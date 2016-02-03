@@ -1,0 +1,7 @@
+# To use JDK Device I/O:
+#com.diozero.internal.provider.jdkdio10.JdkDeviceIoDeviceFactory
+com.diozero.internal.provider.jdkdio11.JdkDeviceIoDeviceFactory
+# To use Pi4j:
+#com.diozero.internal.provider.pi4j.Pi4jDeviceFactory
+# To use wiringPi:
+#com.diozero.internal.provider.wiringpi.WiringPiDeviceFactory

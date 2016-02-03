@@ -1,0 +1,155 @@
+package com.diozero.internal.spi;
+
+import java.io.IOException;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import com.diozero.api.*;
+
+/**
+ * Helper class for instantiating different devices via the configured provider.
+ * To set the provider edit META-INF/services/com.diozero.internal.spi.NativeDeviceFactoryInterface
+ * While the ServiceLoader supports multiple service providers, only the first entry in this file is used
+ */
+public abstract class BaseNativeDeviceFactory extends AbstractDeviceFactory implements NativeDeviceFactoryInterface {
+	private static final Logger logger = LogManager.getLogger(BaseNativeDeviceFactory.class);
+	
+	private static final String NATIVE_PREFIX = "Native-";
+	private static final String GPIO_PREFIX = NATIVE_PREFIX + "GPIO-";
+	private static final String I2C_PREFIX = NATIVE_PREFIX + "I2C-";
+	private static final String SPI_PREFIX = NATIVE_PREFIX + "SPI-";
+	
+	private static String createGpioKey(int pinNumber) {
+		return GPIO_PREFIX + pinNumber;
+	}
+	
+	private static String createI2CKey(int controller, int address) {
+		return I2C_PREFIX + controller + "-" + address;
+	}
+	
+	private static String createSpiKey(int controller, int chipSelect) {
+		return SPI_PREFIX + controller + "-" + chipSelect;
+	}
+	
+	@Override
+	public final GpioDigitalInputDeviceInterface provisionDigitalInputPin(int pinNumber, GpioPullUpDown pud,
+			GpioEventTrigger trigger) throws IOException {
+		// TODO Understand limitations of a particular device
+		// Create some sort of DeviceCapabilities class for this kind of information
+		// Raspberry Pi GPIO2 and GPIO3 are SDA and SCL1 respectively
+		if (pud == GpioPullUpDown.PULL_DOWN && (pinNumber == 2 || pinNumber == 3)) {
+			throw new IllegalArgumentException("GPIO pins 2 and 3 are fitted with physical pull up resistors; "
+					+ "you cannot initialize them in pull-down mode");
+		}
+		
+		String key = createGpioKey(pinNumber);
+		
+		// Check if this pin is already provisioned
+		if (isDeviceOpened(key)) {
+			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
+		}
+		
+		GpioDigitalInputDeviceInterface device = createDigitalInputPin(key, pinNumber, pud, trigger);
+		deviceOpened(device);
+		
+		return device;
+	}
+
+	@Override
+	public final GpioAnalogueInputDeviceInterface provisionAnalogueInputPin(int pinNumber) throws IOException {
+		String key = createGpioKey(pinNumber);
+		
+		// Check if this pin is already provisioned
+		if (isDeviceOpened(key)) {
+			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
+		}
+		
+		GpioAnalogueInputDeviceInterface device = createAnalogueInputPin(key, pinNumber);
+		deviceOpened(device);
+		
+		return device;
+	}
+
+	@Override
+	public final GpioDigitalOutputDeviceInterface provisionDigitalOutputPin(int pinNumber, boolean initialValue) throws IOException {
+		String key = createGpioKey(pinNumber);
+		
+		// Check if this pin is already provisioned
+		if (isDeviceOpened(key)) {
+			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
+		}
+		
+		GpioDigitalOutputDeviceInterface device = createDigitalOutputPin(key, pinNumber, initialValue);
+		deviceOpened(device);
+		
+		return device;
+	}
+
+	@Override
+	public final PwmOutputDeviceInterface provisionPwmOutputPin(int pinNumber, float initialValue) throws IOException {
+		String key = createGpioKey(pinNumber);
+		
+		// Check if this pin is already provisioned
+		if (isDeviceOpened(key)) {
+			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
+		}
+		
+		// TODO Create some sort of DeviceCapabilities class for this kind of information
+		// Raspberry Pi BCM GPIO pins with hardware PWM support: 12 (phys 32, wPi 26), 13 (phys 33, wPi 23),
+		// 18 (phys 12, wPi 1), 19 (phys 35, wPi 24)
+		PwmType pwm_type;
+		if (pinNumber == 12 || pinNumber == 13 || pinNumber == 18 || pinNumber == 19) {
+			pwm_type = PwmType.HARDWARE;
+		} else {
+			logger.warn("Hardware PWM not available on BCM pin " + pinNumber + ", reverting to software");
+			pwm_type = PwmType.SOFTWARE;
+		}
+		
+		PwmOutputDeviceInterface device = createPwmOutputPin(key, pinNumber, initialValue, pwm_type);
+		deviceOpened(device);
+		
+		return device;
+	}
+
+	@Override
+	public final SpiDeviceInterface provisionSpiDevice(int controller, int chipSelect, int frequency, SpiClockMode spiClockMode) throws IOException {
+		String key = createSpiKey(controller, chipSelect);
+		
+		// Check if this pin is already provisioned
+		if (isDeviceOpened(key)) {
+			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
+		}
+		
+		SpiDeviceInterface device = createSpiDevice(key, controller, chipSelect, frequency, spiClockMode);
+		deviceOpened(device);
+		
+		return device;
+	}
+
+	@Override
+	public final I2CDeviceInterface provisionI2CDevice(int controller, int address, int addressSize, int clockFrequency) throws IOException {
+		String key = createI2CKey(controller, address);
+		
+		// Check if this pin is already provisioned
+		if (isDeviceOpened(key)) {
+			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
+		}
+		
+		I2CDeviceInterface device = createI2CDevice(key, controller, address, addressSize, clockFrequency);
+		deviceOpened(device);
+		
+		return device;
+	}
+
+	protected abstract GpioDigitalInputDeviceInterface createDigitalInputPin(String key, int pinNumber, GpioPullUpDown pud,
+			GpioEventTrigger trigger) throws IOException;
+	protected abstract GpioAnalogueInputDeviceInterface createAnalogueInputPin(String key, int pinNumber) throws IOException;
+	protected abstract GpioDigitalOutputDeviceInterface createDigitalOutputPin(String key, int pinNumber, boolean initialValue) throws IOException;
+	protected abstract PwmOutputDeviceInterface createPwmOutputPin(String key, int pinNumber,
+			float initialValue, PwmType pwmType) throws IOException;
+	protected abstract SpiDeviceInterface createSpiDevice(String key, int controller, int chipSelect, int frequency,
+			SpiClockMode spiClockMode) throws IOException;
+	protected abstract I2CDeviceInterface createI2CDevice(String key, int controller, int address, int addressSize,
+			int clockFrequency) throws IOException;
+}
