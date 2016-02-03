@@ -3,6 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	
 	<artifactId>diozero-provider-pigpio</artifactId>
+	<name>Device I/O Zero - pigpioj provider</name>
 	<parent>
 		<groupId>com.diozero</groupId>
 		<artifactId>diozero-parent</artifactId>
