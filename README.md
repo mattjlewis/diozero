@@ -11,7 +11,7 @@ All pin numbers are device native, i.e. Broadcom pin numbering on the Raspberry 
 
 Snapshot builds of the library are available in the [Nexus Repository Manager](https://oss.sonatype.org/index.html#nexus-search;gav~com.diozero~~~~).
 Dependencies:
-* log4j ([API](https://drive.google.com/open?id=0B2Kd_bs3CEYaN29vVGlhak9WQVE) & [Core](https://drive.google.com/open?id=0B2Kd_bs3CEYaeURfWk5uSlZfbGc))
+* log4j ([API](https://drive.google.com/open?id=0B2Kd_bs3CEYaN29vVGlhak9WQVE) and [Core](https://drive.google.com/open?id=0B2Kd_bs3CEYaeURfWk5uSlZfbGc))
 * [Pi4j](https://oss.sonatype.org/service/local/repositories/snapshots/content/com/pi4j/pi4j-core/1.1-SNAPSHOT/pi4j-core-1.1-20151214.215847-34.jar)
 
 To run the [LED sample application](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/sampleapps/LEDTest.java) using Pi4j:
