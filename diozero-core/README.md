@@ -1,7 +1,7 @@
 # DIO-Zero - a Java Device I/O wrapper for GPIO / I2C / SPI devices
 A Device I/O library that provides object-orientated APIs for a range of GPIO/I2C/SPI devices such as LEDs, buttons and other various sensors. The library uses Java ServiceLoader to load low-level libraries for actually interfacing with the underlying hardware. I've only tested this library on the Raspberry Pi (B+, Zero and 2) using Oracle's Java SE 1.8 however it should work on any device that the currently bundled libraries support.
 
-The class [DeviceFactoryHelper](https://github.com/mattjlewis/dio-zero/blob/master/src/main/java/com/diozero/internal/DeviceFactoryHelper.java) encapsulates the logic for accessing the configured service provider. Interfaces for implementing a new service provider are in the [com.diozero.internal.spi](https://github.com/mattjlewis/dio-zero/blob/master/src/main/java/com/diozero/internal/spi) package. Developing a new service provider is relatively straightforward given the provided APIs and base classes.
+The class [DeviceFactoryHelper](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/DeviceFactoryHelper.java) encapsulates the logic for accessing the configured service provider. Interfaces for implementing a new service provider are in the [com.diozero.internal.spi](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/internal/spi) package. Developing a new service provider is relatively straightforward given the provided APIs and base classes.
 
 In theory the OpenJDK Device I/O service provider should provide the best platform support, however, the JDK Device I/O library [doesn't support PWM](http://mail.openjdk.java.net/pipermail/dio-dev/2015-November/000650.html).
 
@@ -9,23 +9,24 @@ As well as providing classes for interfacing with some I2C and SPI devices, the 
 
 All pin numbers are device native, i.e. Broadcom pin numbering on the Raspberry Pi.
 
-A v0.1 build of the library is [currently available](https://drive.google.com/file/d/0B2Kd_bs3CEYaaVROclROX1VPejg/view).
+Snapshot builds of the library are available in the [Nexus Repository Manager](https://oss.sonatype.org/index.html#nexus-search;gav~com.diozero~~~~).
 Dependencies:
 * log4j ([API](https://drive.google.com/open?id=0B2Kd_bs3CEYaN29vVGlhak9WQVE) & [Core](https://drive.google.com/open?id=0B2Kd_bs3CEYaeURfWk5uSlZfbGc))
 * [Pi4j](https://oss.sonatype.org/service/local/repositories/snapshots/content/com/pi4j/pi4j-core/1.1-SNAPSHOT/pi4j-core-1.1-20151214.215847-34.jar)
 
-To run the sample LED application using Pi4j:
+To run the [LED sample application](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/sampleapps/LEDTest.java) using Pi4j:
 
-	sudo java -classpath dio-zero-0.0.1-SNAPSHOT.jar:pi4j-core-1.1-SNAPSHOT.jar:log4j-api-2.5.jar:log4j-core-2.5.jar:pi4j-core-1.0.1-SNAPSHOT.jar com.diozero.sampleapps.LEDTest 18
+	sudo java -classpath diozero-core-0.2-SNAPSHOT.jar:diozero-provider-pi4j-0.2-SNAPSHOT.jar:pi4j-core-1.1-SNAPSHOT.jar:log4j-api-2.5.jar:log4j-core-2.5.jar com.diozero.sampleapps.LEDTest 18
 
 The device native service provider library is defined in the following order:
 1.  System property com.diozero.devicefactory, e.g. `-Dcom.diozero.devicefactory=com.diozero.internal.provider.pi4j.Pi4jDeviceFactory`
-2.  Service definition file on the classpath, file: [/META-INF/services/com.diozero.internal.spi.NativeDeviceFactoryInterface](https://github.com/mattjlewis/dio-zero/blob/master/src/main/java/META-INF/services/com.diozero.internal.spi.NativeDeviceFactoryInterface)
+2.  Service definition file on the classpath, file /META-INF/services/com.diozero.internal.spi.NativeDeviceFactoryInterface. For example [the one for pi4j](https://github.com/mattjlewis/diozero/blob/master/diozero-provider-pi4j/src/main/resources/META-INF/services/com.diozero.internal.spi.NativeDeviceFactoryInterface)
 
 **Currently implemented service providers:**
 * [JDK Device I/O](https://wiki.openjdk.java.net/display/dio/Main) - versions 1.0 and 1.1
 * [Pi4j](http://pi4j.com/)
 * [wiringPi](http://wiringpi.com/) via the Pi4j JNI wrapper classes
+* [pigpio](http://abyz.co.uk/rpi/pigpio/index.html) via my [JNI wrapper library](https://github.com/mattjlewis/pigpioj)
 
 **Currently supported I2C devices:**
 * [InvenSense MPU-9150](http://www.invensense.com/products/motion-tracking/9-axis/mpu-9150/) Nine-axis motion tracking device. Currently a fully working Java port of the InvenSense C library but could do with some Object Orientation related improvements. 
@@ -57,7 +58,7 @@ The device native service provider library is defined in the following order:
 * PWM-controlled motor drivers, e.g. [CamJam EduKit #3 - Robotics](http://camjam.me/?page_id=1035) and the [Toshiba TB6612FNG Dual Motor Driver](http://toshiba.semicon-storage.com/info/lookup.jsp?pid=TB6612FNG&lang=en) as used in the [Pololu Dual Motor Driver Carrier](https://www.pololu.com/product/713)
 
 ##Performance
-I've done some limited performance tests (turning a GPIO on then off, see [GpioPerfTest](https://github.com/mattjlewis/dio-zero/blob/master/src/main/java/com/diozero/sampleapps/GpioPerfTest.java)) on a Raspberry Pi 2 using the various native device factory providers as well as a test using Pi4j's wiringPi JNI API directly without going via my DIO-Zero wrapper (see [WiringPiRawPerfTest](https://github.com/mattjlewis/dio-zero/blob/master/src/main/java/com/diozero/internal/provider/wiringpi/WiringPiRawPerfTest.java)); here are the results:
+I've done some limited performance tests (turning a GPIO on then off, see [GpioPerfTest](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/sampleapps/GpioPerfTest.java)) on a Raspberry Pi 2 using the various native device factory providers as well as a test using Pi4j's wiringPi JNI API directly without going via my DIO-Zero wrapper (see [WiringPiRawPerfTest](https://github.com/mattjlewis/diozero/blob/master/diozero-provider-wiringpi/src/main/java/com/diozero/internal/provider/wiringpi/WiringPiRawPerfTest.java)); here are the results:
 
 	Provider           Iterations  Frequency (kHz)
 	Pi4j 1.0           10,000      0.91
@@ -65,6 +66,7 @@ I've done some limited performance tests (turning a GPIO on then off, see [GpioP
 	Pi4j 1.1           10,000,000  622
 	wiringPi           5,000,000   1,683
 	wiringPi (direct)  10,000,000  2,137
+	pigpio             5,000,000   1,266
 	pigpio (direct)    10,000,000  1,649
 For a discussion on why Pi4j 1.0 is so slow, see this [issue](https://github.com/Pi4J/pi4j/issues/158). These results are in-line with those documented in the book ["Raspberry Pi with Java: Programming the Internet of Things"](http://www.amazon.co.uk/Raspberry-Pi-Java-Programming-Internet/dp/0071842012). For reference, the author's results were:
 
@@ -110,7 +112,4 @@ There is still a lot left to do, in particular:
 * Smoothed input listener
 * Other I2C & SPI devices, including those on the SenseHAT
 * A clean object-orientated API for IMUs
-* Review logging framework and output (is log4j an unnecessary dependency for this library?)
-* Separate projects for each of the device factory implementations as well as sample apps
-* Move the MPU-9150 test application to a separate project to remove the dependency on MQTT
-* Implement a wrapper library based on the [pigpio C interface](http://abyz.co.uk/rpi/pigpio/cif.html). Could initially base it on [this wrapper library](https://github.com/nkolban/jpigpio)
+* Review logging framework usage and output (is log4j an unnecessary dependency for this library?)
