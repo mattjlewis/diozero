@@ -29,6 +29,11 @@
 			<artifactId>device-io</artifactId>
 			<version>1.0</version>
 		</dependency>
+		<dependency>
+			<groupId>com.diozero</groupId>
+			<artifactId>diozero-core</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 	</dependencies>
 
 	<build>
