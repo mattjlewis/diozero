@@ -2,23 +2,31 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	
-	<artifactId>diozero-provider-pigpio</artifactId>
 	<name>Device I/O Zero - pigpioj provider</name>
+	<artifactId>diozero-provider-pigpio</artifactId>
 	<parent>
 		<groupId>com.diozero</groupId>
 		<artifactId>diozero-parent</artifactId>
 		<version>0.2-SNAPSHOT</version>
 	</parent>
 	
+	<dependencies>
+		<dependency>
+			<groupId>com.diozero</groupId>
+			<artifactId>diozero-core</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.pigpioj</groupId>
+			<artifactId>pigpioj-java</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+	</dependencies>
+	
 	<build>
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.3</version>
-				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
-				</configuration>
 			</plugin>
 		</plugins>
 	</build>
