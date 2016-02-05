@@ -31,12 +31,23 @@ import java.io.IOException;
 
 import com.diozero.api.*;
 import com.diozero.internal.spi.*;
+import com.diozero.pigpioj.PigpioGpio;
 
 public class PigpioJDeviceFactory extends BaseNativeDeviceFactory {
+	
+	public PigpioJDeviceFactory() throws IOException {
+		PigpioGpio.initialise();
+	}
 
 	@Override
 	public String getName() {
 		return getClass().getSimpleName();
+	}
+	
+	@Override
+	public void closeAll() {
+		super.closeAll();
+		PigpioGpio.terminate();
 	}
 
 	@Override

@@ -136,8 +136,6 @@ public class PigpioJDigitalInputDevice extends AbstractDevice implements GpioDig
 
 	@Override
 	public void callback(int pin, boolean value, long epochTime, long nanoTime) {
-		logger.info("callback(" + pin + ", " + value + ", " + epochTime + ", " + nanoTime + ")");
-		
 		if (pin != pinNumber) {
 			logger.severe("Error, got a callback for the wrong pin (" + pin + "), was expecting " + pinNumber);
 		}
