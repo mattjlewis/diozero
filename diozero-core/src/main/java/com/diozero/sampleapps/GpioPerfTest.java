@@ -34,6 +34,20 @@ import org.apache.logging.log4j.Logger;
 
 import com.diozero.api.DigitalOutputDevice;
 
+/**
+ * GPIO output performance test application
+ * To run:
+ * JDK Device I/O 1.0:
+ *	sudo java -classpath diozero-core-0.2-SNAPSHOT.jar:diozero-provider-jdkdio10-0.2-SNAPSHOT.jar:log4j-api-2.5.jar:log4j-core-2.5.jar com.diozero.sampleapps.GpioPerfTest 18 50000
+ * JDK Device I/O 1.1:
+ *	sudo java -classpath diozero-core-0.2-SNAPSHOT.jar:diozero-provider-jdkdio11-0.2-SNAPSHOT.jar:log4j-api-2.5.jar:log4j-core-2.5.jar com.diozero.sampleapps.GpioPerfTest 18 50000
+ * Pi4j:
+ *	sudo java -classpath diozero-core-0.2-SNAPSHOT.jar:diozero-provider-pi4j-0.2-SNAPSHOT.jar:pi4j-core-1.1-SNAPSHOT.jar:log4j-api-2.5.jar:log4j-core-2.5.jar com.diozero.sampleapps.GpioPerfTest 18 2000000
+ * wiringPi:
+ * sudo java -classpath diozero-core-0.2-SNAPSHOT.jar:diozero-provider-wiringpi-0.2-SNAPSHOT.jar:pi4j-core-1.1-SNAPSHOT.jar:log4j-api-2.5.jar:log4j-core-2.5.jar com.diozero.sampleapps.GpioPerfTest 18 5000000
+ * pigpgioJ:
+ * sudo java -Djava.library.path=. -classpath diozero-core-0.2-SNAPSHOT.jar:diozero-provider-pigpio-0.2-SNAPSHOT.jar:pigpioj-java-0.0.1-SNAPSHOT.jar:log4j-api-2.5.jar:log4j-core-2.5.jar com.diozero.sampleapps.GpioPerfTest 18 5000000
+ */
 public class GpioPerfTest {
 	private static final Logger logger = LogManager.getLogger(GpioPerfTest.class);
 	

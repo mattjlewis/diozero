@@ -35,6 +35,20 @@ import com.diozero.api.DigitalPinEvent;
 import com.diozero.api.GpioPullUpDown;
 import com.diozero.util.SleepUtil;
 
+/**
+ * Input test application
+ * To run:
+ * JDK Device I/O 1.0:
+ *	sudo java -classpath diozero-core-0.2-SNAPSHOT.jar:diozero-provider-jdkdio10-0.2-SNAPSHOT.jar:log4j-api-2.5.jar:log4j-core-2.5.jar com.diozero.sampleapps.ButtonTest 12
+ * JDK Device I/O 1.1:
+ *	sudo java -classpath diozero-core-0.2-SNAPSHOT.jar:diozero-provider-jdkdio11-0.2-SNAPSHOT.jar:log4j-api-2.5.jar:log4j-core-2.5.jar com.diozero.sampleapps.ButtonTest 12
+ * Pi4j:
+ *	sudo java -classpath diozero-core-0.2-SNAPSHOT.jar:diozero-provider-pi4j-0.2-SNAPSHOT.jar:pi4j-core-1.1-SNAPSHOT.jar:log4j-api-2.5.jar:log4j-core-2.5.jar com.diozero.sampleapps.ButtonTest 12
+ * wiringPi:
+ * sudo java -classpath diozero-core-0.2-SNAPSHOT.jar:diozero-provider-wiringpi-0.2-SNAPSHOT.jar:pi4j-core-1.1-SNAPSHOT.jar:log4j-api-2.5.jar:log4j-core-2.5.jar com.diozero.sampleapps.ButtonTest 12
+ * pigpgioJ:
+ * sudo java -Djava.library.path=. -classpath diozero-core-0.2-SNAPSHOT.jar:diozero-provider-pigpio-0.2-SNAPSHOT.jar:pigpioj-java-0.0.1-SNAPSHOT.jar:log4j-api-2.5.jar:log4j-core-2.5.jar com.diozero.sampleapps.ButtonTest 12
+ */
 public class ButtonTest implements Consumer<DigitalPinEvent> {
 	public static void main(String[] args) {
 		new ButtonTest().test();
