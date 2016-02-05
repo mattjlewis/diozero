@@ -35,12 +35,6 @@
 		<Logger name="com.diozero" level="debug" additivity="false">
 			<AppenderRef ref="Console" />
 		</Logger>
-		<Logger name="com.diozero.sampleapps" level="debug" additivity="false">
-			<AppenderRef ref="Console" />
-		</Logger>
-		<Logger name="com.diozero.sandpit" level="debug" additivity="false">
-			<AppenderRef ref="Console" />
-		</Logger>
 		<Root level="error">
 			<AppenderRef ref="Console" />
 		</Root>

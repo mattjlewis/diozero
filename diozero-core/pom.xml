@@ -2,72 +2,23 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<artifactId>diozero-core</artifactId>
-	<packaging>jar</packaging>
-	<name>Device I/O Zero - Core</name>
-	<description>Java Device I/O library with an API based on the Python GPIO Zero supporting multiple devices (Raspberry Pi, BeagleBone Black, ...)</description>
-	<url>https://github.com/mattjlewis/diozero</url>
 	<parent>
 		<groupId>com.diozero</groupId>
 		<artifactId>diozero-parent</artifactId>
 		<version>0.2-SNAPSHOT</version>
 	</parent>
 	
-	<issueManagement>
-		<system>GitHub</system>
-		<url>https://github.com/mattjlewis/diozero/issues</url>
-	</issueManagement>
-	
-	<licenses>
-		<license>
-			<name>MIT License</name>
-			<url>http://www.opensource.org/licenses/mit-license.php</url>
-			<distribution>repo</distribution>
-		</license>
-	</licenses>
-	
-	<scm>
-		<url>https://github.com/mattjlewis/diozero.git</url>
-		<connection>scm:git:git@github.com:mattjlewis/diozero.git</connection>
-		<developerConnection>scm:git:git@github.com:mattjlewis/diozero.git</developerConnection>
-	</scm>
-	
-	<developers>
-		<developer>
-			<email>deviceiozero@gmail.com</email>
-			<name>Matthew Lewis</name>
-			<url>https://github.com/mattjlewis</url>
-			<id>mattjlewis</id>
-		</developer>
-	</developers>
-
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	</properties>
-	
-	<repositories>
-		<repository>
-			<id>oss-snapshots-repo</id>
-			<name>Sonatype OSS Maven Repository</name>
-			<url>https://oss.sonatype.org/content/groups/public</url>
-			<snapshots>
-				<enabled>true</enabled>
-				<updatePolicy>always</updatePolicy>
-			</snapshots>
-		</repository>
-	</repositories>
+	<artifactId>diozero-core</artifactId>
+	<packaging>jar</packaging>
+	<name>Device I/O Zero - Core</name>
+	<description>Java Device I/O library with an API based on the Python GPIO Zero supporting multiple devices (Raspberry Pi, BeagleBone Black, ...)</description>
+	<url>https://github.com/mattjlewis/diozero</url>
 
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.12</version>
 			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>jdk.dio</groupId>
-			<artifactId>device-io</artifactId>
-			<version>1.1</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
@@ -75,24 +26,12 @@
 			<version>3.5</version>
 		</dependency>
 		<dependency>
-			<groupId>org.eclipse.paho</groupId>
-			<artifactId>org.eclipse.paho.client.mqttv3</artifactId>
-			<version>1.0.2</version>
-		</dependency>
-		<dependency>
-			<groupId>com.pi4j</groupId>
-			<artifactId>pi4j-core</artifactId>
-			<version>1.1-SNAPSHOT</version>
-		</dependency>
-		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-api</artifactId>
-			<version>2.5</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-core</artifactId>
-			<version>2.5</version>
 		</dependency>
 	</dependencies>
 
@@ -101,13 +40,10 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.3</version>
-				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
-					<optimize>true</optimize>
-					<showDeprecation>true</showDeprecation>
-				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>license-maven-plugin</artifactId>
 			</plugin>
 		</plugins>
 	</build>
