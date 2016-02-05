@@ -42,7 +42,7 @@ public abstract class AbstractDeviceFactory implements DeviceFactoryInterface {
 	}
 	
 	@Override
-	public final void closeAll() {
+	public void closeAll() {
 		logger.debug("closeAll()");
 		deviceStates.closeAll();
 	}
