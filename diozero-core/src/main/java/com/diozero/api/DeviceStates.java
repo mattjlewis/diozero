@@ -55,7 +55,9 @@ public class DeviceStates {
 	
 	public void closed(DeviceInterface device) {
 		logger.debug("closed(" + device.getKey() + ")");
-		devices.remove(device.getKey());
+		if (devices.remove(device.getKey()) == null) {
+			logger.warn("request to close unknown device with key '" + device.getKey() + "'");
+		}
 	}
 	
 	public void closeAll() {
@@ -68,5 +70,9 @@ public class DeviceStates {
 
 	public DeviceInterface getDevice(String key) {
 		return devices.get(key);
+	}
+	
+	public int size() {
+		return devices.size();
 	}
 }

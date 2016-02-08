@@ -33,6 +33,11 @@ import com.diozero.api.*;
 import com.diozero.internal.spi.*;
 
 public class TestDeviceFactory extends BaseNativeDeviceFactory {
+	
+	// Added for testing purposess only
+	public DeviceStates getDeviceStates() {
+		return deviceStates;
+	}
 
 	@Override
 	public String getName() {
@@ -75,6 +80,6 @@ public class TestDeviceFactory extends BaseNativeDeviceFactory {
 	protected I2CDeviceInterface createI2CDevice(String key, int controller, int address, int addressSize,
 			int clockFrequency) throws IOException {
 		// TODO Support for test I2C devices
-		throw new UnsupportedOperationException("I2C not yet supported in the Test device provider factory");
+		return new TestI2CDevice(key, this, controller, address, addressSize, clockFrequency);
 	}
 }

@@ -44,7 +44,7 @@ import com.diozero.internal.spi.InternalPinListener;
 public class DigitalInputDevice extends GpioDevice implements InternalPinListener {
 	private static final Logger logger = LogManager.getLogger(DigitalInputDevice.class);
 	
-	private Consumer<DigitalPinEvent> consumer;
+	protected Consumer<DigitalPinEvent> consumer;
 	protected boolean activeHigh;
 	protected GpioDigitalInputDeviceInterface device;
 

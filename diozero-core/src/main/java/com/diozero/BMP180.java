@@ -26,6 +26,7 @@ package com.diozero;
  * #L%
  */
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
@@ -39,24 +40,8 @@ import com.diozero.util.IOUtil;
 import com.diozero.util.SleepUtil;
 
 @SuppressWarnings("unused")
-public class BMP180 extends I2CDevice implements TemperaturePressureSensorInterface {
+public class BMP180 implements TemperaturePressureSensorInterface, Closeable {
 	private static final Logger logger = LogManager.getLogger(BMP180.class);
-	
-	public static void main(String[] args) {
-		try (BMP180 bmp180 = new BMP180(1, I2CConstants.ADDR_SIZE_7, I2CConstants.DEFAULT_CLOCK_FREQUENCY)) {
-			bmp180.init(BMPMode.STANDARD);
-			logger.debug("Opened device");
-
-			double temp = bmp180.getTemperature();
-			System.out.format("Temperature=%.2f%n", Double.valueOf(temp));
-			double pressure = bmp180.getPressure();
-			System.out.format("Pressure=%.2f%n", Double.valueOf(pressure));
-			
-			bmp180.close();
-		} catch (IOException ioe) {
-			logger.error("Error: " + ioe, ioe);
-		}
-	}
 	
 	/**
 	 * Device address BMP180 address is 0x77
@@ -109,13 +94,14 @@ public class BMP180 extends I2CDevice implements TemperaturePressureSensorInterf
 
 	// Barometer configuration
 	private BMPMode mode;
+	private I2CDevice i2cDevice;
 	
 	public BMP180() throws IOException {
-		this(1, I2CConstants.ADDR_SIZE_7, I2CConstants.DEFAULT_CLOCK_FREQUENCY);
+		this(I2CConstants.BUS_1, I2CConstants.ADDR_SIZE_7, I2CConstants.DEFAULT_CLOCK_FREQUENCY);
 	}
 	
 	public BMP180(int controllerNumber, int addressSize, int clockFrequency) throws IOException {
-		super(controllerNumber, BMP180_ADDR, addressSize, clockFrequency);
+		i2cDevice = new I2CDevice(controllerNumber, BMP180_ADDR, addressSize, clockFrequency);
 	}
 
 	/**
@@ -138,7 +124,7 @@ public class BMP180 extends I2CDevice implements TemperaturePressureSensorInterf
 	private void getCalibrationData() throws IOException {
 		// Read all of the calibration data into a byte array
 		ByteBuffer calibData = ByteBuffer.allocateDirect(CALIBRATION_BYTES);
-		read(EEPROM_START, I2CConstants.SUB_ADDRESS_SIZE_1_BYTE, calibData);
+		i2cDevice.read(EEPROM_START, I2CConstants.SUB_ADDRESS_SIZE_1_BYTE, calibData);
 		// Read each of the pairs of data as a signed short
 		calibData.rewind();
 		calAC1 = calibData.getShort();
@@ -160,13 +146,13 @@ public class BMP180 extends I2CDevice implements TemperaturePressureSensorInterf
 
 	private int readRawTemperature() throws IOException {
 		// Write the read temperature command to the command register
-		writeByte(CONTROL_REGISTER, GET_TEMP_CMD);
+		i2cDevice.writeByte(CONTROL_REGISTER, GET_TEMP_CMD);
 
 		// Wait 5m before reading the temperature
 		SleepUtil.sleepMillis(5);
 
 		// Read uncompressed data
-		return readUShort(TEMP_ADDR, I2CConstants.SUB_ADDRESS_SIZE_1_BYTE);
+		return i2cDevice.readUShort(TEMP_ADDR, I2CConstants.SUB_ADDRESS_SIZE_1_BYTE);
 	}
 
 	/**
@@ -193,14 +179,14 @@ public class BMP180 extends I2CDevice implements TemperaturePressureSensorInterf
 
 	private int readRawPressure() throws IOException {
 		// Write the read pressure command to the command register
-		writeByte(CONTROL_REGISTER, mode.getPressureCommand());
+		i2cDevice.writeByte(CONTROL_REGISTER, mode.getPressureCommand());
 
 		// Delay before reading the pressure - use the value determined by the
 		// sampling mode
 		SleepUtil.sleepMillis(mode.getDelay());
 
 		// Read the non-compensated pressure value
-		long val = readUInt(PRESS_ADDR, I2CConstants.SUB_ADDRESS_SIZE_1_BYTE, 3);
+		long val = i2cDevice.readUInt(PRESS_ADDR, I2CConstants.SUB_ADDRESS_SIZE_1_BYTE, 3);
 
 		// ((msb << 16) + (lsb << 8) + xlsb) >> (8 - self._mode)
 		
@@ -315,5 +301,10 @@ public class BMP180 extends I2CDevice implements TemperaturePressureSensorInterf
 		public int getSamplingMode() {
 			return samplingMode;
 		}
+	}
+
+	@Override
+	public void close() {
+		try { i2cDevice.close(); } catch (IOException e) { }
 	}
 }

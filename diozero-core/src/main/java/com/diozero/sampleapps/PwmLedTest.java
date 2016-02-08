@@ -36,11 +36,15 @@ import com.diozero.PwmLed;
 import com.diozero.util.SleepUtil;
 
 /**
- * PWM LED test application, currently only works with Pi4j backend
- * To run:
- * (Pi4j):				sudo java -classpath dio-zero.jar:pi4j-core.jar com.diozero.sampleapps.PwmLedTest 12
- * (JDK Device I/O):	sudo java -classpath dio-zero.jar -Djava.security.policy=config/gpio.policy com.diozero.sampleapps.PwmLedTest 12
+ * PWM LED test application. Note doesn't work with the JDK Device I/O providers
  * Raspberry Pi BCM GPIO pins with hardware PWM support: 12 (phys 32, wPi 26), 13 (phys 33, wPi 23), 18 (phys 12, wPi 1), 19 (phys 35, wPi 24)
+ * To run:
+ * Pi4j:
+ *  sudo java -cp log4j-api-2.5.jar:log4j-core-2.5.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-pi4j-0.2-SNAPSHOT.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sampleapps.PwmLedTest 18
+ * wiringPi:
+ *  sudo java -cp log4j-api-2.5.jar:log4j-core-2.5.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-wiringpi-0.2-SNAPSHOT.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sampleapps.PwmLedTest 18
+ * pigpgioJ:
+ *  sudo java -cp log4j-api-2.5.jar:log4j-core-2.5.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-pigpio-0.2-SNAPSHOT.jar:pigpioj-java-0.0.1-SNAPSHOT.jar -Djava.library.path=. com.diozero.sampleapps.PwmLedTest 18
  */
 public class PwmLedTest {
 	private static final Logger logger = LogManager.getLogger(PwmLedTest.class);

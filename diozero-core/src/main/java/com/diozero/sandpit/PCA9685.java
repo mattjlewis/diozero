@@ -103,7 +103,7 @@ public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFac
 	private double pulseMsPerBit = ServoUtil.calcPulseMsPerBit(pwmFrequency, RANGE);
 
 	public PCA9685() throws IOException {
-		this(1, DEVICE_ADDRESS, I2CConstants.ADDR_SIZE_7, I2CConstants.DEFAULT_CLOCK_FREQUENCY);
+		this(I2CConstants.BUS_1, DEVICE_ADDRESS, I2CConstants.ADDR_SIZE_7, I2CConstants.DEFAULT_CLOCK_FREQUENCY);
 	}
 
 	public PCA9685(int controller, int address, int addressSize, int clockFrequency) throws IOException {
@@ -181,7 +181,7 @@ public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFac
 		byte off_l = i2cDevice.readByte(LED0_OFF_L + 4*channel);
 		byte off_h = i2cDevice.readByte(LED0_OFF_H + 4*channel);
 		int off = ((off_h << 8) & 0xff00) | (off_l | 0xff);
-		System.out.println("on=" + on + ", on_with_read_short=" + on_with_read_short + ", off=" + off + ", off_v1=" + off_with_read_short);
+		logger.debug("on=" + on + ", on_with_read_short=" + on_with_read_short + ", off=" + off + ", off_v1=" + off_with_read_short);
 		
 		return new int[] { on, off };
 	}

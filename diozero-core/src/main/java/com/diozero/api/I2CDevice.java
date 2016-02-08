@@ -26,7 +26,6 @@ package com.diozero.api;
  * #L%
  */
 
-
 import java.io.Closeable;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -35,9 +34,13 @@ import java.nio.ByteOrder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.diozero.internal.spi.I2CDeviceFactoryInterface;
 import com.diozero.internal.spi.I2CDeviceInterface;
 import com.diozero.util.IOUtil;
 
+/**
+ * This is more of a utility class providing various read/write methods
+ */
 public class I2CDevice implements Closeable, I2CConstants {
 	private static final Logger logger = LogManager.getLogger(I2CDevice.class);
 	
@@ -48,7 +51,12 @@ public class I2CDevice implements Closeable, I2CConstants {
 	private int clockFrequency;
 
 	public I2CDevice(int controller, int address, int addressSize, int clockFrequency) throws IOException {
-		device = DeviceFactoryHelper.getNativeDeviceFactory().provisionI2CDevice(controller, address, addressSize, clockFrequency);
+		this(DeviceFactoryHelper.getNativeDeviceFactory(), controller, address, addressSize, clockFrequency);
+	}
+	
+	public I2CDevice(I2CDeviceFactoryInterface deviceFactory, int controller, int address, int addressSize, int clockFrequency)
+			throws IOException {
+		device = deviceFactory.provisionI2CDevice(controller, address, addressSize, clockFrequency);
 		
 		this.controller = controller;
 		this.address = address;
@@ -77,7 +85,7 @@ public class I2CDevice implements Closeable, I2CConstants {
 		logger.debug("close()");
 		device.close();
 	}
-	
+
 	public final boolean isOpen() {
 		return device.isOpen();
 	}

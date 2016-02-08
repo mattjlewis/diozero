@@ -33,6 +33,7 @@ import java.util.Random;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.junit.Assert;
 
 import com.diozero.api.SpiClockMode;
 import com.diozero.internal.spi.DeviceFactoryInterface;
@@ -68,12 +69,12 @@ public class TestMcp3008SpiDevice extends TestSpiDevice {
 		return (high << 8) | low;
 		*/
 		byte b = out.get();
-		assert (b == 0x01);
+		Assert.assertEquals(0x01, b);
 		b = out.get();
 		int pin = (b >> 4) & 0x07;
 		logger.debug("Received read request for pin " + pin);
 		b = out.get();
-		assert (b == 0);
+		Assert.assertEquals(0, b);
 		
 		int temp = random.nextInt(RANGE);
 		ByteBuffer dst = ByteBuffer.allocateDirect(3);

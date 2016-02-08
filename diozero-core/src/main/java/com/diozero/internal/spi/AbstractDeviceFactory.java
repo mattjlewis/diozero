@@ -35,7 +35,7 @@ import com.diozero.api.DeviceStates;
 public abstract class AbstractDeviceFactory implements DeviceFactoryInterface {
 	private static final Logger logger = LogManager.getLogger(AbstractDeviceFactory.class);
 	
-	private DeviceStates deviceStates;
+	protected DeviceStates deviceStates;
 	
 	public AbstractDeviceFactory() {
 		deviceStates = new DeviceStates();

@@ -26,26 +26,40 @@ package com.diozero;
  * #L%
  */
 
-
 import java.util.function.Consumer;
 
 public class LambdaTest {
 
 	public static void main(String[] args) {
-		Consumer<Void> consumer = (Void v) -> { System.out.println("Hello"); };
-		
+		Consumer<Void> consumer = (Void v) -> {
+			System.out.println("Hello");
+		};
+
 		consumer.accept(null);
-		
-		Command c = () -> { System.out.println("Hello"); };
+
+		Command c = () -> {
+			System.out.println("Hello");
+		};
 		c.action();
+		
+		carryOutWork(() -> System.out.println("In here 1"));
 	}
-	
+
 	interface Command extends Consumer<Void> {
 		@Override
 		default void accept(Void v) {
 			action();
 		}
-		
+
 		void action();
 	}
+	
+	public static void carryOutWork(SimpleFuncInterface sfi){
+		sfi.abc();
+	}
+}
+
+@FunctionalInterface
+interface SimpleFuncInterface {
+	public void abc();
 }

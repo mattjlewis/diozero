@@ -54,25 +54,6 @@ import com.diozero.util.SleepUtil;
  */
 public class HCSR04 implements DistanceSensorInterface, Closeable {
 	private static final Logger logger = LogManager.getLogger(HCSR04.class);
-	
-	public static void main(String[] args) {
-		if (args.length != 2) {
-			logger.error("Usage: HCSR04 <trigger GPIO> <echo GPIO>");
-			System.exit(1);
-		}
-		int trigger_gpio = Integer.parseInt(args[0]);
-		int echo_gpio = Integer.parseInt(args[1]);
-		try (HCSR04 device = new HCSR04()) {
-			device.init(trigger_gpio, echo_gpio);
-			
-			while (true) {
-				logger.info("Distance = " + device.getDistanceCm() + " cm");
-				SleepUtil.sleepMillis(1000);
-			}
-		} catch (IOException ex) {
-			logger.error("I/O error with HC-SR04 device: " + ex.getMessage(), ex);
-		}
-	}
 
 	private static long MS_IN_SEC = 1000;
 	private static long US_IN_SEC = MS_IN_SEC * 1000;

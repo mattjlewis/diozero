@@ -223,12 +223,12 @@ public class MCP23017 extends AbstractDeviceFactory implements GpioDeviceFactory
 	private InterruptMode interruptMode = InterruptMode.DISABLED;
 
 	public MCP23017() throws IOException {
-		this(1, DEVICE_ADDRESS, I2CConstants.ADDR_SIZE_7, I2CConstants.DEFAULT_CLOCK_FREQUENCY,
+		this(I2CConstants.BUS_1, DEVICE_ADDRESS, I2CConstants.ADDR_SIZE_7, I2CConstants.DEFAULT_CLOCK_FREQUENCY,
 				INTERRUPT_PIN_NOT_SET, INTERRUPT_PIN_NOT_SET);
 	}
 
 	public MCP23017(int interruptPinNumberA, int interruptPinNumberB) throws IOException {
-		this(1, DEVICE_ADDRESS, I2CConstants.ADDR_SIZE_7, I2CConstants.DEFAULT_CLOCK_FREQUENCY,
+		this(I2CConstants.BUS_1, DEVICE_ADDRESS, I2CConstants.ADDR_SIZE_7, I2CConstants.DEFAULT_CLOCK_FREQUENCY,
 				interruptPinNumberA, interruptPinNumberB);
 	}
 
