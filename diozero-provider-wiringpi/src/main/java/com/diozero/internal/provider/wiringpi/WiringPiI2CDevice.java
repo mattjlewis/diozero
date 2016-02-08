@@ -42,11 +42,12 @@ import com.pi4j.io.i2c.I2CFactory;
 public class WiringPiI2CDevice extends AbstractDevice implements I2CDeviceInterface {
 	private static final Logger logger = LogManager.getLogger(WiringPiI2CDevice.class);
 	
-	// TODO Switch to the wiringPi com.pi4j.wiringpi.I2C class?
-	private I2CDevice i2cDevice;
+	//private static final int CLOSED = -1;
+	
 	private int controller;
 	private int address;
-	private boolean open;
+	//private int handle = CLOSED;
+	private I2CDevice i2cDevice;
 	
 	public WiringPiI2CDevice(String key, DeviceFactoryInterface deviceFactory, int controller, int address,
 			int addressSize, int clockFrequency) throws IOException {
@@ -54,32 +55,48 @@ public class WiringPiI2CDevice extends AbstractDevice implements I2CDeviceInterf
 		
 		this.controller = controller;
 		this.address = address;
+		/*
+		handle = I2C.wiringPiI2CSetup(address);
+		if (handle == -1) {
+			handle = CLOSED;
+			throw new IOException("Error in I2C.wiringPiI2CSetup(" + address + ")");
+		}
+		*/
+		logger.debug(String.format("Opening I2C device (%d, 0x%x)...",
+				Integer.valueOf(controller), Integer.valueOf(address)));
 		i2cDevice = I2CFactory.getInstance(controller).getDevice(address);
-		open = true;
+		logger.debug(String.format("I2C device (%d, 0x%x) opened",
+				Integer.valueOf(controller), Integer.valueOf(address)));
 	}
 
 	@Override
 	public void closeDevice() throws IOException {
 		logger.debug("closeDevice()");
+		// No way to close a wiringPi I2C Device?!
+		//handle = CLOSED;
 		// No way to close a Pi4J I2C Device?!
 		//i2cDevice.close();
-		open = false;
+		i2cDevice = null;
 	}
 
 	@Override
 	public boolean isOpen() {
 		// No way to tell if it is open?!
-		return open;
+		//return handle != CLOSED;
+		return i2cDevice != null;
 	}
 
 	@Override
 	public void read(int register, int subAddressSize, ByteBuffer dst) throws IOException {
-		if (! open) {
+		if (! isOpen()) {
 			throw new IllegalStateException("I2C Device " + controller + "-" + address + " is closed");
 		}
 		
 		int to_read = dst.remaining();
 		byte[] buffer = new byte[to_read];
+		logger.debug("reading " + to_read + " bytes");
+		// TODO Need to loop, yuck
+		//byte b = I2C.wiringPiI2CReadReg8(handle, register);
 		int read = i2cDevice.read(register, buffer, 0, to_read);
 		if (read != to_read) {
 			throw new IOException("Didn't read correct number of bytes, read " + read + ", expected " + to_read);
@@ -90,13 +107,15 @@ public class WiringPiI2CDevice extends AbstractDevice implements I2CDeviceInterf
 
 	@Override
 	public void write(int register, int subAddressSize, ByteBuffer src) throws IOException {
-		if (! open) {
+		if (! isOpen()) {
 			throw new IllegalStateException("I2C Device " + controller + "-" + address + " is closed");
 		}
 		
 		int to_write = src.remaining();
 		byte[] buffer = new byte[to_write];
 		src.get(buffer, src.position(), to_write);
+		// Need to loop, yuck
+		//I2C.wiringPiI2CWriteReg8(handle, register, b);
 		i2cDevice.write(register, buffer, 0, to_write);
 	}
 }

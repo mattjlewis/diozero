@@ -42,10 +42,9 @@ import com.pi4j.io.i2c.I2CFactory;
 public class Pi4jI2CDevice extends AbstractDevice implements I2CDeviceInterface {
 	private static final Logger logger = LogManager.getLogger(Pi4jI2CDevice.class);
 
-	private I2CDevice i2cDevice;
 	private int controller;
 	private int address;
-	private boolean open;
+	private I2CDevice i2cDevice;
 	
 	public Pi4jI2CDevice(String key, DeviceFactoryInterface deviceFactory, int controller, int address,
 			int addressSize, int clockFrequency) throws IOException {
@@ -53,8 +52,11 @@ public class Pi4jI2CDevice extends AbstractDevice implements I2CDeviceInterface 
 		
 		this.controller = controller;
 		this.address = address;
+		logger.debug(String.format("Opening I2C device (%d, 0x%x)...",
+				Integer.valueOf(controller), Integer.valueOf(address)));
 		i2cDevice = I2CFactory.getInstance(controller).getDevice(address);
-		open = true;
+		logger.debug(String.format("I2C device (%d, 0x%x) opened",
+				Integer.valueOf(controller), Integer.valueOf(address)));
 	}
 
 	@Override
@@ -62,18 +64,18 @@ public class Pi4jI2CDevice extends AbstractDevice implements I2CDeviceInterface 
 		logger.debug("closeDevice()");
 		// No way to close a Pi4J I2C Device?!
 		//i2cDevice.close();
-		open = false;
+		i2cDevice = null;
 	}
 
 	@Override
 	public boolean isOpen() {
 		// No way to tell if it is open?!
-		return open;
+		return i2cDevice != null;
 	}
 
 	@Override
 	public void read(int register, int subAddressSize, ByteBuffer dst) throws IOException {
-		if (! open) {
+		if (! isOpen()) {
 			throw new IllegalStateException("I2C Device " + controller + "-" + address + " is closed");
 		}
 		
@@ -89,7 +91,7 @@ public class Pi4jI2CDevice extends AbstractDevice implements I2CDeviceInterface 
 
 	@Override
 	public void write(int register, int subAddressSize, ByteBuffer src) throws IOException {
-		if (! open) {
+		if (! isOpen()) {
 			throw new IllegalStateException("I2C Device " + controller + "-" + address + " is closed");
 		}
 		

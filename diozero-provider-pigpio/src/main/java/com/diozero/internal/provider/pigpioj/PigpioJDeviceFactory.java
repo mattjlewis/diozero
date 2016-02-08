@@ -76,13 +76,13 @@ public class PigpioJDeviceFactory extends BaseNativeDeviceFactory {
 	@Override
 	protected SpiDeviceInterface createSpiDevice(String key, int controller, int chipSelect, int frequency,
 			SpiClockMode spiClockMode) throws IOException {
-		throw new UnsupportedOperationException("SPI not yet supported");
+		return new PigpioJSpiDevice(key, this, controller, chipSelect, frequency, spiClockMode);
 	}
 
 	@Override
 	protected I2CDeviceInterface createI2CDevice(String key, int controller, int address, int addressSize,
 			int clockFrequency) throws IOException {
-		throw new UnsupportedOperationException("I2C not yet supported");
+		return new PigpioJI2CDevice(key, this, controller, address, addressSize);
 	}
 
 }

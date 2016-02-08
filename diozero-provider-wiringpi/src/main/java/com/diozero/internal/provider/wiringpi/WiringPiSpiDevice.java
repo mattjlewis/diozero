@@ -41,8 +41,10 @@ import com.pi4j.wiringpi.Spi;
 
 public class WiringPiSpiDevice extends AbstractDevice implements SpiDeviceInterface {
 	private static final Logger logger = LogManager.getLogger(WiringPiSpiDevice.class);
+
+	private static final int CLOSED = -1;
 	
-	//private final SpiDevice spiDevice;
+	private int handle = CLOSED;
 	private int controller;
 	private int chipSelect;
 	
@@ -70,29 +72,38 @@ public class WiringPiSpiDevice extends AbstractDevice implements SpiDeviceInterf
 			break;
 		}
 		
-		//spiDevice = SpiFactory.getInstance(SpiChannel.getByNumber(chipSelect), speed, SpiMode.getByNumber(mode.getMode()));
-		if (Spi.wiringPiSPISetupMode(controller, speed, wpi_spi_mode) == -1) {
+		handle = Spi.wiringPiSPISetupMode(controller, speed, wpi_spi_mode);
+		if (handle == -1) {
 			throw new IOException("Error initialising SPI controller " + controller + ", speed=" + speed + ", mode=" + wpi_spi_mode);
 		}
+	}
+
+	@Override
+	public boolean isOpen() {
+		return handle >= 0;
 	}
 
 	@Override
 	public void closeDevice() throws IOException {
 		logger.debug("closeDevice()");
 		// No way to close a wiringPi SPI device file handle?!
-		//spiDevice.close();
+		handle = CLOSED;
 	}
 
 	@Override
-	public ByteBuffer writeAndRead(ByteBuffer out) throws IOException {
+	public ByteBuffer writeAndRead(ByteBuffer tx) throws IOException {
+		/*
 		byte[] out_array = out.array();
 		byte[] buffer = new byte[out_array.length];
 		System.arraycopy(out_array, 0, buffer, 0, out_array.length);
+		*/
+		int count = tx.remaining();
+		byte[] buffer = new byte[count];
+		tx.get(buffer);
 		if (Spi.wiringPiSPIDataRW(controller, buffer) == -1) {
-			throw new IOException("Error writing " + out_array.length + " bytes of data to SPI controller " + controller);
+			throw new IOException("Error writing " + buffer.length + " bytes of data to SPI controller " + controller);
 		}
 		return ByteBuffer.wrap(buffer);
-		//return spiDevice.write(out);
 	}
 
 	@Override
