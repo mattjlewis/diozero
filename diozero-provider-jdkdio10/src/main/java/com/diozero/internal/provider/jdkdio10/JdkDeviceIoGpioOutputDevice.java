@@ -29,8 +29,7 @@ package com.diozero.internal.provider.jdkdio10;
 
 import java.io.IOException;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.pmw.tinylog.Logger;
 
 import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.DeviceFactoryInterface;
@@ -42,8 +41,6 @@ import jdk.dio.gpio.GPIOPin;
 import jdk.dio.gpio.GPIOPinConfig;
 
 public class JdkDeviceIoGpioOutputDevice extends AbstractDevice implements GpioDigitalOutputDeviceInterface {
-	private static final Logger logger = LogManager.getLogger(JdkDeviceIoGpioOutputDevice.class);
-	
 	private GPIOPinConfig pinConfig;
 	private GPIOPin pin;
 	
@@ -58,7 +55,7 @@ public class JdkDeviceIoGpioOutputDevice extends AbstractDevice implements GpioD
 
 	@Override
 	public void closeDevice() throws IOException {
-		logger.debug("closeDevice()");
+		Logger.debug("closeDevice()");
 		if (pin.isOpen()) {
 			pin.close();
 		}

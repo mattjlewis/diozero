@@ -29,8 +29,7 @@ package com.diozero.internal.provider.pi4j;
 
 import java.io.IOException;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.pmw.tinylog.Logger;
 
 import com.diozero.api.PwmType;
 import com.diozero.internal.spi.AbstractDevice;
@@ -43,8 +42,6 @@ import com.pi4j.wiringpi.GpioUtil;
 import com.pi4j.wiringpi.SoftPwm;
 
 public class Pi4jPwmOutputDevice extends AbstractDevice implements PwmOutputDeviceInterface {
-	private static final Logger logger = LogManager.getLogger(Pi4jPwmOutputDevice.class);
-
 	private static final int HARDWARE_PWM_RANGE = 1024;
 	// See https://projects.drogon.net/raspberry-pi/wiringpi/software-pwm-library/
 	// You can lower the range to get a higher frequency, at the expense of resolution,
@@ -86,7 +83,7 @@ public class Pi4jPwmOutputDevice extends AbstractDevice implements PwmOutputDevi
 
 	@Override
 	public void closeDevice() {
-		logger.debug("closeDevice()");
+		Logger.debug("closeDevice()");
 		switch (pwmType) {
 		case HARDWARE:
 			pwmOutputPin.setPwm(0);

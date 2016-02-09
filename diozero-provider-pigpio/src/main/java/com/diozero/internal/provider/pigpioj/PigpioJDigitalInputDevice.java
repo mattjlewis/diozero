@@ -28,8 +28,8 @@ package com.diozero.internal.provider.pigpioj;
 
 
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.pmw.tinylog.Logger;
 
 import com.diozero.api.DigitalPinEvent;
 import com.diozero.api.GpioEventTrigger;
@@ -39,8 +39,6 @@ import com.diozero.pigpioj.PigpioCallback;
 import com.diozero.pigpioj.PigpioGpio;
 
 public class PigpioJDigitalInputDevice extends AbstractDevice implements GpioDigitalInputDeviceInterface, PigpioCallback {
-	private static final Logger logger = Logger.getLogger(PigpioJDigitalInputDevice.class.getName());
-	
 	private int pinNumber;
 	private int edge;
 	private InternalPinListener listener;
@@ -108,7 +106,7 @@ public class PigpioJDigitalInputDevice extends AbstractDevice implements GpioDig
 	@Override
 	public void setListener(InternalPinListener listener) {
 		if (edge == PigpioGpio.NO_EDGE) {
-			logger.warning("Edge was configured to be None, no point adding a listener");
+			Logger.warn("Edge was configured to be NO_EDGE, no point adding a listener");
 			return;
 		}
 		
@@ -120,7 +118,7 @@ public class PigpioJDigitalInputDevice extends AbstractDevice implements GpioDig
 		try {
 			PigpioGpio.setISRFunc(pinNumber, edge, -1, this);
 		} catch (IOException e) {
-			logger.log(Level.SEVERE, "Error setting listener: " + e, e);
+			Logger.error(e, "Error setting listener: {}", e);
 		}
 	}
 
@@ -129,7 +127,7 @@ public class PigpioJDigitalInputDevice extends AbstractDevice implements GpioDig
 		try {
 			PigpioGpio.setISRFunc(pinNumber, PigpioGpio.EITHER_EDGE, -1, null);
 		} catch (IOException e) {
-			logger.log(Level.WARNING, "Error removing listener: " + e, e);
+			Logger.warn(e, "Error removing listener: {}", e);
 		}
 		listener = null;
 	}
@@ -137,7 +135,8 @@ public class PigpioJDigitalInputDevice extends AbstractDevice implements GpioDig
 	@Override
 	public void callback(int pin, boolean value, long epochTime, long nanoTime) {
 		if (pin != pinNumber) {
-			logger.severe("Error, got a callback for the wrong pin (" + pin + "), was expecting " + pinNumber);
+			Logger.error("Error, got a callback for the wrong pin ({}), was expecting {}",
+					Integer.valueOf(pin), Integer.valueOf(pinNumber));
 		}
 		
 		if (listener != null) {

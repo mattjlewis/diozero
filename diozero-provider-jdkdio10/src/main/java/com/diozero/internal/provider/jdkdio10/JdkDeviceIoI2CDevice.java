@@ -30,8 +30,7 @@ package com.diozero.internal.provider.jdkdio10;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.pmw.tinylog.Logger;
 
 import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.DeviceFactoryInterface;
@@ -42,8 +41,6 @@ import jdk.dio.i2cbus.I2CDevice;
 import jdk.dio.i2cbus.I2CDeviceConfig;
 
 public class JdkDeviceIoI2CDevice extends AbstractDevice implements I2CDeviceInterface {
-	private static final Logger logger = LogManager.getLogger(JdkDeviceIoI2CDevice.class);
-
 	private I2CDeviceConfig deviceConfig;
 	private I2CDevice device;
 
@@ -78,7 +75,7 @@ public class JdkDeviceIoI2CDevice extends AbstractDevice implements I2CDeviceInt
 
 	@Override
 	public void closeDevice() {
-		logger.debug("closeDevice()");
+		Logger.debug("closeDevice()");
 		if (device.isOpen()) {
 			try { device.close(); } catch (Exception e) { }
 		}

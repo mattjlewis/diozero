@@ -30,8 +30,7 @@ package com.diozero.internal.provider.pi4j;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.pmw.tinylog.Logger;
 
 import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.DeviceFactoryInterface;
@@ -40,8 +39,6 @@ import com.pi4j.io.i2c.I2CDevice;
 import com.pi4j.io.i2c.I2CFactory;
 
 public class Pi4jI2CDevice extends AbstractDevice implements I2CDeviceInterface {
-	private static final Logger logger = LogManager.getLogger(Pi4jI2CDevice.class);
-
 	private int controller;
 	private int address;
 	private I2CDevice i2cDevice;
@@ -52,16 +49,16 @@ public class Pi4jI2CDevice extends AbstractDevice implements I2CDeviceInterface 
 		
 		this.controller = controller;
 		this.address = address;
-		logger.debug(String.format("Opening I2C device (%d, 0x%x)...",
-				Integer.valueOf(controller), Integer.valueOf(address)));
+		Logger.debug(String.format("Opening I2C device ({}, 0x{})...",
+				Integer.valueOf(controller), Integer.toHexString(address)));
 		i2cDevice = I2CFactory.getInstance(controller).getDevice(address);
-		logger.debug(String.format("I2C device (%d, 0x%x) opened",
-				Integer.valueOf(controller), Integer.valueOf(address)));
+		Logger.debug(String.format("I2C device ({}, 0x{}) opened",
+				Integer.valueOf(controller), Integer.toHexString(address)));
 	}
 
 	@Override
 	public void closeDevice() throws IOException {
-		logger.debug("closeDevice()");
+		Logger.debug("closeDevice()");
 		// No way to close a Pi4J I2C Device?!
 		//i2cDevice.close();
 		i2cDevice = null;

@@ -26,16 +26,12 @@ package com.diozero.sandpit.imu.invensense;
  * #L%
  */
 
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.pmw.tinylog.Logger;
 
 import com.diozero.imu.drivers.invensense.AccelFullScaleRange;
 import com.diozero.imu.drivers.invensense.MPU9150DMPConstants;
 
 public class MiscTests {
-	private static final Logger logger = LogManager.getLogger(MiscTests.class);
-	
 	public static void main(String[] args) {
 		dmp_set_tap_thresh(1, 2, AccelFullScaleRange.INV_FSR_2G);
 		dmp_set_tap_thresh(1, 2, AccelFullScaleRange.INV_FSR_4G);
@@ -48,7 +44,7 @@ public class MiscTests {
 		
 		int dmp_thresh = (int)(scaled_thresh * accel_fsr.getSensitivityScaleFactor());
 		int dmp_thresh_2 = (int)(scaled_thresh * accel_fsr.getSensitivityScaleFactor()*0.75);
-		logger.info(dmp_thresh + ", " + dmp_thresh_2);
+		Logger.info(dmp_thresh + ", " + dmp_thresh_2);
 
 		switch (accel_fsr) {
 		case INV_FSR_2G:
@@ -74,7 +70,7 @@ public class MiscTests {
 	    default:
 	        return false;
 	    }
-		logger.info(dmp_thresh + ", " + dmp_thresh_2);
+		Logger.info(dmp_thresh + ", " + dmp_thresh_2);
 		
 		byte[] tmp1 = new byte[2];
 	    tmp1[0] = (byte)(dmp_thresh >> 8);

@@ -30,8 +30,7 @@ package com.diozero.internal.provider.wiringpi;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.pmw.tinylog.Logger;
 
 import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.DeviceFactoryInterface;
@@ -40,8 +39,6 @@ import com.pi4j.io.i2c.I2CDevice;
 import com.pi4j.io.i2c.I2CFactory;
 
 public class WiringPiI2CDevice extends AbstractDevice implements I2CDeviceInterface {
-	private static final Logger logger = LogManager.getLogger(WiringPiI2CDevice.class);
-	
 	//private static final int CLOSED = -1;
 	
 	private int controller;
@@ -62,16 +59,16 @@ public class WiringPiI2CDevice extends AbstractDevice implements I2CDeviceInterf
 			throw new IOException("Error in I2C.wiringPiI2CSetup(" + address + ")");
 		}
 		*/
-		logger.debug(String.format("Opening I2C device (%d, 0x%x)...",
-				Integer.valueOf(controller), Integer.valueOf(address)));
+		Logger.debug("Opening I2C device ({}, 0x{})...",
+				Integer.valueOf(controller), Integer.toHexString(address));
 		i2cDevice = I2CFactory.getInstance(controller).getDevice(address);
-		logger.debug(String.format("I2C device (%d, 0x%x) opened",
-				Integer.valueOf(controller), Integer.valueOf(address)));
+		Logger.debug("I2C device ({}, 0x{}) opened",
+				Integer.valueOf(controller), Integer.toHexString(address));
 	}
 
 	@Override
 	public void closeDevice() throws IOException {
-		logger.debug("closeDevice()");
+		Logger.debug("closeDevice()");
 		// No way to close a wiringPi I2C Device?!
 		//handle = CLOSED;
 		// No way to close a Pi4J I2C Device?!
@@ -94,7 +91,7 @@ public class WiringPiI2CDevice extends AbstractDevice implements I2CDeviceInterf
 		
 		int to_read = dst.remaining();
 		byte[] buffer = new byte[to_read];
-		logger.debug("reading " + to_read + " bytes");
+		Logger.debug("reading {} bytes", to_read);
 		// TODO Need to loop, yuck
 		//byte b = I2C.wiringPiI2CReadReg8(handle, register);
 		int read = i2cDevice.read(register, buffer, 0, to_read);

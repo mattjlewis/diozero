@@ -27,12 +27,8 @@
 			<version>1.0.2</version>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-api</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-core</artifactId>
+			<groupId>org.tinylog</groupId>
+			<artifactId>tinylog</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.diozero</groupId>

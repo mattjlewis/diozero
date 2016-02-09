@@ -30,8 +30,7 @@ package com.diozero.internal.provider.wiringpi;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.pmw.tinylog.Logger;
 
 import com.diozero.api.SpiClockMode;
 import com.diozero.internal.spi.AbstractDevice;
@@ -40,8 +39,6 @@ import com.diozero.internal.spi.SpiDeviceInterface;
 import com.pi4j.wiringpi.Spi;
 
 public class WiringPiSpiDevice extends AbstractDevice implements SpiDeviceInterface {
-	private static final Logger logger = LogManager.getLogger(WiringPiSpiDevice.class);
-
 	private static final int CLOSED = -1;
 	
 	private int handle = CLOSED;
@@ -85,7 +82,7 @@ public class WiringPiSpiDevice extends AbstractDevice implements SpiDeviceInterf
 
 	@Override
 	public void closeDevice() throws IOException {
-		logger.debug("closeDevice()");
+		Logger.debug("closeDevice()");
 		// No way to close a wiringPi SPI device file handle?!
 		handle = CLOSED;
 	}

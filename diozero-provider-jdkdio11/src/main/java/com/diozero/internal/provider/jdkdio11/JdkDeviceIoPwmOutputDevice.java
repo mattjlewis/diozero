@@ -29,8 +29,7 @@ package com.diozero.internal.provider.jdkdio11;
 
 import java.io.IOException;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.pmw.tinylog.Logger;
 
 import com.diozero.api.PwmType;
 import com.diozero.internal.spi.AbstractDevice;
@@ -47,8 +46,6 @@ import jdk.dio.pwm.PWMChannelConfig;
  * Represent Pulse Width Modulation controlled output device
  */
 public class JdkDeviceIoPwmOutputDevice extends AbstractDevice implements PwmOutputDeviceInterface {
-	private static final Logger logger = LogManager.getLogger(JdkDeviceIoPwmOutputDevice.class);
-
 	private static final float DEFAULT_FREQUENCY = 1000;
 	
 	// FIXME Note no PWM device support in JDK Device I/O, need an alternative e.g. servoblaster or pigpio
@@ -102,7 +99,7 @@ public class JdkDeviceIoPwmOutputDevice extends AbstractDevice implements PwmOut
 
 	@Override
 	public void closeDevice() throws IOException {
-		logger.debug("closeDevice()");
+		Logger.debug("closeDevice()");
 		if (pwmChannel.isOpen()) {
 			pwmChannel.close();
 		}

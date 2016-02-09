@@ -30,8 +30,7 @@ package com.diozero.internal.provider.pi4j;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.pmw.tinylog.Logger;
 
 import com.diozero.api.SpiClockMode;
 import com.diozero.internal.spi.AbstractDevice;
@@ -40,8 +39,6 @@ import com.diozero.internal.spi.SpiDeviceInterface;
 import com.pi4j.io.spi.*;
 
 public class Pi4jSpiDevice extends AbstractDevice implements SpiDeviceInterface {
-	private static final Logger logger = LogManager.getLogger(Pi4jSpiDevice.class);
-
 	private final SpiDevice spiDevice;
 	private int controller;
 	private int chipSelect;
@@ -56,7 +53,7 @@ public class Pi4jSpiDevice extends AbstractDevice implements SpiDeviceInterface 
 
 	@Override
 	public void closeDevice() throws IOException {
-		logger.debug("closeDevice()");
+		Logger.debug("closeDevice()");
 		// No way to close a Pi4J SPI Device?!
 		//spiDevice.close();
 	}

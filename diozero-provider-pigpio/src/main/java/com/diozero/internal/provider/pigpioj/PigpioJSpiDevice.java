@@ -3,8 +3,7 @@ package com.diozero.internal.provider.pigpioj;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.pmw.tinylog.Logger;
 
 import com.diozero.api.SpiClockMode;
 import com.diozero.internal.spi.AbstractDevice;
@@ -13,8 +12,6 @@ import com.diozero.internal.spi.SpiDeviceInterface;
 import com.diozero.pigpioj.PigpioSPI;
 
 public class PigpioJSpiDevice extends AbstractDevice implements SpiDeviceInterface {
-	private static final Logger logger = LogManager.getLogger(PigpioJSpiDevice.class);
-
 	private static final int CLOSED = -1;
 	
 	private int handle = CLOSED;
@@ -30,7 +27,7 @@ public class PigpioJSpiDevice extends AbstractDevice implements SpiDeviceInterfa
 		
 		int flags = createSpiFlags(spiClockMode, chipSelect);
 		handle = PigpioSPI.spiOpen(controller, frequency, flags);
-		logger.debug("SPI device (" + controller + "-" + chipSelect + ") opened, handle=" + handle);
+		Logger.debug("SPI device ({}-{}) opened, handle={}", controller, chipSelect, handle);
 		if (handle < 0) {
 			handle = CLOSED;
 			throw new IOException(String.format("Error opening SPI device on controller %d, chip-select %d",

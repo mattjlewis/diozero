@@ -30,8 +30,7 @@ package com.diozero.internal.provider.jdkdio10;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.pmw.tinylog.Logger;
 
 import com.diozero.api.SPIConstants;
 import com.diozero.api.SpiClockMode;
@@ -45,8 +44,6 @@ import jdk.dio.spibus.SPIDevice;
 import jdk.dio.spibus.SPIDeviceConfig;
 
 public class JdkDeviceIoSpiDevice extends AbstractDevice implements SpiDeviceInterface {
-	private static final Logger logger = LogManager.getLogger(JdkDeviceIoSpiDevice.class);
-
 	private SPIDeviceConfig deviceConfig;
 	private SPIDevice device;
 	
@@ -65,7 +62,7 @@ public class JdkDeviceIoSpiDevice extends AbstractDevice implements SpiDeviceInt
 
 	@Override
 	public void closeDevice() throws IOException {
-		logger.debug("closeDevice()");
+		Logger.debug("closeDevice()");
 		if (device.isOpen()) {
 			device.close();
 		}

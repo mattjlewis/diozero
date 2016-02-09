@@ -29,8 +29,7 @@ package com.diozero.internal.provider.wiringpi;
 
 import java.io.IOException;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.pmw.tinylog.Logger;
 
 import com.diozero.api.DigitalPinEvent;
 import com.diozero.api.GpioEventTrigger;
@@ -41,8 +40,6 @@ import com.pi4j.wiringpi.GpioInterruptCallback;
 import com.pi4j.wiringpi.GpioUtil;
 
 public class WiringPiDigitalInputDevice extends AbstractDevice implements GpioDigitalInputDeviceInterface {
-	private static final Logger logger = LogManager.getLogger(WiringPiDigitalInputDevice.class);
-
 	private int pinNumber;
 	private GpioEventTrigger trigger;
 	
@@ -93,7 +90,7 @@ public class WiringPiDigitalInputDevice extends AbstractDevice implements GpioDi
 
 	@Override
 	public void closeDevice() {
-		logger.debug("closeDevice()");
+		Logger.debug("closeDevice()");
 		removeListener();
 		GpioUtil.unexport(pinNumber);
 	}

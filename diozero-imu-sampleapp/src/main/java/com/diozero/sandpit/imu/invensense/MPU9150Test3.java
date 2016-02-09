@@ -32,10 +32,9 @@ import java.nio.ByteBuffer;
 
 import org.apache.commons.math3.complex.Quaternion;
 import org.apache.commons.math3.geometry.euclidean.threed.*;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.eclipse.paho.client.mqttv3.*;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
+import org.pmw.tinylog.Logger;
 
 import com.diozero.api.I2CConstants;
 import com.diozero.imu.IMUData;
@@ -53,8 +52,6 @@ import com.diozero.util.SleepUtil;
  * http://www.invensense.com/developers/index.php?_r=downloads
  */
 public class MPU9150Test3 implements MqttConstants {
-	private static final Logger logger = LogManager.getLogger(MPU9150Test3.class);
-	
 	private static final float RTIMU_FUZZY_ACCEL_ZERO = 0.05f;
 	private static final float RTIMU_FUZZY_GYRO_ZERO = 0.20f;
 	
@@ -168,17 +165,15 @@ public class MPU9150Test3 implements MqttConstants {
 					ypr =  new double[] { 2*Math.atan2(q.getQ1(), q.getQ0()), Math.PI/2, 0};
 					System.out.print("Singularity detected, ");
 				}
-				logger.info("ypr=[" + ypr[0] + ", " + ypr[1] + ", " + ypr[2] + "]");
+				Logger.info("ypr=[{}, {}, {}]", Double.valueOf(ypr[0]), Double.valueOf(ypr[1]), Double.valueOf(ypr[2]));
 				
 				mqttPublish(imu_data, ypr);
 			} while (true);
 
 		} catch (IOException ioe) {
-			logger.error("Error: " + ioe, ioe);
-			ioe.printStackTrace();
+			Logger.error(ioe, "Error: {}", ioe);
 		} catch (MqttException me) {
-			logger.error("Error: " + me, me);
-			me.printStackTrace();
+			Logger.error(me, "Error: {}", me);
 		} finally {
 			try { mqttClient.disconnect(); } catch (Exception e) { }
 		}
@@ -229,52 +224,52 @@ public class MPU9150Test3 implements MqttConstants {
 		MqttConnectOptions con_opts = new MqttConnectOptions();
 		con_opts.setCleanSession(true);
 		mqttClient.connect(con_opts);
-		logger.debug("Connected to MQTT server '" + mqttServer + "'");
+		Logger.debug("Connected to MQTT server '{}'", mqttServer);
 	}
 
 	private void mpuInit(MPU9150Driver mpu) throws IOException {
 		// initialise device
-		logger.debug("Initialising MPU...");
+		Logger.debug("Initialising MPU...");
 		mpu.mpu_init();
 		dmp = new MPU9150DMPDriver(mpu);
 
-		logger.debug("Setting MPU sensors...");
+		Logger.debug("Setting MPU sensors...");
 		// Can be bitwise combination of INV_X_GYRO, INV_Y_GYRO, INV_Z_GYRO,
 		// INV_XYZ_GYRO, INV_XYZ_ACCEL, INV_XYZ_COMPASS
 		mpu.mpu_set_sensors((byte) (MPU9150Constants.INV_XYZ_GYRO | MPU9150Constants.INV_XYZ_ACCEL |
 				MPU9150Constants.INV_XYZ_COMPASS));
 		
-		//logger.debug("Setting LPF...");
+		//Logger.debug("Setting LPF...");
 		//mpu.mpu_set_lpf(lpf);
 
-		logger.debug("Setting GYRO sensitivity...");
+		Logger.debug("Setting GYRO sensitivity...");
 		mpu.mpu_set_gyro_fsr(gyroFsr);
 
-		logger.debug("Setting ACCEL sensitivity...");
+		Logger.debug("Setting ACCEL sensitivity...");
 		mpu.mpu_set_accel_fsr(accelFsr);
 
 		// verify connection
-		logger.debug("Powering up MPU...");
+		Logger.debug("Powering up MPU...");
 		boolean dev_status = mpu.mpu_get_power_state();
-		logger.debug(dev_status ? "MPU9150 connection successful" : "MPU9150 connection failed");
+		Logger.debug(dev_status ? "MPU9150 connection successful" : "MPU9150 connection failed");
 
 		// fifo config
-		logger.debug("Setting MPU fifo...");
+		Logger.debug("Setting MPU fifo...");
 		// Note compass data doesn't go into the FIFO, no need trying to set INV_XYZ_COMPASS
 		mpu.mpu_configure_fifo((byte) (MPU9150Constants.INV_XYZ_GYRO | MPU9150Constants.INV_XYZ_ACCEL));
 
 		// load and configure the DMP
-		logger.debug("Loading DMP firmware...");
+		Logger.debug("Loading DMP firmware...");
 		dmp.dmp_load_motion_driver_firmware();
 		
 		// Configure the orientation
 		dmp.dmp_set_orientation(MPU9150DMPDriver.inv_orientation_matrix_to_scalar(
 				axisRotation.getOrientationMatrix()));
 
-		logger.debug("Activating DMP...");
+		Logger.debug("Activating DMP...");
 		mpu.mpu_set_dmp_state(true);
 
-		logger.debug("Configuring DMP...");
+		Logger.debug("Configuring DMP...");
 		dmp.dmp_register_tap_cb(MPU9150Test3::tapCallback);
 		dmp.dmp_register_android_orient_cb(MPU9150Test3::androidOrientCallback);
 		//int hal_dmp_features = MPU9150DMPConstants.DMP_FEATURE_6X_LP_QUAT |
@@ -291,7 +286,7 @@ public class MPU9150Test3 implements MqttConstants {
 				MPU9150DMPConstants.DMP_FEATURE_GYRO_CAL;
 		dmp.dmp_enable_feature(hal_dmp_features);
 
-		logger.debug("Setting DMP fifo rate...");
+		Logger.debug("Setting DMP fifo rate...");
 		// MPU sample rate is ignored if DMP is enabled
 		//mpu.mpu_set_sample_rate(rate);
 		//mpu.mpu_set_compass_sample_rate(compassSampleRate);
@@ -309,20 +304,20 @@ public class MPU9150Test3 implements MqttConstants {
 		//mpu.mpu_set_sample_rate(dmp_rate);
 		
 		
-		logger.debug("Resetting fifo queue...");
+		Logger.debug("Resetting fifo queue...");
 		mpu.mpu_reset_fifo();
 		
 		gyroBiasInit();
 
-		logger.debug("Sleep time=" + fifoReadDelayMs);
-		logger.debug("Waiting for first FIFO data item... ");
+		Logger.debug("Sleep time={}", Integer.valueOf(fifoReadDelayMs));
+		Logger.debug("Waiting for first FIFO data item... ");
 		FIFOData fifo_data = null;
 		do {
 			SleepUtil.sleepMillis(fifoReadDelayMs);
 			fifo_data = dmp.dmp_read_fifo();
 		} while (fifo_data == null);
 		lastFifoRead = fifo_data.getTimestamp();
-		logger.debug("Done.");
+		Logger.debug("Done.");
 	}
 
 	private IMUData update(MPU9150Driver mpu) throws IOException {
@@ -330,10 +325,10 @@ public class MPU9150Test3 implements MqttConstants {
 		long delay = fifoReadDelayMs - (System.currentTimeMillis() - lastFifoRead);
 		
 		if (delay > 0) {
-			logger.debug("Sleeping for " + delay + "ms");
+			Logger.debug("Sleeping for {}ms", Long.valueOf(delay));
 			SleepUtil.sleepMillis(delay);
 		} else {
-			logger.debug("Not sleeping, delay=" + delay);
+			Logger.debug("Not sleeping, delay={}", Long.valueOf(delay));
 		}
 		
 		//gyro and accel can be null because of being disabled in the features
@@ -342,7 +337,7 @@ public class MPU9150Test3 implements MqttConstants {
 		do {
 			fifo_data = dmp.dmp_read_fifo();
 		} while (fifo_data == null);
-		logger.debug("Time between FIFO reads = " + (System.currentTimeMillis() - lastFifoRead));
+		Logger.debug("Time between FIFO reads = {}ms", Long.valueOf(System.currentTimeMillis() - lastFifoRead));
 		lastFifoRead = fifo_data.getTimestamp();
 		
 		IMUData imu_data = IMUDataFactory.newInstance(fifo_data, mpu.mpu_get_compass_reg(),
@@ -453,11 +448,11 @@ public class MPU9150Test3 implements MqttConstants {
 	}
 
 	public static void tapCallback(TapCallbackEvent event) {
-		logger.debug("tapCallback(" + event + ")");
+		Logger.debug("tapCallback({})", event);
 	}
 
 	public static void androidOrientCallback(OrientationEvent event) {
-		logger.debug("androidOrientCallback(" + event + ")");
+		Logger.debug("androidOrientCallback({})", event);
 	}
 }
 
