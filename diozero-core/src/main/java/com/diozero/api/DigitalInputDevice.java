@@ -30,8 +30,7 @@ package com.diozero.api;
 import java.io.IOException;
 import java.util.function.Consumer;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.pmw.tinylog.Logger;
 
 import com.diozero.internal.spi.GpioDeviceFactoryInterface;
 import com.diozero.internal.spi.GpioDigitalInputDeviceInterface;
@@ -42,8 +41,6 @@ import com.diozero.internal.spi.InternalPinListener;
  * 
  */
 public class DigitalInputDevice extends GpioDevice implements InternalPinListener {
-	private static final Logger logger = LogManager.getLogger(DigitalInputDevice.class);
-	
 	protected Consumer<DigitalPinEvent> consumer;
 	protected boolean activeHigh;
 	protected GpioDigitalInputDeviceInterface device;
@@ -65,7 +62,7 @@ public class DigitalInputDevice extends GpioDevice implements InternalPinListene
 
 	@Override
 	public void close() {
-		logger.debug("close()");
+		Logger.debug("close()");
 		device.close();
 	}
 

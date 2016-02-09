@@ -31,14 +31,11 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.pmw.tinylog.Logger;
 
 import com.diozero.internal.spi.DeviceInterface;
 
 public class DeviceStates {
-	private static final Logger logger = LogManager.getLogger(DeviceStates.class);
-	
 	private Map<String, DeviceInterface> devices;
 	
 	public DeviceStates() {
@@ -54,14 +51,14 @@ public class DeviceStates {
 	}
 	
 	public void closed(DeviceInterface device) {
-		logger.debug("closed(" + device.getKey() + ")");
+		Logger.debug("closed({})", device.getKey());
 		if (devices.remove(device.getKey()) == null) {
-			logger.warn("request to close unknown device with key '" + device.getKey() + "'");
+			Logger.warn("Request to close unknown device with key '{}'", device.getKey());
 		}
 	}
 	
 	public void closeAll() {
-		logger.debug("closeAll()");
+		Logger.debug("closeAll()");
 		for (DeviceInterface device : devices.values()) {
 			// No need to remove from the Map as close() should always call closed()
 			try { device.close(); } catch (IOException e) { }

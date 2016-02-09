@@ -31,8 +31,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.pmw.tinylog.Logger;
 
 import com.diozero.internal.spi.I2CDeviceFactoryInterface;
 import com.diozero.internal.spi.I2CDeviceInterface;
@@ -42,8 +41,6 @@ import com.diozero.util.IOUtil;
  * This is more of a utility class providing various read/write methods
  */
 public class I2CDevice implements Closeable, I2CConstants {
-	private static final Logger logger = LogManager.getLogger(I2CDevice.class);
-	
 	private I2CDeviceInterface device;
 	private int controller;
 	private int address;
@@ -82,7 +79,7 @@ public class I2CDevice implements Closeable, I2CConstants {
 
 	@Override
 	public void close() throws IOException {
-		logger.debug("close()");
+		Logger.debug("close()");
 		device.close();
 	}
 

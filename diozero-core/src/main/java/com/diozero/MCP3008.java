@@ -30,8 +30,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.pmw.tinylog.Logger;
 
 import com.diozero.api.AnalogueInputDevice;
 import com.diozero.api.DeviceAlreadyOpenedException;
@@ -45,8 +44,6 @@ import com.diozero.internal.spi.GpioAnalogueInputDeviceInterface;
  * Encapsulate MCP3008 SPI device functionality
  */
 public class MCP3008 extends AbstractDeviceFactory implements AnalogueInputDeviceFactoryInterface, Closeable {
-	private static final Logger logger = LogManager.getLogger(MCP3008.class);
-	
 	private static final String DEVICE_NAME = "MCP3008";
 	private static final int NUM_PINS = 8;
 	// 10bit ADC
@@ -73,7 +70,7 @@ public class MCP3008 extends AbstractDeviceFactory implements AnalogueInputDevic
 	
 	@Override
 	public void close() throws IOException {
-		logger.debug("close()");
+		Logger.debug("close()");
 		// Close all open pins before closing the SPI device itself
 		closeAll();
 		spiDevice.close();

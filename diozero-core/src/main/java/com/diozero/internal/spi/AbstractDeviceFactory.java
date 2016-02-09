@@ -26,15 +26,11 @@ package com.diozero.internal.spi;
  * #L%
  */
 
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.pmw.tinylog.Logger;
 
 import com.diozero.api.DeviceStates;
 
 public abstract class AbstractDeviceFactory implements DeviceFactoryInterface {
-	private static final Logger logger = LogManager.getLogger(AbstractDeviceFactory.class);
-	
 	protected DeviceStates deviceStates;
 	
 	public AbstractDeviceFactory() {
@@ -43,7 +39,7 @@ public abstract class AbstractDeviceFactory implements DeviceFactoryInterface {
 	
 	@Override
 	public void closeAll() {
-		logger.debug("closeAll()");
+		Logger.debug("closeAll()");
 		deviceStates.closeAll();
 	}
 	

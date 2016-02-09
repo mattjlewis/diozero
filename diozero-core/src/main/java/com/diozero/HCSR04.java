@@ -30,8 +30,7 @@ package com.diozero;
 import java.io.Closeable;
 import java.io.IOException;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.pmw.tinylog.Logger;
 
 import com.diozero.api.*;
 import com.diozero.util.SleepUtil;
@@ -53,8 +52,6 @@ import com.diozero.util.SleepUtil;
  *
  */
 public class HCSR04 implements DistanceSensorInterface, Closeable {
-	private static final Logger logger = LogManager.getLogger(HCSR04.class);
-
 	private static long MS_IN_SEC = 1000;
 	private static long US_IN_SEC = MS_IN_SEC * 1000;
 	private static long NS_IN_SEC = US_IN_SEC * 1000;
@@ -101,7 +98,7 @@ public class HCSR04 implements DistanceSensorInterface, Closeable {
 		// Need to include as little code as possible here to avoid missing pin states
 		while (!echo.getValue()) {
 			if (System.nanoTime() - start > 500_000_000) {
-				logger.error("Timeout exceeded waiting for echo to go high");
+				Logger.error("Timeout exceeded waiting for echo to go high");
 				return -1;
 			}
 		}
@@ -109,13 +106,14 @@ public class HCSR04 implements DistanceSensorInterface, Closeable {
 		
 		while (echo.getValue()) {
 			if (System.nanoTime() - echo_on_time > 500_000_000) {
-				logger.error("Timeout exceeded waiting for echo to go low");
+				Logger.error("Timeout exceeded waiting for echo to go low");
 				return -1;
 			}
 		}
 		long echo_off_time = System.nanoTime();
 		
-		logger.info("Time from echo on to echo off = " + (echo_off_time - echo_on_time) + ", max allowable time=" + MAX_ECHO_TIME_NS);
+		Logger.info("Time from echo on to echo off = {}ns, max allowable time={}ns",
+				Long.valueOf(echo_off_time - echo_on_time), Long.valueOf(MAX_ECHO_TIME_NS));
 
 		double ping_duration_s = (echo_off_time - echo_on_time) / (double)NS_IN_SEC;
 
@@ -134,7 +132,7 @@ public class HCSR04 implements DistanceSensorInterface, Closeable {
 	 */
 	@Override
 	public void close() {
-		logger.debug("close()");
+		Logger.debug("close()");
 		if (trigger != null) { trigger.close(); }
 		if (echo != null) { echo.close(); }
 	}

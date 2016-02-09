@@ -6,9 +6,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.junit.Test;
+import org.pmw.tinylog.Logger;
 
 import com.diozero.api.DigitalPinEvent;
 import com.diozero.api.GpioPullUpDown;
@@ -16,8 +15,6 @@ import com.diozero.sandpit.SmoothedInputDevice;
 import com.diozero.util.SleepUtil;
 
 public class SmoothedInputTest implements Consumer<DigitalPinEvent> {
-	private static final Logger logger = LogManager.getLogger(SmoothedInputTest.class);
-	
 	@Test
 	public void test() {
 		int pin = 1;
@@ -37,26 +34,26 @@ public class SmoothedInputTest implements Consumer<DigitalPinEvent> {
 			// Generate 1 event every 50ms -> 20 events per second
 			ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 			scheduler.scheduleAtFixedRate(event_generator, 50, 50, TimeUnit.MILLISECONDS);
-			logger.debug("Sleeping for " + delay + "s");
+			Logger.debug("Sleeping for {}s", Float.valueOf(delay));
 			SleepUtil.sleepSeconds(delay);
 			
-			logger.debug("Stopping event generation and sleeping for " + delay + "s");
+			Logger.debug("Stopping event generation and sleeping for {}s", Float.valueOf(delay));
 			scheduler.shutdown();
 			SleepUtil.sleepSeconds(delay);
 			
 			// Generate 1 event every 50ms -> 20 events per second
 			scheduler = Executors.newScheduledThreadPool(1);
 			scheduler.scheduleAtFixedRate(event_generator, 50, 50, TimeUnit.MILLISECONDS);
-			logger.debug("Restarting event generation and sleeping for " + delay + "s");
+			Logger.debug("Restarting event generation and sleeping for {}s", Float.valueOf(delay));
 			SleepUtil.sleepSeconds(delay);
 			scheduler.shutdown();
 		} catch (IOException e) {
-			logger.error("Error: " + e, e);
+			Logger.error(e, "Error: {}", e);
 		}
 	}
 
 	@Override
 	public void accept(DigitalPinEvent event) {
-		logger.debug("accept(" + event + ")");
+		Logger.debug("accept({})", event);
 	}
 }

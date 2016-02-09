@@ -31,16 +31,13 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Random;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.junit.Assert;
+import org.pmw.tinylog.Logger;
 
 import com.diozero.api.SpiClockMode;
 import com.diozero.internal.spi.DeviceFactoryInterface;
 
 public class TestMcp3008SpiDevice extends TestSpiDevice {
-	private static final Logger logger = LogManager.getLogger(TestMcp3008SpiDevice.class);
-	
 	private static final int RANGE = (int)Math.pow(2, 10);
 	private static final Random random = new Random();
 
@@ -72,7 +69,7 @@ public class TestMcp3008SpiDevice extends TestSpiDevice {
 		Assert.assertEquals(0x01, b);
 		b = out.get();
 		int pin = (b >> 4) & 0x07;
-		logger.debug("Received read request for pin " + pin);
+		Logger.debug("Received read request for pin {}", Integer.valueOf(pin));
 		b = out.get();
 		Assert.assertEquals(0, b);
 		

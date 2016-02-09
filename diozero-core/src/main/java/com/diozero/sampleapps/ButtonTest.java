@@ -30,8 +30,7 @@ package com.diozero.sampleapps;
 import java.io.IOException;
 import java.util.function.Consumer;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.pmw.tinylog.Logger;
 
 import com.diozero.Button;
 import com.diozero.api.DigitalPinEvent;
@@ -42,19 +41,17 @@ import com.diozero.util.SleepUtil;
  * Input test application
  * To run:
  * JDK Device I/O 1.0:
- *  sudo java -cp log4j-api-2.5.jar:log4j-core-2.5.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-jdkdio10-0.2-SNAPSHOT.jar:dio-1.0.1-dev-linux-armv6hf.jar -Djava.library.path=. com.diozero.sampleapps.ButtonTest 12
+ *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-jdkdio10-0.2-SNAPSHOT.jar:dio-1.0.1-dev-linux-armv6hf.jar -Djava.library.path=. com.diozero.sampleapps.ButtonTest 12
  * JDK Device I/O 1.1:
- *  sudo java -cp log4j-api-2.5.jar:log4j-core-2.5.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-jdkdio11-0.2-SNAPSHOT.jar:dio-1.1-dev-linux-armv6hf.jar -Djava.library.path=. com.diozero.sampleapps.ButtonTest 12
+ *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-jdkdio11-0.2-SNAPSHOT.jar:dio-1.1-dev-linux-armv6hf.jar -Djava.library.path=. com.diozero.sampleapps.ButtonTest 12
  * Pi4j:
- *  sudo java -cp log4j-api-2.5.jar:log4j-core-2.5.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-pi4j-0.2-SNAPSHOT.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sampleapps.ButtonTest 12
+ *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-pi4j-0.2-SNAPSHOT.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sampleapps.ButtonTest 12
  * wiringPi:
- *  sudo java -cp log4j-api-2.5.jar:log4j-core-2.5.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-wiringpi-0.2-SNAPSHOT.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sampleapps.ButtonTest 12
+ *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-wiringpi-0.2-SNAPSHOT.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sampleapps.ButtonTest 12
  * pigpgioJ:
- *  sudo java -cp log4j-api-2.5.jar:log4j-core-2.5.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-pigpio-0.2-SNAPSHOT.jar:pigpioj-java-0.0.1-SNAPSHOT.jar -Djava.library.path=. com.diozero.sampleapps.ButtonTest 12
+ *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-pigpio-0.2-SNAPSHOT.jar:pigpioj-java-0.0.1-SNAPSHOT.jar -Djava.library.path=. com.diozero.sampleapps.ButtonTest 12
  */
 public class ButtonTest implements Consumer<DigitalPinEvent> {
-	private static final Logger logger = LogManager.getLogger(ButtonTest.class);
-	
 	public static void main(String[] args) {
 		new ButtonTest().test();
 	}
@@ -62,16 +59,15 @@ public class ButtonTest implements Consumer<DigitalPinEvent> {
 	public void test() {
 		try (Button button = new Button(12, GpioPullUpDown.PULL_UP)) {
 			button.setConsumer(this);
-			logger.debug("Sleeping for 10s, thread name=" + Thread.currentThread().getName());
+			Logger.debug("Sleeping for 10s");
 			SleepUtil.sleepSeconds(10);
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+		} catch (IOException ioe) {
+			Logger.error(ioe, "Error: {}", ioe);
 		}
 	}
 
 	@Override
 	public void accept(DigitalPinEvent event) {
-		logger.debug("accept(" + event + "), thread name=" + Thread.currentThread().getName());
+		Logger.debug("accept({})", event);
 	}
 }

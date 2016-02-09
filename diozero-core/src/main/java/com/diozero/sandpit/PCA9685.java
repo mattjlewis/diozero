@@ -30,8 +30,7 @@ package com.diozero.sandpit;
 import java.io.Closeable;
 import java.io.IOException;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.pmw.tinylog.Logger;
 
 import com.diozero.api.*;
 import com.diozero.internal.provider.pca9685.PCA9685PwmOutputDevice;
@@ -47,8 +46,6 @@ import com.diozero.util.SleepUtil;
  * Datasheet: http://www.nxp.com/documents/data_sheet/PCA9685.pdf
  * */
 public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFactoryInterface, Closeable {
-	private static final Logger logger = LogManager.getLogger(PCA9685.class);
-			
 	private static final int DEVICE_ADDRESS = 0x40;
 	private static final String DEVICE_NAME = "PCA9685";
 	private static final int NUM_CHANNELS = 16;
@@ -120,7 +117,7 @@ public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFac
 		
 		// TODO Remove when default PRESCALE value is found
 		int prescale = i2cDevice.readByte(PRESCALE) & 0xffff;
-		logger.debug("Starting prescale value = " + prescale);
+		Logger.debug("Starting prescale value = {}", Integer.valueOf(prescale));
 	}
 	
 	/**
@@ -134,8 +131,9 @@ public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFac
 		
 		double prescale_dbl = (((double)CLOCK_FREQ) / RANGE / pwmFrequency) - 1;
 		int prescale_int = (int)Math.round(prescale_dbl);
-		logger.debug(String.format("Setting PWM frequency to %d Hz, double pre-scale: %.2f, int prescale %d",
-				Integer.valueOf(pwmFrequency), Double.valueOf(prescale_dbl), Integer.valueOf(prescale_int)));
+		Logger.debug("Setting PWM frequency to {} Hz, double pre-scale: {}, int prescale {}",
+				Integer.valueOf(pwmFrequency), String.format(".2f", Double.valueOf(prescale_dbl)),
+				Integer.valueOf(prescale_int));
 
 		byte oldmode = i2cDevice.readByte(MODE1);
 		i2cDevice.writeByte(MODE1, (byte)((oldmode & 0x7F) | SLEEP_MASK));	// Enter low power mode (set the sleep bit)
@@ -181,7 +179,7 @@ public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFac
 		byte off_l = i2cDevice.readByte(LED0_OFF_L + 4*channel);
 		byte off_h = i2cDevice.readByte(LED0_OFF_H + 4*channel);
 		int off = ((off_h << 8) & 0xff00) | (off_l | 0xff);
-		logger.debug("on=" + on + ", on_with_read_short=" + on_with_read_short + ", off=" + off + ", off_v1=" + off_with_read_short);
+		Logger.debug("on={}, on_with_read_short={}, off={}, off_with_read_short={}", on, on_with_read_short, off, off_with_read_short);
 		
 		return new int[] { on, off };
 	}
@@ -255,8 +253,9 @@ public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFac
 	 */
 	public void setServoPulse(int channel, double pulseWidthMs) throws IOException {
 		int pulse = ServoUtil.calcServoPulse(pulseWidthMs, pulseMsPerBit);
-		logger.debug(String.format("Requested pulse width: %.2f, Scale: %.4f ms per bit, Pulse: %d",
-				Double.valueOf(pulseWidthMs), Double.valueOf(pulseMsPerBit), Integer.valueOf(pulse)));
+		Logger.debug("Requested pulse width: {}, Scale: {} ms per bit, Pulse: {}",
+				String.format(".2f", Double.valueOf(pulseWidthMs)),
+				String.format(".4f", Double.valueOf(pulseMsPerBit)), Integer.valueOf(pulse));
 		
 		setPwm(channel, 0, pulse);
 	}
@@ -268,14 +267,14 @@ public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFac
 	
 	@Override
 	public void close() throws IOException {
-		logger.debug("close()");
+		Logger.debug("close()");
 		// Close all open pins before closing the I2C device itself
 		closeAll();
 		i2cDevice.close();
 	}
 	
 	public void closeChannel(int channel) throws IOException {
-		logger.debug("closeChannel(" + channel + ")");
+		Logger.debug("closeChannel({})", Integer.valueOf(channel));
 		setPwm(channel, 0, 0);
 	}
 

@@ -29,8 +29,7 @@ package com.diozero.sampleapps;
 
 import java.io.IOException;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.pmw.tinylog.Logger;
 
 import com.diozero.MCP3008;
 import com.diozero.util.SleepUtil;
@@ -39,22 +38,20 @@ import com.diozero.util.SleepUtil;
  * MCP3008 test application
  * To run:
  * JDK Device I/O 1.0:
- *  sudo java -cp log4j-api-2.5.jar:log4j-core-2.5.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-jdkdio10-0.2-SNAPSHOT.jar:dio-1.0.1-dev-linux-armv6hf.jar -Djava.library.path=. com.diozero.sampleapps.MCP3008Test 0 0
+ *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-jdkdio10-0.2-SNAPSHOT.jar:dio-1.0.1-dev-linux-armv6hf.jar -Djava.library.path=. com.diozero.sampleapps.MCP3008Test 0 0
  * JDK Device I/O 1.1:
- *  sudo java -cp log4j-api-2.5.jar:log4j-core-2.5.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-jdkdio11-0.2-SNAPSHOT.jar:dio-1.1-dev-linux-armv6hf.jar -Djava.library.path=. com.diozero.sampleapps.MCP3008Test 0 0
+ *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-jdkdio11-0.2-SNAPSHOT.jar:dio-1.1-dev-linux-armv6hf.jar -Djava.library.path=. com.diozero.sampleapps.MCP3008Test 0 0
  * Pi4j:
- *  sudo java -cp log4j-api-2.5.jar:log4j-core-2.5.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-pi4j-0.2-SNAPSHOT.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sampleapps.MCP3008Test 0 0
+ *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-pi4j-0.2-SNAPSHOT.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sampleapps.MCP3008Test 0 0
  * wiringPi:
- *  sudo java -cp log4j-api-2.5.jar:log4j-core-2.5.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-wiringpi-0.2-SNAPSHOT.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sampleapps.MCP3008Test 0 0
+ *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-wiringpi-0.2-SNAPSHOT.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sampleapps.MCP3008Test 0 0
  * pigpgioJ:
- *  sudo java -cp log4j-api-2.5.jar:log4j-core-2.5.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-pigpio-0.2-SNAPSHOT.jar:pigpioj-java-0.0.1-SNAPSHOT.jar -Djava.library.path=. com.diozero.sampleapps.MCP3008Test 0 0
+ *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-pigpio-0.2-SNAPSHOT.jar:pigpioj-java-0.0.1-SNAPSHOT.jar -Djava.library.path=. com.diozero.sampleapps.MCP3008Test 0 0
  */
 public class MCP3008Test {
-	private static final Logger logger = LogManager.getLogger(MCP3008Test.class);
-	
 	public static void main(String[] args) {
 		if (args.length < 2) {
-			logger.error("Usage: MCP3008 <spi-chip-select> <adc_pin>");
+			Logger.error("Usage: MCP3008Test <spi-chip-select> <adc_pin>");
 			System.exit(2);
 		}
 		int spi_chip_select = Integer.parseInt(args[0]);
@@ -63,11 +60,11 @@ public class MCP3008Test {
 		try (MCP3008 mcp3008 = new MCP3008(spi_chip_select)) {
 			while (true) {
 				float v = mcp3008.getVoltage(adc_pin);
-				logger.info("Voltage: %.2f", Float.valueOf(v));
+				Logger.info("Voltage: {}", String.format("%.2f", Float.valueOf(v)));
 				SleepUtil.sleepMillis(1000);
 			}
 		} catch (IOException ioe) {
-			logger.error("Error: " + ioe, ioe);
+			Logger.error(ioe, "Error: ", ioe);
 		}
 	}
 }

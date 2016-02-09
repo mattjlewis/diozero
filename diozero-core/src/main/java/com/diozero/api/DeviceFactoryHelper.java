@@ -29,8 +29,7 @@ package com.diozero.api;
 
 import java.util.ServiceLoader;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.pmw.tinylog.Logger;
 
 import com.diozero.internal.spi.DeviceFactoryInterface;
 import com.diozero.internal.spi.NativeDeviceFactoryInterface;
@@ -42,8 +41,6 @@ import com.diozero.internal.spi.NativeDeviceFactoryInterface;
  * Alternatively you can set the command line property "com.diozero.devicefactory" to override the ServiceLoader.
  */
 public class DeviceFactoryHelper {
-	private static final Logger logger = LogManager.getLogger(DeviceFactoryHelper.class);
-
 	private static final String SYSTEM_PROPERTY = "com.diozero.devicefactory";
 	
 	private static NativeDeviceFactoryInterface nativeDeviceFactory;
@@ -57,7 +54,7 @@ public class DeviceFactoryHelper {
 					try {
 						nativeDeviceFactory = (NativeDeviceFactoryInterface)Class.forName(property).newInstance();
 					} catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
-						logger.error("Cannot instantiate device factory class '" + property + "'", e);
+						Logger.error(e, "Cannot instantiate device factory class '{}'", property);
 					}
 				}
 				
@@ -71,7 +68,7 @@ public class DeviceFactoryHelper {
 				}
 				
 				if (nativeDeviceFactory != null) {
-					logger.info("Using native device factory class " + nativeDeviceFactory.getName());
+					Logger.info("Using native device factory class {}", nativeDeviceFactory.getName());
 					
 					// TODO Load capabilities for the current native device (e.g. Raspberry Pi, ...)
 					

@@ -35,9 +35,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import com.diozero.api.*;
 
 /**
@@ -57,8 +54,6 @@ import com.diozero.api.*;
  *
  */
 public class SmoothedInputDevice extends DigitalInputDevice {
-	private static final Logger logger = LogManager.getLogger(SmoothedInputDevice.class);
-	
 	private int threshold;
 	private int age;
 	private Queue<Long> queue;

@@ -29,8 +29,7 @@ package com.diozero.api;
 
 import java.io.IOException;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.pmw.tinylog.Logger;
 
 import com.diozero.internal.spi.PwmOutputDeviceFactoryInterface;
 import com.diozero.internal.spi.PwmOutputDeviceInterface;
@@ -43,8 +42,6 @@ import com.diozero.util.SleepUtil;
  * Any other pin will revert to software controlled PWM (not very good)
  */
 public class PwmOutputDevice extends GpioDevice {
-	private static final Logger logger = LogManager.getLogger(PwmOutputDevice.class);
-	
 	public static final int INFINITE_ITERATIONS = -1;
 	
 	private PwmOutputDeviceInterface device;
@@ -72,7 +69,7 @@ public class PwmOutputDevice extends GpioDevice {
 
 	@Override
 	public void close() {
-		logger.debug("close()");
+		Logger.debug("close()");
 		stopLoops();
 		if (device != null) {
 			device.close();

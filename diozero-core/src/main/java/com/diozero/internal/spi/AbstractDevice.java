@@ -29,12 +29,9 @@ package com.diozero.internal.spi;
 
 import java.io.IOException;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.pmw.tinylog.Logger;
 
 public abstract class AbstractDevice implements DeviceInterface {
-	private static final Logger logger = LogManager.getLogger(AbstractDevice.class);
-	
 	private String key;
 	private DeviceFactoryInterface deviceFactory;
 	
@@ -55,16 +52,16 @@ public abstract class AbstractDevice implements DeviceInterface {
 	
 	@Override
 	public final void close() {
-		logger.debug("close(), key=" + key);
+		Logger.debug("close(), key={}", key);
 		if (!isOpen()) {
-			logger.warn("Device '" + key + "' already closed");
+			Logger.warn("Device '{}' already closed", key);
 			return;
 		}
 		
 		try {
 			closeDevice();
 		} catch (IOException e) {
-			logger.error("Error closing device " + key + ": " + e, e);
+			Logger.error(e, "Error closing device {}: {}", key, e);
 		}
 		deviceFactory.deviceClosed(this);
 	}

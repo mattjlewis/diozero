@@ -29,8 +29,7 @@ package com.diozero.internal.spi;
 
 import java.io.IOException;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.pmw.tinylog.Logger;
 
 import com.diozero.api.*;
 
@@ -40,8 +39,6 @@ import com.diozero.api.*;
  * While the ServiceLoader supports multiple service providers, only the first entry in this file is used
  */
 public abstract class BaseNativeDeviceFactory extends AbstractDeviceFactory implements NativeDeviceFactoryInterface {
-	private static final Logger logger = LogManager.getLogger(BaseNativeDeviceFactory.class);
-	
 	private static final String NATIVE_PREFIX = "Native-";
 	private static final String GPIO_PREFIX = NATIVE_PREFIX + "GPIO-";
 	private static final String I2C_PREFIX = NATIVE_PREFIX + "I2C-";
@@ -129,7 +126,7 @@ public abstract class BaseNativeDeviceFactory extends AbstractDeviceFactory impl
 		if (pinNumber == 12 || pinNumber == 13 || pinNumber == 18 || pinNumber == 19) {
 			pwm_type = PwmType.HARDWARE;
 		} else {
-			logger.warn("Hardware PWM not available on BCM pin " + pinNumber + ", reverting to software");
+			Logger.warn("Hardware PWM not available on BCM pin {}, reverting to software", pinNumber);
 			pwm_type = PwmType.SOFTWARE;
 		}
 		

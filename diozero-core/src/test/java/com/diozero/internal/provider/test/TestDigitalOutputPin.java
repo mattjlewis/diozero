@@ -29,16 +29,13 @@ package com.diozero.internal.provider.test;
 
 import java.io.IOException;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.pmw.tinylog.Logger;
 
 import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.DeviceFactoryInterface;
 import com.diozero.internal.spi.GpioDigitalOutputDeviceInterface;
 
 public class TestDigitalOutputPin extends AbstractDevice implements GpioDigitalOutputDeviceInterface {
-	private static final Logger logger = LogManager.getLogger(TestDigitalOutputPin.class);
-	
 	private int pinNumber;
 	private boolean value;
 
@@ -50,7 +47,7 @@ public class TestDigitalOutputPin extends AbstractDevice implements GpioDigitalO
 
 	@Override
 	public void closeDevice() throws IOException {
-		logger.debug("closeDevice()");
+		Logger.debug("closeDevice()");
 	}
 
 	@Override
@@ -60,7 +57,7 @@ public class TestDigitalOutputPin extends AbstractDevice implements GpioDigitalO
 
 	@Override
 	public void setValue(boolean value) throws IOException {
-		logger.debug("setValue(" + value + ")");
+		Logger.debug("setValue({})", Boolean.valueOf(value));
 		this.value = value;
 	}
 

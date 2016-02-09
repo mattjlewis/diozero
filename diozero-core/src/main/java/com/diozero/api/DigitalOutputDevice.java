@@ -28,17 +28,15 @@ package com.diozero.api;
 
 
 import java.io.IOException;
+import java.util.logging.LogManager;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.pmw.tinylog.Logger;
 
 import com.diozero.internal.spi.GpioDeviceFactoryInterface;
 import com.diozero.internal.spi.GpioDigitalOutputDeviceInterface;
 import com.diozero.util.SleepUtil;
 
 public class DigitalOutputDevice extends GpioDevice {
-	private static final Logger logger = LogManager.getLogger(DigitalOutputDevice.class);
-	
 	public static final int INFINITE_ITERATIONS = -1;
 	
 	private boolean activeHigh;
@@ -66,13 +64,13 @@ public class DigitalOutputDevice extends GpioDevice {
 
 	@Override
 	public void close() {
-		logger.debug("close()");
+		Logger.debug("close()");
 		stopOnOffLoop();
 		try {
 			device.setValue(!activeHigh);
 			device.close();
 		} catch (IOException e) {
-			logger.error("Error closing device: " + e, e);
+			Logger.error(e, "Error closing device: {}", e);
 		}
 	}
 	

@@ -31,8 +31,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.util.function.Consumer;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.pmw.tinylog.Logger;
 
 import com.diozero.api.*;
 import com.diozero.util.SleepUtil;
@@ -51,16 +50,16 @@ import com.diozero.util.SleepUtil;
  * burst of ultrasound at 40 kHz and raise its echo. The Echo is a distance
  * object that is pulse width and the range in proportion. We suggest to use over
  * 60ms measurement cycle, in order to prevent trigger signal to the echo signal
- * (Pi4j):				sudo java -classpath dio-zero.jar:pi4j-core.jar com.diozero.HCSR04 17 27
- * (JDK Device I/O):	sudo java -classpath dio-zero.jar -Djava.security.policy=config/gpio.policy com.diozero.HCSR04 17 27
+ * Pi4j:
+ *  sudo java -classpath dio-zero-0.2-SNAPSHOT.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sandpit.HCSR04UsingEvents 17 27
+ * JDK Device I/O:
+ *  sudo java -classpath dio-zero-0.2-SNAPSHOT.jar com.diozero.sandpit.HCSR04UsingEvents 17 27
  *
  */
 public class HCSR04UsingEvents implements DistanceSensorInterface, Closeable, Consumer<DigitalPinEvent> {
-	private static final Logger logger = LogManager.getLogger(HCSR04UsingEvents.class);
-	
 	public static void main(String[] args) {
 		if (args.length != 2) {
-			logger.error("Usage: HCSR04 <trigger GPIO> <echo GPIO>");
+			Logger.error("Usage: HCSR04UsingEvents <trigger GPIO> <echo GPIO>");
 			System.exit(1);
 		}
 		int trigger_pin = Integer.parseInt(args[0]);
@@ -69,11 +68,11 @@ public class HCSR04UsingEvents implements DistanceSensorInterface, Closeable, Co
 			device.init(trigger_pin, echo_pin);
 			
 			while (true) {
-				logger.info("Distance = " + device.getDistanceCm() + " cm");
+				Logger.info("Distance = {} cm", String.format("%.3f", Double.valueOf(device.getDistanceCm())));
 				SleepUtil.sleepMillis(1000);
 			}
 		} catch (IOException ex) {
-			logger.error("I/O error with HC-SR04 device: " + ex.getMessage(), ex);
+			Logger.error(ex, "I/O error with HC-SR04 device: {}", ex.getMessage());
 		}
 	}
 
@@ -139,12 +138,16 @@ public class HCSR04UsingEvents implements DistanceSensorInterface, Closeable, Co
 			}
 		}
 		if (state != State.FINISHED) {
-			logger.error("Illegal state " + state + ", wait must have timed out or error occurred");
+			Logger.error("Illegal state {}, wait must have timed out or error occurred", state);
 			return -1;
 		}
 		
-		logger.info("Time from trigger off to echo on = " + (echoOnTimeNs - trigger_off_time) + "ns, ultrasonic burst time=" + ULTRASONIC_BURST_TIME_NS);
-		logger.info("Time from echo on to echo off = " + (echoOffTimeNs - echoOnTimeNs) + ", (" + (echoOffTimeMs - echoOnTimeMs) + "ms), max expected time=" + EXPECTED_MAX_ECHO_TIME_NS);
+		Logger.info("Time from trigger off to echo on = {}ns, ultrasonic burst time={}ns",
+				Long.valueOf(echoOnTimeNs - trigger_off_time), Long.valueOf(ULTRASONIC_BURST_TIME_NS));
+		Logger.info("Time from echo on to echo off = {}ns, ({}ms), max expected time={}ns",
+				Long.valueOf(echoOffTimeNs - echoOnTimeNs),
+				Long.valueOf(echoOffTimeMs - echoOnTimeMs),
+				Long.valueOf(EXPECTED_MAX_ECHO_TIME_NS));
 
 		double ping_duration_s = (echoOffTimeNs - echoOnTimeNs) / (double)NS_IN_SEC;
 
@@ -163,14 +166,14 @@ public class HCSR04UsingEvents implements DistanceSensorInterface, Closeable, Co
 	 */
 	@Override
 	public void close() {
-		logger.debug("close()");
+		Logger.debug("close()");
 		if (trigger != null) { trigger.close(); }
 		if (echo != null) { echo.close(); }
 	}
 	
 	@Override
 	public synchronized void accept(DigitalPinEvent event) {
-		logger.debug("accept(" + event + "), state=" + state);
+		Logger.debug("accept({}), state={}", event, state);
 		switch (state) {
 		case WAITING_FOR_ECHO_ON:
 			if (event.getValue()) {

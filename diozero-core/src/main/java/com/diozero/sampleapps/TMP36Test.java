@@ -29,8 +29,7 @@ package com.diozero.sampleapps;
 
 import java.io.IOException;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.pmw.tinylog.Logger;
 
 import com.diozero.MCP3008;
 import com.diozero.TMP36;
@@ -40,24 +39,22 @@ import com.diozero.util.SleepUtil;
  * TMP36 temperature sensor test
  * To run:
  * JDK Device I/O 1.0:
- *  sudo java -cp log4j-api-2.5.jar:log4j-core-2.5.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-jdkdio10-0.2-SNAPSHOT.jar:dio-1.0.1-dev-linux-armv6hf.jar -Djava.library.path=. com.diozero.sampleapps.TMP36Test 0 1
+ *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-jdkdio10-0.2-SNAPSHOT.jar:dio-1.0.1-dev-linux-armv6hf.jar -Djava.library.path=. com.diozero.sampleapps.TMP36Test 0 1
  * JDK Device I/O 1.1:
- *  sudo java -cp log4j-api-2.5.jar:log4j-core-2.5.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-jdkdio11-0.2-SNAPSHOT.jar:dio-1.1-dev-linux-armv6hf.jar -Djava.library.path=. com.diozero.sampleapps.TMP36Test 0 1
+ *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-jdkdio11-0.2-SNAPSHOT.jar:dio-1.1-dev-linux-armv6hf.jar -Djava.library.path=. com.diozero.sampleapps.TMP36Test 0 1
  * Pi4j:
- *  sudo java -cp log4j-api-2.5.jar:log4j-core-2.5.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-pi4j-0.2-SNAPSHOT.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sampleapps.TMP36Test 0 1
+ *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-pi4j-0.2-SNAPSHOT.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sampleapps.TMP36Test 0 1
  * wiringPi:
- *  sudo java -cp log4j-api-2.5.jar:log4j-core-2.5.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-wiringpi-0.2-SNAPSHOT.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sampleapps.TMP36Test 0 1
+ *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-wiringpi-0.2-SNAPSHOT.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sampleapps.TMP36Test 0 1
  * pigpgioJ:
- *  sudo java -cp log4j-api-2.5.jar:log4j-core-2.5.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-pigpio-0.2-SNAPSHOT.jar:pigpioj-java-0.0.1-SNAPSHOT.jar -Djava.library.path=. com.diozero.sampleapps.TMP36Test 0 1
+ *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-pigpio-0.2-SNAPSHOT.jar:pigpioj-java-0.0.1-SNAPSHOT.jar -Djava.library.path=. com.diozero.sampleapps.TMP36Test 0 1
  */
 public class TMP36Test {
-	private static final Logger logger = LogManager.getLogger(TMP36Test.class);
-	
 	private static final double DEFAULT_TEMPERATURE_OFFSET = 1.04f;
 
 	public static void main(String[] args) {
 		if (args.length < 2) {
-			logger.error("Usage: TMP36Test <chip-select> <adc-pin> [<temp-offset>]");
+			Logger.error("Usage: TMP36Test <chip-select> <adc-pin> [<temp-offset>]");
 			System.exit(2);
 		}
 		int chip_select = Integer.parseInt(args[0]);
@@ -71,12 +68,12 @@ public class TMP36Test {
 			try (TMP36 tmp36 = new TMP36(mcp3008, adc_pin, temp_offset)) {
 				while (true) {
 					double tmp = tmp36.getTemperature();
-					logger.info(String.format("Temperature: %.2f", Double.valueOf(tmp)));
+					Logger.info("Temperature: {}", String.format("%.2f", Double.valueOf(tmp)));
 					SleepUtil.sleepSeconds(1);
 				}
 			}
 		} catch (IOException ioe) {
-			logger.error("Error: " + ioe, ioe);
+			Logger.error(ioe, "Error: {}", ioe);
 		}
 	}
 

@@ -29,8 +29,7 @@ package com.diozero;
 
 import java.io.IOException;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.pmw.tinylog.Logger;
 
 import com.diozero.api.AnalogueInputDevice;
 import com.diozero.api.DeviceFactoryHelper;
@@ -61,8 +60,6 @@ import com.diozero.internal.spi.AnalogueInputDeviceFactoryInterface;
  * vLDR = 5 * (100 / (100 + 10,000)) = 0.049
  */
 public class LDR extends AnalogueInputDevice implements LuminositySensorInterface {
-	private static final Logger logger = LogManager.getLogger(LDR.class);
-	
 	private float vRef;
 	private float r1;
 	
@@ -87,14 +84,15 @@ public class LDR extends AnalogueInputDevice implements LuminositySensorInterfac
 		// where R is the resister connected between the LDR and Ref voltage
 		// Lux = (vRef*500/V(LDR) - 500) / R
 		//double lux = (vRef * 500 / v_ldr - 500) / r;
-		//logger.debug("Lux=" + lux);
+		//Logger.debug("Lux={}", lux);
 		// Or
 		//double lux = 500 * (vRef - v_ldr) / (r + v_ldr);
 		// Or...
 		// I[lux] = 10000 / (R[kohms]*10)^(4/3)
 		
 		double r_ldr = r1 / (vRef / v_ldr - 1);
-		logger.info(String.format("rLDR = %.4f", Double.valueOf(r_ldr)));
+		// FIXME Check printf style formatting
+		Logger.info("rLDR = {}", String.format(".4f", Double.valueOf(r_ldr)));
 		
 		// https://learn.adafruit.com/photocells/measuring-light
 		

@@ -31,8 +31,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.pmw.tinylog.Logger;
 
 import com.diozero.internal.spi.SpiDeviceInterface;
 
@@ -48,8 +47,6 @@ import com.diozero.internal.spi.SpiDeviceInterface;
  * - No DMA support (no peripheral DREQ)
  */
 public class SpiDevice implements Closeable, SPIConstants {
-	private static final Logger logger = LogManager.getLogger(SpiDevice.class);
-	
 	private SpiDeviceInterface device;
 	
 	public SpiDevice(int chipSelect) throws IOException {
@@ -66,7 +63,7 @@ public class SpiDevice implements Closeable, SPIConstants {
 
 	@Override
 	public void close() throws IOException {
-		logger.debug("close()");
+		Logger.debug("close()");
 		device.close();
 	}
 

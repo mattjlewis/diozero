@@ -31,8 +31,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.pmw.tinylog.Logger;
 
 import com.diozero.api.I2CConstants;
 import com.diozero.api.I2CDevice;
@@ -41,8 +40,6 @@ import com.diozero.util.SleepUtil;
 
 @SuppressWarnings("unused")
 public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constants {
-	private static final Logger logger = LogManager.getLogger(MPU9150Driver.class);
-	
 	private static final byte AKM_DATA_READY	  = 0x01;
 	private static final byte AKM_DATA_OVERRUN	= 0x02;
 	private static final byte AKM_OVERFLOW		= (byte)0x80;
@@ -442,7 +439,7 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 	 */
 	public boolean mpu_reset_fifo() throws IOException {
 		if (sensors == 0) {
-			logger.warn("mpu_reset_fifo(), sensors==0, returning");
+			Logger.warn("mpu_reset_fifo(), sensors==0, returning");
 			return false;
 		}
 	
@@ -609,20 +606,20 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 	 *  @param[in]  rate	Desired sampling rate (Hz).
 	 */
 	public boolean mpu_set_sample_rate(int rate) throws IOException {
-		logger.debug("mpu_set_sample_rate(" + rate + ")");
+		Logger.debug("mpu_set_sample_rate({})", rate);
 		if (sensors == 0) {
 			return false;
 		}
 
 		if (dmp_on) {
-			logger.warn("mpu_set_sample_rate() DMP is on, returning");
+			Logger.warn("mpu_set_sample_rate() DMP is on, returning");
 			return false;
 		}
 
 		if (lp_accel_mode) {
 			if (rate != 0 && (rate <= 40)) {
 				/* Just stay in low-power accel mode. */
-				logger.debug("Just setting lp_accel_mode to " + rate);
+				Logger.debug("Just setting lp_accel_mode to {}", rate);
 				mpu_lp_accel_mode(rate);
 				return true;
 			}
@@ -630,7 +627,7 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 			/* Requested rate exceeds the allowed frequencies in LP accel mode,
 			 * switch back to full-power mode.
 			 */
-			logger.debug("Setting lp_accel_mode to 0");
+			Logger.debug("Setting lp_accel_mode to 0");
 			mpu_lp_accel_mode(0);
 		}
 		int new_rate = rate;
@@ -641,7 +638,7 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 		}
 
 		int data = 1000 / new_rate - 1;
-		logger.debug("Setting sample rate to " + data);
+		Logger.debug("Setting sample rate to {}", data);
 		// rate_div == 0x19 == MPU9150_RA_SMPL_RATE_DIV
 		i2cDevice.writeByte(MPU9150_RA_SMPL_RATE_DIV, data);
 
@@ -649,7 +646,7 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 
 		mpu_set_compass_sample_rate(Math.min(compass_sample_rate, MAX_COMPASS_SAMPLE_RATE));
 
-		logger.debug("Automatically setting LPF to " + (sample_rate >> 1));
+		Logger.debug("Automatically setting LPF to {}", sample_rate >> 1);
 		/* Automatically set LPF to 1/2 sampling rate. */
 		mpu_set_lpf(sample_rate >> 1);
 		
@@ -671,7 +668,7 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 	 *  @param[in]  rate	Desired compass sampling rate (Hz).
 	 */
 	public boolean mpu_set_compass_sample_rate(int rate) throws IOException {
-		logger.debug("mpu_set_compass_sample_rate(" + rate + ")");
+		Logger.debug("mpu_set_compass_sample_rate({})", rate);
 		if (rate == 0 || rate > sample_rate || rate > MAX_COMPASS_SAMPLE_RATE) {
 			return false;
 		}
@@ -770,7 +767,7 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 	public boolean mpu_configure_fifo(byte newSensors) throws IOException {
 		System.out.format("mpu_configure_fifo 0x%x%n", Byte.valueOf(newSensors));
 		if (dmp_on) {
-			logger.info("DMP is on, returning");
+			Logger.info("DMP is on, returning");
 			return true;
 		}
 		
@@ -778,7 +775,7 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 		newSensors &= ~INV_XYZ_COMPASS;
 	
 		if (sensors == 0) {
-			logger.error("mpu_configure_fifo() sensors == 0, returning");
+			Logger.error("mpu_configure_fifo() sensors == 0, returning");
 			return false;
 		}
 		
@@ -787,7 +784,7 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 		boolean result;
 		if (fifo_enable != newSensors) {
 			/* You're not getting what you asked for. Some sensors are asleep. */
-			logger.info("You're not getting what you asked for. Some sensors are asleep.");
+			Logger.info("You're not getting what you asked for. Some sensors are asleep.");
 			result = false;
 		} else {
 			result = true;
@@ -945,11 +942,11 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 		}
 
 		if (sensors == 0) {
-			logger.warn("mpu_read_fifo() sensors == 0, returning");
+			Logger.warn("mpu_read_fifo() sensors == 0, returning");
 			return null;
 		}
 		if (fifo_enable == 0) {
-			logger.warn("mpu_read_fifo() fifo_enable == 0, returning");
+			Logger.warn("mpu_read_fifo() fifo_enable == 0, returning");
 			return null;
 		}
 
@@ -1037,11 +1034,11 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 	 */
 	public FIFOStream mpu_read_fifo_stream(int length) throws IOException {
 		if (!dmp_on) {
-			logger.warn("mpu_read_fifo_stream(), dmp_on is false, returning");
+			Logger.warn("mpu_read_fifo_stream(), dmp_on is false, returning");
 			return null;
 		}
 		if (sensors == 0) {
-			logger.warn("mpu_read_fifo_stream(), sensors == 0, returning");
+			Logger.warn("mpu_read_fifo_stream(), sensors == 0, returning");
 			return null;
 		}
 		
@@ -1053,16 +1050,16 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 		int fifo_count = ((tmp[0] & 0xff) << 8) | (tmp[1] & 0xff);
 		//int fifo_count = readUShort(MPU9150_RA_FIFO_COUNTH, SUB_ADDRESS_SIZE_1_BYTE);
 		if (fifo_count < length) {
-			//logger.trace("mpu_read_fifo_stream() fifo_count (" + fifo_count + ") < length (" + length + ")");
+			//Logger.trace("mpu_read_fifo_stream() fifo_count ({}) < length ({})", fifo_count, length);
 			return null;
 		}
-		//logger.trace("Got a FIFO packet! fifo_count=" + fifo_count);
+		//Logger.trace("Got a FIFO packet! fifo_count={}", fifo_count);
 		if (fifo_count > (MAX_FIFO >> 1)) {
 			/* FIFO is 50% full, better check overflow bit. */
 			// int_status == 0x3a == MPU9150_RA_INT_STATUS
 			byte int_status = i2cDevice.readByte(MPU9150_RA_INT_STATUS);
 			if ((int_status & BIT_FIFO_OVERFLOW) != 0) {
-				logger.info("resetting FIFO as overflowing");
+				Logger.info("resetting FIFO as overflowing");
 				mpu_reset_fifo();
 				return null;
 			}
@@ -1204,7 +1201,7 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 	
 	public void get_st_biases() throws IOException {
 		// TODO Implementation
-		logger.error("get_st_biases NOT IMPLEMENTED!");
+		Logger.error("get_st_biases NOT IMPLEMENTED!");
 	}
 	
 	/**
@@ -1217,7 +1214,7 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 	 */
 	public void mpu_write_mem(int mem_addr, int length, byte[] data) throws IOException {
 		if (sensors == 0) {
-			logger.warn("mpu_write_mem(), sensors == 0, returning");
+			Logger.warn("mpu_write_mem(), sensors == 0, returning");
 			return;
 		}
 
@@ -1230,7 +1227,7 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 		/* Check bank boundaries. */
 		int start_address = tmp[1] & 0xFF;
 		if (start_address + length > MPU9150_DMP_MEMORY_BANK_SIZE) {
-			logger.error("mpu_write_mem(), check bank boundaries failed");
+			Logger.error("mpu_write_mem(), check bank boundaries failed");
 			return;
 		}
 
@@ -1263,7 +1260,7 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 
 		/* Check bank boundaries. */
 		if (tmp_1_unsigned + length > MPU9150_DMP_MEMORY_BANK_SIZE) {
-			logger.error("mpu_read_mem(), check bank boundaries failed");
+			Logger.error("mpu_read_mem(), check bank boundaries failed");
 			return null;
 		}
 
@@ -1287,7 +1284,7 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 		/* Must divide evenly into st.hw->bank_size to avoid bank crossings. */
 		if (dmp_loaded) {
 			/* DMP should only be loaded once. */
-			logger.warn("mpu_load_firmware(), DMP already loaded, returning");
+			Logger.warn("mpu_load_firmware(), DMP already loaded, returning");
 			return;
 		}
 
@@ -1296,7 +1293,7 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 		int this_write;
 		for (int ii = 0; ii < length; ii += this_write) {
 			this_write = Math.min(LOAD_CHUNK, length - ii);
-			//logger.trace("mpu_load_firmware, this_write=" + this_write);
+			//Logger.trace("mpu_load_firmware, this_write={}", this_write);
 			/*
 			if (mpu_write_mem(ii, this_write, (unsigned char*)&firmware[ii]))
 				return -1;
@@ -1311,7 +1308,7 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 			//if (memcmp(firmware+ii, cur, this_write))
 			//	return -2;
 			if (!Arrays.equals(chunk, cur)) {
-				logger.debug("mpu_load_firmware(), mpu_read_mem(" + ii + ", " + this_write + ") != data chunk just written");
+				Logger.debug("mpu_load_firmware(), mpu_read_mem({}, {}) != data chunk just written", ii, this_write);
 			}
 		}
 
@@ -1340,7 +1337,7 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 		byte tmp;
 		if (enable) {
 			if (!dmp_loaded) {
-				logger.warn("mpu_set_dmp_state(), dmp not loaded, returning");
+				Logger.warn("mpu_set_dmp_state(), dmp not loaded, returning");
 				return;
 			}
 			/* Disable data ready interrupt. */
@@ -1393,7 +1390,7 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 
 		if (akm_addr > 0x0F) {
 			/* TODO: Handle this case in all compass-related functions. */
-			logger.warn("Compass not found.\n");
+			Logger.warn("Compass not found.");
 			return false;
 		}
 
@@ -1487,7 +1484,7 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 	 */
 	public short[] mpu_get_compass_reg() throws IOException {
 		if ((sensors & INV_XYZ_COMPASS) == 0) {
-			logger.warn("mpu_get_compass_reg(), INV_XYZ_COMPASS not set in sensors");
+			Logger.warn("mpu_get_compass_reg(), INV_XYZ_COMPASS not set in sensors");
 			return null;
 		}
 
@@ -1564,6 +1561,6 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 	 */
 	 public void mpu_lp_motion_interrupt(int thresh, int time, int lpa_freq) throws IOException {
 		 // TODO Implementation
-		 logger.error("mpu_lp_motion_interrupt NOT IMPLEMENTED!");
+		 Logger.error("mpu_lp_motion_interrupt NOT IMPLEMENTED!");
 	 }
 }

@@ -30,9 +30,6 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import com.diozero.api.I2CConstants;
 import com.diozero.api.I2CDevice;
 import com.diozero.api.TemperaturePressureSensorInterface;
@@ -41,8 +38,6 @@ import com.diozero.util.SleepUtil;
 
 @SuppressWarnings("unused")
 public class BMP180 implements TemperaturePressureSensorInterface, Closeable {
-	private static final Logger logger = LogManager.getLogger(BMP180.class);
-	
 	/**
 	 * Device address BMP180 address is 0x77
 	 */

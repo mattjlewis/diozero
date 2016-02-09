@@ -34,8 +34,7 @@ import java.util.function.Consumer;
 
 import javax.xml.bind.DatatypeConverter;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.pmw.tinylog.Logger;
 
 import com.diozero.imu.OrientationEvent;
 import com.diozero.imu.TapCallbackEvent;
@@ -50,8 +49,6 @@ import com.diozero.imu.TapCallbackEvent;
  *          MPL and general driver function calls.
  */
 public class MPU9150DMPDriver implements MPU9150DMPConstants {
-	private static final Logger logger = LogManager.getLogger(MPU9150DMPDriver.class);
-	
 	// Not sure how this flag is set
 	static final boolean EMPL_NO_64BIT = false;
 
@@ -232,16 +229,16 @@ public class MPU9150DMPDriver implements MPU9150DMPConstants {
 	 * @param[in] rate Desired fifo rate (Hz).
 	 */
 	public void dmp_set_fifo_rate(int rate) throws IOException {
-		logger.debug("dmp_set_fifo_rate(" + rate + ")");
+		Logger.debug("dmp_set_fifo_rate({})", rate);
 
 		if (rate > DMP_SAMPLE_RATE) {
-			logger.warn(
-					"Requested rate (" + rate + ") was greater than DMP_SAMPLE_RATE (" + DMP_SAMPLE_RATE + ")");
+			Logger.warn(
+					"Requested rate ({}) was greater than DMP_SAMPLE_RATE ({})", rate, DMP_SAMPLE_RATE);
 			return;
 		}
 
 		int div = DMP_SAMPLE_RATE / rate - 1;
-		logger.debug("dmp_set_fifo_rate(), div=" + div);
+		Logger.debug("dmp_set_fifo_rate(), div={}", div);
 		byte[] tmp = new byte[2];
 		tmp[0] = (byte) ((div >> 8) & 0xFF);
 		tmp[1] = (byte) (div & 0xFF);
@@ -711,9 +708,9 @@ public class MPU9150DMPDriver implements MPU9150DMPConstants {
 	 * @param[in] gesture Gesture data from DMP packet.
 	 */
 	public void decode_gesture(byte[] gesture) {
-		logger.debug("decode_gesture(" + DatatypeConverter.printHexBinary(gesture) + ")");
+		Logger.debug("decode_gesture()", DatatypeConverter.printHexBinary(gesture));
 		if ((gesture[1] & INT_SRC_TAP) != 0) {
-			logger.debug("decode_gesture() got Tap!");
+			Logger.debug("decode_gesture() got Tap!");
 			byte tap = (byte) (0x3F & gesture[3]);
 			byte direction = (byte) (tap >> 3);
 			byte count = (byte) ((tap % 8) + 1);
@@ -723,7 +720,7 @@ public class MPU9150DMPDriver implements MPU9150DMPConstants {
 		}
 
 		if ((gesture[1] & INT_SRC_ANDROID_ORIENT) != 0) {
-			logger.debug("decode_gesture() got Orient!");
+			Logger.debug("decode_gesture() got Orient!");
 			byte android_orient = (byte) (gesture[3] & 0xC0);
 			if (android_orient_cb != null) {
 				android_orient_cb.accept(new OrientationEvent((short) (android_orient >> 6)));
@@ -780,13 +777,13 @@ public class MPU9150DMPDriver implements MPU9150DMPConstants {
 		/* Get a packet. */
 		FIFOStream fifo_stream = mpu.mpu_read_fifo_stream(packet_length);
 		if (fifo_stream == null) {
-			//logger.warn("FIFO stream was null");
+			//Logger.warn("FIFO stream was null");
 			return null;
 		}
 		// unsigned char fifo_data[MAX_PACKET_LENGTH];
 		byte[] fifo_data = fifo_stream.getData();
 		if (DUMP_FIFO_DATA) {
-			logger.trace("FIFO Data: " + DatatypeConverter.printHexBinary(fifo_data));
+			Logger.trace("FIFO Data: {}", DatatypeConverter.printHexBinary(fifo_data));
 		}
 		ByteBuffer fifo_data_buffer = ByteBuffer.wrap(fifo_data);
 
@@ -829,7 +826,7 @@ public class MPU9150DMPDriver implements MPU9150DMPConstants {
 						+ quat_q14[3] * quat_q14[3];
 				if ((quat_mag_sq < QUAT_MAG_SQ_MIN) || (quat_mag_sq > QUAT_MAG_SQ_MAX)) {
 					/* Quaternion is outside of the acceptable threshold. */
-					logger.error("Quaternion is outside of the acceptable threshold.");
+					Logger.error("Quaternion is outside of the acceptable threshold.");
 					mpu.mpu_reset_fifo();
 					sensors = 0;
 					return null;

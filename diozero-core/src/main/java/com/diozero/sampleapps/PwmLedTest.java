@@ -29,8 +29,7 @@ package com.diozero.sampleapps;
 
 import java.io.IOException;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.pmw.tinylog.Logger;
 
 import com.diozero.PwmLed;
 import com.diozero.util.SleepUtil;
@@ -40,55 +39,52 @@ import com.diozero.util.SleepUtil;
  * Raspberry Pi BCM GPIO pins with hardware PWM support: 12 (phys 32, wPi 26), 13 (phys 33, wPi 23), 18 (phys 12, wPi 1), 19 (phys 35, wPi 24)
  * To run:
  * Pi4j:
- *  sudo java -cp log4j-api-2.5.jar:log4j-core-2.5.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-pi4j-0.2-SNAPSHOT.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sampleapps.PwmLedTest 18
+ *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-pi4j-0.2-SNAPSHOT.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sampleapps.PwmLedTest 18
  * wiringPi:
- *  sudo java -cp log4j-api-2.5.jar:log4j-core-2.5.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-wiringpi-0.2-SNAPSHOT.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sampleapps.PwmLedTest 18
+ *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-wiringpi-0.2-SNAPSHOT.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sampleapps.PwmLedTest 18
  * pigpgioJ:
- *  sudo java -cp log4j-api-2.5.jar:log4j-core-2.5.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-pigpio-0.2-SNAPSHOT.jar:pigpioj-java-0.0.1-SNAPSHOT.jar -Djava.library.path=. com.diozero.sampleapps.PwmLedTest 18
+ *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-pigpio-0.2-SNAPSHOT.jar:pigpioj-java-0.0.1-SNAPSHOT.jar -Djava.library.path=. com.diozero.sampleapps.PwmLedTest 18
  */
 public class PwmLedTest {
-	private static final Logger logger = LogManager.getLogger(PwmLedTest.class);
-	
 	public static void main(String[] args) {
 		if (args.length < 1) {
-			logger.error("Usage: LEDTest <BCM pin number>");
+			Logger.error("Usage: LEDTest <BCM pin number>");
 			System.exit(1);
 		}
 		
 		int pin = Integer.parseInt(args[0]);
 		try (PwmLed led = new PwmLed(pin, 100)) {
-			logger.info("On");
+			Logger.info("On");
 			led.on();
 			SleepUtil.sleepSeconds(1);
-			logger.info("Off");
+			Logger.info("Off");
 			led.off();
 			SleepUtil.sleepSeconds(1);
-			logger.info("Toggle");
+			Logger.info("Toggle");
 			led.toggle();
 			SleepUtil.sleepSeconds(1);
-			logger.info("Toggle");
+			Logger.info("Toggle");
 			led.toggle();
 			SleepUtil.sleepSeconds(1);
-			logger.info("25%");
+			Logger.info("25%");
 			led.setValue(.25f);
 			SleepUtil.sleepSeconds(1);
-			logger.info("Toggle (now 75%)");
+			Logger.info("Toggle (now 75%)");
 			led.toggle();
 			SleepUtil.sleepSeconds(1);
-			logger.info("50%");
+			Logger.info("50%");
 			led.setValue(.5f);
 			SleepUtil.sleepSeconds(1);
 			
-			logger.info("Blink 10 times");
+			Logger.info("Blink 10 times");
 			led.blink(0.5f, 0.5f, 10, false);
 			
-			logger.info("Fade in and out 10 times");
+			Logger.info("Fade in and out 10 times");
 			led.pulse(1, 50, 10, false);
 			
-			logger.info("Done");
+			Logger.info("Done");
 		} catch (IOException e) {
-			logger.error("Error: " + e, e);
-			e.printStackTrace();
+			Logger.error(e, "Error: {}", e);
 		}
 	}
 }

@@ -29,8 +29,7 @@ package com.diozero.sampleapps;
 
 import java.io.IOException;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.pmw.tinylog.Logger;
 
 import com.diozero.LED;
 import com.diozero.util.SleepUtil;
@@ -39,46 +38,44 @@ import com.diozero.util.SleepUtil;
  * LED test application
  * To run:
  * JDK Device I/O 1.0:
- *  sudo java -cp log4j-api-2.5.jar:log4j-core-2.5.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-jdkdio10-0.2-SNAPSHOT.jar:dio-1.0.1-dev-linux-armv6hf.jar -Djava.library.path=. com.diozero.sampleapps.LEDTest 18
+ *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-jdkdio10-0.2-SNAPSHOT.jar:dio-1.0.1-dev-linux-armv6hf.jar -Djava.library.path=. com.diozero.sampleapps.LEDTest 18
  * JDK Device I/O 1.1:
- *  sudo java -cp log4j-api-2.5.jar:log4j-core-2.5.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-jdkdio11-0.2-SNAPSHOT.jar:dio-1.1-dev-linux-armv6hf.jar -Djava.library.path=. com.diozero.sampleapps.LEDTest 18
+ *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-jdkdio11-0.2-SNAPSHOT.jar:dio-1.1-dev-linux-armv6hf.jar -Djava.library.path=. com.diozero.sampleapps.LEDTest 18
  * Pi4j:
- *  sudo java -cp log4j-api-2.5.jar:log4j-core-2.5.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-pi4j-0.2-SNAPSHOT.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sampleapps.LEDTest 18
+ *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-pi4j-0.2-SNAPSHOT.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sampleapps.LEDTest 18
  * wiringPi:
- *  sudo java -cp log4j-api-2.5.jar:log4j-core-2.5.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-wiringpi-0.2-SNAPSHOT.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sampleapps.LEDTest 18
+ *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-wiringpi-0.2-SNAPSHOT.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sampleapps.LEDTest 18
  * pigpgioJ:
- *  sudo java -cp log4j-api-2.5.jar:log4j-core-2.5.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-pigpio-0.2-SNAPSHOT.jar:pigpioj-java-0.0.1-SNAPSHOT.jar -Djava.library.path=. com.diozero.sampleapps.LEDTest 18
+ *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-pigpio-0.2-SNAPSHOT.jar:pigpioj-java-0.0.1-SNAPSHOT.jar -Djava.library.path=. com.diozero.sampleapps.LEDTest 18
  */
 public class LEDTest {
-	private static final Logger logger = LogManager.getLogger(LEDTest.class);
-	
 	public static void main(String[] args) {
 		if (args.length < 1) {
-			logger.error("Usage: LEDTest <BCM pin number>");
+			Logger.error("Usage: LEDTest <BCM pin number>");
 			System.exit(1);
 		}
 		
 		int pin = Integer.parseInt(args[0]);
 		try (LED led = new LED(pin)) {
-			logger.info("On");
+			Logger.info("On");
 			led.on();
 			SleepUtil.sleepSeconds(1);
-			logger.info("Off");
+			Logger.info("Off");
 			led.off();
 			SleepUtil.sleepSeconds(1);
-			logger.info("Toggle");
+			Logger.info("Toggle");
 			led.toggle();
 			SleepUtil.sleepSeconds(1);
-			logger.info("Toggle");
+			Logger.info("Toggle");
 			led.toggle();
 			SleepUtil.sleepSeconds(1);
 			
-			logger.info("Blink 10 times");
+			Logger.info("Blink 10 times");
 			led.blink(0.5f, 0.5f, 10, false);
 			
-			logger.info("Done");
+			Logger.info("Done");
 		} catch (IOException e) {
-			logger.error("Error: " + e, e);
+			Logger.error(e, "Error: {}", e);
 		}
 	}
 }

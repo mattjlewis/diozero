@@ -29,8 +29,7 @@ package com.diozero.sampleapps;
 
 import java.io.IOException;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.pmw.tinylog.Logger;
 
 import com.diozero.api.PwmOutputDevice;
 import com.diozero.util.SleepUtil;
@@ -41,32 +40,29 @@ import com.diozero.util.SleepUtil;
  * Raspberry Pi BCM GPIO pins with hardware PWM support: 12 (phys 32, wPi 26), 13 (phys 33, wPi 23), 18 (phys 12, wPi 1), 19 (phys 35, wPi 24)
  * To run:
  * Pi4j:
- *  sudo java -cp log4j-api-2.5.jar:log4j-core-2.5.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-pi4j-0.2-SNAPSHOT.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sampleapps.PwmTest 18
+ *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-pi4j-0.2-SNAPSHOT.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sampleapps.PwmTest 18
  * wiringPi:
- *  sudo java -cp log4j-api-2.5.jar:log4j-core-2.5.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-wiringpi-0.2-SNAPSHOT.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sampleapps.PwmTest 18
+ *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-wiringpi-0.2-SNAPSHOT.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sampleapps.PwmTest 18
  * pigpgioJ:
- *  sudo java -cp log4j-api-2.5.jar:log4j-core-2.5.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-pigpio-0.2-SNAPSHOT.jar:pigpioj-java-0.0.1-SNAPSHOT.jar -Djava.library.path=. com.diozero.sampleapps.PwmTest 18
+ *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-pigpio-0.2-SNAPSHOT.jar:pigpioj-java-0.0.1-SNAPSHOT.jar -Djava.library.path=. com.diozero.sampleapps.PwmTest 18
  */
 public class PwmTest {
-	private static final Logger logger = LogManager.getLogger(PwmTest.class);
-	
 	public static void main(String[] args) {
 		if (args.length < 1) {
-			logger.error("Usage: PWMTest <pin number>");
+			Logger.error("Usage: PwmTest <pin number>");
 			System.exit(1);
 		}
 		
 		int pin = Integer.parseInt(args[0]);
 		try (PwmOutputDevice pwm = new PwmOutputDevice(pin)) {
 			for (float f=0; f<1; f+=0.05) {
-				logger.info("Setting value to " + f);
+				Logger.info("Setting value to {}", Float.valueOf(f));
 				pwm.setValue(f);
 				SleepUtil.sleepSeconds(0.5);
 			}
-			logger.info("Done");
+			Logger.info("Done");
 		} catch (IOException e) {
-			logger.error("Error: " + e, e);
-			e.printStackTrace();
+			Logger.error(e, "Error: ", e);
 		}
 	}
 }

@@ -31,8 +31,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.util.function.Consumer;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.pmw.tinylog.Logger;
 
 import com.diozero.api.*;
 import com.diozero.internal.provider.mcp23017.MCP23017DigitalInputDevice;
@@ -58,8 +57,6 @@ import com.diozero.util.MutableByte;
  * Address Pointer can initially point to either address in the register pair.
  */
 public class MCP23017 extends AbstractDeviceFactory implements GpioDeviceFactoryInterface, Consumer<DigitalPinEvent>, Closeable {
-	private static final Logger logger = LogManager.getLogger(MCP23017.class);
-	
 	// Default I2C address
 	private static final int DEVICE_ADDRESS = 0x20;
 	private static final String DEVICE_NAME = "MCP23017";
@@ -265,9 +262,9 @@ public class MCP23017 extends AbstractDeviceFactory implements GpioDeviceFactory
 		// Initialise
 		// Read the I/O configuration value
 		byte start_iocon = i2cDevice.readByte(IOCON_REG[0]);
-		logger.debug(String.format("Default power-on values for IOCON: 0x%x", Byte.valueOf(start_iocon)));
+		Logger.debug("Default power-on values for IOCON: 0x{x}", Integer.toHexString(start_iocon));
 		// Is there an IOCONB value?
-		logger.debug(String.format("IOCONB: 0x%x", Byte.valueOf(i2cDevice.readByte(IOCON_REG[1]))));
+		Logger.debug("IOCONB: 0x{x}", Integer.toHexString(i2cDevice.readByte(IOCON_REG[1])));
 		
 		// Configure interrupts
 		MutableByte iocon = new MutableByte(start_iocon);
@@ -284,7 +281,7 @@ public class MCP23017 extends AbstractDeviceFactory implements GpioDeviceFactory
 		iocon.setBit(IOCON_SEQOP_BIT);
 		iocon.unsetBit(IOCON_ODR_BIT);
 		if (!iocon.equals(start_iocon)) {
-			logger.debug(String.format("Updating IOCONA to: 0x%x", Byte.valueOf(iocon.getValue())));
+			Logger.debug("Updating IOCONA to: 0x{x}", Integer.toHexString(iocon.getValue()));
 			i2cDevice.writeByte(IOCON_REG[0], iocon.getValue());
 		}
 		
@@ -307,11 +304,11 @@ public class MCP23017 extends AbstractDeviceFactory implements GpioDeviceFactory
 		
 		// Finally enable interrupt listeners
 		if (interruptPinA != null) {
-			logger.debug("Setting interruptPinA (" + interruptPinA.getPinNumber() + ") consumer");
+			Logger.debug("Setting interruptPinA ({}) consumer", Integer.valueOf(interruptPinA.getPinNumber()));
 			interruptPinA.setConsumer(this);
 		}
 		if (interruptPinB != null) {
-			logger.debug("Setting interruptPinB (" + interruptPinB.getPinNumber() + ") consumer");
+			Logger.debug("Setting interruptPinB ({}) consumer", Integer.valueOf(interruptPinB.getPinNumber()));
 			interruptPinB.setConsumer(this);
 		}
 	}
@@ -424,14 +421,15 @@ public class MCP23017 extends AbstractDeviceFactory implements GpioDeviceFactory
 		
 		byte old_val = i2cDevice.readByte(GPIO_REG[port]);
 		byte new_val = BitManipulation.setBitValue(old_val, value, bit);
-		logger.debug(String.format("setValue(%d, %b), old_val=0x%x, new_val=0x%x",
-				Integer.valueOf(pinNumber), Boolean.valueOf(value), Byte.valueOf(old_val), Byte.valueOf(new_val)));
+		Logger.debug("setValue({}, {}), old_val=0x{}, new_val=0x{}",
+				Integer.valueOf(pinNumber), Boolean.valueOf(value), Integer.toHexString(old_val),
+				Integer.toHexString(new_val));
 		i2cDevice.writeByte(OLAT_REG[port], new_val);
 	}
 	
 	@Override
 	public void close() throws IOException {
-		logger.debug("close()");
+		Logger.debug("close()");
 		// Close the interrupt pins
 		if (interruptPinA != null) { interruptPinA.close(); }
 		if (interruptPinB != null) { interruptPinB.close(); }
@@ -441,7 +439,7 @@ public class MCP23017 extends AbstractDeviceFactory implements GpioDeviceFactory
 	}
 
 	public void closePin(int pinNumber) throws IOException {
-		logger.debug("closePin(" + pinNumber + ")");
+		Logger.debug("closePin({})", Integer.valueOf(pinNumber));
 		
 		if (pinNumber < 0 || pinNumber >= NUM_PINS) {
 			throw new IllegalArgumentException("Invalid pin number: " + pinNumber + ". "
@@ -478,15 +476,15 @@ public class MCP23017 extends AbstractDeviceFactory implements GpioDeviceFactory
 	@Override
 	@SuppressWarnings("resource")
 	public void accept(DigitalPinEvent event) {
-		logger.debug("accept(" + event + ")");
+		Logger.debug("accept({})", event);
 		
 		if (! event.getValue()) {
-			logger.debug("accept(): value was false - ignoring");
+			Logger.debug("accept(): value was false - ignoring");
 			return;
 		}
 		
 		if (event.getPin() != interruptPinA.getPinNumber() && event.getPin() != interruptPinB.getPinNumber()) {
-			logger.error("Unexpected input event on pin " + event.getPin());
+			Logger.error("Unexpected input event on pin {}", Integer.valueOf(event.getPin()));
 			return;
 		}
 		
@@ -508,8 +506,9 @@ public class MCP23017 extends AbstractDeviceFactory implements GpioDeviceFactory
 						intcap[1] = i2cDevice.readByte(INTCAP_REG[1]);
 					}
 				}
-				logger.debug(String.format("Interrupt values: [A]=(%x, %x), [B]=(%x, %x)",
-						Byte.valueOf(intf[0]), Byte.valueOf(intcap[0]), Byte.valueOf(intf[1]), Byte.valueOf(intcap[1])));
+				Logger.debug("Interrupt values: [A]=(0x{}, 0x{}), [B]=(0x{}, 0x{})",
+						Integer.toHexString(intf[0]), Integer.toHexString(intcap[0]),
+						Integer.toHexString(intf[1]), Integer.toHexString(intcap[1]));
 				for (byte bit=0; bit<7; bit++) {
 					if (BitManipulation.isBitSet(intf[0], bit)) {
 						boolean value = BitManipulation.isBitSet(intcap[0], bit);
@@ -534,7 +533,7 @@ public class MCP23017 extends AbstractDeviceFactory implements GpioDeviceFactory
 				}
 			} catch (IOException e) {
 				// Log and ignore
-				logger.error("IO error handling interrupts: " + e, e);
+				Logger.error(e, "IO error handling interrupts: {}", e);
 			}
 		}
 	}

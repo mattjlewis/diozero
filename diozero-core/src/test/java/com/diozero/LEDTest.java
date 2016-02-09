@@ -29,12 +29,10 @@ package com.diozero;
 
 import java.io.IOException;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Test;
+import org.pmw.tinylog.Logger;
 
-import com.diozero.LED;
 import com.diozero.api.DeviceFactoryHelper;
 import com.diozero.internal.spi.NativeDeviceFactoryInterface;
 
@@ -42,8 +40,6 @@ import com.diozero.internal.spi.NativeDeviceFactoryInterface;
  * LED test case using the test device factory
  */
 public class LEDTest {
-	private static final Logger logger = LogManager.getLogger(LEDTest.class);
-	
 	@SuppressWarnings("static-method")
 	@Test
 	public void test() {
@@ -65,7 +61,7 @@ public class LEDTest {
 			led.blink(0.1f, 0.1f, 5, false);
 			Assert.assertFalse("Pin (" + pin + ") is off", led.isOn());
 		} catch (IOException e) {
-			logger.error("Error: " + e, e);
+			Logger.error(e, "Error: {}", e);
 		}
 		
 		// TODO Clean-up required, it is a bit ugly to have to know the DeviceStates key structure...

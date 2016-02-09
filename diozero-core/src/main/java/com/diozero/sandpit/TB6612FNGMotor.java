@@ -29,8 +29,7 @@ package com.diozero.sandpit;
 
 import java.io.IOException;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.pmw.tinylog.Logger;
 
 import com.diozero.api.DigitalOutputDevice;
 import com.diozero.api.MotorInterface;
@@ -43,8 +42,6 @@ import com.diozero.api.PwmOutputDevice;
  * Turn backward, set pin 1 to LOW, pin 2 to HIGH, PWM to >0
  */
 public class TB6612FNGMotor implements MotorInterface {
-	private static final Logger logger = LogManager.getLogger(TB6612FNGMotor.class);
-	
 	private DigitalOutputDevice motorForwardControlPin;
 	private DigitalOutputDevice motorBackwardControlPin;
 	private PwmOutputDevice motorPwmControl;
@@ -59,7 +56,7 @@ public class TB6612FNGMotor implements MotorInterface {
 
 	@Override
 	public void close() {
-		logger.debug("close()");
+		Logger.debug("close()");
 		if (motorForwardControlPin != null) { try { motorForwardControlPin.close(); } catch (Exception e) { } }
 		if (motorBackwardControlPin != null) { try { motorBackwardControlPin.close(); } catch (Exception e) { } }
 		if (motorPwmControl != null) { try { motorPwmControl.close(); } catch (Exception e) { } }
