@@ -34,16 +34,18 @@ import org.pmw.tinylog.Logger;
 import com.diozero.api.DigitalPinEvent;
 import com.diozero.api.GpioEventTrigger;
 import com.diozero.api.GpioPullUpDown;
-import com.diozero.internal.spi.*;
+import com.diozero.internal.spi.AbstractInputDevice;
+import com.diozero.internal.spi.DeviceFactoryInterface;
+import com.diozero.internal.spi.GpioDigitalInputDeviceInterface;
 
 import jdk.dio.DeviceConfig;
 import jdk.dio.DeviceManager;
 import jdk.dio.gpio.*;
 
-public class JdkDeviceIoGpioInputDevice extends AbstractDevice implements GpioDigitalInputDeviceInterface, PinListener {
+public class JdkDeviceIoGpioInputDevice extends AbstractInputDevice<DigitalPinEvent>
+implements GpioDigitalInputDeviceInterface, PinListener {
 	private GPIOPinConfig pinConfig;
 	private GPIOPin pin;
-	private InternalPinListener listener;
 	private long lastPinEventTime;
 	private int debounceTimeMillis;
 	
@@ -114,10 +116,8 @@ public class JdkDeviceIoGpioInputDevice extends AbstractDevice implements GpioDi
 		if (debounceTimeMillis == 0) {
 			lastPinEventTime = event.getTimeStamp();
 
-			if (listener != null) {
-				listener.valueChanged(new DigitalPinEvent(
-						pinConfig.getPinNumber(), event.getTimeStamp(), nano_time, event.getValue()));
-			}
+			valueChanged(new DigitalPinEvent(pinConfig.getPinNumber(),
+					event.getTimeStamp(), nano_time, event.getValue()));
 		} else {
 			synchronized (this) {
 				// FIXME This debounce functionality is a bit lacking, _all_ events are ignored for bounceTimeMillis
@@ -126,18 +126,15 @@ public class JdkDeviceIoGpioInputDevice extends AbstractDevice implements GpioDi
 				if ((this_pin_event_time - lastPinEventTime) > debounceTimeMillis) {
 					lastPinEventTime = this_pin_event_time;
 	
-					if (listener != null) {
-						listener.valueChanged(new DigitalPinEvent(
-								pinConfig.getPinNumber(), event.getTimeStamp(), nano_time, event.getValue()));
-					}
+					valueChanged(new DigitalPinEvent(pinConfig.getPinNumber(),
+							event.getTimeStamp(), nano_time, event.getValue()));
 				}
 			}
 		}
 	}
 
 	@Override
-	public void setListener(InternalPinListener listener) {
-		this.listener = listener;
+	public void enableListener() {
 		try {
 			pin.setInputListener(this);
 		} catch (IOException e) {
@@ -146,8 +143,11 @@ public class JdkDeviceIoGpioInputDevice extends AbstractDevice implements GpioDi
 	}
 
 	@Override
-	public void removeListener() {
-		try { pin.setInputListener(null); } catch (IOException e) { }
-		listener = null;
+	public void disableListener() {
+		try {
+			pin.setInputListener(null);
+		} catch (IOException e) {
+			throw new IllegalStateException("I/O error calling setInputListener: " + e, e);
+		}
 	}
 }

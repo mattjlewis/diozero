@@ -47,7 +47,7 @@ public class PigpioJI2CDevice extends AbstractDevice implements I2CDeviceInterfa
 		
 		int to_read = dst.remaining();
 		byte[] buffer = new byte[to_read];
-		Logger.debug("reading {} bytes", to_read);
+		Logger.debug("reading {} bytes", Integer.valueOf(to_read));
 		int read = PigpioI2C.i2cReadI2CBlockData(handle, register, buffer, to_read);
 		if (read != to_read) {
 			throw new IOException("Didn't read correct number of bytes, read " + read + ", expected " + to_read);

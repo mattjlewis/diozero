@@ -34,14 +34,15 @@ import org.pmw.tinylog.Logger;
 import com.diozero.api.DigitalPinEvent;
 import com.diozero.api.GpioEventTrigger;
 import com.diozero.api.GpioPullUpDown;
-import com.diozero.internal.spi.*;
+import com.diozero.internal.spi.AbstractInputDevice;
+import com.diozero.internal.spi.DeviceFactoryInterface;
+import com.diozero.internal.spi.GpioDigitalInputDeviceInterface;
 import com.diozero.pigpioj.PigpioCallback;
 import com.diozero.pigpioj.PigpioGpio;
 
-public class PigpioJDigitalInputDevice extends AbstractDevice implements GpioDigitalInputDeviceInterface, PigpioCallback {
+public class PigpioJDigitalInputDevice extends AbstractInputDevice<DigitalPinEvent> implements GpioDigitalInputDeviceInterface, PigpioCallback {
 	private int pinNumber;
 	private int edge;
-	private InternalPinListener listener;
 
 	public PigpioJDigitalInputDevice(String key, DeviceFactoryInterface deviceFactory, int pinNumber,
 			GpioPullUpDown pud, GpioEventTrigger trigger) throws IOException {
@@ -104,17 +105,13 @@ public class PigpioJDigitalInputDevice extends AbstractDevice implements GpioDig
 	}
 
 	@Override
-	public void setListener(InternalPinListener listener) {
+	public void enableListener() {
 		if (edge == PigpioGpio.NO_EDGE) {
 			Logger.warn("Edge was configured to be NO_EDGE, no point adding a listener");
 			return;
 		}
 		
-		if (this.listener != null) {
-			removeListener();
-		}
-		
-		this.listener = listener;
+		disableListener();
 		try {
 			PigpioGpio.setISRFunc(pinNumber, edge, -1, this);
 		} catch (IOException e) {
@@ -123,13 +120,12 @@ public class PigpioJDigitalInputDevice extends AbstractDevice implements GpioDig
 	}
 
 	@Override
-	public void removeListener() {
+	public void disableListener() {
 		try {
 			PigpioGpio.setISRFunc(pinNumber, PigpioGpio.EITHER_EDGE, -1, null);
 		} catch (IOException e) {
 			Logger.warn(e, "Error removing listener: {}", e);
 		}
-		listener = null;
 	}
 
 	@Override
@@ -139,8 +135,6 @@ public class PigpioJDigitalInputDevice extends AbstractDevice implements GpioDig
 					Integer.valueOf(pin), Integer.valueOf(pinNumber));
 		}
 		
-		if (listener != null) {
-			listener.valueChanged(new DigitalPinEvent(pin, epochTime, nanoTime, value));
-		}
+		valueChanged(new DigitalPinEvent(pin, epochTime, nanoTime, value));
 	}
 }

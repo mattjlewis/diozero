@@ -91,7 +91,7 @@ public class WiringPiI2CDevice extends AbstractDevice implements I2CDeviceInterf
 		
 		int to_read = dst.remaining();
 		byte[] buffer = new byte[to_read];
-		Logger.debug("reading {} bytes", to_read);
+		Logger.debug("reading {} bytes", Integer.valueOf(to_read));
 		// TODO Need to loop, yuck
 		//byte b = I2C.wiringPiI2CReadReg8(handle, register);
 		int read = i2cDevice.read(register, buffer, 0, to_read);

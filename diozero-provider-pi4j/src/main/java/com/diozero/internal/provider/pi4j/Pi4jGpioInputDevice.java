@@ -5,16 +5,17 @@ import org.pmw.tinylog.Logger;
 import com.diozero.api.DigitalPinEvent;
 import com.diozero.api.GpioEventTrigger;
 import com.diozero.api.GpioPullUpDown;
-import com.diozero.internal.spi.*;
+import com.diozero.internal.spi.AbstractInputDevice;
+import com.diozero.internal.spi.DeviceFactoryInterface;
+import com.diozero.internal.spi.GpioDigitalInputDeviceInterface;
 import com.pi4j.io.gpio.*;
 import com.pi4j.io.gpio.event.GpioPinDigitalStateChangeEvent;
 import com.pi4j.io.gpio.event.GpioPinListenerDigital;
 import com.pi4j.wiringpi.GpioUtil;
 
-public class Pi4jGpioInputDevice extends AbstractDevice implements GpioDigitalInputDeviceInterface, GpioPinListenerDigital {
+public class Pi4jGpioInputDevice extends AbstractInputDevice<DigitalPinEvent> implements GpioDigitalInputDeviceInterface, GpioPinListenerDigital {
 	private GpioPinDigitalInput digitalInputPin;
 	private int pinNumber;
-	private InternalPinListener listener;
 	
 	Pi4jGpioInputDevice(String key, DeviceFactoryInterface deviceFactory, GpioController gpioController,
 			int pinNumber, GpioPullUpDown pud, GpioEventTrigger trigger) {
@@ -91,22 +92,18 @@ public class Pi4jGpioInputDevice extends AbstractDevice implements GpioDigitalIn
 	@Override
 	public void handleGpioPinDigitalStateChangeEvent(GpioPinDigitalStateChangeEvent event) {
 		long nano_time = System.nanoTime();
-		if (listener != null) {
-			listener.valueChanged(new DigitalPinEvent(
-					pinNumber, System.currentTimeMillis(), nano_time, event.getState().isHigh()));
-		}
+		valueChanged(new DigitalPinEvent(pinNumber, System.currentTimeMillis(),
+				nano_time, event.getState().isHigh()));
 	}
 
 	@Override
-	public void setListener(InternalPinListener listener) {
+	public void enableListener() {
 		digitalInputPin.removeAllListeners();
-		this.listener = listener;
 		digitalInputPin.addListener(this);
 	}
 	
 	@Override
-	public void removeListener() {
+	public void disableListener() {
 		digitalInputPin.removeAllListeners();
-		this.listener = null;
 	}
 }

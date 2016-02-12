@@ -34,22 +34,23 @@ import org.pmw.tinylog.Logger;
 import com.diozero.api.DigitalPinEvent;
 import com.diozero.api.GpioEventTrigger;
 import com.diozero.api.GpioPullUpDown;
-import com.diozero.internal.spi.*;
+import com.diozero.internal.spi.AbstractInputDevice;
+import com.diozero.internal.spi.DeviceFactoryInterface;
+import com.diozero.internal.spi.GpioDigitalInputDeviceInterface;
 import com.pi4j.wiringpi.Gpio;
 import com.pi4j.wiringpi.GpioInterruptCallback;
 import com.pi4j.wiringpi.GpioUtil;
 
-public class WiringPiDigitalInputDevice extends AbstractDevice implements GpioDigitalInputDeviceInterface {
+public class WiringPiDigitalInputDevice extends AbstractInputDevice<DigitalPinEvent>
+implements GpioDigitalInputDeviceInterface, GpioInterruptCallback {
 	private int pinNumber;
-	private GpioEventTrigger trigger;
+	private int edge;
 	
 	public WiringPiDigitalInputDevice(String key, DeviceFactoryInterface deviceFactory, int pinNumber,
 			GpioPullUpDown pud, GpioEventTrigger trigger) throws IOException {
 		super(key, deviceFactory);
 		
 		this.pinNumber = pinNumber;
-		this.trigger = trigger;
-		int edge;
 		switch (trigger) {
 		case RISING:
 			edge = Gpio.INT_EDGE_RISING;
@@ -111,36 +112,27 @@ public class WiringPiDigitalInputDevice extends AbstractDevice implements GpioDi
 	}
 
 	@Override
-	public void setListener(InternalPinListener listener) {
+	public void enableListener() {
 		// TODO Validate that wiringPi actually works this way, i.e. supports separate callbacks for rising and falling
 		// Note it looks easier to use GpioInterrupt but this will be less efficient
 		// due to its use of Vectors to support multiple listeners and cloning on every event
-		if (trigger == GpioEventTrigger.BOTH || trigger == GpioEventTrigger.RISING) {
-			Gpio.wiringPiISR(pinNumber, Gpio.INT_EDGE_RISING, new InterruptCallback(true, listener));
-		}
-		if (trigger == GpioEventTrigger.BOTH || trigger == GpioEventTrigger.FALLING) {
-			Gpio.wiringPiISR(pinNumber, Gpio.INT_EDGE_FALLING, new InterruptCallback(false, listener));
-		}
+		Gpio.wiringPiISR(pinNumber, edge, this);
 	}
 
 	@Override
-	public void removeListener() {
-		// TODO What to do?
-	}
-}
-
-class InterruptCallback implements GpioInterruptCallback {
-	private boolean value;
-	private InternalPinListener listener;
-	
-	public InterruptCallback(boolean value, InternalPinListener listener) {
-		this.value = value;
-		this.listener = listener;
+	public void disableListener() {
+		// TODO Is this correct?
+		Gpio.wiringPiISR(pinNumber, edge, null);
 	}
 
 	@Override
 	public void callback(int pin) {
 		long nano_time = System.nanoTime();
-		listener.valueChanged(new DigitalPinEvent(pin, System.currentTimeMillis(), nano_time, value));
+		try {
+			// Really don't like that the callback doesn't include the value, never mind the timestamps
+			valueChanged(new DigitalPinEvent(pin, System.currentTimeMillis(), nano_time, getValue()));
+		} catch (IOException e) {
+			Logger.error(e, "Error invoking getValue(): {}", e);
+		}
 	}
 }

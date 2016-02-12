@@ -27,7 +27,8 @@ public class PigpioJSpiDevice extends AbstractDevice implements SpiDeviceInterfa
 		
 		int flags = createSpiFlags(spiClockMode, chipSelect);
 		handle = PigpioSPI.spiOpen(controller, frequency, flags);
-		Logger.debug("SPI device ({}-{}) opened, handle={}", controller, chipSelect, handle);
+		Logger.debug("SPI device ({}-{}) opened, handle={}", Integer.valueOf(controller),
+				Integer.valueOf(chipSelect), Integer.valueOf(handle));
 		if (handle < 0) {
 			handle = CLOSED;
 			throw new IOException(String.format("Error opening SPI device on controller %d, chip-select %d",
