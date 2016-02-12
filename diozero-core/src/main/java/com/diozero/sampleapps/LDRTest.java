@@ -49,6 +49,8 @@ import com.diozero.util.SleepUtil;
  *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-pigpio-0.2-SNAPSHOT.jar:pigpioj-java-0.0.1-SNAPSHOT.jar -Djava.library.path=. com.diozero.sampleapps.LDRTest 0 3
  */
 public class LDRTest {
+	private static final int ITERATIONS = 20;
+
 	public static void main(String[] args) {
 		if (args.length < 2) {
 			Logger.error("Usage: LDRTest <chip-select> <adc-pin>");
@@ -61,7 +63,8 @@ public class LDRTest {
 		
 		try (MCP3008 mcp3008 = new MCP3008(chip_select)) {
 			try (LDR ldr = new LDR(mcp3008, adc_pin, vref, r1)) {
-				while (true) {
+				ldr.addListener(ldr, r1);
+				for (int i=0; i<ITERATIONS; i++) {
 					double lux = ldr.getLuminosity();
 					Logger.info("Lux: {}", String.format("%.2f", Double.valueOf(lux)));
 					SleepUtil.sleepSeconds(.5);

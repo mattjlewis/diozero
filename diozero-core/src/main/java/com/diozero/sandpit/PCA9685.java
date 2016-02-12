@@ -132,7 +132,7 @@ public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFac
 		double prescale_dbl = (((double)CLOCK_FREQ) / RANGE / pwmFrequency) - 1;
 		int prescale_int = (int)Math.round(prescale_dbl);
 		Logger.debug("Setting PWM frequency to {} Hz, double pre-scale: {}, int prescale {}",
-				Integer.valueOf(pwmFrequency), String.format(".2f", Double.valueOf(prescale_dbl)),
+				Integer.valueOf(pwmFrequency), String.format("%.2f", Double.valueOf(prescale_dbl)),
 				Integer.valueOf(prescale_int));
 
 		byte oldmode = i2cDevice.readByte(MODE1);
@@ -179,7 +179,9 @@ public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFac
 		byte off_l = i2cDevice.readByte(LED0_OFF_L + 4*channel);
 		byte off_h = i2cDevice.readByte(LED0_OFF_H + 4*channel);
 		int off = ((off_h << 8) & 0xff00) | (off_l | 0xff);
-		Logger.debug("on={}, on_with_read_short={}, off={}, off_with_read_short={}", on, on_with_read_short, off, off_with_read_short);
+		Logger.debug("on={}, on_with_read_short={}, off={}, off_with_read_short={}",
+				Integer.valueOf(on), Integer.valueOf(on_with_read_short),
+				Integer.valueOf(off), Integer.valueOf(off_with_read_short));
 		
 		return new int[] { on, off };
 	}
@@ -254,8 +256,8 @@ public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFac
 	public void setServoPulse(int channel, double pulseWidthMs) throws IOException {
 		int pulse = ServoUtil.calcServoPulse(pulseWidthMs, pulseMsPerBit);
 		Logger.debug("Requested pulse width: {}, Scale: {} ms per bit, Pulse: {}",
-				String.format(".2f", Double.valueOf(pulseWidthMs)),
-				String.format(".4f", Double.valueOf(pulseMsPerBit)), Integer.valueOf(pulse));
+				String.format("%.2f", Double.valueOf(pulseWidthMs)),
+				String.format("%.4f", Double.valueOf(pulseMsPerBit)), Integer.valueOf(pulse));
 		
 		setPwm(channel, 0, pulse);
 	}

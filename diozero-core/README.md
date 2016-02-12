@@ -102,7 +102,7 @@ Similar instructions should be followed for installing v1.1, the only difference
 	export JAVA_HOME=/usr/lib/jvm/jdk-8-oracle-arm-vfp-hflt
 	export PATH=$JAVA_HOME/bin:$PATH
 	export PI_TOOLS=/usr
-	make
+	make osgi
 
 ##To-Do
 There is still a lot left to do, in particular:
@@ -112,4 +112,3 @@ There is still a lot left to do, in particular:
 * Smoothed input listener
 * Other I2C & SPI devices, including those on the SenseHAT
 * A clean object-orientated API for IMUs
-* Review logging framework usage and output (is log4j an unnecessary dependency for this library?)

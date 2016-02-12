@@ -28,14 +28,20 @@ package com.diozero.api;
 
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 import org.pmw.tinylog.Logger;
 
 import com.diozero.internal.spi.AnalogueInputDeviceFactoryInterface;
 import com.diozero.internal.spi.GpioAnalogueInputDeviceInterface;
 
-public class AnalogueInputDevice extends GpioDevice {
+public class AnalogueInputDevice extends GpioInputDevice<AnalogueInputEvent> implements Runnable {
+	private static final int DEFAULT_POLL_INTERVAL = 50;
 	private GpioAnalogueInputDeviceInterface device;
+	private Float lastValue;
+	private int pollInterval = DEFAULT_POLL_INTERVAL;
+	private float percentChange;
+	private boolean stopScheduler;
 
 	public AnalogueInputDevice(int pinNumber) throws IOException {
 		this(DeviceFactoryHelper.getNativeDeviceFactory().provisionAnalogueInputPin(pinNumber));
@@ -53,10 +59,52 @@ public class AnalogueInputDevice extends GpioDevice {
 	@Override
 	public void close() throws IOException {
 		Logger.debug("close()");
-		if (device != null) { device.close(); }
+		stopScheduler = true;
+		device.close();
 	}
 	
 	public float getValue() throws IOException {
 		return device.getValue();
+	}
+	
+	public void addListener(InputEventListener<AnalogueInputEvent> listener, float percentChange) {
+		addListener(listener);
+		this.percentChange = percentChange;
+	}
+	
+	public void enableListener() {
+		GpioScheduler.getInstance().scheduleAtFixedRate(this, pollInterval, pollInterval, TimeUnit.MILLISECONDS);
+	}
+
+	@Override
+	public void run() {
+		if (stopScheduler) {
+			throw new RuntimeException("Stopping scheduler due to close request, device key=" + device.getKey());
+		}
+		
+		try {
+			float value = device.getValue();
+			if (changeDetected(value)) {
+				valueChanged(new AnalogueInputEvent(pinNumber, System.currentTimeMillis(), System.nanoTime(), value));
+				lastValue = Float.valueOf(value);
+			}
+		} catch (IOException e) {
+			Logger.error(e, "Error: {}", e);
+			// Quit the scheduler thread otherwise we might get a lot of these errors
+			throw new RuntimeException("IO error in analogue scheduler runnable: " + e, e);
+		}
+	}
+
+	private boolean changeDetected(float value) {
+		if (lastValue == null) {
+			return true;
+		}
+		
+		float last_value = lastValue.floatValue();
+		if (percentChange != 0) {
+			return value < (1 - percentChange) * last_value || value > (1 + percentChange) * last_value;
+		}
+		
+		return value != last_value;
 	}
 }

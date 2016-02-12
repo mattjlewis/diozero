@@ -32,10 +32,11 @@ import java.io.IOException;
 import org.pmw.tinylog.Logger;
 
 import com.diozero.MCP3008;
-import com.diozero.internal.spi.AbstractDevice;
+import com.diozero.api.AnalogueInputEvent;
+import com.diozero.internal.spi.AbstractInputDevice;
 import com.diozero.internal.spi.GpioAnalogueInputDeviceInterface;
 
-public class MCP3008AnalogueInputPin extends AbstractDevice implements GpioAnalogueInputDeviceInterface {
+public class MCP3008AnalogueInputPin extends AbstractInputDevice<AnalogueInputEvent> implements GpioAnalogueInputDeviceInterface {
 	private MCP3008 mcp3008;
 	private int pinNumber;
 

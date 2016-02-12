@@ -92,7 +92,7 @@ public class LDR extends AnalogueInputDevice implements LuminositySensorInterfac
 		
 		double r_ldr = r1 / (vRef / v_ldr - 1);
 		// FIXME Check printf style formatting
-		Logger.info("rLDR = {}", String.format(".4f", Double.valueOf(r_ldr)));
+		Logger.info("rLDR = {}", String.format("%.4f", Double.valueOf(r_ldr)));
 		
 		// https://learn.adafruit.com/photocells/measuring-light
 		

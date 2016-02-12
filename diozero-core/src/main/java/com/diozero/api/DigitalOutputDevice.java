@@ -28,7 +28,6 @@ package com.diozero.api;
 
 
 import java.io.IOException;
-import java.util.logging.LogManager;
 
 import org.pmw.tinylog.Logger;
 
@@ -41,7 +40,6 @@ public class DigitalOutputDevice extends GpioDevice {
 	
 	private boolean activeHigh;
 	private boolean running;
-	private Thread backgroundThread;
 	private GpioDigitalOutputDeviceInterface device;
 	
 	public DigitalOutputDevice(int pinNumber) throws IOException {
@@ -66,31 +64,22 @@ public class DigitalOutputDevice extends GpioDevice {
 	public void close() {
 		Logger.debug("close()");
 		stopOnOffLoop();
-		try {
-			device.setValue(!activeHigh);
-			device.close();
-		} catch (IOException e) {
-			Logger.error(e, "Error closing device: {}", e);
-		}
+		try { device.setValue(!activeHigh); } catch (IOException e) { }
+		device.close();
 	}
 	
 	protected void onOffLoop(float onTime, float offTime, int n, boolean background) throws IOException {
 		stopOnOffLoop();
 		if (background) {
-			//CompletableFuture future = CompletableFuture.supplyAsync;
-			backgroundThread = new Thread("DIO-Zero Digital Output On-Off Loop pin: " + pinNumber) {
-				@Override
-				public void run() {
-					try {
-						DigitalOutputDevice.this.onOffLoop(onTime, offTime, n);
-					} catch (IOException e) {
-						// TODO Auto-generated catch block - what to do?!
-						e.printStackTrace();
-					}
+			GpioScheduler.getInstance().execute(() -> {
+				try {
+					onOffLoop(onTime, offTime, n);
+				} catch (IOException e) {
+					Logger.error(e, "Error: {}", e);
+					// Quit the scheduler thread otherwise we might get a lot of these errors
+					throw new RuntimeException("IO error in digital output onOffLoop: " + e, e);
 				}
-			};
-			backgroundThread.setDaemon(true);
-			backgroundThread.start();
+			});
 		} else {
 			onOffLoop(onTime, offTime, n);
 		}

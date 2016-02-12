@@ -126,7 +126,7 @@ public abstract class BaseNativeDeviceFactory extends AbstractDeviceFactory impl
 		if (pinNumber == 12 || pinNumber == 13 || pinNumber == 18 || pinNumber == 19) {
 			pwm_type = PwmType.HARDWARE;
 		} else {
-			Logger.warn("Hardware PWM not available on BCM pin {}, reverting to software", pinNumber);
+			Logger.warn("Hardware PWM not available on BCM pin {}, reverting to software", Integer.valueOf(pinNumber));
 			pwm_type = PwmType.SOFTWARE;
 		}
 		

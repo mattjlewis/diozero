@@ -47,7 +47,6 @@ public class PwmOutputDevice extends GpioDevice {
 	private PwmOutputDeviceInterface device;
 	private boolean running;
 	private Thread backgroundThread;
-	private int pinNumber;
 
 	public PwmOutputDevice(int pinNumber) throws IOException {
 		this(pinNumber, 0);
@@ -71,6 +70,12 @@ public class PwmOutputDevice extends GpioDevice {
 	public void close() {
 		Logger.debug("close()");
 		stopLoops();
+		if (backgroundThread != null) {
+			Logger.info("Interrupting background thread " + backgroundThread.getName());
+			backgroundThread.interrupt();
+		}
+		Logger.info("Setting value to 0");
+		try { device.setValue(0); } catch (IOException e) { }
 		if (device != null) {
 			device.close();
 		}
@@ -79,19 +84,16 @@ public class PwmOutputDevice extends GpioDevice {
 	protected void onOffLoop(float onTime, float offTime, int n, boolean background) throws IOException {
 		stopLoops();
 		if (background) {
-			backgroundThread = new Thread("DIO-Zero PWM Output On-Off Loop pin: " + pinNumber) {
-				@Override
-				public void run() {
-					try {
-						PwmOutputDevice.this.onOffLoop(onTime, offTime, n);
-					} catch (IOException e) {
-						// TODO Auto-generated catch block - what to do?!
-						e.printStackTrace();
-					}
+			GpioScheduler.getInstance().execute(() -> {
+				try {
+					onOffLoop(onTime, offTime, n);
+				} catch (IOException e) {
+					Logger.error(e, "Error: {}", e);
+					// Quit the scheduler thread otherwise we might get a lot of these errors
+					throw new RuntimeException("IO error in PWM output onOffLoop: " + e, e);
 				}
-			};
-			backgroundThread.setDaemon(true);
-			backgroundThread.start();
+				Logger.info("Background blink finished");
+			});
 		} else {
 			onOffLoop(onTime, offTime, n);
 		}
@@ -115,19 +117,18 @@ public class PwmOutputDevice extends GpioDevice {
 	protected void fadeInOutLoop(float fadeTime, int steps, int iterations, boolean background) throws IOException {
 		stopLoops();
 		if (background) {
-			backgroundThread = new Thread("DIO-Zero PWM Output Fade In-Out Loop pin: " + pinNumber) {
-				@Override
-				public void run() {
-					try {
-						PwmOutputDevice.this.fadeInOutLoop(fadeTime, steps, iterations);
-					} catch (IOException e) {
-						// TODO Auto-generated catch block - what to do?!
-						e.printStackTrace();
-					}
+			GpioScheduler.getInstance().execute(() -> {
+				backgroundThread = Thread.currentThread();
+				try {
+					fadeInOutLoop(fadeTime, steps, iterations);
+				} catch (IOException e) {
+					Logger.error(e, "Error: {}", e);
+					// Quit the scheduler thread otherwise we might get a lot of these errors
+					throw new RuntimeException("IO error in PWM output onOffLoop: " + e, e);
 				}
-			};
-			backgroundThread.setDaemon(true);
-			backgroundThread.start();
+				Logger.info("Background fade in-out loop finished");
+				backgroundThread = null;
+			});
 		} else {
 			fadeInOutLoop(fadeTime, steps, iterations);
 		}
@@ -152,26 +153,21 @@ public class PwmOutputDevice extends GpioDevice {
 	
 	private void fadeInOut(float sleepTime, float delta) throws IOException {
 		float value = 0;
-		while (value <= 1) {
+		while (value <= 1 && running) {
 			setValueInternal(value);
 			SleepUtil.sleepSeconds(sleepTime);
 			value += delta;
 		}
 		value = 1;
-		while (value >= 0) {
+		while (value >= 0 && running) {
 			setValueInternal(value);
 			SleepUtil.sleepSeconds(sleepTime);
 			value -= delta;
 		}
 	}
 	
-	protected void stopLoops() {
-		// TODO Check if this is called in a separate thread to that which started non-background loops?
-		//Thread t = Thread.currentThread();
+	private void stopLoops() {
 		running = false;
-		if (backgroundThread != null && backgroundThread.isAlive()) {
-			backgroundThread.interrupt();
-		}
 	}
 
 	private void onOff(float onTime, float offTime) throws IOException {

@@ -29,7 +29,6 @@ package com.diozero;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.util.function.Consumer;
 
 import org.pmw.tinylog.Logger;
 
@@ -56,7 +55,8 @@ import com.diozero.util.MutableByte;
  * to address 12h (GPIOA) or 13h (GPIOB), the pointer will toggle between GPIOA and GPIOB. Note that the
  * Address Pointer can initially point to either address in the register pair.
  */
-public class MCP23017 extends AbstractDeviceFactory implements GpioDeviceFactoryInterface, Consumer<DigitalPinEvent>, Closeable {
+public class MCP23017 extends AbstractDeviceFactory
+implements GpioDeviceFactoryInterface, InputEventListener<DigitalPinEvent>, Closeable {
 	// Default I2C address
 	private static final int DEVICE_ADDRESS = 0x20;
 	private static final String DEVICE_NAME = "MCP23017";
@@ -305,11 +305,11 @@ public class MCP23017 extends AbstractDeviceFactory implements GpioDeviceFactory
 		// Finally enable interrupt listeners
 		if (interruptPinA != null) {
 			Logger.debug("Setting interruptPinA ({}) consumer", Integer.valueOf(interruptPinA.getPinNumber()));
-			interruptPinA.setConsumer(this);
+			interruptPinA.addListener(this);
 		}
 		if (interruptPinB != null) {
 			Logger.debug("Setting interruptPinB ({}) consumer", Integer.valueOf(interruptPinB.getPinNumber()));
-			interruptPinB.setConsumer(this);
+			interruptPinB.addListener(this);
 		}
 	}
 
@@ -475,11 +475,11 @@ public class MCP23017 extends AbstractDeviceFactory implements GpioDeviceFactory
 
 	@Override
 	@SuppressWarnings("resource")
-	public void accept(DigitalPinEvent event) {
-		Logger.debug("accept({})", event);
+	public void valueChanged(DigitalPinEvent event) {
+		Logger.debug("valueChanged({})", event);
 		
 		if (! event.getValue()) {
-			Logger.debug("accept(): value was false - ignoring");
+			Logger.debug("valueChanged(): value was false - ignoring");
 			return;
 		}
 		

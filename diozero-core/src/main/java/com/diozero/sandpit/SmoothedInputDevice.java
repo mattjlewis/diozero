@@ -30,8 +30,6 @@ package com.diozero.sandpit;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Queue;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 
@@ -49,15 +47,11 @@ import com.diozero.api.*;
  * This class is intended for use with devices which either exhibit analogue
  * behaviour (such as the charging time of a capacitor with an LDR), or those
  * which exhibit "twitchy" behaviour (such as certain motion sensors).
- * 
- * TODO Not yet implemented
- *
  */
 public class SmoothedInputDevice extends DigitalInputDevice {
 	private int threshold;
 	private int age;
 	private Queue<Long> queue;
-	private ScheduledExecutorService scheduler;
 
 	/**
 	 * @param pinNumber
@@ -81,8 +75,7 @@ public class SmoothedInputDevice extends DigitalInputDevice {
 		this.age = age;
 		
 		queue = new LinkedList<>();
-		scheduler = Executors.newScheduledThreadPool(1);
-		scheduler.scheduleAtFixedRate(new EventDetection(), age, age, TimeUnit.MILLISECONDS);
+		GpioScheduler.getInstance().scheduleAtFixedRate(new EventDetection(), age, age, TimeUnit.MILLISECONDS);
 	}
 	
 	/**
@@ -107,29 +100,23 @@ public class SmoothedInputDevice extends DigitalInputDevice {
 	}
 	
 	private class EventDetection implements Runnable {
-		private Predicate<? super Long> predicate;
+		private Predicate<Long> predicate;
 		private long now;
 		
 		EventDetection() {
-			predicate = new Predicate<Long>() {
-				@Override
-				public boolean test(Long t) {
-					return t.longValue() < (now - age);
-				}
-			};
+			predicate = time -> time.longValue() < (now - age);
 		}
 		
 		@Override
 		public void run() {
+			long nano_time = System.nanoTime();
 			now = System.currentTimeMillis();
 			// Purge any old events
 			synchronized (queue) {
 				queue.removeIf(predicate);
 				// Check if the number of events exceeds the threshold
 				if (queue.size() > threshold) {
-					if (consumer != null) {
-						consumer.accept(new DigitalPinEvent(pinNumber, now, System.nanoTime(), true));
-					}
+					SmoothedInputDevice.super.valueChanged(new DigitalPinEvent(pinNumber, now, nano_time, true));
 					// If an event is fired clear the queue of all events
 					queue.clear();
 				}

@@ -4,24 +4,24 @@ import java.io.IOException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
 
 import org.junit.Test;
 import org.pmw.tinylog.Logger;
 
 import com.diozero.api.DigitalPinEvent;
 import com.diozero.api.GpioPullUpDown;
+import com.diozero.api.InputEventListener;
 import com.diozero.sandpit.SmoothedInputDevice;
 import com.diozero.util.SleepUtil;
 
-public class SmoothedInputTest implements Consumer<DigitalPinEvent> {
+public class SmoothedInputTest implements InputEventListener<DigitalPinEvent> {
 	@Test
 	public void test() {
 		int pin = 1;
 		float delay = 2;
 		// 10 events in 1 second
 		try (SmoothedInputDevice device = new SmoothedInputDevice(pin, GpioPullUpDown.NONE, 10, 1000)) {
-			device.setConsumer(this);
+			device.addListener(this);
 			Runnable event_generator = new Runnable() {
 				@Override
 				public void run() {
@@ -53,7 +53,7 @@ public class SmoothedInputTest implements Consumer<DigitalPinEvent> {
 	}
 
 	@Override
-	public void accept(DigitalPinEvent event) {
-		Logger.debug("accept({})", event);
+	public void valueChanged(DigitalPinEvent event) {
+		Logger.debug("valueChanged({})", event);
 	}
 }

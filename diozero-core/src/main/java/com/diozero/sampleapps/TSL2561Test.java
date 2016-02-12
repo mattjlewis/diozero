@@ -21,15 +21,17 @@ import com.diozero.util.SleepUtil;
  *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-pigpio-0.2-SNAPSHOT.jar:pigpioj-java-0.0.1-SNAPSHOT.jar -Djava.library.path=. com.diozero.sampleapps.TSL2561Test
  */
 public class TSL2561Test {
+	private static final int ITERATIONS = 20;
+
 	public static void main(String[] args) {
 		try (TSL2561 tsl2561 = new TSL2561(TSL2561.TSL2561_PACKAGE_T_FN_CL)) {
 			tsl2561.enableAutoGain(true);
 
-			while (true) {
+			for (int i=0; i<ITERATIONS; i++) {
 				double lux = tsl2561.getLuminosity();
 				Logger.info("Luminosity={} Lux", String.format("%.2f", Double.valueOf(lux)));
 
-				SleepUtil.sleepMillis(1);
+				SleepUtil.sleepSeconds(0.5);
 			}
 		} catch (IOException ioe) {
 			Logger.error(ioe, "Error: {}", ioe);

@@ -49,6 +49,8 @@ import com.diozero.util.SleepUtil;
  *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-pigpio-0.2-SNAPSHOT.jar:pigpioj-java-0.0.1-SNAPSHOT.jar -Djava.library.path=. com.diozero.sampleapps.MCP3008Test 0 0
  */
 public class MCP3008Test {
+	private static final int ITERATIONS = 20;
+
 	public static void main(String[] args) {
 		if (args.length < 2) {
 			Logger.error("Usage: MCP3008Test <spi-chip-select> <adc_pin>");
@@ -58,10 +60,10 @@ public class MCP3008Test {
 		int adc_pin = Integer.parseInt(args[1]);
 
 		try (MCP3008 mcp3008 = new MCP3008(spi_chip_select)) {
-			while (true) {
+			for (int i=0; i<ITERATIONS; i++) {
 				float v = mcp3008.getVoltage(adc_pin);
 				Logger.info("Voltage: {}", String.format("%.2f", Float.valueOf(v)));
-				SleepUtil.sleepMillis(1000);
+				SleepUtil.sleepSeconds(0.5);
 			}
 		} catch (IOException ioe) {
 			Logger.error(ioe, "Error: ", ioe);

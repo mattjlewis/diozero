@@ -21,6 +21,8 @@ import com.diozero.util.SleepUtil;
  *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-pigpio-0.2-SNAPSHOT.jar:pigpioj-java-0.0.1-SNAPSHOT.jar -Djava.library.path=. com.diozero.sampleapps.HCSR04Test 23 24
  */
 public class HCSR04Test {
+	private static final int ITERATIONS = 20;
+
 	public static void main(String[] args) {
 		if (args.length != 2) {
 			Logger.error("Usage: HCSR04 <trigger GPIO> <echo GPIO>");
@@ -31,9 +33,9 @@ public class HCSR04Test {
 		try (HCSR04 device = new HCSR04()) {
 			device.init(trigger_gpio, echo_gpio);
 			
-			while (true) {
+			for (int i=0; i<ITERATIONS; i++) {
 				Logger.info("Distance = {} cm", String.format("%.3f", Double.valueOf(device.getDistanceCm())));
-				SleepUtil.sleepMillis(1000);
+				SleepUtil.sleepSeconds(0.5);
 			}
 		} catch (IOException ex) {
 			Logger.error(ex, "I/O error with HC-SR04 device: {}", ex.getMessage());

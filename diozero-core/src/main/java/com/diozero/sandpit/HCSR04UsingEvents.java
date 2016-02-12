@@ -29,7 +29,6 @@ package com.diozero.sandpit;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.util.function.Consumer;
 
 import org.pmw.tinylog.Logger;
 
@@ -56,7 +55,7 @@ import com.diozero.util.SleepUtil;
  *  sudo java -classpath dio-zero-0.2-SNAPSHOT.jar com.diozero.sandpit.HCSR04UsingEvents 17 27
  *
  */
-public class HCSR04UsingEvents implements DistanceSensorInterface, Closeable, Consumer<DigitalPinEvent> {
+public class HCSR04UsingEvents implements DistanceSensorInterface, Closeable, InputEventListener<DigitalPinEvent> {
 	public static void main(String[] args) {
 		if (args.length != 2) {
 			Logger.error("Usage: HCSR04UsingEvents <trigger GPIO> <echo GPIO>");
@@ -109,7 +108,7 @@ public class HCSR04UsingEvents implements DistanceSensorInterface, Closeable, Co
 		trigger = new DigitalOutputDevice(triggerGpioNum);
 		// Define device for echo pin at HCSR04
 		echo = new DigitalInputDevice(echoGpioNum, GpioPullUpDown.NONE, GpioEventTrigger.BOTH);
-		echo.setConsumer(this);
+		echo.addListener(this);
 
 		trigger.setValue(false);
 		// Wait for 0.5 seconds
@@ -172,8 +171,8 @@ public class HCSR04UsingEvents implements DistanceSensorInterface, Closeable, Co
 	}
 	
 	@Override
-	public synchronized void accept(DigitalPinEvent event) {
-		Logger.debug("accept({}), state={}", event, state);
+	public synchronized void valueChanged(DigitalPinEvent event) {
+		Logger.debug("valueChanged({}), state={}", event, state);
 		switch (state) {
 		case WAITING_FOR_ECHO_ON:
 			if (event.getValue()) {

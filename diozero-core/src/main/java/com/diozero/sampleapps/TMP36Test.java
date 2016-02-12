@@ -51,6 +51,7 @@ import com.diozero.util.SleepUtil;
  */
 public class TMP36Test {
 	private static final double DEFAULT_TEMPERATURE_OFFSET = 1.04f;
+	private static final int ITERATIONS = 20;
 
 	public static void main(String[] args) {
 		if (args.length < 2) {
@@ -66,10 +67,10 @@ public class TMP36Test {
 
 		try (MCP3008 mcp3008 = new MCP3008(chip_select)) {
 			try (TMP36 tmp36 = new TMP36(mcp3008, adc_pin, temp_offset)) {
-				while (true) {
+				for (int i=0; i<ITERATIONS; i++) {
 					double tmp = tmp36.getTemperature();
 					Logger.info("Temperature: {}", String.format("%.2f", Double.valueOf(tmp)));
-					SleepUtil.sleepSeconds(1);
+					SleepUtil.sleepSeconds(.5);
 				}
 			}
 		} catch (IOException ioe) {

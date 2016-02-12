@@ -1,4 +1,4 @@
-package com.diozero.api;
+package com.diozero.internal.spi;
 
 /*
  * #%L
@@ -32,8 +32,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.pmw.tinylog.Logger;
-
-import com.diozero.internal.spi.DeviceInterface;
 
 public class DeviceStates {
 	private Map<String, DeviceInterface> devices;

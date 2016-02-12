@@ -28,20 +28,17 @@ package com.diozero.api;
 
 
 import java.io.IOException;
-import java.util.function.Consumer;
 
 import org.pmw.tinylog.Logger;
 
 import com.diozero.internal.spi.GpioDeviceFactoryInterface;
 import com.diozero.internal.spi.GpioDigitalInputDeviceInterface;
-import com.diozero.internal.spi.InternalPinListener;
 
 /**
  * Represents a generic input device.
  * 
  */
-public class DigitalInputDevice extends GpioDevice implements InternalPinListener {
-	protected Consumer<DigitalPinEvent> consumer;
+public class DigitalInputDevice extends GpioInputDevice<DigitalPinEvent> {
 	protected boolean activeHigh;
 	protected GpioDigitalInputDeviceInterface device;
 
@@ -74,15 +71,9 @@ public class DigitalInputDevice extends GpioDevice implements InternalPinListene
 		return device.getValue() == activeHigh;
 	}
 
-	public void setConsumer(Consumer<DigitalPinEvent> consumer) {
-		device.setListener(this);
-		this.consumer = consumer;
-	}
-
 	@Override
-	public void valueChanged(DigitalPinEvent event) {
-		if (consumer != null) {
-			consumer.accept(event);
-		}
+	public void addListener(InputEventListener<DigitalPinEvent> listener) {
+		super.addListener(listener);
+		device.setListener(this);
 	}
 }

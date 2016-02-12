@@ -76,11 +76,26 @@ public class PwmLedTest {
 			led.setValue(.5f);
 			SleepUtil.sleepSeconds(1);
 			
-			Logger.info("Blink 10 times");
-			led.blink(0.5f, 0.5f, 10, false);
+			Logger.info("Blink 5 times");
+			led.blink(0.5f, 0.5f, 5, false);
 			
-			Logger.info("Fade in and out 10 times");
-			led.pulse(1, 50, 10, false);
+			Logger.info("Blink 10 times in the background");
+			led.blink(0.5f, 0.5f, 10, true);
+			for (int i=0; i<11; i++) {
+				Logger.info("Sleeping for 1s");
+				SleepUtil.sleepSeconds(1);
+			}
+			
+			Logger.info("Fade in and out 5 times, on-off will take 1s; this will take 10s in total (2*1*5)");
+			led.pulse(1, 50, 5, false);
+			
+			// FIXME Tests for background threads still running when shutting down
+			Logger.info("Fade in and out 20 times in the background, on-off will take 0.5s; this will take 20s in total (2*0.5*20)");
+			led.pulse(0.5f, 50, 20, true);
+			for (int i=0; i<6; i++) {
+				Logger.info("Sleeping for 1s");
+				SleepUtil.sleepSeconds(1);
+			}
 			
 			Logger.info("Done");
 		} catch (IOException e) {

@@ -8,6 +8,7 @@ import org.junit.Test;
 
 import com.diozero.api.*;
 import com.diozero.internal.provider.test.TestDeviceFactory;
+import com.diozero.internal.spi.DeviceStates;
 import com.diozero.internal.spi.I2CDeviceInterface;
 import com.diozero.internal.spi.SpiDeviceInterface;
 

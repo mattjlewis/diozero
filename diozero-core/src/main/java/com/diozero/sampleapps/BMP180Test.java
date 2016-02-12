@@ -7,6 +7,7 @@ import org.pmw.tinylog.Logger;
 import com.diozero.BMP180;
 import com.diozero.BMP180.BMPMode;
 import com.diozero.api.I2CConstants;
+import com.diozero.util.SleepUtil;
 
 /**
  * JDK Device I/O 1.0:
@@ -21,15 +22,20 @@ import com.diozero.api.I2CConstants;
  *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-pigpio-0.2-SNAPSHOT.jar:pigpioj-java-0.0.1-SNAPSHOT.jar -Djava.library.path=. com.diozero.sampleapps.BMP180Test
  */
 public class BMP180Test {
+	private static final int ITERATIONS = 20;
+
 	public static void main(String[] args) {
 		try (BMP180 bmp180 = new BMP180(1, I2CConstants.ADDR_SIZE_7, I2CConstants.DEFAULT_CLOCK_FREQUENCY)) {
 			bmp180.init(BMPMode.STANDARD);
 			Logger.debug("Opened device");
 
-			double temp = bmp180.getTemperature();
-			Logger.info("Temperature={}", String.format("%.2f", Double.valueOf(temp)));
-			double pressure = bmp180.getPressure();
-			Logger.info("Pressure={}", String.format("%.2f", Double.valueOf(pressure)));
+			for (int i=0; i<ITERATIONS; i++) {
+				double temp = bmp180.getTemperature();
+				Logger.info("Temperature={}", String.format("%.2f", Double.valueOf(temp)));
+				double pressure = bmp180.getPressure();
+				Logger.info("Pressure={}", String.format("%.2f", Double.valueOf(pressure)));
+				SleepUtil.sleepSeconds(0.5);
+			}
 		} catch (IOException ioe) {
 			Logger.error(ioe, "Error: {}", ioe);
 		}

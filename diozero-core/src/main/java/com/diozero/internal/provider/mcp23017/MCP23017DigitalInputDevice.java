@@ -34,15 +34,12 @@ import org.pmw.tinylog.Logger;
 import com.diozero.MCP23017;
 import com.diozero.api.DigitalPinEvent;
 import com.diozero.api.GpioEventTrigger;
-import com.diozero.internal.spi.AbstractDevice;
+import com.diozero.internal.spi.AbstractInputDevice;
 import com.diozero.internal.spi.GpioDigitalInputDeviceInterface;
-import com.diozero.internal.spi.InternalPinListener;
 
-// TODO Implement interrupt support for detecting value changes
-public class MCP23017DigitalInputDevice extends AbstractDevice implements GpioDigitalInputDeviceInterface {
+public class MCP23017DigitalInputDevice extends AbstractInputDevice<DigitalPinEvent> implements GpioDigitalInputDeviceInterface {
 	private MCP23017 mcp23017;
 	private int pinNumber;
-	private InternalPinListener listener;
 	private GpioEventTrigger trigger;
 
 	public MCP23017DigitalInputDevice(MCP23017 mcp23017, String key, int pinNumber, GpioEventTrigger trigger) {
@@ -73,21 +70,5 @@ public class MCP23017DigitalInputDevice extends AbstractDevice implements GpioDi
 	@Override
 	public void setDebounceTimeMillis(int debounceTime) {
 		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public void setListener(InternalPinListener listener) {
-		this.listener = listener;
-	}
-	
-	public void valueChanged(DigitalPinEvent event) {
-		if (listener != null) {
-			listener.valueChanged(event);
-		}
-	}
-
-	@Override
-	public void removeListener() {
-		listener = null;
 	}
 }
