@@ -63,7 +63,7 @@
 		<jdk.source.version>1.${java.version}</jdk.source.version>
 		<jdk.target.version>1.${java.version}</jdk.target.version>		
 		<junit.version>4.12</junit.version>
-		<log4j.version>2.5</log4j.version>
+		<tinylog.version>1.0.3</tinylog.version>
 		<maven-compiler-plugin.version>3.5</maven-compiler-plugin.version>
 		<license-maven-plugin.version>1.8</license-maven-plugin.version>
 		<eclipse.m2e.lifecycle-mapping.version>1.0.0</eclipse.m2e.lifecycle-mapping.version>
@@ -89,14 +89,9 @@
 				<scope>test</scope>
 			</dependency>
 			<dependency>
-				<groupId>org.apache.logging.log4j</groupId>
-				<artifactId>log4j-api</artifactId>
-				<version>${log4j.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.logging.log4j</groupId>
-				<artifactId>log4j-core</artifactId>
-				<version>${log4j.version}</version>
+				<groupId>org.tinylog</groupId>
+				<artifactId>tinylog</artifactId>
+				<version>${tinylog.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
