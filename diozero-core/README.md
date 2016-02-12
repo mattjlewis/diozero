@@ -10,13 +10,11 @@ As well as providing classes for interfacing with some I2C and SPI devices, the 
 All pin numbers are device native, i.e. Broadcom pin numbering on the Raspberry Pi.
 
 Snapshot builds of the library are available in the [Nexus Repository Manager](https://oss.sonatype.org/index.html#nexus-search;gav~com.diozero~~~~).
-Dependencies:
-* log4j ([API](https://drive.google.com/open?id=0B2Kd_bs3CEYaN29vVGlhak9WQVE) & [Core](https://drive.google.com/open?id=0B2Kd_bs3CEYaeURfWk5uSlZfbGc))
-* [Pi4j](https://oss.sonatype.org/service/local/repositories/snapshots/content/com/pi4j/pi4j-core/1.1-SNAPSHOT/pi4j-core-1.1-20151214.215847-34.jar)
+This library uses [tinylog](www.tinylog.org) [v1.0](https://github.com/pmwmedia/tinylog/releases/download/1.0.3/tinylog-1.0.3.zip).
 
 To run the [LED sample application](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/sampleapps/LEDTest.java) using Pi4j:
 
-	sudo java -classpath diozero-core-0.2-SNAPSHOT.jar:diozero-provider-pi4j-0.2-SNAPSHOT.jar:pi4j-core-1.1-SNAPSHOT.jar:log4j-api-2.5.jar:log4j-core-2.5.jar com.diozero.sampleapps.LEDTest 18
+	sudo java -classpath diozero-core-0.2-SNAPSHOT.jar:diozero-provider-pi4j-0.2-SNAPSHOT.jar:pi4j-core-1.1-SNAPSHOT.jar:tinylog-1.0.3.jar com.diozero.sampleapps.LEDTest 18
 
 The device native service provider library is defined in the following order:
 1.  System property com.diozero.devicefactory, e.g. `-Dcom.diozero.devicefactory=com.diozero.internal.provider.pi4j.Pi4jDeviceFactory`
@@ -27,6 +25,7 @@ The device native service provider library is defined in the following order:
 * [Pi4j](http://pi4j.com/)
 * [wiringPi](http://wiringpi.com/) via the Pi4j JNI wrapper classes
 * [pigpio](http://abyz.co.uk/rpi/pigpio/index.html) via my [JNI wrapper library](https://github.com/mattjlewis/pigpioj)
+See below for provider specific details.
 
 **Currently supported I2C devices:**
 * [InvenSense MPU-9150](http://www.invensense.com/products/motion-tracking/9-axis/mpu-9150/) Nine-axis motion tracking device. Currently a fully working Java port of the InvenSense C library but could do with some Object Orientation related improvements. 
@@ -75,8 +74,9 @@ For a discussion on why Pi4j 1.0 is so slow, see this [issue](https://github.com
 	JDK DIO 1.0        3.048
 	wiringPi (direct)  1,662
 
-##Notes
-This library has device providers for [JDK Device I/O](https://wiki.openjdk.java.net/display/dio/Main) v1.0 [Mercurial master repository](http://hg.openjdk.java.net/dio/master) and v1.1 [Mercurial dev repository](http://hg.openjdk.java.net/dio/dev). Unfortunately these libraries aren't in Maven repositories; to build the JDK Device I/O v1.0 library on the Raspberry Pi:
+##Providers
+###JDK Device I/O
+This library has device providers for [JDK Device I/O](https://wiki.openjdk.java.net/display/dio/Main) v1.0 (in Mercurial [master repository](http://hg.openjdk.java.net/dio/master)) and v1.1 Mercurial (in [dev repository](http://hg.openjdk.java.net/dio/dev)). Unfortunately these libraries aren't in Maven repositories; to build the JDK Device I/O v1.0 library on the Raspberry Pi:
 
 	sudo apt-get install mercurial
 	mkdir deviceio
@@ -103,6 +103,12 @@ Similar instructions should be followed for installing v1.1, the only difference
 	export PATH=$JAVA_HOME/bin:$PATH
 	export PI_TOOLS=/usr
 	make osgi
+
+###wiringPi & Pi4j
+Make sure you have wiringPi installed (`sudo apt-get update && sudo apt-get install wiringpi`). I recommend using the latest [Pi4j 1.1 snapshot build](https://oss.sonatype.org/service/local/repositories/snapshots/content/com/pi4j/pi4j-core/1.1-SNAPSHOT/pi4j-core-1.1-20151214.215847-34.jar).
+
+###pigpio
+TBD
 
 ##To-Do
 There is still a lot left to do, in particular:
