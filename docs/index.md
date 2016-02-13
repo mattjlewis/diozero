@@ -4,6 +4,29 @@ Created by [Matt Lewis](https://github.com/mattjlewis), inspired by [GPIO Zero](
 
 ##Components
 TODO Describe component abstraction layer.
+Example LED application:
+```java
+try (LED led = new LED(pin)) {
+	led.on();
+	SleepUtil.sleepSeconds(.5);
+	led.off();
+	SleepUtil.sleepSeconds(.5);
+	led.toggle();
+	SleepUtil.sleepSeconds(.5);
+	led.toggle();
+	SleepUtil.sleepSeconds(.5);
+	led.blink(0.5f, 0.5f, 10, false);
+}
+```
+Turn on a LED when you press a button:
+```java
+try (Button b = new Button(buttonPin, GpioPullUpDown.PULL_UP); LED led = new LED(ledPin)) {
+	b.whenPressed(led::on);
+	b.whenReleased(led::off);
+	SleepUtil.sleepSeconds(10);
+}
+```
+
 TODO Describe device factory concept to allow same API via expansion boards.
 
 ##Install
@@ -16,44 +39,44 @@ This project is hosted on [GitHub](https://github.com/mattjlewis/diozero/), plea
 * Contribute to development
 
 ##Contents
-* Digital Input Devices
- * Button
- * PIR Motion Sensor
- * Line Sensor
+* [Digital Input Devices](DigitalInputDevices.md)
+  * Button
+  * PIR Motion Sensor
+  * Line Sensor
 * Analogue Input Devices
- * Light Dependent Resistor
- * TMP36 Temperature Sensor
- * Potentiometer
- * Sharp GP2Y0A21YK Distance Sensor
+  * Light Dependent Resistor
+  * TMP36 Temperature Sensor
+  * Potentiometer
+  * Sharp GP2Y0A21YK Distance Sensor
 * Output Devices
- * Digital LED
- * Buzzer
- * PWM Output
- * PWM LED
- * RGB LED
+  * Digital LED
+  * Buzzer
+  * PWM Output
+  * PWM LED
+  * RGB LED
 * Expansion Boards
- * MCP3008 Analogue-to-Digital Converter
- * MCP23017 GPIO Expansion Board
- * PCA9685 16-channel 12-bit PWM Controller (Adafruit PWM Servo Driver)
+  * MCP3008 Analogue-to-Digital Converter
+  * MCP23017 GPIO Expansion Board
+  * PCA9685 16-channel 12-bit PWM Controller (Adafruit PWM Servo Driver)
 * Motor Control
- * CamJam EduKit #3 Motor Controller Board
- * Ryanteck RPi Motor Controller Board
- * Toshiba TB6612FNG Dual Motor Driver
+  * CamJam EduKit #3 Motor Controller Board
+  * Ryanteck RPi Motor Controller Board
+  * Toshiba TB6612FNG Dual Motor Driver
 * Other Components
- * HC-SR04 Ultrasonic Distance Sensor
- * BMP180 Temperature and Pressure Sensor
- * TSL2561 Luminosity Sensor
- * InvenSense MPU-9150 9-axis MotionTracking Device
+  * HC-SR04 Ultrasonic Distance Sensor
+  * BMP180 Temperature and Pressure Sensor
+  * TSL2561 Luminosity Sensor
+  * InvenSense MPU-9150 9-axis MotionTracking Device
 * API
- * Analogue Input Device
- * Digital Input Device
- * Motors (Digital and PWM)
- * Digital Output Device
- * I2C Device Support
- * SPI Device Support
- * PWM Output Device
- * Smoothed Input Device
- * Waitable Input Device
+  * Analogue Input Device
+  * Digital Input Device
+  * Motors (Digital and PWM)
+  * Digital Output Device
+  * I2C Device Support
+  * SPI Device Support
+  * PWM Output Device
+  * Smoothed Input Device
+  * Waitable Input Device
 
 ##Providers
 * JDK Device I/O
@@ -66,4 +89,4 @@ TODO Describe steps for creating a new provider.
 * Release 0.2 (TBD)
 
 ##License
-This work is provided under the [MIT License](license.md).
+This work is provided under the [MIT License](license.txt).
