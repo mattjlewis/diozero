@@ -18,12 +18,20 @@ try (LED led = new LED(pin)) {
 	led.blink(0.5f, 0.5f, 10, false);
 }
 ```
-Turn on a LED when you press a button:
+Turn on an LED when you press a button:
 ```java
 try (Button b = new Button(buttonPin, GpioPullUpDown.PULL_UP); LED led = new LED(ledPin)) {
 	b.whenPressed(led::on);
 	b.whenReleased(led::off);
 	SleepUtil.sleepSeconds(10);
+}
+```
+Likewise to control the brightness of an LED based on readings from an LDR:
+```java
+try (MCP3008 mcp3008 = new MCP3008(chipSelect); LDR ldr = new LDR(mcp3008, pin, vRef, r1); PwmLed led = new PwmLed(ledPin)) {
+	// Detect variations of 5%
+	ldr.addListener(.05f, (event) -> led.setValue(1-event.getValue()/mcp3008.getVoltageRange()));
+	SleepUtil.sleepSeconds(20);
 }
 ```
 
