@@ -26,13 +26,11 @@ package com.diozero.api;
  * #L%
  */
 
-
-import java.io.IOException;
-
 import org.pmw.tinylog.Logger;
 
 import com.diozero.internal.spi.PwmOutputDeviceFactoryInterface;
 import com.diozero.internal.spi.PwmOutputDeviceInterface;
+import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 
 /**
@@ -48,16 +46,16 @@ public class PwmOutputDevice extends GpioDevice {
 	private boolean running;
 	private Thread backgroundThread;
 
-	public PwmOutputDevice(int pinNumber) throws IOException {
+	public PwmOutputDevice(int pinNumber) throws RuntimeIOException {
 		this(pinNumber, 0);
 	}
 	
-	public PwmOutputDevice(int pinNumber, float initialValue) throws IOException {
+	public PwmOutputDevice(int pinNumber, float initialValue) throws RuntimeIOException {
 		this(DeviceFactoryHelper.getNativeDeviceFactory(), pinNumber, initialValue);
 	}
 	
 	public PwmOutputDevice(PwmOutputDeviceFactoryInterface pwmDeviceFactory, int pinNumber,
-			float initialValue) throws IOException {
+			float initialValue) throws RuntimeIOException {
 		this(pwmDeviceFactory.provisionPwmOutputPin(pinNumber, initialValue));
 	}
 	
@@ -75,23 +73,17 @@ public class PwmOutputDevice extends GpioDevice {
 			backgroundThread.interrupt();
 		}
 		Logger.info("Setting value to 0");
-		try { device.setValue(0); } catch (IOException e) { }
+		try { device.setValue(0); } catch (RuntimeIOException e) { }
 		if (device != null) {
 			device.close();
 		}
 	}
 	
-	protected void onOffLoop(float onTime, float offTime, int n, boolean background) throws IOException {
+	protected void onOffLoop(float onTime, float offTime, int n, boolean background) throws RuntimeIOException {
 		stopLoops();
 		if (background) {
 			GpioScheduler.getInstance().execute(() -> {
-				try {
-					onOffLoop(onTime, offTime, n);
-				} catch (IOException e) {
-					Logger.error(e, "Error: {}", e);
-					// Quit the scheduler thread otherwise we might get a lot of these errors
-					throw new RuntimeException("IO error in PWM output onOffLoop: " + e, e);
-				}
+				onOffLoop(onTime, offTime, n);
 				Logger.info("Background blink finished");
 			});
 		} else {
@@ -99,7 +91,7 @@ public class PwmOutputDevice extends GpioDevice {
 		}
 	}
 	
-	private void onOffLoop(float onTime, float offTime, int n) throws IOException {
+	private void onOffLoop(float onTime, float offTime, int n) throws RuntimeIOException {
 		if (n > 0) {
 			running = true;
 			for (int i=0; i<n && running; i++) {
@@ -114,18 +106,12 @@ public class PwmOutputDevice extends GpioDevice {
 		}
 	}
 	
-	protected void fadeInOutLoop(float fadeTime, int steps, int iterations, boolean background) throws IOException {
+	protected void fadeInOutLoop(float fadeTime, int steps, int iterations, boolean background) throws RuntimeIOException {
 		stopLoops();
 		if (background) {
 			GpioScheduler.getInstance().execute(() -> {
 				backgroundThread = Thread.currentThread();
-				try {
-					fadeInOutLoop(fadeTime, steps, iterations);
-				} catch (IOException e) {
-					Logger.error(e, "Error: {}", e);
-					// Quit the scheduler thread otherwise we might get a lot of these errors
-					throw new RuntimeException("IO error in PWM output onOffLoop: " + e, e);
-				}
+				fadeInOutLoop(fadeTime, steps, iterations);
 				Logger.info("Background fade in-out loop finished");
 				backgroundThread = null;
 			});
@@ -134,7 +120,7 @@ public class PwmOutputDevice extends GpioDevice {
 		}
 	}
 
-	private void fadeInOutLoop(float fadeTime, int steps, int iterations) throws IOException {
+	private void fadeInOutLoop(float fadeTime, int steps, int iterations) throws RuntimeIOException {
 		float sleep_time = fadeTime / steps;
 		float delta = 1f / steps;
 		if (iterations > 0) {
@@ -151,7 +137,7 @@ public class PwmOutputDevice extends GpioDevice {
 		}
 	}
 	
-	private void fadeInOut(float sleepTime, float delta) throws IOException {
+	private void fadeInOut(float sleepTime, float delta) throws RuntimeIOException {
 		float value = 0;
 		while (value <= 1 && running) {
 			setValueInternal(value);
@@ -170,42 +156,42 @@ public class PwmOutputDevice extends GpioDevice {
 		running = false;
 	}
 
-	private void onOff(float onTime, float offTime) throws IOException {
+	private void onOff(float onTime, float offTime) throws RuntimeIOException {
 		setValueInternal(1);
 		SleepUtil.sleepSeconds(onTime);
 		setValueInternal(0);
 		SleepUtil.sleepSeconds(offTime);
 	}
 
-	private void setValueInternal(float value) throws IOException {
+	private void setValueInternal(float value) throws RuntimeIOException {
 		device.setValue(value);
 	}
 	
 	// Exposed operations
-	public void on() throws IOException {
+	public void on() throws RuntimeIOException {
 		stopLoops();
 		setValueInternal(1);
 	}
 	
-	public void off() throws IOException {
+	public void off() throws RuntimeIOException {
 		stopLoops();
 		setValueInternal(0);
 	}
 	
-	public void toggle() throws IOException {
+	public void toggle() throws RuntimeIOException {
 		stopLoops();
 		setValueInternal(1 - device.getValue());
 	}
 	
-	public boolean isOn() throws IOException {
+	public boolean isOn() throws RuntimeIOException {
 		return device.getValue() > 0;
 	}
 	
-	public float getValue() throws IOException {
+	public float getValue() throws RuntimeIOException {
 		return device.getValue();
 	}
 
-	public void setValue(float value) throws IOException {
+	public void setValue(float value) throws RuntimeIOException {
 		stopLoops();
 		setValueInternal(value);
 	}

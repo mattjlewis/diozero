@@ -26,14 +26,13 @@ package com.diozero.sampleapps;
  * #L%
  */
 
-
-import java.io.IOException;
-
 import org.pmw.tinylog.Logger;
 
+import com.diozero.Button;
 import com.diozero.LED;
 import com.diozero.MCP23017;
-import com.diozero.api.*;
+import com.diozero.api.GpioPullUpDown;
+import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 
 /**
@@ -49,7 +48,7 @@ import com.diozero.util.SleepUtil;
  * pigpgioJ:
  *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-pigpio-0.2-SNAPSHOT.jar:pigpioj-java-0.0.1-SNAPSHOT.jar -Djava.library.path=. com.diozero.sampleapps.MCP23017Test 21 20
  */
-public class MCP23017Test implements InputEventListener<DigitalPinEvent> {
+public class MCP23017Test {
 	public static void main(String[] args) {
 		if (args.length < 4) {
 			Logger.error("Usage: MCP23017Test <int-a pin> <int-b pin> <mcp23017-input-pin> <mcp23017-output-pin>");
@@ -59,23 +58,21 @@ public class MCP23017Test implements InputEventListener<DigitalPinEvent> {
 		int int_b_pin = Integer.parseInt(args[1]);
 		int input_pin = Integer.parseInt(args[2]);
 		int output_pin = Integer.parseInt(args[3]);
-		new MCP23017Test().test(int_a_pin, int_b_pin, input_pin, output_pin);
+		test(int_a_pin, int_b_pin, input_pin, output_pin);
 	}
 	
-	private LED led;
-	
-	public MCP23017Test() {
-	}
-	
-	public void test(int intAPin, int intBPin, int inputPin, int outputPin) {
+	public static void test(int intAPin, int intBPin, int inputPin, int outputPin) {
 		try (MCP23017 mcp23017 = new MCP23017(intAPin, intBPin)) {
-			try (DigitalInputDevice button = mcp23017.provisionDigitalInputDevice(inputPin, GpioPullUpDown.PULL_UP, GpioEventTrigger.BOTH)) {
-				led = new LED(mcp23017.provisionDigitalOutputPin(outputPin, false), true);
-				button.addListener(this);
-				Logger.debug("Waiting for 10s - *** Press the button conencted to input pin " + inputPin + " ***");
-				SleepUtil.sleepSeconds(10);
+			try (Button button = new Button(mcp23017, inputPin, GpioPullUpDown.PULL_UP);
+					LED led = new LED(mcp23017, outputPin, false, true)) {
+				button.whenPressed(led::on);
+				button.whenReleased(led::off);
 				
-				SleepUtil.sleepSeconds(1);
+				Logger.debug("Waiting for 10s - *** Press the button connected to MCP23017 pin {} ***",
+						Integer.valueOf(inputPin));
+				SleepUtil.sleepSeconds(10);
+				button.whenPressed(null);
+				button.whenReleased(null);
 				
 				Logger.debug("On");
 				led.on();
@@ -89,19 +86,9 @@ public class MCP23017Test implements InputEventListener<DigitalPinEvent> {
 				led.blink(0.5f, 0.5f, 10, false);
 				
 				Logger.debug("Done");
-			} finally {
-				if (led != null) { led.close(); }
 			}
-		} catch (IOException e) {
+		} catch (RuntimeIOException e) {
 			Logger.error(e, "Error: {}", e);
-		}
-	}
-
-	@Override
-	public void valueChanged(DigitalPinEvent event) {
-		Logger.debug("valueChanged({})", event);
-		if (led != null) {
-			try { led.setValue(!event.getValue()); } catch (IOException e) { Logger.error(e, "Error: {}", e); }
 		}
 	}
 }

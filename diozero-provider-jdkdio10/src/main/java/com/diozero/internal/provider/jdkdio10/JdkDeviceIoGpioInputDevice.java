@@ -34,7 +34,10 @@ import org.pmw.tinylog.Logger;
 import com.diozero.api.DigitalPinEvent;
 import com.diozero.api.GpioEventTrigger;
 import com.diozero.api.GpioPullUpDown;
-import com.diozero.internal.spi.*;
+import com.diozero.internal.spi.AbstractInputDevice;
+import com.diozero.internal.spi.DeviceFactoryInterface;
+import com.diozero.internal.spi.GpioDigitalInputDeviceInterface;
+import com.diozero.util.RuntimeIOException;
 
 import jdk.dio.DeviceConfig;
 import jdk.dio.DeviceManager;
@@ -47,7 +50,7 @@ implements GpioDigitalInputDeviceInterface, PinListener {
 	private long lastPinEventTime;
 	private int debounceTimeMillis;
 	
-	JdkDeviceIoGpioInputDevice(String key, DeviceFactoryInterface deviceFactory, int pinNumber, GpioPullUpDown pud, GpioEventTrigger trigger) throws IOException {
+	JdkDeviceIoGpioInputDevice(String key, DeviceFactoryInterface deviceFactory, int pinNumber, GpioPullUpDown pud, GpioEventTrigger trigger) throws RuntimeIOException {
 		super(key, deviceFactory);
 		
 		int mode;
@@ -78,15 +81,23 @@ implements GpioDigitalInputDeviceInterface, PinListener {
 		}
 		
 		pinConfig = new GPIOPinConfig(DeviceConfig.DEFAULT, pinNumber, GPIOPinConfig.DIR_INPUT_ONLY, mode, trig, false);
-		pin = DeviceManager.open(GPIOPin.class, pinConfig);
+		try {
+			pin = DeviceManager.open(GPIOPin.class, pinConfig);
+		} catch (IOException e) {
+			throw new RuntimeIOException(e);
+		}
 	}
 
 	@Override
-	public void closeDevice() throws IOException {
+	public void closeDevice() throws RuntimeIOException {
 		Logger.debug("closeDevice()");
 		removeListener();
 		if (pin.isOpen()) {
-			pin.close();
+			try {
+				pin.close();
+			} catch (IOException e) {
+				throw new RuntimeIOException(e);
+			}
 		}
 	}
 	
@@ -97,8 +108,12 @@ implements GpioDigitalInputDeviceInterface, PinListener {
 	}
 	
 	@Override
-	public boolean getValue() throws IOException {
-		return pin.getValue();
+	public boolean getValue() throws RuntimeIOException {
+		try {
+			return pin.getValue();
+		} catch (IOException e) {
+			throw new RuntimeIOException(e);
+		}
 	}
 
 	@Override

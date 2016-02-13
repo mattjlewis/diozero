@@ -27,7 +27,6 @@ package com.diozero;
  */
 
 import java.io.Closeable;
-import java.io.IOException;
 import java.nio.ByteBuffer;
 
 import org.pmw.tinylog.Logger;
@@ -39,6 +38,7 @@ import com.diozero.internal.provider.mcp3008.MCP3008AnalogueInputPin;
 import com.diozero.internal.spi.AbstractDeviceFactory;
 import com.diozero.internal.spi.AnalogueInputDeviceFactoryInterface;
 import com.diozero.internal.spi.GpioAnalogueInputDeviceInterface;
+import com.diozero.util.RuntimeIOException;
 
 /**
  * Encapsulate MCP3008 SPI device functionality
@@ -54,22 +54,22 @@ public class MCP3008 extends AbstractDeviceFactory implements AnalogueInputDevic
 	private String keyPrefix;
 	private float voltage;
 
-	public MCP3008(int chipSelect) throws IOException {
+	public MCP3008(int chipSelect) throws RuntimeIOException {
 		this(0, chipSelect, DEFAULT_VOLTAGE);
 	}
 
-	public MCP3008(int controller, int chipSelect) throws IOException {
+	public MCP3008(int controller, int chipSelect) throws RuntimeIOException {
 		this(controller, chipSelect, DEFAULT_VOLTAGE);
 	}
 
-	public MCP3008(int controller, int chipSelect, float voltage) throws IOException {
+	public MCP3008(int controller, int chipSelect, float voltage) throws RuntimeIOException {
 		spiDevice = new SpiDevice(controller, chipSelect);
 		this.voltage = voltage;
 		keyPrefix = DEVICE_NAME + "-" + controller + "-" + chipSelect + "-";
 	}
 	
 	@Override
-	public void close() throws IOException {
+	public void close() throws RuntimeIOException {
 		Logger.debug("close()");
 		// Close all open pins before closing the SPI device itself
 		closeAll();
@@ -78,9 +78,9 @@ public class MCP3008 extends AbstractDeviceFactory implements AnalogueInputDevic
 
 	/**
 	 * Read the raw 10bit value (0-1023)
-	 * @throws IOException 
+	 * @throws RuntimeIOException 
 	 */
-	public int getRawValue(int adcPin) throws IOException {
+	public int getRawValue(int adcPin) throws RuntimeIOException {
 		if (adcPin < 0 || adcPin >= NUM_PINS) {
 			throw new IllegalArgumentException(
 					"Invalid channel number (" + adcPin + "), must be >= 0 and < " + NUM_PINS);
@@ -98,7 +98,7 @@ public class MCP3008 extends AbstractDeviceFactory implements AnalogueInputDevic
 		return (high << 8) | low;
 	}
 
-	public float getVoltage(int adcPin) throws IOException {
+	public float getVoltage(int adcPin) throws RuntimeIOException {
 		int r = getRawValue(adcPin);
 		// r will be 0..1023
 		return (r / (RANGE-1f)) * voltage;
@@ -118,7 +118,7 @@ public class MCP3008 extends AbstractDeviceFactory implements AnalogueInputDevic
 	 */
 	@Override
 	public GpioAnalogueInputDeviceInterface provisionAnalogueInputPin(int pinNumber)
-			throws IOException {
+			throws RuntimeIOException {
 		if (pinNumber < 0 || pinNumber >= NUM_PINS) {
 			throw new IllegalArgumentException(
 					"Invalid channel number (" + pinNumber + "), must be >= 0 and < " + NUM_PINS);
@@ -136,7 +136,7 @@ public class MCP3008 extends AbstractDeviceFactory implements AnalogueInputDevic
 		return device;
 	}
 	
-	public AnalogueInputDevice provisionAnalogueInputDevice(int pinNumber) throws IOException {
+	public AnalogueInputDevice provisionAnalogueInputDevice(int pinNumber) throws RuntimeIOException {
 		return new AnalogueInputDevice(provisionAnalogueInputPin(pinNumber));
 	}
 }

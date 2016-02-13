@@ -26,9 +26,8 @@ package com.diozero.internal.spi;
  * #L%
  */
 
-
-import java.io.IOException;
+import com.diozero.util.RuntimeIOException;
 
 public interface PwmOutputDeviceFactoryInterface extends DeviceFactoryInterface {
-	PwmOutputDeviceInterface provisionPwmOutputPin(int pinNumber, float initialValue) throws IOException;
+	PwmOutputDeviceInterface provisionPwmOutputPin(int pinNumber, float initialValue) throws RuntimeIOException;
 }

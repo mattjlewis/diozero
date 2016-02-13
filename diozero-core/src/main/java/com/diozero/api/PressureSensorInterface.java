@@ -26,9 +26,8 @@ package com.diozero.api;
  * #L%
  */
 
-
-import java.io.IOException;
+import com.diozero.util.RuntimeIOException;
 
 public interface PressureSensorInterface {
-	public double getPressure() throws IOException;
+	public double getPressure() throws RuntimeIOException;
 }

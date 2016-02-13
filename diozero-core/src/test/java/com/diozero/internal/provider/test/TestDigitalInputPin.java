@@ -26,15 +26,13 @@ package com.diozero.internal.provider.test;
  * #L%
  */
 
-
-import java.io.IOException;
-
 import com.diozero.api.DigitalPinEvent;
 import com.diozero.api.GpioEventTrigger;
 import com.diozero.api.GpioPullUpDown;
 import com.diozero.internal.spi.AbstractInputDevice;
 import com.diozero.internal.spi.DeviceFactoryInterface;
 import com.diozero.internal.spi.GpioDigitalInputDeviceInterface;
+import com.diozero.util.RuntimeIOException;
 
 public class TestDigitalInputPin extends AbstractInputDevice<DigitalPinEvent> implements GpioDigitalInputDeviceInterface {
 	private int pinNumber;
@@ -46,7 +44,7 @@ public class TestDigitalInputPin extends AbstractInputDevice<DigitalPinEvent> im
 	}
 
 	@Override
-	public boolean getValue() throws IOException {
+	public boolean getValue() throws RuntimeIOException {
 		// TODO Auto-generated method stub
 		return false;
 	}
@@ -63,7 +61,7 @@ public class TestDigitalInputPin extends AbstractInputDevice<DigitalPinEvent> im
 	}
 
 	@Override
-	public void closeDevice() throws IOException {
+	public void closeDevice() throws RuntimeIOException {
 		// TODO Auto-generated method stub
 	}
 }

@@ -31,15 +31,11 @@ import java.util.function.Consumer;
 public class LambdaTest {
 
 	public static void main(String[] args) {
-		Consumer<Void> consumer = (Void v) -> {
-			System.out.println("Hello");
-		};
+		Consumer<Void> consumer = (Void v) -> System.out.println("Hello consumer");
 
 		consumer.accept(null);
 
-		Command c = () -> {
-			System.out.println("Hello");
-		};
+		Command c = () -> System.out.println("Hello lambda");
 		c.action();
 		
 		carryOutWork(() -> System.out.println("In here 1"));
@@ -61,5 +57,5 @@ public class LambdaTest {
 
 @FunctionalInterface
 interface SimpleFuncInterface {
-	public void abc();
+	void abc();
 }

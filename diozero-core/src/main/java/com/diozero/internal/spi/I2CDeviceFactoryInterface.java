@@ -26,9 +26,8 @@ package com.diozero.internal.spi;
  * #L%
  */
 
-
-import java.io.IOException;
+import com.diozero.util.RuntimeIOException;
 
 public interface I2CDeviceFactoryInterface extends DeviceFactoryInterface {
-	I2CDeviceInterface provisionI2CDevice(int controller, int address, int addressSize, int clockFrequency) throws IOException;
+	I2CDeviceInterface provisionI2CDevice(int controller, int address, int addressSize, int clockFrequency) throws RuntimeIOException;
 }

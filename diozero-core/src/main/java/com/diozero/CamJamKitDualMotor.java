@@ -1,5 +1,8 @@
 package com.diozero;
 
+import com.diozero.api.DualMotor;
+import com.diozero.api.Motor;
+
 /*
  * #%L
  * Device I/O Zero - Core
@@ -26,15 +29,14 @@ package com.diozero;
  * #L%
  */
 
-
-import java.io.IOException;
+import com.diozero.util.RuntimeIOException;
 
 /**
  * CamJam EduKit 3 Robot. Generic robot controller with pre-configured pin numbers.
  */
 @SuppressWarnings("resource")
 public class CamJamKitDualMotor extends DualMotor {
-	public CamJamKitDualMotor() throws IOException {
+	public CamJamKitDualMotor() throws RuntimeIOException {
 		super(new Motor(9, 10), new Motor(7, 8));
 	}
 }

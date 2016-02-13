@@ -36,6 +36,7 @@ import org.pmw.tinylog.Logger;
 import com.diozero.internal.spi.I2CDeviceFactoryInterface;
 import com.diozero.internal.spi.I2CDeviceInterface;
 import com.diozero.util.IOUtil;
+import com.diozero.util.RuntimeIOException;
 
 /**
  * This is more of a utility class providing various read/write methods
@@ -47,12 +48,12 @@ public class I2CDevice implements Closeable, I2CConstants {
 	private int addressSize;
 	private int clockFrequency;
 
-	public I2CDevice(int controller, int address, int addressSize, int clockFrequency) throws IOException {
+	public I2CDevice(int controller, int address, int addressSize, int clockFrequency) throws RuntimeIOException {
 		this(DeviceFactoryHelper.getNativeDeviceFactory(), controller, address, addressSize, clockFrequency);
 	}
 	
 	public I2CDevice(I2CDeviceFactoryInterface deviceFactory, int controller, int address, int addressSize, int clockFrequency)
-			throws IOException {
+			throws RuntimeIOException {
 		device = deviceFactory.provisionI2CDevice(controller, address, addressSize, clockFrequency);
 		
 		this.controller = controller;
@@ -78,9 +79,9 @@ public class I2CDevice implements Closeable, I2CConstants {
 	}
 
 	@Override
-	public void close() throws IOException {
+	public void close() throws RuntimeIOException {
 		Logger.debug("close()");
-		device.close();
+		try { device.close(); } catch (IOException e) { throw new RuntimeIOException(e); }
 	}
 
 	public final boolean isOpen() {
@@ -95,22 +96,22 @@ public class I2CDevice implements Closeable, I2CConstants {
 	 * @param byteToWrite
 	 *            Byte to be written
 	 */
-	public void write(int register, int subAddressSize, byte[] value) throws IOException {
+	public void write(int register, int subAddressSize, byte[] value) throws RuntimeIOException {
 		device.write(register, subAddressSize, ByteBuffer.wrap(value));
 	}
 	
-	public void writeShort(int regAddr, short val) throws IOException {
+	public void writeShort(int regAddr, short val) throws RuntimeIOException {
 		ByteBuffer buffer = ByteBuffer.allocateDirect(2);
 		buffer.putShort(val);
 		buffer.flip();
 		device.write(regAddr, SUB_ADDRESS_SIZE_1_BYTE, buffer);
 	}
 
-	public void read(int address, int subAddressSize, ByteBuffer buffer) throws IOException {
+	public void read(int address, int subAddressSize, ByteBuffer buffer) throws RuntimeIOException {
 		device.read(address, subAddressSize, buffer);
 	}
 
-	public byte[] read(int address, int subAddressSize, int count) throws IOException {
+	public byte[] read(int address, int subAddressSize, int count) throws RuntimeIOException {
 		ByteBuffer buffer = ByteBuffer.allocateDirect(subAddressSize*count);
 		read(address, subAddressSize, buffer);
 
@@ -129,12 +130,12 @@ public class I2CDevice implements Closeable, I2CConstants {
 	 * @param regAddr
 	 *            Register regAddr to read from
 	 */
-	public byte readByte(int regAddr) throws IOException {
+	public byte readByte(int regAddr) throws RuntimeIOException {
 		// int8_t I2Cdev::readByte(uint8_t devAddr, uint8_t regAddr, uint8_t *data, uint16_t timeout)
 		return readByte(regAddr, SUB_ADDRESS_SIZE_1_BYTE);
 	}
 
-	public byte readByte(int address, int subAddressSize) throws IOException {
+	public byte readByte(int address, int subAddressSize) throws RuntimeIOException {
 		ByteBuffer buffer = ByteBuffer.allocateDirect(1);
 		read(address, subAddressSize, buffer);
 
@@ -144,11 +145,11 @@ public class I2CDevice implements Closeable, I2CConstants {
 		return buffer.get();
 	}
 
-	public short readShort(int address, int subAddressSize) throws IOException {
+	public short readShort(int address, int subAddressSize) throws RuntimeIOException {
 		return readShort(address, subAddressSize);
 	}
 
-	public short readShort(int address, int subAddressSize, ByteOrder order) throws IOException {
+	public short readShort(int address, int subAddressSize, ByteOrder order) throws RuntimeIOException {
 		ByteBuffer buffer = ByteBuffer.allocateDirect(2);
 		read(address, subAddressSize, buffer);
 
@@ -159,19 +160,19 @@ public class I2CDevice implements Closeable, I2CConstants {
 		return buffer.getShort();
 	}
 
-	public int readUShort(int address, int subAddressSize) throws IOException {
+	public int readUShort(int address, int subAddressSize) throws RuntimeIOException {
 		return readUShort(address, subAddressSize, IOUtil.DEFAULT_BYTE_ORDER);
 	}
 
-	public int readUShort(int address, int subAddressSize, ByteOrder order) throws IOException {
+	public int readUShort(int address, int subAddressSize, ByteOrder order) throws RuntimeIOException {
 		return readShort(address, subAddressSize, order) & 0xffff;
 	}
 
-	public long readUInt(int address, int subAddressSize, int bytes) throws IOException {
+	public long readUInt(int address, int subAddressSize, int bytes) throws RuntimeIOException {
 		return readUInt(address, subAddressSize, bytes, IOUtil.DEFAULT_BYTE_ORDER);
 	}
 
-	public long readUInt(int address, int subAddressSize, int length, ByteOrder order) throws IOException {
+	public long readUInt(int address, int subAddressSize, int length, ByteOrder order) throws RuntimeIOException {
 		if (length > 4) {
 			throw new IllegalArgumentException("Can't create an int for " + length + " bytes, max length is 4");
 		}
@@ -197,7 +198,7 @@ public class I2CDevice implements Closeable, I2CConstants {
 	 * @param bitNum
 	 *            Bit position to read (0-7)
 	 */
-	public boolean readBit(int regAddr, int bitNum) throws IOException {
+	public boolean readBit(int regAddr, int bitNum) throws RuntimeIOException {
 		// int8_t I2Cdev::readBit(uint8_t devAddr, uint8_t regAddr, uint8_t
 		// bitNum, uint8_t *data, uint16_t timeout)
 		byte b = readByte(regAddr, SUB_ADDRESS_SIZE_1_BYTE);
@@ -215,7 +216,7 @@ public class I2CDevice implements Closeable, I2CConstants {
 	 * @param length
 	 *            Number of bits to read (not more than 8)
 	 */
-	public byte readBits(int regAddr, int bitStart, int length) throws IOException {
+	public byte readBits(int regAddr, int bitStart, int length) throws RuntimeIOException {
 		// int8_t I2Cdev::readBits(uint8_t devAddr, uint8_t regAddr, uint8_t
 		// bitStart, uint8_t length, uint8_t *data, uint16_t timeout)
 		byte b = readByte(regAddr);
@@ -240,7 +241,7 @@ public class I2CDevice implements Closeable, I2CConstants {
 	 *            to use default class value in I2Cdev::readTimeout)
 	 * @return Number of bytes read (-1 indicates failure)
 	 */
-	public byte[] readBytes(int regAddr, int length) throws IOException {
+	public byte[] readBytes(int regAddr, int length) throws RuntimeIOException {
 		// int8_t I2Cdev::readBytes(uint8_t devAddr, uint8_t regAddr, uint8_t
 		// length, uint8_t *data, uint16_t timeout)
 		return read(regAddr, SUB_ADDRESS_SIZE_1_BYTE, length);
@@ -257,7 +258,7 @@ public class I2CDevice implements Closeable, I2CConstants {
 	 *            New bit value to write
 	 * @return Status of operation (true = success)
 	 */
-	public void writeBit(int regAddr, int bitNum, int value) throws IOException {
+	public void writeBit(int regAddr, int bitNum, int value) throws RuntimeIOException {
 		// bool I2Cdev::writeBit(uint8_t devAddr, uint8_t regAddr, uint8_t
 		// bitNum, uint8_t data)
 		writeBit(regAddr, bitNum, value != 0);
@@ -274,7 +275,7 @@ public class I2CDevice implements Closeable, I2CConstants {
 	 *            New bit value to write
 	 * @return Status of operation (true = success)
 	 */
-	public void writeBit(int regAddr, int bitNum, boolean value) throws IOException {
+	public void writeBit(int regAddr, int bitNum, boolean value) throws RuntimeIOException {
 		// bool I2Cdev::writeBit(uint8_t devAddr, uint8_t regAddr, uint8_t
 		// bitNum, uint8_t data)
 		byte b = readByte(regAddr);
@@ -295,7 +296,7 @@ public class I2CDevice implements Closeable, I2CConstants {
 	 *            Right-aligned value to write
 	 * @return Status of operation (true = success)
 	 */
-	public void writeBits(int regAddr, int bitStart, int length, int data) throws IOException {
+	public void writeBits(int regAddr, int bitStart, int length, int data) throws RuntimeIOException {
 		// bool I2Cdev::writeBits(uint8_t devAddr, uint8_t regAddr, uint8_t
 		// bitStart, uint8_t length, uint8_t data)
 		// 010 value to write
@@ -326,7 +327,7 @@ public class I2CDevice implements Closeable, I2CConstants {
 	 * @param byteToWrite
 	 *            Byte to be written
 	 */
-	public void write(int register, int subAddressSize, byte value) throws IOException {
+	public void write(int register, int subAddressSize, byte value) throws RuntimeIOException {
 		write(register, subAddressSize, new byte[] { value });
 	}
 
@@ -339,7 +340,7 @@ public class I2CDevice implements Closeable, I2CConstants {
 	 *            New byte value to write
 	 * @return Status of operation (true = success)
 	 */
-	public void writeByte(int regAddr, int data) throws IOException {
+	public void writeByte(int regAddr, int data) throws RuntimeIOException {
 		// bool I2Cdev::writeByte(uint8_t devAddr, uint8_t regAddr, uint8_t
 		// data)
 		writeByte(regAddr, (byte) data);
@@ -354,7 +355,7 @@ public class I2CDevice implements Closeable, I2CConstants {
 	 *            New byte value to write
 	 * @return Status of operation (true = success)
 	 */
-	public void writeByte(int regAddr, byte data) throws IOException {
+	public void writeByte(int regAddr, byte data) throws RuntimeIOException {
 		// bool I2Cdev::writeByte(uint8_t devAddr, uint8_t regAddr, uint8_t
 		// data)
 		write(regAddr, SUB_ADDRESS_SIZE_1_BYTE, data);
@@ -369,7 +370,7 @@ public class I2CDevice implements Closeable, I2CConstants {
 	 *            New word value to write
 	 * @return Status of operation (true = success)
 	 */
-	public void writeWord(int regAddr, int data) throws IOException {
+	public void writeWord(int regAddr, int data) throws RuntimeIOException {
 		// bool I2Cdev::writeWord(uint8_t devAddr, uint8_t regAddr, uint16_t
 		// data)
 		ByteBuffer buffer = ByteBuffer.allocateDirect(2);
@@ -390,11 +391,11 @@ public class I2CDevice implements Closeable, I2CConstants {
 	 *            Buffer to copy new data from
 	 * @return Status of operation (true = success)
 	 */
-	public void writeBytes(int regAddr, int length, byte[] data) throws IOException {
+	public void writeBytes(int regAddr, int length, byte[] data) throws RuntimeIOException {
 		writeBytes(regAddr, length, data, 0);
 	}
 	
-	public void writeBytes(int regAddr, int length, byte[] data, int offset) throws IOException {
+	public void writeBytes(int regAddr, int length, byte[] data, int offset) throws RuntimeIOException {
 		/*
 		 * if (I2CDEV_SERIAL_DEBUG) { System.out.format(
 		 * "I2C (0x%x) writing %d bytes to 0x%x...%n", devAddr, length,

@@ -26,13 +26,11 @@ package com.diozero.internal.spi;
  * #L%
  */
 
-
-import java.io.IOException;
-
 import com.diozero.api.GpioEventTrigger;
 import com.diozero.api.GpioPullUpDown;
+import com.diozero.util.RuntimeIOException;
 
 public interface GpioDeviceFactoryInterface extends DeviceFactoryInterface {
-	GpioDigitalInputDeviceInterface provisionDigitalInputPin(int pinNumber, GpioPullUpDown pud, GpioEventTrigger trigger) throws IOException;
-	GpioDigitalOutputDeviceInterface provisionDigitalOutputPin(int pinNumber, boolean initialValue) throws IOException;
+	GpioDigitalInputDeviceInterface provisionDigitalInputPin(int pinNumber, GpioPullUpDown pud, GpioEventTrigger trigger) throws RuntimeIOException;
+	GpioDigitalOutputDeviceInterface provisionDigitalOutputPin(int pinNumber, boolean initialValue) throws RuntimeIOException;
 }

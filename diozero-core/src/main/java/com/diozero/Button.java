@@ -26,20 +26,68 @@ package com.diozero;
  * #L%
  */
 
+import org.pmw.tinylog.Logger;
 
-import java.io.IOException;
+import com.diozero.api.*;
+import com.diozero.internal.spi.GpioDeviceFactoryInterface;
+import com.diozero.util.RuntimeIOException;
 
-import com.diozero.api.DigitalInputDevice;
-import com.diozero.api.GpioEventTrigger;
-import com.diozero.api.GpioPullUpDown;
-
+/**
+ * 
+ */
 public class Button extends DigitalInputDevice {
+	private Action pressedAction;
+	private Action releasedAction;
 
-	public Button(int pinNumber) throws IOException {
+	public Button(int pinNumber) throws RuntimeIOException {
 		super(pinNumber, GpioPullUpDown.NONE, GpioEventTrigger.BOTH);
 	}
 
-	public Button(int pinNumber, GpioPullUpDown pud) throws IOException {
+	public Button(int pinNumber, GpioPullUpDown pud) throws RuntimeIOException {
 		super(pinNumber, pud, GpioEventTrigger.BOTH);
+	}
+
+	public Button(GpioDeviceFactoryInterface deviceFactory, int pinNumber, GpioPullUpDown pud) throws RuntimeIOException {
+		super(deviceFactory, pinNumber, pud, GpioEventTrigger.BOTH);
+	}
+	
+	public boolean isPressed() {
+		return (pud == GpioPullUpDown.PULL_UP) != getValue();
+	}
+	
+	public boolean isReleased() {
+		return (pud == GpioPullUpDown.PULL_UP) == getValue();
+	}
+	
+	public void whenPressed(Action action) {
+		if (action != null) {
+			enableListener();
+		}
+		pressedAction = action;
+	}
+	
+	public void whenReleased(Action action) {
+		if (action != null) {
+			enableListener();
+		}
+		releasedAction = action;
+	}
+	
+	@Override
+	public void valueChanged(DigitalPinEvent event) {
+		Logger.debug("valuechanged(" + event + ")");
+		
+		if (pressedAction != null && (pud == GpioPullUpDown.PULL_UP) != event.getValue()) {
+			pressedAction.action();
+		}
+		if (releasedAction != null && (pud == GpioPullUpDown.PULL_UP) == event.getValue()) {
+			releasedAction.action();
+		}
+		super.valueChanged(event);
+	}
+	
+	@FunctionalInterface
+	public interface Action {
+		void action();
 	}
 }

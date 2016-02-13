@@ -26,7 +26,6 @@ package com.diozero.internal.spi;
  * #L%
  */
 
-
 import java.io.IOException;
 
 import org.pmw.tinylog.Logger;

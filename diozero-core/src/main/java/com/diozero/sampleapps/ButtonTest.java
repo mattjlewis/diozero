@@ -26,15 +26,11 @@ package com.diozero.sampleapps;
  * #L%
  */
 
-
-import java.io.IOException;
-
 import org.pmw.tinylog.Logger;
 
 import com.diozero.Button;
-import com.diozero.api.DigitalPinEvent;
 import com.diozero.api.GpioPullUpDown;
-import com.diozero.api.InputEventListener;
+import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 
 /**
@@ -51,28 +47,22 @@ import com.diozero.util.SleepUtil;
  * pigpgioJ:
  *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-pigpio-0.2-SNAPSHOT.jar:pigpioj-java-0.0.1-SNAPSHOT.jar -Djava.library.path=. com.diozero.sampleapps.ButtonTest 12
  */
-public class ButtonTest implements InputEventListener<DigitalPinEvent> {
+public class ButtonTest {
 	public static void main(String[] args) {
 		if (args.length < 1) {
 			Logger.error("Usage: ButtonTest <input-pin>");
 			System.exit(1);
 		}
-		int input_pin = Integer.parseInt(args[0]);
-		new ButtonTest().test(input_pin);
+		test(Integer.parseInt(args[0]));
 	}
 	
-	public void test(int inputPin) {
+	public static void test(int inputPin) {
 		try (Button button = new Button(inputPin, GpioPullUpDown.PULL_UP)) {
-			button.addListener(this);
+			button.addListener(event -> Logger.debug("valueChanged({})", event));
 			Logger.debug("Waiting for 10s - *** Press the button conencted to input pin " + inputPin + " ***");
 			SleepUtil.sleepSeconds(10);
-		} catch (IOException ioe) {
+		} catch (RuntimeIOException ioe) {
 			Logger.error(ioe, "Error: {}", ioe);
 		}
-	}
-
-	@Override
-	public void valueChanged(DigitalPinEvent event) {
-		Logger.debug("valueChanged({})", event);
 	}
 }

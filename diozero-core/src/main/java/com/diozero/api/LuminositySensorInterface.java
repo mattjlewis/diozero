@@ -26,9 +26,8 @@ package com.diozero.api;
  * #L%
  */
 
-
-import java.io.IOException;
+import com.diozero.util.RuntimeIOException;
 
 public interface LuminositySensorInterface {
-	public double getLuminosity() throws IOException;
+	public double getLuminosity() throws RuntimeIOException;
 }

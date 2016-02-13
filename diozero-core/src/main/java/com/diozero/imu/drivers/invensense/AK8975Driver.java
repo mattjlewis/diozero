@@ -27,9 +27,9 @@ package com.diozero.imu.drivers.invensense;
  */
 
 import java.io.Closeable;
-import java.io.IOException;
 
 import com.diozero.api.I2CDevice;
+import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 
 /**
@@ -39,15 +39,15 @@ public class AK8975Driver implements Closeable, AK8975Constants {
 	private short[] mag_sens_adj = new short[3];
 	private I2CDevice i2cDevice;
 
-	public AK8975Driver(int controllerNumber, int addressSize, int clockFrequency) throws IOException {
+	public AK8975Driver(int controllerNumber, int addressSize, int clockFrequency) throws RuntimeIOException {
 		this(controllerNumber, addressSize, clockFrequency, AK8975_MAG_ADDRESS);
 	}
 
-	public AK8975Driver(int controllerNumber, int addressSize, int clockFrequency, int address) throws IOException {
+	public AK8975Driver(int controllerNumber, int addressSize, int clockFrequency, int address) throws RuntimeIOException {
 		i2cDevice = new I2CDevice(controllerNumber, address, addressSize, clockFrequency);
 	}
 	
-	public void init() throws IOException {
+	public void init() throws RuntimeIOException {
 		byte[] data = new byte[4];
 		data[0] = AKM_POWER_DOWN;
 		i2cDevice.writeByte(AKM_REG_CNTL, data[0]);
@@ -74,6 +74,6 @@ public class AK8975Driver implements Closeable, AK8975Constants {
 	
 	@Override
 	public void close() {
-		try { i2cDevice.close(); } catch (IOException e) { }
+		i2cDevice.close();
 	}
 }

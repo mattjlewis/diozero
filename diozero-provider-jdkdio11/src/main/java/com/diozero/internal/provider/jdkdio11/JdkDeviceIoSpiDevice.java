@@ -26,7 +26,6 @@ package com.diozero.internal.provider.jdkdio11;
  * #L%
  */
 
-
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
@@ -37,6 +36,7 @@ import com.diozero.api.SpiClockMode;
 import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.DeviceFactoryInterface;
 import com.diozero.internal.spi.SpiDeviceInterface;
+import com.diozero.util.RuntimeIOException;
 
 import jdk.dio.Device;
 import jdk.dio.DeviceManager;
@@ -47,7 +47,8 @@ public class JdkDeviceIoSpiDevice extends AbstractDevice implements SpiDeviceInt
 	private SPIDeviceConfig deviceConfig;
 	private SPIDevice device;
 	
-	public JdkDeviceIoSpiDevice(String key, DeviceFactoryInterface deviceFactory, int controller, int chipSelect, int frequency, SpiClockMode mode) throws IOException {
+	public JdkDeviceIoSpiDevice(String key, DeviceFactoryInterface deviceFactory,
+			int controller, int chipSelect, int frequency, SpiClockMode mode) throws RuntimeIOException {
 		super(key, deviceFactory);
 		
 		int cs_active = SPIDeviceConfig.CS_ACTIVE_LOW;
@@ -58,26 +59,38 @@ public class JdkDeviceIoSpiDevice extends AbstractDevice implements SpiDeviceInt
 		deviceConfig = new SPIDeviceConfig.Builder().setControllerNumber(controller).setAddress(chipSelect)
 				.setCSActiveLevel(cs_active).setClockFrequency(frequency).setClockMode(mode.getMode())
 				.setWordLength(word_length).setBitOrdering(bit_ordering).build();
-		device = DeviceManager.open(deviceConfig);
-	}
-
-	@Override
-	public void closeDevice() throws IOException {
-		Logger.debug("closeDevice()");
-		if (device.isOpen()) {
-			device.close();
+		try {
+			device = DeviceManager.open(deviceConfig);
+		} catch (IOException e) {
+			throw new RuntimeIOException(e);
 		}
 	}
 
 	@Override
-	public ByteBuffer writeAndRead(ByteBuffer src) throws IOException {
+	public void closeDevice() throws RuntimeIOException {
+		Logger.debug("closeDevice()");
+		if (device.isOpen()) {
+			try {
+				device.close();
+			} catch (IOException e) {
+				throw new RuntimeIOException(e);
+			}
+		}
+	}
+
+	@Override
+	public ByteBuffer writeAndRead(ByteBuffer src) throws RuntimeIOException {
 		if (! device.isOpen()) {
 			throw new IllegalStateException("SPI Device " +
 					deviceConfig.getControllerNumber() + "-" + deviceConfig.getAddress() + " is closed");
 		}
 		
 		ByteBuffer dest = ByteBuffer.allocateDirect(src.capacity());
-		device.writeAndRead(src, dest);
+		try {
+			device.writeAndRead(src, dest);
+		} catch (IOException e) {
+			throw new RuntimeIOException(e);
+		}
 		return dest;
 	}
 

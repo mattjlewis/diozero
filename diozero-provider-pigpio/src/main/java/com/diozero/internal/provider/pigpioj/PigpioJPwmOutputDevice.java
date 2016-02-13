@@ -28,18 +28,17 @@ package com.diozero.internal.provider.pigpioj;
 
 
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.pmw.tinylog.Logger;
 
 import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.DeviceFactoryInterface;
 import com.diozero.internal.spi.PwmOutputDeviceInterface;
 import com.diozero.pigpioj.PigpioGpio;
+import com.diozero.util.RuntimeIOException;
 
 public class PigpioJPwmOutputDevice extends AbstractDevice implements PwmOutputDeviceInterface {
 	private static final int PWM_RANGE = 256-1;
-	
-	private static final Logger logger = Logger.getLogger(PigpioJPwmOutputDevice.class.getName());
 	
 	private int pinNumber;
 
@@ -54,8 +53,8 @@ public class PigpioJPwmOutputDevice extends AbstractDevice implements PwmOutputD
 	public void closeDevice() {
 		try {
 			setValue(0);
-		} catch (IOException e) {
-			logger.log(Level.WARNING, "Error setting value to 0 in closeDevice()", e);
+		} catch (RuntimeIOException e) {
+			Logger.error(e, "Error setting value to 0 in closeDevice(): {}", e);
 		}
 		// Nothing more to do?
 	}
@@ -66,12 +65,20 @@ public class PigpioJPwmOutputDevice extends AbstractDevice implements PwmOutputD
 	}
 
 	@Override
-	public float getValue() throws IOException {
-		return PigpioGpio.getPWMDutyCycle(pinNumber) / (float)PWM_RANGE;
+	public float getValue() throws RuntimeIOException {
+		try {
+			return PigpioGpio.getPWMDutyCycle(pinNumber) / (float)PWM_RANGE;
+		} catch (IOException e) {
+			throw new RuntimeIOException(e);
+		}
 	}
 
 	@Override
-	public void setValue(float value) throws IOException {
-		PigpioGpio.setPWMDutyCycle(pinNumber, (int)(PWM_RANGE*value));
+	public void setValue(float value) throws RuntimeIOException {
+		try {
+			PigpioGpio.setPWMDutyCycle(pinNumber, (int)(PWM_RANGE*value));
+		} catch (IOException e) {
+			throw new RuntimeIOException(e);
+		}
 	}
 }

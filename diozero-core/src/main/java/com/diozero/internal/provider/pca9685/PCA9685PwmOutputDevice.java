@@ -26,14 +26,12 @@ package com.diozero.internal.provider.pca9685;
  * #L%
  */
 
-
-import java.io.IOException;
-
 import org.pmw.tinylog.Logger;
 
 import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.PwmOutputDeviceInterface;
 import com.diozero.sandpit.PCA9685;
+import com.diozero.util.RuntimeIOException;
 
 public class PCA9685PwmOutputDevice extends AbstractDevice implements PwmOutputDeviceInterface {
 	private PCA9685 pca9685;
@@ -52,17 +50,17 @@ public class PCA9685PwmOutputDevice extends AbstractDevice implements PwmOutputD
 	}
 
 	@Override
-	public float getValue() throws IOException {
+	public float getValue() throws RuntimeIOException {
 		return pca9685.getValue(channel);
 	}
 
 	@Override
-	public void setValue(float value) throws IOException {
+	public void setValue(float value) throws RuntimeIOException {
 		pca9685.setValue(channel, value);
 	}
 
 	@Override
-	protected void closeDevice() throws IOException {
+	protected void closeDevice() throws RuntimeIOException {
 		Logger.debug("closeDevice()");
 		pca9685.closeChannel(channel);
 	}

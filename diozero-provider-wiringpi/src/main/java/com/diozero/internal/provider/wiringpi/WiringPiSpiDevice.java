@@ -26,8 +26,6 @@ package com.diozero.internal.provider.wiringpi;
  * #L%
  */
 
-
-import java.io.IOException;
 import java.nio.ByteBuffer;
 
 import org.pmw.tinylog.Logger;
@@ -36,6 +34,7 @@ import com.diozero.api.SpiClockMode;
 import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.DeviceFactoryInterface;
 import com.diozero.internal.spi.SpiDeviceInterface;
+import com.diozero.util.RuntimeIOException;
 import com.pi4j.wiringpi.Spi;
 
 public class WiringPiSpiDevice extends AbstractDevice implements SpiDeviceInterface {
@@ -46,7 +45,7 @@ public class WiringPiSpiDevice extends AbstractDevice implements SpiDeviceInterf
 	private int chipSelect;
 	
 	public WiringPiSpiDevice(String key, DeviceFactoryInterface deviceFactory, int controller,
-			int chipSelect, int speed, SpiClockMode mode) throws IOException {
+			int chipSelect, int speed, SpiClockMode mode) throws RuntimeIOException {
 		super(key, deviceFactory);
 		
 		this.controller = controller;
@@ -71,7 +70,7 @@ public class WiringPiSpiDevice extends AbstractDevice implements SpiDeviceInterf
 		
 		handle = Spi.wiringPiSPISetupMode(controller, speed, wpi_spi_mode);
 		if (handle == -1) {
-			throw new IOException("Error initialising SPI controller " + controller + ", speed=" + speed + ", mode=" + wpi_spi_mode);
+			throw new RuntimeIOException("Error initialising SPI controller " + controller + ", speed=" + speed + ", mode=" + wpi_spi_mode);
 		}
 	}
 
@@ -81,14 +80,14 @@ public class WiringPiSpiDevice extends AbstractDevice implements SpiDeviceInterf
 	}
 
 	@Override
-	public void closeDevice() throws IOException {
+	public void closeDevice() throws RuntimeIOException {
 		Logger.debug("closeDevice()");
 		// No way to close a wiringPi SPI device file handle?!
 		handle = CLOSED;
 	}
 
 	@Override
-	public ByteBuffer writeAndRead(ByteBuffer tx) throws IOException {
+	public ByteBuffer writeAndRead(ByteBuffer tx) throws RuntimeIOException {
 		/*
 		byte[] out_array = out.array();
 		byte[] buffer = new byte[out_array.length];
@@ -98,7 +97,7 @@ public class WiringPiSpiDevice extends AbstractDevice implements SpiDeviceInterf
 		byte[] buffer = new byte[count];
 		tx.get(buffer);
 		if (Spi.wiringPiSPIDataRW(controller, buffer) == -1) {
-			throw new IOException("Error writing " + buffer.length + " bytes of data to SPI controller " + controller);
+			throw new RuntimeIOException("Error writing " + buffer.length + " bytes of data to SPI controller " + controller);
 		}
 		return ByteBuffer.wrap(buffer);
 	}

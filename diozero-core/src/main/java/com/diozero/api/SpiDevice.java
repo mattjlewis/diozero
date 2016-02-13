@@ -34,6 +34,7 @@ import java.nio.ByteBuffer;
 import org.pmw.tinylog.Logger;
 
 import com.diozero.internal.spi.SpiDeviceInterface;
+import com.diozero.util.RuntimeIOException;
 
 /**
  * https://www.raspberrypi.org/documentation/hardware/raspberrypi/spi/README.md
@@ -49,25 +50,25 @@ import com.diozero.internal.spi.SpiDeviceInterface;
 public class SpiDevice implements Closeable, SPIConstants {
 	private SpiDeviceInterface device;
 	
-	public SpiDevice(int chipSelect) throws IOException {
+	public SpiDevice(int chipSelect) throws RuntimeIOException {
 		this(DEFAULT_SPI_CONTROLLER, chipSelect, DEFAULT_SPI_CLOCK_FREQUENCY, DEFAULT_SPI_CLOCK_MODE);
 	}
 	
-	public SpiDevice(int controller, int chipSelect) throws IOException {
+	public SpiDevice(int controller, int chipSelect) throws RuntimeIOException {
 		this(controller, chipSelect, DEFAULT_SPI_CLOCK_FREQUENCY, DEFAULT_SPI_CLOCK_MODE);
 	}
 	
-	public SpiDevice(int controller, int chipSelect, int frequency, SpiClockMode mode) throws IOException {
+	public SpiDevice(int controller, int chipSelect, int frequency, SpiClockMode mode) throws RuntimeIOException {
 		device = DeviceFactoryHelper.getNativeDeviceFactory().provisionSpiDevice(controller, chipSelect, frequency, mode);
 	}
 
 	@Override
-	public void close() throws IOException {
+	public void close() throws RuntimeIOException {
 		Logger.debug("close()");
-		device.close();
+		try { device.close(); } catch (IOException e) { throw new RuntimeIOException(e); }
 	}
 
-	public ByteBuffer writeAndRead(ByteBuffer out) throws IOException {
+	public ByteBuffer writeAndRead(ByteBuffer out) throws RuntimeIOException {
 		return device.writeAndRead(out);
 	}
 	

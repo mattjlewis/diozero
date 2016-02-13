@@ -26,7 +26,6 @@ package com.diozero.internal.provider.pi4j;
  * #L%
  */
 
-
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
@@ -36,6 +35,7 @@ import com.diozero.api.SpiClockMode;
 import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.DeviceFactoryInterface;
 import com.diozero.internal.spi.SpiDeviceInterface;
+import com.diozero.util.RuntimeIOException;
 import com.pi4j.io.spi.*;
 
 public class Pi4jSpiDevice extends AbstractDevice implements SpiDeviceInterface {
@@ -43,24 +43,32 @@ public class Pi4jSpiDevice extends AbstractDevice implements SpiDeviceInterface 
 	private int controller;
 	private int chipSelect;
 	
-	public Pi4jSpiDevice(String key, DeviceFactoryInterface deviceFactory, int controller, int chipSelect, int speed, SpiClockMode mode) throws IOException {
+	public Pi4jSpiDevice(String key, DeviceFactoryInterface deviceFactory, int controller, int chipSelect, int speed, SpiClockMode mode) throws RuntimeIOException {
 		super(key, deviceFactory);
 		
 		this.controller = controller;
 		this.chipSelect = chipSelect;
-		spiDevice = SpiFactory.getInstance(SpiChannel.getByNumber(chipSelect), speed, SpiMode.getByNumber(mode.getMode()));
+		try {
+			spiDevice = SpiFactory.getInstance(SpiChannel.getByNumber(chipSelect), speed, SpiMode.getByNumber(mode.getMode()));
+		} catch (IOException e) {
+			throw new RuntimeIOException(e);
+		}
 	}
 
 	@Override
-	public void closeDevice() throws IOException {
+	public void closeDevice() throws RuntimeIOException {
 		Logger.debug("closeDevice()");
 		// No way to close a Pi4J SPI Device?!
 		//spiDevice.close();
 	}
 
 	@Override
-	public ByteBuffer writeAndRead(ByteBuffer out) throws IOException {
-		return spiDevice.write(out);
+	public ByteBuffer writeAndRead(ByteBuffer out) throws RuntimeIOException {
+		try {
+			return spiDevice.write(out);
+		} catch (IOException e) {
+			throw new RuntimeIOException(e);
+		}
 	}
 
 	@Override

@@ -26,11 +26,11 @@ package com.diozero.internal.spi;
  * #L%
  */
 
-
-import java.io.IOException;
 import java.nio.ByteBuffer;
 
+import com.diozero.util.RuntimeIOException;
+
 public interface I2CDeviceInterface extends DeviceInterface {
-	void read(int register, int subAddressSize, ByteBuffer buffer) throws IOException;
-	void write(int register, int subAddressSize, ByteBuffer buffer) throws IOException;
+	void read(int register, int subAddressSize, ByteBuffer buffer) throws RuntimeIOException;
+	void write(int register, int subAddressSize, ByteBuffer buffer) throws RuntimeIOException;
 }

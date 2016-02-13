@@ -26,8 +26,6 @@ package com.diozero.sandpit.imu.invensense;
  * #L%
  */
 
-
-import java.io.IOException;
 import java.nio.ByteBuffer;
 
 import org.apache.commons.math3.complex.Quaternion;
@@ -42,6 +40,7 @@ import com.diozero.imu.OrientationEvent;
 import com.diozero.imu.TapCallbackEvent;
 import com.diozero.imu.drivers.invensense.*;
 import com.diozero.imu.mqtt.MqttConstants;
+import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 
 /**
@@ -170,7 +169,7 @@ public class MPU9150Test3 implements MqttConstants {
 				mqttPublish(imu_data, ypr);
 			} while (true);
 
-		} catch (IOException ioe) {
+		} catch (RuntimeIOException ioe) {
 			Logger.error(ioe, "Error: {}", ioe);
 		} catch (MqttException me) {
 			Logger.error(me, "Error: {}", me);
@@ -227,7 +226,7 @@ public class MPU9150Test3 implements MqttConstants {
 		Logger.debug("Connected to MQTT server '{}'", mqttServer);
 	}
 
-	private void mpuInit(MPU9150Driver mpu) throws IOException {
+	private void mpuInit(MPU9150Driver mpu) throws RuntimeIOException {
 		// initialise device
 		Logger.debug("Initialising MPU...");
 		mpu.mpu_init();
@@ -320,7 +319,7 @@ public class MPU9150Test3 implements MqttConstants {
 		Logger.debug("Done.");
 	}
 
-	private IMUData update(MPU9150Driver mpu) throws IOException {
+	private IMUData update(MPU9150Driver mpu) throws RuntimeIOException {
 		// Wait for FIFO data to be available
 		long delay = fifoReadDelayMs - (System.currentTimeMillis() - lastFifoRead);
 		

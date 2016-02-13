@@ -28,7 +28,6 @@ package com.diozero.sandpit;
 
 
 import java.io.Closeable;
-import java.io.IOException;
 
 import org.pmw.tinylog.Logger;
 
@@ -37,9 +36,7 @@ import com.diozero.internal.provider.pca9685.PCA9685PwmOutputDevice;
 import com.diozero.internal.spi.AbstractDeviceFactory;
 import com.diozero.internal.spi.PwmOutputDeviceFactoryInterface;
 import com.diozero.internal.spi.PwmOutputDeviceInterface;
-import com.diozero.util.BitManipulation;
-import com.diozero.util.ServoUtil;
-import com.diozero.util.SleepUtil;
+import com.diozero.util.*;
 
 /**
  * PCA9685 I2C-bus controlled 16-channel 12-bit PWM controller as used in the popular Adafruit PWM add-on board
@@ -99,11 +96,11 @@ public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFac
 	private int pwmFrequency = DEFAULT_PWM_FREQUENCY;
 	private double pulseMsPerBit = ServoUtil.calcPulseMsPerBit(pwmFrequency, RANGE);
 
-	public PCA9685() throws IOException {
+	public PCA9685() throws RuntimeIOException {
 		this(I2CConstants.BUS_1, DEVICE_ADDRESS, I2CConstants.ADDR_SIZE_7, I2CConstants.DEFAULT_CLOCK_FREQUENCY);
 	}
 
-	public PCA9685(int controller, int address, int addressSize, int clockFrequency) throws IOException {
+	public PCA9685(int controller, int address, int addressSize, int clockFrequency) throws RuntimeIOException {
 		i2cDevice = new I2CDevice(controller, address, addressSize, clockFrequency);
 		
 		keyPrefix = DEVICE_NAME + "-" + controller + "-" + address + "-";
@@ -111,7 +108,7 @@ public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFac
 		reset();
 	}
 	
-	public void reset() throws IOException {
+	public void reset() throws RuntimeIOException {
 		i2cDevice.writeByte(MODE1, 0); // Normal mode
 		i2cDevice.writeByte(MODE2, OUTDRV_MASK); // Set output driver to totem pole mode (rather than open drain)
 		
@@ -124,7 +121,7 @@ public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFac
 	 * Sets the PWM frequency
 	 * @param freq desired frequency. 40Hz to 1000Hz using internal 25MHz oscillator
 	 */
-	public void setPwmFreq(int pwmFrequency) throws IOException {
+	public void setPwmFreq(int pwmFrequency) throws RuntimeIOException {
 		if (pwmFrequency < MIN_PWM_FREQUENCY || pwmFrequency > MAX_PWM_FREQUENCY) {
 			throw new IllegalArgumentException();
 		}
@@ -145,7 +142,7 @@ public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFac
 		i2cDevice.writeByte(MODE1, (byte)(oldmode | RESTART_MASK));			// Set restart enabled
 	}
 
-	public float getValue(int channel) throws IOException {
+	public float getValue(int channel) throws RuntimeIOException {
 		int[] on_off = getPwm(channel);
 		return (on_off[1] - on_off[0]) / (float)RANGE;
 	}
@@ -155,9 +152,9 @@ public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFac
 	 * 
 	 * @param channel
 	 * @param value Must be 0..1
-	 * @throws IOException
+	 * @throws RuntimeIOException
 	 */
-	public void setValue(int channel, double value) throws IOException {
+	public void setValue(int channel, double value) throws RuntimeIOException {
 		if (value < 0 || value > 1) {
 			throw new IllegalArgumentException("PWM value must 0..1, you requested " + value);
 		}
@@ -165,7 +162,7 @@ public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFac
 		setPwm(channel, 0, off);
 	}
 
-	public int[] getPwm(int channel) throws IOException {
+	public int[] getPwm(int channel) throws RuntimeIOException {
 		validateChannel(channel);
 		
 		// TODO Replace with readUShort()?
@@ -195,7 +192,7 @@ public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFac
 	 * LED on time = 20 % = 819.2 ~ 819 counts
 	 * LED off time = (decimal 409 + 819 = 1228)
 	 */
-	public void setPwm(int channel, int on, int off) throws IOException {
+	public void setPwm(int channel, int on, int off) throws RuntimeIOException {
 		validateChannel(channel);
 		validateOnOff(on, off);
 		
@@ -234,7 +231,7 @@ public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFac
 	}
 
 	/** Sets a all PWM channels */
-	public void setAllPwm(int on, int off) throws IOException {
+	public void setAllPwm(int on, int off) throws RuntimeIOException {
 		validateOnOff(on, off);
 		// TODO Replace with writeShort()?
 		//i2cDevice.writeShort(ALL_LED_ON_L, (short)on);
@@ -251,9 +248,9 @@ public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFac
 	 * TowerPro SG5010 servo pulse width range = 1ms-2ms
 	 * @param channel
 	 * @param pulseWidthMs The desired pulse width in milli-seconds
-	 * @throws IOException
+	 * @throws RuntimeIOException
 	 */
-	public void setServoPulse(int channel, double pulseWidthMs) throws IOException {
+	public void setServoPulse(int channel, double pulseWidthMs) throws RuntimeIOException {
 		int pulse = ServoUtil.calcServoPulse(pulseWidthMs, pulseMsPerBit);
 		Logger.debug("Requested pulse width: {}, Scale: {} ms per bit, Pulse: {}",
 				String.format("%.2f", Double.valueOf(pulseWidthMs)),
@@ -268,21 +265,21 @@ public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFac
 	}
 	
 	@Override
-	public void close() throws IOException {
+	public void close() throws RuntimeIOException {
 		Logger.debug("close()");
 		// Close all open pins before closing the I2C device itself
 		closeAll();
 		i2cDevice.close();
 	}
 	
-	public void closeChannel(int channel) throws IOException {
+	public void closeChannel(int channel) throws RuntimeIOException {
 		Logger.debug("closeChannel({})", Integer.valueOf(channel));
 		setPwm(channel, 0, 0);
 	}
 
 	@Override
 	public PwmOutputDeviceInterface provisionPwmOutputPin(int channel, float initialValue)
-			throws IOException {
+			throws RuntimeIOException {
 		validateChannel(channel);
 		
 		String key = keyPrefix + channel;
@@ -298,7 +295,7 @@ public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFac
 		return device;
 	}
 	
-	public PwmOutputDevice provisionPwmOutputDevice(int channel, float initialValue) throws IOException {
+	public PwmOutputDevice provisionPwmOutputDevice(int channel, float initialValue) throws RuntimeIOException {
 		return new PwmOutputDevice(provisionPwmOutputPin(channel, initialValue));
 	}
 }

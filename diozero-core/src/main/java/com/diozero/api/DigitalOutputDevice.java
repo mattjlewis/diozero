@@ -26,13 +26,11 @@ package com.diozero.api;
  * #L%
  */
 
-
-import java.io.IOException;
-
 import org.pmw.tinylog.Logger;
 
 import com.diozero.internal.spi.GpioDeviceFactoryInterface;
 import com.diozero.internal.spi.GpioDigitalOutputDeviceInterface;
+import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 
 public class DigitalOutputDevice extends GpioDevice {
@@ -42,15 +40,15 @@ public class DigitalOutputDevice extends GpioDevice {
 	private boolean running;
 	private GpioDigitalOutputDeviceInterface device;
 	
-	public DigitalOutputDevice(int pinNumber) throws IOException {
+	public DigitalOutputDevice(int pinNumber) throws RuntimeIOException {
 		this(pinNumber, true, false);
 	}
 	
-	public DigitalOutputDevice(int pinNumber, boolean activeHigh, boolean initialValue) throws IOException {
+	public DigitalOutputDevice(int pinNumber, boolean activeHigh, boolean initialValue) throws RuntimeIOException {
 		this(DeviceFactoryHelper.getNativeDeviceFactory(), pinNumber, activeHigh, initialValue);
 	}
 	
-	public DigitalOutputDevice(GpioDeviceFactoryInterface deviceFactory, int pinNumber, boolean activeHigh, boolean initialValue) throws IOException {
+	public DigitalOutputDevice(GpioDeviceFactoryInterface deviceFactory, int pinNumber, boolean activeHigh, boolean initialValue) throws RuntimeIOException {
 		this(deviceFactory.provisionDigitalOutputPin(pinNumber, activeHigh & initialValue), activeHigh);
 	}
 
@@ -63,29 +61,20 @@ public class DigitalOutputDevice extends GpioDevice {
 	@Override
 	public void close() {
 		Logger.debug("close()");
-		stopOnOffLoop();
-		try { device.setValue(!activeHigh); } catch (IOException e) { }
+		setValue(!activeHigh);
 		device.close();
 	}
 	
-	protected void onOffLoop(float onTime, float offTime, int n, boolean background) throws IOException {
+	protected void onOffLoop(float onTime, float offTime, int n, boolean background) throws RuntimeIOException {
 		stopOnOffLoop();
 		if (background) {
-			GpioScheduler.getInstance().execute(() -> {
-				try {
-					onOffLoop(onTime, offTime, n);
-				} catch (IOException e) {
-					Logger.error(e, "Error: {}", e);
-					// Quit the scheduler thread otherwise we might get a lot of these errors
-					throw new RuntimeException("IO error in digital output onOffLoop: " + e, e);
-				}
-			});
+			GpioScheduler.getInstance().execute(() -> onOffLoop(onTime, offTime, n));
 		} else {
 			onOffLoop(onTime, offTime, n);
 		}
 	}
 	
-	private void onOffLoop(float onTime, float offTime, int n) throws IOException {
+	private void onOffLoop(float onTime, float offTime, int n) throws RuntimeIOException {
 		running = true;
 		if (n > 0) {
 			for (int i=0; i<n && running; i++) {
@@ -98,7 +87,7 @@ public class DigitalOutputDevice extends GpioDevice {
 		}
 	}
 
-	private void onOff(float onTime, float offTime) throws IOException {
+	private void onOff(float onTime, float offTime) throws RuntimeIOException {
 		setValueInternal(activeHigh);
 		SleepUtil.sleepSeconds(onTime);
 		if (running) {
@@ -112,32 +101,36 @@ public class DigitalOutputDevice extends GpioDevice {
 	}
 	
 	// Exposed operations
-	public void on() throws IOException {
+	public void on() throws RuntimeIOException {
 		stopOnOffLoop();
 		setValueInternal(activeHigh);
 	}
 	
-	public void off() throws IOException {
+	public void off() throws RuntimeIOException {
 		stopOnOffLoop();
 		setValueInternal(!activeHigh);
 	}
 	
-	public void toggle() throws IOException {
+	public void setOn(boolean on) throws RuntimeIOException {
+		if (on) on(); else off();
+	}
+	
+	public void toggle() throws RuntimeIOException {
 		stopOnOffLoop();
 		setValueInternal(!device.getValue());
 	}
 
 	// Exposed properties
-	public boolean isOn() throws IOException {
+	public boolean isOn() throws RuntimeIOException {
 		return activeHigh == device.getValue();
 	}
 	
-	public void setValue(boolean value) throws IOException {
+	public void setValue(boolean value) throws RuntimeIOException {
 		stopOnOffLoop();
-		setValueInternal(value);
+		setValueInternal(activeHigh ? value : !value);
 	}
 	
-	private void setValueInternal(boolean value) throws IOException {
+	private void setValueInternal(boolean value) throws RuntimeIOException {
 		synchronized (device) {
 			device.setValue(value);
 		}

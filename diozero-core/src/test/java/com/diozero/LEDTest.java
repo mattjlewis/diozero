@@ -26,15 +26,13 @@ package com.diozero;
  * #L%
  */
 
-
-import java.io.IOException;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.pmw.tinylog.Logger;
 
 import com.diozero.api.DeviceFactoryHelper;
 import com.diozero.internal.spi.NativeDeviceFactoryInterface;
+import com.diozero.util.RuntimeIOException;
 
 /**
  * LED test case using the test device factory
@@ -60,7 +58,7 @@ public class LEDTest {
 			Assert.assertFalse("Pin (" + pin + ") is off", led.isOn());
 			led.blink(0.1f, 0.1f, 5, false);
 			Assert.assertFalse("Pin (" + pin + ") is off", led.isOn());
-		} catch (IOException e) {
+		} catch (RuntimeIOException e) {
 			Logger.error(e, "Error: {}", e);
 		}
 		

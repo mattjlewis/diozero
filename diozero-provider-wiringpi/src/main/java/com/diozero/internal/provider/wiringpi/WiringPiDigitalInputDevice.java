@@ -26,9 +26,6 @@ package com.diozero.internal.provider.wiringpi;
  * #L%
  */
 
-
-import java.io.IOException;
-
 import org.pmw.tinylog.Logger;
 
 import com.diozero.api.DigitalPinEvent;
@@ -37,6 +34,7 @@ import com.diozero.api.GpioPullUpDown;
 import com.diozero.internal.spi.AbstractInputDevice;
 import com.diozero.internal.spi.DeviceFactoryInterface;
 import com.diozero.internal.spi.GpioDigitalInputDeviceInterface;
+import com.diozero.util.RuntimeIOException;
 import com.pi4j.wiringpi.Gpio;
 import com.pi4j.wiringpi.GpioInterruptCallback;
 import com.pi4j.wiringpi.GpioUtil;
@@ -47,7 +45,7 @@ implements GpioDigitalInputDeviceInterface, GpioInterruptCallback {
 	private int edge;
 	
 	public WiringPiDigitalInputDevice(String key, DeviceFactoryInterface deviceFactory, int pinNumber,
-			GpioPullUpDown pud, GpioEventTrigger trigger) throws IOException {
+			GpioPullUpDown pud, GpioEventTrigger trigger) throws RuntimeIOException {
 		super(key, deviceFactory);
 		
 		this.pinNumber = pinNumber;
@@ -67,10 +65,10 @@ implements GpioDigitalInputDeviceInterface, GpioInterruptCallback {
 		try {
 			// Note calling this method will automatically export the pin and set the pin direction to INPUT
 			if (!GpioUtil.setEdgeDetection(pinNumber, edge)) {
-				throw new IOException("Error setting edge detection (" + edge + ") for pin " + pinNumber);
+				throw new RuntimeIOException("Error setting edge detection (" + edge + ") for pin " + pinNumber);
 			}
 		} catch (RuntimeException re) {
-			throw new IOException(re);
+			throw new RuntimeIOException(re);
 		}
 	
 		int wpi_pud;
@@ -97,7 +95,7 @@ implements GpioDigitalInputDeviceInterface, GpioInterruptCallback {
 	}
 
 	@Override
-	public boolean getValue() throws IOException {
+	public boolean getValue() throws RuntimeIOException {
 		return Gpio.digitalRead(pinNumber) == 1;
 	}
 
@@ -131,7 +129,7 @@ implements GpioDigitalInputDeviceInterface, GpioInterruptCallback {
 		try {
 			// Really don't like that the callback doesn't include the value, never mind the timestamps
 			valueChanged(new DigitalPinEvent(pin, System.currentTimeMillis(), nano_time, getValue()));
-		} catch (IOException e) {
+		} catch (RuntimeIOException e) {
 			Logger.error(e, "Error invoking getValue(): {}", e);
 		}
 	}

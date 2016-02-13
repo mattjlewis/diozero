@@ -26,15 +26,13 @@ package com.diozero.internal.provider.mcp3008;
  * #L%
  */
 
-
-import java.io.IOException;
-
 import org.pmw.tinylog.Logger;
 
 import com.diozero.MCP3008;
 import com.diozero.api.AnalogueInputEvent;
 import com.diozero.internal.spi.AbstractInputDevice;
 import com.diozero.internal.spi.GpioAnalogueInputDeviceInterface;
+import com.diozero.util.RuntimeIOException;
 
 public class MCP3008AnalogueInputPin extends AbstractInputDevice<AnalogueInputEvent> implements GpioAnalogueInputDeviceInterface {
 	private MCP3008 mcp3008;
@@ -53,7 +51,7 @@ public class MCP3008AnalogueInputPin extends AbstractInputDevice<AnalogueInputEv
 	}
 
 	@Override
-	public float getValue() throws IOException {
+	public float getValue() throws RuntimeIOException {
 		return mcp3008.getVoltage(pinNumber);
 	}
 

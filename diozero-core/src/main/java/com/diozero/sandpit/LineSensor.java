@@ -1,4 +1,4 @@
-package com.diozero;
+package com.diozero.sandpit;
 
 /*
  * #%L
@@ -26,19 +26,17 @@ package com.diozero;
  * #L%
  */
 
-
-import java.io.IOException;
-
 import com.diozero.api.DebouncedDigitalInputDevice;
 import com.diozero.api.GpioPullUpDown;
+import com.diozero.util.RuntimeIOException;
 
 public class LineSensor extends DebouncedDigitalInputDevice {
 
-	public LineSensor(int pinNumber) throws IOException {
+	public LineSensor(int pinNumber) throws RuntimeIOException {
 		super(pinNumber, GpioPullUpDown.NONE, 0);
 	}
 
-	public LineSensor(int pinNumber, GpioPullUpDown pud, float bounceTime) throws IOException {
+	public LineSensor(int pinNumber, GpioPullUpDown pud, float bounceTime) throws RuntimeIOException {
 		super(pinNumber, pud, bounceTime);
 	}
 }

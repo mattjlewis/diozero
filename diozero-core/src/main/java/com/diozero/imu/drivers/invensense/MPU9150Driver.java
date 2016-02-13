@@ -27,7 +27,6 @@ package com.diozero.imu.drivers.invensense;
  */
 
 import java.io.Closeable;
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
@@ -36,6 +35,7 @@ import org.pmw.tinylog.Logger;
 import com.diozero.api.I2CConstants;
 import com.diozero.api.I2CDevice;
 import com.diozero.util.IOUtil;
+import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 
 @SuppressWarnings("unused")
@@ -96,27 +96,27 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 	private I2CDevice i2cDevice;
 	
 	/** Default constructor, uses default I2C address.
-	 * @throws IOException 
+	 * @throws RuntimeIOException 
 	 * @see MPU9150_DEFAULT_ADDRESS
 	 */
-	public MPU9150Driver(int controllerNumber, int addressSize, int clockFreq) throws IOException {
+	public MPU9150Driver(int controllerNumber, int addressSize, int clockFreq) throws RuntimeIOException {
 		this(controllerNumber, addressSize, clockFreq, MPU9150_DEFAULT_ADDRESS);
 	}
 	
 	/** Specific address constructor.
 	 * @param address I2C address
-	 * @throws IOException
+	 * @throws RuntimeIOException
 	 * @see MPU9150_DEFAULT_ADDRESS
 	 * @see MPU9150_ADDRESS_AD0_LOW
 	 * @see MPU9150_ADDRESS_AD0_HIGH
 	 */
-	public MPU9150Driver(int controllerNumber, int addressSize, int clockFreq, int devAddr) throws IOException {
+	public MPU9150Driver(int controllerNumber, int addressSize, int clockFreq, int devAddr) throws RuntimeIOException {
 		i2cDevice = new I2CDevice(controllerNumber, devAddr, addressSize, clockFreq);
 		this.devAddr = devAddr;
 	}
 	
 	@Override
-	public void close() throws IOException {
+	public void close() throws RuntimeIOException {
 		if (magSensor != null) { magSensor.close(); }
 		i2cDevice.close();
 	}
@@ -127,7 +127,7 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 	 *  interrupt is used.
 	 *  @param[in]  enable	  1 to enable interrupt.
 	 */
-	public boolean set_int_enable(boolean enable) throws IOException {
+	public boolean set_int_enable(boolean enable) throws RuntimeIOException {
 		byte tmp;
 	
 		if (dmp_on) {
@@ -170,7 +170,7 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 	 *  Data ready interrupt: Disabled, active low, unlatched.
 	 *  @param[in]  int_param   Platform-specific parameters to interrupt API.
 	 */
-	public void mpu_init() throws IOException {
+	public void mpu_init() throws RuntimeIOException {
 		/* Reset device. */
 		// pwr_mgmt_1 == 0x6B, MPU9150_RA_PWR_MGMT_1, BIT_RESET (pin 7, 0x80)
 		i2cDevice.writeByte(MPU9150_RA_PWR_MGMT_1, BIT_RESET);
@@ -230,7 +230,7 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 	 *  @param[in]  rate		Minimum sampling rate, or zero to disable LP accel mode.
 	 *  @return	 true if successful.
 	 */
-	public boolean mpu_lp_accel_mode(int rate) throws IOException {
+	public boolean mpu_lp_accel_mode(int rate) throws RuntimeIOException {
 		if (rate > 40) {
 			return false;
 		}
@@ -282,7 +282,7 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 	 *  @brief	  Read raw gyro data directly from the registers.
 	 *  @return		Raw data in hardware units.
 	 */
-	public short[] mpu_get_gyro_reg() throws IOException {
+	public short[] mpu_get_gyro_reg() throws RuntimeIOException {
 		if ((sensors & INV_XYZ_GYRO) == 0) {
 			return null;
 		}
@@ -312,7 +312,7 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 	 *  @brief	  Read raw accel data directly from the registers.
 	 *  @return		Raw data in hardware units.
 	 */
-	public short[] mpu_get_accel_reg() throws IOException {
+	public short[] mpu_get_accel_reg() throws RuntimeIOException {
 		if ((sensors & INV_XYZ_ACCEL) == 0) {
 			return null;
 		}
@@ -341,7 +341,7 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 	 *  Please note that the math in the above equation is in decimal.
 	 *  @return		Temperature
 	 */
-	public float mpu_get_temperature() throws IOException {
+	public float mpu_get_temperature() throws RuntimeIOException {
 		if (sensors == 0) {
 			return -1;
 		}
@@ -361,7 +361,7 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 	 *  factory trim values.
 	 *  @return  accel_bias  returned structure with the accel bias
 	 */
-	public short[] mpu_read_6050_accel_bias() throws IOException {
+	public short[] mpu_read_6050_accel_bias() throws RuntimeIOException {
 		short[] accel_bias = new short[3];
 		
 		/*
@@ -387,7 +387,7 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 	 *  in +-1000dps format.
 	 *  @param[in]  gyro_bias  New biases.
 	 */
-	public void mpu_set_gyro_bias_reg(short[] gyro_bias) throws IOException {
+	public void mpu_set_gyro_bias_reg(short[] gyro_bias) throws RuntimeIOException {
 		for(int i=0; i<3; i++) {
 			gyro_bias[i] = (short)-gyro_bias[i];
 		}
@@ -412,7 +412,7 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 	 *  in +-16G format.
 	 *  @param[in]  accel_bias  New biases.
 	 */
-	public void mpu_set_accel_bias_6050_reg(short[] accel_bias) throws IOException {
+	public void mpu_set_accel_bias_6050_reg(short[] accel_bias) throws RuntimeIOException {
 		short accel_reg_bias[] = mpu_read_6050_accel_bias();
 	
 		accel_reg_bias[0] -= (accel_bias[0] & ~1);
@@ -437,7 +437,7 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 	/**
 	 *  @brief  Reset FIFO read/write pointers.
 	 */
-	public boolean mpu_reset_fifo() throws IOException {
+	public boolean mpu_reset_fifo() throws RuntimeIOException {
 		if (sensors == 0) {
 			Logger.warn("mpu_reset_fifo(), sensors==0, returning");
 			return false;
@@ -510,7 +510,7 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 	 *  @brief	  Set the gyro full-scale range.
 	 *  @param[in]  fsr Desired full-scale range.
 	 */
-	public boolean mpu_set_gyro_fsr(GyroFullScaleRange fsr) throws IOException {
+	public boolean mpu_set_gyro_fsr(GyroFullScaleRange fsr) throws RuntimeIOException {
 		if (sensors == 0) {
 			return false;
 		}
@@ -539,9 +539,9 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 	/**
 	 *  @brief	  Set the accel full-scale range.
 	 *  @param[in]  fsr Desired full-scale range.
-	 * @throws IOException
+	 * @throws RuntimeIOException
 	 */
-	public boolean mpu_set_accel_fsr(AccelFullScaleRange fsr) throws IOException {
+	public boolean mpu_set_accel_fsr(AccelFullScaleRange fsr) throws RuntimeIOException {
 		if (sensors == 0) {
 			return false;
 		}
@@ -566,9 +566,9 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 	 *  @brief	  Set digital low pass filter.
 	 *  The following LPF settings are supported: 188, 98, 42, 20, 10, 5.
 	 *  @param[in]  lpf Desired LPF setting.
-	 * @throws IOException
+	 * @throws RuntimeIOException
 	 */
-	public boolean mpu_set_lpf(int frequency) throws IOException {
+	public boolean mpu_set_lpf(int frequency) throws RuntimeIOException {
 		return mpu_set_lpf(LowPassFilter.getForFrequency(frequency));
 	}
 	
@@ -576,9 +576,9 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 	 *  @brief	  Set digital low pass filter.
 	 *  The following LPF settings are supported: 188, 98, 42, 20, 10, 5.
 	 *  @param[in]  lpf Desired LPF setting.
-	 * @throws IOException
+	 * @throws RuntimeIOException
 	 */
-	public boolean mpu_set_lpf(LowPassFilter lpf) throws IOException {
+	public boolean mpu_set_lpf(LowPassFilter lpf) throws RuntimeIOException {
 		if (sensors == 0) {
 			return false;
 		}
@@ -605,7 +605,7 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 	 *  Sampling rate must be between 4Hz and 1kHz.
 	 *  @param[in]  rate	Desired sampling rate (Hz).
 	 */
-	public boolean mpu_set_sample_rate(int rate) throws IOException {
+	public boolean mpu_set_sample_rate(int rate) throws RuntimeIOException {
 		Logger.debug("mpu_set_sample_rate({})", rate);
 		if (sensors == 0) {
 			return false;
@@ -667,7 +667,7 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 	 *  mpu_get_compass_sample_rate to check the actual setting.
 	 *  @param[in]  rate	Desired compass sampling rate (Hz).
 	 */
-	public boolean mpu_set_compass_sample_rate(int rate) throws IOException {
+	public boolean mpu_set_compass_sample_rate(int rate) throws RuntimeIOException {
 		Logger.debug("mpu_set_compass_sample_rate({})", rate);
 		if (rate == 0 || rate > sample_rate || rate > MAX_COMPASS_SAMPLE_RATE) {
 			return false;
@@ -764,7 +764,7 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 	 *   INV_XYZ_ACCEL
 	 *  @param[in]  sensors Mask of sensors to push to FIFO.
 	 */
-	public boolean mpu_configure_fifo(byte newSensors) throws IOException {
+	public boolean mpu_configure_fifo(byte newSensors) throws RuntimeIOException {
 		System.out.format("mpu_configure_fifo 0x%x%n", Byte.valueOf(newSensors));
 		if (dmp_on) {
 			Logger.info("DMP is on, returning");
@@ -825,7 +825,7 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 	 *  @param[in]  sensors	Mask of sensors to wake.
 	 *  @return	 true if successful.
 	 */
-	public boolean mpu_set_sensors(byte newSensors) throws IOException {
+	public boolean mpu_set_sensors(byte newSensors) throws RuntimeIOException {
 		byte data;
 		byte user_ctrl;
 	
@@ -839,7 +839,7 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 		try {
 			// pwr_mgmt_1 == 0x6B, MPU9150_RA_PWR_MGMT_1
 			i2cDevice.writeByte(MPU9150_RA_PWR_MGMT_1, data);
-		} catch (IOException ioe) {
+		} catch (RuntimeIOException ioe) {
 			System.out.format("Error in mpu_set_sensors(%x): %s%n", new Byte(newSensors), ioe);
 			ioe.printStackTrace();
 			sensors = 0;
@@ -863,7 +863,7 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 		try {
 			// pwr_mgmt_2 == 0x6C == MPU9150_RA_PWR_MGMT_2
 			i2cDevice.writeByte(MPU9150_RA_PWR_MGMT_2, data);
-		} catch (IOException ioe) {
+		} catch (RuntimeIOException ioe) {
 			System.out.format("Error in mpu_set_sensors(%x): %s%n", new Byte(newSensors), ioe);
 			ioe.printStackTrace();
 			sensors = 0;
@@ -908,7 +908,7 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 	 *  @brief	  Read the MPU interrupt status registers.
 	 *  @return status  Mask of interrupt bits.
 	 */
-	public short mpu_get_int_status() throws IOException {
+	public short mpu_get_int_status() throws RuntimeIOException {
 		if (sensors == 0) {
 			return -1;
 		}
@@ -935,7 +935,7 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 	 *   sensors	 Mask of sensors read from FIFO.
 	 *   more		Number of remaining packets.
 	 */
-	public FIFOData mpu_read_fifo() throws IOException {
+	public FIFOData mpu_read_fifo() throws RuntimeIOException {
 
 		if (dmp_on) {
 			return null;
@@ -1032,7 +1032,7 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 	 *  @param[in]  data	FIFO packet.
 	 *  @return  more	Number of remaining packets.
 	 */
-	public FIFOStream mpu_read_fifo_stream(int length) throws IOException {
+	public FIFOStream mpu_read_fifo_stream(int length) throws RuntimeIOException {
 		if (!dmp_on) {
 			Logger.warn("mpu_read_fifo_stream(), dmp_on is false, returning");
 			return null;
@@ -1077,7 +1077,7 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 	 *  @brief	  Set device to bypass mode.
 	 *  @param[in]  bypass_on   1 to enable bypass mode.
 	 */
-	public void mpu_set_bypass(boolean bypass_on) throws IOException {
+	public void mpu_set_bypass(boolean bypass_on) throws RuntimeIOException {
 		/** Was:
 		// Set i2c bypass enable pin to true to access magnetometer
 		// MPU9150_RA_INT_PIN_CFG = 0x37, MPU9150_INTCFG_I2C_BYPASS_EN_BIT = 0x02
@@ -1150,7 +1150,7 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 	 *  Any MPU register will clear the interrupt.
 	 *  @param[in]  enable  1 to enable, 0 to disable.
 	 */
-	public void mpu_set_int_latched(boolean enable) throws IOException {
+	public void mpu_set_int_latched(boolean enable) throws RuntimeIOException {
 		if (latched_int == enable) {
 			return;
 		}
@@ -1172,7 +1172,7 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 		latched_int = enable;
 	}
 	
-	public float[] get_accel_prod_shift() throws IOException {
+	public float[] get_accel_prod_shift() throws RuntimeIOException {
 		byte[] tmp = new byte[4];
 		tmp = i2cDevice.readBytes(0x0D, 4);
 		//if (i2c_read(st.hw->addr, 0x0D, 4, tmp))
@@ -1199,7 +1199,7 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 		return st_shift;
 	}
 	
-	public void get_st_biases() throws IOException {
+	public void get_st_biases() throws RuntimeIOException {
 		// TODO Implementation
 		Logger.error("get_st_biases NOT IMPLEMENTED!");
 	}
@@ -1212,7 +1212,7 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 	 *  @param[in]  length	  Number of bytes to write.
 	 *  @param[in]  data		Bytes to write to memory.
 	 */
-	public void mpu_write_mem(int mem_addr, int length, byte[] data) throws IOException {
+	public void mpu_write_mem(int mem_addr, int length, byte[] data) throws RuntimeIOException {
 		if (sensors == 0) {
 			Logger.warn("mpu_write_mem(), sensors == 0, returning");
 			return;
@@ -1247,7 +1247,7 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 	 *  @param[in]  length	  Number of bytes to read.
 	 *  @return data		Bytes read from memory.
 	 */
-	public byte[] mpu_read_mem(int mem_addr, int length) throws IOException {
+	public byte[] mpu_read_mem(int mem_addr, int length) throws RuntimeIOException {
 
 		if (sensors == 0) {
 			return null;
@@ -1280,7 +1280,7 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 	 *  @param[in]  start_addr  Starting address of DMP code memory.
 	 *  @param[in]  sample_rate Fixed sampling rate used when DMP is enabled.
 	 */
-	public void mpu_load_firmware(int length, byte[] firmware, short start_addr, int sample_rate) throws IOException {
+	public void mpu_load_firmware(int length, byte[] firmware, short start_addr, int sample_rate) throws RuntimeIOException {
 		/* Must divide evenly into st.hw->bank_size to avoid bank crossings. */
 		if (dmp_loaded) {
 			/* DMP should only be loaded once. */
@@ -1329,7 +1329,7 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 	 *  @brief	  Enable/disable DMP support.
 	 *  @param[in]  enable  1 to turn on the DMP.
 	 */
-	public void mpu_set_dmp_state(boolean enable) throws IOException {
+	public void mpu_set_dmp_state(boolean enable) throws RuntimeIOException {
 		if (dmp_on == enable) {
 			return;
 		}
@@ -1373,7 +1373,7 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 	}
 	
 	/* This initialisation is similar to the one in ak8975.c. */
-	public boolean setup_compass() throws IOException {
+	public boolean setup_compass() throws RuntimeIOException {
 		mpu_set_bypass(true);
 	
 		/* Find compass. Possible addresses range from 0x0C to 0x0F. */
@@ -1482,7 +1482,7 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 	 *  @param[out] timestamp   Timestamp in milliseconds. Null if not needed.
 	 *  @return	 0 if successful.
 	 */
-	public short[] mpu_get_compass_reg() throws IOException {
+	public short[] mpu_get_compass_reg() throws RuntimeIOException {
 		if ((sensors & INV_XYZ_COMPASS) == 0) {
 			Logger.warn("mpu_get_compass_reg(), INV_XYZ_COMPASS not set in sensors");
 			return null;
@@ -1559,7 +1559,7 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 	 *						  exceed @e thresh before motion is reported.
 	 *  @param[in]  lpa_freq	Minimum sampling rate, or zero to disable.
 	 */
-	 public void mpu_lp_motion_interrupt(int thresh, int time, int lpa_freq) throws IOException {
+	 public void mpu_lp_motion_interrupt(int thresh, int time, int lpa_freq) throws RuntimeIOException {
 		 // TODO Implementation
 		 Logger.error("mpu_lp_motion_interrupt NOT IMPLEMENTED!");
 	 }

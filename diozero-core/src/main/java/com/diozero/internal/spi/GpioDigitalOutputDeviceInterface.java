@@ -26,12 +26,11 @@ package com.diozero.internal.spi;
  * #L%
  */
 
-
-import java.io.IOException;
+import com.diozero.util.RuntimeIOException;
 
 public interface GpioDigitalOutputDeviceInterface extends GpioDeviceInterface {
 	@Override
 	void close();
-	boolean getValue() throws IOException;
-	void setValue(boolean value) throws IOException;
+	boolean getValue() throws RuntimeIOException;
+	void setValue(boolean value) throws RuntimeIOException;
 }

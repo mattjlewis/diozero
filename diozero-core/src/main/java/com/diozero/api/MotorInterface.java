@@ -28,14 +28,15 @@ package com.diozero.api;
 
 
 import java.io.Closeable;
-import java.io.IOException;
+
+import com.diozero.util.RuntimeIOException;
 
 public interface MotorInterface extends Closeable {
-	void forward(float speed) throws IOException;
-	void backward(float speed) throws IOException;
-	void stop() throws IOException;
-	float getValue() throws IOException;
-	void setValue(float value) throws IOException;
-	boolean isActive() throws IOException;
-	void reverse() throws IOException;
+	void forward(float speed) throws RuntimeIOException;
+	void backward(float speed) throws RuntimeIOException;
+	void stop() throws RuntimeIOException;
+	float getValue() throws RuntimeIOException;
+	void setValue(float value) throws RuntimeIOException;
+	boolean isActive() throws RuntimeIOException;
+	void reverse() throws RuntimeIOException;
 }

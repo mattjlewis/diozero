@@ -26,13 +26,11 @@ package com.diozero.api;
  * #L%
  */
 
-
-import java.io.IOException;
-
 import org.pmw.tinylog.Logger;
 
 import com.diozero.internal.spi.GpioDeviceFactoryInterface;
 import com.diozero.internal.spi.GpioDigitalInputDeviceInterface;
+import com.diozero.util.RuntimeIOException;
 
 /**
  * Represents a generic input device.
@@ -41,13 +39,16 @@ import com.diozero.internal.spi.GpioDigitalInputDeviceInterface;
 public class DigitalInputDevice extends GpioInputDevice<DigitalPinEvent> {
 	protected boolean activeHigh;
 	protected GpioDigitalInputDeviceInterface device;
+	protected GpioPullUpDown pud;
 
-	public DigitalInputDevice(int pinNumber, GpioPullUpDown pud, GpioEventTrigger trigger) throws IOException {
+	public DigitalInputDevice(int pinNumber, GpioPullUpDown pud, GpioEventTrigger trigger) throws RuntimeIOException {
 		this(DeviceFactoryHelper.getNativeDeviceFactory(), pinNumber, pud, trigger);
 	}
 
-	public DigitalInputDevice(GpioDeviceFactoryInterface deviceFactory, int pinNumber, GpioPullUpDown pud, GpioEventTrigger trigger) throws IOException {
+	public DigitalInputDevice(GpioDeviceFactoryInterface deviceFactory, int pinNumber, GpioPullUpDown pud, GpioEventTrigger trigger) throws RuntimeIOException {
 		this(deviceFactory.provisionDigitalInputPin(pinNumber, pud, trigger), pud != GpioPullUpDown.PULL_DOWN);
+		
+		this.pud = pud;
 	}
 
 	public DigitalInputDevice(GpioDigitalInputDeviceInterface device, boolean activeHigh) {
@@ -63,17 +64,21 @@ public class DigitalInputDevice extends GpioInputDevice<DigitalPinEvent> {
 		device.close();
 	}
 
-	public boolean getValue() throws IOException {
+	public boolean getValue() throws RuntimeIOException {
 		return device.getValue();
 	}
 	
-	public boolean isActive() throws IOException {
+	public boolean isActive() throws RuntimeIOException {
 		return device.getValue() == activeHigh;
 	}
 
 	@Override
-	public void addListener(InputEventListener<DigitalPinEvent> listener) {
-		super.addListener(listener);
+	public void enableListener() {
 		device.setListener(this);
+	}
+
+	@Override
+	public void disableListener() {
+		device.removeListener();
 	}
 }

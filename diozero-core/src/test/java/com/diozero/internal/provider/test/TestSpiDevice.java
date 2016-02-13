@@ -26,14 +26,13 @@ package com.diozero.internal.provider.test;
  * #L%
  */
 
-import java.io.IOException;
-
 import org.pmw.tinylog.Logger;
 
 import com.diozero.api.SpiClockMode;
 import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.DeviceFactoryInterface;
 import com.diozero.internal.spi.SpiDeviceInterface;
+import com.diozero.util.RuntimeIOException;
 
 public abstract class TestSpiDevice extends AbstractDevice implements SpiDeviceInterface {
 	private int controller;
@@ -48,7 +47,7 @@ public abstract class TestSpiDevice extends AbstractDevice implements SpiDeviceI
 	}
 
 	@Override
-	public void closeDevice() throws IOException {
+	public void closeDevice() throws RuntimeIOException {
 		Logger.debug("closeDevice()");
 	}
 

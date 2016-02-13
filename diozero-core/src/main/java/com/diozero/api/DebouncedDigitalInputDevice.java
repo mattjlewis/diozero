@@ -26,8 +26,7 @@ package com.diozero.api;
  * #L%
  */
 
-
-import java.io.IOException;
+import com.diozero.util.RuntimeIOException;
 
 /**
  * Represents a generic input device with typical on/off behaviour.
@@ -38,7 +37,7 @@ import java.io.IOException;
  * the two.
  */
 public class DebouncedDigitalInputDevice extends WaitableDigitalInputDevice {
-	public DebouncedDigitalInputDevice(int pinNumber) throws IOException {
+	public DebouncedDigitalInputDevice(int pinNumber) throws RuntimeIOException {
 		this(pinNumber, GpioPullUpDown.NONE, 0, GpioEventTrigger.BOTH);
 	}
 
@@ -51,13 +50,13 @@ public class DebouncedDigitalInputDevice extends WaitableDigitalInputDevice {
 	 *            will ignore changes in state after an initial change. This
 	 *            defaults to 0 which indicates that no bounce compensation will
 	 *            be performed.
-	 * @throws IOException
+	 * @throws RuntimeIOException
 	 */
-	public DebouncedDigitalInputDevice(int pinNumber, GpioPullUpDown pud, float debounceTime) throws IOException {
+	public DebouncedDigitalInputDevice(int pinNumber, GpioPullUpDown pud, float debounceTime) throws RuntimeIOException {
 		this(pinNumber, pud, debounceTime, GpioEventTrigger.BOTH);
 	}
 	
-	public DebouncedDigitalInputDevice(int pinNumber, GpioPullUpDown pud, float debounceTime, GpioEventTrigger trigger) throws IOException {
+	public DebouncedDigitalInputDevice(int pinNumber, GpioPullUpDown pud, float debounceTime, GpioEventTrigger trigger) throws RuntimeIOException {
 		super(pinNumber, pud, trigger);
 
 		if (debounceTime > 0) {

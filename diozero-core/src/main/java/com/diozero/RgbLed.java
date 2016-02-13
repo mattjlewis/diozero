@@ -28,16 +28,17 @@ package com.diozero;
 
 
 import java.io.Closeable;
-import java.io.IOException;
 
 import org.pmw.tinylog.Logger;
+
+import com.diozero.util.RuntimeIOException;
 
 public class RgbLed implements Closeable {
 	private LED redLED;
 	private LED greenLED;
 	private LED blueLED;
 	
-	public RgbLed(int redPin, int greenPin, int bluePin) throws IOException {
+	public RgbLed(int redPin, int greenPin, int bluePin) throws RuntimeIOException {
 		redLED = new LED(redPin);
 		greenLED = new LED(greenPin);
 		blueLED = new LED(bluePin);
@@ -52,19 +53,19 @@ public class RgbLed implements Closeable {
 	}
 	
 	// Exposed operations
-	public void on() throws IOException {
+	public void on() throws RuntimeIOException {
 		redLED.on();
 		greenLED.on();
 		blueLED.on();
 	}
 	
-	public void off() throws IOException {
+	public void off() throws RuntimeIOException {
 		redLED.off();
 		greenLED.off();
 		blueLED.off();
 	}
 	
-	public void toggle() throws IOException {
+	public void toggle() throws RuntimeIOException {
 		redLED.toggle();
 		greenLED.toggle();
 		blueLED.toggle();

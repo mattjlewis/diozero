@@ -26,12 +26,10 @@ package com.diozero.sampleapps;
  * #L%
  */
 
-
-import java.io.IOException;
-
 import org.pmw.tinylog.Logger;
 
 import com.diozero.LED;
+import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 
 /**
@@ -54,8 +52,10 @@ public class LEDTest {
 			Logger.error("Usage: LEDTest <BCM pin number>");
 			System.exit(1);
 		}
-		
-		int pin = Integer.parseInt(args[0]);
+		test(Integer.parseInt(args[0]));
+	}
+	
+	public static void test(int pin) {
 		try (LED led = new LED(pin)) {
 			Logger.info("On");
 			led.on();
@@ -74,7 +74,7 @@ public class LEDTest {
 			led.blink(0.5f, 0.5f, 10, false);
 			
 			Logger.info("Done");
-		} catch (IOException e) {
+		} catch (RuntimeIOException e) {
 			Logger.error(e, "Error: {}", e);
 		}
 	}

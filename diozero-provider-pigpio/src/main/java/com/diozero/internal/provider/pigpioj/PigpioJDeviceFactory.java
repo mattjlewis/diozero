@@ -32,6 +32,7 @@ import java.io.IOException;
 import com.diozero.api.*;
 import com.diozero.internal.spi.*;
 import com.diozero.pigpioj.PigpioGpio;
+import com.diozero.util.RuntimeIOException;
 
 public class PigpioJDeviceFactory extends BaseNativeDeviceFactory {
 	
@@ -52,36 +53,36 @@ public class PigpioJDeviceFactory extends BaseNativeDeviceFactory {
 
 	@Override
 	protected GpioDigitalInputDeviceInterface createDigitalInputPin(String key, int pinNumber, GpioPullUpDown pud,
-			GpioEventTrigger trigger) throws IOException {
+			GpioEventTrigger trigger) throws RuntimeIOException {
 		return new PigpioJDigitalInputDevice(key, this, pinNumber, pud, trigger);
 	}
 
 	@Override
-	protected GpioAnalogueInputDeviceInterface createAnalogueInputPin(String key, int pinNumber) throws IOException {
+	protected GpioAnalogueInputDeviceInterface createAnalogueInputPin(String key, int pinNumber) throws RuntimeIOException {
 		throw new UnsupportedOperationException("Analogue input pins not supported");
 	}
 
 	@Override
 	protected GpioDigitalOutputDeviceInterface createDigitalOutputPin(String key, int pinNumber, boolean initialValue)
-			throws IOException {
+			throws RuntimeIOException {
 		return new PigpioJDigitalOutputDevice(key, this, pinNumber, initialValue);
 	}
 
 	@Override
 	protected PwmOutputDeviceInterface createPwmOutputPin(String key, int pinNumber, float initialValue,
-			PwmType pwmType) throws IOException {
+			PwmType pwmType) throws RuntimeIOException {
 		return new PigpioJPwmOutputDevice(key, this, pinNumber, initialValue);
 	}
 
 	@Override
 	protected SpiDeviceInterface createSpiDevice(String key, int controller, int chipSelect, int frequency,
-			SpiClockMode spiClockMode) throws IOException {
+			SpiClockMode spiClockMode) throws RuntimeIOException {
 		return new PigpioJSpiDevice(key, this, controller, chipSelect, frequency, spiClockMode);
 	}
 
 	@Override
 	protected I2CDeviceInterface createI2CDevice(String key, int controller, int address, int addressSize,
-			int clockFrequency) throws IOException {
+			int clockFrequency) throws RuntimeIOException {
 		return new PigpioJI2CDevice(key, this, controller, address, addressSize);
 	}
 

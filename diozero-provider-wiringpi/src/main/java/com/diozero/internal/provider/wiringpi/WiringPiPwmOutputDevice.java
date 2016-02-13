@@ -26,15 +26,13 @@ package com.diozero.internal.provider.wiringpi;
  * #L%
  */
 
-
-import java.io.IOException;
-
 import org.pmw.tinylog.Logger;
 
 import com.diozero.api.PwmType;
 import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.DeviceFactoryInterface;
 import com.diozero.internal.spi.PwmOutputDeviceInterface;
+import com.diozero.util.RuntimeIOException;
 import com.pi4j.wiringpi.Gpio;
 import com.pi4j.wiringpi.GpioUtil;
 import com.pi4j.wiringpi.SoftPwm;
@@ -50,7 +48,7 @@ public class WiringPiPwmOutputDevice extends AbstractDevice implements PwmOutput
 	private float value;
 	private PwmType pwmType;
 	
-	WiringPiPwmOutputDevice(String key, DeviceFactoryInterface deviceFactory, int pinNumber, float initialValue, PwmType pwmType) throws IOException {
+	WiringPiPwmOutputDevice(String key, DeviceFactoryInterface deviceFactory, int pinNumber, float initialValue, PwmType pwmType) throws RuntimeIOException {
 		super(key, deviceFactory);
 		
 		this.pinNumber = pinNumber;
@@ -70,14 +68,14 @@ public class WiringPiPwmOutputDevice extends AbstractDevice implements PwmOutput
 		default:
 			int status = SoftPwm.softPwmCreate(pinNumber, 0, SOFTWARE_PWM_RANGE);
 			if (status != 0) {
-				throw new IOException("Error setting up software controlled PWM GPIO on BCM pin " +
+				throw new RuntimeIOException("Error setting up software controlled PWM GPIO on BCM pin " +
 						pinNumber + ", status=" + status);
 			}
 		}
 	}
 
 	@Override
-	public void closeDevice() throws IOException {
+	public void closeDevice() throws RuntimeIOException {
 		Logger.debug("closeDevice()");
 		switch (pwmType) {
 		case HARDWARE:
@@ -103,7 +101,7 @@ public class WiringPiPwmOutputDevice extends AbstractDevice implements PwmOutput
 	}
 
 	@Override
-	public void setValue(float value) throws IOException {
+	public void setValue(float value) throws RuntimeIOException {
 		this.value = value;
 		switch (pwmType) {
 		case HARDWARE:

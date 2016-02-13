@@ -26,12 +26,11 @@ package com.diozero.api;
  * #L%
  */
 
-
-import java.io.IOException;
+import com.diozero.util.RuntimeIOException;
 
 public interface DistanceSensorInterface {
 	/**
 	 * @return distance in cm
 	 */
-	public double getDistanceCm() throws IOException;
+	public double getDistanceCm() throws RuntimeIOException;
 }

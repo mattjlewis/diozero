@@ -28,11 +28,11 @@ package com.diozero.sandpit;
 
 
 import java.io.Closeable;
-import java.io.IOException;
 
 import org.pmw.tinylog.Logger;
 
 import com.diozero.api.*;
+import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 
 /**
@@ -70,7 +70,7 @@ public class HCSR04UsingEvents implements DistanceSensorInterface, Closeable, In
 				Logger.info("Distance = {} cm", String.format("%.3f", Double.valueOf(device.getDistanceCm())));
 				SleepUtil.sleepMillis(1000);
 			}
-		} catch (IOException ex) {
+		} catch (RuntimeIOException ex) {
 			Logger.error(ex, "I/O error with HC-SR04 device: {}", ex.getMessage());
 		}
 	}
@@ -103,7 +103,7 @@ public class HCSR04UsingEvents implements DistanceSensorInterface, Closeable, In
 	 * @param triggerGpioPin
 	 * @param echoGpioPin
 	 */
-	public void init(int triggerGpioNum, int echoGpioNum) throws IOException {
+	public void init(int triggerGpioNum, int echoGpioNum) throws RuntimeIOException {
 		// Define device for trigger pin at HCSR04
 		trigger = new DigitalOutputDevice(triggerGpioNum);
 		// Define device for echo pin at HCSR04
@@ -121,7 +121,7 @@ public class HCSR04UsingEvents implements DistanceSensorInterface, Closeable, In
 	 * @return distance in cm
 	 */
 	@Override
-	public double getDistanceCm() throws IOException {
+	public double getDistanceCm() throws RuntimeIOException {
 		// Send a pulse trigger of 10 us duration
 		trigger.setValue(true);
 		state = State.WAITING_FOR_ECHO_ON;

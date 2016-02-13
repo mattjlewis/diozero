@@ -1,4 +1,4 @@
-package com.diozero;
+package com.diozero.api;
 
 /*
  * #%L
@@ -28,17 +28,16 @@ package com.diozero;
 
 
 import java.io.Closeable;
-import java.io.IOException;
 
 import org.pmw.tinylog.Logger;
 
-import com.diozero.api.DigitalOutputDevice;
+import com.diozero.util.RuntimeIOException;
 
 public class DigitalMotor implements Closeable {
 	private DigitalOutputDevice forward;
 	private DigitalOutputDevice backward;
 	
-	public DigitalMotor(int forwardPin, int backwardPin) throws IOException {
+	public DigitalMotor(int forwardPin, int backwardPin) throws RuntimeIOException {
 		forward = new DigitalOutputDevice(forwardPin);
 		backward = new DigitalOutputDevice(forwardPin);
 	}
@@ -51,22 +50,22 @@ public class DigitalMotor implements Closeable {
 	}
 	
 	// Exposed operations
-	public void forward() throws IOException {
+	public void forward() throws RuntimeIOException {
 		forward.on();
 		backward.off();
 	}
 	
-	public void backward() throws IOException {
+	public void backward() throws RuntimeIOException {
 		forward.off();
 		backward.on();
 	}
 	
-	public void stop() throws IOException {
+	public void stop() throws RuntimeIOException {
 		forward.off();
 		backward.off();
 	}
 	
-	public void reverse() throws IOException {
+	public void reverse() throws RuntimeIOException {
 		if (!isActive()) {
 			return;
 		}
@@ -74,16 +73,16 @@ public class DigitalMotor implements Closeable {
 		backward.toggle();
 	}
 	
-	public boolean isActive() throws IOException {
+	public boolean isActive() throws RuntimeIOException {
 		return forward.isOn() || backward.isOn();
 	}
 	
 	/**
 	 * Represents the speed of the motor as a floating point value between -1
 	 *   (full speed backward) and 1 (full speed forward)
-	 * @throws IOException 
+	 * @throws RuntimeIOException 
 	 */
-	public float getValue() throws IOException {
+	public float getValue() throws RuntimeIOException {
 		if (forward.isOn()) {
 			return 1;
 		} else if (backward.isOn()) {

@@ -27,8 +27,6 @@ package com.diozero.internal.provider.mcp23017;
  */
 
 
-import java.io.IOException;
-
 import org.pmw.tinylog.Logger;
 
 import com.diozero.MCP23017;
@@ -36,6 +34,7 @@ import com.diozero.api.DigitalPinEvent;
 import com.diozero.api.GpioEventTrigger;
 import com.diozero.internal.spi.AbstractInputDevice;
 import com.diozero.internal.spi.GpioDigitalInputDeviceInterface;
+import com.diozero.util.RuntimeIOException;
 
 public class MCP23017DigitalInputDevice extends AbstractInputDevice<DigitalPinEvent> implements GpioDigitalInputDeviceInterface {
 	private MCP23017 mcp23017;
@@ -51,14 +50,14 @@ public class MCP23017DigitalInputDevice extends AbstractInputDevice<DigitalPinEv
 	}
 
 	@Override
-	public void closeDevice() throws IOException {
+	public void closeDevice() throws RuntimeIOException {
 		Logger.debug("closeDevice()");
 		removeListener();
 		mcp23017.closePin(pinNumber);
 	}
 
 	@Override
-	public boolean getValue() throws IOException {
+	public boolean getValue() throws RuntimeIOException {
 		return mcp23017.getValue(pinNumber);
 	}
 

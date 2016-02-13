@@ -28,7 +28,6 @@ package com.diozero;
 
 
 import java.io.Closeable;
-import java.io.IOException;
 
 import org.pmw.tinylog.Logger;
 
@@ -38,6 +37,7 @@ import com.diozero.internal.provider.mcp23017.MCP23017DigitalOutputDevice;
 import com.diozero.internal.spi.*;
 import com.diozero.util.BitManipulation;
 import com.diozero.util.MutableByte;
+import com.diozero.util.RuntimeIOException;
 
 /**
  * http://ww1.microchip.com/downloads/en/DeviceDoc/21952b.pdf
@@ -219,22 +219,22 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalPinEvent>, Clos
 	private MutableByte[] interruptCompareFlags = { new MutableByte(), new MutableByte() };
 	private InterruptMode interruptMode = InterruptMode.DISABLED;
 
-	public MCP23017() throws IOException {
+	public MCP23017() throws RuntimeIOException {
 		this(I2CConstants.BUS_1, DEVICE_ADDRESS, I2CConstants.ADDR_SIZE_7, I2CConstants.DEFAULT_CLOCK_FREQUENCY,
 				INTERRUPT_PIN_NOT_SET, INTERRUPT_PIN_NOT_SET);
 	}
 
-	public MCP23017(int interruptPinNumberA, int interruptPinNumberB) throws IOException {
+	public MCP23017(int interruptPinNumberA, int interruptPinNumberB) throws RuntimeIOException {
 		this(I2CConstants.BUS_1, DEVICE_ADDRESS, I2CConstants.ADDR_SIZE_7, I2CConstants.DEFAULT_CLOCK_FREQUENCY,
 				interruptPinNumberA, interruptPinNumberB);
 	}
 
-	public MCP23017(int controller, int address, int addressSize, int clockFrequency, int interruptPinNumber) throws IOException {
+	public MCP23017(int controller, int address, int addressSize, int clockFrequency, int interruptPinNumber) throws RuntimeIOException {
 		this(controller, address, addressSize, clockFrequency, interruptPinNumber, interruptPinNumber);
 	}
 
 	public MCP23017(int controller, int address, int addressSize, int clockFrequency,
-			int interruptPinNumberA, int interruptPinNumberB) throws IOException {
+			int interruptPinNumberA, int interruptPinNumberB) throws RuntimeIOException {
 		i2cDevice = new I2CDevice(controller, address, addressSize, clockFrequency);
 		
 		keyPrefix = DEVICE_NAME + "-" + controller + "-" + address + "-";
@@ -320,7 +320,7 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalPinEvent>, Clos
 
 	@Override
 	public GpioDigitalInputDeviceInterface provisionDigitalInputPin(int pinNumber, GpioPullUpDown pud,
-			GpioEventTrigger trigger) throws IOException {
+			GpioEventTrigger trigger) throws RuntimeIOException {
 		if (pinNumber < 0 || pinNumber >= NUM_PINS) {
 			throw new IllegalArgumentException(
 					"Invalid pin number (" + pinNumber + "); pin number must be 0.." + (NUM_PINS - 1));
@@ -365,12 +365,12 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalPinEvent>, Clos
 	}
 	
 	public DigitalInputDevice provisionDigitalInputDevice(int pinNumber, GpioPullUpDown pud,
-			GpioEventTrigger trigger) throws IOException {
+			GpioEventTrigger trigger) throws RuntimeIOException {
 		return new DigitalInputDevice(provisionDigitalInputPin(pinNumber, pud, trigger), pud != GpioPullUpDown.PULL_DOWN);
 	}
 
 	@Override
-	public GpioDigitalOutputDeviceInterface provisionDigitalOutputPin(int pinNumber, boolean initialValue) throws IOException {
+	public GpioDigitalOutputDeviceInterface provisionDigitalOutputPin(int pinNumber, boolean initialValue) throws RuntimeIOException {
 		if (pinNumber < 0 || pinNumber >= NUM_PINS) {
 			throw new IllegalArgumentException(
 					"Invalid pin number (" + pinNumber + "); pin number must be 0.." + (NUM_PINS - 1));
@@ -391,7 +391,7 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalPinEvent>, Clos
 		return device;
 	}
 
-	public boolean getValue(int pinNumber) throws IOException {
+	public boolean getValue(int pinNumber) throws RuntimeIOException {
 		if (pinNumber < 0 || pinNumber >= NUM_PINS) {
 			throw new IllegalArgumentException("Invalid pin number: " + pinNumber + ". "
 					+ DEVICE_NAME + " has " + NUM_PINS + " GPIOs; pin number must be 0.." + (NUM_PINS - 1));
@@ -405,7 +405,7 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalPinEvent>, Clos
 		return (states & bit) != 0;
 	}
 
-	public void setValue(int pinNumber, boolean value) throws IOException {
+	public void setValue(int pinNumber, boolean value) throws RuntimeIOException {
 		if (pinNumber < 0 || pinNumber >= NUM_PINS) {
 			throw new IllegalArgumentException("Invalid pin number: " + pinNumber + ". "
 					+ DEVICE_NAME + " has " + NUM_PINS + " GPIOs; pin number must be 0.." + (NUM_PINS - 1));
@@ -428,7 +428,7 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalPinEvent>, Clos
 	}
 	
 	@Override
-	public void close() throws IOException {
+	public void close() throws RuntimeIOException {
 		Logger.debug("close()");
 		// Close the interrupt pins
 		if (interruptPinA != null) { interruptPinA.close(); }
@@ -438,7 +438,7 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalPinEvent>, Clos
 		i2cDevice.close();
 	}
 
-	public void closePin(int pinNumber) throws IOException {
+	public void closePin(int pinNumber) throws RuntimeIOException {
 		Logger.debug("closePin({})", Integer.valueOf(pinNumber));
 		
 		if (pinNumber < 0 || pinNumber >= NUM_PINS) {
@@ -531,7 +531,7 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalPinEvent>, Clos
 						}
 					}
 				}
-			} catch (IOException e) {
+			} catch (RuntimeIOException e) {
 				// Log and ignore
 				Logger.error(e, "IO error handling interrupts: {}", e);
 			}

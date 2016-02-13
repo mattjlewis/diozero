@@ -26,11 +26,9 @@ package com.diozero.internal.provider.wiringpi;
  * #L%
  */
 
-
-import java.io.IOException;
-
 import com.diozero.api.*;
 import com.diozero.internal.spi.*;
+import com.diozero.util.RuntimeIOException;
 import com.pi4j.wiringpi.Gpio;
 import com.pi4j.wiringpi.GpioUtil;
 
@@ -50,23 +48,23 @@ public class WiringPiDeviceFactory extends BaseNativeDeviceFactory {
 
 	@Override
 	protected GpioDigitalInputDeviceInterface createDigitalInputPin(String key, int pinNumber, GpioPullUpDown pud,
-			GpioEventTrigger trigger) throws IOException {
+			GpioEventTrigger trigger) throws RuntimeIOException {
 		if (GpioUtil.isPinSupported(pinNumber) != 1) {
-			throw new IOException("Error: Pin " + pinNumber + " isn't supported");
+			throw new RuntimeIOException("Error: Pin " + pinNumber + " isn't supported");
 		}
 		
 		return new WiringPiDigitalInputDevice(key, this, pinNumber, pud, trigger);
 	}
 
 	@Override
-	public GpioAnalogueInputDeviceInterface createAnalogueInputPin(String key, int pinNumber) throws IOException {
+	public GpioAnalogueInputDeviceInterface createAnalogueInputPin(String key, int pinNumber) throws RuntimeIOException {
 		throw new UnsupportedOperationException("Analogue devices aren't supported on this device");
 	}
 
 	@Override
-	public GpioDigitalOutputDeviceInterface createDigitalOutputPin(String key, int pinNumber, boolean initialValue) throws IOException {
+	public GpioDigitalOutputDeviceInterface createDigitalOutputPin(String key, int pinNumber, boolean initialValue) throws RuntimeIOException {
 		if (GpioUtil.isPinSupported(pinNumber) != 1) {
-			throw new IOException("Error: Pin " + pinNumber + " isn't supported");
+			throw new RuntimeIOException("Error: Pin " + pinNumber + " isn't supported");
 		}
 		
 		return new WiringPiDigitalOutputDevice(key, this, pinNumber, initialValue);
@@ -74,9 +72,9 @@ public class WiringPiDeviceFactory extends BaseNativeDeviceFactory {
 
 	@Override
 	public PwmOutputDeviceInterface createPwmOutputPin(String key, int pinNumber,
-			float initialValue, PwmType pwmType) throws IOException {
+			float initialValue, PwmType pwmType) throws RuntimeIOException {
 		if (GpioUtil.isPinSupported(pinNumber) != 1) {
-			throw new IOException("Error: Pin " + pinNumber + " isn't supported");
+			throw new RuntimeIOException("Error: Pin " + pinNumber + " isn't supported");
 		}
 		
 		return new WiringPiPwmOutputDevice(key, this, pinNumber, initialValue, pwmType);
@@ -84,13 +82,13 @@ public class WiringPiDeviceFactory extends BaseNativeDeviceFactory {
 
 	@Override
 	public SpiDeviceInterface createSpiDevice(String key, int controller, int chipSelect, int frequency,
-			SpiClockMode spiClockMode) throws IOException {
+			SpiClockMode spiClockMode) throws RuntimeIOException {
 		return new WiringPiSpiDevice(key, this, controller, chipSelect, frequency, spiClockMode);
 	}
 
 	@Override
 	public I2CDeviceInterface createI2CDevice(String key, int controller, int address, int addressSize, int clockFrequency)
-			throws IOException {
+			throws RuntimeIOException {
 		return new WiringPiI2CDevice(key, this, controller, address, addressSize, clockFrequency);
 	}
 }

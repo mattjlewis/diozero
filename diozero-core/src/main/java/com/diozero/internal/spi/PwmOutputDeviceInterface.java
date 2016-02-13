@@ -26,8 +26,7 @@ package com.diozero.internal.spi;
  * #L%
  */
 
-
-import java.io.IOException;
+import com.diozero.util.RuntimeIOException;
 
 public interface PwmOutputDeviceInterface extends DeviceInterface {
 	/**
@@ -43,13 +42,13 @@ public interface PwmOutputDeviceInterface extends DeviceInterface {
 	/**
 	 * Get the current PWM output value (0..1)
 	 * @return Range is 0..1
-	 * @throws IOException
+	 * @throws RuntimeIOException
 	 */
-	float getValue() throws IOException;
+	float getValue() throws RuntimeIOException;
 	/**
 	 * Set the PWM output value (0..1)
 	 * @param value Relative value in the range 0..1
-	 * @throws IOException
+	 * @throws RuntimeIOException
 	 */
-	void setValue(float value) throws IOException;
+	void setValue(float value) throws RuntimeIOException;
 }

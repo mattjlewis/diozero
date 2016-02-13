@@ -1,4 +1,4 @@
-package com.diozero.internal.spi;
+package com.diozero.util;
 
 /*
  * #%L
@@ -26,12 +26,15 @@ package com.diozero.internal.spi;
  * #L%
  */
 
-import java.nio.ByteBuffer;
 
-import com.diozero.util.RuntimeIOException;
+public class RuntimeIOException extends RuntimeException {
+	private static final long serialVersionUID = -1676518784067421079L;
+	
+	public RuntimeIOException(Exception cause) {
+		super(cause);
+	}
 
-public interface SpiDeviceInterface extends DeviceInterface {
-	ByteBuffer writeAndRead(ByteBuffer out) throws RuntimeIOException;
-	int getController();
-	int getChipSelect();
+	public RuntimeIOException(String message) {
+		super(message);
+	}
 }

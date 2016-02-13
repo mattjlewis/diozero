@@ -26,14 +26,12 @@ package com.diozero.sandpit;
  * #L%
  */
 
-
-import java.io.IOException;
-
 import org.pmw.tinylog.Logger;
 
 import com.diozero.api.DigitalOutputDevice;
 import com.diozero.api.MotorInterface;
 import com.diozero.api.PwmOutputDevice;
+import com.diozero.util.RuntimeIOException;
 
 /**
  * Bi-directional motor controlled by a single PWM pin and separate forward / backward GPIO pins
@@ -65,10 +63,10 @@ public class TB6612FNGMotor implements MotorInterface {
 	/**
 	 * @param speed
 	 *            Range 0..1
-	 * @throws IOException
+	 * @throws RuntimeIOException
 	 */
 	@Override
-	public void forward(float speed) throws IOException {
+	public void forward(float speed) throws RuntimeIOException {
 		motorBackwardControlPin.off();
 		motorForwardControlPin.on();
 		motorPwmControl.setValue(speed);
@@ -77,17 +75,17 @@ public class TB6612FNGMotor implements MotorInterface {
 	/**
 	 * @param speed
 	 *            Range 0..1
-	 * @throws IOException
+	 * @throws RuntimeIOException
 	 */
 	@Override
-	public void backward(float speed) throws IOException {
+	public void backward(float speed) throws RuntimeIOException {
 		motorForwardControlPin.off();
 		motorBackwardControlPin.on();
 		motorPwmControl.setValue(speed);
 	}
 	
 	@Override
-	public void stop() throws IOException {
+	public void stop() throws RuntimeIOException {
 		motorForwardControlPin.off();
 		motorBackwardControlPin.off();
 		motorPwmControl.setValue(0);
@@ -95,10 +93,10 @@ public class TB6612FNGMotor implements MotorInterface {
 
 	/**
 	 * Reverse direction of the motors
-	 * @throws IOException
+	 * @throws RuntimeIOException
 	 */
 	@Override
-	public void reverse() throws IOException {
+	public void reverse() throws RuntimeIOException {
 		setValue(-getValue());
 	}
 	
@@ -107,7 +105,7 @@ public class TB6612FNGMotor implements MotorInterface {
 	 * (full speed backward) and 1 (full speed forward)
 	 */
 	@Override
-	public float getValue() throws IOException {
+	public float getValue() throws RuntimeIOException {
 		float speed = motorPwmControl.getValue();
 		
 		return motorForwardControlPin.isOn() ? speed : -speed;
@@ -117,10 +115,10 @@ public class TB6612FNGMotor implements MotorInterface {
 	 * Set the speed of the motor as a floating point value between -1 (full
 	 * speed backward) and 1 (full speed forward)
 	 * @param value Range -1 .. 1. Positive numbers for forward, Negative numbers for backward
-	 * @throws IOException
+	 * @throws RuntimeIOException
 	 */
 	@Override
-	public void setValue(float value) throws IOException {
+	public void setValue(float value) throws RuntimeIOException {
 		if (value < -1 || value > 1) {
 			throw new IllegalArgumentException("Motor value must be between -1 and 1");
 		}
@@ -134,7 +132,7 @@ public class TB6612FNGMotor implements MotorInterface {
 	}
 
 	@Override
-	public boolean isActive() throws IOException {
+	public boolean isActive() throws RuntimeIOException {
 		return motorPwmControl.isOn() && (motorForwardControlPin.isOn() || motorBackwardControlPin.isOn());
 	}
 }

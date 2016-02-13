@@ -1,4 +1,4 @@
-package com.diozero.internal.spi;
+package com.diozero.sampleapps;
 
 /*
  * #%L
@@ -26,12 +26,33 @@ package com.diozero.internal.spi;
  * #L%
  */
 
-import java.nio.ByteBuffer;
 
+import org.pmw.tinylog.Logger;
+
+import com.diozero.Button;
+import com.diozero.LED;
+import com.diozero.api.GpioPullUpDown;
 import com.diozero.util.RuntimeIOException;
+import com.diozero.util.SleepUtil;
 
-public interface SpiDeviceInterface extends DeviceInterface {
-	ByteBuffer writeAndRead(ByteBuffer out) throws RuntimeIOException;
-	int getController();
-	int getChipSelect();
+public class ButtonControlledLed {
+	public static void main(String[] args) {
+		if (args.length < 2) {
+			Logger.error("Usage: ButtonControlledLed <button-pin> <led-pin>");
+			System.exit(1);
+		}
+		test(Integer.parseInt(args[0]), Integer.parseInt(args[1]));
+	}
+	
+	public static void test(int buttonPin, int ledPin) {
+		try (Button b = new Button(buttonPin, GpioPullUpDown.PULL_UP); LED led = new LED(ledPin)) {
+			b.whenPressed(led::on);
+			b.whenReleased(led::off);
+			
+			Logger.info("Waiting for 10s - *** Press the button connected to pin {} ***", Integer.valueOf(buttonPin));
+			SleepUtil.sleepSeconds(10);
+		} catch (RuntimeIOException e) {
+			Logger.error(e, "Error: {}", e);
+		}
+	}
 }

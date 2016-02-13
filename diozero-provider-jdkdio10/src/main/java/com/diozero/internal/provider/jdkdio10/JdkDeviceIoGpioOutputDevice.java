@@ -34,6 +34,7 @@ import org.pmw.tinylog.Logger;
 import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.DeviceFactoryInterface;
 import com.diozero.internal.spi.GpioDigitalOutputDeviceInterface;
+import com.diozero.util.RuntimeIOException;
 
 import jdk.dio.DeviceConfig;
 import jdk.dio.DeviceManager;
@@ -44,20 +45,28 @@ public class JdkDeviceIoGpioOutputDevice extends AbstractDevice implements GpioD
 	private GPIOPinConfig pinConfig;
 	private GPIOPin pin;
 	
-	JdkDeviceIoGpioOutputDevice(String key, DeviceFactoryInterface deviceFactory, int pinNumber, boolean initialValue) throws IOException {
+	JdkDeviceIoGpioOutputDevice(String key, DeviceFactoryInterface deviceFactory, int pinNumber, boolean initialValue) throws RuntimeIOException {
 		super(key, deviceFactory);
 		
 		pinConfig = new GPIOPinConfig(DeviceConfig.DEFAULT, pinNumber, GPIOPinConfig.DIR_OUTPUT_ONLY,
 				GPIOPinConfig.DEFAULT, GPIOPinConfig.TRIGGER_NONE, initialValue);
 				//GPIOPinConfig.MODE_OUTPUT_PUSH_PULL, GPIOPinConfig.TRIGGER_NONE, false);
-		pin = DeviceManager.open(GPIOPin.class, pinConfig);
+		try {
+			pin = DeviceManager.open(GPIOPin.class, pinConfig);
+		} catch (IOException e) {
+			throw new RuntimeIOException(e);
+		}
 	}
 
 	@Override
-	public void closeDevice() throws IOException {
+	public void closeDevice() throws RuntimeIOException {
 		Logger.debug("closeDevice()");
 		if (pin.isOpen()) {
-			pin.close();
+			try {
+				pin.close();
+			} catch (IOException e) {
+				throw new RuntimeIOException(e);
+			}
 		}
 	}
 	
@@ -68,12 +77,20 @@ public class JdkDeviceIoGpioOutputDevice extends AbstractDevice implements GpioD
 	}
 	
 	@Override
-	public boolean getValue() throws IOException {
-		return pin.getValue();
+	public boolean getValue() throws RuntimeIOException {
+		try {
+			return pin.getValue();
+		} catch (IOException e) {
+			throw new RuntimeIOException(e);
+		}
 	}
 	
 	@Override
-	public void setValue(boolean value) throws IOException {
-		pin.setValue(value);
+	public void setValue(boolean value) throws RuntimeIOException {
+		try {
+			pin.setValue(value);
+		} catch (IOException e) {
+			throw new RuntimeIOException(e);
+		}
 	}
 }

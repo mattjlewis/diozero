@@ -26,12 +26,10 @@ package com.diozero.internal.spi;
  * #L%
  */
 
-
-import java.io.IOException;
-
 import com.diozero.api.SpiClockMode;
+import com.diozero.util.RuntimeIOException;
 
 public interface SpiDeviceFactoryInterface extends DeviceFactoryInterface {
 	SpiDeviceInterface provisionSpiDevice(int controller, int chipSelect, int frequency,
-			SpiClockMode spiClockMode) throws IOException;
+			SpiClockMode spiClockMode) throws RuntimeIOException;
 }

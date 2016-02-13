@@ -26,12 +26,10 @@ package com.diozero.sampleapps;
  * #L%
  */
 
-
-import java.io.IOException;
-
 import org.pmw.tinylog.Logger;
 
 import com.diozero.api.PwmOutputDevice;
+import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 
 /**
@@ -53,7 +51,10 @@ public class PwmTest {
 			System.exit(1);
 		}
 		
-		int pin = Integer.parseInt(args[0]);
+		test(Integer.parseInt(args[0]));
+	}
+	
+	public static void test(int pin) {
 		try (PwmOutputDevice pwm = new PwmOutputDevice(pin)) {
 			for (float f=0; f<1; f+=0.05) {
 				Logger.info("Setting value to {}", Float.valueOf(f));
@@ -61,7 +62,7 @@ public class PwmTest {
 				SleepUtil.sleepSeconds(0.5);
 			}
 			Logger.info("Done");
-		} catch (IOException e) {
+		} catch (RuntimeIOException e) {
 			Logger.error(e, "Error: ", e);
 		}
 	}

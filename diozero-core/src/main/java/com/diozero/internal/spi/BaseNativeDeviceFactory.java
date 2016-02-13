@@ -26,12 +26,10 @@ package com.diozero.internal.spi;
  * #L%
  */
 
-
-import java.io.IOException;
-
 import org.pmw.tinylog.Logger;
 
 import com.diozero.api.*;
+import com.diozero.util.RuntimeIOException;
 
 /**
  * Helper class for instantiating different devices via the configured provider.
@@ -58,7 +56,7 @@ public abstract class BaseNativeDeviceFactory extends AbstractDeviceFactory impl
 	
 	@Override
 	public final GpioDigitalInputDeviceInterface provisionDigitalInputPin(int pinNumber, GpioPullUpDown pud,
-			GpioEventTrigger trigger) throws IOException {
+			GpioEventTrigger trigger) throws RuntimeIOException {
 		// TODO Understand limitations of a particular device
 		// Create some sort of DeviceCapabilities class for this kind of information
 		// Raspberry Pi GPIO2 and GPIO3 are SDA and SCL1 respectively
@@ -81,7 +79,7 @@ public abstract class BaseNativeDeviceFactory extends AbstractDeviceFactory impl
 	}
 
 	@Override
-	public final GpioAnalogueInputDeviceInterface provisionAnalogueInputPin(int pinNumber) throws IOException {
+	public final GpioAnalogueInputDeviceInterface provisionAnalogueInputPin(int pinNumber) throws RuntimeIOException {
 		String key = createGpioKey(pinNumber);
 		
 		// Check if this pin is already provisioned
@@ -96,7 +94,7 @@ public abstract class BaseNativeDeviceFactory extends AbstractDeviceFactory impl
 	}
 
 	@Override
-	public final GpioDigitalOutputDeviceInterface provisionDigitalOutputPin(int pinNumber, boolean initialValue) throws IOException {
+	public final GpioDigitalOutputDeviceInterface provisionDigitalOutputPin(int pinNumber, boolean initialValue) throws RuntimeIOException {
 		String key = createGpioKey(pinNumber);
 		
 		// Check if this pin is already provisioned
@@ -111,7 +109,7 @@ public abstract class BaseNativeDeviceFactory extends AbstractDeviceFactory impl
 	}
 
 	@Override
-	public final PwmOutputDeviceInterface provisionPwmOutputPin(int pinNumber, float initialValue) throws IOException {
+	public final PwmOutputDeviceInterface provisionPwmOutputPin(int pinNumber, float initialValue) throws RuntimeIOException {
 		String key = createGpioKey(pinNumber);
 		
 		// Check if this pin is already provisioned
@@ -137,7 +135,7 @@ public abstract class BaseNativeDeviceFactory extends AbstractDeviceFactory impl
 	}
 
 	@Override
-	public final SpiDeviceInterface provisionSpiDevice(int controller, int chipSelect, int frequency, SpiClockMode spiClockMode) throws IOException {
+	public final SpiDeviceInterface provisionSpiDevice(int controller, int chipSelect, int frequency, SpiClockMode spiClockMode) throws RuntimeIOException {
 		String key = createSpiKey(controller, chipSelect);
 		
 		// Check if this pin is already provisioned
@@ -152,7 +150,7 @@ public abstract class BaseNativeDeviceFactory extends AbstractDeviceFactory impl
 	}
 
 	@Override
-	public final I2CDeviceInterface provisionI2CDevice(int controller, int address, int addressSize, int clockFrequency) throws IOException {
+	public final I2CDeviceInterface provisionI2CDevice(int controller, int address, int addressSize, int clockFrequency) throws RuntimeIOException {
 		String key = createI2CKey(controller, address);
 		
 		// Check if this pin is already provisioned
@@ -167,13 +165,13 @@ public abstract class BaseNativeDeviceFactory extends AbstractDeviceFactory impl
 	}
 
 	protected abstract GpioDigitalInputDeviceInterface createDigitalInputPin(String key, int pinNumber, GpioPullUpDown pud,
-			GpioEventTrigger trigger) throws IOException;
-	protected abstract GpioAnalogueInputDeviceInterface createAnalogueInputPin(String key, int pinNumber) throws IOException;
-	protected abstract GpioDigitalOutputDeviceInterface createDigitalOutputPin(String key, int pinNumber, boolean initialValue) throws IOException;
+			GpioEventTrigger trigger) throws RuntimeIOException;
+	protected abstract GpioAnalogueInputDeviceInterface createAnalogueInputPin(String key, int pinNumber) throws RuntimeIOException;
+	protected abstract GpioDigitalOutputDeviceInterface createDigitalOutputPin(String key, int pinNumber, boolean initialValue) throws RuntimeIOException;
 	protected abstract PwmOutputDeviceInterface createPwmOutputPin(String key, int pinNumber,
-			float initialValue, PwmType pwmType) throws IOException;
+			float initialValue, PwmType pwmType) throws RuntimeIOException;
 	protected abstract SpiDeviceInterface createSpiDevice(String key, int controller, int chipSelect, int frequency,
-			SpiClockMode spiClockMode) throws IOException;
+			SpiClockMode spiClockMode) throws RuntimeIOException;
 	protected abstract I2CDeviceInterface createI2CDevice(String key, int controller, int address, int addressSize,
-			int clockFrequency) throws IOException;
+			int clockFrequency) throws RuntimeIOException;
 }

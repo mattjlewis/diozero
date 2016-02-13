@@ -26,12 +26,10 @@ package com.diozero.sampleapps;
  * #L%
  */
 
-
-import java.io.IOException;
-
 import org.pmw.tinylog.Logger;
 
 import com.diozero.api.DigitalOutputDevice;
+import com.diozero.util.RuntimeIOException;
 
 /**
  * GPIO output performance test application
@@ -63,6 +61,10 @@ public class GpioPerfTest {
 			iterations = Integer.parseInt(args[1]);
 		}
 		
+		test(pin, iterations);
+	}
+	
+	public static void test(int pin, int iterations) {
 		try (DigitalOutputDevice gpio = new DigitalOutputDevice(pin)) {
 			for (int j=0; j<5; j++) {
 				long start_nano = System.nanoTime();
@@ -75,9 +77,8 @@ public class GpioPerfTest {
 				Logger.info("Duration for {} iterations: {}s", Integer.valueOf(iterations),
 						String.format("%.4f", Float.valueOf(((float)duration_ns) / 1000 / 1000 / 1000)));
 			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (RuntimeIOException e) {
+			Logger.error(e, "Error: {}", e);
 		}
 	}
 }

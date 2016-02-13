@@ -26,15 +26,13 @@ package com.diozero.internal.provider.pi4j;
  * #L%
  */
 
-
-import java.io.IOException;
-
 import org.pmw.tinylog.Logger;
 
 import com.diozero.api.PwmType;
 import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.DeviceFactoryInterface;
 import com.diozero.internal.spi.PwmOutputDeviceInterface;
+import com.diozero.util.RuntimeIOException;
 import com.pi4j.io.gpio.GpioController;
 import com.pi4j.io.gpio.GpioPinPwmOutput;
 import com.pi4j.io.gpio.Pin;
@@ -54,7 +52,7 @@ public class Pi4jPwmOutputDevice extends AbstractDevice implements PwmOutputDevi
 	private PwmType pwmType;
 	
 	Pi4jPwmOutputDevice(String key, DeviceFactoryInterface deviceFactory, GpioController gpioController,
-			int pinNumber, float initialValue, PwmType pwmType) throws IOException {
+			int pinNumber, float initialValue, PwmType pwmType) throws RuntimeIOException {
 		super(key, deviceFactory);
 		
 		Pin pin = RaspiGpioBcm.getPin(pinNumber);
@@ -75,7 +73,7 @@ public class Pi4jPwmOutputDevice extends AbstractDevice implements PwmOutputDevi
 		default:
 			int status = SoftPwm.softPwmCreate(pinNumber, (int)(initialValue * SOFTWARE_PWM_RANGE), SOFTWARE_PWM_RANGE);
 			if (status != 0) {
-				throw new IOException("Error setting up software controlled PWM GPIO on BCM pin " +
+				throw new RuntimeIOException("Error setting up software controlled PWM GPIO on BCM pin " +
 						pinNumber + ", status=" + status);
 			}
 		}
@@ -109,7 +107,7 @@ public class Pi4jPwmOutputDevice extends AbstractDevice implements PwmOutputDevi
 	}
 
 	@Override
-	public void setValue(float value) throws IOException {
+	public void setValue(float value) throws RuntimeIOException {
 		this.value = value;
 		switch (pwmType) {
 		case HARDWARE:

@@ -35,6 +35,7 @@ import org.pmw.tinylog.Logger;
 import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.DeviceFactoryInterface;
 import com.diozero.internal.spi.I2CDeviceInterface;
+import com.diozero.util.RuntimeIOException;
 
 import jdk.dio.DeviceManager;
 import jdk.dio.i2cbus.I2CDevice;
@@ -61,11 +62,15 @@ public class JdkDeviceIoI2CDevice extends AbstractDevice implements I2CDeviceInt
 	 *            the clock frequency of the slave device in Hz (a positive
 	 *            integer) or {@link jdk.dio.i2cbus.I2CDeviceConfig.DEFAULT}.
 	 */
-	public JdkDeviceIoI2CDevice(String key, DeviceFactoryInterface deviceFactory, int controllerNumber, int address, int addressSize, int clockFrequency) throws IOException {
+	public JdkDeviceIoI2CDevice(String key, DeviceFactoryInterface deviceFactory, int controllerNumber, int address, int addressSize, int clockFrequency) throws RuntimeIOException {
 		super(key, deviceFactory);
 		
 		this.deviceConfig = new I2CDeviceConfig(controllerNumber, address, addressSize, clockFrequency);
-		device = DeviceManager.open(deviceConfig);
+		try {
+			device = DeviceManager.open(deviceConfig);
+		} catch (IOException e) {
+			throw new RuntimeIOException(e);
+		}
 	}
 	
 	@Override
@@ -82,26 +87,35 @@ public class JdkDeviceIoI2CDevice extends AbstractDevice implements I2CDeviceInt
 	}
 
 	@Override
-	public void read(int address, int subAddressSize, ByteBuffer buffer) throws IOException {
+	public void read(int address, int subAddressSize, ByteBuffer buffer) throws RuntimeIOException {
 		if (! device.isOpen()) {
 			throw new IllegalStateException("I2C Device " +
 					deviceConfig.getControllerNumber() + "-" + deviceConfig.getAddress() + " is closed");
 		}
 		
-		int result = device.read(address, subAddressSize, buffer);
-		if (result != buffer.capacity()) {
-			throw new IOException(
-					"Didn't read correct number of bytes, read " + result + ", expected " + buffer.capacity());
+		int result;
+		try {
+			result = device.read(address, subAddressSize, buffer);
+			if (result != buffer.capacity()) {
+				throw new RuntimeIOException(
+						"Didn't read correct number of bytes, read " + result + ", expected " + buffer.capacity());
+			}
+		} catch (IOException e) {
+			throw new RuntimeIOException(e);
 		}
 	}
 
 	@Override
-	public void write(int register, int subAddressSize, ByteBuffer buffer) throws IOException {
+	public void write(int register, int subAddressSize, ByteBuffer buffer) throws RuntimeIOException {
 		if (! device.isOpen()) {
 			throw new IllegalStateException("I2C Device " +
 					deviceConfig.getControllerNumber() + "-" + deviceConfig.getAddress() + " is closed");
 		}
 		
-		device.write(register, subAddressSize, buffer);
+		try {
+			device.write(register, subAddressSize, buffer);
+		} catch (IOException e) {
+			throw new RuntimeIOException(e);
+		}
 	}
 }

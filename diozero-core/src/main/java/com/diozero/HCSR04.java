@@ -28,11 +28,11 @@ package com.diozero;
 
 
 import java.io.Closeable;
-import java.io.IOException;
 
 import org.pmw.tinylog.Logger;
 
 import com.diozero.api.*;
+import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 
 /**
@@ -47,9 +47,6 @@ import com.diozero.util.SleepUtil;
  * burst of ultrasound at 40 kHz and raise its echo. The Echo is a distance
  * object that is pulse width and the range in proportion. We suggest to use over
  * 60ms measurement cycle, in order to prevent trigger signal to the echo signal
- * (Pi4j):				sudo java -classpath dio-zero.jar:pi4j-core.jar com.diozero.HCSR04 17 27
- * (JDK Device I/O):	sudo java -classpath dio-zero.jar -Djava.security.policy=config/gpio.policy com.diozero.HCSR04 17 27
- *
  */
 public class HCSR04 implements DistanceSensorInterface, Closeable {
 	private static long MS_IN_SEC = 1000;
@@ -71,15 +68,14 @@ public class HCSR04 implements DistanceSensorInterface, Closeable {
 	 * @param triggerGpioPin
 	 * @param echoGpioPin
 	 */
-	public void init(int triggerGpioNum, int echoGpioNum) throws IOException {
+	public HCSR04(int triggerGpioNum, int echoGpioNum) throws RuntimeIOException {
 		// Define device for trigger pin at HCSR04
-		trigger = new DigitalOutputDevice(triggerGpioNum);
+		trigger = new DigitalOutputDevice(triggerGpioNum, true, false);
 		// Define device for echo pin at HCSR04
 		echo = new DigitalInputDevice(echoGpioNum, GpioPullUpDown.NONE, GpioEventTrigger.BOTH);
 
-		trigger.setValue(false);
-		// Wait for 0.5 seconds
-		SleepUtil.sleepSeconds(0.5);
+		// Sleep for 20 ms - let the device settle?
+		SleepUtil.sleepMillis(20);
 	}
 
 	/**
@@ -88,7 +84,7 @@ public class HCSR04 implements DistanceSensorInterface, Closeable {
 	 * @return distance in cm
 	 */
 	@Override
-	public double getDistanceCm() throws IOException {
+	public double getDistanceCm() throws RuntimeIOException {
 		long start = System.nanoTime();
 		// Send a pulse trigger of 10 us duration
 		trigger.setValue(true);

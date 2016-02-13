@@ -27,14 +27,12 @@ package com.diozero;
  */
 
 import java.io.Closeable;
-import java.io.IOException;
 import java.nio.ByteOrder;
-
-import org.pmw.tinylog.Logger;
 
 import com.diozero.api.I2CConstants;
 import com.diozero.api.I2CDevice;
 import com.diozero.api.LuminositySensorInterface;
+import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 
 @SuppressWarnings("unused")
@@ -158,11 +156,11 @@ public class TSL2561 implements Closeable, LuminositySensorInterface {
 	private int tsl2561Package;
 	private I2CDevice i2cDevice;
 	
-	public TSL2561(int tsl2561Package) throws IOException {
+	public TSL2561(int tsl2561Package) throws RuntimeIOException {
 		this(I2CConstants.BUS_1, I2CConstants.ADDR_SIZE_7, I2CConstants.DEFAULT_CLOCK_FREQUENCY, tsl2561Package);
 	}
 	
-	public TSL2561(int controllerNumber, int addressSize, int clockFreq, int tsl2561Package) throws IOException {
+	public TSL2561(int controllerNumber, int addressSize, int clockFreq, int tsl2561Package) throws RuntimeIOException {
 		i2cDevice = new I2CDevice(controllerNumber, DEVICE_ADDR, addressSize, clockFreq);
 		this.tsl2561Package = tsl2561Package;
 		initialised = false;
@@ -181,8 +179,7 @@ public class TSL2561 implements Closeable, LuminositySensorInterface {
 		this.autoGain = autoGain;
 	}
 
-	private boolean begin() throws IOException {
-		Logger.debug("begin()");
+	private boolean begin() throws RuntimeIOException {
 		int x = i2cDevice.readByte(TSL2561_REGISTER_ID);
 		// if not(x & 0x0A):
 		if ((x & 0x0A) == 0) {
@@ -197,7 +194,6 @@ public class TSL2561 implements Closeable, LuminositySensorInterface {
 
 		// Note by default the device is in power down mode on bootup
 		disable();
-		Logger.debug("begin_end");
 
 		return true;
 	}
@@ -205,26 +201,21 @@ public class TSL2561 implements Closeable, LuminositySensorInterface {
 	/**
 	 * Enables the device
 	 */
-	private void enable() throws IOException {
-		Logger.debug("enable");
+	private void enable() throws RuntimeIOException {
 		i2cDevice.writeByte(TSL2561_COMMAND_BIT | TSL2561_REGISTER_CONTROL, TSL2561_CONTROL_POWERON);
-		Logger.debug("enable_end");
 	}
 
 	/**
 	 * Disables the device (putting it in lower power sleep mode)
 	 */
-	private void disable() throws IOException {
-		Logger.debug("disable");
+	private void disable() throws RuntimeIOException {
 		i2cDevice.writeByte(TSL2561_COMMAND_BIT | TSL2561_REGISTER_CONTROL, TSL2561_CONTROL_POWEROFF);
-		Logger.debug("disable_end");
 	}
 
 	/**
 	 * Private function to read luminosity on both channels
 	 */
-	private void getData() throws IOException {
-		Logger.debug("getData");
+	private void getData() throws RuntimeIOException {
 		enable();
 
 		// Wait x ms for ADC to complete */
@@ -246,7 +237,6 @@ public class TSL2561 implements Closeable, LuminositySensorInterface {
 
 		// Turn the device off to save power
 		disable();
-		Logger.debug("getData_end");
 	}
 
 	/**
@@ -254,14 +244,10 @@ public class TSL2561 implements Closeable, LuminositySensorInterface {
 	 * sensor
 	 */
 	public void enableAutoGain(boolean enable) {
-		Logger.debug("enableAutoGain");
 		autoGain = enable;
-		Logger.debug("enableAutoGain_end");
 	}
 
-	void setIntegrationTime(int time) throws IOException {
-		Logger.debug("setIntegrationTime({})", Integer.valueOf(time));
-
+	void setIntegrationTime(int time) throws RuntimeIOException {
 		// Enable the device by setting the control bit to 0x03
 		enable();
 
@@ -272,15 +258,12 @@ public class TSL2561 implements Closeable, LuminositySensorInterface {
 
 		// Turn the device off to save power
 		disable();
-		Logger.debug("setIntegrationTime_end");
 	}
 
 	/**
 	 * Adjusts the gain on the TSL2561 (adjusts the sensitivity to light)
 	 */
-	public void setGain(int gain) throws IOException {
-		Logger.debug("setGain({})", Integer.valueOf(gain));
-
+	public void setGain(int gain) throws RuntimeIOException {
 		// Enable the device by setting the control bit to 0x03
 		enable();
 
@@ -291,11 +274,9 @@ public class TSL2561 implements Closeable, LuminositySensorInterface {
 
 		// Turn the device off to save power
 		disable();
-		Logger.debug("setGain_end");
 	}
 
-	private void getRawLuminosity() throws IOException {
-		Logger.debug("getLuminosity");
+	private void getRawLuminosity() throws RuntimeIOException {
 		if (!initialised) {
 			begin();
 		}
@@ -356,7 +337,6 @@ public class TSL2561 implements Closeable, LuminositySensorInterface {
 				valid = true;
 			}
 		}
-		Logger.debug("getLuminosity_end");
 	}
 
 	/**
@@ -364,8 +344,7 @@ public class TSL2561 implements Closeable, LuminositySensorInterface {
 	 * 0 if the sensor is saturated and the values are unreliable.
 	 */
 	@Override
-	public double getLuminosity() throws IOException {
-		Logger.debug("calculateLux");
+	public double getLuminosity() throws RuntimeIOException {
 		getRawLuminosity();
 
 		// Make sure the sensor isn't saturated!
@@ -486,14 +465,12 @@ public class TSL2561 implements Closeable, LuminositySensorInterface {
 		int lux = temp >> TSL2561_LUX_LUXSCALE;
 		// FIXME Work with floating point numbers rather than integers!
 
-		Logger.debug("calculateLux_end");
-
 		// Signal I2C had no errors
 		return lux;
 	}
 
 	@Override
 	public void close() {
-		try { i2cDevice.close(); } catch (IOException e) { }
+		i2cDevice.close();
 	}
 }

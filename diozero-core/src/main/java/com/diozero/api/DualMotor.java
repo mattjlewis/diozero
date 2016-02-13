@@ -1,4 +1,4 @@
-package com.diozero;
+package com.diozero.api;
 
 /*
  * #%L
@@ -32,7 +32,7 @@ import java.io.IOException;
 
 import org.pmw.tinylog.Logger;
 
-import com.diozero.api.MotorInterface;
+import com.diozero.util.RuntimeIOException;
 
 /**
  * Generic dual bi-directional motor driver
@@ -47,52 +47,52 @@ public class DualMotor implements Closeable {
 	}
 
 	@Override
-	public void close() throws IOException {
+	public void close() {
 		Logger.debug("close()");
-		if (leftMotor != null) { leftMotor.close(); }
-		if (rightMotor != null) { rightMotor.close(); }
+		if (leftMotor != null) { try { leftMotor.close(); } catch (IOException e) { } }
+		if (rightMotor != null) { try { rightMotor.close(); } catch (IOException e) { } }
 	}
 	
-	public float[] getValues() throws IOException {
+	public float[] getValues() throws RuntimeIOException {
 		return new float[] { leftMotor.getValue(), rightMotor.getValue() };
 	}
 	
 	/**
 	 * Set the speed and direction for both motors (clockwise / counter-clockwise)
 	 * @param speed Range -1 .. 1. Positive numbers for clockwise, Negative numbers for counter clockwise
-	 * @throws IOException
+	 * @throws RuntimeIOException
 	 */
-	public void setValues(float leftValue, float rightValue) throws IOException {
+	public void setValues(float leftValue, float rightValue) throws RuntimeIOException {
 		leftMotor.setValue(leftValue);
 		rightMotor.setValue(rightValue);
 	}
 	
-	public void forward(float speed) throws IOException {
+	public void forward(float speed) throws RuntimeIOException {
 		leftMotor.forward(speed);
 		rightMotor.forward(speed);
 	}
 	
-	public void backward(float speed) throws IOException {
+	public void backward(float speed) throws RuntimeIOException {
 		leftMotor.backward(speed);
 		rightMotor.backward(speed);
 	}
 	
-	public void rotateLeft(float speed) throws IOException {
+	public void rotateLeft(float speed) throws RuntimeIOException {
 		rightMotor.forward(speed);
 		leftMotor.backward(speed);
 	}
 	
-	public void rotateRight(float speed) throws IOException {
+	public void rotateRight(float speed) throws RuntimeIOException {
 		leftMotor.forward(speed);
 		rightMotor.backward(speed);
 	}
 	
-	public void reverse() throws IOException {
+	public void reverse() throws RuntimeIOException {
 		leftMotor.reverse();
 		rightMotor.reverse();
 	}
 	
-	public void stop() throws IOException {
+	public void stop() throws RuntimeIOException {
 		leftMotor.stop();
 		rightMotor.stop();
 	}

@@ -109,6 +109,52 @@
 			</snapshots>
 		</repository>
 	</repositories>
+	
+	<profiles>
+		<profile>
+			<id>m2e</id>
+			<!-- This profile is only active when the property "m2e.version"
+				 is set, which is the case when building in Eclipse with m2e. -->
+			<activation>
+				<property>
+					<name>m2e.version</name>
+				</property>
+			</activation>
+			<build>
+				<pluginManagement>
+					<plugins>
+						<!-- Fix for the Eclipse "execution not covered by lifecycle configuration" warning -->
+						<plugin>
+							<groupId>org.eclipse.m2e</groupId>
+							<artifactId>lifecycle-mapping</artifactId>
+							<version>${eclipse.m2e.lifecycle-mapping.version}</version>
+							<configuration>
+								<lifecycleMappingMetadata>
+									<pluginExecutions>
+										<pluginExecution>
+											<pluginExecutionFilter>
+												<groupId>org.codehaus.mojo</groupId>
+												<artifactId>license-maven-plugin</artifactId>
+												<versionRange>[${license-maven-plugin.version},)</versionRange>
+												<goals>
+													<goal>download-licenses</goal>
+													<goal>update-project-license</goal>
+													<goal>update-file-header</goal>
+												</goals>
+											</pluginExecutionFilter>
+											<action>
+												<ignore/>
+											</action>
+										</pluginExecution>
+									</pluginExecutions>
+								</lifecycleMappingMetadata>
+							</configuration>
+						</plugin>
+					</plugins>
+				</pluginManagement>
+			</build>
+		</profile>
+	</profiles>
 
 	<build>
 		<pluginManagement>
@@ -129,33 +175,6 @@
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>license-maven-plugin</artifactId>
 					<version>${license-maven-plugin.version}</version>
-				</plugin>
-				<!-- Fix for the Exclipse "execution not covered by lifecycle configuration" warning -->
-				<plugin>
-					<groupId>org.eclipse.m2e</groupId>
-					<artifactId>lifecycle-mapping</artifactId>
-					<version>${eclipse.m2e.lifecycle-mapping.version}</version>
-					<configuration>
-						<lifecycleMappingMetadata>
-							<pluginExecutions>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>org.codehaus.mojo</groupId>
-										<artifactId>license-maven-plugin</artifactId>
-										<versionRange>[${license-maven-plugin.version},)</versionRange>
-										<goals>
-											<goal>download-licenses</goal>
-											<goal>update-project-license</goal>
-											<goal>update-file-header</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<ignore/>
-									</action>
-								</pluginExecution>
-							</pluginExecutions>
-						</lifecycleMappingMetadata>
-					</configuration>
 				</plugin>
 			</plugins>
 		</pluginManagement>

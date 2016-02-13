@@ -26,8 +26,6 @@ package com.diozero.internal.provider.test;
  * #L%
  */
 
-
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Random;
 
@@ -36,6 +34,7 @@ import org.pmw.tinylog.Logger;
 
 import com.diozero.api.SpiClockMode;
 import com.diozero.internal.spi.DeviceFactoryInterface;
+import com.diozero.util.RuntimeIOException;
 
 public class TestMcp3008SpiDevice extends TestSpiDevice {
 	private static final int RANGE = (int)Math.pow(2, 10);
@@ -47,7 +46,7 @@ public class TestMcp3008SpiDevice extends TestSpiDevice {
 	}
 
 	@Override
-	public ByteBuffer writeAndRead(ByteBuffer out) throws IOException {
+	public ByteBuffer writeAndRead(ByteBuffer out) throws RuntimeIOException {
 		/*
 		ByteBuffer out = ByteBuffer.allocate(3);
 		out.put((byte) 0x01);

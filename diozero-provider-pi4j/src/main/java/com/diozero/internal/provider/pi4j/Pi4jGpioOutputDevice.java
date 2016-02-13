@@ -26,14 +26,12 @@ package com.diozero.internal.provider.pi4j;
  * #L%
  */
 
-
-import java.io.IOException;
-
 import org.pmw.tinylog.Logger;
 
 import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.DeviceFactoryInterface;
 import com.diozero.internal.spi.GpioDigitalOutputDeviceInterface;
+import com.diozero.util.RuntimeIOException;
 import com.pi4j.io.gpio.*;
 
 public class Pi4jGpioOutputDevice extends AbstractDevice implements GpioDigitalOutputDeviceInterface {
@@ -62,12 +60,12 @@ public class Pi4jGpioOutputDevice extends AbstractDevice implements GpioDigitalO
 	}
 
 	@Override
-	public boolean getValue() throws IOException {
+	public boolean getValue() throws RuntimeIOException {
 		return digitalOutputPin.getState().isHigh();
 	}
 
 	@Override
-	public void setValue(boolean value) throws IOException {
+	public void setValue(boolean value) throws RuntimeIOException {
 		digitalOutputPin.setState(value);
 	}
 

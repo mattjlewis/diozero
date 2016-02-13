@@ -26,10 +26,9 @@ package com.diozero.sandpit;
  * #L%
  */
 
-
-import java.io.IOException;
-
 import com.diozero.api.GpioPullUpDown;
+import com.diozero.api.SmoothedInputDevice;
+import com.diozero.util.RuntimeIOException;
 
 /**
  * A PIR (Passive Infra-Red) motion sensor.
@@ -45,13 +44,13 @@ import com.diozero.api.GpioPullUpDown;
  * mitigate this.
  */
 public class MotionSensor extends SmoothedInputDevice {
-	public MotionSensor(int pinNumber) throws IOException {
+	public MotionSensor(int pinNumber) throws RuntimeIOException {
 		// Trigger if there are 10 events in a 50ms period
 		this(pinNumber, 10, 50);
 	}
 	
 	public MotionSensor(int pinNumber, int threshold, int age)
-			throws IOException {
+			throws RuntimeIOException {
 		super(pinNumber, GpioPullUpDown.NONE, threshold, age);
 	}
 

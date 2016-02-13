@@ -26,12 +26,10 @@ package com.diozero.sampleapps;
  * #L%
  */
 
-
-import java.io.IOException;
-
 import org.pmw.tinylog.Logger;
 
 import com.diozero.PwmLed;
+import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 
 /**
@@ -52,26 +50,35 @@ public class PwmLedTest {
 			System.exit(1);
 		}
 		
-		int pin = Integer.parseInt(args[0]);
-		try (PwmLed led = new PwmLed(pin, 100)) {
+		test(Integer.parseInt(args[0]));
+	}
+	
+	public static void test(int pin) {
+		try (PwmLed led = new PwmLed(pin)) {
 			Logger.info("On");
 			led.on();
 			SleepUtil.sleepSeconds(1);
+			
 			Logger.info("Off");
 			led.off();
 			SleepUtil.sleepSeconds(1);
+			
 			Logger.info("Toggle");
 			led.toggle();
 			SleepUtil.sleepSeconds(1);
+			
 			Logger.info("Toggle");
 			led.toggle();
 			SleepUtil.sleepSeconds(1);
+			
 			Logger.info("25%");
 			led.setValue(.25f);
 			SleepUtil.sleepSeconds(1);
+			
 			Logger.info("Toggle (now 75%)");
 			led.toggle();
 			SleepUtil.sleepSeconds(1);
+			
 			Logger.info("50%");
 			led.setValue(.5f);
 			SleepUtil.sleepSeconds(1);
@@ -98,7 +105,7 @@ public class PwmLedTest {
 			}
 			
 			Logger.info("Done");
-		} catch (IOException e) {
+		} catch (RuntimeIOException e) {
 			Logger.error(e, "Error: {}", e);
 		}
 	}

@@ -26,13 +26,11 @@ package com.diozero.sampleapps;
  * #L%
  */
 
-
-import java.io.IOException;
-
 import org.pmw.tinylog.Logger;
 
 import com.diozero.MCP3008;
 import com.diozero.TMP36;
+import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 
 /**
@@ -64,18 +62,18 @@ public class TMP36Test {
 		if (args.length > 2) {
 			temp_offset = Double.parseDouble(args[2]);
 		}
-
-		try (MCP3008 mcp3008 = new MCP3008(chip_select)) {
-			try (TMP36 tmp36 = new TMP36(mcp3008, adc_pin, temp_offset)) {
-				for (int i=0; i<ITERATIONS; i++) {
-					double tmp = tmp36.getTemperature();
-					Logger.info("Temperature: {}", String.format("%.2f", Double.valueOf(tmp)));
-					SleepUtil.sleepSeconds(.5);
-				}
+		test(chip_select, adc_pin, temp_offset);
+	}
+	
+	public static void test(int chipSelect, int pin, double tempOffset) {
+		try (MCP3008 mcp3008 = new MCP3008(chipSelect); TMP36 tmp36 = new TMP36(mcp3008, pin, tempOffset)) {
+			for (int i=0; i<ITERATIONS; i++) {
+				double tmp = tmp36.getTemperature();
+				Logger.info("Temperature: {}", String.format("%.2f", Double.valueOf(tmp)));
+				SleepUtil.sleepSeconds(.5);
 			}
-		} catch (IOException ioe) {
+		} catch (RuntimeIOException ioe) {
 			Logger.error(ioe, "Error: {}", ioe);
 		}
 	}
-
 }

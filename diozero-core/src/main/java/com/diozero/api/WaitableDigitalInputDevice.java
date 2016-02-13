@@ -26,8 +26,7 @@ package com.diozero.api;
  * #L%
  */
 
-
-import java.io.IOException;
+import com.diozero.util.RuntimeIOException;
 
 /**
  * Represents a generic input device with distinct waitable states.
@@ -43,7 +42,7 @@ import java.io.IOException;
 public class WaitableDigitalInputDevice extends DigitalInputDevice {
 	protected DigitalPinEvent lastPinEvent;
 
-	public WaitableDigitalInputDevice(int pinNumber, GpioPullUpDown pud, GpioEventTrigger trigger) throws IOException {
+	public WaitableDigitalInputDevice(int pinNumber, GpioPullUpDown pud, GpioEventTrigger trigger) throws RuntimeIOException {
 		super(pinNumber, pud, trigger);
 	}
 

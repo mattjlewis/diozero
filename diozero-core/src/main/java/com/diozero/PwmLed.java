@@ -26,37 +26,35 @@ package com.diozero;
  * #L%
  */
 
-
-import java.io.IOException;
-
 import com.diozero.api.PwmOutputDevice;
+import com.diozero.util.RuntimeIOException;
 
 public class PwmLed extends PwmOutputDevice {
-	public PwmLed(int pinNumber) throws IOException {
+	public PwmLed(int pinNumber) throws RuntimeIOException {
 		this(pinNumber, 0);
 	}
 	
-	public PwmLed(int pinNumber, float initialValue) throws IOException {
+	public PwmLed(int pinNumber, float initialValue) throws RuntimeIOException {
 		super(pinNumber, initialValue);
 	}
 	
-	public void blink() throws IOException {
+	public void blink() throws RuntimeIOException {
 		blink(1, 1, INFINITE_ITERATIONS, true);
 	}
 	
-	public void blink(float onTime, float offTime, int iterations, boolean background) throws IOException {
+	public void blink(float onTime, float offTime, int iterations, boolean background) throws RuntimeIOException {
 		onOffLoop(onTime, offTime, iterations, background);
 	}
 	
-	public void pulse() throws IOException {
+	public void pulse() throws RuntimeIOException {
 		fadeInOutLoop(1, 50, INFINITE_ITERATIONS, true);
 	}
 	
-	public void pulse(float fadeTime, int steps, int iterations, boolean background) throws IOException {
+	public void pulse(float fadeTime, int steps, int iterations, boolean background) throws RuntimeIOException {
 		fadeInOutLoop(fadeTime, steps, iterations, background);
 	}
 	
-	public boolean isLit() throws IOException {
+	public boolean isLit() throws RuntimeIOException {
 		return isOn();
 	}
 }

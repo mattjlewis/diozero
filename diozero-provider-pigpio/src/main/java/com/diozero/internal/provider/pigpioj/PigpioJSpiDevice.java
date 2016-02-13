@@ -1,5 +1,32 @@
 package com.diozero.internal.provider.pigpioj;
 
+/*
+ * #%L
+ * Device I/O Zero - pigpioj provider
+ * %%
+ * Copyright (C) 2016 diozero
+ * %%
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ * #L%
+ */
+
+
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
@@ -10,6 +37,7 @@ import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.DeviceFactoryInterface;
 import com.diozero.internal.spi.SpiDeviceInterface;
 import com.diozero.pigpioj.PigpioSPI;
+import com.diozero.util.RuntimeIOException;
 
 public class PigpioJSpiDevice extends AbstractDevice implements SpiDeviceInterface {
 	private static final int CLOSED = -1;
@@ -19,25 +47,29 @@ public class PigpioJSpiDevice extends AbstractDevice implements SpiDeviceInterfa
 	private int chipSelect;
 
 	public PigpioJSpiDevice(String key, DeviceFactoryInterface deviceFactory, int controller,
-			int chipSelect, int frequency, SpiClockMode spiClockMode) throws IOException {
+			int chipSelect, int frequency, SpiClockMode spiClockMode) throws RuntimeIOException {
 		super(key, deviceFactory);
 		
 		this.controller = controller;
 		this.chipSelect = chipSelect;
 		
 		int flags = createSpiFlags(spiClockMode, chipSelect);
-		handle = PigpioSPI.spiOpen(controller, frequency, flags);
+		try {
+			handle = PigpioSPI.spiOpen(controller, frequency, flags);
+		} catch (IOException e) {
+			throw new RuntimeIOException(e);
+		}
 		Logger.debug("SPI device ({}-{}) opened, handle={}", Integer.valueOf(controller),
 				Integer.valueOf(chipSelect), Integer.valueOf(handle));
 		if (handle < 0) {
 			handle = CLOSED;
-			throw new IOException(String.format("Error opening SPI device on controller %d, chip-select %d",
+			throw new RuntimeIOException(String.format("Error opening SPI device on controller %d, chip-select %d",
 					Integer.valueOf(controller), Integer.valueOf(chipSelect)));
 		}
 	}
 
 	@Override
-	public ByteBuffer writeAndRead(ByteBuffer out) throws IOException {
+	public ByteBuffer writeAndRead(ByteBuffer out) throws RuntimeIOException {
 		if (! isOpen()) {
 			throw new IllegalStateException("SPI Device " + controller + "-" + chipSelect + " is closed");
 		}
@@ -46,7 +78,11 @@ public class PigpioJSpiDevice extends AbstractDevice implements SpiDeviceInterfa
 		byte[] tx = new byte[count];
 		out.get(tx);
 		byte[] rx = new byte[count];
-		PigpioSPI.spiXfer(handle, tx, rx, count);
+		try {
+			PigpioSPI.spiXfer(handle, tx, rx, count);
+		} catch (IOException e) {
+			throw new RuntimeIOException(e);
+		}
 		
 		return ByteBuffer.wrap(rx);
 	}
@@ -67,8 +103,12 @@ public class PigpioJSpiDevice extends AbstractDevice implements SpiDeviceInterfa
 	}
 
 	@Override
-	protected void closeDevice() throws IOException {
-		PigpioSPI.spiClose(handle);
+	protected void closeDevice() throws RuntimeIOException {
+		try {
+			PigpioSPI.spiClose(handle);
+		} catch (IOException e) {
+			throw new RuntimeIOException(e);
+		}
 		handle = CLOSED;
 	}
 	

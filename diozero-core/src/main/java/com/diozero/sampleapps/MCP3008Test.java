@@ -26,12 +26,10 @@ package com.diozero.sampleapps;
  * #L%
  */
 
-
-import java.io.IOException;
-
 import org.pmw.tinylog.Logger;
 
 import com.diozero.MCP3008;
+import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 
 /**
@@ -58,14 +56,17 @@ public class MCP3008Test {
 		}
 		int spi_chip_select = Integer.parseInt(args[0]);
 		int adc_pin = Integer.parseInt(args[1]);
-
-		try (MCP3008 mcp3008 = new MCP3008(spi_chip_select)) {
+		test(spi_chip_select, adc_pin);
+	}
+	
+	public static void test(int chipSelect, int pin) {
+		try (MCP3008 mcp3008 = new MCP3008(chipSelect)) {
 			for (int i=0; i<ITERATIONS; i++) {
-				float v = mcp3008.getVoltage(adc_pin);
+				float v = mcp3008.getVoltage(pin);
 				Logger.info("Voltage: {}", String.format("%.2f", Float.valueOf(v)));
 				SleepUtil.sleepSeconds(0.5);
 			}
-		} catch (IOException ioe) {
+		} catch (RuntimeIOException ioe) {
 			Logger.error(ioe, "Error: ", ioe);
 		}
 	}

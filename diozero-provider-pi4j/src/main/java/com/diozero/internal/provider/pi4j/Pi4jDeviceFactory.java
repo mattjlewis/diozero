@@ -26,11 +26,9 @@ package com.diozero.internal.provider.pi4j;
  * #L%
  */
 
-
-import java.io.IOException;
-
 import com.diozero.api.*;
 import com.diozero.internal.spi.*;
+import com.diozero.util.RuntimeIOException;
 import com.pi4j.io.gpio.GpioController;
 import com.pi4j.io.gpio.GpioFactory;
 
@@ -48,33 +46,33 @@ public class Pi4jDeviceFactory extends BaseNativeDeviceFactory {
 
 	@Override
 	public GpioDigitalInputDeviceInterface createDigitalInputPin(String key, int pinNumber, GpioPullUpDown pud,
-			GpioEventTrigger trigger) throws IOException {
+			GpioEventTrigger trigger) throws RuntimeIOException {
 		return new Pi4jGpioInputDevice(key, this, gpioController, pinNumber, pud, trigger);
 	}
 
 	@Override
-	public GpioAnalogueInputDeviceInterface createAnalogueInputPin(String key, int pinNumber) throws IOException {
+	public GpioAnalogueInputDeviceInterface createAnalogueInputPin(String key, int pinNumber) throws RuntimeIOException {
 		throw new UnsupportedOperationException("Analogue devices aren't supported on this device");
 	}
 
 	@Override
-	public GpioDigitalOutputDeviceInterface createDigitalOutputPin(String key, int pinNumber, boolean initialValue) throws IOException {
+	public GpioDigitalOutputDeviceInterface createDigitalOutputPin(String key, int pinNumber, boolean initialValue) throws RuntimeIOException {
 		return new Pi4jGpioOutputDevice(key, this, gpioController, pinNumber, initialValue);
 	}
 
 	@Override
 	public PwmOutputDeviceInterface createPwmOutputPin(String key, int pinNumber,
-			float initialValue, PwmType pwmType) throws IOException {
+			float initialValue, PwmType pwmType) throws RuntimeIOException {
 		return new Pi4jPwmOutputDevice(key, this, gpioController, pinNumber, initialValue, pwmType);
 	}
 
 	@Override
-	public SpiDeviceInterface createSpiDevice(String key, int controller, int chipSelect, int frequency, SpiClockMode spiClockMode) throws IOException {
+	public SpiDeviceInterface createSpiDevice(String key, int controller, int chipSelect, int frequency, SpiClockMode spiClockMode) throws RuntimeIOException {
 		return new Pi4jSpiDevice(key, this, controller, chipSelect, frequency, spiClockMode);
 	}
 
 	@Override
-	public I2CDeviceInterface createI2CDevice(String key, int controller, int address, int addressSize, int clockFrequency) throws IOException {
+	public I2CDeviceInterface createI2CDevice(String key, int controller, int address, int addressSize, int clockFrequency) throws RuntimeIOException {
 		return new Pi4jI2CDevice(key, this, controller, address, addressSize, clockFrequency);
 	}
 }

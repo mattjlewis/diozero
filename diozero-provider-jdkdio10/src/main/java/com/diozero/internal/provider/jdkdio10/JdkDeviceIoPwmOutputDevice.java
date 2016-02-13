@@ -26,7 +26,6 @@ package com.diozero.internal.provider.jdkdio10;
  * #L%
  */
 
-
 import java.io.IOException;
 
 import org.pmw.tinylog.Logger;
@@ -35,6 +34,7 @@ import com.diozero.api.PwmType;
 import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.DeviceFactoryInterface;
 import com.diozero.internal.spi.PwmOutputDeviceInterface;
+import com.diozero.util.RuntimeIOException;
 
 import jdk.dio.DeviceConfig;
 import jdk.dio.DeviceManager;
@@ -59,7 +59,7 @@ public class JdkDeviceIoPwmOutputDevice extends AbstractDevice implements PwmOut
 	private int pulseWidthMs;
 	
 	JdkDeviceIoPwmOutputDevice(String key, DeviceFactoryInterface deviceFactory, int pinNumber,
-			float initialValue, PwmType pwmType) throws IOException {
+			float initialValue, PwmType pwmType) throws RuntimeIOException {
 		super(key, deviceFactory);
 		
 		GPIOPinConfig gpio_pin_config = new GPIOPinConfig(DeviceConfig.DEFAULT, pinNumber, GPIOPinConfig.DIR_OUTPUT_ONLY,
@@ -72,14 +72,22 @@ public class JdkDeviceIoPwmOutputDevice extends AbstractDevice implements PwmOut
 		int pulse_alignment = DeviceConfig.DEFAULT;	// ALIGN_CENTER, ALIGN_LEFT or ALIGN_RIGHT
 		pwmChannelConfig = new PWMChannelConfig(DeviceConfig.DEFAULT, pwm_channel_number, idle_state,
 				pulsePeriodMs, pulse_alignment, gpio_pin_config);
-		pwmChannel = DeviceManager.open(PWMChannel.class, pwmChannelConfig);
+		try {
+			pwmChannel = DeviceManager.open(PWMChannel.class, pwmChannelConfig);
+		} catch (IOException e) {
+			throw new RuntimeIOException(e);
+		}
 	}
 
 	@Override
-	public void closeDevice() throws IOException {
+	public void closeDevice() throws RuntimeIOException {
 		Logger.debug("closeDevice()");
 		if (pwmChannel.isOpen()) {
-			pwmChannel.close();
+			try {
+				pwmChannel.close();
+			} catch (IOException e) {
+				throw new RuntimeIOException(e);
+			}
 		}
 	}
 
@@ -93,18 +101,22 @@ public class JdkDeviceIoPwmOutputDevice extends AbstractDevice implements PwmOut
 		return frequency;
 	}
 	
-	public void setFrequency(float frequency) throws IOException {
-		float min_frequency = 1000f / pwmChannel.getMinPulsePeriod();
-		float max_frequency = 1000f / pwmChannel.getMaxPulsePeriod();
-		if (frequency < min_frequency || frequency > max_frequency) {
-			throw new java.lang.IllegalArgumentException(
-					String.format("Frequency (%f) must be between %f and %f", Float.valueOf(frequency),
-					Float.valueOf(min_frequency), Float.valueOf(max_frequency)));
-		}
-		this.frequency = frequency;
-		pulsePeriodMs = (int)(1000 / frequency);
-		synchronized (pwmChannel) {
-			pwmChannel.setPulsePeriod(pulsePeriodMs);
+	public void setFrequency(float frequency) throws RuntimeIOException {
+		try {
+			float min_frequency = 1000f / pwmChannel.getMinPulsePeriod();
+			float max_frequency = 1000f / pwmChannel.getMaxPulsePeriod();
+			if (frequency < min_frequency || frequency > max_frequency) {
+				throw new java.lang.IllegalArgumentException(
+						String.format("Frequency (%f) must be between %f and %f", Float.valueOf(frequency),
+						Float.valueOf(min_frequency), Float.valueOf(max_frequency)));
+			}
+			this.frequency = frequency;
+			pulsePeriodMs = (int)(1000 / frequency);
+			synchronized (pwmChannel) {
+				pwmChannel.setPulsePeriod(pulsePeriodMs);
+			}
+		} catch (IOException e) {
+			throw new RuntimeIOException(e);
 		}
 	}
 	
@@ -114,7 +126,7 @@ public class JdkDeviceIoPwmOutputDevice extends AbstractDevice implements PwmOut
 	}
 	
 	@Override
-	public void setValue(float value) throws IOException {
+	public void setValue(float value) throws RuntimeIOException {
 		if (value < 0 || value > 1) {
 			throw new java.lang.IllegalArgumentException("Value (" + value + ") must be between 0 and 1");
 		}
@@ -123,12 +135,16 @@ public class JdkDeviceIoPwmOutputDevice extends AbstractDevice implements PwmOut
 			this.value = value;
 			pulseWidthMs = (int)(value * pulsePeriodMs);
 			
-			if (value == 0) {
-				pwmChannel.stopGeneration();
-				return;
+			try {
+				if (value == 0) {
+					pwmChannel.stopGeneration();
+					return;
+				}
+				
+				pwmChannel.startGeneration(pulseWidthMs);
+			} catch (IOException e) {
+				throw new RuntimeIOException(e);
 			}
-			
-			pwmChannel.startGeneration(pulseWidthMs);
 		}
 	}
 }

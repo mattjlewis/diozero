@@ -26,21 +26,19 @@ package com.diozero.internal.provider.wiringpi;
  * #L%
  */
 
-
-import java.io.IOException;
-
 import org.pmw.tinylog.Logger;
 
 import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.DeviceFactoryInterface;
 import com.diozero.internal.spi.GpioDigitalOutputDeviceInterface;
+import com.diozero.util.RuntimeIOException;
 import com.pi4j.wiringpi.Gpio;
 import com.pi4j.wiringpi.GpioUtil;
 
 public class WiringPiDigitalOutputDevice extends AbstractDevice implements GpioDigitalOutputDeviceInterface {
 	private int pinNumber;
 	
-	WiringPiDigitalOutputDevice(String key, DeviceFactoryInterface deviceFactory, int pinNumber, boolean initialValue) throws IOException {
+	WiringPiDigitalOutputDevice(String key, DeviceFactoryInterface deviceFactory, int pinNumber, boolean initialValue) throws RuntimeIOException {
 		super(key, deviceFactory);
 		
 		this.pinNumber = pinNumber;
@@ -52,7 +50,7 @@ public class WiringPiDigitalOutputDevice extends AbstractDevice implements GpioD
 			}
 			Gpio.pinMode(pinNumber, Gpio.OUTPUT);
 		} catch (RuntimeException re) {
-			throw new IOException(re);
+			throw new RuntimeIOException(re);
 		}
 	}
 
@@ -63,12 +61,12 @@ public class WiringPiDigitalOutputDevice extends AbstractDevice implements GpioD
 	}
 
 	@Override
-	public boolean getValue() throws IOException {
+	public boolean getValue() throws RuntimeIOException {
 		return Gpio.digitalRead(pinNumber) == 1;
 	}
 
 	@Override
-	public void setValue(boolean value) throws IOException {
+	public void setValue(boolean value) throws RuntimeIOException {
 		Gpio.digitalWrite(pinNumber, value);
 	}
 

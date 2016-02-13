@@ -26,24 +26,28 @@ package com.diozero.internal.provider.pigpioj;
  * #L%
  */
 
-
 import java.io.IOException;
 
 import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.DeviceFactoryInterface;
 import com.diozero.internal.spi.GpioDigitalOutputDeviceInterface;
 import com.diozero.pigpioj.PigpioGpio;
+import com.diozero.util.RuntimeIOException;
 
 public class PigpioJDigitalOutputDevice extends AbstractDevice implements GpioDigitalOutputDeviceInterface {
 	private int pinNumber;
 
 	public PigpioJDigitalOutputDevice(String key, DeviceFactoryInterface deviceFactory, int pinNumber,
-			boolean initialValue) throws IOException {
+			boolean initialValue) throws RuntimeIOException {
 		super(key, deviceFactory);
 		
 		this.pinNumber = pinNumber;
 		
-		PigpioGpio.setMode(pinNumber, PigpioGpio.MODE_PI_OUTPUT);
+		try {
+			PigpioGpio.setMode(pinNumber, PigpioGpio.MODE_PI_OUTPUT);
+		} catch (IOException e) {
+			throw new RuntimeIOException(e);
+		}
 		setValue(initialValue);
 	}
 
@@ -53,17 +57,25 @@ public class PigpioJDigitalOutputDevice extends AbstractDevice implements GpioDi
 	}
 
 	@Override
-	public boolean getValue() throws IOException {
-		return PigpioGpio.read(pinNumber);
+	public boolean getValue() throws RuntimeIOException {
+		try {
+			return PigpioGpio.read(pinNumber);
+		} catch (IOException e) {
+			throw new RuntimeIOException(e);
+		}
 	}
 
 	@Override
-	public void setValue(boolean value) throws IOException {
-		PigpioGpio.write(pinNumber, value);
+	public void setValue(boolean value) throws RuntimeIOException {
+		try {
+			PigpioGpio.write(pinNumber, value);
+		} catch (IOException e) {
+			throw new RuntimeIOException(e);
+		}
 	}
 
 	@Override
-	protected void closeDevice() throws IOException {
+	protected void closeDevice() throws RuntimeIOException {
 		// No GPIO close method in pigpio
 	}
 }

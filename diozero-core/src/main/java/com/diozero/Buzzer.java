@@ -26,30 +26,28 @@ package com.diozero;
  * #L%
  */
 
-
-import java.io.IOException;
-
 import com.diozero.api.DigitalOutputDevice;
+import com.diozero.util.RuntimeIOException;
 
 public class Buzzer extends DigitalOutputDevice {
 
-	public Buzzer(int pinNumber) throws IOException {
+	public Buzzer(int pinNumber) throws RuntimeIOException {
 		super(pinNumber);
 	}
 
-	public Buzzer(int pinNumber, boolean activeHigh) throws IOException {
+	public Buzzer(int pinNumber, boolean activeHigh) throws RuntimeIOException {
 		super(pinNumber, activeHigh, false);
 	}
 	
-	public void beep() throws IOException {
+	public void beep() throws RuntimeIOException {
 		beep(1, 1, INFINITE_ITERATIONS, true);
 	}
 	
-	public void beep(float onTime, float offTime, int n, boolean background) throws IOException {
+	public void beep(float onTime, float offTime, int n, boolean background) throws RuntimeIOException {
 		onOffLoop(onTime, offTime, n, background);
 	}
 	
-	public boolean isActive() throws IOException {
+	public boolean isActive() throws RuntimeIOException {
 		return isOn();
 	}
 }

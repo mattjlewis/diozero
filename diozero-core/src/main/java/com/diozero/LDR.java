@@ -26,15 +26,13 @@ package com.diozero;
  * #L%
  */
 
-
-import java.io.IOException;
-
 import org.pmw.tinylog.Logger;
 
 import com.diozero.api.AnalogueInputDevice;
 import com.diozero.api.DeviceFactoryHelper;
 import com.diozero.api.LuminositySensorInterface;
 import com.diozero.internal.spi.AnalogueInputDeviceFactoryInterface;
+import com.diozero.util.RuntimeIOException;
 
 /**
  * vRef      vLdr      GND
@@ -63,11 +61,11 @@ public class LDR extends AnalogueInputDevice implements LuminositySensorInterfac
 	private float vRef;
 	private float r1;
 	
-	public LDR(int pinNumber, float vRef, float r1) throws IOException {
+	public LDR(int pinNumber, float vRef, float r1) throws RuntimeIOException {
 		this(DeviceFactoryHelper.getNativeDeviceFactory(), pinNumber, vRef, r1);
 	}
 	
-	public LDR(AnalogueInputDeviceFactoryInterface deviceFactory, int pinNumber, float vRef, float r1) throws IOException {
+	public LDR(AnalogueInputDeviceFactoryInterface deviceFactory, int pinNumber, float vRef, float r1) throws RuntimeIOException {
 		super(deviceFactory, pinNumber);
 		
 		this.vRef = vRef;
@@ -75,7 +73,7 @@ public class LDR extends AnalogueInputDevice implements LuminositySensorInterfac
 	}
 
 	@Override
-	public double getLuminosity() throws IOException {
+	public double getLuminosity() throws RuntimeIOException {
 		double v_ldr = getValue();
 		
 		// http://emant.com/316002.page

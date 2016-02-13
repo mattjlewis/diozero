@@ -26,9 +26,6 @@ package com.diozero;
  * #L%
  */
 
-
-import java.io.IOException;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.pmw.tinylog.Logger;
@@ -61,8 +58,6 @@ public class MCP3008Test {
 					SleepUtil.sleepMillis(100);
 				}
 			}
-		} catch (IOException ioe) {
-			Logger.error(ioe, "Error: {}", ioe);
 		}
 	}
 }

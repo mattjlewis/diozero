@@ -26,13 +26,11 @@ package com.diozero.sampleapps;
  * #L%
  */
 
-
-import java.io.IOException;
-
 import org.pmw.tinylog.Logger;
 
 import com.diozero.LDR;
 import com.diozero.MCP3008;
+import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 
 /**
@@ -60,17 +58,18 @@ public class LDRTest {
 		int adc_pin = Integer.parseInt(args[1]);
 		float vref = 3.3f;
 		int r1 = 10_000;
-		
-		try (MCP3008 mcp3008 = new MCP3008(chip_select)) {
-			try (LDR ldr = new LDR(mcp3008, adc_pin, vref, r1)) {
-				ldr.addListener(ldr, r1);
-				for (int i=0; i<ITERATIONS; i++) {
-					double lux = ldr.getLuminosity();
-					Logger.info("Lux: {}", String.format("%.2f", Double.valueOf(lux)));
-					SleepUtil.sleepSeconds(.5);
-				}
+		test(chip_select, adc_pin, vref, r1);
+	}
+	
+	public static void test(int chipSelect, int pin, float vRef, int r1) {
+		try (MCP3008 mcp3008 = new MCP3008(chipSelect); LDR ldr = new LDR(mcp3008, pin, vRef, r1)) {
+			ldr.addListener(ldr, r1);
+			for (int i=0; i<ITERATIONS; i++) {
+				double lux = ldr.getLuminosity();
+				Logger.info("Lux: {}", String.format("%.2f", Double.valueOf(lux)));
+				SleepUtil.sleepSeconds(.5);
 			}
-		} catch (IOException e) {
+		} catch (RuntimeIOException e) {
 			Logger.error(e, "Error: {}", e);
 		}
 	}

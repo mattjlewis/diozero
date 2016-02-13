@@ -39,13 +39,14 @@ import com.diozero.internal.spi.DeviceFactoryInterface;
 import com.diozero.internal.spi.GpioDigitalInputDeviceInterface;
 import com.diozero.pigpioj.PigpioCallback;
 import com.diozero.pigpioj.PigpioGpio;
+import com.diozero.util.RuntimeIOException;
 
 public class PigpioJDigitalInputDevice extends AbstractInputDevice<DigitalPinEvent> implements GpioDigitalInputDeviceInterface, PigpioCallback {
 	private int pinNumber;
 	private int edge;
 
 	public PigpioJDigitalInputDevice(String key, DeviceFactoryInterface deviceFactory, int pinNumber,
-			GpioPullUpDown pud, GpioEventTrigger trigger) throws IOException {
+			GpioPullUpDown pud, GpioEventTrigger trigger) throws RuntimeIOException {
 		super(key, deviceFactory);
 		
 		switch (trigger) {
@@ -77,8 +78,12 @@ public class PigpioJDigitalInputDevice extends AbstractInputDevice<DigitalPinEve
 			break;
 		}
 		
-		PigpioGpio.setMode(pinNumber, PigpioGpio.MODE_PI_INPUT);
-		PigpioGpio.setPullUpDown(pinNumber, pigpio_pud);
+		try {
+			PigpioGpio.setMode(pinNumber, PigpioGpio.MODE_PI_INPUT);
+			PigpioGpio.setPullUpDown(pinNumber, pigpio_pud);
+		} catch (IOException e) {
+			throw new RuntimeIOException(e);
+		}
 		
 		this.pinNumber = pinNumber;
 	}
@@ -89,14 +94,18 @@ public class PigpioJDigitalInputDevice extends AbstractInputDevice<DigitalPinEve
 	}
 
 	@Override
-	public void closeDevice() throws IOException {
+	public void closeDevice() throws RuntimeIOException {
 		// No GPIO close method in pigpio
 		removeListener();
 	}
 
 	@Override
-	public boolean getValue() throws IOException {
-		return PigpioGpio.read(pinNumber);
+	public boolean getValue() throws RuntimeIOException {
+		try {
+			return PigpioGpio.read(pinNumber);
+		} catch (IOException e) {
+			throw new RuntimeIOException(e);
+		}
 	}
 
 	@Override

@@ -35,6 +35,7 @@ import org.pmw.tinylog.Logger;
 import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.DeviceFactoryInterface;
 import com.diozero.internal.spi.I2CDeviceInterface;
+import com.diozero.util.RuntimeIOException;
 import com.pi4j.io.i2c.I2CDevice;
 import com.pi4j.io.i2c.I2CFactory;
 
@@ -47,7 +48,7 @@ public class WiringPiI2CDevice extends AbstractDevice implements I2CDeviceInterf
 	private I2CDevice i2cDevice;
 	
 	public WiringPiI2CDevice(String key, DeviceFactoryInterface deviceFactory, int controller, int address,
-			int addressSize, int clockFrequency) throws IOException {
+			int addressSize, int clockFrequency) throws RuntimeIOException {
 		super(key, deviceFactory);
 		
 		this.controller = controller;
@@ -61,13 +62,17 @@ public class WiringPiI2CDevice extends AbstractDevice implements I2CDeviceInterf
 		*/
 		Logger.debug("Opening I2C device ({}, 0x{})...",
 				Integer.valueOf(controller), Integer.toHexString(address));
-		i2cDevice = I2CFactory.getInstance(controller).getDevice(address);
+		try {
+			i2cDevice = I2CFactory.getInstance(controller).getDevice(address);
+		} catch (IOException e) {
+			throw new RuntimeIOException(e);
+		}
 		Logger.debug("I2C device ({}, 0x{}) opened",
 				Integer.valueOf(controller), Integer.toHexString(address));
 	}
 
 	@Override
-	public void closeDevice() throws IOException {
+	public void closeDevice() throws RuntimeIOException {
 		Logger.debug("closeDevice()");
 		// No way to close a wiringPi I2C Device?!
 		//handle = CLOSED;
@@ -84,7 +89,7 @@ public class WiringPiI2CDevice extends AbstractDevice implements I2CDeviceInterf
 	}
 
 	@Override
-	public void read(int register, int subAddressSize, ByteBuffer dst) throws IOException {
+	public void read(int register, int subAddressSize, ByteBuffer dst) throws RuntimeIOException {
 		if (! isOpen()) {
 			throw new IllegalStateException("I2C Device " + controller + "-" + address + " is closed");
 		}
@@ -94,16 +99,20 @@ public class WiringPiI2CDevice extends AbstractDevice implements I2CDeviceInterf
 		Logger.debug("reading {} bytes", Integer.valueOf(to_read));
 		// TODO Need to loop, yuck
 		//byte b = I2C.wiringPiI2CReadReg8(handle, register);
-		int read = i2cDevice.read(register, buffer, 0, to_read);
-		if (read != to_read) {
-			throw new IOException("Didn't read correct number of bytes, read " + read + ", expected " + to_read);
+		try {
+			int read = i2cDevice.read(register, buffer, 0, to_read);
+			if (read != to_read) {
+				throw new RuntimeIOException("Didn't read correct number of bytes, read " + read + ", expected " + to_read);
+			}
+			dst.put(buffer);
+			dst.flip();
+		} catch (IOException e) {
+			throw new RuntimeIOException(e);
 		}
-		dst.put(buffer);
-		dst.flip();
 	}
 
 	@Override
-	public void write(int register, int subAddressSize, ByteBuffer src) throws IOException {
+	public void write(int register, int subAddressSize, ByteBuffer src) throws RuntimeIOException {
 		if (! isOpen()) {
 			throw new IllegalStateException("I2C Device " + controller + "-" + address + " is closed");
 		}
@@ -113,6 +122,10 @@ public class WiringPiI2CDevice extends AbstractDevice implements I2CDeviceInterf
 		src.get(buffer, src.position(), to_write);
 		// Need to loop, yuck
 		//I2C.wiringPiI2CWriteReg8(handle, register, b);
-		i2cDevice.write(register, buffer, 0, to_write);
+		try {
+			i2cDevice.write(register, buffer, 0, to_write);
+		} catch (IOException e) {
+			throw new RuntimeIOException(e);
+		}
 	}
 }

@@ -27,15 +27,18 @@ package com.diozero;
  */
 
 import java.io.Closeable;
-import java.io.IOException;
 import java.nio.ByteBuffer;
 
 import com.diozero.api.I2CConstants;
 import com.diozero.api.I2CDevice;
 import com.diozero.api.TemperaturePressureSensorInterface;
 import com.diozero.util.IOUtil;
+import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 
+/**
+ * Bosch BMP180 I2C temperature and pressure sensor
+ */
 @SuppressWarnings("unused")
 public class BMP180 implements TemperaturePressureSensorInterface, Closeable {
 	/**
@@ -91,11 +94,11 @@ public class BMP180 implements TemperaturePressureSensorInterface, Closeable {
 	private BMPMode mode;
 	private I2CDevice i2cDevice;
 	
-	public BMP180() throws IOException {
+	public BMP180() throws RuntimeIOException {
 		this(I2CConstants.BUS_1, I2CConstants.ADDR_SIZE_7, I2CConstants.DEFAULT_CLOCK_FREQUENCY);
 	}
 	
-	public BMP180(int controllerNumber, int addressSize, int clockFrequency) throws IOException {
+	public BMP180(int controllerNumber, int addressSize, int clockFrequency) throws RuntimeIOException {
 		i2cDevice = new I2CDevice(controllerNumber, BMP180_ADDR, addressSize, clockFrequency);
 	}
 
@@ -103,7 +106,7 @@ public class BMP180 implements TemperaturePressureSensorInterface, Closeable {
 	 * This method reads the calibration data common for the Temperature sensor
 	 * and Barometer sensor included in the BMP180
 	 **/
-	public void init(BMPMode mode) throws IOException {
+	public void init(BMPMode mode) throws RuntimeIOException {
 		this.mode = mode;
 		
 		getCalibrationData();
@@ -114,9 +117,9 @@ public class BMP180 implements TemperaturePressureSensorInterface, Closeable {
 	 * method. Normally this information is given in the device information
 	 * sheet.
 	 *
-	 * @throws IOException
+	 * @throws RuntimeIOException
 	 */
-	private void getCalibrationData() throws IOException {
+	private void getCalibrationData() throws RuntimeIOException {
 		// Read all of the calibration data into a byte array
 		ByteBuffer calibData = ByteBuffer.allocateDirect(CALIBRATION_BYTES);
 		i2cDevice.read(EEPROM_START, I2CConstants.SUB_ADDRESS_SIZE_1_BYTE, calibData);
@@ -139,7 +142,7 @@ public class BMP180 implements TemperaturePressureSensorInterface, Closeable {
 		calMD = calibData.getShort();
 	}
 
-	private int readRawTemperature() throws IOException {
+	private int readRawTemperature() throws RuntimeIOException {
 		// Write the read temperature command to the command register
 		i2cDevice.writeByte(CONTROL_REGISTER, GET_TEMP_CMD);
 
@@ -157,11 +160,11 @@ public class BMP180 implements TemperaturePressureSensorInterface, Closeable {
 	 * our case we use the calibration data collected at construction time.
 	 *
 	 * @return Temperature in Celsius as a double
-	 * @throws IOException
+	 * @throws RuntimeIOException
 	 *             If there is an IO error reading the sensor
 	 */
 	@Override
-	public double getTemperature() throws IOException {
+	public double getTemperature() throws RuntimeIOException {
 		int UT = readRawTemperature();
 
 		// Calculate the actual temperature
@@ -172,7 +175,7 @@ public class BMP180 implements TemperaturePressureSensorInterface, Closeable {
 		return ((B5 + 8) >> 4) / 10.0;
 	}
 
-	private int readRawPressure() throws IOException {
+	private int readRawPressure() throws RuntimeIOException {
 		// Write the read pressure command to the command register
 		i2cDevice.writeByte(CONTROL_REGISTER, mode.getPressureCommand());
 
@@ -194,7 +197,7 @@ public class BMP180 implements TemperaturePressureSensorInterface, Closeable {
 	 * @return double Pressure measurement in hPa
 	 */
 	@Override
-	public double getPressure() throws IOException {
+	public double getPressure() throws RuntimeIOException {
 		int sampling_mode = mode.getSamplingMode();
 		int UT = readRawTemperature();
 		int UP = readRawPressure();
@@ -300,6 +303,6 @@ public class BMP180 implements TemperaturePressureSensorInterface, Closeable {
 
 	@Override
 	public void close() {
-		try { i2cDevice.close(); } catch (IOException e) { }
+		i2cDevice.close();
 	}
 }

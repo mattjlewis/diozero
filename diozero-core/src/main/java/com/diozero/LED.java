@@ -26,35 +26,38 @@ package com.diozero;
  * #L%
  */
 
-
-import java.io.IOException;
-
 import com.diozero.api.DigitalOutputDevice;
+import com.diozero.internal.spi.GpioDeviceFactoryInterface;
 import com.diozero.internal.spi.GpioDigitalOutputDeviceInterface;
+import com.diozero.util.RuntimeIOException;
 
 public class LED extends DigitalOutputDevice {
 
-	public LED(int pinNumber) throws IOException {
+	public LED(int pinNumber) throws RuntimeIOException {
 		super(pinNumber);
 	}
 
-	public LED(int pinNumber, boolean activeHigh) throws IOException {
+	public LED(int pinNumber, boolean activeHigh) throws RuntimeIOException {
 		super(pinNumber, activeHigh, false);
+	}
+	
+	public LED(GpioDeviceFactoryInterface deviceFactory, int pinNumber, boolean activeHigh, boolean initialValue) {
+		super(deviceFactory, pinNumber, activeHigh, initialValue);
 	}
 	
 	public LED(GpioDigitalOutputDeviceInterface device, boolean activeHigh) {
 		super(device, activeHigh);
 	}
 
-	public void blink() throws IOException {
+	public void blink() throws RuntimeIOException {
 		blink(1, 1, INFINITE_ITERATIONS, true);
 	}
 	
-	public void blink(float onTime, float offTime, int n, boolean background) throws IOException {
+	public void blink(float onTime, float offTime, int n, boolean background) throws RuntimeIOException {
 		onOffLoop(onTime, offTime, n, background);
 	}
 	
-	public boolean isLit() throws IOException {
+	public boolean isLit() throws RuntimeIOException {
 		return isOn();
 	}
 }

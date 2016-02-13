@@ -1,4 +1,4 @@
-package com.diozero.sandpit;
+package com.diozero.api;
 
 /*
  * #%L
@@ -26,14 +26,13 @@ package com.diozero.sandpit;
  * #L%
  */
 
-
-import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 
 import com.diozero.api.*;
+import com.diozero.util.RuntimeIOException;
 
 /**
  * Represents a generic input device which takes its value from the mean of a
@@ -60,15 +59,15 @@ public class SmoothedInputDevice extends DigitalInputDevice {
 	 * 				The value above which the device will be considered "on".
 	 * @param age
 	 * 				The time in millis in which to keep items in the queue
-	 * @throws IOException
+	 * @throws RuntimeIOException
 	 */
 	public SmoothedInputDevice(int pinNumber, GpioPullUpDown pud, int threshold,
-			int age) throws IOException {
+			int age) throws RuntimeIOException {
 		this(pinNumber, pud, threshold, age, GpioEventTrigger.RISING);
 	}
 	
 	public SmoothedInputDevice(int pinNumber, GpioPullUpDown pud, int threshold,
-			int age, GpioEventTrigger trigger) throws IOException {
+			int age, GpioEventTrigger trigger) throws RuntimeIOException {
 		super(pinNumber, pud, trigger);
 		
 		this.threshold = threshold;
