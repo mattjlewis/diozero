@@ -41,7 +41,6 @@ try (PwmLed led = new PwmLed(pin)) {
 }
 ```
 
-
 TODO Describe device factory concept to allow same API via expansion boards.
 
 ##Install
@@ -99,6 +98,27 @@ This project is hosted on [GitHub](https://github.com/mattjlewis/diozero/), plea
 + wiringPi
 + pigpio
 TODO Describe steps for creating a new provider.
+
+##Performance
+I've done some limited performance tests (turning a GPIO on then off, see [GpioPerfTest](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/sampleapps/GpioPerfTest.java)) on a Raspberry Pi 2 using the various native device factory providers as well as a test using Pi4j's wiringPi JNI API directly without going via my DIO-Zero wrapper (see [WiringPiRawPerfTest](https://github.com/mattjlewis/diozero/blob/master/diozero-provider-wiringpi/src/main/java/com/diozero/internal/provider/wiringpi/WiringPiRawPerfTest.java)); here are the results:
+
+| Provider | Iterations | Frequency (kHz) |
+| -------- | ---------- | --------------- |
+| Pi4j 1.0 | 10,000 | 0.91 |
+| JDK DIO 1.1 | 100,000 | 8.23 |
+| Pi4j 1.1 | 10,000,000 | 622 |
+| wiringPi | 5,000,000 | 1,683 |
+| wiringPi (direct) | 10,000,000 | 2,137 |
+| pigpio | 5,000,000 | 1,266 |
+| pigpio (direct) 10,000,000 | 1,649 |
+
+For a discussion on why Pi4j 1.0 is so slow, see this [issue](https://github.com/Pi4J/pi4j/issues/158). These results are in-line with those documented in the book ["Raspberry Pi with Java: Programming the Internet of Things"](http://www.amazon.co.uk/Raspberry-Pi-Java-Programming-Internet/dp/0071842012). For reference, the author's results were:
+
+| Library | Frequency (kHz) |
+| ------- | --------------- |
+| Pi4j 1.0 | 0.751 |
+| JDK DIO 1.0 | 3.048 |
+| wiringPi (direct) | 1,662 |
 
 ##Change-log
 + Release 0.2 (TBD)

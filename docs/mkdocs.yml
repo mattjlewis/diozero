@@ -1,0 +1,4 @@
+site_name=diozero
+site_url=rtd.diozero.com
+copyright='2016 Matt Lewis'
+google_analytics=['UA-73764647-1', 'rtd.diozero.com']
