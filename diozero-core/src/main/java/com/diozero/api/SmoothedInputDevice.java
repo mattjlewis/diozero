@@ -31,7 +31,6 @@ import java.util.Queue;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 
-import com.diozero.api.*;
 import com.diozero.util.RuntimeIOException;
 
 /**

@@ -41,18 +41,17 @@ import com.diozero.util.SleepUtil;
  * Detection Area Diameter @ 80 cm: 12 cm
  */
 public class GP2Y0A21YK extends AnalogueInputDevice {
-	
-	public GP2Y0A21YK(int pinNumber) throws RuntimeIOException {
-		this(DeviceFactoryHelper.getNativeDeviceFactory(), pinNumber);
+	public GP2Y0A21YK(int pinNumber, float range) throws RuntimeIOException {
+		this(DeviceFactoryHelper.getNativeDeviceFactory(), pinNumber, range);
 	}
 	
-	public GP2Y0A21YK(AnalogueInputDeviceFactoryInterface deviceFactory, int pinNumber) throws RuntimeIOException {
-		super(deviceFactory, pinNumber);
+	public GP2Y0A21YK(AnalogueInputDeviceFactoryInterface deviceFactory, int pinNumber, float range) throws RuntimeIOException {
+		super(deviceFactory, pinNumber, range);
 		SleepUtil.sleepMillis(44);
 	}
 	
 	public double getDistance() throws RuntimeIOException {
-		float v = getValue();
+		float v = getUnscaledValue();
 		return 16.2537 * Math.pow(v, 4) - 129.893 * Math.pow(v, 3) + 382.268 * Math.pow(v, 2) - 512.611 * v + 306.439;
 	}
 }

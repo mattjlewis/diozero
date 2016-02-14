@@ -45,12 +45,12 @@ import com.diozero.util.SleepUtil;
  * wiringPi:
  *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-wiringpi-0.2-SNAPSHOT.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sampleapps.ButtonTest 12
  * pigpgioJ:
- *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-pigpio-0.2-SNAPSHOT.jar:pigpioj-java-0.0.1-SNAPSHOT.jar -Djava.library.path=. com.diozero.sampleapps.ButtonTest 12
+ *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-pigpio-0.2-SNAPSHOT.jar:pigpioj-java-0.0.1-SNAPSHOT.jar com.diozero.sampleapps.ButtonTest 12
  */
 public class ButtonTest {
 	public static void main(String[] args) {
 		if (args.length < 1) {
-			Logger.error("Usage: ButtonTest <input-pin>");
+			Logger.error("Usage: {} <input-pin>", ButtonTest.class.getName());
 			System.exit(1);
 		}
 		test(Integer.parseInt(args[0]));

@@ -45,7 +45,7 @@ import com.diozero.util.SleepUtil;
  * wiringPi:
  *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-wiringpi-0.2-SNAPSHOT.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sampleapps.TMP36Test 0 1
  * pigpgioJ:
- *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-pigpio-0.2-SNAPSHOT.jar:pigpioj-java-0.0.1-SNAPSHOT.jar -Djava.library.path=. com.diozero.sampleapps.TMP36Test 0 1
+ *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-pigpio-0.2-SNAPSHOT.jar:pigpioj-java-0.0.1-SNAPSHOT.jar com.diozero.sampleapps.TMP36Test 0 1
  */
 public class TMP36Test {
 	private static final double DEFAULT_TEMPERATURE_OFFSET = 1.04f;
@@ -53,7 +53,7 @@ public class TMP36Test {
 
 	public static void main(String[] args) {
 		if (args.length < 2) {
-			Logger.error("Usage: TMP36Test <chip-select> <adc-pin> [<temp-offset>]");
+			Logger.error("Usage: {} <chip-select> <adc-pin> [<temp-offset>]", TMP36Test.class.getName());
 			System.exit(2);
 		}
 		int chip_select = Integer.parseInt(args[0]);
@@ -62,11 +62,12 @@ public class TMP36Test {
 		if (args.length > 2) {
 			temp_offset = Double.parseDouble(args[2]);
 		}
-		test(chip_select, adc_pin, temp_offset);
+		float v_ref = 3.3f;
+		test(chip_select, adc_pin, temp_offset, v_ref);
 	}
 	
-	public static void test(int chipSelect, int pin, double tempOffset) {
-		try (MCP3008 mcp3008 = new MCP3008(chipSelect); TMP36 tmp36 = new TMP36(mcp3008, pin, tempOffset)) {
+	public static void test(int chipSelect, int pin, double tempOffset, float vRef) {
+		try (MCP3008 mcp3008 = new MCP3008(0, chipSelect, vRef); TMP36 tmp36 = new TMP36(mcp3008, pin, tempOffset, vRef)) {
 			for (int i=0; i<ITERATIONS; i++) {
 				double tmp = tmp36.getTemperature();
 				Logger.info("Temperature: {}", String.format("%.2f", Double.valueOf(tmp)));

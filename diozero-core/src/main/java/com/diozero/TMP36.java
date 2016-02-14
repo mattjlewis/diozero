@@ -37,14 +37,16 @@ import com.diozero.util.RuntimeIOException;
 public class TMP36 extends AnalogueInputDevice implements TemperatureSensorInterface {
 	private double tempOffset;
 
-	public TMP36(AnalogueInputDeviceFactoryInterface deviceFactory, int pinNumber, double tempOffset) throws RuntimeIOException {
-		super(deviceFactory, pinNumber);
+	public TMP36(AnalogueInputDeviceFactoryInterface deviceFactory, int pinNumber,
+			double tempOffset, float vRef) throws RuntimeIOException {
+		super(deviceFactory, pinNumber, vRef);
 		this.tempOffset = tempOffset;
 	}
 
 	@Override
 	public double getTemperature() throws RuntimeIOException {
-		double v = getValue();
+		// Get the unscaled value
+		double v = getUnscaledValue();
 		return (100 * v - 50) + tempOffset;
 	}
 }

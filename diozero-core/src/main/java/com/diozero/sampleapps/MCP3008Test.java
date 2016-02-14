@@ -44,14 +44,14 @@ import com.diozero.util.SleepUtil;
  * wiringPi:
  *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-wiringpi-0.2-SNAPSHOT.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sampleapps.MCP3008Test 0 0
  * pigpgioJ:
- *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-pigpio-0.2-SNAPSHOT.jar:pigpioj-java-0.0.1-SNAPSHOT.jar -Djava.library.path=. com.diozero.sampleapps.MCP3008Test 0 0
+ *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-pigpio-0.2-SNAPSHOT.jar:pigpioj-java-0.0.1-SNAPSHOT.jar com.diozero.sampleapps.MCP3008Test 0 0
  */
 public class MCP3008Test {
 	private static final int ITERATIONS = 20;
 
 	public static void main(String[] args) {
 		if (args.length < 2) {
-			Logger.error("Usage: MCP3008Test <spi-chip-select> <adc_pin>");
+			Logger.error("Usage: {} <spi-chip-select> <adc_pin>", MCP3008Test.class.getName());
 			System.exit(2);
 		}
 		int spi_chip_select = Integer.parseInt(args[0]);

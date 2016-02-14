@@ -44,12 +44,12 @@ import com.diozero.util.SleepUtil;
  * wiringPi:
  *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-wiringpi-0.2-SNAPSHOT.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sampleapps.LEDTest 18
  * pigpgioJ:
- *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-pigpio-0.2-SNAPSHOT.jar:pigpioj-java-0.0.1-SNAPSHOT.jar -Djava.library.path=. com.diozero.sampleapps.LEDTest 18
+ *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-pigpio-0.2-SNAPSHOT.jar:pigpioj-java-0.0.1-SNAPSHOT.jar com.diozero.sampleapps.LEDTest 18
  */
 public class LEDTest {
 	public static void main(String[] args) {
 		if (args.length < 1) {
-			Logger.error("Usage: LEDTest <BCM pin number>");
+			Logger.error("Usage: {} <BCM pin number>", LEDTest.class.getName());
 			System.exit(1);
 		}
 		test(Integer.parseInt(args[0]));

@@ -28,21 +28,28 @@ package com.diozero.api;
 
 
 public class AnalogueInputEvent extends DeviceEvent {
-	private float value;
+	private float unscaledValue;
+	private float scaledValue;
 	
-	public AnalogueInputEvent(int pin, long epochTime, long nanoTime, float value) {
+	public AnalogueInputEvent(int pin, long epochTime, long nanoTime, float unscaledValue, float scaledValue) {
 		super(pin, epochTime, nanoTime);
 		
-		this.value = value;
+		this.unscaledValue = unscaledValue;
+		this.scaledValue = scaledValue;
 	}
 	
-	public float getValue() {
-		return value;
+	public float getUnscaledValue() {
+		return unscaledValue;
+	}
+	
+	public float getScaledValue() {
+		return scaledValue;
 	}
 
 	@Override
 	public String toString() {
 		return "AnaloguePinEvent [pin=" + getPin() + ", epochTime=" + getEpochTime() +
-				", nanoTime=" + getNanoTime() + ", value=" + value + "]";
+				", nanoTime=" + getNanoTime() + ", unscaledValue=" + unscaledValue +
+				", scaledValue=" + scaledValue + "]";
 	}
 }

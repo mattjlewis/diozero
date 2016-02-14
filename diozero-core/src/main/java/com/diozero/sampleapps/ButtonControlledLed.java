@@ -35,10 +35,24 @@ import com.diozero.api.GpioPullUpDown;
 import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 
+/**
+ * Control an LED with a button
+ * To run:
+ * JDK Device I/O 1.0:
+ *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-jdkdio10-0.2-SNAPSHOT.jar:dio-1.0.1-dev-linux-armv6hf.jar -Djava.library.path=. com.diozero.sampleapps.ButtonControlledLed 12 18
+ * JDK Device I/O 1.1:
+ *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-jdkdio11-0.2-SNAPSHOT.jar:dio-1.1-dev-linux-armv6hf.jar -Djava.library.path=. com.diozero.sampleapps.ButtonControlledLed 12 18
+ * Pi4j:
+ *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-pi4j-0.2-SNAPSHOT.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sampleapps.ButtonControlledLed 12 18
+ * wiringPi:
+ *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-wiringpi-0.2-SNAPSHOT.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sampleapps.ButtonControlledLed 12 18
+ * pigpgioJ:
+ *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-pigpio-0.2-SNAPSHOT.jar:pigpioj-java-0.0.1-SNAPSHOT.jar com.diozero.sampleapps.ButtonControlledLed 12 18
+ */
 public class ButtonControlledLed {
 	public static void main(String[] args) {
 		if (args.length < 2) {
-			Logger.error("Usage: ButtonControlledLed <button-pin> <led-pin>");
+			Logger.error("Usage: {} <button-pin> <led-pin>", ButtonControlledLed.class.getName());
 			System.exit(1);
 		}
 		test(Integer.parseInt(args[0]), Integer.parseInt(args[1]));

@@ -41,18 +41,16 @@ public class AnalogueInputDevice extends GpioInputDevice<AnalogueInputEvent> imp
 	private int pollInterval = DEFAULT_POLL_INTERVAL;
 	private float percentChange;
 	private boolean stopScheduler;
+	private float range;
 
-	public AnalogueInputDevice(int pinNumber) throws RuntimeIOException {
-		this(DeviceFactoryHelper.getNativeDeviceFactory().provisionAnalogueInputPin(pinNumber));
+	public AnalogueInputDevice(int pinNumber, float range) throws RuntimeIOException {
+		this(DeviceFactoryHelper.getNativeDeviceFactory(), pinNumber, range);
 	}
 
-	public AnalogueInputDevice(AnalogueInputDeviceFactoryInterface deviceFactory, int pinNumber) throws RuntimeIOException {
-		this(deviceFactory.provisionAnalogueInputPin(pinNumber));
-	}
-
-	public AnalogueInputDevice(GpioAnalogueInputDeviceInterface device) {
-		super(device.getPin());
-		this.device = device;
+	public AnalogueInputDevice(AnalogueInputDeviceFactoryInterface deviceFactory, int pinNumber, float range) throws RuntimeIOException {
+		super(pinNumber);
+		device = deviceFactory.provisionAnalogueInputPin(pinNumber);
+		this.range = range;
 	}
 
 	@Override
@@ -62,11 +60,16 @@ public class AnalogueInputDevice extends GpioInputDevice<AnalogueInputEvent> imp
 		device.close();
 	}
 	
-	public float getValue() throws RuntimeIOException {
+	public float getUnscaledValue() throws RuntimeIOException {
 		return device.getValue();
 	}
 	
-	public void addListener(InputEventListener<AnalogueInputEvent> listener, float percentChange) {
+	public float getScaledValue() throws RuntimeIOException {
+		// The raw device must return unscaled values
+		return device.getValue() / range;
+	}
+	
+	public void addListener(float percentChange, InputEventListener<AnalogueInputEvent> listener) {
 		addListener(listener);
 		this.percentChange = percentChange;
 	}
@@ -78,7 +81,7 @@ public class AnalogueInputDevice extends GpioInputDevice<AnalogueInputEvent> imp
 	
 	@Override
 	public void disableListener() {
-		// TODO Implementation?
+		stopScheduler = true;
 	}
 
 	@Override
@@ -87,10 +90,10 @@ public class AnalogueInputDevice extends GpioInputDevice<AnalogueInputEvent> imp
 			throw new RuntimeException("Stopping scheduler due to close request, device key=" + device.getKey());
 		}
 		
-		float value = device.getValue();
-		if (changeDetected(value)) {
-			valueChanged(new AnalogueInputEvent(pinNumber, System.currentTimeMillis(), System.nanoTime(), value));
-			lastValue = Float.valueOf(value);
+		float unscaled = getUnscaledValue();
+		if (changeDetected(unscaled)) {
+			valueChanged(new AnalogueInputEvent(pinNumber, System.currentTimeMillis(), System.nanoTime(), unscaled, unscaled/range));
+			lastValue = Float.valueOf(unscaled);
 		}
 	}
 

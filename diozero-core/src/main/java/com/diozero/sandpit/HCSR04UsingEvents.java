@@ -58,7 +58,7 @@ import com.diozero.util.SleepUtil;
 public class HCSR04UsingEvents implements DistanceSensorInterface, Closeable, InputEventListener<DigitalPinEvent> {
 	public static void main(String[] args) {
 		if (args.length != 2) {
-			Logger.error("Usage: HCSR04UsingEvents <trigger GPIO> <echo GPIO>");
+			Logger.error("Usage: {} <trigger GPIO> <echo GPIO>", HCSR04UsingEvents.class.getName());
 			System.exit(1);
 		}
 		int trigger_pin = Integer.parseInt(args[0]);

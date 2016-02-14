@@ -47,12 +47,12 @@ public class MCP3008Test {
 
 		try (MCP3008 mcp3008 = new MCP3008(0, spi_chip_select, voltage)) {
 			//mcp3008.provisionAnalogueInputPin(pin_number);
-			try (AnalogueInputDevice device = mcp3008.provisionAnalogueInputDevice(pin_number)) {
+			try (AnalogueInputDevice device = new AnalogueInputDevice(mcp3008, pin_number, voltage)) {
 				for (int i=0; i<iterations; i++) {
 					float v = mcp3008.getVoltage(pin_number);
 					Logger.info("Voltage: {}", String.format("%.2f", Float.valueOf(v)));
 					Assert.assertTrue("Voltage range", v >= 0 && v < voltage);
-					float pin_val = device.getValue();
+					float pin_val = device.getUnscaledValue();
 					Logger.info("Raw val: {}", String.format("%.2f", Float.valueOf(pin_val)));
 					Assert.assertTrue("Voltage range", v >= 0 && v < voltage);
 					SleepUtil.sleepMillis(100);

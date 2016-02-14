@@ -46,12 +46,12 @@ import com.diozero.util.SleepUtil;
  * wiringPi:
  *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-wiringpi-0.2-SNAPSHOT.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sampleapps.MCP23017Test 21 20
  * pigpgioJ:
- *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-pigpio-0.2-SNAPSHOT.jar:pigpioj-java-0.0.1-SNAPSHOT.jar -Djava.library.path=. com.diozero.sampleapps.MCP23017Test 21 20
+ *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-pigpio-0.2-SNAPSHOT.jar:pigpioj-java-0.0.1-SNAPSHOT.jar com.diozero.sampleapps.MCP23017Test 21 20
  */
 public class MCP23017Test {
 	public static void main(String[] args) {
 		if (args.length < 4) {
-			Logger.error("Usage: MCP23017Test <int-a pin> <int-b pin> <mcp23017-input-pin> <mcp23017-output-pin>");
+			Logger.error("Usage: {} <int-a pin> <int-b pin> <mcp23017-input-pin> <mcp23017-output-pin>", MCP23017Test.class.getName());
 			System.exit(1);
 		}
 		int int_a_pin = Integer.parseInt(args[0]);

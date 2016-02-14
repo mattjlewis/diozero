@@ -65,8 +65,9 @@ public class LDR extends AnalogueInputDevice implements LuminositySensorInterfac
 		this(DeviceFactoryHelper.getNativeDeviceFactory(), pinNumber, vRef, r1);
 	}
 	
-	public LDR(AnalogueInputDeviceFactoryInterface deviceFactory, int pinNumber, float vRef, float r1) throws RuntimeIOException {
-		super(deviceFactory, pinNumber);
+	public LDR(AnalogueInputDeviceFactoryInterface deviceFactory, int pinNumber,
+			float vRef, float r1) throws RuntimeIOException {
+		super(deviceFactory, pinNumber, vRef);
 		
 		this.vRef = vRef;
 		this.r1 = r1;
@@ -74,7 +75,8 @@ public class LDR extends AnalogueInputDevice implements LuminositySensorInterfac
 
 	@Override
 	public double getLuminosity() throws RuntimeIOException {
-		double v_ldr = getValue();
+		// Get the unscaled value
+		double v_ldr = getUnscaledValue();
 		
 		// http://emant.com/316002.page
 		// rLDR = 500 / Lux

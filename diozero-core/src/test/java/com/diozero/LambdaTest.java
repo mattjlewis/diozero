@@ -1,5 +1,8 @@
 package com.diozero;
 
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
+
 /*
  * #%L
  * Device I/O Zero - Core
@@ -27,8 +30,15 @@ package com.diozero;
  */
 
 import java.util.function.Consumer;
+import java.util.function.Supplier;
+
+import org.pmw.tinylog.Logger;
+
+import com.diozero.api.GpioScheduler;
+import com.diozero.util.SleepUtil;
 
 public class LambdaTest {
+	private static final Random RANDOM = new Random(System.nanoTime());
 
 	public static void main(String[] args) {
 		Consumer<Void> consumer = (Void v) -> System.out.println("Hello consumer");
@@ -39,6 +49,34 @@ public class LambdaTest {
 		c.action();
 		
 		carryOutWork(() -> System.out.println("In here 1"));
+		
+		LambdaTest t = new LambdaTest();
+		
+		Logger.info("Using local invoke utility");
+		for (int i=0; i<10; i++) {
+			invoke(t::getValue, t::setValue);
+			SleepUtil.sleepSeconds(1);
+		}
+		
+		Logger.info("Using GpioScheduler");
+		GpioScheduler.getInstance().invokeAtFixedRate(t::getValue, t::setValue, 100, 1000, TimeUnit.MILLISECONDS);
+		for (int i=0; i<10; i++) {
+			SleepUtil.sleepSeconds(1);
+		}
+		
+		GpioScheduler.getInstance().shutdown();
+	}
+	
+	static void invoke(Supplier<Float> source, Consumer<Float> sink) {
+		sink.accept(source.get());
+	}
+	
+	public float getValue() {
+		return RANDOM.nextFloat();
+	}
+	
+	public void setValue(float f) {
+		System.out.println("setValue(" + f + ")");
 	}
 
 	interface Command extends Consumer<Void> {

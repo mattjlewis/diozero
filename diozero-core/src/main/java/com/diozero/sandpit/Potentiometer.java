@@ -8,14 +8,14 @@ public class Potentiometer extends AnalogueInputDevice {
 	private float r1;
 	
 	public Potentiometer(AnalogueInputDeviceFactoryInterface deviceFactory, int pinNumber, float vRef, float r1) {
-		super(deviceFactory, pinNumber);
+		super(deviceFactory, pinNumber, vRef);
 		
 		this.vRef = vRef;
 		this.r1 = r1;
 	}
 	
 	public double getResistance() {
-		double v_pot = getValue();
+		double v_pot = getUnscaledValue();
 		double r_pot = r1 / (vRef / v_pot - 1);
 		
 		return r_pot;
