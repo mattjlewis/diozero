@@ -34,6 +34,13 @@ try (MCP3008 mcp3008 = new MCP3008(chipSelect); LDR ldr = new LDR(mcp3008, pin, 
 	SleepUtil.sleepSeconds(20);
 }
 ```
+Or a random LED flicker effect:
+```java
+try (PwmLed led = new PwmLed(pin)) {
+	GpioScheduler.getInstance().invokeAtFixedRate(RANDOM::nextFloat, led::setValue, 50, 50, TimeUnit.MILLISECONDS, false);
+}
+```
+
 
 TODO Describe device factory concept to allow same API via expansion boards.
 
@@ -48,43 +55,43 @@ This project is hosted on [GitHub](https://github.com/mattjlewis/diozero/), plea
 
 ##Contents
 * [Digital Input Devices](DigitalInputDevices.md)
-  * Button
-  * PIR Motion Sensor
-  * Line Sensor
+    * Button
+    * PIR Motion Sensor
+    * Line Sensor
 * Analogue Input Devices
-  * Light Dependent Resistor
-  * TMP36 Temperature Sensor
-  * Potentiometer
-  * Sharp GP2Y0A21YK Distance Sensor
+    * Light Dependent Resistor
+    * TMP36 Temperature Sensor
+    * Potentiometer
+    * Sharp GP2Y0A21YK Distance Sensor
 * Output Devices
-  * Digital LED
-  * Buzzer
-  * PWM Output
-  * PWM LED
-  * RGB LED
+    * Digital LED
+    * Buzzer
+    * PWM Output
+    * PWM LED
+    * RGB LED
 * Expansion Boards
-  * MCP3008 Analogue-to-Digital Converter
-  * MCP23017 GPIO Expansion Board
-  * PCA9685 16-channel 12-bit PWM Controller (Adafruit PWM Servo Driver)
+    * MCP3008 Analogue-to-Digital Converter
+    * MCP23017 GPIO Expansion Board
+    * PCA9685 16-channel 12-bit PWM Controller (Adafruit PWM Servo Driver)
 * Motor Control
-  * CamJam EduKit #3 Motor Controller Board
-  * Ryanteck RPi Motor Controller Board
-  * Toshiba TB6612FNG Dual Motor Driver
+    * CamJam EduKit #3 Motor Controller Board
+    * Ryanteck RPi Motor Controller Board
+    * Toshiba TB6612FNG Dual Motor Driver
 * Other Components
-  * HC-SR04 Ultrasonic Distance Sensor
-  * BMP180 Temperature and Pressure Sensor
-  * TSL2561 Luminosity Sensor
-  * InvenSense MPU-9150 9-axis MotionTracking Device
+    * HC-SR04 Ultrasonic Distance Sensor
+    * BMP180 Temperature and Pressure Sensor
+    * TSL2561 Luminosity Sensor
+    * InvenSense MPU-9150 9-axis MotionTracking Device
 * API
-  * Analogue Input Device
-  * Digital Input Device
-  * Motors (Digital and PWM)
-  * Digital Output Device
-  * I2C Device Support
-  * SPI Device Support
-  * PWM Output Device
-  * Smoothed Input Device
-  * Waitable Input Device
+    * Analogue Input Device
+    * Digital Input Device
+    * Motors (Digital and PWM)
+    * Digital Output Device
+    * I2C Device Support
+    * SPI Device Support
+    * PWM Output Device
+    * Smoothed Input Device
+    * Waitable Input Device
 
 ##Providers
 * JDK Device I/O
