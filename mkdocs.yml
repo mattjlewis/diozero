@@ -5,3 +5,4 @@ google_analytics: ['UA-73764647-1', 'rtd.diozero.com']
 pages:
 - Home: index.md
 - Digital Input Devices: DigitalInputDevices.md
+- License: license.md
