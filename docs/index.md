@@ -124,4 +124,4 @@ For a discussion on why Pi4j 1.0 is so slow, see this [issue](https://github.com
 + Release 0.2 (TBD)
 
 ##License
-This work is provided under the [MIT License](license.txt).
+This work is provided under the [MIT License](license.md).
