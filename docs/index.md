@@ -110,7 +110,7 @@ I've done some limited performance tests (turning a GPIO on then off, see [GpioP
 | wiringPi | 5,000,000 | 1,683 |
 | wiringPi (direct) | 10,000,000 | 2,137 |
 | pigpio | 5,000,000 | 1,266 |
-| pigpio (direct) 10,000,000 | 1,649 |
+| pigpio (direct) | 10,000,000 | 1,649 |
 
 For a discussion on why Pi4j 1.0 is so slow, see this [issue](https://github.com/Pi4J/pi4j/issues/158). These results are in-line with those documented in the book ["Raspberry Pi with Java: Programming the Internet of Things"](http://www.amazon.co.uk/Raspberry-Pi-Java-Programming-Internet/dp/0071842012). For reference, the author's results were:
 
