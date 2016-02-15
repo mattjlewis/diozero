@@ -1,8 +1,19 @@
 site_name: diozero
 site_url: http://rtd.diozero.com
-copyright: Copyright &copy; 2016 Matt Lewis
-google_analytics: ['UA-73764647-1', 'rtd.diozero.com']
+site_description: Device I/O abstraction library written in Java
+site_author: Matt Lewis
+repo_url: https://github.com/mattjlewis/diozero
 pages:
 - Home: index.md
-- Digital Input Devices: DigitalInputDevices.md
+- Devices
+    - Digital Input Devices: DigitalInputDevices.md
+    - Analogue Input Devices: AnalogueInputDevices.md
+    - Output Devices: OutputDevices.md
+    - Expansion Boards: ExpansionBoards.md
+    - Motor Control: MotorControl.md
+    - Other Components: OtherComponents.md
+    - API: API.md
+- Providers: Providers.md
 - License: license.md
+copyright: Copyright &copy; 2016 Matt Lewis
+google_analytics: ['UA-73764647-1', 'diozero.com']
