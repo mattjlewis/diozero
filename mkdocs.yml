@@ -5,7 +5,7 @@ site_author: Matt Lewis
 repo_url: https://github.com/mattjlewis/diozero
 pages:
 - Home: index.md
-- Devices
+- Devices:
     - Digital Input Devices: DigitalInputDevices.md
     - Analogue Input Devices: AnalogueInputDevices.md
     - Output Devices: OutputDevices.md
