@@ -71,7 +71,7 @@ try (MCP3008 mcp3008 = new MCP3008(chipSelect); LDR ldr = new LDR(mcp3008, pin, 
 ## Install
 TODO Describe getting started steps.
 Snapshot builds of the library are available in the [Nexus Repository Manager](https://oss.sonatype.org/index.html#nexus-search;gav~com.diozero~~~~).
-This library uses [tinylog](www.tinylog.org) [v1.0](https://github.com/pmwmedia/tinylog/releases/download/1.0.3/tinylog-1.0.3.zip).
+This library uses [tinylog](http://www.tinylog.org) [v1.0](https://github.com/pmwmedia/tinylog/releases/download/1.0.3/tinylog-1.0.3.zip).
 
 ## Devices
 + [Digital Input Devices](DigitalInputDevices.md)
@@ -136,18 +136,21 @@ For a discussion on why Pi4j 1.0 was so slow, see this [issue](https://github.co
 
 ## Development
 This project is hosted on [GitHub](https://github.com/mattjlewis/diozero/), please feel free to join in:
+
 + Make suggestions for [fixes and enhancements](https://github.com/mattjlewis/diozero/issues)
 + Provide sample applications
 + Contribute to development
+
 TODO Add something about Maven dependencies, setting up development environments.
 
 ## To-Do
 There is still a lot left to do, in particular:
-* Thorough testing (various types of devices using each service provider)
-* Testing on different devices (all flavours of Raspberry Pi, BeagleBone, ...)
-* GPIO input debouncing
-* Other I2C & SPI devices, including those on the SenseHAT
-* A clean object-orientated API for IMUs
+
++ Thorough testing (various types of devices using each service provider)
++ Testing on different devices (all flavours of Raspberry Pi, BeagleBone, ...)
++ GPIO input debouncing
++ Other I2C & SPI devices, including those on the SenseHAT
++ A clean object-orientated API for IMUs
 
 ## Change-log
 + Release 0.2 (TBD)
