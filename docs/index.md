@@ -1,12 +1,12 @@
 # diozero
 A Device I/O library that provides an object-orientated interface for a range of GPIO / I2C / SPI devices such as LEDs, buttons and other various sensors. Actual GPIO / I2C / SPI device communication is delegated via a pluggable abstraction layer to provide maximum compatibility across devices.
 
-This library makes use of modern Java 8 features such as automatic resource management, [Lambda Expressions](https://docs.oracle.com/javase/tutorial/java/javaOO/lambdaexpressions.html) and [Method References](https://docs.oracle.com/javase/tutorial/java/javaOO/methodreferences.html) where they simplify development and improve code readability.
+This library makes use of modern Java 8 features such as [automatic resource management](https://docs.oracle.com/javase/tutorial/essential/exceptions/tryResourceClose.html), [Lambda Expressions](https://docs.oracle.com/javase/tutorial/java/javaOO/lambdaexpressions.html) and [Method References](https://docs.oracle.com/javase/tutorial/java/javaOO/methodreferences.html) where they simplify development and improve code readability.
 
 Created by [Matt Lewis](https://github.com/mattjlewis), inspired by [GPIO Zero](https://gpiozero.readthedocs.org/en/v1.1.0/index.html).
 
 ## Concepts
-The aim of this library is to encapsulated real-world devices as classes with meaningful operation names, for example LED (on / off), LDR (analogue readings), Button (pressed / released), Motor (forward / backwards / left / right). All devices implement Closeable hence will get automatically closed by the `try (Device d = new Device()) { d.doSomething() }` block. This is best illustrated by some simple examples.
+The aim of this library is to encapsulated real-world devices as classes with meaningful operation names, for example LED (on / off), LDR (analogue readings), Button (pressed / released), Motor (forward / backwards / left / right). All devices implement Closeable hence will get automatically closed by the `try (Device d = new Device()) { d.doSomething() }` statement. This is best illustrated by some simple examples.
 
 LED control:
 ```java
@@ -39,9 +39,9 @@ try (PwmLed led = new PwmLed(pin)) {
 }
 ```
 
-All devices are provisioned by a [Device Factory](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/internal/spi/DeviceFactoryInterface.java). There is a default NativeDeviceFactory for provisioning via the host board itself. However, all components accept an optional Device Factory parameter for provisioning the same set of components via an alternative method. This is particularly useful for GPIO expansion boards and Analogue-to-Digital converters.
+All devices are provisioned by a [Device Factory](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/internal/spi/DeviceFactoryInterface.java) with a default NativeDeviceFactory for provisioning via the host board itself. However, all components accept an optional Device Factory parameter for provisioning the same set of components via an alternative method. This is particularly useful for GPIO expansion boards and Analogue-to-Digital converters.
 
-The Raspberry Pi provides no analogue input pins; attempting to create an AnalogueInputDevice such as an LDR using the Raspberry Pi default native device factory would result in a runtime error (UnsupportedOperationException). However, ADC classes such as the [MCP3008](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/MCP3008.java) are also analogue input device factories and can be used to construct devices such as LDRs:
+The Raspberry Pi provides no analogue input pins; attempting to create an AnalogueInputDevice such as an LDR using the Raspberry Pi default native device factory would result in a runtime error (UnsupportedOperationException). However, ADC classes such as the [MCP3008](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/MCP3008.java) have been implemented as analogue input device factories hence can be used to construct analogue devices such as LDRs:
 ```java
 try (MCP3008 mcp3008 = new MCP3008(chipSelect); LDR ldr = new LDR(mcp3008, pin, vRef, r1)) {
 	System.out.println(ldr.getUnscaledValue());
@@ -59,7 +59,7 @@ try (MCP23017 mcp23017 = new MCP23017(intAPin, intBPin);
 }
 ```
 
-Analogue input devices also provide an event notification mechanism; to control the brightness of an LED based on readings from an LDR:
+Analogue input devices also provide an event notification mechanism. To control the brightness of an LED based on ambient light levels:
 ```java
 try (MCP3008 mcp3008 = new MCP3008(chipSelect); LDR ldr = new LDR(mcp3008, pin, vRef, r1); PwmLed led = new PwmLed(ledPin)) {
 	// Detect variations of 5%
@@ -117,22 +117,22 @@ This library uses [tinylog](www.tinylog.org) [v1.0](https://github.com/pmwmedia/
 I've done some limited performance tests (turning a GPIO on then off, see [GpioPerfTest](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/sampleapps/GpioPerfTest.java)) on a Raspberry Pi 2 using the various native device factory providers as well as a test using Pi4j's wiringPi JNI API directly without going via my DIO-Zero wrapper (see [WiringPiRawPerfTest](https://github.com/mattjlewis/diozero/blob/master/diozero-provider-wiringpi/src/main/java/com/diozero/internal/provider/wiringpi/WiringPiRawPerfTest.java)); here are the results:
 
 | Provider | Iterations | Frequency (kHz) |
-| -------- | ---------- | --------------- |
-| Pi4j 1.0 | 10,000: | 0.91: |
-| JDK DIO 1.1 | 100,000: | 8.23: |
-| Pi4j 1.1 | 10,000,000: | 622: |
-| wiringPi | 5,000,000: | 1,683: |
-| wiringPi (direct) | 10,000,000: | 2,137: |
-| pigpio | 5,000,000 | 1,266: |
-| pigpio (direct) | 10,000,000: | 1,649: |
+| -------- | ---------: | --------------: |
+| Pi4j 1.0 | 10,000 | 0.91 |
+| JDK DIO 1.1 | 100,000 | 8.23 |
+| Pi4j 1.1 | 10,000,000 | 622 |
+| wiringPi | 5,000,000 | 1,683 |
+| wiringPi (direct) | 10,000,000 | 2,137 |
+| pigpio | 5,000,000 | 1,266 |
+| pigpio (direct) | 10,000,000 | 1,649 |
 
 For a discussion on why Pi4j 1.0 was so slow, see this [issue](https://github.com/Pi4J/pi4j/issues/158). These results are in-line with those documented in the book ["Raspberry Pi with Java: Programming the Internet of Things"](http://www.amazon.co.uk/Raspberry-Pi-Java-Programming-Internet/dp/0071842012). For reference, the author's results were:
 
 | Library | Frequency (kHz) |
-| ------- | --------------- |
-| Pi4j 1.0 | 0.751: |
-| JDK DIO 1.0 | 3.048: |
-| wiringPi (direct) | 1,662: |
+| ------- | --------------: |
+| Pi4j 1.0 | 0.751 |
+| JDK DIO 1.0 | 3.048 |
+| wiringPi (direct) | 1,662 |
 
 ## Development
 This project is hosted on [GitHub](https://github.com/mattjlewis/diozero/), please feel free to join in:
