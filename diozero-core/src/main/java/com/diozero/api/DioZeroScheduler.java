@@ -1,5 +1,7 @@
 package com.diozero.api;
 
+import java.util.Map;
+
 /*
  * #%L
  * Device I/O Zero - Core
@@ -32,12 +34,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import org.pmw.tinylog.Logger;
+
 public class DioZeroScheduler {
 	private static DioZeroScheduler daemonInstance = new DioZeroScheduler(true);
 	private static DioZeroScheduler nonDaemonInstance = new DioZeroScheduler(false);
 	
 	private ExecutorService executor;
 	private ScheduledExecutorService scheduler;
+	private DaemonThreadFactory threadFactory;
 	
 	public static DioZeroScheduler getDaemonInstance() {
 		return daemonInstance;
@@ -53,8 +58,9 @@ public class DioZeroScheduler {
 	}
 	
 	private DioZeroScheduler(boolean daemon) {
-		executor = Executors.newCachedThreadPool(new DaemonThreadFactory(daemon));
-		scheduler = Executors.newScheduledThreadPool(50, new DaemonThreadFactory(daemon));
+		threadFactory = new DaemonThreadFactory(daemon);
+		executor = Executors.newCachedThreadPool(threadFactory);
+		scheduler = Executors.newScheduledThreadPool(50, threadFactory);
 	}
 	
 	public void execute(Runnable r) {
@@ -71,18 +77,22 @@ public class DioZeroScheduler {
 	}
 	
 	private void shutdown() {
-		try { executor.awaitTermination(50, TimeUnit.MILLISECONDS); } catch (InterruptedException e) { }
-		try { scheduler.awaitTermination(50, TimeUnit.MILLISECONDS); } catch (InterruptedException e) { }
+		executor.shutdown();
+		scheduler.shutdown();
+		Logger.debug("Shutdown - done");
 	}
 	
 	static class DaemonThreadFactory implements ThreadFactory {
 		private static final AtomicInteger poolNumber = new AtomicInteger(1);
+		
+		private final boolean daemon;
 		private final ThreadGroup group;
 		private final AtomicInteger threadNumber = new AtomicInteger(1);
 		private final String namePrefix;
-		private boolean daemon;
 
 		DaemonThreadFactory(boolean daemon) {
+			this.daemon = daemon;
+
 			SecurityManager s = System.getSecurityManager();
 			group = (s != null) ? s.getThreadGroup() : Thread.currentThread().getThreadGroup();
 			namePrefix = (daemon ? "daemon" : "non-daemon") + "-pool-" + poolNumber.getAndIncrement() + "-thread-";
@@ -94,5 +104,26 @@ public class DioZeroScheduler {
 			t.setDaemon(daemon);
 			return t;
 		}
+		
+		void status() {
+			Logger.debug("[" + (daemon ? "daemon" : "non-daemon") + "] activeCount=" + group.activeCount() +
+					", activeGroupCount=" + group.activeGroupCount());
+		}
+	}
+
+	public static void statusAll() {
+		Map<Thread, StackTraceElement[]> stacks = Thread.getAllStackTraces();
+		for (Map.Entry<Thread, StackTraceElement[]> entry : stacks.entrySet()) {
+			Logger.debug("Stack trace elements for Thread " + entry.getKey().getName() + ":");
+			for (StackTraceElement element : entry.getValue()) {
+				Logger.debug(element.toString());
+			}
+		}
+		daemonInstance.status();
+		nonDaemonInstance.status();
+	}
+
+	private void status() {
+		threadFactory.status();
 	}
 }

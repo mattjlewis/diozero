@@ -101,7 +101,9 @@ class ShutdownHandlerThread extends Thread {
 	
 	@Override
 	public void run() {
+		Logger.debug("Shutdown handler running");
 		DioZeroScheduler.shutdownAll();
 		deviceFactory.closeAll();
+		Logger.debug("Shutdown handler finished");
 	}
 }
