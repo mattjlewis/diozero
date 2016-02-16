@@ -73,7 +73,7 @@ public class SmoothedInputDevice extends DigitalInputDevice {
 		this.age = age;
 		
 		queue = new LinkedList<>();
-		GpioScheduler.getInstance().scheduleAtFixedRate(new EventDetection(), age, age, TimeUnit.MILLISECONDS);
+		DioZeroScheduler.getDaemonInstance().scheduleAtFixedRate(new EventDetection(), age, age, TimeUnit.MILLISECONDS);
 	}
 	
 	/**

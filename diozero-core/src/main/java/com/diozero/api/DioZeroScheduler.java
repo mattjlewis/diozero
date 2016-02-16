@@ -32,65 +32,47 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public class GpioScheduler {
-	private static GpioScheduler instance = new GpioScheduler();
-	private ExecutorService daemonExecutor;
-	private ScheduledExecutorService daemonScheduler;
-	private ExecutorService nonDaemonExecutor;
-	private ScheduledExecutorService nonDaemonScheduler;
+public class DioZeroScheduler {
+	private static DioZeroScheduler daemonInstance = new DioZeroScheduler(true);
+	private static DioZeroScheduler nonDaemonInstance = new DioZeroScheduler(false);
 	
-	private GpioScheduler() {
-		daemonExecutor = Executors.newCachedThreadPool(new DaemonThreadFactory(true));
-		daemonScheduler = Executors.newScheduledThreadPool(50, new DaemonThreadFactory(true));
-		nonDaemonExecutor = Executors.newCachedThreadPool(new DaemonThreadFactory(false));
-		nonDaemonScheduler = Executors.newScheduledThreadPool(50, new DaemonThreadFactory(false));
+	private ExecutorService executor;
+	private ScheduledExecutorService scheduler;
+	
+	public static DioZeroScheduler getDaemonInstance() {
+		return daemonInstance;
 	}
 	
-	public static GpioScheduler getInstance() {
-		return instance;
+	public static DioZeroScheduler getNonDaemonInstance() {
+		return nonDaemonInstance;
+	}
+	
+	public static void shutdownAll() {
+		daemonInstance.shutdown();
+		nonDaemonInstance.shutdown();
+	}
+	
+	private DioZeroScheduler(boolean daemon) {
+		executor = Executors.newCachedThreadPool(new DaemonThreadFactory(daemon));
+		scheduler = Executors.newScheduledThreadPool(50, new DaemonThreadFactory(daemon));
 	}
 	
 	public void execute(Runnable r) {
-		execute(r, true);
-	}
-	
-	public void execute(Runnable r, boolean daemon) {
-		if (daemon) {
-			daemonExecutor.execute(r);
-		} else {
-			nonDaemonExecutor.execute(r);
-		}
+		executor.execute(r);
 	}
 	
 	public ScheduledFuture<?> scheduleAtFixedRate(Runnable r, long initialDelay, long period, TimeUnit unit) {
-		return scheduleAtFixedRate(r, initialDelay, period, unit, true);
-	}
-	
-	public ScheduledFuture<?> scheduleAtFixedRate(Runnable r, long initialDelay, long period, TimeUnit unit, boolean daemon) {
-		if (daemon) {
-			return daemonScheduler.scheduleAtFixedRate(r, initialDelay, period, unit);
-		}
-		return nonDaemonScheduler.scheduleAtFixedRate(r, initialDelay, period, unit);
+		return scheduler.scheduleAtFixedRate(r, initialDelay, period, unit);
 	}
 	
 	public ScheduledFuture<?> invokeAtFixedRate(Supplier<Float> source, Consumer<Float> sink,
 			long initialDelay, long period, TimeUnit unit) {
-		return invokeAtFixedRate(source, sink, initialDelay, period, unit, true);
+		return scheduler.scheduleAtFixedRate(() -> sink.accept(source.get()), initialDelay, period, unit);
 	}
 	
-	public ScheduledFuture<?> invokeAtFixedRate(Supplier<Float> source, Consumer<Float> sink,
-			long initialDelay, long period, TimeUnit unit, boolean daemon) {
-		if (daemon) {
-			return daemonScheduler.scheduleAtFixedRate(() -> sink.accept(source.get()), initialDelay, period, unit);
-		}
-		return nonDaemonScheduler.scheduleAtFixedRate(() -> sink.accept(source.get()), initialDelay, period, unit);
-	}
-	
-	public void shutdown() {
-		try { daemonExecutor.awaitTermination(50, TimeUnit.MILLISECONDS); } catch (InterruptedException e) { }
-		try { daemonScheduler.awaitTermination(50, TimeUnit.MILLISECONDS); } catch (InterruptedException e) { }
-		try { nonDaemonExecutor.awaitTermination(50, TimeUnit.MILLISECONDS); } catch (InterruptedException e) { }
-		try { nonDaemonScheduler.awaitTermination(50, TimeUnit.MILLISECONDS); } catch (InterruptedException e) { }
+	private void shutdown() {
+		try { executor.awaitTermination(50, TimeUnit.MILLISECONDS); } catch (InterruptedException e) { }
+		try { scheduler.awaitTermination(50, TimeUnit.MILLISECONDS); } catch (InterruptedException e) { }
 	}
 	
 	static class DaemonThreadFactory implements ThreadFactory {
@@ -109,9 +91,7 @@ public class GpioScheduler {
 		@Override
 		public Thread newThread(Runnable r) {
 			Thread t = new Thread(group, r, namePrefix + threadNumber.getAndIncrement(), 0);
-			if (daemon) {
-				t.setDaemon(true);
-			}
+			t.setDaemon(daemon);
 			return t;
 		}
 	}

@@ -46,39 +46,38 @@ public class WaitableDigitalInputDevice extends DigitalInputDevice {
 		super(pinNumber, pud, trigger);
 	}
 
-	public void waitForActive() {
+	public void waitForActive() throws InterruptedException {
 		waitForActive(0);
 	}
 
-	public void waitForActive(float timeoutSec) {
-		waitForValue(activeHigh, timeoutSec);
+	public void waitForActive(int timeout) throws InterruptedException {
+		waitForValue(activeHigh, timeout);
 	}
 
-	public void waitForInactive() {
+	public void waitForInactive() throws InterruptedException {
 		waitForInactive(0);
 	}
 
-	public void waitForInactive(float timeoutSec) {
-		waitForValue(!activeHigh, timeoutSec);
+	public void waitForInactive(int timeout) throws InterruptedException {
+		waitForValue(!activeHigh, timeout);
 	}
 
-	protected void waitForValue(boolean value, float timeoutSec) {
+	protected void waitForValue(boolean value, int timeout) throws InterruptedException {
 		long start = System.currentTimeMillis();
-		long wait_for_millis = (long) (timeoutSec * 1000);
+		long wait_for_millis = timeout;
 		synchronized (this) {
 			do {
-				try {
-					if (timeoutSec > 0) {
-						wait(wait_for_millis);
-					} else {
-						wait();
-					}
-				} catch (InterruptedException ie) {
+				if (wait_for_millis > 0) {
+					wait(wait_for_millis);
+				} else {
+					wait();
 				}
 				if (lastPinEvent.getValue() == value) {
+					// Got the value we were waiting for, exit the loop
 					break;
 				}
-			} while ((System.currentTimeMillis() - start) < wait_for_millis);
+				wait_for_millis = timeout - (System.currentTimeMillis() - start);
+			} while (wait_for_millis > 0);
 		}
 	}
 
@@ -88,7 +87,7 @@ public class WaitableDigitalInputDevice extends DigitalInputDevice {
 			lastPinEvent = event;
 			notify();
 		}
-		
+		// Notify any listeners
 		super.valueChanged(event);
 	}
 }

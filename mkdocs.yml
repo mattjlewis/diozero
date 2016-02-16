@@ -2,7 +2,9 @@ site_name: diozero
 site_url: http://rtd.diozero.com
 site_description: Device I/O abstraction library written in Java
 site_author: Matt Lewis
+
 repo_url: https://github.com/mattjlewis/diozero
+
 pages:
 - Home: index.md
 - Devices:
@@ -15,5 +17,6 @@ pages:
     - API: API.md
 - Providers: Providers.md
 - License: license.md
+
 copyright: Copyright &copy; 2016 Matt Lewis
 google_analytics: ['UA-73764647-1', 'diozero.com']

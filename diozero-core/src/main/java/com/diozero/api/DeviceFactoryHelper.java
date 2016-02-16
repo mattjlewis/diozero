@@ -101,7 +101,7 @@ class ShutdownHandlerThread extends Thread {
 	
 	@Override
 	public void run() {
-		GpioScheduler.getInstance().shutdown();
+		DioZeroScheduler.shutdownAll();
 		deviceFactory.closeAll();
 	}
 }

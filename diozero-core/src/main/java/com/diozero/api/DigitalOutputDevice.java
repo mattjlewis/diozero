@@ -68,7 +68,7 @@ public class DigitalOutputDevice extends GpioDevice {
 	protected void onOffLoop(float onTime, float offTime, int n, boolean background) throws RuntimeIOException {
 		stopOnOffLoop();
 		if (background) {
-			GpioScheduler.getInstance().execute(() -> onOffLoop(onTime, offTime, n));
+			DioZeroScheduler.getDaemonInstance().execute(() -> onOffLoop(onTime, offTime, n));
 		} else {
 			onOffLoop(onTime, offTime, n);
 		}
@@ -88,27 +88,33 @@ public class DigitalOutputDevice extends GpioDevice {
 	}
 
 	private void onOff(float onTime, float offTime) throws RuntimeIOException {
-		setValueInternal(activeHigh);
-		SleepUtil.sleepSeconds(onTime);
-		if (running) {
-			setValueInternal(!activeHigh);
-			SleepUtil.sleepSeconds(offTime);
+		if (! running) {
+			return;
 		}
+		setValueUnsafe(activeHigh);
+		SleepUtil.sleepSeconds(onTime);
+		
+		if (!running) {
+			return;
+		}
+		setValueUnsafe(!activeHigh);
+		SleepUtil.sleepSeconds(offTime);
 	}
 
 	private void stopOnOffLoop() {
+		// TODO Interrupt any background threads?
 		running = false;
 	}
 	
 	// Exposed operations
 	public void on() throws RuntimeIOException {
 		stopOnOffLoop();
-		setValueInternal(activeHigh);
+		setValueUnsafe(activeHigh);
 	}
 	
 	public void off() throws RuntimeIOException {
 		stopOnOffLoop();
-		setValueInternal(!activeHigh);
+		setValueUnsafe(!activeHigh);
 	}
 	
 	public void setOn(boolean on) throws RuntimeIOException {
@@ -117,7 +123,7 @@ public class DigitalOutputDevice extends GpioDevice {
 	
 	public void toggle() throws RuntimeIOException {
 		stopOnOffLoop();
-		setValueInternal(!device.getValue());
+		setValueUnsafe(!device.getValue());
 	}
 
 	// Exposed properties
@@ -127,12 +133,14 @@ public class DigitalOutputDevice extends GpioDevice {
 	
 	public void setValue(boolean value) throws RuntimeIOException {
 		stopOnOffLoop();
-		setValueInternal(activeHigh ? value : !value);
+		setValueUnsafe(activeHigh ? value : !value);
 	}
 	
-	private void setValueInternal(boolean value) throws RuntimeIOException {
-		synchronized (device) {
-			device.setValue(value);
-		}
+	/**
+	 * Unsafe operation that has no synchronisation checks and doesn't factor in active low logic.
+	 * Included primarily for performance tests
+	 */
+	public void setValueUnsafe(boolean value) throws RuntimeIOException {
+		device.setValue(value);
 	}
 }

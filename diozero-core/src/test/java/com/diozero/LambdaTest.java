@@ -34,7 +34,7 @@ import java.util.function.Supplier;
 
 import org.pmw.tinylog.Logger;
 
-import com.diozero.api.GpioScheduler;
+import com.diozero.api.DioZeroScheduler;
 import com.diozero.util.SleepUtil;
 
 public class LambdaTest {
@@ -59,12 +59,12 @@ public class LambdaTest {
 		}
 		
 		Logger.info("Using GpioScheduler");
-		GpioScheduler.getInstance().invokeAtFixedRate(t::getValue, t::setValue, 100, 1000, TimeUnit.MILLISECONDS);
+		DioZeroScheduler.getDaemonInstance().invokeAtFixedRate(t::getValue, t::setValue, 100, 1000, TimeUnit.MILLISECONDS);
 		for (int i=0; i<10; i++) {
 			SleepUtil.sleepSeconds(1);
 		}
 		
-		GpioScheduler.getInstance().shutdown();
+		DioZeroScheduler.shutdownAll();
 	}
 	
 	static void invoke(Supplier<Float> source, Consumer<Float> sink) {

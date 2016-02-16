@@ -1,5 +1,5 @@
 # diozero
-A Device I/O library that provides an object-orientated interface for a range of GPIO / I2C / SPI devices such as LEDs, buttons and other various sensors. Actual GPIO / I2C / SPI device communication is delegated via a pluggable abstraction layer to provide maximum compatibility across devices.
+A Device I/O library written in Java that provides an object-orientated interface for a range of GPIO / I2C / SPI devices such as LEDs, buttons and other various sensors connected to intelligent devices like the Raspberry Pi. Actual GPIO / I2C / SPI device communication is delegated via a pluggable abstraction layer to provide maximum compatibility across devices.
 
 This library makes use of modern Java 8 features such as [automatic resource management](https://docs.oracle.com/javase/tutorial/essential/exceptions/tryResourceClose.html), [Lambda Expressions](https://docs.oracle.com/javase/tutorial/java/javaOO/lambdaexpressions.html) and [Method References](https://docs.oracle.com/javase/tutorial/java/javaOO/methodreferences.html) where they simplify development and improve code readability.
 

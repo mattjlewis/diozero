@@ -87,11 +87,11 @@ public class HCSR04 implements DistanceSensorInterface, Closeable {
 	public double getDistanceCm() throws RuntimeIOException {
 		long start = System.nanoTime();
 		// Send a pulse trigger of 10 us duration
-		trigger.setValue(true);
+		trigger.setValueUnsafe(true);
 		SleepUtil.sleep(0, PULSE_NS);// wait 10 us (10,000ns)
-		trigger.setValue(false);
+		trigger.setValueUnsafe(false);
 		
-		// Need to include as little code as possible here to avoid missing pin states
+		// Need to include as little code as possible here to avoid missing pin state changes
 		while (!echo.getValue()) {
 			if (System.nanoTime() - start > 500_000_000) {
 				Logger.error("Timeout exceeded waiting for echo to go high");

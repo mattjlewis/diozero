@@ -62,31 +62,30 @@ public class MCP23017Test {
 	}
 	
 	public static void test(int intAPin, int intBPin, int inputPin, int outputPin) {
-		try (MCP23017 mcp23017 = new MCP23017(intAPin, intBPin)) {
-			try (Button button = new Button(mcp23017, inputPin, GpioPullUpDown.PULL_UP);
-					LED led = new LED(mcp23017, outputPin, false, true)) {
-				button.whenPressed(led::on);
-				button.whenReleased(led::off);
+		try (MCP23017 mcp23017 = new MCP23017(intAPin, intBPin);
+				Button button = new Button(mcp23017, inputPin, GpioPullUpDown.PULL_UP);
+				LED led = new LED(mcp23017, outputPin, false, true)) {
+			button.whenPressed(led::on);
+			button.whenReleased(led::off);
 				
-				Logger.debug("Waiting for 10s - *** Press the button connected to MCP23017 pin {} ***",
-						Integer.valueOf(inputPin));
-				SleepUtil.sleepSeconds(10);
-				button.whenPressed(null);
-				button.whenReleased(null);
+			Logger.debug("Waiting for 10s - *** Press the button connected to MCP23017 pin {} ***",
+					Integer.valueOf(inputPin));
+			SleepUtil.sleepSeconds(10);
+			button.whenPressed(null);
+			button.whenReleased(null);
 				
-				Logger.debug("On");
-				led.on();
-				SleepUtil.sleepSeconds(1);
+			Logger.debug("On");
+			led.on();
+			SleepUtil.sleepSeconds(1);
 				
-				Logger.debug("Off");
-				led.off();
-				SleepUtil.sleepSeconds(1);
+			Logger.debug("Off");
+			led.off();
+			SleepUtil.sleepSeconds(1);
 				
-				Logger.debug("Blink");
-				led.blink(0.5f, 0.5f, 10, false);
+			Logger.debug("Blink");
+			led.blink(0.5f, 0.5f, 10, false);
 				
-				Logger.debug("Done");
-			}
+			Logger.debug("Done");
 		} catch (RuntimeIOException e) {
 			Logger.error(e, "Error: {}", e);
 		}

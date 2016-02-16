@@ -88,10 +88,13 @@ public class HCSR04UsingEvents implements DistanceSensorInterface, Closeable, In
 	// Calculate the max time (in ns) that the echo pulse stays high
 	private static final long EXPECTED_MAX_ECHO_TIME_NS = (int) (MAX_DISTANCE_CM * 2 * NS_IN_SEC / SPEED_OF_SOUND_CM_PER_S);
 	private static final long MAX_ECHO_HIGH_TIME_NS = NS_IN_SEC;
+	
+	// States
+	private static final int STARTING_UP=0, WAITING_FOR_ECHO_ON=1, WAITING_FOR_ECHO_OFF=2, ERROR=3, FINISHED=4;
 
 	private DigitalOutputDevice trigger;
 	private DigitalInputDevice echo;
-	private State state = State.STARTING_UP;
+	private int state = STARTING_UP;
 	private long echoOnTimeNs;
 	private long echoOnTimeMs;
 	private long echoOffTimeNs;
@@ -105,14 +108,13 @@ public class HCSR04UsingEvents implements DistanceSensorInterface, Closeable, In
 	 */
 	public void init(int triggerGpioNum, int echoGpioNum) throws RuntimeIOException {
 		// Define device for trigger pin at HCSR04
-		trigger = new DigitalOutputDevice(triggerGpioNum);
+		trigger = new DigitalOutputDevice(triggerGpioNum, true, false);
 		// Define device for echo pin at HCSR04
 		echo = new DigitalInputDevice(echoGpioNum, GpioPullUpDown.NONE, GpioEventTrigger.BOTH);
 		echo.addListener(this);
 
-		trigger.setValue(false);
-		// Wait for 0.5 seconds
-		SleepUtil.sleepSeconds(0.5);
+		// Sleep for 20 ms - let the device settle?
+		SleepUtil.sleepMillis(20);
 	}
 
 	/**
@@ -123,10 +125,10 @@ public class HCSR04UsingEvents implements DistanceSensorInterface, Closeable, In
 	@Override
 	public double getDistanceCm() throws RuntimeIOException {
 		// Send a pulse trigger of 10 us duration
-		trigger.setValue(true);
-		state = State.WAITING_FOR_ECHO_ON;
+		state = WAITING_FOR_ECHO_ON;
+		trigger.setValueUnsafe(true);
 		SleepUtil.sleep(0, PULSE_NS);// wait 10 us (10,000ns)
-		trigger.setValue(false);
+		trigger.setValueUnsafe(false);
 		long trigger_off_time = System.nanoTime(); // ns
 		
 		synchronized (this) {
@@ -136,8 +138,8 @@ public class HCSR04UsingEvents implements DistanceSensorInterface, Closeable, In
 				// Ignore
 			}
 		}
-		if (state != State.FINISHED) {
-			Logger.error("Illegal state {}, wait must have timed out or error occurred", state);
+		if (state != FINISHED) {
+			Logger.error("Illegal state {}, wait must have timed out or error occurred", Integer.valueOf(state));
 			return -1;
 		}
 		
@@ -171,30 +173,28 @@ public class HCSR04UsingEvents implements DistanceSensorInterface, Closeable, In
 	}
 	
 	@Override
-	public synchronized void valueChanged(DigitalPinEvent event) {
-		Logger.debug("valueChanged({}), state={}", event, state);
-		switch (state) {
-		case WAITING_FOR_ECHO_ON:
-			if (event.getValue()) {
+	public void valueChanged(DigitalPinEvent event) {
+		if (state == STARTING_UP || state == FINISHED) {
+			// Ignore
+			return;
+		}
+		
+		synchronized (this) {
+			if (event.getValue() && state == WAITING_FOR_ECHO_ON) {
+				state = WAITING_FOR_ECHO_OFF;
 				echoOnTimeNs = event.getNanoTime();
 				echoOnTimeMs = event.getEpochTime();
-				state = State.WAITING_FOR_ECHO_OFF;
-			}
-			break;
-		case WAITING_FOR_ECHO_OFF:
-			if (!event.getValue()) {
+			} else if (!event.getValue() && state == WAITING_FOR_ECHO_OFF) {
+				state = FINISHED;
 				echoOffTimeNs = event.getNanoTime();
 				echoOffTimeMs = event.getEpochTime();
-				state = State.FINISHED;
+				notify();
+			} else {
+				// Error unexpected event...
+				Logger.warn("valueChanged({}), unexpected event for state {}", event, Integer.valueOf(state));
+				state = ERROR;
 				notify();
 			}
-			break;
-		default:
-			// Nothing to do
 		}
 	}
-}
-
-enum State {
-	STARTING_UP, WAITING_FOR_ECHO_ON, WAITING_FOR_ECHO_OFF, ERROR, FINISHED;
 }

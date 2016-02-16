@@ -69,8 +69,8 @@ public class GpioPerfTest {
 			for (int j=0; j<5; j++) {
 				long start_nano = System.nanoTime();
 				for (int i=0; i<iterations; i++) {
-					gpio.setValue(true);
-					gpio.setValue(false);
+					gpio.setValueUnsafe(true);
+					gpio.setValueUnsafe(false);
 				}
 				long duration_ns = System.nanoTime() - start_nano;
 				

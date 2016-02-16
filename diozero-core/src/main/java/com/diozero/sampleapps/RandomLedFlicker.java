@@ -6,7 +6,7 @@ import java.util.concurrent.TimeUnit;
 import org.pmw.tinylog.Logger;
 
 import com.diozero.PwmLed;
-import com.diozero.api.GpioScheduler;
+import com.diozero.api.DioZeroScheduler;
 
 /**
  * To run:
@@ -35,7 +35,7 @@ public class RandomLedFlicker {
 
 	private static void test(int pin) {
 		try (PwmLed led = new PwmLed(pin)) {
-			GpioScheduler.getInstance().invokeAtFixedRate(RANDOM::nextFloat, led::setValue, 50, 50, TimeUnit.MILLISECONDS, false);
+			DioZeroScheduler.getNonDaemonInstance().invokeAtFixedRate(RANDOM::nextFloat, led::setValue, 50, 50, TimeUnit.MILLISECONDS);
 		}
 	}
 }

@@ -76,7 +76,7 @@ public class AnalogueInputDevice extends GpioInputDevice<AnalogueInputEvent> imp
 	
 	@Override
 	public void enableListener() {
-		GpioScheduler.getInstance().scheduleAtFixedRate(this, pollInterval, pollInterval, TimeUnit.MILLISECONDS);
+		DioZeroScheduler.getDaemonInstance().scheduleAtFixedRate(this, pollInterval, pollInterval, TimeUnit.MILLISECONDS);
 	}
 	
 	@Override
