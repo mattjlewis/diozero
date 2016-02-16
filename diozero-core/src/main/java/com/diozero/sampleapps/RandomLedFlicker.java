@@ -7,6 +7,7 @@ import org.pmw.tinylog.Logger;
 
 import com.diozero.PwmLed;
 import com.diozero.api.DioZeroScheduler;
+import com.diozero.util.SleepUtil;
 
 /**
  * To run:
@@ -35,7 +36,8 @@ public class RandomLedFlicker {
 
 	private static void test(int pin) {
 		try (PwmLed led = new PwmLed(pin)) {
-			DioZeroScheduler.getNonDaemonInstance().invokeAtFixedRate(RANDOM::nextFloat, led::setValue, 50, 50, TimeUnit.MILLISECONDS);
+			DioZeroScheduler.getDaemonInstance().invokeAtFixedRate(RANDOM::nextFloat, led::setValue, 50, 50, TimeUnit.MILLISECONDS);
+			SleepUtil.sleepSeconds(10);
 		}
 	}
 }

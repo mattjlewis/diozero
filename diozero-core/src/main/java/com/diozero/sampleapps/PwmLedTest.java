@@ -54,41 +54,43 @@ public class PwmLedTest {
 	}
 	
 	public static void test(int pin) {
+		float delay = 0.5f;
+		
 		try (PwmLed led = new PwmLed(pin)) {
 			Logger.info("On");
 			led.on();
-			SleepUtil.sleepSeconds(1);
+			SleepUtil.sleepSeconds(delay);
 			
 			Logger.info("Off");
 			led.off();
-			SleepUtil.sleepSeconds(1);
+			SleepUtil.sleepSeconds(delay);
 			
 			Logger.info("Toggle");
 			led.toggle();
-			SleepUtil.sleepSeconds(1);
+			SleepUtil.sleepSeconds(delay);
 			
 			Logger.info("Toggle");
 			led.toggle();
-			SleepUtil.sleepSeconds(1);
+			SleepUtil.sleepSeconds(delay);
 			
 			Logger.info("25%");
 			led.setValue(.25f);
-			SleepUtil.sleepSeconds(1);
+			SleepUtil.sleepSeconds(delay);
 			
 			Logger.info("Toggle (now 75%)");
 			led.toggle();
-			SleepUtil.sleepSeconds(1);
+			SleepUtil.sleepSeconds(delay);
 			
 			Logger.info("50%");
 			led.setValue(.5f);
-			SleepUtil.sleepSeconds(1);
+			SleepUtil.sleepSeconds(delay);
 			
 			Logger.info("Blink 5 times");
 			led.blink(0.5f, 0.5f, 5, false);
 			
-			Logger.info("Blink 10 times in the background");
-			led.blink(0.5f, 0.5f, 10, true);
-			for (int i=0; i<11; i++) {
+			Logger.info("Blink 5 times in the background");
+			led.blink(0.5f, 0.5f, 5, true);
+			for (int i=0; i<7; i++) {
 				Logger.info("Sleeping for 1s");
 				SleepUtil.sleepSeconds(1);
 			}
@@ -103,10 +105,10 @@ public class PwmLedTest {
 				Logger.info("Sleeping for 1s");
 				SleepUtil.sleepSeconds(1);
 			}
-			
-			Logger.info("Done");
 		} catch (RuntimeIOException e) {
 			Logger.error(e, "Error: {}", e);
 		}
+		
+		Logger.info("Done");
 	}
 }
