@@ -77,14 +77,17 @@ public class PwmOutputDevice extends GpioDevice {
 		if (device != null) {
 			device.close();
 		}
+		Logger.debug("device closed");
 	}
 	
 	protected void onOffLoop(float onTime, float offTime, int n, boolean background) throws RuntimeIOException {
 		stopLoops();
 		if (background) {
 			DioZeroScheduler.getDaemonInstance().execute(() -> {
+				backgroundThread = Thread.currentThread();
 				onOffLoop(onTime, offTime, n);
-				Logger.info("Background blink finished");
+				Logger.info("Background on-off loop finished");
+				backgroundThread = null;
 			});
 		} else {
 			onOffLoop(onTime, offTime, n);
