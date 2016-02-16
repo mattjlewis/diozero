@@ -47,7 +47,7 @@ public class PwmLed extends PwmOutputDevice {
 	}
 	
 	public void pulse() throws RuntimeIOException {
-		fadeInOutLoop(1, 50, INFINITE_ITERATIONS, true);
+		pulse(1, 50, INFINITE_ITERATIONS, true);
 	}
 	
 	public void pulse(float fadeTime, int steps, int iterations, boolean background) throws RuntimeIOException {

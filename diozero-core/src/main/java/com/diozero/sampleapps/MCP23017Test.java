@@ -38,20 +38,21 @@ import com.diozero.util.SleepUtil;
 /**
  * To run (note this hangs the Pi when using wiringPi provider):
  * JDK Device I/O 1.0:
- *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-jdkdio10-0.2-SNAPSHOT.jar:dio-1.0.1-dev-linux-armv6hf.jar -Djava.library.path=. com.diozero.sampleapps.MCP23017Test 21 20
+ *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-jdkdio10-0.2-SNAPSHOT.jar:dio-1.0.1-dev-linux-armv6hf.jar -Djava.library.path=. com.diozero.sampleapps.MCP23017Test 21 20 0 1
  * JDK Device I/O 1.1:
- *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-jdkdio11-0.2-SNAPSHOT.jar:dio-1.1-dev-linux-armv6hf.jar -Djava.library.path=. com.diozero.sampleapps.MCP23017Test 21 20
+ *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-jdkdio11-0.2-SNAPSHOT.jar:dio-1.1-dev-linux-armv6hf.jar -Djava.library.path=. com.diozero.sampleapps.MCP23017Test 21 20 0 1
  * Pi4j:
- *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-pi4j-0.2-SNAPSHOT.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sampleapps.MCP23017Test 21 20
+ *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-pi4j-0.2-SNAPSHOT.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sampleapps.MCP23017Test 21 20 0 1
  * wiringPi:
- *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-wiringpi-0.2-SNAPSHOT.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sampleapps.MCP23017Test 21 20
+ *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-wiringpi-0.2-SNAPSHOT.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sampleapps.MCP23017Test 21 20 0 1
  * pigpgioJ:
- *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-pigpio-0.2-SNAPSHOT.jar:pigpioj-java-0.0.1-SNAPSHOT.jar com.diozero.sampleapps.MCP23017Test 21 20
+ *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-pigpio-0.2-SNAPSHOT.jar:pigpioj-java-0.0.1-SNAPSHOT.jar com.diozero.sampleapps.MCP23017Test 21 20 0 1
  */
 public class MCP23017Test {
 	public static void main(String[] args) {
 		if (args.length < 4) {
-			Logger.error("Usage: {} <int-a pin> <int-b pin> <mcp23017-input-pin> <mcp23017-output-pin>", MCP23017Test.class.getName());
+			Logger.error("Usage: {} <int-a pin> <int-b pin> <mcp23017-input-pin> <mcp23017-output-pin>",
+					MCP23017Test.class.getName());
 			System.exit(1);
 		}
 		int int_a_pin = Integer.parseInt(args[0]);
@@ -64,30 +65,30 @@ public class MCP23017Test {
 	public static void test(int intAPin, int intBPin, int inputPin, int outputPin) {
 		try (MCP23017 mcp23017 = new MCP23017(intAPin, intBPin);
 				Button button = new Button(mcp23017, inputPin, GpioPullUpDown.PULL_UP);
-				LED led = new LED(mcp23017, outputPin, false, true)) {
+				LED led = new LED(mcp23017, outputPin, true, false)) {
+			Logger.debug("On");
+			led.on();
+			SleepUtil.sleepSeconds(1);
+
+			Logger.debug("Off");
+			led.off();
+			SleepUtil.sleepSeconds(1);
+
+			Logger.debug("Blink");
+			led.blink(0.5f, 0.5f, 10, false);
+
 			button.whenPressed(led::on);
 			button.whenReleased(led::off);
-				
+
 			Logger.debug("Waiting for 10s - *** Press the button connected to MCP23017 pin {} ***",
 					Integer.valueOf(inputPin));
 			SleepUtil.sleepSeconds(10);
 			button.whenPressed(null);
 			button.whenReleased(null);
-				
-			Logger.debug("On");
-			led.on();
-			SleepUtil.sleepSeconds(1);
-				
-			Logger.debug("Off");
-			led.off();
-			SleepUtil.sleepSeconds(1);
-				
-			Logger.debug("Blink");
-			led.blink(0.5f, 0.5f, 10, false);
-				
-			Logger.debug("Done");
 		} catch (RuntimeIOException e) {
 			Logger.error(e, "Error: {}", e);
 		}
+
+		Logger.debug("Done");
 	}
 }

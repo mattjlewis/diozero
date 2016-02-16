@@ -49,12 +49,8 @@ public class DigitalOutputDevice extends GpioDevice {
 	}
 	
 	public DigitalOutputDevice(GpioDeviceFactoryInterface deviceFactory, int pinNumber, boolean activeHigh, boolean initialValue) throws RuntimeIOException {
-		this(deviceFactory.provisionDigitalOutputPin(pinNumber, activeHigh & initialValue), activeHigh);
-	}
-
-	public DigitalOutputDevice(GpioDigitalOutputDeviceInterface device, boolean activeHigh) {
-		super(device.getPin());
-		this.device = device;
+		super(pinNumber);
+		this.device = deviceFactory.provisionDigitalOutputPin(pinNumber, activeHigh & initialValue);
 		this.activeHigh = activeHigh;
 	}
 
@@ -133,7 +129,7 @@ public class DigitalOutputDevice extends GpioDevice {
 	
 	public void setValue(boolean value) throws RuntimeIOException {
 		stopOnOffLoop();
-		setValueUnsafe(activeHigh ? value : !value);
+		setValueUnsafe(activeHigh & value);
 	}
 	
 	/**

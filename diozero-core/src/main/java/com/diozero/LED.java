@@ -38,15 +38,15 @@ public class LED extends DigitalOutputDevice {
 	}
 
 	public LED(int pinNumber, boolean activeHigh) throws RuntimeIOException {
-		super(pinNumber, activeHigh, false);
+		super(pinNumber, activeHigh, !activeHigh);
+	}
+	
+	public LED(GpioDeviceFactoryInterface deviceFactory, int pinNumber) {
+		super(deviceFactory, pinNumber, true, false);
 	}
 	
 	public LED(GpioDeviceFactoryInterface deviceFactory, int pinNumber, boolean activeHigh, boolean initialValue) {
 		super(deviceFactory, pinNumber, activeHigh, initialValue);
-	}
-	
-	public LED(GpioDigitalOutputDeviceInterface device, boolean activeHigh) {
-		super(device, activeHigh);
 	}
 
 	public void blink() throws RuntimeIOException {

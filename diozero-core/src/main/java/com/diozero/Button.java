@@ -52,11 +52,11 @@ public class Button extends DigitalInputDevice {
 	}
 	
 	public boolean isPressed() {
-		return (pud == GpioPullUpDown.PULL_UP) != getValue();
+		return activeHigh == getValue();
 	}
 	
 	public boolean isReleased() {
-		return (pud == GpioPullUpDown.PULL_UP) == getValue();
+		return activeHigh != getValue();
 	}
 	
 	public void whenPressed(Action action) {
@@ -77,10 +77,10 @@ public class Button extends DigitalInputDevice {
 	public void valueChanged(DigitalPinEvent event) {
 		Logger.debug("valuechanged(" + event + ")");
 		
-		if (pressedAction != null && (pud == GpioPullUpDown.PULL_UP) != event.getValue()) {
+		if (pressedAction != null && activeHigh == event.getValue()) {
 			pressedAction.action();
 		}
-		if (releasedAction != null && (pud == GpioPullUpDown.PULL_UP) == event.getValue()) {
+		if (releasedAction != null && activeHigh != event.getValue()) {
 			releasedAction.action();
 		}
 		super.valueChanged(event);

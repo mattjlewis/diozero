@@ -46,16 +46,11 @@ public class DigitalInputDevice extends GpioInputDevice<DigitalPinEvent> {
 	}
 
 	public DigitalInputDevice(GpioDeviceFactoryInterface deviceFactory, int pinNumber, GpioPullUpDown pud, GpioEventTrigger trigger) throws RuntimeIOException {
-		this(deviceFactory.provisionDigitalInputPin(pinNumber, pud, trigger), pud != GpioPullUpDown.PULL_DOWN);
+		super(pinNumber);
 		
+		this.device = deviceFactory.provisionDigitalInputPin(pinNumber, pud, trigger);
 		this.pud = pud;
-	}
-
-	public DigitalInputDevice(GpioDigitalInputDeviceInterface device, boolean activeHigh) {
-		super(device.getPin());
-		
-		this.device = device;
-		this.activeHigh = activeHigh;
+		this.activeHigh = pud != GpioPullUpDown.PULL_UP;
 	}
 
 	@Override

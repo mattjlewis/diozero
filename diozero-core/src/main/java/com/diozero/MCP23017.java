@@ -363,11 +363,6 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalPinEvent>, Clos
 		
 		return device;
 	}
-	
-	public DigitalInputDevice provisionDigitalInputDevice(int pinNumber, GpioPullUpDown pud,
-			GpioEventTrigger trigger) throws RuntimeIOException {
-		return new DigitalInputDevice(provisionDigitalInputPin(pinNumber, pud, trigger), pud != GpioPullUpDown.PULL_DOWN);
-	}
 
 	@Override
 	public GpioDigitalOutputDeviceInterface provisionDigitalOutputPin(int pinNumber, boolean initialValue) throws RuntimeIOException {
