@@ -30,7 +30,7 @@ The device native service provider library is defined in the following order:
 See below for provider specific details.
 
 **Currently supported I2C devices:**
-* [InvenSense MPU-9150](http://www.invensense.com/products/motion-tracking/9-axis/mpu-9150/) Nine-axis motion tracking device. Currently a fully working Java port of the InvenSense C library but could do with some Object Orientation related improvements. 
+* [InvenSense MPU-9150](http://www.invensense.com/products/motion-tracking/9-axis/mpu-9150/) Nine-axis motion tracking device. Currently a fully working Java port of the InvenSense C library but could do with some Object Orientation related improvements
 * [TSL2561](https://www.adafruit.com/datasheets/TSL2561.pdf) light-to-digital converter
 * [Bosch Sensortec BMP180](https://www.bosch-sensortec.com/en/homepage/products_3/environmental_sensors_1/bmp180_1/bmp180) temperature and pressure sensor
 * [MCP23017](http://www.microchip.com/wwwproducts/Devices.aspx?product=MCP23017) 16-bit input/output port expander with interrupt output
@@ -70,6 +70,7 @@ I've done some limited performance tests (turning a GPIO on then off, see [GpioP
 | wiringPi (direct) | 10,000,000 | 2,137 |
 | pigpio | 5,000,000 | 1,266 |
 | pigpio (direct) 10,000,000 | 1,649 |
+
 For a discussion on why Pi4j 1.0 is so slow, see this [issue](https://github.com/Pi4J/pi4j/issues/158). These results are in-line with those documented in the book ["Raspberry Pi with Java: Programming the Internet of Things"](http://www.amazon.co.uk/Raspberry-Pi-Java-Programming-Internet/dp/0071842012). For reference, the author's results were:
 
 | Library | Frequency (kHz) |
@@ -119,6 +120,5 @@ There is still a lot left to do, in particular:
 * Thorough testing (various types of devices using each service provider)
 * Testing on different devices (all flavours of Raspberry Pi, BeagleBone, ...)
 * GPIO input debouncing
-* Smoothed input listener
 * Other I2C & SPI devices, including those on the SenseHAT
 * A clean object-orientated API for IMUs

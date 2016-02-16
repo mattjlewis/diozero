@@ -1,6 +1,8 @@
 # DIO-Zero - a Java Device I/O wrapper for GPIO / I2C / SPI devices
 A Device I/O library that provides object-orientated APIs for a range of GPIO/I2C/SPI devices such as LEDs, buttons and other various sensors. The library uses Java ServiceLoader to load low-level libraries for actually interfacing with the underlying hardware. I've only tested this library on the Raspberry Pi (B+, Zero and 2) using Oracle's Java SE 1.8 however it should work on any device that the currently bundled libraries support.
 
+Detailed document is available on [read the docs](http://rtd.diozero.com/).
+
 The class [DeviceFactoryHelper](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/DeviceFactoryHelper.java) encapsulates the logic for accessing the configured service provider. Interfaces for implementing a new service provider are in the [com.diozero.internal.spi](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/internal/spi) package. Developing a new service provider is relatively straightforward given the provided APIs and base classes.
 
 In theory the OpenJDK Device I/O service provider should provide the best platform support, however, the JDK Device I/O library [doesn't support PWM](http://mail.openjdk.java.net/pipermail/dio-dev/2015-November/000650.html).
@@ -59,20 +61,23 @@ See below for provider specific details.
 ##Performance
 I've done some limited performance tests (turning a GPIO on then off, see [GpioPerfTest](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/sampleapps/GpioPerfTest.java)) on a Raspberry Pi 2 using the various native device factory providers as well as a test using Pi4j's wiringPi JNI API directly without going via my DIO-Zero wrapper (see [WiringPiRawPerfTest](https://github.com/mattjlewis/diozero/blob/master/diozero-provider-wiringpi/src/main/java/com/diozero/internal/provider/wiringpi/WiringPiRawPerfTest.java)); here are the results:
 
-	Provider           Iterations  Frequency (kHz)
-	Pi4j 1.0           10,000      0.91
-	JDK DIO 1.1        100,000     8.23
-	Pi4j 1.1           10,000,000  622
-	wiringPi           5,000,000   1,683
-	wiringPi (direct)  10,000,000  2,137
-	pigpio             5,000,000   1,266
-	pigpio (direct)    10,000,000  1,649
+| Provider | Iterations | Frequency (kHz) |
+| -------- | ---------- | --------------- |
+| Pi4j 1.0 | 10,000 | 0.91 |
+| JDK DIO 1.1 | 100,000 | 8.23 |
+| Pi4j 1.1 | 10,000,000 | 622 |
+| wiringPi | 5,000,000 | 1,683 |
+| wiringPi (direct) | 10,000,000 | 2,137 |
+| pigpio | 5,000,000 | 1,266 |
+| pigpio (direct) 10,000,000 | 1,649 |
+
 For a discussion on why Pi4j 1.0 is so slow, see this [issue](https://github.com/Pi4J/pi4j/issues/158). These results are in-line with those documented in the book ["Raspberry Pi with Java: Programming the Internet of Things"](http://www.amazon.co.uk/Raspberry-Pi-Java-Programming-Internet/dp/0071842012). For reference, the author's results were:
 
-	Library            Frequency (kHz)
-	Pi4j 1.0           0.751
-	JDK DIO 1.0        3.048
-	wiringPi (direct)  1,662
+| Library | Frequency (kHz) |
+| ------- | --------------- |
+| Pi4j 1.0 | 0.751 |
+| JDK DIO 1.0 | 3.048 |
+| wiringPi (direct) | 1,662 |
 
 ##Providers
 ###JDK Device I/O
