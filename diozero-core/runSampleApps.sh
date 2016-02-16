@@ -16,6 +16,20 @@ mcp23017_intb_pin=20
 mcp23017_input_pin=0
 mcp23017_output_pin=1
 
+# GPIO
+echo "--- Button ---"
+sudo java -cp diozero-core-$diozero_version.jar:$log_classpath:$provider_classpath $library_path com.diozero.sampleapps.ButtonTest $input_pin
+echo "--- LED ---"
+sudo java -cp diozero-core-$diozero_version.jar:$log_classpath:$provider_classpath $library_path com.diozero.sampleapps.LEDTest $led_pin
+echo "--- PWM ---"
+sudo java -cp diozero-core-$diozero_version.jar:$log_classpath:$provider_classpath $library_path com.diozero.sampleapps.PwmTest $led_pin
+echo "--- PWM LED ---"
+sudo java -cp diozero-core-$diozero_version.jar:$log_classpath:$provider_classpath $library_path com.diozero.sampleapps.PwmLedTest $led_pin
+echo "--- Button Controlled LED ---"
+sudo java -cp diozero-core-$diozero_version.jar:$log_classpath:$provider_classpath $library_path com.diozero.sampleapps.ButtonControlledLed $input_pin $led_pin
+echo "--- Random LED Flicker ---"
+sudo java -cp diozero-core-$diozero_version.jar:$log_classpath:$provider_classpath $library_path com.diozero.sampleapps.RandomLedFlicker $led_pin
+
 # Temperature
 echo "--- BMP180 ---"
 sudo java -cp diozero-core-$diozero_version.jar:$log_classpath:$provider_classpath $library_path com.diozero.sampleapps.BMP180Test
@@ -27,16 +41,9 @@ echo "--- TSL2561 ---"
 sudo java -cp diozero-core-$diozero_version.jar:$log_classpath:$provider_classpath $library_path com.diozero.sampleapps.TSL2561Test
 echo "--- MCP3008 LDR ---"
 sudo java -cp diozero-core-$diozero_version.jar:$log_classpath:$provider_classpath $library_path com.diozero.sampleapps.LDRTest $spi_cs $ldr_pin
+echo "--- LDR Controlled LED ---"
+sudo java -cp diozero-core-$diozero_version.jar:$log_classpath:$provider_classpath $library_path com.diozero.sampleapps.LdrControlledLed $spi_cs $ldr_pin $led_pin
 
-echo "--- Button ---"
-sudo java -cp diozero-core-$diozero_version.jar:$log_classpath:$provider_classpath $library_path com.diozero.sampleapps.ButtonTest $input_pin
-echo "--- LED ---"
-sudo java -cp diozero-core-$diozero_version.jar:$log_classpath:$provider_classpath $library_path com.diozero.sampleapps.LEDTest $led_pin
-echo "--- PWM ---"
-sudo java -cp diozero-core-$diozero_version.jar:$log_classpath:$provider_classpath $library_path com.diozero.sampleapps.PwmTest $led_pin
-echo "--- PWM LED ---"
-sudo java -cp diozero-core-$diozero_version.jar:$log_classpath:$provider_classpath $library_path com.diozero.sampleapps.PwmLedTest $led_pin
-sudo java -cp diozero-core-$diozero_version.jar:$log_classpath:$provider_classpath $library_path com.diozero.sampleapps.ButtonControlledLed $input_pin $led_pin
-
+# MCP23017
 echo "--- MCP23017 GPIO Expansion Input and Output ---"
 sudo java -cp diozero-core-$diozero_version.jar:$log_classpath:$provider_classpath $library_path com.diozero.sampleapps.MCP23017Test $mcp23017_inta_pin $mcp23017_intb_pin $mcp23017_input_pin $mcp23017_output_pin
