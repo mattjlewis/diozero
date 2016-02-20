@@ -9,10 +9,12 @@ The device native service provider library is defined in the following order:
 2. Service definition file on the classpath, file: `/META-INF/services/com.diozero.internal.spi.NativeDeviceFactoryInterface`. For example [the one for pi4j](https://github.com/mattjlewis/diozero/blob/master/diozero-provider-pi4j/src/main/resources/META-INF/services/com.diozero.internal.spi.NativeDeviceFactoryInterface)
 
 **Currently implemented service providers:**
+
 + [JDK Device I/O](https://wiki.openjdk.java.net/display/dio/Main) - versions 1.0 and 1.1
 + [Pi4j](http://pi4j.com/)
 + [wiringPi](http://wiringpi.com/) via the Pi4j JNI wrapper classes
 + [pigpio](http://abyz.co.uk/rpi/pigpio/index.html) via my [JNI wrapper library](https://github.com/mattjlewis/pigpioj)
+
 See below for provider specific details.
 
 TODO Describe steps for creating a new provider.

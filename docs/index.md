@@ -102,6 +102,7 @@ This library uses [tinylog](http://www.tinylog.org) [v1.0](https://github.com/pm
     - BMP180 Temperature and Pressure Sensor
     - TSL2561 Luminosity Sensor
     - InvenSense MPU-9150 9-axis MotionTracking Device
+    - WS281x / NeoPixel LEDs
 + [API](API.md)
     - Analogue Input Device
     - Digital Input Device

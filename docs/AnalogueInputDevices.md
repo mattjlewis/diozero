@@ -1,4 +1,5 @@
 # Analogue Input Devices
+
 * [TMP36](http://www.analog.com/en/products/analog-to-digital-converters/integrated-special-purpose-converters/integrated-temperature-sensors/tmp36.html) Temperature Sensor
 * [Potentiometer](https://en.wikipedia.org/wiki/Potentiometer)
 * [Photo Resistor/LDR](https://en.wikipedia.org/wiki/Photoresistor)
