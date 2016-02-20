@@ -1,5 +1,7 @@
 package com.diozero;
 
+import java.nio.ByteBuffer;
+
 /*
  * #%L
  * Device I/O Zero - Core
@@ -30,6 +32,7 @@ package com.diozero;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.diozero.McpAdc.McpAdcType;
 import com.diozero.util.BitManipulation;
 
 @SuppressWarnings("static-method")
@@ -38,6 +41,8 @@ public class BitSetTest {
 	
 	@Test
 	public void test() {
+		System.out.format("0x%08x%n", 1<<16);
+		
 		byte val = 0;
 		val = BitManipulation.setBitValue(val, true, 1);
 		byte expected_val = 2;
@@ -56,29 +61,124 @@ public class BitSetTest {
 		
 		byte mask = BitManipulation.getBitMask(4, 5);
 		Assert.assertEquals(mask, 16+32);
-		
+	}
+	
+	@Test
+	public void testMcp23017() {
 		int pinNumber = 7;
 		byte bit = (byte)(pinNumber % PINS_PER_PORT);
-		Assert.assertEquals(bit, 7);
+		Assert.assertEquals(7, bit);
 		int port = pinNumber / PINS_PER_PORT;
-		Assert.assertEquals(port, 0);
+		Assert.assertEquals(0, port);
 		
 		pinNumber = 0;
 		bit = (byte)(pinNumber % PINS_PER_PORT);
-		Assert.assertEquals(bit, 0);
+		Assert.assertEquals(0, bit);
 		port = pinNumber / PINS_PER_PORT;
-		Assert.assertEquals(port, 0);
+		Assert.assertEquals(0, port);
 		
 		pinNumber = 8;
 		bit = (byte)(pinNumber % PINS_PER_PORT);
-		Assert.assertEquals(bit, 0);
+		Assert.assertEquals(0, bit);
 		port = pinNumber / PINS_PER_PORT;
-		Assert.assertEquals(port, 1);
+		Assert.assertEquals(1, port);
 		
 		pinNumber = 15;
 		bit = (byte)(pinNumber % PINS_PER_PORT);
-		Assert.assertEquals(bit, 7);
+		Assert.assertEquals(7, bit);
 		port = pinNumber / PINS_PER_PORT;
-		Assert.assertEquals(port, 1);
+		Assert.assertEquals(1, port);
+	}
+	
+	@Test
+	public void testMcpAdc() {
+		int resolution = 12;
+		int m = (1 << resolution-8) - 1;
+		Assert.assertEquals(0b00001111, m);
+		
+		resolution = 10;
+		m = (1 << resolution-8) - 1;
+		Assert.assertEquals(0b00000011, m);
+		
+		// Rx   x0RRRRRR RRRRxxxx for the 300x (10 bit)
+		// Rx   x0RRRRRR RRRRRRxx for the 320x (12 bit)
+		// Rx   x0SRRRRR RRRRRRRx for the 330x (13 bit signed)
+		ByteBuffer buffer = ByteBuffer.allocateDirect(2);
+		buffer.put((byte)0x01);
+		buffer.put((byte)0xfe);
+		buffer.flip();
+		int v = (buffer.getShort() << 2) >> 3;
+		Assert.assertEquals(255, v);
+		
+		buffer.rewind();
+		buffer.put((byte)0b11111);
+		buffer.put((byte)0xfe);
+		buffer.flip();
+		v = ((short)(buffer.getShort() << 2)) >> 3;
+		Assert.assertEquals(4095, v);
+		
+		buffer.rewind();
+		buffer.put((byte)0b111111);
+		buffer.put((byte)0xfe);
+		buffer.flip();
+		v = ((short)(buffer.getShort() << 2)) >> 3;
+		Assert.assertEquals(-1, v);
+		
+		buffer.rewind();
+		buffer.put((byte)0b100000);
+		buffer.put((byte)0x0);
+		buffer.flip();
+		v = ((short)(buffer.getShort() << 2)) >> 3;
+		Assert.assertEquals(-4096, v);
+		
+		Assert.assertTrue("MCP3301".substring(0, 5).equals("MCP33"));
+		Assert.assertTrue("MCP3302".substring(0, 5).equals("MCP33"));
+		Assert.assertTrue("MCP3304".substring(0, 5).equals("MCP33"));
+		
+		McpAdcType type = McpAdcType.valueOf("MCP3008");
+		Assert.assertEquals(McpAdcType.MCP3008, type);
+		
+		// Unsigned
+		type = McpAdcType.MCP3208;
+		buffer.rewind();
+		//buffer.put((byte)0b111111);
+		//buffer.put((byte)0xfe);
+		buffer.put((byte)0xff);
+		buffer.put((byte)0xff);
+		buffer.flip();
+		// Doesn't work as >>> is promoted to integer
+		short s = (short)((short)(buffer.getShort() << 2) >>> (short)(14+2-type.getResolution()));
+		System.out.format("Resolution=%d, s=%d, expected %d%n", Integer.valueOf(14+2-type.getResolution()),
+				Integer.valueOf(s), Integer.valueOf((int)Math.pow(2, type.getResolution())-1));
+		
+		buffer.rewind();
+		v = (buffer.getShort() & 0x3fff) >> (14 - type.getResolution());
+		System.out.format("Resolution=%d, v=%d%n", Integer.valueOf(14+2-type.getResolution()), Integer.valueOf(v));
+		
+		// Signed
+		type = McpAdcType.MCP3304;
+		buffer.rewind();
+		v = ((short)(buffer.getShort() << 2)) >> (14+2-type.getResolution());
+		System.out.format("Resolution=%d, v=%d%n", Integer.valueOf(14+2-type.getResolution()), Integer.valueOf(v));
+		
+		// Unsigned
+		type = McpAdcType.MCP3208;
+		buffer.rewind();
+		if (type.isSigned()) {
+			v = ((short)(buffer.getShort() << 2)) >> (14+2-type.getResolution());
+		} else {
+			v = (buffer.getShort() & 0x3fff) >> (14 - type.getResolution());
+		}
+		System.out.format("Resolution=%d, v=%d%n", Integer.valueOf(14+2-type.getResolution()), Integer.valueOf(v));
+		
+		// Signed
+		type = McpAdcType.MCP3304;
+		buffer.rewind();
+		if (type.isSigned()) {
+			v = ((short)(buffer.getShort() << 2)) >> (14+2-type.getResolution());
+		} else {
+			v = (buffer.getShort() & 0x3fff) >> (14 - type.getResolution());
+		}
+		System.out.format("Resolution=%d, v=%d%n", Integer.valueOf(14+2-type.getResolution()), Integer.valueOf(v));
 	}
 }

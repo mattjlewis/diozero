@@ -28,7 +28,6 @@ package com.diozero;
 
 import com.diozero.api.DigitalOutputDevice;
 import com.diozero.internal.spi.GpioDeviceFactoryInterface;
-import com.diozero.internal.spi.GpioDigitalOutputDeviceInterface;
 import com.diozero.util.RuntimeIOException;
 
 public class LED extends DigitalOutputDevice {

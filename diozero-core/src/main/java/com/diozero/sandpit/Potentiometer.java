@@ -15,7 +15,7 @@ public class Potentiometer extends AnalogueInputDevice {
 	}
 	
 	public double getResistance() {
-		double v_pot = getUnscaledValue();
+		double v_pot = getScaledValue();
 		double r_pot = r1 / (vRef / v_pot - 1);
 		
 		return r_pot;

@@ -32,6 +32,7 @@ import org.pmw.tinylog.Logger;
 
 import com.diozero.internal.spi.AnalogueInputDeviceFactoryInterface;
 import com.diozero.internal.spi.GpioAnalogueInputDeviceInterface;
+import com.diozero.util.DioZeroScheduler;
 import com.diozero.util.RuntimeIOException;
 
 public class AnalogueInputDevice extends GpioInputDevice<AnalogueInputEvent> implements Runnable {
@@ -60,13 +61,23 @@ public class AnalogueInputDevice extends GpioInputDevice<AnalogueInputEvent> imp
 		device.close();
 	}
 	
+	/**
+	 * Unscaled values -1..1
+	 * @return
+	 * @throws RuntimeIOException
+	 */
 	public float getUnscaledValue() throws RuntimeIOException {
 		return device.getValue();
 	}
 	
+	/**
+	 * Scaled values -range..range
+	 * @return
+	 * @throws RuntimeIOException
+	 */
 	public float getScaledValue() throws RuntimeIOException {
-		// The raw device must return unscaled values
-		return device.getValue() / range;
+		// The raw device must return unscaled values (-1..1)
+		return device.getValue() * range;
 	}
 	
 	public void addListener(float percentChange, InputEventListener<AnalogueInputEvent> listener) {
@@ -92,7 +103,7 @@ public class AnalogueInputDevice extends GpioInputDevice<AnalogueInputEvent> imp
 		
 		float unscaled = getUnscaledValue();
 		if (changeDetected(unscaled)) {
-			valueChanged(new AnalogueInputEvent(pinNumber, System.currentTimeMillis(), System.nanoTime(), unscaled, unscaled/range));
+			valueChanged(new AnalogueInputEvent(pinNumber, System.currentTimeMillis(), System.nanoTime(), unscaled, unscaled*range));
 			lastValue = Float.valueOf(unscaled);
 		}
 	}

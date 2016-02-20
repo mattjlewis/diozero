@@ -27,8 +27,6 @@ package com.diozero.internal.provider.pigpioj;
  */
 
 
-import java.io.IOException;
-
 import org.pmw.tinylog.Logger;
 
 import com.diozero.api.DigitalPinEvent;
@@ -78,11 +76,13 @@ public class PigpioJDigitalInputDevice extends AbstractInputDevice<DigitalPinEve
 			break;
 		}
 		
-		try {
-			PigpioGpio.setMode(pinNumber, PigpioGpio.MODE_PI_INPUT);
-			PigpioGpio.setPullUpDown(pinNumber, pigpio_pud);
-		} catch (IOException e) {
-			throw new RuntimeIOException(e);
+		int rc = PigpioGpio.setMode(pinNumber, PigpioGpio.MODE_PI_INPUT);
+		if (rc < 0) {
+			throw new RuntimeIOException("Error calling PigpioGpio.setMode(), respone: " + rc);
+		}
+		rc = PigpioGpio.setPullUpDown(pinNumber, pigpio_pud);
+		if (rc < 0) {
+			throw new RuntimeIOException("Error calling PigpioGpio.setPullUpDown(), respone: " + rc);
 		}
 		
 		this.pinNumber = pinNumber;
@@ -101,11 +101,11 @@ public class PigpioJDigitalInputDevice extends AbstractInputDevice<DigitalPinEve
 
 	@Override
 	public boolean getValue() throws RuntimeIOException {
-		try {
-			return PigpioGpio.read(pinNumber);
-		} catch (IOException e) {
-			throw new RuntimeIOException(e);
+		int rc = PigpioGpio.read(pinNumber);
+		if (rc < 0) {
+			throw new RuntimeIOException("Error calling PigpioGpio.read(), respone: " + rc);
 		}
+		return rc == 1;
 	}
 
 	@Override
@@ -121,19 +121,17 @@ public class PigpioJDigitalInputDevice extends AbstractInputDevice<DigitalPinEve
 		}
 		
 		disableListener();
-		try {
-			PigpioGpio.setISRFunc(pinNumber, edge, -1, this);
-		} catch (IOException e) {
-			Logger.error(e, "Error setting listener: {}", e);
+		int rc = PigpioGpio.setISRFunc(pinNumber, edge, -1, this);
+		if (rc < 0) {
+			throw new RuntimeIOException("Error calling PigpioGpio.setISRFunc(), respone: " + rc);
 		}
 	}
 
 	@Override
 	public void disableListener() {
-		try {
-			PigpioGpio.setISRFunc(pinNumber, PigpioGpio.EITHER_EDGE, -1, null);
-		} catch (IOException e) {
-			Logger.warn(e, "Error removing listener: {}", e);
+		int rc = PigpioGpio.setISRFunc(pinNumber, PigpioGpio.EITHER_EDGE, -1, null);
+		if (rc < 0) {
+			throw new RuntimeIOException("Error calling PigpioGpio.setISRFunc(), respone: " + rc);
 		}
 	}
 

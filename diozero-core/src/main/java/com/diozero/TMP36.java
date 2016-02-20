@@ -45,8 +45,8 @@ public class TMP36 extends AnalogueInputDevice implements TemperatureSensorInter
 
 	@Override
 	public double getTemperature() throws RuntimeIOException {
-		// Get the unscaled value
-		double v = getUnscaledValue();
+		// Get the scaled value (voltage)
+		double v = getScaledValue();
 		return (100 * v - 50) + tempOffset;
 	}
 }

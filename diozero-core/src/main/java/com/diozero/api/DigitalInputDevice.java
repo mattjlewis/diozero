@@ -1,5 +1,7 @@
 package com.diozero.api;
 
+import java.io.IOException;
+
 /*
  * #%L
  * Device I/O Zero - Core
@@ -56,7 +58,12 @@ public class DigitalInputDevice extends GpioInputDevice<DigitalPinEvent> {
 	@Override
 	public void close() {
 		Logger.debug("close()");
-		device.close();
+		try {
+			device.close();
+		} catch (IOException e) {
+			// Log and ignore
+			Logger.warn(e, "Error closing device: {}", e);
+		}
 	}
 
 	public boolean getValue() throws RuntimeIOException {

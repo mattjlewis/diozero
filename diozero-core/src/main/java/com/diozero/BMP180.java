@@ -95,11 +95,11 @@ public class BMP180 implements TemperaturePressureSensorInterface, Closeable {
 	private I2CDevice i2cDevice;
 	
 	public BMP180() throws RuntimeIOException {
-		this(I2CConstants.BUS_1, I2CConstants.ADDR_SIZE_7, I2CConstants.DEFAULT_CLOCK_FREQUENCY);
+		this(I2CConstants.BUS_1, I2CConstants.DEFAULT_CLOCK_FREQUENCY);
 	}
 	
-	public BMP180(int controllerNumber, int addressSize, int clockFrequency) throws RuntimeIOException {
-		i2cDevice = new I2CDevice(controllerNumber, BMP180_ADDR, addressSize, clockFrequency);
+	public BMP180(int controllerNumber, int clockFrequency) throws RuntimeIOException {
+		i2cDevice = new I2CDevice(controllerNumber, BMP180_ADDR, I2CConstants.ADDR_SIZE_7, clockFrequency);
 	}
 
 	/**

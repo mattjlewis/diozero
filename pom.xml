@@ -51,6 +51,8 @@
 		<module>diozero-provider-pi4j</module>
 		<module>diozero-provider-pigpio</module>
 		<module>diozero-provider-wiringpi</module>
+		<module>diozero-ws281x-java</module>
+		<module>diozero-imu-devices</module>
 		<module>diozero-imu-sampleapp</module>
 	</modules>
 	
@@ -62,6 +64,7 @@
 		<java.version>8</java.version>
 		<jdk.source.version>1.${java.version}</jdk.source.version>
 		<jdk.target.version>1.${java.version}</jdk.target.version>		
+		<commons-math3.version>3.5</commons-math3.version>
 		<junit.version>4.12</junit.version>
 		<tinylog.version>1.0.3</tinylog.version>
 		<maven-compiler-plugin.version>3.5</maven-compiler-plugin.version>
@@ -80,6 +83,7 @@
 		</repository>
 	</distributionManagement>
 	
+	<!-- Core dependencies common to all projects -->
 	<dependencyManagement>
 		<dependencies>
 			<dependency>

@@ -19,7 +19,7 @@
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-math3</artifactId>
-			<version>3.5</version>
+			<version>${commons-math3.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.paho</groupId>
@@ -33,6 +33,11 @@
 		<dependency>
 			<groupId>com.diozero</groupId>
 			<artifactId>diozero-core</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.diozero</groupId>
+			<artifactId>diozero-imu</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 	</dependencies>

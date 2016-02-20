@@ -60,8 +60,8 @@ public class CleanupTest {
 		Assert.assertTrue(ds.size() == 0);
 		try (SpiDeviceInterface device = tdf.provisionSpiDevice(0, 0, 0, SpiClockMode.MODE_0)) {
 			ByteBuffer out = ByteBuffer.allocate(3);
-			out.put((byte) 0x01);
-			out.put((byte) ((1 | 0x08) << 4));
+			out.put((byte) (0x10 | (false ? 0 : 0x08 ) | 1));
+			out.put((byte) 0);
 			out.put((byte) 0);
 			out.flip();
 			device.writeAndRead(out);

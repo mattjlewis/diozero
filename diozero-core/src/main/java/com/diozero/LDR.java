@@ -75,8 +75,8 @@ public class LDR extends AnalogueInputDevice implements LuminositySensorInterfac
 
 	@Override
 	public double getLuminosity() throws RuntimeIOException {
-		// Get the unscaled value
-		double v_ldr = getUnscaledValue();
+		// Get the scaled value (voltage)
+		double v_ldr = getScaledValue();
 		
 		// http://emant.com/316002.page
 		// rLDR = 500 / Lux

@@ -1,5 +1,7 @@
 package com.diozero.api;
 
+import java.io.IOException;
+
 /*
  * #%L
  * Device I/O Zero - Core
@@ -30,6 +32,7 @@ import org.pmw.tinylog.Logger;
 
 import com.diozero.internal.spi.GpioDeviceFactoryInterface;
 import com.diozero.internal.spi.GpioDigitalOutputDeviceInterface;
+import com.diozero.util.DioZeroScheduler;
 import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 
@@ -58,7 +61,12 @@ public class DigitalOutputDevice extends GpioDevice {
 	public void close() {
 		Logger.debug("close()");
 		setValue(!activeHigh);
-		device.close();
+		try {
+			device.close();
+		} catch (IOException e) {
+			// Log and ignore
+			Logger.warn(e, "Error closing device: {}", e);
+		}
 	}
 	
 	protected void onOffLoop(float onTime, float offTime, int n, boolean background) throws RuntimeIOException {

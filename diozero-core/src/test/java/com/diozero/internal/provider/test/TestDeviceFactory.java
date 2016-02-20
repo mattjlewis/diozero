@@ -71,7 +71,7 @@ public class TestDeviceFactory extends BaseNativeDeviceFactory {
 	protected SpiDeviceInterface createSpiDevice(String key, int controller, int chipSelect, int frequency,
 			SpiClockMode spiClockMode) throws RuntimeIOException {
 		// TODO Ability to create different SPI devices
-		return new TestMcp3008SpiDevice(key, this, controller, chipSelect, frequency, spiClockMode);
+		return new TestMcpAdcSpiDevice(key, this, controller, chipSelect, frequency, spiClockMode);
 	}
 
 	@Override

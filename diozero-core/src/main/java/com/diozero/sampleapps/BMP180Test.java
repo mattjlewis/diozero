@@ -55,10 +55,9 @@ public class BMP180Test {
 			Logger.debug("Opened device");
 
 			for (int i=0; i<ITERATIONS; i++) {
-				double temp = bmp180.getTemperature();
-				Logger.info("Temperature={}", String.format("%.2f", Double.valueOf(temp)));
-				double pressure = bmp180.getPressure();
-				Logger.info("Pressure={}", String.format("%.2f", Double.valueOf(pressure)));
+				Logger.info(String.format("Temperature=%.2f, Pressure=%.2f",
+						Double.valueOf(bmp180.getTemperature()),
+						Double.valueOf(bmp180.getPressure())));
 				SleepUtil.sleepSeconds(0.5);
 			}
 		} catch (RuntimeIOException ioe) {

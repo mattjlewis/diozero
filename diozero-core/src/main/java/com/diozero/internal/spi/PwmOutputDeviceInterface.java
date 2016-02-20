@@ -30,11 +30,6 @@ import com.diozero.util.RuntimeIOException;
 
 public interface PwmOutputDeviceInterface extends DeviceInterface {
 	/**
-	 * Close this device
-	 */
-	@Override
-	void close();
-	/**
 	 * Get the device pin number
 	 * @return Device native pin number
 	 */

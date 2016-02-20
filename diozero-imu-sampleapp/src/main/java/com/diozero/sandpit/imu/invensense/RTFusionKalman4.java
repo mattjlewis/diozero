@@ -29,7 +29,7 @@ package com.diozero.sandpit.imu.invensense;
 
 import org.apache.commons.math3.filter.KalmanFilter;
 
-import com.diozero.imu.IMUData;
+import com.diozero.api.imu.ImuData;
 
 public class RTFusionKalman4 implements FusionInterface {
 	private KalmanFilter filter;
@@ -41,7 +41,7 @@ public class RTFusionKalman4 implements FusionInterface {
 	}
 
 	@Override
-	public void newIMUData(IMUData imuData) {
+	public void newIMUData(ImuData imuData) {
 		// TODO Auto-generated method stub
 		
 	}

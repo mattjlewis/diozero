@@ -35,11 +35,8 @@ import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.pmw.tinylog.Logger;
 
 import com.diozero.api.I2CConstants;
-import com.diozero.imu.IMUData;
-import com.diozero.imu.OrientationEvent;
-import com.diozero.imu.TapCallbackEvent;
+import com.diozero.api.imu.*;
 import com.diozero.imu.drivers.invensense.*;
-import com.diozero.imu.mqtt.MqttConstants;
 import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 
@@ -54,13 +51,6 @@ public class MPU9150Test3 implements MqttConstants {
 	private static final float RTIMU_FUZZY_ACCEL_ZERO = 0.05f;
 	private static final float RTIMU_FUZZY_GYRO_ZERO = 0.20f;
 	
-	// TODO Validate scale of the compass data?!
-	// 0.3f is used here: https://github.com/richards-tech/RTIMULib/blob/master/RTIMULib/IMUDrivers/RTIMUMPU9150.cpp
-	private static final float COMPASS_SCALE = 0.3f;
-	// From https://github.com/pocketmoon/MPU-6050-Arduino-Micro-Head-Tracker/blob/master/MPUReset/MPU6050Reset.ino
-	// TODO Validate the scale of the Quaternion data
-	//private static final double QUATERNION_SCALE = 1.0 / 16384;
-	private static final double QUATERNION_SCALE = 1.0 / (MPU9150Constants.HARDWARE_UNIT/2);
 	private static final int DEFAULT_FIFO_RATE = 20;
 	
 	// MPU driver variables
@@ -146,7 +136,7 @@ public class MPU9150Test3 implements MqttConstants {
 			System.err.println("Ready.");
 
 			do {
-				IMUData imu_data = update(mpu);
+				ImuData imu_data = update(mpu);
 				System.out.print("Got IMU data: compass=[" + imu_data.getCompass() +
 						"], temp=" + imu_data.getTemperature() + ", gyro=[" + imu_data.getGyro() +
 						"], accel=[" + imu_data.getAccel() + "], quat=[" + imu_data.getQuaternion().getQ0() +
@@ -178,7 +168,7 @@ public class MPU9150Test3 implements MqttConstants {
 		}
 	}
 	
-	private void mqttPublish(IMUData imu_data, double[] ypr) throws MqttException {
+	private void mqttPublish(ImuData imu_data, double[] ypr) throws MqttException {
 		if (mqttClient != null) {
 			MqttMessage message = new MqttMessage();
 			message.setQos(MQTT_QOS_AT_MOST_ONCE);
@@ -310,7 +300,7 @@ public class MPU9150Test3 implements MqttConstants {
 
 		Logger.debug("Sleep time={}", Integer.valueOf(fifoReadDelayMs));
 		Logger.debug("Waiting for first FIFO data item... ");
-		FIFOData fifo_data = null;
+		MPU9150FIFOData fifo_data = null;
 		do {
 			SleepUtil.sleepMillis(fifoReadDelayMs);
 			fifo_data = dmp.dmp_read_fifo();
@@ -319,8 +309,9 @@ public class MPU9150Test3 implements MqttConstants {
 		Logger.debug("Done.");
 	}
 
-	private IMUData update(MPU9150Driver mpu) throws RuntimeIOException {
+	private ImuData update(MPU9150Driver mpu) throws RuntimeIOException {
 		// Wait for FIFO data to be available
+		// FIXME Use a fixed period scheduler instead
 		long delay = fifoReadDelayMs - (System.currentTimeMillis() - lastFifoRead);
 		
 		if (delay > 0) {
@@ -331,7 +322,8 @@ public class MPU9150Test3 implements MqttConstants {
 		}
 		
 		//gyro and accel can be null because of being disabled in the features
-		FIFOData fifo_data;
+		// FIXME move this logic to a scheduler within MPU-9150 driver?
+		MPU9150FIFOData fifo_data;
 		// dmp_read_fifo(g, a, _q, &sensors, &fifoCount)
 		do {
 			fifo_data = dmp.dmp_read_fifo();
@@ -339,8 +331,9 @@ public class MPU9150Test3 implements MqttConstants {
 		Logger.debug("Time between FIFO reads = {}ms", Long.valueOf(System.currentTimeMillis() - lastFifoRead));
 		lastFifoRead = fifo_data.getTimestamp();
 		
-		IMUData imu_data = IMUDataFactory.newInstance(fifo_data, mpu.mpu_get_compass_reg(),
-				gyroFsr.getScale(), accelFsr.getScale(), COMPASS_SCALE, QUATERNION_SCALE, mpu.mpu_get_temperature());
+		ImuData imu_data = ImuDataFactory.newInstance(fifo_data, mpu.mpu_get_compass_reg(),
+				gyroFsr.getScale(), accelFsr.getScale(), AK8975Constants.COMPASS_SCALE,
+				MPU9150Constants.QUATERNION_SCALE, mpu.mpu_get_temperature());
 		
 		// Now do standard processing
 		//handleGyroBias(imu_data);
@@ -353,7 +346,7 @@ public class MPU9150Test3 implements MqttConstants {
 		return imu_data;
 	}
 	
-	private void updateFusion(IMUData imuData) {
+	private void updateFusion(ImuData imuData) {
 		fusion.newIMUData(imuData);
 	}
 	
@@ -363,7 +356,7 @@ public class MPU9150Test3 implements MqttConstants {
 		gyroSampleCount = 0;
 	}
 	
-	private void handleGyroBias(IMUData imuData) {
+	private void handleGyroBias(ImuData imuData) {
 		/*
 		 * Shouldn't need to do any of this if we call dmp_set_orientation...
 		// do axis rotation

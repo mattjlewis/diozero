@@ -19,7 +19,7 @@
 		<dependency>
 			<groupId>com.pigpioj</groupId>
 			<artifactId>pigpioj-java</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>1.0.0</version>
 		</dependency>
 	</dependencies>
 	

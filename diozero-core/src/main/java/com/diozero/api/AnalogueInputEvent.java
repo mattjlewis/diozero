@@ -38,10 +38,18 @@ public class AnalogueInputEvent extends DeviceEvent {
 		this.scaledValue = scaledValue;
 	}
 	
+	/**
+	 * Value from -1..1
+	 * @return
+	 */
 	public float getUnscaledValue() {
 		return unscaledValue;
 	}
 	
+	/**
+	 * Value from -range..range
+	 * @return
+	 */
 	public float getScaledValue() {
 		return scaledValue;
 	}

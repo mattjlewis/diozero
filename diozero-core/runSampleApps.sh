@@ -2,7 +2,7 @@
 
 diozero_version=0.2-SNAPSHOT
 #provider_classpath=diozero-provider-jdkdio11-$diozero_version.jar:dio-1.1-dev-linux-armv6hf.jar
-provider_classpath=diozero-provider-pigpio-$diozero_version.jar:pigpioj-java-0.0.1-SNAPSHOT.jar
+provider_classpath=diozero-provider-pigpio-$diozero_version.jar:pigpioj-java-1.0.0.jar
 log_classpath=tinylog-1.0.3.jar
 library_path=-Djava.library.path=.
 
@@ -15,6 +15,7 @@ mcp23017_inta_pin=21
 mcp23017_intb_pin=20
 mcp23017_input_pin=0
 mcp23017_output_pin=1
+mcp_adc_type=MCP3208
 
 # GPIO
 echo "--- Button ---"
@@ -34,15 +35,19 @@ sudo java -cp diozero-core-$diozero_version.jar:$log_classpath:$provider_classpa
 echo "--- BMP180 ---"
 sudo java -cp diozero-core-$diozero_version.jar:$log_classpath:$provider_classpath $library_path com.diozero.sampleapps.BMP180Test
 echo "--- MCP3008 TMP36 ---"
-sudo java -cp diozero-core-$diozero_version.jar:$log_classpath:$provider_classpath $library_path com.diozero.sampleapps.TMP36Test $spi_cs $tmp36_pin
+sudo java -cp diozero-core-$diozero_version.jar:$log_classpath:$provider_classpath $library_path com.diozero.sampleapps.TMP36Test $mcp_adc_type $spi_cs $tmp36_pin
 
 # Luminosity
 echo "--- TSL2561 ---"
 sudo java -cp diozero-core-$diozero_version.jar:$log_classpath:$provider_classpath $library_path com.diozero.sampleapps.TSL2561Test
-echo "--- MCP3008 LDR ---"
-sudo java -cp diozero-core-$diozero_version.jar:$log_classpath:$provider_classpath $library_path com.diozero.sampleapps.LDRTest $spi_cs $ldr_pin
+echo "--- MCP3xxx ADC using LDR pin ---"
+sudo java -cp diozero-core-$diozero_version.jar:$log_classpath:$provider_classpath $library_path com.diozero.sampleapps.McpAdcTest $mcp_adc_type $spi_cs $ldr_pin
+echo "--- MCP3xxx LDR ---"
+sudo java -cp diozero-core-$diozero_version.jar:$log_classpath:$provider_classpath $library_path com.diozero.sampleapps.LDRTest $mcp_adc_type $spi_cs $ldr_pin
+echo "--- MCP3xxx LDR with events ---"
+sudo java -cp diozero-core-$diozero_version.jar:$log_classpath:$provider_classpath $library_path com.diozero.sampleapps.LDRListenerTest $mcp_adc_type $spi_cs $ldr_pin
 echo "--- LDR Controlled LED ---"
-sudo java -cp diozero-core-$diozero_version.jar:$log_classpath:$provider_classpath $library_path com.diozero.sampleapps.LdrControlledLed $spi_cs $ldr_pin $led_pin
+sudo java -cp diozero-core-$diozero_version.jar:$log_classpath:$provider_classpath $library_path com.diozero.sampleapps.LdrControlledLed $mcp_adc_type $spi_cs $ldr_pin $led_pin
 
 # MCP23017
 echo "--- MCP23017 GPIO Expansion Input and Output ---"

@@ -31,8 +31,6 @@ import com.diozero.api.InputEventListener;
 import com.diozero.util.RuntimeIOException;
 
 public interface GpioDigitalInputDeviceInterface extends GpioDeviceInterface {
-	@Override
-	void close();
 	boolean getValue() throws RuntimeIOException;
 	void setDebounceTimeMillis(int debounceTime);
 	void setListener(InputEventListener<DigitalPinEvent> listener);

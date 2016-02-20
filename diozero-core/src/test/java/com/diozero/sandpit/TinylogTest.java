@@ -1,0 +1,46 @@
+package com.diozero.sandpit;
+
+/*
+ * #%L
+ * Device I/O Zero - Core
+ * %%
+ * Copyright (C) 2016 diozero
+ * %%
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ * #L%
+ */
+
+
+import org.pmw.tinylog.Logger;
+
+public class TinylogTest {
+	public static void main(String[] args) {
+		byte b1 = (byte)55;
+		byte b2 = (byte)175;
+		// 21:29:21.885 [main] INFO com.diozero.TinylogTest.main - hello
+		// 21:28:53.365 [main] DEBUG com.diozero.MCP3008 - close()
+		Logger.info("hello - info");
+		Logger.debug("hello - debug");
+		Logger.trace("hello - trace");
+		Logger.info("double: {%.2f}", Double.valueOf(0.545464));
+		Logger.info("double: {}", String.format("%.2f", Double.valueOf(0.545464)));
+		Logger.debug("setValue({}, {}), old_val=0x{}, new_val=0x{}",
+				Integer.valueOf(1), Boolean.valueOf(true), Integer.toHexString(b1), Integer.toHexString(b2));
+	}
+}

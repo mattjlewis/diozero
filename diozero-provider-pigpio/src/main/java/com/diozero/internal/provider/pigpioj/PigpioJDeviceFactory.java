@@ -26,9 +26,6 @@ package com.diozero.internal.provider.pigpioj;
  * #L%
  */
 
-
-import java.io.IOException;
-
 import com.diozero.api.*;
 import com.diozero.internal.spi.*;
 import com.diozero.pigpioj.PigpioGpio;
@@ -36,8 +33,11 @@ import com.diozero.util.RuntimeIOException;
 
 public class PigpioJDeviceFactory extends BaseNativeDeviceFactory {
 	
-	public PigpioJDeviceFactory() throws IOException {
-		PigpioGpio.initialise();
+	public PigpioJDeviceFactory() {
+		int rc = PigpioGpio.initialise();
+		if (rc < 0) {
+			throw new RuntimeIOException("Error calling PigpioGpio.initialise(), respone: " + rc);
+		}
 	}
 
 	@Override

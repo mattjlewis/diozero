@@ -31,6 +31,7 @@ import org.junit.Test;
 import org.pmw.tinylog.Logger;
 
 import com.diozero.api.AnalogueInputDevice;
+import com.diozero.internal.provider.test.TestMcpAdcSpiDevice;
 import com.diozero.util.SleepUtil;
 
 /**
@@ -41,22 +42,27 @@ public class MCP3008Test {
 	@Test
 	public void test() {
 		int spi_chip_select = 0;
-		int pin_number = 0;
-		int iterations = 5;
+		int pin_number = 1;
+		int iterations = 20;
 		float voltage = 3.3f;
 
-		try (MCP3008 mcp3008 = new MCP3008(0, spi_chip_select, voltage)) {
-			//mcp3008.provisionAnalogueInputPin(pin_number);
-			try (AnalogueInputDevice device = new AnalogueInputDevice(mcp3008, pin_number, voltage)) {
-				for (int i=0; i<iterations; i++) {
-					float v = mcp3008.getVoltage(pin_number);
-					Logger.info("Voltage: {}", String.format("%.2f", Float.valueOf(v)));
-					Assert.assertTrue("Voltage range", v >= 0 && v < voltage);
-					float pin_val = device.getUnscaledValue();
-					Logger.info("Raw val: {}", String.format("%.2f", Float.valueOf(pin_val)));
-					Assert.assertTrue("Voltage range", v >= 0 && v < voltage);
-					SleepUtil.sleepMillis(100);
-				}
+		TestMcpAdcSpiDevice.setType(McpAdc.MCP3008);
+		try (McpAdc adc = new McpAdc(McpAdc.MCP3008, spi_chip_select);
+				AnalogueInputDevice device = new AnalogueInputDevice(adc, pin_number, voltage)) {
+			for (int i=0; i<iterations; i++) {
+				float unscaled_val = adc.getValue(pin_number);
+				Logger.info("Value: {}", String.format("%.2f", Float.valueOf(unscaled_val)));
+				Assert.assertTrue("Unscaled range", unscaled_val >= 0 && unscaled_val < 1);
+				
+				unscaled_val = device.getUnscaledValue();
+				Logger.info("Unscaled value: {}", String.format("%.2f", Float.valueOf(unscaled_val)));
+				Assert.assertTrue("Unscaled range", unscaled_val >= 0 && unscaled_val < 1);
+				
+				float scaled_val = device.getScaledValue();
+				Logger.info("Scaled value: {}", String.format("%.2f", Float.valueOf(scaled_val)));
+				Assert.assertTrue("Scaled range", scaled_val >= 0 && scaled_val < voltage);
+				
+				SleepUtil.sleepMillis(100);
 			}
 		}
 	}

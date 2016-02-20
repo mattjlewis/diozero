@@ -27,8 +27,6 @@ package com.diozero.internal.provider.pigpioj;
  */
 
 
-import java.io.IOException;
-
 import org.pmw.tinylog.Logger;
 
 import com.diozero.internal.spi.AbstractDevice;
@@ -66,19 +64,19 @@ public class PigpioJPwmOutputDevice extends AbstractDevice implements PwmOutputD
 
 	@Override
 	public float getValue() throws RuntimeIOException {
-		try {
-			return PigpioGpio.getPWMDutyCycle(pinNumber) / (float)PWM_RANGE;
-		} catch (IOException e) {
-			throw new RuntimeIOException(e);
+		int rc = PigpioGpio.getPWMDutyCycle(pinNumber);
+		if (rc < 0) {
+			throw new RuntimeIOException("Error calling PigpioGpio.getPWMDutyCycle(), respone: " + rc);
 		}
+		
+		return rc / (float)PWM_RANGE;
 	}
 
 	@Override
 	public void setValue(float value) throws RuntimeIOException {
-		try {
-			PigpioGpio.setPWMDutyCycle(pinNumber, (int)(PWM_RANGE*value));
-		} catch (IOException e) {
-			throw new RuntimeIOException(e);
+		int rc = PigpioGpio.setPWMDutyCycle(pinNumber, (int)(PWM_RANGE*value));
+		if (rc < 0) {
+			throw new RuntimeIOException("Error calling PigpioGpio.setPWMDutyCycle(), respone: " + rc);
 		}
 	}
 }

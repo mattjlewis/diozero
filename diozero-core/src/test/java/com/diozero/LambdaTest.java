@@ -34,7 +34,7 @@ import java.util.function.Supplier;
 
 import org.pmw.tinylog.Logger;
 
-import com.diozero.api.DioZeroScheduler;
+import com.diozero.util.DioZeroScheduler;
 import com.diozero.util.SleepUtil;
 
 public class LambdaTest {
