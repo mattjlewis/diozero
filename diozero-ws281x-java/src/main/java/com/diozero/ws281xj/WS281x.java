@@ -14,7 +14,7 @@ public class WS281x implements Closeable {
 	// TODO Find out what options there are here... What do pigpio & wiringPi use?
 	private static final int DEFAULT_DMA_NUM = 5;
 
-	private static final String LIB_NAME = "ws281x";
+	private static final String LIB_NAME = "ws281xj";
 	private static Boolean loaded = Boolean.FALSE;
 	private static void init() {
 		synchronized (loaded) {
@@ -54,7 +54,7 @@ public class WS281x implements Closeable {
 		System.out.println("order=" + ch0LedBuffer.order());
 		ch0LedBuffer.order(ByteOrder.LITTLE_ENDIAN);
 		
-		Runtime.getRuntime().addShutdownHook(new Thread(this::close));
+		//Runtime.getRuntime().addShutdownHook(new Thread(this::close));
 	}
 
 	@Override
