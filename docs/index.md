@@ -41,7 +41,7 @@ try (PwmLed led = new PwmLed(pin)) {
 
 All devices are provisioned by a [Device Factory](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/internal/spi/DeviceFactoryInterface.java) with a default NativeDeviceFactory for provisioning via the host board itself. However, all components accept an optional Device Factory parameter for provisioning the same set of components via an alternative method. This is particularly useful for GPIO expansion boards and Analog-to-Digital converters.
 
-The Raspberry Pi provides no analog input pins; attempting to create an AnalogInputDevice such as an LDR using the Raspberry Pi default native device factory would result in a runtime error (UnsupportedOperationException). However, ADC classes such as the [MCP3008](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/MCP3008.java) have been implemented as analog input device factories hence can be used to construct analog devices such as LDRs:
+The Raspberry Pi provides no analog input pins; attempting to create an AnalogInputDevice such as an LDR using the Raspberry Pi default native device factory would result in a runtime error (UnsupportedOperationException). However, ADC classes such as the [McpAdc](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/McpAdc.java) have been implemented as analog input device factories hence can be used to construct analog devices such as LDRs:
 ```java
 try (McpAdc adc = new McpAdc(McpAdc.Type.MCP3008, chipSelect); LDR ldr = new LDR(adc, pin, vRef, r1)) {
 	System.out.println(ldr.getUnscaledValue());
@@ -75,11 +75,11 @@ This library uses [tinylog](http://www.tinylog.org) [v1.0](https://github.com/pm
 
 ## Devices
 + [Input Devices](InputDevices.md)
-    - [Digital Input Devices](DigitalInputDevices.md)
+    - Digital Input Devices
         + Button
         + PIR Motion Sensor
         + Line Sensor
-    - [Analog Input Devices](AnalogInputDevices.md)
+    - Analog Input Devices
         + Light Dependent Resistor
         + TMP36 Temperature Sensor
         + Potentiometer
@@ -155,7 +155,9 @@ There is still a lot left to do, in particular:
 + A clean object-orientated API for IMUs
 
 ## Change-log
-+ Release 0.2 (TBD)
+
++ Release 0.2: First tagged release
++ Release 0.3: API change - analogue to analog
 
 ## License
 This work is provided under the [MIT License](license.md).

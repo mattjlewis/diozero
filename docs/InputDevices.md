@@ -20,6 +20,8 @@ Controlling an LED with a button:
 
 ![Button controlled LED](images/Button_LED.png "Button controlled LED") 
 
+Code:
+
 ```java
 try (Button button = new Button(buttonPin, GpioPullUpDown.PULL_UP); LED led = new LED(ledPin)) {
 	button.whenPressed(led::on);
