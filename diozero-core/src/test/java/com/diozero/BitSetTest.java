@@ -32,7 +32,6 @@ import java.nio.ByteBuffer;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.diozero.McpAdc.McpAdcType;
 import com.diozero.util.BitManipulation;
 
 @SuppressWarnings("static-method")
@@ -41,7 +40,7 @@ public class BitSetTest {
 	
 	@Test
 	public void test() {
-		System.out.format("0x%08x%n", 1<<16);
+		System.out.format("0x%08x%n", Integer.valueOf(1<<16));
 		
 		byte val = 0;
 		val = BitManipulation.setBitValue(val, true, 1);
@@ -135,11 +134,11 @@ public class BitSetTest {
 		Assert.assertTrue("MCP3302".substring(0, 5).equals("MCP33"));
 		Assert.assertTrue("MCP3304".substring(0, 5).equals("MCP33"));
 		
-		McpAdcType type = McpAdcType.valueOf("MCP3008");
-		Assert.assertEquals(McpAdcType.MCP3008, type);
+		McpAdc.Type type = McpAdc.Type.valueOf("MCP3008");
+		Assert.assertEquals(McpAdc.Type.MCP3008, type);
 		
 		// Unsigned
-		type = McpAdcType.MCP3208;
+		type = McpAdc.Type.MCP3208;
 		buffer.rewind();
 		//buffer.put((byte)0b111111);
 		//buffer.put((byte)0xfe);
@@ -156,13 +155,13 @@ public class BitSetTest {
 		System.out.format("Resolution=%d, v=%d%n", Integer.valueOf(14+2-type.getResolution()), Integer.valueOf(v));
 		
 		// Signed
-		type = McpAdcType.MCP3304;
+		type = McpAdc.Type.MCP3304;
 		buffer.rewind();
 		v = ((short)(buffer.getShort() << 2)) >> (14+2-type.getResolution());
 		System.out.format("Resolution=%d, v=%d%n", Integer.valueOf(14+2-type.getResolution()), Integer.valueOf(v));
 		
 		// Unsigned
-		type = McpAdcType.MCP3208;
+		type = McpAdc.Type.MCP3208;
 		buffer.rewind();
 		if (type.isSigned()) {
 			v = ((short)(buffer.getShort() << 2)) >> (14+2-type.getResolution());
@@ -172,7 +171,7 @@ public class BitSetTest {
 		System.out.format("Resolution=%d, v=%d%n", Integer.valueOf(14+2-type.getResolution()), Integer.valueOf(v));
 		
 		// Signed
-		type = McpAdcType.MCP3304;
+		type = McpAdc.Type.MCP3304;
 		buffer.rewind();
 		if (type.isSigned()) {
 			v = ((short)(buffer.getShort() << 2)) >> (14+2-type.getResolution());

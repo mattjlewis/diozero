@@ -33,8 +33,6 @@ public class TinylogTest {
 	public static void main(String[] args) {
 		byte b1 = (byte)55;
 		byte b2 = (byte)175;
-		// 21:29:21.885 [main] INFO com.diozero.TinylogTest.main - hello
-		// 21:28:53.365 [main] DEBUG com.diozero.MCP3008 - close()
 		Logger.info("hello - info");
 		Logger.debug("hello - debug");
 		Logger.trace("hello - trace");

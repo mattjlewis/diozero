@@ -344,7 +344,7 @@ public class TSL2561 implements Closeable, LuminositySensorInterface {
 	 * 0 if the sensor is saturated and the values are unreliable.
 	 */
 	@Override
-	public double getLuminosity() throws RuntimeIOException {
+	public float getLuminosity() throws RuntimeIOException {
 		getRawLuminosity();
 
 		// Make sure the sensor isn't saturated!

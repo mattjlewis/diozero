@@ -28,10 +28,10 @@ package com.diozero;
 
 import org.pmw.tinylog.Logger;
 
-import com.diozero.api.AnalogueInputDevice;
+import com.diozero.api.AnalogInputDevice;
 import com.diozero.api.DeviceFactoryHelper;
 import com.diozero.api.LuminositySensorInterface;
-import com.diozero.internal.spi.AnalogueInputDeviceFactoryInterface;
+import com.diozero.internal.spi.AnalogInputDeviceFactoryInterface;
 import com.diozero.util.RuntimeIOException;
 
 /**
@@ -57,7 +57,7 @@ import com.diozero.util.RuntimeIOException;
  * When light, if R(LDR) == 100ohm
  * vLDR = 5 * (100 / (100 + 10,000)) = 0.049
  */
-public class LDR extends AnalogueInputDevice implements LuminositySensorInterface {
+public class LDR extends AnalogInputDevice implements LuminositySensorInterface {
 	private float vRef;
 	private float r1;
 	
@@ -65,7 +65,7 @@ public class LDR extends AnalogueInputDevice implements LuminositySensorInterfac
 		this(DeviceFactoryHelper.getNativeDeviceFactory(), pinNumber, vRef, r1);
 	}
 	
-	public LDR(AnalogueInputDeviceFactoryInterface deviceFactory, int pinNumber,
+	public LDR(AnalogInputDeviceFactoryInterface deviceFactory, int pinNumber,
 			float vRef, float r1) throws RuntimeIOException {
 		super(deviceFactory, pinNumber, vRef);
 		
@@ -74,14 +74,19 @@ public class LDR extends AnalogueInputDevice implements LuminositySensorInterfac
 	}
 
 	@Override
-	public double getLuminosity() throws RuntimeIOException {
+	public float getScaledValue() throws RuntimeIOException {
+		return getLuminosity();
+	}
+	
+	@Override
+	public float getLuminosity() throws RuntimeIOException {
 		// Get the scaled value (voltage)
-		double v_ldr = getScaledValue();
+		float v_ldr = super.getScaledValue();
 		
 		// http://emant.com/316002.page
 		// rLDR = 500 / Lux
 		// Voltage over the LDR vLDR = vRef * rLDR / (rLDR + R)
-		// where R is the resister connected between the LDR and Ref voltage
+		// where R is the resistor connected between the LDR and Ref voltage
 		// Lux = (vRef*500/V(LDR) - 500) / R
 		//double lux = (vRef * 500 / v_ldr - 500) / r;
 		//Logger.debug("Lux={}", lux);

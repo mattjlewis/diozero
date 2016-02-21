@@ -29,5 +29,5 @@ package com.diozero.api;
 import com.diozero.util.RuntimeIOException;
 
 public interface LuminositySensorInterface {
-	public double getLuminosity() throws RuntimeIOException;
+	public float getLuminosity() throws RuntimeIOException;
 }

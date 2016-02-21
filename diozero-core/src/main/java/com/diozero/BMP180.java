@@ -164,7 +164,7 @@ public class BMP180 implements TemperaturePressureSensorInterface, Closeable {
 	 *             If there is an IO error reading the sensor
 	 */
 	@Override
-	public double getTemperature() throws RuntimeIOException {
+	public float getTemperature() throws RuntimeIOException {
 		int UT = readRawTemperature();
 
 		// Calculate the actual temperature
@@ -172,7 +172,7 @@ public class BMP180 implements TemperaturePressureSensorInterface, Closeable {
 		int X2 = (calMC << 11) / (X1 + calMD);
 		int B5 = X1 + X2;
 
-		return ((B5 + 8) >> 4) / 10.0;
+		return ((B5 + 8) >> 4) / 10.0f;
 	}
 
 	private int readRawPressure() throws RuntimeIOException {

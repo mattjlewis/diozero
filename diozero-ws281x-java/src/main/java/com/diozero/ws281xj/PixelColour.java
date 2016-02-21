@@ -91,7 +91,7 @@ public class PixelColour {
 	}
 
     /**
-     * Creates a colour based on the specified values in the HSL coluor model.
+     * Creates a colour based on the specified values in the HSL colour model.
      *
      * @param hue The hue, in degrees, {@code 0.0 to 360.0}
      * @param saturation The saturation %, {@code 0.0 to 1.0}
@@ -100,13 +100,17 @@ public class PixelColour {
      * @throws IllegalArgumentException if {@code hue}, {@code saturation}, {@code brightness} are out of range
      */
 	public static int createColourHSL(float hue, float saturation, float luminance) {
+		// TODO Not sure this is correct - needs testing!
+		
 		// Hue Saturation Luminance - see https://tips4java.wordpress.com/2009/07/05/hsl-color/
 		// Or javafx
 		//javafx.scene.paint.Color c = javafx.scene.paint.Color.web("hsl(270,100%,100%)");// blue as an hsl web value, implicit alpha
 		
-		if (saturation < 0.0f || saturation > 1.0f) {
-			String message = "Color parameter outside of expected range - Saturation";
-			throw new IllegalArgumentException(message);
+		if (saturation < 0.0f) {
+			saturation = 0;
+		}
+		if (saturation > 1.0f) {
+			saturation = 1;
 		}
 
 		if (luminance < 0.0f || luminance > 1.0f) {

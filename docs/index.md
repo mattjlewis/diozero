@@ -6,7 +6,7 @@ This library makes use of modern Java 8 features such as [automatic resource man
 Created by [Matt Lewis](https://github.com/mattjlewis), inspired by [GPIO Zero](https://gpiozero.readthedocs.org/en/v1.1.0/index.html).
 
 ## Concepts
-The aim of this library is to encapsulated real-world devices as classes with meaningful operation names, for example LED (on / off), LDR (analogue readings), Button (pressed / released), Motor (forward / backwards / left / right). All devices implement Closeable hence will get automatically closed by the `try (Device d = new Device()) { d.doSomething() }` statement. This is best illustrated by some simple examples.
+The aim of this library is to encapsulated real-world devices as classes with meaningful operation names, for example LED (on / off), LDR (analog readings), Button (pressed / released), Motor (forward / backwards / left / right). All devices implement Closeable hence will get automatically closed by the `try (Device d = new Device()) { d.doSomething() }` statement. This is best illustrated by some simple examples.
 
 LED control:
 ```java
@@ -39,11 +39,11 @@ try (PwmLed led = new PwmLed(pin)) {
 }
 ```
 
-All devices are provisioned by a [Device Factory](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/internal/spi/DeviceFactoryInterface.java) with a default NativeDeviceFactory for provisioning via the host board itself. However, all components accept an optional Device Factory parameter for provisioning the same set of components via an alternative method. This is particularly useful for GPIO expansion boards and Analogue-to-Digital converters.
+All devices are provisioned by a [Device Factory](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/internal/spi/DeviceFactoryInterface.java) with a default NativeDeviceFactory for provisioning via the host board itself. However, all components accept an optional Device Factory parameter for provisioning the same set of components via an alternative method. This is particularly useful for GPIO expansion boards and Analog-to-Digital converters.
 
-The Raspberry Pi provides no analogue input pins; attempting to create an AnalogueInputDevice such as an LDR using the Raspberry Pi default native device factory would result in a runtime error (UnsupportedOperationException). However, ADC classes such as the [MCP3008](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/MCP3008.java) have been implemented as analogue input device factories hence can be used to construct analogue devices such as LDRs:
+The Raspberry Pi provides no analog input pins; attempting to create an AnalogInputDevice such as an LDR using the Raspberry Pi default native device factory would result in a runtime error (UnsupportedOperationException). However, ADC classes such as the [MCP3008](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/MCP3008.java) have been implemented as analog input device factories hence can be used to construct analog devices such as LDRs:
 ```java
-try (MCP3008 mcp3008 = new MCP3008(chipSelect); LDR ldr = new LDR(mcp3008, pin, vRef, r1)) {
+try (McpAdc adc = new McpAdc(McpAdc.Type.MCP3008, chipSelect); LDR ldr = new LDR(adc, pin, vRef, r1)) {
 	System.out.println(ldr.getUnscaledValue());
 }
 ```
@@ -52,16 +52,16 @@ Repeating the previous example of controlling an LED when you press a button but
 ```java
 try (MCP23017 mcp23017 = new MCP23017(intAPin, intBPin);
 		Button button = new Button(mcp23017, inputPin, GpioPullUpDown.PULL_UP);
-		LED led = new LED(mcp23017, outputPin, false, true)) {
+		LED led = new LED(mcp23017, outputPin)) {
 	button.whenPressed(led::on);
 	button.whenReleased(led::off);
 	SleepUtil.sleepSeconds(10);
 }
 ```
 
-Analogue input devices also provide an event notification mechanism. To control the brightness of an LED based on ambient light levels:
+Analog input devices also provide an event notification mechanism. To control the brightness of an LED based on ambient light levels:
 ```java
-try (MCP3008 mcp3008 = new MCP3008(chipSelect); LDR ldr = new LDR(mcp3008, pin, vRef, r1); PwmLed led = new PwmLed(ledPin)) {
+try (McpAdc adc = new McpAdc(McpAdc.Type.MCP3008, chipSelect); LDR ldr = new LDR(adc, pin, vRef, r1); PwmLed led = new PwmLed(ledPin)) {
 	// Detect variations of 5%
 	ldr.addListener(.05f, (event) -> led.setValue(1-event.getScaledValue()));
 	SleepUtil.sleepSeconds(20);
@@ -74,15 +74,16 @@ Snapshot builds of the library are available in the [Nexus Repository Manager](h
 This library uses [tinylog](http://www.tinylog.org) [v1.0](https://github.com/pmwmedia/tinylog/releases/download/1.0.3/tinylog-1.0.3.zip).
 
 ## Devices
-+ [Digital Input Devices](DigitalInputDevices.md)
-    - Button
-    - PIR Motion Sensor
-    - Line Sensor
-+ [Analogue Input Devices](AnalogueInputDevices.md)
-    - Light Dependent Resistor
-    - TMP36 Temperature Sensor
-    - Potentiometer
-    - Sharp GP2Y0A21YK Distance Sensor
++ [Input Devices](InputDevices.md)
+    - [Digital Input Devices](DigitalInputDevices.md)
+        + Button
+        + PIR Motion Sensor
+        + Line Sensor
+    - [Analog Input Devices](AnalogInputDevices.md)
+        + Light Dependent Resistor
+        + TMP36 Temperature Sensor
+        + Potentiometer
+        + Sharp GP2Y0A21YK Distance Sensor
 + [Output Devices](OutputDevices.md)
     - Digital LED
     - Buzzer
@@ -90,7 +91,7 @@ This library uses [tinylog](http://www.tinylog.org) [v1.0](https://github.com/pm
     - PWM LED
     - RGB LED
 + [Expansion Boards](ExpansionBoards.md)
-    - MCP3008 Analogue-to-Digital Converter
+    - MCP3008 Analog-to-Digital Converter
     - MCP23017 GPIO Expansion Board
     - PCA9685 16-channel 12-bit PWM Controller (Adafruit PWM Servo Driver)
 + [Motor Control](MotorControl.md)
@@ -104,7 +105,7 @@ This library uses [tinylog](http://www.tinylog.org) [v1.0](https://github.com/pm
     - InvenSense MPU-9150 9-axis MotionTracking Device
     - WS281x / NeoPixel LEDs
 + [API](API.md)
-    - Analogue Input Device
+    - Analog Input Device
     - Digital Input Device
     - Motors (Digital and PWM)
     - Digital Output Device

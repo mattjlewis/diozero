@@ -8,8 +8,7 @@ repo_url: https://github.com/mattjlewis/diozero
 pages:
 - Home: index.md
 - Devices:
-    - Digital Input Devices: DigitalInputDevices.md
-    - Analogue Input Devices: AnalogueInputDevices.md
+    - Input Devices: InputDevices.md
     - Output Devices: OutputDevices.md
     - Expansion Boards: ExpansionBoards.md
     - Motor Control: MotorControl.md

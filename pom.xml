@@ -4,7 +4,7 @@
 	
 	<groupId>com.diozero</groupId>
 	<artifactId>diozero-parent</artifactId>
-	<version>0.2-SNAPSHOT</version>
+	<version>0.3-SNAPSHOT</version>
 	<name>Device I/O Zero</name>
 	<description>Java Device I/O library with an API based on the Python GPIO Zero supporting multiple devices (Raspberry Pi, BeagleBone Black, ...)</description>
 	<url>https://github.com/mattjlewis/diozero</url>

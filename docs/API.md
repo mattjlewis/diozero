@@ -1,6 +1,6 @@
 # API
 
-* Analogue Input Device
+* Analog Input Device
 * Digital Input Device
 * Motors (Digital and PWM)
 * Digital Output Device

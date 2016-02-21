@@ -28,7 +28,7 @@ package com.diozero.internal.spi;
 
 import com.diozero.util.RuntimeIOException;
 
-public interface GpioAnalogueInputDeviceInterface extends DeviceInterface {
+public interface GpioAnalogInputDeviceInterface extends DeviceInterface {
 	@Override
 	void close();
 	float getValue() throws RuntimeIOException;

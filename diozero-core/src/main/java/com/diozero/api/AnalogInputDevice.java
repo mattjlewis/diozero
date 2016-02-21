@@ -30,27 +30,27 @@ import java.util.concurrent.TimeUnit;
 
 import org.pmw.tinylog.Logger;
 
-import com.diozero.internal.spi.AnalogueInputDeviceFactoryInterface;
-import com.diozero.internal.spi.GpioAnalogueInputDeviceInterface;
+import com.diozero.internal.spi.AnalogInputDeviceFactoryInterface;
+import com.diozero.internal.spi.GpioAnalogInputDeviceInterface;
 import com.diozero.util.DioZeroScheduler;
 import com.diozero.util.RuntimeIOException;
 
-public class AnalogueInputDevice extends GpioInputDevice<AnalogueInputEvent> implements Runnable {
+public class AnalogInputDevice extends GpioInputDevice<AnalogInputEvent> implements Runnable {
 	private static final int DEFAULT_POLL_INTERVAL = 50;
-	private GpioAnalogueInputDeviceInterface device;
+	private GpioAnalogInputDeviceInterface device;
 	private Float lastValue;
 	private int pollInterval = DEFAULT_POLL_INTERVAL;
 	private float percentChange;
 	private boolean stopScheduler;
 	private float range;
 
-	public AnalogueInputDevice(int pinNumber, float range) throws RuntimeIOException {
+	public AnalogInputDevice(int pinNumber, float range) throws RuntimeIOException {
 		this(DeviceFactoryHelper.getNativeDeviceFactory(), pinNumber, range);
 	}
 
-	public AnalogueInputDevice(AnalogueInputDeviceFactoryInterface deviceFactory, int pinNumber, float range) throws RuntimeIOException {
+	public AnalogInputDevice(AnalogInputDeviceFactoryInterface deviceFactory, int pinNumber, float range) throws RuntimeIOException {
 		super(pinNumber);
-		device = deviceFactory.provisionAnalogueInputPin(pinNumber);
+		device = deviceFactory.provisionAnalogInputPin(pinNumber);
 		this.range = range;
 	}
 
@@ -80,7 +80,7 @@ public class AnalogueInputDevice extends GpioInputDevice<AnalogueInputEvent> imp
 		return device.getValue() * range;
 	}
 	
-	public void addListener(float percentChange, InputEventListener<AnalogueInputEvent> listener) {
+	public void addListener(float percentChange, InputEventListener<AnalogInputEvent> listener) {
 		addListener(listener);
 		this.percentChange = percentChange;
 	}
@@ -103,7 +103,7 @@ public class AnalogueInputDevice extends GpioInputDevice<AnalogueInputEvent> imp
 		
 		float unscaled = getUnscaledValue();
 		if (changeDetected(unscaled)) {
-			valueChanged(new AnalogueInputEvent(pinNumber, System.currentTimeMillis(), System.nanoTime(), unscaled, unscaled*range));
+			valueChanged(new AnalogInputEvent(pinNumber, System.currentTimeMillis(), System.nanoTime(), unscaled, unscaled*range));
 			lastValue = Float.valueOf(unscaled);
 		}
 	}

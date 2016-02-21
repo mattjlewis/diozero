@@ -31,7 +31,7 @@ import java.util.Random;
 
 import org.junit.Assert;
 
-import com.diozero.McpAdc.McpAdcType;
+import com.diozero.McpAdc;
 import com.diozero.api.SpiClockMode;
 import com.diozero.internal.spi.DeviceFactoryInterface;
 import com.diozero.util.RuntimeIOException;
@@ -39,13 +39,13 @@ import com.diozero.util.RuntimeIOException;
 public class TestMcpAdcSpiDevice extends TestSpiDevice {
 	private static final Random random = new Random();
 	
-	private static McpAdcType type;
+	private static McpAdc.Type type;
 	static {
 		// Default to MCP3208
-		setType(McpAdcType.MCP3208);
+		setType(McpAdc.Type.MCP3208);
 	}
 	
-	public static void setType(McpAdcType type) {
+	public static void setType(McpAdc.Type type) {
 		TestMcpAdcSpiDevice.type = type;
 	}
 

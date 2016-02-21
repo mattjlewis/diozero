@@ -16,7 +16,7 @@ This library uses [tinylog](www.tinylog.org) [v1.0](https://github.com/pmwmedia/
 
 To run the [LED sample application](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/sampleapps/LEDTest.java) using Pi4j:
 
-	sudo java -classpath diozero-core-0.2-SNAPSHOT.jar:diozero-provider-pi4j-0.2-SNAPSHOT.jar:pi4j-core-1.1-SNAPSHOT.jar:tinylog-1.0.3.jar com.diozero.sampleapps.LEDTest 18
+	sudo java -classpath diozero-core-0.3-SNAPSHOT.jar:diozero-provider-pi4j-0.3-SNAPSHOT.jar:pi4j-core-1.1-SNAPSHOT.jar:tinylog-1.0.3.jar com.diozero.sampleapps.LEDTest 18
 
 The device native service provider library is defined in the following order:
 1.  System property com.diozero.devicefactory, e.g. `-Dcom.diozero.devicefactory=com.diozero.internal.provider.pi4j.Pi4jDeviceFactory`
@@ -37,9 +37,9 @@ See below for provider specific details.
 * [PCA9685](http://www.nxp.com/products/power-management/lighting-driver-and-controller-ics/i2c-led-display-control/16-channel-12-bit-pwm-fm-plus-ic-bus-led-controller:PCA9685) 12-bit 16-channel PWM driver as used by the [Adafruit PWM Servo Driver](https://www.adafruit.com/product/815)
 
 **Currently supported SPI devices:**
-* [MCP3008 Analogue to Digital Converter](https://www.adafruit.com/datasheets/MCP3008.pdf)
+* [MCP30xx / MCP32xx / MCP34xx Analog to Digital Converters](http://www.microchip.com/ParamChartSearch/chart.aspx?branchID=11021&mid=10&lang=en&pageId=79)
 
-**Analogue device support:**
+**Analog device support:**
 * [TMP36](http://www.analog.com/en/products/analog-to-digital-converters/integrated-special-purpose-converters/integrated-temperature-sensors/tmp36.html) temperature sensor
 * [Photo Resistor/LDR](https://en.wikipedia.org/wiki/Photoresistor)
 * [Sharp GP2Y0A21YK](http://www.sharpsma.com/webfm_send/1208) distance sensor

@@ -1,6 +1,6 @@
 #!/bin/sh
 
-version=0.2-SNAPSHOT
+version=0.3-SNAPSHOT
 echo "version=$version"
 
 files="../pigpioj/pigpioj-java/target/pigpioj-java-1.0.0.jar \

@@ -4,12 +4,12 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.pmw.tinylog.Logger;
 
-import com.diozero.api.AnalogueInputDevice;
+import com.diozero.api.AnalogInputDevice;
 import com.diozero.internal.provider.test.TestMcpAdcSpiDevice;
 import com.diozero.util.SleepUtil;
 
 /**
- * MCP3008 test using the test device factory
+ * MCP3208 test using the test device factory
  */
 public class MCP3208Test {
 	@SuppressWarnings("static-method")
@@ -22,7 +22,7 @@ public class MCP3208Test {
 
 		TestMcpAdcSpiDevice.setType(McpAdc.MCP3208);
 		try (McpAdc adc = new McpAdc(McpAdc.MCP3208, spi_chip_select);
-				AnalogueInputDevice device = new AnalogueInputDevice(adc, pin_number, voltage)) {
+				AnalogInputDevice device = new AnalogInputDevice(adc, pin_number, voltage)) {
 			for (int i=0; i<iterations; i++) {
 				float unscaled_val = adc.getValue(pin_number);
 				Logger.info("Value: {}", String.format("%.2f", Float.valueOf(unscaled_val)));

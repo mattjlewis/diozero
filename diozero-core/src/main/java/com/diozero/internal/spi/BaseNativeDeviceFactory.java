@@ -79,7 +79,7 @@ public abstract class BaseNativeDeviceFactory extends AbstractDeviceFactory impl
 	}
 
 	@Override
-	public final GpioAnalogueInputDeviceInterface provisionAnalogueInputPin(int pinNumber) throws RuntimeIOException {
+	public final GpioAnalogInputDeviceInterface provisionAnalogInputPin(int pinNumber) throws RuntimeIOException {
 		String key = createGpioKey(pinNumber);
 		
 		// Check if this pin is already provisioned
@@ -87,7 +87,7 @@ public abstract class BaseNativeDeviceFactory extends AbstractDeviceFactory impl
 			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
 		}
 		
-		GpioAnalogueInputDeviceInterface device = createAnalogueInputPin(key, pinNumber);
+		GpioAnalogInputDeviceInterface device = createAnalogInputPin(key, pinNumber);
 		deviceOpened(device);
 		
 		return device;
@@ -166,7 +166,7 @@ public abstract class BaseNativeDeviceFactory extends AbstractDeviceFactory impl
 
 	protected abstract GpioDigitalInputDeviceInterface createDigitalInputPin(String key, int pinNumber, GpioPullUpDown pud,
 			GpioEventTrigger trigger) throws RuntimeIOException;
-	protected abstract GpioAnalogueInputDeviceInterface createAnalogueInputPin(String key, int pinNumber) throws RuntimeIOException;
+	protected abstract GpioAnalogInputDeviceInterface createAnalogInputPin(String key, int pinNumber) throws RuntimeIOException;
 	protected abstract GpioDigitalOutputDeviceInterface createDigitalOutputPin(String key, int pinNumber, boolean initialValue) throws RuntimeIOException;
 	protected abstract PwmOutputDeviceInterface createPwmOutputPin(String key, int pinNumber,
 			float initialValue, PwmType pwmType) throws RuntimeIOException;

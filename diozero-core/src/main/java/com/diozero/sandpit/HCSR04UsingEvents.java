@@ -50,9 +50,9 @@ import com.diozero.util.SleepUtil;
  * object that is pulse width and the range in proportion. We suggest to use over
  * 60ms measurement cycle, in order to prevent trigger signal to the echo signal
  * Pi4j:
- *  sudo java -classpath dio-zero-0.2-SNAPSHOT.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sandpit.HCSR04UsingEvents 17 27
+ *  sudo java -classpath dio-zero-0.3-SNAPSHOT.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sandpit.HCSR04UsingEvents 17 27
  * JDK Device I/O:
- *  sudo java -classpath dio-zero-0.2-SNAPSHOT.jar com.diozero.sandpit.HCSR04UsingEvents 17 27
+ *  sudo java -classpath dio-zero-0.3-SNAPSHOT.jar com.diozero.sandpit.HCSR04UsingEvents 17 27
  *
  */
 public class HCSR04UsingEvents implements DistanceSensorInterface, Closeable, InputEventListener<DigitalPinEvent> {
@@ -123,7 +123,7 @@ public class HCSR04UsingEvents implements DistanceSensorInterface, Closeable, In
 	 * @return distance in cm
 	 */
 	@Override
-	public double getDistanceCm() throws RuntimeIOException {
+	public float getDistanceCm() throws RuntimeIOException {
 		// Send a pulse trigger of 10 us duration
 		state = WAITING_FOR_ECHO_ON;
 		trigger.setValueUnsafe(true);
@@ -159,7 +159,7 @@ public class HCSR04UsingEvents implements DistanceSensorInterface, Closeable, In
 			distance = MAX_DISTANCE_CM;
 		}
 
-		return distance;
+		return (float)distance;
 	}
 
 	/**

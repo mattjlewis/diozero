@@ -29,16 +29,16 @@ package com.diozero.internal.provider.mcpadc;
 import org.pmw.tinylog.Logger;
 
 import com.diozero.McpAdc;
-import com.diozero.api.AnalogueInputEvent;
+import com.diozero.api.AnalogInputEvent;
 import com.diozero.internal.spi.AbstractInputDevice;
-import com.diozero.internal.spi.GpioAnalogueInputDeviceInterface;
+import com.diozero.internal.spi.GpioAnalogInputDeviceInterface;
 import com.diozero.util.RuntimeIOException;
 
-public class McpAdcAnalogueInputPin extends AbstractInputDevice<AnalogueInputEvent> implements GpioAnalogueInputDeviceInterface {
+public class McpAdcAnalogInputPin extends AbstractInputDevice<AnalogInputEvent> implements GpioAnalogInputDeviceInterface {
 	private McpAdc mcp3xxx;
 	private int pinNumber;
 
-	public McpAdcAnalogueInputPin(McpAdc mcp3xxx, String key, int pinNumber) {
+	public McpAdcAnalogInputPin(McpAdc mcp3xxx, String key, int pinNumber) {
 		super(key, mcp3xxx);
 		this.mcp3xxx = mcp3xxx;
 		this.pinNumber = pinNumber;

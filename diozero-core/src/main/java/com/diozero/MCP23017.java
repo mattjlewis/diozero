@@ -413,12 +413,9 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalPinEvent>, Clos
 		if (directions[port].isBitSet(bit)) {
 			throw new IllegalStateException("Can't set value for input pin: " + pinNumber);
 		}
-		
+		// Read the current state of this bank of GPIOs
 		byte old_val = i2cDevice.readByte(GPIO_REG[port]);
 		byte new_val = BitManipulation.setBitValue(old_val, value, bit);
-		Logger.debug("setValue({}, {}), old_val=0x{}, new_val=0x{}",
-				Integer.valueOf(pinNumber), Boolean.valueOf(value), Integer.toHexString(old_val),
-				Integer.toHexString(new_val));
 		i2cDevice.writeByte(OLAT_REG[port], new_val);
 	}
 	

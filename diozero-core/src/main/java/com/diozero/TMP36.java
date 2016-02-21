@@ -26,27 +26,32 @@ package com.diozero;
  * #L%
  */
 
-import com.diozero.api.AnalogueInputDevice;
+import com.diozero.api.AnalogInputDevice;
 import com.diozero.api.TemperatureSensorInterface;
-import com.diozero.internal.spi.AnalogueInputDeviceFactoryInterface;
+import com.diozero.internal.spi.AnalogInputDeviceFactoryInterface;
 import com.diozero.util.RuntimeIOException;
 
 /**
  * TMP36 temperature sensor
  */
-public class TMP36 extends AnalogueInputDevice implements TemperatureSensorInterface {
-	private double tempOffset;
+public class TMP36 extends AnalogInputDevice implements TemperatureSensorInterface {
+	private float tempOffset;
 
-	public TMP36(AnalogueInputDeviceFactoryInterface deviceFactory, int pinNumber,
-			double tempOffset, float vRef) throws RuntimeIOException {
+	public TMP36(AnalogInputDeviceFactoryInterface deviceFactory, int pinNumber,
+			float tempOffset, float vRef) throws RuntimeIOException {
 		super(deviceFactory, pinNumber, vRef);
 		this.tempOffset = tempOffset;
 	}
+	
+	@Override
+	public float getScaledValue() throws RuntimeIOException {
+		return getTemperature();
+	}
 
 	@Override
-	public double getTemperature() throws RuntimeIOException {
+	public float getTemperature() throws RuntimeIOException {
 		// Get the scaled value (voltage)
-		double v = getScaledValue();
+		float v = super.getScaledValue();
 		return (100 * v - 50) + tempOffset;
 	}
 }

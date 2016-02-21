@@ -32,5 +32,5 @@ public interface DistanceSensorInterface {
 	/**
 	 * @return distance in cm
 	 */
-	public double getDistanceCm() throws RuntimeIOException;
+	public float getDistanceCm() throws RuntimeIOException;
 }

@@ -1,6 +1,6 @@
 #!/bin/sh
 
-diozero_version=0.2-SNAPSHOT
+diozero_version=0.3-SNAPSHOT
 #provider_classpath=diozero-provider-jdkdio11-$diozero_version.jar:dio-1.1-dev-linux-armv6hf.jar
 provider_classpath=diozero-provider-pigpio-$diozero_version.jar:pigpioj-java-1.0.0.jar
 log_classpath=tinylog-1.0.3.jar
@@ -34,7 +34,7 @@ sudo java -cp diozero-core-$diozero_version.jar:$log_classpath:$provider_classpa
 # Temperature
 echo "--- BMP180 ---"
 sudo java -cp diozero-core-$diozero_version.jar:$log_classpath:$provider_classpath $library_path com.diozero.sampleapps.BMP180Test
-echo "--- MCP3008 TMP36 ---"
+echo "--- MCP ADC TMP36 ---"
 sudo java -cp diozero-core-$diozero_version.jar:$log_classpath:$provider_classpath $library_path com.diozero.sampleapps.TMP36Test $mcp_adc_type $spi_cs $tmp36_pin
 
 # Luminosity

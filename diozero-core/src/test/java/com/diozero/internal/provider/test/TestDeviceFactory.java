@@ -49,9 +49,9 @@ public class TestDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	protected GpioAnalogueInputDeviceInterface createAnalogueInputPin(String key, int pinNumber) throws RuntimeIOException {
-		// TODO Support for test analogue GPIO pins
-		throw new UnsupportedOperationException("Analogue GPIOs not yet supported in the Test device provider factory");
+	protected GpioAnalogInputDeviceInterface createAnalogInputPin(String key, int pinNumber) throws RuntimeIOException {
+		// TODO Support for test analog GPIO pins
+		throw new UnsupportedOperationException("Analog GPIOs not yet supported in the Test device provider factory");
 	}
 
 	@Override

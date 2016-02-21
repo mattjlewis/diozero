@@ -26,10 +26,10 @@ package com.diozero.sandpit;
  * #L%
  */
 
-import com.diozero.api.AnalogueInputDevice;
+import com.diozero.api.AnalogInputDevice;
 import com.diozero.api.DeviceFactoryHelper;
 import com.diozero.api.DistanceSensorInterface;
-import com.diozero.internal.spi.AnalogueInputDeviceFactoryInterface;
+import com.diozero.internal.spi.AnalogInputDeviceFactoryInterface;
 import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 
@@ -41,19 +41,24 @@ import com.diozero.util.SleepUtil;
  * Average Current Consumption: 30 mA
  * Detection Area Diameter @ 80 cm: 12 cm
  */
-public class GP2Y0A21YK extends AnalogueInputDevice implements DistanceSensorInterface {
+public class GP2Y0A21YK extends AnalogInputDevice implements DistanceSensorInterface {
 	public GP2Y0A21YK(int pinNumber, float range) throws RuntimeIOException {
 		this(DeviceFactoryHelper.getNativeDeviceFactory(), pinNumber, range);
 	}
 	
-	public GP2Y0A21YK(AnalogueInputDeviceFactoryInterface deviceFactory, int pinNumber, float range) throws RuntimeIOException {
+	public GP2Y0A21YK(AnalogInputDeviceFactoryInterface deviceFactory, int pinNumber, float range) throws RuntimeIOException {
 		super(deviceFactory, pinNumber, range);
 		SleepUtil.sleepMillis(44);
 	}
 	
 	@Override
-	public double getDistanceCm() throws RuntimeIOException {
-		float v = getScaledValue();
-		return 16.2537 * Math.pow(v, 4) - 129.893 * Math.pow(v, 3) + 382.268 * Math.pow(v, 2) - 512.611 * v + 306.439;
+	public float getScaledValue() throws RuntimeIOException {
+		return getDistanceCm();
+	}
+	
+	@Override
+	public float getDistanceCm() throws RuntimeIOException {
+		float v = super.getScaledValue();
+		return (float)(16.2537 * Math.pow(v, 4) - 129.893 * Math.pow(v, 3) + 382.268 * Math.pow(v, 2) - 512.611 * v + 306.439);
 	}
 }

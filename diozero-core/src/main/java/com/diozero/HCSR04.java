@@ -84,7 +84,7 @@ public class HCSR04 implements DistanceSensorInterface, Closeable {
 	 * @return distance in cm
 	 */
 	@Override
-	public double getDistanceCm() throws RuntimeIOException {
+	public float getDistanceCm() throws RuntimeIOException {
 		long start = System.nanoTime();
 		// Send a pulse trigger of 10 us duration
 		trigger.setValueUnsafe(true);
@@ -120,7 +120,7 @@ public class HCSR04 implements DistanceSensorInterface, Closeable {
 			distance = MAX_DISTANCE_CM;
 		}
 
-		return distance;
+		return (float)distance;
 	}
 
 	/**

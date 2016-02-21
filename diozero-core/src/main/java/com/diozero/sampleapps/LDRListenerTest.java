@@ -30,22 +30,21 @@ import org.pmw.tinylog.Logger;
 
 import com.diozero.LDR;
 import com.diozero.McpAdc;
-import com.diozero.McpAdc.McpAdcType;
 import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 
 /**
  * To run:
  * JDK Device I/O 1.0:
- *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-jdkdio10-0.2-SNAPSHOT.jar:dio-1.0.1-dev-linux-armv6hf.jar -Djava.library.path=. com.diozero.sampleapps.LDRTest MCP3208 0 3
+ *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.3-SNAPSHOT.jar:diozero-provider-jdkdio10-0.3-SNAPSHOT.jar:dio-1.0.1-dev-linux-armv6hf.jar -Djava.library.path=. com.diozero.sampleapps.LDRTest MCP3208 0 3
  * JDK Device I/O 1.1:
- *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-jdkdio11-0.2-SNAPSHOT.jar:dio-1.1-dev-linux-armv6hf.jar -Djava.library.path=. com.diozero.sampleapps.LDRTest MCP3208 0 3
+ *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.3-SNAPSHOT.jar:diozero-provider-jdkdio11-0.3-SNAPSHOT.jar:dio-1.1-dev-linux-armv6hf.jar -Djava.library.path=. com.diozero.sampleapps.LDRTest MCP3208 0 3
  * Pi4j:
- *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-pi4j-0.2-SNAPSHOT.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sampleapps.LDRTest MCP3208 0 3
+ *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.3-SNAPSHOT.jar:diozero-provider-pi4j-0.3-SNAPSHOT.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sampleapps.LDRTest MCP3208 0 3
  * wiringPi:
- *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-wiringpi-0.2-SNAPSHOT.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sampleapps.LDRTest MCP3208 0 3
+ *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.3-SNAPSHOT.jar:diozero-provider-wiringpi-0.3-SNAPSHOT.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sampleapps.LDRTest MCP3208 0 3
  * pigpgioJ:
- *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.2-SNAPSHOT.jar:diozero-provider-pigpio-0.2-SNAPSHOT.jar:pigpioj-java-0.0.1-SNAPSHOT.jar com.diozero.sampleapps.LDRTest MCP3208 0 3
+ *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.3-SNAPSHOT.jar:diozero-provider-pigpio-0.3-SNAPSHOT.jar:pigpioj-java-1.0.0.jar com.diozero.sampleapps.LDRTest MCP3208 0 3
  */
 public class LDRListenerTest {
 	public static void main(String[] args) {
@@ -53,7 +52,7 @@ public class LDRListenerTest {
 			Logger.error("Usage: {} <mcp-name> <chip-select> <adc-pin>", LDRListenerTest.class.getName());
 			System.exit(2);
 		}
-		McpAdcType type = McpAdcType.valueOf(args[0]);
+		McpAdc.Type type = McpAdc.Type.valueOf(args[0]);
 		if (type == null) {
 			Logger.error("Invalid MCP ADC type '{}'. Usage: {} <mcp-name> <spi-chip-select> <adc_pin>", args[0], McpAdcTest.class.getName());
 			System.exit(2);
@@ -66,7 +65,7 @@ public class LDRListenerTest {
 		test(type, chip_select, adc_pin, vref, r1);
 	}
 	
-	public static void test(McpAdcType type, int chipSelect, int pin, float vRef, int r1) {
+	public static void test(McpAdc.Type type, int chipSelect, int pin, float vRef, int r1) {
 		try (McpAdc adc = new McpAdc(type, chipSelect); LDR ldr = new LDR(adc, pin, vRef, r1)) {
 			ldr.addListener((event) -> Logger.info("valueChanged({})", event));
 			SleepUtil.sleepSeconds(10);

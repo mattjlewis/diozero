@@ -29,5 +29,5 @@ package com.diozero.api;
 import com.diozero.util.RuntimeIOException;
 
 public interface TemperatureSensorInterface {
-	public double getTemperature() throws RuntimeIOException;
+	public float getTemperature() throws RuntimeIOException;
 }

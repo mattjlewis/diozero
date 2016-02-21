@@ -43,7 +43,7 @@ import com.diozero.util.RuntimeIOException;
  * device. The mean of the values in the queue is compared to a threshold
  * which is used to determine the state of the 'is_active' property.
  * 
- * This class is intended for use with devices which either exhibit analogue
+ * This class is intended for use with devices which either exhibit analog
  * behaviour (such as the charging time of a capacitor with an LDR), or those
  * which exhibit "twitchy" behaviour (such as certain motion sensors).
  */
