@@ -37,7 +37,7 @@
 		</dependency>
 		<dependency>
 			<groupId>com.diozero</groupId>
-			<artifactId>diozero-imu</artifactId>
+			<artifactId>diozero-imu-devices</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 	</dependencies>
