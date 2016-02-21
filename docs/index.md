@@ -1,4 +1,5 @@
 # diozero
+
 A Device I/O library written in Java that provides an object-orientated interface for a range of GPIO / I2C / SPI devices such as LEDs, buttons and other various sensors connected to intelligent devices like the Raspberry Pi. Actual GPIO / I2C / SPI device communication is delegated via a pluggable abstraction layer to provide maximum compatibility across devices.
 
 This library makes use of modern Java 8 features such as [automatic resource management](https://docs.oracle.com/javase/tutorial/essential/exceptions/tryResourceClose.html), [Lambda Expressions](https://docs.oracle.com/javase/tutorial/java/javaOO/lambdaexpressions.html) and [Method References](https://docs.oracle.com/javase/tutorial/java/javaOO/methodreferences.html) where they simplify development and improve code readability.
@@ -6,9 +7,11 @@ This library makes use of modern Java 8 features such as [automatic resource man
 Created by [Matt Lewis](https://github.com/mattjlewis), inspired by [GPIO Zero](https://gpiozero.readthedocs.org/en/v1.1.0/index.html).
 
 ## Concepts
+
 The aim of this library is to encapsulated real-world devices as classes with meaningful operation names, for example LED (on / off), LDR (analog readings), Button (pressed / released), Motor (forward / backwards / left / right). All devices implement Closeable hence will get automatically closed by the `try (Device d = new Device()) { d.doSomething() }` statement. This is best illustrated by some simple examples.
 
 LED control:
+
 ```java
 try (LED led = new LED(pin)) {
 	led.on();
@@ -24,6 +27,7 @@ try (LED led = new LED(pin)) {
 ```
 
 Turn on an LED when you press a button:
+
 ```java
 try (Button button = new Button(buttonPin, GpioPullUpDown.PULL_UP); LED led = new LED(ledPin)) {
 	button.whenPressed(led::on);
@@ -33,6 +37,7 @@ try (Button button = new Button(buttonPin, GpioPullUpDown.PULL_UP); LED led = ne
 ```
 
 Or a random LED flicker effect:
+
 ```java
 try (PwmLed led = new PwmLed(pin)) {
 	GpioScheduler.getInstance().invokeAtFixedRate(RANDOM::nextFloat, led::setValue, 50, 50, TimeUnit.MILLISECONDS, false);
@@ -42,6 +47,7 @@ try (PwmLed led = new PwmLed(pin)) {
 All devices are provisioned by a [Device Factory](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/internal/spi/DeviceFactoryInterface.java) with a default NativeDeviceFactory for provisioning via the host board itself. However, all components accept an optional Device Factory parameter for provisioning the same set of components via an alternative method. This is particularly useful for GPIO expansion boards and Analog-to-Digital converters.
 
 The Raspberry Pi provides no analog input pins; attempting to create an AnalogInputDevice such as an LDR using the Raspberry Pi default native device factory would result in a runtime error (UnsupportedOperationException). However, ADC classes such as the [McpAdc](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/McpAdc.java) have been implemented as analog input device factories hence can be used to construct analog devices such as LDRs:
+
 ```java
 try (McpAdc adc = new McpAdc(McpAdc.Type.MCP3008, chipSelect); LDR ldr = new LDR(adc, pin, vRef, r1)) {
 	System.out.println(ldr.getUnscaledValue());
@@ -49,6 +55,7 @@ try (McpAdc adc = new McpAdc(McpAdc.Type.MCP3008, chipSelect); LDR ldr = new LDR
 ```
 
 Repeating the previous example of controlling an LED when you press a button but with components connected via an [MCP23017](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/MCP23017.java) GPIO expansion board:
+
 ```java
 try (MCP23017 mcp23017 = new MCP23017(intAPin, intBPin);
 		Button button = new Button(mcp23017, inputPin, GpioPullUpDown.PULL_UP);
@@ -60,6 +67,7 @@ try (MCP23017 mcp23017 = new MCP23017(intAPin, intBPin);
 ```
 
 Analog input devices also provide an event notification mechanism. To control the brightness of an LED based on ambient light levels:
+
 ```java
 try (McpAdc adc = new McpAdc(McpAdc.Type.MCP3008, chipSelect); LDR ldr = new LDR(adc, pin, vRef, r1); PwmLed led = new PwmLed(ledPin)) {
 	// Detect variations of 5%
@@ -69,11 +77,13 @@ try (McpAdc adc = new McpAdc(McpAdc.Type.MCP3008, chipSelect); LDR ldr = new LDR
 ```
 
 ## Install
+
 TODO Describe getting started steps.
 Snapshot builds of the library are available in the [Nexus Repository Manager](https://oss.sonatype.org/index.html#nexus-search;gav~com.diozero~~~~).
 This library uses [tinylog](http://www.tinylog.org) [v1.0](https://github.com/pmwmedia/tinylog/releases/download/1.0.3/tinylog-1.0.3.zip).
 
 ## Devices
+
 + [Input Devices](InputDevices.md)
     - Digital Input Devices
         + Button
@@ -116,6 +126,7 @@ This library uses [tinylog](http://www.tinylog.org) [v1.0](https://github.com/pm
     - Waitable Input Device
 
 ## Performance
+
 I've done some limited performance tests (turning a GPIO on then off, see [GpioPerfTest](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/sampleapps/GpioPerfTest.java)) on a Raspberry Pi 2 using the various native device factory providers as well as a test using Pi4j's wiringPi JNI API directly without going via my DIO-Zero wrapper (see [WiringPiRawPerfTest](https://github.com/mattjlewis/diozero/blob/master/diozero-provider-wiringpi/src/main/java/com/diozero/internal/provider/wiringpi/WiringPiRawPerfTest.java)); here are the results:
 
 | Provider | Iterations | Frequency (kHz) |
@@ -137,6 +148,7 @@ For a discussion on why Pi4j 1.0 was so slow, see this [issue](https://github.co
 |wiringPi (direct) | 1,662 |
 
 ## Development
+
 This project is hosted on [GitHub](https://github.com/mattjlewis/diozero/), please feel free to join in:
 
 + Make suggestions for [fixes and enhancements](https://github.com/mattjlewis/diozero/issues)
@@ -146,6 +158,7 @@ This project is hosted on [GitHub](https://github.com/mattjlewis/diozero/), plea
 TODO Add something about Maven dependencies, setting up development environments.
 
 ## To-Do
+
 There is still a lot left to do, in particular:
 
 + Thorough testing (various types of devices using each service provider)
@@ -160,4 +173,5 @@ There is still a lot left to do, in particular:
 + Release 0.3: API change - analogue to analog
 
 ## License
+
 This work is provided under the [MIT License](license.md).

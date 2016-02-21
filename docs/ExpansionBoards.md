@@ -1,6 +1,7 @@
 # Expansion Boards
 
 ## Microchip Analog to Digital Converters
+
 The class [McpAdc](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/McpAdc.java) supports the following Microchip analog-to-digital converter devices:
 
 + MCP300x: [MCP3001](http://www.microchip.com/wwwproducts/en/MCP3001), [MCP3002](http://www.microchip.com/wwwproducts/en/MCP3002), [MCP3004](http://www.microchip.com/wwwproducts/en/MCP3004), [MCP3008](http://www.microchip.com/wwwproducts/en/MCP3008)

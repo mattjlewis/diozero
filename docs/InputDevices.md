@@ -6,7 +6,7 @@
 
 ![Button](images/Button.png "Button") 
 
-Code:
+Code taken from [ButtonTest](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/sampleapps/ButtonTest.java):
 
 ```java
 try (Button button = new Button(inputPin, GpioPullUpDown.PULL_UP)) {
@@ -20,7 +20,7 @@ Controlling an LED with a button:
 
 ![Button controlled LED](images/Button_LED.png "Button controlled LED") 
 
-Code:
+Code taken from [ButtonControlledLed](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/sampleapps/ButtonControlledLed.java):
 
 ```java
 try (Button button = new Button(buttonPin, GpioPullUpDown.PULL_UP); LED led = new LED(ledPin)) {
@@ -51,3 +51,15 @@ The following analog devices are supported via subclasses of AnalogInputDevice:
 Example: Temperature readings using an MCP3008 and TMP36:
 
 ![MCP3008 TMP36](images/MCP3008_TMP36.png "MCP3008 TMP36") 
+
+Code taken from [TMP36Test](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/sampleapps/TMP36Test.java):
+```java
+try (McpAdc adc = new McpAdc(type, chipSelect);
+		TMP36 tmp36 = new TMP36(adc, pin, tempOffset, vRef)) {
+	for (int i=0; i<ITERATIONS; i++) {
+		double tmp = tmp36.getTemperature();
+		Logger.info("Temperature: {}", String.format("%.2f", Double.valueOf(tmp)));
+		SleepUtil.sleepSeconds(.5);
+	}
+}
+```
