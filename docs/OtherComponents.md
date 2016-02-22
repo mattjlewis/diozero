@@ -15,7 +15,8 @@ This is a paragraph.
 
 *class* **com.diozero.TSL2561**(*tsl2561Package*)
 
-: Implements support for the [Adafruit](https://www.adafruit.com/products/439) Digital Luminosity / Lux / Light Sensor - [Datasheet](https://www.adafruit.com/datasheets/TSL2561.pdf). 
+: Implements support for the [Adafruit](https://www.adafruit.com/products/439) Digital Luminosity / Lux / Light Sensor - [Datasheet](https://www.adafruit.com/datasheets/TSL2561.pdf).
+
   Parameters | * tsl2561Package - TSL Package
 
     **setAutoGain**(*autoGain*)
