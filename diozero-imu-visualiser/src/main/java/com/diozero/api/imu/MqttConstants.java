@@ -1,4 +1,4 @@
-package org.diozero.imu.mqtt;
+package com.diozero.api.imu;
 
 public interface MqttConstants {
 	static final String MQTT_SERVER_OPTION = "mqttServer";

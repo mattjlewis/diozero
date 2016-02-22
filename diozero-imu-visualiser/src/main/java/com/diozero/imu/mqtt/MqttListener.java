@@ -1,4 +1,4 @@
-package org.diozero.imu.mqtt;
+package com.diozero.imu.mqtt;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
@@ -6,6 +6,7 @@ import java.util.Arrays;
 import org.eclipse.paho.client.mqttv3.*;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
+import com.diozero.api.imu.MqttConstants;
 import com.interactivemesh.jfx.importer.tds.TdsModelImporter;
 
 import javafx.application.Application;
