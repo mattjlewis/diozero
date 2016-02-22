@@ -16,17 +16,39 @@ This is a paragraph.
 *class* com.diozero.TSL2561(*tsl2561Package*)
 
 : Implements support for the [Adafruit](https://www.adafruit.com/products/439) Digital Luminosity / Lux / Light Sensor - [Datasheet](https://www.adafruit.com/datasheets/TSL2561.pdf).
-   setAutoGain(*autoGain*)
-   
-   : Enables or disables the auto-gain settings when reading data from the sensor
 
-   getLuminosity()
+setAutoGain(*autoGain*)
    
-   : Get luminosity (Lux)
+: Enables or disables the auto-gain settings when reading data from the sensor
 
-   setGain(*gain*)
+getLuminosity()
    
-   : Adjusts the gain on the TSL2561 (adjusts the sensitivity to light)
+: Get luminosity (Lux)
+
+setGain(*gain*)
+   
+: Adjusts the gain on the TSL2561 (adjusts the sensitivity to light)
+
+
+Definition List Test
+
+: Term 1
+
+    Vestibulum enim wisi, viverra nec, fringilla in, laoreet
+    vitae, risus.
+    
+    : Term 1.1
+    
+    Blah blah
+    
+    : Term 1.2
+    
+    More blah
+
+: Term 2
+
+    jfidjfidsfds fdfds
+
 
 
 ## NeoPixel
