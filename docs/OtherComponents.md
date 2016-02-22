@@ -21,7 +21,7 @@
 <dd>Support for [WS281x / NeoPixel LEDs](https://learn.adafruit.com/adafruit-neopixel-uberguide) is available through a [JNI wrapper](WS281xNative.java) around the [rpi_ws281x C library](https://github.com/jgarff/rpi_ws281x).</dd>
 </dl>
 <dl class="method">
-<dt id="com.diozero.ws281xj.WS281x.render"><code class="descname">render</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#com.diozero.ws281xj.WS281x.render" title="Permalink to this definition">¶</a></dt>
+<dt id="com.diozero.ws281xj.WS281x.render"><code class="descname">render</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#com.diozero.ws281xj.WS281x.render" title="Permalink to this definition">@para;</a></dt>
 <dd><p>Render all of the configured colours to the LED strip.</p><dd>
 </dl>
 
