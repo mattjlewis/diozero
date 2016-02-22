@@ -10,16 +10,18 @@
 
 ## TSL2561 Digital Luminosity / Lux / Light Sensor
 
-com.diozero.TSL2561(: #com.diozero.TSL2561 .class)
+com.diozero.TSL2561(: #com.diozero.TSL2561 .class )
 :   Implements support for the [Adafruit](https://www.adafruit.com/products/439) Digital Luminosity / Lux / Light Sensor. [Datasheet](https://www.adafruit.com/datasheets/TSL2561.pdf).
 
-getLuminosity(: .method)
+getLuminosity(: .method )
 :   Get luminosity (Lux)
 
 com.diozero.TSL2561
+(: #com.diozero.TSL2561 .class )
 :   Implements support for the [Adafruit](https://www.adafruit.com/products/439) Digital Luminosity / Lux / Light Sensor. [Datasheet](https://www.adafruit.com/datasheets/TSL2561.pdf).
 
 getLuminosity
+(: #com.diozero.TSL2561.getLuminosity .method )
 :   Get luminosity (Lux)
 
 ## NeoPixel
