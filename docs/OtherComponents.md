@@ -13,29 +13,24 @@ This is a paragraph.
 
 ## TSL2561 Digital Luminosity / Lux / Light Sensor
 
-com.diozero.TSL2561{: #com.diozero.TSL2561 .class }
-:   Implements support for the [Adafruit](https://www.adafruit.com/products/439) Digital Luminosity / Lux / Light Sensor. [Datasheet](https://www.adafruit.com/datasheets/TSL2561.pdf).
-
-getLuminosity{: .method }
+class com.diozero.TSL2561
+TSL2561(tsl2561Package)
+:   Implements support for the [Adafruit](https://www.adafruit.com/products/439) Digital Luminosity / Lux / Light Sensor - [Datasheet](https://www.adafruit.com/datasheets/TSL2561.pdf).
+setAutoGain(autoGain)
+:   Enables or disables the auto-gain settings when reading data from the sensor
+getLuminosity()
 :   Get luminosity (Lux)
+setGain(gain)
+:   Adjusts the gain on the TSL2561 (adjusts the sensitivity to light)
 
-
-com.diozero.TSL2561
-{: #com_diozero_TSL2561 .class }
-:   Implements support for the [Adafruit](https://www.adafruit.com/products/439) Digital Luminosity / Lux / Light Sensor. [Datasheet](https://www.adafruit.com/datasheets/TSL2561.pdf).
-getLuminosity
-{: #com_diozero_TSL2561_getLuminosity .method }
+*class* com.diozero.TSL2561(*tsl2561Package*)
+:   Implements support for the [Adafruit](https://www.adafruit.com/products/439) Digital Luminosity / Lux / Light Sensor - [Datasheet](https://www.adafruit.com/datasheets/TSL2561.pdf).
+setAutoGain(autoGain)
+:   Enables or disables the auto-gain settings when reading data from the sensor
+getLuminosity()
 :   Get luminosity (Lux)
-
-
-com.diozero.TSL2561
-{: #com_diozero_TSL2561 .class }
-
-:   Implements support for the [Adafruit](https://www.adafruit.com/products/439) Digital Luminosity / Lux / Light Sensor. [Datasheet](https://www.adafruit.com/datasheets/TSL2561.pdf).
-
-getLuminosity
-{: #com_diozero_TSL2561_getLuminosity .method }
-:   Get luminosity (Lux)
+setGain(gain)
+:   Adjusts the gain on the TSL2561 (adjusts the sensitivity to light)
 
 ## NeoPixel
 
