@@ -1,5 +1,8 @@
 # Other Components
 
+This is a paragraph.
+{: #an_id .a_class }
+
 ## HC-SRO4 Ultrasonic Ranging Module
 
 [HC-SR04](http://www.micropik.com/PDF/HCSR04.pdf).
@@ -16,12 +19,22 @@ com.diozero.TSL2561{: #com.diozero.TSL2561 .class }
 getLuminosity{: .method }
 :   Get luminosity (Lux)
 
+
 com.diozero.TSL2561
-{: #com.diozero.TSL2561 .class }
+{: #com_diozero_TSL2561 .class }
+:   Implements support for the [Adafruit](https://www.adafruit.com/products/439) Digital Luminosity / Lux / Light Sensor. [Datasheet](https://www.adafruit.com/datasheets/TSL2561.pdf).
+getLuminosity
+{: #com_diozero_TSL2561_getLuminosity .method }
+:   Get luminosity (Lux)
+
+
+com.diozero.TSL2561
+{: #com_diozero_TSL2561 .class }
+
 :   Implements support for the [Adafruit](https://www.adafruit.com/products/439) Digital Luminosity / Lux / Light Sensor. [Datasheet](https://www.adafruit.com/datasheets/TSL2561.pdf).
 
 getLuminosity
-{: #com.diozero.TSL2561.getLuminosity .method }
+{: #com_diozero_TSL2561_getLuminosity .method }
 :   Get luminosity (Lux)
 
 ## NeoPixel
