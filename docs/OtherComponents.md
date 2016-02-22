@@ -10,8 +10,11 @@
 
 ## TSL2561 Digital Luminosity / Lux / Light Sensor
 
-[Adafruit](https://www.adafruit.com/products/439)
-[Datasheet](https://www.adafruit.com/datasheets/TSL2561.pdf) light-to-digital converter
+com.diozero.TSL2561(: #com.diozero.TSL2561 .class)
+:   Implements support for the [Adafruit](https://www.adafruit.com/products/439) Digital Luminosity / Lux / Light Sensor. [Datasheet](https://www.adafruit.com/datasheets/TSL2561.pdf).
+
+getLuminosity(: .method)
+:   Get luminosity (Lux)
 
 ## NeoPixel
 
@@ -24,7 +27,6 @@
 <dt id="com.diozero.ws281xj.WS281x.render"><code class="descname">render</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#com.diozero.ws281xj.WS281x.render" title="Permalink to this definition">@para;</a></dt>
 <dd><p>Push any updated colours to the LED strip.</p><dd>
 </dl>
-
 
 ## Inertial Measurement Units
 
