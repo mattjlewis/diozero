@@ -1,6 +1,6 @@
 # diozero
 
-A Device I/O library written in Java that provides an object-orientated interface for a range of GPIO / I2C / SPI devices such as LEDs, buttons and other various sensors connected to intelligent devices like the Raspberry Pi. Actual GPIO / I2C / SPI device communication is delegated via a pluggable abstraction layer to provide maximum compatibility across devices.
+A Device I/O library written in Java that provides an object-orientated interface for a range of GPIO / I^2^C / SPI devices such as LEDs, buttons and other various sensors connected to intelligent devices like the Raspberry Pi. Actual GPIO / I^2^C / SPI device communication is delegated via a pluggable abstraction layer to provide maximum compatibility across devices.
 
 This library makes use of modern Java 8 features such as [automatic resource management](https://docs.oracle.com/javase/tutorial/essential/exceptions/tryResourceClose.html), [Lambda Expressions](https://docs.oracle.com/javase/tutorial/java/javaOO/lambdaexpressions.html) and [Method References](https://docs.oracle.com/javase/tutorial/java/javaOO/methodreferences.html) where they simplify development and improve code readability.
 
@@ -123,7 +123,7 @@ For convenience a ZIP of all diozero JARs will be made available on [Google Driv
     - Digital Input Device
     - Motors (Digital and PWM)
     - Digital Output Device
-    - I2C Device Support
+    - I^2^C Device Support
     - SPI Device Support
     - PWM Output Device
     - Smoothed Input Device
@@ -168,7 +168,7 @@ There is still a lot left to do, in particular:
 + Thorough testing (various types of devices using each service provider)
 + Testing on different devices (all flavours of Raspberry Pi, BeagleBone, ...)
 + GPIO input debouncing
-+ Other I2C & SPI devices, including those on the SenseHAT
++ Other I^2^C & SPI devices, including those on the SenseHAT
 + A clean object-orientated API for IMUs
 
 ## Change-log
