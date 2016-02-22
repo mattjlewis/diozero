@@ -6,8 +6,8 @@ provider_classpath=diozero-provider-pigpio-$diozero_version.jar:pigpioj-java-1.0
 log_classpath=tinylog-1.0.3.jar
 library_path=-Djava.library.path=.
 
-input_pin=12
-led_pin=18
+input_pin=25
+led_pin=12
 spi_cs=0
 ldr_pin=3
 tmp36_pin=1
