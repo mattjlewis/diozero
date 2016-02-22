@@ -13,13 +13,14 @@ This is a paragraph.
 
 ## TSL2561 Digital Luminosity / Lux / Light Sensor
 
-class com.diozero.TSL2561
-TSL2561(tsl2561Package)
+class com.diozero.TSL2561(tsl2561Package)
 :   Implements support for the [Adafruit](https://www.adafruit.com/products/439) Digital Luminosity / Lux / Light Sensor - [Datasheet](https://www.adafruit.com/datasheets/TSL2561.pdf).
 setAutoGain(autoGain)
 :   Enables or disables the auto-gain settings when reading data from the sensor
+
 getLuminosity()
 :   Get luminosity (Lux)
+
 setGain(gain)
 :   Adjusts the gain on the TSL2561 (adjusts the sensitivity to light)
 
