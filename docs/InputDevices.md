@@ -39,7 +39,8 @@ try (Button button = new Button(buttonPin, GpioPullUpDown.PULL_UP); LED led = ne
 
 The [AnalogInputDevice](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/AnalogInputDevice.java) base class encapsulates logic for interfacing with analog devices. This class provides access to unscaled (-1..1) and scaled (e.g. voltage, temperature, distance) readings. For scaled readings is important to pass the ADC voltage range in the device constructor - all raw analog readings are normalised (i.e. -1..1).
 
-Note the Raspberry Pi does not natively support analog input devices, see [expansion boards](ExpansionBoards.md) for connecting to analog-to-digital converters.
+!!! note
+    Note the Raspberry Pi does not natively support analog input devices, see [expansion boards](ExpansionBoards.md) for connecting to analog-to-digital converters.
 
 The following analog devices are supported via subclasses of AnalogInputDevice:
 
