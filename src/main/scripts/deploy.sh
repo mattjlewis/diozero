@@ -9,7 +9,7 @@ install_folder=/home/pi/diozero
 echo "Deploying version ${version} to ${pi_user}@${pi_host}:${install_folder}"
 
 files="../pigpioj/pigpioj-java/target/pigpioj-java-${pigpioj_version}.jar \
-	diozero-core/src/main/scripts/runSampleApps.sh \
+	src/main/scripts/runSampleApps.sh \
 	diozero-core/target/diozero-core-${version}.jar \
 	diozero-imu-devices/target/diozero-imu-devices-${version}.jar \
 	diozero-imu-sampleapp/target/diozero-imu-sampleapp-${version}.jar \
