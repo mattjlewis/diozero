@@ -17,7 +17,9 @@ This is a paragraph.
 
 : Implements support for the [Adafruit](https://www.adafruit.com/products/439) Digital Luminosity / Lux / Light Sensor - [Datasheet](https://www.adafruit.com/datasheets/TSL2561.pdf).
 
-    Parameters | * tsl2561Package - TSL Package
+    | Parameter      | Description |
+    | -------------- | ----------- |
+    | tsl2561Package | TSL Package |
 
     **setAutoGain**(*autoGain*)
 
