@@ -17,25 +17,24 @@ This is a paragraph.
 
 : Implements support for the [Adafruit](https://www.adafruit.com/products/439) Digital Luminosity / Lux / Light Sensor - [Datasheet](https://www.adafruit.com/datasheets/TSL2561.pdf).
 
-setAutoGain(*autoGain*)
-   
-: Enables or disables the auto-gain settings when reading data from the sensor
+    setAutoGain(*autoGain*)
 
-getLuminosity()
-   
-: Get luminosity (Lux)
+    : Enables or disables the auto-gain settings when reading data from the sensor
 
-setGain(*gain*)
-   
-: Adjusts the gain on the TSL2561 (adjusts the sensitivity to light)
+    getLuminosity()
+
+    : Get luminosity (Lux)
+
+    setGain(*gain*)
+
+    : Adjusts the gain on the TSL2561 (adjusts the sensitivity to light)
 
 
 Definition List Test
 
 : Term 1
 
-    Vestibulum enim wisi, viverra nec, fringilla in, laoreet
-    vitae, risus.
+    Vestibulum enim wisi, viverra nec, fringilla in, laoreet vitae, risus.
     
     : Term 1.1
     
