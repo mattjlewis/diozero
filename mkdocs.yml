@@ -23,3 +23,5 @@ google_analytics: ['UA-73764647-1', 'rtd.diozero.com']
 theme: readthedocs
 markdown_extensions:
  - admonition
+ - attr_list
+ - def_list
