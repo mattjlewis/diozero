@@ -8,15 +8,15 @@ TODO Insert wiring diagram.
 
 : Implements support for the [HC-SR04](http://www.micropik.com/PDF/HCSR04.pdf) Ultrasonic Ranging Module.
 
-    *HCSR04*(**int** *triggerGpioNum*, **int** *echoGpioNum*)
+    **HCSR04** (*triggerGpioNum*, *echoGpioNum*)
 
     : Constructor
     
-    * *triggerGpioNum* - GPIO pin connected to the HC-SR04 trigger pin
+    * **triggerGpioNum** (*int*) - GPIO pin connected to the HC-SR04 trigger pin
     
-    * *echoGpioNum* - GPIO pin connected to the HC-SR04 echo pin
+    * **echoGpioNum** (*int*) - GPIO pin connected to the HC-SR04 echo pin
 
-    **float** *getDistanceCm*()
+    *float* **getDistanceCm**()
 
     : Get distance in cm
 
@@ -27,17 +27,17 @@ TODO Insert wiring diagram.
 
 : Implements support for the [Bosch Sensortec BMP180](http://www.bosch-sensortec.com/bst/products/all_products/bmp180) temperature and pressure sensor.
 
-    *BMP180*(**BMPMode** *mode*)
+    **BMP180** (*mode*)
 
     : Constructor
     
-    * *mode* - BMP operating mode (Ultra-Low Power, Standard, High Resolution, Ultra-High Resolution)
+    * **mode** (*BMPMode*) - BMP operating mode (Ultra-Low Power, Standard, High Resolution, Ultra-High Resolution)
 
-    **float** *getPressure*()
+    *float* **getPressure**()
 
     : Read the barometric pressure (in hPa) from the device
 
-    **float** *getTemperature*()
+    *float* **getTemperature**()
 
     : Read the temperature (in &8451;) from the device
 
@@ -48,23 +48,27 @@ TODO Insert wiring diagram.
 
 : Implements support for the [Adafruit](https://www.adafruit.com/products/439) Digital Luminosity / Lux / Light Sensor - [Datasheet](https://www.adafruit.com/datasheets/TSL2561.pdf).
 
-    *TSL2561*(**int** *tsl2561Package*)
+    **TSL2561**(*tsl2561Package*)
 
     : Constructor
     
-    * *tsl2561Package* - TSL package information (values are CS or T / FN / CL)
+    * **tsl2561Package** (*int*) - TSL package information (values are CS or T / FN / CL)
 
-    *setAutoGain*(**boolean** *autoGain*)
+    **setAutoGain** (*autoGain*)
 
-    : Enables or disables the auto-gain settings when reading data from the sensor
+    : Enable or disable the auto-gain settings when reading data from the sensor
+    
+    * **autoGain** (*boolean*) - Auto-gain flag
 
-    **float** *getLuminosity*()
-
-    : Get luminosity in Lux
-
-    *setGain*(**int** *gain*)
+    **setGain** (*gain*)
 
     : Adjusts the gain on the TSL2561 (adjusts the sensitivity to light)
+    
+    * **gain** (*int*) - Gain value
+
+    *float* **getLuminosity**()
+
+    : Get luminosity in Lux
 
 
 ## NeoPixel
