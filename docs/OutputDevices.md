@@ -26,27 +26,27 @@ try (LED led = new LED(pin)) {
 
 : Extends [DigitalOutputDevice](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/DigitalOutputDevice.java) and provides utility methods for controlling a Light Emitting Diode (LED).
 
-    **LED**(*pinNumber*)
+    **LED** (*pinNumber*)
 
     : Constructor
     
-    * **pinNumber**(*int*) - GPIO pin to which the LED is connected.
+    * **pinNumber** (*int*) - GPIO pin to which the LED is connected.
 
-    **blink**()
+    **blink** ()
 
     : Blink indefinitely with 1 second on and 1 second off.
     
-    **blink**(*onTime*, *offTime*, *n*, *background*)
+    **blink** (*onTime*, *offTime*, *n*, *background*)
     
     : Blink
     
-    * **onTime**(*float*) - On time in seconds.
+    * **onTime** (*float*) - On time in seconds.
     
-    * **offtime**(*float*) - Off time in seconds.
+    * **offtime** (*float*) - Off time in seconds.
     
-    * **n**(*int*) - Number of iterations. Set to -1 to blink indefinitely.
+    * **n** (*int*) - Number of iterations. Set to -1 to blink indefinitely.
     
-    * **background**(*boolean*) - If true start a background thread to control the blink and return immediately. If false, only return once the blink iterations have finished.
+    * **background** (*boolean*) - If true start a background thread to control the blink and return immediately. If false, only return once the blink iterations have finished.
 
 
 ## PWM LED

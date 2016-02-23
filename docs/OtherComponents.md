@@ -39,7 +39,7 @@ TODO Insert wiring diagram.
 
     *float* **getTemperature**()
 
-    : Read the temperature (in &8451;) from the device
+    : Read the temperature (in &#8451;) from the device
 
 
 ## TSL2561 Digital Luminosity / Lux / Light Sensor
