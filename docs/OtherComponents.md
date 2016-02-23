@@ -1,38 +1,75 @@
 # Other Components
 
-This is a paragraph.
-{: #an_id .a_class }
-
 ## HC-SRO4 Ultrasonic Ranging Module
 
-[HC-SR04](http://www.micropik.com/PDF/HCSR04.pdf).
+TODO Insert wiring diagram.
+
+*class* **com.diozero.HCSR04**
+
+: Implements support for the [HC-SR04](http://www.micropik.com/PDF/HCSR04.pdf) Ultrasonic Ranging Module.
+
+    *HCSR04*(**int** *triggerGpioNum*, **int** *echoGpioNum*)
+
+    : Constructor
+    
+    * *triggerGpioNum* - GPIO pin connected to the HC-SR04 trigger pin
+    
+    * *echoGpioNum* - GPIO pin connected to the HC-SR04 echo pin
+
+    **float** *getDistanceCm*()
+
+    : Get distance in cm
+
 
 ## Bosch Sensortec BMP180
 
-[Bosch Sensortec BMP180](http://www.bosch-sensortec.com/bst/products/all_products/bmp180) temperature and pressure sensor
+*class* **com.diozero.BMP180**
+
+: Implements support for the [Bosch Sensortec BMP180](http://www.bosch-sensortec.com/bst/products/all_products/bmp180) temperature and pressure sensor.
+
+    *BMP180*(**BMPMode** *mode*)
+
+    : Constructor
+    
+    * *mode* - BMP operating mode (Ultra-Low Power, Standard, High Resolution, Ultra-High Resolution)
+
+    **float** *getPressure*()
+
+    : Read the barometric pressure (in hPa) from the device
+
+    **float** *getTemperature*()
+
+    : Read the temperature (in &8451;) from the device
+
 
 ## TSL2561 Digital Luminosity / Lux / Light Sensor
 
-*class* **com.diozero.TSL2561**(*tsl2561Package*)
+*class* **com.diozero.TSL2561**
 
 : Implements support for the [Adafruit](https://www.adafruit.com/products/439) Digital Luminosity / Lux / Light Sensor - [Datasheet](https://www.adafruit.com/datasheets/TSL2561.pdf).
 
-    * tsl2561Package - TSL package information (values are CS or T / FN / CL)
+    *TSL2561*(**int** *tsl2561Package*)
 
-    **setAutoGain**(*autoGain*)
+    : Constructor
+    
+    * *tsl2561Package* - TSL package information (values are CS or T / FN / CL)
+
+    *setAutoGain*(**boolean** *autoGain*)
 
     : Enables or disables the auto-gain settings when reading data from the sensor
 
-    **getLuminosity**()
+    **float** *getLuminosity*()
 
-    : Get luminosity (Lux)
+    : Get luminosity in Lux
 
-    **setGain**(*gain*)
+    *setGain*(**int** *gain*)
 
     : Adjusts the gain on the TSL2561 (adjusts the sensitivity to light)
 
 
 ## NeoPixel
+
+TODO Insert wiring diagram.
 
 <dl class="class">
 <dt id="com.diozero.ws281xj.WS281x">
@@ -46,4 +83,4 @@ This is a paragraph.
 
 ## Inertial Measurement Units
 
-* [InvenSense MPU-9150](http://www.invensense.com/products/motion-tracking/9-axis/mpu-9150/) Nine-axis motion tracking device. Currently a fully working Java port of the InvenSense C library but could do with some Object Orientation related improvements.
+TODO Describe IMU API
