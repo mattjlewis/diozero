@@ -66,7 +66,7 @@ Generic [potentiometer](https://en.wikipedia.org/wiki/Potentiometer).
 TODO Wiring diagram.
 
 !!! Warning "Work-in-progress"
-Still under construction hence in the sandpit package.
+    Still under construction hence in the sandpit package.
 
 *class* **com.diozero.sandpit.Potentiometer** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/sandpit/Potentiometer.java)
 
@@ -82,7 +82,7 @@ Still under construction hence in the sandpit package.
 [Sharp GP2Y0A21YK](http://www.sharpsma.com/webfm_send/1208) Distance Sensor.
 
 !!! Warning "Work-in-progress"
-Not yet tested hence in the sandpit package.
+    Not yet tested hence in the sandpit package.
 
 *class* com.diozero.sandpit.GP2Y0A21YK [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/sandpit/GP2Y0A21YK.java)
 

@@ -1,7 +1,7 @@
 # IMU Devices
 
 !!! warning "Work in Progress"
-Support for IMU devices is still work-in-progress, A clean API for interfacing with various IMU devices is still being considered, the IMU-9150 driver class is effectively a Java port of the InvenSense C library hence has no object orientation. The [RTIMULib from Richards-Tech](https://github.com/richards-tech/RTIMULib2) could be a good starting point.
+    Support for IMU devices is still work-in-progress, A clean API for interfacing with various IMU devices is still being considered, the IMU-9150 driver class is effectively a Java port of the InvenSense C library hence has no object orientation. The [RTIMULib from Richards-Tech](https://github.com/richards-tech/RTIMULib2) could be a good starting point.
 
 ## API
 
