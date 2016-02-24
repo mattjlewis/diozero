@@ -55,7 +55,7 @@ public class TSL2561Test {
 	
 	public static void test() {
 		try (TSL2561 tsl2561 = new TSL2561(TSL2561.TSL2561_PACKAGE_T_FN_CL)) {
-			tsl2561.enableAutoGain(true);
+			tsl2561.setAutoGain(true);
 
 			for (int i=0; i<ITERATIONS; i++) {
 				double lux = tsl2561.getLuminosity();
