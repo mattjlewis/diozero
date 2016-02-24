@@ -29,8 +29,8 @@ package com.diozero.util;
 
 public class SleepUtil {
 	/**
-	 *
-	 * @param secs
+	 * Sleep for the specific number of seconds
+	 * @param secs number of seconds to sleep for
 	 */
 	public static void sleepSeconds(double secs) {
 		try {
@@ -40,8 +40,8 @@ public class SleepUtil {
 	}
 
 	/**
-	 *
-	 * @param mili
+	 * Sleep for the specific number of milli-seconds
+	 * @param mili number of millis seconds to sleep for
 	 */
 	public static void sleepMillis(long mili) {
 		try {
@@ -51,9 +51,9 @@ public class SleepUtil {
 	}
 
 	/**
-	 *
-	 * @param mili
-	 * @param nano
+	 * Sleep for mill.nan seconds
+	 * @param mili number of milli-seconds
+	 * @param nano number of nano-seconds
 	 */
 	public static void sleep(int mili, int nano) {
 		try {

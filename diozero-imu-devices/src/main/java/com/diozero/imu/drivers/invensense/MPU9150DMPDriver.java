@@ -39,12 +39,11 @@ import com.diozero.api.imu.TapCallbackEvent;
 import com.diozero.util.RuntimeIOException;
 
 /**
- * @addtogroup DRIVERS Sensor Driver Layer
- * @brief Hardware drivers to communicate with sensors via I2C.
+ * Sensor Driver Layer
+ * Hardware drivers to communicate with sensors via I2C.
  *
- * @{ @file inv_mpu_dmp_motion_driver.c
- * @brief DMP image and interface functions.
- * @details All functions are preceded by the dmp_ prefix to differentiate among
+ * DMP image and interface functions.
+ * All functions are preceded by the dmp_ prefix to differentiate among
  *          MPL and general driver function calls.
  */
 public class MPU9150DMPDriver implements MPU9150DMPConstants {
@@ -68,17 +67,17 @@ public class MPU9150DMPDriver implements MPU9150DMPConstants {
 	}
 
 	/**
-	 * @brief Load the DMP with this image.
+	 * Load the DMP with this image.
 	 */
 	public void dmp_load_motion_driver_firmware() throws RuntimeIOException {
 		mpu.mpu_load_firmware(DMP612.DMP_CODE_SIZE, DMP612.dmp_memory, DMP612.sStartAddress, DMP_SAMPLE_RATE);
 	}
 
 	/**
-	 * @brief Push gyro and accel orientation to the DMP. The orientation is
+	 * Push gyro and accel orientation to the DMP. The orientation is
 	 *        represented here as the output of
-	 * @e inv_orientation_matrix_to_scalar.
-	 * @param[in] orient Gyro and accel orientation in body frame.
+	 * @param orient Gyro and accel orientation in body frame.
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	public void dmp_set_orientation(int orient) throws RuntimeIOException {
 		byte[] gyro_axes = { DINA4C, DINACD, DINA6C };
@@ -126,13 +125,14 @@ public class MPU9150DMPDriver implements MPU9150DMPConstants {
 	}
 
 	/**
-	 * @brief Push gyro biases to the DMP. Because the gyro integration is
+	 * Push gyro biases to the DMP. Because the gyro integration is
 	 *        handled in the DMP, any gyro biases calculated by the MPL should
 	 *        be pushed down to DMP memory to remove 3-axis quaternion drift. 
 	 *        NOTE: If the DMP-based gyro calibration is enabled, the DMP will
 	 *        overwrite the biases written to this location once a new one is
 	 *        computed.
-	 * @param[in] bias Gyro biases in q16.
+	 * @param bias Gyro biases in q16.
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	public void dmp_set_gyro_bias(long[] bias) throws RuntimeIOException {
 		long[] gyro_bias_body = new long[3];
@@ -181,9 +181,10 @@ public class MPU9150DMPDriver implements MPU9150DMPConstants {
 	}
 
 	/**
-	 * @brief Push accel biases to the DMP. These biases will be removed from
+	 * Push accel biases to the DMP. These biases will be removed from
 	 *        the DMP 6-axis quaternion.
-	 * @param[in] bias Accel biases in q16.
+	 * @param bias Accel biases in q16.
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	public void dmp_set_accel_bias(int[] bias) throws RuntimeIOException {
 		int accel_sens = mpu.mpu_get_accel_sens();
@@ -224,8 +225,9 @@ public class MPU9150DMPDriver implements MPU9150DMPConstants {
 	}
 
 	/**
-	 * @brief Set DMP output rate. Only used when DMP is on.
-	 * @param[in] rate Desired fifo rate (Hz).
+	 * Set DMP output rate. Only used when DMP is on.
+	 * @param rate Desired fifo rate (Hz).
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	public void dmp_set_fifo_rate(int rate) throws RuntimeIOException {
 		Logger.debug("dmp_set_fifo_rate({})", rate);
@@ -251,16 +253,19 @@ public class MPU9150DMPDriver implements MPU9150DMPConstants {
 	}
 
 	/**
-	 * @brief Get DMP output rate. return rate Current fifo rate (Hz).
+	 * Get DMP output rate. return rate Current fifo rate (Hz).
+	 * @return dmp FIFO rate
 	 */
 	public int dmp_get_fifo_rate() {
 		return fifo_rate;
 	}
 
 	/**
-	 * @brief Set tap threshold for a specific axis.
-	 * @param[in] axis 1, 2, and 4 for XYZ accel, respectively.
-	 * @param[in] thresh Tap threshold, in mg/ms.
+	 * Set tap threshold for a specific axis.
+	 * @param axis 1, 2, and 4 for XYZ accel, respectively.
+	 * @param thresh Tap threshold, in mg/ms.
+	 * @return success status
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	public boolean dmp_set_tap_thresh(short axis, int thresh) throws RuntimeIOException {
 		if ((axis & TAP_XYZ) == 0 || thresh > 1600) {
@@ -323,8 +328,9 @@ public class MPU9150DMPDriver implements MPU9150DMPConstants {
 	}
 
 	/**
-	 * @brief Set which axes will register a tap.
-	 * @param[in] axis 1, 2, and 4 for XYZ, respectively.
+	 * Set which axes will register a tap.
+	 * @param axis 1, 2, and 4 for XYZ, respectively.
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	public void dmp_set_tap_axes(short axis) throws RuntimeIOException {
 		byte tmp = 0;
@@ -342,8 +348,9 @@ public class MPU9150DMPDriver implements MPU9150DMPConstants {
 	}
 
 	/**
-	 * @brief Set minimum number of taps needed for an interrupt.
-	 * @param[in] min_taps Minimum consecutive taps (1-4).
+	 * Set minimum number of taps needed for an interrupt.
+	 * @param min_taps Minimum consecutive taps (1-4).
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	public void dmp_set_tap_count(byte min_taps) throws RuntimeIOException {
 		byte tmp;
@@ -359,8 +366,9 @@ public class MPU9150DMPDriver implements MPU9150DMPConstants {
 	}
 
 	/**
-	 * @brief Set length between valid taps.
-	 * @param[in] time Milliseconds between taps.
+	 * Set length between valid taps.
+	 * @param time Milliseconds between taps.
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	public void dmp_set_tap_time(int time) throws RuntimeIOException {
 
@@ -372,8 +380,9 @@ public class MPU9150DMPDriver implements MPU9150DMPConstants {
 	}
 
 	/**
-	 * @brief Set max time between taps to register as a multi-tap.
-	 * @param[in] time Max milliseconds between taps.
+	 * Set max time between taps to register as a multi-tap.
+	 * @param time Max milliseconds between taps.
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	public void dmp_set_tap_time_multi(int time) throws RuntimeIOException {
 		int dmp_time = time / (1000 / DMP_SAMPLE_RATE);
@@ -384,10 +393,11 @@ public class MPU9150DMPDriver implements MPU9150DMPConstants {
 	}
 
 	/**
-	 * @brief Set shake rejection threshold. If the DMP detects a gyro sample
-	 *        larger than @e thresh, taps are rejected.
-	 * @param[in] sf Gyro scale factor.
-	 * @param[in] thresh Gyro threshold in dps.
+	 * Set shake rejection threshold. If the DMP detects a gyro sample
+	 *        larger than  thresh, taps are rejected.
+	 * @param sf Gyro scale factor.
+	 * @param thresh Gyro threshold in dps.
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	public void dmp_set_shake_reject_thresh(long sf, int thresh) throws RuntimeIOException {
 	    long thresh_scaled = sf / 1000 * thresh;
@@ -400,11 +410,12 @@ public class MPU9150DMPDriver implements MPU9150DMPConstants {
 	}
 
 	/**
-	 * @brief Set shake rejection time. Sets the length of time that the gyro
-	 *        must be outside of the threshold set by @e
+	 * Set shake rejection time. Sets the length of time that the gyro
+	 *        must be outside of the threshold set by 
 	 *        gyro_set_shake_reject_thresh before taps are rejected. A mandatory
 	 *        60 ms is added to this parameter.
-	 * @param[in] time Time in milliseconds.
+	 * @param time Time in milliseconds.
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	public void dmp_set_shake_reject_time(int time) throws RuntimeIOException {
 	    time /= (1000 / DMP_SAMPLE_RATE);
@@ -415,11 +426,12 @@ public class MPU9150DMPDriver implements MPU9150DMPConstants {
 	}
 
 	/**
-	 * @brief Set shake rejection timeout. Sets the length of time after a shake
+	 * Set shake rejection timeout. Sets the length of time after a shake
 	 *        rejection that the gyro must stay inside of the threshold before
 	 *        taps can be detected again. A mandatory 60 ms is added to this
 	 *        parameter.
-	 * @param[in] time Time in milliseconds.
+	 * @param time Time in milliseconds.
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	public void dmp_set_shake_reject_timeout(int time) throws RuntimeIOException {
 		time /= (1000 / DMP_SAMPLE_RATE);
@@ -430,7 +442,8 @@ public class MPU9150DMPDriver implements MPU9150DMPConstants {
 	}
 
 	/**
-	 * @brief Get current step count. return count Number of steps detected.
+	 * Get current step count. return count Number of steps detected.
+	 * @return Step count
 	 */
 	public long dmp_get_pedometer_step_count() throws RuntimeIOException {
 		byte[] tmp = mpu.mpu_read_mem(DMP612.D_PEDSTD_STEPCTR, 4);
@@ -442,10 +455,11 @@ public class MPU9150DMPDriver implements MPU9150DMPConstants {
 	}
 
 	/**
-	 * @brief Overwrite current step count. WARNING: This function writes to DMP
+	 * Overwrite current step count. WARNING: This function writes to DMP
 	 *        memory and could potentially encounter a race condition if called
 	 *        while the pedometer is enabled.
-	 * @param[in] count New step count.
+	 * @param count New step count.
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	public void dmp_set_pedometer_step_count(long count) throws RuntimeIOException {
 		byte[] tmp = new byte[4];
@@ -457,8 +471,9 @@ public class MPU9150DMPDriver implements MPU9150DMPConstants {
 	}
 
 	/**
-	 * @brief Get duration of walking time.
+	 * Get duration of walking time.
 	 * @return time Walk time in milliseconds.
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	public long dmp_get_pedometer_walk_time() throws RuntimeIOException {
 		byte[] tmp =  mpu.mpu_read_mem(DMP612.D_PEDSTD_TIMECTR, 4);
@@ -468,10 +483,11 @@ public class MPU9150DMPDriver implements MPU9150DMPConstants {
 	}
 
 	/**
-	 * @brief Overwrite current walk time. WARNING: This function writes to DMP
+	 * Overwrite current walk time. WARNING: This function writes to DMP
 	 *        memory and could potentially encounter a race condition if called
 	 *        while the pedometer is enabled.
-	 * @param[in] time New walk time in milliseconds.
+	 * @param time New walk time in milliseconds.
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	public void dmp_set_pedometer_walk_time(long time) throws RuntimeIOException {
 	    time /= 20;
@@ -485,7 +501,7 @@ public class MPU9150DMPDriver implements MPU9150DMPConstants {
 	}
 
 	/**
-	 * @brief Enable DMP features.
+	 * Enable DMP features.
 	 * The following #define's are used in the input mask: 
 	 *        DMP_FEATURE_TAP
 	 *        DMP_FEATURE_ANDROID_ORIENT
@@ -496,7 +512,8 @@ public class MPU9150DMPDriver implements MPU9150DMPConstants {
 	 *        DMP_FEATURE_SEND_RAW_GYRO
 	 *  NOTE: DMP_FEATURE_LP_QUAT and DMP_FEATURE_6X_LP_QUAT are mutually exclusive.
 	 *  NOTE: DMP_FEATURE_SEND_RAW_GYRO and DMP_FEATURE_SEND_CAL_GYRO are also mutually exclusive.
-	 * @param[in] mask Mask of features to enable.
+	 * @param mask Mask of features to enable.
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	public void dmp_enable_feature(int mask) throws RuntimeIOException {
 		byte[] tmp = new byte[10];
@@ -622,20 +639,22 @@ public class MPU9150DMPDriver implements MPU9150DMPConstants {
 	}
 
 	/**
-	 * @brief Get list of currently enabled DMP features.
+	 * Get list of currently enabled DMP features.
 	 * @return Mask of enabled features.
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	public int dmp_get_enabled_features() {
 		return feature_mask;
 	}
 
 	/**
-	 * @brief Calibrate the gyro data in the DMP. After eight seconds of no
+	 * Calibrate the gyro data in the DMP. After eight seconds of no
 	 *        motion, the DMP will compute gyro biases and subtract them from
-	 *        the quaternion output. If @e dmp_enable_feature is called with @e
+	 *        the quaternion output. If dmp_enable_feature is called with 
 	 *        DMP_FEATURE_SEND_CAL_GYRO, the biases will also be subtracted from
 	 *        the gyro output.
-	 * @param[in] enable 1 to enable gyro calibration.
+	 * @param enable 1 to enable gyro calibration.
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	public void dmp_enable_gyro_cal(boolean enable) throws RuntimeIOException {
 		if (enable) {
@@ -650,9 +669,10 @@ public class MPU9150DMPDriver implements MPU9150DMPConstants {
 	}
 
 	/**
-	 * @brief Generate 3-axis quaternions from the DMP. In this driver, the
+	 * Generate 3-axis quaternions from the DMP. In this driver, the
 	 *        3-axis and 6-axis DMP quaternion features are mutually exclusive.
-	 * @param[in] enable 1 to enable 3-axis quaternion.
+	 * @param enable 1 to enable 3-axis quaternion.
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	public void dmp_enable_lp_quat(boolean enable) throws RuntimeIOException {
 		byte[] regs = new byte[4];
@@ -678,9 +698,10 @@ public class MPU9150DMPDriver implements MPU9150DMPConstants {
 	}
 
 	/**
-	 * @brief Generate 6-axis quaternions from the DMP. In this driver, the
+	 * Generate 6-axis quaternions from the DMP. In this driver, the
 	 *        3-axis and 6-axis DMP quaternion features are mutually exclusive.
-	 * @param[in] enable 1 to enable 6-axis quaternion.
+	 * @param enable 1 to enable 6-axis quaternion.
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	public void dmp_enable_6x_lp_quat(boolean enable) throws RuntimeIOException {
 		byte[] regs = new byte[4];
@@ -703,8 +724,9 @@ public class MPU9150DMPDriver implements MPU9150DMPConstants {
 	}
 
 	/**
-	 * @brief Decode the four-byte gesture data and execute any callbacks.
-	 * @param[in] gesture Gesture data from DMP packet.
+	 * Decode the four-byte gesture data and execute any callbacks.
+	 * @param gesture Gesture data from DMP packet.
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	public void decode_gesture(byte[] gesture) {
 		Logger.debug("decode_gesture()", DatatypeConverter.printHexBinary(gesture));
@@ -728,11 +750,12 @@ public class MPU9150DMPDriver implements MPU9150DMPConstants {
 	}
 
 	/**
-	 * @brief Specify when a DMP interrupt should occur. A DMP interrupt can be
+	 * Specify when a DMP interrupt should occur. A DMP interrupt can be
 	 *        configured to trigger on either of the two conditions below:
-	 *        a. One FIFO period has elapsed (set by @e mpu_set_sample_rate).
+	 *        a. One FIFO period has elapsed (set by  mpu_set_sample_rate).
 	 *        b. A tap event has been detected.
-	 * @param[in] mode DMP_INT_GESTURE or DMP_INT_CONTINUOUS.
+	 * @param mode DMP_INT_GESTURE or DMP_INT_CONTINUOUS.
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	public void dmp_set_interrupt_mode(short mode) throws RuntimeIOException {
 		byte[] regs_continuous = new byte[] { (byte) 0xd8, (byte) 0xb1, (byte) 0xb9, (byte) 0xf3, (byte) 0x8b,
@@ -751,19 +774,20 @@ public class MPU9150DMPDriver implements MPU9150DMPConstants {
 	}
 
 	/**
-	 * @brief Get one packet from the FIFO. If @e sensors does not contain a
+	 * Get one packet from the FIFO. If  sensors does not contain a
 	 *        particular sensor, disregard the data returned to that pointer.
-	 *        @e sensors can contain a combination of the following flags:
+	 *         sensors can contain a combination of the following flags:
 	 *        INV_X_GYRO, INV_Y_GYRO, INV_Z_GYRO
 	 *        INV_XYZ_GYRO
 	 *        INV_XYZ_ACCEL
 	 *        INV_WXYZ_QUAT
-	 *        If the FIFO has no new data, @esensors will be zero.
-	 *        If the FIFO is disabled, @e sensors will be zero and this function will return a non-zero error code.
+	 *        If the FIFO has no new data, sensors will be zero.
+	 *        If the FIFO is disabled,  sensors will be zero and this function will return a non-zero error code.
 	 * @return FIFOData: gyro Gyro data in hardware units. accel Accel data in
 	 *         hardware units. quat 3-axis quaternion data in hardware units.
 	 *         timestamp Timestamp in milliseconds. sensors Mask of sensors read
 	 *         from FIFO. more Number of remaining packets.
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	public MPU9150FIFOData dmp_read_fifo() throws RuntimeIOException {
 
@@ -872,7 +896,7 @@ public class MPU9150DMPDriver implements MPU9150DMPConstants {
 	}
 
 	/**
-	 * @brief Register a function to be executed on a tap event. The tap
+	 * Register a function to be executed on a tap event. The tap
 	 *        direction is represented by one of the following:
 	 *        TAP_X_UP
 	 *        TAP_X_DOWN
@@ -880,7 +904,7 @@ public class MPU9150DMPDriver implements MPU9150DMPConstants {
 	 *        TAP_Y_DOWN
 	 *        TAP_Z_UP
 	 *        TAP_Z_DOWN
-	 * @param[in] func Callback function.
+	 * @param func Callback function.
 	 */
 	// public void dmp_register_tap_cb(void (*func)(unsigned char, unsigned
 	// char)) throws RuntimeIOException {
@@ -889,8 +913,9 @@ public class MPU9150DMPDriver implements MPU9150DMPConstants {
 	}
 
 	/**
-	 * @brief Register a function to be executed on a android orientation event.
-	 * @param[in] func Callback function.
+	 * Register a function to be executed on a android orientation event.
+	 * @param func Callback function.
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	public void dmp_register_android_orient_cb(Consumer<OrientationEvent> func) {
 		android_orient_cb = func;

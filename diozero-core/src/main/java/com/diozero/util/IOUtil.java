@@ -34,8 +34,8 @@ public class IOUtil {
 	public static final ByteOrder DEFAULT_BYTE_ORDER = ByteOrder.BIG_ENDIAN;
 
 	/**
-	 *
-	 * @param b
+	 * Get an unsigned int value from a signed byte
+	 * @param b input value
 	 * @return byte values from -127..128 convert 128..255
 	 */
 	public static int asInt(byte b) {
