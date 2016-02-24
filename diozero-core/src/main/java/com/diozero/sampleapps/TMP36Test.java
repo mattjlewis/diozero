@@ -74,7 +74,7 @@ public class TMP36Test {
 	
 	public static void test(McpAdc.Type type, int chipSelect, int pin, float tempOffset, float vRef) {
 		try (McpAdc adc = new McpAdc(type, chipSelect);
-				TMP36 tmp36 = new TMP36(adc, pin, tempOffset, vRef)) {
+				TMP36 tmp36 = new TMP36(adc, pin, vRef, tempOffset)) {
 			for (int i=0; i<ITERATIONS; i++) {
 				double tmp = tmp36.getTemperature();
 				Logger.info("Temperature: {}", String.format("%.2f", Double.valueOf(tmp)));
