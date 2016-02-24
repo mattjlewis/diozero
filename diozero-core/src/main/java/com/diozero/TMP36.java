@@ -38,7 +38,7 @@ public class TMP36 extends AnalogInputDevice implements TemperatureSensorInterfa
 	private float tempOffset;
 
 	public TMP36(AnalogInputDeviceFactoryInterface deviceFactory, int pinNumber,
-			float tempOffset, float vRef) throws RuntimeIOException {
+			float vRef, float tempOffset) throws RuntimeIOException {
 		super(deviceFactory, pinNumber, vRef);
 		this.tempOffset = tempOffset;
 	}
