@@ -53,13 +53,13 @@ public class SmoothedInputDevice extends DigitalInputDevice {
 	private Queue<Long> queue;
 
 	/**
-	 * @param pinNumber
-	 * @param pullUp
+	 * @param pinNumber GPIO pin number
+	 * @param pud pull-up/down configuration
 	 * @param threshold
 	 * 				The value above which the device will be considered "on".
 	 * @param age
 	 * 				The time in millis in which to keep items in the queue
-	 * @throws RuntimeIOException
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	public SmoothedInputDevice(int pinNumber, GpioPullUpDown pud, int threshold,
 			int age) throws RuntimeIOException {
@@ -79,6 +79,7 @@ public class SmoothedInputDevice extends DigitalInputDevice {
 	
 	/**
 	 * If the number of on events exceeds this amount, then 'is_active' will return 'True'
+	 * @return event threshold
 	 */
 	public int getThreshold() {
 		return threshold;

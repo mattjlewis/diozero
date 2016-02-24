@@ -56,7 +56,7 @@ public class Motor implements MotorInterface {
 
 	/**
 	 * Forward at full speed
-	 * @throws RuntimeIOException
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	public void forward() throws RuntimeIOException {
 		forward(1);
@@ -64,7 +64,7 @@ public class Motor implements MotorInterface {
 
 	/**
 	 * Backward at full speed
-	 * @throws RuntimeIOException
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	public void backward() throws RuntimeIOException {
 		backward(1);
@@ -72,8 +72,8 @@ public class Motor implements MotorInterface {
 
 	/**
 	 * @param speed
-	 *            Range 0..1
-	 * @throws RuntimeIOException
+	 *            Range -1..1
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	@Override
 	public void forward(float speed) throws RuntimeIOException {
@@ -83,8 +83,8 @@ public class Motor implements MotorInterface {
 
 	/**
 	 * @param speed
-	 *            Range 0..1
-	 * @throws RuntimeIOException
+	 *            Range -1..1
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	@Override
 	public void backward(float speed) throws RuntimeIOException {
@@ -100,7 +100,7 @@ public class Motor implements MotorInterface {
 
 	/**
 	 * Reverse direction of the motors
-	 * @throws RuntimeIOException
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	@Override
 	public void reverse() throws RuntimeIOException {
@@ -110,6 +110,8 @@ public class Motor implements MotorInterface {
 	/**
 	 * Represents the speed of the motor as a floating point value between -1
 	 * (full speed backward) and 1 (full speed forward)
+	 * @return current relative motor speed
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	@Override
 	public float getValue() throws RuntimeIOException {
@@ -120,7 +122,7 @@ public class Motor implements MotorInterface {
 	 * Set the speed of the motor as a floating point value between -1 (full
 	 * speed backward) and 1 (full speed forward)
 	 * @param value Range -1 .. 1. Positive numbers for forward, Negative numbers for backward
-	 * @throws RuntimeIOException
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	@Override
 	public void setValue(float value) throws RuntimeIOException {

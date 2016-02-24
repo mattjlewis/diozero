@@ -93,8 +93,11 @@ public class I2CDevice implements Closeable, I2CConstants {
 	 *
 	 * @param register
 	 *            Register to write
-	 * @param byteToWrite
-	 *            Byte to be written
+	 * @param subAddressSize
+	 *            sub-address size in bytes (1 or 2)
+	 * @param value
+	 *            Bytes to be written
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	public void write(int register, int subAddressSize, byte[] value) throws RuntimeIOException {
 		device.write(register, subAddressSize, ByteBuffer.wrap(value));
@@ -129,6 +132,8 @@ public class I2CDevice implements Closeable, I2CConstants {
 	 * 
 	 * @param regAddr
 	 *            Register regAddr to read from
+	 * @throws RuntimeIOException if an I/O error occurs
+	 * @return the byte read
 	 */
 	public byte readByte(int regAddr) throws RuntimeIOException {
 		// int8_t I2Cdev::readByte(uint8_t devAddr, uint8_t regAddr, uint8_t *data, uint16_t timeout)
@@ -197,6 +202,8 @@ public class I2CDevice implements Closeable, I2CConstants {
 	 *            Register regAddr to read from
 	 * @param bitNum
 	 *            Bit position to read (0-7)
+	 * @return bit on/off value
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	public boolean readBit(int regAddr, int bitNum) throws RuntimeIOException {
 		// int8_t I2Cdev::readBit(uint8_t devAddr, uint8_t regAddr, uint8_t
@@ -215,6 +222,8 @@ public class I2CDevice implements Closeable, I2CConstants {
 	 *            First bit position to read (0-7)
 	 * @param length
 	 *            Number of bits to read (not more than 8)
+	 * @return the byte read
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	public byte readBits(int regAddr, int bitStart, int length) throws RuntimeIOException {
 		// int8_t I2Cdev::readBits(uint8_t devAddr, uint8_t regAddr, uint8_t
@@ -234,12 +243,8 @@ public class I2CDevice implements Closeable, I2CConstants {
 	 *            First register regAddr to read from
 	 * @param length
 	 *            Number of bytes to read
-	 * @param data
-	 *            Buffer to store read data in
-	 * @param timeout
-	 *            Optional read timeout in milliseconds (0 to disable, leave off
-	 *            to use default class value in I2Cdev::readTimeout)
-	 * @return Number of bytes read (-1 indicates failure)
+	 * @throws RuntimeIOException if an I/O error occurs
+	 * @return the bytes read
 	 */
 	public byte[] readBytes(int regAddr, int length) throws RuntimeIOException {
 		// int8_t I2Cdev::readBytes(uint8_t devAddr, uint8_t regAddr, uint8_t
@@ -256,7 +261,7 @@ public class I2CDevice implements Closeable, I2CConstants {
 	 *            Bit position to write (0-7)
 	 * @param value
 	 *            New bit value to write
-	 * @return Status of operation (true = success)
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	public void writeBit(int regAddr, int bitNum, int value) throws RuntimeIOException {
 		// bool I2Cdev::writeBit(uint8_t devAddr, uint8_t regAddr, uint8_t
@@ -273,7 +278,7 @@ public class I2CDevice implements Closeable, I2CConstants {
 	 *            Bit position to write (0-7)
 	 * @param value
 	 *            New bit value to write
-	 * @return Status of operation (true = success)
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	public void writeBit(int regAddr, int bitNum, boolean value) throws RuntimeIOException {
 		// bool I2Cdev::writeBit(uint8_t devAddr, uint8_t regAddr, uint8_t
@@ -294,7 +299,7 @@ public class I2CDevice implements Closeable, I2CConstants {
 	 *            Number of bits to write (not more than 8)
 	 * @param data
 	 *            Right-aligned value to write
-	 * @return Status of operation (true = success)
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	public void writeBits(int regAddr, int bitStart, int length, int data) throws RuntimeIOException {
 		// bool I2Cdev::writeBits(uint8_t devAddr, uint8_t regAddr, uint8_t
@@ -324,8 +329,10 @@ public class I2CDevice implements Closeable, I2CConstants {
 	 *
 	 * @param register
 	 *            Register to write
-	 * @param byteToWrite
+	 * @param subAddressSize sub-address size in bytes (1 or 2)
+	 * @param value
 	 *            Byte to be written
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	public void write(int register, int subAddressSize, byte value) throws RuntimeIOException {
 		write(register, subAddressSize, new byte[] { value });
@@ -338,7 +345,7 @@ public class I2CDevice implements Closeable, I2CConstants {
 	 *            Register address to write to
 	 * @param data
 	 *            New byte value to write
-	 * @return Status of operation (true = success)
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	public void writeByte(int regAddr, int data) throws RuntimeIOException {
 		// bool I2Cdev::writeByte(uint8_t devAddr, uint8_t regAddr, uint8_t
@@ -353,7 +360,7 @@ public class I2CDevice implements Closeable, I2CConstants {
 	 *            Register address to write to
 	 * @param data
 	 *            New byte value to write
-	 * @return Status of operation (true = success)
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	public void writeByte(int regAddr, byte data) throws RuntimeIOException {
 		// bool I2Cdev::writeByte(uint8_t devAddr, uint8_t regAddr, uint8_t
@@ -368,7 +375,7 @@ public class I2CDevice implements Closeable, I2CConstants {
 	 *            Register address to write to
 	 * @param data
 	 *            New word value to write
-	 * @return Status of operation (true = success)
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	public void writeWord(int regAddr, int data) throws RuntimeIOException {
 		// bool I2Cdev::writeWord(uint8_t devAddr, uint8_t regAddr, uint16_t
@@ -389,7 +396,7 @@ public class I2CDevice implements Closeable, I2CConstants {
 	 *            Number of bytes to write
 	 * @param data
 	 *            Buffer to copy new data from
-	 * @return Status of operation (true = success)
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	public void writeBytes(int regAddr, int length, byte[] data) throws RuntimeIOException {
 		writeBytes(regAddr, length, data, 0);

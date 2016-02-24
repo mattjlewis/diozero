@@ -40,7 +40,7 @@ public class AnalogInputEvent extends DeviceEvent {
 	
 	/**
 	 * Value from -1..1
-	 * @return
+	 * @return the unscaled value
 	 */
 	public float getUnscaledValue() {
 		return unscaledValue;
@@ -48,7 +48,7 @@ public class AnalogInputEvent extends DeviceEvent {
 	
 	/**
 	 * Value from -range..range
-	 * @return
+	 * @return the scaled value
 	 */
 	public float getScaledValue() {
 		return scaledValue;

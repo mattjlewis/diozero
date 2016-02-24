@@ -59,8 +59,9 @@ public class DualMotor implements Closeable {
 	
 	/**
 	 * Set the speed and direction for both motors (clockwise / counter-clockwise)
-	 * @param speed Range -1 .. 1. Positive numbers for clockwise, Negative numbers for counter clockwise
-	 * @throws RuntimeIOException
+	 * @param leftValue Range -1 .. 1. Positive numbers for clockwise, Negative numbers for counter clockwise
+	 * @param rightValue Range -1 .. 1. Positive numbers for clockwise, Negative numbers for counter clockwise
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	public void setValues(float leftValue, float rightValue) throws RuntimeIOException {
 		leftMotor.setValue(leftValue);

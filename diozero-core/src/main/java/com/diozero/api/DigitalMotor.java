@@ -80,7 +80,8 @@ public class DigitalMotor implements Closeable {
 	/**
 	 * Represents the speed of the motor as a floating point value between -1
 	 *   (full speed backward) and 1 (full speed forward)
-	 * @throws RuntimeIOException 
+	 * @throws RuntimeIOException if an I/O error occurs
+	 * @return current value for this motor in the range -1 (backwards) to 1 (forwards)
 	 */
 	public float getValue() throws RuntimeIOException {
 		if (forward.isOn()) {

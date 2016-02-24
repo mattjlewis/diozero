@@ -43,14 +43,14 @@ public class DebouncedDigitalInputDevice extends WaitableDigitalInputDevice {
 
 	/**
 	 * 
-	 * @param pinNumber
-	 * @param pullUp
-	 * @param bounceTime
+	 * @param pinNumber GPIO
+	 * @param pud Pull-up/down configuratoin
+	 * @param debounceTime
 	 *            Specifies the length of time (in seconds) that the component
 	 *            will ignore changes in state after an initial change. This
 	 *            defaults to 0 which indicates that no bounce compensation will
 	 *            be performed.
-	 * @throws RuntimeIOException
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	public DebouncedDigitalInputDevice(int pinNumber, GpioPullUpDown pud, float debounceTime) throws RuntimeIOException {
 		this(pinNumber, pud, debounceTime, GpioEventTrigger.BOTH);
