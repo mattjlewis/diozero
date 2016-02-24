@@ -50,8 +50,8 @@ public class BMP180Test {
 	private static final int ITERATIONS = 20;
 
 	public static void main(String[] args) {
-		try (BMP180 bmp180 = new BMP180()) {
-			bmp180.init(BMPMode.STANDARD);
+		try (BMP180 bmp180 = new BMP180(BMPMode.STANDARD)) {
+			bmp180.readCalibrationData();
 			Logger.debug("Opened device");
 
 			for (int i=0; i<ITERATIONS; i++) {
