@@ -1,7 +1,7 @@
 # DIO-Zero - a Java Device I/O wrapper for GPIO / I2C / SPI devices
-A Device I/O library that provides object-orientated APIs for a range of GPIO/I2C/SPI devices such as LEDs, buttons and other various sensors. The library uses Java ServiceLoader to load low-level libraries for actually interfacing with the underlying hardware. I've only tested this library on the Raspberry Pi (B+, Zero and 2) using Oracle's Java SE 1.8 however it should work on any device that the currently bundled libraries support.
+A Device I/O library that provides object-orientated APIs for a range of GPIO / I2C / SPI devices such as LEDs, buttons and other various sensors. The library uses Java ServiceLoader to load low-level libraries for actually interfacing with the underlying hardware. I've only tested this library on the Raspberry Pi (B+, Zero and 2) using Oracle's Java SE 1.8 however it should work on any device that the currently bundled libraries support.
 
-Detailed documentation is available on [read the docs](http://rtd.diozero.com/).
+More detailed documentation is available on [read the docs](http://rtd.diozero.com/).
 
 The class [DeviceFactoryHelper](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/DeviceFactoryHelper.java) encapsulates the logic for accessing the configured service provider. Interfaces for implementing a new service provider are in the [com.diozero.internal.spi](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/internal/spi) package. Developing a new service provider is relatively straightforward given the provided APIs and base classes.
 
@@ -69,7 +69,7 @@ I've done some limited performance tests (turning a GPIO on then off, see [GpioP
 | wiringPi | 5,000,000 | 1,683 |
 | wiringPi (direct) | 10,000,000 | 2,137 |
 | pigpio | 5,000,000 | 1,266 |
-| pigpio (direct) 10,000,000 | 1,649 |
+| pigpio (direct) | 10,000,000 | 1,649 |
 
 For a discussion on why Pi4j 1.0 is so slow, see this [issue](https://github.com/Pi4J/pi4j/issues/158). These results are in-line with those documented in the book ["Raspberry Pi with Java: Programming the Internet of Things"](http://www.amazon.co.uk/Raspberry-Pi-Java-Programming-Internet/dp/0071842012). For reference, the author's results were:
 
