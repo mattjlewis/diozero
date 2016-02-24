@@ -12,20 +12,6 @@
 		
 	<dependencies>
 		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-math3</artifactId>
-			<version>${commons-math3.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.tinylog</groupId>
-			<artifactId>tinylog</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>com.diozero</groupId>
 			<artifactId>diozero-core</artifactId>
 			<version>${project.version}</version>
@@ -35,12 +21,28 @@
 			<artifactId>org.eclipse.paho.client.mqttv3</artifactId>
 			<version>1.0.2</version>
 		</dependency>
+		<dependency>
+			<groupId>com.interactivemesh.jfx.importer</groupId>
+			<artifactId>interactivemesh.jim3dsModelImporterJFX</artifactId>
+			<version>0.7</version>
+			<scope>system</scope>
+			<systemPath>${basedir}/lib/jim3dsModelImporterJFX.jar</systemPath>
+		</dependency>
 	</dependencies>
 	
 	<build>
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<excludes>
+						<exclude>**/models/*</exclude>
+					</excludes>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>

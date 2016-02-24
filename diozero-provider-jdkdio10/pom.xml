@@ -12,9 +12,8 @@
 	
 	<dependencies>
 		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<scope>test</scope>
+			<groupId>org.tinylog</groupId>
+			<artifactId>tinylog</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>jdk.dio</groupId>

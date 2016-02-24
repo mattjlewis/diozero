@@ -30,6 +30,11 @@
 			<artifactId>tinylog</artifactId>
 		</dependency>
 	</dependencies>
+	
+	<reporting>
+		<plugins>
+		</plugins>
+	</reporting>
 
 	<build>
 		<plugins>
@@ -40,6 +45,32 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>license-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+	    	    <artifactId>maven-javadoc-plugin</artifactId>
+		        <version>${maven-javadoc-plugin.version}</version>
+		        <configuration>
+		        	<groups>
+		        		<group>
+		        			<title>Devices</title>
+		        			<packages>com.diozero:com.diozero.sandpit</packages>
+		        		</group>
+		        		<group>
+		        			<title>Application Program Interface</title>
+		        			<packages>com.diozero.api*</packages>
+		        		</group>
+		        		<group>
+		        			<title>Service Provider Interface</title>
+		        			<packages>com.diozero.internal.spi</packages>
+		        		</group>
+		        		<group>
+		        			<title>Sample Applications</title>
+		        			<packages>com.diozero.sampleapps</packages>
+		        		</group>
+		        	</groups>
+		        	<excludePackageNames>com.diozero.internal.provider*:com.diozero.util*</excludePackageNames>
+		        </configuration>
 			</plugin>
 		</plugins>
 	</build>

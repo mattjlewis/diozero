@@ -17,6 +17,10 @@
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
+			<groupId>org.tinylog</groupId>
+			<artifactId>tinylog</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>com.pigpioj</groupId>
 			<artifactId>pigpioj-java</artifactId>
 			<version>1.0.0</version>

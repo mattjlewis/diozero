@@ -16,6 +16,20 @@
 		<url>http://www.diozero.com</url>
 	</organization>
 	
+	<!--
+	Useful Maven commands:
+	Show updates to versions:
+		mvn versions:display-plugin-updates
+		mvn versions:display-dependency-updates
+		mvn versions:display-property-updates
+	Dependency analysis:
+		mvn dependency:analyze
+	Set new project version:
+	mvn versions:set -DnewVersion=1.0.1-SNAPSHOT
+		mvn license:update-project-license
+		mvn license:update-file-header
+	-->
+	
 	<licenses>
 		<license>
 			<name>MIT License</name>
@@ -54,6 +68,7 @@
 		<module>diozero-ws281x-java</module>
 		<module>diozero-imu-devices</module>
 		<module>diozero-imu-sampleapp</module>
+		<module>diozero-imu-visualiser</module>
 	</modules>
 	
 	<properties>
@@ -64,21 +79,42 @@
 		<java.version>8</java.version>
 		<jdk.source.version>1.${java.version}</jdk.source.version>
 		<jdk.target.version>1.${java.version}</jdk.target.version>		
-		<commons-math3.version>3.5</commons-math3.version>
+		<commons-math3.version>3.6</commons-math3.version>
 		<junit.version>4.12</junit.version>
 		<tinylog.version>1.0.3</tinylog.version>
-		<maven-compiler-plugin.version>3.5</maven-compiler-plugin.version>
+		
+		<maven.min-version>3.3.0</maven.min-version>
+		<maven-clean-plugin.version>3.0.0</maven-clean-plugin.version>
+		<maven-compiler-plugin.version>3.5.1</maven-compiler-plugin.version>
+		<maven-dependency-plugin.version>2.10</maven-dependency-plugin.version>
+		<maven-deploy-plugin.version>2.8.2</maven-deploy-plugin.version>
+		<maven-install-plugin.version>2.5.2</maven-install-plugin.version>
+		<maven-jar-plugin.version>2.6</maven-jar-plugin.version>
+		<maven-javadoc-plugin.version>2.10.3</maven-javadoc-plugin.version>
+		<maven-project-info-reports-plugin.version>2.8.1</maven-project-info-reports-plugin.version>
+		<maven-release-plugin.version>2.5.3</maven-release-plugin.version>
+		<maven-resources-plugin.version>2.7</maven-resources-plugin.version>
+		<maven-site-plugin.version>3.5</maven-site-plugin.version>
+		<maven-surefire-plugin.version>2.19.1</maven-surefire-plugin.version>
 		<license-maven-plugin.version>1.8</license-maven-plugin.version>
 		<eclipse.m2e.lifecycle-mapping.version>1.0.0</eclipse.m2e.lifecycle-mapping.version>
 	</properties>
 	
+	<prerequisites>
+		<maven>${maven.min-version}</maven>
+	</prerequisites>
+	
 	<distributionManagement>
+		<downloadUrl>https://oss.sonatype.org/index.html#nexus-search;gav~com.diozero~~~~</downloadUrl>
+		<!-- <downloadUrl>https://drive.google.com/folderview?id=0B2Kd_bs3CEYaZ3NiRkd4OXhYd3c</downloadUrl> -->
 		<snapshotRepository>
-			<id>ossrh</id>
+			<id>sonatype-oss-snapshots</id>
+			<name>Sonatype Open Source Maven Snapshots Repository</name>
 			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
 		</snapshotRepository>
 		<repository>
-			<id>ossrh</id>
+			<id>sonatype-oss-staging</id>
+			<name>Sonatype Open Source Maven Repository</name>
 			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
 		</repository>
 	</distributionManagement>
@@ -165,6 +201,11 @@
 			<plugins>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-clean-plugin</artifactId>
+					<version>${maven-clean-plugin.version}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
 					<version>${maven-compiler-plugin.version}</version>
 					<configuration>
@@ -176,6 +217,64 @@
 					</configuration>
 				</plugin>
 				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-dependency-plugin</artifactId>
+					<version>${maven-dependency-plugin.version}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-deploy-plugin</artifactId>
+					<version>${maven-deploy-plugin.version}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-install-plugin</artifactId>
+					<version>${maven-install-plugin.version}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-jar-plugin</artifactId>
+					<version>${maven-jar-plugin.version}</version>
+					<configuration>
+						<archive>
+							<manifest>
+								<addClasspath>true</addClasspath>
+							</manifest>
+						</archive>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-release-plugin</artifactId>
+					<version>${maven-release-plugin.version}</version>
+					<configuration>
+						<autoVersionSubmodules>true</autoVersionSubmodules>
+						<useReleaseProfile>false</useReleaseProfile>
+						<releaseProfiles>release</releaseProfiles>
+						<goals>deploy</goals>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-project-info-reports-plugin</artifactId>
+					<version>${maven-project-info-reports-plugin.version}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-resources-plugin</artifactId>
+					<version>${maven-resources-plugin.version}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-site-plugin</artifactId>
+					<version>${maven-site-plugin.version}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-surefire-plugin</artifactId>
+					<version>${maven-surefire-plugin.version}</version>
+				</plugin>
+				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>license-maven-plugin</artifactId>
 					<version>${license-maven-plugin.version}</version>
@@ -185,10 +284,6 @@
 		
 		<plugins>
 			<plugin>
-				<!--
-				mvn license:update-project-license
-				mvn license:update-file-header
-				-->
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>license-maven-plugin</artifactId>
 				<executions>
