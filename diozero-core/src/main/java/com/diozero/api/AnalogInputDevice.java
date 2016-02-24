@@ -62,9 +62,9 @@ public class AnalogInputDevice extends GpioInputDevice<AnalogInputEvent> impleme
 	}
 	
 	/**
-	 * Unscaled values -1..1
-	 * @return
-	 * @throws RuntimeIOException
+	 * Unscaled normalised values -1..1
+	 * @return the unscaled value
+	 * @throws RuntimeIOException if there was an I/O error
 	 */
 	public float getUnscaledValue() throws RuntimeIOException {
 		return device.getValue();
@@ -72,26 +72,31 @@ public class AnalogInputDevice extends GpioInputDevice<AnalogInputEvent> impleme
 	
 	/**
 	 * Scaled values -range..range
-	 * @return
-	 * @throws RuntimeIOException
+	 * @return the scaled value
+	 * @throws RuntimeIOException if there was an I/O error
 	 */
 	public float getScaledValue() throws RuntimeIOException {
 		// The raw device must return unscaled values (-1..1)
 		return device.getValue() * range;
 	}
 	
-	public void addListener(float percentChange, InputEventListener<AnalogInputEvent> listener) {
-		addListener(listener);
+	public void addListener(InputEventListener<AnalogInputEvent> listener, float percentChange) {
+		addListener(listener, percentChange, DEFAULT_POLL_INTERVAL);
+	}
+	
+	public void addListener(InputEventListener<AnalogInputEvent> listener, float percentChange, int pollInterval) {
 		this.percentChange = percentChange;
+		this.pollInterval = pollInterval;
+		addListener(listener);
 	}
 	
 	@Override
-	public void enableListener() {
+	protected void enableListener() {
 		DioZeroScheduler.getDaemonInstance().scheduleAtFixedRate(this, pollInterval, pollInterval, TimeUnit.MILLISECONDS);
 	}
 	
 	@Override
-	public void disableListener() {
+	protected void disableListener() {
 		stopScheduler = true;
 	}
 
