@@ -26,38 +26,38 @@ package com.diozero;
  * #L%
  */
 
-import org.pmw.tinylog.Logger;
 
 import com.diozero.api.AnalogInputDevice;
 import com.diozero.api.DeviceFactoryHelper;
-import com.diozero.api.LuminositySensorInterface;
 import com.diozero.internal.spi.AnalogInputDeviceFactoryInterface;
 import com.diozero.util.RuntimeIOException;
 
 /**
- * vRef      vLdr      GND
- *   |         |        |
- *   +---LDR---+---R1---+
- *
- * When there is a lot of light the LDR has low resistance (vLdr ~ vRef).
- * When it is dark the resistance increases (vRef ~ 0V).
+ * <pre><code>
+ * vRef     vLDR       GND
+ *   |        |         |
+ *   +---R1---+---LDR---+
+ * </pre></code>
+ * <p>When there is a lot of light the LDR has low resistance (vLdr ~ 0V).
+ * When it is dark the resistance increases (vRef ~ vRef).</p>
+ * <pre><code>
  * vLDR = vRef * (rLDR / (rLDR + R1))
- * vLDR / vRef = rLDR / (rLDR + R1)
- * rLDR = R1 / (vRef/vLDR - 1)
- *
- * Given R1 = 1,000ohm, vRef = 5v
+ * IF R1 = 10,000ohm, vRef = 5v
  * When dark, if rLDR == 100,000ohm
- * vLDR = 5 * (100,000 / (100,000 + 1,000)) = 4.95
+ * vLDR = 5 * (100,000 / (100,000 + 10,000)) = 4.54V
  * When light, if rLDR == 100ohm
- * vLDR = 5 * (100 / (100 + 1,000)) = 0.45
- *
- * Given R1 = 10,000ohm, vRef = 5v
- * When dark, if R(LDR) == 100,000ohm
- * vLDR = 5 * (100,000 / (100,000 + 10,000)) = 4.54
- * When light, if R(LDR) == 100ohm
- * vLDR = 5 * (100 / (100 + 10,000)) = 0.049
+ * vLDR = 5 * (100 / (100 + 10,000)) = 0.0495V
+ * 
+ * rLDR = R1 / (vRef/vLDR - 1)
+ * IF R1 = 10,000ohm, vRef = 5v
+ * When dark, if vLDR=4V
+ * rLDR = 10,000 / (5 / 4 - 1) = 40,000ohm
+ * When light, if vLDR=1V
+ * rLDR = 10,000 / (5 / 1 - 1) = 2,500ohm
+ * 
+ * </pre></code>
  */
-public class LDR extends AnalogInputDevice implements LuminositySensorInterface {
+public class LDR extends AnalogInputDevice {
 	private float vRef;
 	private float r1;
 	
@@ -72,21 +72,23 @@ public class LDR extends AnalogInputDevice implements LuminositySensorInterface 
 		this.vRef = vRef;
 		this.r1 = r1;
 	}
-
-	@Override
-	public float getScaledValue() throws RuntimeIOException {
-		return getLuminosity();
+	
+	public float getLdrResistance() throws RuntimeIOException {
+		// Get the scaled value (voltage)
+		float v_ldr = getScaledValue();
+		
+		return r1 / (vRef / v_ldr - 1);
 	}
 	
-	@Override
 	public float getLuminosity() throws RuntimeIOException {
 		// Get the scaled value (voltage)
-		float v_ldr = super.getScaledValue();
+		float v_ldr = getScaledValue();
+		float r_ldr = getLdrResistance();
+	
+		// FIXME Can this be reliably calculated?
 		
 		// http://emant.com/316002.page
 		// rLDR = 500 / Lux
-		// Voltage over the LDR vLDR = vRef * rLDR / (rLDR + R)
-		// where R is the resistor connected between the LDR and Ref voltage
 		// Lux = (vRef*500/V(LDR) - 500) / R
 		//double lux = (vRef * 500 / v_ldr - 500) / r;
 		//Logger.debug("Lux={}", lux);
@@ -95,12 +97,8 @@ public class LDR extends AnalogInputDevice implements LuminositySensorInterface 
 		// Or...
 		// I[lux] = 10000 / (R[kohms]*10)^(4/3)
 		
-		double r_ldr = r1 / (vRef / v_ldr - 1);
-		// FIXME Check printf style formatting
-		Logger.info("rLDR = {}", String.format("%.4f", Double.valueOf(r_ldr)));
-		
 		// https://learn.adafruit.com/photocells/measuring-light
 		
-		return v_ldr;
+		return r_ldr;
 	}
 }
