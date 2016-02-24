@@ -75,12 +75,12 @@ public class DigitalInputDevice extends GpioInputDevice<DigitalPinEvent> {
 	}
 
 	@Override
-	public void enableListener() {
+	protected void enableListener() {
 		device.setListener(this);
 	}
 
 	@Override
-	public void disableListener() {
+	protected void disableListener() {
 		device.removeListener();
 	}
 }
