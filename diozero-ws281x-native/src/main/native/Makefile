@@ -5,8 +5,8 @@ CC = gcc
 CFLAGS = -Wall
 
 INCLUDES = -I/home/pi/rpi_ws281x \
-					-I$(JAVA_HOME)/include \
-					-I$(JAVA_HOME)/include/linux
+	-I$(JAVA_HOME)/include \
+	-I$(JAVA_HOME)/include/linux
 
 LFLAGS = -L/home/pi/rpi_ws281x
 
