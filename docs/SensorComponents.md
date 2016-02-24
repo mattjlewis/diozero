@@ -4,7 +4,7 @@
 
 TODO Insert wiring diagram.
 
-*class* **com.diozero.HCSR04**
+*class* **com.diozero.HCSR04** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/HCSR04.java)
 
 : Implements support for the [HC-SR04](http://www.micropik.com/PDF/HCSR04.pdf) Ultrasonic Ranging Module.
 
@@ -23,7 +23,7 @@ TODO Insert wiring diagram.
 
 ## Bosch BMP180
 
-*class* **com.diozero.BMP180**
+*class* **com.diozero.BMP180** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/BMP180.java)
 
 : Implements support for the [Bosch Sensortec BMP180](http://www.bosch-sensortec.com/bst/products/all_products/bmp180) temperature and pressure sensor.
 
@@ -44,7 +44,7 @@ TODO Insert wiring diagram.
 
 ## TSL2561 Digital Luminosity / Lux / Light Sensor {: #tsl2561 }
 
-*class* **com.diozero.TSL2561**
+*class* **com.diozero.TSL2561** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/TSL2561.java)
 
 : Implements support for the [Adafruit](https://www.adafruit.com/products/439) Digital Luminosity / Lux / Light Sensor - [Datasheet](https://www.adafruit.com/datasheets/TSL2561.pdf).
 

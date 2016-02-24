@@ -8,7 +8,7 @@ Created by [Matt Lewis](https://github.com/mattjlewis), inspired by [GPIO Zero](
 
 ## Concepts
 
-The aim of this library is to encapsulated real-world devices as classes with meaningful operation names, for example LED (on / off), LDR (analog readings), Button (pressed / released), Motor (forward / backwards / left / right). All devices implement Closeable hence will get automatically closed by the `try (Device d = new Device()) { d.doSomething() }` statement. This is best illustrated by some simple examples.
+The aim of this library is to encapsulated real-world devices as classes with meaningful operation names, for example LED (on / off), LDR (analog readings), Button (pressed / released), Motor (forward / backwards / left / right). All devices implement `Closeable` hence will get automatically closed by the `try (Device d = new Device()) { d.doSomething() }` statement. This is best illustrated by some simple examples.
 
 LED control:
 
@@ -46,7 +46,7 @@ try (PwmLed led = new PwmLed(pin)) {
 
 All devices are provisioned by a [Device Factory](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/internal/spi/DeviceFactoryInterface.java) with a default NativeDeviceFactory for provisioning via the host board itself. However, all components accept an optional Device Factory parameter for provisioning the same set of components via an alternative method. This is particularly useful for GPIO expansion boards and Analog-to-Digital converters.
 
-The Raspberry Pi provides no analog input pins; attempting to create an AnalogInputDevice such as an LDR using the Raspberry Pi default native device factory would result in a runtime error (UnsupportedOperationException). However, ADC classes such as the [McpAdc](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/McpAdc.java) have been implemented as analog input device factories hence can be used to construct analog devices such as LDRs:
+The Raspberry Pi provides no analog input pins; attempting to create an AnalogInputDevice such as an LDR using the Raspberry Pi default native device factory would result in a runtime error (`UnsupportedOperationException`). However, ADC classes such as the [McpAdc](ExpansionBoards.md#mcp-adc) have been implemented as analog input device factories hence can be used to construct analog devices such as LDRs:
 
 ```java
 try (McpAdc adc = new McpAdc(McpAdc.Type.MCP3008, chipSelect); LDR ldr = new LDR(adc, pin, vRef, r1)) {
@@ -70,8 +70,8 @@ Analog input devices also provide an event notification mechanism. To control th
 
 ```java
 try (McpAdc adc = new McpAdc(McpAdc.Type.MCP3008, chipSelect); LDR ldr = new LDR(adc, pin, vRef, r1); PwmLed led = new PwmLed(ledPin)) {
-	// Detect variations of 5%
-	ldr.addListener(.05f, (event) -> led.setValue(1-event.getScaledValue()));
+	// Detect variations of 10%, get values every 50ms (the default)
+	ldr.addListener((event) -> led.setValue(1-event.getScaledValue()), .1f);
 	SleepUtil.sleepSeconds(20);
 }
 ```

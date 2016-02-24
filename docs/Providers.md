@@ -1,5 +1,7 @@
 # Providers
 
+## Device Factories
+
 The class [DeviceFactoryHelper](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/DeviceFactoryHelper.java) encapsulates the logic for accessing the configured service provider. Interfaces for implementing a new service provider are in the [com.diozero.internal.spi](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/internal/spi) package. Developing a new service provider is relatively straightforward given the provided APIs and base classes.
 
 In theory the OpenJDK Device I/O service provider should provide the best platform support, however, the JDK Device I/O library [doesn't support PWM](http://mail.openjdk.java.net/pipermail/dio-dev/2015-November/000650.html).
@@ -24,7 +26,7 @@ TODO Describe steps for creating a new provider.
 
 This library has device providers for [JDK Device I/O](https://wiki.openjdk.java.net/display/dio/Main) v1.0 (in Mercurial [master repository](http://hg.openjdk.java.net/dio/master)) and v1.1 Mercurial (in [dev repository](http://hg.openjdk.java.net/dio/dev)). Unfortunately these libraries aren't in Maven repositories; to build the JDK Device I/O v1.0 library on the Raspberry Pi:
 
-```shell
+```sh
 sudo apt-get install mercurial
 mkdir deviceio
 cd deviceio
@@ -45,7 +47,7 @@ To add Java Device I/O JAR to your local Maven repository (on your development m
 
 Similar instructions should be followed for installing v1.1, the only difference being how it is built:
 
-```shell
+```sh
 hg clone http://hg.openjdk.java.net/dio/dev
 cd dev
 export JAVA_HOME=/usr/lib/jvm/jdk-8-oracle-arm-vfp-hflt
