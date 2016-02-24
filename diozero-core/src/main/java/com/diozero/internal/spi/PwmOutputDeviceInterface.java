@@ -37,13 +37,13 @@ public interface PwmOutputDeviceInterface extends DeviceInterface {
 	/**
 	 * Get the current PWM output value (0..1)
 	 * @return Range is 0..1
-	 * @throws RuntimeIOException
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	float getValue() throws RuntimeIOException;
 	/**
 	 * Set the PWM output value (0..1)
 	 * @param value Relative value in the range 0..1
-	 * @throws RuntimeIOException
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	void setValue(float value) throws RuntimeIOException;
 }
