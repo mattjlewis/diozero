@@ -46,23 +46,25 @@ public class JdkDeviceIoI2CDevice extends AbstractDevice implements I2CDeviceInt
 	private I2CDevice device;
 
 	/**
+	 * @param key
+	 *            Unique identifier for this device
+	 * @param deviceFactory
+	 *            Device factory used to create this device
 	 * @param controllerNumber
 	 *            the number of the bus the slave device is connected to (a
-	 *            positive or zero integer) or
-	 *            {@link jdk.dio.i2cbus.I2CDeviceConfig.DEFAULT}.
+	 *            positive or zero integer).
 	 * @param address
 	 *            the address of the slave device on the bus (a positive or zero
 	 *            integer).
 	 * @param addressSize
-	 *            the address size:
-	 *            {@link jdk.dio.i2cbus.I2CDeviceConfig.ADDR_SIZE_7} bits,
-	 *            {@link jdk.dio.i2cbus.I2CDeviceConfig.ADDR_SIZE_10} bits or
-	 *            {@link jdk.dio.i2cbus.I2CDeviceConfig.DEFAULT}.
+	 *            the address size (I2CConstants.ADDR_SIZE_7 or I2CConstants.ADDR_SIZE_10)
 	 * @param clockFrequency
 	 *            the clock frequency of the slave device in Hz (a positive
-	 *            integer) or {@link jdk.dio.i2cbus.I2CDeviceConfig.DEFAULT}.
+	 *            integer).
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
-	public JdkDeviceIoI2CDevice(String key, DeviceFactoryInterface deviceFactory, int controllerNumber, int address, int addressSize, int clockFrequency) throws RuntimeIOException {
+	public JdkDeviceIoI2CDevice(String key, DeviceFactoryInterface deviceFactory,
+			int controllerNumber, int address, int addressSize, int clockFrequency) throws RuntimeIOException {
 		super(key, deviceFactory);
 		
 		this.deviceConfig = new I2CDeviceConfig(controllerNumber, address, addressSize, clockFrequency);
