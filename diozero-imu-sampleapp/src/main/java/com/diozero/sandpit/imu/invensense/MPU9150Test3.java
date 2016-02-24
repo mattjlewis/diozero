@@ -149,7 +149,7 @@ public class MPU9150Test3 implements MqttConstants {
 				Rotation r = new Rotation(q.getQ0(), q.getQ1(), q.getQ2(), q.getQ3(), true);
 				double[] ypr = null;
 				try {
-					ypr = r.getAngles(RotationOrder.XYZ);
+					ypr = r.getAngles(RotationOrder.XYZ, RotationConvention.VECTOR_OPERATOR);
 				} catch (CardanEulerSingularityException e) {
 					ypr =  new double[] { 2*Math.atan2(q.getQ1(), q.getQ0()), Math.PI/2, 0};
 					System.out.print("Singularity detected, ");
