@@ -60,7 +60,7 @@ public class DigitalOutputDevice extends GpioDevice {
 	@Override
 	public void close() {
 		Logger.debug("close()");
-		setValue(!activeHigh);
+		setOn(false);
 		try {
 			device.close();
 		} catch (IOException e) {
@@ -121,10 +121,6 @@ public class DigitalOutputDevice extends GpioDevice {
 		setValueUnsafe(!activeHigh);
 	}
 	
-	public void setOn(boolean on) throws RuntimeIOException {
-		if (on) on(); else off();
-	}
-	
 	public void toggle() throws RuntimeIOException {
 		stopOnOffLoop();
 		setValueUnsafe(!device.getValue());
@@ -135,14 +131,16 @@ public class DigitalOutputDevice extends GpioDevice {
 		return activeHigh == device.getValue();
 	}
 	
-	public void setValue(boolean value) throws RuntimeIOException {
+	public void setOn(boolean on) throws RuntimeIOException {
 		stopOnOffLoop();
-		setValueUnsafe(activeHigh & value);
+		setValueUnsafe(activeHigh & on);
 	}
 	
 	/**
 	 * Unsafe operation that has no synchronisation checks and doesn't factor in active low logic.
 	 * Included primarily for performance tests
+	 * @param value the new value
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	public void setValueUnsafe(boolean value) throws RuntimeIOException {
 		device.setValue(value);
