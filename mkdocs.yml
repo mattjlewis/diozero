@@ -6,22 +6,24 @@ site_author: Matt Lewis
 repo_url: https://github.com/mattjlewis/diozero
 
 pages:
-- Home: index.md
+- Home: 'index.md'
 - Devices:
-    - Input Devices: InputDevices.md
-    - Output Devices: OutputDevices.md
-    - Expansion Boards: ExpansionBoards.md
-    - Motor Control: MotorControl.md
-    - Other Components: OtherComponents.md
-    - API: API.md
-- Providers: Providers.md
-- License: license.md
+    - 'Input Devices': 'InputDevices.md'
+    - 'Output Devices': 'OutputDevices.md'
+    - 'Expansion Boards': 'ExpansionBoards.md'
+    - 'Motor Control': 'MotorControl.md'
+    - 'Sensor Components': 'SensorComponents.md'
+    - 'IMU Devices': 'IMUDevices.md'
+    - 'LED Strips': 'LEDStrips.md'
+    - 'API': 'API.md'
+- Providers: 'Providers.md'
+- License: 'license.md'
 
 copyright: Copyright &copy; 2016 Matt Lewis
 google_analytics: ['UA-73764647-1', 'rtd.diozero.com']
 # theme: sphinx_rtd_theme
 theme: readthedocs
 markdown_extensions:
- - admonition
- - attr_list
- - def_list
+    - admonition
+    - attr_list
+    - def_list

@@ -1,6 +1,6 @@
-# Other Components
+# Sensor Components
 
-## HC-SRO4 Ultrasonic Ranging Module
+## HC-SRO4 Ultrasonic Ranging Module {: #hc-sr04 }
 
 TODO Insert wiring diagram.
 
@@ -16,12 +16,12 @@ TODO Insert wiring diagram.
     
     * **echoGpioNum** (*int*) - GPIO pin connected to the HC-SR04 echo pin
 
-    *float* **getDistanceCm**()
+    *float* **getDistanceCm** ()
 
     : Get distance in cm
 
 
-## Bosch Sensortec BMP180
+## Bosch BMP180
 
 *class* **com.diozero.BMP180**
 
@@ -33,22 +33,22 @@ TODO Insert wiring diagram.
     
     * **mode** (*BMPMode*) - BMP operating mode (Ultra-Low Power, Standard, High Resolution, Ultra-High Resolution)
 
-    *float* **getPressure**()
+    *float* **getPressure** ()
 
     : Read the barometric pressure (in hPa) from the device
 
-    *float* **getTemperature**()
+    *float* **getTemperature** ()
 
     : Read the temperature (in &#8451;) from the device
 
 
-## TSL2561 Digital Luminosity / Lux / Light Sensor
+## TSL2561 Digital Luminosity / Lux / Light Sensor {: #tsl2561 }
 
 *class* **com.diozero.TSL2561**
 
 : Implements support for the [Adafruit](https://www.adafruit.com/products/439) Digital Luminosity / Lux / Light Sensor - [Datasheet](https://www.adafruit.com/datasheets/TSL2561.pdf).
 
-    **TSL2561**(*tsl2561Package*)
+    **TSL2561** (*tsl2561Package*)
 
     : Constructor
     
@@ -66,25 +66,7 @@ TODO Insert wiring diagram.
     
     * **gain** (*int*) - Gain value
 
-    *float* **getLuminosity**()
+    *float* **getLuminosity** ()
 
     : Get luminosity in Lux
 
-
-## NeoPixel
-
-TODO Insert wiring diagram.
-
-<dl class="class">
-<dt id="com.diozero.ws281xj.WS281x">
-<em class="property">class</em> <strong>com.diozero.ws281xj</strong><code class="descclassname">WS281x</code><span class="sig-paren">(</span><em>frequency</em>, <em>dmaNum</em>, <em>gpioNum</em>, <em>brightness</em>, <em>numPixels</em><span class="sig-paren">)</span><a href="https://github.com/mattjlewis/diozero/blob/master/diozero-ws281x-java/src/main/java/com/diozero/ws281xj/WS281x.java"><span class="viewcode-link">[source]</span></a></dt>
-<dd>Support for [WS281x / NeoPixel LEDs](https://learn.adafruit.com/adafruit-neopixel-uberguide) is available through a [JNI wrapper](WS281xNative.java) around the [rpi_ws281x C library](https://github.com/jgarff/rpi_ws281x).</dd>
-</dl>
-<dl class="method">
-<dt id="com.diozero.ws281xj.WS281x.render"><code class="descname">render</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#com.diozero.ws281xj.WS281x.render" title="Permalink to this definition">@para;</a></dt>
-<dd><p>Push any updated colours to the LED strip.</p><dd>
-</dl>
-
-## Inertial Measurement Units
-
-TODO Describe IMU API

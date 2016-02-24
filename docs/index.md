@@ -76,58 +76,55 @@ try (McpAdc adc = new McpAdc(McpAdc.Type.MCP3008, chipSelect); LDR ldr = new LDR
 }
 ```
 
-## Install
+## Getting Started
 
-TODO Describe getting started steps.
+Snapshot builds of the library are available in the [Nexus Repository Manager](https://oss.sonatype.org/index.html#nexus-search;gav~com.diozero~~~~). For convenience a ZIP of all diozero JARs will be maintained on [Google Drive](https://drive.google.com/folderview?id=0B2Kd_bs3CEYaZ3NiRkd4OXhYd3c).
 
-Snapshot builds of the library are available in the [Nexus Repository Manager](https://oss.sonatype.org/index.html#nexus-search;gav~com.diozero~~~~).
+Unfortunately Java doesn't provide a convenient deployment-time dependency manager such Python's `pip` therefore you will need to setup your classpath correctly. You can do this either via setting the `CLASSPATH` environment variable or as a command-line option (`java -cp <jar1>:<jar2>`). I've deliberately kept the dependencies to as few libraries as possible, as such this library is only dependent on [tinylog](http://www.tinylog.org) [v1.0](https://github.com/pmwmedia/tinylog/releases/download/1.0.3/tinylog-1.0.3.zip).
 
-This library uses [tinylog](http://www.tinylog.org) [v1.0](https://github.com/pmwmedia/tinylog/releases/download/1.0.3/tinylog-1.0.3.zip).
+To compile or run diozero a application you will need 4 JAR files - tinylog, diozero-core, one of the supported device provider libraries and the corresponding diozero provider wrapper.
 
-For convenience a ZIP of all diozero JARs will be made available on [Google Drive](https://drive.google.com/folderview?id=0B2Kd_bs3CEYaZ3NiRkd4OXhYd3c).
+Provider | Provider Jar | diozero Wrapper-library
+-------- | ------------ | -----------------------
+JDK Device I/O 1.0 | dio-1.0.1.jar | diozero-provider-jdkdeviceio10-<version>.jar
+JDK Device I/O 1.1 | dio-1.1.jar | diozero-provider-jdkdeviceio11-<version>.jar
+Pi4j | pi4j-core-1.1-SNAPSHOT.jar | diozero-provider-pi4j-<version>.jar
+wiringPi | pi4j-core-1.1-SNAPSHOT.jar | diozero-provider-wiringpi-<version>.jar
+pigpio | pigpioj-java-1.0.0.jar | diozero-provider-pigio-<version>.jar
+
+To get started I recommend first looking at the classes in [com.diozero.sampleapps](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/sampleapps/). To run the [LEDTest](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/sampleapps/LEDTest.java) sample application using the pigpioj provider:
+
+Setting the CLASSPATH environment variable:
+```sh
+CLASSPATH=tinylog-1.0.3.jar:diozero-core-0.3-SNAPSHOT.jar:diozero-provider-pigpio-0.3-SNAPSHOT.jar:pigpioj-java-1.0.0.jar; export CLASSPATH
+sudo java com.diozero.sampleapps.LEDTest 12
+```
+
+Setting the classpath via the command-line:
+```sh
+sudo java -cp tinylog-1.0.3.jar:diozero-core-0.3-SNAPSHOT.jar:diozero-provider-pigpio-0.3-SNAPSHOT.jar:pigpioj-java-1.0.0.jar com.diozero.sampleapps.LEDTest 12
+```
 
 ## Devices
 
+This library provides support for a growing number of GPIO / I2C / SPI connected components and devices, I have categorised them as follows:
+
 + [Input Devices](InputDevices.md)
-    - Digital Input Devices
-        + Button
-        + PIR Motion Sensor
-        + Line Sensor
-    - Analog Input Devices
-        + Light Dependent Resistor
-        + TMP36 Temperature Sensor
-        + Potentiometer
-        + Sharp GP2Y0A21YK Distance Sensor
+    - [Digital](InputDevices.md#digital-input-devices) and [Analog](InputDevices.md#analog-input-devices)
 + [Output Devices](OutputDevices.md)
-    - Digital LED
-    - Buzzer
-    - PWM Output
-    - PWM LED
-    - RGB LED
-+ [Expansion Boards](ExpansionBoards.md)
-    - MCP3008 Analog-to-Digital Converter
-    - MCP23017 GPIO Expansion Board
-    - PCA9685 16-channel 12-bit PWM Controller (Adafruit PWM Servo Driver)
-+ [Motor Control](MotorControl.md)
-    - CamJam EduKit #3 Motor Controller Board
-    - Ryanteck RPi Motor Controller Board
-    - Toshiba TB6612FNG Dual Motor Driver
-+ [Other Components](OtherComponents.md)
-    - HC-SR04 Ultrasonic Distance Sensor
-    - BMP180 Temperature and Pressure Sensor
-    - TSL2561 Luminosity Sensor
-    - InvenSense MPU-9150 9-axis MotionTracking Device
-    - WS281x / NeoPixel LEDs
-+ [API](API.md)
-    - Analog Input Device
-    - Digital Input Device
-    - Motors (Digital and PWM)
-    - Digital Output Device
-    - I2C Device Support
-    - SPI Device Support
-    - PWM Output Device
-    - Smoothed Input Device
-    - Waitable Input Device
+    - [Digital](OutputDevices.md#digital-led) and [PWM](OutputDevices.md#pwm-led)
++ [Expansion Boards](ExpansionBoards.md) for adding additional GPIO / Analog / PWM pins
+    - [Microchip Analog to Digital Converters](ExpansionBoards.md#microchip-analog-to-digital-converters), [Microchip GPIO Expansion Board](ExpansionBoards.md#microchip-gpio-expansion-board), [PWM / Server Driver](ExpansionBoards.md#pwm-servo-driver)
++ [Motor Control](MotorControl.md) (support for common motor controller boards)
+    - [CamJam EduKit](MotorControl.md#camjam-edukit), [Ryanteck](MotorControl.md#ryanteck), [Toshiba TB6612FNG](MotorControl.md#toshiba-tb6612fng)
++ [Sensor Components](SensorComponents.md) (support for specific sensors, e.g. temperature, pressure, distance, luminosity)
+    - [HC-SRO4 Ultrasonic Ranging Module](SensorComponents.md#hc-sr04), [Bosch BMP180](SensorComponents.md#bosch-bmp180), [TSL2561 Light Sensor](SensorComponents.md#tsl2561)
++ [API](API.md) for lower-level interactions
+    - [Input](API.md#input-devices), [Output](API.md#output-devices), [I2C](API.md#i2c-support), [SPI](API.md#spi-support)
++ [IMU Devices](IMUDevices.md) Work-in-progress API for interacting with Inertial Measurement Units such as the InvenSense MPU-9150 and the Analog Devices ADXL345
+    - [API](IMUDevices.md#api), [Supported Devices](IMUDevices.md#supported-devices)
++ [LED Strips](LEDStrips.md) Support for LED strips (WS2811B / WS2812B / Adafruit NeoPixel)
+    - [API](LEDStrips.md), [Supported Devices](LEDStrips.md#supported-devices)
 
 ## Performance
 

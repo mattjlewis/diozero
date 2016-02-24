@@ -24,7 +24,7 @@ try (LED led = new LED(pin)) {
 
 *class* **com.diozero.LED**
 
-: Extends [DigitalOutputDevice](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/DigitalOutputDevice.java) and provides utility methods for controlling a Light Emitting Diode (LED).
+: Extends [DigitalOutputDevice](API.md#digital-output-device) and provides utility methods for controlling a Light Emitting Diode (LED). [Source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/LED.java).
 
     **LED** (*pinNumber*)
 

@@ -1,16 +1,22 @@
 # API
 
-## Analog Input Device
+## Input Devices
 
-## Digital Input Device
+### Digital Input Device
 
-## Motors (Digital and PWM)
+### Analog Input Device
 
-## Digital Output Device
+### Smoothed Input Device
+
+### Waitable Input Device
+
+## Output Devices
+
+### Digital Output Device
 
 *class* **com.diozero.api.DigitalOutputDevice**
 
-: Extends GpioDevice to provide generic digital (on/off) output control.
+: Extends GpioDevice to provide generic digital (on/off) output control. [Source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/DigitalOutputDevice.java)
 
     **DigitalOutputDevice** (*pinNumber*, *activeHigh=true*, *initialValue=false*)
     
@@ -50,13 +56,10 @@
     
     * **value** (*boolean*) - New value, true == on, false == off.
 
+### PWM Output Device
 
-## I2C Device Support
+### Motors (Digital and PWM)
 
-## SPI Device Support
+## I2C Support
 
-## PWM Output Device
-
-## Smoothed Input Device
-
-## Waitable Input Device
+## SPI Support
