@@ -94,32 +94,27 @@ public class BMP180 implements TemperaturePressureSensorInterface, Closeable {
 	private BMPMode mode;
 	private I2CDevice i2cDevice;
 	
-	public BMP180() throws RuntimeIOException {
-		this(I2CConstants.BUS_1, I2CConstants.DEFAULT_CLOCK_FREQUENCY);
+	/**
+	 * Constructor
+	 * @param mode BMP180 operating mode (low power .. ultra-high resolution)
+	 * @throws RuntimeIOException if an I/O error occurs
+	 **/
+	public BMP180(BMPMode mode) throws RuntimeIOException {
+		this(I2CConstants.BUS_1, I2CConstants.DEFAULT_CLOCK_FREQUENCY, mode);
 	}
 	
-	public BMP180(int controllerNumber, int clockFrequency) throws RuntimeIOException {
+	public BMP180(int controllerNumber, int clockFrequency, BMPMode mode) throws RuntimeIOException {
 		i2cDevice = new I2CDevice(controllerNumber, BMP180_ADDR, I2CConstants.ADDR_SIZE_7, clockFrequency);
+		
+		this.mode = mode;
 	}
 
 	/**
 	 * This method reads the calibration data common for the Temperature sensor
 	 * and Barometer sensor included in the BMP180
+	 * @throws RuntimeIOException if an I/O error occurs
 	 **/
-	public void init(BMPMode mode) throws RuntimeIOException {
-		this.mode = mode;
-		
-		getCalibrationData();
-	}
-
-	/**
-	 * Method for reading the calibration data. Do not worry too much about this
-	 * method. Normally this information is given in the device information
-	 * sheet.
-	 *
-	 * @throws RuntimeIOException
-	 */
-	private void getCalibrationData() throws RuntimeIOException {
+	public void readCalibrationData() throws RuntimeIOException {
 		// Read all of the calibration data into a byte array
 		ByteBuffer calibData = ByteBuffer.allocateDirect(CALIBRATION_BYTES);
 		i2cDevice.read(EEPROM_START, I2CConstants.SUB_ADDRESS_SIZE_1_BYTE, calibData);
@@ -194,10 +189,10 @@ public class BMP180 implements TemperaturePressureSensorInterface, Closeable {
 	/**
 	 * Read the barometric pressure (in hPa) from the device.
 	 *
-	 * @return double Pressure measurement in hPa
+	 * @return Pressure measurement in hPa
 	 */
 	@Override
-	public double getPressure() throws RuntimeIOException {
+	public float getPressure() throws RuntimeIOException {
 		int sampling_mode = mode.getSamplingMode();
 		int UT = readRawTemperature();
 		int UP = readRawPressure();
@@ -240,7 +235,7 @@ public class BMP180 implements TemperaturePressureSensorInterface, Closeable {
 	 * sampling mode Ultra low power: 4.5 ms minimum conversion delay Standard:
 	 * 7.5 ms High Resolution: 13.5 ms Ultra high Resolution: 25.5 ms
 	 */
-	public enum BMPMode {
+	public static enum BMPMode {
 
 		ULTRA_LOW_POWER(0, 5), STANDARD(1, 8), HIGH_RESOLUTION(2, 14), ULTRA_HIGH_RESOLUTION(3, 26);
 

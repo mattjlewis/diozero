@@ -15,27 +15,27 @@ import com.diozero.internal.spi.GpioAnalogInputDeviceInterface;
 import com.diozero.util.RuntimeIOException;
 
 public class McpAdc extends AbstractDeviceFactory implements AnalogInputDeviceFactoryInterface, Closeable {
-	/** @see http://ww1.microchip.com/downloads/en/DeviceDoc/21293C.pdf */
+	/** @see <a href="http://ww1.microchip.com/downloads/en/DeviceDoc/21293C.pdf">MCP3001</a> */
 	public static final Type MCP3001 = Type.MCP3001;
-	/** @see http://ww1.microchip.com/downloads/en/DeviceDoc/21294E.pdf */
+	/** @see <a href="http://ww1.microchip.com/downloads/en/DeviceDoc/21294E.pdf">MCP3002</a> */
 	public static final Type MCP3002 = Type.MCP3002;
-	/** @see http://ww1.microchip.com/downloads/en/DeviceDoc/21295d.pdf */
+	/** @see <a href="http://ww1.microchip.com/downloads/en/DeviceDoc/21295d.pdf">MCP3004</a> */
 	public static final Type MCP3004 = Type.MCP3004;
-	/** @see http://ww1.microchip.com/downloads/en/DeviceDoc/21295d.pdf */
+	/** @see <a href="http://ww1.microchip.com/downloads/en/DeviceDoc/21295d.pdf">MCP3008</a> */
 	public static final Type MCP3008 = Type.MCP3008;
-	/** @see http://ww1.microchip.com/downloads/en/DeviceDoc/21290F.pdf */
+	/** @see <a href="http://ww1.microchip.com/downloads/en/DeviceDoc/21290F.pdf">MCP3201</a> */
 	public static final Type MCP3201 = Type.MCP3201;
-	/** @see http://ww1.microchip.com/downloads/en/DeviceDoc/21034F.pdf */
+	/** @see <a href="http://ww1.microchip.com/downloads/en/DeviceDoc/21034F.pdf">MCP3202</a> */
 	public static final Type MCP3202 = Type.MCP3202;
-	/** @see http://ww1.microchip.com/downloads/en/DeviceDoc/21298e.pdf */
+	/** @see <a href="http://ww1.microchip.com/downloads/en/DeviceDoc/21298e.pdf">MCP3204</a> */
 	public static final Type MCP3204 = Type.MCP3204;
-	/** @see http://ww1.microchip.com/downloads/en/DeviceDoc/21298e.pdf */
+	/** @see <a href="http://ww1.microchip.com/downloads/en/DeviceDoc/21298e.pdf">MCP3208</a> */
 	public static final Type MCP3208 = Type.MCP3208;
-	/** @see http://ww1.microchip.com/downloads/en/DeviceDoc/21700E.pdf */
+	/** @see <a href="http://ww1.microchip.com/downloads/en/DeviceDoc/21700E.pdf">MCP3301</a> */
 	public static final Type MCP3301 = Type.MCP3301;
-	/** @see http://ww1.microchip.com/downloads/en/DeviceDoc/21697F.pdf */
+	/** @see <a href="http://ww1.microchip.com/downloads/en/DeviceDoc/21697F.pdf">MCP3302</a> */
 	public static final Type MCP3302 = Type.MCP3302;
-	/** @see http://ww1.microchip.com/downloads/en/DeviceDoc/21697F.pdf */
+	/** @see <a href="http://ww1.microchip.com/downloads/en/DeviceDoc/21697F.pdf">MCP3304</a> */
 	public static final Type MCP3304 = Type.MCP3304;
 	
 	private Type type;
@@ -160,9 +160,9 @@ public class McpAdc extends AbstractDeviceFactory implements AnalogInputDeviceFa
 	// TODO Support for differential mode
 	/**
 	 * Read the analog value in the range 0..1 or -1..1 (if the ADC type is signed)
-	 * @param adcPin
-	 * @return
-	 * @throws RuntimeIOException
+	 * @param adcPin Pin on the MCP device
+	 * @return the unscaled value (-1..1)
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	public float getValue(int adcPin) throws RuntimeIOException {
 		return getRawValue(adcPin, false) / (float)type.range;
@@ -170,6 +170,7 @@ public class McpAdc extends AbstractDeviceFactory implements AnalogInputDeviceFa
 
 	/**
 	 * Device Factory SPI method
+	 * @param pinNumber Pin on the MCP device
 	 */
 	@Override
 	public GpioAnalogInputDeviceInterface provisionAnalogInputPin(int pinNumber)

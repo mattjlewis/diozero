@@ -65,8 +65,9 @@ public class HCSR04 implements DistanceSensorInterface, Closeable {
 	/**
 	 * Initialise GPIO to echo and trigger pins
 	 *
-	 * @param triggerGpioPin
-	 * @param echoGpioPin
+	 * @param triggerGpioNum GPIO connected to the HC-SR04 trigger pin
+	 * @param echoGpioNum GPIO connected to the HC-SR04 echo pin
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	public HCSR04(int triggerGpioNum, int echoGpioNum) throws RuntimeIOException {
 		// Define device for trigger pin at HCSR04
@@ -82,6 +83,7 @@ public class HCSR04 implements DistanceSensorInterface, Closeable {
 	 * Send a pulse to HCSR04 and compute the echo to obtain distance
 	 *
 	 * @return distance in cm
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	@Override
 	public float getDistanceCm() throws RuntimeIOException {

@@ -172,8 +172,8 @@ public class TSL2561 implements Closeable, LuminositySensorInterface {
 	}
 
 	/**
-	 * Enables or disables the auto-gain settings when reading data from the
-	 * sensor
+	 * Enables or disables the auto-gain settings when reading data from the sensor
+	 * @param autoGain enable/disable
 	 */
 	public void setAutoGain(boolean autoGain) {
 		this.autoGain = autoGain;
@@ -239,14 +239,6 @@ public class TSL2561 implements Closeable, LuminositySensorInterface {
 		disable();
 	}
 
-	/**
-	 * Enables or disables the auto-gain settings when reading data from the
-	 * sensor
-	 */
-	public void enableAutoGain(boolean enable) {
-		autoGain = enable;
-	}
-
 	void setIntegrationTime(int time) throws RuntimeIOException {
 		// Enable the device by setting the control bit to 0x03
 		enable();
@@ -262,6 +254,8 @@ public class TSL2561 implements Closeable, LuminositySensorInterface {
 
 	/**
 	 * Adjusts the gain on the TSL2561 (adjusts the sensitivity to light)
+	 * @param gain gain value
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	public void setGain(int gain) throws RuntimeIOException {
 		// Enable the device by setting the control bit to 0x03
