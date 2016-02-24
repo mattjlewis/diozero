@@ -95,6 +95,7 @@ public class PigpioJDigitalInputDevice extends AbstractInputDevice<DigitalPinEve
 
 	@Override
 	public void closeDevice() throws RuntimeIOException {
+		Logger.debug("closeDevice()");
 		// No GPIO close method in pigpio
 		removeListener();
 	}
