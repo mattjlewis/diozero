@@ -119,7 +119,8 @@ public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFac
 	
 	/**
 	 * Sets the PWM frequency
-	 * @param freq desired frequency. 40Hz to 1000Hz using internal 25MHz oscillator
+	 * @param pwmFrequency desired frequency. 40Hz to 1000Hz using internal 25MHz oscillator
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	public void setPwmFreq(int pwmFrequency) throws RuntimeIOException {
 		if (pwmFrequency < MIN_PWM_FREQUENCY || pwmFrequency > MAX_PWM_FREQUENCY) {
@@ -148,11 +149,11 @@ public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFac
 	}
 
 	/**
-	 * Set PWM output on a specific channel, alue must be 0..1
+	 * Set PWM output on a specific channel, value must be 0..1
 	 * 
-	 * @param channel
+	 * @param channel PWM channel
 	 * @param value Must be 0..1
-	 * @throws RuntimeIOException
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	public void setValue(int channel, double value) throws RuntimeIOException {
 		if (value < 0 || value > 1) {
@@ -185,12 +186,16 @@ public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFac
 
 	/**
 	 * Sets a single PWM channel
-	 * Example 1: (assumes that the LED0 output is used and (delay time) + (PWM duty cycle) <= 100 %)
+	 * Example 1: (assumes that the LED0 output is used and (delay time) + (PWM duty cycle) &lt;= 100 %)
 	 * Delay time = 10 %; PWM duty cycle = 20 % (LED on time = 20 %; LED off time = 80 %).
 	 * Delay time = 10 % = 409.6 ~ 410 counts
 	 * Since the counter starts at 0 and ends at 4095, we will subtract 1, so delay time = 409 counts
 	 * LED on time = 20 % = 819.2 ~ 819 counts
 	 * LED off time = (decimal 409 + 819 = 1228)
+	 * @param channel PWM channel
+	 * @param on on time
+	 * @param off off time
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	public void setPwm(int channel, int on, int off) throws RuntimeIOException {
 		validateChannel(channel);
@@ -230,7 +235,12 @@ public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFac
 		}
 	}
 
-	/** Sets a all PWM channels */
+	/**
+	 * Sets a all PWM channels
+	 * @param on on time
+	 * @param off off time
+	 * @throws RuntimeIOException if an I/O error occurs
+	 */
 	public void setAllPwm(int on, int off) throws RuntimeIOException {
 		validateOnOff(on, off);
 		// TODO Replace with writeShort()?
@@ -246,9 +256,9 @@ public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFac
 	 * Set the pulse duration (micro-seconds)
 	 * E.g. For TowerPro SG90 servo pulse width range = 500-2400 us
 	 * TowerPro SG5010 servo pulse width range = 1ms-2ms
-	 * @param channel
+	 * @param channel PWM channel
 	 * @param pulseWidthMs The desired pulse width in milli-seconds
-	 * @throws RuntimeIOException
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	public void setServoPulse(int channel, double pulseWidthMs) throws RuntimeIOException {
 		int pulse = ServoUtil.calcServoPulse(pulseWidthMs, pulseMsPerBit);

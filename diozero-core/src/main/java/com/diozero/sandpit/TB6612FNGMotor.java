@@ -35,9 +35,9 @@ import com.diozero.util.RuntimeIOException;
 
 /**
  * Bi-directional motor controlled by a single PWM pin and separate forward / backward GPIO pins
- * Toshiba TB6612FNG Dual Motor Driver such as this one from Pololu: https://www.pololu.com/product/713
- * Turn forward, set pin 1 to HIGH, pin 2 to LOW, and PWM to >0
- * Turn backward, set pin 1 to LOW, pin 2 to HIGH, PWM to >0
+ * Toshiba TB6612FNG Dual Motor Driver such as @see <a href="https://www.pololu.com/product/713">this one from Pololu</a>
+ * Turn forward, set pin 1 to HIGH, pin 2 to LOW, and PWM to &gt;0
+ * Turn backward, set pin 1 to LOW, pin 2 to HIGH, PWM to &gt;0
  */
 public class TB6612FNGMotor implements MotorInterface {
 	private DigitalOutputDevice motorForwardControlPin;
@@ -63,7 +63,7 @@ public class TB6612FNGMotor implements MotorInterface {
 	/**
 	 * @param speed
 	 *            Range 0..1
-	 * @throws RuntimeIOException
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	@Override
 	public void forward(float speed) throws RuntimeIOException {
@@ -75,7 +75,7 @@ public class TB6612FNGMotor implements MotorInterface {
 	/**
 	 * @param speed
 	 *            Range 0..1
-	 * @throws RuntimeIOException
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	@Override
 	public void backward(float speed) throws RuntimeIOException {
@@ -93,7 +93,7 @@ public class TB6612FNGMotor implements MotorInterface {
 
 	/**
 	 * Reverse direction of the motors
-	 * @throws RuntimeIOException
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	@Override
 	public void reverse() throws RuntimeIOException {
@@ -103,6 +103,7 @@ public class TB6612FNGMotor implements MotorInterface {
 	/**
 	 * Represents the speed of the motor as a floating point value between -1
 	 * (full speed backward) and 1 (full speed forward)
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	@Override
 	public float getValue() throws RuntimeIOException {
@@ -115,7 +116,7 @@ public class TB6612FNGMotor implements MotorInterface {
 	 * Set the speed of the motor as a floating point value between -1 (full
 	 * speed backward) and 1 (full speed forward)
 	 * @param value Range -1 .. 1. Positive numbers for forward, Negative numbers for backward
-	 * @throws RuntimeIOException
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	@Override
 	public void setValue(float value) throws RuntimeIOException {
