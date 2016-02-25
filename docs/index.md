@@ -135,6 +135,8 @@ sudo groovy -cp $CLASSPATH test.groovy
     
     `groovy: JAVA_HOME is not defined correctly, can not execute: /usr/lib/jvm/default-java/bin/java`
     
+    I tried setting JAVA_HOME in /etc/environment and /etc/profile.d/jdk.sh to no affect. Eventually the following fixed it for me. Please let me know if there is a better way to fix this issue.
+    
     ```sh
     ln -s /usr/lib/jvm/jdk-8-oracle-arm32-vfp-hflt /usr/lib/jvm/default-java
     ```
