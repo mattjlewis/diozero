@@ -29,7 +29,7 @@ package com.diozero.internal.provider.pigpioj;
 
 import org.pmw.tinylog.Logger;
 
-import com.diozero.api.DigitalPinEvent;
+import com.diozero.api.DigitalInputEvent;
 import com.diozero.api.GpioEventTrigger;
 import com.diozero.api.GpioPullUpDown;
 import com.diozero.internal.spi.AbstractInputDevice;
@@ -39,7 +39,7 @@ import com.diozero.pigpioj.PigpioCallback;
 import com.diozero.pigpioj.PigpioGpio;
 import com.diozero.util.RuntimeIOException;
 
-public class PigpioJDigitalInputDevice extends AbstractInputDevice<DigitalPinEvent> implements GpioDigitalInputDeviceInterface, PigpioCallback {
+public class PigpioJDigitalInputDevice extends AbstractInputDevice<DigitalInputEvent> implements GpioDigitalInputDeviceInterface, PigpioCallback {
 	private int pinNumber;
 	private int edge;
 
@@ -143,6 +143,6 @@ public class PigpioJDigitalInputDevice extends AbstractInputDevice<DigitalPinEve
 					Integer.valueOf(pin), Integer.valueOf(pinNumber));
 		}
 		
-		valueChanged(new DigitalPinEvent(pin, epochTime, nanoTime, value));
+		valueChanged(new DigitalInputEvent(pin, epochTime, nanoTime, value));
 	}
 }

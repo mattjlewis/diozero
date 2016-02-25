@@ -37,7 +37,7 @@ import org.pmw.tinylog.Logger;
 import com.diozero.api.*;
 import com.diozero.util.SleepUtil;
 
-public class SmoothedInputTest implements InputEventListener<DigitalPinEvent> {
+public class SmoothedInputTest implements InputEventListener<DigitalInputEvent> {
 	@Test
 	public void test() {
 		int pin = 1;
@@ -50,7 +50,7 @@ public class SmoothedInputTest implements InputEventListener<DigitalPinEvent> {
 				public void run() {
 					long nano_time = System.nanoTime();
 					long now = System.currentTimeMillis();
-					device.valueChanged(new DigitalPinEvent(pin, now, nano_time, true));
+					device.valueChanged(new DigitalInputEvent(pin, now, nano_time, true));
 				}
 			};
 			
@@ -74,7 +74,7 @@ public class SmoothedInputTest implements InputEventListener<DigitalPinEvent> {
 	}
 
 	@Override
-	public void valueChanged(DigitalPinEvent event) {
+	public void valueChanged(DigitalInputEvent event) {
 		Logger.debug("valueChanged({})", event);
 	}
 }

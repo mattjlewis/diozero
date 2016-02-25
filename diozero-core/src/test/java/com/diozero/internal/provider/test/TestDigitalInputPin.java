@@ -26,7 +26,7 @@ package com.diozero.internal.provider.test;
  * #L%
  */
 
-import com.diozero.api.DigitalPinEvent;
+import com.diozero.api.DigitalInputEvent;
 import com.diozero.api.GpioEventTrigger;
 import com.diozero.api.GpioPullUpDown;
 import com.diozero.internal.spi.AbstractInputDevice;
@@ -34,7 +34,7 @@ import com.diozero.internal.spi.DeviceFactoryInterface;
 import com.diozero.internal.spi.GpioDigitalInputDeviceInterface;
 import com.diozero.util.RuntimeIOException;
 
-public class TestDigitalInputPin extends AbstractInputDevice<DigitalPinEvent> implements GpioDigitalInputDeviceInterface {
+public class TestDigitalInputPin extends AbstractInputDevice<DigitalInputEvent> implements GpioDigitalInputDeviceInterface {
 	private int pinNumber;
 
 	public TestDigitalInputPin(String key, DeviceFactoryInterface deviceFactory, int pinNumber, GpioPullUpDown pud, GpioEventTrigger trigger) {

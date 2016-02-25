@@ -28,7 +28,7 @@ package com.diozero.internal.provider.wiringpi;
 
 import org.pmw.tinylog.Logger;
 
-import com.diozero.api.DigitalPinEvent;
+import com.diozero.api.DigitalInputEvent;
 import com.diozero.api.GpioEventTrigger;
 import com.diozero.api.GpioPullUpDown;
 import com.diozero.internal.spi.AbstractInputDevice;
@@ -39,7 +39,7 @@ import com.pi4j.wiringpi.Gpio;
 import com.pi4j.wiringpi.GpioInterruptCallback;
 import com.pi4j.wiringpi.GpioUtil;
 
-public class WiringPiDigitalInputDevice extends AbstractInputDevice<DigitalPinEvent>
+public class WiringPiDigitalInputDevice extends AbstractInputDevice<DigitalInputEvent>
 implements GpioDigitalInputDeviceInterface, GpioInterruptCallback {
 	private int pinNumber;
 	private int edge;
@@ -128,7 +128,7 @@ implements GpioDigitalInputDeviceInterface, GpioInterruptCallback {
 		long nano_time = System.nanoTime();
 		try {
 			// Really don't like that the callback doesn't include the value, never mind the timestamps
-			valueChanged(new DigitalPinEvent(pin, System.currentTimeMillis(), nano_time, getValue()));
+			valueChanged(new DigitalInputEvent(pin, System.currentTimeMillis(), nano_time, getValue()));
 		} catch (RuntimeIOException e) {
 			Logger.error(e, "Error invoking getValue(): {}", e);
 		}

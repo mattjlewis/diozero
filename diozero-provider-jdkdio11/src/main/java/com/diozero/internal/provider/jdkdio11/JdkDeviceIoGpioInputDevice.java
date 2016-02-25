@@ -31,7 +31,7 @@ import java.io.IOException;
 
 import org.pmw.tinylog.Logger;
 
-import com.diozero.api.DigitalPinEvent;
+import com.diozero.api.DigitalInputEvent;
 import com.diozero.api.GpioEventTrigger;
 import com.diozero.api.GpioPullUpDown;
 import com.diozero.internal.spi.AbstractInputDevice;
@@ -43,7 +43,7 @@ import jdk.dio.DeviceConfig;
 import jdk.dio.DeviceManager;
 import jdk.dio.gpio.*;
 
-public class JdkDeviceIoGpioInputDevice extends AbstractInputDevice<DigitalPinEvent>
+public class JdkDeviceIoGpioInputDevice extends AbstractInputDevice<DigitalInputEvent>
 implements GpioDigitalInputDeviceInterface, PinListener {
 	private GPIOPinConfig pinConfig;
 	private GPIOPin pin;
@@ -129,7 +129,7 @@ implements GpioDigitalInputDeviceInterface, PinListener {
 		if (debounceTimeMillis == 0) {
 			lastPinEventTime = event.getTimeStamp();
 
-			valueChanged(new DigitalPinEvent(pinConfig.getPinNumber(),
+			valueChanged(new DigitalInputEvent(pinConfig.getPinNumber(),
 					event.getTimeStamp(), nano_time, event.getValue()));
 		} else {
 			synchronized (this) {
@@ -139,7 +139,7 @@ implements GpioDigitalInputDeviceInterface, PinListener {
 				if ((this_pin_event_time - lastPinEventTime) > debounceTimeMillis) {
 					lastPinEventTime = this_pin_event_time;
 	
-					valueChanged(new DigitalPinEvent(pinConfig.getPinNumber(),
+					valueChanged(new DigitalInputEvent(pinConfig.getPinNumber(),
 							event.getTimeStamp(), nano_time, event.getValue()));
 				}
 			}
