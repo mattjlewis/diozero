@@ -56,7 +56,7 @@ import com.diozero.util.RuntimeIOException;
  * Address Pointer can initially point to either address in the register pair.
  */
 public class MCP23017 extends AbstractDeviceFactory
-implements GpioDeviceFactoryInterface, InputEventListener<DigitalPinEvent>, Closeable {
+implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Closeable {
 	// Default I2C address
 	private static final int DEVICE_ADDRESS = 0x20;
 	private static final String DEVICE_NAME = "MCP23017";
@@ -189,11 +189,11 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalPinEvent>, Clos
 	/** Slew Rate control bit for SDA output
 	 * 1 = Slew rate disabled.
 	 * 0 = Slew rate enabled */
-	private static final byte IOCON_DISSLW_BIT = 4;
+	//private static final byte IOCON_DISSLW_BIT = 4;
 	/** Hardware Address Enable bit (MCP23S17 only). Address pins are always enabled on MCP23017
 	 * 1 = Enables the MCP23S17 address pins.
 	 * 0 = Disables the MCP23S17 address pins */
-	private static final byte IOCON_HAEN_BIT = 3;
+	//private static final byte IOCON_HAEN_BIT = 3;
 	/** This bit configures the INT pin as an open-drain output
 	 * 1 = Open-drain output (overrides the INTPOL bit).
 	 * 0 = Active driver output (INTPOL bit sets the polarity) */
@@ -467,11 +467,11 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalPinEvent>, Clos
 
 	@Override
 	@SuppressWarnings("resource")
-	public void valueChanged(DigitalPinEvent event) {
+	public void valueChanged(DigitalInputEvent event) {
 		Logger.debug("valueChanged({})", event);
 		
 		if (! event.getValue()) {
-			Logger.debug("valueChanged(): value was false - ignoring");
+			Logger.info("valueChanged(): value was false - ignoring");
 			return;
 		}
 		
@@ -504,7 +504,7 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalPinEvent>, Clos
 				for (byte bit=0; bit<7; bit++) {
 					if (BitManipulation.isBitSet(intf[0], bit)) {
 						boolean value = BitManipulation.isBitSet(intcap[0], bit);
-						DigitalPinEvent e = new DigitalPinEvent(bit, event.getEpochTime(), event.getNanoTime(), value);
+						DigitalInputEvent e = new DigitalInputEvent(bit, event.getEpochTime(), event.getNanoTime(), value);
 						// Notify the appropriate input device
 						MCP23017DigitalInputDevice device = getInputDevice(bit);
 						if (device != null) {
@@ -515,7 +515,7 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalPinEvent>, Clos
 				for (byte bit=0; bit<7; bit++) {
 					if (BitManipulation.isBitSet(intf[1], bit)) {
 						boolean value = BitManipulation.isBitSet(intcap[1], bit);
-						DigitalPinEvent e = new DigitalPinEvent(bit+PINS_PER_PORT, event.getEpochTime(), event.getNanoTime(), value);
+						DigitalInputEvent e = new DigitalInputEvent(bit+PINS_PER_PORT, event.getEpochTime(), event.getNanoTime(), value);
 						// Notify the appropriate input device
 						MCP23017DigitalInputDevice device = getInputDevice((byte)(bit+8));
 						if (device != null) {

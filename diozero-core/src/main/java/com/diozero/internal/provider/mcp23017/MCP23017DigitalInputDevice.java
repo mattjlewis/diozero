@@ -30,13 +30,13 @@ package com.diozero.internal.provider.mcp23017;
 import org.pmw.tinylog.Logger;
 
 import com.diozero.MCP23017;
-import com.diozero.api.DigitalPinEvent;
+import com.diozero.api.DigitalInputEvent;
 import com.diozero.api.GpioEventTrigger;
 import com.diozero.internal.spi.AbstractInputDevice;
 import com.diozero.internal.spi.GpioDigitalInputDeviceInterface;
 import com.diozero.util.RuntimeIOException;
 
-public class MCP23017DigitalInputDevice extends AbstractInputDevice<DigitalPinEvent> implements GpioDigitalInputDeviceInterface {
+public class MCP23017DigitalInputDevice extends AbstractInputDevice<DigitalInputEvent> implements GpioDigitalInputDeviceInterface {
 	private MCP23017 mcp23017;
 	private int pinNumber;
 	private GpioEventTrigger trigger;

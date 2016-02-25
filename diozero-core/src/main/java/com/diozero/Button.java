@@ -74,13 +74,13 @@ public class Button extends DigitalInputDevice {
 	}
 	
 	@Override
-	public void valueChanged(DigitalPinEvent event) {
+	public void valueChanged(DigitalInputEvent event) {
 		Logger.debug("valuechanged(" + event + ")");
 		
-		if (pressedAction != null && activeHigh == event.getValue()) {
+		if (pressedAction != null && event.isActive()) {
 			pressedAction.action();
 		}
-		if (releasedAction != null && activeHigh != event.getValue()) {
+		if (releasedAction != null && !event.isActive()) {
 			releasedAction.action();
 		}
 		super.valueChanged(event);

@@ -26,13 +26,13 @@ package com.diozero.internal.spi;
  * #L%
  */
 
-import com.diozero.api.DigitalPinEvent;
+import com.diozero.api.DigitalInputEvent;
 import com.diozero.api.InputEventListener;
 import com.diozero.util.RuntimeIOException;
 
 public interface GpioDigitalInputDeviceInterface extends GpioDeviceInterface {
 	boolean getValue() throws RuntimeIOException;
 	void setDebounceTimeMillis(int debounceTime);
-	void setListener(InputEventListener<DigitalPinEvent> listener);
+	void setListener(InputEventListener<DigitalInputEvent> listener);
 	void removeListener();
 }

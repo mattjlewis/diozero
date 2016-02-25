@@ -55,7 +55,7 @@ import com.diozero.util.SleepUtil;
  *  sudo java -classpath dio-zero-0.3-SNAPSHOT.jar com.diozero.sandpit.HCSR04UsingEvents 17 27
  *
  */
-public class HCSR04UsingEvents implements DistanceSensorInterface, Closeable, InputEventListener<DigitalPinEvent> {
+public class HCSR04UsingEvents implements DistanceSensorInterface, Closeable, InputEventListener<DigitalInputEvent> {
 	public static void main(String[] args) {
 		if (args.length != 2) {
 			Logger.error("Usage: {} <trigger GPIO> <echo GPIO>", HCSR04UsingEvents.class.getName());
@@ -175,7 +175,7 @@ public class HCSR04UsingEvents implements DistanceSensorInterface, Closeable, In
 	}
 	
 	@Override
-	public void valueChanged(DigitalPinEvent event) {
+	public void valueChanged(DigitalInputEvent event) {
 		if (state == STARTING_UP || state == FINISHED) {
 			// Ignore
 			return;

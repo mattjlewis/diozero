@@ -40,7 +40,7 @@ import com.diozero.util.RuntimeIOException;
  * effectively an abstract base class.
  */
 public class WaitableDigitalInputDevice extends DigitalInputDevice {
-	protected DigitalPinEvent lastPinEvent;
+	protected DigitalInputEvent lastPinEvent;
 
 	public WaitableDigitalInputDevice(int pinNumber, GpioPullUpDown pud, GpioEventTrigger trigger) throws RuntimeIOException {
 		super(pinNumber, pud, trigger);
@@ -82,7 +82,7 @@ public class WaitableDigitalInputDevice extends DigitalInputDevice {
 	}
 
 	@Override
-	public void valueChanged(DigitalPinEvent event) {
+	public void valueChanged(DigitalInputEvent event) {
 		synchronized (this) {
 			lastPinEvent = event;
 			notify();

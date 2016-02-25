@@ -35,10 +35,10 @@ import com.diozero.util.DioZeroScheduler;
 import com.diozero.util.RuntimeIOException;
 
 /**
- * Represents a generic input device which takes its value from the mean of a
- * queue of historical values.
+ * Represents a generic input device which takes its value from the length of a
+ * queue of historical values over a specific time period.
  * 
- * This class extends 'WaitableInputDevice' with a queue which is filled by a
+ * This class extends <{@link DigitalInputDevice} with a queue which is filled by a
  * background thread which continually polls the state of the underlying
  * device. The mean of the values in the queue is compared to a threshold
  * which is used to determine the state of the 'is_active' property.
@@ -58,7 +58,7 @@ public class SmoothedInputDevice extends DigitalInputDevice {
 	 * @param threshold
 	 * 				The value above which the device will be considered "on".
 	 * @param age
-	 * 				The time in millis in which to keep items in the queue
+	 * 				The time in milliseconds to keep items in the queue.
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	public SmoothedInputDevice(int pinNumber, GpioPullUpDown pud, int threshold,
@@ -78,7 +78,7 @@ public class SmoothedInputDevice extends DigitalInputDevice {
 	}
 	
 	/**
-	 * If the number of on events exceeds this amount, then 'is_active' will return 'True'
+	 * If the number of on events younger than age exceeds this amount, then 'isActive' will return 'True'.
 	 * @return event threshold
 	 */
 	public int getThreshold() {
@@ -89,10 +89,9 @@ public class SmoothedInputDevice extends DigitalInputDevice {
 		this.threshold = threshold;
 	}
 
-
 	@Override
-	public void valueChanged(DigitalPinEvent event) {
-		if (event.getValue()) {
+	public void valueChanged(DigitalInputEvent event) {
+		if (event.isActive()) {
 			synchronized (queue) {
 				queue.add(Long.valueOf(event.getEpochTime()));
 			}
@@ -116,7 +115,7 @@ public class SmoothedInputDevice extends DigitalInputDevice {
 				queue.removeIf(predicate);
 				// Check if the number of events exceeds the threshold
 				if (queue.size() > threshold) {
-					SmoothedInputDevice.super.valueChanged(new DigitalPinEvent(pinNumber, now, nano_time, true));
+					SmoothedInputDevice.super.valueChanged(new DigitalInputEvent(pinNumber, now, nano_time, true));
 					// If an event is fired clear the queue of all events
 					queue.clear();
 				}

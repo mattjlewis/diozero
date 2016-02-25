@@ -177,6 +177,15 @@ public class PwmOutputDevice extends GpioDevice {
 	}
 	
 	// Exposed operations
+	public float getValue() throws RuntimeIOException {
+		return device.getValue();
+	}
+
+	public void setValue(float value) throws RuntimeIOException {
+		stopLoops();
+		setValueInternal(value);
+	}
+	
 	public void on() throws RuntimeIOException {
 		stopLoops();
 		setValueInternal(1);
@@ -194,14 +203,5 @@ public class PwmOutputDevice extends GpioDevice {
 	
 	public boolean isOn() throws RuntimeIOException {
 		return device.getValue() > 0;
-	}
-	
-	public float getValue() throws RuntimeIOException {
-		return device.getValue();
-	}
-
-	public void setValue(float value) throws RuntimeIOException {
-		stopLoops();
-		setValueInternal(value);
 	}
 }

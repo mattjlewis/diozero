@@ -38,7 +38,7 @@ import com.diozero.util.RuntimeIOException;
  * Represents a generic input device.
  * 
  */
-public class DigitalInputDevice extends GpioInputDevice<DigitalPinEvent> {
+public class DigitalInputDevice extends GpioInputDevice<DigitalInputEvent> {
 	protected boolean activeHigh;
 	protected GpioDigitalInputDeviceInterface device;
 	protected GpioPullUpDown pud;
@@ -72,6 +72,12 @@ public class DigitalInputDevice extends GpioInputDevice<DigitalPinEvent> {
 	
 	public boolean isActive() throws RuntimeIOException {
 		return device.getValue() == activeHigh;
+	}
+	
+	@Override
+	public void valueChanged(DigitalInputEvent event) {
+		event.setAvtiveHigh(activeHigh);
+		super.valueChanged(event);
 	}
 
 	@Override
