@@ -2,13 +2,15 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	
-	<name>Device I/O Zero - JDK Device I/O v1.0 provider</name>
-	<artifactId>diozero-provider-jdkdio11</artifactId>
 	<parent>
 		<groupId>com.diozero</groupId>
 		<artifactId>diozero-parent</artifactId>
 		<version>0.3-SNAPSHOT</version>
 	</parent>
+	
+	<name>Device I/O Zero - JDK Device I/O v1.0 provider</name>
+	<artifactId>diozero-provider-jdkdio11</artifactId>
+	<packaging>jar</packaging>
 	
 	<dependencies>
 		<dependency>

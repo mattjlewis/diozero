@@ -8,11 +8,9 @@
 		<version>0.3-SNAPSHOT</version>
 	</parent>
 	
+	<name>Device I/O Zero - Core</name>
 	<artifactId>diozero-core</artifactId>
 	<packaging>jar</packaging>
-	<name>Device I/O Zero - Core</name>
-	<description>Java Device I/O library with an API based on the Python GPIO Zero supporting multiple devices (Raspberry Pi, BeagleBone Black, ...)</description>
-	<url>https://github.com/mattjlewis/diozero</url>
 
 	<dependencies>
 		<dependency>
@@ -30,21 +28,11 @@
 			<artifactId>tinylog</artifactId>
 		</dependency>
 	</dependencies>
-	
-	<reporting>
-		<plugins>
-		</plugins>
-	</reporting>
 
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>license-maven-plugin</artifactId>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -59,6 +47,7 @@
 		        		<group>
 		        			<title>Application Program Interface</title>
 		        			<packages>com.diozero.api*</packages>
+		        			<packages>com.diozero.util</packages>
 		        		</group>
 		        		<group>
 		        			<title>Service Provider Interface</title>
@@ -69,7 +58,7 @@
 		        			<packages>com.diozero.sampleapps</packages>
 		        		</group>
 		        	</groups>
-		        	<excludePackageNames>com.diozero.internal.provider*:com.diozero.util*</excludePackageNames>
+		        	<excludePackageNames>com.diozero.internal.provider*</excludePackageNames>
 		        </configuration>
 			</plugin>
 		</plugins>
