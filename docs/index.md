@@ -105,7 +105,9 @@ Setting the classpath via the command-line:
 sudo java -cp tinylog-1.0.3.jar:diozero-core-0.3-SNAPSHOT.jar:diozero-provider-pigpio-0.3-SNAPSHOT.jar:pigpioj-java-1.0.0.jar com.diozero.sampleapps.LEDTest 12
 ```
 
-For an experience similar to Python where source code is interpreted rather than compiled try [Groovy](http://www.groovy-lang.org/) (`sudo apt-get update && sudo apt-get install groovy2`). With the `CLASSPATH` environment variable set as per the instructions above, a simple test application can be run via the command `groovy test.groovy`. For example, the LED controlled button example:
+For an experience similar to Python where source code is interpreted rather than compiled try [Groovy](http://www.groovy-lang.org/) (`sudo apt-get update && sudo apt-get install groovy2`). With the `CLASSPATH` environment variable set as per the instructions above, a simple test application can be run via the command `groovy <filename>`. There is also a Groovy shell environment `groovysh`.
+
+For Groovy equivalent of the LED controlled button example:
 
 ```groovy
 import com.diozero.Button
@@ -128,8 +130,11 @@ To run:
 sudo groovy -cp $CLASSPATH test.groovy
 ```
 
-!!! note "JAVA_HOME config"
-    I was getting the error `groovy: JAVA_HOME is not defined correctly, can not execute: /usr/lib/jvm/default-java/bin/java`, tried setting JAVA_HOME in /etc/environment and /etc/profile.d/jdk.sh to no affect. Eventually this fixed it:
+!!! note "Groovy JAVA_HOME config when running via sudo"
+    I was getting the error:
+    
+    `groovy: JAVA_HOME is not defined correctly, can not execute: /usr/lib/jvm/default-java/bin/java`
+    
     ```sh
     ln -s /usr/lib/jvm/jdk-8-oracle-arm32-vfp-hflt /usr/lib/jvm/default-java
     ```
