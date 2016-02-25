@@ -61,4 +61,15 @@ public class SleepUtil {
 		} catch (InterruptedException ex) {
 		}
 	}
+	
+	public static void pause() {
+		Object lock = new Object();
+		synchronized (lock) {
+			try {
+				lock.wait();
+			} catch (InterruptedException e) {
+				// Ignore
+			}
+		}
+	}
 }
