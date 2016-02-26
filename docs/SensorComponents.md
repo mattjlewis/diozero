@@ -70,3 +70,27 @@ TODO Insert wiring diagram.
 
     : Get luminosity in Lux
 
+## 1-Wire Temperature Sensors
+
+*class* **com.diozero.sandpit.W1ThermSensor** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/sandpit/W1ThermSensor.java)
+
+: Support for 1-wire temperature sensors such as the DS18B20. Adafruit has a good [article on connecting these](https://learn.adafruit.com/adafruits-raspberry-pi-lesson-11-ds18b20-temperature-sensing?view=all) to the Raspberry Pi. Currently supported types: DS18S20, DS1822, DS18B20, DS1825, DS28EA00, MAX31850K.
+
+    static *List&lt;W1ThermSensor&gt;* **getAvailableSensors** (*folder="/sys/bus/w1/devices"*)
+    
+    : Class-level operation to get a list of all supported 1-wire device instances currently connected.
+    
+    * **folder** (*String*) - System folder containing the devices, defaults to `"/sys/bus/w1/devices"`.
+    
+    *float* **getTemperature** ()
+    
+    : Get the temperature in &#;
+    
+    *W1TermSensor.Type* **getType** ()
+    
+    : Get the type of this 1-wire sensor instance.
+    
+    *String* **getSerialNumber** ()
+    
+    : Get the serial number for this 1-wire sensor instance.
+    

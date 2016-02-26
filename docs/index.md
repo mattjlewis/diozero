@@ -137,7 +137,7 @@ sudo groovy -cp $CLASSPATH test.groovy
     
     I tried setting JAVA_HOME in /etc/environment and /etc/profile.d/jdk.sh to no affect. Eventually the following fixed it for me. Please let me know if there is a better way to fix this issue.
     
-    ```sh
+    ```
     ln -s /usr/lib/jvm/jdk-8-oracle-arm32-vfp-hflt /usr/lib/jvm/default-java
     ```
 
@@ -154,7 +154,7 @@ This library provides support for a growing number of GPIO / I2C / SPI connected
 + [Motor Control](MotorControl.md) (support for common motor controller boards)
     - [CamJam EduKit](MotorControl.md#camjam-edukit), [Ryanteck](MotorControl.md#ryanteck), [Toshiba TB6612FNG](MotorControl.md#toshiba-tb6612fng)
 + [Sensor Components](SensorComponents.md) (support for specific sensors, e.g. temperature, pressure, distance, luminosity)
-    - [HC-SRO4 Ultrasonic Ranging Module](SensorComponents.md#hc-sr04), [Bosch BMP180](SensorComponents.md#bosch-bmp180), [TSL2561 Light Sensor](SensorComponents.md#tsl2561)
+    - [HC-SRO4 Ultrasonic Ranging Module](SensorComponents.md#hc-sr04), [Bosch BMP180](SensorComponents.md#bosch-bmp180), [TSL2561 Light Sensor](SensorComponents.md#tsl2561), [1-Wire Temperature Sensors e.g. DS18B20](SensorComponents.md#1-wire-temperature-sensors)
 + [API](API.md) for lower-level interactions
     - [Input](API.md#input-devices), [Output](API.md#output-devices), [I2C](API.md#i2c-support), [SPI](API.md#spi-support)
 + [IMU Devices](IMUDevices.md) Work-in-progress API for interacting with Inertial Measurement Units such as the InvenSense MPU-9150 and the Analog Devices ADXL345
