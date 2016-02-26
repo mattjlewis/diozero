@@ -54,7 +54,7 @@ try (McpAdc adc = new McpAdc(McpAdc.Type.MCP3008, chipSelect); LDR ldr = new LDR
 }
 ```
 
-Repeating the previous example of controlling an LED when you press a button but with components connected via an [MCP23017](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/MCP23017.java) GPIO expansion board:
+Repeating the previous example of controlling an LED when you press a button but with all devices connected via an [MCP23017](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/MCP23017.java) GPIO expansion board:
 
 ```java
 try (MCP23017 mcp23017 = new MCP23017(intAPin, intBPin);
@@ -71,7 +71,7 @@ Analog input devices also provide an event notification mechanism. To control th
 ```java
 try (McpAdc adc = new McpAdc(McpAdc.Type.MCP3008, chipSelect); LDR ldr = new LDR(adc, pin, vRef, r1); PwmLed led = new PwmLed(ledPin)) {
 	// Detect variations of 10%, get values every 50ms (the default)
-	ldr.addListener((event) -> led.setValue(1-event.getScaledValue()), .1f);
+	ldr.addListener((event) -> led.setValue(1-event.getUnscaledValue()), .1f);
 	SleepUtil.sleepSeconds(20);
 }
 ```
@@ -82,15 +82,15 @@ Snapshot builds of the library are available in the [Nexus Repository Manager](h
 
 Unfortunately Java doesn't provide a convenient deployment-time dependency manager such Python's `pip` therefore you will need to setup your classpath correctly. You can do this either via setting the `CLASSPATH` environment variable or as a command-line option (`java -cp <jar1>:<jar2>`). I've deliberately kept the dependencies to as few libraries as possible, as such this library is only dependent on [tinylog](http://www.tinylog.org) [v1.0](https://github.com/pmwmedia/tinylog/releases/download/1.0.3/tinylog-1.0.3.zip).
 
-To compile or run diozero a application you will need 4 JAR files - tinylog, diozero-core, one of the supported device provider libraries and the corresponding diozero provider wrapper.
+To compile or run a diozero application you will need 4 JAR files - tinylog, diozero-core, one of the supported device provider libraries and the corresponding diozero provider wrapper library.
 
-Provider | Provider Jar | diozero Wrapper-library
+Provider | Provider Jar | diozero wrapper-library
 -------- | ------------ | -----------------------
-JDK Device I/O 1.0 | dio-1.0.1.jar | diozero-provider-jdkdeviceio10-<version>.jar
-JDK Device I/O 1.1 | dio-1.1.jar | diozero-provider-jdkdeviceio11-<version>.jar
-Pi4j | pi4j-core-1.1-SNAPSHOT.jar | diozero-provider-pi4j-<version>.jar
-wiringPi | pi4j-core-1.1-SNAPSHOT.jar | diozero-provider-wiringpi-<version>.jar
-pigpio | pigpioj-java-1.0.0.jar | diozero-provider-pigio-<version>.jar
+JDK Device I/O 1.0 | dio-1.0.1.jar | diozero-provider-jdkdeviceio10-&lt;version&gt;.jar
+JDK Device I/O 1.1 | dio-1.1.jar | diozero-provider-jdkdeviceio11-&lt;version&gt;.jar
+Pi4j | pi4j-core-1.1-SNAPSHOT.jar | diozero-provider-pi4j-&lt;version&gt;.jar
+wiringPi | pi4j-core-1.1-SNAPSHOT.jar | diozero-provider-wiringpi-&lt;version&gt;.jar
+pigpio | pigpioj-java-1.0.0.jar | diozero-provider-pigio-&lt;version&gt;.jar
 
 To get started I recommend first looking at the classes in [com.diozero.sampleapps](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/sampleapps/). To run the [LEDTest](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/sampleapps/LEDTest.java) sample application using the pigpioj provider:
 
@@ -107,7 +107,7 @@ sudo java -cp tinylog-1.0.3.jar:diozero-core-0.3-SNAPSHOT.jar:diozero-provider-p
 
 For an experience similar to Python where source code is interpreted rather than compiled try [Groovy](http://www.groovy-lang.org/) (`sudo apt-get update && sudo apt-get install groovy2`). With the `CLASSPATH` environment variable set as per the instructions above, a simple test application can be run via the command `groovy <filename>`. There is also a Groovy shell environment `groovysh`.
 
-For Groovy equivalent of the LED controlled button example:
+A Groovy equivalent of the LED controlled button example:
 
 ```groovy
 import com.diozero.Button
