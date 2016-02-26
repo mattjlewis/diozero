@@ -30,7 +30,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.pmw.tinylog.Logger;
 
-import com.diozero.api.DeviceFactoryHelper;
+import com.diozero.internal.DeviceFactoryHelper;
 import com.diozero.internal.spi.NativeDeviceFactoryInterface;
 import com.diozero.util.RuntimeIOException;
 

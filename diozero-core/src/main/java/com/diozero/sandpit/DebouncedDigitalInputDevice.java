@@ -1,4 +1,8 @@
-package com.diozero.api;
+package com.diozero.sandpit;
+
+import com.diozero.api.GpioEventTrigger;
+import com.diozero.api.GpioPullUpDown;
+import com.diozero.api.WaitableDigitalInputDevice;
 
 /*
  * #%L

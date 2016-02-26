@@ -26,7 +26,7 @@ package com.diozero.sandpit;
  * #L%
  */
 
-import com.diozero.api.DebouncedDigitalInputDevice;
+
 import com.diozero.api.GpioPullUpDown;
 import com.diozero.util.RuntimeIOException;
 

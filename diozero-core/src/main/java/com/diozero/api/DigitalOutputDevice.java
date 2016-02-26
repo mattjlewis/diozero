@@ -30,6 +30,7 @@ import java.io.IOException;
 
 import org.pmw.tinylog.Logger;
 
+import com.diozero.internal.DeviceFactoryHelper;
 import com.diozero.internal.spi.GpioDeviceFactoryInterface;
 import com.diozero.internal.spi.GpioDigitalOutputDeviceInterface;
 import com.diozero.util.DioZeroScheduler;

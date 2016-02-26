@@ -1,4 +1,4 @@
-package com.diozero.api;
+package com.diozero.internal;
 
 /*
  * #%L

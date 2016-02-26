@@ -27,8 +27,8 @@ package com.diozero.sandpit;
  */
 
 import com.diozero.api.AnalogInputDevice;
-import com.diozero.api.DeviceFactoryHelper;
 import com.diozero.api.DistanceSensorInterface;
+import com.diozero.internal.DeviceFactoryHelper;
 import com.diozero.internal.spi.AnalogInputDeviceFactoryInterface;
 import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;

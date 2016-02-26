@@ -28,6 +28,7 @@ package com.diozero.api;
 
 import org.pmw.tinylog.Logger;
 
+import com.diozero.internal.DeviceFactoryHelper;
 import com.diozero.internal.spi.PwmOutputDeviceFactoryInterface;
 import com.diozero.util.RuntimeIOException;
 
@@ -38,13 +39,18 @@ public class Motor implements MotorInterface {
 	private PwmOutputDevice forward;
 	private PwmOutputDevice backward;
 
-	public Motor(int forwardPin, int backwardPin) throws RuntimeIOException {
-		this(DeviceFactoryHelper.getNativeDeviceFactory(), forwardPin, backwardPin);
+	public Motor(int forwardPwmPin, int backwardPwmPin) throws RuntimeIOException {
+		this(DeviceFactoryHelper.getNativeDeviceFactory(), forwardPwmPin, backwardPwmPin);
 	}
 
-	public Motor(PwmOutputDeviceFactoryInterface deviceFactory, int forwardPin, int backwardPin) throws RuntimeIOException {
-		forward = new PwmOutputDevice(deviceFactory, forwardPin, 0);
-		backward = new PwmOutputDevice(deviceFactory, forwardPin, 0);
+	public Motor(PwmOutputDeviceFactoryInterface deviceFactory, int forwardPwmPin, int backwardPwmPin) throws RuntimeIOException {
+		forward = new PwmOutputDevice(deviceFactory, forwardPwmPin, 0);
+		backward = new PwmOutputDevice(deviceFactory, forwardPwmPin, 0);
+	}
+
+	public Motor(PwmOutputDevice forward, PwmOutputDevice backward) throws RuntimeIOException {
+		this.forward = forward;
+		this.backward = backward;
 	}
 
 	@Override
@@ -63,14 +69,6 @@ public class Motor implements MotorInterface {
 	}
 
 	/**
-	 * Backward at full speed
-	 * @throws RuntimeIOException if an I/O error occurs
-	 */
-	public void backward() throws RuntimeIOException {
-		backward(1);
-	}
-
-	/**
 	 * @param speed
 	 *            Range -1..1
 	 * @throws RuntimeIOException if an I/O error occurs
@@ -79,6 +77,14 @@ public class Motor implements MotorInterface {
 	public void forward(float speed) throws RuntimeIOException {
 		backward.off();
 		forward.setValue(speed);
+	}
+
+	/**
+	 * Backward at full speed
+	 * @throws RuntimeIOException if an I/O error occurs
+	 */
+	public void backward() throws RuntimeIOException {
+		backward(1);
 	}
 
 	/**

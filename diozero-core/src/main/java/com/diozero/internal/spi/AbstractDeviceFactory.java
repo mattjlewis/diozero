@@ -28,6 +28,8 @@ package com.diozero.internal.spi;
 
 import org.pmw.tinylog.Logger;
 
+import com.diozero.internal.DeviceStates;
+
 public abstract class AbstractDeviceFactory implements DeviceFactoryInterface {
 	protected DeviceStates deviceStates;
 	

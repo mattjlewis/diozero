@@ -27,6 +27,7 @@ package com.diozero.internal.provider.test;
  */
 
 import com.diozero.api.*;
+import com.diozero.internal.DeviceStates;
 import com.diozero.internal.spi.*;
 import com.diozero.util.RuntimeIOException;
 
