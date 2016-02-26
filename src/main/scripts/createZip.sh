@@ -18,4 +18,4 @@ files="../pigpioj/pigpioj-java/target/pigpioj-java-${pigpioj_version}.jar \
 
 
 rm -f diozero-${version}.zip
-zip -j diozero-${version}.zip $files
+zip -j target/diozero-${version}.zip $files
