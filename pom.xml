@@ -16,7 +16,7 @@
 	-->
 	
 	<groupId>com.diozero</groupId>
-	<artifactId>diozero-parent</artifactId>
+	<artifactId>diozero</artifactId>
 	<version>0.3-SNAPSHOT</version>
 	<name>Device I/O Zero</name>
 	<description>Java Device I/O library with an API based on the Python GPIO Zero supporting multiple devices (Raspberry Pi, BeagleBone Black, ...)</description>
@@ -25,7 +25,7 @@
 	<packaging>pom</packaging>
 	
 	<organization>
-		<name>diozero</name>
+		<name>mattjlewis</name>
 		<url>http://www.diozero.com</url>
 	</organization>
 	
@@ -44,8 +44,12 @@
 	
 	<scm>
 		<url>https://github.com/mattjlewis/diozero.git</url>
-		<connection>scm:git:git@github.com:mattjlewis/diozero.git</connection>
-		<developerConnection>scm:git:git@github.com:mattjlewis/diozero.git</developerConnection>
+		<!-- <connection>scm:git:git@github.com:mattjlewis/diozero.git</connection>
+		<developerConnection>scm:git:git@github.com:mattjlewis/diozero.git</developerConnection> -->
+		<!-- <connection>scm:git:git://github.com/mattjlewis/diozero.git</connection>
+		<developerConnection>scm:git:git://github.com/mattjlewis/diozero.git</developerConnection> -->
+		<connection>scm:git:https://github.com/mattjlewis/diozero.git</connection>
+		<developerConnection>scm:git:https://github.com/mattjlewis/diozero.git</developerConnection>
 	</scm>
 	
 	<developers>
@@ -288,7 +292,7 @@
 					<autoVersionSubmodules>true</autoVersionSubmodules>
 					<useReleaseProfile>false</useReleaseProfile>
 					<releaseProfiles>release</releaseProfiles>
-					<goals>deploy</goals>
+					<!-- <goals>deploy</goals> -->
 				</configuration>
 			</plugin>
 			<plugin>

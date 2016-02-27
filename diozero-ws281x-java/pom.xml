@@ -3,7 +3,7 @@
 
 	<parent>
 		<groupId>com.diozero</groupId>
-		<artifactId>diozero-parent</artifactId>
+		<artifactId>diozero</artifactId>
 		<version>0.3-SNAPSHOT</version>
 	</parent>
 	
