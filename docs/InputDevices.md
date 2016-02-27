@@ -40,9 +40,9 @@ try (Button button = new Button(buttonPin, GpioPullUpDown.PULL_UP); LED led = ne
 
 ### TMP36
 
-*class* **com.diozero.TMP36** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/TMP36.java)
+*class* com.diozero.**TMP36** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/TMP36.java)
 
-: Extends [AnalogInputDevice](API.md#analog-input-device] for reading temperature values from a [TMP36 Temperature Sensor by Analog Devices](http://www.analog.com/en/products/analog-to-digital-converters/integrated-special-purpose-converters/integrated-temperature-sensors/tmp36.html).
+: Extends [AnalogInputDevice](API.md#analoginputdevice] for reading temperature values from a [TMP36 Temperature Sensor by Analog Devices](http://www.analog.com/en/products/analog-to-digital-converters/integrated-special-purpose-converters/integrated-temperature-sensors/tmp36.html).
 
     **TMP36** (*pinNumber*, *vRef*, *tempOffset*)
     
@@ -68,9 +68,9 @@ TODO Wiring diagram.
 !!! Warning "Work-in-progress"
     Still under construction hence in the sandpit package.
 
-*class* **com.diozero.sandpit.Potentiometer** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/sandpit/Potentiometer.java)
+*class* com.diozero.sandpit.**Potentiometer** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/sandpit/Potentiometer.java)
 
-: Extends [AnalogInputDevice](API.md#analog-input-device] for taking readings from a potentiometer.
+: Extends [AnalogInputDevice](API.md#analoginputdevice] for taking readings from a potentiometer.
 
 
 ### LDR
@@ -84,6 +84,6 @@ TODO Wiring diagram.
 !!! Warning "Work-in-progress"
     Not yet tested hence in the sandpit package.
 
-*class* com.diozero.sandpit.GP2Y0A21YK [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/sandpit/GP2Y0A21YK.java)
+*class* com.diozero.sandpit.**GP2Y0A21YK** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/sandpit/GP2Y0A21YK.java)
 
-: Extends [AnalogInputDevice](API.md#analog-input-device] for taking object proximity readings. 
+: Extends [AnalogInputDevice](API.md#analoginputdevice] for taking object proximity readings. 

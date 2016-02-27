@@ -4,7 +4,7 @@
 
 ### GPIODevice
 
-*class* **com.diozero.api.GPIODevice** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/GPIODevice.java)
+*class* com.diozero.api.**GPIODevice** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/GPIODevice.java)
 
 : Abstract base class for all GPIO related devices.
 
@@ -23,7 +23,7 @@
 
 ### GPIOInputDevice
 
-*class* **com.diozero.api.GPIOInputDevice** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/GPIOInputDevice.java)
+*class* com.diozero.api.**GPIOInputDevice** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/GPIOInputDevice.java)
 
 : Common base class for digital and analog input devices, extends [GPIODevice](#gpiodevice).
 
@@ -50,9 +50,9 @@
     : Remove all listeners.
 
 
-### Digital Input Device
+### DigitalInputDevice
 
-*class* **com.diozero.api.DigitalInputDevice** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/DigitalInputDevice.java)
+*class* com.diozero.api.**DigitalInputDevice** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/DigitalInputDevice.java)
 
 : Extends [GPIOInputDevice](#gpioinputdevice) to provide common support for digital devices.
 
@@ -75,11 +75,11 @@
     : Read the current on/off state for this device taking into account the pull up / down configuration. If the input is pulled up **isActive**() will return `true` when when the value is `false`.
 
 
-### Waitable Input Device
+### WaitableInputDevice
 
-*class* **com.diozero.api.WaitableInputDevice** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/WaitableInputDevice.java)
+*class* com.diozero.api.**WaitableInputDevice** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/WaitableInputDevice.java)
 
-: Extends [DigitalInputDevice](#digital-input-device) to support waiting for state changes.
+: Extends [DigitalInputDevice](#digitalinputdevice) to support waiting for state changes.
 
     **WaitableInputDevice** (*pinNumber*, *pud*, *trigger*)
     
@@ -104,11 +104,11 @@
     * **timeout** (*int*) - Timeout value in milliseconds. Values &lt;= 0 represent an indefinite amount of time. Defaults to 0.
 
 
-### Smoothed Input Device
+### SmoothedInputDevice
 
-*class* **com.diozero.api.SmoothedInputDevice** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/SmoothedInputDevice.java)
+*class* com.diozero.api.**SmoothedInputDevice** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/SmoothedInputDevice.java)
 
-: Extends [DigitalInputDevice](#digital-input-device) to support waiting for state changes.
+: Extends [DigitalInputDevice](#digitalinputdevice) to support waiting for state changes.
 
     **SmoothedInputDevice** (*pinNumber*, *pud*, *threshold*, *age*)
     
@@ -133,7 +133,7 @@
     * **threshold** (*int*) - New threshold value in terms of number of on events within the specified time period that will trigger an on event to any listeners.
 
 
-### Analog Input Device
+### AnalogInputDevice
 
 The [AnalogInputDevice](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/AnalogInputDevice.java) base class encapsulates logic for interfacing with analog devices. This class provides access to unscaled (-1..1) and scaled (e.g. voltage, temperature, distance) readings. For scaled readings is important to pass the ADC voltage range in the device constructor - all raw analog readings are normalised (i.e. -1..1).
 
@@ -156,7 +156,7 @@ try (McpAdc adc = new McpAdc(type, chipSelect);
 }
 ```
 
-*class* **com.diozero.api.AnalogInputDevice** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/AnalogInputDevice.java)
+*class* com.diozero.api.**AnalogInputDevice** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/AnalogInputDevice.java)
 
 : Extends [GPIOInputDevice](#gpioinputdevice) to provide common support for analog devices.
 
@@ -189,9 +189,9 @@ try (McpAdc adc = new McpAdc(type, chipSelect);
 
 ## Output Devices
 
-### Digital Output Device
+### DigitalOutputDevice
 
-*class* **com.diozero.api.DigitalOutputDevice** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/DigitalOutputDevice.java)
+*class* com.diozero.api.**DigitalOutputDevice** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/DigitalOutputDevice.java)
 
 : Extends [GPIODevice](#gpiodevice) to provide generic digital (on/off) output control.
 
@@ -234,9 +234,9 @@ try (McpAdc adc = new McpAdc(type, chipSelect);
     * **value** (*boolean*) - New value, true == on, false == off.
 
 
-### PWM Output Device
+### PWMOutputDevice
 
-*class* **com.diozero.api.PWMOutputDevice** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/PWMOutputDevice.java)
+*class* com.diozero.api.**PWMOutputDevice** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/PWMOutputDevice.java)
 
 : Extends [GPIODevice](#gpiodevice) to provide generic [Pulse Width Modulation](https://en.wikipedia.org/wiki/Pulse-width_modulation) (PWM) output control.
 
@@ -334,7 +334,7 @@ Divided into two distinct types;
 
 ### Motor
 
-*class* **com.diozero.api.Motor** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/Motor.java)
+*class* com.diozero.api.**Motor** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/Motor.java)
 
 : Represents a single motor controlled by two separate PWM signals. Implements [MotorInterface](#motorinterface).
 
@@ -367,7 +367,7 @@ Divided into two distinct types;
 
 ### TB6612FNGMotor
 
-*class* **com.diozero.sandpit.TB6612FNGMotor** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/sandpit/TB6612FNGMotor.java)
+*class* com.diozero.sandpit.**TB6612FNGMotor** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/sandpit/TB6612FNGMotor.java)
 
 : Represents a single motor controlled by one PWM signal and two separate forwards / backwards control digital signals. Implements [MotorInterface](#motorinterface).
 
@@ -384,7 +384,7 @@ Divided into two distinct types;
 
 ### DualMotor
 
-*class* **com.diozero.api.DualMotor** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/DualMotor.java)
+*class* com.diozero.api.**DualMotor** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/DualMotor.java)
 
 : Convenience class for a robot with two [Motors](#motorinterface).
 
@@ -435,23 +435,23 @@ Divided into two distinct types;
 
 ### TB6612FNGDualMotorDriver
 
-*class* **com.diozero.sandpit.TB6612FNGDualMotorDriver** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/sandpit/TB6612FNGDualMotorDriver.java)
+*class* com.diozero.sandpit.**TB6612FNGDualMotorDriver** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/sandpit/TB6612FNGDualMotorDriver.java)
 
-: Extends [Dual Motor](#dualmotor). Convenience class for interfacing with dual H-bridge motor drivers.
+: Extends [DualMotor](#dualmotor). Convenience class for interfacing with dual H-bridge motor drivers.
 
 
 ### CamJamKitDualMotor
 
-*class* **com.diozero.CamJamKitDualMotor** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/CamJamKitDualMotor.java)
+*class* com.diozero.**CamJamKitDualMotor** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/CamJamKitDualMotor.java)
 
-: Extends [Dual Motor](#dualmotor). Convenience class for interfacing with the CamJam Edit Kit #3 motor controller board.
+: Extends [DualMotor](#dualmotor). Convenience class for interfacing with the CamJam Edit Kit #3 motor controller board with pre-configured pin numbers (left -&gt; 9 and 10, right -&gt; 7 and 8).
 
 
 ### RyanteckDualMotor
 
-*class* **com.diozero.RyanteckDualMotor** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/RyanteckDualMotor.java)
+*class* com.diozero.**RyanteckDualMotor** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/RyanteckDualMotor.java)
 
-: Extends [Dual Motor](#dualmotor). Convenience class for interfacing with the Ryanteck motor controller board with pre-configured pin numbers (left -> 17 and 18, right -> 22 and 23).
+: Extends [DualMotor](#dualmotor). Convenience class for interfacing with the Ryanteck motor controller board with pre-configured pin numbers (left -&gt; 17 and 18, right -&gt; 22 and 23).
 
 
 ## I2C Support
