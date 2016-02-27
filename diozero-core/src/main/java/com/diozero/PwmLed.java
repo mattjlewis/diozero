@@ -27,6 +27,7 @@ package com.diozero;
  */
 
 import com.diozero.api.PwmOutputDevice;
+import com.diozero.internal.spi.PwmOutputDeviceFactoryInterface;
 import com.diozero.util.RuntimeIOException;
 
 public class PwmLed extends PwmOutputDevice {
@@ -36,6 +37,14 @@ public class PwmLed extends PwmOutputDevice {
 	
 	public PwmLed(int pinNumber, float initialValue) throws RuntimeIOException {
 		super(pinNumber, initialValue);
+	}
+	
+	public PwmLed(PwmOutputDeviceFactoryInterface deviceFactory, int pinNumber) throws RuntimeIOException {
+		this(deviceFactory, pinNumber, 0);
+	}
+	
+	public PwmLed(PwmOutputDeviceFactoryInterface deviceFactory, int pinNumber, float initialValue) throws RuntimeIOException {
+		super(deviceFactory, pinNumber, initialValue);
 	}
 	
 	public void blink() throws RuntimeIOException {
