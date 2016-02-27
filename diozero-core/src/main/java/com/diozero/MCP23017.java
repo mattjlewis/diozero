@@ -224,6 +224,11 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Cl
 				INTERRUPT_PIN_NOT_SET, INTERRUPT_PIN_NOT_SET);
 	}
 
+	public MCP23017(int interruptPinNumber) throws RuntimeIOException {
+		this(I2CConstants.BUS_1, DEVICE_ADDRESS, I2CConstants.ADDR_SIZE_7, I2CConstants.DEFAULT_CLOCK_FREQUENCY,
+				interruptPinNumber, interruptPinNumber);
+	}
+
 	public MCP23017(int interruptPinNumberA, int interruptPinNumberB) throws RuntimeIOException {
 		this(I2CConstants.BUS_1, DEVICE_ADDRESS, I2CConstants.ADDR_SIZE_7, I2CConstants.DEFAULT_CLOCK_FREQUENCY,
 				interruptPinNumberA, interruptPinNumberB);
