@@ -82,6 +82,8 @@
 		<maven.compiler.source>${jdk.source.version}</maven.compiler.source>
 		<maven.compiler.target>${jdk.target.version}</maven.compiler.target>
 		
+		<github.global.server>github</github.global.server>
+		
 		<commons-math3.version>3.6</commons-math3.version>
 		<junit.version>4.12</junit.version>
 		<tinylog.version>1.0.3</tinylog.version>
