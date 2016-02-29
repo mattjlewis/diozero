@@ -11,8 +11,8 @@ Currently supports two basic types of motor controllers:
 
 ### MotorInterface
 
-{: class="class" }*interface* `com.diozero.api`{: .descclassname }.`MotorInterface`{: .descname } [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/MotorInterface.java){: .viewcode-link } [&para;](MotorControl.md#motorinterface){: .headerlink }
-{: class="class" }
+*interface* *com.diozero.api*{: .descclassname }.**MotorInterface**{: .descname } [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/MotorInterface.java){: .viewcode-link } [&para;](MotorControl.md#motorinterface){: .headerlink }
+
 : Represents a single motor.
 
     **Motor** (*forwardPin*, *backwardPin*)
