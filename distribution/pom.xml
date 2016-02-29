@@ -7,7 +7,7 @@
 		<version>0.4-SNAPSHOT</version>
 	</parent>
 
-	<name>Distribution</name>
+	<name>Device I/O Zero - Distribution</name>
 	<artifactId>diozero-distribution</artifactId>
 	<packaging>pom</packaging>
 
