@@ -10,9 +10,15 @@
 	Dependency analysis:
 		mvn dependency:analyze
 	Set new project version:
-	mvn versions:set -DnewVersion=1.0.1-SNAPSHOT
+		mvn versions:set -DnewVersion=0.5-SNAPSHOT
+		mvn versions:commit
+	Licence stuff:
 		mvn license:update-project-license
 		mvn license:update-file-header
+	Release:
+		mvn release:prepare -DignoreSnapshots=true
+		mvn release:clean / mvn release:rollback
+		mvn release:commit
 	-->
 	
 	<groupId>com.diozero</groupId>
