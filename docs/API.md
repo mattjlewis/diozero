@@ -4,7 +4,7 @@
 
 ### GPIODevice
 
-*class* com.diozero.api.**GPIODevice** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/GPIODevice.java)
+*class* com.diozero.api.**GPIODevice** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/GPIODevice.java){: .viewcode-link }
 
 : Abstract base class for all GPIO related devices.
 
@@ -23,7 +23,7 @@
 
 ### GPIOInputDevice
 
-*class* com.diozero.api.**GPIOInputDevice** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/GPIOInputDevice.java)
+*class* com.diozero.api.**GPIOInputDevice** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/GPIOInputDevice.java){: .viewcode-link }
 
 : Common base class for digital and analog input devices, extends [GPIODevice](#gpiodevice).
 
@@ -52,7 +52,7 @@
 
 ### DigitalInputDevice
 
-*class* com.diozero.api.**DigitalInputDevice** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/DigitalInputDevice.java)
+*class* com.diozero.api.**DigitalInputDevice** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/DigitalInputDevice.java){: .viewcode-link }
 
 : Extends [GPIOInputDevice](#gpioinputdevice) to provide common support for digital devices.
 
@@ -77,7 +77,7 @@
 
 ### WaitableInputDevice
 
-*class* com.diozero.api.**WaitableInputDevice** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/WaitableInputDevice.java)
+*class* com.diozero.api.**WaitableInputDevice** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/WaitableInputDevice.java){: .viewcode-link }
 
 : Extends [DigitalInputDevice](#digitalinputdevice) to support waiting for state changes.
 
@@ -106,7 +106,7 @@
 
 ### SmoothedInputDevice
 
-*class* com.diozero.api.**SmoothedInputDevice** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/SmoothedInputDevice.java)
+*class* com.diozero.api.**SmoothedInputDevice** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/SmoothedInputDevice.java){: .viewcode-link }
 
 : Extends [DigitalInputDevice](#digitalinputdevice) to support waiting for state changes.
 
@@ -156,7 +156,7 @@ try (McpAdc adc = new McpAdc(type, chipSelect);
 }
 ```
 
-*class* com.diozero.api.**AnalogInputDevice** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/AnalogInputDevice.java)
+*class* com.diozero.api.**AnalogInputDevice** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/AnalogInputDevice.java){: .viewcode-link }
 
 : Extends [GPIOInputDevice](#gpioinputdevice) to provide common support for analog devices.
 
@@ -191,7 +191,7 @@ try (McpAdc adc = new McpAdc(type, chipSelect);
 
 ### DigitalOutputDevice
 
-*class* com.diozero.api.**DigitalOutputDevice** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/DigitalOutputDevice.java)
+*class* com.diozero.api.**DigitalOutputDevice** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/DigitalOutputDevice.java){: .viewcode-link }
 
 : Extends [GPIODevice](#gpiodevice) to provide generic digital (on/off) output control.
 
@@ -236,7 +236,7 @@ try (McpAdc adc = new McpAdc(type, chipSelect);
 
 ### PWMOutputDevice
 
-*class* com.diozero.api.**PWMOutputDevice** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/PWMOutputDevice.java)
+*class* com.diozero.api.**PWMOutputDevice** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/PWMOutputDevice.java){: .viewcode-link }
 
 : Extends [GPIODevice](#gpiodevice) to provide generic [Pulse Width Modulation](https://en.wikipedia.org/wiki/Pulse-width_modulation) (PWM) output control.
 

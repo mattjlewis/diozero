@@ -40,7 +40,7 @@ try (Button button = new Button(buttonPin, GpioPullUpDown.PULL_UP); LED led = ne
 
 ### TMP36
 
-*class* com.diozero.**TMP36** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/TMP36.java)
+*class* com.diozero.**TMP36** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/TMP36.java){: .viewcode-link }
 
 : Extends [AnalogInputDevice](API.md#analoginputdevice] for reading temperature values from a [TMP36 Temperature Sensor by Analog Devices](http://www.analog.com/en/products/analog-to-digital-converters/integrated-special-purpose-converters/integrated-temperature-sensors/tmp36.html).
 
@@ -68,7 +68,7 @@ TODO Wiring diagram.
 !!! Warning "Work-in-progress"
     Still under construction hence in the sandpit package.
 
-*class* com.diozero.sandpit.**Potentiometer** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/sandpit/Potentiometer.java)
+*class* com.diozero.sandpit.**Potentiometer** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/sandpit/Potentiometer.java){: .viewcode-link }
 
 : Extends [AnalogInputDevice](API.md#analoginputdevice] for taking readings from a potentiometer.
 
@@ -84,6 +84,6 @@ TODO Wiring diagram.
 !!! Warning "Work-in-progress"
     Not yet tested hence in the sandpit package.
 
-*class* com.diozero.sandpit.**GP2Y0A21YK** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/sandpit/GP2Y0A21YK.java)
+*class* com.diozero.sandpit.**GP2Y0A21YK** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/sandpit/GP2Y0A21YK.java){: .viewcode-link }
 
 : Extends [AnalogInputDevice](API.md#analoginputdevice] for taking object proximity readings. 

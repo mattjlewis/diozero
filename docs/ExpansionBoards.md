@@ -2,7 +2,7 @@
 
 ## Microchip Analog to Digital Converters {: #mcp-adc }
 
-*class* com.diozero.**McpAdc** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/McpAdc.java)
+*class* com.diozero.**McpAdc** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/McpAdc.java){: .viewcode-link }
 
 : Provides support for the following Microchip analog-to-digital converter devices:
 
@@ -27,7 +27,7 @@ try (McpAdc adc = new McpAdc(type, chipSelect); LDR ldr = new LDR(adc, pin, vRef
 
 ## Microchip MCP23017 GPIO Expansion Board
 
-*class* com.diozero.**MCP23017** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/MCP23017.java)
+*class* com.diozero.**MCP23017** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/MCP23017.java){: .viewcode-link }
 
 : Provides support for the Microchip [MCP23017](http://www.microchip.com/wwwproducts/Devices.aspx?product=MCP23017) 16-bit input/output port expander. Input device state change notifications will only work if at least one of the MCP23017 interrupt pins is connected to the Raspberry Pi.
 
@@ -72,7 +72,7 @@ try (MCP23017 mcp23017 = new MCP23017(intAPin, intBPin);
 
 ## PCA9685 PWM / Servo Driver {: #pwm-servo-driver }
 
-*class* com.diozero.sandpit.**PCA9685** [source](https://github.com/mattjlewis/diozero/blob/master/src/main/java/com/diozero/sandpit/PCA9685.java)
+*class* com.diozero.sandpit.**PCA9685** [source](https://github.com/mattjlewis/diozero/blob/master/src/main/java/com/diozero/sandpit/PCA9685.java){: .viewcode-link }
 
 : Provides support for the [PCA9685](http://www.nxp.com/products/power-management/lighting-driver-and-controller-ics/i2c-led-display-control/16-channel-12-bit-pwm-fm-plus-ic-bus-led-controller:PCA9685) 12-bit 16-channel PWM driver as used by the [Adafruit PWM Servo Driver](https://www.adafruit.com/product/815). Implements [PwmOutputDeviceFactoryInterface](https://github.com/mattjlewis/diozero/blob/master/src/main/java/com/diozero/internal/spi/PwmOutputDeviceFactoryInterface.java) hence can be passed into the constructor of PWM output devices.
 
