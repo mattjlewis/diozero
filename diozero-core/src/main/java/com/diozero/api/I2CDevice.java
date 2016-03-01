@@ -140,6 +140,10 @@ public class I2CDevice implements Closeable, I2CConstants {
 		// int8_t I2Cdev::readByte(uint8_t devAddr, uint8_t regAddr, uint8_t *data, uint16_t timeout)
 		return readByte(regAddr, SUB_ADDRESS_SIZE_1_BYTE);
 	}
+	
+	public short readUByte(int regAddr) throws RuntimeIOException {
+		return (short)(readByte(regAddr) & 0xff);
+	}
 
 	public byte readByte(int address, int subAddressSize) throws RuntimeIOException {
 		ByteBuffer buffer = ByteBuffer.allocateDirect(1);
