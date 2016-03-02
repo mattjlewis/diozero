@@ -77,8 +77,8 @@ TODO Insert wiring diagram.
     
     : Set the colour for the specified pixel using Hue Saturation Luminance (HSL) values.
     
-    !!! warning
-    I'm not convinced this is working correctly. Code for the colour mapping taken [from this article written in 2009](https://tips4java.wordpress.com/2009/07/05/hsl-color/). Also not entirely sure how this is different from HSB colour mapping.
+    !!! warning "In development"
+        I'm not convinced this is working correctly. Code for the colour mapping taken [from this article written in 2009](https://tips4java.wordpress.com/2009/07/05/hsl-color/). Also not entirely sure how this is different from HSB colour mapping.
     
     * **pixel** (*int*) - Pixel number.
     
