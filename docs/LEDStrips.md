@@ -72,3 +72,18 @@ TODO Insert wiring diagram.
     * **saturation** (*float*) - Float value in the range 0..1 representing the colour saturation.
     
     * **brightness** (*float*) - Float value in the range 0..1 representing the colour brightness.
+    
+    **setPixelColourHSL** (*pixel*, *hue*, *saturation*, *luminance*)
+    
+    : Set the colour for the specified pixel using Hue Saturation Luminance (HSL) values.
+    
+    !!! warning
+    I'm not convinced this is working correctly. Code for the colour mapping taken [from this article written in 2009](https://tips4java.wordpress.com/2009/07/05/hsl-color/). Also not entirely sure how this is different from HSB colour mapping.
+    
+    * **pixel** (*int*) - Pixel number.
+    
+    * **hue** (*float*) - Represents the colour (think colours of the rainbow), specified in degrees from 0 - 360. Red is 0, green is 120 and blue is 240.
+    
+    * **saturation** (*float*) - Represents the purity of the colour. Range is 0..1 with 1 fully saturated and 0 gray.
+    
+    * **luminance** (*float*) - Represents the brightness of the colour. Range is 0..1 with 1 white 0 black.
