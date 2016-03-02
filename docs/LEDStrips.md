@@ -13,7 +13,7 @@ TODO Insert wiring diagram.
 : Provides support for [WS2811B / WS2812B aka Adafriut NeoPixel LEDs](https://learn.adafruit.com/adafruit-neopixel-uberguide) via a JNI wrapper around the [rpi_ws281x C library](https://github.com/jgarff/rpi_ws281x).
 
     !!! note
-    All colours are represented as 24bit RGB values.
+        All colours are represented as 24bit RGB values.
 
     **WS281x** (*frequency=800,000*, *dmaNum=5*, *gpioNum*, *brightness*, *numPixels*)
     
