@@ -7,9 +7,6 @@
 
 TODO Describe IMU API
 
-This is a paragraph that tests the attr_list extension. It doesn't work with the definition list extension unfortunately.
-{: #an_id .a_class }
-
 ## Supported Devices
 
 ### InvenSense MPU-9150
