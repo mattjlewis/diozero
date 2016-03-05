@@ -72,10 +72,48 @@ TODO Wiring diagram.
 
 : Extends [AnalogInputDevice](API.md#analoginputdevice] for taking readings from a potentiometer.
 
+    **Potentiometer** (*pinNumber*, *vRef*, *r1*)
+    
+    : Constructor
+    
+    * **pinNumber** (*int*) - Pin to which the potentiometer is connected.
+    
+    * **vRef** (*float*) - Reference voltage.
+    
+    * **r1** (*float*) - Resistor between the potentiometer and ground.
+
+    *float* **getResistance** ()
+    
+    : Read the current resistance setting for the potentiometer.
+
 
 ### LDR
 
-[com.diozero.LDR](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/LDR.java): Generic [Photoresistor / Light-Dependent-Resistor (LDR)](https://en.wikipedia.org/wiki/Photoresistor)
+*class* com.diozero.**LDR** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/LDR.java){: .viewcode-link }
+
+: Extends [AnalogInputDevce](API.md#analoginputdevice). Generic [Photoresistor / Light-Dependent-Resistor (LDR)](https://en.wikipedia.org/wiki/Photoresistor).
+
+    **LDR** (*pinNumber*, *vRef*, *r1*)
+    
+    : Constructor
+    
+    * **pinNumber** (*int*) - Pin to which the LDR is connected.
+    
+    * **vRef** (*float*) - Reference voltage.
+    
+    * **r1** (*float*) - Resistor between the potentiometer and ground.
+
+    *float* **getLdrResistance** ()
+    
+    : Read the current resistance across the LDR.
+
+    *float* **getLuminosity** ()
+    
+    : Read the current luminosity.
+    
+    !!! warning "Not yet implemented"
+        This operation currently just returns the resistance across the LDR.
+
 
 ### Sharp GP2Y0A21YK Distance Sensor
 
@@ -86,4 +124,13 @@ TODO Wiring diagram.
 
 *class* com.diozero.sandpit.**GP2Y0A21YK** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/sandpit/GP2Y0A21YK.java){: .viewcode-link }
 
-: Extends [AnalogInputDevice](API.md#analoginputdevice] for taking object proximity readings. 
+: Extends [AnalogInputDevice](API.md#analoginputdevice] for taking object proximity readings.
+
+    **GP2Y0A21YK** (*pinNumber*)
+    
+    : Constructor
+    
+    *float* **getDistanceCm** ()
+    
+    : Read distance, range 10 to 80cm.
+    
