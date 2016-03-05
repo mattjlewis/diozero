@@ -1,11 +1,16 @@
 package com.diozero.sandpit;
 
 import com.diozero.api.AnalogInputDevice;
+import com.diozero.internal.DeviceFactoryHelper;
 import com.diozero.internal.spi.AnalogInputDeviceFactoryInterface;
 
 public class Potentiometer extends AnalogInputDevice {
 	private float vRef;
 	private float r1;
+	
+	public Potentiometer(int pinNumber, float vRef, float r1) {
+		this(DeviceFactoryHelper.getNativeDeviceFactory(), pinNumber, vRef, r1);
+	}
 	
 	public Potentiometer(AnalogInputDeviceFactoryInterface deviceFactory, int pinNumber, float vRef, float r1) {
 		super(deviceFactory, pinNumber, vRef);
