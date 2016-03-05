@@ -113,7 +113,7 @@ public class WS281xTest {
 		float saturation_start = 0;
 		float saturation_step = 0.01f;
 		
-		for (float hue=0; hue<1; hue+=0.05) {
+		for (float hue=0; hue<360; hue+=1) {
 			for (float saturation=saturation_start; saturation>=0 & saturation<=1; saturation+=saturation_step) {
 				for (int pixel=0; pixel<ws281x.getNumPixels(); pixel++) {
 					ws281x.setPixelColourHSL(pixel, hue, saturation, luminance);

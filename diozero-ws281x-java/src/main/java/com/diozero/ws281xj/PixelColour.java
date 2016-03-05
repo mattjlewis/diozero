@@ -79,7 +79,7 @@ public class PixelColour {
     /**
      * Creates a colour based on the specified values in the HSB colour model.
      *
-     * @param hue The hue, in degrees, {@code 0.0 to 360.0}
+     * @param hue The hue, in degrees, {@code 0.0 to 1.0}
      * @param saturation The saturation %, {@code 0.0 to 1.0}
      * @param brightness The brightness %, {@code 0.0 to 1.0}
      * @return RGB colour integer value
