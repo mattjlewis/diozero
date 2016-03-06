@@ -28,14 +28,14 @@ package com.diozero.imu.drivers.invensense;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
-import java.util.function.Consumer;
 
 import javax.xml.bind.DatatypeConverter;
 
 import org.pmw.tinylog.Logger;
 
-import com.diozero.api.imu.OrientationEvent;
-import com.diozero.api.imu.TapCallbackEvent;
+import com.diozero.api.imu.*;
+import com.diozero.api.imu.OrientationEvent.OrientationType;
+import com.diozero.api.imu.TapEvent.TapType;
 import com.diozero.util.RuntimeIOException;
 
 /**
@@ -55,8 +55,8 @@ public class MPU9150DMPDriver implements MPU9150DMPConstants {
 	private static final boolean DUMP_FIFO_DATA = false;
 
 	private MPU9150Driver mpu;
-	private Consumer<TapCallbackEvent> tap_cb;
-	private Consumer<OrientationEvent> android_orient_cb;
+	private TapListener tap_cb;
+	private OrientationListener android_orient_cb;
 	private int orient;
 	private int feature_mask;
 	private int fifo_rate;
@@ -736,7 +736,7 @@ public class MPU9150DMPDriver implements MPU9150DMPConstants {
 			byte direction = (byte) (tap >> 3);
 			byte count = (byte) ((tap % 8) + 1);
 			if (tap_cb != null) {
-				tap_cb.accept(new TapCallbackEvent(direction, count));
+				tap_cb.tapped(new TapEvent(createTapType(direction), count));
 			}
 		}
 
@@ -744,9 +744,59 @@ public class MPU9150DMPDriver implements MPU9150DMPConstants {
 			Logger.debug("decode_gesture() got Orient!");
 			byte android_orient = (byte) (gesture[3] & 0xC0);
 			if (android_orient_cb != null) {
-				android_orient_cb.accept(new OrientationEvent((short) (android_orient >> 6)));
+				android_orient_cb.orientationChange(new OrientationEvent(getOrientationType((short) (android_orient >> 6))));
 			}
 		}
+	}
+
+	private static TapType createTapType(byte direction) {
+		TapType type;
+		switch (direction) {
+		case 1:
+			type = TapType.TAP_X_UP;
+			break;
+		case 2:
+			type = TapType.TAP_X_DOWN;
+			break;
+		case 3:
+			type = TapType.TAP_Y_UP;
+			break;
+		case 4:
+			type = TapType.TAP_Y_DOWN;
+			break;
+		case 5:
+			type = TapType.TAP_Z_UP;
+			break;
+		case 6:
+			type = TapType.TAP_Z_DOWN;
+			break;
+		default:
+			type = TapType.UNKNWON;
+		}
+		
+		return type;
+	}
+
+	private static OrientationType getOrientationType(short s) {
+		OrientationType orientation;
+		switch (s) {
+		case 0:
+			orientation = OrientationEvent.OrientationType.PORTRAIT;
+			break;
+		case 1:
+			orientation = OrientationEvent.OrientationType.LANDSCAPE;
+			break;
+		case 2:
+			orientation = OrientationEvent.OrientationType.REVERSE_PORTRAIT;
+			break;
+		case 3:
+			orientation = OrientationEvent.OrientationType.REVERSE_LANDSCAPE;
+			break;
+		default:
+			orientation = OrientationEvent.OrientationType.UNKOWN;
+		}
+		
+		return orientation;
 	}
 
 	/**
@@ -908,7 +958,7 @@ public class MPU9150DMPDriver implements MPU9150DMPConstants {
 	 */
 	// public void dmp_register_tap_cb(void (*func)(unsigned char, unsigned
 	// char)) throws RuntimeIOException {
-	public void dmp_register_tap_cb(Consumer<TapCallbackEvent> func) {
+	public void dmp_register_tap_cb(TapListener func) {
 		tap_cb = func;
 	}
 
@@ -917,7 +967,7 @@ public class MPU9150DMPDriver implements MPU9150DMPConstants {
 	 * @param func Callback function.
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
-	public void dmp_register_android_orient_cb(Consumer<OrientationEvent> func) {
+	public void dmp_register_android_orient_cb(OrientationListener func) {
 		android_orient_cb = func;
 	}
 	
