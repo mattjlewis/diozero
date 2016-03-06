@@ -1,7 +1,7 @@
 package com.diozero;
 
-import com.diozero.api.DualMotor;
-import com.diozero.api.Motor;
+import com.diozero.api.motor.DualMotor;
+import com.diozero.api.motor.Motor;
 
 /*
  * #%L
