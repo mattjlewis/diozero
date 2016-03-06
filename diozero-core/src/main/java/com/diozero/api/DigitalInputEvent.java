@@ -37,7 +37,7 @@ public class DigitalInputEvent extends DeviceEvent {
 		this.value = value;
 	}
 	
-	void setAvtiveHigh(boolean activeHigh) {
+	void setActiveHigh(boolean activeHigh) {
 		this.activeHigh = activeHigh;
 	}
 
