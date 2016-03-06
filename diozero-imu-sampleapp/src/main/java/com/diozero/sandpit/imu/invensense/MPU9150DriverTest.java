@@ -47,7 +47,7 @@ import com.diozero.util.SleepUtil;
  * Invensense libraries (v5.1):
  * http://www.invensense.com/developers/index.php?_r=downloads
  */
-public class MPU9150Test3 implements MqttConstants {
+public class MPU9150DriverTest implements MqttConstants {
 	private static final float RTIMU_FUZZY_ACCEL_ZERO = 0.05f;
 	private static final float RTIMU_FUZZY_GYRO_ZERO = 0.20f;
 	
@@ -88,10 +88,10 @@ public class MPU9150Test3 implements MqttConstants {
 				mqtt_server = args[0].substring(MQTT_SERVER_OPTION.length() + 3);
 			}
 		}
-		new MPU9150Test3(mqtt_server).run();
+		new MPU9150DriverTest(mqtt_server).run();
 	}
 	
-	public MPU9150Test3(String mqttServer) {
+	public MPU9150DriverTest(String mqttServer) {
 		// General defaults
 		//axisRotation = AxisRotation.RTIMU_XNORTH_YEAST;
 		axisRotation = AxisRotation.RTIMU_XEAST_YSOUTH;
@@ -129,7 +129,7 @@ public class MPU9150Test3 implements MqttConstants {
 	}
 	
 	public void run() {
-		try (MPU9150Driver mpu = new MPU9150Driver(1, I2CConstants.ADDR_SIZE_7,
+		try (MPU9150Driver mpu = new MPU9150Driver(I2CConstants.BUS_1, I2CConstants.ADDR_SIZE_7,
 				MPU9150Constants.I2C_CLOCK_FREQUENCY_FAST)) {
 			mpuInit(mpu);
 			mqttInit();
@@ -259,8 +259,8 @@ public class MPU9150Test3 implements MqttConstants {
 		mpu.mpu_set_dmp_state(true);
 
 		Logger.debug("Configuring DMP...");
-		dmp.dmp_register_tap_cb(MPU9150Test3::tapCallback);
-		dmp.dmp_register_android_orient_cb(MPU9150Test3::androidOrientCallback);
+		dmp.dmp_register_tap_cb(MPU9150DriverTest::tapCallback);
+		dmp.dmp_register_android_orient_cb(MPU9150DriverTest::androidOrientCallback);
 		//int hal_dmp_features = MPU9150DMPConstants.DMP_FEATURE_6X_LP_QUAT |
 		//		MPU9150DMPConstants.DMP_FEATURE_SEND_RAW_ACCEL|
 		//		MPU9150DMPConstants.DMP_FEATURE_SEND_CAL_GYRO |
@@ -439,7 +439,7 @@ public class MPU9150Test3 implements MqttConstants {
 		imuData.setGyro(imuData.getGyro().subtract(gyroBias));
 	}
 
-	public static void tapCallback(TapCallbackEvent event) {
+	public static void tapCallback(TapEvent event) {
 		Logger.debug("tapCallback({})", event);
 	}
 
