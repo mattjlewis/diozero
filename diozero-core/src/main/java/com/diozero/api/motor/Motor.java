@@ -1,4 +1,4 @@
-package com.diozero.api;
+package com.diozero.api.motor;
 
 /*
  * #%L
@@ -28,6 +28,7 @@ package com.diozero.api;
 
 import org.pmw.tinylog.Logger;
 
+import com.diozero.api.PwmOutputDevice;
 import com.diozero.internal.DeviceFactoryHelper;
 import com.diozero.internal.spi.PwmOutputDeviceFactoryInterface;
 import com.diozero.util.RuntimeIOException;
@@ -45,7 +46,7 @@ public class Motor implements MotorInterface {
 
 	public Motor(PwmOutputDeviceFactoryInterface deviceFactory, int forwardPwmPin, int backwardPwmPin) throws RuntimeIOException {
 		forward = new PwmOutputDevice(deviceFactory, forwardPwmPin, 0);
-		backward = new PwmOutputDevice(deviceFactory, forwardPwmPin, 0);
+		backward = new PwmOutputDevice(deviceFactory, backwardPwmPin, 0);
 	}
 
 	public Motor(PwmOutputDevice forward, PwmOutputDevice backward) throws RuntimeIOException {

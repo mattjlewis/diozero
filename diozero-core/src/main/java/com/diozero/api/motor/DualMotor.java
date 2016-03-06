@@ -1,4 +1,4 @@
-package com.diozero.api;
+package com.diozero.api.motor;
 
 /*
  * #%L
@@ -79,13 +79,33 @@ public class DualMotor implements Closeable {
 	}
 	
 	public void rotateLeft(float speed) throws RuntimeIOException {
-		rightMotor.forward(speed);
 		leftMotor.backward(speed);
+		rightMotor.forward(speed);
 	}
 	
 	public void rotateRight(float speed) throws RuntimeIOException {
 		leftMotor.forward(speed);
 		rightMotor.backward(speed);
+	}
+	
+	public void forwardLeft(float speed) throws RuntimeIOException {
+		leftMotor.stop();
+		rightMotor.forward(speed);
+	}
+	
+	public void forwardRight(float speed) throws RuntimeIOException {
+		leftMotor.forward(speed);
+		rightMotor.stop();
+	}
+	
+	public void backwardLeft(float speed) throws RuntimeIOException {
+		leftMotor.stop();
+		rightMotor.backward(speed);
+	}
+	
+	public void backwardRight(float speed) throws RuntimeIOException {
+		leftMotor.backward(speed);
+		rightMotor.stop();
 	}
 	
 	public void reverse() throws RuntimeIOException {

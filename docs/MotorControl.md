@@ -11,7 +11,7 @@ Currently supports two basic types of motor controllers:
 
 ### MotorInterface
 
-*interface* **com.diozero.api.MotorInterface**{: .descname } [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/MotorInterface.java){: .viewcode-link } [&para;](MotorControl.md#motorinterface "Permalink to this definition"){: .headerlink }
+*interface* **com.diozero.api.motor.MotorInterface**{: .descname } [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/motor/MotorInterface.java){: .viewcode-link } [&para;](MotorControl.md#motorinterface "Permalink to this definition"){: .headerlink }
 
 : Represents a single motor.
 
@@ -60,7 +60,7 @@ Currently supports two basic types of motor controllers:
 
 ### Motor
 
-*class* com.diozero.api.**Motor** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/Motor.java){: .viewcode-link }
+*class* com.diozero.api.motor.**Motor** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/motor/Motor.java){: .viewcode-link }
 
 : Represents a single motor controlled by two separate PWM signals. Implements [MotorInterface](#motorinterface).
 
@@ -110,7 +110,7 @@ Currently supports two basic types of motor controllers:
 
 ### DualMotor
 
-*class* com.diozero.api.**DualMotor** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/DualMotor.java){: .viewcode-link }
+*class* com.diozero.api.motor.**DualMotor** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/motor/DualMotor.java){: .viewcode-link }
 
 : Convenience class for a robot with two [Motors](#motorinterface).
 

@@ -1,4 +1,4 @@
-package com.diozero.api;
+package com.diozero.api.motor;
 
 /*
  * #%L
@@ -31,6 +31,7 @@ import java.io.Closeable;
 
 import org.pmw.tinylog.Logger;
 
+import com.diozero.api.DigitalOutputDevice;
 import com.diozero.util.RuntimeIOException;
 
 public class DigitalMotor implements Closeable {
