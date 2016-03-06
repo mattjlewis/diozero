@@ -29,8 +29,8 @@ package com.diozero.sandpit;
 import org.pmw.tinylog.Logger;
 
 import com.diozero.api.DigitalOutputDevice;
-import com.diozero.api.MotorInterface;
 import com.diozero.api.PwmOutputDevice;
+import com.diozero.api.motor.MotorInterface;
 import com.diozero.util.RuntimeIOException;
 
 /**
