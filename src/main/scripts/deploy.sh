@@ -1,9 +1,9 @@
 #!/bin/sh
 
-version=0.3-SNAPSHOT
+version=0.4-SNAPSHOT
 pigpioj_version=1.0.0
 pi_user=pi
-pi_host=sheldon.local
+pi_host=george.local
 install_folder=/home/pi/diozero
 
 echo "Deploying version ${version} to ${pi_user}@${pi_host}:${install_folder}"
