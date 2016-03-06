@@ -30,18 +30,16 @@ import java.io.Closeable;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
-import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.pmw.tinylog.Logger;
 
-import com.diozero.api.*;
-import com.diozero.api.imu.ImuData;
-import com.diozero.api.imu.ImuInterface;
+import com.diozero.api.I2CConstants;
+import com.diozero.api.I2CDevice;
 import com.diozero.util.IOUtil;
 import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 
 @SuppressWarnings("unused")
-public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constants, ImuInterface {
+public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constants {
 	private static final byte AKM_DATA_READY	  = 0x01;
 	private static final byte AKM_DATA_OVERRUN	= 0x02;
 	private static final byte AKM_OVERFLOW		= (byte)0x80;
@@ -1599,25 +1597,4 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 		 // TODO Implementation
 		 Logger.error("mpu_lp_motion_interrupt NOT IMPLEMENTED!");
 	 }
-
-	@Override
-	public ImuData getIMUData() throws RuntimeIOException {
-		return ImuDataFactory.newInstance(mpu_get_gyro_reg(), mpu_get_accel_reg(), mpu_get_compass_reg(),
-				mpu_get_temperature(), gyro_fsr.getScale(), accel_fsr.getScale(), COMPASS_SCALE);
-	}
-
-	@Override
-	public Vector3D getGyroData() throws RuntimeIOException {
-		return ImuDataFactory.createVector(mpu_get_gyro_reg(), gyro_fsr.getScale());
-	}
-
-	@Override
-	public Vector3D getAccelerometerData() throws RuntimeIOException {
-		return ImuDataFactory.createVector(mpu_get_accel_reg(), accel_fsr.getScale());
-	}
-
-	@Override
-	public Vector3D getCompassData() throws RuntimeIOException {
-		return ImuDataFactory.createVector(mpu_get_compass_reg(), COMPASS_SCALE);
-	}
 }
