@@ -26,8 +26,6 @@ package com.diozero;
  * #L%
  */
 
-import org.pmw.tinylog.Logger;
-
 import com.diozero.api.*;
 import com.diozero.internal.spi.GpioDeviceFactoryInterface;
 import com.diozero.util.RuntimeIOException;
@@ -36,9 +34,6 @@ import com.diozero.util.RuntimeIOException;
  * 
  */
 public class Button extends DigitalInputDevice {
-	private Action pressedAction;
-	private Action releasedAction;
-
 	public Button(int pinNumber) throws RuntimeIOException {
 		super(pinNumber, GpioPullUpDown.NONE, GpioEventTrigger.BOTH);
 	}
@@ -60,34 +55,10 @@ public class Button extends DigitalInputDevice {
 	}
 	
 	public void whenPressed(Action action) {
-		if (action != null) {
-			enableListener();
-		}
-		pressedAction = action;
+		whenActivated(action);
 	}
 	
 	public void whenReleased(Action action) {
-		if (action != null) {
-			enableListener();
-		}
-		releasedAction = action;
-	}
-	
-	@Override
-	public void valueChanged(DigitalInputEvent event) {
-		Logger.debug("valuechanged(" + event + ")");
-		
-		if (pressedAction != null && event.isActive()) {
-			pressedAction.action();
-		}
-		if (releasedAction != null && !event.isActive()) {
-			releasedAction.action();
-		}
-		super.valueChanged(event);
-	}
-	
-	@FunctionalInterface
-	public interface Action {
-		void action();
+		whenDeactivated(action);
 	}
 }

@@ -43,6 +43,12 @@ public class DigitalInputDevice extends GpioInputDevice<DigitalInputEvent> {
 	protected boolean activeHigh;
 	protected GpioDigitalInputDeviceInterface device;
 	protected GpioPullUpDown pud;
+	private Action activatedAction;
+	private Action deactivatedAction;
+
+	public DigitalInputDevice(int pinNumber) throws RuntimeIOException {
+		this(DeviceFactoryHelper.getNativeDeviceFactory(), pinNumber, GpioPullUpDown.NONE, GpioEventTrigger.BOTH);
+	}
 
 	public DigitalInputDevice(int pinNumber, GpioPullUpDown pud, GpioEventTrigger trigger) throws RuntimeIOException {
 		this(DeviceFactoryHelper.getNativeDeviceFactory(), pinNumber, pud, trigger);
@@ -77,8 +83,32 @@ public class DigitalInputDevice extends GpioInputDevice<DigitalInputEvent> {
 	
 	@Override
 	public void valueChanged(DigitalInputEvent event) {
-		event.setAvtiveHigh(activeHigh);
+		event.setActiveHigh(activeHigh);
+		if (activatedAction != null && event.isActive()) {
+			activatedAction.action();
+		}
+		if (deactivatedAction != null && !event.isActive()) {
+			deactivatedAction.action();
+		}
 		super.valueChanged(event);
+	}
+	
+	public void whenActivated(Action action) {
+		activatedAction = action;
+		if (action != null) {
+			enableListener();
+		} else if (listeners.isEmpty() && deactivatedAction == null) {
+			disableListener();
+		}
+	}
+	
+	public void whenDeactivated(Action action) {
+		deactivatedAction = action;
+		if (action != null) {
+			enableListener();
+		} else if (listeners.isEmpty() && activatedAction == null) {
+			disableListener();
+		}
 	}
 
 	@Override
@@ -88,6 +118,8 @@ public class DigitalInputDevice extends GpioInputDevice<DigitalInputEvent> {
 
 	@Override
 	protected void disableListener() {
-		device.removeListener();
+		if (activatedAction == null && deactivatedAction == null) {
+			device.removeListener();
+		}
 	}
 }
