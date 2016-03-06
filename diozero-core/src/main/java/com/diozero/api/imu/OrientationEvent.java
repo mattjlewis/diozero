@@ -28,19 +28,22 @@ package com.diozero.api.imu;
 
 
 public class OrientationEvent {
-	// FIXME Make generic via an enumeration
-	private short orientation;
+	private OrientationType orientation;
 
-	public OrientationEvent(short orientation) {
+	public OrientationEvent(OrientationType orientation) {
 		this.orientation = orientation;
 	}
 
-	public short getOrientation() {
+	public OrientationType getOrientation() {
 		return orientation;
 	}
 
 	@Override
 	public String toString() {
 		return "OrientationEvent [orientation=" + orientation + "]";
+	}
+	
+	public static enum OrientationType {
+		UNKOWN, PORTRAIT, LANDSCAPE, REVERSE_PORTRAIT, REVERSE_LANDSCAPE;		
 	}
 }
