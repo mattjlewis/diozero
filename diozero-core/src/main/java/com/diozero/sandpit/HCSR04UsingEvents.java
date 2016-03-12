@@ -63,9 +63,7 @@ public class HCSR04UsingEvents implements DistanceSensorInterface, Closeable, In
 		}
 		int trigger_pin = Integer.parseInt(args[0]);
 		int echo_pin = Integer.parseInt(args[1]);
-		try (HCSR04UsingEvents device = new HCSR04UsingEvents()) {
-			device.init(trigger_pin, echo_pin);
-			
+		try (HCSR04UsingEvents device = new HCSR04UsingEvents(trigger_pin, echo_pin)) {
 			while (true) {
 				Logger.info("Distance = {} cm", String.format("%.3f", Double.valueOf(device.getDistanceCm())));
 				SleepUtil.sleepMillis(1000);
@@ -107,7 +105,7 @@ public class HCSR04UsingEvents implements DistanceSensorInterface, Closeable, In
 	 * @param echoGpioNum GPIO connected to the HC-SR04 echo pin
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
-	public void init(int triggerGpioNum, int echoGpioNum) throws RuntimeIOException {
+	public HCSR04UsingEvents(int triggerGpioNum, int echoGpioNum) throws RuntimeIOException {
 		// Define device for trigger pin at HCSR04
 		trigger = new DigitalOutputDevice(triggerGpioNum, true, false);
 		// Define device for echo pin at HCSR04
