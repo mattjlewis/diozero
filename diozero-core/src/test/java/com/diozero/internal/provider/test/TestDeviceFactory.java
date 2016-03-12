@@ -1,5 +1,7 @@
 package com.diozero.internal.provider.test;
 
+import java.lang.reflect.Constructor;
+
 /*
  * #%L
  * Device I/O Zero - Core
@@ -30,10 +32,19 @@ import com.diozero.api.*;
 import com.diozero.internal.DeviceStates;
 import com.diozero.internal.spi.*;
 import com.diozero.util.RuntimeIOException;
-
 public class TestDeviceFactory extends BaseNativeDeviceFactory {
+	private static Class<? extends GpioDigitalInputDeviceInterface> digitalInputDeviceClass;
+	private static Class<? extends GpioDigitalOutputDeviceInterface> digitalOutputDeviceClass;
+
+	public static void setDigitalInputDeviceClass(Class<? extends GpioDigitalInputDeviceInterface> clz) {
+		digitalInputDeviceClass = clz;
+	}
 	
-	// Added for testing purposess only
+	public static void setDigitalOutputDeviceClass(Class<? extends GpioDigitalOutputDeviceInterface> clz) {
+		digitalOutputDeviceClass = clz;
+	}
+	
+	// Added for testing purposes only
 	public DeviceStates getDeviceStates() {
 		return deviceStates;
 	}
@@ -46,7 +57,16 @@ public class TestDeviceFactory extends BaseNativeDeviceFactory {
 	@Override
 	protected GpioDigitalInputDeviceInterface createDigitalInputPin(String key, int pinNumber, GpioPullUpDown pud,
 			GpioEventTrigger trigger) throws RuntimeIOException {
-		return new TestDigitalInputPin(key, this, pinNumber, pud, trigger);
+		if (digitalInputDeviceClass == null) {
+			return new TestDigitalInputDevice(key, this, pinNumber, pud, trigger);
+		}
+		
+		try {
+			return digitalInputDeviceClass.getConstructor(String.class, DeviceFactoryInterface.class, Integer.TYPE, GpioPullUpDown.class, GpioEventTrigger.class)
+				.newInstance(key, this, Integer.valueOf(pinNumber), pud, trigger);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	@Override
@@ -58,7 +78,16 @@ public class TestDeviceFactory extends BaseNativeDeviceFactory {
 	@Override
 	protected GpioDigitalOutputDeviceInterface createDigitalOutputPin(String key, int pinNumber, boolean initialValue)
 			throws RuntimeIOException {
-		return new TestDigitalOutputPin(key, this, pinNumber, initialValue);
+		if (digitalOutputDeviceClass == null) {
+			return new TestDigitalOutputDevice(key, this, pinNumber, initialValue);
+		}
+		
+		try {
+			return digitalOutputDeviceClass.getConstructor(String.class, DeviceFactoryInterface.class, Integer.TYPE, Boolean.TYPE)
+				.newInstance(key, this, Integer.valueOf(pinNumber), Boolean.valueOf(initialValue));
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	@Override
