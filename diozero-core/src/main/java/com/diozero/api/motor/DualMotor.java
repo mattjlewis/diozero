@@ -113,6 +113,14 @@ public class DualMotor implements Closeable {
 		rightMotor.reverse();
 	}
 	
+	public void circleLeft(float speed, float turnRate) {
+		setValues(speed, speed-turnRate);
+	}
+	
+	public void circleRight(float speed, float turnRate) {
+		setValues(speed-turnRate, speed);
+	}
+	
 	public void stop() throws RuntimeIOException {
 		leftMotor.stop();
 		rightMotor.stop();
