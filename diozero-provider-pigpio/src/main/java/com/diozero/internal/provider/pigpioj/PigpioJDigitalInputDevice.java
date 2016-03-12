@@ -116,12 +116,12 @@ public class PigpioJDigitalInputDevice extends AbstractInputDevice<DigitalInputE
 
 	@Override
 	public void enableListener() {
+		disableListener();
 		if (edge == PigpioGpio.NO_EDGE) {
 			Logger.warn("Edge was configured to be NO_EDGE, no point adding a listener");
 			return;
 		}
 		
-		disableListener();
 		int rc = PigpioGpio.setISRFunc(pinNumber, edge, -1, this);
 		if (rc < 0) {
 			throw new RuntimeIOException("Error calling PigpioGpio.setISRFunc(), respone: " + rc);
