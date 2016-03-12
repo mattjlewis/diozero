@@ -36,6 +36,7 @@ import com.diozero.pigpioj.PigpioGpio;
 import com.diozero.util.RuntimeIOException;
 
 public class PigpioJPwmOutputDevice extends AbstractDevice implements PwmOutputDeviceInterface {
+	//private static final int PI_HW_PWM_RANGE = 1_000_000;
 	private static final int PWM_RANGE = 256-1;
 	
 	private int pinNumber;
@@ -64,6 +65,9 @@ public class PigpioJPwmOutputDevice extends AbstractDevice implements PwmOutputD
 
 	@Override
 	public float getValue() throws RuntimeIOException {
+		int freq = PigpioGpio.getPWMFrequency(pinNumber);
+		Logger.debug("PWM Frequency for pin {}={}", Integer.valueOf(pinNumber), Integer.valueOf(freq));
+		
 		int rc = PigpioGpio.getPWMDutyCycle(pinNumber);
 		if (rc < 0) {
 			throw new RuntimeIOException("Error calling PigpioGpio.getPWMDutyCycle(), respone: " + rc);
@@ -74,6 +78,9 @@ public class PigpioJPwmOutputDevice extends AbstractDevice implements PwmOutputD
 
 	@Override
 	public void setValue(float value) throws RuntimeIOException {
+		int freq = PigpioGpio.getPWMFrequency(pinNumber);
+		Logger.debug("PWM Frequency for pin {}={}", Integer.valueOf(pinNumber), Integer.valueOf(freq));
+		
 		int rc = PigpioGpio.setPWMDutyCycle(pinNumber, (int)(PWM_RANGE*value));
 		if (rc < 0) {
 			throw new RuntimeIOException("Error calling PigpioGpio.setPWMDutyCycle(), respone: " + rc);
