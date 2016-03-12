@@ -26,42 +26,41 @@ package com.diozero.internal.provider.test;
  * #L%
  */
 
-import com.diozero.api.DigitalInputEvent;
-import com.diozero.api.GpioEventTrigger;
-import com.diozero.api.GpioPullUpDown;
-import com.diozero.internal.spi.AbstractInputDevice;
+import org.pmw.tinylog.Logger;
+
+import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.DeviceFactoryInterface;
-import com.diozero.internal.spi.GpioDigitalInputDeviceInterface;
+import com.diozero.internal.spi.GpioDigitalOutputDeviceInterface;
 import com.diozero.util.RuntimeIOException;
 
-public class TestDigitalInputPin extends AbstractInputDevice<DigitalInputEvent> implements GpioDigitalInputDeviceInterface {
+public class TestDigitalOutputDevice extends AbstractDevice implements GpioDigitalOutputDeviceInterface {
 	private int pinNumber;
+	private boolean value;
 
-	public TestDigitalInputPin(String key, DeviceFactoryInterface deviceFactory, int pinNumber, GpioPullUpDown pud, GpioEventTrigger trigger) {
+	public TestDigitalOutputDevice(String key, DeviceFactoryInterface deviceFactory, int pinNumber, boolean initialValue) {
 		super(key, deviceFactory);
 		
 		this.pinNumber = pinNumber;
 	}
 
 	@Override
+	public void closeDevice() {
+		Logger.debug("closeDevice()");
+	}
+
+	@Override
 	public boolean getValue() throws RuntimeIOException {
-		// TODO Auto-generated method stub
-		return false;
+		return value;
+	}
+
+	@Override
+	public void setValue(boolean value) throws RuntimeIOException {
+		Logger.debug("setValue({})", Boolean.valueOf(value));
+		this.value = value;
 	}
 
 	@Override
 	public int getPin() {
-		// TODO Auto-generated method stub
 		return pinNumber;
-	}
-
-	@Override
-	public void setDebounceTimeMillis(int debounceTime) {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public void closeDevice() throws RuntimeIOException {
-		// TODO Auto-generated method stub
 	}
 }
