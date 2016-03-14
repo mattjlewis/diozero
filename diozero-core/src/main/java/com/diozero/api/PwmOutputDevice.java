@@ -60,12 +60,8 @@ public class PwmOutputDevice extends GpioDevice {
 	
 	public PwmOutputDevice(PwmOutputDeviceFactoryInterface pwmDeviceFactory, int pinNumber,
 			float initialValue) throws RuntimeIOException {
-		this(pwmDeviceFactory.provisionPwmOutputPin(pinNumber, initialValue));
-	}
-	
-	public PwmOutputDevice(PwmOutputDeviceInterface device) {
-		super(device.getPin());
-		this.device = device;
+		super(pinNumber);
+		this.device = pwmDeviceFactory.provisionPwmOutputPin(pinNumber, initialValue);
 	}
 
 	@Override
