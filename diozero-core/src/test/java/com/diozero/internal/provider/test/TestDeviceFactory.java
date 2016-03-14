@@ -1,7 +1,5 @@
 package com.diozero.internal.provider.test;
 
-import java.lang.reflect.Constructor;
-
 /*
  * #%L
  * Device I/O Zero - Core
@@ -32,9 +30,18 @@ import com.diozero.api.*;
 import com.diozero.internal.DeviceStates;
 import com.diozero.internal.spi.*;
 import com.diozero.util.RuntimeIOException;
+
 public class TestDeviceFactory extends BaseNativeDeviceFactory {
-	private static Class<? extends GpioDigitalInputDeviceInterface> digitalInputDeviceClass;
-	private static Class<? extends GpioDigitalOutputDeviceInterface> digitalOutputDeviceClass;
+	private static Class<? extends GpioAnalogInputDeviceInterface> analogInputDeviceClass;
+	private static Class<? extends GpioDigitalInputDeviceInterface> digitalInputDeviceClass = TestDigitalInputDevice.class;
+	private static Class<? extends GpioDigitalOutputDeviceInterface> digitalOutputDeviceClass = TestDigitalOutputDevice.class;
+	private static Class<? extends PwmOutputDeviceInterface> pwmOutputDeviceClass;
+	private static Class<? extends SpiDeviceInterface> spiDeviceClass;
+	private static Class<? extends I2CDeviceInterface> i2cDeviceClass = TestI2CDevice.class;
+	
+	public static void setAnalogInputDeviceClass(Class<? extends GpioAnalogInputDeviceInterface> clz) {
+		analogInputDeviceClass = clz;
+	}
 
 	public static void setDigitalInputDeviceClass(Class<? extends GpioDigitalInputDeviceInterface> clz) {
 		digitalInputDeviceClass = clz;
@@ -42,6 +49,18 @@ public class TestDeviceFactory extends BaseNativeDeviceFactory {
 	
 	public static void setDigitalOutputDeviceClass(Class<? extends GpioDigitalOutputDeviceInterface> clz) {
 		digitalOutputDeviceClass = clz;
+	}
+	
+	public static void setPwmOutputDeviceClass(Class<? extends PwmOutputDeviceInterface> clz) {
+		pwmOutputDeviceClass = clz;
+	}
+	
+	public static void setSpiDeviceClass(Class<? extends SpiDeviceInterface> clz) {
+		spiDeviceClass = clz;
+	}
+	
+	public static void setI2CDeviceClass(Class<? extends I2CDeviceInterface> clz) {
+		i2cDeviceClass = clz;
 	}
 	
 	// Added for testing purposes only
@@ -55,10 +74,24 @@ public class TestDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
+	protected GpioAnalogInputDeviceInterface createAnalogInputPin(String key, int pinNumber) throws RuntimeIOException {
+		if (analogInputDeviceClass == null) {
+			throw new UnsupportedOperationException("Analog input implementation class hasn't been set");
+		}
+		
+		try {
+			return analogInputDeviceClass.getConstructor(String.class, DeviceFactoryInterface.class, Integer.TYPE)
+				.newInstance(key, this, Integer.valueOf(pinNumber));
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
 	protected GpioDigitalInputDeviceInterface createDigitalInputPin(String key, int pinNumber, GpioPullUpDown pud,
 			GpioEventTrigger trigger) throws RuntimeIOException {
 		if (digitalInputDeviceClass == null) {
-			return new TestDigitalInputDevice(key, this, pinNumber, pud, trigger);
+			throw new UnsupportedOperationException("Digital input implementation class hasn't been set");
 		}
 		
 		try {
@@ -70,16 +103,10 @@ public class TestDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	protected GpioAnalogInputDeviceInterface createAnalogInputPin(String key, int pinNumber) throws RuntimeIOException {
-		// TODO Support for test analog GPIO pins
-		throw new UnsupportedOperationException("Analog GPIOs not yet supported in the Test device provider factory");
-	}
-
-	@Override
 	protected GpioDigitalOutputDeviceInterface createDigitalOutputPin(String key, int pinNumber, boolean initialValue)
 			throws RuntimeIOException {
 		if (digitalOutputDeviceClass == null) {
-			return new TestDigitalOutputDevice(key, this, pinNumber, initialValue);
+			throw new UnsupportedOperationException("Digital output implementation class hasn't been set");
 		}
 		
 		try {
@@ -93,21 +120,45 @@ public class TestDeviceFactory extends BaseNativeDeviceFactory {
 	@Override
 	protected PwmOutputDeviceInterface createPwmOutputPin(String key, int pinNumber,
 			float initialValue, PwmType pwmType) throws RuntimeIOException {
-		// TODO Support for test PWM devices
-		throw new UnsupportedOperationException("PWM not yet supported in the Test device provider factory");
+		if (pwmOutputDeviceClass == null) {
+			throw new IllegalArgumentException("PWM output implementation class hasn't been set");
+		}
+		
+		try {
+			return pwmOutputDeviceClass.getConstructor(String.class, DeviceFactoryInterface.class, Integer.TYPE, Float.TYPE, PwmType.class)
+				.newInstance(key, this, Integer.valueOf(pinNumber), Float.valueOf(initialValue), pwmType);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	@Override
 	protected SpiDeviceInterface createSpiDevice(String key, int controller, int chipSelect, int frequency,
 			SpiClockMode spiClockMode) throws RuntimeIOException {
-		// TODO Ability to create different SPI devices
-		return new TestMcpAdcSpiDevice(key, this, controller, chipSelect, frequency, spiClockMode);
+		if (spiDeviceClass == null) {
+			throw new IllegalArgumentException("SPI Device implementation class hasn't been set");
+		}
+		
+		try {
+			return spiDeviceClass.getConstructor(String.class, DeviceFactoryInterface.class, Integer.TYPE, Integer.TYPE, Integer.TYPE, SpiClockMode.class)
+				.newInstance(key, this, Integer.valueOf(controller), Integer.valueOf(chipSelect), Integer.valueOf(frequency), spiClockMode);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	@Override
 	protected I2CDeviceInterface createI2CDevice(String key, int controller, int address, int addressSize,
 			int clockFrequency) throws RuntimeIOException {
-		// TODO Support for test I2C devices
-		return new TestI2CDevice(key, this, controller, address, addressSize, clockFrequency);
+		if (i2cDeviceClass == null) {
+			throw new IllegalArgumentException("I2C Device implementation class hasn't been set");
+		}
+		
+		try {
+			return i2cDeviceClass.getConstructor(String.class, DeviceFactoryInterface.class, Integer.TYPE, Integer.TYPE, Integer.TYPE, Integer.TYPE)
+				.newInstance(key, this, Integer.valueOf(controller), Integer.valueOf(address), Integer.valueOf(addressSize), Integer.valueOf(clockFrequency));
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 }

@@ -31,30 +31,41 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
+import org.pmw.tinylog.Logger;
 
-import com.diozero.api.*;
+import com.diozero.api.I2CConstants;
+import com.diozero.api.SpiClockMode;
 import com.diozero.internal.DeviceFactoryHelper;
 import com.diozero.internal.DeviceStates;
 import com.diozero.internal.provider.test.TestDeviceFactory;
+import com.diozero.internal.provider.test.TestMcpAdcSpiDevice;
 import com.diozero.internal.spi.I2CDeviceInterface;
 import com.diozero.internal.spi.SpiDeviceInterface;
 
 @SuppressWarnings("static-method")
 public class CleanupTest {
+	@Before
+	public void setup() {
+		TestMcpAdcSpiDevice.setType(McpAdc.Type.MCP3008);
+		TestDeviceFactory.setSpiDeviceClass(TestMcpAdcSpiDevice.class);
+	}
+	
 	@Test
 	public void test() {
 		TestDeviceFactory tdf = (TestDeviceFactory)DeviceFactoryHelper.getNativeDeviceFactory();
+		
 		DeviceStates ds = tdf.getDeviceStates();
 		Assert.assertTrue(ds.size() == 0);
+		
 		try (I2CDeviceInterface device = tdf.provisionI2CDevice(0, 0, 0, 0)) {
 			device.read(0, I2CConstants.ADDR_SIZE_7, ByteBuffer.allocateDirect(5));
 			Assert.assertTrue(ds.size() == 1);
 			device.close();
 			Assert.assertTrue(ds.size() == 0);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Logger.error(e, "Error: {}", e);
 		}
 		// Check the log for the above - make sure there is a warning about closing already closed device
 		
@@ -68,10 +79,11 @@ public class CleanupTest {
 			device.writeAndRead(out);
 			Assert.assertTrue(ds.size() == 1);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Logger.error(e, "Error: {}", e);
 		}
+		
 		Assert.assertTrue(ds.size() == 0);
+		
 		tdf.closeAll();
 	}
 }

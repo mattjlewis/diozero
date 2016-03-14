@@ -58,8 +58,14 @@ public class LambdaTest {
 			SleepUtil.sleepSeconds(1);
 		}
 		
-		Logger.info("Using GpioScheduler");
+		Logger.info("Using DioZeroScheduler.invokeAtFixedRate()");
 		DioZeroScheduler.getDaemonInstance().invokeAtFixedRate(t::getValue, t::setValue, 100, 1000, TimeUnit.MILLISECONDS);
+		for (int i=0; i<10; i++) {
+			SleepUtil.sleepSeconds(1);
+		}
+		
+		Logger.info("Using DioZeroScheduler.scheduleAtFixedRate()");
+		DioZeroScheduler.getDaemonInstance().scheduleAtFixedRate(t::getValue, 100, 1000, TimeUnit.MILLISECONDS);
 		for (int i=0; i<10; i++) {
 			SleepUtil.sleepSeconds(1);
 		}
@@ -72,6 +78,7 @@ public class LambdaTest {
 	}
 	
 	public float getValue() {
+		System.out.println("getValue() called");
 		return RANDOM.nextFloat();
 	}
 	
