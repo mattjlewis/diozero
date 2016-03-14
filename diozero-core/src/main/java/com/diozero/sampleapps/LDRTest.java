@@ -36,15 +36,15 @@ import com.diozero.util.SleepUtil;
 /**
  * To run:
  * JDK Device I/O 1.0:
- *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.3-SNAPSHOT.jar:diozero-provider-jdkdio10-0.3-SNAPSHOT.jar:dio-1.0.1-dev-linux-armv6hf.jar -Djava.library.path=. com.diozero.sampleapps.LDRTest MCP3208 0 3
+ *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.4-SNAPSHOT.jar:diozero-provider-jdkdio10-0.4-SNAPSHOT.jar:dio-1.0.1-dev-linux-armv6hf.jar -Djava.library.path=. com.diozero.sampleapps.LDRTest MCP3208 0 3
  * JDK Device I/O 1.1:
- *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.3-SNAPSHOT.jar:diozero-provider-jdkdio11-0.3-SNAPSHOT.jar:dio-1.1-dev-linux-armv6hf.jar -Djava.library.path=. com.diozero.sampleapps.LDRTest MCP3208 0 3
+ *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.4-SNAPSHOT.jar:diozero-provider-jdkdio11-0.4-SNAPSHOT.jar:dio-1.1-dev-linux-armv6hf.jar -Djava.library.path=. com.diozero.sampleapps.LDRTest MCP3208 0 3
  * Pi4j:
- *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.3-SNAPSHOT.jar:diozero-provider-pi4j-0.3-SNAPSHOT.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sampleapps.LDRTest MCP3208 0 3
+ *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.4-SNAPSHOT.jar:diozero-provider-pi4j-0.4-SNAPSHOT.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sampleapps.LDRTest MCP3208 0 3
  * wiringPi:
- *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.3-SNAPSHOT.jar:diozero-provider-wiringpi-0.3-SNAPSHOT.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sampleapps.LDRTest MCP3208 0 3
+ *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.4-SNAPSHOT.jar:diozero-provider-wiringpi-0.4-SNAPSHOT.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sampleapps.LDRTest MCP3208 0 3
  * pigpgioJ:
- *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.3-SNAPSHOT.jar:diozero-provider-pigpio-0.3-SNAPSHOT.jar:pigpioj-java-1.0.0.jar com.diozero.sampleapps.LDRTest MCP3208 0 3
+ *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.4-SNAPSHOT.jar:diozero-provider-pigpio-0.4-SNAPSHOT.jar:pigpioj-java-1.0.0.jar com.diozero.sampleapps.LDRTest MCP3208 0 3
  */
 public class LDRTest {
 	private static final int ITERATIONS = 20;
@@ -56,7 +56,7 @@ public class LDRTest {
 		}
 		McpAdc.Type type = McpAdc.Type.valueOf(args[0]);
 		if (type == null) {
-			Logger.error("Invalid MCP ADC type '{}'. Usage: {} <mcp-name> <spi-chip-select> <adc_pin>", args[0], McpAdcTest.class.getName());
+			Logger.error("Invalid MCP ADC type '{}'. Usage: {} <mcp-name> <spi-chip-select> <adc_pin>", args[0], LDRTest.class.getName());
 			System.exit(2);
 		}
 		
