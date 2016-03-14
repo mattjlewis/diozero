@@ -3,6 +3,12 @@
 	
 	<!--
 	Useful Maven commands:
+	Skip tests:
+		 -Dmaven.test.skip=true
+	General lifecycle:
+		mvn package
+		mvn install
+		mvn deploy
 	Show updates to versions:
 		mvn versions:display-plugin-updates
 		mvn versions:display-dependency-updates
