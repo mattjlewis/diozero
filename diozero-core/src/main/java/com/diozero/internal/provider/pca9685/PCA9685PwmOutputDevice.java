@@ -28,9 +28,9 @@ package com.diozero.internal.provider.pca9685;
 
 import org.pmw.tinylog.Logger;
 
+import com.diozero.PCA9685;
 import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.PwmOutputDeviceInterface;
-import com.diozero.sandpit.PCA9685;
 import com.diozero.util.RuntimeIOException;
 
 public class PCA9685PwmOutputDevice extends AbstractDevice implements PwmOutputDeviceInterface {
