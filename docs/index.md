@@ -166,15 +166,21 @@ This library provides support for a growing number of GPIO / I2C / SPI connected
 
 I've done some limited performance tests (turning a GPIO on then off, see [GpioPerfTest](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/sampleapps/GpioPerfTest.java)) on a Raspberry Pi 2 using the various native device factory providers as well as a test using Pi4j's wiringPi JNI API directly without going via my DIO-Zero wrapper (see [WiringPiRawPerfTest](https://github.com/mattjlewis/diozero/blob/master/diozero-provider-wiringpi/src/main/java/com/diozero/internal/provider/wiringpi/WiringPiRawPerfTest.java)); here are the results:
 
-| Provider | Iterations | Frequency (kHz) |
-| -------- | ----------:| ---------------:|
-| Pi4j 1.0 | 10,000 | 0.91 |
-| JDK DIO 1.1 | 100,000 | 8.23 |
-| Pi4j 1.1 | 10,000,000 | 622 |
-| wiringPi | 5,000,000 | 1,683 |
-| wiringPi (direct) | 10,000,000 | 2,137 |
-| pigpio | 5,000,000 | 1,266 |
-| pigpio (direct) | 10,000,000 | 1,649 |
+| Provider | Device | Iterations | Frequency (kHz) |
+| -------- | ------ | ----------:| ---------------:|
+| Pi4j 1.0 | Pi2 | 10,000 | 0.91 |
+| JDK DIO 1.1 | Pi2 | 100,000 | 8.23 |
+| Pi4j 1.1 | Pi2 | 10,000,000 | 622 |
+| pigpio | Pi2 | 5,000,000 | 2,019 |
+| pigpio | Pi3 | 10,000,000 | 2,900 |
+| pigpio (JNI) | Pi2 | 10,000,000 | 2,509 |
+| pigpio (JNI) | Pi3 | 10,000,000 | 3,537 |
+| wiringPi | Pi2 | 5,000,000 | 2,640 |
+| wiringPi | Pi3 | 5,000,000 | 3,446 |
+| wiringPi (JNI) | Pi2 | 10,000,000 | 3,298 |
+| wiringPi (JNI) | Pi3 | 10,000,000 | 4,373 |
+
+![Performance](images/Performance.png "Performance") 
 
 For a discussion on why Pi4j 1.0 was so slow, see this [issue](https://github.com/Pi4J/pi4j/issues/158). These results are in-line with those documented in the book ["Raspberry Pi with Java: Programming the Internet of Things"](http://www.amazon.co.uk/Raspberry-Pi-Java-Programming-Internet/dp/0071842012). For reference, the author's results were:
 
