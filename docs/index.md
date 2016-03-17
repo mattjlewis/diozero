@@ -4,7 +4,7 @@ A Device I/O library written in Java that provides an object-orientated interfac
 
 This library makes use of modern Java 8 features such as [automatic resource management](https://docs.oracle.com/javase/tutorial/essential/exceptions/tryResourceClose.html), [Lambda Expressions](https://docs.oracle.com/javase/tutorial/java/javaOO/lambdaexpressions.html) and [Method References](https://docs.oracle.com/javase/tutorial/java/javaOO/methodreferences.html) where they simplify development and improve code readability.
 
-Created by [Matt Lewis](https://github.com/mattjlewis), inspired by [GPIO Zero](https://gpiozero.readthedocs.org/en/v1.1.0/index.html).
+Created by [Matt Lewis](https://github.com/mattjlewis) (email [deviceiozero@gmail.com](mailto:deviceiozero@gmail.com)), inspired by [GPIO Zero](https://gpiozero.readthedocs.org/en/v1.1.0/index.html). If you have any issues, comments or suggestions please use [this thread](https://www.raspberrypi.org/forums/viewtopic.php?f=81&t=136010) on the Raspberry Pi forums.
 
 ## Concepts
 
@@ -191,8 +191,6 @@ This project is hosted on [GitHub](https://github.com/mattjlewis/diozero/), plea
 + Make suggestions for [fixes and enhancements](https://github.com/mattjlewis/diozero/issues)
 + Provide sample applications
 + Contribute to development
-
-TODO Add something about Maven dependencies, setting up development environments.
 
 ## To-Do
 
