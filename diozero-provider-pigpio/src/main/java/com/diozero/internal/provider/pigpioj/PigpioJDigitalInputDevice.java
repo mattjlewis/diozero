@@ -78,11 +78,11 @@ public class PigpioJDigitalInputDevice extends AbstractInputDevice<DigitalInputE
 		
 		int rc = PigpioGpio.setMode(pinNumber, PigpioGpio.MODE_PI_INPUT);
 		if (rc < 0) {
-			throw new RuntimeIOException("Error calling PigpioGpio.setMode(), respone: " + rc);
+			throw new RuntimeIOException("Error calling PigpioGpio.setMode(), response: " + rc);
 		}
 		rc = PigpioGpio.setPullUpDown(pinNumber, pigpio_pud);
 		if (rc < 0) {
-			throw new RuntimeIOException("Error calling PigpioGpio.setPullUpDown(), respone: " + rc);
+			throw new RuntimeIOException("Error calling PigpioGpio.setPullUpDown(), response: " + rc);
 		}
 		
 		this.pinNumber = pinNumber;
@@ -104,7 +104,7 @@ public class PigpioJDigitalInputDevice extends AbstractInputDevice<DigitalInputE
 	public boolean getValue() throws RuntimeIOException {
 		int rc = PigpioGpio.read(pinNumber);
 		if (rc < 0) {
-			throw new RuntimeIOException("Error calling PigpioGpio.read(), respone: " + rc);
+			throw new RuntimeIOException("Error calling PigpioGpio.read(), response: " + rc);
 		}
 		return rc == 1;
 	}
@@ -124,7 +124,7 @@ public class PigpioJDigitalInputDevice extends AbstractInputDevice<DigitalInputE
 		
 		int rc = PigpioGpio.setISRFunc(pinNumber, edge, -1, this);
 		if (rc < 0) {
-			throw new RuntimeIOException("Error calling PigpioGpio.setISRFunc(), respone: " + rc);
+			throw new RuntimeIOException("Error calling PigpioGpio.setISRFunc(), response: " + rc);
 		}
 	}
 
@@ -132,7 +132,7 @@ public class PigpioJDigitalInputDevice extends AbstractInputDevice<DigitalInputE
 	public void disableListener() {
 		int rc = PigpioGpio.setISRFunc(pinNumber, PigpioGpio.EITHER_EDGE, -1, null);
 		if (rc < 0) {
-			throw new RuntimeIOException("Error calling PigpioGpio.setISRFunc(), respone: " + rc);
+			throw new RuntimeIOException("Error calling PigpioGpio.setISRFunc(), response: " + rc);
 		}
 	}
 

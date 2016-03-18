@@ -19,7 +19,7 @@ public class PigpioJDigitalOutputDevice extends AbstractDevice implements GpioDi
 		
 		int rc = PigpioGpio.setMode(pinNumber, PigpioGpio.MODE_PI_OUTPUT);
 		if (rc < 0) {
-			throw new RuntimeIOException("Error calling PigpioGpio.setMode(), respone: " + rc);
+			throw new RuntimeIOException("Error calling PigpioGpio.setMode(), response: " + rc);
 		}
 		setValue(initialValue);
 	}
@@ -33,7 +33,7 @@ public class PigpioJDigitalOutputDevice extends AbstractDevice implements GpioDi
 	public boolean getValue() throws RuntimeIOException {
 		int rc = PigpioGpio.read(pinNumber);
 		if (rc < 0) {
-			throw new RuntimeIOException("Error calling PigpioGpio.read(), respone: " + rc);
+			throw new RuntimeIOException("Error calling PigpioGpio.read(), response: " + rc);
 		}
 		return rc == 1;
 	}
@@ -42,7 +42,7 @@ public class PigpioJDigitalOutputDevice extends AbstractDevice implements GpioDi
 	public void setValue(boolean value) throws RuntimeIOException {
 		int rc = PigpioGpio.write(pinNumber, value);
 		if (rc < 0) {
-			throw new RuntimeIOException("Error calling PigpioGpio.write(), respone: " + rc);
+			throw new RuntimeIOException("Error calling PigpioGpio.write(), response: " + rc);
 		}
 	}
 
