@@ -164,21 +164,21 @@ This library provides support for a growing number of GPIO / I2C / SPI connected
 
 ## Performance
 
-I've done some limited performance tests (turning a GPIO on then off, see [GpioPerfTest](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/sampleapps/GpioPerfTest.java)) on a Raspberry Pi 2 using the various native device factory providers as well as a test using Pi4j's wiringPi JNI API directly without going via my DIO-Zero wrapper (see [WiringPiRawPerfTest](https://github.com/mattjlewis/diozero/blob/master/diozero-provider-wiringpi/src/main/java/com/diozero/internal/provider/wiringpi/WiringPiRawPerfTest.java)); here are the results:
+I've done some limited performance tests (turning a GPIO on then off, see [GpioPerfTest](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/sampleapps/GpioPerfTest.java)) on a Raspberry Pi 2 and 3 using the various native device factory providers. I've also run tests using JNI APIs directly without going via my DIO-Zero wrapper to assess the overhead of using my library (see [WiringPiRawPerfTest](https://github.com/mattjlewis/diozero/blob/master/diozero-provider-wiringpi/src/main/java/com/diozero/internal/provider/wiringpi/WiringPiRawPerfTest.java) and [PigpioPerfTest](https://github.com/mattjlewis/pigpioj/blob/master/pigpioj-java/src/main/java/com/diozero/pigpioj/test/PigpioPerfTest.java)) - the overhead is approximately 25% for pigpio and wiringPi. Here are the results:
 
-| Provider | Device | Iterations | Frequency (kHz) |
-| -------- | ------ | ----------:| ---------------:|
-| Pi4j 1.0 | Pi2 | 10,000 | 0.91 |
-| JDK DIO 1.1 | Pi2 | 100,000 | 8.23 |
-| Pi4j 1.1 | Pi2 | 10,000,000 | 622 |
-| pigpio | Pi2 | 5,000,000 | 2,019 |
-| pigpio | Pi3 | 10,000,000 | 2,900 |
-| pigpio (JNI) | Pi2 | 10,000,000 | 2,509 |
-| pigpio (JNI) | Pi3 | 10,000,000 | 3,537 |
-| wiringPi | Pi2 | 5,000,000 | 2,640 |
-| wiringPi | Pi3 | 5,000,000 | 3,446 |
-| wiringPi (JNI) | Pi2 | 10,000,000 | 3,298 |
-| wiringPi (JNI) | Pi3 | 10,000,000 | 4,373 |
+| Provider | Device | Frequency (kHz) |
+| -------- |:------:| ---------------:|
+| Pi4j 1.0 | Pi2 | 0.91 |
+| JDK DIO 1.1 | Pi2 | 8.23 |
+| Pi4j 1.1 | Pi2 | 622 |
+| pigpio | Pi2 | 2,019 |
+| pigpio | Pi3 | 2,900 |
+| pigpio (JNI) | Pi2 | 2,509 |
+| pigpio (JNI) | Pi3 | 3,537 |
+| wiringPi | Pi2 | 2,640 |
+| wiringPi | Pi3 | 3,446 |
+| wiringPi (JNI) | Pi2 3,298 |
+| wiringPi (JNI) | Pi3 4,373 |
 
 ![Performance](images/Performance.png "Performance") 
 
