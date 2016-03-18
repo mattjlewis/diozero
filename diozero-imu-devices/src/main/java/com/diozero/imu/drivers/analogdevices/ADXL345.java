@@ -28,30 +28,30 @@ public class ADXL345 implements ImuInterface {
 	private static final int[] RANGE_LIST = { 2, 4, 8, 16 };
 
 	// Registers
-	private static final byte THRESH_TAP = 0x1D;	// Tap threshold
-	private static final byte OFSX = 0x1E;			// X-axis offset
-	private static final byte OFSY = 0x1F;			// Y-axis offset
-	private static final byte OFSZ = 0x20;			// Z-axis offset
-	private static final byte TAP_DUR = 0x21;		// Tap duration
-	private static final byte TAP_LATENCY = 0x22;	// Tap latency
-	private static final byte TAP_WINDOW = 0x23;	// Tap window
-	private static final byte THRESH_ACT = 0x24;	// Activity threshold
-	private static final byte THRESH_INACT = 0x25;	// Inactivity threshold
-	private static final byte TIME_INACT = 0x26;	// Inactivity time
-	private static final byte ACT_INACT_CTL = 0x27;	// Axis enable control for activity and inactivity detection
-	private static final byte THRESH_FF = 0x28;		// Free-fall threshold
-	private static final byte TIME_FF = 0x29;		// Free-fall time
-	private static final byte TAP_AXES = 0x2A;		// Axis control for single tap/double tap
-	private static final byte ACT_TAP_STATUS = 0x2B;// Source of single tap/double tap
-	private static final byte BW_RATE = 0x2C;		// Data rate and power mode control
-	private static final byte POWER_CTL = 0x2D;		// Power-saving features control
-	private static final byte INT_ENABLE = 0x2E;	// Interrupt enable control
-	private static final byte INT_MAP = 0x2F;		// Interrupt mapping control
-	private static final byte INT_SOURCE = 0x30;	// Source of interrupts
-	private static final byte DATA_FORMAT = 0x31;	// Data format control
-	private static final byte AXES_DATA = 0x32;		// 3 sets of 2 byte axis data
-	private static final byte FIFO_CTL = 0x38;		// FIFO control
-	private static final byte FIFO_STATUS = 0x39;	// FIFO status
+	private static final int THRESH_TAP = 0x1D;		// Tap threshold
+	private static final int OFSX = 0x1E;			// X-axis offset
+	private static final int OFSY = 0x1F;			// Y-axis offset
+	private static final int OFSZ = 0x20;			// Z-axis offset
+	private static final int TAP_DUR = 0x21;		// Tap duration
+	private static final int TAP_LATENCY = 0x22;	// Tap latency
+	private static final int TAP_WINDOW = 0x23;		// Tap window
+	private static final int THRESH_ACT = 0x24;		// Activity threshold
+	private static final int THRESH_INACT = 0x25;	// Inactivity threshold
+	private static final int TIME_INACT = 0x26;		// Inactivity time
+	private static final int ACT_INACT_CTL = 0x27;	// Axis enable control for activity and inactivity detection
+	private static final int THRESH_FF = 0x28;		// Free-fall threshold
+	private static final int TIME_FF = 0x29;		// Free-fall time
+	private static final int TAP_AXES = 0x2A;		// Axis control for single tap/double tap
+	private static final int ACT_TAP_STATUS = 0x2B;	// Source of single tap/double tap
+	private static final int BW_RATE = 0x2C;		// Data rate and power mode control
+	private static final int POWER_CTL = 0x2D;		// Power-saving features control
+	private static final int INT_ENABLE = 0x2E;		// Interrupt enable control
+	private static final int INT_MAP = 0x2F;		// Interrupt mapping control
+	private static final int INT_SOURCE = 0x30;		// Source of interrupts
+	private static final int DATA_FORMAT = 0x31;	// Data format control
+	private static final int AXES_DATA = 0x32;		// 3 sets of 2 byte axis data
+	private static final int FIFO_CTL = 0x38;		// FIFO control
+	private static final int FIFO_STATUS = 0x39;	// FIFO status
 	
 	private static final byte POWER_CTL_LINK_BIT = 5;
 	private static final byte POWER_CTL_LINK = BitManipulation.getBitMask(POWER_CTL_LINK_BIT);
@@ -116,12 +116,12 @@ public class ADXL345 implements ImuInterface {
 		device.writeByte(THRESH_TAP, (byte)(Math.floor(tapThreshold / THRESH_TAP_LSB)));
 	}
 	
-	private float getOffset(byte register) {
+	private float getOffset(int register) {
 		// Signed 8-bit
 		return device.readByte(register) * OFFSET_LSB;
 	}
 	
-	private void setOffset(byte register, float offset) {
+	private void setOffset(int register, float offset) {
 		if (offset < 0 || offset > OFFSET_RANGE) {
 			throw new IllegalArgumentException("Illegal offset value (" +
 					offset + "), must be 0.." + OFFSET_RANGE);
