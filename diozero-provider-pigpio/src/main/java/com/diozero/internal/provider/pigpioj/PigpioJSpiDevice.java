@@ -49,7 +49,7 @@ public class PigpioJSpiDevice extends AbstractDevice implements SpiDeviceInterfa
 		byte[] rx = new byte[count];
 		int rc = PigpioSPI.spiXfer(handle, tx, rx, count);
 		if (rc < 0) {
-			throw new RuntimeIOException("Error calling PigpioSPI.spiXfer(), respone: " + rc);
+			throw new RuntimeIOException("Error calling PigpioSPI.spiXfer(), response: " + rc);
 		}
 		
 		return ByteBuffer.wrap(rx);
@@ -75,7 +75,7 @@ public class PigpioJSpiDevice extends AbstractDevice implements SpiDeviceInterfa
 		int rc = PigpioSPI.spiClose(handle);
 		handle = CLOSED;
 		if (rc < 0) {
-			throw new RuntimeIOException("Error calling PigpioSPI.spiClose(), respone: " + rc);
+			throw new RuntimeIOException("Error calling PigpioSPI.spiClose(), response: " + rc);
 		}
 	}
 	

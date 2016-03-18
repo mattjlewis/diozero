@@ -67,7 +67,7 @@ public class PigpioJI2CDevice extends AbstractDevice implements I2CDeviceInterfa
 		src.get(buffer, src.position(), to_write);
 		int rc = PigpioI2C.i2cWriteI2CBlockData(handle, register, buffer, to_write);
 		if (rc < 0) {
-			throw new RuntimeIOException("Error calling PigpioI2C.i2cWriteI2CBlockData(), respone: " + rc);
+			throw new RuntimeIOException("Error calling PigpioI2C.i2cWriteI2CBlockData(), response: " + rc);
 		}
 	}
 
@@ -77,7 +77,7 @@ public class PigpioJI2CDevice extends AbstractDevice implements I2CDeviceInterfa
 		int rc = PigpioI2C.i2cClose(handle);
 		handle = CLOSED;
 		if (rc < 0) {
-			throw new RuntimeIOException("Error calling PigpioI2C.i2cClose(), respone: " + rc);
+			throw new RuntimeIOException("Error calling PigpioI2C.i2cClose(), response: " + rc);
 		}
 	}
 }
