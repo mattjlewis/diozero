@@ -150,7 +150,7 @@ This library provides support for a growing number of GPIO / I2C / SPI connected
 + [Output Devices](OutputDevices.md)
     - [Digital](OutputDevices.md#digital-led) and [PWM](OutputDevices.md#pwm-led)
 + [Expansion Boards](ExpansionBoards.md) for adding additional GPIO / Analog / PWM pins
-    - [Microchip Analog to Digital Converters](ExpansionBoards.md#microchip-analog-to-digital-converters), [Microchip GPIO Expansion Board](ExpansionBoards.md#microchip-gpio-expansion-board), [PWM / Server Driver](ExpansionBoards.md#pwm-servo-driver)
+    - [Microchip Analog to Digital Converters](ExpansionBoards.md#microchip-analog-to-digital-converters), [Microchip GPIO Expansion Board](ExpansionBoards.md#microchip-gpio-expansion-board), [PWM / Servo Driver](ExpansionBoards.md#pwm-servo-driver)
 + [Motor Control](MotorControl.md) (support for common motor controller boards)
     - [CamJam EduKit](MotorControl.md#camjam-edukit), [Ryanteck](MotorControl.md#ryanteck), [Toshiba TB6612FNG](MotorControl.md#toshiba-tb6612fng)
 + [Sensor Components](SensorComponents.md) (support for specific sensors, e.g. temperature, pressure, distance, luminosity)
