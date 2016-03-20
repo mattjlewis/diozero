@@ -1,5 +1,7 @@
 package com.diozero.internal.provider.pigpioj;
 
+import org.pmw.tinylog.Logger;
+
 /*
  * #%L
  * Device I/O Zero - pigpioj provider
@@ -32,17 +34,38 @@ import com.diozero.pigpioj.PigpioGpio;
 import com.diozero.util.RuntimeIOException;
 
 public class PigpioJDeviceFactory extends BaseNativeDeviceFactory {
-	
 	public PigpioJDeviceFactory() {
 		int rc = PigpioGpio.initialise();
 		if (rc < 0) {
-			throw new RuntimeIOException("Error calling PigpioGpio.initialise(), respone: " + rc);
+			throw new RuntimeIOException("Error calling PigpioGpio.initialise(), response: " + rc);
 		}
 	}
 
 	@Override
 	public String getName() {
 		return getClass().getSimpleName();
+	}
+
+	@Override
+	public int getPwmFrequency(int pinNumber) {
+		return PigpioGpio.getPWMFrequency(pinNumber);
+	}
+	
+	@Override
+	public void setPwmFrequency(int pinNumber, int pwmFrequency) {
+		int old_freq = PigpioGpio.getPWMFrequency(pinNumber);
+		int old_range = PigpioGpio.getPWMRange(pinNumber);
+		int old_real_range = PigpioGpio.getPWMRealRange(pinNumber);
+		PigpioGpio.setPWMFrequency(pinNumber, pwmFrequency);
+		PigpioGpio.setPWMRange(pinNumber, PigpioGpio.getPWMRealRange(pinNumber));
+		int new_freq = PigpioGpio.getPWMFrequency(pinNumber);
+		int new_range = PigpioGpio.getPWMRange(pinNumber);
+		int new_real_range = PigpioGpio.getPWMRealRange(pinNumber);
+		Logger.info("setPwmFrequency({}, {}), old freq={}, old real range={}, old range={},"
+				+ " new freq={}, new real range={}, new range={}",
+				Integer.valueOf(pinNumber), Integer.valueOf(pwmFrequency),
+				Integer.valueOf(old_freq), Integer.valueOf(old_real_range), Integer.valueOf(old_range),
+				Integer.valueOf(new_freq), Integer.valueOf(new_real_range), Integer.valueOf(new_range));
 	}
 	
 	@Override
@@ -71,7 +94,7 @@ public class PigpioJDeviceFactory extends BaseNativeDeviceFactory {
 	@Override
 	protected PwmOutputDeviceInterface createPwmOutputPin(String key, int pinNumber, float initialValue,
 			PwmType pwmType) throws RuntimeIOException {
-		return new PigpioJPwmOutputDevice(key, this, pinNumber, initialValue);
+		return new PigpioJPwmOutputDevice(key, this, pinNumber, initialValue, PigpioGpio.getPWMRange(pinNumber));
 	}
 
 	@Override
@@ -85,5 +108,4 @@ public class PigpioJDeviceFactory extends BaseNativeDeviceFactory {
 			int clockFrequency) throws RuntimeIOException {
 		return new PigpioJI2CDevice(key, this, controller, address, addressSize);
 	}
-
 }

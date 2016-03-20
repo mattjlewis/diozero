@@ -48,9 +48,9 @@ public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFac
 	private static final int DEVICE_ADDRESS = 0x40;
 	private static final String DEVICE_NAME = "PCA9685";
 	private static final int NUM_CHANNELS = 16;
-	public static final int RANGE = (int)Math.pow(2, 12);
+	private static final int RANGE = (int)Math.pow(2, 12);
 	
-	private static final int CLOCK_FREQ = 25_000_000; //25MHz default osc clock
+	private static final int CLOCK_FREQ = 25_000_000; // 25MHz default osc clock
 	
 	// Registers/etc.
 	private static final int MODE1 = 0x00;
@@ -112,7 +112,7 @@ public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFac
 		setPwmFreq(pwmFrequency);
 	}
 	
-	public void reset() throws RuntimeIOException {
+	private void reset() throws RuntimeIOException {
 		i2cDevice.writeByte(MODE1, 0); // Normal mode
 		i2cDevice.writeByte(MODE2, OUTDRV_MASK); // Set output driver to totem pole mode (rather than open drain)
 	}
@@ -122,9 +122,10 @@ public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFac
 	 * @param pwmFrequency desired frequency. 40Hz to 1000Hz using internal 25MHz oscillator
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
-	public void setPwmFreq(int pwmFrequency) throws RuntimeIOException {
+	private void setPwmFreq(int pwmFrequency) throws RuntimeIOException {
 		if (pwmFrequency < MIN_PWM_FREQUENCY || pwmFrequency > MAX_PWM_FREQUENCY) {
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("Invalid PWM Frequency value (" + pwmFrequency +
+					") must be " + MIN_PWM_FREQUENCY + ".." + MAX_PWM_FREQUENCY);
 		}
 		
 		double prescale_dbl = (((double)CLOCK_FREQ) / RANGE / pwmFrequency) - 1;
@@ -143,27 +144,7 @@ public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFac
 		i2cDevice.writeByte(MODE1, (byte)(oldmode | RESTART_MASK));			// Set restart enabled
 	}
 
-	public float getValue(int channel) throws RuntimeIOException {
-		int[] on_off = getPwm(channel);
-		return (on_off[1] - on_off[0]) / (float)RANGE;
-	}
-
-	/**
-	 * Set PWM output on a specific channel, value must be 0..1
-	 * 
-	 * @param channel PWM channel
-	 * @param value Must be 0..1
-	 * @throws RuntimeIOException if an I/O error occurs
-	 */
-	public void setValue(int channel, double value) throws RuntimeIOException {
-		if (value < 0 || value > 1) {
-			throw new IllegalArgumentException("PWM value must 0..1, you requested " + value);
-		}
-		int off = (int)Math.round((RANGE-1) * value);
-		setPwm(channel, 0, off);
-	}
-
-	public int[] getPwm(int channel) throws RuntimeIOException {
+	private int[] getPwm(int channel) throws RuntimeIOException {
 		validateChannel(channel);
 		
 		// TODO Replace with readUShort()?
@@ -260,8 +241,8 @@ public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFac
 	 * @param pulseWidthMs The desired pulse width in milli-seconds
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
-	public void setServoPulse(int channel, double pulseWidthMs) throws RuntimeIOException {
-		int pulse = ServoUtil.calcServoPulse(pulseWidthMs, pulseMsPerBit);
+	public void setServoPulseWidthMs(int channel, double pulseWidthMs) throws RuntimeIOException {
+		int pulse = ServoUtil.calcServoPulseBits(pulseWidthMs, pulseMsPerBit);
 		Logger.debug("Requested pulse width: {}, Scale: {} ms per bit, Pulse: {}",
 				String.format("%.2f", Double.valueOf(pulseWidthMs)),
 				String.format("%.4f", Double.valueOf(pulseMsPerBit)), Integer.valueOf(pulse));
@@ -303,5 +284,35 @@ public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFac
 		device.setValue(initialValue);
 		
 		return device;
+	}
+
+	public float getValue(int channel) throws RuntimeIOException {
+		int[] on_off = getPwm(channel);
+		return (on_off[1] - on_off[0]) / (float)RANGE;
+	}
+
+	/**
+	 * Set PWM output on a specific channel, value must be 0..1
+	 * 
+	 * @param channel PWM channel
+	 * @param value Must be 0..1
+	 * @throws RuntimeIOException if an I/O error occurs
+	 */
+	public void setValue(int channel, float value) throws RuntimeIOException {
+		if (value < 0 || value > 1) {
+			throw new IllegalArgumentException("PWM value must 0..1, you requested " + value);
+		}
+		int off = (int)Math.floor(value * RANGE);
+		setPwm(channel, 0, off);
+	}
+	
+	@Override
+	public int getPwmFrequency(int pinNumber) {
+		return pwmFrequency;
+	}
+	
+	@Override
+	public void setPwmFrequency(int pinNumber, int pwmFrequency) {
+		setPwmFreq(pwmFrequency);
 	}
 }

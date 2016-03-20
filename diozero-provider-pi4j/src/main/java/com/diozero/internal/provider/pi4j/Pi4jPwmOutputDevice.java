@@ -33,26 +33,16 @@ import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.DeviceFactoryInterface;
 import com.diozero.internal.spi.PwmOutputDeviceInterface;
 import com.diozero.util.RuntimeIOException;
-import com.pi4j.io.gpio.GpioController;
-import com.pi4j.io.gpio.GpioPinPwmOutput;
-import com.pi4j.io.gpio.Pin;
-import com.pi4j.wiringpi.GpioUtil;
-import com.pi4j.wiringpi.SoftPwm;
+import com.pi4j.io.gpio.*;
 
 public class Pi4jPwmOutputDevice extends AbstractDevice implements PwmOutputDeviceInterface {
-	private static final int HARDWARE_PWM_RANGE = 1024;
-	// See https://projects.drogon.net/raspberry-pi/wiringpi/software-pwm-library/
-	// You can lower the range to get a higher frequency, at the expense of resolution,
-	// or increase to get more resolution, but that will lower the frequency
-	private static final int SOFTWARE_PWM_RANGE = 100;
-	
 	private GpioPinPwmOutput pwmOutputPin;
 	private int pinNumber;
 	private float value;
-	private PwmType pwmType;
+	private int range;
 	
 	Pi4jPwmOutputDevice(String key, DeviceFactoryInterface deviceFactory, GpioController gpioController,
-			int pinNumber, float initialValue, PwmType pwmType) throws RuntimeIOException {
+			PwmType pwmType, int range, int pinNumber, float initialValue) throws RuntimeIOException {
 		super(key, deviceFactory);
 		
 		Pin pin = RaspiGpioBcm.getPin(pinNumber);
@@ -62,38 +52,30 @@ public class Pi4jPwmOutputDevice extends AbstractDevice implements PwmOutputDevi
 		
 		this.pinNumber = pinNumber;
 		this.value = initialValue;
-		this.pwmType = pwmType;
+		this.range = range;
 		
 		switch (pwmType) {
 		case HARDWARE:
 			pwmOutputPin = gpioController.provisionPwmOutputPin(pin, "PWM output for BCM GPIO " + pinNumber,
-					(int)(value * HARDWARE_PWM_RANGE));
+					(int)(value * range));
 			break;
 		case SOFTWARE:
-		default:
-			int status = SoftPwm.softPwmCreate(pinNumber, (int)(initialValue * SOFTWARE_PWM_RANGE), SOFTWARE_PWM_RANGE);
+			pwmOutputPin = gpioController.provisionSoftPwmOutputPin(
+					pin, "PWM output for BCM GPIO " + pinNumber, (int)(initialValue * range));
+			/*
+			int status = SoftPwm.softPwmCreate(pinNumber, (int)(initialValue * range), range);
 			if (status != 0) {
 				throw new RuntimeIOException("Error setting up software controlled PWM GPIO on BCM pin " +
 						pinNumber + ", status=" + status);
 			}
+			*/
 		}
 	}
 
 	@Override
 	public void closeDevice() {
 		Logger.debug("closeDevice()");
-		switch (pwmType) {
-		case HARDWARE:
-			pwmOutputPin.setPwm(0);
-			pwmOutputPin.unexport();
-			break;
-		case SOFTWARE:
-			SoftPwm.softPwmWrite(pinNumber, 0);
-			// TODO No software PWM cleanup method?!
-			GpioUtil.unexport(pinNumber);
-			break;
-		default:
-		}
+		GpioFactory.getInstance().unprovisionPin(pwmOutputPin);
 	}
 
 	@Override
@@ -109,14 +91,17 @@ public class Pi4jPwmOutputDevice extends AbstractDevice implements PwmOutputDevi
 	@Override
 	public void setValue(float value) throws RuntimeIOException {
 		this.value = value;
+		pwmOutputPin.setPwm((int)(value * range));
+		/*
 		switch (pwmType) {
 		case HARDWARE:
-			pwmOutputPin.setPwm((int)(value * HARDWARE_PWM_RANGE));
+			pwmOutputPin.setPwm((int)(value * range));
 			break;
 		case SOFTWARE:
 		default:
-			SoftPwm.softPwmWrite(pinNumber, (int)(value * SOFTWARE_PWM_RANGE));
+			SoftPwm.softPwmWrite(pinNumber, (int)(value * range));
 			break;
 		}
+		*/
 	}
 }

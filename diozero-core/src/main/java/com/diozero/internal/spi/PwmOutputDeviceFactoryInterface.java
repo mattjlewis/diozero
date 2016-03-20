@@ -30,4 +30,6 @@ import com.diozero.util.RuntimeIOException;
 
 public interface PwmOutputDeviceFactoryInterface extends DeviceFactoryInterface {
 	PwmOutputDeviceInterface provisionPwmOutputPin(int pinNumber, float initialValue) throws RuntimeIOException;
+	int getPwmFrequency(int pinNumber);
+	void setPwmFrequency(int pinNumber, int pwmFrequency);
 }

@@ -3,8 +3,7 @@ package com.diozero.sampleapps;
 import org.pmw.tinylog.Logger;
 
 import com.diozero.PCA9685;
-import com.diozero.Servo;
-import com.diozero.util.ServoUtil;
+import com.diozero.sandpit.Servo;
 import com.diozero.util.SleepUtil;
 
 /**
@@ -22,70 +21,64 @@ import com.diozero.util.SleepUtil;
  *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.4-SNAPSHOT.jar:diozero-provider-pigpio-0.4-SNAPSHOT.jar:pigpioj-java-1.0.0.jar com.diozero.sampleapps.PCA9685ServoTest 60 15
  */
 public class PCA9685ServoTest {
-	private static final double TOWERPRO_SG90_MIN_MS = 0.7;
-	private static final double TOWERPRO_SG90_MAX_MS = 2.6;
-	private static final double TOWERPRO_SG90_MID_MS = (TOWERPRO_SG90_MIN_MS + TOWERPRO_SG90_MAX_MS) / 2;
+	private static final float TOWERPRO_SG90_MIN_MS = 0.6f;
+	private static final float TOWERPRO_SG90_MAX_MS = 2.5f;
+	private static final float TOWERPRO_SG90_MID_MS = (TOWERPRO_SG90_MIN_MS + TOWERPRO_SG90_MAX_MS) / 2;
 	
 	public static void main(String[] args) {
-		int freq = 60;
+		int pwm_freq = 50;
 		int pin_number = 15;
-		
-		test(freq, pin_number);
+		test(pwm_freq, pin_number);
+		pin_number = 14;
+		test(pwm_freq, pin_number);
 	}
 	
-	public static void test(int frequency, int pinNumber) {
-		int min_pulse = ServoUtil.calcServoPulse(TOWERPRO_SG90_MIN_MS, frequency, PCA9685.RANGE);
-		int mid_pulse = ServoUtil.calcServoPulse(TOWERPRO_SG90_MID_MS, frequency, PCA9685.RANGE);
-		int max_pulse = ServoUtil.calcServoPulse(TOWERPRO_SG90_MAX_MS, frequency, PCA9685.RANGE);
-		Logger.info("Min={}, Mid={}, Max={}, Range={}", Integer.valueOf(min_pulse),
-				Integer.valueOf(mid_pulse), Integer.valueOf(max_pulse), Integer.valueOf(PCA9685.RANGE));
-		
-		float mid = mid_pulse / (float)PCA9685.RANGE;
-		try (PCA9685 pca9685 = new PCA9685(frequency);
-				Servo servo = new Servo(pca9685, frequency, PCA9685.RANGE, pinNumber, mid)) {
+	public static void test(int pwmFrequency, int pinNumber) {
+		try (PCA9685 pca9685 = new PCA9685(pwmFrequency);
+				Servo servo = new Servo(pca9685, pinNumber, pwmFrequency, TOWERPRO_SG90_MID_MS)) {
 			Logger.info("Mid");
-			pca9685.setServoPulse(pinNumber, TOWERPRO_SG90_MID_MS);
+			pca9685.setServoPulseWidthMs(pinNumber, TOWERPRO_SG90_MID_MS);
 			SleepUtil.sleepMillis(1000);
 			Logger.info("Max");
-			pca9685.setServoPulse(pinNumber, TOWERPRO_SG90_MAX_MS);
+			pca9685.setServoPulseWidthMs(pinNumber, TOWERPRO_SG90_MAX_MS);
 			SleepUtil.sleepMillis(1000);
 			Logger.info("Mid");
-			pca9685.setServoPulse(pinNumber, TOWERPRO_SG90_MID_MS);
+			pca9685.setServoPulseWidthMs(pinNumber, TOWERPRO_SG90_MID_MS);
 			SleepUtil.sleepMillis(1000);
 			Logger.info("Min");
-			pca9685.setServoPulse(pinNumber, TOWERPRO_SG90_MIN_MS);
+			pca9685.setServoPulseWidthMs(pinNumber, TOWERPRO_SG90_MIN_MS);
 			SleepUtil.sleepMillis(1000);
 			Logger.info("Mid");
-			pca9685.setServoPulse(pinNumber, TOWERPRO_SG90_MID_MS);
+			pca9685.setServoPulseWidthMs(pinNumber, TOWERPRO_SG90_MID_MS);
 			SleepUtil.sleepMillis(1000);
 			
 			Logger.info("Mid");
-			servo.setValue(mid_pulse / (float)PCA9685.RANGE);
+			servo.setValue(TOWERPRO_SG90_MID_MS * pca9685.getPwmFrequency(pinNumber) / 1000f);
 			SleepUtil.sleepMillis(1000);
 			
-			for (int i=mid_pulse; i>min_pulse; i--) {
-				servo.setValue(i / (float)PCA9685.RANGE);
+			for (float i=TOWERPRO_SG90_MID_MS; i>TOWERPRO_SG90_MIN_MS; i-=0.01) {
+				servo.setValue(i * pca9685.getPwmFrequency(pinNumber) / 1000f);
 				SleepUtil.sleepMillis(10);
 			}
-			for (int i=min_pulse; i<max_pulse; i++) {
-				servo.setValue(i / (float)PCA9685.RANGE);
+			for (float i=TOWERPRO_SG90_MIN_MS; i<TOWERPRO_SG90_MAX_MS; i+=0.01) {
+				servo.setValue(i * pca9685.getPwmFrequency(pinNumber) / 1000f);
 				SleepUtil.sleepMillis(10);
 			}
-			for (int i=max_pulse; i>mid_pulse; i--) {
-				servo.setValue(i / (float)PCA9685.RANGE);
+			for (float i=TOWERPRO_SG90_MAX_MS; i>TOWERPRO_SG90_MID_MS; i-=0.01) {
+				servo.setValue(i * pca9685.getPwmFrequency(pinNumber) / 1000f);
 				SleepUtil.sleepMillis(10);
 			}
 			
-			for (double pulse_ms=TOWERPRO_SG90_MID_MS; pulse_ms<TOWERPRO_SG90_MAX_MS; pulse_ms+=0.01) {
-				servo.setPulseMs(pulse_ms);
+			for (float pulse_ms=TOWERPRO_SG90_MID_MS; pulse_ms<TOWERPRO_SG90_MAX_MS; pulse_ms+=0.01) {
+				servo.setPulseWidthMs(pulse_ms);
 				SleepUtil.sleepMillis(10);
 			}
-			for (double pulse_ms=TOWERPRO_SG90_MAX_MS; pulse_ms>TOWERPRO_SG90_MIN_MS; pulse_ms-=0.01) {
-				servo.setPulseMs(pulse_ms);
+			for (float pulse_ms=TOWERPRO_SG90_MAX_MS; pulse_ms>TOWERPRO_SG90_MIN_MS; pulse_ms-=0.01) {
+				servo.setPulseWidthMs(pulse_ms);
 				SleepUtil.sleepMillis(10);
 			}
-			for (double pulse_ms=TOWERPRO_SG90_MIN_MS; pulse_ms<TOWERPRO_SG90_MID_MS; pulse_ms+=0.01) {
-				servo.setPulseMs(pulse_ms);
+			for (float pulse_ms=TOWERPRO_SG90_MIN_MS; pulse_ms<TOWERPRO_SG90_MID_MS; pulse_ms+=0.01) {
+				servo.setPulseWidthMs(pulse_ms);
 				SleepUtil.sleepMillis(10);
 			}
 		}

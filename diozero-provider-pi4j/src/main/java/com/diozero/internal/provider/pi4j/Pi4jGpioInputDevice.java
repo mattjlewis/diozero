@@ -101,6 +101,7 @@ public class Pi4jGpioInputDevice extends AbstractInputDevice<DigitalInputEvent> 
 		removeListener();
 		digitalInputPin.removeAllTriggers();
 		digitalInputPin.unexport();
+		GpioFactory.getInstance().unprovisionPin(digitalInputPin);
 	}
 
 	@Override

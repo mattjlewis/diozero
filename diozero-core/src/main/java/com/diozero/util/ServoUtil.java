@@ -29,14 +29,21 @@ package com.diozero.util;
 
 public class ServoUtil {
 	public static double calcPulseMsPerBit(int pwmFrequency, int range) {
-		return 1000.0/pwmFrequency/range;
+		return (1000.0/pwmFrequency) / range;
 	}
 
-	public static int calcServoPulse(double pulseWidthMs, double pulseMsPerBit) {
-		return (int)Math.round(pulseWidthMs / pulseMsPerBit);
+	public static int calcServoPulseBits(double pulseWidthMs, double pulseMsPerBit) {
+		return (int)Math.floor(pulseWidthMs / pulseMsPerBit);
 	}
 
-	public static int calcServoPulse(double pulseWidthMs, int pwmFrequency, int range) {
-		return (int)Math.round(pulseWidthMs / calcPulseMsPerBit(pwmFrequency, range));
+	/**
+	 * Calculate the number of bits required for the specified pulse width (milliseconds)
+	 * @param pulseWidthMs The required pulse width value
+	 * @param pwmFrequency The servo driver PWM Frequency
+	 * @param range The servo driver range, i.e. if 12 bit then this would be 4096
+	 * @return Relative servo driver duty cycle value required to set the requested pulse width
+	 */
+	public static int calcServoPulseBits(double pulseWidthMs, int pwmFrequency, int range) {
+		return (int)Math.floor(pulseWidthMs / calcPulseMsPerBit(pwmFrequency, range));
 	}
 }

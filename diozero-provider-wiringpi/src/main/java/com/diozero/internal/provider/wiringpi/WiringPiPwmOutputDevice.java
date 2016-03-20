@@ -38,39 +38,45 @@ import com.pi4j.wiringpi.GpioUtil;
 import com.pi4j.wiringpi.SoftPwm;
 
 public class WiringPiPwmOutputDevice extends AbstractDevice implements PwmOutputDeviceInterface {
-	private static final int HARDWARE_PWM_RANGE = 1024;
-	// See https://projects.drogon.net/raspberry-pi/wiringpi/software-pwm-library/
-	// You can lower the range to get a higher frequency, at the expense of resolution,
-	// or increase to get more resolution, but that will lower the frequency
-	private static final int SOFTWARE_PWM_RANGE = 100;
+	private static final boolean DISABLED = true;
 	
 	private int pinNumber;
 	private float value;
 	private PwmType pwmType;
+	private int range;
 	
-	WiringPiPwmOutputDevice(String key, DeviceFactoryInterface deviceFactory, int pinNumber, float initialValue, PwmType pwmType) throws RuntimeIOException {
+	WiringPiPwmOutputDevice(String key, DeviceFactoryInterface deviceFactory, PwmType pwmType,
+			int range, int pinNumber, float initialValue) throws RuntimeIOException {
 		super(key, deviceFactory);
 		
 		this.pinNumber = pinNumber;
 		this.value = initialValue;
 		this.pwmType = pwmType;
+		this.range = range;
 		
 		switch (pwmType) {
 		case HARDWARE:
+			if (DISABLED) {
+				// This worked from the command line after a fresh restart
+				// However, not yet got it to work in software even though using the same commands
+				// http://raspberrypi.stackexchange.com/questions/4906/control-hardware-pwm-frequency/38070#38070?newreg=67e978faf30840a6a674ba040fbf1752
+				throw new UnsupportedOperationException("Not yet worked out WiringPi Hardware PWM");
+			}
 			if (GpioUtil.isExported(pinNumber)) {
 				GpioUtil.setDirection(pinNumber, GpioUtil.DIRECTION_OUT);
 			} else {
 				GpioUtil.export(pinNumber, GpioUtil.DIRECTION_OUT);
 			}
 			Gpio.pinMode(pinNumber, Gpio.PWM_OUTPUT);
+			Gpio.pwmWrite(pinNumber, (int)(value * range));
 			break;
 		case SOFTWARE:
-		default:
-			int status = SoftPwm.softPwmCreate(pinNumber, 0, SOFTWARE_PWM_RANGE);
+			int status = SoftPwm.softPwmCreate(pinNumber, (int)(value * range), range);
 			if (status != 0) {
 				throw new RuntimeIOException("Error setting up software controlled PWM GPIO on BCM pin " +
 						pinNumber + ", status=" + status);
 			}
+			break;
 		}
 	}
 
@@ -79,11 +85,9 @@ public class WiringPiPwmOutputDevice extends AbstractDevice implements PwmOutput
 		Logger.debug("closeDevice()");
 		switch (pwmType) {
 		case HARDWARE:
-			Gpio.pwmWrite(pinNumber, 0);
 			GpioUtil.unexport(pinNumber);
 		case SOFTWARE:
-			SoftPwm.softPwmWrite(pinNumber, 0);
-			// TODO No software PWM cleanup method?!
+			SoftPwm.softPwmStop(pinNumber);
 			GpioUtil.unexport(pinNumber);
 			break;
 		default:
@@ -103,13 +107,15 @@ public class WiringPiPwmOutputDevice extends AbstractDevice implements PwmOutput
 	@Override
 	public void setValue(float value) throws RuntimeIOException {
 		this.value = value;
+		int dc = (int)Math.floor(value * range);
 		switch (pwmType) {
 		case HARDWARE:
-			Gpio.pwmWrite(pinNumber, (int)(value * HARDWARE_PWM_RANGE));
+			Logger.info("setValue({}), range={}, dc={}", Float.valueOf(value), Integer.valueOf(range), Integer.valueOf(dc));
+			Gpio.pwmWrite(pinNumber, dc);
 			break;
 		case SOFTWARE:
 		default:
-			SoftPwm.softPwmWrite(pinNumber, (int)(value * SOFTWARE_PWM_RANGE));
+			SoftPwm.softPwmWrite(pinNumber, dc);
 			break;
 		}
 	}

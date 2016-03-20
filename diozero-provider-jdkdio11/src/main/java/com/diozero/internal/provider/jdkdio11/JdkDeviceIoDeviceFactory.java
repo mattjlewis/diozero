@@ -62,34 +62,44 @@ public class JdkDeviceIoDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	public GpioDigitalInputDeviceInterface createDigitalInputPin(String key, int pinNumber, GpioPullUpDown pud,
+	public int getPwmFrequency(int pinNumber) {
+		throw new UnsupportedOperationException("PWM output isn't supported by JDK Device I/O");
+	}
+
+	@Override
+	public void setPwmFrequency(int pinNumber, int pwmFrequency) {
+		throw new UnsupportedOperationException("PWM output isn't supported by JDK Device I/O");
+	}
+
+	@Override
+	protected GpioDigitalInputDeviceInterface createDigitalInputPin(String key, int pinNumber, GpioPullUpDown pud,
 			GpioEventTrigger trigger) throws RuntimeIOException {
 		return new JdkDeviceIoGpioInputDevice(key, this, pinNumber, pud, trigger);
 	}
 
 	@Override
-	public GpioAnalogInputDeviceInterface createAnalogInputPin(String key, int pinNumber) throws RuntimeIOException {
+	protected GpioAnalogInputDeviceInterface createAnalogInputPin(String key, int pinNumber) throws RuntimeIOException {
 		throw new UnsupportedOperationException("Analog devices aren't supported on this device");
 	}
 
 	@Override
-	public GpioDigitalOutputDeviceInterface createDigitalOutputPin(String key, int pinNumber, boolean initialValue) throws RuntimeIOException {
+	protected GpioDigitalOutputDeviceInterface createDigitalOutputPin(String key, int pinNumber, boolean initialValue) throws RuntimeIOException {
 		return new JdkDeviceIoGpioOutputDevice(key, this, pinNumber, initialValue);
 	}
 
 	@Override
-	public PwmOutputDeviceInterface createPwmOutputPin(String key, int pinNumber,
+	protected PwmOutputDeviceInterface createPwmOutputPin(String key, int pinNumber,
 			float initialValue, PwmType pwmType) throws RuntimeIOException {
-		return new JdkDeviceIoPwmOutputDevice(key, this, pinNumber, initialValue, pwmType);
+		throw new UnsupportedOperationException("PWM output isn't supported by JDK Device I/O");
 	}
 
 	@Override
-	public SpiDeviceInterface createSpiDevice(String key, int controller, int chipSelect, int frequency, SpiClockMode spiClockMode) throws RuntimeIOException {
+	protected SpiDeviceInterface createSpiDevice(String key, int controller, int chipSelect, int frequency, SpiClockMode spiClockMode) throws RuntimeIOException {
 		return new JdkDeviceIoSpiDevice(key, this, controller, chipSelect, frequency, spiClockMode);
 	}
 
 	@Override
-	public I2CDeviceInterface createI2CDevice(String key, int controller, int address, int addressSize, int clockFrequency) throws RuntimeIOException {
+	protected I2CDeviceInterface createI2CDevice(String key, int controller, int address, int addressSize, int clockFrequency) throws RuntimeIOException {
 		return new JdkDeviceIoI2CDevice(key, this, controller, address, addressSize, clockFrequency);
 	}
 }

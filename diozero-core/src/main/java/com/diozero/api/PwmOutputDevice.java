@@ -169,7 +169,10 @@ public class PwmOutputDevice extends GpioDevice {
 		SleepUtil.sleepSeconds(offTime);
 	}
 
-	private void setValueInternal(float value) throws RuntimeIOException {
+	protected void setValueInternal(float value) throws RuntimeIOException {
+		if (value < 0 || value > 1) {
+			throw new IllegalArgumentException("Value must be 0..1, you requested " + value);
+		}
 		device.setValue(value);
 	}
 	

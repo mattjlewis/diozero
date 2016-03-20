@@ -1,5 +1,10 @@
 package com.diozero.internal.provider.wiringpi;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.pmw.tinylog.Logger;
+
 /*
  * #%L
  * Device I/O Zero - wiringPi provider
@@ -33,17 +38,72 @@ import com.pi4j.wiringpi.Gpio;
 import com.pi4j.wiringpi.GpioUtil;
 
 public class WiringPiDeviceFactory extends BaseNativeDeviceFactory {
+	private static final int PI_PWM_CLOCK_BASE_FREQUENCY = 19_200_000;
+	private static final int DEFAULT_HARDWARE_PWM_RANGE = 1024;
+	private static final int DEFAULT_SOFTWARE_PWM_FREQ = 100;
+	// See https://projects.drogon.net/raspberry-pi/wiringpi/software-pwm-library/
+	// You can lower the range to get a higher frequency, at the expense of resolution,
+	// or increase to get more resolution, but that will lower the frequency
+	private static final int PI4J_MIN_SOFTWARE_PULSE_WIDTH_US = 100;
+	
+	private Map<Integer, Integer> softwarePwmFrequency;
+	private int hardwarePwmFrequency;
+	private int hardwarePwmRange;
+	
 	public WiringPiDeviceFactory() {
 		// Initialise using native pin numbering scheme
 		int status = Gpio.wiringPiSetupGpio();
 		if (status != 0) {
 			throw new RuntimeException("Error initialising wiringPi: " + status);
 		}
+		
+		// Default mode is balanced, actually want mark-space which gives traditional PWM with
+		// predictable PWM frequencies
+		Gpio.pwmSetMode(Gpio.PWM_MODE_MS);
+		
+		softwarePwmFrequency = new HashMap<>();
 	}
 
 	@Override
 	public String getName() {
 		return getClass().getSimpleName();
+	}
+
+	@Override
+	public int getPwmFrequency(int pinNumber) {
+		if (pinNumber == 12 || pinNumber == 13 || pinNumber == 18 || pinNumber == 19) {
+			return hardwarePwmFrequency;
+		}
+		
+		Integer pwm_freq = softwarePwmFrequency.get(Integer.valueOf(pinNumber));
+		if (pwm_freq == null) {
+			return DEFAULT_SOFTWARE_PWM_FREQ;
+		}
+		
+		return pwm_freq.intValue();
+	}
+	
+	@Override
+	public void setPwmFrequency(int pinNumber, int pwmFrequency) {
+		if (pinNumber == 12 || pinNumber == 13 || pinNumber == 18 || pinNumber == 19) {
+			// TODO Validate the requested PWM frequency
+			hardwarePwmRange = DEFAULT_HARDWARE_PWM_RANGE;
+			Gpio.pwmSetRange(hardwarePwmRange);
+			int divisor = PI_PWM_CLOCK_BASE_FREQUENCY / hardwarePwmRange / pwmFrequency;
+			Gpio.pwmSetClock(divisor);
+			this.hardwarePwmFrequency = pwmFrequency;
+			Logger.info("setHardwarePwmFrequency({}, {}) - range={}, divisor={}", Integer.valueOf(pinNumber),
+					Integer.valueOf(pwmFrequency), Integer.valueOf(hardwarePwmRange), Integer.valueOf(divisor));
+		} else {
+			// TODO Software PWM frequency should be limited to 20..250Hz (gives a range of 500..40)
+			this.softwarePwmFrequency.put(Integer.valueOf(pinNumber), Integer.valueOf(pwmFrequency));
+			Logger.info("setPwmFrequency({}, {}) - range={}", Integer.valueOf(pinNumber),
+					Integer.valueOf(pwmFrequency), Integer.valueOf(getSoftwarePwmRange(pinNumber)));
+		}
+	}
+	
+	private int getSoftwarePwmRange(int pinNumber) {
+		return 1_000_000 / (PI4J_MIN_SOFTWARE_PULSE_WIDTH_US * getPwmFrequency(pinNumber));
 	}
 
 	@Override
@@ -57,12 +117,12 @@ public class WiringPiDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	public GpioAnalogInputDeviceInterface createAnalogInputPin(String key, int pinNumber) throws RuntimeIOException {
+	protected GpioAnalogInputDeviceInterface createAnalogInputPin(String key, int pinNumber) throws RuntimeIOException {
 		throw new UnsupportedOperationException("Analog devices aren't supported on this device");
 	}
 
 	@Override
-	public GpioDigitalOutputDeviceInterface createDigitalOutputPin(String key, int pinNumber, boolean initialValue) throws RuntimeIOException {
+	protected GpioDigitalOutputDeviceInterface createDigitalOutputPin(String key, int pinNumber, boolean initialValue) throws RuntimeIOException {
 		if (GpioUtil.isPinSupported(pinNumber) != 1) {
 			throw new RuntimeIOException("Error: Pin " + pinNumber + " isn't supported");
 		}
@@ -71,23 +131,24 @@ public class WiringPiDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	public PwmOutputDeviceInterface createPwmOutputPin(String key, int pinNumber,
+	protected PwmOutputDeviceInterface createPwmOutputPin(String key, int pinNumber,
 			float initialValue, PwmType pwmType) throws RuntimeIOException {
 		if (GpioUtil.isPinSupported(pinNumber) != 1) {
 			throw new RuntimeIOException("Error: Pin " + pinNumber + " isn't supported");
 		}
 		
-		return new WiringPiPwmOutputDevice(key, this, pinNumber, initialValue, pwmType);
+		return new WiringPiPwmOutputDevice(key, this, pwmType,
+				pwmType == PwmType.HARDWARE ? hardwarePwmRange : getSoftwarePwmRange(pinNumber), pinNumber, initialValue);
 	}
 
 	@Override
-	public SpiDeviceInterface createSpiDevice(String key, int controller, int chipSelect, int frequency,
+	protected SpiDeviceInterface createSpiDevice(String key, int controller, int chipSelect, int frequency,
 			SpiClockMode spiClockMode) throws RuntimeIOException {
 		return new WiringPiSpiDevice(key, this, controller, chipSelect, frequency, spiClockMode);
 	}
 
 	@Override
-	public I2CDeviceInterface createI2CDevice(String key, int controller, int address, int addressSize, int clockFrequency)
+	protected I2CDeviceInterface createI2CDevice(String key, int controller, int address, int addressSize, int clockFrequency)
 			throws RuntimeIOException {
 		return new WiringPiI2CDevice(key, this, controller, address, addressSize, clockFrequency);
 	}

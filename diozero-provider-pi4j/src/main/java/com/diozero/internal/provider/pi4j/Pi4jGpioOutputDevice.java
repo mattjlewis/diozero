@@ -57,6 +57,7 @@ public class Pi4jGpioOutputDevice extends AbstractDevice implements GpioDigitalO
 		Logger.debug("closeDevice()");
 		digitalOutputPin.setState(false);
 		digitalOutputPin.unexport();
+		GpioFactory.getInstance().unprovisionPin(digitalOutputPin);
 	}
 
 	@Override

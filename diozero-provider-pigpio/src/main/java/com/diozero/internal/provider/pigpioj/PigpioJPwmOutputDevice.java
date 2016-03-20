@@ -26,9 +26,6 @@ package com.diozero.internal.provider.pigpioj;
  * #L%
  */
 
-
-import org.pmw.tinylog.Logger;
-
 import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.DeviceFactoryInterface;
 import com.diozero.internal.spi.PwmOutputDeviceInterface;
@@ -36,26 +33,22 @@ import com.diozero.pigpioj.PigpioGpio;
 import com.diozero.util.RuntimeIOException;
 
 public class PigpioJPwmOutputDevice extends AbstractDevice implements PwmOutputDeviceInterface {
-	//private static final int PI_HW_PWM_RANGE = 1_000_000;
-	private static final int PWM_RANGE = 256-1;
-	
 	private int pinNumber;
+	private int range;
 
 	public PigpioJPwmOutputDevice(String key, DeviceFactoryInterface deviceFactory, int pinNumber,
-			float initialValue) {
+			float initialValue, int range) {
 		super(key, deviceFactory);
 		
 		this.pinNumber = pinNumber;
+		this.range = range;
+		
+		setValue(initialValue);
 	}
 
 	@Override
 	public void closeDevice() {
-		try {
-			setValue(0);
-		} catch (RuntimeIOException e) {
-			Logger.error(e, "Error setting value to 0 in closeDevice(): {}", e);
-		}
-		// Nothing more to do?
+		// Nothing to do?
 	}
 
 	@Override
@@ -65,25 +58,19 @@ public class PigpioJPwmOutputDevice extends AbstractDevice implements PwmOutputD
 
 	@Override
 	public float getValue() throws RuntimeIOException {
-		int freq = PigpioGpio.getPWMFrequency(pinNumber);
-		Logger.debug("PWM Frequency for pin {}={}", Integer.valueOf(pinNumber), Integer.valueOf(freq));
-		
-		int rc = PigpioGpio.getPWMDutyCycle(pinNumber);
-		if (rc < 0) {
-			throw new RuntimeIOException("Error calling PigpioGpio.getPWMDutyCycle(), respone: " + rc);
+		int dc = PigpioGpio.getPWMDutyCycle(pinNumber);
+		if (dc < 0) {
+			throw new RuntimeIOException("Error calling PigpioGpio.getPWMDutyCycle(), response: " + dc);
 		}
 		
-		return rc / (float)PWM_RANGE;
+		return dc / (float)range;
 	}
 
 	@Override
 	public void setValue(float value) throws RuntimeIOException {
-		int freq = PigpioGpio.getPWMFrequency(pinNumber);
-		Logger.debug("PWM Frequency for pin {}={}", Integer.valueOf(pinNumber), Integer.valueOf(freq));
-		
-		int rc = PigpioGpio.setPWMDutyCycle(pinNumber, (int)(PWM_RANGE*value));
+		int rc = PigpioGpio.setPWMDutyCycle(pinNumber, (int)(range*value));
 		if (rc < 0) {
-			throw new RuntimeIOException("Error calling PigpioGpio.setPWMDutyCycle(), respone: " + rc);
+			throw new RuntimeIOException("Error calling PigpioGpio.setPWMDutyCycle(), response: " + rc);
 		}
 	}
 }

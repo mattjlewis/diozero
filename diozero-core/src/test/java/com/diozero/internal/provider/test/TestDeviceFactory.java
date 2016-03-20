@@ -1,5 +1,8 @@
 package com.diozero.internal.provider.test;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /*
  * #%L
  * Device I/O Zero - Core
@@ -62,6 +65,9 @@ public class TestDeviceFactory extends BaseNativeDeviceFactory {
 	public static void setI2CDeviceClass(Class<? extends I2CDeviceInterface> clz) {
 		i2cDeviceClass = clz;
 	}
+	
+	private static final int DEFAULT_PWM_FREQUENCY = 100;
+	private Map<Integer, Integer> pwmFrequencies = new HashMap<>();
 	
 	// Added for testing purposes only
 	public DeviceStates getDeviceStates() {
@@ -160,5 +166,22 @@ public class TestDeviceFactory extends BaseNativeDeviceFactory {
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	@Override
+	public int getPwmFrequency(int pinNumber) {
+		Integer key = Integer.valueOf(pinNumber);
+		Integer pwm_freq = pwmFrequencies.get(key);
+		if (pwm_freq == null) {
+			pwm_freq = new Integer(DEFAULT_PWM_FREQUENCY);
+			pwmFrequencies.put(key, pwm_freq);
+		}
+		
+		return pwm_freq.intValue();
+	}
+
+	@Override
+	public void setPwmFrequency(int pinNumber, int pwmFrequency) {
+		this.pwmFrequencies.put(Integer.valueOf(pinNumber), Integer.valueOf(pwmFrequency));
 	}
 }
