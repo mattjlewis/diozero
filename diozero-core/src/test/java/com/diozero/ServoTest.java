@@ -59,12 +59,12 @@ public class ServoTest {
 		pulse_width_ms = TOWERPRO_SG90_MIN_MS;
 		servo_pulse = ServoUtil.calcServoPulseBits(pulse_width_ms, ms_per_bit);
 		System.out.println("TowerPro SG90 Min: On time=" + pulse_width_ms + ", servo_pulse=" + servo_pulse);
-		Assert.assertEquals(122, servo_pulse);
+		Assert.assertEquals(147, servo_pulse);
 		
 		pulse_width_ms = TOWERPRO_SG90_MAX_MS;
 		servo_pulse = ServoUtil.calcServoPulseBits(pulse_width_ms, ms_per_bit);
 		System.out.println("TowerPro SG90 Max: On time=" + pulse_width_ms + ", servo_pulse=" + servo_pulse);
-		Assert.assertEquals(589, servo_pulse);
+		Assert.assertEquals(614, servo_pulse);
 		
 		// Error - value greater than range...
 		pulse_width_ms = 20;
@@ -80,9 +80,8 @@ public class ServoTest {
 		
 		double val = TOWERPRO_SG90_MIN_MS * pwm_freq / 1000f;
 		System.out.println("Pulse width of " + TOWERPRO_SG90_MIN_MS + "ms is " + (val * 100f) + "%");
-		Assert.assertEquals(0.03, val, 0.01);
+		Assert.assertEquals(0.036, val, 0.001);
 		
-		val = 0.03;
 		pulse_width_ms = val * 1000f / pwm_freq;
 		System.out.println("Val of " + (val * 100f) + "% is " + TOWERPRO_SG90_MIN_MS + "ms");
 		Assert.assertEquals(TOWERPRO_SG90_MIN_MS, pulse_width_ms, 0.01);
