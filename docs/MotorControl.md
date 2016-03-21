@@ -1,9 +1,10 @@
 # Motor Control
 
-Currently supports two basic types of motor controllers:
+Currently supports the following types of motors:
 
 1.  Motor controller boards with just two separate PWM connections; one for forwards / clockwise control, the other for backwards / ant-clockwise control. Examples: CamJam EduKit #3 Robotics Kit, Ryanteck RPi Motor Controller Board.
 2.  H-Bridge style motor drivers with three connections; PWM proportionate control, digital forwards / clockwise control, and digital backwards / anti-clockwise control. Examples: Toshiba TB6612FNG Dual Motor Driver.
+3.  Servos
 
 
 ## API
@@ -101,11 +102,11 @@ Currently supports two basic types of motor controllers:
     
     : Constructor
     
-    * **motorForwardControlPin** (*[DigitalOutputDevice](API.md#digitaloutputdevice*) - Digital device controlling forward movement.
+    * **motorForwardControlPin** (*[DigitalOutputDevice](API.md#digitaloutputdevice)* - Digital device controlling forward movement.
     
-    * **motorBackwardControlPin** (*[DigitalOutputDevice](API.md#digitaloutputdevice*) - Digital device controlling backward movement.
+    * **motorBackwardControlPin** (*[DigitalOutputDevice](API.md#digitaloutputdevice)* - Digital device controlling backward movement.
     
-    * **motorPwmControl** (*[PwmOutputDevice](API.md#pwmoutputdevice*) - PWM output device controlling relative motor speed.
+    * **motorPwmControl** (*[PwmOutputDevice](API.md#pwmoutputdevice)* - PWM output device controlling relative motor speed.
 
 
 ### DualMotor
@@ -157,6 +158,36 @@ Currently supports two basic types of motor controllers:
     **stop** ()
     
     : Stop both motors.
+
+
+### Servo
+
+!!! Warning "Work-in-progress"
+    Only tested with pigpio hence in the sandpit package.
+
+*class* com.diozero.sandpit.**Servo** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/sandpit/Servo.java){: .viewcode-link }
+
+: Represents a pulse-width controlled servo.
+
+    **Servo** (*pinNumber*, *pwmFrequency*, *initialPulseWidthMs*)
+    
+    : Constructor
+    
+    * **pinNumber** (*int*) - Pin number
+    
+    * **pwmFrequency** (*int*) - Desired PWM frequency for the servo, typically 50Hz
+    
+    * **initialPulseWidthMs** (*float*) - Starting pulse width (in milliseconds). Range is 0.5ms - 2.6ms
+    
+    **getPulseWidthMs** ()
+    
+    : Get the current pulse width value (milliseconds)
+    
+    **getPulseWidthMs** (*float* pulseWidthMs)
+    
+    : Set the pulse width value (milliseconds)
+    
+    **pulseWidthMs** - New pulse width value (milliseconds)
 
 
 ## Common Commercial Motor Controllers

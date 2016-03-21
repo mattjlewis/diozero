@@ -94,13 +94,13 @@ pigpio | pigpioj-java-1.0.0.jar | diozero-provider-pigio-&lt;version&gt;.jar
 
 To get started I recommend first looking at the classes in [com.diozero.sampleapps](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/sampleapps/). To run the [LEDTest](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/sampleapps/LEDTest.java) sample application using the pigpioj provider:
 
-Setting the CLASSPATH environment variable:
+Option 1 - Setting the CLASSPATH environment variable:
 ```sh
 CLASSPATH=tinylog-1.0.3.jar:diozero-core-0.3-SNAPSHOT.jar:diozero-provider-pigpio-0.3-SNAPSHOT.jar:pigpioj-java-1.0.0.jar; export CLASSPATH
 sudo java -cp $CLASSPATH com.diozero.sampleapps.LEDTest 12
 ```
 
-Setting the classpath via the command-line:
+Option 2 - Setting the classpath via command-line:
 ```sh
 sudo java -cp tinylog-1.0.3.jar:diozero-core-0.3-SNAPSHOT.jar:diozero-provider-pigpio-0.3-SNAPSHOT.jar:pigpioj-java-1.0.0.jar com.diozero.sampleapps.LEDTest 12
 ```
@@ -145,22 +145,22 @@ sudo groovy -cp $CLASSPATH test.groovy
 
 This library provides support for a growing number of GPIO / I2C / SPI connected components and devices, I have categorised them as follows:
 
++ [API](API.md) for lower-level interactions
+    - [Input](API.md#input-devices), [Output](API.md#output-devices), [I2C](API.md#i2c-support), [SPI](API.md#spi-support)
 + [Input Devices](InputDevices.md)
     - [Digital](InputDevices.md#digital-input-devices) and [Analog](InputDevices.md#analog-input-devices)
 + [Output Devices](OutputDevices.md)
     - [Digital](OutputDevices.md#digital-led) and [PWM](OutputDevices.md#pwm-led)
 + [Expansion Boards](ExpansionBoards.md) for adding additional GPIO / Analog / PWM pins
-    - [Microchip Analog to Digital Converters](ExpansionBoards.md#microchip-analog-to-digital-converters), [Microchip GPIO Expansion Board](ExpansionBoards.md#microchip-gpio-expansion-board), [PWM / Servo Driver](ExpansionBoards.md#pwm-servo-driver)
+    - [Microchip Analog to Digital Converters](ExpansionBoards.md#mcp-adc), [Microchip GPIO Expansion Board](ExpansionBoards.md#mcp-gpio-expansion-board), [PWM / Servo Driver](ExpansionBoards.md#pwm-servo-driver)
 + [Motor Control](MotorControl.md) (support for common motor controller boards)
-    - [CamJam EduKit](MotorControl.md#camjam-edukit), [Ryanteck](MotorControl.md#ryanteck), [Toshiba TB6612FNG](MotorControl.md#toshiba-tb6612fng)
+    - [API](MotorControl.md#api), [Servos](MotorControl.md#servo), [CamJam EduKit](MotorControl.md#camjamkitdualmotor), [Ryanteck](MotorControl.md#ryanteckdualmotor), [Toshiba TB6612FNG](MotorControl.md#tb6612fngdualmotordriver)
 + [Sensor Components](SensorComponents.md) (support for specific sensors, e.g. temperature, pressure, distance, luminosity)
     - [HC-SRO4 Ultrasonic Ranging Module](SensorComponents.md#hc-sr04), [Bosch BMP180](SensorComponents.md#bosch-bmp180), [TSL2561 Light Sensor](SensorComponents.md#tsl2561), [1-Wire Temperature Sensors e.g. DS18B20](SensorComponents.md#1-wire-temperature-sensors)
-+ [API](API.md) for lower-level interactions
-    - [Input](API.md#input-devices), [Output](API.md#output-devices), [I2C](API.md#i2c-support), [SPI](API.md#spi-support)
 + [IMU Devices](IMUDevices.md) Work-in-progress API for interacting with Inertial Measurement Units such as the InvenSense MPU-9150 and the Analog Devices ADXL345
     - [API](IMUDevices.md#api), [Supported Devices](IMUDevices.md#supported-devices)
 + [LED Strips](LEDStrips.md) Support for LED strips (WS2811B / WS2812B / Adafruit NeoPixel)
-    - [API](LEDStrips.md), [Supported Devices](LEDStrips.md#supported-devices)
+    - [API](LEDStrips.md#api), [Supported Devices](LEDStrips.md#supported-devices)
 
 ## Performance
 
