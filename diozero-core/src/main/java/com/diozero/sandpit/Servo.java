@@ -46,11 +46,11 @@ public class Servo extends GpioDevice {
 		return pwmFrequency;
 	}
 	
-	public float getValue() {
+	private float getValue() {
 		return device.getValue();
 	}
 	
-	public void setValue(float value) {
+	private void setValue(float value) {
 		if (value < 0 || value > 1) {
 			throw new IllegalArgumentException("Value must be 0..1, you requested " + value);
 		}
