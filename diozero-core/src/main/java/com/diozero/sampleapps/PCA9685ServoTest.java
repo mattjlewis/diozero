@@ -52,6 +52,7 @@ public class PCA9685ServoTest {
 			pca9685.setServoPulseWidthMs(pinNumber, TOWERPRO_SG90_MID_MS);
 			SleepUtil.sleepMillis(1000);
 			
+			/*
 			Logger.info("Mid");
 			servo.setValue(TOWERPRO_SG90_MID_MS * pca9685.getPwmFrequency(pinNumber) / 1000f);
 			SleepUtil.sleepMillis(1000);
@@ -68,6 +69,7 @@ public class PCA9685ServoTest {
 				servo.setValue(i * pca9685.getPwmFrequency(pinNumber) / 1000f);
 				SleepUtil.sleepMillis(10);
 			}
+			*/
 			
 			for (float pulse_ms=TOWERPRO_SG90_MID_MS; pulse_ms<TOWERPRO_SG90_MAX_MS; pulse_ms+=0.01) {
 				servo.setPulseWidthMs(pulse_ms);
