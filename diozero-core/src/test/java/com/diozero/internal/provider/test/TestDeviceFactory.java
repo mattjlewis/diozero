@@ -86,7 +86,7 @@ public class TestDeviceFactory extends BaseNativeDeviceFactory {
 		}
 		
 		try {
-			return analogInputDeviceClass.getConstructor(String.class, DeviceFactoryInterface.class, Integer.TYPE)
+			return analogInputDeviceClass.getConstructor(String.class, DeviceFactoryInterface.class, int.class)
 				.newInstance(key, this, Integer.valueOf(pinNumber));
 		} catch (Exception e) {
 			throw new RuntimeException(e);
@@ -101,7 +101,7 @@ public class TestDeviceFactory extends BaseNativeDeviceFactory {
 		}
 		
 		try {
-			return digitalInputDeviceClass.getConstructor(String.class, DeviceFactoryInterface.class, Integer.TYPE, GpioPullUpDown.class, GpioEventTrigger.class)
+			return digitalInputDeviceClass.getConstructor(String.class, DeviceFactoryInterface.class, int.class, GpioPullUpDown.class, GpioEventTrigger.class)
 				.newInstance(key, this, Integer.valueOf(pinNumber), pud, trigger);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
@@ -116,7 +116,7 @@ public class TestDeviceFactory extends BaseNativeDeviceFactory {
 		}
 		
 		try {
-			return digitalOutputDeviceClass.getConstructor(String.class, DeviceFactoryInterface.class, Integer.TYPE, Boolean.TYPE)
+			return digitalOutputDeviceClass.getConstructor(String.class, DeviceFactoryInterface.class, int.class, boolean.class)
 				.newInstance(key, this, Integer.valueOf(pinNumber), Boolean.valueOf(initialValue));
 		} catch (Exception e) {
 			throw new RuntimeException(e);
@@ -131,7 +131,7 @@ public class TestDeviceFactory extends BaseNativeDeviceFactory {
 		}
 		
 		try {
-			return pwmOutputDeviceClass.getConstructor(String.class, DeviceFactoryInterface.class, Integer.TYPE, Float.TYPE, PwmType.class)
+			return pwmOutputDeviceClass.getConstructor(String.class, DeviceFactoryInterface.class, int.class, float.class, PwmType.class)
 				.newInstance(key, this, Integer.valueOf(pinNumber), Float.valueOf(initialValue), pwmType);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
@@ -146,7 +146,7 @@ public class TestDeviceFactory extends BaseNativeDeviceFactory {
 		}
 		
 		try {
-			return spiDeviceClass.getConstructor(String.class, DeviceFactoryInterface.class, Integer.TYPE, Integer.TYPE, Integer.TYPE, SpiClockMode.class)
+			return spiDeviceClass.getConstructor(String.class, DeviceFactoryInterface.class, int.class, int.class, int.class, SpiClockMode.class)
 				.newInstance(key, this, Integer.valueOf(controller), Integer.valueOf(chipSelect), Integer.valueOf(frequency), spiClockMode);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
@@ -161,7 +161,7 @@ public class TestDeviceFactory extends BaseNativeDeviceFactory {
 		}
 		
 		try {
-			return i2cDeviceClass.getConstructor(String.class, DeviceFactoryInterface.class, Integer.TYPE, Integer.TYPE, Integer.TYPE, Integer.TYPE)
+			return i2cDeviceClass.getConstructor(String.class, DeviceFactoryInterface.class, int.class, int.class, int.class, int.class)
 				.newInstance(key, this, Integer.valueOf(controller), Integer.valueOf(address), Integer.valueOf(addressSize), Integer.valueOf(clockFrequency));
 		} catch (Exception e) {
 			throw new RuntimeException(e);
