@@ -38,7 +38,7 @@ import com.diozero.api.DigitalInputDevice;
 import com.diozero.api.motor.DualMotor;
 import com.diozero.util.SleepUtil;;
 
-public class CamJamMotorTest implements Closeable {
+public class CamJamLineFollower implements Closeable {
 	private static final int LED_FRONT_LEFT_PIN = 18;
 	private static final int LED_FRONT_RIGHT_PIN = 17;
 	private static final int LED_REAR_LEFT_PIN = 22;
@@ -52,24 +52,11 @@ public class CamJamMotorTest implements Closeable {
 	private static final int HCSR04_ECHO_PIN = 4;
 
 	public static void main(String[] args) {
-		float DELAY = 0.65f;
 		float speed = 0.9f;
+		float DELAY = 0.65f;
 		
-		try (CamJamMotorTest robot = new CamJamMotorTest()) {
-			robot.go(Direction.RIGHT, DELAY, speed);
-			robot.go(Direction.FORWARDS, DELAY, speed);
-			robot.go(Direction.LEFT, DELAY, speed);
-			robot.stop(DELAY);
-			robot.go(Direction.LEFT_BACKWARDS, DELAY, speed);
-			robot.go(Direction.BACKWARDS, DELAY, speed);
-			robot.go(Direction.RIGHT_BACKWARDS, DELAY, speed);
-			robot.stop(DELAY);
-			robot.go(Direction.SHARP_LEFT, DELAY, speed);
-			robot.go(Direction.SHARP_RIGHT, DELAY, speed);
-			robot.stop(DELAY);
-			robot.go(Direction.FORWARDS, DELAY, speed);
-			robot.go(Direction.BACKWARDS, DELAY, speed);
-			robot.stop(DELAY);
+		try (CamJamLineFollower robot = new CamJamLineFollower()) {
+			robot.testMovements(speed, DELAY);
 			
 			robot.followLine();
 		} catch (IOException e) {
@@ -87,7 +74,7 @@ public class CamJamMotorTest implements Closeable {
 	private HCSR04 hcsr04;
 	private DualMotor dualMotor;
 
-	public CamJamMotorTest() {
+	public CamJamLineFollower() {
 		frontLeftLed = new LED(LED_FRONT_LEFT_PIN, true);
 		frontRightLed = new LED(LED_FRONT_RIGHT_PIN, true);
 		rearLeftLed = new LED(LED_REAR_LEFT_PIN, true);
@@ -100,6 +87,26 @@ public class CamJamMotorTest implements Closeable {
 		hcsr04 = new HCSR04(HCSR04_TRIGGER_PIN, HCSR04_ECHO_PIN);
 			
 		dualMotor = new CamJamKitDualMotor();
+		dualMotor.getLeftMotor().addListener((event) -> {
+			float value = event.getValue();
+			if (value > 0) {
+				frontLeftLed.on(); rearLeftLed.off();
+			} else if (value < 0) {
+				frontLeftLed.off(); rearLeftLed.on();
+			} else {
+				frontLeftLed.off(); rearLeftLed.off();
+			}
+		});
+		dualMotor.getRightMotor().addListener((event) -> {
+			float value = event.getValue();
+			if (value > 0) {
+				frontRightLed.on(); rearRightLed.off();
+			} else if (value < 0) {
+				frontRightLed.off(); rearRightLed.on();
+			} else {
+				frontRightLed.off(); rearRightLed.off();
+			}
+		});
 		
 		frontLeftLed.blink(0.25f, 0.25f, 1, false);
 		frontRightLed.blink(0.25f, 0.25f, 1, false);
@@ -107,6 +114,37 @@ public class CamJamMotorTest implements Closeable {
 		rearLeftLed.blink(0.25f, 0.25f, 1, false);
 		
 		Logger.info("Ready");
+	}
+	
+	public void testMovements(float speed, float delay) {
+		dualMotor.forwardRight(speed);
+		SleepUtil.sleepSeconds(delay);
+		dualMotor.forward(speed);
+		SleepUtil.sleepSeconds(delay);
+		dualMotor.forwardLeft(speed);
+		SleepUtil.sleepSeconds(delay);
+		dualMotor.stop();
+		SleepUtil.sleepSeconds(delay);
+		dualMotor.backwardLeft(speed);
+		SleepUtil.sleepSeconds(delay);
+		dualMotor.backward(speed);
+		SleepUtil.sleepSeconds(delay);
+		dualMotor.backwardRight(speed);
+		SleepUtil.sleepSeconds(delay);
+		dualMotor.stop();
+		SleepUtil.sleepSeconds(delay);
+		dualMotor.rotateLeft(speed);
+		SleepUtil.sleepSeconds(delay);
+		dualMotor.rotateRight(speed);
+		SleepUtil.sleepSeconds(delay);
+		dualMotor.stop();
+		SleepUtil.sleepSeconds(delay);
+		dualMotor.forward(speed);
+		SleepUtil.sleepSeconds(delay);
+		dualMotor.backward(speed);
+		SleepUtil.sleepSeconds(delay);
+		dualMotor.stop();
+		SleepUtil.sleepSeconds(delay);
 	}
 	
 	public void followLine() {
@@ -163,81 +201,6 @@ public class CamJamMotorTest implements Closeable {
 		}
 	}
 
-	public void go(Direction direction, float duration, float speed) {
-		switch (direction) {
-		case FORWARDS:
-			frontLeftLed.on();
-			frontRightLed.on();
-			rearLeftLed.off();
-			rearRightLed.off();
-			dualMotor.forward(speed);
-			break;
-		case BACKWARDS:
-			frontLeftLed.off();
-	    	frontRightLed.off();
-	    	rearLeftLed.on();
-	    	rearRightLed.on();
-	    	dualMotor.backward(speed);
-	    	break;
-		case SHARP_LEFT:
-			frontLeftLed.off();
-			frontRightLed.on();
-			rearLeftLed.off();
-			rearRightLed.on();
-			dualMotor.rotateLeft(speed);
-			break;
-		case SHARP_RIGHT:
-			frontLeftLed.on();
-			frontRightLed.off();
-			rearLeftLed.on();
-			rearRightLed.off();
-			dualMotor.rotateRight(speed);
-			break;
-		case LEFT:
-			frontLeftLed.off();
-			frontRightLed.on();
-			rearLeftLed.off();
-			rearRightLed.off();
-			dualMotor.forwardLeft(speed);
-			break;
-		case RIGHT:
-			frontLeftLed.on();
-			frontRightLed.off();
-			rearLeftLed.off();
-			rearRightLed.off();
-			dualMotor.forwardRight(speed);
-			break;
-		case LEFT_BACKWARDS:
-			frontLeftLed.off();
-			frontRightLed.off();
-			rearLeftLed.off();
-			rearRightLed.on();
-			dualMotor.backwardLeft(speed);
-			break;
-		case RIGHT_BACKWARDS:
-			frontLeftLed.off();
-			frontRightLed.off();
-			rearLeftLed.on();
-			rearRightLed.off();
-			dualMotor.backwardRight(speed);
-		}
-		
-		if (duration > 0) {
-			SleepUtil.sleepSeconds(duration);
-		}
-	}
-
-	public void stop(float duration) {
-		frontLeftLed.off();
-		frontRightLed.off();
-		rearLeftLed.off();
-		rearRightLed.off();
-		dualMotor.stop();
-		if (duration > 0) {
-			SleepUtil.sleepSeconds(duration);
-		}
-	}
-
 	@Override
 	public void close() throws IOException {
 		frontLeftLed.close();
@@ -248,9 +211,5 @@ public class CamJamMotorTest implements Closeable {
 		centreIrSensor.close();
 		rightIrSensor.close();
 		dualMotor.close();
-	}
-	
-	public static enum Direction {
-		FORWARDS, BACKWARDS, LEFT, RIGHT, LEFT_BACKWARDS, RIGHT_BACKWARDS, SHARP_LEFT, SHARP_RIGHT;
 	}
 }
