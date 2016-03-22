@@ -1,0 +1,62 @@
+package com.diozero.sampleapps;
+
+/*
+ * #%L
+ * Device I/O Zero - Core
+ * %%
+ * Copyright (C) 2016 mattjlewis
+ * %%
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ * #L%
+ */
+
+
+import org.pmw.tinylog.Logger;
+
+import com.diozero.McpAdc;
+import com.diozero.sandpit.Potentiometer;
+
+public class PotentiometerTest {
+	public static void main(String[] args) {
+		if (args.length < 3) {
+			Logger.error("Usage: {} <mcp-name> <chip-select> <adc-pin>", PotentiometerTest.class.getName());
+			System.exit(2);
+		}
+		McpAdc.Type type = McpAdc.Type.valueOf(args[0]);
+		if (type == null) {
+			Logger.error("Invalid MCP ADC type '{}'. Usage: {} <mcp-name> <spi-chip-select> <adc_pin>", args[0], PotentiometerTest.class.getName());
+			System.exit(2);
+		}
+		
+		int chip_select = Integer.parseInt(args[1]);
+		int adc_pin = Integer.parseInt(args[2]);
+		float vref = 3.3f;
+		int r1 = 10_000;
+		test(chip_select, adc_pin, vref, r1);
+	}
+	
+	public static void test(int chipSelect, int pinNumber, float vRef, float r1) {
+		try (McpAdc adc = new McpAdc(McpAdc.Type.MCP3008, chipSelect);
+				Potentiometer pot = new Potentiometer(adc, pinNumber, vRef, r1)) {
+			for (int i=0; i<10; i++) {
+				Logger.info("rPot={}", Float.valueOf(pot.getResistance()));
+			}
+		}
+	}
+}
