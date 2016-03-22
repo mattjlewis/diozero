@@ -30,7 +30,7 @@ import org.pmw.tinylog.Logger;
 
 import com.diozero.api.DigitalOutputDevice;
 import com.diozero.api.PwmOutputDevice;
-import com.diozero.api.motor.MotorInterface;
+import com.diozero.api.motor.MotorBase;
 import com.diozero.util.RuntimeIOException;
 
 /**
@@ -39,7 +39,7 @@ import com.diozero.util.RuntimeIOException;
  * Turn forward, set pin 1 to HIGH, pin 2 to LOW, and PWM to &gt;0
  * Turn backward, set pin 1 to LOW, pin 2 to HIGH, PWM to &gt;0
  */
-public class TB6612FNGMotor implements MotorInterface {
+public class TB6612FNGMotor extends MotorBase {
 	private DigitalOutputDevice motorForwardControlPin;
 	private DigitalOutputDevice motorBackwardControlPin;
 	private PwmOutputDevice motorPwmControl;
@@ -70,6 +70,7 @@ public class TB6612FNGMotor implements MotorInterface {
 		motorBackwardControlPin.off();
 		motorForwardControlPin.on();
 		motorPwmControl.setValue(speed);
+		valueChanged(speed);
 	}
 	
 	/**
@@ -82,6 +83,7 @@ public class TB6612FNGMotor implements MotorInterface {
 		motorForwardControlPin.off();
 		motorBackwardControlPin.on();
 		motorPwmControl.setValue(speed);
+		valueChanged(-speed);
 	}
 	
 	@Override
@@ -89,15 +91,7 @@ public class TB6612FNGMotor implements MotorInterface {
 		motorForwardControlPin.off();
 		motorBackwardControlPin.off();
 		motorPwmControl.setValue(0);
-	}
-
-	/**
-	 * Reverse direction of the motors
-	 * @throws RuntimeIOException if an I/O error occurs
-	 */
-	@Override
-	public void reverse() throws RuntimeIOException {
-		setValue(-getValue());
+		valueChanged(0);
 	}
 	
 	/**
@@ -110,26 +104,6 @@ public class TB6612FNGMotor implements MotorInterface {
 		float speed = motorPwmControl.getValue();
 		
 		return motorForwardControlPin.isOn() ? speed : -speed;
-	}
-
-	/**
-	 * Set the speed of the motor as a floating point value between -1 (full
-	 * speed backward) and 1 (full speed forward)
-	 * @param value Range -1 .. 1. Positive numbers for forward, Negative numbers for backward
-	 * @throws RuntimeIOException if an I/O error occurs
-	 */
-	@Override
-	public void setValue(float value) throws RuntimeIOException {
-		if (value < -1 || value > 1) {
-			throw new IllegalArgumentException("Motor value must be between -1 and 1");
-		}
-		if (value > 0) {
-			forward(value);
-		} else if (value < 0) {
-			backward(-value);
-		} else {
-			stop();
-		}
 	}
 
 	@Override
