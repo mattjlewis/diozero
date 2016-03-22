@@ -125,4 +125,12 @@ public class DualMotor implements Closeable {
 		leftMotor.stop();
 		rightMotor.stop();
 	}
+	
+	public MotorInterface getLeftMotor() {
+		return leftMotor;
+	}
+	
+	public MotorInterface getRightMotor() {
+		return leftMotor;
+	}
 }

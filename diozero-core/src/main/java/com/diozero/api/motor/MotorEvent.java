@@ -4,7 +4,7 @@ package com.diozero.api.motor;
  * #%L
  * Device I/O Zero - Core
  * %%
- * Copyright (C) 2016 diozero
+ * Copyright (C) 2016 mattjlewis
  * %%
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,22 +27,26 @@ package com.diozero.api.motor;
  */
 
 
-import java.io.Closeable;
+public class MotorEvent {
+	private long epochTime;
+	private long nanoTime;
+	private float value;
 
-import com.diozero.api.Action;
-import com.diozero.util.RuntimeIOException;
+	public MotorEvent(long epochTime, long nanoTime, float value) {
+		this.epochTime = epochTime;
+		this.nanoTime = nanoTime;
+		this.value = value;
+	}
 
-public interface MotorInterface extends Closeable {
-	void forward(float speed) throws RuntimeIOException;
-	void backward(float speed) throws RuntimeIOException;
-	void stop() throws RuntimeIOException;
-	float getValue() throws RuntimeIOException;
-	void setValue(float value) throws RuntimeIOException;
-	boolean isActive() throws RuntimeIOException;
-	void reverse() throws RuntimeIOException;
-	void whenForward(Action action);
-	void whenBackward(Action action);
-	void whenStop(Action action);
-	void addListener(MotorListener listener);
-	void removeListener(MotorListener listener);
+	public long getEpochTime() {
+		return epochTime;
+	}
+
+	public long getNanoTime() {
+		return nanoTime;
+	}
+
+	public float getValue() {
+		return value;
+	}
 }
