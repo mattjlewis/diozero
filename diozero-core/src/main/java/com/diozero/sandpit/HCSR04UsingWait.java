@@ -72,10 +72,10 @@ public class HCSR04UsingWait implements DistanceSensorInterface, Closeable {
 	private static long NS_IN_SEC = US_IN_SEC * 1000;
 	// Spec says #10us pulse (min) = 10,000 ns
 	private static final int PULSE_NS = 10_000; 
-	private static final double MAX_DISTANCE_CM = 600; // Max distance measurement (was 400)
+	private static final int MAX_DISTANCE_CM = (int)(400 * 1.5); // Max distance measurement (400cm + 50%)
 	private static final double SPEED_OF_SOUND_CM_PER_S = 34029; // Approx Speed of Sound at sea level and 15 degC
-	// Calculate the max time (in ns) that the echo pulse stays high
-	private static final int MAX_ECHO_TIME_NS = (int) (MAX_DISTANCE_CM * 2 * NS_IN_SEC / SPEED_OF_SOUND_CM_PER_S);
+	// Calculate the max time (in ns) that the echo pulse can stay high (35.26ms)
+	private static final int MAX_ECHO_TIME_MS = (int) Math.floor(MAX_DISTANCE_CM * 2 * MS_IN_SEC / SPEED_OF_SOUND_CM_PER_S) + 1;
 
 	private DigitalOutputDevice trigger;
 	private WaitableDigitalInputDevice echo;
@@ -120,10 +120,10 @@ public class HCSR04UsingWait implements DistanceSensorInterface, Closeable {
 			}
 			long echo_on_time = System.nanoTime();
 			
-			// Wait up to 40ms for the echo pin to fall (35ms is maximum pulse time given
-			// a max distance of 600cm so any longer means something's gone wrong)
-			if (! echo.waitForValue(false, 40)) {
-				Logger.warn("Timed-out waiting for echo pin to go low, max={}ms", Long.valueOf(40));
+			// Wait up to 36ms for the echo pin to fall (that is the maximum echo time given
+			// a maximum distance of 600cm, any longer means something's gone wrong)
+			if (! echo.waitForValue(false, MAX_ECHO_TIME_MS)) {
+				Logger.warn("Timed-out waiting for echo pin to go low, max={}ms", Long.valueOf(MAX_ECHO_TIME_MS));
 				return -1;
 			}
 			
