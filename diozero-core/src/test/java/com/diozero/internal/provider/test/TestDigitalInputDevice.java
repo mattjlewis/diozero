@@ -36,6 +36,7 @@ import com.diozero.util.RuntimeIOException;
 
 public class TestDigitalInputDevice extends AbstractInputDevice<DigitalInputEvent> implements GpioDigitalInputDeviceInterface {
 	private int pinNumber;
+	private boolean value;
 
 	public TestDigitalInputDevice(String key, DeviceFactoryInterface deviceFactory,
 			int pinNumber, GpioPullUpDown pud, GpioEventTrigger trigger) {
@@ -43,26 +44,29 @@ public class TestDigitalInputDevice extends AbstractInputDevice<DigitalInputEven
 		
 		this.pinNumber = pinNumber;
 	}
+	
+	@Override
+	public void valueChanged(DigitalInputEvent event) {
+		value = event.getValue();
+		super.valueChanged(event);
+	}
 
 	@Override
 	public boolean getValue() throws RuntimeIOException {
-		// TODO Auto-generated method stub
-		return false;
+		return value;
 	}
 
 	@Override
 	public int getPin() {
-		// TODO Auto-generated method stub
 		return pinNumber;
 	}
 
 	@Override
 	public void setDebounceTimeMillis(int debounceTime) {
-		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Debounce not supported");
 	}
 
 	@Override
 	public void closeDevice() throws RuntimeIOException {
-		// TODO Auto-generated method stub
 	}
 }
