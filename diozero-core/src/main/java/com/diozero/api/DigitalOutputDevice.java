@@ -70,15 +70,6 @@ public class DigitalOutputDevice extends GpioDevice {
 		}
 	}
 	
-	protected void onOffLoop(float onTime, float offTime, int n, boolean background) throws RuntimeIOException {
-		stopOnOffLoop();
-		if (background) {
-			DioZeroScheduler.getDaemonInstance().execute(() -> onOffLoop(onTime, offTime, n));
-		} else {
-			onOffLoop(onTime, offTime, n);
-		}
-	}
-	
 	private void onOffLoop(float onTime, float offTime, int n) throws RuntimeIOException {
 		running = true;
 		if (n > 0) {
@@ -145,5 +136,14 @@ public class DigitalOutputDevice extends GpioDevice {
 	 */
 	public void setValueUnsafe(boolean value) throws RuntimeIOException {
 		device.setValue(value);
+	}
+	
+	public void onOffLoop(float onTime, float offTime, int n, boolean background) throws RuntimeIOException {
+		stopOnOffLoop();
+		if (background) {
+			DioZeroScheduler.getDaemonInstance().execute(() -> onOffLoop(onTime, offTime, n));
+		} else {
+			onOffLoop(onTime, offTime, n);
+		}
 	}
 }
