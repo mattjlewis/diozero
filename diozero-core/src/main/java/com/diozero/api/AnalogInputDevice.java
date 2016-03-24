@@ -62,35 +62,6 @@ public class AnalogInputDevice extends GpioInputDevice<AnalogInputEvent> impleme
 		device.close();
 	}
 	
-	/**
-	 * Unscaled normalised values -1..1
-	 * @return the unscaled value
-	 * @throws RuntimeIOException if there was an I/O error
-	 */
-	public float getUnscaledValue() throws RuntimeIOException {
-		return device.getValue();
-	}
-	
-	/**
-	 * Scaled values -range..range
-	 * @return the scaled value
-	 * @throws RuntimeIOException if there was an I/O error
-	 */
-	public float getScaledValue() throws RuntimeIOException {
-		// The raw device must return unscaled values (-1..1)
-		return device.getValue() * range;
-	}
-	
-	public void addListener(InputEventListener<AnalogInputEvent> listener, float percentChange) {
-		addListener(listener, percentChange, DEFAULT_POLL_INTERVAL);
-	}
-	
-	public void addListener(InputEventListener<AnalogInputEvent> listener, float percentChange, int pollInterval) {
-		this.percentChange = percentChange;
-		this.pollInterval = pollInterval;
-		addListener(listener);
-	}
-	
 	@Override
 	protected void enableListener() {
 		DioZeroScheduler.getDaemonInstance().scheduleAtFixedRate(this, pollInterval, pollInterval, TimeUnit.MILLISECONDS);
@@ -125,5 +96,34 @@ public class AnalogInputDevice extends GpioInputDevice<AnalogInputEvent> impleme
 		}
 		
 		return value != last_value;
+	}
+	
+	/**
+	 * Get the unscaled normalised value in the range 0..1 (if unsigned) or -1..1 (if signed)
+	 * @return the unscaled value
+	 * @throws RuntimeIOException if there was an I/O error
+	 */
+	public float getUnscaledValue() throws RuntimeIOException {
+		return device.getValue();
+	}
+	
+	/**
+	 * Get the scaled value in the range 0..range (if unsigned) or -range..range (if signed)
+	 * @return the scaled value
+	 * @throws RuntimeIOException if there was an I/O error
+	 */
+	public float getScaledValue() throws RuntimeIOException {
+		// The raw device must return unscaled values (-1..1)
+		return device.getValue() * range;
+	}
+	
+	public void addListener(InputEventListener<AnalogInputEvent> listener, float percentChange) {
+		addListener(listener, percentChange, DEFAULT_POLL_INTERVAL);
+	}
+	
+	public void addListener(InputEventListener<AnalogInputEvent> listener, float percentChange, int pollInterval) {
+		this.percentChange = percentChange;
+		this.pollInterval = pollInterval;
+		addListener(listener);
 	}
 }
