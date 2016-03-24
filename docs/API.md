@@ -56,7 +56,7 @@
 
 : Extends [GPIOInputDevice](#gpioinputdevice) to provide common support for digital devices.
 
-    **DigitalInputDevice** (*pinNumber*, *pud*, *trigger*)
+    **DigitalInputDevice** (*pinNumber*, *pud=NONE*, *trigger=BOTH*)
     
     : Constructor
     
@@ -64,24 +64,48 @@
     
     * **pud** (*GpioPullUpDown*) - Pull up/down configuration, values: NONE, PULL_UP, PULL_DOWN.
     
-    * **trigger** (*GpioEventTrigger*) - Event trigger configuration, values: NONE, RISING, FALLING, BOTH
+    * **trigger** (*GpioEventTrigger*) - Event trigger configuration, values: NONE, RISING, FALLING, BOTH.
+    
+    *GpioPullUpDown* **getPullUpDown** ()
+    
+    : Get pull up / down configuration.
+    
+    *GpioEventTrigger* **getTrigger** ()
+    
+    : Get event trigger configuration.
+    
+    *boolean* **isActiveHigh** ()
+    
+    : Returns false if configured as pull-up, true for all other pull up / down options.
     
     *boolean* **getValue** ()
     
-    : Read the current underlying state of the input pin
+    : Read the current underlying state of the input pin. Does not factor in active high logic.
     
     *boolean* **isActive** ()
     
-    : Read the current on/off state for this device taking into account the pull up / down configuration. If the input is pulled up **isActive**() will return `true` when when the value is `false`.
+    : Read the current on/off state for this device taking into account the pull up / down configuration. If the input is pulled up **isActive** () will return `true` when when the value is `false`.
+    
+    **whenActivated** (*action*)
+    
+    : Action to perform when the device state is active.
+    
+    **action** (*Action*) - Action callback object.
+    
+    **whenDectivated** (*action*)
+    
+    : Action to perform when the device state is inactive.
+    
+    **action** (*Action*) - Action callback object.
 
 
-### WaitableInputDevice
+### WaitableDigitalInputDevice
 
-*class* com.diozero.api.**WaitableInputDevice** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/WaitableInputDevice.java){: .viewcode-link }
+*class* com.diozero.api.**WaitableDigitalInputDevice** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/WaitableDigitalInputDevice.java){: .viewcode-link }
 
 : Extends [DigitalInputDevice](#digitalinputdevice) to support waiting for state changes.
 
-    **WaitableInputDevice** (*pinNumber*, *pud*, *trigger*)
+    **WaitableDigitalInputDevice** (*pinNumber*, *pud=NONE*, *trigger=BOTH*)
     
     : Constructor
     
@@ -95,22 +119,31 @@
     
     : Wait for the input device to go active.
     
-    * **timeout** (*int*) - Timeout value in milliseconds. Values &lt;= 0 represent an indefinite amount of time. Defaults to 0.
+    * **timeout** (*int*) - Timeout value in milliseconds. Timeout values &lt;= 0 represent an indefinite amount of time.
     
     **waitForInactive** (*timeout=0*)
     
     : Wait for the input device to go inactive.
     
-    * **timeout** (*int*) - Timeout value in milliseconds. Values &lt;= 0 represent an indefinite amount of time. Defaults to 0.
+    * **timeout** (*int*) - Timeout value in milliseconds. Timeout values &lt;= 0 represent an indefinite amount of time.
+    
+    **waitForValue** (*value*, *timeout*)
+    
+    : Wait for a specific input high / low state.
+    
+    * **timeout** (*int*) - Timeout value in milliseconds. Timeout values &lt;= 0 represent an indefinite amount of time.
 
 
 ### SmoothedInputDevice
 
 *class* com.diozero.api.**SmoothedInputDevice** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/SmoothedInputDevice.java){: .viewcode-link }
 
-: Extends [DigitalInputDevice](#digitalinputdevice) to support waiting for state changes.
+: Represents a generic input device which takes its value from the number of active events over a specific time period.
+This class extends [DigitalInputDevice](#digitalinputdevice) with a queue which is added to whenever the input device is active. The number of the active events in the queue is compared to a threshold which is used to determine the state of the 'active' property.
+Any active events over the specified eventAge are removed by a background thread.
+This class is intended for use with devices which exhibit "twitchy" behaviour (such as certain motion sensors).
 
-    **SmoothedInputDevice** (*pinNumber*, *pud*, *threshold*, *age*)
+    **SmoothedInputDevice** (*pinNumber*, *pud*, *threshold*, *eventAge*, *eventDetectPeriod*)
     
     : Constructor
     
@@ -120,7 +153,9 @@
     
     * **threshold** (*int*) - The value above which the device will be considered "on".
     
-    * **age** (*int*) - The time in milliseconds to keep items in the queue.
+    * **eventAge** (*int*) - The time in milliseconds to keep items in the queue.
+    
+    * **eventDetectPeriod** (*int*) - How frequently to check for events.
     
     *int* **getThreshold** ()
     
@@ -131,6 +166,20 @@
     : Set the threshold.
     
     * **threshold** (*int*) - New threshold value in terms of number of on events within the specified time period that will trigger an on event to any listeners.
+    
+    *int* **getEventAge** ()
+    
+    : The time in milliseconds to keep items in the queue.
+    
+    **setEventAge** (eventAge)
+    
+    : Set the event age (milliseconds).
+    
+    * **eventAge** (*int*) - New event age value (milliseconds).
+    
+    *int* **getEventDetectPeriod** ()
+    
+    : How frequently (in milliseconds) to check the state of the queue.
 
 
 ### AnalogInputDevice
@@ -232,6 +281,18 @@ try (McpAdc adc = new McpAdc(type, chipSelect);
     : Unsafe operation that has no synchronisation checks and doesn't factor in active low logic. Included primarily for performance tests.
     
     * **value** (*boolean*) - New value, true == on, false == off.
+    
+    **onOffLoop** (*ontime*, *offTime*, *n*, *background*)
+    
+    : Toggle the device on-off.
+    
+    * **onTime** (*float*) - On time in seconds.
+    
+    * **offtime** (*float*) - Off time in seconds.
+    
+    * **n** (*int*) - Number of iterations. Set to -1 to blink indefinitely.
+    
+    * **background** (*boolean*) - If true start a background thread to control the blink and return immediately. If false, only return once the blink iterations have finished.
 
 
 ### PWMOutputDevice

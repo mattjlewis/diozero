@@ -15,14 +15,6 @@ Currently supports the following types of motors:
 *interface* **com.diozero.api.motor.MotorInterface**{: .descname } [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/motor/MotorInterface.java){: .viewcode-link } [&para;](MotorControl.md#motorinterface "Permalink to this definition"){: .headerlink }
 
 : Represents a single motor.
-
-    **Motor** (*forwardPin*, *backwardPin*)
-    
-    : Constructor.
-    
-    * **forwardPin** (*int*) - PWM-capable GPIO for forward / clockwise control.
-    
-    * **backwardPin** (*int*) - PWM-capable GPIO for backward / anti-clockwise control.
     
     **forward** (*speed=1*)
     
@@ -57,13 +49,94 @@ Currently supports the following types of motors:
     *boolean* **isActive** ()
     
     : Return `true` if the motor is moving in either direction, `false` if stopped.
+    
+    **whenForward** (*action*)
+    
+    : Action to perform when going forward
+    
+    * **action** (*Action*) - Callback action object
+    
+    **whenBackward** (*action*)
+    
+    : Action to perform when going backward
+    
+    * **action** (*Action*) - Callback action object
+    
+    **whenStop** (*action*)
+    
+    : Action to perform when stopped
+    
+    * **action** (*Action*) - Callback action object
+    
+    **addListener** (*listener*)
+    
+    : Listener to be notified when the motor value changes
+    
+    * **listener** (*MotorListener*) - Listener instance
+    
+    **removeListener** (*listener*)
+    
+    : Remove a listener
+    
+    * **listener** (*MotorListener*) - Listener instance
 
+
+### MotorBase
+
+*interface* **com.diozero.api.motor.MotorBase**{: .descname } [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/motor/MotorBase.java){: .viewcode-link } [&para;](MotorControl.md#motorbase "Permalink to this definition"){: .headerlink }
+
+: Base motor class, support for events. Implements [MotorInterface](MotorControl.md#motorinterface).
+
+    **MotorBase** ()
+    
+    : Constructor.
+    
+    **reverse** ()
+    
+    : Reverse the direction of the motor.
+    
+    **setValue** (*value*)
+    
+    : Set the motor direction and speed.
+    
+    * **value** (*float*) - Range -1..1. Negative numbers backward.
+    
+    **whenForward** (*action*)
+    
+    : Action to perform when going forward
+    
+    * **action** (*Action*) - Callback action object
+    
+    **whenBackward** (*action*)
+    
+    : Action to perform when going backward
+    
+    * **action** (*Action*) - Callback action object
+    
+    **whenStop** (*action*)
+    
+    : Action to perform when stopped
+    
+    * **action** (*Action*) - Callback action object
+    
+    **addListener** (*listener*)
+    
+    : Listener to be notified when the motor value changes
+    
+    * **listener** (*MotorListener*) - Listener instance
+    
+    **removeListener** (*listener*)
+    
+    : Remove a listener
+    
+    * **listener** (*MotorListener*) - Listener instance
+    
 
 ### Motor
 
 *class* com.diozero.api.motor.**Motor** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/motor/Motor.java){: .viewcode-link }
 
-: Represents a single motor controlled by two separate PWM signals. Implements [MotorInterface](#motorinterface).
+: Represents a single motor controlled by two separate PWM signals. Extends [MotorBase](#motorbase).
 
     **Motor** (*forwardPin*, *backwardPin*)
     
@@ -83,20 +156,12 @@ Currently supports the following types of motors:
     
     * **backwardPin** (*int*) - PWM-capable GPIO for backward / anti-clockwise control.
 
-    **Motor** (*forward*, *backward*)
-    
-    : Constructor.
-    
-    * **forward** (*[PwmOutputDevice](API.md#pwmoutputdevice)*) - PWM output device for forward / clockwise control.
-    
-    * **backward** (*[PwmOutputDevice](API.md#pwmoutputdevice)*) - PWM output device for backward / anti-clockwise control.
-
 
 ### TB6612FNGMotor
 
 *class* com.diozero.sandpit.**TB6612FNGMotor** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/sandpit/TB6612FNGMotor.java){: .viewcode-link }
 
-: Represents a single motor controlled by one PWM signal and two separate forwards / backwards control digital signals. Implements [MotorInterface](#motorinterface).
+: Represents a single motor controlled by one PWM signal and two separate forwards / backwards control digital signals. Extends [MotorBase](#motorbase).
 
     **TB6612FNGMotor** (*motorForwardControlPin*, *motorBackwardControlPin*, *motorPwmControl*)
     
@@ -151,9 +216,41 @@ Currently supports the following types of motors:
     
     : Turn the left motor forward and the right motor backward at the specific speed. Range 0..1.
     
+    **forwardLeft** (*speed*)
+    
+    : Turn the right motor forward at the specified speed, stop the left motor. Range 0..1.
+    
+    **forwardRight** (*speed*)
+    
+    : Turn the left motor forward at the specified speed, stop the right motor. Range 0..1.
+    
+    **backwardLeft** (*speed*)
+    
+    : Turn the right motor backward at the specified speed, stop the left motor. Range 0..1.
+    
+    **backwardRight** (*speed*)
+    
+    : Turn the left motor backward at the specified speed, stop the right motor. Range 0..1.
+    
     **reverse** ()
     
     : Reverse the direction of both motors.
+    
+    **circleLeft** (*speed*, *turnRate*)
+    
+    : Circle to the left.
+    
+    * **speed** (*float*) - Range 0..1.
+    
+    * **turnRate** (*float*) - Range 0..speed.
+    
+    **circleRight** (*speed*, *turnRate*)
+    
+    : Circle to the right.
+    
+    * **speed** (*float*) - Range 0..1.
+    
+    * **turnRate** (*float*) - Range 0..speed.
     
     **stop** ()
     
@@ -183,7 +280,7 @@ Currently supports the following types of motors:
     
     : Get the current pulse width value (milliseconds)
     
-    **getPulseWidthMs** (*float* pulseWidthMs)
+    *float* **getPulseWidthMs** (*float* pulseWidthMs)
     
     : Set the pulse width value (milliseconds)
     
