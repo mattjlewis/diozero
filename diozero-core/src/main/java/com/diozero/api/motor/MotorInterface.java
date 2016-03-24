@@ -36,10 +36,10 @@ public interface MotorInterface extends Closeable {
 	void forward(float speed) throws RuntimeIOException;
 	void backward(float speed) throws RuntimeIOException;
 	void stop() throws RuntimeIOException;
+	void reverse() throws RuntimeIOException;
 	float getValue() throws RuntimeIOException;
 	void setValue(float value) throws RuntimeIOException;
 	boolean isActive() throws RuntimeIOException;
-	void reverse() throws RuntimeIOException;
 	void whenForward(Action action);
 	void whenBackward(Action action);
 	void whenStop(Action action);
