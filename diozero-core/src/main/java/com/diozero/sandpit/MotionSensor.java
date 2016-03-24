@@ -45,13 +45,13 @@ import com.diozero.util.RuntimeIOException;
  */
 public class MotionSensor extends SmoothedInputDevice {
 	public MotionSensor(int pinNumber) throws RuntimeIOException {
-		// Trigger if there are 10 events in a 50ms period
-		this(pinNumber, 10, 50);
+		// Trigger if there are 10 or more events in a 50ms period, check every 50ms
+		this(pinNumber, 10, 50, 50);
 	}
 	
-	public MotionSensor(int pinNumber, int threshold, int age)
+	public MotionSensor(int pinNumber, int threshold, int eventAge, int eventDetectPeriod)
 			throws RuntimeIOException {
-		super(pinNumber, GpioPullUpDown.NONE, threshold, age);
+		super(pinNumber, GpioPullUpDown.NONE, threshold, eventAge, eventDetectPeriod);
 	}
 
 	// TODO Implementation
