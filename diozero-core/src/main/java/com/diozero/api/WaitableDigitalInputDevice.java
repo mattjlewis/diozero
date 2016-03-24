@@ -1,5 +1,7 @@
 package com.diozero.api;
 
+import com.diozero.internal.DeviceFactoryHelper;
+import com.diozero.internal.spi.GpioDeviceFactoryInterface;
 import com.diozero.util.Event;
 
 /*
@@ -46,13 +48,31 @@ public class WaitableDigitalInputDevice extends DigitalInputDevice {
 	private Event highEvent = new Event();
 	private Event lowEvent = new Event();
 
+	public WaitableDigitalInputDevice(int pinNumber) throws RuntimeIOException {
+		this(DeviceFactoryHelper.getNativeDeviceFactory(), pinNumber, GpioPullUpDown.NONE, GpioEventTrigger.BOTH);
+	}
+
 	public WaitableDigitalInputDevice(int pinNumber, GpioPullUpDown pud, GpioEventTrigger trigger) throws RuntimeIOException {
-		super(pinNumber, pud, trigger);
+		this(DeviceFactoryHelper.getNativeDeviceFactory(), pinNumber, pud, trigger);
+	}
+
+	public WaitableDigitalInputDevice(GpioDeviceFactoryInterface deviceFactory, int pinNumber,
+			GpioPullUpDown pud, GpioEventTrigger trigger) throws RuntimeIOException {
+		super(deviceFactory, pinNumber, pud, trigger);
 		enableListener();
 	}
 	
 	@Override
 	protected void disableListener() {
+	}
+
+	@Override
+	public void valueChanged(DigitalInputEvent event) {
+		Event e = event.getValue() ? highEvent : lowEvent;
+		e.set();
+		
+		// Notify any listeners
+		super.valueChanged(event);
 	}
 
 	public void waitForActive() throws InterruptedException {
@@ -78,14 +98,5 @@ public class WaitableDigitalInputDevice extends DigitalInputDevice {
 		}
 
 		return e.doWait();
-	}
-
-	@Override
-	public void valueChanged(DigitalInputEvent event) {
-		Event e = event.getValue() ? highEvent : lowEvent;
-		e.set();
-		
-		// Notify any listeners
-		super.valueChanged(event);
 	}
 }
