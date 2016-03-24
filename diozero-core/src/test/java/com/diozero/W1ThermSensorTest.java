@@ -1,4 +1,4 @@
-package com.diozero.internal.provider.test;
+package com.diozero;
 
 /*
  * #%L
