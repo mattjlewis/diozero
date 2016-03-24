@@ -50,7 +50,7 @@ public class DigitalInputEvent extends DeviceEvent {
 	}
 	
 	public boolean isActive() {
-		return value & activeHigh;
+		return value == activeHigh;
 	}
 
 	@Override
