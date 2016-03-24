@@ -43,7 +43,8 @@ import com.diozero.util.*;
 /**
  * PCA9685 I2C-bus controlled 16-channel 12-bit PWM controller as used in the popular Adafruit PWM add-on board
  * Datasheet: http://www.nxp.com/documents/data_sheet/PCA9685.pdf
- * */
+ */
+@SuppressWarnings("unused")
 public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFactoryInterface, Closeable {
 	private static final int DEVICE_ADDRESS = 0x40;
 	private static final String DEVICE_NAME = "PCA9685";
