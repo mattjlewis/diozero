@@ -43,6 +43,7 @@ public class DigitalInputDevice extends GpioInputDevice<DigitalInputEvent> {
 	protected boolean activeHigh;
 	protected GpioDigitalInputDeviceInterface device;
 	protected GpioPullUpDown pud;
+	protected GpioEventTrigger trigger;
 	private Action activatedAction;
 	private Action deactivatedAction;
 
@@ -59,6 +60,7 @@ public class DigitalInputDevice extends GpioInputDevice<DigitalInputEvent> {
 		
 		this.device = deviceFactory.provisionDigitalInputPin(pinNumber, pud, trigger);
 		this.pud = pud;
+		this.trigger = trigger;
 		this.activeHigh = pud != GpioPullUpDown.PULL_UP;
 	}
 
@@ -72,14 +74,6 @@ public class DigitalInputDevice extends GpioInputDevice<DigitalInputEvent> {
 			Logger.warn(e, "Error closing device: {}", e);
 		}
 	}
-
-	public boolean getValue() throws RuntimeIOException {
-		return device.getValue();
-	}
-	
-	public boolean isActive() throws RuntimeIOException {
-		return device.getValue() == activeHigh;
-	}
 	
 	@Override
 	public void valueChanged(DigitalInputEvent event) {
@@ -91,6 +85,38 @@ public class DigitalInputDevice extends GpioInputDevice<DigitalInputEvent> {
 			deactivatedAction.action();
 		}
 		super.valueChanged(event);
+	}
+
+	@Override
+	protected void enableListener() {
+		device.setListener(this);
+	}
+
+	@Override
+	protected void disableListener() {
+		if (activatedAction == null && deactivatedAction == null) {
+			device.removeListener();
+		}
+	}
+	
+	public GpioPullUpDown getPullUpDown() {
+		return pud;
+	}
+
+	public GpioEventTrigger getTrigger() {
+		return trigger;
+	}
+	
+	public boolean isActiveHigh() {
+		return activeHigh;
+	}
+	
+	public boolean getValue() throws RuntimeIOException {
+		return device.getValue();
+	}
+	
+	public boolean isActive() throws RuntimeIOException {
+		return device.getValue() == activeHigh;
 	}
 	
 	public void whenActivated(Action action) {
@@ -108,18 +134,6 @@ public class DigitalInputDevice extends GpioInputDevice<DigitalInputEvent> {
 			enableListener();
 		} else if (listeners.isEmpty() && activatedAction == null) {
 			disableListener();
-		}
-	}
-
-	@Override
-	protected void enableListener() {
-		device.setListener(this);
-	}
-
-	@Override
-	protected void disableListener() {
-		if (activatedAction == null && deactivatedAction == null) {
-			device.removeListener();
 		}
 	}
 }
