@@ -43,7 +43,7 @@ public class SmoothedInputTest implements InputEventListener<DigitalInputEvent> 
 		int pin = 1;
 		float delay = 2;
 		// 10 events in 1 second
-		try (SmoothedInputDevice device = new SmoothedInputDevice(pin, GpioPullUpDown.NONE, 10, 1000)) {
+		try (SmoothedInputDevice device = new SmoothedInputDevice(pin, GpioPullUpDown.NONE, 10, 1000, 50)) {
 			device.addListener(this);
 			Runnable event_generator = new Runnable() {
 				@Override
