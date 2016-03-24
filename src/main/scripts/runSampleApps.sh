@@ -25,7 +25,7 @@
 ###
 #!/bin/sh
 
-diozero_version=0.3-SNAPSHOT
+diozero_version=0.5-SNAPSHOT
 #provider_classpath=diozero-provider-jdkdio11-$diozero_version.jar:dio-1.1-dev-linux-armv6hf.jar
 provider_classpath=diozero-provider-pigpio-$diozero_version.jar:pigpioj-java-1.0.0.jar
 log_classpath=tinylog-1.0.3.jar
