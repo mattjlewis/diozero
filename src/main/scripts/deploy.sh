@@ -25,7 +25,7 @@
 ###
 #!/bin/sh
 
-version=0.4-SNAPSHOT
+version=0.5-SNAPSHOT
 pigpioj_version=1.0.0
 pi_user=pi
 #pi_host=george.local
@@ -49,6 +49,6 @@ files="../pigpioj/pigpioj-java/target/pigpioj-java-${pigpioj_version}.jar \
 	diozero-provider-pigpio/target/diozero-provider-pigpio-${version}.jar \
 	diozero-provider-wiringpi/target/diozero-provider-wiringpi-${version}.jar \
 	diozero-ws281x-java/target/diozero-ws281x-java-${version}.jar \
-	distribution/target/diozero-distribution-0.4-SNAPSHOT-bin.zip"
+	distribution/target/diozero-distribution-${version}-bin.zip"
 
 scp $files ${pi_user}@${pi_host}:${install_folder}
