@@ -39,16 +39,14 @@ public class WS281xTest {
 		int num_pixels = 60;
 		
 		try (WS281x ws281x = new WS281x(gpio_num, brightness, num_pixels)) {
-			//rainbowColours(ws281x);
-			//test2(ws281x);
+			rainbowColours(ws281x);
+			test2(ws281x);
 			hsbTest(ws281x);
 			hslTest(ws281x);
 
-			/*
 			while (true) {
 				loop(ws281x);
 			}
-			*/
 		} catch (Throwable t) {
 			System.out.println("Error: " + t);
 			t.printStackTrace();
@@ -140,7 +138,7 @@ public class WS281xTest {
 		float saturation_start = 0;
 		float saturation_step = 0.01f;
 		
-		for (float hue=0; hue<360; hue+=1) {
+		for (float hue=0; hue<360; hue+=18) {
 			for (float saturation=saturation_start; saturation>=0 & saturation<=1; saturation+=saturation_step) {
 				for (int pixel=0; pixel<ws281x.getNumPixels(); pixel++) {
 					ws281x.setPixelColourHSL(pixel, hue, saturation, luminance);
