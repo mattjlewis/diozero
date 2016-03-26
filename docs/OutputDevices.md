@@ -49,6 +49,33 @@ try (LED led = new LED(pin)) {
     * **background** (*boolean*) - If true start a background thread to control the blink and return immediately. If false, only return once the blink iterations have finished.
 
 
+## Buzzer
+
+*class* com.diozero.**Buzzer** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/Buzzer.java){: .viewcode-link }
+
+: Extends [DigitalOutputDevice](API.md#digitaloutputdevice) and represents a digital buzzer component.
+
+    **Buzzer** (*pinNumber*, *activeHigh*)
+    
+    : Constructor
+    
+    * **pinNumber** (*int*) - The GPIO pin which the buzzer is attached to.
+    
+    * **activeHigh** (*boolean*) - Set to `true` if the circuit is wired such that the buzzer will beep when the output is high.
+    
+    **beep** (*onTime=1*, *offTime=1*, *n=-1*, *background=true*)
+    
+    : Turn the device turn on and off repeatedly.
+    
+    * **onTime** (*float*) - Number of seconds on. Defaults to 1 second.
+    
+    * **offTime** (*float*) - Number of seconds off. Defaults to 1 second.
+    
+    * **n** (*int*) - Number of times to blink; any value &lt; 0 (the default) means forever.
+    
+    * **background** (*boolean*) - If `True` (the default), start a background thread to continue blinking and return immediately. If `False`, only return when the blink is finished (warning: the default value of n will result in this method never returning).
+
+
 ## PWM LED
 
 Code, taken from [PwmLedTest](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/sampleapps/PwmLedTest.java):
@@ -79,6 +106,3 @@ try (PwmLed led = new PwmLed(pin)) {
 
 ## RGB LED
 
-## Buzzer
-
-## PWM Output inc. servo control

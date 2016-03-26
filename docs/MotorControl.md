@@ -287,7 +287,7 @@ Currently supports the following types of motors:
     **pulseWidthMs** - New pulse width value (milliseconds)
 
 
-## Common Commercial Motor Controllers
+## Common Motor Controllers
 
 ### CamJamKitDualMotor
 

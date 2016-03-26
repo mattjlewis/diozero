@@ -31,10 +31,62 @@ try (Button button = new Button(buttonPin, GpioPullUpDown.PULL_UP); LED led = ne
 }
 ```
 
+*class* com.diozero.**Button** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/Button.java){: .viewcode-link }
 
-### PIR Motion Sensor
+: Extends [DigitalInputDevice](API.md#digitalinputdevice].
 
-### Line Sensor
+    **Button** (*pinNumber*, *pud=NONE*, *trigger=BOTH*)
+    
+    : Constructor
+    
+    * **pinNumber** (*int*) - Pin number for the button.
+    
+    * **pud** (*GpioPullUpDown*) - Pull up / down configuration (NONE, PULL_UP, PULL_DOWN).
+    
+    * **trigger** (*GpioEventTrigger*) - What events to trigger (NONE, RISING, FALLING, BOTH).
+    
+    *boolean* **isPressed** ()
+    
+    : Return true if the button is currently pressed.
+    
+    *boolean* **isReleased** ()
+    
+    : Return true if the button is currently released.
+    
+    **whenPressed** (*action*)
+    
+    : Action to perform when the button is pressed.
+    
+    * **action** (*Action*) - Action function to invoke.
+    
+    **whenReleased** (*action*)
+    
+    : Action to perform when the button is released.
+    
+    * **action** (*Action*) - Action function to invoke.
+
+
+### Motion Sensor
+
+!!! Warning "Work-in-progress"
+    Still under construction hence in the sandpit package.
+
+*class* com.diozero.sandpit.**MotionSensor** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/sandpit/MotionSensor.java){: .viewcode-link }
+
+: Extends [SmoothedInputDevice](API.md#smoothedinputdevice] and represents a passive infra-red (PIR) motion sensor like the sort found in the [CamJam #2 EduKit](http://camjam.me/?page_id=623).
+
+    **MotionSensor** (*pinNumber*, *threshold=10*, *eventAge=50*, *eventDetectPeriod=50*)
+    
+    : Constructor
+    
+    * **pinNumber** (*int*) - The GPIO pin which the button is attached to.
+    
+    * **threshold** (*int*) - The value above which the device will be considered "on".
+    
+    * **eventAge** (*int*) - The time in milliseconds to keep active events in the queue.
+    
+    * **eventDetectPeriod** (*int*) - How frequently to check for events.
+
 
 ## Analog Input Devices
 

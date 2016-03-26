@@ -139,7 +139,7 @@
 *class* com.diozero.api.**SmoothedInputDevice** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/SmoothedInputDevice.java){: .viewcode-link }
 
 : Represents a generic input device which takes its value from the number of active events over a specific time period.
-This class extends [DigitalInputDevice](#digitalinputdevice) with a queue which is added to whenever the input device is active. The number of the active events in the queue is compared to a threshold which is used to determine the state of the 'active' property.
+This class extends [WaitableDigitalInputDevice](#waitabledigitalinputdevice) with a queue which is added to whenever the input device is active. The number of the active events in the queue is compared to a threshold which is used to determine the state of the 'active' property.
 Any active events over the specified eventAge are removed by a background thread.
 This class is intended for use with devices which exhibit "twitchy" behaviour (such as certain motion sensors).
 

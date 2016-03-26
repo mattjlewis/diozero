@@ -1,6 +1,6 @@
 # diozero
 
-A Device I/O library written in Java that provides an object-orientated interface for a range of GPIO / I2C / SPI devices such as LEDs, buttons and other various sensors connected to intelligent devices like the Raspberry Pi. Actual GPIO / I2C / SPI device communication is delegated via a pluggable abstraction layer to provide maximum compatibility across devices.
+A Device I/O library written in Java that provides an object-orientated interface for a range of GPIO / I2C / SPI devices such as LEDs, buttons and other various sensors connected to intelligent devices like the Raspberry Pi. Actual GPIO / I2C / SPI device communication is implemented via pluggable service providers for maximum compatibility across different device types.
 
 This library makes use of modern Java 8 features such as [automatic resource management](https://docs.oracle.com/javase/tutorial/essential/exceptions/tryResourceClose.html), [Lambda Expressions](https://docs.oracle.com/javase/tutorial/java/javaOO/lambdaexpressions.html) and [Method References](https://docs.oracle.com/javase/tutorial/java/javaOO/methodreferences.html) where they simplify development and improve code readability.
 
@@ -8,7 +8,7 @@ Created by [Matt Lewis](https://github.com/mattjlewis) (email [deviceiozero@gmai
 
 ## Concepts
 
-The aim of this library is to encapsulated real-world devices as classes with meaningful operation names, for example LED (on / off), LDR (analog readings), Button (pressed / released), Motor (forward / backwards / left / right). All devices implement `Closeable` hence will get automatically closed by the `try (Device d = new Device()) { d.doSomething() }` statement. This is best illustrated by some simple examples.
+The aim of this library is to encapsulate real-world devices as classes with meaningful operation names, for example LED (on / off), LDR (get value), Button (pressed / released), Motor (forward / backwards / left / right). All devices implement `Closeable` hence will get automatically closed by the `try (Device d = new Device()) { d.doSomething() }` statement. This is best illustrated by some simple examples.
 
 LED control:
 
@@ -82,7 +82,7 @@ Snapshot builds of the library are available in the [Nexus Repository Manager](h
 
 Unfortunately Java doesn't provide a convenient deployment-time dependency manager such Python's `pip` therefore you will need to setup your classpath correctly. You can do this either via setting the `CLASSPATH` environment variable or as a command-line option (`java -cp <jar1>:<jar2>`). I've deliberately kept the dependencies to as few libraries as possible, as such this library is only dependent on [tinylog](http://www.tinylog.org) [v1.0](https://github.com/pmwmedia/tinylog/releases/download/1.0.3/tinylog-1.0.3.zip).
 
-To compile or run a diozero application you will need 4 JAR files - tinylog, diozero-core, one of the supported device provider libraries and the corresponding diozero provider wrapper library.
+To compile and run a diozero application you will need 4 JAR files - tinylog, diozero-core, one of the supported device provider libraries and the corresponding diozero provider wrapper library.
 
 Provider | Provider Jar | diozero wrapper-library
 -------- | ------------ | -----------------------
@@ -143,7 +143,7 @@ sudo groovy -cp $CLASSPATH test.groovy
 
 ## Devices
 
-This library provides support for a growing number of GPIO / I2C / SPI connected components and devices, I have categorised them as follows:
+This library provides support for a number of GPIO / I2C / SPI connected components and devices, I have categorised them as follows:
 
 + [API](API.md) for lower-level interactions
     - [Input](API.md#input-devices), [Output](API.md#output-devices), [I2C](API.md#i2c-support), [SPI](API.md#spi-support)
@@ -156,11 +156,11 @@ This library provides support for a growing number of GPIO / I2C / SPI connected
 + [Motor Control](MotorControl.md) (support for common motor controller boards)
     - [API](MotorControl.md#api), [Servos](MotorControl.md#servo), [CamJam EduKit](MotorControl.md#camjamkitdualmotor), [Ryanteck](MotorControl.md#ryanteckdualmotor), [Toshiba TB6612FNG](MotorControl.md#tb6612fngdualmotordriver)
 + [Sensor Components](SensorComponents.md) (support for specific sensors, e.g. temperature, pressure, distance, luminosity)
-    - [HC-SRO4 Ultrasonic Ranging Module](SensorComponents.md#hc-sr04), [Bosch BMP180](SensorComponents.md#bosch-bmp180), [TSL2561 Light Sensor](SensorComponents.md#tsl2561), [1-Wire Temperature Sensors e.g. DS18B20](SensorComponents.md#1-wire-temperature-sensors)
+    - [HC-SR04 Ultrasonic Ranging Module](SensorComponents.md#hc-sr04), [Bosch BMP180](SensorComponents.md#bosch-bmp180), [TSL2561 Light Sensor](SensorComponents.md#tsl2561), [1-Wire Temperature Sensors e.g. DS18B20](SensorComponents.md#1-wire-temperature-sensors)
 + [IMU Devices](IMUDevices.md) Work-in-progress API for interacting with Inertial Measurement Units such as the InvenSense MPU-9150 and the Analog Devices ADXL345
     - [API](IMUDevices.md#api), [Supported Devices](IMUDevices.md#supported-devices)
 + [LED Strips](LEDStrips.md) Support for LED strips (WS2811B / WS2812B / Adafruit NeoPixel)
-    - [API](LEDStrips.md#api), [Supported Devices](LEDStrips.md#supported-devices)
+    - [WS2811B / WS2812B](LEDStrips.md#ws281x)
 
 ## Performance
 
@@ -177,8 +177,8 @@ I've done some limited performance tests (turning a GPIO on then off, see [GpioP
 | pigpio (JNI) | Pi3 | 3,537 |
 | wiringPi | Pi2 | 2,640 |
 | wiringPi | Pi3 | 3,446 |
-| wiringPi (JNI) | Pi2 3,298 |
-| wiringPi (JNI) | Pi3 4,373 |
+| wiringPi (JNI) | Pi2 | 3,298 |
+| wiringPi (JNI) | Pi3 | 4,373 |
 
 ![Performance](images/Performance.png "Performance") 
 
@@ -212,6 +212,7 @@ There is still a lot left to do, in particular:
 
 + Release 0.2: First tagged release
 + Release 0.3: API change - analogue to analog
++ Release 0.4: Bug fixes, servo support
 
 ## License
 
