@@ -49,7 +49,7 @@ import com.diozero.util.RuntimeIOException;
  * This class is intended for use with devices which exhibit "twitchy" behaviour (such
  * as certain motion sensors).
  */
-public class SmoothedInputDevice extends DigitalInputDevice {
+public class SmoothedInputDevice extends WaitableDigitalInputDevice {
 	private int threshold;
 	private int eventAge;
 	private int eventDetectPeriod;
