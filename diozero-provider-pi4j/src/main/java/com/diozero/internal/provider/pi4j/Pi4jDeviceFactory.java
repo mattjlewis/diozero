@@ -105,6 +105,12 @@ public class Pi4jDeviceFactory extends BaseNativeDeviceFactory {
 	private int getSoftwarePwmRange(int pinNumber) {
 		return 1_000_000 / (PI4J_MIN_SOFTWARE_PULSE_WIDTH_US * getPwmFrequency(pinNumber));
 	}
+	
+	@Override
+	public void closeAll() {
+		super.closeAll();
+		gpioController.shutdown();
+	}
 
 	@Override
 	protected GpioDigitalInputDeviceInterface createDigitalInputPin(String key, int pinNumber, GpioPullUpDown pud,
