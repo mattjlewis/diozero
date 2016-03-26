@@ -47,11 +47,11 @@ public class Button extends DigitalInputDevice {
 	}
 	
 	public boolean isPressed() {
-		return activeHigh == getValue();
+		return isActive();
 	}
 	
 	public boolean isReleased() {
-		return activeHigh != getValue();
+		return !isActive();
 	}
 	
 	public void whenPressed(Action action) {
