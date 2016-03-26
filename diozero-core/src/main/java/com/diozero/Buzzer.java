@@ -46,8 +46,4 @@ public class Buzzer extends DigitalOutputDevice {
 	public void beep(float onTime, float offTime, int n, boolean background) throws RuntimeIOException {
 		onOffLoop(onTime, offTime, n, background);
 	}
-	
-	public boolean isActive() throws RuntimeIOException {
-		return isOn();
-	}
 }
