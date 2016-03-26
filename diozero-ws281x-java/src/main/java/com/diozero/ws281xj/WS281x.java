@@ -61,6 +61,8 @@ public class WS281x implements Closeable {
 					System.loadLibrary(LIB_NAME);
 					loaded = Boolean.TRUE;
 				}
+				
+				Runtime.getRuntime().addShutdownHook(new Thread(WS281xNative::terminate, "WS281x Shutdown Handler"));
 			}
 		}
 	}
@@ -80,8 +82,6 @@ public class WS281x implements Closeable {
 		ch0LedBuffer = WS281xNative.initialise(frequency, dmaNum, gpioNum, brightness, numPixels);
 		System.out.println("order=" + ch0LedBuffer.order());
 		ch0LedBuffer.order(ByteOrder.LITTLE_ENDIAN);
-		
-		//Runtime.getRuntime().addShutdownHook(new Thread(this::close));
 	}
 
 	@Override
