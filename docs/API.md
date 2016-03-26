@@ -2,15 +2,15 @@
 
 ## Base classes
 
-### GPIODevice
+### GpioDevice
 
-*class* com.diozero.api.**GPIODevice** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/GPIODevice.java){: .viewcode-link }
+*class* com.diozero.api.**GpioDevice** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/GpioDevice.java){: .viewcode-link }
 
 : Abstract base class for all GPIO related devices.
 
-    **GPIODevice** (*pinNumber*)
+    **GpioDevice** (*pinNumber*)
     
-    : Constructor
+    : Constructor.
     
     * **pinNumber** (*int*) - Pin number to which the device is connected.
     
@@ -21,15 +21,15 @@
 
 ## Input Devices
 
-### GPIOInputDevice
+### GpioInputDevice
 
-*class* com.diozero.api.**GPIOInputDevice** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/GPIOInputDevice.java){: .viewcode-link }
+*class* com.diozero.api.**GpioInputDevice** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/GpioInputDevice.java){: .viewcode-link }
 
-: Common base class for digital and analog input devices, extends [GPIODevice](#gpiodevice).
+: Common base class for digital and analog input devices, extends [GpioDevice](#gpiodevice).
 
-    **GPIOInputDevice** (*pinNumber*)
+    **GpioInputDevice** (*pinNumber*)
     
-    : Constructor
+    : Constructor.
     
     * **pinNumber** (*int*) - Pin number to which the device is connected.
 
@@ -54,11 +54,11 @@
 
 *class* com.diozero.api.**DigitalInputDevice** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/DigitalInputDevice.java){: .viewcode-link }
 
-: Extends [GPIOInputDevice](#gpioinputdevice) to provide common support for digital devices.
+: Extends [GpioInputDevice](#gpioinputdevice) to provide common support for digital devices.
 
     **DigitalInputDevice** (*pinNumber*, *pud=NONE*, *trigger=BOTH*)
     
-    : Constructor
+    : Constructor.
     
     * **pinNumber** (*int*) - Pin number to which the device is connected.
     
@@ -107,7 +107,7 @@
 
     **WaitableDigitalInputDevice** (*pinNumber*, *pud=NONE*, *trigger=BOTH*)
     
-    : Constructor
+    : Constructor.
     
     * **pinNumber** (*int*) - Pin number to which the device is connected.
     
@@ -145,7 +145,7 @@ This class is intended for use with devices which exhibit "twitchy" behaviour (s
 
     **SmoothedInputDevice** (*pinNumber*, *pud*, *threshold*, *eventAge*, *eventDetectPeriod*)
     
-    : Constructor
+    : Constructor.
     
     * **pinNumber** (*int*) - Pin number to which the device is connected.
     
@@ -159,7 +159,7 @@ This class is intended for use with devices which exhibit "twitchy" behaviour (s
     
     *int* **getThreshold** ()
     
-    : If the number of on events younger than age exceeds this amount, then 'isActive' will return 'True'.
+    : If the number of on events younger than age exceeds this amount, then `isActive` will return `true`.
     
     **setThreshold** (threshold)
     
@@ -207,11 +207,11 @@ try (McpAdc adc = new McpAdc(type, chipSelect);
 
 *class* com.diozero.api.**AnalogInputDevice** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/AnalogInputDevice.java){: .viewcode-link }
 
-: Extends [GPIOInputDevice](#gpioinputdevice) to provide common support for analog devices.
+: Extends [GpioInputDevice](#gpioinputdevice) to provide common support for analog devices.
 
     **AnalogInputDevice** (*pinNumber*, *range*)
     
-    : Constructor
+    : Constructor.
     
     * **pinNumber** (*int*) - Pin number to which the device is connected.
     
@@ -242,11 +242,11 @@ try (McpAdc adc = new McpAdc(type, chipSelect);
 
 *class* com.diozero.api.**DigitalOutputDevice** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/DigitalOutputDevice.java){: .viewcode-link }
 
-: Extends [GPIODevice](#gpiodevice) to provide generic digital (on/off) output control.
+: Extends [GpioDevice](#gpiodevice) to provide generic digital (on/off) output control.
 
     **DigitalOutputDevice** (*pinNumber*, *activeHigh=true*, *initialValue=false*)
     
-    : Constructor
+    : Constructor.
     
     * **pinNumber** (*int*) - GPIO pin to which the output device is connected.
     
@@ -264,7 +264,7 @@ try (McpAdc adc = new McpAdc(type, chipSelect);
     
     **toggle** ()
     
-    : Toggle the state of the device
+    : Toggle the state of the device.
     
     *boolean* **isOn** ()
     
@@ -273,8 +273,6 @@ try (McpAdc adc = new McpAdc(type, chipSelect);
     **setOn** (*on*)
     
     : Turn the device on or off.
-    
-    * **value** (*boolean*) - New value, true == on, false == off.
     
     **setValueUnsafe** (*value*)
     
@@ -295,15 +293,15 @@ try (McpAdc adc = new McpAdc(type, chipSelect);
     * **background** (*boolean*) - If true start a background thread to control the blink and return immediately. If false, only return once the blink iterations have finished.
 
 
-### PWMOutputDevice
+### PwmOutputDevice
 
-*class* com.diozero.api.**PWMOutputDevice** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/PWMOutputDevice.java){: .viewcode-link }
+*class* com.diozero.api.**PwmOutputDevice** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/PwmOutputDevice.java){: .viewcode-link }
 
-: Extends [GPIODevice](#gpiodevice) to provide generic [Pulse Width Modulation](https://en.wikipedia.org/wiki/Pulse-width_modulation) (PWM) output control.
+: Extends [GpioDevice](#gpiodevice) to provide generic [Pulse Width Modulation](https://en.wikipedia.org/wiki/Pulse-width_modulation) (PWM) output control.
 
-    **PWMOutputDevice** (*pinNumber*, *initialValue=0*)
+    **PwmOutputDevice** (*pinNumber*, *initialValue=0*)
     
-    : Constructor
+    : Constructor.
     
     * **pinNumber** (*int*) - GPIO pin to which the output device is connected.
     
@@ -321,11 +319,11 @@ try (McpAdc adc = new McpAdc(type, chipSelect);
     
     **on** ()
     
-    : Turn on the device (same as `setValue(1)]`.
+    : Turn on the device (same as `setValue(1)`).
     
     **off** ()
     
-    : Turn off the device (same as `setValue(0)`.
+    : Turn off the device (same as `setValue(0)`).
     
     **toggle** ()
     
