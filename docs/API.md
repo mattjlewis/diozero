@@ -4,7 +4,7 @@
 
 ### GpioDevice
 
-*class* **com.diozero.api.GpioDevice**{: .descname } (*pinNumber*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/GpioDevice.java){: .viewcode-link }
+*class* **com.diozero.api.GpioDevice** (*pinNumber*){: .descname } [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/GpioDevice.java){: .viewcode-link }
 
 : Abstract base class for all GPIO related devices.
     
@@ -185,7 +185,7 @@ try (McpAdc adc = new McpAdc(type, chipSelect);
 }
 ```
 
-*class* **com.diozero.api.AnalogInputDevice**{: .descname } (*pinNumber*, *range*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/AnalogInputDevice.java){: .viewcode-link }
+*class* **com.diozero.api.AnalogInputDevice** (*pinNumber*, *range*){: .descname } [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/AnalogInputDevice.java){: .viewcode-link }
 
 : Extends [GpioInputDevice](#gpioinputdevice) to provide common support for analog devices.
     
