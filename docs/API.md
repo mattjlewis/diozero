@@ -4,7 +4,7 @@
 
 ### GpioDevice
 
-*class* **com.diozero.api.GpioDevice** (*pinNumber*){: .descname } [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/GpioDevice.java){: .viewcode-link }
+*class* **com.diozero.api.GpioDevice (*pinNumber*)**{: .descname } [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/GpioDevice.java){: .viewcode-link }
 
 : Abstract base class for all GPIO related devices.
     
@@ -19,7 +19,7 @@
 
 ### GpioInputDevice
 
-*class* **com.diozero.api.GpioInputDevice**{: .descname } (*pinNumber*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/GpioInputDevice.java){: .viewcode-link }
+*class* **com.diozero.api.GpioInputDevice (*pinNumber*)**{: .descname } [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/GpioInputDevice.java){: .viewcode-link }
 
 : Common base class for digital and analog input devices, extends [GpioDevice](#gpiodevice).
     
