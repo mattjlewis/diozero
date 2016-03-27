@@ -4,7 +4,7 @@
 
 ### GpioDevice
 
-*class* **com.diozero.api.GpioDevice (*pinNumber*)**{: .descname } [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/GpioDevice.java){: .viewcode-link }
+*class* **com.diozero.api.GpioDevice**{: .descname } (*pinNumber*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/GpioDevice.java){: .viewcode-link } [&para;](API.md#gpiodevice "Permalink to this definition"){: .headerlink }
 
 : Abstract base class for all GPIO related devices.
     
@@ -19,7 +19,7 @@
 
 ### GpioInputDevice
 
-*class* **com.diozero.api.GpioInputDevice (*pinNumber*)**{: .descname } [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/GpioInputDevice.java){: .viewcode-link }
+*class* **com.diozero.api.GpioInputDevice**{: .descname } (*pinNumber*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/GpioInputDevice.java){: .viewcode-link } [&para;](API.md#gpioinputdevice "Permalink to this definition"){: .headerlink }
 
 : Common base class for digital and analog input devices, extends [GpioDevice](#gpiodevice).
     
@@ -44,7 +44,7 @@
 
 ### DigitalInputDevice
 
-*class* **com.diozero.api.DigitalInputDevice**{: .descname } (*pinNumber*, *pud=NONE*, *trigger=BOTH*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/DigitalInputDevice.java){: .viewcode-link }
+*class* **com.diozero.api.DigitalInputDevice**{: .descname } (*pinNumber*, *pud=NONE*, *trigger=BOTH*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/DigitalInputDevice.java){: .viewcode-link } [&para;](API.md#digitalinputdevice "Permalink to this definition"){: .headerlink }
 
 : Extends [GpioInputDevice](#gpioinputdevice) to provide common support for digital devices.
     
@@ -89,7 +89,7 @@
 
 ### WaitableDigitalInputDevice
 
-*class* **com.diozero.api.WaitableDigitalInputDevice**{: .descname } (*pinNumber*, *pud=NONE*, *trigger=BOTH*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/WaitableDigitalInputDevice.java){: .viewcode-link }
+*class* **com.diozero.api.WaitableDigitalInputDevice**{: .descname } (*pinNumber*, *pud=NONE*, *trigger=BOTH*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/WaitableDigitalInputDevice.java){: .viewcode-link } [&para;](API.md#waitabledigitalinputdevice "Permalink to this definition"){: .headerlink }
 
 : Extends [DigitalInputDevice](#digitalinputdevice) to support waiting for state changes.
     
@@ -120,7 +120,7 @@
 
 ### SmoothedInputDevice
 
-*class* **com.diozero.api.SmoothedInputDevice**{: .descname } (*pinNumber*, *pud*, *threshold*, *eventAge*, *eventDetectPeriod*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/SmoothedInputDevice.java){: .viewcode-link }
+*class* **com.diozero.api.SmoothedInputDevice**{: .descname } (*pinNumber*, *pud*, *threshold*, *eventAge*, *eventDetectPeriod*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/SmoothedInputDevice.java){: .viewcode-link } [&para;](API.md#smoothedinputdevice "Permalink to this definition"){: .headerlink }
 
 : Represents a generic input device which takes its value from the number of active events over a specific time period.
 This class extends [WaitableDigitalInputDevice](#waitabledigitalinputdevice) with a queue which is added to whenever the input device is active. The number of the active events in the queue is compared to a threshold which is used to determine the state of the 'active' property.
@@ -185,7 +185,7 @@ try (McpAdc adc = new McpAdc(type, chipSelect);
 }
 ```
 
-*class* **com.diozero.api.AnalogInputDevice** (*pinNumber*, *range*){: .descname } [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/AnalogInputDevice.java){: .viewcode-link }
+*class* **com.diozero.api.AnalogInputDevice** (*pinNumber*, *range*){: .descname } [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/AnalogInputDevice.java){: .viewcode-link } [&para;](API.md#analoginputdevice "Permalink to this definition"){: .headerlink }
 
 : Extends [GpioInputDevice](#gpioinputdevice) to provide common support for analog devices.
     
@@ -216,7 +216,7 @@ try (McpAdc adc = new McpAdc(type, chipSelect);
 
 ### DigitalOutputDevice
 
-*class* **com.diozero.api.DigitalOutputDevice**{: .descname } (*pinNumber*, *activeHigh=true*, *initialValue=false*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/DigitalOutputDevice.java){: .viewcode-link }
+*class* **com.diozero.api.DigitalOutputDevice**{: .descname } (*pinNumber*, *activeHigh=true*, *initialValue=false*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/DigitalOutputDevice.java){: .viewcode-link } [&para;](API.md#digitaloutputdevice "Permalink to this definition"){: .headerlink }
 
 : Extends [GpioDevice](#gpiodevice) to provide generic digital (on/off) output control.
     
@@ -267,7 +267,7 @@ try (McpAdc adc = new McpAdc(type, chipSelect);
 
 ### PwmOutputDevice
 
-*class* **com.diozero.api.PwmOutputDevice**{: .descname } (*pinNumber*, *initialValue=0*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/PwmOutputDevice.java){: .viewcode-link }
+*class* **com.diozero.api.PwmOutputDevice**{: .descname } (*pinNumber*, *initialValue=0*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/PwmOutputDevice.java){: .viewcode-link } [&para;](API.md#pwmoutputdevice "Permalink to this definition"){: .headerlink }
 
 : Extends [GpioDevice](#gpiodevice) to provide generic [Pulse Width Modulation](https://en.wikipedia.org/wiki/Pulse-width_modulation) (PWM) output control.
     

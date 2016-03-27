@@ -31,7 +31,7 @@ try (Button button = new Button(buttonPin, GpioPullUpDown.PULL_UP); LED led = ne
 }
 ```
 
-*class* **com.diozero.Button**{: .descname } (*pinNumber*, *pud=NONE*, *trigger=BOTH*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/Button.java){: .viewcode-link }
+*class* **com.diozero.Button**{: .descname } (*pinNumber*, *pud=NONE*, *trigger=BOTH*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/Button.java){: .viewcode-link } [&para;](InputDevices.md#button "Permalink to this definition"){: .headerlink }
 
 : Extends [DigitalInputDevice](API.md#digitalinputdevice].
     
@@ -67,7 +67,7 @@ try (Button button = new Button(buttonPin, GpioPullUpDown.PULL_UP); LED led = ne
 !!! Warning "Work-in-progress"
     Still under construction hence in the sandpit package.
 
-*class* **com.diozero.sandpit.MotionSensor**{: .descname } (*pinNumber*, *threshold=10*, *eventAge=50*, *eventDetectPeriod=50*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/sandpit/MotionSensor.java){: .viewcode-link }
+*class* **com.diozero.sandpit.MotionSensor**{: .descname } (*pinNumber*, *threshold=10*, *eventAge=50*, *eventDetectPeriod=50*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/sandpit/MotionSensor.java){: .viewcode-link } [&para;](InputDevices.md#motionsensor "Permalink to this definition"){: .headerlink }
 
 : Extends [SmoothedInputDevice](API.md#smoothedinputdevice] and represents a passive infra-red (PIR) motion sensor like the sort found in the [CamJam #2 EduKit](http://camjam.me/?page_id=623).
     
@@ -84,7 +84,7 @@ try (Button button = new Button(buttonPin, GpioPullUpDown.PULL_UP); LED led = ne
 
 ### TMP36
 
-*class* **com.diozero.TMP36**{: .descname } (*pinNumber*, *vRef*, *tempOffset*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/TMP36.java){: .viewcode-link }
+*class* **com.diozero.TMP36**{: .descname } (*pinNumber*, *vRef*, *tempOffset*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/TMP36.java){: .viewcode-link } [&para;](InputDevices.md#tmp36 "Permalink to this definition"){: .headerlink }
 
 : Extends [AnalogInputDevice](API.md#analoginputdevice] for reading temperature values from a [TMP36 Temperature Sensor by Analog Devices](http://www.analog.com/en/products/analog-to-digital-converters/integrated-special-purpose-converters/integrated-temperature-sensors/tmp36.html).
     
@@ -108,7 +108,7 @@ TODO Wiring diagram.
 !!! Warning "Work-in-progress"
     Still under construction hence in the sandpit package.
 
-*class* **com.diozero.sandpit.Potentiometer**{: .descname } (*pinNumber*, *vRef*, *r1*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/sandpit/Potentiometer.java){: .viewcode-link }
+*class* **com.diozero.sandpit.Potentiometer**{: .descname } (*pinNumber*, *vRef*, *r1*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/sandpit/Potentiometer.java){: .viewcode-link } [&para;](InputDevices.md#potentiometer "Permalink to this definition"){: .headerlink }
 
 : Extends [AnalogInputDevice](API.md#analoginputdevice] for taking readings from a potentiometer.
     
@@ -125,7 +125,7 @@ TODO Wiring diagram.
 
 ### LDR
 
-*class* **com.diozero.LDR**{: .descname } (*pinNumber*, *vRef*, *r1*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/LDR.java){: .viewcode-link }
+*class* **com.diozero.LDR**{: .descname } (*pinNumber*, *vRef*, *r1*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/LDR.java){: .viewcode-link } [&para;](InputDevices.md#ldr "Permalink to this definition"){: .headerlink }
 
 : Extends [AnalogInputDevce](API.md#analoginputdevice). Generic [Photoresistor / Light-Dependent-Resistor (LDR)](https://en.wikipedia.org/wiki/Photoresistor).
     
@@ -154,7 +154,7 @@ TODO Wiring diagram.
 !!! Warning "Work-in-progress"
     Not yet tested hence in the sandpit package.
 
-*class* **com.diozero.sandpit.GP2Y0A21YK**{: .descname } (*pinNumber*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/sandpit/GP2Y0A21YK.java){: .viewcode-link }
+*class* **com.diozero.sandpit.GP2Y0A21YK**{: .descname } (*pinNumber*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/sandpit/GP2Y0A21YK.java){: .viewcode-link } [&para;](InputDevices.md#sharp-gp2y0a21yk-distance-sensor "Permalink to this definition"){: .headerlink }
 
 : Extends [AnalogInputDevice](API.md#analoginputdevice] for taking object proximity readings.
     
