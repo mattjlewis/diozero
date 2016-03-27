@@ -22,13 +22,9 @@ try (LED led = new LED(pin)) {
 }
 ```
 
-*class* com.diozero.**LED** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/LED.java){: .viewcode-link }
+*class* **com.diozero.LED**{: .descname } (*pinNumber*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/LED.java){: .viewcode-link }
 
 : Extends [DigitalOutputDevice](API.md#digitaloutputdevice) and provides utility methods for controlling a Light Emitting Diode (LED).
-
-    **LED** (*pinNumber*)
-
-    : Constructor
     
     * **pinNumber** (*int*) - GPIO pin to which the LED is connected.
 
@@ -51,13 +47,9 @@ try (LED led = new LED(pin)) {
 
 ## Buzzer
 
-*class* com.diozero.**Buzzer** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/Buzzer.java){: .viewcode-link }
+*class* **com.diozero.Buzzer**{: .descname } (*pinNumber*, *activeHigh*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/Buzzer.java){: .viewcode-link }
 
 : Extends [DigitalOutputDevice](API.md#digitaloutputdevice) and represents a digital buzzer component.
-
-    **Buzzer** (*pinNumber*, *activeHigh*)
-    
-    : Constructor
     
     * **pinNumber** (*int*) - The GPIO pin which the buzzer is attached to.
     

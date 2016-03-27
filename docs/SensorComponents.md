@@ -4,13 +4,9 @@
 
 TODO Insert wiring diagram.
 
-*class* com.diozero.**HCSR04** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/HCSR04.java){: .viewcode-link }
+*class* **com.diozero.HCSR04**{: .descname } (*triggerGpioNum*, *echoGpioNum*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/HCSR04.java){: .viewcode-link }
 
 : Implements support for the [HC-SR04](http://www.micropik.com/PDF/HCSR04.pdf) Ultrasonic Ranging Module.
-
-    **HCSR04** (*triggerGpioNum*, *echoGpioNum*)
-
-    : Constructor
     
     * **triggerGpioNum** (*int*) - GPIO pin connected to the HC-SR04 trigger pin
     
@@ -23,13 +19,9 @@ TODO Insert wiring diagram.
 
 ## Bosch BMP180
 
-*class* com.diozero.**BMP180** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/BMP180.java){: .viewcode-link }
+*class* **com.diozero.BMP180**{: .descname } (*mode*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/BMP180.java){: .viewcode-link }
 
 : Implements support for the [Bosch Sensortec BMP180](http://www.bosch-sensortec.com/bst/products/all_products/bmp180) temperature and pressure sensor.
-
-    **BMP180** (*mode*)
-
-    : Constructor
     
     * **mode** (*BMPMode*) - BMP operating mode (Ultra-Low Power, Standard, High Resolution, Ultra-High Resolution)
 
@@ -44,13 +36,9 @@ TODO Insert wiring diagram.
 
 ## TSL2561 Digital Luminosity / Lux / Light Sensor {: #tsl2561 }
 
-*class* com.diozero.**TSL2561** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/TSL2561.java){: .viewcode-link }
+*class* **com.diozero.TSL2561**{: .descname } (*tsl2561Package*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/TSL2561.java){: .viewcode-link }
 
 : Implements support for the [Adafruit](https://www.adafruit.com/products/439) Digital Luminosity / Lux / Light Sensor - [Datasheet](https://www.adafruit.com/datasheets/TSL2561.pdf).
-
-    **TSL2561** (*tsl2561Package*)
-
-    : Constructor
     
     * **tsl2561Package** (*int*) - TSL package information (values are CS or T / FN / CL)
 
@@ -72,7 +60,7 @@ TODO Insert wiring diagram.
 
 ## 1-Wire Temperature Sensors
 
-*class* com.diozero.sandpit.**W1ThermSensor** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/sandpit/W1ThermSensor.java){: .viewcode-link }
+*class* **com.diozero.sandpit.W1ThermSensor**{: .descname } [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/sandpit/W1ThermSensor.java){: .viewcode-link }
 
 : Support for 1-wire temperature sensors such as the DS18B20. Adafruit has a good [article on connecting these](https://learn.adafruit.com/adafruits-raspberry-pi-lesson-11-ds18b20-temperature-sensing?view=all) to the Raspberry Pi. Currently supported types: DS18S20, DS1822, DS18B20, DS1825, DS28EA00, MAX31850K.
 

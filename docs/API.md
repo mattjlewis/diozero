@@ -4,7 +4,7 @@
 
 ### GpioDevice
 
-*class* com.diozero.api.**GpioDevice** (*pinNumber*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/GpioDevice.java){: .viewcode-link }
+*class* **com.diozero.api.GpioDevice**{: .descname } (*pinNumber*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/GpioDevice.java){: .viewcode-link }
 
 : Abstract base class for all GPIO related devices.
     
@@ -19,7 +19,7 @@
 
 ### GpioInputDevice
 
-*class* com.diozero.api.**GpioInputDevice** (*pinNumber*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/GpioInputDevice.java){: .viewcode-link }
+*class* **com.diozero.api.GpioInputDevice**{: .descname } (*pinNumber*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/GpioInputDevice.java){: .viewcode-link }
 
 : Common base class for digital and analog input devices, extends [GpioDevice](#gpiodevice).
     
@@ -44,13 +44,9 @@
 
 ### DigitalInputDevice
 
-*class* com.diozero.api.**DigitalInputDevice** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/DigitalInputDevice.java){: .viewcode-link }
+*class* **com.diozero.api.DigitalInputDevice**{: .descname } (*pinNumber*, *pud=NONE*, *trigger=BOTH*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/DigitalInputDevice.java){: .viewcode-link }
 
 : Extends [GpioInputDevice](#gpioinputdevice) to provide common support for digital devices.
-
-    **DigitalInputDevice** (*pinNumber*, *pud=NONE*, *trigger=BOTH*)
-    
-    : Constructor.
     
     * **pinNumber** (*int*) - Pin number to which the device is connected.
     
@@ -93,13 +89,9 @@
 
 ### WaitableDigitalInputDevice
 
-*class* com.diozero.api.**WaitableDigitalInputDevice** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/WaitableDigitalInputDevice.java){: .viewcode-link }
+*class* **com.diozero.api.WaitableDigitalInputDevice**{: .descname } (*pinNumber*, *pud=NONE*, *trigger=BOTH*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/WaitableDigitalInputDevice.java){: .viewcode-link }
 
 : Extends [DigitalInputDevice](#digitalinputdevice) to support waiting for state changes.
-
-    **WaitableDigitalInputDevice** (*pinNumber*, *pud=NONE*, *trigger=BOTH*)
-    
-    : Constructor.
     
     * **pinNumber** (*int*) - Pin number to which the device is connected.
     
@@ -128,16 +120,12 @@
 
 ### SmoothedInputDevice
 
-*class* com.diozero.api.**SmoothedInputDevice** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/SmoothedInputDevice.java){: .viewcode-link }
+*class* **com.diozero.api.SmoothedInputDevice**{: .descname } (*pinNumber*, *pud*, *threshold*, *eventAge*, *eventDetectPeriod*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/SmoothedInputDevice.java){: .viewcode-link }
 
 : Represents a generic input device which takes its value from the number of active events over a specific time period.
 This class extends [WaitableDigitalInputDevice](#waitabledigitalinputdevice) with a queue which is added to whenever the input device is active. The number of the active events in the queue is compared to a threshold which is used to determine the state of the 'active' property.
 Any active events over the specified eventAge are removed by a background thread.
 This class is intended for use with devices which exhibit "twitchy" behaviour (such as certain motion sensors).
-
-    **SmoothedInputDevice** (*pinNumber*, *pud*, *threshold*, *eventAge*, *eventDetectPeriod*)
-    
-    : Constructor.
     
     * **pinNumber** (*int*) - Pin number to which the device is connected.
     
@@ -197,13 +185,9 @@ try (McpAdc adc = new McpAdc(type, chipSelect);
 }
 ```
 
-*class* com.diozero.api.**AnalogInputDevice** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/AnalogInputDevice.java){: .viewcode-link }
+*class* **com.diozero.api.AnalogInputDevice**{: .descname } (*pinNumber*, *range*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/AnalogInputDevice.java){: .viewcode-link }
 
 : Extends [GpioInputDevice](#gpioinputdevice) to provide common support for analog devices.
-
-    **AnalogInputDevice** (*pinNumber*, *range*)
-    
-    : Constructor.
     
     * **pinNumber** (*int*) - Pin number to which the device is connected.
     
@@ -232,13 +216,9 @@ try (McpAdc adc = new McpAdc(type, chipSelect);
 
 ### DigitalOutputDevice
 
-*class* com.diozero.api.**DigitalOutputDevice** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/DigitalOutputDevice.java){: .viewcode-link }
+*class* **com.diozero.api.DigitalOutputDevice**{: .descname } (*pinNumber*, *activeHigh=true*, *initialValue=false*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/DigitalOutputDevice.java){: .viewcode-link }
 
 : Extends [GpioDevice](#gpiodevice) to provide generic digital (on/off) output control.
-
-    **DigitalOutputDevice** (*pinNumber*, *activeHigh=true*, *initialValue=false*)
-    
-    : Constructor.
     
     * **pinNumber** (*int*) - GPIO pin to which the output device is connected.
     
@@ -287,13 +267,9 @@ try (McpAdc adc = new McpAdc(type, chipSelect);
 
 ### PwmOutputDevice
 
-*class* com.diozero.api.**PwmOutputDevice** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/PwmOutputDevice.java){: .viewcode-link }
+*class* **com.diozero.api.PwmOutputDevice**{: .descname } (*pinNumber*, *initialValue=0*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/PwmOutputDevice.java){: .viewcode-link }
 
 : Extends [GpioDevice](#gpiodevice) to provide generic [Pulse Width Modulation](https://en.wikipedia.org/wiki/Pulse-width_modulation) (PWM) output control.
-
-    **PwmOutputDevice** (*pinNumber*, *initialValue=0*)
-    
-    : Constructor.
     
     * **pinNumber** (*int*) - GPIO pin to which the output device is connected.
     

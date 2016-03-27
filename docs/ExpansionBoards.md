@@ -2,8 +2,6 @@
 
 ## Microchip Analog to Digital Converters {: #mcp-adc }
 
-*class* com.diozero.**McpAdc** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/McpAdc.java){: .viewcode-link }
-
 : Provides support for the following Microchip analog-to-digital converter devices:
 
 + MCP300x: [MCP3001](http://www.microchip.com/wwwproducts/en/MCP3001), [MCP3002](http://www.microchip.com/wwwproducts/en/MCP3002), [MCP3004](http://www.microchip.com/wwwproducts/en/MCP3004), [MCP3008](http://www.microchip.com/wwwproducts/en/MCP3008)
@@ -25,25 +23,22 @@ try (McpAdc adc = new McpAdc(type, chipSelect); LDR ldr = new LDR(adc, pin, vRef
 }
 ```
 
+*class* **com.diozero.McpAdc**{: .descname } (*type*, *chipSelect*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/McpAdc.java){: .viewcode-link }
+
+: Implementation class for all supported MCP analog-to-digital converters.
+
+    * **type** (*McpAdc.Type*) - The MCP type (MCP3001 - MCP3304).
+    
+    * **chipSelect** (*int*) - SPI Chip Select to which the ADC is connected.
+    
+    *float* **getValue** (*adcPin*)
+    
+    : Get the value for the specified ADC pin. Range 0..1 (if unsigned) or -1..1 (if signed).
+    
+    * **adcPin** (*int*) - The pin on the MCP ADC to take a reading from.
+    
+
 ## Microchip MCP23017 GPIO Expansion Board {: #mcp-gpio-expansion-board }
-
-*class* com.diozero.**MCP23017** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/MCP23017.java){: .viewcode-link }
-
-: Provides support for the Microchip [MCP23017](http://www.microchip.com/wwwproducts/Devices.aspx?product=MCP23017) 16-bit input/output port expander. Input device state change notifications will only work if at least one of the MCP23017 interrupt pins is connected to the Raspberry Pi.
-
-    **MCP23017** (*interruptPinNumber*)
-    
-    : Constructor
-    
-    * **interruptPinNumber** (*int*) - The pin on the Raspberry Pi to be used for input interrupt notifications. This sets the device into mirrored interrupt mode whereby interrupts for either bank get mirrored on both of the MCP23017 interrupt outputs.
-
-    **MCP23017** (*interruptPinNumberA*, *interruptPinNumberB*)
-    
-    : Constructor
-    
-    * **interruptPinNumberA** (*int*) - The pin on the Raspberry Pi to be used for input interrupt notifications for bank A.
-    
-    * **interruptPinNumberB** (*int*) - The pin on the Raspberry Pi to be used for input interrupt notifications for bank B.
 
 An example circuit for controlling an LED with a button, all connected via an MCP23017:
 
@@ -70,9 +65,36 @@ try (MCP23017 mcp23017 = new MCP23017(intAPin, intBPin);
 }
 ```
 
+*class* **com.diozero.MCP23017**{: .descname } (*controller=1*, *address=0x20*, *interruptPinNumberA*, *interruptPinNumberB=interruptPinNumberA*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/MCP23017.java){: .viewcode-link }
+
+: Provides support for the Microchip [MCP23017](http://www.microchip.com/wwwproducts/Devices.aspx?product=MCP23017) 16-bit input/output port expander. Input device state change notifications will only work if at least one of the MCP23017 interrupt pins is connected to the Raspberry Pi.
+
+    * **controller** (*int*) - I2C bus controller to which the MCP23017 is connected to. Defaults to bus 1.
+    
+    * **address** (*int*) - Device I2C address. Defaults to 0x20.
+    
+    * **interruptPinNumberA** (*int*) - The pin on the Raspberry Pi to be used for input interrupt notifications for bank A. If only interruptPinA is set or interruptPinB equals interuptPinB the device will be configured to mirrored interrupt mode whereby interrupts for either bank get mirrored on both of the MCP23017 interrupt outputs.
+    
+    * **interruptPinNumberB** (*int*) - The pin on the Raspberry Pi to be used for input interrupt notifications for bank B. Defaults to interruptPinNumberA.
+    
+    *boolean* **getValue** (*pinNumber*)
+    
+    : Get the value for the specified pin.
+    
+    * **pinNumber** (*int*) - Pin number.
+    
+    **setValue** (*pinNumber*, *value*)
+    
+    : Set the value for the specified pin.
+    
+    * **pinNumber** (*int*) - Pin number.
+    
+    * **value** (*boolean*) - Value to set.
+    
+
 ## PCA9685 PWM / Servo Driver {: #pwm-servo-driver }
 
-*class* com.diozero.**PCA9685** [source](https://github.com/mattjlewis/diozero/blob/master/src/main/java/com/diozero/PCA9685.java){: .viewcode-link }
+*class* **com.diozero.PCA9685**{: .descname } [source](https://github.com/mattjlewis/diozero/blob/master/src/main/java/com/diozero/PCA9685.java){: .viewcode-link }
 
 : Provides support for the [PCA9685](http://www.nxp.com/products/power-management/lighting-driver-and-controller-ics/i2c-led-display-control/16-channel-12-bit-pwm-fm-plus-ic-bus-led-controller:PCA9685) 12-bit 16-channel PWM driver as used by the [Adafruit PWM Servo Driver](https://www.adafruit.com/product/815). Implements [PwmOutputDeviceFactoryInterface](https://github.com/mattjlewis/diozero/blob/master/src/main/java/com/diozero/internal/spi/PwmOutputDeviceFactoryInterface.java) hence can be passed into the constructor of PWM output devices.
 
