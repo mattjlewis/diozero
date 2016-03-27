@@ -4,13 +4,9 @@
 
 ### GpioDevice
 
-*class* com.diozero.api.**GpioDevice** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/GpioDevice.java){: .viewcode-link }
+*class* com.diozero.api.**GpioDevice** (*pinNumber*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/GpioDevice.java){: .viewcode-link }
 
 : Abstract base class for all GPIO related devices.
-
-    **GpioDevice** (*pinNumber*)
-    
-    : Constructor.
     
     * **pinNumber** (*int*) - Pin number to which the device is connected.
     
@@ -23,13 +19,9 @@
 
 ### GpioInputDevice
 
-*class* com.diozero.api.**GpioInputDevice** [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/GpioInputDevice.java){: .viewcode-link }
+*class* com.diozero.api.**GpioInputDevice** (*pinNumber*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/GpioInputDevice.java){: .viewcode-link }
 
 : Common base class for digital and analog input devices, extends [GpioDevice](#gpiodevice).
-
-    **GpioInputDevice** (*pinNumber*)
-    
-    : Constructor.
     
     * **pinNumber** (*int*) - Pin number to which the device is connected.
 
@@ -315,7 +307,7 @@ try (McpAdc adc = new McpAdc(type, chipSelect);
     
     : Set the PWM output value (0..1).
     
-    *float* **value** - the new PWM output value (0..1).
+    * **value** (*float*) - the new PWM output value (0..1).
     
     **on** ()
     
