@@ -220,27 +220,23 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Cl
 	private InterruptMode interruptMode = InterruptMode.DISABLED;
 
 	public MCP23017() throws RuntimeIOException {
-		this(I2CConstants.BUS_1, DEVICE_ADDRESS, I2CConstants.ADDR_SIZE_7, I2CConstants.DEFAULT_CLOCK_FREQUENCY,
-				INTERRUPT_PIN_NOT_SET, INTERRUPT_PIN_NOT_SET);
+		this(I2CConstants.BUS_1, DEVICE_ADDRESS, INTERRUPT_PIN_NOT_SET, INTERRUPT_PIN_NOT_SET);
 	}
 
 	public MCP23017(int interruptPinNumber) throws RuntimeIOException {
-		this(I2CConstants.BUS_1, DEVICE_ADDRESS, I2CConstants.ADDR_SIZE_7, I2CConstants.DEFAULT_CLOCK_FREQUENCY,
-				interruptPinNumber, interruptPinNumber);
+		this(I2CConstants.BUS_1, DEVICE_ADDRESS, interruptPinNumber, interruptPinNumber);
 	}
 
 	public MCP23017(int interruptPinNumberA, int interruptPinNumberB) throws RuntimeIOException {
-		this(I2CConstants.BUS_1, DEVICE_ADDRESS, I2CConstants.ADDR_SIZE_7, I2CConstants.DEFAULT_CLOCK_FREQUENCY,
-				interruptPinNumberA, interruptPinNumberB);
+		this(I2CConstants.BUS_1, DEVICE_ADDRESS, interruptPinNumberA, interruptPinNumberB);
 	}
 
-	public MCP23017(int controller, int address, int addressSize, int clockFrequency, int interruptPinNumber) throws RuntimeIOException {
-		this(controller, address, addressSize, clockFrequency, interruptPinNumber, interruptPinNumber);
+	public MCP23017(int controller, int address, int interruptPinNumber) throws RuntimeIOException {
+		this(controller, address, interruptPinNumber, interruptPinNumber);
 	}
 
-	public MCP23017(int controller, int address, int addressSize, int clockFrequency,
-			int interruptPinNumberA, int interruptPinNumberB) throws RuntimeIOException {
-		i2cDevice = new I2CDevice(controller, address, addressSize, clockFrequency);
+	public MCP23017(int controller, int address, int interruptPinNumberA, int interruptPinNumberB) throws RuntimeIOException {
+		i2cDevice = new I2CDevice(controller, address, I2CConstants.ADDR_SIZE_7, I2CConstants.DEFAULT_CLOCK_FREQUENCY);
 		
 		keyPrefix = DEVICE_NAME + "-" + controller + "-" + address + "-";
 		

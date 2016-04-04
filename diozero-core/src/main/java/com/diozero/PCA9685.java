@@ -100,11 +100,11 @@ public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFac
 	private double pulseMsPerBit = ServoUtil.calcPulseMsPerBit(pwmFrequency, RANGE);
 
 	public PCA9685(int pwmFrequency) throws RuntimeIOException {
-		this(I2CConstants.BUS_1, DEVICE_ADDRESS, I2CConstants.ADDR_SIZE_7, I2CConstants.DEFAULT_CLOCK_FREQUENCY, pwmFrequency);
+		this(I2CConstants.BUS_1, DEVICE_ADDRESS, pwmFrequency);
 	}
 
-	public PCA9685(int controller, int address, int addressSize, int clockFrequency, int pwmFrequency) throws RuntimeIOException {
-		i2cDevice = new I2CDevice(controller, address, addressSize, clockFrequency);
+	public PCA9685(int controller, int address, int pwmFrequency) throws RuntimeIOException {
+		i2cDevice = new I2CDevice(controller, address, I2CConstants.ADDR_SIZE_7, I2CConstants.DEFAULT_CLOCK_FREQUENCY);
 		
 		keyPrefix = DEVICE_NAME + "-" + controller + "-" + address + "-";
 		
