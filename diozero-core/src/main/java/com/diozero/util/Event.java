@@ -37,6 +37,11 @@ public class Event {
 	private Condition cond = lock.newCondition();
 	private boolean wasSet;
 
+	/**
+	 * Wait indefinitely for set() to be called.
+	 * @return True if set() was called, false woken unexpectedly.
+	 * @throws InterruptedException If interrupted.
+	 */
 	public boolean doWait() throws InterruptedException {
 		lock.lock();
 		wasSet = false;
@@ -48,6 +53,12 @@ public class Event {
 		return wasSet;
 	}
 
+	/**
+	 * Wait the specified time period for set() to be called.
+	 * @param timeout Timeout value in milliseconds.
+	 * @return True if set() was called, false if timed out waiting.
+	 * @throws InterruptedException If interrupted.
+	 */
 	public boolean doWait(int timeout) throws InterruptedException {
 		lock.lock();
 		wasSet = false;
