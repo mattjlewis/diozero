@@ -27,18 +27,28 @@ package com.diozero;
  */
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.pmw.tinylog.Logger;
 
 import com.diozero.internal.DeviceFactoryHelper;
+import com.diozero.internal.provider.test.TestDeviceFactory;
+import com.diozero.internal.provider.test.TestDigitalInputDevice;
+import com.diozero.internal.provider.test.TestDigitalOutputDevice;
 import com.diozero.internal.spi.NativeDeviceFactoryInterface;
 import com.diozero.util.RuntimeIOException;
 
 /**
  * LED test case using the test device factory
  */
+@SuppressWarnings("static-method")
 public class LEDTest {
-	@SuppressWarnings("static-method")
+	@Before
+	public void setup() {
+		TestDeviceFactory.setDigitalInputDeviceClass(TestDigitalInputDevice.class);
+		TestDeviceFactory.setDigitalOutputDeviceClass(TestDigitalOutputDevice.class);
+	}
+	
 	@Test
 	public void test() {
 		NativeDeviceFactoryInterface df = DeviceFactoryHelper.getNativeDeviceFactory();

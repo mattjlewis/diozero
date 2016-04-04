@@ -38,7 +38,7 @@ public class SchedulerTest {
 
 	public static void main(String[] args) {
 		ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1, new DaemonThreadFactory());
-		scheduler.scheduleAtFixedRate(() -> {
+		ScheduledFuture<?> future = scheduler.scheduleAtFixedRate(() -> {
 			long now = System.currentTimeMillis();
 			long diff = now - last_call;
 			last_call = now;
@@ -46,6 +46,10 @@ public class SchedulerTest {
 					Long.valueOf(diff));
 		} , 100, 100, TimeUnit.MILLISECONDS);
 		SleepUtil.sleepSeconds(5);
+		
+		future.cancel(true);
+		scheduler.shutdownNow();
+		
 		System.out.println("Finished");
 	}
 }

@@ -26,19 +26,28 @@ package com.diozero;
  * #L%
  */
 
+import java.util.concurrent.*;
 
-import java.util.concurrent.TimeUnit;
-
+import org.junit.Before;
 import org.junit.Test;
 import org.pmw.tinylog.Logger;
 
 import com.diozero.api.DigitalInputEvent;
 import com.diozero.api.GpioPullUpDown;
-import com.diozero.util.DioZeroScheduler;
+import com.diozero.internal.provider.test.TestDeviceFactory;
+import com.diozero.internal.provider.test.TestDigitalInputDevice;
+import com.diozero.internal.provider.test.TestDigitalOutputDevice;
 import com.diozero.util.SleepUtil;
 
+@SuppressWarnings("static-method")
 public class ButtonTest {
 	private int i;
+	
+	@Before
+	public void setup() {
+		TestDeviceFactory.setDigitalInputDeviceClass(TestDigitalInputDevice.class);
+		TestDeviceFactory.setDigitalOutputDeviceClass(TestDigitalOutputDevice.class);
+	}
 	
 	@Test
 	public void test() {
@@ -47,11 +56,15 @@ public class ButtonTest {
 			button.whenReleased(() -> Logger.info("Released"));
 			button.addListener((event) -> Logger.info("valueChanged({})", event));
 			
-			DioZeroScheduler.getDaemonInstance().scheduleAtFixedRate(
+			ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
+			ScheduledFuture<?> future = executor.scheduleAtFixedRate(
 					() -> button.valueChanged(new DigitalInputEvent(button.getPinNumber(), System.currentTimeMillis(), System.nanoTime(), (i++ % 2) == 0)),
 					500, 500, TimeUnit.MILLISECONDS);
 			
 			SleepUtil.sleepSeconds(10);
+			
+			future.cancel(true);
+			executor.shutdownNow();
 		}
 	}
 }

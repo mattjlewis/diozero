@@ -1,7 +1,7 @@
 package com.diozero;
 
 import java.util.Random;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 /*
  * #%L
@@ -59,18 +59,20 @@ public class LambdaTest {
 		}
 		
 		Logger.info("Using DioZeroScheduler.invokeAtFixedRate()");
-		DioZeroScheduler.getDaemonInstance().invokeAtFixedRate(t::getValue, t::setValue, 100, 1000, TimeUnit.MILLISECONDS);
+		ScheduledFuture<?> future1 = DioZeroScheduler.getDaemonInstance().invokeAtFixedRate(t::getValue, t::setValue, 100, 1000, TimeUnit.MILLISECONDS);
 		for (int i=0; i<10; i++) {
 			SleepUtil.sleepSeconds(1);
 		}
+		future1.cancel(true);
 		
-		Logger.info("Using DioZeroScheduler.scheduleAtFixedRate()");
-		DioZeroScheduler.getDaemonInstance().scheduleAtFixedRate(t::getValue, 100, 1000, TimeUnit.MILLISECONDS);
+		Logger.info("Using ScheduledExecutorService.scheduleAtFixedRate()");
+		ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
+		ScheduledFuture<?> future2 = executor.scheduleAtFixedRate(t::getValue, 100, 1000, TimeUnit.MILLISECONDS);
 		for (int i=0; i<10; i++) {
 			SleepUtil.sleepSeconds(1);
 		}
-		
-		DioZeroScheduler.shutdownAll();
+		future2.cancel(true);
+		executor.shutdownNow();
 	}
 	
 	static void invoke(Supplier<Float> source, Consumer<Float> sink) {

@@ -25,19 +25,26 @@ package com.diozero;
  * THE SOFTWARE.
  * #L%
  */
+import java.util.concurrent.*;
 
-
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-
+import org.junit.Before;
 import org.junit.Test;
 import org.pmw.tinylog.Logger;
 
 import com.diozero.api.*;
+import com.diozero.internal.provider.test.TestDeviceFactory;
+import com.diozero.internal.provider.test.TestDigitalInputDevice;
+import com.diozero.internal.provider.test.TestDigitalOutputDevice;
 import com.diozero.util.SleepUtil;
 
+@SuppressWarnings("static-method")
 public class SmoothedInputTest implements InputEventListener<DigitalInputEvent> {
+	@Before
+	public void setup() {
+		TestDeviceFactory.setDigitalInputDeviceClass(TestDigitalInputDevice.class);
+		TestDeviceFactory.setDigitalOutputDeviceClass(TestDigitalOutputDevice.class);
+	}
+	
 	@Test
 	public void test() {
 		int pin = 1;
@@ -54,22 +61,24 @@ public class SmoothedInputTest implements InputEventListener<DigitalInputEvent> 
 				}
 			};
 			
-			// Generate 1 event every 50ms -> 20 events per second
 			ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-			scheduler.scheduleAtFixedRate(event_generator, 50, 50, TimeUnit.MILLISECONDS);
+			
+			// Generate 1 event every 50ms -> 20 events per second
+			ScheduledFuture<?> future = scheduler.scheduleAtFixedRate(event_generator, 50, 50, TimeUnit.MILLISECONDS);
 			Logger.debug("Sleeping for {}s", Float.valueOf(delay));
 			SleepUtil.sleepSeconds(delay);
+			future.cancel(true);
 			
 			Logger.debug("Stopping event generation and sleeping for {}s", Float.valueOf(delay));
-			scheduler.shutdown();
 			SleepUtil.sleepSeconds(delay);
 			
 			// Generate 1 event every 50ms -> 20 events per second
-			scheduler = Executors.newScheduledThreadPool(1);
-			scheduler.scheduleAtFixedRate(event_generator, 50, 50, TimeUnit.MILLISECONDS);
+			future = scheduler.scheduleAtFixedRate(event_generator, 50, 50, TimeUnit.MILLISECONDS);
 			Logger.debug("Restarting event generation and sleeping for {}s", Float.valueOf(delay));
 			SleepUtil.sleepSeconds(delay);
-			scheduler.shutdown();
+			future.cancel(true);
+			
+			scheduler.shutdownNow();
 		}
 	}
 

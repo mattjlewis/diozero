@@ -40,6 +40,7 @@ import com.diozero.api.SpiClockMode;
 import com.diozero.internal.DeviceFactoryHelper;
 import com.diozero.internal.DeviceStates;
 import com.diozero.internal.provider.test.TestDeviceFactory;
+import com.diozero.internal.provider.test.TestI2CDevice;
 import com.diozero.internal.provider.test.TestMcpAdcSpiDevice;
 import com.diozero.internal.spi.I2CDeviceInterface;
 import com.diozero.internal.spi.SpiDeviceInterface;
@@ -49,6 +50,7 @@ public class CleanupTest {
 	@Before
 	public void setup() {
 		TestMcpAdcSpiDevice.setType(McpAdc.Type.MCP3008);
+		TestDeviceFactory.setI2CDeviceClass(TestI2CDevice.class);
 		TestDeviceFactory.setSpiDeviceClass(TestMcpAdcSpiDevice.class);
 	}
 	
