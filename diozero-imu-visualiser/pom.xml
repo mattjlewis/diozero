@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>com.diozero</groupId>
 		<artifactId>diozero</artifactId>
-		<version>0.5-SNAPSHOT</version>
+		<version>0.6-SNAPSHOT</version>
 	</parent>
 	
 	<name>Device I/O Zero - IMU Visualiser</name>
@@ -27,7 +27,7 @@
 			<artifactId>interactivemesh.jim3dsModelImporterJFX</artifactId>
 			<version>0.7</version>
 			<scope>system</scope>
-			<systemPath>${basedir}/lib/jim3dsModelImporterJFX.jar</systemPath>
+			<systemPath>${system-java-lib.dir}/jim3dsModelImporterJFX.jar</systemPath>
 		</dependency>
 	</dependencies>
 	
