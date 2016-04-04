@@ -29,6 +29,8 @@ package com.diozero.internal.provider.test;
 
 import java.io.IOException;
 import java.util.Random;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
@@ -42,7 +44,6 @@ import com.diozero.api.GpioPullUpDown;
 import com.diozero.internal.spi.AbstractInputDevice;
 import com.diozero.internal.spi.DeviceFactoryInterface;
 import com.diozero.internal.spi.GpioDigitalInputDeviceInterface;
-import com.diozero.util.DioZeroScheduler;
 import com.diozero.util.RuntimeIOException;
 
 public class HCSR04EchoPin extends AbstractInputDevice<DigitalInputEvent>
@@ -59,6 +60,8 @@ implements GpioDigitalInputDeviceInterface, Runnable {
 	private Condition cond;
 	private AtomicBoolean value;
 	private long echoStart;
+	private AtomicBoolean running;
+	private ExecutorService executor;
 	
 	public HCSR04EchoPin(String key, DeviceFactoryInterface deviceFactory,
 			int pinNumber, GpioPullUpDown pud, GpioEventTrigger trigger) {
@@ -71,9 +74,11 @@ implements GpioDigitalInputDeviceInterface, Runnable {
 		lock = new ReentrantLock();
 		cond = lock.newCondition();
 		value = new AtomicBoolean();
+		running = new AtomicBoolean();
 		
 		// Start the background process to send the echo low signal
-		DioZeroScheduler.getDaemonInstance().execute(this);
+		executor = Executors.newFixedThreadPool(1);
+		executor.execute(this);
 	}
 	
 	@Override
@@ -92,6 +97,16 @@ implements GpioDigitalInputDeviceInterface, Runnable {
 
 	@Override
 	protected void closeDevice() throws IOException {
+		Logger.debug("closeDevice()");
+		
+		running.set(false);
+		lock.lock();
+		try {
+			cond.signalAll();
+		} finally {
+			lock.unlock();
+		}
+		executor.shutdownNow();
 	}
 	
 	void doEcho(long start) {
@@ -118,13 +133,17 @@ implements GpioDigitalInputDeviceInterface, Runnable {
 
 	@Override
 	public void run() {
+		running.set(true);
 		try {
-			while (true) {
+			while (running.get()) {
 				lock.lock();
 				try {
 					cond.await();
 				} finally {
 					lock.unlock();
+				}
+				if (!running.get()) {
+					break;
 				}
 				if ((System.currentTimeMillis() - echoStart) < 2) {
 					Thread.sleep(0, random.nextInt(999_999));
