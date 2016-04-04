@@ -59,6 +59,7 @@ public class PixelColour {
 	/**
 	 * Input a value 0 to 255 to get a colour value.
 	 * The colours are a transition r - g - b - back to r.
+	 * @return 24-bit RGB colour value
 	 */
 	public static int wheel(int wheelPos) {
 		int max = COLOUR_COMPONENT_MAX;

@@ -50,7 +50,7 @@ public class PixelAnimations {
 		}
 	}
 	
-	/** Slightly different, this makes the rainbow equally distributed throughout */
+	/* Slightly different, this makes the rainbow equally distributed throughout */
 	public static void rainbowCycle(WS281x ws281x, int wait) {
 		for (int j=0; j<256*5; j++) { // 5 cycles of all colors on wheel
 			for (int i=0; i<ws281x.getNumPixels(); i++) {
@@ -61,7 +61,7 @@ public class PixelAnimations {
 		}
 	}
 	
-	/** Theatre-style crawling lights. */
+	/* Theatre-style crawling lights */
 	public static void theatreChase(WS281x ws281x, int c, int wait) {
 		for (int j=0; j<10; j++) {  //do 10 cycles of chasing
 			for (int q=0; q < 3; q++) {
@@ -79,7 +79,7 @@ public class PixelAnimations {
 		}
 	}
 
-	/** Theatre-style crawling lights with rainbow effect */
+	/* Theatre-style crawling lights with rainbow effect */
 	public static void theatreChaseRainbow(WS281x ws281x, int wait) {
 		for (int j=0; j < 256; j++) {     // cycle all 256 colours in the wheel
 			for (int q=0; q < 3; q++) {
