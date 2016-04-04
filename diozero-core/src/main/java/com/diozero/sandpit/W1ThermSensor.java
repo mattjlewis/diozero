@@ -77,7 +77,7 @@ public class W1ThermSensor implements TemperatureSensorInterface {
 	/**
 	 * Get temperature in degrees celsius
 	 * @return Temperature (deg C)
-	 * @throw {@link RuntimeIOException} if an I/O error occurs
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	@Override
 	public float getTemperature() throws RuntimeIOException {

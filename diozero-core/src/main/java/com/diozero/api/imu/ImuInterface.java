@@ -34,7 +34,10 @@ import com.diozero.util.RuntimeIOException;
 public interface ImuInterface {
 	
 	String getImuName();
-	/** Get the recommended poll interval in mS */
+	/**
+	 * Get the recommended poll interval in milliseconds
+	 * @return The poll interval
+	 */
 	int getPollInterval();
 	
 	boolean hasGyro();

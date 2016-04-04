@@ -32,7 +32,7 @@ public interface TemperatureSensorInterface {
 	/**
 	 * Get temperature in degrees celsius
 	 * @return Temperature (deg C)
-	 * @throw {@link RuntimeIOException} if an I/O error occurs
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	float getTemperature() throws RuntimeIOException;
 }

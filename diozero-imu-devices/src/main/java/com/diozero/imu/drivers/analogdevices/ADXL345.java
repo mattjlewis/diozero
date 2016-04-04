@@ -126,7 +126,10 @@ public class ADXL345 implements ImuInterface {
 		setNormalMeasurementMode();
 	}
 	
-	/** Get the tap threshold in g */
+	/**
+	 * Get the tap threshold in g
+	 * @return Tap threshold (g)
+	 */
 	public float getTapThreshold() {
 		return device.readUByte(THRESH_TAP) * THRESH_TAP_LSB;
 	}
@@ -160,7 +163,10 @@ public class ADXL345 implements ImuInterface {
 		return getOffset(OFSX);
 	}
 	
-	/** Set the X-axis offset in g */
+	/**
+	 * Set the X-axis offset in g
+	 * @param offset Offset value (g)
+	 */
 	public void setOffsetX(float offset) {
 		setOffset(OFSX, offset);
 	}
@@ -169,7 +175,10 @@ public class ADXL345 implements ImuInterface {
 		return getOffset(OFSY);
 	}
 	
-	/** Set the Y-axis offset in g */
+	/**
+	 * Set the Y-axis offset in g
+	 * @param offset Offset value (g)
+	 */
 	public void setOffsetY(float offset) {
 		setOffset(OFSY, offset);
 	}
@@ -178,7 +187,10 @@ public class ADXL345 implements ImuInterface {
 		return getOffset(OFSZ);
 	}
 	
-	/** Set the Z-axis offset in g */
+	/**
+	 * Set the Z-axis offset in g
+	 * @param offset Offset value (g)
+	 */
 	public void setOffsetZ(float offset) {
 		setOffset(OFSZ, offset);
 	}
@@ -193,7 +205,10 @@ public class ADXL345 implements ImuInterface {
 		setOffset(OFSZ, offsetZ);
 	}
 	
-	/** Get the tap duration in ms */
+	/**
+	 * Get the tap duration in milliseconds
+	 * @return Tap duration (milliseconds)
+	 */
 	public float getTapDuration() {
 		return device.readUByte(TAP_DUR) * TAP_DURATION_MS_LSB;
 	}
@@ -210,7 +225,10 @@ public class ADXL345 implements ImuInterface {
 		device.writeByte(TAP_DUR, (byte)(Math.floor(tapDuration / TAP_DURATION_MS_LSB)));
 	}
 	
-	/** Get the tap latency in mS */
+	/**
+	 * Get the tap latency in milliseconds
+	 * @return The tap latency (milliseconds)
+	 */
 	public float getTapLatency() {
 		return device.readUByte(TAP_LATENCY) * TAP_LATENCY_MS_LSB;
 	}
@@ -228,14 +246,17 @@ public class ADXL345 implements ImuInterface {
 		device.writeByte(TAP_LATENCY, (byte)(Math.floor(tapLatency / TAP_LATENCY_MS_LSB)));
 	}
 	
-	/** Get the tap window in ms */
+	/**
+	 * Get the tap window in milliseconds
+	 * @return Tap window (milliseconds)
+	 */
 	public float getTapWindow() {
 		return device.readUByte(TAP_WINDOW) * TAP_WINDOW_MS_LSB;
 	}
 	
 	/**
 	 * Set the tap window in mS
-	 * @param tapWindow The amount of time in mS after the expiration of the latency time
+	 * @param tapWindow The amount of time in milliseconds after the expiration of the latency time
 	 * during which a second valid tap can begin
 	 */
 	public void setTapWindow(float tapWindow) {
@@ -252,7 +273,7 @@ public class ADXL345 implements ImuInterface {
 	
 	/**
 	 * Set the activity threshold value in g
-	 * @param thresholdActivity The threshold value for detecting activity
+	 * @param activityThreshold The threshold value for detecting activity
 	 */
 	public void setActivityThreshold(float activityThreshold) {
 		if (activityThreshold < 0 || activityThreshold > ACTIVITY_THRESHOLD_RANGE) {
@@ -333,7 +354,7 @@ public class ADXL345 implements ImuInterface {
 	
 	/**
 	 * Set the freefall threshold value in g
-	 * @param thresholdInactivity The threshold value for detecting inactivity
+	 * @param freefallThreshold The threshold value for detecting inactivity
 	 */
 	public void setFreefallThreshold(float freefallThreshold) {
 		if (freefallThreshold < 0 || freefallThreshold > FREEFALL_THRESHOLD_RANGE) {

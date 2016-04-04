@@ -94,7 +94,7 @@ public class Servo extends GpioDevice {
 
 	/**
 	 * Set the servo pulse width in milliseconds
-	 * @param pulseMs Servo pulse width (milliseconds)
+	 * @param pulseWidthMs Servo pulse width (milliseconds)
 	 */
 	public void setPulseWidthMs(float pulseWidthMs) {
 		if (pulseWidthMs < MIN_PULSE_WIDTH_MS || pulseWidthMs > MAX_PULSE_WIDTH_MS) {

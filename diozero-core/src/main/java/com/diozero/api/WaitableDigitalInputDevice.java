@@ -80,7 +80,7 @@ public class WaitableDigitalInputDevice extends DigitalInputDevice {
 
 	/**
 	 * Wait the specified time period for the device state to go active.
-	 * @param timeout Timeout value if milliseconds, <= 0 is indefinite.
+	 * @param timeout Timeout value if milliseconds, &lt;= 0 is indefinite.
 	 * @return False if timed out waiting for the specified value, otherwise true.
 	 * @throws InterruptedException If interrupted while waiting.-
 	 */
@@ -99,7 +99,7 @@ public class WaitableDigitalInputDevice extends DigitalInputDevice {
 
 	/**
 	 * Wait the specified time period for the device state to go inactive.
-	 * @param timeout Timeout value if milliseconds, <= 0 is indefinite.
+	 * @param timeout Timeout value if milliseconds, &lt;= 0 is indefinite.
 	 * @return False if timed out waiting for the specified value, otherwise true.
 	 * @throws InterruptedException If interrupted while waiting.-
 	 */
@@ -110,7 +110,7 @@ public class WaitableDigitalInputDevice extends DigitalInputDevice {
 	/**
 	 * Wait the specified time period for the device state to switch to value.
 	 * @param value The desired device state to wait for.
-	 * @param timeout Timeout value if milliseconds, <= 0 is indefinite.
+	 * @param timeout Timeout value if milliseconds, &lt;= 0 is indefinite.
 	 * @return False if timed out waiting for the specified value, otherwise true.
 	 * @throws InterruptedException If interrupted while waiting.-
 	 */
