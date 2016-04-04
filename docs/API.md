@@ -304,4 +304,17 @@ try (McpAdc adc = new McpAdc(type, chipSelect);
 
 ## I2C Support
 
+*class* **com.diozero.api.I2CDevice**{: .descname } (*controller*, *address*, *addressSize*, *clockFrequency*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/I2CDevice.java){: .viewcode-link } [&para;](API.md#i2c-support "Permalink to this definition"){: .headerlink }
+
+: Utility class for reading / writing to I2C devices.
+
+    * **controller** (*int*) - I2C bus.
+    
+    * **address** (*int*) - I2C device address.
+    
+    * **addressSize** (*int*) - I2C device address size. Can be 7 or 10.
+    
+    * **clockFrequency** (*int*) - I2C clock frequency.
+
+
 ## SPI Support

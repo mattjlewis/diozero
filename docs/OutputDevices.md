@@ -22,7 +22,7 @@ try (LED led = new LED(pin)) {
 }
 ```
 
-*class* **com.diozero.LED**{: .descname } (*pinNumber*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/LED.java){: .viewcode-link }
+*class* **com.diozero.LED**{: .descname } (*pinNumber*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/LED.java){: .viewcode-link } [&para;](OutputDevices.md#led "Permalink to this definition"){: .headerlink }
 
 : Extends [DigitalOutputDevice](API.md#digitaloutputdevice) and provides utility methods for controlling a Light Emitting Diode (LED).
     
@@ -47,7 +47,7 @@ try (LED led = new LED(pin)) {
 
 ## Buzzer
 
-*class* **com.diozero.Buzzer**{: .descname } (*pinNumber*, *activeHigh*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/Buzzer.java){: .viewcode-link }
+*class* **com.diozero.Buzzer**{: .descname } (*pinNumber*, *activeHigh*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/Buzzer.java){: .viewcode-link } [&para;](OutputDevices.md#buzzer "Permalink to this definition"){: .headerlink }
 
 : Extends [DigitalOutputDevice](API.md#digitaloutputdevice) and represents a digital buzzer component.
     

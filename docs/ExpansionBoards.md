@@ -94,24 +94,39 @@ try (MCP23017 mcp23017 = new MCP23017(intAPin, intBPin);
 
 ## PCA9685 PWM / Servo Driver {: #pwm-servo-driver }
 
-*class* **com.diozero.PCA9685**{: .descname } [source](https://github.com/mattjlewis/diozero/blob/master/src/main/java/com/diozero/PCA9685.java){: .viewcode-link } [&para;](ExpansionBoards.md#pca9685 "Permalink to this definition"){: .headerlink }
+*class* **com.diozero.PCA9685**{: .descname } (*controller*=1, *address=0x40*, *pwmFrequency*) [source](https://github.com/mattjlewis/diozero/blob/master/src/main/java/com/diozero/PCA9685.java){: .viewcode-link } [&para;](ExpansionBoards.md#pca9685 "Permalink to this definition"){: .headerlink }
 
 : Provides support for the [PCA9685](http://www.nxp.com/products/power-management/lighting-driver-and-controller-ics/i2c-led-display-control/16-channel-12-bit-pwm-fm-plus-ic-bus-led-controller:PCA9685) 12-bit 16-channel PWM driver as used by the [Adafruit PWM Servo Driver](https://www.adafruit.com/product/815). Implements [PwmOutputDeviceFactoryInterface](https://github.com/mattjlewis/diozero/blob/master/src/main/java/com/diozero/internal/spi/PwmOutputDeviceFactoryInterface.java) hence can be passed into the constructor of PWM output devices.
 
-Usage example:
+    Usage example:
 
-```java
-float delay = 0.5f;
-try (PwmOutputDeviceFactoryInterface df = new PCA9685(); PwmLed led = new PwmLed(df, pin)) {
-	led.setValue(.25f);
-	SleepUtil.sleepSeconds(delay);
-	led.toggle();
-	SleepUtil.sleepSeconds(delay);
-	led.setValue(.5f);
-	SleepUtil.sleepSeconds(delay);
-	led.blink(0.5f, 0.5f, 5, false);
-	led.pulse(1, 50, 5, false);
-} catch (RuntimeIOException e) {
-	Logger.error(e, "Error: {}", e);
-}
-```
+    ```java
+    float delay = 0.5f;
+    try (PwmOutputDeviceFactoryInterface df = new PCA9685(); PwmLed led = new PwmLed(df, pin)) {
+    	led.setValue(.25f);
+    	SleepUtil.sleepSeconds(delay);
+    	led.toggle();
+    	SleepUtil.sleepSeconds(delay);
+    	led.setValue(.5f);
+    	SleepUtil.sleepSeconds(delay);
+    	led.blink(0.5f, 0.5f, 5, false);
+    	led.pulse(1, 50, 5, false);
+    } catch (RuntimeIOException e) {
+    	Logger.error(e, "Error: {}", e);
+    }
+    ```
+    
+    * **controller** (*int*) - I2C controller bus. Defaults to 1.
+    
+    * **address** (*int*) - I2C address. Defaults to 0x40.
+    
+    * **pwmFrequency** (*int*) - PWM Frequency.
+
+    **setServoPulseWidthMs** (*channel*, *pulseWidthMs*)
+    
+    : Set the servo pulse for the specified channel.
+    
+    * **channel** (*int*) - Channel number.
+    
+    * **pulseWidthMs** (*int*) - Pulse width value (milliseconds).
+    
