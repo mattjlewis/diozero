@@ -33,15 +33,9 @@ import com.diozero.util.Event;
 import com.diozero.util.RuntimeIOException;
 
 /**
- * Represents a generic input device with distinct waitable states.
- * 
- * This class extends 'InputDevice' with methods for waiting on the device's
- * status ('wait_for_active' and 'wait_for_inactive'), and properties that hold
- * functions to be called when the device changes state ('when_activated' and
- * 'when_deactivated'). These are aliased appropriately in various subclasses.
- * 
- * Note that this class provides no means of actually firing its events; it's
- * effectively an abstract base class.
+ * Represents a digital input device with distinct waitable states.
+ * This class extends 'DigitalInputDevice' with methods for waiting on the device's
+ * status ('waitForActive' and 'waitForInactive').
  */
 public class WaitableDigitalInputDevice extends DigitalInputDevice {
 	protected DigitalInputEvent lastPinEvent;
@@ -75,22 +69,51 @@ public class WaitableDigitalInputDevice extends DigitalInputDevice {
 		super.valueChanged(event);
 	}
 
-	public void waitForActive() throws InterruptedException {
-		waitForActive(0);
+	/**
+	 * Wait indefinitely for the device state to go active.
+	 * @return False if timed out waiting for the specified value, otherwise true.
+	 * @throws InterruptedException If interrupted while waiting.-
+	 */
+	public boolean waitForActive() throws InterruptedException {
+		return waitForActive(0);
 	}
 
-	public void waitForActive(int timeout) throws InterruptedException {
-		waitForValue(activeHigh, timeout);
+	/**
+	 * Wait the specified time period for the device state to go active.
+	 * @param timeout Timeout value if milliseconds, <= 0 is indefinite.
+	 * @return False if timed out waiting for the specified value, otherwise true.
+	 * @throws InterruptedException If interrupted while waiting.-
+	 */
+	public boolean waitForActive(int timeout) throws InterruptedException {
+		return waitForValue(activeHigh, timeout);
 	}
 
-	public void waitForInactive() throws InterruptedException {
-		waitForInactive(0);
+	/**
+	 * Wait indefinitely for the device state to go inactive.
+	 * @return False if timed out waiting for the specified value, otherwise true.
+	 * @throws InterruptedException If interrupted while waiting.-
+	 */
+	public boolean waitForInactive() throws InterruptedException {
+		return waitForInactive(0);
 	}
 
-	public void waitForInactive(int timeout) throws InterruptedException {
-		waitForValue(!activeHigh, timeout);
+	/**
+	 * Wait the specified time period for the device state to go inactive.
+	 * @param timeout Timeout value if milliseconds, <= 0 is indefinite.
+	 * @return False if timed out waiting for the specified value, otherwise true.
+	 * @throws InterruptedException If interrupted while waiting.-
+	 */
+	public boolean waitForInactive(int timeout) throws InterruptedException {
+		return waitForValue(!activeHigh, timeout);
 	}
 
+	/**
+	 * Wait the specified time period for the device state to switch to value.
+	 * @param value The desired device state to wait for.
+	 * @param timeout Timeout value if milliseconds, <= 0 is indefinite.
+	 * @return False if timed out waiting for the specified value, otherwise true.
+	 * @throws InterruptedException If interrupted while waiting.-
+	 */
 	public boolean waitForValue(boolean value, int timeout) throws InterruptedException {
 		Event e = value ? highEvent : lowEvent;
 		if (timeout > 0) {
