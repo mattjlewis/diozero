@@ -213,6 +213,8 @@ There is still a lot left to do, in particular:
 + Release 0.2: First tagged release
 + Release 0.3: API change - analogue to analog
 + Release 0.4: Bug fixes, servo support
++ Release 0.5: Testing improvements
++ Release 0.6: Preparing for 1.0 release
 
 ## License
 
