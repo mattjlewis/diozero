@@ -21,6 +21,9 @@
 	Licence stuff:
 		mvn license:update-project-license
 		mvn license:update-file-header
+	Push to repository:
+		mvn deploy
+		mvn deploy -P release
 	Release:
 		mvn release:prepare -DignoreSnapshots=true
 		mvn release:clean / mvn release:rollback
@@ -29,7 +32,7 @@
 	
 	<groupId>com.diozero</groupId>
 	<artifactId>diozero</artifactId>
-	<version>0.5-SNAPSHOT</version>
+	<version>0.6</version>
 	<name>Device I/O Zero</name>
 	<description>Java Device I/O library with an API based on the Python GPIO Zero supporting multiple devices (Raspberry Pi, BeagleBone Black, ...)</description>
 	<url>https://github.com/mattjlewis/diozero</url>
@@ -59,7 +62,7 @@
 		<connection>scm:git:git@github.com:mattjlewis/diozero.git</connection>
 		<developerConnection>scm:git:git@github.com:mattjlewis/diozero.git</developerConnection>
 		<tag>HEAD</tag>
-  </scm>
+	</scm>
 	
 	<developers>
 		<developer>
@@ -97,7 +100,7 @@
 		
 		<github.global.server>github</github.global.server>
 		
-		<commons-math3.version>3.6</commons-math3.version>
+		<commons-math3.version>3.6.1</commons-math3.version>
 		<junit.version>4.12</junit.version>
 		<tinylog.version>1.0.3</tinylog.version>
 		
@@ -109,6 +112,7 @@
 		<maven-compiler-plugin.version>3.5.1</maven-compiler-plugin.version>
 		<maven-dependency-plugin.version>2.10</maven-dependency-plugin.version>
 		<maven-deploy-plugin.version>2.8.2</maven-deploy-plugin.version>
+		<maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
 		<maven-install-plugin.version>2.5.2</maven-install-plugin.version>
 		<maven-jar-plugin.version>2.6</maven-jar-plugin.version>
 		<maven-javadoc-plugin.version>2.10.3</maven-javadoc-plugin.version>
@@ -116,7 +120,7 @@
 		<maven-release-plugin.version>2.5.3</maven-release-plugin.version>
 		<maven-resources-plugin.version>2.7</maven-resources-plugin.version>
 		<maven-site-plugin.version>3.5</maven-site-plugin.version>
-		<maven-source-plugin.version>2.4</maven-source-plugin.version>
+		<maven-source-plugin.version>3.0.0</maven-source-plugin.version>
 		<maven-surefire-plugin.version>2.19.1</maven-surefire-plugin.version>
 		<license-maven-plugin.version>1.8</license-maven-plugin.version>
 		<eclipse.m2e.lifecycle-mapping.version>1.0.0</eclipse.m2e.lifecycle-mapping.version>
@@ -216,19 +220,40 @@
 				</pluginManagement>
 			</build>
 		</profile>
+		<profile>
+			<id>release</id>
+			<activation>
+				<property>
+					<name>release-build</name>
+				</property>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>sign-artifacts</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
 	</profiles>
 
 	<build>
 		<pluginManagement>
 			<plugins>
 				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-assembly-plugin</artifactId>
 					<version>${maven-assembly-plugin.version}</version>
-					<configuration>
-						<descriptors>
-							<descriptor>src/assembly/bin.xml</descriptor>
-						</descriptors>
-					</configuration>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -276,6 +301,32 @@
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-source-plugin</artifactId>
+					<version>${maven-source-plugin.version}</version>
+					<executions>
+						<execution>
+							<id>attach-sources</id>
+							<goals>
+								<goal>jar</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-javadoc-plugin</artifactId>
+					<version>${maven-javadoc-plugin.version}</version>
+					<executions>
+						<execution>
+							<id>attach-javadocs</id>
+							<goals>
+								<goal>jar</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-site-plugin</artifactId>
 					<version>${maven-site-plugin.version}</version>
 				</plugin>
@@ -289,10 +340,29 @@
 					<artifactId>maven-resources-plugin</artifactId>
 					<version>${maven-resources-plugin.version}</version>
 				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-project-info-reports-plugin</artifactId>
+					<version>${maven-project-info-reports-plugin.version}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-gpg-plugin</artifactId>
+					<version>${maven-gpg-plugin.version}</version>
+				</plugin>
 			</plugins>
 		</pluginManagement>
 		
 		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<configuration>
+					<descriptors>
+						<descriptor>${project.basedir}/src/assembly/bin.xml</descriptor>
+					</descriptors>
+				</configuration>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-release-plugin</artifactId>
@@ -303,11 +373,6 @@
 					<releaseProfiles>release</releaseProfiles>
 					<!-- <goals>deploy</goals> -->
 				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-project-info-reports-plugin</artifactId>
-				<version>${maven-project-info-reports-plugin.version}</version>
 			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
@@ -336,6 +401,19 @@
 				<configuration>
 					<licenseName>mit</licenseName>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-gpg-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>sign-artifacts</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>sign</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
