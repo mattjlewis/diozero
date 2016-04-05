@@ -23,11 +23,13 @@
 			<version>1.0.2</version>
 		</dependency>
 		<dependency>
-			<groupId>com.interactivemesh.jfx.importer</groupId>
-			<artifactId>interactivemesh.jim3dsModelImporterJFX</artifactId>
+			<!--
+			To install, run this command:
+			mvn install:install-file -Dfile=diozero-imu-visualiser/lib/jim3dsModelImporterJFX.jar -DgroupId=interactivemesh.org -DartifactId=3dsModelImporterJFX -Dversion=0.7 -Dpackaging=jar
+			-->
+			<groupId>interactivemesh.org</groupId>
+			<artifactId>3dsModelImporterJFX</artifactId>
 			<version>0.7</version>
-			<scope>system</scope>
-			<systemPath>${system-java-lib.dir}/jim3dsModelImporterJFX.jar</systemPath>
 		</dependency>
 	</dependencies>
 	
