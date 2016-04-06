@@ -29,13 +29,13 @@
     
     : Add a new listener.
     
-    * listener (*InputEventListener&lt;T extends DeviceEvent&gt;)* - Callback instance.
+    * **listener** (*InputEventListener&lt;T extends DeviceEvent&gt;)* - Callback instance.
 
     **removeListener** (*listener*)
     
     : Remove a specific listener.
     
-    * listener (*InputEventListener&lt;T extends DeviceEvent&gt;)* - Callback instance to remove.
+    * **listener** (*InputEventListener&lt;T extends DeviceEvent&gt;)* - Callback instance to remove.
 
     **removeAllListeners** ()
     
@@ -78,13 +78,13 @@
     
     : Action to perform when the device state is active.
     
-    **action** (*Action*) - Action callback object.
+    * **action** (*Action*) - Action callback object.
     
     **whenDectivated** (*action*)
     
     : Action to perform when the device state is inactive.
     
-    **action** (*Action*) - Action callback object.
+    * **action** (*Action*) - Action callback object.
 
 
 ### WaitableDigitalInputDevice
@@ -97,7 +97,7 @@
     
     * **pud** (*GpioPullUpDown*) - Pull up/down configuration, values: NONE, PULL_UP, PULL_DOWN.
     
-    * **trigger** (*GpioEventTrigger*) - Event trigger configuration, values: NONE, RISING, FALLING, BOTH
+    * **trigger** (*GpioEventTrigger*) - Event trigger configuration, values: NONE, RISING, FALLING, BOTH.
     
     **waitForActive** (*timeout=0*)
     
@@ -245,6 +245,8 @@ try (McpAdc adc = new McpAdc(type, chipSelect);
     **setOn** (*on*)
     
     : Turn the device on or off.
+    
+    * **on** (*boolean*) - New on/off value.
     
     **setValueUnsafe** (*value*)
     
