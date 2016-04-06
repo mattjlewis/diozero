@@ -32,18 +32,19 @@ import com.diozero.api.DigitalOutputDevice;
 import com.diozero.util.RuntimeIOException;
 
 /**
- * GPIO output performance test application
- * To run:
- * JDK Device I/O 1.0:
- *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.4-SNAPSHOT.jar:diozero-provider-jdkdio10-0.4-SNAPSHOT.jar:dio-1.0.1-dev-linux-armv6hf.jar -Djava.library.path=. com.diozero.sampleapps.GpioPerfTest 12 50000
- * JDK Device I/O 1.1:
- *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.4-SNAPSHOT.jar:diozero-provider-jdkdio11-0.4-SNAPSHOT.jar:dio-1.1-dev-linux-armv6hf.jar -Djava.library.path=. com.diozero.sampleapps.GpioPerfTest 12 50000
- * Pi4j:
- *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.4-SNAPSHOT.jar:diozero-provider-pi4j-0.4-SNAPSHOT.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sampleapps.GpioPerfTest 12 2000000
- * wiringPi:
- *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.4-SNAPSHOT.jar:diozero-provider-wiringpi-0.4-SNAPSHOT.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sampleapps.GpioPerfTest 12 5000000
- * pigpgioJ:
- *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.4-SNAPSHOT.jar:diozero-provider-pigpio-0.4-SNAPSHOT.jar:pigpioj-java-1.0.0.jar com.diozero.sampleapps.GpioPerfTest 12 5000000
+ * GPIO output performance test application. To run:
+ * <ul>
+ * <li>JDK Device I/O 1.0:<br>
+ *  {@code sudo java -cp tinylog-1.0.3.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-jdkdio10-$DIOZERO_VERSION.jar:dio-1.0.1-dev-linux-armv6hf.jar -Djava.library.path=. com.diozero.sampleapps.GpioPerfTest 12 50000}</li>
+ * <li>JDK Device I/O 1.1:<br>
+ *  {@code sudo java -cp tinylog-1.0.3.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-jdkdio11-$DIOZERO_VERSION.jar:dio-1.1-dev-linux-armv6hf.jar -Djava.library.path=. com.diozero.sampleapps.GpioPerfTest 12 50000}</li>
+ * <li>Pi4j:<br>
+ *  {@code sudo java -cp tinylog-1.0.3.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-pi4j-$DIOZERO_VERSION.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sampleapps.GpioPerfTest 12 2000000}</li>
+ * <li>wiringPi:<br>
+ *  {@code sudo java -cp tinylog-1.0.3.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-wiringpi-$DIOZERO_VERSION.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sampleapps.GpioPerfTest 12 5000000}</li>
+ * <li>pigpgioJ:<br>
+ *  {@code sudo java -cp tinylog-1.0.3.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-pigpio-$DIOZERO_VERSION.jar:pigpioj-java-1.0.0.jar com.diozero.sampleapps.GpioPerfTest 12 5000000}</li>
+ * </ul>
  */
 public class GpioPerfTest {
 	private static final int ITERATIONS = 100_000;

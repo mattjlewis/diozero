@@ -33,16 +33,17 @@ import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 
 /**
- * PWM output test application, currently only works with Pi4j backend
- * PWM LED test application. Note doesn't work with the JDK Device I/O providers
- * Raspberry Pi BCM GPIO pins with hardware PWM support: 12 (phys 32, wPi 26), 13 (phys 33, wPi 23), 18 (phys 12, wPi 1), 19 (phys 35, wPi 24)
- * To run:
- * Pi4j:
- *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.4-SNAPSHOT.jar:diozero-provider-pi4j-0.4-SNAPSHOT.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sampleapps.PwmTest 12
- * wiringPi:
- *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.4-SNAPSHOT.jar:diozero-provider-wiringpi-0.4-SNAPSHOT.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sampleapps.PwmTest 12
- * pigpgioJ:
- *  sudo java -cp tinylog-1.0.3.jar:diozero-core-0.4-SNAPSHOT.jar:diozero-provider-pigpio-0.4-SNAPSHOT.jar:pigpioj-java-1.0.0.jar com.diozero.sampleapps.PwmTest 12
+ * <p>PWM output sample application. Note doesn't work with the JDK Device I/O providers due to lack of PWM support.
+ * Raspberry Pi BCM GPIO pins with hardware PWM support: 12 (phys 32, wPi 26), 13 (phys 33, wPi 23), 18 (phys 12, wPi 1), 19 (phys 35, wPi 24).</p>
+ * <p>To run:</p>
+ * <ul>
+ * <li>Pi4j:<br>
+ *  {@code sudo java -cp tinylog-1.0.3.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-pi4j-$DIOZERO_VERSION.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sampleapps.PwmTest 12}</li>
+ * <li>wiringPi:<br>
+ *  {@code sudo java -cp tinylog-1.0.3.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-wiringpi-$DIOZERO_VERSION.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sampleapps.PwmTest 12}</li>
+ * <li>pigpgioJ:<br>
+ *  {@code sudo java -cp tinylog-1.0.3.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-pigpio-$DIOZERO_VERSION.jar:pigpioj-java-1.0.0.jar com.diozero.sampleapps.PwmTest 12}</li>
+ * </ul>
  */
 public class PwmTest {
 	public static void main(String[] args) {
