@@ -31,10 +31,18 @@ import com.diozero.api.AnalogInputDevice;
 import com.diozero.internal.spi.AnalogInputDeviceFactoryInterface;
 import com.diozero.util.DeviceFactoryHelper;
 
+/**
+ * Supports taking readings from a <a href="https://en.wikipedia.org/wiki/Potentiometer">potentiometer</a>.
+ */
 public class Potentiometer extends AnalogInputDevice {
 	private float vRef;
 	private float r1;
 	
+	/**
+	 * @param pinNumber Pin to which the potentiometer is connected.
+	 * @param vRef Reference voltage.
+	 * @param r1 Resistor between the potentiometer and ground.
+	 */
 	public Potentiometer(int pinNumber, float vRef, float r1) {
 		this(DeviceFactoryHelper.getNativeDeviceFactory(), pinNumber, vRef, r1);
 	}
@@ -51,6 +59,10 @@ public class Potentiometer extends AnalogInputDevice {
 		return getResistance();
 	}
 	
+	/**
+	 * Read the current resistance setting for the potentiometer.
+	 * @return Resistance (Ohm).
+	 */
 	public float getResistance() {
 		float v_pot = super.getScaledValue();
 		float r_pot = r1 / (vRef / v_pot - 1);

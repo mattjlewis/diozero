@@ -31,28 +31,36 @@ import com.diozero.api.SmoothedInputDevice;
 import com.diozero.util.RuntimeIOException;
 
 /**
- * A PIR (Passive Infra-Red) motion sensor.
+ * <p>A Passive Infra-Red (PIR) motion sensor.</p>
  * 
- * A typical PIR device has a small circuit board with three pins: VCC, OUT, and
+ * <p>A typical PIR device has a small circuit board with three pins: VCC, OUT, and
  * GND. VCC should be connected to the Pi's +5V pin, GND to one of the Pi's
  * ground pins, and finally OUT to the GPIO specified as the value of the 'pin'
- * parameter in the constructor.
- * 
- * This class defaults 'queue_len' to 1, effectively removing the averaging of
- * the internal queue. If your PIR sensor has a short fall time and is
- * particularly "jittery" you may wish to set this to a higher value (e.g. 5) to
- * mitigate this.
+ * parameter in the constructor.</p>
  */
 public class MotionSensor extends SmoothedInputDevice {
+	/**
+	 * <p>Defaults 'threshold' to 1, eventAge t0 20ms and eventDetectPeriod to 10ms.</p>
+	 * 
+	 * <p>If your PIR sensor has a short fall time and is particularly "jittery" you
+	 * may wish to set this to a higher value (e.g. 5) to mitigate this.</p>
+	 * @param pinNumber The GPIO pin which the motion sensor is attached.
+	 * @throws RuntimeIOException If an I/O error occurred.
+	 */
 	public MotionSensor(int pinNumber) throws RuntimeIOException {
-		// Trigger if there are 10 or more events in a 50ms period, check every 50ms
-		this(pinNumber, 10, 50, 50);
+		// Trigger if there is 1 or more events in a 20ms period, check every 10ms
+		this(pinNumber, 1, 20, 10);
 	}
 	
+	/**
+	 * @param pinNumber The GPIO pin which the motion sensor is attached.
+	 * @param threshold The value above which the device will be considered "on".
+	 * @param eventAge The time in milliseconds to keep active events in the queue.
+	 * @param eventDetectPeriod How frequently to check for events.
+	 * @throws RuntimeIOException If an I/O error occurred.
+	 */
 	public MotionSensor(int pinNumber, int threshold, int eventAge, int eventDetectPeriod)
 			throws RuntimeIOException {
 		super(pinNumber, GpioPullUpDown.NONE, threshold, eventAge, eventDetectPeriod);
 	}
-
-	// TODO Implementation
 }
