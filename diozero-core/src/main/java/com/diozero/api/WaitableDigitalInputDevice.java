@@ -33,23 +33,37 @@ import com.diozero.util.Event;
 import com.diozero.util.RuntimeIOException;
 
 /**
- * Represents a digital input device with distinct waitable states.
- * This class extends 'DigitalInputDevice' with methods for waiting on the device's
- * status ('waitForActive' and 'waitForInactive').
+ * Represents a digital input device with distinct waitable states (active / inactive).
  */
 public class WaitableDigitalInputDevice extends DigitalInputDevice {
-	protected DigitalInputEvent lastPinEvent;
 	private Event highEvent = new Event();
 	private Event lowEvent = new Event();
 
+	/**
+	 * @param pinNumber Pin number to which the device is connected.
+	 * @throws RuntimeIOException If an I/O error occurred.
+	 */
 	public WaitableDigitalInputDevice(int pinNumber) throws RuntimeIOException {
 		this(DeviceFactoryHelper.getNativeDeviceFactory(), pinNumber, GpioPullUpDown.NONE, GpioEventTrigger.BOTH);
 	}
 
+	/**
+	 * @param pinNumber Pin number to which the device is connected.
+	 * @param pud Pull up/down configuration, values: NONE, PULL_UP, PULL_DOWN.
+	 * @param trigger Event trigger configuration, values: NONE, RISING, FALLING, BOTH.
+	 * @throws RuntimeIOException If an I/O error occurred.
+	 */
 	public WaitableDigitalInputDevice(int pinNumber, GpioPullUpDown pud, GpioEventTrigger trigger) throws RuntimeIOException {
 		this(DeviceFactoryHelper.getNativeDeviceFactory(), pinNumber, pud, trigger);
 	}
 
+	/**
+	 * @param deviceFactory Device factory to use to construct the device.
+	 * @param pinNumber Pin number to which the device is connected.
+	 * @param pud Pull up/down configuration, values: NONE, PULL_UP, PULL_DOWN.
+	 * @param trigger Event trigger configuration, values: NONE, RISING, FALLING, BOTH.
+	 * @throws RuntimeIOException If an I/O error occurred.
+	 */
 	public WaitableDigitalInputDevice(GpioDeviceFactoryInterface deviceFactory, int pinNumber,
 			GpioPullUpDown pud, GpioEventTrigger trigger) throws RuntimeIOException {
 		super(deviceFactory, pinNumber, pud, trigger);

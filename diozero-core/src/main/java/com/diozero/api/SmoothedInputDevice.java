@@ -37,17 +37,19 @@ import com.diozero.util.DioZeroScheduler;
 import com.diozero.util.RuntimeIOException;
 
 /**
- * Represents a generic input device which takes its value from the number of active
- * events over a specific time period.
+ * <p>Represents a generic input device which takes its value from the number of
+ * active events over a specific time period.</p>
  * 
- * This class extends {@link DigitalInputDevice} with a queue which is added to whenever
- * the input device is active. The number of the active events in the queue is compared
- * to a threshold which is used to determine the state of the 'active' property.
+ * <p>This class extends {@link DigitalInputDevice} with a queue which is added to
+ * whenever the input device is active. The number of the active events in the
+ * queue is compared to a threshold which is used to determine the state of the
+ * 'active' property.</p>
  * 
- * Any active events over the specified eventAge are removed by a background thread.
+ * <p>Any active events over the specified eventAge are removed by a background
+ * thread.</p>
  * 
- * This class is intended for use with devices which exhibit "twitchy" behaviour (such
- * as certain motion sensors).
+ * <p>This class is intended for use with devices which exhibit "twitchy" behaviour
+ * (such as certain motion sensors).</p>
  */
 public class SmoothedInputDevice extends WaitableDigitalInputDevice {
 	private int threshold;
@@ -56,32 +58,52 @@ public class SmoothedInputDevice extends WaitableDigitalInputDevice {
 	private Queue<Long> queue;
 
 	/**
-	 * @param pinNumber GPIO pin number
-	 * @param pud Pull-up/down configuration
+	 * @param pinNumber
+	 *            Pin number to which the device is connected.
+	 * @param pud
+	 *            Pull up/down configuration, values: NONE, PULL_UP, PULL_DOWN.
 	 * @param threshold
-	 * 				The value above which the device will be considered "on".
+	 *            The value above which the device will be considered "on".
 	 * @param eventAge
-	 * 				The time in milliseconds to keep active events in the queue.
+	 *            The time in milliseconds to keep active events in the queue.
 	 * @param eventDetectPeriod
-	 * 				How frequently to check for events.
-	 * @throws RuntimeIOException if an I/O error occurs
+	 *            How frequently to check for events.
+	 * @throws RuntimeIOException
+	 *             if an I/O error occurs
 	 */
-	public SmoothedInputDevice(int pinNumber, GpioPullUpDown pud, int threshold,
-			int eventAge, int eventDetectPeriod) throws RuntimeIOException {
+	public SmoothedInputDevice(int pinNumber, GpioPullUpDown pud, int threshold, int eventAge, int eventDetectPeriod)
+			throws RuntimeIOException {
 		this(DeviceFactoryHelper.getNativeDeviceFactory(), pinNumber, pud, threshold, eventAge, eventDetectPeriod);
 	}
-	
-	public SmoothedInputDevice(GpioDeviceFactoryInterface deviceFactory, int pinNumber, GpioPullUpDown pud, int threshold,
-			int eventAge, int eventDetectPeriod) throws RuntimeIOException {
-		super(deviceFactory, pinNumber, pud, pud == GpioPullUpDown.PULL_UP ? GpioEventTrigger.FALLING : GpioEventTrigger.RISING);
-		
+
+	/**
+	 * @param deviceFactory
+	 *            Device factory to use to construct this device.
+	 * @param pinNumber
+	 *            Pin number to which the device is connected.
+	 * @param pud
+	 *            Pull up/down configuration, values: NONE, PULL_UP, PULL_DOWN.
+	 * @param threshold
+	 *            The value above which the device will be considered "on".
+	 * @param eventAge
+	 *            The time in milliseconds to keep active events in the queue.
+	 * @param eventDetectPeriod
+	 *            How frequently to check for events.
+	 * @throws RuntimeIOException
+	 *             if an I/O error occurs
+	 */
+	public SmoothedInputDevice(GpioDeviceFactoryInterface deviceFactory, int pinNumber, GpioPullUpDown pud,
+			int threshold, int eventAge, int eventDetectPeriod) throws RuntimeIOException {
+		super(deviceFactory, pinNumber, pud,
+				pud == GpioPullUpDown.PULL_UP ? GpioEventTrigger.FALLING : GpioEventTrigger.RISING);
+
 		this.threshold = threshold;
 		this.eventAge = eventAge;
 		this.eventDetectPeriod = eventDetectPeriod;
-		
+
 		queue = new LinkedList<>();
-		DioZeroScheduler.getDaemonInstance().scheduleAtFixedRate(new EventDetection(),
-				eventDetectPeriod, eventDetectPeriod, TimeUnit.MILLISECONDS);
+		DioZeroScheduler.getDaemonInstance().scheduleAtFixedRate(new EventDetection(), eventDetectPeriod,
+				eventDetectPeriod, TimeUnit.MILLISECONDS);
 	}
 
 	@Override
@@ -93,15 +115,15 @@ public class SmoothedInputDevice extends WaitableDigitalInputDevice {
 			}
 		}
 	}
-	
+
 	private class EventDetection implements Runnable {
 		private Predicate<Long> removePredicate;
 		private long now;
-		
+
 		EventDetection() {
 			removePredicate = time -> time.longValue() < (now - eventAge);
 		}
-		
+
 		@Override
 		public void run() {
 			long nano_time = System.nanoTime();
@@ -109,38 +131,63 @@ public class SmoothedInputDevice extends WaitableDigitalInputDevice {
 			synchronized (queue) {
 				// Purge any old events
 				queue.removeIf(removePredicate);
-				
+
 				// Check if the number of events exceeds the threshold
 				if (queue.size() > threshold) {
 					SmoothedInputDevice.super.valueChanged(new DigitalInputEvent(pinNumber, now, nano_time, true));
-					
+
 					// If an event is fired clear the queue of all events
 					queue.clear();
 				}
 			}
 		}
 	}
-	
+
 	/**
-	 * If the number of on events younger than eventAge exceeds this amount, then 'isActive' will return 'True'.
+	 * If the number of on events younger than eventAge exceeds this amount,
+	 * then 'isActive' will return 'True'.
+	 * 
 	 * @return event threshold
 	 */
 	public int getThreshold() {
 		return threshold;
 	}
-	
+
+	/**
+	 * Set the threshold value in terms of number of on events within the
+	 * specified time period that will trigger an on event to any listeners.
+	 * 
+	 * @param threshold
+	 *            New threshold value.
+	 */
 	public void setThreshold(int threshold) {
 		this.threshold = threshold;
 	}
-	
+
+	/**
+	 * The time in milliseconds to keep items in the queue.
+	 * 
+	 * @return The event age (milliseconds).
+	 */
 	public int getEventAge() {
 		return eventAge;
 	}
-	
+
+	/**
+	 * Set the event age (milliseconds).
+	 * 
+	 * @param eventAge
+	 *            New event age value (milliseconds).
+	 */
 	public void setEventAge(int eventAge) {
 		this.eventAge = eventAge;
 	}
-	
+
+	/**
+	 * How frequently (in milliseconds) to check the state of the queue.
+	 * 
+	 * @return The event detection period (milliseconds)
+	 */
 	public int getEventDetectPeriod() {
 		return eventDetectPeriod;
 	}

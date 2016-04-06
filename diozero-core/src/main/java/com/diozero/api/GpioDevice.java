@@ -29,13 +29,23 @@ package com.diozero.api;
 
 import java.io.Closeable;
 
+/**
+ * Abstract base class for all GPIO related devices.
+ */
 public abstract class GpioDevice implements Closeable {
 	protected int pinNumber;
 	
+	/**
+	 * @param pinNumber Pin number to which the device is connected.
+	 */
 	public GpioDevice(int pinNumber) {
 		this.pinNumber = pinNumber;
 	}
-	
+
+	/**
+	 * Get the GPIO pin number for this device.
+	 * @return Pin number for this device.
+	 */
 	public int getPinNumber() {
 		return pinNumber;
 	}

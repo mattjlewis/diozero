@@ -35,10 +35,10 @@ import com.diozero.internal.spi.PwmOutputDeviceInterface;
 import com.diozero.util.*;
 
 /**
- * Represent a generic PWM output GPIO.
- * Note the following BCM GPIO pins provide hardware PWM support:
+ * Provide generic <a href="https://en.wikipedia.org/wiki/Pulse-width_modulation">Pulse Width Modulation (PWM)</a> output control.
+ * Note the following Raspberry Pi BCM GPIO pins provide hardware PWM support:
  * 	12 (phys 32, wPi 26), 13 (phys 33, wPi 23), 18 (phys 12, wPi 1), 19 (phys 35, wPi 24)
- * Any other pin will revert to software controlled PWM (not very good)
+ * Any other pin will revert to software controlled PWM.
  */
 public class PwmOutputDevice extends GpioDevice {
 	public static final int INFINITE_ITERATIONS = -1;
@@ -47,14 +47,29 @@ public class PwmOutputDevice extends GpioDevice {
 	private boolean running;
 	private Thread backgroundThread;
 
+	/**
+	 * @param pinNumber GPIO pin to which the output device is connected.
+	 * @throws RuntimeIOException If an I/O error occurred.
+	 */
 	public PwmOutputDevice(int pinNumber) throws RuntimeIOException {
 		this(pinNumber, 0);
 	}
 	
+	/**
+	 * @param pinNumber GPIO pin to which the output device is connected.
+	 * @param initialValue Initial output value (0..1).
+	 * @throws RuntimeIOException If an I/O error occurred.
+	 */
 	public PwmOutputDevice(int pinNumber, float initialValue) throws RuntimeIOException {
 		this(DeviceFactoryHelper.getNativeDeviceFactory(), pinNumber, initialValue);
 	}
 	
+	/**
+	 * @param pwmDeviceFactory Device factory to use to construct this device.
+	 * @param pinNumber GPIO pin to which the output device is connected.
+	 * @param initialValue Initial output value (0..1).
+	 * @throws RuntimeIOException If an I/O error occurred.
+	 */
 	public PwmOutputDevice(PwmOutputDeviceFactoryInterface pwmDeviceFactory, int pinNumber,
 			float initialValue) throws RuntimeIOException {
 		super(pinNumber);
@@ -174,30 +189,58 @@ public class PwmOutputDevice extends GpioDevice {
 	}
 	
 	// Exposed operations
+	
+	/**
+	 * Get the current PWM output value (0..1).
+	 * @return Current PWM output value.
+	 * @throws RuntimeIOException If an I/O error occurred.
+	 */
 	public float getValue() throws RuntimeIOException {
 		return device.getValue();
 	}
 
+	/**
+	 * Set the PWM output value (0..1).
+	 * @param value New PWM output value.
+	 * @throws RuntimeIOException If an I/O error occurred.
+	 */
 	public void setValue(float value) throws RuntimeIOException {
 		stopLoops();
 		setValueInternal(value);
 	}
 	
+	/**
+	 * Turn on the device (same as {@code setValue(1)}).
+	 * @throws RuntimeIOException If an I/O error occurred.
+	 */
 	public void on() throws RuntimeIOException {
 		stopLoops();
 		setValueInternal(1);
 	}
 	
+	/**
+	 * Turn off the device (same as {@code setValue(0)}).
+	 * @throws RuntimeIOException If an I/O error occurred.
+	 */
 	public void off() throws RuntimeIOException {
 		stopLoops();
 		setValueInternal(0);
 	}
 	
+	/**
+	 * Toggle the state of the device (same as {@code setValue(1 - getvalue())}).
+	 * @throws RuntimeIOException If an I/O error occurred.
+	 */
 	public void toggle() throws RuntimeIOException {
 		stopLoops();
 		setValueInternal(1 - device.getValue());
 	}
 	
+	/**
+	 * Get the device on / off status.
+	 * @return Returns true if the device currently has a value &gt; 0.
+	 * @throws RuntimeIOException If an I/O error occurred.
+	 */
 	public boolean isOn() throws RuntimeIOException {
 		return device.getValue() > 0;
 	}
