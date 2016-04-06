@@ -47,7 +47,7 @@ try (PwmLed led = new PwmLed(pin)) {
 }
 ```
 
-All devices are provisioned by a [Device Factory](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/internal/spi/DeviceFactoryInterface.java) with a default [NativeDeviceFactory](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/internal/DeviceFactoryHelper.java) for provisioning via the host board itself. However, all components accept an optional Device Factory parameter for provisioning the same set of components via an alternative method. This is particularly useful for GPIO expansion boards and Analog-to-Digital converters.
+All devices are provisioned by a [Device Factory](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/internal/spi/DeviceFactoryInterface.java) with a default [NativeDeviceFactory](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/util/DeviceFactoryHelper.java) for provisioning via the host board itself. However, all components accept an optional Device Factory parameter for provisioning the same set of components via an alternative method. This is particularly useful for GPIO expansion boards and Analog-to-Digital converters.
 
 The Raspberry Pi provides no analog input pins; attempting to create an AnalogInputDevice such as an LDR using the Raspberry Pi default native device factory would result in a runtime error (`UnsupportedOperationException`). However, ADC classes such as the [McpAdc](ExpansionBoards.md#mcp-adc) have been implemented as analog input device factories hence can be used to construct analog devices such as LDRs:
 
