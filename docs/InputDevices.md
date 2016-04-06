@@ -31,15 +31,13 @@ try (Button button = new Button(buttonPin, GpioPullUpDown.PULL_UP); LED led = ne
 }
 ```
 
-*class* **com.diozero.Button**{: .descname } (*pinNumber*, *pud=NONE*, *trigger=BOTH*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/Button.java){: .viewcode-link } [&para;](InputDevices.md#button "Permalink to this definition"){: .headerlink }
+*class* **com.diozero.Button**{: .descname } (*pinNumber*, *pud=NONE*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/Button.java){: .viewcode-link } [&para;](InputDevices.md#button "Permalink to this definition"){: .headerlink }
 
-: Extends [DigitalInputDevice](API.md#digitalinputdevice].
+: Extends [DigitalInputDevice](API.md#digitalinputdevice] to provide push button related utility methods.
     
     * **pinNumber** (*int*) - Pin number for the button.
     
     * **pud** (*GpioPullUpDown*) - Pull up / down configuration (NONE, PULL_UP, PULL_DOWN).
-    
-    * **trigger** (*GpioEventTrigger*) - What events to trigger (NONE, RISING, FALLING, BOTH).
     
     *boolean* **isPressed** ()
     
@@ -71,7 +69,7 @@ try (Button button = new Button(buttonPin, GpioPullUpDown.PULL_UP); LED led = ne
 
 : Extends [SmoothedInputDevice](API.md#smoothedinputdevice] and represents a passive infra-red (PIR) motion sensor like the sort found in the [CamJam #2 EduKit](http://camjam.me/?page_id=623).
     
-    * **pinNumber** (*int*) - The GPIO pin which the button is attached to.
+    * **pinNumber** (*int*) - The GPIO pin which the motion sensor is attached.
     
     * **threshold** (*int*) - The value above which the device will be considered "on".
     
@@ -96,7 +94,7 @@ try (Button button = new Button(buttonPin, GpioPullUpDown.PULL_UP); LED led = ne
     
     *float* **getTemperature** ()
     
-    : Get the current temperature in &#8451;
+    : Get the current temperature in &deg;C.
 
 
 ### Potentiometer
