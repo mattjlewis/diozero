@@ -28,8 +28,8 @@ package com.diozero.sandpit;
 
 
 import com.diozero.api.AnalogInputDevice;
-import com.diozero.internal.DeviceFactoryHelper;
 import com.diozero.internal.spi.AnalogInputDeviceFactoryInterface;
+import com.diozero.util.DeviceFactoryHelper;
 
 public class Potentiometer extends AnalogInputDevice {
 	private float vRef;

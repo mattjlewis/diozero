@@ -33,9 +33,9 @@ import java.nio.ByteOrder;
 
 import org.pmw.tinylog.Logger;
 
-import com.diozero.internal.DeviceFactoryHelper;
 import com.diozero.internal.spi.I2CDeviceFactoryInterface;
 import com.diozero.internal.spi.I2CDeviceInterface;
+import com.diozero.util.DeviceFactoryHelper;
 import com.diozero.util.IOUtil;
 import com.diozero.util.RuntimeIOException;
 

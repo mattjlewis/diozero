@@ -33,8 +33,8 @@ import java.nio.ByteBuffer;
 
 import org.pmw.tinylog.Logger;
 
-import com.diozero.internal.DeviceFactoryHelper;
 import com.diozero.internal.spi.SpiDeviceInterface;
+import com.diozero.util.DeviceFactoryHelper;
 import com.diozero.util.RuntimeIOException;
 
 /**

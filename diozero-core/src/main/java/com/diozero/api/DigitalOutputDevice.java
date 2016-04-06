@@ -30,12 +30,9 @@ import java.io.IOException;
 
 import org.pmw.tinylog.Logger;
 
-import com.diozero.internal.DeviceFactoryHelper;
 import com.diozero.internal.spi.GpioDeviceFactoryInterface;
 import com.diozero.internal.spi.GpioDigitalOutputDeviceInterface;
-import com.diozero.util.DioZeroScheduler;
-import com.diozero.util.RuntimeIOException;
-import com.diozero.util.SleepUtil;
+import com.diozero.util.*;
 
 public class DigitalOutputDevice extends GpioDevice {
 	public static final int INFINITE_ITERATIONS = -1;
