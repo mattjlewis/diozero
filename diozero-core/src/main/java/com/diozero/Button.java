@@ -31,33 +31,88 @@ import com.diozero.internal.spi.GpioDeviceFactoryInterface;
 import com.diozero.util.RuntimeIOException;
 
 /**
- * 
+ * <p>Provides push button related utility methods.</p>
+ * <p>From the {@link com.diozero.sampleapps.ButtonTest} example:</p>
+ * <img src="doc-files/Button.png" alt="Button">
+ * <pre>
+ * {@code
+ *try (Button button = new Button(inputPin, GpioPullUpDown.PULL_UP)) {
+ *	button.addListener(event -> Logger.debug("valueChanged({})", event));
+ *	Logger.debug("Waiting for 10s - *** Press the button connected to input pin " + inputPin + " ***");
+ *	SleepUtil.sleepSeconds(10);
+ *}
+ * }
+ * </pre>
+ * <p>Controlling an LED with a button {@link com.diozero.sampleapps.ButtonControlledLed}:</p>
+ * <img src="doc-files/Button_LED.png" alt="Button controlled LED">
+ * <pre>
+ * {@code
+ *try (Button button = new Button(buttonPin, GpioPullUpDown.PULL_UP); LED led = new LED(ledPin)) {
+ *	button.whenPressed(led::on);
+ *	button.whenReleased(led::off);
+ *	Logger.info("Waiting for 10s - *** Press the button connected to pin {} ***", Integer.valueOf(buttonPin));
+ *	SleepUtil.sleepSeconds(10);
+ *}
+ * }
+ * </pre>
  */
 public class Button extends DigitalInputDevice {
+	/**
+	 * Pull up / down configuration defaults to NONE.
+	 * @param pinNumber Pin number for the button.
+	 * @throws RuntimeIOException If an I/O error occurred.
+	 */
 	public Button(int pinNumber) throws RuntimeIOException {
 		super(pinNumber, GpioPullUpDown.NONE, GpioEventTrigger.BOTH);
 	}
 
+	/**
+	 * @param pinNumber Pin number for the button.
+	 * @param pud Pull up / down configuration (NONE, PULL_UP, PULL_DOWN).
+	 * @throws RuntimeIOException If an I/O error occurred.
+	 */
 	public Button(int pinNumber, GpioPullUpDown pud) throws RuntimeIOException {
 		super(pinNumber, pud, GpioEventTrigger.BOTH);
 	}
 
+	/**
+	 * @param deviceFactory Device factory to use to contruct the device.
+	 * @param pinNumber Pin number for the button.
+	 * @param pud Pull up / down configuration (NONE, PULL_UP, PULL_DOWN).
+	 * @throws RuntimeIOException If an I/O error occurred.
+	 */
 	public Button(GpioDeviceFactoryInterface deviceFactory, int pinNumber, GpioPullUpDown pud) throws RuntimeIOException {
 		super(deviceFactory, pinNumber, pud, GpioEventTrigger.BOTH);
 	}
 	
+	/**
+	 * Get the current state.
+	 * @return Return true if the button is currently pressed.
+	 */
 	public boolean isPressed() {
 		return isActive();
 	}
 	
+	/**
+	 * Get the current state.
+	 * @return Return true if the button is currently released.
+	 */
 	public boolean isReleased() {
 		return !isActive();
 	}
 	
+	/**
+	 * Action to perform when the button is pressed.
+	 * @param action Action function to invoke.
+	 */
 	public void whenPressed(Action action) {
 		whenActivated(action);
 	}
 	
+	/**
+	 * Action to perform when the button is released.
+	 * @param action Action function to invoke.
+	 */
 	public void whenReleased(Action action) {
 		whenDeactivated(action);
 	}

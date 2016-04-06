@@ -33,14 +33,14 @@ import com.diozero.util.DeviceFactoryHelper;
 import com.diozero.util.RuntimeIOException;
 
 /**
- * <pre><code>
+ * <pre>
  * vRef     vLDR       GND
  *   |        |         |
  *   +---R1---+---LDR---+
- * </code></pre>
+ * </pre>
  * <p>When there is a lot of light the LDR has low resistance (vLdr ~ 0V).
  * When it is dark the resistance increases (vRef ~ vRef).</p>
- * <pre><code>
+ * <pre>
  * vLDR = vRef * (rLDR / (rLDR + R1))
  * IF R1 = 10,000ohm, vRef = 5v
  * When dark, if rLDR == 100,000ohm
@@ -54,7 +54,7 @@ import com.diozero.util.RuntimeIOException;
  * rLDR = 10,000 / (5 / 4 - 1) = 40,000ohm
  * When light, if vLDR=1V
  * rLDR = 10,000 / (5 / 1 - 1) = 2,500ohm
- * </code></pre>
+ * </pre>
  */
 public class LDR extends AnalogInputDevice {
 	private float vRef;

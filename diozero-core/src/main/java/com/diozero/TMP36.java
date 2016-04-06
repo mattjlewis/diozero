@@ -32,22 +32,36 @@ import com.diozero.internal.spi.AnalogInputDeviceFactoryInterface;
 import com.diozero.util.RuntimeIOException;
 
 /**
- * TMP36 temperature sensor
+ * Support for reading temperature values from a <a href=
+ * "http://www.analog.com/en/products/analog-to-digital-converters/integrated-special-purpose-converters/integrated-temperature-sensors/tmp36.html">
+ * TMP36 Temperature Sensor by Analog Devices</a>
  */
 public class TMP36 extends AnalogInputDevice implements TemperatureSensorInterface {
 	private float tempOffset;
 
-	public TMP36(AnalogInputDeviceFactoryInterface deviceFactory, int pinNumber,
-			float vRef, float tempOffset) throws RuntimeIOException {
+	/**
+	 * @param deviceFactory Device factory to use to construct the device.
+	 * @param pinNumber Pin number on the ADC device.
+	 * @param vRef Voltage range for the ADC - essential for scaled readings.
+	 * @param tempOffset Compensate for potential temperature reading variations between different TMP36 devices.
+	 * @throws RuntimeIOException If an I/O error occurred.
+	 */
+	public TMP36(AnalogInputDeviceFactoryInterface deviceFactory, int pinNumber, float vRef, float tempOffset)
+			throws RuntimeIOException {
 		super(deviceFactory, pinNumber, vRef);
 		this.tempOffset = tempOffset;
 	}
-	
+
 	@Override
 	public float getScaledValue() throws RuntimeIOException {
 		return getTemperature();
 	}
 
+	/**
+	 * Get the current temperature in &deg;C.
+	 * @return Temperature in &deg;C.
+	 * @throws RuntimeIOException If an I/O error occurred.
+	 */
 	@Override
 	public float getTemperature() throws RuntimeIOException {
 		// Get the scaled value (voltage)
