@@ -31,7 +31,7 @@ TODO Insert wiring diagram.
 
     *float* **getTemperature** ()
 
-    : Read the temperature (in &#8451;) from the device
+    : Read the temperature (in &deg;C) from the device
 
 
 ## TSL2561 Digital Luminosity / Lux / Light Sensor {: #tsl2561 }
@@ -72,7 +72,7 @@ TODO Insert wiring diagram.
     
     *float* **getTemperature** ()
     
-    : Get the temperature in &#;
+    : Get the temperature in &#deg;C.
     
     *W1TermSensor.Type* **getType** ()
     
