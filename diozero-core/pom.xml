@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>com.diozero</groupId>
 		<artifactId>diozero</artifactId>
-		<version>0.6</version>
+		<version>0.7-SNAPSHOT</version>
 	</parent>
 	
 	<name>Device I/O Zero - Core</name>
@@ -49,8 +49,7 @@
 						</group>
 						<group>
 							<title>Application Program Interface</title>
-							<packages>com.diozero.api*</packages>
-							<packages>com.diozero.util</packages>
+							<packages>com.diozero.api*:com.diozero.util</packages>
 						</group>
 						<group>
 							<title>Service Provider Interface</title>
