@@ -8,12 +8,13 @@ import com.diozero.api.I2CDevice;
 import com.diozero.util.SleepUtil;
 
 /**
- * Generic I2C LCD support, code based on <a href=
+ * <p>Generic I2C LCD support, code based on <a href=
  * "http://www.raspberrypi-spy.co.uk/2015/05/using-an-i2c-enabled-lcd-screen-with-the-raspberry-pi/">
  * this Raspberry-Pi Spy article</a>, Python code: <a href=
  * "https://bitbucket.org/MattHawkinsUK/rpispy-misc/raw/master/python/lcd_i2c.py">
  * https://bitbucket.org/MattHawkinsUK/rpispy-misc/raw/master/python/lcd_i2c.py
- * </a>
+ * </a></p>
+ * <p>Another source of information: <a href="https://gist.github.com/DenisFromHR/cc863375a6e19dce359d">https://gist.github.com/DenisFromHR/cc863375a6e19dce359d</a>.</p>
  */
 public class I2CLcd implements Closeable {
 
@@ -26,8 +27,48 @@ public class I2CLcd implements Closeable {
 			(byte) 0x94, // LCD RAM address for the 3rd line
 			(byte) 0xD4  // LCD RAM address for the 4th line
 	};
+	
+	// Commands
+	private static final byte LCD_CLEAR_DISPLAY = 0x01;
+	private static final byte LCD_RETURN_HOME = 0x02;
+	private static final byte LCD_SET_CGRAM_ADDR = 0x40;
+	private static final byte LCD_SET_DDRAM_ADDR = (byte)0x80;
+	
+	private static final byte LCD_ENTRY_MODE_SET = 0x04;
+	// Flags for display entry mode
+	private static final byte LCD_ENTRY_RIGHT = 0x00;
+	private static final byte LCD_ENTRY_LEFT = 0x02;
+	private static final byte LCD_ENTRY_SHIFT_INCREMENT = 0x01;
+	private static final byte LCD_ENTRY_SHIFT_DECREMENT = 0x00;
 
-	private static final int LCD_BACKLIGHT_BIT = 0x08; // On
+	private static final byte LCD_DISPLAY_CONTROL = 0x08;
+	// Flags for display on/off control
+	private static final byte LCD_DISPLAY_ON = 0x04;
+	private static final byte LCD_DISPLAY_OFF = 0x00;
+	private static final byte LCD_CURSOR_ON = 0x02;
+	private static final byte LCD_CURSOR_OFF = 0x00;
+	private static final byte LCD_BLINK_ON = 0x01;
+	private static final byte LCD_BLINK_OFF = 0x00;
+
+	private static final byte LCD_CURSOR_SHIFT = 0x10;
+	// Flags for display/cursor shift
+	private static final byte LCD_DISPLAY_MOVE = 0x08;
+	private static final byte LCD_CURSOR_MOVE = 0x00;
+	private static final byte LCD_MOVE_RIGHT = 0x04;
+	private static final byte LCD_MOVE_LEFT = 0x00;
+
+	private static final byte LCD_FUNCTION_SET = 0x20;
+	// Flags for function set
+	private static final byte LCD_8BIT_MODE = 0x10;
+	private static final byte LCD_4BIT_MODE = 0x00;
+	private static final byte LCD_2LINE = 0x08;
+	private static final byte LCD_1LINE = 0x00;
+	private static final byte LCD_5x10_DOTS = 0x04;
+	private static final byte LCD_5x8_DOTS = 0x00;
+	
+	// Flags for backlight control
+	private static final int LCD_BACKLIGHT_ON_BIT = 0x08;
+	private static final int LCD_BACKLIGHT_OFF_BIT = 0x00;
 
 	// Enable bit
 	private static final byte ENABLE = 0b00000100;
@@ -58,20 +99,21 @@ public class I2CLcd implements Closeable {
 				I2CConstants.DEFAULT_CLOCK_FREQUENCY);
 
 		// Initialise display
-		lcdWriteByte(Mode.COMMAND, (byte) 0x33); // 110011 Initialise
-		lcdWriteByte(Mode.COMMAND, (byte) 0x32); // 110010 Initialise
-		lcdWriteByte(Mode.COMMAND, (byte) 0x06); // 000110 Cursor move direction (right)
-		lcdWriteByte(Mode.COMMAND, (byte) 0x0C); // 001100 Display On, Cursor Off, Blink Off
-		lcdWriteByte(Mode.COMMAND, (byte) 0x28); // 101000 Data length, number of lines, font size
-		lcdWriteByte(Mode.COMMAND, (byte) 0x01); // 000001 Clear display
+		// TODO Understand these commands using the constants above
+		lcdWriteByte(Mode.COMMAND, (byte) 0x33);		// 110011 Initialise
+		lcdWriteByte(Mode.COMMAND, (byte) 0x32);		// 110010 Initialise
+		lcdWriteByte(Mode.COMMAND, (byte) 0x06);		// 000110 Cursor move direction (right)
+		lcdWriteByte(Mode.COMMAND, (byte) 0x0C);		// 001100 Display On, Cursor Off, Blink Off
+		lcdWriteByte(Mode.COMMAND, (byte) 0x28);		// 101000 Data length, number of lines, font size
+		lcdWriteByte(Mode.COMMAND, LCD_CLEAR_DISPLAY);	// 000001 Clear display
 
 		SleepUtil.sleepSeconds(E_DELAY);
 	}
 
 	// Send byte to data pins
 	private void lcdWriteByte(Mode mode, byte data) {
-		byte bits_high = (byte) (mode.getMode() | (data & 0xF0) | (backlight ? LCD_BACKLIGHT_BIT : 0));
-		byte bits_low = (byte) (mode.getMode() | ((data << 4) & 0xF0) | (backlight ? LCD_BACKLIGHT_BIT : 0));
+		byte bits_high = (byte) (mode.getMode() | (data & 0xF0) | (backlight ? LCD_BACKLIGHT_ON_BIT : LCD_BACKLIGHT_OFF_BIT));
+		byte bits_low = (byte) (mode.getMode() | ((data << 4) & 0xF0) | (backlight ? LCD_BACKLIGHT_ON_BIT : LCD_BACKLIGHT_OFF_BIT));
 
 		// High bits
 		device.writeByte(bits_high);
@@ -109,7 +151,7 @@ public class I2CLcd implements Closeable {
 
 	/**
 	 * Send string to display
-	 * @param line Line number
+	 * @param line Line number (starts at 0)
 	 * @param text Text to display
 	 */
 	public void setText(int line, String text) {
@@ -130,7 +172,8 @@ public class I2CLcd implements Closeable {
 	 * Clear the display
 	 */
 	public void clear() {
-		lcdWriteByte(Mode.COMMAND, (byte) 0x01);
+		lcdWriteByte(Mode.COMMAND, LCD_CLEAR_DISPLAY);
+		lcdWriteByte(Mode.COMMAND, LCD_RETURN_HOME);
 	}
 
 	@Override
