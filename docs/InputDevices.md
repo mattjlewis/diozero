@@ -62,7 +62,7 @@ try (Button button = new Button(buttonPin, GpioPullUpDown.PULL_UP); LED led = ne
 
 ### Motion Sensor
 
-!!! Warning "Work-in-progress"
+!!! Warning "Work in progress"
     Still under construction hence in the sandpit package.
 
 *class* **com.diozero.sandpit.MotionSensor**{: .descname } (*pinNumber*, *threshold=10*, *eventAge=50*, *eventDetectPeriod=50*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/sandpit/MotionSensor.java){: .viewcode-link } [&para;](InputDevices.md#motionsensor "Permalink to this definition"){: .headerlink }
@@ -103,7 +103,7 @@ Generic [potentiometer](https://en.wikipedia.org/wiki/Potentiometer).
 
 TODO Wiring diagram.
 
-!!! Warning "Work-in-progress"
+!!! Warning "Work in progress"
     Still under construction hence in the sandpit package.
 
 *class* **com.diozero.sandpit.Potentiometer**{: .descname } (*pinNumber*, *vRef*, *r1*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/sandpit/Potentiometer.java){: .viewcode-link } [&para;](InputDevices.md#potentiometer "Permalink to this definition"){: .headerlink }
@@ -131,11 +131,11 @@ TODO Wiring diagram.
     
     * **vRef** (*float*) - Reference voltage.
     
-    * **r1** (*float*) - Resistor between the potentiometer and ground.
+    * **r1** (*float*) - Resistor between the LDR and ground.
 
     *float* **getLdrResistance** ()
     
-    : Read the current resistance across the LDR.
+    : Read the resistance across the LDR.
 
     *float* **getLuminosity** ()
     
@@ -149,7 +149,7 @@ TODO Wiring diagram.
 
 [Sharp GP2Y0A21YK](http://www.sharpsma.com/webfm_send/1208) Distance Sensor.
 
-!!! Warning "Work-in-progress"
+!!! Warning "Work in progress"
     Not yet tested hence in the sandpit package.
 
 *class* **com.diozero.sandpit.GP2Y0A21YK**{: .descname } (*pinNumber*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/sandpit/GP2Y0A21YK.java){: .viewcode-link } [&para;](InputDevices.md#sharp-gp2y0a21yk-distance-sensor "Permalink to this definition"){: .headerlink }
@@ -158,5 +158,5 @@ TODO Wiring diagram.
     
     *float* **getDistanceCm** ()
     
-    : Read distance, range 10 to 80cm.
+    : Read distance in centimetres, range 10 to 80cm.
     

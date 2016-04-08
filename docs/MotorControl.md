@@ -247,7 +247,7 @@ Currently supports the following types of motors:
 
 ### Servo
 
-!!! Warning "Work-in-progress"
+!!! Warning "Work in progress"
     Only tested with pigpio hence in the sandpit package.
 
 *class* **com.diozero.sandpit.Servo**{: .descname } (*pinNumber*, *pwmFrequency*, *initialPulseWidthMs*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/sandpit/Servo.java){: .viewcode-link } [&para;](MotorControl.md#servo "Permalink to this definition"){: .headerlink }

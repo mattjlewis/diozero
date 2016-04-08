@@ -8,7 +8,7 @@ TODO Insert wiring diagram.
 
 : Provides support for [WS2811B / WS2812B aka Adafriut NeoPixel LEDs](https://learn.adafruit.com/adafruit-neopixel-uberguide) via a JNI wrapper around the [rpi_ws281x C library](https://github.com/jgarff/rpi_ws281x).
 
-    !!! note
+    !!! note "Colour Coding"
         All colours are represented as 24bit RGB values.
     
     * **frequency** (*int*) - Communication frequency, 800,000 or 400,000.
@@ -17,7 +17,7 @@ TODO Insert wiring diagram.
     
     * **gpioNum** (*int*) - GPIO pin to use to drive the LEDs.
     
-    * **brightness** (*int*) - Brightness level.
+    * **brightness** (*int*) - Brightness level (0..255).
     
     * **numPixels** (*int*) - The number of pixels connected.
 
@@ -70,7 +70,7 @@ TODO Insert wiring diagram.
     : Set the colour for the specified pixel using Hue Saturation Luminance (HSL) values.
     
     !!! warning "In development"
-        I'm not convinced this is working correctly. Code for the colour mapping taken [from this article written in 2009](https://tips4java.wordpress.com/2009/07/05/hsl-color/). Also not entirely sure how this is different from HSB colour mapping.
+        I'm not convinced this is working correctly. Code for the colour mapping taken [from this article written in 2009 by Rob Camick](https://tips4java.wordpress.com/2009/07/05/hsl-color/). Also not entirely sure how this is different from HSB colour mapping.
     
     * **pixel** (*int*) - Pixel number.
     

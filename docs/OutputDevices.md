@@ -96,5 +96,50 @@ try (PwmLed led = new PwmLed(pin)) {
 }
 ```
 
+*class* **com.diozero.PwmLed**{: .descname } (*pinNumber*, *initialValue=0*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/PwmLed.java){: .viewcode-link } [&para;](OutputDevices.md#pwm-led "Permalink to this definition"){: .headerlink }
+
+: Extends [DigitalOutputDevice](API.md#digitaloutputdevice) and represents a PWM controlled LED.
+    
+    * **pinNumber** (*int*) - The GPIO pin which the LED is attached to.
+    
+    * **initialValue=0** (*float*) - Initial PWM output value (range 0..1).
+    
+    **blink** ()
+    
+    : Blink the LED on and off indefinitely.
+    
+    **blink** (*onTime*, *offTime*, *iterations*, *background*)
+    
+    : Blink the LED.
+    
+    * **onTime** (*float*) - On time in seconds.
+    
+    * **offTime** (*float*) - Off time in seconds.
+    
+    * **iterations** (*int*) - Number of iterations. Set to &lt;0 to blink indefinitely.
+    
+    * **background** (*boolean*) - If true start a background thread to control the blink and return immediately. If false, only return once the blink iterations have finished.
+
+    **pulse** (*fadeTime=1*, *steps=50*, *iterations=-1*, *background=true*)
+    
+    : Pulse the LED on and off repeatedly.
+    
+    * **fadeTime** (*float*) - Time from fully on to fully off. Default 1.
+    
+    * **steps** (*int*) - Number of steps between fully on to fully off. Default 50.
+    
+    * **iterations** (*int*) - Number of times to fade in and out. Default infinite.
+    
+    * **background** (*boolean*) - If true start a background thread to control the blink and return immediately. If false, only return once the blink iterations have finished.
+
+    **isLit** ()
+    
+    : Return true if the PWM value is &gt;0, false if 0.
+
+
 ## RGB LED
 
+*class* **com.diozero.RgbLed**{: .descname } (*pinNumber*, *initialValue=0*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/RgbLed.java){: .viewcode-link } [&para;](OutputDevices.md#rgb-led "Permalink to this definition"){: .headerlink }
+
+: Extends [DigitalOutputDevice](API.md#digitaloutputdevice) and represents a PWM controlled LED.
+    
