@@ -226,7 +226,7 @@ public class WS281x implements Closeable {
 	/**
 	 * Set the 8-bit red component value for the specified pixel.
 	 * @param pixel Pixel number.
-	 * @param green 8-bit red component value.
+	 * @param red 8-bit red component value.
 	 */
 	public void setRedComponent(int pixel, int red) {
 		validatePixel(pixel);
@@ -268,7 +268,7 @@ public class WS281x implements Closeable {
 	/**
 	 * Set the 8-bit blue component value for the specified pixel.
 	 * @param pixel Pixel number.
-	 * @param green 8-bit blue component value.
+	 * @param blue 8-bit blue component value.
 	 */
 	public void setBlueComponent(int pixel, int blue) {
 		validatePixel(pixel);

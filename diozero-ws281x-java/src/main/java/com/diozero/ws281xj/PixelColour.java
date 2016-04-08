@@ -59,6 +59,7 @@ public class PixelColour {
 	/**
 	 * Input a value 0 to 255 to get a colour value.
 	 * The colours are a transition r - g - b - back to r.
+	 * @param wheelPos Position on the colour wheel (range 0..255).
 	 * @return 24-bit RGB colour value
 	 */
 	public static int wheel(int wheelPos) {
