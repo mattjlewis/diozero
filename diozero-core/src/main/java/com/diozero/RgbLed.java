@@ -44,10 +44,10 @@ public class RgbLed implements Closeable {
 	private LED blueLED;
 	
 	/**
-	 * @param redPin 
-	 * @param greenPin
-	 * @param bluePin
-	 * @throws RuntimeIOException
+	 * @param redPin GPIO pin number for the red LED.
+	 * @param greenPin GPIO pin number for the green LED.
+	 * @param bluePin GPIO pin number for the blue LED.
+	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
 	public RgbLed(int redPin, int greenPin, int bluePin) throws RuntimeIOException {
 		this(DeviceFactoryHelper.getNativeDeviceFactory(), redPin, greenPin, bluePin);
@@ -55,10 +55,10 @@ public class RgbLed implements Closeable {
 	
 	/**
 	 * @param deviceFactory Device factory to use to provision this device.
-	 * @param redPin 
-	 * @param greenPin
-	 * @param bluePin
-	 * @throws RuntimeIOException
+	 * @param redPin GPIO pin number for the red LED.
+	 * @param greenPin GPIO pin number for the green LED.
+	 * @param bluePin GPIO pin number for the blue LED.
+	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
 	public RgbLed(GpioDeviceFactoryInterface deviceFactory, int redPin, int greenPin, int bluePin) throws RuntimeIOException {
 		redLED = new LED(deviceFactory, redPin);
@@ -74,19 +74,52 @@ public class RgbLed implements Closeable {
 		blueLED.close();
 	}
 	
-	// Exposed operations
+	/**
+	 * Get the state of all LEDs.
+	 * @return Boolean array (red, green, blue).
+	 * @throws RuntimeIOException If an I/O error occurred.
+	 */
+	public boolean[] getState() throws RuntimeIOException {
+		return new boolean[] { redLED.isOn(), greenLED.isOn(), blueLED.isOn() };
+	}
+	
+	/**
+	 * Set the state of all LEDs.
+	 * @param red Red LED state.
+	 * @param green Green LED state.
+	 * @param blue Blue LED state.
+	 * @throws RuntimeIOException If an I/O error occurred.
+	 */
+	public void setState(boolean red, boolean green, boolean blue) throws RuntimeIOException {
+		redLED.setOn(red);
+		greenLED.setOn(green);
+		blueLED.setOn(blue);
+	}
+	
+	/**
+	 * Turn all LEDs on.
+	 * @throws RuntimeIOException If an I/O error occurred.
+	 */
 	public void on() throws RuntimeIOException {
 		redLED.on();
 		greenLED.on();
 		blueLED.on();
 	}
 	
+	/**
+	 * Turn all LEDs off.
+	 * @throws RuntimeIOException If an I/O error occurred.
+	 */
 	public void off() throws RuntimeIOException {
 		redLED.off();
 		greenLED.off();
 		blueLED.off();
 	}
 	
+	/**
+	 * Toggle the state of all LEDs.
+	 * @throws RuntimeIOException If an I/O error occurred.
+	 */
 	public void toggle() throws RuntimeIOException {
 		redLED.toggle();
 		greenLED.toggle();
