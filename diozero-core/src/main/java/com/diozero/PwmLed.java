@@ -30,39 +30,126 @@ import com.diozero.api.PwmOutputDevice;
 import com.diozero.internal.spi.PwmOutputDeviceFactoryInterface;
 import com.diozero.util.RuntimeIOException;
 
+/**
+ * PWM controlled LED. {@see com.diozero.sampleapps.PwmLedTest PwmLedTest}
+ */
 public class PwmLed extends PwmOutputDevice {
+	/**
+	 * @param pinNumber
+	 *            The GPIO pin which the LED is attached to.
+	 * @throws RuntimeIOException
+	 *             If an I/O error occurred.
+	 */
 	public PwmLed(int pinNumber) throws RuntimeIOException {
 		this(pinNumber, 0);
 	}
-	
+
+	/**
+	 * @param pinNumber
+	 *            The GPIO pin which the LED is attached to.
+	 * @param initialValue
+	 *            Initial PWM output value (range 0..1).
+	 * @throws RuntimeIOException
+	 *             If an I/O error occurred.
+	 */
 	public PwmLed(int pinNumber, float initialValue) throws RuntimeIOException {
 		super(pinNumber, initialValue);
 	}
-	
+
+	/**
+	 * @param deviceFactory
+	 *            Device factory to use to provision this device.
+	 * @param pinNumber
+	 *            The GPIO pin which the LED is attached to.
+	 * @throws RuntimeIOException
+	 *             If an I/O error occurred.
+	 */
 	public PwmLed(PwmOutputDeviceFactoryInterface deviceFactory, int pinNumber) throws RuntimeIOException {
 		this(deviceFactory, pinNumber, 0);
 	}
-	
-	public PwmLed(PwmOutputDeviceFactoryInterface deviceFactory, int pinNumber, float initialValue) throws RuntimeIOException {
+
+	/**
+	 * @param deviceFactory
+	 *            Device factory to use to provision this device.
+	 * @param pinNumber
+	 *            The GPIO pin which the LED is attached to.
+	 * @param initialValue
+	 *            Initial PWM output value (range 0..1).
+	 * @throws RuntimeIOException
+	 *             If an I/O error occurred.
+	 */
+	public PwmLed(PwmOutputDeviceFactoryInterface deviceFactory, int pinNumber, float initialValue)
+			throws RuntimeIOException {
 		super(deviceFactory, pinNumber, initialValue);
 	}
-	
+
+	/**
+	 * Blink the LED on and off indefinitely.
+	 * 
+	 * @throws RuntimeIOException
+	 *             If an I/O error occurred.
+	 */
 	public void blink() throws RuntimeIOException {
 		blink(1, 1, INFINITE_ITERATIONS, true);
 	}
-	
+
+	/**
+	 * Blink the LED on and off repeatedly.
+	 * 
+	 * @param onTime
+	 *            On time in seconds.
+	 * @param offTime
+	 *            Off time in seconds.
+	 * @param iterations
+	 *            Number of iterations. Set to &lt;0 to blink indefinitely.
+	 * @param background
+	 *            If true start a background thread to control the blink and
+	 *            return immediately. If false, only return once the blink
+	 *            iterations have finished.
+	 * @throws RuntimeIOException
+	 *             If an I/O error occurred.
+	 */
 	public void blink(float onTime, float offTime, int iterations, boolean background) throws RuntimeIOException {
 		onOffLoop(onTime, offTime, iterations, background);
 	}
-	
+
+	/**
+	 * Pulse the LED on and off indefinitely.
+	 * 
+	 * @throws RuntimeIOException
+	 *             If an I/O error occurred.
+	 */
 	public void pulse() throws RuntimeIOException {
 		pulse(1, 50, INFINITE_ITERATIONS, true);
 	}
-	
+
+	/**
+	 * Pulse the LED on and off repeatedly.
+	 * 
+	 * @param fadeTime
+	 *            Time from fully on to fully off.
+	 * @param steps
+	 *            Number of steps between fully on to fully off.
+	 * @param iterations
+	 *            Number of times to fade in and out.
+	 * @param background
+	 *            If true start a background thread to control the blink and
+	 *            return immediately. If false, only return once the blink
+	 *            iterations have finished.
+	 * @throws RuntimeIOException
+	 *             If an I/O error occurred.
+	 */
 	public void pulse(float fadeTime, int steps, int iterations, boolean background) throws RuntimeIOException {
 		fadeInOutLoop(fadeTime, steps, iterations, background);
 	}
-	
+
+	/**
+	 * Return true if the PWM value is &gt;0.
+	 * 
+	 * @return True if &gt;0, false if 0.
+	 * @throws RuntimeIOException
+	 *             If an I/O error occurred.
+	 */
 	public boolean isLit() throws RuntimeIOException {
 		return isOn();
 	}

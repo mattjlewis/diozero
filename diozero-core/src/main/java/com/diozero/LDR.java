@@ -28,11 +28,13 @@ package com.diozero;
 
 
 import com.diozero.api.AnalogInputDevice;
+import com.diozero.internal.DeviceFactoryHelper;
 import com.diozero.internal.spi.AnalogInputDeviceFactoryInterface;
-import com.diozero.util.DeviceFactoryHelper;
 import com.diozero.util.RuntimeIOException;
 
 /**
+ * <p>Generic <a href="https://en.wikipedia.org/wiki/Photoresistor">Photoresistor / Light-Dependent-Resistor (LDR)</a>.<br>
+ * Wiring:</p>
  * <pre>
  * vRef     vLDR       GND
  *   |        |         |
@@ -40,30 +42,37 @@ import com.diozero.util.RuntimeIOException;
  * </pre>
  * <p>When there is a lot of light the LDR has low resistance (vLdr ~ 0V).
  * When it is dark the resistance increases (vRef ~ vRef).</p>
- * <pre>
- * vLDR = vRef * (rLDR / (rLDR + R1))
- * IF R1 = 10,000ohm, vRef = 5v
- * When dark, if rLDR == 100,000ohm
- * vLDR = 5 * (100,000 / (100,000 + 10,000)) = 4.54V
- * When light, if rLDR == 100ohm
- * vLDR = 5 * (100 / (100 + 10,000)) = 0.0495V
+ * <p>{@code vLDR = vRef * (rLDR / (rLDR + R1))}</p>
+ * <p>Given R1 = 10,000ohm and vRef = 5v:<br>
+ * When dark, if rLDR == 100,000ohm: {@code vLDR = 5 * (100,000 / (100,000 + 10,000)) = 4.54V}<br>
+ * When light, if rLDR == 100ohm: {code vLDR = 5 * (100 / (100 + 10,000)) = 0.0495V}</p>
  * 
- * rLDR = R1 / (vRef/vLDR - 1)
- * IF R1 = 10,000ohm, vRef = 5v
- * When dark, if vLDR=4V
- * rLDR = 10,000 / (5 / 4 - 1) = 40,000ohm
- * When light, if vLDR=1V
- * rLDR = 10,000 / (5 / 1 - 1) = 2,500ohm
- * </pre>
+ * <p>{@code rLDR = R1 / (vRef / vLDR - 1)}</p>
+ * <p>Given R1 = 10,000ohm and vRef = 5v:<br>
+ * When dark, if vLDR=4V: {@code rLDR = 10,000 / (5 / 4 - 1) = 40,000 Ohm}<br>
+ * When light, if vLDR=1V: {@code rLDR = 10,000 / (5 / 1 - 1) = 2,500 Ohm}<br></p>
  */
 public class LDR extends AnalogInputDevice {
 	private float vRef;
 	private float r1;
 	
+	/**
+	 * @param pinNumber Pin to which the LDR is connected.
+	 * @param vRef Reference voltage.
+	 * @param r1 Resistor between the LDR and ground.
+	 * @throws RuntimeIOException If an I/O error occurred.
+	 */
 	public LDR(int pinNumber, float vRef, float r1) throws RuntimeIOException {
 		this(DeviceFactoryHelper.getNativeDeviceFactory(), pinNumber, vRef, r1);
 	}
 	
+	/**
+	 * @param deviceFactory Device factory to use to construct the device.
+	 * @param pinNumber Pin to which the LDR is connected.
+	 * @param vRef Reference voltage.
+	 * @param r1 Resistor between the LDR and ground.
+	 * @throws RuntimeIOException If an I/O error occurred.
+	 */
 	public LDR(AnalogInputDeviceFactoryInterface deviceFactory, int pinNumber,
 			float vRef, float r1) throws RuntimeIOException {
 		super(deviceFactory, pinNumber, vRef);
@@ -72,6 +81,11 @@ public class LDR extends AnalogInputDevice {
 		this.r1 = r1;
 	}
 	
+	/**
+	 * Read the resistance across the LDR.
+	 * @return Resistance (Ohms)
+	 * @throws RuntimeIOException If an I/O error occurred.
+	 */
 	public float getLdrResistance() throws RuntimeIOException {
 		// Get the scaled value (voltage)
 		float v_ldr = getScaledValue();
@@ -79,6 +93,11 @@ public class LDR extends AnalogInputDevice {
 		return r1 / (vRef / v_ldr - 1);
 	}
 	
+	/**
+	 * Read the LDR luminosity. <strong>Not yet implemented</strong> (not sure if this can be reliably implemented).
+	 * @return Luminosity (lux).
+	 * @throws RuntimeIOException If an I/O error occurred.
+	 */
 	public float getLuminosity() throws RuntimeIOException {
 		// Get the scaled value (voltage)
 		float v_ldr = getScaledValue();

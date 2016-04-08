@@ -31,17 +31,39 @@ import java.io.Closeable;
 
 import org.pmw.tinylog.Logger;
 
+import com.diozero.internal.DeviceFactoryHelper;
+import com.diozero.internal.spi.GpioDeviceFactoryInterface;
 import com.diozero.util.RuntimeIOException;
 
+/**
+ * Three pin controlled RGB LED.
+ */
 public class RgbLed implements Closeable {
 	private LED redLED;
 	private LED greenLED;
 	private LED blueLED;
 	
+	/**
+	 * @param redPin 
+	 * @param greenPin
+	 * @param bluePin
+	 * @throws RuntimeIOException
+	 */
 	public RgbLed(int redPin, int greenPin, int bluePin) throws RuntimeIOException {
-		redLED = new LED(redPin);
-		greenLED = new LED(greenPin);
-		blueLED = new LED(bluePin);
+		this(DeviceFactoryHelper.getNativeDeviceFactory(), redPin, greenPin, bluePin);
+	}
+	
+	/**
+	 * @param deviceFactory Device factory to use to provision this device.
+	 * @param redPin 
+	 * @param greenPin
+	 * @param bluePin
+	 * @throws RuntimeIOException
+	 */
+	public RgbLed(GpioDeviceFactoryInterface deviceFactory, int redPin, int greenPin, int bluePin) throws RuntimeIOException {
+		redLED = new LED(deviceFactory, redPin);
+		greenLED = new LED(deviceFactory, greenPin);
+		blueLED = new LED(deviceFactory, bluePin);
 	}
 	
 	@Override

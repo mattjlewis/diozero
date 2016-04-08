@@ -29,20 +29,52 @@ package com.diozero;
 import com.diozero.api.DigitalOutputDevice;
 import com.diozero.util.RuntimeIOException;
 
+/**
+ * Represents a digital buzzer component.
+ */
 public class Buzzer extends DigitalOutputDevice {
 
+	/**
+	 * @param pinNumber The GPIO pin which the buzzer is attached to.
+	 * @throws RuntimeIOException If an I/O error occurred.
+	 */
 	public Buzzer(int pinNumber) throws RuntimeIOException {
 		super(pinNumber);
 	}
 
+	/**
+	 * @param pinNumber The GPIO pin which the buzzer is attached to.
+	 * @param activeHigh Set to true if a high output value represents on.
+	 * @throws RuntimeIOException If an I/O error occurred.
+	 */
 	public Buzzer(int pinNumber, boolean activeHigh) throws RuntimeIOException {
 		super(pinNumber, activeHigh, false);
 	}
 	
+	/**
+	 * Beep repeatedly in a background thread.
+	 * @throws RuntimeIOException If an I/O error occurred.
+	 */
 	public void beep() throws RuntimeIOException {
 		beep(1, 1, INFINITE_ITERATIONS, true);
 	}
 	
+	/**
+	 * Beep.
+	 * 
+	 * @param onTime
+	 *            On time in seconds.
+	 * @param offTime
+	 *            Off time in seconds.
+	 * @param n
+	 *            Number of iterations. Set to &lt;0 to beep indefinitely
+	 * @param background
+	 *            If true start a background thread to control the blink and
+	 *            return immediately. If false, only return once the blink
+	 *            iterations have finished.
+	 * @throws RuntimeIOException
+	 *             If an I/O error occurred.
+	 */
 	public void beep(float onTime, float offTime, int n, boolean background) throws RuntimeIOException {
 		onOffLoop(onTime, offTime, n, background);
 	}

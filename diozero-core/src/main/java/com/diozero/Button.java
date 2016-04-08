@@ -32,7 +32,7 @@ import com.diozero.util.RuntimeIOException;
 
 /**
  * <p>Provides push button related utility methods.</p>
- * <p>From the {@link com.diozero.sampleapps.ButtonTest} example:</p>
+ * <p>From the {@link com.diozero.sampleapps.ButtonTest ButtonTest} example:</p>
  * <img src="doc-files/Button.png" alt="Button">
  * <pre>
  * {@code
@@ -43,7 +43,7 @@ import com.diozero.util.RuntimeIOException;
  *}
  * }
  * </pre>
- * <p>Controlling an LED with a button {@link com.diozero.sampleapps.ButtonControlledLed}:</p>
+ * <p>Controlling an LED with a button {@link com.diozero.sampleapps.ButtonControlledLed ButtonControlledLed}:</p>
  * <img src="doc-files/Button_LED.png" alt="Button controlled LED">
  * <pre>
  * {@code
