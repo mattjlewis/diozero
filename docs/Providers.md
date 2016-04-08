@@ -58,7 +58,7 @@ make osgi
 
 ## wiringPi & Pi4j
 
-Make sure you have wiringPi installed (`sudo apt-get update && sudo apt-get install wiringpi`). I recommend using the latest [Pi4j 1.1 snapshot build](https://oss.sonatype.org/service/local/repositories/snapshots/content/com/pi4j/pi4j-core/1.1-SNAPSHOT/pi4j-core-1.1-20151214.215847-34.jar).
+Make sure you have wiringPi installed (`sudo apt-get update && sudo apt-get install wiringpi`). I recommend using the latest [Pi4j 1.1 snapshot build](https://oss.sonatype.org/service/local/repositories/snapshots/content/com/pi4j/pi4j-core/1.1-SNAPSHOT/pi4j-core-1.1-20160407.175636-41.jar).
 
 ## pigpio
 
