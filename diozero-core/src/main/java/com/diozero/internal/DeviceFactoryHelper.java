@@ -1,4 +1,4 @@
-package com.diozero.util;
+package com.diozero.internal;
 
 /*
  * #%L
@@ -33,6 +33,7 @@ import org.pmw.tinylog.Logger;
 
 import com.diozero.internal.spi.DeviceFactoryInterface;
 import com.diozero.internal.spi.NativeDeviceFactoryInterface;
+import com.diozero.util.DioZeroScheduler;
 
 /**
  * Helper class for instantiating different devices via the configured provider.
