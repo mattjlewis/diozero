@@ -31,7 +31,7 @@ import com.diozero.internal.spi.PwmOutputDeviceFactoryInterface;
 import com.diozero.util.RuntimeIOException;
 
 /**
- * PWM controlled LED. {@see com.diozero.sampleapps.PwmLedTest PwmLedTest}
+ * PWM controlled LED. @see com.diozero.sampleapps.PwmLedTest PwmLedTest
  */
 public class PwmLed extends PwmOutputDevice {
 	/**
