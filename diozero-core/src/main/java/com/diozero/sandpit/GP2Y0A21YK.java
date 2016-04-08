@@ -28,8 +28,8 @@ package com.diozero.sandpit;
 
 import com.diozero.api.AnalogInputDevice;
 import com.diozero.api.DistanceSensorInterface;
+import com.diozero.internal.DeviceFactoryHelper;
 import com.diozero.internal.spi.AnalogInputDeviceFactoryInterface;
-import com.diozero.util.DeviceFactoryHelper;
 import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 
@@ -56,6 +56,10 @@ public class GP2Y0A21YK extends AnalogInputDevice implements DistanceSensorInter
 		return getDistanceCm();
 	}
 	
+	/**
+	 * Read distance in centimetres, range 10 to 80cm.
+	 * @return Distance, range 10 to 80cm.
+	 */
 	@Override
 	public float getDistanceCm() throws RuntimeIOException {
 		float v = super.getScaledValue();
