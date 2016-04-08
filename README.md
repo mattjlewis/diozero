@@ -223,6 +223,7 @@ There is still a lot left to do, in particular:
 + Release 0.4: Bug fixes, servo support
 + Release 0.5: Testing improvements
 + Release 0.6: Preparing for 1.0 release
++ Release 0.7: Support for non-register based I2C device read / write
 
 ## License
 
