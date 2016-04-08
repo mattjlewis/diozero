@@ -42,7 +42,7 @@ import com.pi4j.io.i2c.I2CFactory;
 public class Pi4jI2CDevice extends AbstractDevice implements I2CDeviceInterface {
 	private int controller;
 	private int address;
-	private I2CDevice i2cDevice;
+	private I2CDevice device;
 	
 	public Pi4jI2CDevice(String key, DeviceFactoryInterface deviceFactory, int controller, int address,
 			int addressSize, int clockFrequency) throws RuntimeIOException {
@@ -53,7 +53,7 @@ public class Pi4jI2CDevice extends AbstractDevice implements I2CDeviceInterface 
 		Logger.debug(String.format("Opening I2C device ({}, 0x{})...",
 				Integer.valueOf(controller), Integer.toHexString(address)));
 		try {
-			i2cDevice = I2CFactory.getInstance(controller).getDevice(address);
+			device = I2CFactory.getInstance(controller).getDevice(address);
 		} catch (IOException e) {
 			throw new RuntimeIOException(e);
 		}
@@ -66,13 +66,13 @@ public class Pi4jI2CDevice extends AbstractDevice implements I2CDeviceInterface 
 		Logger.debug("closeDevice()");
 		// No way to close a Pi4J I2C Device?!
 		//i2cDevice.close();
-		i2cDevice = null;
+		device = null;
 	}
 
 	@Override
 	public boolean isOpen() {
 		// No way to tell if it is open?!
-		return i2cDevice != null;
+		return device != null;
 	}
 
 	@Override
@@ -84,7 +84,7 @@ public class Pi4jI2CDevice extends AbstractDevice implements I2CDeviceInterface 
 		int to_read = dst.remaining();
 		byte[] buffer = new byte[to_read];
 		try {
-			int read = i2cDevice.read(register, buffer, 0, to_read);
+			int read = device.read(register, buffer, 0, to_read);
 			if (read != to_read) {
 				throw new RuntimeIOException("Didn't read correct number of bytes, read " + read + ", expected " + to_read);
 			}
@@ -105,7 +105,44 @@ public class Pi4jI2CDevice extends AbstractDevice implements I2CDeviceInterface 
 		byte[] buffer = new byte[to_write];
 		src.get(buffer, src.position(), to_write);
 		try {
-			i2cDevice.write(register, buffer, 0, to_write);
+			device.write(register, buffer, 0, to_write);
+		} catch (IOException e) {
+			throw new RuntimeIOException(e);
+		}
+	}
+
+	@Override
+	public void read(ByteBuffer dst) throws RuntimeException {
+		if (! isOpen()) {
+			throw new IllegalStateException("I2C Device " + controller + "-" + address + " is closed");
+		}
+		
+		int to_read = dst.remaining();
+		byte[] buffer = new byte[to_read];
+		try {
+			int read = device.read(buffer, 0, to_read);
+			if (read != to_read) {
+				throw new RuntimeIOException(
+						"Didn't read correct number of bytes, read " + read + ", expected " + to_read);
+			}
+			dst.put(buffer);
+			dst.flip();
+		} catch (IOException e) {
+			throw new RuntimeIOException(e);
+		}
+	}
+
+	@Override
+	public void write(ByteBuffer src) throws RuntimeException {
+		if (! isOpen()) {
+			throw new IllegalStateException("I2C Device " + controller + "-" + address + " is closed");
+		}
+		
+		int to_write = src.remaining();
+		byte[] buffer = new byte[to_write];
+		src.get(buffer, src.position(), to_write);
+		try {
+			device.write(buffer);
 		} catch (IOException e) {
 			throw new RuntimeIOException(e);
 		}

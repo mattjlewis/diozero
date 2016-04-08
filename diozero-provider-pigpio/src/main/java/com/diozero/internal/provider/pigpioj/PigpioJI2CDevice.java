@@ -67,6 +67,16 @@ public class PigpioJI2CDevice extends AbstractDevice implements I2CDeviceInterfa
 	}
 
 	@Override
+	protected void closeDevice() throws RuntimeIOException {
+		Logger.debug("closeDevice()");
+		int rc = PigpioI2C.i2cClose(handle);
+		handle = CLOSED;
+		if (rc < 0) {
+			throw new RuntimeIOException("Error calling PigpioI2C.i2cClose(), response: " + rc);
+		}
+	}
+
+	@Override
 	public void read(int register, int subAddressSize, ByteBuffer dst) throws RuntimeIOException {
 		if (! isOpen()) {
 			throw new IllegalStateException("I2C Device " + controller + "-" + address + " is closed");
@@ -98,12 +108,33 @@ public class PigpioJI2CDevice extends AbstractDevice implements I2CDeviceInterfa
 	}
 
 	@Override
-	protected void closeDevice() throws RuntimeIOException {
-		Logger.debug("closeDevice()");
-		int rc = PigpioI2C.i2cClose(handle);
-		handle = CLOSED;
+	public void read(ByteBuffer dst) throws RuntimeException {
+		if (! isOpen()) {
+			throw new IllegalStateException("I2C Device " + controller + "-" + address + " is closed");
+		}
+		
+		int to_read = dst.remaining();
+		byte[] buffer = new byte[to_read];
+		int read = PigpioI2C.i2cReadDevice(handle, buffer, to_read);
+		if (read < 0 || read != to_read) {
+			throw new RuntimeIOException("Didn't read correct number of bytes, read " + read + ", expected " + to_read);
+		}
+		dst.put(buffer);
+		dst.flip();
+	}
+
+	@Override
+	public void write(ByteBuffer src) throws RuntimeException {
+		if (! isOpen()) {
+			throw new IllegalStateException("I2C Device " + controller + "-" + address + " is closed");
+		}
+		
+		int to_write = src.remaining();
+		byte[] buffer = new byte[to_write];
+		src.get(buffer, src.position(), to_write);
+		int rc = PigpioI2C.i2cWriteDevice(handle, buffer, to_write);
 		if (rc < 0) {
-			throw new RuntimeIOException("Error calling PigpioI2C.i2cClose(), response: " + rc);
+			throw new RuntimeIOException("Error calling PigpioI2C.i2cWriteI2CBlockData(), response: " + rc);
 		}
 	}
 }

@@ -33,4 +33,6 @@ import com.diozero.util.RuntimeIOException;
 public interface I2CDeviceInterface extends DeviceInterface {
 	void read(int register, int subAddressSize, ByteBuffer buffer) throws RuntimeIOException;
 	void write(int register, int subAddressSize, ByteBuffer buffer) throws RuntimeIOException;
+	void read(ByteBuffer buffer) throws RuntimeException;
+	void write(ByteBuffer buffer) throws RuntimeException;
 }

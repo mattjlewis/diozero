@@ -43,6 +43,11 @@ public class TestI2CDevice extends AbstractDevice implements I2CDeviceInterface 
 	}
 
 	@Override
+	protected void closeDevice() throws RuntimeIOException {
+		Logger.debug("closeDevice()");
+	}
+
+	@Override
 	public void read(int register, int subAddressSize, ByteBuffer buffer) throws RuntimeIOException {
 		// TODO Auto-generated method stub
 	}
@@ -53,7 +58,12 @@ public class TestI2CDevice extends AbstractDevice implements I2CDeviceInterface 
 	}
 
 	@Override
-	protected void closeDevice() throws RuntimeIOException {
-		Logger.debug("closeDevice()");
+	public void read(ByteBuffer buffer) throws RuntimeException {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void write(ByteBuffer buffer) throws RuntimeException {
+		// TODO Auto-generated method stub
 	}
 }
