@@ -31,11 +31,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.pmw.tinylog.Logger;
 
+import com.diozero.internal.DeviceFactoryHelper;
 import com.diozero.internal.provider.test.TestDeviceFactory;
 import com.diozero.internal.provider.test.TestDigitalInputDevice;
 import com.diozero.internal.provider.test.TestDigitalOutputDevice;
 import com.diozero.internal.spi.NativeDeviceFactoryInterface;
-import com.diozero.util.DeviceFactoryHelper;
 import com.diozero.util.RuntimeIOException;
 
 /**
