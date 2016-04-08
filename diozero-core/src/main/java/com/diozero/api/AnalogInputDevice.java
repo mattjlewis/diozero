@@ -30,10 +30,9 @@ import java.util.concurrent.TimeUnit;
 
 import org.pmw.tinylog.Logger;
 
-import com.diozero.McpAdc;
+import com.diozero.internal.DeviceFactoryHelper;
 import com.diozero.internal.spi.AnalogInputDeviceFactoryInterface;
 import com.diozero.internal.spi.GpioAnalogInputDeviceInterface;
-import com.diozero.util.DeviceFactoryHelper;
 import com.diozero.util.DioZeroScheduler;
 import com.diozero.util.RuntimeIOException;
 
@@ -47,14 +46,15 @@ import com.diozero.util.RuntimeIOException;
  * </p>
  * <p>
  * Note: The Raspberry Pi does not natively support analog input devices, see
- * {@link McpAdc} for connecting to analog-to-digital converters.
+ * {@link com.diozero.McpAdc McpAdc} for connecting to analog-to-digital
+ * converters.
  * </p>
  * <p>
  * Example: Temperature readings using an MCP3008 and TMP36:
  * </p>
  * <img src="doc-files/MCP3008_TMP36.png" alt="MCP3008 TMP36">
  * <p>
- * Code taken from {@link com.diozero.sampleapps.TMP36Test}:
+ * Code taken from {@link com.diozero.sampleapps.TMP36Test TMP36Test}:
  * </p>
  * 
  * <pre>
@@ -93,7 +93,7 @@ public class AnalogInputDevice extends GpioInputDevice<AnalogInputEvent> impleme
 
 	/**
 	 * @param deviceFactory
-	 *            The device factory to use to construct this device.
+	 *            The device factory to use to provision this device.
 	 * @param pinNumber
 	 *            Pin number to which the device is connected.
 	 * @param range

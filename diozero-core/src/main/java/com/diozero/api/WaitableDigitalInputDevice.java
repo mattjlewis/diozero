@@ -1,7 +1,7 @@
 package com.diozero.api;
 
+import com.diozero.internal.DeviceFactoryHelper;
 import com.diozero.internal.spi.GpioDeviceFactoryInterface;
-import com.diozero.util.DeviceFactoryHelper;
 import com.diozero.util.Event;
 
 /*

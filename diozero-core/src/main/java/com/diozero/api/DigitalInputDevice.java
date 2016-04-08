@@ -30,9 +30,9 @@ import java.io.IOException;
 
 import org.pmw.tinylog.Logger;
 
+import com.diozero.internal.DeviceFactoryHelper;
 import com.diozero.internal.spi.GpioDeviceFactoryInterface;
 import com.diozero.internal.spi.GpioDigitalInputDeviceInterface;
-import com.diozero.util.DeviceFactoryHelper;
 import com.diozero.util.RuntimeIOException;
 
 /**
@@ -47,33 +47,47 @@ public class DigitalInputDevice extends GpioInputDevice<DigitalInputEvent> {
 	private Action deactivatedAction;
 
 	/**
-	 * @param pinNumber Pin number to which the device is connected.
-	 * @throws RuntimeIOException If an I/O error occurs.
+	 * @param pinNumber
+	 *            Pin number to which the device is connected.
+	 * @throws RuntimeIOException
+	 *             If an I/O error occurs.
 	 */
 	public DigitalInputDevice(int pinNumber) throws RuntimeIOException {
 		this(DeviceFactoryHelper.getNativeDeviceFactory(), pinNumber, GpioPullUpDown.NONE, GpioEventTrigger.BOTH);
 	}
 
 	/**
-	 * @param pinNumber Pin number to which the device is connected.
-	 * @param pud Pull up/down configuration, values: NONE, PULL_UP, PULL_DOWN.
-	 * @param trigger Event trigger configuration, values: NONE, RISING, FALLING, BOTH.
-	 * @throws RuntimeIOException If an I/O error occurs.
+	 * @param pinNumber
+	 *            Pin number to which the device is connected.
+	 * @param pud
+	 *            Pull up/down configuration, values: NONE, PULL_UP, PULL_DOWN.
+	 * @param trigger
+	 *            Event trigger configuration, values: NONE, RISING, FALLING,
+	 *            BOTH.
+	 * @throws RuntimeIOException
+	 *             If an I/O error occurs.
 	 */
 	public DigitalInputDevice(int pinNumber, GpioPullUpDown pud, GpioEventTrigger trigger) throws RuntimeIOException {
 		this(DeviceFactoryHelper.getNativeDeviceFactory(), pinNumber, pud, trigger);
 	}
 
 	/**
-	 * @param deviceFactory Device factory to use to construct this digital input device.
-	 * @param pinNumber Pin number to which the device is connected.
-	 * @param pud Pull up/down configuration, values: NONE, PULL_UP, PULL_DOWN.
-	 * @param trigger Event trigger configuration, values: NONE, RISING, FALLING, BOTH.
-	 * @throws RuntimeIOException If an I/O error occurs.
+	 * @param deviceFactory
+	 *            Device factory to use to provision this digital input device.
+	 * @param pinNumber
+	 *            Pin number to which the device is connected.
+	 * @param pud
+	 *            Pull up/down configuration, values: NONE, PULL_UP, PULL_DOWN.
+	 * @param trigger
+	 *            Event trigger configuration, values: NONE, RISING, FALLING,
+	 *            BOTH.
+	 * @throws RuntimeIOException
+	 *             If an I/O error occurs.
 	 */
-	public DigitalInputDevice(GpioDeviceFactoryInterface deviceFactory, int pinNumber, GpioPullUpDown pud, GpioEventTrigger trigger) throws RuntimeIOException {
+	public DigitalInputDevice(GpioDeviceFactoryInterface deviceFactory, int pinNumber, GpioPullUpDown pud,
+			GpioEventTrigger trigger) throws RuntimeIOException {
 		super(pinNumber);
-		
+
 		this.device = deviceFactory.provisionDigitalInputPin(pinNumber, pud, trigger);
 		this.pud = pud;
 		this.trigger = trigger;
@@ -90,7 +104,7 @@ public class DigitalInputDevice extends GpioInputDevice<DigitalInputEvent> {
 			Logger.warn(e, "Error closing device: {}", e);
 		}
 	}
-	
+
 	@Override
 	public void valueChanged(DigitalInputEvent event) {
 		event.setActiveHigh(activeHigh);
@@ -114,9 +128,10 @@ public class DigitalInputDevice extends GpioInputDevice<DigitalInputEvent> {
 			device.removeListener();
 		}
 	}
-	
+
 	/**
 	 * Get pull up / down configuration.
+	 * 
 	 * @return Pull up / down configuration.
 	 */
 	public GpioPullUpDown getPullUpDown() {
@@ -125,33 +140,44 @@ public class DigitalInputDevice extends GpioInputDevice<DigitalInputEvent> {
 
 	/**
 	 * Get event trigger configuration.
+	 * 
 	 * @return Event trigger configuration.
 	 */
 	public GpioEventTrigger getTrigger() {
 		return trigger;
 	}
-	
+
 	/**
 	 * Get active high configuration.
-	 * @return Returns false if configured as pull-up, true for all other pull up / down options.
+	 * 
+	 * @return Returns false if configured as pull-up, true for all other pull
+	 *         up / down options.
 	 */
 	public boolean isActiveHigh() {
 		return activeHigh;
 	}
-	
+
 	/**
-	 * Read the current underlying state of the input pin. Does not factor in active high logic.
+	 * Read the current underlying state of the input pin. Does not factor in
+	 * active high logic.
+	 * 
 	 * @return Device state.
-	 * @throws RuntimeIOException If an I/O error occurred.
+	 * @throws RuntimeIOException
+	 *             If an I/O error occurred.
 	 */
 	public boolean getValue() throws RuntimeIOException {
 		return device.getValue();
 	}
-	
+
 	/**
-	 * Read the current on/off state for this device taking into account the pull up / down configuration. If the input is pulled up {@code isActive()} will return {@code true} when when the value is {@code false}.
+	 * Read the current on/off state for this device taking into account the
+	 * pull up / down configuration. If the input is pulled up
+	 * {@code isActive()} will return {@code true} when when the value is
+	 * {@code false}.
+	 * 
 	 * @return Device active state.
-	 * @throws RuntimeIOException If an I/O error occurred.
+	 * @throws RuntimeIOException
+	 *             If an I/O error occurred.
 	 */
 	public boolean isActive() throws RuntimeIOException {
 		return device.getValue() == activeHigh;
@@ -159,7 +185,9 @@ public class DigitalInputDevice extends GpioInputDevice<DigitalInputEvent> {
 
 	/**
 	 * Action to perform when the device state is active.
-	 * @param action Action callback object.
+	 * 
+	 * @param action
+	 *            Action callback object.
 	 */
 	public void whenActivated(Action action) {
 		activatedAction = action;
@@ -172,7 +200,9 @@ public class DigitalInputDevice extends GpioInputDevice<DigitalInputEvent> {
 
 	/**
 	 * Action to perform when the device state is inactive.
-	 * @param action Action callback object.
+	 * 
+	 * @param action
+	 *            Action callback object.
 	 */
 	public void whenDeactivated(Action action) {
 		deactivatedAction = action;

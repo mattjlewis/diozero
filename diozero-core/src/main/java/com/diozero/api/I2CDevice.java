@@ -33,9 +33,9 @@ import java.nio.ByteOrder;
 
 import org.pmw.tinylog.Logger;
 
+import com.diozero.internal.DeviceFactoryHelper;
 import com.diozero.internal.spi.I2CDeviceFactoryInterface;
 import com.diozero.internal.spi.I2CDeviceInterface;
-import com.diozero.util.DeviceFactoryHelper;
 import com.diozero.util.IOUtil;
 import com.diozero.util.RuntimeIOException;
 
@@ -67,7 +67,7 @@ public class I2CDevice implements Closeable, I2CConstants {
 
 	/**
 	 * @param deviceFactory
-	 *            Device factory to use to construct this device.
+	 *            Device factory to use to provision this device.
 	 * @param controller
 	 *            I2C bus.
 	 * @param address
@@ -463,5 +463,32 @@ public class I2CDevice implements Closeable, I2CConstants {
 		byte[] dest = new byte[length];
 		System.arraycopy(data, offset, dest, 0, length);
 		write(regAddr, SUB_ADDRESS_SIZE_1_BYTE, dest);
+	}
+	
+	public void read(ByteBuffer dst) throws RuntimeException {
+		device.read(dst);
+	}
+	
+	public byte[] read(int count) throws RuntimeException {
+		ByteBuffer buffer = ByteBuffer.allocateDirect(count);
+		device.read(buffer);
+
+		// Rewind the byte buffer for reading
+		buffer.rewind();
+
+		byte[] data = new byte[count];
+		buffer.get(data);
+
+		return data;
+	}
+	
+	public void write(byte[] data) throws RuntimeException {
+		ByteBuffer buffer = ByteBuffer.wrap(data);
+		device.write(buffer);
+	}
+	
+	public void writeByte(byte data) throws RuntimeException {
+		ByteBuffer buffer = ByteBuffer.wrap(new byte[] { data });
+		device.write(buffer);
 	}
 }

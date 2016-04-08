@@ -31,25 +31,33 @@ import java.util.Queue;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 
+import com.diozero.internal.DeviceFactoryHelper;
 import com.diozero.internal.spi.GpioDeviceFactoryInterface;
-import com.diozero.util.DeviceFactoryHelper;
 import com.diozero.util.DioZeroScheduler;
 import com.diozero.util.RuntimeIOException;
 
 /**
- * <p>Represents a generic input device which takes its value from the number of
- * active events over a specific time period.</p>
+ * <p>
+ * Represents a generic input device which takes its value from the number of
+ * active events over a specific time period.
+ * </p>
  * 
- * <p>This class extends {@link DigitalInputDevice} with a queue which is added to
- * whenever the input device is active. The number of the active events in the
- * queue is compared to a threshold which is used to determine the state of the
- * 'active' property.</p>
+ * <p>
+ * This class extends {@link com.diozero.api.WaitableDigitalInputDevice
+ * WaitableDigitalInputDevice} with a queue which is added to whenever the input device
+ * is active. The number of the active events in the queue is compared to a
+ * threshold which is used to determine the state of the 'active' property.
+ * </p>
  * 
- * <p>Any active events over the specified eventAge are removed by a background
- * thread.</p>
+ * <p>
+ * Any active events over the specified eventAge are removed by a background
+ * thread.
+ * </p>
  * 
- * <p>This class is intended for use with devices which exhibit "twitchy" behaviour
- * (such as certain motion sensors).</p>
+ * <p>
+ * This class is intended for use with devices which exhibit "twitchy" behaviour
+ * (such as certain motion sensors).
+ * </p>
  */
 public class SmoothedInputDevice extends WaitableDigitalInputDevice {
 	private int threshold;
@@ -78,7 +86,7 @@ public class SmoothedInputDevice extends WaitableDigitalInputDevice {
 
 	/**
 	 * @param deviceFactory
-	 *            Device factory to use to construct this device.
+	 *            Device factory to use to provision this device.
 	 * @param pinNumber
 	 *            Pin number to which the device is connected.
 	 * @param pud

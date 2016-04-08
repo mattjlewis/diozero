@@ -30,6 +30,7 @@ import java.io.IOException;
 
 import org.pmw.tinylog.Logger;
 
+import com.diozero.internal.DeviceFactoryHelper;
 import com.diozero.internal.spi.GpioDeviceFactoryInterface;
 import com.diozero.internal.spi.GpioDigitalOutputDeviceInterface;
 import com.diozero.util.*;
@@ -216,7 +217,7 @@ public class DigitalOutputDevice extends GpioDevice {
 	 * @param offTime
 	 *            Off time in seconds.
 	 * @param n
-	 *            Number of iterations. Set to -1 to blink indefinitely.
+	 *            Number of iterations. Set to &lt;0 to blink indefinitely.
 	 * @param background
 	 *            If true start a background thread to control the blink and
 	 *            return immediately. If false, only return once the blink
