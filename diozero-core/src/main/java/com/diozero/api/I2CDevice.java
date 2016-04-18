@@ -484,11 +484,13 @@ public class I2CDevice implements Closeable, I2CConstants {
 	
 	public void write(byte[] data) throws RuntimeException {
 		ByteBuffer buffer = ByteBuffer.wrap(data);
+		buffer.order(ByteOrder.LITTLE_ENDIAN);
 		device.write(buffer);
 	}
 	
 	public void writeByte(byte data) throws RuntimeException {
 		ByteBuffer buffer = ByteBuffer.wrap(new byte[] { data });
+		buffer.order(ByteOrder.LITTLE_ENDIAN);
 		device.write(buffer);
 	}
 }
