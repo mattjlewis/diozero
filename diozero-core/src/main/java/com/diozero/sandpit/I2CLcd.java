@@ -3,6 +3,8 @@ package com.diozero.sandpit;
 import java.io.Closeable;
 import java.io.IOException;
 
+import org.pmw.tinylog.Logger;
+
 import com.diozero.api.I2CConstants;
 import com.diozero.api.I2CDevice;
 import com.diozero.util.SleepUtil;
@@ -15,60 +17,68 @@ import com.diozero.util.SleepUtil;
  * https://bitbucket.org/MattHawkinsUK/rpispy-misc/raw/master/python/lcd_i2c.py
  * </a></p>
  * <p>Another source of information: <a href="https://gist.github.com/DenisFromHR/cc863375a6e19dce359d">https://gist.github.com/DenisFromHR/cc863375a6e19dce359d</a>.</p>
+ * <p>Datasheet for HD44780: <a href="https://www.sparkfun.com/datasheets/LCD/HD44780.pdf">https://www.sparkfun.com/datasheets/LCD/HD44780.pdf</a>.</p>
  */
 public class I2CLcd implements Closeable {
+	private static final boolean DEFAULT_BACKLIGHT_STATE = true;
 
 	// I2C device address
 	private static final int DEVICE_ADDRESS = 0x27;
 
-	private static final byte[] LCD_LINE_ADDRESSES = {
+	private static final byte[] LINE_ADDRESSES = {
 			(byte) 0x80, // LCD RAM address for the 1st line
 			(byte) 0xC0, // LCD RAM address for the 2nd line
 			(byte) 0x94, // LCD RAM address for the 3rd line
 			(byte) 0xD4  // LCD RAM address for the 4th line
 	};
 	
-	// Commands
-	private static final byte LCD_CLEAR_DISPLAY = 0x01;
-	private static final byte LCD_RETURN_HOME = 0x02;
-	private static final byte LCD_SET_CGRAM_ADDR = 0x40;
-	private static final byte LCD_SET_DDRAM_ADDR = (byte)0x80;
+	// Instructions
+	private static final byte INST_CLEAR_DISPLAY = 0x01;
+	private static final byte INST_RETURN_HOME = 0x02;
+	private static final byte INST_ENTRY_MODE_SET = 0x04;
+	private static final byte INST_DISPLAY_CONTROL = 0x08;
+	private static final byte INST_CURSOR_SHIFT = 0x10;
+	/** Perform the function at the head of the program before executing any instructions (except for the
+	 * read  busy  flag  and  address  instruction).  From  this  point,  the  function  set  instruction  cannot  be
+	 * executed unless the interface data length is changed. */
+	private static final byte INST_FUNCTION_SET = 0x20;
+	private static final byte INST_SET_CGRAM_ADDR = 0x40;		// CGRAM = Character Generator RAM
+	private static final byte INST_SET_DDRAM_ADDR = (byte)0x80;	// DDRAM = Display Data RAM
 	
-	private static final byte LCD_ENTRY_MODE_SET = 0x04;
-	// Flags for display entry mode
-	private static final byte LCD_ENTRY_RIGHT = 0x00;
-	private static final byte LCD_ENTRY_LEFT = 0x02;
-	private static final byte LCD_ENTRY_SHIFT_INCREMENT = 0x01;
-	private static final byte LCD_ENTRY_SHIFT_DECREMENT = 0x00;
+	// Flags for INST_ENTRY_MODE_SET
+	/** Display shift control, 1=left, 0=right.
+	 * If S is 1, it will seem as if the cursor does not move but the display does.
+	 * The display does not shift if S is 0. */
+	private static final byte ENTRY_MODE_SHIFT_LEFT = 0x02;
+	/** Cursor increment/decrement control, 1=increment, 0=decrement.
+	 * The cursor or blinking moves to the right when incremented by 1 and to the left when decremented by 1 */
+	private static final byte ENTRY_MODE_INCREMENT = 0x01;
 
-	private static final byte LCD_DISPLAY_CONTROL = 0x08;
-	// Flags for display on/off control
-	private static final byte LCD_DISPLAY_ON = 0x04;
-	private static final byte LCD_DISPLAY_OFF = 0x00;
-	private static final byte LCD_CURSOR_ON = 0x02;
-	private static final byte LCD_CURSOR_OFF = 0x00;
-	private static final byte LCD_BLINK_ON = 0x01;
-	private static final byte LCD_BLINK_OFF = 0x00;
+	// Flags for INST_DISPLAY_CONTROL
+	/** Display on/off, 1=on, 0=off. */
+	private static final byte DISPLAY_CONTROL_DISPLAY_ON = 0x04;
+	/** Cursor on/off, 1=on, 0=off. */
+	private static final byte DISPLAY_CONTROL_CURSOR_ON = 0x02;
+	/** Cursor blink control, 1=blink, 0=no blink. */
+	private static final byte DISPLAY_CONTROL_BLINK_ON = 0x01;
 
-	private static final byte LCD_CURSOR_SHIFT = 0x10;
-	// Flags for display/cursor shift
-	private static final byte LCD_DISPLAY_MOVE = 0x08;
-	private static final byte LCD_CURSOR_MOVE = 0x00;
-	private static final byte LCD_MOVE_RIGHT = 0x04;
-	private static final byte LCD_MOVE_LEFT = 0x00;
+	// Flags for INST_CURSOR_SHIFT
+	/** Shift the displayed text, 1=right, 0=left. */
+	private static final byte CURSOR_SHIFT_DISPLAY_SHIFT_RIGHT = 0x08;
+	/** Shift the cursor, 1=right, 0=left. */
+	private static final byte CURSOR_SHIFT_CURSOR_SHIFT_RIGHT = 0x04;
 
-	private static final byte LCD_FUNCTION_SET = 0x20;
-	// Flags for function set
-	private static final byte LCD_8BIT_MODE = 0x10;
-	private static final byte LCD_4BIT_MODE = 0x00;
-	private static final byte LCD_2LINE = 0x08;
-	private static final byte LCD_1LINE = 0x00;
-	private static final byte LCD_5x10_DOTS = 0x04;
-	private static final byte LCD_5x8_DOTS = 0x00;
+	// Flags for INST_FUNCTION_SET
+	/** Data is sent or received in 8-bit lengths (DB7 to DB0) when DL is 1,
+	 * and  in  4-bit  lengths  (DB7  to  DB4)  when  DL  is  0. */
+	private static final byte FUNCTION_SET_DATA_LENGTH_8BIT = 0x10;
+	/** Sets the number of display lines. 1=2 lines, 0=1 line. */
+	private static final byte FUNCTION_SET_DISPLAY_LINES = 0x08;
+	/** Sets the character font. 1=5x10 dots (32 character fonts), 0=5x8 dots (208 character fonts) */
+	private static final byte FUNCTION_SET_CHAR_FONT = 0x04;
 	
-	// Flags for backlight control
-	private static final int LCD_BACKLIGHT_ON_BIT = 0x08;
-	private static final int LCD_BACKLIGHT_OFF_BIT = 0x00;
+	// Backlight control bit (1=on, 0=off)
+	private static final int BACKLIGHT_CONTROL = 0b00001000;
 
 	// Enable bit
 	private static final byte ENABLE = 0b00000100;
@@ -82,38 +92,44 @@ public class I2CLcd implements Closeable {
 	private int rows;
 	private int columns;
 
-	public I2CLcd(int rows, int columns) {
-		this(I2CConstants.BUS_1, DEVICE_ADDRESS, rows, columns);
+	public I2CLcd(int columns, int rows) {
+		this(I2CConstants.BUS_1, DEVICE_ADDRESS, columns, rows);
 	}
 
-	public I2CLcd(int controller, int deviceAddress, int rows, int columns) {
-		if (rows < 1 || rows > LCD_LINE_ADDRESSES.length) {
+	public I2CLcd(int controller, int deviceAddress, int columns, int rows) {
+		if (rows < 1 || rows > LINE_ADDRESSES.length) {
 			throw new IllegalArgumentException(
-					"Invalid number of rows (" + rows + "), must be 1.." + LCD_LINE_ADDRESSES.length);
+					"Invalid number of rows (" + rows + "), must be 1.." + LINE_ADDRESSES.length);
 		}
 
-		this.rows = rows;
 		this.columns = columns;
+		this.rows = rows;
+		backlight = DEFAULT_BACKLIGHT_STATE;
 
 		device = new I2CDevice(controller, deviceAddress, I2CConstants.ADDR_SIZE_7,
 				I2CConstants.DEFAULT_CLOCK_FREQUENCY);
 
 		// Initialise display
-		// TODO Understand these commands using the constants above
-		lcdWriteByte(Mode.COMMAND, (byte) 0x33);		// 110011 Initialise
-		lcdWriteByte(Mode.COMMAND, (byte) 0x32);		// 110010 Initialise
-		lcdWriteByte(Mode.COMMAND, (byte) 0x06);		// 000110 Cursor move direction (right)
-		lcdWriteByte(Mode.COMMAND, (byte) 0x0C);		// 001100 Display On, Cursor Off, Blink Off
-		lcdWriteByte(Mode.COMMAND, (byte) 0x28);		// 101000 Data length, number of lines, font size
-		lcdWriteByte(Mode.COMMAND, LCD_CLEAR_DISPLAY);	// 000001 Clear display
+		// 110011 Initialise, 8-bit (INST_FUNCTION_SET | FUNCTION_SET_DATA_LENGTH | 0b11)
+		//lcdWriteByte(Mode.COMMAND, (byte) 0x33);
+		// 110010 Initialise, 8-bit (INST_FUNCTION_SET | FUNCTION_SET_DATA_LENGTH | 0b10)
+		//lcdWriteByte(Mode.COMMAND, (byte) 0x32);
+		// 101000 Function set: 4-bit data length, 2 lines, 5x8 character font
+		lcdWriteByte(Mode.COMMAND, (byte) (INST_FUNCTION_SET | FUNCTION_SET_DISPLAY_LINES));
+		// 001100 Display On, Cursor on, Blink on
+		lcdWriteByte(Mode.COMMAND, (byte) (INST_DISPLAY_CONTROL | DISPLAY_CONTROL_DISPLAY_ON | DISPLAY_CONTROL_CURSOR_ON | DISPLAY_CONTROL_BLINK_ON));
+		// 000110 Display shift to left, decrement cursor
+		lcdWriteByte(Mode.COMMAND, (byte) (INST_ENTRY_MODE_SET | ENTRY_MODE_SHIFT_LEFT));
+		// 000001 Clear display
+		lcdWriteByte(Mode.COMMAND, INST_CLEAR_DISPLAY);
 
 		SleepUtil.sleepSeconds(E_DELAY);
 	}
 
 	// Send byte to data pins
 	private void lcdWriteByte(Mode mode, byte data) {
-		byte bits_high = (byte) (mode.getMode() | (data & 0xF0) | (backlight ? LCD_BACKLIGHT_ON_BIT : LCD_BACKLIGHT_OFF_BIT));
-		byte bits_low = (byte) (mode.getMode() | ((data << 4) & 0xF0) | (backlight ? LCD_BACKLIGHT_ON_BIT : LCD_BACKLIGHT_OFF_BIT));
+		byte bits_high = (byte) (mode.getMode() | (data & 0xF0) | (backlight ? BACKLIGHT_CONTROL : 0));
+		byte bits_low = (byte) (mode.getMode() | ((data << 4) & 0xF0) | (backlight ? BACKLIGHT_CONTROL : 0));
 
 		// High bits
 		device.writeByte(bits_high);
@@ -141,30 +157,30 @@ public class I2CLcd implements Closeable {
 		this.backlight = backlight;
 	}
 
-	public int getRowCount() {
-		return rows;
-	}
-
 	public int getColumnCount() {
 		return columns;
 	}
 
+	public int getRowCount() {
+		return rows;
+	}
+
 	/**
 	 * Send string to display
-	 * @param line Line number (starts at 0)
+	 * @param row Row number (starts at 0)
 	 * @param text Text to display
 	 */
-	public void setText(int line, String text) {
-		if (line < 0 || line >= rows) {
-			throw new IllegalArgumentException("Invalid line (" + line + "), must be 0.." + (rows - 1));
+	public void setText(int row, String text) {
+		if (row < 0 || row >= rows) {
+			throw new IllegalArgumentException("Invalid row (" + row + "), must be 0.." + (rows - 1));
 		}
 
 		String str = pad(text, columns);
 
-		lcdWriteByte(Mode.COMMAND, LCD_LINE_ADDRESSES[line]);
+		lcdWriteByte(Mode.COMMAND, LINE_ADDRESSES[row]);
 
-		for (int i = 0; i < columns; i++) {
-			lcdWriteByte(Mode.DATA, (byte) str.charAt(i));
+		for (byte b : str.getBytes()) {
+			lcdWriteByte(Mode.DATA, b);
 		}
 	}
 
@@ -172,8 +188,7 @@ public class I2CLcd implements Closeable {
 	 * Clear the display
 	 */
 	public void clear() {
-		lcdWriteByte(Mode.COMMAND, LCD_CLEAR_DISPLAY);
-		lcdWriteByte(Mode.COMMAND, LCD_RETURN_HOME);
+		lcdWriteByte(Mode.COMMAND, INST_CLEAR_DISPLAY);
 	}
 
 	@Override
