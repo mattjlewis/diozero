@@ -67,15 +67,12 @@ public class HCSR04UsingWait implements DistanceSensorInterface, Closeable {
 		}
 	}
 
-	private static long MS_IN_SEC = 1000;
-	private static long US_IN_SEC = MS_IN_SEC * 1000;
-	private static long NS_IN_SEC = US_IN_SEC * 1000;
 	// Spec says #10us pulse (min) = 10,000 ns
 	private static final int PULSE_NS = 10_000; 
 	private static final int MAX_DISTANCE_CM = (int)(400 * 1.5); // Max distance measurement (400cm + 50%)
 	private static final double SPEED_OF_SOUND_CM_PER_S = 34029; // Approx Speed of Sound at sea level and 15 degC
 	// Calculate the max time (in ns) that the echo pulse can stay high (35.26ms)
-	private static final int MAX_ECHO_TIME_MS = (int) Math.floor(MAX_DISTANCE_CM * 2 * MS_IN_SEC / SPEED_OF_SOUND_CM_PER_S) + 1;
+	private static final int MAX_ECHO_TIME_MS = (int) Math.floor(MAX_DISTANCE_CM * 2 * SleepUtil.MS_IN_SEC / SPEED_OF_SOUND_CM_PER_S) + 1;
 
 	private DigitalOutputDevice trigger;
 	private WaitableDigitalInputDevice echo;
@@ -129,7 +126,7 @@ public class HCSR04UsingWait implements DistanceSensorInterface, Closeable {
 			
 			long echo_off_time = System.nanoTime();
 
-			ping_duration_s = (echo_off_time - echo_on_time) / (double)NS_IN_SEC;
+			ping_duration_s = (echo_off_time - echo_on_time) / (double)SleepUtil.NS_IN_SEC;
 			Logger.info("Ping duration = {}ms", Double.valueOf((ping_duration_s * 1000)));
 		} catch (InterruptedException e) {
 			Logger.warn(e, "Interrupted: {}", e);

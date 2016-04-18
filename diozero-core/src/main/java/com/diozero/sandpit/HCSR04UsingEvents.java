@@ -73,19 +73,16 @@ public class HCSR04UsingEvents implements DistanceSensorInterface, Closeable, In
 		}
 	}
 
-	private static long MS_IN_SEC = 1000;
-	private static long US_IN_SEC = MS_IN_SEC * 1000;
-	private static long NS_IN_SEC = US_IN_SEC * 1000;
 	// Spec says #10us pulse (min) = 10,000 ns
 	private static final int PULSE_NS = 10_000; 
 	private static final double MAX_DISTANCE_CM = 400; // Max distance measurement
 	private static final double SPEED_OF_SOUND_CM_PER_S = 34029; // Approx Speed of Sound at sea level and 15 degC
 	// After trigger goes low the device sends 8 ultrasonic bursts @ 40kHz
-	private static final long ULTRASONIC_BURST_TIME_NS = (NS_IN_SEC / 40_000) * 8;
-	private static final long MAX_DELAY_TO_ECHO_HIGH_NS = NS_IN_SEC;
+	private static final long ULTRASONIC_BURST_TIME_NS = (SleepUtil.NS_IN_SEC / 40_000) * 8;
+	private static final long MAX_DELAY_TO_ECHO_HIGH_NS = SleepUtil.NS_IN_SEC;
 	// Calculate the max time (in ns) that the echo pulse stays high
-	private static final long EXPECTED_MAX_ECHO_TIME_NS = (int) (MAX_DISTANCE_CM * 2 * NS_IN_SEC / SPEED_OF_SOUND_CM_PER_S);
-	private static final long MAX_ECHO_HIGH_TIME_NS = NS_IN_SEC;
+	private static final long EXPECTED_MAX_ECHO_TIME_NS = (int) (MAX_DISTANCE_CM * 2 * SleepUtil.NS_IN_SEC / SPEED_OF_SOUND_CM_PER_S);
+	private static final long MAX_ECHO_HIGH_TIME_NS = SleepUtil.NS_IN_SEC;
 	
 	// States
 	private static final int STARTING_UP=0, WAITING_FOR_ECHO_ON=1, WAITING_FOR_ECHO_OFF=2, ERROR=3, FINISHED=4;
@@ -150,7 +147,7 @@ public class HCSR04UsingEvents implements DistanceSensorInterface, Closeable, In
 				Long.valueOf(echoOffTimeMs - echoOnTimeMs),
 				Long.valueOf(EXPECTED_MAX_ECHO_TIME_NS));
 
-		double ping_duration_s = (echoOffTimeNs - echoOnTimeNs) / (double)NS_IN_SEC;
+		double ping_duration_s = (echoOffTimeNs - echoOnTimeNs) / (double)SleepUtil.NS_IN_SEC;
 
 		// Distance = velocity * time taken
 		// Half the ping duration as it is the time to the object and back
