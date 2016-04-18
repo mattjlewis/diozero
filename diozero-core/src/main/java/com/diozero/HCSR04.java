@@ -49,15 +49,12 @@ import com.diozero.util.SleepUtil;
  * 60ms measurement cycle, in order to prevent trigger signal to the echo signal
  */
 public class HCSR04 implements DistanceSensorInterface, Closeable {
-	private static long MS_IN_SEC = 1000;
-	private static long US_IN_SEC = MS_IN_SEC * 1000;
-	private static long NS_IN_SEC = US_IN_SEC * 1000;
 	// Spec says #10us pulse (min) = 10,000 ns
 	private static final int PULSE_NS = 10_000; 
 	private static final double MAX_DISTANCE_CM = 400; // Max distance measurement
 	private static final double SPEED_OF_SOUND_CM_PER_S = 34029; // Approx Speed of Sound at sea level and 15 degC
 	// Calculate the max time (in ns) that the echo pulse stays high
-	private static final int MAX_ECHO_TIME_NS = (int) (MAX_DISTANCE_CM * 2 * NS_IN_SEC / SPEED_OF_SOUND_CM_PER_S);
+	private static final int MAX_ECHO_TIME_NS = (int) (MAX_DISTANCE_CM * 2 * SleepUtil.NS_IN_SEC / SPEED_OF_SOUND_CM_PER_S);
 
 	private DigitalOutputDevice trigger;
 	private DigitalInputDevice echo;
@@ -114,7 +111,7 @@ public class HCSR04 implements DistanceSensorInterface, Closeable {
 		Logger.info("Time from echo on to echo off = {}ns, max allowable time={}ns",
 				Long.valueOf(echo_off_time - echo_on_time), Long.valueOf(MAX_ECHO_TIME_NS));
 
-		double ping_duration_s = (echo_off_time - echo_on_time) / (double)NS_IN_SEC;
+		double ping_duration_s = (echo_off_time - echo_on_time) / (double)SleepUtil.NS_IN_SEC;
 
 		// Distance = velocity * time taken
 		// Half the ping duration as it is the time to the object and back
