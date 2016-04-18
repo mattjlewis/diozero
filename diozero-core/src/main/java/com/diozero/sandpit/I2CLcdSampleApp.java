@@ -26,18 +26,41 @@ public class I2CLcdSampleApp {
 	public static void main(String[] args) {
 		// Initialise display
 		try (I2CLcd lcd = new I2CLcd(16, 2)) {
-			while (true) {
+			for (int i=0; i<3; i++) {
 				// Send some text
-				lcd.setText(0, "RPiSpy         <");
-				lcd.setText(1, "I2C LCD        <");
-	
-				SleepUtil.sleepSeconds(3);
+				lcd.setText(0, "Hello -");
+				lcd.setText(1, "World! " + i);
+				SleepUtil.sleepSeconds(1);
+				
+				lcd.clear();
+				SleepUtil.sleepSeconds(1);
 			  
 				// Send some more text
 				lcd.setText(0, ">         RPiSpy");
 				lcd.setText(1, ">        I2C LCD");
-	
-				SleepUtil.sleepSeconds(3);
+				SleepUtil.sleepSeconds(1);
+			}
+			
+			lcd.clear();
+			SleepUtil.sleepSeconds(1);
+			
+			for (byte b : "Hello Matt!".getBytes()) {
+				lcd.addText(b);
+				SleepUtil.sleepSeconds(.2);
+			}
+			
+			lcd.clear();
+			SleepUtil.sleepSeconds(1);
+
+			int x=0;
+			for (int i=0; i<3; i++) {
+				for (byte b : "Hello World! ".getBytes()) {
+					if (x++ == 16) {
+						lcd.entryModeControl(true, true);
+					}
+					lcd.addText(b);
+					SleepUtil.sleepSeconds(.2);
+				}
 			}
 		} catch (IOException e) {
 			Logger.error(e, "Error: {}", e);
