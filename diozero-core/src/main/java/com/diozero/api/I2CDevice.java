@@ -48,6 +48,7 @@ public class I2CDevice implements Closeable, I2CConstants {
 	private int address;
 	private int addressSize;
 	private int clockFrequency;
+	private ByteOrder order;
 
 	/**
 	 * @param controller
@@ -61,8 +62,30 @@ public class I2CDevice implements Closeable, I2CConstants {
 	 * @throws RuntimeIOException
 	 *             If an I/O error occurred.
 	 */
-	public I2CDevice(int controller, int address, int addressSize, int clockFrequency) throws RuntimeIOException {
-		this(DeviceFactoryHelper.getNativeDeviceFactory(), controller, address, addressSize, clockFrequency);
+	public I2CDevice(int controller, int address, int addressSize, int clockFrequency)
+			throws RuntimeIOException {
+		this(DeviceFactoryHelper.getNativeDeviceFactory(), controller, address,
+				addressSize, clockFrequency, IOUtil.DEFAULT_BYTE_ORDER);
+	}
+
+	/**
+	 * @param controller
+	 *            I2C bus.
+	 * @param address
+	 *            I2C device address.
+	 * @param addressSize
+	 *            I2C device address size. Can be 7 or 10.
+	 * @param clockFrequency
+	 *            I2C clock frequency.
+	 * @param order
+	 *            Default byte order for this device
+	 * @throws RuntimeIOException
+	 *             If an I/O error occurred.
+	 */
+	public I2CDevice(int controller, int address, int addressSize, int clockFrequency, ByteOrder order)
+			throws RuntimeIOException {
+		this(DeviceFactoryHelper.getNativeDeviceFactory(), controller, address,
+				addressSize, clockFrequency, order);
 	}
 
 	/**
@@ -76,17 +99,20 @@ public class I2CDevice implements Closeable, I2CConstants {
 	 *            I2C device address size. Can be 7 or 10.
 	 * @param clockFrequency
 	 *            I2C clock frequency.
+	 * @param order
+	 *            Default byte order for this device
 	 * @throws RuntimeIOException
 	 *             If an I/O error occurred.
 	 */
 	public I2CDevice(I2CDeviceFactoryInterface deviceFactory, int controller, int address, int addressSize,
-			int clockFrequency) throws RuntimeIOException {
+			int clockFrequency, ByteOrder order) throws RuntimeIOException {
 		device = deviceFactory.provisionI2CDevice(controller, address, addressSize, clockFrequency);
 
 		this.controller = controller;
 		this.address = address;
 		this.addressSize = addressSize;
 		this.clockFrequency = clockFrequency;
+		this.order = order;
 	}
 
 	public int getController() {
@@ -189,11 +215,11 @@ public class I2CDevice implements Closeable, I2CConstants {
 	}
 
 	public short readShort(int address) throws RuntimeIOException {
-		return readShort(address, I2CConstants.SUB_ADDRESS_SIZE_1_BYTE);
+		return readShort(address, I2CConstants.SUB_ADDRESS_SIZE_1_BYTE, order);
 	}
 
 	public short readShort(int address, int subAddressSize) throws RuntimeIOException {
-		return readShort(address, subAddressSize, IOUtil.DEFAULT_BYTE_ORDER);
+		return readShort(address, subAddressSize, order);
 	}
 
 	public short readShort(int address, int subAddressSize, ByteOrder order) throws RuntimeIOException {
@@ -208,11 +234,11 @@ public class I2CDevice implements Closeable, I2CConstants {
 	}
 
 	public int readUShort(int address) throws RuntimeIOException {
-		return readUShort(address, I2CConstants.SUB_ADDRESS_SIZE_1_BYTE, IOUtil.DEFAULT_BYTE_ORDER);
+		return readUShort(address, I2CConstants.SUB_ADDRESS_SIZE_1_BYTE, order);
 	}
 
 	public int readUShort(int address, int subAddressSize) throws RuntimeIOException {
-		return readUShort(address, subAddressSize, IOUtil.DEFAULT_BYTE_ORDER);
+		return readUShort(address, subAddressSize, order);
 	}
 
 	public int readUShort(int address, int subAddressSize, ByteOrder order) throws RuntimeIOException {
@@ -220,7 +246,7 @@ public class I2CDevice implements Closeable, I2CConstants {
 	}
 
 	public long readUInt(int address, int subAddressSize, int bytes) throws RuntimeIOException {
-		return readUInt(address, subAddressSize, bytes, IOUtil.DEFAULT_BYTE_ORDER);
+		return readUInt(address, subAddressSize, bytes, order);
 	}
 
 	public long readUInt(int address, int subAddressSize, int length, ByteOrder order) throws RuntimeIOException {
@@ -491,7 +517,7 @@ public class I2CDevice implements Closeable, I2CConstants {
 	}
 	
 	public void write(byte[] data) throws RuntimeException {
-		write(data, ByteOrder.LITTLE_ENDIAN);
+		write(data, order);
 	}
 	
 	public void write(byte[] data, ByteOrder order) throws RuntimeException {
@@ -503,7 +529,7 @@ public class I2CDevice implements Closeable, I2CConstants {
 	}
 	
 	public void writeByte(byte data) throws RuntimeException {
-		writeByte(data, ByteOrder.LITTLE_ENDIAN);
+		writeByte(data, order);
 	}
 	
 	public void writeByte(byte data, ByteOrder order) throws RuntimeException {
