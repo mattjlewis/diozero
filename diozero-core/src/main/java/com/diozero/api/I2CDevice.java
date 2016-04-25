@@ -188,8 +188,12 @@ public class I2CDevice implements Closeable, I2CConstants {
 		return buffer.get();
 	}
 
+	public short readShort(int address) throws RuntimeIOException {
+		return readShort(address, I2CConstants.SUB_ADDRESS_SIZE_1_BYTE);
+	}
+
 	public short readShort(int address, int subAddressSize) throws RuntimeIOException {
-		return readShort(address, subAddressSize);
+		return readShort(address, subAddressSize, IOUtil.DEFAULT_BYTE_ORDER);
 	}
 
 	public short readShort(int address, int subAddressSize, ByteOrder order) throws RuntimeIOException {
@@ -201,6 +205,10 @@ public class I2CDevice implements Closeable, I2CConstants {
 
 		buffer.order(order);
 		return buffer.getShort();
+	}
+
+	public int readUShort(int address) throws RuntimeIOException {
+		return readUShort(address, I2CConstants.SUB_ADDRESS_SIZE_1_BYTE, IOUtil.DEFAULT_BYTE_ORDER);
 	}
 
 	public int readUShort(int address, int subAddressSize) throws RuntimeIOException {
@@ -483,14 +491,26 @@ public class I2CDevice implements Closeable, I2CConstants {
 	}
 	
 	public void write(byte[] data) throws RuntimeException {
+		write(data, ByteOrder.LITTLE_ENDIAN);
+	}
+	
+	public void write(byte[] data, ByteOrder order) throws RuntimeException {
 		ByteBuffer buffer = ByteBuffer.wrap(data);
-		buffer.order(ByteOrder.LITTLE_ENDIAN);
+		if (! buffer.order().equals(order)) {
+			buffer.order(order);
+		}
 		device.write(buffer);
 	}
 	
 	public void writeByte(byte data) throws RuntimeException {
+		writeByte(data, ByteOrder.LITTLE_ENDIAN);
+	}
+	
+	public void writeByte(byte data, ByteOrder order) throws RuntimeException {
 		ByteBuffer buffer = ByteBuffer.wrap(new byte[] { data });
-		buffer.order(ByteOrder.LITTLE_ENDIAN);
+		if (! buffer.order().equals(order)) {
+			buffer.order(order);
+		}
 		device.write(buffer);
 	}
 }
