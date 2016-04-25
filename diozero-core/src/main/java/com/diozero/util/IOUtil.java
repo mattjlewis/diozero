@@ -32,6 +32,7 @@ import java.nio.ByteOrder;
 
 public class IOUtil {
 	public static final ByteOrder DEFAULT_BYTE_ORDER = ByteOrder.BIG_ENDIAN;
+	//public static final ByteOrder DEFAULT_BYTE_ORDER = ByteOrder.nativeOrder();
 
 	/**
 	 * Get an unsigned int value from a signed byte
