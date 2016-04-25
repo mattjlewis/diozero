@@ -30,21 +30,22 @@ package com.diozero.sampleapps;
 import org.pmw.tinylog.Logger;
 
 import com.diozero.McpAdc;
-import com.diozero.sandpit.Potentiometer;
+import com.diozero.Potentiometer;
+import com.diozero.util.SleepUtil;
 
 /**
  * Potentiometer sample application. To run:
  * <ul>
  * <li>JDK Device I/O 1.0:<br>
- *  {@code sudo java -cp tinylog-1.0.3.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-jdkdio10-$DIOZERO_VERSION.jar:dio-1.0.1-dev-linux-armv6hf.jar -Djava.library.path=. com.diozero.sampleapps.PotentiometerTest 0 5}</li>
+ *  {@code sudo java -cp tinylog-1.0.3.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-jdkdio10-$DIOZERO_VERSION.jar:dio-1.0.1-dev-linux-armv6hf.jar -Djava.library.path=. com.diozero.sampleapps.PotentiometerTest 0 6}</li>
  * <li>JDK Device I/O 1.1:<br>
- *  {@code sudo java -cp tinylog-1.0.3.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-jdkdio11-$DIOZERO_VERSION.jar:dio-1.1-dev-linux-armv6hf.jar -Djava.library.path=. com.diozero.sampleapps.PotentiometerTest 0 5}</li>
+ *  {@code sudo java -cp tinylog-1.0.3.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-jdkdio11-$DIOZERO_VERSION.jar:dio-1.1-dev-linux-armv6hf.jar -Djava.library.path=. com.diozero.sampleapps.PotentiometerTest 0 6}</li>
  * <li>Pi4j:<br>
- *  {@code sudo java -cp tinylog-1.0.3.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-pi4j-$DIOZERO_VERSION.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sampleapps.PotentiometerTest 0 5}</li>
+ *  {@code sudo java -cp tinylog-1.0.3.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-pi4j-$DIOZERO_VERSION.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sampleapps.PotentiometerTest 0 6}</li>
  * <li>wiringPi:<br>
- *  {@code sudo java -cp tinylog-1.0.3.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-wiringpi-$DIOZERO_VERSION.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sampleapps.PotentiometerTest 0 5}</li>
+ *  {@code sudo java -cp tinylog-1.0.3.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-wiringpi-$DIOZERO_VERSION.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sampleapps.PotentiometerTest 0 6}</li>
  * <li>pigpgioJ:<br>
- *  {@code sudo java -cp tinylog-1.0.3.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-pigpio-$DIOZERO_VERSION.jar:pigpioj-java-1.0.0.jar com.diozero.sampleapps.PotentiometerTest 0 5}</li>
+ *  {@code sudo java -cp tinylog-1.0.3.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-pigpio-$DIOZERO_VERSION.jar:pigpioj-java-1.0.0.jar com.diozero.sampleapps.PotentiometerTest 0 6}</li>
  * </ul>
  */
 public class PotentiometerTest {
@@ -71,6 +72,7 @@ public class PotentiometerTest {
 				Potentiometer pot = new Potentiometer(adc, pinNumber, vRef, r1)) {
 			for (int i=0; i<10; i++) {
 				Logger.info("rPot={}", Float.valueOf(pot.getResistance()));
+				SleepUtil.sleepSeconds(1);
 			}
 		}
 	}
