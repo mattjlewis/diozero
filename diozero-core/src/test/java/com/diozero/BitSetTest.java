@@ -40,7 +40,14 @@ public class BitSetTest {
 	
 	@Test
 	public void test() {
+		System.out.format("0x%02x%n", Integer.valueOf(1<<7));
 		System.out.format("0x%08x%n", Integer.valueOf(1<<16));
+		System.out.format("0x%02x%n", Integer.valueOf(0x0f<<4));
+		System.out.format("0x%02x%n", Integer.valueOf((0x0f<<4) & 0xf0));
+		
+		byte b = (byte) 0xff;
+		byte b2 = (byte) (b >>> 4);
+		System.out.format("b=0x%02x, b2=0x%02x%n", Byte.valueOf(b), Byte.valueOf(b2));
 		
 		byte val = 0;
 		val = BitManipulation.setBitValue(val, true, 1);
