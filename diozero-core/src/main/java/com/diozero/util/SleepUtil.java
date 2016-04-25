@@ -28,19 +28,20 @@ package com.diozero.util;
 
 
 public class SleepUtil {
-	public static final long MS_IN_SEC = 1000;
+	public static final int MS_IN_SEC = 1000;
 	public static final long US_IN_SEC = MS_IN_SEC * 1000;
 	public static final long NS_IN_SEC = US_IN_SEC * 1000;
 	
-	public static final long US_IN_MS = 1000;
-	public static final long NS_IN_MS = US_IN_MS * 1000;
+	public static final int NS_IN_US = 1000;
+	public static final int US_IN_MS = 1000;
+	public static final long NS_IN_MS = NS_IN_US * US_IN_MS;
 	
 	/**
 	 * Sleep for the specific number of seconds
 	 * @param secs Number of seconds to sleep for
 	 */
 	public static void sleepSeconds(double secs) {
-		int millis = (int) (secs * MS_IN_SEC);
+		long millis = (long) (secs * MS_IN_SEC);
 		int nanos = (int) (secs * NS_IN_SEC - millis * NS_IN_MS);
 		
 		sleep(millis, nanos);
@@ -48,13 +49,21 @@ public class SleepUtil {
 
 	/**
 	 * Sleep for the specific number of milliseconds
-	 * @param mili Number of milliseconds to sleep for
+	 * @param millis Number of milliseconds to sleep for
 	 */
-	public static void sleepMillis(long mili) {
+	public static void sleepMillis(long millis) {
 		try {
-			Thread.sleep(mili);
+			Thread.sleep(millis);
 		} catch (InterruptedException ex) {
 		}
+	}
+
+	/**
+	 * Sleep for the specific number of microseconds
+	 * @param micros Number of microseconds to sleep for
+	 */
+	public static void sleepMicros(int micros) {
+		sleep(0, micros * NS_IN_US);
 	}
 
 	/**
