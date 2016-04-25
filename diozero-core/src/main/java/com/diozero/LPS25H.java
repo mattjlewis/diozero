@@ -1,4 +1,34 @@
-package com.diozero.sandpit;
+package com.diozero;
+
+/*
+ * #%L
+ * Device I/O Zero - Core
+ * %%
+ * Copyright (C) 2016 mattjlewis
+ * %%
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ * #L%
+ */
+
+
+import java.io.Closeable;
+import java.nio.ByteOrder;
 
 import org.pmw.tinylog.Logger;
 
@@ -12,7 +42,7 @@ import com.diozero.api.I2CDevice;
  * https://github.com/richards-tech/RTIMULib/blob/master/RTIMULib/IMUDrivers/RTPressureLPS25H.cpp
  */
 @SuppressWarnings("unused")
-public class LPS25H {
+public class LPS25H implements Closeable {
 	private static final double PRESSURE_SCALE = 4096;
 	
 	//  LPS25H I2C Slave Addresses
@@ -20,6 +50,8 @@ public class LPS25H {
 	private static final int DEFAULT_DEVICE_ADDRESS1 = 0x5d;
 	private static final int REG_ID = 0x0f;
 	private static final int ID = 0xbd;
+	/** Set to 1 to read, 0 to write. */
+	private static final int READ = 0x80;
 	
 	//	Register map
 	/** Reference pressure, 2s complement, 3-byte signed integer. */
@@ -259,19 +291,20 @@ public class LPS25H {
 	private I2CDevice device;
 
 	public LPS25H() {
-		device = new I2CDevice(I2CConstants.BUS_1, DEFAULT_DEVICE_ADDRESS0,
-				I2CConstants.ADDR_SIZE_7, I2CConstants.DEFAULT_CLOCK_FREQUENCY);
+		this(I2CConstants.BUS_1, DEFAULT_DEVICE_ADDRESS0);
 	}
 
 	public LPS25H(int controller, int address) {
-		device = new I2CDevice(controller, address, I2CConstants.ADDR_SIZE_7, I2CConstants.DEFAULT_CLOCK_FREQUENCY);
+		device = new I2CDevice(controller, address, I2CConstants.ADDR_SIZE_7,
+				I2CConstants.DEFAULT_CLOCK_FREQUENCY, ByteOrder.LITTLE_ENDIAN);
 
 		// Power on, 25Hz output data rate, output registers not updated until both MSB & LSB read
 		device.writeByte(CTRL_REG1, CR1_PD_CONTROL | CR1_ODR_25HZ | CR1_BDU);
 		// Configure the number of pressure and temperature samples
 		device.writeByte(RES_CONF, RC_PRESSURE_32_SAMPLES | RC_TEMP_16_SAMPLES);
-		// Configure the FIFO (mean mode, 4 samples)
-		device.writeByte(FIFO_CTRL, FC_FIFO_MEAN_MODE | FC_WTM_4_SAMPLES);
+		// Configure the FIFO (mean mode)
+		// TODO Configure number of WTM samples?!
+		device.writeByte(FIFO_CTRL, FC_FIFO_MEAN_MODE);
 		// Enable the FIFO
 		device.writeByte(CTRL_REG2, CR2_FIFO_EN);
 	}
@@ -283,7 +316,7 @@ public class LPS25H {
 			return -1;
 		}
 		
-		byte[] raw_data = device.readBytes(PRESS_OUT_XL, 3);
+		byte[] raw_data = device.readBytes(PRESS_OUT_XL | READ, 3);
 		
 		int raw_pressure = raw_data[2] << 16 | (raw_data[1] & 0xff) << 8 | (raw_data[0] & 0xff);
 		
@@ -297,8 +330,13 @@ public class LPS25H {
 			return -1;
 		}
 		
-		short raw_temp = device.readShort(TEMP_OUT_L);
+		short raw_temp = device.readShort(TEMP_OUT_L | READ);
 		
 		return raw_temp / 480.0 + 42.5;
+	}
+
+	@Override
+	public void close() {
+		device.close();
 	}
 }
