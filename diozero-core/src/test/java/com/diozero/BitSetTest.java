@@ -31,6 +31,7 @@ import java.nio.ByteBuffer;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.pmw.tinylog.Logger;
 
 import com.diozero.util.BitManipulation;
 
@@ -52,21 +53,21 @@ public class BitSetTest {
 		byte val = 0;
 		val = BitManipulation.setBitValue(val, true, 1);
 		byte expected_val = 2;
-		Assert.assertEquals(val, expected_val);
+		Assert.assertEquals(expected_val, val);
 		val = BitManipulation.setBitValue(val, true, 0);
 		expected_val += 1;
-		Assert.assertEquals(val, expected_val);
+		Assert.assertEquals(expected_val, val);
 		val = BitManipulation.setBitValue(val, true, 4);
 		expected_val += 16;
-		Assert.assertEquals(val, expected_val);
+		Assert.assertEquals(expected_val, val);
 		val = BitManipulation.setBitValue(val, false, 5);
-		Assert.assertEquals(val, expected_val);
+		Assert.assertEquals(expected_val, val);
 		val = BitManipulation.setBitValue(val, false, 1);
 		expected_val -= 2;
-		Assert.assertEquals(val, expected_val);
+		Assert.assertEquals(expected_val, val);
 		
 		byte mask = BitManipulation.getBitMask(4, 5);
-		Assert.assertEquals(mask, 16+32);
+		Assert.assertEquals(16+32, mask);
 	}
 	
 	@Test
@@ -98,6 +99,41 @@ public class BitSetTest {
 	
 	@Test
 	public void testMcpAdc() {
+		// MCP3304 ADC
+		// x0SRRRRR RRRRRRRx
+		// 00011111 11111110 0 1111 1111 1111 +4095
+		// 00011111 11111100 0 1111 1111 1110 +4094
+		// 00000000 00000100 0 0000 0000 0010 +2
+		// 00000000 00000010 0 0000 0000 0001 +1
+		// 00000000 00000000 0 0000 0000 0000 0
+		// 00111111 11111110 1 1111 1111 1111 -1
+		// 00111111 11111100 1 1111 1111 1110 -2
+		// 00100000 00000010 1 0000 0000 0001 -4095
+		// 00100000 00000000 1 0000 0000 0000 -4096
+		
+		byte[][] values = {
+			{ (byte) 0b00011111, (byte) 0b11111110 },
+			{ (byte) 0b00011111, (byte) 0b11111100 },
+			{ (byte) 0b00000000, (byte) 0b00000100 },
+			{ (byte) 0b00000000, (byte) 0b00000010 },
+			{ (byte) 0b00000000, (byte) 0b00000000 },
+			{ (byte) 0b00111111, (byte) 0b11111110 },
+			{ (byte) 0b00111111, (byte) 0b11111100 },
+			{ (byte) 0b00100000, (byte) 0b00000010 },
+			{ (byte) 0b00100000, (byte) 0b00000000 },
+		};
+		int[] expected = { 4095, 4094, 2, 1, 0, -1, -2, -4095, -4096 };
+		
+		ByteBuffer buffer = ByteBuffer.allocateDirect(2);
+		for (int i=0; i<values.length; i++) {
+			buffer.put(values[i][0]);
+			buffer.put(values[i][1]);
+			buffer.flip();
+			int v = extractValue(buffer, McpAdc.Type.MCP3304);
+			Assert.assertEquals(expected[i], v);
+			buffer.clear();
+		}
+
 		int resolution = 12;
 		int m = (1 << resolution-8) - 1;
 		Assert.assertEquals(0b00001111, m);
@@ -109,30 +145,29 @@ public class BitSetTest {
 		// Rx   x0RRRRRR RRRRxxxx for the 300x (10 bit)
 		// Rx   x0RRRRRR RRRRRRxx for the 320x (12 bit)
 		// Rx   x0SRRRRR RRRRRRRx for the 330x (13 bit signed)
-		ByteBuffer buffer = ByteBuffer.allocateDirect(2);
 		buffer.put((byte)0x01);
 		buffer.put((byte)0xfe);
 		buffer.flip();
 		int v = (buffer.getShort() << 2) >> 3;
 		Assert.assertEquals(255, v);
 		
-		buffer.rewind();
-		buffer.put((byte)0b11111);
-		buffer.put((byte)0xfe);
+		buffer.clear();
+		buffer.put((byte) 0b00011111);
+		buffer.put((byte) 0xfe);
 		buffer.flip();
 		v = ((short)(buffer.getShort() << 2)) >> 3;
 		Assert.assertEquals(4095, v);
 		
-		buffer.rewind();
-		buffer.put((byte)0b111111);
+		buffer.clear();
+		buffer.put((byte)0b00111111);
 		buffer.put((byte)0xfe);
 		buffer.flip();
 		v = ((short)(buffer.getShort() << 2)) >> 3;
 		Assert.assertEquals(-1, v);
 		
-		buffer.rewind();
-		buffer.put((byte)0b100000);
-		buffer.put((byte)0x0);
+		buffer.clear();
+		buffer.put((byte)0b00100000);
+		buffer.put((byte)0x00);
 		buffer.flip();
 		v = ((short)(buffer.getShort() << 2)) >> 3;
 		Assert.assertEquals(-4096, v);
@@ -147,7 +182,7 @@ public class BitSetTest {
 		// Unsigned
 		type = McpAdc.Type.MCP3208;
 		buffer.rewind();
-		//buffer.put((byte)0b111111);
+		//buffer.put((byte)0b00111111);
 		//buffer.put((byte)0xfe);
 		buffer.put((byte)0xff);
 		buffer.put((byte)0xff);
@@ -185,6 +220,23 @@ public class BitSetTest {
 		} else {
 			v = (buffer.getShort() & 0x3fff) >> (14 - type.getResolution());
 		}
-		System.out.format("Resolution=%d, v=%d%n", Integer.valueOf(14+2-type.getResolution()), Integer.valueOf(v));
+		System.out.format("Right shift=%d, v=%d%n", Integer.valueOf(14+2-type.getResolution()), Integer.valueOf(v));
+	}
+	
+	private static int extractValue(ByteBuffer in, McpAdc.Type type) {
+		/*
+		 * Rx x0RRRRRR RRRRxxxx for the 30xx (10-bit unsigned)
+		 * Rx x0RRRRRR RRRRRRxx for the 32xx (12-bit unsigned)
+		 * Rx x0SRRRRR RRRRRRRx for the 33xx (13-bit signed)
+		 */
+		if (type.isSigned()) {
+			short s = in.getShort();
+			Logger.debug("Signed reading, s={}", Short.valueOf(s));
+			// Relies on the >> operator to preserve the sign bit
+			return ((short) (s << 2)) >> (14+2-type.getResolution());
+		}
+		
+		// Note can't use >>> to propagate MSB 0s as it doesn't work with short, only integer
+		return (in.getShort() & 0x3fff) >> (14 - type.getResolution());
 	}
 }
