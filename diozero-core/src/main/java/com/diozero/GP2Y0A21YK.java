@@ -1,4 +1,4 @@
-package com.diozero.sandpit;
+package com.diozero;
 
 /*
  * #%L
@@ -34,26 +34,26 @@ import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 
 /**
- * Sharp GP2Y0A21YK distance sensor. http://www.sharpsma.com/webfm_send/1208
+ * <p>Sharp GP2Y0A21YK distance sensor. <a href="http://www.sharpsma.com/webfm_send/1208">Datasheet</a>, 
+ * <a href="http://oomlout.com/parts/IC-PROX-01-guide.pdf">Guide</a>.
+ * Important to supply 5V to get correct readings (max output voltage ~3.2V).</p>
+ * <pre>
  * Range: 10 to 80 cm
  * Typical response time: 39 ms
  * Typical start up delay: 44 ms
  * Average Current Consumption: 30 mA
  * Detection Area Diameter @ 80 cm: 12 cm
+ * Supply voltage : 4.5 to 5.5 V
+ * </pre>
  */
 public class GP2Y0A21YK extends AnalogInputDevice implements DistanceSensorInterface {
-	public GP2Y0A21YK(int pinNumber) throws RuntimeIOException {
-		this(DeviceFactoryHelper.getNativeDeviceFactory(), pinNumber);
+	public GP2Y0A21YK(int pinNumber, float vRef) throws RuntimeIOException {
+		this(DeviceFactoryHelper.getNativeDeviceFactory(), pinNumber, vRef);
 	}
 	
-	public GP2Y0A21YK(AnalogInputDeviceFactoryInterface deviceFactory, int pinNumber) throws RuntimeIOException {
-		super(deviceFactory, pinNumber, 1);
+	public GP2Y0A21YK(AnalogInputDeviceFactoryInterface deviceFactory, int pinNumber, float vRef) throws RuntimeIOException {
+		super(deviceFactory, pinNumber, vRef);
 		SleepUtil.sleepMillis(44);
-	}
-	
-	@Override
-	public float getScaledValue() throws RuntimeIOException {
-		return getDistanceCm();
 	}
 	
 	/**
@@ -62,7 +62,7 @@ public class GP2Y0A21YK extends AnalogInputDevice implements DistanceSensorInter
 	 */
 	@Override
 	public float getDistanceCm() throws RuntimeIOException {
-		float v = super.getScaledValue();
-		return (float)(16.2537 * Math.pow(v, 4) - 129.893 * Math.pow(v, 3) + 382.268 * Math.pow(v, 2) - 512.611 * v + 306.439);
+		float v = getScaledValue();
+		return (float) (27.86 * Math.pow(v, -1.15));
 	}
 }
