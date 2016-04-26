@@ -91,7 +91,8 @@ public class McpAdc extends AbstractDeviceFactory implements AnalogInputDeviceFa
 
 	/**
 	 * Read the raw integer value 0..(range-1) or -range..(range-1)
-	 * If differential read see the table below for channel selection
+	 * If differential read see the table below for channel selection.
+	 * <pre>{@code
 	 * Single |    |    |    | Pin | Input  | Channel  
 	 * / Diff | D2 | D1 | D0 | Num | Config | Selection
 	 * -------+----+----+----+-----+--------+----------
@@ -127,7 +128,7 @@ public class McpAdc extends AbstractDeviceFactory implements AnalogInputDeviceFa
 	 * -------+----+----+----+-----+--------+----------
 	 *   0    | 1  | 1  | 1  |  7  | Single | CH6=IN-
 	 *        |    |    |    |     | Single | CH7=IN+
-	 * 
+	 * }</pre>
 	 * @throws RuntimeIOException 
 	 */
 	private int getRawValue(int adcPin, boolean differentialRead) throws RuntimeIOException {
@@ -177,7 +178,7 @@ public class McpAdc extends AbstractDeviceFactory implements AnalogInputDeviceFa
 		 */
 		if (type.isSigned()) {
 			// Relies on the >> operator to preserve the sign bit
-			return ((short)(in.getShort() << 2)) >> (14+2-type.getResolution());
+			return ((short) (in.getShort() << 2)) >> (14+2-type.getResolution());
 		}
 		
 		// Note can't use >>> to propagate MSB 0s as it doesn't work with short, only integer
