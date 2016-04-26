@@ -31,8 +31,7 @@ import java.util.List;
 
 import org.pmw.tinylog.Logger;
 
-import com.diozero.sandpit.W1ThermSensor;
-import com.diozero.sandpit.W1ThermSensor.Type;
+import com.diozero.W1ThermSensor.Type;
 
 public class W1ThermSensorTest {
 	
@@ -45,7 +44,7 @@ public class W1ThermSensorTest {
 		for (W1ThermSensor sensor : sensors) {
 			Logger.debug("Type=" + sensor.getType());
 			Logger.debug("Serial number=" + sensor.getSerialNumber());
-			if (sensor.getSerialNumber().startsWith("789")) {
+			if (sensor.getSerialNumber().startsWith("789") || sensor.getSerialNumber().startsWith("021")) {
 				Logger.debug("Temperature={}", Float.valueOf(sensor.getTemperature()));
 			}
 		}
