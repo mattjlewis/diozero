@@ -98,7 +98,7 @@ public class LDR extends AnalogInputDevice {
 	 * @return Luminosity (lux).
 	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
-	public float getLuminosity() throws RuntimeIOException {
+	private float getLuminosity() throws RuntimeIOException {
 		// Get the scaled value (voltage)
 		float v_ldr = getScaledValue();
 		float r_ldr = getLdrResistance();
