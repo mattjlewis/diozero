@@ -72,8 +72,9 @@ public class LDRTest {
 	public static void test(McpAdc.Type type, int chipSelect, int pin, float vRef, int r1) {
 		try (McpAdc adc = new McpAdc(type, chipSelect); LDR ldr = new LDR(adc, pin, vRef, r1)) {
 			for (int i=0; i<ITERATIONS; i++) {
-				double v_ldr = ldr.getLuminosity();
-				Logger.info("vLDR: {}", String.format("%.2f", Double.valueOf(v_ldr)));
+				double v_ldr = ldr.getScaledValue();
+				double r_ldr = ldr.getLdrResistance();
+				Logger.info(String.format("vLDR: %.2f, rLDR: %.2f", Double.valueOf(v_ldr), Double.valueOf(r_ldr)));
 				SleepUtil.sleepSeconds(.5);
 			}
 		} catch (RuntimeIOException e) {
