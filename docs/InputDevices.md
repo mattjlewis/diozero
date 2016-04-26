@@ -103,22 +103,17 @@ Generic [potentiometer](https://en.wikipedia.org/wiki/Potentiometer).
 
 TODO Wiring diagram.
 
-!!! Warning "Work in progress"
-    Still under construction hence in the sandpit package.
-
-*class* **com.diozero.sandpit.Potentiometer**{: .descname } (*pinNumber*, *vRef*, *r1*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/sandpit/Potentiometer.java){: .viewcode-link } [&para;](InputDevices.md#potentiometer "Permalink to this definition"){: .headerlink }
+*class* **com.diozero.Potentiometer**{: .descname } (*pinNumber*, *vRef*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/Potentiometer.java){: .viewcode-link } [&para;](InputDevices.md#potentiometer "Permalink to this definition"){: .headerlink }
 
 : Extends [AnalogInputDevice](API.md#analoginputdevice] for taking readings from a potentiometer.
     
     * **pinNumber** (*int*) - Pin to which the potentiometer is connected.
     
     * **vRef** (*float*) - Reference voltage.
-    
-    * **r1** (*float*) - Resistor between the potentiometer and ground.
 
-    *float* **getResistance** ()
+    *float* **getVoltage** ()
     
-    : Read the current resistance setting for the potentiometer.
+    : Read the potentiometer output voltage value.
 
 
 ### LDR
@@ -149,10 +144,7 @@ TODO Wiring diagram.
 
 [Sharp GP2Y0A21YK](http://www.sharpsma.com/webfm_send/1208) Distance Sensor.
 
-!!! Warning "Work in progress"
-    Not yet tested hence in the sandpit package.
-
-*class* **com.diozero.sandpit.GP2Y0A21YK**{: .descname } (*pinNumber*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/sandpit/GP2Y0A21YK.java){: .viewcode-link } [&para;](InputDevices.md#sharp-gp2y0a21yk-distance-sensor "Permalink to this definition"){: .headerlink }
+*class* **com.diozero.GP2Y0A21YK**{: .descname } (*pinNumber*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/GP2Y0A21YK.java){: .viewcode-link } [&para;](InputDevices.md#sharp-gp2y0a21yk-distance-sensor "Permalink to this definition"){: .headerlink }
 
 : Extends [AnalogInputDevice](API.md#analoginputdevice] for taking object proximity readings.
     

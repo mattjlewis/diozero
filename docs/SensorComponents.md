@@ -60,7 +60,7 @@ TODO Insert wiring diagram.
 
 ## 1-Wire Temperature Sensors
 
-*class* **com.diozero.sandpit.W1ThermSensor**{: .descname } [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/sandpit/W1ThermSensor.java){: .viewcode-link } [&para;](SensorComponents.md#1-wire-temperature-sensors "Permalink to this definition"){: .headerlink }
+*class* **com.diozero.W1ThermSensor**{: .descname } [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/W1ThermSensor.java){: .viewcode-link } [&para;](SensorComponents.md#1-wire-temperature-sensors "Permalink to this definition"){: .headerlink }
 
 : Support for 1-wire temperature sensors such as the DS18B20. Adafruit has a good [article on connecting these](https://learn.adafruit.com/adafruits-raspberry-pi-lesson-11-ds18b20-temperature-sensing?view=all) to the Raspberry Pi. Currently supported types: DS18S20, DS1822, DS18B20, DS1825, DS28EA00, MAX31850K.
 
