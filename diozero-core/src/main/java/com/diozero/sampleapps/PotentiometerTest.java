@@ -63,15 +63,15 @@ public class PotentiometerTest {
 		int chip_select = Integer.parseInt(args[1]);
 		int adc_pin = Integer.parseInt(args[2]);
 		float vref = 3.3f;
-		int r1 = 10_000;
-		test(chip_select, adc_pin, vref, r1);
+		int r_pot = 10_000;
+		test(type, chip_select, adc_pin, vref, r_pot);
 	}
 	
-	public static void test(int chipSelect, int pinNumber, float vRef, float r1) {
-		try (McpAdc adc = new McpAdc(McpAdc.Type.MCP3008, chipSelect);
-				Potentiometer pot = new Potentiometer(adc, pinNumber, vRef, r1)) {
+	public static void test(McpAdc.Type type, int chipSelect, int pinNumber, float vRef, float rPot) {
+		try (McpAdc adc = new McpAdc(type, chipSelect);
+				Potentiometer pot = new Potentiometer(adc, pinNumber, vRef)) {
 			for (int i=0; i<10; i++) {
-				Logger.info("rPot={}", Float.valueOf(pot.getResistance()));
+				Logger.info("vPot={}", Float.valueOf(pot.getScaledValue()));
 				SleepUtil.sleepSeconds(1);
 			}
 		}
