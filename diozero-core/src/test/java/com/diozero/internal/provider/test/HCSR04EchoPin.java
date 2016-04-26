@@ -26,8 +26,6 @@ package com.diozero.internal.provider.test;
  * #L%
  */
 
-
-import java.io.IOException;
 import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -96,7 +94,7 @@ implements GpioDigitalInputDeviceInterface, Runnable {
 	}
 
 	@Override
-	protected void closeDevice() throws IOException {
+	protected void closeDevice() throws RuntimeIOException {
 		Logger.debug("closeDevice()");
 		
 		running.set(false);

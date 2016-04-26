@@ -26,9 +26,9 @@ package com.diozero.internal.spi;
  * #L%
  */
 
-import java.io.IOException;
-
 import org.pmw.tinylog.Logger;
+
+import com.diozero.util.RuntimeIOException;
 
 public abstract class AbstractDevice implements DeviceInterface {
 	private String key;
@@ -59,11 +59,11 @@ public abstract class AbstractDevice implements DeviceInterface {
 		
 		try {
 			closeDevice();
-		} catch (IOException e) {
+		} catch (RuntimeIOException e) {
 			Logger.error(e, "Error closing device {}: {}", key, e);
 		}
 		deviceFactory.deviceClosed(this);
 	}
 	
-	protected abstract void closeDevice() throws IOException;
+	protected abstract void closeDevice() throws RuntimeIOException;
 }

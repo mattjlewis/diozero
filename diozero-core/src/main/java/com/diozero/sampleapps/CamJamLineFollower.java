@@ -27,7 +27,6 @@ package com.diozero.sampleapps;
  */
 
 import java.io.Closeable;
-import java.io.IOException;
 
 import org.pmw.tinylog.Logger;
 
@@ -36,6 +35,7 @@ import com.diozero.HCSR04;
 import com.diozero.LED;
 import com.diozero.api.DigitalInputDevice;
 import com.diozero.api.motor.DualMotor;
+import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;;
 
 /**
@@ -70,7 +70,7 @@ public class CamJamLineFollower implements Closeable {
 			robot.testMovements(speed, DELAY);
 			
 			robot.followLine();
-		} catch (IOException e) {
+		} catch (RuntimeIOException e) {
 			Logger.error(e, "Error: {}", e);
 		}
 	}
@@ -213,7 +213,7 @@ public class CamJamLineFollower implements Closeable {
 	}
 
 	@Override
-	public void close() throws IOException {
+	public void close() throws RuntimeIOException {
 		frontLeftLed.close();
 		frontRightLed.close();
 		rearLeftLed.close();

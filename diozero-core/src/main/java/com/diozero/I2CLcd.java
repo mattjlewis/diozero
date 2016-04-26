@@ -28,11 +28,11 @@ package com.diozero;
 
 
 import java.io.Closeable;
-import java.io.IOException;
 import java.nio.ByteOrder;
 
 import com.diozero.api.I2CConstants;
 import com.diozero.api.I2CDevice;
+import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 
 /**
@@ -460,7 +460,7 @@ public class I2CLcd implements Closeable {
 	}
 
 	@Override
-	public void close() throws IOException {
+	public void close() throws RuntimeIOException {
 		backlight = false;
 		clear();
 		displayControl(false, false, false);

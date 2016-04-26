@@ -28,7 +28,6 @@ package com.diozero.imu.drivers.invensense;
 
 
 import java.io.Closeable;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -129,7 +128,7 @@ public class MPU9150Device implements Closeable, ImuInterface {
 	}
 	
 	@Override
-	public void close() throws IOException {
+	public void close() throws RuntimeIOException {
 		mpu.close();
 	}
 

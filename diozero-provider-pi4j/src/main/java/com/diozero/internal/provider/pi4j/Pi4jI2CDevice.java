@@ -62,7 +62,7 @@ public class Pi4jI2CDevice extends AbstractDevice implements I2CDeviceInterface 
 	}
 
 	@Override
-	public void closeDevice() throws IOException {
+	public void closeDevice() throws RuntimeIOException {
 		Logger.debug("closeDevice()");
 		// No way to close a Pi4J I2C Device?!
 		//i2cDevice.close();
