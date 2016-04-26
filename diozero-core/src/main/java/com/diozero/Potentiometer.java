@@ -46,4 +46,8 @@ public class Potentiometer extends AnalogInputDevice {
 	public Potentiometer(AnalogInputDeviceFactoryInterface deviceFactory, int pinNumber, float vRef) {
 		super(deviceFactory, pinNumber, vRef);
 	}
+	
+	public float getVoltage() {
+		return getScaledValue();
+	}
 }

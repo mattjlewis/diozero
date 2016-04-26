@@ -71,7 +71,7 @@ public class PotentiometerTest {
 		try (McpAdc adc = new McpAdc(type, chipSelect);
 				Potentiometer pot = new Potentiometer(adc, pinNumber, vRef)) {
 			for (int i=0; i<10; i++) {
-				Logger.info("vPot={}", Float.valueOf(pot.getScaledValue()));
+				Logger.info("vPot={}", Float.valueOf(pot.getVoltage()));
 				SleepUtil.sleepSeconds(1);
 			}
 		}
