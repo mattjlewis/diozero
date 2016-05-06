@@ -40,20 +40,20 @@ import com.diozero.util.MutableByte;
 import com.diozero.util.RuntimeIOException;
 
 /**
- * http://ww1.microchip.com/downloads/en/DeviceDoc/21952b.pdf
- * The MCP23X17 consists of multiple 8-bit configuration registers for input, output and polarity selection. The
+ * Datasheet: <a href="http://ww1.microchip.com/downloads/en/DeviceDoc/21952b.pdf">http://ww1.microchip.com/downloads/en/DeviceDoc/21952b.pdf</a>.
+ * <p>The MCP23X17 consists of multiple 8-bit configuration registers for input, output and polarity selection. The
  * system master can enable the I/Os as either inputs or outputs by writing the I/O configuration bits (IODIRA/B).
  * The data for each input or output is kept in the corresponding input or output register. The polarity of
  * the Input Port register can be inverted with the Polarity Inversion register. All registers can be read by the
- * system master.
- * The 16-bit I/O port functionally consists of two 8-bit ports (PORTA and PORTB). The MCP23X17 can be
- * configured to operate in the 8-bit or 16-bit modes via IOCON.BANK
- * There are two interrupt pins, INTA and INTB, that can be associated with their respective ports, or can be
+ * system master.</p>
+ * <p>The 16-bit I/O port functionally consists of two 8-bit ports (PORTA and PORTB). The MCP23X17 can be
+ * configured to operate in the 8-bit or 16-bit modes via IOCON.BANK.</p>
+ * <p>There are two interrupt pins, INTA and INTB, that can be associated with their respective ports, or can be
  * logically OR'ed together so that both pins will activate if either port causes an interrupt.
  * A special mode (Byte mode with IOCON.BANK = 0) causes the address pointer to toggle between
  * associated A/B register pairs. For example, if the BANK bit is cleared and the Address Pointer is initially set
  * to address 12h (GPIOA) or 13h (GPIOB), the pointer will toggle between GPIOA and GPIOB. Note that the
- * Address Pointer can initially point to either address in the register pair.
+ * Address Pointer can initially point to either address in the register pair.</p>
  */
 public class MCP23017 extends AbstractDeviceFactory
 implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Closeable {
@@ -208,7 +208,7 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Cl
 	private static final int NUM_PINS = PORTS*PINS_PER_PORT;
 	private static final int INTERRUPT_PIN_NOT_SET = -1;
 
-	private I2CDevice i2cDevice;
+	private I2CDevice device;
 	private String keyPrefix;
 	private DigitalInputDevice interruptPinA;
 	private DigitalInputDevice interruptPinB;
@@ -236,7 +236,7 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Cl
 	}
 
 	public MCP23017(int controller, int address, int interruptPinNumberA, int interruptPinNumberB) throws RuntimeIOException {
-		i2cDevice = new I2CDevice(controller, address, I2CConstants.ADDR_SIZE_7, I2CConstants.DEFAULT_CLOCK_FREQUENCY);
+		device = new I2CDevice(controller, address, I2CConstants.ADDR_SIZE_7, I2CConstants.DEFAULT_CLOCK_FREQUENCY);
 		
 		keyPrefix = DEVICE_NAME + "-" + controller + "-" + address + "-";
 		
@@ -262,10 +262,10 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Cl
 
 		// Initialise
 		// Read the I/O configuration value
-		byte start_iocon = i2cDevice.readByte(IOCON_REG[0]);
+		byte start_iocon = device.readByte(IOCON_REG[0]);
 		Logger.debug("Default power-on values for IOCON: 0x{x}", Integer.toHexString(start_iocon));
 		// Is there an IOCONB value?
-		Logger.debug("IOCONB: 0x{x}", Integer.toHexString(i2cDevice.readByte(IOCON_REG[1])));
+		Logger.debug("IOCONB: 0x{x}", Integer.toHexString(device.readByte(IOCON_REG[1])));
 		
 		// Configure interrupts
 		MutableByte iocon = new MutableByte(start_iocon);
@@ -283,24 +283,24 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Cl
 		iocon.unsetBit(IOCON_ODR_BIT);
 		if (!iocon.equals(start_iocon)) {
 			Logger.debug("Updating IOCONA to: 0x{x}", Integer.toHexString(iocon.getValue()));
-			i2cDevice.writeByte(IOCON_REG[0], iocon.getValue());
+			device.writeByte(IOCON_REG[0], iocon.getValue());
 		}
 		
 		for (int ab=0; ab<PORTS; ab++) {
 			// Default all pins to output
-			i2cDevice.writeByte(IODIR_REG[ab], directions[ab].getValue());
+			device.writeByte(IODIR_REG[ab], directions[ab].getValue());
 			// Default to normal input polarity - IPOLA/IPOLB
-			i2cDevice.writeByte(IPOL_REG[ab], 0);
+			device.writeByte(IPOL_REG[ab], 0);
 			// Disable interrupt-on-change for all pins
-			i2cDevice.writeByte(GPINTEN_REG[ab], interruptOnChangeFlags[ab].getValue());
+			device.writeByte(GPINTEN_REG[ab], interruptOnChangeFlags[ab].getValue());
 			// Set default compare values to 0
-			i2cDevice.writeByte(DEFVAL_REG[ab], defaultValues[ab].getValue());
+			device.writeByte(DEFVAL_REG[ab], defaultValues[ab].getValue());
 			// Disable interrupt comparison control
-			i2cDevice.writeByte(INTCON_REG[ab], interruptCompareFlags[ab].getValue());
+			device.writeByte(INTCON_REG[ab], interruptCompareFlags[ab].getValue());
 			// Disable pull-up resistors
-			i2cDevice.writeByte(GPPU_REG[ab], pullUps[ab].getValue());
+			device.writeByte(GPPU_REG[ab], pullUps[ab].getValue());
 			// Set all values to off
-			i2cDevice.writeByte(GPIO_REG[ab], 0);
+			device.writeByte(GPIO_REG[ab], 0);
 		}
 		
 		// Finally enable interrupt listeners
@@ -316,7 +316,7 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Cl
 
 	@Override
 	public String getName() {
-		return DEVICE_NAME + "-" + i2cDevice.getController() + "-" + i2cDevice.getAddress();
+		return DEVICE_NAME + "-" + device.getController() + "-" + device.getAddress();
 	}
 
 	@Override
@@ -338,10 +338,10 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Cl
 		
 		// Set the following values: direction, pullUp, interruptCompare, defaultValue, interruptOnChange
 		directions[port].setBit(bit);
-		i2cDevice.writeByte(IODIR_REG[port], directions[port].getValue());
+		device.writeByte(IODIR_REG[port], directions[port].getValue());
 		if (pud == GpioPullUpDown.PULL_UP) {
 			pullUps[port].setBit(bit);
-			i2cDevice.writeByte(GPPU_REG[port], pullUps[port].getValue());
+			device.writeByte(GPPU_REG[port], pullUps[port].getValue());
 		}
 		if (interruptMode != InterruptMode.DISABLED) {
 			if (trigger == GpioEventTrigger.RISING) {
@@ -354,9 +354,9 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Cl
 				interruptCompareFlags[port].unsetBit(bit);
 			}
 			interruptOnChangeFlags[port].setBit(bit);
-			i2cDevice.writeByte(DEFVAL_REG[port], defaultValues[port].getValue());
-			i2cDevice.writeByte(INTCON_REG[port], interruptCompareFlags[port].getValue());
-			i2cDevice.writeByte(GPINTEN_REG[port], interruptOnChangeFlags[port].getValue());
+			device.writeByte(DEFVAL_REG[port], defaultValues[port].getValue());
+			device.writeByte(INTCON_REG[port], interruptCompareFlags[port].getValue());
+			device.writeByte(GPINTEN_REG[port], interruptOnChangeFlags[port].getValue());
 		}
 		
 		GpioDigitalInputDeviceInterface device = new MCP23017DigitalInputDevice(this, key, pinNumber, trigger);
@@ -396,7 +396,7 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Cl
 		byte bit = (byte)(pinNumber % PINS_PER_PORT);
 		int port = pinNumber / PINS_PER_PORT;
 		
-		byte states = i2cDevice.readByte(GPIO_REG[port]);
+		byte states = device.readByte(GPIO_REG[port]);
 		
 		return (states & bit) != 0;
 	}
@@ -415,9 +415,9 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Cl
 			throw new IllegalStateException("Can't set value for input pin: " + pinNumber);
 		}
 		// Read the current state of this bank of GPIOs
-		byte old_val = i2cDevice.readByte(GPIO_REG[port]);
+		byte old_val = device.readByte(GPIO_REG[port]);
 		byte new_val = BitManipulation.setBitValue(old_val, value, bit);
-		i2cDevice.writeByte(OLAT_REG[port], new_val);
+		device.writeByte(OLAT_REG[port], new_val);
 	}
 	
 	@Override
@@ -428,7 +428,7 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Cl
 		if (interruptPinB != null) { interruptPinB.close(); }
 		// Close all open pins before closing the I2C device itself
 		closeAll();
-		i2cDevice.close();
+		device.close();
 	}
 
 	public void closePin(int pinNumber) throws RuntimeIOException {
@@ -446,23 +446,23 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Cl
 		
 		if (interruptOnChangeFlags[port].isBitSet(bit)) {
 			interruptOnChangeFlags[port].unsetBit(bit);
-			i2cDevice.writeByte(GPINTEN_REG[port], interruptOnChangeFlags[port].getValue());
+			device.writeByte(GPINTEN_REG[port], interruptOnChangeFlags[port].getValue());
 		}
 		if (defaultValues[port].isBitSet(bit)) {
 			defaultValues[port].unsetBit(bit);
-			i2cDevice.writeByte(DEFVAL_REG[port], defaultValues[port].getValue());
+			device.writeByte(DEFVAL_REG[port], defaultValues[port].getValue());
 		}
 		if (interruptCompareFlags[port].isBitSet(bit)) {
 			interruptCompareFlags[port].unsetBit(bit);
-			i2cDevice.writeByte(INTCON_REG[port], interruptCompareFlags[port].getValue());
+			device.writeByte(INTCON_REG[port], interruptCompareFlags[port].getValue());
 		}
 		if (pullUps[port].isBitSet(bit)) {
 			pullUps[port].unsetBit(bit);
-			i2cDevice.writeByte(GPPU_REG[port], pullUps[port].getValue());
+			device.writeByte(GPPU_REG[port], pullUps[port].getValue());
 		}
 		if (directions[port].isBitSet(bit)) {
 			directions[port].unsetBit(bit);
-			i2cDevice.writeByte(IODIR_REG[port], directions[port].getValue());
+			device.writeByte(IODIR_REG[port], directions[port].getValue());
 		}
 	}
 
@@ -486,17 +486,17 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Cl
 				byte[] intf = new byte[2];
 				byte[] intcap = new byte[2];
 				if (interruptMode == InterruptMode.MIRRORED) {
-					intf[0] = i2cDevice.readByte(INTF_REG[0]);
-					intcap[0] = i2cDevice.readByte(INTCAP_REG[0]);
-					intf[1] = i2cDevice.readByte(INTF_REG[1]);
-					intcap[1] = i2cDevice.readByte(INTCAP_REG[1]);
+					intf[0] = device.readByte(INTF_REG[0]);
+					intcap[0] = device.readByte(INTCAP_REG[0]);
+					intf[1] = device.readByte(INTF_REG[1]);
+					intcap[1] = device.readByte(INTCAP_REG[1]);
 				} else if (interruptMode != InterruptMode.DISABLED) {
 					if (event.getPin() == interruptPinA.getPinNumber()) {
-						intf[0] = i2cDevice.readByte(INTF_REG[0]);
-						intcap[0] = i2cDevice.readByte(INTCAP_REG[0]);
+						intf[0] = device.readByte(INTF_REG[0]);
+						intcap[0] = device.readByte(INTCAP_REG[0]);
 					} else {
-						intf[1] = i2cDevice.readByte(INTF_REG[1]);
-						intcap[1] = i2cDevice.readByte(INTCAP_REG[1]);
+						intf[1] = device.readByte(INTF_REG[1]);
+						intcap[1] = device.readByte(INTCAP_REG[1]);
 					}
 				}
 				Logger.debug("Interrupt values: [A]=(0x{}, 0x{}), [B]=(0x{}, 0x{})",
