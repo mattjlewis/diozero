@@ -503,6 +503,10 @@ public class I2CDevice implements Closeable, I2CConstants {
 		device.read(dst);
 	}
 	
+	public byte readByte() throws RuntimeIOException {
+		return read(1)[0];
+	}
+	
 	public byte[] read(int count) throws RuntimeException {
 		ByteBuffer buffer = ByteBuffer.allocateDirect(count);
 		device.read(buffer);
