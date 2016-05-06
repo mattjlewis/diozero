@@ -40,6 +40,7 @@ public class McpAdcAnalogInputPin extends AbstractInputDevice<AnalogInputEvent> 
 
 	public McpAdcAnalogInputPin(McpAdc mcp3xxx, String key, int pinNumber) {
 		super(key, mcp3xxx);
+		
 		this.mcp3xxx = mcp3xxx;
 		this.pinNumber = pinNumber;
 	}
