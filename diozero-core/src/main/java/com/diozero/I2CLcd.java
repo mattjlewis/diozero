@@ -200,8 +200,8 @@ public class I2CLcd implements Closeable {
 	private int columns;
 	private int rows;
 	private boolean characterFont5x8;
-	private boolean cursorOn;
-	private boolean blinkOn;
+	private boolean cursorEnabled;
+	private boolean blinkEnabled;
 	private boolean increment;
 	private boolean shiftDisplay;
 	private byte[] rowOffsets;
@@ -355,18 +355,18 @@ public class I2CLcd implements Closeable {
 		}
 	}
 	
-	public void addText(String str) {
-		for (byte b : str.getBytes()) {
+	public void addText(String text) {
+		for (byte b : text.getBytes()) {
 			writeData(b);
 		}
 	}
 	
-	public void addText(char c) {
-		writeData((byte) c);
+	public void addText(char character) {
+		writeData((byte) character);
 	}
 	
-	public void addText(byte c) {
-		writeData(c);
+	public void addText(byte code) {
+		writeData(code);
 	}
 
 	/**
@@ -411,22 +411,22 @@ public class I2CLcd implements Closeable {
 		return shiftDisplay;
 	}
 
-	public void displayControl(boolean displayOn, boolean cursorOn, boolean blinkOn) {
-		this.cursorOn = cursorOn;
-		this.blinkOn = blinkOn;
+	public void displayControl(boolean displayOn, boolean cursorEnabled, boolean blinkEnabled) {
+		this.cursorEnabled = cursorEnabled;
+		this.blinkEnabled = blinkEnabled;
 		writeInstruction((byte) (INST_DISPLAY_CONTROL
 				| (displayOn ? DC_DISPLAY_ON : DC_DISPLAY_OFF)
-				| (cursorOn ? DC_CURSOR_ON : DC_CURSOR_OFF)
-				| (blinkOn ? DC_BLINK_ON : DC_BLINK_OFF)
+				| (cursorEnabled ? DC_CURSOR_ON : DC_CURSOR_OFF)
+				| (blinkEnabled ? DC_BLINK_ON : DC_BLINK_OFF)
 				));
 	}
 	
-	public boolean isCursorOn() {
-		return cursorOn;
+	public boolean isCursorEnabled() {
+		return cursorEnabled;
 	}
 	
-	public boolean isBlinkOn() {
-		return blinkOn;
+	public boolean isBlinkEnabled() {
+		return blinkEnabled;
 	}
 	
 	/**

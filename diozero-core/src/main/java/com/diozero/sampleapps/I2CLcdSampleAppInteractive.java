@@ -46,8 +46,8 @@ public class I2CLcdSampleAppInteractive implements Closeable {
 				lcd.entryModeControl(increment, shift_display);
 			})
 			, new ActionMenuItem("Cursor Control", () -> {
-				boolean cursor_on = booleanInputPrompt("Cursor On", lcd.isCursorOn());
-				boolean blink_on = booleanInputPrompt("Blink On", lcd.isBlinkOn());
+				boolean cursor_on = booleanInputPrompt("Cursor On", lcd.isCursorEnabled());
+				boolean blink_on = booleanInputPrompt("Blink On", lcd.isBlinkEnabled());
 				lcd.displayControl(true, cursor_on, blink_on);
 			})
 			, new ActionMenuItem("Shift Display", () -> {
