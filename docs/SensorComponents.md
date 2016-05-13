@@ -8,13 +8,13 @@ TODO Insert wiring diagram.
 
 : Implements support for the [HC-SR04](http://www.micropik.com/PDF/HCSR04.pdf) Ultrasonic Ranging Module.
     
-    * **triggerGpioNum** (*int*) - GPIO pin connected to the HC-SR04 trigger pin
+    * **triggerGpioNum** (*int*) - GPIO pin connected to the HC-SR04 trigger pin.
     
-    * **echoGpioNum** (*int*) - GPIO pin connected to the HC-SR04 echo pin
+    * **echoGpioNum** (*int*) - GPIO pin connected to the HC-SR04 echo pin.
 
     *float* **getDistanceCm** ()
 
-    : Get distance in cm
+    : Get distance in cm.
 
 
 ## Bosch BMP180
@@ -23,15 +23,36 @@ TODO Insert wiring diagram.
 
 : Implements support for the [Bosch Sensortec BMP180](http://www.bosch-sensortec.com/bst/products/all_products/bmp180) temperature and pressure sensor.
     
-    * **mode** (*BMPMode*) - BMP operating mode (Ultra-Low Power, Standard, High Resolution, Ultra-High Resolution)
+    * **mode** (*BMPMode*) - BMP operating mode (Ultra-Low Power, Standard, High Resolution, Ultra-High Resolution).
 
     *float* **getPressure** ()
 
-    : Read the barometric pressure (in hPa) from the device
+    : Read the barometric pressure (in hPa) from the device.
 
     *float* **getTemperature** ()
 
-    : Read the temperature (in &deg;C) from the device
+    : Read the temperature (in &deg;C) from the device.
+
+
+## Bosch BME280
+
+*class* **com.diozero.sandpit.BME280**{: .descname } (*mode*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/BME280.java){: .viewcode-link } [&para;](SensorComponents.md#bosch-bme280 "Permalink to this definition"){: .headerlink }
+
+: Implements support for the [Bosch Sensortec BME280](http://www.bosch-sensortec.com/bst/products/all_products/bme280) pressure, humidity and temperature sensor.
+    
+    * **mode** (*BMPMode*) - BMP operating mode (Ultra-Low Power, Standard, High Resolution, Ultra-High Resolution).
+
+    *float* **getPressure** ()
+
+    : Read the barometric pressure (in hPa) from the device.
+
+    *float* **getHumidity** ()
+
+    : Read the humidity from the device.
+
+    *float* **getTemperature** ()
+
+    : Read the temperature (in &deg;C) from the device.
 
 
 ## TSL2561 Digital Luminosity / Lux / Light Sensor {: #tsl2561 }
@@ -40,23 +61,54 @@ TODO Insert wiring diagram.
 
 : Implements support for the [Adafruit](https://www.adafruit.com/products/439) Digital Luminosity / Lux / Light Sensor - [Datasheet](https://www.adafruit.com/datasheets/TSL2561.pdf).
     
-    * **tsl2561Package** (*int*) - TSL package information (values are CS or T / FN / CL)
+    * **tsl2561Package** (*int*) - TSL package information (values are CS or T / FN / CL).
 
     **setAutoGain** (*autoGain*)
 
-    : Enable or disable the auto-gain settings when reading data from the sensor
+    : Enable or disable the auto-gain settings when reading data from the sensor.
     
-    * **autoGain** (*boolean*) - Auto-gain flag
+    * **autoGain** (*boolean*) - Auto-gain flag.
 
     **setGain** (*gain*)
 
-    : Adjusts the gain on the TSL2561 (adjusts the sensitivity to light)
+    : Adjusts the gain on the TSL2561 (adjusts the sensitivity to light).
     
-    * **gain** (*int*) - Gain value
+    * **gain** (*int*) - Gain value.
 
     *float* **getLuminosity** ()
 
-    : Get luminosity in Lux
+    : Get luminosity in Lux.
+
+
+##  STMicroelectronics HTS221 Humidity and Temperature Sensor {: #hts221 }
+
+*class* **com.diozero.HTS221**{: .descname } [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/HTS221.java){: .viewcode-link } [&para;](SensorComponents.md#hts221 "Permalink to this definition"){: .headerlink }
+
+: Implements support for the [STMicroelectronics]() Humidity and Temperature Sensor - [Datasheet](http://www2.st.com/content/ccc/resource/technical/document/datasheet/4d/9a/9c/ad/25/07/42/34/DM00116291.pdf/files/DM00116291.pdf/jcr:content/translations/en.DM00116291.pdf).
+
+    *float* **getHumidity** ()
+
+    : Read the humidity from the device.
+
+    *float* **getTemperature** ()
+
+    : Read the temperature (in &deg;C) from the device.
+
+
+##  STMicroelectronics LPS25H Pressure and Temperature Sensor {: #hts221 }
+
+*class* **com.diozero.LPS25H**{: .descname } [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/LPS25H.java){: .viewcode-link } [&para;](SensorComponents.md#lps25H "Permalink to this definition"){: .headerlink }
+
+: Implements support for the [STMicroelectronics]() Pressure and Temperature Sensor - [Datasheet](http://www2.st.com/content/ccc/resource/technical/document/datasheet/58/d2/33/a4/42/89/42/0b/DM00066332.pdf/files/DM00066332.pdf/jcr:content/translations/en.DM00066332.pdf).
+
+    *float* **getPressure** ()
+
+    : Read the barometric pressure (in hPa) from the device.
+
+    *float* **getTemperature** ()
+
+    : Read the temperature (in &deg;C) from the device.
+
 
 ## 1-Wire Temperature Sensors
 
@@ -81,4 +133,3 @@ TODO Insert wiring diagram.
     *String* **getSerialNumber** ()
     
     : Get the serial number for this 1-wire sensor instance.
-    
