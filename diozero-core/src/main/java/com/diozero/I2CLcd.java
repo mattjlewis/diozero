@@ -187,10 +187,12 @@ public class I2CLcd implements Closeable {
 	private static final int BACKLIGHT_OFF					= 0;
 	private static final int BACKLIGHT_ON					= 1 << BACKLIGHT_BIT;
 
-	// For regular LCDs
-	private static final byte[] ROW_OFFSETS_DEFAULT = { 0x00, 0x40, 0x14, 0x40 | 0x14 };
-	// For 16x4 LCDs
-	private static final byte[] ROW_OFFSETS_LARGE = { 0x00, 0x40, 0x10, 0x40 | 0x10 };
+	// For 2-row LCDs
+	private static final byte[] ROW_OFFSETS_2ROWS = { 0x00, 0x40 };
+	// For 20x4 LCDs
+	private static final byte[] ROW_OFFSETS_20x4 = { 0x00, 0x40, 20, 0x40 + 20 };
+	// For 16x4 LCDs - special memory map layout
+	private static final byte[] ROW_OFFSETS_16x4 = { 0, 0x40, 16, 0x40 + 16 };
 
 	private I2CDevice device;
 	private ByteOrder order;
@@ -198,15 +200,33 @@ public class I2CLcd implements Closeable {
 	private int columns;
 	private int rows;
 	private boolean characterFont5x8;
+	private boolean cursorOn;
+	private boolean blinkOn;
+	private boolean increment;
+	private boolean shiftDisplay;
+	private byte[] rowOffsets;
 
 	public I2CLcd(int columns, int rows) {
 		this(I2CConstants.BUS_1, DEFAULT_DEVICE_ADDRESS, ByteOrder.LITTLE_ENDIAN, columns, rows);
 	}
 
 	public I2CLcd(int controller, int deviceAddress, ByteOrder order, int columns, int rows) {
-		if (rows < 1 || rows > ROW_OFFSETS_DEFAULT.length) {
+		if (rows == 2) {
+			rowOffsets = ROW_OFFSETS_2ROWS;
+		} else if (rows == 4) {
+			if (columns == 16) {
+				rowOffsets = ROW_OFFSETS_16x4;
+			} else if (columns == 20) {
+				rowOffsets = ROW_OFFSETS_20x4;
+			}
+		}
+		if (rowOffsets == null) {
+			throw new IllegalArgumentException(columns + "x" + rows + " LCDs not supported");
+		}
+
+		if (rows < 1 || rows > rowOffsets.length) {
 			throw new IllegalArgumentException(
-					"Invalid number of rows (" + rows + "), must be 1.." + ROW_OFFSETS_DEFAULT.length);
+					"Invalid number of rows (" + rows + "), must be 1.." + rowOffsets.length);
 		}
 
 		this.order = order;
@@ -306,13 +326,7 @@ public class I2CLcd implements Closeable {
 		}
 
 		byte[] row_offsets;
-		// 16x4 LCDs have special memory map layout
-		if (columns == 16 && rows == 4) {
-			row_offsets = ROW_OFFSETS_LARGE;
-		} else {
-			row_offsets = ROW_OFFSETS_DEFAULT;
-		}
-		writeInstruction((byte) (INST_SET_DDRAM_ADDR | (column + row_offsets[row])));
+		writeInstruction((byte) (INST_SET_DDRAM_ADDR | (column + rowOffsets[row])));
 	}
 	
 	public void setCharacter(int column, int row, char character) {
@@ -330,12 +344,13 @@ public class I2CLcd implements Closeable {
 			throw new IllegalArgumentException("Invalid row (" + row + "), must be 0.." + (rows - 1));
 		}
 
-		String str = pad(text, columns);
-
+		// Trim the string to the length of the column
+		String str = text.substring(0, columns);
+		
 		// Set the cursor position to the start of the specified row
 		setCursorPosition(0, row);
 
-		for (byte b : str.getBytes()) {
+		for (byte b : text.getBytes()) {
 			writeData(b);
 		}
 	}
@@ -380,18 +395,38 @@ public class I2CLcd implements Closeable {
 	 *				move but the display does. 
 	 */
 	public void entryModeControl(boolean increment, boolean shiftDisplay) {
+		this.increment = increment;
+		this.shiftDisplay = shiftDisplay;
 		writeInstruction((byte) (INST_ENTRY_MODE_SET
 				| (increment ? EMS_CURSOR_INCREMENT : EMS_CURSOR_DECREMENT)
 				| (shiftDisplay ? EMS_DISPLAY_SHIFT_ON : EMS_DISPLAY_SHIFT_OFF)
 				));
 	}
+	
+	public boolean isIncrementOn() {
+		return increment;
+	}
+	
+	public boolean isShiftDisplayOn() {
+		return shiftDisplay;
+	}
 
 	public void displayControl(boolean displayOn, boolean cursorOn, boolean blinkOn) {
+		this.cursorOn = cursorOn;
+		this.blinkOn = blinkOn;
 		writeInstruction((byte) (INST_DISPLAY_CONTROL
 				| (displayOn ? DC_DISPLAY_ON : DC_DISPLAY_OFF)
 				| (cursorOn ? DC_CURSOR_ON : DC_CURSOR_OFF)
 				| (blinkOn ? DC_BLINK_ON : DC_BLINK_OFF)
 				));
+	}
+	
+	public boolean isCursorOn() {
+		return cursorOn;
+	}
+	
+	public boolean isBlinkOn() {
+		return blinkOn;
 	}
 	
 	/**
@@ -465,9 +500,5 @@ public class I2CLcd implements Closeable {
 		clear();
 		displayControl(false, false, false);
 		device.close();
-	}
-
-	public static String pad(String str, int length) {
-		return String.format("%1$-" + length + "s", str).substring(0, length);
 	}
 }
