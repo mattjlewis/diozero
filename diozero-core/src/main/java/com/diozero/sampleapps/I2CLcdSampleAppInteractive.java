@@ -1,0 +1,286 @@
+package com.diozero.sampleapps;
+
+import java.io.*;
+
+import com.diozero.I2CLcd;
+import com.diozero.util.RuntimeIOException;
+
+public class I2CLcdSampleAppInteractive implements Closeable {
+	public static void main(String[] args) {
+		try (I2CLcdSampleAppInteractive app = new I2CLcdSampleAppInteractive()) {
+			app.run();
+		}
+	}
+	
+	private BufferedReader reader;
+	private boolean running;
+	private I2CLcd lcd;
+	
+	private OptionsMenu initMenu = new OptionsMenu("Screen Size", new String[] { "16x2", "20x4" });
+	private ActionMenu mainMenu = new ActionMenu("Main Menu", new ActionMenuItem[] {
+			new ActionMenuItem("Exit", () -> running = false)
+			, new ActionMenuItem("Clear", () -> lcd.clear())
+			, new ActionMenuItem("Set Cursor Position", () -> {
+				int column = integerInputPrompt("Column", 1, lcd.getColumnCount());
+				int row = integerInputPrompt("Row", 1, lcd.getRowCount());
+				lcd.setCursorPosition(column-1, row-1);
+			})
+			, new ActionMenuItem("Add Text", () -> lcd.addText(textInputPrompt("Text", 1, lcd.getRowCount()*lcd.getColumnCount())))
+			, new ActionMenuItem("Set Text", () -> {
+				int row = integerInputPrompt("Row Number", 1, lcd.getRowCount());
+				String text = textInputPrompt("Text", 1, lcd.getColumnCount());
+				lcd.setText(row-1, text);
+			})
+			, new ActionMenuItem("Define Special Character", () -> {
+				int location = integerInputPrompt("Memory Location", 0, 7);
+				byte[] codes = integerArrayInputPrompt("Character Codes", 8, 0, 255);
+				lcd.createChar(location, codes);
+			})
+			, new ActionMenuItem("Add Special Character", () -> {
+				int location = integerInputPrompt("Memory Location", 0, 7);
+				lcd.addText((byte) location);
+			})
+			, new ActionMenuItem("Entry Mode Control", () -> {
+				boolean increment = booleanInputPrompt("Increment (otherwise decrement)", lcd.isIncrementOn());
+				boolean shift_display = booleanInputPrompt("Shift Display (otherwise shift cursor)", lcd.isShiftDisplayOn());
+				lcd.entryModeControl(increment, shift_display);
+			})
+			, new ActionMenuItem("Cursor Control", () -> {
+				boolean cursor_on = booleanInputPrompt("Cursor On", lcd.isCursorOn());
+				boolean blink_on = booleanInputPrompt("Blink On", lcd.isBlinkOn());
+				lcd.displayControl(true, cursor_on, blink_on);
+			})
+			, new ActionMenuItem("Shift Display", () -> {
+				int option = prompt(new OptionsMenu("Direction", new String[] { "Left", "Right" }));
+				if (option == 1) {
+					lcd.shiftDisplayLeft();
+				} else {
+					lcd.shiftDisplayRight();
+				}
+			})
+			, new ActionMenuItem("Shift Cursor", () -> {
+				int option = prompt(new OptionsMenu("Direction", new String[] { "Left", "Right" }));
+				if (option == 1) {
+					lcd.moveCursorLeft();
+				} else {
+					lcd.moveCursorRight();
+				}
+			})
+		});
+	
+	public void run() {
+		reader = new BufferedReader(new InputStreamReader(System.in));
+		int resp = prompt(initMenu);
+		String[] resolution = initMenu.getOption(resp).split("x");
+		
+		int columns = Integer.parseInt(resolution[0]);
+		int rows = Integer.parseInt(resolution[1]);
+		lcd = new I2CLcd(columns, rows);
+		
+		running = true;
+		while (running) {
+			try {
+				prompt(mainMenu);
+			} catch (IllegalArgumentException iae) {
+				System.out.println("Error: " + iae);
+			}
+		}
+	}
+	
+	private String readLine() {
+		try {
+			return reader.readLine();
+		} catch (IOException e) {
+			throw new RuntimeIOException(e);
+		}
+	}
+	
+	private boolean booleanInputPrompt(String prompt, boolean currentVal) {
+		while (true) {
+			System.out.print(prompt + "? (y/n,yes/no,true/false,on/off) [currently " + (currentVal ? "on" : "off") + "]> ");
+			System.out.flush();
+			String s = readLine();
+			if (s.equalsIgnoreCase("y") || s.equalsIgnoreCase("yes") || s.equalsIgnoreCase("true") || s.equalsIgnoreCase("on")) {
+				return true;
+			}
+			if (s.equalsIgnoreCase("n") || s.equalsIgnoreCase("no") || s.equalsIgnoreCase("false") || s.equalsIgnoreCase("off")) {
+				return false;
+			}
+			System.out.println("Invalid response '" + s + "'");
+		}
+	}
+
+	private int integerInputPrompt(String prompt, int min, int max) {
+		while (true) {
+			System.out.print(prompt + " (" + min + ".." + max + ")> ");
+			System.out.flush();
+			String s = readLine();
+			try {
+				return Integer.parseInt(s);
+			} catch (NumberFormatException nfe) {
+				System.out.println("Invalid number '" + s + "'");
+			}
+		}
+	}
+
+	private byte[] integerArrayInputPrompt(String prompt, int count, int min, int max) {
+		while (true) {
+			System.out.print(prompt + " (" + count + " comma separated numbers range " + min + ".." + max + ")> ");
+			System.out.flush();
+			String s = readLine();
+			String[] codes = s.split(",");
+			if (codes.length == count) {
+				byte[] values = new byte[count];
+				String val = "";
+				try {
+					for (int i=0; i<codes.length; i++) {
+						val = codes[i].trim();
+						values[i] = (byte) Integer.parseInt(val);
+					}
+					return values;
+				} catch (NumberFormatException nfe) {
+					System.out.println("Invalid number '" + val + "'");
+				}
+			} else {
+				System.out.println("Not enough values (" + codes.length + "), expecting " + count);
+			}
+		}
+	}
+
+	private String textInputPrompt(String prompt, int minLength, int maxLength) {
+		while (true) {
+			System.out.print(prompt + " (" + minLength + ".." + maxLength + " chars)> ");
+			System.out.flush();
+			String s = readLine();
+			if (s.length() >= minLength && s.length() <= maxLength) {
+				return s;
+			}
+			
+			System.out.println("Invalid input length (" + s.length() + "), must be " + minLength + ".." + maxLength);
+		}
+	}
+	
+	private int prompt(OptionsMenu menu) {
+		int num_options = menu.getOptions().length;
+		while (true) {
+			System.out.println(menu.getPrompt() + ":");
+			int i=1;
+			for (String option : menu.getOptions()) {
+				System.out.println(i++ + ") " + option);
+			}
+			System.out.print("> ");
+			System.out.flush();
+			
+			String s = readLine();
+			try {
+				int resp = Integer.parseInt(s);
+				if (resp >= 1 && resp <= num_options) {
+					return resp;
+				}
+				System.out.println("Invalid input value " + resp + ". Must be 1.." + num_options);
+			} catch (NumberFormatException nfe) {
+				System.out.println("Invalid input value '" + s + "'. Must be 1.." + num_options);
+			}
+		}
+	}
+	
+	private void prompt(ActionMenu menu) {
+		int num_options = menu.getMenuItems().length;
+		while (true) {
+			System.out.println(menu.getPrompt() + ":");
+			int i=1;
+			for (ActionMenuItem menuItem : menu.getMenuItems()) {
+				System.out.println(i++ + ") " + menuItem.getPrompt());
+			}
+			System.out.print("> ");
+			System.out.flush();
+			
+			String s = readLine();
+			try {
+				int resp = Integer.parseInt(s);
+				if (resp >= 1 && resp <= num_options) {
+					ActionMenuItem menu_item = menu.getMenuItem(resp);
+					System.out.println(menu_item.getPrompt() + ":");
+					menu_item.getAction().run();
+					return;
+				}
+				System.out.println("Invalid input value " + resp + ". Must be 1.." + num_options);
+			} catch (NumberFormatException nfe) {
+				System.out.println("Invalid input value '" + s + "'. Must be 1.." + num_options);
+			}
+		}
+	}
+
+	@Override
+	public void close() {
+		if (lcd != null) { lcd.close(); }
+		if (reader != null) { try { reader.close(); } catch (IOException e) { } }
+	}
+}
+
+class OptionsMenu {
+	private String prompt;
+	private String[] options;
+	
+	public OptionsMenu(String prompt, String[] options) {
+		this.prompt = prompt;
+		this.options = options;
+	}
+
+	public String getPrompt() {
+		return prompt;
+	}
+
+	public String[] getOptions() {
+		return options;
+	}
+	
+	public String getOption(int resp) {
+		return options[resp-1];
+	}
+}
+
+class ActionMenu {
+	private String prompt;
+	private ActionMenuItem[] menuItems;
+
+	public ActionMenu(String prompt, ActionMenuItem[] menuItems) {
+		this.prompt = prompt;
+		this.menuItems = menuItems;
+	}
+
+	public String getPrompt() {
+		return prompt;
+	}
+
+	public ActionMenuItem[] getMenuItems() {
+		return menuItems;
+	}
+
+	public ActionMenuItem getMenuItem(int resp) {
+		return menuItems[resp-1];
+	}
+}
+
+class ActionMenuItem {
+	private String prompt;
+	private Action action;
+	
+	public ActionMenuItem(String prompt, Action action) {
+		this.prompt = prompt;
+		this.action = action;
+	}
+
+	public String getPrompt() {
+		return prompt;
+	}
+
+	public Action getAction() {
+		return action;
+	}
+}
+
+@FunctionalInterface
+interface Action {
+	void run();
+}
