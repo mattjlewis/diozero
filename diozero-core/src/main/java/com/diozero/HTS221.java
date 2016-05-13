@@ -38,7 +38,7 @@ import com.diozero.util.RuntimeIOException;
 
 /**
  * STMicroelectronics HTS221 "ultra compact sensor for relative humidity and temperature". Datasheet:
- * http://www2.st.com/content/ccc/resource/technical/document/datasheet/4d/9a/9c/ad/25/07/42/34/DM00116291.pdf/files/DM00116291.pdf/jcr:content/translations/en.DM00116291.pdf
+ * <a href="http://www2.st.com/content/ccc/resource/technical/document/datasheet/4d/9a/9c/ad/25/07/42/34/DM00116291.pdf/files/DM00116291.pdf/jcr:content/translations/en.DM00116291.pdf">http://www2.st.com/content/ccc/resource/technical/document/datasheet/4d/9a/9c/ad/25/07/42/34/DM00116291.pdf/files/DM00116291.pdf/jcr:content/translations/en.DM00116291.pdf</a>
  */
 @SuppressWarnings("unused")
 public class HTS221 implements Closeable {
