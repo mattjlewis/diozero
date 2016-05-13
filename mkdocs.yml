@@ -14,8 +14,9 @@ pages:
     - 'Expansion Boards': 'ExpansionBoards.md'
     - 'Motor Control': 'MotorControl.md'
     - 'Sensor Components': 'SensorComponents.md'
-    - 'IMU Devices': 'IMUDevices.md'
+    - 'LCD Displays': 'LCDDisplays.md'
     - 'LED Strips': 'LEDStrips.md'
+    - 'IMU Devices': 'IMUDevices.md'
 - Providers: 'Providers.md'
 - License: 'license.md'
 
