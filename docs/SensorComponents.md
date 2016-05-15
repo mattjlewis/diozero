@@ -95,7 +95,7 @@ TODO Insert wiring diagram.
     : Read the temperature (in &deg;C) from the device.
 
 
-##  STMicroelectronics LPS25H Pressure and Temperature Sensor {: #hts221 }
+##  STMicroelectronics LPS25H Pressure and Temperature Sensor {: #lps25h }
 
 *class* **com.diozero.LPS25H**{: .descname } [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/LPS25H.java){: .viewcode-link } [&para;](SensorComponents.md#lps25H "Permalink to this definition"){: .headerlink }
 
