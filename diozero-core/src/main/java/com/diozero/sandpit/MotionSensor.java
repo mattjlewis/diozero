@@ -49,7 +49,7 @@ public class MotionSensor extends SmoothedInputDevice {
 	 */
 	public MotionSensor(int pinNumber) throws RuntimeIOException {
 		// Trigger if there is 1 or more events in a 20ms period, check every 10ms
-		this(pinNumber, 1, 20, 10);
+		this(pinNumber, GpioPullUpDown.NONE, 1, 20, 10);
 	}
 	
 	/**
@@ -61,6 +61,19 @@ public class MotionSensor extends SmoothedInputDevice {
 	 */
 	public MotionSensor(int pinNumber, int threshold, int eventAge, int eventDetectPeriod)
 			throws RuntimeIOException {
-		super(pinNumber, GpioPullUpDown.NONE, threshold, eventAge, eventDetectPeriod);
+		this(pinNumber, GpioPullUpDown.NONE, threshold, eventAge, eventDetectPeriod);
+	}
+	
+	/**
+	 * @param pinNumber The GPIO pin which the motion sensor is attached.
+	 * @param pud Pull up/down configuration
+	 * @param threshold The value above which the device will be considered "on".
+	 * @param eventAge The time in milliseconds to keep active events in the queue.
+	 * @param eventDetectPeriod How frequently to check for events.
+	 * @throws RuntimeIOException If an I/O error occurred.
+	 */
+	public MotionSensor(int pinNumber, GpioPullUpDown pud, int threshold, int eventAge, int eventDetectPeriod)
+			throws RuntimeIOException {
+		super(pinNumber, pud, threshold, eventAge, eventDetectPeriod);
 	}
 }
