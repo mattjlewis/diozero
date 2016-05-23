@@ -127,6 +127,7 @@ public class SmoothedInputDevice extends WaitableDigitalInputDevice {
 	private class EventDetection implements Runnable {
 		private Predicate<Long> removePredicate;
 		private long now;
+		private boolean active;
 
 		EventDetection() {
 			removePredicate = time -> time.longValue() < (now - eventAge);
@@ -142,10 +143,14 @@ public class SmoothedInputDevice extends WaitableDigitalInputDevice {
 
 				// Check if the number of events exceeds the threshold
 				if (queue.size() > threshold) {
-					SmoothedInputDevice.super.valueChanged(new DigitalInputEvent(pinNumber, now, nano_time, true));
+					SmoothedInputDevice.super.valueChanged(new DigitalInputEvent(pinNumber, now, nano_time, activeHigh));
+					active = true;
 
 					// If an event is fired clear the queue of all events
 					queue.clear();
+				} else if (active) {
+					SmoothedInputDevice.super.valueChanged(new DigitalInputEvent(pinNumber, now, nano_time, !activeHigh));
+					active = false;
 				}
 			}
 		}
