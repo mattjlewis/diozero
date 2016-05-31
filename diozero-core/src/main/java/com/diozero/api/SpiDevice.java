@@ -28,7 +28,6 @@ package com.diozero.api;
 
 
 import java.io.Closeable;
-import java.io.IOException;
 import java.nio.ByteBuffer;
 
 import org.pmw.tinylog.Logger;
@@ -66,7 +65,7 @@ public class SpiDevice implements Closeable, SPIConstants {
 	@Override
 	public void close() throws RuntimeIOException {
 		Logger.debug("close()");
-		try { device.close(); } catch (IOException e) { throw new RuntimeIOException(e); }
+		device.close();
 	}
 
 	public ByteBuffer writeAndRead(ByteBuffer out) throws RuntimeIOException {

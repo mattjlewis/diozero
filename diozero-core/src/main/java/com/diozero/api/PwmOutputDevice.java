@@ -1,7 +1,5 @@
 package com.diozero.api;
 
-import java.io.IOException;
-
 /*
  * #%L
  * Device I/O Zero - Core
@@ -33,7 +31,9 @@ import org.pmw.tinylog.Logger;
 import com.diozero.internal.DeviceFactoryHelper;
 import com.diozero.internal.spi.PwmOutputDeviceFactoryInterface;
 import com.diozero.internal.spi.PwmOutputDeviceInterface;
-import com.diozero.util.*;
+import com.diozero.util.DioZeroScheduler;
+import com.diozero.util.RuntimeIOException;
+import com.diozero.util.SleepUtil;
 
 /**
  * Provide generic
@@ -101,12 +101,7 @@ public class PwmOutputDevice extends GpioDevice {
 			device.setValue(0);
 		} catch (RuntimeIOException e) {
 		}
-		try {
-			device.close();
-		} catch (IOException e) {
-			// Log and ignore
-			Logger.warn(e, "Error closing device: {}", e);
-		}
+		device.close();
 		Logger.debug("device closed");
 	}
 

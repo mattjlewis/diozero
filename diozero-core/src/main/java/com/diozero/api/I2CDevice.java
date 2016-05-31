@@ -27,7 +27,6 @@ package com.diozero.api;
  */
 
 import java.io.Closeable;
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
@@ -134,11 +133,7 @@ public class I2CDevice implements Closeable, I2CConstants {
 	@Override
 	public void close() throws RuntimeIOException {
 		Logger.debug("close()");
-		try {
-			device.close();
-		} catch (IOException e) {
-			throw new RuntimeIOException(e);
-		}
+		device.close();
 	}
 
 	public final boolean isOpen() {

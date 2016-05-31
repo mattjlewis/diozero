@@ -1,7 +1,5 @@
 package com.diozero.api;
 
-import java.io.IOException;
-
 /*
  * #%L
  * Device I/O Zero - Core
@@ -33,7 +31,9 @@ import org.pmw.tinylog.Logger;
 import com.diozero.internal.DeviceFactoryHelper;
 import com.diozero.internal.spi.GpioDeviceFactoryInterface;
 import com.diozero.internal.spi.GpioDigitalOutputDeviceInterface;
-import com.diozero.util.*;
+import com.diozero.util.DioZeroScheduler;
+import com.diozero.util.RuntimeIOException;
+import com.diozero.util.SleepUtil;
 
 /**
  * Provides generic digital (on/off) output control with support for active high
@@ -97,12 +97,7 @@ public class DigitalOutputDevice extends GpioDevice {
 	public void close() {
 		Logger.debug("close()");
 		setOn(false);
-		try {
-			device.close();
-		} catch (IOException e) {
-			// Log and ignore
-			Logger.warn(e, "Error closing device: {}", e);
-		}
+		device.close();
 	}
 
 	private void onOffLoop(float onTime, float offTime, int n) throws RuntimeIOException {
@@ -197,8 +192,8 @@ public class DigitalOutputDevice extends GpioDevice {
 	}
 
 	/**
-	 * Unsafe operation that has no synchronisation checks and doesn't factor in
-	 * active low logic. Included primarily for performance tests.
+	 * Unsafe operation that has no synchronisation checks and doesn't compensate
+	 * for active low logic. Included primarily for performance tests.
 	 * 
 	 * @param value
 	 *            The new value
