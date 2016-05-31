@@ -61,8 +61,7 @@
 		<url>https://github.com/mattjlewis/diozero.git</url>
 		<connection>scm:git:git@github.com:mattjlewis/diozero.git</connection>
 		<developerConnection>scm:git:git@github.com:mattjlewis/diozero.git</developerConnection>
-		<tag>diozero-0.7</tag>
-	</scm>
+  </scm>
 	
 	<developers>
 		<developer>
@@ -413,7 +412,7 @@
 					<autoVersionSubmodules>true</autoVersionSubmodules>
 					<useReleaseProfile>false</useReleaseProfile>
 					<releaseProfiles>release</releaseProfiles>
-					<!-- <goals>deploy</goals> -->
+					<goals>deploy</goals>
 				</configuration>
 			</plugin>
 			<plugin>
