@@ -24,6 +24,7 @@
 	Push to repository:
 		mvn deploy
 		mvn deploy -P release
+		(go to https://oss.sonatype.org/#nexus-search;gav~com.diozero~diozero-core~~~~kw,versionexpand then close and release)
 	Release:
 		mvn release:prepare -DignoreSnapshots=true
 		mvn release:clean / mvn release:rollback
@@ -32,7 +33,7 @@
 	
 	<groupId>com.diozero</groupId>
 	<artifactId>diozero</artifactId>
-	<version>0.7</version>
+	<version>0.8-SNAPSHOT</version>
 	<name>Device I/O Zero</name>
 	<description>Java Device I/O library with an API based on the Python GPIO Zero supporting multiple devices (Raspberry Pi, BeagleBone Black, ...)</description>
 	<url>http://www.diozero.com/</url>
@@ -61,6 +62,7 @@
 		<url>https://github.com/mattjlewis/diozero.git</url>
 		<connection>scm:git:git@github.com:mattjlewis/diozero.git</connection>
 		<developerConnection>scm:git:git@github.com:mattjlewis/diozero.git</developerConnection>
+    <tag>HEAD</tag>
   </scm>
 	
 	<developers>
