@@ -25,7 +25,7 @@
 		mvn deploy
 		mvn deploy -P release
 	Release:
-		mvn release:prepare -DignoreSnapshots=true
+		mvn release:prepare -DignoreSnapshots=true -DautoVersionSubmodules=true
 		mvn release:clean / mvn release:rollback
 		mvn release:perform
 	-->
@@ -47,7 +47,7 @@
 	<licenses>
 		<license>
 			<name>MIT License</name>
-			<url>http://www.opensource.org/licenses/mit-license.php</url>
+			<url>https://opensource.org/licenses/MIT</url>
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
@@ -61,7 +61,7 @@
 		<url>https://github.com/mattjlewis/diozero.git</url>
 		<connection>scm:git:git@github.com:mattjlewis/diozero.git</connection>
 		<developerConnection>scm:git:git@github.com:mattjlewis/diozero.git</developerConnection>
-		<tag>HEAD</tag>
+		<tag>diozero-0.7</tag>
 	</scm>
 	
 	<developers>
@@ -143,10 +143,10 @@
 			<name>Sonatype Open Source Maven Repository</name>
 			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
 		</repository>
-		<site>
+		<!-- <site>
 			<id>www.diozero.com</id>
 			<url>http://www.diozero.com</url>
-		</site>
+		</site> -->
 	</distributionManagement>
 	
 	<!-- Core dependencies common to all projects -->
