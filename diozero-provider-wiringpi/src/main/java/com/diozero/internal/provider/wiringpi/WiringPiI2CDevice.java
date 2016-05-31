@@ -38,6 +38,7 @@ import com.diozero.internal.spi.I2CDeviceInterface;
 import com.diozero.util.RuntimeIOException;
 import com.pi4j.io.i2c.I2CDevice;
 import com.pi4j.io.i2c.I2CFactory;
+import com.pi4j.io.i2c.I2CFactory.UnsupportedBusNumberException;
 
 public class WiringPiI2CDevice extends AbstractDevice implements I2CDeviceInterface {
 	//private static final int CLOSED = -1;
@@ -64,7 +65,7 @@ public class WiringPiI2CDevice extends AbstractDevice implements I2CDeviceInterf
 				Integer.valueOf(controller), Integer.toHexString(address));
 		try {
 			device = I2CFactory.getInstance(controller).getDevice(address);
-		} catch (IOException e) {
+		} catch (UnsupportedBusNumberException | IOException e) {
 			throw new RuntimeIOException(e);
 		}
 		Logger.debug("I2C device ({}, 0x{}) opened",
