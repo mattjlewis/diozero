@@ -1,7 +1,5 @@
 package com.diozero.api;
 
-import java.io.IOException;
-
 /*
  * #%L
  * Device I/O Zero - Core
@@ -45,6 +43,7 @@ public class DigitalInputDevice extends GpioInputDevice<DigitalInputEvent> {
 	private GpioEventTrigger trigger;
 	private Action activatedAction;
 	private Action deactivatedAction;
+	private boolean listenerEnabled;
 
 	/**
 	 * @param pinNumber
@@ -97,12 +96,7 @@ public class DigitalInputDevice extends GpioInputDevice<DigitalInputEvent> {
 	@Override
 	public void close() {
 		Logger.debug("close()");
-		try {
-			device.close();
-		} catch (IOException e) {
-			// Log and ignore
-			Logger.warn(e, "Error closing device: {}", e);
-		}
+		device.close();
 	}
 
 	@Override
@@ -119,13 +113,23 @@ public class DigitalInputDevice extends GpioInputDevice<DigitalInputEvent> {
 
 	@Override
 	protected void enableListener() {
-		device.setListener(this);
+		synchronized (device) {
+			if (! listenerEnabled) {
+				device.setListener(this);
+				listenerEnabled = true;
+			}
+		}
 	}
 
 	@Override
 	protected void disableListener() {
-		if (activatedAction == null && deactivatedAction == null) {
-			device.removeListener();
+		if (listeners.isEmpty() && activatedAction == null && deactivatedAction == null) {
+			synchronized (device) {
+				if (listenerEnabled) {
+					device.removeListener();
+					listenerEnabled = false;
+				}
+			}
 		}
 	}
 
@@ -191,10 +195,10 @@ public class DigitalInputDevice extends GpioInputDevice<DigitalInputEvent> {
 	 */
 	public void whenActivated(Action action) {
 		activatedAction = action;
-		if (action != null) {
-			enableListener();
-		} else if (listeners.isEmpty() && deactivatedAction == null) {
+		if (action == null) {
 			disableListener();
+		} else {
+			enableListener();
 		}
 	}
 
@@ -206,10 +210,10 @@ public class DigitalInputDevice extends GpioInputDevice<DigitalInputEvent> {
 	 */
 	public void whenDeactivated(Action action) {
 		deactivatedAction = action;
-		if (action != null) {
-			enableListener();
-		} else if (listeners.isEmpty() && activatedAction == null) {
+		if (action == null) {
 			disableListener();
+		} else {
+			enableListener();
 		}
 	}
 }
