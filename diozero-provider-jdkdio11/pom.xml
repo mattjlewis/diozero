@@ -7,7 +7,7 @@
 		<version>0.7-SNAPSHOT</version>
 	</parent>
 	
-	<name>Device I/O Zero - JDK Device I/O v1.0 provider</name>
+	<name>Device I/O Zero - JDK Device I/O v1.1 provider</name>
 	<artifactId>diozero-provider-jdkdio11</artifactId>
 	<packaging>jar</packaging>
 	
