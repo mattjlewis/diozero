@@ -26,8 +26,6 @@ package com.diozero.internal;
  * #L%
  */
 
-
-import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -61,7 +59,7 @@ public class DeviceStates {
 		Logger.debug("closeAll()");
 		for (DeviceInterface device : devices.values()) {
 			// No need to remove from the Map as close() should always call closed()
-			try { device.close(); } catch (IOException e) { }
+			device.close();
 		}
 	}
 

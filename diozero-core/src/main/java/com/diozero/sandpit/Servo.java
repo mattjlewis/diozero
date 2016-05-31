@@ -27,8 +27,6 @@ package com.diozero.sandpit;
  */
 
 
-import java.io.IOException;
-
 import org.pmw.tinylog.Logger;
 
 import com.diozero.api.GpioDevice;
@@ -60,12 +58,7 @@ public class Servo extends GpioDevice {
 	@Override
 	public void close() {
 		Logger.debug("close()");
-		try {
-			device.close();
-		} catch (IOException e) {
-			// Log and ignore
-			Logger.warn(e, "Error closing device: {}", e);
-		}
+		device.close();
 		Logger.debug("device closed");
 	}
 	

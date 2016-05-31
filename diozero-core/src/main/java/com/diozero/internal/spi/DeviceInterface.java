@@ -31,5 +31,7 @@ import java.io.Closeable;
 
 public interface DeviceInterface extends Closeable {
 	String getKey();
-	public boolean isOpen();
+	boolean isOpen();
+	@Override
+	void close();
 }

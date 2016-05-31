@@ -27,7 +27,6 @@ package com.diozero;
  */
 
 
-import java.io.IOException;
 import java.nio.ByteBuffer;
 
 import org.junit.Assert;
@@ -44,6 +43,7 @@ import com.diozero.internal.provider.test.TestI2CDevice;
 import com.diozero.internal.provider.test.TestMcpAdcSpiDevice;
 import com.diozero.internal.spi.I2CDeviceInterface;
 import com.diozero.internal.spi.SpiDeviceInterface;
+import com.diozero.util.RuntimeIOException;
 
 @SuppressWarnings("static-method")
 public class CleanupTest {
@@ -66,7 +66,7 @@ public class CleanupTest {
 			Assert.assertTrue(ds.size() == 1);
 			device.close();
 			Assert.assertTrue(ds.size() == 0);
-		} catch (IOException e) {
+		} catch (RuntimeIOException e) {
 			Logger.error(e, "Error: {}", e);
 		}
 		// Check the log for the above - make sure there is a warning about closing already closed device
@@ -80,7 +80,7 @@ public class CleanupTest {
 			out.flip();
 			device.writeAndRead(out);
 			Assert.assertTrue(ds.size() == 1);
-		} catch (IOException e) {
+		} catch (RuntimeIOException e) {
 			Logger.error(e, "Error: {}", e);
 		}
 		
