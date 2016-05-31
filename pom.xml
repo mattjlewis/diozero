@@ -25,14 +25,14 @@
 		mvn deploy
 		mvn deploy -P release
 	Release:
-		mvn release:prepare -DignoreSnapshots=true -DautoVersionSubmodules=true
+		mvn release:prepare -DignoreSnapshots=true
 		mvn release:clean / mvn release:rollback
 		mvn release:perform
 	-->
 	
 	<groupId>com.diozero</groupId>
 	<artifactId>diozero</artifactId>
-	<version>0.7-SNAPSHOT</version>
+	<version>0.7</version>
 	<name>Device I/O Zero</name>
 	<description>Java Device I/O library with an API based on the Python GPIO Zero supporting multiple devices (Raspberry Pi, BeagleBone Black, ...)</description>
 	<url>http://www.diozero.com/</url>
