@@ -10,6 +10,7 @@ public class GpioMMapTest {
 	}
 
 	private static final int PI_MAX_GPIO = 53;
+	private static final int GPIO_LEN = 0xB4;
 
 	/*
  	0 GPFSEL0   GPIO Function Select 0
@@ -89,6 +90,7 @@ public class GpioMMapTest {
 	private static final int PI_PUD_UP = 2;
 
 	public static native ByteBuffer initialise();
+	public static native void test();
 	public static native void terminate();
 
 	//static volatile uint32_t * gpioReg = MAP_FAILED;
@@ -103,10 +105,35 @@ public class GpioMMapTest {
 				System.out.println("Error in initialise");
 				return;
 			}
+			System.out.println("capacity=" + gpioReg.capacity());
+
 			System.out.println("order=" + gpioReg.order());
 			gpioReg.order(ByteOrder.LITTLE_ENDIAN);
 			System.out.println("order=" + gpioReg.order());
-			System.out.println("capacity=" + gpioReg.capacity());
+
+			for (int i=0; i<20; i++) {
+				System.out.format("gpioReg[%d]=0x%x%n", i, gpioReg.getInt(i*4));
+			}
+			for (int i=0; i<20; i++) {
+				System.out.format("gpioReg[%d]=0x", i);
+				for (int j=3; j>=0; j--) {
+					System.out.format("%02x", gpioReg.get(i*4+j));
+				}
+				System.out.println();
+			}
+
+			test();
+		
+			for (int i=0; i<gpioReg.capacity()/SIZE_OF_INT; i+=4) {
+				if ((i % 0x1000) == 0) {
+					System.out.format("gpioReg[%d]=0x%x%n", i, gpioReg.getInt(i));
+				}
+				if (gpioReg.getInt(i) == 0x24024) {
+					System.out.format("gpioReg[0x%x]=0x%x%n", i, gpioReg.getInt(i));
+					System.out.println("Found it...");
+					break;
+				}
+			}
 
 			int rc = gpioSetMode(gpio, PI_OUTPUT);
 			if (rc < 0) {
@@ -145,10 +172,6 @@ public class GpioMMapTest {
 
 		if (mode > PI_ALT3 || mode < 0) {
 			return -2;
-		}
-		
-		for (int i=0; i<GPIO_LEN/SIZE_OF_INT; i++) {
-			System.out.format("gpioReg[%d]=0x%x%n", i, gpioReg.getInt(i*SIZE_OF_INT));
 		}
 
 		int reg = gpio / 10;
