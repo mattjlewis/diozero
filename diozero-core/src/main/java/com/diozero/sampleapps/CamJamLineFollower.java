@@ -69,7 +69,7 @@ public class CamJamLineFollower implements Closeable {
 		try (CamJamLineFollower robot = new CamJamLineFollower()) {
 			robot.testMovements(speed, DELAY);
 			
-			robot.followLine();
+			robot.go();
 		} catch (RuntimeIOException e) {
 			Logger.error(e, "Error: {}", e);
 		}
@@ -158,7 +158,7 @@ public class CamJamLineFollower implements Closeable {
 		SleepUtil.sleepSeconds(delay);
 	}
 	
-	public void followLine() {
+	public void go() {
 		float speed = 0.8f;
 		float turn_rate = 0.4f;
 		int delay_ms = 20;
