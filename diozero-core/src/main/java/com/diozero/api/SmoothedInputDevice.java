@@ -143,8 +143,10 @@ public class SmoothedInputDevice extends WaitableDigitalInputDevice {
 
 				// Check if the number of events exceeds the threshold
 				if (queue.size() > threshold) {
-					SmoothedInputDevice.super.valueChanged(new DigitalInputEvent(pinNumber, now, nano_time, activeHigh));
-					active = true;
+					if (! active) {
+						SmoothedInputDevice.super.valueChanged(new DigitalInputEvent(pinNumber, now, nano_time, activeHigh));
+						active = true;
+					}
 
 					// If an event is fired clear the queue of all events
 					queue.clear();
