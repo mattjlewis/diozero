@@ -13,7 +13,7 @@ extern "C" {
  * Signature: ()Ljava/nio/ByteBuffer;
  */
 JNIEXPORT jobject JNICALL Java_GpioMMapTest_initialise
-  (JNIEnv *, jclass);
+  (JNIEnv *, jclass, jint);
 
 /*
  * Class:     GpioMMapTest

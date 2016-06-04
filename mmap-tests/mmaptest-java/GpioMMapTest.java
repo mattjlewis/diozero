@@ -4,6 +4,11 @@ import java.nio.ByteOrder;
 public class GpioMMapTest {
 	private static final boolean READ_ONLY = true;
 	private static final int SIZE_OF_INT = 4;
+
+	private static final int GPIOMEM = 1;
+	private static final int MEM_GPIO_OFFSET = 2;
+	private static final int MEM_NO_OFFSET = 3;
+
 	
 	static {
 		System.loadLibrary("gpiommaptest");
@@ -89,18 +94,26 @@ public class GpioMMapTest {
 	private static final int PI_PUD_DOWN = 1;
 	private static final int PI_PUD_UP = 2;
 
-	public static native ByteBuffer initialise();
+	public static native ByteBuffer initialise(int mode);
 	public static native void test();
 	public static native void terminate();
 
 	//static volatile uint32_t * gpioReg = MAP_FAILED;
 	private static ByteBuffer gpioReg = null;
 
+	private static final int pi_peri_phys_armv7 = 0x3F000000;
+	private static final int GPIO_BASE_OFFSET = 0x00200000;
+
 	public static void main(String[] args) {
+		if (args.length != 1) {
+			System.out.println("Usage: GpioMmapTest <mode>");
+			System.exit(1);
+		}
+		int mode = Integer.parseInt(args[0]);
 		int gpio = 12;
 
 		try {
-			gpioReg = initialise();
+			gpioReg = initialise(mode);
 			if (gpioReg == null) {
 				System.out.println("Error in initialise");
 				return;
@@ -110,6 +123,12 @@ public class GpioMMapTest {
 			System.out.println("order=" + gpioReg.order());
 			gpioReg.order(ByteOrder.LITTLE_ENDIAN);
 			System.out.println("order=" + gpioReg.order());
+
+			if (mode == MEM_NO_OFFSET) {
+				//int offset = pi_peri_phys_armv7 + GPIO_BASE_OFFSET;
+				int offset = GPIO_BASE_OFFSET;
+				System.out.format("gpioReg[%d]=0x%x%n", offset, gpioReg.getInt(offset));
+			}
 
 			for (int i=0; i<20; i++) {
 				System.out.format("gpioReg[%d]=0x%x%n", i, gpioReg.getInt(i*4));
@@ -159,6 +178,7 @@ public class GpioMMapTest {
 			delay(1000);
 		} finally {
 			gpioReg = null;
+			System.out.println("Terminating");
 			terminate();
 		}
 	}

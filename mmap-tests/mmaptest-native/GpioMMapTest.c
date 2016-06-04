@@ -10,10 +10,14 @@
 
 #include "GpioMMapTest.h"
 
+#define GPIOMEM 1
+#define MEM_GPIO_OFFSET 2
+#define MEM_NO_OFFSET 3
+
 // ARMv6
-#define pi_peri_phys_armv6 0x20000000;
+#define pi_peri_phys_armv6 0x20000000
 // ARMv7
-#define pi_peri_phys_armv7 0x3F000000;
+#define pi_peri_phys_armv7 0x3F000000
 
 #define SYST_BASE_OFFSET  0x00003000
 #define GPIO_TIMER_OFFSET 0x0000B000
@@ -71,12 +75,13 @@
 static volatile uint32_t piPeriBase;
 static volatile uint32_t gpioPads;
 static volatile uint32_t gpioClockBase;
-static volatile uint32_t gpioBase;
+static uint32_t gpioBase;
+static uint32_t gpioLen;
 static volatile uint32_t gpioTimer;
 static volatile uint32_t gpioPwm;
 
 static int fdMem = -1;
-static uint32_t *gpioAddr = MAP_FAILED;
+static volatile uint32_t* gpioAddr = MAP_FAILED;
 
 // gpioToGPFSEL:
 //	Map a BCM_GPIO pin to it's Function Selection
@@ -140,6 +145,16 @@ static uint8_t gpioToGPLEV [] =
 /* Java VM interface */
 static JavaVM* globalJavaVM = NULL;
 
+static uint32_t * initMapMem(int fd, uint32_t addr, uint32_t len) {
+	//gpioAddr = mmap(0, GPIO_LEN, PROT_READ|PROT_WRITE|PROT_EXEC, MAP_SHARED|MAP_LOCKED, fdMem, GPIO_BASE);
+	//gpioAddr = (uint32_t *)mmap(NULL, GPIO_LEN, PROT_READ|PROT_WRITE|PROT_EXEC, MAP_SHARED|MAP_LOCKED, fdMem, 0);
+	//gpioAddr = (uint32_t *)mmap(NULL, BLOCK_SIZE, PROT_READ|PROT_WRITE, MAP_SHARED, fdMem, 0);
+	return (uint32_t *) mmap(0, len,
+		PROT_READ|PROT_WRITE|PROT_EXEC,
+		MAP_SHARED|MAP_LOCKED,
+		fd, addr);
+}
+
 int getPinMode(unsigned int gpioPin) {
 	int fSel = gpioToGPFSEL[gpioPin];
 	int shift = gpioToShift[gpioPin];
@@ -192,36 +207,41 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* jvm, void* reserved) {
  * Signature: ()Ljava/nio/ByteBuffer;
  */
 JNIEXPORT jobject JNICALL Java_GpioMMapTest_initialise
-  (JNIEnv *env, jclass clz) {
+  (JNIEnv *env, jclass clz, jint mode) {
 
-	int useGpioMem = 1;
-
-	if (useGpioMem) {
+	switch (mode) {
+	case GPIOMEM:
 		piPeriBase = 0;
-		fdMem = open("/dev/gpiomem", O_RDWR | O_SYNC | O_CLOEXEC);
-		//fdMem = open("/dev/fb0", O_RDWR | O_SYNC | O_CLOEXEC);
-	} else {
+		gpioBase = 0;
+		gpioLen = GPIO_LEN;
+
+		fdMem = open("/dev/gpiomem", O_RDWR | O_SYNC);
+		//fdMem = open("/dev/gpiomem", O_RDWR | O_SYNC | O_CLOEXEC);
+		break;
+	case MEM_GPIO_OFFSET:
 		piPeriBase = pi_peri_phys_armv7;
-		//piPeriBase = 0;
-		fdMem = open("/dev/mem", O_RDWR | O_SYNC | O_CLOEXEC);
+		gpioBase = piPeriBase + GPIO_BASE_OFFSET;
+		gpioLen = GPIO_LEN;
+
+		fdMem = open("/dev/mem", O_RDWR | O_SYNC);
+		//fdMem = open("/dev/mem", O_RDWR | O_SYNC | O_CLOEXEC);
+		break;
+	case MEM_NO_OFFSET:
+		piPeriBase = 0;
+		gpioBase = 0;
+		gpioLen = piPeriBase + GPIO_BASE_OFFSET + GPIO_LEN;
+
+		fdMem = open("/dev/mem", O_RDWR | O_SYNC);
+		break;
 	}
 	if (fdMem < 0) {
 		printf("You don't have permission to run this program, try running as root\n");
 		return NULL;
 	}
 
-	// Set the offsets into the memory interface.
-	gpioPads = piPeriBase + GPIO_PADS_OFFSET;
-	gpioClockBase = piPeriBase + CLK_BASE_OFFSET;
-	//gpioBase = piPeriBase + GPIO_BASE_OFFSET;
-	gpioBase = piPeriBase;
-	gpioTimer = piPeriBase + GPIO_TIMER_OFFSET;
-	gpioPwm = piPeriBase + PWM_BASE_OFFSET;
+	gpioAddr = initMapMem(fdMem, gpioBase, gpioLen);
 
-	printf("gpioBase=0x%x, GPIO_LEN=0x%x\n", gpioBase, GPIO_LEN);
-	//gpioAddr = mmap(0, GPIO_LEN, PROT_READ|PROT_WRITE|PROT_EXEC, MAP_SHARED|MAP_LOCKED, fdMem, GPIO_BASE);
-	gpioAddr = (uint32_t *)mmap(NULL, BLOCK_SIZE, PROT_READ|PROT_WRITE, MAP_SHARED, fdMem, gpioBase);
-	//gpioAddr = (uint32_t *)mmap(NULL, BLOCK_SIZE, PROT_READ|PROT_WRITE, MAP_SHARED, fdMem, 0);
+	printf("gpioBase=0x%x, gpioLen=0x%x\n", gpioBase, gpioLen);
 	printf("gpioAddr=%p\n", (void*)gpioAddr);
 
 	if (gpioAddr == MAP_FAILED) {
@@ -233,8 +253,8 @@ JNIEXPORT jobject JNICALL Java_GpioMMapTest_initialise
 		return NULL;
 	}
 
-	//jobject direct_buffer = (*env)->NewDirectByteBuffer(env, gpioAddr, GPIO_LEN);
-	jobject direct_buffer = (*env)->NewDirectByteBuffer(env, gpioAddr, BLOCK_SIZE);
+	jobject direct_buffer = (*env)->NewDirectByteBuffer(env, gpioAddr, gpioLen);
+	//jobject direct_buffer = (*env)->NewDirectByteBuffer(env, gpioAddr, BLOCK_SIZE);
 
 	return direct_buffer;
 }
@@ -259,13 +279,16 @@ JNIEXPORT void JNICALL Java_GpioMMapTest_terminate
 }
 
 int main(int argc, char *argv[]) {
-	Java_GpioMMapTest_initialise(NULL, NULL);
+	int mode = GPIOMEM;
+	//int mode = MEM_GPIO_OFFSET;
+	//int mode = MEM_NO_OFFSET;
+
+	Java_GpioMMapTest_initialise(NULL, NULL, mode);
 	if (gpioAddr == MAP_FAILED) {
 		printf("Error in initialise()\n");
 		return -1;
 	}
 
-	printf("gpioAddr=%p\n", (void*)gpioAddr);
 	int i;
 	for (i=0; i<20; i++) {
 		printf("&gpioAddr[%d]=%p, gpioAddr[%d]=0x%x\n", i, (void*)&gpioAddr[i], i, gpioAddr[i]);
