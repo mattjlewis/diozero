@@ -214,6 +214,7 @@ public class I2CLcd implements Closeable {
 		this(I2CConstants.BUS_1, deviceAddress, ByteOrder.LITTLE_ENDIAN, columns, rows);
 	}
 	
+<<<<<<< HEAD
 	public I2CLcd(int controller, int deviceAddress, ByteOrder order, int columns, int rows) {
 		if (rows == 2) {
 			rowOffsets = ROW_OFFSETS_2ROWS;
@@ -223,6 +224,20 @@ public class I2CLcd implements Closeable {
 			} else if (columns == 20) {
 				rowOffsets = ROW_OFFSETS_20x4;
 			}
+=======
+	public I2CLcd(int controller, int deviceAddress, ByteOrder order, int columns, int rows) {
+		if (rows == 2) {
+			rowOffsets = ROW_OFFSETS_2ROWS;
+		} else if (rows == 4) {
+			if (columns == 16) {
+				rowOffsets = ROW_OFFSETS_16x4;
+			} else if (columns == 20) {
+				rowOffsets = ROW_OFFSETS_20x4;
+			}
+		}
+		if (rowOffsets == null) {
+			throw new IllegalArgumentException(columns + "x" + rows + " LCDs not supported");
+>>>>>>> branch 'master' of https://github.com/mattjlewis/diozero.git
 		}
 		if (rowOffsets == null) {
 			throw new IllegalArgumentException(columns + "x" + rows + " LCDs not supported");
@@ -347,10 +362,17 @@ public class I2CLcd implements Closeable {
 		if (row < 0 || row >= rows) {
 			throw new IllegalArgumentException("Invalid row (" + row + "), must be 0.." + (rows - 1));
 		}
+<<<<<<< HEAD
 
 		// Trim the string to the length of the column
 		if (text.length() >= columns)
 			text = text.substring(0, columns);
+=======
+
+		// Trim the string to the length of the column
+		if (text.length() >= columns)
+			text = text.substring(0, columns);
+>>>>>>> branch 'master' of https://github.com/mattjlewis/diozero.git
 		
 		// Set the cursor position to the start of the specified row
 		setCursorPosition(0, row);
