@@ -90,6 +90,14 @@ public class DeviceFactoryHelper {
 		
 		return nativeDeviceFactory;
 	}
+
+	public static void setNativeDeviceFactory(NativeDeviceFactoryInterface f) {
+		synchronized (DeviceFactoryHelper.class) {
+			if (nativeDeviceFactory != null)
+				throw new IllegalStateException("Alreade initialized");
+			nativeDeviceFactory = f;
+		}
+	}
 }
 
 class ShutdownHandlerThread extends Thread {
@@ -105,7 +113,7 @@ class ShutdownHandlerThread extends Thread {
 	public void run() {
 		Logger.debug("Shutdown handler running");
 		DioZeroScheduler.shutdownAll();
-		deviceFactory.closeAll();
+		deviceFactory.shutdown();
 		Logger.debug("Shutdown handler finished");
 	}
 }
