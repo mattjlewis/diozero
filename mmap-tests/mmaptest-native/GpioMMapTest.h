@@ -7,21 +7,12 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-/*
- * Class:     GpioMMapTest
- * Method:    initialise
- * Signature: ()Ljava/nio/ByteBuffer;
- */
-JNIEXPORT jobject JNICALL Java_GpioMMapTest_initialise
-  (JNIEnv *, jclass, jint);
 
-/*
- * Class:     GpioMMapTest
- * Method:    terminate
- * Signature: ()V
- */
-JNIEXPORT void JNICALL Java_GpioMMapTest_terminate
-  (JNIEnv *, jclass);
+JNIEXPORT jobject JNICALL Java_GpioMMapTest_createMmapBuffer
+  (JNIEnv *, jclass, jstring, jint, jint);
+
+JNIEXPORT void JNICALL Java_GpioMMapTest_closeMmapBuffer
+  (JNIEnv *, jclass, jint, jint, jint);
 
 #ifdef __cplusplus
 }

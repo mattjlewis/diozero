@@ -26,7 +26,7 @@ $(LIB_TARGET): $(OBJS)
 	@$(CC) -shared -o $(LIB_TARGET) $(OBJS) $(LFLAGS) $(LIBS)
 
 $(MAIN_TARGET): $(OBJS)
-	@echo [CUILD] $(MAIN_TARGET)
+	@echo [BUILD] $(MAIN_TARGET)
 	@$(CC) -o $(MAIN_TARGET) $(OBJS) $(LFLAGS) $(LIBS)
 
 .c.o:
