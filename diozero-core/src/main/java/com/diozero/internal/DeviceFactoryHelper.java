@@ -90,6 +90,14 @@ public class DeviceFactoryHelper {
 		
 		return nativeDeviceFactory;
 	}
+
+	public static void setNativeDeviceFactory(NativeDeviceFactoryInterface f) {
+		synchronized (DeviceFactoryHelper.class) {
+			if (nativeDeviceFactory != null)
+				throw new IllegalStateException("Alreade initialized");
+			nativeDeviceFactory = f;
+		}
+	}
 }
 
 class ShutdownHandlerThread extends Thread {
