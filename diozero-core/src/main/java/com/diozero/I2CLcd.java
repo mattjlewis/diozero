@@ -50,7 +50,7 @@ public class I2CLcd implements Closeable {
 	private static final boolean DEFAULT_BACKLIGHT_STATE = true;
 
 	// I2C device address
-	private static final int DEFAULT_DEVICE_ADDRESS = 0x27;
+	public static final int DEFAULT_DEVICE_ADDRESS = 0x27;
 	
 	/*
 	 * Instructions:
@@ -210,6 +210,10 @@ public class I2CLcd implements Closeable {
 		this(I2CConstants.BUS_1, DEFAULT_DEVICE_ADDRESS, ByteOrder.LITTLE_ENDIAN, columns, rows);
 	}
 
+	public I2CLcd(int deviceAddress, int columns, int rows) {
+		this(I2CConstants.BUS_1, deviceAddress, ByteOrder.LITTLE_ENDIAN, columns, rows);
+	}
+	
 	public I2CLcd(int controller, int deviceAddress, ByteOrder order, int columns, int rows) {
 		if (rows == 2) {
 			rowOffsets = ROW_OFFSETS_2ROWS;
@@ -257,7 +261,7 @@ public class I2CLcd implements Closeable {
 		// Now set it to 4-bit mode
 		write4Bits(true, (byte) (INST_FUNCTION_SET | FS_DATA_LENGTH_4BIT));
 
-		// Function set: 4-bit data length, lines & character font as requested 
+		// Function set: 4-bit data length, lines & character font as requested
 		writeInstruction((byte) (INST_FUNCTION_SET
 				| FS_DATA_LENGTH_4BIT
 				| (rows == 1 ? FS_DISPLAY_1LINE : FS_DISPLAY_2LINES)
@@ -345,7 +349,8 @@ public class I2CLcd implements Closeable {
 		}
 
 		// Trim the string to the length of the column
-		String str = text.substring(0, columns);
+		if (text.length() >= columns)
+			text = text.substring(0, columns);
 		
 		// Set the cursor position to the start of the specified row
 		setCursorPosition(0, row);
@@ -392,7 +397,7 @@ public class I2CLcd implements Closeable {
 	 *				Shifts the entire display either to the right (I/D = 0) or
 	 *				to the left (I/D = 1) when true. The display does not shift
 	 *				if false. If true, it will seem as if the cursor does not
-	 *				move but the display does. 
+	 *				move but the display does.
 	 */
 	public void entryModeControl(boolean increment, boolean shiftDisplay) {
 		this.increment = increment;
