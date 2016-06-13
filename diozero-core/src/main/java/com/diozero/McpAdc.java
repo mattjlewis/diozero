@@ -85,7 +85,7 @@ public class McpAdc extends AbstractDeviceFactory implements AnalogInputDeviceFa
 	public void close() throws RuntimeIOException {
 		Logger.debug("close()");
 		// Close all open pins before closing the SPI device itself
-		closeAll();
+		shutdown();
 		spiDevice.close();
 	}
 

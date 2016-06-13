@@ -80,6 +80,7 @@
 		<module>diozero-provider-jdkdio11</module>
 		<module>diozero-provider-pi4j</module>
 		<module>diozero-provider-pigpio</module>
+		<module>diozero-provider-sysfs</module>
 		<module>diozero-provider-wiringpi</module>
 		<module>diozero-ws281x-java</module>
 		<module>diozero-imu-devices</module>

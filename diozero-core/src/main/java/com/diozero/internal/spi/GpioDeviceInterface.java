@@ -1,5 +1,7 @@
 package com.diozero.internal.spi;
 
+import com.diozero.util.RuntimeIOException;
+
 /*
  * #%L
  * Device I/O Zero - Core
@@ -28,5 +30,11 @@ package com.diozero.internal.spi;
 
 
 public interface GpioDeviceInterface extends DeviceInterface {
+	public static enum Direction {
+		INPUT, OUTPUT;
+	}
+	
 	int getPin();
+	boolean getValue() throws RuntimeIOException;
+	Direction getDirection();
 }

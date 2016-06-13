@@ -86,6 +86,6 @@ public class CleanupTest {
 		
 		Assert.assertTrue(ds.size() == 0);
 		
-		tdf.closeAll();
+		tdf.shutdown();
 	}
 }

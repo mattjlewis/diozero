@@ -260,7 +260,7 @@ public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFac
 	public void close() throws RuntimeIOException {
 		Logger.debug("close()");
 		// Close all open pins before closing the I2C device itself
-		closeAll();
+		shutdown();
 		i2cDevice.close();
 	}
 	

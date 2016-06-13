@@ -14,7 +14,7 @@ import com.diozero.util.SleepUtil;
 
 public class MotionTest implements Closeable {
 	public static void main(String[] args) {
-		try (MotionTest test = new MotionTest(13, 19, 26)) {
+		try (MotionTest test = new MotionTest(19, 26)) {
 			Logger.info("Sleeping for 60s");
 			SleepUtil.sleepSeconds(60);
 		}

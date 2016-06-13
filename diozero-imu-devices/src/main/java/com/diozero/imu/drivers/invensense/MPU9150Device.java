@@ -63,8 +63,8 @@ public class MPU9150Device implements Closeable, ImuInterface {
 		dmp.dmp_load_motion_driver_firmware();
 		mpu.mpu_set_dmp_state(true);
 		
-		dmp.dmp_register_tap_cb(event -> tapListeners.forEach(listener -> listener.tapped(event)));
-		dmp.dmp_register_android_orient_cb(event -> orientationListeners.forEach(listener -> listener.orientationChange(event)));
+		dmp.dmp_register_tap_cb(event -> tapListeners.forEach(listener -> listener.accept(event)));
+		dmp.dmp_register_android_orient_cb(event -> orientationListeners.forEach(listener -> listener.accept(event)));
 		
 		int hal_dmp_features =
 				MPU9150DMPConstants.DMP_FEATURE_TAP |

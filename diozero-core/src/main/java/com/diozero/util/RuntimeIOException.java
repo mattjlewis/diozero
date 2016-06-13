@@ -30,11 +30,15 @@ package com.diozero.util;
 public class RuntimeIOException extends RuntimeException {
 	private static final long serialVersionUID = -1676518784067421079L;
 	
-	public RuntimeIOException(Exception cause) {
+	public RuntimeIOException(Throwable cause) {
 		super(cause);
 	}
 
 	public RuntimeIOException(String message) {
 		super(message);
+	}
+
+	public RuntimeIOException(String message, Throwable t) {
+		super(message, t);
 	}
 }

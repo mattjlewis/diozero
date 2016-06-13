@@ -3,6 +3,7 @@ package com.diozero.sampleapps;
 import java.io.*;
 
 import com.diozero.I2CLcd;
+import com.diozero.api.Action;
 import com.diozero.util.RuntimeIOException;
 
 public class I2CLcdSampleAppInteractive implements Closeable {
@@ -201,7 +202,7 @@ public class I2CLcdSampleAppInteractive implements Closeable {
 				if (resp >= 1 && resp <= num_options) {
 					ActionMenuItem menu_item = menu.getMenuItem(resp);
 					System.out.println(menu_item.getPrompt() + ":");
-					menu_item.getAction().run();
+					menu_item.getAction().action();
 					return;
 				}
 				System.out.println("Invalid input value " + resp + ". Must be 1.." + num_options);
@@ -278,9 +279,4 @@ class ActionMenuItem {
 	public Action getAction() {
 		return action;
 	}
-}
-
-@FunctionalInterface
-interface Action {
-	void run();
 }

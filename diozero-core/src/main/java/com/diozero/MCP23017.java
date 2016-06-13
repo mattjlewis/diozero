@@ -427,7 +427,7 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Cl
 		if (interruptPinA != null) { interruptPinA.close(); }
 		if (interruptPinB != null) { interruptPinB.close(); }
 		// Close all open pins before closing the I2C device itself
-		closeAll();
+		shutdown();
 		device.close();
 	}
 

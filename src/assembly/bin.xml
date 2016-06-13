@@ -47,6 +47,7 @@
 				<include>com.diozero:diozero-provider-jdkdio11</include>
 				<include>com.diozero:diozero-provider-pi4j</include>
 				<include>com.diozero:diozero-provider-pigpio</include>
+				<include>com.diozero:diozero-provider-sysfs</include>
 				<include>com.diozero:diozero-provider-wiringpi</include>
 				<include>com.diozero:diozero-ws281x-java</include>
 				<include>com.diozero:diozero-imu-devices</include>

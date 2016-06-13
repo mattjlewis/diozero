@@ -736,7 +736,7 @@ public class MPU9150DMPDriver implements MPU9150DMPConstants {
 			byte direction = (byte) (tap >> 3);
 			byte count = (byte) ((tap % 8) + 1);
 			if (tap_cb != null) {
-				tap_cb.tapped(new TapEvent(createTapType(direction), count));
+				tap_cb.accept(new TapEvent(createTapType(direction), count));
 			}
 		}
 
@@ -744,7 +744,7 @@ public class MPU9150DMPDriver implements MPU9150DMPConstants {
 			Logger.debug("decode_gesture() got Orient!");
 			byte android_orient = (byte) (gesture[3] & 0xC0);
 			if (android_orient_cb != null) {
-				android_orient_cb.orientationChange(new OrientationEvent(getOrientationType((short) (android_orient >> 6))));
+				android_orient_cb.accept(new OrientationEvent(getOrientationType((short) (android_orient >> 6))));
 			}
 		}
 	}

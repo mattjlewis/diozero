@@ -29,7 +29,7 @@ package com.diozero.internal.spi;
 
 public interface DeviceFactoryInterface {
 	String getName();
-	void closeAll();
+	void shutdown();
 	boolean isDeviceOpened(String key);
 	void deviceOpened(DeviceInterface device);
 	void deviceClosed(DeviceInterface device);
