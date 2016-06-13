@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-package com.diozero.internal;
-=======
 package com.diozero.internal;
 
 /*
@@ -28,8 +25,6 @@ package com.diozero.internal;
  * THE SOFTWARE.
  * #L%
  */
-
->>>>>>> branch 'master' of https://github.com/mattjlewis/diozero.git
 
 /*
  * #%L
@@ -121,7 +116,6 @@ public class DeviceFactoryHelper {
 		
 		return nativeDeviceFactory;
 	}
-<<<<<<< HEAD
 
 	public static void setNativeDeviceFactory(NativeDeviceFactoryInterface f) {
 		synchronized (DeviceFactoryHelper.class) {
@@ -129,15 +123,6 @@ public class DeviceFactoryHelper {
 				throw new IllegalStateException("Alreade initialized");
 			nativeDeviceFactory = f;
 		}
-=======
-
-	public static void setNativeDeviceFactory(NativeDeviceFactoryInterface f) {
-		synchronized (DeviceFactoryHelper.class) {
-			if (nativeDeviceFactory != null)
-				throw new IllegalStateException("Alreade initialized");
-			nativeDeviceFactory = f;
-		}
->>>>>>> branch 'master' of https://github.com/mattjlewis/diozero.git
 	}
 }
 
