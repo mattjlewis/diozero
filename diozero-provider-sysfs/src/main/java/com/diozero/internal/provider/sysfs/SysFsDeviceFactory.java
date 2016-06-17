@@ -124,25 +124,24 @@ implements Runnable {
 		}
 		
 		Path direction_file = getGpioDir(pinNumber).resolve(DIRECTION_FILE);
+		// TODO Do I need to do any of this polling?
 		// Wait up to 500ms for the gpioxxx/direction file to exist
 		int delay = 500;
 		long start = System.currentTimeMillis();
-		while (true) {
-			if (Files.exists(direction_file)) {
-				break;
-			}
-			if (System.currentTimeMillis() - start > delay) {
-				unexport(pinNumber);
-				throw new RuntimeIOException("Waited for over " + delay + " ms for the GPIO pin to be created, aborting");
-			}
+		while (! Files.isWritable(direction_file)) {
 			try {
 				Thread.sleep(10);
 			} catch (InterruptedException ie) {
 				// Ignore
 			}
+			if (System.currentTimeMillis() - start > delay) {
+				unexport(pinNumber);
+				throw new RuntimeIOException("Waited for over " + delay + " ms for the GPIO pin to be created, aborting");
+			}
 		}
 
-		try (FileWriter writer = new FileWriter(direction_file.toFile())) {
+		// Defaults to in on the Raspberry Pi
+		try (FileWriter writer = new FileWriter(direction_file.toFile(), true)) {
 			writer.write(direction == Direction.OUTPUT ? "out" : "in");
 		} catch (IOException e) {
 			unexport(pinNumber);
