@@ -26,7 +26,6 @@ static void* initMapMem(int fd, uint32_t offset, uint32_t length) {
 }
 
 jobject createMmapByteBuffer(JNIEnv* env, int fd, void* map_ptr, long mapCapacity) {
-	printf("2\n");
 	char* class_name = "MmapByteBuffer";
 	jclass clz = (*env)->FindClass(env, class_name);
 	if (clz == NULL) {
@@ -46,14 +45,12 @@ jobject createMmapByteBuffer(JNIEnv* env, int fd, void* map_ptr, long mapCapacit
 
 /* The VM calls this function upon loading the native library. */
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* jvm, void* reserved) {
-	printf("JNI_OnLoad()\n");
 	globalJavaVM = jvm;
 
 	return JNI_VERSION_1_8;
 }
 
 JNIEXPORT jobject JNICALL Java_GpioMMapTest_createMmapBuffer(JNIEnv *env, jclass clz, jstring path, jint offset, jint length) {
-	printf("1\n");
 	int str_len = (*env)->GetStringLength(env, path);
 	char filename[str_len];
 	(*env)->GetStringUTFRegion(env, path, 0, str_len, filename);
