@@ -108,11 +108,6 @@ public class GpioMMapTest {
 		}
 	}
 	
-	private static int getPullUpDown(int gpio) {
-		// TODO Implementation
-		return PUD_NONE;
-	}
-	
 	private static void setPullUpDown(int gpio, int pud) {
 		// pigpio:
 		/*
