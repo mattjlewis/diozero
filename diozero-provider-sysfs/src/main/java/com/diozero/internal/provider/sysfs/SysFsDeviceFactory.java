@@ -1,20 +1,45 @@
 package com.diozero.internal.provider.sysfs;
 
+/*
+ * #%L
+ * Device I/O Zero - Java Sysfs provider
+ * %%
+ * Copyright (C) 2016 mattjlewis
+ * %%
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ * #L%
+ */
+
+
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
-import java.nio.file.*;
-
-import org.pmw.tinylog.Logger;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import com.diozero.api.*;
 import com.diozero.internal.spi.*;
 import com.diozero.internal.spi.GpioDeviceInterface.Direction;
-import com.diozero.util.DioZeroScheduler;
 import com.diozero.util.RuntimeIOException;
 
-public class SysFsDeviceFactory extends BaseNativeDeviceFactory
-implements Runnable {
+public class SysFsDeviceFactory extends BaseNativeDeviceFactory {
 	private static final String GPIO_ROOT_DIR = "/sys/class/gpio";
 	private static final String EXPORT_FILE = "export";
 	private static final String UNEXPORT_FILE = "unexport";
@@ -22,33 +47,9 @@ implements Runnable {
 	private static final String DIRECTION_FILE = "direction";
 	
 	private Path rootPath;
-	private WatchService exportedGpiosWatchService;
-	private Thread watchServiceThread;
-	private boolean watchServiceRunning;
 	
 	public SysFsDeviceFactory() {
 		rootPath = FileSystems.getDefault().getPath(GPIO_ROOT_DIR);
-		
-		try {
-			exportedGpiosWatchService = FileSystems.getDefault().newWatchService();
-			rootPath.register(exportedGpiosWatchService,
-					StandardWatchEventKinds.ENTRY_CREATE,
-					StandardWatchEventKinds.ENTRY_DELETE);
-			
-			// Monitor for changes to exported pins
-			DioZeroScheduler.getDaemonInstance().execute(this);
-		} catch (IOException e) {
-			throw new RuntimeIOException(e);
-		}
-	}
-	
-	@Override
-	public void shutdown() {
-		watchServiceRunning = false;
-		if (watchServiceThread != null) {
-			watchServiceThread.interrupt();
-		}
-		super.shutdown();
 	}
 
 	/**
@@ -80,7 +81,7 @@ implements Runnable {
 			GpioEventTrigger trigger) throws RuntimeIOException {
 		export(pinNumber, Direction.INPUT);
 		
-		return new SysFsGpioInputDevice(this, getGpioDir(pinNumber), key, pinNumber, pud, trigger);
+		return new SysFsGpioInputDevice(this, getGpioDir(pinNumber), key, pinNumber, trigger);
 	}
 
 	@Override
@@ -161,38 +162,5 @@ implements Runnable {
 				throw new RuntimeIOException(e);
 			}
 		}
-	}
-
-	@Override
-	public void run() {
-		watchServiceThread = Thread.currentThread();
-		watchServiceRunning = true;
-		try {
-			while (watchServiceRunning) {
-				// Wait for a change
-				WatchKey key = exportedGpiosWatchService.take();
-				for (WatchEvent<?> event: key.pollEvents()) {
-					WatchEvent.Kind<?> kind = event.kind();
-					if (kind == StandardWatchEventKinds.OVERFLOW) {
-						continue;
-					}
-					
-					@SuppressWarnings("unchecked")
-					WatchEvent<Path> ev = (WatchEvent<Path>) event;
-					Path path = ev.context();
-					if (path.getFileName().toString().startsWith(GPIO_DIR_PREFIX)) {
-						// TODO Do something...
-						Logger.info("GPIO dir changed, path='" + path + "', event kind=" + kind);
-					}
-				}
-				if (! key.reset()) {
-					Logger.error("Error, key.reset() return false");
-					break;
-				}
-			}
-		} catch (InterruptedException e) {
-			// Ignore
-		}
-		watchServiceRunning = false;
 	}
 }
