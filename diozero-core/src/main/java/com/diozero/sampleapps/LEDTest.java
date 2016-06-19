@@ -47,6 +47,8 @@ import com.diozero.util.SleepUtil;
  *  {@code sudo java -cp tinylog-1.0.3.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-pigpio-$DIOZERO_VERSION.jar:pigpioj-java-1.0.0.jar com.diozero.sampleapps.LEDTest 12}</li>
  * <li>sysfs:<br>
  *  {@code java -cp tinylog-1.0.3.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-sysfs-$DIOZERO_VERSION.jar com.diozero.sampleapps.LEDTest 12}</li>
+ * <li>jpi:<br>
+ *  {@code java -cp tinylog-1.0.3.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-jpi-$DIOZERO_VERSION.jar com.diozero.sampleapps.LEDTest 12}</li>
  * </ul>
  */
 public class LEDTest {
