@@ -65,5 +65,9 @@ public abstract class AbstractDevice implements DeviceInterface {
 		deviceFactory.deviceClosed(this);
 	}
 	
+	protected DeviceFactoryInterface getDeviceFactory() {
+		return deviceFactory;
+	}
+	
 	protected abstract void closeDevice() throws RuntimeIOException;
 }
