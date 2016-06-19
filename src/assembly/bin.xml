@@ -45,6 +45,7 @@
 				<include>com.diozero:diozero-core</include>
 				<include>com.diozero:diozero-provider-jdkdio10</include>
 				<include>com.diozero:diozero-provider-jdkdio11</include>
+				<include>com.diozero:diozero-provider-jpi</include>
 				<include>com.diozero:diozero-provider-pi4j</include>
 				<include>com.diozero:diozero-provider-pigpio</include>
 				<include>com.diozero:diozero-provider-sysfs</include>
