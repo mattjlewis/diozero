@@ -45,6 +45,7 @@ files="../pigpioj/pigpioj-java/target/pigpioj-java-${pigpioj_version}.jar \
 	diozero-imu-sampleapp/target/diozero-imu-sampleapp-${version}.jar \
 	diozero-provider-jdkdio10/target/diozero-provider-jdkdio10-${version}.jar \
 	diozero-provider-jdkdio11/target/diozero-provider-jdkdio11-${version}.jar \
+	diozero-provider-jpi/target/diozero-provider-jpi-${version}.jar \
 	diozero-provider-pi4j/target/diozero-provider-pi4j-${version}.jar \
 	diozero-provider-pigpio/target/diozero-provider-pigpio-${version}.jar \
 	diozero-provider-sysfs/target/diozero-provider-sysfs-${version}.jar \
