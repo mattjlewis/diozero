@@ -32,6 +32,11 @@
 		</dependency>
 		<dependency>
 			<groupId>com.diozero</groupId>
+			<artifactId>diozero-provider-jpi</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.diozero</groupId>
 			<artifactId>diozero-provider-pi4j</artifactId>
 			<version>${project.version}</version>
 		</dependency>
