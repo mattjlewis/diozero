@@ -48,9 +48,9 @@ public class SmoothedInputTest implements InputEventListener<DigitalInputEvent> 
 	@Test
 	public void test() {
 		int pin = 1;
-		float delay = 2;
-		// 10 events in 1 second
-		try (SmoothedInputDevice device = new SmoothedInputDevice(pin, GpioPullUpDown.NONE, 10, 1000, 50)) {
+		float delay = 10;
+		// Require 10 events in 2 seconds to be considered on, check every 50ms
+		try (SmoothedInputDevice device = new SmoothedInputDevice(pin, GpioPullUpDown.NONE, 10, 2000, 50)) {
 			device.addListener(this);
 			Runnable event_generator = new Runnable() {
 				@Override
@@ -63,17 +63,17 @@ public class SmoothedInputTest implements InputEventListener<DigitalInputEvent> 
 			
 			ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 			
-			// Generate 1 event every 50ms -> 20 events per second
-			ScheduledFuture<?> future = scheduler.scheduleAtFixedRate(event_generator, 50, 50, TimeUnit.MILLISECONDS);
+			// Generate 1 event every 100ms -> 10 events per second, therefore should get a smoothed event every 1s
+			ScheduledFuture<?> future = scheduler.scheduleAtFixedRate(event_generator, 100, 100, TimeUnit.MILLISECONDS);
 			Logger.debug("Sleeping for {}s", Float.valueOf(delay));
 			SleepUtil.sleepSeconds(delay);
-			future.cancel(true);
 			
 			Logger.debug("Stopping event generation and sleeping for {}s", Float.valueOf(delay));
+			future.cancel(true);
 			SleepUtil.sleepSeconds(delay);
 			
 			// Generate 1 event every 50ms -> 20 events per second
-			future = scheduler.scheduleAtFixedRate(event_generator, 50, 50, TimeUnit.MILLISECONDS);
+			future = scheduler.scheduleAtFixedRate(event_generator, 100, 100, TimeUnit.MILLISECONDS);
 			Logger.debug("Restarting event generation and sleeping for {}s", Float.valueOf(delay));
 			SleepUtil.sleepSeconds(delay);
 			future.cancel(true);
