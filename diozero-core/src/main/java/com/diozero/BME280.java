@@ -232,7 +232,7 @@ public class BME280 implements Closeable {
 		device.writeByte(CONFIG_REG, (byte) (standbyMode.getMask() | filterMode.getMask()));
 	}
 	
-	public double[] getValues() {
+	public float[] getValues() {
 		// Read the 3 pressure registers
 		ByteBuffer buffer = device.read(PRESS_MSB_REG, 8);
 
@@ -280,7 +280,19 @@ public class BME280 implements Closeable {
 		v_x1_u32r = v_x1_u32r > 419430400 ? 419430400 : v_x1_u32r;
 		long humidity = ((long) v_x1_u32r) >> 12;
 		
-		return new double[] { temp / 100.0, pressure / 2560.0, humidity / 1024.0 };
+		return new float[] { temp / 100.0f, pressure / 2560.0f, humidity / 1024.0f };
+	}
+	
+	public float getTemperature() {
+		return getValues()[0];
+	}
+	
+	public float getPressure() {
+		return getValues()[1];
+	}
+	
+	public float getHumidity() {
+		return getValues()[2];
 	}
 
 	@Override
