@@ -1,5 +1,8 @@
 # Expansion Boards
 
+All of these devices act as Device Factories and should be accessed as such.
+
+
 ## Microchip Analog to Digital Converters {: #mcp-adc }
 
 : Provides support for the following Microchip analog-to-digital converter devices:
@@ -90,7 +93,34 @@ try (MCP23017 mcp23017 = new MCP23017(intAPin, intBPin);
     * **pinNumber** (*int*) - Pin number.
     
     * **value** (*boolean*) - Value to set.
+
+
+## PCF8591 ADC / DAC {: #pcf8591 }
+
+*class* **com.diozero.sandpit.PCF8591**{: .descname } (*controller*=1, *address=0x40*, *inputMode*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/sandpit/PCF8591.java){: .viewcode-link } [&para;](ExpansionBoards.md#pcf8591 "Permalink to this definition"){: .headerlink }
+
+: Supports the [NXP PCF8591](http://www.nxp.com/documents/data_sheet/PCF8591.pdf) ADC / DAC.
+
+    * **controller** (*int*) - I2C controller.
     
+    * **address** (*int*) - I2C device address.
+    
+    * **inputMode** (*InputMode*) - Device ADC input mode (4 single-ended, 3 differential, 2 single-ended + 1 differential, 2 differential).
+    
+    **getValue** (*adcPin*)
+    
+    : Get analogue value for the specified pin.
+    
+    * **adcPin** (*int*) - the analogue input pin.
+    
+    **setValue** (*dacPin*, *value*)
+    
+    : Set the analogue output value.
+    
+    * **dacPin** (*int*) - Digital output pin. Note there is only one DAC output pin.
+    
+    * **value** (*float*) - Output value (0..1).
+
 
 ## PCA9685 PWM / Servo Driver {: #pwm-servo-driver }
 
