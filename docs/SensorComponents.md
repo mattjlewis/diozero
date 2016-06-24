@@ -36,11 +36,37 @@ TODO Insert wiring diagram.
 
 ## Bosch BME280
 
-*class* **com.diozero.sandpit.BME280**{: .descname } (*mode*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/BME280.java){: .viewcode-link } [&para;](SensorComponents.md#bosch-bme280 "Permalink to this definition"){: .headerlink }
+*class* **com.diozero.BME280**{: .descname } (*bus=1*, *address=0x76*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/BME280.java){: .viewcode-link } [&para;](SensorComponents.md#bosch-bme280 "Permalink to this definition"){: .headerlink }
 
 : Implements support for the [Bosch Sensortec BME280](http://www.bosch-sensortec.com/bst/products/all_products/bme280) pressure, humidity and temperature sensor.
     
-    * **mode** (*BMPMode*) - BMP operating mode (Ultra-Low Power, Standard, High Resolution, Ultra-High Resolution).
+    * **bus** (*int*) - I2C bus number.
+    
+    * **address** (*int*) - I2C device address.
+    
+    **setOperatingModes** (tempOversampling, pressOversampling, humOversampling, operatingMode)
+    
+    : Set the oversampling and operating modes
+    
+    * **tempOversampling** (*TemperatureOversampling*) - Temperature oversampling mode (1, 2, 4, 8, 16)
+    
+    * **pressOversampling** (*PressureOversampling*) - Pressure oversampling mode (1, 2, 4, 8, 16)
+    
+    * **humOversampling** (*HumidityOversampling*) - Humidity oversampling mode (1, 2, 4, 8, 16)
+    
+    * **operatingMode** (*OperatingMode*) - Device operating mode (Sleep, Forced, Normal)
+    
+    **setStandbyAndFilterModes** (*standbyMode*, *filterMode*)
+    
+    : Set the standby and filter modes
+    
+    * **standbyMode** (*StandbyMode*) - The standby mode (0.5ms, 62.5ms, 125ms, 250ms, 500ms, 1000ms, 10ms, 20ms)
+    
+    * **filterMode** (*FilterMode*) - The filter mode (Off, 2, 4, 8, 16 samples)
+
+    *float* **getTemperature** ()
+
+    : Read the temperature (in &deg;C) from the device.
 
     *float* **getPressure** ()
 
@@ -49,10 +75,6 @@ TODO Insert wiring diagram.
     *float* **getHumidity** ()
 
     : Read the humidity from the device.
-
-    *float* **getTemperature** ()
-
-    : Read the temperature (in &deg;C) from the device.
 
 
 ## TSL2561 Digital Luminosity / Lux / Light Sensor {: #tsl2561 }
@@ -80,7 +102,7 @@ TODO Insert wiring diagram.
     : Get luminosity in Lux.
 
 
-##  STMicroelectronics HTS221 Humidity and Temperature Sensor {: #hts221 }
+## STMicroelectronics HTS221 Humidity and Temperature Sensor {: #hts221 }
 
 *class* **com.diozero.HTS221**{: .descname } [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/HTS221.java){: .viewcode-link } [&para;](SensorComponents.md#hts221 "Permalink to this definition"){: .headerlink }
 
@@ -95,11 +117,11 @@ TODO Insert wiring diagram.
     : Read the temperature (in &deg;C) from the device.
 
 
-##  STMicroelectronics LPS25H Pressure and Temperature Sensor {: #lps25h }
+## STMicroelectronics LPS25H Pressure and Temperature Sensor {: #lps25h }
 
-*class* **com.diozero.LPS25H**{: .descname } [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/LPS25H.java){: .viewcode-link } [&para;](SensorComponents.md#lps25H "Permalink to this definition"){: .headerlink }
+*class* **com.diozero.LPS25H**{: .descname } [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/LPS25H.java){: .viewcode-link } [&para;](SensorComponents.md#lps25h "Permalink to this definition"){: .headerlink }
 
-: Implements support for the [STMicroelectronics]() Pressure and Temperature Sensor - [Datasheet](http://www2.st.com/content/ccc/resource/technical/document/datasheet/58/d2/33/a4/42/89/42/0b/DM00066332.pdf/files/DM00066332.pdf/jcr:content/translations/en.DM00066332.pdf).
+: Implements support for the [STMicroelectronics](http://www.st.com/content/st_com/en/products/mems-and-sensors/pressure-sensors/lps25h.html) Pressure and Temperature Sensor - [Datasheet](http://www2.st.com/content/ccc/resource/technical/document/datasheet/58/d2/33/a4/42/89/42/0b/DM00066332.pdf/files/DM00066332.pdf/jcr:content/translations/en.DM00066332.pdf).
 
     *float* **getPressure** ()
 
@@ -133,3 +155,18 @@ TODO Insert wiring diagram.
     *String* **getSerialNumber** ()
     
     : Get the serial number for this 1-wire sensor instance.
+
+
+## Sharp GP2Y0A21YK {: #gp2y0a21yk }
+
+*class* **com.diozero.GP2Y0A21YK**{: .descname } (*pinNumber*, *vRef*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/GP2Y0A21YK.java){: .viewcode-link } [&para;](SensorComponents.md#gp2y0a21yk "Permalink to this definition"){: .headerlink }
+
+: Implements support for the [Sharp GP2Y0A21YK](http://www.sharpsma.com/webfm_send/1208) distance sensor - [Datasheet](http://oomlout.com/parts/IC-PROX-01-guide.pdf).
+
+    * **pinNumber** (*int*) - Pin number
+
+    * **vRef** (*float*) - Reference voltage for the ADC
+
+    *float* **getDistanceCm** ()
+
+    : Get the distance in cm.
