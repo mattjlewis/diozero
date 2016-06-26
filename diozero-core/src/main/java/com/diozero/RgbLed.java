@@ -79,7 +79,7 @@ public class RgbLed implements Closeable {
 	 * @return Boolean array (red, green, blue).
 	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
-	public boolean[] getState() throws RuntimeIOException {
+	public boolean[] getValues() throws RuntimeIOException {
 		return new boolean[] { redLED.isOn(), greenLED.isOn(), blueLED.isOn() };
 	}
 	
@@ -90,7 +90,7 @@ public class RgbLed implements Closeable {
 	 * @param blue Blue LED state.
 	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
-	public void setState(boolean red, boolean green, boolean blue) throws RuntimeIOException {
+	public void setValues(boolean red, boolean green, boolean blue) throws RuntimeIOException {
 		redLED.setOn(red);
 		greenLED.setOn(green);
 		blueLED.setOn(blue);
