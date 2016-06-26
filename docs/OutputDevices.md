@@ -139,7 +139,66 @@ try (PwmLed led = new PwmLed(pin)) {
 
 ## RGB LED
 
-*class* **com.diozero.RgbLed**{: .descname } (*pinNumber*, *initialValue=0*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/RgbLed.java){: .viewcode-link } [&para;](OutputDevices.md#rgb-led "Permalink to this definition"){: .headerlink }
+*class* **com.diozero.RgbLed**{: .descname } (*redPin*, *greenPin*, *bluePin*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/RgbLed.java){: .viewcode-link } [&para;](OutputDevices.md#rgb-led "Permalink to this definition"){: .headerlink }
 
-: Extends [DigitalOutputDevice](API.md#digitaloutputdevice) and represents a PWM controlled LED.
+: Represents a digital RGB LED controlled by three separate red / green / blue digital LED devices.
+
+    * **redPin** (*int*) - GPIO connected to the red LED connector.
     
+    * **greenPin** (*int*) - GPIO connected to the green LED connector.
+    
+    * **bluePin** (*int*) - GPIO connected to the blue LED connector.
+    
+    *boolean[]* **getValues** ()
+    
+    : Get the digital state of the red / green / blue LED components.
+    
+    **setValues** (*boolean[]*)
+    
+    : Set the digital state of the red / green / blue LED components.
+    
+    **on** ()
+    
+    : Turn on red / green / blue LED components.
+    
+    **off** ()
+    
+    : Turn off red / green / blue LED components.
+    
+    **toggle** ()
+    
+    : Toggle the state of the red / green / blue LED components.
+    
+
+## RGB PWM LED
+
+*class* **com.diozero.RgbPwmLed**{: .descname } (*redPin*, *greenPin*, *bluePin*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/RgbPwmLed.java){: .viewcode-link } [&para;](OutputDevices.md#rgb-pwm-led "Permalink to this definition"){: .headerlink }
+
+: Represents a PWM RGB LED controlled by three separate red / green / blue PWM LED devices.
+
+    * **redPin** (*int*) - GPIO connected to the red LED connector.
+    
+    * **greenPin** (*int*) - GPIO connected to the green LED connector.
+    
+    * **bluePin** (*int*) - GPIO connected to the blue LED connector.
+    
+    *float[]* **getValues** ()
+    
+    : Get the PWM values for each of the red / green / blue LED components.
+    
+    **setValues** (*float[]*)
+    
+    : Get the PWM values for each of the red / green / blue LED components.
+    
+    **on** ()
+    
+    : Turn on red / green / blue LED components.
+    
+    **off** ()
+    
+    : Turn off red / green / blue LED components.
+    
+    **toggle** ()
+    
+    : Toggle the state of the red / green / blue LED components.
+
