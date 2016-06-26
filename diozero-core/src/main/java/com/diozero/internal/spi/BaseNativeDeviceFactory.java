@@ -53,6 +53,36 @@ public abstract class BaseNativeDeviceFactory extends AbstractDeviceFactory impl
 	private static String createSpiKey(int controller, int chipSelect) {
 		return SPI_PREFIX + controller + "-" + chipSelect;
 	}
+
+	@Override
+	public final GpioAnalogInputDeviceInterface provisionAnalogInputPin(int pinNumber) throws RuntimeIOException {
+		String key = createGpioKey(pinNumber);
+		
+		// Check if this pin is already provisioned
+		if (isDeviceOpened(key)) {
+			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
+		}
+		
+		GpioAnalogInputDeviceInterface device = createAnalogInputPin(key, pinNumber);
+		deviceOpened(device);
+		
+		return device;
+	}
+
+	@Override
+	public final GpioAnalogOutputDeviceInterface provisionAnalogOutputPin(int pinNumber) throws RuntimeIOException {
+		String key = createGpioKey(pinNumber);
+		
+		// Check if this pin is already provisioned
+		if (isDeviceOpened(key)) {
+			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
+		}
+		
+		GpioAnalogOutputDeviceInterface device = createAnalogOutputPin(key, pinNumber);
+		deviceOpened(device);
+		
+		return device;
+	}
 	
 	@Override
 	public final GpioDigitalInputDeviceInterface provisionDigitalInputPin(int pinNumber, GpioPullUpDown pud,
@@ -73,21 +103,6 @@ public abstract class BaseNativeDeviceFactory extends AbstractDeviceFactory impl
 		}
 		
 		GpioDigitalInputDeviceInterface device = createDigitalInputPin(key, pinNumber, pud, trigger);
-		deviceOpened(device);
-		
-		return device;
-	}
-
-	@Override
-	public final GpioAnalogInputDeviceInterface provisionAnalogInputPin(int pinNumber) throws RuntimeIOException {
-		String key = createGpioKey(pinNumber);
-		
-		// Check if this pin is already provisioned
-		if (isDeviceOpened(key)) {
-			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
-		}
-		
-		GpioAnalogInputDeviceInterface device = createAnalogInputPin(key, pinNumber);
 		deviceOpened(device);
 		
 		return device;
@@ -164,9 +179,10 @@ public abstract class BaseNativeDeviceFactory extends AbstractDeviceFactory impl
 		return device;
 	}
 
+	protected abstract GpioAnalogInputDeviceInterface createAnalogInputPin(String key, int pinNumber) throws RuntimeIOException;
+	protected abstract GpioAnalogOutputDeviceInterface createAnalogOutputPin(String key, int pinNumber) throws RuntimeIOException;
 	protected abstract GpioDigitalInputDeviceInterface createDigitalInputPin(String key, int pinNumber, GpioPullUpDown pud,
 			GpioEventTrigger trigger) throws RuntimeIOException;
-	protected abstract GpioAnalogInputDeviceInterface createAnalogInputPin(String key, int pinNumber) throws RuntimeIOException;
 	protected abstract GpioDigitalOutputDeviceInterface createDigitalOutputPin(String key, int pinNumber, boolean initialValue) throws RuntimeIOException;
 	protected abstract PwmOutputDeviceInterface createPwmOutputPin(String key, int pinNumber,
 			float initialValue, PwmType pwmType) throws RuntimeIOException;

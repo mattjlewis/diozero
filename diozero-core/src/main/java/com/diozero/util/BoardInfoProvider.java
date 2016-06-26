@@ -27,28 +27,6 @@ package com.diozero.util;
  */
 
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
-
-import org.pmw.tinylog.Logger;
-
-public class LibraryLoader {
-	public static void loadLibrary(Class<?> clz, String libName) throws UnsatisfiedLinkError {
-		;
-		try {
-			// First try load the library from within the JAR file
-			Path path = Files.createTempFile("lib" + libName, ".so");
-			path.toFile().deleteOnExit();
-			Files.copy(clz.getResourceAsStream("/lib/" + SystemInfo.getOperatingSystemId() + "/lib" + libName + ".so"), path,
-					StandardCopyOption.REPLACE_EXISTING);
-			Runtime.getRuntime().load(path.toString());
-		} catch (NullPointerException | IOException e) {
-			Logger.info(e, "Error loading library from classpath: " + e);
-
-			// Try load from the Java system library path (-Djava.library.path)
-			System.loadLibrary(libName);
-		}
-	}
+public interface BoardInfoProvider {
+	BoardInfo lookup(String revisionString);
 }

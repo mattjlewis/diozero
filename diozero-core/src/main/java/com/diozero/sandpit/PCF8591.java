@@ -35,21 +35,20 @@ import com.diozero.api.DeviceAlreadyOpenedException;
 import com.diozero.api.I2CConstants;
 import com.diozero.api.I2CDevice;
 import com.diozero.internal.provider.pcf8591.PCF8591AnalogInputPin;
-import com.diozero.internal.spi.AbstractDeviceFactory;
-import com.diozero.internal.spi.AnalogInputDeviceFactoryInterface;
-import com.diozero.internal.spi.GpioAnalogInputDeviceInterface;
+import com.diozero.internal.provider.pcf8591.PCF8591AnalogOutputPin;
+import com.diozero.internal.spi.*;
 import com.diozero.util.RuntimeIOException;
 
 /**
  * Datasheet: <a href="http://www.nxp.com/documents/data_sheet/PCF8591.pdf">http://www.nxp.com/documents/data_sheet/PCF8591.pdf</a>.
  */
 @SuppressWarnings("unused")
-public class PCF8591 extends AbstractDeviceFactory implements AnalogInputDeviceFactoryInterface, Closeable {
+public class PCF8591 extends AbstractDeviceFactory implements AnalogInputDeviceFactoryInterface,
+AnalogOutputDeviceFactoryInterface, Closeable {
 	private static final int RESOLUTION = 8;
 	private static final float RANGE = (float) Math.pow(2, RESOLUTION);
 	private static final int DEFAULT_ADDRESS = 0x48;
 	private static final String DEVICE_NAME = "PCF8591";
-	private static final int NUM_PINS = 4;
 	// Flags for the control byte
 	// [0:1] A/D Channel Number
 	//   [2] Auto increment flag (active if 1)
@@ -60,7 +59,7 @@ public class PCF8591 extends AbstractDeviceFactory implements AnalogInputDeviceF
 	/** If the auto-increment flag is set to 1, the channel number is incremented
 	 * automatically after each A/D conversion. */
 	private static final byte AUTO_INCREMENT_FLAG       = 0b00000100; // 0000 0100 0x04
-	private static final byte ANALOG_OUTPUT_ENABLE_FLAG = 0b01000000; // 0100 0000 0x40
+	private static final byte ANALOG_OUTPUT_ENABLE_MASK = 0b01000000; // 0100 0000 0x40
 	
 	public static enum InputMode {
 		FOUR_SINGLE_ENDED_INPUTS(0b00, 4, "Four single-ended inputs"),
@@ -97,7 +96,7 @@ public class PCF8591 extends AbstractDeviceFactory implements AnalogInputDeviceF
 	
 	private I2CDevice device;
 	private String keyPrefix;
-	private boolean enableAnalogOutput = false;
+	private boolean outputEnabled = false;
 	private InputMode inputMode;
 	
 	public PCF8591() {
@@ -107,7 +106,8 @@ public class PCF8591 extends AbstractDeviceFactory implements AnalogInputDeviceF
 	public PCF8591(int controller, int address, InputMode inputMode) {
 		this.inputMode = inputMode;
 		
-		device = new I2CDevice(controller, address, I2CConstants.ADDR_SIZE_7, I2CConstants.DEFAULT_CLOCK_FREQUENCY);
+		device = new I2CDevice(controller, address, I2CConstants.ADDR_SIZE_7,
+				I2CConstants.DEFAULT_CLOCK_FREQUENCY, ByteOrder.LITTLE_ENDIAN);
 		keyPrefix = getName() + "-";
 	}
 
@@ -139,6 +139,25 @@ public class PCF8591 extends AbstractDeviceFactory implements AnalogInputDeviceF
 		
 		return device;
 	}
+
+	@Override
+	public GpioAnalogOutputDeviceInterface provisionAnalogOutputPin(int pinNumber) throws RuntimeIOException {
+		if (pinNumber != 0) {
+			throw new IllegalArgumentException(
+					"Invalid channel number (" + pinNumber + "), must be 0");
+		}
+		
+		String key = keyPrefix + pinNumber;
+		
+		if (isDeviceOpened(key)) {
+			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
+		}
+		
+		GpioAnalogOutputDeviceInterface device = new PCF8591AnalogOutputPin(this, key, pinNumber);
+		deviceOpened(device);
+		
+		return device;
+	}
 	
 	/**
 	 * Read the analog value in the range 0..1
@@ -153,13 +172,14 @@ public class PCF8591 extends AbstractDeviceFactory implements AnalogInputDeviceF
 	/**
 	 * Set the analog output value.
 	 * @param dacPin The analog output channel.
+	 * @param value Analogue output value (0..1).
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
-	public void setValue(int dacPin) throws RuntimeIOException {
+	public void setValue(int dacPin, float value) throws RuntimeIOException {
 		if (dacPin < 0 || dacPin >= 1) {
 			throw new IllegalArgumentException("Invalid output channel number (" + dacPin + ")");
 		}
-		// TODO
+		device.writeByte(ANALOG_OUTPUT_ENABLE_MASK, (byte) (value * (RANGE-1)));
 	}
 
 	private int getRawValue(int adcPin) {
@@ -168,20 +188,26 @@ public class PCF8591 extends AbstractDeviceFactory implements AnalogInputDeviceF
 		}
 		
 		// Set output enable?
-		byte control_byte = (byte) (inputMode.getControlFlags() | adcPin);
+		byte control_byte = (byte) ((outputEnabled ? ANALOG_OUTPUT_ENABLE_MASK : 0) | inputMode.getControlFlags() | adcPin);
 		// Note if the auto-increment flag is set you need to read 5 bytes (if all channels are in single input mode),
 		// 1 for the previous value + 1 for each channel.
 		
-		device.writeByte(control_byte, ByteOrder.LITTLE_ENDIAN);
+		Logger.info(String.format("control_byte=0x%02x", Byte.valueOf(control_byte)));
+		
+		device.writeByte(control_byte);
 		byte[] data = device.read(2);
 		// TODO Validate this... If little endian is it the reverse of this?!
 		// Note data[0] is the previous value held in the DAC register, data[1] is value of data byte 1
-		Logger.info(String.format("data[1]=0x%2x, data[0]=0x%2x", Byte.valueOf(data[1]), Byte.valueOf(data[0])));
+		Logger.info(String.format("data[1]=0x%02x, data[0]=0x%02x", Byte.valueOf(data[1]), Byte.valueOf(data[0])));
 		
 		return data[1] & 0xff;
 	}
 
 	public int getNumPins() {
 		return inputMode.getNumPins();
+	}
+	
+	public void setOutputEnabledFlag(boolean outputEnabled) {
+		this.outputEnabled = outputEnabled;
 	}
 }

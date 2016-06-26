@@ -38,6 +38,7 @@ import com.diozero.api.*;
 import com.diozero.internal.spi.*;
 import com.diozero.internal.spi.GpioDeviceInterface.Direction;
 import com.diozero.util.RuntimeIOException;
+import com.diozero.util.SystemInfo;
 
 public class SysFsDeviceFactory extends BaseNativeDeviceFactory {
 	private static final String GPIO_ROOT_DIR = "/sys/class/gpio";
@@ -45,6 +46,7 @@ public class SysFsDeviceFactory extends BaseNativeDeviceFactory {
 	private static final String UNEXPORT_FILE = "unexport";
 	private static final String GPIO_DIR_PREFIX = "gpio";
 	private static final String DIRECTION_FILE = "direction";
+	private static final int DEFAULT_PWM_FREQUENCY = 100_000;
 	
 	private Path rootPath;
 	
@@ -77,6 +79,16 @@ public class SysFsDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
+	protected GpioAnalogInputDeviceInterface createAnalogInputPin(String key, int pinNumber) throws RuntimeIOException {
+		throw new UnsupportedOperationException("Analogue input not supported");
+	}
+
+	@Override
+	protected GpioAnalogOutputDeviceInterface createAnalogOutputPin(String key, int pinNumber) throws RuntimeIOException {
+		throw new UnsupportedOperationException("Analog devices aren't supported on this device");
+	}
+
+	@Override
 	protected GpioDigitalInputDeviceInterface createDigitalInputPin(String key, int pinNumber, GpioPullUpDown pud,
 			GpioEventTrigger trigger) throws RuntimeIOException {
 		export(pinNumber, Direction.INPUT);
@@ -93,13 +105,12 @@ public class SysFsDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	protected GpioAnalogInputDeviceInterface createAnalogInputPin(String key, int pinNumber) throws RuntimeIOException {
-		throw new UnsupportedOperationException("Analogue input not supported");
-	}
-
-	@Override
 	protected PwmOutputDeviceInterface createPwmOutputPin(String key, int pinNumber, float initialValue,
 			PwmType pwmType) throws RuntimeIOException {
+		if (SystemInfo.getBoardInfo().getMake().equals("Odroid")) {
+			// FIXME Match with previously set PWM frequency...
+			return new OdroidSysFsPwmOutputDevice(key, this, pinNumber, DEFAULT_PWM_FREQUENCY, initialValue, 1023);
+		}
 		throw new UnsupportedOperationException("PWM not supported");
 	}
 

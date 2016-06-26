@@ -25,40 +25,89 @@ package com.diozero.util;
  * THE SOFTWARE.
  * #L%
  */
-
-
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.Reader;
+import java.io.*;
 import java.util.Properties;
+import java.util.ServiceLoader;
+
+import org.pmw.tinylog.Logger;
 
 public class SystemInfo {
 	private static final String OS_RELEASE_FILE = "/etc/os-release";
+	private static final String CPUINFO_FILE = "/proc/cpuinfo";
 	
-	private static Properties properties;
 	private static boolean initialised;
+	private static Properties osReleaseProperties;
+	private static BoardInfo boardInfo;
 	
 	private static synchronized void initialise() throws RuntimeIOException {
 		if (! initialised) {
-			properties = new Properties();
+			osReleaseProperties = new Properties();
 			try (Reader reader = new FileReader(OS_RELEASE_FILE)) {
-				properties.load(reader);
+				osReleaseProperties.load(reader);
 				
 				initialised = true;
 			} catch (IOException e) {
 				throw new RuntimeIOException("Error loading properties file '" + OS_RELEASE_FILE, e);
 			}
+			
+			ProcessBuilder pb = new ProcessBuilder("cat", CPUINFO_FILE);
+			BufferedReader reader = null;
+			String revision_string = null;
+			try {
+				Process proc = pb.start();
+				reader = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+				String line;
+				do {
+					line = reader.readLine();
+					if (line != null && line.startsWith("Revision")) {
+						revision_string = line.split(":")[1].trim();
+					}
+				} while (line != null);
+			} catch (IOException | NullPointerException | IndexOutOfBoundsException e) {
+				Logger.error(e, "Error reading " + CPUINFO_FILE, e.getMessage());
+			} finally {
+				if (reader != null) { try { reader.close(); } catch (IOException e) {} }
+			}
+			
+			boardInfo = lookupBoardInfo(revision_string);
 		}
 	}
-
-	public static String getOperatingSystem() {
-		initialise();
-		
-		return properties.getProperty("ID");
+	
+	protected static BoardInfo lookupBoardInfo(String revision) {
+		BoardInfo board_info = null;
+		ServiceLoader<BoardInfoProvider> service_loader = ServiceLoader.load(BoardInfoProvider.class);
+		for (BoardInfoProvider board_info_provider : service_loader) {
+			board_info = board_info_provider.lookup(revision);
+			if (board_info != null) {
+				break;
+			}
+		}
+		return board_info;
 	}
 
-	public static void main(String[] args) {
-		System.out.println(properties);
-		System.out.println("OS='" + getOperatingSystem() + "'");
+	public static String getOsReleaseProperty(String property) {
+		return osReleaseProperties.getProperty(property);
+	}
+
+	public static String getOperatingSystemId() {
+		initialise();
+		
+		return osReleaseProperties.getProperty("ID");
+	}
+
+	public static String getOperatingSystemVersion() {
+		initialise();
+		
+		return osReleaseProperties.getProperty("VERSION");
+	}
+
+	public static String getOperatingSystemVersionId() {
+		initialise();
+		
+		return osReleaseProperties.getProperty("VERSION_ID");
+	}
+	
+	public static BoardInfo getBoardInfo() {
+		return boardInfo;
 	}
 }

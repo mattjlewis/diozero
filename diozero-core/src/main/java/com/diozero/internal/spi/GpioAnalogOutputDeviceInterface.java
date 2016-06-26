@@ -1,10 +1,10 @@
-package com.diozero.util;
+package com.diozero.internal.spi;
 
 /*
  * #%L
  * Device I/O Zero - Core
  * %%
- * Copyright (C) 2016 mattjlewis
+ * Copyright (C) 2016 diozero
  * %%
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,29 +26,8 @@ package com.diozero.util;
  * #L%
  */
 
+import com.diozero.util.RuntimeIOException;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
-
-import org.pmw.tinylog.Logger;
-
-public class LibraryLoader {
-	public static void loadLibrary(Class<?> clz, String libName) throws UnsatisfiedLinkError {
-		;
-		try {
-			// First try load the library from within the JAR file
-			Path path = Files.createTempFile("lib" + libName, ".so");
-			path.toFile().deleteOnExit();
-			Files.copy(clz.getResourceAsStream("/lib/" + SystemInfo.getOperatingSystemId() + "/lib" + libName + ".so"), path,
-					StandardCopyOption.REPLACE_EXISTING);
-			Runtime.getRuntime().load(path.toString());
-		} catch (NullPointerException | IOException e) {
-			Logger.info(e, "Error loading library from classpath: " + e);
-
-			// Try load from the Java system library path (-Djava.library.path)
-			System.loadLibrary(libName);
-		}
-	}
+public interface GpioAnalogOutputDeviceInterface extends GpioAnalogInputDeviceInterface {
+	void setValue(float value) throws RuntimeIOException;
 }

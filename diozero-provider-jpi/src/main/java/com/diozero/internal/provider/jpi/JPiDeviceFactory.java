@@ -58,14 +58,19 @@ public class JPiDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	protected GpioDigitalInputDeviceInterface createDigitalInputPin(String key, int pinNumber, GpioPullUpDown pud,
-			GpioEventTrigger trigger) throws RuntimeIOException {
-		return new JPiDigitalInputDevice(this, key, pinNumber, pud, trigger);
+	protected GpioAnalogInputDeviceInterface createAnalogInputPin(String key, int pinNumber) throws RuntimeIOException {
+		throw new UnsupportedOperationException("Analog input not supported");
 	}
 
 	@Override
-	protected GpioAnalogInputDeviceInterface createAnalogInputPin(String key, int pinNumber) throws RuntimeIOException {
-		throw new UnsupportedOperationException("Analog input not supported");
+	protected GpioAnalogOutputDeviceInterface createAnalogOutputPin(String key, int pinNumber) throws RuntimeIOException {
+		throw new UnsupportedOperationException("Analog devices aren't supported on this device");
+	}
+
+	@Override
+	protected GpioDigitalInputDeviceInterface createDigitalInputPin(String key, int pinNumber, GpioPullUpDown pud,
+			GpioEventTrigger trigger) throws RuntimeIOException {
+		return new JPiDigitalInputDevice(this, key, pinNumber, pud, trigger);
 	}
 
 	@Override

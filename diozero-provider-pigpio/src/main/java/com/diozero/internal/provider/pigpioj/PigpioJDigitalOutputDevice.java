@@ -76,5 +76,6 @@ public class PigpioJDigitalOutputDevice extends AbstractDevice implements GpioDi
 	protected void closeDevice() throws RuntimeIOException {
 		Logger.debug("closeDevice()");
 		// No GPIO close method in pigpio
+		// TODO Revert to default input mode?
 	}
 }

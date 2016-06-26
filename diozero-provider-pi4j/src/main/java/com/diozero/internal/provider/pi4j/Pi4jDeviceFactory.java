@@ -113,14 +113,19 @@ public class Pi4jDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	protected GpioDigitalInputDeviceInterface createDigitalInputPin(String key, int pinNumber, GpioPullUpDown pud,
-			GpioEventTrigger trigger) throws RuntimeIOException {
-		return new Pi4jGpioInputDevice(key, this, gpioController, pinNumber, pud, trigger);
+	protected GpioAnalogInputDeviceInterface createAnalogInputPin(String key, int pinNumber) throws RuntimeIOException {
+		throw new UnsupportedOperationException("Analog devices aren't supported on this device");
 	}
 
 	@Override
-	protected GpioAnalogInputDeviceInterface createAnalogInputPin(String key, int pinNumber) throws RuntimeIOException {
+	protected GpioAnalogOutputDeviceInterface createAnalogOutputPin(String key, int pinNumber) throws RuntimeIOException {
 		throw new UnsupportedOperationException("Analog devices aren't supported on this device");
+	}
+
+	@Override
+	protected GpioDigitalInputDeviceInterface createDigitalInputPin(String key, int pinNumber, GpioPullUpDown pud,
+			GpioEventTrigger trigger) throws RuntimeIOException {
+		return new Pi4jGpioInputDevice(key, this, gpioController, pinNumber, pud, trigger);
 	}
 
 	@Override

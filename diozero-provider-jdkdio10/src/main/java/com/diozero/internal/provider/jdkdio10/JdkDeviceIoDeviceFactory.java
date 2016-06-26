@@ -72,6 +72,16 @@ public class JdkDeviceIoDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
+	protected GpioAnalogInputDeviceInterface createAnalogInputPin(String key, int pinNumber) throws RuntimeIOException {
+		throw new UnsupportedOperationException("Analog devices aren't supported on this device");
+	}
+
+	@Override
+	protected GpioAnalogOutputDeviceInterface createAnalogOutputPin(String key, int pinNumber) throws RuntimeIOException {
+		throw new UnsupportedOperationException("Analog devices aren't supported on this device");
+	}
+
+	@Override
 	protected GpioDigitalInputDeviceInterface createDigitalInputPin(String key, int pinNumber, GpioPullUpDown pud,
 			GpioEventTrigger trigger) throws RuntimeIOException {
 		return new JdkDeviceIoGpioInputDevice(key, this, pinNumber, pud, trigger);
@@ -80,11 +90,6 @@ public class JdkDeviceIoDeviceFactory extends BaseNativeDeviceFactory {
 	@Override
 	protected GpioDigitalOutputDeviceInterface createDigitalOutputPin(String key, int pinNumber, boolean initialValue) throws RuntimeIOException {
 		return new JdkDeviceIoGpioOutputDevice(key, this, pinNumber, initialValue);
-	}
-
-	@Override
-	protected GpioAnalogInputDeviceInterface createAnalogInputPin(String key, int pinNumber) throws RuntimeIOException {
-		throw new UnsupportedOperationException("Analog devices aren't supported on this device");
 	}
 
 	@Override

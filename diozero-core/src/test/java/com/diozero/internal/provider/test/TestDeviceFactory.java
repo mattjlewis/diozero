@@ -36,6 +36,7 @@ import com.diozero.util.RuntimeIOException;
 
 public class TestDeviceFactory extends BaseNativeDeviceFactory {
 	private static Class<? extends GpioAnalogInputDeviceInterface> analogInputDeviceClass;
+	private static Class<? extends GpioAnalogOutputDeviceInterface> analogOutputDeviceClass;
 	private static Class<? extends GpioDigitalInputDeviceInterface> digitalInputDeviceClass = TestDigitalInputDevice.class;
 	private static Class<? extends GpioDigitalOutputDeviceInterface> digitalOutputDeviceClass = TestDigitalOutputDevice.class;
 	private static Class<? extends PwmOutputDeviceInterface> pwmOutputDeviceClass;
@@ -44,6 +45,10 @@ public class TestDeviceFactory extends BaseNativeDeviceFactory {
 	
 	public static void setAnalogInputDeviceClass(Class<? extends GpioAnalogInputDeviceInterface> clz) {
 		analogInputDeviceClass = clz;
+	}
+	
+	public static void setAnalogOutputDeviceClass(Class<? extends GpioAnalogOutputDeviceInterface> clz) {
+		analogOutputDeviceClass = clz;
 	}
 
 	public static void setDigitalInputDeviceClass(Class<? extends GpioDigitalInputDeviceInterface> clz) {
@@ -87,6 +92,20 @@ public class TestDeviceFactory extends BaseNativeDeviceFactory {
 		
 		try {
 			return analogInputDeviceClass.getConstructor(String.class, DeviceFactoryInterface.class, int.class)
+				.newInstance(key, this, Integer.valueOf(pinNumber));
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	protected GpioAnalogOutputDeviceInterface createAnalogOutputPin(String key, int pinNumber) throws RuntimeIOException {
+		if (analogOutputDeviceClass == null) {
+			throw new UnsupportedOperationException("Analog output implementation class hasn't been set");
+		}
+		
+		try {
+			return analogOutputDeviceClass.getConstructor(String.class, DeviceFactoryInterface.class, int.class)
 				.newInstance(key, this, Integer.valueOf(pinNumber));
 		} catch (Exception e) {
 			throw new RuntimeException(e);

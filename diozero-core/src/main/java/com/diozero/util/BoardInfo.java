@@ -27,28 +27,31 @@ package com.diozero.util;
  */
 
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
+public class BoardInfo {
+	private String make;
+	private String model;
+	private int memory;
+	
+	public BoardInfo(String make, String model, int memory) {
+		this.make = make;
+		this.model = model;
+		this.memory = memory;
+	}
 
-import org.pmw.tinylog.Logger;
+	public String getMake() {
+		return make;
+	}
 
-public class LibraryLoader {
-	public static void loadLibrary(Class<?> clz, String libName) throws UnsatisfiedLinkError {
-		;
-		try {
-			// First try load the library from within the JAR file
-			Path path = Files.createTempFile("lib" + libName, ".so");
-			path.toFile().deleteOnExit();
-			Files.copy(clz.getResourceAsStream("/lib/" + SystemInfo.getOperatingSystemId() + "/lib" + libName + ".so"), path,
-					StandardCopyOption.REPLACE_EXISTING);
-			Runtime.getRuntime().load(path.toString());
-		} catch (NullPointerException | IOException e) {
-			Logger.info(e, "Error loading library from classpath: " + e);
+	public String getModel() {
+		return model;
+	}
 
-			// Try load from the Java system library path (-Djava.library.path)
-			System.loadLibrary(libName);
-		}
+	public int getMemory() {
+		return memory;
+	}
+
+	@Override
+	public String toString() {
+		return "BoardInfo [make=" + make + ", model=" + model + ", memory=" + memory + "]";
 	}
 }

@@ -98,6 +98,7 @@ public class JPiNative {
 		closeMmapBuffer(mmap.getFd(), mmap.getAddress(), mmap.getLength());
 	}
 	
+	/** Returns the function of a GPIO: 0=input, 1=output, 4=alt0 */
 	public static int getMode(int gpio) {
 		int reg = gpio / 10;
 		int shift = (gpio % 10) * 3;

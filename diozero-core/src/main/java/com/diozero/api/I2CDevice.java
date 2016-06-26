@@ -162,17 +162,26 @@ public class I2CDevice implements Closeable, I2CConstants {
 		buffer.flip();
 		device.write(regAddr, SUB_ADDRESS_SIZE_1_BYTE, buffer);
 	}
+	
+	public ByteBuffer read(int address, int count) {
+		ByteBuffer buffer = ByteBuffer.allocateDirect(count);
+		read(address, buffer);
+		return buffer;
+	}
+	
+	public void read(int address, ByteBuffer dst) throws RuntimeException {
+		read(address, SUB_ADDRESS_SIZE_1_BYTE, dst);
+	}
 
 	public void read(int address, int subAddressSize, ByteBuffer buffer) throws RuntimeIOException {
 		device.read(address, subAddressSize, buffer);
+		buffer.rewind();
+		buffer.order(order);
 	}
 
 	public byte[] read(int address, int subAddressSize, int count) throws RuntimeIOException {
 		ByteBuffer buffer = ByteBuffer.allocateDirect(subAddressSize * count);
 		read(address, subAddressSize, buffer);
-
-		// Rewind the byte buffer for reading
-		buffer.rewind();
 
 		byte[] data = new byte[count];
 		buffer.get(data);
@@ -221,10 +230,6 @@ public class I2CDevice implements Closeable, I2CConstants {
 		ByteBuffer buffer = ByteBuffer.allocateDirect(2);
 		read(address, subAddressSize, buffer);
 
-		// Rewind the buffer for reading
-		buffer.rewind();
-
-		buffer.order(order);
 		return buffer.getShort();
 	}
 
@@ -251,9 +256,6 @@ public class I2CDevice implements Closeable, I2CConstants {
 
 		ByteBuffer buffer = ByteBuffer.allocateDirect(length);
 		read(address, subAddressSize, buffer);
-
-		// Rewind the buffer for reading
-		buffer.rewind();
 
 		return IOUtil.getUInt(buffer, length, order);
 	}
@@ -460,6 +462,7 @@ public class I2CDevice implements Closeable, I2CConstants {
 		// bool I2Cdev::writeWord(uint8_t devAddr, uint8_t regAddr, uint16_t
 		// data)
 		ByteBuffer buffer = ByteBuffer.allocateDirect(2);
+		buffer.order(order);
 		buffer.putShort((short) data);
 		buffer.flip();
 
@@ -496,6 +499,8 @@ public class I2CDevice implements Closeable, I2CConstants {
 	
 	public void read(ByteBuffer dst) throws RuntimeException {
 		device.read(dst);
+		dst.order(order);
+		dst.rewind();
 	}
 	
 	public byte readByte() throws RuntimeIOException {
@@ -504,10 +509,7 @@ public class I2CDevice implements Closeable, I2CConstants {
 	
 	public byte[] read(int count) throws RuntimeException {
 		ByteBuffer buffer = ByteBuffer.allocateDirect(count);
-		device.read(buffer);
-
-		// Rewind the byte buffer for reading
-		buffer.rewind();
+		read(buffer);
 
 		byte[] data = new byte[count];
 		buffer.get(data);
@@ -521,9 +523,7 @@ public class I2CDevice implements Closeable, I2CConstants {
 	
 	public void write(byte[] data, ByteOrder order) throws RuntimeException {
 		ByteBuffer buffer = ByteBuffer.wrap(data);
-		if (! buffer.order().equals(order)) {
-			buffer.order(order);
-		}
+		buffer.order(order);
 		device.write(buffer);
 	}
 	
@@ -532,10 +532,6 @@ public class I2CDevice implements Closeable, I2CConstants {
 	}
 	
 	public void writeByte(byte data, ByteOrder order) throws RuntimeException {
-		ByteBuffer buffer = ByteBuffer.wrap(new byte[] { data });
-		if (! buffer.order().equals(order)) {
-			buffer.order(order);
-		}
-		device.write(buffer);
+		write(new byte[] { data }, order);
 	}
 }

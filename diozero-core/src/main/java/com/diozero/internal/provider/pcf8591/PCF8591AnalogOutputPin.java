@@ -1,4 +1,4 @@
-package com.diozero.util;
+package com.diozero.internal.provider.pcf8591;
 
 /*
  * #%L
@@ -27,28 +27,42 @@ package com.diozero.util;
  */
 
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
-
 import org.pmw.tinylog.Logger;
 
-public class LibraryLoader {
-	public static void loadLibrary(Class<?> clz, String libName) throws UnsatisfiedLinkError {
-		;
-		try {
-			// First try load the library from within the JAR file
-			Path path = Files.createTempFile("lib" + libName, ".so");
-			path.toFile().deleteOnExit();
-			Files.copy(clz.getResourceAsStream("/lib/" + SystemInfo.getOperatingSystemId() + "/lib" + libName + ".so"), path,
-					StandardCopyOption.REPLACE_EXISTING);
-			Runtime.getRuntime().load(path.toString());
-		} catch (NullPointerException | IOException e) {
-			Logger.info(e, "Error loading library from classpath: " + e);
+import com.diozero.internal.spi.AbstractDevice;
+import com.diozero.internal.spi.GpioAnalogOutputDeviceInterface;
+import com.diozero.sandpit.PCF8591;
+import com.diozero.util.RuntimeIOException;
 
-			// Try load from the Java system library path (-Djava.library.path)
-			System.loadLibrary(libName);
-		}
+public class PCF8591AnalogOutputPin extends AbstractDevice implements GpioAnalogOutputDeviceInterface {
+	private int pinNumber;
+	private PCF8591 pcf8591;
+
+	public PCF8591AnalogOutputPin(PCF8591 pcf8591, String key, int pinNumber) {
+		super(key, pcf8591);
+		
+		this.pcf8591 = pcf8591;
+		this.pinNumber = pinNumber;
+	}
+
+	@Override
+	protected void closeDevice() throws RuntimeIOException {
+		Logger.debug("closeDevice()");
+		// TODO Nothing to do?
+	}
+
+	@Override
+	public int getPin() {
+		return pinNumber;
+	}
+
+	@Override
+	public float getValue() throws RuntimeIOException {
+		return pcf8591.getValue(pinNumber);
+	}
+
+	@Override
+	public void setValue(float value) throws RuntimeIOException {
+		pcf8591.setValue(pinNumber, value);
 	}
 }

@@ -107,6 +107,16 @@ public class WiringPiDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
+	protected GpioAnalogInputDeviceInterface createAnalogInputPin(String key, int pinNumber) throws RuntimeIOException {
+		throw new UnsupportedOperationException("Analog devices aren't supported on this device");
+	}
+
+	@Override
+	protected GpioAnalogOutputDeviceInterface createAnalogOutputPin(String key, int pinNumber) throws RuntimeIOException {
+		throw new UnsupportedOperationException("Analog devices aren't supported on this device");
+	}
+
+	@Override
 	protected GpioDigitalInputDeviceInterface createDigitalInputPin(String key, int pinNumber, GpioPullUpDown pud,
 			GpioEventTrigger trigger) throws RuntimeIOException {
 		if (GpioUtil.isPinSupported(pinNumber) != 1) {
@@ -114,11 +124,6 @@ public class WiringPiDeviceFactory extends BaseNativeDeviceFactory {
 		}
 		
 		return new WiringPiDigitalInputDevice(key, this, pinNumber, pud, trigger);
-	}
-
-	@Override
-	protected GpioAnalogInputDeviceInterface createAnalogInputPin(String key, int pinNumber) throws RuntimeIOException {
-		throw new UnsupportedOperationException("Analog devices aren't supported on this device");
 	}
 
 	@Override

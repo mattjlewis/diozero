@@ -59,10 +59,22 @@ public class PCF8591App {
 	
 	private static void test(int adcPin) {
 		try (PCF8591 adc = new PCF8591()) {
+			adc.setOutputEnabledFlag(true);
+			float[] v = new float[4];
+			boolean high = true;
 			while (true) {
-				float val = adc.getValue(adcPin);
-				Logger.info(String.format("Pin %d value=%.2f, v=%.2f",
-						Integer.valueOf(adcPin), Float.valueOf(val), Float.valueOf(val*3.3f)));
+				if (high) {
+					adc.setValue(0, 1);
+					high = false;
+				} else {
+					adc.setValue(0, 0);
+					high = true;
+				}
+				for (int i=0; i<v.length; i++) {
+					v[i] = adc.getValue(i);
+				}
+				Logger.info(String.format("Pin 0: %.2f; Pin 1: %.2f; Pin 2: %.2f; Pin 3: %.2f",
+						Float.valueOf(v[0]), Float.valueOf(v[1]), Float.valueOf(v[2]), Float.valueOf(v[3])));
 				
 				SleepUtil.sleepSeconds(1);
 			}

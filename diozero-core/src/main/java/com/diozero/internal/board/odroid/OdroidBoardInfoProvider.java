@@ -1,4 +1,4 @@
-package com.diozero.util;
+package com.diozero.internal.board.odroid;
 
 /*
  * #%L
@@ -27,28 +27,39 @@ package com.diozero.util;
  */
 
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
+import java.util.HashMap;
+import java.util.Map;
 
-import org.pmw.tinylog.Logger;
+import com.diozero.util.BoardInfo;
+import com.diozero.util.BoardInfoProvider;
 
-public class LibraryLoader {
-	public static void loadLibrary(Class<?> clz, String libName) throws UnsatisfiedLinkError {
-		;
-		try {
-			// First try load the library from within the JAR file
-			Path path = Files.createTempFile("lib" + libName, ".so");
-			path.toFile().deleteOnExit();
-			Files.copy(clz.getResourceAsStream("/lib/" + SystemInfo.getOperatingSystemId() + "/lib" + libName + ".so"), path,
-					StandardCopyOption.REPLACE_EXISTING);
-			Runtime.getRuntime().load(path.toString());
-		} catch (NullPointerException | IOException e) {
-			Logger.info(e, "Error loading library from classpath: " + e);
+public class OdroidBoardInfoProvider implements BoardInfoProvider {
+	public static final String MAKE = "Odroid";
+	
+	public static enum Model {
+		C0, U2_U3, C1, XU_3_4, C2;
+	}
+	
+	private static Map<String, BoardInfo> BOARDS;
+	static {
+		BOARDS = new HashMap<>();
+		
+		// TODO Verify C0
+		//BOARDS.put("????", new OdroidBoardInfo(Model.C0, 1024));
+		BOARDS.put("0000", new OdroidBoardInfo(Model.U2_U3, 2048));
+		BOARDS.put("000a", new OdroidBoardInfo(Model.C1, 1024));
+		BOARDS.put("0100", new OdroidBoardInfo(Model.XU_3_4, 2048));
+		BOARDS.put("020b", new OdroidBoardInfo(Model.C2, 2048));
+	}
 
-			// Try load from the Java system library path (-Djava.library.path)
-			System.loadLibrary(libName);
+	@Override
+	public BoardInfo lookup(String revisionString) {
+		return BOARDS.get(revisionString);
+	}
+
+	public static class OdroidBoardInfo extends BoardInfo {
+		public OdroidBoardInfo(Model model, int memory) {
+			super(MAKE, model.toString(), memory);
 		}
 	}
 }
