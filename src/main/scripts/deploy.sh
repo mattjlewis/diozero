@@ -27,16 +27,20 @@
 
 version=0.8-SNAPSHOT
 pigpioj_version=1.0.0
-pi_user=pi
-#pi_host=george.local
-#pi_host=sheldon.local
-pi_host=stuart.local
+user=pi
+#host=george.local
+#host=sheldon.local
+host=stuart.local
+# FIXME Should really use getopts...
 if [ $# -gt 0 ]; then
-	pi_host=$1
+	host=$1
 fi
-install_folder=/home/pi/diozero
+if [ $# -gt 1 ]; then
+	user = $2
+fi
+install_folder=/home/$user/diozero
 
-echo "Deploying version ${version} to ${pi_user}@${pi_host}:${install_folder}"
+echo "Deploying version ${version} to ${user}@${host}:${install_folder}"
 
 files="../pigpioj/pigpioj-java/target/pigpioj-java-${pigpioj_version}.jar \
 	src/main/scripts/runSampleApps.sh \
@@ -53,4 +57,4 @@ files="../pigpioj/pigpioj-java/target/pigpioj-java-${pigpioj_version}.jar \
 	diozero-ws281x-java/target/diozero-ws281x-java-${version}.jar \
 	distribution/target/diozero-distribution-${version}-bin.zip"
 
-scp $files ${pi_user}@${pi_host}:${install_folder}
+scp $files ${user}@${host}:${install_folder}
