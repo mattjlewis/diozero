@@ -51,22 +51,21 @@ public class SystemInfo {
 			}
 			
 			ProcessBuilder pb = new ProcessBuilder("cat", CPUINFO_FILE);
-			BufferedReader reader = null;
 			String revision_string = null;
 			try {
 				Process proc = pb.start();
-				reader = new BufferedReader(new InputStreamReader(proc.getInputStream()));
-				String line;
-				do {
-					line = reader.readLine();
-					if (line != null && line.startsWith("Revision")) {
-						revision_string = line.split(":")[1].trim();
-					}
-				} while (line != null);
+				try (BufferedReader reader = new BufferedReader(new InputStreamReader(proc.getInputStream()))) {
+					String line;
+					// Fully read the process output
+					do {
+						line = reader.readLine();
+						if (line != null && line.startsWith("Revision")) {
+							revision_string = line.split(":")[1].trim();
+						}
+					} while (line != null);
+				}
 			} catch (IOException | NullPointerException | IndexOutOfBoundsException e) {
 				Logger.error(e, "Error reading " + CPUINFO_FILE, e.getMessage());
-			} finally {
-				if (reader != null) { try { reader.close(); } catch (IOException e) {} }
 			}
 			
 			boardInfo = lookupBoardInfo(revision_string);
@@ -86,6 +85,8 @@ public class SystemInfo {
 	}
 
 	public static String getOsReleaseProperty(String property) {
+		initialise();
+		
 		return osReleaseProperties.getProperty(property);
 	}
 
@@ -108,6 +109,12 @@ public class SystemInfo {
 	}
 	
 	public static BoardInfo getBoardInfo() {
+		initialise();
+		
 		return boardInfo;
+	}
+
+	public static String getLibraryPath() {
+		return getBoardInfo().getLibraryPath();
 	}
 }
