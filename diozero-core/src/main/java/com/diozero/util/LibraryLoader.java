@@ -41,7 +41,7 @@ public class LibraryLoader {
 			// First try load the library from within the JAR file
 			Path path = Files.createTempFile("lib" + libName, ".so");
 			path.toFile().deleteOnExit();
-			Files.copy(clz.getResourceAsStream("/lib/" + SystemInfo.getOperatingSystemId() + "/lib" + libName + ".so"), path,
+			Files.copy(clz.getResourceAsStream("/lib/" + SystemInfo.getLibraryPath() + "/lib" + libName + ".so"), path,
 					StandardCopyOption.REPLACE_EXISTING);
 			Runtime.getRuntime().load(path.toString());
 		} catch (NullPointerException | IOException e) {
