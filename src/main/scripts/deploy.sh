@@ -27,7 +27,7 @@
 
 version=0.8-SNAPSHOT
 pigpioj_version=1.0.0
-user=pi
+username=pi
 #host=george.local
 #host=sheldon.local
 host=stuart.local
@@ -36,11 +36,11 @@ if [ $# -gt 0 ]; then
 	host=$1
 fi
 if [ $# -gt 1 ]; then
-	user = $2
+	username=$2
 fi
-install_folder=/home/$user/diozero
+install_folder=/home/${username}/diozero
 
-echo "Deploying version ${version} to ${user}@${host}:${install_folder}"
+echo "Deploying version ${version} to ${username}@${host}:${install_folder}"
 
 files="../pigpioj/pigpioj-java/target/pigpioj-java-${pigpioj_version}.jar \
 	src/main/scripts/runSampleApps.sh \
@@ -57,4 +57,4 @@ files="../pigpioj/pigpioj-java/target/pigpioj-java-${pigpioj_version}.jar \
 	diozero-ws281x-java/target/diozero-ws281x-java-${version}.jar \
 	distribution/target/diozero-distribution-${version}-bin.zip"
 
-scp $files ${user}@${host}:${install_folder}
+scp $files ${username}@${host}:${install_folder}
