@@ -37,7 +37,7 @@ import com.diozero.util.BoardInfoProvider;
  * See <a href="https://github.com/AndrewFromMelbourne/raspberry_pi_revision">this c library</a>.
  */
 public class PiBoardInfoProvider implements BoardInfoProvider {
-	public static final String MAKE = "Raspberry Pi";
+	public static final String MAKE = "RaspberryPi";
 	
 	public static enum Model {
 		A(0), B(1), A_PLUS(2), B_PLUS(3), PI_2_B(4), ALPHA(5), COMPUTE_MODEL(6), UNKNWON(7), PI_3_B(8), ZERO(9);
