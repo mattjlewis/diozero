@@ -33,13 +33,12 @@ import com.diozero.util.RuntimeIOException;
 
 public class JPiDeviceFactory extends BaseNativeDeviceFactory {
 	public JPiDeviceFactory() {
-		JPiNative.initialise();
 	}
 	
 	@Override
 	public void shutdown() {
 		super.shutdown();
-		JPiNative.terminate();
+		JPiMmapGpio.terminate();
 	}
 
 	@Override

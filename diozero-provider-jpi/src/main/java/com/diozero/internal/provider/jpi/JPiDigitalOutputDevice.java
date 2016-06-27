@@ -30,6 +30,7 @@ package com.diozero.internal.provider.jpi;
 import org.pmw.tinylog.Logger;
 
 import com.diozero.internal.spi.AbstractDevice;
+import com.diozero.internal.spi.GpioDeviceInterface;
 import com.diozero.internal.spi.GpioDigitalOutputDeviceInterface;
 import com.diozero.util.RuntimeIOException;
 
@@ -42,8 +43,8 @@ public class JPiDigitalOutputDevice extends AbstractDevice implements GpioDigita
 		
 		this.pinNumber = pinNumber;
 		
-		JPiNative.setMode(pinNumber, JPiNative.PI_OUTPUT);
-		JPiNative.gpioWrite(pinNumber, initialValue);
+		JPiMmapGpio.setMode(pinNumber, GpioDeviceInterface.Direction.OUTPUT);
+		JPiMmapGpio.gpioWrite(pinNumber, initialValue);
 	}
 
 	@Override
@@ -53,12 +54,12 @@ public class JPiDigitalOutputDevice extends AbstractDevice implements GpioDigita
 
 	@Override
 	public boolean getValue() throws RuntimeIOException {
-		return JPiNative.gpioRead(pinNumber);
+		return JPiMmapGpio.gpioRead(pinNumber);
 	}
 
 	@Override
 	public void setValue(boolean value) throws RuntimeIOException {
-		JPiNative.gpioWrite(pinNumber, value);
+		JPiMmapGpio.gpioWrite(pinNumber, value);
 	}
 
 	@Override

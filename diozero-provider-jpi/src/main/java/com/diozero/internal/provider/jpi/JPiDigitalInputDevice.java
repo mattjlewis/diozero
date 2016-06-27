@@ -30,14 +30,15 @@ package com.diozero.internal.provider.jpi;
 import org.pmw.tinylog.Logger;
 
 import com.diozero.api.*;
+import com.diozero.internal.board.odroid.OdroidBoardInfoProvider;
 import com.diozero.internal.provider.sysfs.SysFsDeviceFactory;
-import com.diozero.internal.spi.AbstractInputDevice;
-import com.diozero.internal.spi.DeviceFactoryInterface;
-import com.diozero.internal.spi.GpioDigitalInputDeviceInterface;
+import com.diozero.internal.spi.*;
 import com.diozero.util.RuntimeIOException;
+import com.diozero.util.SystemInfo;
 
 public class JPiDigitalInputDevice extends AbstractInputDevice<DigitalInputEvent>
 implements GpioDigitalInputDeviceInterface, InputEventListener<DigitalInputEvent> {
+
 	private static SysFsDeviceFactory sysFsDeviceFactory;
 	static {
 		sysFsDeviceFactory = new SysFsDeviceFactory();
@@ -52,22 +53,15 @@ implements GpioDigitalInputDeviceInterface, InputEventListener<DigitalInputEvent
 		
 		this.pinNumber = pinNumber;
 		
-		int pi_pud;
-		switch (pud) {
-		case PULL_DOWN:
-			pi_pud = JPiNative.PI_PUD_DOWN;
-			break;
-		case PULL_UP:
-			pi_pud = JPiNative.PI_PUD_UP;
-			break;
-		case NONE:
-		default:
-			pi_pud = JPiNative.PI_PUD_OFF;
-			break;
+		if (SystemInfo.getBoardInfo().sameMakeAndModel(OdroidBoardInfoProvider.ORDOID_C2)) {
+			OdroidC2MmapGpio.initialise();
+			OdroidC2MmapGpio.setMode(pinNumber, GpioDeviceInterface.Direction.INPUT);
+			OdroidC2MmapGpio.setPullUpDown(pinNumber, pud);
+		} else {
+			JPiMmapGpio.initialise();
+			JPiMmapGpio.setMode(pinNumber, GpioDeviceInterface.Direction.INPUT);
+			JPiMmapGpio.setPullUpDown(pinNumber, pud);
 		}
-		
-		JPiNative.setMode(pinNumber, JPiNative.PI_INPUT);
-		JPiNative.setPullUpDown(pinNumber, pi_pud);
 		sysFsDigitialInput = sysFsDeviceFactory.provisionDigitalInputPin(pinNumber, pud, trigger);
 	}
 
@@ -78,7 +72,7 @@ implements GpioDigitalInputDeviceInterface, InputEventListener<DigitalInputEvent
 
 	@Override
 	public boolean getValue() throws RuntimeIOException {
-		return JPiNative.gpioRead(pinNumber);
+		return JPiMmapGpio.gpioRead(pinNumber);
 	}
 
 	@Override
