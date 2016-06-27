@@ -34,6 +34,8 @@ import com.diozero.util.BoardInfo;
 import com.diozero.util.BoardInfoProvider;
 
 public class OdroidBoardInfoProvider implements BoardInfoProvider {
+	public static final OdroidBoardInfo ORDOID_C2 = new OdroidBoardInfo(Model.C2, 2048);
+	
 	public static final String MAKE = "Odroid";
 	
 	public static enum Model {
@@ -49,7 +51,7 @@ public class OdroidBoardInfoProvider implements BoardInfoProvider {
 		BOARDS.put("0000", new OdroidBoardInfo(Model.U2_U3, 2048));
 		BOARDS.put("000a", new OdroidBoardInfo(Model.C1, 1024));
 		BOARDS.put("0100", new OdroidBoardInfo(Model.XU_3_4, 2048));
-		BOARDS.put("020b", new OdroidBoardInfo(Model.C2, 2048));
+		BOARDS.put("020b", ORDOID_C2);
 	}
 
 	@Override
@@ -60,6 +62,11 @@ public class OdroidBoardInfoProvider implements BoardInfoProvider {
 	public static class OdroidBoardInfo extends BoardInfo {
 		public OdroidBoardInfo(Model model, int memory) {
 			super(MAKE, model.toString(), memory);
+		}
+		
+		@Override
+		public String getLibraryPath() {
+			return MAKE.toLowerCase() + "/" + getModel().toLowerCase();
 		}
 	}
 }

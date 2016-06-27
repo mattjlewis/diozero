@@ -50,8 +50,16 @@ public class BoardInfo {
 		return memory;
 	}
 
+	public String getLibraryPath() {
+		return make.toLowerCase();
+	}
+
 	@Override
 	public String toString() {
 		return "BoardInfo [make=" + make + ", model=" + model + ", memory=" + memory + "]";
+	}
+
+	public boolean sameMakeAndModel(BoardInfo boardInfo) {
+		return make.equals(boardInfo.getMake()) && model.equals(boardInfo.getModel());
 	}
 }
