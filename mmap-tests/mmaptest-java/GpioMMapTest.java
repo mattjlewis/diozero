@@ -82,7 +82,7 @@ public class GpioMMapTest {
 				write(gpio, true);
 				write(gpio, false);
 			}
-			double duration = (double) System.currentTimeMillis() - start;
+			double duration = System.currentTimeMillis() - start;
 			System.out.println("Took " + duration + "ms for " + iterations + " iterations, frequency=" + (iterations/duration) + "kHz");
 			closeMmapBuffer(mmap.getFd(), mmap.getAddress(), mmap.getLength());
 		}
