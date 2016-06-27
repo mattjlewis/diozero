@@ -41,6 +41,7 @@ import com.diozero.util.RuntimeIOException;
 
 /**
  * Datasheet: <a href="http://www.nxp.com/documents/data_sheet/PCF8591.pdf">http://www.nxp.com/documents/data_sheet/PCF8591.pdf</a>.
+ * <p>Note the <a href="http://www.raspoid.com/source/src__main__com__raspoid__additionalcomponents__adc__PCF8591.java">raspoid</a> driver states there is a <em>known bug when reading digital values from PCF8591 if analog output disabled ! (independent of this framework)</em>.</p>
  */
 @SuppressWarnings("unused")
 public class PCF8591 extends AbstractDeviceFactory implements AnalogInputDeviceFactoryInterface,
@@ -58,8 +59,8 @@ AnalogOutputDeviceFactoryInterface, Closeable {
 	//   [7] 0
 	/** If the auto-increment flag is set to 1, the channel number is incremented
 	 * automatically after each A/D conversion. */
-	private static final byte AUTO_INCREMENT_FLAG       = 0b00000100; // 0000 0100 0x04
-	private static final byte ANALOG_OUTPUT_ENABLE_MASK = 0b01000000; // 0100 0000 0x40
+	private static final byte AUTO_INCREMENT_FLAG       = 0b0000_0100; // 0x04
+	private static final byte ANALOG_OUTPUT_ENABLE_MASK = 0b0100_0000; // 0x40
 	
 	public static enum InputMode {
 		FOUR_SINGLE_ENDED_INPUTS(0b00, 4, "Four single-ended inputs"),
@@ -100,11 +101,12 @@ AnalogOutputDeviceFactoryInterface, Closeable {
 	private InputMode inputMode;
 	
 	public PCF8591() {
-		this(I2CConstants.BUS_1, DEFAULT_ADDRESS, InputMode.FOUR_SINGLE_ENDED_INPUTS);
+		this(I2CConstants.BUS_1, DEFAULT_ADDRESS, InputMode.FOUR_SINGLE_ENDED_INPUTS, true);
 	}
 
-	public PCF8591(int controller, int address, InputMode inputMode) {
+	public PCF8591(int controller, int address, InputMode inputMode, boolean outputEnabled) {
 		this.inputMode = inputMode;
+		this.outputEnabled = outputEnabled;
 		
 		device = new I2CDevice(controller, address, I2CConstants.ADDR_SIZE_7,
 				I2CConstants.DEFAULT_CLOCK_FREQUENCY, ByteOrder.LITTLE_ENDIAN);
@@ -176,10 +178,18 @@ AnalogOutputDeviceFactoryInterface, Closeable {
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	public void setValue(int dacPin, float value) throws RuntimeIOException {
+		outputEnabled = true;
 		if (dacPin < 0 || dacPin >= 1) {
 			throw new IllegalArgumentException("Invalid output channel number (" + dacPin + ")");
 		}
-		device.writeByte(ANALOG_OUTPUT_ENABLE_MASK, (byte) (value * (RANGE-1)));
+		if (value < 0 || value >= 1) {
+			throw new IllegalArgumentException("Invalid output value (" + value + ", must be 0..1");
+		}
+		//device.writeByte(ANALOG_OUTPUT_ENABLE_MASK, (byte) (value * (RANGE-1)));
+		byte[] data = new byte[2];
+		data[0] = ANALOG_OUTPUT_ENABLE_MASK;
+		data[1] = (byte) (value * (RANGE-1));
+		device.write(data);
 	}
 
 	private int getRawValue(int adcPin) {
@@ -196,7 +206,6 @@ AnalogOutputDeviceFactoryInterface, Closeable {
 		
 		device.writeByte(control_byte);
 		byte[] data = device.read(2);
-		// TODO Validate this... If little endian is it the reverse of this?!
 		// Note data[0] is the previous value held in the DAC register, data[1] is value of data byte 1
 		Logger.info(String.format("data[1]=0x%02x, data[0]=0x%02x", Byte.valueOf(data[1]), Byte.valueOf(data[0])));
 		
