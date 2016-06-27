@@ -37,19 +37,19 @@ import com.diozero.internal.spi.PwmOutputDeviceInterface;
 import com.diozero.util.RuntimeIOException;
 
 /**
- * <a href="http://odroid.com/dokuwiki/doku.php?id=en:c2_hardware_pwm">Setting up</a>:
- * 1 PWM Channel (GPIO 234; Pin 33):
- * <pre>
- * sudo modprobe pwm-meson
- * sudo modprobe pwm-ctrl
- * </pre>
- * 2 PWM Channels (GPIO 234 & 235; Pins 33 / 19):
- * <pre>
- * sudo modprobe pwm-meson npwm=2
- * sudo modprobe pwm-ctrl
- * </pre>
+ * <p><a href="http://odroid.com/dokuwiki/doku.php?id=en:c2_hardware_pwm">Setting up</a>:
+ * 1 PWM Channel (GPIO 234; Pin 33):</p>
+ * <pre>{@code
+ *sudo modprobe pwm-meson
+ *sudo modprobe pwm-ctrl
+ *}</pre>
+ * <p>2 PWM Channels (GPIO 234 &amp; 235; Pins 33 / 19):</p>
+ * <pre>{@code
+ *sudo modprobe pwm-meson npwm=2
+ *sudo modprobe pwm-ctrl
+ *}</pre>
  */
-public class OdroidSysFsPwmOutputDevice extends AbstractDevice implements PwmOutputDeviceInterface {
+public class OdroidC2SysFsPwmOutputDevice extends AbstractDevice implements PwmOutputDeviceInterface {
 	private static Path PWM_ROOT = FileSystems.getDefault().getPath("/sys/devices/platform/pwm-ctrl");
 	
 	private int pinNumber;
@@ -57,7 +57,7 @@ public class OdroidSysFsPwmOutputDevice extends AbstractDevice implements PwmOut
 	private int pwmNum;
 	private RandomAccessFile dutyFile;
 
-	public OdroidSysFsPwmOutputDevice(String key, DeviceFactoryInterface deviceFactory, int pinNumber,
+	public OdroidC2SysFsPwmOutputDevice(String key, DeviceFactoryInterface deviceFactory, int pinNumber,
 			int frequency, float initialValue, int range) {
 		super(key, deviceFactory);
 		
@@ -83,6 +83,11 @@ public class OdroidSysFsPwmOutputDevice extends AbstractDevice implements PwmOut
 
 	@Override
 	public void closeDevice() {
+		try {
+			dutyFile.close();
+		} catch (IOException e) {
+			// Ignore
+		}
 		setEnabled(pwmNum, false);
 	}
 
