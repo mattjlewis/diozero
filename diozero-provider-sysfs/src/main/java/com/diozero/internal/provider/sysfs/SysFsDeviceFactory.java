@@ -35,6 +35,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import com.diozero.api.*;
+import com.diozero.internal.board.odroid.OdroidBoardInfoProvider;
 import com.diozero.internal.spi.*;
 import com.diozero.internal.spi.GpioDeviceInterface.Direction;
 import com.diozero.util.RuntimeIOException;
@@ -107,9 +108,9 @@ public class SysFsDeviceFactory extends BaseNativeDeviceFactory {
 	@Override
 	protected PwmOutputDeviceInterface createPwmOutputPin(String key, int pinNumber, float initialValue,
 			PwmType pwmType) throws RuntimeIOException {
-		if (SystemInfo.getBoardInfo().getMake().equals("Odroid")) {
+		if (SystemInfo.getBoardInfo().sameMakeAndModel(OdroidBoardInfoProvider.ORDOID_C2)) {
 			// FIXME Match with previously set PWM frequency...
-			return new OdroidSysFsPwmOutputDevice(key, this, pinNumber, DEFAULT_PWM_FREQUENCY, initialValue, 1023);
+			return new OdroidC2SysFsPwmOutputDevice(key, this, pinNumber, DEFAULT_PWM_FREQUENCY, initialValue, 1023);
 		}
 		throw new UnsupportedOperationException("PWM not supported");
 	}
