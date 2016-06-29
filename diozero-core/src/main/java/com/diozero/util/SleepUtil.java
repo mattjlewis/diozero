@@ -73,6 +73,8 @@ public class SleepUtil {
 	 */
 	public static void sleep(long millis, int nanos) {
 		try {
+			millis = millis + nanos / 1_000_000;
+			nanos = nanos % 1_000_000;
 			Thread.sleep(millis, nanos);
 		} catch (InterruptedException ex) {
 		}
