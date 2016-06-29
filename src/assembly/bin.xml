@@ -42,17 +42,7 @@
 
 			<!-- Now, select which projects to include in this module-set. -->
 			<includes>
-				<include>com.diozero:diozero-core</include>
-				<include>com.diozero:diozero-provider-jdkdio10</include>
-				<include>com.diozero:diozero-provider-jdkdio11</include>
-				<include>com.diozero:diozero-provider-jpi</include>
-				<include>com.diozero:diozero-provider-pi4j</include>
-				<include>com.diozero:diozero-provider-pigpio</include>
-				<include>com.diozero:diozero-provider-sysfs</include>
-				<include>com.diozero:diozero-provider-wiringpi</include>
-				<include>com.diozero:diozero-ws281x-java</include>
-				<include>com.diozero:diozero-imu-devices</include>
-				<include>com.diozero:diozero-imu-sampleapp</include>
+				<include>com.diozero:diozero-*:*</include>
 			</includes>
 			<binaries>
 				<!-- <outputDirectory>.</outputDirectory> -->
