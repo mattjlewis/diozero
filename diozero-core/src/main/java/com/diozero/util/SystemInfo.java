@@ -117,4 +117,10 @@ public class SystemInfo {
 	public static String getLibraryPath() {
 		return getBoardInfo().getLibraryPath();
 	}
+	
+	public static void main(String[] args) {
+		initialise();
+		Logger.info(osReleaseProperties);
+		Logger.info(getBoardInfo());
+	}
 }
