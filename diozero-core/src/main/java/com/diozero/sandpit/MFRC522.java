@@ -50,19 +50,19 @@ public class MFRC522 implements Closeable {
 	private static final byte PCD_SOFT_RESET	= 0b1111;
 	
 	// AddicoreRFID Proximity Integrated Circuit Card (PICC) Commands
-	private static final byte PICC_REQIDL		= 0x26;  // search the antenna area. PCD does not enter hibernation
-	private static final byte PICC_REQALL		= 0x52;  // find all the cards in antenna area
-	private static final byte PICC_ANTICOLL		= (byte) 0x93;  // anti-collision
-	private static final byte PICC_SElECTTAG	= (byte) 0x93;  // Select card
-	private static final byte PICC_AUTHENT1A	= 0x60;  // authentication with key A
-	private static final byte PICC_AUTHENT1B	= 0x61;  // authentication with key B
-	private static final byte PICC_READ			= 0x30;  // reads one memory block
-	private static final byte PICC_WRITE		= (byte) 0xA0;  // writes one memory block
-	private static final byte PICC_DECREMENT	= (byte) 0xC0;  // decrements the contents of a block and stores the result in the internal data register
-	private static final byte PICC_INCREMENT	= (byte) 0xC1;  // increments the contents of a block and stores the result in the internal data register
-	private static final byte PICC_RESTORE		= (byte) 0xC2;  // reads the contents of a block into the internal data register
-	private static final byte PICC_TRANSFER		= (byte) 0xB0;  // writes the contents of the internal data register to a block
-	private static final byte PICC_HALT			= 0x50;  // Sleep the card
+	public static final byte PICC_REQIDL		= 0x26;  // search the antenna area. PCD does not enter hibernation
+	public static final byte PICC_REQALL		= 0x52;  // find all the cards in antenna area
+	public static final byte PICC_ANTICOLL		= (byte) 0x93;  // anti-collision
+	public static final byte PICC_SElECTTAG	= (byte) 0x93;  // Select card
+	public static final byte PICC_AUTHENT1A	= 0x60;  // authentication with key A
+	public static final byte PICC_AUTHENT1B	= 0x61;  // authentication with key B
+	public static final byte PICC_READ			= 0x30;  // reads one memory block
+	public static final byte PICC_WRITE		= (byte) 0xA0;  // writes one memory block
+	public static final byte PICC_DECREMENT	= (byte) 0xC0;  // decrements the contents of a block and stores the result in the internal data register
+	public static final byte PICC_INCREMENT	= (byte) 0xC1;  // increments the contents of a block and stores the result in the internal data register
+	public static final byte PICC_RESTORE		= (byte) 0xC2;  // reads the contents of a block into the internal data register
+	public static final byte PICC_TRANSFER		= (byte) 0xB0;  // writes the contents of the internal data register to a block
+	public static final byte PICC_HALT			= 0x50;  // Sleep the card
 	
 	// Registers
 	//private static final int Reserved00 = 0x00;
@@ -134,9 +134,9 @@ public class MFRC522 implements Closeable {
 	//private static final int Reserved34 = 0x3F;
 	
 	// AddicoreRFID error codes
-	private static final byte MI_OK = 0;
-	private static final byte MI_NOTAGERR = 1;
-	private static final byte MI_ERR = 2;
+	public static final byte MI_OK = 0;
+	public static final byte MI_NOTAGERR = 1;
+	public static final byte MI_ERR = 2;
 
 	// Maximum length of the array
 	private static final int MAX_LEN = 16;
@@ -431,7 +431,7 @@ public class MFRC522 implements Closeable {
 	    return size;
 	}
 	
-	public byte Auth(byte authMode, byte blockAddr, byte[] sectorKey, byte[] serNum) {
+	public byte auth(byte authMode, byte blockAddr, byte[] sectorKey, byte[] serNum) {
 		byte[] buff = new byte[12];
 
 		// Verify the command block address + sector + password + card serial number
