@@ -51,8 +51,8 @@ public class PigpioJSpiDevice extends AbstractDevice implements SpiDeviceInterfa
 		this.controller = controller;
 		this.chipSelect = chipSelect;
 		
-		int flags = createSpiFlags(spiClockMode, chipSelect);
-		int rc = PigpioSPI.spiOpen(controller, frequency, flags);
+		int flags = createSpiFlags(spiClockMode, controller);
+		int rc = PigpioSPI.spiOpen(chipSelect, frequency, flags);
 		if (rc < 0) {
 			handle = CLOSED;
 			throw new RuntimeIOException(String.format("Error opening SPI device on controller %d, chip-select %d, response: %d",
@@ -130,11 +130,11 @@ public class PigpioJSpiDevice extends AbstractDevice implements SpiDeviceInterfa
 	 * The default (0) sets 8 bits per word. Auxiliary SPI device only.
 	 * The other bits in flags should be set to zero
 	 */
-	private static int createSpiFlags(SpiClockMode clockMode, int chipEnable) {
+	private static int createSpiFlags(SpiClockMode clockMode, int controller) {
 		int flags = clockMode.getMode();
 		
 		// CE0 is the standard SPI device, CE1 is auxiliary
-		if (chipEnable == 1) {
+		if (controller == 1) {
 			flags |= 0x0100;
 		}
 		
