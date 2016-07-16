@@ -43,14 +43,14 @@ import jdk.dio.DeviceConfig;
 import jdk.dio.DeviceManager;
 import jdk.dio.gpio.*;
 
-public class JdkDeviceIoGpioInputDevice extends AbstractInputDevice<DigitalInputEvent>
+public class JdkDeviceIoDigitalInputDevice extends AbstractInputDevice<DigitalInputEvent>
 implements GpioDigitalInputDeviceInterface, PinListener {
 	private GPIOPinConfig pinConfig;
 	private GPIOPin pin;
 	private long lastPinEventTime;
 	private int debounceTimeMillis;
 	
-	JdkDeviceIoGpioInputDevice(String key, DeviceFactoryInterface deviceFactory, int pinNumber, GpioPullUpDown pud, GpioEventTrigger trigger) throws RuntimeIOException {
+	JdkDeviceIoDigitalInputDevice(String key, DeviceFactoryInterface deviceFactory, int pinNumber, GpioPullUpDown pud, GpioEventTrigger trigger) throws RuntimeIOException {
 		super(key, deviceFactory);
 		
 		int mode;
