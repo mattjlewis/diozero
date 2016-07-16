@@ -34,12 +34,14 @@ import org.pmw.tinylog.Logger;
 import com.diozero.api.*;
 import com.diozero.internal.spi.*;
 import com.diozero.util.RuntimeIOException;
+import com.diozero.util.SystemInfo;
 import com.pi4j.wiringpi.Gpio;
 import com.pi4j.wiringpi.GpioUtil;
 
 public class WiringPiDeviceFactory extends BaseNativeDeviceFactory {
 	private static final int PI_PWM_CLOCK_BASE_FREQUENCY = 19_200_000;
 	private static final int DEFAULT_HARDWARE_PWM_RANGE = 1024;
+	private static final int DEFAULT_HARDWARE_PWM_FREQUENCY = 100;
 	private static final int DEFAULT_SOFTWARE_PWM_FREQ = 100;
 	// See https://projects.drogon.net/raspberry-pi/wiringpi/software-pwm-library/
 	// You can lower the range to get a higher frequency, at the expense of resolution,
@@ -59,7 +61,7 @@ public class WiringPiDeviceFactory extends BaseNativeDeviceFactory {
 		
 		// Default mode is balanced, actually want mark-space which gives traditional PWM with
 		// predictable PWM frequencies
-		Gpio.pwmSetMode(Gpio.PWM_MODE_MS);
+		setHardwarePwmFrequency(DEFAULT_HARDWARE_PWM_FREQUENCY);
 		
 		softwarePwmFrequency = new HashMap<>();
 	}
@@ -71,7 +73,7 @@ public class WiringPiDeviceFactory extends BaseNativeDeviceFactory {
 
 	@Override
 	public int getPwmFrequency(int pinNumber) {
-		if (pinNumber == 12 || pinNumber == 13 || pinNumber == 18 || pinNumber == 19) {
+		if (SystemInfo.getBoardInfo().isSupported(GpioDeviceInterface.Mode.PWM_OUTPUT, pinNumber)) {
 			return hardwarePwmFrequency;
 		}
 		
@@ -85,15 +87,8 @@ public class WiringPiDeviceFactory extends BaseNativeDeviceFactory {
 	
 	@Override
 	public void setPwmFrequency(int pinNumber, int pwmFrequency) {
-		if (pinNumber == 12 || pinNumber == 13 || pinNumber == 18 || pinNumber == 19) {
-			// TODO Validate the requested PWM frequency
-			hardwarePwmRange = DEFAULT_HARDWARE_PWM_RANGE;
-			Gpio.pwmSetRange(hardwarePwmRange);
-			int divisor = PI_PWM_CLOCK_BASE_FREQUENCY / hardwarePwmRange / pwmFrequency;
-			Gpio.pwmSetClock(divisor);
-			this.hardwarePwmFrequency = pwmFrequency;
-			Logger.info("setHardwarePwmFrequency({}, {}) - range={}, divisor={}", Integer.valueOf(pinNumber),
-					Integer.valueOf(pwmFrequency), Integer.valueOf(hardwarePwmRange), Integer.valueOf(divisor));
+		if (SystemInfo.getBoardInfo().isSupported(GpioDeviceInterface.Mode.PWM_OUTPUT, pinNumber)) {
+			setHardwarePwmFrequency(pwmFrequency);
 		} else {
 			// TODO Software PWM frequency should be limited to 20..250Hz (gives a range of 500..40)
 			this.softwarePwmFrequency.put(Integer.valueOf(pinNumber), Integer.valueOf(pwmFrequency));
@@ -102,6 +97,18 @@ public class WiringPiDeviceFactory extends BaseNativeDeviceFactory {
 		}
 	}
 	
+	private void setHardwarePwmFrequency(int pwmFrequency) {
+		// TODO Validate the requested PWM frequency
+		hardwarePwmRange = DEFAULT_HARDWARE_PWM_RANGE;
+		Gpio.pwmSetRange(hardwarePwmRange);
+		int divisor = PI_PWM_CLOCK_BASE_FREQUENCY / hardwarePwmRange / pwmFrequency;
+		Gpio.pwmSetClock(divisor);
+		Gpio.pwmSetMode(Gpio.PWM_MODE_MS);
+		this.hardwarePwmFrequency = pwmFrequency;
+		Logger.info("setHardwarePwmFrequency({}) - range={}, divisor={}",
+				Integer.valueOf(pwmFrequency), Integer.valueOf(hardwarePwmRange), Integer.valueOf(divisor));
+	}
+
 	private int getSoftwarePwmRange(int pinNumber) {
 		return 1_000_000 / (PI4J_MIN_SOFTWARE_PULSE_WIDTH_US * getPwmFrequency(pinNumber));
 	}
