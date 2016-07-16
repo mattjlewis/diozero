@@ -29,7 +29,10 @@ package com.diozero.internal.spi;
 import org.pmw.tinylog.Logger;
 
 import com.diozero.api.*;
+import com.diozero.internal.spi.GpioDeviceInterface.Mode;
+import com.diozero.util.BoardInfo;
 import com.diozero.util.RuntimeIOException;
+import com.diozero.util.SystemInfo;
 
 /**
  * Helper class for instantiating different devices via the configured provider.
@@ -131,16 +134,16 @@ public abstract class BaseNativeDeviceFactory extends AbstractDeviceFactory impl
 		if (isDeviceOpened(key)) {
 			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
 		}
-		
-		// TODO Create some sort of DeviceCapabilities class for this kind of information
-		// Raspberry Pi BCM GPIO pins with hardware PWM support: 12 (phys 32, wPi 26), 13 (phys 33, wPi 23),
-		// 18 (phys 12, wPi 1), 19 (phys 35, wPi 24)
+
 		PwmType pwm_type;
-		if (pinNumber == 12 || pinNumber == 13 || pinNumber == 18 || pinNumber == 19) {
+		BoardInfo board_info = SystemInfo.getBoardInfo();
+		if (board_info.isSupported(Mode.PWM_OUTPUT, pinNumber)) {
 			pwm_type = PwmType.HARDWARE;
-		} else {
+		} else if (board_info.isSupported(Mode.DIGITAL_OUTPUT, pinNumber)) {
 			Logger.warn("Hardware PWM not available on BCM pin {}, reverting to software", Integer.valueOf(pinNumber));
 			pwm_type = PwmType.SOFTWARE;
+		} else {
+			throw new IllegalArgumentException("Invalid pinNumber " + pinNumber);
 		}
 		
 		PwmOutputDeviceInterface device = createPwmOutputPin(key, pinNumber, initialValue, pwm_type);
