@@ -62,36 +62,36 @@ import com.pi4j.io.gpio.RaspiPin;
  *  +-----+-----+---------+------+---+---Pi 2---+---+------+---------+-----+-----+
  */
 public class RaspiGpioBcm {
-	public static final Pin BCM_GPIO_2 = RaspiPin.GPIO_08;
-	public static final Pin BCM_GPIO_3 = RaspiPin.GPIO_09;
-	public static final Pin BCM_GPIO_4 = RaspiPin.GPIO_07;
-	public static final Pin BCM_GPIO_5 = RaspiPin.GPIO_21;
-	public static final Pin BCM_GPIO_6 = RaspiPin.GPIO_22;
-	public static final Pin BCM_GPIO_7 = RaspiPin.GPIO_11;
-	public static final Pin BCM_GPIO_8 = RaspiPin.GPIO_10;
-	public static final Pin BCM_GPIO_9 = RaspiPin.GPIO_13;
-	public static final Pin BCM_GPIO_10 = RaspiPin.GPIO_12;
-	public static final Pin BCM_GPIO_11 = RaspiPin.GPIO_14;
-	public static final Pin BCM_GPIO_12 = RaspiPin.GPIO_26;
-	public static final Pin BCM_GPIO_13 = RaspiPin.GPIO_23;
-	public static final Pin BCM_GPIO_14 = RaspiPin.GPIO_15;
-	public static final Pin BCM_GPIO_15 = RaspiPin.GPIO_16;
-	public static final Pin BCM_GPIO_16 = RaspiPin.GPIO_27;
-	public static final Pin BCM_GPIO_17 = RaspiPin.GPIO_00;
-	public static final Pin BCM_GPIO_18 = RaspiPin.GPIO_01;
-	public static final Pin BCM_GPIO_19 = RaspiPin.GPIO_24;
-	public static final Pin BCM_GPIO_20 = RaspiPin.GPIO_28;
-	public static final Pin BCM_GPIO_21 = RaspiPin.GPIO_29;
-	public static final Pin BCM_GPIO_22 = RaspiPin.GPIO_03;
-	public static final Pin BCM_GPIO_23 = RaspiPin.GPIO_04;
-	public static final Pin BCM_GPIO_24 = RaspiPin.GPIO_05;
-	public static final Pin BCM_GPIO_25 = RaspiPin.GPIO_06;
-	public static final Pin BCM_GPIO_26 = RaspiPin.GPIO_25;
-	public static final Pin BCM_GPIO_27 = RaspiPin.GPIO_02;
-	public static final Pin BCM_GPIO_28 = RaspiPin.GPIO_17;
-	public static final Pin BCM_GPIO_29 = RaspiPin.GPIO_18;
-	public static final Pin BCM_GPIO_30 = RaspiPin.GPIO_19;
-	public static final Pin BCM_GPIO_31 = RaspiPin.GPIO_20;
+	private static final Pin BCM_GPIO_2 = RaspiPin.GPIO_08;
+	private static final Pin BCM_GPIO_3 = RaspiPin.GPIO_09;
+	private static final Pin BCM_GPIO_4 = RaspiPin.GPIO_07;
+	private static final Pin BCM_GPIO_5 = RaspiPin.GPIO_21;
+	private static final Pin BCM_GPIO_6 = RaspiPin.GPIO_22;
+	private static final Pin BCM_GPIO_7 = RaspiPin.GPIO_11;
+	private static final Pin BCM_GPIO_8 = RaspiPin.GPIO_10;
+	private static final Pin BCM_GPIO_9 = RaspiPin.GPIO_13;
+	private static final Pin BCM_GPIO_10 = RaspiPin.GPIO_12;
+	private static final Pin BCM_GPIO_11 = RaspiPin.GPIO_14;
+	private static final Pin BCM_GPIO_12 = RaspiPin.GPIO_26;
+	private static final Pin BCM_GPIO_13 = RaspiPin.GPIO_23;
+	private static final Pin BCM_GPIO_14 = RaspiPin.GPIO_15;
+	private static final Pin BCM_GPIO_15 = RaspiPin.GPIO_16;
+	private static final Pin BCM_GPIO_16 = RaspiPin.GPIO_27;
+	private static final Pin BCM_GPIO_17 = RaspiPin.GPIO_00;
+	private static final Pin BCM_GPIO_18 = RaspiPin.GPIO_01;
+	private static final Pin BCM_GPIO_19 = RaspiPin.GPIO_24;
+	private static final Pin BCM_GPIO_20 = RaspiPin.GPIO_28;
+	private static final Pin BCM_GPIO_21 = RaspiPin.GPIO_29;
+	private static final Pin BCM_GPIO_22 = RaspiPin.GPIO_03;
+	private static final Pin BCM_GPIO_23 = RaspiPin.GPIO_04;
+	private static final Pin BCM_GPIO_24 = RaspiPin.GPIO_05;
+	private static final Pin BCM_GPIO_25 = RaspiPin.GPIO_06;
+	private static final Pin BCM_GPIO_26 = RaspiPin.GPIO_25;
+	private static final Pin BCM_GPIO_27 = RaspiPin.GPIO_02;
+	private static final Pin BCM_GPIO_28 = RaspiPin.GPIO_17;
+	private static final Pin BCM_GPIO_29 = RaspiPin.GPIO_18;
+	private static final Pin BCM_GPIO_30 = RaspiPin.GPIO_19;
+	private static final Pin BCM_GPIO_31 = RaspiPin.GPIO_20;
 	
 	private static final Map<Integer, Pin> BCM_TO_WIRINGPI_MAPPING = new HashMap<>();
 	static {
@@ -127,7 +127,7 @@ public class RaspiGpioBcm {
 		BCM_TO_WIRINGPI_MAPPING.put(Integer.valueOf(31), BCM_GPIO_31);
 	}
 	
-	public static Pin getPin(int pinNumer) {
+	/*public static Pin getPin(int pinNumer) {
 		return BCM_TO_WIRINGPI_MAPPING.get(Integer.valueOf(pinNumer));
-	}
+	}*/
 }
