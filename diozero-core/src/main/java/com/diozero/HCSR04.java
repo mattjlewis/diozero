@@ -87,7 +87,7 @@ public class HCSR04 implements DistanceSensorInterface, Closeable {
 		long start = System.nanoTime();
 		// Send a pulse trigger of 10 us duration
 		trigger.setValueUnsafe(true);
-		SleepUtil.sleep(0, PULSE_NS);// wait 10 us (10,000ns)
+		SleepUtil.sleepNanos(0, PULSE_NS);// wait 10 us (10,000ns)
 		trigger.setValueUnsafe(false);
 		
 		// Need to include as little code as possible here to avoid missing pin state changes
@@ -111,7 +111,7 @@ public class HCSR04 implements DistanceSensorInterface, Closeable {
 		Logger.info("Time from echo on to echo off = {}ns, max allowable time={}ns",
 				Long.valueOf(echo_off_time - echo_on_time), Long.valueOf(MAX_ECHO_TIME_NS));
 
-		double ping_duration_s = (echo_off_time - echo_on_time) / (double)SleepUtil.NS_IN_SEC;
+		double ping_duration_s = (echo_off_time - echo_on_time) / (double) SleepUtil.NS_IN_SEC;
 
 		// Distance = velocity * time taken
 		// Half the ping duration as it is the time to the object and back

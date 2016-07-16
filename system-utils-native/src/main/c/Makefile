@@ -9,7 +9,7 @@ LFLAGS =
 
 LIBS = 
 
-SRCS = com_diozero_util_EpollNative.c com_diozero_util_PollNative.c com_diozero_util.c
+SRCS = com_diozero_util_EpollNative.c com_diozero_util_PollNative.c com_diozero_util_SleepUtil.c com_diozero_util.c
 
 OBJS = $(SRCS:.c=.o)
 

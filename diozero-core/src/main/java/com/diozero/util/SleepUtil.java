@@ -1,5 +1,7 @@
 package com.diozero.util;
 
+import java.util.concurrent.TimeUnit;
+
 /*
  * #%L
  * Device I/O Zero - Core
@@ -40,11 +42,17 @@ public class SleepUtil {
 	 * Sleep for the specific number of seconds
 	 * @param secs Number of seconds to sleep for
 	 */
+	public static void sleepSeconds(int secs) {
+		sleepMillis(TimeUnit.SECONDS.toMillis(secs));
+	}
+	
+	/**
+	 * Sleep for the specific number of seconds
+	 * @param secs Number of seconds to sleep for
+	 */
 	public static void sleepSeconds(double secs) {
 		long millis = (long) (secs * MS_IN_SEC);
-		int nanos = (int) (secs * NS_IN_SEC - millis * NS_IN_MS);
-		
-		sleep(millis, nanos);
+		sleepMillis(millis);
 	}
 
 	/**
@@ -63,21 +71,15 @@ public class SleepUtil {
 	 * @param micros Number of microseconds to sleep for
 	 */
 	public static void sleepMicros(int micros) {
-		sleep(0, micros * NS_IN_US);
+		sleepNanos(0, TimeUnit.MICROSECONDS.toNanos(micros));
 	}
 
 	/**
-	 * Sleep for the specified number of milliseconds plus the specified number of nanoseconds.
-	 * @param millis Number of milliseconds
+	 * Sleep for the specified number of nanoseconds.
 	 * @param nanos Number of nanoseconds
 	 */
-	public static void sleep(long millis, int nanos) {
-		try {
-			millis = millis + nanos / 1_000_000;
-			nanos = nanos % 1_000_000;
-			Thread.sleep(millis, nanos);
-		} catch (InterruptedException ex) {
-		}
+	public static void sleepNanos(int nanos) {
+		sleepNanos(0, nanos);
 	}
 	
 	public static void pause() {
@@ -89,5 +91,20 @@ public class SleepUtil {
 				// Ignore
 			}
 		}
+	}
+
+	public static void busySleep(long nanos) {
+		final long startTime = System.nanoTime();
+		do {
+		} while ((System.nanoTime() - startTime) < nanos);
+	}
+	
+	public static native long sleepNanos(int seconds, long nanos);
+	
+	public static void main(String[] args) {
+		LibraryLoader.loadLibrary(SleepUtil.class, "diozero-system-utils");
+		System.out.println("Sleeping for 2.5s");
+		sleepNanos(2, 500_000_000);
+		System.out.println("Done");
 	}
 }

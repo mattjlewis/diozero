@@ -1,10 +1,13 @@
 #include <jni.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <sys/time.h>
 #include "com_diozero_util.h"
 
 /* The VM calls this function upon loading the native library. */
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* jvm, void* reserved) {
-        return JNI_VERSION_1_8;
+	printf("system-utils-native JNI_OnLoad\n");
+	return JNI_VERSION_1_8;
 }
 
 unsigned long long getEpochTime() {

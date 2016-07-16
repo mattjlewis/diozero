@@ -124,7 +124,7 @@ public class HCSR04UsingEvents implements DistanceSensorInterface, Closeable, In
 		// Send a pulse trigger of 10 us duration
 		state = WAITING_FOR_ECHO_ON;
 		trigger.setValueUnsafe(true);
-		SleepUtil.sleep(0, PULSE_NS);// wait 10 us (10,000ns)
+		SleepUtil.sleepNanos(0, PULSE_NS);// wait 10 us (10,000ns)
 		trigger.setValueUnsafe(false);
 		long trigger_off_time = System.nanoTime(); // ns
 		
