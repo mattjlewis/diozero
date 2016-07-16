@@ -1,2 +1,2 @@
-com.diozero.internal.board.pi.PiBoardInfoProvider
+com.diozero.internal.board.raspberrypi.RaspberryPiBoardInfoProvider
 com.diozero.internal.board.odroid.OdroidBoardInfoProvider

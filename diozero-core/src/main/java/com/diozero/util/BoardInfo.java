@@ -1,5 +1,11 @@
 package com.diozero.util;
 
+import java.util.List;
+import java.util.Map;
+
+import com.diozero.internal.spi.GpioDeviceInterface;
+import com.diozero.internal.spi.GpioDeviceInterface.Mode;
+
 /*
  * #%L
  * Device I/O Zero - Core
@@ -27,15 +33,20 @@ package com.diozero.util;
  */
 
 
-public class BoardInfo {
+public abstract class BoardInfo {
 	private String make;
 	private String model;
 	private int memory;
+	private Map<Integer, List<GpioDeviceInterface.Mode>> pins;
+	private String libraryPath;
 	
-	public BoardInfo(String make, String model, int memory) {
+	public BoardInfo(String make, String model, int memory, Map<Integer, List<GpioDeviceInterface.Mode>> pins,
+			String libraryPath) {
 		this.make = make;
 		this.model = model;
 		this.memory = memory;
+		this.pins = pins;
+		this.libraryPath = libraryPath;
 	}
 
 	public String getMake() {
@@ -51,7 +62,7 @@ public class BoardInfo {
 	}
 
 	public String getLibraryPath() {
-		return make.toLowerCase();
+		return libraryPath;
 	}
 
 	@Override
@@ -61,5 +72,11 @@ public class BoardInfo {
 
 	public boolean sameMakeAndModel(BoardInfo boardInfo) {
 		return make.equals(boardInfo.getMake()) && model.equals(boardInfo.getModel());
+	}
+
+	public boolean isSupported(Mode mode, int pin) {
+		List<Mode> modes = pins.get(Integer.valueOf(pin));
+		
+		return mode == null ? false : modes.contains(mode);
 	}
 }
