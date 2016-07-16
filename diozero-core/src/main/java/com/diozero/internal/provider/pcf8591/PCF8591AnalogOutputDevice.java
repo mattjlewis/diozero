@@ -29,17 +29,16 @@ package com.diozero.internal.provider.pcf8591;
 
 import org.pmw.tinylog.Logger;
 
-import com.diozero.api.AnalogInputEvent;
-import com.diozero.internal.spi.AbstractInputDevice;
-import com.diozero.internal.spi.GpioAnalogInputDeviceInterface;
+import com.diozero.internal.spi.AbstractDevice;
+import com.diozero.internal.spi.GpioAnalogOutputDeviceInterface;
 import com.diozero.sandpit.PCF8591;
 import com.diozero.util.RuntimeIOException;
 
-public class PCF8591AnalogInputPin extends AbstractInputDevice<AnalogInputEvent> implements GpioAnalogInputDeviceInterface {
-	private PCF8591 pcf8591;
+public class PCF8591AnalogOutputDevice extends AbstractDevice implements GpioAnalogOutputDeviceInterface {
 	private int pinNumber;
+	private PCF8591 pcf8591;
 
-	public PCF8591AnalogInputPin(PCF8591 pcf8591, String key, int pinNumber) {
+	public PCF8591AnalogOutputDevice(PCF8591 pcf8591, String key, int pinNumber) {
 		super(key, pcf8591);
 		
 		this.pcf8591 = pcf8591;
@@ -47,9 +46,14 @@ public class PCF8591AnalogInputPin extends AbstractInputDevice<AnalogInputEvent>
 	}
 
 	@Override
-	public void closeDevice() {
+	protected void closeDevice() throws RuntimeIOException {
 		Logger.debug("closeDevice()");
 		// TODO Nothing to do?
+	}
+
+	@Override
+	public int getPin() {
+		return pinNumber;
 	}
 
 	@Override
@@ -58,7 +62,7 @@ public class PCF8591AnalogInputPin extends AbstractInputDevice<AnalogInputEvent>
 	}
 
 	@Override
-	public int getPin() {
-		return pinNumber;
+	public void setValue(float value) throws RuntimeIOException {
+		pcf8591.setValue(pinNumber, value);
 	}
 }
