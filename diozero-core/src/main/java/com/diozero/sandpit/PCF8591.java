@@ -34,8 +34,8 @@ import org.pmw.tinylog.Logger;
 import com.diozero.api.DeviceAlreadyOpenedException;
 import com.diozero.api.I2CConstants;
 import com.diozero.api.I2CDevice;
-import com.diozero.internal.provider.pcf8591.PCF8591AnalogInputPin;
-import com.diozero.internal.provider.pcf8591.PCF8591AnalogOutputPin;
+import com.diozero.internal.provider.pcf8591.PCF8591AnalogInputDevice;
+import com.diozero.internal.provider.pcf8591.PCF8591AnalogOutputDevice;
 import com.diozero.internal.spi.*;
 import com.diozero.util.RuntimeIOException;
 
@@ -136,7 +136,7 @@ AnalogOutputDeviceFactoryInterface, Closeable {
 			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
 		}
 		
-		GpioAnalogInputDeviceInterface device = new PCF8591AnalogInputPin(this, key, pinNumber);
+		GpioAnalogInputDeviceInterface device = new PCF8591AnalogInputDevice(this, key, pinNumber);
 		deviceOpened(device);
 		
 		return device;
@@ -155,7 +155,7 @@ AnalogOutputDeviceFactoryInterface, Closeable {
 			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
 		}
 		
-		GpioAnalogOutputDeviceInterface device = new PCF8591AnalogOutputPin(this, key, pinNumber);
+		GpioAnalogOutputDeviceInterface device = new PCF8591AnalogOutputDevice(this, key, pinNumber);
 		deviceOpened(device);
 		
 		return device;
