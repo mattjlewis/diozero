@@ -26,7 +26,7 @@ package com.diozero.internal.provider.jpi;
  * #L%
  */
 
-public class JPiNative {
-	static native MmapByteBuffer createMmapBuffer(String path, int offset, int length);
-	static native void closeMmapBuffer(int fd, int mapPtr, int length);
+public class MmapBufferNative {
+	public static native MmapByteBuffer createMmapBuffer(String path, int offset, int length);
+	public static native void closeMmapBuffer(int fd, int mapPtr, int length);
 }

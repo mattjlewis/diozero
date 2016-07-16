@@ -28,17 +28,34 @@ package com.diozero.internal.provider.jpi;
 
 
 import com.diozero.api.*;
+import com.diozero.internal.board.odroid.OdroidBoardInfoProvider;
+import com.diozero.internal.board.raspberrypi.RaspberryPiBoardInfoProvider;
+import com.diozero.internal.provider.jpi.odroid.OdroidC2MmapGpio;
+import com.diozero.internal.provider.jpi.rpi.RPiMmapGpio;
 import com.diozero.internal.spi.*;
+import com.diozero.util.BoardInfo;
 import com.diozero.util.RuntimeIOException;
+import com.diozero.util.SystemInfo;
 
 public class JPiDeviceFactory extends BaseNativeDeviceFactory {
+	private MmapGpioInterface mmapGpio;
+	
 	public JPiDeviceFactory() {
+		BoardInfo board_info = SystemInfo.getBoardInfo();
+		if (board_info.sameMakeAndModel(OdroidBoardInfoProvider.ORDOID_C2)) {
+			mmapGpio = new OdroidC2MmapGpio();
+		} else if (board_info.getMake().equals(RaspberryPiBoardInfoProvider.MAKE)) {
+			mmapGpio = new RPiMmapGpio();
+		} else {
+			throw new RuntimeException("This provider is currently only supported on Raspberry Pi and Odroid C2 boards");
+		}
+		mmapGpio.initialise();
 	}
 	
 	@Override
 	public void shutdown() {
 		super.shutdown();
-		JPiMmapGpio.terminate();
+		mmapGpio.terminate();
 	}
 
 	@Override
@@ -69,13 +86,13 @@ public class JPiDeviceFactory extends BaseNativeDeviceFactory {
 	@Override
 	protected GpioDigitalInputDeviceInterface createDigitalInputPin(String key, int pinNumber, GpioPullUpDown pud,
 			GpioEventTrigger trigger) throws RuntimeIOException {
-		return new JPiDigitalInputDevice(this, key, pinNumber, pud, trigger);
+		return new JPiDigitalInputDevice(this, mmapGpio, key, pinNumber, pud, trigger);
 	}
 
 	@Override
 	protected GpioDigitalOutputDeviceInterface createDigitalOutputPin(String key, int pinNumber, boolean initialValue)
 			throws RuntimeIOException {
-		return new JPiDigitalOutputDevice(this, key, pinNumber, initialValue);
+		return new JPiDigitalOutputDevice(this, mmapGpio, key, pinNumber, initialValue);
 	}
 
 	@Override

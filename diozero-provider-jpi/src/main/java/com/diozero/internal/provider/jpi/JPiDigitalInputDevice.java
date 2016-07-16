@@ -30,11 +30,9 @@ package com.diozero.internal.provider.jpi;
 import org.pmw.tinylog.Logger;
 
 import com.diozero.api.*;
-import com.diozero.internal.board.odroid.OdroidBoardInfoProvider;
 import com.diozero.internal.provider.sysfs.SysFsDeviceFactory;
 import com.diozero.internal.spi.*;
 import com.diozero.util.RuntimeIOException;
-import com.diozero.util.SystemInfo;
 
 public class JPiDigitalInputDevice extends AbstractInputDevice<DigitalInputEvent>
 implements GpioDigitalInputDeviceInterface, InputEventListener<DigitalInputEvent> {
@@ -45,23 +43,19 @@ implements GpioDigitalInputDeviceInterface, InputEventListener<DigitalInputEvent
 	}
 	
 	private int pinNumber;
+	private MmapGpioInterface mmapGpio;
 	private GpioDigitalInputDeviceInterface sysFsDigitialInput;
 
-	public JPiDigitalInputDevice(DeviceFactoryInterface deviceFactory, String key,
+	public JPiDigitalInputDevice(DeviceFactoryInterface deviceFactory, MmapGpioInterface mmapGpio, String key,
 			int pinNumber, GpioPullUpDown pud, GpioEventTrigger trigger) {
 		super(key, deviceFactory);
 		
 		this.pinNumber = pinNumber;
+		this.mmapGpio = mmapGpio;
 		
-		if (SystemInfo.getBoardInfo().sameMakeAndModel(OdroidBoardInfoProvider.ORDOID_C2)) {
-			OdroidC2MmapGpio.initialise();
-			OdroidC2MmapGpio.setMode(pinNumber, GpioDeviceInterface.Direction.INPUT);
-			OdroidC2MmapGpio.setPullUpDown(pinNumber, pud);
-		} else {
-			JPiMmapGpio.initialise();
-			JPiMmapGpio.setMode(pinNumber, GpioDeviceInterface.Direction.INPUT);
-			JPiMmapGpio.setPullUpDown(pinNumber, pud);
-		}
+		mmapGpio.setMode(pinNumber, GpioDeviceInterface.Mode.DIGITAL_INPUT);
+		mmapGpio.setPullUpDown(pinNumber, pud);
+
 		sysFsDigitialInput = sysFsDeviceFactory.provisionDigitalInputPin(pinNumber, pud, trigger);
 	}
 
@@ -72,7 +66,7 @@ implements GpioDigitalInputDeviceInterface, InputEventListener<DigitalInputEvent
 
 	@Override
 	public boolean getValue() throws RuntimeIOException {
-		return JPiMmapGpio.gpioRead(pinNumber);
+		return mmapGpio.gpioRead(pinNumber);
 	}
 
 	@Override

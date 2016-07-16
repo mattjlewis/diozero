@@ -1,4 +1,4 @@
-package com.diozero.internal.provider.jpi;
+package com.diozero.internal.provider.jpi.rpi;
 
 /*
  * #%L
@@ -31,10 +31,13 @@ import java.nio.ByteOrder;
 import java.nio.IntBuffer;
 
 import com.diozero.api.GpioPullUpDown;
+import com.diozero.internal.provider.jpi.MmapBufferNative;
+import com.diozero.internal.provider.jpi.MmapByteBuffer;
+import com.diozero.internal.provider.jpi.MmapGpioInterface;
 import com.diozero.internal.spi.GpioDeviceInterface;
 import com.diozero.util.LibraryLoader;
 
-public class JPiMmapGpio {
+public class RPiMmapGpio implements MmapGpioInterface {
 	private static final String GPIOMEM_DEVICE = "/dev/gpiomem";
 	private static final int GPIOMEM_LEN = 0xB4;
 	// Offset to the GPIO Input level registers for each GPIO pin
@@ -64,24 +67,26 @@ public class JPiMmapGpio {
 	private static final int PI_PUD_DOWN = 1;
 	private static final int PI_PUD_UP = 2;
 	
-	private static boolean loaded;
-	private static MmapByteBuffer mmap;
-	private static IntBuffer gpioReg;
+	private boolean loaded;
+	private MmapByteBuffer mmap;
+	private IntBuffer gpioReg;
 	
-	public static synchronized void initialise() {
+	@Override
+	public synchronized void initialise() {
 		if (! loaded) {
-			LibraryLoader.loadLibrary(JPiMmapGpio.class, "jpi");
+			LibraryLoader.loadLibrary(RPiMmapGpio.class, "jpi");
 			
-			mmap = JPiNative.createMmapBuffer(GPIOMEM_DEVICE, 0, GPIOMEM_LEN);
+			mmap = MmapBufferNative.createMmapBuffer(GPIOMEM_DEVICE, 0, GPIOMEM_LEN);
 			gpioReg = mmap.getBuffer().order(ByteOrder.LITTLE_ENDIAN).asIntBuffer();
 			
 			loaded = true;
 		}
 	}
 	
-	public static synchronized void terminate() {
+	@Override
+	public synchronized void terminate() {
 		if (loaded) {
-			JPiNative.closeMmapBuffer(mmap.getFd(), mmap.getAddress(), mmap.getLength());
+			MmapBufferNative.closeMmapBuffer(mmap.getFd(), mmap.getAddress(), mmap.getLength());
 		}
 	}
 	
@@ -90,7 +95,8 @@ public class JPiMmapGpio {
 	 * @param gpio GPIO number
 	 * @return GPIO mode (0 - INPUT, 1 - OUTPUT)
 	 */
-	public static int getMode(int gpio) {
+	@Override
+	public int getMode(int gpio) {
 		int reg = gpio / 10;
 		int shift = (gpio % 10) * 3;
 
@@ -98,15 +104,16 @@ public class JPiMmapGpio {
 		return (gpioReg.get(reg) >> shift) & 7;
 	}
 	
-	public static void setMode(int gpio, GpioDeviceInterface.Direction mode) {
+	@Override
+	public void setMode(int gpio, GpioDeviceInterface.Mode mode) {
 		int reg = gpio / 10;
 		int shift = (gpio % 10) * 3;
 		
 		switch (mode) {
-		case INPUT:
+		case DIGITAL_INPUT:
 			gpioReg.put(reg, gpioReg.get(reg) & ~(7 << shift));
 			break;
-		case OUTPUT:
+		case DIGITAL_OUTPUT:
 			gpioReg.put(reg, (gpioReg.get(reg) & ~(7 << shift)) | (1 << shift));
 			break;
 		default:
@@ -114,7 +121,8 @@ public class JPiMmapGpio {
 		}
 	}
 	
-	public static void setPullUpDown(int gpio, GpioPullUpDown pud) {
+	@Override
+	public void setPullUpDown(int gpio, GpioPullUpDown pud) {
 		// pigpio:
 		/*
 		try {
@@ -158,12 +166,14 @@ public class JPiMmapGpio {
 		}
 	}
 	
-	public static boolean gpioRead(int gpio) {
+	@Override
+	public boolean gpioRead(int gpio) {
 		//return (gpioReg.get(GPLEV0 + (gpio >> 5)) & (1 << (gpio & 0x1F))) != 0;
 		return (gpioReg.get(GPIO_TO_GPLEV[gpio]) & (1 << (gpio & 0x1F))) != 0;
 	}
 	
-	public static void gpioWrite(int gpio, boolean value) {
+	@Override
+	public void gpioWrite(int gpio, boolean value) {
 		if (value) {
 			// pigpio
 			//gpioReg.put(GPSET0 + gpio >> 5, 1 << (gpio & 0x1F));
