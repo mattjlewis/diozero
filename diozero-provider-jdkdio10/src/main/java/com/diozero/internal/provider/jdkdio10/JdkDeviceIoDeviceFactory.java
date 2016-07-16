@@ -84,7 +84,7 @@ public class JdkDeviceIoDeviceFactory extends BaseNativeDeviceFactory {
 	@Override
 	protected GpioDigitalInputDeviceInterface createDigitalInputPin(String key, int pinNumber, GpioPullUpDown pud,
 			GpioEventTrigger trigger) throws RuntimeIOException {
-		return new JdkDeviceIoGpioInputDevice(key, this, pinNumber, pud, trigger);
+		return new JdkDeviceIoDigitalInputDevice(key, this, pinNumber, pud, trigger);
 	}
 
 	@Override
