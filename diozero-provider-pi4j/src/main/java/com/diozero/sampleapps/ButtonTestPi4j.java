@@ -4,7 +4,7 @@ package com.diozero.sampleapps;
  * #%L
  * Device I/O Zero - pi4j provider
  * %%
- * Copyright (C) 2016 diozero
+ * Copyright (C) 2016 mattjlewis
  * %%
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,8 +26,6 @@ package com.diozero.sampleapps;
  * #L%
  */
 
-
-import com.diozero.internal.provider.pi4j.RaspiGpioBcm;
 import com.diozero.util.SleepUtil;
 import com.pi4j.io.gpio.*;
 import com.pi4j.io.gpio.event.GpioPinDigitalStateChangeEvent;
@@ -40,8 +38,9 @@ public class ButtonTestPi4j implements GpioPinListenerDigital {
 	}
 	
 	public void test(int pinNumber) {
+		GpioFactory.setDefaultProvider(new RaspiGpioProvider(RaspiPinNumberingScheme.BROADCOM_PIN_NUMBERING));
 		GpioController gpio_controller = GpioFactory.getInstance();
-		Pin pin = RaspiGpioBcm.getPin(pinNumber);
+		Pin pin = RaspiBcmPin.getPinByAddress(pinNumber);
 		GpioPinDigitalInput digitalInputPin = gpio_controller.provisionDigitalInputPin(pin,
 				"Digital Input for BCM GPIO " + pinNumber, PinPullResistance.PULL_UP);
 		GpioUtil.setEdgeDetection(pin.getAddress(), PinEdge.BOTH.getValue());
