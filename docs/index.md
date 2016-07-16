@@ -88,7 +88,7 @@ Snapshot builds of the library are available in the [Nexus Repository Manager](h
 
 Javadoc for the core library is also available via [javadoc.io](http://www.javadoc.io/doc/com.diozero/diozero-core/). 
 
-Unfortunately Java doesn't provide a convenient deployment-time dependency manager such Python's `pip` therefore you will need to manually download all dependencies and setup your classpath correctly. You can do this either via setting the `CLASSPATH` environment variable or as a command-line option (`java -cp <jar1>:<jar2>`). The dependencies have been deliberately kept to as few libraries as possible, as such this library is only dependent on [tinylog](http://www.tinylog.org) [v1.0](https://github.com/pmwmedia/tinylog/releases/download/1.0.3/tinylog-1.0.3.zip).
+Unfortunately Java doesn't provide a convenient deployment-time dependency manager such Python's `pip` therefore you will need to manually download all dependencies and setup your classpath correctly. You can do this either via setting the `CLASSPATH` environment variable or as a command-line option (`java -cp <jar1>:<jar2>`). The dependencies have been deliberately kept to as few libraries as possible, as such this library is only dependent on [tinylog](http://www.tinylog.org) [v1.0](https://github.com/pmwmedia/tinylog/releases/download/1.0.3/tinylog-1.1.zip).
 
 To compile and run a diozero application you will need 4 JAR files - tinylog, diozero-core, one of the supported device provider libraries and the corresponding diozero provider wrapper library.
 
@@ -104,13 +104,13 @@ To get started I recommend first looking at the classes in [com.diozero.sampleap
 
 Option 1 - Setting the CLASSPATH environment variable:
 ```sh
-CLASSPATH=tinylog-1.0.3.jar:diozero-core-0.3-SNAPSHOT.jar:diozero-provider-pigpio-0.3-SNAPSHOT.jar:pigpioj-java-1.0.0.jar; export CLASSPATH
+CLASSPATH=tinylog-1.1.jar:diozero-core-0.3-SNAPSHOT.jar:diozero-provider-pigpio-0.3-SNAPSHOT.jar:pigpioj-java-1.0.0.jar; export CLASSPATH
 sudo java -cp $CLASSPATH com.diozero.sampleapps.LEDTest 12
 ```
 
 Option 2 - Setting the classpath via command-line:
 ```sh
-sudo java -cp tinylog-1.0.3.jar:diozero-core-0.3-SNAPSHOT.jar:diozero-provider-pigpio-0.3-SNAPSHOT.jar:pigpioj-java-1.0.0.jar com.diozero.sampleapps.LEDTest 12
+sudo java -cp tinylog-1.1.jar:diozero-core-0.3-SNAPSHOT.jar:diozero-provider-pigpio-0.3-SNAPSHOT.jar:pigpioj-java-1.0.0.jar com.diozero.sampleapps.LEDTest 12
 ```
 
 For an experience similar to Python where source code is interpreted rather than compiled try [Groovy](http://www.groovy-lang.org/) (`sudo apt-get update && sudo apt-get install groovy2`). With the `CLASSPATH` environment variable set as per the instructions above, a simple test application can be run via the command `groovy <filename>`. There is also a Groovy shell environment `groovysh`.
