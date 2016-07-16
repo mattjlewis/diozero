@@ -29,9 +29,10 @@ package com.diozero.internal.spi;
 import com.diozero.util.RuntimeIOException;
 
 public interface GpioDigitalOutputDeviceInterface extends GpioDeviceInterface {
+	boolean getValue() throws RuntimeIOException;
 	void setValue(boolean value) throws RuntimeIOException;
 	@Override
-	default Direction getDirection() {
-		return Direction.OUTPUT;
+	default Mode getMode() {
+		return Mode.DIGITAL_OUTPUT;
 	}
 }

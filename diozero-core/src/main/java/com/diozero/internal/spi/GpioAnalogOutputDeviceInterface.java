@@ -30,4 +30,8 @@ import com.diozero.util.RuntimeIOException;
 
 public interface GpioAnalogOutputDeviceInterface extends GpioAnalogInputDeviceInterface {
 	void setValue(float value) throws RuntimeIOException;
+	@Override
+	default Mode getMode() {
+		return Mode.ANALOG_OUTPUT;
+	}
 }

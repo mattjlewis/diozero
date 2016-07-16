@@ -28,9 +28,12 @@ package com.diozero.internal.spi;
 
 import com.diozero.util.RuntimeIOException;
 
-public interface GpioAnalogInputDeviceInterface extends DeviceInterface {
+public interface GpioAnalogInputDeviceInterface extends GpioDeviceInterface {
 	@Override
 	void close();
 	float getValue() throws RuntimeIOException;
-	int getPin();
+	@Override
+	default Mode getMode() {
+		return Mode.ANALOG_INPUT;
+	}
 }
