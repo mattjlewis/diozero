@@ -1,4 +1,4 @@
-#include "com_diozero_internal_provider_jpi_JPiNative.h"
+#include "com_diozero_internal_provider_jpi_MmapBufferNative.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -50,7 +50,7 @@ jobject createMmapByteBuffer(JNIEnv* env, int fd, void* map_ptr, long mapCapacit
 			(*env)->NewDirectByteBuffer(env, map_ptr, mapCapacity));
 }
 
-JNIEXPORT jobject JNICALL Java_com_diozero_internal_provider_jpi_JPiNative_createMmapBuffer(JNIEnv *env, jclass clz, jstring path, jint offset, jint length) {
+JNIEXPORT jobject JNICALL Java_com_diozero_internal_provider_jpi_MmapBufferNative_createMmapBuffer(JNIEnv *env, jclass clz, jstring path, jint offset, jint length) {
 	int str_len = (*env)->GetStringLength(env, path);
 	char filename[str_len];
 	(*env)->GetStringUTFRegion(env, path, 0, str_len, filename);
@@ -68,7 +68,7 @@ JNIEXPORT jobject JNICALL Java_com_diozero_internal_provider_jpi_JPiNative_creat
 	return createMmapByteBuffer(env, fd, map_ptr, length);
 }
 
-JNIEXPORT void JNICALL Java_com_diozero_internal_provider_jpi_JPiNative_closeMmapBuffer(JNIEnv *env, jclass clz, jint fd, jint mapPtr, jint length) {
+JNIEXPORT void JNICALL Java_com_diozero_internal_provider_jpi_MmapBufferNative_closeMmapBuffer(JNIEnv *env, jclass clz, jint fd, jint mapPtr, jint length) {
 	munmap((void*)mapPtr, length);
 	close((int) fd);
 }

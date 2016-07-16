@@ -11,7 +11,7 @@ LFLAGS =
 
 LIBS = 
 
-SRCS = com_diozero_internal_provider_jpi_JPiNative.c
+SRCS = com_diozero_internal_provider_jpi_MmapBufferNative.c
 
 OBJS = $(SRCS:.c=.o)
 
