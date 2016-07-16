@@ -40,15 +40,15 @@ import com.pi4j.io.gpio.event.GpioPinDigitalStateChangeEvent;
 import com.pi4j.io.gpio.event.GpioPinListenerDigital;
 import com.pi4j.wiringpi.GpioUtil;
 
-public class Pi4jGpioInputDevice extends AbstractInputDevice<DigitalInputEvent> implements GpioDigitalInputDeviceInterface, GpioPinListenerDigital {
+public class Pi4jDigitalInputDevice extends AbstractInputDevice<DigitalInputEvent> implements GpioDigitalInputDeviceInterface, GpioPinListenerDigital {
 	private GpioPinDigitalInput digitalInputPin;
 	private int pinNumber;
 	
-	Pi4jGpioInputDevice(String key, DeviceFactoryInterface deviceFactory, GpioController gpioController,
+	Pi4jDigitalInputDevice(String key, DeviceFactoryInterface deviceFactory, GpioController gpioController,
 			int pinNumber, GpioPullUpDown pud, GpioEventTrigger trigger) {
 		super(key, deviceFactory);
 		
-		Pin pin = RaspiGpioBcm.getPin(pinNumber);
+		Pin pin = RaspiBcmPin.getPinByAddress(pinNumber);
 		if (pin == null) {
 			throw new IllegalArgumentException("Illegal pin number: " + pinNumber);
 		}

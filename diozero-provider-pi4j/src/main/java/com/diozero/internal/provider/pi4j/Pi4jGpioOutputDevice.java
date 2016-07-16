@@ -41,7 +41,7 @@ public class Pi4jGpioOutputDevice extends AbstractDevice implements GpioDigitalO
 	Pi4jGpioOutputDevice(String key, DeviceFactoryInterface deviceFactory, GpioController gpioController, int pinNumber, boolean initialValue) {
 		super(key, deviceFactory);
 		
-		Pin pin = RaspiGpioBcm.getPin(pinNumber);
+		Pin pin = RaspiBcmPin.getPinByAddress(pinNumber);
 		if (pin == null) {
 			throw new IllegalArgumentException("Illegal pin number: " + pinNumber);
 		}
