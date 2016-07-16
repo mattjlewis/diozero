@@ -38,8 +38,6 @@ import com.pi4j.wiringpi.GpioUtil;
 import com.pi4j.wiringpi.SoftPwm;
 
 public class WiringPiPwmOutputDevice extends AbstractDevice implements PwmOutputDeviceInterface {
-	private static final boolean DISABLED = true;
-	
 	private int pinNumber;
 	private float value;
 	private PwmType pwmType;
@@ -49,29 +47,25 @@ public class WiringPiPwmOutputDevice extends AbstractDevice implements PwmOutput
 			int range, int pinNumber, float initialValue) throws RuntimeIOException {
 		super(key, deviceFactory);
 		
+		this.pwmType = pwmType;
 		this.pinNumber = pinNumber;
 		this.value = initialValue;
-		this.pwmType = pwmType;
 		this.range = range;
 		
 		switch (pwmType) {
 		case HARDWARE:
-			if (DISABLED) {
-				// This worked from the command line after a fresh restart
-				// However, not yet got it to work in software even though using the same commands
-				// http://raspberrypi.stackexchange.com/questions/4906/control-hardware-pwm-frequency/38070#38070?newreg=67e978faf30840a6a674ba040fbf1752
-				throw new UnsupportedOperationException("Not yet worked out WiringPi Hardware PWM");
-			}
 			if (GpioUtil.isExported(pinNumber)) {
 				GpioUtil.setDirection(pinNumber, GpioUtil.DIRECTION_OUT);
 			} else {
 				GpioUtil.export(pinNumber, GpioUtil.DIRECTION_OUT);
 			}
 			Gpio.pinMode(pinNumber, Gpio.PWM_OUTPUT);
-			Gpio.pwmWrite(pinNumber, (int)(value * range));
+			// Have to call this after setting the pin mode! Yuck
+			Gpio.pwmSetMode(Gpio.PWM_MODE_MS);
+			Gpio.pwmWrite(pinNumber, (int) (initialValue * range));
 			break;
 		case SOFTWARE:
-			int status = SoftPwm.softPwmCreate(pinNumber, (int)(value * range), range);
+			int status = SoftPwm.softPwmCreate(pinNumber, (int)(initialValue * range), range);
 			if (status != 0) {
 				throw new RuntimeIOException("Error setting up software controlled PWM GPIO on BCM pin " +
 						pinNumber + ", status=" + status);
@@ -107,7 +101,7 @@ public class WiringPiPwmOutputDevice extends AbstractDevice implements PwmOutput
 	@Override
 	public void setValue(float value) throws RuntimeIOException {
 		this.value = value;
-		int dc = (int)Math.floor(value * range);
+		int dc = (int) Math.floor(value * range);
 		switch (pwmType) {
 		case HARDWARE:
 			Logger.info("setValue({}), range={}, dc={}", Float.valueOf(value), Integer.valueOf(range), Integer.valueOf(dc));
