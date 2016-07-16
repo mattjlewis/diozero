@@ -106,7 +106,7 @@
 		
 		<commons-math3.version>3.6.1</commons-math3.version>
 		<junit.version>4.12</junit.version>
-		<tinylog.version>1.0.3</tinylog.version>
+		<tinylog.version>1.1</tinylog.version>
 		
 		<maven.min-version>3.3.0</maven.min-version>
 		<maven-assembly-plugin.version>2.6</maven-assembly-plugin.version>
