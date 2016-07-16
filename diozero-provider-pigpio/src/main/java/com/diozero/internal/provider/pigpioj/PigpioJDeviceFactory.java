@@ -30,7 +30,7 @@ import org.pmw.tinylog.Logger;
 
 import com.diozero.api.*;
 import com.diozero.internal.spi.*;
-import com.diozero.internal.spi.GpioDeviceInterface.Direction;
+import com.diozero.internal.spi.GpioDeviceInterface.Mode;
 import com.diozero.pigpioj.PigpioGpio;
 import com.diozero.util.RuntimeIOException;
 
@@ -97,17 +97,16 @@ public class PigpioJDeviceFactory extends BaseNativeDeviceFactory {
 		return new PigpioJDigitalOutputDevice(key, this, pinNumber, initialValue);
 	}
 	
-	protected GpioDeviceInterface.Direction getCurrentGpioMode(int pinNumber) {
+	protected GpioDeviceInterface.Mode getCurrentGpioMode(int pinNumber) {
 		int rc = PigpioGpio.getMode(pinNumber);
-		if (rc != PigpioGpio.MODE_PI_INPUT || rc != PigpioGpio.MODE_PI_OUTPUT) {
-			throw new RuntimeIOException("Error calling PigpioGpio.getMode(), response: " + rc);
-		}
 		
 		if (rc == PigpioGpio.MODE_PI_INPUT) {
-			return Direction.INPUT;
+			return Mode.DIGITAL_INPUT;
+		} else if (rc == PigpioGpio.MODE_PI_OUTPUT) {
+			return Mode.DIGITAL_OUTPUT;
 		}
 		
-		return Direction.OUTPUT;
+		throw new RuntimeIOException("Error calling PigpioGpio.getMode(), response: " + rc);
 	}
 
 	@Override
