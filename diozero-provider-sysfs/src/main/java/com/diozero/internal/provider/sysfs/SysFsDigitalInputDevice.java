@@ -44,7 +44,7 @@ import com.diozero.util.*;
  * Pure Java implementation using <a href="https://www.kernel.org/doc/Documentation/gpio/sysfs.txt">/sys/class/gpio</a> kernel module
  *
  */
-public class SysFsGpioInputDevice extends AbstractInputDevice<DigitalInputEvent>
+public class SysFsDigitalInputDevice extends AbstractInputDevice<DigitalInputEvent>
 implements GpioDigitalInputDeviceInterface, PollEventListener, Runnable {
 	private static final String EDGE_FILE = "edge";
 	private static final String VALUE_FILE = "value";
@@ -57,7 +57,7 @@ implements GpioDigitalInputDeviceInterface, PollEventListener, Runnable {
 	private Path valuePath;
 	private RandomAccessFile valueFile;
 
-	public SysFsGpioInputDevice(SysFsDeviceFactory deviceFactory, Path gpioDir,
+	public SysFsDigitalInputDevice(SysFsDeviceFactory deviceFactory, Path gpioDir,
 			String key, int pinNumber, GpioEventTrigger trigger) {
 		super(key, deviceFactory);
 		

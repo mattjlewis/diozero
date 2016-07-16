@@ -37,7 +37,7 @@ import java.nio.file.Path;
 import com.diozero.api.*;
 import com.diozero.internal.board.odroid.OdroidBoardInfoProvider;
 import com.diozero.internal.spi.*;
-import com.diozero.internal.spi.GpioDeviceInterface.Direction;
+import com.diozero.internal.spi.GpioDeviceInterface.Mode;
 import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SystemInfo;
 
@@ -92,15 +92,15 @@ public class SysFsDeviceFactory extends BaseNativeDeviceFactory {
 	@Override
 	protected GpioDigitalInputDeviceInterface createDigitalInputPin(String key, int pinNumber, GpioPullUpDown pud,
 			GpioEventTrigger trigger) throws RuntimeIOException {
-		export(pinNumber, Direction.INPUT);
+		export(pinNumber, Mode.DIGITAL_INPUT);
 		
-		return new SysFsGpioInputDevice(this, getGpioDir(pinNumber), key, pinNumber, trigger);
+		return new SysFsDigitalInputDevice(this, getGpioDir(pinNumber), key, pinNumber, trigger);
 	}
 
 	@Override
 	protected GpioDigitalOutputDeviceInterface createDigitalOutputPin(String key, int pinNumber, boolean initialValue)
 			throws RuntimeIOException {
-		export(pinNumber, Direction.OUTPUT);
+		export(pinNumber, Mode.DIGITAL_OUTPUT);
 		
 		return new SysFsGpioOutputDevice(this, getGpioDir(pinNumber), key, pinNumber, initialValue);
 	}
@@ -127,7 +127,7 @@ public class SysFsDeviceFactory extends BaseNativeDeviceFactory {
 		throw new UnsupportedOperationException("I2C not supported");
 	}
 	
-	private void export(int pinNumber, Direction direction) {
+	private void export(int pinNumber, Mode direction) {
 		if (! isExported(pinNumber)) {
 			try (Writer export_writer = new FileWriter(rootPath.resolve(EXPORT_FILE).toFile())) {
 				export_writer.write(String.valueOf(pinNumber));
@@ -155,7 +155,7 @@ public class SysFsDeviceFactory extends BaseNativeDeviceFactory {
 
 		// Defaults to in on the Raspberry Pi
 		try (FileWriter writer = new FileWriter(direction_file.toFile(), true)) {
-			writer.write(direction == Direction.OUTPUT ? "out" : "in");
+			writer.write(direction == Mode.DIGITAL_OUTPUT ? "out" : "in");
 		} catch (IOException e) {
 			unexport(pinNumber);
 			throw new RuntimeIOException("Error setting direction for GPIO " + pinNumber, e);
