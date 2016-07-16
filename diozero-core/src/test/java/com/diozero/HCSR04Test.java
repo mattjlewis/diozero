@@ -52,6 +52,8 @@ public class HCSR04Test {
 				Logger.info("Distance={}", Float.valueOf(distance));
 				SleepUtil.sleepSeconds(1);
 			}
+		} catch (UnsatisfiedLinkError e) {
+			Logger.warn(e, "Error: {}", e);
 		}
 	}
 }
