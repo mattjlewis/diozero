@@ -271,14 +271,13 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 			B_REV_1_PINS.put(Integer.valueOf(14), digital_in_out); // UART TXD
 			B_REV_1_PINS.put(Integer.valueOf(15), digital_in_out); // UART RXD
 			B_REV_1_PINS.put(Integer.valueOf(17), digital_in_out);
-			B_REV_1_PINS.put(Integer.valueOf(18), digital_in_out);
 			B_REV_1_PINS.put(Integer.valueOf(21), digital_in_out);
 			B_REV_1_PINS.put(Integer.valueOf(22), digital_in_out);
 			B_REV_1_PINS.put(Integer.valueOf(23), digital_in_out);
 			B_REV_1_PINS.put(Integer.valueOf(24), digital_in_out);
 			B_REV_1_PINS.put(Integer.valueOf(25), digital_in_out);
 			// GPIO 18 also has Hardware PWM output
-			B_REV_1_PINS.get(Integer.valueOf(18)).add(Mode.PWM_OUTPUT);
+			B_REV_1_PINS.put(Integer.valueOf(18), Arrays.asList(Mode.DIGITAL_INPUT, Mode.DIGITAL_OUTPUT, Mode.SOFTWARE_PWM_OUTPUT, Mode.PWM_OUTPUT));
 		}
 		
 		public PiBRev1BoardInfo(Revision revision, Memory memory, Manufacturer manufacturer) {
@@ -290,6 +289,8 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 		private static Map<Integer, List<Mode>> AB_REV_2_PINS;
 		static {
 			List<Mode> digital_in_out = Arrays.asList(Mode.DIGITAL_INPUT, Mode.DIGITAL_OUTPUT, Mode.SOFTWARE_PWM_OUTPUT);
+			// GPIO 18 also has Hardware PWM output
+			List<Mode> digital_in_out_pwm = Arrays.asList(Mode.DIGITAL_INPUT, Mode.DIGITAL_OUTPUT, Mode.SOFTWARE_PWM_OUTPUT, Mode.PWM_OUTPUT);
 			AB_REV_2_PINS = new HashMap<>();
 			AB_REV_2_PINS.put(Integer.valueOf(2), digital_in_out);  // I2C SDA
 			AB_REV_2_PINS.put(Integer.valueOf(3), digital_in_out);  // I2C SCL
@@ -302,14 +303,12 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 			AB_REV_2_PINS.put(Integer.valueOf(14), digital_in_out); // UART TXD
 			AB_REV_2_PINS.put(Integer.valueOf(15), digital_in_out); // UART RXD
 			AB_REV_2_PINS.put(Integer.valueOf(17), digital_in_out);
-			AB_REV_2_PINS.put(Integer.valueOf(18), digital_in_out);
+			AB_REV_2_PINS.put(Integer.valueOf(18), digital_in_out_pwm);
 			AB_REV_2_PINS.put(Integer.valueOf(22), digital_in_out);
 			AB_REV_2_PINS.put(Integer.valueOf(23), digital_in_out);
 			AB_REV_2_PINS.put(Integer.valueOf(24), digital_in_out);
 			AB_REV_2_PINS.put(Integer.valueOf(25), digital_in_out);
 			AB_REV_2_PINS.put(Integer.valueOf(27), digital_in_out);
-			// GPIO 18 also has Hardware PWM output
-			AB_REV_2_PINS.get(Integer.valueOf(18)).add(Mode.PWM_OUTPUT);
 		}
 		
 		public PiABRev2BoardInfo(Model model, Memory memory, Manufacturer manufacturer) {
@@ -321,6 +320,8 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 		private static Map<Integer, List<Mode>> AB_PLUS_PINS;
 		static {
 			List<Mode> digital_in_out = Arrays.asList(Mode.DIGITAL_INPUT, Mode.DIGITAL_OUTPUT, Mode.SOFTWARE_PWM_OUTPUT);
+			// GPIO 12, 13, 18 and 19 also have Hardware PWM output
+			List<Mode> digital_in_out_pwm = Arrays.asList(Mode.DIGITAL_INPUT, Mode.DIGITAL_OUTPUT, Mode.SOFTWARE_PWM_OUTPUT, Mode.PWM_OUTPUT);
 			AB_PLUS_PINS = new HashMap<>();
 			AB_PLUS_PINS.put(Integer.valueOf(2), digital_in_out);  // I2C SDA
 			AB_PLUS_PINS.put(Integer.valueOf(3), digital_in_out);  // I2C SCL
@@ -332,14 +333,14 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 			AB_PLUS_PINS.put(Integer.valueOf(9), digital_in_out);  // SPI-0 MISO
 			AB_PLUS_PINS.put(Integer.valueOf(10), digital_in_out); // SPI-0 MOSI
 			AB_PLUS_PINS.put(Integer.valueOf(11), digital_in_out); // SPI-0 CLK
-			AB_PLUS_PINS.put(Integer.valueOf(12), digital_in_out);
-			AB_PLUS_PINS.put(Integer.valueOf(13), digital_in_out);
+			AB_PLUS_PINS.put(Integer.valueOf(12), digital_in_out_pwm);
+			AB_PLUS_PINS.put(Integer.valueOf(13), digital_in_out_pwm);
 			AB_PLUS_PINS.put(Integer.valueOf(14), digital_in_out); // UART TXD
 			AB_PLUS_PINS.put(Integer.valueOf(15), digital_in_out); // UART RXD
 			AB_PLUS_PINS.put(Integer.valueOf(16), digital_in_out); // SPI-1 CE2
 			AB_PLUS_PINS.put(Integer.valueOf(17), digital_in_out); // SPI-1 CE1
-			AB_PLUS_PINS.put(Integer.valueOf(18), digital_in_out); // SPI-1 CE0
-			AB_PLUS_PINS.put(Integer.valueOf(19), digital_in_out); // SPI-1 MISO
+			AB_PLUS_PINS.put(Integer.valueOf(18), digital_in_out_pwm); // SPI-1 CE0
+			AB_PLUS_PINS.put(Integer.valueOf(19), digital_in_out_pwm); // SPI-1 MISO
 			AB_PLUS_PINS.put(Integer.valueOf(20), digital_in_out); // SPI-1 MOSI
 			AB_PLUS_PINS.put(Integer.valueOf(21), digital_in_out); // SPI-1 SCLK
 			AB_PLUS_PINS.put(Integer.valueOf(22), digital_in_out);
@@ -353,11 +354,6 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 			AB_PLUS_PINS.put(Integer.valueOf(29), digital_in_out);
 			AB_PLUS_PINS.put(Integer.valueOf(30), digital_in_out);
 			AB_PLUS_PINS.put(Integer.valueOf(31), digital_in_out);
-			// GPIO 12, 13, 18 and 19 also have Hardware PWM output
-			AB_PLUS_PINS.get(Integer.valueOf(12)).add(Mode.PWM_OUTPUT);
-			AB_PLUS_PINS.get(Integer.valueOf(13)).add(Mode.PWM_OUTPUT);
-			AB_PLUS_PINS.get(Integer.valueOf(18)).add(Mode.PWM_OUTPUT);
-			AB_PLUS_PINS.get(Integer.valueOf(19)).add(Mode.PWM_OUTPUT);
 		}
 		
 		public PiABPlusBoardInfo(Model model, Revision revision, Memory memory, Manufacturer manufacturer, Processor processor) {
@@ -369,6 +365,8 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 		private static Map<Integer, List<Mode>> AB_PLUS_PINS;
 		static {
 			List<Mode> digital_in_out = Arrays.asList(Mode.DIGITAL_INPUT, Mode.DIGITAL_OUTPUT, Mode.SOFTWARE_PWM_OUTPUT);
+			// GPIO 12, 13, 18 and 19 also have Hardware PWM output
+			List<Mode> digital_in_out_pwm = Arrays.asList(Mode.DIGITAL_INPUT, Mode.DIGITAL_OUTPUT, Mode.SOFTWARE_PWM_OUTPUT, Mode.PWM_OUTPUT);
 			AB_PLUS_PINS = new HashMap<>();
 			AB_PLUS_PINS.put(Integer.valueOf(2), digital_in_out);  // I2C SDA
 			AB_PLUS_PINS.put(Integer.valueOf(3), digital_in_out);  // I2C SCL
@@ -380,14 +378,14 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 			AB_PLUS_PINS.put(Integer.valueOf(9), digital_in_out);  // SPI-0 MISO
 			AB_PLUS_PINS.put(Integer.valueOf(10), digital_in_out); // SPI-0 MOSI
 			AB_PLUS_PINS.put(Integer.valueOf(11), digital_in_out); // SPI-0 CLK
-			AB_PLUS_PINS.put(Integer.valueOf(12), digital_in_out);
-			AB_PLUS_PINS.put(Integer.valueOf(13), digital_in_out);
+			AB_PLUS_PINS.put(Integer.valueOf(12), digital_in_out_pwm);
+			AB_PLUS_PINS.put(Integer.valueOf(13), digital_in_out_pwm);
 			AB_PLUS_PINS.put(Integer.valueOf(14), digital_in_out); // UART TXD
 			AB_PLUS_PINS.put(Integer.valueOf(15), digital_in_out); // UART RXD
 			AB_PLUS_PINS.put(Integer.valueOf(16), digital_in_out); // SPI-1 CE2
 			AB_PLUS_PINS.put(Integer.valueOf(17), digital_in_out); // SPI-1 CE1
-			AB_PLUS_PINS.put(Integer.valueOf(18), digital_in_out); // SPI-1 CE0
-			AB_PLUS_PINS.put(Integer.valueOf(19), digital_in_out); // SPI-1 MISO
+			AB_PLUS_PINS.put(Integer.valueOf(18), digital_in_out_pwm); // SPI-1 CE0
+			AB_PLUS_PINS.put(Integer.valueOf(19), digital_in_out_pwm); // SPI-1 MISO
 			AB_PLUS_PINS.put(Integer.valueOf(20), digital_in_out); // SPI-1 MOSI
 			AB_PLUS_PINS.put(Integer.valueOf(21), digital_in_out); // SPI-1 SCLK
 			AB_PLUS_PINS.put(Integer.valueOf(22), digital_in_out);
@@ -401,11 +399,6 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 			AB_PLUS_PINS.put(Integer.valueOf(29), digital_in_out);
 			AB_PLUS_PINS.put(Integer.valueOf(30), digital_in_out);
 			AB_PLUS_PINS.put(Integer.valueOf(31), digital_in_out);
-			// GPIO 12, 13, 18 and 19 also have Hardware PWM output
-			AB_PLUS_PINS.get(Integer.valueOf(12)).add(Mode.PWM_OUTPUT);
-			AB_PLUS_PINS.get(Integer.valueOf(13)).add(Mode.PWM_OUTPUT);
-			AB_PLUS_PINS.get(Integer.valueOf(18)).add(Mode.PWM_OUTPUT);
-			AB_PLUS_PINS.get(Integer.valueOf(19)).add(Mode.PWM_OUTPUT);
 		}
 		
 		public PiComputeModuleBoardInfo(Memory memory, Manufacturer manufacturer, Processor processor) {

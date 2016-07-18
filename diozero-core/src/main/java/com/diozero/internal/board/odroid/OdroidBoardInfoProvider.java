@@ -84,6 +84,12 @@ public class OdroidBoardInfoProvider implements BoardInfoProvider {
 					GpioDeviceInterface.Mode.DIGITAL_INPUT,
 					GpioDeviceInterface.Mode.DIGITAL_OUTPUT,
 					GpioDeviceInterface.Mode.SOFTWARE_PWM_OUTPUT);
+			// See http://odroid.com/dokuwiki/doku.php?id=en:c2_hardware_pwm
+			List<Mode> digital_in_out_pwm = Arrays.asList(
+					GpioDeviceInterface.Mode.DIGITAL_INPUT,
+					GpioDeviceInterface.Mode.DIGITAL_OUTPUT,
+					GpioDeviceInterface.Mode.SOFTWARE_PWM_OUTPUT,
+					GpioDeviceInterface.Mode.PWM_OUTPUT);
 			C2_PINS = new HashMap<>();
 			C2_PINS.put(Integer.valueOf(214), digital_in_out);
 			C2_PINS.put(Integer.valueOf(218), digital_in_out);
@@ -91,13 +97,14 @@ public class OdroidBoardInfoProvider implements BoardInfoProvider {
 			C2_PINS.put(Integer.valueOf(224), digital_in_out);
 			C2_PINS.put(Integer.valueOf(225), digital_in_out);
 			for (int i=228; i<=239; i++) {
-				C2_PINS.put(Integer.valueOf(i), digital_in_out);
+				if (i == 234 || i == 235) {
+					C2_PINS.put(Integer.valueOf(i), digital_in_out_pwm);
+				} else {
+					C2_PINS.put(Integer.valueOf(i), digital_in_out);
+				}
 			}
 			C2_PINS.put(Integer.valueOf(247), digital_in_out);
 			C2_PINS.put(Integer.valueOf(249), digital_in_out);
-			// See http://odroid.com/dokuwiki/doku.php?id=en:c2_hardware_pwm
-			C2_PINS.get(Integer.valueOf(234)).add(GpioDeviceInterface.Mode.PWM_OUTPUT);
-			C2_PINS.get(Integer.valueOf(235)).add(GpioDeviceInterface.Mode.PWM_OUTPUT);
 			// Note these are actual pin numbers, not logical GPIO numbers
 			C2_PINS.put(Integer.valueOf(37), Arrays.asList(GpioDeviceInterface.Mode.ANALOG_INPUT));
 			C2_PINS.put(Integer.valueOf(40), Arrays.asList(GpioDeviceInterface.Mode.ANALOG_INPUT));
