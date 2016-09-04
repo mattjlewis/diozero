@@ -30,6 +30,10 @@ import java.util.concurrent.TimeUnit;
 
 
 public class SleepUtil {
+	static {
+		LibraryLoader.loadLibrary(SleepUtil.class, "diozero-system-utils");
+	}
+	
 	public static final int MS_IN_SEC = 1000;
 	public static final long US_IN_SEC = MS_IN_SEC * 1000;
 	public static final long NS_IN_SEC = US_IN_SEC * 1000;
@@ -102,7 +106,6 @@ public class SleepUtil {
 	public static native long sleepNanos(int seconds, long nanos);
 	
 	public static void main(String[] args) {
-		LibraryLoader.loadLibrary(SleepUtil.class, "diozero-system-utils");
 		System.out.println("Sleeping for 2.5s");
 		sleepNanos(2, 500_000_000);
 		System.out.println("Done");
