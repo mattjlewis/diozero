@@ -25,7 +25,7 @@
 ###
 #!/bin/sh
 
-version=0.8-SNAPSHOT
+version=0.9-SNAPSHOT
 pigpioj_version=1.0.0
 username=pi
 #host=george.local
