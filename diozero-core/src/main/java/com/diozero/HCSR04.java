@@ -87,12 +87,11 @@ public class HCSR04 implements DistanceSensorInterface, Closeable {
 		long start = System.nanoTime();
 		// Send a pulse trigger of 10 us duration
 		trigger.setValueUnsafe(true);
-		SleepUtil.sleepNanos(0, PULSE_NS);// wait 10 us (10,000ns)
+		SleepUtil.busySleep(PULSE_NS);// wait 10 us (10,000ns)
 		trigger.setValueUnsafe(false);
 		
 		// Need to include as little code as possible here to avoid missing pin state changes
-		Logger.info("Waiting for echo to go high...");
-		while (!echo.getValue()) {
+		while (! echo.getValue()) {
 			if (System.nanoTime() - start > 500_000_000) {
 				Logger.error("Timeout exceeded waiting for echo to go high");
 				return -1;
