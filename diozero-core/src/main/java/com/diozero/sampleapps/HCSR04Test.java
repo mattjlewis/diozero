@@ -46,6 +46,8 @@ import com.diozero.util.SleepUtil;
  *  {@code sudo java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-wiringpi-$DIOZERO_VERSION.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sampleapps.HCSR04Test 23 24}</li>
  * <li>pigpgioJ:<br>
  *  {@code sudo java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-pigpio-$DIOZERO_VERSION.jar:pigpioj-java-1.0.0.jar com.diozero.sampleapps.HCSR04Test 23 24}</li>
+ * <li>jpi:<br>
+ *  {@code sudo java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-jpi-$DIOZERO_VERSION.jar com.diozero.sampleapps.HCSR04Test 23 24}</li>
  * </ul>
  */
 public class HCSR04Test {
