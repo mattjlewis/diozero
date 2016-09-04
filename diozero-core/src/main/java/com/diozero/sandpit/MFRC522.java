@@ -142,12 +142,10 @@ public class MFRC522 implements Closeable {
 	private static final int MAX_LEN = 16;
 	
 	private SpiDevice device;
-	private int resetPinNumber;
 	private DigitalOutputDevice resetPin;
 	
 	public MFRC522(int chipSelect, int resetPinNumber) {
 		device = new SpiDevice(chipSelect);
-		this.resetPinNumber = resetPinNumber;
 		resetPin = new DigitalOutputDevice(resetPinNumber, true, false);
 		
 		resetPin.on();
