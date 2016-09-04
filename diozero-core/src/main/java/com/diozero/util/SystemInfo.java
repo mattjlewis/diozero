@@ -44,8 +44,6 @@ public class SystemInfo {
 			osReleaseProperties = new Properties();
 			try (Reader reader = new FileReader(OS_RELEASE_FILE)) {
 				osReleaseProperties.load(reader);
-				
-				initialised = true;
 			} catch (IOException e) {
 				throw new RuntimeIOException("Error loading properties file '" + OS_RELEASE_FILE, e);
 			}
@@ -69,6 +67,8 @@ public class SystemInfo {
 			}
 			
 			boardInfo = lookupBoardInfo(revision_string);
+			
+			initialised = true;
 		}
 	}
 	
@@ -80,6 +80,11 @@ public class SystemInfo {
 			if (board_info != null) {
 				break;
 			}
+		}
+		if (board_info == null) {
+			Logger.warn("Failed to resolve board info, revision '" + revision + "'");
+		} else {
+			Logger.debug("Resolved board " + board_info);
 		}
 		return board_info;
 	}
