@@ -59,6 +59,10 @@ public abstract class BaseNativeDeviceFactory extends AbstractDeviceFactory impl
 
 	@Override
 	public final GpioAnalogInputDeviceInterface provisionAnalogInputPin(int pinNumber) throws RuntimeIOException {
+		if (! SystemInfo.getBoardInfo().isSupported(Mode.ANALOG_INPUT, pinNumber)) {
+			throw new IllegalArgumentException("Invalid mode (analog input) for pinNumber " + pinNumber);
+		}
+		
 		String key = createGpioKey(pinNumber);
 		
 		// Check if this pin is already provisioned
@@ -74,6 +78,10 @@ public abstract class BaseNativeDeviceFactory extends AbstractDeviceFactory impl
 
 	@Override
 	public final GpioAnalogOutputDeviceInterface provisionAnalogOutputPin(int pinNumber) throws RuntimeIOException {
+		if (! SystemInfo.getBoardInfo().isSupported(Mode.ANALOG_OUTPUT, pinNumber)) {
+			throw new IllegalArgumentException("Invalid mode (analog output) for pinNumber " + pinNumber);
+		}
+		
 		String key = createGpioKey(pinNumber);
 		
 		// Check if this pin is already provisioned
@@ -90,6 +98,10 @@ public abstract class BaseNativeDeviceFactory extends AbstractDeviceFactory impl
 	@Override
 	public final GpioDigitalInputDeviceInterface provisionDigitalInputPin(int pinNumber, GpioPullUpDown pud,
 			GpioEventTrigger trigger) throws RuntimeIOException {
+		if (! SystemInfo.getBoardInfo().isSupported(Mode.DIGITAL_INPUT, pinNumber)) {
+			throw new IllegalArgumentException("Invalid mode (digital input) for pinNumber " + pinNumber);
+		}
+		
 		// TODO Understand limitations of a particular device
 		// Create some sort of DeviceCapabilities class for this kind of information
 		// Raspberry Pi GPIO2 and GPIO3 are SDA and SCL1 respectively
@@ -113,6 +125,10 @@ public abstract class BaseNativeDeviceFactory extends AbstractDeviceFactory impl
 
 	@Override
 	public final GpioDigitalOutputDeviceInterface provisionDigitalOutputPin(int pinNumber, boolean initialValue) throws RuntimeIOException {
+		if (! SystemInfo.getBoardInfo().isSupported(Mode.DIGITAL_OUTPUT, pinNumber)) {
+			throw new IllegalArgumentException("Invalid mode (digital output) for pinNumber " + pinNumber);
+		}
+		
 		String key = createGpioKey(pinNumber);
 		
 		// Check if this pin is already provisioned
@@ -128,13 +144,6 @@ public abstract class BaseNativeDeviceFactory extends AbstractDeviceFactory impl
 
 	@Override
 	public final PwmOutputDeviceInterface provisionPwmOutputPin(int pinNumber, float initialValue) throws RuntimeIOException {
-		String key = createGpioKey(pinNumber);
-		
-		// Check if this pin is already provisioned
-		if (isDeviceOpened(key)) {
-			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
-		}
-
 		PwmType pwm_type;
 		BoardInfo board_info = SystemInfo.getBoardInfo();
 		if (board_info.isSupported(Mode.PWM_OUTPUT, pinNumber)) {
@@ -143,9 +152,16 @@ public abstract class BaseNativeDeviceFactory extends AbstractDeviceFactory impl
 			Logger.warn("Hardware PWM not available on BCM pin {}, reverting to software", Integer.valueOf(pinNumber));
 			pwm_type = PwmType.SOFTWARE;
 		} else {
-			throw new IllegalArgumentException("Invalid pinNumber " + pinNumber);
+			throw new IllegalArgumentException("Invalid mode (PWM output) for pinNumber " + pinNumber);
 		}
 		
+		String key = createGpioKey(pinNumber);
+		
+		// Check if this pin is already provisioned
+		if (isDeviceOpened(key)) {
+			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
+		}
+
 		PwmOutputDeviceInterface device = createPwmOutputPin(key, pinNumber, initialValue, pwm_type);
 		deviceOpened(device);
 		
