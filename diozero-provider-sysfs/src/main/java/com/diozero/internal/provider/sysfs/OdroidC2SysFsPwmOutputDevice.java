@@ -61,10 +61,6 @@ public class OdroidC2SysFsPwmOutputDevice extends AbstractDevice implements PwmO
 			int frequency, float initialValue, int range) {
 		super(key, deviceFactory);
 		
-		if (pinNumber != 234 && pinNumber != 235) {
-			throw new RuntimeIOException("Invalid PWM pin number, must be 234 or 235");
-		}
-		
 		this.pinNumber = pinNumber;
 		this.range = range;
 		pwmNum = pinNumber - 234;
@@ -118,7 +114,7 @@ public class OdroidC2SysFsPwmOutputDevice extends AbstractDevice implements PwmO
 			dutyFile.writeBytes(Integer.toString(((int) (value * range))));
 		} catch (IOException e) {
 			closeDevice();
-			throw new RuntimeIOException("Error setting duty for PWM " + pinNumber, e);
+			throw new RuntimeIOException("Error setting duty for PWM #" + pinNumber, e);
 		}
 	}
 
@@ -127,16 +123,25 @@ public class OdroidC2SysFsPwmOutputDevice extends AbstractDevice implements PwmO
 		try (FileWriter writer = new FileWriter(f)) {
 			writer.write("1");
 		} catch (IOException e) {
-			throw new RuntimeIOException("Error enabling PWM " + pwmNum, e);
+			throw new RuntimeIOException("Error enabling PWM on #" + pwmNum, e);
 		}
 	}
 
-	private static void setFrequency(int pwmNum, int frequency) {
+	static void setFrequency(int pwmNum, int frequency) {
 		File f = PWM_ROOT.resolve("freq" + pwmNum).toFile();
 		try (FileWriter writer = new FileWriter(f)) {
 			writer.write(Integer.toString(frequency));
 		} catch (IOException e) {
-			throw new RuntimeIOException("Error set frequency for PWM " + pwmNum, e);
+			throw new RuntimeIOException("Error setting frequency (" + frequency + ") for PWM #" + pwmNum, e);
+		}
+	}
+
+	static int getFrequency(int pwmNum) {
+		File f = PWM_ROOT.resolve("freq" + pwmNum).toFile();
+		try (BufferedReader reader = new BufferedReader(new FileReader(f))) {
+			return Integer.parseInt(reader.readLine());
+		} catch (IOException | NumberFormatException e) {
+			throw new RuntimeIOException("Error getting frequency for PWM #" + pwmNum, e);
 		}
 	}
 }

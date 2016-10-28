@@ -71,22 +71,37 @@ public class SysFsDeviceFactory extends BaseNativeDeviceFactory {
 
 	@Override
 	public int getPwmFrequency(int pinNumber) {
-		throw new UnsupportedOperationException("PWM not supported");
+		if (SystemInfo.getBoardInfo().sameMakeAndModel(OdroidBoardInfoProvider.ORDOID_C2)) {
+			return OdroidC2SysFsPwmOutputDevice.getFrequency(pinNumber);
+		}
+		
+		throw new UnsupportedOperationException("PWM not supported by device factory '"
+				+ getClass().getSimpleName() + "' on device '" + SystemInfo.getBoardInfo() + "'");
 	}
 
 	@Override
 	public void setPwmFrequency(int pinNumber, int pwmFrequency) {
-		throw new UnsupportedOperationException("PWM not supported");
+		if (SystemInfo.getBoardInfo().sameMakeAndModel(OdroidBoardInfoProvider.ORDOID_C2)) {
+			OdroidC2SysFsPwmOutputDevice.setFrequency(pinNumber, pwmFrequency);
+			return;
+		}
+		
+		throw new UnsupportedOperationException("PWM not supported by device factory '"
+				+ getClass().getSimpleName() + "' on device '" + SystemInfo.getBoardInfo() + "'");
 	}
 
 	@Override
 	protected GpioAnalogInputDeviceInterface createAnalogInputPin(String key, int pinNumber) throws RuntimeIOException {
-		throw new UnsupportedOperationException("Analogue input not supported");
+		// TODO Analog input support on Odroid C2
+		
+		throw new UnsupportedOperationException("Analog input not supported by device factory '"
+				+ getClass().getSimpleName() + "' on device '" + SystemInfo.getBoardInfo() + "'");
 	}
 
 	@Override
 	protected GpioAnalogOutputDeviceInterface createAnalogOutputPin(String key, int pinNumber) throws RuntimeIOException {
-		throw new UnsupportedOperationException("Analog devices aren't supported on this device");
+		throw new UnsupportedOperationException("Analog output not supported by device factory '"
+				+ getClass().getSimpleName() + "' on device '" + SystemInfo.getBoardInfo() + "'");
 	}
 
 	@Override
