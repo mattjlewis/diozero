@@ -57,6 +57,10 @@ import com.diozero.util.RuntimeIOException;
  */
 public class MCP23017 extends AbstractDeviceFactory
 implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Closeable {
+	private static enum InterruptMode {
+		DISABLED, BANK_A_ONLY, BANK_B_ONLY, BANK_A_AND_B, MIRRORED;
+	}
+
 	// Default I2C address
 	private static final int DEVICE_ADDRESS = 0x20;
 	private static final String DEVICE_NAME = "MCP23017";
@@ -534,8 +538,4 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Cl
 	private MCP23017DigitalInputDevice getInputDevice(byte pinNumber) {
 		return getDevice(keyPrefix + pinNumber, MCP23017DigitalInputDevice.class);
 	}
-}
-
-enum InterruptMode {
-	DISABLED, BANK_A_ONLY, BANK_B_ONLY, BANK_A_AND_B, MIRRORED;
 }
