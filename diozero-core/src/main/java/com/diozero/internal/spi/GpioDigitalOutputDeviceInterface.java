@@ -28,8 +28,7 @@ package com.diozero.internal.spi;
 
 import com.diozero.util.RuntimeIOException;
 
-public interface GpioDigitalOutputDeviceInterface extends GpioDeviceInterface {
-	boolean getValue() throws RuntimeIOException;
+public interface GpioDigitalOutputDeviceInterface extends GpioDigitalDeviceInterface {
 	void setValue(boolean value) throws RuntimeIOException;
 	@Override
 	default Mode getMode() {

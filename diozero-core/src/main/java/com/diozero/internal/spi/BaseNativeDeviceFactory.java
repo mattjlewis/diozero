@@ -143,6 +143,26 @@ public abstract class BaseNativeDeviceFactory extends AbstractDeviceFactory impl
 	}
 
 	@Override
+	public final GpioDigitalInputOutputDeviceInterface provisionDigitalInputOutputPin(int pinNumber, GpioDeviceInterface.Mode mode) throws RuntimeIOException {
+		if (! SystemInfo.getBoardInfo().isSupported(Mode.DIGITAL_OUTPUT, pinNumber) ||
+				! SystemInfo.getBoardInfo().isSupported(Mode.DIGITAL_INPUT, pinNumber)) {
+			throw new IllegalArgumentException("Invalid mode (digital input/output) for pinNumber " + pinNumber);
+		}
+		
+		String key = createGpioKey(pinNumber);
+		
+		// Check if this pin is already provisioned
+		if (isDeviceOpened(key)) {
+			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
+		}
+		
+		GpioDigitalInputOutputDeviceInterface device = createDigitalInputOutputPin(key, pinNumber, mode);
+		deviceOpened(device);
+		
+		return device;
+	}
+
+	@Override
 	public final PwmOutputDeviceInterface provisionPwmOutputPin(int pinNumber, float initialValue) throws RuntimeIOException {
 		PwmType pwm_type;
 		BoardInfo board_info = SystemInfo.getBoardInfo();
@@ -203,6 +223,7 @@ public abstract class BaseNativeDeviceFactory extends AbstractDeviceFactory impl
 	protected abstract GpioDigitalInputDeviceInterface createDigitalInputPin(String key, int pinNumber, GpioPullUpDown pud,
 			GpioEventTrigger trigger) throws RuntimeIOException;
 	protected abstract GpioDigitalOutputDeviceInterface createDigitalOutputPin(String key, int pinNumber, boolean initialValue) throws RuntimeIOException;
+	protected abstract GpioDigitalInputOutputDeviceInterface createDigitalInputOutputPin(String key, int pinNumber, GpioDeviceInterface.Mode mode) throws RuntimeIOException;
 	protected abstract PwmOutputDeviceInterface createPwmOutputPin(String key, int pinNumber,
 			float initialValue, PwmType pwmType) throws RuntimeIOException;
 	protected abstract SpiDeviceInterface createSpiDevice(String key, int controller, int chipSelect, int frequency,

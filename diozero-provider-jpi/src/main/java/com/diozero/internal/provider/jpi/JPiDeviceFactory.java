@@ -32,6 +32,7 @@ import com.diozero.internal.board.odroid.OdroidBoardInfoProvider;
 import com.diozero.internal.board.raspberrypi.RaspberryPiBoardInfoProvider;
 import com.diozero.internal.provider.jpi.odroid.OdroidC2MmapGpio;
 import com.diozero.internal.provider.jpi.rpi.RPiMmapGpio;
+import com.diozero.internal.provider.sysfs.SysFsDeviceFactory;
 import com.diozero.internal.spi.*;
 import com.diozero.util.BoardInfo;
 import com.diozero.util.RuntimeIOException;
@@ -39,6 +40,7 @@ import com.diozero.util.SystemInfo;
 
 public class JPiDeviceFactory extends BaseNativeDeviceFactory {
 	private MmapGpioInterface mmapGpio;
+	private SysFsDeviceFactory sysFsDeviceFactory;
 	
 	public JPiDeviceFactory() {
 		BoardInfo board_info = SystemInfo.getBoardInfo();
@@ -50,6 +52,15 @@ public class JPiDeviceFactory extends BaseNativeDeviceFactory {
 			throw new RuntimeException("This provider is currently only supported on Raspberry Pi and Odroid C2 boards");
 		}
 		mmapGpio.initialise();
+		sysFsDeviceFactory = new SysFsDeviceFactory();
+	}
+	
+	MmapGpioInterface getMmapGpio() {
+		return mmapGpio;
+	}
+	
+	SysFsDeviceFactory getSysFsDeviceFactory() {
+		return sysFsDeviceFactory;
 	}
 	
 	@Override
@@ -86,13 +97,19 @@ public class JPiDeviceFactory extends BaseNativeDeviceFactory {
 	@Override
 	protected GpioDigitalInputDeviceInterface createDigitalInputPin(String key, int pinNumber, GpioPullUpDown pud,
 			GpioEventTrigger trigger) throws RuntimeIOException {
-		return new JPiDigitalInputDevice(this, mmapGpio, key, pinNumber, pud, trigger);
+		return new JPiDigitalInputDevice(this, key, pinNumber, pud, trigger);
 	}
 
 	@Override
 	protected GpioDigitalOutputDeviceInterface createDigitalOutputPin(String key, int pinNumber, boolean initialValue)
 			throws RuntimeIOException {
-		return new JPiDigitalOutputDevice(this, mmapGpio, key, pinNumber, initialValue);
+		return new JPiDigitalOutputDevice(this, key, pinNumber, initialValue);
+	}
+
+	@Override
+	public GpioDigitalInputOutputDeviceInterface createDigitalInputOutputPin(String key, int pinNumber, GpioDeviceInterface.Mode mode)
+			throws RuntimeIOException {
+		return new JPiDigitalInputOutputDevice(this, key, pinNumber, mode);
 	}
 
 	@Override

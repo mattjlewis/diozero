@@ -137,7 +137,13 @@ public class Pi4jDeviceFactory extends BaseNativeDeviceFactory {
 
 	@Override
 	protected GpioDigitalOutputDeviceInterface createDigitalOutputPin(String key, int pinNumber, boolean initialValue) throws RuntimeIOException {
-		return new Pi4jGpioOutputDevice(key, this, gpioController, pinNumber, initialValue);
+		return new Pi4jDigitalOutputDevice(key, this, gpioController, pinNumber, initialValue);
+	}
+
+	@Override
+	public GpioDigitalInputOutputDeviceInterface createDigitalInputOutputPin(String key, int pinNumber, GpioDeviceInterface.Mode mode)
+			throws RuntimeIOException {
+		return new Pi4jDigitalInputOutputDevice(key, this, gpioController, pinNumber, mode);
 	}
 
 	@Override

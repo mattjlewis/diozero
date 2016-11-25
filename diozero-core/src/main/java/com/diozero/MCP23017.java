@@ -35,6 +35,7 @@ import com.diozero.api.*;
 import com.diozero.internal.provider.mcp23017.MCP23017DigitalInputDevice;
 import com.diozero.internal.provider.mcp23017.MCP23017DigitalOutputDevice;
 import com.diozero.internal.spi.*;
+import com.diozero.internal.spi.GpioDeviceInterface.Mode;
 import com.diozero.util.BitManipulation;
 import com.diozero.util.MutableByte;
 import com.diozero.util.RuntimeIOException;
@@ -389,6 +390,12 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Cl
 		device.setValue(initialValue);
 		
 		return device;
+	}
+
+	@Override
+	public GpioDigitalInputOutputDeviceInterface provisionDigitalInputOutputPin(int pinNumber, Mode mode)
+			throws RuntimeIOException {
+		throw new UnsupportedOperationException("Digital Input / Output devices not yet supported by this provider");
 	}
 
 	public boolean getValue(int pinNumber) throws RuntimeIOException {

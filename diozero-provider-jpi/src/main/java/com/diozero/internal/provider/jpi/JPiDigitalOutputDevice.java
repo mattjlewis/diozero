@@ -35,19 +35,18 @@ import com.diozero.internal.spi.GpioDigitalOutputDeviceInterface;
 import com.diozero.util.RuntimeIOException;
 
 public class JPiDigitalOutputDevice extends AbstractDevice implements GpioDigitalOutputDeviceInterface {
-
+	private JPiDeviceFactory jpiDeviceFactory;
 	private int pinNumber;
-	private MmapGpioInterface mmapGpio;
 
-	public JPiDigitalOutputDevice(JPiDeviceFactory deviceFactory, MmapGpioInterface mmapGpio,
-			String key, int pinNumber, boolean initialValue) {
+	JPiDigitalOutputDevice(JPiDeviceFactory deviceFactory, String key,
+			int pinNumber, boolean initialValue) {
 		super(key, deviceFactory);
 		
+		this.jpiDeviceFactory = deviceFactory;
 		this.pinNumber = pinNumber;
-		this.mmapGpio = mmapGpio;
 		
-		mmapGpio.setMode(pinNumber, GpioDeviceInterface.Mode.DIGITAL_OUTPUT);
-		mmapGpio.gpioWrite(pinNumber, initialValue);
+		deviceFactory.getMmapGpio().setMode(pinNumber, GpioDeviceInterface.Mode.DIGITAL_OUTPUT);
+		deviceFactory.getMmapGpio().gpioWrite(pinNumber, initialValue);
 	}
 
 	@Override
@@ -57,18 +56,19 @@ public class JPiDigitalOutputDevice extends AbstractDevice implements GpioDigita
 
 	@Override
 	public boolean getValue() throws RuntimeIOException {
-		return mmapGpio.gpioRead(pinNumber);
+		return jpiDeviceFactory.getMmapGpio().gpioRead(pinNumber);
 	}
 
 	@Override
 	public void setValue(boolean value) throws RuntimeIOException {
-		mmapGpio.gpioWrite(pinNumber, value);
+		jpiDeviceFactory.getMmapGpio().gpioWrite(pinNumber, value);
 	}
 
 	@Override
 	public void closeDevice() {
 		Logger.debug("closeDevice()");
-		// No GPIO close method
+		// FIXME No GPIO close method?
 		// TODO Revert to default input mode?
+		// What do wiringPi / pigpio do?
 	}
 }

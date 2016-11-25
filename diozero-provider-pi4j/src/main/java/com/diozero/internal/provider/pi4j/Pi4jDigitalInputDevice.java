@@ -40,7 +40,8 @@ import com.pi4j.io.gpio.event.GpioPinDigitalStateChangeEvent;
 import com.pi4j.io.gpio.event.GpioPinListenerDigital;
 import com.pi4j.wiringpi.GpioUtil;
 
-public class Pi4jDigitalInputDevice extends AbstractInputDevice<DigitalInputEvent> implements GpioDigitalInputDeviceInterface, GpioPinListenerDigital {
+public class Pi4jDigitalInputDevice extends AbstractInputDevice<DigitalInputEvent>
+implements GpioDigitalInputDeviceInterface, GpioPinListenerDigital {
 	private GpioPinDigitalInput digitalInputPin;
 	private int pinNumber;
 	
@@ -86,10 +87,11 @@ public class Pi4jDigitalInputDevice extends AbstractInputDevice<DigitalInputEven
 		}
 		
 		// Note configuring GPIO event trigger values (rising / falling / both) via the provision APIs isn't possible in Pi4j
-		digitalInputPin = gpioController.provisionDigitalInputPin(pin, "Digital Input for BCM GPIO " + pinNumber, ppr);
+		digitalInputPin = gpioController.provisionDigitalInputPin(
+				pin, "Digital Input for BCM GPIO " + pinNumber, ppr);
 		
 		// RaspiGpioProvider.export() calls this for all input pins:
-		if (!GpioUtil.setEdgeDetection(pin.getAddress(), PinEdge.BOTH.getValue())) {
+		if (! GpioUtil.setEdgeDetection(pin.getAddress(), PinEdge.BOTH.getValue())) {
 			throw new RuntimeIOException("Error setting edge detection");
 		}
 		//GpioUtil.setEdgeDetection(pin.getAddress(), edge.getValue());

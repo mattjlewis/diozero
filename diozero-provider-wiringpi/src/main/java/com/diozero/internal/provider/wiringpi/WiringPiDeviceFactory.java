@@ -143,6 +143,12 @@ public class WiringPiDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
+	public GpioDigitalInputOutputDeviceInterface createDigitalInputOutputPin(String key, int pinNumber, GpioDeviceInterface.Mode mode)
+			throws RuntimeIOException {
+		throw new UnsupportedOperationException("Digital Input / Output devices not yet supported by this provider");
+	}
+
+	@Override
 	protected PwmOutputDeviceInterface createPwmOutputPin(String key, int pinNumber,
 			float initialValue, PwmType pwmType) throws RuntimeIOException {
 		if (GpioUtil.isPinSupported(pinNumber) != 1) {

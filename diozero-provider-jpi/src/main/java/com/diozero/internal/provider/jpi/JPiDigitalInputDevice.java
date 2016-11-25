@@ -30,33 +30,29 @@ package com.diozero.internal.provider.jpi;
 import org.pmw.tinylog.Logger;
 
 import com.diozero.api.*;
-import com.diozero.internal.provider.sysfs.SysFsDeviceFactory;
-import com.diozero.internal.spi.*;
+import com.diozero.internal.spi.AbstractInputDevice;
+import com.diozero.internal.spi.GpioDeviceInterface;
+import com.diozero.internal.spi.GpioDigitalInputDeviceInterface;
 import com.diozero.util.RuntimeIOException;
 
 public class JPiDigitalInputDevice extends AbstractInputDevice<DigitalInputEvent>
 implements GpioDigitalInputDeviceInterface, InputEventListener<DigitalInputEvent> {
-
-	private static SysFsDeviceFactory sysFsDeviceFactory;
-	static {
-		sysFsDeviceFactory = new SysFsDeviceFactory();
-	}
-	
+	private JPiDeviceFactory jpiDeviceFactory;
 	private int pinNumber;
-	private MmapGpioInterface mmapGpio;
 	private GpioDigitalInputDeviceInterface sysFsDigitialInput;
 
-	public JPiDigitalInputDevice(DeviceFactoryInterface deviceFactory, MmapGpioInterface mmapGpio, String key,
+	JPiDigitalInputDevice(JPiDeviceFactory deviceFactory, String key,
 			int pinNumber, GpioPullUpDown pud, GpioEventTrigger trigger) {
 		super(key, deviceFactory);
 		
+		this.jpiDeviceFactory = deviceFactory;
 		this.pinNumber = pinNumber;
-		this.mmapGpio = mmapGpio;
 		
-		mmapGpio.setMode(pinNumber, GpioDeviceInterface.Mode.DIGITAL_INPUT);
-		mmapGpio.setPullUpDown(pinNumber, pud);
+		deviceFactory.getMmapGpio().setMode(pinNumber, GpioDeviceInterface.Mode.DIGITAL_INPUT);
+		deviceFactory.getMmapGpio().setPullUpDown(pinNumber, pud);
 
-		sysFsDigitialInput = sysFsDeviceFactory.provisionDigitalInputPin(pinNumber, pud, trigger);
+		sysFsDigitialInput = jpiDeviceFactory.getSysFsDeviceFactory().provisionDigitalInputPin(
+				pinNumber, pud, trigger);
 	}
 
 	@Override
@@ -66,7 +62,7 @@ implements GpioDigitalInputDeviceInterface, InputEventListener<DigitalInputEvent
 
 	@Override
 	public boolean getValue() throws RuntimeIOException {
-		return mmapGpio.gpioRead(pinNumber);
+		return jpiDeviceFactory.getMmapGpio().gpioRead(pinNumber);
 	}
 
 	@Override
@@ -88,7 +84,12 @@ implements GpioDigitalInputDeviceInterface, InputEventListener<DigitalInputEvent
 	protected void closeDevice() throws RuntimeIOException {
 		Logger.debug("closeDevice()");
 		disableListener();
-		sysFsDigitialInput.close();
-		// Nothing further to do to close an input device...
+		if (sysFsDigitialInput != null) {
+			sysFsDigitialInput.close();
+			sysFsDigitialInput = null;
+		}
+		// FIXME No GPIO close method?
+		// TODO Revert to default input mode?
+		// What do wiringPi / pigpio do?
 	}
 }

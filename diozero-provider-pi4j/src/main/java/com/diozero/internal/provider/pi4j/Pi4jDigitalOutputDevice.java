@@ -34,11 +34,11 @@ import com.diozero.internal.spi.GpioDigitalOutputDeviceInterface;
 import com.diozero.util.RuntimeIOException;
 import com.pi4j.io.gpio.*;
 
-public class Pi4jGpioOutputDevice extends AbstractDevice implements GpioDigitalOutputDeviceInterface {
+public class Pi4jDigitalOutputDevice extends AbstractDevice implements GpioDigitalOutputDeviceInterface {
 	private GpioPinDigitalOutput digitalOutputPin;
 	private int pinNumber;
 
-	Pi4jGpioOutputDevice(String key, DeviceFactoryInterface deviceFactory, GpioController gpioController, int pinNumber, boolean initialValue) {
+	Pi4jDigitalOutputDevice(String key, DeviceFactoryInterface deviceFactory, GpioController gpioController, int pinNumber, boolean initialValue) {
 		super(key, deviceFactory);
 		
 		Pin pin = RaspiBcmPin.getPinByAddress(pinNumber);

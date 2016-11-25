@@ -35,6 +35,7 @@ import com.diozero.api.*;
 import com.diozero.internal.provider.mcp23008.MCP23008DigitalInputDevice;
 import com.diozero.internal.provider.mcp23008.MCP23008DigitalOutputDevice;
 import com.diozero.internal.spi.*;
+import com.diozero.internal.spi.GpioDeviceInterface.Mode;
 import com.diozero.util.BitManipulation;
 import com.diozero.util.MutableByte;
 import com.diozero.util.RuntimeIOException;
@@ -278,6 +279,12 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Cl
 		return device;
 	}
 
+	@Override
+	public GpioDigitalInputOutputDeviceInterface provisionDigitalInputOutputPin(int pinNumber, Mode mode)
+			throws RuntimeIOException {
+		throw new UnsupportedOperationException("Digital Input / Output devices not yet supported by this provider");
+	}
+
 	public boolean getValue(int pinNumber) throws RuntimeIOException {
 		if (pinNumber < 0 || pinNumber >= NUM_PINS) {
 			throw new IllegalArgumentException("Invalid pin number: " + pinNumber + ". "
@@ -373,8 +380,8 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Cl
 		
 		synchronized (this) {
 			try {
-				byte[] intf = new byte[2];
-				byte[] intcap = new byte[2];
+				byte[] intf = new byte[PORTS];
+				byte[] intcap = new byte[PORTS];
 				for (int port=0; port<PORTS; port++) {
 					intf[port] = device.readByte(INTF_REG[port]);
 					intcap[port] = device.readByte(INTCAP_REG[port]);
