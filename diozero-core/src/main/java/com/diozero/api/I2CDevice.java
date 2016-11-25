@@ -466,7 +466,9 @@ public class I2CDevice implements Closeable, I2CConstants {
 		buffer.putShort((short) data);
 		buffer.flip();
 
-		write(regAddr, SUB_ADDRESS_SIZE_2_BYTES, buffer.array());
+		byte[] array = new byte[buffer.remaining()];
+		buffer.get(array);
+		write(regAddr, SUB_ADDRESS_SIZE_2_BYTES, array);
 	}
 
 	/**
