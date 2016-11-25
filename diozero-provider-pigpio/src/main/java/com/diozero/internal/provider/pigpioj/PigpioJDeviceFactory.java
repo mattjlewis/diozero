@@ -96,7 +96,14 @@ public class PigpioJDeviceFactory extends BaseNativeDeviceFactory {
 			throws RuntimeIOException {
 		return new PigpioJDigitalOutputDevice(key, this, pinNumber, initialValue);
 	}
-	
+
+	@Override
+	public GpioDigitalInputOutputDeviceInterface createDigitalInputOutputPin(
+			String key, int pinNumber, GpioDeviceInterface.Mode mode)
+			throws RuntimeIOException {
+		return new PigpioJDigitalInputOutputDevice(key, this, pinNumber, mode);
+	}
+
 	protected GpioDeviceInterface.Mode getCurrentGpioMode(int pinNumber) {
 		int rc = PigpioGpio.getMode(pinNumber);
 		
@@ -125,5 +132,22 @@ public class PigpioJDeviceFactory extends BaseNativeDeviceFactory {
 	protected I2CDeviceInterface createI2CDevice(String key, int controller, int address, int addressSize,
 			int clockFrequency) throws RuntimeIOException {
 		return new PigpioJI2CDevice(key, this, controller, address, addressSize);
+	}
+	
+	static int getPigpioJPullUpDown(GpioPullUpDown pud) {
+		int pigpio_pud;
+		switch (pud) {
+		case PULL_DOWN:
+			pigpio_pud = PigpioGpio.PI_PUD_DOWN;
+			break;
+		case PULL_UP:
+			pigpio_pud = PigpioGpio.PI_PUD_UP;
+			break;
+		case NONE:
+		default:
+			pigpio_pud = PigpioGpio.PI_PUD_OFF;
+			break;
+		}
+		return pigpio_pud;
 	}
 }

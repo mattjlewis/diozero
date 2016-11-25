@@ -61,20 +61,7 @@ public class PigpioJDigitalInputDevice extends AbstractInputDevice<DigitalInputE
 		default:
 			edge = PigpioGpio.NO_EDGE;
 		}
-		
-		int pigpio_pud;
-		switch (pud) {
-		case PULL_DOWN:
-			pigpio_pud = PigpioGpio.PI_PUD_DOWN;
-			break;
-		case PULL_UP:
-			pigpio_pud = PigpioGpio.PI_PUD_UP;
-			break;
-		case NONE:
-		default:
-			pigpio_pud = PigpioGpio.PI_PUD_OFF;
-			break;
-		}
+		int pigpio_pud = PigpioJDeviceFactory.getPigpioJPullUpDown(pud);
 		
 		int rc = PigpioGpio.setMode(pinNumber, PigpioGpio.MODE_PI_INPUT);
 		if (rc < 0) {
