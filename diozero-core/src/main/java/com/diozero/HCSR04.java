@@ -32,6 +32,7 @@ import java.io.Closeable;
 import org.pmw.tinylog.Logger;
 
 import com.diozero.api.*;
+import com.diozero.internal.spi.GpioDeviceInterface.Mode;
 import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 
@@ -57,7 +58,8 @@ public class HCSR04 implements DistanceSensorInterface, Closeable {
 	private static final int MAX_ECHO_TIME_NS = (int) (MAX_DISTANCE_CM * 2 * SleepUtil.NS_IN_SEC / SPEED_OF_SOUND_CM_PER_S);
 
 	private DigitalOutputDevice trigger;
-	private DigitalInputDevice echo;
+	private DigitalInputDeviceInterface echo;
+	private DigitalInputOutputDevice triggerAndEcho;
 
 	/**
 	 * Initialise GPIO to echo and trigger pins
@@ -67,10 +69,15 @@ public class HCSR04 implements DistanceSensorInterface, Closeable {
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	public HCSR04(int triggerGpioNum, int echoGpioNum) throws RuntimeIOException {
-		// Define device for trigger pin at HCSR04
-		trigger = new DigitalOutputDevice(triggerGpioNum, true, false);
-		// Define device for echo pin at HCSR04
-		echo = new DigitalInputDevice(echoGpioNum, GpioPullUpDown.NONE, GpioEventTrigger.BOTH);
+		if (triggerGpioNum != echoGpioNum) {
+			// Define device for trigger pin at HCSR04
+			trigger = new DigitalOutputDevice(triggerGpioNum, true, false);
+			// Define device for echo pin at HCSR04
+			echo = new DigitalInputDevice(echoGpioNum, GpioPullUpDown.NONE, GpioEventTrigger.BOTH);
+		} else {
+			triggerAndEcho = new DigitalInputOutputDevice(triggerGpioNum, Mode.DIGITAL_OUTPUT);
+			echo = triggerAndEcho;
+		}
 
 		// Sleep for 20 ms - let the device settle?
 		SleepUtil.sleepMillis(20);
@@ -85,10 +92,19 @@ public class HCSR04 implements DistanceSensorInterface, Closeable {
 	@Override
 	public float getDistanceCm() throws RuntimeIOException {
 		long start = System.nanoTime();
-		// Send a pulse trigger of 10 us duration
-		trigger.setValueUnsafe(true);
-		SleepUtil.busySleep(PULSE_NS);// wait 10 us (10,000ns)
-		trigger.setValueUnsafe(false);
+		if (triggerAndEcho == null) {
+			// Send a pulse trigger of 10 us duration
+			trigger.setValueUnsafe(true);
+			SleepUtil.busySleep(PULSE_NS);// wait 10 us (10,000ns)
+			trigger.setValueUnsafe(false);
+		} else {
+			triggerAndEcho.setMode(Mode.DIGITAL_OUTPUT);
+			// Send a pulse trigger of 10 us duration
+			triggerAndEcho.setValue(true);
+			SleepUtil.busySleep(PULSE_NS);// wait 10 us (10,000ns)
+			triggerAndEcho.setValue(false);
+			triggerAndEcho.setMode(Mode.DIGITAL_INPUT);
+		}
 		
 		// Need to include as little code as possible here to avoid missing pin state changes
 		while (! echo.getValue()) {
@@ -128,7 +144,11 @@ public class HCSR04 implements DistanceSensorInterface, Closeable {
 	@Override
 	public void close() {
 		Logger.debug("close()");
-		if (trigger != null) { trigger.close(); }
-		if (echo != null) { echo.close(); }
+		if (triggerAndEcho == null) {
+			if (trigger != null) { trigger.close(); }
+			if (echo != null) { echo.close(); }
+		} else {
+			triggerAndEcho.close();
+		}
 	}
 }
