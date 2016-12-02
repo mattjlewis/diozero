@@ -1,7 +1,7 @@
 package com.diozero;
 
 import com.diozero.api.motor.DualMotor;
-import com.diozero.api.motor.Motor;
+import com.diozero.api.motor.PwmMotor;
 
 /*
  * #%L
@@ -37,6 +37,6 @@ import com.diozero.util.RuntimeIOException;
 @SuppressWarnings("resource")
 public class CamJamKitDualMotor extends DualMotor {
 	public CamJamKitDualMotor() throws RuntimeIOException {
-		super(new Motor(9, 10), new Motor(7, 8));
+		super(new PwmMotor(9, 10), new PwmMotor(7, 8));
 	}
 }

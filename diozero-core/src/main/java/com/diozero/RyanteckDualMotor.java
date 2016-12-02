@@ -1,7 +1,7 @@
 package com.diozero;
 
 import com.diozero.api.motor.DualMotor;
-import com.diozero.api.motor.Motor;
+import com.diozero.api.motor.PwmMotor;
 
 /*
  * #%L
@@ -37,6 +37,6 @@ import com.diozero.util.RuntimeIOException;
 @SuppressWarnings("resource")
 public class RyanteckDualMotor extends DualMotor {
 	public RyanteckDualMotor() throws RuntimeIOException {
-		super(new Motor(17, 18), new Motor(22, 23));
+		super(new PwmMotor(17, 18), new PwmMotor(22, 23));
 	}
 }

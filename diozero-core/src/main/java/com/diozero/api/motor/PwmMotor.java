@@ -36,15 +36,15 @@ import com.diozero.util.RuntimeIOException;
 /**
  * Generic bi-directional motor controlled by separate forward / backward PWM output pins
  */
-public class Motor extends MotorBase {
+public class PwmMotor extends MotorBase {
 	private PwmOutputDevice forward;
 	private PwmOutputDevice backward;
 
-	public Motor(int forwardPwmPin, int backwardPwmPin) throws RuntimeIOException {
+	public PwmMotor(int forwardPwmPin, int backwardPwmPin) throws RuntimeIOException {
 		this(DeviceFactoryHelper.getNativeDeviceFactory(), forwardPwmPin, backwardPwmPin);
 	}
 
-	public Motor(PwmOutputDeviceFactoryInterface deviceFactory, int forwardPwmPin, int backwardPwmPin) throws RuntimeIOException {
+	public PwmMotor(PwmOutputDeviceFactoryInterface deviceFactory, int forwardPwmPin, int backwardPwmPin) throws RuntimeIOException {
 		forward = new PwmOutputDevice(deviceFactory, forwardPwmPin, 0);
 		backward = new PwmOutputDevice(deviceFactory, backwardPwmPin, 0);
 	}
