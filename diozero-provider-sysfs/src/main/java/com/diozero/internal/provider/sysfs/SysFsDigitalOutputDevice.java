@@ -37,7 +37,7 @@ import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.GpioDigitalOutputDeviceInterface;
 import com.diozero.util.RuntimeIOException;
 
-public class SysFsGpioOutputDevice extends AbstractDevice implements GpioDigitalOutputDeviceInterface {
+public class SysFsDigitalOutputDevice extends AbstractDevice implements GpioDigitalOutputDeviceInterface {
 	private static final String VALUE_FILE = "value";
 	private static final byte LOW_VALUE = '0';
 	private static final byte HIGH_VALUE = '1';
@@ -46,7 +46,7 @@ public class SysFsGpioOutputDevice extends AbstractDevice implements GpioDigital
 	private int pinNumber;
 	private RandomAccessFile valueFile;
 
-	public SysFsGpioOutputDevice(SysFsDeviceFactory deviceFactory, Path gpioDir, String key, int pinNumber,
+	public SysFsDigitalOutputDevice(SysFsDeviceFactory deviceFactory, Path gpioDir, String key, int pinNumber,
 			boolean initialValue) {
 		super(key, deviceFactory);
 		

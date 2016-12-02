@@ -117,13 +117,14 @@ public class SysFsDeviceFactory extends BaseNativeDeviceFactory {
 			throws RuntimeIOException {
 		export(pinNumber, Mode.DIGITAL_OUTPUT);
 		
-		return new SysFsGpioOutputDevice(this, getGpioDir(pinNumber), key, pinNumber, initialValue);
+		return new SysFsDigitalOutputDevice(this, getGpioDir(pinNumber), key, pinNumber, initialValue);
 	}
 
 	@Override
-	public GpioDigitalInputOutputDeviceInterface createDigitalInputOutputPin(String key, int pinNumber, GpioDeviceInterface.Mode mode)
+	public GpioDigitalInputOutputDeviceInterface createDigitalInputOutputPin(
+			String key, int pinNumber, GpioDeviceInterface.Mode mode)
 			throws RuntimeIOException {
-		throw new UnsupportedOperationException("Digital Input / Output devices not yet supported by this provider");
+		return new SysFsDigitalInputOutputDevice(this, getGpioDir(pinNumber), key, pinNumber, mode);
 	}
 
 	@Override
@@ -145,10 +146,15 @@ public class SysFsDeviceFactory extends BaseNativeDeviceFactory {
 	@Override
 	protected I2CDeviceInterface createI2CDevice(String key, int controller, int address, int addressSize,
 			int clockFrequency) throws RuntimeIOException {
-		throw new UnsupportedOperationException("I2C not supported");
+		return new SysFsI2cDevice(this, key, controller, address, addressSize, clockFrequency);
 	}
 	
-	private void export(int pinNumber, Mode direction) {
+	void export(int pinNumber, Mode mode) {
+		if (mode != Mode.DIGITAL_INPUT && mode != Mode.DIGITAL_OUTPUT) {
+			throw new IllegalArgumentException("Illegal mode (" + mode +
+					") must be " + Mode.DIGITAL_INPUT + " or " + Mode.DIGITAL_OUTPUT);
+		}
+
 		if (! isExported(pinNumber)) {
 			try (Writer export_writer = new FileWriter(rootPath.resolve(EXPORT_FILE).toFile())) {
 				export_writer.write(String.valueOf(pinNumber));
@@ -158,7 +164,7 @@ public class SysFsDeviceFactory extends BaseNativeDeviceFactory {
 		}
 		
 		Path direction_file = getGpioDir(pinNumber).resolve(DIRECTION_FILE);
-		// TODO Do I need to do any of this polling?
+		// TODO Is this polling actually required?
 		// Wait up to 500ms for the gpioxxx/direction file to exist
 		int delay = 500;
 		long start = System.currentTimeMillis();
@@ -176,7 +182,7 @@ public class SysFsDeviceFactory extends BaseNativeDeviceFactory {
 
 		// Defaults to in on the Raspberry Pi
 		try (FileWriter writer = new FileWriter(direction_file.toFile(), true)) {
-			writer.write(direction == Mode.DIGITAL_OUTPUT ? "out" : "in");
+			writer.write(mode == Mode.DIGITAL_OUTPUT ? "out" : "in");
 		} catch (IOException e) {
 			unexport(pinNumber);
 			throw new RuntimeIOException("Error setting direction for GPIO " + pinNumber, e);
