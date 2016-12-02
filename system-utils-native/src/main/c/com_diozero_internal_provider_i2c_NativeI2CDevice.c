@@ -31,7 +31,7 @@
 //#define PI_I2C_SLAVE 0x0703
 //#define PI_I2C_FUNCS 0x0705
 
-JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeSysFsI2C_selectSlave(
+JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_i2c_NativeI2CDevice_selectSlave(
 		JNIEnv* env, jclass clz, jint fd, jint address) {
 	return ioctl(fd, I2C_SLAVE, address);
 }
