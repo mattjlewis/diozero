@@ -34,6 +34,7 @@ import java.nio.ByteOrder;
 import org.pmw.tinylog.Logger;
 
 import com.diozero.api.*;
+import com.diozero.internal.DeviceFactoryHelper;
 import com.diozero.internal.provider.piconzero.*;
 import com.diozero.internal.spi.*;
 import com.diozero.internal.spi.GpioDeviceInterface.Mode;
@@ -69,6 +70,7 @@ implements GpioDeviceFactoryInterface, AnalogInputDeviceFactoryInterface, PwmOut
 	}
 	
 	private static final int DEFAULT_ADDRESS = 0x22;
+	private static final int MAX_I2C_RETRIES = 5;
 	
 	private static final int REVISION_REG = 0x00;
 	private static final int WS2812B_SET_PIXEL_NOUPDATE_REG = 0x00;
@@ -86,6 +88,7 @@ implements GpioDeviceFactoryInterface, AnalogInputDeviceFactoryInterface, PwmOut
 
 	private static final int ALL_PIXELS = 100;
 	private static final int MAX_VALUE = 100;
+	private static final int NUM_MOTORS = 2;
 	private static final int NUM_INPUT_CHANNELS = 4;
 	private static final int NUM_OUTPUT_CHANNELS = 6;
 	private static final float MAX_ANALOG_VALUE = 1023;
@@ -93,9 +96,12 @@ implements GpioDeviceFactoryInterface, AnalogInputDeviceFactoryInterface, PwmOut
 	private I2CDevice device;
 	private String keyPrefix;
 	private InputConfig[] inputConfigs = new InputConfig[NUM_INPUT_CHANNELS];
+	private int[] motorValues = new int[NUM_MOTORS];
 	
 	public PiconZero() {
 		this(I2CConstants.BUS_1, DEFAULT_ADDRESS);
+		
+		DeviceFactoryHelper.getNativeDeviceFactory().registerDeviceFactory(this);
 	}
 	
 	public PiconZero(int bus, int address) {
@@ -106,35 +112,53 @@ implements GpioDeviceFactoryInterface, AnalogInputDeviceFactoryInterface, PwmOut
 		reset();
 	}
 	
+	private static void validateMotor(int motor) {
+		if (motor < 0 || motor >= NUM_MOTORS) {
+			throw new IllegalArgumentException("Invalid motor number (" + motor + ") must be 0.." + (NUM_MOTORS-1));
+		}
+	}
+	
 	private static void validateInputChannel(int channel) {
 		if (channel < 0 || channel >= NUM_INPUT_CHANNELS) {
-			throw new IllegalArgumentException("Invalid channel value (" + channel + "), must be 0..3");
+			throw new IllegalArgumentException("Invalid channel value (" + channel + "), must be 0.." + (NUM_INPUT_CHANNELS-1));
 		}
 	}
 	
 	private static void validateOutputChannel(int channel) {
 		if (channel < 0 || channel >= NUM_OUTPUT_CHANNELS) {
-			throw new IllegalArgumentException("Invalid channel value (" + channel + "), must be 0..5");
+			throw new IllegalArgumentException("Invalid channel value (" + channel + "), must be 0.." + (NUM_OUTPUT_CHANNELS-1));
 		}
 	}
 	
 	private static void validateChannelMode(int channel, InputConfig config) {
-		if (channel < 0 || channel >= NUM_INPUT_CHANNELS) {
-			throw new IllegalArgumentException("Invalid channel value (" + channel + "), must be 0..3");
-		}
+		validateInputChannel(channel);
 	}
 	
 	private static void validateChannelMode(int channel, OutputConfig config) {
-		if (channel < 0 || channel >= NUM_OUTPUT_CHANNELS) {
-			throw new IllegalArgumentException("Invalid channel value (" + channel + "), must be 0..5");
-		}
+		validateOutputChannel(channel);
 		if (channel != 5 && config == OutputConfig.WS2812B) {
 			throw new IllegalArgumentException("Invalid channel for WS2812B NeoPixels - only supported on channel 5");
 		}
 	}
 	
 	public void reset() {
-		device.writeByte(RESET_REG, 0);
+		writeByte(RESET_REG, 0);
+	}
+	
+	private void writeByte(int register, int value) throws RuntimeIOException {
+		for (int i=0; i<MAX_I2C_RETRIES; i++) {
+			try {
+				device.writeByte(register, value);
+				SleepUtil.sleepMillis(1);
+				return;
+			} catch (RuntimeIOException e) {
+				Logger.warn(e, "Retrying I2C call, attempt # {}, error: {}", Integer.valueOf(i+1), e);
+			}
+		}
+	}
+	
+	private void writeBytes(int register, int length, byte[] data) throws RuntimeIOException {
+		device.writeBytes(register, length, data);
 		SleepUtil.sleepMillis(1);
 	}
 	
@@ -155,10 +179,14 @@ implements GpioDeviceFactoryInterface, AnalogInputDeviceFactoryInterface, PwmOut
 	 * @param speed must be in range -128 - +127. Values of -127, -128, +127 are treated as always ON, no PWM
 	 */
 	public void setMotor(int motor, int speed) {
-		if (motor < 0 || motor > 1) {
-			throw new IllegalArgumentException("Invalid motor number (" + motor + ") must be 0..1");
-		}
-		device.writeByte(MOTOR0_REG + motor, speed);
+		validateMotor(motor);
+		writeByte(MOTOR0_REG + motor, speed);
+		motorValues[motor] = speed;
+	}
+	
+	public int getMotor(int motor) {
+		validateMotor(motor);
+		return motorValues[motor];
 	}
 	
 	/**
@@ -169,7 +197,7 @@ implements GpioDeviceFactoryInterface, AnalogInputDeviceFactoryInterface, PwmOut
 	public void setInputConfig(int channel, InputConfig config) {
 		validateChannelMode(channel, config);
 		
-		device.writeByte(INPUT0_CONFIG_REG + channel, config.getValue());
+		writeByte(INPUT0_CONFIG_REG + channel, config.getValue());
 		inputConfigs[channel] = config; 
 	}
 	
@@ -181,7 +209,7 @@ implements GpioDeviceFactoryInterface, AnalogInputDeviceFactoryInterface, PwmOut
 	public void setOutputConfig(int channel, OutputConfig config) {
 		validateChannelMode(channel, config);
 		
-		device.writeByte(OUTPUT0_CONFIG_REG + channel, config.getValue());
+		writeByte(OUTPUT0_CONFIG_REG + channel, config.getValue());
 	}
 	
 	public int readInput(int channel) {
@@ -212,7 +240,7 @@ implements GpioDeviceFactoryInterface, AnalogInputDeviceFactoryInterface, PwmOut
 	 * Mode  Name    Type    Values
 	 * 0     On/Off  Byte    0 is OFF, 1 is ON
 	 * 1     PWM     Byte    0 to 100 percentage of ON time
-	 * 2     Servo   Byte    -100 to + 100 Position in degrees
+	 * 2     Servo   Byte    Position in degrees with 90 as the mid point
 	 * 3*    WS2812B 4 Bytes 0:Pixel ID, 1:Red, 2:Green, 3:Blue
 	 * </pre>
 	 * * Don't use this method if the output mode is WS2812B.
@@ -223,7 +251,7 @@ implements GpioDeviceFactoryInterface, AnalogInputDeviceFactoryInterface, PwmOut
 		// don't actually need to - the PiconZero handles it for us plus would
 		// require us to store the current output configuration
 		
-		device.writeByte(OUTPUT0_REG + channel, value);
+		writeByte(OUTPUT0_REG + channel, value);
 	}
 	
 	/**
@@ -243,6 +271,10 @@ implements GpioDeviceFactoryInterface, AnalogInputDeviceFactoryInterface, PwmOut
 		setOutput(channel, Math.round(MAX_VALUE * value));
 	}
 	
+	public void setValue(int channel, boolean value) {
+		setOutput(channel, value ? 1 : 0);
+	}
+	
 	/**
 	 * Set the colour of an individual pixel (always output channel 5)
 	 * @param pixel 0..63
@@ -255,7 +287,7 @@ implements GpioDeviceFactoryInterface, AnalogInputDeviceFactoryInterface, PwmOut
 		//pixelData = [Pixel, Red, Green, Blue]
 		//bus.write_i2c_block_data (pzaddr, Update, pixelData)
 		byte[] pixel_data = new byte[] { (byte) pixel, (byte) red, (byte) green, (byte) blue };
-		device.writeBytes(update ? WS2812B_SET_PIXEL_UPDATE_REG : WS2812B_SET_PIXEL_NOUPDATE_REG, 4, pixel_data);
+		writeBytes(update ? WS2812B_SET_PIXEL_UPDATE_REG : WS2812B_SET_PIXEL_NOUPDATE_REG, 4, pixel_data);
 	}
 	
 	/**
@@ -272,17 +304,11 @@ implements GpioDeviceFactoryInterface, AnalogInputDeviceFactoryInterface, PwmOut
 	}
 	
 	public void updatePixels() {
-		device.writeByte(UPDATE_NOW_REG, 0);
+		writeByte(UPDATE_NOW_REG, 0);
 	}
 	
 	public void setBrightness(int brightness) {
-		device.writeByte(SET_BRIGHTNESS_REG, brightness);
-	}
-
-	@Override
-	public void close() throws RuntimeIOException {
-		reset();
-		device.close();
+		writeByte(SET_BRIGHTNESS_REG, brightness);
 	}
 
 	@Override
@@ -370,11 +396,20 @@ implements GpioDeviceFactoryInterface, AnalogInputDeviceFactoryInterface, PwmOut
 	@Override
 	public GpioDigitalInputOutputDeviceInterface provisionDigitalInputOutputPin(int pinNumber, Mode mode)
 			throws RuntimeIOException {
-		throw new UnsupportedOperationException("DigitalInputOutDevice isn't supported on PiconZero");
+		throw new UnsupportedOperationException("DigitalInputOutputDevice isn't supported on PiconZero");
 	}
 
 	public void closeChannel(int channel) {
 		Logger.debug("closeChannel({})", Integer.valueOf(channel));
 		setInputConfig(channel, InputConfig.DIGITAL);
+	}
+
+	@Override
+	public void close() throws RuntimeIOException {
+		Logger.debug("close({})");
+		setMotor(0, 0);
+		setMotor(1, 0);
+		reset();
+		device.close();
 	}
 }
