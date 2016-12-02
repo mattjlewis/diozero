@@ -31,7 +31,6 @@ import java.util.ServiceLoader;
 
 import org.pmw.tinylog.Logger;
 
-import com.diozero.internal.spi.DeviceFactoryInterface;
 import com.diozero.internal.spi.NativeDeviceFactoryInterface;
 import com.diozero.util.DioZeroScheduler;
 
@@ -101,9 +100,9 @@ public class DeviceFactoryHelper {
 }
 
 class ShutdownHandlerThread extends Thread {
-	private DeviceFactoryInterface deviceFactory;
+	private NativeDeviceFactoryInterface deviceFactory;
 
-	public ShutdownHandlerThread(DeviceFactoryInterface deviceFactory) {
+	public ShutdownHandlerThread(NativeDeviceFactoryInterface deviceFactory) {
 		this.deviceFactory = deviceFactory;
 		setName("DIO-Zero Shutdown Handler");
 		setDaemon(false);
