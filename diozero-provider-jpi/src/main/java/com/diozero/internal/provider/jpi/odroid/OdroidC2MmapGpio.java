@@ -39,7 +39,6 @@ import com.diozero.api.GpioPullUpDown;
 import com.diozero.internal.provider.jpi.MmapBufferNative;
 import com.diozero.internal.provider.jpi.MmapByteBuffer;
 import com.diozero.internal.provider.jpi.MmapGpioInterface;
-import com.diozero.internal.provider.jpi.rpi.RPiMmapGpio;
 import com.diozero.internal.spi.GpioDeviceInterface;
 import com.diozero.util.LibraryLoader;
 import com.diozero.util.MemoryInspector;
@@ -80,7 +79,7 @@ public class OdroidC2MmapGpio implements MmapGpioInterface {
 	@Override
 	public synchronized void initialise() {
 		if (! loaded) {
-			LibraryLoader.loadLibrary(RPiMmapGpio.class, "jpi");
+			LibraryLoader.loadLibrary(OdroidC2MmapGpio.class, "jpi");
 			
 			mmap = MmapBufferNative.createMmapBuffer(MEM_DEVICE, GPIO_BASE_OFFSET, BLOCK_SIZE);
 			gpioReg = mmap.getBuffer().order(ByteOrder.LITTLE_ENDIAN).asIntBuffer();
