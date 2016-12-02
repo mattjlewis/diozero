@@ -127,6 +127,6 @@ public class JPiDeviceFactory extends BaseNativeDeviceFactory {
 	@Override
 	protected I2CDeviceInterface createI2CDevice(String key, int controller, int address, int addressSize,
 			int clockFrequency) throws RuntimeIOException {
-		throw new UnsupportedOperationException("I2C not yet supported");
+		return new SysFsI2cDevice(this, key, controller, address, addressSize, clockFrequency);
 	}
 }
