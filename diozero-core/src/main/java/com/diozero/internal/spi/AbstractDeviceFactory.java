@@ -32,6 +32,7 @@ import com.diozero.internal.DeviceStates;
 
 public abstract class AbstractDeviceFactory implements DeviceFactoryInterface {
 	protected DeviceStates deviceStates;
+	protected boolean shutdown;
 	
 	public AbstractDeviceFactory() {
 		deviceStates = new DeviceStates();
@@ -41,6 +42,12 @@ public abstract class AbstractDeviceFactory implements DeviceFactoryInterface {
 	public void shutdown() {
 		Logger.debug("shutdown()");
 		deviceStates.closeAll();
+		shutdown = true;
+	}
+	
+	@Override
+	public final boolean isShutdown() {
+		return shutdown;
 	}
 	
 	@Override

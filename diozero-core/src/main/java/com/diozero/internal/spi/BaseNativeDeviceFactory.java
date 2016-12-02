@@ -1,5 +1,8 @@
 package com.diozero.internal.spi;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /*
  * #%L
  * Device I/O Zero - Core
@@ -39,6 +42,7 @@ import com.diozero.util.SystemInfo;
  * To set the provider edit META-INF/services/com.diozero.internal.spi.NativeDeviceFactoryInterface
  * While the ServiceLoader supports multiple service providers, only the first entry in this file is used
  */
+
 public abstract class BaseNativeDeviceFactory extends AbstractDeviceFactory implements NativeDeviceFactoryInterface {
 	private static final String NATIVE_PREFIX = "Native-";
 	private static final String GPIO_PREFIX = NATIVE_PREFIX + "GPIO-";
@@ -55,6 +59,23 @@ public abstract class BaseNativeDeviceFactory extends AbstractDeviceFactory impl
 	
 	private static String createSpiKey(int controller, int chipSelect) {
 		return SPI_PREFIX + controller + "-" + chipSelect;
+	}
+	
+	private List<DeviceFactoryInterface> deviceFactories = new ArrayList<>();
+	
+	@Override
+	public final void registerDeviceFactory(DeviceFactoryInterface deviceFactory) {
+		deviceFactories.add(deviceFactory);
+	}
+	
+	@Override
+	public void shutdown() {
+		for (DeviceFactoryInterface df : deviceFactories) {
+			if (! df.isShutdown()) {
+				df.shutdown();
+			}
+		}
+		super.shutdown();
 	}
 
 	@Override

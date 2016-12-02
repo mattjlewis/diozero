@@ -30,4 +30,6 @@ package com.diozero.internal.spi;
 public interface NativeDeviceFactoryInterface extends GpioDeviceFactoryInterface, SpiDeviceFactoryInterface,
 		I2CDeviceFactoryInterface, PwmOutputDeviceFactoryInterface, AnalogInputDeviceFactoryInterface,
 		AnalogOutputDeviceFactoryInterface {
+
+	void registerDeviceFactory(DeviceFactoryInterface deviceFactory);
 }
