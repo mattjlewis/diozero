@@ -40,8 +40,10 @@ import com.diozero.internal.spi.*;
 import com.diozero.util.RuntimeIOException;
 
 /**
+ * Analog to Digital Converter. 4 analog in / 1 analog out.
  * Datasheet: <a href="http://www.nxp.com/documents/data_sheet/PCF8591.pdf">http://www.nxp.com/documents/data_sheet/PCF8591.pdf</a>.
- * <p>Note the <a href="http://www.raspoid.com/source/src__main__com__raspoid__additionalcomponents__adc__PCF8591.java">raspoid</a> driver states there is a <em>known bug when reading digital values from PCF8591 if analog output disabled ! (independent of this framework)</em>.</p>
+ * <p>Note the <a href="http://www.raspoid.com/source/src__main__com__raspoid__additionalcomponents__adc__PCF8591.java">raspoid</a> driver
+ * states there is a <em>known bug when reading digital values from PCF8591 if analog output disabled ! (independent of this framework)</em>.</p>
  */
 @SuppressWarnings("unused")
 public class PCF8591 extends AbstractDeviceFactory implements AnalogInputDeviceFactoryInterface,
