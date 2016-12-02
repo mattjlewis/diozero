@@ -8,7 +8,8 @@ import com.diozero.internal.spi.GpioDeviceInterface;
 import com.diozero.internal.spi.GpioDigitalInputOutputDeviceInterface;
 import com.diozero.util.RuntimeIOException;
 
-public class DigitalInputOutputDevice extends GpioDevice {
+public class DigitalInputOutputDevice extends GpioDevice
+implements DigitalInputDeviceInterface {
 	protected GpioDigitalInputOutputDeviceInterface device;
 	private GpioDeviceInterface.Mode mode;
 
@@ -86,6 +87,7 @@ public class DigitalInputOutputDevice extends GpioDevice {
 	 * @throws RuntimeIOException
 	 *             If an I/O error occurred.
 	 */
+	@Override
 	public boolean getValue() throws RuntimeIOException {
 		return device.getValue();
 	}

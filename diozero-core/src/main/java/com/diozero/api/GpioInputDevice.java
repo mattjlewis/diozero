@@ -37,7 +37,8 @@ import java.util.Collection;
  *            {@link com.diozero.api.DigitalInputEvent DigitalInputEvent} and
  *            {@link com.diozero.api.AnalogInputEvent AnalogInputEvent}.
  */
-public abstract class GpioInputDevice<T extends DeviceEvent> extends GpioDevice implements InputEventListener<T> {
+public abstract class GpioInputDevice<T extends DeviceEvent> extends GpioDevice
+implements InputEventListener<T> {
 	protected Collection<InputEventListener<T>> listeners;
 
 	/**
