@@ -34,6 +34,8 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import org.pmw.tinylog.Logger;
+
 import com.diozero.api.*;
 import com.diozero.internal.board.odroid.OdroidBoardInfoProvider;
 import com.diozero.internal.spi.*;
@@ -154,6 +156,8 @@ public class SysFsDeviceFactory extends BaseNativeDeviceFactory {
 			throw new IllegalArgumentException("Illegal mode (" + mode +
 					") must be " + Mode.DIGITAL_INPUT + " or " + Mode.DIGITAL_OUTPUT);
 		}
+		
+		Logger.debug("export({}, {})", Integer.valueOf(pinNumber), mode);
 
 		if (! isExported(pinNumber)) {
 			try (Writer export_writer = new FileWriter(rootPath.resolve(EXPORT_FILE).toFile())) {
