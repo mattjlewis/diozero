@@ -26,9 +26,6 @@ package com.diozero.util;
  * #L%
  */
 
-
-import com.diozero.util.SystemInfo;
-
 public class SystemInfoTest {
 	public static void main(String[] args) {
 		//System.out.println(osReleaseProperties);
@@ -36,22 +33,22 @@ public class SystemInfoTest {
 		//		getOperatingSystemId(), getOperatingSystemVersion(), getOperatingSystemVersionId());
 		String line = "Revision        : a02082\n";
 		String revision_string = line.split(":")[1].trim();
-		System.out.println(revision_string + ": " + SystemInfo.lookupBoardInfo(revision_string));
+		System.out.println(revision_string + ": " + SystemInfo.lookupBoardInfo("BCM2709", revision_string));
 		revision_string = "a01040";
-		System.out.println(revision_string + ": " + SystemInfo.lookupBoardInfo(revision_string));
+		System.out.println(revision_string + ": " + SystemInfo.lookupBoardInfo("BCM2709", revision_string));
 		revision_string = "a01041";
-		System.out.println(revision_string + ": " + SystemInfo.lookupBoardInfo(revision_string));
+		System.out.println(revision_string + ": " + SystemInfo.lookupBoardInfo("BCM2709", revision_string));
 		revision_string = "a21041";
-		System.out.println(revision_string + ": " + SystemInfo.lookupBoardInfo(revision_string));
+		System.out.println(revision_string + ": " + SystemInfo.lookupBoardInfo("BCM2709", revision_string));
 		revision_string = "900092";
-		System.out.println(revision_string + ": " + SystemInfo.lookupBoardInfo(revision_string));
+		System.out.println(revision_string + ": " + SystemInfo.lookupBoardInfo("BCM2709", revision_string));
 		revision_string = "a00092";
-		System.out.println(revision_string + ": " + SystemInfo.lookupBoardInfo(revision_string));
+		System.out.println(revision_string + ": " + SystemInfo.lookupBoardInfo("BCM2709", revision_string));
 		revision_string = "a00093";
-		System.out.println(revision_string + ": " + SystemInfo.lookupBoardInfo(revision_string));
+		System.out.println(revision_string + ": " + SystemInfo.lookupBoardInfo("BCM2709", revision_string));
 		revision_string = "a02082";
-		System.out.println(revision_string + ": " + SystemInfo.lookupBoardInfo(revision_string));
+		System.out.println(revision_string + ": " + SystemInfo.lookupBoardInfo("BCM2709", revision_string));
 		revision_string = "020b";
-		System.out.println(revision_string + ": " + SystemInfo.lookupBoardInfo(revision_string));
+		System.out.println(revision_string + ": " + SystemInfo.lookupBoardInfo("BCM2709", revision_string));
 	}
 }
