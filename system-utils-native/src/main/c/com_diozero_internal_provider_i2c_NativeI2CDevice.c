@@ -26,6 +26,7 @@
 
 #include "com_diozero_internal_provider_i2c_NativeI2CDevice.h"
 
+#include <sys/ioctl.h>
 #include <linux/i2c-dev.h>
 
 //#define PI_I2C_SLAVE 0x0703
