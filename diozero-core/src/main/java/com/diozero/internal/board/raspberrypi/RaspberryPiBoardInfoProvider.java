@@ -36,6 +36,7 @@ import com.diozero.util.BoardInfoProvider;
  */
 public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 	public static final String MAKE = "RaspberryPi";
+	private static final String BCM_HARDWARE_ID = "BCM";
 	
 	public static enum Model {
 		A(0), B(1), A_PLUS(2), B_PLUS(3), PI_2_B(4), ALPHA(5), COMPUTE_MODEL(6), UNKNWON(7), PI_3_B(8), ZERO(9);
@@ -184,17 +185,21 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 	}
 	
 	@Override
-	public BoardInfo lookup(String revisionString) {
+	public BoardInfo lookup(String hardware, String revision) {
+		if (! hardware.startsWith(BCM_HARDWARE_ID) || revision.length() < 4) {
+			return null;
+		}
+		
 		try {
-			int revision = Integer.parseInt(revisionString, 16);
+			int rev_int = Integer.parseInt(revision, 16);
 			// With the release of the Raspberry Pi 2, there is a new encoding of the
 			// Revision field in /proc/cpuinfo
-			if ((revision & (1 << 23)) != 0) {
-				int pcb_rev = (revision & (0x0F << 0)) >> 0;
-				int model = (revision & (0xFF << 4)) >> 4;
-				int proc = (revision & (0x0F << 12)) >> 12;
-				int mfr = (revision & (0x0F << 16)) >> 16;
-				int mem = (revision & (0x07 << 20)) >> 20;
+			if ((rev_int & (1 << 23)) != 0) {
+				int pcb_rev = (rev_int & (0x0F << 0)) >> 0;
+				int model = (rev_int & (0xFF << 4)) >> 4;
+				int proc = (rev_int & (0x0F << 12)) >> 12;
+				int mfr = (rev_int & (0x0F << 16)) >> 16;
+				int mem = (rev_int & (0x07 << 20)) >> 20;
 				//boolean warranty_void = (revision & (0x03 << 24)) != 0;
 				
 				return new PiABPlusBoardInfo(Model.forId(model), Revision.forId(pcb_rev),
@@ -203,11 +208,8 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 		} catch (NumberFormatException nfe) {
 			// Ignore
 		}
-		if (revisionString.length() < 4) {
-			return null;
-		}
 		
-		return PI_BOARDS.get(revisionString.substring(revisionString.length()-4));
+		return PI_BOARDS.get(revision.substring(revision.length()-4));
 	}
 	
 	/**

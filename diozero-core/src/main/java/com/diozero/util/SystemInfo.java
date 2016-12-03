@@ -49,7 +49,8 @@ public class SystemInfo {
 			}
 			
 			ProcessBuilder pb = new ProcessBuilder("cat", CPUINFO_FILE);
-			String revision_string = null;
+			String hardware = null;
+			String revision = null;
 			try {
 				Process proc = pb.start();
 				try (BufferedReader reader = new BufferedReader(new InputStreamReader(proc.getInputStream()))) {
@@ -57,8 +58,11 @@ public class SystemInfo {
 					// Fully read the process output
 					do {
 						line = reader.readLine();
+						if (line != null && line.startsWith("Hardware")) {
+							hardware = line.split(":")[1].trim();
+						}
 						if (line != null && line.startsWith("Revision")) {
-							revision_string = line.split(":")[1].trim();
+							revision = line.split(":")[1].trim();
 						}
 					} while (line != null);
 				}
@@ -66,25 +70,25 @@ public class SystemInfo {
 				Logger.error(e, "Error reading " + CPUINFO_FILE, e.getMessage());
 			}
 			
-			boardInfo = lookupBoardInfo(revision_string);
+			boardInfo = lookupBoardInfo(hardware, revision);
 			
 			initialised = true;
 		}
 	}
 	
-	protected static BoardInfo lookupBoardInfo(String revision) {
+	protected static BoardInfo lookupBoardInfo(String hardware, String revision) {
 		BoardInfo board_info = null;
 		ServiceLoader<BoardInfoProvider> service_loader = ServiceLoader.load(BoardInfoProvider.class);
 		for (BoardInfoProvider board_info_provider : service_loader) {
-			board_info = board_info_provider.lookup(revision);
+			board_info = board_info_provider.lookup(hardware, revision);
 			if (board_info != null) {
 				break;
 			}
 		}
 		if (board_info == null) {
-			Logger.warn("Failed to resolve board info, revision '" + revision + "'");
+			Logger.warn("Failed to resolve board info for hardware '{}' and revision '{}'", hardware, revision);
 		} else {
-			Logger.debug("Resolved board " + board_info);
+			Logger.debug("Resolved board {}", board_info);
 		}
 		return board_info;
 	}

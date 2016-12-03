@@ -33,29 +33,33 @@ import com.diozero.util.BoardInfo;
 import com.diozero.util.BoardInfoProvider;
 
 public class OdroidBoardInfoProvider implements BoardInfoProvider {
-	public static final OdroidC2BoardInfo ORDOID_C2 = new OdroidC2BoardInfo(2048);
+	public static final OdroidC2BoardInfo ODROID_C2 = new OdroidC2BoardInfo(2048);
 	
 	public static final String MAKE = "Odroid";
+	private static final String C2_HARDWARE_ID = "ODROID-C2";
 	
 	public static enum Model {
 		C0, U2_U3, C1, XU_3_4, C2;
 	}
 	
-	private static Map<String, BoardInfo> BOARDS;
+	private static Map<String, BoardInfo> BOARD_REVISIONS;
 	static {
-		BOARDS = new HashMap<>();
+		BOARD_REVISIONS = new HashMap<>();
 		
 		// TODO Verify C0
 		//BOARDS.put("????", new OdroidBoardInfo(Model.C0, 1024));
 		//BOARDS.put("0000", new OdroidBoardInfo(Model.U2_U3, 2048));
 		//BOARDS.put("000a", new OdroidBoardInfo(Model.C1, 1024));
 		//BOARDS.put("0100", new OdroidBoardInfo(Model.XU_3_4, 2048));
-		BOARDS.put("020b", ORDOID_C2);
+		BOARD_REVISIONS.put("020b", ODROID_C2);
 	}
 
 	@Override
-	public BoardInfo lookup(String revisionString) {
-		return BOARDS.get(revisionString);
+	public BoardInfo lookup(String hardware, String revision) {
+		if (hardware.equals(C2_HARDWARE_ID)) {
+			return ODROID_C2;
+		}
+		return null;
 	}
 
 	public static class OdroidBoardInfo extends BoardInfo {
@@ -90,6 +94,7 @@ public class OdroidBoardInfoProvider implements BoardInfoProvider {
 					GpioDeviceInterface.Mode.DIGITAL_OUTPUT,
 					GpioDeviceInterface.Mode.SOFTWARE_PWM_OUTPUT,
 					GpioDeviceInterface.Mode.PWM_OUTPUT);
+
 			C2_PINS = new HashMap<>();
 			C2_PINS.put(Integer.valueOf(214), digital_in_out);
 			C2_PINS.put(Integer.valueOf(218), digital_in_out);
