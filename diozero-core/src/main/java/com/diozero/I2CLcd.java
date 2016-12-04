@@ -213,6 +213,10 @@ public class I2CLcd implements Closeable {
 	public I2CLcd(int deviceAddress, int columns, int rows) {
 		this(I2CConstants.BUS_1, deviceAddress, ByteOrder.LITTLE_ENDIAN, columns, rows);
 	}
+
+	public I2CLcd(int controller, int deviceAddress, int columns, int rows) {
+		this(controller, deviceAddress, ByteOrder.LITTLE_ENDIAN, columns, rows);
+	}
 	
 	public I2CLcd(int controller, int deviceAddress, ByteOrder order, int columns, int rows) {
 		if (rows == 2) {
@@ -276,6 +280,8 @@ public class I2CLcd implements Closeable {
 		entryModeControl(true, false);
 		// Clear display
 		clear();
+		// Need to wait here, encounter strange errors otherwise
+		SleepUtil.sleepMicros(100);
 	}
 
 	private void writeInstruction(byte data) {
