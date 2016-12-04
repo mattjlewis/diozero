@@ -31,12 +31,37 @@ import java.io.*;
 
 import com.diozero.I2CLcd;
 import com.diozero.api.Action;
+import com.diozero.api.I2CConstants;
 import com.diozero.util.RuntimeIOException;
 
+/**
+ * I2C LCD sample interactive application. To run:
+ * <ul>
+ * <li>JDK Device I/O 1.0:<br>
+ *  {@code sudo java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-jdkdio10-$DIOZERO_VERSION.jar:dio-1.0.1-dev-linux-armv6hf.jar -Djava.library.path=. com.diozero.sandpit.I2CLcdSampleAppInteractive [i2c_address] [i2c_controller]}</li>
+ * <li>JDK Device I/O 1.1:<br>
+ *  {@code sudo java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-jdkdio11-$DIOZERO_VERSION.jar:dio-1.1-dev-linux-armv6hf.jar -Djava.library.path=. com.diozero.sandpit.I2CLcdSampleAppInteractive [i2c_address] [i2c_controller]}</li>
+ * <li>Pi4j:<br>
+ *  {@code sudo java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-pi4j-$DIOZERO_VERSION.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sandpit.I2CLcdSampleAppInteractive [i2c_address] [i2c_controller]}</li>
+ * <li>wiringPi:<br>
+ *  {@code sudo java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-wiringpi-$DIOZERO_VERSION.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sandpit.I2CLcdSampleAppInteractive [i2c_address] [i2c_controller]}</li>
+ * <li>pigpgioJ:<br>
+ *  {@code sudo java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-pigpio-$DIOZERO_VERSION.jar:pigpioj-java-1.0.0.jar com.diozero.sandpit.I2CLcdSampleAppInteractive [i2c_address] [i2c_controller]}</li>
+ * </ul>
+ */
 public class I2CLcdSampleAppInteractive implements Closeable {
 	public static void main(String[] args) {
+		int device_address = I2CLcd.DEFAULT_DEVICE_ADDRESS;
+		if (args.length > 0) {
+			device_address = Integer.decode(args[0]).intValue();
+		}
+		int controller = I2CConstants.BUS_1;
+		if (args.length > 1) {
+			controller = Integer.parseInt(args[1]);
+		}
+		
 		try (I2CLcdSampleAppInteractive app = new I2CLcdSampleAppInteractive()) {
-			app.run();
+			app.run(controller, device_address);
 		}
 	}
 	
@@ -44,7 +69,7 @@ public class I2CLcdSampleAppInteractive implements Closeable {
 	private boolean running;
 	private I2CLcd lcd;
 	
-	private OptionsMenu initMenu = new OptionsMenu("Screen Size", new String[] { "16x2", "20x4" });
+	private OptionsMenu screenSizeMenu = new OptionsMenu("Screen Size", new String[] { "16x2", "20x4" });
 	private ActionMenu mainMenu = new ActionMenu("Main Menu", new ActionMenuItem[] {
 			new ActionMenuItem("Exit", () -> running = false)
 			, new ActionMenuItem("Clear", () -> lcd.clear())
@@ -96,14 +121,15 @@ public class I2CLcdSampleAppInteractive implements Closeable {
 			})
 		});
 	
-	public void run() {
+	public void run(int controller, int deviceAddress) {
 		reader = new BufferedReader(new InputStreamReader(System.in));
-		int resp = prompt(initMenu);
-		String[] resolution = initMenu.getOption(resp).split("x");
+		
+		int resp = prompt(screenSizeMenu);
+		String[] resolution = screenSizeMenu.getOption(resp).split("x");
 		
 		int columns = Integer.parseInt(resolution[0]);
 		int rows = Integer.parseInt(resolution[1]);
-		lcd = new I2CLcd(columns, rows);
+		lcd = new I2CLcd(controller, deviceAddress, columns, rows);
 		
 		running = true;
 		while (running) {
