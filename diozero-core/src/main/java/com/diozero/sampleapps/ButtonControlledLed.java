@@ -51,6 +51,7 @@ import com.diozero.util.SleepUtil;
  * <li>sysfs:<br>
  *  {@code java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-sysfs-$DIOZERO_VERSION.jar com.diozero.sampleapps.ButtonControlledLed 25 12}</li>
  * </ul>
+ * <p>Note to self - currently using 228 (input) and 219 (output) on Odroid C2.</p>
  */
 public class ButtonControlledLed {
 	public static void main(String[] args) {
