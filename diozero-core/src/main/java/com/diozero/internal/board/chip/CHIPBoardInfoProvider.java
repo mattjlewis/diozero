@@ -10,7 +10,7 @@ import com.diozero.util.BoardInfoProvider;
 public class CHIPBoardInfoProvider implements BoardInfoProvider {
 	public static final String MAKE = "CHIP";
 	
-	private static final ChipBoardInfo CHIP_BOARD_INFO = new ChipBoardInfo();
+	private static final CHIPBoardInfo CHIP_BOARD_INFO = new CHIPBoardInfo();
 
 	@Override
 	public BoardInfo lookup(String hardware, String revision) {
@@ -20,7 +20,7 @@ public class CHIPBoardInfoProvider implements BoardInfoProvider {
 		return null;
 	}
 
-	public static final class ChipBoardInfo extends BoardInfo {
+	public static final class CHIPBoardInfo extends BoardInfo {
 		private static Map<Integer, List<Mode>> CHIP_PINS;
 		static {
 			List<Mode> digital_in_out = Arrays.asList(
@@ -34,7 +34,7 @@ public class CHIPBoardInfoProvider implements BoardInfoProvider {
 			}
 		}
 		
-		public ChipBoardInfo() {
+		public CHIPBoardInfo() {
 			super(MAKE, "CHIP", 1024, CHIP_PINS, MAKE.toLowerCase());
 		}
 	}
