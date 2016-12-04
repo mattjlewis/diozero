@@ -73,7 +73,7 @@ public class SysFsDeviceFactory extends BaseNativeDeviceFactory {
 
 	@Override
 	public int getPwmFrequency(int pinNumber) {
-		if (SystemInfo.getBoardInfo().sameMakeAndModel(OdroidBoardInfoProvider.ORDOID_C2)) {
+		if (SystemInfo.getBoardInfo().sameMakeAndModel(OdroidBoardInfoProvider.ODROID_C2)) {
 			return OdroidC2SysFsPwmOutputDevice.getFrequency(pinNumber);
 		}
 		
@@ -83,7 +83,7 @@ public class SysFsDeviceFactory extends BaseNativeDeviceFactory {
 
 	@Override
 	public void setPwmFrequency(int pinNumber, int pwmFrequency) {
-		if (SystemInfo.getBoardInfo().sameMakeAndModel(OdroidBoardInfoProvider.ORDOID_C2)) {
+		if (SystemInfo.getBoardInfo().sameMakeAndModel(OdroidBoardInfoProvider.ODROID_C2)) {
 			OdroidC2SysFsPwmOutputDevice.setFrequency(pinNumber, pwmFrequency);
 			return;
 		}
@@ -132,7 +132,7 @@ public class SysFsDeviceFactory extends BaseNativeDeviceFactory {
 	@Override
 	protected PwmOutputDeviceInterface createPwmOutputPin(String key, int pinNumber, float initialValue,
 			PwmType pwmType) throws RuntimeIOException {
-		if (SystemInfo.getBoardInfo().sameMakeAndModel(OdroidBoardInfoProvider.ORDOID_C2)) {
+		if (SystemInfo.getBoardInfo().sameMakeAndModel(OdroidBoardInfoProvider.ODROID_C2)) {
 			// FIXME Match with previously set PWM frequency...
 			return new OdroidC2SysFsPwmOutputDevice(key, this, pinNumber, DEFAULT_PWM_FREQUENCY, initialValue, 1023);
 		}
