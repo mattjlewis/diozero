@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.diozero.internal.spi.GpioDeviceInterface;
-import com.diozero.internal.spi.GpioDeviceInterface.Mode;
 
 /*
  * #%L
@@ -32,20 +31,19 @@ import com.diozero.internal.spi.GpioDeviceInterface.Mode;
  * #L%
  */
 
-
-public abstract class BoardInfo {
+public abstract class BoardInfo extends BoardPinInfo {
 	private String make;
 	private String model;
 	private int memory;
-	private Map<Integer, List<GpioDeviceInterface.Mode>> pins;
 	private String libraryPath;
 	
 	public BoardInfo(String make, String model, int memory, Map<Integer, List<GpioDeviceInterface.Mode>> pins,
 			String libraryPath) {
+		super(pins);
+		
 		this.make = make;
 		this.model = model;
 		this.memory = memory;
-		this.pins = pins;
 		this.libraryPath = libraryPath;
 	}
 
@@ -72,11 +70,5 @@ public abstract class BoardInfo {
 
 	public boolean sameMakeAndModel(BoardInfo boardInfo) {
 		return make.equals(boardInfo.getMake()) && model.equals(boardInfo.getModel());
-	}
-
-	public boolean isSupported(Mode mode, int pin) {
-		List<Mode> modes = pins.get(Integer.valueOf(pin));
-		
-		return mode == null ? false : modes.contains(mode);
 	}
 }
