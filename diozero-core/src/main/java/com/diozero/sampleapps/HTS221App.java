@@ -49,8 +49,8 @@ public class HTS221App {
 	public static void main(String[] args) {
 		try (HTS221 device = new HTS221()) {
 			for (int i=0; i<10; i++) {
-				double humidity = device.getHumidity();
-				double temperature = device.getTemperature();
+				float humidity = device.getRelativeHumidity();
+				float temperature = device.getTemperature();
 				System.out.format("Humidity=%.2f, Temperature=%.2f%n", Double.valueOf(humidity), Double.valueOf(temperature));
 				SleepUtil.sleepSeconds(1);
 			}

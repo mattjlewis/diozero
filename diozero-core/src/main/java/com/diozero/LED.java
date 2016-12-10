@@ -1,5 +1,7 @@
 package com.diozero;
 
+import com.diozero.api.Action;
+
 /*
  * #%L
  * Device I/O Zero - Core
@@ -114,7 +116,18 @@ public class LED extends DigitalOutputDevice {
 	 *             If an I/O error occurred.
 	 */
 	public void blink() throws RuntimeIOException {
-		blink(1, 1, INFINITE_ITERATIONS, true);
+		blink(1, 1, INFINITE_ITERATIONS, true, null);
+	}
+
+	/**
+	 * Blink indefinitely with 1 second on and 1 second off.
+	 * @param stopAction
+	 *             Action to invoke when the animation stops.
+	 * @throws RuntimeIOException
+	 *             If an I/O error occurred.
+	 */
+	public void blink(Action stopAction) throws RuntimeIOException {
+		blink(1, 1, INFINITE_ITERATIONS, true, stopAction);
 	}
 
 	/**
@@ -134,7 +147,29 @@ public class LED extends DigitalOutputDevice {
 	 *             If an I/O error occurred.
 	 */
 	public void blink(float onTime, float offTime, int n, boolean background) throws RuntimeIOException {
-		onOffLoop(onTime, offTime, n, background);
+		blink(onTime, offTime, n, background, null);
+	}
+
+	/**
+	 * Blink.
+	 * 
+	 * @param onTime
+	 *            On time in seconds.
+	 * @param offTime
+	 *            Off time in seconds.
+	 * @param n
+	 *            Number of iterations. Set to &lt;0 to blink indefinitely.
+	 * @param background
+	 *            If true start a background thread to control the blink and
+	 *            return immediately. If false, only return once the blink
+	 *            iterations have finished.
+	 * @param stopAction
+	 *            Action to invoke when the animation stops.
+	 * @throws RuntimeIOException
+	 *            If an I/O error occurred.
+	 */
+	public void blink(float onTime, float offTime, int n, boolean background, Action stopAction) throws RuntimeIOException {
+		onOffLoop(onTime, offTime, n, background, stopAction);
 	}
 
 	/**

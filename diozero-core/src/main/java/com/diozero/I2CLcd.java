@@ -29,6 +29,9 @@ package com.diozero;
 
 import java.io.Closeable;
 import java.nio.ByteOrder;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.diozero.api.I2CConstants;
 import com.diozero.api.I2CDevice;
@@ -200,6 +203,7 @@ public class I2CLcd implements Closeable {
 	private int columns;
 	private int rows;
 	private boolean characterFont5x8;
+	private boolean displayOn;
 	private boolean cursorEnabled;
 	private boolean blinkEnabled;
 	private boolean increment;
@@ -324,12 +328,14 @@ public class I2CLcd implements Closeable {
 		return backlight;
 	}
 
-	public void setBacklightOn(boolean backlight) {
+	public I2CLcd setBacklightOn(boolean backlight) {
 		this.backlight = backlight;
 		writeByte(true, (byte) 0);
+		
+		return this;
 	}
 
-	public void setCursorPosition(int column, int row) {
+	public I2CLcd setCursorPosition(int column, int row) {
 		if (column < 0 || column >= columns) {
 			throw new IllegalArgumentException("Invalid column (" + column + "), must be 0.." + (column - 1));
 		}
@@ -340,19 +346,24 @@ public class I2CLcd implements Closeable {
 
 		byte[] row_offsets;
 		writeInstruction((byte) (INST_SET_DDRAM_ADDR | (column + rowOffsets[row])));
+		
+		return this;
 	}
 	
-	public void setCharacter(int column, int row, char character) {
+	public I2CLcd setCharacter(int column, int row, char character) {
 		setCursorPosition(column, row);
 		writeData((byte) character);
+		
+		return this;
 	}
 
 	/**
 	 * Send string to display
 	 * @param row Row number (starts at 0)
 	 * @param text Text to display
+	 * @return This object instance
 	 */
-	public void setText(int row, String text) {
+	public I2CLcd setText(int row, String text) {
 		if (row < 0 || row >= rows) {
 			throw new IllegalArgumentException("Invalid row (" + row + "), must be 0.." + (rows - 1));
 		}
@@ -367,34 +378,48 @@ public class I2CLcd implements Closeable {
 		for (byte b : text.getBytes()) {
 			writeData(b);
 		}
+		
+		return this;
 	}
 	
-	public void addText(String text) {
+	public I2CLcd addText(String text) {
 		for (byte b : text.getBytes()) {
 			writeData(b);
 		}
+		
+		return this;
 	}
 	
-	public void addText(char character) {
+	public I2CLcd addText(char character) {
 		writeData((byte) character);
+		
+		return this;
 	}
 	
-	public void addText(byte code) {
+	public I2CLcd addText(byte code) {
 		writeData(code);
+		
+		return this;
 	}
 
 	/**
 	 * Clear the display
+	 * @return This object instance
 	 */
-	public void clear() {
+	public I2CLcd clear() {
 		writeInstruction(INST_CLEAR_DISPLAY);
+		
+		return this;
 	}
 
 	/**
 	 * Return the cursor to the home position
+	 * @return This object instance
 	 */
-	public void returnHome() {
+	public I2CLcd returnHome() {
 		writeInstruction(INST_RETURN_HOME);
+		
+		return this;
 	}
 	
 	/**
@@ -407,14 +432,27 @@ public class I2CLcd implements Closeable {
 	 *				to the left (I/D = 1) when true. The display does not shift
 	 *				if false. If true, it will seem as if the cursor does not
 	 *				move but the display does.
+	 * @return This object instance
 	 */
-	public void entryModeControl(boolean increment, boolean shiftDisplay) {
+	public I2CLcd entryModeControl(boolean increment, boolean shiftDisplay) {
 		this.increment = increment;
 		this.shiftDisplay = shiftDisplay;
 		writeInstruction((byte) (INST_ENTRY_MODE_SET
 				| (increment ? EMS_CURSOR_INCREMENT : EMS_CURSOR_DECREMENT)
 				| (shiftDisplay ? EMS_DISPLAY_SHIFT_ON : EMS_DISPLAY_SHIFT_OFF)
 				));
+		
+		return this;
+	}
+	
+	public I2CLcd autoscrollOn() {
+		entryModeControl(true, true);
+		return this;
+	}
+	
+	public I2CLcd autoscrollOff() {
+		entryModeControl(true, false);
+		return this;
 	}
 	
 	public boolean isIncrementOn() {
@@ -425,7 +463,8 @@ public class I2CLcd implements Closeable {
 		return shiftDisplay;
 	}
 
-	public void displayControl(boolean displayOn, boolean cursorEnabled, boolean blinkEnabled) {
+	public I2CLcd displayControl(boolean displayOn, boolean cursorEnabled, boolean blinkEnabled) {
+		this.displayOn = displayOn;
 		this.cursorEnabled = cursorEnabled;
 		this.blinkEnabled = blinkEnabled;
 		writeInstruction((byte) (INST_DISPLAY_CONTROL
@@ -433,6 +472,32 @@ public class I2CLcd implements Closeable {
 				| (cursorEnabled ? DC_CURSOR_ON : DC_CURSOR_OFF)
 				| (blinkEnabled ? DC_BLINK_ON : DC_BLINK_OFF)
 				));
+		
+		return this;
+	}
+	
+	public I2CLcd displayOn() {
+		return displayControl(true, cursorEnabled, blinkEnabled);
+	}
+		
+	public I2CLcd displayOff() {
+		return displayControl(false, cursorEnabled, blinkEnabled);
+	}
+	
+	public I2CLcd cursorOn() {
+		return displayControl(displayOn, true, blinkEnabled);
+	}
+		
+	public I2CLcd cursorOff() {
+		return displayControl(displayOn, false, blinkEnabled);
+	}
+	
+	public I2CLcd blinkOn() {
+		return displayControl(displayOn, true, true);
+	}
+		
+	public I2CLcd blinkOff() {
+		return displayControl(displayOn, cursorEnabled, false);
 	}
 	
 	public boolean isCursorEnabled() {
@@ -455,31 +520,42 @@ public class I2CLcd implements Closeable {
 	 * 				Shift the display if true, the cursor if false.
 	 * @param shiftRight
 	 *				Shift to the right if true, to the left if false.
+	 * @return This object instance
 	 */
-	public void cursorOrDisplayShift(boolean displayShift, boolean shiftRight) {
+	public I2CLcd cursorOrDisplayShift(boolean displayShift, boolean shiftRight) {
 		writeInstruction((byte) (INST_CURSOR_DISPLAY_SHIFT
 				| (displayShift ? CDS_DISPLAY_SHIFT : CDS_CURSOR_MOVE)
 				| (shiftRight ? CDS_SHIFT_RIGHT : CDS_SHIFT_LEFT)
 				));
+		
+		return this;
 	}
 	
-	public void shiftDisplayRight() {
+	public I2CLcd shiftDisplayRight() {
 		cursorOrDisplayShift(true, true);
+		
+		return this;
 	}
 	
-	public void shiftDisplayLeft() {
+	public I2CLcd shiftDisplayLeft() {
 		cursorOrDisplayShift(true, false);
+		
+		return this;
 	}
 	
-	public void moveCursorRight() {
+	public I2CLcd moveCursorRight() {
 		cursorOrDisplayShift(false, true);
+		
+		return this;
 	}
 	
-	public void moveCursorLeft() {
+	public I2CLcd moveCursorLeft() {
 		cursorOrDisplayShift(false, false);
+		
+		return this;
 	}
 	
-	public void createChar(int location, byte[] charMap) {
+	public I2CLcd createChar(int location, byte[] charMap) {
 		/* In the character generator RAM, the user can rewrite character patterns by program.
 		 * For 5×8 dots, eight character patterns can be written, and for 5×10 dots,
 		 * four character patterns can be written. */
@@ -506,6 +582,8 @@ public class I2CLcd implements Closeable {
 			writeData((byte) (charMap[i] & 0b11111));
 			SleepUtil.sleepMicros(40);
 		}
+		
+		return this;
 	}
 
 	@Override
@@ -514,5 +592,123 @@ public class I2CLcd implements Closeable {
 		clear();
 		displayControl(false, false, false);
 		device.close();
+	}
+}
+
+class LcdCharacters {
+	private static Map<String, byte[]> CHARACTERS = new HashMap<>();
+	static {
+		CHARACTERS.put("0",					new byte[] { 0xe, 0x1b, 0x1b, 0x1b, 0x1b, 0x1b, 0xe });
+		CHARACTERS.put("1",					new byte[] { 0x2, 0x6, 0xe, 0x6, 0x6, 0x6, 0x6 });
+		CHARACTERS.put("2",					new byte[] { 0xe, 0x1b, 0x3, 0x6, 0xc, 0x18, 0x1f });
+		CHARACTERS.put("3",					new byte[] { 0xe, 0x1b, 0x3, 0xe, 0x3, 0x1b, 0xe });
+		CHARACTERS.put("4",					new byte[] { 0x3, 0x7, 0xf, 0x1b, 0x1f, 0x3, 0x3 });
+		CHARACTERS.put("5",					new byte[] { 0x1f, 0x18, 0x1e, 0x3, 0x3, 0x1b, 0xe });
+		CHARACTERS.put("6",					new byte[] { 0xe, 0x1b, 0x18, 0x1e, 0x1b, 0x1b, 0xe });
+		CHARACTERS.put("7",					new byte[] { 0x1f, 0x3, 0x6, 0xc, 0xc, 0xc, 0xc });
+		CHARACTERS.put("8",					new byte[] { 0xe, 0x1b, 0x1b, 0xe, 0x1b, 0x1b, 0xe });
+		CHARACTERS.put("9",					new byte[] { 0xe, 0x1b, 0x1b, 0xf, 0x3, 0x1b, 0xe });
+		CHARACTERS.put("10",				new byte[] { 0x17, 0x15, 0x15, 0x15, 0x17, 0x0, 0x1f });
+		CHARACTERS.put("11",				new byte[] { 0xa, 0xa, 0xa, 0xa, 0xa, 0x0, 0x1f });
+		CHARACTERS.put("12",				new byte[] { 0x17, 0x11, 0x17, 0x14, 0x17, 0x0, 0x1f });
+		CHARACTERS.put("13",				new byte[] { 0x17, 0x11, 0x13, 0x11, 0x17, 0x0, 0x1f });
+		CHARACTERS.put("14",				new byte[] { 0x15, 0x15, 0x17, 0x11, 0x11, 0x0, 0x1f });
+		CHARACTERS.put("15",				new byte[] { 0x17, 0x14, 0x17, 0x11, 0x17, 0x0, 0x1f });
+		CHARACTERS.put("16",				new byte[] { 0x17, 0x14, 0x17, 0x15, 0x17, 0x0, 0x1f });
+		CHARACTERS.put("17",				new byte[] { 0x17, 0x11, 0x12, 0x12, 0x12, 0x0, 0x1f });
+		CHARACTERS.put("18",				new byte[] { 0x17, 0x15, 0x17, 0x15, 0x17, 0x0, 0x1f });
+		CHARACTERS.put("19",				new byte[] { 0x17, 0x15, 0x17, 0x11, 0x17, 0x0, 0x1f });
+		CHARACTERS.put("circle",			new byte[] { 0x0, 0xe, 0x11, 0x11, 0x11, 0xe, 0x0 });
+		CHARACTERS.put("cdot",				new byte[] { 0x0, 0xe, 0x11, 0x15, 0x11, 0xe, 0x0 });
+		CHARACTERS.put("donut",				new byte[] { 0x0, 0xe, 0x1f, 0x1b, 0x1f, 0xe, 0x0 });
+		CHARACTERS.put("ball",				new byte[] { 0x0, 0xe, 0x1f, 0x1f, 0x1f, 0xe, 0x0 });
+		CHARACTERS.put("square",			new byte[] { 0x0, 0x1f, 0x11, 0x11, 0x11, 0x1f, 0x0 });
+		CHARACTERS.put("sdot",				new byte[] { 0x0, 0x1f, 0x11, 0x15, 0x11, 0x1f, 0x0 });
+		CHARACTERS.put("fbox",				new byte[] { 0x0, 0x1f, 0x1f, 0x1f, 0x1f, 0x1f, 0x0 });
+		CHARACTERS.put("sbox",				new byte[] { 0x0, 0x0, 0xe, 0xa, 0xe, 0x0, 0x0 });
+		CHARACTERS.put("sfbox",				new byte[] { 0x0, 0x0, 0xe, 0xe, 0xe, 0x0, 0x0 });
+		CHARACTERS.put("bigpointerright",	new byte[] { 0x8, 0xc, 0xa, 0x9, 0xa, 0xc, 0x8 });
+		CHARACTERS.put("bigpointerleft",	new byte[] { 0x2, 0x6, 0xa, 0x12, 0xa, 0x6, 0x2 });
+		CHARACTERS.put("arrowright",		new byte[] { 0x8, 0xc, 0xa, 0x9, 0xa, 0xc, 0x8 });
+		CHARACTERS.put("arrowleft",			new byte[] { 0x2, 0x6, 0xa, 0x12, 0xa, 0x6, 0x2 });
+		CHARACTERS.put("ascprogress1",		new byte[] { 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10 });
+		CHARACTERS.put("ascprogress2",		new byte[] { 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18 });
+		CHARACTERS.put("ascprogress3",		new byte[] { 0x1c, 0x1c, 0x1c, 0x1c, 0x1c, 0x1c, 0x1c, 0x1c });
+		CHARACTERS.put("ascprogress4",		new byte[] { 0x1e, 0x1e, 0x1e, 0x1e, 0x1e, 0x1e, 0x1e, 0x1e });
+		CHARACTERS.put("fullprogress",		new byte[] { 0x1f, 0x1f, 0x1f, 0x1f, 0x1f, 0x1f, 0x1f, 0x1f });
+		CHARACTERS.put("descprogress1",		new byte[] { 1, 1, 1, 1, 1, 1, 1, 1 });
+		CHARACTERS.put("descprogress2",		new byte[] { 3, 3, 3, 3, 3, 3, 3, 3 });
+		CHARACTERS.put("descprogress3",		new byte[] { 7, 7, 7, 7, 7, 7, 7, 7 });
+		CHARACTERS.put("descprogress4",		new byte[] { 15, 15, 15, 15, 15, 15, 15, 15 });
+		CHARACTERS.put("ascchart1",			new byte[] { 31, 0, 0, 0, 0, 0, 0, 0 });
+		CHARACTERS.put("ascchart2",			new byte[] { 31, 31, 0, 0, 0, 0, 0, 0 });
+		CHARACTERS.put("ascchart3",			new byte[] { 31, 31, 31, 0, 0, 0, 0, 0 });
+		CHARACTERS.put("ascchart4",			new byte[] { 31, 31, 31, 31, 0, 0, 0, 0 });
+		CHARACTERS.put("ascchart5",			new byte[] { 31, 31, 31, 31, 31, 0, 0, 0 });
+		CHARACTERS.put("ascchart6",			new byte[] { 31, 31, 31, 31, 31, 31, 0, 0 });
+		CHARACTERS.put("ascchart7",			new byte[] { 31, 31, 31, 31, 31, 31, 31, 0 });
+		CHARACTERS.put("descchart1",		new byte[] { 0, 0, 0, 0, 0, 0, 0, 31 });
+		CHARACTERS.put("descchart2",		new byte[] { 0, 0, 0, 0, 0, 0, 31, 31 });
+		CHARACTERS.put("descchart3",		new byte[] { 0, 0, 0, 0, 0, 31, 31, 31 });
+		CHARACTERS.put("descchart4",		new byte[] { 0, 0, 0, 0, 31, 31, 31, 31 });
+		CHARACTERS.put("descchart5",		new byte[] { 0, 0, 0, 31, 31, 31, 31, 31 });
+		CHARACTERS.put("descchart6",		new byte[] { 0, 0, 31, 31, 31, 31, 31, 31 });
+		CHARACTERS.put("descchart7",		new byte[] { 0, 31, 31, 31, 31, 31, 31, 31 });
+		CHARACTERS.put("borderleft1",		new byte[] { 1, 1, 1, 1, 1, 1, 1, 1 });
+		CHARACTERS.put("borderleft2",		new byte[] { 3, 2, 2, 2, 2, 2, 2, 3 });
+		CHARACTERS.put("borderleft3",		new byte[] { 7, 4, 4, 4, 4, 4, 4, 7 });
+		CHARACTERS.put("borderleft4",		new byte[] { 15, 8, 8, 8, 8, 8, 8, 15 });
+		CHARACTERS.put("borderleft5",		new byte[] { 31, 16, 16, 16, 16, 16, 16, 31 });
+		CHARACTERS.put("bordertopbottom5",	new byte[] { 31, 0, 0, 0, 0, 0, 0, 31 });
+		CHARACTERS.put("borderright1",		new byte[] { 16, 16, 16, 16, 16, 16, 16, 16 });
+		CHARACTERS.put("borderright2",		new byte[] { 24, 8, 8, 8, 8, 8, 8, 24 });
+		CHARACTERS.put("borderright3",		new byte[] { 28, 4, 4, 4, 4, 4, 4, 28 });
+		CHARACTERS.put("borderright4",		new byte[] { 30, 2, 2, 2, 2, 2, 2, 30 });
+		CHARACTERS.put("borderright5",		new byte[] { 31, 1, 1, 1, 1, 1, 1, 31 });
+		CHARACTERS.put("box1",				new byte[] { 3, 3, 3, 0, 0, 0, 0 });
+		CHARACTERS.put("box2",				new byte[] { 24, 24, 24, 0, 0, 0, 0 });
+		CHARACTERS.put("box3",				new byte[] { 27, 27, 27, 0, 0, 0, 0 });
+		CHARACTERS.put("box4",				new byte[] { 0, 0, 0, 0, 3, 3, 3 });
+		CHARACTERS.put("box5",				new byte[] { 3, 3, 3, 0, 3, 3, 3 });
+		CHARACTERS.put("box6",				new byte[] { 24, 24, 24, 0, 3, 3, 3 });
+		CHARACTERS.put("box7",				new byte[] { 27, 27, 27, 0, 3, 3, 3 });
+		CHARACTERS.put("box8",				new byte[] { 0, 0, 0, 0, 24, 24, 24 });
+		CHARACTERS.put("box9",				new byte[] { 3, 3, 3, 0, 24, 24, 24 });
+		CHARACTERS.put("box10",				new byte[] { 24, 24, 24, 0, 24, 24, 24 });
+		CHARACTERS.put("box11",				new byte[] { 27, 27, 27, 0, 24, 24, 24 });
+		CHARACTERS.put("box12",				new byte[] { 0, 0, 0, 0, 27, 27, 27 });
+		CHARACTERS.put("box13",				new byte[] { 3, 3, 3, 0, 27, 27, 27 });
+		CHARACTERS.put("box14",				new byte[] { 24, 24, 24, 0, 27, 27, 27 });
+		CHARACTERS.put("box15",				new byte[] { 27, 27, 27, 0, 27, 27, 27 });
+		CHARACTERS.put("euro",				new byte[] { 3, 4, 30, 8, 30, 8, 7 });
+		CHARACTERS.put("cent",				new byte[] { 0, 0, 14, 17, 16, 21, 14, 8 });
+		CHARACTERS.put("speaker",			new byte[] { 1, 3, 15, 15, 15, 3, 1 });
+		CHARACTERS.put("sound",				new byte[] { 8, 16, 0, 24, 0, 16, 8 });
+		CHARACTERS.put("x",					new byte[] { 0, 27, 14, 4, 14, 27, 0 });
+		CHARACTERS.put("target",			new byte[] { 0, 10, 17, 21, 17, 10, 0 });
+		CHARACTERS.put("pointerright",		new byte[] { 0, 8, 12, 14, 12, 8, 0 });
+		CHARACTERS.put("pointerup",			new byte[] { 0, 0, 4, 14, 31, 0, 0 });
+		CHARACTERS.put("pointerleft",		new byte[] { 0, 2, 6, 14, 6, 2, 0 });
+		CHARACTERS.put("pointerdown",		new byte[] { 0, 0, 31, 14, 4, 0, 0 });
+		CHARACTERS.put("arrowne",			new byte[] { 0, 15, 3, 5, 9, 16, 0 });
+		CHARACTERS.put("arrownw",			new byte[] { 0, 30, 24, 20, 18, 1, 0 });
+		CHARACTERS.put("arrowsw",			new byte[] { 0, 1, 18, 20, 24, 30, 0 });
+		CHARACTERS.put("arrowse",			new byte[] { 0, 16, 9, 5, 3, 15, 0 });
+		CHARACTERS.put("dice1",				new byte[] { 0, 0, 0, 4, 0, 0, 0 });
+		CHARACTERS.put("dice2",				new byte[] { 0, 16, 0, 0, 0, 1, 0 });
+		CHARACTERS.put("dice3",				new byte[] { 0, 16, 0, 4, 0, 1, 0 });
+		CHARACTERS.put("dice4",				new byte[] { 0, 17, 0, 0, 0, 17, 0 });
+		CHARACTERS.put("dice5",				new byte[] { 0, 17, 0, 4, 0, 17, 0 });
+		CHARACTERS.put("dice6",				new byte[] { 0, 17, 0, 17, 0, 17, 0 });
+		CHARACTERS.put("bell",				new byte[] { 4, 14, 14, 14, 31, 0, 4 });
+		CHARACTERS.put("smile",				new byte[] { 0, 10, 0, 17, 14, 0, 0 });
+		CHARACTERS.put("note",				new byte[] { 2, 3, 2, 14, 30, 12, 0 });
+		CHARACTERS.put("clock",				new byte[] { 0, 14, 21, 23, 17, 14, 0 });
+		CHARACTERS.put("heart",				new byte[] { 0, 10, 31, 31, 31, 14, 4, 0 });
+		CHARACTERS.put("duck",				new byte[] { 0, 12, 29, 15, 15, 6, 0 });
+		CHARACTERS.put("check",				new byte[] { 0, 1, 3, 22, 28, 8, 0 });
+		CHARACTERS.put("retarrow",			new byte[] { 1, 1, 5, 9, 31, 8, 4 });
+		CHARACTERS.put("runninga",			new byte[] { 6, 6, 5, 14, 20, 4, 10, 17 });
+		CHARACTERS.put("runningb",			new byte[] { 6, 6, 4, 14, 14, 4, 10, 10 });
 	}
 }

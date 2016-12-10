@@ -104,9 +104,9 @@ public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFac
 	}
 
 	public PCA9685(int controller, int address, int pwmFrequency) throws RuntimeIOException {
-		i2cDevice = new I2CDevice(controller, address, I2CConstants.ADDR_SIZE_7, I2CConstants.DEFAULT_CLOCK_FREQUENCY);
+		super(DEVICE_NAME + "-" + controller + "-" + address + "-");
 		
-		keyPrefix = DEVICE_NAME + "-" + controller + "-" + address + "-";
+		i2cDevice = new I2CDevice(controller, address, I2CConstants.ADDR_SIZE_7, I2CConstants.DEFAULT_CLOCK_FREQUENCY);
 		
 		reset();
 		
@@ -270,41 +270,41 @@ public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFac
 	}
 
 	@Override
-	public PwmOutputDeviceInterface provisionPwmOutputPin(int channel, float initialValue)
+	public PwmOutputDeviceInterface provisionPwmOutputPin(int pin, float initialValue)
 			throws RuntimeIOException {
-		validateChannel(channel);
+		validateChannel(pin);
 		
-		String key = keyPrefix + channel;
+		String key = createPinKey(pin);
 		
 		if (isDeviceOpened(key)) {
 			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
 		}
 		
-		PwmOutputDeviceInterface device = new PCA9685PwmOutputDevice(this, key, channel);
+		PwmOutputDeviceInterface device = new PCA9685PwmOutputDevice(this, key, pin);
 		deviceOpened(device);
 		device.setValue(initialValue);
 		
 		return device;
 	}
 
-	public float getValue(int channel) throws RuntimeIOException {
-		int[] on_off = getPwm(channel);
+	public float getValue(int pin) throws RuntimeIOException {
+		int[] on_off = getPwm(pin);
 		return (on_off[1] - on_off[0]) / (float)RANGE;
 	}
 
 	/**
 	 * Set PWM output on a specific channel, value must be 0..1
 	 * 
-	 * @param channel PWM channel
+	 * @param pin PWM channel
 	 * @param value Must be 0..1
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
-	public void setValue(int channel, float value) throws RuntimeIOException {
+	public void setValue(int pin, float value) throws RuntimeIOException {
 		if (value < 0 || value > 1) {
 			throw new IllegalArgumentException("PWM value must 0..1, you requested " + value);
 		}
 		int off = (int)Math.floor(value * RANGE);
-		setPwm(channel, 0, off);
+		setPwm(pin, 0, off);
 	}
 	
 	@Override

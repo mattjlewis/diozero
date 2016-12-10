@@ -49,10 +49,6 @@ public abstract class BaseNativeDeviceFactory extends AbstractDeviceFactory impl
 	private static final String I2C_PREFIX = NATIVE_PREFIX + "I2C-";
 	private static final String SPI_PREFIX = NATIVE_PREFIX + "SPI-";
 	
-	private static String createGpioKey(int pinNumber) {
-		return GPIO_PREFIX + pinNumber;
-	}
-	
 	private static String createI2CKey(int controller, int address) {
 		return I2C_PREFIX + controller + "-" + address;
 	}
@@ -62,6 +58,13 @@ public abstract class BaseNativeDeviceFactory extends AbstractDeviceFactory impl
 	}
 	
 	private List<DeviceFactoryInterface> deviceFactories = new ArrayList<>();
+	private BoardInfo boardInfo;
+	
+	public BaseNativeDeviceFactory() {
+		super(GPIO_PREFIX);
+		
+		boardInfo = SystemInfo.getBoardInfo();
+	}
 	
 	@Override
 	public final void registerDeviceFactory(DeviceFactoryInterface deviceFactory) {
@@ -80,11 +83,11 @@ public abstract class BaseNativeDeviceFactory extends AbstractDeviceFactory impl
 
 	@Override
 	public final GpioAnalogInputDeviceInterface provisionAnalogInputPin(int pinNumber) throws RuntimeIOException {
-		if (! SystemInfo.getBoardInfo().isSupported(Mode.ANALOG_INPUT, pinNumber)) {
+		if (! boardInfo.isSupported(Mode.ANALOG_INPUT, pinNumber)) {
 			throw new IllegalArgumentException("Invalid mode (analog input) for pinNumber " + pinNumber);
 		}
 		
-		String key = createGpioKey(pinNumber);
+		String key = createPinKey(pinNumber);
 		
 		// Check if this pin is already provisioned
 		if (isDeviceOpened(key)) {
@@ -99,11 +102,11 @@ public abstract class BaseNativeDeviceFactory extends AbstractDeviceFactory impl
 
 	@Override
 	public final GpioAnalogOutputDeviceInterface provisionAnalogOutputPin(int pinNumber) throws RuntimeIOException {
-		if (! SystemInfo.getBoardInfo().isSupported(Mode.ANALOG_OUTPUT, pinNumber)) {
+		if (! boardInfo.isSupported(Mode.ANALOG_OUTPUT, pinNumber)) {
 			throw new IllegalArgumentException("Invalid mode (analog output) for pinNumber " + pinNumber);
 		}
 		
-		String key = createGpioKey(pinNumber);
+		String key = createPinKey(pinNumber);
 		
 		// Check if this pin is already provisioned
 		if (isDeviceOpened(key)) {
@@ -119,7 +122,7 @@ public abstract class BaseNativeDeviceFactory extends AbstractDeviceFactory impl
 	@Override
 	public final GpioDigitalInputDeviceInterface provisionDigitalInputPin(int pinNumber, GpioPullUpDown pud,
 			GpioEventTrigger trigger) throws RuntimeIOException {
-		if (! SystemInfo.getBoardInfo().isSupported(Mode.DIGITAL_INPUT, pinNumber)) {
+		if (! boardInfo.isSupported(Mode.DIGITAL_INPUT, pinNumber)) {
 			throw new IllegalArgumentException("Invalid mode (digital input) for pinNumber " + pinNumber);
 		}
 		
@@ -131,7 +134,7 @@ public abstract class BaseNativeDeviceFactory extends AbstractDeviceFactory impl
 					+ "you cannot initialize them in pull-down mode");
 		}
 		
-		String key = createGpioKey(pinNumber);
+		String key = createPinKey(pinNumber);
 		
 		// Check if this pin is already provisioned
 		if (isDeviceOpened(key)) {
@@ -146,11 +149,11 @@ public abstract class BaseNativeDeviceFactory extends AbstractDeviceFactory impl
 
 	@Override
 	public final GpioDigitalOutputDeviceInterface provisionDigitalOutputPin(int pinNumber, boolean initialValue) throws RuntimeIOException {
-		if (! SystemInfo.getBoardInfo().isSupported(Mode.DIGITAL_OUTPUT, pinNumber)) {
+		if (! boardInfo.isSupported(Mode.DIGITAL_OUTPUT, pinNumber)) {
 			throw new IllegalArgumentException("Invalid mode (digital output) for pinNumber " + pinNumber);
 		}
 		
-		String key = createGpioKey(pinNumber);
+		String key = createPinKey(pinNumber);
 		
 		// Check if this pin is already provisioned
 		if (isDeviceOpened(key)) {
@@ -165,12 +168,12 @@ public abstract class BaseNativeDeviceFactory extends AbstractDeviceFactory impl
 
 	@Override
 	public final GpioDigitalInputOutputDeviceInterface provisionDigitalInputOutputPin(int pinNumber, GpioDeviceInterface.Mode mode) throws RuntimeIOException {
-		if (! SystemInfo.getBoardInfo().isSupported(Mode.DIGITAL_OUTPUT, pinNumber) ||
-				! SystemInfo.getBoardInfo().isSupported(Mode.DIGITAL_INPUT, pinNumber)) {
+		if (! boardInfo.isSupported(Mode.DIGITAL_OUTPUT, pinNumber) ||
+				! boardInfo.isSupported(Mode.DIGITAL_INPUT, pinNumber)) {
 			throw new IllegalArgumentException("Invalid mode (digital input/output) for pinNumber " + pinNumber);
 		}
 		
-		String key = createGpioKey(pinNumber);
+		String key = createPinKey(pinNumber);
 		
 		// Check if this pin is already provisioned
 		if (isDeviceOpened(key)) {
@@ -186,17 +189,16 @@ public abstract class BaseNativeDeviceFactory extends AbstractDeviceFactory impl
 	@Override
 	public final PwmOutputDeviceInterface provisionPwmOutputPin(int pinNumber, float initialValue) throws RuntimeIOException {
 		PwmType pwm_type;
-		BoardInfo board_info = SystemInfo.getBoardInfo();
-		if (board_info.isSupported(Mode.PWM_OUTPUT, pinNumber)) {
+		if (boardInfo.isSupported(Mode.PWM_OUTPUT, pinNumber)) {
 			pwm_type = PwmType.HARDWARE;
-		} else if (board_info.isSupported(Mode.DIGITAL_OUTPUT, pinNumber)) {
+		} else if (boardInfo.isSupported(Mode.DIGITAL_OUTPUT, pinNumber)) {
 			Logger.warn("Hardware PWM not available on BCM pin {}, reverting to software", Integer.valueOf(pinNumber));
 			pwm_type = PwmType.SOFTWARE;
 		} else {
 			throw new IllegalArgumentException("Invalid mode (PWM output) for pinNumber " + pinNumber);
 		}
 		
-		String key = createGpioKey(pinNumber);
+		String key = createPinKey(pinNumber);
 		
 		// Check if this pin is already provisioned
 		if (isDeviceOpened(key)) {

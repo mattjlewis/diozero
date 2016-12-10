@@ -28,7 +28,7 @@ package com.diozero.api;
 
 import com.diozero.util.RuntimeIOException;
 
-public interface TemperatureSensorInterface {
+public interface ThermometerInterface {
 	/**
 	 * Get temperature in degrees celsius
 	 * @return Temperature (deg C)

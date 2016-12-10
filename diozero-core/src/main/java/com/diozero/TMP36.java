@@ -27,7 +27,7 @@ package com.diozero;
  */
 
 import com.diozero.api.AnalogInputDevice;
-import com.diozero.api.TemperatureSensorInterface;
+import com.diozero.api.ThermometerInterface;
 import com.diozero.internal.spi.AnalogInputDeviceFactoryInterface;
 import com.diozero.util.RuntimeIOException;
 
@@ -36,7 +36,7 @@ import com.diozero.util.RuntimeIOException;
  * "http://www.analog.com/en/products/analog-to-digital-converters/integrated-special-purpose-converters/integrated-temperature-sensors/tmp36.html">
  * TMP36 Temperature Sensor by Analog Devices</a>
  */
-public class TMP36 extends AnalogInputDevice implements TemperatureSensorInterface {
+public class TMP36 extends AnalogInputDevice implements ThermometerInterface {
 	private float tempOffset;
 
 	/**

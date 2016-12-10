@@ -29,15 +29,15 @@ package com.diozero.api;
 
 public enum SpiClockMode {
 	// https://en.wikipedia.org/wiki/Serial_Peripheral_Interface_Bus#Mode_numbers
-	MODE_0(0), MODE_1(1), MODE_2(2), MODE_3(3);
+	MODE_0((byte) 0), MODE_1((byte) 1), MODE_2((byte) 2), MODE_3((byte) 3);
 	
-	private int mode;
+	private byte mode;
 	
-	private SpiClockMode(int mode) {
+	private SpiClockMode(byte mode) {
 		this.mode = mode;
 	}
 	
-	public int getMode() {
+	public byte getMode() {
 		return mode;
 	}
 	

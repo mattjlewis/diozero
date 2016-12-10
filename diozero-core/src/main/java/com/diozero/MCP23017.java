@@ -214,7 +214,6 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Cl
 	private static final int INTERRUPT_PIN_NOT_SET = -1;
 
 	private I2CDevice device;
-	private String keyPrefix;
 	private DigitalInputDevice interruptPinA;
 	private DigitalInputDevice interruptPinB;
 	private MutableByte[] directions = { new MutableByte(), new MutableByte() };
@@ -241,9 +240,9 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Cl
 	}
 
 	public MCP23017(int controller, int address, int interruptPinNumberA, int interruptPinNumberB) throws RuntimeIOException {
-		device = new I2CDevice(controller, address, I2CConstants.ADDR_SIZE_7, I2CConstants.DEFAULT_CLOCK_FREQUENCY);
+		super(DEVICE_NAME + "-" + controller + "-" + address + "-");
 		
-		keyPrefix = DEVICE_NAME + "-" + controller + "-" + address + "-";
+		device = new I2CDevice(controller, address, I2CConstants.ADDR_SIZE_7, I2CConstants.DEFAULT_CLOCK_FREQUENCY);
 		
 		if (interruptPinNumberA != INTERRUPT_PIN_NOT_SET) {
 			interruptPinA = new DigitalInputDevice(interruptPinNumberA, GpioPullUpDown.NONE, GpioEventTrigger.RISING);
@@ -332,7 +331,7 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Cl
 					"Invalid pin number (" + pinNumber + "); pin number must be 0.." + (NUM_PINS - 1));
 		}
 		
-		String key = keyPrefix + pinNumber;
+		String key = createPinKey(pinNumber);
 		
 		if (isDeviceOpened(key)) {
 			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
@@ -377,7 +376,7 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Cl
 					"Invalid pin number (" + pinNumber + "); pin number must be 0.." + (NUM_PINS - 1));
 		}
 		
-		String key = keyPrefix + pinNumber;
+		String key = createPinKey(pinNumber);
 		
 		if (isDeviceOpened(key)) {
 			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
@@ -543,6 +542,6 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Cl
 	}
 
 	private MCP23017DigitalInputDevice getInputDevice(byte pinNumber) {
-		return getDevice(keyPrefix + pinNumber, MCP23017DigitalInputDevice.class);
+		return getDevice(createPinKey(pinNumber), MCP23017DigitalInputDevice.class);
 	}
 }

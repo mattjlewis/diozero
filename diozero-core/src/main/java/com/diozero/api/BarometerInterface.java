@@ -28,6 +28,11 @@ package com.diozero.api;
 
 import com.diozero.util.RuntimeIOException;
 
-public interface PressureSensorInterface {
+public interface BarometerInterface {
+	/**
+	 * Get the pressure in kPa
+	 * @return pressure in kPa
+	 * @throws RuntimeIOException if an IO error occurs
+	 */
 	public float getPressure() throws RuntimeIOException;
 }

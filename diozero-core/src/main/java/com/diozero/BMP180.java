@@ -29,9 +29,7 @@ package com.diozero;
 import java.io.Closeable;
 import java.nio.ByteBuffer;
 
-import com.diozero.api.I2CConstants;
-import com.diozero.api.I2CDevice;
-import com.diozero.api.TemperaturePressureSensorInterface;
+import com.diozero.api.*;
 import com.diozero.util.IOUtil;
 import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;
@@ -40,7 +38,7 @@ import com.diozero.util.SleepUtil;
  * Bosch BMP180 I2C temperature and pressure sensor
  */
 @SuppressWarnings("unused")
-public class BMP180 implements TemperaturePressureSensorInterface, Closeable {
+public class BMP180 implements ThermometerInterface, BarometerInterface, Closeable {
 	/**
 	 * Device address BMP180 address is 0x77
 	 */

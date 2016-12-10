@@ -32,8 +32,7 @@ import java.nio.ByteOrder;
 
 import org.pmw.tinylog.Logger;
 
-import com.diozero.api.I2CConstants;
-import com.diozero.api.I2CDevice;
+import com.diozero.api.*;
 
 /**
  * STMicroelectronics LPS25H "ultra compact absolute piezoresistive pressure sensor". Datasheet:
@@ -42,7 +41,7 @@ import com.diozero.api.I2CDevice;
  * https://github.com/richards-tech/RTIMULib/blob/master/RTIMULib/IMUDrivers/RTPressureLPS25H.cpp
  */
 @SuppressWarnings("unused")
-public class LPS25H implements Closeable {
+public class LPS25H implements ThermometerInterface, BarometerInterface, Closeable {
 	private static final double PRESSURE_SCALE = 4096;
 	
 	//  LPS25H I2C Slave Addresses
@@ -309,7 +308,8 @@ public class LPS25H implements Closeable {
 		device.writeByte(CTRL_REG2, CR2_FIFO_EN);
 	}
 	
-	public double getPressure() {
+	@Override
+	public float getPressure() {
 		byte status = device.readByte(STATUS_REG);
 		if ((status & SR_P_DA) == 0) {
 			Logger.warn("Pressure data not available");
@@ -320,10 +320,11 @@ public class LPS25H implements Closeable {
 		
 		int raw_pressure = raw_data[2] << 16 | (raw_data[1] & 0xff) << 8 | (raw_data[0] & 0xff);
 		
-		return raw_pressure / PRESSURE_SCALE;
+		return (float) (raw_pressure / PRESSURE_SCALE);
 	}
 	
-	public double getTemperature() {
+	@Override
+	public float getTemperature() {
 		byte status = device.readByte(STATUS_REG);
 		if ((status & SR_T_DA) == 0) {
 			Logger.warn("Temperature data not available");
@@ -332,7 +333,7 @@ public class LPS25H implements Closeable {
 		
 		short raw_temp = device.readShort(TEMP_OUT_L | READ);
 		
-		return raw_temp / 480.0 + 42.5;
+		return (float) (raw_temp / 480.0 + 42.5);
 	}
 
 	@Override

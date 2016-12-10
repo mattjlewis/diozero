@@ -107,6 +107,8 @@ AnalogOutputDeviceFactoryInterface, Closeable {
 	}
 
 	public PCF8591(int controller, int address, InputMode inputMode, boolean outputEnabled) {
+		super(DEVICE_NAME + "-" + controller + "-" + address);
+		
 		this.inputMode = inputMode;
 		this.outputEnabled = outputEnabled;
 		
@@ -132,7 +134,7 @@ AnalogOutputDeviceFactoryInterface, Closeable {
 					"Invalid channel number (" + pinNumber + "), must be >= 0 and < " + inputMode.getNumPins());
 		}
 		
-		String key = keyPrefix + pinNumber;
+		String key = createPinKey(pinNumber);
 		
 		if (isDeviceOpened(key)) {
 			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
@@ -151,7 +153,7 @@ AnalogOutputDeviceFactoryInterface, Closeable {
 					"Invalid channel number (" + pinNumber + "), must be 0");
 		}
 		
-		String key = keyPrefix + pinNumber;
+		String key = createPinKey(pinNumber);
 		
 		if (isDeviceOpened(key)) {
 			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");

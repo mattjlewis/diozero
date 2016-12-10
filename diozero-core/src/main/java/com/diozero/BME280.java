@@ -4,8 +4,6 @@ import java.io.Closeable;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
-import com.diozero.api.I2CConstants;
-
 /*
  * #%L
  * Device I/O Zero - Core
@@ -31,8 +29,7 @@ import com.diozero.api.I2CConstants;
  * THE SOFTWARE.
  * #L%
  */
-
-import com.diozero.api.I2CDevice;
+import com.diozero.api.*;
 import com.diozero.util.RuntimeIOException;
 
 /**
@@ -42,7 +39,7 @@ import com.diozero.util.RuntimeIOException;
  * https://github.com/adafruit/Adafruit_BME280_Library/blob/master/
  * Adafruit_BME280.cpp
  */
-public class BME280 implements Closeable {
+public class BME280 implements BarometerInterface, ThermometerInterface, HygrometerInterface, Closeable {
 	private static final int DEFAULT_ADDRESS = 0x76;
 	
 	private static final int CALIB_00_REG = 0x88;
@@ -283,15 +280,18 @@ public class BME280 implements Closeable {
 		return new float[] { temp / 100.0f, pressure / 2560.0f, humidity / 1024.0f };
 	}
 	
+	@Override
 	public float getTemperature() {
 		return getValues()[0];
 	}
 	
+	@Override
 	public float getPressure() {
 		return getValues()[1];
 	}
 	
-	public float getHumidity() {
+	@Override
+	public float getRelativeHumidity() {
 		return getValues()[2];
 	}
 

@@ -104,10 +104,11 @@ implements GpioDeviceFactoryInterface, AnalogInputDeviceFactoryInterface, PwmOut
 		DeviceFactoryHelper.getNativeDeviceFactory().registerDeviceFactory(this);
 	}
 	
-	public PiconZero(int bus, int address) {
-		device = new I2CDevice(bus, address, I2CConstants.ADDR_SIZE_7,
+	public PiconZero(int controller, int address) {
+		super(DEVICE_NAME + "-" + controller + "-" + address + "-");
+		
+		device = new I2CDevice(controller, address, I2CConstants.ADDR_SIZE_7,
 				I2CConstants.DEFAULT_CLOCK_FREQUENCY, ByteOrder.LITTLE_ENDIAN);
-		keyPrefix = DEVICE_NAME + "-" + device.getController() + "-" + address + "-";
 		
 		reset();
 	}

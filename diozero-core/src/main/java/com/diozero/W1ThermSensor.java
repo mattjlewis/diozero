@@ -38,7 +38,7 @@ import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import com.diozero.api.TemperatureSensorInterface;
+import com.diozero.api.ThermometerInterface;
 import com.diozero.util.RuntimeIOException;
 
 /**
@@ -46,7 +46,7 @@ import com.diozero.util.RuntimeIOException;
  * @see <a href="https://learn.adafruit.com/adafruits-raspberry-pi-lesson-11-ds18b20-temperature-sensing?view=all">Adafruit's Raspberry Pi Lesson 11. DS18B20 Temperature Sensing</a>
  * @see <a href="https://github.com/timofurrer/w1thermsensor">W1ThermSensor Python library</a>
  */
-public class W1ThermSensor implements TemperatureSensorInterface {
+public class W1ThermSensor implements ThermometerInterface {
 	private static final String BASE_DIRECTORY = "/sys/bus/w1/devices";
 	private static final String SLAVE_FILE = "w1_slave";
 	

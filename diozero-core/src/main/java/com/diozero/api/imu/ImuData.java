@@ -30,7 +30,9 @@ package com.diozero.api.imu;
 import org.apache.commons.math3.complex.Quaternion;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 
-public class ImuData {
+import com.diozero.api.ThermometerInterface;
+
+public class ImuData implements ThermometerInterface {
 	private Vector3D gyro;
 	private Vector3D accel;
 	private Quaternion quaternion;
@@ -72,6 +74,7 @@ public class ImuData {
 		return timestamp;
 	}
 
+	@Override
 	public float getTemperature() {
 		return temperature;
 	}

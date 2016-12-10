@@ -76,6 +76,6 @@ public class Buzzer extends DigitalOutputDevice {
 	 *             If an I/O error occurred.
 	 */
 	public void beep(float onTime, float offTime, int n, boolean background) throws RuntimeIOException {
-		onOffLoop(onTime, offTime, n, background);
+		onOffLoop(onTime, offTime, n, background, null);
 	}
 }

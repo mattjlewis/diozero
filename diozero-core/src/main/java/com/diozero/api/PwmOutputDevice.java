@@ -43,7 +43,7 @@ import com.diozero.util.SleepUtil;
  * 23), 18 (phys 12, wPi 1), 19 (phys 35, wPi 24) Any other pin will revert to
  * software controlled PWM.
  */
-public class PwmOutputDevice extends GpioDevice {
+public class PwmOutputDevice extends GpioDevice implements OutputDeviceInterface {
 	public static final int INFINITE_ITERATIONS = -1;
 
 	private PwmOutputDeviceInterface device;
@@ -220,6 +220,7 @@ public class PwmOutputDevice extends GpioDevice {
 	 * @throws RuntimeIOException
 	 *             If an I/O error occurred.
 	 */
+	@Override
 	public void setValue(float value) throws RuntimeIOException {
 		stopLoops();
 		setValueInternal(value);

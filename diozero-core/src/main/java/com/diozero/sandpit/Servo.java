@@ -30,12 +30,13 @@ package com.diozero.sandpit;
 import org.pmw.tinylog.Logger;
 
 import com.diozero.api.GpioDevice;
+import com.diozero.api.OutputDeviceInterface;
 import com.diozero.internal.DeviceFactoryHelper;
 import com.diozero.internal.spi.PwmOutputDeviceFactoryInterface;
 import com.diozero.internal.spi.PwmOutputDeviceInterface;
 import com.diozero.util.RuntimeIOException;
 
-public class Servo extends GpioDevice {
+public class Servo extends GpioDevice implements OutputDeviceInterface {
 	private static final float MIN_PULSE_WIDTH_MS = 0.5f;
 	private static final float MAX_PULSE_WIDTH_MS = 2.6f;
 	
@@ -66,15 +67,24 @@ public class Servo extends GpioDevice {
 		return pwmFrequency;
 	}
 	
-	private float getValue() {
+	private float getValueInternal() {
 		return device.getValue();
 	}
 	
-	private void setValue(float value) {
+	private void setValueInternal(float value) {
 		if (value < 0 || value > 1) {
 			throw new IllegalArgumentException("Value must be 0..1, you requested " + value);
 		}
 		device.setValue(value);
+	}
+	
+	public float getValue() {
+		return getPulseWidthMs();
+	}
+	
+	@Override
+	public void setValue(float value) {
+		setPulseWidthMs(value);
 	}
 	
 	/**
@@ -82,7 +92,7 @@ public class Servo extends GpioDevice {
 	 * @return The servo pulse width (milliseconds)
 	 */
 	public float getPulseWidthMs() {
-		return getValue() * 1000f / pwmFrequency;
+		return getValueInternal() * 1000f / pwmFrequency;
 	}
 
 	/**
@@ -94,7 +104,7 @@ public class Servo extends GpioDevice {
 			throw new IllegalArgumentException("Invalid pulse width (" + pulseWidthMs + "), must be " +
 					MIN_PULSE_WIDTH_MS + ".." + MAX_PULSE_WIDTH_MS);
 		}
-		setValue(calcValue(pulseWidthMs));
+		setValueInternal(calcValue(pulseWidthMs));
 	}
 
 	private float calcValue(float pulseWidthMs) {

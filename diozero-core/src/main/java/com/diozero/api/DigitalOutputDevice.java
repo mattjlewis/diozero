@@ -39,7 +39,7 @@ import com.diozero.util.SleepUtil;
  * Provides generic digital (on/off) output control with support for active high
  * and low logic.
  */
-public class DigitalOutputDevice extends GpioDevice {
+public class DigitalOutputDevice extends GpioDevice implements OutputDeviceInterface {
 	public static final int INFINITE_ITERATIONS = -1;
 
 	private boolean activeHigh;
@@ -100,7 +100,7 @@ public class DigitalOutputDevice extends GpioDevice {
 		device.close();
 	}
 
-	private void onOffLoop(float onTime, float offTime, int n) throws RuntimeIOException {
+	private void onOffLoop(float onTime, float offTime, int n, Action stopAction) throws RuntimeIOException {
 		running = true;
 		if (n > 0) {
 			for (int i = 0; i < n && running; i++) {
@@ -110,6 +110,9 @@ public class DigitalOutputDevice extends GpioDevice {
 			while (running) {
 				onOff(onTime, offTime);
 			}
+		}
+		if (stopAction != null) {
+			stopAction.action();
 		}
 	}
 
@@ -203,6 +206,11 @@ public class DigitalOutputDevice extends GpioDevice {
 	public void setValueUnsafe(boolean value) throws RuntimeIOException {
 		device.setValue(value);
 	}
+	
+	@Override
+	public void setValue(float value) {
+		setValueUnsafe(value != 0);
+	}
 
 	/**
 	 * Toggle the device on-off.
@@ -217,15 +225,17 @@ public class DigitalOutputDevice extends GpioDevice {
 	 *            If true start a background thread to control the blink and
 	 *            return immediately. If false, only return once the blink
 	 *            iterations have finished.
+	 * @param stopAction
+	 *            Action to perform when the loop finishes
 	 * @throws RuntimeIOException
-	 *             If an I/O error occurs
+	 *            If an I/O error occurs
 	 */
-	public void onOffLoop(float onTime, float offTime, int n, boolean background) throws RuntimeIOException {
+	public void onOffLoop(float onTime, float offTime, int n, boolean background, Action stopAction) throws RuntimeIOException {
 		stopOnOffLoop();
 		if (background) {
-			DioZeroScheduler.getDaemonInstance().execute(() -> onOffLoop(onTime, offTime, n));
+			DioZeroScheduler.getDaemonInstance().execute(() -> onOffLoop(onTime, offTime, n, stopAction));
 		} else {
-			onOffLoop(onTime, offTime, n);
+			onOffLoop(onTime, offTime, n, stopAction);
 		}
 	}
 }

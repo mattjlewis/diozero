@@ -50,8 +50,8 @@ public class LPS25HApp {
 	public static void main(String[] args) {
 		try (LPS25H device = new LPS25H()) {
 			for (int i=0; i<10; i++) {
-				double pressure = device.getPressure();
-				double temperature = device.getTemperature();
+				float pressure = device.getPressure();
+				float temperature = device.getTemperature();
 				System.out.format("Pressure=%.2f, Temperature=%.2f%n", Double.valueOf(pressure), Double.valueOf(temperature));
 				SleepUtil.sleepSeconds(1);
 			}

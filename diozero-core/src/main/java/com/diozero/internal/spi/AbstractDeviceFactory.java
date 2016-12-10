@@ -31,11 +31,18 @@ import org.pmw.tinylog.Logger;
 import com.diozero.internal.DeviceStates;
 
 public abstract class AbstractDeviceFactory implements DeviceFactoryInterface {
+	private String pinPrefix;
 	protected DeviceStates deviceStates;
 	protected boolean shutdown;
 	
-	public AbstractDeviceFactory() {
+	public AbstractDeviceFactory(String pinPrefix) {
+		this.pinPrefix = pinPrefix;
 		deviceStates = new DeviceStates();
+	}
+	
+	@Override
+	public final String createPinKey(int pinNumber) {
+		return pinPrefix + pinNumber;
 	}
 	
 	@Override

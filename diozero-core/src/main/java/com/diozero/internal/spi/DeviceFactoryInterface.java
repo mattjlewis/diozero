@@ -28,6 +28,7 @@ package com.diozero.internal.spi;
 
 
 public interface DeviceFactoryInterface {
+	String createPinKey(int pinNumber);
 	String getName();
 	void shutdown();
 	boolean isShutdown();

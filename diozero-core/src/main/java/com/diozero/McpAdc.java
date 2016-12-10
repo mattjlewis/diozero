@@ -67,16 +67,15 @@ public class McpAdc extends AbstractDeviceFactory implements AnalogInputDeviceFa
 	
 	private Type type;
 	private SpiDevice spiDevice;
-	private String keyPrefix;
 	
 	public McpAdc(Type type, int chipSelect) throws RuntimeIOException {
 		this(type, SPIConstants.DEFAULT_SPI_CONTROLLER, chipSelect);
 	}
 
 	public McpAdc(Type type, int controller, int chipSelect) throws RuntimeIOException {
-		this.type = type;
+		super(type.name() + "-" + controller + "-" + chipSelect + "-");
 		
-		keyPrefix = type.name() + "-" + controller + "-" + chipSelect + "-";
+		this.type = type;
 		
 		spiDevice = new SpiDevice(controller, chipSelect);
 	}
@@ -132,9 +131,9 @@ public class McpAdc extends AbstractDeviceFactory implements AnalogInputDeviceFa
 	 * @throws RuntimeIOException 
 	 */
 	private int getRawValue(int adcPin, boolean differentialRead) throws RuntimeIOException {
-		if (adcPin < 0 || adcPin >= type.numPins) {
+		if (adcPin < 0 || adcPin >= type.getNumPins()) {
 			throw new IllegalArgumentException(
-					"Invalid channel number (" + adcPin + "), must be >= 0 and < " + type.numPins);
+					"Invalid channel number (" + adcPin + "), must be >= 0 and < " + type.getNumPins());
 		}
 		
 		ByteBuffer out;
@@ -193,7 +192,7 @@ public class McpAdc extends AbstractDeviceFactory implements AnalogInputDeviceFa
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	public float getValue(int adcPin) throws RuntimeIOException {
-		return getRawValue(adcPin, false) / (float)type.range;
+		return getRawValue(adcPin, false) / (float)type.getRange();
 	}
 
 	/**
@@ -203,12 +202,12 @@ public class McpAdc extends AbstractDeviceFactory implements AnalogInputDeviceFa
 	@Override
 	public GpioAnalogInputDeviceInterface provisionAnalogInputPin(int pinNumber)
 			throws RuntimeIOException {
-		if (pinNumber < 0 || pinNumber >= type.numPins) {
+		if (pinNumber < 0 || pinNumber >= type.getNumPins()) {
 			throw new IllegalArgumentException(
-					"Invalid channel number (" + pinNumber + "), must be >= 0 and < " + type.numPins);
+					"Invalid channel number (" + pinNumber + "), must be >= 0 and < " + type.getNumPins());
 		}
 		
-		String key = keyPrefix + pinNumber;
+		String key = createPinKey(pinNumber);
 		
 		if (isDeviceOpened(key)) {
 			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");

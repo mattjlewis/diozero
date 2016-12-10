@@ -32,8 +32,7 @@ import java.nio.ByteOrder;
 
 import org.pmw.tinylog.Logger;
 
-import com.diozero.api.I2CConstants;
-import com.diozero.api.I2CDevice;
+import com.diozero.api.*;
 import com.diozero.util.RuntimeIOException;
 
 /**
@@ -41,7 +40,7 @@ import com.diozero.util.RuntimeIOException;
  * <a href="http://www2.st.com/content/ccc/resource/technical/document/datasheet/4d/9a/9c/ad/25/07/42/34/DM00116291.pdf/files/DM00116291.pdf/jcr:content/translations/en.DM00116291.pdf">http://www2.st.com/content/ccc/resource/technical/document/datasheet/4d/9a/9c/ad/25/07/42/34/DM00116291.pdf/files/DM00116291.pdf/jcr:content/translations/en.DM00116291.pdf</a>
  */
 @SuppressWarnings("unused")
-public class HTS221 implements Closeable {
+public class HTS221 implements ThermometerInterface, HygrometerInterface, Closeable {
 	private static final int DEFAULT_DEVICE_ADDRESS = 0x5f;
 	// Register map
 	private static final int WHO_AM_I = 0x0f;
@@ -171,7 +170,8 @@ public class HTS221 implements Closeable {
 		t1Out = device.readShort(T1_OUT | READ);
 	}
 	
-	public double getHumidity() {
+	@Override
+	public float getRelativeHumidity() {
 		byte status = device.readByte(STATUS_REG);
 		if ((status & SR_H_DA) == 0) {
 			Logger.warn("Humidity data not available");
@@ -188,7 +188,8 @@ public class HTS221 implements Closeable {
 	 * Get temperature (degrees C).
 	 * @return Temperature in degrees C.
 	 */
-	public double getTemperature() {
+	@Override
+	public float getTemperature() {
 		byte status = device.readByte(STATUS_REG);
 		if ((status & SR_T_DA) == 0) {
 			Logger.warn("Temperature data not available");
