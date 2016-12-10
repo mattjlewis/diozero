@@ -44,7 +44,7 @@ public class JPiDeviceFactory extends BaseNativeDeviceFactory {
 	
 	public JPiDeviceFactory() {
 		BoardInfo board_info = SystemInfo.getBoardInfo();
-		if (board_info.sameMakeAndModel(OdroidBoardInfoProvider.ORDOID_C2)) {
+		if (board_info.sameMakeAndModel(OdroidBoardInfoProvider.ODROID_C2)) {
 			mmapGpio = new OdroidC2MmapGpio();
 		} else if (board_info.getMake().equals(RaspberryPiBoardInfoProvider.MAKE)) {
 			mmapGpio = new RPiMmapGpio();
