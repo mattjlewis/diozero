@@ -142,7 +142,7 @@ public class SysFsDeviceFactory extends BaseNativeDeviceFactory {
 	@Override
 	protected SpiDeviceInterface createSpiDevice(String key, int controller, int chipSelect, int frequency,
 			SpiClockMode spiClockMode) throws RuntimeIOException {
-		throw new UnsupportedOperationException("SPI not supported");
+		return new SysFsSpiDevice(this, key, controller, chipSelect, frequency, spiClockMode);
 	}
 
 	@Override
