@@ -67,6 +67,10 @@ public class DioZeroScheduler {
 		executor.execute(r);
 	}
 	
+	public Future<?> submit(Runnable r) {
+		return executor.submit(r);
+	}
+	
 	public ScheduledFuture<?> scheduleAtFixedRate(Runnable r, long initialDelay, long period, TimeUnit unit) {
 		return scheduler.scheduleAtFixedRate(r, initialDelay, period, unit);
 	}
