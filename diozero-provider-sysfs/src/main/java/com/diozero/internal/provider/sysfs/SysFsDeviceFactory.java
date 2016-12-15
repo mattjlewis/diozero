@@ -37,6 +37,7 @@ import java.nio.file.Path;
 import org.pmw.tinylog.Logger;
 
 import com.diozero.api.*;
+import com.diozero.internal.board.beaglebone.BeagleBoneBoardInfoProvider;
 import com.diozero.internal.board.odroid.OdroidBoardInfoProvider;
 import com.diozero.internal.spi.*;
 import com.diozero.internal.spi.GpioDeviceInterface.Mode;
@@ -49,7 +50,7 @@ public class SysFsDeviceFactory extends BaseNativeDeviceFactory {
 	private static final String UNEXPORT_FILE = "unexport";
 	private static final String GPIO_DIR_PREFIX = "gpio";
 	private static final String DIRECTION_FILE = "direction";
-	private static final int DEFAULT_PWM_FREQUENCY = 100_000;
+	private static final int DEFAULT_PWM_FREQUENCY = 100;
 	
 	private Path rootPath;
 	
@@ -134,7 +135,11 @@ public class SysFsDeviceFactory extends BaseNativeDeviceFactory {
 			PwmType pwmType) throws RuntimeIOException {
 		if (SystemInfo.getBoardInfo().sameMakeAndModel(OdroidBoardInfoProvider.ODROID_C2)) {
 			// FIXME Match with previously set PWM frequency...
-			return new OdroidC2SysFsPwmOutputDevice(key, this, pinNumber, DEFAULT_PWM_FREQUENCY, initialValue, 1023);
+			return new OdroidC2SysFsPwmOutputDevice(key, this, pinNumber, DEFAULT_PWM_FREQUENCY, initialValue);
+		}
+		if (SystemInfo.getBoardInfo().sameMakeAndModel(BeagleBoneBoardInfoProvider.BBB_BOARD_INFO)) {
+			// FIXME Match with previously set PWM frequency...
+			return new BbbPwmSysFsPwmOutputDevice(key, this, pinNumber, DEFAULT_PWM_FREQUENCY, initialValue);
 		}
 		throw new UnsupportedOperationException("PWM not supported");
 	}
