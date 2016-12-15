@@ -37,15 +37,17 @@ import com.diozero.util.SleepUtil;
  * I2C LCD sample application. To run:
  * <ul>
  * <li>JDK Device I/O 1.0:<br>
- *  {@code sudo java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-jdkdio10-$DIOZERO_VERSION.jar:dio-1.0.1-dev-linux-armv6hf.jar -Djava.library.path=. com.diozero.sandpit.I2CLcdSampleApp16x2 [i2c_address] [i2c_controller]}</li>
+ *  {@code sudo java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-jdkdio10-$DIOZERO_VERSION.jar:dio-1.0.1-dev-linux-armv6hf.jar -Djava.library.path=. com.diozero.sampleapps.I2CLcdSampleApp16x2 [i2c_address] [i2c_controller]}</li>
  * <li>JDK Device I/O 1.1:<br>
- *  {@code sudo java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-jdkdio11-$DIOZERO_VERSION.jar:dio-1.1-dev-linux-armv6hf.jar -Djava.library.path=. com.diozero.sandpit.I2CLcdSampleApp16x2 [i2c_address] [i2c_controller]}</li>
+ *  {@code sudo java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-jdkdio11-$DIOZERO_VERSION.jar:dio-1.1-dev-linux-armv6hf.jar -Djava.library.path=. com.diozero.sampleapps.I2CLcdSampleApp16x2 [i2c_address] [i2c_controller]}</li>
  * <li>Pi4j:<br>
- *  {@code sudo java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-pi4j-$DIOZERO_VERSION.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sandpit.I2CLcdSampleApp16x2 [i2c_address] [i2c_controller]}</li>
+ *  {@code sudo java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-pi4j-$DIOZERO_VERSION.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sampleapps.I2CLcdSampleApp16x2 [i2c_address] [i2c_controller]}</li>
  * <li>wiringPi:<br>
- *  {@code sudo java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-wiringpi-$DIOZERO_VERSION.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sandpit.I2CLcdSampleApp16x2 [i2c_address] [i2c_controller]}</li>
+ *  {@code sudo java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-wiringpi-$DIOZERO_VERSION.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sampleapps.I2CLcdSampleApp16x2 [i2c_address] [i2c_controller]}</li>
  * <li>pigpgioJ:<br>
- *  {@code sudo java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-pigpio-$DIOZERO_VERSION.jar:pigpioj-java-1.0.0.jar com.diozero.sandpit.I2CLcdSampleApp16x2 [i2c_address] [i2c_controller]}</li>
+ *  {@code sudo java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-pigpio-$DIOZERO_VERSION.jar:pigpioj-java-1.0.0.jar com.diozero.sampleapps.I2CLcdSampleApp16x2 [i2c_address] [i2c_controller]}</li>
+ * <li>sysfs:<br>
+ *  {@code sudo java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-sysfs-$DIOZERO_VERSION.jar com.diozero.sampleapps.I2CLcdSampleApp16x2 [i2c_address] [i2c_controller]}</li>
  * </ul>
  */
 public class I2CLcdSampleApp16x2 {
@@ -70,9 +72,9 @@ public class I2CLcdSampleApp16x2 {
 			SleepUtil.sleepSeconds(2);*/
 			
 			// 0, 14, 21, 31, 10, 4, 10, 17
-			byte[] space_invader = new byte[] { 0x00, 0x0e, 0x15, 0x1f, 0x0a, 0x04, 0x0a, 0x11 };
-			byte[] smilie = new byte[] { 0x00, 0x00, 0x0a, 0x00, 0x00, 0x11, 0x0e, 0x00 };
-			byte[] frownie = new byte[] { 0x00, 0x00, 0x0a, 0x00, 0x00, 0x00, 0x0e, 0x11 };
+			byte[] space_invader = I2CLcd.Characters.get("space_invader");
+			byte[] smilie = I2CLcd.Characters.get("smilie");
+			byte[] frownie = I2CLcd.Characters.get("frownie");
 			lcd.createChar(0, space_invader);
 			lcd.createChar(1, smilie);
 			lcd.createChar(2, frownie);
@@ -86,10 +88,10 @@ public class I2CLcdSampleApp16x2 {
 			lcd.addText('l');
 			lcd.addText('o');
 			lcd.addText(' ');
-				lcd.addText(' ');
-			lcd.addText((byte) 0);
-			lcd.addText((byte) 1);
-			lcd.addText((byte) 2);
+			lcd.addText(' ');
+			lcd.addText(0);
+			lcd.addText(1);
+			lcd.addText(2);
 			lcd.setCursorPosition(0, 1);
 			lcd.addText('W');
 			lcd.addText('o');
@@ -98,10 +100,24 @@ public class I2CLcdSampleApp16x2 {
 			lcd.addText('d');
 			lcd.addText('!');
 			lcd.addText(' ');
-			lcd.addText((byte) 0);
-			lcd.addText((byte) 1);
-			lcd.addText((byte) 2);
+			lcd.addText(0);
+			lcd.addText(1);
+			lcd.addText(2);
 			SleepUtil.sleepSeconds(2);
+			lcd.clear();
+			
+			lcd.createChar(3, I2CLcd.Characters.get("runninga"));
+			lcd.createChar(4, I2CLcd.Characters.get("runningb"));
+			lcd.clear();
+			for (int i=0; i<20; i++) {
+				lcd.setCursorPosition(0, 0);
+				lcd.addText(3);
+				SleepUtil.sleepMillis(200);
+				lcd.setCursorPosition(0, 0);
+				lcd.addText(4);
+				SleepUtil.sleepMillis(200);
+			}
+			SleepUtil.sleepSeconds(1);
 			lcd.clear();
 			
 			for (int i=0; i<2; i++) {
@@ -152,9 +168,9 @@ public class I2CLcdSampleApp16x2 {
 			lcd.addText('o');
 			lcd.addText(' ');
 			lcd.addText(' ');
-			lcd.addText((byte) 0);
-			lcd.addText((byte) 1);
-			lcd.addText((byte) 2);
+			lcd.addText(0);
+			lcd.addText(1);
+			lcd.addText(2);
 			lcd.setCursorPosition(0, 1);
 			lcd.addText('W');
 			lcd.addText('o');
@@ -163,11 +179,11 @@ public class I2CLcdSampleApp16x2 {
 			lcd.addText('d');
 			lcd.addText('!');
 			lcd.addText(' ');
-			lcd.addText((byte) 0);
-			lcd.addText((byte) 1);
-			lcd.addText((byte) 2);
-			Logger.info("Sleeping for 10 seconds...");
-			SleepUtil.sleepSeconds(10);
+			lcd.addText(0);
+			lcd.addText(1);
+			lcd.addText(2);
+			Logger.info("Sleeping for 5 seconds...");
+			SleepUtil.sleepSeconds(5);
 			
 			lcd.clear();
 		} catch (RuntimeIOException e) {
