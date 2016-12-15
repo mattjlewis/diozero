@@ -45,7 +45,7 @@ public class SystemInfo {
 			try (Reader reader = new FileReader(OS_RELEASE_FILE)) {
 				osReleaseProperties.load(reader);
 			} catch (IOException e) {
-				throw new RuntimeIOException("Error loading properties file '" + OS_RELEASE_FILE, e);
+				Logger.warn(e, "Error loading properties file '" + OS_RELEASE_FILE + "': " + e);
 			}
 			
 			ProcessBuilder pb = new ProcessBuilder("cat", CPUINFO_FILE);
@@ -67,7 +67,7 @@ public class SystemInfo {
 					} while (line != null);
 				}
 			} catch (IOException | NullPointerException | IndexOutOfBoundsException e) {
-				Logger.error(e, "Error reading " + CPUINFO_FILE, e.getMessage());
+				Logger.error(e, "Error reading " + CPUINFO_FILE + ":" + e.getMessage());
 			}
 			
 			boardInfo = lookupBoardInfo(hardware, revision);
@@ -86,7 +86,8 @@ public class SystemInfo {
 			}
 		}
 		if (board_info == null) {
-			Logger.warn("Failed to resolve board info for hardware '{}' and revision '{}'", hardware, revision);
+			Logger.warn("Failed to resolve board info for hardware '{}' and revision '{}' {}", hardware, revision, System.getProperty("os.name"));
+			board_info = new UnknownBoardInfo();
 		} else {
 			Logger.debug("Resolved board {}", board_info);
 		}
@@ -131,5 +132,14 @@ public class SystemInfo {
 		initialise();
 		Logger.info(osReleaseProperties);
 		Logger.info(getBoardInfo());
+	}
+	
+	public static final class UnknownBoardInfo extends BoardInfo {
+		private static final String UNKNOWN = "unknown";
+		
+		public UnknownBoardInfo() {
+			super(UNKNOWN, UNKNOWN, 1024, null, UNKNOWN);
+			// TODO Auto-generated constructor stub
+		}
 	}
 }
