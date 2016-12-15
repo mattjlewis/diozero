@@ -58,11 +58,11 @@ public class OdroidC2SysFsPwmOutputDevice extends AbstractDevice implements PwmO
 	private RandomAccessFile dutyFile;
 
 	public OdroidC2SysFsPwmOutputDevice(String key, DeviceFactoryInterface deviceFactory, int pinNumber,
-			int frequency, float initialValue, int range) {
+			int frequency, float initialValue) {
 		super(key, deviceFactory);
 		
 		this.pinNumber = pinNumber;
-		this.range = range;
+		this.range = 1023;
 		pwmNum = pinNumber - 234;
 
 		try {
@@ -72,7 +72,7 @@ public class OdroidC2SysFsPwmOutputDevice extends AbstractDevice implements PwmO
 		}
 		
 		setEnabled(pwmNum, true);
-		setFrequency(pwmNum, frequency);
+		setFrequency(pwmNum, frequency * 1000);
 
 		setValue(initialValue);
 	}
@@ -121,7 +121,7 @@ public class OdroidC2SysFsPwmOutputDevice extends AbstractDevice implements PwmO
 	private static void setEnabled(int pwmNum, boolean enabled) {
 		File f = PWM_ROOT.resolve("enable" + pwmNum).toFile();
 		try (FileWriter writer = new FileWriter(f)) {
-			writer.write("1");
+			writer.write(enabled ? "1" : "0");
 		} catch (IOException e) {
 			throw new RuntimeIOException("Error enabling PWM on #" + pwmNum, e);
 		}
