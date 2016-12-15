@@ -34,5 +34,5 @@
 
 JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_i2c_NativeI2CDevice_selectSlave(
 		JNIEnv* env, jclass clz, jint fd, jint address) {
-	return ioctl(fd, I2C_SLAVE, address);
+	return ioctl(fd, I2C_SLAVE, (void*)address);
 }

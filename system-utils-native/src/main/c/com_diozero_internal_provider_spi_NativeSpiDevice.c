@@ -1,24 +1,22 @@
 #include "com_diozero_internal_provider_spi_NativeSpiDevice.h"
 
-#include <jni.h>
 #include <errno.h>
-#include <stdint.h>
+#include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <string.h>
-
-#include <sys/types.h>
 #include <fcntl.h>
-#include <unistd.h>
-#include <sys/ioctl.h>
-#include <linux/types.h>
-#include <linux/spi/spidev.h>
 
 #if __WORDSIZE == 32
 #define long_t uint32_t
 #else
 #define long_t uint64_t
 #endif
+
+#include <sys/ioctl.h>
+#include <linux/types.h>
+#include <linux/spi/spidev.h>
 
 /*
  * Class:     com_diozero_internal_spi_NativeSpiDevice

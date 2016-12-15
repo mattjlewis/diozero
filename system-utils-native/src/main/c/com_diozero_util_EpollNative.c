@@ -2,14 +2,14 @@
 
 #include <errno.h>
 #include <fcntl.h>
-#include <jni.h>
-#include <jni_md.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <string.h>
 #include <sys/time.h>
-#include <sys/epoll.h>
 #include <unistd.h>
+
+#include <sys/epoll.h>
 
 /*
  * Class:     com_diozero_util_EpollNative
