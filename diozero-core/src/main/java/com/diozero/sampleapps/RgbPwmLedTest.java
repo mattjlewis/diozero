@@ -34,7 +34,17 @@ import com.diozero.util.SleepUtil;
 
 public class RgbPwmLedTest {
 	public static void main(String[] args) {
-		test(17, 27, 22);
+		int red_pin, green_pin, blue_pin;
+		if (args.length > 2) {
+			red_pin = Integer.parseInt(args[0]);
+			green_pin = Integer.parseInt(args[1]);
+			blue_pin = Integer.parseInt(args[2]);
+		} else {
+			red_pin = 17;
+			blue_pin = 27;
+			green_pin = 22;
+		}
+		test(red_pin, blue_pin, green_pin);
 	}
 	
 	private static void test(int redPin, int greenPin, int bluePin) {
