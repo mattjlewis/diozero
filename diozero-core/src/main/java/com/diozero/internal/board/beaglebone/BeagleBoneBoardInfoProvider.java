@@ -10,11 +10,11 @@ import com.diozero.util.BoardInfoProvider;
 public class BeagleBoneBoardInfoProvider implements BoardInfoProvider {
 	public static final String MAKE = "BeagleBone";
 	private static final String BBB_HARDWARE_ID = "Generic AM33XX";
-	private static final BoardInfo BBB_BOARD_INFO = new BeagleBoneBlackBoardInfo();
+	public static final BoardInfo BBB_BOARD_INFO = new BeagleBoneBlackBoardInfo();
 
 	@Override
 	public BoardInfo lookup(String hardware, String revision) {
-		if (hardware.startsWith(BBB_HARDWARE_ID)) {
+		if (hardware != null && hardware.startsWith(BBB_HARDWARE_ID)) {
 			return BBB_BOARD_INFO;
 		}
 		return null;

@@ -56,7 +56,7 @@ public class OdroidBoardInfoProvider implements BoardInfoProvider {
 
 	@Override
 	public BoardInfo lookup(String hardware, String revision) {
-		if (hardware.equals(C2_HARDWARE_ID)) {
+		if (hardware != null && hardware.equals(C2_HARDWARE_ID)) {
 			return ODROID_C2;
 		}
 		return null;

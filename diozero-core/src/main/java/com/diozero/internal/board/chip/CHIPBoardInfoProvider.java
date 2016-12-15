@@ -14,7 +14,7 @@ public class CHIPBoardInfoProvider implements BoardInfoProvider {
 
 	@Override
 	public BoardInfo lookup(String hardware, String revision) {
-		if (hardware.startsWith("Allwinner sun4i/sun5i")) {
+		if (hardware != null && hardware.startsWith("Allwinner sun4i/sun5i")) {
 			return CHIP_BOARD_INFO;
 		}
 		return null;

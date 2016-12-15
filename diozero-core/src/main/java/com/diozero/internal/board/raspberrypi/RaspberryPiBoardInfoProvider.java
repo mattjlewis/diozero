@@ -186,6 +186,9 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 	
 	@Override
 	public BoardInfo lookup(String hardware, String revision) {
+		if (hardware == null || revision == null) {
+			return null;
+		}
 		if (! hardware.startsWith(BCM_HARDWARE_ID) || revision.length() < 4) {
 			return null;
 		}
