@@ -1,6 +1,6 @@
 # DIO-Zero - a Java Device I/O wrapper for GPIO / I2C / SPI devices
 
-A Device I/O library written in Java that provides an object-orientated interface for a range of GPIO / I2C / SPI devices such as LEDs, buttons and other various sensors connected to single board computers like the Raspberry Pi. Actual GPIO / I2C / SPI device communication is implemented via pluggable service providers for maximum compatibility across different device types. This library is known to work on all models of the Raspberry Pi, the Udoo Quad (using JDK Device I/O provider), and the Odroid C2.
+A Device I/O library written in Java that provides an object-orientated interface for a range of GPIO / I2C / SPI devices such as LEDs, buttons and other various sensors connected to single board computers like the Raspberry Pi, BeagleBone Black, Odroid C2, Udoo, C.H.I.P. Actual GPIO / I2C / SPI device communication is implemented via pluggable service providers for maximum compatibility across different device types. This library is known to work on all models of the Raspberry Pi, the Udoo Quad, and the Odroid C2.
 
 This library makes use of modern Java 8 features such as [automatic resource management](https://docs.oracle.com/javase/tutorial/essential/exceptions/tryResourceClose.html), [Lambda Expressions](https://docs.oracle.com/javase/tutorial/java/javaOO/lambdaexpressions.html) and [Method References](https://docs.oracle.com/javase/tutorial/java/javaOO/methodreferences.html) where they simplify development and improve code readability.
 
@@ -216,7 +216,6 @@ This project is hosted on [GitHub](https://github.com/mattjlewis/diozero/), plea
 There is still a lot left to do, in particular:
 
 + Thorough testing (various types of devices using each service provider)
-+ Testing on different devices (all flavours of Raspberry Pi, BeagleBone, Odroid, Udoo, ...)
 + GPIO input debouncing
 + Other I2C & SPI devices, in particular the IMU on the SenseHAT
 + A clean object-orientated API for IMUs
