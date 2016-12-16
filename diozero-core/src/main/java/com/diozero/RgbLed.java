@@ -37,6 +37,11 @@ import com.diozero.util.RuntimeIOException;
 
 /**
  * Three pin controlled RGB LED.
+ * 4 3 2 1
+ * 1 Red
+ * 2 Ground
+ * 3 Green
+ * 4 Blue
  */
 public class RgbLed implements Closeable {
 	private LED redLED;
