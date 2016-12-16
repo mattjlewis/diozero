@@ -98,7 +98,7 @@ public class PigpioJDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	public GpioDigitalInputOutputDeviceInterface createDigitalInputOutputPin(
+	protected GpioDigitalInputOutputDeviceInterface createDigitalInputOutputPin(
 			String key, int pinNumber, GpioDeviceInterface.Mode mode)
 			throws RuntimeIOException {
 		return new PigpioJDigitalInputOutputDevice(key, this, pinNumber, mode);
@@ -132,6 +132,10 @@ public class PigpioJDeviceFactory extends BaseNativeDeviceFactory {
 	protected I2CDeviceInterface createI2CDevice(String key, int controller, int address, int addressSize,
 			int clockFrequency) throws RuntimeIOException {
 		return new PigpioJI2CDevice(key, this, controller, address, addressSize);
+	}
+	
+	public PigpioJBitBangI2CDevice createI2CBitBangDevice(int sdaPin, int sclPin, int baud) {
+		return new PigpioJBitBangI2CDevice("PigpioJ-BitBangI2C-" + sdaPin, this, sdaPin, sclPin, baud);
 	}
 	
 	static int getPigpioJPullUpDown(GpioPullUpDown pud) {
