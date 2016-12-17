@@ -1,6 +1,7 @@
 package com.diozero.internal.provider.pigpioj;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 import org.pmw.tinylog.Logger;
 
@@ -45,6 +46,8 @@ public class PigpioJBitBangI2CDevice extends AbstractDevice {
 			throw new IllegalStateException("BitBang I2C Device " + getKey() + " is closed");
 		}
 		
+		src.order(ByteOrder.LITTLE_ENDIAN);
+		
 		int tx_count = src.remaining();
 		byte[] tx = new byte[tx_count];
 		src.get(tx);
@@ -54,6 +57,8 @@ public class PigpioJBitBangI2CDevice extends AbstractDevice {
 			throw new RuntimeIOException("Error calling bbI2CZip: " + rc);
 		}
 		
-		return ByteBuffer.wrap(rx);
+		ByteBuffer out = ByteBuffer.wrap(rx);
+		out.order(ByteOrder.LITTLE_ENDIAN);
+		return out;
 	}
 }
