@@ -41,14 +41,14 @@ public class TMP36 extends AnalogInputDevice implements ThermometerInterface {
 
 	/**
 	 * @param deviceFactory Device factory to use to construct the device.
-	 * @param pinNumber Pin number on the ADC device.
+	 * @param gpio GPIO on the ADC device.
 	 * @param vRef Voltage range for the ADC - essential for scaled readings.
 	 * @param tempOffset Compensate for potential temperature reading variations between different TMP36 devices.
 	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
-	public TMP36(AnalogInputDeviceFactoryInterface deviceFactory, int pinNumber, float vRef, float tempOffset)
+	public TMP36(AnalogInputDeviceFactoryInterface deviceFactory, int gpio, float vRef, float tempOffset)
 			throws RuntimeIOException {
-		super(deviceFactory, pinNumber, vRef);
+		super(deviceFactory, gpio, vRef);
 		this.tempOffset = tempOffset;
 	}
 

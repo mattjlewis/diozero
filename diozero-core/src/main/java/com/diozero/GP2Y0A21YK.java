@@ -47,12 +47,12 @@ import com.diozero.util.SleepUtil;
  * </pre>
  */
 public class GP2Y0A21YK extends AnalogInputDevice implements DistanceSensorInterface {
-	public GP2Y0A21YK(int pinNumber, float vRef) throws RuntimeIOException {
-		this(DeviceFactoryHelper.getNativeDeviceFactory(), pinNumber, vRef);
+	public GP2Y0A21YK(int gpio, float vRef) throws RuntimeIOException {
+		this(DeviceFactoryHelper.getNativeDeviceFactory(), gpio, vRef);
 	}
 	
-	public GP2Y0A21YK(AnalogInputDeviceFactoryInterface deviceFactory, int pinNumber, float vRef) throws RuntimeIOException {
-		super(deviceFactory, pinNumber, vRef);
+	public GP2Y0A21YK(AnalogInputDeviceFactoryInterface deviceFactory, int gpio, float vRef) throws RuntimeIOException {
+		super(deviceFactory, gpio, vRef);
 		SleepUtil.sleepMillis(44);
 	}
 	

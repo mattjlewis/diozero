@@ -59,30 +59,30 @@ import com.diozero.util.RuntimeIOException;
 public class Button extends DigitalInputDevice {
 	/**
 	 * Pull up / down configuration defaults to NONE.
-	 * @param pinNumber Pin number for the button.
+	 * @param gpio GPIO to which the button is connected.
 	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
-	public Button(int pinNumber) throws RuntimeIOException {
-		super(pinNumber, GpioPullUpDown.NONE, GpioEventTrigger.BOTH);
+	public Button(int gpio) throws RuntimeIOException {
+		super(gpio, GpioPullUpDown.NONE, GpioEventTrigger.BOTH);
 	}
 
 	/**
-	 * @param pinNumber Pin number for the button.
+	 * @param gpio GPIO to which the button is connected.
 	 * @param pud Pull up / down configuration (NONE, PULL_UP, PULL_DOWN).
 	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
-	public Button(int pinNumber, GpioPullUpDown pud) throws RuntimeIOException {
-		super(pinNumber, pud, GpioEventTrigger.BOTH);
+	public Button(int gpio, GpioPullUpDown pud) throws RuntimeIOException {
+		super(gpio, pud, GpioEventTrigger.BOTH);
 	}
 
 	/**
 	 * @param deviceFactory Device factory to use to contruct the device.
-	 * @param pinNumber Pin number for the button.
+	 * @param gpio GPIO for the button.
 	 * @param pud Pull up / down configuration (NONE, PULL_UP, PULL_DOWN).
 	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
-	public Button(GpioDeviceFactoryInterface deviceFactory, int pinNumber, GpioPullUpDown pud) throws RuntimeIOException {
-		super(deviceFactory, pinNumber, pud, GpioEventTrigger.BOTH);
+	public Button(GpioDeviceFactoryInterface deviceFactory, int gpio, GpioPullUpDown pud) throws RuntimeIOException {
+		super(deviceFactory, gpio, pud, GpioEventTrigger.BOTH);
 	}
 	
 	/**

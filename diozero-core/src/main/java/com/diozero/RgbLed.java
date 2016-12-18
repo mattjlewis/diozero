@@ -49,9 +49,9 @@ public class RgbLed implements Closeable {
 	private LED blueLED;
 	
 	/**
-	 * @param redPin GPIO pin number for the red LED.
-	 * @param greenPin GPIO pin number for the green LED.
-	 * @param bluePin GPIO pin number for the blue LED.
+	 * @param redPin GPIO for the red LED.
+	 * @param greenPin GPIO for the green LED.
+	 * @param bluePin GPIO for the blue LED.
 	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
 	public RgbLed(int redPin, int greenPin, int bluePin) throws RuntimeIOException {
@@ -60,9 +60,9 @@ public class RgbLed implements Closeable {
 	
 	/**
 	 * @param deviceFactory Device factory to use to provision this device.
-	 * @param redPin GPIO pin number for the red LED.
-	 * @param greenPin GPIO pin number for the green LED.
-	 * @param bluePin GPIO pin number for the blue LED.
+	 * @param redPin GPIO for the red LED.
+	 * @param greenPin GPIO for the green LED.
+	 * @param bluePin GPIO for the blue LED.
 	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
 	public RgbLed(GpioDeviceFactoryInterface deviceFactory, int redPin, int greenPin, int bluePin) throws RuntimeIOException {

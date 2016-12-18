@@ -35,52 +35,52 @@ import com.diozero.util.RuntimeIOException;
  */
 public class PwmLed extends PwmOutputDevice {
 	/**
-	 * @param pinNumber
-	 *            The GPIO pin which the LED is attached to.
+	 * @param gpio
+	 *            The GPIO to which the LED is attached to.
 	 * @throws RuntimeIOException
 	 *             If an I/O error occurred.
 	 */
-	public PwmLed(int pinNumber) throws RuntimeIOException {
-		this(pinNumber, 0);
+	public PwmLed(int gpio) throws RuntimeIOException {
+		this(gpio, 0);
 	}
 
 	/**
-	 * @param pinNumber
-	 *            The GPIO pin which the LED is attached to.
+	 * @param gpio
+	 *            The GPIO to which the LED is attached to.
 	 * @param initialValue
 	 *            Initial PWM output value (range 0..1).
 	 * @throws RuntimeIOException
 	 *             If an I/O error occurred.
 	 */
-	public PwmLed(int pinNumber, float initialValue) throws RuntimeIOException {
-		super(pinNumber, initialValue);
+	public PwmLed(int gpio, float initialValue) throws RuntimeIOException {
+		super(gpio, initialValue);
 	}
 
 	/**
 	 * @param deviceFactory
 	 *            Device factory to use to provision this device.
-	 * @param pinNumber
-	 *            The GPIO pin which the LED is attached to.
+	 * @param gpio
+	 *            The GPIO to which the LED is attached to.
 	 * @throws RuntimeIOException
 	 *             If an I/O error occurred.
 	 */
-	public PwmLed(PwmOutputDeviceFactoryInterface deviceFactory, int pinNumber) throws RuntimeIOException {
-		this(deviceFactory, pinNumber, 0);
+	public PwmLed(PwmOutputDeviceFactoryInterface deviceFactory, int gpio) throws RuntimeIOException {
+		this(deviceFactory, gpio, 0);
 	}
 
 	/**
 	 * @param deviceFactory
 	 *            Device factory to use to provision this device.
-	 * @param pinNumber
-	 *            The GPIO pin which the LED is attached to.
+	 * @param gpio
+	 *            The GPIO to which the LED is attached to.
 	 * @param initialValue
 	 *            Initial PWM output value (range 0..1).
 	 * @throws RuntimeIOException
 	 *             If an I/O error occurred.
 	 */
-	public PwmLed(PwmOutputDeviceFactoryInterface deviceFactory, int pinNumber, float initialValue)
+	public PwmLed(PwmOutputDeviceFactoryInterface deviceFactory, int gpio, float initialValue)
 			throws RuntimeIOException {
-		super(deviceFactory, pinNumber, initialValue);
+		super(deviceFactory, gpio, initialValue);
 	}
 
 	/**

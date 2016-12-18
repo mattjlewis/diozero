@@ -60,44 +60,44 @@ import com.diozero.util.RuntimeIOException;
 public class LED extends DigitalOutputDevice {
 
 	/**
-	 * @param pinNumber
-	 *            GPIO pin to which the LED is connected.
+	 * @param gpio
+	 *            GPIO to which the LED is connected.
 	 * @throws RuntimeIOException
 	 *             If an I/O error occurred.
 	 */
-	public LED(int pinNumber) throws RuntimeIOException {
-		super(pinNumber);
+	public LED(int gpio) throws RuntimeIOException {
+		super(gpio);
 	}
 
 	/**
-	 * @param pinNumber
-	 *            GPIO pin to which the LED is connected.
+	 * @param gpio
+	 *            GPIO to which the LED is connected.
 	 * @param activeHigh
 	 *            Set to true if a high output value represents on.
 	 * @throws RuntimeIOException
 	 *             If an I/O error occurred.
 	 */
-	public LED(int pinNumber, boolean activeHigh) throws RuntimeIOException {
-		super(pinNumber, activeHigh, !activeHigh);
+	public LED(int gpio, boolean activeHigh) throws RuntimeIOException {
+		super(gpio, activeHigh, !activeHigh);
 	}
 
 	/**
 	 * @param deviceFactory
 	 *            Device factory to use to construct the device.
-	 * @param pinNumber
-	 *            GPIO pin to which the LED is connected.
+	 * @param gpio
+	 *            GPIO to which the LED is connected.
 	 * @throws RuntimeIOException
 	 *             If an I/O error occurred.
 	 */
-	public LED(GpioDeviceFactoryInterface deviceFactory, int pinNumber) throws RuntimeIOException {
-		super(deviceFactory, pinNumber, true, false);
+	public LED(GpioDeviceFactoryInterface deviceFactory, int gpio) throws RuntimeIOException {
+		super(deviceFactory, gpio, true, false);
 	}
 
 	/**
 	 * @param deviceFactory
 	 *            Device factory to use to construct the device.
-	 * @param pinNumber
-	 *            GPIO pin to which the LED is connected.
+	 * @param gpio
+	 *            GPIO to which the LED is connected.
 	 * @param activeHigh
 	 *            Set to true if a high output value represents on.
 	 * @param initialValue
@@ -105,8 +105,8 @@ public class LED extends DigitalOutputDevice {
 	 * @throws RuntimeIOException
 	 *             If an I/O error occurred.
 	 */
-	public LED(GpioDeviceFactoryInterface deviceFactory, int pinNumber, boolean activeHigh, boolean initialValue) {
-		super(deviceFactory, pinNumber, activeHigh, initialValue);
+	public LED(GpioDeviceFactoryInterface deviceFactory, int gpio, boolean activeHigh, boolean initialValue) {
+		super(deviceFactory, gpio, activeHigh, initialValue);
 	}
 
 	/**

@@ -35,20 +35,20 @@ import com.diozero.util.RuntimeIOException;
 public class Buzzer extends DigitalOutputDevice {
 
 	/**
-	 * @param pinNumber The GPIO pin which the buzzer is attached to.
+	 * @param gpio The GPIO to which the buzzer is attached to.
 	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
-	public Buzzer(int pinNumber) throws RuntimeIOException {
-		super(pinNumber);
+	public Buzzer(int gpio) throws RuntimeIOException {
+		super(gpio);
 	}
 
 	/**
-	 * @param pinNumber The GPIO pin which the buzzer is attached to.
+	 * @param gpio The GPIO to which the buzzer is attached to.
 	 * @param activeHigh Set to true if a high output value represents on.
 	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
-	public Buzzer(int pinNumber, boolean activeHigh) throws RuntimeIOException {
-		super(pinNumber, activeHigh, false);
+	public Buzzer(int gpio, boolean activeHigh) throws RuntimeIOException {
+		super(gpio, activeHigh, false);
 	}
 	
 	/**

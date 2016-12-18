@@ -36,15 +36,15 @@ import com.diozero.internal.spi.AnalogInputDeviceFactoryInterface;
  */
 public class Potentiometer extends AnalogInputDevice {
 	/**
-	 * @param pinNumber Pin to which the potentiometer is connected.
+	 * @param gpio GPIO which the potentiometer is connected.
 	 * @param vRef Reference voltage.
 	 */
-	public Potentiometer(int pinNumber, float vRef) {
-		this(DeviceFactoryHelper.getNativeDeviceFactory(), pinNumber, vRef);
+	public Potentiometer(int gpio, float vRef) {
+		this(DeviceFactoryHelper.getNativeDeviceFactory(), gpio, vRef);
 	}
 	
-	public Potentiometer(AnalogInputDeviceFactoryInterface deviceFactory, int pinNumber, float vRef) {
-		super(deviceFactory, pinNumber, vRef);
+	public Potentiometer(AnalogInputDeviceFactoryInterface deviceFactory, int gpio, float vRef) {
+		super(deviceFactory, gpio, vRef);
 	}
 	
 	public float getVoltage() {

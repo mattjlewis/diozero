@@ -32,7 +32,7 @@ import com.diozero.api.motor.PwmMotor;
 import com.diozero.util.RuntimeIOException;
 
 /**
- * CamJam EduKit 3 Robot. Generic robot controller with pre-configured pin numbers.
+ * CamJam EduKit 3 Robot. Generic robot controller with pre-configured GPIO connections.
  */
 @SuppressWarnings("resource")
 public class CamJamKitDualMotor extends DualMotor {

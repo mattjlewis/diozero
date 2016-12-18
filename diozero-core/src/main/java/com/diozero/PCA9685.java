@@ -287,33 +287,33 @@ public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFac
 		return device;
 	}
 
-	public float getValue(int pin) throws RuntimeIOException {
-		int[] on_off = getPwm(pin);
+	public float getValue(int channel) throws RuntimeIOException {
+		int[] on_off = getPwm(channel);
 		return (on_off[1] - on_off[0]) / (float)RANGE;
 	}
 
 	/**
 	 * Set PWM output on a specific channel, value must be 0..1
 	 * 
-	 * @param pin PWM channel
+	 * @param channel PWM channel
 	 * @param value Must be 0..1
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
-	public void setValue(int pin, float value) throws RuntimeIOException {
+	public void setValue(int channel, float value) throws RuntimeIOException {
 		if (value < 0 || value > 1) {
 			throw new IllegalArgumentException("PWM value must 0..1, you requested " + value);
 		}
 		int off = (int)Math.floor(value * RANGE);
-		setPwm(pin, 0, off);
+		setPwm(channel, 0, off);
 	}
 	
 	@Override
-	public int getPwmFrequency(int pinNumber) {
+	public int getPwmFrequency(int channel) {
 		return pwmFrequency;
 	}
 	
 	@Override
-	public void setPwmFrequency(int pinNumber, int pwmFrequency) {
+	public void setPwmFrequency(int channel, int pwmFrequency) {
 		setPwmFreq(pwmFrequency);
 	}
 }

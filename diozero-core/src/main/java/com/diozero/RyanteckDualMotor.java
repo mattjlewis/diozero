@@ -32,7 +32,7 @@ import com.diozero.api.motor.PwmMotor;
 import com.diozero.util.RuntimeIOException;
 
 /**
- * RTK MCB Robot. Generic robot controller with pre-configured pin numbers.
+ * RTK MCB Robot. Generic robot controller with pre-configured GPIO connections.
  */
 @SuppressWarnings("resource")
 public class RyanteckDualMotor extends DualMotor {

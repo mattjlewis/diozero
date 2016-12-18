@@ -35,7 +35,7 @@ import org.pmw.tinylog.Logger;
 import com.diozero.api.DeviceAlreadyOpenedException;
 import com.diozero.api.SPIConstants;
 import com.diozero.api.SpiDevice;
-import com.diozero.internal.provider.mcpadc.McpAdcAnalogInputPin;
+import com.diozero.internal.provider.mcpadc.McpAdcAnalogInputDevice;
 import com.diozero.internal.spi.AbstractDeviceFactory;
 import com.diozero.internal.spi.AnalogInputDeviceFactoryInterface;
 import com.diozero.internal.spi.GpioAnalogInputDeviceInterface;
@@ -197,23 +197,23 @@ public class McpAdc extends AbstractDeviceFactory implements AnalogInputDeviceFa
 
 	/**
 	 * Device Factory SPI method
-	 * @param pinNumber Pin on the MCP device
+	 * @param gpio Pin on the MCP device
 	 */
 	@Override
-	public GpioAnalogInputDeviceInterface provisionAnalogInputPin(int pinNumber)
+	public GpioAnalogInputDeviceInterface provisionAnalogInputPin(int gpio)
 			throws RuntimeIOException {
-		if (pinNumber < 0 || pinNumber >= type.getNumPins()) {
+		if (gpio < 0 || gpio >= type.getNumPins()) {
 			throw new IllegalArgumentException(
-					"Invalid channel number (" + pinNumber + "), must be >= 0 and < " + type.getNumPins());
+					"Invalid channel number (" + gpio + "), must be >= 0 and < " + type.getNumPins());
 		}
 		
-		String key = createPinKey(pinNumber);
+		String key = createPinKey(gpio);
 		
 		if (isDeviceOpened(key)) {
 			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
 		}
 		
-		GpioAnalogInputDeviceInterface device = new McpAdcAnalogInputPin(this, key, pinNumber);
+		GpioAnalogInputDeviceInterface device = new McpAdcAnalogInputDevice(this, key, gpio);
 		deviceOpened(device);
 		
 		return device;

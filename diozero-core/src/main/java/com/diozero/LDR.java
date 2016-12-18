@@ -57,25 +57,25 @@ public class LDR extends AnalogInputDevice {
 	private float r1;
 	
 	/**
-	 * @param pinNumber Pin to which the LDR is connected.
+	 * @param gpio GPIO to which the LDR is connected.
 	 * @param vRef Reference voltage.
 	 * @param r1 Resistor between the LDR and ground.
 	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
-	public LDR(int pinNumber, float vRef, float r1) throws RuntimeIOException {
-		this(DeviceFactoryHelper.getNativeDeviceFactory(), pinNumber, vRef, r1);
+	public LDR(int gpio, float vRef, float r1) throws RuntimeIOException {
+		this(DeviceFactoryHelper.getNativeDeviceFactory(), gpio, vRef, r1);
 	}
 	
 	/**
 	 * @param deviceFactory Device factory to use to construct the device.
-	 * @param pinNumber Pin to which the LDR is connected.
+	 * @param gpio GPIO to which the LDR is connected.
 	 * @param vRef Reference voltage.
 	 * @param r1 Resistor between the LDR and ground.
 	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
-	public LDR(AnalogInputDeviceFactoryInterface deviceFactory, int pinNumber,
+	public LDR(AnalogInputDeviceFactoryInterface deviceFactory, int gpio,
 			float vRef, float r1) throws RuntimeIOException {
-		super(deviceFactory, pinNumber, vRef);
+		super(deviceFactory, gpio, vRef);
 		
 		this.vRef = vRef;
 		this.r1 = r1;
