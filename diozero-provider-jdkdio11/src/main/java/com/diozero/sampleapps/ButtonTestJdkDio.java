@@ -40,8 +40,8 @@ public class ButtonTestJdkDio implements PinListener {
 		new ButtonTestJdkDio().test(12);
 	}
 	
-	public void test(int pinNumber) {
-		GPIOPinConfig pin_config = new GPIOPinConfig.Builder().setControllerNumber(DeviceConfig.UNASSIGNED).setPinNumber(pinNumber).
+	public void test(int gpio) {
+		GPIOPinConfig pin_config = new GPIOPinConfig.Builder().setControllerNumber(DeviceConfig.UNASSIGNED).setPinNumber(gpio).
 			setDirection(GPIOPinConfig.DIR_INPUT_ONLY).setDriveMode(GPIOPinConfig.MODE_INPUT_PULL_UP).setTrigger(GPIOPinConfig.TRIGGER_BOTH_EDGES).build();
 		try (GPIOPin pin = DeviceManager.open(GPIOPin.class, pin_config)) {
 			pin.setInputListener(this);

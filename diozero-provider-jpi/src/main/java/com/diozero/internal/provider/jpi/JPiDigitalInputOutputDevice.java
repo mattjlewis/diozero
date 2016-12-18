@@ -38,16 +38,16 @@ import com.diozero.util.RuntimeIOException;
 public class JPiDigitalInputOutputDevice extends AbstractDevice
 implements GpioDigitalInputOutputDeviceInterface {
 	private JPiDeviceFactory jpiDeviceFactory;
-	private int pinNumber;
+	private int gpio;
 	private GpioDeviceInterface.Mode mode;
 	private GpioPullUpDown pud;
 
 	public JPiDigitalInputOutputDevice(JPiDeviceFactory deviceFactory, String key,
-			int pinNumber, GpioDeviceInterface.Mode mode) {
+			int gpio, GpioDeviceInterface.Mode mode) {
 		super(key, deviceFactory);
 		
 		this.jpiDeviceFactory = deviceFactory;
-		this.pinNumber = pinNumber;
+		this.gpio = gpio;
 
 		// For when mode is switched to input
 		this.pud = GpioPullUpDown.NONE;
@@ -75,17 +75,17 @@ implements GpioDigitalInputOutputDeviceInterface {
 			return;
 		}
 
-		jpiDeviceFactory.getMmapGpio().setMode(pinNumber, mode);
+		jpiDeviceFactory.getMmapGpio().setMode(gpio, mode);
 		this.mode = mode;
 		
 		if (mode == GpioDeviceInterface.Mode.DIGITAL_INPUT) {
-			jpiDeviceFactory.getMmapGpio().setPullUpDown(pinNumber, pud);
+			jpiDeviceFactory.getMmapGpio().setPullUpDown(gpio, pud);
 		}
 	}
 
 	@Override
 	public boolean getValue() throws RuntimeIOException {
-		return jpiDeviceFactory.getMmapGpio().gpioRead(pinNumber);
+		return jpiDeviceFactory.getMmapGpio().gpioRead(gpio);
 	}
 
 	@Override
@@ -93,12 +93,12 @@ implements GpioDigitalInputOutputDeviceInterface {
 		if (mode != GpioDeviceInterface.Mode.DIGITAL_OUTPUT) {
 			throw new IllegalStateException("Can only set output value for digital output pins");
 		}
-		jpiDeviceFactory.getMmapGpio().gpioWrite(pinNumber, value);
+		jpiDeviceFactory.getMmapGpio().gpioWrite(gpio, value);
 	}
 
 	@Override
-	public int getPin() {
-		return pinNumber;
+	public int getGpio() {
+		return gpio;
 	}
 
 	@Override

@@ -40,40 +40,40 @@ import com.pi4j.wiringpi.SoftPwm;
 
 public class Pi4jPwmOutputDevice extends AbstractDevice implements PwmOutputDeviceInterface {
 	//private GpioPinPwmOutput pwmOutputPin;
-	private int pinNumber;
+	private int gpio;
 	private float value;
 	private int range;
 	//private Pin pin;
 	private PwmType pwmType;
 	
 	Pi4jPwmOutputDevice(String key, DeviceFactoryInterface deviceFactory, GpioController gpioController,
-			PwmType pwmType, int range, int pinNumber, float initialValue) throws RuntimeIOException {
+			PwmType pwmType, int range, int gpio, float initialValue) throws RuntimeIOException {
 		super(key, deviceFactory);
 		
 		this.pwmType = pwmType;
-		this.pinNumber = pinNumber;
+		this.gpio = gpio;
 		this.value = initialValue;
 		this.range = range;
 		
-		//pin = RaspiBcmPin.getPinByAddress(pinNumber);
+		//pin = RaspiBcmPin.getPinByAddress(gpio);
 		//pin.getSupportedPinModes().contains(PinMode.PWM_OUTPUT);
 		
 		switch (pwmType) {
 		case HARDWARE:
-			//pwmOutputPin = gpioController.provisionPwmOutputPin(pin, "PWM output for BCM GPIO " + pinNumber,
+			//pwmOutputPin = gpioController.provisionPwmOutputPin(pin, "PWM output for BCM GPIO " + gpio,
 			//		(int)(value * range));
-			Gpio.pinMode(pinNumber, Gpio.PWM_OUTPUT);
+			Gpio.pinMode(gpio, Gpio.PWM_OUTPUT);
 			// Have to call this after setting the pin mode! Yuck
 			Gpio.pwmSetMode(Gpio.PWM_MODE_MS);
-			Gpio.pwmWrite(pinNumber, (int) (initialValue * range));
+			Gpio.pwmWrite(gpio, (int) (initialValue * range));
 			break;
 		case SOFTWARE:
 			//pwmOutputPin = gpioController.provisionSoftPwmOutputPin(
-			//		pin, "PWM output for BCM GPIO " + pinNumber, (int)(initialValue * range));
-			int status = SoftPwm.softPwmCreate(pinNumber, (int)(initialValue * range), range);
+			//		pin, "PWM output for BCM GPIO " + gpio, (int)(initialValue * range));
+			int status = SoftPwm.softPwmCreate(gpio, (int)(initialValue * range), range);
 			if (status != 0) {
 				throw new RuntimeIOException("Error setting up software controlled PWM GPIO on BCM pin " +
-						pinNumber + ", status=" + status);
+						gpio + ", status=" + status);
 			}
 		}
 	}
@@ -84,18 +84,23 @@ public class Pi4jPwmOutputDevice extends AbstractDevice implements PwmOutputDevi
 		//GpioFactory.getInstance().unprovisionPin(pwmOutputPin);
 		switch (pwmType) {
 		case HARDWARE:
-			GpioUtil.unexport(pinNumber);
+			GpioUtil.unexport(gpio);
 		case SOFTWARE:
-			SoftPwm.softPwmStop(pinNumber);
-			GpioUtil.unexport(pinNumber);
+			SoftPwm.softPwmStop(gpio);
+			GpioUtil.unexport(gpio);
 			break;
 		default:
 		}
 	}
 
 	@Override
-	public int getPin() {
-		return pinNumber;
+	public int getGpio() {
+		return gpio;
+	}
+	
+	@Override
+	public int getPwmNum() {
+		return gpio;
 	}
 
 	@Override
@@ -109,10 +114,10 @@ public class Pi4jPwmOutputDevice extends AbstractDevice implements PwmOutputDevi
 		switch (pwmType) {
 		case HARDWARE:
 			Logger.info("Pi4j Hardware PWM write " + ((int) (value * range)));
-			Gpio.pwmWrite(pinNumber, (int) (value * range));
+			Gpio.pwmWrite(gpio, (int) (value * range));
 			break;
 		case SOFTWARE:
-			SoftPwm.softPwmWrite(pinNumber, (int) (value * range));
+			SoftPwm.softPwmWrite(gpio, (int) (value * range));
 			break;
 		}
 	}

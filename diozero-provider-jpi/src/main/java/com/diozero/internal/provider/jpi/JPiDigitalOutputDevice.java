@@ -36,32 +36,32 @@ import com.diozero.util.RuntimeIOException;
 
 public class JPiDigitalOutputDevice extends AbstractDevice implements GpioDigitalOutputDeviceInterface {
 	private JPiDeviceFactory jpiDeviceFactory;
-	private int pinNumber;
+	private int gpio;
 
 	JPiDigitalOutputDevice(JPiDeviceFactory deviceFactory, String key,
-			int pinNumber, boolean initialValue) {
+			int gpio, boolean initialValue) {
 		super(key, deviceFactory);
 		
 		this.jpiDeviceFactory = deviceFactory;
-		this.pinNumber = pinNumber;
+		this.gpio = gpio;
 		
-		deviceFactory.getMmapGpio().setMode(pinNumber, GpioDeviceInterface.Mode.DIGITAL_OUTPUT);
-		deviceFactory.getMmapGpio().gpioWrite(pinNumber, initialValue);
+		deviceFactory.getMmapGpio().setMode(gpio, GpioDeviceInterface.Mode.DIGITAL_OUTPUT);
+		deviceFactory.getMmapGpio().gpioWrite(gpio, initialValue);
 	}
 
 	@Override
-	public int getPin() {
-		return pinNumber;
+	public int getGpio() {
+		return gpio;
 	}
 
 	@Override
 	public boolean getValue() throws RuntimeIOException {
-		return jpiDeviceFactory.getMmapGpio().gpioRead(pinNumber);
+		return jpiDeviceFactory.getMmapGpio().gpioRead(gpio);
 	}
 
 	@Override
 	public void setValue(boolean value) throws RuntimeIOException {
-		jpiDeviceFactory.getMmapGpio().gpioWrite(pinNumber, value);
+		jpiDeviceFactory.getMmapGpio().gpioWrite(gpio, value);
 	}
 
 	@Override

@@ -37,12 +37,12 @@ public class ButtonTestPi4j implements GpioPinListenerDigital {
 		new ButtonTestPi4j().test(12);
 	}
 	
-	public void test(int pinNumber) {
+	public void test(int gpio) {
 		GpioFactory.setDefaultProvider(new RaspiGpioProvider(RaspiPinNumberingScheme.BROADCOM_PIN_NUMBERING));
 		GpioController gpio_controller = GpioFactory.getInstance();
-		Pin pin = RaspiBcmPin.getPinByAddress(pinNumber);
+		Pin pin = RaspiBcmPin.getPinByAddress(gpio);
 		GpioPinDigitalInput digitalInputPin = gpio_controller.provisionDigitalInputPin(pin,
-				"Digital Input for BCM GPIO " + pinNumber, PinPullResistance.PULL_UP);
+				"Digital Input for BCM GPIO " + gpio, PinPullResistance.PULL_UP);
 		GpioUtil.setEdgeDetection(pin.getAddress(), PinEdge.BOTH.getValue());
 		digitalInputPin.addListener(this);
 		System.out.println("Waiting 20s for events..., thread name=" + Thread.currentThread().getName());

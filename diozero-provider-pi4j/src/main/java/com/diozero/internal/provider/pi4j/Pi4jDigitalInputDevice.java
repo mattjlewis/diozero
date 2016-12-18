@@ -43,18 +43,18 @@ import com.pi4j.wiringpi.GpioUtil;
 public class Pi4jDigitalInputDevice extends AbstractInputDevice<DigitalInputEvent>
 implements GpioDigitalInputDeviceInterface, GpioPinListenerDigital {
 	private GpioPinDigitalInput digitalInputPin;
-	private int pinNumber;
+	private int gpio;
 	
 	Pi4jDigitalInputDevice(String key, DeviceFactoryInterface deviceFactory, GpioController gpioController,
-			int pinNumber, GpioPullUpDown pud, GpioEventTrigger trigger) {
+			int gpio, GpioPullUpDown pud, GpioEventTrigger trigger) {
 		super(key, deviceFactory);
 		
-		Pin pin = RaspiBcmPin.getPinByAddress(pinNumber);
+		Pin pin = RaspiBcmPin.getPinByAddress(gpio);
 		if (pin == null) {
-			throw new IllegalArgumentException("Illegal pin number: " + pinNumber);
+			throw new IllegalArgumentException("Illegal GPIO number: " + gpio);
 		}
 		
-		this.pinNumber = pinNumber;
+		this.gpio = gpio;
 		
 		PinPullResistance ppr;
 		switch (pud) {
@@ -88,7 +88,7 @@ implements GpioDigitalInputDeviceInterface, GpioPinListenerDigital {
 		
 		// Note configuring GPIO event trigger values (rising / falling / both) via the provision APIs isn't possible in Pi4j
 		digitalInputPin = gpioController.provisionDigitalInputPin(
-				pin, "Digital Input for BCM GPIO " + pinNumber, ppr);
+				pin, "Digital Input for BCM GPIO " + gpio, ppr);
 		
 		// RaspiGpioProvider.export() calls this for all input pins:
 		if (! GpioUtil.setEdgeDetection(pin.getAddress(), PinEdge.BOTH.getValue())) {
@@ -112,8 +112,8 @@ implements GpioDigitalInputDeviceInterface, GpioPinListenerDigital {
 	}
 
 	@Override
-	public int getPin() {
-		return pinNumber;
+	public int getGpio() {
+		return gpio;
 	}
 	
 	@Override
@@ -124,7 +124,7 @@ implements GpioDigitalInputDeviceInterface, GpioPinListenerDigital {
 	@Override
 	public void handleGpioPinDigitalStateChangeEvent(GpioPinDigitalStateChangeEvent event) {
 		long nano_time = System.nanoTime();
-		valueChanged(new DigitalInputEvent(pinNumber, System.currentTimeMillis(),
+		valueChanged(new DigitalInputEvent(gpio, System.currentTimeMillis(),
 				nano_time, event.getState().isHigh()));
 	}
 

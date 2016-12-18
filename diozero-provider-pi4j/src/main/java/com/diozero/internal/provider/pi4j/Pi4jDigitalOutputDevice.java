@@ -36,19 +36,19 @@ import com.pi4j.io.gpio.*;
 
 public class Pi4jDigitalOutputDevice extends AbstractDevice implements GpioDigitalOutputDeviceInterface {
 	private GpioPinDigitalOutput digitalOutputPin;
-	private int pinNumber;
+	private int gpio;
 
-	Pi4jDigitalOutputDevice(String key, DeviceFactoryInterface deviceFactory, GpioController gpioController, int pinNumber, boolean initialValue) {
+	Pi4jDigitalOutputDevice(String key, DeviceFactoryInterface deviceFactory, GpioController gpioController, int gpio, boolean initialValue) {
 		super(key, deviceFactory);
 		
-		Pin pin = RaspiBcmPin.getPinByAddress(pinNumber);
+		Pin pin = RaspiBcmPin.getPinByAddress(gpio);
 		if (pin == null) {
-			throw new IllegalArgumentException("Illegal pin number: " + pinNumber);
+			throw new IllegalArgumentException("Illegal GPIO: " + gpio);
 		}
 		
-		this.pinNumber = pinNumber;
+		this.gpio = gpio;
 		
-		digitalOutputPin = gpioController.provisionDigitalOutputPin(pin, "Digital output for BCM GPIO " + pinNumber,
+		digitalOutputPin = gpioController.provisionDigitalOutputPin(pin, "Digital output for BCM GPIO " + gpio,
 				PinState.getState(initialValue));
 	}
 
@@ -71,7 +71,7 @@ public class Pi4jDigitalOutputDevice extends AbstractDevice implements GpioDigit
 	}
 
 	@Override
-	public int getPin() {
-		return pinNumber;
+	public int getGpio() {
+		return gpio;
 	}
 }

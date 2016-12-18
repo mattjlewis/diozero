@@ -43,10 +43,9 @@ public class JPiDeviceFactory extends BaseNativeDeviceFactory {
 	private SysFsDeviceFactory sysFsDeviceFactory;
 	
 	public JPiDeviceFactory() {
-		BoardInfo board_info = SystemInfo.getBoardInfo();
-		if (board_info.sameMakeAndModel(OdroidBoardInfoProvider.ODROID_C2)) {
+		if (boardInfo.sameMakeAndModel(OdroidBoardInfoProvider.ODROID_C2)) {
 			mmapGpio = new OdroidC2MmapGpio();
-		} else if (board_info.getMake().equals(RaspberryPiBoardInfoProvider.MAKE)) {
+		} else if (boardInfo.getMake().equals(RaspberryPiBoardInfoProvider.MAKE)) {
 			mmapGpio = new RPiMmapGpio();
 		} else {
 			throw new RuntimeException("This provider is currently only supported on Raspberry Pi and Odroid C2 boards");
@@ -75,45 +74,45 @@ public class JPiDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	public int getPwmFrequency(int pinNumber) {
+	public int getPwmFrequency(int gpio) {
 		throw new UnsupportedOperationException("PWM not yet supported");
 	}
 
 	@Override
-	public void setPwmFrequency(int pinNumber, int pwmFrequency) {
+	public void setPwmFrequency(int gpio, int pwmFrequency) {
 		throw new UnsupportedOperationException("PWM not yet supported");
 	}
 
 	@Override
-	protected GpioAnalogInputDeviceInterface createAnalogInputPin(String key, int pinNumber) throws RuntimeIOException {
+	protected GpioAnalogInputDeviceInterface createAnalogInputPin(String key, int gpio) throws RuntimeIOException {
 		throw new UnsupportedOperationException("Analog input not supported");
 	}
 
 	@Override
-	protected GpioAnalogOutputDeviceInterface createAnalogOutputPin(String key, int pinNumber) throws RuntimeIOException {
+	protected GpioAnalogOutputDeviceInterface createAnalogOutputPin(String key, int gpio) throws RuntimeIOException {
 		throw new UnsupportedOperationException("Analog devices aren't supported on this device");
 	}
 
 	@Override
-	protected GpioDigitalInputDeviceInterface createDigitalInputPin(String key, int pinNumber, GpioPullUpDown pud,
+	protected GpioDigitalInputDeviceInterface createDigitalInputPin(String key, int gpio, GpioPullUpDown pud,
 			GpioEventTrigger trigger) throws RuntimeIOException {
-		return new JPiDigitalInputDevice(this, key, pinNumber, pud, trigger);
+		return new JPiDigitalInputDevice(this, key, gpio, pud, trigger);
 	}
 
 	@Override
-	protected GpioDigitalOutputDeviceInterface createDigitalOutputPin(String key, int pinNumber, boolean initialValue)
+	protected GpioDigitalOutputDeviceInterface createDigitalOutputPin(String key, int gpio, boolean initialValue)
 			throws RuntimeIOException {
-		return new JPiDigitalOutputDevice(this, key, pinNumber, initialValue);
+		return new JPiDigitalOutputDevice(this, key, gpio, initialValue);
 	}
 
 	@Override
-	public GpioDigitalInputOutputDeviceInterface createDigitalInputOutputPin(String key, int pinNumber, GpioDeviceInterface.Mode mode)
+	public GpioDigitalInputOutputDeviceInterface createDigitalInputOutputPin(String key, int gpio, GpioDeviceInterface.Mode mode)
 			throws RuntimeIOException {
-		return new JPiDigitalInputOutputDevice(this, key, pinNumber, mode);
+		return new JPiDigitalInputOutputDevice(this, key, gpio, mode);
 	}
 
 	@Override
-	protected PwmOutputDeviceInterface createPwmOutputPin(String key, int pinNumber, float initialValue,
+	protected PwmOutputDeviceInterface createPwmOutputPin(String key, int gpio, float initialValue,
 			PwmType pwmType) throws RuntimeIOException {
 		throw new UnsupportedOperationException("PWM not yet supported");
 	}

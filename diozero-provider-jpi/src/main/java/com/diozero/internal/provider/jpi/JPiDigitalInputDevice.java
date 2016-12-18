@@ -38,31 +38,31 @@ import com.diozero.util.RuntimeIOException;
 public class JPiDigitalInputDevice extends AbstractInputDevice<DigitalInputEvent>
 implements GpioDigitalInputDeviceInterface, InputEventListener<DigitalInputEvent> {
 	private JPiDeviceFactory jpiDeviceFactory;
-	private int pinNumber;
+	private int gpio;
 	private GpioDigitalInputDeviceInterface sysFsDigitialInput;
 
 	JPiDigitalInputDevice(JPiDeviceFactory deviceFactory, String key,
-			int pinNumber, GpioPullUpDown pud, GpioEventTrigger trigger) {
+			int gpio, GpioPullUpDown pud, GpioEventTrigger trigger) {
 		super(key, deviceFactory);
 		
 		this.jpiDeviceFactory = deviceFactory;
-		this.pinNumber = pinNumber;
+		this.gpio = gpio;
 		
-		deviceFactory.getMmapGpio().setMode(pinNumber, GpioDeviceInterface.Mode.DIGITAL_INPUT);
-		deviceFactory.getMmapGpio().setPullUpDown(pinNumber, pud);
+		deviceFactory.getMmapGpio().setMode(gpio, GpioDeviceInterface.Mode.DIGITAL_INPUT);
+		deviceFactory.getMmapGpio().setPullUpDown(gpio, pud);
 
 		sysFsDigitialInput = jpiDeviceFactory.getSysFsDeviceFactory().provisionDigitalInputPin(
-				pinNumber, pud, trigger);
+				gpio, pud, trigger);
 	}
 
 	@Override
-	public int getPin() {
-		return pinNumber;
+	public int getGpio() {
+		return gpio;
 	}
 
 	@Override
 	public boolean getValue() throws RuntimeIOException {
-		return jpiDeviceFactory.getMmapGpio().gpioRead(pinNumber);
+		return jpiDeviceFactory.getMmapGpio().gpioRead(gpio);
 	}
 
 	@Override
