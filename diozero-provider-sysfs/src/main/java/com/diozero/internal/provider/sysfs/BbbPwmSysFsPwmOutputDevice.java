@@ -61,7 +61,7 @@ public class BbbPwmSysFsPwmOutputDevice extends AbstractDevice implements PwmOut
 			setEnabled(true);
 			setPeriod(periodNs);
 		} catch (IOException e) {
-			throw new RuntimeIOException("Error opening duty file for pin " + gpio, e);
+			throw new RuntimeIOException("Error opening duty file for PWM #" + pwmNum, e);
 		}
 		setValue(0);
 	}
@@ -75,8 +75,13 @@ public class BbbPwmSysFsPwmOutputDevice extends AbstractDevice implements PwmOut
 	}
 
 	@Override
-	public int getPin() {
+	public int getGpio() {
 		return gpio;
+	}
+
+	@Override
+	public int getPwmNum() {
+		return pwmNum;
 	}
 	
 	@Override
@@ -103,7 +108,7 @@ public class BbbPwmSysFsPwmOutputDevice extends AbstractDevice implements PwmOut
 			dutyFile.flush();
 		} catch (IOException e) {
 			closeDevice();
-			throw new RuntimeIOException("Error setting duty for PWM #" + gpio, e);
+			throw new RuntimeIOException("Error setting duty for PWM #" + pwmNum, e);
 		}
 	}
 	

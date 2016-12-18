@@ -43,30 +43,30 @@ public class SysFsDigitalOutputDevice extends AbstractDevice implements GpioDigi
 	private static final byte HIGH_VALUE = '1';
 
 	private SysFsDeviceFactory deviceFactory;
-	private int pinNumber;
+	private int gpio;
 	private RandomAccessFile valueFile;
 
-	public SysFsDigitalOutputDevice(SysFsDeviceFactory deviceFactory, Path gpioDir, String key, int pinNumber,
+	public SysFsDigitalOutputDevice(SysFsDeviceFactory deviceFactory, Path gpioDir, String key, int gpio,
 			boolean initialValue) {
 		super(key, deviceFactory);
 		
 		this.deviceFactory = deviceFactory;
-		this.pinNumber = pinNumber;
+		this.gpio = gpio;
 		
 		// TODO Set active_low value to 0
 		
 		try {
 			valueFile = new RandomAccessFile(gpioDir.resolve(VALUE_FILE).toFile(), "rw");
 		} catch (IOException e) {
-			throw new RuntimeIOException("Error opening value file for GPIO " + pinNumber, e);
+			throw new RuntimeIOException("Error opening value file for GPIO " + gpio, e);
 		}
 		
 		setValue(initialValue);
 	}
 
 	@Override
-	public int getPin() {
-		return pinNumber;
+	public int getGpio() {
+		return gpio;
 	}
 
 	@Override
@@ -97,6 +97,6 @@ public class SysFsDigitalOutputDevice extends AbstractDevice implements GpioDigi
 		} catch (IOException e) {
 			throw new RuntimeIOException(e);
 		}
-		deviceFactory.unexport(pinNumber);
+		deviceFactory.unexport(gpio);
 	}
 }

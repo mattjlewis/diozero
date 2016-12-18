@@ -53,23 +53,23 @@ implements GpioDigitalInputDeviceInterface, PollEventListener, Runnable {
 	
 	private PollNative pollNative;
 	private SysFsDeviceFactory deviceFactory;
-	private int pinNumber;
+	private int gpio;
 	private Path valuePath;
 	private RandomAccessFile valueFile;
 
 	public SysFsDigitalInputDevice(SysFsDeviceFactory deviceFactory, Path gpioDir,
-			String key, int pinNumber, GpioEventTrigger trigger) {
+			String key, int gpio, GpioEventTrigger trigger) {
 		super(key, deviceFactory);
 		
 		this.deviceFactory = deviceFactory;
-		this.pinNumber = pinNumber;
+		this.gpio = gpio;
 		
 		pollNative = new PollNative();
 
 		try (FileWriter writer = new FileWriter(gpioDir.resolve(EDGE_FILE).toFile())) {
 			writer.write(trigger.name().toLowerCase());
 		} catch (IOException e) {
-			throw new RuntimeIOException("Error setting edge for GPIO " + pinNumber, e);
+			throw new RuntimeIOException("Error setting edge for GPIO " + gpio, e);
 		}
 		
 		// Note: Not possible to set pull-up/down resistor configuration via /sys/class/gpio
@@ -79,13 +79,13 @@ implements GpioDigitalInputDeviceInterface, PollEventListener, Runnable {
 		try {
 			valueFile = new RandomAccessFile(valuePath.toFile(), "r");
 		} catch (IOException e) {
-			throw new RuntimeIOException("Error opening value file for GPIO " + pinNumber, e);
+			throw new RuntimeIOException("Error opening value file for GPIO " + gpio, e);
 		}
 	}
 
 	@Override
-	public int getPin() {
-		return pinNumber;
+	public int getGpio() {
+		return gpio;
 	}
 
 	@Override
@@ -127,18 +127,18 @@ implements GpioDigitalInputDeviceInterface, PollEventListener, Runnable {
 		} catch (IOException e) {
 			throw new RuntimeIOException(e);
 		}
-		deviceFactory.unexport(pinNumber);
+		deviceFactory.unexport(gpio);
 	}
 
 	@Override
 	public void notify(int ref, long epochTime) {
 		Logger.info("notify(" + ref + ", " + epochTime + ")");
-		valueChanged(new DigitalInputEvent(pinNumber, epochTime, System.nanoTime(), getValue()));
+		valueChanged(new DigitalInputEvent(gpio, epochTime, System.nanoTime(), getValue()));
 	}
 
 	@Override
 	public void run() {
-		pollNative.poll(valuePath.toString(), 100, pinNumber, this);
+		pollNative.poll(valuePath.toString(), 100, gpio, this);
 		Logger.info("poll returned");
 	}
 }

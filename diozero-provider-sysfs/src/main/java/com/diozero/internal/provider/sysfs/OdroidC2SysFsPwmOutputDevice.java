@@ -52,23 +52,23 @@ import com.diozero.util.RuntimeIOException;
 public class OdroidC2SysFsPwmOutputDevice extends AbstractDevice implements PwmOutputDeviceInterface {
 	private static Path PWM_ROOT = FileSystems.getDefault().getPath("/sys/devices/platform/pwm-ctrl");
 	
-	private int pinNumber;
+	private int gpio;
 	private int range;
 	private int pwmNum;
 	private RandomAccessFile dutyFile;
 
-	public OdroidC2SysFsPwmOutputDevice(String key, DeviceFactoryInterface deviceFactory, int pinNumber,
+	public OdroidC2SysFsPwmOutputDevice(String key, DeviceFactoryInterface deviceFactory, int gpio,
 			int frequency, float initialValue) {
 		super(key, deviceFactory);
 		
-		this.pinNumber = pinNumber;
+		this.gpio = gpio;
 		this.range = 1023;
-		pwmNum = pinNumber - 234;
+		pwmNum = gpio - 234;
 
 		try {
 			dutyFile = new RandomAccessFile(PWM_ROOT.resolve("duty" + pwmNum).toFile(), "rw");
 		} catch (IOException e) {
-			throw new RuntimeIOException("Error opening duty file for pin " + pinNumber, e);
+			throw new RuntimeIOException("Error opening duty file for gpio " + gpio, e);
 		}
 		
 		setEnabled(pwmNum, true);
@@ -88,8 +88,13 @@ public class OdroidC2SysFsPwmOutputDevice extends AbstractDevice implements PwmO
 	}
 
 	@Override
-	public int getPin() {
-		return pinNumber;
+	public int getGpio() {
+		return gpio;
+	}
+
+	@Override
+	public int getPwmNum() {
+		return pwmNum;
 	}
 	
 	@Override
@@ -99,7 +104,7 @@ public class OdroidC2SysFsPwmOutputDevice extends AbstractDevice implements PwmO
 			return Integer.parseInt(dutyFile.readLine()) / range;
 		} catch (IOException e) {
 			closeDevice();
-			throw new RuntimeIOException("Error setting duty for PWM " + pinNumber, e);
+			throw new RuntimeIOException("Error setting duty for PWM #" + pwmNum, e);
 		}
 	}
 	
@@ -114,7 +119,7 @@ public class OdroidC2SysFsPwmOutputDevice extends AbstractDevice implements PwmO
 			dutyFile.writeBytes(Integer.toString(((int) (value * range))));
 		} catch (IOException e) {
 			closeDevice();
-			throw new RuntimeIOException("Error setting duty for PWM #" + pinNumber, e);
+			throw new RuntimeIOException("Error setting duty for PWM #" + pwmNum, e);
 		}
 	}
 

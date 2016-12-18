@@ -44,21 +44,21 @@ public class SysFsDigitalInputOutputDevice extends AbstractDevice implements Gpi
 	private static final byte HIGH_VALUE = '1';
 
 	private SysFsDeviceFactory deviceFactory;
-	private int pinNumber;
+	private int gpio;
 	private RandomAccessFile valueFile;
 	private GpioDeviceInterface.Mode mode;
 
-	public SysFsDigitalInputOutputDevice(SysFsDeviceFactory deviceFactory, Path gpioDir, String key, int pinNumber,
+	public SysFsDigitalInputOutputDevice(SysFsDeviceFactory deviceFactory, Path gpioDir, String key, int gpio,
 			GpioDeviceInterface.Mode mode) {
 		super(key, deviceFactory);
 		
 		this.deviceFactory = deviceFactory;
-		this.pinNumber = pinNumber;
+		this.gpio = gpio;
 		
 		try {
 			valueFile = new RandomAccessFile(gpioDir.resolve(VALUE_FILE).toFile(), "rw");
 		} catch (IOException e) {
-			throw new RuntimeIOException("Error opening value file for GPIO " + pinNumber, e);
+			throw new RuntimeIOException("Error opening value file for GPIO " + gpio, e);
 		}
 		
 		setMode(mode);
@@ -71,13 +71,13 @@ public class SysFsDigitalInputOutputDevice extends AbstractDevice implements Gpi
 	
 	@Override
 	public void setMode(GpioDeviceInterface.Mode mode) {
-		deviceFactory.export(pinNumber, mode);
+		deviceFactory.export(gpio, mode);
 		this.mode = mode;
 	}
 
 	@Override
-	public int getPin() {
-		return pinNumber;
+	public int getGpio() {
+		return gpio;
 	}
 
 	@Override
@@ -108,6 +108,6 @@ public class SysFsDigitalInputOutputDevice extends AbstractDevice implements Gpi
 		} catch (IOException e) {
 			throw new RuntimeIOException(e);
 		}
-		deviceFactory.unexport(pinNumber);
+		deviceFactory.unexport(gpio);
 	}
 }

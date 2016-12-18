@@ -38,11 +38,12 @@ import org.pmw.tinylog.Logger;
 
 import com.diozero.api.*;
 import com.diozero.internal.board.beaglebone.BeagleBoneBoardInfoProvider;
+import com.diozero.internal.board.chip.CHIPBoardInfoProvider;
 import com.diozero.internal.board.odroid.OdroidBoardInfoProvider;
 import com.diozero.internal.spi.*;
 import com.diozero.internal.spi.GpioDeviceInterface.Mode;
 import com.diozero.util.RuntimeIOException;
-import com.diozero.util.SystemInfo;
+import com.diozero.util.SoftwarePwmOutputDevice;
 
 public class SysFsDeviceFactory extends BaseNativeDeviceFactory {
 	private static final String GPIO_ROOT_DIR = "/sys/class/gpio";
@@ -60,11 +61,11 @@ public class SysFsDeviceFactory extends BaseNativeDeviceFactory {
 
 	/**
 	 * Check if this pin is exported by checking the existance of /sys/class/gpio/gpioxxx/
-	 * @param pinNumber GPIO pin
+	 * @param gpio GPIO pin
 	 * @return Returns true if this pin is currently exported
 	 */
-	public boolean isExported(int pinNumber) {
-		return Files.isDirectory(getGpioDir(pinNumber));
+	public boolean isExported(int gpio) {
+		return Files.isDirectory(getGpioDir(gpio));
 	}
 
 	@Override
@@ -73,75 +74,81 @@ public class SysFsDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	public int getPwmFrequency(int pinNumber) {
-		if (SystemInfo.getBoardInfo().sameMakeAndModel(OdroidBoardInfoProvider.ODROID_C2)) {
-			return OdroidC2SysFsPwmOutputDevice.getFrequency(pinNumber);
+	public int getPwmFrequency(int gpio) {
+		if (boardInfo.sameMakeAndModel(OdroidBoardInfoProvider.ODROID_C2)) {
+			return OdroidC2SysFsPwmOutputDevice.getFrequency(gpio);
 		}
 		
 		throw new UnsupportedOperationException("PWM not supported by device factory '"
-				+ getClass().getSimpleName() + "' on device '" + SystemInfo.getBoardInfo() + "'");
+				+ getClass().getSimpleName() + "' on device '" + boardInfo.getName() + "'");
 	}
 
 	@Override
-	public void setPwmFrequency(int pinNumber, int pwmFrequency) {
-		if (SystemInfo.getBoardInfo().sameMakeAndModel(OdroidBoardInfoProvider.ODROID_C2)) {
-			OdroidC2SysFsPwmOutputDevice.setFrequency(pinNumber, pwmFrequency);
+	public void setPwmFrequency(int gpio, int pwmFrequency) {
+		if (boardInfo.sameMakeAndModel(OdroidBoardInfoProvider.ODROID_C2)) {
+			OdroidC2SysFsPwmOutputDevice.setFrequency(gpio, pwmFrequency);
 			return;
 		}
 		
 		throw new UnsupportedOperationException("PWM not supported by device factory '"
-				+ getClass().getSimpleName() + "' on device '" + SystemInfo.getBoardInfo() + "'");
+				+ getClass().getSimpleName() + "' on device '" + boardInfo.getName() + "'");
 	}
 
 	@Override
-	protected GpioAnalogInputDeviceInterface createAnalogInputPin(String key, int pinNumber) throws RuntimeIOException {
-		// TODO Analog input support on Odroid C2
+	protected GpioAnalogInputDeviceInterface createAnalogInputPin(String key, int gpio) throws RuntimeIOException {
+		// TODO Analog input support on Odroid C2, Beaglebone Black and C.H.I.P.
 		
 		throw new UnsupportedOperationException("Analog input not supported by device factory '"
-				+ getClass().getSimpleName() + "' on device '" + SystemInfo.getBoardInfo() + "'");
+				+ getClass().getSimpleName() + "' on device '" + boardInfo.getName() + "'");
 	}
 
 	@Override
-	protected GpioAnalogOutputDeviceInterface createAnalogOutputPin(String key, int pinNumber) throws RuntimeIOException {
+	protected GpioAnalogOutputDeviceInterface createAnalogOutputPin(String key, int gpio) throws RuntimeIOException {
 		throw new UnsupportedOperationException("Analog output not supported by device factory '"
-				+ getClass().getSimpleName() + "' on device '" + SystemInfo.getBoardInfo() + "'");
+				+ getClass().getSimpleName() + "' on device '" + boardInfo.getName() + "'");
 	}
 
 	@Override
-	protected GpioDigitalInputDeviceInterface createDigitalInputPin(String key, int pinNumber, GpioPullUpDown pud,
+	protected GpioDigitalInputDeviceInterface createDigitalInputPin(String key, int gpio, GpioPullUpDown pud,
 			GpioEventTrigger trigger) throws RuntimeIOException {
-		export(pinNumber, Mode.DIGITAL_INPUT);
+		export(gpio, Mode.DIGITAL_INPUT);
 		
-		return new SysFsDigitalInputDevice(this, getGpioDir(pinNumber), key, pinNumber, trigger);
+		return new SysFsDigitalInputDevice(this, getGpioDir(gpio), key, gpio, trigger);
 	}
 
 	@Override
-	protected GpioDigitalOutputDeviceInterface createDigitalOutputPin(String key, int pinNumber, boolean initialValue)
+	protected GpioDigitalOutputDeviceInterface createDigitalOutputPin(String key, int gpio, boolean initialValue)
 			throws RuntimeIOException {
-		export(pinNumber, Mode.DIGITAL_OUTPUT);
+		export(gpio, Mode.DIGITAL_OUTPUT);
 		
-		return new SysFsDigitalOutputDevice(this, getGpioDir(pinNumber), key, pinNumber, initialValue);
+		return new SysFsDigitalOutputDevice(this, getGpioDir(gpio), key, gpio, initialValue);
 	}
 
 	@Override
 	public GpioDigitalInputOutputDeviceInterface createDigitalInputOutputPin(
-			String key, int pinNumber, GpioDeviceInterface.Mode mode)
+			String key, int gpio, GpioDeviceInterface.Mode mode)
 			throws RuntimeIOException {
-		return new SysFsDigitalInputOutputDevice(this, getGpioDir(pinNumber), key, pinNumber, mode);
+		return new SysFsDigitalInputOutputDevice(this, getGpioDir(gpio), key, gpio, mode);
 	}
 
 	@Override
-	protected PwmOutputDeviceInterface createPwmOutputPin(String key, int pinNumber, float initialValue,
+	protected PwmOutputDeviceInterface createPwmOutputPin(String key, int gpio, float initialValue,
 			PwmType pwmType) throws RuntimeIOException {
-		if (SystemInfo.getBoardInfo().sameMakeAndModel(OdroidBoardInfoProvider.ODROID_C2)) {
+		if (boardInfo.sameMakeAndModel(OdroidBoardInfoProvider.ODROID_C2)) {
 			// FIXME Match with previously set PWM frequency...
-			return new OdroidC2SysFsPwmOutputDevice(key, this, pinNumber, DEFAULT_PWM_FREQUENCY, initialValue);
+			return new OdroidC2SysFsPwmOutputDevice(key, this, gpio, DEFAULT_PWM_FREQUENCY, initialValue);
 		}
-		if (SystemInfo.getBoardInfo().sameMakeAndModel(BeagleBoneBoardInfoProvider.BBB_BOARD_INFO)) {
+		if (boardInfo.sameMakeAndModel(BeagleBoneBoardInfoProvider.BBB_BOARD_INFO)) {
 			// FIXME Match with previously set PWM frequency...
-			return new BbbPwmSysFsPwmOutputDevice(key, this, pinNumber, DEFAULT_PWM_FREQUENCY, initialValue);
+			return new BbbPwmSysFsPwmOutputDevice(key, this, gpio, DEFAULT_PWM_FREQUENCY, initialValue);
 		}
-		throw new UnsupportedOperationException("PWM not supported");
+		if (boardInfo.sameMakeAndModel(CHIPBoardInfoProvider.CHIP_BOARD_INFO) && gpio == 0) {
+			// FIXME Match with previously set PWM frequency...
+			return new ChipSysFsPwmOutputDevice(key, this, gpio, DEFAULT_PWM_FREQUENCY, initialValue);
+		}
+		SoftwarePwmOutputDevice pwm = new SoftwarePwmOutputDevice(key, this, createDigitalOutputPin(key, gpio, false), DEFAULT_PWM_FREQUENCY, initialValue);
+		pwm.start();
+		return pwm;
 	}
 
 	@Override
@@ -156,23 +163,23 @@ public class SysFsDeviceFactory extends BaseNativeDeviceFactory {
 		return new SysFsI2cDevice(this, key, controller, address, addressSize, clockFrequency);
 	}
 	
-	void export(int pinNumber, Mode mode) {
+	void export(int gpio, Mode mode) {
 		if (mode != Mode.DIGITAL_INPUT && mode != Mode.DIGITAL_OUTPUT) {
 			throw new IllegalArgumentException("Illegal mode (" + mode +
 					") must be " + Mode.DIGITAL_INPUT + " or " + Mode.DIGITAL_OUTPUT);
 		}
 		
-		Logger.debug("export({}, {})", Integer.valueOf(pinNumber), mode);
-
-		if (! isExported(pinNumber)) {
+		Logger.debug("export({}, {})", Integer.valueOf(gpio), mode);
+		
+		if (! isExported(gpio)) {
 			try (Writer export_writer = new FileWriter(rootPath.resolve(EXPORT_FILE).toFile())) {
-				export_writer.write(String.valueOf(pinNumber));
+				export_writer.write(String.valueOf(gpio));
 			} catch (IOException e) {
 				throw new RuntimeIOException(e);
 			}
 		}
 		
-		Path direction_file = getGpioDir(pinNumber).resolve(DIRECTION_FILE);
+		Path direction_file = getGpioDir(gpio).resolve(DIRECTION_FILE);
 		// TODO Is this polling actually required?
 		// Wait up to 500ms for the gpioxxx/direction file to exist
 		int delay = 500;
@@ -184,28 +191,28 @@ public class SysFsDeviceFactory extends BaseNativeDeviceFactory {
 				// Ignore
 			}
 			if (System.currentTimeMillis() - start > delay) {
-				unexport(pinNumber);
+				unexport(gpio);
 				throw new RuntimeIOException("Waited for over " + delay + " ms for the GPIO pin to be created, aborting");
 			}
 		}
 
-		// Defaults to in on the Raspberry Pi
+		// Defaults to in on most boards
 		try (FileWriter writer = new FileWriter(direction_file.toFile(), true)) {
 			writer.write(mode == Mode.DIGITAL_OUTPUT ? "out" : "in");
 		} catch (IOException e) {
-			unexport(pinNumber);
-			throw new RuntimeIOException("Error setting direction for GPIO " + pinNumber, e);
+			unexport(gpio);
+			throw new RuntimeIOException("Error setting direction for GPIO " + gpio, e);
 		}
 	}
 	
-	private Path getGpioDir(int pinNumber) {
-		return rootPath.resolve(GPIO_DIR_PREFIX + pinNumber);
+	private Path getGpioDir(int gpio) {
+		return rootPath.resolve(GPIO_DIR_PREFIX + gpio);
 	}
 
-	void unexport(int pinNumber) {
-		if (isExported(pinNumber)) {
+	void unexport(int gpio) {
+		if (isExported(gpio)) {
 			try (Writer unexport_writer = new FileWriter(rootPath.resolve(UNEXPORT_FILE).toFile())) {
-				unexport_writer.write(String.valueOf(pinNumber));
+				unexport_writer.write(String.valueOf(gpio));
 			} catch (IOException e) {
 				throw new RuntimeIOException(e);
 			}
