@@ -1,7 +1,6 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <jni.h>
 
 #include <clk.h>
 #include <gpio.h>
