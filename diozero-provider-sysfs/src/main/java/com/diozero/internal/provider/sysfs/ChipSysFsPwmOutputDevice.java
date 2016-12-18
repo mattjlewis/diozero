@@ -38,7 +38,7 @@ public class ChipSysFsPwmOutputDevice extends AbstractDevice implements PwmOutpu
 					writer.write(String.valueOf(pwmNum));
 				}
 			}
-			//setPolarity("normal");
+			//setPolarity(Polarity.NORMAL);
 			setEnabled(true);
 			setPeriod(periodNs);
 			
@@ -114,11 +114,24 @@ public class ChipSysFsPwmOutputDevice extends AbstractDevice implements PwmOutpu
 		this.periodNs = periodNs;
 	}
 	
-	private void setPolarity(String polarity) throws IOException {
+	protected void setPolarity(Polarity polarity) throws IOException {
 		Logger.info("setPolarity(" + polarity + ")");
 		try (FileWriter writer = new FileWriter(pwmRoot.resolve("polarity").toFile())) {
-			writer.write("normal");
+			writer.write(polarity.getValue());
 			writer.flush();
+		}
+	}
+	
+	public static enum Polarity {
+		NORMAL("normal"), INVERSED("inversed");
+		
+		private String value;
+		private Polarity(String value) {
+			this.value = value;
+		}
+		
+		public String getValue() {
+			return value;
 		}
 	}
 }
