@@ -33,14 +33,14 @@ import com.diozero.pigpioj.PigpioGpio;
 import com.diozero.util.RuntimeIOException;
 
 public class PigpioJPwmOutputDevice extends AbstractDevice implements PwmOutputDeviceInterface {
-	private int pinNumber;
+	private int gpio;
 	private int range;
 
-	public PigpioJPwmOutputDevice(String key, DeviceFactoryInterface deviceFactory, int pinNumber,
+	public PigpioJPwmOutputDevice(String key, DeviceFactoryInterface deviceFactory, int gpio,
 			float initialValue, int range) {
 		super(key, deviceFactory);
 		
-		this.pinNumber = pinNumber;
+		this.gpio = gpio;
 		this.range = range;
 		
 		setValue(initialValue);
@@ -52,13 +52,18 @@ public class PigpioJPwmOutputDevice extends AbstractDevice implements PwmOutputD
 	}
 
 	@Override
-	public int getPin() {
-		return pinNumber;
+	public int getGpio() {
+		return gpio;
+	}
+	
+	@Override
+	public int getPwmNum() {
+		return gpio;
 	}
 
 	@Override
 	public float getValue() throws RuntimeIOException {
-		int dc = PigpioGpio.getPWMDutyCycle(pinNumber);
+		int dc = PigpioGpio.getPWMDutyCycle(gpio);
 		if (dc < 0) {
 			throw new RuntimeIOException("Error calling PigpioGpio.getPWMDutyCycle(), response: " + dc);
 		}
@@ -68,7 +73,7 @@ public class PigpioJPwmOutputDevice extends AbstractDevice implements PwmOutputD
 
 	@Override
 	public void setValue(float value) throws RuntimeIOException {
-		int rc = PigpioGpio.setPWMDutyCycle(pinNumber, (int)(range*value));
+		int rc = PigpioGpio.setPWMDutyCycle(gpio, (int)(range*value));
 		if (rc < 0) {
 			throw new RuntimeIOException("Error calling PigpioGpio.setPWMDutyCycle(), response: " + rc);
 		}

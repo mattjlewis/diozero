@@ -48,23 +48,23 @@ public class PigpioJDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	public int getPwmFrequency(int pinNumber) {
-		return PigpioGpio.getPWMFrequency(pinNumber);
+	public int getPwmFrequency(int gpio) {
+		return PigpioGpio.getPWMFrequency(gpio);
 	}
 	
 	@Override
-	public void setPwmFrequency(int pinNumber, int pwmFrequency) {
-		int old_freq = PigpioGpio.getPWMFrequency(pinNumber);
-		int old_range = PigpioGpio.getPWMRange(pinNumber);
-		int old_real_range = PigpioGpio.getPWMRealRange(pinNumber);
-		PigpioGpio.setPWMFrequency(pinNumber, pwmFrequency);
-		PigpioGpio.setPWMRange(pinNumber, PigpioGpio.getPWMRealRange(pinNumber));
-		int new_freq = PigpioGpio.getPWMFrequency(pinNumber);
-		int new_range = PigpioGpio.getPWMRange(pinNumber);
-		int new_real_range = PigpioGpio.getPWMRealRange(pinNumber);
+	public void setPwmFrequency(int gpio, int pwmFrequency) {
+		int old_freq = PigpioGpio.getPWMFrequency(gpio);
+		int old_range = PigpioGpio.getPWMRange(gpio);
+		int old_real_range = PigpioGpio.getPWMRealRange(gpio);
+		PigpioGpio.setPWMFrequency(gpio, pwmFrequency);
+		PigpioGpio.setPWMRange(gpio, PigpioGpio.getPWMRealRange(gpio));
+		int new_freq = PigpioGpio.getPWMFrequency(gpio);
+		int new_range = PigpioGpio.getPWMRange(gpio);
+		int new_real_range = PigpioGpio.getPWMRealRange(gpio);
 		Logger.info("setPwmFrequency({}, {}), old freq={}, old real range={}, old range={},"
 				+ " new freq={}, new real range={}, new range={}",
-				Integer.valueOf(pinNumber), Integer.valueOf(pwmFrequency),
+				Integer.valueOf(gpio), Integer.valueOf(pwmFrequency),
 				Integer.valueOf(old_freq), Integer.valueOf(old_real_range), Integer.valueOf(old_range),
 				Integer.valueOf(new_freq), Integer.valueOf(new_real_range), Integer.valueOf(new_range));
 	}
@@ -76,36 +76,36 @@ public class PigpioJDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	protected GpioAnalogInputDeviceInterface createAnalogInputPin(String key, int pinNumber) throws RuntimeIOException {
+	protected GpioAnalogInputDeviceInterface createAnalogInputPin(String key, int gpio) throws RuntimeIOException {
 		throw new UnsupportedOperationException("Analog input pins not supported");
 	}
 
 	@Override
-	protected GpioAnalogOutputDeviceInterface createAnalogOutputPin(String key, int pinNumber) throws RuntimeIOException {
+	protected GpioAnalogOutputDeviceInterface createAnalogOutputPin(String key, int gpio) throws RuntimeIOException {
 		throw new UnsupportedOperationException("Analog devices aren't supported on this device");
 	}
 
 	@Override
-	protected GpioDigitalInputDeviceInterface createDigitalInputPin(String key, int pinNumber, GpioPullUpDown pud,
+	protected GpioDigitalInputDeviceInterface createDigitalInputPin(String key, int gpio, GpioPullUpDown pud,
 			GpioEventTrigger trigger) throws RuntimeIOException {
-		return new PigpioJDigitalInputDevice(key, this, pinNumber, pud, trigger);
+		return new PigpioJDigitalInputDevice(key, this, gpio, pud, trigger);
 	}
 
 	@Override
-	protected GpioDigitalOutputDeviceInterface createDigitalOutputPin(String key, int pinNumber, boolean initialValue)
+	protected GpioDigitalOutputDeviceInterface createDigitalOutputPin(String key, int gpio, boolean initialValue)
 			throws RuntimeIOException {
-		return new PigpioJDigitalOutputDevice(key, this, pinNumber, initialValue);
+		return new PigpioJDigitalOutputDevice(key, this, gpio, initialValue);
 	}
 
 	@Override
 	protected GpioDigitalInputOutputDeviceInterface createDigitalInputOutputPin(
-			String key, int pinNumber, GpioDeviceInterface.Mode mode)
+			String key, int gpio, GpioDeviceInterface.Mode mode)
 			throws RuntimeIOException {
-		return new PigpioJDigitalInputOutputDevice(key, this, pinNumber, mode);
+		return new PigpioJDigitalInputOutputDevice(key, this, gpio, mode);
 	}
 
-	protected GpioDeviceInterface.Mode getCurrentGpioMode(int pinNumber) {
-		int rc = PigpioGpio.getMode(pinNumber);
+	protected GpioDeviceInterface.Mode getCurrentGpioMode(int gpio) {
+		int rc = PigpioGpio.getMode(gpio);
 		
 		if (rc == PigpioGpio.MODE_PI_INPUT) {
 			return Mode.DIGITAL_INPUT;
@@ -117,9 +117,9 @@ public class PigpioJDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	protected PwmOutputDeviceInterface createPwmOutputPin(String key, int pinNumber, float initialValue,
+	protected PwmOutputDeviceInterface createPwmOutputPin(String key, int gpio, float initialValue,
 			PwmType pwmType) throws RuntimeIOException {
-		return new PigpioJPwmOutputDevice(key, this, pinNumber, initialValue, PigpioGpio.getPWMRange(pinNumber));
+		return new PigpioJPwmOutputDevice(key, this, gpio, initialValue, PigpioGpio.getPWMRange(gpio));
 	}
 
 	@Override

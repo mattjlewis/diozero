@@ -38,13 +38,13 @@ import com.diozero.util.RuntimeIOException;
 public class PigpioJDigitalInputOutputDevice extends AbstractDevice
 implements GpioDigitalInputOutputDeviceInterface {
 	private GpioDeviceInterface.Mode mode;
-	private int pinNumber;
+	private int gpio;
 
 	public PigpioJDigitalInputOutputDevice(String key, PigpioJDeviceFactory deviceFactory,
-			int pinNumber, GpioDeviceInterface.Mode mode) {
+			int gpio, GpioDeviceInterface.Mode mode) {
 		super(key, deviceFactory);
 		
-		this.pinNumber = pinNumber;
+		this.gpio = gpio;
 		
 		setMode(mode);
 	}
@@ -70,16 +70,16 @@ implements GpioDigitalInputOutputDeviceInterface {
 		}
 
 		if (mode == GpioDeviceInterface.Mode.DIGITAL_INPUT) {
-			int rc = PigpioGpio.setMode(pinNumber, PigpioGpio.MODE_PI_INPUT);
+			int rc = PigpioGpio.setMode(gpio, PigpioGpio.MODE_PI_INPUT);
 			if (rc < 0) {
 				throw new RuntimeIOException("Error calling PigpioGpio.setMode(), response: " + rc);
 			}
-			rc = PigpioGpio.setPullUpDown(pinNumber, PigpioJDeviceFactory.getPigpioJPullUpDown(GpioPullUpDown.NONE));
+			rc = PigpioGpio.setPullUpDown(gpio, PigpioJDeviceFactory.getPigpioJPullUpDown(GpioPullUpDown.NONE));
 			if (rc < 0) {
 				throw new RuntimeIOException("Error calling PigpioGpio.setPullUpDown(), response: " + rc);
 			}
 		} else {
-			int rc = PigpioGpio.setMode(pinNumber, PigpioGpio.MODE_PI_OUTPUT);
+			int rc = PigpioGpio.setMode(gpio, PigpioGpio.MODE_PI_OUTPUT);
 			if (rc < 0) {
 				throw new RuntimeIOException("Error calling PigpioGpio.setMode(), response: " + rc);
 			}
@@ -90,7 +90,7 @@ implements GpioDigitalInputOutputDeviceInterface {
 
 	@Override
 	public boolean getValue() throws RuntimeIOException {
-		int rc = PigpioGpio.read(pinNumber);
+		int rc = PigpioGpio.read(gpio);
 		if (rc < 0) {
 			throw new RuntimeIOException("Error calling PigpioGpio.read(), response: " + rc);
 		}
@@ -102,15 +102,15 @@ implements GpioDigitalInputOutputDeviceInterface {
 		if (mode != GpioDeviceInterface.Mode.DIGITAL_OUTPUT) {
 			throw new IllegalStateException("Can only set output value for digital output pins");
 		}
-		int rc = PigpioGpio.write(pinNumber, value);
+		int rc = PigpioGpio.write(gpio, value);
 		if (rc < 0) {
 			throw new RuntimeIOException("Error calling PigpioGpio.write(), response: " + rc);
 		}
 	}
 
 	@Override
-	public int getPin() {
-		return pinNumber;
+	public int getGpio() {
+		return gpio;
 	}
 
 	@Override
