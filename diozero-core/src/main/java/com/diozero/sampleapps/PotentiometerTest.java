@@ -67,9 +67,9 @@ public class PotentiometerTest {
 		test(type, chip_select, adc_pin, vref, r_pot);
 	}
 	
-	public static void test(McpAdc.Type type, int chipSelect, int pinNumber, float vRef, float rPot) {
+	public static void test(McpAdc.Type type, int chipSelect, int gpio, float vRef, float rPot) {
 		try (McpAdc adc = new McpAdc(type, chipSelect);
-				Potentiometer pot = new Potentiometer(adc, pinNumber, vRef)) {
+				Potentiometer pot = new Potentiometer(adc, gpio, vRef)) {
 			for (int i=0; i<10; i++) {
 				Logger.info("vPot={}", Float.valueOf(pot.getVoltage()));
 				SleepUtil.sleepSeconds(1);

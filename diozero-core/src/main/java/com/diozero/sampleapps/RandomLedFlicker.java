@@ -52,7 +52,7 @@ public class RandomLedFlicker {
 	
 	public static void main(String[] args) {
 		if (args.length < 1) {
-			Logger.error("Usage: {} <BCM pin number>", RandomLedFlicker.class.getName());
+			Logger.error("Usage: {} <gpio>", RandomLedFlicker.class.getName());
 			System.exit(1);
 		}
 		

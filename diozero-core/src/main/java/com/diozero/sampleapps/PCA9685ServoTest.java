@@ -61,40 +61,40 @@ public class PCA9685ServoTest {
 		test(pwm_freq, pin_number);
 	}
 	
-	public static void test(int pwmFrequency, int pinNumber) {
+	public static void test(int pwmFrequency, int gpio) {
 		try (PCA9685 pca9685 = new PCA9685(pwmFrequency);
-				Servo servo = new Servo(pca9685, pinNumber, pwmFrequency, TOWERPRO_SG90_MID_MS)) {
+				Servo servo = new Servo(pca9685, gpio, pwmFrequency, TOWERPRO_SG90_MID_MS)) {
 			Logger.info("Mid");
-			pca9685.setServoPulseWidthMs(pinNumber, TOWERPRO_SG90_MID_MS);
+			pca9685.setServoPulseWidthMs(gpio, TOWERPRO_SG90_MID_MS);
 			SleepUtil.sleepMillis(1000);
 			Logger.info("Max");
-			pca9685.setServoPulseWidthMs(pinNumber, TOWERPRO_SG90_MAX_MS);
+			pca9685.setServoPulseWidthMs(gpio, TOWERPRO_SG90_MAX_MS);
 			SleepUtil.sleepMillis(1000);
 			Logger.info("Mid");
-			pca9685.setServoPulseWidthMs(pinNumber, TOWERPRO_SG90_MID_MS);
+			pca9685.setServoPulseWidthMs(gpio, TOWERPRO_SG90_MID_MS);
 			SleepUtil.sleepMillis(1000);
 			Logger.info("Min");
-			pca9685.setServoPulseWidthMs(pinNumber, TOWERPRO_SG90_MIN_MS);
+			pca9685.setServoPulseWidthMs(gpio, TOWERPRO_SG90_MIN_MS);
 			SleepUtil.sleepMillis(1000);
 			Logger.info("Mid");
-			pca9685.setServoPulseWidthMs(pinNumber, TOWERPRO_SG90_MID_MS);
+			pca9685.setServoPulseWidthMs(gpio, TOWERPRO_SG90_MID_MS);
 			SleepUtil.sleepMillis(1000);
 			
 			/*
 			Logger.info("Mid");
-			servo.setValue(TOWERPRO_SG90_MID_MS * pca9685.getPwmFrequency(pinNumber) / 1000f);
+			servo.setValue(TOWERPRO_SG90_MID_MS * pca9685.getPwmFrequency(gpio) / 1000f);
 			SleepUtil.sleepMillis(1000);
 			
 			for (float i=TOWERPRO_SG90_MID_MS; i>TOWERPRO_SG90_MIN_MS; i-=0.01) {
-				servo.setValue(i * pca9685.getPwmFrequency(pinNumber) / 1000f);
+				servo.setValue(i * pca9685.getPwmFrequency(gpio) / 1000f);
 				SleepUtil.sleepMillis(10);
 			}
 			for (float i=TOWERPRO_SG90_MIN_MS; i<TOWERPRO_SG90_MAX_MS; i+=0.01) {
-				servo.setValue(i * pca9685.getPwmFrequency(pinNumber) / 1000f);
+				servo.setValue(i * pca9685.getPwmFrequency(gpio) / 1000f);
 				SleepUtil.sleepMillis(10);
 			}
 			for (float i=TOWERPRO_SG90_MAX_MS; i>TOWERPRO_SG90_MID_MS; i-=0.01) {
-				servo.setValue(i * pca9685.getPwmFrequency(pinNumber) / 1000f);
+				servo.setValue(i * pca9685.getPwmFrequency(gpio) / 1000f);
 				SleepUtil.sleepMillis(10);
 			}
 			*/

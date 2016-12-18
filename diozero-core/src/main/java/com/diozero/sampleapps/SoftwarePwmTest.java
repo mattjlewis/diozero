@@ -30,24 +30,24 @@ package com.diozero.sampleapps;
 import org.pmw.tinylog.Logger;
 
 import com.diozero.util.SleepUtil;
-import com.diozero.util.SoftwarePwm;
+import com.diozero.util.SoftwarePwmOutputDevice;
 
 public class SoftwarePwmTest {
 	public static void main(String[] args) {
 		if (args.length < 1) {
-			System.out.println("Usage: " + SoftwarePwmTest.class.getName() + " <gpio> <frequency> <pulseUs>");
+			System.out.println("Usage: " + SoftwarePwmTest.class.getName() + " <gpio> <frequency> <value>");
 			System.exit(1);
 		}
 		
 		int pin_number = Integer.parseInt(args[0]);
 		int frequency = Integer.parseInt(args[1]);
-		int pulse_us = Integer.parseInt(args[2]);
-		test(pin_number, frequency, pulse_us);
+		float value = Float.parseFloat(args[2]);
+		test(pin_number, frequency, value);
 	}
 	
-	private static void test(int pinNumber, int frequency, int pulseUs) {
+	private static void test(int gpio, int frequency, float value) {
 		int delay = 10;
-		try (SoftwarePwm pwm = new SoftwarePwm(pinNumber, frequency, pulseUs)) {
+		try (SoftwarePwmOutputDevice pwm = new SoftwarePwmOutputDevice("", null, null, frequency, value)) {
 			pwm.start();
 			
 			for (int i=delay; i>0; i--) {

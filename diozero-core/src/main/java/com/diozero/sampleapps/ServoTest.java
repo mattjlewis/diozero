@@ -60,8 +60,8 @@ public class ServoTest {
 		test(pwm_freq, pin_number);
 	}
 	
-	public static void test(int frequency, int pinNumber) {
-		try (Servo servo = new Servo(pinNumber, frequency, TOWERPRO_SG90_MID_MS)) {
+	public static void test(int frequency, int gpio) {
+		try (Servo servo = new Servo(gpio, frequency, TOWERPRO_SG90_MID_MS)) {
 			for (float pulse_ms=TOWERPRO_SG90_MID_MS; pulse_ms<TOWERPRO_SG90_MAX_MS; pulse_ms+=0.005) {
 				servo.setPulseWidthMs(pulse_ms);
 				SleepUtil.sleepMillis(10);

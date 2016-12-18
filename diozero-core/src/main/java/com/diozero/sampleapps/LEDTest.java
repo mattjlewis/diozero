@@ -54,7 +54,7 @@ import com.diozero.util.SleepUtil;
 public class LEDTest {
 	public static void main(String[] args) {
 		if (args.length < 1) {
-			Logger.error("Usage: {} <BCM pin number>", LEDTest.class.getName());
+			Logger.error("Usage: {} <gpio>", LEDTest.class.getName());
 			System.exit(1);
 		}
 		test(Integer.parseInt(args[0]));

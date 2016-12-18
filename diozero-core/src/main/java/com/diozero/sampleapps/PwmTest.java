@@ -48,7 +48,7 @@ import com.diozero.util.SleepUtil;
 public class PwmTest {
 	public static void main(String[] args) {
 		if (args.length < 1) {
-			Logger.error("Usage: {} <pin number>", PwmTest.class.getName());
+			Logger.error("Usage: {} <gpio>", PwmTest.class.getName());
 			System.exit(1);
 		}
 		

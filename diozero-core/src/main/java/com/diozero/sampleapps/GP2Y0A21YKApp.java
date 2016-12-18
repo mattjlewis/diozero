@@ -66,8 +66,8 @@ public class GP2Y0A21YKApp {
 		test(type, chip_select, adc_pin, v_ref);
 	}
 	
-	public static void test(McpAdc.Type type, int chipSelect, int pinNumber, float vRef) {
-		try (McpAdc adc = new McpAdc(type, chipSelect); GP2Y0A21YK device = new GP2Y0A21YK(adc, pinNumber, vRef)) {
+	public static void test(McpAdc.Type type, int chipSelect, int gpio, float vRef) {
+		try (McpAdc adc = new McpAdc(type, chipSelect); GP2Y0A21YK device = new GP2Y0A21YK(adc, gpio, vRef)) {
 			for (int i=0; i<10; i++) {
 				float distance = device.getDistanceCm();
 				Logger.info(String.format("Distance: %.2f", Float.valueOf(distance)));

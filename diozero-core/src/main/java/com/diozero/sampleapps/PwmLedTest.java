@@ -29,6 +29,7 @@ package com.diozero.sampleapps;
 import org.pmw.tinylog.Logger;
 
 import com.diozero.PwmLed;
+import com.diozero.util.DioZeroScheduler;
 import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 
@@ -48,7 +49,7 @@ import com.diozero.util.SleepUtil;
 public class PwmLedTest {
 	public static void main(String[] args) {
 		if (args.length < 1) {
-			Logger.error("Usage: {} <BCM pin number>", PwmLedTest.class.getName());
+			Logger.error("Usage: {} <gpio>", PwmLedTest.class.getName());
 			System.exit(1);
 		}
 		
@@ -112,5 +113,6 @@ public class PwmLedTest {
 		}
 		
 		Logger.info("Done");
+		DioZeroScheduler.shutdownAll();
 	}
 }
