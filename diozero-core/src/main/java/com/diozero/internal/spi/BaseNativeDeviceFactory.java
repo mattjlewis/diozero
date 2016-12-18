@@ -46,8 +46,13 @@ import com.diozero.util.SystemInfo;
 public abstract class BaseNativeDeviceFactory extends AbstractDeviceFactory implements NativeDeviceFactoryInterface {
 	private static final String NATIVE_PREFIX = "Native-";
 	private static final String GPIO_PREFIX = NATIVE_PREFIX + "GPIO-";
+	private static final String PWM_PREFIX = NATIVE_PREFIX + "PWM-";
 	private static final String I2C_PREFIX = NATIVE_PREFIX + "I2C-";
 	private static final String SPI_PREFIX = NATIVE_PREFIX + "SPI-";
+	
+	private static String createPwmKey(int pwmNum) {
+		return PWM_PREFIX + pwmNum;
+	}
 	
 	private static String createI2CKey(int controller, int address) {
 		return I2C_PREFIX + controller + "-" + address;
@@ -58,7 +63,7 @@ public abstract class BaseNativeDeviceFactory extends AbstractDeviceFactory impl
 	}
 	
 	private List<DeviceFactoryInterface> deviceFactories = new ArrayList<>();
-	private BoardInfo boardInfo;
+	protected BoardInfo boardInfo;
 	
 	public BaseNativeDeviceFactory() {
 		super(GPIO_PREFIX);
@@ -82,130 +87,131 @@ public abstract class BaseNativeDeviceFactory extends AbstractDeviceFactory impl
 	}
 
 	@Override
-	public final GpioAnalogInputDeviceInterface provisionAnalogInputPin(int pinNumber) throws RuntimeIOException {
-		if (! boardInfo.isSupported(Mode.ANALOG_INPUT, pinNumber)) {
-			throw new IllegalArgumentException("Invalid mode (analog input) for pinNumber " + pinNumber);
+	public final GpioAnalogInputDeviceInterface provisionAnalogInputPin(int gpio) throws RuntimeIOException {
+		int mapped_gpio = boardInfo.mapGpio(gpio);
+		if (! boardInfo.isSupported(Mode.ANALOG_INPUT, mapped_gpio)) {
+			throw new IllegalArgumentException("Invalid mode (analog input) for GPIO " + mapped_gpio);
 		}
 		
-		String key = createPinKey(pinNumber);
+		String key = createPinKey(mapped_gpio);
 		
 		// Check if this pin is already provisioned
 		if (isDeviceOpened(key)) {
 			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
 		}
 		
-		GpioAnalogInputDeviceInterface device = createAnalogInputPin(key, pinNumber);
+		GpioAnalogInputDeviceInterface device = createAnalogInputPin(key, mapped_gpio);
 		deviceOpened(device);
 		
 		return device;
 	}
 
 	@Override
-	public final GpioAnalogOutputDeviceInterface provisionAnalogOutputPin(int pinNumber) throws RuntimeIOException {
-		if (! boardInfo.isSupported(Mode.ANALOG_OUTPUT, pinNumber)) {
-			throw new IllegalArgumentException("Invalid mode (analog output) for pinNumber " + pinNumber);
+	public final GpioAnalogOutputDeviceInterface provisionAnalogOutputPin(int gpio) throws RuntimeIOException {
+		int mapped_gpio = boardInfo.mapGpio(gpio);
+		if (! boardInfo.isSupported(Mode.ANALOG_OUTPUT, mapped_gpio)) {
+			throw new IllegalArgumentException("Invalid mode (analog output) for GPIO " + mapped_gpio);
 		}
 		
-		String key = createPinKey(pinNumber);
+		String key = createPinKey(mapped_gpio);
 		
 		// Check if this pin is already provisioned
 		if (isDeviceOpened(key)) {
 			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
 		}
 		
-		GpioAnalogOutputDeviceInterface device = createAnalogOutputPin(key, pinNumber);
+		GpioAnalogOutputDeviceInterface device = createAnalogOutputPin(key, mapped_gpio);
 		deviceOpened(device);
 		
 		return device;
 	}
 	
 	@Override
-	public final GpioDigitalInputDeviceInterface provisionDigitalInputPin(int pinNumber, GpioPullUpDown pud,
+	public final GpioDigitalInputDeviceInterface provisionDigitalInputPin(int gpio, GpioPullUpDown pud,
 			GpioEventTrigger trigger) throws RuntimeIOException {
-		if (! boardInfo.isSupported(Mode.DIGITAL_INPUT, pinNumber)) {
-			throw new IllegalArgumentException("Invalid mode (digital input) for pinNumber " + pinNumber);
+		int mapped_gpio = boardInfo.mapGpio(gpio);
+		if (! boardInfo.isSupported(Mode.DIGITAL_INPUT, mapped_gpio)) {
+			throw new IllegalArgumentException("Invalid mode (digital input) for gpio " + mapped_gpio);
 		}
 		
-		// TODO Understand limitations of a particular device
-		// Create some sort of DeviceCapabilities class for this kind of information
-		// Raspberry Pi GPIO2 and GPIO3 are SDA and SCL1 respectively
-		if (pud == GpioPullUpDown.PULL_DOWN && (pinNumber == 2 || pinNumber == 3)) {
-			throw new IllegalArgumentException("GPIO pins 2 and 3 are fitted with physical pull up resistors; "
-					+ "you cannot initialize them in pull-down mode");
-		}
-		
-		String key = createPinKey(pinNumber);
+		String key = createPinKey(mapped_gpio);
 		
 		// Check if this pin is already provisioned
 		if (isDeviceOpened(key)) {
 			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
 		}
 		
-		GpioDigitalInputDeviceInterface device = createDigitalInputPin(key, pinNumber, pud, trigger);
+		GpioDigitalInputDeviceInterface device = createDigitalInputPin(key, mapped_gpio, pud, trigger);
 		deviceOpened(device);
 		
 		return device;
 	}
 
 	@Override
-	public final GpioDigitalOutputDeviceInterface provisionDigitalOutputPin(int pinNumber, boolean initialValue) throws RuntimeIOException {
-		if (! boardInfo.isSupported(Mode.DIGITAL_OUTPUT, pinNumber)) {
-			throw new IllegalArgumentException("Invalid mode (digital output) for pinNumber " + pinNumber);
+	public final GpioDigitalOutputDeviceInterface provisionDigitalOutputPin(int gpio, boolean initialValue) throws RuntimeIOException {
+		int mapped_gpio = boardInfo.mapGpio(gpio);
+		if (! boardInfo.isSupported(Mode.DIGITAL_OUTPUT, mapped_gpio)) {
+			throw new IllegalArgumentException("Invalid mode (digital output) for gpio " + mapped_gpio);
 		}
 		
-		String key = createPinKey(pinNumber);
+		String key = createPinKey(mapped_gpio);
 		
 		// Check if this pin is already provisioned
 		if (isDeviceOpened(key)) {
 			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
 		}
 		
-		GpioDigitalOutputDeviceInterface device = createDigitalOutputPin(key, pinNumber, initialValue);
+		GpioDigitalOutputDeviceInterface device = createDigitalOutputPin(key, mapped_gpio, initialValue);
 		deviceOpened(device);
 		
 		return device;
 	}
 
 	@Override
-	public final GpioDigitalInputOutputDeviceInterface provisionDigitalInputOutputPin(int pinNumber, GpioDeviceInterface.Mode mode) throws RuntimeIOException {
-		if (! boardInfo.isSupported(Mode.DIGITAL_OUTPUT, pinNumber) ||
-				! boardInfo.isSupported(Mode.DIGITAL_INPUT, pinNumber)) {
-			throw new IllegalArgumentException("Invalid mode (digital input/output) for pinNumber " + pinNumber);
+	public final GpioDigitalInputOutputDeviceInterface provisionDigitalInputOutputPin(int gpio, GpioDeviceInterface.Mode mode) throws RuntimeIOException {
+		int mapped_gpio = boardInfo.mapGpio(gpio);
+		if (! boardInfo.isSupported(Mode.DIGITAL_OUTPUT, mapped_gpio) ||
+				! boardInfo.isSupported(Mode.DIGITAL_INPUT, mapped_gpio)) {
+			throw new IllegalArgumentException("Invalid mode (digital input/output) for gpio " + mapped_gpio);
 		}
 		
-		String key = createPinKey(pinNumber);
+		String key = createPinKey(mapped_gpio);
 		
 		// Check if this pin is already provisioned
 		if (isDeviceOpened(key)) {
 			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
 		}
 		
-		GpioDigitalInputOutputDeviceInterface device = createDigitalInputOutputPin(key, pinNumber, mode);
+		GpioDigitalInputOutputDeviceInterface device = createDigitalInputOutputPin(key, mapped_gpio, mode);
 		deviceOpened(device);
 		
 		return device;
 	}
 
 	@Override
-	public final PwmOutputDeviceInterface provisionPwmOutputPin(int pinNumber, float initialValue) throws RuntimeIOException {
+	public final PwmOutputDeviceInterface provisionPwmOutputPin(int gpio, float initialValue) throws RuntimeIOException {
+		int mapped_gpio;
+		String key;
 		PwmType pwm_type;
-		if (boardInfo.isSupported(Mode.PWM_OUTPUT, pinNumber)) {
+		if (boardInfo.isSupported(Mode.PWM_OUTPUT, gpio)) {
 			pwm_type = PwmType.HARDWARE;
-		} else if (boardInfo.isSupported(Mode.DIGITAL_OUTPUT, pinNumber)) {
-			Logger.warn("Hardware PWM not available on BCM pin {}, reverting to software", Integer.valueOf(pinNumber));
+			mapped_gpio = gpio;
+			key = createPwmKey(mapped_gpio);
+		} else if (boardInfo.isSupported(Mode.DIGITAL_OUTPUT, gpio)) {
+			Logger.warn("Hardware PWM not available on pin {}, reverting to software", Integer.valueOf(gpio));
 			pwm_type = PwmType.SOFTWARE;
+			mapped_gpio = boardInfo.mapGpio(gpio);
+			key = createPinKey(mapped_gpio);
 		} else {
-			throw new IllegalArgumentException("Invalid mode (PWM output) for pinNumber " + pinNumber);
+			throw new IllegalArgumentException("Invalid mode (PWM output) for GPIO " + gpio);
 		}
-		
-		String key = createPinKey(pinNumber);
 		
 		// Check if this pin is already provisioned
 		if (isDeviceOpened(key)) {
 			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
 		}
 
-		PwmOutputDeviceInterface device = createPwmOutputPin(key, pinNumber, initialValue, pwm_type);
+		PwmOutputDeviceInterface device = createPwmOutputPin(key, mapped_gpio, initialValue, pwm_type);
 		deviceOpened(device);
 		
 		return device;
@@ -241,13 +247,13 @@ public abstract class BaseNativeDeviceFactory extends AbstractDeviceFactory impl
 		return device;
 	}
 
-	protected abstract GpioAnalogInputDeviceInterface createAnalogInputPin(String key, int pinNumber) throws RuntimeIOException;
-	protected abstract GpioAnalogOutputDeviceInterface createAnalogOutputPin(String key, int pinNumber) throws RuntimeIOException;
-	protected abstract GpioDigitalInputDeviceInterface createDigitalInputPin(String key, int pinNumber, GpioPullUpDown pud,
+	protected abstract GpioAnalogInputDeviceInterface createAnalogInputPin(String key, int gpio) throws RuntimeIOException;
+	protected abstract GpioAnalogOutputDeviceInterface createAnalogOutputPin(String key, int gpio) throws RuntimeIOException;
+	protected abstract GpioDigitalInputDeviceInterface createDigitalInputPin(String key, int gpio, GpioPullUpDown pud,
 			GpioEventTrigger trigger) throws RuntimeIOException;
-	protected abstract GpioDigitalOutputDeviceInterface createDigitalOutputPin(String key, int pinNumber, boolean initialValue) throws RuntimeIOException;
-	protected abstract GpioDigitalInputOutputDeviceInterface createDigitalInputOutputPin(String key, int pinNumber, GpioDeviceInterface.Mode mode) throws RuntimeIOException;
-	protected abstract PwmOutputDeviceInterface createPwmOutputPin(String key, int pinNumber,
+	protected abstract GpioDigitalOutputDeviceInterface createDigitalOutputPin(String key, int gpio, boolean initialValue) throws RuntimeIOException;
+	protected abstract GpioDigitalInputOutputDeviceInterface createDigitalInputOutputPin(String key, int gpio, GpioDeviceInterface.Mode mode) throws RuntimeIOException;
+	protected abstract PwmOutputDeviceInterface createPwmOutputPin(String key, int gpio,
 			float initialValue, PwmType pwmType) throws RuntimeIOException;
 	protected abstract SpiDeviceInterface createSpiDevice(String key, int controller, int chipSelect, int frequency,
 			SpiClockMode spiClockMode) throws RuntimeIOException;

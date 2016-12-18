@@ -41,8 +41,8 @@ public abstract class AbstractDeviceFactory implements DeviceFactoryInterface {
 	}
 	
 	@Override
-	public final String createPinKey(int pinNumber) {
-		return pinPrefix + pinNumber;
+	public final String createPinKey(int gpio) {
+		return pinPrefix + gpio;
 	}
 	
 	@Override
@@ -74,6 +74,6 @@ public abstract class AbstractDeviceFactory implements DeviceFactoryInterface {
 
 	@SuppressWarnings("unchecked")
 	public final <T extends DeviceInterface> T getDevice(String key, Class<T> clz) {
-		return (T)deviceStates.getDevice(key);
+		return (T) deviceStates.getDevice(key);
 	}
 }

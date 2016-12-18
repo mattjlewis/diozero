@@ -29,5 +29,5 @@ package com.diozero.internal.spi;
 import com.diozero.util.RuntimeIOException;
 
 public interface AnalogOutputDeviceFactoryInterface extends DeviceFactoryInterface {
-	GpioAnalogOutputDeviceInterface provisionAnalogOutputPin(int pinNumber) throws RuntimeIOException;
+	GpioAnalogOutputDeviceInterface provisionAnalogOutputPin(int gpio) throws RuntimeIOException;
 }

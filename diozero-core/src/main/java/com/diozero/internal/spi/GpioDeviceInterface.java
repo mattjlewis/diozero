@@ -32,6 +32,6 @@ public interface GpioDeviceInterface extends DeviceInterface {
 		DIGITAL_INPUT, DIGITAL_OUTPUT, PWM_OUTPUT, SOFTWARE_PWM_OUTPUT, ANALOG_INPUT, ANALOG_OUTPUT;
 	}
 	
-	int getPin();
+	int getGpio();
 	Mode getMode();
 }

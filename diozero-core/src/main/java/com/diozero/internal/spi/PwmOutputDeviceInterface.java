@@ -30,10 +30,15 @@ import com.diozero.util.RuntimeIOException;
 
 public interface PwmOutputDeviceInterface extends DeviceInterface {
 	/**
-	 * Get the device pin number
-	 * @return Device native pin number
+	 * Get the device GPIO
+	 * @return Device native GPIO
 	 */
-	int getPin();
+	int getGpio();
+	/**
+	 * Get the device PWM output device number
+	 * @return Device native PWM output
+	 */
+	int getPwmNum();
 	/**
 	 * Get the current PWM output value (0..1)
 	 * @return Range is 0..1

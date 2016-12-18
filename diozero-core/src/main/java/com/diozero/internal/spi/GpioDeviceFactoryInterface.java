@@ -31,7 +31,7 @@ import com.diozero.api.GpioPullUpDown;
 import com.diozero.util.RuntimeIOException;
 
 public interface GpioDeviceFactoryInterface extends DeviceFactoryInterface {
-	GpioDigitalInputDeviceInterface provisionDigitalInputPin(int pinNumber, GpioPullUpDown pud, GpioEventTrigger trigger) throws RuntimeIOException;
-	GpioDigitalOutputDeviceInterface provisionDigitalOutputPin(int pinNumber, boolean initialValue) throws RuntimeIOException;
-	GpioDigitalInputOutputDeviceInterface provisionDigitalInputOutputPin(int pinNumber, GpioDeviceInterface.Mode mode) throws RuntimeIOException;
+	GpioDigitalInputDeviceInterface provisionDigitalInputPin(int gpio, GpioPullUpDown pud, GpioEventTrigger trigger) throws RuntimeIOException;
+	GpioDigitalOutputDeviceInterface provisionDigitalOutputPin(int gpio, boolean initialValue) throws RuntimeIOException;
+	GpioDigitalInputOutputDeviceInterface provisionDigitalInputOutputPin(int gpio, GpioDeviceInterface.Mode mode) throws RuntimeIOException;
 }
