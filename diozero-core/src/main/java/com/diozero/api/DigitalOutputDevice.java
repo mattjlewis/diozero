@@ -49,18 +49,18 @@ public class DigitalOutputDevice extends GpioDevice implements OutputDeviceInter
 	/**
 	 * Defaults to active high logic, initial value is off.
 	 * 
-	 * @param pinNumber
-	 *            GPIO pin to which the output device is connected.
+	 * @param gpio
+	 *            GPIO to which the output device is connected.
 	 * @throws RuntimeIOException
 	 *             If an I/O error occurred.
 	 */
-	public DigitalOutputDevice(int pinNumber) throws RuntimeIOException {
-		this(pinNumber, true, false);
+	public DigitalOutputDevice(int gpio) throws RuntimeIOException {
+		this(gpio, true, false);
 	}
 
 	/**
-	 * @param pinNumber
-	 *            GPIO pin to which the output device is connected.
+	 * @param gpio
+	 *            GPIO to which the output device is connected.
 	 * @param activeHigh
 	 *            If true then setting the value to true will turn on the
 	 *            connected device.
@@ -69,15 +69,15 @@ public class DigitalOutputDevice extends GpioDevice implements OutputDeviceInter
 	 * @throws RuntimeIOException
 	 *             If an I/O error occurred.
 	 */
-	public DigitalOutputDevice(int pinNumber, boolean activeHigh, boolean initialValue) throws RuntimeIOException {
-		this(DeviceFactoryHelper.getNativeDeviceFactory(), pinNumber, activeHigh, initialValue);
+	public DigitalOutputDevice(int gpio, boolean activeHigh, boolean initialValue) throws RuntimeIOException {
+		this(DeviceFactoryHelper.getNativeDeviceFactory(), gpio, activeHigh, initialValue);
 	}
 
 	/**
 	 * @param deviceFactory
 	 *            Device factory to use to construct the device.
-	 * @param pinNumber
-	 *            GPIO pin to which the output device is connected.
+	 * @param gpio
+	 *            GPIO to which the output device is connected.
 	 * @param activeHigh
 	 *            If true then setting the value to true will turn on the
 	 *            connected device.
@@ -86,10 +86,10 @@ public class DigitalOutputDevice extends GpioDevice implements OutputDeviceInter
 	 * @throws RuntimeIOException
 	 *             If an I/O error occurred.
 	 */
-	public DigitalOutputDevice(GpioDeviceFactoryInterface deviceFactory, int pinNumber, boolean activeHigh,
+	public DigitalOutputDevice(GpioDeviceFactoryInterface deviceFactory, int gpio, boolean activeHigh,
 			boolean initialValue) throws RuntimeIOException {
-		super(pinNumber);
-		this.device = deviceFactory.provisionDigitalOutputPin(pinNumber, activeHigh & initialValue);
+		super(gpio);
+		this.device = deviceFactory.provisionDigitalOutputPin(gpio, activeHigh & initialValue);
 		this.activeHigh = activeHigh;
 	}
 

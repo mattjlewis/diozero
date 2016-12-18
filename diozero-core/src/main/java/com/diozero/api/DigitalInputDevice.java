@@ -47,18 +47,18 @@ implements DigitalInputDeviceInterface {
 	private boolean listenerEnabled;
 
 	/**
-	 * @param pinNumber
-	 *            Pin number to which the device is connected.
+	 * @param gpio
+	 *            GPIO to which the device is connected.
 	 * @throws RuntimeIOException
 	 *             If an I/O error occurs.
 	 */
-	public DigitalInputDevice(int pinNumber) throws RuntimeIOException {
-		this(DeviceFactoryHelper.getNativeDeviceFactory(), pinNumber, GpioPullUpDown.NONE, GpioEventTrigger.BOTH);
+	public DigitalInputDevice(int gpio) throws RuntimeIOException {
+		this(DeviceFactoryHelper.getNativeDeviceFactory(), gpio, GpioPullUpDown.NONE, GpioEventTrigger.BOTH);
 	}
 
 	/**
-	 * @param pinNumber
-	 *            Pin number to which the device is connected.
+	 * @param gpio
+	 *            GPIO to which the device is connected.
 	 * @param pud
 	 *            Pull up/down configuration, values: NONE, PULL_UP, PULL_DOWN.
 	 * @param trigger
@@ -67,15 +67,15 @@ implements DigitalInputDeviceInterface {
 	 * @throws RuntimeIOException
 	 *             If an I/O error occurs.
 	 */
-	public DigitalInputDevice(int pinNumber, GpioPullUpDown pud, GpioEventTrigger trigger) throws RuntimeIOException {
-		this(DeviceFactoryHelper.getNativeDeviceFactory(), pinNumber, pud, trigger);
+	public DigitalInputDevice(int gpio, GpioPullUpDown pud, GpioEventTrigger trigger) throws RuntimeIOException {
+		this(DeviceFactoryHelper.getNativeDeviceFactory(), gpio, pud, trigger);
 	}
 
 	/**
 	 * @param deviceFactory
 	 *            Device factory to use to provision this digital input device.
-	 * @param pinNumber
-	 *            Pin number to which the device is connected.
+	 * @param gpio
+	 *            GPIO to which the device is connected.
 	 * @param pud
 	 *            Pull up/down configuration, values: NONE, PULL_UP, PULL_DOWN.
 	 * @param trigger
@@ -84,11 +84,11 @@ implements DigitalInputDeviceInterface {
 	 * @throws RuntimeIOException
 	 *             If an I/O error occurs.
 	 */
-	public DigitalInputDevice(GpioDeviceFactoryInterface deviceFactory, int pinNumber, GpioPullUpDown pud,
+	public DigitalInputDevice(GpioDeviceFactoryInterface deviceFactory, int gpio, GpioPullUpDown pud,
 			GpioEventTrigger trigger) throws RuntimeIOException {
-		super(pinNumber);
+		super(gpio);
 
-		this.device = deviceFactory.provisionDigitalInputPin(pinNumber, pud, trigger);
+		this.device = deviceFactory.provisionDigitalInputPin(gpio, pud, trigger);
 		this.pud = pud;
 		this.trigger = trigger;
 		this.activeHigh = pud != GpioPullUpDown.PULL_UP;

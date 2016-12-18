@@ -80,31 +80,31 @@ public class AnalogInputDevice extends GpioInputDevice<AnalogInputEvent> impleme
 	private float range;
 
 	/**
-	 * @param pinNumber
-	 *            Pin number to which the device is connected.
+	 * @param gpio
+	 *            GPIO to which the device is connected.
 	 * @param range
 	 *            To be used for taking scaled readings for this device.
 	 * @throws RuntimeIOException
 	 *             If an I/O error occurred.
 	 */
-	public AnalogInputDevice(int pinNumber, float range) throws RuntimeIOException {
-		this(DeviceFactoryHelper.getNativeDeviceFactory(), pinNumber, range);
+	public AnalogInputDevice(int gpio, float range) throws RuntimeIOException {
+		this(DeviceFactoryHelper.getNativeDeviceFactory(), gpio, range);
 	}
 
 	/**
 	 * @param deviceFactory
 	 *            The device factory to use to provision this device.
-	 * @param pinNumber
-	 *            Pin number to which the device is connected.
+	 * @param gpio
+	 *            GPIO to which the device is connected.
 	 * @param range
 	 *            To be used for taking scaled readings for this device.
 	 * @throws RuntimeIOException
 	 *             If an I/O error occurred.
 	 */
-	public AnalogInputDevice(AnalogInputDeviceFactoryInterface deviceFactory, int pinNumber, float range)
+	public AnalogInputDevice(AnalogInputDeviceFactoryInterface deviceFactory, int gpio, float range)
 			throws RuntimeIOException {
-		super(pinNumber);
-		device = deviceFactory.provisionAnalogInputPin(pinNumber);
+		super(gpio);
+		device = deviceFactory.provisionAnalogInputPin(gpio);
 		this.range = range;
 	}
 
@@ -134,7 +134,7 @@ public class AnalogInputDevice extends GpioInputDevice<AnalogInputEvent> impleme
 
 		float unscaled = getUnscaledValue();
 		if (changeDetected(unscaled)) {
-			valueChanged(new AnalogInputEvent(pinNumber, System.currentTimeMillis(), System.nanoTime(), unscaled,
+			valueChanged(new AnalogInputEvent(gpio, System.currentTimeMillis(), System.nanoTime(), unscaled,
 					unscaled * range));
 			lastValue = Float.valueOf(unscaled);
 		}

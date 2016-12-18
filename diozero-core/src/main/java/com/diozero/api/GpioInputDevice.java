@@ -42,11 +42,11 @@ implements InputEventListener<T> {
 	protected Collection<InputEventListener<T>> listeners;
 
 	/**
-	 * @param pinNumber
-	 *            Pin number to which the device is connected.
+	 * @param gpio
+	 *            GPIO to which the device is connected.
 	 */
-	public GpioInputDevice(int pinNumber) {
-		super(pinNumber);
+	public GpioInputDevice(int gpio) {
+		super(gpio);
 		listeners = new ArrayList<>();
 	}
 

@@ -40,33 +40,33 @@ public class WaitableDigitalInputDevice extends DigitalInputDevice {
 	private Event lowEvent = new Event();
 
 	/**
-	 * @param pinNumber Pin number to which the device is connected.
+	 * @param gpio GPIO to which the device is connected.
 	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
-	public WaitableDigitalInputDevice(int pinNumber) throws RuntimeIOException {
-		this(DeviceFactoryHelper.getNativeDeviceFactory(), pinNumber, GpioPullUpDown.NONE, GpioEventTrigger.BOTH);
+	public WaitableDigitalInputDevice(int gpio) throws RuntimeIOException {
+		this(DeviceFactoryHelper.getNativeDeviceFactory(), gpio, GpioPullUpDown.NONE, GpioEventTrigger.BOTH);
 	}
 
 	/**
-	 * @param pinNumber Pin number to which the device is connected.
+	 * @param gpio GPIO to which the device is connected.
 	 * @param pud Pull up/down configuration, values: NONE, PULL_UP, PULL_DOWN.
 	 * @param trigger Event trigger configuration, values: NONE, RISING, FALLING, BOTH.
 	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
-	public WaitableDigitalInputDevice(int pinNumber, GpioPullUpDown pud, GpioEventTrigger trigger) throws RuntimeIOException {
-		this(DeviceFactoryHelper.getNativeDeviceFactory(), pinNumber, pud, trigger);
+	public WaitableDigitalInputDevice(int gpio, GpioPullUpDown pud, GpioEventTrigger trigger) throws RuntimeIOException {
+		this(DeviceFactoryHelper.getNativeDeviceFactory(), gpio, pud, trigger);
 	}
 
 	/**
 	 * @param deviceFactory Device factory to use to construct the device.
-	 * @param pinNumber Pin number to which the device is connected.
+	 * @param gpio GPIO to which the device is connected.
 	 * @param pud Pull up/down configuration, values: NONE, PULL_UP, PULL_DOWN.
 	 * @param trigger Event trigger configuration, values: NONE, RISING, FALLING, BOTH.
 	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
-	public WaitableDigitalInputDevice(GpioDeviceFactoryInterface deviceFactory, int pinNumber,
+	public WaitableDigitalInputDevice(GpioDeviceFactoryInterface deviceFactory, int gpio,
 			GpioPullUpDown pud, GpioEventTrigger trigger) throws RuntimeIOException {
-		super(deviceFactory, pinNumber, pud, trigger);
+		super(deviceFactory, gpio, pud, trigger);
 		enableListener();
 	}
 	

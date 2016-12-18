@@ -66,8 +66,8 @@ public class SmoothedInputDevice extends WaitableDigitalInputDevice {
 	private Queue<Long> queue;
 
 	/**
-	 * @param pinNumber
-	 *            Pin number to which the device is connected.
+	 * @param gpio
+	 *            GPIO to which the device is connected.
 	 * @param pud
 	 *            Pull up/down configuration, values: NONE, PULL_UP, PULL_DOWN.
 	 * @param threshold
@@ -79,16 +79,16 @@ public class SmoothedInputDevice extends WaitableDigitalInputDevice {
 	 * @throws RuntimeIOException
 	 *             if an I/O error occurs
 	 */
-	public SmoothedInputDevice(int pinNumber, GpioPullUpDown pud, int threshold, int eventAge, int eventDetectPeriod)
+	public SmoothedInputDevice(int gpio, GpioPullUpDown pud, int threshold, int eventAge, int eventDetectPeriod)
 			throws RuntimeIOException {
-		this(DeviceFactoryHelper.getNativeDeviceFactory(), pinNumber, pud, threshold, eventAge, eventDetectPeriod);
+		this(DeviceFactoryHelper.getNativeDeviceFactory(), gpio, pud, threshold, eventAge, eventDetectPeriod);
 	}
 
 	/**
 	 * @param deviceFactory
 	 *            Device factory to use to provision this device.
-	 * @param pinNumber
-	 *            Pin number to which the device is connected.
+	 * @param gpio
+	 *            GPIO to which the device is connected.
 	 * @param pud
 	 *            Pull up/down configuration, values: NONE, PULL_UP, PULL_DOWN.
 	 * @param threshold
@@ -100,9 +100,9 @@ public class SmoothedInputDevice extends WaitableDigitalInputDevice {
 	 * @throws RuntimeIOException
 	 *             if an I/O error occurs
 	 */
-	public SmoothedInputDevice(GpioDeviceFactoryInterface deviceFactory, int pinNumber, GpioPullUpDown pud,
+	public SmoothedInputDevice(GpioDeviceFactoryInterface deviceFactory, int gpio, GpioPullUpDown pud,
 			int threshold, int eventAge, int eventDetectPeriod) throws RuntimeIOException {
-		super(deviceFactory, pinNumber, pud,
+		super(deviceFactory, gpio, pud,
 				pud == GpioPullUpDown.PULL_UP ? GpioEventTrigger.FALLING : GpioEventTrigger.RISING);
 
 		this.threshold = threshold;
@@ -144,14 +144,14 @@ public class SmoothedInputDevice extends WaitableDigitalInputDevice {
 				// Check if the number of events exceeds the threshold
 				if (queue.size() > threshold) {
 					if (! active) {
-						SmoothedInputDevice.super.valueChanged(new DigitalInputEvent(pinNumber, now, nano_time, activeHigh));
+						SmoothedInputDevice.super.valueChanged(new DigitalInputEvent(gpio, now, nano_time, activeHigh));
 						active = true;
 					}
 
 					// If an event is fired clear the queue of all events
 					queue.clear();
 				} else if (active) {
-					SmoothedInputDevice.super.valueChanged(new DigitalInputEvent(pinNumber, now, nano_time, !activeHigh));
+					SmoothedInputDevice.super.valueChanged(new DigitalInputEvent(gpio, now, nano_time, !activeHigh));
 					active = false;
 				}
 			}

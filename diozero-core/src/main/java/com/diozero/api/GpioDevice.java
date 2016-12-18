@@ -33,20 +33,28 @@ import java.io.Closeable;
  * Abstract base class for all GPIO related devices.
  */
 public abstract class GpioDevice implements Closeable {
-	protected int pinNumber;
+	protected int gpio;
 	
 	/**
-	 * @param pinNumber Pin number to which the device is connected.
+	 * @param gpio GPIO to which the device is connected.
 	 */
-	public GpioDevice(int pinNumber) {
-		this.pinNumber = pinNumber;
+	public GpioDevice(int gpio) {
+		this.gpio = gpio;
 	}
 
 	/**
-	 * Get the GPIO pin number for this device.
-	 * @return Pin number for this device.
+	 * Get the GPIO for this device.
+	 * @return GPIO for this device.
+	 */
+	public int getGpio() {
+		return gpio;
+	}
+
+	/**
+	 * Get the GPIO for this device.
+	 * @return GPIO for this device.
 	 */
 	public int getPinNumber() {
-		return pinNumber;
+		return gpio;
 	}
 }

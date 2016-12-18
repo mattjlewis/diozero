@@ -51,47 +51,48 @@ public class PwmOutputDevice extends GpioDevice implements OutputDeviceInterface
 	private Thread backgroundThread;
 
 	/**
-	 * @param pinNumber
-	 *            GPIO pin to which the output device is connected.
+	 * @param gpio
+	 *            GPIO to which the output device is connected.
 	 * @throws RuntimeIOException
 	 *             If an I/O error occurred.
 	 */
-	public PwmOutputDevice(int pinNumber) throws RuntimeIOException {
-		this(pinNumber, 0);
+	public PwmOutputDevice(int gpio) throws RuntimeIOException {
+		this(gpio, 0);
 	}
 
 	/**
-	 * @param pinNumber
-	 *            GPIO pin to which the output device is connected.
+	 * @param gpio
+	 *            GPIO to which the output device is connected.
 	 * @param initialValue
 	 *            Initial output value (0..1).
 	 * @throws RuntimeIOException
 	 *             If an I/O error occurred.
 	 */
-	public PwmOutputDevice(int pinNumber, float initialValue) throws RuntimeIOException {
-		this(DeviceFactoryHelper.getNativeDeviceFactory(), pinNumber, initialValue);
+	public PwmOutputDevice(int gpio, float initialValue) throws RuntimeIOException {
+		this(DeviceFactoryHelper.getNativeDeviceFactory(), gpio, initialValue);
 	}
 
 	/**
 	 * @param pwmDeviceFactory
 	 *            Device factory to use to provision this device.
-	 * @param pinNumber
-	 *            GPIO pin to which the output device is connected.
+	 * @param gpio
+	 *            GPIO to which the output device is connected.
 	 * @param initialValue
 	 *            Initial output value (0..1).
 	 * @throws RuntimeIOException
 	 *             If an I/O error occurred.
 	 */
-	public PwmOutputDevice(PwmOutputDeviceFactoryInterface pwmDeviceFactory, int pinNumber, float initialValue)
+	public PwmOutputDevice(PwmOutputDeviceFactoryInterface pwmDeviceFactory, int gpio, float initialValue)
 			throws RuntimeIOException {
-		super(pinNumber);
-		this.device = pwmDeviceFactory.provisionPwmOutputPin(pinNumber, initialValue);
+		super(gpio);
+		this.device = pwmDeviceFactory.provisionPwmOutputPin(gpio, initialValue);
 	}
 
 	@Override
 	public void close() {
 		Logger.debug("close()");
 		stopLoops();
+		running = false;
 		if (backgroundThread != null) {
 			Logger.info("Interrupting background thread " + backgroundThread.getName());
 			backgroundThread.interrupt();
@@ -111,8 +112,8 @@ public class PwmOutputDevice extends GpioDevice implements OutputDeviceInterface
 			DioZeroScheduler.getDaemonInstance().execute(() -> {
 				backgroundThread = Thread.currentThread();
 				onOffLoop(onTime, offTime, n);
-				Logger.info("Background on-off loop finished");
 				backgroundThread = null;
+				Logger.info("Background on-off loop finished");
 			});
 		} else {
 			onOffLoop(onTime, offTime, n);

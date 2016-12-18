@@ -41,34 +41,34 @@ implements DigitalInputDeviceInterface {
 	private GpioDeviceInterface.Mode mode;
 
 	/**
-	 * @param pinNumber
-	 *            Pin number to which the device is connected.
+	 * @param gpio
+	 *            GPIO to which the device is connected.
 	 * @param mode
 	 *            Input or output {@link com.diozero.internal.spi.GpioDeviceInterface.Mode Mode}
 	 * @throws RuntimeIOException
 	 *             If an I/O error occurs.
 	 */
-	public DigitalInputOutputDevice(int pinNumber, GpioDeviceInterface.Mode mode) throws RuntimeIOException {
-		this(DeviceFactoryHelper.getNativeDeviceFactory(), pinNumber, mode);
+	public DigitalInputOutputDevice(int gpio, GpioDeviceInterface.Mode mode) throws RuntimeIOException {
+		this(DeviceFactoryHelper.getNativeDeviceFactory(), gpio, mode);
 	}
 
 	/**
 	 * @param deviceFactory
 	 *            Device factory to use to provision this digital input device.
-	 * @param pinNumber
-	 *            Pin number to which the device is connected.
+	 * @param gpio
+	 *            GPIO to which the device is connected.
 	 * @param mode
 	 *            Input or output {@link com.diozero.internal.spi.GpioDeviceInterface.Mode Mode}
 	 * @throws RuntimeIOException
 	 *             If an I/O error occurs.
 	 */
-	public DigitalInputOutputDevice(GpioDeviceFactoryInterface deviceFactory, int pinNumber,
+	public DigitalInputOutputDevice(GpioDeviceFactoryInterface deviceFactory, int gpio,
 			GpioDeviceInterface.Mode mode) throws RuntimeIOException {
-		super(pinNumber);
+		super(gpio);
 		
 		checkMode(mode);
 		
-		this.device = deviceFactory.provisionDigitalInputOutputPin(pinNumber, mode);
+		this.device = deviceFactory.provisionDigitalInputOutputPin(gpio, mode);
 		this.mode = mode;
 	}
 	
