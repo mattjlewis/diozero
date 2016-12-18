@@ -41,14 +41,14 @@ import com.pi4j.wiringpi.GpioUtil;
 
 public class WiringPiDigitalInputDevice extends AbstractInputDevice<DigitalInputEvent>
 implements GpioDigitalInputDeviceInterface, GpioInterruptCallback {
-	private int pinNumber;
+	private int gpio;
 	private int edge;
 	
-	public WiringPiDigitalInputDevice(String key, DeviceFactoryInterface deviceFactory, int pinNumber,
+	public WiringPiDigitalInputDevice(String key, DeviceFactoryInterface deviceFactory, int gpio,
 			GpioPullUpDown pud, GpioEventTrigger trigger) throws RuntimeIOException {
 		super(key, deviceFactory);
 		
-		this.pinNumber = pinNumber;
+		this.gpio = gpio;
 		switch (trigger) {
 		case RISING:
 			edge = Gpio.INT_EDGE_RISING;
@@ -64,8 +64,8 @@ implements GpioDigitalInputDeviceInterface, GpioInterruptCallback {
 		
 		try {
 			// Note calling this method will automatically export the pin and set the pin direction to INPUT
-			if (!GpioUtil.setEdgeDetection(pinNumber, edge)) {
-				throw new RuntimeIOException("Error setting edge detection (" + edge + ") for pin " + pinNumber);
+			if (!GpioUtil.setEdgeDetection(gpio, edge)) {
+				throw new RuntimeIOException("Error setting edge detection (" + edge + ") for pin " + gpio);
 			}
 		} catch (RuntimeException re) {
 			throw new RuntimeIOException(re);
@@ -84,24 +84,24 @@ implements GpioDigitalInputDeviceInterface, GpioInterruptCallback {
 			wpi_pud = Gpio.PUD_OFF;
 			break;
 		}
-		Gpio.pullUpDnControl(pinNumber, wpi_pud);
+		Gpio.pullUpDnControl(gpio, wpi_pud);
 	}
 
 	@Override
 	public void closeDevice() {
 		Logger.debug("closeDevice()");
 		removeListener();
-		GpioUtil.unexport(pinNumber);
+		GpioUtil.unexport(gpio);
 	}
 
 	@Override
 	public boolean getValue() throws RuntimeIOException {
-		return Gpio.digitalRead(pinNumber) == 1;
+		return Gpio.digitalRead(gpio) == 1;
 	}
 
 	@Override
-	public int getPin() {
-		return pinNumber;
+	public int getGpio() {
+		return gpio;
 	}
 
 	@Override
@@ -114,13 +114,13 @@ implements GpioDigitalInputDeviceInterface, GpioInterruptCallback {
 		// TODO Validate that wiringPi actually works this way, i.e. supports separate callbacks for rising and falling
 		// Note it looks easier to use GpioInterrupt but this will be less efficient
 		// due to its use of Vectors to support multiple listeners and cloning on every event
-		Gpio.wiringPiISR(pinNumber, edge, this);
+		Gpio.wiringPiISR(gpio, edge, this);
 	}
 
 	@Override
 	public void disableListener() {
 		// TODO Is this correct?
-		Gpio.wiringPiISR(pinNumber, edge, null);
+		Gpio.wiringPiISR(gpio, edge, null);
 	}
 
 	@Override

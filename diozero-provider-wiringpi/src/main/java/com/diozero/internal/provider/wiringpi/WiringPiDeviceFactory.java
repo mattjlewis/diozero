@@ -72,12 +72,12 @@ public class WiringPiDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	public int getPwmFrequency(int pinNumber) {
-		if (SystemInfo.getBoardInfo().isSupported(GpioDeviceInterface.Mode.PWM_OUTPUT, pinNumber)) {
+	public int getPwmFrequency(int gpio) {
+		if (boardInfo.isSupported(GpioDeviceInterface.Mode.PWM_OUTPUT, gpio)) {
 			return hardwarePwmFrequency;
 		}
 		
-		Integer pwm_freq = softwarePwmFrequency.get(Integer.valueOf(pinNumber));
+		Integer pwm_freq = softwarePwmFrequency.get(Integer.valueOf(gpio));
 		if (pwm_freq == null) {
 			return DEFAULT_SOFTWARE_PWM_FREQ;
 		}
@@ -86,14 +86,14 @@ public class WiringPiDeviceFactory extends BaseNativeDeviceFactory {
 	}
 	
 	@Override
-	public void setPwmFrequency(int pinNumber, int pwmFrequency) {
-		if (SystemInfo.getBoardInfo().isSupported(GpioDeviceInterface.Mode.PWM_OUTPUT, pinNumber)) {
+	public void setPwmFrequency(int gpio, int pwmFrequency) {
+		if (boardInfo.isSupported(GpioDeviceInterface.Mode.PWM_OUTPUT, gpio)) {
 			setHardwarePwmFrequency(pwmFrequency);
 		} else {
 			// TODO Software PWM frequency should be limited to 20..250Hz (gives a range of 500..40)
-			this.softwarePwmFrequency.put(Integer.valueOf(pinNumber), Integer.valueOf(pwmFrequency));
-			Logger.info("setPwmFrequency({}, {}) - range={}", Integer.valueOf(pinNumber),
-					Integer.valueOf(pwmFrequency), Integer.valueOf(getSoftwarePwmRange(pinNumber)));
+			this.softwarePwmFrequency.put(Integer.valueOf(gpio), Integer.valueOf(pwmFrequency));
+			Logger.info("setPwmFrequency({}, {}) - range={}", Integer.valueOf(gpio),
+					Integer.valueOf(pwmFrequency), Integer.valueOf(getSoftwarePwmRange(gpio)));
 		}
 	}
 	
@@ -109,54 +109,54 @@ public class WiringPiDeviceFactory extends BaseNativeDeviceFactory {
 				Integer.valueOf(pwmFrequency), Integer.valueOf(hardwarePwmRange), Integer.valueOf(divisor));
 	}
 
-	private int getSoftwarePwmRange(int pinNumber) {
-		return 1_000_000 / (PI4J_MIN_SOFTWARE_PULSE_WIDTH_US * getPwmFrequency(pinNumber));
+	private int getSoftwarePwmRange(int gpio) {
+		return 1_000_000 / (PI4J_MIN_SOFTWARE_PULSE_WIDTH_US * getPwmFrequency(gpio));
 	}
 
 	@Override
-	protected GpioAnalogInputDeviceInterface createAnalogInputPin(String key, int pinNumber) throws RuntimeIOException {
+	protected GpioAnalogInputDeviceInterface createAnalogInputPin(String key, int gpio) throws RuntimeIOException {
 		throw new UnsupportedOperationException("Analog devices aren't supported on this device");
 	}
 
 	@Override
-	protected GpioAnalogOutputDeviceInterface createAnalogOutputPin(String key, int pinNumber) throws RuntimeIOException {
+	protected GpioAnalogOutputDeviceInterface createAnalogOutputPin(String key, int gpio) throws RuntimeIOException {
 		throw new UnsupportedOperationException("Analog devices aren't supported on this device");
 	}
 
 	@Override
-	protected GpioDigitalInputDeviceInterface createDigitalInputPin(String key, int pinNumber, GpioPullUpDown pud,
+	protected GpioDigitalInputDeviceInterface createDigitalInputPin(String key, int gpio, GpioPullUpDown pud,
 			GpioEventTrigger trigger) throws RuntimeIOException {
-		if (GpioUtil.isPinSupported(pinNumber) != 1) {
-			throw new RuntimeIOException("Error: Pin " + pinNumber + " isn't supported");
+		if (GpioUtil.isPinSupported(gpio) != 1) {
+			throw new RuntimeIOException("Error: Pin " + gpio + " isn't supported");
 		}
 		
-		return new WiringPiDigitalInputDevice(key, this, pinNumber, pud, trigger);
+		return new WiringPiDigitalInputDevice(key, this, gpio, pud, trigger);
 	}
 
 	@Override
-	protected GpioDigitalOutputDeviceInterface createDigitalOutputPin(String key, int pinNumber, boolean initialValue) throws RuntimeIOException {
-		if (GpioUtil.isPinSupported(pinNumber) != 1) {
-			throw new RuntimeIOException("Error: Pin " + pinNumber + " isn't supported");
+	protected GpioDigitalOutputDeviceInterface createDigitalOutputPin(String key, int gpio, boolean initialValue) throws RuntimeIOException {
+		if (GpioUtil.isPinSupported(gpio) != 1) {
+			throw new RuntimeIOException("Error: Pin " + gpio + " isn't supported");
 		}
 		
-		return new WiringPiDigitalOutputDevice(key, this, pinNumber, initialValue);
+		return new WiringPiDigitalOutputDevice(key, this, gpio, initialValue);
 	}
 
 	@Override
-	public GpioDigitalInputOutputDeviceInterface createDigitalInputOutputPin(String key, int pinNumber, GpioDeviceInterface.Mode mode)
+	public GpioDigitalInputOutputDeviceInterface createDigitalInputOutputPin(String key, int gpio, GpioDeviceInterface.Mode mode)
 			throws RuntimeIOException {
 		throw new UnsupportedOperationException("Digital Input / Output devices not yet supported by this provider");
 	}
 
 	@Override
-	protected PwmOutputDeviceInterface createPwmOutputPin(String key, int pinNumber,
+	protected PwmOutputDeviceInterface createPwmOutputPin(String key, int gpio,
 			float initialValue, PwmType pwmType) throws RuntimeIOException {
-		if (GpioUtil.isPinSupported(pinNumber) != 1) {
-			throw new RuntimeIOException("Error: Pin " + pinNumber + " isn't supported");
+		if (GpioUtil.isPinSupported(gpio) != 1) {
+			throw new RuntimeIOException("Error: Pin " + gpio + " isn't supported");
 		}
 		
 		return new WiringPiPwmOutputDevice(key, this, pwmType,
-				pwmType == PwmType.HARDWARE ? hardwarePwmRange : getSoftwarePwmRange(pinNumber), pinNumber, initialValue);
+				pwmType == PwmType.HARDWARE ? hardwarePwmRange : getSoftwarePwmRange(gpio), gpio, initialValue);
 	}
 
 	@Override

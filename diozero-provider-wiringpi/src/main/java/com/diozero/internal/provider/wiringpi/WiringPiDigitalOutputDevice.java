@@ -36,19 +36,19 @@ import com.pi4j.wiringpi.Gpio;
 import com.pi4j.wiringpi.GpioUtil;
 
 public class WiringPiDigitalOutputDevice extends AbstractDevice implements GpioDigitalOutputDeviceInterface {
-	private int pinNumber;
+	private int gpio;
 	
-	WiringPiDigitalOutputDevice(String key, DeviceFactoryInterface deviceFactory, int pinNumber, boolean initialValue) throws RuntimeIOException {
+	WiringPiDigitalOutputDevice(String key, DeviceFactoryInterface deviceFactory, int gpio, boolean initialValue) throws RuntimeIOException {
 		super(key, deviceFactory);
 		
-		this.pinNumber = pinNumber;
+		this.gpio = gpio;
 		try {
-			if (GpioUtil.isExported(pinNumber)) {
-				GpioUtil.setDirection(pinNumber, initialValue ? GpioUtil.DIRECTION_HIGH : GpioUtil.DIRECTION_LOW);
+			if (GpioUtil.isExported(gpio)) {
+				GpioUtil.setDirection(gpio, initialValue ? GpioUtil.DIRECTION_HIGH : GpioUtil.DIRECTION_LOW);
 			} else {
-				GpioUtil.export(pinNumber, initialValue ? GpioUtil.DIRECTION_HIGH : GpioUtil.DIRECTION_LOW);
+				GpioUtil.export(gpio, initialValue ? GpioUtil.DIRECTION_HIGH : GpioUtil.DIRECTION_LOW);
 			}
-			Gpio.pinMode(pinNumber, Gpio.OUTPUT);
+			Gpio.pinMode(gpio, Gpio.OUTPUT);
 		} catch (RuntimeException re) {
 			throw new RuntimeIOException(re);
 		}
@@ -57,21 +57,21 @@ public class WiringPiDigitalOutputDevice extends AbstractDevice implements GpioD
 	@Override
 	public void closeDevice() {
 		Logger.debug("closeDevice()");
-		GpioUtil.unexport(pinNumber);
+		GpioUtil.unexport(gpio);
 	}
 
 	@Override
 	public boolean getValue() throws RuntimeIOException {
-		return Gpio.digitalRead(pinNumber) == 1;
+		return Gpio.digitalRead(gpio) == 1;
 	}
 
 	@Override
 	public void setValue(boolean value) throws RuntimeIOException {
-		Gpio.digitalWrite(pinNumber, value);
+		Gpio.digitalWrite(gpio, value);
 	}
 
 	@Override
-	public int getPin() {
-		return pinNumber;
+	public int getGpio() {
+		return gpio;
 	}
 }
