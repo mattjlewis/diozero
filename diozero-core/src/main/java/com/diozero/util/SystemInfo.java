@@ -139,7 +139,6 @@ public class SystemInfo {
 		
 		public UnknownBoardInfo() {
 			super(UNKNOWN, UNKNOWN, 1024, null, UNKNOWN);
-			// TODO Auto-generated constructor stub
 		}
 	}
 }

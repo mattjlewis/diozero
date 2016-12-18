@@ -62,6 +62,10 @@ public abstract class BoardInfo extends BoardPinInfo {
 	public String getLibraryPath() {
 		return libraryPath;
 	}
+	
+	public String getName() {
+		return make + " " + model;
+	}
 
 	@Override
 	public String toString() {

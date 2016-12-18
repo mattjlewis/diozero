@@ -27,4 +27,9 @@ public abstract class BoardPinInfo {
 		
 		return modes.contains(mode);
 	}
+	
+	@SuppressWarnings("static-method")
+	public int mapGpio(int gpio) {
+		return gpio;
+	}
 }
