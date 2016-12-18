@@ -39,23 +39,23 @@ import com.diozero.util.SleepUtil;
 
 public class HCSR04TriggerPin extends AbstractDevice
 implements GpioDigitalOutputDeviceInterface, Runnable {
-	private int pinNumber;
+	private int gpio;
 	private boolean value;
 	private long start;
 	private ExecutorService executor;
 	
 	public HCSR04TriggerPin(String key, DeviceFactoryInterface deviceFactory,
-			int pinNumber, boolean initialValue) {
+			int gpio, boolean initialValue) {
 		super(key, deviceFactory);
 		
-		this.pinNumber = pinNumber;
+		this.gpio = gpio;
 		this.value = initialValue;
 		executor = Executors.newCachedThreadPool();
 	}
 	
 	@Override
-	public int getPin() {
-		return pinNumber;
+	public int getGpio() {
+		return gpio;
 	}
 
 	@Override

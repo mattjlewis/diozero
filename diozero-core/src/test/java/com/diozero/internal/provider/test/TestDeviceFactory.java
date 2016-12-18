@@ -85,35 +85,35 @@ public class TestDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	protected GpioAnalogInputDeviceInterface createAnalogInputPin(String key, int pinNumber) throws RuntimeIOException {
+	protected GpioAnalogInputDeviceInterface createAnalogInputPin(String key, int gpio) throws RuntimeIOException {
 		if (analogInputDeviceClass == null) {
 			throw new UnsupportedOperationException("Analog input implementation class hasn't been set");
 		}
 		
 		try {
 			return analogInputDeviceClass.getConstructor(String.class, DeviceFactoryInterface.class, int.class)
-				.newInstance(key, this, Integer.valueOf(pinNumber));
+				.newInstance(key, this, Integer.valueOf(gpio));
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
 
 	@Override
-	protected GpioAnalogOutputDeviceInterface createAnalogOutputPin(String key, int pinNumber) throws RuntimeIOException {
+	protected GpioAnalogOutputDeviceInterface createAnalogOutputPin(String key, int gpio) throws RuntimeIOException {
 		if (analogOutputDeviceClass == null) {
 			throw new UnsupportedOperationException("Analog output implementation class hasn't been set");
 		}
 		
 		try {
 			return analogOutputDeviceClass.getConstructor(String.class, DeviceFactoryInterface.class, int.class)
-				.newInstance(key, this, Integer.valueOf(pinNumber));
+				.newInstance(key, this, Integer.valueOf(gpio));
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
 
 	@Override
-	protected GpioDigitalInputDeviceInterface createDigitalInputPin(String key, int pinNumber, GpioPullUpDown pud,
+	protected GpioDigitalInputDeviceInterface createDigitalInputPin(String key, int gpio, GpioPullUpDown pud,
 			GpioEventTrigger trigger) throws RuntimeIOException {
 		if (digitalInputDeviceClass == null) {
 			throw new UnsupportedOperationException("Digital input implementation class hasn't been set");
@@ -121,14 +121,14 @@ public class TestDeviceFactory extends BaseNativeDeviceFactory {
 		
 		try {
 			return digitalInputDeviceClass.getConstructor(String.class, DeviceFactoryInterface.class, int.class, GpioPullUpDown.class, GpioEventTrigger.class)
-				.newInstance(key, this, Integer.valueOf(pinNumber), pud, trigger);
+				.newInstance(key, this, Integer.valueOf(gpio), pud, trigger);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
 
 	@Override
-	protected GpioDigitalOutputDeviceInterface createDigitalOutputPin(String key, int pinNumber, boolean initialValue)
+	protected GpioDigitalOutputDeviceInterface createDigitalOutputPin(String key, int gpio, boolean initialValue)
 			throws RuntimeIOException {
 		if (digitalOutputDeviceClass == null) {
 			throw new UnsupportedOperationException("Digital output implementation class hasn't been set");
@@ -136,20 +136,20 @@ public class TestDeviceFactory extends BaseNativeDeviceFactory {
 		
 		try {
 			return digitalOutputDeviceClass.getConstructor(String.class, DeviceFactoryInterface.class, int.class, boolean.class)
-				.newInstance(key, this, Integer.valueOf(pinNumber), Boolean.valueOf(initialValue));
+				.newInstance(key, this, Integer.valueOf(gpio), Boolean.valueOf(initialValue));
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
 
 	@Override
-	public GpioDigitalInputOutputDeviceInterface createDigitalInputOutputPin(String key, int pinNumber, GpioDeviceInterface.Mode mode)
+	public GpioDigitalInputOutputDeviceInterface createDigitalInputOutputPin(String key, int gpio, GpioDeviceInterface.Mode mode)
 			throws RuntimeIOException {
 		throw new UnsupportedOperationException("Digital Input / Output devices not yet supported by this provider");
 	}
 
 	@Override
-	protected PwmOutputDeviceInterface createPwmOutputPin(String key, int pinNumber,
+	protected PwmOutputDeviceInterface createPwmOutputPin(String key, int gpio,
 			float initialValue, PwmType pwmType) throws RuntimeIOException {
 		if (pwmOutputDeviceClass == null) {
 			throw new IllegalArgumentException("PWM output implementation class hasn't been set");
@@ -157,7 +157,7 @@ public class TestDeviceFactory extends BaseNativeDeviceFactory {
 		
 		try {
 			return pwmOutputDeviceClass.getConstructor(String.class, DeviceFactoryInterface.class, int.class, float.class, PwmType.class)
-				.newInstance(key, this, Integer.valueOf(pinNumber), Float.valueOf(initialValue), pwmType);
+				.newInstance(key, this, Integer.valueOf(gpio), Float.valueOf(initialValue), pwmType);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -194,8 +194,8 @@ public class TestDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	public int getPwmFrequency(int pinNumber) {
-		Integer key = Integer.valueOf(pinNumber);
+	public int getPwmFrequency(int gpio) {
+		Integer key = Integer.valueOf(gpio);
 		Integer pwm_freq = pwmFrequencies.get(key);
 		if (pwm_freq == null) {
 			pwm_freq = new Integer(DEFAULT_PWM_FREQUENCY);
@@ -206,7 +206,7 @@ public class TestDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	public void setPwmFrequency(int pinNumber, int pwmFrequency) {
-		this.pwmFrequencies.put(Integer.valueOf(pinNumber), Integer.valueOf(pwmFrequency));
+	public void setPwmFrequency(int gpio, int pwmFrequency) {
+		this.pwmFrequencies.put(Integer.valueOf(gpio), Integer.valueOf(pwmFrequency));
 	}
 }

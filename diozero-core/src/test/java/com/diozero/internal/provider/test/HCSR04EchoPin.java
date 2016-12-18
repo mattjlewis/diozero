@@ -53,7 +53,7 @@ implements GpioDigitalInputDeviceInterface, Runnable {
 		return instance;
 	}
 	
-	private int pinNumber;
+	private int gpio;
 	private Lock lock;
 	private Condition cond;
 	private AtomicBoolean value;
@@ -62,10 +62,10 @@ implements GpioDigitalInputDeviceInterface, Runnable {
 	private ExecutorService executor;
 	
 	public HCSR04EchoPin(String key, DeviceFactoryInterface deviceFactory,
-			int pinNumber, GpioPullUpDown pud, GpioEventTrigger trigger) {
+			int gpio, GpioPullUpDown pud, GpioEventTrigger trigger) {
 		super(key, deviceFactory);
 		
-		this.pinNumber = pinNumber;
+		this.gpio = gpio;
 		
 		instance = this;
 		
@@ -80,8 +80,8 @@ implements GpioDigitalInputDeviceInterface, Runnable {
 	}
 	
 	@Override
-	public int getPin() {
-		return pinNumber;
+	public int getGpio() {
+		return gpio;
 	}
 
 	@Override
@@ -116,7 +116,7 @@ implements GpioDigitalInputDeviceInterface, Runnable {
 			}
 			echoStart = System.currentTimeMillis();
 			value.set(true);
-			valueChanged(new DigitalInputEvent(pinNumber, echoStart, System.nanoTime(), true));
+			valueChanged(new DigitalInputEvent(gpio, echoStart, System.nanoTime(), true));
 			// Need to send echo low in a separate thread
 			lock.lock();
 			try {
@@ -147,7 +147,7 @@ implements GpioDigitalInputDeviceInterface, Runnable {
 					Thread.sleep(0, random.nextInt(999_999));
 				}
 				value.set(false);
-				valueChanged(new DigitalInputEvent(pinNumber, System.currentTimeMillis(), System.nanoTime(), false));
+				valueChanged(new DigitalInputEvent(gpio, System.currentTimeMillis(), System.nanoTime(), false));
 				Logger.debug("Time to send echo high then low=" + (System.currentTimeMillis() - echoStart) + "ms");
 			}
 		} catch (InterruptedException e) {

@@ -34,13 +34,13 @@ import com.diozero.internal.spi.GpioDigitalOutputDeviceInterface;
 import com.diozero.util.RuntimeIOException;
 
 public class TestDigitalOutputDevice extends AbstractDevice implements GpioDigitalOutputDeviceInterface {
-	private int pinNumber;
+	private int gpio;
 	private boolean value;
 
-	public TestDigitalOutputDevice(String key, DeviceFactoryInterface deviceFactory, int pinNumber, boolean initialValue) {
+	public TestDigitalOutputDevice(String key, DeviceFactoryInterface deviceFactory, int gpio, boolean initialValue) {
 		super(key, deviceFactory);
 		
-		this.pinNumber = pinNumber;
+		this.gpio = gpio;
 	}
 
 	@Override
@@ -60,7 +60,7 @@ public class TestDigitalOutputDevice extends AbstractDevice implements GpioDigit
 	}
 
 	@Override
-	public int getPin() {
-		return pinNumber;
+	public int getGpio() {
+		return gpio;
 	}
 }
