@@ -72,28 +72,28 @@ public class BitSetTest {
 	
 	@Test
 	public void testMcp23017() {
-		int pinNumber = 7;
-		byte bit = (byte)(pinNumber % PINS_PER_PORT);
+		int gpio = 7;
+		byte bit = (byte)(gpio % PINS_PER_PORT);
 		Assert.assertEquals(7, bit);
-		int port = pinNumber / PINS_PER_PORT;
+		int port = gpio / PINS_PER_PORT;
 		Assert.assertEquals(0, port);
 		
-		pinNumber = 0;
-		bit = (byte)(pinNumber % PINS_PER_PORT);
+		gpio = 0;
+		bit = (byte)(gpio % PINS_PER_PORT);
 		Assert.assertEquals(0, bit);
-		port = pinNumber / PINS_PER_PORT;
+		port = gpio / PINS_PER_PORT;
 		Assert.assertEquals(0, port);
 		
-		pinNumber = 8;
-		bit = (byte)(pinNumber % PINS_PER_PORT);
+		gpio = 8;
+		bit = (byte)(gpio % PINS_PER_PORT);
 		Assert.assertEquals(0, bit);
-		port = pinNumber / PINS_PER_PORT;
+		port = gpio / PINS_PER_PORT;
 		Assert.assertEquals(1, port);
 		
-		pinNumber = 15;
-		bit = (byte)(pinNumber % PINS_PER_PORT);
+		gpio = 15;
+		bit = (byte)(gpio % PINS_PER_PORT);
 		Assert.assertEquals(7, bit);
-		port = pinNumber / PINS_PER_PORT;
+		port = gpio / PINS_PER_PORT;
 		Assert.assertEquals(1, port);
 	}
 	

@@ -58,7 +58,7 @@ public class ButtonTest {
 			
 			ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
 			ScheduledFuture<?> future = executor.scheduleAtFixedRate(
-					() -> button.valueChanged(new DigitalInputEvent(button.getPinNumber(), System.currentTimeMillis(), System.nanoTime(), (i++ % 2) == 0)),
+					() -> button.valueChanged(new DigitalInputEvent(button.getGpio(), System.currentTimeMillis(), System.nanoTime(), (i++ % 2) == 0)),
 					500, 500, TimeUnit.MILLISECONDS);
 			
 			SleepUtil.sleepSeconds(10);
