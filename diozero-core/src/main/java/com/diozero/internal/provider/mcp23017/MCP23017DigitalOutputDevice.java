@@ -35,33 +35,33 @@ import com.diozero.util.RuntimeIOException;
 
 public class MCP23017DigitalOutputDevice extends AbstractDevice implements GpioDigitalOutputDeviceInterface {
 	private MCP23017 mcp23017;
-	private int pinNumber;
+	private int gpio;
 
-	public MCP23017DigitalOutputDevice(MCP23017 mcp23017, String key, int pinNumber) {
+	public MCP23017DigitalOutputDevice(MCP23017 mcp23017, String key, int gpio) {
 		super(key, mcp23017);
 		
 		this.mcp23017 = mcp23017;
-		this.pinNumber = pinNumber;
+		this.gpio = gpio;
 	}
 
 	@Override
 	public boolean getValue() throws RuntimeIOException {
-		return mcp23017.getValue(pinNumber);
+		return mcp23017.getValue(gpio);
 	}
 
 	@Override
 	public void setValue(boolean value) throws RuntimeIOException {
-		mcp23017.setValue(pinNumber, value);
+		mcp23017.setValue(gpio, value);
 	}
 
 	@Override
-	public int getPin() {
-		return pinNumber;
+	public int getGpio() {
+		return gpio;
 	}
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
 		Logger.debug("closeDevice()");
-		mcp23017.closePin(pinNumber);
+		mcp23017.closePin(gpio);
 	}
 }

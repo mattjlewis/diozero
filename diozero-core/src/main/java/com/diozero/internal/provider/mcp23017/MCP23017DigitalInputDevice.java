@@ -38,14 +38,14 @@ import com.diozero.util.RuntimeIOException;
 
 public class MCP23017DigitalInputDevice extends AbstractInputDevice<DigitalInputEvent> implements GpioDigitalInputDeviceInterface {
 	private MCP23017 mcp23017;
-	private int pinNumber;
+	private int gpio;
 	private GpioEventTrigger trigger;
 
-	public MCP23017DigitalInputDevice(MCP23017 mcp23017, String key, int pinNumber, GpioEventTrigger trigger) {
+	public MCP23017DigitalInputDevice(MCP23017 mcp23017, String key, int gpio, GpioEventTrigger trigger) {
 		super(key, mcp23017);
 
 		this.mcp23017 = mcp23017;
-		this.pinNumber = pinNumber;
+		this.gpio = gpio;
 		this.trigger = trigger;
 	}
 
@@ -53,17 +53,17 @@ public class MCP23017DigitalInputDevice extends AbstractInputDevice<DigitalInput
 	public void closeDevice() throws RuntimeIOException {
 		Logger.debug("closeDevice()");
 		removeListener();
-		mcp23017.closePin(pinNumber);
+		mcp23017.closePin(gpio);
 	}
 
 	@Override
 	public boolean getValue() throws RuntimeIOException {
-		return mcp23017.getValue(pinNumber);
+		return mcp23017.getValue(gpio);
 	}
 
 	@Override
-	public int getPin() {
-		return pinNumber;
+	public int getGpio() {
+		return gpio;
 	}
 
 	@Override

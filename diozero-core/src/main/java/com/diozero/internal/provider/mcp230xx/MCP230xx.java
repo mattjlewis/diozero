@@ -98,20 +98,20 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Cl
 		this(numPorts, deviceName, I2CConstants.BUS_1, DEVICE_ADDRESS, INTERRUPT_PIN_NOT_SET, INTERRUPT_PIN_NOT_SET);
 	}
 
-	public MCP230xx(int numPorts, String deviceName, int interruptPinNumber) throws RuntimeIOException {
-		this(numPorts, deviceName, I2CConstants.BUS_1, DEVICE_ADDRESS, interruptPinNumber, interruptPinNumber);
+	public MCP230xx(int numPorts, String deviceName, int interruptGpio) throws RuntimeIOException {
+		this(numPorts, deviceName, I2CConstants.BUS_1, DEVICE_ADDRESS, interruptGpio, interruptGpio);
 	}
 
-	public MCP230xx(int numPorts, String deviceName, int interruptPinNumberA, int interruptPinNumberB) throws RuntimeIOException {
-		this(numPorts, deviceName, I2CConstants.BUS_1, DEVICE_ADDRESS, interruptPinNumberA, interruptPinNumberB);
+	public MCP230xx(int numPorts, String deviceName, int interruptGpioA, int interruptGpioB) throws RuntimeIOException {
+		this(numPorts, deviceName, I2CConstants.BUS_1, DEVICE_ADDRESS, interruptGpioA, interruptGpioB);
 	}
 
-	public MCP230xx(int numPorts, String deviceName, int controller, int address, int interruptPinNumber) throws RuntimeIOException {
-		this(numPorts, deviceName, controller, address, interruptPinNumber, interruptPinNumber);
+	public MCP230xx(int numPorts, String deviceName, int controller, int address, int interruptGpio) throws RuntimeIOException {
+		this(numPorts, deviceName, controller, address, interruptGpio, interruptGpio);
 	}
 
 	public MCP230xx(int numPorts, String deviceName, int controller, int address,
-			int interruptPinNumberA, int interruptPinNumberB) throws RuntimeIOException {
+			int interruptGpioA, int interruptGpioB) throws RuntimeIOException {
 		super(deviceName + "-" + controller + "-" + address + "-");
 		
 		this.numPorts = numPorts;
@@ -120,10 +120,10 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Cl
 		device = new I2CDevice(controller, address, I2CConstants.ADDR_SIZE_7, I2CConstants.DEFAULT_CLOCK_FREQUENCY);
 		
 		interruptPins = new DigitalInputDevice[numPorts];
-		if (interruptPinNumberA != INTERRUPT_PIN_NOT_SET) {
-			interruptPins[0] = new DigitalInputDevice(interruptPinNumberA, GpioPullUpDown.NONE, GpioEventTrigger.RISING);
+		if (interruptGpioA != INTERRUPT_PIN_NOT_SET) {
+			interruptPins[0] = new DigitalInputDevice(interruptGpioA, GpioPullUpDown.NONE, GpioEventTrigger.RISING);
 			
-			if (interruptPinNumberA == interruptPinNumberB) {
+			if (interruptGpioA == interruptGpioB) {
 				interruptMode = InterruptMode.MIRRORED;
 			} else {
 				interruptMode = InterruptMode.BANK_A_ONLY;
@@ -132,8 +132,8 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Cl
 		
 		// There can only be one interrupt pin (A) if there is only one bank of pins
 		if (numPorts > 1 && interruptMode != InterruptMode.MIRRORED
-				&& interruptPinNumberB != INTERRUPT_PIN_NOT_SET) {
-			interruptPins[1] = new DigitalInputDevice(interruptPinNumberB, GpioPullUpDown.NONE, GpioEventTrigger.RISING);
+				&& interruptGpioB != INTERRUPT_PIN_NOT_SET) {
+			interruptPins[1] = new DigitalInputDevice(interruptGpioB, GpioPullUpDown.NONE, GpioEventTrigger.RISING);
 			
 			if (interruptMode == InterruptMode.BANK_A_ONLY) {
 				interruptMode = InterruptMode.BANK_A_AND_B;
@@ -190,7 +190,7 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Cl
 		// Finally enable interrupt listeners
 		for (DigitalInputDevice interrupt_pin : interruptPins) {
 			if (interrupt_pin != null) {
-				Logger.debug("Setting interruptPin ({}) consumer", Integer.valueOf(interrupt_pin.getPinNumber()));
+				Logger.debug("Setting interruptPin ({}) consumer", Integer.valueOf(interrupt_pin.getGpio()));
 				interrupt_pin.addListener(this);
 			}
 		}
@@ -202,21 +202,21 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Cl
 	}
 
 	@Override
-	public GpioDigitalInputDeviceInterface provisionDigitalInputPin(int pinNumber, GpioPullUpDown pud,
+	public GpioDigitalInputDeviceInterface provisionDigitalInputPin(int gpio, GpioPullUpDown pud,
 			GpioEventTrigger trigger) throws RuntimeIOException {
-		if (pinNumber < 0 || pinNumber >= numPins) {
+		if (gpio < 0 || gpio >= numPins) {
 			throw new IllegalArgumentException(
-					"Invalid pin number (" + pinNumber + "); pin number must be 0.." + (numPins - 1));
+					"Invalid GPIO (" + gpio + "); must be 0.." + (numPins - 1));
 		}
 		
-		String key = createPinKey(pinNumber);
+		String key = createPinKey(gpio);
 		
 		if (isDeviceOpened(key)) {
 			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
 		}
 		
-		byte bit = (byte)(pinNumber % PINS_PER_PORT);
-		int port = pinNumber / PINS_PER_PORT;
+		byte bit = (byte)(gpio % PINS_PER_PORT);
+		int port = gpio / PINS_PER_PORT;
 		
 		// Set the following values: direction, pullUp, interruptCompare, defaultValue, interruptOnChange
 		directions[port].setBit(bit);
@@ -241,20 +241,20 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Cl
 			device.writeByte(getGPIntEnReg(port), interruptOnChangeFlags[port].getValue());
 		}
 		
-		GpioDigitalInputDeviceInterface device = new MCP230xxDigitalInputDevice(this, key, pinNumber, trigger);
+		GpioDigitalInputDeviceInterface device = new MCP230xxDigitalInputDevice(this, key, gpio, trigger);
 		deviceOpened(device);
 		
 		return device;
 	}
 
 	@Override
-	public GpioDigitalOutputDeviceInterface provisionDigitalOutputPin(int pinNumber, boolean initialValue) throws RuntimeIOException {
-		if (pinNumber < 0 || pinNumber >= numPins) {
+	public GpioDigitalOutputDeviceInterface provisionDigitalOutputPin(int gpio, boolean initialValue) throws RuntimeIOException {
+		if (gpio < 0 || gpio >= numPins) {
 			throw new IllegalArgumentException(
-					"Invalid pin number (" + pinNumber + "); pin number must be 0.." + (numPins - 1));
+					"Invalid GPIO (" + gpio + "); must be 0.." + (numPins - 1));
 		}
 		
-		String key = createPinKey(pinNumber);
+		String key = createPinKey(gpio);
 		
 		if (isDeviceOpened(key)) {
 			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
@@ -262,39 +262,39 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Cl
 		
 		// Nothing to do assuming that closing a pin resets it to the default output state?
 		
-		GpioDigitalOutputDeviceInterface device = new MCP230xxDigitalOutputDevice(this, key, pinNumber);
+		GpioDigitalOutputDeviceInterface device = new MCP230xxDigitalOutputDevice(this, key, gpio);
 		deviceOpened(device);
 		device.setValue(initialValue);
 		
 		return device;
 	}
 
-	public boolean getValue(int pinNumber) throws RuntimeIOException {
-		if (pinNumber < 0 || pinNumber >= numPins) {
-			throw new IllegalArgumentException("Invalid pin number: " + pinNumber + ". "
-					+ deviceName + " has " + numPins + " GPIOs; pin number must be 0.." + (numPins - 1));
+	public boolean getValue(int gpio) throws RuntimeIOException {
+		if (gpio < 0 || gpio >= numPins) {
+			throw new IllegalArgumentException("Invalid GPIO: " + gpio + ". "
+					+ deviceName + " has " + numPins + " GPIOs; must be 0.." + (numPins - 1));
 		}
 		
-		byte bit = (byte)(pinNumber % PINS_PER_PORT);
-		int port = pinNumber / PINS_PER_PORT;
+		byte bit = (byte)(gpio % PINS_PER_PORT);
+		int port = gpio / PINS_PER_PORT;
 		
 		byte states = device.readByte(getGPIOReg(port));
 		
 		return (states & bit) != 0;
 	}
 
-	public void setValue(int pinNumber, boolean value) throws RuntimeIOException {
-		if (pinNumber < 0 || pinNumber >= numPins) {
-			throw new IllegalArgumentException("Invalid pin number: " + pinNumber + ". "
-					+ deviceName + " has " + numPins + " GPIOs; pin number must be 0.." + (numPins - 1));
+	public void setValue(int gpio, boolean value) throws RuntimeIOException {
+		if (gpio < 0 || gpio >= numPins) {
+			throw new IllegalArgumentException("Invalid GPIO: " + gpio + ". "
+					+ deviceName + " has " + numPins + " GPIOs; must be 0.." + (numPins - 1));
 		}
 		
-		byte bit = (byte)(pinNumber % PINS_PER_PORT);
-		int port = pinNumber / PINS_PER_PORT;
+		byte bit = (byte)(gpio % PINS_PER_PORT);
+		int port = gpio / PINS_PER_PORT;
 		
 		// Check the direction of the pin - can't set the value of input pins (direction bit is set)
 		if (directions[port].isBitSet(bit)) {
-			throw new IllegalStateException("Can't set value for input pin: " + pinNumber);
+			throw new IllegalStateException("Can't set value for input pin: " + gpio);
 		}
 		// Read the current state of this bank of GPIOs
 		byte old_val = device.readByte(getGPIOReg(port));
@@ -314,16 +314,16 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Cl
 		device.close();
 	}
 
-	public void closePin(int pinNumber) throws RuntimeIOException {
-		Logger.debug("closePin({})", Integer.valueOf(pinNumber));
+	public void closePin(int gpio) throws RuntimeIOException {
+		Logger.debug("closePin({})", Integer.valueOf(gpio));
 		
-		if (pinNumber < 0 || pinNumber >= numPins) {
-			throw new IllegalArgumentException("Invalid pin number: " + pinNumber + ". "
-					+ deviceName + " has " + numPins + " GPIOs; pin number must be 0.." + (numPins - 1));
+		if (gpio < 0 || gpio >= numPins) {
+			throw new IllegalArgumentException("Invalid GPIO: " + gpio + ". "
+					+ deviceName + " has " + numPins + " GPIOs; must be 0.." + (numPins - 1));
 		}
 		
-		byte bit = (byte)(pinNumber % PINS_PER_PORT);
-		int port = pinNumber / PINS_PER_PORT;
+		byte bit = (byte)(gpio % PINS_PER_PORT);
+		int port = gpio / PINS_PER_PORT;
 		
 		// Clean-up this pin only
 		
@@ -362,7 +362,7 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Cl
 		// Check the event is for one of the interrupt pins
 		boolean process_event = false;
 		for (DigitalInputDevice interrupt_pin : interruptPins) {
-			if (interrupt_pin != null && event.getPin() == interrupt_pin.getPinNumber()) {
+			if (interrupt_pin != null && event.getPin() == interrupt_pin.getGpio()) {
 				process_event = true;
 				break;
 			}
@@ -382,7 +382,7 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Cl
 					intf[1] = device.readByte(getIntFReg(1));
 					intcap[1] = device.readByte(getIntCapReg(1));
 				} else if (interruptMode != InterruptMode.DISABLED) {
-					if (interruptPins[0] != null && event.getPin() == interruptPins[0].getPinNumber()) {
+					if (interruptPins[0] != null && event.getPin() == interruptPins[0].getGpio()) {
 						intf[0] = device.readByte(getIntFReg(0));
 						intcap[0] = device.readByte(getIntCapReg(0));
 					} else {
@@ -422,8 +422,8 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Cl
 		}
 	}
 
-	private MCP23017DigitalInputDevice getInputDevice(byte pinNumber) {
-		return getDevice(createPinKey(pinNumber), MCP23017DigitalInputDevice.class);
+	private MCP23017DigitalInputDevice getInputDevice(byte gpio) {
+		return getDevice(createPinKey(gpio), MCP23017DigitalInputDevice.class);
 	}
 	
 	protected abstract int getIODirReg(int port);
