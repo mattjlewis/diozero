@@ -28,6 +28,7 @@ package com.diozero;
 
 
 import java.io.Closeable;
+import java.io.IOException;
 import java.nio.ByteOrder;
 import java.util.HashMap;
 import java.util.Map;
@@ -197,8 +198,7 @@ public class I2CLcd implements Closeable {
 	// For 16x4 LCDs - special memory map layout
 	private static final byte[] ROW_OFFSETS_16x4 = { 0, 0x40, 16, 0x40 + 16 };
 
-	private I2CDevice device;
-	private ByteOrder order;
+	private GpioExpander gpioExpander;
 	private boolean backlight;
 	private int columns;
 	private int rows;
@@ -221,8 +221,14 @@ public class I2CLcd implements Closeable {
 	public I2CLcd(int controller, int deviceAddress, int columns, int rows) {
 		this(controller, deviceAddress, ByteOrder.LITTLE_ENDIAN, columns, rows);
 	}
-	
+
+	@SuppressWarnings("resource")
 	public I2CLcd(int controller, int deviceAddress, ByteOrder order, int columns, int rows) {
+		this(new PCF8574(controller, deviceAddress, I2CConstants.ADDR_SIZE_7,
+				I2CConstants.DEFAULT_CLOCK_FREQUENCY, order), columns, rows);
+	}
+	
+	public I2CLcd(GpioExpander gpioExpander, int columns, int rows) {
 		if (rows == 2) {
 			rowOffsets = ROW_OFFSETS_2ROWS;
 		} else if (rows == 4) {
@@ -244,14 +250,12 @@ public class I2CLcd implements Closeable {
 					"Invalid number of rows (" + rows + "), must be 1.." + rowOffsets.length);
 		}
 
-		this.order = order;
 		this.columns = columns;
 		this.rows = rows;
 		backlight = DEFAULT_BACKLIGHT_STATE;
 		characterFont5x8 = true;
 
-		device = new I2CDevice(controller, deviceAddress, I2CConstants.ADDR_SIZE_7,
-				I2CConstants.DEFAULT_CLOCK_FREQUENCY);
+		this.gpioExpander = gpioExpander;
 
 		// Initialise the display. From p45/46 of the datasheet:
 		// https://www.sparkfun.com/datasheets/LCD/HD44780.pdf
@@ -306,10 +310,10 @@ public class I2CLcd implements Closeable {
 				| (instruction ? REGISTER_SELECT_INSTRUCTION : REGISTER_SELECT_DATA)
 				| (backlight ? BACKLIGHT_ON : BACKLIGHT_OFF));
 
-		device.writeByte((byte) (data | ENABLE), order);
+		gpioExpander.setValues(0, (byte) (data | ENABLE));
 		// 50us delay enough?
 		SleepUtil.sleepMicros(50);
-		device.writeByte((byte) (data & ~ENABLE), order);
+		gpioExpander.setValues(0, (byte) (data & ~ENABLE));
 		// 50us delay enough?
 		SleepUtil.sleepMicros(50);
 	}
@@ -591,7 +595,11 @@ public class I2CLcd implements Closeable {
 		backlight = false;
 		clear();
 		displayControl(false, false, false);
-		device.close();
+		try {
+			gpioExpander.close();
+		} catch (IOException e) {
+			throw new RuntimeIOException(e);
+		}
 	}
 	
 	public static class Characters {
@@ -716,6 +724,28 @@ public class I2CLcd implements Closeable {
 		
 		public static byte[] get(String code) {
 			return CHARACTERS.get(code);
+		}
+	}
+	
+	public static class PCF8574 implements GpioExpander {
+		private I2CDevice device;
+		
+		public PCF8574(int controller, int deviceAddress, int addressSize, int frequency, ByteOrder order) {
+			device = new I2CDevice(controller, deviceAddress, addressSize, frequency, order);
+		}
+
+		@Override
+		public void setDirections(int port, byte directions) {
+		}
+
+		@Override
+		public void setValues(int port, byte values) {
+			device.writeByte(values);
+		}
+		
+		@Override
+		public void close() {
+			device.close();
 		}
 	}
 }

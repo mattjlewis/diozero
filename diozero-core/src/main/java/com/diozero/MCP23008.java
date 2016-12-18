@@ -1,34 +1,5 @@
 package com.diozero;
 
-/*
- * #%L
- * Device I/O Zero - Core
- * %%
- * Copyright (C) 2016 diozero
- * %%
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- * 
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- * 
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- * #L%
- */
-
-
-import java.io.Closeable;
-
 import org.pmw.tinylog.Logger;
 
 import com.diozero.api.*;
@@ -59,7 +30,7 @@ import com.diozero.util.RuntimeIOException;
  * <p>The hardware address pins are used to determine the device address.</p>
  */
 public class MCP23008 extends AbstractDeviceFactory
-implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Closeable {
+implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, GpioExpander {
 	public static enum InterruptMode {
 		DISABLED, MIRRORED;
 	}
@@ -183,7 +154,7 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Cl
 		
 		for (int port=0; port<PORTS; port++) {
 			// Default all pins to output
-			device.writeByte(IODIR_REG[port], directions[port].getValue());
+			setDirections(port, directions[port].getValue());
 			// Default to normal input polarity - IPOLA/IPOLB
 			device.writeByte(IPOL_REG[port], 0);
 			// Disable interrupt-on-change for all pins
@@ -229,7 +200,7 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Cl
 		
 		// Set the following values: direction, pullUp, interruptCompare, defaultValue, interruptOnChange
 		directions[port].setBit(bit);
-		device.writeByte(IODIR_REG[port], directions[port].getValue());
+		setDirections(port, directions[port].getValue());
 		if (pud == GpioPullUpDown.PULL_UP) {
 			pullUps[port].setBit(bit);
 			device.writeByte(GPPU_REG[port], pullUps[port].getValue());
@@ -314,7 +285,17 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Cl
 		// Read the current state of this bank of GPIOs
 		byte old_val = device.readByte(GPIO_REG[port]);
 		byte new_val = BitManipulation.setBitValue(old_val, value, bit);
-		device.writeByte(OLAT_REG[port], new_val);
+		setValues(port, new_val);
+	}
+	
+	@Override
+	public void setDirections(int port, byte directions) {
+		device.writeByte(IODIR_REG[port], directions);
+	}
+	
+	@Override
+	public void setValues(int port, byte values) {
+		device.writeByte(OLAT_REG[0], values);
 	}
 	
 	@Override
@@ -358,7 +339,7 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Cl
 		}
 		if (directions[port].isBitSet(bit)) {
 			directions[port].unsetBit(bit);
-			device.writeByte(IODIR_REG[port], directions[port].getValue());
+			setDirections(port, directions[port].getValue());
 		}
 	}
 
