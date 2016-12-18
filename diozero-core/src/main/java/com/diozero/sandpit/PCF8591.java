@@ -128,38 +128,38 @@ AnalogOutputDeviceFactoryInterface, Closeable {
 	}
 
 	@Override
-	public GpioAnalogInputDeviceInterface provisionAnalogInputPin(int pinNumber) throws RuntimeIOException {
-		if (pinNumber < 0 || pinNumber >= inputMode.getNumPins()) {
+	public GpioAnalogInputDeviceInterface provisionAnalogInputPin(int gpio) throws RuntimeIOException {
+		if (gpio < 0 || gpio >= inputMode.getNumPins()) {
 			throw new IllegalArgumentException(
-					"Invalid channel number (" + pinNumber + "), must be >= 0 and < " + inputMode.getNumPins());
+					"Invalid channel number (" + gpio + "), must be >= 0 and < " + inputMode.getNumPins());
 		}
 		
-		String key = createPinKey(pinNumber);
+		String key = createPinKey(gpio);
 		
 		if (isDeviceOpened(key)) {
 			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
 		}
 		
-		GpioAnalogInputDeviceInterface device = new PCF8591AnalogInputDevice(this, key, pinNumber);
+		GpioAnalogInputDeviceInterface device = new PCF8591AnalogInputDevice(this, key, gpio);
 		deviceOpened(device);
 		
 		return device;
 	}
 
 	@Override
-	public GpioAnalogOutputDeviceInterface provisionAnalogOutputPin(int pinNumber) throws RuntimeIOException {
-		if (pinNumber != 0) {
+	public GpioAnalogOutputDeviceInterface provisionAnalogOutputPin(int gpio) throws RuntimeIOException {
+		if (gpio != 0) {
 			throw new IllegalArgumentException(
-					"Invalid channel number (" + pinNumber + "), must be 0");
+					"Invalid channel number (" + gpio + "), must be 0");
 		}
 		
-		String key = createPinKey(pinNumber);
+		String key = createPinKey(gpio);
 		
 		if (isDeviceOpened(key)) {
 			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
 		}
 		
-		GpioAnalogOutputDeviceInterface device = new PCF8591AnalogOutputDevice(this, key, pinNumber);
+		GpioAnalogOutputDeviceInterface device = new PCF8591AnalogOutputDevice(this, key, gpio);
 		deviceOpened(device);
 		
 		return device;

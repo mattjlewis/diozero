@@ -43,17 +43,17 @@ public class Servo extends GpioDevice implements OutputDeviceInterface {
 	private int pwmFrequency;
 	private PwmOutputDeviceInterface device;
 	
-	public Servo(int pinNumber, int pwmFrequency, float initialPulseWidthMs) throws RuntimeIOException {
-		this(DeviceFactoryHelper.getNativeDeviceFactory(), pinNumber, pwmFrequency, initialPulseWidthMs);
+	public Servo(int gpio, int pwmFrequency, float initialPulseWidthMs) throws RuntimeIOException {
+		this(DeviceFactoryHelper.getNativeDeviceFactory(), gpio, pwmFrequency, initialPulseWidthMs);
 	}
 	
-	public Servo(PwmOutputDeviceFactoryInterface pwmDeviceFactory, int pinNumber,
+	public Servo(PwmOutputDeviceFactoryInterface pwmDeviceFactory, int gpio,
 			int pwmFrequency, float initialPulseWidthMs) throws RuntimeIOException {
-		super(pinNumber);
+		super(gpio);
 		
 		this.pwmFrequency = pwmFrequency;
-		pwmDeviceFactory.setPwmFrequency(pinNumber, pwmFrequency);
-		this.device = pwmDeviceFactory.provisionPwmOutputPin(pinNumber, calcValue(initialPulseWidthMs));
+		pwmDeviceFactory.setPwmFrequency(gpio, pwmFrequency);
+		this.device = pwmDeviceFactory.provisionPwmOutputPin(gpio, calcValue(initialPulseWidthMs));
 	}
 	
 	@Override

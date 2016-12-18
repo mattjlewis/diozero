@@ -38,29 +38,29 @@ import com.diozero.util.RuntimeIOException;
  */
 @SuppressWarnings("resource")
 public class TB6612FNGDualMotorDriver extends DualMotor {
-	public TB6612FNGDualMotorDriver(int leftMotorClockwiseControlPinNumber, int leftMotorCounterClockwiseControlPinNumber,
-			int leftMotorPwmPinNumber,
-			int rightMotorClockwiseControlPinNumber,int rightMotorCounterClockwiseControlPinNumber,
-			int rightMotorPwmPinNumber) throws RuntimeIOException {
-		this(new DigitalOutputDevice(leftMotorClockwiseControlPinNumber),
-				new DigitalOutputDevice(leftMotorCounterClockwiseControlPinNumber),
-				new PwmOutputDevice(leftMotorPwmPinNumber),
-				new DigitalOutputDevice(rightMotorClockwiseControlPinNumber),
-				new DigitalOutputDevice(rightMotorCounterClockwiseControlPinNumber),
-				new PwmOutputDevice(rightMotorPwmPinNumber));
+	public TB6612FNGDualMotorDriver(int leftMotorClockwiseControlGpio, int leftMotorCounterClockwiseControlGpio,
+			int leftMotorPwmGpio,
+			int rightMotorClockwiseControlGpio,int rightMotorCounterClockwiseControlGpio,
+			int rightMotorPwmGpio) throws RuntimeIOException {
+		this(new DigitalOutputDevice(leftMotorClockwiseControlGpio),
+				new DigitalOutputDevice(leftMotorCounterClockwiseControlGpio),
+				new PwmOutputDevice(leftMotorPwmGpio),
+				new DigitalOutputDevice(rightMotorClockwiseControlGpio),
+				new DigitalOutputDevice(rightMotorCounterClockwiseControlGpio),
+				new PwmOutputDevice(rightMotorPwmGpio));
 	}
 	
 	public TB6612FNGDualMotorDriver(PwmOutputDeviceFactoryInterface pwmDeviceFactory,
-			int leftMotorClockwiseControlPinNumber, int leftMotorCounterClockwiseControlPinNumber,
-			int leftMotorPwmPinNumber,
-			int rightMotorClockwiseControlPinNumber,int rightMotorCounterClockwiseControlPinNumber,
-			int rightMotorPwmPinNumber) throws RuntimeIOException {
-		this(new DigitalOutputDevice(leftMotorClockwiseControlPinNumber),
-				new DigitalOutputDevice(leftMotorCounterClockwiseControlPinNumber),
-				new PwmOutputDevice(pwmDeviceFactory, leftMotorPwmPinNumber, 0),
-				new DigitalOutputDevice(rightMotorClockwiseControlPinNumber),
-				new DigitalOutputDevice(rightMotorCounterClockwiseControlPinNumber),
-				new PwmOutputDevice(pwmDeviceFactory, rightMotorPwmPinNumber, 0));
+			int leftMotorClockwiseControlGpio, int leftMotorCounterClockwiseControlGpio,
+			int leftMotorPwmGpio,
+			int rightMotorClockwiseControlGpio,int rightMotorCounterClockwiseControlGpio,
+			int rightMotorPwmGpio) throws RuntimeIOException {
+		this(new DigitalOutputDevice(leftMotorClockwiseControlGpio),
+				new DigitalOutputDevice(leftMotorCounterClockwiseControlGpio),
+				new PwmOutputDevice(pwmDeviceFactory, leftMotorPwmGpio, 0),
+				new DigitalOutputDevice(rightMotorClockwiseControlGpio),
+				new DigitalOutputDevice(rightMotorCounterClockwiseControlGpio),
+				new PwmOutputDevice(pwmDeviceFactory, rightMotorPwmGpio, 0));
 	}
 	
 	public TB6612FNGDualMotorDriver(

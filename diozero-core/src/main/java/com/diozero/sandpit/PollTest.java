@@ -43,10 +43,10 @@ public class PollTest {
 		test(pin);
 	}
 	
-	private static void test(int pinNumber) {
+	private static void test(int gpio) {
 		PollNative pn = new PollNative();
 		Logger.info("Calling poll()");
-		pn.poll("/sys/class/gpio/gpio" + pinNumber + "/value", -1, pinNumber,
+		pn.poll("/sys/class/gpio/gpio" + gpio + "/value", -1, gpio,
 				(ref, epochTime)->Logger.info("notify(" + ref + ", " + epochTime + ")"));
 	}
 }

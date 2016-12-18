@@ -41,13 +41,13 @@ import com.diozero.util.RuntimeIOException;
  * the two.
  */
 public class DebouncedDigitalInputDevice extends WaitableDigitalInputDevice {
-	public DebouncedDigitalInputDevice(int pinNumber) throws RuntimeIOException {
-		this(pinNumber, GpioPullUpDown.NONE, 0, GpioEventTrigger.BOTH);
+	public DebouncedDigitalInputDevice(int gpio) throws RuntimeIOException {
+		this(gpio, GpioPullUpDown.NONE, 0, GpioEventTrigger.BOTH);
 	}
 
 	/**
 	 * 
-	 * @param pinNumber GPIO
+	 * @param gpio GPIO
 	 * @param pud Pull-up/down configuratoin
 	 * @param debounceTime
 	 *            Specifies the length of time (in seconds) that the component
@@ -56,12 +56,12 @@ public class DebouncedDigitalInputDevice extends WaitableDigitalInputDevice {
 	 *            be performed.
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
-	public DebouncedDigitalInputDevice(int pinNumber, GpioPullUpDown pud, float debounceTime) throws RuntimeIOException {
-		this(pinNumber, pud, debounceTime, GpioEventTrigger.BOTH);
+	public DebouncedDigitalInputDevice(int gpio, GpioPullUpDown pud, float debounceTime) throws RuntimeIOException {
+		this(gpio, pud, debounceTime, GpioEventTrigger.BOTH);
 	}
 	
-	public DebouncedDigitalInputDevice(int pinNumber, GpioPullUpDown pud, float debounceTime, GpioEventTrigger trigger) throws RuntimeIOException {
-		super(pinNumber, pud, trigger);
+	public DebouncedDigitalInputDevice(int gpio, GpioPullUpDown pud, float debounceTime, GpioEventTrigger trigger) throws RuntimeIOException {
+		super(gpio, pud, trigger);
 
 		if (debounceTime > 0) {
 			device.setDebounceTimeMillis((int) (debounceTime * 1000));

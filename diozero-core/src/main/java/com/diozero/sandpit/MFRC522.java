@@ -144,9 +144,9 @@ public class MFRC522 implements Closeable {
 	private SpiDevice device;
 	private DigitalOutputDevice resetPin;
 	
-	public MFRC522(int chipSelect, int resetPinNumber) {
+	public MFRC522(int chipSelect, int resetGpio) {
 		device = new SpiDevice(chipSelect);
-		resetPin = new DigitalOutputDevice(resetPinNumber, true, false);
+		resetPin = new DigitalOutputDevice(resetGpio, true, false);
 		
 		resetPin.on();
 		reset();

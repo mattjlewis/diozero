@@ -318,84 +318,84 @@ implements GpioDeviceFactoryInterface, AnalogInputDeviceFactoryInterface, PwmOut
 	}
 
 	@Override
-	public int getPwmFrequency(int pinNumber) {
+	public int getPwmFrequency(int gpio) {
 		// Not supported
 		return 50;
 	}
 
 	@Override
-	public void setPwmFrequency(int pinNumber, int pwmFrequency) {
+	public void setPwmFrequency(int gpio, int pwmFrequency) {
 		// Not supported
 	}
 
 	@Override
-	public GpioAnalogInputDeviceInterface provisionAnalogInputPin(int pinNumber) throws RuntimeIOException {
-		validateChannelMode(pinNumber, InputConfig.ANALOG);
+	public GpioAnalogInputDeviceInterface provisionAnalogInputPin(int gpio) throws RuntimeIOException {
+		validateChannelMode(gpio, InputConfig.ANALOG);
 		
-		String key = keyPrefix + pinNumber;
+		String key = keyPrefix + gpio;
 		
 		if (isDeviceOpened(key)) {
 			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
 		}
 		
-		GpioAnalogInputDeviceInterface device = new PiconZeroAnalogInputDevice(this, key, pinNumber);
+		GpioAnalogInputDeviceInterface device = new PiconZeroAnalogInputDevice(this, key, gpio);
 		deviceOpened(device);
 		
 		return device;
 	}
 
 	@Override
-	public GpioDigitalInputDeviceInterface provisionDigitalInputPin(int pinNumber, GpioPullUpDown pud,
+	public GpioDigitalInputDeviceInterface provisionDigitalInputPin(int gpio, GpioPullUpDown pud,
 			GpioEventTrigger trigger) throws RuntimeIOException {
-		validateChannelMode(pinNumber, pud == GpioPullUpDown.PULL_UP ? InputConfig.DIGITAL_PULL_UP : InputConfig.DIGITAL);
+		validateChannelMode(gpio, pud == GpioPullUpDown.PULL_UP ? InputConfig.DIGITAL_PULL_UP : InputConfig.DIGITAL);
 		
-		String key = keyPrefix + pinNumber;
+		String key = keyPrefix + gpio;
 		
 		if (isDeviceOpened(key)) {
 			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
 		}
 		
-		GpioDigitalInputDeviceInterface device = new PiconZeroDigitalInputDevice(this, key, pinNumber, pud, trigger);
+		GpioDigitalInputDeviceInterface device = new PiconZeroDigitalInputDevice(this, key, gpio, pud, trigger);
 		deviceOpened(device);
 		
 		return device;
 	}
 
 	@Override
-	public GpioDigitalOutputDeviceInterface provisionDigitalOutputPin(int pinNumber, boolean initialValue)
+	public GpioDigitalOutputDeviceInterface provisionDigitalOutputPin(int gpio, boolean initialValue)
 			throws RuntimeIOException {
-		validateChannelMode(pinNumber, OutputConfig.DIGITAL);
+		validateChannelMode(gpio, OutputConfig.DIGITAL);
 		
-		String key = keyPrefix + pinNumber;
+		String key = keyPrefix + gpio;
 		
 		if (isDeviceOpened(key)) {
 			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
 		}
 		
-		GpioDigitalOutputDeviceInterface device = new PiconZeroDigitalOutputDevice(this, key, pinNumber, initialValue);
+		GpioDigitalOutputDeviceInterface device = new PiconZeroDigitalOutputDevice(this, key, gpio, initialValue);
 		deviceOpened(device);
 		
 		return device;
 	}
 
 	@Override
-	public PwmOutputDeviceInterface provisionPwmOutputPin(int pinNumber, float initialValue) throws RuntimeIOException {
-		validateChannelMode(pinNumber, OutputConfig.PWM);
+	public PwmOutputDeviceInterface provisionPwmOutputPin(int gpio, float initialValue) throws RuntimeIOException {
+		validateChannelMode(gpio, OutputConfig.PWM);
 		
-		String key = keyPrefix + pinNumber;
+		String key = keyPrefix + gpio;
 		
 		if (isDeviceOpened(key)) {
 			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
 		}
 		
-		PwmOutputDeviceInterface device = new PiconZeroPwmOutputDevice(this, key, pinNumber, initialValue);
+		PwmOutputDeviceInterface device = new PiconZeroPwmOutputDevice(this, key, gpio, initialValue);
 		deviceOpened(device);
 		
 		return device;
 	}
 
 	@Override
-	public GpioDigitalInputOutputDeviceInterface provisionDigitalInputOutputPin(int pinNumber, Mode mode)
+	public GpioDigitalInputOutputDeviceInterface provisionDigitalInputOutputPin(int gpio, Mode mode)
 			throws RuntimeIOException {
 		throw new UnsupportedOperationException("DigitalInputOutputDevice isn't supported on PiconZero");
 	}
