@@ -45,11 +45,11 @@ public class JdkDeviceIoGpioOutputDevice extends AbstractDevice implements GpioD
 	private GPIOPinConfig pinConfig;
 	private GPIOPin pin;
 	
-	JdkDeviceIoGpioOutputDevice(String key, DeviceFactoryInterface deviceFactory, int pinNumber, boolean initialValue) throws RuntimeIOException {
+	JdkDeviceIoGpioOutputDevice(String key, DeviceFactoryInterface deviceFactory, int gpio, boolean initialValue) throws RuntimeIOException {
 		super(key, deviceFactory);
 		
-		pinConfig = new GPIOPinConfig(DeviceConfig.DEFAULT, pinNumber, GPIOPinConfig.DIR_OUTPUT_ONLY,
-				GPIOPinConfig.DEFAULT, GPIOPinConfig.TRIGGER_NONE, initialValue);
+		pinConfig = new GPIOPinConfig(DeviceConfig.DEFAULT, gpio, GPIOPinConfig.DIR_OUTPUT_ONLY,
+				DeviceConfig.DEFAULT, GPIOPinConfig.TRIGGER_NONE, initialValue);
 				//GPIOPinConfig.MODE_OUTPUT_PUSH_PULL, GPIOPinConfig.TRIGGER_NONE, false);
 		try {
 			pin = DeviceManager.open(GPIOPin.class, pinConfig);
@@ -72,7 +72,7 @@ public class JdkDeviceIoGpioOutputDevice extends AbstractDevice implements GpioD
 	
 	// Exposed properties
 	@Override
-	public int getPin() {
+	public int getGpio() {
 		return pinConfig.getPinNumber();
 	}
 	

@@ -58,7 +58,7 @@ public class JdkDeviceIoPwmOutputDevice extends AbstractDevice implements PwmOut
 	private float value;
 	private int pulseWidthMs;
 	
-	JdkDeviceIoPwmOutputDevice(String key, DeviceFactoryInterface deviceFactory, int pinNumber,
+	JdkDeviceIoPwmOutputDevice(String key, DeviceFactoryInterface deviceFactory, int gpio,
 			float initialValue, PwmType pwmType) throws RuntimeIOException {
 		super(key, deviceFactory);
 		
@@ -82,12 +82,12 @@ public class JdkDeviceIoPwmOutputDevice extends AbstractDevice implements PwmOut
 		*/
 		
 		GPIOPinConfig gpio_pin_config = new GPIOPinConfig.Builder().setControllerNumber(DeviceConfig.UNASSIGNED)
-				.setPinNumber(pinNumber).setDirection(GPIOPinConfig.DIR_OUTPUT_ONLY)
+				.setPinNumber(gpio).setDirection(GPIOPinConfig.DIR_OUTPUT_ONLY)
 				.setDriveMode(GPIOPinConfig.MODE_OUTPUT_PUSH_PULL)
 				.setInitValue(false).build();
 		this.frequency = DEFAULT_FREQUENCY;
 		// TODO What value for PWM Channel Number?! Same as the GPIO Output Pin number?
-		int pwm_channel_number = pinNumber;
+		int pwm_channel_number = gpio;
 		int idle_state = DeviceConfig.UNASSIGNED;		// IDLE_STATE_HIGH or IDLE_STATE_LOW
 		pulsePeriodMs = (int)(1000 / frequency);
 		int pulse_alignment = DeviceConfig.UNASSIGNED;	// ALIGN_CENTER, ALIGN_LEFT or ALIGN_RIGHT
@@ -115,7 +115,12 @@ public class JdkDeviceIoPwmOutputDevice extends AbstractDevice implements PwmOut
 
 	// Exposed properties
 	@Override
-	public int getPin() {
+	public int getGpio() {
+		return pwmChannelConfig.getOutputConfig().getPinNumber();
+	}
+	
+	@Override
+	public int getPwmNum() {
 		return pwmChannelConfig.getOutputConfig().getPinNumber();
 	}
 	

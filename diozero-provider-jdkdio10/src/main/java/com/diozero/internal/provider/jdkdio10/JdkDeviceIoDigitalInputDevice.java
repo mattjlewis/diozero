@@ -50,7 +50,7 @@ implements GpioDigitalInputDeviceInterface, PinListener {
 	private long lastPinEventTime;
 	private int debounceTimeMillis;
 	
-	JdkDeviceIoDigitalInputDevice(String key, DeviceFactoryInterface deviceFactory, int pinNumber, GpioPullUpDown pud, GpioEventTrigger trigger) throws RuntimeIOException {
+	JdkDeviceIoDigitalInputDevice(String key, DeviceFactoryInterface deviceFactory, int gpio, GpioPullUpDown pud, GpioEventTrigger trigger) throws RuntimeIOException {
 		super(key, deviceFactory);
 		
 		int mode;
@@ -80,7 +80,7 @@ implements GpioDigitalInputDeviceInterface, PinListener {
 			trig = GPIOPinConfig.TRIGGER_NONE;
 		}
 		
-		pinConfig = new GPIOPinConfig(DeviceConfig.DEFAULT, pinNumber, GPIOPinConfig.DIR_INPUT_ONLY, mode, trig, false);
+		pinConfig = new GPIOPinConfig(DeviceConfig.DEFAULT, gpio, GPIOPinConfig.DIR_INPUT_ONLY, mode, trig, false);
 		try {
 			pin = DeviceManager.open(GPIOPin.class, pinConfig);
 		} catch (IOException e) {
@@ -103,7 +103,7 @@ implements GpioDigitalInputDeviceInterface, PinListener {
 	
 	// Exposed properties
 	@Override
-	public int getPin() {
+	public int getGpio() {
 		return pinConfig.getPinNumber();
 	}
 	
