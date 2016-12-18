@@ -51,7 +51,7 @@ public class PiconZeroDigitalInputDevice extends AbstractDevice implements GpioD
 	}
 	
 	@Override
-	public int getPin() {
+	public int getGpio() {
 		return channel;
 	}
 

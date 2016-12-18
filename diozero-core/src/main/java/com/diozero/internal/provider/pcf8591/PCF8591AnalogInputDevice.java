@@ -37,13 +37,13 @@ import com.diozero.util.RuntimeIOException;
 
 public class PCF8591AnalogInputDevice extends AbstractInputDevice<AnalogInputEvent> implements GpioAnalogInputDeviceInterface {
 	private PCF8591 pcf8591;
-	private int pinNumber;
+	private int gpio;
 
-	public PCF8591AnalogInputDevice(PCF8591 pcf8591, String key, int pinNumber) {
+	public PCF8591AnalogInputDevice(PCF8591 pcf8591, String key, int gpio) {
 		super(key, pcf8591);
 		
 		this.pcf8591 = pcf8591;
-		this.pinNumber = pinNumber;
+		this.gpio = gpio;
 	}
 
 	@Override
@@ -54,11 +54,11 @@ public class PCF8591AnalogInputDevice extends AbstractInputDevice<AnalogInputEve
 
 	@Override
 	public float getValue() throws RuntimeIOException {
-		return pcf8591.getValue(pinNumber);
+		return pcf8591.getValue(gpio);
 	}
 
 	@Override
-	public int getPin() {
-		return pinNumber;
+	public int getGpio() {
+		return gpio;
 	}
 }

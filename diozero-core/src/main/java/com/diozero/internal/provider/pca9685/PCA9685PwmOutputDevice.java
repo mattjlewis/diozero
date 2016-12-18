@@ -45,7 +45,12 @@ public class PCA9685PwmOutputDevice extends AbstractDevice implements PwmOutputD
 	}
 
 	@Override
-	public int getPin() {
+	public int getGpio() {
+		return channel;
+	}
+
+	@Override
+	public int getPwmNum() {
 		return channel;
 	}
 

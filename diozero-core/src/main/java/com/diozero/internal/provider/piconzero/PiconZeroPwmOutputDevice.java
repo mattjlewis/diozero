@@ -48,7 +48,12 @@ public class PiconZeroPwmOutputDevice extends AbstractDevice implements PwmOutpu
 	}
 
 	@Override
-	public int getPin() {
+	public int getGpio() {
+		return channel;
+	}
+
+	@Override
+	public int getPwmNum() {
 		return channel;
 	}
 
