@@ -26,7 +26,16 @@ package com.diozero.api;
  * #L%
  */
 
-
+/**
+ * <pre>
+ * SPI  Clock Polarity Clock Phase Clock Edge
+ * Mode (CPOL/CKP)     (CPHA)      (CKE/NCPHA)
+ * 0    0              0           1
+ * 1    0              1           0
+ * 2    1              0           1
+ * 3    1              1           0
+ * </pre>
+ */
 public enum SpiClockMode {
 	// https://en.wikipedia.org/wiki/Serial_Peripheral_Interface_Bus#Mode_numbers
 	MODE_0((byte) 0), MODE_1((byte) 1), MODE_2((byte) 2), MODE_3((byte) 3);
