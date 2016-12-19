@@ -19,11 +19,11 @@
 #include <linux/spi/spidev.h>
 
 /*
- * Class:     com_diozero_internal_spi_NativeSpiDevice
+ * Class:     com_diozero_internal_provider_spi_NativeSpiDevice
  * Method:    spiOpen
  * Signature: (Ljava/lang/String;BIBZ)I
  */
-JNIEXPORT jint JNICALL Java_com_diozero_internal_spi_NativeSpiDevice_spiOpen(
+JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_spi_NativeSpiDevice_spiOpen(
 		JNIEnv* env, jclass clazz, jstring path, jbyte mode, jint speed, jbyte bitsPerWord, jboolean lsbFirst) {
 	int len = (*env)->GetStringLength(env, path);
 	char filename[len];
@@ -35,7 +35,7 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_spi_NativeSpiDevice_spiOpen(
 		return -1;
 	}
 
-	if (Java_com_diozero_internal_spi_NativeSpiDevice_spiConfig(env, clazz, fd, mode, speed, bitsPerWord, lsbFirst == JNI_TRUE ? 1 : 0) < 0) {
+	if (Java_com_diozero_internal_provider_spi_NativeSpiDevice_spiConfig(env, clazz, fd, mode, speed, bitsPerWord, lsbFirst == JNI_TRUE ? 1 : 0) < 0) {
 		printf("open failed: %s", strerror(errno));
 		return -1;
 	}
@@ -44,11 +44,11 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_spi_NativeSpiDevice_spiOpen(
 }
 
 /*
- * Class:     com_diozero_internal_spi_NativeSpiDevice
+ * Class:     com_diozero_internal_provider_spi_NativeSpiDevice
  * Method:    spiConfig
  * Signature: (IBIBZ)I
  */
-JNIEXPORT jint JNICALL Java_com_diozero_internal_spi_NativeSpiDevice_spiConfig(
+JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_spi_NativeSpiDevice_spiConfig(
 		JNIEnv* env, jclass clazz, jint fileDescriptor, jbyte mode, jint speed, jbyte bitsPerWord, jboolean lsbFirst) {
 	if (ioctl(fileDescriptor, SPI_IOC_WR_MODE, &mode) < 0) {
 		printf("Cannot set SPI mode: %s", strerror(errno));
@@ -107,21 +107,21 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_spi_NativeSpiDevice_spiConfig(
 }
 
 /*
- * Class:     com_diozero_internal_spi_NativeSpiDevice
+ * Class:     com_diozero_internal_provider_spi_NativeSpiDevice
  * Method:    spiClose
  * Signature: (I)I
  */
-JNIEXPORT jint JNICALL Java_com_diozero_internal_spi_NativeSpiDevice_spiClose(
+JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_spi_NativeSpiDevice_spiClose(
 		JNIEnv* env, jclass clazz, jint fileDescriptor) {
 	return close(fileDescriptor);
 }
 
 /*
- * Class:     com_diozero_internal_spi_NativeSpiDevice
+ * Class:     com_diozero_internal_provider_spi_NativeSpiDevice
  * Method:    spiTransfer
- * Signature: (IJJIIIB)I
+ * Signature: (ILjava/nio/ByteBuffer;Ljava/nio/ByteBuffer;IIIB)I
  */
-JNIEXPORT jint JNICALL Java_com_diozero_internal_spi_NativeSpiDevice_spiTransfer(
+JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_spi_NativeSpiDevice_spiTransfer(
 		JNIEnv* env, jclass clazz, jint fileDescriptor, jobject txBuffer,
 		jobject rxBuffer, jint length, jint speedHz, jint delayUSecs, jbyte bitsPerWord) {
 	long_t* tx_buf = NULL;
