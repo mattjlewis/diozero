@@ -3,7 +3,7 @@ package com.diozero.internal.provider.sysfs;
 import java.nio.ByteBuffer;
 
 import com.diozero.api.SpiClockMode;
-import com.diozero.internal.provider.i2c.NativeSpiDevice;
+import com.diozero.internal.provider.spi.NativeSpiDevice;
 import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.DeviceFactoryInterface;
 import com.diozero.internal.spi.SpiDeviceInterface;
