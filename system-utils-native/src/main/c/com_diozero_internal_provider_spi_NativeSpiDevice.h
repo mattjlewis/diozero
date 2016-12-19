@@ -36,10 +36,10 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_spi_NativeSpiDevice_sp
 /*
  * Class:     com_diozero_internal_provider_spi_NativeSpiDevice
  * Method:    spiTransfer
- * Signature: (ILjava/nio/ByteBuffer;Ljava/nio/ByteBuffer;IIIB)I
+ * Signature: (I[B[BIIIB)I
  */
 JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_spi_NativeSpiDevice_spiTransfer
-  (JNIEnv *, jclass, jint, jobject, jobject, jint, jint, jint, jbyte);
+  (JNIEnv *, jclass, jint, jbyteArray, jbyteArray, jint, jint, jint, jbyte);
 
 #ifdef __cplusplus
 }

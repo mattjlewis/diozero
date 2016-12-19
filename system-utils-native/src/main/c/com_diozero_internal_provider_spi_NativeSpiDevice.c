@@ -89,12 +89,17 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_spi_NativeSpiDevice_sp
 		printf("Warning SPI speed (%d) does not equal that set (%d)\n", actual_speed, speed);
 	}
 
+	uint8_t actual_lsb;
+	if (ioctl(fileDescriptor, SPI_IOC_RD_LSB_FIRST, &actual_lsb) < 0) {
+		printf("Cannot get lsb first: %s", strerror(errno));
+		return -1;
+	}
 	uint8_t lsb = lsbFirst > 0 ? SPI_LSB_FIRST : 0;
+	printf("Original LSB first=%d, setting to %d\n", actual_lsb, lsb);
 	if (ioctl(fileDescriptor, SPI_IOC_WR_LSB_FIRST, &lsb) < 0) {
 		printf("Cannot set lsb first: %s", strerror(errno));
 		return -1;
 	}
-	uint8_t actual_lsb;
 	if (ioctl(fileDescriptor, SPI_IOC_RD_LSB_FIRST, &actual_lsb) < 0) {
 		printf("Cannot get lsb first: %s", strerror(errno));
 		return -1;
@@ -119,21 +124,14 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_spi_NativeSpiDevice_sp
 /*
  * Class:     com_diozero_internal_provider_spi_NativeSpiDevice
  * Method:    spiTransfer
- * Signature: (ILjava/nio/ByteBuffer;Ljava/nio/ByteBuffer;IIIB)I
+ * Signature: (I[B[BIIIB)I
  */
 JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_spi_NativeSpiDevice_spiTransfer(
-		JNIEnv* env, jclass clazz, jint fileDescriptor, jobject txBuffer,
-		jobject rxBuffer, jint length, jint speedHz, jint delayUSecs, jbyte bitsPerWord) {
-	long_t* tx_buf = NULL;
-	long_t* rx_buf = NULL;
-
-	if (txBuffer != NULL) {
-		tx_buf = (unsigned int*) (*env)->GetDirectBufferAddress(env, txBuffer);
-	}
-
-	if (rxBuffer != NULL) {
-		rx_buf = (unsigned int*) (*env)->GetDirectBufferAddress(env, rxBuffer);
-	}
+		JNIEnv* env, jclass clazz, jint fileDescriptor, jbyteArray txBuffer,
+		jbyteArray rxBuffer, jint length, jint speedHz, jint delayUSecs, jbyte bitsPerWord) {
+	jboolean is_copy;
+	jbyte* tx_buf = (*env)->GetByteArrayElements(env, txBuffer, &is_copy);
+	jbyte* rx_buf = (*env)->GetByteArrayElements(env, rxBuffer, &is_copy);
 
 	struct spi_ioc_transfer tr = {
 		tr.tx_buf = (long_t) tx_buf
@@ -155,6 +153,11 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_spi_NativeSpiDevice_sp
 	if (ret < 0) {
 		printf("SPI message transfer failed: %s", strerror(errno));
 	}
+
+	// mode = JNI_ABORT - No change hence free the buffer without copying back the possible changes
+	(*env)->ReleaseByteArrayElements(env, txBuffer, tx_buf, JNI_ABORT);
+	// mode = 0 - Copy back the content and free the buffer (rx)
+	(*env)->ReleaseByteArrayElements(env, rxBuffer, rx_buf, 0);
 
 	return ret;
 }

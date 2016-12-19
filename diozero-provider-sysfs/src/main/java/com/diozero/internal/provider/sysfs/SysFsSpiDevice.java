@@ -36,10 +36,6 @@ public class SysFsSpiDevice extends AbstractDevice implements SpiDeviceInterface
 
 	@Override
 	public ByteBuffer writeAndRead(ByteBuffer txBuffer) throws RuntimeIOException {
-		ByteBuffer rx_buffer = ByteBuffer.allocateDirect(txBuffer.capacity());
-		if (device.transfer(txBuffer, rx_buffer, txBuffer.capacity(), 0) != 0) {
-			throw new RuntimeIOException("SPI transfer error");
-		}
-		return rx_buffer;
+		return device.transfer(txBuffer, 0);
 	}
 }

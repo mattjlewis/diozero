@@ -34,6 +34,7 @@ import java.nio.ByteBuffer;
 import com.diozero.api.SPIConstants;
 import com.diozero.api.SpiClockMode;
 import com.diozero.util.LibraryLoader;
+import com.diozero.util.RuntimeIOException;
 
 /**
  * <p>Native Java implementation of the I2C SMBus commands using a single native method to select the slave address.</p>
@@ -51,8 +52,8 @@ public class NativeSpiDevice implements Closeable {
 	private static native int spiOpen(String filename, byte mode, int speedHz, byte bitsPerWord, boolean lsbFirst);
 	private static native int spiConfig(int fileDescriptor, byte spiMode, int frequency, byte bitsPerWord, boolean lsbFirst);
 	private static native int spiClose(int fileDescriptor);
-	private static native int spiTransfer(int fileDescriptor, ByteBuffer txBuffer,
-			ByteBuffer rxBuffer, int length, int speedHz, int delayUSecs, byte bitsPerWord);
+	private static native int spiTransfer(int fileDescriptor, byte[] txBuffer,
+			byte[] rxBuffer, int length, int speedHz, int delayUSecs, byte bitsPerWord);
 	
 	private RandomAccessFile i2cDeviceFile;
 	private int controller;
@@ -76,8 +77,17 @@ public class NativeSpiDevice implements Closeable {
 		spiClose(fd);
 	}
 	
-	public int transfer(ByteBuffer txBuffer, ByteBuffer rxBuffer, int length, int delayUSecs) {
-		return spiTransfer(fd, txBuffer, rxBuffer, length, speedHz, delayUSecs, bitsPerWord);
+	public ByteBuffer transfer(ByteBuffer txBuffer, int delayUSecs) {
+		int length = txBuffer.remaining();
+		byte[] tx = new byte[length];
+		txBuffer.get(tx);
+		byte[] rx = new byte[length];
+		int rc = spiTransfer(fd, tx, rx, length, speedHz, delayUSecs, bitsPerWord);
+		if (rc < 0) {
+			throw new RuntimeIOException("Error in spiTransfer(), response: " + rc);
+		}
+		
+		return ByteBuffer.wrap(rx);
 	}
 	
 	public int getController() {
