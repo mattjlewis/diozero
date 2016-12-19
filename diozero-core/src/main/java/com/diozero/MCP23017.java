@@ -266,10 +266,10 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Cl
 
 		// Initialise
 		// Read the I/O configuration value
-		byte start_iocon = device.readByte(IOCON_REG[0]);
+		byte start_iocon = readByte(IOCON_REG[0]);
 		Logger.debug("Default power-on values for IOCON: 0x{x}", Integer.toHexString(start_iocon));
 		// Is there an IOCONB value?
-		Logger.debug("IOCONB: 0x{x}", Integer.toHexString(device.readByte(IOCON_REG[1])));
+		Logger.debug("IOCONB: 0x{x}", Integer.toHexString(readByte(IOCON_REG[1])));
 		
 		// Configure interrupts
 		MutableByte iocon = new MutableByte(start_iocon);
@@ -287,24 +287,24 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Cl
 		iocon.unsetBit(IOCON_ODR_BIT);
 		if (!iocon.equals(start_iocon)) {
 			Logger.debug("Updating IOCONA to: 0x{x}", Integer.toHexString(iocon.getValue()));
-			device.writeByte(IOCON_REG[0], iocon.getValue());
+			writeByte(IOCON_REG[0], iocon.getValue());
 		}
 		
 		for (int ab=0; ab<PORTS; ab++) {
 			// Default all pins to output
-			device.writeByte(IODIR_REG[ab], directions[ab].getValue());
+			writeByte(IODIR_REG[ab], directions[ab].getValue());
 			// Default to normal input polarity - IPOLA/IPOLB
-			device.writeByte(IPOL_REG[ab], 0);
+			writeByte(IPOL_REG[ab], (byte) 0);
 			// Disable interrupt-on-change for all pins
-			device.writeByte(GPINTEN_REG[ab], interruptOnChangeFlags[ab].getValue());
+			writeByte(GPINTEN_REG[ab], interruptOnChangeFlags[ab].getValue());
 			// Set default compare values to 0
-			device.writeByte(DEFVAL_REG[ab], defaultValues[ab].getValue());
+			writeByte(DEFVAL_REG[ab], defaultValues[ab].getValue());
 			// Disable interrupt comparison control
-			device.writeByte(INTCON_REG[ab], interruptCompareFlags[ab].getValue());
+			writeByte(INTCON_REG[ab], interruptCompareFlags[ab].getValue());
 			// Disable pull-up resistors
-			device.writeByte(GPPU_REG[ab], pullUps[ab].getValue());
+			writeByte(GPPU_REG[ab], pullUps[ab].getValue());
 			// Set all values to off
-			device.writeByte(GPIO_REG[ab], 0);
+			writeByte(GPIO_REG[ab], (byte) 0);
 		}
 		
 		// Finally enable interrupt listeners
@@ -342,10 +342,10 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Cl
 		
 		// Set the following values: direction, pullUp, interruptCompare, defaultValue, interruptOnChange
 		directions[port].setBit(bit);
-		device.writeByte(IODIR_REG[port], directions[port].getValue());
+		writeByte(IODIR_REG[port], directions[port].getValue());
 		if (pud == GpioPullUpDown.PULL_UP) {
 			pullUps[port].setBit(bit);
-			device.writeByte(GPPU_REG[port], pullUps[port].getValue());
+			writeByte(GPPU_REG[port], pullUps[port].getValue());
 		}
 		if (interruptMode != InterruptMode.DISABLED) {
 			if (trigger == GpioEventTrigger.RISING) {
@@ -358,15 +358,15 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Cl
 				interruptCompareFlags[port].unsetBit(bit);
 			}
 			interruptOnChangeFlags[port].setBit(bit);
-			device.writeByte(DEFVAL_REG[port], defaultValues[port].getValue());
-			device.writeByte(INTCON_REG[port], interruptCompareFlags[port].getValue());
-			device.writeByte(GPINTEN_REG[port], interruptOnChangeFlags[port].getValue());
+			writeByte(DEFVAL_REG[port], defaultValues[port].getValue());
+			writeByte(INTCON_REG[port], interruptCompareFlags[port].getValue());
+			writeByte(GPINTEN_REG[port], interruptOnChangeFlags[port].getValue());
 		}
 		
-		GpioDigitalInputDeviceInterface device = new MCP23017DigitalInputDevice(this, key, gpio, trigger);
-		deviceOpened(device);
+		GpioDigitalInputDeviceInterface in_device = new MCP23017DigitalInputDevice(this, key, gpio, trigger);
+		deviceOpened(in_device);
 		
-		return device;
+		return in_device;
 	}
 
 	@Override
@@ -384,11 +384,11 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Cl
 		
 		// Nothing to do assuming that closing a pin resets it to the default output state?
 		
-		GpioDigitalOutputDeviceInterface device = new MCP23017DigitalOutputDevice(this, key, gpio);
-		deviceOpened(device);
-		device.setValue(initialValue);
+		GpioDigitalOutputDeviceInterface out_device = new MCP23017DigitalOutputDevice(this, key, gpio);
+		deviceOpened(out_device);
+		out_device.setValue(initialValue);
 		
-		return device;
+		return out_device;
 	}
 
 	@Override
@@ -406,7 +406,7 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Cl
 		byte bit = (byte)(gpio % PINS_PER_PORT);
 		int port = gpio / PINS_PER_PORT;
 		
-		byte states = device.readByte(GPIO_REG[port]);
+		byte states = readByte(GPIO_REG[port]);
 		
 		return (states & bit) != 0;
 	}
@@ -425,9 +425,9 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Cl
 			throw new IllegalStateException("Can't set value for input pin: " + gpio);
 		}
 		// Read the current state of this bank of GPIOs
-		byte old_val = device.readByte(GPIO_REG[port]);
+		byte old_val = readByte(GPIO_REG[port]);
 		byte new_val = BitManipulation.setBitValue(old_val, value, bit);
-		device.writeByte(OLAT_REG[port], new_val);
+		writeByte(OLAT_REG[port], new_val);
 	}
 	
 	@Override
@@ -456,23 +456,23 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Cl
 		
 		if (interruptOnChangeFlags[port].isBitSet(bit)) {
 			interruptOnChangeFlags[port].unsetBit(bit);
-			device.writeByte(GPINTEN_REG[port], interruptOnChangeFlags[port].getValue());
+			writeByte(GPINTEN_REG[port], interruptOnChangeFlags[port].getValue());
 		}
 		if (defaultValues[port].isBitSet(bit)) {
 			defaultValues[port].unsetBit(bit);
-			device.writeByte(DEFVAL_REG[port], defaultValues[port].getValue());
+			writeByte(DEFVAL_REG[port], defaultValues[port].getValue());
 		}
 		if (interruptCompareFlags[port].isBitSet(bit)) {
 			interruptCompareFlags[port].unsetBit(bit);
-			device.writeByte(INTCON_REG[port], interruptCompareFlags[port].getValue());
+			writeByte(INTCON_REG[port], interruptCompareFlags[port].getValue());
 		}
 		if (pullUps[port].isBitSet(bit)) {
 			pullUps[port].unsetBit(bit);
-			device.writeByte(GPPU_REG[port], pullUps[port].getValue());
+			writeByte(GPPU_REG[port], pullUps[port].getValue());
 		}
 		if (directions[port].isBitSet(bit)) {
 			directions[port].unsetBit(bit);
-			device.writeByte(IODIR_REG[port], directions[port].getValue());
+			writeByte(IODIR_REG[port], directions[port].getValue());
 		}
 	}
 
@@ -496,17 +496,17 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Cl
 				byte[] intf = new byte[2];
 				byte[] intcap = new byte[2];
 				if (interruptMode == InterruptMode.MIRRORED) {
-					intf[0] = device.readByte(INTF_REG[0]);
-					intcap[0] = device.readByte(INTCAP_REG[0]);
-					intf[1] = device.readByte(INTF_REG[1]);
-					intcap[1] = device.readByte(INTCAP_REG[1]);
+					intf[0] = readByte(INTF_REG[0]);
+					intcap[0] = readByte(INTCAP_REG[0]);
+					intf[1] = readByte(INTF_REG[1]);
+					intcap[1] = readByte(INTCAP_REG[1]);
 				} else if (interruptMode != InterruptMode.DISABLED) {
 					if (event.getPin() == interruptPinA.getGpio()) {
-						intf[0] = device.readByte(INTF_REG[0]);
-						intcap[0] = device.readByte(INTCAP_REG[0]);
+						intf[0] = readByte(INTF_REG[0]);
+						intcap[0] = readByte(INTCAP_REG[0]);
 					} else {
-						intf[1] = device.readByte(INTF_REG[1]);
-						intcap[1] = device.readByte(INTCAP_REG[1]);
+						intf[1] = readByte(INTF_REG[1]);
+						intcap[1] = readByte(INTCAP_REG[1]);
 					}
 				}
 				Logger.debug("Interrupt values: [A]=(0x{}, 0x{}), [B]=(0x{}, 0x{})",
@@ -517,9 +517,9 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Cl
 						boolean value = BitManipulation.isBitSet(intcap[0], bit);
 						DigitalInputEvent e = new DigitalInputEvent(bit, event.getEpochTime(), event.getNanoTime(), value);
 						// Notify the appropriate input device
-						MCP23017DigitalInputDevice device = getInputDevice(bit);
-						if (device != null) {
-							device.valueChanged(e);
+						MCP23017DigitalInputDevice input_dev = getInputDevice(bit);
+						if (input_dev != null) {
+							input_dev.valueChanged(e);
 						}
 					}
 				}
@@ -528,9 +528,9 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Cl
 						boolean value = BitManipulation.isBitSet(intcap[1], bit);
 						DigitalInputEvent e = new DigitalInputEvent(bit+PINS_PER_PORT, event.getEpochTime(), event.getNanoTime(), value);
 						// Notify the appropriate input device
-						MCP23017DigitalInputDevice device = getInputDevice((byte)(bit+8));
-						if (device != null) {
-							device.valueChanged(e);
+						MCP23017DigitalInputDevice input_dev = getInputDevice((byte)(bit+8));
+						if (input_dev != null) {
+							input_dev.valueChanged(e);
 						}
 					}
 				}
@@ -543,5 +543,13 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Cl
 
 	private MCP23017DigitalInputDevice getInputDevice(byte gpio) {
 		return getDevice(createPinKey(gpio), MCP23017DigitalInputDevice.class);
+	}
+	
+	protected void writeByte(int register, byte value) {
+		device.writeByte(register, value);
+	}
+	
+	protected byte readByte(int register) {
+		return device.readByte(register);
 	}
 }
