@@ -1,4 +1,4 @@
-package com.diozero.internal.provider.mcp230xx;
+package com.diozero.internal.provider.mcp23xxx;
 
 /*
  * #%L
@@ -32,25 +32,25 @@ import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.GpioDigitalOutputDeviceInterface;
 import com.diozero.util.RuntimeIOException;
 
-public class MCP230xxDigitalOutputDevice extends AbstractDevice implements GpioDigitalOutputDeviceInterface {
-	private MCP230xx mcp230xx;
+public class MCP23xxxDigitalOutputDevice extends AbstractDevice implements GpioDigitalOutputDeviceInterface {
+	private MCP23xxx mcp23xxx;
 	private int gpio;
 
-	public MCP230xxDigitalOutputDevice(MCP230xx mcp230xx, String key, int gpio) {
-		super(key, mcp230xx);
+	public MCP23xxxDigitalOutputDevice(MCP23xxx mcp23xxx, String key, int gpio) {
+		super(key, mcp23xxx);
 		
-		this.mcp230xx = mcp230xx;
+		this.mcp23xxx = mcp23xxx;
 		this.gpio = gpio;
 	}
 
 	@Override
 	public boolean getValue() throws RuntimeIOException {
-		return mcp230xx.getValue(gpio);
+		return mcp23xxx.getValue(gpio);
 	}
 
 	@Override
 	public void setValue(boolean value) throws RuntimeIOException {
-		mcp230xx.setValue(gpio, value);
+		mcp23xxx.setValue(gpio, value);
 	}
 
 	@Override
@@ -61,6 +61,6 @@ public class MCP230xxDigitalOutputDevice extends AbstractDevice implements GpioD
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
 		Logger.debug("closeDevice()");
-		mcp230xx.closePin(gpio);
+		mcp23xxx.closePin(gpio);
 	}
 }

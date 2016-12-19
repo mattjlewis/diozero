@@ -1,4 +1,4 @@
-package com.diozero.internal.provider.mcp230xx;
+package com.diozero.internal.provider.mcp23xxx;
 
 /*
  * #%L
@@ -35,15 +35,15 @@ import com.diozero.internal.spi.AbstractInputDevice;
 import com.diozero.internal.spi.GpioDigitalInputDeviceInterface;
 import com.diozero.util.RuntimeIOException;
 
-public class MCP230xxDigitalInputDevice extends AbstractInputDevice<DigitalInputEvent> implements GpioDigitalInputDeviceInterface {
-	private MCP230xx mcp230xx;
+public class MCP23xxxDigitalInputDevice extends AbstractInputDevice<DigitalInputEvent> implements GpioDigitalInputDeviceInterface {
+	private MCP23xxx mcp23xxx;
 	private int gpio;
 	private GpioEventTrigger trigger;
 
-	public MCP230xxDigitalInputDevice(MCP230xx mcp230xx, String key, int gpio, GpioEventTrigger trigger) {
-		super(key, mcp230xx);
+	public MCP23xxxDigitalInputDevice(MCP23xxx mcp23xxx, String key, int gpio, GpioEventTrigger trigger) {
+		super(key, mcp23xxx);
 
-		this.mcp230xx = mcp230xx;
+		this.mcp23xxx = mcp23xxx;
 		this.gpio = gpio;
 		this.trigger = trigger;
 	}
@@ -52,12 +52,12 @@ public class MCP230xxDigitalInputDevice extends AbstractInputDevice<DigitalInput
 	public void closeDevice() throws RuntimeIOException {
 		Logger.debug("closeDevice()");
 		removeListener();
-		mcp230xx.closePin(gpio);
+		mcp23xxx.closePin(gpio);
 	}
 
 	@Override
 	public boolean getValue() throws RuntimeIOException {
-		return mcp230xx.getValue(gpio);
+		return mcp23xxx.getValue(gpio);
 	}
 
 	@Override
