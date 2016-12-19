@@ -70,8 +70,6 @@ public class DeviceFactoryHelper {
 				if (nativeDeviceFactory != null) {
 					Logger.info("Using native device factory class {}", nativeDeviceFactory.getName());
 					
-					// TODO Load capabilities for the current native device (e.g. Raspberry Pi, ...)
-					
 					Runtime.getRuntime().addShutdownHook(new ShutdownHandlerThread(nativeDeviceFactory));
 				}
 			}
