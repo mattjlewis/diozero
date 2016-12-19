@@ -68,7 +68,7 @@ try (MCP23017 mcp23017 = new MCP23017(intAPin, intBPin);
 }
 ```
 
-*class* **com.diozero.MCP23017**{: .descname } (*controller=1*, *address=0x20*, *interruptPinNumberA*, *interruptPinNumberB=interruptPinNumberA*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/MCP23017.java){: .viewcode-link } [&para;](ExpansionBoards.md#mcp23017 "Permalink to this definition"){: .headerlink }
+*class* **com.diozero.MCP23017**{: .descname } (*controller=1*, *address=0x20*, *interruptGpioA*, *interruptGpioB=interruptGpioA*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/MCP23017.java){: .viewcode-link } [&para;](ExpansionBoards.md#mcp23017 "Permalink to this definition"){: .headerlink }
 
 : Provides support for the Microchip [MCP23017](http://www.microchip.com/wwwproducts/Devices.aspx?product=MCP23017) 16-bit input/output port expander. Input device state change notifications will only work if at least one of the MCP23017 interrupt pins is connected to the Raspberry Pi.
 
@@ -76,21 +76,21 @@ try (MCP23017 mcp23017 = new MCP23017(intAPin, intBPin);
     
     * **address** (*int*) - Device I2C address. Defaults to 0x20.
     
-    * **interruptPinNumberA** (*int*) - The pin on the Raspberry Pi to be used for input interrupt notifications for bank A. If only interruptPinA is set or interruptPinB equals interuptPinB the device will be configured to mirrored interrupt mode whereby interrupts for either bank get mirrored on both of the MCP23017 interrupt outputs.
+    * **interruptGpioA** (*int*) - The pin on the Raspberry Pi to be used for input interrupt notifications for bank A. If only interruptPinA is set or interruptPinB equals interuptPinB the device will be configured to mirrored interrupt mode whereby interrupts for either bank get mirrored on both of the MCP23017 interrupt outputs.
     
-    * **interruptPinNumberB** (*int*) - The pin on the Raspberry Pi to be used for input interrupt notifications for bank B. Defaults to interruptPinNumberA.
+    * **interruptGpioB** (*int*) - The pin on the Raspberry Pi to be used for input interrupt notifications for bank B. Defaults to interruptGpioA.
     
-    *boolean* **getValue** (*pinNumber*)
+    *boolean* **getValue** (*gpio*)
     
     : Get the value for the specified pin.
     
-    * **pinNumber** (*int*) - Pin number.
+    * **gpio** (*int*) - GPIO.
     
-    **setValue** (*pinNumber*, *value*)
+    **setValue** (*gpio*, *value*)
     
     : Set the value for the specified pin.
     
-    * **pinNumber** (*int*) - Pin number.
+    * **gpio** (*int*) - GPIO.
     
     * **value** (*boolean*) - Value to set.
 

@@ -159,11 +159,11 @@ TODO Insert wiring diagram.
 
 ## Sharp GP2Y0A21YK {: #gp2y0a21yk }
 
-*class* **com.diozero.GP2Y0A21YK**{: .descname } (*pinNumber*, *vRef*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/GP2Y0A21YK.java){: .viewcode-link } [&para;](SensorComponents.md#gp2y0a21yk "Permalink to this definition"){: .headerlink }
+*class* **com.diozero.GP2Y0A21YK**{: .descname } (*gpio*, *vRef*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/GP2Y0A21YK.java){: .viewcode-link } [&para;](SensorComponents.md#gp2y0a21yk "Permalink to this definition"){: .headerlink }
 
 : Implements support for the [Sharp GP2Y0A21YK](http://www.sharpsma.com/webfm_send/1208) distance sensor - [Datasheet](http://oomlout.com/parts/IC-PROX-01-guide.pdf).
 
-    * **pinNumber** (*int*) - Pin number
+    * **gpio** (*int*) - GPIO
 
     * **vRef** (*float*) - Reference voltage for the ADC
 

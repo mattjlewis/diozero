@@ -250,11 +250,11 @@ Currently supports the following types of motors:
 !!! Warning "Work in progress"
     Only tested with pigpio hence in the sandpit package.
 
-*class* **com.diozero.sandpit.Servo**{: .descname } (*pinNumber*, *pwmFrequency*, *initialPulseWidthMs*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/sandpit/Servo.java){: .viewcode-link } [&para;](MotorControl.md#servo "Permalink to this definition"){: .headerlink }
+*class* **com.diozero.sandpit.Servo**{: .descname } (*gpio*, *pwmFrequency*, *initialPulseWidthMs*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/sandpit/Servo.java){: .viewcode-link } [&para;](MotorControl.md#servo "Permalink to this definition"){: .headerlink }
 
 : Represents a pulse-width controlled servo.
     
-    * **pinNumber** (*int*) - Pin number
+    * **gpio** (*int*) - GPIO
     
     * **pwmFrequency** (*int*) - Desired PWM frequency for the servo, typically 50Hz
     
@@ -277,14 +277,14 @@ Currently supports the following types of motors:
 
 *class* **com.diozero.CamJamKitDualMotor**{: .descname } [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/CamJamKitDualMotor.java){: .viewcode-link } [&para;](MotorControl.md#camjamkitdualmotor "Permalink to this definition"){: .headerlink }
 
-: Extends [DualMotor](#dualmotor). Convenience class for interfacing with the [CamJam EduKit #3 Motor Controller Board](http://camjam.me/?page_id=1035) with pre-configured pin numbers (left -&gt; 9 and 10, right -&gt; 7 and 8).
+: Extends [DualMotor](#dualmotor). Convenience class for interfacing with the [CamJam EduKit #3 Motor Controller Board](http://camjam.me/?page_id=1035) with pre-configured GPIOs (left -&gt; 9 and 10, right -&gt; 7 and 8).
 
 
 ### RyanteckDualMotor
 
 *class* **com.diozero.RyanteckDualMotor**{: .descname } [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/RyanteckDualMotor.java){: .viewcode-link } [&para;](MotorControl.md#ryanteckdualmotor "Permalink to this definition"){: .headerlink }
 
-: Extends [DualMotor](#dualmotor). Convenience class for interfacing with the Ryanteck RPi Motor Controller Board with pre-configured pin numbers (left -&gt; 17 and 18, right -&gt; 22 and 23).
+: Extends [DualMotor](#dualmotor). Convenience class for interfacing with the Ryanteck RPi Motor Controller Board with pre-configured GPIOs (left -&gt; 17 and 18, right -&gt; 22 and 23).
 
 
 ### TB6612FNGDualMotorDriver

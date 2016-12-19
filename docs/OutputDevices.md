@@ -22,11 +22,11 @@ try (LED led = new LED(pin)) {
 }
 ```
 
-*class* **com.diozero.LED**{: .descname } (*pinNumber*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/LED.java){: .viewcode-link } [&para;](OutputDevices.md#led "Permalink to this definition"){: .headerlink }
+*class* **com.diozero.LED**{: .descname } (*gpio*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/LED.java){: .viewcode-link } [&para;](OutputDevices.md#led "Permalink to this definition"){: .headerlink }
 
 : Extends [DigitalOutputDevice](API.md#digitaloutputdevice) and provides utility methods for controlling a Light Emitting Diode (LED).
     
-    * **pinNumber** (*int*) - GPIO pin to which the LED is connected.
+    * **gpio** (*int*) - GPIO pin to which the LED is connected.
 
     **blink** ()
 
@@ -47,11 +47,11 @@ try (LED led = new LED(pin)) {
 
 ## Buzzer
 
-*class* **com.diozero.Buzzer**{: .descname } (*pinNumber*, *activeHigh*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/Buzzer.java){: .viewcode-link } [&para;](OutputDevices.md#buzzer "Permalink to this definition"){: .headerlink }
+*class* **com.diozero.Buzzer**{: .descname } (*gpio*, *activeHigh*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/Buzzer.java){: .viewcode-link } [&para;](OutputDevices.md#buzzer "Permalink to this definition"){: .headerlink }
 
 : Extends [DigitalOutputDevice](API.md#digitaloutputdevice) and represents a digital buzzer component.
     
-    * **pinNumber** (*int*) - The GPIO pin which the buzzer is attached to.
+    * **gpio** (*int*) - The GPIO pin which the buzzer is attached to.
     
     * **activeHigh** (*boolean*) - Set to `true` if the circuit is wired such that the buzzer will beep when the output is high.
     
@@ -96,11 +96,11 @@ try (PwmLed led = new PwmLed(pin)) {
 }
 ```
 
-*class* **com.diozero.PwmLed**{: .descname } (*pinNumber*, *initialValue=0*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/PwmLed.java){: .viewcode-link } [&para;](OutputDevices.md#pwm-led "Permalink to this definition"){: .headerlink }
+*class* **com.diozero.PwmLed**{: .descname } (*gpio*, *initialValue=0*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/PwmLed.java){: .viewcode-link } [&para;](OutputDevices.md#pwm-led "Permalink to this definition"){: .headerlink }
 
 : Extends [DigitalOutputDevice](API.md#digitaloutputdevice) and represents a PWM controlled LED.
     
-    * **pinNumber** (*int*) - The GPIO pin which the LED is attached to.
+    * **gpio** (*int*) - The GPIO pin which the LED is attached to.
     
     * **initialValue=0** (*float*) - Initial PWM output value (range 0..1).
     
