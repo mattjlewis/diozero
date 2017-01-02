@@ -46,7 +46,7 @@ import com.diozero.util.RuntimeIOException;
 
 public class HCSR04EchoPin extends AbstractInputDevice<DigitalInputEvent>
 implements GpioDigitalInputDeviceInterface, Runnable {
-	private static final Random random = new Random(System.nanoTime());
+	private static final Random random = new Random();
 	private static HCSR04EchoPin instance;
 	
 	static HCSR04EchoPin getInstance() {

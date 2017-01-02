@@ -48,7 +48,7 @@ import com.diozero.util.SleepUtil;
  * </ul>
  */
 public class RandomLedFlicker {
-	private static final Random RANDOM = new Random(System.nanoTime());
+	private static final Random RANDOM = new Random();
 	
 	public static void main(String[] args) {
 		if (args.length < 1) {
