@@ -42,8 +42,9 @@ try (Button button = new Button(buttonPin, GpioPullUpDown.PULL_UP); LED led = ne
 Or a random LED flicker effect:
 
 ```java
+Random random = new Random();
 try (PwmLed led = new PwmLed(pin)) {
-	GpioScheduler.getInstance().invokeAtFixedRate(RANDOM::nextFloat, led::setValue, 50, 50, TimeUnit.MILLISECONDS, false);
+	DioZeroScheduler.getNonDaemonInstance().invokeAtFixedRate(RANDOM::nextFloat, led::setValue, 50, 50, TimeUnit.MILLISECONDS);
 }
 ```
 
