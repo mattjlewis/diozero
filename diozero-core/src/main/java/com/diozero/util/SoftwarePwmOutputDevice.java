@@ -47,6 +47,8 @@ public class SoftwarePwmOutputDevice extends AbstractDevice implements PwmOutput
 	@Override
 	public void closeDevice() {
 		stop();
+		Logger.debug("closeDevice() {}", getKey());
+		stop();
 		if (digitalOutputDevice != null) {
 			digitalOutputDevice.close();
 			digitalOutputDevice = null;
