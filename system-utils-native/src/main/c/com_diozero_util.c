@@ -6,7 +6,6 @@
 
 /* The VM calls this function upon loading the native library. */
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* jvm, void* reserved) {
-	printf("system-utils-native JNI_OnLoad\n");
 	return JNI_VERSION_1_8;
 }
 

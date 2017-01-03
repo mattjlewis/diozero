@@ -29,10 +29,8 @@ JNIEXPORT jint JNICALL Java_com_diozero_util_EpollNative_epollCreate(
 JNIEXPORT jint JNICALL Java_com_diozero_util_EpollNative_addFile(
 		JNIEnv * env, jclass clazz, jint epollFd, jstring filename) {
 	jsize len = (*env)->GetStringLength(env, filename);
-	printf("len=%d\n", len);
 	char c_filename[len];
 	(*env)->GetStringUTFRegion(env, filename, 0, len, c_filename);
-	printf("c_filename=%s\n", c_filename);
 
 	int fd = open(c_filename, O_RDONLY);
 	if (fd < 0) {
@@ -92,7 +90,6 @@ JNIEXPORT jobjectArray JNICALL Java_com_diozero_util_EpollNative_waitForEvents(
 	struct epoll_event epoll_events[max_events];
 	int num_fds = epoll_wait(epollFd, epoll_events, max_events, -1);
 	//unsigned long long epoch_time = getEpochTime();
-	printf("Got %d fds\n", num_fds);
 	if (num_fds < 0) {
 		printf("epoll_wait failed! %s\n", strerror(errno));
 		return NULL;

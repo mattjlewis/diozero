@@ -2,18 +2,17 @@ RM = rm -f
 CC = gcc
 
 CFLAGS = -Wall -fPIC
-
 INCLUDES = -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/linux
-
 LFLAGS = 
+SO_FILE_EXT = "so"
 
 LIBS = 
 
-SRCS = com_diozero_internal_provider_i2c_NativeI2CDevice.c com_diozero_internal_provider_spi_NativeSpiDevice.c com_diozero_util_EpollNative.c com_diozero_util_PollNative.c com_diozero_util_SleepUtil.c com_diozero_util.c
+SRCS = com_diozero_internal_provider_i2c_NativeI2CDevice.c com_diozero_internal_provider_spi_NativeSpiDevice.c com_diozero_util_EpollNative.c com_diozero_util_PollNative.c com_diozero_util_SleepUtil.c com_diozero_util.c $(EXTRA_SRC)
 
 OBJS = $(SRCS:.c=.o)
 
-LIB_TARGET = libdiozero-system-utils.so
+LIB_TARGET = libdiozero-system-utils.$(SO_FILE_EXT)
 
 all: $(LIB_TARGET)
 
@@ -30,7 +29,7 @@ $(MAIN): $(OBJS)
 	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
 clean:
-	$(RM) $(OBJS) $(TARGET) *~
+	$(RM) $(OBJS) $(LIB_TARGET) *~
 
 depend: $(SRCS)
 	makedepend $(INCLUDES) $^

@@ -95,7 +95,6 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_spi_NativeSpiDevice_sp
 		return -1;
 	}
 	uint8_t lsb = lsbFirst > 0 ? SPI_LSB_FIRST : 0;
-	printf("Original LSB first=%d, setting to %d\n", actual_lsb, lsb);
 	if (ioctl(fileDescriptor, SPI_IOC_WR_LSB_FIRST, &lsb) < 0) {
 		printf("Cannot set lsb first: %s", strerror(errno));
 		return -1;

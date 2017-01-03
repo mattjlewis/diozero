@@ -42,7 +42,6 @@ JavaVM* getGlobalJavaVM() {
 
 /* The VM calls this function upon loading the native library. */
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* jvm, void* reserved) {
-	printf("JNI_OnLoad()\n");
 	globalJavaVM = jvm;
 
 	return JNI_VERSION_1_8;
@@ -50,7 +49,6 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* jvm, void* reserved) {
 
 /* This function is called when the native library gets unloaded by the VM. */
 JNIEXPORT void JNICALL JNI_OnUnload(JavaVM* jvm, void* reserved) {
-	printf("JNI_OnUnLoad()\n");
 	ws2811_fini(&led_string);
 	globalJavaVM = NULL;
 }
@@ -61,7 +59,6 @@ JNIEXPORT void JNICALL JNI_OnUnload(JavaVM* jvm, void* reserved) {
  * Signature: (IIIII)Ljava/nio/ByteBuffer
  */
 JNIEXPORT jobject JNICALL Java_com_diozero_ws281xj_WS281xNative_initialise(JNIEnv* env, jclass clz, jint frequency, jint dmaNum, jint gpioNum, jint brightness, jint numLeds) {
-	printf("W281xj_initialise()\n");
 	led_string.freq = frequency;
 	led_string.dmanum = dmaNum;
 	led_string.channel[0].gpionum = gpioNum;
@@ -73,9 +70,6 @@ JNIEXPORT jobject JNICALL Java_com_diozero_ws281xj_WS281xNative_initialise(JNIEn
 	}
 
 	jobject direct_buffer = (*env)->NewDirectByteBuffer(env, led_string.channel[0].leds, numLeds*sizeof(ws2811_led_t));
-
-	printf("led_string.channel[0].gpionum=%d\n", led_string.channel[0].gpionum);
-	printf("led_string.channel[0].count=%d\n", led_string.channel[0].count);
 
 	return direct_buffer;
 }

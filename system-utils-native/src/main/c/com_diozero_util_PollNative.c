@@ -76,12 +76,10 @@ JNIEXPORT void JNICALL Java_com_diozero_util_PollNative_poll
 		}
 	}
 
-	printf("poll(): closing fd\n");
 	close(fd);
 }
 
 JNIEXPORT void JNICALL Java_com_diozero_util_PollNative_stop
   (JNIEnv* env, jobject obj, jint fd) {
-	printf("stop(): closing fd %d\n", fd);
 	close(fd);
 }
