@@ -38,14 +38,13 @@ import com.diozero.util.RuntimeIOException;
 public class MCP23xxxDigitalInputDevice extends AbstractInputDevice<DigitalInputEvent> implements GpioDigitalInputDeviceInterface {
 	private MCP23xxx mcp23xxx;
 	private int gpio;
-	private GpioEventTrigger trigger;
 
 	public MCP23xxxDigitalInputDevice(MCP23xxx mcp23xxx, String key, int gpio, GpioEventTrigger trigger) {
 		super(key, mcp23xxx);
 
 		this.mcp23xxx = mcp23xxx;
 		this.gpio = gpio;
-		this.trigger = trigger;
+		// Note trigger is current ignored
 	}
 
 	@Override

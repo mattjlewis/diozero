@@ -45,7 +45,7 @@ public class MCP23xxxDigitalInputOutputDevice extends AbstractDevice implements 
 		
 		this.mcp23xxx = mcp23xxx;
 		this.gpio = gpio;
-		this.mode = mode;
+		setMode(mode);
 	}
 
 	@Override
@@ -71,16 +71,16 @@ public class MCP23xxxDigitalInputOutputDevice extends AbstractDevice implements 
 		Logger.debug("closeDevice()");
 		mcp23xxx.closePin(gpio);
 	}
-
-	@Override
-	public Mode getMode() {
-		return mode;
-	}
 	
 	private static void checkMode(GpioDeviceInterface.Mode mode) {
 		if (mode != GpioDeviceInterface.Mode.DIGITAL_INPUT && mode != GpioDeviceInterface.Mode.DIGITAL_OUTPUT) {
 			throw new IllegalArgumentException("Invalid mode, must be DIGITAL_INPUT or DIGITAL_OUTPUT");
 		}
+	}
+
+	@Override
+	public Mode getMode() {
+		return mode;
 	}
 
 	@Override
@@ -92,5 +92,6 @@ public class MCP23xxxDigitalInputOutputDevice extends AbstractDevice implements 
 		} else {
 			mcp23xxx.setOutputMode(gpio);
 		}
+		this.mode = mode;
 	}
 }

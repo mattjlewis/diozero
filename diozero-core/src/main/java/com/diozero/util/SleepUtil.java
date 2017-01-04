@@ -2,6 +2,8 @@ package com.diozero.util;
 
 import java.util.concurrent.TimeUnit;
 
+import org.pmw.tinylog.Logger;
+
 /*
  * #%L
  * Device I/O Zero - Core
@@ -31,7 +33,11 @@ import java.util.concurrent.TimeUnit;
 
 public class SleepUtil {
 	static {
-		LibraryLoader.loadLibrary(SleepUtil.class, "diozero-system-utils");
+		try {
+			LibraryLoader.loadLibrary(SleepUtil.class, "diozero-system-utils");
+		} catch (Throwable t) {
+			Logger.error(t, "Error loading diozero-system-utils: " + t);
+		}
 	}
 	
 	public static final int MS_IN_SEC = 1000;

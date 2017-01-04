@@ -1,4 +1,4 @@
-package com.diozero.internal.provider.mcp23xxx;
+package com.diozero.internal.provider.pcf8574;
 
 /*
  * #%L
@@ -28,29 +28,38 @@ package com.diozero.internal.provider.mcp23xxx;
 
 import org.pmw.tinylog.Logger;
 
+import com.diozero.PCF8574;
+import com.diozero.api.GpioEventTrigger;
+import com.diozero.api.GpioPullUpDown;
 import com.diozero.internal.spi.AbstractDevice;
-import com.diozero.internal.spi.GpioDigitalOutputDeviceInterface;
+import com.diozero.internal.spi.GpioDeviceInterface;
+import com.diozero.internal.spi.GpioDigitalInputOutputDeviceInterface;
 import com.diozero.util.RuntimeIOException;
 
-public class MCP23xxxDigitalOutputDevice extends AbstractDevice implements GpioDigitalOutputDeviceInterface {
-	private MCP23xxx mcp23xxx;
+public class PCF8574DigitalInputOutputDevice extends AbstractDevice implements GpioDigitalInputOutputDeviceInterface {
+	private PCF8574 pcf8574;
 	private int gpio;
+	private GpioDeviceInterface.Mode mode;
 
-	public MCP23xxxDigitalOutputDevice(MCP23xxx mcp23xxx, String key, int gpio) {
-		super(key, mcp23xxx);
+	public PCF8574DigitalInputOutputDevice(PCF8574 pcf8574, String key, int gpio, GpioDeviceInterface.Mode mode) {
+		super(key, pcf8574);
 		
-		this.mcp23xxx = mcp23xxx;
+		this.pcf8574 = pcf8574;
 		this.gpio = gpio;
+		setMode(mode);
 	}
 
 	@Override
 	public boolean getValue() throws RuntimeIOException {
-		return mcp23xxx.getValue(gpio);
+		return pcf8574.getValue(gpio);
 	}
 
 	@Override
 	public void setValue(boolean value) throws RuntimeIOException {
-		mcp23xxx.setValue(gpio, value);
+		if (mode != GpioDeviceInterface.Mode.DIGITAL_OUTPUT) {
+			throw new IllegalStateException("Can only set output value for digital output pins");
+		}
+		pcf8574.setValue(gpio, value);
 	}
 
 	@Override
@@ -61,6 +70,29 @@ public class MCP23xxxDigitalOutputDevice extends AbstractDevice implements GpioD
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
 		Logger.debug("closeDevice()");
-		mcp23xxx.closePin(gpio);
+		pcf8574.closePin(gpio);
+	}
+	
+	private static void checkMode(GpioDeviceInterface.Mode mode) {
+		if (mode != GpioDeviceInterface.Mode.DIGITAL_INPUT && mode != GpioDeviceInterface.Mode.DIGITAL_OUTPUT) {
+			throw new IllegalArgumentException("Invalid mode, must be DIGITAL_INPUT or DIGITAL_OUTPUT");
+		}
+	}
+
+	@Override
+	public Mode getMode() {
+		return mode;
+	}
+
+	@Override
+	public void setMode(Mode mode) {
+		checkMode(mode);
+		
+		if (mode == GpioDeviceInterface.Mode.DIGITAL_INPUT) {
+			pcf8574.setInputMode(gpio);
+		} else {
+			pcf8574.setOutputMode(gpio);
+		}
+		this.mode = mode;
 	}
 }

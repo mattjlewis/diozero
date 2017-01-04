@@ -1,4 +1,4 @@
-package com.diozero.internal.provider.mcp23xxx;
+package com.diozero.internal.provider.pcf8574;
 
 /*
  * #%L
@@ -28,29 +28,30 @@ package com.diozero.internal.provider.mcp23xxx;
 
 import org.pmw.tinylog.Logger;
 
+import com.diozero.PCF8574;
 import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.GpioDigitalOutputDeviceInterface;
 import com.diozero.util.RuntimeIOException;
 
-public class MCP23xxxDigitalOutputDevice extends AbstractDevice implements GpioDigitalOutputDeviceInterface {
-	private MCP23xxx mcp23xxx;
+public class PCF8574DigitalOutputDevice extends AbstractDevice implements GpioDigitalOutputDeviceInterface {
+	private PCF8574 pcf8574;
 	private int gpio;
 
-	public MCP23xxxDigitalOutputDevice(MCP23xxx mcp23xxx, String key, int gpio) {
-		super(key, mcp23xxx);
+	public PCF8574DigitalOutputDevice(PCF8574 pcf8574, String key, int gpio) {
+		super(key, pcf8574);
 		
-		this.mcp23xxx = mcp23xxx;
+		this.pcf8574 = pcf8574;
 		this.gpio = gpio;
 	}
 
 	@Override
 	public boolean getValue() throws RuntimeIOException {
-		return mcp23xxx.getValue(gpio);
+		return pcf8574.getValue(gpio);
 	}
 
 	@Override
 	public void setValue(boolean value) throws RuntimeIOException {
-		mcp23xxx.setValue(gpio, value);
+		pcf8574.setValue(gpio, value);
 	}
 
 	@Override
@@ -61,6 +62,6 @@ public class MCP23xxxDigitalOutputDevice extends AbstractDevice implements GpioD
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
 		Logger.debug("closeDevice()");
-		mcp23xxx.closePin(gpio);
+		pcf8574.closePin(gpio);
 	}
 }

@@ -240,7 +240,7 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Gp
 			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
 		}
 		
-		// Nothing to do assuming that closing a pin resets it to the default output state?
+		// TODO Nothing to do assuming that closing a pin resets it to the default output state?
 		
 		GpioDigitalOutputDeviceInterface device = new MCP23008DigitalOutputDevice(this, key, gpio);
 		deviceOpened(device);
@@ -295,7 +295,7 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Gp
 	
 	@Override
 	public void setValues(int port, byte values) {
-		device.writeByte(OLAT_REG[0], values);
+		device.writeByte(OLAT_REG[port], values);
 	}
 	
 	@Override

@@ -1,4 +1,4 @@
-package com.diozero.internal.provider.mcp23xxx;
+package com.diozero.internal.provider.pcf8574;
 
 /*
  * #%L
@@ -26,31 +26,39 @@ package com.diozero.internal.provider.mcp23xxx;
  * #L%
  */
 
+
 import org.pmw.tinylog.Logger;
 
-import com.diozero.internal.spi.AbstractDevice;
-import com.diozero.internal.spi.GpioDigitalOutputDeviceInterface;
+import com.diozero.PCF8574;
+import com.diozero.api.DigitalInputEvent;
+import com.diozero.api.GpioEventTrigger;
+import com.diozero.internal.provider.mcp23xxx.MCP23xxx;
+import com.diozero.internal.spi.AbstractInputDevice;
+import com.diozero.internal.spi.GpioDigitalInputDeviceInterface;
 import com.diozero.util.RuntimeIOException;
 
-public class MCP23xxxDigitalOutputDevice extends AbstractDevice implements GpioDigitalOutputDeviceInterface {
-	private MCP23xxx mcp23xxx;
+public class PCF8574DigitalInputDevice extends AbstractInputDevice<DigitalInputEvent> implements GpioDigitalInputDeviceInterface {
+	private PCF8574 pcf8574;
 	private int gpio;
 
-	public MCP23xxxDigitalOutputDevice(MCP23xxx mcp23xxx, String key, int gpio) {
-		super(key, mcp23xxx);
-		
-		this.mcp23xxx = mcp23xxx;
+	public PCF8574DigitalInputDevice(PCF8574 pcf8574, String key, int gpio, GpioEventTrigger trigger) {
+		super(key, pcf8574);
+
+		this.pcf8574 = pcf8574;
 		this.gpio = gpio;
+		// Note trigger is current ignored
+	}
+
+	@Override
+	public void closeDevice() throws RuntimeIOException {
+		Logger.debug("closeDevice()");
+		removeListener();
+		pcf8574.closePin(gpio);
 	}
 
 	@Override
 	public boolean getValue() throws RuntimeIOException {
-		return mcp23xxx.getValue(gpio);
-	}
-
-	@Override
-	public void setValue(boolean value) throws RuntimeIOException {
-		mcp23xxx.setValue(gpio, value);
+		return pcf8574.getValue(gpio);
 	}
 
 	@Override
@@ -59,8 +67,7 @@ public class MCP23xxxDigitalOutputDevice extends AbstractDevice implements GpioD
 	}
 
 	@Override
-	protected void closeDevice() throws RuntimeIOException {
-		Logger.debug("closeDevice()");
-		mcp23xxx.closePin(gpio);
+	public void setDebounceTimeMillis(int debounceTime) {
+		// TODO Auto-generated method stub
 	}
 }

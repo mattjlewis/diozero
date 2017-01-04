@@ -1,7 +1,6 @@
 package com.diozero.internal.provider.mcp23xxx;
 
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 
 import org.pmw.tinylog.Logger;
 
@@ -68,7 +67,7 @@ public class MCP23S17 extends MCP23x17 {
 
         ByteBuffer rx = device.writeAndRead(tx);
 
-        Logger.info("{}, {}, {}", rx.get(0), rx.get(1), rx.get(2));
+        Logger.info("{}, {}, {}", Byte.valueOf(rx.get(0)), Byte.valueOf(rx.get(1)), Byte.valueOf(rx.get(2)));
         return (byte) (rx.get(2) & 0xFF);
 	}
 	
