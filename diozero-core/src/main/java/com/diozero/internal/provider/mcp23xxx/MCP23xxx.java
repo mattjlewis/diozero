@@ -26,14 +26,13 @@ package com.diozero.internal.provider.mcp23xxx;
  * #L%
  */
 
-
-import java.io.Closeable;
-
 import org.pmw.tinylog.Logger;
 
+import com.diozero.GpioExpander;
 import com.diozero.api.*;
 import com.diozero.internal.provider.mcp23017.MCP23017DigitalInputDevice;
 import com.diozero.internal.spi.*;
+import com.diozero.internal.spi.GpioDeviceInterface.Mode;
 import com.diozero.util.BitManipulation;
 import com.diozero.util.MutableByte;
 import com.diozero.util.RuntimeIOException;
@@ -42,7 +41,7 @@ import com.diozero.util.RuntimeIOException;
  * Support for both MCP23008 and MCP23017 GPIO expansion boards.
  */
 public abstract class MCP23xxx extends AbstractDeviceFactory
-implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Closeable {
+implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, GpioExpander {
 	private static enum InterruptMode {
 		DISABLED, BANK_A_ONLY, BANK_B_ONLY, BANK_A_AND_B, MIRRORED;
 	}
@@ -233,18 +232,37 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Cl
 		return out_device;
 	}
 
+	@Override
+	public GpioDigitalInputOutputDeviceInterface provisionDigitalInputOutputPin(int gpio, GpioDeviceInterface.Mode mode) throws RuntimeIOException {
+		if (gpio < 0 || gpio >= numPins) {
+			throw new IllegalArgumentException(
+					"Invalid GPIO (" + gpio + "); must be 0.." + (numPins - 1));
+		}
+		
+		String key = createPinKey(gpio);
+		
+		if (isDeviceOpened(key)) {
+			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
+		}
+		
+		GpioDigitalInputOutputDeviceInterface inout_device = new MCP23xxxDigitalInputOutputDevice(this, key, gpio, mode);
+		deviceOpened(inout_device);
+		
+		return inout_device;
+	}
+
 	protected void setInputMode(int gpio, GpioPullUpDown pud, GpioEventTrigger trigger) {
-		// TODO Detect no change in direction?
+		// TODO Detect if there is no change in direction?
 		
 		byte bit = (byte) (gpio % PINS_PER_PORT);
 		int port = gpio / PINS_PER_PORT;
-		Logger.info("setInputMode({}), directions={}", gpio, directions[port].getValue());
+		Logger.info("setInputMode({}), directions={}", Integer.valueOf(gpio), Byte.valueOf(directions[port].getValue()));
 		
 		// Set the following values: direction, pullUp, interruptCompare, defaultValue, interruptOnChange
 		directions[port].setBit(bit);
 		writeByte(getIODirReg(port), directions[port].getValue());
 		byte new_dir = readByte(getIODirReg(port));
-		Logger.info("setInputMode({}), directions={}, new_dir={}", gpio, directions[port].getValue(), new_dir);
+		Logger.info("setInputMode({}), directions={}, new_dir={}", Integer.valueOf(gpio), Byte.valueOf(directions[port].getValue()), Byte.valueOf(new_dir));
 		if (pud == GpioPullUpDown.PULL_UP) {
 			pullUps[port].setBit(bit);
 			writeByte(getGPPullUpReg(port), pullUps[port].getValue());
@@ -267,7 +285,7 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Cl
 	}
 	
 	protected void setOutputMode(int gpio) {
-		// TODO Detect no change in direction?
+		// TODO Detect if there is no change in direction?
 		
 		byte bit = (byte) (gpio % PINS_PER_PORT);
 		int port = gpio / PINS_PER_PORT;
@@ -275,27 +293,6 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Cl
 		// Set the following values: direction, pullUp, interruptCompare, defaultValue, interruptOnChange
 		directions[port].unsetBit(bit);
 		writeByte(getIODirReg(port), directions[port].getValue());
-	}
-
-	@Override
-	public GpioDigitalInputOutputDeviceInterface provisionDigitalInputOutputPin(int gpio, GpioDeviceInterface.Mode mode) throws RuntimeIOException {
-		if (gpio < 0 || gpio >= numPins) {
-			throw new IllegalArgumentException(
-					"Invalid GPIO (" + gpio + "); must be 0.." + (numPins - 1));
-		}
-		
-		String key = createPinKey(gpio);
-		
-		if (isDeviceOpened(key)) {
-			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
-		}
-		
-		// Nothing to do assuming that closing a pin resets it to the default output state?
-		
-		GpioDigitalInputOutputDeviceInterface inout_device = new MCP23xxxDigitalInputOutputDevice(this, key, gpio, mode);
-		deviceOpened(inout_device);
-		
-		return inout_device;
 	}
 
 	public boolean getValue(int gpio) throws RuntimeIOException {
@@ -329,14 +326,6 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Cl
 		byte old_val = readByte(getGPIOReg(port));
 		byte new_val = BitManipulation.setBitValue(old_val, value, bit);
 		writeByte(getOLatReg(port), new_val);
-	}
-	
-	public byte getValues(int port) {
-		return readByte(getOLatReg(port));
-	}
-	
-	public void setValues(int port, byte values) {
-		writeByte(getOLatReg(port), values);
 	}
 	
 	@Override
@@ -379,8 +368,9 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Cl
 			pullUps[port].unsetBit(bit);
 			writeByte(getGPPullUpReg(port), pullUps[port].getValue());
 		}
-		if (directions[port].isBitSet(bit)) {
-			directions[port].unsetBit(bit);
+		// Default pin to input
+		if (! directions[port].isBitSet(bit)) {
+			directions[port].setBit(bit);
 			writeByte(getIODirReg(port), directions[port].getValue());
 		}
 	}
@@ -476,4 +466,18 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Cl
 	
 	protected abstract byte readByte(int register);
 	protected abstract void writeByte(int register, byte value);
+	
+	@Override
+	public final void setDirections(int port, byte directions) {
+		writeByte(getIODirReg(port), directions);
+	}
+	
+	public byte getValues(int port) {
+		return readByte(getOLatReg(port));
+	}
+	
+	@Override
+	public final void setValues(int port, byte values) {
+		writeByte(getOLatReg(port), values);
+	}
 }
