@@ -211,21 +211,17 @@ public class I2CLcd implements Closeable {
 	private byte[] rowOffsets;
 
 	public I2CLcd(int columns, int rows) {
-		this(I2CConstants.BUS_1, DEFAULT_DEVICE_ADDRESS, ByteOrder.LITTLE_ENDIAN, columns, rows);
+		this(I2CConstants.BUS_1, DEFAULT_DEVICE_ADDRESS, columns, rows);
 	}
 
 	public I2CLcd(int deviceAddress, int columns, int rows) {
-		this(I2CConstants.BUS_1, deviceAddress, ByteOrder.LITTLE_ENDIAN, columns, rows);
-	}
-
-	public I2CLcd(int controller, int deviceAddress, int columns, int rows) {
-		this(controller, deviceAddress, ByteOrder.LITTLE_ENDIAN, columns, rows);
+		this(I2CConstants.BUS_1, deviceAddress, columns, rows);
 	}
 
 	@SuppressWarnings("resource")
-	public I2CLcd(int controller, int deviceAddress, ByteOrder order, int columns, int rows) {
+	public I2CLcd(int controller, int deviceAddress, int columns, int rows) {
 		this(new PCF8574(controller, deviceAddress, I2CConstants.ADDR_SIZE_7,
-				I2CConstants.DEFAULT_CLOCK_FREQUENCY, order), columns, rows);
+				I2CConstants.DEFAULT_CLOCK_FREQUENCY), columns, rows);
 	}
 	
 	public I2CLcd(GpioExpander gpioExpander, int columns, int rows) {
@@ -724,28 +720,6 @@ public class I2CLcd implements Closeable {
 		
 		public static byte[] get(String code) {
 			return CHARACTERS.get(code);
-		}
-	}
-	
-	public static class PCF8574 implements GpioExpander {
-		private I2CDevice device;
-		
-		public PCF8574(int controller, int deviceAddress, int addressSize, int frequency, ByteOrder order) {
-			device = new I2CDevice(controller, deviceAddress, addressSize, frequency, order);
-		}
-
-		@Override
-		public void setDirections(int port, byte directions) {
-		}
-
-		@Override
-		public void setValues(int port, byte values) {
-			device.writeByte(values);
-		}
-		
-		@Override
-		public void close() {
-			device.close();
 		}
 	}
 }
