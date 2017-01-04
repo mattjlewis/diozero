@@ -4,7 +4,7 @@ CC = gcc
 CFLAGS = -Wall -fPIC
 INCLUDES = -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/linux
 LFLAGS = 
-SO_FILE_EXT = "so"
+SO_FILE_EXT = so
 
 LIBS = 
 
