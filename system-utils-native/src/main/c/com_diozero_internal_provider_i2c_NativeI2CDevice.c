@@ -26,13 +26,18 @@
 
 #include "com_diozero_internal_provider_i2c_NativeI2CDevice.h"
 
+#include <stdint.h>
 #include <sys/ioctl.h>
 #include <linux/i2c-dev.h>
 
-//#define PI_I2C_SLAVE 0x0703
-//#define PI_I2C_FUNCS 0x0705
+#if __WORDSIZE == 32
+#define long_t uint32_t
+#else
+#define long_t uint64_t
+#endif
 
 JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_i2c_NativeI2CDevice_selectSlave(
 		JNIEnv* env, jclass clz, jint fd, jint address) {
-	return ioctl(fd, I2C_SLAVE, (void*)address);
+	long_t addr = address;
+	return ioctl(fd, I2C_SLAVE, (void*)addr);
 }
