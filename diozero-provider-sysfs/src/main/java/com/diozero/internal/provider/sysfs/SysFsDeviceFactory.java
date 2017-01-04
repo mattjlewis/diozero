@@ -146,7 +146,8 @@ public class SysFsDeviceFactory extends BaseNativeDeviceFactory {
 			// FIXME Match with previously set PWM frequency...
 			return new ChipSysFsPwmOutputDevice(key, this, gpio, DEFAULT_PWM_FREQUENCY, initialValue);
 		}
-		SoftwarePwmOutputDevice pwm = new SoftwarePwmOutputDevice(key, this, createDigitalOutputPin(key, gpio, false), DEFAULT_PWM_FREQUENCY, initialValue);
+		Logger.warn("Using software PWM on gpio {}", Integer.valueOf(gpio));
+		SoftwarePwmOutputDevice pwm = new SoftwarePwmOutputDevice(key, this, createDigitalOutputPin(createPinKey(gpio), gpio, false), DEFAULT_PWM_FREQUENCY, initialValue);
 		pwm.start();
 		return pwm;
 	}

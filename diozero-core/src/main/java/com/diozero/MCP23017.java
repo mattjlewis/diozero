@@ -245,7 +245,8 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Cl
 		device = new I2CDevice(controller, address, I2CConstants.ADDR_SIZE_7, I2CConstants.DEFAULT_CLOCK_FREQUENCY);
 		
 		if (interruptGpioA != INTERRUPT_PIN_NOT_SET) {
-			interruptPinA = new DigitalInputDevice(interruptGpioA, GpioPullUpDown.NONE, GpioEventTrigger.RISING);
+			//interruptPinA = new DigitalInputDevice(interruptGpioA, GpioPullUpDown.NONE, GpioEventTrigger.RISING);
+			interruptPinA = new DigitalInputDevice(interruptGpioA, GpioPullUpDown.NONE, GpioEventTrigger.BOTH);
 			
 			if (interruptGpioA == interruptGpioB) {
 				interruptMode = InterruptMode.MIRRORED;
@@ -255,7 +256,8 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Cl
 		}
 		
 		if (interruptMode != InterruptMode.MIRRORED && interruptGpioB != INTERRUPT_PIN_NOT_SET) {
-			interruptPinB = new DigitalInputDevice(interruptGpioB, GpioPullUpDown.NONE, GpioEventTrigger.RISING);
+			interruptPinB = new DigitalInputDevice(interruptGpioB, GpioPullUpDown.NONE, GpioEventTrigger.BOTH);
+			//interruptPinB = new DigitalInputDevice(interruptGpioB, GpioPullUpDown.NONE, GpioEventTrigger.RISING);
 			
 			if (interruptMode == InterruptMode.BANK_A_ONLY) {
 				interruptMode = InterruptMode.BANK_A_AND_B;
@@ -382,7 +384,7 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Cl
 			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
 		}
 		
-		// Nothing to do assuming that closing a pin resets it to the default output state?
+		// TODO Nothing to do assuming that closing a pin resets it to the default output state?
 		
 		GpioDigitalOutputDeviceInterface out_device = new MCP23017DigitalOutputDevice(this, key, gpio);
 		deviceOpened(out_device);

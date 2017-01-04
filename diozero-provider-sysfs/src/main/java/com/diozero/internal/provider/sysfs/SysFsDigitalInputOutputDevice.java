@@ -92,6 +92,7 @@ public class SysFsDigitalInputOutputDevice extends AbstractDevice implements Gpi
 
 	@Override
 	public void setValue(boolean value) throws RuntimeIOException {
+		// TODO Throw error if mode is not DIGITAL_OUTPUT
 		try {
 			valueFile.seek(0);
 			valueFile.writeByte(value ? HIGH_VALUE : LOW_VALUE);
