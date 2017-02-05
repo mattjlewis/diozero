@@ -1,6 +1,6 @@
 # Sensor Components
 
-## HC-SRO4 Ultrasonic Ranging Module {: #hc-sr04 }
+## HC-SR04 Ultrasonic Ranging Module {: #hc-sr04 }
 
 TODO Insert wiring diagram.
 

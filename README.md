@@ -1,14 +1,14 @@
-# DIO-Zero - a Java Device I/O wrapper for GPIO / I2C / SPI devices
+# DIO-Zero - a Java Device I/O wrapper for GPIO / I2C / SPI comtrol
 
-A Device I/O library written in Java that provides an object-orientated interface for a range of GPIO / I2C / SPI devices such as LEDs, buttons and other various sensors connected to single board computers like the Raspberry Pi, BeagleBone Black, Odroid C2, Udoo, C.H.I.P. Actual GPIO / I2C / SPI device communication is implemented via pluggable service providers for maximum compatibility across different device types. This library is known to work on all models of the Raspberry Pi, the Udoo Quad, and the Odroid C2.
+A Device I/O library written in Java that provides an object-orientated interface for a range of GPIO / I2C / SPI devices such as LEDs, buttons and other various sensors connected to Single Board Computers such as the Raspberry Pi. Actual GPIO / I2C / SPI device communication is implemented via pluggable service providers for maximum compatibility across different boards. This library is known to work on the following boards: all models of the Raspberry Pi, Odroid C2, BeagleBone Black, C.H.I.P and Asus Tinker Board.
 
 This library makes use of modern Java 8 features such as [automatic resource management](https://docs.oracle.com/javase/tutorial/essential/exceptions/tryResourceClose.html), [Lambda Expressions](https://docs.oracle.com/javase/tutorial/java/javaOO/lambdaexpressions.html) and [Method References](https://docs.oracle.com/javase/tutorial/java/javaOO/methodreferences.html) where they simplify development and improve code readability.
 
-Created by [Matt Lewis](https://github.com/mattjlewis) (email [deviceiozero@gmail.com](mailto:deviceiozero@gmail.com)), inspired by [GPIO Zero](https://gpiozero.readthedocs.org/en/v1.1.0/index.html). If you have any issues, comments or suggestions please use [this thread](https://www.raspberrypi.org/forums/viewtopic.php?f=81&t=136010) on the Raspberry Pi forums. I'd very much like to hear any suggestions, feedback or other comments regarding this library.
+Created by [Matt Lewis](https://github.com/mattjlewis) (email [deviceiozero@gmail.com](mailto:deviceiozero@gmail.com)), inspired by [GPIO Zero](https://gpiozero.readthedocs.org/en/v1.1.0/index.html). If you have any issues, comments or suggestions please use [the GitHub issues page](https://github.com/mattjlewis/diozero/issues).
 
 ## Concepts
 
-The aim of this library is to encapsulate real-world devices as classes with meaningful operation names, for example LED (on / off), LDR (get luminosity), Button (pressed / released), Motor (forward / backwards / left / right). All devices implement `Closeable` hence will be automatically closed by the `try (Device d = new Device()) { d.doSomething(); }` statement. This is best illustrated by some simple examples.
+The aim of this library is to encapsulate real-world devices as classes with meaningful operation names, for example LED (on / off), LDR (get luminosity), Button (pressed / released), Motor (forward / backwards / left / right). All devices implement `Closeable` hence will get automatically closed by the `try (Device d = new Device()) { d.doSomething(); }` statement. This is best illustrated by some simple examples.
 
 !!! note "Pin Numbering"
     All pin numbers are device native, i.e. Broadcom for the Raspberry Pi.
@@ -51,9 +51,9 @@ try (PwmLed led = new PwmLed(pin)) {
 All devices are actually provisioned by a [Device Factory](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/internal/spi/DeviceFactoryInterface.java) with a default [NativeDeviceFactory](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/internal/DeviceFactoryHelper.java) for provisioning via the host board itself. However, all components accept an optional Device Factory parameter for provisioning the same set of components via an alternative method. This is particularly useful for GPIO expansion boards and Analog-to-Digital converters.
 
 !!! note "Device Factory"
-    Unless you are implementing a new device you shouldn't need to use any of the Device Factory interfaces or helper classes (under the `com.diozero.internal` package).
+    Unless you are implementing a new device you shouldn't need to use any of the Device Factory interfaces or helper classes (within the `com.diozero.internal` package).
 
-The Raspberry Pi provides no analog input pins; attempting to create an AnalogInputDevice such as an LDR using the Raspberry Pi default native device factory would result in a runtime error (`UnsupportedOperationException`). However, ADC classes such as the [McpAdc](http://rtd.diozero.com/en/latest/ExpansionBoards/#mcp-adc) have been implemented as analog input device factories hence can be used to construct analog devices such as LDRs:
+Some boards such as the Raspberry Pi provide no analog input pins; attempting to create an AnalogInputDevice such as an LDR using the Raspberry Pi default native device factory would result in a runtime error (`UnsupportedOperationException`). However, support for Analog to Digital Converter devices such as the [MCP3008](http://rtd.diozero.com/en/latest/ExpansionBoards/#mcp-adc) have been implemented as analog input device factories hence can be used in the constructor of analog devices such as LDRs:
 
 ```java
 try (McpAdc adc = new McpAdc(McpAdc.Type.MCP3008, chipSelect); LDR ldr = new LDR(adc, pin, vRef, r1)) {
@@ -83,40 +83,51 @@ try (McpAdc adc = new McpAdc(McpAdc.Type.MCP3008, chipSelect); LDR ldr = new LDR
 }
 ```
 
+## Supported Devices
+
+diozero has out of the box support for the following Single Board Computers:
++ [Raspberry Pi](http://www.raspberyrpi.org/) (all versions)
++ [Odroid C2](http://www.hardkernel.com/main/products/prdt_info.php)
++ [Beagle Bone Black](https://beagleboard.org/black)
++ [Asus Tinker Board](https://www.asus.com/uk/supportonly/TInker%20Board2GB/)
++ [C.H.I.P.](https://getchip.com/pages/chip)
+
+The builtin sysfs provider is designed to be portable across different boards. In addition, the two Java Device I/O providers adds an additional layer of compatibility, for example the Udoo Quad.
+
 ## Getting Started
 
 Snapshot builds of the library are available in the [Nexus Repository Manager](https://oss.sonatype.org/index.html#nexus-search;gav~com.diozero~~~~). For convenience a ZIP of all diozero JARs will be maintained on [Google Drive](https://drive.google.com/folderview?id=0B2Kd_bs3CEYaZ3NiRkd4OXhYd3c).
 
 Javadoc for the core library is also available via [javadoc.io](http://www.javadoc.io/doc/com.diozero/diozero-core/). 
 
-Unfortunately Java doesn't provide a convenient deployment-time dependency manager such Python's `pip` therefore you will need to manually download all dependencies and setup your classpath correctly. You can do this either via setting the `CLASSPATH` environment variable or as a command-line option (`java -cp <jar1>:<jar2>`). The dependencies have been deliberately kept to as few libraries as possible, as such this library is only dependent on [tinylog](http://www.tinylog.org) [v1.0](https://github.com/pmwmedia/tinylog/releases/download/1.1/tinylog-1.1.zip).
+Unfortunately Java doesn't provide a convenient deployment-time dependency manager such as Python's `pip` therefore you will need to manually download all dependencies and setup your classpath correctly. You can do this either via setting the `CLASSPATH` environment variable or as a command-line option (`java -cp <jar1>:<jar2>`). The dependencies have been deliberately kept to as few libraries as possible, as such this library is only dependent on [tinylog](http://www.tinylog.org) [v1.1](https://github.com/pmwmedia/tinylog/releases/download/1.1/tinylog-1.1.zip).
 
-To compile and run a diozero application you will need 4 JAR files - tinylog, diozero-core, one of the supported device provider libraries and the corresponding diozero provider wrapper library.
+To compile a diozero application you will need 2 JAR files - tinylog, and diozero-core. To run a diozero, one of the supported device provider libraries and the corresponding diozero provider wrapper library.
 
 Provider | Provider Jar | diozero wrapper-library
 -------- | ------------ | -----------------------
+sysfs | N/A | Built-in
 JDK Device I/O 1.0 | dio-1.0.1.jar | diozero-provider-jdkdeviceio10-&lt;version&gt;.jar
 JDK Device I/O 1.1 | dio-1.1.jar | diozero-provider-jdkdeviceio11-&lt;version&gt;.jar
-Pi4j | pi4j-core-1.1-SNAPSHOT.jar | diozero-provider-pi4j-&lt;version&gt;.jar
-wiringPi | pi4j-core-1.1-SNAPSHOT.jar | diozero-provider-wiringpi-&lt;version&gt;.jar
-pigpio | pigpioj-java-1.0.0.jar | diozero-provider-pigio-&lt;version&gt;.jar
-jpi | N/A | diozero-provider-jpi-&lt;version&gt;.jar
-sysfs | N/A | diozero-provider-sysfs-&lt;version&gt;.jar
+Pi4j | pi4j-core-1.1.jar | diozero-provider-pi4j-&lt;version&gt;.jar
+wiringPi | pi4j-core-1.1.jar | diozero-provider-wiringpi-&lt;version&gt;.jar
+pigpio | pigpioj-java-1.0.1.jar | diozero-provider-pigio-&lt;version&gt;.jar
+mmap | N/A | diozero-provider-mmap-&lt;version&gt;.jar
 
 To get started I recommend first looking at the classes in [com.diozero.sampleapps](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/sampleapps/). To run the [LEDTest](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/sampleapps/LEDTest.java) sample application using the pigpioj provider:
 
 Option 1 - Setting the CLASSPATH environment variable:
 ```sh
-CLASSPATH=tinylog-1.1.jar:diozero-core-0.3-SNAPSHOT.jar:diozero-provider-pigpio-0.3-SNAPSHOT.jar:pigpioj-java-1.0.0.jar; export CLASSPATH
+CLASSPATH=tinylog-1.1.jar:diozero-core-0.9-SNAPSHOT.jar:diozero-provider-pigpio-0.9-SNAPSHOT.jar:pigpioj-java-1.0.1.jar; export CLASSPATH
 sudo java -cp $CLASSPATH com.diozero.sampleapps.LEDTest 12
 ```
 
 Option 2 - Setting the classpath via command-line:
 ```sh
-sudo java -cp tinylog-1.1.jar:diozero-core-0.3-SNAPSHOT.jar:diozero-provider-pigpio-0.3-SNAPSHOT.jar:pigpioj-java-1.0.0.jar com.diozero.sampleapps.LEDTest 12
+sudo java -cp tinylog-1.1.jar:diozero-core-0.9-SNAPSHOT.jar:diozero-provider-pigpio-0.9-SNAPSHOT.jar:pigpioj-java-1.0.1.jar com.diozero.sampleapps.LEDTest 12
 ```
 
-For an experience similar to Python where source code can be interpreted rather than compiled try [Groovy](http://www.groovy-lang.org/) (`sudo apt-get update && sudo apt-get install groovy2`). With the `CLASSPATH` environment variable set as per the instructions above, a simple test application can be run via the command `groovy <filename>`. There is also a Groovy shell environment `groovysh`.
+For an experience similar to Python where source code is interpreted rather than compiled try [Groovy](http://www.groovy-lang.org/) (`sudo apt-get update && sudo apt-get install groovy2`). With the `CLASSPATH` environment variable set as per the instructions above, a simple test application can be run via the command `groovy <filename>`. There is also a Groovy shell environment `groovysh`.
 
 A Groovy equivalent of the LED controlled button example:
 
@@ -168,10 +179,12 @@ This library provides support for a number of GPIO / I2C / SPI connected compone
     - [API](http://rtd.diozero.com/en/latest/MotorControl/#api), [Servos](http://rtd.diozero.com/en/latest/MotorControl/#servo), [CamJam EduKit](http://rtd.diozero.com/en/latest/MotorControl/#camjamkitdualmotor), [Ryanteck](http://rtd.diozero.com/en/latest/MotorControl/#ryanteckdualmotor), [Toshiba TB6612FNG](http://rtd.diozero.com/en/latest/MotorControl/#tb6612fngdualmotordriver)
 + [Sensor Components](http://rtd.diozero.com/en/latest/SensorComponents/) (support for specific sensors, e.g. temperature, pressure, distance, luminosity)
     - [HC-SR04 Ultrasonic Ranging Module](http://rtd.diozero.com/en/latest/SensorComponents/#hc-sr04), [Bosch BMP180](http://rtd.diozero.com/en/latest/SensorComponents/#bosch-bmp180), [TSL2561 Light Sensor](http://rtd.diozero.com/en/latest/SensorComponents/#tsl2561), [1-Wire Temperature Sensors e.g. DS18B20](http://rtd.diozero.com/en/latest/SensorComponents/#1-wire-temperature-sensors)
-+ [IMU Devices](http://rtd.diozero.com/en/latest/IMUDevices/) Work-in-progress API for interacting with Inertial Measurement Units such as the InvenSense MPU-9150 and the Analog Devices ADXL345
-    - [API](http://rtd.diozero.com/en/latest/IMUDevices/#api), [Supported Devices](http://rtd.diozero.com/en/latest/IMUDevices/#supported-devices)
++ [LCD Displays](http://rtd.diozero.com/en/latest/LCDDisplays/)
+    - [I2C LCDs](http://rtd.diozero.com/en/latest#i2c-lcds) I2C attached displays (Hitachi HD44780 via the NCP PCF8754 I2C I/O expansion board)    
 + [LED Strips](http://rtd.diozero.com/en/latest/LEDStrips/) Support for LED strips (WS2811B / WS2812B / Adafruit NeoPixel)
     - [WS2811B / WS2812B](http://rtd.diozero.com/en/latest/LEDStrips/#ws281x)
++ [IMU Devices](http://rtd.diozero.com/en/latest/IMUDevices/) Work-in-progress API for interacting with Inertial Measurement Units such as the InvenSense MPU-9150 and the Analog Devices ADXL345
+    - [API](http://rtd.diozero.com/en/latest/IMUDevices/#api), [Supported Devices](http://rtd.diozero.com/en/latest/IMUDevices/#supported-devices)
 
 ## Performance
 
@@ -190,8 +203,8 @@ I've done some limited performance tests (turning a GPIO on then off, see [GpioP
 | wiringPi | Pi3 | 3,446 |
 | wiringPi (JNI) | Pi2 | 3,298 |
 | wiringPi (JNI) | Pi3 | 4,373 |
-| jpi | Pi3 |  7,686 |
-| jpi (JNI) | Pi3 |   11,007 |
+| mmap | Pi3 |  7,686 |
+| mmap (JNI) | Pi3 |   11,007 |
 
 ![Performance](images/Performance.png "Performance") 
 
@@ -223,13 +236,15 @@ There is still a lot left to do, in particular:
 
 ## Change-log
 
-+ Release 0.2: First tagged release
-+ Release 0.3: API change - analogue to analog
-+ Release 0.4: Bug fixes, servo support
-+ Release 0.5: Testing improvements
-+ Release 0.6: Preparing for 1.0 release
++ Release 0.2: First tagged release.
++ Release 0.3: API change - analogue to analog.
++ Release 0.4: Bug fixes, servo support.
++ Release 0.5: Testing improvements.
++ Release 0.6: Preparing for 1.0 release.
 + Release 0.7: Support for non-register based I2C device read / write
 + Release 0.8: Added Analog Output device support (added for the PCF8591). Introduced Java based sysfs and jpi providers. Bug fix to I2CLcd. Added support for BME280.
++ Release 0.9: Native support for I2C and SPI in the sysfs provider. Support for C.H.I.P. and Beagle Bone Black.
++ Release 0.10: Moved sysfs provider into diozero-core, use as the default provider if no others have been specified. Support for Asus Tinker Board.
 
 ## License
 
