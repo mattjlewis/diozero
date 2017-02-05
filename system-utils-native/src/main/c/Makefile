@@ -8,7 +8,7 @@ SO_FILE_EXT = so
 
 LIBS = 
 
-SRCS = com_diozero_internal_provider_i2c_NativeI2CDevice.c com_diozero_internal_provider_spi_NativeSpiDevice.c com_diozero_util_EpollNative.c com_diozero_util_PollNative.c com_diozero_util_SleepUtil.c com_diozero_util.c $(EXTRA_SRC)
+SRCS = com_diozero_internal_provider_sysfs_NativeI2CDevice.c com_diozero_internal_provider_sysfs_NativeSpiDevice.c com_diozero_util_EpollNative.c com_diozero_util_PollNative.c com_diozero_util_SleepUtil.c com_diozero_util_Util.c com_diozero_util_MmapBufferNative.c $(EXTRA_SRC)
 
 OBJS = $(SRCS:.c=.o)
 

@@ -1,4 +1,3 @@
-#include "com_diozero_util.h"
 #include "com_diozero_util_PollNative.h"
 
 #include <errno.h>
@@ -9,6 +8,7 @@
 #include <string.h>
 #include <fcntl.h>
 #include <poll.h>
+#include "com_diozero_util_Util.h"
 
 JNIEXPORT void JNICALL Java_com_diozero_util_PollNative_poll
   (JNIEnv* env, jobject pollNative, jstring filename, jint timeout, jint ref, jobject callback) {
