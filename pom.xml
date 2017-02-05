@@ -37,7 +37,7 @@
 	<artifactId>diozero</artifactId>
 	<version>0.9-SNAPSHOT</version>
 	<name>Device I/O Zero</name>
-	<description>Java Device I/O library with an API based on the Python GPIO Zero supporting multiple devices (Raspberry Pi, BeagleBone Black, ...)</description>
+	<description>Java Device I/O library with an API based on the Python GPIO Zero supporting portable across Single Board Computers (including Raspberry Pi, BeagleBone Black, Odroid C2, C.H.I.P., Asus Tinker Board)</description>
 	<url>http://www.diozero.com/</url>
 	<inceptionYear>2016</inceptionYear>
 	<packaging>pom</packaging>
@@ -64,9 +64,9 @@
 		<url>https://github.com/mattjlewis/diozero.git</url>
 		<connection>scm:git:git@github.com:mattjlewis/diozero.git</connection>
 		<developerConnection>scm:git:git@github.com:mattjlewis/diozero.git</developerConnection>
-    <tag>HEAD</tag>
-  </scm>
-	
+		<tag>HEAD</tag>
+	</scm>
+
 	<developers>
 		<developer>
 			<email>deviceiozero@gmail.com</email>
@@ -75,7 +75,7 @@
 			<id>mattjlewis</id>
 		</developer>
 	</developers>
-	
+
 	<modules>
 		<module>diozero-core</module>
 		<module>diozero-provider-jdkdio10</module>
@@ -83,7 +83,6 @@
 		<module>diozero-provider-jpi</module>
 		<module>diozero-provider-pi4j</module>
 		<module>diozero-provider-pigpio</module>
-		<module>diozero-provider-sysfs</module>
 		<module>diozero-provider-wiringpi</module>
 		<module>diozero-ws281x-java</module>
 		<module>diozero-imu-devices</module>
@@ -91,11 +90,11 @@
 		<module>diozero-imu-visualiser</module>
 		<module>distribution</module>
 	</modules>
-	
+
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		
+
 		<!-- Version dependencies -->
 		<java.version>8</java.version>
 		<jdk.source.version>1.${java.version}</jdk.source.version>
