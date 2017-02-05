@@ -39,6 +39,7 @@ import java.nio.file.StandardCopyOption;
  * <a href="https://learn.adafruit.com/adafruit-neopixel-uberguide">WS2811B /
  * WS2812B aka Adafriut NeoPixel LEDs</a> via a JNI wrapper around the
  * <a href="https://github.com/jgarff/rpi_ws281x">rpi_ws281x C library</a>.</p>
+ * <p>Also see <a href="https://github.com/626Pilot/RaspberryPi-NeoPixel-WS2812">this implementation</a>.</p>
  * <p>All colours are represented as 24bit RGB values.</p>
  */
 public class WS281x implements Closeable {
