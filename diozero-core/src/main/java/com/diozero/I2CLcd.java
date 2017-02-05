@@ -26,32 +26,34 @@ package com.diozero;
  * #L%
  */
 
-
 import java.io.Closeable;
-import java.io.IOException;
-import java.nio.ByteOrder;
 import java.util.HashMap;
 import java.util.Map;
 
 import com.diozero.api.I2CConstants;
-import com.diozero.api.I2CDevice;
+import com.diozero.internal.provider.mcp23xxx.MCP23xxx;
 import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 
 /**
- * <p>Generic I2C LCD support, code based on <a href=
+ * <p>
+ * LCD with HD44780 controller.<br>
+ * Code based on <a href=
  * "http://www.raspberrypi-spy.co.uk/2015/05/using-an-i2c-enabled-lcd-screen-with-the-raspberry-pi/">
- * this Raspberry-Pi Spy article</a>, Python code: <a href=
- * "https://bitbucket.org/MattHawkinsUK/rpispy-misc/raw/master/python/lcd_i2c.py">
- * https://bitbucket.org/MattHawkinsUK/rpispy-misc/raw/master/python/lcd_i2c.py
- * </a></p>
- * <p>Another source of information: <a href="https://gist.github.com/DenisFromHR/cc863375a6e19dce359d">https://gist.github.com/DenisFromHR/cc863375a6e19dce359d</a>.</p>
- * <p>Datasheet for HD44780: <a href="https://www.sparkfun.com/datasheets/LCD/HD44780.pdf">https://www.sparkfun.com/datasheets/LCD/HD44780.pdf</a>.</p>
- * <p>Note currently only tested with an NXP PCF8574 I2C backpack.</p>
+ * this Raspberry-Pi Spy article</a>, <a href=
+ * "https://bitbucket.org/MattHawkinsUK/rpispy-misc/raw/master/python/lcd_i2c.py">Python code.</a>
+ * </p>
+ * <p>
+ * Another source of information: <a href=
+ * "https://gist.github.com/DenisFromHR/cc863375a6e19dce359d">https://gist.github.com/DenisFromHR/cc863375a6e19dce359d</a>.
+ * </p>
+ * <p>
+ * <a href="https://www.sparkfun.com/datasheets/LCD/HD44780.pdf">HD44780 Datasheet</a>.
+ * </p>
  */
-@SuppressWarnings("unused")
+//@SuppressWarnings("unused")
 public class I2CLcd implements Closeable {
-	private static final boolean DEFAULT_BACKLIGHT_STATE = true;
+	private static final boolean DEFAULT_BACKLIGHT_STATE = false;
 
 	// I2C device address
 	public static final int DEFAULT_DEVICE_ADDRESS = 0x27;
@@ -175,22 +177,6 @@ public class I2CLcd implements Closeable {
 	private static final byte FS_CHAR_FONT_5X10DOTS = 0x04;
 	private static final byte FS_CHAR_FONT_5X8DOTS = 0x00;
 	
-	// Register select (0: instruction, 1:data)
-	private static final byte REGISTER_SELECT_BIT			= 0;
-	private static final byte REGISTER_SELECT_INSTRUCTION	= 0;
-	private static final byte REGISTER_SELECT_DATA			= 1 << REGISTER_SELECT_BIT;
-	// Select read or write (0: Write, 1: Read).
-	private static final byte DATA_READ_WRITE_BIT			= 1;
-	private static final byte DATA_WRITE					= 0;
-	private static final byte DATA_READ						= 1 << DATA_READ_WRITE_BIT;
-	// Enable bit, starts read/write.
-	private static final byte ENABLE_BIT					= 2;
-	private static final byte ENABLE						= 1 << ENABLE_BIT;
-	// Backlight control bit (1=on, 0=off)
-	private static final int BACKLIGHT_BIT					= 3;
-	private static final int BACKLIGHT_OFF					= 0;
-	private static final int BACKLIGHT_ON					= 1 << BACKLIGHT_BIT;
-
 	// For 2-row LCDs
 	private static final byte[] ROW_OFFSETS_2ROWS = { 0x00, 0x40 };
 	// For 20x4 LCDs
@@ -198,8 +184,13 @@ public class I2CLcd implements Closeable {
 	// For 16x4 LCDs - special memory map layout
 	private static final byte[] ROW_OFFSETS_16x4 = { 0, 0x40, 16, 0x40 + 16 };
 
-	private GpioExpander gpioExpander;
-	private boolean backlight;
+	private LcdConnection lcdConnection;
+	private boolean dataInHighNibble;
+	private int registerSelectDataMask;
+	private int dataReadMask;
+	private int enableMask;
+	private int backlightOnMask;
+	private boolean backlightEnabled;
 	private int columns;
 	private int rows;
 	private boolean characterFont5x8;
@@ -220,11 +211,10 @@ public class I2CLcd implements Closeable {
 
 	@SuppressWarnings("resource")
 	public I2CLcd(int controller, int deviceAddress, int columns, int rows) {
-		this(new PCF8574(controller, deviceAddress, I2CConstants.ADDR_SIZE_7,
-				I2CConstants.DEFAULT_CLOCK_FREQUENCY), columns, rows);
+		this(new PCF8574LcdConnection(controller, deviceAddress), columns, rows);
 	}
 	
-	public I2CLcd(GpioExpander gpioExpander, int columns, int rows) {
+	public I2CLcd(LcdConnection lcdConnection, int columns, int rows) {
 		if (rows == 2) {
 			rowOffsets = ROW_OFFSETS_2ROWS;
 		} else if (rows == 4) {
@@ -248,10 +238,15 @@ public class I2CLcd implements Closeable {
 
 		this.columns = columns;
 		this.rows = rows;
-		backlight = DEFAULT_BACKLIGHT_STATE;
+		backlightEnabled = DEFAULT_BACKLIGHT_STATE;
 		characterFont5x8 = true;
 
-		this.gpioExpander = gpioExpander;
+		this.lcdConnection = lcdConnection;
+		dataInHighNibble = lcdConnection.isDataInHighNibble();
+		registerSelectDataMask = 1 << lcdConnection.getRegisterSelectBit();
+		dataReadMask = 1 << lcdConnection.getDataReadWriteBit();
+		enableMask = 1 << lcdConnection.getEnableBit();
+		backlightOnMask = 1 << lcdConnection.getBacklightBit();
 
 		// Initialise the display. From p45/46 of the datasheet:
 		// https://www.sparkfun.com/datasheets/LCD/HD44780.pdf
@@ -295,21 +290,24 @@ public class I2CLcd implements Closeable {
 	}
 
 	private void writeByte(boolean instruction, byte data) {
-		// High bits
+		// High bits first
 		write4Bits(instruction, (byte) (data & 0xF0));
-		// Low bits
+		// Low bits last
 		write4Bits(instruction, (byte) (data << 4));
 	}
 
 	private void write4Bits(boolean instruction, byte value) {
+		if (! dataInHighNibble) {
+			value = (byte) ((value >> 4) & 0x0F);
+		}
 		byte data = (byte) (value
-				| (instruction ? REGISTER_SELECT_INSTRUCTION : REGISTER_SELECT_DATA)
-				| (backlight ? BACKLIGHT_ON : BACKLIGHT_OFF));
+				| (instruction ? 0 : registerSelectDataMask)
+				| (backlightEnabled ? backlightOnMask : 0));
 
-		gpioExpander.setValues(0, (byte) (data | ENABLE));
+		lcdConnection.write((byte) (data | enableMask));
 		// 50us delay enough?
 		SleepUtil.sleepMicros(50);
-		gpioExpander.setValues(0, (byte) (data & ~ENABLE));
+		lcdConnection.write((byte) (data & ~enableMask));
 		// 50us delay enough?
 		SleepUtil.sleepMicros(50);
 	}
@@ -322,12 +320,12 @@ public class I2CLcd implements Closeable {
 		return rows;
 	}
 
-	public boolean isBacklightOn() {
-		return backlight;
+	public boolean isBacklightEnabled() {
+		return backlightEnabled;
 	}
 
-	public I2CLcd setBacklightOn(boolean backlight) {
-		this.backlight = backlight;
+	public I2CLcd setBacklightEnabled(boolean backlightEnabled) {
+		this.backlightEnabled = backlightEnabled;
 		writeByte(true, (byte) 0);
 		
 		return this;
@@ -342,7 +340,6 @@ public class I2CLcd implements Closeable {
 			throw new IllegalArgumentException("Invalid row (" + row + "), must be 0.." + (rows - 1));
 		}
 
-		byte[] row_offsets;
 		writeInstruction((byte) (INST_SET_DDRAM_ADDR | (column + rowOffsets[row])));
 		
 		return this;
@@ -588,14 +585,10 @@ public class I2CLcd implements Closeable {
 
 	@Override
 	public void close() throws RuntimeIOException {
-		backlight = false;
+		backlightEnabled = false;
 		clear();
 		displayControl(false, false, false);
-		try {
-			gpioExpander.close();
-		} catch (IOException e) {
-			throw new RuntimeIOException(e);
-		}
+		lcdConnection.close();
 	}
 	
 	public static class Characters {
@@ -720,6 +713,164 @@ public class I2CLcd implements Closeable {
 		
 		public static byte[] get(String code) {
 			return CHARACTERS.get(code);
+		}
+	}
+	
+	public static interface LcdConnection extends Closeable {
+		void write(byte values);
+		boolean isDataInHighNibble();
+		int getBacklightBit();
+		int getEnableBit();
+		int getDataReadWriteBit();
+		int getRegisterSelectBit();
+		@Override
+		void close() throws RuntimeIOException;
+	}
+	
+	public static class PiFaceCadLcdConnection implements LcdConnection {
+		private static final int CHIP_SELECT = 1;
+		private static final int ADDRESS = 0;
+		private static final int PORT = 1;
+		
+		/*
+		 * MCP23S17 GPIOB to HD44780 pin map
+		 * PH_PIN_D4 = 0
+		 * PH_PIN_D5 = 1
+		 * PH_PIN_D6 = 2
+		 * PH_PIN_D7 = 3
+		 * PH_PIN_ENABLE = 4
+		 * PH_PIN_RW = 5
+		 * PH_PIN_RS = 6
+		 * PH_PIN_LED_EN = 7
+		 */
+		// Register select (0: instruction, 1:data)
+		private static final byte REGISTER_SELECT_BIT			= 6;
+		// Select read or write (0: Write, 1: Read).
+		private static final byte DATA_READ_WRITE_BIT			= 5;
+		// Enable bit, starts read/write.
+		private static final byte ENABLE_BIT					= 4;
+		// Backlight control bit (1=on, 0=off)
+		private static final int BACKLIGHT_BIT					= 7;
+
+		private MCP23S17 mcp23s17;
+		private boolean dataInHighNibble = false;
+		private int registerSelectBit = REGISTER_SELECT_BIT;
+		private int dataReadWriteBit = DATA_READ_WRITE_BIT;
+		private int enableBit = ENABLE_BIT;
+		private int backlightBit = BACKLIGHT_BIT;
+		
+		public PiFaceCadLcdConnection(int controller) {
+			mcp23s17 = new MCP23S17(controller, CHIP_SELECT, ADDRESS, MCP23xxx.INTERRUPT_GPIO_NOT_SET);
+			// All output
+			mcp23s17.setDirections(PORT, (byte) 0);
+		}
+
+		@Override
+		public void write(byte values) {
+			//byte new_values = (byte) ((values >> 4) & 0x0f);
+			//new_values |= values << 4;
+			mcp23s17.setValues(PORT, values);
+		}
+
+		@Override
+		public void close() throws RuntimeIOException {
+			mcp23s17.close();
+		}
+
+		@Override
+		public boolean isDataInHighNibble() {
+			return dataInHighNibble;
+		}
+
+		@Override
+		public int getRegisterSelectBit() {
+			return registerSelectBit;
+		}
+
+		@Override
+		public int getDataReadWriteBit() {
+			return dataReadWriteBit;
+		}
+
+		@Override
+		public int getEnableBit() {
+			return enableBit;
+		}
+
+		@Override
+		public int getBacklightBit() {
+			return backlightBit;
+		}
+	}
+	
+	public static class PCF8574LcdConnection implements LcdConnection {
+		private static final int PORT = 0;
+		
+		/*
+		 * Default PCF8574 GPIO to HD44780 pin map
+		 * PH_PIN_RS = 0
+		 * PH_PIN_RW = 1
+		 * PH_PIN_ENABLE = 2
+		 * PH_PIN_LED_EN = 3
+		 * PH_PIN_D4 = 4
+		 * PH_PIN_D5 = 5
+		 * PH_PIN_D6 = 6
+		 * PH_PIN_D7 = 7
+		 */
+		// Register select (0: instruction, 1:data)
+		private static final byte REGISTER_SELECT_BIT			= 0;
+		// Select read or write (0: Write, 1: Read).
+		private static final byte DATA_READ_WRITE_BIT			= 1;
+		// Enable bit, starts read/write.
+		private static final byte ENABLE_BIT					= 2;
+		// Backlight control bit (1=on, 0=off)
+		private static final int BACKLIGHT_BIT					= 3;
+
+		private PCF8574 pcf8574;
+		private boolean dataInHighNibble = true;
+		private int registerSelectBit = REGISTER_SELECT_BIT;
+		private int dataReadWriteBit = DATA_READ_WRITE_BIT;
+		private int enableBit = ENABLE_BIT;
+		private int backlightBit = BACKLIGHT_BIT;
+
+		public PCF8574LcdConnection(int controller, int deviceAddress) {
+			pcf8574 = new PCF8574(controller, deviceAddress, I2CConstants.ADDR_SIZE_7,
+					I2CConstants.DEFAULT_CLOCK_FREQUENCY);
+		}
+
+		@Override
+		public void write(byte values) {
+			pcf8574.setValues(PORT, values);
+		}
+
+		@Override
+		public boolean isDataInHighNibble() {
+			return dataInHighNibble;
+		}
+
+		@Override
+		public int getRegisterSelectBit() {
+			return registerSelectBit;
+		}
+
+		@Override
+		public int getDataReadWriteBit() {
+			return dataReadWriteBit;
+		}
+
+		@Override
+		public int getEnableBit() {
+			return enableBit;
+		}
+
+		@Override
+		public int getBacklightBit() {
+			return backlightBit;
+		}
+
+		@Override
+		public void close() throws RuntimeIOException {
+			pcf8574.close();
 		}
 	}
 }
