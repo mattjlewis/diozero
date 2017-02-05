@@ -1,4 +1,4 @@
-package com.diozero.internal.provider.jpi;
+package com.diozero.util;
 
 /*
  * #%L
