@@ -1,12 +1,35 @@
-package com.diozero;
+package com.diozero.legacy;
+
+/*
+ * #%L
+ * Device I/O Zero - Core
+ * %%
+ * Copyright (C) 2016 - 2017 mattjlewis
+ * %%
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ * #L%
+ */
 
 import org.pmw.tinylog.Logger;
 
 import com.diozero.api.*;
-import com.diozero.internal.provider.mcp23008.MCP23008DigitalInputDevice;
-import com.diozero.internal.provider.mcp23008.MCP23008DigitalOutputDevice;
 import com.diozero.internal.spi.*;
-import com.diozero.internal.spi.GpioDeviceInterface.Mode;
 import com.diozero.util.BitManipulation;
 import com.diozero.util.MutableByte;
 import com.diozero.util.RuntimeIOException;
@@ -29,7 +52,7 @@ import com.diozero.util.RuntimeIOException;
  * <p>The Power-on Reset (POR) sets the registers to their default values and initializes the device state machine.</p>
  * <p>The hardware address pins are used to determine the device address.</p>
  */
-public class MCP23008 extends AbstractDeviceFactory
+public class MCP23008Old extends AbstractDeviceFactory
 implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, GpioExpander {
 	public static enum InterruptMode {
 		DISABLED, MIRRORED;
@@ -105,10 +128,10 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Gp
 	private static final int PINS_PER_PORT = 8;
 	private static final int PORTS = 1;
 	private static final int NUM_PINS = PORTS*PINS_PER_PORT;
-	private static final int INTERRUPT_PIN_NOT_SET = -1;
+	private static final int INTERRUPT_GPIO_NOT_SET = -1;
 
 	private I2CDevice device;
-	private DigitalInputDevice interruptPin;
+	private DigitalInputDevice interruptGpio;
 	private MutableByte[] directions = { new MutableByte(), new MutableByte() };
 	private MutableByte[] pullUps = { new MutableByte(), new MutableByte() };
 	private MutableByte[] interruptOnChangeFlags = { new MutableByte(), new MutableByte() };
@@ -116,21 +139,21 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Gp
 	private MutableByte[] interruptCompareFlags = { new MutableByte(), new MutableByte() };
 	private InterruptMode interruptMode = InterruptMode.DISABLED;
 
-	public MCP23008() throws RuntimeIOException {
-		this(I2CConstants.BUS_1, DEVICE_ADDRESS, INTERRUPT_PIN_NOT_SET);
+	public MCP23008Old() throws RuntimeIOException {
+		this(I2CConstants.BUS_1, DEVICE_ADDRESS, INTERRUPT_GPIO_NOT_SET);
 	}
 
-	public MCP23008(int interruptGpio) throws RuntimeIOException {
+	public MCP23008Old(int interruptGpio) throws RuntimeIOException {
 		this(I2CConstants.BUS_1, DEVICE_ADDRESS, interruptGpio);
 	}
 
-	public MCP23008(int controller, int address, int interruptGpio) throws RuntimeIOException {
+	public MCP23008Old(int controller, int address, int interruptGpioNumber) throws RuntimeIOException {
 		super(DEVICE_NAME + "-" + controller + "-" + address + "-");
 		
 		device = new I2CDevice(controller, address, I2CConstants.ADDR_SIZE_7, I2CConstants.DEFAULT_CLOCK_FREQUENCY);
 		
-		if (interruptGpio != INTERRUPT_PIN_NOT_SET) {
-			interruptPin = new DigitalInputDevice(interruptGpio, GpioPullUpDown.NONE, GpioEventTrigger.RISING);
+		if (interruptGpioNumber != INTERRUPT_GPIO_NOT_SET) {
+			interruptGpio = new DigitalInputDevice(interruptGpioNumber, GpioPullUpDown.NONE, GpioEventTrigger.RISING);
 		}
 
 		// Initialise
@@ -153,11 +176,11 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Gp
 		}
 		
 		for (int port=0; port<PORTS; port++) {
-			// Default all pins to output
+			// Default all gpios to output
 			setDirections(port, directions[port].getValue());
 			// Default to normal input polarity - IPOLA/IPOLB
 			device.writeByte(IPOL_REG[port], 0);
-			// Disable interrupt-on-change for all pins
+			// Disable interrupt-on-change for all gpios
 			device.writeByte(GPINTEN_REG[port], interruptOnChangeFlags[port].getValue());
 			// Set default compare values to 0
 			device.writeByte(DEFVAL_REG[port], defaultValues[port].getValue());
@@ -170,9 +193,9 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Gp
 		}
 		
 		// Finally enable interrupt listeners
-		if (interruptPin != null) {
-			Logger.debug("Setting interruptPin ({}) consumer", Integer.valueOf(interruptPin.getGpio()));
-			interruptPin.addListener(this);
+		if (interruptGpio != null) {
+			Logger.debug("Setting interruptGpio ({}) consumer", Integer.valueOf(interruptGpio.getGpio()));
+			interruptGpio.addListener(this);
 		}
 	}
 
@@ -250,7 +273,7 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Gp
 	}
 
 	@Override
-	public GpioDigitalInputOutputDeviceInterface provisionDigitalInputOutputPin(int gpio, Mode mode)
+	public GpioDigitalInputOutputDeviceInterface provisionDigitalInputOutputPin(int gpio, DeviceMode mode)
 			throws RuntimeIOException {
 		throw new UnsupportedOperationException("Digital Input / Output devices not yet supported by this provider");
 	}
@@ -301,9 +324,9 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Gp
 	@Override
 	public void close() throws RuntimeIOException {
 		Logger.debug("close()");
-		// Close the interrupt pin
-		if (interruptPin != null) { interruptPin.close(); }
-		// Close all open pins before closing the I2C device itself
+		// Close the interrupt gpio
+		if (interruptGpio != null) { interruptGpio.close(); }
+		// Close all open gpios before closing the I2C device itself
 		shutdown();
 		device.close();
 	}
@@ -353,8 +376,8 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Gp
 			return;
 		}
 		
-		if (event.getPin() != interruptPin.getGpio()) {
-			Logger.error("Unexpected input event on pin {}", Integer.valueOf(event.getPin()));
+		if (event.getGpio() != interruptGpio.getGpio()) {
+			Logger.error("Unexpected input event on gpio {}", Integer.valueOf(event.getGpio()));
 			return;
 		}
 		
@@ -369,7 +392,7 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Gp
 				Logger.debug("Interrupt values: [A]=(0x{}, 0x{})",
 						Integer.toHexString(intf[0]), Integer.toHexString(intcap[0]));
 				for (int port=0; port<PORTS; port++) {
-					for (byte bit=0; bit<7; bit++) {
+					for (byte bit=0; bit<8; bit++) {
 						if (BitManipulation.isBitSet(intf[port], bit)) {
 							boolean value = BitManipulation.isBitSet(intcap[port], bit);
 							DigitalInputEvent e = new DigitalInputEvent(bit, event.getEpochTime(), event.getNanoTime(), value);
@@ -390,5 +413,74 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Gp
 
 	private MCP23008DigitalInputDevice getInputDevice(byte gpio) {
 		return getDevice(createPinKey(gpio), MCP23008DigitalInputDevice.class);
+	}
+
+	public static class MCP23008DigitalOutputDevice extends AbstractDevice implements GpioDigitalOutputDeviceInterface {
+		private MCP23008Old mcp23008;
+		private int gpio;
+	
+		public MCP23008DigitalOutputDevice(MCP23008Old mcp23008, String key, int gpio) {
+			super(key, mcp23008);
+			
+			this.mcp23008 = mcp23008;
+			this.gpio = gpio;
+		}
+	
+		@Override
+		public boolean getValue() throws RuntimeIOException {
+			return mcp23008.getValue(gpio);
+		}
+	
+		@Override
+		public void setValue(boolean value) throws RuntimeIOException {
+			mcp23008.setValue(gpio, value);
+		}
+	
+		@Override
+		public int getGpio() {
+			return gpio;
+		}
+	
+		@Override
+		protected void closeDevice() throws RuntimeIOException {
+			Logger.debug("closeDevice()");
+			mcp23008.closePin(gpio);
+		}
+	}
+	
+	public static class MCP23008DigitalInputDevice extends AbstractInputDevice<DigitalInputEvent> implements GpioDigitalInputDeviceInterface {
+		private MCP23008Old mcp23008;
+		private int gpio;
+		private GpioEventTrigger trigger;
+	
+		public MCP23008DigitalInputDevice(MCP23008Old mcp23008, String key, int gpio, GpioEventTrigger trigger) {
+			super(key, mcp23008);
+	
+			this.mcp23008 = mcp23008;
+			this.gpio = gpio;
+			this.trigger = trigger;
+		}
+	
+		@Override
+		public void closeDevice() throws RuntimeIOException {
+			Logger.debug("closeDevice()");
+			removeListener();
+			mcp23008.closePin(gpio);
+		}
+	
+		@Override
+		public boolean getValue() throws RuntimeIOException {
+			return mcp23008.getValue(gpio);
+		}
+	
+		@Override
+		public int getGpio() {
+			return gpio;
+		}
+	
+		@Override
+		public void setDebounceTimeMillis(int debounceTime) {
+			// TODO Auto-generated method stub
+		}
 	}
 }

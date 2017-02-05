@@ -1,4 +1,4 @@
-package com.diozero;
+package com.diozero.legacy;
 
 /*
  * #%L
@@ -32,10 +32,7 @@ import java.io.Closeable;
 import org.pmw.tinylog.Logger;
 
 import com.diozero.api.*;
-import com.diozero.internal.provider.mcp23017.MCP23017DigitalInputDevice;
-import com.diozero.internal.provider.mcp23017.MCP23017DigitalOutputDevice;
 import com.diozero.internal.spi.*;
-import com.diozero.internal.spi.GpioDeviceInterface.Mode;
 import com.diozero.util.BitManipulation;
 import com.diozero.util.MutableByte;
 import com.diozero.util.RuntimeIOException;
@@ -56,7 +53,7 @@ import com.diozero.util.RuntimeIOException;
  * to address 12h (GPIOA) or 13h (GPIOB), the pointer will toggle between GPIOA and GPIOB. Note that the
  * Address Pointer can initially point to either address in the register pair.</p>
  */
-public class MCP23017 extends AbstractDeviceFactory
+public class MCP23017Old extends AbstractDeviceFactory
 implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Closeable {
 	private static enum InterruptMode {
 		DISABLED, BANK_A_ONLY, BANK_B_ONLY, BANK_A_AND_B, MIRRORED;
@@ -223,23 +220,23 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Cl
 	private MutableByte[] interruptCompareFlags = { new MutableByte(), new MutableByte() };
 	private InterruptMode interruptMode = InterruptMode.DISABLED;
 
-	public MCP23017() throws RuntimeIOException {
+	public MCP23017Old() throws RuntimeIOException {
 		this(I2CConstants.BUS_1, DEVICE_ADDRESS, INTERRUPT_PIN_NOT_SET, INTERRUPT_PIN_NOT_SET);
 	}
 
-	public MCP23017(int interruptGpio) throws RuntimeIOException {
+	public MCP23017Old(int interruptGpio) throws RuntimeIOException {
 		this(I2CConstants.BUS_1, DEVICE_ADDRESS, interruptGpio, interruptGpio);
 	}
 
-	public MCP23017(int interruptGpioA, int interruptGpioB) throws RuntimeIOException {
+	public MCP23017Old(int interruptGpioA, int interruptGpioB) throws RuntimeIOException {
 		this(I2CConstants.BUS_1, DEVICE_ADDRESS, interruptGpioA, interruptGpioB);
 	}
 
-	public MCP23017(int controller, int address, int interruptGpio) throws RuntimeIOException {
+	public MCP23017Old(int controller, int address, int interruptGpio) throws RuntimeIOException {
 		this(controller, address, interruptGpio, interruptGpio);
 	}
 
-	public MCP23017(int controller, int address, int interruptGpioA, int interruptGpioB) throws RuntimeIOException {
+	public MCP23017Old(int controller, int address, int interruptGpioA, int interruptGpioB) throws RuntimeIOException {
 		super(DEVICE_NAME + "-" + controller + "-" + address + "-");
 		
 		device = new I2CDevice(controller, address, I2CConstants.ADDR_SIZE_7, I2CConstants.DEFAULT_CLOCK_FREQUENCY);
@@ -394,7 +391,7 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Cl
 	}
 
 	@Override
-	public GpioDigitalInputOutputDeviceInterface provisionDigitalInputOutputPin(int gpio, Mode mode)
+	public GpioDigitalInputOutputDeviceInterface provisionDigitalInputOutputPin(int gpio, DeviceMode mode)
 			throws RuntimeIOException {
 		throw new UnsupportedOperationException("Digital Input / Output devices not yet supported by this provider");
 	}
@@ -488,8 +485,8 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Cl
 			return;
 		}
 		
-		if (event.getPin() != interruptPinA.getGpio() && event.getPin() != interruptPinB.getGpio()) {
-			Logger.error("Unexpected input event on pin {}", Integer.valueOf(event.getPin()));
+		if (event.getGpio() != interruptPinA.getGpio() && event.getGpio() != interruptPinB.getGpio()) {
+			Logger.error("Unexpected input event on pin {}", Integer.valueOf(event.getGpio()));
 			return;
 		}
 		
@@ -503,7 +500,7 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Cl
 					intf[1] = readByte(INTF_REG[1]);
 					intcap[1] = readByte(INTCAP_REG[1]);
 				} else if (interruptMode != InterruptMode.DISABLED) {
-					if (event.getPin() == interruptPinA.getGpio()) {
+					if (event.getGpio() == interruptPinA.getGpio()) {
 						intf[0] = readByte(INTF_REG[0]);
 						intcap[0] = readByte(INTCAP_REG[0]);
 					} else {
@@ -514,7 +511,7 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Cl
 				Logger.debug("Interrupt values: [A]=(0x{}, 0x{}), [B]=(0x{}, 0x{})",
 						Integer.toHexString(intf[0]), Integer.toHexString(intcap[0]),
 						Integer.toHexString(intf[1]), Integer.toHexString(intcap[1]));
-				for (byte bit=0; bit<7; bit++) {
+				for (byte bit=0; bit<8; bit++) {
 					if (BitManipulation.isBitSet(intf[0], bit)) {
 						boolean value = BitManipulation.isBitSet(intcap[0], bit);
 						DigitalInputEvent e = new DigitalInputEvent(bit, event.getEpochTime(), event.getNanoTime(), value);
@@ -553,5 +550,74 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Cl
 	
 	protected byte readByte(int register) {
 		return device.readByte(register);
+	}
+	
+	public static class MCP23017DigitalInputDevice extends AbstractInputDevice<DigitalInputEvent> implements GpioDigitalInputDeviceInterface {
+		private MCP23017Old mcp23017;
+		private int gpio;
+		private GpioEventTrigger trigger;
+	
+		public MCP23017DigitalInputDevice(MCP23017Old mcp23017, String key, int gpio, GpioEventTrigger trigger) {
+			super(key, mcp23017);
+	
+			this.mcp23017 = mcp23017;
+			this.gpio = gpio;
+			this.trigger = trigger;
+		}
+	
+		@Override
+		public void closeDevice() throws RuntimeIOException {
+			Logger.debug("closeDevice()");
+			removeListener();
+			mcp23017.closePin(gpio);
+		}
+	
+		@Override
+		public boolean getValue() throws RuntimeIOException {
+			return mcp23017.getValue(gpio);
+		}
+	
+		@Override
+		public int getGpio() {
+			return gpio;
+		}
+	
+		@Override
+		public void setDebounceTimeMillis(int debounceTime) {
+			// TODO Auto-generated method stub
+		}
+	}
+	
+	public static class MCP23017DigitalOutputDevice extends AbstractDevice implements GpioDigitalOutputDeviceInterface {
+		private MCP23017Old mcp23017;
+		private int gpio;
+	
+		public MCP23017DigitalOutputDevice(MCP23017Old mcp23017, String key, int gpio) {
+			super(key, mcp23017);
+			
+			this.mcp23017 = mcp23017;
+			this.gpio = gpio;
+		}
+	
+		@Override
+		public boolean getValue() throws RuntimeIOException {
+			return mcp23017.getValue(gpio);
+		}
+	
+		@Override
+		public void setValue(boolean value) throws RuntimeIOException {
+			mcp23017.setValue(gpio, value);
+		}
+	
+		@Override
+		public int getGpio() {
+			return gpio;
+		}
+	
+		@Override
+		protected void closeDevice() throws RuntimeIOException {
+			Logger.debug("closeDevice()");
+			mcp23017.closePin(gpio);
+		}
 	}
 }
