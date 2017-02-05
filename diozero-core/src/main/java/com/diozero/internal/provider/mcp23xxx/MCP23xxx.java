@@ -28,11 +28,8 @@ package com.diozero.internal.provider.mcp23xxx;
 
 import org.pmw.tinylog.Logger;
 
-import com.diozero.GpioExpander;
 import com.diozero.api.*;
-import com.diozero.internal.provider.mcp23017.MCP23017DigitalInputDevice;
 import com.diozero.internal.spi.*;
-import com.diozero.internal.spi.GpioDeviceInterface.Mode;
 import com.diozero.util.BitManipulation;
 import com.diozero.util.MutableByte;
 import com.diozero.util.RuntimeIOException;
@@ -61,11 +58,11 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Gp
 	/** Slew Rate control bit for SDA output
 	 * 1 = Slew rate disabled.
 	 * 0 = Slew rate enabled */
-	//private static final byte IOCON_DISSLW_BIT = 4;
+	private static final byte IOCON_DISSLW_BIT = 4;
 	/** Hardware Address Enable bit (MCP23S17 only). Address pins are always enabled on MCP23017
 	 * 1 = Enables the MCP23S17 address pins.
 	 * 0 = Disables the MCP23S17 address pins */
-	//private static final byte IOCON_HAEN_BIT = 3;
+	private static final byte IOCON_HAEN_BIT = 3;
 	/** This bit configures the INT pin as an open-drain output
 	 * 1 = Open-drain output (overrides the INTPOL bit).
 	 * 0 = Active driver output (INTPOL bit sets the polarity) */
@@ -75,11 +72,11 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Gp
 	 * 0 = Active-low */
 	private static final byte IOCON_INTPOL_BIT = 1;
 	
-	private static final int PINS_PER_PORT = 8;
-	public static final int INTERRUPT_PIN_NOT_SET = -1;
+	private static final int GPIOS_PER_PORT = 8;
+	public static final int INTERRUPT_GPIO_NOT_SET = -1;
 
 	private String deviceName;
-	private DigitalInputDevice[] interruptPins;
+	private DigitalInputDevice[] interruptGpios;
 	private MutableByte[] directions = { new MutableByte(), new MutableByte() };
 	private MutableByte[] pullUps = { new MutableByte(), new MutableByte() };
 	private MutableByte[] interruptOnChangeFlags = { new MutableByte(), new MutableByte() };
@@ -87,10 +84,10 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Gp
 	private MutableByte[] interruptCompareFlags = { new MutableByte(), new MutableByte() };
 	private InterruptMode interruptMode = InterruptMode.DISABLED;
 	private int numPorts;
-	private int numPins;
+	private int numGpios;
 
 	public MCP23xxx(int numPorts, String deviceName) throws RuntimeIOException {
-		this(numPorts, deviceName, INTERRUPT_PIN_NOT_SET, INTERRUPT_PIN_NOT_SET);
+		this(numPorts, deviceName, INTERRUPT_GPIO_NOT_SET, INTERRUPT_GPIO_NOT_SET);
 	}
 
 	public MCP23xxx(int numPorts, String deviceName, int interruptGpio) throws RuntimeIOException {
@@ -101,12 +98,12 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Gp
 		super(deviceName + "-");
 		
 		this.numPorts = numPorts;
-		numPins = numPorts*PINS_PER_PORT;
+		numGpios = numPorts*GPIOS_PER_PORT;
 		this.deviceName = deviceName;
 		
-		interruptPins = new DigitalInputDevice[numPorts];
-		if (interruptGpioA != INTERRUPT_PIN_NOT_SET) {
-			interruptPins[0] = new DigitalInputDevice(interruptGpioA, GpioPullUpDown.NONE, GpioEventTrigger.RISING);
+		interruptGpios = new DigitalInputDevice[numPorts];
+		if (interruptGpioA != INTERRUPT_GPIO_NOT_SET) {
+			interruptGpios[0] = new DigitalInputDevice(interruptGpioA, GpioPullUpDown.NONE, GpioEventTrigger.RISING);
 			
 			if (interruptGpioA == interruptGpioB) {
 				interruptMode = InterruptMode.MIRRORED;
@@ -115,10 +112,10 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Gp
 			}
 		}
 		
-		// There can only be one interrupt pin (A) if there is only one bank of pins
+		// There can only be one interrupt GPIO (A) if there is only one bank of GPIOs
 		if (numPorts > 1 && interruptMode != InterruptMode.MIRRORED
-				&& interruptGpioB != INTERRUPT_PIN_NOT_SET) {
-			interruptPins[1] = new DigitalInputDevice(interruptGpioB, GpioPullUpDown.NONE, GpioEventTrigger.RISING);
+				&& interruptGpioB != INTERRUPT_GPIO_NOT_SET) {
+			interruptGpios[1] = new DigitalInputDevice(interruptGpioB, GpioPullUpDown.NONE, GpioEventTrigger.RISING);
 			
 			if (interruptMode == InterruptMode.BANK_A_ONLY) {
 				interruptMode = InterruptMode.BANK_A_AND_B;
@@ -157,17 +154,19 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Gp
 		}
 		iocon.unsetBit(IOCON_BANK_BIT);
 		iocon.setBit(IOCON_SEQOP_BIT);
+		iocon.unsetBit(IOCON_DISSLW_BIT);
+		iocon.setBit(IOCON_HAEN_BIT);
 		iocon.unsetBit(IOCON_ODR_BIT);
 		if (! iocon.equals(start_iocon)) {
 			writeByte(getIOConReg(0), iocon.getValue());
 		}
 	
 		for (int port=0; port<numPorts; port++) {
-			// Default all pins to output
+			// Default all GPIOs to output
 			writeByte(getIODirReg(port), directions[port].getValue());
 			// Default to normal input polarity - IPOLA/IPOLB
 			writeByte(getIPolReg(port), (byte) 0);
-			// Disable interrupt-on-change for all pins
+			// Disable interrupt-on-change for all GPIOs
 			writeByte(getGPIntEnReg(port), interruptOnChangeFlags[port].getValue());
 			// Set default compare values to 0
 			writeByte(getDefValReg(port), defaultValues[port].getValue());
@@ -180,10 +179,10 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Gp
 		}
 		
 		// Finally enable interrupt listeners
-		for (DigitalInputDevice interrupt_pin : interruptPins) {
-			if (interrupt_pin != null) {
-				Logger.debug("Setting interruptPin ({}) consumer", Integer.valueOf(interrupt_pin.getGpio()));
-				interrupt_pin.addListener(this);
+		for (DigitalInputDevice interrupt_gpio : interruptGpios) {
+			if (interrupt_gpio != null) {
+				Logger.debug("Setting interruptGpio ({}) consumer", Integer.valueOf(interrupt_gpio.getGpio()));
+				interrupt_gpio.addListener(this);
 			}
 		}
 	}
@@ -191,9 +190,9 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Gp
 	@Override
 	public GpioDigitalInputDeviceInterface provisionDigitalInputPin(int gpio, GpioPullUpDown pud,
 			GpioEventTrigger trigger) throws RuntimeIOException {
-		if (gpio < 0 || gpio >= numPins) {
+		if (gpio < 0 || gpio >= numGpios) {
 			throw new IllegalArgumentException(
-					"Invalid GPIO (" + gpio + "); must be 0.." + (numPins - 1));
+					"Invalid GPIO (" + gpio + "); must be 0.." + (numGpios - 1));
 		}
 		
 		String key = createPinKey(gpio);
@@ -212,9 +211,9 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Gp
 
 	@Override
 	public GpioDigitalOutputDeviceInterface provisionDigitalOutputPin(int gpio, boolean initialValue) throws RuntimeIOException {
-		if (gpio < 0 || gpio >= numPins) {
+		if (gpio < 0 || gpio >= numGpios) {
 			throw new IllegalArgumentException(
-					"Invalid GPIO (" + gpio + "); must be 0.." + (numPins - 1));
+					"Invalid GPIO (" + gpio + "); must be 0.." + (numGpios - 1));
 		}
 		
 		String key = createPinKey(gpio);
@@ -233,10 +232,10 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Gp
 	}
 
 	@Override
-	public GpioDigitalInputOutputDeviceInterface provisionDigitalInputOutputPin(int gpio, GpioDeviceInterface.Mode mode) throws RuntimeIOException {
-		if (gpio < 0 || gpio >= numPins) {
+	public GpioDigitalInputOutputDeviceInterface provisionDigitalInputOutputPin(int gpio, DeviceMode mode) throws RuntimeIOException {
+		if (gpio < 0 || gpio >= numGpios) {
 			throw new IllegalArgumentException(
-					"Invalid GPIO (" + gpio + "); must be 0.." + (numPins - 1));
+					"Invalid GPIO (" + gpio + "); must be 0.." + (numGpios - 1));
 		}
 		
 		String key = createPinKey(gpio);
@@ -254,15 +253,17 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Gp
 	protected void setInputMode(int gpio, GpioPullUpDown pud, GpioEventTrigger trigger) {
 		// TODO Detect if there is no change in direction?
 		
-		byte bit = (byte) (gpio % PINS_PER_PORT);
-		int port = gpio / PINS_PER_PORT;
-		Logger.info("setInputMode({}), directions={}", Integer.valueOf(gpio), Byte.valueOf(directions[port].getValue()));
+		byte bit = (byte) (gpio % GPIOS_PER_PORT);
+		int port = gpio / GPIOS_PER_PORT;
 		
 		// Set the following values: direction, pullUp, interruptCompare, defaultValue, interruptOnChange
 		directions[port].setBit(bit);
 		writeByte(getIODirReg(port), directions[port].getValue());
 		byte new_dir = readByte(getIODirReg(port));
-		Logger.info("setInputMode({}), directions={}, new_dir={}", Integer.valueOf(gpio), Byte.valueOf(directions[port].getValue()), Byte.valueOf(new_dir));
+		if (directions[port].getValue() != new_dir) {
+			Logger.error("Error setting input mode for gpio {}, expected {}, read {}",
+					Integer.valueOf(gpio), Byte.valueOf(directions[port].getValue()), Byte.valueOf(new_dir));
+		}
 		if (pud == GpioPullUpDown.PULL_UP) {
 			pullUps[port].setBit(bit);
 			writeByte(getGPPullUpReg(port), pullUps[port].getValue());
@@ -287,8 +288,8 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Gp
 	protected void setOutputMode(int gpio) {
 		// TODO Detect if there is no change in direction?
 		
-		byte bit = (byte) (gpio % PINS_PER_PORT);
-		int port = gpio / PINS_PER_PORT;
+		byte bit = (byte) (gpio % GPIOS_PER_PORT);
+		int port = gpio / GPIOS_PER_PORT;
 		
 		// Set the following values: direction, pullUp, interruptCompare, defaultValue, interruptOnChange
 		directions[port].unsetBit(bit);
@@ -296,31 +297,31 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Gp
 	}
 
 	public boolean getValue(int gpio) throws RuntimeIOException {
-		if (gpio < 0 || gpio >= numPins) {
+		if (gpio < 0 || gpio >= numGpios) {
 			throw new IllegalArgumentException("Invalid GPIO: " + gpio + ". "
-					+ deviceName + " has " + numPins + " GPIOs; must be 0.." + (numPins - 1));
+					+ deviceName + " has " + numGpios + " GPIOs; must be 0.." + (numGpios - 1));
 		}
 		
-		byte bit = (byte)(gpio % PINS_PER_PORT);
-		int port = gpio / PINS_PER_PORT;
+		byte bit = (byte) (gpio % GPIOS_PER_PORT);
+		int port = gpio / GPIOS_PER_PORT;
 		
 		byte states = readByte(getGPIOReg(port));
 		
-		return (states & bit) != 0;
+		return BitManipulation.isBitSet(states, bit);
 	}
 
 	public void setValue(int gpio, boolean value) throws RuntimeIOException {
-		if (gpio < 0 || gpio >= numPins) {
+		if (gpio < 0 || gpio >= numGpios) {
 			throw new IllegalArgumentException("Invalid GPIO: " + gpio + ". "
-					+ deviceName + " has " + numPins + " GPIOs; must be 0.." + (numPins - 1));
+					+ deviceName + " has " + numGpios + " GPIOs; must be 0.." + (numGpios - 1));
 		}
 		
-		byte bit = (byte)(gpio % PINS_PER_PORT);
-		int port = gpio / PINS_PER_PORT;
+		byte bit = (byte)(gpio % GPIOS_PER_PORT);
+		int port = gpio / GPIOS_PER_PORT;
 		
-		// Check the direction of the pin - can't set the value of input pins (direction bit is set)
+		// Check the direction of the GPIO - can't set the output value for input GPIOs (direction bit is set)
 		if (directions[port].isBitSet(bit)) {
-			throw new IllegalStateException("Can't set value for input pin: " + gpio);
+			throw new IllegalStateException("Can't set value for input GPIO: " + gpio);
 		}
 		// Read the current state of this bank of GPIOs
 		byte old_val = readByte(getGPIOReg(port));
@@ -331,26 +332,26 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Gp
 	@Override
 	public void close() throws RuntimeIOException {
 		Logger.debug("close()");
-		// Close the interrupt pins
-		for (DigitalInputDevice interrupt_pin : interruptPins) {
-			if (interrupt_pin != null) { interrupt_pin.close(); }
+		// Close the interrupt GPIOs
+		for (DigitalInputDevice interrupt_gpio : interruptGpios) {
+			if (interrupt_gpio != null) { interrupt_gpio.close(); }
 		}
-		// Close all open pins before closing the I2C device itself
+		// Close all open GPIOs before closing the I2C device itself
 		shutdown();
 	}
 
-	public void closePin(int gpio) throws RuntimeIOException {
-		Logger.debug("closePin({})", Integer.valueOf(gpio));
+	public void closeGpio(int gpio) throws RuntimeIOException {
+		Logger.debug("closeGpio({})", Integer.valueOf(gpio));
 		
-		if (gpio < 0 || gpio >= numPins) {
+		if (gpio < 0 || gpio >= numGpios) {
 			throw new IllegalArgumentException("Invalid GPIO: " + gpio + ". "
-					+ deviceName + " has " + numPins + " GPIOs; must be 0.." + (numPins - 1));
+					+ deviceName + " has " + numGpios + " GPIOs; must be 0.." + (numGpios - 1));
 		}
 		
-		byte bit = (byte)(gpio % PINS_PER_PORT);
-		int port = gpio / PINS_PER_PORT;
+		byte bit = (byte)(gpio % GPIOS_PER_PORT);
+		int port = gpio / GPIOS_PER_PORT;
 		
-		// Clean-up this pin only
+		// Clean-up this GPIO only
 		
 		if (interruptOnChangeFlags[port].isBitSet(bit)) {
 			interruptOnChangeFlags[port].unsetBit(bit);
@@ -368,7 +369,7 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Gp
 			pullUps[port].unsetBit(bit);
 			writeByte(getGPPullUpReg(port), pullUps[port].getValue());
 		}
-		// Default pin to input
+		// Default GPIO to input
 		if (! directions[port].isBitSet(bit)) {
 			directions[port].setBit(bit);
 			writeByte(getIODirReg(port), directions[port].getValue());
@@ -385,16 +386,16 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Gp
 			return;
 		}
 		
-		// Check the event is for one of the interrupt pins
+		// Check the event is for one of the interrupt gpios
 		boolean process_event = false;
-		for (DigitalInputDevice interrupt_pin : interruptPins) {
-			if (interrupt_pin != null && event.getPin() == interrupt_pin.getGpio()) {
+		for (DigitalInputDevice interrupt_gpio : interruptGpios) {
+			if (interrupt_gpio != null && event.getGpio() == interrupt_gpio.getGpio()) {
 				process_event = true;
 				break;
 			}
 		}
-		if (process_event) {
-			Logger.error("Unexpected input event on pin {}", Integer.valueOf(event.getPin()));
+		if (! process_event) {
+			Logger.error("Unexpected interrupt event on gpio {}", Integer.valueOf(event.getGpio()));
 			return;
 		}
 		
@@ -408,7 +409,7 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Gp
 					intf[1] = readByte(getIntFReg(1));
 					intcap[1] = readByte(getIntCapReg(1));
 				} else if (interruptMode != InterruptMode.DISABLED) {
-					if (interruptPins[0] != null && event.getPin() == interruptPins[0].getGpio()) {
+					if (interruptGpios[0] != null && event.getGpio() == interruptGpios[0].getGpio()) {
 						intf[0] = readByte(getIntFReg(0));
 						intcap[0] = readByte(getIntCapReg(0));
 					} else {
@@ -416,40 +417,29 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Gp
 						intcap[1] = readByte(getIntCapReg(1));
 					}
 				}
-				Logger.debug("Interrupt values: [A]=(0x{}, 0x{}), [B]=(0x{}, 0x{})",
-						Integer.toHexString(intf[0]), Integer.toHexString(intcap[0]),
-						Integer.toHexString(intf[1]), Integer.toHexString(intcap[1]));
-				for (byte bit=0; bit<7; bit++) {
-					if (BitManipulation.isBitSet(intf[0], bit)) {
-						boolean value = BitManipulation.isBitSet(intcap[0], bit);
-						DigitalInputEvent e = new DigitalInputEvent(bit, event.getEpochTime(), event.getNanoTime(), value);
-						// Notify the appropriate input device
-						MCP23017DigitalInputDevice in_device = getInputDevice(bit);
-						if (in_device != null) {
-							in_device.valueChanged(e);
+				for (int port=0; port<numPorts; port++) {
+					for (byte bit=0; bit<8; bit++) {
+						if (BitManipulation.isBitSet(intf[port], bit)) {
+							int gpio = bit + port*8;
+							boolean value = BitManipulation.isBitSet(intcap[port], bit);
+							DigitalInputEvent e = new DigitalInputEvent(gpio, event.getEpochTime(), event.getNanoTime(), value);
+							// Notify the appropriate input device
+							MCP23xxxDigitalInputDevice in_device = getInputDevice((byte) gpio);
+							if (in_device != null) {
+								in_device.valueChanged(e);
+							}
 						}
 					}
 				}
-				for (byte bit=0; bit<7; bit++) {
-					if (BitManipulation.isBitSet(intf[1], bit)) {
-						boolean value = BitManipulation.isBitSet(intcap[1], bit);
-						DigitalInputEvent e = new DigitalInputEvent(bit+PINS_PER_PORT, event.getEpochTime(), event.getNanoTime(), value);
-						// Notify the appropriate input device
-						MCP23017DigitalInputDevice in_device = getInputDevice((byte)(bit+8));
-						if (in_device != null) {
-							in_device.valueChanged(e);
-						}
-					}
-				}
-			} catch (RuntimeIOException e) {
+			} catch (Throwable t) {
 				// Log and ignore
-				Logger.error(e, "IO error handling interrupts: {}", e);
+				Logger.error(t, "IO error handling interrupts: {}", t);
 			}
 		}
 	}
 
-	private MCP23017DigitalInputDevice getInputDevice(byte gpio) {
-		return getDevice(createPinKey(gpio), MCP23017DigitalInputDevice.class);
+	private MCP23xxxDigitalInputDevice getInputDevice(byte gpio) {
+		return getDevice(createPinKey(gpio), MCP23xxxDigitalInputDevice.class);
 	}
 	
 	protected abstract int getIODirReg(int port);
@@ -473,7 +463,7 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Gp
 	}
 	
 	public byte getValues(int port) {
-		return readByte(getOLatReg(port));
+		return readByte(getGPIOReg(port));
 	}
 	
 	@Override

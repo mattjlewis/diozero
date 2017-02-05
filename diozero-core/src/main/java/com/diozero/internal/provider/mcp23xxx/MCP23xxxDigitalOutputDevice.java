@@ -61,6 +61,6 @@ public class MCP23xxxDigitalOutputDevice extends AbstractDevice implements GpioD
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
 		Logger.debug("closeDevice()");
-		mcp23xxx.closePin(gpio);
+		mcp23xxx.closeGpio(gpio);
 	}
 }

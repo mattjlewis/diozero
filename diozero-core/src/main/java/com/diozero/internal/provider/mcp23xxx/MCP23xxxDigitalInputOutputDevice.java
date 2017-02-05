@@ -28,19 +28,19 @@ package com.diozero.internal.provider.mcp23xxx;
 
 import org.pmw.tinylog.Logger;
 
+import com.diozero.api.DeviceMode;
 import com.diozero.api.GpioEventTrigger;
 import com.diozero.api.GpioPullUpDown;
 import com.diozero.internal.spi.AbstractDevice;
-import com.diozero.internal.spi.GpioDeviceInterface;
 import com.diozero.internal.spi.GpioDigitalInputOutputDeviceInterface;
 import com.diozero.util.RuntimeIOException;
 
 public class MCP23xxxDigitalInputOutputDevice extends AbstractDevice implements GpioDigitalInputOutputDeviceInterface {
 	private MCP23xxx mcp23xxx;
 	private int gpio;
-	private GpioDeviceInterface.Mode mode;
+	private DeviceMode mode;
 
-	public MCP23xxxDigitalInputOutputDevice(MCP23xxx mcp23xxx, String key, int gpio, GpioDeviceInterface.Mode mode) {
+	public MCP23xxxDigitalInputOutputDevice(MCP23xxx mcp23xxx, String key, int gpio, DeviceMode mode) {
 		super(key, mcp23xxx);
 		
 		this.mcp23xxx = mcp23xxx;
@@ -55,7 +55,7 @@ public class MCP23xxxDigitalInputOutputDevice extends AbstractDevice implements 
 
 	@Override
 	public void setValue(boolean value) throws RuntimeIOException {
-		if (mode != GpioDeviceInterface.Mode.DIGITAL_OUTPUT) {
+		if (mode != DeviceMode.DIGITAL_OUTPUT) {
 			throw new IllegalStateException("Can only set output value for digital output pins");
 		}
 		mcp23xxx.setValue(gpio, value);
@@ -69,25 +69,25 @@ public class MCP23xxxDigitalInputOutputDevice extends AbstractDevice implements 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
 		Logger.debug("closeDevice()");
-		mcp23xxx.closePin(gpio);
+		mcp23xxx.closeGpio(gpio);
 	}
 	
-	private static void checkMode(GpioDeviceInterface.Mode mode) {
-		if (mode != GpioDeviceInterface.Mode.DIGITAL_INPUT && mode != GpioDeviceInterface.Mode.DIGITAL_OUTPUT) {
+	private static void checkMode(DeviceMode mode) {
+		if (mode != DeviceMode.DIGITAL_INPUT && mode != DeviceMode.DIGITAL_OUTPUT) {
 			throw new IllegalArgumentException("Invalid mode, must be DIGITAL_INPUT or DIGITAL_OUTPUT");
 		}
 	}
 
 	@Override
-	public Mode getMode() {
+	public DeviceMode getMode() {
 		return mode;
 	}
 
 	@Override
-	public void setMode(Mode mode) {
+	public void setMode(DeviceMode mode) {
 		checkMode(mode);
 		
-		if (mode == GpioDeviceInterface.Mode.DIGITAL_INPUT) {
+		if (mode == DeviceMode.DIGITAL_INPUT) {
 			mcp23xxx.setInputMode(gpio, GpioPullUpDown.NONE, GpioEventTrigger.BOTH);
 		} else {
 			mcp23xxx.setOutputMode(gpio);
