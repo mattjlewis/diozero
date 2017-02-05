@@ -3,7 +3,7 @@
  * the development of device factories. Uses of diozero should never need to
  * reference this package.
  */
-package com.diozero;
+package com.diozero.internal.spi;
 
 /*
  * #%L
