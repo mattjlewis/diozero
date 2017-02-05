@@ -33,8 +33,8 @@ import java.nio.file.Path;
 
 import org.pmw.tinylog.Logger;
 
+import com.diozero.api.DeviceMode;
 import com.diozero.internal.spi.AbstractDevice;
-import com.diozero.internal.spi.GpioDeviceInterface;
 import com.diozero.internal.spi.GpioDigitalInputOutputDeviceInterface;
 import com.diozero.util.RuntimeIOException;
 
@@ -46,10 +46,10 @@ public class SysFsDigitalInputOutputDevice extends AbstractDevice implements Gpi
 	private SysFsDeviceFactory deviceFactory;
 	private int gpio;
 	private RandomAccessFile valueFile;
-	private GpioDeviceInterface.Mode mode;
+	private DeviceMode mode;
 
 	public SysFsDigitalInputOutputDevice(SysFsDeviceFactory deviceFactory, Path gpioDir, String key, int gpio,
-			GpioDeviceInterface.Mode mode) {
+			DeviceMode mode) {
 		super(key, deviceFactory);
 		
 		this.deviceFactory = deviceFactory;
@@ -65,12 +65,12 @@ public class SysFsDigitalInputOutputDevice extends AbstractDevice implements Gpi
 	}
 
 	@Override
-	public GpioDeviceInterface.Mode getMode() {
+	public DeviceMode getMode() {
 		return mode;
 	}
 	
 	@Override
-	public void setMode(GpioDeviceInterface.Mode mode) {
+	public void setMode(DeviceMode mode) {
 		deviceFactory.export(gpio, mode);
 		this.mode = mode;
 	}

@@ -41,7 +41,6 @@ import com.diozero.internal.board.beaglebone.BeagleBoneBoardInfoProvider;
 import com.diozero.internal.board.chip.CHIPBoardInfoProvider;
 import com.diozero.internal.board.odroid.OdroidBoardInfoProvider;
 import com.diozero.internal.spi.*;
-import com.diozero.internal.spi.GpioDeviceInterface.Mode;
 import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SoftwarePwmOutputDevice;
 
@@ -111,7 +110,7 @@ public class SysFsDeviceFactory extends BaseNativeDeviceFactory {
 	@Override
 	protected GpioDigitalInputDeviceInterface createDigitalInputPin(String key, int gpio, GpioPullUpDown pud,
 			GpioEventTrigger trigger) throws RuntimeIOException {
-		export(gpio, Mode.DIGITAL_INPUT);
+		export(gpio, DeviceMode.DIGITAL_INPUT);
 		
 		return new SysFsDigitalInputDevice(this, getGpioDir(gpio), key, gpio, trigger);
 	}
@@ -119,14 +118,14 @@ public class SysFsDeviceFactory extends BaseNativeDeviceFactory {
 	@Override
 	protected GpioDigitalOutputDeviceInterface createDigitalOutputPin(String key, int gpio, boolean initialValue)
 			throws RuntimeIOException {
-		export(gpio, Mode.DIGITAL_OUTPUT);
+		export(gpio, DeviceMode.DIGITAL_OUTPUT);
 		
 		return new SysFsDigitalOutputDevice(this, getGpioDir(gpio), key, gpio, initialValue);
 	}
 
 	@Override
 	public GpioDigitalInputOutputDeviceInterface createDigitalInputOutputPin(
-			String key, int gpio, GpioDeviceInterface.Mode mode)
+			String key, int gpio, DeviceMode mode)
 			throws RuntimeIOException {
 		return new SysFsDigitalInputOutputDevice(this, getGpioDir(gpio), key, gpio, mode);
 	}
@@ -154,8 +153,8 @@ public class SysFsDeviceFactory extends BaseNativeDeviceFactory {
 
 	@Override
 	protected SpiDeviceInterface createSpiDevice(String key, int controller, int chipSelect, int frequency,
-			SpiClockMode spiClockMode) throws RuntimeIOException {
-		return new SysFsSpiDevice(this, key, controller, chipSelect, frequency, spiClockMode);
+			SpiClockMode spiClockMode, boolean lsbFirst) throws RuntimeIOException {
+		return new SysFsSpiDevice(this, key, controller, chipSelect, frequency, spiClockMode, lsbFirst);
 	}
 
 	@Override
@@ -164,10 +163,10 @@ public class SysFsDeviceFactory extends BaseNativeDeviceFactory {
 		return new SysFsI2cDevice(this, key, controller, address, addressSize, clockFrequency);
 	}
 	
-	void export(int gpio, Mode mode) {
-		if (mode != Mode.DIGITAL_INPUT && mode != Mode.DIGITAL_OUTPUT) {
+	void export(int gpio, DeviceMode mode) {
+		if (mode != DeviceMode.DIGITAL_INPUT && mode != DeviceMode.DIGITAL_OUTPUT) {
 			throw new IllegalArgumentException("Illegal mode (" + mode +
-					") must be " + Mode.DIGITAL_INPUT + " or " + Mode.DIGITAL_OUTPUT);
+					") must be " + DeviceMode.DIGITAL_INPUT + " or " + DeviceMode.DIGITAL_OUTPUT);
 		}
 		
 		Logger.debug("export({}, {})", Integer.valueOf(gpio), mode);
@@ -199,7 +198,7 @@ public class SysFsDeviceFactory extends BaseNativeDeviceFactory {
 
 		// Defaults to in on most boards
 		try (FileWriter writer = new FileWriter(direction_file.toFile(), true)) {
-			writer.write(mode == Mode.DIGITAL_OUTPUT ? "out" : "in");
+			writer.write(mode == DeviceMode.DIGITAL_OUTPUT ? "out" : "in");
 		} catch (IOException e) {
 			unexport(gpio);
 			throw new RuntimeIOException("Error setting direction for GPIO " + gpio, e);

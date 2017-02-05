@@ -29,7 +29,6 @@ package com.diozero.internal.provider.sysfs;
 
 import java.nio.ByteBuffer;
 
-import com.diozero.internal.provider.i2c.NativeI2CDevice;
 import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.DeviceFactoryInterface;
 import com.diozero.internal.spi.I2CDeviceInterface;
