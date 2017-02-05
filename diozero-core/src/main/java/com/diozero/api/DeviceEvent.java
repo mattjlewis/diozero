@@ -28,18 +28,18 @@ package com.diozero.api;
 
 
 public abstract class DeviceEvent {
-	private int pin;
+	private int gpio;
 	private long epochTime;
 	private long nanoTime;
 	
-	public DeviceEvent(int pin, long epochTime, long nanoTime) {
-		this.pin = pin;
+	public DeviceEvent(int gpio, long epochTime, long nanoTime) {
+		this.gpio = gpio;
 		this.epochTime = epochTime;
 		this.nanoTime = nanoTime;
 	}
 
-	public int getPin() {
-		return pin;
+	public int getGpio() {
+		return gpio;
 	}
 
 	public long getEpochTime() {

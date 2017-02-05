@@ -31,6 +31,7 @@ import java.util.ServiceLoader;
 
 import org.pmw.tinylog.Logger;
 
+import com.diozero.internal.provider.sysfs.SysFsDeviceFactory;
 import com.diozero.internal.spi.NativeDeviceFactoryInterface;
 import com.diozero.util.DioZeroScheduler;
 
@@ -52,7 +53,7 @@ public class DeviceFactoryHelper {
 				String property = System.getProperty(SYSTEM_PROPERTY);
 				if (property != null && property.length() > 0) {
 					try {
-						nativeDeviceFactory = (NativeDeviceFactoryInterface)Class.forName(property).newInstance();
+						nativeDeviceFactory = (NativeDeviceFactoryInterface) Class.forName(property).newInstance();
 					} catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
 						Logger.error(e, "Cannot instantiate device factory class '{}'", property);
 					}
@@ -67,11 +68,14 @@ public class DeviceFactoryHelper {
 					}
 				}
 				
-				if (nativeDeviceFactory != null) {
-					Logger.info("Using native device factory class {}", nativeDeviceFactory.getName());
-					
-					Runtime.getRuntime().addShutdownHook(new ShutdownHandlerThread(nativeDeviceFactory));
+				// If none found use the univesal sysfs device factory
+				if (nativeDeviceFactory == null) {
+					nativeDeviceFactory = new SysFsDeviceFactory();
 				}
+
+				Logger.info("Using native device factory class {}", nativeDeviceFactory.getName());
+					
+				Runtime.getRuntime().addShutdownHook(new ShutdownHandlerThread(nativeDeviceFactory));
 			}
 			
 			if (nativeDeviceFactory == null) {

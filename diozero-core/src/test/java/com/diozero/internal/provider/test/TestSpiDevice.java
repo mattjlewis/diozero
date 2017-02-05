@@ -39,7 +39,7 @@ public abstract class TestSpiDevice extends AbstractDevice implements SpiDeviceI
 	private int chipSelect;
 
 	public TestSpiDevice(String key, DeviceFactoryInterface deviceFactory, int controller, int chipSelect, int frequency,
-			SpiClockMode spiClockMode) {
+			SpiClockMode spiClockMode, boolean lsbFirst) {
 		super(key, deviceFactory);
 		
 		this.controller = controller;

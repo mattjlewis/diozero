@@ -32,7 +32,6 @@ import java.util.List;
 import org.pmw.tinylog.Logger;
 
 import com.diozero.api.*;
-import com.diozero.internal.spi.GpioDeviceInterface.Mode;
 import com.diozero.util.BoardInfo;
 import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SystemInfo;
@@ -89,7 +88,7 @@ public abstract class BaseNativeDeviceFactory extends AbstractDeviceFactory impl
 	@Override
 	public final GpioAnalogInputDeviceInterface provisionAnalogInputPin(int gpio) throws RuntimeIOException {
 		int mapped_gpio = boardInfo.mapGpio(gpio);
-		if (! boardInfo.isSupported(Mode.ANALOG_INPUT, mapped_gpio)) {
+		if (! boardInfo.isSupported(DeviceMode.ANALOG_INPUT, mapped_gpio)) {
 			throw new IllegalArgumentException("Invalid mode (analog input) for GPIO " + mapped_gpio);
 		}
 		
@@ -109,7 +108,7 @@ public abstract class BaseNativeDeviceFactory extends AbstractDeviceFactory impl
 	@Override
 	public final GpioAnalogOutputDeviceInterface provisionAnalogOutputPin(int gpio) throws RuntimeIOException {
 		int mapped_gpio = boardInfo.mapGpio(gpio);
-		if (! boardInfo.isSupported(Mode.ANALOG_OUTPUT, mapped_gpio)) {
+		if (! boardInfo.isSupported(DeviceMode.ANALOG_OUTPUT, mapped_gpio)) {
 			throw new IllegalArgumentException("Invalid mode (analog output) for GPIO " + mapped_gpio);
 		}
 		
@@ -130,7 +129,7 @@ public abstract class BaseNativeDeviceFactory extends AbstractDeviceFactory impl
 	public final GpioDigitalInputDeviceInterface provisionDigitalInputPin(int gpio, GpioPullUpDown pud,
 			GpioEventTrigger trigger) throws RuntimeIOException {
 		int mapped_gpio = boardInfo.mapGpio(gpio);
-		if (! boardInfo.isSupported(Mode.DIGITAL_INPUT, mapped_gpio)) {
+		if (! boardInfo.isSupported(DeviceMode.DIGITAL_INPUT, mapped_gpio)) {
 			throw new IllegalArgumentException("Invalid mode (digital input) for gpio " + mapped_gpio);
 		}
 		
@@ -150,7 +149,7 @@ public abstract class BaseNativeDeviceFactory extends AbstractDeviceFactory impl
 	@Override
 	public final GpioDigitalOutputDeviceInterface provisionDigitalOutputPin(int gpio, boolean initialValue) throws RuntimeIOException {
 		int mapped_gpio = boardInfo.mapGpio(gpio);
-		if (! boardInfo.isSupported(Mode.DIGITAL_OUTPUT, mapped_gpio)) {
+		if (! boardInfo.isSupported(DeviceMode.DIGITAL_OUTPUT, mapped_gpio)) {
 			throw new IllegalArgumentException("Invalid mode (digital output) for gpio " + mapped_gpio);
 		}
 		
@@ -168,10 +167,10 @@ public abstract class BaseNativeDeviceFactory extends AbstractDeviceFactory impl
 	}
 
 	@Override
-	public final GpioDigitalInputOutputDeviceInterface provisionDigitalInputOutputPin(int gpio, GpioDeviceInterface.Mode mode) throws RuntimeIOException {
+	public final GpioDigitalInputOutputDeviceInterface provisionDigitalInputOutputPin(int gpio, DeviceMode mode) throws RuntimeIOException {
 		int mapped_gpio = boardInfo.mapGpio(gpio);
-		if (! boardInfo.isSupported(Mode.DIGITAL_OUTPUT, mapped_gpio) ||
-				! boardInfo.isSupported(Mode.DIGITAL_INPUT, mapped_gpio)) {
+		if (! boardInfo.isSupported(DeviceMode.DIGITAL_OUTPUT, mapped_gpio) ||
+				! boardInfo.isSupported(DeviceMode.DIGITAL_INPUT, mapped_gpio)) {
 			throw new IllegalArgumentException("Invalid mode (digital input/output) for gpio " + mapped_gpio);
 		}
 		
@@ -193,11 +192,11 @@ public abstract class BaseNativeDeviceFactory extends AbstractDeviceFactory impl
 		int mapped_gpio;
 		String key;
 		PwmType pwm_type;
-		if (boardInfo.isSupported(Mode.PWM_OUTPUT, gpio)) {
+		if (boardInfo.isSupported(DeviceMode.PWM_OUTPUT, gpio)) {
 			pwm_type = PwmType.HARDWARE;
 			mapped_gpio = gpio;
 			key = createPwmKey(mapped_gpio);
-		} else if (boardInfo.isSupported(Mode.DIGITAL_OUTPUT, gpio)) {
+		} else if (boardInfo.isSupported(DeviceMode.DIGITAL_OUTPUT, gpio)) {
 			Logger.warn("Hardware PWM not available on pin {}, reverting to software", Integer.valueOf(gpio));
 			pwm_type = PwmType.SOFTWARE;
 			mapped_gpio = boardInfo.mapGpio(gpio);
@@ -218,7 +217,8 @@ public abstract class BaseNativeDeviceFactory extends AbstractDeviceFactory impl
 	}
 
 	@Override
-	public final SpiDeviceInterface provisionSpiDevice(int controller, int chipSelect, int frequency, SpiClockMode spiClockMode) throws RuntimeIOException {
+	public final SpiDeviceInterface provisionSpiDevice(int controller, int chipSelect,
+			int frequency, SpiClockMode spiClockMode, boolean lsbFirst) throws RuntimeIOException {
 		String key = createSpiKey(controller, chipSelect);
 		
 		// Check if this pin is already provisioned
@@ -226,7 +226,7 @@ public abstract class BaseNativeDeviceFactory extends AbstractDeviceFactory impl
 			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
 		}
 		
-		SpiDeviceInterface device = createSpiDevice(key, controller, chipSelect, frequency, spiClockMode);
+		SpiDeviceInterface device = createSpiDevice(key, controller, chipSelect, frequency, spiClockMode, lsbFirst);
 		deviceOpened(device);
 		
 		return device;
@@ -252,11 +252,11 @@ public abstract class BaseNativeDeviceFactory extends AbstractDeviceFactory impl
 	protected abstract GpioDigitalInputDeviceInterface createDigitalInputPin(String key, int gpio, GpioPullUpDown pud,
 			GpioEventTrigger trigger) throws RuntimeIOException;
 	protected abstract GpioDigitalOutputDeviceInterface createDigitalOutputPin(String key, int gpio, boolean initialValue) throws RuntimeIOException;
-	protected abstract GpioDigitalInputOutputDeviceInterface createDigitalInputOutputPin(String key, int gpio, GpioDeviceInterface.Mode mode) throws RuntimeIOException;
+	protected abstract GpioDigitalInputOutputDeviceInterface createDigitalInputOutputPin(String key, int gpio, DeviceMode mode) throws RuntimeIOException;
 	protected abstract PwmOutputDeviceInterface createPwmOutputPin(String key, int gpio,
 			float initialValue, PwmType pwmType) throws RuntimeIOException;
 	protected abstract SpiDeviceInterface createSpiDevice(String key, int controller, int chipSelect, int frequency,
-			SpiClockMode spiClockMode) throws RuntimeIOException;
+			SpiClockMode spiClockMode, boolean lsbFirst) throws RuntimeIOException;
 	protected abstract I2CDeviceInterface createI2CDevice(String key, int controller, int address, int addressSize,
 			int clockFrequency) throws RuntimeIOException;
 }

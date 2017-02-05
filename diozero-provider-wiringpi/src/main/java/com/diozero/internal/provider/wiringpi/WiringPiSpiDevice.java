@@ -45,7 +45,7 @@ public class WiringPiSpiDevice extends AbstractDevice implements SpiDeviceInterf
 	private int chipSelect;
 	
 	public WiringPiSpiDevice(String key, DeviceFactoryInterface deviceFactory, int controller,
-			int chipSelect, int speed, SpiClockMode mode) throws RuntimeIOException {
+			int chipSelect, int speed, SpiClockMode mode, boolean lsbFirst) throws RuntimeIOException {
 		super(key, deviceFactory);
 		
 		this.controller = controller;
@@ -84,6 +84,16 @@ public class WiringPiSpiDevice extends AbstractDevice implements SpiDeviceInterf
 		Logger.debug("closeDevice()");
 		// No way to close a wiringPi SPI device file handle?!
 		handle = CLOSED;
+	}
+
+	@Override
+	public void write(ByteBuffer tx) {
+		int count = tx.remaining();
+		byte[] buffer = new byte[count];
+		tx.get(buffer);
+		if (Spi.wiringPiSPIDataRW(controller, buffer) == -1) {
+			throw new RuntimeIOException("Error writing " + buffer.length + " bytes of data to SPI controller " + controller);
+		}
 	}
 
 	@Override

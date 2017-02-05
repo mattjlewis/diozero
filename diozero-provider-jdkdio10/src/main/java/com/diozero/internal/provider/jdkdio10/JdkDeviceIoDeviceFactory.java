@@ -93,7 +93,7 @@ public class JdkDeviceIoDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	public GpioDigitalInputOutputDeviceInterface createDigitalInputOutputPin(String key, int gpio, GpioDeviceInterface.Mode mode)
+	public GpioDigitalInputOutputDeviceInterface createDigitalInputOutputPin(String key, int gpio, DeviceMode mode)
 			throws RuntimeIOException {
 		throw new UnsupportedOperationException("Digital Input / Output devices not yet supported by this provider");
 	}
@@ -105,8 +105,9 @@ public class JdkDeviceIoDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	protected SpiDeviceInterface createSpiDevice(String key, int controller, int chipSelect, int frequency, SpiClockMode spiClockMode) throws RuntimeIOException {
-		return new JdkDeviceIoSpiDevice(key, this, controller, chipSelect, frequency, spiClockMode);
+	protected SpiDeviceInterface createSpiDevice(String key, int controller, int chipSelect,
+			int frequency, SpiClockMode spiClockMode, boolean lsbFirst) throws RuntimeIOException {
+		return new JdkDeviceIoSpiDevice(key, this, controller, chipSelect, frequency, spiClockMode, lsbFirst);
 	}
 
 	@Override

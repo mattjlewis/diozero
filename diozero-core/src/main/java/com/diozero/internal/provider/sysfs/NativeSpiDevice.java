@@ -1,4 +1,4 @@
-package com.diozero.internal.provider.spi;
+package com.diozero.internal.provider.sysfs;
 
 /*
  * #%L
@@ -47,8 +47,6 @@ public class NativeSpiDevice implements Closeable {
 		LibraryLoader.loadLibrary(NativeSpiDevice.class, "diozero-system-utils");
 	}
 	
-	private static final boolean LSB_FIRST = false;
-	
 	private static native int spiOpen(String filename, byte mode, int speedHz, byte bitsPerWord, boolean lsbFirst);
 	private static native int spiConfig(int fileDescriptor, byte spiMode, int frequency, byte bitsPerWord, boolean lsbFirst);
 	private static native int spiClose(int fileDescriptor);
@@ -63,13 +61,13 @@ public class NativeSpiDevice implements Closeable {
 	private byte bitsPerWord;
 	private int fd;
 
-	public NativeSpiDevice(int controller, int chipSelect, int speedHz, SpiClockMode mode) {
+	public NativeSpiDevice(int controller, int chipSelect, int speedHz, SpiClockMode mode, boolean lsbFirst) {
 		this.controller = controller;
 		this.chipSelect = chipSelect;
 		this.speedHz = speedHz;
 		this.spiMode = mode.getMode();
 		bitsPerWord = SPIConstants.DEFAULT_WORD_LENGTH;
-		fd = spiOpen("/dev/spidev" + controller + "." + chipSelect, spiMode, speedHz, bitsPerWord, LSB_FIRST);
+		fd = spiOpen("/dev/spidev" + controller + "." + chipSelect, spiMode, speedHz, bitsPerWord, lsbFirst);
 	}
 	
 	@Override
@@ -77,7 +75,17 @@ public class NativeSpiDevice implements Closeable {
 		spiClose(fd);
 	}
 	
-	public ByteBuffer transfer(ByteBuffer txBuffer, int delayUSecs) {
+	public void write(ByteBuffer txBuffer, int delayUSecs) {
+		int length = txBuffer.remaining();
+		byte[] tx = new byte[length];
+		txBuffer.get(tx);
+		int rc = spiTransfer(fd, tx, null, length, speedHz, delayUSecs, bitsPerWord);
+		if (rc < 0) {
+			throw new RuntimeIOException("Error in spiTransfer(), response: " + rc);
+		}
+	}
+	
+	public ByteBuffer writeAndRead(ByteBuffer txBuffer, int delayUSecs) {
 		int length = txBuffer.remaining();
 		byte[] tx = new byte[length];
 		txBuffer.get(tx);

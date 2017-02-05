@@ -36,6 +36,8 @@ import com.diozero.util.SleepUtil;
 /**
  * Sample application for reading LDR analog values. To run:
  * <ul>
+ * <li>sysfs:<br>
+ *  {@code java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar com.diozero.sampleapps.LDRTest MCP3304 0 2}</li>
  * <li>JDK Device I/O 1.0:<br>
  *  {@code sudo java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-jdkdio10-$DIOZERO_VERSION.jar:dio-1.0.1-dev-linux-armv6hf.jar -Djava.library.path=. com.diozero.sampleapps.LDRTest MCP3304 0 2}</li>
  * <li>JDK Device I/O 1.1:<br>
@@ -45,7 +47,7 @@ import com.diozero.util.SleepUtil;
  * <li>wiringPi:<br>
  *  {@code sudo java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-wiringpi-$DIOZERO_VERSION.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sampleapps.LDRTest MCP3304 0 2}</li>
  * <li>pigpgioJ:<br>
- *  {@code sudo java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-pigpio-$DIOZERO_VERSION.jar:pigpioj-java-1.0.0.jar com.diozero.sampleapps.LDRTest MCP3304 0 2}</li>
+ *  {@code sudo java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-pigpio-$DIOZERO_VERSION.jar:pigpioj-java-1.0.1.jar com.diozero.sampleapps.LDRTest MCP3304 0 2}</li>
  * </ul>
  */
 public class LDRTest {

@@ -27,8 +27,8 @@ package com.diozero.sampleapps;
  */
 
 
-import com.diozero.sandpit.PiconZero;
-import com.diozero.sandpit.PiconZero.OutputConfig;
+import com.diozero.PiconZero;
+import com.diozero.PiconZero.OutputConfig;
 import com.diozero.util.SleepUtil;
 
 public class PiconZeroTest {

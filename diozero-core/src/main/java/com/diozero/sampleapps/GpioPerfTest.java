@@ -34,6 +34,8 @@ import com.diozero.util.RuntimeIOException;
 /**
  * GPIO output performance test application. To run:
  * <ul>
+ * <li>sysfs:<br>
+ *  {@code java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar com.diozero.sampleapps.GpioPerfTest 12 100000}</li>
  * <li>JDK Device I/O 1.0:<br>
  *  {@code sudo java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-jdkdio10-$DIOZERO_VERSION.jar:dio-1.0.1-dev-linux-armv6hf.jar -Djava.library.path=. com.diozero.sampleapps.GpioPerfTest 12 50000}</li>
  * <li>JDK Device I/O 1.1:<br>
@@ -43,9 +45,7 @@ import com.diozero.util.RuntimeIOException;
  * <li>wiringPi:<br>
  *  {@code sudo java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-wiringpi-$DIOZERO_VERSION.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sampleapps.GpioPerfTest 12 5000000}</li>
  * <li>pigpgioJ:<br>
- *  {@code sudo java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-pigpio-$DIOZERO_VERSION.jar:pigpioj-java-1.0.0.jar com.diozero.sampleapps.GpioPerfTest 12 5000000}</li>
- * <li>sysfs:<br>
- *  {@code java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-sysfs-$DIOZERO_VERSION.jar com.diozero.sampleapps.GpioPerfTest 12 100000}</li>
+ *  {@code sudo java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-pigpio-$DIOZERO_VERSION.jar:pigpioj-java-1.0.1.jar com.diozero.sampleapps.GpioPerfTest 12 5000000}</li>
  * <li>jpi:<br>
  *  {@code java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-jpi-$DIOZERO_VERSION.jar com.diozero.sampleapps.GpioPerfTest 12 40000000}</li>
  * </ul>

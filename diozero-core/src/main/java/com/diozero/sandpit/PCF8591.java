@@ -31,11 +31,7 @@ import java.nio.ByteOrder;
 
 import org.pmw.tinylog.Logger;
 
-import com.diozero.api.DeviceAlreadyOpenedException;
-import com.diozero.api.I2CConstants;
-import com.diozero.api.I2CDevice;
-import com.diozero.internal.provider.pcf8591.PCF8591AnalogInputDevice;
-import com.diozero.internal.provider.pcf8591.PCF8591AnalogOutputDevice;
+import com.diozero.api.*;
 import com.diozero.internal.spi.*;
 import com.diozero.util.RuntimeIOException;
 
@@ -223,4 +219,66 @@ AnalogOutputDeviceFactoryInterface, Closeable {
 	public void setOutputEnabledFlag(boolean outputEnabled) {
 		this.outputEnabled = outputEnabled;
 	}
+	
+	private static class PCF8591AnalogInputDevice extends AbstractInputDevice<AnalogInputEvent> implements GpioAnalogInputDeviceInterface {
+		private PCF8591 pcf8591;
+		private int gpio;
+
+		public PCF8591AnalogInputDevice(PCF8591 pcf8591, String key, int gpio) {
+			super(key, pcf8591);
+			
+			this.pcf8591 = pcf8591;
+			this.gpio = gpio;
+		}
+
+		@Override
+		public void closeDevice() {
+			Logger.debug("closeDevice()");
+			// TODO Nothing to do?
+		}
+
+		@Override
+		public float getValue() throws RuntimeIOException {
+			return pcf8591.getValue(gpio);
+		}
+
+		@Override
+		public int getGpio() {
+			return gpio;
+		}
+	}
+	
+	private static class PCF8591AnalogOutputDevice extends AbstractDevice implements GpioAnalogOutputDeviceInterface {
+		private int gpio;
+		private PCF8591 pcf8591;
+
+		public PCF8591AnalogOutputDevice(PCF8591 pcf8591, String key, int gpio) {
+			super(key, pcf8591);
+			
+			this.pcf8591 = pcf8591;
+			this.gpio = gpio;
+		}
+
+		@Override
+		protected void closeDevice() throws RuntimeIOException {
+			Logger.debug("closeDevice()");
+			// TODO Nothing to do?
+		}
+
+		@Override
+		public int getGpio() {
+			return gpio;
+		}
+
+		@Override
+		public float getValue() throws RuntimeIOException {
+			return pcf8591.getValue(gpio);
+		}
+
+		@Override
+		public void setValue(float value) throws RuntimeIOException {
+			pcf8591.setValue(gpio, value);
+		}
+	}
+
 }

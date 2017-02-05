@@ -37,6 +37,8 @@ import com.diozero.util.SleepUtil;
 /**
  * BMP180 temperature / pressure sensor sample application. To run:
  * <ul>
+ * <li>sysfs:<br>
+ *  {@code java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar com.diozero.sampleapps.BMP180Test}</li>
  * <li>JDK Device I/O 1.0:<br>
  *  {@code sudo java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-jdkdio10-$DIOZERO_VERSION.jar:dio-1.0.1-dev-linux-armv6hf.jar -Djava.library.path=. com.diozero.sampleapps.BMP180Test}</li>
  * <li>JDK Device I/O 1.1:<br>
@@ -46,7 +48,7 @@ import com.diozero.util.SleepUtil;
  * <li>wiringPi:<br>
  *  {@code sudo java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-wiringpi-$DIOZERO_VERSION.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sampleapps.BMP180Test}</li>
  * <li>pigpgioJ:<br>
- *  {@code sudo java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-pigpio-$DIOZERO_VERSION.jar:pigpioj-java-1.0.0.jar com.diozero.sampleapps.BMP180Test}</li>
+ *  {@code sudo java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-pigpio-$DIOZERO_VERSION.jar:pigpioj-java-1.0.1.jar com.diozero.sampleapps.BMP180Test}</li>
  * </ul>
  */
 public class BMP180Test {

@@ -105,11 +105,9 @@ implements GpioDigitalInputDeviceInterface, PollEventListener, Runnable {
 
 	@Override
 	public void enableListener() {
-		Logger.info("enableListener()");
 		disableListener();
 		// Note WatchService doesn't work with /sys, /proc and network file-systems
 		// http://stackoverflow.com/questions/30190730/nio-watchservice-for-unix-sys-classes-gpio-files
-		Logger.info("Starting thread to poll '" + valuePath + "'");
 		DioZeroScheduler.getDaemonInstance().execute(this);
 	}
 
@@ -132,7 +130,6 @@ implements GpioDigitalInputDeviceInterface, PollEventListener, Runnable {
 
 	@Override
 	public void notify(int ref, long epochTime) {
-		Logger.info("notify(" + ref + ", " + epochTime + ")");
 		valueChanged(new DigitalInputEvent(gpio, epochTime, System.nanoTime(), getValue()));
 	}
 

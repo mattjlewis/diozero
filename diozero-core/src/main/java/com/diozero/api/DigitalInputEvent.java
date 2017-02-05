@@ -31,8 +31,8 @@ public class DigitalInputEvent extends DeviceEvent {
 	private boolean value;
 	private boolean activeHigh;
 
-	public DigitalInputEvent(int pin, long epochTime, long nanoTime, boolean value) {
-		super(pin, epochTime, nanoTime);
+	public DigitalInputEvent(int gpio, long epochTime, long nanoTime, boolean value) {
+		super(gpio, epochTime, nanoTime);
 		
 		this.value = value;
 	}
@@ -55,7 +55,7 @@ public class DigitalInputEvent extends DeviceEvent {
 
 	@Override
 	public String toString() {
-		return "DigitalPinEvent [pin=" + getPin() + ", epochTime=" + getEpochTime() +
+		return "DigitalPinEvent [gpio=" + getGpio() + ", epochTime=" + getEpochTime() +
 				", nanoTime=" + getNanoTime() + ", value=" + value + "]";
 	}
 }

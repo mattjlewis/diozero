@@ -32,7 +32,6 @@ import java.io.Closeable;
 import org.pmw.tinylog.Logger;
 
 import com.diozero.api.*;
-import com.diozero.internal.spi.GpioDeviceInterface.Mode;
 import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 
@@ -75,7 +74,7 @@ public class HCSR04 implements DistanceSensorInterface, Closeable {
 			// Define device for echo pin at HCSR04
 			echo = new DigitalInputDevice(echoGpioNum, GpioPullUpDown.NONE, GpioEventTrigger.BOTH);
 		} else {
-			triggerAndEcho = new DigitalInputOutputDevice(triggerGpioNum, Mode.DIGITAL_OUTPUT);
+			triggerAndEcho = new DigitalInputOutputDevice(triggerGpioNum, DeviceMode.DIGITAL_OUTPUT);
 			echo = triggerAndEcho;
 		}
 
@@ -98,12 +97,12 @@ public class HCSR04 implements DistanceSensorInterface, Closeable {
 			SleepUtil.busySleep(PULSE_NS);// wait 10 us (10,000ns)
 			trigger.setValueUnsafe(false);
 		} else {
-			triggerAndEcho.setMode(Mode.DIGITAL_OUTPUT);
+			triggerAndEcho.setMode(DeviceMode.DIGITAL_OUTPUT);
 			// Send a pulse trigger of 10 us duration
 			triggerAndEcho.setValue(true);
 			SleepUtil.busySleep(PULSE_NS);// wait 10 us (10,000ns)
 			triggerAndEcho.setValue(false);
-			triggerAndEcho.setMode(Mode.DIGITAL_INPUT);
+			triggerAndEcho.setMode(DeviceMode.DIGITAL_INPUT);
 		}
 		
 		// Need to include as little code as possible here to avoid missing pin state changes

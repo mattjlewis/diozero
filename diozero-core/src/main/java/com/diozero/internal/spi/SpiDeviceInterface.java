@@ -31,6 +31,7 @@ import java.nio.ByteBuffer;
 import com.diozero.util.RuntimeIOException;
 
 public interface SpiDeviceInterface extends DeviceInterface {
+	public void write(ByteBuffer src);
 	ByteBuffer writeAndRead(ByteBuffer out) throws RuntimeIOException;
 	int getController();
 	int getChipSelect();

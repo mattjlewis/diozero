@@ -143,7 +143,7 @@ public class TestDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	public GpioDigitalInputOutputDeviceInterface createDigitalInputOutputPin(String key, int gpio, GpioDeviceInterface.Mode mode)
+	public GpioDigitalInputOutputDeviceInterface createDigitalInputOutputPin(String key, int gpio, DeviceMode mode)
 			throws RuntimeIOException {
 		throw new UnsupportedOperationException("Digital Input / Output devices not yet supported by this provider");
 	}
@@ -165,14 +165,14 @@ public class TestDeviceFactory extends BaseNativeDeviceFactory {
 
 	@Override
 	protected SpiDeviceInterface createSpiDevice(String key, int controller, int chipSelect, int frequency,
-			SpiClockMode spiClockMode) throws RuntimeIOException {
+			SpiClockMode spiClockMode, boolean lsbFirst) throws RuntimeIOException {
 		if (spiDeviceClass == null) {
 			throw new IllegalArgumentException("SPI Device implementation class hasn't been set");
 		}
 		
 		try {
-			return spiDeviceClass.getConstructor(String.class, DeviceFactoryInterface.class, int.class, int.class, int.class, SpiClockMode.class)
-				.newInstance(key, this, Integer.valueOf(controller), Integer.valueOf(chipSelect), Integer.valueOf(frequency), spiClockMode);
+			return spiDeviceClass.getConstructor(String.class, DeviceFactoryInterface.class, int.class, int.class, int.class, SpiClockMode.class, boolean.class)
+				.newInstance(key, this, Integer.valueOf(controller), Integer.valueOf(chipSelect), Integer.valueOf(frequency), spiClockMode, Boolean.valueOf(lsbFirst));
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}

@@ -3,7 +3,7 @@ package com.diozero.util;
 import java.util.List;
 import java.util.Map;
 
-import com.diozero.internal.spi.GpioDeviceInterface;
+import com.diozero.api.DeviceMode;
 
 /*
  * #%L
@@ -37,7 +37,7 @@ public abstract class BoardInfo extends BoardPinInfo {
 	private int memory;
 	private String libraryPath;
 	
-	public BoardInfo(String make, String model, int memory, Map<Integer, List<GpioDeviceInterface.Mode>> pins,
+	public BoardInfo(String make, String model, int memory, Map<Integer, List<DeviceMode>> pins,
 			String libraryPath) {
 		super(pins);
 		

@@ -31,5 +31,5 @@ import com.diozero.util.RuntimeIOException;
 
 public interface SpiDeviceFactoryInterface extends DeviceFactoryInterface {
 	SpiDeviceInterface provisionSpiDevice(int controller, int chipSelect, int frequency,
-			SpiClockMode spiClockMode) throws RuntimeIOException;
+			SpiClockMode spiClockMode, boolean lsbFirst) throws RuntimeIOException;
 }

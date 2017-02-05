@@ -35,14 +35,10 @@ import java.nio.ByteOrder;
 import java.nio.IntBuffer;
 import java.util.Random;
 
+import com.diozero.api.DeviceMode;
 import com.diozero.api.GpioPullUpDown;
-import com.diozero.internal.provider.jpi.MmapBufferNative;
-import com.diozero.internal.provider.jpi.MmapByteBuffer;
 import com.diozero.internal.provider.jpi.MmapGpioInterface;
-import com.diozero.internal.spi.GpioDeviceInterface;
-import com.diozero.util.LibraryLoader;
-import com.diozero.util.MemoryInspector;
-import com.diozero.util.SleepUtil;
+import com.diozero.util.*;
 
 /**
  * See <a href="https://github.com/hardkernel/wiringPi/blob/master/wiringPi/wiringPi.c">Odroid wiringPi</a> fork.
@@ -72,25 +68,23 @@ public class OdroidC2MmapGpio implements MmapGpioInterface {
 	private static final int[] C2_GP_TO_SHIFT_REG = new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
 			0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22 };
 	
-	private boolean loaded;
+	private boolean initialised;
 	private MmapByteBuffer mmap;
 	private volatile IntBuffer gpioReg;
 	
 	@Override
 	public synchronized void initialise() {
-		if (! loaded) {
-			LibraryLoader.loadLibrary(OdroidC2MmapGpio.class, "jpi");
-			
+		if (! initialised) {
 			mmap = MmapBufferNative.createMmapBuffer(MEM_DEVICE, GPIO_BASE_OFFSET, BLOCK_SIZE);
 			gpioReg = mmap.getBuffer().order(ByteOrder.LITTLE_ENDIAN).asIntBuffer();
 			
-			loaded = true;
+			initialised = true;
 		}
 	}
 	
 	@Override
 	public synchronized void terminate() {
-		if (loaded) {
+		if (initialised) {
 			MmapBufferNative.closeMmapBuffer(mmap.getFd(), mmap.getAddress(), mmap.getLength());
 		}
 	}
@@ -100,13 +94,13 @@ public class OdroidC2MmapGpio implements MmapGpioInterface {
 		int reg = gpio < C2_GPIOX_PIN_START ? C2_GPIOY_FSEL_REG_OFFSET : C2_GPIOX_FSEL_REG_OFFSET;
 		int shift = C2_GP_TO_SHIFT_REG[gpio - C2_GPIOY_PIN_START];
 		
-		// TODO FIXME Mapping to GpioDeviceInterface.Mode enum
-		//return (gpioReg.get(reg) & (1 << shift)) == 0 ? GpioDeviceInterface.Mode.DIGITAL_OUTPUT : GpioDeviceInterface.Mode.DIGITAL_INPUT;
+		// TODO FIXME Mapping to DeviceMode enum
+		//return (gpioReg.get(reg) & (1 << shift)) == 0 ? DeviceMode.DIGITAL_OUTPUT : DeviceMode.DIGITAL_INPUT;
 		return (gpioReg.get(reg) & (1 << shift));
 	}
 	
 	@Override
-	public void setMode(int gpio, GpioDeviceInterface.Mode mode) {
+	public void setMode(int gpio, DeviceMode mode) {
 		int reg = gpio < C2_GPIOX_PIN_START ? C2_GPIOY_FSEL_REG_OFFSET : C2_GPIOX_FSEL_REG_OFFSET;
 		int shift = C2_GP_TO_SHIFT_REG[gpio - C2_GPIOY_PIN_START];
 		switch (mode) {
@@ -244,7 +238,7 @@ public class OdroidC2MmapGpio implements MmapGpioInterface {
 		}
 		
 		System.out.println("getMode(" + gpio + ")=" + mmap_gpio.getMode(gpio));
-		mmap_gpio.setMode(gpio, GpioDeviceInterface.Mode.DIGITAL_OUTPUT);
+		mmap_gpio.setMode(gpio, DeviceMode.DIGITAL_OUTPUT);
 		System.out.println("getMode(" + gpio + ")=" + mmap_gpio.getMode(gpio));
 
 		System.out.println("Current val=" + mmap_gpio.gpioRead(gpio));

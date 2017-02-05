@@ -1,5 +1,7 @@
 package com.diozero.internal.spi;
 
+import com.diozero.api.DeviceMode;
+
 /*
  * #%L
  * Device I/O Zero - Core
@@ -28,10 +30,6 @@ package com.diozero.internal.spi;
 
 
 public interface GpioDeviceInterface extends DeviceInterface {
-	public static enum Mode {
-		DIGITAL_INPUT, DIGITAL_OUTPUT, PWM_OUTPUT, SOFTWARE_PWM_OUTPUT, ANALOG_INPUT, ANALOG_OUTPUT;
-	}
-	
 	int getGpio();
-	Mode getMode();
+	DeviceMode getMode();
 }

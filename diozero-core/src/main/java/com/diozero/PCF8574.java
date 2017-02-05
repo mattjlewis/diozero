@@ -1,15 +1,38 @@
 package com.diozero;
 
+/*
+ * #%L
+ * Device I/O Zero - Core
+ * %%
+ * Copyright (C) 2016 - 2017 mattjlewis
+ * %%
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ * #L%
+ */
+
+
 import java.nio.ByteOrder;
 
 import org.pmw.tinylog.Logger;
 
 import com.diozero.api.*;
-import com.diozero.internal.provider.pcf8574.PCF8574DigitalInputDevice;
-import com.diozero.internal.provider.pcf8574.PCF8574DigitalInputOutputDevice;
-import com.diozero.internal.provider.pcf8574.PCF8574DigitalOutputDevice;
 import com.diozero.internal.spi.*;
-import com.diozero.internal.spi.GpioDeviceInterface.Mode;
 import com.diozero.util.BitManipulation;
 import com.diozero.util.MutableByte;
 import com.diozero.util.RuntimeIOException;
@@ -74,7 +97,7 @@ public class PCF8574 extends AbstractDeviceFactory implements GpioDeviceFactoryI
 	}
 
 	@Override
-	public GpioDigitalInputOutputDeviceInterface provisionDigitalInputOutputPin(int gpio, Mode mode)
+	public GpioDigitalInputOutputDeviceInterface provisionDigitalInputOutputPin(int gpio, DeviceMode mode)
 			throws RuntimeIOException {
 		if (gpio < 0 || gpio >= NUM_PINS) {
 			throw new IllegalArgumentException(
@@ -159,5 +182,134 @@ public class PCF8574 extends AbstractDeviceFactory implements GpioDeviceFactoryI
 		}
 		
 		setInputMode(gpio);
+	}
+
+	private static class PCF8574DigitalInputDevice extends AbstractInputDevice<DigitalInputEvent> implements GpioDigitalInputDeviceInterface {
+		private PCF8574 pcf8574;
+		private int gpio;
+
+		public PCF8574DigitalInputDevice(PCF8574 pcf8574, String key, int gpio, GpioEventTrigger trigger) {
+			super(key, pcf8574);
+
+			this.pcf8574 = pcf8574;
+			this.gpio = gpio;
+			// Note trigger is current ignored
+		}
+
+		@Override
+		public void closeDevice() throws RuntimeIOException {
+			Logger.debug("closeDevice()");
+			removeListener();
+			pcf8574.closePin(gpio);
+		}
+
+		@Override
+		public boolean getValue() throws RuntimeIOException {
+			return pcf8574.getValue(gpio);
+		}
+
+		@Override
+		public int getGpio() {
+			return gpio;
+		}
+
+		@Override
+		public void setDebounceTimeMillis(int debounceTime) {
+			// TODO Auto-generated method stub
+		}
+	}
+
+	private static class PCF8574DigitalInputOutputDevice extends AbstractDevice implements GpioDigitalInputOutputDeviceInterface {
+		private PCF8574 pcf8574;
+		private int gpio;
+		private DeviceMode mode;
+
+		public PCF8574DigitalInputOutputDevice(PCF8574 pcf8574, String key, int gpio, DeviceMode mode) {
+			super(key, pcf8574);
+			
+			this.pcf8574 = pcf8574;
+			this.gpio = gpio;
+			setMode(mode);
+		}
+
+		@Override
+		public boolean getValue() throws RuntimeIOException {
+			return pcf8574.getValue(gpio);
+		}
+
+		@Override
+		public void setValue(boolean value) throws RuntimeIOException {
+			if (mode != DeviceMode.DIGITAL_OUTPUT) {
+				throw new IllegalStateException("Can only set output value for digital output pins");
+			}
+			pcf8574.setValue(gpio, value);
+		}
+
+		@Override
+		public int getGpio() {
+			return gpio;
+		}
+
+		@Override
+		protected void closeDevice() throws RuntimeIOException {
+			Logger.debug("closeDevice()");
+			pcf8574.closePin(gpio);
+		}
+		
+		private static void checkMode(DeviceMode mode) {
+			if (mode != DeviceMode.DIGITAL_INPUT && mode != DeviceMode.DIGITAL_OUTPUT) {
+				throw new IllegalArgumentException("Invalid mode, must be DIGITAL_INPUT or DIGITAL_OUTPUT");
+			}
+		}
+
+		@Override
+		public DeviceMode getMode() {
+			return mode;
+		}
+
+		@Override
+		public void setMode(DeviceMode mode) {
+			checkMode(mode);
+			
+			if (mode == DeviceMode.DIGITAL_INPUT) {
+				pcf8574.setInputMode(gpio);
+			} else {
+				pcf8574.setOutputMode(gpio);
+			}
+			this.mode = mode;
+		}
+	}
+	
+	private static class PCF8574DigitalOutputDevice extends AbstractDevice implements GpioDigitalOutputDeviceInterface {
+		private PCF8574 pcf8574;
+		private int gpio;
+
+		public PCF8574DigitalOutputDevice(PCF8574 pcf8574, String key, int gpio) {
+			super(key, pcf8574);
+			
+			this.pcf8574 = pcf8574;
+			this.gpio = gpio;
+		}
+
+		@Override
+		public boolean getValue() throws RuntimeIOException {
+			return pcf8574.getValue(gpio);
+		}
+
+		@Override
+		public void setValue(boolean value) throws RuntimeIOException {
+			pcf8574.setValue(gpio, value);
+		}
+
+		@Override
+		public int getGpio() {
+			return gpio;
+		}
+
+		@Override
+		protected void closeDevice() throws RuntimeIOException {
+			Logger.debug("closeDevice()");
+			pcf8574.closePin(gpio);
+		}
 	}
 }

@@ -31,7 +31,6 @@ import org.pmw.tinylog.Logger;
 
 import com.diozero.api.*;
 import com.diozero.internal.spi.AbstractInputDevice;
-import com.diozero.internal.spi.GpioDeviceInterface;
 import com.diozero.internal.spi.GpioDigitalInputDeviceInterface;
 import com.diozero.util.RuntimeIOException;
 
@@ -48,7 +47,7 @@ implements GpioDigitalInputDeviceInterface, InputEventListener<DigitalInputEvent
 		this.jpiDeviceFactory = deviceFactory;
 		this.gpio = gpio;
 		
-		deviceFactory.getMmapGpio().setMode(gpio, GpioDeviceInterface.Mode.DIGITAL_INPUT);
+		deviceFactory.getMmapGpio().setMode(gpio, DeviceMode.DIGITAL_INPUT);
 		deviceFactory.getMmapGpio().setPullUpDown(gpio, pud);
 
 		sysFsDigitialInput = jpiDeviceFactory.getSysFsDeviceFactory().provisionDigitalInputPin(

@@ -1,4 +1,4 @@
-package com.diozero.sandpit;
+package com.diozero;
 
 /*
  * #%L
@@ -26,9 +26,9 @@ package com.diozero.sandpit;
  * #L%
  */
 
-
 import java.io.IOException;
 
+import com.diozero.PiconZero;
 import com.diozero.api.motor.MotorBase;
 import com.diozero.util.RuntimeIOException;
 

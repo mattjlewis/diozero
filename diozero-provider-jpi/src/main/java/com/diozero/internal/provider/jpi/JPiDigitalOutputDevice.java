@@ -29,8 +29,8 @@ package com.diozero.internal.provider.jpi;
 
 import org.pmw.tinylog.Logger;
 
+import com.diozero.api.DeviceMode;
 import com.diozero.internal.spi.AbstractDevice;
-import com.diozero.internal.spi.GpioDeviceInterface;
 import com.diozero.internal.spi.GpioDigitalOutputDeviceInterface;
 import com.diozero.util.RuntimeIOException;
 
@@ -45,7 +45,7 @@ public class JPiDigitalOutputDevice extends AbstractDevice implements GpioDigita
 		this.jpiDeviceFactory = deviceFactory;
 		this.gpio = gpio;
 		
-		deviceFactory.getMmapGpio().setMode(gpio, GpioDeviceInterface.Mode.DIGITAL_OUTPUT);
+		deviceFactory.getMmapGpio().setMode(gpio, DeviceMode.DIGITAL_OUTPUT);
 		deviceFactory.getMmapGpio().gpioWrite(gpio, initialValue);
 	}
 

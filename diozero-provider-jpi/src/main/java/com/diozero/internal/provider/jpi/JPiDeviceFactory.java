@@ -33,16 +33,18 @@ import com.diozero.internal.board.raspberrypi.RaspberryPiBoardInfoProvider;
 import com.diozero.internal.provider.jpi.odroid.OdroidC2MmapGpio;
 import com.diozero.internal.provider.jpi.rpi.RPiMmapGpio;
 import com.diozero.internal.provider.sysfs.SysFsDeviceFactory;
+import com.diozero.internal.provider.sysfs.SysFsI2cDevice;
 import com.diozero.internal.spi.*;
-import com.diozero.util.BoardInfo;
+import com.diozero.util.LibraryLoader;
 import com.diozero.util.RuntimeIOException;
-import com.diozero.util.SystemInfo;
 
 public class JPiDeviceFactory extends BaseNativeDeviceFactory {
 	private MmapGpioInterface mmapGpio;
 	private SysFsDeviceFactory sysFsDeviceFactory;
 	
 	public JPiDeviceFactory() {
+		LibraryLoader.loadLibrary(JPiDeviceFactory.class, "jpi");
+		
 		if (boardInfo.sameMakeAndModel(OdroidBoardInfoProvider.ODROID_C2)) {
 			mmapGpio = new OdroidC2MmapGpio();
 		} else if (boardInfo.getMake().equals(RaspberryPiBoardInfoProvider.MAKE)) {
@@ -106,7 +108,7 @@ public class JPiDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	public GpioDigitalInputOutputDeviceInterface createDigitalInputOutputPin(String key, int gpio, GpioDeviceInterface.Mode mode)
+	public GpioDigitalInputOutputDeviceInterface createDigitalInputOutputPin(String key, int gpio, DeviceMode mode)
 			throws RuntimeIOException {
 		return new JPiDigitalInputOutputDevice(this, key, gpio, mode);
 	}
@@ -119,13 +121,14 @@ public class JPiDeviceFactory extends BaseNativeDeviceFactory {
 
 	@Override
 	protected SpiDeviceInterface createSpiDevice(String key, int controller, int chipSelect, int frequency,
-			SpiClockMode spiClockMode) throws RuntimeIOException {
+			SpiClockMode spiClockMode, boolean lsbFirst) throws RuntimeIOException {
 		throw new UnsupportedOperationException("SPI not yet supported");
 	}
 
 	@Override
 	protected I2CDeviceInterface createI2CDevice(String key, int controller, int address, int addressSize,
 			int clockFrequency) throws RuntimeIOException {
+		// FIXME Remove this duplicate class!
 		return new SysFsI2cDevice(this, key, controller, address, addressSize, clockFrequency);
 	}
 }

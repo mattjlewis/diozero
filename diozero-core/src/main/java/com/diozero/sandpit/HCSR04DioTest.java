@@ -29,15 +29,15 @@ package com.diozero.sandpit;
 
 import org.pmw.tinylog.Logger;
 
+import com.diozero.api.DeviceMode;
 import com.diozero.api.DigitalInputOutputDevice;
-import com.diozero.internal.spi.GpioDeviceInterface;
 import com.diozero.util.SleepUtil;
 
 public class HCSR04DioTest {
 	private static final double SPEED_OF_SOUND_CM_PER_S = 34029; // Approx Speed of Sound at sea level and 15 degC
 	
 	public static void main(String[] args) {
-		try (DigitalInputOutputDevice dio = new DigitalInputOutputDevice(4, GpioDeviceInterface.Mode.DIGITAL_OUTPUT)) {
+		try (DigitalInputOutputDevice dio = new DigitalInputOutputDevice(4, DeviceMode.DIGITAL_OUTPUT)) {
 			for (int i=0; i<3; i++) {
 				dio.setValue(true);
 				SleepUtil.sleepSeconds(1);
@@ -46,15 +46,15 @@ public class HCSR04DioTest {
 			}
 		}
 		System.out.println("Starting");
-		try (DigitalInputOutputDevice dio = new DigitalInputOutputDevice(20, GpioDeviceInterface.Mode.DIGITAL_OUTPUT)) {
+		try (DigitalInputOutputDevice dio = new DigitalInputOutputDevice(20, DeviceMode.DIGITAL_OUTPUT)) {
 			for (int i=0; i<3; i++) {
-				dio.setMode(GpioDeviceInterface.Mode.DIGITAL_OUTPUT);
+				dio.setMode(DeviceMode.DIGITAL_OUTPUT);
 				System.out.println("setValue(true)");
 				dio.setValue(true);
 				SleepUtil.sleepNanos(10);
 				System.out.println("setValue(false)");
 				dio.setValue(false);
-				dio.setMode(GpioDeviceInterface.Mode.DIGITAL_INPUT);
+				dio.setMode(DeviceMode.DIGITAL_INPUT);
 				SleepUtil.sleepSeconds(1);
 			}
 
@@ -68,12 +68,12 @@ public class HCSR04DioTest {
 	
 	public static double getDistance(DigitalInputOutputDevice dio) {
 		System.out.println("Starting test");
-		dio.setMode(GpioDeviceInterface.Mode.DIGITAL_OUTPUT);
+		dio.setMode(DeviceMode.DIGITAL_OUTPUT);
 		System.out.println("setValue(true)");
 		dio.setValue(true);
 		SleepUtil.sleepNanos(10);
 		dio.setValue(false);
-		dio.setMode(GpioDeviceInterface.Mode.DIGITAL_INPUT);
+		dio.setMode(DeviceMode.DIGITAL_INPUT);
 		// Wait for the pin to go high
 		long start = System.nanoTime();
 		while (! dio.getValue()) {

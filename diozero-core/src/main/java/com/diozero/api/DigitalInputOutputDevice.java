@@ -31,24 +31,23 @@ import org.pmw.tinylog.Logger;
 
 import com.diozero.internal.DeviceFactoryHelper;
 import com.diozero.internal.spi.GpioDeviceFactoryInterface;
-import com.diozero.internal.spi.GpioDeviceInterface;
 import com.diozero.internal.spi.GpioDigitalInputOutputDeviceInterface;
 import com.diozero.util.RuntimeIOException;
 
 public class DigitalInputOutputDevice extends GpioDevice
 implements DigitalInputDeviceInterface {
 	protected GpioDigitalInputOutputDeviceInterface device;
-	private GpioDeviceInterface.Mode mode;
+	private DeviceMode mode;
 
 	/**
 	 * @param gpio
 	 *            GPIO to which the device is connected.
 	 * @param mode
-	 *            Input or output {@link com.diozero.internal.spi.GpioDeviceInterface.Mode Mode}
+	 *            Input or output {@link com.diozero.api.DeviceMode Mode}
 	 * @throws RuntimeIOException
 	 *             If an I/O error occurs.
 	 */
-	public DigitalInputOutputDevice(int gpio, GpioDeviceInterface.Mode mode) throws RuntimeIOException {
+	public DigitalInputOutputDevice(int gpio, DeviceMode mode) throws RuntimeIOException {
 		this(DeviceFactoryHelper.getNativeDeviceFactory(), gpio, mode);
 	}
 
@@ -58,12 +57,12 @@ implements DigitalInputDeviceInterface {
 	 * @param gpio
 	 *            GPIO to which the device is connected.
 	 * @param mode
-	 *            Input or output {@link com.diozero.internal.spi.GpioDeviceInterface.Mode Mode}
+	 *            Input or output {@link com.diozero.api.DeviceMode Mode}
 	 * @throws RuntimeIOException
 	 *             If an I/O error occurs.
 	 */
 	public DigitalInputOutputDevice(GpioDeviceFactoryInterface deviceFactory, int gpio,
-			GpioDeviceInterface.Mode mode) throws RuntimeIOException {
+			DeviceMode mode) throws RuntimeIOException {
 		super(gpio);
 		
 		checkMode(mode);
@@ -72,8 +71,8 @@ implements DigitalInputDeviceInterface {
 		this.mode = mode;
 	}
 	
-	private static void checkMode(GpioDeviceInterface.Mode mode) {
-		if (mode != GpioDeviceInterface.Mode.DIGITAL_INPUT && mode != GpioDeviceInterface.Mode.DIGITAL_OUTPUT) {
+	private static void checkMode(DeviceMode mode) {
+		if (mode != DeviceMode.DIGITAL_INPUT && mode != DeviceMode.DIGITAL_OUTPUT) {
 			throw new IllegalArgumentException("Invalid mode value, must be DIGITAL_INPUT or DIGITAL_OUTPUT");
 		}
 	}
@@ -88,15 +87,15 @@ implements DigitalInputDeviceInterface {
 	 * Get the input / output mode
 	 * @return current mode
 	 */
-	public GpioDeviceInterface.Mode getMode() {
+	public DeviceMode getMode() {
 		return mode;
 	}
 	
 	/**
 	 * Set the input / output mode
-	 * @param mode new mode, valid values are {@link com.diozero.internal.spi.GpioDeviceInterface.Mode DIGITAL_INPUT} and {@link com.diozero.internal.spi.GpioDeviceInterface.Mode DIGITAL_OUTPUT}
+	 * @param mode new mode, valid values are {@link com.diozero.api.DeviceMode DIGITAL_INPUT} and {@link com.diozero.api.DeviceMode DIGITAL_OUTPUT}
 	 */
-	public void setMode(GpioDeviceInterface.Mode mode) {
+	public void setMode(DeviceMode mode) {
 		if (mode == this.mode) {
 			return;
 		}
@@ -128,7 +127,7 @@ implements DigitalInputDeviceInterface {
 	 *             If an I/O error occurs
 	 */
 	public void setValue(boolean value) throws RuntimeIOException {
-		if (mode != GpioDeviceInterface.Mode.DIGITAL_OUTPUT) {
+		if (mode != DeviceMode.DIGITAL_OUTPUT) {
 			throw new IllegalStateException("Can only set output value for digital output pins");
 		}
 		device.setValue(value);

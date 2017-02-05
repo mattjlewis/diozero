@@ -28,20 +28,20 @@ package com.diozero.internal.provider.pigpioj;
 
 import org.pmw.tinylog.Logger;
 
+import com.diozero.api.DeviceMode;
 import com.diozero.api.GpioPullUpDown;
 import com.diozero.internal.spi.AbstractDevice;
-import com.diozero.internal.spi.GpioDeviceInterface;
 import com.diozero.internal.spi.GpioDigitalInputOutputDeviceInterface;
 import com.diozero.pigpioj.PigpioGpio;
 import com.diozero.util.RuntimeIOException;
 
 public class PigpioJDigitalInputOutputDevice extends AbstractDevice
 implements GpioDigitalInputOutputDeviceInterface {
-	private GpioDeviceInterface.Mode mode;
+	private DeviceMode mode;
 	private int gpio;
 
 	public PigpioJDigitalInputOutputDevice(String key, PigpioJDeviceFactory deviceFactory,
-			int gpio, GpioDeviceInterface.Mode mode) {
+			int gpio, DeviceMode mode) {
 		super(key, deviceFactory);
 		
 		this.gpio = gpio;
@@ -49,19 +49,19 @@ implements GpioDigitalInputOutputDeviceInterface {
 		setMode(mode);
 	}
 	
-	private static void checkMode(GpioDeviceInterface.Mode mode) {
-		if (mode != GpioDeviceInterface.Mode.DIGITAL_INPUT && mode != GpioDeviceInterface.Mode.DIGITAL_OUTPUT) {
+	private static void checkMode(DeviceMode mode) {
+		if (mode != DeviceMode.DIGITAL_INPUT && mode != DeviceMode.DIGITAL_OUTPUT) {
 			throw new IllegalArgumentException("Invalid mode, must be DIGITAL_INPUT or DIGITAL_OUTPUT");
 		}
 	}
 
 	@Override
-	public Mode getMode() {
+	public DeviceMode getMode() {
 		return mode;
 	}
 
 	@Override
-	public void setMode(Mode mode) {
+	public void setMode(DeviceMode mode) {
 		checkMode(mode);
 		
 		// No change?
@@ -69,7 +69,7 @@ implements GpioDigitalInputOutputDeviceInterface {
 			return;
 		}
 
-		if (mode == GpioDeviceInterface.Mode.DIGITAL_INPUT) {
+		if (mode == DeviceMode.DIGITAL_INPUT) {
 			int rc = PigpioGpio.setMode(gpio, PigpioGpio.MODE_PI_INPUT);
 			if (rc < 0) {
 				throw new RuntimeIOException("Error calling PigpioGpio.setMode(), response: " + rc);
@@ -99,7 +99,7 @@ implements GpioDigitalInputOutputDeviceInterface {
 
 	@Override
 	public void setValue(boolean value) throws RuntimeIOException {
-		if (mode != GpioDeviceInterface.Mode.DIGITAL_OUTPUT) {
+		if (mode != DeviceMode.DIGITAL_OUTPUT) {
 			throw new IllegalStateException("Can only set output value for digital output pins");
 		}
 		int rc = PigpioGpio.write(gpio, value);

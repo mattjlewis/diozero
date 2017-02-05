@@ -34,10 +34,7 @@ import org.pmw.tinylog.Logger;
 import com.diozero.api.DeviceAlreadyOpenedException;
 import com.diozero.api.I2CConstants;
 import com.diozero.api.I2CDevice;
-import com.diozero.internal.provider.pca9685.PCA9685PwmOutputDevice;
-import com.diozero.internal.spi.AbstractDeviceFactory;
-import com.diozero.internal.spi.PwmOutputDeviceFactoryInterface;
-import com.diozero.internal.spi.PwmOutputDeviceInterface;
+import com.diozero.internal.spi.*;
 import com.diozero.util.*;
 
 /**
@@ -264,6 +261,7 @@ public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFac
 		i2cDevice.close();
 	}
 	
+	@SuppressWarnings("static-method")
 	public void closeChannel(int channel) throws RuntimeIOException {
 		Logger.debug("closeChannel({})", Integer.valueOf(channel));
 		//setPwm(channel, 0, 0);
@@ -315,5 +313,43 @@ public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFac
 	@Override
 	public void setPwmFrequency(int channel, int pwmFrequency) {
 		setPwmFreq(pwmFrequency);
+	}
+	
+	private static class PCA9685PwmOutputDevice extends AbstractDevice implements PwmOutputDeviceInterface {
+		private PCA9685 pca9685;
+		private int channel;
+		
+		public PCA9685PwmOutputDevice(PCA9685 pca9685, String key, int channel) {
+			super(key, pca9685);
+			
+			this.pca9685 = pca9685;
+			this.channel = channel;
+		}
+
+		@Override
+		public int getGpio() {
+			return channel;
+		}
+
+		@Override
+		public int getPwmNum() {
+			return channel;
+		}
+
+		@Override
+		public float getValue() throws RuntimeIOException {
+			return pca9685.getValue(channel);
+		}
+
+		@Override
+		public void setValue(float value) throws RuntimeIOException {
+			pca9685.setValue(channel, value);
+		}
+
+		@Override
+		protected void closeDevice() throws RuntimeIOException {
+			Logger.debug("closeDevice()");
+			pca9685.closeChannel(channel);
+		}
 	}
 }

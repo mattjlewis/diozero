@@ -1,4 +1,4 @@
-package com.diozero.sandpit;
+package com.diozero;
 
 import java.io.Closeable;
 
@@ -35,9 +35,7 @@ import org.pmw.tinylog.Logger;
 
 import com.diozero.api.*;
 import com.diozero.internal.DeviceFactoryHelper;
-import com.diozero.internal.provider.piconzero.*;
 import com.diozero.internal.spi.*;
-import com.diozero.internal.spi.GpioDeviceInterface.Mode;
 import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 
@@ -395,7 +393,7 @@ implements GpioDeviceFactoryInterface, AnalogInputDeviceFactoryInterface, PwmOut
 	}
 
 	@Override
-	public GpioDigitalInputOutputDeviceInterface provisionDigitalInputOutputPin(int gpio, Mode mode)
+	public GpioDigitalInputOutputDeviceInterface provisionDigitalInputOutputPin(int gpio, DeviceMode mode)
 			throws RuntimeIOException {
 		throw new UnsupportedOperationException("DigitalInputOutputDevice isn't supported on PiconZero");
 	}
@@ -412,5 +410,150 @@ implements GpioDeviceFactoryInterface, AnalogInputDeviceFactoryInterface, PwmOut
 		setMotor(1, 0);
 		reset();
 		device.close();
+	}
+	
+	public static class PiconZeroAnalogInputDevice extends AbstractDevice implements GpioAnalogInputDeviceInterface {
+		private PiconZero piconZero;
+		private int channel;
+	
+		public PiconZeroAnalogInputDevice(PiconZero piconZero, String key, int channel) {
+			super(key, piconZero);
+			
+			this.piconZero = piconZero;
+			this.channel = channel;
+		}
+	
+		@Override
+		public void closeDevice() {
+			Logger.debug("closeDevice()");
+			piconZero.closeChannel(channel);
+		}
+	
+		@Override
+		public float getValue() throws RuntimeIOException {
+			return piconZero.getValue(channel);
+		}
+	
+		@Override
+		public int getGpio() {
+			return channel;
+		}
+	}
+	
+	public static class PiconZeroDigitalInputDevice extends AbstractDevice implements GpioDigitalInputDeviceInterface {
+		private PiconZero piconZero;
+		private int channel;
+	
+		public PiconZeroDigitalInputDevice(PiconZero piconZero, String key, int channel, GpioPullUpDown pud,
+				GpioEventTrigger trigger) {
+			super(key, piconZero);
+			
+			this.piconZero = piconZero;
+			this.channel = channel;
+		}
+		
+		@Override
+		public void closeDevice() {
+			piconZero.closeChannel(channel);
+		}
+		
+		@Override
+		public int getGpio() {
+			return channel;
+		}
+	
+		@Override
+		public boolean getValue() throws RuntimeIOException {
+			return piconZero.readInput(channel) != 0;
+		}
+	
+		@Override
+		public void setDebounceTimeMillis(int debounceTime) {
+			throw new UnsupportedOperationException("Not supported");
+		}
+	
+		@Override
+		public void setListener(InputEventListener<DigitalInputEvent> listener) {
+			// TODO Need to implement a polling mechanism
+			throw new UnsupportedOperationException("Not yet implemented");
+		}
+	
+		@Override
+		public void removeListener() {
+		}
+	}
+
+	public static class PiconZeroDigitalOutputDevice extends AbstractDevice implements GpioDigitalOutputDeviceInterface {
+		private PiconZero piconZero;
+		private int channel;
+		private boolean value;
+	
+		public PiconZeroDigitalOutputDevice(PiconZero piconZero, String key, int channel, boolean initialValue) {
+			super(key, piconZero);
+			
+			this.piconZero = piconZero;
+			this.channel = channel;
+		}
+	
+		@Override
+		public void closeDevice() {
+			piconZero.closeChannel(channel);
+		}
+		
+		@Override
+		public int getGpio() {
+			return channel;
+		}
+		
+		@Override
+		public boolean getValue() {
+			return value;
+		}
+		
+		@Override
+		public void setValue(boolean value) {
+			piconZero.setOutput(channel, value ? 1 : 0);
+			this.value = value;
+		}
+	}
+
+	public static class PiconZeroPwmOutputDevice extends AbstractDevice implements PwmOutputDeviceInterface {
+		private PiconZero piconZero;
+		private int channel;
+		private float value;
+	
+		public PiconZeroPwmOutputDevice(PiconZero piconZero, String key, int channel, float initialValue) {
+			super(key, piconZero);
+			
+			this.piconZero = piconZero;
+			this.channel = channel;
+		}
+	
+		@Override
+		public int getGpio() {
+			return channel;
+		}
+	
+		@Override
+		public int getPwmNum() {
+			return channel;
+		}
+	
+		@Override
+		public float getValue() throws RuntimeIOException {
+			return value;
+		}
+	
+		@Override
+		public void setValue(float value) throws RuntimeIOException {
+			piconZero.setValue(channel, value);
+			this.value = value;
+		}
+	
+		@Override
+		protected void closeDevice() throws RuntimeIOException {
+			Logger.debug("closeDevice()");
+			piconZero.closeChannel(channel);
+		}
 	}
 }

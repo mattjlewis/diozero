@@ -1,4 +1,4 @@
-package com.diozero.internal.provider.i2c;
+package com.diozero.internal.provider.sysfs;
 
 /*
  * #%L

@@ -32,13 +32,8 @@ import java.nio.ByteBuffer;
 
 import org.pmw.tinylog.Logger;
 
-import com.diozero.api.DeviceAlreadyOpenedException;
-import com.diozero.api.SPIConstants;
-import com.diozero.api.SpiDevice;
-import com.diozero.internal.provider.mcpadc.McpAdcAnalogInputDevice;
-import com.diozero.internal.spi.AbstractDeviceFactory;
-import com.diozero.internal.spi.AnalogInputDeviceFactoryInterface;
-import com.diozero.internal.spi.GpioAnalogInputDeviceInterface;
+import com.diozero.api.*;
+import com.diozero.internal.spi.*;
 import com.diozero.util.RuntimeIOException;
 
 public class McpAdc extends AbstractDeviceFactory implements AnalogInputDeviceFactoryInterface, Closeable {
@@ -77,7 +72,7 @@ public class McpAdc extends AbstractDeviceFactory implements AnalogInputDeviceFa
 		
 		this.type = type;
 		
-		spiDevice = new SpiDevice(controller, chipSelect);
+		spiDevice = new SpiDevice(controller, chipSelect, type.getMaxFreq2v7(), SpiClockMode.MODE_0, false);
 	}
 	
 	@Override
@@ -240,22 +235,29 @@ public class McpAdc extends AbstractDeviceFactory implements AnalogInputDeviceFa
 	 * VSS, then the FFFh code will not be seen unless the IN+ input level goes above VREF level.
 	 */
 	public static enum Type {
-		MCP3001(1, 10), MCP3002(2, 10), MCP3004(4, 10), MCP3008(8, 10),
-		MCP3201(1, 12), MCP3202(2, 12), MCP3204(4, 12), MCP3208(8, 12),
-		MCP3301(1, 13, true), MCP3302(4, 13, true), MCP3304(8, 13, true);
+		MCP3001(1, 10, 1_050_000, 2_800_000), MCP3002(2, 10, 1_200_000, 3_200_000),
+		MCP3004(4, 10, 1_350_000, 3_600_000), MCP3008(8, 10, 1_350_000, 3_600_000),
+		MCP3201(1, 12, 800_000, 1_600_000), MCP3202(2, 12, 900_000, 1_800_000),
+		MCP3204(4, 12, 1_000_000, 2_000_000), MCP3208(8, 12, 1_000_000, 2_000_000),
+		MCP3301(1, 13, 1_000_000, 1_700_000, true),
+		MCP3302(4, 13, 1_350_000, 2_000_000, true), MCP3304(8, 13, 1_350_000, 2_000_000, true);
 		
 		private int numPins;
 		private int resolution;
+		private int maxFreq2v7;
+		private int maxFreq5v0;
 		private boolean signed;
 		private int range;
 
-		private Type(int numPins, int resolution) {
-			this(numPins, resolution, false);
+		private Type(int numPins, int resolution, int maxFreq2v7, int maxFreq5v0) {
+			this(numPins, resolution, maxFreq2v7, maxFreq5v0, false);
 		}
 
-		private Type(int numPins, int resolution, boolean signed) {
+		private Type(int numPins, int resolution, int maxFreq2v7, int maxFreq5v0, boolean signed) {
 			this.numPins = numPins;
 			this.resolution = resolution;
+			this.maxFreq2v7 = maxFreq2v7;
+			this.maxFreq5v0 = maxFreq5v0;
 			this.signed = signed;
 			range = (int)Math.pow(2, resolution) / (signed ? 2 : 1);
 		}
@@ -266,6 +268,14 @@ public class McpAdc extends AbstractDeviceFactory implements AnalogInputDeviceFa
 		
 		public int getResolution() {
 			return resolution;
+		}
+		
+		public int getMaxFreq2v7() {
+			return maxFreq2v7;
+		}
+		
+		public int getMaxFreq5v0() {
+			return maxFreq5v0;
 		}
 		
 		public boolean isSigned() {
@@ -284,6 +294,34 @@ public class McpAdc extends AbstractDeviceFactory implements AnalogInputDeviceFa
 		public boolean isModel3301() {
 			// FIXME Need a cleaner way of doing this
 			return name().equals("MCP3301");
+		}
+	}
+	
+	private static class McpAdcAnalogInputDevice extends AbstractInputDevice<AnalogInputEvent> implements GpioAnalogInputDeviceInterface {
+		private McpAdc mcp3xxx;
+		private int gpio;
+
+		public McpAdcAnalogInputDevice(McpAdc mcp3xxx, String key, int gpio) {
+			super(key, mcp3xxx);
+			
+			this.mcp3xxx = mcp3xxx;
+			this.gpio = gpio;
+		}
+
+		@Override
+		public void closeDevice() {
+			Logger.debug("closeDevice()");
+			// TODO Nothing to do?
+		}
+
+		@Override
+		public float getValue() throws RuntimeIOException {
+			return mcp3xxx.getValue(gpio);
+		}
+
+		@Override
+		public int getGpio() {
+			return gpio;
 		}
 	}
 }

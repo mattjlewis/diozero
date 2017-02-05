@@ -30,7 +30,6 @@ import org.pmw.tinylog.Logger;
 
 import com.diozero.api.*;
 import com.diozero.internal.spi.*;
-import com.diozero.internal.spi.GpioDeviceInterface.Mode;
 import com.diozero.pigpioj.PigpioGpio;
 import com.diozero.util.RuntimeIOException;
 
@@ -99,18 +98,18 @@ public class PigpioJDeviceFactory extends BaseNativeDeviceFactory {
 
 	@Override
 	protected GpioDigitalInputOutputDeviceInterface createDigitalInputOutputPin(
-			String key, int gpio, GpioDeviceInterface.Mode mode)
+			String key, int gpio, DeviceMode mode)
 			throws RuntimeIOException {
 		return new PigpioJDigitalInputOutputDevice(key, this, gpio, mode);
 	}
 
-	protected GpioDeviceInterface.Mode getCurrentGpioMode(int gpio) {
+	protected DeviceMode getCurrentGpioMode(int gpio) {
 		int rc = PigpioGpio.getMode(gpio);
 		
 		if (rc == PigpioGpio.MODE_PI_INPUT) {
-			return Mode.DIGITAL_INPUT;
+			return DeviceMode.DIGITAL_INPUT;
 		} else if (rc == PigpioGpio.MODE_PI_OUTPUT) {
-			return Mode.DIGITAL_OUTPUT;
+			return DeviceMode.DIGITAL_OUTPUT;
 		}
 		
 		throw new RuntimeIOException("Error calling PigpioGpio.getMode(), response: " + rc);
@@ -124,8 +123,8 @@ public class PigpioJDeviceFactory extends BaseNativeDeviceFactory {
 
 	@Override
 	protected SpiDeviceInterface createSpiDevice(String key, int controller, int chipSelect, int frequency,
-			SpiClockMode spiClockMode) throws RuntimeIOException {
-		return new PigpioJSpiDevice(key, this, controller, chipSelect, frequency, spiClockMode);
+			SpiClockMode spiClockMode, boolean lsbFirst) throws RuntimeIOException {
+		return new PigpioJSpiDevice(key, this, controller, chipSelect, frequency, spiClockMode, lsbFirst);
 	}
 
 	@Override

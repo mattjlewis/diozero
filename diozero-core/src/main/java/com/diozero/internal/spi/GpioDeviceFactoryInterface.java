@@ -1,5 +1,7 @@
 package com.diozero.internal.spi;
 
+import com.diozero.api.DeviceMode;
+
 /*
  * #%L
  * Device I/O Zero - Core
@@ -33,5 +35,5 @@ import com.diozero.util.RuntimeIOException;
 public interface GpioDeviceFactoryInterface extends DeviceFactoryInterface {
 	GpioDigitalInputDeviceInterface provisionDigitalInputPin(int gpio, GpioPullUpDown pud, GpioEventTrigger trigger) throws RuntimeIOException;
 	GpioDigitalOutputDeviceInterface provisionDigitalOutputPin(int gpio, boolean initialValue) throws RuntimeIOException;
-	GpioDigitalInputOutputDeviceInterface provisionDigitalInputOutputPin(int gpio, GpioDeviceInterface.Mode mode) throws RuntimeIOException;
+	GpioDigitalInputOutputDeviceInterface provisionDigitalInputOutputPin(int gpio, DeviceMode mode) throws RuntimeIOException;
 }

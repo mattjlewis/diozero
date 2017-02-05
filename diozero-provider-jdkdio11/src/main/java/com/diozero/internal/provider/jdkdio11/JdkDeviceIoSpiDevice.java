@@ -48,14 +48,14 @@ public class JdkDeviceIoSpiDevice extends AbstractDevice implements SpiDeviceInt
 	private SPIDevice device;
 	
 	public JdkDeviceIoSpiDevice(String key, DeviceFactoryInterface deviceFactory,
-			int controller, int chipSelect, int frequency, SpiClockMode mode) throws RuntimeIOException {
+			int controller, int chipSelect, int frequency, SpiClockMode mode, boolean lsbFirst) throws RuntimeIOException {
 		super(key, deviceFactory);
 		
 		int cs_active = SPIDeviceConfig.CS_ACTIVE_LOW;
 		//int clock_frequency = SPIDeviceConfig.DEFAULT;
 		//int clock_frequency = RPiConstants.SPI_DEFAULT_CLOCK;
 		int word_length = SPIConstants.DEFAULT_WORD_LENGTH;
-		int bit_ordering = Device.BIG_ENDIAN;
+		int bit_ordering = lsbFirst ? Device.LITTLE_ENDIAN : Device.BIG_ENDIAN;
 		deviceConfig = new SPIDeviceConfig.Builder().setControllerNumber(controller).setAddress(chipSelect)
 				.setCSActiveLevel(cs_active).setClockFrequency(frequency).setClockMode(mode.getMode())
 				.setWordLength(word_length).setBitOrdering(bit_ordering).build();
@@ -75,6 +75,20 @@ public class JdkDeviceIoSpiDevice extends AbstractDevice implements SpiDeviceInt
 			} catch (IOException e) {
 				throw new RuntimeIOException(e);
 			}
+		}
+	}
+	
+	@Override
+	public void write(ByteBuffer src) {
+		if (! device.isOpen()) {
+			throw new IllegalStateException("SPI Device " +
+					deviceConfig.getControllerNumber() + "-" + deviceConfig.getAddress() + " is closed");
+		}
+		
+		try {
+			device.write(src);
+		} catch (IOException e) {
+			throw new RuntimeIOException(e);
 		}
 	}
 

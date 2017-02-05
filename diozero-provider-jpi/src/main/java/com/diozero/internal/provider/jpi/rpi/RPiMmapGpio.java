@@ -30,12 +30,11 @@ package com.diozero.internal.provider.jpi.rpi;
 import java.nio.ByteOrder;
 import java.nio.IntBuffer;
 
+import com.diozero.api.DeviceMode;
 import com.diozero.api.GpioPullUpDown;
-import com.diozero.internal.provider.jpi.MmapBufferNative;
-import com.diozero.internal.provider.jpi.MmapByteBuffer;
 import com.diozero.internal.provider.jpi.MmapGpioInterface;
-import com.diozero.internal.spi.GpioDeviceInterface;
-import com.diozero.util.LibraryLoader;
+import com.diozero.util.MmapBufferNative;
+import com.diozero.util.MmapByteBuffer;
 
 public class RPiMmapGpio implements MmapGpioInterface {
 	private static final String GPIOMEM_DEVICE = "/dev/gpiomem";
@@ -67,25 +66,23 @@ public class RPiMmapGpio implements MmapGpioInterface {
 	private static final int PI_PUD_DOWN = 1;
 	private static final int PI_PUD_UP = 2;
 	
-	private boolean loaded;
+	private boolean initialised;
 	private MmapByteBuffer mmap;
 	private IntBuffer gpioReg;
 	
 	@Override
 	public synchronized void initialise() {
-		if (! loaded) {
-			LibraryLoader.loadLibrary(RPiMmapGpio.class, "jpi");
-			
+		if (! initialised) {
 			mmap = MmapBufferNative.createMmapBuffer(GPIOMEM_DEVICE, 0, GPIOMEM_LEN);
 			gpioReg = mmap.getBuffer().order(ByteOrder.LITTLE_ENDIAN).asIntBuffer();
 			
-			loaded = true;
+			initialised = true;
 		}
 	}
 	
 	@Override
 	public synchronized void terminate() {
-		if (loaded) {
+		if (initialised) {
 			MmapBufferNative.closeMmapBuffer(mmap.getFd(), mmap.getAddress(), mmap.getLength());
 		}
 	}
@@ -100,12 +97,12 @@ public class RPiMmapGpio implements MmapGpioInterface {
 		int reg = gpio / 10;
 		int shift = (gpio % 10) * 3;
 
-		// FIXME Map to GpioDeviceInterface.Direction enum
+		// FIXME Map to DeviceMode enum
 		return (gpioReg.get(reg) >> shift) & 7;
 	}
 	
 	@Override
-	public void setMode(int gpio, GpioDeviceInterface.Mode mode) {
+	public void setMode(int gpio, DeviceMode mode) {
 		int reg = gpio / 10;
 		int shift = (gpio % 10) * 3;
 		

@@ -27,8 +27,7 @@ package com.diozero.internal.board.odroid;
  */
 import java.util.*;
 
-import com.diozero.internal.spi.GpioDeviceInterface;
-import com.diozero.internal.spi.GpioDeviceInterface.Mode;
+import com.diozero.api.DeviceMode;
 import com.diozero.util.BoardInfo;
 import com.diozero.util.BoardInfoProvider;
 
@@ -73,7 +72,7 @@ public class OdroidBoardInfoProvider implements BoardInfoProvider {
 		}
 
 		@Override
-		public boolean isSupported(Mode mode, int gpio) {
+		public boolean isSupported(DeviceMode mode, int gpio) {
 			return false;
 		}
 	}
@@ -82,18 +81,18 @@ public class OdroidBoardInfoProvider implements BoardInfoProvider {
 	 * See <a href="http://www.hardkernel.com/main/products/prdt_info.php?g_code=G145457216438&tab_idx=2">Odroid C2 Hardware Technical details</a>.
 	 */
 	public static class OdroidC2BoardInfo extends BoardInfo {
-		private static Map<Integer, List<Mode>> C2_PINS;
+		private static Map<Integer, List<DeviceMode>> C2_PINS;
 		static {
-			List<Mode> digital_in_out = Arrays.asList(
-					GpioDeviceInterface.Mode.DIGITAL_INPUT,
-					GpioDeviceInterface.Mode.DIGITAL_OUTPUT,
-					GpioDeviceInterface.Mode.SOFTWARE_PWM_OUTPUT);
+			List<DeviceMode> digital_in_out = Arrays.asList(
+					DeviceMode.DIGITAL_INPUT,
+					DeviceMode.DIGITAL_OUTPUT,
+					DeviceMode.SOFTWARE_PWM_OUTPUT);
 			// See http://odroid.com/dokuwiki/doku.php?id=en:c2_hardware_pwm
-			List<Mode> digital_in_out_pwm = Arrays.asList(
-					GpioDeviceInterface.Mode.DIGITAL_INPUT,
-					GpioDeviceInterface.Mode.DIGITAL_OUTPUT,
-					GpioDeviceInterface.Mode.SOFTWARE_PWM_OUTPUT,
-					GpioDeviceInterface.Mode.PWM_OUTPUT);
+			List<DeviceMode> digital_in_out_pwm = Arrays.asList(
+					DeviceMode.DIGITAL_INPUT,
+					DeviceMode.DIGITAL_OUTPUT,
+					DeviceMode.SOFTWARE_PWM_OUTPUT,
+					DeviceMode.PWM_OUTPUT);
 
 			C2_PINS = new HashMap<>();
 			C2_PINS.put(Integer.valueOf(214), digital_in_out);
@@ -111,11 +110,11 @@ public class OdroidBoardInfoProvider implements BoardInfoProvider {
 			C2_PINS.put(Integer.valueOf(247), digital_in_out);
 			C2_PINS.put(Integer.valueOf(249), digital_in_out);
 			// Note these are actual pin numbers, not logical GPIO numbers
-			C2_PINS.put(Integer.valueOf(37), Arrays.asList(GpioDeviceInterface.Mode.ANALOG_INPUT));
-			C2_PINS.put(Integer.valueOf(40), Arrays.asList(GpioDeviceInterface.Mode.ANALOG_INPUT));
+			C2_PINS.put(Integer.valueOf(37), Arrays.asList(DeviceMode.ANALOG_INPUT));
+			C2_PINS.put(Integer.valueOf(40), Arrays.asList(DeviceMode.ANALOG_INPUT));
 		}
 
-		public OdroidC2BoardInfo(int memory) {
+		private OdroidC2BoardInfo(int memory) {
 			super(MAKE, Model.C2.toString(), memory, C2_PINS, MAKE.toLowerCase() + "/" + Model.C2.toString().toLowerCase());
 		}
 	}

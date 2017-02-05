@@ -34,7 +34,6 @@ import org.pmw.tinylog.Logger;
 import com.diozero.api.*;
 import com.diozero.internal.spi.*;
 import com.diozero.util.RuntimeIOException;
-import com.diozero.util.SystemInfo;
 import com.pi4j.wiringpi.Gpio;
 import com.pi4j.wiringpi.GpioUtil;
 
@@ -73,7 +72,7 @@ public class WiringPiDeviceFactory extends BaseNativeDeviceFactory {
 
 	@Override
 	public int getPwmFrequency(int gpio) {
-		if (boardInfo.isSupported(GpioDeviceInterface.Mode.PWM_OUTPUT, gpio)) {
+		if (boardInfo.isSupported(DeviceMode.PWM_OUTPUT, gpio)) {
 			return hardwarePwmFrequency;
 		}
 		
@@ -87,7 +86,7 @@ public class WiringPiDeviceFactory extends BaseNativeDeviceFactory {
 	
 	@Override
 	public void setPwmFrequency(int gpio, int pwmFrequency) {
-		if (boardInfo.isSupported(GpioDeviceInterface.Mode.PWM_OUTPUT, gpio)) {
+		if (boardInfo.isSupported(DeviceMode.PWM_OUTPUT, gpio)) {
 			setHardwarePwmFrequency(pwmFrequency);
 		} else {
 			// TODO Software PWM frequency should be limited to 20..250Hz (gives a range of 500..40)
@@ -143,7 +142,7 @@ public class WiringPiDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	public GpioDigitalInputOutputDeviceInterface createDigitalInputOutputPin(String key, int gpio, GpioDeviceInterface.Mode mode)
+	public GpioDigitalInputOutputDeviceInterface createDigitalInputOutputPin(String key, int gpio, DeviceMode mode)
 			throws RuntimeIOException {
 		throw new UnsupportedOperationException("Digital Input / Output devices not yet supported by this provider");
 	}
@@ -161,8 +160,8 @@ public class WiringPiDeviceFactory extends BaseNativeDeviceFactory {
 
 	@Override
 	protected SpiDeviceInterface createSpiDevice(String key, int controller, int chipSelect, int frequency,
-			SpiClockMode spiClockMode) throws RuntimeIOException {
-		return new WiringPiSpiDevice(key, this, controller, chipSelect, frequency, spiClockMode);
+			SpiClockMode spiClockMode, boolean lsbFirst) throws RuntimeIOException {
+		return new WiringPiSpiDevice(key, this, controller, chipSelect, frequency, spiClockMode, lsbFirst);
 	}
 
 	@Override

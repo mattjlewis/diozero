@@ -72,7 +72,7 @@ public class CleanupTest {
 		// Check the log for the above - make sure there is a warning about closing already closed device
 		
 		Assert.assertTrue(ds.size() == 0);
-		try (SpiDeviceInterface device = tdf.provisionSpiDevice(0, 0, 0, SpiClockMode.MODE_0)) {
+		try (SpiDeviceInterface device = tdf.provisionSpiDevice(0, 0, 0, SpiClockMode.MODE_0, false)) {
 			ByteBuffer out = ByteBuffer.allocate(3);
 			out.put((byte) (0x10 | (false ? 0 : 0x08 ) | 1));
 			out.put((byte) 0);

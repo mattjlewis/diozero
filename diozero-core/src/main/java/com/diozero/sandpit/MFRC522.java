@@ -30,8 +30,7 @@ package com.diozero.sandpit;
 import java.io.Closeable;
 import java.nio.ByteBuffer;
 
-import com.diozero.api.DigitalOutputDevice;
-import com.diozero.api.SpiDevice;
+import com.diozero.api.*;
 
 /**
  * Datasheet: http://www.nxp.com/documents/data_sheet/MFRC522.pdf
@@ -141,14 +140,24 @@ public class MFRC522 implements Closeable {
 	// Maximum length of the array
 	private static final int MAX_LEN = 16;
 	
+	private static final int SPI_CLOCK_FREQUENCY = 2_000_000;
+	
 	private SpiDevice device;
 	private DigitalOutputDevice resetPin;
 	
 	public MFRC522(int chipSelect, int resetGpio) {
-		device = new SpiDevice(chipSelect);
-		resetPin = new DigitalOutputDevice(resetGpio, true, false);
+		this(SPIConstants.DEFAULT_SPI_CONTROLLER, chipSelect, resetGpio);
+	}
+	
+	@SuppressWarnings("resource")
+	public MFRC522(int controller, int chipSelect, int resetGpio) {
+		this(controller, chipSelect, new DigitalOutputDevice(resetGpio, true, false));
+	}
+	
+	public MFRC522(int controller, int chipSelect, DigitalOutputDevice resetPin) {
+		device = new SpiDevice(controller, chipSelect, SPI_CLOCK_FREQUENCY, SpiClockMode.MODE_0, false);
+		this.resetPin = resetPin;
 		
-		resetPin.on();
 		reset();
 		
 		// Timer: TPrescaler*TreloadVal/6.78MHz = 24ms
@@ -182,7 +191,7 @@ public class MFRC522 implements Closeable {
 		tx.put(value);
 		tx.flip();
 		
-		device.writeAndRead(tx);
+		device.write(tx);
 	}
 	
 	private byte writeAndReadRegister(int address, byte value) {
@@ -226,6 +235,7 @@ public class MFRC522 implements Closeable {
 	 * Perform soft reset of AddicoreRFID Module
 	 */
 	public void reset() {
+		resetPin.on();
 		writeRegister(COMMAND_REG, PCD_SOFT_RESET);
 	}
 	

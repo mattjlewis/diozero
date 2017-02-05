@@ -28,8 +28,11 @@ package com.diozero.internal.provider.pi4j;
 
 import org.pmw.tinylog.Logger;
 
+import com.diozero.api.DeviceMode;
 import com.diozero.api.GpioPullUpDown;
-import com.diozero.internal.spi.*;
+import com.diozero.internal.spi.AbstractDevice;
+import com.diozero.internal.spi.DeviceFactoryInterface;
+import com.diozero.internal.spi.GpioDigitalInputOutputDeviceInterface;
 import com.diozero.util.RuntimeIOException;
 import com.pi4j.io.gpio.*;
 
@@ -37,10 +40,10 @@ public class Pi4jDigitalInputOutputDevice extends AbstractDevice
 implements GpioDigitalInputOutputDeviceInterface {
 	private GpioPinDigitalMultipurpose digitalInputOutputPin;
 	private int gpio;
-	private GpioDeviceInterface.Mode mode;
+	private DeviceMode mode;
 	
 	Pi4jDigitalInputOutputDevice(String key, DeviceFactoryInterface deviceFactory, GpioController gpioController,
-			int gpio, GpioDeviceInterface.Mode mode) {
+			int gpio, DeviceMode mode) {
 		super(key, deviceFactory);
 		
 		Pin pin = RaspiBcmPin.getPinByAddress(gpio);
@@ -70,7 +73,7 @@ implements GpioDigitalInputOutputDeviceInterface {
 				"Digital InputOutput for BCM GPIO " + gpio, getPinMode(mode), ppr);
 	}
 	
-	private static PinMode getPinMode(GpioDeviceInterface.Mode mode) {
+	private static PinMode getPinMode(DeviceMode mode) {
 		PinMode pm;
 		switch (mode) {
 		case DIGITAL_INPUT:
@@ -86,12 +89,12 @@ implements GpioDigitalInputOutputDeviceInterface {
 	}
 
 	@Override
-	public Mode getMode() {
+	public DeviceMode getMode() {
 		return mode;
 	}
 
 	@Override
-	public void setMode(Mode mode) {
+	public void setMode(DeviceMode mode) {
 		digitalInputOutputPin.setMode(getPinMode(mode));
 		this.mode = mode;
 	}
@@ -103,7 +106,7 @@ implements GpioDigitalInputOutputDeviceInterface {
 
 	@Override
 	public void setValue(boolean value) throws RuntimeIOException {
-		if (mode != GpioDeviceInterface.Mode.DIGITAL_OUTPUT) {
+		if (mode != DeviceMode.DIGITAL_OUTPUT) {
 			throw new IllegalStateException("Can only set output value for digital output pins");
 		}
 		digitalInputOutputPin.setState(value);

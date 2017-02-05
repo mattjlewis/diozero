@@ -45,13 +45,13 @@ public class PigpioJSpiDevice extends AbstractDevice implements SpiDeviceInterfa
 	private int chipSelect;
 
 	public PigpioJSpiDevice(String key, DeviceFactoryInterface deviceFactory, int controller,
-			int chipSelect, int frequency, SpiClockMode spiClockMode) throws RuntimeIOException {
+			int chipSelect, int frequency, SpiClockMode spiClockMode, boolean lsbFirst) throws RuntimeIOException {
 		super(key, deviceFactory);
 		
 		this.controller = controller;
 		this.chipSelect = chipSelect;
 		
-		int flags = createSpiFlags(spiClockMode, controller);
+		int flags = createSpiFlags(spiClockMode, controller, lsbFirst);
 		int rc = PigpioSPI.spiOpen(chipSelect, frequency, flags);
 		if (rc < 0) {
 			handle = CLOSED;
@@ -61,6 +61,20 @@ public class PigpioJSpiDevice extends AbstractDevice implements SpiDeviceInterfa
 		handle = rc;
 		Logger.debug("SPI device ({}-{}) opened, handle={}", Integer.valueOf(controller),
 				Integer.valueOf(chipSelect), Integer.valueOf(handle));
+	}
+	
+	@Override
+	public void write(ByteBuffer out) {
+		if (! isOpen()) {
+			throw new IllegalStateException("SPI Device " + controller + "-" + chipSelect + " is closed");
+		}
+		
+		int count = out.remaining();
+		byte[] tx = new byte[count];
+		int rc = PigpioSPI.spiWrite(handle, tx, count);
+		if (rc < 0) {
+			throw new RuntimeIOException("Error calling PigpioSPI.write(), response: " + rc);
+		}
 	}
 
 	@Override
@@ -130,12 +144,15 @@ public class PigpioJSpiDevice extends AbstractDevice implements SpiDeviceInterfa
 	 * The default (0) sets 8 bits per word. Auxiliary SPI device only.
 	 * The other bits in flags should be set to zero
 	 */
-	private static int createSpiFlags(SpiClockMode clockMode, int controller) {
+	private static int createSpiFlags(SpiClockMode clockMode, int controller, boolean lsbFirst) {
 		int flags = clockMode.getMode();
 		
 		// CE0 is the standard SPI device, CE1 is auxiliary
 		if (controller == 1) {
-			flags |= 0x0100;
+			flags |= 0x100;
+		}
+		if (lsbFirst) {
+			flags |= 0x8000;
 		}
 		
 		return flags;

@@ -31,8 +31,8 @@ public class AnalogInputEvent extends DeviceEvent {
 	private float unscaledValue;
 	private float scaledValue;
 	
-	public AnalogInputEvent(int pin, long epochTime, long nanoTime, float unscaledValue, float scaledValue) {
-		super(pin, epochTime, nanoTime);
+	public AnalogInputEvent(int gpio, long epochTime, long nanoTime, float unscaledValue, float scaledValue) {
+		super(gpio, epochTime, nanoTime);
 		
 		this.unscaledValue = unscaledValue;
 		this.scaledValue = scaledValue;
@@ -56,7 +56,7 @@ public class AnalogInputEvent extends DeviceEvent {
 
 	@Override
 	public String toString() {
-		return "AnalogPinEvent [pin=" + getPin() + ", epochTime=" + getEpochTime() +
+		return "AnalogPinEvent [pin=" + getGpio() + ", epochTime=" + getEpochTime() +
 				", nanoTime=" + getNanoTime() + ", unscaledValue=" + unscaledValue +
 				", scaledValue=" + scaledValue + "]";
 	}

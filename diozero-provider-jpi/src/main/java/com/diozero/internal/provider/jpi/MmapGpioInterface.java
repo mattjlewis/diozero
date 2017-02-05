@@ -1,5 +1,7 @@
 package com.diozero.internal.provider.jpi;
 
+import com.diozero.api.DeviceMode;
+
 /*
  * #%L
  * Device I/O Zero - Java Native provider for the Raspberry Pi
@@ -28,13 +30,12 @@ package com.diozero.internal.provider.jpi;
 
 
 import com.diozero.api.GpioPullUpDown;
-import com.diozero.internal.spi.GpioDeviceInterface;
 
 public interface MmapGpioInterface {
 	void initialise();
 	void terminate();
 	int getMode(int gpio);
-	void setMode(int gpio, GpioDeviceInterface.Mode mode);
+	void setMode(int gpio, DeviceMode mode);
 	void setPullUpDown(int gpio, GpioPullUpDown pud);
 	boolean gpioRead(int gpio);
 	void gpioWrite(int gpio, boolean value);

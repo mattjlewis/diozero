@@ -1,5 +1,6 @@
 /**
- * Support for devices representing actual devices such as LEDs, Buttons including GPIO, SPI and I2C devices.
+ * Classes representing actual devices such as LEDs, Buttons as well as GPIO,
+ * SPI and I2C connected devices.
  */
 package com.diozero;
 

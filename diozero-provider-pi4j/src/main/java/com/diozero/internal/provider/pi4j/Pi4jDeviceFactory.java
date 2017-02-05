@@ -34,7 +34,6 @@ import org.pmw.tinylog.Logger;
 import com.diozero.api.*;
 import com.diozero.internal.spi.*;
 import com.diozero.util.RuntimeIOException;
-import com.diozero.util.SystemInfo;
 import com.pi4j.io.gpio.*;
 import com.pi4j.wiringpi.Gpio;
 import com.pi4j.wiringpi.GpioUtil;
@@ -73,7 +72,7 @@ public class Pi4jDeviceFactory extends BaseNativeDeviceFactory {
 
 	@Override
 	public int getPwmFrequency(int gpio) {
-		if (boardInfo.isSupported(GpioDeviceInterface.Mode.PWM_OUTPUT, gpio)) {
+		if (boardInfo.isSupported(DeviceMode.PWM_OUTPUT, gpio)) {
 			return hardwarePwmFrequency;
 		}
 		
@@ -87,7 +86,7 @@ public class Pi4jDeviceFactory extends BaseNativeDeviceFactory {
 	
 	@Override
 	public void setPwmFrequency(int gpio, int pwmFrequency) {
-		if (boardInfo.isSupported(GpioDeviceInterface.Mode.PWM_OUTPUT, gpio)) {
+		if (boardInfo.isSupported(DeviceMode.PWM_OUTPUT, gpio)) {
 			setHardwarePwmFrequency(pwmFrequency);
 		} else {
 			// TODO Software PWM frequency should be limited to 20..250Hz (gives a range of 500..40)
@@ -141,7 +140,7 @@ public class Pi4jDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	public GpioDigitalInputOutputDeviceInterface createDigitalInputOutputPin(String key, int gpio, GpioDeviceInterface.Mode mode)
+	public GpioDigitalInputOutputDeviceInterface createDigitalInputOutputPin(String key, int gpio, DeviceMode mode)
 			throws RuntimeIOException {
 		return new Pi4jDigitalInputOutputDevice(key, this, gpioController, gpio, mode);
 	}
@@ -158,8 +157,9 @@ public class Pi4jDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	protected SpiDeviceInterface createSpiDevice(String key, int controller, int chipSelect, int frequency, SpiClockMode spiClockMode) throws RuntimeIOException {
-		return new Pi4jSpiDevice(key, this, controller, chipSelect, frequency, spiClockMode);
+	protected SpiDeviceInterface createSpiDevice(String key, int controller, int chipSelect,
+			int frequency, SpiClockMode spiClockMode, boolean lsbFirst) throws RuntimeIOException {
+		return new Pi4jSpiDevice(key, this, controller, chipSelect, frequency, spiClockMode, lsbFirst);
 	}
 
 	@Override

@@ -49,9 +49,14 @@ public class TestMcpAdcSpiDevice extends TestSpiDevice {
 		TestMcpAdcSpiDevice.type = type;
 	}
 
-	public TestMcpAdcSpiDevice(String key, DeviceFactoryInterface deviceFactory, int controller, int chipSelect, int frequency,
-			SpiClockMode spiClockMode) {
-		super(key, deviceFactory, controller, chipSelect, frequency, spiClockMode);
+	public TestMcpAdcSpiDevice(String key, DeviceFactoryInterface deviceFactory, int controller,
+			int chipSelect, int frequency, SpiClockMode spiClockMode, boolean lsbFirst) {
+		super(key, deviceFactory, controller, chipSelect, frequency, spiClockMode, lsbFirst);
+	}
+	
+	@Override
+	public void write(ByteBuffer out) throws RuntimeIOException {
+		
 	}
 
 	@Override

@@ -1,5 +1,7 @@
 package com.diozero.internal.spi;
 
+import com.diozero.api.DeviceMode;
+
 /*
  * #%L
  * Device I/O Zero - Core
@@ -29,6 +31,6 @@ package com.diozero.internal.spi;
 public interface GpioDigitalInputOutputDeviceInterface
 extends GpioDigitalOutputDeviceInterface {
 	@Override
-	public Mode getMode();
-	public void setMode(Mode mode);
+	public DeviceMode getMode();
+	public void setMode(DeviceMode mode);
 }

@@ -43,7 +43,8 @@ public class Pi4jSpiDevice extends AbstractDevice implements SpiDeviceInterface 
 	private int controller;
 	private int chipSelect;
 	
-	public Pi4jSpiDevice(String key, DeviceFactoryInterface deviceFactory, int controller, int chipSelect, int speed, SpiClockMode mode) throws RuntimeIOException {
+	public Pi4jSpiDevice(String key, DeviceFactoryInterface deviceFactory, int controller,
+			int chipSelect, int speed, SpiClockMode mode, boolean lsbFirst) throws RuntimeIOException {
 		super(key, deviceFactory);
 		
 		this.controller = controller;
@@ -60,6 +61,15 @@ public class Pi4jSpiDevice extends AbstractDevice implements SpiDeviceInterface 
 		Logger.debug("closeDevice()");
 		// No way to close a Pi4J SPI Device?!
 		//spiDevice.close();
+	}
+	
+	@Override
+	public void write(ByteBuffer src) {
+		try {
+			spiDevice.write(src);
+		} catch (IOException e) {
+			throw new RuntimeIOException(e);
+		}
 	}
 
 	@Override
