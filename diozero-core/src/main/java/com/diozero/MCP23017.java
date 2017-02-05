@@ -1,7 +1,34 @@
-package com.diozero.internal.provider.mcp23xxx;
+package com.diozero;
+
+/*
+ * #%L
+ * Device I/O Zero - Core
+ * %%
+ * Copyright (C) 2016 - 2017 mattjlewis
+ * %%
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ * #L%
+ */
 
 import com.diozero.api.I2CConstants;
 import com.diozero.api.I2CDevice;
+import com.diozero.internal.provider.mcp23xxx.MCP23x17;
 import com.diozero.util.RuntimeIOException;
 
 /**
@@ -13,8 +40,8 @@ import com.diozero.util.RuntimeIOException;
  * system master.</p>
  * <p>The 16-bit I/O port functionally consists of two 8-bit ports (PORTA and PORTB). The MCP23X17 can be
  * configured to operate in the 8-bit or 16-bit modes via IOCON.BANK.</p>
- * <p>There are two interrupt pins, INTA and INTB, that can be associated with their respective ports, or can be
- * logically OR'ed together so that both pins will activate if either port causes an interrupt.
+ * <p>There are two interrupt GPIOs, INTA and INTB, that can be associated with their respective ports, or can be
+ * logically OR'ed together so that both GPIOs will activate if either port causes an interrupt.
  * A special mode (Byte mode with IOCON.BANK = 0) causes the address pointer to toggle between
  * associated A/B register pairs. For example, if the BANK bit is cleared and the Address Pointer is initially set
  * to address 12h (GPIOA) or 13h (GPIOB), the pointer will toggle between GPIOA and GPIOB. Note that the
@@ -28,7 +55,7 @@ public class MCP23017 extends MCP23x17 {
 	private I2CDevice device;
 
 	public MCP23017() throws RuntimeIOException {
-		this(I2CConstants.BUS_1, DEVICE_ADDRESS, INTERRUPT_PIN_NOT_SET, INTERRUPT_PIN_NOT_SET);
+		this(I2CConstants.BUS_1, DEVICE_ADDRESS, INTERRUPT_GPIO_NOT_SET, INTERRUPT_GPIO_NOT_SET);
 	}
 
 	public MCP23017(int interruptGpio) throws RuntimeIOException {
@@ -44,7 +71,7 @@ public class MCP23017 extends MCP23x17 {
 	}
 
 	public MCP23017(int controller, int address, int interruptGpioA, int interruptGpioB) throws RuntimeIOException {
-		super(DEVICE_NAME + "-" + controller + "-" + address + "-");
+		super(DEVICE_NAME + "-" + controller + "-" + address, interruptGpioA, interruptGpioB);
 		
 		device = new I2CDevice(controller, address, I2CConstants.ADDR_SIZE_7, I2CConstants.DEFAULT_CLOCK_FREQUENCY);
 		
