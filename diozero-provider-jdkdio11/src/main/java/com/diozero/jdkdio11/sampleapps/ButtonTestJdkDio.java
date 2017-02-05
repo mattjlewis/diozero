@@ -1,4 +1,4 @@
-package com.diozero.sampleapps;
+package com.diozero.jdkdio11.sampleapps;
 
 /*
  * #%L
