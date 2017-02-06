@@ -86,6 +86,7 @@ try (McpAdc adc = new McpAdc(McpAdc.Type.MCP3008, chipSelect); LDR ldr = new LDR
 ## Supported Devices
 
 diozero has out of the box support for the following Single Board Computers:
+
 + [Raspberry Pi](http://www.raspberyrpi.org/) (all versions)
 + [Odroid C2](http://www.hardkernel.com/main/products/prdt_info.php)
 + [Beagle Bone Black](https://beagleboard.org/black)
