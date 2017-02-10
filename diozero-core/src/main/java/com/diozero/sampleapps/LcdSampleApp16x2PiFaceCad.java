@@ -28,9 +28,9 @@ package com.diozero.sampleapps;
 
 import org.pmw.tinylog.Logger;
 
-import com.diozero.I2CLcd;
-import com.diozero.I2CLcd.LcdConnection;
-import com.diozero.I2CLcd.PiFaceCadLcdConnection;
+import com.diozero.HD44780Lcd;
+import com.diozero.HD44780Lcd.LcdConnection;
+import com.diozero.HD44780Lcd.PiFaceCadLcdConnection;
 import com.diozero.api.SPIConstants;
 import com.diozero.util.RuntimeIOException;
 
@@ -64,7 +64,7 @@ public class LcdSampleApp16x2PiFaceCad {
 		
 		// Initialise display
 		try (LcdConnection lcd_connection = new PiFaceCadLcdConnection(controller);
-				I2CLcd lcd = new I2CLcd(lcd_connection, columns, rows)) {
+				HD44780Lcd lcd = new HD44780Lcd(lcd_connection, columns, rows)) {
 			LcdSampleApp16x2Base.test(lcd);
 		} catch (RuntimeIOException e) {
 			Logger.error(e, "Error: {}", e);

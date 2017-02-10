@@ -1,10 +1,10 @@
-package com.diozero.util;
+package com.diozero.sandpit;
 
 /*
  * #%L
  * Device I/O Zero - Core
  * %%
- * Copyright (C) 2016 - 2017 mattjlewis
+ * Copyright (C) 2016 mattjlewis
  * %%
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,35 +27,24 @@ package com.diozero.util;
  */
 
 
-import java.util.List;
-import java.util.Map;
+import org.pmw.tinylog.Logger;
 
-import com.diozero.api.DeviceMode;
+import com.diozero.util.PollNative;
 
-public abstract class BoardPinInfo {
-	private Map<Integer, List<DeviceMode>> pins;
-
-	public BoardPinInfo(Map<Integer, List<DeviceMode>> pins) {
-		this.pins = pins;
-	}
-
-	public boolean isSupported(DeviceMode mode, int pin) {
-		// Default to true if the pins aren't defined
-		if (pins == null) {
-			return true;
+public class PollTestFile {
+	public static void main(String[] args) {
+		if (args.length < 1) {
+			System.out.println("Usage: " + PollTestFile.class.getName() + " <filename>");
+			return;
 		}
 		
-		List<DeviceMode> modes = pins.get(Integer.valueOf(pin));
-		// Default to true if the modes for the requested pin isn't set
-		if (modes == null) {
-			return true;
-		}
-		
-		return modes.contains(mode);
+		test(args[0]);
 	}
 	
-	@SuppressWarnings("static-method")
-	public int mapGpio(int gpio) {
-		return gpio;
+	private static void test(String filename) {
+		PollNative pn = new PollNative();
+		Logger.info("Calling poll()");
+		pn.poll(filename, -1, 1, (ref, epochTime, value)->Logger.info("notify(" + ref + ", " + epochTime + ", " + value + ")"));
+		Logger.info("Poll returned");
 	}
 }

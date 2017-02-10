@@ -28,12 +28,12 @@ package com.diozero.sampleapps;
 
 import org.pmw.tinylog.Logger;
 
-import com.diozero.I2CLcd;
+import com.diozero.HD44780Lcd;
 import com.diozero.util.SleepUtil;
 
 public class LcdSampleApp16x2Base {
 	// Main program block
-	public static void test(I2CLcd lcd) {
+	public static void test(HD44780Lcd lcd) {
 		lcd.setBacklightEnabled(true);
 		
 		/*Logger.info("Calling setText");
@@ -41,9 +41,9 @@ public class LcdSampleApp16x2Base {
 		SleepUtil.sleepSeconds(2);*/
 		
 		// 0, 14, 21, 31, 10, 4, 10, 17
-		byte[] space_invader = I2CLcd.Characters.get("space_invader");
-		byte[] smilie = I2CLcd.Characters.get("smilie");
-		byte[] frownie = I2CLcd.Characters.get("frownie");
+		byte[] space_invader = HD44780Lcd.Characters.get("space_invader");
+		byte[] smilie = HD44780Lcd.Characters.get("smilie");
+		byte[] frownie = HD44780Lcd.Characters.get("frownie");
 		lcd.createChar(0, space_invader);
 		lcd.createChar(1, smilie);
 		lcd.createChar(2, frownie);
@@ -75,8 +75,8 @@ public class LcdSampleApp16x2Base {
 		SleepUtil.sleepSeconds(2);
 		lcd.clear();
 		
-		lcd.createChar(3, I2CLcd.Characters.get("runninga"));
-		lcd.createChar(4, I2CLcd.Characters.get("runningb"));
+		lcd.createChar(3, HD44780Lcd.Characters.get("runninga"));
+		lcd.createChar(4, HD44780Lcd.Characters.get("runningb"));
 		lcd.clear();
 		lcd.displayControl(true, false, false);
 		for (int i=0; i<40; i++) {
@@ -101,7 +101,7 @@ public class LcdSampleApp16x2Base {
 
 			// Send some more text
 			lcd.setText(0, ">        diozero");
-			lcd.setText(1, ">        I2C LCD");
+			lcd.setText(1, ">    HD44780 LCD");
 			SleepUtil.sleepSeconds(0.5);
 		}
 		

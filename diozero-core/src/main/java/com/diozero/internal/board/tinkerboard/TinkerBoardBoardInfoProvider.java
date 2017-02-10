@@ -26,10 +26,7 @@ package com.diozero.internal.board.tinkerboard;
  * #L%
  */
 
-
-import java.util.*;
-
-import com.diozero.api.DeviceMode;
+import com.diozero.api.GpioInfo;
 import com.diozero.util.BoardInfo;
 import com.diozero.util.BoardInfoProvider;
 
@@ -51,53 +48,63 @@ public class TinkerBoardBoardInfoProvider implements BoardInfoProvider {
 		private static final int MEMORY = 2048;
 		private static final String LIBRARY_PATH = "tinkerboard";
 		
-		private static Map<Integer, List<DeviceMode>> PINS;
-		static {
-			List<DeviceMode> digital_in_out = Arrays.asList(
-					DeviceMode.DIGITAL_INPUT,
-					DeviceMode.DIGITAL_OUTPUT,
-					DeviceMode.SOFTWARE_PWM_OUTPUT);
-			// See http://odroid.com/dokuwiki/doku.php?id=en:c2_hardware_pwm
-			List<DeviceMode> digital_in_out_pwm = Arrays.asList(
-					DeviceMode.DIGITAL_INPUT,
-					DeviceMode.DIGITAL_OUTPUT,
-					DeviceMode.SOFTWARE_PWM_OUTPUT,
-					DeviceMode.PWM_OUTPUT);
-
-			PINS = new HashMap<>();
-			// GPIO5B (GP5B0-GP5B7)
-			for (int i=160; i<168; i++) {
-				PINS.put(Integer.valueOf(i), digital_in_out);
-			}
-			// GPIO5C (GP5C0-GP5C3)
-			for (int i=168; i<172; i++) {
-				PINS.put(Integer.valueOf(i), digital_in_out);
-			}
-			// GPIO6A (GP6A0-GP6A4)
-			PINS.put(Integer.valueOf(184), digital_in_out);
-			PINS.put(Integer.valueOf(185), digital_in_out);
-			PINS.put(Integer.valueOf(187), digital_in_out);
-			PINS.put(Integer.valueOf(188), digital_in_out);
-			// GPIO7A
-			PINS.put(Integer.valueOf(223), digital_in_out);
-			// GPIO7B
-			PINS.put(Integer.valueOf(224), digital_in_out);
-			PINS.put(Integer.valueOf(225), digital_in_out);
-			PINS.put(Integer.valueOf(226), digital_in_out);
-			// GPIO7CL
-			PINS.put(Integer.valueOf(233), digital_in_out);
-			PINS.put(Integer.valueOf(234), digital_in_out);
-			// GPIO7CH
-			PINS.put(Integer.valueOf(238), digital_in_out_pwm);
-			PINS.put(Integer.valueOf(239), digital_in_out_pwm);
-			// GPIO8A
-			for (int i=251; i<258; i++) {
-				PINS.put(Integer.valueOf(i), digital_in_out);
-			}
+		private TinkerBoardBoardInfo() {
+			super(MAKE, MODEL, MEMORY, LIBRARY_PATH);
 		}
 		
-		private TinkerBoardBoardInfo() {
-			super(MAKE, MODEL, MEMORY, PINS, LIBRARY_PATH);
+		@Override
+		protected void init() {
+			// GPIO0_C1
+			addGpioInfo(new GpioInfo(16+1, "GPIO0_C1", 7, GpioInfo.DIGITAL_IN_OUT));
+			
+			// GPIO5B (GP5B0-GP5B7)
+			addGpioInfo(new GpioInfo(160, "GPIO5_B0", 10, GpioInfo.DIGITAL_IN_OUT));
+			addGpioInfo(new GpioInfo(160+1, "GPIO5_B1", 8, GpioInfo.DIGITAL_IN_OUT));
+			addGpioInfo(new GpioInfo(160+2, "GPIO5_B2", 16, GpioInfo.DIGITAL_IN_OUT));
+			addGpioInfo(new GpioInfo(160+3, "GPIO5_B3", 18, GpioInfo.DIGITAL_IN_OUT));
+			addGpioInfo(new GpioInfo(160+4, "GPIO5_B4", 11, GpioInfo.DIGITAL_IN_OUT));
+			addGpioInfo(new GpioInfo(160+5, "GPIO5_B5", 29, GpioInfo.DIGITAL_IN_OUT));
+			addGpioInfo(new GpioInfo(160+6, "GPIO5_B6", 13, GpioInfo.DIGITAL_IN_OUT));
+			addGpioInfo(new GpioInfo(160+7, "GPIO5_B7", 15, GpioInfo.DIGITAL_IN_OUT));
+			
+			// GPIO5C (GP5C0-GP5C3)
+			addGpioInfo(new GpioInfo(168, "GPIO5_C0", 31, GpioInfo.DIGITAL_IN_OUT));
+			addGpioInfo(new GpioInfo(168+1, "GPIO5_C1", -1, GpioInfo.DIGITAL_IN_OUT));
+			addGpioInfo(new GpioInfo(168+2, "GPIO5_C2", -1, GpioInfo.DIGITAL_IN_OUT));
+			addGpioInfo(new GpioInfo(168+3, "GPIO5_C3", 22, GpioInfo.DIGITAL_IN_OUT));
+
+			// GPIO6A (GP6A0-GP6A1)
+			addGpioInfo(new GpioInfo(184, "GPIO6_A0", 12, GpioInfo.DIGITAL_IN_OUT));
+			addGpioInfo(new GpioInfo(184+1, "GPIO6_A1", 35, GpioInfo.DIGITAL_IN_OUT));
+			// GPIO6A (GP6A3-GP6A4)
+			addGpioInfo(new GpioInfo(184+3, "GPIO6_A3", 38, GpioInfo.DIGITAL_IN_OUT));
+			addGpioInfo(new GpioInfo(184+4, "GPIO6_A4", 40, GpioInfo.DIGITAL_IN_OUT));
+			
+			// GPIO7A (GP7A7)
+			addGpioInfo(new GpioInfo(216+7, "GPIO7_A7", 36, GpioInfo.DIGITAL_IN_OUT));
+			
+			// GPIO7B (GP7B0-GP7B2)
+			addGpioInfo(new GpioInfo(224, "GPIO7_B0", 37, GpioInfo.DIGITAL_IN_OUT));
+			addGpioInfo(new GpioInfo(224+1, "GPIO7_B1", -1, GpioInfo.DIGITAL_IN_OUT));
+			addGpioInfo(new GpioInfo(224+2, "GPIO7_B2", -1, GpioInfo.DIGITAL_IN_OUT));
+			
+			// GPIO7CL (GP7C1-GP7C2)
+			addGpioInfo(new GpioInfo(232+1, "GPIO7_C1", 27, GpioInfo.DIGITAL_IN_OUT));
+			addGpioInfo(new GpioInfo(232+2, "GPIO7_C2", 28, GpioInfo.DIGITAL_IN_OUT));
+			// GPIO7CH (GP7C6-GP7C7)
+			addGpioInfo(new GpioInfo(232+6, "GPIO7_C6", 33, 0, GpioInfo.DIGITAL_IN_OUT_PWM));
+			addGpioInfo(new GpioInfo(232+7, "GPIO7_C7", 32, 1, GpioInfo.DIGITAL_IN_OUT_PWM));
+			
+			// GPIO8A (GP8A3-GP8A7)
+			addGpioInfo(new GpioInfo(248+3, "GPIO8_A3", 26, GpioInfo.DIGITAL_IN_OUT));
+			addGpioInfo(new GpioInfo(248+4, "GPIO8_A4", 3, GpioInfo.DIGITAL_IN_OUT));
+			addGpioInfo(new GpioInfo(248+5, "GPIO8_A5", 5, GpioInfo.DIGITAL_IN_OUT));
+			addGpioInfo(new GpioInfo(248+6, "GPIO8_A6", 23, GpioInfo.DIGITAL_IN_OUT));
+			addGpioInfo(new GpioInfo(248+7, "GPIO8_A7", 24, GpioInfo.DIGITAL_IN_OUT));
+
+			// GPIO8B (GP8B0-GP8B1)
+			addGpioInfo(new GpioInfo(256, "GPIO8_B0", 21, GpioInfo.DIGITAL_IN_OUT));
+			addGpioInfo(new GpioInfo(256+1, "GPIO8_B1", 19, GpioInfo.DIGITAL_IN_OUT));
 		}
 	}
 }

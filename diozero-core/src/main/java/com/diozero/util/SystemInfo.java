@@ -138,7 +138,11 @@ public class SystemInfo {
 		private static final String UNKNOWN = "unknown";
 		
 		public UnknownBoardInfo() {
-			super(UNKNOWN, UNKNOWN, 1024, null, UNKNOWN);
+			super(UNKNOWN, UNKNOWN, -1, UNKNOWN);
+		}
+		
+		@Override
+		protected void init() {
 		}
 	}
 }

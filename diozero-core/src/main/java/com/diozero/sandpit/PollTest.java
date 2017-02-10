@@ -47,6 +47,6 @@ public class PollTest {
 		PollNative pn = new PollNative();
 		Logger.info("Calling poll()");
 		pn.poll("/sys/class/gpio/gpio" + gpio + "/value", -1, gpio,
-				(ref, epochTime)->Logger.info("notify(" + ref + ", " + epochTime + ")"));
+				(ref, epochTime, value)->Logger.info("notify(" + ref + ", " + epochTime + ", " + value + ")"));
 	}
 }

@@ -34,7 +34,7 @@ public class PollNative {
 	
 	private int fd;
 	
-	public native void poll(String filename, int timeout, int ref, PollEventListener listener);
+	public synchronized native void poll(String filename, int timeout, int ref, PollEventListener listener);
 	private native void stop(int fd);
 	
 	public void setFd(int fd) {

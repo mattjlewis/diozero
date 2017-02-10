@@ -52,11 +52,8 @@ import com.diozero.util.SleepUtil;
  * </p>
  */
 //@SuppressWarnings("unused")
-public class I2CLcd implements Closeable {
-	private static final boolean DEFAULT_BACKLIGHT_STATE = false;
-
-	// I2C device address
-	public static final int DEFAULT_DEVICE_ADDRESS = 0x27;
+public class HD44780Lcd implements Closeable {
+	private static final boolean DEFAULT_BACKLIGHT_STATE = true;
 	
 	/*
 	 * Instructions:
@@ -200,21 +197,8 @@ public class I2CLcd implements Closeable {
 	private boolean increment;
 	private boolean shiftDisplay;
 	private byte[] rowOffsets;
-
-	public I2CLcd(int columns, int rows) {
-		this(I2CConstants.BUS_1, DEFAULT_DEVICE_ADDRESS, columns, rows);
-	}
-
-	public I2CLcd(int deviceAddress, int columns, int rows) {
-		this(I2CConstants.BUS_1, deviceAddress, columns, rows);
-	}
-
-	@SuppressWarnings("resource")
-	public I2CLcd(int controller, int deviceAddress, int columns, int rows) {
-		this(new PCF8574LcdConnection(controller, deviceAddress), columns, rows);
-	}
 	
-	public I2CLcd(LcdConnection lcdConnection, int columns, int rows) {
+	public HD44780Lcd(LcdConnection lcdConnection, int columns, int rows) {
 		if (rows == 2) {
 			rowOffsets = ROW_OFFSETS_2ROWS;
 		} else if (rows == 4) {
@@ -324,14 +308,14 @@ public class I2CLcd implements Closeable {
 		return backlightEnabled;
 	}
 
-	public I2CLcd setBacklightEnabled(boolean backlightEnabled) {
+	public HD44780Lcd setBacklightEnabled(boolean backlightEnabled) {
 		this.backlightEnabled = backlightEnabled;
 		writeByte(true, (byte) 0);
 		
 		return this;
 	}
 
-	public I2CLcd setCursorPosition(int column, int row) {
+	public HD44780Lcd setCursorPosition(int column, int row) {
 		if (column < 0 || column >= columns) {
 			throw new IllegalArgumentException("Invalid column (" + column + "), must be 0.." + (column - 1));
 		}
@@ -345,7 +329,7 @@ public class I2CLcd implements Closeable {
 		return this;
 	}
 	
-	public I2CLcd setCharacter(int column, int row, char character) {
+	public HD44780Lcd setCharacter(int column, int row, char character) {
 		setCursorPosition(column, row);
 		writeData((byte) character);
 		
@@ -358,7 +342,7 @@ public class I2CLcd implements Closeable {
 	 * @param text Text to display
 	 * @return This object instance
 	 */
-	public I2CLcd setText(int row, String text) {
+	public HD44780Lcd setText(int row, String text) {
 		if (row < 0 || row >= rows) {
 			throw new IllegalArgumentException("Invalid row (" + row + "), must be 0.." + (rows - 1));
 		}
@@ -377,7 +361,7 @@ public class I2CLcd implements Closeable {
 		return this;
 	}
 	
-	public I2CLcd addText(String text) {
+	public HD44780Lcd addText(String text) {
 		for (byte b : text.getBytes()) {
 			writeData(b);
 		}
@@ -385,13 +369,13 @@ public class I2CLcd implements Closeable {
 		return this;
 	}
 	
-	public I2CLcd addText(char character) {
+	public HD44780Lcd addText(char character) {
 		writeData((byte) character);
 		
 		return this;
 	}
 	
-	public I2CLcd addText(int code) {
+	public HD44780Lcd addText(int code) {
 		writeData((byte) code);
 		
 		return this;
@@ -401,7 +385,7 @@ public class I2CLcd implements Closeable {
 	 * Clear the display
 	 * @return This object instance
 	 */
-	public I2CLcd clear() {
+	public HD44780Lcd clear() {
 		writeInstruction(INST_CLEAR_DISPLAY);
 		// Seem to have to wait after clearing the display, encounter strange errors otherwise
 		SleepUtil.sleepMillis(1);
@@ -413,7 +397,7 @@ public class I2CLcd implements Closeable {
 	 * Return the cursor to the home position
 	 * @return This object instance
 	 */
-	public I2CLcd returnHome() {
+	public HD44780Lcd returnHome() {
 		writeInstruction(INST_RETURN_HOME);
 		
 		return this;
@@ -431,7 +415,7 @@ public class I2CLcd implements Closeable {
 	 *				move but the display does.
 	 * @return This object instance
 	 */
-	public I2CLcd entryModeControl(boolean increment, boolean shiftDisplay) {
+	public HD44780Lcd entryModeControl(boolean increment, boolean shiftDisplay) {
 		this.increment = increment;
 		this.shiftDisplay = shiftDisplay;
 		writeInstruction((byte) (INST_ENTRY_MODE_SET
@@ -442,12 +426,12 @@ public class I2CLcd implements Closeable {
 		return this;
 	}
 	
-	public I2CLcd autoscrollOn() {
+	public HD44780Lcd autoscrollOn() {
 		entryModeControl(true, true);
 		return this;
 	}
 	
-	public I2CLcd autoscrollOff() {
+	public HD44780Lcd autoscrollOff() {
 		entryModeControl(true, false);
 		return this;
 	}
@@ -460,7 +444,7 @@ public class I2CLcd implements Closeable {
 		return shiftDisplay;
 	}
 
-	public I2CLcd displayControl(boolean displayOn, boolean cursorEnabled, boolean blinkEnabled) {
+	public HD44780Lcd displayControl(boolean displayOn, boolean cursorEnabled, boolean blinkEnabled) {
 		this.displayOn = displayOn;
 		this.cursorEnabled = cursorEnabled;
 		this.blinkEnabled = blinkEnabled;
@@ -473,27 +457,27 @@ public class I2CLcd implements Closeable {
 		return this;
 	}
 	
-	public I2CLcd displayOn() {
+	public HD44780Lcd displayOn() {
 		return displayControl(true, cursorEnabled, blinkEnabled);
 	}
 		
-	public I2CLcd displayOff() {
+	public HD44780Lcd displayOff() {
 		return displayControl(false, cursorEnabled, blinkEnabled);
 	}
 	
-	public I2CLcd cursorOn() {
+	public HD44780Lcd cursorOn() {
 		return displayControl(displayOn, true, blinkEnabled);
 	}
 		
-	public I2CLcd cursorOff() {
+	public HD44780Lcd cursorOff() {
 		return displayControl(displayOn, false, blinkEnabled);
 	}
 	
-	public I2CLcd blinkOn() {
+	public HD44780Lcd blinkOn() {
 		return displayControl(displayOn, true, true);
 	}
 		
-	public I2CLcd blinkOff() {
+	public HD44780Lcd blinkOff() {
 		return displayControl(displayOn, cursorEnabled, false);
 	}
 	
@@ -519,7 +503,7 @@ public class I2CLcd implements Closeable {
 	 *				Shift to the right if true, to the left if false.
 	 * @return This object instance
 	 */
-	public I2CLcd cursorOrDisplayShift(boolean displayShift, boolean shiftRight) {
+	public HD44780Lcd cursorOrDisplayShift(boolean displayShift, boolean shiftRight) {
 		writeInstruction((byte) (INST_CURSOR_DISPLAY_SHIFT
 				| (displayShift ? CDS_DISPLAY_SHIFT : CDS_CURSOR_MOVE)
 				| (shiftRight ? CDS_SHIFT_RIGHT : CDS_SHIFT_LEFT)
@@ -528,31 +512,31 @@ public class I2CLcd implements Closeable {
 		return this;
 	}
 	
-	public I2CLcd shiftDisplayRight() {
+	public HD44780Lcd shiftDisplayRight() {
 		cursorOrDisplayShift(true, true);
 		
 		return this;
 	}
 	
-	public I2CLcd shiftDisplayLeft() {
+	public HD44780Lcd shiftDisplayLeft() {
 		cursorOrDisplayShift(true, false);
 		
 		return this;
 	}
 	
-	public I2CLcd moveCursorRight() {
+	public HD44780Lcd moveCursorRight() {
 		cursorOrDisplayShift(false, true);
 		
 		return this;
 	}
 	
-	public I2CLcd moveCursorLeft() {
+	public HD44780Lcd moveCursorLeft() {
 		cursorOrDisplayShift(false, false);
 		
 		return this;
 	}
 	
-	public I2CLcd createChar(int location, byte[] charMap) {
+	public HD44780Lcd createChar(int location, byte[] charMap) {
 		/* In the character generator RAM, the user can rewrite character patterns by program.
 		 * For 5×8 dots, eight character patterns can be written, and for 5×10 dots,
 		 * four character patterns can be written. */
@@ -804,6 +788,8 @@ public class I2CLcd implements Closeable {
 	}
 	
 	public static class PCF8574LcdConnection implements LcdConnection {
+		// Default I2C device address for the PCF8574
+		public static final int DEFAULT_DEVICE_ADDRESS = 0x27;
 		private static final int PORT = 0;
 		
 		/*
@@ -832,6 +818,10 @@ public class I2CLcd implements Closeable {
 		private int dataReadWriteBit = DATA_READ_WRITE_BIT;
 		private int enableBit = ENABLE_BIT;
 		private int backlightBit = BACKLIGHT_BIT;
+
+		public PCF8574LcdConnection(int controller) {
+			this(controller, DEFAULT_DEVICE_ADDRESS);
+		}
 
 		public PCF8574LcdConnection(int controller, int deviceAddress) {
 			pcf8574 = new PCF8574(controller, deviceAddress, I2CConstants.ADDR_SIZE_7,

@@ -29,7 +29,7 @@ package com.diozero.sampleapps;
 
 import java.io.*;
 
-import com.diozero.I2CLcd;
+import com.diozero.HD44780Lcd;
 import com.diozero.api.Action;
 import com.diozero.api.I2CConstants;
 import com.diozero.util.RuntimeIOException;
@@ -53,7 +53,7 @@ import com.diozero.util.RuntimeIOException;
  */
 public class I2CLcdSampleAppInteractive implements Closeable {
 	public static void main(String[] args) {
-		int device_address = I2CLcd.DEFAULT_DEVICE_ADDRESS;
+		int device_address = HD44780Lcd.PCF8574LcdConnection.DEFAULT_DEVICE_ADDRESS;
 		if (args.length > 0) {
 			device_address = Integer.decode(args[0]).intValue();
 		}
@@ -69,7 +69,7 @@ public class I2CLcdSampleAppInteractive implements Closeable {
 	
 	private BufferedReader reader;
 	private boolean running;
-	private I2CLcd lcd;
+	private HD44780Lcd lcd;
 	
 	private OptionsMenu screenSizeMenu = new OptionsMenu("Screen Size", new String[] { "16x2", "20x4" });
 	private ActionMenu mainMenu = new ActionMenu("Main Menu", new ActionMenuItem[] {
@@ -131,7 +131,7 @@ public class I2CLcdSampleAppInteractive implements Closeable {
 		
 		int columns = Integer.parseInt(resolution[0]);
 		int rows = Integer.parseInt(resolution[1]);
-		lcd = new I2CLcd(controller, deviceAddress, columns, rows);
+		lcd = new HD44780Lcd(new HD44780Lcd.PCF8574LcdConnection(controller, deviceAddress), columns, rows);
 		
 		running = true;
 		while (running) {

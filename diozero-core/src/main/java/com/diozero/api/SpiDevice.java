@@ -67,14 +67,6 @@ public class SpiDevice implements Closeable, SPIConstants {
 		Logger.debug("close()");
 		device.close();
 	}
-
-	public void write(ByteBuffer out) throws RuntimeIOException {
-		device.write(out);
-	}
-
-	public ByteBuffer writeAndRead(ByteBuffer out) throws RuntimeIOException {
-		return device.writeAndRead(out);
-	}
 	
 	public int getController() {
 		return device.getController();
@@ -82,5 +74,13 @@ public class SpiDevice implements Closeable, SPIConstants {
 	
 	public int getChipSelect() {
 		return device.getChipSelect();
+	}
+
+	public void write(ByteBuffer out) throws RuntimeIOException {
+		device.write(out);
+	}
+
+	public ByteBuffer writeAndRead(ByteBuffer out) throws RuntimeIOException {
+		return device.writeAndRead(out);
 	}
 }

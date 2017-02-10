@@ -1,10 +1,5 @@
 package com.diozero.util;
 
-import java.util.List;
-import java.util.Map;
-
-import com.diozero.api.DeviceMode;
-
 /*
  * #%L
  * Device I/O Zero - Core
@@ -31,16 +26,13 @@ import com.diozero.api.DeviceMode;
  * #L%
  */
 
-public abstract class BoardInfo extends BoardPinInfo {
+public abstract class BoardInfo extends BoardGpioInfo {
 	private String make;
 	private String model;
 	private int memory;
 	private String libraryPath;
 	
-	public BoardInfo(String make, String model, int memory, Map<Integer, List<DeviceMode>> pins,
-			String libraryPath) {
-		super(pins);
-		
+	public BoardInfo(String make, String model, int memory, String libraryPath) {
 		this.make = make;
 		this.model = model;
 		this.memory = memory;

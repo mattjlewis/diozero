@@ -31,9 +31,8 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.*;
-import java.util.*;
 
-import com.diozero.api.DeviceMode;
+import com.diozero.api.GpioInfo;
 import com.diozero.util.BoardInfo;
 import com.diozero.util.BoardInfoProvider;
 import com.diozero.util.RuntimeIOException;
@@ -52,60 +51,15 @@ public class CHIPBoardInfoProvider implements BoardInfoProvider {
 	}
 
 	public static final class CHIPBoardInfo extends BoardInfo {
-		private static Map<Integer, List<DeviceMode>> CHIP_GPIOS;
-		static {
-			List<DeviceMode> digital_in_out_with_pwm = Arrays.asList(
-					DeviceMode.DIGITAL_INPUT,
-					DeviceMode.DIGITAL_OUTPUT,
-					DeviceMode.SOFTWARE_PWM_OUTPUT,
-					DeviceMode.PWM_OUTPUT);
-			List<DeviceMode> digital_in_out = Arrays.asList(
-					DeviceMode.DIGITAL_INPUT,
-					DeviceMode.DIGITAL_OUTPUT,
-					DeviceMode.SOFTWARE_PWM_OUTPUT);
-
-			CHIP_GPIOS = new HashMap<>();
-			
-			// Map the XIO pins. Note these are connected via a PCF8574 GPIO
-			// expansion board that does not handle interrupts reliably.
-			// Special rule for GPIO0 - maps to PWM0 (U13-18) for hardware PWM
-			// or GPIO0 (U14-13, XIO-P0) for digital in/out.
-			CHIP_GPIOS.put(Integer.valueOf(0), digital_in_out_with_pwm);
-			// Add the rest of the GPIOs (XIO-P1-7)
-			for (int i=1; i<8; i++) {
-				CHIP_GPIOS.put(Integer.valueOf(i), digital_in_out);
-			}
-			
-			// LCD-D2-D7
-			for (int i=98; i<104; i++) {
-				CHIP_GPIOS.put(Integer.valueOf(i), digital_in_out);
-			}
-			
-			// LCD-D10-D15
-			for (int i=106; i<112; i++) {
-				CHIP_GPIOS.put(Integer.valueOf(i), digital_in_out);
-			}
-			
-			// LCD-D18-D23
-			for (int i=114; i<120; i++) {
-				CHIP_GPIOS.put(Integer.valueOf(i), digital_in_out);
-			}
-			
-			// LCD-CLK, LCD-VSYNC, LCD-HSYNC
-			CHIP_GPIOS.put(Integer.valueOf(120), digital_in_out);
-			CHIP_GPIOS.put(Integer.valueOf(122), digital_in_out);
-			CHIP_GPIOS.put(Integer.valueOf(123), digital_in_out);
-			
-			// CSID0-7
-			for (int i=132; i<140; i++) {
-				CHIP_GPIOS.put(Integer.valueOf(i), digital_in_out);
-			}
-		}
+		public static final String U13_HEADER = "U13";
+		public static final String U14_HEADER = "U14";
+		
+		private static final int MEMORY = 512;
 		
 		private int xioGpioOffset = 0;
 		
 		public CHIPBoardInfo() {
-			super(MAKE, "CHIP", 512, CHIP_GPIOS, MAKE.toLowerCase());
+			super(MAKE, "CHIP", MEMORY, MAKE.toLowerCase());
 			
 			// Determine the XIO GPIO base
 			Path gpio_sysfs_dir = FileSystems.getDefault().getPath("/sys/class/gpio");
@@ -121,6 +75,96 @@ public class CHIPBoardInfoProvider implements BoardInfoProvider {
 				}
 			} catch (IOException e) {
 				throw new RuntimeIOException("Error determining XIO GPIO base: " + e, e);
+			}
+		}
+		
+		@Override
+		protected void init() {
+			// Not all gpio pins support interrupts. Whether a pin supports
+			// interrupts can be seen by the presence of an "edge" file (e.g.
+			// /sys/class/gpio/<pin>/edge) after exporting the pin. The
+			// following pins support interrupts: XIO-P0 thru XIO-P7, AP-EINT1,
+			// AP-EINT3, CSIPCK, CSICK.
+			// The XIO pin interrupts are for state changes only and may miss
+			// edges. The PCF8574 I/O extender only provides an interrupt on pin
+			// change and the driver then compares the current state of the
+			// inputs with the last seen state to determine which pin changed.
+			// This means that it can miss short pulses. In addition, the
+			// current driver does not respect the direction of change and
+			// instead delivers a signal on every change, meaning that setting
+			// the edge detection to "rising" or "falling" acts as if it were
+			// set to "both".
+			
+			// Map the XIO pins. Note these are connected via a PCF8574 GPIO
+			// expansion board that does not handle interrupts reliably.
+			// Special rule for GPIO0 - maps to PWM0 (U13-18) for hardware PWM
+			// or GPIO0 (U14-13, XIO-P0) for digital in/out.
+			int gpio = 0;
+			int pin = 13;
+			addGpioInfo(new GpioInfo(U14_HEADER, gpio, pin++, GpioInfo.DIGITAL_IN_OUT));
+			// Add the rest of the GPIOs (XIO-P1-7)
+			for (gpio=1; gpio<8; gpio++) {
+				addGpioInfo(new GpioInfo(U14_HEADER, gpio, pin++, GpioInfo.DIGITAL_IN_OUT));
+			}
+			
+			// PWM0
+			addGpioInfo(new GpioInfo(U13_HEADER, 34, "PWM0", 18, GpioInfo.DIGITAL_IN_OUT_PWM));
+			
+			// LCD-D2-D7
+			gpio = 98;
+			addGpioInfo(new GpioInfo(U13_HEADER, gpio++, "LCD-D2", 17, GpioInfo.DIGITAL_IN_OUT));
+			addGpioInfo(new GpioInfo(U13_HEADER, gpio++, "LCD-D3", 20, GpioInfo.DIGITAL_IN_OUT));
+			addGpioInfo(new GpioInfo(U13_HEADER, gpio++, "LCD-D4", 19, GpioInfo.DIGITAL_IN_OUT));
+			addGpioInfo(new GpioInfo(U13_HEADER, gpio++, "LCD-D5", 22, GpioInfo.DIGITAL_IN_OUT));
+			addGpioInfo(new GpioInfo(U13_HEADER, gpio++, "LCD-D6", 21, GpioInfo.DIGITAL_IN_OUT));
+			addGpioInfo(new GpioInfo(U13_HEADER, gpio++, "LCD-D7", 24, GpioInfo.DIGITAL_IN_OUT));
+			
+			// LCD-D10-D15
+			gpio = 106;
+			addGpioInfo(new GpioInfo(U13_HEADER, gpio++, "LCD-D10", 23, GpioInfo.DIGITAL_IN_OUT));
+			addGpioInfo(new GpioInfo(U13_HEADER, gpio++, "LCD-D11", 26, GpioInfo.DIGITAL_IN_OUT));
+			addGpioInfo(new GpioInfo(U13_HEADER, gpio++, "LCD-D12", 25, GpioInfo.DIGITAL_IN_OUT));
+			addGpioInfo(new GpioInfo(U13_HEADER, gpio++, "LCD-D13", 28, GpioInfo.DIGITAL_IN_OUT));
+			addGpioInfo(new GpioInfo(U13_HEADER, gpio++, "LCD-D14", 27, GpioInfo.DIGITAL_IN_OUT));
+			addGpioInfo(new GpioInfo(U13_HEADER, gpio++, "LCD-D15", 30, GpioInfo.DIGITAL_IN_OUT));
+			
+			// LCD-D18-D23
+			gpio = 114;
+			addGpioInfo(new GpioInfo(U13_HEADER, gpio++, "LCD-D18", 29, GpioInfo.DIGITAL_IN_OUT));
+			addGpioInfo(new GpioInfo(U13_HEADER, gpio++, "LCD-D19", 32, GpioInfo.DIGITAL_IN_OUT));
+			addGpioInfo(new GpioInfo(U13_HEADER, gpio++, "LCD-D20", 31, GpioInfo.DIGITAL_IN_OUT));
+			addGpioInfo(new GpioInfo(U13_HEADER, gpio++, "LCD-D21", 34, GpioInfo.DIGITAL_IN_OUT));
+			addGpioInfo(new GpioInfo(U13_HEADER, gpio++, "LCD-D22", 33, GpioInfo.DIGITAL_IN_OUT));
+			addGpioInfo(new GpioInfo(U13_HEADER, gpio++, "LCD-D23", 36, GpioInfo.DIGITAL_IN_OUT));
+			
+			// LCD-CLK, LCD-VSYNC, LCD-HSYNC
+			pin = 36;
+			addGpioInfo(new GpioInfo(U13_HEADER, 120, "LCD-CLK", pin++, GpioInfo.DIGITAL_IN_OUT));
+			addGpioInfo(new GpioInfo(U13_HEADER, 122, "LCD-VSYNC", pin++, GpioInfo.DIGITAL_IN_OUT));
+			addGpioInfo(new GpioInfo(U13_HEADER, 123, "LCD-HSYNC", pin++, GpioInfo.DIGITAL_IN_OUT));
+			
+			// UART1
+			addGpioInfo(new GpioInfo(U14_HEADER, 195, "UART1-TX", 3, GpioInfo.DIGITAL_IN_OUT));
+			addGpioInfo(new GpioInfo(U14_HEADER, 196, "UART1-RX", 5, GpioInfo.DIGITAL_IN_OUT));
+			
+			// AP-EINT
+			pin = 23;
+			addGpioInfo(new GpioInfo(U14_HEADER, 193, "AP-EINT1", pin++, GpioInfo.DIGITAL_IN_OUT));
+			addGpioInfo(new GpioInfo(U14_HEADER, 35, "AP-EINT3", pin++, GpioInfo.DIGITAL_IN_OUT));
+			
+			// I2C / SPI
+			pin = 25;
+			addGpioInfo(new GpioInfo(U14_HEADER, 50, "TWI2-SDA", pin++, GpioInfo.DIGITAL_IN_OUT));	// I2C2-SDA
+			addGpioInfo(new GpioInfo(U14_HEADER, 49, "TWI2-SCK", pin++, GpioInfo.DIGITAL_IN_OUT));	// I2C2-SCL
+			addGpioInfo(new GpioInfo(U14_HEADER, 128, "CSIPCK", pin++, GpioInfo.DIGITAL_IN_OUT));	// SPI-CS0
+			addGpioInfo(new GpioInfo(U14_HEADER, 129, "CSICK", pin++, GpioInfo.DIGITAL_IN_OUT));	// SPI-CLK
+			addGpioInfo(new GpioInfo(U14_HEADER, 130, "CSIHSYNC", pin++, GpioInfo.DIGITAL_IN_OUT));	// SPI-MOSI
+			addGpioInfo(new GpioInfo(U14_HEADER, 131, "CSIVSYNC", pin++, GpioInfo.DIGITAL_IN_OUT));	// SPI-MISO
+			
+			// CSID0-7
+			gpio = 132;
+			for (int csid=0; csid<8; csid++) {
+				addGpioInfo(new GpioInfo(U14_HEADER, gpio+csid, "CSID"+csid, 31+csid, GpioInfo.DIGITAL_IN_OUT));
 			}
 		}
 		

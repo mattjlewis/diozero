@@ -32,15 +32,21 @@ import java.io.Closeable;
 import org.pmw.tinylog.Logger;
 
 import com.diozero.api.DigitalOutputDevice;
+import com.diozero.internal.DeviceFactoryHelper;
+import com.diozero.internal.spi.GpioDeviceFactoryInterface;
 import com.diozero.util.RuntimeIOException;
 
 public class DigitalMotor implements Closeable {
 	private DigitalOutputDevice forward;
 	private DigitalOutputDevice backward;
 	
-	public DigitalMotor(int forwardPin, int backwardPin) throws RuntimeIOException {
-		forward = new DigitalOutputDevice(forwardPin);
-		backward = new DigitalOutputDevice(forwardPin);
+	public DigitalMotor(int forwardGpio, int backwardGpio) throws RuntimeIOException {
+		this(DeviceFactoryHelper.getNativeDeviceFactory(), forwardGpio, backwardGpio);
+	}
+	
+	public DigitalMotor(GpioDeviceFactoryInterface deviceFactory, int forwardGpio, int backwardGpio) throws RuntimeIOException {
+		forward = new DigitalOutputDevice(deviceFactory, forwardGpio, true, false);
+		backward = new DigitalOutputDevice(deviceFactory, forwardGpio, true, false);
 	}
 
 	@Override

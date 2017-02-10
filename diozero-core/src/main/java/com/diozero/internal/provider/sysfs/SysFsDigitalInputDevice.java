@@ -41,17 +41,19 @@ import com.diozero.internal.spi.GpioDigitalInputDeviceInterface;
 import com.diozero.util.*;
 
 /**
- * Pure Java implementation using <a href="https://www.kernel.org/doc/Documentation/gpio/sysfs.txt">/sys/class/gpio</a> kernel module
- *
+ * Pure Java implementation using <a href="https://www.kernel.org/doc/Documentation/gpio/sysfs.txt">the sysfs (/sys/class/gpio)</a> kernel module.
  */
 public class SysFsDigitalInputDevice extends AbstractInputDevice<DigitalInputEvent>
-implements GpioDigitalInputDeviceInterface, PollEventListener, Runnable {
+implements GpioDigitalInputDeviceInterface, PollEventListener {
 	private static final String EDGE_FILE = "edge";
 	private static final String VALUE_FILE = "value";
 	//private static final byte LOW_VALUE = '0';
 	private static final byte HIGH_VALUE = '1';
 	
-	private PollNative pollNative;
+	// Note java.nio.file.WatchService doesn't work with /sys, /proc and network file-systems
+	// http://stackoverflow.com/questions/30190730/nio-watchservice-for-unix-sys-classes-gpio-files
+	private EpollNative epollNative;
+	
 	private SysFsDeviceFactory deviceFactory;
 	private int gpio;
 	private Path valuePath;
@@ -63,17 +65,15 @@ implements GpioDigitalInputDeviceInterface, PollEventListener, Runnable {
 		
 		this.deviceFactory = deviceFactory;
 		this.gpio = gpio;
-		
-		pollNative = new PollNative();
+		epollNative = new EpollNative();
 
 		try (FileWriter writer = new FileWriter(gpioDir.resolve(EDGE_FILE).toFile())) {
 			writer.write(trigger.name().toLowerCase());
 		} catch (IOException e) {
-			throw new RuntimeIOException("Error setting edge for GPIO " + gpio, e);
+			Logger.warn(e, "Error writing to edge file for GPIO {}: {}", Integer.valueOf(gpio), e);
 		}
 		
 		// Note: Not possible to set pull-up/down resistor configuration via /sys/class/gpio
-		// TODO Set active_low based on the pud value?
 		
 		valuePath = gpioDir.resolve(VALUE_FILE);
 		try {
@@ -105,21 +105,21 @@ implements GpioDigitalInputDeviceInterface, PollEventListener, Runnable {
 
 	@Override
 	public void enableListener() {
-		disableListener();
-		// Note WatchService doesn't work with /sys, /proc and network file-systems
-		// http://stackoverflow.com/questions/30190730/nio-watchservice-for-unix-sys-classes-gpio-files
-		DioZeroScheduler.getDaemonInstance().execute(this);
+		epollNative.register(valuePath.toString(), Integer.valueOf(gpio), this);
+		DioZeroScheduler.getDaemonInstance().execute(epollNative::processEvents);
 	}
 
 	@Override
 	public void disableListener() {
-		pollNative.stop();
+		epollNative.deregister(valuePath.toString());
+		epollNative.stop();
 	}
 
 	@Override
 	public void closeDevice() throws RuntimeIOException {
 		Logger.debug("closeDevice()");
 		disableListener();
+		epollNative.close();
 		try {
 			valueFile.close();
 		} catch (IOException e) {
@@ -129,13 +129,7 @@ implements GpioDigitalInputDeviceInterface, PollEventListener, Runnable {
 	}
 
 	@Override
-	public void notify(int ref, long epochTime) {
-		valueChanged(new DigitalInputEvent(gpio, epochTime, System.nanoTime(), getValue()));
-	}
-
-	@Override
-	public void run() {
-		pollNative.poll(valuePath.toString(), 100, gpio, this);
-		Logger.info("poll returned");
+	public void notify(Object ref, long epochTime, char value) {
+		valueChanged(new DigitalInputEvent(gpio, epochTime, System.nanoTime(), value == HIGH_VALUE));
 	}
 }

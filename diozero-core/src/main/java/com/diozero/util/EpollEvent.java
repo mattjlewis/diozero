@@ -31,11 +31,13 @@ public class EpollEvent {
 	private int fd;
 	private int eventMask;
 	private long epochTime;
-	
-	public EpollEvent(int fd, int eventMask, long epochTime) {
+	private char value;
+
+	public EpollEvent(int fd, int eventMask, long epochTime, byte value) {
 		this.fd = fd;
 		this.eventMask = eventMask;
 		this.epochTime = epochTime;
+		this.value = (char) value;
 	}
 
 	public int getFd() {
@@ -50,8 +52,13 @@ public class EpollEvent {
 		return epochTime;
 	}
 
+	public char getValue() {
+		return value;
+	}
+
 	@Override
 	public String toString() {
-		return "EpollEvent [fd=" + fd + ", eventMask=" + eventMask + "]";
+		return "EpollEvent [fd=" + fd + ", eventMask=" + eventMask + ", epochTime=" + epochTime + ", value=" + value
+				+ "]";
 	}
 }

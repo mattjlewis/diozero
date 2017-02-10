@@ -74,6 +74,7 @@ public class SysFsDeviceFactory extends BaseNativeDeviceFactory {
 
 	@Override
 	public int getPwmFrequency(int gpio) {
+		// FIXME Remove if statement
 		if (boardInfo.sameMakeAndModel(OdroidBoardInfoProvider.ODROID_C2)) {
 			return OdroidC2SysFsPwmOutputDevice.getFrequency(gpio);
 		}
@@ -84,6 +85,7 @@ public class SysFsDeviceFactory extends BaseNativeDeviceFactory {
 
 	@Override
 	public void setPwmFrequency(int gpio, int pwmFrequency) {
+		// FIXME Remove if statement
 		if (boardInfo.sameMakeAndModel(OdroidBoardInfoProvider.ODROID_C2)) {
 			OdroidC2SysFsPwmOutputDevice.setFrequency(gpio, pwmFrequency);
 			return;
@@ -95,7 +97,7 @@ public class SysFsDeviceFactory extends BaseNativeDeviceFactory {
 
 	@Override
 	protected GpioAnalogInputDeviceInterface createAnalogInputPin(String key, int gpio) throws RuntimeIOException {
-		// TODO Analog input support on Odroid C2, Beaglebone Black and C.H.I.P.
+		// TODO Analog input support on Odroid C2, Beaglebone Black, Asus Tinker Board and CHIP
 		
 		throw new UnsupportedOperationException("Analog input not supported by device factory '"
 				+ getClass().getSimpleName() + "' on device '" + boardInfo.getName() + "'");
@@ -133,6 +135,7 @@ public class SysFsDeviceFactory extends BaseNativeDeviceFactory {
 	@Override
 	protected PwmOutputDeviceInterface createPwmOutputPin(String key, int gpio, float initialValue,
 			PwmType pwmType) throws RuntimeIOException {
+		// FIXME Remove if statements
 		if (boardInfo.sameMakeAndModel(OdroidBoardInfoProvider.ODROID_C2)) {
 			// FIXME Match with previously set PWM frequency...
 			return new OdroidC2SysFsPwmOutputDevice(key, this, gpio, DEFAULT_PWM_FREQUENCY, initialValue);
@@ -196,7 +199,7 @@ public class SysFsDeviceFactory extends BaseNativeDeviceFactory {
 			}
 		}
 
-		// Defaults to in on most boards
+		// Defaults to "in" on all boards I have encountered
 		try (FileWriter writer = new FileWriter(direction_file.toFile(), true)) {
 			writer.write(mode == DeviceMode.DIGITAL_OUTPUT ? "out" : "in");
 		} catch (IOException e) {

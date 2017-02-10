@@ -25,16 +25,19 @@ package com.diozero.internal.board.odroid;
  * THE SOFTWARE.
  * #L%
  */
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
-import com.diozero.api.DeviceMode;
+import com.diozero.api.GpioInfo;
 import com.diozero.util.BoardInfo;
 import com.diozero.util.BoardInfoProvider;
 
 public class OdroidBoardInfoProvider implements BoardInfoProvider {
-	public static final OdroidC2BoardInfo ODROID_C2 = new OdroidC2BoardInfo(2048);
+	public static final OdroidC1BoardInfo ODROID_C1 = new OdroidC1BoardInfo();
+	public static final OdroidC2BoardInfo ODROID_C2 = new OdroidC2BoardInfo();
 	
 	public static final String MAKE = "Odroid";
+	private static final String C1_HARDWARE_ID = "ODROID-C1";
 	private static final String C2_HARDWARE_ID = "ODROID-C2";
 	
 	public static enum Model {
@@ -48,32 +51,33 @@ public class OdroidBoardInfoProvider implements BoardInfoProvider {
 		// TODO Verify C0
 		//BOARDS.put("????", new OdroidBoardInfo(Model.C0, 1024));
 		//BOARDS.put("0000", new OdroidBoardInfo(Model.U2_U3, 2048));
-		//BOARDS.put("000a", new OdroidBoardInfo(Model.C1, 1024));
+		BOARD_REVISIONS.put("000a", ODROID_C1);
 		//BOARDS.put("0100", new OdroidBoardInfo(Model.XU_3_4, 2048));
 		BOARD_REVISIONS.put("020b", ODROID_C2);
 	}
 
 	@Override
 	public BoardInfo lookup(String hardware, String revision) {
-		if (hardware != null && hardware.equals(C2_HARDWARE_ID)) {
-			return ODROID_C2;
+		if (hardware != null) {
+			if (hardware.equals(C2_HARDWARE_ID)) {
+				return ODROID_C2;
+			} else if (hardware.equals(C1_HARDWARE_ID)) {
+				return ODROID_C1;
+			}
 		}
 		return null;
 	}
 
-	public static class OdroidBoardInfo extends BoardInfo {
-		public OdroidBoardInfo(Model model, int memory) {
-			super(MAKE, model.toString(), memory, null, MAKE.toLowerCase() + "/" + model.toString().toLowerCase());
+	public static class OdroidC1BoardInfo extends BoardInfo {
+		private static final int MEMORY = 1024;
+		
+		public OdroidC1BoardInfo() {
+			super(MAKE, Model.C1.toString(), MEMORY, MAKE.toLowerCase() + "/" + Model.C1.toString().toLowerCase());
 		}
 		
 		@Override
-		public String getLibraryPath() {
-			return MAKE.toLowerCase() + "/" + getModel().toLowerCase();
-		}
-
-		@Override
-		public boolean isSupported(DeviceMode mode, int gpio) {
-			return false;
+		protected void init() {
+			// TODO Add pins when support for this board is added
 		}
 	}
 
@@ -81,41 +85,32 @@ public class OdroidBoardInfoProvider implements BoardInfoProvider {
 	 * See <a href="http://www.hardkernel.com/main/products/prdt_info.php?g_code=G145457216438&tab_idx=2">Odroid C2 Hardware Technical details</a>.
 	 */
 	public static class OdroidC2BoardInfo extends BoardInfo {
-		private static Map<Integer, List<DeviceMode>> C2_PINS;
-		static {
-			List<DeviceMode> digital_in_out = Arrays.asList(
-					DeviceMode.DIGITAL_INPUT,
-					DeviceMode.DIGITAL_OUTPUT,
-					DeviceMode.SOFTWARE_PWM_OUTPUT);
-			// See http://odroid.com/dokuwiki/doku.php?id=en:c2_hardware_pwm
-			List<DeviceMode> digital_in_out_pwm = Arrays.asList(
-					DeviceMode.DIGITAL_INPUT,
-					DeviceMode.DIGITAL_OUTPUT,
-					DeviceMode.SOFTWARE_PWM_OUTPUT,
-					DeviceMode.PWM_OUTPUT);
-
-			C2_PINS = new HashMap<>();
-			C2_PINS.put(Integer.valueOf(214), digital_in_out);
-			C2_PINS.put(Integer.valueOf(218), digital_in_out);
-			C2_PINS.put(Integer.valueOf(219), digital_in_out);
-			C2_PINS.put(Integer.valueOf(224), digital_in_out);
-			C2_PINS.put(Integer.valueOf(225), digital_in_out);
-			for (int i=228; i<=239; i++) {
-				if (i == 234 || i == 235) {
-					C2_PINS.put(Integer.valueOf(i), digital_in_out_pwm);
-				} else {
-					C2_PINS.put(Integer.valueOf(i), digital_in_out);
-				}
-			}
-			C2_PINS.put(Integer.valueOf(247), digital_in_out);
-			C2_PINS.put(Integer.valueOf(249), digital_in_out);
-			// Note these are actual pin numbers, not logical GPIO numbers
-			C2_PINS.put(Integer.valueOf(37), Arrays.asList(DeviceMode.ANALOG_INPUT));
-			C2_PINS.put(Integer.valueOf(40), Arrays.asList(DeviceMode.ANALOG_INPUT));
+		private static final int MEMORY = 2048;
+		
+		private OdroidC2BoardInfo() {
+			super(MAKE, Model.C2.toString(), MEMORY, MAKE.toLowerCase() + "/" + Model.C2.toString().toLowerCase());
 		}
-
-		private OdroidC2BoardInfo(int memory) {
-			super(MAKE, Model.C2.toString(), memory, C2_PINS, MAKE.toLowerCase() + "/" + Model.C2.toString().toLowerCase());
+		
+		@Override
+		protected void init() {
+			addGpioInfo(new GpioInfo(214,35, GpioInfo.DIGITAL_IN_OUT));
+			addGpioInfo(new GpioInfo(218, 36, GpioInfo.DIGITAL_IN_OUT));
+			addGpioInfo(new GpioInfo(219, 31, GpioInfo.DIGITAL_IN_OUT));
+			addGpioInfo(new GpioInfo(224, 32, GpioInfo.DIGITAL_IN_OUT));
+			addGpioInfo(new GpioInfo(225, 26, GpioInfo.DIGITAL_IN_OUT));
+			addGpioInfo(new GpioInfo(228, 29, GpioInfo.DIGITAL_IN_OUT));
+			addGpioInfo(new GpioInfo(229, 24, GpioInfo.DIGITAL_IN_OUT));
+			addGpioInfo(new GpioInfo(230, 23, GpioInfo.DIGITAL_IN_OUT));
+			addGpioInfo(new GpioInfo(231, 22, GpioInfo.DIGITAL_IN_OUT));
+			addGpioInfo(new GpioInfo(232, 21, GpioInfo.DIGITAL_IN_OUT));
+			addGpioInfo(new GpioInfo(233, 18, GpioInfo.DIGITAL_IN_OUT));
+			addGpioInfo(new GpioInfo(234, 33, GpioInfo.DIGITAL_IN_OUT_PWM));
+			addGpioInfo(new GpioInfo(235, 19, GpioInfo.DIGITAL_IN_OUT_PWM));
+			addGpioInfo(new GpioInfo(247, 11, GpioInfo.DIGITAL_IN_OUT));
+			addGpioInfo(new GpioInfo(249, 7, GpioInfo.DIGITAL_IN_OUT));
+			// Note these are actual pin numbers, not logical GPIO numbers
+			addGpioInfo(new GpioInfo(37, 37, GpioInfo.ANALOG_INPUT));
+			addGpioInfo(new GpioInfo(40, 40, GpioInfo.ANALOG_INPUT));
 		}
 	}
 }

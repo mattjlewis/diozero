@@ -28,6 +28,7 @@ package com.diozero.util;
 
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -37,26 +38,41 @@ import java.util.Map;
 import org.pmw.tinylog.Logger;
 
 public class LibraryLoader {
-	private static final Object LOADED = new Object();
-	private static final Map<String, Object> LOADED_LIBRARIES = new HashMap<>();
+	private static final Map<String, Boolean> LOADED_LIBRARIES = new HashMap<>();
 	
 	public static void loadLibrary(Class<?> clz, String libName) throws UnsatisfiedLinkError {
 		synchronized (LOADED_LIBRARIES) {
 			if (LOADED_LIBRARIES.get(libName) == null) {
-				try {
-					// First try load the library from within the JAR file
-					Path path = Files.createTempFile("lib" + libName, ".so");
-					path.toFile().deleteOnExit();
-					Files.copy(clz.getResourceAsStream("/lib/" + SystemInfo.getLibraryPath() + "/lib" + libName + ".so"), path,
-							StandardCopyOption.REPLACE_EXISTING);
-					Runtime.getRuntime().load(path.toString());
-				} catch (NullPointerException | IOException e) {
-					Logger.info(e, "Error loading library from classpath, trying System.loadLibrary: " + e);
-		
-					// Try load from the Java system library path (-Djava.library.path)
-					System.loadLibrary(libName);
+				boolean loaded = false;
+				
+				// First try load the library from within the JAR file
+				@SuppressWarnings("resource")
+				InputStream is = clz.getResourceAsStream("/lib/" + SystemInfo.getLibraryPath() + "/lib" + libName + ".so");
+				if (is != null) {
+					try {
+						Path path = Files.createTempFile("lib" + libName, ".so");
+						path.toFile().deleteOnExit();
+						Files.copy(is, path, StandardCopyOption.REPLACE_EXISTING);
+						Runtime.getRuntime().load(path.toString());
+						loaded = true;
+						Logger.info("Loaded {} from classpath", libName);
+					} catch (Throwable t) {
+						Logger.info(t, "Error loading library from classpath, trying System.loadLibrary: {}", t);
+					} finally {
+						try { is.close(); } catch (IOException e) { }
+					}
 				}
-				LOADED_LIBRARIES.put(libName, LOADED);
+				if (! loaded) {
+					// Try load from the Java system library path (-Djava.library.path)
+					try {
+						System.loadLibrary(libName);
+						loaded = true;
+						Logger.info("Loaded {} from system library path", libName);
+					} catch (Throwable t) {
+						Logger.info(t, "Error loading library from system library path: {}", t);
+					}
+				}
+				LOADED_LIBRARIES.put(libName, Boolean.valueOf(loaded));
 			}
 		}
 	}

@@ -28,13 +28,14 @@ package com.diozero.sampleapps;
 
 import org.pmw.tinylog.Logger;
 
-import com.diozero.I2CLcd;
+import com.diozero.HD44780Lcd;
+import com.diozero.HD44780Lcd.LcdConnection;
 import com.diozero.api.I2CConstants;
 import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 
 /**
- * I2C LCD sample application. To run:
+ * HD44780 controlled LCD sample application. To run:
  * <ul>
  * <li>sysfs:<br>
  *  {@code java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar com.diozero.sampleapps.I2CLcdSampleApp20x4 [i2c_address] [i2c_controller]}</li>
@@ -53,7 +54,7 @@ import com.diozero.util.SleepUtil;
 public class I2CLcdSampleApp20x4 {
 	// Main program block
 	public static void main(String[] args) {
-		int device_address = I2CLcd.DEFAULT_DEVICE_ADDRESS;
+		int device_address = HD44780Lcd.PCF8574LcdConnection.DEFAULT_DEVICE_ADDRESS;
 		if (args.length > 0) {
 			device_address = Integer.decode(args[0]).intValue();
 		}
@@ -63,7 +64,8 @@ public class I2CLcdSampleApp20x4 {
 		}
 		
 		// Initialise display
-		try (I2CLcd lcd = new I2CLcd(controller, device_address, 20, 4)) {
+		try (LcdConnection lcd_connection = new HD44780Lcd.PCF8574LcdConnection(controller, device_address);
+				HD44780Lcd lcd = new HD44780Lcd(lcd_connection, 20, 4)) {
 			byte[] space_invader = new byte[] { 0x00, 0x0e, 0x15, 0x1f, 0x0a, 0x04, 0x0a, 0x11 };
 			byte[] smilie = new byte[] { 0x00, 0x00, 0x0a, 0x00, 0x00, 0x11, 0x0e, 0x00 };
 			byte[] frownie = new byte[] { 0x00, 0x00, 0x0a, 0x00, 0x00, 0x00, 0x0e, 0x11 };

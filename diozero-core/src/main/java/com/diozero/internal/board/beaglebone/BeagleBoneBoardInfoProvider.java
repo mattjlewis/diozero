@@ -26,10 +26,7 @@ package com.diozero.internal.board.beaglebone;
  * #L%
  */
 
-
-import java.util.*;
-
-import com.diozero.api.DeviceMode;
+import com.diozero.api.GpioInfo;
 import com.diozero.util.BoardInfo;
 import com.diozero.util.BoardInfoProvider;
 
@@ -47,38 +44,39 @@ public class BeagleBoneBoardInfoProvider implements BoardInfoProvider {
 	}
 	
 	public static class BeagleBoneBlackBoardInfo extends BoardInfo {
+		public static final String P9_HEADER = "P9";
+		public static final String P8_HEADER = "P8";
+		
 		private static final String BB_BLACK = "Black";
 		private static final int MEMORY = 512;
 		private static final String BBB_LIB_PATH = MAKE.toLowerCase() + "/" + BB_BLACK.toLowerCase();
-		private static Map<Integer, List<DeviceMode>> BBB_PINS;
-		static {
-			List<DeviceMode> digital_in_out = Arrays.asList(
-					DeviceMode.DIGITAL_INPUT,
-					DeviceMode.DIGITAL_OUTPUT,
-					DeviceMode.SOFTWARE_PWM_OUTPUT);
-
-			BBB_PINS = new HashMap<>();
-			BBB_PINS.put(Integer.valueOf(20), digital_in_out);
-			BBB_PINS.put(Integer.valueOf(26), digital_in_out);
-			BBB_PINS.put(Integer.valueOf(27), digital_in_out);
-			BBB_PINS.put(Integer.valueOf(45), digital_in_out);
-			BBB_PINS.put(Integer.valueOf(46), digital_in_out);
-			BBB_PINS.put(Integer.valueOf(47), digital_in_out);
-			BBB_PINS.put(Integer.valueOf(48), digital_in_out);
-			BBB_PINS.put(Integer.valueOf(49), digital_in_out);
-			BBB_PINS.put(Integer.valueOf(60), digital_in_out);
-			BBB_PINS.put(Integer.valueOf(61), digital_in_out);
-			BBB_PINS.put(Integer.valueOf(66), digital_in_out);
-			BBB_PINS.put(Integer.valueOf(67), digital_in_out);
-			BBB_PINS.put(Integer.valueOf(68), digital_in_out);
-			BBB_PINS.put(Integer.valueOf(69), digital_in_out);
-			BBB_PINS.put(Integer.valueOf(112), digital_in_out);
-			BBB_PINS.put(Integer.valueOf(115), digital_in_out);
-			BBB_PINS.put(Integer.valueOf(117), digital_in_out);
-		}
 		
 		public BeagleBoneBlackBoardInfo() {
-			super(MAKE, BB_BLACK, MEMORY, BBB_PINS, BBB_LIB_PATH);
+			super(MAKE, BB_BLACK, MEMORY, BBB_LIB_PATH);
+		}
+
+		@Override
+		protected void init() {
+			addGpioInfo(new GpioInfo(P9_HEADER, 60, 12, GpioInfo.DIGITAL_IN_OUT));
+			addGpioInfo(new GpioInfo(P9_HEADER, 48, 15, GpioInfo.DIGITAL_IN_OUT));
+			addGpioInfo(new GpioInfo(P9_HEADER, 49, 23, GpioInfo.DIGITAL_IN_OUT));
+			addGpioInfo(new GpioInfo(P9_HEADER, 117, 25, GpioInfo.DIGITAL_IN_OUT));
+			addGpioInfo(new GpioInfo(P9_HEADER, 115, 27, GpioInfo.DIGITAL_IN_OUT));
+			addGpioInfo(new GpioInfo(P9_HEADER, 112, 30, GpioInfo.DIGITAL_IN_OUT));
+			addGpioInfo(new GpioInfo(P9_HEADER, 20, 41, GpioInfo.DIGITAL_IN_OUT));
+
+			addGpioInfo(new GpioInfo(P8_HEADER, 66, 7, GpioInfo.DIGITAL_IN_OUT));
+			addGpioInfo(new GpioInfo(P8_HEADER, 67, 8, GpioInfo.DIGITAL_IN_OUT));
+			addGpioInfo(new GpioInfo(P8_HEADER, 69, 9, GpioInfo.DIGITAL_IN_OUT));
+			addGpioInfo(new GpioInfo(P8_HEADER, 68, 10, GpioInfo.DIGITAL_IN_OUT));
+			addGpioInfo(new GpioInfo(P8_HEADER, 45, 11, GpioInfo.DIGITAL_IN_OUT));
+			addGpioInfo(new GpioInfo(P8_HEADER, 44, 12, GpioInfo.DIGITAL_IN_OUT));
+			addGpioInfo(new GpioInfo(P8_HEADER, 26, 14, GpioInfo.DIGITAL_IN_OUT));
+			addGpioInfo(new GpioInfo(P8_HEADER, 47, 15, GpioInfo.DIGITAL_IN_OUT));
+			addGpioInfo(new GpioInfo(P8_HEADER, 46, 16, GpioInfo.DIGITAL_IN_OUT));
+			addGpioInfo(new GpioInfo(P8_HEADER, 27, 17, GpioInfo.DIGITAL_IN_OUT));
+			addGpioInfo(new GpioInfo(P8_HEADER, 65, 18, GpioInfo.DIGITAL_IN_OUT));
+			addGpioInfo(new GpioInfo(P8_HEADER, 61, 26, GpioInfo.DIGITAL_IN_OUT));
 		}
 	}
 }

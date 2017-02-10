@@ -28,9 +28,9 @@ package com.diozero.sampleapps;
 
 import org.pmw.tinylog.Logger;
 
-import com.diozero.I2CLcd;
-import com.diozero.I2CLcd.LcdConnection;
-import com.diozero.I2CLcd.PCF8574LcdConnection;
+import com.diozero.HD44780Lcd;
+import com.diozero.HD44780Lcd.LcdConnection;
+import com.diozero.HD44780Lcd.PCF8574LcdConnection;
 import com.diozero.api.I2CConstants;
 import com.diozero.util.RuntimeIOException;
 
@@ -38,23 +38,23 @@ import com.diozero.util.RuntimeIOException;
  * I2C LCD sample application. To run:
  * <ul>
  * <li>sysfs:<br>
- *  {@code java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar com.diozero.sampleapps.I2CLcdSampleApp16x2 [i2c_address] [i2c_controller]}</li>
+ *  {@code java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar com.diozero.sampleapps.LcdSampleApp16x2 [i2c_address] [i2c_controller]}</li>
  * <li>JDK Device I/O 1.0:<br>
- *  {@code sudo java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-jdkdio10-$DIOZERO_VERSION.jar:dio-1.0.1-dev-linux-armv6hf.jar -Djava.library.path=. com.diozero.sampleapps.I2CLcdSampleApp16x2 [i2c_address] [i2c_controller]}</li>
+ *  {@code sudo java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-jdkdio10-$DIOZERO_VERSION.jar:dio-1.0.1-dev-linux-armv6hf.jar -Djava.library.path=. com.diozero.sampleapps.LcdSampleApp16x2 [i2c_address] [i2c_controller]}</li>
  * <li>JDK Device I/O 1.1:<br>
- *  {@code sudo java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-jdkdio11-$DIOZERO_VERSION.jar:dio-1.1-dev-linux-armv6hf.jar -Djava.library.path=. com.diozero.sampleapps.I2CLcdSampleApp16x2 [i2c_address] [i2c_controller]}</li>
+ *  {@code sudo java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-jdkdio11-$DIOZERO_VERSION.jar:dio-1.1-dev-linux-armv6hf.jar -Djava.library.path=. com.diozero.sampleapps.LcdSampleApp16x2 [i2c_address] [i2c_controller]}</li>
  * <li>Pi4j:<br>
- *  {@code sudo java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-pi4j-$DIOZERO_VERSION.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sampleapps.I2CLcdSampleApp16x2 [i2c_address] [i2c_controller]}</li>
+ *  {@code sudo java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-pi4j-$DIOZERO_VERSION.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sampleapps.LcdSampleApp16x2 [i2c_address] [i2c_controller]}</li>
  * <li>wiringPi:<br>
- *  {@code sudo java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-wiringpi-$DIOZERO_VERSION.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sampleapps.I2CLcdSampleApp16x2 [i2c_address] [i2c_controller]}</li>
+ *  {@code sudo java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-wiringpi-$DIOZERO_VERSION.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sampleapps.LcdSampleApp16x2 [i2c_address] [i2c_controller]}</li>
  * <li>pigpgioJ:<br>
- *  {@code sudo java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-pigpio-$DIOZERO_VERSION.jar:pigpioj-java-1.0.1.jar com.diozero.sampleapps.I2CLcdSampleApp16x2 [i2c_address] [i2c_controller]}</li>
+ *  {@code sudo java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-pigpio-$DIOZERO_VERSION.jar:pigpioj-java-1.0.1.jar com.diozero.sampleapps.LcdSampleApp16x2 [i2c_address] [i2c_controller]}</li>
  * </ul>
  */
-public class I2CLcdSampleApp16x2 {
+public class LcdSampleApp16x2PCF8574 {
 	// Main program block
 	public static void main(String[] args) {
-		int device_address = I2CLcd.DEFAULT_DEVICE_ADDRESS;
+		int device_address = HD44780Lcd.PCF8574LcdConnection.DEFAULT_DEVICE_ADDRESS;
 		if (args.length > 0) {
 			device_address = Integer.decode(args[0]).intValue();
 		}
@@ -68,7 +68,7 @@ public class I2CLcdSampleApp16x2 {
 		
 		// Initialise display
 		try (LcdConnection lcd_connection = new PCF8574LcdConnection(controller, device_address);
-				I2CLcd lcd = new I2CLcd(lcd_connection, columns, rows)) {
+				HD44780Lcd lcd = new HD44780Lcd(lcd_connection, columns, rows)) {
 			LcdSampleApp16x2Base.test(lcd);
 		} catch (RuntimeIOException e) {
 			Logger.error(e, "Error: {}", e);

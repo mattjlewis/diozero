@@ -49,12 +49,4 @@ public abstract class GpioDevice implements Closeable {
 	public int getGpio() {
 		return gpio;
 	}
-
-	/**
-	 * Get the GPIO for this device.
-	 * @return GPIO for this device.
-	 */
-	public int getPinNumber() {
-		return gpio;
-	}
 }

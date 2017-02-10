@@ -34,19 +34,20 @@ import com.diozero.internal.spi.PwmOutputDeviceFactoryInterface;
 import com.diozero.util.RuntimeIOException;
 
 /**
- * Generic bi-directional motor controlled by separate forward / backward PWM output pins
+ * Generic bi-directional motor controlled by separate forward / backward PWM output GPIOs
  */
 public class PwmMotor extends MotorBase {
 	private PwmOutputDevice forward;
 	private PwmOutputDevice backward;
 
-	public PwmMotor(int forwardPwmPin, int backwardPwmPin) throws RuntimeIOException {
-		this(DeviceFactoryHelper.getNativeDeviceFactory(), forwardPwmPin, backwardPwmPin);
+	public PwmMotor(int forwardPwmGpio, int backwardPwmGpio) throws RuntimeIOException {
+		this(DeviceFactoryHelper.getNativeDeviceFactory(), forwardPwmGpio, backwardPwmGpio);
 	}
 
-	public PwmMotor(PwmOutputDeviceFactoryInterface deviceFactory, int forwardPwmPin, int backwardPwmPin) throws RuntimeIOException {
-		forward = new PwmOutputDevice(deviceFactory, forwardPwmPin, 0);
-		backward = new PwmOutputDevice(deviceFactory, backwardPwmPin, 0);
+	public PwmMotor(PwmOutputDeviceFactoryInterface deviceFactory,
+			int forwardPwmGpio, int backwardPwmGpio) throws RuntimeIOException {
+		forward = new PwmOutputDevice(deviceFactory, forwardPwmGpio, 0);
+		backward = new PwmOutputDevice(deviceFactory, backwardPwmGpio, 0);
 	}
 
 	@Override
@@ -105,7 +106,7 @@ public class PwmMotor extends MotorBase {
 
 	/**
 	 * Represents the speed of the motor as a floating point value between -1
-	 * (full speed backward) and 1 (full speed forward)
+	 * (full speed backward) and 1 (full speed forward).
 	 * @return current relative motor speed
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
