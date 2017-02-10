@@ -37,7 +37,7 @@
 	<artifactId>diozero</artifactId>
 	<version>0.9-SNAPSHOT</version>
 	<name>Device I/O Zero</name>
-	<description>Java Device I/O library with an API based on the Python GPIO Zero supporting portable across Single Board Computers (including Raspberry Pi, BeagleBone Black, Odroid C2, C.H.I.P., Asus Tinker Board)</description>
+	<description>Java Device I/O library with an API based on the Python GPIO Zero supporting portable across Single Board Computers (including Raspberry Pi, BeagleBone Black, Odroid C2, CHIP, Asus Tinker Board)</description>
 	<url>http://www.diozero.com/</url>
 	<inceptionYear>2016</inceptionYear>
 	<packaging>pom</packaging>
@@ -239,6 +239,30 @@
 				<plugins>
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-source-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>attach-sources</id>
+								<goals>
+									<goal>jar</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-javadoc-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>attach-javadocs</id>
+								<goals>
+									<goal>jar</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-gpg-plugin</artifactId>
 						<executions>
 							<execution>
@@ -311,6 +335,7 @@
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-source-plugin</artifactId>
 					<version>${maven-source-plugin.version}</version>
+				<!--
 					<executions>
 						<execution>
 							<id>attach-sources</id>
@@ -319,11 +344,13 @@
 							</goals>
 						</execution>
 					</executions>
+				 -->
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-javadoc-plugin</artifactId>
 					<version>${maven-javadoc-plugin.version}</version>
+					<!--
 					<executions>
 						<execution>
 							<id>attach-javadocs</id>
@@ -332,6 +359,7 @@
 							</goals>
 						</execution>
 					</executions>
+					-->
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>

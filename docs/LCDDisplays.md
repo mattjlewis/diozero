@@ -1,10 +1,10 @@
 # LCD Displays
 
-## I2C LCDs
+## HD44780 LCDs
 
-*class* **com.diozero.I2CLcd**{: .descname } (*controller=1*, *deviceAddress=0x27*, *columns*, *rows*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/I2CLcd.java){: .viewcode-link } [&para;](LCDDisplays.md#i2c-lcd "Permalink to this definition"){: .headerlink }
+*class* **com.diozero.HD44780Lcd**{: .descname } (*controller=1*, *deviceAddress=0x27*, *columns*, *rows*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/HD44780Lcd.java){: .viewcode-link } [&para;](LCDDisplays.md#hd44780-lcd "Permalink to this definition"){: .headerlink }
 
-: Supports the Hitachi HD44780 controller attached via the NCP PCF8574 I/O expansion board.
+: Support for Hitachi HD44780 controlled LCDs.
 
     * **controller** (*int=1*) - I2C bus controller number (defaults to 1).
     

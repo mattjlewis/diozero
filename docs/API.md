@@ -10,9 +10,9 @@
     
     * **gpio** (*int*) - GPIO to which the device is connected.
     
-    *int* **getgpio** ()
+    *int* **getGpio** ()
     
-    : Get the GPIO GPIO for this device.
+    : Get the GPIO for this device.
     
 
 ## Input Devices
@@ -50,9 +50,9 @@
     
     * **gpio** (*int*) - GPIO to which the device is connected.
     
-    * **pud** (*GpioPullUpDown*) - Pull up/down configuration, values: NONE, PULL_UP, PULL_DOWN.
+    * **pud** (*GpioPullUpDown*) - Pull up/down configuration, values: NONE, PULL_UP, PULL_DOWN. Defaults to NONE.
     
-    * **trigger** (*GpioEventTrigger*) - Event trigger configuration, values: NONE, RISING, FALLING, BOTH.
+    * **trigger** (*GpioEventTrigger*) - Event trigger configuration, values: NONE, RISING, FALLING, BOTH. Defaults to BOTH.
     
     *GpioPullUpDown* **getPullUpDown** ()
     
@@ -95,19 +95,19 @@
     
     * **gpio** (*int*) - GPIO to which the device is connected.
     
-    * **pud** (*GpioPullUpDown*) - Pull up/down configuration, values: NONE, PULL_UP, PULL_DOWN.
+    * **pud** (*GpioPullUpDown*) - Pull up/down configuration, values: NONE, PULL_UP, PULL_DOWN.. Defaults to NONE.
     
-    * **trigger** (*GpioEventTrigger*) - Event trigger configuration, values: NONE, RISING, FALLING, BOTH.
+    * **trigger** (*GpioEventTrigger*) - Event trigger configuration, values: NONE, RISING, FALLING, BOTH. Defaults to BOTH.
     
     **waitForActive** (*timeout=0*)
     
-    : Wait for the input device to go active.
+    : Wait for the specified time period (in millieconds) for the device to go active.
     
     * **timeout** (*int*) - Timeout value in milliseconds. Timeout values &lt;= 0 represent an indefinite amount of time.
     
     **waitForInactive** (*timeout=0*)
     
-    : Wait for the input device to go inactive.
+    : Wait for the specified time period (in millieconds) for the device to go inactive.
     
     * **timeout** (*int*) - Timeout value in milliseconds. Timeout values &lt;= 0 represent an indefinite amount of time.
     
@@ -175,7 +175,7 @@ Example: Temperature readings using an MCP3008 and TMP36:
 
 Code taken from [TMP36Test](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/sampleapps/TMP36Test.java):
 ```java
-try (McpAdc adc = new McpAdc(type, chipSelect);
+try (McpAdc adc = new McpAdc(McpAdc.Type.MCP3008, chipSelect);
 		TMP36 tmp36 = new TMP36(adc, pin, vRef, tempOffset)) {
 	for (int i=0; i<ITERATIONS; i++) {
 		double tmp = tmp36.getTemperature();
@@ -210,6 +210,37 @@ try (McpAdc adc = new McpAdc(type, chipSelect);
     * **percentChange** (*float*) - Degree of change required to trigger an event.
     
     * **pollInterval** (*int=50*) - Time in milliseconds at which reading should be taken.
+
+
+### DigitalInputOutputDevice
+
+*class* **com.diozero.api.DigitalInputOutputDevice**{: .descname } (*gpio*, *mode*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/DigitalInputOutputDevice.java){: .viewcode-link } [&para;](API.md#digitalinputoutputdevice "Permalink to this definition"){: .headerlink }
+
+: Extends [GpioDevice](#gpiodevice) that allows switching between input and output modes. Note currently only provides basic get/set functionality.
+    
+    * **gpio** (*int*) - GPIO pin to which the output device is connected.
+    
+    * **mode** (*DeviceMode*) - Initial input / output mode.
+    
+    *DeviceMode* **getMode** ()
+    
+    : Get the current input / output mode.
+    
+    **setMode** (mode)
+    
+    : Change input / output mode.
+    
+    **mode** (*DeviceMode*) - new mode for the device.
+    
+    *boolean* **getValue** ()
+    
+    : Get the current device state.
+    
+    **setValue** (value)
+    
+    : Set the output value.
+    
+    **value** (*boolean*) - output on/off state.
 
 
 ## Output Devices
@@ -306,9 +337,9 @@ try (McpAdc adc = new McpAdc(type, chipSelect);
 
 ## I2C Support
 
-*class* **com.diozero.api.I2CDevice**{: .descname } (*controller*, *address*, *addressSize*, *clockFrequency*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/I2CDevice.java){: .viewcode-link } [&para;](API.md#i2c-support "Permalink to this definition"){: .headerlink }
+*class* **com.diozero.api.I2CDevice**{: .descname } (*controller*, *address*, *addressSize*, *clockFrequency*, *byteOrder*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/I2CDevice.java){: .viewcode-link } [&para;](API.md#i2c-support "Permalink to this definition"){: .headerlink }
 
-: Utility class for reading / writing to I2C devices.
+: Class for reading / writing to I2C devices.
 
     * **controller** (*int*) - I2C bus.
     
@@ -317,6 +348,34 @@ try (McpAdc adc = new McpAdc(type, chipSelect);
     * **addressSize** (*int*) - I2C device address size. Can be 7 or 10.
     
     * **clockFrequency** (*int*) - I2C clock frequency.
+    
+    * **byteOrder** (*int*) - The ByteOrder to use when sending data to this device.
 
 
 ## SPI Support
+
+*class* **com.diozero.api.SpiDevice**{: .descname } (*controller*, *chipSelect*, *frequency*, *mode*, *lsbFirst*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/SpiDevice.java){: .viewcode-link } [&para;](API.md#spi-support "Permalink to this definition"){: .headerlink }
+
+: Class for reading / writing to SPI devices.
+
+    * **controller** (*int*) - SPI controller.
+    
+    * **chipSelect** (*int*) - Chip Select, aka Chip Enable.
+    
+    * **frequency** (*int*) - SPI frequency in HZ.
+    
+    * **mode** (*SpiClockMode*) - SPI clock mode to be used, 1 for each combination of Clock Polarity / Clock Phase. See [Wikiepedia](https://en.wikipedia.org/wiki/Serial_Peripheral_Interface_Bus#Mode_number) for further information.
+    
+    * **lsbFirst** (*boolean*) - Byte order to use in communication.
+    
+    **write** (*out*)
+    
+    : Write data to the device.
+
+    * **out** (*ByteBuffer*) - the data to write.
+    
+    *ByteBuffer* **writeAndRead** (*out*)
+    
+    : Write and then read data to the device in the same transaction. The number of bytes read is the same as that written. Maximum output buffer size is 2048 bytes.
+
+    * **out** (*ByteBuffer*) - the data to write.

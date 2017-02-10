@@ -11,14 +11,14 @@
 #include "com_diozero_util_Util.h"
 
 JNIEXPORT void JNICALL Java_com_diozero_util_PollNative_poll
-  (JNIEnv* env, jobject pollNative, jstring filename, jint timeout, jint ref, jobject callback) {
+  (JNIEnv* env, jobject pollNative, jstring filename, jint timeout, jobject ref, jobject callback) {
 	jclass callback_class = (*env)->GetObjectClass(env, callback);
 	if (callback_class == NULL) {
 		printf("Error: poll() could not get callback class\n");
 		return;
 	}
 	char* notify_method_name = "notify";
-	char* notify_signature = "(IJ)V";
+	char* notify_signature = "(Ljava/lang/String;JB)V";
 	jmethodID notify_method_id = (*env)->GetMethodID(env, callback_class, notify_method_name, notify_signature);
 	if (notify_method_id == NULL) {
 		printf("Unable to find method '%s' with signature '%s' in callback object\n", notify_method_name, notify_signature);
@@ -29,7 +29,7 @@ JNIEXPORT void JNICALL Java_com_diozero_util_PollNative_poll
 	char c_filename[len];
 	(*env)->GetStringUTFRegion(env, filename, 0, len, c_filename);
 
-	int fd = open(c_filename, O_RDONLY);
+	int fd = open(c_filename, O_RDONLY | O_NONBLOCK);
 	if (fd < 0) {
 		printf("open: file %s could not be opened, %s\n", c_filename, strerror(errno));
 		return;
@@ -49,16 +49,19 @@ JNIEXPORT void JNICALL Java_com_diozero_util_PollNative_poll
 	}
 	(*env)->CallVoidMethod(env, pollNative, set_fd_method_id, fd);
 
-	uint8_t c;
+	const int BUF_LEN = 2;
+	uint8_t c[BUF_LEN];
+	memset(c, 0, BUF_LEN);
 
-	lseek(fd, 0, SEEK_SET); /* consume any prior interrupt */
-	read(fd, &c, 1);
+	lseek(fd, 0, SEEK_SET); /* consume any prior interrupts */
+	read(fd, &c, BUF_LEN-1);
 
 	int retval;
 
 	struct pollfd pfd;
 	pfd.fd = fd;
-	pfd.events = POLLPRI;
+	pfd.events = POLLPRI | POLLERR | POLLHUP | POLLNVAL;
+	//pfd.events = POLLPRI;
 	unsigned long long epoch_time;
 
 	while (1) {
@@ -67,12 +70,14 @@ JNIEXPORT void JNICALL Java_com_diozero_util_PollNative_poll
 		epoch_time = getEpochTime();
 
 		lseek(fd, 0, SEEK_SET); /* consume the interrupt */
-		read(fd, &c, 1);
+		memset(c, 0, BUF_LEN);
+		long r = read(fd, &c, BUF_LEN-1);
 
-		if (retval < 0 || (pfd.revents & POLLNVAL)) {
+		if (retval < 0 || (pfd.revents & POLLNVAL) || r <= 0) {
+			printf("Invalid response");
 			break;
 		} else if (retval > 0) {
-			(*env)->CallVoidMethod(env, callback, notify_method_id, ref, epoch_time);
+			(*env)->CallVoidMethod(env, callback, notify_method_id, ref, epoch_time, c[0]);
 		}
 	}
 

@@ -8,8 +8,9 @@
 #include <string.h>
 #include <sys/time.h>
 #include <unistd.h>
-
 #include <sys/epoll.h>
+
+#include "com_diozero_util_Util.h"
 
 /*
  * Class:     com_diozero_util_EpollNative
@@ -32,14 +33,18 @@ JNIEXPORT jint JNICALL Java_com_diozero_util_EpollNative_addFile(
 	char c_filename[len];
 	(*env)->GetStringUTFRegion(env, filename, 0, len, c_filename);
 
-	int fd = open(c_filename, O_RDONLY);
+	int fd = open(c_filename, O_RDONLY | O_NONBLOCK);
 	if (fd < 0) {
 		printf("open: file %s could not be opened, %s\n", c_filename, strerror(errno));
 		return -1;
 	}
+	/* consume any prior interrupts */
+	char buf;
+	lseek(fd, 0, SEEK_SET);
+	read(fd, &buf, 1);
 
 	struct epoll_event ev;
-	ev.events = EPOLLPRI;
+	ev.events = EPOLLIN | EPOLLPRI | EPOLLET;
 	ev.data.fd = fd;
 
 	if (epoll_ctl(epollFd, EPOLL_CTL_ADD, fd, &ev) == -1) {
@@ -58,10 +63,16 @@ JNIEXPORT jint JNICALL Java_com_diozero_util_EpollNative_addFile(
 JNIEXPORT jint JNICALL Java_com_diozero_util_EpollNative_removeFile(
 		JNIEnv * env, jclass clazz, jint epollFd, jint fileFd)
 {
-	if (close(fileFd) == -1) {
+	int rc = epoll_ctl(epollFd, EPOLL_CTL_DEL, fileFd, NULL);
+	if (rc != 0) {
+		printf("close: error in epoll_ctl(%d, EPOLL_CTL_DEL, %d), %s\n", epollFd, fileFd, strerror(errno));
+	}
+
+	rc = close(fileFd);
+	if (rc != 0) {
 		printf("close: error closing fd %d, %s\n", fileFd, strerror(errno));
 	}
-	return epoll_ctl(epollFd, EPOLL_CTL_DEL, fileFd, NULL);
+	return rc;
 }
 
 /*
@@ -78,7 +89,7 @@ JNIEXPORT jobjectArray JNICALL Java_com_diozero_util_EpollNative_waitForEvents(
 		printf("Could not find class '%s'\n", class_name);
 		return NULL;
 	}
-	char* signature = "(IIZ)V";
+	char* signature = "(IIJB)V";
 	jmethodID constructor = (*env)->GetMethodID(env, clz, "<init>", signature);
 	if (constructor == NULL) {
 		// TODO Throw exception
@@ -89,6 +100,7 @@ JNIEXPORT jobjectArray JNICALL Java_com_diozero_util_EpollNative_waitForEvents(
 	int max_events = 1;
 	struct epoll_event epoll_events[max_events];
 	int num_fds = epoll_wait(epollFd, epoll_events, max_events, -1);
+	unsigned long long epoch_time = getEpochTime();
 	//unsigned long long epoch_time = getEpochTime();
 	if (num_fds < 0) {
 		printf("epoll_wait failed! %s\n", strerror(errno));
@@ -96,14 +108,14 @@ JNIEXPORT jobjectArray JNICALL Java_com_diozero_util_EpollNative_waitForEvents(
 	}
 
 	jobjectArray poll_events = (*env)->NewObjectArray(env, num_fds, clz, NULL);
-	//char buf;
+	char val;
 	int i;
 	for (i=0; i<num_fds; i++) {
-		//lseek(epoll_events[i].data.fd, 0, SEEK_SET);
-		//read(epoll_events[i].data.fd, &buf, 1);
-		//printf("read %c\n", buf);
-		jobject aPollResult = (*env)->NewObject(env, clz, constructor, epoll_events[i].data.fd, epoll_events[i].events);
-		(*env)->SetObjectArrayElement(env, poll_events, i, aPollResult);
+		lseek(epoll_events[i].data.fd, 0, SEEK_SET);
+		read(epoll_events[i].data.fd, &val, 1);
+
+		jobject poll_event = (*env)->NewObject(env, clz, constructor, epoll_events[i].data.fd, epoll_events[i].events, epoch_time, val);
+		(*env)->SetObjectArrayElement(env, poll_events, i, poll_event);
 	}
 
 	return poll_events;

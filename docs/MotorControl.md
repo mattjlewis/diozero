@@ -132,25 +132,80 @@ Currently supports the following types of motors:
     * **listener** (*MotorListener*) - Listener instance
     
 
-### Motor
+### Digital Motor
 
-*class* **com.diozero.api.motor.Motor**{: .descname } (*forwardPin*, *backwardPin*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/motor/Motor.java){: .viewcode-link } [&para;](MotorControl.md#motor "Permalink to this definition"){: .headerlink }
+*class* **com.diozero.api.motor.DigitalMotor**{: .descname } (*forwardGpio*, *backwardGpio*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/motor/DigitalMotor.java){: .viewcode-link } [&para;](MotorControl.md#motor "Permalink to this definition"){: .headerlink }
+
+: Represents a single motor controlled by two separate digital signals. Extends [MotorBase](#motorbase).
+    
+    * **forwardGpio** (*int*) - GPIO for forward / clockwise control.
+    
+    * **backwardGpio** (*int*) - GPIO for backward / anti-clockwise control.
+    
+    **forward** ()
+    
+    : Stop the backward motor and turn on the forward motor.
+    
+    **backward** ()
+    
+    : Stop the forward motor and turn on the backward motor.
+
+    **stop** ()
+    
+    : Stop both motors.
+
+    *boolean* **getValue** ()
+    
+    : Represents the speed of the motor as a floating point value that will either be -1 (full speed backward), 1 (full speed forward) or 0 (stopped).
+
+    *boolean* **isActive** ()
+    
+    : Returns true if either motor is active.
+
+
+### PWM Motor
+
+*class* **com.diozero.api.motor.PwmMotor**{: .descname } (*forwardGpio*, *backwardGpio*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/motor/PwmMotor.java){: .viewcode-link } [&para;](MotorControl.md#motor "Permalink to this definition"){: .headerlink }
 
 : Represents a single motor controlled by two separate PWM signals. Extends [MotorBase](#motorbase).
     
-    * **forwardPin** (*int*) - PWM-capable GPIO for forward / clockwise control.
+    * **forwardGpio** (*int*) - PWM-capable GPIO for forward / clockwise control.
     
-    * **backwardPin** (*int*) - PWM-capable GPIO for backward / anti-clockwise control.
+    * **backwardGpio** (*int*) - PWM-capable GPIO for backward / anti-clockwise control.
 
-    **Motor** (*deviceFactory*, *forwardPin*, *backwardPin*)
+    **PwmMotor** (*deviceFactory*, *forwardGpio*, *backwardGpio*)
     
     : Constructor.
     
     * **deviceFactory** (*PwmOutputDeviceFactoryInterface*) - Device factory to use for constructing the [PWMOutputDevice](API#pwmoutputdevice) instances.
     
-    * **forwardPin** (*int*) - PWM-capable GPIO for forward / clockwise control.
+    * **forwardGpio** (*int*) - PWM-capable GPIO for forward / clockwise control.
     
-    * **backwardPin** (*int*) - PWM-capable GPIO for backward / anti-clockwise control.
+    * **backwardGpio** (*int*) - PWM-capable GPIO for backward / anti-clockwise control.
+    
+    **forward** (*speed*)
+    
+    : Stop the backward motor and set the forward motor speed.
+    
+    **speed** (*float*) - value range 0..1.
+    
+    **backward** (*speed*)
+    
+    : Stop the forward motor and set the backward motor speed.
+    
+    **speed** (*float*) - value range 0..1.
+
+    **stop** ()
+    
+    : Stop both motors.
+
+    *boolean* **getValue** ()
+    
+    : Represents the speed of the motor as a floating point value between -1 (full speed backward) and 1 (full speed forward).
+
+    *boolean* **isActive** ()
+    
+    : Returns true if either motor is active.
 
 
 ### TB6612FNGMotor

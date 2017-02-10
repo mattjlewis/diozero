@@ -47,11 +47,6 @@
 		</dependency>
 		<dependency>
 			<groupId>com.diozero</groupId>
-			<artifactId>diozero-provider-sysfs</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.diozero</groupId>
 			<artifactId>diozero-provider-wiringpi</artifactId>
 			<version>${project.version}</version>
 		</dependency>

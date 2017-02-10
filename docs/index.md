@@ -1,10 +1,10 @@
 # diozero
 
-A Device I/O library written in Java that provides an object-orientated interface for a range of GPIO / I2C / SPI devices such as LEDs, buttons and other various sensors connected to Single Board Computers such as the Raspberry Pi. Actual GPIO / I2C / SPI device communication is implemented via pluggable service providers for maximum compatibility across different boards. This library is known to work on the following boards: all models of the Raspberry Pi, Odroid C2, BeagleBone Black, C.H.I.P and Asus Tinker Board.
+A Device I/O library written in Java that provides an object-orientated interface for a range of GPIO / I2C / SPI devices (LEDs, buttons, sensors, motors, displays, etc) connected to Single Board Computers like the Raspberry Pi. Actual GPIO / I2C / SPI device communication is delegated to pluggable service providers for maximum compatibility across different boards. This library is known to work on the following boards: all models of the Raspberry Pi, Odroid C2, BeagleBone Black, C.H.I.P and Asus Tinker Board. It should be portable to any Single Board computer that runs Linux and Java 8.
 
 This library makes use of modern Java 8 features such as [automatic resource management](https://docs.oracle.com/javase/tutorial/essential/exceptions/tryResourceClose.html), [Lambda Expressions](https://docs.oracle.com/javase/tutorial/java/javaOO/lambdaexpressions.html) and [Method References](https://docs.oracle.com/javase/tutorial/java/javaOO/methodreferences.html) where they simplify development and improve code readability.
 
-Created by [Matt Lewis](https://github.com/mattjlewis) (email [deviceiozero@gmail.com](mailto:deviceiozero@gmail.com)), inspired by [GPIO Zero](https://gpiozero.readthedocs.org/en/v1.1.0/index.html). If you have any issues, comments or suggestions please use [the GitHub issues page](https://github.com/mattjlewis/diozero/issues).
+Created by [Matt Lewis](https://github.com/mattjlewis) (email [deviceiozero@gmail.com](mailto:deviceiozero@gmail.com)), inspired by [GPIO Zero](https://gpiozero.readthedocs.org/) and [Johnny Five](http://johnny-five.io/). If you have any issues, comments or suggestions please use [the GitHub issues page](https://github.com/mattjlewis/diozero/issues).
 
 ## Concepts
 
@@ -53,7 +53,7 @@ All devices are actually provisioned by a [Device Factory](https://github.com/ma
 !!! note "Device Factory"
     Unless you are implementing a new device you shouldn't need to use any of the Device Factory interfaces or helper classes (within the `com.diozero.internal` package).
 
-Some boards such as the Raspberry Pi provide no analog input pins; attempting to create an AnalogInputDevice such as an LDR using the Raspberry Pi default native device factory would result in a runtime error (`UnsupportedOperationException`). However, support for Analog to Digital Converter devices such as the [MCP3008](ExpansionBoards.md#mcp-adc) have been implemented as analog input device factories hence can be used in the constructor of analog devices such as LDRs:
+Some boards like the Raspberry Pi provide no analog input pins; attempting to create an AnalogInputDevice such as an LDR using the Raspberry Pi default native device factory would result in a runtime error (`UnsupportedOperationException`). However, support for Analog to Digital Converter devices such as the [MCP3008](http://rtd.diozero.com/en/latest/ExpansionBoards/#mcp-adc) have been implemented as analog input device factories hence can be used in the constructor of analog devices like LDRs:
 
 ```java
 try (McpAdc adc = new McpAdc(McpAdc.Type.MCP3008, chipSelect); LDR ldr = new LDR(adc, pin, vRef, r1)) {
@@ -91,9 +91,9 @@ diozero has out of the box support for the following Single Board Computers:
 + [Odroid C2](http://www.hardkernel.com/main/products/prdt_info.php)
 + [Beagle Bone Black](https://beagleboard.org/black)
 + [Asus Tinker Board](https://www.asus.com/uk/supportonly/TInker%20Board2GB/)
-+ [C.H.I.P.](https://getchip.com/pages/chip)
++ [The Next Thing Co CHIP](https://getchip.com/pages/chip)
 
-The builtin sysfs provider is designed to be portable across different boards. In addition, the two Java Device I/O providers adds an additional layer of compatibility, for example the Udoo Quad.
+The builtin sysfs provider is designed to be portable across different boards. In addition, the two Java Device I/O providers adds an alternative method of compatibility, for example on the Udoo Quad.
 
 ## Getting Started
 
@@ -175,17 +175,17 @@ This library provides support for a number of GPIO / I2C / SPI connected compone
 + [Output Devices](OutputDevices.md)
     - [Digital](OutputDevices.md#digital-led) and [PWM](OutputDevices.md#pwm-led)
 + [Expansion Boards](ExpansionBoards.md) for adding additional GPIO / Analog / PWM pins
-    - [Microchip Analog to Digital Converters](ExpansionBoards.md#mcp-adc), [NXP PCF8591 ADC / DAC](ExpansionBoards.md#pcf8591), [Microchip GPIO Expansion Board](ExpansionBoards.md#mcp-gpio-expansion-board), [PWM / Servo Driver](ExpansionBoards.md#pwm-servo-driver)
+    - [Microchip Analog to Digital Converters](ExpansionBoards.md#mcp-adc), [NXP PCF8591 ADC / DAC](ExpansionBoards.md#pcf8591), [Microchip GPIO Expansion Board](ExpansionBoards.md#mcp-gpio-expansion-board), [PWM / Servo Driver](ExpansionBoards.md#pwm-servo-driver), [PCF8574](ExpansionBoards.md#pcf8574)
 + [Motor Control](MotorControl.md) (support for common motor controller boards)
-    - [API](MotorControl.md#api), [Servos](MotorControl.md#servo), [CamJam EduKit](MotorControl.md#camjamkitdualmotor), [Ryanteck](MotorControl.md#ryanteckdualmotor), [Toshiba TB6612FNG](MotorControl.md#tb6612fngdualmotordriver)
+    - [API](MotorControl.md#api), [Servos](MotorControl.md#servo), [CamJam EduKit](MotorControl.md#camjamkitdualmotor), [Ryanteck](MotorControl.md#ryanteckdualmotor), [Toshiba TB6612FNG](MotorControl.md#tb6612fngdualmotordriver), [PiConZero](MotorControl.md#piconzero)
 + [Sensor Components](SensorComponents.md) (support for specific sensors, e.g. temperature, pressure, distance, luminosity)
     - [HC-SR04 Ultrasonic Ranging Module](SensorComponents.md#hc-sr04), [Bosch BMP180](SensorComponents.md#bosch-bmp180), [Bosch BME280](SensorComponents.md#bosch-bme280), [TSL2561 Light Sensor](SensorComponents.md#tsl2561), [STMicroelectronics HTS221 Humidity and Temperature Sensor](SensorComponents.md#hts221), [STMicroelectronics LPS25H Pressure and Temperature Sensor](SensorComponents.md#lps25h), [1-Wire Temperature Sensors e.g. DS18B20](SensorComponents.md#1-wire-temperature-sensors), [Sharp GP2Y0A21YK distance sensor](SensorComponents.md#gp2y0a21yk)
 + [LCD Displays](LCDDisplays.md)
-    - [I2C LCDs](LCDDisplays.md#i2c-lcds) I2C attached displays (Hitachi HD44780 via the NCP PCF8754 I2C I/O expansion board)
-+ [LED Strips](LEDStrips.md) Support for LED strips (WS2811B / WS2812B / Adafruit NeoPixel)
-    - [WS2811B / WS2812B](LEDStrips.md#ws281x)
+    - [HD44780 controlled LCDs](LCDDisplays.md#hd44780-lcds)
 + [IMU Devices](IMUDevices.md) Work-in-progress API for interacting with Inertial Measurement Units such as the InvenSense MPU-9150 and the Analog Devices ADXL345
     - [API](IMUDevices.md#api), [Supported Devices](IMUDevices.md#supported-devices)
++ [LED Strips](LEDStrips.md) Support for LED strips (WS2811B / WS2812B / Adafruit NeoPixel)
+    - [WS2811B / WS2812B](LEDStrips.md#ws281x)
 
 ## Performance
 
@@ -227,11 +227,12 @@ This project is hosted on [GitHub](https://github.com/mattjlewis/diozero/), plea
 
 ## To-Do
 
-There is still a lot left to do, in particular:
-
 + Thorough testing (various types of devices using each service provider)
 + A clean object-orientated API for IMUs
 + Native support for all devices via mmap (/dev/mem), in particular to improve performance and add support for GPIO pull up/down configuration.
++ ADC support
++ Cleanup the logic for handling capabilities of different boards in a generic fashion (no more if / then / else)
++ mmap support for all boards
 
 ## Change-log
 
@@ -242,8 +243,7 @@ There is still a lot left to do, in particular:
 + Release 0.6: Preparing for 1.0 release.
 + Release 0.7: Support for non-register based I2C device read / write
 + Release 0.8: Added Analog Output device support (added for the PCF8591). Introduced Java based sysfs and jpi providers. Bug fix to I2CLcd. Added support for BME280.
-+ Release 0.9: Native support for I2C and SPI in the sysfs provider. Support for C.H.I.P. and Beagle Bone Black.
-+ Release 0.10: Moved sysfs provider into diozero-core, use as the default provider if no others have been specified. Support for Asus Tinker Board.
++ Release 0.9: Native support for I2C and SPI in the sysfs provider. Support for CHIP, BeagleBone Black and Asus Tinker Board. Moved sysfs provider into diozero-core, use as the default provider.
 
 ## License
 
