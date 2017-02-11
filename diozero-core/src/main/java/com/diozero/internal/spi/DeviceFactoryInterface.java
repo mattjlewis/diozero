@@ -1,5 +1,7 @@
 package com.diozero.internal.spi;
 
+import com.diozero.util.BoardGpioInfo;
+
 /*
  * #%L
  * Device I/O Zero - Core
@@ -35,4 +37,5 @@ public interface DeviceFactoryInterface {
 	boolean isDeviceOpened(String key);
 	void deviceOpened(DeviceInterface device);
 	void deviceClosed(DeviceInterface device);
+	BoardGpioInfo getGpioInfo();
 }

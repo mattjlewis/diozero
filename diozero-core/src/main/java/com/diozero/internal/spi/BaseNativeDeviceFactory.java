@@ -32,9 +32,7 @@ import java.util.List;
 import org.pmw.tinylog.Logger;
 
 import com.diozero.api.*;
-import com.diozero.util.BoardInfo;
-import com.diozero.util.RuntimeIOException;
-import com.diozero.util.SystemInfo;
+import com.diozero.util.*;
 
 /**
  * Helper class for instantiating different devices via the configured provider.
@@ -68,6 +66,11 @@ public abstract class BaseNativeDeviceFactory extends AbstractDeviceFactory impl
 		super(GPIO_PREFIX);
 		
 		boardInfo = SystemInfo.getBoardInfo();
+	}
+	
+	@Override
+	public BoardGpioInfo getGpioInfo() {
+		return boardInfo;
 	}
 	
 	@Override
