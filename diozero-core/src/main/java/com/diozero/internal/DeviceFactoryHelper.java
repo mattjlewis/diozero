@@ -79,9 +79,9 @@ public class DeviceFactoryHelper {
 			}
 			
 			if (nativeDeviceFactory == null) {
-				throw new IllegalStateException("Error: no device provider factory service found,"
+				throw new IllegalStateException("Error: failed to load native device factory,"
 						+ " please configure META-INF/services/com.diozero.internal.spi.NativeDeviceFactoryInterface"
-						+ " or set -Dcom.diozero.devicefactory");
+						+ " or set -D" + SYSTEM_PROPERTY);
 			}
 		}
 	}
@@ -92,11 +92,12 @@ public class DeviceFactoryHelper {
 		return nativeDeviceFactory;
 	}
 
-	public static void setNativeDeviceFactory(NativeDeviceFactoryInterface f) {
+	public static void setNativeDeviceFactory(NativeDeviceFactoryInterface ndf) {
 		synchronized (DeviceFactoryHelper.class) {
-			if (nativeDeviceFactory != null)
-				throw new IllegalStateException("Alreade initialized");
-			nativeDeviceFactory = f;
+			if (nativeDeviceFactory != null) {
+				throw new IllegalStateException("Already initialised");
+			}
+			nativeDeviceFactory = ndf;
 		}
 	}
 }
