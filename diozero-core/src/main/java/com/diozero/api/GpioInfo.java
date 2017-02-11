@@ -43,6 +43,14 @@ public class GpioInfo {
 			DeviceMode.PWM_OUTPUT);
 	public static final List<DeviceMode> ANALOG_INPUT = Arrays.asList(
 			DeviceMode.ANALOG_INPUT);
+	public static final List<DeviceMode> ANALOG_OUTPUT = Arrays.asList(
+			DeviceMode.ANALOG_OUTPUT);
+	public static final List<DeviceMode> PWM_OUTPUT = Arrays.asList(
+			DeviceMode.PWM_OUTPUT);
+	public static final List<DeviceMode> DIGITAL_PWM_OUTPUT = Arrays.asList(
+			DeviceMode.DIGITAL_OUTPUT, DeviceMode.PWM_OUTPUT);
+	public static final List<DeviceMode> DIGITAL_ANALOG_INPUT = Arrays.asList(
+			DeviceMode.DIGITAL_INPUT, DeviceMode.ANALOG_INPUT);
 	
 	private static final String DEFAULT_GPIO_NAME_PREFIX = "GPIO";
 	private static final String DEFAULT_HEADER = "DEFAULT";
@@ -105,5 +113,11 @@ public class GpioInfo {
 
 	public List<DeviceMode> getModes() {
 		return modes;
+	}
+
+	@Override
+	public String toString() {
+		return "GpioInfo [header=" + header + ", gpioNum=" + gpioNum + ", name=" + name + ", pin=" + pin + ", pwmNum="
+				+ pwmNum + ", modes=" + modes + "]";
 	}
 }
