@@ -28,11 +28,13 @@ package com.diozero.sandpit;
 
 import java.io.Closeable;
 import java.nio.ByteOrder;
+import java.util.Arrays;
 
 import org.pmw.tinylog.Logger;
 
 import com.diozero.api.*;
 import com.diozero.internal.spi.*;
+import com.diozero.util.BoardGpioInfo;
 import com.diozero.util.RuntimeIOException;
 
 /**
@@ -60,43 +62,11 @@ AnalogOutputDeviceFactoryInterface, Closeable {
 	private static final byte AUTO_INCREMENT_FLAG       = 0b0000_0100; // 0x04
 	private static final byte ANALOG_OUTPUT_ENABLE_MASK = 0b0100_0000; // 0x40
 	
-	public static enum InputMode {
-		FOUR_SINGLE_ENDED_INPUTS(0b00, 4, "Four single-ended inputs"),
-		/** Channel 0=AIN0-AIN3, Channel 1=AIN1-AIN3, Channel 2=AIN2-AIN3. */
-		THREE_DIFFERENTIAL_INPUTS(0b01, 3, "Three differential inputs"),
-		/** Channel 0=AIN0, Channel 1=AIN1, Channel 2=AIN2-AIN3. */
-		SINGLE_ENDED_AND_DIFFERENTIAL_MIXED(0b10, 3, "Single-ended and differential mixed"),
-		/** Channel 0=AIN0-AIN1, Channel 1=AIN2-AIN3. */
-		TWO_DIFFERENTIAL_INPUTS(0b11, 2, "Two differential inputs");
-		private static final int INPUT_MODE_SHIFT_LEFT = 4;
-		
-		private byte controlFlags;
-		private int numPins;
-		private String name;
-		
-		private InputMode(int val, int numPins, String name) {
-			this.controlFlags = (byte) (val << INPUT_MODE_SHIFT_LEFT);
-			this.numPins = numPins;
-			this.name = name;
-		}
-		
-		public byte getControlFlags() {
-			return controlFlags;
-		}
-		
-		public int getNumPins() {
-			return numPins;
-		}
-		
-		public String getName() {
-			return name;
-		}
-	}
-	
 	private I2CDevice device;
 	private String keyPrefix;
 	private boolean outputEnabled = false;
 	private InputMode inputMode;
+	private BoardGpioInfo boardGpioInfo;
 	
 	public PCF8591() {
 		this(I2CConstants.BUS_1, DEFAULT_ADDRESS, InputMode.FOUR_SINGLE_ENDED_INPUTS, true);
@@ -111,6 +81,13 @@ AnalogOutputDeviceFactoryInterface, Closeable {
 		device = new I2CDevice(controller, address, I2CConstants.ADDR_SIZE_7,
 				I2CConstants.DEFAULT_CLOCK_FREQUENCY, ByteOrder.LITTLE_ENDIAN);
 		keyPrefix = getName() + "-";
+		
+		boardGpioInfo = new PCF8591BoardGpioInfo(inputMode);
+	}
+	
+	@Override
+	public BoardGpioInfo getGpioInfo() {
+		return boardGpioInfo;
 	}
 
 	@Override
@@ -280,5 +257,72 @@ AnalogOutputDeviceFactoryInterface, Closeable {
 			pcf8591.setValue(gpio, value);
 		}
 	}
+	
+	public static enum InputMode {
+		FOUR_SINGLE_ENDED_INPUTS(0b00, 4, "Four single-ended inputs"),
+		/** Channel 0=AIN0-AIN3, Channel 1=AIN1-AIN3, Channel 2=AIN2-AIN3. */
+		THREE_DIFFERENTIAL_INPUTS(0b01, 3, "Three differential inputs"),
+		/** Channel 0=AIN0, Channel 1=AIN1, Channel 2=AIN2-AIN3. */
+		SINGLE_ENDED_AND_DIFFERENTIAL_MIXED(0b10, 3, "Single-ended and differential mixed"),
+		/** Channel 0=AIN0-AIN1, Channel 1=AIN2-AIN3. */
+		TWO_DIFFERENTIAL_INPUTS(0b11, 2, "Two differential inputs");
+		private static final int INPUT_MODE_SHIFT_LEFT = 4;
+		
+		private byte controlFlags;
+		private int numPins;
+		private String name;
+		
+		private InputMode(int val, int numPins, String name) {
+			this.controlFlags = (byte) (val << INPUT_MODE_SHIFT_LEFT);
+			this.numPins = numPins;
+			this.name = name;
+		}
+		
+		public byte getControlFlags() {
+			return controlFlags;
+		}
+		
+		public int getNumPins() {
+			return numPins;
+		}
+		
+		public String getName() {
+			return name;
+		}
+	}
 
+	public static class PCF8591BoardGpioInfo extends BoardGpioInfo {
+		private InputMode inputMode;
+		
+		public PCF8591BoardGpioInfo(InputMode inputMode) {
+			this.inputMode = inputMode;
+		}
+		
+		@Override
+		protected void init() {
+			addGpioInfo(new GpioInfo(4, "AOUT", 1, GpioInfo.ANALOG_OUTPUT));
+			switch (inputMode) {
+			case FOUR_SINGLE_ENDED_INPUTS:
+				addGpioInfo(new GpioInfo(0, "AIN0", 2, GpioInfo.ANALOG_INPUT));
+				addGpioInfo(new GpioInfo(1, "AIN1", 3, GpioInfo.ANALOG_INPUT));
+				addGpioInfo(new GpioInfo(2, "AIN2", 4, GpioInfo.ANALOG_INPUT));
+				addGpioInfo(new GpioInfo(3, "AIN3", 5, GpioInfo.ANALOG_INPUT));
+				break;
+			case THREE_DIFFERENTIAL_INPUTS:
+				addGpioInfo(new GpioInfo(0, "AIN0-AIN3", 2, GpioInfo.ANALOG_INPUT));
+				addGpioInfo(new GpioInfo(1, "AIN1-AIN3", 3, GpioInfo.ANALOG_INPUT));
+				addGpioInfo(new GpioInfo(2, "AIN2-AIN3", 4, GpioInfo.ANALOG_INPUT));
+				break;
+			case SINGLE_ENDED_AND_DIFFERENTIAL_MIXED:
+				addGpioInfo(new GpioInfo(0, "AIN0", 2, GpioInfo.ANALOG_INPUT));
+				addGpioInfo(new GpioInfo(1, "AIN1", 3, GpioInfo.ANALOG_INPUT));
+				addGpioInfo(new GpioInfo(2, "AIN2-AIN3", 4, GpioInfo.ANALOG_INPUT));
+				break;
+			case TWO_DIFFERENTIAL_INPUTS:
+				addGpioInfo(new GpioInfo(0, "AIN0-AIN1", 2, GpioInfo.ANALOG_INPUT));
+				addGpioInfo(new GpioInfo(1, "AIN2-AIN3", 4, GpioInfo.ANALOG_INPUT));
+				break;
+			}
+		}
+	}
 }
