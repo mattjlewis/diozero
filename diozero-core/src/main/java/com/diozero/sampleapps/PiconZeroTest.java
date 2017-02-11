@@ -60,20 +60,20 @@ public class PiconZeroTest {
 			double DELAY = 0.02;
 			for (int i=SERVO_MID; i<SERVO_MID+MAX_DELTA; i+=STEP) {
 				System.out.println("Setting servo output to " + i);
-				pz.setOutput(SERVO1, i);
-				pz.setOutput(SERVO2, i);
+				pz.setOutputValue(SERVO1, i);
+				pz.setOutputValue(SERVO2, i);
 				SleepUtil.sleepSeconds(DELAY);
 			}
 			for (int i=SERVO_MID+MAX_DELTA; i>SERVO_MID-MAX_DELTA; i-=STEP) {
 				System.out.println("Setting servo output to " + i);
-				pz.setOutput(SERVO1, i);
-				pz.setOutput(SERVO2, i);
+				pz.setOutputValue(SERVO1, i);
+				pz.setOutputValue(SERVO2, i);
 				SleepUtil.sleepSeconds(DELAY);
 			}
 			for (int i=SERVO_MID-MAX_DELTA; i<SERVO_MID; i+=STEP) {
 				System.out.println("Setting servo output to " + i);
-				pz.setOutput(SERVO1, i);
-				pz.setOutput(SERVO2, i);
+				pz.setOutputValue(SERVO1, i);
+				pz.setOutputValue(SERVO2, i);
 				SleepUtil.sleepSeconds(DELAY);
 			}
 
@@ -81,19 +81,19 @@ public class PiconZeroTest {
 			for (int i=0; i<PWM_MAX; i++) {
 				int val = i;
 				System.out.println("Setting LED PWM value to " + val);
-				pz.setOutput(LED, val);
+				pz.setOutputValue(LED, val);
 			}
 			for (int i=0; i<PWM_MAX; i++) {
 				int val = PWM_MAX - i;
 				System.out.println("Setting LED PWM value to " + val);
-				pz.setOutput(LED, val);
+				pz.setOutputValue(LED, val);
 			}
 			
 			pz.setOutputConfig(LED, OutputConfig.DIGITAL);
 			boolean value = false;
 			for (int i=0; i<10; i++) {
 				System.out.println("Setting LED value to " + value);
-				pz.setOutput(LED, value ? 1 : 0);
+				pz.setOutputValue(LED, value ? 1 : 0);
 				value = ! value;
 				SleepUtil.sleepSeconds(1);
 			}
