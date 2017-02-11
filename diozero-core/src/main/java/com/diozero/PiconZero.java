@@ -34,13 +34,14 @@ import java.nio.ByteOrder;
 import org.pmw.tinylog.Logger;
 
 import com.diozero.api.*;
-import com.diozero.internal.DeviceFactoryHelper;
 import com.diozero.internal.spi.*;
+import com.diozero.util.BoardGpioInfo;
 import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 
 public class PiconZero extends AbstractDeviceFactory
-implements GpioDeviceFactoryInterface, AnalogInputDeviceFactoryInterface, PwmOutputDeviceFactoryInterface, Closeable {
+implements GpioDeviceFactoryInterface, PwmOutputDeviceFactoryInterface,
+	AnalogInputDeviceFactoryInterface, AnalogOutputDeviceFactoryInterface, Closeable {
 	public static enum InputConfig {
 		DIGITAL(0), DIGITAL_PULL_UP(128), ANALOG(1), DS18B20(2);
 		
@@ -84,22 +85,27 @@ implements GpioDeviceFactoryInterface, AnalogInputDeviceFactoryInterface, PwmOut
 	
 	private static final String DEVICE_NAME = "PiconZero";
 
-	private static final int ALL_PIXELS = 100;
-	private static final int MAX_VALUE = 100;
-	private static final int NUM_MOTORS = 2;
-	private static final int NUM_INPUT_CHANNELS = 4;
-	private static final int NUM_OUTPUT_CHANNELS = 6;
-	private static final float MAX_ANALOG_VALUE = 1023;
+	public static final int ALL_PIXELS = 100;
+	public static final int MAX_OUTPUT_VALUE = 100;
+	public static final int NUM_MOTORS = 2;
+	public static final int NUM_INPUT_CHANNELS = 4;
+	public static final int NUM_OUTPUT_CHANNELS = 6;
+	public static final float MAX_ANALOG_INPUT_VALUE = (float) Math.pow(2, 10)-1;
+	public static final int MAX_MOTOR_VALUE = 127;
+	public static final int MIN_MOTOR_VALUE = -128;
+	public static final int SERVO_CENTRE = 90;
 
 	private I2CDevice device;
 	private String keyPrefix;
+	private BoardGpioInfo boardGpioInfo;
+	private OutputConfig[] outputConfigs = new OutputConfig[NUM_OUTPUT_CHANNELS];
 	private InputConfig[] inputConfigs = new InputConfig[NUM_INPUT_CHANNELS];
 	private int[] motorValues = new int[NUM_MOTORS];
 	
 	public PiconZero() {
 		this(I2CConstants.BUS_1, DEFAULT_ADDRESS);
 		
-		DeviceFactoryHelper.getNativeDeviceFactory().registerDeviceFactory(this);
+		boardGpioInfo = new PiconZeroBoardGpioInfo();
 	}
 	
 	public PiconZero(int controller, int address) {
@@ -140,10 +146,6 @@ implements GpioDeviceFactoryInterface, AnalogInputDeviceFactoryInterface, PwmOut
 		}
 	}
 	
-	public void reset() {
-		writeByte(RESET_REG, 0);
-	}
-	
 	private void writeByte(int register, int value) throws RuntimeIOException {
 		for (int i=0; i<MAX_I2C_RETRIES; i++) {
 			try {
@@ -162,6 +164,13 @@ implements GpioDeviceFactoryInterface, AnalogInputDeviceFactoryInterface, PwmOut
 	}
 	
 	/**
+	 * Reset the board.
+	 */
+	public void reset() {
+		writeByte(RESET_REG, 0);
+	}
+	
+	/**
 	 * Get the board revision details
 	 * @return revision[0]: Board type (2 == PiconZero); revision[1]: Firmware version
 	 */
@@ -170,22 +179,6 @@ implements GpioDeviceFactoryInterface, AnalogInputDeviceFactoryInterface, PwmOut
 		byte[] arr = new byte[buffer.remaining()];
 		buffer.get(arr);
 		return arr;
-	}
-	
-	/**
-	 * Set motor output value
-	 * @param motor must be in range 0..1
-	 * @param speed must be in range -128 - +127. Values of -127, -128, +127 are treated as always ON, no PWM
-	 */
-	public void setMotor(int motor, int speed) {
-		validateMotor(motor);
-		writeByte(MOTOR0_REG + motor, speed);
-		motorValues[motor] = speed;
-	}
-	
-	public int getMotor(int motor) {
-		validateMotor(motor);
-		return motorValues[motor];
 	}
 	
 	/**
@@ -209,20 +202,59 @@ implements GpioDeviceFactoryInterface, AnalogInputDeviceFactoryInterface, PwmOut
 		validateChannelMode(channel, config);
 		
 		writeByte(OUTPUT0_CONFIG_REG + channel, config.getValue());
+		outputConfigs[channel] = config; 
 	}
 	
-	public int readInput(int channel) {
-		validateInputChannel(channel);
-		
-		return device.readUShort(INPUT0_REG + channel);
+	/**
+	 * Set motor output value (normalised to range -1..1)
+	 * @param motor Motor number (0 or 1)
+	 * @param speed Must be in range -1..1
+	 */
+	public void setMotor(int motor, float speed) {
+		setMotorValue(motor, (int) Math.max(MIN_MOTOR_VALUE, Math.min(MAX_MOTOR_VALUE, speed * MAX_MOTOR_VALUE)));
 	}
 	
+	/**
+	 * Get motor output value (normalised to range -1..1)
+	 * @param motor Motor number (0 or 1)
+	 * @return Current motor speed in range -1..1
+	 */
+	public float getMotor(int motor) {
+		return getMotorValue(motor) / (float) MAX_MOTOR_VALUE;
+	}
+	
+	/**
+	 * Set motor output value (PiconZero range -128..127)
+	 * @param motor Motor number (0 or 1)
+	 * @param speed Must be in range -128..127
+	 */
+	public void setMotorValue(int motor, int speed) {
+		validateMotor(motor);
+		writeByte(MOTOR0_REG + motor, speed);
+		motorValues[motor] = speed;
+	}
+	
+	/**
+	 * Get the current motor speed (PiconZero range -128..127)
+	 * @param motor Motor number (0 or 1)
+	 * @return Motor speed in range -128..127
+	 */
+	public int getMotorValue(int motor) {
+		validateMotor(motor);
+		return motorValues[motor];
+	}
+	
+	/**
+	 * Read input value in normalised range (0..1)
+	 * @param channel Input to read
+	 * @return Normalised value (0..1)
+	 */
 	public float getValue(int channel) {
-		int input = readInput(channel);
+		int input = getInputValue(channel);
 		
 		switch (inputConfigs[channel]) {
 		case ANALOG:
-			return input / MAX_ANALOG_VALUE;
+			return input / MAX_ANALOG_INPUT_VALUE;
 		case DIGITAL:
 		case DIGITAL_PULL_UP:
 		case DS18B20:
@@ -232,7 +264,46 @@ implements GpioDeviceFactoryInterface, AnalogInputDeviceFactoryInterface, PwmOut
 	}
 	
 	/**
-	 * Set output data for selected output channel. 
+	 * <p>Set output value for the specified channel (normalised).</p> 
+	 * <p><em>* Don't use this method if the output mode is WS2812B.</em></p>
+	 * @param channel 0..5
+	 * @param value Normalised output value:
+	 * <pre>
+	 * Mode  Name    Type    Values
+	 * 0     On/Off  Byte    0 is OFF, 1 is ON
+	 * 1     PWM     Byte    0 to 1 percentage of ON time
+	 * 2     Servo   Byte    -1 to + 1 Position in degrees (0 is centre)
+	 * 3*    WS2812B 4 Bytes 0:Pixel ID, 1:Red, 2:Green, 3:Blue
+	 * </pre>
+	 */
+	public void setValue(int channel, float value) {
+		// FIXME Doesn't work for servo output, needs to be 0..90..180
+		int pz_value;
+		if (outputConfigs[channel] == OutputConfig.SERVO) {
+			pz_value = Math.round(SERVO_CENTRE * value) + SERVO_CENTRE;
+		} else {
+			pz_value = Math.round(MAX_OUTPUT_VALUE * value);
+		}
+		setOutputValue(channel, pz_value);
+	}
+
+	public void setValue(int channel, boolean value) {
+		setOutputValue(channel, value ? 1 : 0);
+	}
+	
+	/**
+	 * Read input value in PiconZero range
+	 * @param channel Input to read
+	 * @return Value in PiconZero range
+	 */
+	public int getInputValue(int channel) {
+		validateInputChannel(channel);
+		
+		return device.readUShort(INPUT0_REG + channel);
+	}
+
+	/**
+	 * Set output data for selected output channel in PiconZero range. 
 	 * @param channel 0..5
 	 * @param value output value:
 	 * <pre>
@@ -244,34 +315,12 @@ implements GpioDeviceFactoryInterface, AnalogInputDeviceFactoryInterface, PwmOut
 	 * </pre>
 	 * * Don't use this method if the output mode is WS2812B.
 	 */
-	public void setOutput(int channel, int value) {
+	public void setOutputValue(int channel, int value) {
 		validateOutputChannel(channel);
 		// Should really validate value based on the output config however we
-		// don't actually need to - the PiconZero handles it for us plus would
-		// require us to store the current output configuration
+		// don't actually need to - the PiconZero handles it for us
 		
 		writeByte(OUTPUT0_REG + channel, value);
-	}
-	
-	/**
-	 * Set output data for selected output channel. 
-	 * @param channel 0..5
-	 * @param value output value:
-	 * <pre>
-	 * Mode  Name    Type    Values
-	 * 0     On/Off  Byte    0 is OFF, 1 is ON
-	 * 1     PWM     Byte    0 to 1 percentage of ON time
-	 * 2     Servo   Byte    -1 to + 1 Position in degrees
-	 * 3*    WS2812B 4 Bytes 0:Pixel ID, 1:Red, 2:Green, 3:Blue
-	 * </pre>
-	 * * Don't use this method if the output mode is WS2812B.
-	 */
-	public void setValue(int channel, float value) {
-		setOutput(channel, Math.round(MAX_VALUE * value));
-	}
-	
-	public void setValue(int channel, boolean value) {
-		setOutput(channel, value ? 1 : 0);
 	}
 	
 	/**
@@ -327,8 +376,14 @@ implements GpioDeviceFactoryInterface, AnalogInputDeviceFactoryInterface, PwmOut
 	}
 
 	@Override
+	public BoardGpioInfo getGpioInfo() {
+		return boardGpioInfo;
+	}
+
+	@Override
 	public GpioAnalogInputDeviceInterface provisionAnalogInputPin(int gpio) throws RuntimeIOException {
-		validateChannelMode(gpio, InputConfig.ANALOG);
+		int channel = gpio - NUM_OUTPUT_CHANNELS;
+		validateChannelMode(channel, InputConfig.ANALOG);
 		
 		String key = keyPrefix + gpio;
 		
@@ -336,7 +391,9 @@ implements GpioDeviceFactoryInterface, AnalogInputDeviceFactoryInterface, PwmOut
 			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
 		}
 		
-		GpioAnalogInputDeviceInterface device = new PiconZeroAnalogInputDevice(this, key, gpio);
+		setInputConfig(channel, InputConfig.ANALOG);
+		
+		GpioAnalogInputDeviceInterface device = new PiconZeroAnalogInputDevice(this, key, gpio, channel);
 		deviceOpened(device);
 		
 		return device;
@@ -345,7 +402,8 @@ implements GpioDeviceFactoryInterface, AnalogInputDeviceFactoryInterface, PwmOut
 	@Override
 	public GpioDigitalInputDeviceInterface provisionDigitalInputPin(int gpio, GpioPullUpDown pud,
 			GpioEventTrigger trigger) throws RuntimeIOException {
-		validateChannelMode(gpio, pud == GpioPullUpDown.PULL_UP ? InputConfig.DIGITAL_PULL_UP : InputConfig.DIGITAL);
+		int channel = gpio - NUM_OUTPUT_CHANNELS;
+		validateChannelMode(channel, pud == GpioPullUpDown.PULL_UP ? InputConfig.DIGITAL_PULL_UP : InputConfig.DIGITAL);
 		
 		String key = keyPrefix + gpio;
 		
@@ -353,7 +411,9 @@ implements GpioDeviceFactoryInterface, AnalogInputDeviceFactoryInterface, PwmOut
 			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
 		}
 		
-		GpioDigitalInputDeviceInterface device = new PiconZeroDigitalInputDevice(this, key, gpio, pud, trigger);
+		setInputConfig(channel, pud == GpioPullUpDown.PULL_UP ? InputConfig.DIGITAL_PULL_UP : InputConfig.DIGITAL);
+		
+		GpioDigitalInputDeviceInterface device = new PiconZeroDigitalInputDevice(this, key, gpio, channel, pud, trigger);
 		deviceOpened(device);
 		
 		return device;
@@ -362,7 +422,8 @@ implements GpioDeviceFactoryInterface, AnalogInputDeviceFactoryInterface, PwmOut
 	@Override
 	public GpioDigitalOutputDeviceInterface provisionDigitalOutputPin(int gpio, boolean initialValue)
 			throws RuntimeIOException {
-		validateChannelMode(gpio, OutputConfig.DIGITAL);
+		int channel = gpio;
+		validateChannelMode(channel, OutputConfig.DIGITAL);
 		
 		String key = keyPrefix + gpio;
 		
@@ -370,7 +431,9 @@ implements GpioDeviceFactoryInterface, AnalogInputDeviceFactoryInterface, PwmOut
 			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
 		}
 		
-		GpioDigitalOutputDeviceInterface device = new PiconZeroDigitalOutputDevice(this, key, gpio, initialValue);
+		setOutputConfig(channel, OutputConfig.DIGITAL);
+		
+		GpioDigitalOutputDeviceInterface device = new PiconZeroDigitalOutputDevice(this, key, gpio, channel, initialValue);
 		deviceOpened(device);
 		
 		return device;
@@ -378,7 +441,8 @@ implements GpioDeviceFactoryInterface, AnalogInputDeviceFactoryInterface, PwmOut
 
 	@Override
 	public PwmOutputDeviceInterface provisionPwmOutputPin(int gpio, float initialValue) throws RuntimeIOException {
-		validateChannelMode(gpio, OutputConfig.PWM);
+		int channel = gpio;
+		validateChannelMode(channel, OutputConfig.PWM);
 		
 		String key = keyPrefix + gpio;
 		
@@ -386,7 +450,9 @@ implements GpioDeviceFactoryInterface, AnalogInputDeviceFactoryInterface, PwmOut
 			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
 		}
 		
-		PwmOutputDeviceInterface device = new PiconZeroPwmOutputDevice(this, key, gpio, initialValue);
+		setOutputConfig(channel, OutputConfig.PWM);
+		
+		PwmOutputDeviceInterface device = new PiconZeroPwmOutputDevice(this, key, gpio, channel, initialValue);
 		deviceOpened(device);
 		
 		return device;
@@ -396,6 +462,23 @@ implements GpioDeviceFactoryInterface, AnalogInputDeviceFactoryInterface, PwmOut
 	public GpioDigitalInputOutputDeviceInterface provisionDigitalInputOutputPin(int gpio, DeviceMode mode)
 			throws RuntimeIOException {
 		throw new UnsupportedOperationException("DigitalInputOutputDevice isn't supported on PiconZero");
+	}
+
+	@Override
+	public GpioAnalogOutputDeviceInterface provisionAnalogOutputPin(int gpio) throws RuntimeIOException {
+		int channel = gpio - NUM_OUTPUT_CHANNELS - NUM_INPUT_CHANNELS;
+		validateChannelMode(channel, InputConfig.ANALOG);
+		
+		String key = keyPrefix + gpio;
+		
+		if (isDeviceOpened(key)) {
+			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
+		}
+		
+		GpioAnalogOutputDeviceInterface device = new PiconZeroAnalogOutputDevice(this, key, gpio, channel);
+		deviceOpened(device);
+		
+		return device;
 	}
 
 	public void closeChannel(int channel) {
@@ -412,14 +495,40 @@ implements GpioDeviceFactoryInterface, AnalogInputDeviceFactoryInterface, PwmOut
 		device.close();
 	}
 	
+	public static class PiconZeroBoardGpioInfo extends BoardGpioInfo {
+		public static final String OUTPUTS_HEADER = "OUTPUTS";
+		public static final String INPUTS_HEADER = "INPUTS";
+		public static final String MOTORS_HEADER = "MOTORS";
+		
+		@Override
+		protected void init() {
+			// GPIO0-5 - Output
+			// Note doesn't include built-in servo and WS2812B capabilities
+			for (int i=0; i<NUM_OUTPUT_CHANNELS; i++) {
+				addGpioInfo(new GpioInfo(OUTPUTS_HEADER, i, i, GpioInfo.DIGITAL_PWM_OUTPUT));
+			}
+			// GPIO6-9 - Input
+			// Note doesn't include built-in DS18B20 capability
+			for (int i=0; i<NUM_INPUT_CHANNELS; i++) {
+				addGpioInfo(new GpioInfo(INPUTS_HEADER, NUM_OUTPUT_CHANNELS+i, i, GpioInfo.DIGITAL_ANALOG_INPUT));
+			}
+			// GPIO10-11 - Motors
+			for (int i=0; i<NUM_MOTORS; i++) {
+				addGpioInfo(new GpioInfo(MOTORS_HEADER, NUM_OUTPUT_CHANNELS+NUM_INPUT_CHANNELS+i, i, GpioInfo.ANALOG_OUTPUT));
+			}
+		}
+	}
+	
 	public static class PiconZeroAnalogInputDevice extends AbstractDevice implements GpioAnalogInputDeviceInterface {
 		private PiconZero piconZero;
+		private int gpio;
 		private int channel;
 	
-		public PiconZeroAnalogInputDevice(PiconZero piconZero, String key, int channel) {
+		public PiconZeroAnalogInputDevice(PiconZero piconZero, String key, int gpio, int channel) {
 			super(key, piconZero);
 			
 			this.piconZero = piconZero;
+			this.gpio = gpio;
 			this.channel = channel;
 		}
 	
@@ -436,19 +545,25 @@ implements GpioDeviceFactoryInterface, AnalogInputDeviceFactoryInterface, PwmOut
 	
 		@Override
 		public int getGpio() {
+			return gpio;
+		}
+		
+		public int getChannel() {
 			return channel;
 		}
 	}
 	
 	public static class PiconZeroDigitalInputDevice extends AbstractDevice implements GpioDigitalInputDeviceInterface {
 		private PiconZero piconZero;
+		private int gpio;
 		private int channel;
 	
-		public PiconZeroDigitalInputDevice(PiconZero piconZero, String key, int channel, GpioPullUpDown pud,
-				GpioEventTrigger trigger) {
+		public PiconZeroDigitalInputDevice(PiconZero piconZero, String key,
+				int gpio, int channel, GpioPullUpDown pud, GpioEventTrigger trigger) {
 			super(key, piconZero);
 			
 			this.piconZero = piconZero;
+			this.gpio = gpio;
 			this.channel = channel;
 		}
 		
@@ -459,12 +574,16 @@ implements GpioDeviceFactoryInterface, AnalogInputDeviceFactoryInterface, PwmOut
 		
 		@Override
 		public int getGpio() {
+			return gpio;
+		}
+		
+		public int getChannel() {
 			return channel;
 		}
 	
 		@Override
 		public boolean getValue() throws RuntimeIOException {
-			return piconZero.readInput(channel) != 0;
+			return piconZero.getInputValue(channel) != 0;
 		}
 	
 		@Override
@@ -480,18 +599,22 @@ implements GpioDeviceFactoryInterface, AnalogInputDeviceFactoryInterface, PwmOut
 	
 		@Override
 		public void removeListener() {
+			// TODO Need to implement a polling mechanism
+			throw new UnsupportedOperationException("Not yet implemented");
 		}
 	}
 
 	public static class PiconZeroDigitalOutputDevice extends AbstractDevice implements GpioDigitalOutputDeviceInterface {
 		private PiconZero piconZero;
+		private int gpio;
 		private int channel;
 		private boolean value;
 	
-		public PiconZeroDigitalOutputDevice(PiconZero piconZero, String key, int channel, boolean initialValue) {
+		public PiconZeroDigitalOutputDevice(PiconZero piconZero, String key, int gpio, int channel, boolean initialValue) {
 			super(key, piconZero);
 			
 			this.piconZero = piconZero;
+			this.gpio = gpio;
 			this.channel = channel;
 		}
 	
@@ -502,6 +625,10 @@ implements GpioDeviceFactoryInterface, AnalogInputDeviceFactoryInterface, PwmOut
 		
 		@Override
 		public int getGpio() {
+			return gpio;
+		}
+
+		public int getChannel() {
 			return channel;
 		}
 		
@@ -512,25 +639,31 @@ implements GpioDeviceFactoryInterface, AnalogInputDeviceFactoryInterface, PwmOut
 		
 		@Override
 		public void setValue(boolean value) {
-			piconZero.setOutput(channel, value ? 1 : 0);
+			piconZero.setValue(channel, value);
 			this.value = value;
 		}
 	}
 
 	public static class PiconZeroPwmOutputDevice extends AbstractDevice implements PwmOutputDeviceInterface {
 		private PiconZero piconZero;
+		private int gpio;
 		private int channel;
 		private float value;
 	
-		public PiconZeroPwmOutputDevice(PiconZero piconZero, String key, int channel, float initialValue) {
+		public PiconZeroPwmOutputDevice(PiconZero piconZero, String key, int gpio, int channel, float initialValue) {
 			super(key, piconZero);
 			
 			this.piconZero = piconZero;
+			this.gpio = gpio;
 			this.channel = channel;
 		}
 	
 		@Override
 		public int getGpio() {
+			return gpio;
+		}
+		
+		public int getChannel() {
 			return channel;
 		}
 	
@@ -554,6 +687,43 @@ implements GpioDeviceFactoryInterface, AnalogInputDeviceFactoryInterface, PwmOut
 		protected void closeDevice() throws RuntimeIOException {
 			Logger.debug("closeDevice()");
 			piconZero.closeChannel(channel);
+		}
+	}
+	
+	public static class PiconZeroAnalogOutputDevice extends AbstractDevice implements GpioAnalogOutputDeviceInterface {
+		private PiconZero piconZero;
+		private int gpio;
+		private int channel;
+		private float value;
+		
+		public PiconZeroAnalogOutputDevice(PiconZero piconZero, String key, int gpio, int channel) {
+			super(key, piconZero);
+			
+			this.piconZero = piconZero;
+			this.gpio = gpio;
+			this.channel = channel;
+		}
+
+		@Override
+		public float getValue() throws RuntimeIOException {
+			return value;
+		}
+
+		@Override
+		public void setValue(float value) throws RuntimeIOException {
+			piconZero.setMotor(channel, value);
+			this.value = value;
+		}
+
+		@Override
+		public int getGpio() {
+			return gpio;
+		}
+
+		@Override
+		protected void closeDevice() throws RuntimeIOException {
+			Logger.debug("closeDevice()");
+			setValue(0);
 		}
 	}
 }

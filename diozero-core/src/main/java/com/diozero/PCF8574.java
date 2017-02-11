@@ -33,9 +33,7 @@ import org.pmw.tinylog.Logger;
 
 import com.diozero.api.*;
 import com.diozero.internal.spi.*;
-import com.diozero.util.BitManipulation;
-import com.diozero.util.MutableByte;
-import com.diozero.util.RuntimeIOException;
+import com.diozero.util.*;
 
 public class PCF8574 extends AbstractDeviceFactory implements GpioDeviceFactoryInterface, GpioExpander {
 	private static final String DEVICE_NAME = "PCF8574";
@@ -44,9 +42,12 @@ public class PCF8574 extends AbstractDeviceFactory implements GpioDeviceFactoryI
 	
 	private I2CDevice device;
 	private MutableByte directions;
+	private BoardGpioInfo boardGpioInfo;
 	
 	public PCF8574(int controller, int address, int addressSize, int frequency) {
 		super(DEVICE_NAME + "-" + controller + "-" + address);
+		
+		boardGpioInfo = new PCF8574BoardGpioInfo();
 		
 		device = new I2CDevice(controller, address, addressSize, frequency, ByteOrder.LITTLE_ENDIAN);
 		directions = new MutableByte();
@@ -182,6 +183,20 @@ public class PCF8574 extends AbstractDeviceFactory implements GpioDeviceFactoryI
 		}
 		
 		setInputMode(gpio);
+	}
+
+	@Override
+	public BoardGpioInfo getGpioInfo() {
+		return boardGpioInfo;
+	}
+	
+	public static class PCF8574BoardGpioInfo extends BoardGpioInfo {
+		@Override
+		public void init() {
+			for (int i=0; i<NUM_PINS; i++) {
+				addGpioInfo(new GpioInfo(i, i, GpioInfo.DIGITAL_IN_OUT));
+			}
+		}
 	}
 
 	private static class PCF8574DigitalInputDevice extends AbstractInputDevice<DigitalInputEvent> implements GpioDigitalInputDeviceInterface {

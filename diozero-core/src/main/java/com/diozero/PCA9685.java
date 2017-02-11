@@ -31,9 +31,7 @@ import java.io.Closeable;
 
 import org.pmw.tinylog.Logger;
 
-import com.diozero.api.DeviceAlreadyOpenedException;
-import com.diozero.api.I2CConstants;
-import com.diozero.api.I2CDevice;
+import com.diozero.api.*;
 import com.diozero.internal.spi.*;
 import com.diozero.util.*;
 
@@ -95,6 +93,7 @@ public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFac
 	private String keyPrefix;
 	private int pwmFrequency = DEFAULT_PWM_FREQUENCY;
 	private double pulseMsPerBit = ServoUtil.calcPulseMsPerBit(pwmFrequency, RANGE);
+	private PCA9685BoardGpioInfo boardGpioInfo;
 
 	public PCA9685(int pwmFrequency) throws RuntimeIOException {
 		this(I2CConstants.BUS_1, DEVICE_ADDRESS, pwmFrequency);
@@ -104,6 +103,7 @@ public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFac
 		super(DEVICE_NAME + "-" + controller + "-" + address + "-");
 		
 		i2cDevice = new I2CDevice(controller, address, I2CConstants.ADDR_SIZE_7, I2CConstants.DEFAULT_CLOCK_FREQUENCY);
+		boardGpioInfo = new PCA9685BoardGpioInfo();
 		
 		reset();
 		
@@ -313,6 +313,23 @@ public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFac
 	@Override
 	public void setPwmFrequency(int channel, int pwmFrequency) {
 		setPwmFreq(pwmFrequency);
+	}
+
+	@Override
+	public BoardGpioInfo getGpioInfo() {
+		return boardGpioInfo;
+	}
+	
+	public static class PCA9685BoardGpioInfo extends BoardGpioInfo {
+		@Override
+		protected void init() {
+			for (int i=0; i<8; i++) {
+				addGpioInfo(new GpioInfo(i, 6+i, GpioInfo.PWM_OUTPUT));
+			}
+			for (int i=8; i<16; i++) {
+				addGpioInfo(new GpioInfo(i, 7+i, GpioInfo.PWM_OUTPUT));
+			}
+		}
 	}
 	
 	private static class PCA9685PwmOutputDevice extends AbstractDevice implements PwmOutputDeviceInterface {

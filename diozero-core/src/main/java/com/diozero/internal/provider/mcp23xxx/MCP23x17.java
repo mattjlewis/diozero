@@ -1,5 +1,9 @@
 package com.diozero.internal.provider.mcp23xxx;
 
+import com.diozero.api.GpioInfo;
+import com.diozero.sandpit.PCF8591.PCF8591BoardGpioInfo;
+import com.diozero.util.BoardGpioInfo;
+
 /*
  * #%L
  * Device I/O Zero - Core
@@ -142,6 +146,8 @@ public abstract class MCP23x17 extends MCP23xxx {
 	 * results in a read of the OLAT and not the port itself. A write to this register
 	 * modifies the output latches that modifies the pins configured as outputs */
 	private static final int[] OLAT_REG = BANK0_OLAT_REG;
+	
+	private BoardGpioInfo boardGpioInfo;
 
 	public MCP23x17(String deviceName) {
 		this(deviceName, INTERRUPT_GPIO_NOT_SET, INTERRUPT_GPIO_NOT_SET);
@@ -153,6 +159,8 @@ public abstract class MCP23x17 extends MCP23xxx {
 	
 	public MCP23x17(String deviceName, int interruptGpioA, int interruptGpioB) {
 		super(NUM_PORTS, deviceName, interruptGpioA, interruptGpioB);
+		
+		boardGpioInfo = new MCP23x17BoardGpioInfo();
 	}
 	
 	@Override
@@ -208,5 +216,25 @@ public abstract class MCP23x17 extends MCP23xxx {
 	@Override
 	protected int getOLatReg(int port) {
 		return OLAT_REG[port];
+	}
+
+	@Override
+	public BoardGpioInfo getGpioInfo() {
+		return boardGpioInfo;
+	}
+	
+	public static class MCP23x17BoardGpioInfo extends BoardGpioInfo {
+		public static final String BANK_A = "BANK-A";
+		public static final String BANK_B = "BANK-B";
+		
+		@Override
+		protected void init() {
+			for (int i=0; i<8; i++) {
+				addGpioInfo(new GpioInfo(BANK_A, i, 21+i, GpioInfo.DIGITAL_IN_OUT));
+			}
+			for (int i=0; i<8; i++) {
+				addGpioInfo(new GpioInfo(BANK_B, 8+i, 1+i, GpioInfo.DIGITAL_IN_OUT));
+			}
+		}
 	}
 }
