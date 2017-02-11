@@ -1,7 +1,5 @@
 package com.diozero.util;
 
-import java.util.HashMap;
-
 /*
  * #%L
  * Device I/O Zero - Core
@@ -27,10 +25,7 @@ import java.util.HashMap;
  * THE SOFTWARE.
  * #L%
  */
-
-
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import com.diozero.api.DeviceMode;
 import com.diozero.api.GpioInfo;
@@ -57,6 +52,26 @@ public abstract class BoardGpioInfo {
 		gpiosByGpioNumber.put(Integer.valueOf(gpioInfo.getGpioNum()), gpioInfo);
 		gpiosByName.put(gpioInfo.getName(), gpioInfo);
 		gpiosByPin.put(Integer.valueOf(gpioInfo.getPin()), gpioInfo);
+	}
+	
+	public Set<Integer> getGioNumbers() {
+		return gpiosByGpioNumber.keySet();
+	}
+	
+	public Collection<GpioInfo> getGpios() {
+		return gpiosByGpioNumber.values();
+	}
+	
+	public GpioInfo getByGpioNumber(int gpio) {
+		return gpiosByGpioNumber.get(Integer.valueOf(gpio));
+	}
+	
+	public GpioInfo getByName(String name) {
+		return gpiosByGpioNumber.get(name);
+	}
+	
+	public GpioInfo getByPin(int pin) {
+		return gpiosByGpioNumber.get(Integer.valueOf(pin));
 	}
 
 	public boolean isSupported(DeviceMode mode, int gpio) {
