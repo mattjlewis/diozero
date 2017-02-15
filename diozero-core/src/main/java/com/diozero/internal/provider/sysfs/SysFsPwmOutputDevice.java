@@ -33,12 +33,13 @@ import java.nio.file.Path;
 
 import org.pmw.tinylog.Logger;
 
+import com.diozero.api.PwmPinInfo;
 import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.DeviceFactoryInterface;
 import com.diozero.internal.spi.PwmOutputDeviceInterface;
 import com.diozero.util.RuntimeIOException;
 
-public class ChipSysFsPwmOutputDevice extends AbstractDevice implements PwmOutputDeviceInterface {
+public class SysFsPwmOutputDevice extends AbstractDevice implements PwmOutputDeviceInterface {
 	private int gpio;
 	private int pwmChip;
 	private int pwmNum;
@@ -46,29 +47,30 @@ public class ChipSysFsPwmOutputDevice extends AbstractDevice implements PwmOutpu
 	private RandomAccessFile dutyFile;
 	private int periodNs;
 	
-	public ChipSysFsPwmOutputDevice(String key, DeviceFactoryInterface deviceFactory, int gpio,
+	public SysFsPwmOutputDevice(String key, DeviceFactoryInterface deviceFactory, int pwmChip, PwmPinInfo pinInfo,
 			int frequency, float initialValue) {
 		super(key, deviceFactory);
-		
-		this.gpio = gpio;
-		pwmNum = gpio;
-		pwmChip = 0;
-		Path pwm_chip_root = FileSystems.getDefault().getPath("/sys/class/pwm/pwmchip" + pwmChip);
-		pwmRoot = pwm_chip_root.resolve("pwm" + pwmNum);
-		
+
+		this.pwmChip = pwmChip;
+		gpio = pinInfo.getDeviceNumber();
+		pwmNum = pinInfo.getPwmNum();
+
 		periodNs = 1_000_000_000 / frequency;
 		
+		Path pwm_chip_root = FileSystems.getDefault().getPath("/sys/class/pwm/pwmchip" + pwmChip);
+		pwmRoot = pwm_chip_root.resolve("pwm" + pwmNum);
+
 		try {
-			if (! pwmRoot.toFile().exists()) {
+			if (!pwmRoot.toFile().exists()) {
 				File export_file = pwm_chip_root.resolve("export").toFile();
 				try (FileWriter writer = new FileWriter(export_file)) {
 					writer.write(String.valueOf(pwmNum));
 				}
 			}
-			//setPolarity(Polarity.NORMAL);
+			// setPolarity(Polarity.NORMAL);
 			setEnabled(true);
 			setPeriod(periodNs);
-			
+
 			dutyFile = new RandomAccessFile(pwmRoot.resolve("duty_cycle").toFile(), "rw");
 		} catch (IOException e) {
 			throw new RuntimeIOException("Error opening PWM #" + pwmNum, e);

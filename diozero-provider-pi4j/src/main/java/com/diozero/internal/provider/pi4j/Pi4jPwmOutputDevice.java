@@ -47,7 +47,7 @@ public class Pi4jPwmOutputDevice extends AbstractDevice implements PwmOutputDevi
 	private PwmType pwmType;
 	
 	Pi4jPwmOutputDevice(String key, DeviceFactoryInterface deviceFactory, GpioController gpioController,
-			PwmType pwmType, int range, int gpio, float initialValue) throws RuntimeIOException {
+			PwmType pwmType, int gpio, float initialValue, int range) throws RuntimeIOException {
 		super(key, deviceFactory);
 		
 		this.pwmType = pwmType;

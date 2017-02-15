@@ -31,6 +31,8 @@ import java.util.ServiceLoader;
 
 import org.pmw.tinylog.Logger;
 
+import com.diozero.api.PinInfo;
+
 public class SystemInfo {
 	private static final String OS_RELEASE_FILE = "/etc/os-release";
 	private static final String CPUINFO_FILE = "/proc/cpuinfo";
@@ -142,7 +144,30 @@ public class SystemInfo {
 		}
 		
 		@Override
-		protected void init() {
+		public PinInfo getByGpioNumber(int gpio) {
+			PinInfo pin_info = super.getByGpioNumber(gpio);
+			if (pin_info == null) {
+				pin_info = addGpioPinInfo(gpio, gpio, PinInfo.DIGITAL_IN_OUT);
+			}
+			return pin_info;
+		}
+		
+		@Override
+		public PinInfo getByAdcNumber(int adcNumber) {
+			PinInfo pin_info = super.getByAdcNumber(adcNumber);
+			if (pin_info == null) {
+				pin_info = addAdcPinInfo(adcNumber, adcNumber);
+			}
+			return pin_info;
+		}
+		
+		@Override
+		public PinInfo getByDacNumber(int dacNumber) {
+			PinInfo pin_info = super.getByDacNumber(dacNumber);
+			if (pin_info == null) {
+				pin_info = addDacPinInfo(dacNumber, dacNumber);
+			}
+			return pin_info;
 		}
 	}
 }

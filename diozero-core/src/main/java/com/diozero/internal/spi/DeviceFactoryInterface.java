@@ -1,6 +1,7 @@
 package com.diozero.internal.spi;
 
-import com.diozero.util.BoardGpioInfo;
+import com.diozero.api.PinInfo;
+import com.diozero.util.BoardPinInfo;
 
 /*
  * #%L
@@ -30,12 +31,12 @@ import com.diozero.util.BoardGpioInfo;
 
 
 public interface DeviceFactoryInterface {
-	String createPinKey(int gpio);
 	String getName();
 	void shutdown();
 	boolean isShutdown();
 	boolean isDeviceOpened(String key);
 	void deviceOpened(DeviceInterface device);
 	void deviceClosed(DeviceInterface device);
-	BoardGpioInfo getGpioInfo();
+	BoardPinInfo getBoardPinInfo();
+	String createPinKey(PinInfo pinInfo);
 }

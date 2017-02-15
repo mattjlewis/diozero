@@ -1,5 +1,9 @@
 package com.diozero.internal.spi;
 
+import com.diozero.api.DeviceAlreadyOpenedException;
+import com.diozero.api.DeviceMode;
+import com.diozero.api.PinInfo;
+
 /*
  * #%L
  * Device I/O Zero - Core
@@ -29,5 +33,24 @@ package com.diozero.internal.spi;
 import com.diozero.util.RuntimeIOException;
 
 public interface AnalogInputDeviceFactoryInterface extends DeviceFactoryInterface {
-	GpioAnalogInputDeviceInterface provisionAnalogInputPin(int gpio) throws RuntimeIOException;
+	default AnalogInputDeviceInterface provisionAnalogInputDevice(int adcNumber) throws RuntimeIOException {
+		PinInfo pin_info = getBoardPinInfo().getByAdcNumber(adcNumber);
+		if (pin_info == null || ! pin_info.isSupported(DeviceMode.ANALOG_INPUT)) {
+			throw new IllegalArgumentException("Invalid mode (analog input) for adc " + adcNumber);
+		}
+		
+		String key = createPinKey(pin_info);
+		
+		// Check if this pin is already provisioned
+		if (isDeviceOpened(key)) {
+			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
+		}
+		
+		AnalogInputDeviceInterface device = createAnalogInputDevice(key, pin_info);
+		deviceOpened(device);
+		
+		return device;
+	}
+
+	AnalogInputDeviceInterface createAnalogInputDevice(String key, PinInfo pinInfo);
 }

@@ -29,7 +29,6 @@ package com.diozero.sampleapps;
 import org.pmw.tinylog.Logger;
 
 import com.diozero.LDR;
-import com.diozero.McpAdc;
 import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 
@@ -37,42 +36,40 @@ import com.diozero.util.SleepUtil;
  * Sample application to illustrate listening for changes to analog values. To run:
  * <ul>
  * <li>sysfs:<br>
- *  {@code java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar com.diozero.sampleapps.LDRTest MCP3304 0 2}</li>
+ *  {@code java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar com.diozero.sampleapps.AnalogListenerTest 0}</li>
  * <li>JDK Device I/O 1.0:<br>
- *  {@code sudo java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-jdkdio10-$DIOZERO_VERSION.jar:dio-1.0.1-dev-linux-armv6hf.jar -Djava.library.path=. com.diozero.sampleapps.LDRTest MCP3304 0 2}</li>
+ *  {@code sudo java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-jdkdio10-$DIOZERO_VERSION.jar:dio-1.0.1-dev-linux-armv6hf.jar -Djava.library.path=. com.diozero.sampleapps.AnalogListenerTest 0}</li>
  * <li>JDK Device I/O 1.1:<br>
- *  {@code sudo java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-jdkdio11-$DIOZERO_VERSION.jar:dio-1.1-dev-linux-armv6hf.jar -Djava.library.path=. com.diozero.sampleapps.LDRTest MCP3304 0 2}</li>
+ *  {@code sudo java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-jdkdio11-$DIOZERO_VERSION.jar:dio-1.1-dev-linux-armv6hf.jar -Djava.library.path=. com.diozero.sampleapps.AnalogListenerTest 0}</li>
  * <li>Pi4j:<br>
- *  {@code sudo java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-pi4j-$DIOZERO_VERSION.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sampleapps.LDRTest MCP3304 0 2}</li>
+ *  {@code sudo java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-pi4j-$DIOZERO_VERSION.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sampleapps.AnalogListenerTest 0}</li>
  * <li>wiringPi:<br>
- *  {@code sudo java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-wiringpi-$DIOZERO_VERSION.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sampleapps.LDRTest MCP3304 0 2}</li>
+ *  {@code sudo java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-wiringpi-$DIOZERO_VERSION.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sampleapps.AnalogListenerTest 0}</li>
  * <li>pigpgioJ:<br>
- *  {@code sudo java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-pigpio-$DIOZERO_VERSION.jar:pigpioj-java-1.0.1.jar com.diozero.sampleapps.LDRTest MCP3304 0 2}</li>
+ *  {@code sudo java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-pigpio-$DIOZERO_VERSION.jar:pigpioj-java-1.0.1.jar com.diozero.sampleapps.AnalogListenerTest 0}</li>
  * </ul>
  */
 public class LDRListenerTest {
 	public static void main(String[] args) {
-		if (args.length < 3) {
-			Logger.error("Usage: {} <mcp-name> <chip-select> <adc-pin>", LDRListenerTest.class.getName());
+		if (args.length < 1) {
+			Logger.error("Usage: {} <adc-number>", LDRListenerTest.class.getName());
 			System.exit(2);
 		}
-		McpAdc.Type type = McpAdc.Type.valueOf(args[0]);
-		if (type == null) {
-			Logger.error("Invalid MCP ADC type '{}'. Usage: {} <mcp-name> <spi-chip-select> <adc_pin>", args[0], McpAdcTest.class.getName());
-			System.exit(2);
-		}
-		
-		int chip_select = Integer.parseInt(args[1]);
-		int adc_pin = Integer.parseInt(args[2]);
-		float vref = 3.3f;
+
+		int adc_number = Integer.parseInt(args[0]);
+		float vref = 1.8f;
 		int r1 = 10_000;
-		test(type, chip_select, adc_pin, vref, r1);
+		test(adc_number, vref, r1);
 	}
-	
-	public static void test(McpAdc.Type type, int chipSelect, int pin, float vRef, int r1) {
-		try (McpAdc adc = new McpAdc(type, chipSelect); LDR ldr = new LDR(adc, pin, vRef, r1)) {
+
+	public static void test(int adcNumber, float vRef, int r1) {
+		try (LDR ldr = new LDR(adcNumber, vRef, r1)) {
 			ldr.addListener((event) -> Logger.info("valueChanged({})", event));
-			SleepUtil.sleepSeconds(10);
+			for (int i = 0; i < 10; i++) {
+				Logger.info("Scaled: {}, Unscaled: {}", Float.valueOf(ldr.getScaledValue()),
+						Float.valueOf(ldr.getUnscaledValue()));
+				SleepUtil.sleepSeconds(1);
+			}
 		} catch (RuntimeIOException e) {
 			Logger.error(e, "Error: {}", e);
 		}

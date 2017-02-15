@@ -28,7 +28,7 @@ package com.diozero.internal.board.raspberrypi;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.diozero.api.GpioInfo;
+import com.diozero.api.PinInfo;
 import com.diozero.util.BoardInfo;
 import com.diozero.util.BoardInfoProvider;
 
@@ -295,54 +295,64 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 	public static class PiBRev1BoardInfo extends PiBoardInfo {
 		public PiBRev1BoardInfo(Revision revision, Memory memory, Manufacturer manufacturer) {
 			super(Model.B, revision, memory, manufacturer, Processor.BCM_2835);
-		}
-		
-		@Override
-		protected void init() {
-			addGpioInfo(new GpioInfo(0, 3, GpioInfo.DIGITAL_IN_OUT));  // I2C SDA
-			addGpioInfo(new GpioInfo(1, 5, GpioInfo.DIGITAL_IN_OUT));  // I2C SCL
-			addGpioInfo(new GpioInfo(4, 7, GpioInfo.DIGITAL_IN_OUT));
-			addGpioInfo(new GpioInfo(7, 26, GpioInfo.DIGITAL_IN_OUT));  // SPI CE1
-			addGpioInfo(new GpioInfo(8, 24, GpioInfo.DIGITAL_IN_OUT));  // SPI CE0
-			addGpioInfo(new GpioInfo(9, 21, GpioInfo.DIGITAL_IN_OUT));  // SPI MISO
-			addGpioInfo(new GpioInfo(10, 19, GpioInfo.DIGITAL_IN_OUT)); // SPI MOSI
-			addGpioInfo(new GpioInfo(11, 23, GpioInfo.DIGITAL_IN_OUT)); // SPI CLK
-			addGpioInfo(new GpioInfo(14, 8, GpioInfo.DIGITAL_IN_OUT)); // UART TXD
-			addGpioInfo(new GpioInfo(15, 10, GpioInfo.DIGITAL_IN_OUT)); // UART RXD
-			addGpioInfo(new GpioInfo(17, 11, GpioInfo.DIGITAL_IN_OUT));
-			addGpioInfo(new GpioInfo(18, 12, GpioInfo.DIGITAL_IN_OUT_PWM));
-			addGpioInfo(new GpioInfo(21, 13, GpioInfo.DIGITAL_IN_OUT));
-			addGpioInfo(new GpioInfo(22, 15, GpioInfo.DIGITAL_IN_OUT));
-			addGpioInfo(new GpioInfo(23, 16, GpioInfo.DIGITAL_IN_OUT));
-			addGpioInfo(new GpioInfo(24, 18, GpioInfo.DIGITAL_IN_OUT));
-			addGpioInfo(new GpioInfo(25, 22, GpioInfo.DIGITAL_IN_OUT));
+
+			// 3v3 1 | 2 5v0
+			addGpioPinInfo(0, 3, PinInfo.DIGITAL_IN_OUT);  // I2C SDA
+			// 4 5v0
+			addGpioPinInfo(1, 5, PinInfo.DIGITAL_IN_OUT);  // I2C SCL
+			// 6 GND
+			addGpioPinInfo(4, 7, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(14, 8, PinInfo.DIGITAL_IN_OUT); // UART TXD
+			// 9 GND
+			addGpioPinInfo(15, 10, PinInfo.DIGITAL_IN_OUT); // UART RXD
+			addGpioPinInfo(17, 11, PinInfo.DIGITAL_IN_OUT);
+			addPwmPinInfo(18, 12, 0, PinInfo.DIGITAL_IN_OUT_PWM);
+			addGpioPinInfo(21, 13, PinInfo.DIGITAL_IN_OUT);
+			// 14 GND
+			addGpioPinInfo(22, 15, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(23, 16, PinInfo.DIGITAL_IN_OUT);
+			// 17 3v3
+			addGpioPinInfo(24, 18, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(10, 19, PinInfo.DIGITAL_IN_OUT); // SPI MOSI
+			// 20 GND
+			addGpioPinInfo(9, 21, PinInfo.DIGITAL_IN_OUT);  // SPI MISO
+			addGpioPinInfo(25, 22, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(11, 23, PinInfo.DIGITAL_IN_OUT); // SPI CLK
+			addGpioPinInfo(8, 24, PinInfo.DIGITAL_IN_OUT);  // SPI CE0
+			// 25 GND
+			addGpioPinInfo(7, 26, PinInfo.DIGITAL_IN_OUT);  // SPI CE1
 		}
 	}
 	
 	public static class PiABRev2BoardInfo extends PiBoardInfo {
 		public PiABRev2BoardInfo(Model model, Memory memory, Manufacturer manufacturer) {
 			super(model, Revision.REV_2, memory, manufacturer, Processor.BCM_2835);
-		}
-		
-		@Override
-		protected void init() {
-			addGpioInfo(new GpioInfo(2, 3, GpioInfo.DIGITAL_IN_OUT));  // I2C SDA
-			addGpioInfo(new GpioInfo(3, 5, GpioInfo.DIGITAL_IN_OUT));  // I2C SCL
-			addGpioInfo(new GpioInfo(4, 7, GpioInfo.DIGITAL_IN_OUT));
-			addGpioInfo(new GpioInfo(7, 26, GpioInfo.DIGITAL_IN_OUT));  // SPI CE1
-			addGpioInfo(new GpioInfo(8, 24, GpioInfo.DIGITAL_IN_OUT));  // SPI CE0
-			addGpioInfo(new GpioInfo(9, 21, GpioInfo.DIGITAL_IN_OUT));  // SPI MISO
-			addGpioInfo(new GpioInfo(10, 19, GpioInfo.DIGITAL_IN_OUT)); // SPI MOSI
-			addGpioInfo(new GpioInfo(11, 23, GpioInfo.DIGITAL_IN_OUT)); // SPI CLK
-			addGpioInfo(new GpioInfo(14, 8, GpioInfo.DIGITAL_IN_OUT)); // UART TXD
-			addGpioInfo(new GpioInfo(15, 10, GpioInfo.DIGITAL_IN_OUT)); // UART RXD
-			addGpioInfo(new GpioInfo(17, 11, GpioInfo.DIGITAL_IN_OUT));
-			addGpioInfo(new GpioInfo(18, 12, GpioInfo.DIGITAL_IN_OUT_PWM));
-			addGpioInfo(new GpioInfo(22, 15, GpioInfo.DIGITAL_IN_OUT));
-			addGpioInfo(new GpioInfo(23, 16, GpioInfo.DIGITAL_IN_OUT));
-			addGpioInfo(new GpioInfo(24, 18, GpioInfo.DIGITAL_IN_OUT));
-			addGpioInfo(new GpioInfo(25, 22, GpioInfo.DIGITAL_IN_OUT));
-			addGpioInfo(new GpioInfo(27, 13, GpioInfo.DIGITAL_IN_OUT));
+
+			// 3v3 1 | 2 5v0
+			addGpioPinInfo(2, 3, PinInfo.DIGITAL_IN_OUT);  // I2C SDA
+			// 4 5v0
+			addGpioPinInfo(3, 5, PinInfo.DIGITAL_IN_OUT);  // I2C SCL
+			// 6 GND
+			addGpioPinInfo(4, 7, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(14, 8, PinInfo.DIGITAL_IN_OUT); // UART TXD
+			// 9 GND
+			addGpioPinInfo(15, 10, PinInfo.DIGITAL_IN_OUT); // UART RXD
+			addGpioPinInfo(17, 11, PinInfo.DIGITAL_IN_OUT);
+			addPwmPinInfo(18, 12, 0, PinInfo.DIGITAL_IN_OUT_PWM);
+			addGpioPinInfo(27, 13, PinInfo.DIGITAL_IN_OUT);
+			// 14 GND
+			addGpioPinInfo(22, 15, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(23, 16, PinInfo.DIGITAL_IN_OUT);
+			// 17 3v3
+			addGpioPinInfo(24, 18, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(10, 19, PinInfo.DIGITAL_IN_OUT); // SPI MOSI
+			// 20 GND
+			addGpioPinInfo(9, 21, PinInfo.DIGITAL_IN_OUT);  // SPI MISO
+			addGpioPinInfo(25, 22, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(11, 23, PinInfo.DIGITAL_IN_OUT); // SPI CLK
+			addGpioPinInfo(8, 24, PinInfo.DIGITAL_IN_OUT);  // SPI CE0
+			// 25 GND
+			addGpioPinInfo(7, 26, PinInfo.DIGITAL_IN_OUT);  // SPI CE1
 		}
 	}
 	
@@ -351,66 +361,72 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 		
 		public PiABPlusBoardInfo(Model model, Revision revision, Memory memory, Manufacturer manufacturer, Processor processor) {
 			super(model, revision, memory, manufacturer, processor);
-		}
-		
-		@Override
-		protected void init() {
-			addGpioInfo(new GpioInfo(2, 3, GpioInfo.DIGITAL_IN_OUT));		// I2C-SDA
-			addGpioInfo(new GpioInfo(3, 5, GpioInfo.DIGITAL_IN_OUT));		// I2C-SCL
-			addGpioInfo(new GpioInfo(4, 7, GpioInfo.DIGITAL_IN_OUT));		// GPCLK0
-			addGpioInfo(new GpioInfo(5, 29, GpioInfo.DIGITAL_IN_OUT));
-			addGpioInfo(new GpioInfo(6, 31, GpioInfo.DIGITAL_IN_OUT));
-			addGpioInfo(new GpioInfo(7, 26, GpioInfo.DIGITAL_IN_OUT));		// SPI0-CE1
-			addGpioInfo(new GpioInfo(8, 24, GpioInfo.DIGITAL_IN_OUT));		// SPI0-CE0
-			addGpioInfo(new GpioInfo(9, 21, GpioInfo.DIGITAL_IN_OUT));		// SPI0-MISO
-			addGpioInfo(new GpioInfo(10, 19, GpioInfo.DIGITAL_IN_OUT));		// SPI0-MOSI
-			addGpioInfo(new GpioInfo(11, 23, GpioInfo.DIGITAL_IN_OUT));		// SPI0-CLK
-			addGpioInfo(new GpioInfo(12, 32, GpioInfo.DIGITAL_IN_OUT_PWM));	// Alt0 = PWM0
-			addGpioInfo(new GpioInfo(13, 33, GpioInfo.DIGITAL_IN_OUT_PWM));	// Alt0 = PWM1
-			addGpioInfo(new GpioInfo(14, 8, GpioInfo.DIGITAL_IN_OUT));		// UART-TXD
-			addGpioInfo(new GpioInfo(15, 10, GpioInfo.DIGITAL_IN_OUT));		// UART-RXD
-			addGpioInfo(new GpioInfo(16, 36, GpioInfo.DIGITAL_IN_OUT));		// Alt4 = SPI1-CE2
-			addGpioInfo(new GpioInfo(17, 11, GpioInfo.DIGITAL_IN_OUT));		// Alt4 = SPI1-CE1
-			addGpioInfo(new GpioInfo(18, 12, GpioInfo.DIGITAL_IN_OUT_PWM));	// Alt0 = PCM-CLK, Alt4 = SPI1-CE0, Alt5 = PWM0
-			addGpioInfo(new GpioInfo(19, 35, GpioInfo.DIGITAL_IN_OUT_PWM));	// Alt4 = SPI1-MISO, Alt5 = PWM1
-			addGpioInfo(new GpioInfo(20, 38, GpioInfo.DIGITAL_IN_OUT));		// Alt4 = SPI1-MOSI
-			addGpioInfo(new GpioInfo(21, 40, GpioInfo.DIGITAL_IN_OUT));		// Alt4 = SPI1-SCLK
-			addGpioInfo(new GpioInfo(22, 15, GpioInfo.DIGITAL_IN_OUT));
-			addGpioInfo(new GpioInfo(23, 16, GpioInfo.DIGITAL_IN_OUT));
-			addGpioInfo(new GpioInfo(24, 18, GpioInfo.DIGITAL_IN_OUT));
-			addGpioInfo(new GpioInfo(25, 22, GpioInfo.DIGITAL_IN_OUT));
-			addGpioInfo(new GpioInfo(26, 37, GpioInfo.DIGITAL_IN_OUT));
-			addGpioInfo(new GpioInfo(27, 13, GpioInfo.DIGITAL_IN_OUT));
+
+			// 3v3 1 | 2 5v0
+			addGpioPinInfo(2, 3, PinInfo.DIGITAL_IN_OUT);					// I2C-SDA
+			// 4 5v0
+			addGpioPinInfo(3, 5, PinInfo.DIGITAL_IN_OUT);					// I2C-SCL
+			// 6 GND
+			addGpioPinInfo(4, 7, PinInfo.DIGITAL_IN_OUT);					// GPCLK0
+			addGpioPinInfo(14, 8, PinInfo.DIGITAL_IN_OUT);					// UART-TXD
+			// 9 GND
+			addGpioPinInfo(15, 10, PinInfo.DIGITAL_IN_OUT);				// UART-RXD
+			addGpioPinInfo(17, 11, PinInfo.DIGITAL_IN_OUT);				// Alt4 = SPI1-CE1
+			addPwmPinInfo(18, "PCM-CLK", 12, 0, PinInfo.DIGITAL_IN_OUT_PWM);	// Alt0 = PCM-CLK, Alt4 = SPI1-CE0, Alt5 = PWM0
+			addGpioPinInfo(27, 13, PinInfo.DIGITAL_IN_OUT);
+			// 14 GND
+			addGpioPinInfo(22, 15, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(23, 16, PinInfo.DIGITAL_IN_OUT);
+			// 17 3v3
+			addGpioPinInfo(24, 18, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(10, 19, PinInfo.DIGITAL_IN_OUT);				// SPI0-MOSI
+			// 20 GND
+			addGpioPinInfo(9, 21, PinInfo.DIGITAL_IN_OUT);					// SPI0-MISO
+			addGpioPinInfo(25, 22, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(11, 23, PinInfo.DIGITAL_IN_OUT);				// SPI0-CLK
+			addGpioPinInfo(8, 24, PinInfo.DIGITAL_IN_OUT);					// SPI0-CE0
+			// 25 GND
+			addGpioPinInfo(7, 26, PinInfo.DIGITAL_IN_OUT);					// SPI0-CE1
+			// BCM_0 (ID_SD) 27 | 28 BMC_1 (ID_SC)
+			addGpioPinInfo(5, 29, PinInfo.DIGITAL_IN_OUT);
+			// 20 GND
+			addGpioPinInfo(6, 31, PinInfo.DIGITAL_IN_OUT);
+			addPwmPinInfo(12, "PWM0", 32, 0, PinInfo.DIGITAL_IN_OUT_PWM);	// Alt0 = PWM0
+			addPwmPinInfo(13, "PWM1", 33, 1, PinInfo.DIGITAL_IN_OUT_PWM);	// Alt0 = PWM1
+			// 34 GND
+			addPwmPinInfo(19, "PCM-FS", 35, 1, PinInfo.DIGITAL_IN_OUT_PWM);	// Alt4 = SPI1-MISO, Alt5 = PWM1
+			addGpioPinInfo(16, 36, PinInfo.DIGITAL_IN_OUT);				// Alt4 = SPI1-CE2
+			addGpioPinInfo(26, 37, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(20, 38, PinInfo.DIGITAL_IN_OUT);				// Alt4 = SPI1-MOSI
+			// 39 GND
+			addGpioPinInfo(21, 40, PinInfo.DIGITAL_IN_OUT);				// Alt4 = SPI1-SCLK
 			// P5 Header
-			addGpioInfo(new GpioInfo(P5_HEADER, 28, 0, GpioInfo.DIGITAL_IN_OUT));
-			addGpioInfo(new GpioInfo(P5_HEADER, 29, 1, GpioInfo.DIGITAL_IN_OUT));
-			addGpioInfo(new GpioInfo(P5_HEADER, 30, 2, GpioInfo.DIGITAL_IN_OUT));
-			addGpioInfo(new GpioInfo(P5_HEADER, 31, 3, GpioInfo.DIGITAL_IN_OUT));
+			addGpioPinInfo(P5_HEADER, 28, 0, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(P5_HEADER, 29, 1, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(P5_HEADER, 30, 2, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(P5_HEADER, 31, 3, PinInfo.DIGITAL_IN_OUT);
 		}
 	}
 	
 	public static class PiComputeModuleBoardInfo extends PiBoardInfo {
 		public PiComputeModuleBoardInfo(Memory memory, Manufacturer manufacturer, Processor processor) {
 			super(Model.COMPUTE_MODEL, Revision.REV_1_2, memory, manufacturer, processor);
-		}
-		
-		@Override
-		protected void init() {
+
 			// See https://www.raspberrypi.org/documentation/hardware/computemodule/RPI-CM-DATASHEET-V1_0.pdf
-			addGpioInfo(new GpioInfo(0, 3, GpioInfo.DIGITAL_IN_OUT));
-			addGpioInfo(new GpioInfo(1, 5, GpioInfo.DIGITAL_IN_OUT));
-			addGpioInfo(new GpioInfo(2, 9, GpioInfo.DIGITAL_IN_OUT));
-			addGpioInfo(new GpioInfo(3, 11, GpioInfo.DIGITAL_IN_OUT));
-			addGpioInfo(new GpioInfo(4, 15, GpioInfo.DIGITAL_IN_OUT));
-			addGpioInfo(new GpioInfo(5, 17, GpioInfo.DIGITAL_IN_OUT));
-			addGpioInfo(new GpioInfo(6, 21, GpioInfo.DIGITAL_IN_OUT));
-			addGpioInfo(new GpioInfo(7, 23, GpioInfo.DIGITAL_IN_OUT));		// SPI0-CE1
-			addGpioInfo(new GpioInfo(8, 27, GpioInfo.DIGITAL_IN_OUT));		// SPI0-CE0
-			addGpioInfo(new GpioInfo(9, 29, GpioInfo.DIGITAL_IN_OUT));		// SPI0-MISO
-			addGpioInfo(new GpioInfo(10, 33, GpioInfo.DIGITAL_IN_OUT));		// SPI0-MOSI
-			addGpioInfo(new GpioInfo(11, 35, GpioInfo.DIGITAL_IN_OUT));		// SPI0-SCLK
-			addGpioInfo(new GpioInfo(12, 45, GpioInfo.DIGITAL_IN_OUT_PWM));	// PWM0
-			addGpioInfo(new GpioInfo(13, 47, GpioInfo.DIGITAL_IN_OUT_PWM));	// PWM1
+			addGpioPinInfo(0, 3, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(1, 5, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(2, 9, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(3, 11, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(4, 15, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(5, 17, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(6, 21, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(7, 23, PinInfo.DIGITAL_IN_OUT);			// SPI0-CE1
+			addGpioPinInfo(8, 27, PinInfo.DIGITAL_IN_OUT);			// SPI0-CE0
+			addGpioPinInfo(9, 29, PinInfo.DIGITAL_IN_OUT);			// SPI0-MISO
+			addGpioPinInfo(10, 33, PinInfo.DIGITAL_IN_OUT);			// SPI0-MOSI
+			addGpioPinInfo(11, 35, PinInfo.DIGITAL_IN_OUT);			// SPI0-SCLK
+			addPwmPinInfo(12, 45, 0, PinInfo.DIGITAL_IN_OUT_PWM);	// PWM0
+			addPwmPinInfo(13, 47, 1, PinInfo.DIGITAL_IN_OUT_PWM);	// PWM1
 			// TODO Complete this (up to GPIO45)
 		}
 	}

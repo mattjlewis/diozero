@@ -28,12 +28,7 @@ package com.diozero.internal.spi;
 
 import com.diozero.util.RuntimeIOException;
 
-public interface PwmOutputDeviceInterface extends DeviceInterface {
-	/**
-	 * Get the device GPIO
-	 * @return Device native GPIO
-	 */
-	int getGpio();
+public interface PwmOutputDeviceInterface extends GpioDeviceInterface {
 	/**
 	 * Get the device PWM output device number
 	 * @return Device native PWM output

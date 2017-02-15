@@ -35,7 +35,7 @@ import org.pmw.tinylog.Logger;
 
 import com.diozero.api.*;
 import com.diozero.internal.spi.*;
-import com.diozero.util.BoardGpioInfo;
+import com.diozero.util.BoardPinInfo;
 import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 
@@ -96,8 +96,7 @@ implements GpioDeviceFactoryInterface, PwmOutputDeviceFactoryInterface,
 	public static final int SERVO_CENTRE = 90;
 
 	private I2CDevice device;
-	private String keyPrefix;
-	private BoardGpioInfo boardGpioInfo;
+	private BoardPinInfo boardPinInfo;
 	private OutputConfig[] outputConfigs = new OutputConfig[NUM_OUTPUT_CHANNELS];
 	private InputConfig[] inputConfigs = new InputConfig[NUM_INPUT_CHANNELS];
 	private int[] motorValues = new int[NUM_MOTORS];
@@ -105,11 +104,11 @@ implements GpioDeviceFactoryInterface, PwmOutputDeviceFactoryInterface,
 	public PiconZero() {
 		this(I2CConstants.BUS_1, DEFAULT_ADDRESS);
 		
-		boardGpioInfo = new PiconZeroBoardGpioInfo();
+		boardPinInfo = new PiconZeroBoardPinInfo();
 	}
 	
 	public PiconZero(int controller, int address) {
-		super(DEVICE_NAME + "-" + controller + "-" + address + "-");
+		super(DEVICE_NAME + "-" + controller + "-" + address);
 		
 		device = new I2CDevice(controller, address, I2CConstants.ADDR_SIZE_7,
 				I2CConstants.DEFAULT_CLOCK_FREQUENCY, ByteOrder.LITTLE_ENDIAN);
@@ -376,111 +375,70 @@ implements GpioDeviceFactoryInterface, PwmOutputDeviceFactoryInterface,
 	}
 
 	@Override
-	public BoardGpioInfo getGpioInfo() {
-		return boardGpioInfo;
+	public BoardPinInfo getBoardPinInfo() {
+		return boardPinInfo;
 	}
-
+	
 	@Override
-	public GpioAnalogInputDeviceInterface provisionAnalogInputPin(int gpio) throws RuntimeIOException {
-		int channel = gpio - NUM_OUTPUT_CHANNELS;
-		validateChannelMode(channel, InputConfig.ANALOG);
-		
-		String key = keyPrefix + gpio;
-		
-		if (isDeviceOpened(key)) {
-			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
-		}
-		
-		setInputConfig(channel, InputConfig.ANALOG);
-		
-		GpioAnalogInputDeviceInterface device = new PiconZeroAnalogInputDevice(this, key, gpio, channel);
-		deviceOpened(device);
-		
-		return device;
-	}
-
-	@Override
-	public GpioDigitalInputDeviceInterface provisionDigitalInputPin(int gpio, GpioPullUpDown pud,
+	public GpioDigitalInputDeviceInterface createDigitalInputDevice(String key, PinInfo pinInfo, GpioPullUpDown pud,
 			GpioEventTrigger trigger) throws RuntimeIOException {
-		int channel = gpio - NUM_OUTPUT_CHANNELS;
-		validateChannelMode(channel, pud == GpioPullUpDown.PULL_UP ? InputConfig.DIGITAL_PULL_UP : InputConfig.DIGITAL);
+		setInputConfig(pinInfo.getPinNumber(), pud == GpioPullUpDown.PULL_UP ? InputConfig.DIGITAL_PULL_UP : InputConfig.DIGITAL);
+		return new PiconZeroDigitalInputDevice(this, key, pinInfo, pud, trigger);
+	}
+	
+	@Override
+	public GpioDigitalOutputDeviceInterface createDigitalOutputDevice(String key, PinInfo pinInfo,
+			boolean initialValue) throws RuntimeIOException {
+		setOutputConfig(pinInfo.getPinNumber(), OutputConfig.DIGITAL);
+		return new PiconZeroDigitalOutputDevice(this, key, pinInfo.getDeviceNumber(), pinInfo.getPinNumber(), initialValue);
+	}
+	
+	@Override
+	public GpioDigitalInputOutputDeviceInterface createDigitalInputOutputDevice(String key, PinInfo pinInfo,
+			DeviceMode mode) throws RuntimeIOException {
+		throw new UnsupportedOperationException("DigitalInputOutputDevice isn't possible with the PiconZero");
+	}
+	
+	@Override
+	public PwmOutputDeviceInterface createPwmOutputDevice(String key, PinInfo pinInfo,
+			float initialValue) throws RuntimeIOException {
+		setOutputConfig(pinInfo.getPinNumber(), OutputConfig.PWM);
+		return new PiconZeroPwmOutputDevice(this, key, pinInfo.getDeviceNumber(), pinInfo.getPinNumber(), initialValue);
+	}
+	
+	@Override
+	public AnalogInputDeviceInterface createAnalogInputDevice(String key, PinInfo pinInfo) {
+		setInputConfig(pinInfo.getPinNumber(), InputConfig.ANALOG);
 		
-		String key = keyPrefix + gpio;
+		return new PiconZeroAnalogInputDevice(this, key, pinInfo);
+	}
+
+	@Override
+	public AnalogOutputDeviceInterface createAnalogOutputDevice(String key, PinInfo pinInfo) throws RuntimeIOException {
+		return new PiconZeroAnalogOutputDevice(this, key, pinInfo.getDeviceNumber(), pinInfo.getPinNumber());
+	}
+
+	@Override
+	public AnalogInputDeviceInterface provisionAnalogInputDevice(int gpio) throws RuntimeIOException {
+		// Special case - PiconZero can switch between digital and analog input hence use of gpio rather than adc
+		PinInfo pin_info = boardPinInfo.getByGpioNumber(gpio);
+		if (pin_info == null || ! pin_info.isSupported(DeviceMode.ANALOG_INPUT)) {
+			throw new IllegalArgumentException("Invalid mode (analog input) for GPIO " + gpio);
+		}
 		
+		String key = createPinKey(pin_info);
+		
+		// Check if this pin is already provisioned
 		if (isDeviceOpened(key)) {
 			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
 		}
 		
-		setInputConfig(channel, pud == GpioPullUpDown.PULL_UP ? InputConfig.DIGITAL_PULL_UP : InputConfig.DIGITAL);
-		
-		GpioDigitalInputDeviceInterface device = new PiconZeroDigitalInputDevice(this, key, gpio, channel, pud, trigger);
+		AnalogInputDeviceInterface device = createAnalogInputDevice(key, pin_info);
 		deviceOpened(device);
 		
 		return device;
 	}
-
-	@Override
-	public GpioDigitalOutputDeviceInterface provisionDigitalOutputPin(int gpio, boolean initialValue)
-			throws RuntimeIOException {
-		int channel = gpio;
-		validateChannelMode(channel, OutputConfig.DIGITAL);
-		
-		String key = keyPrefix + gpio;
-		
-		if (isDeviceOpened(key)) {
-			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
-		}
-		
-		setOutputConfig(channel, OutputConfig.DIGITAL);
-		
-		GpioDigitalOutputDeviceInterface device = new PiconZeroDigitalOutputDevice(this, key, gpio, channel, initialValue);
-		deviceOpened(device);
-		
-		return device;
-	}
-
-	@Override
-	public PwmOutputDeviceInterface provisionPwmOutputPin(int gpio, float initialValue) throws RuntimeIOException {
-		int channel = gpio;
-		validateChannelMode(channel, OutputConfig.PWM);
-		
-		String key = keyPrefix + gpio;
-		
-		if (isDeviceOpened(key)) {
-			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
-		}
-		
-		setOutputConfig(channel, OutputConfig.PWM);
-		
-		PwmOutputDeviceInterface device = new PiconZeroPwmOutputDevice(this, key, gpio, channel, initialValue);
-		deviceOpened(device);
-		
-		return device;
-	}
-
-	@Override
-	public GpioDigitalInputOutputDeviceInterface provisionDigitalInputOutputPin(int gpio, DeviceMode mode)
-			throws RuntimeIOException {
-		throw new UnsupportedOperationException("DigitalInputOutputDevice isn't supported on PiconZero");
-	}
-
-	@Override
-	public GpioAnalogOutputDeviceInterface provisionAnalogOutputPin(int gpio) throws RuntimeIOException {
-		int channel = gpio - NUM_OUTPUT_CHANNELS - NUM_INPUT_CHANNELS;
-		validateChannelMode(channel, InputConfig.ANALOG);
-		
-		String key = keyPrefix + gpio;
-		
-		if (isDeviceOpened(key)) {
-			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
-		}
-		
-		GpioAnalogOutputDeviceInterface device = new PiconZeroAnalogOutputDevice(this, key, gpio, channel);
-		deviceOpened(device);
-		
-		return device;
-	}
-
+	
 	public void closeChannel(int channel) {
 		Logger.debug("closeChannel({})", Integer.valueOf(channel));
 		setInputConfig(channel, InputConfig.DIGITAL);
@@ -495,95 +453,90 @@ implements GpioDeviceFactoryInterface, PwmOutputDeviceFactoryInterface,
 		device.close();
 	}
 	
-	public static class PiconZeroBoardGpioInfo extends BoardGpioInfo {
+	public static class PiconZeroBoardPinInfo extends BoardPinInfo {
 		public static final String OUTPUTS_HEADER = "OUTPUTS";
 		public static final String INPUTS_HEADER = "INPUTS";
 		public static final String MOTORS_HEADER = "MOTORS";
 		
-		@Override
-		protected void init() {
+		public PiconZeroBoardPinInfo() {
 			// GPIO0-5 - Output
 			// Note doesn't include built-in servo and WS2812B capabilities
 			for (int i=0; i<NUM_OUTPUT_CHANNELS; i++) {
-				addGpioInfo(new GpioInfo(OUTPUTS_HEADER, i, i, GpioInfo.DIGITAL_PWM_OUTPUT));
+				addGpioPinInfo(OUTPUTS_HEADER, i, i, PinInfo.DIGITAL_PWM_OUTPUT);
 			}
 			// GPIO6-9 - Input
 			// Note doesn't include built-in DS18B20 capability
 			for (int i=0; i<NUM_INPUT_CHANNELS; i++) {
-				addGpioInfo(new GpioInfo(INPUTS_HEADER, NUM_OUTPUT_CHANNELS+i, i, GpioInfo.DIGITAL_ANALOG_INPUT));
+				addGpioPinInfo(INPUTS_HEADER, NUM_OUTPUT_CHANNELS+i, i, PinInfo.DIGITAL_ANALOG_INPUT);
 			}
 			// GPIO10-11 - Motors
 			for (int i=0; i<NUM_MOTORS; i++) {
-				addGpioInfo(new GpioInfo(MOTORS_HEADER, NUM_OUTPUT_CHANNELS+NUM_INPUT_CHANNELS+i, i, GpioInfo.ANALOG_OUTPUT));
+				addDacPinInfo(MOTORS_HEADER, i, i);
 			}
 		}
 	}
 	
-	public static class PiconZeroAnalogInputDevice extends AbstractDevice implements GpioAnalogInputDeviceInterface {
+	public static class PiconZeroAnalogInputDevice extends AbstractDevice implements AnalogInputDeviceInterface {
 		private PiconZero piconZero;
-		private int gpio;
-		private int channel;
+		private PinInfo pinInfo;
 	
-		public PiconZeroAnalogInputDevice(PiconZero piconZero, String key, int gpio, int channel) {
+		public PiconZeroAnalogInputDevice(PiconZero piconZero, String key, PinInfo pinInfo) {
 			super(key, piconZero);
 			
 			this.piconZero = piconZero;
-			this.gpio = gpio;
-			this.channel = channel;
+			this.pinInfo = pinInfo;
 		}
 	
 		@Override
 		public void closeDevice() {
 			Logger.debug("closeDevice()");
-			piconZero.closeChannel(channel);
+			piconZero.closeChannel(getChannel());
 		}
 	
 		@Override
 		public float getValue() throws RuntimeIOException {
-			return piconZero.getValue(channel);
+			return piconZero.getValue(getChannel());
 		}
 	
 		@Override
-		public int getGpio() {
-			return gpio;
+		public int getAdcNumber() {
+			return pinInfo.getDeviceNumber();
 		}
 		
 		public int getChannel() {
-			return channel;
+			return pinInfo.getPinNumber();
 		}
 	}
 	
 	public static class PiconZeroDigitalInputDevice extends AbstractDevice implements GpioDigitalInputDeviceInterface {
 		private PiconZero piconZero;
-		private int gpio;
-		private int channel;
+		private PinInfo pinInfo;
 	
 		public PiconZeroDigitalInputDevice(PiconZero piconZero, String key,
-				int gpio, int channel, GpioPullUpDown pud, GpioEventTrigger trigger) {
+				PinInfo pinInfo, GpioPullUpDown pud, GpioEventTrigger trigger) {
 			super(key, piconZero);
 			
 			this.piconZero = piconZero;
-			this.gpio = gpio;
-			this.channel = channel;
+			this.pinInfo = pinInfo;
 		}
 		
 		@Override
 		public void closeDevice() {
-			piconZero.closeChannel(channel);
+			piconZero.closeChannel(getChannel());
 		}
 		
 		@Override
 		public int getGpio() {
-			return gpio;
+			return pinInfo.getDeviceNumber();
 		}
 		
 		public int getChannel() {
-			return channel;
+			return pinInfo.getPinNumber();
 		}
 	
 		@Override
 		public boolean getValue() throws RuntimeIOException {
-			return piconZero.getInputValue(channel) != 0;
+			return piconZero.getInputValue(getChannel()) != 0;
 		}
 	
 		@Override
@@ -690,17 +643,17 @@ implements GpioDeviceFactoryInterface, PwmOutputDeviceFactoryInterface,
 		}
 	}
 	
-	public static class PiconZeroAnalogOutputDevice extends AbstractDevice implements GpioAnalogOutputDeviceInterface {
+	public static class PiconZeroAnalogOutputDevice extends AbstractDevice implements AnalogOutputDeviceInterface {
 		private PiconZero piconZero;
-		private int gpio;
+		private int adcNumber;
 		private int channel;
 		private float value;
 		
-		public PiconZeroAnalogOutputDevice(PiconZero piconZero, String key, int gpio, int channel) {
+		public PiconZeroAnalogOutputDevice(PiconZero piconZero, String key, int adcNumber, int channel) {
 			super(key, piconZero);
 			
 			this.piconZero = piconZero;
-			this.gpio = gpio;
+			this.adcNumber = adcNumber;
 			this.channel = channel;
 		}
 
@@ -716,8 +669,8 @@ implements GpioDeviceFactoryInterface, PwmOutputDeviceFactoryInterface,
 		}
 
 		@Override
-		public int getGpio() {
-			return gpio;
+		public int getAdcNumber() {
+			return adcNumber;
 		}
 
 		@Override

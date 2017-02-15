@@ -72,36 +72,37 @@ public class JdkDeviceIoDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	protected GpioAnalogInputDeviceInterface createAnalogInputPin(String key, int gpio) throws RuntimeIOException {
-		throw new UnsupportedOperationException("Analog devices aren't supported on this device");
+	public GpioDigitalInputDeviceInterface createDigitalInputDevice(String key, PinInfo pinInfo,
+			GpioPullUpDown pud, GpioEventTrigger trigger) throws RuntimeIOException {
+		return new JdkDeviceIoDigitalInputDevice(key, this, pinInfo.getDeviceNumber(), pud, trigger);
 	}
 
 	@Override
-	protected GpioAnalogOutputDeviceInterface createAnalogOutputPin(String key, int gpio) throws RuntimeIOException {
-		throw new UnsupportedOperationException("Analog devices aren't supported on this device");
+	public GpioDigitalOutputDeviceInterface createDigitalOutputDevice(String key, PinInfo pinInfo,
+			boolean initialValue) throws RuntimeIOException {
+		return new JdkDeviceIoGpioOutputDevice(key, this, pinInfo.getDeviceNumber(), initialValue);
 	}
 
 	@Override
-	protected GpioDigitalInputDeviceInterface createDigitalInputPin(String key, int gpio, GpioPullUpDown pud,
-			GpioEventTrigger trigger) throws RuntimeIOException {
-		return new JdkDeviceIoDigitalInputDevice(key, this, gpio, pud, trigger);
-	}
-
-	@Override
-	protected GpioDigitalOutputDeviceInterface createDigitalOutputPin(String key, int gpio, boolean initialValue) throws RuntimeIOException {
-		return new JdkDeviceIoGpioOutputDevice(key, this, gpio, initialValue);
-	}
-
-	@Override
-	public GpioDigitalInputOutputDeviceInterface createDigitalInputOutputPin(String key, int gpio, DeviceMode mode)
+	public GpioDigitalInputOutputDeviceInterface createDigitalInputOutputDevice(String key, PinInfo pinInfo, DeviceMode mode)
 			throws RuntimeIOException {
 		throw new UnsupportedOperationException("Digital Input / Output devices not yet supported by this provider");
 	}
 
 	@Override
-	protected PwmOutputDeviceInterface createPwmOutputPin(String key, int gpio,
-			float initialValue, PwmType pwmType) throws RuntimeIOException {
+	public PwmOutputDeviceInterface createPwmOutputDevice(String key, PinInfo pinInfo,
+			float initialValue) throws RuntimeIOException {
 		throw new UnsupportedOperationException("PWM output isn't supported by JDK Device I/O");
+	}
+
+	@Override
+	public AnalogInputDeviceInterface createAnalogInputDevice(String key, PinInfo pinInfo) throws RuntimeIOException {
+		throw new UnsupportedOperationException("Analog devices aren't supported on this device");
+	}
+
+	@Override
+	public AnalogOutputDeviceInterface createAnalogOutputDevice(String key, PinInfo pinInfo) throws RuntimeIOException {
+		throw new UnsupportedOperationException("Analog devices aren't supported on this device");
 	}
 
 	@Override

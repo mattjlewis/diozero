@@ -50,7 +50,7 @@ implements GpioDigitalInputDeviceInterface, InputEventListener<DigitalInputEvent
 		deviceFactory.getMmapGpio().setMode(gpio, DeviceMode.DIGITAL_INPUT);
 		deviceFactory.getMmapGpio().setPullUpDown(gpio, pud);
 
-		sysFsDigitialInput = jpiDeviceFactory.getSysFsDeviceFactory().provisionDigitalInputPin(
+		sysFsDigitialInput = jpiDeviceFactory.getSysFsDeviceFactory().provisionDigitalInputDevice(
 				gpio, pud, trigger);
 	}
 

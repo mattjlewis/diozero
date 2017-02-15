@@ -86,37 +86,36 @@ public class JPiDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	protected GpioAnalogInputDeviceInterface createAnalogInputPin(String key, int gpio) throws RuntimeIOException {
+	public GpioDigitalInputDeviceInterface createDigitalInputDevice(String key, PinInfo pinInfo, GpioPullUpDown pud,
+			GpioEventTrigger trigger) throws RuntimeIOException {
+		return new JPiDigitalInputDevice(this, key, pinInfo.getDeviceNumber(), pud, trigger);
+	}
+
+	@Override
+	public GpioDigitalOutputDeviceInterface createDigitalOutputDevice(String key, PinInfo pinInfo, boolean initialValue)
+			throws RuntimeIOException {
+		return new JPiDigitalOutputDevice(this, key, pinInfo.getDeviceNumber(), initialValue);
+	}
+
+	@Override
+	public GpioDigitalInputOutputDeviceInterface createDigitalInputOutputDevice(String key, PinInfo pinInfo, DeviceMode mode)
+			throws RuntimeIOException {
+		return new JPiDigitalInputOutputDevice(this, key, pinInfo.getDeviceNumber(), mode);
+	}
+
+	@Override
+	public PwmOutputDeviceInterface createPwmOutputDevice(String key, PinInfo pinInfo, float initialValue) throws RuntimeIOException {
+		throw new UnsupportedOperationException("PWM not yet supported");
+	}
+
+	@Override
+	public AnalogInputDeviceInterface createAnalogInputDevice(String key, PinInfo pinInfo) throws RuntimeIOException {
 		throw new UnsupportedOperationException("Analog input not supported");
 	}
 
 	@Override
-	protected GpioAnalogOutputDeviceInterface createAnalogOutputPin(String key, int gpio) throws RuntimeIOException {
+	public AnalogOutputDeviceInterface createAnalogOutputDevice(String key, PinInfo pinInfo) throws RuntimeIOException {
 		throw new UnsupportedOperationException("Analog devices aren't supported on this device");
-	}
-
-	@Override
-	protected GpioDigitalInputDeviceInterface createDigitalInputPin(String key, int gpio, GpioPullUpDown pud,
-			GpioEventTrigger trigger) throws RuntimeIOException {
-		return new JPiDigitalInputDevice(this, key, gpio, pud, trigger);
-	}
-
-	@Override
-	protected GpioDigitalOutputDeviceInterface createDigitalOutputPin(String key, int gpio, boolean initialValue)
-			throws RuntimeIOException {
-		return new JPiDigitalOutputDevice(this, key, gpio, initialValue);
-	}
-
-	@Override
-	public GpioDigitalInputOutputDeviceInterface createDigitalInputOutputPin(String key, int gpio, DeviceMode mode)
-			throws RuntimeIOException {
-		return new JPiDigitalInputOutputDevice(this, key, gpio, mode);
-	}
-
-	@Override
-	protected PwmOutputDeviceInterface createPwmOutputPin(String key, int gpio, float initialValue,
-			PwmType pwmType) throws RuntimeIOException {
-		throw new UnsupportedOperationException("PWM not yet supported");
 	}
 
 	@Override

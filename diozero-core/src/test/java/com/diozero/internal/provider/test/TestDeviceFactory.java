@@ -35,19 +35,19 @@ import com.diozero.internal.spi.*;
 import com.diozero.util.RuntimeIOException;
 
 public class TestDeviceFactory extends BaseNativeDeviceFactory {
-	private static Class<? extends GpioAnalogInputDeviceInterface> analogInputDeviceClass;
-	private static Class<? extends GpioAnalogOutputDeviceInterface> analogOutputDeviceClass;
+	private static Class<? extends AnalogInputDeviceInterface> analogInputDeviceClass;
+	private static Class<? extends AnalogOutputDeviceInterface> analogOutputDeviceClass;
 	private static Class<? extends GpioDigitalInputDeviceInterface> digitalInputDeviceClass = TestDigitalInputDevice.class;
 	private static Class<? extends GpioDigitalOutputDeviceInterface> digitalOutputDeviceClass = TestDigitalOutputDevice.class;
 	private static Class<? extends PwmOutputDeviceInterface> pwmOutputDeviceClass;
 	private static Class<? extends SpiDeviceInterface> spiDeviceClass;
 	private static Class<? extends I2CDeviceInterface> i2cDeviceClass = TestI2CDevice.class;
 	
-	public static void setAnalogInputDeviceClass(Class<? extends GpioAnalogInputDeviceInterface> clz) {
+	public static void setAnalogInputDeviceClass(Class<? extends AnalogInputDeviceInterface> clz) {
 		analogInputDeviceClass = clz;
 	}
 	
-	public static void setAnalogOutputDeviceClass(Class<? extends GpioAnalogOutputDeviceInterface> clz) {
+	public static void setAnalogOutputDeviceClass(Class<? extends AnalogOutputDeviceInterface> clz) {
 		analogOutputDeviceClass = clz;
 	}
 
@@ -85,35 +85,7 @@ public class TestDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	protected GpioAnalogInputDeviceInterface createAnalogInputPin(String key, int gpio) throws RuntimeIOException {
-		if (analogInputDeviceClass == null) {
-			throw new UnsupportedOperationException("Analog input implementation class hasn't been set");
-		}
-		
-		try {
-			return analogInputDeviceClass.getConstructor(String.class, DeviceFactoryInterface.class, int.class)
-				.newInstance(key, this, Integer.valueOf(gpio));
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	@Override
-	protected GpioAnalogOutputDeviceInterface createAnalogOutputPin(String key, int gpio) throws RuntimeIOException {
-		if (analogOutputDeviceClass == null) {
-			throw new UnsupportedOperationException("Analog output implementation class hasn't been set");
-		}
-		
-		try {
-			return analogOutputDeviceClass.getConstructor(String.class, DeviceFactoryInterface.class, int.class)
-				.newInstance(key, this, Integer.valueOf(gpio));
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	@Override
-	protected GpioDigitalInputDeviceInterface createDigitalInputPin(String key, int gpio, GpioPullUpDown pud,
+	public GpioDigitalInputDeviceInterface createDigitalInputDevice(String key, PinInfo pinInfo, GpioPullUpDown pud,
 			GpioEventTrigger trigger) throws RuntimeIOException {
 		if (digitalInputDeviceClass == null) {
 			throw new UnsupportedOperationException("Digital input implementation class hasn't been set");
@@ -121,14 +93,14 @@ public class TestDeviceFactory extends BaseNativeDeviceFactory {
 		
 		try {
 			return digitalInputDeviceClass.getConstructor(String.class, DeviceFactoryInterface.class, int.class, GpioPullUpDown.class, GpioEventTrigger.class)
-				.newInstance(key, this, Integer.valueOf(gpio), pud, trigger);
+				.newInstance(key, this, Integer.valueOf(pinInfo.getDeviceNumber()), pud, trigger);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
 
 	@Override
-	protected GpioDigitalOutputDeviceInterface createDigitalOutputPin(String key, int gpio, boolean initialValue)
+	public GpioDigitalOutputDeviceInterface createDigitalOutputDevice(String key, PinInfo pinInfo, boolean initialValue)
 			throws RuntimeIOException {
 		if (digitalOutputDeviceClass == null) {
 			throw new UnsupportedOperationException("Digital output implementation class hasn't been set");
@@ -136,28 +108,56 @@ public class TestDeviceFactory extends BaseNativeDeviceFactory {
 		
 		try {
 			return digitalOutputDeviceClass.getConstructor(String.class, DeviceFactoryInterface.class, int.class, boolean.class)
-				.newInstance(key, this, Integer.valueOf(gpio), Boolean.valueOf(initialValue));
+				.newInstance(key, this, Integer.valueOf(pinInfo.getDeviceNumber()), Boolean.valueOf(initialValue));
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
 
 	@Override
-	public GpioDigitalInputOutputDeviceInterface createDigitalInputOutputPin(String key, int gpio, DeviceMode mode)
+	public GpioDigitalInputOutputDeviceInterface createDigitalInputOutputDevice(String key, PinInfo pinInfo, DeviceMode mode)
 			throws RuntimeIOException {
 		throw new UnsupportedOperationException("Digital Input / Output devices not yet supported by this provider");
 	}
 
 	@Override
-	protected PwmOutputDeviceInterface createPwmOutputPin(String key, int gpio,
-			float initialValue, PwmType pwmType) throws RuntimeIOException {
+	public PwmOutputDeviceInterface createPwmOutputDevice(String key, PinInfo pinInfo,
+			float initialValue) throws RuntimeIOException {
 		if (pwmOutputDeviceClass == null) {
 			throw new IllegalArgumentException("PWM output implementation class hasn't been set");
 		}
 		
 		try {
-			return pwmOutputDeviceClass.getConstructor(String.class, DeviceFactoryInterface.class, int.class, float.class, PwmType.class)
-				.newInstance(key, this, Integer.valueOf(gpio), Float.valueOf(initialValue), pwmType);
+			return pwmOutputDeviceClass.getConstructor(String.class, DeviceFactoryInterface.class, int.class, float.class)
+				.newInstance(key, this, Integer.valueOf(pinInfo.getDeviceNumber()), Float.valueOf(initialValue));
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public AnalogInputDeviceInterface createAnalogInputDevice(String key, PinInfo pinInfo) throws RuntimeIOException {
+		if (analogInputDeviceClass == null) {
+			throw new UnsupportedOperationException("Analog input implementation class hasn't been set");
+		}
+		
+		try {
+			return analogInputDeviceClass.getConstructor(String.class, DeviceFactoryInterface.class, int.class)
+				.newInstance(key, this, Integer.valueOf(pinInfo.getDeviceNumber()));
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public AnalogOutputDeviceInterface createAnalogOutputDevice(String key, PinInfo pinInfo) throws RuntimeIOException {
+		if (analogOutputDeviceClass == null) {
+			throw new UnsupportedOperationException("Analog output implementation class hasn't been set");
+		}
+		
+		try {
+			return analogOutputDeviceClass.getConstructor(String.class, DeviceFactoryInterface.class, int.class)
+				.newInstance(key, this, Integer.valueOf(pinInfo.getDeviceNumber()));
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}

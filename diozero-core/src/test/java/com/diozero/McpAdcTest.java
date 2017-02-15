@@ -40,13 +40,14 @@ import com.diozero.util.SleepUtil;
  * Base class for testing the various MCP ADC types
  */
 public abstract class McpAdcTest {
-	private McpAdc.Type type;
+	protected McpAdc.Type type;
 	
-	protected abstract McpAdc.Type getType();
+	public McpAdcTest(McpAdc.Type type) {
+		this.type = type;
+	}
 
 	@Before
 	public void setup() {
-		type = getType();
 		Logger.info("setup(), type=" + type);
 		TestMcpAdcSpiDevice.setType(type);
 		TestDeviceFactory.setSpiDeviceClass(TestMcpAdcSpiDevice.class);

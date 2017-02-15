@@ -28,7 +28,6 @@ package com.diozero.internal.provider.pigpioj;
 
 
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 
 import org.pmw.tinylog.Logger;
 

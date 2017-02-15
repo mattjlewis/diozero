@@ -26,7 +26,7 @@ package com.diozero.util;
  * #L%
  */
 
-public abstract class BoardInfo extends BoardGpioInfo {
+public abstract class BoardInfo extends BoardPinInfo {
 	private String make;
 	private String model;
 	private int memory;
@@ -66,5 +66,10 @@ public abstract class BoardInfo extends BoardGpioInfo {
 
 	public boolean sameMakeAndModel(BoardInfo boardInfo) {
 		return make.equals(boardInfo.getMake()) && model.equals(boardInfo.getModel());
+	}
+	
+	@SuppressWarnings("static-method")
+	public int getPwmChip(int pwmNum) {
+		return -1;
 	}
 }

@@ -1,7 +1,5 @@
 package com.diozero.internal.spi;
 
-import com.diozero.api.DeviceMode;
-
 /*
  * #%L
  * Device I/O Zero - Core
@@ -27,13 +25,70 @@ import com.diozero.api.DeviceMode;
  * THE SOFTWARE.
  * #L%
  */
-
-import com.diozero.api.GpioEventTrigger;
-import com.diozero.api.GpioPullUpDown;
+import com.diozero.api.*;
 import com.diozero.util.RuntimeIOException;
 
 public interface GpioDeviceFactoryInterface extends DeviceFactoryInterface {
-	GpioDigitalInputDeviceInterface provisionDigitalInputPin(int gpio, GpioPullUpDown pud, GpioEventTrigger trigger) throws RuntimeIOException;
-	GpioDigitalOutputDeviceInterface provisionDigitalOutputPin(int gpio, boolean initialValue) throws RuntimeIOException;
-	GpioDigitalInputOutputDeviceInterface provisionDigitalInputOutputPin(int gpio, DeviceMode mode) throws RuntimeIOException;
+	default GpioDigitalInputDeviceInterface provisionDigitalInputDevice(int gpio, GpioPullUpDown pud,
+			GpioEventTrigger trigger) throws RuntimeIOException {
+		PinInfo pin_info = getBoardPinInfo().getByGpioNumber(gpio);
+		if (pin_info == null || !pin_info.isSupported(DeviceMode.DIGITAL_INPUT)) {
+			throw new IllegalArgumentException("Invalid mode (digital input) for GPIO " + gpio);
+		}
+
+		String key = createPinKey(pin_info);
+
+		// Check if this pin is already provisioned
+		if (isDeviceOpened(key)) {
+			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
+		}
+
+		GpioDigitalInputDeviceInterface device = createDigitalInputDevice(key, pin_info, pud, trigger);
+		deviceOpened(device);
+
+		return device;
+	}
+	
+	default GpioDigitalOutputDeviceInterface provisionDigitalOutputDevice(int gpio, boolean initialValue)
+			throws RuntimeIOException {
+		PinInfo pin_info = getBoardPinInfo().getByGpioNumber(gpio);
+		if (pin_info == null || !pin_info.isSupported(DeviceMode.DIGITAL_OUTPUT)) {
+			throw new IllegalArgumentException("Invalid mode (digital output) for GPIO " + gpio);
+		}
+
+		String key = createPinKey(pin_info);
+
+		// Check if this pin is already provisioned
+		if (isDeviceOpened(key)) {
+			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
+		}
+
+		GpioDigitalOutputDeviceInterface device = createDigitalOutputDevice(key, pin_info, initialValue);
+		deviceOpened(device);
+
+		return device;
+	}
+	
+	default GpioDigitalInputOutputDeviceInterface provisionDigitalInputOutputDevice(int gpio, DeviceMode mode) throws RuntimeIOException {
+		PinInfo pin_info = getBoardPinInfo().getByGpioNumber(gpio);
+		if (pin_info == null || ! pin_info.getModes().containsAll(PinInfo.DIGITAL_IN_OUT)) {
+			throw new IllegalArgumentException("Invalid mode (digital input/output) for GPIO " + gpio);
+		}
+		
+		String key = createPinKey(pin_info);
+		
+		// Check if this pin is already provisioned
+		if (isDeviceOpened(key)) {
+			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
+		}
+		
+		GpioDigitalInputOutputDeviceInterface device = createDigitalInputOutputDevice(key, pin_info, mode);
+		deviceOpened(device);
+		
+		return device;
+	}
+	
+	GpioDigitalInputDeviceInterface createDigitalInputDevice(String key, PinInfo pinInfo, GpioPullUpDown pud, GpioEventTrigger trigger);
+	GpioDigitalOutputDeviceInterface createDigitalOutputDevice(String key, PinInfo pinInfo, boolean initialValue);
+	GpioDigitalInputOutputDeviceInterface createDigitalInputOutputDevice(String key, PinInfo pinInfo, DeviceMode mode);
 }

@@ -1,5 +1,11 @@
 package com.diozero.internal.spi;
 
+import org.pmw.tinylog.Logger;
+
+import com.diozero.api.DeviceAlreadyOpenedException;
+import com.diozero.api.DeviceMode;
+import com.diozero.api.PinInfo;
+
 /*
  * #%L
  * Device I/O Zero - Core
@@ -29,7 +35,35 @@ package com.diozero.internal.spi;
 import com.diozero.util.RuntimeIOException;
 
 public interface PwmOutputDeviceFactoryInterface extends DeviceFactoryInterface {
-	PwmOutputDeviceInterface provisionPwmOutputPin(int gpio, float initialValue) throws RuntimeIOException;
+	default PwmOutputDeviceInterface provisionPwmOutputDevice(int pwmOrGpioNum, float initialValue) throws RuntimeIOException {
+		// Lookup by PWM number first, if not found or doesn't support PWM_OUTPUT, lookup by GPIO number
+		PinInfo pin_info = getBoardPinInfo().getByPwmNumber(pwmOrGpioNum);
+		if (pin_info == null || ! pin_info.isSupported(DeviceMode.PWM_OUTPUT)) {
+			pin_info = getBoardPinInfo().getByGpioNumber(pwmOrGpioNum);
+		}
+		if (pin_info != null && pin_info.isSupported(DeviceMode.PWM_OUTPUT)) {
+			// Ok
+		} else if (pin_info != null && pin_info.isSupported(DeviceMode.DIGITAL_OUTPUT)) {
+			Logger.warn("Hardware PWM not available on pin {}, reverting to software", Integer.valueOf(pwmOrGpioNum));
+		} else {
+			throw new IllegalArgumentException("Invalid mode (PWM output) for GPIO " + pwmOrGpioNum);
+		}
+		
+		String key = createPinKey(pin_info);
+		
+		// Check if this pin is already provisioned
+		if (isDeviceOpened(key)) {
+			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
+		}
+
+		PwmOutputDeviceInterface device = createPwmOutputDevice(key, pin_info, initialValue);
+		deviceOpened(device);
+		
+		return device;
+	}
+
 	int getPwmFrequency(int gpio);
 	void setPwmFrequency(int gpio, int pwmFrequency);
+
+	PwmOutputDeviceInterface createPwmOutputDevice(String key, PinInfo pinInfo, float initialValue);
 }

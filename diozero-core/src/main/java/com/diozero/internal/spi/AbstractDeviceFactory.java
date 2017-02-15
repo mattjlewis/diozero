@@ -28,25 +28,28 @@ package com.diozero.internal.spi;
 
 import org.pmw.tinylog.Logger;
 
+import com.diozero.api.PinInfo;
 import com.diozero.internal.DeviceFactoryHelper;
 import com.diozero.internal.DeviceStates;
-import com.diozero.util.BoardGpioInfo;
 
 public abstract class AbstractDeviceFactory implements DeviceFactoryInterface {
-	private String pinPrefix;
+	private String deviceFactoryPrefix;
 	protected DeviceStates deviceStates;
 	protected boolean shutdown;
 	
-	public AbstractDeviceFactory(String pinPrefix) {
-		this.pinPrefix = pinPrefix;
+	public AbstractDeviceFactory(String deviceFactoryPrefix) {
+		this.deviceFactoryPrefix = deviceFactoryPrefix;
 		deviceStates = new DeviceStates();
-		
-		DeviceFactoryHelper.getNativeDeviceFactory().registerDeviceFactory(this);
+
+		// Regsiter all expansion boards so that they can be cleaned up on shutdown
+		if (! (this instanceof BaseNativeDeviceFactory)) {
+			DeviceFactoryHelper.getNativeDeviceFactory().registerDeviceFactory(this);
+		}
 	}
 	
 	@Override
-	public final String createPinKey(int gpio) {
-		return pinPrefix + gpio;
+	public final String createPinKey(PinInfo pinInfo) {
+		return deviceFactoryPrefix + "-" + pinInfo.getKeyPrefix() + "-" + pinInfo.getDeviceNumber();
 	}
 	
 	@Override
@@ -79,10 +82,5 @@ public abstract class AbstractDeviceFactory implements DeviceFactoryInterface {
 	@SuppressWarnings("unchecked")
 	public final <T extends DeviceInterface> T getDevice(String key, Class<T> clz) {
 		return (T) deviceStates.getDevice(key);
-	}
-
-	@Override
-	public BoardGpioInfo getGpioInfo() {
-		return null;
 	}
 }

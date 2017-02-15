@@ -32,7 +32,7 @@ import org.pmw.tinylog.Logger;
 
 import com.diozero.internal.DeviceFactoryHelper;
 import com.diozero.internal.spi.AnalogInputDeviceFactoryInterface;
-import com.diozero.internal.spi.GpioAnalogInputDeviceInterface;
+import com.diozero.internal.spi.AnalogInputDeviceInterface;
 import com.diozero.util.DioZeroScheduler;
 import com.diozero.util.RuntimeIOException;
 
@@ -72,7 +72,7 @@ import com.diozero.util.RuntimeIOException;
  */
 public class AnalogInputDevice extends GpioInputDevice<AnalogInputEvent> implements Runnable {
 	private static final int DEFAULT_POLL_INTERVAL = 50;
-	private GpioAnalogInputDeviceInterface device;
+	private AnalogInputDeviceInterface device;
 	private Float lastValue;
 	private int pollInterval = DEFAULT_POLL_INTERVAL;
 	private float percentChange;
@@ -104,7 +104,7 @@ public class AnalogInputDevice extends GpioInputDevice<AnalogInputEvent> impleme
 	public AnalogInputDevice(AnalogInputDeviceFactoryInterface deviceFactory, int gpio, float range)
 			throws RuntimeIOException {
 		super(gpio);
-		device = deviceFactory.provisionAnalogInputPin(gpio);
+		device = deviceFactory.provisionAnalogInputDevice(gpio);
 		this.range = range;
 	}
 

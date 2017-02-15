@@ -31,6 +31,7 @@ import java.io.*;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 
+import com.diozero.api.PwmPinInfo;
 import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.DeviceFactoryInterface;
 import com.diozero.internal.spi.PwmOutputDeviceInterface;
@@ -52,25 +53,25 @@ import com.diozero.util.RuntimeIOException;
 public class OdroidC2SysFsPwmOutputDevice extends AbstractDevice implements PwmOutputDeviceInterface {
 	private static Path PWM_ROOT = FileSystems.getDefault().getPath("/sys/devices/platform/pwm-ctrl");
 	
-	private int gpio;
 	private int range;
+	private int gpio;
 	private int pwmNum;
 	private RandomAccessFile dutyFile;
 
-	public OdroidC2SysFsPwmOutputDevice(String key, DeviceFactoryInterface deviceFactory, int gpio,
+	public OdroidC2SysFsPwmOutputDevice(String key, DeviceFactoryInterface deviceFactory, PwmPinInfo pinInfo,
 			int frequency, float initialValue) {
 		super(key, deviceFactory);
-		
-		this.gpio = gpio;
+
 		this.range = 1023;
-		pwmNum = gpio - 234;
+		this.gpio = pinInfo.getDeviceNumber();
+		this.pwmNum = pinInfo.getPwmNum();
 
 		try {
 			dutyFile = new RandomAccessFile(PWM_ROOT.resolve("duty" + pwmNum).toFile(), "rw");
 		} catch (IOException e) {
-			throw new RuntimeIOException("Error opening duty file for gpio " + gpio, e);
+			throw new RuntimeIOException("Error opening duty file for PWM " + pwmNum, e);
 		}
-		
+
 		setEnabled(pwmNum, true);
 		setFrequency(pwmNum, frequency * 1000);
 

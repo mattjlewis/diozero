@@ -1,7 +1,5 @@
 package com.diozero.internal.spi;
 
-import com.diozero.api.DeviceMode;
-
 /*
  * #%L
  * Device I/O Zero - Core
@@ -30,10 +28,6 @@ import com.diozero.api.DeviceMode;
 
 import com.diozero.util.RuntimeIOException;
 
-public interface GpioAnalogOutputDeviceInterface extends GpioAnalogInputDeviceInterface {
+public interface AnalogOutputDeviceInterface extends AnalogInputDeviceInterface {
 	void setValue(float value) throws RuntimeIOException;
-	@Override
-	default DeviceMode getMode() {
-		return DeviceMode.ANALOG_OUTPUT;
-	}
 }

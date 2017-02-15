@@ -95,7 +95,7 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Gp
 	}
 
 	public MCP23xxx(int numPorts, String deviceName, int interruptGpioA, int interruptGpioB) throws RuntimeIOException {
-		super(deviceName + "-");
+		super(deviceName);
 		
 		this.numPorts = numPorts;
 		numGpios = numPorts*GPIOS_PER_PORT;
@@ -188,66 +188,23 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Gp
 	}
 
 	@Override
-	public GpioDigitalInputDeviceInterface provisionDigitalInputPin(int gpio, GpioPullUpDown pud,
-			GpioEventTrigger trigger) throws RuntimeIOException {
-		if (gpio < 0 || gpio >= numGpios) {
-			throw new IllegalArgumentException(
-					"Invalid GPIO (" + gpio + "); must be 0.." + (numGpios - 1));
-		}
+	public GpioDigitalInputDeviceInterface createDigitalInputDevice(String key, PinInfo pin_info, GpioPullUpDown pud,
+			GpioEventTrigger trigger) {
+		setInputMode(pin_info.getDeviceNumber(), pud, trigger);
 		
-		String key = createPinKey(gpio);
-		
-		if (isDeviceOpened(key)) {
-			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
-		}
-		
-		setInputMode(gpio, pud, trigger);
-		
-		GpioDigitalInputDeviceInterface in_device = new MCP23xxxDigitalInputDevice(this, key, gpio, trigger);
-		deviceOpened(in_device);
-		
-		return in_device;
+		return new MCP23xxxDigitalInputDevice(this, key, pin_info.getDeviceNumber(), trigger);
 	}
 
 	@Override
-	public GpioDigitalOutputDeviceInterface provisionDigitalOutputPin(int gpio, boolean initialValue) throws RuntimeIOException {
-		if (gpio < 0 || gpio >= numGpios) {
-			throw new IllegalArgumentException(
-					"Invalid GPIO (" + gpio + "); must be 0.." + (numGpios - 1));
-		}
+	public GpioDigitalOutputDeviceInterface createDigitalOutputDevice(String key, PinInfo pin_info, boolean initialValue) {
+		setOutputMode(pin_info.getDeviceNumber());
 		
-		String key = createPinKey(gpio);
-		
-		if (isDeviceOpened(key)) {
-			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
-		}
-		
-		setOutputMode(gpio);
-		
-		GpioDigitalOutputDeviceInterface out_device = new MCP23xxxDigitalOutputDevice(this, key, gpio);
-		deviceOpened(out_device);
-		out_device.setValue(initialValue);
-		
-		return out_device;
+		return new MCP23xxxDigitalOutputDevice(this, key, pin_info.getDeviceNumber(), initialValue);
 	}
 
 	@Override
-	public GpioDigitalInputOutputDeviceInterface provisionDigitalInputOutputPin(int gpio, DeviceMode mode) throws RuntimeIOException {
-		if (gpio < 0 || gpio >= numGpios) {
-			throw new IllegalArgumentException(
-					"Invalid GPIO (" + gpio + "); must be 0.." + (numGpios - 1));
-		}
-		
-		String key = createPinKey(gpio);
-		
-		if (isDeviceOpened(key)) {
-			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
-		}
-		
-		GpioDigitalInputOutputDeviceInterface inout_device = new MCP23xxxDigitalInputOutputDevice(this, key, gpio, mode);
-		deviceOpened(inout_device);
-		
-		return inout_device;
+	public GpioDigitalInputOutputDeviceInterface createDigitalInputOutputDevice(String key, PinInfo pin_info, DeviceMode mode) {
+		return new MCP23xxxDigitalInputOutputDevice(this, key, pin_info.getDeviceNumber(), mode);
 	}
 
 	protected void setInputMode(int gpio, GpioPullUpDown pud, GpioEventTrigger trigger) {
@@ -439,7 +396,7 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Gp
 	}
 
 	private MCP23xxxDigitalInputDevice getInputDevice(byte gpio) {
-		return getDevice(createPinKey(gpio), MCP23xxxDigitalInputDevice.class);
+		return getDevice(createPinKey(getBoardPinInfo().getByGpioNumber(gpio)), MCP23xxxDigitalInputDevice.class);
 	}
 	
 	protected abstract int getIODirReg(int port);

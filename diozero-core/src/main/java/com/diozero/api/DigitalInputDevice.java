@@ -88,7 +88,7 @@ implements DigitalInputDeviceInterface {
 			GpioEventTrigger trigger) throws RuntimeIOException {
 		super(gpio);
 
-		this.device = deviceFactory.provisionDigitalInputPin(gpio, pud, trigger);
+		this.device = deviceFactory.provisionDigitalInputDevice(gpio, pud, trigger);
 		this.pud = pud;
 		this.trigger = trigger;
 		this.activeHigh = pud != GpioPullUpDown.PULL_UP;

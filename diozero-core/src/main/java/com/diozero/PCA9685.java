@@ -31,7 +31,9 @@ import java.io.Closeable;
 
 import org.pmw.tinylog.Logger;
 
-import com.diozero.api.*;
+import com.diozero.api.I2CConstants;
+import com.diozero.api.I2CDevice;
+import com.diozero.api.PinInfo;
 import com.diozero.internal.spi.*;
 import com.diozero.util.*;
 
@@ -93,17 +95,17 @@ public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFac
 	private String keyPrefix;
 	private int pwmFrequency = DEFAULT_PWM_FREQUENCY;
 	private double pulseMsPerBit = ServoUtil.calcPulseMsPerBit(pwmFrequency, RANGE);
-	private PCA9685BoardGpioInfo boardGpioInfo;
+	private BoardPinInfo boardPinInfo;
 
 	public PCA9685(int pwmFrequency) throws RuntimeIOException {
 		this(I2CConstants.BUS_1, DEVICE_ADDRESS, pwmFrequency);
 	}
 
 	public PCA9685(int controller, int address, int pwmFrequency) throws RuntimeIOException {
-		super(DEVICE_NAME + "-" + controller + "-" + address + "-");
+		super(DEVICE_NAME + "-" + controller + "-" + address);
 		
 		i2cDevice = new I2CDevice(controller, address, I2CConstants.ADDR_SIZE_7, I2CConstants.DEFAULT_CLOCK_FREQUENCY);
-		boardGpioInfo = new PCA9685BoardGpioInfo();
+		boardPinInfo = new PCA9685BoardPinInfo();
 		
 		reset();
 		
@@ -268,21 +270,9 @@ public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFac
 	}
 
 	@Override
-	public PwmOutputDeviceInterface provisionPwmOutputPin(int pin, float initialValue)
+	public PwmOutputDeviceInterface createPwmOutputDevice(String key, PinInfo pinInfo, float initialValue)
 			throws RuntimeIOException {
-		validateChannel(pin);
-		
-		String key = createPinKey(pin);
-		
-		if (isDeviceOpened(key)) {
-			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
-		}
-		
-		PwmOutputDeviceInterface device = new PCA9685PwmOutputDevice(this, key, pin);
-		deviceOpened(device);
-		device.setValue(initialValue);
-		
-		return device;
+		return new PCA9685PwmOutputDevice(this, key, pinInfo.getDeviceNumber());
 	}
 
 	public float getValue(int channel) throws RuntimeIOException {
@@ -316,18 +306,17 @@ public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFac
 	}
 
 	@Override
-	public BoardGpioInfo getGpioInfo() {
-		return boardGpioInfo;
+	public BoardPinInfo getBoardPinInfo() {
+		return boardPinInfo;
 	}
 	
-	public static class PCA9685BoardGpioInfo extends BoardGpioInfo {
-		@Override
-		protected void init() {
+	public static class PCA9685BoardPinInfo extends BoardPinInfo {
+		public PCA9685BoardPinInfo() {
 			for (int i=0; i<8; i++) {
-				addGpioInfo(new GpioInfo(i, 6+i, GpioInfo.PWM_OUTPUT));
+				addGpioPinInfo(i, 6+i, PinInfo.PWM_OUTPUT);
 			}
 			for (int i=8; i<16; i++) {
-				addGpioInfo(new GpioInfo(i, 7+i, GpioInfo.PWM_OUTPUT));
+				addGpioPinInfo(i, 7+i, PinInfo.PWM_OUTPUT);
 			}
 		}
 	}

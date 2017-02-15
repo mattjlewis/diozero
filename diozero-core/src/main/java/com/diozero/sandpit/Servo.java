@@ -53,7 +53,7 @@ public class Servo extends GpioDevice implements OutputDeviceInterface {
 		
 		this.pwmFrequency = pwmFrequency;
 		pwmDeviceFactory.setPwmFrequency(gpio, pwmFrequency);
-		this.device = pwmDeviceFactory.provisionPwmOutputPin(gpio, calcValue(initialPulseWidthMs));
+		this.device = pwmDeviceFactory.provisionPwmOutputDevice(gpio, calcValue(initialPulseWidthMs));
 	}
 	
 	@Override

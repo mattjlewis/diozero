@@ -32,7 +32,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.*;
 
-import com.diozero.api.GpioInfo;
+import com.diozero.api.PinInfo;
 import com.diozero.util.BoardInfo;
 import com.diozero.util.BoardInfoProvider;
 import com.diozero.util.RuntimeIOException;
@@ -76,10 +76,7 @@ public class CHIPBoardInfoProvider implements BoardInfoProvider {
 			} catch (IOException e) {
 				throw new RuntimeIOException("Error determining XIO GPIO base: " + e, e);
 			}
-		}
-		
-		@Override
-		protected void init() {
+
 			// Not all gpio pins support interrupts. Whether a pin supports
 			// interrupts can be seen by the presence of an "edge" file (e.g.
 			// /sys/class/gpio/<pin>/edge) after exporting the pin. The
@@ -97,80 +94,88 @@ public class CHIPBoardInfoProvider implements BoardInfoProvider {
 			
 			// Map the XIO pins. Note these are connected via a PCF8574 GPIO
 			// expansion board that does not handle interrupts reliably.
-			// Special rule for GPIO0 - maps to PWM0 (U13-18) for hardware PWM
-			// or GPIO0 (U14-13, XIO-P0) for digital in/out.
 			int gpio = 0;
 			int pin = 13;
-			addGpioInfo(new GpioInfo(U14_HEADER, gpio, pin++, GpioInfo.DIGITAL_IN_OUT));
-			// Add the rest of the GPIOs (XIO-P1-7)
-			for (gpio=1; gpio<8; gpio++) {
-				addGpioInfo(new GpioInfo(U14_HEADER, gpio, pin++, GpioInfo.DIGITAL_IN_OUT));
+			for (gpio=0; gpio<8; gpio++) {
+				addGpioPinInfo(U14_HEADER, gpio, pin++, PinInfo.DIGITAL_IN_OUT);
 			}
 			
 			// PWM0
-			addGpioInfo(new GpioInfo(U13_HEADER, 34, "PWM0", 18, GpioInfo.DIGITAL_IN_OUT_PWM));
+			// To enable:
+			//sudo fdtput -t s /boot/sun5i-r8-chip.dtb "/soc@01c00000/pwm@01c20e00" "status" "okay"
+			//sudo fdtput -t s /boot/sun5i-r8-chip.dtb "/soc@01c00000/pwm@01c20e00" "pinctrl-names" "default"
+			//sudo fdtput -t x /boot/sun5i-r8-chip.dtb "/soc@01c00000/pwm@01c20e00" "pinctrl-0" "0x67" # 0x63 for older v4.4
+			addPwmPinInfo(U13_HEADER, 34, "PWM0", 18, 0, PinInfo.DIGITAL_IN_OUT_PWM);
 			
 			// LCD-D2-D7
 			gpio = 98;
-			addGpioInfo(new GpioInfo(U13_HEADER, gpio++, "LCD-D2", 17, GpioInfo.DIGITAL_IN_OUT));
-			addGpioInfo(new GpioInfo(U13_HEADER, gpio++, "LCD-D3", 20, GpioInfo.DIGITAL_IN_OUT));
-			addGpioInfo(new GpioInfo(U13_HEADER, gpio++, "LCD-D4", 19, GpioInfo.DIGITAL_IN_OUT));
-			addGpioInfo(new GpioInfo(U13_HEADER, gpio++, "LCD-D5", 22, GpioInfo.DIGITAL_IN_OUT));
-			addGpioInfo(new GpioInfo(U13_HEADER, gpio++, "LCD-D6", 21, GpioInfo.DIGITAL_IN_OUT));
-			addGpioInfo(new GpioInfo(U13_HEADER, gpio++, "LCD-D7", 24, GpioInfo.DIGITAL_IN_OUT));
+			addGpioPinInfo(U13_HEADER, gpio++, "LCD-D2", 17, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(U13_HEADER, gpio++, "LCD-D3", 20, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(U13_HEADER, gpio++, "LCD-D4", 19, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(U13_HEADER, gpio++, "LCD-D5", 22, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(U13_HEADER, gpio++, "LCD-D6", 21, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(U13_HEADER, gpio++, "LCD-D7", 24, PinInfo.DIGITAL_IN_OUT);
 			
 			// LCD-D10-D15
 			gpio = 106;
-			addGpioInfo(new GpioInfo(U13_HEADER, gpio++, "LCD-D10", 23, GpioInfo.DIGITAL_IN_OUT));
-			addGpioInfo(new GpioInfo(U13_HEADER, gpio++, "LCD-D11", 26, GpioInfo.DIGITAL_IN_OUT));
-			addGpioInfo(new GpioInfo(U13_HEADER, gpio++, "LCD-D12", 25, GpioInfo.DIGITAL_IN_OUT));
-			addGpioInfo(new GpioInfo(U13_HEADER, gpio++, "LCD-D13", 28, GpioInfo.DIGITAL_IN_OUT));
-			addGpioInfo(new GpioInfo(U13_HEADER, gpio++, "LCD-D14", 27, GpioInfo.DIGITAL_IN_OUT));
-			addGpioInfo(new GpioInfo(U13_HEADER, gpio++, "LCD-D15", 30, GpioInfo.DIGITAL_IN_OUT));
+			addGpioPinInfo(U13_HEADER, gpio++, "LCD-D10", 23, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(U13_HEADER, gpio++, "LCD-D11", 26, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(U13_HEADER, gpio++, "LCD-D12", 25, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(U13_HEADER, gpio++, "LCD-D13", 28, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(U13_HEADER, gpio++, "LCD-D14", 27, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(U13_HEADER, gpio++, "LCD-D15", 30, PinInfo.DIGITAL_IN_OUT);
 			
 			// LCD-D18-D23
 			gpio = 114;
-			addGpioInfo(new GpioInfo(U13_HEADER, gpio++, "LCD-D18", 29, GpioInfo.DIGITAL_IN_OUT));
-			addGpioInfo(new GpioInfo(U13_HEADER, gpio++, "LCD-D19", 32, GpioInfo.DIGITAL_IN_OUT));
-			addGpioInfo(new GpioInfo(U13_HEADER, gpio++, "LCD-D20", 31, GpioInfo.DIGITAL_IN_OUT));
-			addGpioInfo(new GpioInfo(U13_HEADER, gpio++, "LCD-D21", 34, GpioInfo.DIGITAL_IN_OUT));
-			addGpioInfo(new GpioInfo(U13_HEADER, gpio++, "LCD-D22", 33, GpioInfo.DIGITAL_IN_OUT));
-			addGpioInfo(new GpioInfo(U13_HEADER, gpio++, "LCD-D23", 36, GpioInfo.DIGITAL_IN_OUT));
+			addGpioPinInfo(U13_HEADER, gpio++, "LCD-D18", 29, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(U13_HEADER, gpio++, "LCD-D19", 32, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(U13_HEADER, gpio++, "LCD-D20", 31, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(U13_HEADER, gpio++, "LCD-D21", 34, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(U13_HEADER, gpio++, "LCD-D22", 33, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(U13_HEADER, gpio++, "LCD-D23", 36, PinInfo.DIGITAL_IN_OUT);
 			
 			// LCD-CLK, LCD-VSYNC, LCD-HSYNC
 			pin = 36;
-			addGpioInfo(new GpioInfo(U13_HEADER, 120, "LCD-CLK", pin++, GpioInfo.DIGITAL_IN_OUT));
-			addGpioInfo(new GpioInfo(U13_HEADER, 122, "LCD-VSYNC", pin++, GpioInfo.DIGITAL_IN_OUT));
-			addGpioInfo(new GpioInfo(U13_HEADER, 123, "LCD-HSYNC", pin++, GpioInfo.DIGITAL_IN_OUT));
+			addGpioPinInfo(U13_HEADER, 120, "LCD-CLK", pin++, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(U13_HEADER, 122, "LCD-VSYNC", pin++, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(U13_HEADER, 123, "LCD-HSYNC", pin++, PinInfo.DIGITAL_IN_OUT);
 			
 			// UART1
-			addGpioInfo(new GpioInfo(U14_HEADER, 195, "UART1-TX", 3, GpioInfo.DIGITAL_IN_OUT));
-			addGpioInfo(new GpioInfo(U14_HEADER, 196, "UART1-RX", 5, GpioInfo.DIGITAL_IN_OUT));
+			addGpioPinInfo(U14_HEADER, 195, "UART1-TX", 3, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(U14_HEADER, 196, "UART1-RX", 5, PinInfo.DIGITAL_IN_OUT);
 			
 			// AP-EINT
 			pin = 23;
-			addGpioInfo(new GpioInfo(U14_HEADER, 193, "AP-EINT1", pin++, GpioInfo.DIGITAL_IN_OUT));
-			addGpioInfo(new GpioInfo(U14_HEADER, 35, "AP-EINT3", pin++, GpioInfo.DIGITAL_IN_OUT));
+			addGpioPinInfo(U14_HEADER, 193, "AP-EINT1", pin++, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(U14_HEADER, 35, "AP-EINT3", pin++, PinInfo.DIGITAL_IN_OUT);
 			
 			// I2C / SPI
 			pin = 25;
-			addGpioInfo(new GpioInfo(U14_HEADER, 50, "TWI2-SDA", pin++, GpioInfo.DIGITAL_IN_OUT));	// I2C2-SDA
-			addGpioInfo(new GpioInfo(U14_HEADER, 49, "TWI2-SCK", pin++, GpioInfo.DIGITAL_IN_OUT));	// I2C2-SCL
-			addGpioInfo(new GpioInfo(U14_HEADER, 128, "CSIPCK", pin++, GpioInfo.DIGITAL_IN_OUT));	// SPI-CS0
-			addGpioInfo(new GpioInfo(U14_HEADER, 129, "CSICK", pin++, GpioInfo.DIGITAL_IN_OUT));	// SPI-CLK
-			addGpioInfo(new GpioInfo(U14_HEADER, 130, "CSIHSYNC", pin++, GpioInfo.DIGITAL_IN_OUT));	// SPI-MOSI
-			addGpioInfo(new GpioInfo(U14_HEADER, 131, "CSIVSYNC", pin++, GpioInfo.DIGITAL_IN_OUT));	// SPI-MISO
+			addGpioPinInfo(U14_HEADER, 50, "TWI2-SDA", pin++, PinInfo.DIGITAL_IN_OUT);	// I2C2-SDA
+			addGpioPinInfo(U14_HEADER, 49, "TWI2-SCK", pin++, PinInfo.DIGITAL_IN_OUT);	// I2C2-SCL
+			addGpioPinInfo(U14_HEADER, 128, "CSIPCK", pin++, PinInfo.DIGITAL_IN_OUT);	// SPI-CS0
+			addGpioPinInfo(U14_HEADER, 129, "CSICK", pin++, PinInfo.DIGITAL_IN_OUT);	// SPI-CLK
+			addGpioPinInfo(U14_HEADER, 130, "CSIHSYNC", pin++, PinInfo.DIGITAL_IN_OUT);	// SPI-MOSI
+			addGpioPinInfo(U14_HEADER, 131, "CSIVSYNC", pin++, PinInfo.DIGITAL_IN_OUT);	// SPI-MISO
 			
 			// CSID0-7
 			gpio = 132;
 			for (int csid=0; csid<8; csid++) {
-				addGpioInfo(new GpioInfo(U14_HEADER, gpio+csid, "CSID"+csid, 31+csid, GpioInfo.DIGITAL_IN_OUT));
+				addGpioPinInfo(U14_HEADER, gpio+csid, "CSID"+csid, 31+csid, PinInfo.DIGITAL_IN_OUT);
 			}
+			
+			// LRADC
+			addAdcPinInfo(U14_HEADER, 0, "LRADC", 11);
 		}
 		
 		@Override
-		public int mapGpio(int gpio) {
+		public int mapToSysFsGpioNumber(int gpio) {
 			return gpio < 8 ? xioGpioOffset + gpio : gpio;
+		}
+
+		@Override
+		public int getPwmChip(int pwmNum) {
+			return 0;
 		}
 	}
 }

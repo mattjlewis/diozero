@@ -1,7 +1,7 @@
 package com.diozero.internal.provider.mcp23xxx;
 
-import com.diozero.api.GpioInfo;
-import com.diozero.util.BoardGpioInfo;
+import com.diozero.api.PinInfo;
+import com.diozero.util.BoardPinInfo;
 
 /*
  * #%L
@@ -75,7 +75,7 @@ public abstract class MCP23x08 extends MCP23xxx {
 	 * modifies the output latches that modifies the pins configured as outputs */
 	private static final int[] OLAT_REG = { 0x0A };
 
-	private BoardGpioInfo boardGpioInfo;
+	private BoardPinInfo boardPinInfo;
 
 	public MCP23x08(String deviceName) {
 		this(deviceName, INTERRUPT_GPIO_NOT_SET, INTERRUPT_GPIO_NOT_SET);
@@ -88,7 +88,7 @@ public abstract class MCP23x08 extends MCP23xxx {
 	public MCP23x08(String deviceName, int interruptGpioA, int interruptGpioB) {
 		super(NUM_PORTS, deviceName, interruptGpioA, interruptGpioB);
 		
-		boardGpioInfo = new MCP23x08BoardGpioInfo();
+		boardPinInfo = new MCP23x08BoardPinInfo();
 	}
 	
 	@Override
@@ -147,15 +147,14 @@ public abstract class MCP23x08 extends MCP23xxx {
 	}
 
 	@Override
-	public BoardGpioInfo getGpioInfo() {
-		return boardGpioInfo;
+	public BoardPinInfo getBoardPinInfo() {
+		return boardPinInfo;
 	}
 	
-	public static class MCP23x08BoardGpioInfo extends BoardGpioInfo {
-		@Override
-		protected void init() {
+	public static class MCP23x08BoardPinInfo extends BoardPinInfo {
+		public MCP23x08BoardPinInfo() {
 			for (int i=0; i<8; i++) {
-				addGpioInfo(new GpioInfo(i, 10+i, GpioInfo.DIGITAL_IN_OUT));
+				addGpioPinInfo(i, 10+i, PinInfo.DIGITAL_IN_OUT);
 			}
 		}
 	}

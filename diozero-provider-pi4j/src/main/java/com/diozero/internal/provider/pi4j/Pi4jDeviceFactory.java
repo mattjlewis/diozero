@@ -36,7 +36,6 @@ import com.diozero.internal.spi.*;
 import com.diozero.util.RuntimeIOException;
 import com.pi4j.io.gpio.*;
 import com.pi4j.wiringpi.Gpio;
-import com.pi4j.wiringpi.GpioUtil;
 
 public class Pi4jDeviceFactory extends BaseNativeDeviceFactory {
 	private static final int PI_PWM_CLOCK_BASE_FREQUENCY = 19_200_000;
@@ -72,7 +71,7 @@ public class Pi4jDeviceFactory extends BaseNativeDeviceFactory {
 
 	@Override
 	public int getPwmFrequency(int gpio) {
-		if (boardInfo.isSupported(DeviceMode.PWM_OUTPUT, gpio)) {
+		if (boardInfo.getByGpioNumber(gpio).isSupported(DeviceMode.PWM_OUTPUT)) {
 			return hardwarePwmFrequency;
 		}
 		
@@ -86,7 +85,7 @@ public class Pi4jDeviceFactory extends BaseNativeDeviceFactory {
 	
 	@Override
 	public void setPwmFrequency(int gpio, int pwmFrequency) {
-		if (boardInfo.isSupported(DeviceMode.PWM_OUTPUT, gpio)) {
+		if (boardInfo.getByGpioNumber(gpio).isSupported(DeviceMode.PWM_OUTPUT)) {
 			setHardwarePwmFrequency(pwmFrequency);
 		} else {
 			// TODO Software PWM frequency should be limited to 20..250Hz (gives a range of 500..40)
@@ -119,41 +118,45 @@ public class Pi4jDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	protected GpioAnalogInputDeviceInterface createAnalogInputPin(String key, int gpio) throws RuntimeIOException {
-		throw new UnsupportedOperationException("Analog devices aren't supported on this device");
+	public GpioDigitalInputDeviceInterface createDigitalInputDevice(String key, PinInfo pinInfo,
+			GpioPullUpDown pud, GpioEventTrigger trigger) throws RuntimeIOException {
+		return new Pi4jDigitalInputDevice(key, this, gpioController, pinInfo.getDeviceNumber(), pud, trigger);
 	}
 
 	@Override
-	protected GpioAnalogOutputDeviceInterface createAnalogOutputPin(String key, int gpio) throws RuntimeIOException {
-		throw new UnsupportedOperationException("Analog devices aren't supported on this device");
+	public GpioDigitalOutputDeviceInterface createDigitalOutputDevice(String key, PinInfo pinInfo,
+			boolean initialValue) throws RuntimeIOException {
+		return new Pi4jDigitalOutputDevice(key, this, gpioController, pinInfo.getDeviceNumber(), initialValue);
 	}
 
 	@Override
-	protected GpioDigitalInputDeviceInterface createDigitalInputPin(String key, int gpio, GpioPullUpDown pud,
-			GpioEventTrigger trigger) throws RuntimeIOException {
-		return new Pi4jDigitalInputDevice(key, this, gpioController, gpio, pud, trigger);
-	}
-
-	@Override
-	protected GpioDigitalOutputDeviceInterface createDigitalOutputPin(String key, int gpio, boolean initialValue) throws RuntimeIOException {
-		return new Pi4jDigitalOutputDevice(key, this, gpioController, gpio, initialValue);
-	}
-
-	@Override
-	public GpioDigitalInputOutputDeviceInterface createDigitalInputOutputPin(String key, int gpio, DeviceMode mode)
+	public GpioDigitalInputOutputDeviceInterface createDigitalInputOutputDevice(String key, PinInfo pinInfo,
+			DeviceMode mode)
 			throws RuntimeIOException {
-		return new Pi4jDigitalInputOutputDevice(key, this, gpioController, gpio, mode);
+		return new Pi4jDigitalInputOutputDevice(key, this, gpioController, pinInfo.getDeviceNumber(), mode);
 	}
 
 	@Override
-	protected PwmOutputDeviceInterface createPwmOutputPin(String key, int gpio,
-			float initialValue, PwmType pwmType) throws RuntimeIOException {
-		if (GpioUtil.isPinSupported(gpio) != 1) {
-			throw new RuntimeIOException("Error: Pin " + gpio + " isn't supported");
+	public PwmOutputDeviceInterface createPwmOutputDevice(String key, PinInfo pinInfo, float initialValue)
+			throws RuntimeIOException {
+		int gpio = pinInfo.getDeviceNumber();
+		PwmType pwm_type = PwmType.SOFTWARE;
+		if (pinInfo instanceof PwmPinInfo) {
+			pwm_type = PwmType.HARDWARE;
 		}
-		
-		return new Pi4jPwmOutputDevice(key, this, gpioController, pwmType,
-				pwmType == PwmType.HARDWARE ? hardwarePwmRange : getSoftwarePwmRange(gpio), gpio, initialValue);
+
+		return new Pi4jPwmOutputDevice(key, this, gpioController, pwm_type, gpio, initialValue,
+				pwm_type == PwmType.HARDWARE ? hardwarePwmRange : getSoftwarePwmRange(gpio));
+	}
+
+	@Override
+	public AnalogInputDeviceInterface createAnalogInputDevice(String key, PinInfo pinInfo) throws RuntimeIOException {
+		throw new UnsupportedOperationException("Analog devices aren't supported on this device");
+	}
+
+	@Override
+	public AnalogOutputDeviceInterface createAnalogOutputDevice(String key, PinInfo pinInfo) throws RuntimeIOException {
+		throw new UnsupportedOperationException("Analog devices aren't supported on this device");
 	}
 
 	@Override

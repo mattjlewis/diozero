@@ -34,6 +34,7 @@ import org.pmw.tinylog.Logger;
 
 import com.diozero.api.*;
 import com.diozero.internal.spi.*;
+import com.diozero.util.BoardPinInfo;
 import com.diozero.util.RuntimeIOException;
 
 public class McpAdc extends AbstractDeviceFactory implements AnalogInputDeviceFactoryInterface, Closeable {
@@ -62,15 +63,18 @@ public class McpAdc extends AbstractDeviceFactory implements AnalogInputDeviceFa
 	
 	private Type type;
 	private SpiDevice spiDevice;
+	private BoardPinInfo boardPinInfo;
 	
 	public McpAdc(Type type, int chipSelect) throws RuntimeIOException {
 		this(type, SPIConstants.DEFAULT_SPI_CONTROLLER, chipSelect);
 	}
 
 	public McpAdc(Type type, int controller, int chipSelect) throws RuntimeIOException {
-		super(type.name() + "-" + controller + "-" + chipSelect + "-");
+		super(type.name() + "-" + controller + "-" + chipSelect);
 		
 		this.type = type;
+		
+		boardPinInfo = new McpAdcBoardPinInfo(type);
 		
 		spiDevice = new SpiDevice(controller, chipSelect, type.getMaxFreq2v7(), SpiClockMode.MODE_0, false);
 	}
@@ -195,28 +199,19 @@ public class McpAdc extends AbstractDeviceFactory implements AnalogInputDeviceFa
 	 * @param gpio Pin on the MCP device
 	 */
 	@Override
-	public GpioAnalogInputDeviceInterface provisionAnalogInputPin(int gpio)
+	public AnalogInputDeviceInterface createAnalogInputDevice(String key, PinInfo pinInfo)
 			throws RuntimeIOException {
-		if (gpio < 0 || gpio >= type.getNumPins()) {
-			throw new IllegalArgumentException(
-					"Invalid channel number (" + gpio + "), must be >= 0 and < " + type.getNumPins());
-		}
-		
-		String key = createPinKey(gpio);
-		
-		if (isDeviceOpened(key)) {
-			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
-		}
-		
-		GpioAnalogInputDeviceInterface device = new McpAdcAnalogInputDevice(this, key, gpio);
-		deviceOpened(device);
-		
-		return device;
+		return new McpAdcAnalogInputDevice(this, key, pinInfo.getDeviceNumber());
 	}
 
 	@Override
 	public String getName() {
 		return type.name() + "-" + spiDevice.getController() + "-" + spiDevice.getChipSelect();
+	}
+
+	@Override
+	public BoardPinInfo getBoardPinInfo() {
+		return boardPinInfo;
 	}
 	
 	/**
@@ -297,15 +292,15 @@ public class McpAdc extends AbstractDeviceFactory implements AnalogInputDeviceFa
 		}
 	}
 	
-	private static class McpAdcAnalogInputDevice extends AbstractInputDevice<AnalogInputEvent> implements GpioAnalogInputDeviceInterface {
+	private static class McpAdcAnalogInputDevice extends AbstractInputDevice<AnalogInputEvent> implements AnalogInputDeviceInterface {
 		private McpAdc mcp3xxx;
-		private int gpio;
+		private int adcNumber;
 
-		public McpAdcAnalogInputDevice(McpAdc mcp3xxx, String key, int gpio) {
+		public McpAdcAnalogInputDevice(McpAdc mcp3xxx, String key, int adcNumber) {
 			super(key, mcp3xxx);
 			
 			this.mcp3xxx = mcp3xxx;
-			this.gpio = gpio;
+			this.adcNumber = adcNumber;
 		}
 
 		@Override
@@ -316,12 +311,20 @@ public class McpAdc extends AbstractDeviceFactory implements AnalogInputDeviceFa
 
 		@Override
 		public float getValue() throws RuntimeIOException {
-			return mcp3xxx.getValue(gpio);
+			return mcp3xxx.getValue(adcNumber);
 		}
 
 		@Override
-		public int getGpio() {
-			return gpio;
+		public int getAdcNumber() {
+			return adcNumber;
+		}
+	}
+	
+	public static class McpAdcBoardPinInfo extends BoardPinInfo {
+		public McpAdcBoardPinInfo(McpAdc.Type type) {
+			for (int i=0; i<type.getNumPins(); i++) {
+				addAdcPinInfo(i, i);
+			}
 		}
 	}
 }

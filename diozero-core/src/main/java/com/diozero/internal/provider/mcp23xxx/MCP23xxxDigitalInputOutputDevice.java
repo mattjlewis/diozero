@@ -45,6 +45,7 @@ public class MCP23xxxDigitalInputOutputDevice extends AbstractDevice implements 
 		
 		this.mcp23xxx = mcp23xxx;
 		this.gpio = gpio;
+		
 		setMode(mode);
 	}
 

@@ -28,7 +28,7 @@ package com.diozero.internal.board.odroid;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.diozero.api.GpioInfo;
+import com.diozero.api.PinInfo;
 import com.diozero.util.BoardInfo;
 import com.diozero.util.BoardInfoProvider;
 
@@ -73,44 +73,70 @@ public class OdroidBoardInfoProvider implements BoardInfoProvider {
 		
 		public OdroidC1BoardInfo() {
 			super(MAKE, Model.C1.toString(), MEMORY, MAKE.toLowerCase() + "/" + Model.C1.toString().toLowerCase());
-		}
-		
-		@Override
-		protected void init() {
+
 			// TODO Add pins when support for this board is added
+		}
+
+		@Override
+		public int getPwmChip(int pwmNum) {
+			return 0;
 		}
 	}
 
 	/**
-	 * See <a href="http://www.hardkernel.com/main/products/prdt_info.php?g_code=G145457216438&tab_idx=2">Odroid C2 Hardware Technical details</a>.
+	 * <p>See <a href="http://www.hardkernel.com/main/products/prdt_info.php?g_code=G145457216438&tab_idx=2">Odroid C2 Hardware Technical details</a>.</p>
+	 * <p>Also see <a href="http://odroid.com/dokuwiki/doku.php?id=en:c2_hardware_pwm">Hardware PWM</a> for details on PWM.</p>
 	 */
 	public static class OdroidC2BoardInfo extends BoardInfo {
 		private static final int MEMORY = 2048;
 		
 		private OdroidC2BoardInfo() {
 			super(MAKE, Model.C2.toString(), MEMORY, MAKE.toLowerCase() + "/" + Model.C2.toString().toLowerCase());
+
+			// 3V3 1 | 2 5V0
+			addGpioPinInfo(205, 3, PinInfo.DIGITAL_IN_OUT);			// I2C1-SDA
+			// 4 5V0
+			addGpioPinInfo(206, 5, PinInfo.DIGITAL_IN_OUT);			// I2C1-SCL
+			// 6 GND
+			addGpioPinInfo(249, 7, PinInfo.DIGITAL_IN_OUT);			// GPIOX.BIT21
+			addGpioPinInfo(113, 8, PinInfo.DIGITAL_IN_OUT);			// UART TX
+			// 9 GND
+			addGpioPinInfo(114, 10, PinInfo.DIGITAL_IN_OUT);		// UART RX
+			addGpioPinInfo(247, 11, PinInfo.DIGITAL_IN_OUT);		// GPIOX.BIT19
+			addGpioPinInfo(238, 12, PinInfo.DIGITAL_IN_OUT);		// GPIOY.BIT10
+			addGpioPinInfo(239, 13, PinInfo.DIGITAL_IN_OUT);		// GPIOX.BIT11
+			// 14 GND
+			addGpioPinInfo(237, 15, PinInfo.DIGITAL_IN_OUT);		// GPIOX.BIT9
+			addGpioPinInfo(236, 16, PinInfo.DIGITAL_IN_OUT);		// GPIOX.BIT8
+			// 17 3V3
+			addGpioPinInfo(233, 18, PinInfo.DIGITAL_IN_OUT);		// GPIOX.BIT5
+			addPwmPinInfo(235, 19, 1, PinInfo.DIGITAL_IN_OUT_PWM);	// GPIOX.BIT7
+			// 20 GND
+			addGpioPinInfo(232, 21, PinInfo.DIGITAL_IN_OUT);		// GPIOX.BIT4
+			addGpioPinInfo(231, 22, PinInfo.DIGITAL_IN_OUT);		// GPIOX.BIT3
+			addGpioPinInfo(230, 23, PinInfo.DIGITAL_IN_OUT);		// GPIOX.BIT2
+			addGpioPinInfo(229, 24, PinInfo.DIGITAL_IN_OUT);		// GPIOX.BIT1
+			// 25 GND
+			addGpioPinInfo(225, 26, PinInfo.DIGITAL_IN_OUT);		// GPIOY.BIT14
+			addGpioPinInfo(207, 27, PinInfo.DIGITAL_IN_OUT);		// I2C2-SDA
+			addGpioPinInfo(77, 28, PinInfo.DIGITAL_IN_OUT);			// I2C2-SCL
+			addGpioPinInfo(228, 29, PinInfo.DIGITAL_IN_OUT);		// GPIOX.BIT10
+			// 30 GND
+			addGpioPinInfo(219, 31, PinInfo.DIGITAL_IN_OUT);		// GPIOY.BIT8
+			addGpioPinInfo(224, 32, PinInfo.DIGITAL_IN_OUT);		// GPIOY.BIT13
+			addPwmPinInfo(234, 33, 0, PinInfo.DIGITAL_IN_OUT_PWM);	// GPIOX.BIT6
+			// 34 GND
+			addGpioPinInfo(214, 35, PinInfo.DIGITAL_IN_OUT);		// GPIOY.BIT3
+			addGpioPinInfo(218, 36, PinInfo.DIGITAL_IN_OUT);		// GPIOY.BIT7
+			addAdcPinInfo(1, 37);									// ADC.AIN1
+			// 38 1V8
+			// 39 GND
+			addAdcPinInfo(0, 40);									// ADC.AIN0
 		}
-		
+
 		@Override
-		protected void init() {
-			addGpioInfo(new GpioInfo(214,35, GpioInfo.DIGITAL_IN_OUT));
-			addGpioInfo(new GpioInfo(218, 36, GpioInfo.DIGITAL_IN_OUT));
-			addGpioInfo(new GpioInfo(219, 31, GpioInfo.DIGITAL_IN_OUT));
-			addGpioInfo(new GpioInfo(224, 32, GpioInfo.DIGITAL_IN_OUT));
-			addGpioInfo(new GpioInfo(225, 26, GpioInfo.DIGITAL_IN_OUT));
-			addGpioInfo(new GpioInfo(228, 29, GpioInfo.DIGITAL_IN_OUT));
-			addGpioInfo(new GpioInfo(229, 24, GpioInfo.DIGITAL_IN_OUT));
-			addGpioInfo(new GpioInfo(230, 23, GpioInfo.DIGITAL_IN_OUT));
-			addGpioInfo(new GpioInfo(231, 22, GpioInfo.DIGITAL_IN_OUT));
-			addGpioInfo(new GpioInfo(232, 21, GpioInfo.DIGITAL_IN_OUT));
-			addGpioInfo(new GpioInfo(233, 18, GpioInfo.DIGITAL_IN_OUT));
-			addGpioInfo(new GpioInfo(234, 33, GpioInfo.DIGITAL_IN_OUT_PWM));
-			addGpioInfo(new GpioInfo(235, 19, GpioInfo.DIGITAL_IN_OUT_PWM));
-			addGpioInfo(new GpioInfo(247, 11, GpioInfo.DIGITAL_IN_OUT));
-			addGpioInfo(new GpioInfo(249, 7, GpioInfo.DIGITAL_IN_OUT));
-			// Note these are actual pin numbers, not logical GPIO numbers
-			addGpioInfo(new GpioInfo(37, 37, GpioInfo.ANALOG_INPUT));
-			addGpioInfo(new GpioInfo(40, 40, GpioInfo.ANALOG_INPUT));
+		public int getPwmChip(int pwmNum) {
+			return 0;
 		}
 	}
 }

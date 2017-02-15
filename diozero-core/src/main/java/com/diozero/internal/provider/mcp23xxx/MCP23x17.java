@@ -1,8 +1,7 @@
 package com.diozero.internal.provider.mcp23xxx;
 
-import com.diozero.api.GpioInfo;
-import com.diozero.sandpit.PCF8591.PCF8591BoardGpioInfo;
-import com.diozero.util.BoardGpioInfo;
+import com.diozero.api.PinInfo;
+import com.diozero.util.BoardPinInfo;
 
 /*
  * #%L
@@ -147,7 +146,7 @@ public abstract class MCP23x17 extends MCP23xxx {
 	 * modifies the output latches that modifies the pins configured as outputs */
 	private static final int[] OLAT_REG = BANK0_OLAT_REG;
 	
-	private BoardGpioInfo boardGpioInfo;
+	private BoardPinInfo boardPinInfo;
 
 	public MCP23x17(String deviceName) {
 		this(deviceName, INTERRUPT_GPIO_NOT_SET, INTERRUPT_GPIO_NOT_SET);
@@ -160,7 +159,7 @@ public abstract class MCP23x17 extends MCP23xxx {
 	public MCP23x17(String deviceName, int interruptGpioA, int interruptGpioB) {
 		super(NUM_PORTS, deviceName, interruptGpioA, interruptGpioB);
 		
-		boardGpioInfo = new MCP23x17BoardGpioInfo();
+		boardPinInfo = new MCP23x17BoardPinInfo();
 	}
 	
 	@Override
@@ -219,21 +218,20 @@ public abstract class MCP23x17 extends MCP23xxx {
 	}
 
 	@Override
-	public BoardGpioInfo getGpioInfo() {
-		return boardGpioInfo;
+	public BoardPinInfo getBoardPinInfo() {
+		return boardPinInfo;
 	}
 	
-	public static class MCP23x17BoardGpioInfo extends BoardGpioInfo {
+	public static class MCP23x17BoardPinInfo extends BoardPinInfo {
 		public static final String BANK_A = "BANK-A";
 		public static final String BANK_B = "BANK-B";
 		
-		@Override
-		protected void init() {
+		public MCP23x17BoardPinInfo() {
 			for (int i=0; i<8; i++) {
-				addGpioInfo(new GpioInfo(BANK_A, i, 21+i, GpioInfo.DIGITAL_IN_OUT));
+				addGpioPinInfo(BANK_A, i, 21+i, PinInfo.DIGITAL_IN_OUT);
 			}
 			for (int i=0; i<8; i++) {
-				addGpioInfo(new GpioInfo(BANK_B, 8+i, 1+i, GpioInfo.DIGITAL_IN_OUT));
+				addGpioPinInfo(BANK_B, 8+i, 1+i, PinInfo.DIGITAL_IN_OUT);
 			}
 		}
 	}

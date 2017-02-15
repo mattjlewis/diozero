@@ -1,7 +1,5 @@
 package com.diozero.internal.spi;
 
-import com.diozero.api.DeviceMode;
-
 /*
  * #%L
  * Device I/O Zero - Core
@@ -35,8 +33,4 @@ public interface GpioDigitalInputDeviceInterface extends GpioDigitalDeviceInterf
 	void setDebounceTimeMillis(int debounceTime);
 	void setListener(InputEventListener<DigitalInputEvent> listener);
 	void removeListener();
-	@Override
-	default DeviceMode getMode() {
-		return DeviceMode.DIGITAL_INPUT;
-	}
 }

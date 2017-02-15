@@ -1,5 +1,7 @@
 package com.diozero.api;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 /*
  * #%L
  * Device I/O Zero - Core
@@ -47,7 +49,7 @@ public class PwmOutputDevice extends GpioDevice implements OutputDeviceInterface
 	public static final int INFINITE_ITERATIONS = -1;
 
 	private PwmOutputDeviceInterface device;
-	private boolean running;
+	private AtomicBoolean running;
 	private Thread backgroundThread;
 
 	/**
@@ -85,15 +87,15 @@ public class PwmOutputDevice extends GpioDevice implements OutputDeviceInterface
 	public PwmOutputDevice(PwmOutputDeviceFactoryInterface pwmDeviceFactory, int gpio, float initialValue)
 			throws RuntimeIOException {
 		super(gpio);
-		this.device = pwmDeviceFactory.provisionPwmOutputPin(gpio, initialValue);
+		running = new AtomicBoolean();
+		this.device = pwmDeviceFactory.provisionPwmOutputDevice(gpio, initialValue);
 	}
 
 	@Override
 	public void close() {
 		Logger.debug("close()");
-		stopLoops();
-		running = false;
-		if (backgroundThread != null) {
+		if (running.get()) {
+			stopLoops();
 			Logger.info("Interrupting background thread " + backgroundThread.getName());
 			backgroundThread.interrupt();
 		}
@@ -112,7 +114,6 @@ public class PwmOutputDevice extends GpioDevice implements OutputDeviceInterface
 			DioZeroScheduler.getDaemonInstance().execute(() -> {
 				backgroundThread = Thread.currentThread();
 				onOffLoop(onTime, offTime, n);
-				backgroundThread = null;
 				Logger.info("Background on-off loop finished");
 			});
 		} else {
@@ -122,14 +123,14 @@ public class PwmOutputDevice extends GpioDevice implements OutputDeviceInterface
 
 	private void onOffLoop(float onTime, float offTime, int n) throws RuntimeIOException {
 		if (n > 0) {
-			running = true;
-			for (int i = 0; i < n && running; i++) {
+			running.set(true);
+			for (int i = 0; i < n && running.get(); i++) {
 				onOff(onTime, offTime);
 			}
-			running = false;
+			running.set(false);
 		} else if (n == INFINITE_ITERATIONS) {
-			running = true;
-			while (running) {
+			running.set(true);
+			while (running.get()) {
 				onOff(onTime, offTime);
 			}
 		}
@@ -143,7 +144,6 @@ public class PwmOutputDevice extends GpioDevice implements OutputDeviceInterface
 				backgroundThread = Thread.currentThread();
 				fadeInOutLoop(fadeTime, steps, iterations);
 				Logger.info("Background fade in-out loop finished");
-				backgroundThread = null;
 			});
 		} else {
 			fadeInOutLoop(fadeTime, steps, iterations);
@@ -154,14 +154,14 @@ public class PwmOutputDevice extends GpioDevice implements OutputDeviceInterface
 		float sleep_time = fadeTime / steps;
 		float delta = 1f / steps;
 		if (iterations > 0) {
-			running = true;
-			for (int i = 0; i < iterations && running; i++) {
+			running.set(true);
+			for (int i = 0; i < iterations && running.get(); i++) {
 				fadeInOut(sleep_time, delta);
 			}
-			running = false;
+			running.set(false);
 		} else if (iterations == INFINITE_ITERATIONS) {
-			running = true;
-			while (running) {
+			running.set(true);
+			while (running.get()) {
 				fadeInOut(sleep_time, delta);
 			}
 		}
@@ -169,13 +169,13 @@ public class PwmOutputDevice extends GpioDevice implements OutputDeviceInterface
 
 	private void fadeInOut(float sleepTime, float delta) throws RuntimeIOException {
 		float value = 0;
-		while (value <= 1 && running) {
+		while (value <= 1 && running.get()) {
 			setValueInternal(value);
 			SleepUtil.sleepSeconds(sleepTime);
 			value += delta;
 		}
 		value = 1;
-		while (value >= 0 && running) {
+		while (value >= 0 && running.get()) {
 			setValueInternal(value);
 			SleepUtil.sleepSeconds(sleepTime);
 			value -= delta;
@@ -183,7 +183,7 @@ public class PwmOutputDevice extends GpioDevice implements OutputDeviceInterface
 	}
 
 	private void stopLoops() {
-		running = false;
+		running.set(false);
 	}
 
 	private void onOff(float onTime, float offTime) throws RuntimeIOException {

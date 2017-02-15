@@ -28,13 +28,12 @@ package com.diozero.sandpit;
 
 import java.io.Closeable;
 import java.nio.ByteOrder;
-import java.util.Arrays;
 
 import org.pmw.tinylog.Logger;
 
 import com.diozero.api.*;
 import com.diozero.internal.spi.*;
-import com.diozero.util.BoardGpioInfo;
+import com.diozero.util.BoardPinInfo;
 import com.diozero.util.RuntimeIOException;
 
 /**
@@ -66,7 +65,7 @@ AnalogOutputDeviceFactoryInterface, Closeable {
 	private String keyPrefix;
 	private boolean outputEnabled = false;
 	private InputMode inputMode;
-	private BoardGpioInfo boardGpioInfo;
+	private BoardPinInfo boardPinInfo;
 	
 	public PCF8591() {
 		this(I2CConstants.BUS_1, DEFAULT_ADDRESS, InputMode.FOUR_SINGLE_ENDED_INPUTS, true);
@@ -82,12 +81,12 @@ AnalogOutputDeviceFactoryInterface, Closeable {
 				I2CConstants.DEFAULT_CLOCK_FREQUENCY, ByteOrder.LITTLE_ENDIAN);
 		keyPrefix = getName() + "-";
 		
-		boardGpioInfo = new PCF8591BoardGpioInfo(inputMode);
+		boardPinInfo = new PCF8591BoardPinInfo(inputMode);
 	}
 	
 	@Override
-	public BoardGpioInfo getGpioInfo() {
-		return boardGpioInfo;
+	public BoardPinInfo getBoardPinInfo() {
+		return boardPinInfo;
 	}
 
 	@Override
@@ -101,41 +100,13 @@ AnalogOutputDeviceFactoryInterface, Closeable {
 	}
 
 	@Override
-	public GpioAnalogInputDeviceInterface provisionAnalogInputPin(int gpio) throws RuntimeIOException {
-		if (gpio < 0 || gpio >= inputMode.getNumPins()) {
-			throw new IllegalArgumentException(
-					"Invalid channel number (" + gpio + "), must be >= 0 and < " + inputMode.getNumPins());
-		}
-		
-		String key = createPinKey(gpio);
-		
-		if (isDeviceOpened(key)) {
-			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
-		}
-		
-		GpioAnalogInputDeviceInterface device = new PCF8591AnalogInputDevice(this, key, gpio);
-		deviceOpened(device);
-		
-		return device;
+	public AnalogInputDeviceInterface createAnalogInputDevice(String key, PinInfo pinInfo) throws RuntimeIOException {
+		return new PCF8591AnalogInputDevice(this, key, pinInfo.getDeviceNumber());
 	}
 
 	@Override
-	public GpioAnalogOutputDeviceInterface provisionAnalogOutputPin(int gpio) throws RuntimeIOException {
-		if (gpio != 0) {
-			throw new IllegalArgumentException(
-					"Invalid channel number (" + gpio + "), must be 0");
-		}
-		
-		String key = createPinKey(gpio);
-		
-		if (isDeviceOpened(key)) {
-			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
-		}
-		
-		GpioAnalogOutputDeviceInterface device = new PCF8591AnalogOutputDevice(this, key, gpio);
-		deviceOpened(device);
-		
-		return device;
+	public AnalogOutputDeviceInterface createAnalogOutputDevice(String key, PinInfo pinInfo) throws RuntimeIOException {
+		return new PCF8591AnalogOutputDevice(this, key, pinInfo.getDeviceNumber());
 	}
 	
 	/**
@@ -197,15 +168,15 @@ AnalogOutputDeviceFactoryInterface, Closeable {
 		this.outputEnabled = outputEnabled;
 	}
 	
-	private static class PCF8591AnalogInputDevice extends AbstractInputDevice<AnalogInputEvent> implements GpioAnalogInputDeviceInterface {
+	private static class PCF8591AnalogInputDevice extends AbstractInputDevice<AnalogInputEvent> implements AnalogInputDeviceInterface {
 		private PCF8591 pcf8591;
-		private int gpio;
+		private int adcNumber;
 
-		public PCF8591AnalogInputDevice(PCF8591 pcf8591, String key, int gpio) {
+		public PCF8591AnalogInputDevice(PCF8591 pcf8591, String key, int adcNumber) {
 			super(key, pcf8591);
 			
 			this.pcf8591 = pcf8591;
-			this.gpio = gpio;
+			this.adcNumber = adcNumber;
 		}
 
 		@Override
@@ -216,24 +187,24 @@ AnalogOutputDeviceFactoryInterface, Closeable {
 
 		@Override
 		public float getValue() throws RuntimeIOException {
-			return pcf8591.getValue(gpio);
+			return pcf8591.getValue(adcNumber);
 		}
 
 		@Override
-		public int getGpio() {
-			return gpio;
+		public int getAdcNumber() {
+			return adcNumber;
 		}
 	}
 	
-	private static class PCF8591AnalogOutputDevice extends AbstractDevice implements GpioAnalogOutputDeviceInterface {
-		private int gpio;
+	private static class PCF8591AnalogOutputDevice extends AbstractDevice implements AnalogOutputDeviceInterface {
+		private int adcNumber;
 		private PCF8591 pcf8591;
 
-		public PCF8591AnalogOutputDevice(PCF8591 pcf8591, String key, int gpio) {
+		public PCF8591AnalogOutputDevice(PCF8591 pcf8591, String key, int adcNumber) {
 			super(key, pcf8591);
 			
 			this.pcf8591 = pcf8591;
-			this.gpio = gpio;
+			this.adcNumber = adcNumber;
 		}
 
 		@Override
@@ -243,18 +214,18 @@ AnalogOutputDeviceFactoryInterface, Closeable {
 		}
 
 		@Override
-		public int getGpio() {
-			return gpio;
+		public int getAdcNumber() {
+			return adcNumber;
 		}
 
 		@Override
 		public float getValue() throws RuntimeIOException {
-			return pcf8591.getValue(gpio);
+			return pcf8591.getValue(adcNumber);
 		}
 
 		@Override
 		public void setValue(float value) throws RuntimeIOException {
-			pcf8591.setValue(gpio, value);
+			pcf8591.setValue(adcNumber, value);
 		}
 	}
 	
@@ -291,36 +262,33 @@ AnalogOutputDeviceFactoryInterface, Closeable {
 		}
 	}
 
-	public static class PCF8591BoardGpioInfo extends BoardGpioInfo {
+	public static class PCF8591BoardPinInfo extends BoardPinInfo {
 		private InputMode inputMode;
 		
-		public PCF8591BoardGpioInfo(InputMode inputMode) {
+		public PCF8591BoardPinInfo(InputMode inputMode) {
 			this.inputMode = inputMode;
-		}
-		
-		@Override
-		protected void init() {
-			addGpioInfo(new GpioInfo(4, "AOUT", 1, GpioInfo.ANALOG_OUTPUT));
+
+			addDacPinInfo(4, "AOUT", 1);
 			switch (inputMode) {
 			case FOUR_SINGLE_ENDED_INPUTS:
-				addGpioInfo(new GpioInfo(0, "AIN0", 2, GpioInfo.ANALOG_INPUT));
-				addGpioInfo(new GpioInfo(1, "AIN1", 3, GpioInfo.ANALOG_INPUT));
-				addGpioInfo(new GpioInfo(2, "AIN2", 4, GpioInfo.ANALOG_INPUT));
-				addGpioInfo(new GpioInfo(3, "AIN3", 5, GpioInfo.ANALOG_INPUT));
+				addAdcPinInfo(0, 2);
+				addAdcPinInfo(1, 3);
+				addAdcPinInfo(2, 4);
+				addAdcPinInfo(3, 5);
 				break;
 			case THREE_DIFFERENTIAL_INPUTS:
-				addGpioInfo(new GpioInfo(0, "AIN0-AIN3", 2, GpioInfo.ANALOG_INPUT));
-				addGpioInfo(new GpioInfo(1, "AIN1-AIN3", 3, GpioInfo.ANALOG_INPUT));
-				addGpioInfo(new GpioInfo(2, "AIN2-AIN3", 4, GpioInfo.ANALOG_INPUT));
+				addAdcPinInfo(0, "AIN0-AIN3", 2);
+				addAdcPinInfo(1, "AIN1-AIN3", 3);
+				addAdcPinInfo(2, "AIN2-AIN3", 4);
 				break;
 			case SINGLE_ENDED_AND_DIFFERENTIAL_MIXED:
-				addGpioInfo(new GpioInfo(0, "AIN0", 2, GpioInfo.ANALOG_INPUT));
-				addGpioInfo(new GpioInfo(1, "AIN1", 3, GpioInfo.ANALOG_INPUT));
-				addGpioInfo(new GpioInfo(2, "AIN2-AIN3", 4, GpioInfo.ANALOG_INPUT));
+				addAdcPinInfo(0, "AIN0", 2);
+				addAdcPinInfo(1, "AIN1", 3);
+				addAdcPinInfo(2, "AIN2-AIN3", 4);
 				break;
 			case TWO_DIFFERENTIAL_INPUTS:
-				addGpioInfo(new GpioInfo(0, "AIN0-AIN1", 2, GpioInfo.ANALOG_INPUT));
-				addGpioInfo(new GpioInfo(1, "AIN2-AIN3", 4, GpioInfo.ANALOG_INPUT));
+				addAdcPinInfo(0, "AIN0-AIN1", 2);
+				addAdcPinInfo(1, "AIN2-AIN3", 4);
 				break;
 			}
 		}

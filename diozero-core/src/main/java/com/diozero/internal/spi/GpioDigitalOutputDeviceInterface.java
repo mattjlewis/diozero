@@ -1,7 +1,5 @@
 package com.diozero.internal.spi;
 
-import com.diozero.api.DeviceMode;
-
 /*
  * #%L
  * Device I/O Zero - Core
@@ -32,8 +30,4 @@ import com.diozero.util.RuntimeIOException;
 
 public interface GpioDigitalOutputDeviceInterface extends GpioDigitalDeviceInterface {
 	void setValue(boolean value) throws RuntimeIOException;
-	@Override
-	default DeviceMode getMode() {
-		return DeviceMode.DIGITAL_OUTPUT;
-	}
 }

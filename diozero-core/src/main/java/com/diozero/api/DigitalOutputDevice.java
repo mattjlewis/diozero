@@ -89,7 +89,7 @@ public class DigitalOutputDevice extends GpioDevice implements OutputDeviceInter
 	public DigitalOutputDevice(GpioDeviceFactoryInterface deviceFactory, int gpio, boolean activeHigh,
 			boolean initialValue) throws RuntimeIOException {
 		super(gpio);
-		this.device = deviceFactory.provisionDigitalOutputPin(gpio, activeHigh & initialValue);
+		this.device = deviceFactory.provisionDigitalOutputDevice(gpio, activeHigh & initialValue);
 		this.activeHigh = activeHigh;
 	}
 

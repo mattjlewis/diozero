@@ -42,79 +42,37 @@ public class PCF8574 extends AbstractDeviceFactory implements GpioDeviceFactoryI
 	
 	private I2CDevice device;
 	private MutableByte directions;
-	private BoardGpioInfo boardGpioInfo;
+	private BoardPinInfo boardPinInfo;
 	
 	public PCF8574(int controller, int address, int addressSize, int frequency) {
 		super(DEVICE_NAME + "-" + controller + "-" + address);
 		
-		boardGpioInfo = new PCF8574BoardGpioInfo();
+		boardPinInfo = new PCF8574BoardPinInfo();
 		
 		device = new I2CDevice(controller, address, addressSize, frequency, ByteOrder.LITTLE_ENDIAN);
 		directions = new MutableByte();
 	}
 
 	@Override
-	public GpioDigitalInputDeviceInterface provisionDigitalInputPin(int gpio, GpioPullUpDown pud,
+	public GpioDigitalInputDeviceInterface createDigitalInputDevice(String key, PinInfo pinInfo, GpioPullUpDown pud,
 			GpioEventTrigger trigger) throws RuntimeIOException {
-		if (gpio < 0 || gpio >= NUM_PINS) {
-			throw new IllegalArgumentException(
-					"Invalid GPIO (" + gpio + "); must be 0.." + (NUM_PINS - 1));
-		}
-		
-		String key = createPinKey(gpio);
-		
-		if (isDeviceOpened(key)) {
-			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
-		}
-		
+		int gpio = pinInfo.getDeviceNumber();
 		setInputMode(gpio);
-		
-		GpioDigitalInputDeviceInterface in_device = new PCF8574DigitalInputDevice(this, key, gpio, trigger);
-		deviceOpened(in_device);
-		
-		return in_device;
+		return new PCF8574DigitalInputDevice(this, key, gpio, trigger);
 	}
 
 	@Override
-	public GpioDigitalOutputDeviceInterface provisionDigitalOutputPin(int gpio, boolean initialValue) throws RuntimeIOException {
-		if (gpio < 0 || gpio >= NUM_PINS) {
-			throw new IllegalArgumentException(
-					"Invalid GPIO (" + gpio + "); must be 0.." + (NUM_PINS - 1));
-		}
-		
-		String key = createPinKey(gpio);
-		
-		if (isDeviceOpened(key)) {
-			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
-		}
-		
+	public GpioDigitalOutputDeviceInterface createDigitalOutputDevice(String key, PinInfo pinInfo,
+			boolean initialValue) throws RuntimeIOException {
+		int gpio = pinInfo.getDeviceNumber();
 		setOutputMode(gpio);
-		
-		GpioDigitalOutputDeviceInterface out_device = new PCF8574DigitalOutputDevice(this, key, gpio);
-		deviceOpened(out_device);
-		out_device.setValue(initialValue);
-		
-		return out_device;
+		return new PCF8574DigitalOutputDevice(this, key, gpio, initialValue);
 	}
 
 	@Override
-	public GpioDigitalInputOutputDeviceInterface provisionDigitalInputOutputPin(int gpio, DeviceMode mode)
-			throws RuntimeIOException {
-		if (gpio < 0 || gpio >= NUM_PINS) {
-			throw new IllegalArgumentException(
-					"Invalid GPIO (" + gpio + "); must be 0.." + (NUM_PINS - 1));
-		}
-		
-		String key = createPinKey(gpio);
-		
-		if (isDeviceOpened(key)) {
-			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
-		}
-		
-		GpioDigitalInputOutputDeviceInterface inout_device = new PCF8574DigitalInputOutputDevice(this, key, gpio, mode);
-		deviceOpened(inout_device);
-		
-		return inout_device;
+	public GpioDigitalInputOutputDeviceInterface createDigitalInputOutputDevice(String key, PinInfo pinInfo,
+			DeviceMode mode) throws RuntimeIOException {
+		return new PCF8574DigitalInputOutputDevice(this, key, pinInfo.getDeviceNumber(), mode);
 	}
 	
 	@Override
@@ -186,15 +144,14 @@ public class PCF8574 extends AbstractDeviceFactory implements GpioDeviceFactoryI
 	}
 
 	@Override
-	public BoardGpioInfo getGpioInfo() {
-		return boardGpioInfo;
+	public BoardPinInfo getBoardPinInfo() {
+		return boardPinInfo;
 	}
 	
-	public static class PCF8574BoardGpioInfo extends BoardGpioInfo {
-		@Override
-		public void init() {
+	public static class PCF8574BoardPinInfo extends BoardPinInfo {
+		public PCF8574BoardPinInfo() {
 			for (int i=0; i<NUM_PINS; i++) {
-				addGpioInfo(new GpioInfo(i, i, GpioInfo.DIGITAL_IN_OUT));
+				addGpioPinInfo(i, i, PinInfo.DIGITAL_IN_OUT);
 			}
 		}
 	}
@@ -299,11 +256,13 @@ public class PCF8574 extends AbstractDeviceFactory implements GpioDeviceFactoryI
 		private PCF8574 pcf8574;
 		private int gpio;
 
-		public PCF8574DigitalOutputDevice(PCF8574 pcf8574, String key, int gpio) {
+		public PCF8574DigitalOutputDevice(PCF8574 pcf8574, String key, int gpio, boolean initialValue) {
 			super(key, pcf8574);
 			
 			this.pcf8574 = pcf8574;
 			this.gpio = gpio;
+			
+			setValue(initialValue);
 		}
 
 		@Override

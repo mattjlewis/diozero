@@ -74,35 +74,6 @@ public class PigpioJDeviceFactory extends BaseNativeDeviceFactory {
 		PigpioGpio.terminate();
 	}
 
-	@Override
-	protected GpioAnalogInputDeviceInterface createAnalogInputPin(String key, int gpio) throws RuntimeIOException {
-		throw new UnsupportedOperationException("Analog input pins not supported");
-	}
-
-	@Override
-	protected GpioAnalogOutputDeviceInterface createAnalogOutputPin(String key, int gpio) throws RuntimeIOException {
-		throw new UnsupportedOperationException("Analog devices aren't supported on this device");
-	}
-
-	@Override
-	protected GpioDigitalInputDeviceInterface createDigitalInputPin(String key, int gpio, GpioPullUpDown pud,
-			GpioEventTrigger trigger) throws RuntimeIOException {
-		return new PigpioJDigitalInputDevice(key, this, gpio, pud, trigger);
-	}
-
-	@Override
-	protected GpioDigitalOutputDeviceInterface createDigitalOutputPin(String key, int gpio, boolean initialValue)
-			throws RuntimeIOException {
-		return new PigpioJDigitalOutputDevice(key, this, gpio, initialValue);
-	}
-
-	@Override
-	protected GpioDigitalInputOutputDeviceInterface createDigitalInputOutputPin(
-			String key, int gpio, DeviceMode mode)
-			throws RuntimeIOException {
-		return new PigpioJDigitalInputOutputDevice(key, this, gpio, mode);
-	}
-
 	protected DeviceMode getCurrentGpioMode(int gpio) {
 		int rc = PigpioGpio.getMode(gpio);
 		
@@ -116,9 +87,38 @@ public class PigpioJDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	protected PwmOutputDeviceInterface createPwmOutputPin(String key, int gpio, float initialValue,
-			PwmType pwmType) throws RuntimeIOException {
-		return new PigpioJPwmOutputDevice(key, this, gpio, initialValue, PigpioGpio.getPWMRange(gpio));
+	public GpioDigitalInputDeviceInterface createDigitalInputDevice(String key, PinInfo pinInfo, GpioPullUpDown pud,
+			GpioEventTrigger trigger) throws RuntimeIOException {
+		return new PigpioJDigitalInputDevice(key, this, pinInfo.getDeviceNumber(), pud, trigger);
+	}
+
+	@Override
+	public GpioDigitalOutputDeviceInterface createDigitalOutputDevice(String key, PinInfo pinInfo, boolean initialValue)
+			throws RuntimeIOException {
+		return new PigpioJDigitalOutputDevice(key, this, pinInfo.getDeviceNumber(), initialValue);
+	}
+
+	@Override
+	public GpioDigitalInputOutputDeviceInterface createDigitalInputOutputDevice(String key, PinInfo pinInfo,
+			DeviceMode mode) throws RuntimeIOException {
+		return new PigpioJDigitalInputOutputDevice(key, this, pinInfo.getDeviceNumber(), mode);
+	}
+
+	@Override
+	public PwmOutputDeviceInterface createPwmOutputDevice(String key, PinInfo pinInfo, float initialValue)
+			throws RuntimeIOException {
+		return new PigpioJPwmOutputDevice(key, this, pinInfo.getDeviceNumber(), initialValue,
+				PigpioGpio.getPWMRange(pinInfo.getDeviceNumber()));
+	}
+
+	@Override
+	public AnalogInputDeviceInterface createAnalogInputDevice(String key, PinInfo pinInfo) throws RuntimeIOException {
+		throw new UnsupportedOperationException("Analog input pins not supported");
+	}
+
+	@Override
+	public AnalogOutputDeviceInterface createAnalogOutputDevice(String key, PinInfo pinInfo) throws RuntimeIOException {
+		throw new UnsupportedOperationException("Analog devices aren't supported on this device");
 	}
 
 	@Override

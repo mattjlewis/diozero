@@ -26,7 +26,12 @@ package com.diozero.internal.board.beaglebone;
  * #L%
  */
 
-import com.diozero.api.GpioInfo;
+import java.io.IOException;
+import java.nio.file.*;
+
+import org.pmw.tinylog.Logger;
+
+import com.diozero.api.PinInfo;
 import com.diozero.util.BoardInfo;
 import com.diozero.util.BoardInfoProvider;
 
@@ -53,30 +58,49 @@ public class BeagleBoneBoardInfoProvider implements BoardInfoProvider {
 		
 		public BeagleBoneBlackBoardInfo() {
 			super(MAKE, BB_BLACK, MEMORY, BBB_LIB_PATH);
+
+			addGpioPinInfo(P9_HEADER, 60, 12, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(P9_HEADER, 48, 15, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(P9_HEADER, 49, 23, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(P9_HEADER, 117, 25, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(P9_HEADER, 115, 27, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(P9_HEADER, 112, 30, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(P9_HEADER, 20, 41, PinInfo.DIGITAL_IN_OUT);
+
+			addGpioPinInfo(P8_HEADER, 66, 7, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(P8_HEADER, 67, 8, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(P8_HEADER, 69, 9, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(P8_HEADER, 68, 10, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(P8_HEADER, 45, 11, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(P8_HEADER, 44, 12, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(P8_HEADER, 26, 14, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(P8_HEADER, 47, 15, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(P8_HEADER, 46, 16, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(P8_HEADER, 27, 17, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(P8_HEADER, 65, 18, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(P8_HEADER, 61, 26, PinInfo.DIGITAL_IN_OUT);
 		}
 
 		@Override
-		protected void init() {
-			addGpioInfo(new GpioInfo(P9_HEADER, 60, 12, GpioInfo.DIGITAL_IN_OUT));
-			addGpioInfo(new GpioInfo(P9_HEADER, 48, 15, GpioInfo.DIGITAL_IN_OUT));
-			addGpioInfo(new GpioInfo(P9_HEADER, 49, 23, GpioInfo.DIGITAL_IN_OUT));
-			addGpioInfo(new GpioInfo(P9_HEADER, 117, 25, GpioInfo.DIGITAL_IN_OUT));
-			addGpioInfo(new GpioInfo(P9_HEADER, 115, 27, GpioInfo.DIGITAL_IN_OUT));
-			addGpioInfo(new GpioInfo(P9_HEADER, 112, 30, GpioInfo.DIGITAL_IN_OUT));
-			addGpioInfo(new GpioInfo(P9_HEADER, 20, 41, GpioInfo.DIGITAL_IN_OUT));
-
-			addGpioInfo(new GpioInfo(P8_HEADER, 66, 7, GpioInfo.DIGITAL_IN_OUT));
-			addGpioInfo(new GpioInfo(P8_HEADER, 67, 8, GpioInfo.DIGITAL_IN_OUT));
-			addGpioInfo(new GpioInfo(P8_HEADER, 69, 9, GpioInfo.DIGITAL_IN_OUT));
-			addGpioInfo(new GpioInfo(P8_HEADER, 68, 10, GpioInfo.DIGITAL_IN_OUT));
-			addGpioInfo(new GpioInfo(P8_HEADER, 45, 11, GpioInfo.DIGITAL_IN_OUT));
-			addGpioInfo(new GpioInfo(P8_HEADER, 44, 12, GpioInfo.DIGITAL_IN_OUT));
-			addGpioInfo(new GpioInfo(P8_HEADER, 26, 14, GpioInfo.DIGITAL_IN_OUT));
-			addGpioInfo(new GpioInfo(P8_HEADER, 47, 15, GpioInfo.DIGITAL_IN_OUT));
-			addGpioInfo(new GpioInfo(P8_HEADER, 46, 16, GpioInfo.DIGITAL_IN_OUT));
-			addGpioInfo(new GpioInfo(P8_HEADER, 27, 17, GpioInfo.DIGITAL_IN_OUT));
-			addGpioInfo(new GpioInfo(P8_HEADER, 65, 18, GpioInfo.DIGITAL_IN_OUT));
-			addGpioInfo(new GpioInfo(P8_HEADER, 61, 26, GpioInfo.DIGITAL_IN_OUT));
+		public int getPwmChip(int pwmNum) {
+			// FIXME How to work this out? Temporarily hardcode to GPIO 50 (EHRPWM1A, P9_14)
+			String chip = "48302000";
+			String address = "48302200";
+			
+			Path chip_path = FileSystems.getDefault().getPath("/sys/devices/platform/ocp/" + chip + ".epwmss/" + address + ".pwm/pwm");
+			int pwm_chip = -1;
+			try (DirectoryStream<Path> dirs = Files.newDirectoryStream(chip_path, "pwm*")) {
+				for (Path p : dirs) {
+					String dir = p.getFileName().toString();
+					Logger.info("Got {}" + dir);
+					pwm_chip = Integer.parseInt(dir.substring(dir.length()-1));
+					Logger.info("Found pwmChip {}", Integer.valueOf(pwm_chip));
+				}
+			} catch (IOException e) {
+				Logger.error(e, "Error: " + e);
+			}
+			
+			return pwm_chip;
 		}
 	}
 }

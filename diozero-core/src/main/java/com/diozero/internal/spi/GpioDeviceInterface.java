@@ -31,5 +31,4 @@ import com.diozero.api.DeviceMode;
 
 public interface GpioDeviceInterface extends DeviceInterface {
 	int getGpio();
-	DeviceMode getMode();
 }

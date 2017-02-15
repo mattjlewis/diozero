@@ -67,7 +67,7 @@ implements DigitalInputDeviceInterface {
 		
 		checkMode(mode);
 		
-		this.device = deviceFactory.provisionDigitalInputOutputPin(gpio, mode);
+		this.device = deviceFactory.provisionDigitalInputOutputDevice(gpio, mode);
 		this.mode = mode;
 	}
 	

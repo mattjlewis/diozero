@@ -29,10 +29,9 @@ package com.diozero.legacy;
 import org.pmw.tinylog.Logger;
 
 import com.diozero.api.*;
+import com.diozero.internal.provider.mcp23xxx.MCP23x08;
 import com.diozero.internal.spi.*;
-import com.diozero.util.BitManipulation;
-import com.diozero.util.MutableByte;
-import com.diozero.util.RuntimeIOException;
+import com.diozero.util.*;
 
 /**
  * Datasheet: <a href="http://ww1.microchip.com/downloads/en/DeviceDoc/21919e.pdf">http://ww1.microchip.com/downloads/en/DeviceDoc/21919e.pdf</a>.
@@ -131,6 +130,7 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Gp
 	private static final int INTERRUPT_GPIO_NOT_SET = -1;
 
 	private I2CDevice device;
+	private BoardPinInfo boardPinInfo;
 	private DigitalInputDevice interruptGpio;
 	private MutableByte[] directions = { new MutableByte(), new MutableByte() };
 	private MutableByte[] pullUps = { new MutableByte(), new MutableByte() };
@@ -148,8 +148,9 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Gp
 	}
 
 	public MCP23008Old(int controller, int address, int interruptGpioNumber) throws RuntimeIOException {
-		super(DEVICE_NAME + "-" + controller + "-" + address + "-");
+		super(DEVICE_NAME + "-" + controller + "-" + address);
 		
+		boardPinInfo = new MCP23x08.MCP23x08BoardPinInfo();
 		device = new I2CDevice(controller, address, I2CConstants.ADDR_SIZE_7, I2CConstants.DEFAULT_CLOCK_FREQUENCY);
 		
 		if (interruptGpioNumber != INTERRUPT_GPIO_NOT_SET) {
@@ -203,21 +204,8 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Gp
 	public String getName() {
 		return DEVICE_NAME + "-" + device.getController() + "-" + device.getAddress();
 	}
-
-	@Override
-	public GpioDigitalInputDeviceInterface provisionDigitalInputPin(int gpio, GpioPullUpDown pud,
-			GpioEventTrigger trigger) throws RuntimeIOException {
-		if (gpio < 0 || gpio >= NUM_PINS) {
-			throw new IllegalArgumentException(
-					"Invalid GPIO (" + gpio + "); must be 0.." + (NUM_PINS - 1));
-		}
-		
-		String key = createPinKey(gpio);
-		
-		if (isDeviceOpened(key)) {
-			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
-		}
-		
+	
+	private void setInput(int gpio, GpioPullUpDown pud, GpioEventTrigger trigger) {
 		byte bit = (byte)(gpio % PINS_PER_PORT);
 		int port = gpio / PINS_PER_PORT;
 		
@@ -243,38 +231,31 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Gp
 			device.writeByte(INTCON_REG[port], interruptCompareFlags[port].getValue());
 			device.writeByte(GPINTEN_REG[port], interruptOnChangeFlags[port].getValue());
 		}
-		
-		GpioDigitalInputDeviceInterface device = new MCP23008DigitalInputDevice(this, key, gpio, trigger);
-		deviceOpened(device);
-		
-		return device;
 	}
-
-	@Override
-	public GpioDigitalOutputDeviceInterface provisionDigitalOutputPin(int gpio, boolean initialValue) throws RuntimeIOException {
-		if (gpio < 0 || gpio >= NUM_PINS) {
-			throw new IllegalArgumentException(
-					"Invalid GPIO (" + gpio + "); must be 0.." + (NUM_PINS - 1));
-		}
-		
-		String key = createPinKey(gpio);
-		
-		if (isDeviceOpened(key)) {
-			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
-		}
-		
+	
+	private void setOutput(int gpio) {
 		// TODO Nothing to do assuming that closing a pin resets it to the default output state?
-		
-		GpioDigitalOutputDeviceInterface device = new MCP23008DigitalOutputDevice(this, key, gpio);
-		deviceOpened(device);
-		device.setValue(initialValue);
-		
-		return device;
 	}
 
 	@Override
-	public GpioDigitalInputOutputDeviceInterface provisionDigitalInputOutputPin(int gpio, DeviceMode mode)
-			throws RuntimeIOException {
+	public GpioDigitalInputDeviceInterface createDigitalInputDevice(String key, PinInfo pinInfo, GpioPullUpDown pud,
+			GpioEventTrigger trigger) {
+		int gpio = pinInfo.getDeviceNumber();
+		setInput(gpio, pud, trigger);
+		return new MCP23008DigitalInputDevice(this, key, gpio, trigger);
+	}
+
+	@Override
+	public GpioDigitalOutputDeviceInterface createDigitalOutputDevice(String key, PinInfo pinInfo,
+			boolean initialValue) {
+		int gpio = pinInfo.getDeviceNumber();
+		setOutput(gpio);
+		return new MCP23008DigitalOutputDevice(this, key, gpio, initialValue);
+	}
+
+	@Override
+	public GpioDigitalInputOutputDeviceInterface createDigitalInputOutputDevice(String key, PinInfo pinInfo,
+			DeviceMode mode) {
 		throw new UnsupportedOperationException("Digital Input / Output devices not yet supported by this provider");
 	}
 
@@ -412,18 +393,25 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Gp
 	}
 
 	private MCP23008DigitalInputDevice getInputDevice(byte gpio) {
-		return getDevice(createPinKey(gpio), MCP23008DigitalInputDevice.class);
+		return getDevice(createPinKey(getBoardPinInfo().getByGpioNumber(gpio)), MCP23008DigitalInputDevice.class);
+	}
+
+	@Override
+	public BoardPinInfo getBoardPinInfo() {
+		return boardPinInfo;
 	}
 
 	public static class MCP23008DigitalOutputDevice extends AbstractDevice implements GpioDigitalOutputDeviceInterface {
 		private MCP23008Old mcp23008;
 		private int gpio;
 	
-		public MCP23008DigitalOutputDevice(MCP23008Old mcp23008, String key, int gpio) {
+		public MCP23008DigitalOutputDevice(MCP23008Old mcp23008, String key, int gpio, boolean initialValue) {
 			super(key, mcp23008);
 			
 			this.mcp23008 = mcp23008;
 			this.gpio = gpio;
+			
+			setValue(initialValue);
 		}
 	
 		@Override

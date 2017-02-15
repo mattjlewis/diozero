@@ -36,11 +36,13 @@ public class MCP23xxxDigitalOutputDevice extends AbstractDevice implements GpioD
 	private MCP23xxx mcp23xxx;
 	private int gpio;
 
-	public MCP23xxxDigitalOutputDevice(MCP23xxx mcp23xxx, String key, int gpio) {
+	public MCP23xxxDigitalOutputDevice(MCP23xxx mcp23xxx, String key, int gpio, boolean initialValue) {
 		super(key, mcp23xxx);
 		
 		this.mcp23xxx = mcp23xxx;
 		this.gpio = gpio;
+		
+		setValue(initialValue);
 	}
 
 	@Override
