@@ -1,4 +1,4 @@
-package com.diozero.sandpit;
+package com.diozero.sampleapps.sandpit;
 
 /*
  * #%L

@@ -1,4 +1,4 @@
-package com.diozero.sandpit;
+package com.diozero.api;
 
 import java.util.ArrayList;
 import java.util.Arrays;

@@ -28,7 +28,7 @@ package com.diozero.sampleapps;
 
 import org.pmw.tinylog.Logger;
 
-import com.diozero.LDR;
+import com.diozero.api.AnalogInputDevice;
 import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 
@@ -36,38 +36,37 @@ import com.diozero.util.SleepUtil;
  * Sample application to illustrate listening for changes to analog values. To run:
  * <ul>
  * <li>sysfs:<br>
- *  {@code java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar com.diozero.sampleapps.AnalogListenerTest 0}</li>
+ *  {@code java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar com.diozero.sampleapps.AdcListenerTest 0}</li>
  * <li>JDK Device I/O 1.0:<br>
- *  {@code sudo java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-jdkdio10-$DIOZERO_VERSION.jar:dio-1.0.1-dev-linux-armv6hf.jar -Djava.library.path=. com.diozero.sampleapps.AnalogListenerTest 0}</li>
+ *  {@code sudo java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar:diozero-provider-jdkdio10-$DIOZERO_VERSION.jar:dio-1.0.1-dev-linux-armv6hf.jar -Djava.library.path=. com.diozero.sampleapps.AdcListenerTest 0}</li>
  * <li>JDK Device I/O 1.1:<br>
- *  {@code sudo java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-jdkdio11-$DIOZERO_VERSION.jar:dio-1.1-dev-linux-armv6hf.jar -Djava.library.path=. com.diozero.sampleapps.AnalogListenerTest 0}</li>
+ *  {@code sudo java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar:diozero-provider-jdkdio11-$DIOZERO_VERSION.jar:dio-1.1-dev-linux-armv6hf.jar -Djava.library.path=. com.diozero.sampleapps.AdcListenerTest 0}</li>
  * <li>Pi4j:<br>
- *  {@code sudo java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-pi4j-$DIOZERO_VERSION.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sampleapps.AnalogListenerTest 0}</li>
+ *  {@code sudo java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar:diozero-provider-pi4j-$DIOZERO_VERSION.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sampleapps.AdcListenerTest 0}</li>
  * <li>wiringPi:<br>
- *  {@code sudo java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-wiringpi-$DIOZERO_VERSION.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sampleapps.AnalogListenerTest 0}</li>
+ *  {@code sudo java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar:diozero-provider-wiringpi-$DIOZERO_VERSION.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sampleapps.AdcListenerTest 0}</li>
  * <li>pigpgioJ:<br>
- *  {@code sudo java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-pigpio-$DIOZERO_VERSION.jar:pigpioj-java-1.0.1.jar com.diozero.sampleapps.AnalogListenerTest 0}</li>
+ *  {@code sudo java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar:diozero-provider-pigpio-$DIOZERO_VERSION.jar:pigpioj-java-1.0.1.jar com.diozero.sampleapps.AdcListenerTest 0}</li>
  * </ul>
  */
-public class LDRListenerTest {
+public class AdcListenerTest {
 	public static void main(String[] args) {
 		if (args.length < 1) {
-			Logger.error("Usage: {} <adc-number>", LDRListenerTest.class.getName());
+			Logger.error("Usage: {} <adc-number>", AdcListenerTest.class.getName());
 			System.exit(2);
 		}
 
 		int adc_number = Integer.parseInt(args[0]);
 		float vref = 1.8f;
-		int r1 = 10_000;
-		test(adc_number, vref, r1);
+		test(adc_number, vref);
 	}
 
-	public static void test(int adcNumber, float vRef, int r1) {
-		try (LDR ldr = new LDR(adcNumber, vRef, r1)) {
-			ldr.addListener((event) -> Logger.info("valueChanged({})", event));
+	public static void test(int adcNumber, float vRef) {
+		try (AnalogInputDevice adc = new AnalogInputDevice(adcNumber, vRef)) {
+			adc.addListener((event) -> Logger.info("valueChanged({})", event));
 			for (int i = 0; i < 10; i++) {
-				Logger.info("Scaled: {}, Unscaled: {}", Float.valueOf(ldr.getScaledValue()),
-						Float.valueOf(ldr.getUnscaledValue()));
+				Logger.info("Scaled: {}, Unscaled: {}", Float.valueOf(adc.getScaledValue()),
+						Float.valueOf(adc.getUnscaledValue()));
 				SleepUtil.sleepSeconds(1);
 			}
 		} catch (RuntimeIOException e) {

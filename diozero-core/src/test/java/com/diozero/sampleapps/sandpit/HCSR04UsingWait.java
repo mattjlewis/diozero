@@ -1,4 +1,4 @@
-package com.diozero.sandpit;
+package com.diozero.sampleapps.sandpit;
 
 /*
  * #%L
@@ -51,7 +51,7 @@ import com.diozero.util.SleepUtil;
 public class HCSR04UsingWait implements DistanceSensorInterface, Closeable {
 	public static void main(String[] args) {
 		if (args.length != 2) {
-			Logger.error("Usage: {} <trigger GPIO> <echo GPIO>", HCSR04UsingEvents.class.getName());
+			Logger.error("Usage: {} <trigger GPIO> <echo GPIO>", HCSR04UsingWait.class.getName());
 			System.exit(1);
 		}
 		int trigger_pin = Integer.parseInt(args[0]);

@@ -230,9 +230,10 @@ This project is hosted on [GitHub](https://github.com/mattjlewis/diozero/), plea
 + Thorough testing (various types of devices using each service provider)
 + A clean object-orientated API for IMUs
 + Native support for all devices via mmap (/dev/mem), in particular to improve performance and add support for GPIO pull up/down configuration.
-+ ADC support
 + Cleanup the logic for handling capabilities of different boards in a generic fashion (no more if / then / else)
 + mmap support for all boards
++ Arduino support (via USB cable)
++ Particle Photon support (via wifi)
 
 ## Change-log
 

@@ -28,6 +28,7 @@ package com.diozero.sampleapps;
 
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
@@ -36,9 +37,10 @@ import java.util.concurrent.Future;
 import org.pmw.tinylog.Logger;
 
 import com.diozero.PwmLed;
+import com.diozero.api.Animation;
+import com.diozero.api.AnimationObject;
 import com.diozero.api.OutputDeviceInterface;
-import com.diozero.api.easing.Linear;
-import com.diozero.sandpit.Animation;
+import com.diozero.api.easing.Quad;
 import com.diozero.util.DioZeroScheduler;
 
 public class AnimationTest {
@@ -52,18 +54,19 @@ public class AnimationTest {
 	
 	public static void test(int pin1, int pin2) {
 		try (PwmLed led1 = new PwmLed(pin1); PwmLed led2 = new PwmLed(pin2)) { 
-			List<OutputDeviceInterface> targets = Arrays.asList(led1, led2);
+			Collection<OutputDeviceInterface> targets = Arrays.asList(led1, led2);
 			
-			Animation anim = new Animation(targets, 100, Linear::ease, 1);
+			Animation anim = new Animation(targets, 100, Quad::easeIn, 1);
 			anim.setLoop(true);
 			
 			// How long the animation is
 			int duration = 5000;
 			// Relative time points (0..1)
-			float[] cue_points = { 0, 0.2f, 0.8f, 1 };
+			float[] cue_points = { 0, 0.6f, 0.8f, 1 };
 			// Value for each target at the corresponding cue points
 			//float[][] key_frames = { { 1, 5, 10 }, { 2, 4, 9 }, { 3, 6, 8 } };
-			float[][] key_frames = { { 0, 1 }, { 0.2f, 0.8f }, { 0.8f, 0.2f }, { 0, 1 } };
+			List<AnimationObject.KeyFrame[]> key_frames = AnimationObject.KeyFrame.from(
+				new float[][] { {0, 1}, {0.2f, 0.8f}, {0.8f, 0.2f}, {1, 0} } );
 			anim.enqueue(duration, cue_points, key_frames);
 			
 			Logger.info("Starting animation...");

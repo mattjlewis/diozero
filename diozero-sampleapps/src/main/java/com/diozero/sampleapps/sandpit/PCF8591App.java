@@ -1,4 +1,4 @@
-package com.diozero.sandpit;
+package com.diozero.sampleapps.sandpit;
 
 /*
  * #%L
@@ -29,6 +29,7 @@ package com.diozero.sandpit;
 
 import org.pmw.tinylog.Logger;
 
+import com.diozero.PCF8591;
 import com.diozero.util.SleepUtil;
 
 /**

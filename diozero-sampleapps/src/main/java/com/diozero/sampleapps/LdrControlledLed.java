@@ -39,13 +39,13 @@ import com.diozero.util.SleepUtil;
  * Control the brightness of an LED by the luminosity detected of an LDR. To run:
  * <ul>
  * <li>sysfs:<br>
- *  {@code java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar com.diozero.sampleapps.LdrControlledLed MCP3304 0 2 12}</li>
+ *  {@code java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar com.diozero.sampleapps.LdrControlledLed MCP3304 0 2 12}</li>
  * <li>Pi4j:<br>
- *  {@code sudo java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-pi4j-$DIOZERO_VERSION.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sampleapps.LdrControlledLed MCP3304 0 2 12}</li>
+ *  {@code sudo java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar:diozero-provider-pi4j-$DIOZERO_VERSION.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sampleapps.LdrControlledLed MCP3304 0 2 12}</li>
  * <li>wiringPi:<br>
- *  {@code sudo java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-wiringpi-$DIOZERO_VERSION.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sampleapps.LdrControlledLed MCP3304 0 2 12}</li>
+ *  {@code sudo java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar:diozero-provider-wiringpi-$DIOZERO_VERSION.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sampleapps.LdrControlledLed MCP3304 0 2 12}</li>
  * <li>pigpgioJ:<br>
- *  {@code sudo java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-pigpio-$DIOZERO_VERSION.jar:pigpioj-java-1.0.1.jar com.diozero.sampleapps.LdrControlledLed MCP3304 0 2 12}</li>
+ *  {@code sudo java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar:diozero-provider-pigpio-$DIOZERO_VERSION.jar:pigpioj-java-1.0.1.jar com.diozero.sampleapps.LdrControlledLed MCP3304 0 2 12}</li>
  * </ul>
  */
 public class LdrControlledLed {
@@ -71,7 +71,7 @@ public class LdrControlledLed {
 	}
 	
 	public static void test(McpAdc.Type type, int chipSelect, int pin, float vRef, int r1, int ledPin) {
-		try (McpAdc adc = new McpAdc(type, chipSelect); LDR ldr = new LDR(adc, pin, vRef, r1); PwmLed led = new PwmLed(ledPin)) {
+		try (McpAdc adc = new McpAdc(type, chipSelect, vRef); LDR ldr = new LDR(adc, pin, r1); PwmLed led = new PwmLed(ledPin)) {
 			// Detect variations of 5%, poll every 20ms
 			ldr.addListener((event) -> led.setValue(1-event.getUnscaledValue()), .05f, 20);
 			

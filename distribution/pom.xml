@@ -52,6 +52,11 @@
 		</dependency>
 		<dependency>
 			<groupId>com.diozero</groupId>
+			<artifactId>diozero-ws281x-java</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.diozero</groupId>
 			<artifactId>diozero-imu-devices</artifactId>
 			<version>${project.version}</version>
 		</dependency>
@@ -67,7 +72,7 @@
 		</dependency>
 		<dependency>
 			<groupId>com.diozero</groupId>
-			<artifactId>diozero-ws281x-java</artifactId>
+			<artifactId>diozero-sampleapps</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 	</dependencies>

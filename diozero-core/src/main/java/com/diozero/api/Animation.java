@@ -1,4 +1,4 @@
-package com.diozero.sandpit;
+package com.diozero.api;
 
 /*
  * #%L
@@ -28,14 +28,13 @@ package com.diozero.sandpit;
 
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import org.pmw.tinylog.Logger;
 
-import com.diozero.api.Action;
-import com.diozero.api.OutputDeviceInterface;
 import com.diozero.api.easing.EasingFunction;
 import com.diozero.api.easing.Linear;
 import com.diozero.util.DioZeroScheduler;
@@ -50,7 +49,7 @@ import com.diozero.util.DioZeroScheduler;
 public class Animation implements Runnable {
 	private static final int DEFAULT_FPS = 60;
 
-	private List<OutputDeviceInterface> targets;
+	private Collection<OutputDeviceInterface> targets;
 	/**
 	 * Array of values from 0.0 to 1.0 representing the beginning and end of the
 	 * animation respectively (default [0, 1]);
@@ -61,7 +60,7 @@ public class Animation implements Runnable {
 	 * A 1 or 2 dimensional array of device positions over time. See more on
 	 * keyFrames below. (required)
 	 */
-	private float[][] keyFrames;
+	private List<AnimationObject.KeyFrame[]> keyFrames;
 	/**
 	 * An easing function from ease-component to apply to the playback head on
 	 * the timeline. See {@link com.diozero.api.easing.Easing Easing} docs for a
@@ -116,7 +115,7 @@ public class Animation implements Runnable {
 	private int runSegment;
 	private int runStep;
 
-	public Animation(List<OutputDeviceInterface> targets, int fps, EasingFunction easing, float speed) {
+	public Animation(Collection<OutputDeviceInterface> targets, int fps, EasingFunction easing, float speed) {
 		this.targets = targets;
 		if (fps <= 0) {
 			fps = DEFAULT_FPS;
@@ -202,6 +201,10 @@ public class Animation implements Runnable {
 		return speed;
 	}
 
+	public void enqueue(AnimationObject animationObject) {
+		enqueue(animationObject.getDuration(), animationObject.getCuePoints(), animationObject.getKeyFrames());
+	}
+	
 	/**
 	 * Add a segment to the animation's queue.
 	 * 
@@ -213,15 +216,15 @@ public class Animation implements Runnable {
 	 * @param keyFrames
 	 *            List of segment values for target
 	 */
-	public void enqueue(int durationMillis, float[] cuePoints, float[][] keyFrames) {
+	public void enqueue(int durationMillis, float[] cuePoints, List<AnimationObject.KeyFrame[]> keyFrames) {
 		// Find our timeline endpoints and refresh rate
 		float scaled_duration = durationMillis / Math.abs(speed);
 
-		if (cuePoints.length == 0 || cuePoints.length != keyFrames.length) {
-			throw new IllegalArgumentException("cuePoints length must equal keyFrames length (" + targets.size() + ")");
+		if (cuePoints.length == 0 || cuePoints.length != keyFrames.size()) {
+			throw new IllegalArgumentException("cuePoints length (" + cuePoints.length + ") must equal keyFrames length (" + keyFrames.size() + ")");
 		}
-		if (keyFrames.length == 0 || keyFrames[0].length != targets.size()) {
-			throw new IllegalArgumentException("keyFrames length (" + keyFrames.length
+		if (keyFrames.size() == 0 || keyFrames.get(0).length != targets.size()) {
+			throw new IllegalArgumentException("keyFrames length (" + keyFrames.get(0).length
 					+ ") must equal number of targets (" + targets.size() + ")");
 		}
 		this.cuePoints = cuePoints;
@@ -244,7 +247,7 @@ public class Animation implements Runnable {
 		float[] tgt_values = new float[targets.size()];
 		step_values.add(tgt_values);
 		for (int tgt = 0; tgt < targets.size(); tgt++) {
-			tgt_values[tgt] = keyFrames[0][tgt];
+			tgt_values[tgt] = keyFrames.get(0)[tgt].getValue();
 		}
 
 		for (segment = 1; segment < cuePoints.length; segment++) {
@@ -257,9 +260,12 @@ public class Animation implements Runnable {
 				tgt_values = new float[targets.size()];
 				step_values.add(tgt_values);
 				for (int tgt = 0; tgt < targets.size(); tgt++) {
-					float begin = keyFrames[segment - 1][tgt];
-					float change = keyFrames[segment][tgt] - keyFrames[segment - 1][tgt];
-					tgt_values[tgt] = easing.ease(time, begin, change, seg_duration);
+					EasingFunction kf_ef = keyFrames.get(segment-1)[tgt].getEasingFunction();
+					EasingFunction easing_func = kf_ef == null ? easing : kf_ef;
+					
+					AnimationObject.KeyFrame begin = keyFrames.get(segment - 1)[tgt];
+					float change = keyFrames.get(segment)[tgt].getValue() - keyFrames.get(segment - 1)[tgt].getValue();
+					tgt_values[tgt] = easing_func.ease(time, begin.getValue(), change, seg_duration);
 				}
 				time += periodMs;
 			}
@@ -268,7 +274,7 @@ public class Animation implements Runnable {
 			tgt_values = new float[targets.size()];
 			step_values.add(tgt_values);
 			for (int tgt = 0; tgt < targets.size(); tgt++) {
-				tgt_values[tgt] = keyFrames[segment][tgt];
+				tgt_values[tgt] = keyFrames.get(segment)[tgt].getValue();
 			}
 
 			if (segment < cuePoints.length - 1) {
@@ -282,8 +288,10 @@ public class Animation implements Runnable {
 	@Override
 	public void run() {
 		float[] tgt_values = segmentValues.get(runSegment).get(runStep);
-		for (int tgt = 0; tgt < targets.size(); tgt++) {
-			targets.get(tgt).setValue(tgt_values[tgt]);
+		int index = 0;
+		for (OutputDeviceInterface target : targets) {
+			// TODO Handle delta / value
+			target.setValue(tgt_values[index++]);
 		}
 		runStep++;
 		if (runStep == segmentValues.get(runSegment).size()) {
