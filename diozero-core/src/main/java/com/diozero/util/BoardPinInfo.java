@@ -31,7 +31,7 @@ import com.diozero.api.DeviceMode;
 import com.diozero.api.PinInfo;
 import com.diozero.api.PwmPinInfo;
 
-public abstract class BoardPinInfo {
+public class BoardPinInfo {
 	private static final String GPIO_KEY_PREFIX = "GPIO";
 	private static final String DEFAULT_GPIO_NAME_PREFIX = GPIO_KEY_PREFIX;
 	private static final String ADC_KEY_PREFIX = "AIN";
@@ -97,7 +97,7 @@ public abstract class BoardPinInfo {
 	}
 	
 	protected PinInfo addAdcPinInfo(int adcNumber, int pin) {
-		return addAdcPinInfo(adcNumber, DEFAULT_ADC_NAME_PREFIX + adcNumber, pin);
+		return addAdcPinInfo(PinInfo.DEFAULT_HEADER, adcNumber, DEFAULT_ADC_NAME_PREFIX + adcNumber, pin);
 	}
 	
 	protected PinInfo addAdcPinInfo(int adcNumber, String name, int pin) {

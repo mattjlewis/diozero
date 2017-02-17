@@ -60,8 +60,8 @@ public abstract class McpAdcTest {
 		int iterations = 20;
 		float voltage = 3.3f;
 
-		try (McpAdc adc = new McpAdc(type, spi_chip_select);
-				AnalogInputDevice device = new AnalogInputDevice(adc, pin_number, voltage)) {
+		try (McpAdc adc = new McpAdc(type, spi_chip_select, voltage);
+				AnalogInputDevice device = new AnalogInputDevice(adc, pin_number)) {
 			for (int i=0; i<iterations; i++) {
 				float unscaled_val = adc.getValue(pin_number);
 				Logger.info("Value: {}", String.format("%.2f", Float.valueOf(unscaled_val)));

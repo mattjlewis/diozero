@@ -41,6 +41,8 @@ public class CHIPBoardInfoProvider implements BoardInfoProvider {
 	public static final String MAKE = "CHIP";
 	
 	public static final CHIPBoardInfo CHIP_BOARD_INFO = new CHIPBoardInfo();
+	
+	private static final float ADC_VREF = 1.750f;
 
 	@Override
 	public BoardInfo lookup(String hardware, String revision) {
@@ -59,7 +61,7 @@ public class CHIPBoardInfoProvider implements BoardInfoProvider {
 		private int xioGpioOffset = 0;
 		
 		public CHIPBoardInfo() {
-			super(MAKE, "CHIP", MEMORY, MAKE.toLowerCase());
+			super(MAKE, "CHIP", MEMORY, MAKE.toLowerCase(), ADC_VREF);
 			
 			// Determine the XIO GPIO base
 			Path gpio_sysfs_dir = FileSystems.getDefault().getPath("/sys/class/gpio");

@@ -28,14 +28,17 @@ package com.diozero.api.easing;
 
 
 public class Quad {
+	public static final String IN = "inQuad";
 	public static float easeIn(float t, float b, float c, float d) {
 		return c * (t /= d) * t + b;
 	}
 
+	public static final String OUT = "outQuad";
 	public static float easeOut(float t, float b, float c, float d) {
 		return -c * (t /= d) * (t - 2) + b;
 	}
 
+	public static final String IN_OUT = "inOutQuad";
 	public static float easeInOut(float t, float b, float c, float d) {
 		if ((t /= d / 2) < 1) {
 			return c / 2 * t * t + b;

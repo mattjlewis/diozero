@@ -27,14 +27,17 @@ package com.diozero.api.easing;
  */
 
 public class Circular {
+	public static final String IN = "inCirc";
 	public static float easeIn(float t, float b, float c, float d) {
 		return -c * ((float) Math.sqrt(1 - (t /= d) * t) - 1) + b;
 	}
 
+	public static final String OUT = "outCirc";
 	public static float easeOut(float t, float b, float c, float d) {
 		return c * (float) Math.sqrt(1 - (t = t / d - 1) * t) + b;
 	}
 
+	public static final String IN_OUT = "inOutCirc";
 	public static float easeInOut(float t, float b, float c, float d) {
 		if ((t /= d / 2) < 1) {
 			return -c / 2 * ((float) Math.sqrt(1 - t * t) - 1) + b;

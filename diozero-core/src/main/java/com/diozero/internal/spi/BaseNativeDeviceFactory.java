@@ -67,6 +67,11 @@ public abstract class BaseNativeDeviceFactory extends AbstractDeviceFactory impl
 	}
 	
 	@Override
+	public float getVRef() {
+		return boardInfo.getAdcVRef();
+	}
+	
+	@Override
 	public final void registerDeviceFactory(DeviceFactoryInterface deviceFactory) {
 		deviceFactories.add(deviceFactory);
 	}

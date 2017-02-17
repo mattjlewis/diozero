@@ -500,8 +500,8 @@ public class I2CDevice implements Closeable, I2CConstants {
 	}
 	
 	public void read(ByteBuffer dst) throws RuntimeException {
-		device.read(dst);
 		dst.order(order);
+		device.read(dst);
 		dst.rewind();
 	}
 	

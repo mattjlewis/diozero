@@ -30,6 +30,7 @@ package com.diozero.api.easing;
 public class Back {
 	private static final float DEFAULT_SPEED = 1.70158f;
 	
+	public static final String IN = "inBack";
 	public static float easeIn(float t, float b, float c, float d) {
 		return easeIn(t, b, c, d, DEFAULT_SPEED);
 	}
@@ -38,6 +39,7 @@ public class Back {
 		return c * (t /= d) * t * ((s + 1) * t - s) + b;
 	}
 
+	public static final String OUT = "outBack";
 	public static float easeOut(float t, float b, float c, float d) {
 		return easeOut(t, b, c, d, DEFAULT_SPEED);
 	}
@@ -46,6 +48,7 @@ public class Back {
 		return c * ((t = t / d - 1) * t * ((s + 1) * t + s) + 1) + b;
 	}
 
+	public static final String IN_OUT = "inOutBack";
 	public static float easeInOut(float t, float b, float c, float d) {
 		return easeInOut(t, b, c, d, DEFAULT_SPEED);
 	}

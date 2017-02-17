@@ -45,11 +45,13 @@ public class SysFsAnalogInputDevice extends AbstractInputDevice<AnalogInputEvent
 	private int adcNumber;
 	private RandomAccessFile voltageScale;
 	private RandomAccessFile voltageRaw;
+	private float vRef;
 	
 	public SysFsAnalogInputDevice(SysFsDeviceFactory deviceFactory, String key, int device, int adcNumber) {
 		super(key, deviceFactory);
 		
 		this.adcNumber = adcNumber;
+		vRef = deviceFactory.getVRef();
 		
 		Path device_path = FileSystems.getDefault().getPath(DEVICE_PATH + device);
 		try {
@@ -73,7 +75,7 @@ public class SysFsAnalogInputDevice extends AbstractInputDevice<AnalogInputEvent
 			voltageRaw.seek(0);
 			float raw = Float.parseFloat(voltageRaw.readLine());
 			
-			return raw * scale;
+			return raw * scale / vRef / 1000f;
 		} catch (IOException | NumberFormatException e) {
 			Logger.error("Error: {}" + e, e);
 			throw new RuntimeIOException("Error reading analog input files: " + e, e);

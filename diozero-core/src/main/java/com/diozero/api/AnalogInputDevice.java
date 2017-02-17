@@ -41,8 +41,8 @@ import com.diozero.util.RuntimeIOException;
  * The AnalogInputDevice base class encapsulates logic for interfacing with
  * analog devices. This class provides access to unscaled (-1..1) and scaled
  * (e.g. voltage, temperature, distance) readings. For scaled readings is
- * important to pass the ADC voltage range in the device constructor - all raw
- * analog readings are normalised (i.e. -1..1).
+ * important that the device factory is configured correctly - all raw analog
+ * readings are normalised (i.e. -1..1).
  * </p>
  * <p>
  * Note: The Raspberry Pi does not natively support analog input devices, see
@@ -77,7 +77,7 @@ public class AnalogInputDevice extends GpioInputDevice<AnalogInputEvent> impleme
 	private int pollInterval = DEFAULT_POLL_INTERVAL;
 	private float percentChange;
 	private boolean stopScheduler;
-	private float range;
+	private float vRef;
 
 	/**
 	 * @param gpio
@@ -88,7 +88,7 @@ public class AnalogInputDevice extends GpioInputDevice<AnalogInputEvent> impleme
 	 *             If an I/O error occurred.
 	 */
 	public AnalogInputDevice(int gpio, float range) throws RuntimeIOException {
-		this(DeviceFactoryHelper.getNativeDeviceFactory(), gpio, range);
+		this(DeviceFactoryHelper.getNativeDeviceFactory(), gpio);
 	}
 
 	/**
@@ -96,16 +96,18 @@ public class AnalogInputDevice extends GpioInputDevice<AnalogInputEvent> impleme
 	 *            The device factory to use to provision this device.
 	 * @param gpio
 	 *            GPIO to which the device is connected.
-	 * @param range
-	 *            To be used for taking scaled readings for this device.
 	 * @throws RuntimeIOException
 	 *             If an I/O error occurred.
 	 */
-	public AnalogInputDevice(AnalogInputDeviceFactoryInterface deviceFactory, int gpio, float range)
+	public AnalogInputDevice(AnalogInputDeviceFactoryInterface deviceFactory, int gpio)
 			throws RuntimeIOException {
 		super(gpio);
 		device = deviceFactory.provisionAnalogInputDevice(gpio);
-		this.range = range;
+		this.vRef = deviceFactory.getVRef();
+	}
+	
+	public float getVRef() {
+		return vRef;
 	}
 
 	@Override
@@ -133,9 +135,10 @@ public class AnalogInputDevice extends GpioInputDevice<AnalogInputEvent> impleme
 		}
 
 		float unscaled = getUnscaledValue();
+		float scaled = getScaledValue();
 		if (changeDetected(unscaled)) {
 			valueChanged(new AnalogInputEvent(gpio, System.currentTimeMillis(), System.nanoTime(), unscaled,
-					unscaled * range));
+					scaled * vRef));
 			lastValue = Float.valueOf(unscaled);
 		}
 	}
@@ -175,7 +178,7 @@ public class AnalogInputDevice extends GpioInputDevice<AnalogInputEvent> impleme
 	 */
 	public float getScaledValue() throws RuntimeIOException {
 		// The raw device must return unscaled values (-1..1)
-		return device.getValue() * range;
+		return device.getValue() * vRef;
 	}
 
 	/**

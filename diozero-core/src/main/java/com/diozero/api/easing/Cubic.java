@@ -28,14 +28,17 @@ package com.diozero.api.easing;
 
 
 public class Cubic {
+	public static final String IN = "inCube";
 	public static float easeIn(float t, float b, float c, float d) {
 		return c * (t /= d) * t * t + b;
 	}
 
+	public static final String OUT = "outCube";
 	public static float easeOut(float t, float b, float c, float d) {
 		return c * ((t = t / d - 1) * t * t + 1) + b;
 	}
 
+	public static final String IN_OUT = "inOutCube";
 	public static float easeInOut(float t, float b, float c, float d) {
 		if ((t /= d / 2) < 1)
 			return c / 2 * t * t * t + b;

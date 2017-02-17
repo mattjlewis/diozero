@@ -64,19 +64,26 @@ public class McpAdc extends AbstractDeviceFactory implements AnalogInputDeviceFa
 	private Type type;
 	private SpiDevice spiDevice;
 	private BoardPinInfo boardPinInfo;
+	private float vRef;
 	
-	public McpAdc(Type type, int chipSelect) throws RuntimeIOException {
-		this(type, SPIConstants.DEFAULT_SPI_CONTROLLER, chipSelect);
+	public McpAdc(Type type, int chipSelect, float vRef) throws RuntimeIOException {
+		this(type, SPIConstants.DEFAULT_SPI_CONTROLLER, chipSelect, vRef);
 	}
 
-	public McpAdc(Type type, int controller, int chipSelect) throws RuntimeIOException {
+	public McpAdc(Type type, int controller, int chipSelect, float vRef) throws RuntimeIOException {
 		super(type.name() + "-" + controller + "-" + chipSelect);
 		
 		this.type = type;
+		this.vRef = vRef;
 		
 		boardPinInfo = new McpAdcBoardPinInfo(type);
 		
 		spiDevice = new SpiDevice(controller, chipSelect, type.getMaxFreq2v7(), SpiClockMode.MODE_0, false);
+	}
+	
+	@Override
+	public float getVRef() {
+		return vRef;
 	}
 	
 	@Override
@@ -165,7 +172,7 @@ public class McpAdc extends AbstractDeviceFactory implements AnalogInputDeviceFa
 	private int extractValue(ByteBuffer in) {
 		// MCP3301 has just one input so doesn't need to send any control data, therefore only receives 2 bytes
 		// Skip the first byte for all other MCP33xx models
-		if (! type.isModel3301()) {
+		if (type != Type.MCP3301) {
 			in.get();
 		}
 		
@@ -284,11 +291,6 @@ public class McpAdc extends AbstractDeviceFactory implements AnalogInputDeviceFa
 		public boolean isModel33() {
 			// FIXME Need a cleaner way of doing this
 			return name().substring(0, 5).equals("MCP33");
-		}
-		
-		public boolean isModel3301() {
-			// FIXME Need a cleaner way of doing this
-			return name().equals("MCP3301");
 		}
 	}
 	

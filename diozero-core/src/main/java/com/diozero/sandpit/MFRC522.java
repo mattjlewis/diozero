@@ -29,15 +29,33 @@ package com.diozero.sandpit;
 
 import java.io.Closeable;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
+
+import org.pmw.tinylog.Logger;
 
 import com.diozero.api.*;
+import com.diozero.util.SleepUtil;
 
 /**
  * Datasheet: http://www.nxp.com/documents/data_sheet/MFRC522.pdf
  * Example Python code: https://github.com/mxgxw/MFRC522-python/blob/master/MFRC522.py
  * Work-in-progress!
+ * <p>Wiring:
+ * <ul>
+ * <li>SDA:  SPI0 CE0 (GPIO8)</li>
+ * <li>SCK:  SPI0 SCLK (GPIO11)</li>
+ * <li>MOSI: SPI0 MOSI (GPIO10)</li>
+ * <li>MISO: SPI0 MISO (GPIO9)</li>
+ * <li>IRQ:  Not connected</li>
+ * <li>GND:  GND</li>
+ * <li>RST:  Any free GPIO (GPIO25)</li>
+ * <li>3v3:  3v3</li>
+ * </ul>
+ * </p>
  */
 public class MFRC522 implements Closeable {
+	@SuppressWarnings("unused")
+	private static final int READY = 1 << 4;
 	
 	// Commands
 	private static final byte PCD_IDLE			= 0b0000;
@@ -140,10 +158,12 @@ public class MFRC522 implements Closeable {
 	// Maximum length of the array
 	private static final int MAX_LEN = 16;
 	
-	private static final int SPI_CLOCK_FREQUENCY = 2_000_000;
+	private static final int SPI_CLOCK_FREQUENCY = 1_000_000;
 	
 	private SpiDevice device;
 	private DigitalOutputDevice resetPin;
+
+	private boolean log;
 	
 	public MFRC522(int chipSelect, int resetGpio) {
 		this(SPIConstants.DEFAULT_SPI_CONTROLLER, chipSelect, resetGpio);
@@ -181,10 +201,18 @@ public class MFRC522 implements Closeable {
 		
 		ByteBuffer rx = device.writeAndRead(tx);
 		
+		if (log) {
+			System.out.format("read(0x%02x): 0x%02x, 0x%02x%n", Integer.valueOf(address), Byte.valueOf(rx.get(0)), Byte.valueOf(rx.get(1)));
+		}
+		
 		return rx.get(1);
 	}
 	
 	private void writeRegister(int address, byte value) {
+		if (log) {
+			System.out.format("write(0x%02x, 0x%02x)%n", Integer.valueOf(address), Byte.valueOf(value));
+		}
+		
 		ByteBuffer tx = ByteBuffer.allocateDirect(2);
 		// Address Format: 0XXXXXX0, the left most "0" indicates a write
 		tx.put((byte) ((address << 1) & 0x7e));
@@ -200,23 +228,29 @@ public class MFRC522 implements Closeable {
 		tx.put(value);
 		tx.flip();
 		
-		return device.writeAndRead(tx).get(1);
+		ByteBuffer rx = device.writeAndRead(tx);
+		
+		return rx.get(1);
 	}
 	
 	private void setBitMask(int address, byte mask) {
-		byte temp = readRegister(address);
+		byte current = readRegister(address);
+		//Logger.debug("Current: 0x" + Integer.toHexString(current&0xff) + ", mask: 0x" + Integer.toHexString(mask&0xff));
 		// Already set?
-		if ((temp & mask) != mask) {
-			writeRegister(address, (byte) (temp | mask));
-		}
+		//if ((current & mask) != mask) {
+			//Logger.debug("Setting bit mask 0x" + Integer.toHexString(mask&0xff));
+			writeRegister(address, (byte) (current | mask));
+		//}
 	}
 	
 	private void clearBitMask(int address, byte mask) {
-		byte temp = readRegister(address);
+		byte current = readRegister(address);
+		//Logger.debug("Current: 0x" + Integer.toHexString(current&0xff) + ", mask: 0x" + Integer.toHexString(mask&0xff));
 		// Already clear?
-		if ((temp & mask) != 0) {
-			writeRegister(address, (byte) (temp & ~mask));
-		}
+		//if ((current & mask) != 0) {
+			//Logger.debug("Clearing bit mask 0x" + Integer.toHexString(mask&0xff));
+			writeRegister(address, (byte) (current & ~mask));
+		//}
 	}
 	
 	/**
@@ -225,7 +259,10 @@ public class MFRC522 implements Closeable {
 	 */
 	public void setAntennaOn(boolean on) {
 		if (on) {
-			setBitMask(TX_CONTROL_REG, (byte) 0x03);
+			byte temp = readRegister(TX_CONTROL_REG);
+			if ((temp & 0x03) == 0) {
+				setBitMask(TX_CONTROL_REG, (byte) 0x03);
+			}
 		} else {
 			clearBitMask(TX_CONTROL_REG, (byte) 0x03);
 		}
@@ -235,8 +272,17 @@ public class MFRC522 implements Closeable {
 	 * Perform soft reset of AddicoreRFID Module
 	 */
 	public void reset() {
+		// Power on
 		resetPin.on();
+		SleepUtil.sleepMillis(100);
+		
+		// Soft reset
+		//Logger.debug("COMMAND_REG=" + readRegister(COMMAND_REG));
 		writeRegister(COMMAND_REG, PCD_SOFT_RESET);
+		for (int i=0; i<5; i++) {
+			//Logger.debug("COMMAND_REG=" + readRegister(COMMAND_REG));
+			SleepUtil.sleepMillis(10);
+		}
 	}
 	
 	/**
@@ -252,14 +298,14 @@ public class MFRC522 implements Closeable {
 	 * @return response?
 	 */
 	public Response request(byte reqMode) {
-		// TxLastBists = BitFramingReg[2..0] ???
+		// TxLastBits = BitFramingReg[2..0] ???
 		writeRegister(BIT_FRAMING_REG, (byte) 0x07);
 		
 		byte[] tag_type = new byte[] {reqMode};
 		Response response = toCard(PCD_TRANSCEIVE, tag_type);
 		
 		byte status = response.getStatus();
-		if ((status != MI_OK) || (response.getBackData().length != 0x10)) {    
+		if ((status != MI_OK) || (response.getBackLen() != 0x10)) {    
 			status = MI_ERR;
 		}
 		
@@ -308,18 +354,22 @@ public class MFRC522 implements Closeable {
 		// i according to the clock frequency adjustment, the operator M1 card maximum waiting time 25ms???
 		int i = 2000;	
 		int n;
-		do {
+		boolean save_log = log;
+		while (true) {
 			n = readRegister(COMM_IRQ_REG);
+			log = false;
+			//Logger.debug("i={}, n=0x{}, wait_irq=0x{}", Integer.valueOf(i), Integer.toHexString(n&0xff), Integer.toHexString(wait_irq&0xff));
 			i--;
-		} while ((i != 0) && ((n & 0x01) == 0) && ((n & wait_irq) == 0));
-		/*while (true) {
-			n = read(COMM_IRQ_REG);
-			i = i - 1;
-			//if ( ~((i != 0) && ~(n & 0x01) && ~(n & waitIRq)) )
-			if (! ((i != 0) && ((n & 0x01) == 0) && ((n & wait_irq) == 0))) {
+			// URGH - What is this trying to achieve?!
+			//if ~((i != 0) and ~(n & 0x01) and ~(n & waitIRq)):
+			if ((i == 0)/* || ((n & 0x01) != 0)*/ || ((n & wait_irq) != 0)) {
 				break;
 			}
-		}*/
+		}
+		log = save_log;
+		if (log) {
+			System.out.format("i=%d, n=0x%02x%n", Integer.valueOf(i), Integer.valueOf(n & 0xff));
+		}
 		
 		// StartSend=0
 		clearBitMask(BIT_FRAMING_REG, (byte) 0x80);
@@ -327,25 +377,44 @@ public class MFRC522 implements Closeable {
 		byte[] back_data = new byte[0];
 		
 		byte status = MI_ERR;
-		int back_bits = 0;
+		int back_len = 0;
 		if (i != 0) {
 			// BufferOvfl Collerr CRCErr ProtecolErr
-			if ((readRegister(ERROR_REG) & 0x1B) == 0x00) {
+			byte error_reg_val = readRegister(ERROR_REG);
+			if (log) {
+				Logger.debug("error_reg_val=0x{}", Integer.toHexString(error_reg_val&0xff));
+			}
+			if ((error_reg_val & 0x1B) == 0x00) {
+				if (log) {
+					Logger.debug("error reg status ok");
+				}
 				status = MI_OK;
 
+				if (log) {
+					Logger.debug("n=0x{}, irq_en=0x{}", Integer.toHexString(n&0xff), Integer.toHexString(irq_en&0xff));
+				}
 				if ((n & irq_en & 0x01) != 0) {
 					status = MI_NOTAGERR;
 				}
 				
 				if (command == PCD_TRANSCEIVE) {
 					n = readRegister(FIFO_LEVEL_REG);
+					if (log) {
+						Logger.debug("FIFO_LEVEL_REG=0x{}", Integer.toHexString(n&0xff));
+					}
 					// Indicates the number of valid bits in the last received byte
 					// If this value is 000b, the whole byte is valid
-					byte rx_last_bits = (byte) (readRegister(CONTROL_REG) & 0b0111);
+					int rx_last_bits = readRegister(CONTROL_REG) & 0b0111;
+					if (log) {
+						Logger.debug("rx_last_bits=" + rx_last_bits);
+					}
 					if (rx_last_bits != 0) {
-						back_bits = (n-1)*8 + rx_last_bits;
+						back_len = (n-1)*8 + rx_last_bits;
 					} else {
-						back_bits = n*8;
+						back_len = n*8;
+					}
+					if (log) {
+						Logger.debug("back_bits=" + back_len);
 					}
 					
 					if (n == 0) {
@@ -356,16 +425,22 @@ public class MFRC522 implements Closeable {
 					}
 					
 					back_data = new byte[n];
-					for (i=0; i<n; i++) {
-						back_data[i] = readRegister(FIFO_DATA_REG);
+					for (int x=0; x<n; x++) {
+						back_data[x] = readRegister(FIFO_DATA_REG);
+						if (log) {
+							Logger.debug("back_data[{}]=0x{}", Integer.valueOf(x), Integer.toHexString(back_data[x]&0xff));
+						}
 					}
 				}
 			} else {
+				if (log) {
+					Logger.debug("error reg status NOT ok");
+				}
 				status = MI_ERR;
 			}
 		}
 
-		return new Response(status, back_data, back_bits);
+		return new Response(status, back_data, back_len);
 	}
 	
 	public Response anticoll() {
@@ -408,31 +483,43 @@ public class MFRC522 implements Closeable {
 			n = readRegister(DIV_IRQ_REG);
 			i--;
 		} while ((i != 0) && (n & 0x04) == 0);	// CRCIrq = 1
+		//if not ((i != 0) and not (n&0x04)):
+		//	break
+		//if (i == 0) || (n&0x04) != 0:
+		//	break
+			
+		byte[] p_out_data = new byte[2];
+		p_out_data[0] = readRegister(CRC_RESULT_REG_L);
+		p_out_data[1] = readRegister(CRC_RESULT_REG_M);
 		
-		byte[] resp = new byte[2];
-		resp[0] = readRegister(CRC_RESULT_REG_L);
-		resp[1] = readRegister(CRC_RESULT_REG_M);
-		
-		return resp;
+		return p_out_data;
 	}
 	
 	public int selectTag(byte[] serNum) {
-		byte[] buffer = new byte[9];
-	    buffer[0] = PICC_SElECTTAG;
-	    buffer[1] = 0x70;
+		byte[] buffer = new byte[7];
+		int pos = 0;
+	    buffer[pos++] = PICC_SElECTTAG;
+	    buffer[pos++] = 0x70;
 	    for (int i=0; i<5; i++) {
-	    	buffer[i+2] = serNum[i];
+	    	buffer[pos++] = serNum[i];
 	    }
 	    
-	    byte[] crc = calculateCrc(buffer);
-	    buffer[7] = crc[0];
-	    buffer[8] = crc[1];
+	    byte[] p_out = calculateCrc(buffer);
+	    byte[] buffer2 = new byte[9];
+	    System.arraycopy(buffer, 0, buffer2, 0, buffer.length);
+	    buffer = buffer2;
+	    buffer[pos++] = p_out[0];
+	    buffer[pos++] = p_out[1];
+	    Logger.info(pos);
 	    Response response = toCard(PCD_TRANSCEIVE, buffer);
 	    
 	    byte size;
-	    if ((response.getStatus() == MI_OK) && (response.getBackBits() == 0x18)) {
+	    Logger.info(response);
+	    if ((response.getStatus() == MI_OK) && (response.getBackLen() == 0x18)) {
 			size = response.getBackData()[0];
+	    	Logger.debug("Size: {}", Byte.valueOf(size));
 		} else {
+			Logger.debug("Setting size to 0, error?");
 			size = 0;
 		}
 
@@ -442,30 +529,55 @@ public class MFRC522 implements Closeable {
 	public byte auth(byte authMode, byte blockAddr, byte[] sectorKey, byte[] serNum) {
 		byte[] buff = new byte[12];
 
+		int pos = 0;
 		// Verify the command block address + sector + password + card serial number
 		// First byte should be the authMode (A or B)
-	    buff[0] = authMode;
+	    buff[pos++] = authMode;
 	    // Second byte is the trailerBlock (usually 7)
-	    buff[1] = blockAddr;
+	    buff[pos++] = blockAddr;
 	    // Now we need to append the authKey which usually is 6 bytes of 0xFF
 	    int i;
 	    for (i=0; i<sectorKey.length; i++) {
-			buff[i+2] = sectorKey[i];
+			buff[pos++] = sectorKey[i];
 		}
 	    // Next we append the first 4 bytes of the UID
 	    for (i=0; i<4; i++) {    
-			buff[i+2+sectorKey.length] = serNum[i];
+			buff[pos++] = serNum[i];
 		}
+	    Logger.info("pos=" + pos);
 	    Response response = toCard(PCD_MF_AUTHENT, buff);
 
 	    byte status = response.getStatus();
-	    if ((status != MI_OK) || ((readRegister(STATUS2_REG) & 0x08) == 0)) {
-			status = MI_ERR;
-		}
+	    if (status != MI_OK) {
+	    	Logger.error("AUTH ERROR!!");
+	    }
+	    
+	    byte status2_reg = readRegister(STATUS2_REG);
+	    //if not (self.Read_MFRC522(self.Status2Reg) & 0x08) != 0:
+	    if ((status2_reg & 0x08) == 0) {
+	    	Logger.error("AUTH ERROR(status2reg & 0x08) != 0, status2_reg=0x{}", Integer.toString(status2_reg));
+	    }
 	    
 	    return status;
 	}
+	
+	public void stopCrypto1() {
+		clearBitMask(STATUS2_REG, (byte) 0x08);
+	}
 
+	public void read(byte blockAddr) {
+		byte[] recv_data = { PICC_READ, blockAddr };
+		byte[] p_out = calculateCrc(recv_data);
+		recv_data = new byte[] { recv_data[0], recv_data[1], p_out[0], p_out[1] };
+		
+		Response response = toCard(PCD_TRANSCEIVE, recv_data);
+		if (response.getStatus() != MI_OK) {
+			Logger.error("Error in read");
+		}
+		if (response.getBackData().length == 16) {
+			Logger.info("Sector 0x{}: {}", Integer.toHexString(blockAddr), Arrays.toString(response.getBackData()));
+		}
+	}
 
 	@Override
 	public void close() {
@@ -473,33 +585,43 @@ public class MFRC522 implements Closeable {
 			device.close();
 		}
 	}
-}
-
-class Response {
-	private byte status;
-	private byte[] backData;
-	private int backBits;
 	
-	public Response(byte status, byte[] backData) {
-		this.status = status;
-		this.backData = backData;
+	public void setLog(boolean log) {
+		this.log = log;
 	}
 	
-	public Response(byte status, byte[] backData, int backBits) {
-		this.status = status;
-		this.backData = backData;
-		this.backBits = backBits;
-	}
+	public static class Response {
+		private byte status;
+		private byte[] backData;
+		private int backLen;
+		
+		public Response(byte status, byte[] backData) {
+			this.status = status;
+			this.backData = backData;
+		}
+		
+		public Response(byte status, byte[] backData, int backLen) {
+			this.status = status;
+			this.backData = backData;
+			this.backLen = backLen;
+		}
 
-	public byte getStatus() {
-		return status;
-	}
+		public byte getStatus() {
+			return status;
+		}
 
-	public byte[] getBackData() {
-		return backData;
-	}
-	
-	public int getBackBits() {
-		return backBits;
+		public byte[] getBackData() {
+			return backData;
+		}
+		
+		public int getBackLen() {
+			return backLen;
+		}
+		
+		@Override
+		public String toString() {
+			return "Response [status=" + status + ", backData=" + Arrays.toString(backData) + ", backLen=" + backLen
+					+ "]";
+		}
 	}
 }

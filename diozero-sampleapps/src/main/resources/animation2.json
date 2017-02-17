@@ -1,0 +1,8 @@
+{
+	"duration": 2000,
+	"cuePoints": [0, 0.5, 1.0],
+	"keyFrames": [
+		[ {"value": 0}, {"value": 1} ],
+		[ {"value": 0.2}, {"value": 0.8} ],
+		[ {"value": 1}, {"value": 0} ] ]
+}

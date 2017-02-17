@@ -33,90 +33,113 @@ import com.diozero.internal.spi.AnalogInputDeviceFactoryInterface;
 import com.diozero.util.RuntimeIOException;
 
 /**
- * <p>Generic <a href="https://en.wikipedia.org/wiki/Photoresistor">Photoresistor / Light-Dependent-Resistor (LDR)</a>.<br>
- * Wiring:</p>
+ * <p>
+ * Generic <a href="https://en.wikipedia.org/wiki/Photoresistor">Photoresistor /
+ * Light-Dependent-Resistor (LDR)</a>.<br>
+ * Wiring:
+ * </p>
+ * 
  * <pre>
  * vRef     vLDR       GND
  *   |        |         |
  *   +---R1---+---LDR---+
  * </pre>
- * <p>When there is a lot of light the LDR has low resistance (vLdr ~ 0V).
- * When it is dark the resistance increases (vRef ~ vRef).</p>
- * <p>{@code vLDR = vRef * (rLDR / (rLDR + R1))}</p>
- * <p>Given R1 = 10,000ohm and vRef = 5v:<br>
- * When dark, if rLDR == 100,000ohm: {@code vLDR = 5 * (100,000 / (100,000 + 10,000)) = 4.54V}<br>
- * When light, if rLDR == 100ohm: {code vLDR = 5 * (100 / (100 + 10,000)) = 0.0495V}</p>
+ * <p>
+ * When there is a lot of light the LDR has low resistance (vLdr ~ 0V). When it
+ * is dark the resistance increases (vLdr ~ vRef).
+ * </p>
+ * <p>
+ * {@code vLDR = vRef * (rLDR / (rLDR + R1))}
+ * </p>
+ * <p>
+ * Given R1 = 10,000ohm and vRef = 5v:<br>
+ * When dark, if rLDR == 100,000 Ohm:
+ * {@code vLDR = 5 * (100,000 / (100,000 + 10,000)) = 4.54V}<br>
+ * When light, if rLDR == 100 Ohm:
+ * {@code vLDR = 5 * (100 / (100 + 10,000)) = 0.0495V}
+ * </p>
  * 
- * <p>{@code rLDR = R1 / (vRef / vLDR - 1)}</p>
- * <p>Given R1 = 10,000ohm and vRef = 5v:<br>
+ * <p>
+ * {@code rLDR = R1 / (vRef / vLDR - 1)}
+ * </p>
+ * <p>
+ * Given R1 = 10,000ohm and vRef = 5v:<br>
  * When dark, if vLDR=4V: {@code rLDR = 10,000 / (5 / 4 - 1) = 40,000 Ohm}<br>
- * When light, if vLDR=1V: {@code rLDR = 10,000 / (5 / 1 - 1) = 2,500 Ohm}<br></p>
+ * When light, if vLDR=1V: {@code rLDR = 10,000 / (5 / 1 - 1) = 2,500 Ohm}<br>
+ * </p>
  */
 public class LDR extends AnalogInputDevice {
-	private float vRef;
 	private float r1;
-	
+
 	/**
-	 * @param gpio GPIO to which the LDR is connected.
-	 * @param vRef Reference voltage.
-	 * @param r1 Resistor between the LDR and ground.
-	 * @throws RuntimeIOException If an I/O error occurred.
+	 * @param gpio
+	 *            GPIO to which the LDR is connected.
+	 * @param r1
+	 *            Resistor between the LDR and ground.
+	 * @throws RuntimeIOException
+	 *             If an I/O error occurred.
 	 */
-	public LDR(int gpio, float vRef, float r1) throws RuntimeIOException {
-		this(DeviceFactoryHelper.getNativeDeviceFactory(), gpio, vRef, r1);
+	public LDR(int gpio, float r1) throws RuntimeIOException {
+		this(DeviceFactoryHelper.getNativeDeviceFactory(), gpio, r1);
 	}
-	
+
 	/**
-	 * @param deviceFactory Device factory to use to construct the device.
-	 * @param gpio GPIO to which the LDR is connected.
-	 * @param vRef Reference voltage.
-	 * @param r1 Resistor between the LDR and ground.
-	 * @throws RuntimeIOException If an I/O error occurred.
+	 * @param deviceFactory
+	 *            Device factory to use to construct the device.
+	 * @param gpio
+	 *            GPIO to which the LDR is connected.
+	 * @param r1
+	 *            Resistor between the LDR and ground.
+	 * @throws RuntimeIOException
+	 *             If an I/O error occurred.
 	 */
-	public LDR(AnalogInputDeviceFactoryInterface deviceFactory, int gpio,
-			float vRef, float r1) throws RuntimeIOException {
-		super(deviceFactory, gpio, vRef);
-		
-		this.vRef = vRef;
+	public LDR(AnalogInputDeviceFactoryInterface deviceFactory, int gpio, float r1) throws RuntimeIOException {
+		super(deviceFactory, gpio);
+
 		this.r1 = r1;
 	}
-	
+
 	/**
 	 * Read the resistance across the LDR.
+	 * 
 	 * @return Resistance (Ohms)
-	 * @throws RuntimeIOException If an I/O error occurred.
+	 * @throws RuntimeIOException
+	 *             If an I/O error occurred.
 	 */
 	public float getLdrResistance() throws RuntimeIOException {
 		// Get the scaled value (voltage)
 		float v_ldr = getScaledValue();
-		
-		return r1 / (vRef / v_ldr - 1);
+
+		return r1 / (getVRef() / v_ldr - 1);
 	}
-	
+
 	/**
-	 * Read the LDR luminosity. <strong>Not yet implemented</strong> (not sure if this can be reliably implemented).
+	 * Read the LDR luminosity. <strong>Not yet implemented</strong> (not sure
+	 * if this can be reliably implemented).
+	 * 
 	 * @return Luminosity (lux).
-	 * @throws RuntimeIOException If an I/O error occurred.
+	 * @throws RuntimeIOException
+	 *             If an I/O error occurred.
 	 */
 	private float getLuminosity() throws RuntimeIOException {
 		// Get the scaled value (voltage)
 		float v_ldr = getScaledValue();
 		float r_ldr = getLdrResistance();
-	
+
 		// FIXME Can this be reliably calculated?
-		
+
 		// http://emant.com/316002.page
 		// rLDR = 500 / Lux
 		// Lux = (vRef*500/V(LDR) - 500) / R
-		//double lux = (vRef * 500 / v_ldr - 500) / r;
-		//Logger.debug("Lux={}", lux);
+		// double lux = (vRef * 500 / v_ldr - 500) / r;
+		// Logger.debug("Lux={}", lux);
 		// Or
-		//double lux = 500 * (vRef - v_ldr) / (r + v_ldr);
+		// double lux = 500 * (vRef - v_ldr) / (r + v_ldr);
 		// Or...
 		// I[lux] = 10000 / (R[kohms]*10)^(4/3)
-		
+
 		// https://learn.adafruit.com/photocells/measuring-light
-		
+
 		return r_ldr;
 	}
 }

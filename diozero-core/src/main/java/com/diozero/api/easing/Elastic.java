@@ -27,6 +27,7 @@ package com.diozero.api.easing;
  */
 
 public class Elastic {
+	public static final String IN = "inElastic";
 	public static float easeIn(float t, float b, float c, float d) {
 		if (t == 0) {
 			return b;
@@ -57,6 +58,7 @@ public class Elastic {
 		return -(a * (float) Math.pow(2, 10 * (t -= 1)) * (float) Math.sin((t * d - s) * (2 * Math.PI) / p)) + b;
 	}
 
+	public static final String OUT = "outElastic";
 	public static float easeOut(float t, float b, float c, float d) {
 		if (t == 0) {
 			return b;
@@ -87,6 +89,7 @@ public class Elastic {
 		return (a * (float) Math.pow(2, -10 * t) * (float) Math.sin((t * d - s) * (2 * (float) Math.PI) / p) + c + b);
 	}
 
+	public static final String IN_OUT = "inOutElastic";
 	public static float easeInOut(float t, float b, float c, float d) {
 		if (t == 0) {
 			return b;

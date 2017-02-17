@@ -84,6 +84,7 @@ implements GpioDeviceFactoryInterface, PwmOutputDeviceFactoryInterface,
 	private static final int RESET_REG = 0x14;
 	
 	private static final String DEVICE_NAME = "PiconZero";
+	private static final float VREF = 5;
 
 	public static final int ALL_PIXELS = 100;
 	public static final int MAX_OUTPUT_VALUE = 100;
@@ -114,6 +115,11 @@ implements GpioDeviceFactoryInterface, PwmOutputDeviceFactoryInterface,
 				I2CConstants.DEFAULT_CLOCK_FREQUENCY, ByteOrder.LITTLE_ENDIAN);
 		
 		reset();
+	}
+	
+	@Override
+	public float getVRef() {
+		return VREF;
 	}
 	
 	private static void validateMotor(int motor) {
@@ -276,7 +282,6 @@ implements GpioDeviceFactoryInterface, PwmOutputDeviceFactoryInterface,
 	 * </pre>
 	 */
 	public void setValue(int channel, float value) {
-		// FIXME Doesn't work for servo output, needs to be 0..90..180
 		int pz_value;
 		if (outputConfigs[channel] == OutputConfig.SERVO) {
 			pz_value = Math.round(SERVO_CENTRE * value) + SERVO_CENTRE;

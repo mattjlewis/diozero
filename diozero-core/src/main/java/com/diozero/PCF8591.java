@@ -1,4 +1,4 @@
-package com.diozero.sandpit;
+package com.diozero;
 
 /*
  * #%L
@@ -37,18 +37,44 @@ import com.diozero.util.BoardPinInfo;
 import com.diozero.util.RuntimeIOException;
 
 /**
+ * <p>
  * Analog to Digital Converter. 4 analog in / 1 analog out.
- * Datasheet: <a href="http://www.nxp.com/documents/data_sheet/PCF8591.pdf">http://www.nxp.com/documents/data_sheet/PCF8591.pdf</a>.
- * <p>Note the <a href="http://www.raspoid.com/source/src__main__com__raspoid__additionalcomponents__adc__PCF8591.java">raspoid</a> driver
- * states there is a <em>known bug when reading digital values from PCF8591 if analog output disabled ! (independent of this framework)</em>.</p>
+ * </p>
+ * <p>
+ * Datasheet: <a href=
+ * "http://www.nxp.com/documents/data_sheet/PCF8591.pdf">http://www.nxp.com/documents/data_sheet/PCF8591.pdf</a>.
+ * </p>
+ * <p>
+ * Note the <a href=
+ * "http://www.raspoid.com/source/src__main__com__raspoid__additionalcomponents__adc__PCF8591.java">raspoid</a>
+ * driver states there is a <em>known bug when reading digital values from
+ * PCF8591 if analog output is disabled</em>.
+ * </p>
+ * <p><a href="https://brainfyre.wordpress.com/2012/10/25/pcf8591-yl-40-ad-da-module-review/">Instructions<a/>:</p>
+ * <p>The jumpers control whether analog input channels of the IC are connected to the analog sources:
+ * <ul>
+ * <li>Jumper P4 for AIN1: The temperature sensed by the R6 thermister is provided to the ADC.</li>
+ * <li>Jumper P5 to AIN0: The R7 photocell voltage (resistance drop) is provided to the DAC.</li>
+ * <li>Jumper P6 to AIN3: The single turn 10K ohm trimpot voltage (resistance drop – brighter light, lower resistance).</li>
+ * </ul>
+ * <p>From my experiments, the inputs / jumpers are configured as follows:
+ * <ul>
+ * <li>AIN0: trimpot (P6)</li>
+ * <li>AIN1: LDR (P5)</li>
+ * <li>AIN2: ?temp? (P4)</li>
+ * <li>AIN3: AIN3</li>
+ * </ul>
+ * </p>
+ * Removing a jumper allows an input channel to be fed from one of the external pins, labelled accordingly.</p>
  */
 @SuppressWarnings("unused")
 public class PCF8591 extends AbstractDeviceFactory implements AnalogInputDeviceFactoryInterface,
 AnalogOutputDeviceFactoryInterface, Closeable {
+	private static final String DEVICE_NAME = "PCF8591";
 	private static final int RESOLUTION = 8;
 	private static final float RANGE = (float) Math.pow(2, RESOLUTION);
+	private static final float DEFAULT_VREF = 3.3f;
 	private static final int DEFAULT_ADDRESS = 0x48;
-	private static final String DEVICE_NAME = "PCF8591";
 	// Flags for the control byte
 	// [0:1] A/D Channel Number
 	//   [2] Auto increment flag (active if 1)
@@ -62,26 +88,35 @@ AnalogOutputDeviceFactoryInterface, Closeable {
 	private static final byte ANALOG_OUTPUT_ENABLE_MASK = 0b0100_0000; // 0x40
 	
 	private I2CDevice device;
-	private String keyPrefix;
 	private boolean outputEnabled = false;
 	private InputMode inputMode;
 	private BoardPinInfo boardPinInfo;
+	private float vRef;
 	
 	public PCF8591() {
-		this(I2CConstants.BUS_1, DEFAULT_ADDRESS, InputMode.FOUR_SINGLE_ENDED_INPUTS, true);
+		this(I2CConstants.BUS_1, DEFAULT_ADDRESS, InputMode.FOUR_SINGLE_ENDED_INPUTS, true, DEFAULT_VREF);
+	}
+	
+	public PCF8591(int controller) {
+		this(controller, DEFAULT_ADDRESS, InputMode.FOUR_SINGLE_ENDED_INPUTS, true, DEFAULT_VREF);
 	}
 
-	public PCF8591(int controller, int address, InputMode inputMode, boolean outputEnabled) {
+	public PCF8591(int controller, int address, InputMode inputMode, boolean outputEnabled, float vRef) {
 		super(DEVICE_NAME + "-" + controller + "-" + address);
 		
 		this.inputMode = inputMode;
 		this.outputEnabled = outputEnabled;
+		this.vRef = vRef;
 		
 		device = new I2CDevice(controller, address, I2CConstants.ADDR_SIZE_7,
 				I2CConstants.DEFAULT_CLOCK_FREQUENCY, ByteOrder.LITTLE_ENDIAN);
-		keyPrefix = getName() + "-";
 		
 		boardPinInfo = new PCF8591BoardPinInfo(inputMode);
+	}
+	
+	@Override
+	public float getVRef() {
+		return vRef;
 	}
 	
 	@Override
@@ -150,12 +185,10 @@ AnalogOutputDeviceFactoryInterface, Closeable {
 		// Note if the auto-increment flag is set you need to read 5 bytes (if all channels are in single input mode),
 		// 1 for the previous value + 1 for each channel.
 		
-		Logger.info(String.format("control_byte=0x%02x", Byte.valueOf(control_byte)));
-		
 		device.writeByte(control_byte);
+
 		byte[] data = device.read(2);
 		// Note data[0] is the previous value held in the DAC register, data[1] is value of data byte 1
-		Logger.info(String.format("data[1]=0x%02x, data[0]=0x%02x", Byte.valueOf(data[1]), Byte.valueOf(data[0])));
 		
 		return data[1] & 0xff;
 	}
@@ -268,27 +301,27 @@ AnalogOutputDeviceFactoryInterface, Closeable {
 		public PCF8591BoardPinInfo(InputMode inputMode) {
 			this.inputMode = inputMode;
 
-			addDacPinInfo(4, "AOUT", 1);
+			addDacPinInfo(0, "AOUT", 15);
 			switch (inputMode) {
 			case FOUR_SINGLE_ENDED_INPUTS:
-				addAdcPinInfo(0, 2);
-				addAdcPinInfo(1, 3);
-				addAdcPinInfo(2, 4);
-				addAdcPinInfo(3, 5);
+				addAdcPinInfo(0, 1);
+				addAdcPinInfo(1, 2);
+				addAdcPinInfo(2, 3);
+				addAdcPinInfo(3, 4);
 				break;
 			case THREE_DIFFERENTIAL_INPUTS:
-				addAdcPinInfo(0, "AIN0-AIN3", 2);
-				addAdcPinInfo(1, "AIN1-AIN3", 3);
-				addAdcPinInfo(2, "AIN2-AIN3", 4);
+				addAdcPinInfo(0, "AIN0-AIN3", 1);
+				addAdcPinInfo(1, "AIN1-AIN3", 2);
+				addAdcPinInfo(2, "AIN2-AIN3", 3);
 				break;
 			case SINGLE_ENDED_AND_DIFFERENTIAL_MIXED:
-				addAdcPinInfo(0, "AIN0", 2);
-				addAdcPinInfo(1, "AIN1", 3);
-				addAdcPinInfo(2, "AIN2-AIN3", 4);
+				addAdcPinInfo(0, "AIN0", 1);
+				addAdcPinInfo(1, "AIN1", 2);
+				addAdcPinInfo(2, "AIN2-AIN3", 3);
 				break;
 			case TWO_DIFFERENTIAL_INPUTS:
-				addAdcPinInfo(0, "AIN0-AIN1", 2);
-				addAdcPinInfo(1, "AIN2-AIN3", 4);
+				addAdcPinInfo(0, "AIN0-AIN1", 1);
+				addAdcPinInfo(1, "AIN2-AIN3", 3);
 				break;
 			}
 		}

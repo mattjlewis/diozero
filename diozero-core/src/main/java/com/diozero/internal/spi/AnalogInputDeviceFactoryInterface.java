@@ -53,4 +53,5 @@ public interface AnalogInputDeviceFactoryInterface extends DeviceFactoryInterfac
 	}
 
 	AnalogInputDeviceInterface createAnalogInputDevice(String key, PinInfo pinInfo);
+	float getVRef();
 }

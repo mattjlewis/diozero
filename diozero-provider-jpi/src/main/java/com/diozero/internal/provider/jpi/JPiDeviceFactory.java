@@ -127,7 +127,6 @@ public class JPiDeviceFactory extends BaseNativeDeviceFactory {
 	@Override
 	protected I2CDeviceInterface createI2CDevice(String key, int controller, int address, int addressSize,
 			int clockFrequency) throws RuntimeIOException {
-		// FIXME Remove this duplicate class!
 		return new SysFsI2cDevice(this, key, controller, address, addressSize, clockFrequency);
 	}
 }

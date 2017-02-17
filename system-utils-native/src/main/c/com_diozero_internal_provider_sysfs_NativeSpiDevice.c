@@ -118,11 +118,11 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeSpiDevice_
 /*
  * Class:     com_diozero_internal_provider_sysfs_NativeSpiDevice
  * Method:    spiTransfer
- * Signature: (I[B[BIIIB)I
+ * Signature: (I[B[BIIIBZ)I
  */
 JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeSpiDevice_spiTransfer(
 		JNIEnv* env, jclass clazz, jint fileDescriptor, jbyteArray txBuffer,
-		jbyteArray rxBuffer, jint length, jint speedHz, jint delayUSecs, jbyte bitsPerWord) {
+		jbyteArray rxBuffer, jint length, jint speedHz, jint delayUSecs, jbyte bitsPerWord, jboolean csChange) {
 	jboolean is_copy;
 	jbyte* tx_buf = NULL;
 	if (txBuffer != NULL) {
@@ -134,14 +134,15 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeSpiDevice_
 	}
 
 	struct spi_ioc_transfer tr = {
-		tr.tx_buf = (long_t) tx_buf
-		, tr.rx_buf = (long_t) rx_buf
+		.tx_buf = (long_t) tx_buf
+		, .rx_buf = (long_t) rx_buf
 
-		, tr.len = (uint32_t) length
-		, tr.speed_hz = (uint32_t) speedHz
+		, .len = (uint32_t) length
+		, .speed_hz = (uint32_t) speedHz
 
-		, tr.delay_usecs = (uint16_t) delayUSecs
-		, tr.bits_per_word = (uint8_t) bitsPerWord
+		, .delay_usecs = (uint16_t) delayUSecs
+		, .bits_per_word = (uint8_t) bitsPerWord
+		, .cs_change = csChange == JNI_TRUE ? 1 : 0
 		/*
 		, tr.tx_nbits = (uint8_t) 0
 		, tr.rx_nbits = (uint8_t) 0

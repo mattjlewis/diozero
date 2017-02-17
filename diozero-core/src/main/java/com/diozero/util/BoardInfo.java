@@ -26,17 +26,29 @@ package com.diozero.util;
  * #L%
  */
 
-public abstract class BoardInfo extends BoardPinInfo {
+public class BoardInfo extends BoardPinInfo {
+	private static final float DEFAULT_ADC_VREF = 1.8f;
+	
 	private String make;
 	private String model;
 	private int memory;
 	private String libraryPath;
+	private float adcVRef;
 	
 	public BoardInfo(String make, String model, int memory, String libraryPath) {
+		this(make, model, memory, libraryPath, DEFAULT_ADC_VREF);
+	}
+	
+	public BoardInfo(String make, String model, int memory, String libraryPath, float adcVRef) {
 		this.make = make;
 		this.model = model;
 		this.memory = memory;
 		this.libraryPath = libraryPath;
+		this.adcVRef = adcVRef;
+	}
+	
+	public float getAdcVRef() {
+		return adcVRef;
 	}
 
 	public String getMake() {

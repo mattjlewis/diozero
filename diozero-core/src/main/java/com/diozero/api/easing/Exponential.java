@@ -27,14 +27,17 @@ package com.diozero.api.easing;
  */
 
 public class Exponential {
+	public static final String IN = "inExpo";
 	public static float easeIn(float t, float b, float c, float d) {
 		return (t == 0) ? b : c * (float) Math.pow(2, 10 * (t / d - 1)) + b;
 	}
 
+	public static final String OUT = "outExpo";
 	public static float easeOut(float t, float b, float c, float d) {
 		return (t == d) ? b + c : c * (-(float) Math.pow(2, -10 * t / d) + 1) + b;
 	}
 
+	public static final String IN_OUT = "inOutExpo";
 	public static float easeInOut(float t, float b, float c, float d) {
 		if (t == 0) {
 			return b;

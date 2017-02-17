@@ -41,6 +41,92 @@ public class BitSetTest {
 	
 	@Test
 	public void test() {
+		int i = 1998;
+		byte wait_irq = 0x30;
+		
+		byte n = 0x44;
+		//if ~((i != 0) and ~(n & 0x01) and ~(n & waitIRq)):
+		if ((i == 0)/* || ((n & 0x01) != 0)*/ || ((n & wait_irq) != 0)) {
+			System.out.println("Match");
+		} else {
+			System.out.println("No match");
+		}
+
+		n = 0x45;
+		if ((i == 0)/* || ((n & 0x01) != 0)*/ || ((n & wait_irq) != 0)) {
+			System.out.println("Match");
+		} else {
+			System.out.println("No match");
+		}
+
+		n = 0x64;
+		if ((i == 0)/* || ((n & 0x01) != 0)*/ || ((n & wait_irq) != 0)) {
+			System.out.println("Match");
+		} else {
+			System.out.println("No match");
+		}
+
+		n = 0x00;
+		if ((i == 0)/* || ((n & 0x01) != 0)*/ || ((n & wait_irq) != 0)) {
+			System.out.println("Match");
+		} else {
+			System.out.println("No match");
+		}
+
+		n = 0x01;
+		if ((i == 0)/* || ((n & 0x01) != 0)*/ || ((n & wait_irq) != 0)) {
+			System.out.println("Match");
+		} else {
+			System.out.println("No match");
+		}
+
+		n = (byte) 0xff;
+		if ((i == 0)/* || ((n & 0x01) != 0)*/ || ((n & wait_irq) != 0)) {
+			System.out.println("Match");
+		} else {
+			System.out.println("No match");
+		}
+		
+		int address = 0xf7;
+		int value = 0x45;
+		System.out.format("write(0x%02x, 0x%02x)%n", Integer.valueOf(address&0xff), Integer.valueOf(value&0xff));
+
+		i = 0;
+		n = 0;
+		boolean match = (i == 0) || ((n&0x04) != 0);
+		System.out.println(match);
+		match = ! ((i != 0) && ((n&0x04) == 0));
+		System.out.println(match);
+		boolean not_match = ((i != 0) && (n & 0x04) == 0);
+		System.out.println(not_match);
+		
+		i = 1;
+		n = 0;
+		match = (i == 0) || ((n&0x04) != 0);
+		System.out.println(match);
+		match = ! ((i != 0) && ((n&0x04) == 0));
+		System.out.println(match);
+		not_match = ((i != 0) && (n & 0x04) == 0);
+		System.out.println(not_match);
+		
+		i = 0;
+		n = 0x04;
+		match = (i == 0) || ((n&0x04) != 0);
+		System.out.println(match);
+		match = ! ((i != 0) && ((n&0x04) == 0));
+		System.out.println(match);
+		not_match = ((i != 0) && (n & 0x04) == 0);
+		System.out.println(not_match);
+		
+		i = 1;
+		n = 0x04;
+		match = (i == 0) || ((n&0x04) != 0);
+		System.out.println(match);
+		match = ! ((i != 0) && ((n&0x04) == 0));
+		System.out.println(match);
+		not_match = ((i != 0) && (n & 0x04) == 0);
+		System.out.println(not_match);
+		
 		System.out.format("0x%02x%n", Integer.valueOf(1<<7));
 		System.out.format("0x%08x%n", Integer.valueOf(1<<16));
 		System.out.format("0x%02x%n", Integer.valueOf(0x0f<<4));

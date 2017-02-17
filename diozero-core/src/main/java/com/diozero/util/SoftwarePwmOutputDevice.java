@@ -65,9 +65,11 @@ public class SoftwarePwmOutputDevice extends AbstractDevice implements PwmOutput
 
 	@Override
 	public void run() {
-		digitalOutputDevice.setValue(true);
-		SleepUtil.sleepNanos(0, dutyNs);
-		digitalOutputDevice.setValue(false);
+		if (dutyNs > 0) {
+			digitalOutputDevice.setValue(true);
+			SleepUtil.sleepNanos(0, dutyNs);
+			digitalOutputDevice.setValue(false);
+		}
 	}
 
 	@Override
@@ -88,13 +90,12 @@ public class SoftwarePwmOutputDevice extends AbstractDevice implements PwmOutput
 	
 	@Override
 	public void setValue(float value) {
-		if (value < 0) {
-			value = 0;
-		}
-		if (value > 1) {
-			value = 1;
-		}
+		// Constrain to 0..1
+		value = Math.min(Math.max(value, 0), 1);
 		dutyNs = (int) (value * TimeUnit.MILLISECONDS.toNanos(periodMs));
+		if (dutyNs == 0) {
+			digitalOutputDevice.setValue(false);
+		}
 	}
 
 	@Override
