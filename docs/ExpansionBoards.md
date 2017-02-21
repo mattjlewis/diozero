@@ -15,7 +15,7 @@ Usage example: An LDR controlled LED (using a 10k&#8486; resistor for the LDR an
 
 ![MCP3008 LDR Controlled LED](images/MCP3008_LDR_LED.png "MCP3008 LDR Controlled LED")
 
-Code for the above circuit is implemented in [LdrControlledLed](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/sampleapps/LdrControlledLed.java), the important bit:
+Code for the above circuit is implemented in [LdrControlledLed](https://github.com/mattjlewis/diozero/blob/master/diozero-sampleapps/src/main/java/com/diozero/sampleapps/LdrControlledLed.java), the important bit:
 
 ```java
 try (McpAdc adc = new McpAdc(type, chipSelect); LDR ldr = new LDR(adc, pin, vRef, r1); PwmLed led = new PwmLed(ledPin)) {
@@ -41,13 +41,13 @@ try (McpAdc adc = new McpAdc(type, chipSelect); LDR ldr = new LDR(adc, pin, vRef
     * **adcPin** (*int*) - The pin on the MCP ADC to take a reading from.
     
 
-## Microchip MCP23017 GPIO Expansion Board {: #mcp-gpio-expansion-board }
+## Microchip MCP23xxx GPIO Expansion Board {: #mcp-gpio-expansion-board }
 
 An example circuit for controlling an LED with a button, all connected via an MCP23017:
 
 ![MCP23017 Button controlled LED](images/MCP23017_LED_Button.png "MCP23017 Button controlled LED")
 
-Code for the above circuit is implemented in [MCP23017Test](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/sampleapps/MCP23017Test.java), the important bit:
+Code for the above circuit is implemented in [MCP23017Test](https://github.com/mattjlewis/diozero/blob/master/diozero-sampleapps/src/main/java/com/diozero/sampleapps/MCP23017Test.java), the important bit:
 
 ```java
 try (MCP23017 mcp23017 = new MCP23017(intAPin, intBPin);

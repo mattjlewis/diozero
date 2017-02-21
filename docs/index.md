@@ -138,41 +138,48 @@ add an alternative method of compatibility, for example on the Udoo Quad.
 
 ## Getting Started
 
-Snapshot builds of the library are available in the [Nexus Repository Manager]
-(https://oss.sonatype.org/index.html#nexus-search;gav~com.diozero~~~~). 
-For convenience a ZIP of all diozero JARs will be maintained on [Google Drive]
-(https://drive.google.com/folderview?id=0B2Kd_bs3CEYaZ3NiRkd4OXhYd3c).
+Snapshot builds of the library are available in the [Nexus Repository Manager](https://oss.sonatype.org/index.html#nexus-search;gav~com.diozero~~~~). 
+For convenience a ZIP of all diozero JARs will be maintained on [Google Drive](https://drive.google.com/folderview?id=0B2Kd_bs3CEYaZ3NiRkd4OXhYd3c).
 
 Javadoc for the core library is also available via [javadoc.io](http://www.javadoc.io/doc/com.diozero/diozero-core/). 
 
-Unfortunately Java doesn't provide a convenient deployment-time dependency manager such as Python's `pip` therefore you will need to manually download all dependencies and setup your classpath correctly. You can do this either via setting the `CLASSPATH` environment variable or as a command-line option (`java -cp <jar1>:<jar2>`). The dependencies have been deliberately kept to as few libraries as possible, as such this library is only dependent on [tinylog](http://www.tinylog.org) [v1.1](https://github.com/pmwmedia/tinylog/releases/download/1.1/tinylog-1.1.zip).
+Unfortunately Java doesn't provide a convenient deployment-time dependency manager 
+such as Python's `pip` therefore you will need to manually download all dependencies 
+and setup your classpath correctly. You can do this either via setting the `CLASSPATH` 
+environment variable or as a command-line option (`java -cp <jar1>:<jar2>`). 
+The dependencies have been deliberately kept to as few libraries as possible, as 
+such this library is only dependent on [tinylog](http://www.tinylog.org) 
+[v1.1](https://github.com/pmwmedia/tinylog/releases/download/1.1/tinylog-1.1.zip).
 
-To compile a diozero application you will need 2 JAR files - tinylog, and diozero-core. To run a diozero, one of the supported device provider libraries and the corresponding diozero provider wrapper library.
+To compile a diozero application you will need 2 JAR files - [tinylog](http://www.tinylog.org/), and diozero-core. 
+To run a diozero application, you will also need one of the supported device provider 
+libraries and the corresponding diozero provider wrapper library. Note the built-in sysfs
+device provider gives maximum portability but has some limitations such as not being able 
+to configure internal pull up/down resistors.
 
-Provider | Provider Jar | diozero wrapper-library
--------- | ------------ | -----------------------
-sysfs | N/A | Built-in
-JDK Device I/O 1.0 | dio-1.0.1.jar | diozero-provider-jdkdeviceio10-&lt;version&gt;.jar
-JDK Device I/O 1.1 | dio-1.1.jar | diozero-provider-jdkdeviceio11-&lt;version&gt;.jar
-Pi4j | pi4j-core-1.1.jar | diozero-provider-pi4j-&lt;version&gt;.jar
-wiringPi | pi4j-core-1.1.jar | diozero-provider-wiringpi-&lt;version&gt;.jar
-pigpio | pigpioj-java-1.0.1.jar | diozero-provider-pigio-&lt;version&gt;.jar
-mmap | N/A | diozero-provider-mmap-&lt;version&gt;.jar
+SBC | Provider | Provider Jar | diozero wrapper-library
+--- | -------- | ------------ | -----------------------
+All | sysfs | N/A | Built-in
+32bit boards | JDK Device I/O 1.0 | dio-1.0.1.jar | diozero-provider-jdkdeviceio10-&lt;version&gt;.jar
+32bit boards | JDK Device I/O 1.1 | dio-1.1.jar | diozero-provider-jdkdeviceio11-&lt;version&gt;.jar
+Raspberry Pi | Pi4j | pi4j-core-1.1.jar | diozero-provider-pi4j-&lt;version&gt;.jar
+Raspberry Pi | wiringPi | pi4j-core-1.1.jar | diozero-provider-wiringpi-&lt;version&gt;.jar
+Raspberry Pi | pigpio | pigpioj-java-1.0.1.jar | diozero-provider-pigio-&lt;version&gt;.jar
+Raspberry Pi, Odroid C2 | mmap | N/A | diozero-provider-mmap-&lt;version&gt;.jar
 
-To get started I recommend first looking at the classes in [com.diozero.sampleapps](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/sampleapps/). To run the [LEDTest](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/sampleapps/LEDTest.java) sample application using the pigpioj provider:
+To get started I recommend first looking at the classes in 
+[com.diozero.sampleapps](https://github.com/mattjlewis/diozero/blob/master/diozero-sampleapps/src/main/java/com/diozero/sampleapps/). 
+To run the [LEDTest](https://github.com/mattjlewis/diozero/blob/master/diozero-sampleapps/src/main/java/com/diozero/sampleapps/LEDTest.java) 
+sample application using the pigpioj provider:
 
-Option 1 - Setting the CLASSPATH environment variable:
 ```sh
-CLASSPATH=tinylog-1.1.jar:diozero-core-0.9-SNAPSHOT.jar:diozero-provider-pigpio-0.9-SNAPSHOT.jar:pigpioj-java-1.0.1.jar; export CLASSPATH
-sudo java -cp $CLASSPATH com.diozero.sampleapps.LEDTest 12
+sudo java -cp tinylog-1.1.jar:diozero-core-0.9-SNAPSHOT.jar:diozero-sampleapps-0.9-SNAPSHOT.jar:diozero-provider-pigpio-0.9-SNAPSHOT.jar:pigpioj-java-1.0.1.jar com.diozero.sampleapps.LEDTest 12
 ```
 
-Option 2 - Setting the classpath via command-line:
-```sh
-sudo java -cp tinylog-1.1.jar:diozero-core-0.9-SNAPSHOT.jar:diozero-provider-pigpio-0.9-SNAPSHOT.jar:pigpioj-java-1.0.1.jar com.diozero.sampleapps.LEDTest 12
-```
-
-For an experience similar to Python where source code is interpreted rather than compiled try [Groovy](http://www.groovy-lang.org/) (`sudo apt-get update && sudo apt-get install groovy2`). With the `CLASSPATH` environment variable set as per the instructions above, a simple test application can be run via the command `groovy <filename>`. There is also a Groovy shell environment `groovysh`.
+For an experience similar to Python where source code is interpreted rather than compiled try 
+[Groovy](http://www.groovy-lang.org/) (`sudo apt-get update && sudo apt-get install groovy2`). 
+With the `CLASSPATH` environment variable set as per the instructions above, a simple test 
+application can be run via the command `groovy <filename>`. There is also a Groovy shell environment `groovysh`.
 
 A Groovy equivalent of the LED controlled button example:
 
@@ -219,7 +226,7 @@ This library provides support for a number of GPIO / I2C / SPI connected compone
 + [Output Devices](OutputDevices.md)
     - [Digital](OutputDevices.md#digital-led) and [PWM](OutputDevices.md#pwm-led)
 + [Expansion Boards](ExpansionBoards.md) for adding additional GPIO / Analog / PWM pins
-    - [Microchip Analog to Digital Converters](ExpansionBoards.md#mcp-adc), [NXP PCF8591 ADC / DAC](ExpansionBoards.md#pcf8591), [Microchip GPIO Expansion Board](ExpansionBoards.md#mcp-gpio-expansion-board), [PWM / Servo Driver](ExpansionBoards.md#pwm-servo-driver), [PCF8574](ExpansionBoards.md#pcf8574)
+    - [Microchip Analog to Digital Converters](ExpansionBoards.md#mcp-adc), [NXP PCF8591 ADC / DAC](ExpansionBoards.md#pcf8591), [Microchip GPIO Expansion Boards](ExpansionBoards.md#mcp-gpio-expansion-board), [PWM / Servo Driver](ExpansionBoards.md#pwm-servo-driver), [PCF8574](ExpansionBoards.md#pcf8574)
 + [Motor Control](MotorControl.md) (support for common motor controller boards)
     - [API](MotorControl.md#api), [Servos](MotorControl.md#servo), [CamJam EduKit](MotorControl.md#camjamkitdualmotor), [Ryanteck](MotorControl.md#ryanteckdualmotor), [Toshiba TB6612FNG](MotorControl.md#tb6612fngdualmotordriver), [PiConZero](MotorControl.md#piconzero)
 + [Sensor Components](SensorComponents.md) (support for specific sensors, e.g. temperature, pressure, distance, luminosity)
@@ -233,7 +240,7 @@ This library provides support for a number of GPIO / I2C / SPI connected compone
 
 ## Performance
 
-I've done some limited performance tests (turning a GPIO on then off, see [GpioPerfTest](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/sampleapps/GpioPerfTest.java)) on a Raspberry Pi 2 and 3 using the various native device factory providers. I've also run tests using JNI APIs directly without going via my DIO-Zero wrapper to assess the overhead of using my library (see [WiringPiRawPerfTest](https://github.com/mattjlewis/diozero/blob/master/diozero-provider-wiringpi/src/main/java/com/diozero/internal/provider/wiringpi/WiringPiRawPerfTest.java) and [PigpioPerfTest](https://github.com/mattjlewis/pigpioj/blob/master/pigpioj-java/src/main/java/com/diozero/pigpioj/test/PigpioPerfTest.java)) - the overhead of DIO-Zero is approximately 25% for both pigpio and wiringPi. Here are the results:
+I've done some limited performance tests (turning a GPIO on then off, see [GpioPerfTest](https://github.com/mattjlewis/diozero/blob/master/diozero-sampleapps/src/main/java/com/diozero/sampleapps/GpioPerfTest.java)) on a Raspberry Pi 2 and 3 using the various native device factory providers. I've also run tests using JNI APIs directly without going via my DIO-Zero wrapper to assess the overhead of using my library (see [WiringPiRawPerfTest](https://github.com/mattjlewis/diozero/blob/master/diozero-provider-wiringpi/src/main/java/com/diozero/internal/provider/wiringpi/WiringPiRawPerfTest.java) and [PigpioPerfTest](https://github.com/mattjlewis/pigpioj/blob/master/pigpioj-java/src/main/java/com/diozero/pigpioj/test/PigpioPerfTest.java)) - the overhead of DIO-Zero is approximately 25% for both pigpio and wiringPi. Here are the results:
 
 | Provider | Device | Frequency (kHz) |
 | -------- |:------:| ---------------:|
