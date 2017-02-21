@@ -1,17 +1,40 @@
 # diozero
 
-A Device I/O library written in Java that provides an object-orientated interface for a range of GPIO / I2C / SPI devices (LEDs, buttons, sensors, motors, displays, etc) connected to Single Board Computers like the Raspberry Pi. Actual GPIO / I2C / SPI device communication is delegated to pluggable service providers for maximum compatibility across different boards. This library is known to work on the following boards: all models of the Raspberry Pi, Odroid C2, BeagleBone Black, C.H.I.P and Asus Tinker Board. It should be portable to any Single Board computer that runs Linux and Java 8.
+A Device I/O library written in Java that provides an object-orientated interface for a range of 
+GPIO / I2C / SPI devices (LEDs, buttons, sensors, motors, displays, etc) connected to Single 
+Board Computers like the Raspberry Pi. Actual GPIO / I2C / SPI device communication is delegated 
+to pluggable service providers for maximum compatibility across different boards. This library is 
+known to work on the following boards: all models of the Raspberry Pi, Odroid C2, BeagleBone 
+Black, C.H.I.P and Asus Tinker Board. It should be portable to any Single Board computer that 
+runs Linux and Java 8.
 
-This library makes use of modern Java features such as [automatic resource management](https://docs.oracle.com/javase/tutorial/essential/exceptions/tryResourceClose.html), [Lambda Expressions](https://docs.oracle.com/javase/tutorial/java/javaOO/lambdaexpressions.html) and [Method References](https://docs.oracle.com/javase/tutorial/java/javaOO/methodreferences.html) where they simplify development and improve code readability.
+This library makes use of modern Java features such as 
+[automatic resource management](https://docs.oracle.com/javase/tutorial/essential/exceptions/tryResourceClose.html), 
+[Lambda Expressions](https://docs.oracle.com/javase/tutorial/java/javaOO/lambdaexpressions.html) and 
+[Method References](https://docs.oracle.com/javase/tutorial/java/javaOO/methodreferences.html) 
+where they simplify development and improve code readability.
 
-Created by [Matt Lewis](https://github.com/mattjlewis) (email [deviceiozero@gmail.com](mailto:deviceiozero@gmail.com)), inspired by [GPIO Zero](https://gpiozero.readthedocs.org/) and [Johnny Five](http://johnny-five.io/). If you have any issues please use [the GitHub issues page](https://github.com/mattjlewis/diozero/issues). For any other comments or suggestions, please use the [diozero Google Group](https://groups.google.com/forum/#!forum/diozero).
+Created by [Matt Lewis](https://github.com/mattjlewis) (email [deviceiozero@gmail.com](mailto:deviceiozero@gmail.com)), 
+inspired by [GPIO Zero](https://gpiozero.readthedocs.org/) and [Johnny Five](http://johnny-five.io/). 
+If you have any issues please use the [GitHub issues page](https://github.com/mattjlewis/diozero/issues). 
+For any other comments or suggestions, please use the [diozero Google Group](https://groups.google.com/forum/#!forum/diozero).
 
 ## Concepts
 
-The aim of this library is to encapsulate real-world devices as classes with meaningful operation names, for example LED (on / off), LDR (get luminosity), Button (pressed / released), Motor (forward / backwards / left / right). All devices implement `Closeable` hence will get automatically closed by the `try (Device d = new Device()) { d.doSomething(); }` statement. This is best illustrated by some simple examples.
+The aim of this library is to encapsulate real-world devices as classes with meaningful operation 
+names, for example, LED (on / off), LDR (get luminosity), Button (pressed / released), Motor 
+(forward / backwards / left / right). All devices implement `Closeable` hence will get 
+automatically closed by the `try (Device d = new Device()) { d.doSomething(); }` statement. This 
+is best illustrated by some simple examples.
 
 !!! note "Pin Numbering"
-    All pin numbers are device native, i.e. Broadcom for the Raspberry Pi.
+    All pin numbers are device native, i.e. Broadcom for the Raspberry Pi, ASUS for the Tinker Board. Pin layouts:
+    
+    + [Raspberry pi](https://pinout.xyz/).
+    + [CHIP pin numbering](http://www.chip-community.org/index.php/Hardware_Information).
+    + [Odroid C2 pin layout](http://www.hardkernel.com/main/products/prdt_info.php?tab_idx=2).
+    + [BeagleBone Black](http://beagleboard.org/support/bone101).
+    + [Asus Tinker Board](https://www.asus.com/uk/Single-board-Computer/TINKER-BOARD/).
 
 LED control:
 
@@ -48,12 +71,24 @@ try (PwmLed led = new PwmLed(pin)) {
 }
 ```
 
-All devices are actually provisioned by a [Device Factory](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/internal/spi/DeviceFactoryInterface.java) with a default [NativeDeviceFactory](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/internal/DeviceFactoryHelper.java) for provisioning via the host board itself. However, all components accept an optional Device Factory parameter for provisioning the same set of components via an alternative method. This is particularly useful for GPIO expansion boards and Analog-to-Digital converters.
+All devices are actually provisioned by a 
+[Device Factory](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/internal/spi/DeviceFactoryInterface.java) 
+with a default [NativeDeviceFactory](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/internal/DeviceFactoryHelper.java) 
+for provisioning via the host board itself. However, all components accept an optional 
+Device Factory parameter for provisioning the same set of components via an alternative 
+method. This is particularly useful for GPIO expansion boards and Analog-to-Digital converters.
 
 !!! note "Device Factory"
-    Unless you are implementing a new device you shouldn't need to use any of the Device Factory interfaces or helper classes (within the `com.diozero.internal` package).
+    Unless you are implementing a new device you shouldn't need to use any of the Device 
+    Factory interfaces or helper classes (within the `com.diozero.internal` package).
 
-Some boards like the Raspberry Pi provide no analog input pins; attempting to create an AnalogInputDevice such as an LDR using the Raspberry Pi default native device factory would result in a runtime error (`UnsupportedOperationException`). However, support for Analog to Digital Converter devices such as the [MCP3008](http://rtd.diozero.com/en/latest/ExpansionBoards/#mcp-adc) have been implemented as analog input device factories hence can be used in the constructor of analog devices like LDRs:
+Some boards like the Raspberry Pi provide no analog input pins; attempting to create an 
+AnalogInputDevice such as an LDR using the Raspberry Pi default native device factory 
+would result in a runtime error (`UnsupportedOperationException`). However, support for 
+Analog to Digital Converter expansion devices such as the 
+[MCP3008](http://rtd.diozero.com/en/latest/ExpansionBoards/#mcp-adc) has been added 
+which are implemented as analog input device factories hence can be used in the 
+constructor of analog devices like LDRs:
 
 ```java
 try (McpAdc adc = new McpAdc(McpAdc.Type.MCP3008, chipSelect); LDR ldr = new LDR(adc, pin, vRef, r1)) {
@@ -61,7 +96,10 @@ try (McpAdc adc = new McpAdc(McpAdc.Type.MCP3008, chipSelect); LDR ldr = new LDR
 }
 ```
 
-Repeating the previous example of controlling an LED when you press a button but with all devices connected via an [MCP23017](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/MCP23017.java) GPIO expansion board:
+Repeating the previous example of controlling an LED when you press a button but with 
+all devices connected via an 
+[MCP23017](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/MCP23017.java) 
+GPIO expansion board:
 
 ```java
 try (MCP23017 mcp23017 = new MCP23017(intAPin, intBPin);
@@ -73,7 +111,8 @@ try (MCP23017 mcp23017 = new MCP23017(intAPin, intBPin);
 }
 ```
 
-Analog input devices also provide an event notification mechanism. To control the brightness of an LED based on ambient light levels:
+Analog input devices also provide an event notification mechanism. To control the 
+brightness of an LED based on ambient light levels:
 
 ```java
 try (McpAdc adc = new McpAdc(McpAdc.Type.MCP3008, chipSelect); LDR ldr = new LDR(adc, pin, vRef, r1); PwmLed led = new PwmLed(ledPin)) {
@@ -87,17 +126,22 @@ try (McpAdc adc = new McpAdc(McpAdc.Type.MCP3008, chipSelect); LDR ldr = new LDR
 
 diozero has out of the box support for the following Single Board Computers:
 
-+ [Raspberry Pi](http://www.raspberyrpi.org/) (all versions)
-+ [Odroid C2](http://www.hardkernel.com/main/products/prdt_info.php)
-+ [Beagle Bone Black](https://beagleboard.org/black)
-+ [Asus Tinker Board](https://www.asus.com/uk/supportonly/TInker%20Board2GB/)
-+ [The Next Thing Co CHIP](https://getchip.com/pages/chip)
++ [Raspberry Pi](http://www.raspberyrpi.org/) (all versions).
++ [Odroid C2](http://www.hardkernel.com/main/products/prdt_info.php).
++ [Beagle Bone Black](https://beagleboard.org/black).
++ [Asus Tinker Board](https://www.asus.com/uk/Single-board-Computer/TINKER-BOARD/).
++ [The Next Thing Co CHIP](https://getchip.com/pages/chip).
 
-The builtin sysfs provider is designed to be portable across different boards. In addition, the two Java Device I/O providers adds an alternative method of compatibility, for example on the Udoo Quad.
+The builtin sysfs provider is designed to be portable across different boards. 
+In addition, the [JDK Device I/O](https://wiki.openjdk.java.net/display/dio/Main) providers 
+add an alternative method of compatibility, for example on the Udoo Quad.
 
 ## Getting Started
 
-Snapshot builds of the library are available in the [Nexus Repository Manager](https://oss.sonatype.org/index.html#nexus-search;gav~com.diozero~~~~). For convenience a ZIP of all diozero JARs will be maintained on [Google Drive](https://drive.google.com/folderview?id=0B2Kd_bs3CEYaZ3NiRkd4OXhYd3c).
+Snapshot builds of the library are available in the [Nexus Repository Manager]
+(https://oss.sonatype.org/index.html#nexus-search;gav~com.diozero~~~~). 
+For convenience a ZIP of all diozero JARs will be maintained on [Google Drive]
+(https://drive.google.com/folderview?id=0B2Kd_bs3CEYaZ3NiRkd4OXhYd3c).
 
 Javadoc for the core library is also available via [javadoc.io](http://www.javadoc.io/doc/com.diozero/diozero-core/). 
 
