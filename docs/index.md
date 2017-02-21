@@ -2,9 +2,9 @@
 
 A Device I/O library written in Java that provides an object-orientated interface for a range of GPIO / I2C / SPI devices (LEDs, buttons, sensors, motors, displays, etc) connected to Single Board Computers like the Raspberry Pi. Actual GPIO / I2C / SPI device communication is delegated to pluggable service providers for maximum compatibility across different boards. This library is known to work on the following boards: all models of the Raspberry Pi, Odroid C2, BeagleBone Black, C.H.I.P and Asus Tinker Board. It should be portable to any Single Board computer that runs Linux and Java 8.
 
-This library makes use of modern Java 8 features such as [automatic resource management](https://docs.oracle.com/javase/tutorial/essential/exceptions/tryResourceClose.html), [Lambda Expressions](https://docs.oracle.com/javase/tutorial/java/javaOO/lambdaexpressions.html) and [Method References](https://docs.oracle.com/javase/tutorial/java/javaOO/methodreferences.html) where they simplify development and improve code readability.
+This library makes use of modern Java features such as [automatic resource management](https://docs.oracle.com/javase/tutorial/essential/exceptions/tryResourceClose.html), [Lambda Expressions](https://docs.oracle.com/javase/tutorial/java/javaOO/lambdaexpressions.html) and [Method References](https://docs.oracle.com/javase/tutorial/java/javaOO/methodreferences.html) where they simplify development and improve code readability.
 
-Created by [Matt Lewis](https://github.com/mattjlewis) (email [deviceiozero@gmail.com](mailto:deviceiozero@gmail.com)), inspired by [GPIO Zero](https://gpiozero.readthedocs.org/) and [Johnny Five](http://johnny-five.io/). If you have any issues, comments or suggestions please use [the GitHub issues page](https://github.com/mattjlewis/diozero/issues).
+Created by [Matt Lewis](https://github.com/mattjlewis) (email [deviceiozero@gmail.com](mailto:deviceiozero@gmail.com)), inspired by [GPIO Zero](https://gpiozero.readthedocs.org/) and [Johnny Five](http://johnny-five.io/). If you have any issues please use [the GitHub issues page](https://github.com/mattjlewis/diozero/issues). For any other comments or suggestions, please use the [diozero Google Group](https://groups.google.com/forum/#!forum/diozero).
 
 ## Concepts
 
@@ -231,7 +231,6 @@ This project is hosted on [GitHub](https://github.com/mattjlewis/diozero/), plea
 + A clean object-orientated API for IMUs
 + Native support for all devices via mmap (/dev/mem), in particular to improve performance and add support for GPIO pull up/down configuration.
 + Cleanup the logic for handling capabilities of different boards in a generic fashion (no more if / then / else)
-+ mmap support for all boards
 + Arduino support (via USB cable)
 + Particle Photon support (via wifi)
 
