@@ -85,7 +85,7 @@ public class MFRC522Test {
 				        mfrc522.selectTag(uid);
 
 				        // Authenticate
-				        byte status = mfrc522.auth(MFRC522.PICC_AUTHENT1A, (byte) 8, key, uid);
+				        byte status = mfrc522.authenticate(MFRC522.PICC_AUTH_KEY_A, (byte) 8, key, uid);
 
 				        // Check if authenticated
 				        if (status == MFRC522.MI_OK) {

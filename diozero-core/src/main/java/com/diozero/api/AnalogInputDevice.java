@@ -54,7 +54,7 @@ import com.diozero.util.RuntimeIOException;
  * </p>
  * <img src="doc-files/MCP3008_TMP36.png" alt="MCP3008 TMP36">
  * <p>
- * Code taken from {@link com.diozero.sampleapps.TMP36Test TMP36Test}:
+ * Code taken from <a href="https://github.com/mattjlewis/diozero/blob/master/diozero-sampleapps/src/main/java/com/diozero/sampleapps/TMP36Test.java">TMP36Test</a>:
  * </p>
  * 
  * <pre>

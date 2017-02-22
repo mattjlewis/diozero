@@ -294,7 +294,7 @@ This project is hosted on [GitHub](https://github.com/mattjlewis/diozero/), plea
 + Release 0.6: Preparing for 1.0 release.
 + Release 0.7: Support for non-register based I2C device read / write
 + Release 0.8: Added Analog Output device support (added for the PCF8591). Introduced Java based sysfs and jpi providers. Bug fix to I2CLcd. Added support for BME280.
-+ Release 0.9: Native support for I2C and SPI in the sysfs provider. Support for CHIP, BeagleBone Black and Asus Tinker Board. Moved sysfs provider into diozero-core, use as the default provider.
++ Release 0.9: Native support for I2C and SPI in the sysfs provider. Support for CHIP, BeagleBone Black and Asus Tinker Board. Moved sysfs provider into diozero-core, use as the default provider. Preliminary support for devices that support the Firmata protocol (i.e. Arduinos).
 
 ## License
 

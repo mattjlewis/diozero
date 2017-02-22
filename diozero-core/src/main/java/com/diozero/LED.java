@@ -39,7 +39,7 @@ import com.diozero.util.RuntimeIOException;
  * connect the anode (longer leg) to a limiting resistor; connect the other side
  * of the limiting resistor to a GPIO pin (the limiting resistor can be placed
  * either side of the LED). Example LED control, taken from
- * {@link com.diozero.sampleapps.LEDTest LEDTest}:
+ * <a href="https://github.com/mattjlewis/diozero/blob/master/diozero-sampleapps/src/main/java/com/diozero/sampleapps/LEDTest.java">LEDTest</a>:
  * </p>
  * 
  * <pre>

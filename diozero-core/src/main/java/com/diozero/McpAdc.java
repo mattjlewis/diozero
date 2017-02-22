@@ -134,6 +134,9 @@ public class McpAdc extends AbstractDeviceFactory implements AnalogInputDeviceFa
 	 *   0    | 1  | 1  | 1  |  7  | Single | CH6=IN-
 	 *        |    |    |    |     | Single | CH7=IN+
 	 * }</pre>
+	 * @param adcPin ADC device number
+	 * @param differentialRead enable / disable differential reads
+	 * @return Raw value
 	 * @throws RuntimeIOException 
 	 */
 	private int getRawValue(int adcPin, boolean differentialRead) throws RuntimeIOException {
@@ -201,10 +204,6 @@ public class McpAdc extends AbstractDeviceFactory implements AnalogInputDeviceFa
 		return getRawValue(adcPin, false) / (float)type.getRange();
 	}
 
-	/**
-	 * Device Factory SPI method
-	 * @param gpio Pin on the MCP device
-	 */
 	@Override
 	public AnalogInputDeviceInterface createAnalogInputDevice(String key, PinInfo pinInfo)
 			throws RuntimeIOException {

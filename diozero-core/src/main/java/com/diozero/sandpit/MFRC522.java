@@ -37,10 +37,10 @@ import com.diozero.api.*;
 import com.diozero.util.SleepUtil;
 
 /**
- * Datasheet: http://www.nxp.com/documents/data_sheet/MFRC522.pdf
- * Example Python code: https://github.com/mxgxw/MFRC522-python/blob/master/MFRC522.py
- * Work-in-progress!
- * <p>Wiring:
+ * <p><a href="http://www.nxp.com/documents/data_sheet/MFRC522.pdf">Datasheet</a><br>
+ * <a href="https://github.com/mxgxw/MFRC522-python/blob/master/MFRC522.py">Example Python code</a></p>
+ * <p>Work-in-progress!</p>
+ * <p>Wiring:</p>
  * <ul>
  * <li>SDA:  SPI0 CE0 (GPIO8)</li>
  * <li>SCK:  SPI0 SCLK (GPIO11)</li>
@@ -51,104 +51,109 @@ import com.diozero.util.SleepUtil;
  * <li>RST:  Any free GPIO (GPIO25)</li>
  * <li>3v3:  3v3</li>
  * </ul>
- * </p>
  */
+@SuppressWarnings("unused")
 public class MFRC522 implements Closeable {
-	@SuppressWarnings("unused")
-	private static final int READY = 1 << 4;
-	
-	// Commands
-	private static final byte PCD_IDLE			= 0b0000;
-	private static final byte PCD_CALCCRC		= 0b0011;
-	private static final byte PCD_TRANSMIT		= 0b0100;
-	private static final byte PCD_RECEIVE		= 0b1000;
-	private static final byte PCD_TRANSCEIVE	= 0b1100;
-	private static final byte PCD_MF_AUTHENT	= 0b1110;
-	private static final byte PCD_SOFT_RESET	= 0b1111;
-	
-	// AddicoreRFID Proximity Integrated Circuit Card (PICC) Commands
-	public static final byte PICC_REQIDL		= 0x26;  // search the antenna area. PCD does not enter hibernation
-	public static final byte PICC_REQALL		= 0x52;  // find all the cards in antenna area
-	public static final byte PICC_ANTICOLL		= (byte) 0x93;  // anti-collision
-	public static final byte PICC_SElECTTAG	= (byte) 0x93;  // Select card
-	public static final byte PICC_AUTHENT1A	= 0x60;  // authentication with key A
-	public static final byte PICC_AUTHENT1B	= 0x61;  // authentication with key B
-	public static final byte PICC_READ			= 0x30;  // reads one memory block
-	public static final byte PICC_WRITE		= (byte) 0xA0;  // writes one memory block
-	public static final byte PICC_DECREMENT	= (byte) 0xC0;  // decrements the contents of a block and stores the result in the internal data register
-	public static final byte PICC_INCREMENT	= (byte) 0xC1;  // increments the contents of a block and stores the result in the internal data register
-	public static final byte PICC_RESTORE		= (byte) 0xC2;  // reads the contents of a block into the internal data register
-	public static final byte PICC_TRANSFER		= (byte) 0xB0;  // writes the contents of the internal data register to a block
-	public static final byte PICC_HALT			= 0x50;  // Sleep the card
-	
 	// Registers
 	//private static final int Reserved00 = 0x00;
-	private static final int COMMAND_REG = 0x01;
-	private static final int COMM_I_EN_REG = 0x02;
-	private static final int DivlEn_REG = 0x03;
-	private static final int COMM_IRQ_REG = 0x04;
-	private static final int DIV_IRQ_REG = 0x05;
-	private static final int ERROR_REG = 0x06;
-	private static final int STATUS1_REG = 0x07;
-	private static final int STATUS2_REG = 0x08;
-	private static final int FIFO_DATA_REG = 0x09;
-	private static final int FIFO_LEVEL_REG = 0x0A;
-	private static final int WATER_LEVEL_REG = 0x0B;
-	private static final int CONTROL_REG = 0x0C;
-	private static final int BIT_FRAMING_REG = 0x0D;
-	private static final int COLL_REG = 0x0E;
+	private static final int COMMAND_REG = 0x01;		// starts and stops command execution
+	private static final int COM_INT_EN_REG = 0x02;		// enable and disable interrupt request control bits
+	private static final int DIV_INT_EN_REG = 0x03;		// enable and disable interrupt request control bits
+	private static final int COM_IRQ_REG = 0x04;		// interrupt request bits
+	private static final int DIV_IRQ_REG = 0x05;		// interrupt request bits
+	private static final int ERROR_REG = 0x06;			// error bits showing the error status of the last command executed
+	private static final int STATUS1_REG = 0x07;		// communication status bits
+	private static final int STATUS2_REG = 0x08;		// receiver and transmitter status bits
+	private static final int FIFO_DATA_REG = 0x09;		// input and output of 64 byte FIFO buffer
+	private static final int FIFO_LEVEL_REG = 0x0A;		// number of bytes stored in the FIFO buffer
+	private static final int WATER_LEVEL_REG = 0x0B;	// level for FIFO underflow and overflow warning
+	private static final int CONTROL_REG = 0x0C;		// miscellaneous control registers
+	private static final int BIT_FRAMING_REG = 0x0D;	// adjustments for bit-oriented frames
+	private static final int COLL_REG = 0x0E;			// bit position of the first bit-collision detected on the RF interface
 	//private static final int RESERVED_01 = 0x0F;
-
 	//private static final int RESERVED_10 = 0x10;
-	private static final int MODE_REG = 0x11;
-	private static final int TX_MODE_REG = 0x12;
-	private static final int RX_MODE_REG = 0x13;
-	private static final int TX_CONTROL_REG = 0x14;
-	private static final int TX_AUTO_REG = 0x15;
-	private static final int TX_SEL_REG = 0x16;
-	private static final int RX_SEL_REG = 0x17;
-	private static final int RX_THRESHOLD_REG = 0x18;
-	private static final int DEMOD_REG = 0x19;
+	private static final int MODE_REG = 0x11;			// defines general modes for transmitting and receiving
+	private static final int TX_MODE_REG = 0x12;		// defines transmission data rate and framing
+	private static final int RX_MODE_REG = 0x13;		// defines reception data rate and framing
+	private static final int TX_CONTROL_REG = 0x14;		// controls the logical behavior of the antenna driver pins TX1 and TX2
+	private static final int TX_ASK_REG = 0x15;			// controls the setting of the transmission modulation
+	private static final int TX_SEL_REG = 0x16;			// selects the internal sources for the antenna driver
+	private static final int RX_SEL_REG = 0x17;			// selects internal receiver settings
+	private static final int RX_THRESHOLD_REG = 0x18;	// selects thresholds for the bit decoder
+	private static final int DEMOD_REG = 0x19;			// defines demodulator settings
 	//private static final int Reserved11 = 0x1A;
 	//private static final int Reserved12 = 0x1B;
-	private static final int MIFARE_REG = 0x1C;
-	//private static final int Reserved13 = 0x1D;
+	private static final int MIFARE_TX_REG = 0x1C;		// controls some MIFARE communication transmit parameters
+	private static final int MIFARE_RX_REG = 0x1D;		// controls some MIFARE communication receive parameters
 	//private static final int Reserved14 = 0x1E;
-	private static final int SERIAL_SPEED_REG = 0x1F;
-
+	private static final int SERIAL_SPEED_REG = 0x1F;	// selects the speed of the serial UART interface
 	//private static final int Reserved20 = 0x20;  
-	private static final int CRC_RESULT_REG_M = 0x21;
-	private static final int CRC_RESULT_REG_L = 0x22;
+	private static final int CRC_RESULT_REG_MSB = 0x21;	// shows the MSB values of the CRC calculation
+	private static final int CRC_RESULT_REG_LSB = 0x22;	// shows the LSB values of the CRC calculation
 	//private static final int Reserved21 = 0x23;
-	private static final int MOD_WIDTH_REG = 0x24;
+	private static final int MOD_WIDTH_REG = 0x24;		// controls the ModWidth setting
 	//private static final int Reserved22 = 0x25;
-	private static final int RFCfg_REG = 0x26;
-	private static final int GsN_REG = 0x27;
-	private static final int CWGsP_REG = 0x28;
-	private static final int ModGsP_REG = 0x29;
-	private static final int T_MODE_REG = 0x2A;
-	private static final int T_PRESCALER_REG = 0x2B;
-	private static final int T_RELOAD_REG_H = 0x2C;
-	private static final int T_RELOAD_REG_L = 0x2D;
-	private static final int T_COUNTER_VALUE_REG_H = 0x2E;
-	private static final int T_COUNTER_VALUE_REG_L = 0x2F;
-			  
+	private static final int RF_CONFIG_REG = 0x26;		// configures the receiver gain
+	private static final int GS_N_REG = 0x27;			// selects the conductance of the antenna driver pins TX1 and TX2 for modulation
+	private static final int CWGsP_REG = 0x28;			// defines the conductance of the p-driver output during periods of no modulation
+	private static final int ModGsP_REG = 0x29;			// defines the conductance of the p-driver output during periods of modulation
+	private static final int T_MODE_REG = 0x2A;			// defines settings for the internal timer
+	private static final int T_PRESCALER_REG = 0x2B;	// 
+	private static final int T_RELOAD_REG_MSB = 0x2C;	// defines the 16-bit timer reload value
+	private static final int T_RELOAD_REG_LSB = 0x2D;
+	private static final int T_COUNTER_VALUE_REG_MSB = 0x2E;	// shows the 16-bit timer value
+	private static final int T_COUNTER_VALUE_REG_LSB = 0x2F;
 	//private static final int Reserved30 = 0x30;
-	private static final int TEST_SEL1_REG = 0x31;
-	private static final int TEST_SEL2_REG = 0x32;
-	private static final int TEST_PIN_EN_REG = 0x33;
-	private static final int TEST_PIN_VALUE_REG = 0x34;
-	private static final int TEST_BUS_REG = 0x35;
-	private static final int AUTO_TEST_REG = 0x36;
-	private static final int VERSION_REG = 0x37;
-	private static final int ANALOG_TEST_REG = 0x38;
-	private static final int TEST_DAC1_REG = 0x39;
-	private static final int TEST_DAC2_REG = 0x3A;
-	private static final int TEST_ADC_REG = 0x3B;
+	private static final int TEST_SEL1_REG = 0x31;		// general test signal configuration
+	private static final int TEST_SEL2_REG = 0x32;		// general test signal configuration and PRBS control
+	private static final int TEST_PIN_EN_REG = 0x33;	// enables pin output driver on pins D1 to D7
+	private static final int TEST_PIN_VALUE_REG = 0x34;	// defines the values for D1 to D7 when it is used as an I/O bus
+	private static final int TEST_BUS_REG = 0x35;		// shows the status of the internal test bus
+	private static final int AUTO_TEST_REG = 0x36;		// controls the digital self test
+	private static final int VERSION_REG = 0x37;		// shows the software version
+	private static final int ANALOG_TEST_REG = 0x38;	// controls the pins AUX1 and AUX2
+	private static final int TEST_DAC1_REG = 0x39;		// defines the test value for TestDAC1
+	private static final int TEST_DAC2_REG = 0x3A;		// defines the test value for TestDAC2
+	private static final int TEST_ADC_REG = 0x3B;		// shows the value of ADC I and Q channels
 	//private static final int Reserved31 = 0x3C;
 	//private static final int Reserved32 = 0x3D;
 	//private static final int Reserved33 = 0x3E;
 	//private static final int Reserved34 = 0x3F;
+	
+	private static final byte PCD_RCV_OFF = 1 << 5; // analog part of the receiver is switched off
+	private static final byte PCD_POWER_DOWN = 1 << 4; // Soft power-down mode entered
+	
+	// Commands
+	private static final byte PCD_IDLE			= 0b0000;	// Places the MFRC522 in Idle mode
+	private static final byte PCD_MEM			= 0b0001;	// stores 25 bytes into the internal buffer
+	private static final byte PCD_GEN_RANDOM_ID	= 0b0010;	// generates a 10-byte random ID number
+	private static final byte PCD_CALC_CRC		= 0b0011;	// activates the CRC coprocessor or performs a self test
+	private static final byte PCD_TRANSMIT		= 0b0100;	// transmits data from the FIFO buffer
+	private static final byte PCD_NO_CMD_CHANGE	= 0b0111;	// no command change, can be used to modify the
+															// CommandReg register bits without affecting the command, 
+															// for example, the PowerDown bit
+	private static final byte PCD_RECEIVE		= 0b1000;	// activates the receiver circuits
+	private static final byte PCD_TRANSCEIVE	= 0b1100;	// transmits data from FIFO buffer to antenna and automatically
+															// activates the receiver after transmission
+	private static final byte PCD_AUTHENT		= 0b1110;	// performs the MIFARE standard authentication as a reader
+	private static final byte PCD_SOFT_RESET	= 0b1111;	// resets the MFRC522
+	
+	// AddicoreRFID Proximity Integrated Circuit Card (PICC) Commands
+	public static final byte PICC_REQIDL		= 0x26;  // search the antenna area. PCD does not enter hibernation
+	public static final byte PICC_READ			= 0x30;  // reads one memory block
+	public static final byte PICC_HALT			= 0x50;  // Sleep the card
+	public static final byte PICC_REQALL		= 0x52;  // find all the cards in antenna area
+	public static final byte PICC_AUTH_KEY_A	= 0x60;  // authentication with key A
+	public static final byte PICC_AUTH_KEY_B	= 0x61;  // authentication with key B
+	public static final byte PICC_ANTICOLL		= (byte) 0x93;  // anti-collision
+	public static final byte PICC_SEL_CL1		= (byte) 0x93;  // Select card
+	public static final byte PICC_SEL_CL2		= (byte) 0x95;  // Select card
+	public static final byte PICC_SEL_CL3		= (byte) 0x97;  // Select card
+	public static final byte PICC_MF_WRITE		= (byte) 0xA0;  // writes one memory block
+	public static final byte PICC_MF_TRANSFER	= (byte) 0xB0;  // writes the contents of the internal data register to a block
+	public static final byte PICC_MF_DECREMENT	= (byte) 0xC0;  // decrements the contents of a block and stores the result in the internal data register
+	public static final byte PICC_MF_INCREMENT	= (byte) 0xC1;  // increments the contents of a block and stores the result in the internal data register
+	public static final byte PICC_MF_RESTORE	= (byte) 0xC2;  // reads the contents of a block into the internal data register
 	
 	// AddicoreRFID error codes
 	public static final byte MI_OK = 0;
@@ -180,16 +185,44 @@ public class MFRC522 implements Closeable {
 		
 		reset();
 		
-		// Timer: TPrescaler*TreloadVal/6.78MHz = 24ms
-	    writeRegister(T_MODE_REG, (byte) 0x8D);			// Tauto=1; f(Timer) = 6.78MHz/TPreScaler
-	    writeRegister(T_PRESCALER_REG, (byte) 0x3E);	// TModeReg[3..0] + TPrescalerReg
-	    writeRegister(T_RELOAD_REG_L, (byte) 30);           
-	    writeRegister(T_RELOAD_REG_H, (byte) 0);
+		// The following formula is used to calculate the timer frequency if the 
+		// DEMOD_REG register’s TPrescalEven bit is set to logic 0:
+		// fTimer = 13.56 MHz / (2*TPreScaler+1).
+		// The following formula is used to calculate the timer frequency if the 
+		// DEMOD_REG register’s TPrescalEven bit inDemoReg is set to logic 1:
+		// fTimer = 13.56 MHz / (2*TPreScaler+2).
+
+		int t_prescaler = 0;
+		// 110100111110 = 3390; 13_560_000 / 6781 -> fTimer = 1999
+		// total time delay = ((TPrescaler * 2 + 1) * (TReloadVal + 1)) / 13.56 MHz
+		// 203430 / 13560000 = 0.015 = 0.015
 		
-	    writeRegister(TX_AUTO_REG, (byte) 0x40);		// 100%ASK
-	    writeRegister(MODE_REG, (byte) 0x3D);			// CRC Initial value 0x6363	???
-	    
-	    setAntennaOn(true);
+		// Timer: TPrescaler*TReloadVal/6.78MHz = 24ms
+		writeRegister(T_MODE_REG, (byte) 0x8D);			// Tauto=1; f(Timer) = 6.78MHz/TPreScaler
+		writeRegister(T_PRESCALER_REG, (byte) 0x3E);	// TModeReg[3..0] + TPrescalerReg
+
+		// 30
+		writeRegister(T_RELOAD_REG_MSB, (byte) 0);
+		writeRegister(T_RELOAD_REG_LSB, (byte) 0x1E);
+		
+		writeRegister(TX_ASK_REG, (byte) 0x40);			// 100%ASK
+		writeRegister(MODE_REG, (byte) 0x3D);			// CRC Initial value 0x6363	???
+		
+		// TPrescaler: 000010101001 = 169;  13_560_000 / 169  -> fTimer = 80236
+		// TReload: 11111101000 = 2024
+		// ((169 * 2 + 1) * (2024 + 1)) / 13.56 MHz = 0.050
+		/* joan:
+		self._PCDWrite(self._TModeReg,	  0x80)
+		self._PCDWrite(self._TPrescalerReg, 0xA9)
+		self._PCDWrite(self._TReloadRegH,   0x03)
+		self._PCDWrite(self._TReloadRegL,   0xe8)
+
+		self._PCDWrite(self._TxASKReg,	  0x40)
+		#self._PCDWrite(self._ModeReg,	   0x3D)
+		self._PCDWrite(self._ModeReg,	   0x29)
+		*/
+
+		setAntennaOn(true);
 	}
 	
 	private byte readRegister(int address) {
@@ -305,7 +338,7 @@ public class MFRC522 implements Closeable {
 		Response response = toCard(PCD_TRANSCEIVE, tag_type);
 		
 		byte status = response.getStatus();
-		if ((status != MI_OK) || (response.getBackLen() != 0x10)) {    
+		if ((status != MI_OK) || (response.getBackLen() != 0x10)) {
 			status = MI_ERR;
 		}
 		
@@ -317,7 +350,7 @@ public class MFRC522 implements Closeable {
 		byte wait_irq = 0x00;
 		
 		switch (command) {
-		case PCD_MF_AUTHENT:	// Certification cards close
+		case PCD_AUTHENT:	// Certification cards close
 			irq_en = 0x12;
 			wait_irq = 0x10;
 			break;
@@ -328,9 +361,9 @@ public class MFRC522 implements Closeable {
 		}
 		
 		// Interrupt request
-		writeRegister(COMM_I_EN_REG, (byte) (irq_en | 0x80));
+		writeRegister(COM_INT_EN_REG, (byte) (irq_en | 0x80));
 		// Clear all interrupt request bit
-		clearBitMask(COMM_IRQ_REG, (byte) 0x80);
+		clearBitMask(COM_IRQ_REG, (byte) 0x80);
 		//FlushBuffer=1, FIFO Initialisation
 		setBitMask(FIFO_LEVEL_REG, (byte) 0x80);
 		
@@ -356,7 +389,7 @@ public class MFRC522 implements Closeable {
 		int n;
 		boolean save_log = log;
 		while (true) {
-			n = readRegister(COMM_IRQ_REG);
+			n = readRegister(COM_IRQ_REG);
 			log = false;
 			//Logger.debug("i={}, n=0x{}, wait_irq=0x{}", Integer.valueOf(i), Integer.toHexString(n&0xff), Integer.toHexString(wait_irq&0xff));
 			i--;
@@ -454,18 +487,18 @@ public class MFRC522 implements Closeable {
 		ser_num = response.getBackData();
 		byte ser_num_check=0;
 		byte status = response.getStatus();
-	    if (status == MI_OK) {
+		if (status == MI_OK) {
 			// Check card serial number
-	    	int i;
+			int i;
 			for (i=0; i<4; i++) {
 				ser_num_check ^= ser_num[i];
 			}
 			if (ser_num_check != ser_num[i]) {
 				status = MI_ERR;
 			}
-	    }
-	    
-	    return new Response(status, response.getBackData());
+		}
+
+		return new Response(status, response.getBackData());
 	}
 	
 	public byte[] calculateCrc(byte[] data) {
@@ -474,7 +507,7 @@ public class MFRC522 implements Closeable {
 		for (byte b : data) {
 			writeRegister(FIFO_DATA_REG, b);
 		}
-		writeRegister(COMMAND_REG, PCD_CALCCRC);
+		writeRegister(COMMAND_REG, PCD_CALC_CRC);
 		
 		// Wait CRC calculation is complete
 		int i = 0xFF;
@@ -489,8 +522,8 @@ public class MFRC522 implements Closeable {
 		//	break
 			
 		byte[] p_out_data = new byte[2];
-		p_out_data[0] = readRegister(CRC_RESULT_REG_L);
-		p_out_data[1] = readRegister(CRC_RESULT_REG_M);
+		p_out_data[0] = readRegister(CRC_RESULT_REG_LSB);
+		p_out_data[1] = readRegister(CRC_RESULT_REG_MSB);
 		
 		return p_out_data;
 	}
@@ -498,67 +531,67 @@ public class MFRC522 implements Closeable {
 	public int selectTag(byte[] serNum) {
 		byte[] buffer = new byte[7];
 		int pos = 0;
-	    buffer[pos++] = PICC_SElECTTAG;
-	    buffer[pos++] = 0x70;
-	    for (int i=0; i<5; i++) {
-	    	buffer[pos++] = serNum[i];
-	    }
-	    
-	    byte[] p_out = calculateCrc(buffer);
-	    byte[] buffer2 = new byte[9];
-	    System.arraycopy(buffer, 0, buffer2, 0, buffer.length);
-	    buffer = buffer2;
-	    buffer[pos++] = p_out[0];
-	    buffer[pos++] = p_out[1];
-	    Logger.info(pos);
-	    Response response = toCard(PCD_TRANSCEIVE, buffer);
-	    
-	    byte size;
-	    Logger.info(response);
-	    if ((response.getStatus() == MI_OK) && (response.getBackLen() == 0x18)) {
+		buffer[pos++] = PICC_SEL_CL1;
+		buffer[pos++] = 0x70;
+		for (int i=0; i<5; i++) {
+			buffer[pos++] = serNum[i];
+		}
+
+		byte[] p_out = calculateCrc(buffer);
+		byte[] buffer2 = new byte[9];
+		System.arraycopy(buffer, 0, buffer2, 0, buffer.length);
+		buffer = buffer2;
+		buffer[pos++] = p_out[0];
+		buffer[pos++] = p_out[1];
+		Logger.info(Integer.valueOf(pos));
+		Response response = toCard(PCD_TRANSCEIVE, buffer);
+		
+		byte size;
+		Logger.info(response);
+		if ((response.getStatus() == MI_OK) && (response.getBackLen() == 0x18)) {
 			size = response.getBackData()[0];
-	    	Logger.debug("Size: {}", Byte.valueOf(size));
+			Logger.debug("Size: {}", Byte.valueOf(size));
 		} else {
 			Logger.debug("Setting size to 0, error?");
 			size = 0;
 		}
-
-	    return size;
+	
+		return size;
 	}
 	
-	public byte auth(byte authMode, byte blockAddr, byte[] sectorKey, byte[] serNum) {
+	public byte authenticate(byte authMode, byte blockAddr, byte[] sectorKey, byte[] serNum) {
 		byte[] buff = new byte[12];
-
+	
 		int pos = 0;
 		// Verify the command block address + sector + password + card serial number
 		// First byte should be the authMode (A or B)
-	    buff[pos++] = authMode;
-	    // Second byte is the trailerBlock (usually 7)
-	    buff[pos++] = blockAddr;
-	    // Now we need to append the authKey which usually is 6 bytes of 0xFF
-	    int i;
-	    for (i=0; i<sectorKey.length; i++) {
+		buff[pos++] = authMode;
+		// Second byte is the trailerBlock (usually 7)
+		buff[pos++] = blockAddr;
+		// Now we need to append the authKey which usually is 6 bytes of 0xFF
+		int i;
+		for (i=0; i<sectorKey.length; i++) {
 			buff[pos++] = sectorKey[i];
 		}
-	    // Next we append the first 4 bytes of the UID
-	    for (i=0; i<4; i++) {    
+		// Next we append the first 4 bytes of the UID
+		for (i=0; i<4; i++) {
 			buff[pos++] = serNum[i];
 		}
-	    Logger.info("pos=" + pos);
-	    Response response = toCard(PCD_MF_AUTHENT, buff);
+		Logger.info("pos=" + pos);
+		Response response = toCard(PCD_AUTHENT, buff);
 
-	    byte status = response.getStatus();
-	    if (status != MI_OK) {
-	    	Logger.error("AUTH ERROR!!");
-	    }
-	    
-	    byte status2_reg = readRegister(STATUS2_REG);
-	    //if not (self.Read_MFRC522(self.Status2Reg) & 0x08) != 0:
-	    if ((status2_reg & 0x08) == 0) {
-	    	Logger.error("AUTH ERROR(status2reg & 0x08) != 0, status2_reg=0x{}", Integer.toString(status2_reg));
-	    }
-	    
-	    return status;
+		byte status = response.getStatus();
+		if (status != MI_OK) {
+			Logger.error("AUTH ERROR!!");
+		}
+		
+		byte status2_reg = readRegister(STATUS2_REG);
+		//if not (self.Read_MFRC522(self.Status2Reg) & 0x08) != 0:
+		if ((status2_reg & 0x08) == 0) {
+			Logger.error("AUTH ERROR(status2reg & 0x08) != 0, status2_reg=0x{}", Integer.toString(status2_reg));
+		}
+		
+		return status;
 	}
 	
 	public void stopCrypto1() {
@@ -571,6 +604,7 @@ public class MFRC522 implements Closeable {
 		recv_data = new byte[] { recv_data[0], recv_data[1], p_out[0], p_out[1] };
 		
 		Response response = toCard(PCD_TRANSCEIVE, recv_data);
+		Logger.info(response);
 		if (response.getStatus() != MI_OK) {
 			Logger.error("Error in read");
 		}

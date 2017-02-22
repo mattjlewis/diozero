@@ -50,22 +50,21 @@ import com.diozero.util.RuntimeIOException;
  * driver states there is a <em>known bug when reading digital values from
  * PCF8591 if analog output is disabled</em>.
  * </p>
- * <p><a href="https://brainfyre.wordpress.com/2012/10/25/pcf8591-yl-40-ad-da-module-review/">Instructions<a/>:</p>
- * <p>The jumpers control whether analog input channels of the IC are connected to the analog sources:
+ * <p><a href="https://brainfyre.wordpress.com/2012/10/25/pcf8591-yl-40-ad-da-module-review/">Instructions</a>:<br>
+ * The jumpers control whether analog input channels of the IC are connected to the analog sources:</p>
  * <ul>
  * <li>Jumper P4 for AIN1: The temperature sensed by the R6 thermister is provided to the ADC.</li>
  * <li>Jumper P5 to AIN0: The R7 photocell voltage (resistance drop) is provided to the DAC.</li>
  * <li>Jumper P6 to AIN3: The single turn 10K ohm trimpot voltage (resistance drop – brighter light, lower resistance).</li>
  * </ul>
- * <p>From my experiments, the inputs / jumpers are configured as follows:
+ * <p>From my experiments, the inputs / jumpers are configured as follows:</p>
  * <ul>
  * <li>AIN0: trimpot (P6)</li>
  * <li>AIN1: LDR (P5)</li>
  * <li>AIN2: ?temp? (P4)</li>
  * <li>AIN3: AIN3</li>
  * </ul>
- * </p>
- * Removing a jumper allows an input channel to be fed from one of the external pins, labelled accordingly.</p>
+ * <p>Removing a jumper allows an input channel to be fed from one of the external pins, labelled accordingly.</p>
  */
 @SuppressWarnings("unused")
 public class PCF8591 extends AbstractDeviceFactory implements AnalogInputDeviceFactoryInterface,
