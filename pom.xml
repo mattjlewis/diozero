@@ -78,6 +78,7 @@
 
 	<modules>
 		<module>diozero-core</module>
+		<module>diozero-provider-firmata</module>
 		<module>diozero-provider-jdkdio10</module>
 		<module>diozero-provider-jdkdio11</module>
 		<module>diozero-provider-jpi</module>
