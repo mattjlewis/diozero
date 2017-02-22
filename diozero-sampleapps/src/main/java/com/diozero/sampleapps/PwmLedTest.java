@@ -29,7 +29,7 @@ package com.diozero.sampleapps;
 import org.pmw.tinylog.Logger;
 
 import com.diozero.PwmLed;
-import com.diozero.util.DioZeroScheduler;
+import com.diozero.internal.DeviceFactoryHelper;
 import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 
@@ -115,6 +115,6 @@ public class PwmLedTest {
 		}
 		
 		Logger.info("Done");
-		DioZeroScheduler.shutdownAll();
+		DeviceFactoryHelper.getNativeDeviceFactory().shutdown();
 	}
 }

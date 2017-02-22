@@ -33,6 +33,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 
+import org.pmw.tinylog.Logger;
+
 import com.diozero.api.*;
 import com.diozero.internal.spi.*;
 import com.diozero.util.RuntimeIOException;
@@ -50,10 +52,11 @@ public class JdkDeviceIoDeviceFactory extends BaseNativeDeviceFactory {
 				}
 				System.setProperty("java.security.policy", policy_file_path.toString());
 			} catch (IOException e) {
-				// Ignore
-				e.printStackTrace();
+				Logger.error(e, "Error initialising JDK Device I/O security policy: {}", e);
 			}
 		}
+		
+		initialiseBoardInfo();
 	}
 
 	@Override

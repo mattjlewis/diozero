@@ -55,19 +55,19 @@ public class BoardPinInfo {
 		pinsByNumber = new TreeMap<>();
 	}
 	
-	protected PinInfo addGpioPinInfo(int gpioNum, int pin, EnumSet<DeviceMode> modes) {
+	protected PinInfo addGpioPinInfo(int gpioNum, int pin, Set<DeviceMode> modes) {
 		return addGpioPinInfo(PinInfo.DEFAULT_HEADER, gpioNum, DEFAULT_GPIO_NAME_PREFIX + gpioNum, pin, modes);
 	}
 	
-	protected PinInfo addGpioPinInfo(int gpioNum, String name, int pin, EnumSet<DeviceMode> modes) {
+	protected PinInfo addGpioPinInfo(int gpioNum, String name, int pin, Set<DeviceMode> modes) {
 		return addGpioPinInfo(PinInfo.DEFAULT_HEADER, gpioNum, name, pin, modes);
 	}
 	
-	protected PinInfo addGpioPinInfo(String header, int gpioNum, int pin, EnumSet<DeviceMode> modes) {
+	protected PinInfo addGpioPinInfo(String header, int gpioNum, int pin, Set<DeviceMode> modes) {
 		return addGpioPinInfo(header, gpioNum, DEFAULT_GPIO_NAME_PREFIX + gpioNum, pin, modes);
 	}
 	
-	protected PinInfo addGpioPinInfo(String header, int gpioNum, String name, int pin, EnumSet<DeviceMode> modes) {
+	protected PinInfo addGpioPinInfo(String header, int gpioNum, String name, int pin, Set<DeviceMode> modes) {
 		PinInfo pin_info = new PinInfo(GPIO_KEY_PREFIX, header, gpioNum, pin, name, modes);
 		addGpioPinInfo(pin_info);
 		return pin_info;
@@ -81,15 +81,15 @@ public class BoardPinInfo {
 		}
 	}
 	
-	protected PinInfo addPwmPinInfo(int gpioNum, int pin, int pwmNum, EnumSet<DeviceMode> modes) {
+	protected PinInfo addPwmPinInfo(int gpioNum, int pin, int pwmNum, Set<DeviceMode> modes) {
 		return addPwmPinInfo(PinInfo.DEFAULT_HEADER, gpioNum, DEFAULT_GPIO_NAME_PREFIX + gpioNum, pin, pwmNum, modes);
 	}
 	
-	protected PinInfo addPwmPinInfo(int gpioNum, String name, int pin, int pwmNum, EnumSet<DeviceMode> modes) {
+	protected PinInfo addPwmPinInfo(int gpioNum, String name, int pin, int pwmNum, Set<DeviceMode> modes) {
 		return addPwmPinInfo(PinInfo.DEFAULT_HEADER, gpioNum, name, pin, pwmNum, modes);
 	}
 	
-	protected PinInfo addPwmPinInfo(String header, int gpioNumber, String name, int pin, int pwmNum, EnumSet<DeviceMode> modes) {
+	protected PinInfo addPwmPinInfo(String header, int gpioNumber, String name, int pin, int pwmNum, Set<DeviceMode> modes) {
 		PinInfo pin_info = new PwmPinInfo(GPIO_KEY_PREFIX, header, gpioNumber, pin, pwmNum, name, modes);
 		addGpioPinInfo(pin_info);
 		pwmNumToGpioMapping.put(Integer.valueOf(pwmNum), Integer.valueOf(gpioNumber));

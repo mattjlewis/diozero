@@ -1,6 +1,7 @@
 package com.diozero;
 
 import java.nio.ByteBuffer;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /*
  * #%L
@@ -41,6 +42,15 @@ public class BitSetTest {
 	
 	@Test
 	public void test() {
+		AtomicInteger register = new AtomicInteger();
+        byte reg = (byte) register.getAndIncrement();
+        register.compareAndSet(256, 1);
+        System.out.println(reg);
+        reg = (byte) register.getAndIncrement();
+        register.compareAndSet(256, 1);
+        System.out.println(reg);
+
+		
 		int i = 1998;
 		byte wait_irq = 0x30;
 		

@@ -771,7 +771,7 @@ public class MPU9150DMPDriver implements MPU9150DMPConstants {
 			type = TapType.TAP_Z_DOWN;
 			break;
 		default:
-			type = TapType.UNKNWON;
+			type = TapType.UNKNOWN;
 		}
 		
 		return type;

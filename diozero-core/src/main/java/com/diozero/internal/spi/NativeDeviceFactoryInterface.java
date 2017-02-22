@@ -1,5 +1,7 @@
 package com.diozero.internal.spi;
 
+import com.diozero.util.BoardInfo;
+
 /*
  * #%L
  * Device I/O Zero - Core
@@ -32,4 +34,5 @@ public interface NativeDeviceFactoryInterface extends GpioDeviceFactoryInterface
 		AnalogOutputDeviceFactoryInterface {
 
 	void registerDeviceFactory(DeviceFactoryInterface deviceFactory);
+	void initialiseBoardInfo();
 }

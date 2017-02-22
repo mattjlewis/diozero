@@ -55,9 +55,9 @@ public class LibraryLoader {
 						Files.copy(is, path, StandardCopyOption.REPLACE_EXISTING);
 						Runtime.getRuntime().load(path.toString());
 						loaded = true;
-						Logger.info("Loaded {} from classpath", libName);
+						Logger.info("Loaded library '{}' from classpath", libName);
 					} catch (Throwable t) {
-						Logger.info(t, "Error loading library from classpath, trying System.loadLibrary: {}", t);
+						Logger.warn("Error loading library '{}' from classpath, trying System.loadLibrary: {}", libName, t);
 					} finally {
 						try { is.close(); } catch (IOException e) { }
 					}
@@ -67,9 +67,9 @@ public class LibraryLoader {
 					try {
 						System.loadLibrary(libName);
 						loaded = true;
-						Logger.info("Loaded {} from system library path", libName);
+						Logger.info("Loaded library '{}' from system library path", libName);
 					} catch (Throwable t) {
-						Logger.info(t, "Error loading library from system library path: {}", t);
+						Logger.error("Error loading library '{}' from system library path: {}", libName, t);
 					}
 				}
 				LOADED_LIBRARIES.put(libName, Boolean.valueOf(loaded));

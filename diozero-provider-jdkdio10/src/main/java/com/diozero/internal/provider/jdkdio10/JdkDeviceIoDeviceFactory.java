@@ -33,6 +33,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 
+import org.pmw.tinylog.Logger;
+
 import com.diozero.api.*;
 import com.diozero.internal.spi.*;
 import com.diozero.util.RuntimeIOException;
@@ -43,17 +45,18 @@ public class JdkDeviceIoDeviceFactory extends BaseNativeDeviceFactory {
 		// Prevent having to reference a local GPIO policy file via -Djava.security.policy=<policy-file> command line
 		if (System.getSecurityManager() == null) {
 			try {
-				Path policy_file_path = Files.createTempFile("dio-zero-gpio-", ".policy");
+				Path policy_file_path = Files.createTempFile("diozero-gpio-", ".policy");
 				policy_file_path.toFile().deleteOnExit();
 				try (InputStream is = getClass().getResourceAsStream("/config/gpio.policy")) {
 					Files.copy(is, policy_file_path, StandardCopyOption.REPLACE_EXISTING);
 				}
 				System.setProperty("java.security.policy", policy_file_path.toString());
 			} catch (IOException e) {
-				// Ignore
-				e.printStackTrace();
+				Logger.error(e, "Error initialising JDK Device I/O security policy: {}", e);
 			}
 		}
+		
+		initialiseBoardInfo();
 	}
 	
 	@Override

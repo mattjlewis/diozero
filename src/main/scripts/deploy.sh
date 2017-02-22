@@ -47,6 +47,8 @@ files="../pigpioj/pigpioj-java/target/pigpioj-java-${pigpioj_version}.jar \
 	diozero-core/target/diozero-core-${version}.jar \
 	diozero-imu-devices/target/diozero-imu-devices-${version}.jar \
 	diozero-imu-sampleapp/target/diozero-imu-sampleapp-${version}.jar \
+	diozero-imu-visualiser/target/diozero-imu-visualiser-${version}.jar \
+	diozero-provider-firmata/target/diozero-provider-firmata-${version}.jar \
 	diozero-provider-jdkdio10/target/diozero-provider-jdkdio10-${version}.jar \
 	diozero-provider-jdkdio11/target/diozero-provider-jdkdio11-${version}.jar \
 	diozero-provider-jpi/target/diozero-provider-jpi-${version}.jar \

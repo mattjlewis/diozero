@@ -57,7 +57,10 @@ public abstract class BaseNativeDeviceFactory extends AbstractDeviceFactory impl
 	
 	public BaseNativeDeviceFactory() {
 		super(NATIVE_PREFIX);
-		
+	}
+
+	@Override
+	public void initialiseBoardInfo() {
 		boardInfo = SystemInfo.getBoardInfo();
 	}
 	
@@ -78,11 +81,13 @@ public abstract class BaseNativeDeviceFactory extends AbstractDeviceFactory impl
 	
 	@Override
 	public void shutdown() {
+		// First shutdown all of the other non-native device factories
 		for (DeviceFactoryInterface df : deviceFactories) {
 			if (! df.isShutdown()) {
 				df.shutdown();
 			}
 		}
+		// Now shutdown the native device factory
 		super.shutdown();
 	}
 

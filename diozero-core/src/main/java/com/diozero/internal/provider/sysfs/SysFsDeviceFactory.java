@@ -53,6 +53,8 @@ public class SysFsDeviceFactory extends BaseNativeDeviceFactory {
 	private Path rootPath;
 	
 	public SysFsDeviceFactory() {
+		initialiseBoardInfo();
+		
 		rootPath = FileSystems.getDefault().getPath(GPIO_ROOT_DIR);
 	}
 

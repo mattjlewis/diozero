@@ -64,6 +64,6 @@ public class TapEvent {
 	}
 	
 	public static enum TapType {
-		UNKNWON, TAP_X_UP, TAP_X_DOWN, TAP_Y_UP, TAP_Y_DOWN, TAP_Z_UP, TAP_Z_DOWN
+		UNKNOWN, TAP_X_UP, TAP_X_DOWN, TAP_Y_UP, TAP_Y_DOWN, TAP_Z_UP, TAP_Z_DOWN
 	}
 }

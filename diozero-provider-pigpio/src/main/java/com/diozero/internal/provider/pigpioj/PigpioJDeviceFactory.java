@@ -35,6 +35,8 @@ import com.diozero.util.RuntimeIOException;
 
 public class PigpioJDeviceFactory extends BaseNativeDeviceFactory {
 	public PigpioJDeviceFactory() {
+		initialiseBoardInfo();
+		
 		int rc = PigpioGpio.initialise();
 		if (rc < 0) {
 			throw new RuntimeIOException("Error calling PigpioGpio.initialise(), response: " + rc);
