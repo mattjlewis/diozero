@@ -27,9 +27,9 @@
 		mvn deploy -P release
 		(go to https://oss.sonatype.org/#nexus-search;gav~com.diozero~diozero-core~~~~kw,versionexpand
 		then Staging Repositories close and release)
-	Release:
+	Release (can't get this to work correctly, messes up version numbers):
 		mvn release:prepare -DignoreSnapshots=true
-		mvn release:clean / mvn release:rollback
+		mvn release:rollback & mvn release:clean 
 		mvn release:perform
 	-->
 	

@@ -29,6 +29,7 @@ package com.diozero.sampleapps;
 import org.pmw.tinylog.Logger;
 
 import com.diozero.LED;
+import com.diozero.internal.DeviceFactoryHelper;
 import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 
@@ -81,6 +82,8 @@ public class LEDTest {
 			Logger.info("Done");
 		} catch (RuntimeIOException e) {
 			Logger.error(e, "Error: {}", e);
+		} finally {
+			DeviceFactoryHelper.getNativeDeviceFactory().shutdown();
 		}
 	}
 }

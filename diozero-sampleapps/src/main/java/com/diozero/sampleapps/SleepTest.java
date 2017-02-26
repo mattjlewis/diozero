@@ -36,10 +36,10 @@ public class SleepTest {
 		int sleep_ns = 10_000;
 		
 		Logger.info("JNI sleep");
-		SleepUtil.sleepNanos(0, 100_000);
+		SleepUtil.sleepNanos(100_000);
 		for (int i=0; i<10; i++) {
 			long start = System.nanoTime();
-			SleepUtil.sleepNanos(0, sleep_ns);
+			SleepUtil.sleepNanos(sleep_ns);
 			long duration = System.nanoTime() - start;
 			Logger.info("Slept for " + duration + " nanos, difference=" + (duration - sleep_ns));
 		}

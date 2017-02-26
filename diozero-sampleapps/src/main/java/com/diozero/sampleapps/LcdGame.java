@@ -40,6 +40,7 @@ import com.diozero.HD44780Lcd;
 import com.diozero.HD44780Lcd.LcdConnection;
 import com.diozero.HD44780Lcd.PCF8574LcdConnection;
 import com.diozero.api.I2CConstants;
+import com.diozero.util.RangeUtil;
 import com.diozero.util.SleepUtil;
 
 public class LcdGame implements Closeable {
@@ -98,7 +99,7 @@ public class LcdGame implements Closeable {
 	
 	private void movePlayer(int delta) {
 		int new_player_pos_y = playerPosY+delta;
-		new_player_pos_y = Math.min(Math.max(new_player_pos_y, 0), lcd.getRowCount()-1);
+		new_player_pos_y = RangeUtil.constrain(new_player_pos_y, 0, lcd.getRowCount()-1);
 		if (new_player_pos_y != playerPosY) {
 			synchronized (lcd) {
 				lcd.setCursorPosition(0, playerPosY);

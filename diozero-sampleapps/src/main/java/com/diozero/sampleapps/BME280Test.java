@@ -28,6 +28,7 @@ package com.diozero.sampleapps;
 
 
 import com.diozero.BME280;
+import com.diozero.internal.DeviceFactoryHelper;
 import com.diozero.util.SleepUtil;
 
 /**
@@ -58,6 +59,8 @@ public class BME280Test {
 				
 				SleepUtil.sleepSeconds(1);
 			}
+		} finally {
+			DeviceFactoryHelper.getNativeDeviceFactory().shutdown();
 		}
 	}
 }

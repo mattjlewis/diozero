@@ -115,6 +115,27 @@ public class FirmataDeviceFactory extends BaseNativeDeviceFactory {
 	}
 	
 	@Override
+	public AnalogInputDeviceInterface provisionAnalogInputDevice(int gpio) {
+		// Special case - The Arduino can switch between digital and analog input hence use of gpio rather than adc
+		PinInfo pin_info = boardInfo.getByGpioNumber(gpio);
+		if (pin_info == null || ! pin_info.isSupported(DeviceMode.ANALOG_INPUT)) {
+			throw new IllegalArgumentException("Invalid mode (analog input) for GPIO " + gpio);
+		}
+		
+		String key = createPinKey(pin_info);
+		
+		// Check if this pin is already provisioned
+		if (isDeviceOpened(key)) {
+			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
+		}
+		
+		AnalogInputDeviceInterface device = createAnalogInputDevice(key, pin_info);
+		deviceOpened(device);
+		
+		return device;
+	}
+	
+	@Override
 	public GpioDigitalInputDeviceInterface createDigitalInputDevice(String key, PinInfo pinInfo, GpioPullUpDown pud,
 			GpioEventTrigger trigger) throws RuntimeIOException {
 		return new FirmataDigitalInputDevice(this, key, pinInfo.getDeviceNumber(), pud, trigger);

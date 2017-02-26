@@ -52,8 +52,12 @@ import com.diozero.util.SleepUtil;
  */
 public class PCA9685ServoTest {
 	private static final float TOWERPRO_SG90_MIN_MS = 0.6f;
-	private static final float TOWERPRO_SG90_MAX_MS = 2.5f;
+	private static final float TOWERPRO_SG90_MAX_MS = 2.4f;
+	private static final float TOWERPRO_SG90_MINUS90_MS = 1f;
+	private static final float TOWERPRO_SG90_PLUS90_MS = 2f;
 	private static final float TOWERPRO_SG90_MID_MS = (TOWERPRO_SG90_MIN_MS + TOWERPRO_SG90_MAX_MS) / 2;
+	private static final long LARGE_DELAY = 500;
+	private static final long SHORT_DELAY = 10;
 	
 	public static void main(String[] args) {
 		int pwm_freq = 50;
@@ -65,22 +69,52 @@ public class PCA9685ServoTest {
 	
 	public static void test(int pwmFrequency, int gpio) {
 		try (PCA9685 pca9685 = new PCA9685(pwmFrequency);
-				Servo servo = new Servo(pca9685, gpio, pwmFrequency, TOWERPRO_SG90_MID_MS)) {
+				Servo servo = new Servo(pca9685, gpio, pwmFrequency, TOWERPRO_SG90_MIN_MS, TOWERPRO_SG90_MAX_MS,
+						TOWERPRO_SG90_MINUS90_MS, TOWERPRO_SG90_PLUS90_MS, TOWERPRO_SG90_MID_MS)) {
 			Logger.info("Mid");
 			pca9685.setServoPulseWidthMs(gpio, TOWERPRO_SG90_MID_MS);
-			SleepUtil.sleepMillis(1000);
+			SleepUtil.sleepMillis(LARGE_DELAY);
 			Logger.info("Max");
 			pca9685.setServoPulseWidthMs(gpio, TOWERPRO_SG90_MAX_MS);
-			SleepUtil.sleepMillis(1000);
+			SleepUtil.sleepMillis(LARGE_DELAY);
 			Logger.info("Mid");
 			pca9685.setServoPulseWidthMs(gpio, TOWERPRO_SG90_MID_MS);
-			SleepUtil.sleepMillis(1000);
+			SleepUtil.sleepMillis(LARGE_DELAY);
 			Logger.info("Min");
 			pca9685.setServoPulseWidthMs(gpio, TOWERPRO_SG90_MIN_MS);
-			SleepUtil.sleepMillis(1000);
+			SleepUtil.sleepMillis(LARGE_DELAY);
 			Logger.info("Mid");
 			pca9685.setServoPulseWidthMs(gpio, TOWERPRO_SG90_MID_MS);
-			SleepUtil.sleepMillis(1000);
+			SleepUtil.sleepMillis(LARGE_DELAY);
+			
+			Logger.info("Mid");
+			servo.centre();
+			SleepUtil.sleepMillis(LARGE_DELAY);
+			Logger.info("Max");
+			servo.max();
+			SleepUtil.sleepMillis(LARGE_DELAY);
+			Logger.info("Mid");
+			servo.centre();
+			SleepUtil.sleepMillis(LARGE_DELAY);
+			Logger.info("Min");
+			servo.min();
+			SleepUtil.sleepMillis(LARGE_DELAY);
+			Logger.info("Mid");
+			servo.centre();
+			SleepUtil.sleepMillis(LARGE_DELAY);
+			
+			Logger.info("0");
+			servo.setAngle(0);
+			SleepUtil.sleepMillis(LARGE_DELAY);
+			Logger.info("Mid");
+			servo.setAngle(90);
+			SleepUtil.sleepMillis(LARGE_DELAY);
+			Logger.info("180");
+			servo.setAngle(180);
+			SleepUtil.sleepMillis(LARGE_DELAY);
+			Logger.info("Mid");
+			servo.setAngle(90);
+			SleepUtil.sleepMillis(LARGE_DELAY);
 			
 			/*
 			Logger.info("Mid");
@@ -103,15 +137,15 @@ public class PCA9685ServoTest {
 			
 			for (float pulse_ms=TOWERPRO_SG90_MID_MS; pulse_ms<TOWERPRO_SG90_MAX_MS; pulse_ms+=0.01) {
 				servo.setPulseWidthMs(pulse_ms);
-				SleepUtil.sleepMillis(10);
+				SleepUtil.sleepMillis(SHORT_DELAY);
 			}
 			for (float pulse_ms=TOWERPRO_SG90_MAX_MS; pulse_ms>TOWERPRO_SG90_MIN_MS; pulse_ms-=0.01) {
 				servo.setPulseWidthMs(pulse_ms);
-				SleepUtil.sleepMillis(10);
+				SleepUtil.sleepMillis(SHORT_DELAY);
 			}
 			for (float pulse_ms=TOWERPRO_SG90_MIN_MS; pulse_ms<TOWERPRO_SG90_MID_MS; pulse_ms+=0.01) {
 				servo.setPulseWidthMs(pulse_ms);
-				SleepUtil.sleepMillis(10);
+				SleepUtil.sleepMillis(SHORT_DELAY);
 			}
 		}
 	}

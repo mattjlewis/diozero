@@ -32,9 +32,11 @@ import org.pmw.tinylog.Logger;
 
 
 public class SleepUtil {
+	private static boolean NATIVE_LIBRARY_AVAILABLE = false;
 	static {
 		try {
 			LibraryLoader.loadLibrary(SleepUtil.class, "diozero-system-utils");
+			NATIVE_LIBRARY_AVAILABLE = false;
 		} catch (Throwable t) {
 			Logger.error(t, "Error loading diozero-system-utils: " + t);
 		}
@@ -81,7 +83,7 @@ public class SleepUtil {
 	 * @param micros Number of microseconds to sleep for
 	 */
 	public static void sleepMicros(int micros) {
-		sleepNanos(0, TimeUnit.MICROSECONDS.toNanos(micros));
+		sleepNanos((int) TimeUnit.MICROSECONDS.toNanos(micros));
 	}
 
 	/**
@@ -89,17 +91,10 @@ public class SleepUtil {
 	 * @param nanos Number of nanoseconds
 	 */
 	public static void sleepNanos(int nanos) {
-		sleepNanos(0, nanos);
-	}
-	
-	public static void pause() {
-		Object lock = new Object();
-		synchronized (lock) {
-			try {
-				lock.wait();
-			} catch (InterruptedException e) {
-				// Ignore
-			}
+		if (NATIVE_LIBRARY_AVAILABLE) {
+			sleepNanos(0, nanos);
+		} else {
+			try { Thread.sleep(0, nanos); } catch (InterruptedException e) { }
 		}
 	}
 
@@ -109,7 +104,7 @@ public class SleepUtil {
 		} while ((System.nanoTime() - startTime) < nanos);
 	}
 	
-	public static native long sleepNanos(int seconds, long nanos);
+	private static native long sleepNanos(int seconds, long nanos);
 	
 	public static void main(String[] args) {
 		System.out.println("Sleeping for 2.5s");

@@ -35,9 +35,7 @@ import org.pmw.tinylog.Logger;
 
 import com.diozero.api.*;
 import com.diozero.internal.spi.*;
-import com.diozero.util.BoardPinInfo;
-import com.diozero.util.RuntimeIOException;
-import com.diozero.util.SleepUtil;
+import com.diozero.util.*;
 
 public class PiconZero extends AbstractDeviceFactory
 implements GpioDeviceFactoryInterface, PwmOutputDeviceFactoryInterface,
@@ -216,7 +214,7 @@ implements GpioDeviceFactoryInterface, PwmOutputDeviceFactoryInterface,
 	 * @param speed Must be in range -1..1
 	 */
 	public void setMotor(int motor, float speed) {
-		setMotorValue(motor, (int) Math.max(MIN_MOTOR_VALUE, Math.min(MAX_MOTOR_VALUE, speed * MAX_MOTOR_VALUE)));
+		setMotorValue(motor, RangeUtil.map(speed, -1f, 1f, MIN_MOTOR_VALUE, MAX_MOTOR_VALUE));
 	}
 	
 	/**
@@ -225,7 +223,7 @@ implements GpioDeviceFactoryInterface, PwmOutputDeviceFactoryInterface,
 	 * @return Current motor speed in range -1..1
 	 */
 	public float getMotor(int motor) {
-		return getMotorValue(motor) / (float) MAX_MOTOR_VALUE;
+		return RangeUtil.map(getMotorValue(motor), MIN_MOTOR_VALUE, MAX_MOTOR_VALUE, -1f, 1f);
 	}
 	
 	/**
@@ -259,7 +257,7 @@ implements GpioDeviceFactoryInterface, PwmOutputDeviceFactoryInterface,
 		
 		switch (inputConfigs[channel]) {
 		case ANALOG:
-			return input / MAX_ANALOG_INPUT_VALUE;
+			return RangeUtil.map(input, 0, MAX_ANALOG_INPUT_VALUE, 0f, 1f);
 		case DIGITAL:
 		case DIGITAL_PULL_UP:
 		case DS18B20:
@@ -284,9 +282,9 @@ implements GpioDeviceFactoryInterface, PwmOutputDeviceFactoryInterface,
 	public void setValue(int channel, float value) {
 		int pz_value;
 		if (outputConfigs[channel] == OutputConfig.SERVO) {
-			pz_value = Math.round(SERVO_CENTRE * value) + SERVO_CENTRE;
+			pz_value = RangeUtil.map(value, -1, 1, 0, 180);
 		} else {
-			pz_value = Math.round(MAX_OUTPUT_VALUE * value);
+			pz_value = RangeUtil.map(value, 0, 1, 0, MAX_OUTPUT_VALUE);
 		}
 		setOutputValue(channel, pz_value);
 	}

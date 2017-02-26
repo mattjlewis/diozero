@@ -32,6 +32,7 @@ import com.diozero.HD44780Lcd;
 import com.diozero.HD44780Lcd.LcdConnection;
 import com.diozero.HD44780Lcd.PCF8574LcdConnection;
 import com.diozero.api.I2CConstants;
+import com.diozero.internal.DeviceFactoryHelper;
 import com.diozero.util.RuntimeIOException;
 
 /**
@@ -72,6 +73,8 @@ public class LcdSampleApp16x2PCF8574 {
 			LcdSampleApp16x2Base.test(lcd);
 		} catch (RuntimeIOException e) {
 			Logger.error(e, "Error: {}", e);
+		} finally {
+			DeviceFactoryHelper.getNativeDeviceFactory().shutdown();
 		}
 	}
 }

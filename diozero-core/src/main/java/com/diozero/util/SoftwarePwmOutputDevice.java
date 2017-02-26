@@ -67,7 +67,7 @@ public class SoftwarePwmOutputDevice extends AbstractDevice implements PwmOutput
 	public void run() {
 		if (dutyNs > 0) {
 			digitalOutputDevice.setValue(true);
-			SleepUtil.sleepNanos(0, dutyNs);
+			SleepUtil.sleepNanos(dutyNs);
 			digitalOutputDevice.setValue(false);
 		}
 	}
@@ -91,7 +91,7 @@ public class SoftwarePwmOutputDevice extends AbstractDevice implements PwmOutput
 	@Override
 	public void setValue(float value) {
 		// Constrain to 0..1
-		value = Math.min(Math.max(value, 0), 1);
+		value = RangeUtil.constrain(value, 0, 1);
 		dutyNs = (int) (value * TimeUnit.MILLISECONDS.toNanos(periodMs));
 		if (dutyNs == 0) {
 			digitalOutputDevice.setValue(false);

@@ -26,7 +26,6 @@ package com.diozero.api;
  * #L%
  */
 
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -50,17 +49,6 @@ public class Animation implements Runnable {
 	private static final int DEFAULT_FPS = 60;
 
 	private Collection<OutputDeviceInterface> targets;
-	/**
-	 * Array of values from 0.0 to 1.0 representing the beginning and end of the
-	 * animation respectively (default [0, 1]);
-	 */
-	private float[] cuePoints;
-	private int[] cuePointsMillis;
-	/**
-	 * A 1 or 2 dimensional array of device positions over time. See more on
-	 * keyFrames below. (required)
-	 */
-	private List<AnimationObject.KeyFrame[]> keyFrames;
 	/**
 	 * An easing function from ease-component to apply to the playback head on
 	 * the timeline. See {@link com.diozero.api.easing.Easing Easing} docs for a
@@ -111,11 +99,14 @@ public class Animation implements Runnable {
 	private Action onLoop;
 
 	private Future<?> future;
-	private List<List<float[]>> segmentValues;
 	private int runSegment;
 	private int runStep;
+	private Collection<AnimationObject> animationList;
+
+	private AnimationObject currentAnimationObject;
 
 	public Animation(Collection<OutputDeviceInterface> targets, int fps, EasingFunction easing, float speed) {
+		animationList = new ArrayList<>();
 		this.targets = targets;
 		if (fps <= 0) {
 			fps = DEFAULT_FPS;
@@ -200,9 +191,17 @@ public class Animation implements Runnable {
 	public float getSpeed() {
 		return speed;
 	}
-
-	public void enqueue(AnimationObject animationObject) {
-		enqueue(animationObject.getDuration(), animationObject.getCuePoints(), animationObject.getKeyFrames());
+	
+	public int getPeriodMs() {
+		return periodMs;
+	}
+	
+	public EasingFunction getEasingFunction() {
+		return easing;
+	}
+	
+	public Collection<OutputDeviceInterface> getTargets() {
+		return targets;
 	}
 	
 	/**
@@ -217,92 +216,35 @@ public class Animation implements Runnable {
 	 *            List of segment values for target
 	 */
 	public void enqueue(int durationMillis, float[] cuePoints, List<AnimationObject.KeyFrame[]> keyFrames) {
-		// Find our timeline endpoints and refresh rate
-		float scaled_duration = durationMillis / Math.abs(speed);
+		enqueue(new AnimationObject(durationMillis, cuePoints, keyFrames));
+	}
 
-		if (cuePoints.length == 0 || cuePoints.length != keyFrames.size()) {
-			throw new IllegalArgumentException("cuePoints length (" + cuePoints.length + ") must equal keyFrames length (" + keyFrames.size() + ")");
-		}
-		if (keyFrames.size() == 0 || keyFrames.get(0).length != targets.size()) {
-			throw new IllegalArgumentException("keyFrames length (" + keyFrames.get(0).length
-					+ ") must equal number of targets (" + targets.size() + ")");
-		}
-		this.cuePoints = cuePoints;
-		this.keyFrames = keyFrames;
-
-		cuePointsMillis = new int[cuePoints.length];
-		int segment = 0;
-		for (float cue_point : cuePoints) {
-			cuePointsMillis[segment++] = (int) (cue_point * scaled_duration);
-		}
-
-		// List of segments, each segment is a list of steps with a value for
-		// each target
-		// Java generics make it very difficult to have arrays of Collections
-		segmentValues = new ArrayList<>(cuePoints.length - 1);
-
-		// Setup first step from key frame start values
-		List<float[]> step_values = new ArrayList<>();
-		segmentValues.add(step_values);
-		float[] tgt_values = new float[targets.size()];
-		step_values.add(tgt_values);
-		for (int tgt = 0; tgt < targets.size(); tgt++) {
-			tgt_values[tgt] = keyFrames.get(0)[tgt].getValue();
-		}
-
-		for (segment = 1; segment < cuePoints.length; segment++) {
-			Logger.info("Segment={}", Integer.valueOf(segment));
-			long time = 0;
-			time += periodMs;
-			long seg_duration = cuePointsMillis[segment] - cuePointsMillis[segment - 1];
-			while (time < seg_duration) {
-				// For each target
-				tgt_values = new float[targets.size()];
-				step_values.add(tgt_values);
-				for (int tgt = 0; tgt < targets.size(); tgt++) {
-					EasingFunction kf_ef = keyFrames.get(segment-1)[tgt].getEasingFunction();
-					EasingFunction easing_func = kf_ef == null ? easing : kf_ef;
-					
-					AnimationObject.KeyFrame begin = keyFrames.get(segment - 1)[tgt];
-					float change = keyFrames.get(segment)[tgt].getValue() - keyFrames.get(segment - 1)[tgt].getValue();
-					tgt_values[tgt] = easing_func.ease(time, begin.getValue(), change, seg_duration);
-				}
-				time += periodMs;
-			}
-
-			// Add the segment finish state
-			tgt_values = new float[targets.size()];
-			step_values.add(tgt_values);
-			for (int tgt = 0; tgt < targets.size(); tgt++) {
-				tgt_values[tgt] = keyFrames.get(segment)[tgt].getValue();
-			}
-
-			if (segment < cuePoints.length - 1) {
-				step_values = new ArrayList<>();
-				segmentValues.add(step_values);
-				Logger.info("Added to segmentValues, size {}", Integer.valueOf(segmentValues.size()));
-			}
-		}
+	public void enqueue(AnimationObject animationObject) {
+		animationObject.prepare(this);
+		animationList.add(animationObject);
+		// TODO Go through the list of animation objects
+		currentAnimationObject = animationObject;
 	}
 
 	@Override
 	public void run() {
-		float[] tgt_values = segmentValues.get(runSegment).get(runStep);
+		List<List<float[]>> segment_values = currentAnimationObject.getSegmentValues();
+		float[] tgt_values = segment_values.get(runSegment).get(runStep);
 		int index = 0;
 		for (OutputDeviceInterface target : targets) {
-			// TODO Handle delta / value
+			// TODO Handle delta as well as value
 			target.setValue(tgt_values[index++]);
 		}
 		runStep++;
-		if (runStep == segmentValues.get(runSegment).size()) {
+		if (runStep == segment_values.get(runSegment).size()) {
 			runStep = 0;
 			runSegment++;
 			Logger.info("New segment {}, segmentValues.size() {}", Integer.valueOf(runSegment),
-					Integer.valueOf(segmentValues.size()));
+					Integer.valueOf(segment_values.size()));
 			if (onSegmentComplete != null) {
 				onSegmentComplete.action();
 			}
-			if (runSegment == segmentValues.size()) {
+			if (runSegment == segment_values.size()) {
 				runSegment = 0;
 				Logger.info("Finished");
 				if (loop) {
