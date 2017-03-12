@@ -35,10 +35,12 @@ import com.diozero.api.PinInfo;
 import com.diozero.util.RuntimeIOException;
 
 public interface PwmOutputDeviceFactoryInterface extends DeviceFactoryInterface {
-	default PwmOutputDeviceInterface provisionPwmOutputDevice(int pwmOrGpioNum, float initialValue) throws RuntimeIOException {
-		// Lookup by PWM number first, if not found or doesn't support PWM_OUTPUT, lookup by GPIO number
+	default PwmOutputDeviceInterface provisionPwmOutputDevice(int pwmOrGpioNum, int pwmFrequency, float initialValue)
+			throws RuntimeIOException {
+		// Lookup by PWM number first, if not found or doesn't support
+		// PWM_OUTPUT, lookup by GPIO number
 		PinInfo pin_info = getBoardPinInfo().getByPwmNumber(pwmOrGpioNum);
-		if (pin_info == null || ! pin_info.isSupported(DeviceMode.PWM_OUTPUT)) {
+		if (pin_info == null || !pin_info.isSupported(DeviceMode.PWM_OUTPUT)) {
 			pin_info = getBoardPinInfo().getByGpioNumber(pwmOrGpioNum);
 		}
 		if (pin_info != null && pin_info.isSupported(DeviceMode.PWM_OUTPUT)) {
@@ -48,22 +50,21 @@ public interface PwmOutputDeviceFactoryInterface extends DeviceFactoryInterface 
 		} else {
 			throw new IllegalArgumentException("Invalid mode (PWM output) for GPIO " + pwmOrGpioNum);
 		}
-		
+
 		String key = createPinKey(pin_info);
-		
+
 		// Check if this pin is already provisioned
 		if (isDeviceOpened(key)) {
 			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
 		}
 
-		PwmOutputDeviceInterface device = createPwmOutputDevice(key, pin_info, initialValue);
+		PwmOutputDeviceInterface device = createPwmOutputDevice(key, pin_info, pwmFrequency, initialValue);
 		deviceOpened(device);
-		
+
 		return device;
 	}
 
-	int getPwmFrequency(int gpio);
-	void setPwmFrequency(int gpio, int pwmFrequency);
-
-	PwmOutputDeviceInterface createPwmOutputDevice(String key, PinInfo pinInfo, float initialValue);
+	int getBoardPwmFrequency();
+	void setBoardPwmFrequency(int pwmFrequency);
+	PwmOutputDeviceInterface createPwmOutputDevice(String key, PinInfo pinInfo, int pwmFrequency, float initialValue);
 }

@@ -25,9 +25,8 @@ package com.diozero.api;
  * THE SOFTWARE.
  * #L%
  */
-
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -61,12 +60,6 @@ public class Animation implements Runnable {
 	 */
 	private boolean loop;
 	/**
-	 * The cuePoint that the animation will loop back to. If the animation is
-	 * playing in reverse, this is the point at which the animation will "loop
-	 * back" to 1.0 (default: 0.0)
-	 */
-	private float loopback;
-	/**
 	 * Controls the speed of the playback head and scales the calculated
 	 * duration of this and all subsequent segments until it is changed by
 	 * another segment or a call to the speed() method (default: 1.0)
@@ -81,10 +74,6 @@ public class Animation implements Runnable {
 	 * function to execute when segment is started (default: none)
 	 */
 	private Action onStart;
-	/**
-	 * function to execute when segment is paused (default: none)
-	 */
-	private Action onPause;
 	/**
 	 * function to execute when animation is stopped (default: none)
 	 */
@@ -101,12 +90,12 @@ public class Animation implements Runnable {
 	private Future<?> future;
 	private int runSegment;
 	private int runStep;
-	private Collection<AnimationObject> animationList;
+	private LinkedList<AnimationInstance> animationInstances;
 
-	private AnimationObject currentAnimationObject;
+	private AnimationInstance currentAnimationInstance;
 
 	public Animation(Collection<OutputDeviceInterface> targets, int fps, EasingFunction easing, float speed) {
-		animationList = new ArrayList<>();
+		animationInstances = new LinkedList<>();
 		this.targets = targets;
 		if (fps <= 0) {
 			fps = DEFAULT_FPS;
@@ -144,6 +133,7 @@ public class Animation implements Runnable {
 	 * @return Future instance for the background animation thread
 	 */
 	public Future<?> play() {
+		currentAnimationInstance = animationInstances.removeFirst();
 		runSegment = 0;
 		runStep = 0;
 		future = DioZeroScheduler.getNonDaemonInstance().scheduleAtFixedRate(this, 0, periodMs, TimeUnit.MILLISECONDS);
@@ -151,14 +141,6 @@ public class Animation implements Runnable {
 			onStart.action();
 		}
 		return future;
-	}
-
-	/**
-	 * Pause an animation while retaining the current progress and segment
-	 * queue.
-	 */
-	public void pause() {
-		// TODO
 	}
 
 	/**
@@ -173,14 +155,6 @@ public class Animation implements Runnable {
 				onStop.action();
 			}
 		}
-	}
-
-	/**
-	 * Jump to the next segment in the queue. This is called automatically when
-	 * a segment completes and in most cases should not be called by the user.
-	 */
-	public void next() {
-		// TODO
 	}
 
 	/**
@@ -215,24 +189,22 @@ public class Animation implements Runnable {
 	 * @param keyFrames
 	 *            List of segment values for target
 	 */
-	public void enqueue(int durationMillis, float[] cuePoints, List<AnimationObject.KeyFrame[]> keyFrames) {
-		enqueue(new AnimationObject(durationMillis, cuePoints, keyFrames));
+	public void enqueue(int durationMillis, float[] cuePoints, List<AnimationInstance.KeyFrame[]> keyFrames) {
+		enqueue(new AnimationInstance(durationMillis, cuePoints, keyFrames));
 	}
 
-	public void enqueue(AnimationObject animationObject) {
-		animationObject.prepare(this);
-		animationList.add(animationObject);
-		// TODO Go through the list of animation objects
-		currentAnimationObject = animationObject;
+	public void enqueue(AnimationInstance animationInstance) {
+		animationInstance.prepare(this);
+		
+		animationInstances.add(animationInstance);
 	}
 
 	@Override
 	public void run() {
-		List<List<float[]>> segment_values = currentAnimationObject.getSegmentValues();
+		List<List<float[]>> segment_values = currentAnimationInstance.getSegmentValues();
 		float[] tgt_values = segment_values.get(runSegment).get(runStep);
 		int index = 0;
 		for (OutputDeviceInterface target : targets) {
-			// TODO Handle delta as well as value
 			target.setValue(tgt_values[index++]);
 		}
 		runStep++;
@@ -246,16 +218,21 @@ public class Animation implements Runnable {
 			}
 			if (runSegment == segment_values.size()) {
 				runSegment = 0;
-				Logger.info("Finished");
-				if (loop) {
-					if (onLoop != null) {
-						onLoop.action();
-					}
+				// Any more animation instances?
+				if (animationInstances.size() > 0) {
+					currentAnimationInstance = animationInstances.removeFirst();
 				} else {
-					future.cancel(false);
-					future = null;
-					if (onStop != null) {
-						onStop.action();
+					Logger.info("Finished");
+					if (loop) {
+						if (onLoop != null) {
+							onLoop.action();
+						}
+					} else {
+						future.cancel(false);
+						future = null;
+						if (onStop != null) {
+							onStop.action();
+						}
 					}
 				}
 			}

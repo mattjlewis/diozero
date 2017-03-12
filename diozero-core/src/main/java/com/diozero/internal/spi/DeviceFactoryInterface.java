@@ -1,7 +1,10 @@
 package com.diozero.internal.spi;
 
+import java.io.Closeable;
+
 import com.diozero.api.PinInfo;
 import com.diozero.util.BoardPinInfo;
+import com.diozero.util.RuntimeIOException;
 
 /*
  * #%L
@@ -30,13 +33,14 @@ import com.diozero.util.BoardPinInfo;
  */
 
 
-public interface DeviceFactoryInterface {
+public interface DeviceFactoryInterface extends Closeable {
 	String getName();
-	void shutdown();
-	boolean isShutdown();
 	boolean isDeviceOpened(String key);
 	void deviceOpened(DeviceInterface device);
 	void deviceClosed(DeviceInterface device);
 	BoardPinInfo getBoardPinInfo();
 	String createPinKey(PinInfo pinInfo);
+	@Override
+	void close() throws RuntimeIOException;
+	boolean isClosed();
 }

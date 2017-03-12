@@ -46,6 +46,7 @@ import com.diozero.util.SleepUtil;
  * software controlled PWM.
  */
 public class PwmOutputDevice extends GpioDevice implements OutputDeviceInterface {
+	private static final int DEFAULT_PWM_FREQUENCY = 50;
 	public static final int INFINITE_ITERATIONS = -1;
 
 	private PwmOutputDeviceInterface device;
@@ -75,6 +76,20 @@ public class PwmOutputDevice extends GpioDevice implements OutputDeviceInterface
 	}
 
 	/**
+	 * @param gpio
+	 *            GPIO to which the output device is connected.
+	 * @param initialValue
+	 *            Initial output value (0..1).
+	 * @param pwmFrequency
+	 *            PWM frequency (Hz).
+	 * @throws RuntimeIOException
+	 *             If an I/O error occurred.
+	 */
+	public PwmOutputDevice(int gpio, int pwmFrequency, float initialValue) throws RuntimeIOException {
+		this(DeviceFactoryHelper.getNativeDeviceFactory(), gpio, pwmFrequency, initialValue);
+	}
+
+	/**
 	 * @param pwmDeviceFactory
 	 *            Device factory to use to provision this device.
 	 * @param gpio
@@ -86,9 +101,24 @@ public class PwmOutputDevice extends GpioDevice implements OutputDeviceInterface
 	 */
 	public PwmOutputDevice(PwmOutputDeviceFactoryInterface pwmDeviceFactory, int gpio, float initialValue)
 			throws RuntimeIOException {
+		this(pwmDeviceFactory, gpio, DEFAULT_PWM_FREQUENCY, initialValue);
+	}
+
+	/**
+	 * @param pwmDeviceFactory
+	 *            Device factory to use to provision this device.
+	 * @param gpio
+	 *            GPIO to which the output device is connected.
+	 * @param initialValue
+	 *            Initial output value (0..1).
+	 * @throws RuntimeIOException
+	 *             If an I/O error occurred.
+	 */
+	public PwmOutputDevice(PwmOutputDeviceFactoryInterface pwmDeviceFactory, int gpio, int pwmFrequency, float initialValue)
+			throws RuntimeIOException {
 		super(gpio);
 		running = new AtomicBoolean();
-		this.device = pwmDeviceFactory.provisionPwmOutputDevice(gpio, initialValue);
+		this.device = pwmDeviceFactory.provisionPwmOutputDevice(gpio, pwmFrequency, initialValue);
 	}
 
 	@Override
@@ -96,10 +126,10 @@ public class PwmOutputDevice extends GpioDevice implements OutputDeviceInterface
 		Logger.debug("close()");
 		if (running.get()) {
 			stopLoops();
-			Logger.info("Interrupting background thread " + backgroundThread.getName());
+			Logger.debug("Interrupting background thread " + backgroundThread.getName());
 			backgroundThread.interrupt();
 		}
-		Logger.info("Setting value to 0");
+		Logger.debug("Setting value to 0");
 		try {
 			device.setValue(0);
 		} catch (RuntimeIOException e) {
@@ -114,7 +144,7 @@ public class PwmOutputDevice extends GpioDevice implements OutputDeviceInterface
 			DioZeroScheduler.getDaemonInstance().execute(() -> {
 				backgroundThread = Thread.currentThread();
 				onOffLoop(onTime, offTime, n);
-				Logger.info("Background on-off loop finished");
+				Logger.debug("Background on-off loop finished");
 			});
 		} else {
 			onOffLoop(onTime, offTime, n);
@@ -143,7 +173,7 @@ public class PwmOutputDevice extends GpioDevice implements OutputDeviceInterface
 			DioZeroScheduler.getDaemonInstance().execute(() -> {
 				backgroundThread = Thread.currentThread();
 				fadeInOutLoop(fadeTime, steps, iterations);
-				Logger.info("Background fade in-out loop finished");
+				Logger.debug("Background fade in-out loop finished");
 			});
 		} else {
 			fadeInOutLoop(fadeTime, steps, iterations);
@@ -153,14 +183,15 @@ public class PwmOutputDevice extends GpioDevice implements OutputDeviceInterface
 	private void fadeInOutLoop(float fadeTime, int steps, int iterations) throws RuntimeIOException {
 		float sleep_time = fadeTime / steps;
 		float delta = 1f / steps;
+		Logger.debug("fadeTime={}, steps={}, sleep_time={}s, delta={}", Float.valueOf(fadeTime), Integer.valueOf(steps),
+				Float.valueOf(sleep_time), Float.valueOf(delta));
+		running.set(true);
 		if (iterations > 0) {
-			running.set(true);
 			for (int i = 0; i < iterations && running.get(); i++) {
 				fadeInOut(sleep_time, delta);
 			}
 			running.set(false);
 		} else if (iterations == INFINITE_ITERATIONS) {
-			running.set(true);
 			while (running.get()) {
 				fadeInOut(sleep_time, delta);
 			}

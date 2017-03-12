@@ -26,7 +26,6 @@ package com.diozero.sampleapps;
  * #L%
  */
 
-
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -39,62 +38,52 @@ import java.util.concurrent.Future;
 import org.pmw.tinylog.Logger;
 
 import com.diozero.api.Animation;
-import com.diozero.api.AnimationObject;
+import com.diozero.api.AnimationInstance;
 import com.diozero.api.OutputDeviceInterface;
 import com.diozero.api.easing.Cubic;
+import com.diozero.api.easing.EasingFunction;
 import com.diozero.api.easing.Elastic;
+import com.diozero.internal.DeviceFactoryHelper;
 import com.google.gson.Gson;
 
 public class GsonAnimationTest {
 	public static void main(String[] args) {
-		
-		Gson gson = new Gson();
-		
-		try (Reader reader = new InputStreamReader(GsonAnimationTest.class.getResourceAsStream("/animation1.json"))) {
-			AnimationObject anim_obj = gson.fromJson(reader, AnimationObject.class);
-			System.out.println(anim_obj);
-			
-			int fps = 100;
-			float speed = 1;
-			Collection<OutputDeviceInterface> targets = Arrays.asList(value -> System.out.println(value));
-			Animation anim = new Animation(targets, fps, Elastic::easeOut, speed);
-			anim.enqueue(anim_obj);
-			
-			Logger.info("Starting animation...");
-			Future<?> future = anim.play();
-			try {
-				Logger.info("Waiting");
-				future.get();
-				Logger.info("Finished");
-			} catch (CancellationException | ExecutionException | InterruptedException e) {
-				Logger.info("Finished {}", e);
-			}
+		Collection<OutputDeviceInterface> one_target = Arrays.asList(value -> System.out.println(value));
+		Collection<OutputDeviceInterface> two_targets = Arrays.asList(
+				value -> System.out.println("1: " + value), value -> System.out.println("2: " + value));
+
+		try {
+			animate(one_target, 10, Elastic::easeOut, 1, "/animation1.json", "/animation3.json");
+			animate(one_target, 10, Elastic::easeOut, 1, "/animation3.json");
+			animate(two_targets, 100, Cubic::easeIn, 1, "/animation2.json");
 		} catch (IOException e) {
 			Logger.error(e, "Error: {}", e);
+		} finally {
+			DeviceFactoryHelper.getNativeDeviceFactory().close();
+		}
+	}
+
+	private static void animate(Collection<OutputDeviceInterface> targets, int fps, EasingFunction easing, float speed,
+			String... files) throws IOException {
+		Animation anim = new Animation(targets, fps, easing, speed);
+
+		Gson gson = new Gson();
+		for (String file : files) {
+			try (Reader reader = new InputStreamReader(GsonAnimationTest.class.getResourceAsStream(file))) {
+				AnimationInstance anim_obj = gson.fromJson(reader, AnimationInstance.class);
+	
+				anim.enqueue(anim_obj);
+			}
 		}
 		
-		try (Reader reader = new InputStreamReader(GsonAnimationTest.class.getResourceAsStream("/animation2.json"))) {
-			AnimationObject anim_obj = gson.fromJson(reader, AnimationObject.class);
-			System.out.println(anim_obj);
-			
-			int fps = 100;
-			float speed = 1;
-			Collection<OutputDeviceInterface> targets = Arrays.asList(
-					value -> System.out.println("1: " + value), value -> System.out.println("2: " + value));
-			Animation anim = new Animation(targets, fps, Cubic::easeIn, speed);
-			anim.enqueue(anim_obj);
-			
-			Logger.info("Starting animation...");
-			Future<?> future = anim.play();
-			try {
-				Logger.info("Waiting");
-				future.get();
-				Logger.info("Finished");
-			} catch (CancellationException | ExecutionException | InterruptedException e) {
-				Logger.info("Finished {}", e);
-			}
-		} catch (IOException e) {
-			Logger.error(e, "Error: {}", e);
+		Logger.info("Starting animation...");
+		Future<?> future = anim.play();
+		try {
+			Logger.info("Waiting");
+			future.get();
+			Logger.info("Finished");
+		} catch (CancellationException | ExecutionException | InterruptedException e) {
+			Logger.info("Finished {}", e);
 		}
 	}
 }

@@ -26,8 +26,6 @@ package com.diozero;
  * #L%
  */
 
-
-import java.io.Closeable;
 import java.nio.ByteBuffer;
 
 import org.pmw.tinylog.Logger;
@@ -37,7 +35,7 @@ import com.diozero.internal.spi.*;
 import com.diozero.util.BoardPinInfo;
 import com.diozero.util.RuntimeIOException;
 
-public class McpAdc extends AbstractDeviceFactory implements AnalogInputDeviceFactoryInterface, Closeable {
+public class McpAdc extends AbstractDeviceFactory implements AnalogInputDeviceFactoryInterface {
 	/** @see <a href="http://ww1.microchip.com/downloads/en/DeviceDoc/21293C.pdf">MCP3001</a> */
 	public static final Type MCP3001 = Type.MCP3001;
 	/** @see <a href="http://ww1.microchip.com/downloads/en/DeviceDoc/21294E.pdf">MCP3002</a> */
@@ -90,7 +88,7 @@ public class McpAdc extends AbstractDeviceFactory implements AnalogInputDeviceFa
 	public void close() throws RuntimeIOException {
 		Logger.debug("close()");
 		// Close all open pins before closing the SPI device itself
-		shutdown();
+		super.close();
 		spiDevice.close();
 	}
 

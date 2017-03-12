@@ -114,7 +114,7 @@ public class PwmLed extends PwmOutputDevice {
 	}
 
 	/**
-	 * Pulse the LED on and off indefinitely.
+	 * Pulse the LED on and off indefinitely in a background thread with a fade time of 1 second.
 	 * 
 	 * @throws RuntimeIOException
 	 *             If an I/O error occurred.
@@ -127,7 +127,7 @@ public class PwmLed extends PwmOutputDevice {
 	 * Pulse the LED on and off repeatedly.
 	 * 
 	 * @param fadeTime
-	 *            Time from fully on to fully off.
+	 *            Time in seconds from fully on to fully off.
 	 * @param steps
 	 *            Number of steps between fully on to fully off.
 	 * @param iterations

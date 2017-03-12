@@ -1,7 +1,5 @@
 package com.diozero;
 
-import java.io.Closeable;
-
 /*
  * #%L
  * Device I/O Zero - Core
@@ -39,7 +37,7 @@ import com.diozero.util.*;
 
 public class PiconZero extends AbstractDeviceFactory
 implements GpioDeviceFactoryInterface, PwmOutputDeviceFactoryInterface,
-	AnalogInputDeviceFactoryInterface, AnalogOutputDeviceFactoryInterface, Closeable {
+	AnalogInputDeviceFactoryInterface, AnalogOutputDeviceFactoryInterface {
 	public static enum InputConfig {
 		DIGITAL(0), DIGITAL_PULL_UP(128), ANALOG(1), DS18B20(2);
 		
@@ -65,6 +63,8 @@ implements GpioDeviceFactoryInterface, PwmOutputDeviceFactoryInterface,
 			return value;
 		}
 	}
+	
+	private static final int PICON_ZERO_PWM_FREQUENCY = 50;
 	
 	private static final int DEFAULT_ADDRESS = 0x22;
 	private static final int MAX_I2C_RETRIES = 5;
@@ -99,6 +99,7 @@ implements GpioDeviceFactoryInterface, PwmOutputDeviceFactoryInterface,
 	private OutputConfig[] outputConfigs = new OutputConfig[NUM_OUTPUT_CHANNELS];
 	private InputConfig[] inputConfigs = new InputConfig[NUM_INPUT_CHANNELS];
 	private int[] motorValues = new int[NUM_MOTORS];
+	private int boardPwmFrequency = PICON_ZERO_PWM_FREQUENCY;
 	
 	public PiconZero() {
 		this(I2CConstants.BUS_1, DEFAULT_ADDRESS);
@@ -367,14 +368,14 @@ implements GpioDeviceFactoryInterface, PwmOutputDeviceFactoryInterface,
 	}
 
 	@Override
-	public int getPwmFrequency(int gpio) {
-		// Not supported
-		return 50;
+	public int getBoardPwmFrequency() {
+		return boardPwmFrequency ;
 	}
 
 	@Override
-	public void setPwmFrequency(int gpio, int pwmFrequency) {
+	public void setBoardPwmFrequency(int pwmFrequency) {
 		// Not supported
+		Logger.warn("Cannot change PWM frequency for the Piconzero");
 	}
 
 	@Override
@@ -404,7 +405,7 @@ implements GpioDeviceFactoryInterface, PwmOutputDeviceFactoryInterface,
 	
 	@Override
 	public PwmOutputDeviceInterface createPwmOutputDevice(String key, PinInfo pinInfo,
-			float initialValue) throws RuntimeIOException {
+			int pwmFrequency, float initialValue) throws RuntimeIOException {
 		setOutputConfig(pinInfo.getPinNumber(), OutputConfig.PWM);
 		return new PiconZeroPwmOutputDevice(this, key, pinInfo.getDeviceNumber(), pinInfo.getPinNumber(), initialValue);
 	}

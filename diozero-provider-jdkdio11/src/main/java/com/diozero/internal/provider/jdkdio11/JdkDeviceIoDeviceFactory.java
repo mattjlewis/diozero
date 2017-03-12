@@ -65,12 +65,12 @@ public class JdkDeviceIoDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	public int getPwmFrequency(int gpio) {
+	public int getBoardPwmFrequency() {
 		throw new UnsupportedOperationException("PWM output isn't supported by JDK Device I/O");
 	}
 
 	@Override
-	public void setPwmFrequency(int gpio, int pwmFrequency) {
+	public void setBoardPwmFrequency(int pwmFrequency) {
 		throw new UnsupportedOperationException("PWM output isn't supported by JDK Device I/O");
 	}
 
@@ -93,7 +93,7 @@ public class JdkDeviceIoDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	public PwmOutputDeviceInterface createPwmOutputDevice(String key, PinInfo pinInfo,
+	public PwmOutputDeviceInterface createPwmOutputDevice(String key, PinInfo pinInfo, int pwmFrequency,
 			float initialValue) throws RuntimeIOException {
 		throw new UnsupportedOperationException("PWM output isn't supported by JDK Device I/O");
 	}

@@ -28,6 +28,8 @@ package com.diozero.util;
 
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.pmw.tinylog.Logger;
 
@@ -41,13 +43,18 @@ public class SoftwarePwmOutputDevice extends AbstractDevice implements PwmOutput
 	private GpioDigitalOutputDeviceInterface digitalOutputDevice;
 	private ScheduledFuture<?> future;
 	private int periodMs;
-	private int dutyNs;
+	private AtomicInteger dutyNs;
+	private AtomicBoolean fullyOn;
+	private AtomicBoolean fullyOff;
 	
 	public SoftwarePwmOutputDevice(String key, DeviceFactoryInterface deviceFactory,
 			GpioDigitalOutputDeviceInterface digitalOutputDevice, int frequency, float initialValue) {
 		super(key, deviceFactory);
 		
 		this.digitalOutputDevice = digitalOutputDevice;
+		dutyNs = new AtomicInteger();
+		fullyOn = new AtomicBoolean();
+		fullyOff = new AtomicBoolean();
 		
 		periodMs = 1_000 / frequency;
 		setValue(initialValue);
@@ -65,16 +72,20 @@ public class SoftwarePwmOutputDevice extends AbstractDevice implements PwmOutput
 
 	@Override
 	public void run() {
-		if (dutyNs > 0) {
+		if (fullyOff.get()) {
+			// Fully off
+			digitalOutputDevice.setValue(false);
+		} else if (fullyOn.get()) {
 			digitalOutputDevice.setValue(true);
-			SleepUtil.sleepNanos(dutyNs);
+		} else {
+			digitalOutputDevice.setValue(true);
+			SleepUtil.sleepNanos(dutyNs.get());
 			digitalOutputDevice.setValue(false);
 		}
 	}
 
 	@Override
 	public void closeDevice() {
-		stop();
 		Logger.debug("closeDevice() {}", getKey());
 		stop();
 		if (digitalOutputDevice != null) {
@@ -85,16 +96,23 @@ public class SoftwarePwmOutputDevice extends AbstractDevice implements PwmOutput
 	
 	@Override
 	public float getValue() {
-		return dutyNs / (float) TimeUnit.MILLISECONDS.toNanos(periodMs);
+		return dutyNs.get() / (float) TimeUnit.MILLISECONDS.toNanos(periodMs);
 	}
 	
 	@Override
 	public void setValue(float value) {
 		// Constrain to 0..1
 		value = RangeUtil.constrain(value, 0, 1);
-		dutyNs = (int) (value * TimeUnit.MILLISECONDS.toNanos(periodMs));
-		if (dutyNs == 0) {
-			digitalOutputDevice.setValue(false);
+		dutyNs.set((int) (value * TimeUnit.MILLISECONDS.toNanos(periodMs)));
+		if (value == 0) {
+			fullyOn.set(false);
+			fullyOff.set(true);
+		} else if (value == 1) {
+			fullyOn.set(true);
+			fullyOff.set(false);
+		} else {
+			fullyOn.set(false);
+			fullyOff.set(false);
 		}
 	}
 

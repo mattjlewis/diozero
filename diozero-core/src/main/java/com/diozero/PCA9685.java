@@ -4,7 +4,7 @@ package com.diozero;
  * #%L
  * Device I/O Zero - Core
  * %%
- * Copyright (C) 2016 diozero
+ * Copyright (C) 2016 - 2017 mattjlewis
  * %%
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,9 +26,6 @@ package com.diozero;
  * #L%
  */
 
-
-import java.io.Closeable;
-
 import org.pmw.tinylog.Logger;
 
 import com.diozero.api.I2CConstants;
@@ -42,7 +39,7 @@ import com.diozero.util.*;
  * Datasheet: http://www.nxp.com/documents/data_sheet/PCA9685.pdf
  */
 @SuppressWarnings("unused")
-public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFactoryInterface, Closeable {
+public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFactoryInterface {
 	private static final int DEVICE_ADDRESS = 0x40;
 	private static final String DEVICE_NAME = "PCA9685";
 	private static final int NUM_CHANNELS = 16;
@@ -93,8 +90,8 @@ public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFac
 	
 	private I2CDevice i2cDevice;
 	private String keyPrefix;
-	private int pwmFrequency = DEFAULT_PWM_FREQUENCY;
-	private double pulseMsPerBit = ServoUtil.calcPulseMsPerBit(pwmFrequency, RANGE);
+	private int boardPwmFrequency = DEFAULT_PWM_FREQUENCY;
+	private double pulseMsPerBit = ServoUtil.calcPulseMsPerBit(boardPwmFrequency, RANGE);
 	private BoardPinInfo boardPinInfo;
 
 	public PCA9685(int pwmFrequency) throws RuntimeIOException {
@@ -137,7 +134,7 @@ public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFac
 		byte oldmode = i2cDevice.readByte(MODE1);
 		i2cDevice.writeByte(MODE1, (byte)((oldmode & 0x7F) | SLEEP_MASK));	// Enter low power mode (set the sleep bit)
 		i2cDevice.writeByte(PRESCALE, (byte)(prescale_int));
-		this.pwmFrequency = pwmFrequency;
+		this.boardPwmFrequency = pwmFrequency;
 		pulseMsPerBit = ServoUtil.calcPulseMsPerBit(pwmFrequency, RANGE);
 		i2cDevice.writeByte(MODE1, oldmode);								// Restore the previous mode1 value
 		SleepUtil.sleepMillis(1);											// Wait min 500us for the oscillator to stabilise
@@ -259,7 +256,7 @@ public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFac
 	public void close() throws RuntimeIOException {
 		Logger.debug("close()");
 		// Close all open pins before closing the I2C device itself
-		shutdown();
+		super.close();
 		i2cDevice.close();
 	}
 	
@@ -270,8 +267,14 @@ public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFac
 	}
 
 	@Override
-	public PwmOutputDeviceInterface createPwmOutputDevice(String key, PinInfo pinInfo, float initialValue)
-			throws RuntimeIOException {
+	public PwmOutputDeviceInterface createPwmOutputDevice(String key, PinInfo pinInfo, int pwmFrequency,
+			float initialValue) throws RuntimeIOException {
+		// Note pwmFrequency is ignored; make sure you setup the board's PWM frequency first
+		if (pwmFrequency != boardPwmFrequency) {
+			Logger.warn("Specified PWM frequency ({}) is different to that configured for the board ({})"
+					+ "; this device has a common PWM frequency for all outputs",
+					Integer.valueOf(pwmFrequency), Integer.valueOf(boardPwmFrequency));
+		}
 		return new PCA9685PwmOutputDevice(this, key, pinInfo.getDeviceNumber());
 	}
 
@@ -296,12 +299,12 @@ public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFac
 	}
 	
 	@Override
-	public int getPwmFrequency(int channel) {
-		return pwmFrequency;
+	public int getBoardPwmFrequency() {
+		return boardPwmFrequency;
 	}
 	
 	@Override
-	public void setPwmFrequency(int channel, int pwmFrequency) {
+	public void setBoardPwmFrequency(int pwmFrequency) {
 		setPwmFreq(pwmFrequency);
 	}
 

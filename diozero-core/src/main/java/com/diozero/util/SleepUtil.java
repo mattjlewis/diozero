@@ -36,7 +36,7 @@ public class SleepUtil {
 	static {
 		try {
 			LibraryLoader.loadLibrary(SleepUtil.class, "diozero-system-utils");
-			NATIVE_LIBRARY_AVAILABLE = false;
+			NATIVE_LIBRARY_AVAILABLE = true;
 		} catch (Throwable t) {
 			Logger.error(t, "Error loading diozero-system-utils: " + t);
 		}
@@ -94,6 +94,7 @@ public class SleepUtil {
 		if (NATIVE_LIBRARY_AVAILABLE) {
 			sleepNanos(0, nanos);
 		} else {
+			// Note max value is 999,999, i.e. less than 1ms
 			try { Thread.sleep(0, nanos); } catch (InterruptedException e) { }
 		}
 	}

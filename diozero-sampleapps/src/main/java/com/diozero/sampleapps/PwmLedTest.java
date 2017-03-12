@@ -113,7 +113,7 @@ public class PwmLedTest {
 		} catch (RuntimeIOException e) {
 			Logger.error(e, "Error: {}", e);
 		} finally {
-			DeviceFactoryHelper.getNativeDeviceFactory().shutdown();
+			DeviceFactoryHelper.getNativeDeviceFactory().close();
 		}
 		
 		Logger.info("Done");

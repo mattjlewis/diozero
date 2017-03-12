@@ -32,7 +32,7 @@ import org.pmw.tinylog.Logger;
 import com.diozero.PCF8591;
 import com.diozero.PwmLed;
 import com.diozero.api.AnalogInputDevice;
-import com.diozero.util.DioZeroScheduler;
+import com.diozero.internal.DeviceFactoryHelper;
 import com.diozero.util.SleepUtil;
 
 public class JoystickTest {
@@ -63,7 +63,8 @@ public class JoystickTest {
 				
 				SleepUtil.sleepSeconds(1);
 			}
+		} finally {
+			DeviceFactoryHelper.getNativeDeviceFactory().close();
 		}
-		DioZeroScheduler.shutdownAll();
 	}
 }

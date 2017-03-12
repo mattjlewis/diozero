@@ -25,7 +25,7 @@
 ###
 #!/bin/sh
 
-version=0.9-SNAPSHOT
+version=0.10-SNAPSHOT
 pigpioj_version=1.0.1
 username=pi
 #host=george.local
@@ -48,6 +48,7 @@ files="../pigpioj/pigpioj-java/target/pigpioj-java-${pigpioj_version}.jar \
 	diozero-imu-devices/target/diozero-imu-devices-${version}.jar \
 	diozero-imu-sampleapp/target/diozero-imu-sampleapp-${version}.jar \
 	diozero-imu-visualiser/target/diozero-imu-visualiser-${version}.jar \
+	diozero-provider-bbbiolib/target/diozero-provider-bbbiolib-${version}.jar \
 	diozero-provider-firmata/target/diozero-provider-firmata-${version}.jar \
 	diozero-provider-jdkdio10/target/diozero-provider-jdkdio10-${version}.jar \
 	diozero-provider-jdkdio11/target/diozero-provider-jdkdio11-${version}.jar \

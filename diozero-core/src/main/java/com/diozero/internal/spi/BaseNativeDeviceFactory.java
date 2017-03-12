@@ -80,15 +80,17 @@ public abstract class BaseNativeDeviceFactory extends AbstractDeviceFactory impl
 	}
 	
 	@Override
-	public void shutdown() {
-		// First shutdown all of the other non-native device factories
+	public void close() {
+		// 
+		DioZeroScheduler.shutdownAll();
+		// Shutdown all of the other non-native device factories
 		for (DeviceFactoryInterface df : deviceFactories) {
-			if (! df.isShutdown()) {
-				df.shutdown();
+			if (! df.isClosed()) {
+				df.close();
 			}
 		}
-		// Now shutdown the native device factory
-		super.shutdown();
+		// Now close all devices provisioned directly by this device factory
+		super.close();
 	}
 
 	@Override

@@ -4,7 +4,7 @@ package com.diozero;
  * #%L
  * Device I/O Zero - Core
  * %%
- * Copyright (C) 2016 mattjlewis
+ * Copyright (C) 2016 - 2017 mattjlewis
  * %%
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,7 +26,6 @@ package com.diozero;
  * #L%
  */
 
-import java.io.Closeable;
 import java.nio.ByteOrder;
 
 import org.pmw.tinylog.Logger;
@@ -68,7 +67,7 @@ import com.diozero.util.RuntimeIOException;
  */
 @SuppressWarnings("unused")
 public class PCF8591 extends AbstractDeviceFactory implements AnalogInputDeviceFactoryInterface,
-AnalogOutputDeviceFactoryInterface, Closeable {
+AnalogOutputDeviceFactoryInterface {
 	private static final String DEVICE_NAME = "PCF8591";
 	private static final int RESOLUTION = 8;
 	private static final float RANGE = (float) Math.pow(2, RESOLUTION);

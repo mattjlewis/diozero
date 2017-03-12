@@ -36,11 +36,11 @@ import java.util.concurrent.Future;
 import org.pmw.tinylog.Logger;
 
 import com.diozero.api.Animation;
-import com.diozero.api.AnimationObject;
+import com.diozero.api.AnimationInstance;
 import com.diozero.api.OutputDeviceInterface;
 import com.diozero.api.easing.EasingFunction;
 import com.diozero.api.easing.EasingFunctions;
-import com.diozero.util.DioZeroScheduler;
+import com.diozero.internal.DeviceFactoryHelper;
 
 public class LedAnimationTest {
 	public static void main(String[] args) {
@@ -79,7 +79,7 @@ public class LedAnimationTest {
 			i++;
 		}
 		
-		List<AnimationObject.KeyFrame[]> key_frames = new ArrayList<>();
+		List<AnimationInstance.KeyFrame[]> key_frames = new ArrayList<>();
 		for (String key_frame_val : args[arg++].split(";")) {
 			Logger.debug("key_frame_val=" + key_frame_val);
 			List<Float> key_frame_list = new ArrayList<>();
@@ -87,11 +87,11 @@ public class LedAnimationTest {
 				Logger.debug("key_frame=" + key_frame);
 				key_frame_list.add(Float.valueOf(key_frame));
 			}
-			AnimationObject.KeyFrame[] key_frame_values = new AnimationObject.KeyFrame[key_frame_list.size()];
+			AnimationInstance.KeyFrame[] key_frame_values = new AnimationInstance.KeyFrame[key_frame_list.size()];
 			key_frames.add(key_frame_values);
 			i = 0;
 			for (Float key_frame : key_frame_list) {
-				key_frame_values[i++] = new AnimationObject.KeyFrame(key_frame.floatValue());
+				key_frame_values[i++] = new AnimationInstance.KeyFrame(key_frame.floatValue());
 			}
 		}
 		
@@ -105,8 +105,8 @@ public class LedAnimationTest {
 			Logger.debug("Finished");
 		} catch (CancellationException | ExecutionException | InterruptedException e) {
 			Logger.debug("Finished {}", e);
+		} finally {
+			DeviceFactoryHelper.getNativeDeviceFactory().close();
 		}
-		
-		DioZeroScheduler.shutdownAll();
 	}
 }

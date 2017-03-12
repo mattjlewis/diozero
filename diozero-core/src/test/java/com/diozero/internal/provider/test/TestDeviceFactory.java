@@ -1,8 +1,5 @@
 package com.diozero.internal.provider.test;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /*
  * #%L
  * Device I/O Zero - Core
@@ -76,7 +73,7 @@ public class TestDeviceFactory extends BaseNativeDeviceFactory {
 	}
 	
 	private static final int DEFAULT_PWM_FREQUENCY = 100;
-	private Map<Integer, Integer> pwmFrequencies = new HashMap<>();
+	private int boardPwmFrequency = DEFAULT_PWM_FREQUENCY;
 	
 	// Added for testing purposes only
 	public DeviceStates getDeviceStates() {
@@ -125,7 +122,7 @@ public class TestDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	public PwmOutputDeviceInterface createPwmOutputDevice(String key, PinInfo pinInfo,
+	public PwmOutputDeviceInterface createPwmOutputDevice(String key, PinInfo pinInfo, int pwmFrequency,
 			float initialValue) throws RuntimeIOException {
 		if (pwmOutputDeviceClass == null) {
 			throw new IllegalArgumentException("PWM output implementation class hasn't been set");
@@ -198,19 +195,12 @@ public class TestDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	public int getPwmFrequency(int gpio) {
-		Integer key = Integer.valueOf(gpio);
-		Integer pwm_freq = pwmFrequencies.get(key);
-		if (pwm_freq == null) {
-			pwm_freq = new Integer(DEFAULT_PWM_FREQUENCY);
-			pwmFrequencies.put(key, pwm_freq);
-		}
-		
-		return pwm_freq.intValue();
+	public int getBoardPwmFrequency() {
+		return boardPwmFrequency;
 	}
 
 	@Override
-	public void setPwmFrequency(int gpio, int pwmFrequency) {
-		this.pwmFrequencies.put(Integer.valueOf(gpio), Integer.valueOf(pwmFrequency));
+	public void setBoardPwmFrequency(int pwmFrequency) {
+		this.boardPwmFrequency = pwmFrequency;
 	}
 }

@@ -69,7 +69,7 @@ public class PwmTest {
 		} catch (RuntimeIOException e) {
 			Logger.error(e, "Error: ", e);
 		} finally {
-			DeviceFactoryHelper.getNativeDeviceFactory().shutdown();
+			DeviceFactoryHelper.getNativeDeviceFactory().close();
 		}
 	}
 }

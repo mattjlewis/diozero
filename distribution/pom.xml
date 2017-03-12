@@ -22,6 +22,11 @@
 		</dependency>
 		<dependency>
 			<groupId>com.diozero</groupId>
+			<artifactId>diozero-provider-bbbiolib</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.diozero</groupId>
 			<artifactId>diozero-provider-firmata</artifactId>
 			<version>${project.version}</version>
 		</dependency>

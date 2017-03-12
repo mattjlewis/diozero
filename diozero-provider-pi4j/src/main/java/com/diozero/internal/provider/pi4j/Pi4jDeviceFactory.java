@@ -1,8 +1,5 @@
 package com.diozero.internal.provider.pi4j;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.pmw.tinylog.Logger;
 
 /*
@@ -41,14 +38,12 @@ public class Pi4jDeviceFactory extends BaseNativeDeviceFactory {
 	private static final int PI_PWM_CLOCK_BASE_FREQUENCY = 19_200_000;
 	private static final int DEFAULT_HARDWARE_PWM_RANGE = 1024;
 	private static final int DEFAULT_HARDWARE_PWM_FREQUENCY = 100;
-	private static final int DEFAULT_SOFTWARE_PWM_FREQ = 100;
 	// See https://projects.drogon.net/raspberry-pi/wiringpi/software-pwm-library/
 	// You can lower the range to get a higher frequency, at the expense of resolution,
 	// or increase to get more resolution, but that will lower the frequency
 	private static final int PI4J_MIN_SOFTWARE_PULSE_WIDTH_US = 100;
 	
-	private Map<Integer, Integer> softwarePwmFrequency;
-	private int hardwarePwmFrequency;
+	private int boardPwmFrequency;
 	private int hardwarePwmRange;
 	
 	private GpioController gpioController;
@@ -62,8 +57,6 @@ public class Pi4jDeviceFactory extends BaseNativeDeviceFactory {
 		// Default mode is balanced, actually want mark-space which gives traditional PWM with
 		// predictable PWM frequencies
 		setHardwarePwmFrequency(DEFAULT_HARDWARE_PWM_FREQUENCY);
-		
-		softwarePwmFrequency = new HashMap<>();
 	}
 
 	@Override
@@ -72,29 +65,13 @@ public class Pi4jDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	public int getPwmFrequency(int gpio) {
-		if (boardInfo.getByGpioNumber(gpio).isSupported(DeviceMode.PWM_OUTPUT)) {
-			return hardwarePwmFrequency;
-		}
-		
-		Integer pwm_freq = softwarePwmFrequency.get(Integer.valueOf(gpio));
-		if (pwm_freq == null) {
-			return DEFAULT_SOFTWARE_PWM_FREQ;
-		}
-		
-		return pwm_freq.intValue();
+	public int getBoardPwmFrequency() {
+		return boardPwmFrequency;
 	}
 	
 	@Override
-	public void setPwmFrequency(int gpio, int pwmFrequency) {
-		if (boardInfo.getByGpioNumber(gpio).isSupported(DeviceMode.PWM_OUTPUT)) {
-			setHardwarePwmFrequency(pwmFrequency);
-		} else {
-			// TODO Software PWM frequency should be limited to 20..250Hz (gives a range of 500..40)
-			this.softwarePwmFrequency.put(Integer.valueOf(gpio), Integer.valueOf(pwmFrequency));
-			Logger.info("setPwmFrequency({}, {}) - range={}", Integer.valueOf(gpio),
-					Integer.valueOf(pwmFrequency), Integer.valueOf(getSoftwarePwmRange(gpio)));
-		}
+	public void setBoardPwmFrequency(int pwmFrequency) {
+		setHardwarePwmFrequency(pwmFrequency);
 	}
 	
 	private void setHardwarePwmFrequency(int pwmFrequency) {
@@ -104,18 +81,18 @@ public class Pi4jDeviceFactory extends BaseNativeDeviceFactory {
 		int divisor = PI_PWM_CLOCK_BASE_FREQUENCY / hardwarePwmRange / pwmFrequency;
 		Gpio.pwmSetClock(divisor);
 		Gpio.pwmSetMode(Gpio.PWM_MODE_MS);
-		this.hardwarePwmFrequency = pwmFrequency;
+		this.boardPwmFrequency = pwmFrequency;
 		Logger.info("setHardwarePwmFrequency({}) - range={}, divisor={}",
 				Integer.valueOf(pwmFrequency), Integer.valueOf(hardwarePwmRange), Integer.valueOf(divisor));
 	}
-
-	private int getSoftwarePwmRange(int gpio) {
-		return 1_000_000 / (PI4J_MIN_SOFTWARE_PULSE_WIDTH_US * getPwmFrequency(gpio));
+	
+	private static int getSoftwarePwmRange(int pwmFrequency) {
+		return 1_000_000 / (PI4J_MIN_SOFTWARE_PULSE_WIDTH_US * pwmFrequency);
 	}
 	
 	@Override
-	public void shutdown() {
-		super.shutdown();
+	public void close() {
+		super.close();
 		gpioController.shutdown();
 	}
 
@@ -139,16 +116,21 @@ public class Pi4jDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	public PwmOutputDeviceInterface createPwmOutputDevice(String key, PinInfo pinInfo, float initialValue)
-			throws RuntimeIOException {
+	public PwmOutputDeviceInterface createPwmOutputDevice(String key, PinInfo pinInfo, int pwmFrequency,
+			float initialValue) throws RuntimeIOException {
 		int gpio = pinInfo.getDeviceNumber();
 		PwmType pwm_type = PwmType.SOFTWARE;
 		if (pinInfo instanceof PwmPinInfo) {
 			pwm_type = PwmType.HARDWARE;
+			// PWM frequency is shared across all PWM outputs when using hardware PWM
+			if (pwmFrequency != boardPwmFrequency) {
+				Logger.warn("Requested PWM frequency ({}) is different to that configured for the board ({})"
+						+ "; using board value", Integer.valueOf(pwmFrequency), Integer.valueOf(boardPwmFrequency));
+			}
 		}
 
 		return new Pi4jPwmOutputDevice(key, this, gpioController, pwm_type, gpio, initialValue,
-				pwm_type == PwmType.HARDWARE ? hardwarePwmRange : getSoftwarePwmRange(gpio));
+				pwm_type == PwmType.HARDWARE ? hardwarePwmRange : getSoftwarePwmRange(pwmFrequency));
 	}
 
 	@Override

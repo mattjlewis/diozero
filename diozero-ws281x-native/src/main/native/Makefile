@@ -1,4 +1,3 @@
-
 RM = rm -f
 CC = gcc
 
@@ -34,8 +33,7 @@ $(MAIN): $(OBJS)
 	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
 clean:
-	$(RM) $(OBJS) $(TARGET) *~
+	$(RM) $(OBJS) $(LIB_TARGET) $(MAIN) *~
 
 depend: $(SRCS)
 	makedepend $(INCLUDES) $^
-

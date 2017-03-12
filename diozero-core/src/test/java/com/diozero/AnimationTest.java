@@ -36,11 +36,11 @@ import java.util.concurrent.Future;
 import org.pmw.tinylog.Logger;
 
 import com.diozero.api.Animation;
-import com.diozero.api.AnimationObject;
+import com.diozero.api.AnimationInstance;
 import com.diozero.api.OutputDeviceInterface;
 import com.diozero.api.easing.EasingFunctions;
 import com.diozero.api.easing.Elastic;
-import com.diozero.util.DioZeroScheduler;
+import com.diozero.internal.DeviceFactoryHelper;
 
 public class AnimationTest {
 	public static void main(String[] args) {
@@ -58,12 +58,12 @@ public class AnimationTest {
 		// Relative time points (0..1)
 		float[] cue_points = { 0, 0.2f, 0.8f, 1 };
 		// Value for each target at the corresponding cue points
-		//List<AnimationObject.KeyFrame[]> key_frames = AnimationObject.KeyFrame.from(new float[][] { { 1, 5, 10 }, { 2, 4, 9 }, { 3, 6, 8 } };
-		//List<AnimationObject.KeyFrame[]> key_frames = AnimationObject.KeyFrame.from(new float[][] { { 1 }, { 2 }, { 3 }, { 1 } };
-		//List<AnimationObject.KeyFrame[]> key_frames = AnimationObject.KeyFrame.from(new float[][] { { 1, 3 }, { 2, 2 }, { 3, 1 }, { 1, 3 } });
-		List<AnimationObject.KeyFrame[]> key_frames = AnimationObject.KeyFrame.from(
+		//List<AnimationInstance.KeyFrame[]> key_frames = AnimationInstance.KeyFrame.from(new float[][] { { 1, 5, 10 }, { 2, 4, 9 }, { 3, 6, 8 } };
+		//List<AnimationInstance.KeyFrame[]> key_frames = AnimationInstance.KeyFrame.from(new float[][] { { 1 }, { 2 }, { 3 }, { 1 } };
+		//List<AnimationInstance.KeyFrame[]> key_frames = AnimationInstance.KeyFrame.from(new float[][] { { 1, 3 }, { 2, 2 }, { 3, 1 }, { 1, 3 } });
+		List<AnimationInstance.KeyFrame[]> key_frames = AnimationInstance.KeyFrame.from(
 				new float[][] { {0, 1}, {0.2f, 0.8f}, {0.8f, 0.2f}, {1, 0} } );
-		//List<AnimationObject.KeyFrame[]> key_frames = Arrays.asList(
+		//List<AnimationInstance.KeyFrame[]> key_frames = Arrays.asList(
 		//		new KeyFrame[] { new KeyFrame(1) }, new KeyFrame[] { new KeyFrame(0.2f) },
 		//		new KeyFrame[] { new KeyFrame(0.5f) }, new KeyFrame[] { new KeyFrame(1) } );
 		anim.enqueue(duration, cue_points, key_frames);
@@ -78,9 +78,9 @@ public class AnimationTest {
 			Logger.info("Finished");
 		} catch (CancellationException | ExecutionException | InterruptedException e) {
 			Logger.info("Finished {}", e);
+		} finally {
+			DeviceFactoryHelper.getNativeDeviceFactory().close();
 		}
-		
-		DioZeroScheduler.shutdownAll();
 	}
 	
 	public static void setMyValue(float f) {

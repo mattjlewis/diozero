@@ -51,6 +51,7 @@ public class SysFsDeviceFactory extends BaseNativeDeviceFactory {
 	private static final int DEFAULT_PWM_FREQUENCY = 100;
 	
 	private Path rootPath;
+	private int boardPwmFrequency;
 	
 	public SysFsDeviceFactory() {
 		initialiseBoardInfo();
@@ -73,26 +74,13 @@ public class SysFsDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	public int getPwmFrequency(int gpio) {
-		// FIXME Remove if statement
-		if (boardInfo.sameMakeAndModel(OdroidBoardInfoProvider.ODROID_C2)) {
-			return OdroidC2SysFsPwmOutputDevice.getFrequency(gpio);
-		}
-		
-		throw new UnsupportedOperationException("PWM not supported by device factory '"
-				+ getClass().getSimpleName() + "' on device '" + boardInfo.getName() + "'");
+	public int getBoardPwmFrequency() {
+		return boardPwmFrequency;
 	}
 
 	@Override
-	public void setPwmFrequency(int gpio, int pwmFrequency) {
-		// FIXME Remove if statement
-		if (boardInfo.sameMakeAndModel(OdroidBoardInfoProvider.ODROID_C2)) {
-			OdroidC2SysFsPwmOutputDevice.setFrequency(gpio, pwmFrequency);
-			return;
-		}
-		
-		throw new UnsupportedOperationException("PWM not supported by device factory '"
-				+ getClass().getSimpleName() + "' on device '" + boardInfo.getName() + "'");
+	public void setBoardPwmFrequency(int pwmFrequency) {
+		boardPwmFrequency = pwmFrequency;
 	}
 
 	@Override
@@ -126,15 +114,15 @@ public class SysFsDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	public PwmOutputDeviceInterface createPwmOutputDevice(String key, PinInfo pinInfo, float initialValue)
-			throws RuntimeIOException {
+	public PwmOutputDeviceInterface createPwmOutputDevice(String key, PinInfo pinInfo, int pwmFrequency,
+			float initialValue) throws RuntimeIOException {
 		int gpio = pinInfo.getDeviceNumber();
 		if (pinInfo instanceof PwmPinInfo) {
 			PwmPinInfo pwm_pin_info = (PwmPinInfo) pinInfo;
 			// Odroid C2 runs with an older kernel hence has a different interface
 			if (boardInfo.sameMakeAndModel(OdroidBoardInfoProvider.ODROID_C2)) {
 				// FIXME Match with previously set PWM frequency...
-				return new OdroidC2SysFsPwmOutputDevice(key, this, pwm_pin_info, DEFAULT_PWM_FREQUENCY, initialValue);
+				return new OdroidC2SysFsPwmOutputDevice(key, this, pwm_pin_info, pwmFrequency, initialValue);
 			}
 
 			// FIXME Match with previously set PWM frequency...
@@ -144,7 +132,7 @@ public class SysFsDeviceFactory extends BaseNativeDeviceFactory {
 
 		Logger.warn("Using software PWM on gpio {}", Integer.valueOf(gpio));
 		SoftwarePwmOutputDevice pwm = new SoftwarePwmOutputDevice(key, this,
-				createDigitalOutputDevice(createPinKey(pinInfo), pinInfo, false), DEFAULT_PWM_FREQUENCY, initialValue);
+				createDigitalOutputDevice(createPinKey(pinInfo), pinInfo, false), pwmFrequency, initialValue);
 		pwm.start();
 		return pwm;
 	}

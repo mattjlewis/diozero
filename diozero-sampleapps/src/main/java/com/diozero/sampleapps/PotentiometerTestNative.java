@@ -62,7 +62,7 @@ public class PotentiometerTestNative {
 		try {
 			test(adc_pin, vref, r_pot);
 		} finally {
-			DeviceFactoryHelper.getNativeDeviceFactory().shutdown();
+			DeviceFactoryHelper.getNativeDeviceFactory().close();
 		}
 	}
 	

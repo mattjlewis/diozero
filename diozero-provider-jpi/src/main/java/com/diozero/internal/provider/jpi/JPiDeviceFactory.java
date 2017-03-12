@@ -68,8 +68,8 @@ public class JPiDeviceFactory extends BaseNativeDeviceFactory {
 	}
 	
 	@Override
-	public void shutdown() {
-		super.shutdown();
+	public void close() {
+		super.close();
 		mmapGpio.terminate();
 	}
 
@@ -79,12 +79,12 @@ public class JPiDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	public int getPwmFrequency(int gpio) {
+	public int getBoardPwmFrequency() {
 		throw new UnsupportedOperationException("PWM not yet supported");
 	}
 
 	@Override
-	public void setPwmFrequency(int gpio, int pwmFrequency) {
+	public void setBoardPwmFrequency(int pwmFrequency) {
 		throw new UnsupportedOperationException("PWM not yet supported");
 	}
 
@@ -107,7 +107,8 @@ public class JPiDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	public PwmOutputDeviceInterface createPwmOutputDevice(String key, PinInfo pinInfo, float initialValue) throws RuntimeIOException {
+	public PwmOutputDeviceInterface createPwmOutputDevice(String key, PinInfo pinInfo, int pwmFrequency,
+			float initialValue) throws RuntimeIOException {
 		throw new UnsupportedOperationException("PWM not yet supported");
 	}
 

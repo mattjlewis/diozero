@@ -38,10 +38,10 @@ import org.pmw.tinylog.Logger;
 
 import com.diozero.PwmLed;
 import com.diozero.api.Animation;
-import com.diozero.api.AnimationObject;
+import com.diozero.api.AnimationInstance;
 import com.diozero.api.OutputDeviceInterface;
 import com.diozero.api.easing.Quad;
-import com.diozero.util.DioZeroScheduler;
+import com.diozero.internal.DeviceFactoryHelper;
 
 public class AnimationTest {
 	public static void main(String[] args) {
@@ -65,7 +65,7 @@ public class AnimationTest {
 			float[] cue_points = { 0, 0.6f, 0.8f, 1 };
 			// Value for each target at the corresponding cue points
 			//float[][] key_frames = { { 1, 5, 10 }, { 2, 4, 9 }, { 3, 6, 8 } };
-			List<AnimationObject.KeyFrame[]> key_frames = AnimationObject.KeyFrame.from(
+			List<AnimationInstance.KeyFrame[]> key_frames = AnimationInstance.KeyFrame.from(
 				new float[][] { {0, 1}, {0.2f, 0.8f}, {0.8f, 0.2f}, {1, 0} } );
 			anim.enqueue(duration, cue_points, key_frames);
 			
@@ -77,9 +77,9 @@ public class AnimationTest {
 				Logger.info("Finished");
 			} catch (CancellationException | ExecutionException | InterruptedException e) {
 				Logger.info("Finished {}", e);
+			} finally {
+				DeviceFactoryHelper.getNativeDeviceFactory().close();
 			}
-			
-			DioZeroScheduler.shutdownAll();
 		}
 	}
 }

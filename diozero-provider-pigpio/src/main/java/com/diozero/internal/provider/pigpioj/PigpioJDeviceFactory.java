@@ -34,6 +34,8 @@ import com.diozero.pigpioj.PigpioGpio;
 import com.diozero.util.RuntimeIOException;
 
 public class PigpioJDeviceFactory extends BaseNativeDeviceFactory {
+	private int boardPwmFrequency;
+
 	public PigpioJDeviceFactory() {
 		initialiseBoardInfo();
 		
@@ -49,30 +51,18 @@ public class PigpioJDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	public int getPwmFrequency(int gpio) {
-		return PigpioGpio.getPWMFrequency(gpio);
+	public int getBoardPwmFrequency() {
+		return boardPwmFrequency;
 	}
 	
 	@Override
-	public void setPwmFrequency(int gpio, int pwmFrequency) {
-		int old_freq = PigpioGpio.getPWMFrequency(gpio);
-		int old_range = PigpioGpio.getPWMRange(gpio);
-		int old_real_range = PigpioGpio.getPWMRealRange(gpio);
-		PigpioGpio.setPWMFrequency(gpio, pwmFrequency);
-		PigpioGpio.setPWMRange(gpio, PigpioGpio.getPWMRealRange(gpio));
-		int new_freq = PigpioGpio.getPWMFrequency(gpio);
-		int new_range = PigpioGpio.getPWMRange(gpio);
-		int new_real_range = PigpioGpio.getPWMRealRange(gpio);
-		Logger.info("setPwmFrequency({}, {}), old freq={}, old real range={}, old range={},"
-				+ " new freq={}, new real range={}, new range={}",
-				Integer.valueOf(gpio), Integer.valueOf(pwmFrequency),
-				Integer.valueOf(old_freq), Integer.valueOf(old_real_range), Integer.valueOf(old_range),
-				Integer.valueOf(new_freq), Integer.valueOf(new_real_range), Integer.valueOf(new_range));
+	public void setBoardPwmFrequency(int pwmFrequency) {
+		boardPwmFrequency = pwmFrequency;
 	}
 	
 	@Override
-	public void shutdown() {
-		super.shutdown();
+	public void close() {
+		super.close();
 		PigpioGpio.terminate();
 	}
 
@@ -107,10 +97,10 @@ public class PigpioJDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	public PwmOutputDeviceInterface createPwmOutputDevice(String key, PinInfo pinInfo, float initialValue)
-			throws RuntimeIOException {
+	public PwmOutputDeviceInterface createPwmOutputDevice(String key, PinInfo pinInfo, int pwmFrequency,
+			float initialValue) throws RuntimeIOException {
 		return new PigpioJPwmOutputDevice(key, this, pinInfo.getDeviceNumber(), initialValue,
-				PigpioGpio.getPWMRange(pinInfo.getDeviceNumber()));
+				setPwmFrequency(pinInfo.getDeviceNumber(), pwmFrequency));
 	}
 
 	@Override
@@ -154,5 +144,23 @@ public class PigpioJDeviceFactory extends BaseNativeDeviceFactory {
 			break;
 		}
 		return pigpio_pud;
+	}
+
+	private static int setPwmFrequency(int gpio, int pwmFrequency) {
+		int old_freq = PigpioGpio.getPWMFrequency(gpio);
+		int old_range = PigpioGpio.getPWMRange(gpio);
+		int old_real_range = PigpioGpio.getPWMRealRange(gpio);
+		PigpioGpio.setPWMFrequency(gpio, pwmFrequency);
+		PigpioGpio.setPWMRange(gpio, PigpioGpio.getPWMRealRange(gpio));
+		int new_freq = PigpioGpio.getPWMFrequency(gpio);
+		int new_range = PigpioGpio.getPWMRange(gpio);
+		int new_real_range = PigpioGpio.getPWMRealRange(gpio);
+		Logger.info("setPwmFrequency({}, {}), old freq={}, old real range={}, old range={},"
+				+ " new freq={}, new real range={}, new range={}",
+				Integer.valueOf(gpio), Integer.valueOf(pwmFrequency),
+				Integer.valueOf(old_freq), Integer.valueOf(old_real_range), Integer.valueOf(old_range),
+				Integer.valueOf(new_freq), Integer.valueOf(new_real_range), Integer.valueOf(new_range));
+		
+		return new_range;
 	}
 }

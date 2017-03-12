@@ -308,7 +308,7 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Gp
 		// Close the interrupt gpio
 		if (interruptGpio != null) { interruptGpio.close(); }
 		// Close all open gpios before closing the I2C device itself
-		shutdown();
+		super.close();
 		device.close();
 	}
 

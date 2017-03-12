@@ -24,11 +24,11 @@
  * #L%
  */
 {
-	"duration": 2000,
+	"durationMillis": 2000,
 	"cuePoints": [0, 0.2, 0.8, 1],
 	"keyFrames": [
-		[ {"value": 1} ],
-		[ {"value": 2, "easing": "inOutCirc"} ],
-		[ {"value": 3} ],
+		[ {"value": 0} ],
+		[ {"value": 0.2, "easing": "inOutCirc"} ],
+		[ {"value": 0.8} ],
 		[ {"value": 1} ] ]
 }

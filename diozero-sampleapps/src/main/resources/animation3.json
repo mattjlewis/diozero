@@ -24,12 +24,11 @@
  * #L%
  */
 {
-	"duration": 2000,
-	"cuePoints": [0, 0.25, 0.5, 0.75, 1.0],
+	"durationMillis": 2000,
+	"cuePoints": [0, 0.2, 0.8, 1],
 	"keyFrames": [
-		[ {"delta": -45}, {"delta": 45} ],
-		[ {"delta": 90}, {"delta": -90} ],
-		[ {"delta": -135}, {"delta": 135} ],
-		[ {"delta": 20}, {"delta": -20} ],
-		[ {"delta": 70}, {"delta": -70} ] ]
+		[ {"value": 0} ],
+		[ {"delta": 0.2, "easing": "inOutCirc"} ],
+		[ {"delta": 0.6} ],
+		[ {"delta": 0.2} ] ]
 }

@@ -98,8 +98,7 @@ public class Servo extends GpioDevice implements OutputDeviceInterface {
 		minAngle = RangeUtil.map(minPulseWidthMs, minus90PulseWidthMs, plus90PulseWidthMs, 0, 180, false);
 		maxAngle = RangeUtil.map(maxPulseWidthMs, minus90PulseWidthMs, plus90PulseWidthMs, 0, 180, false);
 
-		pwmDeviceFactory.setPwmFrequency(gpio, pwmFrequency);
-		this.device = pwmDeviceFactory.provisionPwmOutputDevice(gpio, calcValue(initialPulseWidthMs));
+		this.device = pwmDeviceFactory.provisionPwmOutputDevice(gpio, pwmFrequency, calcValue(initialPulseWidthMs));
 	}
 
 	@Override

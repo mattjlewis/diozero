@@ -30,15 +30,13 @@ import org.pmw.tinylog.Logger;
 
 import com.diozero.api.*;
 import com.diozero.internal.spi.*;
-import com.diozero.util.BitManipulation;
-import com.diozero.util.MutableByte;
-import com.diozero.util.RuntimeIOException;
+import com.diozero.util.*;
 
 /**
  * Support for both MCP23008 and MCP23017 GPIO expansion boards.
  */
-public abstract class MCP23xxx extends AbstractDeviceFactory
-implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, GpioExpander {
+public abstract class MCP23xxx extends AbstractDeviceFactory implements GpioDeviceFactoryInterface,
+		PwmOutputDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, GpioExpander {
 	private static enum InterruptMode {
 		DISABLED, BANK_A_ONLY, BANK_B_ONLY, BANK_A_AND_B, MIRRORED;
 	}
@@ -74,6 +72,7 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Gp
 	
 	private static final int GPIOS_PER_PORT = 8;
 	public static final int INTERRUPT_GPIO_NOT_SET = -1;
+	private static final int DEFAULT_PWM_FREQUENCY = 50;
 
 	private String deviceName;
 	private DigitalInputDevice[] interruptGpios;
@@ -206,6 +205,26 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Gp
 	public GpioDigitalInputOutputDeviceInterface createDigitalInputOutputDevice(String key, PinInfo pin_info, DeviceMode mode) {
 		return new MCP23xxxDigitalInputOutputDevice(this, key, pin_info.getDeviceNumber(), mode);
 	}
+	
+	@Override
+	public PwmOutputDeviceInterface createPwmOutputDevice(String key, PinInfo pinInfo, int pwmFrequency,
+			float initialValue) {
+		Logger.warn("Using software PWM on gpio {}", Integer.valueOf(pinInfo.getDeviceNumber()));
+		SoftwarePwmOutputDevice pwm = new SoftwarePwmOutputDevice(key, this,
+				createDigitalOutputDevice(createPinKey(pinInfo), pinInfo, false), pwmFrequency, initialValue);
+		pwm.start();
+		return pwm;
+	}
+
+	@Override
+	public int getBoardPwmFrequency() {
+		return DEFAULT_PWM_FREQUENCY;
+	}
+	
+	@Override
+	public void setBoardPwmFrequency(int frequency) {
+		Logger.warn("PWM frequency is fixed");
+	}
 
 	protected void setInputMode(int gpio, GpioPullUpDown pud, GpioEventTrigger trigger) {
 		// TODO Detect if there is no change in direction?
@@ -294,7 +313,7 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Gp
 			if (interrupt_gpio != null) { interrupt_gpio.close(); }
 		}
 		// Close all open GPIOs before closing the I2C device itself
-		shutdown();
+		super.close();
 	}
 
 	public void closeGpio(int gpio) throws RuntimeIOException {

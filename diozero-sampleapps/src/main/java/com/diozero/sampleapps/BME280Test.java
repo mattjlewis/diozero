@@ -60,7 +60,7 @@ public class BME280Test {
 				SleepUtil.sleepSeconds(1);
 			}
 		} finally {
-			DeviceFactoryHelper.getNativeDeviceFactory().shutdown();
+			DeviceFactoryHelper.getNativeDeviceFactory().close();
 		}
 	}
 }

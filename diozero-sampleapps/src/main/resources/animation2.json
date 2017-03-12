@@ -24,7 +24,7 @@
  * #L%
  */
 {
-	"duration": 2000,
+	"durationMillis": 2000,
 	"cuePoints": [0, 0.5, 1.0],
 	"keyFrames": [
 		[ {"value": 0}, {"value": 1} ],

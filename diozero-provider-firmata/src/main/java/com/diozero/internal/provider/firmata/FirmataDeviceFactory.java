@@ -48,6 +48,8 @@ public class FirmataDeviceFactory extends BaseNativeDeviceFactory {
 	private IODevice ioDevice;
 	
 	public FirmataDeviceFactory() {
+		Logger.warn("*** Do NOT use this device factory for servo control; not yet implemented!");
+		
 		String port_name = System.getProperty("FIRMATA_PORT");
 		if (port_name == null) {
 			port_name = System.getenv("FIRMATA_PORT");
@@ -70,9 +72,9 @@ public class FirmataDeviceFactory extends BaseNativeDeviceFactory {
 	}
 	
 	@Override
-	public void shutdown() {
-		Logger.info("shutdown()");
-		super.shutdown();
+	public void close() {
+		Logger.info("close()");
+		super.close();
 		if (ioDevice != null) {
 			try { ioDevice.stop(); } catch (Exception e) {}
 		}
@@ -93,7 +95,9 @@ public class FirmataDeviceFactory extends BaseNativeDeviceFactory {
 	}
 	
 	@Override
-	public int getPwmFrequency(int gpio) {
+	public int getBoardPwmFrequency() {
+		/*
+		 * https://www.arduino.cc/en/Tutorial/SecretsOfArduinoPWM
 		// Note that the base frequency for pins 3, 9, 10, and 11 is 31250 Hz and for pins 5 and 6 is 62500 Hz
 		switch (gpio) {
 		case 3:
@@ -106,10 +110,13 @@ public class FirmataDeviceFactory extends BaseNativeDeviceFactory {
 			return 62500;
 		}
 		return -1;
+		*/
+		//
+		return 62500;
 	}
 	
 	@Override
-	public void setPwmFrequency(int gpio, int frequency) {
+	public void setBoardPwmFrequency(int frequency) {
 		// Ignore
 		Logger.warn("Not implemented");
 	}
@@ -155,7 +162,7 @@ public class FirmataDeviceFactory extends BaseNativeDeviceFactory {
 	}
 	
 	@Override
-	public PwmOutputDeviceInterface createPwmOutputDevice(String key, PinInfo pinInfo, float initialValue)
+	public PwmOutputDeviceInterface createPwmOutputDevice(String key, PinInfo pinInfo, int pwmFrequency, float initialValue)
 			throws RuntimeIOException {
 		return new FirmataPwmOutputDevice(this, key, pinInfo.getDeviceNumber(), initialValue);
 	}

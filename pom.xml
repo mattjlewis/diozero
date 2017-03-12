@@ -78,6 +78,7 @@
 
 	<modules>
 		<module>diozero-core</module>
+		<module>diozero-provider-bbbiolib</module>
 		<module>diozero-provider-firmata</module>
 		<module>diozero-provider-jdkdio10</module>
 		<module>diozero-provider-jdkdio11</module>
@@ -108,7 +109,7 @@
 		
 		<commons-math3.version>3.6.1</commons-math3.version>
 		<junit.version>4.12</junit.version>
-		<tinylog.version>1.1</tinylog.version>
+		<tinylog.version>1.2</tinylog.version>
 		
 		<maven.min-version>3.3.0</maven.min-version>
 		<maven-assembly-plugin.version>2.6</maven-assembly-plugin.version>
@@ -129,6 +130,7 @@
 		<maven-source-plugin.version>3.0.0</maven-source-plugin.version>
 		<maven-surefire-plugin.version>2.19.1</maven-surefire-plugin.version>
 		<license-maven-plugin.version>1.8</license-maven-plugin.version>
+		<native-maven-plugin.version>1.0-alpha-8</native-maven-plugin.version>
 		<eclipse.m2e.lifecycle-mapping.version>1.0.0</eclipse.m2e.lifecycle-mapping.version>
 	</properties>
 	
@@ -409,6 +411,11 @@
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-gpg-plugin</artifactId>
 					<version>${maven-gpg-plugin.version}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>native-maven-plugin</artifactId>
+					<version>${native-maven-plugin.version}</version>
 				</plugin>
 			</plugins>
 		</pluginManagement>
