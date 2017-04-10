@@ -38,17 +38,17 @@ import com.diozero.util.SleepUtil;
  * Control an LED with a button. To run:
  * <ul>
  * <li>sysfs:<br>
- *  {@code java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar com.diozero.sandpit.MFRC522Test 25}
+ *  {@code java -cp tinylog-1.2.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar com.diozero.sandpit.MFRC522Test 25}
  * <li>JDK Device I/O 1.0:<br>
- *  {@code sudo java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar:diozero-provider-jdkdio10-$DIOZERO_VERSION.jar:dio-1.0.1-dev-linux-armv6hf.jar -Djava.library.path=. com.diozero.sandpit.MFRC522Test 25}
+ *  {@code sudo java -cp tinylog-1.2.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar:diozero-provider-jdkdio10-$DIOZERO_VERSION.jar:dio-1.0.1-dev-linux-armv6hf.jar -Djava.library.path=. com.diozero.sandpit.MFRC522Test 25}
  * <li>JDK Device I/O 1.1:<br>
- *  {@code sudo java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar:diozero-provider-jdkdio11-$DIOZERO_VERSION.jar:dio-1.1-dev-linux-armv6hf.jar -Djava.library.path=. com.diozero.sandpit.MFRC522Test 25}
+ *  {@code sudo java -cp tinylog-1.2.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar:diozero-provider-jdkdio11-$DIOZERO_VERSION.jar:dio-1.1-dev-linux-armv6hf.jar -Djava.library.path=. com.diozero.sandpit.MFRC522Test 25}
  * <li>Pi4j:<br>
- *  {@code sudo java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar:diozero-provider-pi4j-$DIOZERO_VERSION.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sandpit.MFRC522Test 25}
+ *  {@code sudo java -cp tinylog-1.2.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar:diozero-provider-pi4j-$DIOZERO_VERSION.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sandpit.MFRC522Test 25}
  * <li>wiringPi:<br>
- *  {@code sudo java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar:diozero-provider-wiringpi-$DIOZERO_VERSION.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sandpit.MFRC522Test 25}
+ *  {@code sudo java -cp tinylog-1.2.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar:diozero-provider-wiringpi-$DIOZERO_VERSION.jar:pi4j-core-1.1-SNAPSHOT.jar com.diozero.sandpit.MFRC522Test 25}
  * <li>pigpgioJ:<br>
- *  {@code sudo java -cp tinylog-1.1.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar:diozero-provider-pigpio-$DIOZERO_VERSION.jar:pigpioj-java-1.0.1.jar com.diozero.sandpit.MFRC522Test 25}
+ *  {@code sudo java -cp tinylog-1.2.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar:diozero-provider-pigpio-$DIOZERO_VERSION.jar:pigpioj-java-1.0.1.jar com.diozero.sandpit.MFRC522Test 25}
  * </ul>
  */
 public class MFRC522Test {
@@ -65,35 +65,36 @@ public class MFRC522Test {
 			while (true) {
 				// Scan for cards
 				Logger.info("Waiting for cards");
-				Response resp = mfrc522.request(MFRC522.PICC_REQIDL);
-				if (resp.getStatus() == MFRC522.MI_OK) {
+				Response resp = mfrc522.request(MFRC522.PiccCommand.REQUEST_A.getValue());
+				if (resp.getStatus() == MFRC522.StatusCode.OK) {
 					System.out.println("Card detected");
 					
 					mfrc522.setLog(true);
 					
 					// Get the UID of the card
 					Response ac_resp = mfrc522.anticoll();
-					if (ac_resp.getStatus() == MFRC522.MI_OK) {
+					if (ac_resp.getStatus() == MFRC522.StatusCode.OK) {
 						byte[] uid = ac_resp.getBackData();
 						Logger.info("uid.length=" + uid.length);
 						Logger.info(String.format("Card UID: 0x%02x%02x%02x%02x%n", Byte.valueOf(uid[0]), Byte.valueOf(uid[1]), Byte.valueOf(uid[2]), Byte.valueOf(uid[3])));
 						
 						// This is the default key for authentication
-				        byte[] key = { (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF };
-				        
-				        // Select the scanned tag
-				        mfrc522.selectTag(uid);
+						byte[] key = { (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF };
+						
+						// Select the scanned tag
+						mfrc522.selectTag(uid);
 
-				        // Authenticate
-				        byte status = mfrc522.authenticate(MFRC522.PICC_AUTH_KEY_A, (byte) 8, key, uid);
+						// Authenticate
+						MFRC522.StatusCode status = mfrc522.authenticate(
+								MFRC522.PiccCommand.MF_AUTH_KEY_A.getValue(), (byte) 8, key, uid);
 
-				        // Check if authenticated
-				        if (status == MFRC522.MI_OK) {
-				        	mfrc522.read((byte) 8);
-				        	mfrc522.stopCrypto1();
-				        } else {
-				        	Logger.error("Authentication error");
-				        }
+						// Check if authenticated
+						if (status == MFRC522.StatusCode.OK) {
+							mfrc522.read((byte) 8);
+							mfrc522.stopCrypto1();
+						} else {
+							Logger.error("Authentication error");
+						}
 					} else {
 						Logger.info("Got bad response status from anticoll: " + resp.getStatus());
 					}
