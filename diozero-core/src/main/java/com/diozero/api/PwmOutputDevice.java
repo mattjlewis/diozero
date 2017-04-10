@@ -153,13 +153,13 @@ public class PwmOutputDevice extends GpioDevice implements OutputDeviceInterface
 
 	private void onOffLoop(float onTime, float offTime, int n) throws RuntimeIOException {
 		if (n > 0) {
-			running.set(true);
+			running.getAndSet(true);
 			for (int i = 0; i < n && running.get(); i++) {
 				onOff(onTime, offTime);
 			}
-			running.set(false);
+			running.getAndSet(false);
 		} else if (n == INFINITE_ITERATIONS) {
-			running.set(true);
+			running.getAndSet(true);
 			while (running.get()) {
 				onOff(onTime, offTime);
 			}
@@ -185,12 +185,12 @@ public class PwmOutputDevice extends GpioDevice implements OutputDeviceInterface
 		float delta = 1f / steps;
 		Logger.debug("fadeTime={}, steps={}, sleep_time={}s, delta={}", Float.valueOf(fadeTime), Integer.valueOf(steps),
 				Float.valueOf(sleep_time), Float.valueOf(delta));
-		running.set(true);
+		running.getAndSet(true);
 		if (iterations > 0) {
 			for (int i = 0; i < iterations && running.get(); i++) {
 				fadeInOut(sleep_time, delta);
 			}
-			running.set(false);
+			running.getAndSet(false);
 		} else if (iterations == INFINITE_ITERATIONS) {
 			while (running.get()) {
 				fadeInOut(sleep_time, delta);
@@ -214,7 +214,7 @@ public class PwmOutputDevice extends GpioDevice implements OutputDeviceInterface
 	}
 
 	private void stopLoops() {
-		running.set(false);
+		running.getAndSet(false);
 	}
 
 	private void onOff(float onTime, float offTime) throws RuntimeIOException {

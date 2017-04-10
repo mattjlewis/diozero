@@ -41,7 +41,6 @@ public class TestDeviceFactory extends BaseNativeDeviceFactory {
 	private static Class<? extends I2CDeviceInterface> i2cDeviceClass = TestI2CDevice.class;
 	
 	public TestDeviceFactory() {
-		initialiseBoardInfo();
 	}
 	
 	public static void setAnalogInputDeviceClass(Class<? extends AnalogInputDeviceInterface> clz) {

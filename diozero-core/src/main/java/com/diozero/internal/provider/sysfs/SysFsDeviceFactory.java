@@ -37,10 +37,10 @@ import java.nio.file.Path;
 import org.pmw.tinylog.Logger;
 
 import com.diozero.api.*;
+import com.diozero.internal.SoftwarePwmOutputDevice;
 import com.diozero.internal.board.odroid.OdroidBoardInfoProvider;
 import com.diozero.internal.spi.*;
 import com.diozero.util.RuntimeIOException;
-import com.diozero.util.SoftwarePwmOutputDevice;
 
 public class SysFsDeviceFactory extends BaseNativeDeviceFactory {
 	private static final String GPIO_ROOT_DIR = "/sys/class/gpio";
@@ -54,8 +54,6 @@ public class SysFsDeviceFactory extends BaseNativeDeviceFactory {
 	private int boardPwmFrequency;
 	
 	public SysFsDeviceFactory() {
-		initialiseBoardInfo();
-		
 		rootPath = FileSystems.getDefault().getPath(GPIO_ROOT_DIR);
 	}
 
@@ -120,20 +118,19 @@ public class SysFsDeviceFactory extends BaseNativeDeviceFactory {
 		if (pinInfo instanceof PwmPinInfo) {
 			PwmPinInfo pwm_pin_info = (PwmPinInfo) pinInfo;
 			// Odroid C2 runs with an older kernel hence has a different interface
-			if (boardInfo.sameMakeAndModel(OdroidBoardInfoProvider.ODROID_C2)) {
+			if (getBoardInfo().sameMakeAndModel(OdroidBoardInfoProvider.ODROID_C2)) {
 				// FIXME Match with previously set PWM frequency...
 				return new OdroidC2SysFsPwmOutputDevice(key, this, pwm_pin_info, pwmFrequency, initialValue);
 			}
 
 			// FIXME Match with previously set PWM frequency...
-			return new SysFsPwmOutputDevice(key, this, boardInfo.getPwmChip(pwm_pin_info.getPwmNum()), pwm_pin_info,
+			return new SysFsPwmOutputDevice(key, this, getBoardInfo().getPwmChip(pwm_pin_info.getPwmNum()), pwm_pin_info,
 					DEFAULT_PWM_FREQUENCY, initialValue);
 		}
 
 		Logger.warn("Using software PWM on gpio {}", Integer.valueOf(gpio));
 		SoftwarePwmOutputDevice pwm = new SoftwarePwmOutputDevice(key, this,
 				createDigitalOutputDevice(createPinKey(pinInfo), pinInfo, false), pwmFrequency, initialValue);
-		pwm.start();
 		return pwm;
 	}
 
@@ -149,7 +146,7 @@ public class SysFsDeviceFactory extends BaseNativeDeviceFactory {
 	public AnalogOutputDeviceInterface createAnalogOutputDevice(String key, PinInfo pinInfo)
 			throws RuntimeIOException {
 		throw new UnsupportedOperationException("Analog output not supported by device factory '"
-				+ getClass().getSimpleName() + "' on device '" + boardInfo.getName() + "'");
+				+ getClass().getSimpleName() + "' on device '" + getBoardInfo().getName() + "'");
 	}
 
 	@Override

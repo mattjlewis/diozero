@@ -55,8 +55,6 @@ public class JdkDeviceIoDeviceFactory extends BaseNativeDeviceFactory {
 				Logger.error(e, "Error initialising JDK Device I/O security policy: {}", e);
 			}
 		}
-		
-		initialiseBoardInfo();
 	}
 	
 	@Override

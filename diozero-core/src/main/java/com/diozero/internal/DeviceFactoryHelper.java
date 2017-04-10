@@ -33,7 +33,6 @@ import org.pmw.tinylog.Logger;
 
 import com.diozero.internal.provider.sysfs.SysFsDeviceFactory;
 import com.diozero.internal.spi.NativeDeviceFactoryInterface;
-import com.diozero.util.DioZeroScheduler;
 
 /**
  * Helper class for instantiating different devices via the configured provider.
@@ -68,7 +67,7 @@ public class DeviceFactoryHelper {
 					}
 				}
 				
-				// If none found use the univesal sysfs device factory
+				// If none found use the universal sysfs device factory
 				if (nativeDeviceFactory == null) {
 					nativeDeviceFactory = new SysFsDeviceFactory();
 				}
@@ -79,6 +78,7 @@ public class DeviceFactoryHelper {
 			}
 			
 			if (nativeDeviceFactory == null) {
+				// Shouldn't be possible
 				throw new IllegalStateException("Error: failed to load native device factory,"
 						+ " please configure META-INF/services/com.diozero.internal.spi.NativeDeviceFactoryInterface"
 						+ " or set -D" + SYSTEM_PROPERTY);

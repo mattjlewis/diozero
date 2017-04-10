@@ -53,20 +53,30 @@ public abstract class BaseNativeDeviceFactory extends AbstractDeviceFactory impl
 	}
 	
 	private List<DeviceFactoryInterface> deviceFactories = new ArrayList<>();
-	protected BoardInfo boardInfo;
+	private BoardInfo boardInfo;
 	
 	public BaseNativeDeviceFactory() {
 		super(NATIVE_PREFIX);
 	}
 
+	@SuppressWarnings("static-method")
+	protected BoardInfo initialiseBoardInfo() {
+		return SystemInfo.getBoardInfo();
+	}
+	
 	@Override
-	public void initialiseBoardInfo() {
-		boardInfo = SystemInfo.getBoardInfo();
+	public synchronized BoardInfo getBoardInfo() {
+		if (boardInfo == null) {
+			// Note this has been separated from the constructor to allow derived classes to
+			// override default behaviour, in particular remote devices using e.g. Firmata protocol
+			boardInfo = initialiseBoardInfo();
+		}
+		return boardInfo;
 	}
 	
 	@Override
 	public BoardPinInfo getBoardPinInfo() {
-		return boardInfo;
+		return getBoardInfo();
 	}
 	
 	@Override

@@ -260,10 +260,9 @@ public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFac
 		i2cDevice.close();
 	}
 	
-	@SuppressWarnings("static-method")
 	public void closeChannel(int channel) throws RuntimeIOException {
 		Logger.debug("closeChannel({})", Integer.valueOf(channel));
-		//setPwm(channel, 0, 0);
+		setPwm(channel, 0, 0);
 	}
 
 	@Override

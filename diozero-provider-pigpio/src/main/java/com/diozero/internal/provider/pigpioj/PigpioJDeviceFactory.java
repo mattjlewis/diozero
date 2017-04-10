@@ -37,8 +37,6 @@ public class PigpioJDeviceFactory extends BaseNativeDeviceFactory {
 	private int boardPwmFrequency;
 
 	public PigpioJDeviceFactory() {
-		initialiseBoardInfo();
-		
 		int rc = PigpioGpio.initialise();
 		if (rc < 0) {
 			throw new RuntimeIOException("Error calling PigpioGpio.initialise(), response: " + rc);

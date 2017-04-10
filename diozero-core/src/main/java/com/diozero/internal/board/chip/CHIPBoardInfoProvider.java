@@ -32,13 +32,16 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.*;
 
+import org.pmw.tinylog.Logger;
+
 import com.diozero.api.PinInfo;
 import com.diozero.util.BoardInfo;
 import com.diozero.util.BoardInfoProvider;
-import com.diozero.util.RuntimeIOException;
 
 public class CHIPBoardInfoProvider implements BoardInfoProvider {
-	public static final String MAKE = "CHIP";
+	public static final String MAKE = "Next Thing Company";
+	public static final String MODEL_CHIP = "CHIP";
+	public static final String MODEL_CHIP_PRO = "CHIP Pro";
 	
 	public static final CHIPBoardInfo CHIP_BOARD_INFO = new CHIPBoardInfo();
 	
@@ -61,7 +64,7 @@ public class CHIPBoardInfoProvider implements BoardInfoProvider {
 		private int xioGpioOffset = 0;
 		
 		public CHIPBoardInfo() {
-			super(MAKE, "CHIP", MEMORY, MAKE.toLowerCase(), ADC_VREF);
+			super(MAKE, MODEL_CHIP, MEMORY, MODEL_CHIP.toLowerCase(), ADC_VREF);
 			
 			// Determine the XIO GPIO base
 			Path gpio_sysfs_dir = FileSystems.getDefault().getPath("/sys/class/gpio");
@@ -75,8 +78,9 @@ public class CHIPBoardInfoProvider implements BoardInfoProvider {
 						}
 					}
 				}
+				Logger.debug("xioGpioOffset: {}", Integer.valueOf(xioGpioOffset));
 			} catch (IOException e) {
-				throw new RuntimeIOException("Error determining XIO GPIO base: " + e, e);
+				Logger.error(e, "Error determining XIO GPIO base: {}", e);
 			}
 
 			// Not all gpio pins support interrupts. Whether a pin supports

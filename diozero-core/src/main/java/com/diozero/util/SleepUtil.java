@@ -32,11 +32,9 @@ import org.pmw.tinylog.Logger;
 
 
 public class SleepUtil {
-	private static boolean NATIVE_LIBRARY_AVAILABLE = false;
 	static {
 		try {
 			LibraryLoader.loadLibrary(SleepUtil.class, "diozero-system-utils");
-			NATIVE_LIBRARY_AVAILABLE = true;
 		} catch (Throwable t) {
 			Logger.error(t, "Error loading diozero-system-utils: " + t);
 		}
@@ -91,12 +89,7 @@ public class SleepUtil {
 	 * @param nanos Number of nanoseconds
 	 */
 	public static void sleepNanos(int nanos) {
-		if (NATIVE_LIBRARY_AVAILABLE) {
-			sleepNanos(0, nanos);
-		} else {
-			// Note max value is 999,999, i.e. less than 1ms
-			try { Thread.sleep(0, nanos); } catch (InterruptedException e) { }
-		}
+		sleepNanos(0, nanos);
 	}
 
 	public static void busySleep(long nanos) {

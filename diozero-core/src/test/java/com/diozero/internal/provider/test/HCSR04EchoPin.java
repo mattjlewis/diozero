@@ -97,7 +97,7 @@ implements GpioDigitalInputDeviceInterface, Runnable {
 	protected void closeDevice() throws RuntimeIOException {
 		Logger.debug("closeDevice()");
 		
-		running.set(false);
+		running.getAndSet(false);
 		lock.lock();
 		try {
 			cond.signalAll();
@@ -115,7 +115,7 @@ implements GpioDigitalInputDeviceInterface, Runnable {
 				Thread.sleep(random.nextInt(50));
 			}
 			echoStart = System.currentTimeMillis();
-			value.set(true);
+			value.getAndSet(true);
 			valueChanged(new DigitalInputEvent(gpio, echoStart, System.nanoTime(), true));
 			// Need to send echo low in a separate thread
 			lock.lock();
@@ -131,7 +131,7 @@ implements GpioDigitalInputDeviceInterface, Runnable {
 
 	@Override
 	public void run() {
-		running.set(true);
+		running.getAndSet(true);
 		try {
 			while (running.get()) {
 				lock.lock();
@@ -146,7 +146,7 @@ implements GpioDigitalInputDeviceInterface, Runnable {
 				if ((System.currentTimeMillis() - echoStart) < 2) {
 					Thread.sleep(0, random.nextInt(999_999));
 				}
-				value.set(false);
+				value.getAndSet(false);
 				valueChanged(new DigitalInputEvent(gpio, System.currentTimeMillis(), System.nanoTime(), false));
 				Logger.debug("Time to send echo high then low=" + (System.currentTimeMillis() - echoStart) + "ms");
 			}

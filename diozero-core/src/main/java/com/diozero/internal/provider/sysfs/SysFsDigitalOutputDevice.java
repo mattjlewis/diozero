@@ -83,7 +83,7 @@ public class SysFsDigitalOutputDevice extends AbstractDevice implements GpioDigi
 	public void setValue(boolean value) throws RuntimeIOException {
 		try {
 			valueFile.seek(0);
-			valueFile.writeByte(value ? HIGH_VALUE : LOW_VALUE);
+			valueFile.write(value ? HIGH_VALUE : LOW_VALUE);
 		} catch (IOException e) {
 			throw new RuntimeIOException("Error writing value", e);
 		}

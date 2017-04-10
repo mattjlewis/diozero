@@ -97,11 +97,11 @@ public class EpollNative {
 	}
 	
 	public void processEvents() {
-		running.set(true);
+		running.getAndSet(true);
 		while (running.get()) {
 			EpollEvent[] events = waitForEvents(epollFd);
 			if (events == null) {
-				running.set(false);
+				running.getAndSet(false);
 			} else {
 				for (EpollEvent event : events) {
 					PollEventListener listener = fdToListener.get(Integer.valueOf(event.getFd()));
@@ -114,7 +114,7 @@ public class EpollNative {
 	}
 	
 	public void stop() {
-		running.set(false);
+		running.getAndSet(false);
 		stopWait(epollFd);
 	}
 	

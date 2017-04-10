@@ -61,9 +61,9 @@ public class PCA9685ServoTest {
 	
 	public static void main(String[] args) {
 		int pwm_freq = 50;
-		int pin_number = 15;
+		int pin_number = 0;
 		test(pwm_freq, pin_number);
-		pin_number = 14;
+		pin_number = 1;
 		test(pwm_freq, pin_number);
 	}
 	

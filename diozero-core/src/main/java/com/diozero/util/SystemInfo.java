@@ -73,6 +73,7 @@ public class SystemInfo {
 			}
 			
 			boardInfo = lookupBoardInfo(hardware, revision);
+			Logger.info("Resolved board make {}", boardInfo);
 			
 			initialised = true;
 		}
@@ -90,8 +91,6 @@ public class SystemInfo {
 		if (board_info == null) {
 			Logger.warn("Failed to resolve board info for hardware '{}' and revision '{}' {}", hardware, revision, System.getProperty("os.name"));
 			board_info = new UnknownBoardInfo();
-		} else {
-			Logger.debug("Resolved board {}", board_info);
 		}
 		return board_info;
 	}

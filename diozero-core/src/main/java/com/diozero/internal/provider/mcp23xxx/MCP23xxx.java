@@ -29,6 +29,7 @@ package com.diozero.internal.provider.mcp23xxx;
 import org.pmw.tinylog.Logger;
 
 import com.diozero.api.*;
+import com.diozero.internal.SoftwarePwmOutputDevice;
 import com.diozero.internal.spi.*;
 import com.diozero.util.*;
 
@@ -212,7 +213,6 @@ public abstract class MCP23xxx extends AbstractDeviceFactory implements GpioDevi
 		Logger.warn("Using software PWM on gpio {}", Integer.valueOf(pinInfo.getDeviceNumber()));
 		SoftwarePwmOutputDevice pwm = new SoftwarePwmOutputDevice(key, this,
 				createDigitalOutputDevice(createPinKey(pinInfo), pinInfo, false), pwmFrequency, initialValue);
-		pwm.start();
 		return pwm;
 	}
 

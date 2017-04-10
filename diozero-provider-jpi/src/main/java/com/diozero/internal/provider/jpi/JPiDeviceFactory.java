@@ -43,13 +43,11 @@ public class JPiDeviceFactory extends BaseNativeDeviceFactory {
 	private SysFsDeviceFactory sysFsDeviceFactory;
 	
 	public JPiDeviceFactory() {
-		initialiseBoardInfo();
-		
 		LibraryLoader.loadLibrary(JPiDeviceFactory.class, "jpi");
 		
-		if (boardInfo.sameMakeAndModel(OdroidBoardInfoProvider.ODROID_C2)) {
+		if (getBoardInfo().sameMakeAndModel(OdroidBoardInfoProvider.ODROID_C2)) {
 			mmapGpio = new OdroidC2MmapGpio();
-		} else if (boardInfo.getMake().equals(RaspberryPiBoardInfoProvider.MAKE)) {
+		} else if (getBoardInfo().getMake().equals(RaspberryPiBoardInfoProvider.MAKE)) {
 			mmapGpio = new RPiMmapGpio();
 		} else {
 			throw new RuntimeException("This provider is currently only supported on Raspberry Pi and Odroid C2 boards");

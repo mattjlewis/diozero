@@ -49,8 +49,6 @@ public class Pi4jDeviceFactory extends BaseNativeDeviceFactory {
 	private GpioController gpioController;
 	
 	public Pi4jDeviceFactory() {
-		initialiseBoardInfo();
-		
 		GpioFactory.setDefaultProvider(new RaspiGpioProvider(RaspiPinNumberingScheme.BROADCOM_PIN_NUMBERING));
 		gpioController = GpioFactory.getInstance();
 		

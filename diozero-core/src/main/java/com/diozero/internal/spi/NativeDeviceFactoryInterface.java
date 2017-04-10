@@ -34,5 +34,5 @@ public interface NativeDeviceFactoryInterface extends GpioDeviceFactoryInterface
 		AnalogOutputDeviceFactoryInterface {
 
 	void registerDeviceFactory(DeviceFactoryInterface deviceFactory);
-	void initialiseBoardInfo();
+	BoardInfo getBoardInfo();
 }

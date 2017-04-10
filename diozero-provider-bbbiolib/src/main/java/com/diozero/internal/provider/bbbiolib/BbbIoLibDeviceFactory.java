@@ -40,8 +40,6 @@ public class BbbIoLibDeviceFactory extends BaseNativeDeviceFactory {
 	private SysFsDeviceFactory sysFsDeviceFactory;
 	
 	public BbbIoLibDeviceFactory() {
-		initialiseBoardInfo();
-		
 		int rc = BbbIoLibNative.init();
 		if (rc < 0) {
 			throw new RuntimeIOException("Error in BBBioLib.init()");

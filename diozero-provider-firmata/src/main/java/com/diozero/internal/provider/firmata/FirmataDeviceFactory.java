@@ -67,8 +67,6 @@ public class FirmataDeviceFactory extends BaseNativeDeviceFactory {
 		} catch (IOException | InterruptedException e) {
 			throw new RuntimeIOException(e);
 		}
-		
-		initialiseBoardInfo();
 	}
 	
 	@Override
@@ -90,8 +88,8 @@ public class FirmataDeviceFactory extends BaseNativeDeviceFactory {
 	}
 	
 	@Override
-	public void initialiseBoardInfo() {
-		boardInfo = new FirmataBoardInfo(ioDevice);
+	protected BoardInfo initialiseBoardInfo() {
+		return new FirmataBoardInfo(ioDevice);
 	}
 	
 	@Override
@@ -124,7 +122,7 @@ public class FirmataDeviceFactory extends BaseNativeDeviceFactory {
 	@Override
 	public AnalogInputDeviceInterface provisionAnalogInputDevice(int gpio) {
 		// Special case - The Arduino can switch between digital and analog input hence use of gpio rather than adc
-		PinInfo pin_info = boardInfo.getByGpioNumber(gpio);
+		PinInfo pin_info = getBoardPinInfo().getByGpioNumber(gpio);
 		if (pin_info == null || ! pin_info.isSupported(DeviceMode.ANALOG_INPUT)) {
 			throw new IllegalArgumentException("Invalid mode (analog input) for GPIO " + gpio);
 		}
@@ -177,14 +175,14 @@ public class FirmataDeviceFactory extends BaseNativeDeviceFactory {
 	public AnalogOutputDeviceInterface createAnalogOutputDevice(String key, PinInfo pinInfo)
 			throws RuntimeIOException {
 		throw new UnsupportedOperationException("Analog output not supported by device factory '"
-				+ getClass().getSimpleName() + "' on device '" + boardInfo.getName() + "'");
+				+ getClass().getSimpleName() + "' on device '" + getBoardInfo().getName() + "'");
 	}
 	
 	@Override
 	protected SpiDeviceInterface createSpiDevice(String key, int controller, int chipSelect, int frequency,
 			SpiClockMode spiClockMode, boolean lsbFirst) throws RuntimeIOException {
 		throw new UnsupportedOperationException("SPI is not supported by device factory '"
-				+ getClass().getSimpleName() + "' on device '" + boardInfo.getName() + "'");
+				+ getClass().getSimpleName() + "' on device '" + getBoardInfo().getName() + "'");
 	}
 
 	@Override
