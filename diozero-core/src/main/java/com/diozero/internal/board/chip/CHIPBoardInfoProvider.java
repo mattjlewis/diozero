@@ -62,26 +62,10 @@ public class CHIPBoardInfoProvider implements BoardInfoProvider {
 		private static final int MEMORY = 512;
 		
 		private int xioGpioOffset = 0;
+		private boolean xioGpioOffsetLoaded;
 		
 		public CHIPBoardInfo() {
 			super(MAKE, MODEL_CHIP, MEMORY, MODEL_CHIP.toLowerCase(), ADC_VREF);
-			
-			// Determine the XIO GPIO base
-			Path gpio_sysfs_dir = FileSystems.getDefault().getPath("/sys/class/gpio");
-			try (DirectoryStream<Path> dirs = Files.newDirectoryStream(gpio_sysfs_dir, "gpiochip*")) {
-				for (Path p : dirs) {
-					try (BufferedReader reader = new BufferedReader(new FileReader(p.resolve("label").toFile()))) {
-						if (reader.readLine().equals("pcf8574a")) {
-							String dir_name = p.getFileName().toString();
-							xioGpioOffset = Integer.parseInt(dir_name.replace("gpiochip", ""));
-							break;
-						}
-					}
-				}
-				Logger.debug("xioGpioOffset: {}", Integer.valueOf(xioGpioOffset));
-			} catch (IOException e) {
-				Logger.error(e, "Error determining XIO GPIO base: {}", e);
-			}
 
 			// Not all gpio pins support interrupts. Whether a pin supports
 			// interrupts can be seen by the presence of an "edge" file (e.g.
@@ -174,8 +158,32 @@ public class CHIPBoardInfoProvider implements BoardInfoProvider {
 			addAdcPinInfo(U14_HEADER, 0, "LRADC", 11);
 		}
 		
+		private synchronized void loadXioGpioOffset() {
+			if (! xioGpioOffsetLoaded) {
+				// Determine the XIO GPIO base
+				Path gpio_sysfs_dir = FileSystems.getDefault().getPath("/sys/class/gpio");
+				try (DirectoryStream<Path> dirs = Files.newDirectoryStream(gpio_sysfs_dir, "gpiochip*")) {
+					for (Path p : dirs) {
+						try (BufferedReader reader = new BufferedReader(new FileReader(p.resolve("label").toFile()))) {
+							if (reader.readLine().equals("pcf8574a")) {
+								String dir_name = p.getFileName().toString();
+								xioGpioOffset = Integer.parseInt(dir_name.replace("gpiochip", ""));
+								break;
+							}
+						}
+					}
+					Logger.debug("xioGpioOffset: {}", Integer.valueOf(xioGpioOffset));
+				} catch (IOException e) {
+					Logger.error(e, "Error determining XIO GPIO base: {}", e);
+				}
+				
+				xioGpioOffsetLoaded = true;
+			}
+		}
+		
 		@Override
 		public int mapToSysFsGpioNumber(int gpio) {
+			loadXioGpioOffset();
 			return gpio < 8 ? xioGpioOffset + gpio : gpio;
 		}
 
