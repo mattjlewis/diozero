@@ -35,7 +35,7 @@ public class TinkerBoardBoardInfoProvider implements BoardInfoProvider {
 	private static final String TINKER_BOARD_HARDWARE_ID = "Rockchip (Device Tree)";
 
 	@Override
-	public BoardInfo lookup(String hardware, String revision) {
+	public BoardInfo lookup(String hardware, String revision, Integer memoryKb) {
 		if (hardware != null && hardware.equals(TINKER_BOARD_HARDWARE_ID)) {
 			return TINKER_BOARD;
 		}

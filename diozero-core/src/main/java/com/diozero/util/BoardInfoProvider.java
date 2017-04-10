@@ -28,5 +28,5 @@ package com.diozero.util;
 
 
 public interface BoardInfoProvider {
-	BoardInfo lookup(String hardware, String revision);
+	BoardInfo lookup(String hardware, String revision, Integer memoryKb);
 }

@@ -176,7 +176,7 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 	}
 	
 	@Override
-	public BoardInfo lookup(String hardware, String revision) {
+	public BoardInfo lookup(String hardware, String revision, Integer memoryKb) {
 		if (hardware == null || revision == null) {
 			return null;
 		}

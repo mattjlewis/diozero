@@ -42,17 +42,94 @@ public class CHIPBoardInfoProvider implements BoardInfoProvider {
 	public static final String MAKE = "Next Thing Company";
 	public static final String MODEL_CHIP = "CHIP";
 	public static final String MODEL_CHIP_PRO = "CHIP Pro";
+	private static final String CHIP_LIBRARY_PATH = MODEL_CHIP.toLowerCase();
 	
 	public static final CHIPBoardInfo CHIP_BOARD_INFO = new CHIPBoardInfo();
+	public static final CHIPProBoardInfo CHIP_PRO_BOARD_INFO = new CHIPProBoardInfo();
 	
 	private static final float ADC_VREF = 1.750f;
 
 	@Override
-	public BoardInfo lookup(String hardware, String revision) {
+	public BoardInfo lookup(String hardware, String revision, Integer memoryKb) {
 		if (hardware != null && hardware.startsWith("Allwinner sun4i/sun5i")) {
+			if (memoryKb != null && memoryKb.intValue() < 500_000) {
+				return CHIP_PRO_BOARD_INFO;
+			}
 			return CHIP_BOARD_INFO;
 		}
 		return null;
+	}
+
+	public static final class CHIPProBoardInfo extends BoardInfo {
+		private static final int MEMORY = 256;
+		
+		public CHIPProBoardInfo() {
+			super(MAKE, MODEL_CHIP_PRO, MEMORY, CHIP_LIBRARY_PATH, ADC_VREF);
+			
+			// PWM 0 & 1
+			addPwmPinInfo(34, "PWM0", 9, 0, PinInfo.DIGITAL_IN_OUT_PWM);
+			addPwmPinInfo(205, "PWM1", 10, 0, PinInfo.DIGITAL_IN_OUT_PWM);
+			
+			// LCD-D2-D7
+			int gpio = 98;
+			addGpioPinInfo(gpio++, "LCD-D2", 17, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(gpio++, "LCD-D3", 20, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(gpio++, "LCD-D4", 19, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(gpio++, "LCD-D5", 22, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(gpio++, "LCD-D6", 21, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(gpio++, "LCD-D7", 24, PinInfo.DIGITAL_IN_OUT);
+			
+			// LCD-D10-D15
+			gpio = 106;
+			addGpioPinInfo(gpio++, "LCD-D10", 23, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(gpio++, "LCD-D11", 26, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(gpio++, "LCD-D12", 25, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(gpio++, "LCD-D13", 28, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(gpio++, "LCD-D14", 27, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(gpio++, "LCD-D15", 30, PinInfo.DIGITAL_IN_OUT);
+			
+			// LCD-D18-D23
+			gpio = 114;
+			addGpioPinInfo(gpio++, "LCD-D18", 29, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(gpio++, "LCD-D19", 32, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(gpio++, "LCD-D20", 31, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(gpio++, "LCD-D21", 34, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(gpio++, "LCD-D22", 33, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(gpio++, "LCD-D23", 36, PinInfo.DIGITAL_IN_OUT);
+			
+			// LCD-CLK, LCD-VSYNC, LCD-HSYNC
+			int pin = 36;
+			addGpioPinInfo(120, "LCD-CLK", pin++, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(122, "LCD-VSYNC", pin++, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(123, "LCD-HSYNC", pin++, PinInfo.DIGITAL_IN_OUT);
+			
+			// UART1
+			addGpioPinInfo(195, "UART1-TX", 3, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(196, "UART1-RX", 5, PinInfo.DIGITAL_IN_OUT);
+			
+			// AP-EINT
+			pin = 23;
+			addGpioPinInfo(193, "AP-EINT1", pin++, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(35, "AP-EINT3", pin++, PinInfo.DIGITAL_IN_OUT);
+			
+			// I2C / SPI
+			pin = 25;
+			addGpioPinInfo(50, "TWI2-SDA", pin++, PinInfo.DIGITAL_IN_OUT);	// I2C2-SDA
+			addGpioPinInfo(49, "TWI2-SCK", pin++, PinInfo.DIGITAL_IN_OUT);	// I2C2-SCL
+			addGpioPinInfo(128, "CSIPCK", pin++, PinInfo.DIGITAL_IN_OUT);	// SPI-CS0
+			addGpioPinInfo(129, "CSICK", pin++, PinInfo.DIGITAL_IN_OUT);	// SPI-CLK
+			addGpioPinInfo(130, "CSIHSYNC", pin++, PinInfo.DIGITAL_IN_OUT);	// SPI-MOSI
+			addGpioPinInfo(131, "CSIVSYNC", pin++, PinInfo.DIGITAL_IN_OUT);	// SPI-MISO
+			
+			// CSID0-7
+			gpio = 132;
+			for (int csid=0; csid<8; csid++) {
+				addGpioPinInfo(gpio+csid, "CSID"+csid, 31+csid, PinInfo.DIGITAL_IN_OUT);
+			}
+			
+			// LRADC
+			addAdcPinInfo(0, "LRADC", 11);
+		}
 	}
 
 	public static final class CHIPBoardInfo extends BoardInfo {
@@ -65,7 +142,7 @@ public class CHIPBoardInfoProvider implements BoardInfoProvider {
 		private boolean xioGpioOffsetLoaded;
 		
 		public CHIPBoardInfo() {
-			super(MAKE, MODEL_CHIP, MEMORY, MODEL_CHIP.toLowerCase(), ADC_VREF);
+			super(MAKE, MODEL_CHIP, MEMORY, CHIP_LIBRARY_PATH, ADC_VREF);
 
 			// Not all gpio pins support interrupts. Whether a pin supports
 			// interrupts can be seen by the presence of an "edge" file (e.g.

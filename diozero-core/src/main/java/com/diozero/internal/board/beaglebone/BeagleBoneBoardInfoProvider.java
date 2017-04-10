@@ -41,7 +41,7 @@ public class BeagleBoneBoardInfoProvider implements BoardInfoProvider {
 	public static final BoardInfo BBB_BOARD_INFO = new BeagleBoneBlackBoardInfo();
 
 	@Override
-	public BoardInfo lookup(String hardware, String revision) {
+	public BoardInfo lookup(String hardware, String revision, Integer memoryKb) {
 		if (hardware != null && hardware.startsWith(BBB_HARDWARE_ID)) {
 			return BBB_BOARD_INFO;
 		}

@@ -36,6 +36,7 @@ import com.diozero.api.PinInfo;
 public class SystemInfo {
 	private static final String OS_RELEASE_FILE = "/etc/os-release";
 	private static final String CPUINFO_FILE = "/proc/cpuinfo";
+	private static final String MEMINFO_FILE = "/proc/meminfo";
 	
 	private static boolean initialised;
 	private static Properties osReleaseProperties;
@@ -69,21 +70,39 @@ public class SystemInfo {
 					} while (line != null);
 				}
 			} catch (IOException | NullPointerException | IndexOutOfBoundsException e) {
-				Logger.error(e, "Error reading " + CPUINFO_FILE + ":" + e.getMessage());
+				Logger.error(e, "Error reading {}: ", CPUINFO_FILE, e.getMessage());
+			}
+
+			pb = new ProcessBuilder("cat", MEMINFO_FILE);
+			Integer memory_kb = null;
+			try {
+				Process proc = pb.start();
+				try (BufferedReader reader = new BufferedReader(new InputStreamReader(proc.getInputStream()))) {
+					String line;
+					// Fully read the process output
+					do {
+						line = reader.readLine();
+						if (line != null && line.startsWith("MemTotal")) {
+							memory_kb = new Integer(line.split(" ")[1].trim());
+						}
+					} while (line != null);
+				}
+			} catch (IOException | NullPointerException | IndexOutOfBoundsException e) {
+				Logger.error(e, "Error reading {}: {}", MEMINFO_FILE, e.getMessage());
 			}
 			
-			boardInfo = lookupBoardInfo(hardware, revision);
+			boardInfo = lookupBoardInfo(hardware, revision, memory_kb);
 			Logger.info("Resolved board make {}", boardInfo);
 			
 			initialised = true;
 		}
 	}
 	
-	protected static BoardInfo lookupBoardInfo(String hardware, String revision) {
+	protected static BoardInfo lookupBoardInfo(String hardware, String revision, Integer memoryKb) {
 		BoardInfo board_info = null;
 		ServiceLoader<BoardInfoProvider> service_loader = ServiceLoader.load(BoardInfoProvider.class);
 		for (BoardInfoProvider board_info_provider : service_loader) {
-			board_info = board_info_provider.lookup(hardware, revision);
+			board_info = board_info_provider.lookup(hardware, revision, memoryKb);
 			if (board_info != null) {
 				break;
 			}
