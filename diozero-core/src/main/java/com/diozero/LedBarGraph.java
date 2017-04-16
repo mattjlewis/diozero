@@ -67,31 +67,23 @@ public class LedBarGraph implements OutputDeviceInterface, Closeable {
 	}
 	
 	public void on() {
-		for (LED led : leds) {
-			led.on();
-		}
+		leds.forEach(LED::on);
 	}
 	
 	public void off() {
-		for (LED led : leds) {
-			led.off();
-		}
+		leds.forEach(LED::off);
 	}
 	
 	public void toggle() {
-		for (LED led : leds) {
-			led.toggle();
-		}
+		leds.forEach(LED::toggle);
 	}
 	
 	public void blink() {
-		
+		leds.forEach(LED::blink);
 	}
 	
 	public void blink(float onTime, float offTime, int iterations, Action stopAction) {
-		for (LED led : leds) {
-			led.blink(onTime, offTime, iterations, true, stopAction);
-		}
+		leds.forEach(led -> led.blink(onTime, offTime, iterations, true, stopAction));
 	}
 	
 	/**

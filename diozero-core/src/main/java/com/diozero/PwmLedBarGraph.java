@@ -62,31 +62,23 @@ public class PwmLedBarGraph implements OutputDeviceInterface, Closeable {
 	}
 	
 	public void on() {
-		for (PwmLed led : leds) {
-			led.on();
-		}
+		leds.forEach(PwmLed::on);
 	}
 	
 	public void off() {
-		for (PwmLed led : leds) {
-			led.off();
-		}
+		leds.forEach(PwmLed::off);
 	}
 	
 	public void toggle() {
-		for (PwmLed led : leds) {
-			led.toggle();
-		}
+		leds.forEach(PwmLed::toggle);
 	}
 	
 	public void blink() {
-		
+		leds.forEach(PwmLed::blink);
 	}
 	
 	public void pulse(float fadeTime, int steps, int iterations) {
-		for (PwmLed led : leds) {
-			led.pulse(fadeTime, steps, iterations, true);
-		}
+		leds.forEach(led -> led.pulse(fadeTime, steps, iterations, true));
 	}
 	
 	/**
@@ -112,8 +104,6 @@ public class PwmLedBarGraph implements OutputDeviceInterface, Closeable {
 
 	@Override
 	public void close() throws RuntimeIOException {
-		for (PwmLed led : leds) {
-			led.close();
-		}
+		leds.forEach(PwmLed::close);
 	}
 }
