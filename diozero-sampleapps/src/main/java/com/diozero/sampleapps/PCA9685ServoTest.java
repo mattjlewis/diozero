@@ -51,11 +51,6 @@ import com.diozero.util.SleepUtil;
  * </ul>
  */
 public class PCA9685ServoTest {
-	private static final float TOWERPRO_SG90_MIN_MS = 0.6f;
-	private static final float TOWERPRO_SG90_MAX_MS = 2.4f;
-	private static final float TOWERPRO_SG90_MINUS90_MS = 1f;
-	private static final float TOWERPRO_SG90_PLUS90_MS = 2f;
-	private static final float TOWERPRO_SG90_MID_MS = (TOWERPRO_SG90_MIN_MS + TOWERPRO_SG90_MAX_MS) / 2;
 	private static final long LARGE_DELAY = 500;
 	private static final long SHORT_DELAY = 10;
 	
@@ -66,27 +61,27 @@ public class PCA9685ServoTest {
 		pin_number = 1;
 		test(pwm_freq, pin_number);
 	}
-	
+
 	public static void test(int pwmFrequency, int gpio) {
+		Servo.Trim trim = Servo.Trim.TOWERPRO_SG90;
 		try (PCA9685 pca9685 = new PCA9685(pwmFrequency);
-				Servo servo = new Servo(pca9685, gpio, pwmFrequency, TOWERPRO_SG90_MIN_MS, TOWERPRO_SG90_MAX_MS,
-						TOWERPRO_SG90_MINUS90_MS, TOWERPRO_SG90_PLUS90_MS, TOWERPRO_SG90_MID_MS)) {
+				Servo servo = new Servo(pca9685, gpio, trim.getMidPulseWidthMs(), pwmFrequency, trim)) {
 			Logger.info("Mid");
-			pca9685.setServoPulseWidthMs(gpio, TOWERPRO_SG90_MID_MS);
+			pca9685.setServoPulseWidthMs(gpio, trim.getMidPulseWidthMs());
 			SleepUtil.sleepMillis(LARGE_DELAY);
 			Logger.info("Max");
-			pca9685.setServoPulseWidthMs(gpio, TOWERPRO_SG90_MAX_MS);
+			pca9685.setServoPulseWidthMs(gpio, trim.getMaxPulseWidthMs());
 			SleepUtil.sleepMillis(LARGE_DELAY);
 			Logger.info("Mid");
-			pca9685.setServoPulseWidthMs(gpio, TOWERPRO_SG90_MID_MS);
+			pca9685.setServoPulseWidthMs(gpio, trim.getMidPulseWidthMs());
 			SleepUtil.sleepMillis(LARGE_DELAY);
 			Logger.info("Min");
-			pca9685.setServoPulseWidthMs(gpio, TOWERPRO_SG90_MIN_MS);
+			pca9685.setServoPulseWidthMs(gpio, trim.getMinPulseWidthMs());
 			SleepUtil.sleepMillis(LARGE_DELAY);
 			Logger.info("Mid");
-			pca9685.setServoPulseWidthMs(gpio, TOWERPRO_SG90_MID_MS);
+			pca9685.setServoPulseWidthMs(gpio, trim.getMidPulseWidthMs());
 			SleepUtil.sleepMillis(LARGE_DELAY);
-			
+
 			Logger.info("Mid");
 			servo.centre();
 			SleepUtil.sleepMillis(LARGE_DELAY);
@@ -102,48 +97,29 @@ public class PCA9685ServoTest {
 			Logger.info("Mid");
 			servo.centre();
 			SleepUtil.sleepMillis(LARGE_DELAY);
-			
+
 			Logger.info("0");
 			servo.setAngle(0);
 			SleepUtil.sleepMillis(LARGE_DELAY);
-			Logger.info("Mid");
+			Logger.info("90 (mid)");
 			servo.setAngle(90);
 			SleepUtil.sleepMillis(LARGE_DELAY);
 			Logger.info("180");
 			servo.setAngle(180);
 			SleepUtil.sleepMillis(LARGE_DELAY);
-			Logger.info("Mid");
+			Logger.info("90 (mid)");
 			servo.setAngle(90);
 			SleepUtil.sleepMillis(LARGE_DELAY);
-			
-			/*
-			Logger.info("Mid");
-			servo.setValue(TOWERPRO_SG90_MID_MS * pca9685.getPwmFrequency(gpio) / 1000f);
-			SleepUtil.sleepMillis(1000);
-			
-			for (float i=TOWERPRO_SG90_MID_MS; i>TOWERPRO_SG90_MIN_MS; i-=0.01) {
-				servo.setValue(i * pca9685.getPwmFrequency(gpio) / 1000f);
-				SleepUtil.sleepMillis(10);
-			}
-			for (float i=TOWERPRO_SG90_MIN_MS; i<TOWERPRO_SG90_MAX_MS; i+=0.01) {
-				servo.setValue(i * pca9685.getPwmFrequency(gpio) / 1000f);
-				SleepUtil.sleepMillis(10);
-			}
-			for (float i=TOWERPRO_SG90_MAX_MS; i>TOWERPRO_SG90_MID_MS; i-=0.01) {
-				servo.setValue(i * pca9685.getPwmFrequency(gpio) / 1000f);
-				SleepUtil.sleepMillis(10);
-			}
-			*/
-			
-			for (float pulse_ms=TOWERPRO_SG90_MID_MS; pulse_ms<TOWERPRO_SG90_MAX_MS; pulse_ms+=0.01) {
+
+			for (float pulse_ms = trim.getMidPulseWidthMs(); pulse_ms < trim.getMaxPulseWidthMs(); pulse_ms += 0.01) {
 				servo.setPulseWidthMs(pulse_ms);
 				SleepUtil.sleepMillis(SHORT_DELAY);
 			}
-			for (float pulse_ms=TOWERPRO_SG90_MAX_MS; pulse_ms>TOWERPRO_SG90_MIN_MS; pulse_ms-=0.01) {
+			for (float pulse_ms = trim.getMaxPulseWidthMs(); pulse_ms > trim.getMinPulseWidthMs(); pulse_ms -= 0.01) {
 				servo.setPulseWidthMs(pulse_ms);
 				SleepUtil.sleepMillis(SHORT_DELAY);
 			}
-			for (float pulse_ms=TOWERPRO_SG90_MIN_MS; pulse_ms<TOWERPRO_SG90_MID_MS; pulse_ms+=0.01) {
+			for (float pulse_ms = trim.getMinPulseWidthMs(); pulse_ms < trim.getMidPulseWidthMs(); pulse_ms += 0.01) {
 				servo.setPulseWidthMs(pulse_ms);
 				SleepUtil.sleepMillis(SHORT_DELAY);
 			}

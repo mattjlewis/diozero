@@ -4,7 +4,7 @@ package com.diozero.sandpit;
  * #%L
  * Device I/O Zero - Core
  * %%
- * Copyright (C) 2016 mattjlewis
+ * Copyright (C) 2016 - 2017 mattjlewis
  * %%
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,11 +26,8 @@ package com.diozero.sandpit;
  * #L%
  */
 
-import java.util.LinkedList;
-
 import org.pmw.tinylog.Logger;
 
-import com.diozero.api.Animation;
 import com.diozero.api.GpioDevice;
 import com.diozero.api.OutputDeviceInterface;
 import com.diozero.internal.DeviceFactoryHelper;
@@ -41,62 +38,39 @@ import com.diozero.util.RuntimeIOException;
 
 public class Servo extends GpioDevice implements OutputDeviceInterface {
 	private static final int DEFAULT_PWM_FREQUENCY = 50;
-	private static final float DEFAULT_MIN_PULSE_WIDTH_MS = 0.75f;
-	private static final float DEFAULT_MAX_PULSE_WIDTH_MS = 2.25f;
-	private static final float DEFAULT_MINUS90_PULSE_WIDTH_MS = 1f;
-	private static final float DEFAULT_PLUS90_PULSE_WIDTH_MS = 2f;
 
 	private int pwmFrequency;
 	private PwmOutputDeviceInterface device;
-	private float minPulseWidthMs;
-	private float maxPulseWidthMs;
-	private float midPulseWidthMs;
-	private float minAngle;
-	private float maxAngle;
-	private LinkedList<Animation> movementQueue;
+	private Trim trim;
 
 	public Servo(int gpio, float initialPulseWidthMs) throws RuntimeIOException {
-		this(DeviceFactoryHelper.getNativeDeviceFactory(), gpio, DEFAULT_PWM_FREQUENCY, DEFAULT_MIN_PULSE_WIDTH_MS,
-				DEFAULT_MAX_PULSE_WIDTH_MS, DEFAULT_MINUS90_PULSE_WIDTH_MS, DEFAULT_PLUS90_PULSE_WIDTH_MS,
-				initialPulseWidthMs);
+		this(DeviceFactoryHelper.getNativeDeviceFactory(), gpio, initialPulseWidthMs, DEFAULT_PWM_FREQUENCY,
+				Trim.DEFAULT);
 	}
 
-	public Servo(int gpio, float minPulseWidthMs, float maxPulseWidthMs, float minus90PulseWidthMs,
-			float plus90PulseWidthMs, float initialPulseWidthMs) throws RuntimeIOException {
-		this(DeviceFactoryHelper.getNativeDeviceFactory(), gpio, DEFAULT_PWM_FREQUENCY, minPulseWidthMs,
-				maxPulseWidthMs, minus90PulseWidthMs, plus90PulseWidthMs, initialPulseWidthMs);
+	public Servo(int gpio, float initialPulseWidthMs, Trim trim) throws RuntimeIOException {
+		this(DeviceFactoryHelper.getNativeDeviceFactory(), gpio, initialPulseWidthMs, DEFAULT_PWM_FREQUENCY, Trim.DEFAULT);
 	}
 
-	public Servo(int gpio, int pwmFrequency, float initialPulseWidthMs) throws RuntimeIOException {
-		this(DeviceFactoryHelper.getNativeDeviceFactory(), gpio, pwmFrequency, DEFAULT_MIN_PULSE_WIDTH_MS,
-				DEFAULT_MAX_PULSE_WIDTH_MS, DEFAULT_MINUS90_PULSE_WIDTH_MS, DEFAULT_PLUS90_PULSE_WIDTH_MS,
-				initialPulseWidthMs);
+	public Servo(int gpio, float initialPulseWidthMs, int pwmFrequency) throws RuntimeIOException {
+		this(DeviceFactoryHelper.getNativeDeviceFactory(), gpio, initialPulseWidthMs, pwmFrequency, Trim.DEFAULT);
 	}
 
-	public Servo(int gpio, int pwmFrequency, float minPulseWidthMs, float maxPulseWidthMs, float minus90PulseWidthMs,
-			float plus90PulseWidthMs, float initialPulseWidthMs) throws RuntimeIOException {
-		this(DeviceFactoryHelper.getNativeDeviceFactory(), gpio, pwmFrequency, minPulseWidthMs, maxPulseWidthMs,
-				minus90PulseWidthMs, plus90PulseWidthMs, initialPulseWidthMs);
+	public Servo(int gpio, float initialPulseWidthMs, int pwmFrequency, Trim trim) throws RuntimeIOException {
+		this(DeviceFactoryHelper.getNativeDeviceFactory(), gpio, initialPulseWidthMs, pwmFrequency, trim);
 	}
 
-	public Servo(PwmOutputDeviceFactoryInterface pwmDeviceFactory, int gpio, int pwmFrequency,
-			float initialPulseWidthMs) throws RuntimeIOException {
-		this(pwmDeviceFactory, gpio, pwmFrequency, DEFAULT_MIN_PULSE_WIDTH_MS, DEFAULT_MAX_PULSE_WIDTH_MS,
-				DEFAULT_MINUS90_PULSE_WIDTH_MS, DEFAULT_PLUS90_PULSE_WIDTH_MS, initialPulseWidthMs);
+	public Servo(PwmOutputDeviceFactoryInterface pwmDeviceFactory, int gpio, float initialPulseWidthMs,
+			int pwmFrequency) throws RuntimeIOException {
+		this(pwmDeviceFactory, gpio, initialPulseWidthMs, pwmFrequency, Trim.DEFAULT);
 	}
 
-	public Servo(PwmOutputDeviceFactoryInterface pwmDeviceFactory, int gpio, int pwmFrequency, float minPulseWidthMs,
-			float maxPulseWidthMs, float minus90PulseWidthMs, float plus90PulseWidthMs, float initialPulseWidthMs)
-			throws RuntimeIOException {
+	public Servo(PwmOutputDeviceFactoryInterface pwmDeviceFactory, int gpio, float initialPulseWidthMs,
+			int pwmFrequency, Trim trim) throws RuntimeIOException {
 		super(gpio);
 
-		movementQueue = new LinkedList<>();
 		this.pwmFrequency = pwmFrequency;
-		this.minPulseWidthMs = minPulseWidthMs;
-		this.maxPulseWidthMs = maxPulseWidthMs;
-		this.midPulseWidthMs = (minus90PulseWidthMs + plus90PulseWidthMs) / 2;
-		minAngle = RangeUtil.map(minPulseWidthMs, minus90PulseWidthMs, plus90PulseWidthMs, 0, 180, false);
-		maxAngle = RangeUtil.map(maxPulseWidthMs, minus90PulseWidthMs, plus90PulseWidthMs, 0, 180, false);
+		this.trim = trim;
 
 		this.device = pwmDeviceFactory.provisionPwmOutputDevice(gpio, pwmFrequency, calcValue(initialPulseWidthMs));
 	}
@@ -137,30 +111,75 @@ public class Servo extends GpioDevice implements OutputDeviceInterface {
 	 *            Servo pulse width (milliseconds)
 	 */
 	public void setPulseWidthMs(float pulseWidthMs) {
-		if (pulseWidthMs < minPulseWidthMs || pulseWidthMs > maxPulseWidthMs) {
-			throw new IllegalArgumentException(
-					"Invalid pulse width (" + pulseWidthMs + "), must be " + minPulseWidthMs + ".." + maxPulseWidthMs);
-		}
-		device.setValue(calcValue(pulseWidthMs));
+		float value = calcValue(pulseWidthMs);
+		Logger.debug("pulseWidthMs: {}, value: {}", Float.valueOf(pulseWidthMs), Float.valueOf(value));
+		device.setValue(value);
 	}
 
 	public void setAngle(float angle) {
-		setPulseWidthMs(RangeUtil.map(angle, minAngle, maxAngle, minPulseWidthMs, maxPulseWidthMs));
+		Logger.debug("angle: {}", Float.valueOf(angle));
+		setPulseWidthMs(RangeUtil.map(angle, trim.getMinAngle(), trim.getMaxAngle(), trim.getMinPulseWidthMs(),
+				trim.getMaxPulseWidthMs()));
 	}
 
 	public void min() {
-		setPulseWidthMs(minPulseWidthMs);
+		setPulseWidthMs(trim.getMinPulseWidthMs());
 	}
 
 	public void centre() {
-		setPulseWidthMs(midPulseWidthMs);
+		setPulseWidthMs(trim.getMidPulseWidthMs());
 	}
 
 	public void max() {
-		setPulseWidthMs(maxPulseWidthMs);
+		setPulseWidthMs(trim.getMaxPulseWidthMs());
 	}
 
 	private float calcValue(float pulseWidthMs) {
-		return pulseWidthMs * pwmFrequency / 1000f;
+		return RangeUtil.constrain(pulseWidthMs, trim.getMinPulseWidthMs(), trim.getMaxPulseWidthMs()) * pwmFrequency / 1000f;
+	}
+	
+	public static class Trim {
+		public static final Trim DEFAULT = new Trim(0.6f, 2.4f, 0.6f, 2.4f);
+		public static final Trim TOWERPRO_SG90 = new Trim(0.6f, 2.4f, 0.5f, 2.5f);
+		public static final Trim TOWERPRO_SG5010 = new Trim(0.6f, 2.4f, 0.5f, 2.5f);
+
+		private float minPulseWidthMs;
+		private float maxPulseWidthMs;
+		private float midPulseWidthMs;
+		private float minAngle;
+		private float maxAngle;
+		
+		public Trim(float minus90PulseWidthMs, float plus90PulseWidthMs, float minPulseWidthMs, float maxPulseWidthMs) {
+			this.minPulseWidthMs = minPulseWidthMs;
+			this.maxPulseWidthMs = maxPulseWidthMs;
+			this.midPulseWidthMs = (minus90PulseWidthMs + plus90PulseWidthMs) / 2;
+			minAngle = RangeUtil.map(minPulseWidthMs, minus90PulseWidthMs, plus90PulseWidthMs, 0, 180, false);
+			maxAngle = RangeUtil.map(maxPulseWidthMs, minus90PulseWidthMs, plus90PulseWidthMs, 0, 180, false);
+		}
+		
+		public float getMinPulseWidthMs() {
+			return minPulseWidthMs;
+		}
+
+		public float getMaxPulseWidthMs() {
+			return maxPulseWidthMs;
+		}
+
+		public float getMidPulseWidthMs() {
+			return midPulseWidthMs;
+		}
+
+		public float getMinAngle() {
+			return minAngle;
+		}
+
+		public float getMaxAngle() {
+			return maxAngle;
+		}
+
+		@SuppressWarnings("static-method")
+		public float getMidAngle() {
+			return 90;
+		}
 	}
 }

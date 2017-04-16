@@ -46,13 +46,9 @@ import com.diozero.util.SleepUtil;
  * </ul>
  */
 public class ServoTest {
-	private static final float TOWERPRO_SG90_MIN_MS = 0.6f;
-	private static final float TOWERPRO_SG90_MAX_MS = 2.5f;
-	private static final float TOWERPRO_SG90_MID_MS = (TOWERPRO_SG90_MIN_MS + TOWERPRO_SG90_MAX_MS) / 2;
-	
 	public static void main(String[] args) {
 		if (args.length < 2) {
-			Logger.error("Usage: {} <PWM Frequency> <BCM pin number>", ServoTest.class.getName());
+			Logger.error("Usage: {} <PWM Frequency> <pin number>", ServoTest.class.getName());
 			System.exit(1);
 		}
 		
@@ -61,18 +57,39 @@ public class ServoTest {
 		
 		test(pwm_freq, pin_number);
 	}
-	
+
 	public static void test(int frequency, int gpio) {
-		try (Servo servo = new Servo(gpio, frequency, TOWERPRO_SG90_MID_MS)) {
-			for (float pulse_ms=TOWERPRO_SG90_MID_MS; pulse_ms<TOWERPRO_SG90_MAX_MS; pulse_ms+=0.005) {
+		Servo.Trim trim = Servo.Trim.TOWERPRO_SG5010;
+		try (Servo servo = new Servo(gpio, trim.getMidPulseWidthMs(), frequency, trim)) {
+			Logger.info("Mid");
+			servo.setPulseWidthMs(trim.getMidPulseWidthMs());
+			SleepUtil.sleepMillis(1000);
+			
+			Logger.info("Min");
+			servo.setPulseWidthMs(trim.getMinPulseWidthMs());
+			SleepUtil.sleepMillis(1000);
+			
+			Logger.info("Mid");
+			servo.setPulseWidthMs(trim.getMidPulseWidthMs());
+			SleepUtil.sleepMillis(1000);
+			
+			Logger.info("Max");
+			servo.setPulseWidthMs(trim.getMaxPulseWidthMs());
+			SleepUtil.sleepMillis(1000);
+			
+			Logger.info("Mid");
+			servo.setPulseWidthMs(trim.getMidPulseWidthMs());
+			SleepUtil.sleepMillis(1000);
+			
+			for (float pulse_ms = trim.getMidPulseWidthMs(); pulse_ms < trim.getMaxPulseWidthMs(); pulse_ms += 0.005) {
 				servo.setPulseWidthMs(pulse_ms);
 				SleepUtil.sleepMillis(10);
 			}
-			for (float pulse_ms=TOWERPRO_SG90_MAX_MS; pulse_ms>TOWERPRO_SG90_MIN_MS; pulse_ms-=0.005) {
+			for (float pulse_ms = trim.getMaxPulseWidthMs(); pulse_ms > trim.getMinPulseWidthMs(); pulse_ms -= 0.005) {
 				servo.setPulseWidthMs(pulse_ms);
 				SleepUtil.sleepMillis(10);
 			}
-			for (float pulse_ms=TOWERPRO_SG90_MIN_MS; pulse_ms<TOWERPRO_SG90_MID_MS; pulse_ms+=0.005) {
+			for (float pulse_ms = trim.getMinPulseWidthMs(); pulse_ms < trim.getMidPulseWidthMs(); pulse_ms += 0.005) {
 				servo.setPulseWidthMs(pulse_ms);
 				SleepUtil.sleepMillis(10);
 			}

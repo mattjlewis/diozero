@@ -43,7 +43,7 @@ public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFac
 	private static final int DEVICE_ADDRESS = 0x40;
 	private static final String DEVICE_NAME = "PCA9685";
 	private static final int NUM_CHANNELS = 16;
-	private static final int RANGE = (int)Math.pow(2, 12);
+	private static final int RANGE = (int) Math.pow(2, 12);
 	
 	private static final int CLOCK_FREQ = 25_000_000; // 25MHz default osc clock
 	
@@ -86,7 +86,7 @@ public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFac
 	private static final int MIN_PWM_FREQUENCY = 40;
 	private static final int MAX_PWM_FREQUENCY = 1000;
 	// TODO Qualify this value
-	private static final int DEFAULT_PWM_FREQUENCY = 60;
+	private static final int DEFAULT_PWM_FREQUENCY = 50;
 	
 	private I2CDevice i2cDevice;
 	private String keyPrefix;
@@ -293,7 +293,7 @@ public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFac
 		if (value < 0 || value > 1) {
 			throw new IllegalArgumentException("PWM value must 0..1, you requested " + value);
 		}
-		int off = (int)Math.floor(value * RANGE);
+		int off = (int) Math.floor(value * RANGE);
 		setPwm(channel, 0, off);
 	}
 	

@@ -1,5 +1,31 @@
 package com.diozero.sampleapps;
 
+/*
+ * #%L
+ * Device I/O Zero - Sample applications
+ * %%
+ * Copyright (C) 2016 - 2017 mattjlewis
+ * %%
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ * #L%
+ */
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CancellationException;
@@ -32,40 +58,30 @@ import com.diozero.sandpit.Servo;
  * </ul>
  */
 public class PCA9685ServoAnimation {
-	private static final float TOWERPRO_SG90_MIN_MS = 0.6f;
-	private static final float TOWERPRO_SG90_MAX_MS = 2.4f;
-	private static final float TOWERPRO_SG90_MINUS90_MS = 1f;
-	private static final float TOWERPRO_SG90_PLUS90_MS = 2f;
-	private static final float TOWERPRO_SG90_MID_MS = (TOWERPRO_SG90_MIN_MS + TOWERPRO_SG90_MAX_MS) / 2;
-	
 	public static void main(String[] args) {
 		int pwm_freq = 50;
 		test(pwm_freq, 0, 1, 12, 13, 14, 15);
 	}
 	
 	public static void test(int pwmFrequency, int gpio1, int gpio2, int gpio3, int gpio4, int gpio5, int gpio6) {
+		Servo.Trim trim = Servo.Trim.TOWERPRO_SG90;
 		try (PCA9685 pca9685 = new PCA9685(pwmFrequency);
-				Servo servo1 = new Servo(pca9685, gpio1, pwmFrequency, TOWERPRO_SG90_MIN_MS, TOWERPRO_SG90_MAX_MS,
-						TOWERPRO_SG90_MINUS90_MS, TOWERPRO_SG90_PLUS90_MS, TOWERPRO_SG90_MID_MS);
-				Servo servo2 = new Servo(pca9685, gpio2, pwmFrequency, TOWERPRO_SG90_MIN_MS, TOWERPRO_SG90_MAX_MS,
-						TOWERPRO_SG90_MINUS90_MS, TOWERPRO_SG90_PLUS90_MS, TOWERPRO_SG90_MID_MS);
-				Servo servo3 = new Servo(pca9685, gpio3, pwmFrequency, TOWERPRO_SG90_MIN_MS, TOWERPRO_SG90_MAX_MS,
-						TOWERPRO_SG90_MINUS90_MS, TOWERPRO_SG90_PLUS90_MS, TOWERPRO_SG90_MID_MS);
-				Servo servo4 = new Servo(pca9685, gpio4, pwmFrequency, TOWERPRO_SG90_MIN_MS, TOWERPRO_SG90_MAX_MS,
-						TOWERPRO_SG90_MINUS90_MS, TOWERPRO_SG90_PLUS90_MS, TOWERPRO_SG90_MID_MS);
-				Servo servo5 = new Servo(pca9685, gpio5, pwmFrequency, TOWERPRO_SG90_MIN_MS, TOWERPRO_SG90_MAX_MS,
-						TOWERPRO_SG90_MINUS90_MS, TOWERPRO_SG90_PLUS90_MS, TOWERPRO_SG90_MID_MS);
-				Servo servo6 = new Servo(pca9685, gpio6, pwmFrequency, TOWERPRO_SG90_MIN_MS, TOWERPRO_SG90_MAX_MS,
-					TOWERPRO_SG90_MINUS90_MS, TOWERPRO_SG90_PLUS90_MS, TOWERPRO_SG90_MID_MS)) {
-			Animation animation = new Animation(Arrays.asList(servo1, servo2, servo3, servo4, servo5, servo6), 100, Sine::easeIn, 1f);
+				Servo servo1 = new Servo(pca9685, gpio1, trim.getMidPulseWidthMs(), pwmFrequency, trim);
+				Servo servo2 = new Servo(pca9685, gpio2, trim.getMidPulseWidthMs(), pwmFrequency, trim);
+				Servo servo3 = new Servo(pca9685, gpio3, trim.getMidPulseWidthMs(), pwmFrequency, trim);
+				Servo servo4 = new Servo(pca9685, gpio4, trim.getMidPulseWidthMs(), pwmFrequency, trim);
+				Servo servo5 = new Servo(pca9685, gpio5, trim.getMidPulseWidthMs(), pwmFrequency, trim);
+				Servo servo6 = new Servo(pca9685, gpio6, trim.getMidPulseWidthMs(), pwmFrequency, trim)) {
+			Animation animation = new Animation(Arrays.asList(servo1::setAngle, servo2, servo3, servo4, servo5, servo6), 100,
+					Sine::easeIn, 1f);
 			animation.setLoop(true);
 			float[] cue_points = { 0, 0.2f, 0.5f, 1 };
-			List<AnimationInstance.KeyFrame[]> key_frames = AnimationInstance.KeyFrame.from(
+			List<AnimationInstance.KeyFrame[]> key_frames = AnimationInstance.KeyFrame.fromValues(
 					new float[][] {
-						{TOWERPRO_SG90_MIN_MS, TOWERPRO_SG90_MIN_MS, TOWERPRO_SG90_MIN_MS, TOWERPRO_SG90_MIN_MS, TOWERPRO_SG90_MIN_MS, TOWERPRO_SG90_MIN_MS},
-						{TOWERPRO_SG90_MID_MS, TOWERPRO_SG90_MID_MS, TOWERPRO_SG90_MID_MS, TOWERPRO_SG90_MID_MS, TOWERPRO_SG90_MID_MS, TOWERPRO_SG90_MID_MS},
-						{TOWERPRO_SG90_MAX_MS, TOWERPRO_SG90_MAX_MS, TOWERPRO_SG90_MAX_MS, TOWERPRO_SG90_MAX_MS, TOWERPRO_SG90_MAX_MS, TOWERPRO_SG90_MAX_MS},
-						{TOWERPRO_SG90_MIN_MS, TOWERPRO_SG90_MIN_MS, TOWERPRO_SG90_MIN_MS, TOWERPRO_SG90_MIN_MS, TOWERPRO_SG90_MIN_MS, TOWERPRO_SG90_MIN_MS} } );
+						{ trim.getMinAngle(), trim.getMinPulseWidthMs(), trim.getMinPulseWidthMs(), trim.getMinPulseWidthMs(), trim.getMinPulseWidthMs(), trim.getMinPulseWidthMs() },
+						{ trim.getMidAngle(), trim.getMidPulseWidthMs(), trim.getMidPulseWidthMs(), trim.getMidPulseWidthMs(), trim.getMidPulseWidthMs(), trim.getMidPulseWidthMs() },
+						{ trim.getMaxAngle(), trim.getMaxPulseWidthMs(), trim.getMaxPulseWidthMs(), trim.getMaxPulseWidthMs(), trim.getMaxPulseWidthMs(), trim.getMaxPulseWidthMs() },
+						{ trim.getMinAngle(), trim.getMinPulseWidthMs(), trim.getMinPulseWidthMs(), trim.getMinPulseWidthMs(), trim.getMinPulseWidthMs(), trim.getMinPulseWidthMs() } } );
 			AnimationInstance ai = new AnimationInstance(5000, cue_points, key_frames);
 			animation.enqueue(ai);
 			Future<?> future = animation.play();

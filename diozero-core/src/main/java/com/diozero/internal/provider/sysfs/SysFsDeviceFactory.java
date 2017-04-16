@@ -48,7 +48,6 @@ public class SysFsDeviceFactory extends BaseNativeDeviceFactory {
 	private static final String UNEXPORT_FILE = "unexport";
 	private static final String GPIO_DIR_PREFIX = "gpio";
 	private static final String DIRECTION_FILE = "direction";
-	private static final int DEFAULT_PWM_FREQUENCY = 100;
 	
 	private Path rootPath;
 	private int boardPwmFrequency;
@@ -119,13 +118,11 @@ public class SysFsDeviceFactory extends BaseNativeDeviceFactory {
 			PwmPinInfo pwm_pin_info = (PwmPinInfo) pinInfo;
 			// Odroid C2 runs with an older kernel hence has a different interface
 			if (getBoardInfo().sameMakeAndModel(OdroidBoardInfoProvider.ODROID_C2)) {
-				// FIXME Match with previously set PWM frequency...
 				return new OdroidC2SysFsPwmOutputDevice(key, this, pwm_pin_info, pwmFrequency, initialValue);
 			}
 
-			// FIXME Match with previously set PWM frequency...
 			return new SysFsPwmOutputDevice(key, this, getBoardInfo().getPwmChip(pwm_pin_info.getPwmNum()), pwm_pin_info,
-					DEFAULT_PWM_FREQUENCY, initialValue);
+					pwmFrequency, initialValue);
 		}
 
 		Logger.warn("Using software PWM on gpio {}", Integer.valueOf(gpio));
