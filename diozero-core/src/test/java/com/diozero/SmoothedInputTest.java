@@ -61,7 +61,7 @@ public class SmoothedInputTest implements InputEventListener<DigitalInputEvent> 
 				}
 			};
 			
-			ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+			ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(10);
 			
 			// Generate 1 event every 100ms -> 10 events per second, therefore should get a smoothed event every 1s
 			ScheduledFuture<?> future = scheduler.scheduleAtFixedRate(event_generator, 100, 100, TimeUnit.MILLISECONDS);
@@ -79,6 +79,8 @@ public class SmoothedInputTest implements InputEventListener<DigitalInputEvent> 
 			future.cancel(true);
 			
 			scheduler.shutdownNow();
+		} catch (Throwable t) {
+			Logger.error(t, "Error: {}", t);
 		}
 	}
 
