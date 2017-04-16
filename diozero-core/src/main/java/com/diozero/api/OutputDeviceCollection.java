@@ -1,10 +1,10 @@
-package com.diozero.internal;
+package com.diozero.api;
 
 /*
  * #%L
  * Device I/O Zero - Core
  * %%
- * Copyright (C) 2016 diozero
+ * Copyright (C) 2016 - 2017 mattjlewis
  * %%
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,48 +26,18 @@ package com.diozero.internal;
  * #L%
  */
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
-import org.pmw.tinylog.Logger;
+import java.util.Collection;
 
-import com.diozero.internal.spi.DeviceInterface;
-
-public class DeviceStates {
-	private Map<String, DeviceInterface> devices;
+public class OutputDeviceCollection implements OutputDeviceInterface {
+	private Collection<OutputDeviceInterface> devices;
 	
-	public DeviceStates() {
-		devices = new ConcurrentHashMap<>();
+	public OutputDeviceCollection(Collection<OutputDeviceInterface> devices) {
+		this.devices = devices;
 	}
 
-	public boolean isOpened(String key) {
-		return devices.containsKey(key);
-	}
-	
-	public void opened(DeviceInterface device) {
-		devices.put(device.getKey(), device);
-	}
-	
-	public void closed(DeviceInterface device) {
-		Logger.debug("closed({})", device.getKey());
-		if (devices.remove(device.getKey()) == null) {
-			Logger.warn("Request to close unknown device with key '{}'", device.getKey());
-		}
-	}
-	
-	public void closeAll() {
-		Logger.debug("closeAll()");
-		for (DeviceInterface device : devices.values()) {
-			// No need to remove from the Map as close() should always call closed()
-			device.close();
-		}
-	}
-
-	public DeviceInterface getDevice(String key) {
-		return devices.get(key);
-	}
-	
-	public int size() {
-		return devices.size();
+	@Override
+	public void setValue(float value) {
+		devices.forEach(device -> device.setValue(value));
 	}
 }

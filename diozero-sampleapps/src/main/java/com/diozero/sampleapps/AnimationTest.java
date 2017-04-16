@@ -65,7 +65,7 @@ public class AnimationTest {
 			float[] cue_points = { 0, 0.6f, 0.8f, 1 };
 			// Value for each target at the corresponding cue points
 			//float[][] key_frames = { { 1, 5, 10 }, { 2, 4, 9 }, { 3, 6, 8 } };
-			List<AnimationInstance.KeyFrame[]> key_frames = AnimationInstance.KeyFrame.from(
+			List<AnimationInstance.KeyFrame[]> key_frames = AnimationInstance.KeyFrame.fromValues(
 				new float[][] { {0, 1}, {0.2f, 0.8f}, {0.8f, 0.2f}, {1, 0} } );
 			anim.enqueue(duration, cue_points, key_frames);
 			

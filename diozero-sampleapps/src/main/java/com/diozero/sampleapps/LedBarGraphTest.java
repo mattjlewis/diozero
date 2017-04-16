@@ -60,7 +60,7 @@ public class LedBarGraphTest {
 		
 		int duration = 4000;
 		float[] cue_points = new float[] { 0, 0.5f, 1 };
-		List<KeyFrame[]> key_frames = KeyFrame.from(new float[][] { {0}, {1f}, {0} });
+		List<KeyFrame[]> key_frames = KeyFrame.fromValues(new float[][] { {0}, {1f}, {0} });
 		try (MCP23008 expander = new MCP23008();
 				LedBarGraph led_bar_graph = new LedBarGraph(expander, gpios)) {
 			Animation anim = new Animation(Arrays.asList(led_bar_graph), 50, Sine::easeIn, 1f);

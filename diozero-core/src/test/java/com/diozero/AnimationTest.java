@@ -61,7 +61,7 @@ public class AnimationTest {
 		//List<AnimationInstance.KeyFrame[]> key_frames = AnimationInstance.KeyFrame.from(new float[][] { { 1, 5, 10 }, { 2, 4, 9 }, { 3, 6, 8 } };
 		//List<AnimationInstance.KeyFrame[]> key_frames = AnimationInstance.KeyFrame.from(new float[][] { { 1 }, { 2 }, { 3 }, { 1 } };
 		//List<AnimationInstance.KeyFrame[]> key_frames = AnimationInstance.KeyFrame.from(new float[][] { { 1, 3 }, { 2, 2 }, { 3, 1 }, { 1, 3 } });
-		List<AnimationInstance.KeyFrame[]> key_frames = AnimationInstance.KeyFrame.from(
+		List<AnimationInstance.KeyFrame[]> key_frames = AnimationInstance.KeyFrame.fromValues(
 				new float[][] { {0, 1}, {0.2f, 0.8f}, {0.8f, 0.2f}, {1, 0} } );
 		//List<AnimationInstance.KeyFrame[]> key_frames = Arrays.asList(
 		//		new KeyFrame[] { new KeyFrame(1) }, new KeyFrame[] { new KeyFrame(0.2f) },

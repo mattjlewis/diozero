@@ -163,13 +163,18 @@ public class AnimationInstance {
 	public static class KeyFrame {
 		private float value;
 		private Float delta;
+		private boolean change;
 		private String easing;
 		
 		public KeyFrame() {
 		}
 		
 		public KeyFrame(float value) {
-			this.value = value;
+			setValue(value);
+		}
+		
+		public KeyFrame(boolean change) {
+			setChange(change);
 		}
 		
 		public float getValue() {
@@ -177,6 +182,9 @@ public class AnimationInstance {
 		}
 		
 		public float getValue(float previousValue) {
+			if (! change) {
+				return previousValue;
+			}
 			if (delta == null) {
 				return value;
 			}
@@ -184,6 +192,7 @@ public class AnimationInstance {
 		}
 		
 		public void setValue(float value) {
+			change = true;
 			this.value = value;
 		}
 		
@@ -192,7 +201,16 @@ public class AnimationInstance {
 		}
 		
 		public void setDelta(float delta) {
+			change = true;
 			this.delta = Float.valueOf(delta);
+		}
+		
+		public boolean isChange() {
+			return change;
+		}
+		
+		public void setChange(boolean change) {
+			this.change = change;
 		}
 		
 		public String getEasing() {
@@ -205,10 +223,10 @@ public class AnimationInstance {
 
 		@Override
 		public String toString() {
-			return "KeyFrame [value=" + value + ", delta=" + delta + "]";
+			return "KeyFrame [value=" + value + ", delta=" + delta + ", change=" + change + ", easing=" + easing + "]";
 		}
 		
-		public static List<KeyFrame[]> from(float[][] values) {
+		public static List<KeyFrame[]> fromValues(float[][] values) {
 			List<KeyFrame[]> key_frames = new ArrayList<>();
 			for (float[] kf_values : values) {
 				KeyFrame[] kf_array = new KeyFrame[kf_values.length];
