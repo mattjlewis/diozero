@@ -160,6 +160,11 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeSpiDevice_
 		(*env)->ReleaseByteArrayElements(env, txBuffer, tx_buf, JNI_ABORT);
 	}
 	if (rx_buf != NULL) {
+		// Mode 		Actions
+		// 0 			Copy back the content and free the elems buffer
+		// JNI_COMMIT 	Copy back the content but do not free the elems buffer
+		// JNI_ABORT 	Free the buffer without copying back the possible changes
+
 		// mode = 0 - Copy back the content and free the buffer (rx)
 		(*env)->ReleaseByteArrayElements(env, rxBuffer, rx_buf, 0);
 	}

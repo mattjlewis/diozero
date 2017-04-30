@@ -191,30 +191,42 @@ public class AnimationInstance {
 			return value + delta.floatValue();
 		}
 		
-		public void setValue(float value) {
+		public KeyFrame setValue(float value) {
 			change = true;
 			this.value = value;
+			
+			return this;
 		}
 		
 		public Float getDelta() {
 			return delta;
 		}
 		
-		public void setDelta(float delta) {
+		public KeyFrame setDelta(float delta) {
 			change = true;
 			this.delta = Float.valueOf(delta);
+			
+			return this;
 		}
 		
 		public boolean isChange() {
 			return change;
 		}
 		
-		public void setChange(boolean change) {
+		public KeyFrame setChange(boolean change) {
 			this.change = change;
+			
+			return this;
 		}
 		
 		public String getEasing() {
 			return easing;
+		}
+		
+		public KeyFrame setEasing(String easing) {
+			this.easing = easing;
+			
+			return this;
 		}
 		
 		public EasingFunction getEasingFunction() {

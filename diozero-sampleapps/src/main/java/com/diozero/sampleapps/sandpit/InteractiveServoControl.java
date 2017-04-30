@@ -45,6 +45,7 @@ public class InteractiveServoControl {
 		}
 		
 		int i2c_controller = Integer.parseInt(args[0]);
+		Servo.Trim trim = Servo.Trim.MG996R;
 		try (BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 				PCA9685 pca9685 = new PCA9685(i2c_controller, 0x40, 50)) {
 			while (true) {
@@ -60,7 +61,7 @@ public class InteractiveServoControl {
 				}
 				try {
 					int gpio = Integer.parseInt(line);
-					run(br, pca9685, gpio);
+					run(br, pca9685, gpio, trim);
 				} catch (NumberFormatException e) {
 					System.out.println("Invalid integer '" + line + "'");
 				}
@@ -70,8 +71,8 @@ public class InteractiveServoControl {
 		}
 	}
 	
-	private static void run(BufferedReader br, PwmOutputDeviceFactoryInterface deviceFactory, int gpio) throws IOException {
-		try (Servo servo = new Servo(deviceFactory, gpio, 1.5f, 50)) {
+	private static void run(BufferedReader br, PwmOutputDeviceFactoryInterface deviceFactory, int gpio, Servo.Trim trim) throws IOException {
+		try (Servo servo = new Servo(deviceFactory, gpio, 1.5f, 50, trim)) {
 			while (true) {
 				System.out.print("Angle ('q' to quit): ");
 				System.out.flush();

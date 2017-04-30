@@ -1,5 +1,7 @@
 package com.diozero.api;
 
+import java.util.Arrays;
+
 /*
  * #%L
  * Device I/O Zero - Core
@@ -32,8 +34,16 @@ import java.util.Collection;
 public class OutputDeviceCollection implements OutputDeviceInterface {
 	private Collection<OutputDeviceInterface> devices;
 	
+	public OutputDeviceCollection(OutputDeviceInterface... devices) {
+		this(Arrays.asList(devices));
+	}
+	
 	public OutputDeviceCollection(Collection<OutputDeviceInterface> devices) {
 		this.devices = devices;
+	}
+	
+	public Collection<OutputDeviceInterface> getDevices() {
+		return devices;
 	}
 
 	@Override

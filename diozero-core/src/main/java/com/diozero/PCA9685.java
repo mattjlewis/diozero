@@ -98,6 +98,10 @@ public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFac
 		this(I2CConstants.BUS_1, DEVICE_ADDRESS, pwmFrequency);
 	}
 
+	public PCA9685(int controller, int pwmFrequency) throws RuntimeIOException {
+		this(controller, DEVICE_ADDRESS, pwmFrequency);
+	}
+
 	public PCA9685(int controller, int address, int pwmFrequency) throws RuntimeIOException {
 		super(DEVICE_NAME + "-" + controller + "-" + address);
 		

@@ -1,5 +1,9 @@
 package com.diozero.sandpit;
 
+import java.io.Closeable;
+import java.util.Arrays;
+import java.util.Collection;
+
 /*
  * #%L
  * Device I/O Zero - Core
@@ -29,6 +33,7 @@ package com.diozero.sandpit;
 import org.pmw.tinylog.Logger;
 
 import com.diozero.api.GpioDevice;
+import com.diozero.api.OutputDeviceCollection;
 import com.diozero.api.OutputDeviceInterface;
 import com.diozero.internal.DeviceFactoryHelper;
 import com.diozero.internal.spi.PwmOutputDeviceFactoryInterface;
@@ -42,6 +47,8 @@ public class Servo extends GpioDevice implements OutputDeviceInterface {
 	private int pwmFrequency;
 	private PwmOutputDeviceInterface device;
 	private Trim trim;
+	private boolean inverted;
+	private OutputDeviceUnit outputDeviceUnit;
 
 	public Servo(int gpio, float initialPulseWidthMs) throws RuntimeIOException {
 		this(DeviceFactoryHelper.getNativeDeviceFactory(), gpio, initialPulseWidthMs, DEFAULT_PWM_FREQUENCY,
@@ -71,13 +78,31 @@ public class Servo extends GpioDevice implements OutputDeviceInterface {
 
 		this.pwmFrequency = pwmFrequency;
 		this.trim = trim;
+		// Default the set / get value unit to pulse width ms
+		outputDeviceUnit = OutputDeviceUnit.PULSE_WIDTH_MS;
 
-		this.device = pwmDeviceFactory.provisionPwmOutputDevice(gpio, pwmFrequency, calcValue(initialPulseWidthMs));
+		this.device = pwmDeviceFactory.provisionPwmOutputDevice(gpio, pwmFrequency,
+				mapPulseWidthMsToPercentage(initialPulseWidthMs));
+	}
+	
+	public OutputDeviceUnit getOutputDeviceUnit() {
+		return outputDeviceUnit;
+	}
+	
+	public Servo setOutputDeviceUnit(OutputDeviceUnit outputDeviceUnit) {
+		this.outputDeviceUnit = outputDeviceUnit;
+		
+		return this;
+	}
+	
+	public Servo setInverted(boolean inverted) {
+		this.inverted = inverted;
+		
+		return this;
 	}
 
 	@Override
 	public void close() {
-		Logger.debug("close()");
 		device.close();
 		Logger.debug("device closed");
 	}
@@ -87,12 +112,35 @@ public class Servo extends GpioDevice implements OutputDeviceInterface {
 	}
 
 	public float getValue() {
-		return getPulseWidthMs();
+		float value = 0;
+		switch (outputDeviceUnit) {
+		case PULSE_WIDTH_MS:
+			value = getPulseWidthMs();
+			break;
+		case DEGREES:
+			value = getAngle();
+			break;
+		case RADIANS:
+			value = (float) Math.toRadians(getAngle());
+			break;
+		}
+		
+		return value;
 	}
 
 	@Override
 	public void setValue(float value) {
-		setPulseWidthMs(value);
+		switch (outputDeviceUnit) {
+		case PULSE_WIDTH_MS:
+			setPulseWidthMs(value);
+			break;
+		case DEGREES:
+			setAngle(value);
+			break;
+		case RADIANS:
+			setAngle((float) Math.toDegrees(value));
+			break;
+		}
 	}
 
 	/**
@@ -111,37 +159,73 @@ public class Servo extends GpioDevice implements OutputDeviceInterface {
 	 *            Servo pulse width (milliseconds)
 	 */
 	public void setPulseWidthMs(float pulseWidthMs) {
-		float value = calcValue(pulseWidthMs);
-		Logger.debug("pulseWidthMs: {}, value: {}", Float.valueOf(pulseWidthMs), Float.valueOf(value));
-		device.setValue(value);
+		if (inverted) {
+			pulseWidthMs = trim.getMidPulseWidthMs() - pulseWidthMs + trim.getMidPulseWidthMs();
+		}
+		device.setValue(mapPulseWidthMsToPercentage(pulseWidthMs));
+	}
+	
+	public float getAngle() {
+		return trim.convertPulseWidthMsToAngle(getPulseWidthMs());
 	}
 
 	public void setAngle(float angle) {
-		Logger.debug("angle: {}", Float.valueOf(angle));
-		setPulseWidthMs(RangeUtil.map(angle, trim.getMinAngle(), trim.getMaxAngle(), trim.getMinPulseWidthMs(),
-				trim.getMaxPulseWidthMs()));
+		setPulseWidthMs(trim.convertAngleToPulseWidthMs(angle));
 	}
 
 	public void min() {
 		setPulseWidthMs(trim.getMinPulseWidthMs());
 	}
 
-	public void centre() {
-		setPulseWidthMs(trim.getMidPulseWidthMs());
-	}
-
 	public void max() {
 		setPulseWidthMs(trim.getMaxPulseWidthMs());
 	}
 
-	private float calcValue(float pulseWidthMs) {
+	public void centre() {
+		setPulseWidthMs(trim.getMidPulseWidthMs());
+	}
+
+	private float mapPulseWidthMsToPercentage(float pulseWidthMs) {
 		return RangeUtil.constrain(pulseWidthMs, trim.getMinPulseWidthMs(), trim.getMaxPulseWidthMs()) * pwmFrequency / 1000f;
 	}
 	
+	public static enum OutputDeviceUnit {
+		PULSE_WIDTH_MS, DEGREES, RADIANS;
+	}
+	
+	public static class Array extends OutputDeviceCollection implements Closeable {
+		private Collection<Servo> servos;
+		
+		public Array(Servo... servos) {
+			super(servos);
+			
+			this.servos = Arrays.asList(servos);
+		}
+		
+		@Override
+		public void close() {
+			servos.forEach(Servo::close);
+		}
+	}
+	
 	public static class Trim {
-		public static final Trim DEFAULT = new Trim(0.6f, 2.4f, 0.6f, 2.4f);
-		public static final Trim TOWERPRO_SG90 = new Trim(0.6f, 2.4f, 0.5f, 2.5f);
-		public static final Trim TOWERPRO_SG5010 = new Trim(0.6f, 2.4f, 0.5f, 2.5f);
+		public static final float MID_ANGLE = 90;
+		
+		private static final float DEFAULT_MID = 1.5f;
+		private static final float DEFAULT_90_DELTA = 0.9f;
+		// Default to 180 degree range, from 0.6ms to 2.4ms with 1.5ms centre
+		public static final Trim DEFAULT = new Trim(DEFAULT_MID, DEFAULT_90_DELTA);
+		
+		// From my testing TowerPro SG90 has a range slightly greater than 180 degree
+		private static final float TOWERPRO_SG90_RANGE = 2f;
+		public static final Trim TOWERPRO_SG90 = new Trim(DEFAULT_MID, DEFAULT_90_DELTA, TOWERPRO_SG90_RANGE);
+		
+		// From my testing TowerPro SG5010 has a range slightly greater than 180 degree
+		private static final float TOWERPRO_SG5010_RANGE = 2f;
+		public static final Trim TOWERPRO_SG5010 = new Trim(DEFAULT_MID, DEFAULT_90_DELTA, TOWERPRO_SG5010_RANGE);
+		
+		private static final float MG996R_RANGE = 1f;
+		public static final Trim MG996R = new Trim(DEFAULT_MID, DEFAULT_90_DELTA, MG996R_RANGE);
 
 		private float minPulseWidthMs;
 		private float maxPulseWidthMs;
@@ -149,12 +233,28 @@ public class Servo extends GpioDevice implements OutputDeviceInterface {
 		private float minAngle;
 		private float maxAngle;
 		
-		public Trim(float minus90PulseWidthMs, float plus90PulseWidthMs, float minPulseWidthMs, float maxPulseWidthMs) {
+		/**
+		 * Assumes 180 degree range of movement
+		 * @param midPulseWidthMs Pulse width in ms corresponding to the centre position (90 degrees)
+		 * @param ninetyDegPulseWidthMs Pulse width in ms corresponding to a 90 degreee movement in either direction
+		 */
+		public Trim(float midPulseWidthMs, float ninetyDegPulseWidthMs) {
+			this(midPulseWidthMs, ninetyDegPulseWidthMs, ninetyDegPulseWidthMs);
+		}
+		
+		public Trim(float midPulseWidthMs, float ninetyDegPulseWidthMs, float rangePulseWidthMs) {
+			this(midPulseWidthMs, ninetyDegPulseWidthMs, midPulseWidthMs - rangePulseWidthMs / 2,
+					midPulseWidthMs + rangePulseWidthMs / 2);
+		}
+		
+		public Trim(float midPulseWidthMs, float ninetyDegPulseWidthMs, float minPulseWidthMs, float maxPulseWidthMs) {
 			this.minPulseWidthMs = minPulseWidthMs;
 			this.maxPulseWidthMs = maxPulseWidthMs;
-			this.midPulseWidthMs = (minus90PulseWidthMs + plus90PulseWidthMs) / 2;
-			minAngle = RangeUtil.map(minPulseWidthMs, minus90PulseWidthMs, plus90PulseWidthMs, 0, 180, false);
-			maxAngle = RangeUtil.map(maxPulseWidthMs, minus90PulseWidthMs, plus90PulseWidthMs, 0, 180, false);
+			this.midPulseWidthMs = midPulseWidthMs;
+			minAngle = RangeUtil.map(minPulseWidthMs, midPulseWidthMs - ninetyDegPulseWidthMs,
+					midPulseWidthMs + ninetyDegPulseWidthMs, 0, 180, false);
+			maxAngle = RangeUtil.map(maxPulseWidthMs, midPulseWidthMs - ninetyDegPulseWidthMs,
+					midPulseWidthMs + ninetyDegPulseWidthMs, 0, 180, false);
 		}
 		
 		public float getMinPulseWidthMs() {
@@ -179,7 +279,15 @@ public class Servo extends GpioDevice implements OutputDeviceInterface {
 
 		@SuppressWarnings("static-method")
 		public float getMidAngle() {
-			return 90;
+			return MID_ANGLE;
+		}
+		
+		public float convertPulseWidthMsToAngle(float pulseWidthMs) {
+			return RangeUtil.map(pulseWidthMs, minPulseWidthMs, maxPulseWidthMs, minAngle, maxAngle);
+		}
+		
+		public float convertAngleToPulseWidthMs(float angle) {
+			return RangeUtil.map(angle, minAngle, maxAngle, minPulseWidthMs, maxPulseWidthMs);
 		}
 	}
 }

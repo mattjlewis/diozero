@@ -29,19 +29,50 @@ package com.diozero.internal.provider.sysfs;
 
 import java.nio.ByteBuffer;
 
+import org.pmw.tinylog.Logger;
+
+import com.diozero.internal.provider.sysfs.I2CSMBusInterface.NotSupportedException;
 import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.DeviceFactoryInterface;
 import com.diozero.internal.spi.I2CDeviceInterface;
+import com.diozero.util.LibraryLoader;
 import com.diozero.util.RuntimeIOException;
 
 public class SysFsI2cDevice extends AbstractDevice implements I2CDeviceInterface {
-	private NativeI2CDevice i2cDevice;
+	private static boolean USE_SYSFS = false;
+	static {
+		LibraryLoader.loadLibrary(SysFsI2cDevice.class, "diozero-system-utils");
+		
+		String use_sysfs = System.getProperty("I2C_USE_SYSFS");
+		if (use_sysfs != null) {
+			if (use_sysfs.trim().equals("")) {
+				USE_SYSFS = true;
+			} else {
+				USE_SYSFS = Boolean.parseBoolean(use_sysfs);
+			}
+		}
+	}
+	
+	private I2CSMBusInterface i2cDevice;
 	
 	public SysFsI2cDevice(DeviceFactoryInterface deviceFactory, String key, int controller,
 			int address, int addressSize, int frequency) {
 		super(key, deviceFactory);
+		
+		boolean force = false;
 
-		i2cDevice = new NativeI2CDevice(controller, address);
+		if (USE_SYSFS) {
+			Logger.warn("Using sysfs for I2C communication");
+			i2cDevice = new NativeI2CDeviceSysFs(controller, address, force);
+		} else {
+			try {
+				i2cDevice = new NativeI2CDeviceSMBus(controller, address, force);
+			} catch (NotSupportedException e) {
+				Logger.warn(e, "Error initialising I2C SMBus for controller {}, device 0x{0x}: {}", Integer.valueOf(controller), Integer.valueOf(address), e);
+				Logger.warn("Using sysfs for I2C communication");
+				i2cDevice = new NativeI2CDeviceSysFs(controller, address, force);
+			}
+		}
 	}
 
 	@Override
@@ -60,7 +91,7 @@ public class SysFsI2cDevice extends AbstractDevice implements I2CDeviceInterface
 
 	@Override
 	public void read(int register, int subAddressSize, ByteBuffer dst) throws RuntimeIOException {
-		dst.put(i2cDevice.readBlockData(register, dst.remaining()));
+		dst.put(i2cDevice.readI2CBlockData(register, dst.remaining()));
 		dst.flip();
 	}
 
@@ -68,7 +99,7 @@ public class SysFsI2cDevice extends AbstractDevice implements I2CDeviceInterface
 	public void write(int register, int subAddressSize, ByteBuffer src) throws RuntimeIOException {
 		byte[] buffer = new byte[src.remaining()];
 		src.get(buffer);
-		i2cDevice.writeBlockData(register, buffer);
+		i2cDevice.writeI2CBlockData(register, buffer);
 	}
 
 	@Override

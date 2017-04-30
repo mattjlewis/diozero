@@ -24,10 +24,22 @@
  * #L%
  */
 
+#include <stdio.h>
+#include <stdlib.h>
 #include <stdint.h>
-#include <sys/ioctl.h>
+
+#include <errno.h>
+#include <string.h>
+
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
+
+//#include <linux/i2c.h>
 #include <linux/i2c-dev.h>
-#include "com_diozero_internal_provider_sysfs_NativeI2CDevice.h"
+#include <sys/ioctl.h>
+
+#include "com_diozero_internal_provider_sysfs_NativeI2CDeviceSysFs.h"
 
 #if __WORDSIZE == 32
 #define long_t uint32_t
@@ -35,8 +47,12 @@
 #define long_t uint64_t
 #endif
 
-JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeI2CDevice_selectSlave(
-		JNIEnv* env, jclass clz, jint fd, jint address) {
-	long_t addr = address;
-	return ioctl(fd, I2C_SLAVE, (void*)addr);
+JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeI2CDeviceSysFs_selectSlave(
+		JNIEnv* env, jclass clz, jint fd, jint deviceAddress, jboolean force) {
+	if (ioctl(fd, force ? I2C_SLAVE_FORCE : I2C_SLAVE, (void*) deviceAddress) < 0) {
+		fprintf(stderr, "Error selecting I2C_SLAVE: %s.\n", strerror(errno));
+		return -errno;
+	}
+
+	return 0;
 }
