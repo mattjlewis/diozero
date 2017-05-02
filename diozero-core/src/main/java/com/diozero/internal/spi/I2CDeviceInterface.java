@@ -31,8 +31,15 @@ import java.nio.ByteBuffer;
 import com.diozero.util.RuntimeIOException;
 
 public interface I2CDeviceInterface extends DeviceInterface {
-	void read(int register, int subAddressSize, ByteBuffer buffer) throws RuntimeIOException;
-	void write(int register, int subAddressSize, ByteBuffer buffer) throws RuntimeIOException;
+	byte readByte() throws RuntimeException;
+	void writeByte(byte b) throws RuntimeException;
+	
 	void read(ByteBuffer buffer) throws RuntimeException;
 	void write(ByteBuffer buffer) throws RuntimeException;
+	
+	byte readByteData(int register) throws RuntimeIOException;
+	void writeByteData(int register, byte b) throws RuntimeIOException;
+	
+	void readI2CBlockData(int register, int subAddressSize, ByteBuffer buffer) throws RuntimeIOException;
+	void writeI2CBlockData(int register, int subAddressSize, ByteBuffer buffer) throws RuntimeIOException;
 }

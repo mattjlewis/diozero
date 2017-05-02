@@ -39,6 +39,15 @@ public class NativeI2CDeviceSysFs implements I2CSMBusInterface {
 	}
 	
 	@Override
+	public void close() {
+		try {
+			i2cDeviceFile.close();
+		} catch (IOException e) {
+			throw new RuntimeIOException("Error closing I2C device file: " + e, e);
+		}
+	}
+	
+	@Override
 	public byte readByte() {
 		try {
 			return (byte) i2cDeviceFile.readUnsignedByte();
@@ -143,7 +152,7 @@ public class NativeI2CDeviceSysFs implements I2CSMBusInterface {
 			byte[] buffer = new byte[MAX_I2C_BLOCK_SIZE+1];
 			int rc = i2cDeviceFile.read(buffer);
 			if (rc < 0) {
-				throw new RuntimeIOException("Error reading from I2C device");
+				throw new RuntimeIOException("Error reading from I2C device: " + rc);
 			}
 			int read = buffer[0] & 0xff;
 			rx_data = new byte[read];
@@ -211,15 +220,6 @@ public class NativeI2CDeviceSysFs implements I2CSMBusInterface {
 			i2cDeviceFile.write(buffer);
 		} catch (IOException e) {
 			throw new RuntimeIOException("I2C Error in writeBlockData(" + register + "): " + e, e);
-		}
-	}
-	
-	@Override
-	public void close() {
-		try {
-			i2cDeviceFile.close();
-		} catch (IOException e) {
-			throw new RuntimeIOException("Error closing I2C device file: " + e, e);
 		}
 	}
 }

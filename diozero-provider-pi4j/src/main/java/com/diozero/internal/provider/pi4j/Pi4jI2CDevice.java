@@ -77,36 +77,31 @@ public class Pi4jI2CDevice extends AbstractDevice implements I2CDeviceInterface 
 	}
 
 	@Override
-	public void read(int register, int subAddressSize, ByteBuffer dst) throws RuntimeIOException {
+	public byte readByte() throws RuntimeException {
 		if (! isOpen()) {
 			throw new IllegalStateException("I2C Device " + controller + "-" + address + " is closed");
 		}
 		
-		int to_read = dst.remaining();
-		byte[] buffer = new byte[to_read];
 		try {
-			int read = device.read(register, buffer, 0, to_read);
-			if (read != to_read) {
-				throw new RuntimeIOException("Didn't read correct number of bytes, read " + read + ", expected " + to_read);
+			int read = device.read();
+			if (read < 0) {
+				throw new RuntimeIOException("Error reading from I2C device: " + read);
 			}
-			dst.put(buffer);
-			dst.flip();
+			
+			return (byte) read;
 		} catch (IOException e) {
 			throw new RuntimeIOException(e);
 		}
 	}
 
 	@Override
-	public void write(int register, int subAddressSize, ByteBuffer src) throws RuntimeIOException {
+	public void writeByte(byte b) throws RuntimeException {
 		if (! isOpen()) {
 			throw new IllegalStateException("I2C Device " + controller + "-" + address + " is closed");
 		}
 		
-		int to_write = src.remaining();
-		byte[] buffer = new byte[to_write];
-		src.get(buffer, src.position(), to_write);
 		try {
-			device.write(register, buffer, 0, to_write);
+			device.write(b);
 		} catch (IOException e) {
 			throw new RuntimeIOException(e);
 		}
@@ -144,6 +139,73 @@ public class Pi4jI2CDevice extends AbstractDevice implements I2CDeviceInterface 
 		src.get(buffer, src.position(), to_write);
 		try {
 			device.write(buffer);
+		} catch (IOException e) {
+			throw new RuntimeIOException(e);
+		}
+	}
+
+	@Override
+	public byte readByteData(int register) throws RuntimeIOException {
+		if (! isOpen()) {
+			throw new IllegalStateException("I2C Device " + controller + "-" + address + " is closed");
+		}
+		
+		try {
+			int read = device.read(register);
+			if (read < 0) {
+				throw new RuntimeIOException("Error reading from I2C device: " + read);
+			}
+			
+			return (byte) read;
+		} catch (IOException e) {
+			throw new RuntimeIOException(e);
+		}
+	}
+
+	@Override
+	public void writeByteData(int register, byte b) throws RuntimeIOException {
+		if (! isOpen()) {
+			throw new IllegalStateException("I2C Device " + controller + "-" + address + " is closed");
+		}
+		
+		try {
+			device.write(register, b);
+		} catch (IOException e) {
+			throw new RuntimeIOException(e);
+		}
+	}
+
+	@Override
+	public void readI2CBlockData(int register, int subAddressSize, ByteBuffer dst) throws RuntimeIOException {
+		if (! isOpen()) {
+			throw new IllegalStateException("I2C Device " + controller + "-" + address + " is closed");
+		}
+		
+		int to_read = dst.remaining();
+		byte[] buffer = new byte[to_read];
+		try {
+			int read = device.read(register, buffer, 0, to_read);
+			if (read != to_read) {
+				throw new RuntimeIOException("Didn't read correct number of bytes, read " + read + ", expected " + to_read);
+			}
+			dst.put(buffer);
+			dst.flip();
+		} catch (IOException e) {
+			throw new RuntimeIOException(e);
+		}
+	}
+
+	@Override
+	public void writeI2CBlockData(int register, int subAddressSize, ByteBuffer src) throws RuntimeIOException {
+		if (! isOpen()) {
+			throw new IllegalStateException("I2C Device " + controller + "-" + address + " is closed");
+		}
+		
+		int to_write = src.remaining();
+		byte[] buffer = new byte[to_write];
+		src.get(buffer, src.position(), to_write);
+		try {
+			device.write(register, buffer, 0, to_write);
 		} catch (IOException e) {
 			throw new RuntimeIOException(e);
 		}

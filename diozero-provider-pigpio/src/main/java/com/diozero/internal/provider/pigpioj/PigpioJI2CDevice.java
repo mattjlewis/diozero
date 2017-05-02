@@ -77,31 +77,26 @@ public class PigpioJI2CDevice extends AbstractDevice implements I2CDeviceInterfa
 	}
 
 	@Override
-	public void read(int register, int subAddressSize, ByteBuffer dst) throws RuntimeIOException {
+	public byte readByte() throws RuntimeException {
 		if (! isOpen()) {
 			throw new IllegalStateException("I2C Device " + controller + "-" + address + " is closed");
 		}
 		
-		int to_read = dst.remaining();
-		byte[] buffer = new byte[to_read];
-		int read = PigpioI2C.i2cReadI2CBlockData(handle, register, buffer, to_read);
-		if (read < 0 || read != to_read) {
-			throw new RuntimeIOException("Didn't read correct number of bytes, read " + read + ", expected " + to_read);
+		int read = PigpioI2C.i2cReadByte(handle);
+		if (read < 0) {
+			throw new RuntimeIOException("Error reading from I2C device: " + read);
 		}
-		dst.put(buffer);
-		dst.flip();
+		
+		return (byte) read;
 	}
 
 	@Override
-	public void write(int register, int subAddressSize, ByteBuffer src) throws RuntimeIOException {
+	public void writeByte(byte b) throws RuntimeException {
 		if (! isOpen()) {
 			throw new IllegalStateException("I2C Device " + controller + "-" + address + " is closed");
 		}
 		
-		int to_write = src.remaining();
-		byte[] buffer = new byte[to_write];
-		src.get(buffer, src.position(), to_write);
-		int rc = PigpioI2C.i2cWriteI2CBlockData(handle, register, buffer, to_write);
+		int rc = PigpioI2C.i2cWriteByte(handle, b);
 		if (rc < 0) {
 			throw new RuntimeIOException("Error calling PigpioI2C.i2cWriteI2CBlockData(), response: " + rc);
 		}
@@ -133,6 +128,63 @@ public class PigpioJI2CDevice extends AbstractDevice implements I2CDeviceInterfa
 		byte[] buffer = new byte[to_write];
 		src.get(buffer, src.position(), to_write);
 		int rc = PigpioI2C.i2cWriteDevice(handle, buffer, to_write);
+		if (rc < 0) {
+			throw new RuntimeIOException("Error calling PigpioI2C.i2cWriteI2CBlockData(), response: " + rc);
+		}
+	}
+
+	@Override
+	public byte readByteData(int register) throws RuntimeIOException {
+		if (! isOpen()) {
+			throw new IllegalStateException("I2C Device " + controller + "-" + address + " is closed");
+		}
+		
+		int read = PigpioI2C.i2cReadByteData(handle, register);
+		if (read < 0) {
+			throw new RuntimeIOException("Error reading from I2C device: " + read);
+		}
+
+		return (byte) read;
+	}
+
+	@Override
+	public void writeByteData(int register, byte b) throws RuntimeIOException {
+		if (! isOpen()) {
+			throw new IllegalStateException("I2C Device " + controller + "-" + address + " is closed");
+		}
+		
+		int rc = PigpioI2C.i2cWriteByteData(handle, register, b);
+		if (rc < 0) {
+			throw new RuntimeIOException("Error calling PigpioI2C.i2cWriteI2CBlockData(), response: " + rc);
+		}
+	}
+
+	@Override
+	public void readI2CBlockData(int register, int subAddressSize, ByteBuffer dst) throws RuntimeIOException {
+		if (! isOpen()) {
+			throw new IllegalStateException("I2C Device " + controller + "-" + address + " is closed");
+		}
+		
+		int to_read = dst.remaining();
+		byte[] buffer = new byte[to_read];
+		int read = PigpioI2C.i2cReadI2CBlockData(handle, register, buffer, to_read);
+		if (read < 0 || read != to_read) {
+			throw new RuntimeIOException("Didn't read correct number of bytes, read " + read + ", expected " + to_read);
+		}
+		dst.put(buffer);
+		dst.flip();
+	}
+
+	@Override
+	public void writeI2CBlockData(int register, int subAddressSize, ByteBuffer src) throws RuntimeIOException {
+		if (! isOpen()) {
+			throw new IllegalStateException("I2C Device " + controller + "-" + address + " is closed");
+		}
+		
+		int to_write = src.remaining();
+		byte[] buffer = new byte[to_write];
+		src.get(buffer, src.position(), to_write);
+		int rc = PigpioI2C.i2cWriteI2CBlockData(handle, register, buffer, to_write);
 		if (rc < 0) {
 			throw new RuntimeIOException("Error calling PigpioI2C.i2cWriteI2CBlockData(), response: " + rc);
 		}

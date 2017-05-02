@@ -48,13 +48,15 @@ public class TestI2CDevice extends AbstractDevice implements I2CDeviceInterface 
 	}
 
 	@Override
-	public void read(int register, int subAddressSize, ByteBuffer buffer) throws RuntimeIOException {
+	public byte readByte() throws RuntimeException {
 		// TODO Auto-generated method stub
+		return 0;
 	}
 
 	@Override
-	public void write(int register, int subAddressSize, ByteBuffer buffer) throws RuntimeIOException {
+	public void writeByte(byte b) throws RuntimeException {
 		// TODO Auto-generated method stub
+		
 	}
 
 	@Override
@@ -64,6 +66,27 @@ public class TestI2CDevice extends AbstractDevice implements I2CDeviceInterface 
 
 	@Override
 	public void write(ByteBuffer buffer) throws RuntimeException {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public byte readByteData(int register) throws RuntimeIOException {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void writeByteData(int register, byte b) throws RuntimeIOException {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void readI2CBlockData(int register, int subAddressSize, ByteBuffer buffer) throws RuntimeIOException {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void writeI2CBlockData(int register, int subAddressSize, ByteBuffer buffer) throws RuntimeIOException {
 		// TODO Auto-generated method stub
 	}
 }

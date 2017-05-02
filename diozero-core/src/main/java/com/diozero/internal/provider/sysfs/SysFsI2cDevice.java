@@ -74,6 +74,16 @@ public class SysFsI2cDevice extends AbstractDevice implements I2CDeviceInterface
 			}
 		}
 	}
+	
+	@Override
+	public byte readByte() throws RuntimeException {
+		return i2cDevice.readByte();
+	}
+	
+	@Override
+	public void writeByte(byte b) throws RuntimeException {
+		i2cDevice.writeByte(b);
+	}
 
 	@Override
 	public void read(ByteBuffer dst) throws RuntimeException {
@@ -90,13 +100,23 @@ public class SysFsI2cDevice extends AbstractDevice implements I2CDeviceInterface
 	}
 
 	@Override
-	public void read(int register, int subAddressSize, ByteBuffer dst) throws RuntimeIOException {
+	public byte readByteData(int register) throws RuntimeIOException {
+		return i2cDevice.readByteData(register);
+	}
+
+	@Override
+	public void writeByteData(int register, byte b) throws RuntimeIOException {
+		i2cDevice.writeByteData(register, b);
+	}
+
+	@Override
+	public void readI2CBlockData(int register, int subAddressSize, ByteBuffer dst) throws RuntimeIOException {
 		dst.put(i2cDevice.readI2CBlockData(register, dst.remaining()));
 		dst.flip();
 	}
 
 	@Override
-	public void write(int register, int subAddressSize, ByteBuffer src) throws RuntimeIOException {
+	public void writeI2CBlockData(int register, int subAddressSize, ByteBuffer src) throws RuntimeIOException {
 		byte[] buffer = new byte[src.remaining()];
 		src.get(buffer);
 		i2cDevice.writeI2CBlockData(register, buffer);

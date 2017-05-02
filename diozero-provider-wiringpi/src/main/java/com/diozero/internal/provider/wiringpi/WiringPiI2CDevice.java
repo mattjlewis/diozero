@@ -90,40 +90,35 @@ public class WiringPiI2CDevice extends AbstractDevice implements I2CDeviceInterf
 	}
 
 	@Override
-	public void read(int register, int subAddressSize, ByteBuffer dst) throws RuntimeIOException {
+	public byte readByte() throws RuntimeException {
 		if (! isOpen()) {
 			throw new IllegalStateException("I2C Device " + controller + "-" + address + " is closed");
 		}
 		
-		int to_read = dst.remaining();
-		byte[] buffer = new byte[to_read];
-		// Need to loop if using wiringPi JNI, yuck
-		//byte b = I2C.wiringPiI2CReadReg8(handle, register);
 		try {
-			int read = device.read(register, buffer, 0, to_read);
-			if (read != to_read) {
-				throw new RuntimeIOException("Didn't read correct number of bytes, read " + read + ", expected " + to_read);
+			// Need to loop if using wiringPi JNI, yuck
+			//I2C.wiringPiI2CWrite(handle, b);
+			int read = device.read();
+			if (read < 0) {
+				throw new RuntimeIOException("Error reading from I2C device: " + read);
 			}
-			dst.put(buffer);
-			dst.flip();
+
+			return (byte) read;
 		} catch (IOException e) {
 			throw new RuntimeIOException(e);
 		}
 	}
 
 	@Override
-	public void write(int register, int subAddressSize, ByteBuffer src) throws RuntimeIOException {
+	public void writeByte(byte b) throws RuntimeException {
 		if (! isOpen()) {
 			throw new IllegalStateException("I2C Device " + controller + "-" + address + " is closed");
 		}
 		
-		int to_write = src.remaining();
-		byte[] buffer = new byte[to_write];
-		src.get(buffer, src.position(), to_write);
-		// Need to loop if using wiringPi JNI, yuck
-		//I2C.wiringPiI2CWriteReg8(handle, register, b);
 		try {
-			device.write(register, buffer, 0, to_write);
+			// Need to loop if using wiringPi JNI, yuck
+			//I2C.wiringPiI2CWrite(handle, b);
+			device.write(b);
 		} catch (IOException e) {
 			throw new RuntimeIOException(e);
 		}
@@ -165,6 +160,81 @@ public class WiringPiI2CDevice extends AbstractDevice implements I2CDeviceInterf
 			// Need to loop if using wiringPi JNI, yuck
 			//I2C.wiringPiI2CWrite(handle, b);
 			device.write(buffer);
+		} catch (IOException e) {
+			throw new RuntimeIOException(e);
+		}
+	}
+
+	@Override
+	public byte readByteData(int register) throws RuntimeIOException {
+		if (! isOpen()) {
+			throw new IllegalStateException("I2C Device " + controller + "-" + address + " is closed");
+		}
+		
+		try {
+			// Need to loop if using wiringPi JNI, yuck
+			//byte b = I2C.wiringPiI2CReadReg8(handle, register);
+			int read = device.read(register);
+			if (read < 0) {
+				throw new RuntimeIOException("Error reading from I2C device: " + read);
+			}
+
+			return (byte) read;
+		} catch (IOException e) {
+			throw new RuntimeIOException(e);
+		}
+	}
+
+	@Override
+	public void writeByteData(int register, byte b) throws RuntimeIOException {
+		if (! isOpen()) {
+			throw new IllegalStateException("I2C Device " + controller + "-" + address + " is closed");
+		}
+		
+		// Need to loop if using wiringPi JNI, yuck
+		//I2C.wiringPiI2CWriteReg8(handle, register, b);
+		try {
+			device.write(register, b);
+		} catch (IOException e) {
+			throw new RuntimeIOException(e);
+		}
+	}
+
+	@Override
+	public void readI2CBlockData(int register, int subAddressSize, ByteBuffer dst) throws RuntimeIOException {
+		if (! isOpen()) {
+			throw new IllegalStateException("I2C Device " + controller + "-" + address + " is closed");
+		}
+		
+		int to_read = dst.remaining();
+		byte[] buffer = new byte[to_read];
+		// Need to loop if using wiringPi JNI, yuck
+		//byte b = I2C.wiringPiI2CReadReg8(handle, register);
+		try {
+			int read = device.read(register, buffer, 0, to_read);
+			if (read != to_read) {
+				throw new RuntimeIOException("Didn't read correct number of bytes, read " + read + ", expected " + to_read);
+			}
+			dst.put(buffer);
+			dst.flip();
+		} catch (IOException e) {
+			throw new RuntimeIOException(e);
+		}
+	}
+
+	@Override
+	public void writeI2CBlockData(int register, int subAddressSize, ByteBuffer src) throws RuntimeIOException {
+		if (! isOpen()) {
+			throw new IllegalStateException("I2C Device " + controller + "-" + address + " is closed");
+		}
+		
+		int to_write = src.remaining();
+		byte[] buffer = new byte[to_write];
+		src.get(buffer, src.position(), to_write);
+		// Need to loop if using wiringPi JNI, yuck
+		//I2C.wiringPiI2CWriteReg8(handle, register, b);
+		try {
+			device.write(register, buffer, 0, to_write);
 		} catch (IOException e) {
 			throw new RuntimeIOException(e);
 		}

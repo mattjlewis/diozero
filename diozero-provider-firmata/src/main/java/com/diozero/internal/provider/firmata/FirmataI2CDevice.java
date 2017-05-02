@@ -113,13 +113,27 @@ public class FirmataI2CDevice extends AbstractDevice implements I2CDeviceInterfa
 			lock.unlock();
 		}
 	}
+	
+	@Override
+	public byte readByte() {
+		Logger.info("read()");
+		byte data;
+		try {
+			ByteBuffer buffer = ByteBuffer.allocateDirect(1);
+			i2cDevice.ask(NO_REGISTER, (byte) 1, this);
+			waitForData(NO_REGISTER, buffer);
+			data = buffer.get(0);
+		} catch (IOException e) {
+			throw new RuntimeIOException(e);
+		}
+		
+		return data;
+	}
 
 	@Override
-	public void read(int register, int subAddressSize, ByteBuffer buffer) throws RuntimeIOException {
-		Logger.info("read(0x{})", Integer.toHexString(register));
+	public void writeByte(byte b) throws RuntimeException {
 		try {
-			i2cDevice.ask(register, (byte) buffer.remaining(), this);
-			waitForData(register, buffer);
+			i2cDevice.tell(b);
 		} catch (IOException e) {
 			throw new RuntimeIOException(e);
 		}
@@ -136,10 +150,37 @@ public class FirmataI2CDevice extends AbstractDevice implements I2CDeviceInterfa
 	}
 
 	@Override
-	public void write(int register, int subAddressSize, ByteBuffer buffer) throws RuntimeIOException {
-		byte[] data = new byte[buffer.remaining()+1];
+	public void write(ByteBuffer buffer) throws RuntimeException {
+		byte[] data = new byte[buffer.remaining()];
+		buffer.get(data);
+		try {
+			i2cDevice.tell(data);
+		} catch (IOException e) {
+			throw new RuntimeIOException(e);
+		}
+	}
+	
+	@Override
+	public byte readByteData(int register) {
+		Logger.info("read(0x{})", Integer.toHexString(register));
+		byte data;
+		try {
+			ByteBuffer buffer = ByteBuffer.allocateDirect(1);
+			i2cDevice.ask(register, (byte) 1, this);
+			waitForData(register, buffer);
+			data = buffer.get(0);
+		} catch (IOException e) {
+			throw new RuntimeIOException(e);
+		}
+		
+		return data;
+	}
+
+	@Override
+	public void writeByteData(int register, byte b) throws RuntimeIOException {
+		byte[] data = new byte[2];
 		data[0] = (byte) register;
-		buffer.get(data, 1, buffer.remaining());
+		data[1] = b;
 		try {
 			i2cDevice.tell(data);
 		} catch (IOException e) {
@@ -148,9 +189,21 @@ public class FirmataI2CDevice extends AbstractDevice implements I2CDeviceInterfa
 	}
 
 	@Override
-	public void write(ByteBuffer buffer) throws RuntimeException {
-		byte[] data = new byte[buffer.remaining()];
-		buffer.get(data);
+	public void readI2CBlockData(int register, int subAddressSize, ByteBuffer buffer) throws RuntimeIOException {
+		Logger.info("read(0x{})", Integer.toHexString(register));
+		try {
+			i2cDevice.ask(register, (byte) buffer.remaining(), this);
+			waitForData(register, buffer);
+		} catch (IOException e) {
+			throw new RuntimeIOException(e);
+		}
+	}
+
+	@Override
+	public void writeI2CBlockData(int register, int subAddressSize, ByteBuffer buffer) throws RuntimeIOException {
+		byte[] data = new byte[buffer.remaining()+1];
+		data[0] = (byte) register;
+		buffer.get(data, 1, buffer.remaining());
 		try {
 			i2cDevice.tell(data);
 		} catch (IOException e) {

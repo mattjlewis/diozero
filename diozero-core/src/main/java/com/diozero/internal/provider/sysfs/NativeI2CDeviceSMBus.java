@@ -43,6 +43,11 @@ public class NativeI2CDeviceSMBus implements I2CSMBusInterface {
 	}
 
 	@Override
+	public void close() {
+		smbusClose(fd);
+	}
+
+	@Override
 	public byte readByte() {
 		int rc = readByte(fd);
 		if (rc < 0) {
@@ -165,10 +170,5 @@ public class NativeI2CDeviceSMBus implements I2CSMBusInterface {
 		if (rc < 0) {
 			throw new RuntimeIOException("Error in SMBus.writeI2CBlockData, rc=" + rc);
 		}
-	}
-
-	@Override
-	public void close() {
-		smbusClose(fd);
 	}
 }

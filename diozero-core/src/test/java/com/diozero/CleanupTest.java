@@ -62,7 +62,7 @@ public class CleanupTest {
 		Assert.assertTrue(ds.size() == 0);
 		
 		try (I2CDeviceInterface device = tdf.provisionI2CDevice(0, 0, 0, 0)) {
-			device.read(0, I2CConstants.ADDR_SIZE_7, ByteBuffer.allocateDirect(5));
+			device.readI2CBlockData(0, I2CConstants.ADDR_SIZE_7, ByteBuffer.allocateDirect(5));
 			Assert.assertTrue(ds.size() == 1);
 			device.close();
 			Assert.assertTrue(ds.size() == 0);

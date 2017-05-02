@@ -32,6 +32,7 @@ import java.nio.ByteBuffer;
 
 import org.pmw.tinylog.Logger;
 
+import com.diozero.api.I2CConstants;
 import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.DeviceFactoryInterface;
 import com.diozero.internal.spi.I2CDeviceInterface;
@@ -75,38 +76,35 @@ public class JdkDeviceIoI2CDevice extends AbstractDevice implements I2CDeviceInt
 	}
 
 	@Override
-	public void read(int address, int subAddressSize, ByteBuffer dst) throws RuntimeIOException {
+	public byte readByte() throws RuntimeException {
 		if (! device.isOpen()) {
 			throw new IllegalStateException("I2C Device " +
 					deviceConfig.getControllerNumber() + "-" + deviceConfig.getAddress() + " is closed");
 		}
-		
-		int to_read = dst.remaining();
+
+		byte b;
 		try {
-			int read = device.read(address, subAddressSize, dst);
-			if (read != to_read) {
-				throw new RuntimeIOException(
-						"Didn't read correct number of bytes, read " + read + ", expected " + to_read);
+			int read = device.read();
+			if (read < 0) {
+				throw new RuntimeIOException("Error reading from I2C device: " + read);
 			}
+			b = (byte) read;
 		} catch (IOException e) {
 			throw new RuntimeIOException(e);
 		}
+		
+		return b;
 	}
 
 	@Override
-	public void write(int register, int subAddressSize, ByteBuffer src) throws RuntimeIOException {
+	public void writeByte(byte b) throws RuntimeException {
 		if (! device.isOpen()) {
 			throw new IllegalStateException("I2C Device " +
 					deviceConfig.getControllerNumber() + "-" + deviceConfig.getAddress() + " is closed");
 		}
 		
-		int to_write = src.remaining();
 		try {
-			int written = device.write(register, subAddressSize, src);
-			if (written != to_write) {
-				throw new RuntimeIOException(
-						"Didn't write correct number of bytes, wrote " + written + ", expected " + to_write);
-			}
+			device.write(b);
 		} catch (IOException e) {
 			throw new RuntimeIOException(e);
 		}
@@ -141,6 +139,86 @@ public class JdkDeviceIoI2CDevice extends AbstractDevice implements I2CDeviceInt
 		int to_write = src.remaining();
 		try {
 			int written = device.write(src);
+			if (written != to_write) {
+				throw new RuntimeIOException(
+						"Didn't write correct number of bytes, wrote " + written + ", expected " + to_write);
+			}
+		} catch (IOException e) {
+			throw new RuntimeIOException(e);
+		}
+	}
+
+	@Override
+	public byte readByteData(int address) throws RuntimeIOException {
+		if (! device.isOpen()) {
+			throw new IllegalStateException("I2C Device " +
+					deviceConfig.getControllerNumber() + "-" + deviceConfig.getAddress() + " is closed");
+		}
+		
+		byte b;
+		try {
+			ByteBuffer buffer = ByteBuffer.allocateDirect(1);
+			int read = device.read(address, I2CConstants.SUB_ADDRESS_SIZE_1_BYTE, buffer);
+			if (read < 0) {
+				throw new RuntimeIOException("Error reading from I2C device: " + read);
+			}
+			b = buffer.get(0);
+		} catch (IOException e) {
+			throw new RuntimeIOException(e);
+		}
+		
+		return b;
+	}
+
+	@Override
+	public void writeByteData(int register, byte b) throws RuntimeIOException {
+		if (! device.isOpen()) {
+			throw new IllegalStateException("I2C Device " +
+					deviceConfig.getControllerNumber() + "-" + deviceConfig.getAddress() + " is closed");
+		}
+		
+		try {
+			ByteBuffer buffer = ByteBuffer.allocateDirect(1);
+			buffer.put(b);
+			int written = device.write(register, I2CConstants.SUB_ADDRESS_SIZE_1_BYTE, buffer);
+			if (written != 1) {
+				throw new RuntimeIOException(
+						"Didn't write correct number of bytes, wrote " + written + ", expected 1");
+			}
+		} catch (IOException e) {
+			throw new RuntimeIOException(e);
+		}
+	}
+
+	@Override
+	public void readI2CBlockData(int address, int subAddressSize, ByteBuffer dst) throws RuntimeIOException {
+		if (! device.isOpen()) {
+			throw new IllegalStateException("I2C Device " +
+					deviceConfig.getControllerNumber() + "-" + deviceConfig.getAddress() + " is closed");
+		}
+		
+		int to_read = dst.remaining();
+		try {
+			int read = device.read(address, subAddressSize, dst);
+			if (read != to_read) {
+				throw new RuntimeIOException(
+						"Didn't read correct number of bytes, read " + read + ", expected " + to_read);
+			}
+		} catch (IOException e) {
+			throw new RuntimeIOException(e);
+		}
+	}
+
+	@Override
+	public void writeI2CBlockData(int register, int subAddressSize, ByteBuffer src) throws RuntimeIOException {
+		if (! device.isOpen()) {
+			throw new IllegalStateException("I2C Device " +
+					deviceConfig.getControllerNumber() + "-" + deviceConfig.getAddress() + " is closed");
+		}
+		
+		int to_write = src.remaining();
+		try {
+			int written = device.write(register, subAddressSize, src);
 			if (written != to_write) {
 				throw new RuntimeIOException(
 						"Didn't write correct number of bytes, wrote " + written + ", expected " + to_write);
