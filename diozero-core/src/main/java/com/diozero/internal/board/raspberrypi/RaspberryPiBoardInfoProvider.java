@@ -266,7 +266,9 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 			// 9 GND
 			addGpioPinInfo(15, 10, PinInfo.DIGITAL_IN_OUT);	// UART RXD
 			addGpioPinInfo(17, 11, PinInfo.DIGITAL_IN_OUT);
-			addPwmPinInfo(18, 12, 0, PinInfo.DIGITAL_IN_OUT_PWM);
+			// TODO Try enabling sysfs PWM, see http://www.jumpnowtek.com/rpi/Using-the-Raspberry-Pi-Hardware-PWM-timers.html
+			//addPwmPinInfo(18, 12, 0, PinInfo.DIGITAL_IN_OUT_PWM);
+			addGpioPinInfo(18, 12, PinInfo.DIGITAL_IN_OUT);
 			addGpioPinInfo(21, 13, PinInfo.DIGITAL_IN_OUT);
 			// 14 GND
 			addGpioPinInfo(22, 15, PinInfo.DIGITAL_IN_OUT);
@@ -298,7 +300,9 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 			// 9 GND
 			addGpioPinInfo(15, 10, PinInfo.DIGITAL_IN_OUT);	// UART RXD
 			addGpioPinInfo(17, 11, PinInfo.DIGITAL_IN_OUT);
-			addPwmPinInfo(18, 12, 0, PinInfo.DIGITAL_IN_OUT_PWM);
+			// TODO Try enabling sysfs PWM, see http://www.jumpnowtek.com/rpi/Using-the-Raspberry-Pi-Hardware-PWM-timers.html
+			//addPwmPinInfo(18, 12, 0, PinInfo.DIGITAL_IN_OUT_PWM);
+			addGpioPinInfo(18, 12, PinInfo.DIGITAL_IN_OUT);
 			addGpioPinInfo(27, 13, PinInfo.DIGITAL_IN_OUT);
 			// 14 GND
 			addGpioPinInfo(22, 15, PinInfo.DIGITAL_IN_OUT);
@@ -332,7 +336,9 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 			// 9 GND
 			addGpioPinInfo(15, 10, PinInfo.DIGITAL_IN_OUT);					// UART-RXD
 			addGpioPinInfo(17, 11, PinInfo.DIGITAL_IN_OUT);					// Alt4 = SPI1-CE1
-			addPwmPinInfo(18, "PCM-CLK", 12, 0, PinInfo.DIGITAL_IN_OUT_PWM);// Alt0 = PCM-CLK, Alt4 = SPI1-CE0, Alt5 = PWM0
+			// TODO Try enabling sysfs PWM, see http://www.jumpnowtek.com/rpi/Using-the-Raspberry-Pi-Hardware-PWM-timers.html
+			//addPwmPinInfo(18, 12, 0, PinInfo.DIGITAL_IN_OUT_PWM);
+			addGpioPinInfo(18, 12, PinInfo.DIGITAL_IN_OUT);					// Alt0 = PCM-CLK, Alt4 = SPI1-CE0, Alt5 = PWM0
 			addGpioPinInfo(27, 13, PinInfo.DIGITAL_IN_OUT);
 			// 14 GND
 			addGpioPinInfo(22, 15, PinInfo.DIGITAL_IN_OUT);
@@ -351,10 +357,16 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 			addGpioPinInfo(5, 29, PinInfo.DIGITAL_IN_OUT);
 			// 20 GND
 			addGpioPinInfo(6, 31, PinInfo.DIGITAL_IN_OUT);
-			addPwmPinInfo(12, "PWM0", 32, 0, PinInfo.DIGITAL_IN_OUT_PWM);	// Alt0 = PWM0
-			addPwmPinInfo(13, "PWM1", 33, 1, PinInfo.DIGITAL_IN_OUT_PWM);	// Alt0 = PWM1
+			// TODO Try enabling sysfs PWM, see http://www.jumpnowtek.com/rpi/Using-the-Raspberry-Pi-Hardware-PWM-timers.html
+			//addPwmPinInfo(12, 32, 0, PinInfo.DIGITAL_IN_OUT_PWM);
+			addGpioPinInfo(12, 32, PinInfo.DIGITAL_IN_OUT);					// Alt0 = PWM0
+			// TODO Try enabling sysfs PWM, see http://www.jumpnowtek.com/rpi/Using-the-Raspberry-Pi-Hardware-PWM-timers.html
+			//addPwmPinInfo(13, 33, 1, PinInfo.DIGITAL_IN_OUT_PWM);
+			addGpioPinInfo(13, 33, PinInfo.DIGITAL_IN_OUT);					// Alt0 = PWM1
 			// 34 GND
-			addPwmPinInfo(19, "PCM-FS", 35, 1, PinInfo.DIGITAL_IN_OUT_PWM);	// Alt4 = SPI1-MISO, Alt5 = PWM1
+			// TODO Try enabling sysfs PWM, see http://www.jumpnowtek.com/rpi/Using-the-Raspberry-Pi-Hardware-PWM-timers.html
+			//addPwmPinInfo(19, 35, 1, PinInfo.DIGITAL_IN_OUT_PWM);
+			addGpioPinInfo(19, 35, PinInfo.DIGITAL_IN_OUT);					// Alt4 = SPI1-MISO, Alt5 = PWM1
 			addGpioPinInfo(16, 36, PinInfo.DIGITAL_IN_OUT);					// Alt4 = SPI1-CE2
 			addGpioPinInfo(26, 37, PinInfo.DIGITAL_IN_OUT);
 			addGpioPinInfo(20, 38, PinInfo.DIGITAL_IN_OUT);					// Alt4 = SPI1-MOSI
