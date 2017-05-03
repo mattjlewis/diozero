@@ -6,7 +6,11 @@ import java.io.RandomAccessFile;
 import com.diozero.util.RuntimeIOException;
 
 /**
- * Emulate the SMBus commands using sysfs
+ * <p>Native Java implementation of the I2C SMBus commands using sysfs and a single native method to select the slave address.</p>
+ *
+ * <p>Reference <a href="https://www.kernel.org/doc/Documentation/i2c/dev-interface">Kernel I2C dev interface</a>
+ * and <a href="https://www.kernel.org/doc/Documentation/i2c/smbus-protocol">SMBus Protocol</a>.</p>
+ * <p><em>Warning</em> Not all methods have been tested!</p>
  */
 public class NativeI2CDeviceSysFs implements I2CSMBusInterface {
 	private static native int selectSlave(int fd, int deviceAddress, boolean force);

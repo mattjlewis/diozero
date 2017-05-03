@@ -50,5 +50,7 @@ public class SystemInfoTest {
 		System.out.println(revision_string + ": " + SystemInfo.lookupBoardInfo("BCM2709", revision_string, null));
 		revision_string = "020b";
 		System.out.println(revision_string + ": " + SystemInfo.lookupBoardInfo("BCM2709", revision_string, null));
+		revision_string = "9000c1";
+		System.out.println(revision_string + ": " + SystemInfo.lookupBoardInfo("BCM2709", revision_string, null));
 	}
 }

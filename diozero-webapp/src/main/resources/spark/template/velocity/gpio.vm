@@ -1,0 +1,11 @@
+#parse("/spark/template/velocity/layout.vm")
+#@mainLayout()
+	#if($output)
+<h2>GPIO $output.gpio</h2>
+<p>On? $output.on</p>
+<p>Turn #if($output.on)<a href="/gpio/off/$output.gpio"</a>off</a>#else<a href="/gpio/on/$output.gpio"</a>on</a>#end</p>
+<p><a href="/gpio/toggle/$output.gpio"</a>Toggle</a></p>
+	#else
+<h2>No GPIO</h2>
+	#end
+#end

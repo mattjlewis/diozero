@@ -172,6 +172,14 @@ public class BoardPinInfo {
 		return pinsByNumber.values();
 	}
 	
+	public Collection<PinInfo> getADCs() {
+		return adcs.values();
+	}
+	
+	public Collection<PinInfo> getDACs() {
+		return dacs.values();
+	}
+	
 	@SuppressWarnings("static-method")
 	public int mapToSysFsGpioNumber(int gpio) {
 		return gpio;

@@ -356,7 +356,7 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 		}
 	
 		// temp == 0x41 == MPU9150_RA_TEMP_OUT_H
-		short raw = i2cDevice.readShort(MPU9150_RA_TEMP_OUT_H, I2CConstants.SUB_ADDRESS_SIZE_1_BYTE);
+		short raw = i2cDevice.readShort(MPU9150_RA_TEMP_OUT_H);
 		//raw = (tmp[0] << 8) | (tmp[1] & 0xff);
 	
 		float val = ((raw - MPU6050_TEMP_OFFSET) / (float)MPU6050_TEMP_SENS) + 35;
@@ -941,7 +941,7 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 		}
 		
 		// dmp_int_status == 0x39 == MPU9150_RA_DMP_INT_STATUS
-		return i2cDevice.readShort(MPU9150_RA_DMP_INT_STATUS, I2CConstants.SUB_ADDRESS_SIZE_1_BYTE);
+		return i2cDevice.readShort(MPU9150_RA_DMP_INT_STATUS);
 	}
 	
 	/**

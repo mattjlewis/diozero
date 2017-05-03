@@ -59,6 +59,15 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeI2CDeviceS
 		return -errno;
 	}
 
+	uint32_t funcs;
+	int rc = ioctl(fd, I2C_FUNCS, &funcs);
+	if (rc < 0) {
+		printf("Error reading I2C_FUNCS: %s\n", strerror(errno));
+	} else {
+		printf("funcs: %d\n", funcs);
+		fflush(stdout);
+	}
+
 	if (ioctl(fd, force ? I2C_SLAVE_FORCE : I2C_SLAVE, (void*) deviceAddress) < 0) {
 		close(fd);
 		return -errno;
@@ -67,8 +76,22 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeI2CDeviceS
 	return fd;
 }
 
+JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeI2CDeviceSMBus_getFuncs(
+		JNIEnv* env, jclass clz, jint fd) {
+	uint32_t funcs;
+	int rc = ioctl(fd, I2C_FUNCS, &funcs);
+	if (rc < 0) {
+		printf("Error reading I2C_FUNCS: %s\n", strerror(errno));
+		return -errno;
+	}
+
+	return funcs;
+}
+
 JNIEXPORT void JNICALL Java_com_diozero_internal_provider_sysfs_NativeI2CDeviceSMBus_smbusClose(
 		JNIEnv* env, jclass clz, jint fd) {
+	printf("smbusClose()\n");
+	fflush(stdout);
 	close(fd);
 }
 

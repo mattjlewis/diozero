@@ -28,8 +28,6 @@ package com.diozero.internal.board.raspberrypi;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.pmw.tinylog.Logger;
-
 import com.diozero.api.PinInfo;
 import com.diozero.util.BoardInfo;
 import com.diozero.util.BoardInfoProvider;
@@ -40,145 +38,89 @@ import com.diozero.util.BoardInfoProvider;
 public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 	public static final String MAKE = "RaspberryPi";
 	private static final String BCM_HARDWARE_PREFIX = "BCM";
+	
+	private static final String MODEL_A = "A";
+	private static final String MODEL_B = "B";
+	private static final String MODEL_A_PLUS = "A+";
+	private static final String MODEL_B_PLUS = "B+";
+	private static final String COMPUTE_MODULE = "CM";
+	private static Map<Integer, String> MODELS;
+	static {
+		MODELS = new HashMap<>();
+		MODELS.put(Integer.valueOf(0), MODEL_A);
+		MODELS.put(Integer.valueOf(1), MODEL_B);
+		MODELS.put(Integer.valueOf(2), MODEL_A_PLUS);
+		MODELS.put(Integer.valueOf(3), MODEL_B_PLUS);
+		MODELS.put(Integer.valueOf(4), "2B");
+		MODELS.put(Integer.valueOf(5), "Alpha");
+		MODELS.put(Integer.valueOf(6), COMPUTE_MODULE);
+		MODELS.put(Integer.valueOf(8), "3B");
+		MODELS.put(Integer.valueOf(9), "Zero");
+		MODELS.put(Integer.valueOf(10), "CM3");
+		MODELS.put(Integer.valueOf(12), "ZeroW");
+	}
+	
 	private static final String PCB_REV_1_0 = "1.0";
 	private static final String PCB_REV_1_1 = "1.1";
 	private static final String PCB_REV_1_2 = "1.2";
 	private static final String PCB_REV_2_0 = "2.0";
 	
-	public static enum Model {
-		UNKNOWN(-1), A(0), B(1), A_PLUS(2), B_PLUS(3), PI2_B(4), ALPHA(5), COMPUTE_MODULE(6), UNKNOWN_7(7),
-			PI3_B(8), ZERO(9), COMPUTE_MODULE_3(10), UNKNWON_11(11), ZERO_W(12);
-		
-		private int id;
-		private Model(int id) {
-			this.id = id;
-		}
-		
-		public int getId() {
-			return id;
-		}
-		
-		public static Model forId(int id) {
-			Model[] values = Model.values();
-			if (id < 0 || id >= values.length) {
-				Logger.warn("Unknown Model id " + id + ", must be 0.." + (values.length-1));
-				return UNKNOWN;
-			}
-			return values[id];
-		}
+	private static Map<Integer, Integer> MEMORY;
+	static {
+		MEMORY = new HashMap<>();
+		MEMORY.put(Integer.valueOf(0), Integer.valueOf(256));
+		MEMORY.put(Integer.valueOf(1), Integer.valueOf(512));
+		MEMORY.put(Integer.valueOf(2), Integer.valueOf(1024));
 	}
-	public static enum PcbRevision {
-		UNKNOWN(-1), REV_1(0), REV_1_1(1), REV_2(2), REV_1_2(3);
-		
-		private int id;
-		private PcbRevision(int id) {
-			this.id = id;
-		}
-		
-		public int getId() {
-			return id;
-		}
-		
-		public static PcbRevision forId(int id) {
-			PcbRevision[] values = PcbRevision.values();
-			if (id < 0 || id >= values.length) {
-				Logger.warn("Unknown PCB revision id " + id + ", must be 0.." + (values.length-1));
-				return UNKNOWN;
-			}
-			return values[id];
-		}
+	
+	private static final String SONY = "Sony";
+	private static final String EGOMAN = "Egoman";
+	private static final String EMBEST = "Embest";
+	private static final String SONY_JAPAN = "Sony Japan";
+	private static final String EMBEST_2 = "Embest-2";
+	private static final String QISDA = "Qisda";
+	private static Map<Integer, String> MANUFACTURERS;
+	static {
+		MANUFACTURERS = new HashMap<>();
+		MANUFACTURERS.put(Integer.valueOf(0), SONY);
+		MANUFACTURERS.put(Integer.valueOf(1), EGOMAN);
+		MANUFACTURERS.put(Integer.valueOf(2), EMBEST);
+		MANUFACTURERS.put(Integer.valueOf(3), SONY_JAPAN);
+		MANUFACTURERS.put(Integer.valueOf(4), EMBEST_2);
+		MANUFACTURERS.put(Integer.valueOf(99), QISDA);
 	}
-	public static enum Memory {
-		UNKNOWN(-1, 0), MEM_256(0, 256), MEM_512(1, 512), MEM_1024(2, 1024);
-
-		private int id;
-		private int ram;
-		private Memory(int id, int ram) {
-			this.id = id;
-			this.ram = ram;
-		}
-		
-		public int getId() {
-			return id;
-		}
-		
-		public int getRam() {
-			return ram;
-		}
-		
-		public static Memory forId(int id) {
-			Memory[] values = Memory.values();
-			if (id < 0 || id >= values.length) {
-				Logger.warn("Unknown Memory id " + id + ", must be 0.." + (values.length-1));
-				return UNKNOWN;
-			}
-			return values[id];
-		}
-	}
-	public static enum Manufacturer {
-		UNKNOWN(-1), SONY(0), EGOMAN(1), EMBEST(2), SONY_JAPAN(3), EMBEST2(4), UNKNOWN_5(5), UNKNOWN_6(6),
-			UNKNOWN_7(7), UNKNOWN_8(8), UNKNOWN_9(9), QISDA(99);
-		
-		private int id;
-		private Manufacturer(int id) {
-			this.id = id;
-		}
-		
-		public int getId() {
-			return id;
-		}
-		
-		public static Manufacturer forId(int id) {
-			Manufacturer[] values = Manufacturer.values();
-			if (id < 0 || id >= values.length) {
-				Logger.warn("Unknown Manufacturer id " + id + ", must be 0.." + (values.length-1));
-				return UNKNOWN;
-			}
-			return values[id];
-		}
-	}
-	public static enum Processor {
-		UNKNOWN(-1), BCM_2835(0), BCM_2836(1), BCM_2837(2);
-		
-		private int id;
-		private Processor(int id) {
-			this.id = id;
-		}
-		
-		public int getId() {
-			return id;
-		}
-		
-		public static Processor forId(int id) {
-			Processor[] values = Processor.values();
-			if (id < 0 || id >= values.length) {
-				Logger.warn("Unknown processor id " + id + ", must be 0.." + (values.length-1));
-				return UNKNOWN;
-			}
-			return values[id];
-		}
+	
+	private static final String BCM2835 = "BCM2835";
+	private static final String BCM2836 = "BCM2836";
+	private static final String BCM2837 = "BCM2837";
+	private static Map<Integer, String> PROCESSORS;
+	static {
+		PROCESSORS = new HashMap<>();
+		PROCESSORS.put(Integer.valueOf(0), BCM2835);
+		PROCESSORS.put(Integer.valueOf(1), BCM2836);
+		PROCESSORS.put(Integer.valueOf(2), BCM2837);
 	}
 	
 	private static Map<String, BoardInfo> PI_BOARDS;
 	static {
 		PI_BOARDS = new HashMap<>();
-		PI_BOARDS.put("0002", new PiBRev1BoardInfo("0002", PCB_REV_1_0, Memory.MEM_256, Manufacturer.EGOMAN));
-		PI_BOARDS.put("0003", new PiBRev1BoardInfo("0003", PCB_REV_1_1, Memory.MEM_256, Manufacturer.EGOMAN));
-		PI_BOARDS.put("0004", new PiABRev2BoardInfo("0004", Model.B, Memory.MEM_256, Manufacturer.SONY));
-		PI_BOARDS.put("0005", new PiABRev2BoardInfo("0005", Model.B, Memory.MEM_256, Manufacturer.QISDA));
-		PI_BOARDS.put("0006", new PiABRev2BoardInfo("0006", Model.B, Memory.MEM_256, Manufacturer.EGOMAN));
-		PI_BOARDS.put("0007", new PiABRev2BoardInfo("0007", Model.A, Memory.MEM_256, Manufacturer.EGOMAN));
-		PI_BOARDS.put("0008", new PiABRev2BoardInfo("0008", Model.A, Memory.MEM_256, Manufacturer.SONY));
-		PI_BOARDS.put("0009", new PiABRev2BoardInfo("0009", Model.A, Memory.MEM_256, Manufacturer.QISDA));
-		PI_BOARDS.put("000d", new PiABRev2BoardInfo("000d", Model.B, Memory.MEM_512, Manufacturer.EGOMAN));
-		PI_BOARDS.put("000e", new PiABRev2BoardInfo("000e", Model.B, Memory.MEM_512, Manufacturer.SONY));
-		PI_BOARDS.put("000f", new PiABRev2BoardInfo("000f", Model.B, Memory.MEM_512, Manufacturer.QISDA));
-		PI_BOARDS.put("0010", new PiABPlusBoardInfo("0010", Model.B_PLUS, PCB_REV_1_2, Memory.MEM_512, Manufacturer.SONY, Processor.BCM_2835));
-		PI_BOARDS.put("0011", new PiComputeModuleBoardInfo("0011", Memory.MEM_512, Manufacturer.SONY, Processor.BCM_2835));
-		PI_BOARDS.put("0012", new PiABPlusBoardInfo("0012", Model.A_PLUS, PCB_REV_1_2, Memory.MEM_256, Manufacturer.SONY, Processor.BCM_2835));
-		PI_BOARDS.put("0013", new PiABPlusBoardInfo("0013", Model.B_PLUS, PCB_REV_1_2, Memory.MEM_512, Manufacturer.EGOMAN, Processor.BCM_2835));
-		PI_BOARDS.put("0014", new PiComputeModuleBoardInfo("0014", Memory.MEM_512, Manufacturer.EMBEST, Processor.BCM_2835));
-		PI_BOARDS.put("0015", new PiABPlusBoardInfo("0015", Model.A_PLUS, PCB_REV_1_1, Memory.MEM_256, Manufacturer.EMBEST, Processor.BCM_2835));
+		PI_BOARDS.put("0002", new PiBRev1BoardInfo("0002", PCB_REV_1_0, 256, EGOMAN));
+		PI_BOARDS.put("0003", new PiBRev1BoardInfo("0003", PCB_REV_1_1, 256, EGOMAN));
+		PI_BOARDS.put("0004", new PiABRev2BoardInfo("0004", MODEL_B, 256, SONY));
+		PI_BOARDS.put("0005", new PiABRev2BoardInfo("0005", MODEL_B, 256, QISDA));
+		PI_BOARDS.put("0006", new PiABRev2BoardInfo("0006", MODEL_B, 256, EGOMAN));
+		PI_BOARDS.put("0007", new PiABRev2BoardInfo("0007", MODEL_A, 256, EGOMAN));
+		PI_BOARDS.put("0008", new PiABRev2BoardInfo("0008", MODEL_A, 256, SONY));
+		PI_BOARDS.put("0009", new PiABRev2BoardInfo("0009", MODEL_A, 256, QISDA));
+		PI_BOARDS.put("000d", new PiABRev2BoardInfo("000d", MODEL_B, 512, EGOMAN));
+		PI_BOARDS.put("000e", new PiABRev2BoardInfo("000e", MODEL_B, 512, SONY));
+		PI_BOARDS.put("000f", new PiABRev2BoardInfo("000f", MODEL_B, 512, QISDA));
+		PI_BOARDS.put("0010", new PiABPlusBoardInfo("0010", MODEL_B_PLUS, PCB_REV_1_2, 512, SONY, BCM2835));
+		PI_BOARDS.put("0011", new PiComputeModuleBoardInfo("0011", 512, SONY, BCM2835));
+		PI_BOARDS.put("0012", new PiABPlusBoardInfo("0012", MODEL_A_PLUS, PCB_REV_1_2, 256, SONY, BCM2835));
+		PI_BOARDS.put("0013", new PiABPlusBoardInfo("0013", MODEL_B_PLUS, PCB_REV_1_2, 512, EGOMAN, BCM2835));
+		PI_BOARDS.put("0014", new PiComputeModuleBoardInfo("0014", 512, EMBEST, BCM2835));
+		PI_BOARDS.put("0015", new PiABPlusBoardInfo("0015", MODEL_A_PLUS, PCB_REV_1_1, 256, EMBEST, BCM2835));
 	}
 	
 	@Override
@@ -217,8 +159,24 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 					int mem = (rev_int & (0x07 << 20)) >> 20;
 					//boolean warranty_void = (revision & (0x03 << 24)) != 0;
 					
-					return new PiABPlusBoardInfo(revision, Model.forId(model), pcb_revision,
-							Memory.forId(mem), Manufacturer.forId(mfr), Processor.forId(proc));
+					String model_val = MODELS.get(Integer.valueOf(model));
+					if (model_val == null) {
+						model_val = "UNKNOWN-" + model;
+					}
+					String proc_val = PROCESSORS.get(Integer.valueOf(proc));
+					if (proc_val == null) {
+						proc_val = "UNKNOWN-" + proc;
+					}
+					String mfr_val = MANUFACTURERS.get(Integer.valueOf(mfr));
+					if (mfr_val == null) {
+						mfr_val = "UNKNOWN-" + mfr;
+					}
+					Integer mem_val = MEMORY.get(Integer.valueOf(mem));
+					if (mem_val == null) {
+						mem_val = Integer.valueOf(0);
+					}
+					return new PiABPlusBoardInfo(revision, model_val, pcb_revision,
+							mem_val.intValue(), mfr_val, proc_val);
 				}
 			}
 		} catch (NumberFormatException nfe) {
@@ -261,54 +219,42 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 	 */
 	static abstract class PiBoardInfo extends BoardInfo {
 		private String code;
-		private Model model;
 		private String pcbRevision;
-		private Memory memory;
-		private Manufacturer manufacturer;
-		private Processor processor;
+		private String manufacturer;
+		private String processor;
 		
-		public PiBoardInfo(String code, Model model, String pcbRevision, Memory memory,
-				Manufacturer manufacturer, Processor processor) {
-			super(MAKE, model.toString(), memory.getRam(), MAKE.toLowerCase());
+		public PiBoardInfo(String code, String model, String pcbRevision, int memory,
+				String manufacturer, String processor) {
+			super(MAKE, model, memory, MAKE.toLowerCase());
 			
 			this.code = code;
-			this.model = model;
 			this.pcbRevision = pcbRevision;
-			this.memory = memory;
 			this.manufacturer = manufacturer;
 			this.processor = processor;
 		}
-	
-		public Model getPiModel() {
-			return model;
-		}
-	
+
 		public String getRevision() {
 			return pcbRevision;
 		}
 	
-		public Memory getPiMemory() {
-			return memory;
-		}
-	
-		public Manufacturer getManufacturer() {
+		public String getManufacturer() {
 			return manufacturer;
 		}
 	
-		public Processor getProcessor() {
+		public String getProcessor() {
 			return processor;
 		}
 	
 		@Override
 		public String toString() {
-			return "PiBoardInfo [" + super.toString() + ", code=" + code + ", pcbRevision=" + pcbRevision + ", memory="
-					+ memory + ", manufacturer=" + manufacturer + ", processor=" + processor + "]";
+			return "PiBoardInfo [" + super.toString() + ", code=" + code + ", pcbRevision=" + pcbRevision
+					+ ", manufacturer=" + manufacturer + ", processor=" + processor + "]";
 		}
 	}
 	
 	public static class PiBRev1BoardInfo extends PiBoardInfo {
-		public PiBRev1BoardInfo(String code, String pcbRevision, Memory memory, Manufacturer manufacturer) {
-			super(code, Model.B, pcbRevision, memory, manufacturer, Processor.BCM_2835);
+		public PiBRev1BoardInfo(String code, String pcbRevision, int memory, String manufacturer) {
+			super(code, MODEL_B, pcbRevision, memory, manufacturer, BCM2835);
 
 			// 3v3 1 | 2 5v0
 			addGpioPinInfo(0, 3, PinInfo.DIGITAL_IN_OUT);	// I2C SDA
@@ -339,8 +285,8 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 	}
 	
 	public static class PiABRev2BoardInfo extends PiBoardInfo {
-		public PiABRev2BoardInfo(String code, Model model, Memory memory, Manufacturer manufacturer) {
-			super(code, model, PCB_REV_2_0, memory, manufacturer, Processor.BCM_2835);
+		public PiABRev2BoardInfo(String code, String model, int memory, String manufacturer) {
+			super(code, model, PCB_REV_2_0, memory, manufacturer, BCM2835);
 
 			// 3v3 1 | 2 5v0
 			addGpioPinInfo(2, 3, PinInfo.DIGITAL_IN_OUT);	// I2C SDA
@@ -373,7 +319,7 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 	public static class PiABPlusBoardInfo extends PiBoardInfo {
 		public static final String P5_HEADER = "P5";
 		
-		public PiABPlusBoardInfo(String code, Model model, String pcbRevision, Memory memory, Manufacturer manufacturer, Processor processor) {
+		public PiABPlusBoardInfo(String code, String model, String pcbRevision, int memory, String manufacturer, String processor) {
 			super(code, model, pcbRevision, memory, manufacturer, processor);
 
 			// 3v3 1 | 2 5v0
@@ -423,8 +369,8 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 	}
 	
 	public static class PiComputeModuleBoardInfo extends PiBoardInfo {
-		public PiComputeModuleBoardInfo(String code, Memory memory, Manufacturer manufacturer, Processor processor) {
-			super(code, Model.COMPUTE_MODULE, PCB_REV_1_2, memory, manufacturer, processor);
+		public PiComputeModuleBoardInfo(String code, int memory, String manufacturer, String processor) {
+			super(code, COMPUTE_MODULE, PCB_REV_1_2, memory, manufacturer, processor);
 
 			// See https://www.raspberrypi.org/documentation/hardware/computemodule/RPI-CM-DATASHEET-V1_0.pdf
 			addGpioPinInfo(0, 3, PinInfo.DIGITAL_IN_OUT);

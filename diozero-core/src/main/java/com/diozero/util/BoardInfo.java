@@ -46,10 +46,6 @@ public class BoardInfo extends BoardPinInfo {
 		this.libraryPath = libraryPath;
 		this.adcVRef = adcVRef;
 	}
-	
-	public float getAdcVRef() {
-		return adcVRef;
-	}
 
 	public String getMake() {
 		return make;
@@ -67,13 +63,18 @@ public class BoardInfo extends BoardPinInfo {
 		return libraryPath;
 	}
 	
+	public float getAdcVRef() {
+		return adcVRef;
+	}
+	
 	public String getName() {
 		return make + " " + model;
 	}
 
 	@Override
 	public String toString() {
-		return "BoardInfo [make=" + make + ", model=" + model + ", memory=" + memory + "]";
+		return "BoardInfo [make=" + make + ", model=" + model + ", memory=" + memory + ", libraryPath=" + libraryPath
+				+ ", adcVRef=" + adcVRef + "]";
 	}
 
 	public boolean sameMakeAndModel(BoardInfo boardInfo) {

@@ -1,15 +1,38 @@
 package com.diozero.internal.provider.sysfs;
 
+import org.pmw.tinylog.Logger;
+
 import com.diozero.util.RuntimeIOException;
 
 /**
- * <p>Native Java implementation of the I2C SMBus commands using a single native method to select the slave address.</p>
+ * <p>JNI wrapper of SMBus interface.</p>
  * <p>Reference <a href="https://www.kernel.org/doc/Documentation/i2c/dev-interface">Kernel I2C dev interface</a>
  * and <a href="https://www.kernel.org/doc/Documentation/i2c/smbus-protocol">SMBus Protocol</a>.</p>
- * <p><em>Warning</em> Not all methods have been tested!</p>
+ * <p>See <a href="https://github.com/bivab/smbus-cffi/blob/master/include/linux/i2c-dev.h">i2c-dev</a> for defintion of the inline functions.</p>
+ * <p>See <a href="https://github.com/bivab/smbus-cffi/blob/master/smbus/smbus.py">Python CFFI implementation.</p>
  */
 public class NativeI2CDeviceSMBus implements I2CSMBusInterface {
+	private static final int I2C_FUNC_I2C                    = 0x00000001;
+	private static final int I2C_FUNC_10BIT_ADDR             = 0x00000002;
+	private static final int I2C_FUNC_PROTOCOL_MANGLING      = 0x00000004; /* I2C_M_IGNORE_NAK etc. */
+	private static final int I2C_FUNC_SMBUS_PEC              = 0x00000008;
+	private static final int I2C_FUNC_NOSTART                = 0x00000010; /* I2C_M_NOSTART */
+	private static final int I2C_FUNC_SMBUS_BLOCK_PROC_CALL  = 0x00008000; /* SMBus 2.0 */
+	private static final int I2C_FUNC_SMBUS_QUICK            = 0x00010000;
+	private static final int I2C_FUNC_SMBUS_READ_BYTE        = 0x00020000;
+	private static final int I2C_FUNC_SMBUS_WRITE_BYTE       = 0x00040000;
+	private static final int I2C_FUNC_SMBUS_READ_BYTE_DATA   = 0x00080000;
+	private static final int I2C_FUNC_SMBUS_WRITE_BYTE_DATA  = 0x00100000;
+	private static final int I2C_FUNC_SMBUS_READ_WORD_DATA   = 0x00200000;
+	private static final int I2C_FUNC_SMBUS_WRITE_WORD_DATA  = 0x00400000;
+	private static final int I2C_FUNC_SMBUS_PROC_CALL        = 0x00800000;
+	private static final int I2C_FUNC_SMBUS_READ_BLOCK_DATA  = 0x01000000;
+	private static final int I2C_FUNC_SMBUS_WRITE_BLOCK_DATA = 0x02000000;
+	private static final int I2C_FUNC_SMBUS_READ_I2C_BLOCK   = 0x04000000; /* I2C-like block xfer  */
+	private static final int I2C_FUNC_SMBUS_WRITE_I2C_BLOCK  = 0x08000000; /* w/ 1-byte reg. addr. */
+	
 	private static native int smbusOpen(String adapter, int deviceAddress, boolean force);
+	private static native int getFuncs(int fd);
 	private static native void smbusClose(int fd);
 	
 	private static native int writeQuick(int fd, byte value);
@@ -29,6 +52,7 @@ public class NativeI2CDeviceSMBus implements I2CSMBusInterface {
 	private int controller;
 	private int deviceAddress;
 	private int fd;
+	private int funcs;
 	
 	public NativeI2CDeviceSMBus(int controller, int deviceAddress, boolean force)
 			throws I2CSMBusInterface.NotSupportedException {
@@ -40,6 +64,13 @@ public class NativeI2CDeviceSMBus implements I2CSMBusInterface {
 		if (fd < 0) {
 			throw new I2CSMBusInterface.NotSupportedException();
 		}
+		
+		int rc = getFuncs(fd);
+		if (rc < 0) {
+			Logger.error("Error reading I2C_FUNCS: " + rc);
+		} else {
+			Logger.debug("I2C_FUNCS: 0x{}", Integer.toHexString(funcs));
+		}
 	}
 
 	@Override
@@ -49,6 +80,10 @@ public class NativeI2CDeviceSMBus implements I2CSMBusInterface {
 
 	@Override
 	public byte readByte() {
+		if ((funcs & I2C_FUNC_SMBUS_READ_BYTE) != 0) {
+			Logger.error("Function I2C_FUNC_SMBUS_READ_BYTE isn't supported");
+			// TODO Throw an exception now or attempt anyway?
+		}
 		int rc = readByte(fd);
 		if (rc < 0) {
 			throw new RuntimeIOException("Error in SMBus.readByte, rc=" + rc);
@@ -59,6 +94,10 @@ public class NativeI2CDeviceSMBus implements I2CSMBusInterface {
 
 	@Override
 	public void writeByte(byte data) {
+		if ((funcs & I2C_FUNC_SMBUS_WRITE_BYTE) != 0) {
+			Logger.error("Function I2C_FUNC_SMBUS_WRITE_BYTE isn't supported");
+			// TODO Throw an exception now or attempt anyway?
+		}
 		int rc = writeByte(fd, data);
 		if (rc < 0) {
 			throw new RuntimeIOException("Error in SMBus.writeByte, rc=" + rc);
@@ -79,6 +118,10 @@ public class NativeI2CDeviceSMBus implements I2CSMBusInterface {
 
 	@Override
 	public byte readByteData(int registerAddress) {
+		if ((funcs & I2C_FUNC_SMBUS_READ_BYTE_DATA) != 0) {
+			Logger.error("Function I2C_FUNC_SMBUS_READ_BYTE_DATA isn't supported");
+			// TODO Throw an exception now or attempt anyway?
+		}
 		int rc = readByteData(fd, registerAddress);
 		if (rc < 0) {
 			throw new RuntimeIOException("Error in SMBus.readByteData, rc=" + rc);
@@ -89,6 +132,10 @@ public class NativeI2CDeviceSMBus implements I2CSMBusInterface {
 
 	@Override
 	public void writeByteData(int registerAddress, byte data) {
+		if ((funcs & I2C_FUNC_SMBUS_WRITE_BYTE_DATA) != 0) {
+			Logger.error("Function I2C_FUNC_SMBUS_WRITE_BYTE_DATA isn't supported");
+			// TODO Throw an exception now or attempt anyway?
+		}
 		int rc = writeByteData(fd, registerAddress, data);
 		if (rc < 0) {
 			throw new RuntimeIOException("Error in SMBus.writeByteData, rc=" + rc);
@@ -97,6 +144,10 @@ public class NativeI2CDeviceSMBus implements I2CSMBusInterface {
 
 	@Override
 	public short readWordData(int registerAddress) {
+		if ((funcs & I2C_FUNC_SMBUS_READ_WORD_DATA) != 0) {
+			Logger.error("Function I2C_FUNC_SMBUS_READ_WORD_DATA isn't supported");
+			// TODO Throw an exception now or attempt anyway?
+		}
 		int rc = readWordData(fd, registerAddress);
 		if (rc < 0) {
 			throw new RuntimeIOException("Error in SMBus.readWordData, rc=" + rc);
@@ -107,6 +158,10 @@ public class NativeI2CDeviceSMBus implements I2CSMBusInterface {
 
 	@Override
 	public void writeWordData(int registerAddress, short data) {
+		if ((funcs & I2C_FUNC_SMBUS_WRITE_WORD_DATA) != 0) {
+			Logger.error("Function I2C_FUNC_SMBUS_WRITE_WORD_DATA isn't supported");
+			// TODO Throw an exception now or attempt anyway?
+		}
 		int rc = writeWordData(fd, registerAddress, data);
 		if (rc < 0) {
 			throw new RuntimeIOException("Error in SMBus.writeWordData, rc=" + rc);
@@ -115,6 +170,10 @@ public class NativeI2CDeviceSMBus implements I2CSMBusInterface {
 
 	@Override
 	public short processCall(int registerAddress, short data) {
+		if ((funcs & I2C_FUNC_SMBUS_PROC_CALL) != 0) {
+			Logger.error("Function I2C_FUNC_SMBUS_PROC_CALL isn't supported");
+			// TODO Throw an exception now or attempt anyway?
+		}
 		int rc = processCall(fd, registerAddress, data);
 		if (rc < 0) {
 			throw new RuntimeIOException("Error in SMBus.processCall, rc=" + rc);
@@ -125,6 +184,10 @@ public class NativeI2CDeviceSMBus implements I2CSMBusInterface {
 
 	@Override
 	public byte[] readBlockData(int registerAddress) {
+		if ((funcs & I2C_FUNC_SMBUS_READ_BLOCK_DATA) != 0) {
+			Logger.error("Function I2C_FUNC_SMBUS_READ_BLOCK_DATA isn't supported");
+			// TODO Throw an exception now or attempt anyway?
+		}
 		byte[] data = new byte[MAX_I2C_BLOCK_SIZE];
 		int rc = readBlockData(fd, registerAddress, data);
 		if (rc < 0) {
@@ -136,6 +199,10 @@ public class NativeI2CDeviceSMBus implements I2CSMBusInterface {
 
 	@Override
 	public void writeBlockData(int registerAddress, byte[] data) {
+		if ((funcs & I2C_FUNC_SMBUS_WRITE_BLOCK_DATA) != 0) {
+			Logger.error("Function I2C_FUNC_SMBUS_WRITE_BLOCK_DATA isn't supported");
+			// TODO Throw an exception now or attempt anyway?
+		}
 		int rc = writeBlockData(fd, registerAddress, data.length, data);
 		if (rc < 0) {
 			throw new RuntimeIOException("Error in SMBus.writeI2CBlockData, rc=" + rc);
@@ -144,6 +211,10 @@ public class NativeI2CDeviceSMBus implements I2CSMBusInterface {
 
 	@Override
 	public byte[] blockProcessCall(int registerAddress, byte[] txData, int length) {
+		if ((funcs & I2C_FUNC_SMBUS_BLOCK_PROC_CALL) != 0) {
+			Logger.error("Function I2C_FUNC_SMBUS_BLOCK_PROCESS_CALL isn't supported");
+			// TODO Throw an exception now or attempt anyway?
+		}
 		byte[] rx_data = new byte[length];
 		int rc = blockProcessCall(fd, registerAddress, txData.length, txData, rx_data);
 		if (rc < 0) {
@@ -155,6 +226,10 @@ public class NativeI2CDeviceSMBus implements I2CSMBusInterface {
 
 	@Override
 	public byte[] readI2CBlockData(int registerAddress, int length) {
+		if ((funcs & I2C_FUNC_SMBUS_READ_I2C_BLOCK) != 0) {
+			Logger.error("Function I2C_FUNC_SMBUS_READ_I2C_BLOCK isn't supported");
+			// TODO Throw an exception now or attempt anyway?
+		}
 		byte[] data = new byte[length];
 		int rc = readI2CBlockData(fd, registerAddress, length, data);
 		if (rc < 0) {
@@ -166,6 +241,10 @@ public class NativeI2CDeviceSMBus implements I2CSMBusInterface {
 
 	@Override
 	public void writeI2CBlockData(int registerAddress, byte[] data) {
+		if ((funcs & I2C_FUNC_SMBUS_WRITE_I2C_BLOCK) != 0) {
+			Logger.error("Function I2C_FUNC_SMBUS_WRITE_I2C_BLOCK isn't supported");
+			// TODO Throw an exception now or attempt anyway?
+		}
 		int rc = writeI2CBlockData(fd, registerAddress, data.length, data);
 		if (rc < 0) {
 			throw new RuntimeIOException("Error in SMBus.writeI2CBlockData, rc=" + rc);

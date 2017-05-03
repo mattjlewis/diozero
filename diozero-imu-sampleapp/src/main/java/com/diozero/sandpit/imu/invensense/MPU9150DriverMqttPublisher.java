@@ -26,8 +26,12 @@ package com.diozero.sandpit.imu.invensense;
  * #L%
  */
 
+import java.nio.ByteBuffer;
+
 import org.apache.commons.math3.complex.Quaternion;
 import org.apache.commons.math3.geometry.euclidean.threed.*;
+import org.eclipse.paho.client.mqttv3.*;
+import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.pmw.tinylog.Logger;
 
 import com.diozero.api.I2CConstants;
@@ -43,7 +47,7 @@ import com.diozero.util.SleepUtil;
  * Invensense libraries (v5.1):
  * http://www.invensense.com/developers/index.php?_r=downloads
  */
-public class MPU9150DriverTest {
+public class MPU9150DriverMqttPublisher implements MqttConstants {
 	private static final float RTIMU_FUZZY_ACCEL_ZERO = 0.05f;
 	private static final float RTIMU_FUZZY_GYRO_ZERO = 0.20f;
 	
@@ -63,6 +67,10 @@ public class MPU9150DriverTest {
 	private long lastFifoRead;
 	private AxisRotation axisRotation;
 	
+	// MQTT variables
+	private String mqttServer;
+	private MqttClient mqttClient;
+	
 	// RTIMULib variables
 	private FusionAlgorithmType fusionType;
 	private FusionInterface fusion;
@@ -74,10 +82,16 @@ public class MPU9150DriverTest {
 	private boolean gyroBiasValid;
 
 	public static void main(String[] args) {
-		new MPU9150DriverTest().run();
+		String mqtt_server = null;
+		if (args.length > 0) {
+			if (args[0].startsWith("--" + MQTT_SERVER_OPTION + "=")) {
+				mqtt_server = args[0].substring(MQTT_SERVER_OPTION.length() + 3);
+			}
+		}
+		new MPU9150DriverMqttPublisher(mqtt_server).run();
 	}
 	
-	public MPU9150DriverTest() {
+	public MPU9150DriverMqttPublisher(String mqttServer) {
 		// General defaults
 		//axisRotation = AxisRotation.RTIMU_XNORTH_YEAST;
 		axisRotation = AxisRotation.RTIMU_XEAST_YSOUTH;
@@ -110,12 +124,15 @@ public class MPU9150DriverTest {
 		default:
 			fusion = new RTFusion();
 		}
+		
+		this.mqttServer = mqttServer;
 	}
 	
 	public void run() {
 		try (MPU9150Driver mpu = new MPU9150Driver(I2CConstants.BUS_1, I2CConstants.ADDR_SIZE_7,
 				MPU9150Constants.I2C_CLOCK_FREQUENCY_FAST)) {
 			mpuInit(mpu);
+			mqttInit();
 			System.err.println("Ready.");
 
 			do {
@@ -138,11 +155,65 @@ public class MPU9150DriverTest {
 					System.out.print("Singularity detected, ");
 				}
 				Logger.info("ypr=[{}, {}, {}]", Double.valueOf(ypr[0]), Double.valueOf(ypr[1]), Double.valueOf(ypr[2]));
+				
+				mqttPublish(imu_data, ypr);
 			} while (true);
 
 		} catch (RuntimeIOException ioe) {
 			Logger.error(ioe, "Error: {}", ioe);
+		} catch (MqttException me) {
+			Logger.error(me, "Error: {}", me);
+		} finally {
+			try { mqttClient.disconnect(); } catch (Exception e) { }
 		}
+	}
+	
+	private void mqttPublish(ImuData imu_data, double[] ypr) throws MqttException {
+		if (mqttClient != null) {
+			MqttMessage message = new MqttMessage();
+			message.setQos(MQTT_QOS_AT_MOST_ONCE);
+			
+			// 4 sets of 3 doubles, 1 set of 4 doubles
+			byte[] bytes = new byte[4*3*8 + 1*4*8];
+			ByteBuffer buffer = ByteBuffer.wrap(bytes);
+			
+			buffer.putDouble(imu_data.getCompass().getX());
+			buffer.putDouble(imu_data.getCompass().getY());
+			buffer.putDouble(imu_data.getCompass().getZ());
+
+			buffer.putDouble(imu_data.getAccel().getX());
+			buffer.putDouble(imu_data.getAccel().getY());
+			buffer.putDouble(imu_data.getAccel().getZ());
+			
+			buffer.putDouble(imu_data.getGyro().getX());
+			buffer.putDouble(imu_data.getGyro().getY());
+			buffer.putDouble(imu_data.getGyro().getZ());
+			
+			buffer.putDouble(imu_data.getQuaternion().getQ0());
+			buffer.putDouble(imu_data.getQuaternion().getQ1());
+			buffer.putDouble(imu_data.getQuaternion().getQ2());
+			buffer.putDouble(imu_data.getQuaternion().getQ3());
+			
+			buffer.putDouble(ypr[0]);
+			buffer.putDouble(ypr[1]);
+			buffer.putDouble(ypr[2]);
+			
+			buffer.flip();
+			message.setPayload(bytes);
+			mqttClient.publish(MQTT_TOPIC_IMU, message);
+		}
+	}
+
+	private void mqttInit() throws MqttException {
+		if (mqttServer == null) {
+			return;
+		}
+		
+		mqttClient = new MqttClient(mqttServer, "MPU9150", new MemoryPersistence());
+		MqttConnectOptions con_opts = new MqttConnectOptions();
+		con_opts.setCleanSession(true);
+		mqttClient.connect(con_opts);
+		Logger.debug("Connected to MQTT server '{}'", mqttServer);
 	}
 
 	private void mpuInit(MPU9150Driver mpu) throws RuntimeIOException {
@@ -188,8 +259,8 @@ public class MPU9150DriverTest {
 		mpu.mpu_set_dmp_state(true);
 
 		Logger.debug("Configuring DMP...");
-		dmp.dmp_register_tap_cb(MPU9150DriverTest::tapCallback);
-		dmp.dmp_register_android_orient_cb(MPU9150DriverTest::androidOrientCallback);
+		dmp.dmp_register_tap_cb(MPU9150DriverMqttPublisher::tapCallback);
+		dmp.dmp_register_android_orient_cb(MPU9150DriverMqttPublisher::androidOrientCallback);
 		//int hal_dmp_features = MPU9150DMPConstants.DMP_FEATURE_6X_LP_QUAT |
 		//		MPU9150DMPConstants.DMP_FEATURE_SEND_RAW_ACCEL|
 		//		MPU9150DMPConstants.DMP_FEATURE_SEND_CAL_GYRO |
@@ -375,7 +446,7 @@ public class MPU9150DriverTest {
 	public static void androidOrientCallback(OrientationEvent event) {
 		Logger.debug("androidOrientCallback({})", event);
 	}
-
+	
 	/**  Axis rotation defs
 	 * These allow the IMU to be virtually repositioned if it is in a non-standard configuration
 	 * Standard configuration is X pointing at north, Y pointing east and Z pointing down
@@ -389,7 +460,6 @@ public class MPU9150DriverTest {
 	 * YZX  000_010_001
 	 * ZXY  001_000_010
 	 * ZYX  000_001_010
-	 * 
 	 */
 	public static enum AxisRotation {
 		RTIMU_XNORTH_YEAST(new byte[][]	{{1, 0, 0},		{0, 1, 0},	{0, 0, 1}}), // this is the default identity matrix
@@ -422,12 +492,12 @@ public class MPU9150DriverTest {
 		private AxisRotation(byte[][] orientationMatrix) {
 			this.orientationMatrix = orientationMatrix;
 		}
-	
+
 		public byte[][] getOrientationMatrix() {
 			return orientationMatrix;
 		}
 	}
-	
+
 	public static enum FusionAlgorithmType {
 		RTFUSION_TYPE_KALMANSTATE4,	// kalman state is the quaternion pose
 		RTFUSION_TYPE_RTQF;			// RT quaternion fusion

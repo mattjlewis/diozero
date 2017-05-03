@@ -18,6 +18,14 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeI2CDeviceS
 
 /*
  * Class:     com_diozero_internal_provider_sysfs_NativeI2CDeviceSMBus
+ * Method:    getFuncs
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeI2CDeviceSMBus_getFuncs(
+		JNIEnv* env, jclass clz, jint fd);
+
+/*
+ * Class:     com_diozero_internal_provider_sysfs_NativeI2CDeviceSMBus
  * Method:    smbusClose
  * Signature: (I)
  */

@@ -1,0 +1,38 @@
+#macro(mainLayout)
+<!DOCTYPE html
+        PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>GPIO Web App</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></meta>
+	<title>GPIO Control</title>
+	<link rel="stylesheet" type="text/css" href="/css/style.css">
+</head>
+<body>
+	<header><p>Header</p></header>
+	<main>
+		$bodyContent
+	#if($boardInfo)
+		<h2>Board Info</h2>
+		<ul>
+			<li>Make: $boardInfo.make</li>
+			<li>Model: $boardInfo.model</li>
+			<li>Memory: $boardInfo.memory</li>
+			<li>Library Path: $boardInfo.libraryPath</li>
+			<li>ADC vRef: $boardInfo.adcVRef</li>
+		</ul>
+		<h3>GPIOs</h3>
+		<ul>
+		#foreach( $pin in $boardInfo.pins )
+			<li>$pin.name: <a href="/gpio/on/$pin.deviceNumber">on</a>, <a href="/gpio/off/$pin.deviceNumber">off</a>, <a href="/gpio/toggle/$pin.deviceNumber">toggle</a></li>
+		#end
+		</ul>
+	#else
+		<p>No board info</p>
+	#end
+	</main>
+	<footer><p>Footer</p></footer>
+</body>
+</html>
+#end

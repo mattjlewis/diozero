@@ -87,6 +87,9 @@ public class InteractiveServoControl {
 				try {
 					float angle = Float.parseFloat(line);
 					servo.setAngle(angle);
+					float pulse_width_ms = servo.getPulseWidthMs();
+					float new_angle = servo.getAngle();
+					Logger.debug("pulse_width_ms: {}, new_angle: {}", Float.valueOf(pulse_width_ms), Float.valueOf(new_angle));
 				} catch (NumberFormatException e) {
 					System.out.println("Invalid float '" + line + "'");
 				}

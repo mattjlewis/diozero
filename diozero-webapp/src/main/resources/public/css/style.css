@@ -1,0 +1,52 @@
+body {
+	background: #CAECFF;
+	font-family: 'Trebuchet MS', sans-serif;
+	font-size: 14px;
+	width: 700px;
+	margin: 30px auto;
+}
+
+header {
+	background: #DEE9FF;
+	padding: 4px 10px;
+	border-top: 1px solid #ccc;
+	border-bottom: 1px solid #eee;
+	color: #888;
+	font-size: 12px;
+	letter-spacing: 0.5px;
+}
+
+main {
+	padding: 10px;
+	background: white;
+	border: 1px solid #6ECCFF;
+}
+
+main h1 {
+	background: #6ECCFF;
+	margin: 0;
+	padding: 10px 14px;
+	color: white;
+	letter-spacing: 1px;
+	text-shadow: 0 0 3px #2477FF;
+	font-weight: normal;
+}
+
+main h2 {
+	margin: 0 0 15px 0;
+	color: #1057FF;
+	text-shadow: 0 1px 2px #ccc;
+}
+
+main h3 {
+	margin: 0 0 15px 0;
+	color: #1057FF;
+	text-shadow: 0 1px 2px #ccc;
+}
+
+footer {
+	background: #eee;
+	color: #888;
+	padding: 5px 10px;
+	font-size: 12px;
+}
