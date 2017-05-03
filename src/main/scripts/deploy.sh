@@ -58,6 +58,7 @@ files="../pigpioj/pigpioj-java/target/pigpioj-java-${pigpioj_version}.jar \
 	diozero-provider-wiringpi/target/diozero-provider-wiringpi-${version}.jar \
 	diozero-ws281x-java/target/diozero-ws281x-java-${version}.jar \
 	diozero-sampleapps/target/diozero-sampleapps-${version}.jar \
+	diozero-webapp/target/diozero-webapp-${version}.jar \
 	distribution/target/diozero-distribution-${version}-bin.zip"
 
 scp $files ${username}@${host}:${install_folder}

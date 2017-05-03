@@ -91,6 +91,7 @@
 		<module>diozero-imu-sampleapp</module>
 		<module>diozero-imu-visualiser</module>
 		<module>diozero-sampleapps</module>
+		<module>diozero-webapp</module>
 		<module>distribution</module>
 	</modules>
 

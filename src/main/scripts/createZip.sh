@@ -43,7 +43,8 @@ files="../pigpioj/pigpioj-java/target/pigpioj-java-${pigpioj_version}.jar \
 	diozero-provider-pigpio/target/diozero-provider-pigpio-${version}.jar \
 	diozero-provider-wiringpi/target/diozero-provider-wiringpi-${version}.jar \
 	diozero-ws281x-java/target/diozero-ws281x-java-${version}.jar \
-	diozero-sampleapps/target/diozero-sampleapps-${version}.jar"
+	diozero-sampleapps/target/diozero-sampleapps-${version}.jar \
+	diozero-webapp/target/diozero-webapp-${version}.jar"
 
 
 rm -f diozero-${version}.zip
