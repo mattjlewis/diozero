@@ -40,7 +40,9 @@ public class SystemInfo {
 	
 	private static boolean initialised;
 	private static Properties osReleaseProperties;
-	private static BoardInfo boardInfo;
+	private static String hardware;
+	private static String revision;
+	private static Integer memoryKb;
 	
 	private static synchronized void initialise() throws RuntimeIOException {
 		if (! initialised) {
@@ -52,8 +54,6 @@ public class SystemInfo {
 			}
 			
 			ProcessBuilder pb = new ProcessBuilder("cat", CPUINFO_FILE);
-			String hardware = null;
-			String revision = null;
 			try {
 				Process proc = pb.start();
 				try (BufferedReader reader = new BufferedReader(new InputStreamReader(proc.getInputStream()))) {
@@ -74,7 +74,7 @@ public class SystemInfo {
 			}
 
 			pb = new ProcessBuilder("cat", MEMINFO_FILE);
-			Integer memory_kb = null;
+			memoryKb = null;
 			try {
 				Process proc = pb.start();
 				try (BufferedReader reader = new BufferedReader(new InputStreamReader(proc.getInputStream()))) {
@@ -83,7 +83,7 @@ public class SystemInfo {
 					do {
 						line = reader.readLine();
 						if (line != null && line.startsWith("MemTotal")) {
-							memory_kb = new Integer(line.split("\\s+")[1].trim());
+							memoryKb = new Integer(line.split("\\s+")[1].trim());
 						}
 					} while (line != null);
 				}
@@ -91,14 +91,15 @@ public class SystemInfo {
 				Logger.error(e, "Error reading {}: {}", MEMINFO_FILE, e.getMessage());
 			}
 			
-			boardInfo = lookupBoardInfo(hardware, revision, memory_kb);
-			Logger.info("Resolved board make {}", boardInfo);
-			
 			initialised = true;
 		}
 	}
 	
-	protected static BoardInfo lookupBoardInfo(String hardware, String revision, Integer memoryKb) {
+	public static BoardInfo lookupBoardInfo() {
+		return lookupBoardInfo(hardware, revision, memoryKb);
+	}
+	
+	public static BoardInfo lookupBoardInfo(String hardware, String revision, Integer memoryKb) {
 		BoardInfo board_info = null;
 		ServiceLoader<BoardInfoProvider> service_loader = ServiceLoader.load(BoardInfoProvider.class);
 		for (BoardInfoProvider board_info_provider : service_loader) {
@@ -138,20 +139,10 @@ public class SystemInfo {
 		return osReleaseProperties.getProperty("VERSION_ID");
 	}
 	
-	public static BoardInfo getBoardInfo() {
-		initialise();
-		
-		return boardInfo;
-	}
-
-	public static String getLibraryPath() {
-		return getBoardInfo().getLibraryPath();
-	}
-	
 	public static void main(String[] args) {
 		initialise();
 		Logger.info(osReleaseProperties);
-		Logger.info(getBoardInfo());
+		Logger.info(lookupBoardInfo());
 	}
 	
 	public static final class UnknownBoardInfo extends BoardInfo {

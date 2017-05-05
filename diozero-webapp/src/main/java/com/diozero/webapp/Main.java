@@ -14,6 +14,7 @@ public class Main {
 		GpioController gpio_controller = new GpioController();
 		
 		Spark.get("/gpio", gpio_controller.control, getTemplateEngine());
+		Spark.get("/gpio/", gpio_controller.control, getTemplateEngine());
 		Spark.get("/gpio/:command/:gpio", gpio_controller.control, getTemplateEngine());
 	}
 

@@ -4,9 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.diozero.api.DigitalOutputDevice;
+import com.diozero.internal.DeviceFactoryHelper;
 import com.diozero.util.BoardInfo;
 import com.diozero.util.RuntimeIOException;
-import com.diozero.util.SystemInfo;
 
 import spark.*;
 
@@ -41,7 +41,7 @@ public class GpioController {
 	};
 	
 	public GpioController() {
-		boardInfo = SystemInfo.getBoardInfo();
+		boardInfo = DeviceFactoryHelper.getNativeDeviceFactory().getBoardInfo();
 		gpios = new HashMap<>();
 	}
 

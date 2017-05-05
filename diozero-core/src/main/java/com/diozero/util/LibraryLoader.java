@@ -37,6 +37,8 @@ import java.util.Map;
 
 import org.pmw.tinylog.Logger;
 
+import com.diozero.internal.DeviceFactoryHelper;
+
 public class LibraryLoader {
 	private static final Map<String, Boolean> LOADED_LIBRARIES = new HashMap<>();
 	
@@ -47,7 +49,9 @@ public class LibraryLoader {
 				
 				// First try load the library from within the JAR file
 				@SuppressWarnings("resource")
-				InputStream is = clz.getResourceAsStream("/lib/" + SystemInfo.getLibraryPath() + "/lib" + libName + ".so");
+				InputStream is = clz.getResourceAsStream(
+						"/lib/" + DeviceFactoryHelper.getNativeDeviceFactory().getBoardInfo().getLibraryPath() + "/lib"
+								+ libName + ".so");
 				if (is != null) {
 					try {
 						Path path = Files.createTempFile("lib" + libName, ".so");

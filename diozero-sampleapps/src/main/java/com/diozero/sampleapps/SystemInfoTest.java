@@ -41,7 +41,7 @@ public class SystemInfoTest {
 		Logger.info("Operating System version: {} {}", SystemInfo.getOperatingSystemVersion(),
 				SystemInfo.getOperatingSystemVersionId());
 
-		BoardInfo board_info = SystemInfo.getBoardInfo();
+		BoardInfo board_info = SystemInfo.lookupBoardInfo();
 
 		Logger.info("Name: {}", board_info.getName());
 		Logger.info("Make: {}", board_info.getMake());

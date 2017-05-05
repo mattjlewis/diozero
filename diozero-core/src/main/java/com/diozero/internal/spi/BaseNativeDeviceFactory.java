@@ -61,7 +61,7 @@ public abstract class BaseNativeDeviceFactory extends AbstractDeviceFactory impl
 
 	@SuppressWarnings("static-method")
 	protected BoardInfo initialiseBoardInfo() {
-		return SystemInfo.getBoardInfo();
+		return SystemInfo.lookupBoardInfo();
 	}
 	
 	@Override

@@ -134,10 +134,6 @@
 		<eclipse.m2e.lifecycle-mapping.version>1.0.0</eclipse.m2e.lifecycle-mapping.version>
 	</properties>
 	
-	<prerequisites>
-		<maven>${maven.min-version}</maven>
-	</prerequisites>
-	
 	<distributionManagement>
 		<downloadUrl>https://oss.sonatype.org/index.html#nexus-search;gav~com.diozero~~~~</downloadUrl>
 		<snapshotRepository>
