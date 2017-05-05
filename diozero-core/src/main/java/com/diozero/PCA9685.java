@@ -1,5 +1,7 @@
 package com.diozero;
 
+import java.nio.ByteOrder;
+
 /*
  * #%L
  * Device I/O Zero - Core
@@ -105,7 +107,7 @@ public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFac
 	public PCA9685(int controller, int address, int pwmFrequency) throws RuntimeIOException {
 		super(DEVICE_NAME + "-" + controller + "-" + address);
 		
-		i2cDevice = new I2CDevice(controller, address, I2CConstants.ADDR_SIZE_7, I2CConstants.DEFAULT_CLOCK_FREQUENCY);
+		i2cDevice = new I2CDevice(controller, address, I2CConstants.ADDR_SIZE_7, I2CConstants.DEFAULT_CLOCK_FREQUENCY, ByteOrder.LITTLE_ENDIAN);
 		boardPinInfo = new PCA9685BoardPinInfo();
 		
 		reset();
@@ -129,10 +131,10 @@ public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFac
 					") must be " + MIN_PWM_FREQUENCY + ".." + MAX_PWM_FREQUENCY);
 		}
 		
-		double prescale_dbl = (((double)CLOCK_FREQ) / RANGE / pwmFrequency) - 1;
-		int prescale_int = (int)Math.round(prescale_dbl);
+		float prescale_flt = (((float) CLOCK_FREQ) / RANGE / pwmFrequency) - 1;
+		int prescale_int = Math.round(prescale_flt);
 		Logger.debug("Setting PWM frequency to {} Hz, double pre-scale: {}, int prescale {}",
-				Integer.valueOf(pwmFrequency), String.format("%.2f", Double.valueOf(prescale_dbl)),
+				Integer.valueOf(pwmFrequency), String.format("%.2f", Float.valueOf(prescale_flt)),
 				Integer.valueOf(prescale_int));
 
 		byte oldmode = i2cDevice.readByte(MODE1);
@@ -148,17 +150,18 @@ public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFac
 	private int[] getPwm(int channel) throws RuntimeIOException {
 		validateChannel(channel);
 		
-		// TODO Replace with readUShort()?
-		int on_with_read_short = i2cDevice.readUShort(LED0_ON_L + 4*channel, 8);
 		byte on_l = i2cDevice.readByte(LED0_ON_L + 4*channel);
 		byte on_h = i2cDevice.readByte(LED0_ON_H + 4*channel);
 		int on = ((on_h << 8) & 0xff00) | (on_l | 0xff);
-		
 		// TODO Replace with readUShort()?
-		int off_with_read_short = i2cDevice.readUShort(LED0_OFF_L + 4*channel, 8);
+		int on_with_read_short = i2cDevice.readUShort(LED0_ON_L + 4*channel);
+		
 		byte off_l = i2cDevice.readByte(LED0_OFF_L + 4*channel);
 		byte off_h = i2cDevice.readByte(LED0_OFF_H + 4*channel);
 		int off = ((off_h << 8) & 0xff00) | (off_l | 0xff);
+		// TODO Replace with readUShort()?
+		int off_with_read_short = i2cDevice.readUShort(LED0_OFF_L + 4*channel);
+		
 		Logger.debug("on={}, on_with_read_short={}, off={}, off_with_read_short={}",
 				Integer.valueOf(on), Integer.valueOf(on_with_read_short),
 				Integer.valueOf(off), Integer.valueOf(off_with_read_short));

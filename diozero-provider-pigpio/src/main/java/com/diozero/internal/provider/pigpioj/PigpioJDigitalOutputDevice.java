@@ -31,21 +31,25 @@ import org.pmw.tinylog.Logger;
 import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.DeviceFactoryInterface;
 import com.diozero.internal.spi.GpioDigitalOutputDeviceInterface;
-import com.diozero.pigpioj.PigpioGpio;
 import com.diozero.util.RuntimeIOException;
 
+import uk.pigpioj.PigpioConstants;
+import uk.pigpioj.PigpioInterface;
+
 public class PigpioJDigitalOutputDevice extends AbstractDevice implements GpioDigitalOutputDeviceInterface {
+	private PigpioInterface pigpioImpl;
 	private int gpio;
 
-	public PigpioJDigitalOutputDevice(String key, DeviceFactoryInterface deviceFactory, int gpio,
-			boolean initialValue) throws RuntimeIOException {
+	public PigpioJDigitalOutputDevice(String key, DeviceFactoryInterface deviceFactory,
+			PigpioInterface pigpioImpl, int gpio, boolean initialValue) throws RuntimeIOException {
 		super(key, deviceFactory);
 		
+		this.pigpioImpl = pigpioImpl;
 		this.gpio = gpio;
 		
-		int rc = PigpioGpio.setMode(gpio, PigpioGpio.MODE_PI_OUTPUT);
+		int rc = pigpioImpl.setMode(gpio, PigpioConstants.MODE_PI_OUTPUT);
 		if (rc < 0) {
-			throw new RuntimeIOException("Error calling PigpioGpio.setMode(), response: " + rc);
+			throw new RuntimeIOException("Error calling pigpioImpl.setMode(), response: " + rc);
 		}
 		setValue(initialValue);
 	}
@@ -57,18 +61,18 @@ public class PigpioJDigitalOutputDevice extends AbstractDevice implements GpioDi
 
 	@Override
 	public boolean getValue() throws RuntimeIOException {
-		int rc = PigpioGpio.read(gpio);
+		int rc = pigpioImpl.read(gpio);
 		if (rc < 0) {
-			throw new RuntimeIOException("Error calling PigpioGpio.read(), response: " + rc);
+			throw new RuntimeIOException("Error calling pigpioImpl.read(), response: " + rc);
 		}
 		return rc == 1;
 	}
 
 	@Override
 	public void setValue(boolean value) throws RuntimeIOException {
-		int rc = PigpioGpio.write(gpio, value);
+		int rc = pigpioImpl.write(gpio, value);
 		if (rc < 0) {
-			throw new RuntimeIOException("Error calling PigpioGpio.write(), response: " + rc);
+			throw new RuntimeIOException("Error calling pigpioImpl.write(), response: " + rc);
 		}
 	}
 

@@ -29,23 +29,38 @@ import org.pmw.tinylog.Logger;
  */
 
 import com.diozero.api.*;
+import com.diozero.internal.board.raspberrypi.RaspberryPiBoardInfoProvider;
 import com.diozero.internal.spi.*;
-import com.diozero.pigpioj.PigpioGpio;
+import com.diozero.util.BoardInfo;
 import com.diozero.util.RuntimeIOException;
+
+import uk.pigpioj.PigpioConstants;
+import uk.pigpioj.PigpioInterface;
+import uk.pigpioj.PigpioJ;
 
 public class PigpioJDeviceFactory extends BaseNativeDeviceFactory {
 	private int boardPwmFrequency;
+	private PigpioInterface pigpioImpl;
 
 	public PigpioJDeviceFactory() {
-		int rc = PigpioGpio.initialise();
-		if (rc < 0) {
-			throw new RuntimeIOException("Error calling PigpioGpio.initialise(), response: " + rc);
-		}
+		pigpioImpl = PigpioJ.getImplementation();
+	}
+	
+	@Override
+	public void close() {
+		super.close();
+		pigpioImpl.close();
 	}
 
 	@Override
 	public String getName() {
 		return getClass().getSimpleName();
+	}
+	
+	@Override
+	protected BoardInfo initialiseBoardInfo() {
+		return new RaspberryPiBoardInfoProvider().lookup("BCM2835", Integer.toString(pigpioImpl.getHardwareRevision()),
+				null);
 	}
 
 	@Override
@@ -57,47 +72,41 @@ public class PigpioJDeviceFactory extends BaseNativeDeviceFactory {
 	public void setBoardPwmFrequency(int pwmFrequency) {
 		boardPwmFrequency = pwmFrequency;
 	}
-	
-	@Override
-	public void close() {
-		super.close();
-		PigpioGpio.terminate();
-	}
 
 	protected DeviceMode getCurrentGpioMode(int gpio) {
-		int rc = PigpioGpio.getMode(gpio);
+		int rc = pigpioImpl.getMode(gpio);
 		
-		if (rc == PigpioGpio.MODE_PI_INPUT) {
+		if (rc == PigpioConstants.MODE_PI_INPUT) {
 			return DeviceMode.DIGITAL_INPUT;
-		} else if (rc == PigpioGpio.MODE_PI_OUTPUT) {
+		} else if (rc == PigpioConstants.MODE_PI_OUTPUT) {
 			return DeviceMode.DIGITAL_OUTPUT;
 		}
 		
-		throw new RuntimeIOException("Error calling PigpioGpio.getMode(), response: " + rc);
+		throw new RuntimeIOException("Error calling pigpioImpl.getMode(), response: " + rc);
 	}
 
 	@Override
 	public GpioDigitalInputDeviceInterface createDigitalInputDevice(String key, PinInfo pinInfo, GpioPullUpDown pud,
 			GpioEventTrigger trigger) throws RuntimeIOException {
-		return new PigpioJDigitalInputDevice(key, this, pinInfo.getDeviceNumber(), pud, trigger);
+		return new PigpioJDigitalInputDevice(key, this, pigpioImpl, pinInfo.getDeviceNumber(), pud, trigger);
 	}
 
 	@Override
 	public GpioDigitalOutputDeviceInterface createDigitalOutputDevice(String key, PinInfo pinInfo, boolean initialValue)
 			throws RuntimeIOException {
-		return new PigpioJDigitalOutputDevice(key, this, pinInfo.getDeviceNumber(), initialValue);
+		return new PigpioJDigitalOutputDevice(key, this, pigpioImpl, pinInfo.getDeviceNumber(), initialValue);
 	}
 
 	@Override
 	public GpioDigitalInputOutputDeviceInterface createDigitalInputOutputDevice(String key, PinInfo pinInfo,
 			DeviceMode mode) throws RuntimeIOException {
-		return new PigpioJDigitalInputOutputDevice(key, this, pinInfo.getDeviceNumber(), mode);
+		return new PigpioJDigitalInputOutputDevice(key, this, pigpioImpl, pinInfo.getDeviceNumber(), mode);
 	}
 
 	@Override
 	public PwmOutputDeviceInterface createPwmOutputDevice(String key, PinInfo pinInfo, int pwmFrequency,
 			float initialValue) throws RuntimeIOException {
-		return new PigpioJPwmOutputDevice(key, this, pinInfo.getDeviceNumber(), initialValue,
+		return new PigpioJPwmOutputDevice(key, this, pigpioImpl, pinInfo.getDeviceNumber(), initialValue,
 				setPwmFrequency(pinInfo.getDeviceNumber(), pwmFrequency));
 	}
 
@@ -114,45 +123,28 @@ public class PigpioJDeviceFactory extends BaseNativeDeviceFactory {
 	@Override
 	protected SpiDeviceInterface createSpiDevice(String key, int controller, int chipSelect, int frequency,
 			SpiClockMode spiClockMode, boolean lsbFirst) throws RuntimeIOException {
-		return new PigpioJSpiDevice(key, this, controller, chipSelect, frequency, spiClockMode, lsbFirst);
+		return new PigpioJSpiDevice(key, this, pigpioImpl, controller, chipSelect, frequency, spiClockMode, lsbFirst);
 	}
 
 	@Override
 	protected I2CDeviceInterface createI2CDevice(String key, int controller, int address, int addressSize,
 			int clockFrequency) throws RuntimeIOException {
-		return new PigpioJI2CDevice(key, this, controller, address, addressSize);
+		return new PigpioJI2CDevice(key, this, pigpioImpl, controller, address, addressSize);
 	}
 	
 	public PigpioJBitBangI2CDevice createI2CBitBangDevice(int sdaPin, int sclPin, int baud) {
 		return new PigpioJBitBangI2CDevice("PigpioJ-BitBangI2C-" + sdaPin, this, sdaPin, sclPin, baud);
 	}
-	
-	static int getPigpioJPullUpDown(GpioPullUpDown pud) {
-		int pigpio_pud;
-		switch (pud) {
-		case PULL_DOWN:
-			pigpio_pud = PigpioGpio.PI_PUD_DOWN;
-			break;
-		case PULL_UP:
-			pigpio_pud = PigpioGpio.PI_PUD_UP;
-			break;
-		case NONE:
-		default:
-			pigpio_pud = PigpioGpio.PI_PUD_OFF;
-			break;
-		}
-		return pigpio_pud;
-	}
 
-	private static int setPwmFrequency(int gpio, int pwmFrequency) {
-		int old_freq = PigpioGpio.getPWMFrequency(gpio);
-		int old_range = PigpioGpio.getPWMRange(gpio);
-		int old_real_range = PigpioGpio.getPWMRealRange(gpio);
-		PigpioGpio.setPWMFrequency(gpio, pwmFrequency);
-		PigpioGpio.setPWMRange(gpio, PigpioGpio.getPWMRealRange(gpio));
-		int new_freq = PigpioGpio.getPWMFrequency(gpio);
-		int new_range = PigpioGpio.getPWMRange(gpio);
-		int new_real_range = PigpioGpio.getPWMRealRange(gpio);
+	private int setPwmFrequency(int gpio, int pwmFrequency) {
+		int old_freq = pigpioImpl.getPWMFrequency(gpio);
+		int old_range = pigpioImpl.getPWMRange(gpio);
+		int old_real_range = pigpioImpl.getPWMRealRange(gpio);
+		pigpioImpl.setPWMFrequency(gpio, pwmFrequency);
+		pigpioImpl.setPWMRange(gpio, pigpioImpl.getPWMRealRange(gpio));
+		int new_freq = pigpioImpl.getPWMFrequency(gpio);
+		int new_range = pigpioImpl.getPWMRange(gpio);
+		int new_real_range = pigpioImpl.getPWMRealRange(gpio);
 		Logger.info("setPwmFrequency({}, {}), old freq={}, old real range={}, old range={},"
 				+ " new freq={}, new real range={}, new range={}",
 				Integer.valueOf(gpio), Integer.valueOf(pwmFrequency),
@@ -160,5 +152,22 @@ public class PigpioJDeviceFactory extends BaseNativeDeviceFactory {
 				Integer.valueOf(new_freq), Integer.valueOf(new_real_range), Integer.valueOf(new_range));
 		
 		return new_range;
+	}
+	
+	static int getPigpioJPullUpDown(GpioPullUpDown pud) {
+		int pigpio_pud;
+		switch (pud) {
+		case PULL_DOWN:
+			pigpio_pud = PigpioConstants.PI_PUD_DOWN;
+			break;
+		case PULL_UP:
+			pigpio_pud = PigpioConstants.PI_PUD_UP;
+			break;
+		case NONE:
+		default:
+			pigpio_pud = PigpioConstants.PI_PUD_OFF;
+			break;
+		}
+		return pigpio_pud;
 	}
 }

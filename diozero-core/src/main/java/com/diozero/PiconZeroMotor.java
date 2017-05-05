@@ -45,12 +45,12 @@ public class PiconZeroMotor extends MotorBase {
 
 	@Override
 	public void forward(float speed) throws RuntimeIOException {
-		piconZero.setMotor(motor, (int) (Math.abs(speed) * MAX_FORWARD_SPEED));
+		piconZero.setMotor(motor, Math.round(Math.abs(speed) * MAX_FORWARD_SPEED));
 	}
 
 	@Override
 	public void backward(float speed) throws RuntimeIOException {
-		piconZero.setMotor(motor, (int) (Math.abs(speed) * MAX_BACKWARD_SPEED));
+		piconZero.setMotor(motor, Math.round(Math.abs(speed) * MAX_BACKWARD_SPEED));
 	}
 
 	@Override

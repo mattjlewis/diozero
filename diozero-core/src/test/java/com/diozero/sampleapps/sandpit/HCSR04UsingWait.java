@@ -69,7 +69,7 @@ public class HCSR04UsingWait implements DistanceSensorInterface, Closeable {
 
 	// Spec says #10us pulse (min) = 10,000 ns
 	private static final int PULSE_NS = 10_000; 
-	private static final int MAX_DISTANCE_CM = (int)(400 * 1.5); // Max distance measurement (400cm + 50%)
+	private static final int MAX_DISTANCE_CM = Math.round(400 * 1.5f); // Max distance measurement (400cm + 50%)
 	private static final double SPEED_OF_SOUND_CM_PER_S = 34029; // Approx Speed of Sound at sea level and 15 degC
 	// Calculate the max time (in ns) that the echo pulse can stay high (35.26ms)
 	private static final int MAX_ECHO_TIME_MS = (int) Math.floor(MAX_DISTANCE_CM * 2 * SleepUtil.MS_IN_SEC / SPEED_OF_SOUND_CM_PER_S) + 1;

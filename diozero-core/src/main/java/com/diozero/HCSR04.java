@@ -54,7 +54,7 @@ public class HCSR04 implements DistanceSensorInterface, Closeable {
 	private static final double MAX_DISTANCE_CM = 400; // Max distance measurement
 	private static final double SPEED_OF_SOUND_CM_PER_S = 34029; // Approx Speed of Sound at sea level and 15 degC
 	// Calculate the max time (in ns) that the echo pulse stays high
-	private static final int MAX_ECHO_TIME_NS = (int) (MAX_DISTANCE_CM * 2 * SleepUtil.NS_IN_SEC / SPEED_OF_SOUND_CM_PER_S);
+	private static final int MAX_ECHO_TIME_NS = (int) Math.round(MAX_DISTANCE_CM * 2 * SleepUtil.NS_IN_SEC / SPEED_OF_SOUND_CM_PER_S);
 
 	private DigitalOutputDevice trigger;
 	private DigitalInputDeviceInterface echo;

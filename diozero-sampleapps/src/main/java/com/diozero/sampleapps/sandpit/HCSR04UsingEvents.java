@@ -91,7 +91,7 @@ public class HCSR04UsingEvents implements DistanceSensorInterface, Closeable, In
 	private static final long ULTRASONIC_BURST_TIME_NS = (SleepUtil.NS_IN_SEC / 40_000) * 8;
 	private static final long MAX_DELAY_TO_ECHO_HIGH_NS = SleepUtil.NS_IN_SEC;
 	// Calculate the max time (in ns) that the echo pulse stays high
-	private static final long EXPECTED_MAX_ECHO_TIME_NS = (int) (MAX_DISTANCE_CM * 2 * SleepUtil.NS_IN_SEC / SPEED_OF_SOUND_CM_PER_S);
+	private static final long EXPECTED_MAX_ECHO_TIME_NS = Math.round(MAX_DISTANCE_CM * 2 * SleepUtil.NS_IN_SEC / SPEED_OF_SOUND_CM_PER_S);
 	private static final long MAX_ECHO_HIGH_TIME_NS = SleepUtil.NS_IN_SEC;
 	
 	// States

@@ -64,12 +64,12 @@ public class DebouncedDigitalInputDevice extends WaitableDigitalInputDevice {
 		super(gpio, pud, trigger);
 
 		if (debounceTime > 0) {
-			device.setDebounceTimeMillis((int) (debounceTime * 1000));
+			device.setDebounceTimeMillis(Math.round(debounceTime * 1000));
 		}
 	}
 
 	// Exposed operations
 	public void setDebounceTime(float debounceTime) {
-		device.setDebounceTimeMillis((int) (debounceTime * 1000));
+		device.setDebounceTimeMillis(Math.round(debounceTime * 1000));
 	}
 }

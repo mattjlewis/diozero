@@ -62,10 +62,10 @@ public class WiringPiPwmOutputDevice extends AbstractDevice implements PwmOutput
 			Gpio.pinMode(gpio, Gpio.PWM_OUTPUT);
 			// Have to call this after setting the pin mode! Yuck
 			Gpio.pwmSetMode(Gpio.PWM_MODE_MS);
-			Gpio.pwmWrite(gpio, (int) (initialValue * range));
+			Gpio.pwmWrite(gpio, Math.round(initialValue * range));
 			break;
 		case SOFTWARE:
-			int status = SoftPwm.softPwmCreate(gpio, (int)(initialValue * range), range);
+			int status = SoftPwm.softPwmCreate(gpio, Math.round(initialValue * range), range);
 			if (status != 0) {
 				throw new RuntimeIOException("Error setting up software controlled PWM GPIO on BCM pin " +
 						gpio + ", status=" + status);

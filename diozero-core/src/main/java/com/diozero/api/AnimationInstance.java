@@ -86,7 +86,7 @@ public class AnimationInstance {
 		cuePointsMillis = new int[cuePoints.length];
 		int segment = 0;
 		for (float cue_point : cuePoints) {
-			cuePointsMillis[segment++] = (int) (cue_point * scaled_duration);
+			cuePointsMillis[segment++] = Math.round(cue_point * scaled_duration);
 		}
 
 		// List of segments, each segment is a list of steps with a value for

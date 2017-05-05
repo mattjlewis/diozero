@@ -81,7 +81,7 @@ public class RangeUtil {
 	 * @example RangeUtil.map(500, 0, 1000, 0, 255);
 	 */
 	public static int map(float value, float fromLow, float fromHigh, int toLow, int toHigh, boolean constrain) {
-		int result = (int) ((value - fromLow) * (toHigh - toLow) / (fromHigh - fromLow) + toLow);
+		int result = Math.round((value - fromLow) * (toHigh - toLow) / (fromHigh - fromLow) + toLow);
 		if (constrain) {
 			result = constrain(result, toLow, toHigh);
 		}

@@ -204,9 +204,9 @@ public class MPU9150DMPDriver implements MPU9150DMPConstants {
 			accel_bias_body[2] *= -1;
 		}
 
-		accel_bias_body[0] = (int) ((accel_bias_body[0] * accel_sf) >> 30);
-		accel_bias_body[1] = (int) ((accel_bias_body[1] * accel_sf) >> 30);
-		accel_bias_body[2] = (int) ((accel_bias_body[2] * accel_sf) >> 30);
+		accel_bias_body[0] = Math.round((accel_bias_body[0] * accel_sf) >> 30);
+		accel_bias_body[1] = Math.round((accel_bias_body[1] * accel_sf) >> 30);
+		accel_bias_body[2] = Math.round((accel_bias_body[2] * accel_sf) >> 30);
 
 		byte[] regs = new byte[12];
 		regs[0] = (byte) ((accel_bias_body[0] >> 24) & 0xFF);
@@ -275,30 +275,30 @@ public class MPU9150DMPDriver implements MPU9150DMPConstants {
 		float scaled_thresh = (float)thresh / DMP_SAMPLE_RATE;
 		
 		AccelFullScaleRange accel_fsr = mpu.mpu_get_accel_fsr();
-		int dmp_thresh = (int)(scaled_thresh * accel_fsr.getSensitivityScaleFactor());
-		int dmp_thresh_2 = (int)(scaled_thresh * accel_fsr.getSensitivityScaleFactor()*0.75);
+		int dmp_thresh = Math.round(scaled_thresh * accel_fsr.getSensitivityScaleFactor());
+		int dmp_thresh_2 = Math.round(scaled_thresh * accel_fsr.getSensitivityScaleFactor() * 0.75f);
 
 		/*
 		switch (accel_fsr) {
 		case INV_FSR_2G:
-			dmp_thresh = (int)(scaled_thresh * 16384);
+			dmp_thresh = Math.round(scaled_thresh * 16384);
 			// dmp_thresh * 0.75
-			dmp_thresh_2 = (int)(scaled_thresh * 12288);
+			dmp_thresh_2 = Math.round(scaled_thresh * 12288);
 			break;
 		case INV_FSR_4G:
-			dmp_thresh = (int)(scaled_thresh * 8192);
+			dmp_thresh = Math.round(scaled_thresh * 8192);
 			// dmp_thresh * 0.75
-			dmp_thresh_2 = (int)(scaled_thresh * 6144);
+			dmp_thresh_2 = Math.round(scaled_thresh * 6144);
 			break;
 		case INV_FSR_8G:
-	        dmp_thresh = (int)(scaled_thresh * 4096);
+	        dmp_thresh = Math.round(scaled_thresh * 4096);
 	        // dmp_thresh * 0.75
-	        dmp_thresh_2 = (int)(scaled_thresh * 3072);
+	        dmp_thresh_2 = Math.round(scaled_thresh * 3072);
 	        break;
 	    case INV_FSR_16G:
-	        dmp_thresh = (int)(scaled_thresh * 2048);
+	        dmp_thresh = Math.round(scaled_thresh * 2048);
 	        // dmp_thresh * 0.75
-	        dmp_thresh_2 = (int)(scaled_thresh * 1536);
+	        dmp_thresh_2 = Math.round(scaled_thresh * 1536);
 	        break;
 	    default:
 	        return false;

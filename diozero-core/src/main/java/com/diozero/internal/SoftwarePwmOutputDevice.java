@@ -99,7 +99,7 @@ public class SoftwarePwmOutputDevice extends AbstractDevice implements PwmOutput
 	public void setValue(float value) {
 		// Constrain to 0..1
 		value = RangeUtil.constrain(value, 0, 1);
-		dutyNs = (int) (value * TimeUnit.MILLISECONDS.toNanos(periodMs));
+		dutyNs = Math.round(value * TimeUnit.MILLISECONDS.toNanos(periodMs));
 		if (value == 1) {
 			fullyOn.getAndSet(true);
 		} else {

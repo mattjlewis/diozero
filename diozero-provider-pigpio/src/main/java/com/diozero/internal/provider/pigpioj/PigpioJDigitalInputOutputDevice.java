@@ -32,18 +32,22 @@ import com.diozero.api.DeviceMode;
 import com.diozero.api.GpioPullUpDown;
 import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.GpioDigitalInputOutputDeviceInterface;
-import com.diozero.pigpioj.PigpioGpio;
 import com.diozero.util.RuntimeIOException;
+
+import uk.pigpioj.PigpioConstants;
+import uk.pigpioj.PigpioInterface;
 
 public class PigpioJDigitalInputOutputDevice extends AbstractDevice
 implements GpioDigitalInputOutputDeviceInterface {
+	private PigpioInterface pigpioImpl;
 	private DeviceMode mode;
 	private int gpio;
 
-	public PigpioJDigitalInputOutputDevice(String key, PigpioJDeviceFactory deviceFactory,
+	public PigpioJDigitalInputOutputDevice(String key, PigpioJDeviceFactory deviceFactory, PigpioInterface pigpioImpl,
 			int gpio, DeviceMode mode) {
 		super(key, deviceFactory);
 		
+		this.pigpioImpl = pigpioImpl;
 		this.gpio = gpio;
 		
 		setMode(mode);
@@ -70,18 +74,18 @@ implements GpioDigitalInputOutputDeviceInterface {
 		}
 
 		if (mode == DeviceMode.DIGITAL_INPUT) {
-			int rc = PigpioGpio.setMode(gpio, PigpioGpio.MODE_PI_INPUT);
+			int rc = pigpioImpl.setMode(gpio, PigpioConstants.MODE_PI_INPUT);
 			if (rc < 0) {
-				throw new RuntimeIOException("Error calling PigpioGpio.setMode(), response: " + rc);
+				throw new RuntimeIOException("Error calling pigpioImpl.setMode(), response: " + rc);
 			}
-			rc = PigpioGpio.setPullUpDown(gpio, PigpioJDeviceFactory.getPigpioJPullUpDown(GpioPullUpDown.NONE));
+			rc = pigpioImpl.setPullUpDown(gpio, PigpioJDeviceFactory.getPigpioJPullUpDown(GpioPullUpDown.NONE));
 			if (rc < 0) {
-				throw new RuntimeIOException("Error calling PigpioGpio.setPullUpDown(), response: " + rc);
+				throw new RuntimeIOException("Error calling pigpioImpl.setPullUpDown(), response: " + rc);
 			}
 		} else {
-			int rc = PigpioGpio.setMode(gpio, PigpioGpio.MODE_PI_OUTPUT);
+			int rc = pigpioImpl.setMode(gpio, PigpioConstants.MODE_PI_OUTPUT);
 			if (rc < 0) {
-				throw new RuntimeIOException("Error calling PigpioGpio.setMode(), response: " + rc);
+				throw new RuntimeIOException("Error calling pigpioImpl.setMode(), response: " + rc);
 			}
 		}
 		
@@ -90,9 +94,9 @@ implements GpioDigitalInputOutputDeviceInterface {
 
 	@Override
 	public boolean getValue() throws RuntimeIOException {
-		int rc = PigpioGpio.read(gpio);
+		int rc = pigpioImpl.read(gpio);
 		if (rc < 0) {
-			throw new RuntimeIOException("Error calling PigpioGpio.read(), response: " + rc);
+			throw new RuntimeIOException("Error calling pigpioImpl.read(), response: " + rc);
 		}
 		return rc == 1;
 	}
@@ -102,9 +106,9 @@ implements GpioDigitalInputOutputDeviceInterface {
 		if (mode != DeviceMode.DIGITAL_OUTPUT) {
 			throw new IllegalStateException("Can only set output value for digital output pins");
 		}
-		int rc = PigpioGpio.write(gpio, value);
+		int rc = pigpioImpl.write(gpio, value);
 		if (rc < 0) {
-			throw new RuntimeIOException("Error calling PigpioGpio.write(), response: " + rc);
+			throw new RuntimeIOException("Error calling pigpioImpl.write(), response: " + rc);
 		}
 	}
 

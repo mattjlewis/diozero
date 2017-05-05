@@ -89,7 +89,7 @@ public class JdkDeviceIoPwmOutputDevice extends AbstractDevice implements PwmOut
 		// TODO What value for PWM Channel Number?! Same as the GPIO Output Pin number?
 		int pwm_channel_number = gpio;
 		int idle_state = DeviceConfig.UNASSIGNED;		// IDLE_STATE_HIGH or IDLE_STATE_LOW
-		pulsePeriodMs = (int)(1000 / frequency);
+		pulsePeriodMs = Math.round(1000 / frequency);
 		int pulse_alignment = DeviceConfig.UNASSIGNED;	// ALIGN_CENTER, ALIGN_LEFT or ALIGN_RIGHT
 		pwmChannelConfig = new PWMChannelConfig.Builder().setControllerNumber(DeviceConfig.UNASSIGNED)
 				.setChannelNumber(pwm_channel_number).setIdleState(idle_state).setPulsePeriod(pulsePeriodMs)
@@ -138,7 +138,7 @@ public class JdkDeviceIoPwmOutputDevice extends AbstractDevice implements PwmOut
 						Float.valueOf(min_frequency), Float.valueOf(max_frequency)));
 			}
 			this.frequency = frequency;
-			pulsePeriodMs = (int)(1000 / frequency);
+			pulsePeriodMs = Math.round(1000 / frequency);
 			synchronized (pwmChannel) {
 				pwmChannel.setPulsePeriod(pulsePeriodMs);
 			}
@@ -160,7 +160,7 @@ public class JdkDeviceIoPwmOutputDevice extends AbstractDevice implements PwmOut
 		
 		synchronized (pwmChannel) {
 			this.value = value;
-			pulseWidthMs = (int)(value * pulsePeriodMs);
+			pulseWidthMs = Math.round(value * pulsePeriodMs);
 			
 			try {
 				if (value == 0) {

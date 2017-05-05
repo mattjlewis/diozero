@@ -117,7 +117,7 @@ public class OdroidC2SysFsPwmOutputDevice extends AbstractDevice implements PwmO
 		
 		try {
 			dutyFile.seek(0);
-			dutyFile.writeBytes(Integer.toString(((int) (value * range))));
+			dutyFile.writeBytes(Integer.toString((Math.round(value * range))));
 		} catch (IOException e) {
 			closeDevice();
 			throw new RuntimeIOException("Error setting duty for PWM #" + pwmNum, e);

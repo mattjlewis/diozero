@@ -120,7 +120,7 @@ public class SysFsPwmOutputDevice extends AbstractDevice implements PwmOutputDev
 		
 		try {
 			//dutyFile.seek(0);
-			dutyFile.writeBytes(Integer.toString((int) (value * periodNs)));
+			dutyFile.writeBytes(Integer.toString(Math.round(value * periodNs)));
 			//dutyFile.flush();
 		} catch (IOException e) {
 			close();

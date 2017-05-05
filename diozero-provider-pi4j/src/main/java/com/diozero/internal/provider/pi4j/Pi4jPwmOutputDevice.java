@@ -61,16 +61,16 @@ public class Pi4jPwmOutputDevice extends AbstractDevice implements PwmOutputDevi
 		switch (pwmType) {
 		case HARDWARE:
 			//pwmOutputPin = gpioController.provisionPwmOutputPin(pin, "PWM output for BCM GPIO " + gpio,
-			//		(int)(value * range));
+			//		Math.round(value * range));
 			Gpio.pinMode(gpio, Gpio.PWM_OUTPUT);
 			// Have to call this after setting the pin mode! Yuck
 			Gpio.pwmSetMode(Gpio.PWM_MODE_MS);
-			Gpio.pwmWrite(gpio, (int) (initialValue * range));
+			Gpio.pwmWrite(gpio, Math.round(initialValue * range));
 			break;
 		case SOFTWARE:
 			//pwmOutputPin = gpioController.provisionSoftPwmOutputPin(
-			//		pin, "PWM output for BCM GPIO " + gpio, (int)(initialValue * range));
-			int status = SoftPwm.softPwmCreate(gpio, (int)(initialValue * range), range);
+			//		pin, "PWM output for BCM GPIO " + gpio, Math.round(initialValue * range));
+			int status = SoftPwm.softPwmCreate(gpio, Math.round(initialValue * range), range);
 			if (status != 0) {
 				throw new RuntimeIOException("Error setting up software controlled PWM GPIO on BCM pin " +
 						gpio + ", status=" + status);
@@ -113,11 +113,11 @@ public class Pi4jPwmOutputDevice extends AbstractDevice implements PwmOutputDevi
 		this.value = value;
 		switch (pwmType) {
 		case HARDWARE:
-			Logger.info("Pi4j Hardware PWM write " + ((int) (value * range)));
-			Gpio.pwmWrite(gpio, (int) (value * range));
+			Logger.info("Pi4j Hardware PWM write " + (Math.round(value * range)));
+			Gpio.pwmWrite(gpio, Math.round(value * range));
 			break;
 		case SOFTWARE:
-			SoftPwm.softPwmWrite(gpio, (int) (value * range));
+			SoftPwm.softPwmWrite(gpio, Math.round(value * range));
 			break;
 		}
 	}

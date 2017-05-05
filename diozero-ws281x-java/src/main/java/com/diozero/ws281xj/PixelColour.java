@@ -87,8 +87,8 @@ public class PixelColour {
 	 * @return RGB colour integer value
 	 */
 	public static int createColourRGB(float red, float green, float blue) {
-		return createColourRGB((int)(COLOUR_COMPONENT_MAX*red),
-				(int)(COLOUR_COMPONENT_MAX*green), (int)(COLOUR_COMPONENT_MAX*blue));
+		return createColourRGB(Math.round(COLOUR_COMPONENT_MAX*red),
+				Math.round(COLOUR_COMPONENT_MAX*green), Math.round(COLOUR_COMPONENT_MAX*blue));
 	}
 
 	/**

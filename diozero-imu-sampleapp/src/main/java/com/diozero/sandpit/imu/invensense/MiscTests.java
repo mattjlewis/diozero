@@ -42,30 +42,30 @@ public class MiscTests {
 	public static boolean dmp_set_tap_thresh(int axis, int thresh, AccelFullScaleRange accel_fsr) {
 		float scaled_thresh = (float)thresh / MPU9150DMPConstants.DMP_SAMPLE_RATE;
 		
-		int dmp_thresh = (int)(scaled_thresh * accel_fsr.getSensitivityScaleFactor());
-		int dmp_thresh_2 = (int)(scaled_thresh * accel_fsr.getSensitivityScaleFactor()*0.75);
+		int dmp_thresh = Math.round(scaled_thresh * accel_fsr.getSensitivityScaleFactor());
+		int dmp_thresh_2 = Math.round(scaled_thresh * accel_fsr.getSensitivityScaleFactor() * 0.75f);
 		Logger.info(dmp_thresh + ", " + dmp_thresh_2);
 
 		switch (accel_fsr) {
 		case INV_FSR_2G:
-			dmp_thresh = (int)(scaled_thresh * 16384);
+			dmp_thresh = Math.round(scaled_thresh * 16384);
 			/* dmp_thresh * 0.75 */
-			dmp_thresh_2 = (int)(scaled_thresh * 12288);
+			dmp_thresh_2 = Math.round(scaled_thresh * 12288);
 			break;
 		case INV_FSR_4G:
-			dmp_thresh = (int)(scaled_thresh * 8192);
+			dmp_thresh = Math.round(scaled_thresh * 8192);
 			/* dmp_thresh * 0.75 */
-			dmp_thresh_2 = (int)(scaled_thresh * 6144);
+			dmp_thresh_2 = Math.round(scaled_thresh * 6144);
 			break;
 		case INV_FSR_8G:
-	        dmp_thresh = (int)(scaled_thresh * 4096);
+	        dmp_thresh = Math.round(scaled_thresh * 4096);
 	        /* dmp_thresh * 0.75 */
-	        dmp_thresh_2 = (int)(scaled_thresh * 3072);
+	        dmp_thresh_2 = Math.round(scaled_thresh * 3072);
 	        break;
 	    case INV_FSR_16G:
-	        dmp_thresh = (int)(scaled_thresh * 2048);
+	        dmp_thresh = Math.round(scaled_thresh * 2048);
 	        /* dmp_thresh * 0.75 */
-	        dmp_thresh_2 = (int)(scaled_thresh * 1536);
+	        dmp_thresh_2 = Math.round(scaled_thresh * 1536);
 	        break;
 	    default:
 	        return false;

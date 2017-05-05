@@ -181,7 +181,7 @@ public class BMP180 implements ThermometerInterface, BarometerInterface, Closeab
 
 		// ((msb << 16) + (lsb << 8) + xlsb) >> (8 - self._mode)
 		
-		return (int)(val >> (8 - mode.getSamplingMode()));
+		return (int) (val >> (8 - mode.getSamplingMode()));
 	}
 
 	/**

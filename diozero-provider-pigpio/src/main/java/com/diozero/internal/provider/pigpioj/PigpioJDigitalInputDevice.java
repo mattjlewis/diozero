@@ -35,44 +35,49 @@ import com.diozero.api.GpioPullUpDown;
 import com.diozero.internal.spi.AbstractInputDevice;
 import com.diozero.internal.spi.DeviceFactoryInterface;
 import com.diozero.internal.spi.GpioDigitalInputDeviceInterface;
-import com.diozero.pigpioj.PigpioCallback;
-import com.diozero.pigpioj.PigpioGpio;
 import com.diozero.util.RuntimeIOException;
 
-public class PigpioJDigitalInputDevice extends AbstractInputDevice<DigitalInputEvent> implements GpioDigitalInputDeviceInterface, PigpioCallback {
+import uk.pigpioj.PigpioCallback;
+import uk.pigpioj.PigpioConstants;
+import uk.pigpioj.PigpioInterface;
+
+public class PigpioJDigitalInputDevice extends AbstractInputDevice<DigitalInputEvent>
+		implements GpioDigitalInputDeviceInterface, PigpioCallback {
+	private PigpioInterface pigpioImpl;
 	private int gpio;
 	private int edge;
 
-	public PigpioJDigitalInputDevice(String key, DeviceFactoryInterface deviceFactory, int gpio,
-			GpioPullUpDown pud, GpioEventTrigger trigger) throws RuntimeIOException {
+	public PigpioJDigitalInputDevice(String key, DeviceFactoryInterface deviceFactory, PigpioInterface pigpioImpl,
+			int gpio, GpioPullUpDown pud, GpioEventTrigger trigger) throws RuntimeIOException {
 		super(key, deviceFactory);
+		
+		this.pigpioImpl = pigpioImpl;
+		this.gpio = gpio;
 		
 		switch (trigger) {
 		case RISING:
-			edge = PigpioGpio.RISING_EDGE;
+			edge = PigpioConstants.RISING_EDGE;
 			break;
 		case FALLING:
-			edge = PigpioGpio.FALLING_EDGE;
+			edge = PigpioConstants.FALLING_EDGE;
 			break;
 		case BOTH:
-			edge = PigpioGpio.EITHER_EDGE;
+			edge = PigpioConstants.EITHER_EDGE;
 			break;
 		case NONE:
 		default:
-			edge = PigpioGpio.NO_EDGE;
+			edge = PigpioConstants.NO_EDGE;
 		}
 		int pigpio_pud = PigpioJDeviceFactory.getPigpioJPullUpDown(pud);
 		
-		int rc = PigpioGpio.setMode(gpio, PigpioGpio.MODE_PI_INPUT);
+		int rc = pigpioImpl.setMode(gpio, PigpioConstants.MODE_PI_INPUT);
 		if (rc < 0) {
-			throw new RuntimeIOException("Error calling PigpioGpio.setMode(), response: " + rc);
+			throw new RuntimeIOException("Error calling pigpioImpl.setMode(), response: " + rc);
 		}
-		rc = PigpioGpio.setPullUpDown(gpio, pigpio_pud);
+		rc = pigpioImpl.setPullUpDown(gpio, pigpio_pud);
 		if (rc < 0) {
-			throw new RuntimeIOException("Error calling PigpioGpio.setPullUpDown(), response: " + rc);
+			throw new RuntimeIOException("Error calling pigpioImpl.setPullUpDown(), response: " + rc);
 		}
-		
-		this.gpio = gpio;
 	}
 
 	@Override
@@ -89,9 +94,9 @@ public class PigpioJDigitalInputDevice extends AbstractInputDevice<DigitalInputE
 
 	@Override
 	public boolean getValue() throws RuntimeIOException {
-		int rc = PigpioGpio.read(gpio);
+		int rc = pigpioImpl.read(gpio);
 		if (rc < 0) {
-			throw new RuntimeIOException("Error calling PigpioGpio.read(), response: " + rc);
+			throw new RuntimeIOException("Error calling pigpioImpl.read(), response: " + rc);
 		}
 		return rc == 1;
 	}
@@ -104,22 +109,22 @@ public class PigpioJDigitalInputDevice extends AbstractInputDevice<DigitalInputE
 	@Override
 	public void enableListener() {
 		disableListener();
-		if (edge == PigpioGpio.NO_EDGE) {
+		if (edge == PigpioConstants.NO_EDGE) {
 			Logger.warn("Edge was configured to be NO_EDGE, no point adding a listener");
 			return;
 		}
 		
-		int rc = PigpioGpio.setISRFunc(gpio, edge, -1, this);
+		int rc = pigpioImpl.enableListener(gpio, edge, this);
 		if (rc < 0) {
-			throw new RuntimeIOException("Error calling PigpioGpio.setISRFunc(), response: " + rc);
+			throw new RuntimeIOException("Error calling pigpioImpl.setISRFunc(), response: " + rc);
 		}
 	}
 
 	@Override
 	public void disableListener() {
-		int rc = PigpioGpio.setISRFunc(gpio, PigpioGpio.EITHER_EDGE, -1, null);
+		int rc = pigpioImpl.disableListener(gpio);
 		if (rc < 0) {
-			throw new RuntimeIOException("Error calling PigpioGpio.setISRFunc(), response: " + rc);
+			throw new RuntimeIOException("Error calling pigpioImpl.setISRFunc(), response: " + rc);
 		}
 	}
 

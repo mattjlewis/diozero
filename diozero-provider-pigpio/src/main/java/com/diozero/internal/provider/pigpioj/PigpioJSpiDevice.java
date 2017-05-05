@@ -34,25 +34,29 @@ import com.diozero.api.SpiClockMode;
 import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.DeviceFactoryInterface;
 import com.diozero.internal.spi.SpiDeviceInterface;
-import com.diozero.pigpioj.PigpioSPI;
 import com.diozero.util.RuntimeIOException;
+
+import uk.pigpioj.PigpioInterface;
 
 public class PigpioJSpiDevice extends AbstractDevice implements SpiDeviceInterface {
 	private static final int CLOSED = -1;
 	
+	private PigpioInterface pigpioImpl;
 	private int handle = CLOSED;
 	private int controller;
 	private int chipSelect;
 
-	public PigpioJSpiDevice(String key, DeviceFactoryInterface deviceFactory, int controller,
-			int chipSelect, int frequency, SpiClockMode spiClockMode, boolean lsbFirst) throws RuntimeIOException {
+	public PigpioJSpiDevice(String key, DeviceFactoryInterface deviceFactory, PigpioInterface pigpioImpl,
+			int controller, int chipSelect, int frequency, SpiClockMode spiClockMode, boolean lsbFirst)
+			throws RuntimeIOException {
 		super(key, deviceFactory);
 		
+		this.pigpioImpl = pigpioImpl;
 		this.controller = controller;
 		this.chipSelect = chipSelect;
 		
 		int flags = createSpiFlags(spiClockMode, controller, lsbFirst);
-		int rc = PigpioSPI.spiOpen(chipSelect, frequency, flags);
+		int rc = pigpioImpl.spiOpen(chipSelect, frequency, flags);
 		if (rc < 0) {
 			handle = CLOSED;
 			throw new RuntimeIOException(String.format("Error opening SPI device on controller %d, chip-select %d, response: %d",
@@ -71,9 +75,9 @@ public class PigpioJSpiDevice extends AbstractDevice implements SpiDeviceInterfa
 		
 		int count = out.remaining();
 		byte[] tx = new byte[count];
-		int rc = PigpioSPI.spiWrite(handle, tx, count);
+		int rc = pigpioImpl.spiWrite(handle, tx, count);
 		if (rc < 0) {
-			throw new RuntimeIOException("Error calling PigpioSPI.write(), response: " + rc);
+			throw new RuntimeIOException("Error calling pigpioImpl.write(), response: " + rc);
 		}
 	}
 
@@ -87,9 +91,9 @@ public class PigpioJSpiDevice extends AbstractDevice implements SpiDeviceInterfa
 		byte[] tx = new byte[count];
 		out.get(tx);
 		byte[] rx = new byte[count];
-		int rc = PigpioSPI.spiXfer(handle, tx, rx, count);
+		int rc = pigpioImpl.spiXfer(handle, tx, rx, count);
 		if (rc < 0) {
-			throw new RuntimeIOException("Error calling PigpioSPI.spiXfer(), response: " + rc);
+			throw new RuntimeIOException("Error calling pigpioImpl.spiXfer(), response: " + rc);
 		}
 		
 		return ByteBuffer.wrap(rx);
@@ -112,10 +116,10 @@ public class PigpioJSpiDevice extends AbstractDevice implements SpiDeviceInterfa
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
-		int rc = PigpioSPI.spiClose(handle);
+		int rc = pigpioImpl.spiClose(handle);
 		handle = CLOSED;
 		if (rc < 0) {
-			throw new RuntimeIOException("Error calling PigpioSPI.spiClose(), response: " + rc);
+			throw new RuntimeIOException("Error calling pigpioImpl.spiClose(), response: " + rc);
 		}
 	}
 	

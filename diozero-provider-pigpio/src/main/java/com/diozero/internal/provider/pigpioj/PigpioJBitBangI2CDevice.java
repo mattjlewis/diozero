@@ -33,8 +33,9 @@ import org.pmw.tinylog.Logger;
 
 import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.DeviceFactoryInterface;
-import com.diozero.pigpioj.PigpioBitBangI2C;
 import com.diozero.util.RuntimeIOException;
+
+import uk.pigpioj.PigpioBitBangI2C;
 
 public class PigpioJBitBangI2CDevice extends AbstractDevice {
 	private int sda;

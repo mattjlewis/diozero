@@ -72,7 +72,7 @@ public class FirmataPwmOutputDevice extends AbstractDevice implements PwmOutputD
 	@Override
 	public void setValue(float value) throws RuntimeIOException {
 		try {
-			pin.setValue((int) (value * PWM_MAX));
+			pin.setValue(Math.round(value * PWM_MAX));
 		} catch (IOException e) {
 			throw new RuntimeIOException("Error setting PWM value to " + value + " for pin " + pin.getIndex());
 		}
