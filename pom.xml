@@ -61,10 +61,9 @@
 	</issueManagement>
 	
 	<scm>
-		<url>https://github.com/mattjlewis/diozero.git</url>
-		<connection>scm:git:git@github.com:mattjlewis/diozero.git</connection>
+		<url>https://github.com/mattjlewis/diozero</url>
+		<connection>scm:git:github.com/mattjlewis/diozero.git</connection>
 		<developerConnection>scm:git:git@github.com:mattjlewis/diozero.git</developerConnection>
-		<tag>HEAD</tag>
 	</scm>
 
 	<developers>
@@ -98,6 +97,8 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		
+		<github.global.server>github</github.global.server>
 
 		<!-- Version dependencies -->
 		<java.version>8</java.version>
@@ -105,8 +106,6 @@
 		<jdk.target.version>1.${java.version}</jdk.target.version>
 		<maven.compiler.source>${jdk.source.version}</maven.compiler.source>
 		<maven.compiler.target>${jdk.target.version}</maven.compiler.target>
-		
-		<github.global.server>github</github.global.server>
 		
 		<commons-math3.version>3.6.1</commons-math3.version>
 		<junit.version>4.12</junit.version>
@@ -141,21 +140,20 @@
 	
 	<distributionManagement>
 		<downloadUrl>https://oss.sonatype.org/index.html#nexus-search;gav~com.diozero~~~~</downloadUrl>
-		<!-- <downloadUrl>https://drive.google.com/folderview?id=0B2Kd_bs3CEYaZ3NiRkd4OXhYd3c</downloadUrl> -->
 		<snapshotRepository>
-			<id>sonatype-oss-snapshots</id>
+			<id>ossrh</id>
 			<name>Sonatype Open Source Maven Snapshots Repository</name>
 			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
 		</snapshotRepository>
 		<repository>
-			<id>sonatype-oss-staging</id>
+			<id>ossrh</id>
 			<name>Sonatype Open Source Maven Repository</name>
 			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
 		</repository>
-		<!-- <site>
+		<site>
 			<id>www.diozero.com</id>
 			<url>http://www.diozero.com</url>
-		</site> -->
+		</site>
 	</distributionManagement>
 	
 	<!-- Core dependencies common to all projects -->
@@ -262,19 +260,6 @@
 								<id>attach-javadocs</id>
 								<goals>
 									<goal>jar</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-gpg-plugin</artifactId>
-						<executions>
-							<execution>
-								<id>sign-artifacts</id>
-								<phase>verify</phase>
-								<goals>
-									<goal>sign</goal>
 								</goals>
 							</execution>
 						</executions>
@@ -449,11 +434,24 @@
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-gpg-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>sign-artifacts</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>sign</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-release-plugin</artifactId>
 				<version>${maven-release-plugin.version}</version>
 				<configuration>
 					<autoVersionSubmodules>true</autoVersionSubmodules>
-					<useReleaseProfile>false</useReleaseProfile>
+					<useReleaseProfile>true</useReleaseProfile>
 					<releaseProfiles>release</releaseProfiles>
 					<goals>deploy</goals>
 				</configuration>

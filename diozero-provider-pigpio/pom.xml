@@ -22,9 +22,9 @@
 			<artifactId>tinylog</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.diozero.pigpioj</groupId>
+			<groupId>uk.pigpioj</groupId>
 			<artifactId>pigpioj-java</artifactId>
-			<version>1.0.1</version>
+			<version>2.0-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 	
