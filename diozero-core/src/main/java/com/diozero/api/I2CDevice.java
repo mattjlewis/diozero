@@ -522,6 +522,21 @@ public class I2CDevice implements Closeable, I2CConstants {
 		buffer.order(order);
 		device.write(buffer);
 	}
+
+	public void write(ByteBuffer buffer, int payloadLength, ByteOrder order) throws RuntimeException {
+		buffer.rewind();
+		int lim = buffer.limit();
+		if (payloadLength <= lim) {
+			buffer.limit(payloadLength);
+		}
+		buffer.order(order);
+		device.write(buffer);
+		buffer.limit(lim);
+	}
+
+	public void write(ByteBuffer buffer, int payloadLength) throws RuntimeException {
+		write(buffer, payloadLength, order);
+	}
 	
 	public void writeByte(byte data) throws RuntimeException {
 		device.writeByte(data);
