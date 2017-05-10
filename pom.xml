@@ -11,9 +11,8 @@
 		mvn install
 		mvn deploy
 	Show updates to versions:
-		mvn versions:display-plugin-updates
-		mvn versions:display-dependency-updates
 		mvn versions:display-property-updates
+		mvn versions:display-dependency-updates
 	Dependency analysis:
 		mvn dependency:analyze
 	Set new project version:

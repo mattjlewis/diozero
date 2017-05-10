@@ -439,14 +439,12 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Gp
 	public static class MCP23008DigitalInputDevice extends AbstractInputDevice<DigitalInputEvent> implements GpioDigitalInputDeviceInterface {
 		private MCP23008Old mcp23008;
 		private int gpio;
-		private GpioEventTrigger trigger;
 	
 		public MCP23008DigitalInputDevice(MCP23008Old mcp23008, String key, int gpio, GpioEventTrigger trigger) {
 			super(key, mcp23008);
 	
 			this.mcp23008 = mcp23008;
 			this.gpio = gpio;
-			this.trigger = trigger;
 		}
 	
 		@Override

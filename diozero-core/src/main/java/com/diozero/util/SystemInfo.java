@@ -50,7 +50,7 @@ public class SystemInfo {
 			try (Reader reader = new FileReader(OS_RELEASE_FILE)) {
 				osReleaseProperties.load(reader);
 			} catch (IOException e) {
-				Logger.warn(e, "Error loading properties file '" + OS_RELEASE_FILE + "': " + e);
+				Logger.warn("Error loading properties file '{}': {}", OS_RELEASE_FILE, e);
 			}
 			
 			ProcessBuilder pb = new ProcessBuilder("cat", CPUINFO_FILE);
@@ -70,7 +70,7 @@ public class SystemInfo {
 					} while (line != null);
 				}
 			} catch (IOException | NullPointerException | IndexOutOfBoundsException e) {
-				Logger.error(e, "Error reading {}: ", CPUINFO_FILE, e.getMessage());
+				Logger.error(e, "Error reading {}: {}", CPUINFO_FILE, e.getMessage());
 			}
 
 			pb = new ProcessBuilder("cat", MEMINFO_FILE);
@@ -96,6 +96,7 @@ public class SystemInfo {
 	}
 	
 	public static BoardInfo lookupBoardInfo() {
+		initialise();
 		return lookupBoardInfo(hardware, revision, memoryKb);
 	}
 	

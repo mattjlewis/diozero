@@ -25,18 +25,18 @@
 -->
 <#import "masterTemplate.ftl" as layout />
 
-<@layout.masterTemplate title="GPIO">
+<@layout.masterTemplate title="PWM">
 <#if output??>
-	<#assign pin = boardInfo.getByGpioNumber(output.gpio)>
-<h2>GPIO #${output.deviceNumber} (${output.name})</h2>
-<p>On? ${output.isOn()?c}</p>
-<p>Turn <#if output.isOn()><a href="/gpio/off/${output.gpio}">off</a><#else><a href="/gpio/on/${output.gpio}">on</a></#if>. <a href="/gpio/toggle/${output.gpio}">Toggle</a></p>
+	<#assign pin = boardInfo.getByPwmNumber(output.pwmNum)>
+<h2>PWM #${output.pwmNum} (${output.name})</h2>
+<p>Value: ${output.value}</p>
+<p><form method="get" action="/pwm/${pin.pwmNum}"><input id="pwm" name="val" type="range" min="0" max="1" step="0.01" onchange="document.getElementById('pwmVal').value = document.getElementById('pwm').value"/><input id="pwmVal" type="text" size="3" readonly="readonly"/><input type="submit" value="Set"/></form></p>
 <p>Supported modes:</p>
 <ul>
 	<#list pin.modes as mode><li>${mode}</li></#list>
 </ul>
 <#else>
-<h2>No GPIO</h2>
+<h2>No PWM</h2>
 </#if>
 
 </@layout.masterTemplate>

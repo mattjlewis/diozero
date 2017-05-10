@@ -44,7 +44,7 @@ public class BoardPinInfo {
 	private Map<Integer, PinInfo> adcs;
 	private Map<Integer, PinInfo> dacs;
 	private Map<String, PinInfo> pinsByName;
-	private Map<Integer, PinInfo> pinsByNumber;
+	private Map<String, Map<Integer, PinInfo>> headerPinsByNumber;
 	
 	public BoardPinInfo() {
 		gpios = new HashMap<>();
@@ -52,7 +52,29 @@ public class BoardPinInfo {
 		adcs = new HashMap<>();
 		dacs = new HashMap<>();
 		pinsByName = new HashMap<>();
-		pinsByNumber = new TreeMap<>();
+		headerPinsByNumber = new TreeMap<>();
+	}
+	
+	private Map<Integer, PinInfo> getPinsForHeader(String header) {
+		Map<Integer, PinInfo> pins_by_number = headerPinsByNumber.get(header);
+		if (pins_by_number == null) {
+			pins_by_number = new TreeMap<>();
+			headerPinsByNumber.put(header, pins_by_number);
+		}
+		
+		return pins_by_number;
+	}
+	
+	protected void addGeneralPinInfo(int pin, String name) {
+		addGeneralPinInfo(PinInfo.DEFAULT_HEADER, pin, name);
+	}
+	
+	protected void addGeneralPinInfo(String header, int pin, String name) {
+		addGeneralPinInfo(new PinInfo("", header, -1, pin, name, Collections.emptySet()));
+	}
+	
+	protected void addGeneralPinInfo(PinInfo pinInfo) {
+		getPinsForHeader(pinInfo.getHeader()).put(Integer.valueOf(pinInfo.getPinNumber()), pinInfo);
 	}
 	
 	protected PinInfo addGpioPinInfo(int gpioNum, int pin, Set<DeviceMode> modes) {
@@ -76,11 +98,12 @@ public class BoardPinInfo {
 	protected void addGpioPinInfo(PinInfo pinInfo) {
 		gpios.put(Integer.valueOf(pinInfo.getDeviceNumber()), pinInfo);
 		pinsByName.put(pinInfo.getName(), pinInfo);
+		
 		if (pinInfo.getPinNumber() != PinInfo.NOT_DEFINED) {
-			pinsByNumber.put(Integer.valueOf(pinInfo.getPinNumber()), pinInfo);
+			getPinsForHeader(pinInfo.getHeader()).put(Integer.valueOf(pinInfo.getPinNumber()), pinInfo);
 		}
 	}
-	
+
 	protected PinInfo addPwmPinInfo(int gpioNum, int pin, int pwmNum, Set<DeviceMode> modes) {
 		return addPwmPinInfo(PinInfo.DEFAULT_HEADER, gpioNum, DEFAULT_GPIO_NAME_PREFIX + gpioNum, pin, pwmNum, modes);
 	}
@@ -113,8 +136,9 @@ public class BoardPinInfo {
 	protected void addAdcPinInfo(PinInfo pinInfo) {
 		adcs.put(Integer.valueOf(pinInfo.getDeviceNumber()), pinInfo);
 		pinsByName.put(pinInfo.getName(), pinInfo);
+		
 		if (pinInfo.getPinNumber() != PinInfo.NOT_DEFINED) {
-			pinsByNumber.put(Integer.valueOf(pinInfo.getPinNumber()), pinInfo);
+			getPinsForHeader(pinInfo.getHeader()).put(Integer.valueOf(pinInfo.getPinNumber()), pinInfo);
 		}
 	}
 	
@@ -140,7 +164,7 @@ public class BoardPinInfo {
 		dacs.put(Integer.valueOf(pinInfo.getDeviceNumber()), pinInfo);
 		pinsByName.put(pinInfo.getName(), pinInfo);
 		if (pinInfo.getPinNumber() != PinInfo.NOT_DEFINED) {
-			pinsByNumber.put(Integer.valueOf(pinInfo.getPinNumber()), pinInfo);
+			getPinsForHeader(pinInfo.getHeader()).put(Integer.valueOf(pinInfo.getPinNumber()), pinInfo);
 		}
 	}
 	
@@ -168,8 +192,8 @@ public class BoardPinInfo {
 		return pinsByName.get(name);
 	}
 	
-	public Collection<PinInfo> getPins() {
-		return pinsByNumber.values();
+	public Collection<Map<Integer, PinInfo>> getHeaderPins() {
+		return headerPinsByNumber.values();
 	}
 	
 	public Collection<PinInfo> getADCs() {

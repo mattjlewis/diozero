@@ -28,7 +28,6 @@ package com.diozero.internal.provider.sysfs;
 
 
 import java.io.Closeable;
-import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 
 import org.pmw.tinylog.Logger;
@@ -55,7 +54,6 @@ public class NativeSpiDevice implements Closeable {
 	private static native int spiTransfer(int fileDescriptor, byte[] txBuffer,
 			byte[] rxBuffer, int length, int speedHz, int delayUSecs, byte bitsPerWord, boolean csChange);
 	
-	private RandomAccessFile i2cDeviceFile;
 	private int controller;
 	private int chipSelect;
 	private int speedHz;

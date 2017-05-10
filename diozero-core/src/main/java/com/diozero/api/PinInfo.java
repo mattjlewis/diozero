@@ -46,6 +46,10 @@ public class PinInfo {
 	public static final int NOT_DEFINED = -1;
 	public static final String DEFAULT_HEADER = "DEFAULT";
 	
+	public static final String GROUND = "GND";
+	public static final String VCC_5V = "5V";
+	public static final String VCC_3V3 = "3.3V";
+	
 	private String keyPrefix;
 	private String header;
 	private int deviceNumber;
@@ -88,6 +92,26 @@ public class PinInfo {
 	
 	public boolean isSupported(DeviceMode mode) {
 		return modes.contains(mode);
+	}
+	
+	public boolean isDigitalInputSupported() {
+		return modes.contains(DeviceMode.DIGITAL_OUTPUT);
+	}
+	
+	public boolean isDigitalOutputSupported() {
+		return modes.contains(DeviceMode.DIGITAL_OUTPUT);
+	}
+	
+	public boolean isPwmOutputSupported() {
+		return modes.contains(DeviceMode.PWM_OUTPUT);
+	}
+	
+	public boolean isAnalogInputSupported() {
+		return modes.contains(DeviceMode.ANALOG_INPUT);
+	}
+	
+	public boolean isAnalogOutputSupported() {
+		return modes.contains(DeviceMode.ANALOG_OUTPUT);
 	}
 
 	@Override

@@ -1,5 +1,7 @@
 package com.diozero.sampleapps;
 
+import java.util.Map;
+
 /*
  * #%L
  * Device I/O Zero - Core
@@ -49,14 +51,16 @@ public class SystemInfoTest {
 		Logger.info("Memory: {}", Integer.valueOf(board_info.getMemory()));
 
 		Logger.info("Pins:");
-		for (PinInfo pin_info : board_info.getPins()) {
-			if (pin_info instanceof PwmPinInfo) {
-				System.out.format("Pin [%s-%d]: %s %d (PWM%d) %s%n", pin_info.getHeader(), pin_info.getPinNumber(),
-						pin_info.getName(), pin_info.getDeviceNumber(), ((PwmPinInfo) pin_info).getPwmNum(),
-						pin_info.getModes().toString());
-			} else {
-				System.out.format("Pin [%s-%d]: %s %d %s%n", pin_info.getHeader(), pin_info.getPinNumber(),
-						pin_info.getName(), pin_info.getDeviceNumber(), pin_info.getModes().toString());
+		for (Map<Integer, PinInfo> pins : board_info.getHeaderPins()) {
+			for (PinInfo pin_info : pins.values()) {
+				if (pin_info instanceof PwmPinInfo) {
+					System.out.format("Pin [%s-%d]: %s %d (PWM%d) %s%n", pin_info.getHeader(), pin_info.getPinNumber(),
+							pin_info.getName(), pin_info.getDeviceNumber(), ((PwmPinInfo) pin_info).getPwmNum(),
+							pin_info.getModes().toString());
+				} else {
+					System.out.format("Pin [%s-%d]: %s %d %s%n", pin_info.getHeader(), pin_info.getPinNumber(),
+							pin_info.getName(), pin_info.getDeviceNumber(), pin_info.getModes().toString());
+				}
 			}
 		}
 	}

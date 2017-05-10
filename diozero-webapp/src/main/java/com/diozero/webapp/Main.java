@@ -1,21 +1,64 @@
 package com.diozero.webapp;
 
-import spark.Spark;
-import spark.TemplateEngine;
+import java.util.HashMap;
+import java.util.Map;
+
+import com.diozero.api.*;
+import com.diozero.internal.DeviceFactoryHelper;
+import com.diozero.util.BoardInfo;
+import com.diozero.util.RuntimeIOException;
+
+/*
+ * #%L
+ * Device I/O Zero - Web application
+ * %%
+ * Copyright (C) 2016 - 2017 mattjlewis
+ * %%
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ * #L%
+ */
+import spark.*;
 import spark.template.freemarker.FreeMarkerEngine;
 
 public class Main {
+	private static BoardInfo boardInfo;
 	private static TemplateEngine templateEngine;
+	private static Map<Integer, DigitalOutputDevice> gpios;
+	private static Map<Integer, PwmOutputDevice> pwms;
 	
 	public static void main(String[] args) {
+		boardInfo = DeviceFactoryHelper.getNativeDeviceFactory().getBoardInfo();
+		gpios = new HashMap<>();
+		pwms = new HashMap<>();
+		
 		Spark.port(8080);
 		Spark.staticFileLocation("/public");
 		
 		GpioController gpio_controller = new GpioController();
-		
 		Spark.get("/gpio", gpio_controller.control, getTemplateEngine());
 		Spark.get("/gpio/", gpio_controller.control, getTemplateEngine());
 		Spark.get("/gpio/:command/:gpio", gpio_controller.control, getTemplateEngine());
+		
+		PwmController pwm_controller = new PwmController();
+		Spark.get("/pwm", pwm_controller.control, getTemplateEngine());
+		Spark.get("/pwm/", pwm_controller.control, getTemplateEngine());
+		Spark.get("/pwm/:pwm", pwm_controller.control, getTemplateEngine());
 	}
 
 	private static synchronized TemplateEngine getTemplateEngine() {
@@ -34,5 +77,72 @@ public class Main {
 		}
 		
 		return templateEngine;
+	}
+
+	static ModelAndView buildModelAndView(Request request, OutputDeviceInterface output, String viewName) {
+		Map<String, Object> model = new HashMap<>();
+		model.put("boardInfo", boardInfo);
+		model.put("output", output);
+		
+		return new ModelAndView(model, viewName);
+	}
+
+	static DigitalOutputDevice getOutputDevice(Request request) {
+		String gpio_param = request.params("gpio");
+		if (gpio_param == null || gpio_param.trim().length() == 0) {
+			return null;
+		}
+		
+		try {
+			Integer gpio = new Integer(gpio_param);
+			
+			DigitalOutputDevice output = gpios.get(gpio);
+			if (output == null) {
+				PinInfo pin_info = boardInfo.getByGpioNumber(gpio.intValue());
+				if (pin_info == null || ! pin_info.getModes().contains(DeviceMode.DIGITAL_OUTPUT)) {
+					System.err.println("Error: Invalid GPIO #" + gpio);
+					return null;
+				}
+				
+				System.out.println("Creating DigitalOutputDevice for GPIO #" + gpio);
+				output = new DigitalOutputDevice(gpio.intValue());
+				gpios.put(gpio, output);
+			}
+			
+			return output;
+		} catch (NumberFormatException | RuntimeIOException e) {
+			System.err.println("Error: " + e);
+			return null;
+		}
+	}
+
+	static PwmOutputDevice getPwmDevice(Request request) {
+		String pwm_param = request.params("pwm");
+		if (pwm_param == null || pwm_param.trim().length() == 0) {
+			return null;
+		}
+		
+		try {
+			Integer pwm = new Integer(pwm_param);
+			
+			PwmOutputDevice output = pwms.get(pwm);
+			if (output == null) {
+				PinInfo pin_info = boardInfo.getByPwmNumber(pwm.intValue());
+				if (pin_info == null || ! pin_info.getModes().contains(DeviceMode.PWM_OUTPUT)) {
+					System.err.println("Error: Invalid PWM #" + pwm);
+					return null;
+				}
+				
+				System.out.println("Creating PwmOutputDevice for PWM #" + pwm);
+				output = new PwmOutputDevice(pwm.intValue());
+				pwms.put(pwm, output);
+			}
+			
+			return output;
+		} catch (NumberFormatException | RuntimeIOException e) {
+			System.err.println("Error: " + e);
+			e.printStackTrace(System.err);
+			return null;
+		}
 	}
 }

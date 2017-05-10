@@ -1,10 +1,10 @@
-package com.diozero.internal.spi;
+package com.diozero.util;
 
 /*
  * #%L
  * Device I/O Zero - Core
  * %%
- * Copyright (C) 2016 diozero
+ * Copyright (C) 2016 - 2017 mattjlewis
  * %%
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,6 +27,28 @@ package com.diozero.internal.spi;
  */
 
 
-public interface GpioDeviceInterface extends DeviceInterface {
-	int getGpio();
+import java.io.FileDescriptor;
+import java.lang.reflect.Field;
+
+public class FileUtil {
+	private static boolean initialised;
+	private static Field fdField;
+	
+	public static synchronized int getNativeFileDescriptor(FileDescriptor fd) {
+		if (! initialised) {
+			try {
+				fdField = FileDescriptor.class.getDeclaredField("fd");
+				
+				initialised = true;
+			} catch (NoSuchFieldException | SecurityException e) {
+				throw new RuntimeIOException("Error getting native file descriptor declared field");
+			}
+		}
+
+		try {
+			return ((Integer) fdField.get(fd)).intValue();
+		} catch (IllegalArgumentException | IllegalAccessException e) {
+			throw new RuntimeIOException("Error accessing private fd attribute");
+		}
+	}
 }

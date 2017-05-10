@@ -68,7 +68,8 @@ implements GpioDigitalInputDeviceInterface, GpioPinListenerDigital {
 		default:
 			ppr = PinPullResistance.OFF;
 		}
-		
+
+		/*
 		PinEdge edge;
 		switch (trigger) {
 		case FALLING:
@@ -85,6 +86,7 @@ implements GpioDigitalInputDeviceInterface, GpioPinListenerDigital {
 			edge = PinEdge.BOTH;
 			break;
 		}
+		*/
 		
 		// Note configuring GPIO event trigger values (rising / falling / both) via the provision APIs isn't possible in Pi4j
 		digitalInputPin = gpioController.provisionDigitalInputPin(

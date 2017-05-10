@@ -28,7 +28,6 @@ package com.diozero;
 
 import java.io.IOException;
 
-import com.diozero.PiconZero;
 import com.diozero.api.motor.MotorBase;
 import com.diozero.util.RuntimeIOException;
 
@@ -64,7 +63,7 @@ public class PiconZeroMotor extends MotorBase {
 	 */
 	@Override
 	public float getValue() throws RuntimeIOException {
-		return piconZero.getMotor(motor) / (float) Math.abs(MAX_BACKWARD_SPEED);
+		return piconZero.getMotor(motor) / Math.abs(MAX_BACKWARD_SPEED);
 	}
 
 	@Override

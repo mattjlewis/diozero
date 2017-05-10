@@ -51,28 +51,28 @@ public class LEDTest {
 	
 	@Test
 	public void test() {
-		NativeDeviceFactoryInterface df = DeviceFactoryHelper.getNativeDeviceFactory();
-		
-		int pin = 1;
-		try (LED led = new LED(pin)) {
-			// TODO Clean-up required, it is a bit ugly to have to know the DeviceStates key structure...
-			Assert.assertTrue("Pin (" + pin + ") is opened", df.isDeviceOpened("Native-GPIO-" + pin));
+		try (NativeDeviceFactoryInterface df = DeviceFactoryHelper.getNativeDeviceFactory()) {
+			int pin = 1;
+			try (LED led = new LED(pin)) {
+				// TODO Clean-up required, it is a bit ugly to have to know the DeviceStates key structure...
+				Assert.assertTrue("Pin (" + pin + ") is opened", df.isDeviceOpened("Native-GPIO-" + pin));
+				
+				led.on();
+				Assert.assertTrue("Pin (" + pin + ") is on", led.isOn());
+				led.off();
+				Assert.assertFalse("Pin (" + pin + ") is off", led.isOn());
+				led.toggle();
+				Assert.assertTrue("Pin (" + pin + ") is on", led.isOn());
+				led.toggle();
+				Assert.assertFalse("Pin (" + pin + ") is off", led.isOn());
+				led.blink(0.1f, 0.1f, 5, false);
+				Assert.assertFalse("Pin (" + pin + ") is off", led.isOn());
+			} catch (RuntimeIOException e) {
+				Logger.error(e, "Error: {}", e);
+			}
 			
-			led.on();
-			Assert.assertTrue("Pin (" + pin + ") is on", led.isOn());
-			led.off();
-			Assert.assertFalse("Pin (" + pin + ") is off", led.isOn());
-			led.toggle();
-			Assert.assertTrue("Pin (" + pin + ") is on", led.isOn());
-			led.toggle();
-			Assert.assertFalse("Pin (" + pin + ") is off", led.isOn());
-			led.blink(0.1f, 0.1f, 5, false);
-			Assert.assertFalse("Pin (" + pin + ") is off", led.isOn());
-		} catch (RuntimeIOException e) {
-			Logger.error(e, "Error: {}", e);
+			// TODO Clean-up required, it is a bit ugly to have to know the DeviceStates key structure...
+			Assert.assertFalse("Pin (" + pin + ") is closed", df.isDeviceOpened("Native-GPIO-" + pin));
 		}
-		
-		// TODO Clean-up required, it is a bit ugly to have to know the DeviceStates key structure...
-		Assert.assertFalse("Pin (" + pin + ") is closed", df.isDeviceOpened("Native-GPIO-" + pin));
 	}
 }

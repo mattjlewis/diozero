@@ -62,7 +62,7 @@ implements GpioDigitalInputDeviceInterface, PinListener {
 			mode = GPIOPinConfig.MODE_INPUT_PULL_UP;
 			break;
 		default: 
-			mode = GPIOPinConfig.DEFAULT;
+			mode = DeviceConfig.DEFAULT;
 		}
 		
 		int trig;

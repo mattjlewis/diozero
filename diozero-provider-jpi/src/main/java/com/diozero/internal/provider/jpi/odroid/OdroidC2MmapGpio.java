@@ -192,7 +192,7 @@ public class OdroidC2MmapGpio implements MmapGpioInterface {
 		return -1;
 	}
 	
-	public static void main(String[] args) throws InterruptedException {
+	public static void main(String[] args) {
 		System.out.println(ByteOrder.nativeOrder());
 		if (args.length != 2) {
 			System.out.println("Usage: " + OdroidC2MmapGpio.class.getName() + " <gpio> <iterations>");
@@ -214,10 +214,10 @@ public class OdroidC2MmapGpio implements MmapGpioInterface {
 		int gp_fsel_reg2 = gpioToGPFSELReg(gpio);
 		System.out.println("gp_fsel_reg=" + gp_fsel_reg + ", gp_fsel_reg2=" + gp_fsel_reg2);
 		
-		System.out.format("gpioToGPSETReg(%d)=0x%04x%n", 214, gpioToGPSETReg(214));
-		System.out.format("gpioToGPSETReg(%d)=0x%04x%n", 219, gpioToGPSETReg(219));
-		System.out.format("gpioToGPFSELReg(%d)=0x%04x%n", 214, gpioToGPFSELReg(214));
-		System.out.format("gpioToGPFSELReg(%d)=0x%04x%n", 219, gpioToGPFSELReg(219));
+		System.out.format("gpioToGPSETReg(%d)=0x%04x%n", Integer.valueOf(214), Integer.valueOf(gpioToGPSETReg(214)));
+		System.out.format("gpioToGPSETReg(%d)=0x%04x%n", Integer.valueOf(219), Integer.valueOf(gpioToGPSETReg(219)));
+		System.out.format("gpioToGPFSELReg(%d)=0x%04x%n", Integer.valueOf(214), Integer.valueOf(gpioToGPFSELReg(214)));
+		System.out.format("gpioToGPFSELReg(%d)=0x%04x%n", Integer.valueOf(219), Integer.valueOf(gpioToGPFSELReg(219)));
 		
 		OdroidC2MmapGpio mmap_gpio = new OdroidC2MmapGpio();
 		
@@ -253,7 +253,8 @@ public class OdroidC2MmapGpio implements MmapGpioInterface {
 			SleepUtil.sleepSeconds(1);
 		}
 		
-		if (false) {
+		boolean exit = false;
+		if (exit) {
 			System.exit(1);
 		}
 		

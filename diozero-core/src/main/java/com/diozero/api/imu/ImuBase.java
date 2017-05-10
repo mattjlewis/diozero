@@ -44,7 +44,7 @@ public abstract class ImuBase implements ImuInterface {
 	}
 	
 	protected void processData() {
-		ImuData imu_data = getImuData();
+		//ImuData imu_data = getImuData();
 		// TODO Now what?
 	}
 }

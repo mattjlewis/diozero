@@ -233,6 +233,45 @@ public class CHIPBoardInfoProvider implements BoardInfoProvider {
 			
 			// LRADC
 			addAdcPinInfo(U14_HEADER, 0, "LRADC", 11);
+			
+			// Add other pins
+			pin = 1;
+			addGeneralPinInfo(U13_HEADER, pin++, PinInfo.GROUND);
+			addGeneralPinInfo(U13_HEADER, pin++, "CHG-IN 5V");
+			addGeneralPinInfo(U13_HEADER, pin++, PinInfo.VCC_5V);
+			addGeneralPinInfo(U13_HEADER, pin++, PinInfo.GROUND);
+			addGeneralPinInfo(U13_HEADER, pin++, PinInfo.VCC_3V3);
+			addGeneralPinInfo(U13_HEADER, pin++, "TS");
+			addGeneralPinInfo(U13_HEADER, pin++, "VCC-1V8");
+			addGeneralPinInfo(U13_HEADER, pin++, "Bat");
+			pin++;
+			addGeneralPinInfo(U13_HEADER, pin++, "PWROn");
+			pin++;
+			addGeneralPinInfo(U13_HEADER, pin++, PinInfo.GROUND);
+			addGeneralPinInfo(U13_HEADER, pin++, "X1");
+			addGeneralPinInfo(U13_HEADER, pin++, "X2");
+			addGeneralPinInfo(U13_HEADER, pin++, "Y1");
+			addGeneralPinInfo(U13_HEADER, pin++, "Y2");
+			addGeneralPinInfo(U13_HEADER, 39, PinInfo.GROUND);
+			pin = 1;
+			addGeneralPinInfo(U14_HEADER, pin++, PinInfo.GROUND);
+			addGeneralPinInfo(U14_HEADER, pin++, PinInfo.VCC_5V);
+			pin++;
+			addGeneralPinInfo(U14_HEADER, pin++, "HPL");
+			pin++;
+			addGeneralPinInfo(U14_HEADER, pin++, "HPCOM");
+			addGeneralPinInfo(U14_HEADER, pin++, "FEL");
+			addGeneralPinInfo(U14_HEADER, pin++, "HPR");
+			addGeneralPinInfo(U14_HEADER, pin++, PinInfo.VCC_3V3);
+			addGeneralPinInfo(U14_HEADER, pin++, "MICM");
+			pin++;
+			addGeneralPinInfo(U14_HEADER, pin++, "MICINT");
+			pin = 21;
+			addGeneralPinInfo(U14_HEADER, pin++, PinInfo.GROUND);
+			addGeneralPinInfo(U14_HEADER, pin++, PinInfo.GROUND);
+			pin = 39;
+			addGeneralPinInfo(U14_HEADER, pin++, PinInfo.GROUND);
+			addGeneralPinInfo(U14_HEADER, pin++, PinInfo.GROUND);
 		}
 		
 		private synchronized void loadXioGpioOffset() {
