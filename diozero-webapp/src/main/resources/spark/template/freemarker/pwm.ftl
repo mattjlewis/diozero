@@ -28,7 +28,7 @@
 <@layout.masterTemplate title="PWM">
 <#if output??>
 	<#assign pin = boardInfo.getByPwmNumber(output.pwmNum)>
-<h2>PWM #${output.pwmNum} (${output.name})</h2>
+<h2>PWM #${pin.pwmNum} (${pin.name})</h2>
 <p>Value: ${output.value}</p>
 <p><form method="get" action="/pwm/${pin.pwmNum}"><input id="pwm" name="val" type="range" min="0" max="1" step="0.01" onchange="document.getElementById('pwmVal').value = document.getElementById('pwm').value"/><input id="pwmVal" type="text" size="3" readonly="readonly"/><input type="submit" value="Set"/></form></p>
 <p>Supported modes:</p>

@@ -28,7 +28,7 @@
 <@layout.masterTemplate title="GPIO">
 <#if output??>
 	<#assign pin = boardInfo.getByGpioNumber(output.gpio)>
-<h2>GPIO #${output.deviceNumber} (${output.name})</h2>
+<h2>GPIO #${output.gpio} (${pin.name})</h2>
 <p>On? ${output.isOn()?c}</p>
 <p>Turn <#if output.isOn()><a href="/gpio/off/${output.gpio}">off</a><#else><a href="/gpio/on/${output.gpio}">on</a></#if>. <a href="/gpio/toggle/${output.gpio}">Toggle</a></p>
 <p>Supported modes:</p>
