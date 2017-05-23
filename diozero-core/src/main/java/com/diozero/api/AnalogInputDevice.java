@@ -31,8 +31,8 @@ import java.util.concurrent.TimeUnit;
 import org.pmw.tinylog.Logger;
 
 import com.diozero.internal.DeviceFactoryHelper;
-import com.diozero.internal.spi.AnalogInputDeviceFactoryInterface;
-import com.diozero.internal.spi.AnalogInputDeviceInterface;
+import com.diozero.internal.provider.AnalogInputDeviceFactoryInterface;
+import com.diozero.internal.provider.AnalogInputDeviceInterface;
 import com.diozero.util.DioZeroScheduler;
 import com.diozero.util.RuntimeIOException;
 
