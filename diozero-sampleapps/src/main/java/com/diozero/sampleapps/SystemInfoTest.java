@@ -51,7 +51,7 @@ public class SystemInfoTest {
 		Logger.info("Memory: {}", Integer.valueOf(board_info.getMemory()));
 
 		Logger.info("Pins:");
-		for (Map<Integer, PinInfo> pins : board_info.getHeaderPins()) {
+		for (Map<Integer, PinInfo> pins : board_info.getHeaders().values()) {
 			for (PinInfo pin_info : pins.values()) {
 				if (pin_info instanceof PwmPinInfo) {
 					System.out.format("Pin [%s-%d]: %s %d (PWM%d) %s%n", pin_info.getHeader(), pin_info.getPinNumber(),
