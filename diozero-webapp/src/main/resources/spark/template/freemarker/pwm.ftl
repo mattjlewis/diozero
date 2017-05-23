@@ -30,7 +30,7 @@
 	<#assign pin = boardInfo.getByPwmNumber(output.pwmNum)>
 <h2>PWM #${pin.pwmNum} (${pin.name})</h2>
 <p>Value: ${output.value}</p>
-<p><form method="get" action="/pwm/${pin.pwmNum}"><input id="pwm" name="val" type="range" min="0" max="1" step="0.01" onchange="document.getElementById('pwmVal').value = document.getElementById('pwm').value"/><input id="pwmVal" type="text" size="3" readonly="readonly"/><input type="submit" value="Set"/></form></p>
+<p><form method="get" action="/pwm/${pin.pwmNum}"><input id="pwm" name="val" type="range" min="0" max="1" step="0.01" value="${output.value}" onchange="document.getElementById('pwmVal').value = document.getElementById('pwm').value"/><input id="pwmVal" type="text" size="3" readonly="readonly"/><input type="submit" value="Set"/></form></p>
 <p>Supported modes:</p>
 <ul>
 	<#list pin.modes as mode><li>${mode}</li></#list>

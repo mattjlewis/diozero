@@ -13,6 +13,7 @@
 	
 	<properties>
 		<spark.version>2.5.5</spark.version>
+		<slf4j.version>1.7.25</slf4j.version>
 	</properties>
 
 	<dependencies>
@@ -30,7 +31,7 @@
 			<artifactId>diozero-core</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		<!-- Activate a specific provider, otherwise leave blank to use the default built-in provider -->
+		<!-- Activate a specific diozero provider, otherwise leave blank to use the default built-in provider -->
 		<dependency>
 			<groupId>com.diozero</groupId>
 			<artifactId>diozero-provider-pigpio</artifactId>
@@ -52,6 +53,11 @@
 			<groupId>com.sparkjava</groupId>
 			<artifactId>spark-template-freemarker</artifactId>
 			<version>${spark.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-simple</artifactId>
+			<version>${slf4j.version}</version>
 		</dependency>
 	</dependencies>
 

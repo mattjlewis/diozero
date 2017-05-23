@@ -359,8 +359,8 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 			addGpioPinInfo(8, pin++, PinInfo.DIGITAL_IN_OUT);					// SPI0-CE0
 			addGeneralPinInfo(pin++, PinInfo.GROUND);
 			addGpioPinInfo(7, pin++, PinInfo.DIGITAL_IN_OUT);					// SPI0-CE1
-			addGeneralPinInfo(pin++, "BCM_0 (ID_SD)");
-			addGeneralPinInfo(pin++, "BCM_1 (ID_SC)");
+			addGeneralPinInfo(pin++, "BCM 0 (ID_SD)");
+			addGeneralPinInfo(pin++, "BCM 1 (ID_SC)");
 			addGpioPinInfo(5, pin++, PinInfo.DIGITAL_IN_OUT);
 			addGeneralPinInfo(pin++, PinInfo.GROUND);
 			addGpioPinInfo(6, pin++, PinInfo.DIGITAL_IN_OUT);

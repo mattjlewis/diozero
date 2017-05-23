@@ -75,3 +75,41 @@ footer {
 	padding: 5px 10px;
 	font-size: 12px;
 }
+
+table {
+	color: white;
+	border-collapse: collapse;
+}
+
+table tbody a {
+	color: white;
+}
+
+table tbody td {
+	background: #0080ff;
+	padding: 4px;
+}
+
+table tbody td.pin {
+	text-align: center;
+}
+
+table tbody td.power {
+	background: red;
+}
+
+table tbody td.ground {
+	background: black;
+}
+
+table tbody td.pwm {
+	background: grey;
+}
+
+table tbody td.gpio {
+	background: green;
+}
+
+table tbody td.other {
+	background: olive;
+}

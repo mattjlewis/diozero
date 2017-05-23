@@ -12,18 +12,20 @@ public class GpioController {
 		DigitalOutputDevice output = Main.getOutputDevice(request);
 		if (output != null) {
 			String command = request.params("command");
-			switch (command) {
-			case "on":
-				output.on();
-				break;
-			case "off":
-				output.off();
-				break;
-			case "toggle":
-				output.toggle();
-				break;
-			default:
-				System.out.println("Invalid command '" + command + "'");
+			if (command != null) {
+				switch (command) {
+				case "on":
+					output.on();
+					break;
+				case "off":
+					output.off();
+					break;
+				case "toggle":
+					output.toggle();
+					break;
+				default:
+					System.out.println("Invalid command '" + command + "'");
+				}
 			}
 		}
 		return Main.buildModelAndView(request, output, "gpio.ftl");

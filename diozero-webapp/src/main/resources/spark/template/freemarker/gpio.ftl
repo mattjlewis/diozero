@@ -30,13 +30,13 @@
 	<#assign pin = boardInfo.getByGpioNumber(output.gpio)>
 <h2>GPIO #${output.gpio} (${pin.name})</h2>
 <p>On? ${output.isOn()?c}</p>
-<p>Turn <#if output.isOn()><a href="/gpio/off/${output.gpio}">off</a><#else><a href="/gpio/on/${output.gpio}">on</a></#if>. <a href="/gpio/toggle/${output.gpio}">Toggle</a></p>
+<p>Turn <#if output.isOn()><a href="/gpio/${output.gpio}/off">off</a><#else><a href="/gpio/${output.gpio}/on">on</a></#if>. <a href="/gpio/${output.gpio}/toggle">Toggle</a></p>
 <p>Supported modes:</p>
 <ul>
 	<#list pin.modes as mode><li>${mode}</li></#list>
 </ul>
 <#else>
-<h2>No GPIO</h2>
+<h2>Error - GPIO not found</h2>
 </#if>
 
 </@layout.masterTemplate>

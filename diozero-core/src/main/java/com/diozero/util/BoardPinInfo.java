@@ -44,7 +44,7 @@ public class BoardPinInfo {
 	private Map<Integer, PinInfo> adcs;
 	private Map<Integer, PinInfo> dacs;
 	private Map<String, PinInfo> pinsByName;
-	private Map<String, Map<Integer, PinInfo>> headerPinsByNumber;
+	private Map<String, Map<Integer, PinInfo>> headers;
 	
 	public BoardPinInfo() {
 		gpios = new HashMap<>();
@@ -52,14 +52,14 @@ public class BoardPinInfo {
 		adcs = new HashMap<>();
 		dacs = new HashMap<>();
 		pinsByName = new HashMap<>();
-		headerPinsByNumber = new TreeMap<>();
+		headers = new TreeMap<>();
 	}
 	
 	private Map<Integer, PinInfo> getPinsForHeader(String header) {
-		Map<Integer, PinInfo> pins_by_number = headerPinsByNumber.get(header);
+		Map<Integer, PinInfo> pins_by_number = headers.get(header);
 		if (pins_by_number == null) {
 			pins_by_number = new TreeMap<>();
-			headerPinsByNumber.put(header, pins_by_number);
+			headers.put(header, pins_by_number);
 		}
 		
 		return pins_by_number;
@@ -192,8 +192,12 @@ public class BoardPinInfo {
 		return pinsByName.get(name);
 	}
 	
-	public Collection<Map<Integer, PinInfo>> getHeaderPins() {
-		return headerPinsByNumber.values();
+	public Map<String, Map<Integer, PinInfo>> getHeaders() {
+		return headers;
+	}
+	
+	public Collection<Map<Integer, PinInfo>> getHeaderValues() {
+		return headers.values();
 	}
 	
 	public Collection<PinInfo> getADCs() {

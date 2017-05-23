@@ -42,6 +42,10 @@ public class Main {
 	private static Map<Integer, DigitalOutputDevice> gpios;
 	private static Map<Integer, PwmOutputDevice> pwms;
 	
+	private static TemplateViewRoute home = (Request request, Response response) -> {
+		return buildModelAndView(request, null, "home.ftl");
+	};
+	
 	public static void main(String[] args) {
 		boardInfo = DeviceFactoryHelper.getNativeDeviceFactory().getBoardInfo();
 		gpios = new HashMap<>();
@@ -51,9 +55,10 @@ public class Main {
 		Spark.staticFileLocation("/public");
 		
 		GpioController gpio_controller = new GpioController();
-		Spark.get("/gpio", gpio_controller.control, getTemplateEngine());
+		Spark.get("/home", home, getTemplateEngine());
 		Spark.get("/gpio/", gpio_controller.control, getTemplateEngine());
-		Spark.get("/gpio/:command/:gpio", gpio_controller.control, getTemplateEngine());
+		Spark.get("/gpio/:gpio", gpio_controller.control, getTemplateEngine());
+		Spark.get("/gpio/:gpio/:command", gpio_controller.control, getTemplateEngine());
 		
 		PwmController pwm_controller = new PwmController();
 		Spark.get("/pwm", pwm_controller.control, getTemplateEngine());
@@ -82,7 +87,9 @@ public class Main {
 	static ModelAndView buildModelAndView(Request request, OutputDeviceInterface output, String viewName) {
 		Map<String, Object> model = new HashMap<>();
 		model.put("boardInfo", boardInfo);
-		model.put("output", output);
+		if (output != null) {
+			model.put("output", output);
+		}
 		
 		return new ModelAndView(model, viewName);
 	}
