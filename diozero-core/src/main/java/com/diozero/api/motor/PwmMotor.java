@@ -30,7 +30,7 @@ import org.pmw.tinylog.Logger;
 
 import com.diozero.api.PwmOutputDevice;
 import com.diozero.internal.DeviceFactoryHelper;
-import com.diozero.internal.spi.PwmOutputDeviceFactoryInterface;
+import com.diozero.internal.provider.PwmOutputDeviceFactoryInterface;
 import com.diozero.util.RuntimeIOException;
 
 /**

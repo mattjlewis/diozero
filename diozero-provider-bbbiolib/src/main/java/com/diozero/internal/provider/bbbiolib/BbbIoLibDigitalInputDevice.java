@@ -30,8 +30,8 @@ package com.diozero.internal.provider.bbbiolib;
 import org.pmw.tinylog.Logger;
 
 import com.diozero.api.*;
-import com.diozero.internal.spi.AbstractInputDevice;
-import com.diozero.internal.spi.GpioDigitalInputDeviceInterface;
+import com.diozero.internal.provider.AbstractInputDevice;
+import com.diozero.internal.provider.GpioDigitalInputDeviceInterface;
 import com.diozero.util.RuntimeIOException;
 
 public class BbbIoLibDigitalInputDevice extends AbstractInputDevice<DigitalInputEvent>

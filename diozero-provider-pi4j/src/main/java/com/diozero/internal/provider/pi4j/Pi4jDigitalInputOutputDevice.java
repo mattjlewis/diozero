@@ -30,9 +30,9 @@ import org.pmw.tinylog.Logger;
 
 import com.diozero.api.DeviceMode;
 import com.diozero.api.GpioPullUpDown;
-import com.diozero.internal.spi.AbstractDevice;
-import com.diozero.internal.spi.DeviceFactoryInterface;
-import com.diozero.internal.spi.GpioDigitalInputOutputDeviceInterface;
+import com.diozero.internal.provider.AbstractDevice;
+import com.diozero.internal.provider.DeviceFactoryInterface;
+import com.diozero.internal.provider.GpioDigitalInputOutputDeviceInterface;
 import com.diozero.util.RuntimeIOException;
 import com.pi4j.io.gpio.*;
 

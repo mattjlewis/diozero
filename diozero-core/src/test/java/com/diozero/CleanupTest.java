@@ -38,11 +38,11 @@ import com.diozero.api.I2CConstants;
 import com.diozero.api.SpiClockMode;
 import com.diozero.internal.DeviceFactoryHelper;
 import com.diozero.internal.DeviceStates;
+import com.diozero.internal.provider.I2CDeviceInterface;
+import com.diozero.internal.provider.SpiDeviceInterface;
 import com.diozero.internal.provider.test.TestDeviceFactory;
 import com.diozero.internal.provider.test.TestI2CDevice;
 import com.diozero.internal.provider.test.TestMcpAdcSpiDevice;
-import com.diozero.internal.spi.I2CDeviceInterface;
-import com.diozero.internal.spi.SpiDeviceInterface;
 import com.diozero.util.RuntimeIOException;
 
 @SuppressWarnings("static-method")

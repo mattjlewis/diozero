@@ -38,7 +38,7 @@ import org.firmata4j.firmata.FirmataDevice;
 import org.pmw.tinylog.Logger;
 
 import com.diozero.api.*;
-import com.diozero.internal.spi.*;
+import com.diozero.internal.provider.*;
 import com.diozero.util.BoardInfo;
 import com.diozero.util.RuntimeIOException;
 

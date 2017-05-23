@@ -29,8 +29,8 @@ package com.diozero.legacy;
 import org.pmw.tinylog.Logger;
 
 import com.diozero.api.*;
+import com.diozero.internal.provider.*;
 import com.diozero.internal.provider.mcp23xxx.MCP23x08;
-import com.diozero.internal.spi.*;
 import com.diozero.util.*;
 
 /**

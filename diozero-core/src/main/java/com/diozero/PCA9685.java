@@ -33,7 +33,7 @@ import org.pmw.tinylog.Logger;
 import com.diozero.api.I2CConstants;
 import com.diozero.api.I2CDevice;
 import com.diozero.api.PinInfo;
-import com.diozero.internal.spi.*;
+import com.diozero.internal.provider.*;
 import com.diozero.util.*;
 
 /**

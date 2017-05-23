@@ -31,9 +31,9 @@ import java.nio.ByteBuffer;
 import org.pmw.tinylog.Logger;
 
 import com.diozero.api.SpiClockMode;
-import com.diozero.internal.spi.AbstractDevice;
-import com.diozero.internal.spi.DeviceFactoryInterface;
-import com.diozero.internal.spi.SpiDeviceInterface;
+import com.diozero.internal.provider.AbstractDevice;
+import com.diozero.internal.provider.DeviceFactoryInterface;
+import com.diozero.internal.provider.SpiDeviceInterface;
 import com.diozero.util.RuntimeIOException;
 import com.pi4j.wiringpi.Spi;
 

@@ -31,8 +31,8 @@ import org.pmw.tinylog.Logger;
 
 import com.diozero.api.DigitalInputEvent;
 import com.diozero.api.GpioEventTrigger;
-import com.diozero.internal.spi.AbstractInputDevice;
-import com.diozero.internal.spi.GpioDigitalInputDeviceInterface;
+import com.diozero.internal.provider.AbstractInputDevice;
+import com.diozero.internal.provider.GpioDigitalInputDeviceInterface;
 import com.diozero.util.RuntimeIOException;
 
 public class MCP23xxxDigitalInputDevice extends AbstractInputDevice<DigitalInputEvent> implements GpioDigitalInputDeviceInterface {

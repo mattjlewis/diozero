@@ -28,8 +28,8 @@ package com.diozero.internal.provider.mcp23xxx;
 
 import org.pmw.tinylog.Logger;
 
-import com.diozero.internal.spi.AbstractDevice;
-import com.diozero.internal.spi.GpioDigitalOutputDeviceInterface;
+import com.diozero.internal.provider.AbstractDevice;
+import com.diozero.internal.provider.GpioDigitalOutputDeviceInterface;
 import com.diozero.util.RuntimeIOException;
 
 public class MCP23xxxDigitalOutputDevice extends AbstractDevice implements GpioDigitalOutputDeviceInterface {

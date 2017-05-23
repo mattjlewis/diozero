@@ -36,8 +36,8 @@ import com.diozero.api.GpioDevice;
 import com.diozero.api.OutputDeviceCollection;
 import com.diozero.api.OutputDeviceInterface;
 import com.diozero.internal.DeviceFactoryHelper;
-import com.diozero.internal.spi.PwmOutputDeviceFactoryInterface;
-import com.diozero.internal.spi.PwmOutputDeviceInterface;
+import com.diozero.internal.provider.PwmOutputDeviceFactoryInterface;
+import com.diozero.internal.provider.PwmOutputDeviceInterface;
 import com.diozero.util.RangeUtil;
 import com.diozero.util.RuntimeIOException;
 

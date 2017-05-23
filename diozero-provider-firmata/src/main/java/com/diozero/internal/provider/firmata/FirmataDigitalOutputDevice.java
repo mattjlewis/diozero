@@ -32,8 +32,8 @@ import java.io.IOException;
 import org.firmata4j.Pin;
 import org.firmata4j.Pin.Mode;
 
-import com.diozero.internal.spi.AbstractDevice;
-import com.diozero.internal.spi.GpioDigitalOutputDeviceInterface;
+import com.diozero.internal.provider.AbstractDevice;
+import com.diozero.internal.provider.GpioDigitalOutputDeviceInterface;
 import com.diozero.util.RuntimeIOException;
 
 public class FirmataDigitalOutputDevice extends AbstractDevice implements GpioDigitalOutputDeviceInterface {

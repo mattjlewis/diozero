@@ -33,7 +33,7 @@ import org.junit.Assert;
 
 import com.diozero.McpAdc;
 import com.diozero.api.SpiClockMode;
-import com.diozero.internal.spi.DeviceFactoryInterface;
+import com.diozero.internal.provider.DeviceFactoryInterface;
 import com.diozero.util.RuntimeIOException;
 
 public class TestMcpAdcSpiDevice extends TestSpiDevice {

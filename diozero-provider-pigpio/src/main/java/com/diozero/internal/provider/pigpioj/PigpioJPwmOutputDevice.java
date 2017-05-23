@@ -4,7 +4,7 @@ package com.diozero.internal.provider.pigpioj;
  * #%L
  * Device I/O Zero - pigpioj provider
  * %%
- * Copyright (C) 2016 diozero
+ * Copyright (C) 2016 - 2017 mattjlewis
  * %%
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,9 +26,9 @@ package com.diozero.internal.provider.pigpioj;
  * #L%
  */
 
-import com.diozero.internal.spi.AbstractDevice;
-import com.diozero.internal.spi.DeviceFactoryInterface;
-import com.diozero.internal.spi.PwmOutputDeviceInterface;
+import com.diozero.internal.provider.AbstractDevice;
+import com.diozero.internal.provider.DeviceFactoryInterface;
+import com.diozero.internal.provider.PwmOutputDeviceInterface;
 import com.diozero.util.RuntimeIOException;
 
 import uk.pigpioj.PigpioInterface;

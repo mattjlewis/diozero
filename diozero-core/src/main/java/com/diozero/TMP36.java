@@ -28,7 +28,7 @@ package com.diozero;
 
 import com.diozero.api.AnalogInputDevice;
 import com.diozero.api.ThermometerInterface;
-import com.diozero.internal.spi.AnalogInputDeviceFactoryInterface;
+import com.diozero.internal.provider.AnalogInputDeviceFactoryInterface;
 import com.diozero.util.RuntimeIOException;
 
 /**

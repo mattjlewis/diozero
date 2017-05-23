@@ -32,7 +32,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.pmw.tinylog.Logger;
 
-import com.diozero.internal.spi.*;
+import com.diozero.internal.provider.*;
 import com.diozero.util.DioZeroScheduler;
 import com.diozero.util.RangeUtil;
 import com.diozero.util.SleepUtil;

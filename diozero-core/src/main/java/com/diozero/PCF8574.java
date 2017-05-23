@@ -32,7 +32,7 @@ import java.nio.ByteOrder;
 import org.pmw.tinylog.Logger;
 
 import com.diozero.api.*;
-import com.diozero.internal.spi.*;
+import com.diozero.internal.provider.*;
 import com.diozero.util.*;
 
 public class PCF8574 extends AbstractDeviceFactory implements GpioDeviceFactoryInterface, GpioExpander {

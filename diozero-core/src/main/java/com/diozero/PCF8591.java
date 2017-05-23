@@ -31,7 +31,7 @@ import java.nio.ByteOrder;
 import org.pmw.tinylog.Logger;
 
 import com.diozero.api.*;
-import com.diozero.internal.spi.*;
+import com.diozero.internal.provider.*;
 import com.diozero.util.BoardPinInfo;
 import com.diozero.util.RuntimeIOException;
 

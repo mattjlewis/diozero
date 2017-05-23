@@ -36,7 +36,7 @@ import java.nio.file.StandardCopyOption;
 import org.pmw.tinylog.Logger;
 
 import com.diozero.api.*;
-import com.diozero.internal.spi.*;
+import com.diozero.internal.provider.*;
 import com.diozero.util.RuntimeIOException;
 
 public class JdkDeviceIoDeviceFactory extends BaseNativeDeviceFactory {

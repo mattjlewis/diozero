@@ -29,8 +29,8 @@ package com.diozero.api;
 import org.pmw.tinylog.Logger;
 
 import com.diozero.internal.DeviceFactoryHelper;
-import com.diozero.internal.spi.GpioDeviceFactoryInterface;
-import com.diozero.internal.spi.GpioDigitalOutputDeviceInterface;
+import com.diozero.internal.provider.GpioDeviceFactoryInterface;
+import com.diozero.internal.provider.GpioDigitalOutputDeviceInterface;
 import com.diozero.util.DioZeroScheduler;
 import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;

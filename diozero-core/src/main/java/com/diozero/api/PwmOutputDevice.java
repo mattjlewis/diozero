@@ -31,8 +31,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.pmw.tinylog.Logger;
 
 import com.diozero.internal.DeviceFactoryHelper;
-import com.diozero.internal.spi.PwmOutputDeviceFactoryInterface;
-import com.diozero.internal.spi.PwmOutputDeviceInterface;
+import com.diozero.internal.provider.PwmOutputDeviceFactoryInterface;
+import com.diozero.internal.provider.PwmOutputDeviceInterface;
 import com.diozero.util.DioZeroScheduler;
 import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;

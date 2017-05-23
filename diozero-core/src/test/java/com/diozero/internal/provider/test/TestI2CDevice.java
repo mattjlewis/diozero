@@ -31,9 +31,9 @@ import java.nio.ByteBuffer;
 
 import org.pmw.tinylog.Logger;
 
-import com.diozero.internal.spi.AbstractDevice;
-import com.diozero.internal.spi.DeviceFactoryInterface;
-import com.diozero.internal.spi.I2CDeviceInterface;
+import com.diozero.internal.provider.AbstractDevice;
+import com.diozero.internal.provider.DeviceFactoryInterface;
+import com.diozero.internal.provider.I2CDeviceInterface;
 import com.diozero.util.RuntimeIOException;
 
 public class TestI2CDevice extends AbstractDevice implements I2CDeviceInterface {

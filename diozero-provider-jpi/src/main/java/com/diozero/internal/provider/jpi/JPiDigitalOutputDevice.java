@@ -30,8 +30,8 @@ package com.diozero.internal.provider.jpi;
 import org.pmw.tinylog.Logger;
 
 import com.diozero.api.DeviceMode;
-import com.diozero.internal.spi.AbstractDevice;
-import com.diozero.internal.spi.GpioDigitalOutputDeviceInterface;
+import com.diozero.internal.provider.AbstractDevice;
+import com.diozero.internal.provider.GpioDigitalOutputDeviceInterface;
 import com.diozero.util.RuntimeIOException;
 
 public class JPiDigitalOutputDevice extends AbstractDevice implements GpioDigitalOutputDeviceInterface {

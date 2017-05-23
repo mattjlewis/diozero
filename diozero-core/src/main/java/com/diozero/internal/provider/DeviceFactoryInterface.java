@@ -1,4 +1,4 @@
-package com.diozero.internal.spi;
+package com.diozero.internal.provider;
 
 import java.io.Closeable;
 

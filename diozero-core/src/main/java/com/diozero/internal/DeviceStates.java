@@ -31,7 +31,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.pmw.tinylog.Logger;
 
-import com.diozero.internal.spi.DeviceInterface;
+import com.diozero.internal.provider.DeviceInterface;
 
 public class DeviceStates {
 	private Map<String, DeviceInterface> devices;

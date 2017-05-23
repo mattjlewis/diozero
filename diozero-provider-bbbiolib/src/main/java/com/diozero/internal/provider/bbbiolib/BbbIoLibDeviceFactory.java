@@ -29,10 +29,10 @@ package com.diozero.internal.provider.bbbiolib;
 
 import com.diozero.api.*;
 import com.diozero.internal.board.beaglebone.BeagleBoneBoardInfoProvider.BeagleBoneBlackBoardInfo;
+import com.diozero.internal.provider.*;
 import com.diozero.internal.provider.sysfs.SysFsDeviceFactory;
 import com.diozero.internal.provider.sysfs.SysFsI2cDevice;
 import com.diozero.internal.provider.sysfs.SysFsSpiDevice;
-import com.diozero.internal.spi.*;
 import com.diozero.util.RuntimeIOException;
 
 public class BbbIoLibDeviceFactory extends BaseNativeDeviceFactory {

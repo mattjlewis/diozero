@@ -27,7 +27,7 @@ package com.diozero;
  */
 
 import com.diozero.api.PwmOutputDevice;
-import com.diozero.internal.spi.PwmOutputDeviceFactoryInterface;
+import com.diozero.internal.provider.PwmOutputDeviceFactoryInterface;
 import com.diozero.util.RuntimeIOException;
 
 /**

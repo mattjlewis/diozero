@@ -30,11 +30,11 @@ package com.diozero.internal.provider.jpi;
 import com.diozero.api.*;
 import com.diozero.internal.board.odroid.OdroidBoardInfoProvider;
 import com.diozero.internal.board.raspberrypi.RaspberryPiBoardInfoProvider;
+import com.diozero.internal.provider.*;
 import com.diozero.internal.provider.jpi.odroid.OdroidC2MmapGpio;
 import com.diozero.internal.provider.jpi.rpi.RPiMmapGpio;
 import com.diozero.internal.provider.sysfs.SysFsDeviceFactory;
 import com.diozero.internal.provider.sysfs.SysFsI2cDevice;
-import com.diozero.internal.spi.*;
 import com.diozero.util.LibraryLoader;
 import com.diozero.util.RuntimeIOException;
 

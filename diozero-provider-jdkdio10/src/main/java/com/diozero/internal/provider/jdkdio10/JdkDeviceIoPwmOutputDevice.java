@@ -31,9 +31,9 @@ import java.io.IOException;
 import org.pmw.tinylog.Logger;
 
 import com.diozero.api.PwmType;
-import com.diozero.internal.spi.AbstractDevice;
-import com.diozero.internal.spi.DeviceFactoryInterface;
-import com.diozero.internal.spi.PwmOutputDeviceInterface;
+import com.diozero.internal.provider.AbstractDevice;
+import com.diozero.internal.provider.DeviceFactoryInterface;
+import com.diozero.internal.provider.PwmOutputDeviceInterface;
 import com.diozero.util.RuntimeIOException;
 
 import jdk.dio.DeviceConfig;

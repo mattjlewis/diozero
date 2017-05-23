@@ -35,8 +35,8 @@ import java.nio.file.Path;
 import org.pmw.tinylog.Logger;
 
 import com.diozero.api.AnalogInputEvent;
-import com.diozero.internal.spi.AbstractInputDevice;
-import com.diozero.internal.spi.AnalogInputDeviceInterface;
+import com.diozero.internal.provider.AbstractInputDevice;
+import com.diozero.internal.provider.AnalogInputDeviceInterface;
 import com.diozero.util.RuntimeIOException;
 
 public class SysFsAnalogInputDevice extends AbstractInputDevice<AnalogInputEvent> implements AnalogInputDeviceInterface {

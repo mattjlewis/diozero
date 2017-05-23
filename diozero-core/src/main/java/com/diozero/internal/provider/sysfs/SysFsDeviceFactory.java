@@ -39,7 +39,7 @@ import org.pmw.tinylog.Logger;
 import com.diozero.api.*;
 import com.diozero.internal.SoftwarePwmOutputDevice;
 import com.diozero.internal.board.odroid.OdroidBoardInfoProvider;
-import com.diozero.internal.spi.*;
+import com.diozero.internal.provider.*;
 import com.diozero.util.RuntimeIOException;
 
 public class SysFsDeviceFactory extends BaseNativeDeviceFactory {

@@ -31,8 +31,8 @@ import java.util.ServiceLoader;
 
 import org.pmw.tinylog.Logger;
 
+import com.diozero.internal.provider.NativeDeviceFactoryInterface;
 import com.diozero.internal.provider.sysfs.SysFsDeviceFactory;
-import com.diozero.internal.spi.NativeDeviceFactoryInterface;
 
 /**
  * Helper class for instantiating different devices via the configured provider.
