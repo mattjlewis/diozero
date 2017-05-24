@@ -54,6 +54,36 @@ public class I2CDevice implements Closeable, I2CConstants {
 	 *            I2C bus.
 	 * @param address
 	 *            I2C device address.
+	 * @throws RuntimeIOException
+	 *             If an I/O error occurred.
+	 */
+	public I2CDevice(int controller, int address)
+			throws RuntimeIOException {
+		this(DeviceFactoryHelper.getNativeDeviceFactory(), controller, address,
+				I2CConstants.ADDR_SIZE_7, I2CConstants.DEFAULT_CLOCK_FREQUENCY, IOUtil.DEFAULT_BYTE_ORDER);
+	}
+
+	/**
+	 * @param controller
+	 *            I2C bus.
+	 * @param address
+	 *            I2C device address.
+	 * @param order
+	 *            Default byte order for this device
+	 * @throws RuntimeIOException
+	 *             If an I/O error occurred.
+	 */
+	public I2CDevice(int controller, int address, ByteOrder order)
+			throws RuntimeIOException {
+		this(DeviceFactoryHelper.getNativeDeviceFactory(), controller, address,
+				I2CConstants.ADDR_SIZE_7, I2CConstants.DEFAULT_CLOCK_FREQUENCY, order);
+	}
+
+	/**
+	 * @param controller
+	 *            I2C bus.
+	 * @param address
+	 *            I2C device address.
 	 * @param addressSize
 	 *            I2C device address size. Can be 7 or 10.
 	 * @param clockFrequency
@@ -239,8 +269,16 @@ public class I2CDevice implements Closeable, I2CConstants {
 		return readShort(address, subAddressSize, order) & 0xffff;
 	}
 
-	public long readUInt(int address, int subAddressSize, int bytes) throws RuntimeIOException {
-		return readUInt(address, subAddressSize, bytes, order);
+	public long readUInt(int address) throws RuntimeIOException {
+		return readUInt(address, I2CConstants.SUB_ADDRESS_SIZE_1_BYTE, 4, order);
+	}
+
+	public long readUInt(int address, ByteOrder order) throws RuntimeIOException {
+		return readUInt(address, I2CConstants.SUB_ADDRESS_SIZE_1_BYTE, 4, order);
+	}
+
+	public long readUInt(int address, int subAddressSize, int length) throws RuntimeIOException {
+		return readUInt(address, subAddressSize, length, order);
 	}
 
 	public long readUInt(int address, int subAddressSize, int length, ByteOrder order) throws RuntimeIOException {

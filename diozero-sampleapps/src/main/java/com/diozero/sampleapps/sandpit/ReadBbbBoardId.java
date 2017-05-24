@@ -1,8 +1,8 @@
-package com.diozero.util;
+package com.diozero.sampleapps.sandpit;
 
 /*
  * #%L
- * Device I/O Zero - Core
+ * Device I/O Zero - Sample applications
  * %%
  * Copyright (C) 2016 - 2017 mattjlewis
  * %%
@@ -27,31 +27,35 @@ package com.diozero.util;
  */
 
 
-import java.io.FileDescriptor;
-import java.lang.reflect.Field;
+import java.nio.ByteOrder;
 
-import org.pmw.tinylog.Logger;
+import com.diozero.api.I2CDevice;
 
-public class FileUtil {
-	private static boolean initialised;
-	private static Field fdField;
-	
-	public static synchronized int getNativeFileDescriptor(FileDescriptor fd) {
-		if (! initialised) {
-			try {
-				fdField = FileDescriptor.class.getDeclaredField("fd");
-				fdField.setAccessible(true);
-				
-				initialised = true;
-			} catch (NoSuchFieldException | SecurityException e) {
-				throw new RuntimeIOException("Error getting native file descriptor declared field: " + e, e);
+public class ReadBbbBoardId {
+	public static void main(String[] args) {
+		try (I2CDevice device = new I2CDevice(0, 0x50, ByteOrder.LITTLE_ENDIAN)) {
+			byte[] address = { (byte) 0, 0 };
+			device.write(address);
+			for (int i=0; i<4; i++) {
+				System.out.println("read 0x" + Integer.toHexString(0xff & device.readByte()));
 			}
-		}
-
-		try {
-			return ((Integer) fdField.get(fd)).intValue();
-		} catch (IllegalArgumentException | IllegalAccessException e) {
-			throw new RuntimeIOException("Error accessing private fd attribute: " + e, e);
+			
+			device.write(address);
+			for (int i=0; i<4; i++) {
+				System.out.println("read 0x" + Integer.toHexString(0xff & device.readByte()));
+			}
+			
+			device.write(address);
+			byte[] eeprom_data = device.read(28);
+			for (int i=0; i<4; i++) {
+				System.out.println("Header[" + i + "]: 0x" + Integer.toHexString(0xFF & eeprom_data[i]));
+			}
+			String board_name = new String(eeprom_data, 4, 8);
+			System.out.println("Board Name: " + board_name);
+			String version = new String(eeprom_data, 4+8, 4);
+			System.out.println("Version: " + version);
+			String serial_num = new String(eeprom_data, 4+8+4, 12);
+			System.out.println("Serial Number: " + serial_num);
 		}
 	}
 }

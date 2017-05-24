@@ -132,8 +132,14 @@ public class NativeI2CDeviceSMBus implements I2CSMBusInterface {
 	
 	@Override
 	public byte[] readBytes(int length) {
-		// TODO Test this actually works!
-		return readI2CBlockData(0, length);
+		// TODO Assume this doesn't work:
+		//return readI2CBlockData(0, length);
+		byte[] data = new byte[length];
+		for (int i=0; i<length; i++) {
+			data[i] = readByte();
+		}
+		
+		return data;
 	}
 	
 	@Override

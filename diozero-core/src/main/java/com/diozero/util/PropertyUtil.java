@@ -27,31 +27,45 @@ package com.diozero.util;
  */
 
 
-import java.io.FileDescriptor;
-import java.lang.reflect.Field;
-
-import org.pmw.tinylog.Logger;
-
-public class FileUtil {
-	private static boolean initialised;
-	private static Field fdField;
+public class PropertyUtil {
+	public static boolean isPropertySet(String key) {
+		return getProperty(key, null) != null;
+	}
 	
-	public static synchronized int getNativeFileDescriptor(FileDescriptor fd) {
-		if (! initialised) {
+	public static int getIntProperty(String key, int defaultValue) {
+		int result = defaultValue;
+		
+		String val = getProperty(key, null);
+		if (val != null) {
 			try {
-				fdField = FileDescriptor.class.getDeclaredField("fd");
-				fdField.setAccessible(true);
-				
-				initialised = true;
-			} catch (NoSuchFieldException | SecurityException e) {
-				throw new RuntimeIOException("Error getting native file descriptor declared field: " + e, e);
+				result = Integer.parseInt(val);
+			} catch (NumberFormatException e) {
+				// Ignore
 			}
 		}
-
-		try {
-			return ((Integer) fdField.get(fd)).intValue();
-		} catch (IllegalArgumentException | IllegalAccessException e) {
-			throw new RuntimeIOException("Error accessing private fd attribute: " + e, e);
+		
+		return result;
+	}
+	
+	public static boolean getBooleanProperty(String key, boolean defaultValue) {
+		boolean result = defaultValue;
+		
+		String val = getProperty(key, null);
+		if (val != null) {
+			result = Boolean.parseBoolean(val);
 		}
+		
+		return result;
+	}
+	
+	public static String getProperty(String key, String defaultValue) {
+		// Check -D<key> command line properties
+		String val = System.getProperty(key);
+		if (val == null) {
+			// If not set, check environment properties
+			val = System.getenv(key);
+		}
+		
+		return val == null ? defaultValue : val;
 	}
 }

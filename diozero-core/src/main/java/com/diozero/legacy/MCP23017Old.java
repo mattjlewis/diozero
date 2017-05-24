@@ -264,9 +264,9 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent> {
 		// Initialise
 		// Read the I/O configuration value
 		byte start_iocon = readByte(IOCON_REG[0]);
-		Logger.debug("Default power-on values for IOCON: 0x{x}", Integer.toHexString(start_iocon));
+		Logger.debug("Default power-on values for IOCON: 0x{}", Integer.toHexString(start_iocon));
 		// Is there an IOCONB value?
-		Logger.debug("IOCONB: 0x{x}", Integer.toHexString(readByte(IOCON_REG[1])));
+		Logger.debug("IOCONB: 0x{}", Integer.toHexString(readByte(IOCON_REG[1])));
 		
 		// Configure interrupts
 		MutableByte iocon = new MutableByte(start_iocon);
@@ -283,7 +283,7 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent> {
 		iocon.setBit(IOCON_SEQOP_BIT);
 		iocon.unsetBit(IOCON_ODR_BIT);
 		if (!iocon.equals(start_iocon)) {
-			Logger.debug("Updating IOCONA to: 0x{x}", Integer.toHexString(iocon.getValue()));
+			Logger.debug("Updating IOCONA to: 0x{}", Integer.toHexString(iocon.getValue()));
 			writeByte(IOCON_REG[0], iocon.getValue());
 		}
 		

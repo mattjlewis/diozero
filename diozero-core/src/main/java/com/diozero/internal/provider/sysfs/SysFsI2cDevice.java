@@ -36,21 +36,17 @@ import com.diozero.internal.provider.DeviceFactoryInterface;
 import com.diozero.internal.provider.I2CDeviceInterface;
 import com.diozero.internal.provider.sysfs.I2CSMBusInterface.NotSupportedException;
 import com.diozero.util.LibraryLoader;
+import com.diozero.util.PropertyUtil;
 import com.diozero.util.RuntimeIOException;
 
 public class SysFsI2cDevice extends AbstractDevice implements I2CDeviceInterface {
 	private static boolean USE_SYSFS = false;
+	private static boolean I2C_SLAVE_FORCE = false;
 	static {
 		LibraryLoader.loadLibrary(SysFsI2cDevice.class, "diozero-system-utils");
 		
-		String use_sysfs = System.getProperty("I2C_USE_SYSFS");
-		if (use_sysfs != null) {
-			if (use_sysfs.trim().equals("")) {
-				USE_SYSFS = true;
-			} else {
-				USE_SYSFS = Boolean.parseBoolean(use_sysfs);
-			}
-		}
+		USE_SYSFS = PropertyUtil.isPropertySet("I2C_USE_SYSFS");
+		I2C_SLAVE_FORCE = PropertyUtil.isPropertySet("I2C_SLAVE_FORCE");
 	}
 	
 	private I2CSMBusInterface i2cDevice;
@@ -59,7 +55,7 @@ public class SysFsI2cDevice extends AbstractDevice implements I2CDeviceInterface
 			int address, int addressSize, int frequency) {
 		super(key, deviceFactory);
 		
-		boolean force = false;
+		boolean force = I2C_SLAVE_FORCE;
 
 		if (USE_SYSFS) {
 			Logger.warn("Using sysfs for I2C communication");
@@ -68,7 +64,8 @@ public class SysFsI2cDevice extends AbstractDevice implements I2CDeviceInterface
 			try {
 				i2cDevice = new NativeI2CDeviceSMBus(controller, address, force);
 			} catch (NotSupportedException e) {
-				Logger.warn(e, "Error initialising I2C SMBus for controller {}, device 0x{0x}: {}", Integer.valueOf(controller), Integer.valueOf(address), e);
+				Logger.warn(e, "Error initialising I2C SMBus for controller {}, device 0x{}: {}",
+						Integer.valueOf(controller), Integer.toHexString(address), e);
 				Logger.warn("Using sysfs for I2C communication");
 				i2cDevice = new NativeI2CDeviceSysFs(controller, address, force);
 			}
