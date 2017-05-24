@@ -44,6 +44,7 @@ public class FileUtil {
 				
 				initialised = true;
 			} catch (NoSuchFieldException | SecurityException e) {
+				Logger.error(e, "Error: {}", e);
 				throw new RuntimeIOException("Error getting native file descriptor declared field: " + e, e);
 			}
 		}
@@ -51,6 +52,7 @@ public class FileUtil {
 		try {
 			return ((Integer) fdField.get(fd)).intValue();
 		} catch (IllegalArgumentException | IllegalAccessException e) {
+			Logger.error(e, "Error: {}", e);
 			throw new RuntimeIOException("Error accessing private fd attribute: " + e, e);
 		}
 	}

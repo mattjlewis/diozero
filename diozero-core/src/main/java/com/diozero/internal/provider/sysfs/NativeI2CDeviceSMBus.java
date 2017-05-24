@@ -144,8 +144,11 @@ public class NativeI2CDeviceSMBus implements I2CSMBusInterface {
 	
 	@Override
 	public void writeBytes(byte[] data) {
-		// TODO Test this actually works!
-		writeI2CBlockData(0, data);
+		// TODO Assume this doesn't work:
+		//writeI2CBlockData(0, data);
+		for (int i=0; i<data.length; i++) {
+			writeByte(data[i]);
+		}
 	}
 
 	@Override
