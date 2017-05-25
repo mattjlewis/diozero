@@ -191,7 +191,7 @@ public class PCF8574 extends AbstractDeviceFactory implements GpioDeviceFactoryI
 		}
 	}
 
-	private static class PCF8574DigitalInputOutputDevice extends AbstractDevice implements GpioDigitalInputOutputDeviceInterface {
+	private static class PCF8574DigitalInputOutputDevice extends AbstractInputDevice<DigitalInputEvent> implements GpioDigitalInputOutputDeviceInterface {
 		private PCF8574 pcf8574;
 		private int gpio;
 		private DeviceMode mode;
@@ -225,6 +225,7 @@ public class PCF8574 extends AbstractDeviceFactory implements GpioDeviceFactoryI
 		@Override
 		protected void closeDevice() throws RuntimeIOException {
 			Logger.debug("closeDevice()");
+			removeListener();
 			pcf8574.closePin(gpio);
 		}
 		

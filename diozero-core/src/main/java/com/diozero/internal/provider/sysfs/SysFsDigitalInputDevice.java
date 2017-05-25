@@ -100,7 +100,7 @@ implements GpioDigitalInputDeviceInterface, PollEventListener {
 
 	@Override
 	public void setDebounceTimeMillis(int debounceTime) {
-		throw new UnsupportedOperationException("Debounce not supported");
+		Logger.warn("Debounce not supported");
 	}
 
 	@Override
@@ -116,7 +116,7 @@ implements GpioDigitalInputDeviceInterface, PollEventListener {
 	}
 
 	@Override
-	public void closeDevice() throws RuntimeIOException {
+	protected void closeDevice() throws RuntimeIOException {
 		Logger.debug("closeDevice()");
 		disableListener();
 		epollNative.close();

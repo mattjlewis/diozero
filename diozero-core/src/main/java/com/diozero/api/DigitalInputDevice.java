@@ -36,15 +36,10 @@ import com.diozero.util.RuntimeIOException;
 /**
  * Represents a generic digital input device.
  */
-public class DigitalInputDevice extends GpioInputDevice<DigitalInputEvent>
-implements DigitalInputDeviceInterface {
-	protected boolean activeHigh;
+public class DigitalInputDevice extends AbstractDigitalInputDevice {
 	protected GpioDigitalInputDeviceInterface device;
 	private GpioPullUpDown pud;
 	private GpioEventTrigger trigger;
-	private Action activatedAction;
-	private Action deactivatedAction;
-	private boolean listenerEnabled;
 
 	/**
 	 * @param gpio
@@ -86,52 +81,17 @@ implements DigitalInputDeviceInterface {
 	 */
 	public DigitalInputDevice(GpioDeviceFactoryInterface deviceFactory, int gpio, GpioPullUpDown pud,
 			GpioEventTrigger trigger) throws RuntimeIOException {
-		super(gpio);
+		super(gpio, pud != GpioPullUpDown.PULL_UP);
 
 		this.device = deviceFactory.provisionDigitalInputDevice(gpio, pud, trigger);
 		this.pud = pud;
 		this.trigger = trigger;
-		this.activeHigh = pud != GpioPullUpDown.PULL_UP;
 	}
 
 	@Override
 	public void close() {
 		Logger.debug("close()");
 		device.close();
-	}
-
-	@Override
-	public void valueChanged(DigitalInputEvent event) {
-		event.setActiveHigh(activeHigh);
-		if (activatedAction != null && event.isActive()) {
-			activatedAction.action();
-		}
-		if (deactivatedAction != null && !event.isActive()) {
-			deactivatedAction.action();
-		}
-		super.valueChanged(event);
-	}
-
-	@Override
-	protected void enableListener() {
-		synchronized (device) {
-			if (! listenerEnabled) {
-				device.setListener(this);
-				listenerEnabled = true;
-			}
-		}
-	}
-
-	@Override
-	protected void disableListener() {
-		if (listeners.isEmpty() && activatedAction == null && deactivatedAction == null) {
-			synchronized (device) {
-				if (listenerEnabled) {
-					device.removeListener();
-					listenerEnabled = false;
-				}
-			}
-		}
 	}
 
 	/**
@@ -150,16 +110,6 @@ implements DigitalInputDeviceInterface {
 	 */
 	public GpioEventTrigger getTrigger() {
 		return trigger;
-	}
-
-	/**
-	 * Get active high configuration.
-	 * 
-	 * @return Returns false if configured as pull-up, true for all other pull
-	 *         up / down options.
-	 */
-	public boolean isActiveHigh() {
-		return activeHigh;
 	}
 
 	/**
@@ -188,34 +138,14 @@ implements DigitalInputDeviceInterface {
 	public boolean isActive() throws RuntimeIOException {
 		return device.getValue() == activeHigh;
 	}
-
-	/**
-	 * Action to perform when the device state is active.
-	 * 
-	 * @param action
-	 *            Action callback object.
-	 */
-	public void whenActivated(Action action) {
-		activatedAction = action;
-		if (action == null) {
-			disableListener();
-		} else {
-			enableListener();
-		}
+	
+	@Override
+	protected void setListener() {
+		device.setListener(this);
 	}
-
-	/**
-	 * Action to perform when the device state is inactive.
-	 * 
-	 * @param action
-	 *            Action callback object.
-	 */
-	public void whenDeactivated(Action action) {
-		deactivatedAction = action;
-		if (action == null) {
-			disableListener();
-		} else {
-			enableListener();
-		}
+	
+	@Override
+	protected void removeListener() {
+		device.removeListener();
 	}
 }

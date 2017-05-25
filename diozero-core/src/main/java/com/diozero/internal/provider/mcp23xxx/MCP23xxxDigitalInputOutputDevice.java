@@ -28,14 +28,12 @@ package com.diozero.internal.provider.mcp23xxx;
 
 import org.pmw.tinylog.Logger;
 
-import com.diozero.api.DeviceMode;
-import com.diozero.api.GpioEventTrigger;
-import com.diozero.api.GpioPullUpDown;
-import com.diozero.internal.provider.AbstractDevice;
+import com.diozero.api.*;
+import com.diozero.internal.provider.AbstractInputDevice;
 import com.diozero.internal.provider.GpioDigitalInputOutputDeviceInterface;
 import com.diozero.util.RuntimeIOException;
 
-public class MCP23xxxDigitalInputOutputDevice extends AbstractDevice implements GpioDigitalInputOutputDeviceInterface {
+public class MCP23xxxDigitalInputOutputDevice extends AbstractInputDevice<DigitalInputEvent> implements GpioDigitalInputOutputDeviceInterface {
 	private MCP23xxx mcp23xxx;
 	private int gpio;
 	private DeviceMode mode;

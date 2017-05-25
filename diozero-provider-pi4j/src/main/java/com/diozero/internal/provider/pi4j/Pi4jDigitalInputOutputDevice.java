@@ -29,15 +29,18 @@ package com.diozero.internal.provider.pi4j;
 import org.pmw.tinylog.Logger;
 
 import com.diozero.api.DeviceMode;
+import com.diozero.api.DigitalInputEvent;
 import com.diozero.api.GpioPullUpDown;
-import com.diozero.internal.provider.AbstractDevice;
+import com.diozero.internal.provider.AbstractInputDevice;
 import com.diozero.internal.provider.DeviceFactoryInterface;
 import com.diozero.internal.provider.GpioDigitalInputOutputDeviceInterface;
 import com.diozero.util.RuntimeIOException;
 import com.pi4j.io.gpio.*;
+import com.pi4j.io.gpio.event.GpioPinDigitalStateChangeEvent;
+import com.pi4j.io.gpio.event.GpioPinListenerDigital;
 
-public class Pi4jDigitalInputOutputDevice extends AbstractDevice
-implements GpioDigitalInputOutputDeviceInterface {
+public class Pi4jDigitalInputOutputDevice extends AbstractInputDevice<DigitalInputEvent>
+implements GpioDigitalInputOutputDeviceInterface, GpioPinListenerDigital {
 	private GpioPinDigitalMultipurpose digitalInputOutputPin;
 	private int gpio;
 	private DeviceMode mode;
@@ -122,5 +125,23 @@ implements GpioDigitalInputOutputDeviceInterface {
 		Logger.debug("closeDevice()");
 		digitalInputOutputPin.unexport();
 		GpioFactory.getInstance().unprovisionPin(digitalInputOutputPin);
+	}
+
+	@Override
+	public void handleGpioPinDigitalStateChangeEvent(GpioPinDigitalStateChangeEvent event) {
+		long nano_time = System.nanoTime();
+		valueChanged(new DigitalInputEvent(gpio, System.currentTimeMillis(),
+				nano_time, event.getState().isHigh()));
+	}
+
+	@Override
+	public void enableListener() {
+		digitalInputOutputPin.removeAllListeners();
+		digitalInputOutputPin.addListener(this);
+	}
+	
+	@Override
+	public void disableListener() {
+		digitalInputOutputPin.removeAllListeners();
 	}
 }

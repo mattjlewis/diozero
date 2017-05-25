@@ -110,6 +110,30 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeI2CDeviceS
 	return i2c_smbus_write_byte(fd, value);
 }
 
+JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeI2CDeviceSMBus_readBytes(
+		JNIEnv* env, jclass clz, jint fd, jint rxLength, jbyteArray rxData) {
+	jboolean is_copy;
+	jbyte* rx_buf = (*env)->GetByteArrayElements(env, rxData, &is_copy);
+
+	int rc = read(fd, (uint8_t*) rx_buf, rxLength);
+
+	(*env)->ReleaseByteArrayElements(env, rxData, rx_buf, 0);
+
+	return rc;
+}
+
+JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeI2CDeviceSMBus_writeBytes(
+		JNIEnv* env, jclass clz, jint fd, jint txLength, jbyteArray txData) {
+	jboolean is_copy;
+	jbyte* tx_buf = (*env)->GetByteArrayElements(env, txData, &is_copy);
+
+	int rc = write(fd, tx_buf, txLength);
+
+	(*env)->ReleaseByteArrayElements(env, txData, tx_buf, JNI_ABORT);
+
+	return rc;
+}
+
 JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeI2CDeviceSMBus_readByteData(
 		JNIEnv* env, jclass clz, jint fd, jint registerAddress) {
 	return i2c_smbus_read_byte_data(fd, registerAddress);

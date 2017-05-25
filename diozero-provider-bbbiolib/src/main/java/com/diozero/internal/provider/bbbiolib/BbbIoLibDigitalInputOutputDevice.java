@@ -29,22 +29,26 @@ package com.diozero.internal.provider.bbbiolib;
 
 import org.pmw.tinylog.Logger;
 
-import com.diozero.api.DeviceMode;
-import com.diozero.api.PinInfo;
-import com.diozero.internal.provider.AbstractDevice;
+import com.diozero.api.*;
+import com.diozero.internal.provider.AbstractInputDevice;
+import com.diozero.internal.provider.GpioDigitalInputDeviceInterface;
 import com.diozero.internal.provider.GpioDigitalInputOutputDeviceInterface;
 import com.diozero.util.RuntimeIOException;
 
-public class BbbIoLibDigitalInputOutputDevice extends AbstractDevice
-implements GpioDigitalInputOutputDeviceInterface {
+public class BbbIoLibDigitalInputOutputDevice extends AbstractInputDevice<DigitalInputEvent>
+implements GpioDigitalInputOutputDeviceInterface, InputEventListener<DigitalInputEvent> {
 	private PinInfo pinInfo;
 	private DeviceMode mode;
+	private GpioDigitalInputDeviceInterface sysFsDigitialInput;
 
 	public BbbIoLibDigitalInputOutputDevice(BbbIoLibDeviceFactory deviceFactory, String key, PinInfo pinInfo,
 			DeviceMode mode) {
 		super(key, deviceFactory);
 		
 		this.pinInfo = pinInfo;
+
+		sysFsDigitialInput = deviceFactory.getSysFsDeviceFactory().provisionDigitalInputDevice(
+				getGpio(), GpioPullUpDown.NONE, GpioEventTrigger.BOTH);
 		
 		setMode(mode);
 	}
@@ -83,10 +87,21 @@ implements GpioDigitalInputOutputDeviceInterface {
 		}
 		this.mode = mode;
 	}
+	
+	@Override
+	protected void enableListener() {
+		sysFsDigitialInput.setListener(this);
+	}
+	
+	@Override
+	protected void disableListener() {
+		sysFsDigitialInput.removeListener();
+	}
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
 		Logger.debug("closeDevice()");
+		disableListener();
 		// FIXME No BBBioLib close method?
 		setMode(DeviceMode.DIGITAL_INPUT);
 	}

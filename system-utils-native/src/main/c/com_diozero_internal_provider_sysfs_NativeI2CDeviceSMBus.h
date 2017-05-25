@@ -58,6 +58,22 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeI2CDeviceS
 
 /*
  * Class:     com_diozero_internal_provider_sysfs_NativeI2CDeviceSMBus
+ * Method:    readBytes
+ * Signature: (II[B)I
+ */
+JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeI2CDeviceSMBus_readBytes(
+		JNIEnv* env, jclass clz, jint fd, jint rxLength, jbyteArray rxData);
+
+/*
+ * Class:     com_diozero_internal_provider_sysfs_NativeI2CDeviceSMBus
+ * Method:    writeBytes
+ * Signature: (II[B)I
+ */
+JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeI2CDeviceSMBus_writeBytes(
+		JNIEnv* env, jclass clz, jint fd, jint txLength, jbyteArray txData);
+
+/*
+ * Class:     com_diozero_internal_provider_sysfs_NativeI2CDeviceSMBus
  * Method:    readByteData
  * Signature: (II)I
  */

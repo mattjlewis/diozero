@@ -67,11 +67,12 @@ public class WaitableDigitalInputDevice extends DigitalInputDevice {
 	public WaitableDigitalInputDevice(GpioDeviceFactoryInterface deviceFactory, int gpio,
 			GpioPullUpDown pud, GpioEventTrigger trigger) throws RuntimeIOException {
 		super(deviceFactory, gpio, pud, trigger);
-		enableListener();
+		enableDeviceListener();
 	}
 	
 	@Override
-	protected void disableListener() {
+	protected void disableDeviceListener() {
+		// Never disable the device listener
 	}
 
 	@Override

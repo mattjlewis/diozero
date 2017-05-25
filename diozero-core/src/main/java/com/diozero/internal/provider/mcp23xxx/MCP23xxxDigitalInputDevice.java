@@ -44,7 +44,7 @@ public class MCP23xxxDigitalInputDevice extends AbstractInputDevice<DigitalInput
 
 		this.mcp23xxx = mcp23xxx;
 		this.gpio = gpio;
-		// Note trigger is current ignored
+		// Note trigger is currently ignored
 	}
 
 	@Override
@@ -66,6 +66,6 @@ public class MCP23xxxDigitalInputDevice extends AbstractInputDevice<DigitalInput
 
 	@Override
 	public void setDebounceTimeMillis(int debounceTime) {
-		// TODO Auto-generated method stub
+		Logger.warn("Debounce not implemented");
 	}
 }

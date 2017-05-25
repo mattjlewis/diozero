@@ -29,16 +29,18 @@ package com.diozero.internal.provider.pigpioj;
 import org.pmw.tinylog.Logger;
 
 import com.diozero.api.DeviceMode;
+import com.diozero.api.DigitalInputEvent;
 import com.diozero.api.GpioPullUpDown;
-import com.diozero.internal.provider.AbstractDevice;
+import com.diozero.internal.provider.AbstractInputDevice;
 import com.diozero.internal.provider.GpioDigitalInputOutputDeviceInterface;
 import com.diozero.util.RuntimeIOException;
 
+import uk.pigpioj.PigpioCallback;
 import uk.pigpioj.PigpioConstants;
 import uk.pigpioj.PigpioInterface;
 
-public class PigpioJDigitalInputOutputDevice extends AbstractDevice
-implements GpioDigitalInputOutputDeviceInterface {
+public class PigpioJDigitalInputOutputDevice extends AbstractInputDevice<DigitalInputEvent>
+implements GpioDigitalInputOutputDeviceInterface, PigpioCallback {
 	private PigpioInterface pigpioImpl;
 	private DeviceMode mode;
 	private int gpio;
@@ -122,5 +124,33 @@ implements GpioDigitalInputOutputDeviceInterface {
 		Logger.debug("closeDevice()");
 		// FIXME No piogpio close method?
 		// TODO Revert to default input mode?
+		removeListener();
+	}
+
+	@Override
+	public void enableListener() {
+		disableListener();
+		int rc = pigpioImpl.enableListener(gpio, PigpioConstants.EITHER_EDGE, this);
+		if (rc < 0) {
+			throw new RuntimeIOException("Error calling pigpioImpl.setISRFunc(), response: " + rc);
+		}
+	}
+
+	@Override
+	public void disableListener() {
+		int rc = pigpioImpl.disableListener(gpio);
+		if (rc < 0) {
+			throw new RuntimeIOException("Error calling pigpioImpl.setISRFunc(), response: " + rc);
+		}
+	}
+
+	@Override
+	public void callback(int pin, boolean value, long epochTime, long nanoTime) {
+		if (pin != gpio) {
+			Logger.error("Error, got a callback for the wrong pin ({}), was expecting {}",
+					Integer.valueOf(pin), Integer.valueOf(gpio));
+		}
+		
+		valueChanged(new DigitalInputEvent(pin, epochTime, nanoTime, value));
 	}
 }

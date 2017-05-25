@@ -39,7 +39,7 @@ import java.util.Collection;
  */
 public abstract class GpioInputDevice<T extends DeviceEvent> extends GpioDevice
 implements InputEventListener<T> {
-	protected Collection<InputEventListener<T>> listeners;
+	private Collection<InputEventListener<T>> listeners;
 
 	/**
 	 * @param gpio
@@ -58,7 +58,7 @@ implements InputEventListener<T> {
 	 */
 	public void addListener(InputEventListener<T> listener) {
 		if (listeners.isEmpty()) {
-			enableListener();
+			enableDeviceListener();
 		}
 		if (!listeners.contains(listener)) {
 			listeners.add(listener);
@@ -74,7 +74,7 @@ implements InputEventListener<T> {
 	public void removeListener(InputEventListener<T> listener) {
 		listeners.remove(listener);
 		if (listeners.isEmpty()) {
-			disableListener();
+			disableDeviceListener();
 		}
 	}
 
@@ -83,6 +83,7 @@ implements InputEventListener<T> {
 	 */
 	public void removeAllListeners() {
 		listeners.clear();
+		disableDeviceListener();
 	}
 
 	@Override
@@ -90,7 +91,7 @@ implements InputEventListener<T> {
 		listeners.forEach(listener -> listener.valueChanged(event));
 	}
 
-	protected abstract void enableListener();
+	protected abstract void enableDeviceListener();
 
-	protected abstract void disableListener();
+	protected abstract void disableDeviceListener();
 }

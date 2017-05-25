@@ -29,15 +29,20 @@ package com.diozero.internal.provider.firmata;
 
 import java.io.IOException;
 
+import org.firmata4j.IOEvent;
 import org.firmata4j.Pin;
 import org.firmata4j.Pin.Mode;
+import org.firmata4j.PinEventListener;
+import org.pmw.tinylog.Logger;
 
 import com.diozero.api.DeviceMode;
-import com.diozero.internal.provider.AbstractDevice;
+import com.diozero.api.DigitalInputEvent;
+import com.diozero.internal.provider.AbstractInputDevice;
 import com.diozero.internal.provider.GpioDigitalInputOutputDeviceInterface;
 import com.diozero.util.RuntimeIOException;
 
-public class FirmataDigitalInputOutputDevice extends AbstractDevice implements GpioDigitalInputOutputDeviceInterface {
+public class FirmataDigitalInputOutputDevice extends AbstractInputDevice<DigitalInputEvent>
+implements GpioDigitalInputOutputDeviceInterface, PinEventListener {
 	private Pin pin;
 	private DeviceMode mode;
 
@@ -96,10 +101,32 @@ public class FirmataDigitalInputOutputDevice extends AbstractDevice implements G
 	}
 
 	@Override
+	public void enableListener() {
+		disableListener();
+		
+		pin.addEventListener(this);
+	}
+	
+	@Override
+	public void disableListener() {
+		pin.removeEventListener(this);
+	}
+
+	@Override
 	protected void closeDevice() throws RuntimeIOException {
 		if (mode == DeviceMode.DIGITAL_OUTPUT) {
 			setValue(false);
 		}
 		// TODO Nothing else to do?
+	}
+
+	@Override
+	public void onModeChange(IOEvent event) {
+		Logger.warn("Mode changed from digital input to ?");
+	}
+
+	@Override
+	public void onValueChange(IOEvent event) {
+		valueChanged(new DigitalInputEvent(pin.getIndex(), event.getTimestamp(), System.nanoTime(), event.getValue() != 0));
 	}
 }

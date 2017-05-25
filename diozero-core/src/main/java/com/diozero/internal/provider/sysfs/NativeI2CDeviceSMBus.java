@@ -64,6 +64,8 @@ public class NativeI2CDeviceSMBus implements I2CSMBusInterface {
 	private static native int writeQuick(int fd, byte value);
 	private static native int readByte(int fd);
 	private static native int writeByte(int fd, byte value);
+	private static native int readBytes(int fd, int rxLength, byte[] rxData);
+	private static native int writeBytes(int fd, int txLength, byte[] txData);
 	private static native int readByteData(int fd, int registerAddress);
 	private static native int writeByteData(int fd, int registerAddress, byte value);
 	private static native int readWordData(int fd, int registerAddress);
@@ -132,22 +134,27 @@ public class NativeI2CDeviceSMBus implements I2CSMBusInterface {
 	
 	@Override
 	public byte[] readBytes(int length) {
-		// TODO Assume this doesn't work:
-		//return readI2CBlockData(0, length);
+		/*
 		byte[] data = new byte[length];
 		for (int i=0; i<length; i++) {
 			data[i] = readByte();
 		}
 		
 		return data;
+		*/
+		byte[] data = new byte[length];
+		int rc = readBytes(fd, length, data);
+		if (rc < 0 || rc != length) {
+			throw new RuntimeIOException("Error in SMBus.readBytes, rc=" + rc);
+		}
+		return data;
 	}
 	
 	@Override
 	public void writeBytes(byte[] data) {
-		// TODO Assume this doesn't work:
-		//writeI2CBlockData(0, data);
-		for (int i=0; i<data.length; i++) {
-			writeByte(data[i]);
+		int rc = writeBytes(fd, data.length, data);
+		if (rc < 0 || rc != data.length) {
+			throw new RuntimeIOException("Error in SMBus.writeBytes, rc=" + rc);
 		}
 	}
 

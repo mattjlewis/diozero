@@ -34,17 +34,22 @@ import java.nio.file.Path;
 import org.pmw.tinylog.Logger;
 
 import com.diozero.api.DeviceMode;
-import com.diozero.internal.provider.AbstractDevice;
+import com.diozero.api.DigitalInputEvent;
+import com.diozero.internal.provider.AbstractInputDevice;
 import com.diozero.internal.provider.GpioDigitalInputOutputDeviceInterface;
-import com.diozero.util.RuntimeIOException;
+import com.diozero.util.*;
 
-public class SysFsDigitalInputOutputDevice extends AbstractDevice implements GpioDigitalInputOutputDeviceInterface {
+public class SysFsDigitalInputOutputDevice extends AbstractInputDevice<DigitalInputEvent>
+implements GpioDigitalInputOutputDeviceInterface, PollEventListener {
 	private static final String VALUE_FILE = "value";
 	private static final byte LOW_VALUE = '0';
 	private static final byte HIGH_VALUE = '1';
+	
+	private EpollNative epollNative;
 
 	private SysFsDeviceFactory deviceFactory;
 	private int gpio;
+	private Path valuePath;
 	private RandomAccessFile valueFile;
 	private DeviceMode mode;
 
@@ -54,9 +59,11 @@ public class SysFsDigitalInputOutputDevice extends AbstractDevice implements Gpi
 		
 		this.deviceFactory = deviceFactory;
 		this.gpio = gpio;
+		epollNative = new EpollNative();
 		
+		valuePath = gpioDir.resolve(VALUE_FILE);
 		try {
-			valueFile = new RandomAccessFile(gpioDir.resolve(VALUE_FILE).toFile(), "rw");
+			valueFile = new RandomAccessFile(valuePath.toFile(), "rw");
 		} catch (IOException e) {
 			throw new RuntimeIOException("Error opening value file for GPIO " + gpio, e);
 		}
@@ -102,13 +109,32 @@ public class SysFsDigitalInputOutputDevice extends AbstractDevice implements Gpi
 	}
 
 	@Override
+	public void enableListener() {
+		epollNative.register(valuePath.toString(), Integer.valueOf(gpio), this);
+		DioZeroScheduler.getDaemonInstance().execute(epollNative::processEvents);
+	}
+
+	@Override
+	public void disableListener() {
+		epollNative.deregister(valuePath.toString());
+		epollNative.stop();
+	}
+
+	@Override
 	protected void closeDevice() throws RuntimeIOException {
 		Logger.debug("closeDevice()");
+		disableListener();
+		epollNative.close();
 		try {
 			valueFile.close();
 		} catch (IOException e) {
 			throw new RuntimeIOException(e);
 		}
 		deviceFactory.unexport(gpio);
+	}
+
+	@Override
+	public void notify(Object ref, long epochTime, char value) {
+		valueChanged(new DigitalInputEvent(gpio, epochTime, System.nanoTime(), value == HIGH_VALUE));
 	}
 }

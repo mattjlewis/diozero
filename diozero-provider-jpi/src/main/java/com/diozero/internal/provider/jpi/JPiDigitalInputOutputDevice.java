@@ -29,18 +29,19 @@ package com.diozero.internal.provider.jpi;
 
 import org.pmw.tinylog.Logger;
 
-import com.diozero.api.DeviceMode;
-import com.diozero.api.GpioPullUpDown;
-import com.diozero.internal.provider.AbstractDevice;
+import com.diozero.api.*;
+import com.diozero.internal.provider.AbstractInputDevice;
+import com.diozero.internal.provider.GpioDigitalInputDeviceInterface;
 import com.diozero.internal.provider.GpioDigitalInputOutputDeviceInterface;
 import com.diozero.util.RuntimeIOException;
 
-public class JPiDigitalInputOutputDevice extends AbstractDevice
-implements GpioDigitalInputOutputDeviceInterface {
+public class JPiDigitalInputOutputDevice extends AbstractInputDevice<DigitalInputEvent>
+implements GpioDigitalInputOutputDeviceInterface, InputEventListener<DigitalInputEvent> {
 	private JPiDeviceFactory jpiDeviceFactory;
 	private int gpio;
 	private DeviceMode mode;
 	private GpioPullUpDown pud;
+	private GpioDigitalInputDeviceInterface sysFsDigitialInput;
 
 	public JPiDigitalInputOutputDevice(JPiDeviceFactory deviceFactory, String key,
 			int gpio, DeviceMode mode) {
@@ -51,6 +52,9 @@ implements GpioDigitalInputOutputDeviceInterface {
 
 		// For when mode is switched to input
 		this.pud = GpioPullUpDown.NONE;
+
+		sysFsDigitialInput = jpiDeviceFactory.getSysFsDeviceFactory().provisionDigitalInputDevice(
+				gpio, pud, GpioEventTrigger.BOTH);
 		
 		setMode(mode);
 	}
@@ -100,10 +104,21 @@ implements GpioDigitalInputOutputDeviceInterface {
 	public int getGpio() {
 		return gpio;
 	}
+	
+	@Override
+	protected void enableListener() {
+		sysFsDigitialInput.setListener(this);
+	}
+	
+	@Override
+	protected void disableListener() {
+		sysFsDigitialInput.removeListener();
+	}
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
 		Logger.debug("closeDevice()");
+		disableListener();
 		// FIXME No GPIO close method?
 		// TODO Revert to default input mode?
 		// What do wiringPi / pigpio do?

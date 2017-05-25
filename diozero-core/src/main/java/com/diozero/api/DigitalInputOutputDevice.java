@@ -34,9 +34,8 @@ import com.diozero.internal.provider.GpioDeviceFactoryInterface;
 import com.diozero.internal.provider.GpioDigitalInputOutputDeviceInterface;
 import com.diozero.util.RuntimeIOException;
 
-public class DigitalInputOutputDevice extends GpioDevice
-implements DigitalInputDeviceInterface {
-	protected GpioDigitalInputOutputDeviceInterface device;
+public class DigitalInputOutputDevice extends AbstractDigitalInputDevice {
+	private GpioDigitalInputOutputDeviceInterface device;
 	private DeviceMode mode;
 
 	/**
@@ -63,7 +62,7 @@ implements DigitalInputDeviceInterface {
 	 */
 	public DigitalInputOutputDevice(GpioDeviceFactoryInterface deviceFactory, int gpio,
 			DeviceMode mode) throws RuntimeIOException {
-		super(gpio);
+		super(gpio, false);
 		
 		checkMode(mode);
 		
@@ -131,5 +130,15 @@ implements DigitalInputDeviceInterface {
 			throw new IllegalStateException("Can only set output value for digital output pins");
 		}
 		device.setValue(value);
+	}
+
+	@Override
+	protected void setListener() {
+		device.setListener(this);
+	}
+
+	@Override
+	protected void removeListener() {
+		device.removeListener();
 	}
 }
