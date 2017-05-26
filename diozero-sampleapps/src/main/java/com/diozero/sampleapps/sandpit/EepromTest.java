@@ -1,5 +1,7 @@
 package com.diozero.sampleapps.sandpit;
 
+import org.pmw.tinylog.Logger;
+
 /*
  * #%L
  * Device I/O Zero - Sample applications
@@ -27,46 +29,71 @@ package com.diozero.sampleapps.sandpit;
  */
 
 
-import com.diozero.sandpit.Eeprom24LC512;
+import com.diozero.sandpit.McpEeprom;
 
 public class EepromTest {
+	private static final String LOREM_IPSUM = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, "
+			+ "sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, "
+			+ "quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis "
+			+ "aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla "
+			+ "pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia "
+			+ "deserunt mollit anim id est laborum.";
+
 	public static void main(String[] args) {
-		try (Eeprom24LC512 eeprom = new Eeprom24LC512(2)) {
+		try (McpEeprom eeprom = new McpEeprom(2, McpEeprom.Type.MCP_24xx512)) {
+			// Validate write byte and random read
 			for (int address = 0; address<2; address++) {
-				System.out.println("0x" + Integer.toHexString(eeprom.randomRead(address) & 0xff));
+				Logger.info("Address: 0x{}", Integer.valueOf(address));
 				for (int data=0; data<256; data++) {
 					eeprom.writeByte(address, data);
-					System.out.print("0x" + Integer.toHexString(eeprom.randomRead(address) & 0xff) + " ");
+					int data_read = eeprom.randomRead(address) & 0xff;
+					if (data_read != data) {
+						Logger.error("For address 0x{} expected 0x{}, read 0x{}", Integer.toHexString(address),
+								Integer.toHexString(data), Integer.toHexString(data_read));
+					}
 				}
-				System.out.println();
 			}
 			
+			// Validate write byte and current address read
 			String text_to_write = "Hello World";
-			int address = 0;
+			int address = 0x10;
 			for (byte b : text_to_write.getBytes()) {
-				System.out.println("Writing '" + ((char) b) + "'");
+				Logger.debug("Writing '" + ((char) b) + "'");
 				eeprom.writeByte(address++, b);
 			}
-			byte b = eeprom.randomRead(0);
-			System.out.println("Read '" + ((char) b) + "'");
+			address = 0x10;
+			byte b = eeprom.randomRead(address);
+			Logger.debug("Read '" + ((char) b) + "'");
 			for (int i=0; i<text_to_write.length()-1; i++) {
 				b = eeprom.currentAddressRead();
-				System.out.println("Read '" + ((char) b) + "'");
+				Logger.debug("Read '" + ((char) b) + "'");
 			}
 			
-			System.out.println("Writing '" + text_to_write + "'");
-			eeprom.pageWrite(0, text_to_write.getBytes());
-			b = eeprom.randomRead(0);
-			System.out.println("Read '" + ((char) b) + "'");
-			for (int i=0; i<text_to_write.length()-1; i++) {
-				b = eeprom.currentAddressRead();
-				System.out.println("Read '" + ((char) b) + "'");
-			}
-			
-			byte[] data = eeprom.sequentialRead(0, text_to_write.length());
-			System.out.println("read " + data.length + " bytes");
+			// Validate write bytes and sequential read
+			Logger.debug("Writing '" + text_to_write + "'");
+			eeprom.pageWrite(address, text_to_write.getBytes());
+			byte[] data = eeprom.sequentialRead(address, text_to_write.length());
+			Logger.debug("read " + data.length + " bytes");
 			String text = new String(data);
-			System.out.println("Read '" + text + "'");
+			Logger.debug("Read '" + text + "'");
+			
+			// Test writing more that a page size
+			address = 0x40;
+			Logger.debug("Writing '" + LOREM_IPSUM + "'");
+			eeprom.pageWrite(address, LOREM_IPSUM.getBytes());
+			data = eeprom.sequentialRead(address, LOREM_IPSUM.length());
+			Logger.debug("read " + data.length + " bytes");
+			text = new String(data);
+			Logger.debug("Read '" + text + "'");
+			
+			// Test writing more that a page size
+			address = 0x1000;
+			Logger.debug("Writing '" + LOREM_IPSUM + "'");
+			eeprom.write(address, LOREM_IPSUM.getBytes());
+			data = eeprom.sequentialRead(address, LOREM_IPSUM.length());
+			Logger.debug("read " + data.length + " bytes");
+			text = new String(data);
+			Logger.debug("Read '" + text + "'");
 		}
 	}
 }

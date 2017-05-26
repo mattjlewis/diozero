@@ -29,6 +29,8 @@ package com.diozero.sandpit;
 
 import java.io.Closeable;
 
+import org.pmw.tinylog.Logger;
+
 import com.diozero.api.I2CDevice;
 import com.diozero.util.SleepUtil;
 
@@ -43,25 +45,66 @@ import com.diozero.util.SleepUtil;
  * GND Vss 4  5 SDA
  * </pre>
  */
-public class Eeprom24LC512 implements Closeable {
+public class McpEeprom implements Closeable {
+	public static enum Type {
+		MCP_24xx256(2, 64, 5, 256), MCP_24xx512(2, 128, 5, 512);
+		
+		private int addressBytes;
+		private int pageSizeBytes;
+		private int writeCycleTimeMillis;
+		private int memorySizeBits;
+		private int memorySizeBytes;
+		
+		private Type(int addressBytes, int pageSizeBytes, int writeCycleTimeMillis, int memorySizeKibibits) {
+			this.addressBytes = addressBytes;
+			this.pageSizeBytes = pageSizeBytes;
+			this.writeCycleTimeMillis = writeCycleTimeMillis;
+			memorySizeBits = memorySizeKibibits * 1024;
+			memorySizeBytes = memorySizeBits / 8;
+		}
+
+		public int getAddressBytes() {
+			return addressBytes;
+		}
+
+		public int getPageSizeBytes() {
+			return pageSizeBytes;
+		}
+
+		public int getWriteCycleTimeMillis() {
+			return writeCycleTimeMillis;
+		}
+
+		public int getMemorySizeBits() {
+			return memorySizeBits;
+		}
+
+		public int getMemorySizeBytes() {
+			return memorySizeBytes;
+		}
+	}
 	private static final int DEFAULT_ADDRESS = 0x50;
 	
 	private I2CDevice device;
-	private int pageSize = 128;
-	private int writeCycleTimeMs = 5;
+	private Type type;
 	
-	public Eeprom24LC512(int controller) {
-		this(controller, DEFAULT_ADDRESS);
+	public McpEeprom(int controller, Type type) {
+		this(controller, DEFAULT_ADDRESS, type);
 	}
 	
-	public Eeprom24LC512(int controller, int address) {
+	public McpEeprom(int controller, int address, Type type) {
+		this.type = type;
 		device = new I2CDevice(controller, address);
 	}
 	
-	private void setAddress(int address) {
-		byte addr_msb = (byte) ((address >> 8) & 0xff);
-		byte addr_lsb = (byte) (address & 0xff);
-		device.write(new byte[] { addr_msb, addr_lsb });
+	private byte[] getAddressBytes(int address) {
+		byte[] address_bytes = new byte[type.addressBytes];
+		
+		for (int i=0; i<type.addressBytes; i++) {
+			address_bytes[i] = (byte) ((address >> 8 * (type.addressBytes - (i+1))) & 0xff);
+		}
+		
+		return address_bytes;
 	}
 	
 	public byte currentAddressRead() {
@@ -69,12 +112,12 @@ public class Eeprom24LC512 implements Closeable {
 	}
 	
 	public byte randomRead(int address) {
-		setAddress(address);
+		device.write(getAddressBytes(address));
 		return device.readByte();
 	}
 	
 	public byte[] sequentialRead(int address, int length) {
-		setAddress(address);
+		device.write(getAddressBytes(address));
 		return device.read(length);
 	}
 	
@@ -83,22 +126,58 @@ public class Eeprom24LC512 implements Closeable {
 	}
 	
 	public void writeByte(int address, byte data) {
-		byte addr_msb = (byte) ((address >> 8) & 0xff);
-		byte addr_lsb = (byte) (address & 0xff);
-		device.write(new byte[] { addr_msb, addr_lsb, data });
-		SleepUtil.sleepMillis(writeCycleTimeMs);
+		byte[] addr_bytes = getAddressBytes(address);
+		byte[] buffer = new byte[addr_bytes.length+1];
+		System.arraycopy(addr_bytes, 0, buffer, 0, addr_bytes.length);
+		buffer[addr_bytes.length] = data;
+		device.write(buffer);
+		SleepUtil.sleepMillis(type.getWriteCycleTimeMillis());
 	}
 	
 	public void pageWrite(int address, byte[] data) {
-		// TODO Check max page size
-		byte[] buffer = new byte[2 + data.length];
-		byte addr_msb = (byte) ((address >> 8) & 0xff);
-		byte addr_lsb = (byte) (address & 0xff);
-		buffer[0] = addr_msb;
-		buffer[1] = addr_lsb;
-		System.arraycopy(data, 0, buffer, 2, data.length);
+		if ((address + data.length) > type.getMemorySizeBytes()) {
+			Logger.error("Attempt to write beyond memory size - no data written");
+			return;
+		}
+		
+		if (((address % type.getPageSizeBytes() + data.length) - type.getPageSizeBytes()) > type.getPageSizeBytes()) {
+			Logger.error("Attempt to write beyond page size - no data written");
+			return;
+		}
+		
+		byte[] addr_bytes = getAddressBytes(address);
+		byte[] buffer = new byte[addr_bytes.length+data.length];
+		System.arraycopy(addr_bytes, 0, buffer, 0, addr_bytes.length);
+		System.arraycopy(data, 0, buffer, addr_bytes.length, data.length);
 		device.write(buffer);
-		SleepUtil.sleepMillis(writeCycleTimeMs);
+		
+		SleepUtil.sleepMillis(type.getWriteCycleTimeMillis());
+	}
+	
+	public void write(int address, byte[] data) {
+		if ((address + data.length) > type.getMemorySizeBytes()) {
+			Logger.error("Attempt to write beyond memory size - no data written");
+			return;
+		}
+		
+		int page = address / type.getPageSizeBytes();
+		int bytes_remaining = data.length;
+		do {
+			int remaining_page_size = type.getPageSizeBytes() - (address % type.getPageSizeBytes());
+			int bytes_to_write = remaining_page_size < bytes_remaining ? remaining_page_size : bytes_remaining;
+			
+			byte[] addr_bytes = getAddressBytes(address);
+			byte[] buffer = new byte[addr_bytes.length+bytes_to_write];
+			System.arraycopy(addr_bytes, 0, buffer, 0, addr_bytes.length);
+			System.arraycopy(data, data.length - bytes_remaining, buffer, addr_bytes.length, bytes_to_write);
+			device.write(buffer);
+			
+			bytes_remaining -= bytes_to_write;
+			page++;
+			address = page * type.getPageSizeBytes();
+			
+			SleepUtil.sleepMillis(type.getWriteCycleTimeMillis());
+		} while (bytes_remaining > 0);
 	}
 
 	@Override
