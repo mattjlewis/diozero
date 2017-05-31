@@ -46,7 +46,7 @@ public class EepromTest {
 				Logger.info("Address: 0x{}", Integer.valueOf(address));
 				for (int data=0; data<256; data++) {
 					eeprom.writeByte(address, data);
-					int data_read = eeprom.randomRead(address) & 0xff;
+					int data_read = eeprom.readByte(address) & 0xff;
 					if (data_read != data) {
 						Logger.error("For address 0x{} expected 0x{}, read 0x{}", Integer.toHexString(address),
 								Integer.toHexString(data), Integer.toHexString(data_read));
@@ -62,10 +62,10 @@ public class EepromTest {
 				eeprom.writeByte(address++, b);
 			}
 			address = 0x10;
-			byte b = eeprom.randomRead(address);
+			byte b = eeprom.readByte(address);
 			Logger.debug("Read '" + ((char) b) + "'");
 			for (int i=0; i<text_to_write.length()-1; i++) {
-				b = eeprom.currentAddressRead();
+				b = eeprom.readCurrentAddress();
 				Logger.debug("Read '" + ((char) b) + "'");
 			}
 			
@@ -73,7 +73,7 @@ public class EepromTest {
 			address = 0x1000;
 			Logger.debug("Writing '" + LOREM_IPSUM + "'");
 			eeprom.writeBytes(address, LOREM_IPSUM.getBytes());
-			byte[] data = eeprom.sequentialRead(address, LOREM_IPSUM.length());
+			byte[] data = eeprom.readBytes(address, LOREM_IPSUM.length());
 			Logger.debug("read " + data.length + " bytes");
 			String text = new String(data);
 			Logger.debug("Read '" + text + "'");

@@ -49,22 +49,22 @@ public class McpEeprom implements Closeable {
 	public static enum Type {
 		MCP_24xx256(2, 64, 5, 256), MCP_24xx512(2, 128, 5, 512);
 		
-		private int addressBytes;
+		private int addressSizeBytes;
 		private int pageSizeBytes;
 		private int writeCycleTimeMillis;
 		private int memorySizeBits;
 		private int memorySizeBytes;
 		
-		private Type(int addressBytes, int pageSizeBytes, int writeCycleTimeMillis, int memorySizeKibibits) {
-			this.addressBytes = addressBytes;
+		private Type(int addressSizeBytes, int pageSizeBytes, int writeCycleTimeMillis, int memorySizeKibibits) {
+			this.addressSizeBytes = addressSizeBytes;
 			this.pageSizeBytes = pageSizeBytes;
 			this.writeCycleTimeMillis = writeCycleTimeMillis;
 			memorySizeBits = memorySizeKibibits * 1024;
 			memorySizeBytes = memorySizeBits / 8;
 		}
 
-		public int getAddressBytes() {
-			return addressBytes;
+		public int getAddressSizeBytes() {
+			return addressSizeBytes;
 		}
 
 		public int getPageSizeBytes() {
@@ -97,27 +97,27 @@ public class McpEeprom implements Closeable {
 		device = new I2CDevice(controller, address);
 	}
 	
-	private byte[] getAddressBytes(int address) {
-		byte[] address_bytes = new byte[type.addressBytes];
+	private byte[] getAddressByteArray(int address) {
+		byte[] address_bytes = new byte[type.getAddressSizeBytes()];
 		
-		for (int i=0; i<type.addressBytes; i++) {
-			address_bytes[i] = (byte) ((address >> 8 * (type.addressBytes - (i+1))) & 0xff);
+		for (int i=0; i<type.getAddressSizeBytes(); i++) {
+			address_bytes[i] = (byte) ((address >> 8 * (type.getAddressSizeBytes() - (i+1))) & 0xff);
 		}
 		
 		return address_bytes;
 	}
 	
-	public byte currentAddressRead() {
+	public byte readCurrentAddress() {
 		return device.readByte();
 	}
 	
-	public byte randomRead(int address) {
-		device.write(getAddressBytes(address));
+	public byte readByte(int address) {
+		device.write(getAddressByteArray(address));
 		return device.readByte();
 	}
 	
-	public byte[] sequentialRead(int address, int length) {
-		device.write(getAddressBytes(address));
+	public byte[] readBytes(int address, int length) {
+		device.write(getAddressByteArray(address));
 		return device.read(length);
 	}
 	
@@ -126,7 +126,7 @@ public class McpEeprom implements Closeable {
 	}
 	
 	public void writeByte(int address, byte data) {
-		byte[] addr_bytes = getAddressBytes(address);
+		byte[] addr_bytes = getAddressByteArray(address);
 		byte[] buffer = new byte[addr_bytes.length+1];
 		System.arraycopy(addr_bytes, 0, buffer, 0, addr_bytes.length);
 		buffer[addr_bytes.length] = data;
@@ -146,7 +146,7 @@ public class McpEeprom implements Closeable {
 			int remaining_page_size = type.getPageSizeBytes() - (address % type.getPageSizeBytes());
 			int bytes_to_write = remaining_page_size < bytes_remaining ? remaining_page_size : bytes_remaining;
 			
-			byte[] addr_bytes = getAddressBytes(address);
+			byte[] addr_bytes = getAddressByteArray(address);
 			byte[] buffer = new byte[addr_bytes.length+bytes_to_write];
 			System.arraycopy(addr_bytes, 0, buffer, 0, addr_bytes.length);
 			System.arraycopy(data, data.length - bytes_remaining, buffer, addr_bytes.length, bytes_to_write);
