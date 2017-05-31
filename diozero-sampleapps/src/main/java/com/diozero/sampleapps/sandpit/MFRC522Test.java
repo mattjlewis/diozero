@@ -3,7 +3,6 @@ package com.diozero.sampleapps.sandpit;
 import org.pmw.tinylog.Logger;
 
 import com.diozero.sandpit.MFRC522;
-import com.diozero.sandpit.MFRC522.Response;
 
 /*
  * #%L
@@ -65,14 +64,14 @@ public class MFRC522Test {
 			while (true) {
 				// Scan for cards
 				Logger.info("Waiting for cards");
-				Response resp = mfrc522.request(MFRC522.PiccCommand.REQUEST_A.getValue());
+				MFRC522.Response resp = mfrc522.request(MFRC522.PiccCommand.REQUEST_A.getValue());
 				if (resp.getStatus() == MFRC522.StatusCode.OK) {
 					System.out.println("Card detected");
 					
 					mfrc522.setLog(true);
 					
 					// Get the UID of the card
-					Response ac_resp = mfrc522.anticoll();
+					MFRC522.Response ac_resp = mfrc522.anticoll();
 					if (ac_resp.getStatus() == MFRC522.StatusCode.OK) {
 						byte[] uid = ac_resp.getBackData();
 						Logger.info("uid.length=" + uid.length);
