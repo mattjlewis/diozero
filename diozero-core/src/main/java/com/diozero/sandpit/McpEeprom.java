@@ -134,27 +134,7 @@ public class McpEeprom implements Closeable {
 		SleepUtil.sleepMillis(type.getWriteCycleTimeMillis());
 	}
 	
-	public void pageWrite(int address, byte[] data) {
-		if ((address + data.length) > type.getMemorySizeBytes()) {
-			Logger.error("Attempt to write beyond memory size - no data written");
-			return;
-		}
-		
-		if (((address % type.getPageSizeBytes() + data.length) - type.getPageSizeBytes()) > type.getPageSizeBytes()) {
-			Logger.error("Attempt to write beyond page size - no data written");
-			return;
-		}
-		
-		byte[] addr_bytes = getAddressBytes(address);
-		byte[] buffer = new byte[addr_bytes.length+data.length];
-		System.arraycopy(addr_bytes, 0, buffer, 0, addr_bytes.length);
-		System.arraycopy(data, 0, buffer, addr_bytes.length, data.length);
-		device.write(buffer);
-		
-		SleepUtil.sleepMillis(type.getWriteCycleTimeMillis());
-	}
-	
-	public void write(int address, byte[] data) {
+	public void writeBytes(int address, byte[] data) {
 		if ((address + data.length) > type.getMemorySizeBytes()) {
 			Logger.error("Attempt to write beyond memory size - no data written");
 			return;

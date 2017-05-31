@@ -69,30 +69,13 @@ public class EepromTest {
 				Logger.debug("Read '" + ((char) b) + "'");
 			}
 			
-			// Validate write bytes and sequential read
-			Logger.debug("Writing '" + text_to_write + "'");
-			eeprom.pageWrite(address, text_to_write.getBytes());
-			byte[] data = eeprom.sequentialRead(address, text_to_write.length());
-			Logger.debug("read " + data.length + " bytes");
-			String text = new String(data);
-			Logger.debug("Read '" + text + "'");
-			
-			// Test writing more that a page size
-			address = 0x40;
-			Logger.debug("Writing '" + LOREM_IPSUM + "'");
-			eeprom.pageWrite(address, LOREM_IPSUM.getBytes());
-			data = eeprom.sequentialRead(address, LOREM_IPSUM.length());
-			Logger.debug("read " + data.length + " bytes");
-			text = new String(data);
-			Logger.debug("Read '" + text + "'");
-			
 			// Test writing more that a page size
 			address = 0x1000;
 			Logger.debug("Writing '" + LOREM_IPSUM + "'");
-			eeprom.write(address, LOREM_IPSUM.getBytes());
-			data = eeprom.sequentialRead(address, LOREM_IPSUM.length());
+			eeprom.writeBytes(address, LOREM_IPSUM.getBytes());
+			byte[] data = eeprom.sequentialRead(address, LOREM_IPSUM.length());
 			Logger.debug("read " + data.length + " bytes");
-			text = new String(data);
+			String text = new String(data);
 			Logger.debug("Read '" + text + "'");
 		}
 	}
