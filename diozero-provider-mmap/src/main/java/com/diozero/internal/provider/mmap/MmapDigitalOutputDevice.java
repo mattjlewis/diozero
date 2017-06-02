@@ -1,4 +1,4 @@
-package com.diozero.internal.provider.jpi;
+package com.diozero.internal.provider.mmap;
 
 /*
  * #%L
@@ -34,15 +34,15 @@ import com.diozero.internal.provider.AbstractDevice;
 import com.diozero.internal.provider.GpioDigitalOutputDeviceInterface;
 import com.diozero.util.RuntimeIOException;
 
-public class JPiDigitalOutputDevice extends AbstractDevice implements GpioDigitalOutputDeviceInterface {
-	private JPiDeviceFactory jpiDeviceFactory;
+public class MmapDigitalOutputDevice extends AbstractDevice implements GpioDigitalOutputDeviceInterface {
+	private MmapDeviceFactory mmapDeviceFactory;
 	private int gpio;
 
-	JPiDigitalOutputDevice(JPiDeviceFactory deviceFactory, String key,
+	MmapDigitalOutputDevice(MmapDeviceFactory deviceFactory, String key,
 			int gpio, boolean initialValue) {
 		super(key, deviceFactory);
 		
-		this.jpiDeviceFactory = deviceFactory;
+		this.mmapDeviceFactory = deviceFactory;
 		this.gpio = gpio;
 		
 		deviceFactory.getMmapGpio().setMode(gpio, DeviceMode.DIGITAL_OUTPUT);
@@ -56,12 +56,12 @@ public class JPiDigitalOutputDevice extends AbstractDevice implements GpioDigita
 
 	@Override
 	public boolean getValue() throws RuntimeIOException {
-		return jpiDeviceFactory.getMmapGpio().gpioRead(gpio);
+		return mmapDeviceFactory.getMmapGpio().gpioRead(gpio);
 	}
 
 	@Override
 	public void setValue(boolean value) throws RuntimeIOException {
-		jpiDeviceFactory.getMmapGpio().gpioWrite(gpio, value);
+		mmapDeviceFactory.getMmapGpio().gpioWrite(gpio, value);
 	}
 
 	@Override

@@ -1,4 +1,4 @@
-package com.diozero.internal.provider.jpi;
+package com.diozero.internal.provider.mmap;
 
 import com.diozero.api.DeviceMode;
 

@@ -1,4 +1,4 @@
-package com.diozero.internal.provider.jpi;
+package com.diozero.internal.provider.mmap;
 
 /*
  * #%L
@@ -35,25 +35,25 @@ import com.diozero.internal.provider.GpioDigitalInputDeviceInterface;
 import com.diozero.internal.provider.GpioDigitalInputOutputDeviceInterface;
 import com.diozero.util.RuntimeIOException;
 
-public class JPiDigitalInputOutputDevice extends AbstractInputDevice<DigitalInputEvent>
+public class MmapDigitalInputOutputDevice extends AbstractInputDevice<DigitalInputEvent>
 implements GpioDigitalInputOutputDeviceInterface, InputEventListener<DigitalInputEvent> {
-	private JPiDeviceFactory jpiDeviceFactory;
+	private MmapDeviceFactory mmapDeviceFactory;
 	private int gpio;
 	private DeviceMode mode;
 	private GpioPullUpDown pud;
 	private GpioDigitalInputDeviceInterface sysFsDigitialInput;
 
-	public JPiDigitalInputOutputDevice(JPiDeviceFactory deviceFactory, String key,
+	public MmapDigitalInputOutputDevice(MmapDeviceFactory deviceFactory, String key,
 			int gpio, DeviceMode mode) {
 		super(key, deviceFactory);
 		
-		this.jpiDeviceFactory = deviceFactory;
+		this.mmapDeviceFactory = deviceFactory;
 		this.gpio = gpio;
 
 		// For when mode is switched to input
 		this.pud = GpioPullUpDown.NONE;
 
-		sysFsDigitialInput = jpiDeviceFactory.getSysFsDeviceFactory().provisionDigitalInputDevice(
+		sysFsDigitialInput = mmapDeviceFactory.getSysFsDeviceFactory().provisionDigitalInputDevice(
 				gpio, pud, GpioEventTrigger.BOTH);
 		
 		setMode(mode);
@@ -79,17 +79,17 @@ implements GpioDigitalInputOutputDeviceInterface, InputEventListener<DigitalInpu
 			return;
 		}
 
-		jpiDeviceFactory.getMmapGpio().setMode(gpio, mode);
+		mmapDeviceFactory.getMmapGpio().setMode(gpio, mode);
 		this.mode = mode;
 		
 		if (mode == DeviceMode.DIGITAL_INPUT) {
-			jpiDeviceFactory.getMmapGpio().setPullUpDown(gpio, pud);
+			mmapDeviceFactory.getMmapGpio().setPullUpDown(gpio, pud);
 		}
 	}
 
 	@Override
 	public boolean getValue() throws RuntimeIOException {
-		return jpiDeviceFactory.getMmapGpio().gpioRead(gpio);
+		return mmapDeviceFactory.getMmapGpio().gpioRead(gpio);
 	}
 
 	@Override
@@ -97,7 +97,7 @@ implements GpioDigitalInputOutputDeviceInterface, InputEventListener<DigitalInpu
 		if (mode != DeviceMode.DIGITAL_OUTPUT) {
 			throw new IllegalStateException("Can only set output value for digital output pins");
 		}
-		jpiDeviceFactory.getMmapGpio().gpioWrite(gpio, value);
+		mmapDeviceFactory.getMmapGpio().gpioWrite(gpio, value);
 	}
 
 	@Override

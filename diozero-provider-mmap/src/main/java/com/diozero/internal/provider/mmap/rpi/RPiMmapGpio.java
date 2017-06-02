@@ -1,4 +1,4 @@
-package com.diozero.internal.provider.jpi.rpi;
+package com.diozero.internal.provider.mmap.rpi;
 
 /*
  * #%L
@@ -32,7 +32,7 @@ import java.nio.IntBuffer;
 
 import com.diozero.api.DeviceMode;
 import com.diozero.api.GpioPullUpDown;
-import com.diozero.internal.provider.jpi.MmapGpioInterface;
+import com.diozero.internal.provider.mmap.MmapGpioInterface;
 import com.diozero.util.MmapBufferNative;
 import com.diozero.util.MmapByteBuffer;
 

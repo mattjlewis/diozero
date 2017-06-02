@@ -7,8 +7,8 @@
 		<version>0.10-SNAPSHOT</version>
 	</parent>
 	
-	<name>Device I/O Zero - Java Native provider for the Raspberry Pi</name>
-	<artifactId>diozero-provider-jpi</artifactId>
+	<name>Device I/O Zero - high performance memory map GPIO control</name>
+	<artifactId>diozero-provider-mmap</artifactId>
 	<packaging>jar</packaging>
 	
 	<dependencies>

@@ -52,7 +52,7 @@ files="../pigpioj/pigpioj-java/target/pigpioj-java-${pigpioj_version}.jar \
 	diozero-provider-firmata/target/diozero-provider-firmata-${version}.jar \
 	diozero-provider-jdkdio10/target/diozero-provider-jdkdio10-${version}.jar \
 	diozero-provider-jdkdio11/target/diozero-provider-jdkdio11-${version}.jar \
-	diozero-provider-jpi/target/diozero-provider-jpi-${version}.jar \
+	diozero-provider-mmap/target/diozero-provider-mmap-${version}.jar \
 	diozero-provider-pi4j/target/diozero-provider-pi4j-${version}.jar \
 	diozero-provider-pigpio/target/diozero-provider-pigpio-${version}.jar \
 	diozero-provider-wiringpi/target/diozero-provider-wiringpi-${version}.jar \

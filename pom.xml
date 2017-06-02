@@ -11,8 +11,11 @@
 		mvn install
 		mvn deploy
 	Show updates to versions:
+		mvn versions:display-plugin-updates 
 		mvn versions:display-property-updates
 		mvn versions:display-dependency-updates
+	Updates properties to latest versions:
+		mvn versions:update-properties
 	Dependency analysis:
 		mvn dependency:analyze
 	Set new project version:
@@ -80,7 +83,7 @@
 		<module>diozero-provider-firmata</module>
 		<module>diozero-provider-jdkdio10</module>
 		<module>diozero-provider-jdkdio11</module>
-		<module>diozero-provider-jpi</module>
+		<module>diozero-provider-mmap</module>
 		<module>diozero-provider-pi4j</module>
 		<module>diozero-provider-pigpio</module>
 		<module>diozero-provider-wiringpi</module>

@@ -42,7 +42,7 @@
 		</dependency>
 		<dependency>
 			<groupId>com.diozero</groupId>
-			<artifactId>diozero-provider-jpi</artifactId>
+			<artifactId>diozero-provider-mmap</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>

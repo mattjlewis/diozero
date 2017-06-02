@@ -1,4 +1,4 @@
-package com.diozero.internal.provider.jpi;
+package com.diozero.internal.provider.mmap;
 
 /*
  * #%L
@@ -31,19 +31,19 @@ import com.diozero.api.*;
 import com.diozero.internal.board.odroid.OdroidBoardInfoProvider;
 import com.diozero.internal.board.raspberrypi.RaspberryPiBoardInfoProvider;
 import com.diozero.internal.provider.*;
-import com.diozero.internal.provider.jpi.odroid.OdroidC2MmapGpio;
-import com.diozero.internal.provider.jpi.rpi.RPiMmapGpio;
+import com.diozero.internal.provider.mmap.odroid.OdroidC2MmapGpio;
+import com.diozero.internal.provider.mmap.rpi.RPiMmapGpio;
 import com.diozero.internal.provider.sysfs.SysFsDeviceFactory;
 import com.diozero.internal.provider.sysfs.SysFsI2cDevice;
 import com.diozero.util.LibraryLoader;
 import com.diozero.util.RuntimeIOException;
 
-public class JPiDeviceFactory extends BaseNativeDeviceFactory {
+public class MmapDeviceFactory extends BaseNativeDeviceFactory {
 	private MmapGpioInterface mmapGpio;
 	private SysFsDeviceFactory sysFsDeviceFactory;
 	
-	public JPiDeviceFactory() {
-		LibraryLoader.loadLibrary(JPiDeviceFactory.class, "jpi");
+	public MmapDeviceFactory() {
+		LibraryLoader.loadLibrary(MmapDeviceFactory.class, "diozerommap");
 		
 		if (getBoardInfo().sameMakeAndModel(OdroidBoardInfoProvider.ODROID_C2)) {
 			mmapGpio = new OdroidC2MmapGpio();
@@ -89,19 +89,19 @@ public class JPiDeviceFactory extends BaseNativeDeviceFactory {
 	@Override
 	public GpioDigitalInputDeviceInterface createDigitalInputDevice(String key, PinInfo pinInfo, GpioPullUpDown pud,
 			GpioEventTrigger trigger) throws RuntimeIOException {
-		return new JPiDigitalInputDevice(this, key, pinInfo.getDeviceNumber(), pud, trigger);
+		return new MmapDigitalInputDevice(this, key, pinInfo.getDeviceNumber(), pud, trigger);
 	}
 
 	@Override
 	public GpioDigitalOutputDeviceInterface createDigitalOutputDevice(String key, PinInfo pinInfo, boolean initialValue)
 			throws RuntimeIOException {
-		return new JPiDigitalOutputDevice(this, key, pinInfo.getDeviceNumber(), initialValue);
+		return new MmapDigitalOutputDevice(this, key, pinInfo.getDeviceNumber(), initialValue);
 	}
 
 	@Override
 	public GpioDigitalInputOutputDeviceInterface createDigitalInputOutputDevice(String key, PinInfo pinInfo, DeviceMode mode)
 			throws RuntimeIOException {
-		return new JPiDigitalInputOutputDevice(this, key, pinInfo.getDeviceNumber(), mode);
+		return new MmapDigitalInputOutputDevice(this, key, pinInfo.getDeviceNumber(), mode);
 	}
 
 	@Override

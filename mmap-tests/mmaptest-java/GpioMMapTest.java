@@ -2,7 +2,7 @@ import java.nio.ByteOrder;
 import java.nio.IntBuffer;
 
 /**
- * java -cp tinylog-1.2.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-jpi-$DIOZERO_VERSION.jar GpioMmapTest 12 40000000
+ * java -cp tinylog-1.2.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-mmap-$DIOZERO_VERSION.jar GpioMmapTest 12 40000000
  */
 public class GpioMMapTest {
 	public static native MmapByteBuffer createMmapBuffer(String path, int offset, int length);

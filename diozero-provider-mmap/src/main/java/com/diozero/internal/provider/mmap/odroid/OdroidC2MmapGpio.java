@@ -1,4 +1,4 @@
-package com.diozero.internal.provider.jpi.odroid;
+package com.diozero.internal.provider.mmap.odroid;
 
 /*
  * #%L
@@ -37,7 +37,7 @@ import java.util.Random;
 
 import com.diozero.api.DeviceMode;
 import com.diozero.api.GpioPullUpDown;
-import com.diozero.internal.provider.jpi.MmapGpioInterface;
+import com.diozero.internal.provider.mmap.MmapGpioInterface;
 import com.diozero.util.*;
 
 /**
