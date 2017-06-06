@@ -1,4 +1,4 @@
-package com.diozero.sampleapps.sandpit;
+package com.diozero.sampleapps.mfrc522;
 
 import org.pmw.tinylog.Logger;
 
@@ -56,13 +56,20 @@ public class MFRC522OldTest {
 			Logger.error("Usage: {} <spi-controller> <chip-select> <rst-gpio>", MFRC522OldTest.class.getName());
 			System.exit(1);
 		}
-		int controller = Integer.parseInt(args[0]);
-		int chip_select = Integer.parseInt(args[1]);
-		int rst_pin = Integer.parseInt(args[2]);
+		int index = 0;
+		int controller = Integer.parseInt(args[index++]);
+		int chip_select = Integer.parseInt(args[index++]);
+		int rst_pin = Integer.parseInt(args[index++]);
 		
 		try (MFRC522Old mfrc522 = new MFRC522Old(controller, chip_select, rst_pin)) {
+//			if (mfrc522.performSelfTest()) {
+//				Logger.debug("Self test passed");
+//			} else {
+//				Logger.debug("Self test failed");
+//			}
 			while (true) {
 				// Scan for cards
+				mfrc522.setLog(true);
 				Logger.info("Waiting for cards");
 				MFRC522Old.Response resp = mfrc522.request(MFRC522Old.PICC_REQIDL);
 				if (resp.getStatus() == MFRC522Old.MI_OK) {

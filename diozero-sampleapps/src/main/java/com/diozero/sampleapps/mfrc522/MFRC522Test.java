@@ -1,8 +1,9 @@
-package com.diozero.sampleapps.sandpit;
+package com.diozero.sampleapps.mfrc522;
 
 import org.pmw.tinylog.Logger;
 
 import com.diozero.sandpit.MFRC522;
+import com.diozero.util.Hex;
 
 /*
  * #%L
@@ -56,51 +57,51 @@ public class MFRC522Test {
 			Logger.error("Usage: {} <spi-controller> <chip-select> <rst-gpio>", MFRC522Test.class.getName());
 			System.exit(1);
 		}
-		int controller = Integer.parseInt(args[0]);
-		int chip_select = Integer.parseInt(args[1]);
-		int rst_pin = Integer.parseInt(args[2]);
+		int index = 0;
+		int controller = Integer.parseInt(args[index++]);
+		int chip_select = Integer.parseInt(args[index++]);
+		int reset_pin = Integer.parseInt(args[index++]);
 		
-		try (MFRC522 mfrc522 = new MFRC522(controller, chip_select, rst_pin)) {
-			while (true) {
-				// Scan for cards
-				Logger.info("Waiting for cards");
-				MFRC522.Response resp = mfrc522.request(MFRC522.PiccCommand.REQUEST_A.getValue());
-				if (resp.getStatus() == MFRC522.StatusCode.OK) {
-					System.out.println("Card detected");
-					
-					mfrc522.setLog(true);
-					
-					// Get the UID of the card
-					MFRC522.Response ac_resp = mfrc522.anticoll();
-					if (ac_resp.getStatus() == MFRC522.StatusCode.OK) {
-						byte[] uid = ac_resp.getBackData();
-						Logger.info("uid.length=" + uid.length);
-						Logger.info(String.format("Card UID: 0x%02x%02x%02x%02x%n", Byte.valueOf(uid[0]), Byte.valueOf(uid[1]), Byte.valueOf(uid[2]), Byte.valueOf(uid[3])));
-						
-						// This is the default key for authentication
-						byte[] key = { (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF };
-						
-						// Select the scanned tag
-						mfrc522.selectTag(uid);
-
-						// Authenticate
-						MFRC522.StatusCode status = mfrc522.authenticate(
-								MFRC522.PiccCommand.MF_AUTH_KEY_A.getValue(), (byte) 8, key, uid);
-
-						// Check if authenticated
-						if (status == MFRC522.StatusCode.OK) {
-							mfrc522.read((byte) 8);
-							mfrc522.stopCrypto1();
-						} else {
-							Logger.error("Authentication error");
-						}
-					} else {
-						Logger.info("Got bad response status from anticoll: " + resp.getStatus());
-					}
-					mfrc522.setLog(false);
-				}
+		waitForCard(controller, chip_select, reset_pin);
+	}
+	
+	private static void waitForCard(int controller, int chipSelect, int resetPin) {
+		try (MFRC522 mfrc522 = new MFRC522(controller, chipSelect, resetPin)) {
+//			if (mfrc522.performSelfTest()) {
+//				Logger.debug("Self test passed");
+//			} else {
+//				Logger.debug("Self test failed");
+//			}
+			// Wait for a card
+			MFRC522.UID uid = null;
+			while (uid == null) {
+				Logger.info("Waiting for a card");
+				uid = getID(mfrc522);
+				Logger.debug("uid: {}", uid);
 				SleepUtil.sleepSeconds(1);
 			}
 		}
+	}
+	
+	private static MFRC522.UID getID(MFRC522 mfrc522) {
+		// If a new PICC placed to RFID reader continue
+		if (! mfrc522.isNewCardPresent()) {
+			return null;
+		}
+		Logger.debug("A card is present!");
+		// Since a PICC placed get Serial and continue
+		MFRC522.UID uid = mfrc522.readCardSerial();
+		if (uid == null) {
+			return null;
+		}
+		
+		// There are Mifare PICCs which have 4 byte or 7 byte UID care if you use 7 byte PICC
+		// I think we should assume every PICC as they have 4 byte UID
+		// Until we support 7 byte PICCs
+		Logger.info("Scanned PICC's UID: {}", Hex.encodeHexString(uid.getUidBytes()));
+		
+		mfrc522.haltA();
+		
+		return uid;
 	}
 }
