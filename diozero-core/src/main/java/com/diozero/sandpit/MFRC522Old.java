@@ -54,106 +54,159 @@ import com.diozero.util.SleepUtil;
  */
 @SuppressWarnings("unused")
 public class MFRC522Old implements Closeable {
+	// Firmware data for self-test
+	// Reference values based on firmware version
+	// Hint: if needed, you can remove unused self-test data to save flash memory
+	//
+	// Version 0.0 (0x90)
+	// Philips Semiconductors; Preliminary Specification Revision 2.0 - 01 August 2005; 16.1 self-test
+	public static final byte[] MFRC522_firmware_referenceV0_0 = {
+		0x00, (byte) 0x87, (byte) 0x98, 0x0f, 0x49, (byte) 0xFF, 0x07, 0x19,
+		(byte) 0xBF, 0x22, 0x30, 0x49, 0x59, 0x63, (byte) 0xAD, (byte) 0xCA,
+		0x7F,(byte)  0xE3, 0x4E, 0x03, 0x5C, 0x4E, 0x49, 0x50,
+		0x47, (byte) 0x9A, 0x37, 0x61, (byte) 0xE7, (byte) 0xE2, (byte) 0xC6, 0x2E,
+		0x75, 0x5A, (byte) 0xED, 0x04, 0x3D, 0x02, 0x4B, 0x78,
+		0x32, (byte) 0xFF, 0x58, 0x3B, 0x7C, (byte) 0xE9, 0x00, (byte) 0x94,
+		(byte) 0xB4, 0x4A, 0x59, 0x5B, (byte) 0xFD, (byte) 0xC9, 0x29, (byte) 0xDF,
+		0x35, (byte) 0x96, (byte) 0x98, (byte) 0x9E, 0x4F, 0x30, 0x32, (byte) 0x8D
+	};
+	// Version 1.0 (0x91)
+	// NXP Semiconductors; Rev. 3.8 - 17 September 2014; 16.1.1 self-test
+	public static final byte[] MFRC522_firmware_referenceV1_0 = {
+		0x00, (byte) 0xC6, 0x37, (byte) 0xD5, 0x32, (byte) 0xB7, 0x57, 0x5C,
+		(byte) 0xC2, (byte) 0xD8, 0x7C, 0x4D, (byte) 0xD9, 0x70, (byte) 0xC7, 0x73,
+		0x10, (byte) 0xE6, (byte) 0xD2, (byte) 0xAA, 0x5E, (byte) 0xA1, 0x3E, 0x5A,
+		0x14, (byte) 0xAF, 0x30, 0x61, (byte) 0xC9, 0x70, (byte) 0xDB, 0x2E,
+		0x64, 0x22, 0x72, (byte) 0xB5, (byte) 0xBD, 0x65, (byte) 0xF4, (byte) 0xEC,
+		0x22, (byte) 0xBC, (byte) 0xD3, 0x72, 0x35, (byte) 0xCD, (byte) 0xAA, 0x41,
+		0x1F, (byte) 0xA7, (byte) 0xF3, 0x53, 0x14, (byte) 0xDE, 0x7E, 0x02,
+		(byte) 0xD9, 0x0F, (byte) 0xB5, 0x5E, 0x25, 0x1D, 0x29, 0x79
+	};
+	// Version 2.0 (0x92)
+	// NXP Semiconductors; Rev. 3.8 - 17 September 2014; 16.1.1 self-test
+	public static final byte[] MFRC522_firmware_referenceV2_0 = {
+		0x00, (byte) 0xEB, (byte) 0x66, (byte) 0xBA, 0x57, (byte) 0xBF, 0x23, (byte) 0x95,
+		(byte) 0xD0, (byte) 0xE3, 0x0D, 0x3D, 0x27, (byte) 0x89, 0x5C, (byte) 0xDE,
+		(byte) 0x9D, 0x3B, (byte) 0xA7, 0x00, 0x21, 0x5B, (byte) 0x89, (byte) 0x82,
+		0x51, 0x3A, (byte) 0xEB, 0x02, 0x0C, (byte) 0xA5, 0x00, 0x49,
+		0x7C, (byte) 0x84, 0x4D, (byte) 0xB3, (byte) 0xCC, (byte) 0xD2, 0x1B, (byte) 0x81,
+		0x5D, 0x48, 0x76, (byte) 0xD5, 0x71, 0x61, 0x21, (byte) 0xA9,
+		(byte) 0x86, (byte) 0x96, (byte) 0x83, 0x38, (byte) 0xCF, (byte) 0x9D, 0x5B, 0x6D,
+		(byte) 0xDC, 0x15, (byte) 0xBA, 0x3E, 0x7D, (byte) 0x95, 0x3B, 0x2F
+	};
+	// Clone
+	// Fudan Semiconductor FM17522 (0x88)
+	public static final byte[] FM17522_firmware_reference = {
+		0x00, (byte) 0xD6, 0x78, (byte) 0x8C, (byte) 0xE2, (byte) 0xAA, 0x0C, 0x18,
+		0x2A, (byte) 0xB8, 0x7A, 0x7F, (byte) 0xD3, (byte) 0x6A, (byte) 0xCF, 0x0B,
+		(byte) 0xB1, 0x37, 0x63, 0x4B, 0x69, (byte) 0xAE, (byte) 0x91, (byte) 0xC7,
+		(byte) 0xC3, (byte) 0x97, (byte) 0xAE, 0x77, (byte) 0xF4, 0x37, (byte) 0xD7, (byte) 0x9B,
+		0x7C, (byte) 0xF5, 0x3C, 0x11, (byte) 0x8F, 0x15, (byte) 0xC3, (byte) 0xD7,
+		(byte) 0xC1, 0x5B, 0x00, 0x2A, (byte) 0xD0, 0x75, (byte) 0xDE, (byte) 0x9E,
+		0x51, 0x64, (byte) 0xAB, 0x3E, (byte) 0xE9, 0x15, (byte) 0xB5, (byte) 0xAB,
+		0x56, (byte) 0x9A, (byte) 0x98, (byte) 0x82, 0x26, (byte) 0xEA, 0x2A, 0x62
+	};
+	
 	// Registers
 	//private static final int Reserved00 = 0x00;
-	private static final int COMMAND_REG = 0x01;		// starts and stops command execution
-	private static final int COM_INT_EN_REG = 0x02;		// enable and disable interrupt request control bits
-	private static final int DIV_INT_EN_REG = 0x03;		// enable and disable interrupt request control bits
-	private static final int COM_IRQ_REG = 0x04;		// interrupt request bits
-	private static final int DIV_IRQ_REG = 0x05;		// interrupt request bits
-	private static final int ERROR_REG = 0x06;			// error bits showing the error status of the last command executed
-	private static final int STATUS1_REG = 0x07;		// communication status bits
-	private static final int STATUS2_REG = 0x08;		// receiver and transmitter status bits
-	private static final int FIFO_DATA_REG = 0x09;		// input and output of 64 byte FIFO buffer
-	private static final int FIFO_LEVEL_REG = 0x0A;		// number of bytes stored in the FIFO buffer
-	private static final int WATER_LEVEL_REG = 0x0B;	// level for FIFO underflow and overflow warning
-	private static final int CONTROL_REG = 0x0C;		// miscellaneous control registers
-	private static final int BIT_FRAMING_REG = 0x0D;	// adjustments for bit-oriented frames
-	private static final int COLL_REG = 0x0E;			// bit position of the first bit-collision detected on the RF interface
+	private static final int COMMAND_REG = 0x01;				// starts and stops command execution
+	private static final int COM_INT_EN_REG = 0x02;				// enable and disable interrupt request control bits
+	private static final int DIV_INT_EN_REG = 0x03;				// enable and disable interrupt request control bits
+	private static final int COM_IRQ_REG = 0x04;				// interrupt request bits
+	private static final int DIV_IRQ_REG = 0x05;				// interrupt request bits
+	private static final int ERROR_REG = 0x06;					// error bits showing the error status of the last command executed
+	private static final int STATUS1_REG = 0x07;				// communication status bits
+	private static final int STATUS2_REG = 0x08;				// receiver and transmitter status bits
+	private static final int FIFO_DATA_REG = 0x09;				// input and output of 64 byte FIFO buffer
+	private static final int FIFO_LEVEL_REG = 0x0A;				// number of bytes stored in the FIFO buffer
+	private static final int WATER_LEVEL_REG = 0x0B;			// level for FIFO underflow and overflow warning
+	private static final int CONTROL_REG = 0x0C;				// miscellaneous control registers
+	private static final int BIT_FRAMING_REG = 0x0D;			// adjustments for bit-oriented frames
+	private static final int COLL_REG = 0x0E;					// bit position of the first bit-collision detected on the RF interface
 	//private static final int RESERVED_01 = 0x0F;
 	//private static final int RESERVED_10 = 0x10;
-	private static final int MODE_REG = 0x11;			// defines general modes for transmitting and receiving
-	private static final int TX_MODE_REG = 0x12;		// defines transmission data rate and framing
-	private static final int RX_MODE_REG = 0x13;		// defines reception data rate and framing
-	private static final int TX_CONTROL_REG = 0x14;		// controls the logical behavior of the antenna driver pins TX1 and TX2
-	private static final int TX_ASK_REG = 0x15;			// controls the setting of the transmission modulation
-	private static final int TX_SEL_REG = 0x16;			// selects the internal sources for the antenna driver
-	private static final int RX_SEL_REG = 0x17;			// selects internal receiver settings
-	private static final int RX_THRESHOLD_REG = 0x18;	// selects thresholds for the bit decoder
-	private static final int DEMOD_REG = 0x19;			// defines demodulator settings
+	private static final int MODE_REG = 0x11;					// defines general modes for transmitting and receiving
+	private static final int TX_MODE_REG = 0x12;				// defines transmission data rate and framing
+	private static final int RX_MODE_REG = 0x13;				// defines reception data rate and framing
+	private static final int TX_CONTROL_REG = 0x14;				// controls the logical behavior of the antenna driver pins TX1 and TX2
+	private static final int TX_ASK_REG = 0x15;					// controls the setting of the transmission modulation
+	private static final int TX_SEL_REG = 0x16;					// selects the internal sources for the antenna driver
+	private static final int RX_SEL_REG = 0x17;					// selects internal receiver settings
+	private static final int RX_THRESHOLD_REG = 0x18;			// selects thresholds for the bit decoder
+	private static final int DEMOD_REG = 0x19;					// defines demodulator settings
 	//private static final int Reserved11 = 0x1A;
 	//private static final int Reserved12 = 0x1B;
-	private static final int MIFARE_TX_REG = 0x1C;		// controls some MIFARE communication transmit parameters
-	private static final int MIFARE_RX_REG = 0x1D;		// controls some MIFARE communication receive parameters
+	private static final int MIFARE_TX_REG = 0x1C;				// controls some MIFARE communication transmit parameters
+	private static final int MIFARE_RX_REG = 0x1D;				// controls some MIFARE communication receive parameters
 	//private static final int Reserved14 = 0x1E;
-	private static final int SERIAL_SPEED_REG = 0x1F;	// selects the speed of the serial UART interface
+	private static final int SERIAL_SPEED_REG = 0x1F;			// selects the speed of the serial UART interface
 	//private static final int Reserved20 = 0x20;  
-	private static final int CRC_RESULT_REG_MSB = 0x21;	// shows the MSB values of the CRC calculation
-	private static final int CRC_RESULT_REG_LSB = 0x22;	// shows the LSB values of the CRC calculation
+	private static final int CRC_RESULT_REG_MSB = 0x21;			// shows the MSB values of the CRC calculation
+	private static final int CRC_RESULT_REG_LSB = 0x22;			// shows the LSB values of the CRC calculation
 	//private static final int Reserved21 = 0x23;
-	private static final int MOD_WIDTH_REG = 0x24;		// controls the ModWidth setting
+	private static final int MOD_WIDTH_REG = 0x24;				// controls the ModWidth setting
 	//private static final int Reserved22 = 0x25;
-	private static final int RF_CONFIG_REG = 0x26;		// configures the receiver gain
-	private static final int GS_N_REG = 0x27;			// selects the conductance of the antenna driver pins TX1 and TX2 for modulation
-	private static final int CWGsP_REG = 0x28;			// defines the conductance of the p-driver output during periods of no modulation
-	private static final int ModGsP_REG = 0x29;			// defines the conductance of the p-driver output during periods of modulation
-	private static final int T_MODE_REG = 0x2A;			// defines settings for the internal timer
-	private static final int T_PRESCALER_REG = 0x2B;	// 
-	private static final int T_RELOAD_REG_MSB = 0x2C;	// defines the 16-bit timer reload value
+	private static final int RF_CONFIG_REG = 0x26;				// configures the receiver gain
+	private static final int GS_N_REG = 0x27;					// selects the conductance of the antenna driver pins TX1 and TX2 for modulation
+	private static final int CWGsP_REG = 0x28;					// defines the conductance of the p-driver output during periods of no modulation
+	private static final int ModGsP_REG = 0x29;					// defines the conductance of the p-driver output during periods of modulation
+	private static final int T_MODE_REG = 0x2A;					// defines settings for the internal timer
+	private static final int T_PRESCALER_REG = 0x2B;			// 
+	private static final int T_RELOAD_REG_MSB = 0x2C;			// defines the 16-bit timer reload value
 	private static final int T_RELOAD_REG_LSB = 0x2D;
 	private static final int T_COUNTER_VALUE_REG_MSB = 0x2E;	// shows the 16-bit timer value
 	private static final int T_COUNTER_VALUE_REG_LSB = 0x2F;
 	//private static final int Reserved30 = 0x30;
-	private static final int TEST_SEL1_REG = 0x31;		// general test signal configuration
-	private static final int TEST_SEL2_REG = 0x32;		// general test signal configuration and PRBS control
-	private static final int TEST_PIN_EN_REG = 0x33;	// enables pin output driver on pins D1 to D7
-	private static final int TEST_PIN_VALUE_REG = 0x34;	// defines the values for D1 to D7 when it is used as an I/O bus
-	private static final int TEST_BUS_REG = 0x35;		// shows the status of the internal test bus
-	private static final int AUTO_TEST_REG = 0x36;		// controls the digital self test
-	private static final int VERSION_REG = 0x37;		// shows the software version
-	private static final int ANALOG_TEST_REG = 0x38;	// controls the pins AUX1 and AUX2
-	private static final int TEST_DAC1_REG = 0x39;		// defines the test value for TestDAC1
-	private static final int TEST_DAC2_REG = 0x3A;		// defines the test value for TestDAC2
-	private static final int TEST_ADC_REG = 0x3B;		// shows the value of ADC I and Q channels
+	private static final int TEST_SEL1_REG = 0x31;				// general test signal configuration
+	private static final int TEST_SEL2_REG = 0x32;				// general test signal configuration and PRBS control
+	private static final int TEST_PIN_EN_REG = 0x33;			// enables pin output driver on pins D1 to D7
+	private static final int TEST_PIN_VALUE_REG = 0x34;			// defines the values for D1 to D7 when it is used as an I/O bus
+	private static final int TEST_BUS_REG = 0x35;				// shows the status of the internal test bus
+	private static final int AUTO_TEST_REG = 0x36;				// controls the digital self test
+	private static final int VERSION_REG = 0x37;				// shows the software version
+	private static final int ANALOG_TEST_REG = 0x38;			// controls the pins AUX1 and AUX2
+	private static final int TEST_DAC1_REG = 0x39;				// defines the test value for TestDAC1
+	private static final int TEST_DAC2_REG = 0x3A;				// defines the test value for TestDAC2
+	private static final int TEST_ADC_REG = 0x3B;				// shows the value of ADC I and Q channels
 	//private static final int Reserved31 = 0x3C;
 	//private static final int Reserved32 = 0x3D;
 	//private static final int Reserved33 = 0x3E;
 	//private static final int Reserved34 = 0x3F;
 	
-	private static final byte PCD_RCV_OFF = 1 << 5; // analog part of the receiver is switched off
-	private static final byte PCD_POWER_DOWN = 1 << 4; // Soft power-down mode entered
+	private static final byte PCD_RCV_OFF = 1 << 5;				// analog part of the receiver is switched off
+	private static final byte PCD_POWER_DOWN = 1 << 4;			// Soft power-down mode entered
 	
 	// Commands
-	private static final byte PCD_IDLE			= 0b0000;	// Places the MFRC522 in Idle mode
-	private static final byte PCD_MEM			= 0b0001;	// stores 25 bytes into the internal buffer
-	private static final byte PCD_GEN_RANDOM_ID	= 0b0010;	// generates a 10-byte random ID number
-	private static final byte PCD_CALC_CRC		= 0b0011;	// activates the CRC coprocessor or performs a self test
-	private static final byte PCD_TRANSMIT		= 0b0100;	// transmits data from the FIFO buffer
-	private static final byte PCD_NO_CMD_CHANGE	= 0b0111;	// no command change, can be used to modify the
-															// CommandReg register bits without affecting the command, 
-															// for example, the PowerDown bit
-	private static final byte PCD_RECEIVE		= 0b1000;	// activates the receiver circuits
-	private static final byte PCD_TRANSCEIVE	= 0b1100;	// transmits data from FIFO buffer to antenna and automatically
-															// activates the receiver after transmission
-	private static final byte PCD_AUTHENT		= 0b1110;	// performs the MIFARE standard authentication as a reader
-	private static final byte PCD_SOFT_RESET	= 0b1111;	// resets the MFRC522
+	private static final byte PCD_IDLE			= 0b0000;		// Places the MFRC522 in Idle mode
+	private static final byte PCD_MEM			= 0b0001;		// stores 25 bytes into the internal buffer
+	private static final byte PCD_GEN_RANDOM_ID	= 0b0010;		// generates a 10-byte random ID number
+	private static final byte PCD_CALC_CRC		= 0b0011;		// activates the CRC coprocessor or performs a self test
+	private static final byte PCD_TRANSMIT		= 0b0100;		// transmits data from the FIFO buffer
+	private static final byte PCD_NO_CMD_CHANGE	= 0b0111;		// no command change, can be used to modify the
+																// CommandReg register bits without affecting the command, 
+																// for example, the PowerDown bit
+	private static final byte PCD_RECEIVE		= 0b1000;		// activates the receiver circuits
+	private static final byte PCD_TRANSCEIVE	= 0b1100;		// transmits data from FIFO buffer to antenna and automatically
+																// activates the receiver after transmission
+	private static final byte PCD_AUTHENT		= 0b1110;		// performs the MIFARE standard authentication as a reader
+	private static final byte PCD_SOFT_RESET	= 0b1111;		// resets the MFRC522
 	
 	// AddicoreRFID Proximity Integrated Circuit Card (PICC) Commands
-	public static final byte PICC_REQIDL		= 0x26;  // search the antenna area. PCD does not enter hibernation
-	public static final byte PICC_READ			= 0x30;  // reads one memory block
-	public static final byte PICC_HALT			= 0x50;  // Sleep the card
-	public static final byte PICC_REQALL		= 0x52;  // find all the cards in antenna area
-	public static final byte PICC_AUTH_KEY_A	= 0x60;  // authentication with key A
-	public static final byte PICC_AUTH_KEY_B	= 0x61;  // authentication with key B
-	public static final byte PICC_ANTICOLL		= (byte) 0x93;  // anti-collision
-	public static final byte PICC_SEL_CL1		= (byte) 0x93;  // Select card
-	public static final byte PICC_SEL_CL2		= (byte) 0x95;  // Select card
-	public static final byte PICC_SEL_CL3		= (byte) 0x97;  // Select card
-	public static final byte PICC_MF_WRITE		= (byte) 0xA0;  // writes one memory block
-	public static final byte PICC_MF_TRANSFER	= (byte) 0xB0;  // writes the contents of the internal data register to a block
-	public static final byte PICC_MF_DECREMENT	= (byte) 0xC0;  // decrements the contents of a block and stores the result in the internal data register
-	public static final byte PICC_MF_INCREMENT	= (byte) 0xC1;  // increments the contents of a block and stores the result in the internal data register
-	public static final byte PICC_MF_RESTORE	= (byte) 0xC2;  // reads the contents of a block into the internal data register
+	public static final byte PICC_REQIDL		= 0x26;			// search the antenna area. PCD does not enter hibernation
+	public static final byte PICC_READ			= 0x30;			// reads one memory block
+	public static final byte PICC_HALT			= 0x50;			// Sleep the card
+	public static final byte PICC_REQALL		= 0x52;			// find all the cards in antenna area
+	public static final byte PICC_AUTH_KEY_A	= 0x60;			// authentication with key A
+	public static final byte PICC_AUTH_KEY_B	= 0x61;			// authentication with key B
+	public static final byte PICC_ANTICOLL		= (byte) 0x93;	// anti-collision
+	public static final byte PICC_SEL_CL1		= (byte) 0x93;	// Select card
+	public static final byte PICC_SEL_CL2		= (byte) 0x95;	// Select card
+	public static final byte PICC_SEL_CL3		= (byte) 0x97;	// Select card
+	public static final byte PICC_MF_WRITE		= (byte) 0xA0;	// writes one memory block
+	public static final byte PICC_MF_TRANSFER	= (byte) 0xB0;	// writes the contents of the internal data register to a block
+	public static final byte PICC_MF_DECREMENT	= (byte) 0xC0;	// decrements the contents of a block and stores the result in the internal data register
+	public static final byte PICC_MF_INCREMENT	= (byte) 0xC1;	// increments the contents of a block and stores the result in the internal data register
+	public static final byte PICC_MF_RESTORE	= (byte) 0xC2;	// reads the contents of a block into the internal data register
 	
 	// AddicoreRFID error codes
 	public static final byte MI_OK = 0;
@@ -168,7 +221,7 @@ public class MFRC522Old implements Closeable {
 	private SpiDevice device;
 	private DigitalOutputDevice resetPin;
 
-	private boolean log;
+	private boolean log = true;
 	
 	public MFRC522Old(int chipSelect, int resetGpio) {
 		this(SPIConstants.DEFAULT_SPI_CONTROLLER, chipSelect, resetGpio);
@@ -241,6 +294,20 @@ public class MFRC522Old implements Closeable {
 		return rx.get(1);
 	}
 	
+	private void writeRegister(int address, byte[] values) {
+		if (log) {
+			System.out.format("write(0x%02x, 0x%02x; length: %d)%n", Integer.valueOf(address), Byte.valueOf(values[0]), Integer.valueOf(values.length));
+		}
+		
+		ByteBuffer tx = ByteBuffer.allocateDirect(values.length+1);
+		// Address Format: 0XXXXXX0, the left most "0" indicates a write
+		tx.put((byte) ((address << 1) & 0x7e));
+		tx.put(values);
+		tx.flip();
+		
+		device.write(tx);
+	}
+	
 	private void writeRegister(int address, byte value) {
 		if (log) {
 			System.out.format("write(0x%02x, 0x%02x)%n", Integer.valueOf(address), Byte.valueOf(value));
@@ -294,12 +361,104 @@ public class MFRC522Old implements Closeable {
 		if (on) {
 			byte temp = readRegister(TX_CONTROL_REG);
 			if ((temp & 0x03) == 0) {
-				setBitMask(TX_CONTROL_REG, (byte) 0x03);
+				writeRegister(TX_CONTROL_REG, (byte) (temp | 0x03));
 			}
 		} else {
 			clearBitMask(TX_CONTROL_REG, (byte) 0x03);
 		}
 	}
+	
+	/**
+	 * Performs a self-test of the MFRC522
+	 * See 16.1.1 in http://www.nxp.com/documents/data_sheet/MFRC522.pdf
+	 * 
+	 * @return Whether or not the test passed. Or false if no firmware reference is available.
+	 */
+	public boolean performSelfTest() {
+		Logger.debug("Self test - START");
+		// This follows directly the steps outlined in 16.1.1
+		// 1. Perform a soft reset.
+		reset();
+		
+		// 2. Clear the internal buffer by writing 25 bytes of 00h
+		byte[] ZEROES = new byte[25];
+		writeRegister(FIFO_LEVEL_REG, (byte) 0x80);	// flush the FIFO buffer
+		writeRegister(FIFO_DATA_REG, ZEROES);		// write 25 bytes of 00h to FIFO
+		writeRegister(COMMAND_REG, PCD_MEM);		// transfer to internal buffer
+		
+		// 3. Enable self-test
+		writeRegister(AUTO_TEST_REG, (byte) 0x09);
+		
+		// 4. Write 00h to FIFO buffer
+		writeRegister(FIFO_DATA_REG, (byte) 0x00);
+		
+		// 5. Start self-test by issuing the CalcCRC command
+		writeRegister(COMMAND_REG, PCD_CALC_CRC);
+		
+		// 6. Wait for self-test to complete
+		byte n;
+		for (int i=0; i<0xFF; i++) {
+			// The datasheet does not specify exact completion condition except
+			// that FIFO buffer should contain 64 bytes.
+			// While selftest is initiated by CalcCRC command
+			// it behaves differently from normal CRC computation,
+			// so one can't reliably use DivIrqReg to check for completion.
+			// It is reported that some devices does not trigger CRCIRq flag
+			// during selftest.
+			n = readRegister(FIFO_LEVEL_REG);
+			if (n >= 64) {
+				break;
+			}
+		}
+		writeRegister(COMMAND_REG, PCD_IDLE);		// Stop calculating CRC for new content in the FIFO.
+		
+		// 7. Read out resulting 64 bytes from the FIFO buffer.
+		//byte[] result = readRegister(FIFO_DATA_REG, 64);
+		byte[] result = new byte[64];
+		for (int i=0; i<result.length; i++) {
+			result[i] = readRegister(FIFO_DATA_REG);
+		}
+		
+		// Auto self-test done
+		// Reset AutoTestReg register to be 0 again. Required for normal operation.
+		writeRegister(AUTO_TEST_REG, (byte) 0x00);
+		
+		// Determine firmware version (see section 9.3.4.8 in spec)
+		int version = readRegister(VERSION_REG) & 0xff;
+		Logger.debug("version: 0x" + Integer.toHexString(version));
+		
+		// Pick the appropriate reference values
+		byte[] reference;
+		switch (version) {
+		case 0x88:	// Fudan Semiconductor FM17522 clone
+			reference = FM17522_firmware_reference;
+			break;
+		case 0x90:	// Version 0.0
+			reference = MFRC522_firmware_referenceV0_0;
+			break;
+		case 0x91:	// Version 1.0
+			reference = MFRC522_firmware_referenceV1_0;
+			break;
+		case 0x92:	// Version 2.0
+			reference = MFRC522_firmware_referenceV2_0;
+			break;
+		default:	// Unknown version
+			Logger.debug("Self test - END - FAIL");
+			return false; // abort test
+		}
+		
+		// Verify that the results match up to our expectations
+		for (int i=0; i<64; i++) {
+			if (result[i] != reference[i]) {
+				Logger.debug("Self test - END - FAIL");
+				return false;
+			}
+		}
+		Logger.debug("Self test - END - PASS");
+		
+		// Test passed; all is good.
+		return true;
+	} // End PCD_PerformSelfTest()
 	
 	/**
 	 * Perform soft reset of AddicoreRFID Module
@@ -334,7 +493,7 @@ public class MFRC522Old implements Closeable {
 		// TxLastBits = BitFramingReg[2..0] ???
 		writeRegister(BIT_FRAMING_REG, (byte) 0x07);
 		
-		byte[] tag_type = new byte[] {reqMode};
+		byte[] tag_type = new byte[] { reqMode };
 		Response response = toCard(PCD_TRANSCEIVE, tag_type);
 		
 		byte status = response.getStatus();
@@ -362,9 +521,9 @@ public class MFRC522Old implements Closeable {
 		
 		// Interrupt request
 		writeRegister(COM_INT_EN_REG, (byte) (irq_en | 0x80));
-		// Clear all interrupt request bit
+		// Clear all interrupt request bits
 		clearBitMask(COM_IRQ_REG, (byte) 0x80);
-		//FlushBuffer=1, FIFO Initialisation
+		// FlushBuffer=1, FIFO Initialisation
 		setBitMask(FIFO_LEVEL_REG, (byte) 0x80);
 		
 		// NO action; Cancel the current command???
@@ -390,6 +549,7 @@ public class MFRC522Old implements Closeable {
 		boolean save_log = log;
 		while (true) {
 			n = readRegister(COM_IRQ_REG);
+			Logger.debug("n=0x" + Integer.toHexString(n) + ", wait_irq=0x" + Integer.toHexString(wait_irq));
 			log = false;
 			//Logger.debug("i={}, n=0x{}, wait_irq=0x{}", Integer.valueOf(i), Integer.toHexString(n&0xff), Integer.toHexString(wait_irq&0xff));
 			i--;
@@ -401,7 +561,7 @@ public class MFRC522Old implements Closeable {
 		}
 		log = save_log;
 		if (log) {
-			System.out.format("i=%d, n=0x%02x%n", Integer.valueOf(i), Integer.valueOf(n & 0xff));
+			Logger.debug(String.format("i=%d, n=0x%02x%n", Integer.valueOf(i), Integer.valueOf(n & 0xff)));
 		}
 		
 		// StartSend=0
