@@ -55,7 +55,7 @@ public class ChangeUid {
 				}
 			}
 			Logger.info("Found card with UID 0x{}, type: {}", Hex.encodeHexString(uid.getUidBytes()), uid.getType());
-			if (rfid.miFareSetUid(new_uid, uid, auth_key)) {
+			if (rfid.mifareSetUid(new_uid, uid, auth_key)) {
 				Logger.info("Successfully changed UID from 0x{} to 0x{}", Hex.encodeHexString(uid.getUidBytes()));
 			}
 			

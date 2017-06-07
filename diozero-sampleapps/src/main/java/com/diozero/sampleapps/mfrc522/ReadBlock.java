@@ -34,10 +34,10 @@ import com.diozero.sandpit.MFRC522.StatusCode;
 import com.diozero.util.Hex;
 import com.diozero.util.SleepUtil;
 
-public class Authenticate {
+public class ReadBlock {
 	public static void main(String[] args) {
-		if (args.length < 4) {
-			Logger.error("Usage: {} <spi-controller> <chip-select> <rst-gpio> <auth-key-hex>", Authenticate.class.getName());
+		if (args.length < 5) {
+			Logger.error("Usage: {} <spi-controller> <chip-select> <rst-gpio> <auth-key-hex> <sector> [use-key-a=true]", ReadBlock.class.getName());
 			System.exit(1);
 		}
 		int index = 0;
@@ -45,8 +45,15 @@ public class Authenticate {
 		int chip_select = Integer.parseInt(args[index++]);
 		int reset_pin = Integer.parseInt(args[index++]);
 		byte[] auth_key = Hex.decodeHex(args[index++]);
+		byte sector = Byte.parseByte(args[index++]);
+		boolean use_key_a = true;
+		if (args.length > 5) {
+			use_key_a = Boolean.parseBoolean(args[index++]);
+		}
 		
-		byte sector = 1;
+		int blocks_per_sector = 4;
+		byte block_start_addr = (byte) (sector * blocks_per_sector);
+		byte block_end_addr = (byte) (block_start_addr + blocks_per_sector - 1);
 		
 		try (MFRC522 rfid = new MFRC522(controller, chip_select, reset_pin)) {
 			while (true) {
@@ -60,10 +67,32 @@ public class Authenticate {
 				}
 				Logger.info("Found card with UID 0x{}, type: {}", Hex.encodeHexString(uid.getUidBytes()), uid.getType());
 				
-				// Authenticate using key A
-				Logger.info("Authenticating using key A...");
-				StatusCode status = rfid.authenticate(true, sector, auth_key, uid);
+				// Authenticate using key A or B
+				Logger.info("Authenticating using key {}...", use_key_a ? "A" : "B");
+				StatusCode status = rfid.authenticate(use_key_a, block_end_addr, auth_key, uid);
 				Logger.info("Authentication status: {}", status);
+				if (status == StatusCode.OK) {
+					/*
+					 * MIFARE Classic 1K (MF1S503x):
+ 					 * 	Has 16 sectors * 4 blocks/sector * 16 bytes/block = 1024 bytes.
+ 					 * 	The blocks are numbered 0-63.
+ 					 * 	Block 3 in each sector is the Sector Trailer. See http://www.mouser.com/ds/2/302/MF1S503x-89574.pdf sections 8.6 and 8.7:
+ 					 * 		Bytes 0-5:   Key A
+ 					 * 		Bytes 6-8:   Access Bits
+ 					 * 		Bytes 9:     User data
+ 					 * 		Bytes 10-15: Key B (or user data)
+ 					 * 	Block 0 is read-only manufacturer data.
+ 					 * 	To access a block, an authentication using a key from the block's sector must be performed first.
+ 					 * 	Example: To read from block 10, first authenticate using a key from sector 3 (blocks 8-11).
+					 */
+					byte[] data = rfid.mifareRead(block_start_addr);
+					if (data == null) {
+						Logger.info("Unable to read data on block 0x{}", Integer.toHexString(block_start_addr));
+					} else {
+						Logger.info("Data on block 0x{}: 0x{}", Integer.toHexString(block_start_addr), Hex.encodeHexString(data));
+					}
+					rfid.dumpMifareClassicSectorToConsole(uid, auth_key, sector);
+				}
 				
 				// Halt PICC
 				rfid.haltA();

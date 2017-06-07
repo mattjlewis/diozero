@@ -129,6 +129,8 @@ import com.diozero.util.SleepUtil;
  * 		Pages 44-47 Authentication key 
  */
 public class MFRC522 implements Closeable {
+	public static final byte[] DEFAULT_KEY = { (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff };
+	
 	// Firmware data for self-test
 	// Reference values based on firmware version
 	// Hint: if needed, you can remove unused self-test data to save flash memory
@@ -780,7 +782,8 @@ public class MFRC522 implements Closeable {
 		byte[] back_data = new byte[0];
 		// TODO Check this is equivalent
 		//if (backData && backLen) {
-		if (true) {
+		// FIXME Also TRANSCEIVE when called from haltA()
+		if (command != PcdCommand.MF_AUTHENT) {
 			// Number of bytes in the FIFO
 			back_len = readRegister(PcdRegister.FIFO_LEVEL_REG) & 0xff;
 			Logger.debug("FIFO Level: " + back_len);
@@ -804,6 +807,7 @@ public class MFRC522 implements Closeable {
 		}
 		
 		// Perform CRC_A validation if requested.
+		//if (backData && backLen && checkCRC) {
 		if (back_len > 0 && checkCRC) {
 			Logger.debug("Checking CRC");
 			// In this case a MIFARE Classic NAK is not OK.
@@ -1211,25 +1215,33 @@ public class MFRC522 implements Closeable {
 	 * @return STATUS_OK on success, STATUS_??? otherwise. Probably STATUS_TIMEOUT if you supply the wrong key.
 	 */
 	public StatusCode authenticate(boolean authKeyA, byte blockAddr, byte[] key, UID uid) {
-		byte waitIRq = 0x10;		// IdleIRq
+		Logger.debug("blockAddr: " + blockAddr);
 		
 		// Build command buffer
 		byte[] sendData = new byte[12];
 		sendData[0] = authKeyA ? PiccCommand.MF_AUTH_KEY_A.getValue() : PiccCommand.MF_AUTH_KEY_B.getValue();
 		sendData[1] = blockAddr;
-		for (byte i=0; i<MF_KEY_SIZE; i++) {	// 6 key bytes
+		System.arraycopy(key, 0, sendData, 2, key.length);
+		/*
+		for (byte i=0; i<key.length; i++) {	// 6 key bytes
 			sendData[2+i] = key[i];
 		}
+		*/
 		// Use the last uid bytes as specified in http://cache.nxp.com/documents/application_note/AN10927.pdf
 		// section 3.2.5 "MIFARE Classic Authentication".
 		// The only missed case is the MF1Sxxxx shortcut activation,
 		// but it requires cascade tag (CT) byte, that is not part of uid.
+		System.arraycopy(uid.getUidBytes(), uid.getUidBytes().length-4, sendData, 8, 4);
+		/*
 		for (byte i=0; i<4; i++) {				// The last 4 bytes of the UID
 			sendData[8+i] = uid.getUidByte(i + uid.getSize() - 4);
 		}
+		*/
 		
+		byte waitIRq = 0x10;		// IdleIRq
 		// Start the authentication.
 		return communicateWithPICC(PcdCommand.MF_AUTHENT, waitIRq, sendData).getStatus();
+		//return PCD_CommunicateWithPICC(PCD_MFAuthent, waitIRq, &sendData[0], sizeof(sendData));
 	} // End PCD_Authenticate()
 
 	/**
@@ -1259,6 +1271,7 @@ public class MFRC522 implements Closeable {
 	 * @return STATUS_OK on success, STATUS_??? otherwise.
 	 */
 	public byte[] mifareRead(byte blockAddr) {
+		Logger.debug("blockAddr: " + blockAddr);
 		// Build command buffer
 		byte[] buffer = { PiccCommand.MF_READ.getValue(), blockAddr };
 		// Calculate CRC_A
@@ -1266,13 +1279,12 @@ public class MFRC522 implements Closeable {
 		if (crc == null) {
 			return null;
 		}
-		buffer = new byte[4];
-		System.arraycopy(crc, 0, buffer, 2, crc.length);
+		byte[] tx_buffer = new byte[4];
+		System.arraycopy(buffer, 0, tx_buffer, 0, buffer.length);
+		System.arraycopy(crc, 0, tx_buffer, 2, crc.length);
 		
 		// Transmit the buffer and receive the response, validate CRC_A.
-		Response response = transceiveData(buffer, (byte) 0, (byte) 0, true);
-		//StatusCode PCD_TransceiveData(byte *sendData, byte sendLen, byte *backData, byte *backLen,
-		//	byte *validBits = nullptr, byte rxAlign = 0, bool checkCRC = false);
+		Response response = transceiveData(tx_buffer, (byte) 0, (byte) 0, true);
 		//return PCD_TransceiveData(buffer, 4, buffer, bufferSize, nullptr, 0, true);
 		
 		if (response.getStatus() != StatusCode.OK) {
@@ -1304,13 +1316,13 @@ public class MFRC522 implements Closeable {
 		// Mifare Classic protocol requires two communications to perform a write.
 		// Step 1: Tell the PICC we want to write to block blockAddr.
 		byte[] cmdBuffer = { PiccCommand.MF_WRITE.getValue(), blockAddr };
-		StatusCode result = miFareTransceive(cmdBuffer); // Adds CRC_A and checks that the response is MF_ACK.
+		StatusCode result = mifareTransceive(cmdBuffer); // Adds CRC_A and checks that the response is MF_ACK.
 		if (result != StatusCode.OK) {
 			return result;
 		}
 		
 		// Step 2: Transfer the data
-		return miFareTransceive(buffer); // Adds CRC_A and checks that the response is MF_ACK.
+		return mifareTransceive(buffer); // Adds CRC_A and checks that the response is MF_ACK.
 	} // End MIFARE_Write()
 
 	/**
@@ -1320,7 +1332,7 @@ public class MFRC522 implements Closeable {
 	 * @param buffer The 4 bytes to write to the PICC
 	 * @return STATUS_OK on success, STATUS_??? otherwise.
 	 */
-	public StatusCode miFareUltralightWrite(byte page, byte[] buffer) {
+	public StatusCode mifareUltralightWrite(byte page, byte[] buffer) {
 		// Sanity check
 		if (buffer == null || buffer.length != 4) {
 			return StatusCode.INVALID;
@@ -1334,7 +1346,7 @@ public class MFRC522 implements Closeable {
 		//memcpy(&cmdBuffer[2], buffer, 4);
 		
 		// Perform the write
-		return miFareTransceive(cmdBuffer); // Adds CRC_A and checks that the response is MF_ACK.
+		return mifareTransceive(cmdBuffer); // Adds CRC_A and checks that the response is MF_ACK.
 	} // End MIFARE_Ultralight_Write()
 
 	/**
@@ -1347,8 +1359,8 @@ public class MFRC522 implements Closeable {
 	 * @param delta This number is subtracted from the value of block blockAddr.
 	 * @return STATUS_OK on success, STATUS_??? otherwise.
 	 */
-	public StatusCode miFareDecrement(byte blockAddr, int delta) {
-		return miFareTwoStepHelper(PiccCommand.MF_DECREMENT, blockAddr, delta);
+	public StatusCode mifareDecrement(byte blockAddr, int delta) {
+		return mifareTwoStepHelper(PiccCommand.MF_DECREMENT, blockAddr, delta);
 	} // End MIFARE_Decrement()
 
 	/**
@@ -1361,8 +1373,8 @@ public class MFRC522 implements Closeable {
 	 * @param delta This number is added to the value of block blockAddr.
 	 * @return STATUS_OK on success, STATUS_??? otherwise.
 	 */
-	public StatusCode miFareIncrement(byte blockAddr, int delta) {
-		return miFareTwoStepHelper(PiccCommand.MF_INCREMENT, blockAddr, delta);
+	public StatusCode mifareIncrement(byte blockAddr, int delta) {
+		return mifareTwoStepHelper(PiccCommand.MF_INCREMENT, blockAddr, delta);
 	} // End MIFARE_Increment()
 
 	/**
@@ -1374,10 +1386,10 @@ public class MFRC522 implements Closeable {
 	 * @param blockAddr The block (0-0xff) number.
 	 * @return STATUS_OK on success, STATUS_??? otherwise.
 	 */
-	public StatusCode miFareRestore(byte blockAddr) {
+	public StatusCode mifareRestore(byte blockAddr) {
 		// The datasheet describes Restore as a two step operation, but does not explain what data to transfer in step 2.
 		// Doing only a single step does not work, so I chose to transfer 0L in step two.
-		return miFareTwoStepHelper(PiccCommand.MF_RESTORE, blockAddr, 0);
+		return mifareTwoStepHelper(PiccCommand.MF_RESTORE, blockAddr, 0);
 	} // End MIFARE_Restore()
 
 	/**
@@ -1388,10 +1400,10 @@ public class MFRC522 implements Closeable {
 	 * @param data The data to transfer in step 2
 	 * @return STATUS_OK on success, STATUS_??? otherwise.
 	 */
-	public StatusCode miFareTwoStepHelper(PiccCommand command, byte blockAddr, int data) {
+	public StatusCode mifareTwoStepHelper(PiccCommand command, byte blockAddr, int data) {
 		// Step 1: Tell the PICC the command and block address
 		byte[] cmdBuffer = { command.getValue(), blockAddr };
-		StatusCode result = miFareTransceive(cmdBuffer); // Adds CRC_A and checks that the response is MF_ACK.
+		StatusCode result = mifareTransceive(cmdBuffer); // Adds CRC_A and checks that the response is MF_ACK.
 		if (result != StatusCode.OK) {
 			return result;
 		}
@@ -1405,7 +1417,7 @@ public class MFRC522 implements Closeable {
 		buffer[2] = (byte) ((data & 0xFF0000) >> 16);
 		buffer[3] = (byte) ((data & 0xFF000000) >> 24);
 		
-		return miFareTransceive(buffer, true); // Adds CRC_A and accept timeout as success.
+		return mifareTransceive(buffer, true); // Adds CRC_A and accept timeout as success.
 	} // End MIFARE_TwoStepHelper()
 
 	/**
@@ -1416,10 +1428,10 @@ public class MFRC522 implements Closeable {
 	 * @param blockAddr The block (0-0xff) number.
 	 * @return STATUS_OK on success, STATUS_??? otherwise.
 	 */
-	public StatusCode miFareTransfer(byte blockAddr) {
+	public StatusCode mifareTransfer(byte blockAddr) {
 		// Tell the PICC we want to transfer the result into block blockAddr.
 		byte[] cmdBuffer = { PiccCommand.MF_TRANSFER.getValue(), blockAddr };
-		return miFareTransceive(cmdBuffer); // Adds CRC_A and checks that the response is MF_ACK.
+		return mifareTransceive(cmdBuffer); // Adds CRC_A and checks that the response is MF_ACK.
 	} // End MIFARE_Transfer()
 
 	/**
@@ -1432,7 +1444,7 @@ public class MFRC522 implements Closeable {
 	 * @param[in]   blockAddr   The block (0x00-0xff) number.
 	 * @return STATUS_OK on success, STATUS_??? otherwise.
 	 */
-	public Integer miFareGetValue(byte blockAddr) {
+	public Integer mifareGetValue(byte blockAddr) {
 		// Read the block
 		byte[] buffer = mifareRead(blockAddr);
 		if (buffer == null) {
@@ -1454,7 +1466,7 @@ public class MFRC522 implements Closeable {
 	 * @param value New value of the Value Block.
 	 * @return STATUS_OK on success, STATUS_??? otherwise.
 	 */
-	public StatusCode miFareSetValue(byte blockAddr, int value) {
+	public StatusCode mifareSetValue(byte blockAddr, int value) {
 		byte[] buffer = new byte[16];
 		
 		// Translate the int32_t into 4 bytes; repeated 2x in value block
@@ -1527,8 +1539,8 @@ public class MFRC522 implements Closeable {
 	// Support functions
 	/////////////////////////////////////////////////////////////////////////////////////
 
-	public StatusCode miFareTransceive(byte[] sendData) {
-		return miFareTransceive(sendData, false);
+	public StatusCode mifareTransceive(byte[] sendData) {
+		return mifareTransceive(sendData, false);
 	}
 	
 	/**
@@ -1539,7 +1551,7 @@ public class MFRC522 implements Closeable {
 	 * @param acceptTimeout	A timeout is also success
 	 * @return STATUS_OK on success, STATUS_??? otherwise.
 	 */
-	public StatusCode miFareTransceive(byte[] sendData, boolean acceptTimeout) {
+	public StatusCode mifareTransceive(byte[] sendData, boolean acceptTimeout) {
 		// Sanity check
 		if (sendData == null || sendData.length != 16) {
 			return StatusCode.INVALID;
@@ -1603,7 +1615,7 @@ public class MFRC522 implements Closeable {
 	 * Calculates the bit pattern needed for the specified access bits. In the [C1 C2 C3] tuples C1 is MSB (=4) and C3 is LSB (=1).
 	 */
 	/*
-	public void miFareSetAccessBits(	byte *accessBitBuffer,	///< Pointer to byte 6, 7 and 8 in the sector trailer. Bytes [0..2] will be set.
+	public void mifareSetAccessBits(	byte *accessBitBuffer,	///< Pointer to byte 6, 7 and 8 in the sector trailer. Bytes [0..2] will be set.
 										byte g0,				///< Access bits [C1 C2 C3] for block 0 (for sectors 0-31) or blocks 0-4 (for sectors 32-39)
 										byte g1,				///< Access bits C1 C2 C3] for block 1 (for sectors 0-31) or blocks 5-9 (for sectors 32-39)
 										byte g2,				///< Access bits C1 C2 C3] for block 2 (for sectors 0-31) or blocks 10-14 (for sectors 32-39)
@@ -1630,7 +1642,7 @@ public class MFRC522 implements Closeable {
 	 * 
 	 * Of course with non-bricked devices, you're free to select them before calling this function.
 	 */
-	public boolean miFareOpenUidBackdoor() {
+	public boolean mifareOpenUidBackdoor() {
 		// Magic sequence:
 		// > 50 00 57 CD (HALT + CRC)
 		// > 40 (7 bits only)
@@ -1688,7 +1700,7 @@ public class MFRC522 implements Closeable {
 	 *
 	 * Make sure to have selected the card before this function is called.
 	 */
-	public boolean miFareSetUid(byte[] newUid, UID uid, byte[] authKey) {
+	public boolean mifareSetUid(byte[] newUid, UID uid, byte[] authKey) {
 		// UID + BCC byte can not be larger than 16 together
 		if (newUid == null || newUid.length == 0 || newUid.length > 15) {
 			Logger.error("New UID buffer empty, size 0, or size > 15 given");
@@ -1744,7 +1756,7 @@ public class MFRC522 implements Closeable {
 		stopCrypto1();
 		
 		// Activate UID backdoor
-		if (! miFareOpenUidBackdoor()) {
+		if (! mifareOpenUidBackdoor()) {
 			Logger.error("Activating the UID backdoor failed.");
 			return false;
 		}
@@ -1766,8 +1778,8 @@ public class MFRC522 implements Closeable {
 	/**
 	 * Resets entire sector 0 to zeroes, so the card can be read again by readers.
 	 */
-	public boolean miFareUnbrickUidSector() {
-		miFareOpenUidBackdoor();
+	public boolean mifareUnbrickUidSector() {
+		mifareOpenUidBackdoor();
 		
 		byte[] block0_buffer = { 0x01, 0x02, 0x03, 0x04, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
 		
@@ -1821,7 +1833,7 @@ public class MFRC522 implements Closeable {
 	 * Dumps debug info about the connected PCD to Serial.
 	 * Shows all known firmware versions
 	 */
-	public void dumpVersionToSerial() {
+	public void dumpVersionToConsole() {
 		// Get the MFRC522 firmware version
 		int v = readRegister(PcdRegister.VERSION_REG);
 		System.out.print("Firmware Version: 0x");
@@ -1845,51 +1857,47 @@ public class MFRC522 implements Closeable {
 	 * On success the PICC is halted after dumping the data.
 	 * For MIFARE Classic the factory default key of 0xFFFFFFFFFFFF is tried.  
 	 *
+	 * @param uid UID returned from a successful PICC_Select().
 	 * @DEPRECATED Kept for backward compatibility
 	 */
-	/*
-	void MFRC522::dumpToSerial(Uid *uid	///< Pointer to Uid struct returned from a successful PICC_Select().
-									) {
-		MIFARE_Key key;
-		
+	public void dumpToConsole(UID uid) {
+		dumpToConsole(uid, DEFAULT_KEY);
+	}
+	
+	public void dumpToConsole(UID uid, byte[] key) {	
 		// Dump UID, SAK and Type
-		PICC_DumpDetailsToSerial(uid);
+		dumpDetailsToConsole(uid);
 		
 		// Dump contents
-		PICC_Type piccType = PICC_GetType(uid->sak);
+		PiccType piccType = uid.getType();
 		switch (piccType) {
-			case PICC_TYPE_MIFARE_MINI:
-			case PICC_TYPE_MIFARE_1K:
-			case PICC_TYPE_MIFARE_4K:
-				// All keys are set to FFFFFFFFFFFFh at chip delivery from the factory.
-				for (byte i = 0; i < 6; i++) {
-					key.keyByte[i] = 0xFF;
-				}
-				PICC_DumpMifareClassicToSerial(uid, piccType, &key);
-				break;
-				
-			case PICC_TYPE_MIFARE_UL:
-				PICC_DumpMifareUltralightToSerial();
-				break;
-				
-			case PICC_TYPE_ISO_14443_4:
-			case PICC_TYPE_MIFARE_DESFIRE:
-			case PICC_TYPE_ISO_18092:
-			case PICC_TYPE_MIFARE_PLUS:
-			case PICC_TYPE_TNP3XXX:
-				Serial.println(F("Dumping memory contents not implemented for that PICC type."));
-				break;
-				
-			case PICC_TYPE_UNKNOWN:
-			case PICC_TYPE_NOT_COMPLETE:
-			default:
-				break; // No memory dump here
+		case MIFARE_MINI:
+		case MIFARE_1K:
+		case MIFARE_4K:
+			// All keys are set to FFFFFFFFFFFFh at chip delivery from the factory.
+			dumpMifareClassicToConsole(uid, key);
+			break;
+			
+		case MIFARE_UL:
+			dumpMifareUltralightToConsole();
+			break;
+			
+		case ISO_14443_4:
+		case MIFARE_DESFIRE:
+		case ISO_18092:
+		case MIFARE_PLUS:
+		case TNP3XXX:
+			Logger.warn("Dumping memory contents not implemented for that PICC type.");
+			break;
+			
+		case UNKNOWN:
+		case NOT_COMPLETE:
+		default:
+			break; // No memory dump here
 		}
 		
-		Serial.println();
-		PICC_HaltA(); // Already done if it was a MIFARE Classic PICC.
+		haltA(); // Already done if it was a MIFARE Classic PICC.
 	} // End PICC_DumpToSerial()
-	*/
 
 	/**
 	 * Dumps card info (UID,SAK,Type) about the selected PICC to Serial.
@@ -1897,73 +1905,55 @@ public class MFRC522 implements Closeable {
 	 * @param uid UID struct returned from a successful PICC_Select().
 	 * @DEPRECATED kept for backward compatibility
 	 */
-	public static void dumpDetailsToSerial(UID uid) {
+	public static void dumpDetailsToConsole(UID uid) {
 		// UID
-		System.out.print("Card UID:");
-		for (byte i=0; i<uid.getSize(); i++) {
-			if (uid.getUidByte(i) < 0x10) {
-				System.out.print(" 0");
-			} else {
-				System.out.print(" ");
-			}
-			System.out.print(Integer.toHexString(uid.getUidByte(i) & 0xff));
-		} 
-		System.out.println();
+		System.out.println("Card UID: 0x" + Hex.encodeHexString(uid.getUidBytes()));
 		
 		// SAK
-		System.out.print("Card SAK: ");
-		if (uid.getSak() < 0x10) {
-			System.out.print("0");
-		}
-		System.out.println(Integer.toHexString(uid.getSak() & 0xff));
+		System.out.println("Card SAK: 0x" + Integer.toHexString(uid.getSak() & 0xff));
 		
 		// (suggested) PICC type
-		PiccType piccType = PiccType.forId(uid.getSak());
-		System.out.print("PICC type: ");
-		System.out.println(piccType.getName());
+		System.out.println("PICC type: " + uid.getType().getName());
 	} // End PICC_DumpDetailsToSerial()
 
 	/**
 	 * Dumps memory contents of a MIFARE Classic PICC.
 	 * On success the PICC is halted after dumping the data.
+	 * @param uid UID returned from a successful PICC_Select().
+	 * @param key Key A used for all sectors.
 	 */
-	/*
-	public void dumpMifareClassicToSerial(UID uid,			///< Pointer to Uid struct returned from a successful PICC_Select().
-													PICC_Type piccType,	///< One of the PICC_Type enums.
-													MIFARE_Key *key		///< Key A used for all sectors.
-												) {
+	public void dumpMifareClassicToConsole(UID uid, byte[] key) {
 		byte no_of_sectors = 0;
-		switch (piccType) {
-			case PICC_TYPE_MIFARE_MINI:
-				// Has 5 sectors * 4 blocks/sector * 16 bytes/block = 320 bytes.
-				no_of_sectors = 5;
-				break;
-				
-			case PICC_TYPE_MIFARE_1K:
-				// Has 16 sectors * 4 blocks/sector * 16 bytes/block = 1024 bytes.
-				no_of_sectors = 16;
-				break;
-				
-			case PICC_TYPE_MIFARE_4K:
-				// Has (32 sectors * 4 blocks/sector + 8 sectors * 16 blocks/sector) * 16 bytes/block = 4096 bytes.
-				no_of_sectors = 40;
-				break;
-				
-			default: // Should not happen. Ignore.
-				break;
+		switch (uid.getType()) {
+		case MIFARE_MINI:
+			// Has 5 sectors * 4 blocks/sector * 16 bytes/block = 320 bytes.
+			no_of_sectors = 5;
+			break;
+			
+		case MIFARE_1K:
+			// Has 16 sectors * 4 blocks/sector * 16 bytes/block = 1024 bytes.
+			no_of_sectors = 16;
+			break;
+			
+		case MIFARE_4K:
+			// Has (32 sectors * 4 blocks/sector + 8 sectors * 16 blocks/sector) * 16 bytes/block = 4096 bytes.
+			no_of_sectors = 40;
+			break;
+			
+		default: // Should not happen. Ignore.
+			break;
 		}
 		
 		// Dump sectors, highest address first.
-		if (no_of_sectors) {
-			Serial.println(F("Sector Block   0  1  2  3   4  5  6  7   8  9 10 11  12 13 14 15  AccessBits"));
-			for (int8_t i = no_of_sectors - 1; i >= 0; i--) {
-				PICC_DumpMifareClassicSectorToSerial(uid, key, i);
+		if (no_of_sectors != 0) {
+			System.out.println("Sector Block   0  1  2  3   4  5  6  7   8  9 10 11  12 13 14 15  AccessBits");
+			for (int i=no_of_sectors - 1; i>=0; i--) {
+				dumpMifareClassicSectorToConsole(uid, key, (byte) i);
 			}
 		}
-		PICC_HaltA(); // Halt the PICC before stopping the encrypted session.
-		PCD_StopCrypto1();
+		haltA(); // Halt the PICC before stopping the encrypted session.
+		stopCrypto1();
 	} // End PICC_DumpMifareClassicToSerial()
-	*/
 
 	/**
 	 * Dumps memory contents of a sector of a MIFARE Classic PICC.
@@ -1973,7 +1963,7 @@ public class MFRC522 implements Closeable {
 	 * @param key Key A for the sector.
 	 * @param sector The sector to dump, 0..39.
 	 */
-	public void dumpMifareClassicSectorToSerial(UID uid, byte[] key, byte sector) {
+	public void dumpMifareClassicSectorToConsole(UID uid, byte[] key, byte sector) {
 		int firstBlock;				// Address of lowest address to dump actually last block dumped)
 		byte no_of_blocks;			// Number of blocks in sector
 		boolean isSectorTrailer;	// Set to true while handling the "last" (ie highest address) in the sector.
@@ -1986,9 +1976,9 @@ public class MFRC522 implements Closeable {
 		//		g[0]	Access bits for block 0 (for sectors 0-31) or blocks 0-4 (for sectors 32-39)
 		// Each group has access bits [C1 C2 C3]. In this code C1 is MSB and C3 is LSB.
 		// The four CX bits are stored together in a nible cx and an inverted nible cx_.
-		byte c1, c2, c3;		// Nibbles
-		byte c1_, c2_, c3_;		// Inverted nibbles
-		byte[] g = new byte[4];	// Access bits for each of the four groups.
+		int c1, c2, c3;		// Nibbles
+		int c1_, c2_, c3_;		// Inverted nibbles
+		int[] g = new int[4];	// Access bits for each of the four groups.
 		byte group;				// 0-3 - active group for access bits
 		boolean firstInGroup;	// True for the first block dumped in the group
 		
@@ -2051,29 +2041,30 @@ public class MFRC522 implements Closeable {
 			}
 			// Dump data
 			for (byte index = 0; index < 16; index++) {
-				if (buffer[index] < 0x10) {
+				int val = buffer[index] & 0xff;
+				if (val < 0x10) {
 					System.out.print(" 0");
 				} else {
 					System.out.print(" ");
 				}
-				System.out.print(Integer.toHexString(buffer[index]));
+				System.out.print(Integer.toHexString(val & 0xff));
 				if ((index % 4) == 3) {
 					System.out.print(" ");
 				}
 			}
 			// Parse sector trailer data
 			if (isSectorTrailer) {
-				c1  = (byte) (buffer[7] >> 4);
-				c2  = (byte) (buffer[8] & 0xF);
-				c3  = (byte) (buffer[8] >> 4);
-				c1_ = (byte) (buffer[6] & 0xF);
-				c2_ = (byte) (buffer[6] >> 4);
-				c3_ = (byte) (buffer[7] & 0xF);
+				c1  = (buffer[7] & 0xff) >> 4;
+				c2  = (buffer[8] & 0xF);
+				c3  = ((buffer[8] & 0xff) >> 4);
+				c1_ = (buffer[6] & 0xF);
+				c2_ = ((buffer[6] & 0xff) >> 4);
+				c3_ = (buffer[7] & 0xF);
 				invertedError = (c1 != (~c1_ & 0xF)) || (c2 != (~c2_ & 0xF)) || (c3 != (~c3_ & 0xF));
-				g[0] = (byte) (((c1 & 1) << 2) | ((c2 & 1) << 1) | ((c3 & 1) << 0));
-				g[1] = (byte) (((c1 & 2) << 1) | ((c2 & 2) << 0) | ((c3 & 2) >> 1));
-				g[2] = (byte) (((c1 & 4) << 0) | ((c2 & 4) >> 1) | ((c3 & 4) >> 2));
-				g[3] = (byte) (((c1 & 8) >> 1) | ((c2 & 8) >> 2) | ((c3 & 8) >> 3));
+				g[0] = ((c1 & 1) << 2) | ((c2 & 1) << 1) | ((c3 & 1) << 0);
+				g[1] = ((c1 & 2) << 1) | ((c2 & 2) << 0) | ((c3 & 2) >> 1);
+				g[2] = ((c1 & 4) << 0) | ((c2 & 4) >> 1) | ((c3 & 4) >> 2);
+				g[3] = ((c1 & 8) >> 1) | ((c2 & 8) >> 2) | ((c3 & 8) >> 3);
 				isSectorTrailer = false;
 			}
 			
@@ -2111,7 +2102,7 @@ public class MFRC522 implements Closeable {
 	/**
 	 * Dumps memory contents of a MIFARE Ultralight PICC.
 	 */
-	public void dumpMifareUltralightToSerial() {
+	public void dumpMifareUltralightToConsole() {
 		int i;
 		
 		System.out.println("Page  0  1  2  3");
@@ -2480,16 +2471,17 @@ public class MFRC522 implements Closeable {
 	}
 	
 	public static enum PiccType {
-		NOT_COMPLETE("SAK indicates UID is not complete."),
+		UNKNOWN("Unknown type"),
+		ISO_14443_4("PICC compliant with ISO/IEC 14443-4"),
+		ISO_18092("PICC compliant with ISO/IEC 18092 (NFC)"),
 		MIFARE_MINI("MIFARE Mini, 320 bytes"),
 		MIFARE_1K("MIFARE 1KB"),
 		MIFARE_4K("MIFARE 4KB"),
 		MIFARE_UL("MIFARE Ultralight or Ultralight C"),
 		MIFARE_PLUS("MIFARE Plus"),
+		MIFARE_DESFIRE("MIFARE DESFire"),
 		TNP3XXX("MIFARE TNP3XXX"),
-		ISO_14443_4("PICC compliant with ISO/IEC 14443-4"),
-		ISO_18092("PICC compliant with ISO/IEC 18092 (NFC)"),
-		UNKNOWN("Unknown type");
+		NOT_COMPLETE("SAK indicates UID is not complete.");
 		
 		private String name;
 		

@@ -63,7 +63,7 @@ public class ReadAndWrite {
 				return;
 			}
 			
-			readAndWrite(rfid, uid, auth_key);
+			readAndWrite(rfid, uid, auth_key, false);
 
 		    // Halt PICC
 		    rfid.haltA();
@@ -72,18 +72,13 @@ public class ReadAndWrite {
 		}
 	}
 	
-	private static void readAndWrite(MFRC522 rfid, MFRC522.UID uid, byte[] authKey) {
+	private static void readAndWrite(MFRC522 rfid, MFRC522.UID uid, byte[] authKey, boolean write) {
 		// In this sample we use the second sector, that is: sector #1,
 		// covering block #4 up to and including block #7
-		byte sector = 1;
-		byte blockAddr = 4;
-		byte[] dataBlock = {
-				0x01, 0x02, 0x03, 0x04,			//  1,  2,   3,  4,
-				0x05, 0x06, 0x07, 0x08,			//  5,  6,   7,  8,
-				0x08, 0x09, (byte) 0xff, 0x0b,	//  9, 10, 255, 12,
-				0x0c, 0x0d, 0x0e, 0x0f			// 13, 14,  15, 16
-		};
-		byte trailerBlock = 7;
+		byte blocks_per_sector = 4;
+		byte sector = 15;
+		byte blockAddr = (byte) (sector * blocks_per_sector);
+		byte trailerBlock = (byte) (blockAddr + (blocks_per_sector - 1));
 
 		// Authenticate using key A
 		Logger.info("Authenticating using key A...");
@@ -95,13 +90,13 @@ public class ReadAndWrite {
 
 		// Show the whole sector as it currently is
 		Logger.info("Current data in sector:");
-		rfid.dumpMifareClassicSectorToSerial(uid, authKey, sector);
+		rfid.dumpMifareClassicSectorToConsole(uid, authKey, sector);
 
 		// Read data from the block
 		Logger.info("Reading data from block 0x{} ...", Integer.toHexString(blockAddr));
 		byte[] buffer = rfid.mifareRead(blockAddr);
 		if (buffer == null) {
-			Logger.error("MIFARE_Read() failed: {}", status);
+			Logger.error("MIFARE_Read() failed: buffer was null");
 			return;
 		}
 		Logger.info("Data in block 0x{} : 0x{}", Integer.toHexString(blockAddr), Hex.encodeHexString(buffer, 4));
@@ -114,43 +109,51 @@ public class ReadAndWrite {
 			return;
 		}
 
-		// Write data to the block
-		Logger.info("Writing data into block 0x{} : 0x{} ...", Integer.toHexString(blockAddr), Hex.encodeHexString(dataBlock, 4));
-		status = rfid.mifareWrite(blockAddr, dataBlock);
-		if (status != StatusCode.OK) {
-			Logger.error("MIFARE_Write() failed: {}", status);
-			return;
-		}
-
-	    // Read data from the block (again, should now be what we have written)
-		Logger.info("Reading data from block 0x{} ...", Integer.toHexString(blockAddr));
-		buffer = rfid.mifareRead(blockAddr);
-		if (buffer == null) {
-			Logger.error("MIFARE_Read() failed");
-			return;
-		}
-		Logger.info("Data in block 0x{}: 0x{}", Integer.toHexString(blockAddr), Hex.encodeHexString(buffer, 4));
-	        
-		// Check that data in block is what we have written
-		// by counting the number of bytes that are equal
-		Logger.info("Checking result...");
-		byte count = 0;
-		for (int i=0; i<16; i++) {
-			// Compare buffer (= what we've read) with dataBlock (= what we've written)
-			if (buffer[i] == dataBlock[i]) {
-				count++;
+		if (write) {
+			byte[] dataBlock = {
+					0x01, 0x02, 0x03, 0x04,			//  1,  2,   3,  4,
+					0x05, 0x06, 0x07, 0x08,			//  5,  6,   7,  8,
+					0x08, 0x09, (byte) 0xff, 0x0b,	//  9, 10, 255, 12,
+					0x0c, 0x0d, 0x0e, 0x0f			// 13, 14,  15, 16
+			};
+			// Write data to the block
+			Logger.info("Writing data into block 0x{} : 0x{} ...", Integer.toHexString(blockAddr), Hex.encodeHexString(dataBlock, 4));
+			status = rfid.mifareWrite(blockAddr, dataBlock);
+			if (status != StatusCode.OK) {
+				Logger.error("MIFARE_Write() failed: {}", status);
+				return;
 			}
+	
+		    // Read data from the block (again, should now be what we have written)
+			Logger.info("Reading data from block 0x{} ...", Integer.toHexString(blockAddr));
+			buffer = rfid.mifareRead(blockAddr);
+			if (buffer == null) {
+				Logger.error("MIFARE_Read() failed: buffer was null");
+				return;
+			}
+			Logger.info("Data in block 0x{}: 0x{}", Integer.toHexString(blockAddr), Hex.encodeHexString(buffer, 4));
+		        
+			// Check that data in block is what we have written
+			// by counting the number of bytes that are equal
+			Logger.info("Checking result...");
+			byte count = 0;
+			for (int i=0; i<16; i++) {
+				// Compare buffer (= what we've read) with dataBlock (= what we've written)
+				if (buffer[i] == dataBlock[i]) {
+					count++;
+				}
+			}
+			Logger.info("Number of bytes that match = {}", Integer.valueOf(count));
+		    if (count == 16) {
+		    	Logger.info("Success :-)");
+		    } else {
+		    	Logger.info("Failure, no match :-(");
+		    	Logger.info("  perhaps the write didn't work properly...");
+		    }
+		        
+		    // Dump the sector data
+		    Logger.info("Current data in sector:");
+		    rfid.dumpMifareClassicSectorToConsole(uid, authKey, sector);
 		}
-		Logger.info("Number of bytes that match = {}", Integer.valueOf(count));
-	    if (count == 16) {
-	    	Logger.info("Success :-)");
-	    } else {
-	    	Logger.info("Failure, no match :-(");
-	    	Logger.info("  perhaps the write didn't work properly...");
-	    }
-	        
-	    // Dump the sector data
-	    Logger.info("Current data in sector:");
-	    rfid.dumpMifareClassicSectorToSerial(uid, authKey, sector);
 	}
 }
