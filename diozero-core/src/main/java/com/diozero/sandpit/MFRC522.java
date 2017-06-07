@@ -42,6 +42,7 @@ import com.diozero.util.SleepUtil;
 /**
  * <p><a href="http://www.nxp.com/documents/data_sheet/MFRC522.pdf">Datasheet</a><br>
  * <a href="https://github.com/mxgxw/MFRC522-python/blob/master/MFRC522.py">Example Python code</a><br>
+ * <a href="https://github.com/nfc-tools/mfcuk">MiFare Classic Universal toolKit (MFCUK)</a><br>
  * Work-in-progress!</p>
  * <p>Wiring:</p>
  * <ul>
