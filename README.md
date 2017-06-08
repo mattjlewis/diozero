@@ -1,5 +1,10 @@
 # DIO-Zero - a Java Device I/O wrapper for GPIO / I2C / SPI control
 
+[![][travis img]][travis]
+[![][maven img]][maven]
+[![][license img]][license]
+[![Javadoc](https://javadoc-emblem.rhcloud.com/doc/com.diozero/diozero/badge.svg)](http://www.javadoc.io/doc/com.diozero/diozero)
+
 A Device I/O library written in Java that provides an object-orientated interface for a range of 
 GPIO / I2C / SPI devices (LEDs, buttons, sensors, motors, displays, etc) connected to Single 
 Board Computers like the Raspberry Pi. Actual GPIO / I2C / SPI device communication is delegated 
