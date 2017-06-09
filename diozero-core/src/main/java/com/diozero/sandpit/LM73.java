@@ -1,5 +1,7 @@
 package com.diozero.sandpit;
 
+import java.io.Closeable;
+
 /*
  * #%L
  * Device I/O Zero - Core
@@ -32,7 +34,7 @@ import com.diozero.api.ThermometerInterface;
 import com.diozero.util.BitManipulation;
 import com.diozero.util.RuntimeIOException;
 
-public class LM73 implements ThermometerInterface {
+public class LM73 implements ThermometerInterface, Closeable {
 	public static enum Configuration {
 		LM73_0_ADDRESS_PIN_FLOAT(0x48),
 		LM73_0_ADDRESS_PIN_GROUND(0x49),
@@ -121,6 +123,11 @@ public class LM73 implements ThermometerInterface {
 		resolution = DEFAULT_RESOLUTION;
 		
 		device = new I2CDevice(controller, config.getAddress());
+	}
+	
+	@Override
+	public void close() {
+		device.close();
 	}
 	
 	public Configuration getConfiguration() {
