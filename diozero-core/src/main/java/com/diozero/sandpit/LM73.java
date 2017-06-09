@@ -147,7 +147,7 @@ public class LM73 implements ThermometerInterface {
 	
 	@Override
 	public float getTemperature() throws RuntimeIOException {
-		return device.readUByte(TEMPERATURE_REG) / RANGE;
+		return device.readUShort(TEMPERATURE_REG) / RANGE;
 	}
 	
 	public float oneShotRead() {

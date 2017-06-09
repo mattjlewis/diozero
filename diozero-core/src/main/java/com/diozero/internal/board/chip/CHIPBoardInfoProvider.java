@@ -201,55 +201,6 @@ public class CHIPBoardInfoProvider implements BoardInfoProvider {
 			addGeneralPinInfo(U14_HEADER, pin++, PinInfo.GROUND);
 			addGeneralPinInfo(U14_HEADER, pin++, PinInfo.GROUND);
 		}
-
-		public static final class CHIPProBoardInfo extends BoardInfo {
-			private static final int MEMORY = 256;
-			
-			public CHIPProBoardInfo() {
-				super(MAKE, MODEL_CHIP_PRO, MEMORY, CHIP_LIBRARY_PATH, ADC_VREF);
-				
-				// PWM 0 & 1
-				addPwmPinInfo(34, "PWM0", 9, 0, PinInfo.DIGITAL_IN_OUT_PWM);
-				addPwmPinInfo(205, "PWM1", 10, 0, PinInfo.DIGITAL_IN_OUT_PWM);
-				
-				// D0-D7
-				int pin = 37;
-				for (int i=0; i<8; i++) {
-					addGpioPinInfo(132+i, "CSID" + i, pin--, PinInfo.DIGITAL_IN_OUT);
-				}
-				
-				// TWI1, UART2
-				int gpio = 47;
-				pin = 11;
-				addGpioPinInfo(gpio++, "TWI1-SCK", pin++, PinInfo.DIGITAL_IN_OUT);
-				addGpioPinInfo(gpio++, "TWI1-SDA", pin++, PinInfo.DIGITAL_IN_OUT);
-				gpio = 98;
-				addGpioPinInfo(gpio++, "UART2-TX", pin++, PinInfo.DIGITAL_IN_OUT);
-				addGpioPinInfo(gpio++, "UART2-RX", pin++, PinInfo.DIGITAL_IN_OUT);
-				addGpioPinInfo(gpio++, "UART2-CTS", pin++, PinInfo.DIGITAL_IN_OUT);
-				addGpioPinInfo(gpio++, "UART2-RTS", pin++, PinInfo.DIGITAL_IN_OUT);
-				
-				// I2S
-				gpio = 37;
-				pin = 21;
-				addGpioPinInfo(gpio++, "I2S-MCLK", pin++, PinInfo.DIGITAL_IN_OUT);
-				addGpioPinInfo(gpio++, "I2S-BCLK", pin++, PinInfo.DIGITAL_IN_OUT);
-				addGpioPinInfo(gpio++, "I2S-LCLK", pin++, PinInfo.DIGITAL_IN_OUT);
-				addGpioPinInfo(gpio++, "I2S-DO", pin++, PinInfo.DIGITAL_IN_OUT);
-				addGpioPinInfo(gpio++, "I2S-DI", pin++, PinInfo.DIGITAL_IN_OUT);
-				
-				// SPI2
-				gpio = 128;
-				pin = 41;
-				addGpioPinInfo(gpio++, "CSIPCK", pin--, PinInfo.DIGITAL_IN_OUT);
-				addGpioPinInfo(gpio++, "CSIMCLK", pin--, PinInfo.DIGITAL_IN_OUT);
-				addGpioPinInfo(gpio++, "CSIHSYNC", pin--, PinInfo.DIGITAL_IN_OUT);
-				addGpioPinInfo(gpio++, "CSIVSYNC", pin--, PinInfo.DIGITAL_IN_OUT);
-				
-				// LRADC
-				addAdcPinInfo(0, "LRADC0", 42);
-			}
-		}
 		
 		private synchronized void loadXioGpioOffset() {
 			if (! xioGpioOffsetLoaded) {
@@ -283,6 +234,55 @@ public class CHIPBoardInfoProvider implements BoardInfoProvider {
 		@Override
 		public int getPwmChip(int pwmNum) {
 			return 0;
+		}
+	}
+
+	public static final class CHIPProBoardInfo extends BoardInfo {
+		private static final int MEMORY = 256;
+		
+		public CHIPProBoardInfo() {
+			super(MAKE, MODEL_CHIP_PRO, MEMORY, CHIP_LIBRARY_PATH, ADC_VREF);
+			
+			// PWM 0 & 1
+			addPwmPinInfo(34, "PWM0", 9, 0, PinInfo.DIGITAL_IN_OUT_PWM);
+			addPwmPinInfo(205, "PWM1", 10, 0, PinInfo.DIGITAL_IN_OUT_PWM);
+			
+			// D0-D7
+			int pin = 37;
+			for (int i=0; i<8; i++) {
+				addGpioPinInfo(132+i, "CSID" + i, pin--, PinInfo.DIGITAL_IN_OUT);
+			}
+			
+			// TWI1, UART2
+			int gpio = 47;
+			pin = 11;
+			addGpioPinInfo(gpio++, "TWI1-SCK", pin++, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(gpio++, "TWI1-SDA", pin++, PinInfo.DIGITAL_IN_OUT);
+			gpio = 98;
+			addGpioPinInfo(gpio++, "UART2-TX", pin++, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(gpio++, "UART2-RX", pin++, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(gpio++, "UART2-CTS", pin++, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(gpio++, "UART2-RTS", pin++, PinInfo.DIGITAL_IN_OUT);
+			
+			// I2S
+			gpio = 37;
+			pin = 21;
+			addGpioPinInfo(gpio++, "I2S-MCLK", pin++, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(gpio++, "I2S-BCLK", pin++, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(gpio++, "I2S-LCLK", pin++, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(gpio++, "I2S-DO", pin++, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(gpio++, "I2S-DI", pin++, PinInfo.DIGITAL_IN_OUT);
+			
+			// SPI2
+			gpio = 128;
+			pin = 41;
+			addGpioPinInfo(gpio++, "CSIPCK", pin--, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(gpio++, "CSIMCLK", pin--, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(gpio++, "CSIHSYNC", pin--, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(gpio++, "CSIVSYNC", pin--, PinInfo.DIGITAL_IN_OUT);
+			
+			// LRADC
+			addAdcPinInfo(0, "LRADC0", 42);
 		}
 	}
 }
