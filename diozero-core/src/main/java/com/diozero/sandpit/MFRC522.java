@@ -1836,7 +1836,7 @@ public class MFRC522 implements Closeable {
 	 */
 	public void dumpVersionToConsole() {
 		// Get the MFRC522 firmware version
-		int v = readRegister(PcdRegister.VERSION_REG);
+		int v = readRegister(PcdRegister.VERSION_REG) & 0xff;
 		System.out.print("Firmware Version: 0x");
 		System.out.print(Integer.toHexString(v & 0xff));
 		// Lookup which version

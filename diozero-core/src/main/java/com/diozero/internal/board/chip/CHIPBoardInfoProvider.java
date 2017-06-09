@@ -60,78 +60,6 @@ public class CHIPBoardInfoProvider implements BoardInfoProvider {
 		return null;
 	}
 
-	public static final class CHIPProBoardInfo extends BoardInfo {
-		private static final int MEMORY = 256;
-		
-		public CHIPProBoardInfo() {
-			super(MAKE, MODEL_CHIP_PRO, MEMORY, CHIP_LIBRARY_PATH, ADC_VREF);
-			
-			// PWM 0 & 1
-			addPwmPinInfo(34, "PWM0", 9, 0, PinInfo.DIGITAL_IN_OUT_PWM);
-			addPwmPinInfo(205, "PWM1", 10, 0, PinInfo.DIGITAL_IN_OUT_PWM);
-			
-			// LCD-D2-D7
-			int gpio = 98;
-			addGpioPinInfo(gpio++, "LCD-D2", 17, PinInfo.DIGITAL_IN_OUT);
-			addGpioPinInfo(gpio++, "LCD-D3", 20, PinInfo.DIGITAL_IN_OUT);
-			addGpioPinInfo(gpio++, "LCD-D4", 19, PinInfo.DIGITAL_IN_OUT);
-			addGpioPinInfo(gpio++, "LCD-D5", 22, PinInfo.DIGITAL_IN_OUT);
-			addGpioPinInfo(gpio++, "LCD-D6", 21, PinInfo.DIGITAL_IN_OUT);
-			addGpioPinInfo(gpio++, "LCD-D7", 24, PinInfo.DIGITAL_IN_OUT);
-			
-			// LCD-D10-D15
-			gpio = 106;
-			addGpioPinInfo(gpio++, "LCD-D10", 23, PinInfo.DIGITAL_IN_OUT);
-			addGpioPinInfo(gpio++, "LCD-D11", 26, PinInfo.DIGITAL_IN_OUT);
-			addGpioPinInfo(gpio++, "LCD-D12", 25, PinInfo.DIGITAL_IN_OUT);
-			addGpioPinInfo(gpio++, "LCD-D13", 28, PinInfo.DIGITAL_IN_OUT);
-			addGpioPinInfo(gpio++, "LCD-D14", 27, PinInfo.DIGITAL_IN_OUT);
-			addGpioPinInfo(gpio++, "LCD-D15", 30, PinInfo.DIGITAL_IN_OUT);
-			
-			// LCD-D18-D23
-			gpio = 114;
-			addGpioPinInfo(gpio++, "LCD-D18", 29, PinInfo.DIGITAL_IN_OUT);
-			addGpioPinInfo(gpio++, "LCD-D19", 32, PinInfo.DIGITAL_IN_OUT);
-			addGpioPinInfo(gpio++, "LCD-D20", 31, PinInfo.DIGITAL_IN_OUT);
-			addGpioPinInfo(gpio++, "LCD-D21", 34, PinInfo.DIGITAL_IN_OUT);
-			addGpioPinInfo(gpio++, "LCD-D22", 33, PinInfo.DIGITAL_IN_OUT);
-			addGpioPinInfo(gpio++, "LCD-D23", 36, PinInfo.DIGITAL_IN_OUT);
-			
-			// LCD-CLK, LCD-VSYNC, LCD-HSYNC
-			int pin = 36;
-			addGpioPinInfo(120, "LCD-CLK", pin++, PinInfo.DIGITAL_IN_OUT);
-			addGpioPinInfo(122, "LCD-VSYNC", pin++, PinInfo.DIGITAL_IN_OUT);
-			addGpioPinInfo(123, "LCD-HSYNC", pin++, PinInfo.DIGITAL_IN_OUT);
-			
-			// UART1
-			addGpioPinInfo(195, "UART1-TX", 3, PinInfo.DIGITAL_IN_OUT);
-			addGpioPinInfo(196, "UART1-RX", 5, PinInfo.DIGITAL_IN_OUT);
-			
-			// AP-EINT
-			pin = 23;
-			addGpioPinInfo(193, "AP-EINT1", pin++, PinInfo.DIGITAL_IN_OUT);
-			addGpioPinInfo(35, "AP-EINT3", pin++, PinInfo.DIGITAL_IN_OUT);
-			
-			// I2C / SPI
-			pin = 25;
-			addGpioPinInfo(50, "TWI2-SDA", pin++, PinInfo.DIGITAL_IN_OUT);	// I2C2-SDA
-			addGpioPinInfo(49, "TWI2-SCK", pin++, PinInfo.DIGITAL_IN_OUT);	// I2C2-SCL
-			addGpioPinInfo(128, "CSIPCK", pin++, PinInfo.DIGITAL_IN_OUT);	// SPI-CS0
-			addGpioPinInfo(129, "CSICK", pin++, PinInfo.DIGITAL_IN_OUT);	// SPI-CLK
-			addGpioPinInfo(130, "CSIHSYNC", pin++, PinInfo.DIGITAL_IN_OUT);	// SPI-MOSI
-			addGpioPinInfo(131, "CSIVSYNC", pin++, PinInfo.DIGITAL_IN_OUT);	// SPI-MISO
-			
-			// CSID0-7
-			gpio = 132;
-			for (int csid=0; csid<8; csid++) {
-				addGpioPinInfo(gpio+csid, "CSID"+csid, 31+csid, PinInfo.DIGITAL_IN_OUT);
-			}
-			
-			// LRADC
-			addAdcPinInfo(0, "LRADC", 11);
-		}
-	}
-
 	public static final class CHIPBoardInfo extends BoardInfo {
 		public static final String U13_HEADER = "U13";
 		public static final String U14_HEADER = "U14";
@@ -272,6 +200,55 @@ public class CHIPBoardInfoProvider implements BoardInfoProvider {
 			pin = 39;
 			addGeneralPinInfo(U14_HEADER, pin++, PinInfo.GROUND);
 			addGeneralPinInfo(U14_HEADER, pin++, PinInfo.GROUND);
+		}
+
+		public static final class CHIPProBoardInfo extends BoardInfo {
+			private static final int MEMORY = 256;
+			
+			public CHIPProBoardInfo() {
+				super(MAKE, MODEL_CHIP_PRO, MEMORY, CHIP_LIBRARY_PATH, ADC_VREF);
+				
+				// PWM 0 & 1
+				addPwmPinInfo(34, "PWM0", 9, 0, PinInfo.DIGITAL_IN_OUT_PWM);
+				addPwmPinInfo(205, "PWM1", 10, 0, PinInfo.DIGITAL_IN_OUT_PWM);
+				
+				// D0-D7
+				int pin = 37;
+				for (int i=0; i<8; i++) {
+					addGpioPinInfo(132+i, "CSID" + i, pin--, PinInfo.DIGITAL_IN_OUT);
+				}
+				
+				// TWI1, UART2
+				int gpio = 47;
+				pin = 11;
+				addGpioPinInfo(gpio++, "TWI1-SCK", pin++, PinInfo.DIGITAL_IN_OUT);
+				addGpioPinInfo(gpio++, "TWI1-SDA", pin++, PinInfo.DIGITAL_IN_OUT);
+				gpio = 98;
+				addGpioPinInfo(gpio++, "UART2-TX", pin++, PinInfo.DIGITAL_IN_OUT);
+				addGpioPinInfo(gpio++, "UART2-RX", pin++, PinInfo.DIGITAL_IN_OUT);
+				addGpioPinInfo(gpio++, "UART2-CTS", pin++, PinInfo.DIGITAL_IN_OUT);
+				addGpioPinInfo(gpio++, "UART2-RTS", pin++, PinInfo.DIGITAL_IN_OUT);
+				
+				// I2S
+				gpio = 37;
+				pin = 21;
+				addGpioPinInfo(gpio++, "I2S-MCLK", pin++, PinInfo.DIGITAL_IN_OUT);
+				addGpioPinInfo(gpio++, "I2S-BCLK", pin++, PinInfo.DIGITAL_IN_OUT);
+				addGpioPinInfo(gpio++, "I2S-LCLK", pin++, PinInfo.DIGITAL_IN_OUT);
+				addGpioPinInfo(gpio++, "I2S-DO", pin++, PinInfo.DIGITAL_IN_OUT);
+				addGpioPinInfo(gpio++, "I2S-DI", pin++, PinInfo.DIGITAL_IN_OUT);
+				
+				// SPI2
+				gpio = 128;
+				pin = 41;
+				addGpioPinInfo(gpio++, "CSIPCK", pin--, PinInfo.DIGITAL_IN_OUT);
+				addGpioPinInfo(gpio++, "CSIMCLK", pin--, PinInfo.DIGITAL_IN_OUT);
+				addGpioPinInfo(gpio++, "CSIHSYNC", pin--, PinInfo.DIGITAL_IN_OUT);
+				addGpioPinInfo(gpio++, "CSIVSYNC", pin--, PinInfo.DIGITAL_IN_OUT);
+				
+				// LRADC
+				addAdcPinInfo(0, "LRADC0", 42);
+			}
 		}
 		
 		private synchronized void loadXioGpioOffset() {

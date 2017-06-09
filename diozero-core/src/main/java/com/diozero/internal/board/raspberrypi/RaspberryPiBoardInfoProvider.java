@@ -134,50 +134,48 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 		
 		try {
 			int rev_int = Integer.parseInt(revision, 16);
-			if ((rev_int & 0x800000) != 0) {
-				// With the release of the Raspberry Pi 2, there is a new encoding of the
-				// Revision field in /proc/cpuinfo
-				if ((rev_int & (1 << 23)) != 0) {
-					String pcb_revision;
-					int pcb_rev = rev_int & 0x0F;
-					switch (pcb_rev) {
-					case 0:
-						pcb_revision = PCB_REV_1_0;
-						break;
-					case 1:
-						pcb_revision = PCB_REV_1_1;
-						break;
-					case 2:
-						pcb_revision = PCB_REV_2_0;
-						break;
-					default:
-						pcb_revision = "1." + pcb_rev;
-					}
-					int model = (rev_int & (0xFF << 4)) >> 4;
-					int proc = (rev_int & (0x0F << 12)) >> 12;
-					int mfr = (rev_int & (0x0F << 16)) >> 16;
-					int mem = (rev_int & (0x07 << 20)) >> 20;
-					//boolean warranty_void = (revision & (0x03 << 24)) != 0;
-					
-					String model_val = MODELS.get(Integer.valueOf(model));
-					if (model_val == null) {
-						model_val = "UNKNOWN-" + model;
-					}
-					String proc_val = PROCESSORS.get(Integer.valueOf(proc));
-					if (proc_val == null) {
-						proc_val = "UNKNOWN-" + proc;
-					}
-					String mfr_val = MANUFACTURERS.get(Integer.valueOf(mfr));
-					if (mfr_val == null) {
-						mfr_val = "UNKNOWN-" + mfr;
-					}
-					Integer mem_val = MEMORY.get(Integer.valueOf(mem));
-					if (mem_val == null) {
-						mem_val = Integer.valueOf(0);
-					}
-					return new PiABPlusBoardInfo(revision, model_val, pcb_revision,
-							mem_val.intValue(), mfr_val, proc_val);
+			// With the release of the Raspberry Pi 2, there is a new encoding of the
+			// Revision field in /proc/cpuinfo
+			if ((rev_int & (1 << 23)) != 0) {
+				String pcb_revision;
+				int pcb_rev = rev_int & 0x0F;
+				switch (pcb_rev) {
+				case 0:
+					pcb_revision = PCB_REV_1_0;
+					break;
+				case 1:
+					pcb_revision = PCB_REV_1_1;
+					break;
+				case 2:
+					pcb_revision = PCB_REV_2_0;
+					break;
+				default:
+					pcb_revision = "1." + pcb_rev;
 				}
+				int model = (rev_int & (0xFF << 4)) >> 4;
+				int proc = (rev_int & (0x0F << 12)) >> 12;
+				int mfr = (rev_int & (0x0F << 16)) >> 16;
+				int mem = (rev_int & (0x07 << 20)) >> 20;
+				//boolean warranty_void = (revision & (0x03 << 24)) != 0;
+				
+				String model_val = MODELS.get(Integer.valueOf(model));
+				if (model_val == null) {
+					model_val = "UNKNOWN-" + model;
+				}
+				String proc_val = PROCESSORS.get(Integer.valueOf(proc));
+				if (proc_val == null) {
+					proc_val = "UNKNOWN-" + proc;
+				}
+				String mfr_val = MANUFACTURERS.get(Integer.valueOf(mfr));
+				if (mfr_val == null) {
+					mfr_val = "UNKNOWN-" + mfr;
+				}
+				Integer mem_val = MEMORY.get(Integer.valueOf(mem));
+				if (mem_val == null) {
+					mem_val = Integer.valueOf(0);
+				}
+				return new PiABPlusBoardInfo(revision, model_val, pcb_revision,
+						mem_val.intValue(), mfr_val, proc_val);
 			}
 		} catch (NumberFormatException nfe) {
 			// Ignore

@@ -213,6 +213,7 @@ public class BMP180 implements ThermometerInterface, BarometerInterface, Closeab
 		int B7 = (UP - B3) * (50000 >> sampling_mode);
 
 		int pa;
+		// FIXME Vacuous comparison of integer value - 0x80000000 is Math.MIN_VALUE!
 		if (B7 < 0x80000000) {
 			pa = (B7 * 2) / B4;
 		} else {

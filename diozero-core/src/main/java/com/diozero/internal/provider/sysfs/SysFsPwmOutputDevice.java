@@ -102,6 +102,7 @@ public class SysFsPwmOutputDevice extends AbstractDevice implements PwmOutputDev
 	
 	@Override
 	public float getValue() throws RuntimeIOException {
+		// FIXME Result is ignored
 		isOpen();
 		try {
 			dutyFile.seek(0);

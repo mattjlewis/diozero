@@ -154,7 +154,7 @@ public class LM73 implements ThermometerInterface {
 		// Assumes the device is powered down
 		device.writeBit(CONFIG_REG, ONE_SHOT_BIT, true);
 		while (! isDataAvailable()) {
-			// TODO Wait the required number of ms
+			// TODO Wait the required number of ms with a timeout
 		}
 		return getTemperature();
 	}

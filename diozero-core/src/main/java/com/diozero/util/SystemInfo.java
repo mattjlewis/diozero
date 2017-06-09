@@ -83,7 +83,7 @@ public class SystemInfo {
 					do {
 						line = reader.readLine();
 						if (line != null && line.startsWith("MemTotal")) {
-							memoryKb = new Integer(line.split("\\s+")[1].trim());
+							memoryKb = Integer.valueOf(line.split("\\s+")[1].trim());
 						}
 					} while (line != null);
 				}

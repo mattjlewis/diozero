@@ -211,9 +211,6 @@ public class HD44780Lcd implements Closeable {
 		if (rowOffsets == null) {
 			throw new IllegalArgumentException(columns + "x" + rows + " LCDs not supported");
 		}
-		if (rowOffsets == null) {
-			throw new IllegalArgumentException(columns + "x" + rows + " LCDs not supported");
-		}
 
 		if (rows < 1 || rows > rowOffsets.length) {
 			throw new IllegalArgumentException(

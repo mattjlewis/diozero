@@ -30,6 +30,8 @@ package com.diozero.internal.provider.sysfs;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
+import org.pmw.tinylog.Logger;
+
 import com.diozero.util.FileUtil;
 import com.diozero.util.RuntimeIOException;
 
@@ -208,7 +210,13 @@ public class NativeI2CDeviceSysFs implements I2CSMBusInterface {
 		writeBlockData(register, data);
 		byte[] buffer = new byte[length];
 		try {
-			deviceFile.read(buffer);
+			int read = deviceFile.read(buffer);
+			if (read == -1) {
+				throw new RuntimeIOException("Error response from deviceFile.read");
+			}
+			if (read != length) {
+				Logger.warn("Expected to read " + length + " bytes, read " + read + " bytes");
+			}
 		} catch (IOException e) {
 			throw new RuntimeIOException("I2C Error in blockProcessCall(" + register + "): " + e, e);
 		}

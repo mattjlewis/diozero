@@ -1,0 +1,7 @@
+<!-- Exclude list of warnings -->
+<FindBugsFilter>
+	<Match>
+		<!-- Default encoding is wanted, even if the encoding will be vary between platforms -->
+		<Bug pattern="DM_DEFAULT_ENCODING" />
+	</Match>
+</FindBugsFilter>

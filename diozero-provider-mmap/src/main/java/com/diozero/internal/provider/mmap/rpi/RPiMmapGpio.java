@@ -35,6 +35,7 @@ import com.diozero.api.GpioPullUpDown;
 import com.diozero.internal.provider.mmap.MmapGpioInterface;
 import com.diozero.util.MmapBufferNative;
 import com.diozero.util.MmapByteBuffer;
+import com.diozero.util.SleepUtil;
 
 public class RPiMmapGpio implements MmapGpioInterface {
 	private static final String GPIOMEM_DEVICE = "/dev/gpiomem";
@@ -122,17 +123,13 @@ public class RPiMmapGpio implements MmapGpioInterface {
 	public void setPullUpDown(int gpio, GpioPullUpDown pud) {
 		// pigpio:
 		/*
-		try {
-			gpioReg.put(GPPUD, pud);
-			// Sleep 20us
-			Thread.sleep(0, 20_000);
-			gpioReg.put(GPPUDCLK0 + gpio >> 5, 1 << (gpio & 0x1F));
-			Thread.sleep(0, 20_000);
-			gpioReg.put(GPPUD, 0);
-			gpioReg.put(GPPUDCLK0 + gpio >> 5, 0);
-		} catch (InterruptedException e) {
-			throw new RuntimeException("Interrupted!", e);
-		}
+		gpioReg.put(GPPUD, pud);
+		// Sleep 20us
+		SleepUtil.busySleep(20_000);
+		gpioReg.put(GPPUDCLK0 + gpio >> 5, 1 << (gpio & 0x1F));
+		SleepUtil.busySleep(20_000);
+		gpioReg.put(GPPUD, 0);
+		gpioReg.put(GPPUDCLK0 + gpio >> 5, 0);
 		*/
 		int pi_pud;
 		switch (pud) {
@@ -149,18 +146,14 @@ public class RPiMmapGpio implements MmapGpioInterface {
 		}
 		
 		// wiringPi:
-		try {
-			gpioReg.put(GPPUD, pi_pud & 3);
-			Thread.sleep(0, 5_000);
-		    gpioReg.put(GPIO_TO_PUDCLK[gpio], 1 << (gpio & 0x1F));
-			Thread.sleep(0, 5_000);
-		    gpioReg.put(GPPUD, 0);
-			Thread.sleep(0, 5_000);
-		    gpioReg.put(GPIO_TO_PUDCLK[gpio], 0);
-			Thread.sleep(0, 5_000);
-		} catch (InterruptedException e) {
-			throw new RuntimeException("Interrupted!", e);
-		}
+		gpioReg.put(GPPUD, pi_pud & 3);
+		SleepUtil.busySleep(5_000);
+	    gpioReg.put(GPIO_TO_PUDCLK[gpio], 1 << (gpio & 0x1F));
+		SleepUtil.busySleep(5_000);
+	    gpioReg.put(GPPUD, 0);
+		SleepUtil.busySleep(5_000);
+	    gpioReg.put(GPIO_TO_PUDCLK[gpio], 0);
+		SleepUtil.busySleep(5_000);
 	}
 	
 	@Override
