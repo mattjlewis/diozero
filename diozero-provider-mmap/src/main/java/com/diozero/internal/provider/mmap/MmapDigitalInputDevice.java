@@ -36,21 +36,21 @@ import com.diozero.util.RuntimeIOException;
 
 public class MmapDigitalInputDevice extends AbstractInputDevice<DigitalInputEvent>
 implements GpioDigitalInputDeviceInterface, InputEventListener<DigitalInputEvent> {
-	private MmapDeviceFactory mmapDeviceFactory;
+	private MmapGpioInterface mmapGpio;
 	private int gpio;
 	private GpioDigitalInputDeviceInterface sysFsDigitialInput;
 
-	MmapDigitalInputDevice(MmapDeviceFactory deviceFactory, String key,
-			int gpio, GpioPullUpDown pud, GpioEventTrigger trigger) {
+	MmapDigitalInputDevice(MmapDeviceFactory deviceFactory, String key, int gpio, GpioPullUpDown pud,
+			GpioEventTrigger trigger) {
 		super(key, deviceFactory);
 		
-		this.mmapDeviceFactory = deviceFactory;
+		this.mmapGpio = deviceFactory.getMmapGpio();
 		this.gpio = gpio;
 		
-		deviceFactory.getMmapGpio().setMode(gpio, DeviceMode.DIGITAL_INPUT);
-		deviceFactory.getMmapGpio().setPullUpDown(gpio, pud);
+		mmapGpio.setMode(gpio, DeviceMode.DIGITAL_INPUT);
+		mmapGpio.setPullUpDown(gpio, pud);
 
-		sysFsDigitialInput = mmapDeviceFactory.getSysFsDeviceFactory().provisionDigitalInputDevice(
+		sysFsDigitialInput = deviceFactory.getSysFsDeviceFactory().provisionDigitalInputDevice(
 				gpio, pud, trigger);
 	}
 
@@ -61,7 +61,7 @@ implements GpioDigitalInputDeviceInterface, InputEventListener<DigitalInputEvent
 
 	@Override
 	public boolean getValue() throws RuntimeIOException {
-		return mmapDeviceFactory.getMmapGpio().gpioRead(gpio);
+		return mmapGpio.gpioRead(gpio);
 	}
 
 	@Override

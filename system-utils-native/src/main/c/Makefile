@@ -12,10 +12,10 @@ SRCS = com_diozero_internal_provider_sysfs_NativeI2CDeviceSMBus.c \
 	com_diozero_internal_provider_sysfs_NativeI2CDeviceSysFs.c \
 	com_diozero_internal_provider_sysfs_NativeSpiDevice.c \
 	com_diozero_util_EpollNative.c \
+	com_diozero_util_MmapBufferNative.c \
 	com_diozero_util_PollNative.c \
 	com_diozero_util_SleepUtil.c \
-	com_diozero_util_Util.c \
-	com_diozero_util_MmapBufferNative.c
+	com_diozero_util_Util.c
 
 OBJS = $(SRCS:.c=.o)
 

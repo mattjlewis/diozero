@@ -31,6 +31,8 @@ import java.util.EnumSet;
 import java.util.Set;
 
 public class PinInfo {
+	public static final EnumSet<DeviceMode> DIGITAL_IN = EnumSet.of(DeviceMode.DIGITAL_INPUT);
+	public static final EnumSet<DeviceMode> DIGITAL_OUT = EnumSet.of(DeviceMode.DIGITAL_OUTPUT);
 	public static final EnumSet<DeviceMode> DIGITAL_IN_OUT = EnumSet.of(DeviceMode.DIGITAL_INPUT,
 			DeviceMode.DIGITAL_OUTPUT);
 	public static final EnumSet<DeviceMode> DIGITAL_IN_OUT_PWM = EnumSet.of(DeviceMode.DIGITAL_INPUT,

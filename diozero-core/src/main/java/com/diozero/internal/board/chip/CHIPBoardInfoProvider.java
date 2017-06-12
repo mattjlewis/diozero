@@ -72,6 +72,7 @@ public class CHIPBoardInfoProvider implements BoardInfoProvider {
 		public CHIPBoardInfo() {
 			super(MAKE, MODEL_CHIP, MEMORY, CHIP_LIBRARY_PATH, ADC_VREF);
 
+			// http://www.chip-community.org/index.php/GPIO_Info#Interrupts
 			// Not all gpio pins support interrupts. Whether a pin supports
 			// interrupts can be seen by the presence of an "edge" file (e.g.
 			// /sys/class/gpio/<pin>/edge) after exporting the pin. The
@@ -243,46 +244,62 @@ public class CHIPBoardInfoProvider implements BoardInfoProvider {
 		public CHIPProBoardInfo() {
 			super(MAKE, MODEL_CHIP_PRO, MEMORY, CHIP_LIBRARY_PATH, ADC_VREF);
 			
+			// https://docs.getchip.com/chip_pro.html#pin-descriptions
+
+			// Look at the letter that follows the "P", in this case it's "E".
+			// Starting with A = 0, count up in the alphabet until you arrive at
+			// "E" and that is the letter index. For example, E=4. Multiply the
+			// letter index by 32, then add the number that follows "PE":
+			// (4*32)+4 = 132
+			// A=0, B=1, C=2, D=3, E=4, F=5, G=6
+			// PE0(128)/PE1(129)/PE2(130)/PG0(192)/PG1(193)/PG2(194) are for input only.
+
 			// PWM 0 & 1
-			addPwmPinInfo(34, "PWM0", 9, 0, PinInfo.DIGITAL_IN_OUT_PWM);
-			addPwmPinInfo(205, "PWM1", 10, 0, PinInfo.DIGITAL_IN_OUT_PWM);
-			
-			// D0-D7
-			int pin = 37;
-			for (int i=0; i<8; i++) {
-				addGpioPinInfo(132+i, "CSID" + i, pin--, PinInfo.DIGITAL_IN_OUT);
-			}
+			int pin = 9;
+			addPwmPinInfo(34, "PWM0", pin++, 0, PinInfo.DIGITAL_IN_OUT_PWM);	// PB2
+			addPwmPinInfo(205, "PWM1", pin++, 1, PinInfo.DIGITAL_IN_OUT_PWM);	// PG13
 			
 			// TWI1, UART2
 			int gpio = 47;
-			pin = 11;
-			addGpioPinInfo(gpio++, "TWI1-SCK", pin++, PinInfo.DIGITAL_IN_OUT);
-			addGpioPinInfo(gpio++, "TWI1-SDA", pin++, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(gpio++, "TWI1-SCK", pin++, PinInfo.DIGITAL_IN_OUT);	// PB15
+			addGpioPinInfo(gpio++, "TWI1-SDA", pin++, PinInfo.DIGITAL_IN_OUT);	// PB16
 			gpio = 98;
-			addGpioPinInfo(gpio++, "UART2-TX", pin++, PinInfo.DIGITAL_IN_OUT);
-			addGpioPinInfo(gpio++, "UART2-RX", pin++, PinInfo.DIGITAL_IN_OUT);
-			addGpioPinInfo(gpio++, "UART2-CTS", pin++, PinInfo.DIGITAL_IN_OUT);
-			addGpioPinInfo(gpio++, "UART2-RTS", pin++, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(gpio++, "UART2-TX", pin++, PinInfo.DIGITAL_IN_OUT);	// PD2
+			addGpioPinInfo(gpio++, "UART2-RX", pin++, PinInfo.DIGITAL_IN_OUT);	// PD3
+			addGpioPinInfo(gpio++, "UART2-CTS", pin++, PinInfo.DIGITAL_IN_OUT);	// PD4
+			addGpioPinInfo(gpio++, "UART2-RTS", pin++, PinInfo.DIGITAL_IN_OUT);	// PD5
 			
 			// I2S
 			gpio = 37;
 			pin = 21;
-			addGpioPinInfo(gpio++, "I2S-MCLK", pin++, PinInfo.DIGITAL_IN_OUT);
-			addGpioPinInfo(gpio++, "I2S-BCLK", pin++, PinInfo.DIGITAL_IN_OUT);
-			addGpioPinInfo(gpio++, "I2S-LCLK", pin++, PinInfo.DIGITAL_IN_OUT);
-			addGpioPinInfo(gpio++, "I2S-DO", pin++, PinInfo.DIGITAL_IN_OUT);
-			addGpioPinInfo(gpio++, "I2S-DI", pin++, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(gpio++, "I2S-MCLK", pin++, PinInfo.DIGITAL_IN_OUT);	// PB5
+			addGpioPinInfo(gpio++, "I2S-BCLK", pin++, PinInfo.DIGITAL_IN_OUT);	// PB6
+			addGpioPinInfo(gpio++, "I2S-LCLK", pin++, PinInfo.DIGITAL_IN_OUT);	// PB7
+			addGpioPinInfo(gpio++, "I2S-DO", pin++, PinInfo.DIGITAL_IN_OUT);	// PB8
+			addGpioPinInfo(gpio++, "I2S-DI", pin++, PinInfo.DIGITAL_IN_OUT);	// PB9
+			
+			// UART1
+			gpio = 195;
+			pin = 44;
+			addGpioPinInfo(gpio++, "UART1-TX", pin--, PinInfo.DIGITAL_IN_OUT);	// PG3
+			addGpioPinInfo(gpio++, "UART1-RX", pin--, PinInfo.DIGITAL_IN_OUT);	// PG4
+			
+			// LRADC
+			addAdcPinInfo(0, "LRADC0", pin--);
 			
 			// SPI2
 			gpio = 128;
-			pin = 41;
-			addGpioPinInfo(gpio++, "CSIPCK", pin--, PinInfo.DIGITAL_IN_OUT);
-			addGpioPinInfo(gpio++, "CSIMCLK", pin--, PinInfo.DIGITAL_IN_OUT);
-			addGpioPinInfo(gpio++, "CSIHSYNC", pin--, PinInfo.DIGITAL_IN_OUT);
-			addGpioPinInfo(gpio++, "CSIVSYNC", pin--, PinInfo.DIGITAL_IN_OUT);
+			// PE0/PE1/PE2 are for input only
+			addGpioPinInfo(gpio++, "CSIPCK", pin--, PinInfo.DIGITAL_IN);		// PE0
+			addGpioPinInfo(gpio++, "CSIMCLK", pin--, PinInfo.DIGITAL_IN);		// PE1
+			addGpioPinInfo(gpio++, "CSIHSYNC", pin--, PinInfo.DIGITAL_IN);		// PE2
+			addGpioPinInfo(gpio++, "CSIVSYNC", pin--, PinInfo.DIGITAL_IN_OUT);	// PE3
 			
-			// LRADC
-			addAdcPinInfo(0, "LRADC0", 42);
+			// CSID0-7
+			gpio = 132;
+			for (int i=0; i<8; i++) {
+				addGpioPinInfo(gpio+i, "CSID" + i, pin--, PinInfo.DIGITAL_IN_OUT);	// PE4-11
+			}
 		}
 	}
 }

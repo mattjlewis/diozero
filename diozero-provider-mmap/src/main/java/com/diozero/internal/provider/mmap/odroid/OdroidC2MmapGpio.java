@@ -83,20 +83,26 @@ public class OdroidC2MmapGpio implements MmapGpioInterface {
 	}
 	
 	@Override
-	public synchronized void terminate() {
+	public synchronized void close() {
 		if (initialised) {
 			MmapBufferNative.closeMmapBuffer(mmap.getFd(), mmap.getAddress(), mmap.getLength());
 		}
 	}
 	
 	@Override
-	public int getMode(int gpio) {
+	public DeviceMode getMode(int gpio) {
 		int reg = gpio < C2_GPIOX_PIN_START ? C2_GPIOY_FSEL_REG_OFFSET : C2_GPIOX_FSEL_REG_OFFSET;
 		int shift = C2_GP_TO_SHIFT_REG[gpio - C2_GPIOY_PIN_START];
 		
-		// TODO FIXME Mapping to DeviceMode enum
 		//return (gpioReg.get(reg) & (1 << shift)) == 0 ? DeviceMode.DIGITAL_OUTPUT : DeviceMode.DIGITAL_INPUT;
-		return (gpioReg.get(reg) & (1 << shift));
+		switch (gpioReg.get(reg) & (1 << shift)) {
+		case 0:
+			return DeviceMode.DIGITAL_OUTPUT;
+		case 1:
+			return DeviceMode.DIGITAL_INPUT;
+		default:
+			return DeviceMode.UNKNOWN;
+		}
 	}
 	
 	@Override
@@ -219,66 +225,64 @@ public class OdroidC2MmapGpio implements MmapGpioInterface {
 		System.out.format("gpioToGPFSELReg(%d)=0x%04x%n", Integer.valueOf(214), Integer.valueOf(gpioToGPFSELReg(214)));
 		System.out.format("gpioToGPFSELReg(%d)=0x%04x%n", Integer.valueOf(219), Integer.valueOf(gpioToGPFSELReg(219)));
 		
-		OdroidC2MmapGpio mmap_gpio = new OdroidC2MmapGpio();
-		
-		mmap_gpio.initialise();
-
-		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-		try {
-			while (true) {
-				MemoryInspector.dumpMemory(mmap_gpio.gpioReg, C2_GPIO_PIN_BASE, 200);
-				String line = reader.readLine();
-				if (line == null || line.equals("q")) {
-					break;
+		try (OdroidC2MmapGpio mmap_gpio = new OdroidC2MmapGpio()) {
+			mmap_gpio.initialise();
+	
+			BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+			try {
+				while (true) {
+					MemoryInspector.dumpMemory(mmap_gpio.gpioReg, C2_GPIO_PIN_BASE, 200);
+					String line = reader.readLine();
+					if (line == null || line.equals("q")) {
+						break;
+					}
 				}
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		System.out.println("getMode(" + gpio + ")=" + mmap_gpio.getMode(gpio));
-		mmap_gpio.setMode(gpio, DeviceMode.DIGITAL_OUTPUT);
-		System.out.println("getMode(" + gpio + ")=" + mmap_gpio.getMode(gpio));
-
-		System.out.println("Current val=" + mmap_gpio.gpioRead(gpio));
-		for (int i=0; i<5; i++) {
-			System.out.println("on");
-			mmap_gpio.gpioWrite(gpio, true);
+			
+			System.out.println("getMode(" + gpio + ")=" + mmap_gpio.getMode(gpio));
+			mmap_gpio.setMode(gpio, DeviceMode.DIGITAL_OUTPUT);
+			System.out.println("getMode(" + gpio + ")=" + mmap_gpio.getMode(gpio));
+	
 			System.out.println("Current val=" + mmap_gpio.gpioRead(gpio));
-			SleepUtil.sleepSeconds(1);
-			System.out.println("off");
-			mmap_gpio.gpioWrite(gpio, false);
-			System.out.println("Current val=" + mmap_gpio.gpioRead(gpio));
-			SleepUtil.sleepSeconds(1);
-		}
-		
-		boolean exit = false;
-		if (exit) {
-			System.exit(1);
-		}
-		
-		if (true) {
-			long start = System.currentTimeMillis();
-			for (int i=0; i<iterations; i++) {
+			for (int i=0; i<5; i++) {
+				System.out.println("on");
 				mmap_gpio.gpioWrite(gpio, true);
+				System.out.println("Current val=" + mmap_gpio.gpioRead(gpio));
+				SleepUtil.sleepSeconds(1);
+				System.out.println("off");
 				mmap_gpio.gpioWrite(gpio, false);
+				System.out.println("Current val=" + mmap_gpio.gpioRead(gpio));
+				SleepUtil.sleepSeconds(1);
 			}
-			long duration = System.currentTimeMillis() - start;
-			System.out.format("Took %d ms for %d iterations, frequency=%.2fkHz%n",
-					Long.valueOf(duration), Integer.valueOf(iterations), Double.valueOf(iterations/(double) duration));
+			
+			boolean exit = false;
+			if (exit) {
+				System.exit(1);
+			}
+			
+			if (true) {
+				long start = System.currentTimeMillis();
+				for (int i=0; i<iterations; i++) {
+					mmap_gpio.gpioWrite(gpio, true);
+					mmap_gpio.gpioWrite(gpio, false);
+				}
+				long duration = System.currentTimeMillis() - start;
+				System.out.format("Took %d ms for %d iterations, frequency=%.2fkHz%n",
+						Long.valueOf(duration), Integer.valueOf(iterations), Double.valueOf(iterations/(double) duration));
+			}
+	
+			for (int i=0; i<5; i++) {
+				System.out.println("on");
+				mmap_gpio.gpioWrite(gpio, true);
+				SleepUtil.sleepSeconds(1);
+				System.out.println("off");
+				mmap_gpio.gpioWrite(gpio, false);
+				SleepUtil.sleepSeconds(1);
+			}
 		}
-
-		for (int i=0; i<5; i++) {
-			System.out.println("on");
-			mmap_gpio.gpioWrite(gpio, true);
-			SleepUtil.sleepSeconds(1);
-			System.out.println("off");
-			mmap_gpio.gpioWrite(gpio, false);
-			SleepUtil.sleepSeconds(1);
-		}
-		
-		mmap_gpio.terminate();
 	}
 	
 	public static void test() {

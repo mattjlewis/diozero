@@ -14,11 +14,12 @@
 #include "com_diozero_util_MmapBufferNative.h"
 
 static void* initMapMem(int fd, uint32_t offset, uint32_t length) {
-	return mmap(0, length, PROT_READ|PROT_WRITE|PROT_EXEC, MAP_SHARED|MAP_LOCKED, fd, offset);
+	return mmap(0, length, PROT_READ|PROT_WRITE, MAP_SHARED, fd, offset);
+	//return mmap(0, length, PROT_READ|PROT_WRITE, MAP_SHARED|MAP_LOCKED, fd, offset);
 }
 
 jobject createMmapByteBuffer(JNIEnv* env, int fd, void* map_ptr, long mapCapacity) {
-	char* class_name = "com/diozero/internal/provider/mmap/MmapByteBuffer";
+	char* class_name = "com/diozero/util/MmapByteBuffer";
 	jclass clz = (*env)->FindClass(env, class_name);
 	if (clz == NULL) {
 		printf("Error, could not find class '%s'\n", class_name);
@@ -35,7 +36,8 @@ jobject createMmapByteBuffer(JNIEnv* env, int fd, void* map_ptr, long mapCapacit
 			(*env)->NewDirectByteBuffer(env, map_ptr, mapCapacity));
 }
 
-JNIEXPORT jobject JNICALL Java_com_diozero_util_MmapBufferNative_createMmapBuffer(JNIEnv *env, jclass clz, jstring path, jint offset, jint length) {
+JNIEXPORT jobject JNICALL Java_com_diozero_util_MmapBufferNative_createMmapBuffer(
+		JNIEnv* env, jclass clz, jstring path, jint offset, jint length) {
 	int str_len = (*env)->GetStringLength(env, path);
 	char filename[str_len];
 	(*env)->GetStringUTFRegion(env, path, 0, str_len, filename);

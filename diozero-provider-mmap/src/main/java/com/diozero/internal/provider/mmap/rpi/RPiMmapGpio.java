@@ -82,7 +82,7 @@ public class RPiMmapGpio implements MmapGpioInterface {
 	}
 	
 	@Override
-	public synchronized void terminate() {
+	public synchronized void close() {
 		if (initialised) {
 			MmapBufferNative.closeMmapBuffer(mmap.getFd(), mmap.getAddress(), mmap.getLength());
 		}
@@ -94,12 +94,18 @@ public class RPiMmapGpio implements MmapGpioInterface {
 	 * @return GPIO mode (0 - INPUT, 1 - OUTPUT)
 	 */
 	@Override
-	public int getMode(int gpio) {
+	public DeviceMode getMode(int gpio) {
 		int reg = gpio / 10;
 		int shift = (gpio % 10) * 3;
 
-		// FIXME Map to DeviceMode enum
-		return (gpioReg.get(reg) >> shift) & 7;
+		switch ((gpioReg.get(reg) >> shift) & 7) {
+		case 0:
+			return DeviceMode.DIGITAL_INPUT;
+		case 1:
+			return DeviceMode.DIGITAL_OUTPUT;
+		default:
+			return DeviceMode.UNKNOWN;
+		}
 	}
 	
 	@Override

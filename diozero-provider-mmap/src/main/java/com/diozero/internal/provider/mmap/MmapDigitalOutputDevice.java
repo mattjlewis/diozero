@@ -35,18 +35,18 @@ import com.diozero.internal.provider.GpioDigitalOutputDeviceInterface;
 import com.diozero.util.RuntimeIOException;
 
 public class MmapDigitalOutputDevice extends AbstractDevice implements GpioDigitalOutputDeviceInterface {
-	private MmapDeviceFactory mmapDeviceFactory;
+	private MmapGpioInterface mmapGpio;
 	private int gpio;
 
 	MmapDigitalOutputDevice(MmapDeviceFactory deviceFactory, String key,
 			int gpio, boolean initialValue) {
 		super(key, deviceFactory);
 		
-		this.mmapDeviceFactory = deviceFactory;
+		this.mmapGpio = deviceFactory.getMmapGpio();
 		this.gpio = gpio;
 		
-		deviceFactory.getMmapGpio().setMode(gpio, DeviceMode.DIGITAL_OUTPUT);
-		deviceFactory.getMmapGpio().gpioWrite(gpio, initialValue);
+		mmapGpio.setMode(gpio, DeviceMode.DIGITAL_OUTPUT);
+		mmapGpio.gpioWrite(gpio, initialValue);
 	}
 
 	@Override
@@ -56,12 +56,12 @@ public class MmapDigitalOutputDevice extends AbstractDevice implements GpioDigit
 
 	@Override
 	public boolean getValue() throws RuntimeIOException {
-		return mmapDeviceFactory.getMmapGpio().gpioRead(gpio);
+		return mmapGpio.gpioRead(gpio);
 	}
 
 	@Override
 	public void setValue(boolean value) throws RuntimeIOException {
-		mmapDeviceFactory.getMmapGpio().gpioWrite(gpio, value);
+		mmapGpio.gpioWrite(gpio, value);
 	}
 
 	@Override

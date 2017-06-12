@@ -34,7 +34,6 @@ import com.diozero.internal.provider.*;
 import com.diozero.internal.provider.mmap.odroid.OdroidC2MmapGpio;
 import com.diozero.internal.provider.mmap.rpi.RPiMmapGpio;
 import com.diozero.internal.provider.sysfs.SysFsDeviceFactory;
-import com.diozero.internal.provider.sysfs.SysFsI2cDevice;
 import com.diozero.util.LibraryLoader;
 import com.diozero.util.RuntimeIOException;
 
@@ -68,7 +67,7 @@ public class MmapDeviceFactory extends BaseNativeDeviceFactory {
 	@Override
 	public void close() {
 		super.close();
-		mmapGpio.terminate();
+		mmapGpio.close();
 	}
 
 	@Override
@@ -107,28 +106,28 @@ public class MmapDeviceFactory extends BaseNativeDeviceFactory {
 	@Override
 	public PwmOutputDeviceInterface createPwmOutputDevice(String key, PinInfo pinInfo, int pwmFrequency,
 			float initialValue) throws RuntimeIOException {
-		throw new UnsupportedOperationException("PWM not yet supported");
+		return sysFsDeviceFactory.createPwmOutputDevice(key, pinInfo, pwmFrequency, initialValue);
 	}
 
 	@Override
 	public AnalogInputDeviceInterface createAnalogInputDevice(String key, PinInfo pinInfo) throws RuntimeIOException {
-		throw new UnsupportedOperationException("Analog input not supported");
+		return sysFsDeviceFactory.createAnalogInputDevice(key, pinInfo);
 	}
 
 	@Override
 	public AnalogOutputDeviceInterface createAnalogOutputDevice(String key, PinInfo pinInfo) throws RuntimeIOException {
-		throw new UnsupportedOperationException("Analog devices aren't supported on this device");
+		return sysFsDeviceFactory.createAnalogOutputDevice(key, pinInfo);
 	}
 
 	@Override
 	protected SpiDeviceInterface createSpiDevice(String key, int controller, int chipSelect, int frequency,
 			SpiClockMode spiClockMode, boolean lsbFirst) throws RuntimeIOException {
-		throw new UnsupportedOperationException("SPI not yet supported");
+		return sysFsDeviceFactory.createSpiDevice(key, controller, chipSelect, frequency, spiClockMode, lsbFirst);
 	}
 
 	@Override
 	protected I2CDeviceInterface createI2CDevice(String key, int controller, int address, int addressSize,
 			int clockFrequency) throws RuntimeIOException {
-		return new SysFsI2cDevice(this, key, controller, address, addressSize, clockFrequency);
+		return sysFsDeviceFactory.createI2CDevice(key, controller, address, addressSize, clockFrequency);
 	}
 }

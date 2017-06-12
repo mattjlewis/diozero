@@ -1,5 +1,7 @@
 package com.diozero.internal.provider.mmap;
 
+import java.io.Closeable;
+
 import com.diozero.api.DeviceMode;
 
 /*
@@ -31,12 +33,13 @@ import com.diozero.api.DeviceMode;
 
 import com.diozero.api.GpioPullUpDown;
 
-public interface MmapGpioInterface {
+public interface MmapGpioInterface extends Closeable {
 	void initialise();
-	void terminate();
-	int getMode(int gpio);
+	DeviceMode getMode(int gpio);
 	void setMode(int gpio, DeviceMode mode);
 	void setPullUpDown(int gpio, GpioPullUpDown pud);
 	boolean gpioRead(int gpio);
 	void gpioWrite(int gpio, boolean value);
+	@Override
+	public void close();
 }
