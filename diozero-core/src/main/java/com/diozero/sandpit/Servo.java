@@ -224,7 +224,7 @@ public class Servo extends GpioDevice implements OutputDeviceInterface {
 		private static final float TOWERPRO_SG5010_RANGE = 2f;
 		public static final Trim TOWERPRO_SG5010 = new Trim(DEFAULT_MID, DEFAULT_90_DELTA, TOWERPRO_SG5010_RANGE);
 		
-		private static final float MG996R_RANGE = 1f;
+		private static final float MG996R_RANGE = 2f;
 		public static final Trim MG996R = new Trim(DEFAULT_MID, DEFAULT_90_DELTA, MG996R_RANGE);
 
 		private float minPulseWidthMs;
