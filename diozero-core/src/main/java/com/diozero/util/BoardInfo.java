@@ -1,5 +1,7 @@
 package com.diozero.util;
 
+import com.diozero.internal.provider.mmap.MmapGpioInterface;
+
 /*
  * #%L
  * Device I/O Zero - Core
@@ -26,6 +28,7 @@ package com.diozero.util;
  * #L%
  */
 
+@SuppressWarnings("static-method")
 public class BoardInfo extends BoardPinInfo {
 	private static final float DEFAULT_ADC_VREF = 1.8f;
 	
@@ -71,18 +74,21 @@ public class BoardInfo extends BoardPinInfo {
 		return make + " " + model;
 	}
 
-	@Override
-	public String toString() {
-		return "BoardInfo [make=" + make + ", model=" + model + ", memory=" + memory + ", libraryPath=" + libraryPath
-				+ ", adcVRef=" + adcVRef + "]";
-	}
-
 	public boolean sameMakeAndModel(BoardInfo boardInfo) {
 		return make.equals(boardInfo.getMake()) && model.equals(boardInfo.getModel());
 	}
 	
-	@SuppressWarnings("static-method")
 	public int getPwmChip(int pwmNum) {
 		return -1;
+	}
+
+	public MmapGpioInterface createMmapGpio() {
+		return null;
+	}
+
+	@Override
+	public String toString() {
+		return "BoardInfo [make=" + make + ", model=" + model + ", memory=" + memory + ", libraryPath=" + libraryPath
+				+ ", adcVRef=" + adcVRef + "]";
 	}
 }

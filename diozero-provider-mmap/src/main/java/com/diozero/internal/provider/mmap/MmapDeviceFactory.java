@@ -28,11 +28,7 @@ package com.diozero.internal.provider.mmap;
 
 
 import com.diozero.api.*;
-import com.diozero.internal.board.odroid.OdroidBoardInfoProvider;
-import com.diozero.internal.board.raspberrypi.RaspberryPiBoardInfoProvider;
 import com.diozero.internal.provider.*;
-import com.diozero.internal.provider.mmap.odroid.OdroidC2MmapGpio;
-import com.diozero.internal.provider.mmap.rpi.RPiMmapGpio;
 import com.diozero.internal.provider.sysfs.SysFsDeviceFactory;
 import com.diozero.util.LibraryLoader;
 import com.diozero.util.RuntimeIOException;
@@ -44,12 +40,9 @@ public class MmapDeviceFactory extends BaseNativeDeviceFactory {
 	public MmapDeviceFactory() {
 		LibraryLoader.loadLibrary(MmapDeviceFactory.class, "diozerommap");
 		
-		if (getBoardInfo().sameMakeAndModel(OdroidBoardInfoProvider.ODROID_C2)) {
-			mmapGpio = new OdroidC2MmapGpio();
-		} else if (getBoardInfo().getMake().equals(RaspberryPiBoardInfoProvider.MAKE)) {
-			mmapGpio = new RPiMmapGpio();
-		} else {
-			throw new RuntimeException("This provider is currently only supported on Raspberry Pi and Odroid C2 boards");
+		mmapGpio = getBoardInfo().createMmapGpio();
+		if (mmapGpio == null) {
+			throw new RuntimeException("Memory mapped GPIO is not supported on board " + getBoardInfo());
 		}
 		
 		mmapGpio.initialise();

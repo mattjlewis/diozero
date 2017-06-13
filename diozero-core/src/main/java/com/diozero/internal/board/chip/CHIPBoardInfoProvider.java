@@ -35,6 +35,7 @@ import java.nio.file.*;
 import org.pmw.tinylog.Logger;
 
 import com.diozero.api.PinInfo;
+import com.diozero.internal.provider.mmap.MmapGpioInterface;
 import com.diozero.util.BoardInfo;
 import com.diozero.util.BoardInfoProvider;
 
@@ -203,6 +204,22 @@ public class CHIPBoardInfoProvider implements BoardInfoProvider {
 			addGeneralPinInfo(U14_HEADER, pin++, PinInfo.GROUND);
 		}
 		
+		@Override
+		public int mapToSysFsGpioNumber(int gpio) {
+			loadXioGpioOffset();
+			return gpio < 8 ? xioGpioOffset + gpio : gpio;
+		}
+
+		@Override
+		public int getPwmChip(int pwmNum) {
+			return 0;
+		}
+		
+		@Override
+		public MmapGpioInterface createMmapGpio() {
+			return new ChipMmapGpio();
+		}
+		
 		private synchronized void loadXioGpioOffset() {
 			if (! xioGpioOffsetLoaded) {
 				// Determine the XIO GPIO base
@@ -224,17 +241,6 @@ public class CHIPBoardInfoProvider implements BoardInfoProvider {
 				
 				xioGpioOffsetLoaded = true;
 			}
-		}
-		
-		@Override
-		public int mapToSysFsGpioNumber(int gpio) {
-			loadXioGpioOffset();
-			return gpio < 8 ? xioGpioOffset + gpio : gpio;
-		}
-
-		@Override
-		public int getPwmChip(int pwmNum) {
-			return 0;
 		}
 	}
 
