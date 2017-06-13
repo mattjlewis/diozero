@@ -70,13 +70,13 @@ public class OdroidC2MmapGpio implements MmapGpioInterface {
 	
 	private boolean initialised;
 	private MmapByteBuffer mmap;
-	private volatile IntBuffer gpioReg;
+	private volatile IntBuffer gpioIntBuffer;
 	
 	@Override
 	public synchronized void initialise() {
 		if (! initialised) {
 			mmap = MmapBufferNative.createMmapBuffer(MEM_DEVICE, GPIO_BASE_OFFSET, BLOCK_SIZE);
-			gpioReg = mmap.getBuffer().order(ByteOrder.LITTLE_ENDIAN).asIntBuffer();
+			gpioIntBuffer = mmap.getBuffer().order(ByteOrder.LITTLE_ENDIAN).asIntBuffer();
 			
 			initialised = true;
 		}
@@ -95,7 +95,7 @@ public class OdroidC2MmapGpio implements MmapGpioInterface {
 		int shift = C2_GP_TO_SHIFT_REG[gpio - C2_GPIOY_PIN_START];
 		
 		//return (gpioReg.get(reg) & (1 << shift)) == 0 ? DeviceMode.DIGITAL_OUTPUT : DeviceMode.DIGITAL_INPUT;
-		switch (gpioReg.get(reg) & (1 << shift)) {
+		switch (gpioIntBuffer.get(reg) & (1 << shift)) {
 		case 0:
 			return DeviceMode.DIGITAL_OUTPUT;
 		case 1:
@@ -111,10 +111,10 @@ public class OdroidC2MmapGpio implements MmapGpioInterface {
 		int shift = C2_GP_TO_SHIFT_REG[gpio - C2_GPIOY_PIN_START];
 		switch (mode) {
 		case DIGITAL_INPUT:
-			gpioReg.put(reg, gpioReg.get(reg) | (1 << shift));
+			gpioIntBuffer.put(reg, gpioIntBuffer.get(reg) | (1 << shift));
 			break;
 		case DIGITAL_OUTPUT:
-			gpioReg.put(reg, gpioReg.get(reg) & ~(1 << shift));
+			gpioIntBuffer.put(reg, gpioIntBuffer.get(reg) & ~(1 << shift));
 			break;
 		default:
 			throw new IllegalArgumentException("Invalid GPIO mode " + mode + " for pin " + gpio);
@@ -127,15 +127,15 @@ public class OdroidC2MmapGpio implements MmapGpioInterface {
 		int pud_en_reg = gpio < C2_GPIOX_PIN_START ? C2_GPIOY_PUEN_REG_OFFSET : C2_GPIOX_PUEN_REG_OFFSET;
 		if (pud == GpioPullUpDown.NONE) {
 			// Disable Pull/Pull-down resister
-			gpioReg.put(pud_en_reg, gpioReg.get(pud_en_reg) & ~(1 << shift));
+			gpioIntBuffer.put(pud_en_reg, gpioIntBuffer.get(pud_en_reg) & ~(1 << shift));
 		} else {
 			// Enable Pull/Pull-down resister
-			gpioReg.put(pud_en_reg, gpioReg.get(pud_en_reg) | (1 << shift));
+			gpioIntBuffer.put(pud_en_reg, gpioIntBuffer.get(pud_en_reg) | (1 << shift));
 			int pud_reg = gpio < C2_GPIOX_PIN_START ? C2_GPIOY_PUPD_REG_OFFSET : C2_GPIOX_PUPD_REG_OFFSET;
 			if (pud == GpioPullUpDown.PULL_UP) {
-				gpioReg.put(pud_reg, gpioReg.get(pud_reg) |  (1 << shift));
+				gpioIntBuffer.put(pud_reg, gpioIntBuffer.get(pud_reg) |  (1 << shift));
 			} else {
-				gpioReg.put(pud_reg, gpioReg.get(pud_reg) & ~(1 << shift));
+				gpioIntBuffer.put(pud_reg, gpioIntBuffer.get(pud_reg) & ~(1 << shift));
 			}
 		}
 	}
@@ -144,7 +144,7 @@ public class OdroidC2MmapGpio implements MmapGpioInterface {
 	public boolean gpioRead(int gpio) {
 		int shift = C2_GP_TO_SHIFT_REG[gpio - C2_GPIOY_PIN_START];
 		int gp_lev_reg = gpio < C2_GPIOX_PIN_START ? C2_GPIOY_INP_REG_OFFSET : C2_GPIOX_INP_REG_OFFSET;
-		return (gpioReg.get(gp_lev_reg) & (1 << shift)) != 0;
+		return (gpioIntBuffer.get(gp_lev_reg) & (1 << shift)) != 0;
 	}
 	
 	@Override
@@ -152,9 +152,9 @@ public class OdroidC2MmapGpio implements MmapGpioInterface {
 		int shift = C2_GP_TO_SHIFT_REG[gpio - C2_GPIOY_PIN_START];
 		int gp_set_reg = gpio < C2_GPIOX_PIN_START ? C2_GPIOY_OUTP_REG_OFFSET : C2_GPIOX_OUTP_REG_OFFSET;
 		if (value) {
-			gpioReg.put(gp_set_reg, gpioReg.get(gp_set_reg) | (1 << shift));
+			gpioIntBuffer.put(gp_set_reg, gpioIntBuffer.get(gp_set_reg) | (1 << shift));
 		} else {
-			gpioReg.put(gp_set_reg, gpioReg.get(gp_set_reg) & ~(1 << shift));
+			gpioIntBuffer.put(gp_set_reg, gpioIntBuffer.get(gp_set_reg) & ~(1 << shift));
 		}
 	}
 	
@@ -231,7 +231,7 @@ public class OdroidC2MmapGpio implements MmapGpioInterface {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 			try {
 				while (true) {
-					MemoryInspector.dumpMemory(mmap_gpio.gpioReg, C2_GPIO_PIN_BASE, 200);
+					MemoryInspector.dumpMemory(mmap_gpio.gpioIntBuffer, C2_GPIO_PIN_BASE, 200);
 					String line = reader.readLine();
 					if (line == null || line.equals("q")) {
 						break;

@@ -29,8 +29,8 @@ package com.diozero.sampleapps.mfrc522;
 
 import org.pmw.tinylog.Logger;
 
-import com.diozero.sandpit.MFRC522;
-import com.diozero.sandpit.MFRC522.StatusCode;
+import com.diozero.MFRC522;
+import com.diozero.MFRC522.StatusCode;
 import com.diozero.util.Hex;
 import com.diozero.util.SleepUtil;
 

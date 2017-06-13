@@ -35,11 +35,12 @@ import com.diozero.api.GpioPullUpDown;
 
 public interface MmapGpioInterface extends Closeable {
 	void initialise();
+	@Override
+	public void close();
+	
 	DeviceMode getMode(int gpio);
 	void setMode(int gpio, DeviceMode mode);
 	void setPullUpDown(int gpio, GpioPullUpDown pud);
 	boolean gpioRead(int gpio);
 	void gpioWrite(int gpio, boolean value);
-	@Override
-	public void close();
 }

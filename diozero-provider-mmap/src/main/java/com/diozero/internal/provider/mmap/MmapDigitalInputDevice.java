@@ -40,18 +40,18 @@ implements GpioDigitalInputDeviceInterface, InputEventListener<DigitalInputEvent
 	private int gpio;
 	private GpioDigitalInputDeviceInterface sysFsDigitialInput;
 
-	MmapDigitalInputDevice(MmapDeviceFactory deviceFactory, String key, int gpio, GpioPullUpDown pud,
+	MmapDigitalInputDevice(MmapDeviceFactory deviceFactory, String key, PinInfo pinInfo, GpioPullUpDown pud,
 			GpioEventTrigger trigger) {
 		super(key, deviceFactory);
 		
 		this.mmapGpio = deviceFactory.getMmapGpio();
-		this.gpio = gpio;
+		this.gpio = pinInfo.getDeviceNumber();
 		
 		mmapGpio.setMode(gpio, DeviceMode.DIGITAL_INPUT);
 		mmapGpio.setPullUpDown(gpio, pud);
 
 		sysFsDigitialInput = deviceFactory.getSysFsDeviceFactory().provisionDigitalInputDevice(
-				gpio, pud, trigger);
+				pinInfo.getDeviceNumber(), pud, trigger);
 	}
 
 	@Override

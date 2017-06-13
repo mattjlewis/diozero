@@ -30,6 +30,7 @@ package com.diozero.internal.provider.mmap;
 import org.pmw.tinylog.Logger;
 
 import com.diozero.api.DeviceMode;
+import com.diozero.api.PinInfo;
 import com.diozero.internal.provider.AbstractDevice;
 import com.diozero.internal.provider.GpioDigitalOutputDeviceInterface;
 import com.diozero.util.RuntimeIOException;
@@ -38,12 +39,11 @@ public class MmapDigitalOutputDevice extends AbstractDevice implements GpioDigit
 	private MmapGpioInterface mmapGpio;
 	private int gpio;
 
-	MmapDigitalOutputDevice(MmapDeviceFactory deviceFactory, String key,
-			int gpio, boolean initialValue) {
+	MmapDigitalOutputDevice(MmapDeviceFactory deviceFactory, String key, PinInfo pinInfo, boolean initialValue) {
 		super(key, deviceFactory);
 		
 		this.mmapGpio = deviceFactory.getMmapGpio();
-		this.gpio = gpio;
+		this.gpio = pinInfo.getDeviceNumber();
 		
 		mmapGpio.setMode(gpio, DeviceMode.DIGITAL_OUTPUT);
 		mmapGpio.gpioWrite(gpio, initialValue);

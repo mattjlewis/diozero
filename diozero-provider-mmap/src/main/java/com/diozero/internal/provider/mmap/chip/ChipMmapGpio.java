@@ -35,10 +35,12 @@ import com.diozero.api.GpioPullUpDown;
 import com.diozero.internal.provider.mmap.MmapGpioInterface;
 import com.diozero.util.*;
 
-// Mappings courtesy of WereCatf
-// https://bbs.nextthing.co/t/chippy-gonzales-fast-gpio/14056/6?u=xtacocorex
+// Register mapping courtesy of WereCatf
+//https://bbs.nextthing.co/t/chippy-gonzales-fast-gpio/14056/6?u=xtacocorex
+// https://github.com/WereCatf/Gonzales
+// https://github.com/LuciferAndDiablo/NTC-C.H.I.P.-JavaGPIOLib
 // Refer to the Allwinner R8 User Manual V1.1 datasheet, section 32.2
-// 0 == INPUT, 1 == OUTPUT, 2-7 == alt functions
+// Modes: 0 == INPUT, 1 == OUTPUT, 2-7 == alt functions
 public class ChipMmapGpio implements MmapGpioInterface {
 	private static final String MEM_DEVICE = "/dev/mem";
 	private static final int GPIO_BASE_OFFSET = 0x01c20000;
@@ -62,13 +64,13 @@ public class ChipMmapGpio implements MmapGpioInterface {
 	private static final int PUD_PULL_DOWN = 0b10;
 	
 	private MmapByteBuffer mmap;
-	private IntBuffer gpioReg;
+	private IntBuffer gpioIntBuffer;
 	
 	@Override
 	public synchronized void initialise() {
 		if (mmap == null) {
 			mmap = MmapBufferNative.createMmapBuffer(MEM_DEVICE, GPIO_BASE_OFFSET, 2*PAGE_SIZE);
-			gpioReg = mmap.getBuffer().order(ByteOrder.LITTLE_ENDIAN).asIntBuffer();
+			gpioIntBuffer = mmap.getBuffer().order(ByteOrder.LITTLE_ENDIAN).asIntBuffer();
 		}
 	}
 	
@@ -85,7 +87,7 @@ public class ChipMmapGpio implements MmapGpioInterface {
 		int pin = getPin(gpio);
 		//int config_reg = PIO_START_INT_OFFSET + port*PORT_INT_OFFSET + CONFIG_REG_INT_OFFSET + (pin>>3);
 		int config_reg = PORT_CONFIGS[port].configRegisters[pin];
-		int config_val = (gpioReg.get(config_reg) >> ((pin % 8) * 4)) & 0b111;
+		int config_val = (gpioIntBuffer.get(config_reg) >> ((pin % 8) * 4)) & 0b111;
 		switch (config_val) {
 		case 0b000:
 			return DeviceMode.DIGITAL_INPUT;
@@ -107,22 +109,22 @@ public class ChipMmapGpio implements MmapGpioInterface {
 		int pin = getPin(gpio);
 		//int config_reg = PIO_START_INT_OFFSET + port*PORT_INT_OFFSET + CONFIG_REG_INT_OFFSET + (pin>>3);
 		int config_reg = PORT_CONFIGS[port].configRegisters[pin];
-		int current_reg_val = gpioReg.get(config_reg);
+		int current_reg_val = gpioIntBuffer.get(config_reg);
 		// Blank out the old bits so we can overwrite them
 		int shift = (pin % 8) * 4;
 		current_reg_val &= ~(0b111 << shift);
 		switch (mode) {
 		case DIGITAL_INPUT:
-			gpioReg.put(config_reg, current_reg_val);
+			gpioIntBuffer.put(config_reg, current_reg_val);
 			break;
 		case DIGITAL_OUTPUT:
-			gpioReg.put(config_reg, current_reg_val | (0b001 << shift));
+			gpioIntBuffer.put(config_reg, current_reg_val | (0b001 << shift));
 			break;
 		case PWM_OUTPUT:
 			if (gpio != 34 && gpio != 205) {
 				throw new IllegalArgumentException("Invalid GPIO mode " + mode + " for pin " + gpio);
 			}
-			gpioReg.put(config_reg, current_reg_val | (0b010 << shift));
+			gpioIntBuffer.put(config_reg, current_reg_val | (0b010 << shift));
 			break;
 		default:
 			throw new IllegalArgumentException("Invalid GPIO mode " + mode + " for pin " + gpio);
@@ -135,7 +137,7 @@ public class ChipMmapGpio implements MmapGpioInterface {
 		int pull_reg = PORT_CONFIGS[port].pullRegisters[pin];
 		int shift = (pin % 16) * 2;
 		GpioPullUpDown pud;
-		switch ((gpioReg.get(pull_reg) >> shift) & 0b11) {
+		switch ((gpioIntBuffer.get(pull_reg) >> shift) & 0b11) {
 		case PUD_PULL_UP:
 			pud = GpioPullUpDown.PULL_UP;
 			break;
@@ -156,19 +158,19 @@ public class ChipMmapGpio implements MmapGpioInterface {
 		int port = getPort(gpio);
 		int pin = getPin(gpio);
 		int pull_reg = PORT_CONFIGS[port].pullRegisters[pin];
-		int current_reg_val = gpioReg.get(pull_reg);
+		int current_reg_val = gpioIntBuffer.get(pull_reg);
 		// Blank out the old bits so we can overwrite them
 		int shift = (pin % 16) * 2;
 		current_reg_val &= ~(0b11 << shift);
 		switch (pud) {
 		case NONE:
-			gpioReg.put(pull_reg, current_reg_val);
+			gpioIntBuffer.put(pull_reg, current_reg_val);
 			break;
 		case PULL_UP:
-			gpioReg.put(pull_reg, current_reg_val | (PUD_PULL_UP << shift));
+			gpioIntBuffer.put(pull_reg, current_reg_val | (PUD_PULL_UP << shift));
 			break;
 		case PULL_DOWN:
-			gpioReg.put(pull_reg, current_reg_val | (PUD_PULL_DOWN << shift));
+			gpioIntBuffer.put(pull_reg, current_reg_val | (PUD_PULL_DOWN << shift));
 			break;
 		}
 	}
@@ -179,7 +181,7 @@ public class ChipMmapGpio implements MmapGpioInterface {
 		int pin = getPin(gpio);
 		
 		//int data_reg = PIO_START_INT_OFFSET + port*PORT_INT_OFFSET + DATA_REG_INT_OFFSET;
-		return ((gpioReg.get(PORT_CONFIGS[port].dataRegister) >> pin) & 1) == 1;
+		return ((gpioIntBuffer.get(PORT_CONFIGS[port].dataRegister) >> pin) & 1) == 1;
 	}
 	
 	@Override
@@ -190,9 +192,9 @@ public class ChipMmapGpio implements MmapGpioInterface {
 		//int data_reg = PIO_START_INT_OFFSET + port*PORT_INT_OFFSET + DATA_REG_INT_OFFSET;
 		int data_reg = PORT_CONFIGS[port].dataRegister;
 		if (value) {
-			gpioReg.put(data_reg, gpioReg.get(data_reg) | (1 << pin));
+			gpioIntBuffer.put(data_reg, gpioIntBuffer.get(data_reg) | (1 << pin));
 		} else {
-			gpioReg.put(data_reg, gpioReg.get(data_reg) & ~(1 << pin));
+			gpioIntBuffer.put(data_reg, gpioIntBuffer.get(data_reg) & ~(1 << pin));
 		}
 	}
 	

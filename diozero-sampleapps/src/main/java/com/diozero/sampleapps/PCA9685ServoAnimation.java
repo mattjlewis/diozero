@@ -35,10 +35,10 @@ import java.util.concurrent.Future;
 import org.pmw.tinylog.Logger;
 
 import com.diozero.PCA9685;
+import com.diozero.Servo;
 import com.diozero.api.Animation;
 import com.diozero.api.AnimationInstance;
 import com.diozero.api.easing.Sine;
-import com.diozero.sandpit.Servo;
 
 /**
  * PCA9685 sample application. To run:

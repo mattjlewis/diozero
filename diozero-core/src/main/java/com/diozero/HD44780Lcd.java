@@ -51,7 +51,6 @@ import com.diozero.util.SleepUtil;
  * <a href="https://www.sparkfun.com/datasheets/LCD/HD44780.pdf">HD44780 Datasheet</a>.
  * </p>
  */
-//@SuppressWarnings("unused")
 public class HD44780Lcd implements Closeable {
 	private static final boolean DEFAULT_BACKLIGHT_STATE = true;
 	
@@ -184,7 +183,7 @@ public class HD44780Lcd implements Closeable {
 	private LcdConnection lcdConnection;
 	private boolean dataInHighNibble;
 	private int registerSelectDataMask;
-	private int dataReadMask;
+	//private int dataReadMask;
 	private int enableMask;
 	private int backlightOnMask;
 	private boolean backlightEnabled;
@@ -225,7 +224,7 @@ public class HD44780Lcd implements Closeable {
 		this.lcdConnection = lcdConnection;
 		dataInHighNibble = lcdConnection.isDataInHighNibble();
 		registerSelectDataMask = 1 << lcdConnection.getRegisterSelectBit();
-		dataReadMask = 1 << lcdConnection.getDataReadWriteBit();
+		//dataReadMask = 1 << lcdConnection.getDataReadWriteBit();
 		enableMask = 1 << lcdConnection.getEnableBit();
 		backlightOnMask = 1 << lcdConnection.getBacklightBit();
 

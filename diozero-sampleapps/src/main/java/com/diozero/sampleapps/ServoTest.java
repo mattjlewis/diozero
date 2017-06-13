@@ -29,7 +29,7 @@ package com.diozero.sampleapps;
 
 import org.pmw.tinylog.Logger;
 
-import com.diozero.sandpit.Servo;
+import com.diozero.Servo;
 import com.diozero.util.SleepUtil;
 
 /**

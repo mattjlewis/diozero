@@ -88,19 +88,19 @@ public class MmapDeviceFactory extends BaseNativeDeviceFactory {
 	@Override
 	public GpioDigitalInputDeviceInterface createDigitalInputDevice(String key, PinInfo pinInfo, GpioPullUpDown pud,
 			GpioEventTrigger trigger) throws RuntimeIOException {
-		return new MmapDigitalInputDevice(this, key, pinInfo.getDeviceNumber(), pud, trigger);
+		return new MmapDigitalInputDevice(this, key, pinInfo, pud, trigger);
 	}
 
 	@Override
 	public GpioDigitalOutputDeviceInterface createDigitalOutputDevice(String key, PinInfo pinInfo, boolean initialValue)
 			throws RuntimeIOException {
-		return new MmapDigitalOutputDevice(this, key, pinInfo.getDeviceNumber(), initialValue);
+		return new MmapDigitalOutputDevice(this, key, pinInfo, initialValue);
 	}
 
 	@Override
 	public GpioDigitalInputOutputDeviceInterface createDigitalInputOutputDevice(String key, PinInfo pinInfo, DeviceMode mode)
 			throws RuntimeIOException {
-		return new MmapDigitalInputOutputDevice(this, key, pinInfo.getDeviceNumber(), mode);
+		return new MmapDigitalInputOutputDevice(this, key, pinInfo, mode);
 	}
 
 	@Override

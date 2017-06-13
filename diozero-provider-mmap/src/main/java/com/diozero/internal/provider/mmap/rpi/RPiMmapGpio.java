@@ -69,13 +69,13 @@ public class RPiMmapGpio implements MmapGpioInterface {
 	
 	private boolean initialised;
 	private MmapByteBuffer mmap;
-	private IntBuffer gpioReg;
+	private IntBuffer gpioIntBuffer;
 	
 	@Override
 	public synchronized void initialise() {
 		if (! initialised) {
 			mmap = MmapBufferNative.createMmapBuffer(GPIOMEM_DEVICE, 0, GPIOMEM_LEN);
-			gpioReg = mmap.getBuffer().order(ByteOrder.LITTLE_ENDIAN).asIntBuffer();
+			gpioIntBuffer = mmap.getBuffer().order(ByteOrder.LITTLE_ENDIAN).asIntBuffer();
 			
 			initialised = true;
 		}
@@ -98,7 +98,7 @@ public class RPiMmapGpio implements MmapGpioInterface {
 		int reg = gpio / 10;
 		int shift = (gpio % 10) * 3;
 
-		switch ((gpioReg.get(reg) >> shift) & 7) {
+		switch ((gpioIntBuffer.get(reg) >> shift) & 7) {
 		case 0:
 			return DeviceMode.DIGITAL_INPUT;
 		case 1:
@@ -115,10 +115,10 @@ public class RPiMmapGpio implements MmapGpioInterface {
 		
 		switch (mode) {
 		case DIGITAL_INPUT:
-			gpioReg.put(reg, gpioReg.get(reg) & ~(7 << shift));
+			gpioIntBuffer.put(reg, gpioIntBuffer.get(reg) & ~(7 << shift));
 			break;
 		case DIGITAL_OUTPUT:
-			gpioReg.put(reg, (gpioReg.get(reg) & ~(7 << shift)) | (1 << shift));
+			gpioIntBuffer.put(reg, (gpioIntBuffer.get(reg) & ~(7 << shift)) | (1 << shift));
 			break;
 		default:
 			throw new IllegalArgumentException("Invalid GPIO mode " + mode + " for pin " + gpio);
@@ -152,20 +152,20 @@ public class RPiMmapGpio implements MmapGpioInterface {
 		}
 		
 		// wiringPi:
-		gpioReg.put(GPPUD, pi_pud & 3);
+		gpioIntBuffer.put(GPPUD, pi_pud & 3);
 		SleepUtil.busySleep(5_000);
-	    gpioReg.put(GPIO_TO_PUDCLK[gpio], 1 << (gpio & 0x1F));
+	    gpioIntBuffer.put(GPIO_TO_PUDCLK[gpio], 1 << (gpio & 0x1F));
 		SleepUtil.busySleep(5_000);
-	    gpioReg.put(GPPUD, 0);
+	    gpioIntBuffer.put(GPPUD, 0);
 		SleepUtil.busySleep(5_000);
-	    gpioReg.put(GPIO_TO_PUDCLK[gpio], 0);
+	    gpioIntBuffer.put(GPIO_TO_PUDCLK[gpio], 0);
 		SleepUtil.busySleep(5_000);
 	}
 	
 	@Override
 	public boolean gpioRead(int gpio) {
 		//return (gpioReg.get(GPLEV0 + (gpio >> 5)) & (1 << (gpio & 0x1F))) != 0;
-		return (gpioReg.get(GPIO_TO_GPLEV[gpio]) & (1 << (gpio & 0x1F))) != 0;
+		return (gpioIntBuffer.get(GPIO_TO_GPLEV[gpio]) & (1 << (gpio & 0x1F))) != 0;
 	}
 	
 	@Override
@@ -174,12 +174,12 @@ public class RPiMmapGpio implements MmapGpioInterface {
 			// pigpio
 			//gpioReg.put(GPSET0 + gpio >> 5, 1 << (gpio & 0x1F));
 			// wiringPi
-			gpioReg.put(GPIO_TO_GPSET[gpio], 1 << (gpio & 0x1F));
+			gpioIntBuffer.put(GPIO_TO_GPSET[gpio], 1 << (gpio & 0x1F));
 		} else {
 			// pigpio
 			//gpioReg.put(GPCLR0 + gpio >> 5, 1 << (gpio & 0x1F));
 			// wiringPi
-			gpioReg.put(GPIO_TO_GPCLR[gpio], 1 << (gpio & 0x1F));
+			gpioIntBuffer.put(GPIO_TO_GPCLR[gpio], 1 << (gpio & 0x1F));
 		}
 	}
 }

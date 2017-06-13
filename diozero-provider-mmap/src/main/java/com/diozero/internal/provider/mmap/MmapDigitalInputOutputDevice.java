@@ -45,12 +45,12 @@ implements GpioDigitalInputOutputDeviceInterface, InputEventListener<DigitalInpu
 	private GpioDigitalInputDeviceInterface sysFsDigitialInput;
 
 	public MmapDigitalInputOutputDevice(MmapDeviceFactory deviceFactory, String key,
-			int gpio, DeviceMode mode) {
+			PinInfo pinInfo, DeviceMode mode) {
 		super(key, deviceFactory);
 		
 		this.mmapDeviceFactory = deviceFactory;
 		mmapGpio = mmapDeviceFactory.getMmapGpio();
-		this.gpio = gpio;
+		this.gpio = pinInfo.getDeviceNumber();
 
 		// For when mode is set to input
 		this.pud = GpioPullUpDown.NONE;
