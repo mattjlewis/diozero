@@ -1,6 +1,8 @@
-package com.diozero.sandpit;
+package com.diozero;
 
 import java.io.Closeable;
+
+import org.pmw.tinylog.Logger;
 
 /*
  * #%L
@@ -85,29 +87,19 @@ public class LM73 implements ThermometerInterface, Closeable {
 	
 	// Control/Status register bits
 	private static final byte CONTROL_DATA_AVAILABLE_BIT = 0;
-	private static final byte CONTROL_DATA_AVAILABLE_MASK = 1 << CONTROL_DATA_AVAILABLE_BIT;
 	private static final byte TEMP_LOW_BIT = 1;
-	private static final byte TEMP_LOW_MASK = 1 << TEMP_LOW_BIT;
 	private static final byte TEMP_HIGH_BIT = 2;
-	private static final byte TEMP_HIGH_MASK = 1 << TEMP_HIGH_BIT;
 	private static final byte ALERT_STATUS_BIT = 3;
-	private static final byte ALERT_STATUS_MASK = 1 << ALERT_STATUS_BIT;
 	private static final byte TIMEOUT_DISABLE_BIT = 7;
-	private static final byte TIMEOUT_DISABLE_MASK = (byte) (1 << TIMEOUT_DISABLE_BIT);
 
 	//private static final byte LM73_BIT_STATUS = 0x0F;
 
 	// Configuration register bits
 	private static final byte ONE_SHOT_BIT = 2;
-	private static final byte ONE_SHOT_MASK = 1 << ONE_SHOT_BIT;
 	private static final byte ALERT_RESET_BIT = 3;
-	private static final byte ALERT_RESET_MASK = 1 << ALERT_RESET_BIT;
 	private static final byte ALERT_POLARITY_BIT = 4;
-	private static final byte ALERT_POLARITY_MASK = 1 << ALERT_POLARITY_BIT;
 	private static final byte ALERT_ENABLE_BIT = 5;
-	private static final byte ALERT_ENABLE_MASK = 1 << ALERT_ENABLE_BIT;
 	private static final byte POWER_DOWN_BIT = 7;
-	private static final byte POWER_DOWN_MASK = (byte) (1 << POWER_DOWN_BIT);
 	
 	private static final int LM73_ID = 0x190;
 	// p19 states that the reset state is 0x08
@@ -123,6 +115,10 @@ public class LM73 implements ThermometerInterface, Closeable {
 		resolution = DEFAULT_RESOLUTION;
 		
 		device = new I2CDevice(controller, config.getAddress());
+		int id = device.readUShort(ID_REG);
+		if (id != LM73_ID) {
+			Logger.warn("Expected device id 0x{}, got 0x{}", Integer.toHexString(LM73_ID), Integer.toHexString(id));
+		}
 	}
 	
 	@Override

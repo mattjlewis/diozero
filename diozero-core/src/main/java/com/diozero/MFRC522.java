@@ -1,4 +1,4 @@
-package com.diozero.sandpit;
+package com.diozero;
 
 /*
  * #%L
@@ -56,78 +56,123 @@ import com.diozero.util.SleepUtil;
  * <li>3v3:  3v3</li>
  * </ul>
  *
- * Java port from <a href="https://github.com/miguelbalboa/rfid/blob/master/src/MFRC522.cpp">MFRC522 Library to use ARDUINO RFID MODULE KIT 13.56 MHZ WITH TAGS SPI W AND R BY COOQROBOT</a></p>
- * Based on code written by Dr.Leong   ( WWW.B2CQSHOP.COM )
- * Created by Miguel Balboa (circuitito.com), Jan, 2012.
- * Rewritten by Søren Thing Andersen (access.thing.dk), fall of 2013 (Translation to English, refactored, comments, anti collision, cascade levels.)
- * Extended by Tom Clement with functionality to write to sector 0 of UID changeable Mifare cards.
- * Released into the public domain.
+ * <p>Java port from <a href="https://github.com/miguelbalboa/rfid/blob/master/src/MFRC522.cpp">MFRC522 Library to use ARDUINO RFID MODULE KIT 13.56 MHZ WITH TAGS SPI W AND R BY COOQROBOT</a> that was created by Miguel Balboa (circuitito.com).</p>
  * 
- * Please read this file for an overview and then MFRC522.cpp for comments on the specific functions.
- * Search for "mf-rc522" on ebay.com to purchase the MF-RC522 board. 
+ * <p>There are three hardware components involved:</p>
+ * <ol>
+ * <li>The controller, e.g. Arduino, Raspberry Pi</li>
+ * <li>The PCD (Proximity C	oupling Device), e.g. NXP MFRC522 Contactless Reader</li>
+ * <li>The PICC (Proximity Integrated Circuit Card): A card or tag using the ISO 14443A interface, e.g. Mifare or NTAG203.</li>
+ * </ol>
  * 
- * There are three hardware components involved:
- * 1) The micro controller: An Arduino
- * 2) The PCD (short for Proximity Coupling Device): NXP MFRC522 Contactless Reader IC
- * 3) The PICC (short for Proximity Integrated Circuit Card): A card or tag using the ISO 14443A interface, eg Mifare or NTAG203.
+ * <p>The microcontroller and card reader uses SPI for communication.
+ * The protocol is described in the <a href="http://www.nxp.com/documents/data_sheet/MFRC522.pdf">MFRC522 datasheet</a>.</p>
  * 
- * The microcontroller and card reader uses SPI for communication.
- * The protocol is described in the MFRC522 datasheet: http://www.nxp.com/documents/data_sheet/MFRC522.pdf
+ * <p>The card reader and the tags communicate using a 13.56MHz electromagnetic field.
+ * The protocol is defined in <a href="http://wg8.de/wg8n1496_17n3613_Ballot_FCD14443-3.pdf">http://wg8.de/wg8n1496_17n3613_Ballot_FCD14443-3.pdf</a>:</p>
+ * <ul>
+ * <li>ISO/IEC 14443-3 Identification cards</li>
+ * <li>Contactless integrated circuit cards</li>
+ * <li>Proximity cards</li>
+ * <li>Part 3: Initialization and anticollision"</li>
+ * <li>Chapter 6, Type A – Initialization and anticollision</li>
+ * </ul>
  * 
- * The card reader and the tags communicate using a 13.56MHz electromagnetic field.
- * The protocol is defined in ISO/IEC 14443-3 Identification cards -- Contactless integrated circuit cards -- Proximity cards -- Part 3: Initialization and anticollision".
- * A free version of the final draft can be found at http://wg8.de/wg8n1496_17n3613_Ballot_FCD14443-3.pdf
- * Details are found in chapter 6, Type A – Initialization and anticollision.
+ * <p>If only the PICC UID is wanted, the above documents have all the information needed.<br>
+ * To read and write from MIFARE PICCs, the MIFARE protocol is used after the PICC has been selected.<br>
+ * The MIFARE Classic and Ultralight chips and protocols are described in the datasheets:</p>
+ * <ul>
+ * <li><a href="http://www.mouser.com/ds/2/302/MF1S503x-89574.pdf">1K</a></li>
+ * <li><a href="http://datasheet.octopart.com/MF1S7035DA4,118-NXP-Semiconductors-datasheet-11046188.pdf">4K</a></li>
+ * <li><a href="http://www.idcardmarket.com/download/mifare_S20_datasheet.pdf">Mini</a></li>
+ * <li><a href="http://www.nxp.com/documents/data_sheet/MF0ICU1.pdf">Ultralight</a></li>
+ * <li><a href="http://www.nxp.com/documents/short_data_sheet/MF0ICU2_SDS.pdf">Ultralight C</a></li>
+ * </ul>
  * 
- * If only the PICC UID is wanted, the above documents has all the needed information.
- * To read and write from MIFARE PICCs, the MIFARE protocol is used after the PICC has been selected.
- * The MIFARE Classic chips and protocol is described in the datasheets:
- *		1K:   http://www.mouser.com/ds/2/302/MF1S503x-89574.pdf
- * 		4K:   http://datasheet.octopart.com/MF1S7035DA4,118-NXP-Semiconductors-datasheet-11046188.pdf
- * 		Mini: http://www.idcardmarket.com/download/mifare_S20_datasheet.pdf
- * The MIFARE Ultralight chip and protocol is described in the datasheets:
- *		Ultralight:   http://www.nxp.com/documents/data_sheet/MF0ICU1.pdf
- * 		Ultralight C: http://www.nxp.com/documents/short_data_sheet/MF0ICU2_SDS.pdf
+ * <h2>MIFARE Classic 1K (MF1S503x)</h2>
+ * <p>Has 16 sectors * 4 blocks/sector * 16 bytes/block = 1024 bytes.<br>
+ * The blocks are numbered 0-63.<br>
+ * Block 3 in each sector is the Sector Trailer. See <a href="http://www.mouser.com/ds/2/302/MF1S503x-89574.pdf">sections 8.6 and 8.7</a>:</p>
+ * <pre>
+ *   Bytes 0-5:   Key A
+ *   Bytes 6-8:   Access Bits
+ *   Bytes 9:     User data
+ *   Bytes 10-15: Key B (or user data)
+ * </pre>
+ * <p>Block 0 is read-only manufacturer data, sometimes as follows:</p>
+ * <pre>
+ * 0 1 2 3 |4  | 5 |6   |7 8 9 A B C D E F
+ * UID     |BCC|SAK|ATAQ|Manufacturer data
+ * </pre>
+ * <p>To access a block, an authentication using a key from the block's sector must be performed first.<br>
+ * Example: To read from block 10, first authenticate using a key from sector 3 (blocks 8-11).<br>
+ * All keys are set to FFFFFFFFFFFFh at chip delivery.<br>
+ * <em>Warning</em>: Please read section 8.7 "Memory Access". It includes this text: if the PICC detects a format violation the whole sector is irreversibly blocked.<br>
+ * To use a block in "value block" mode (for Increment/Decrement operations) you need to change the sector trailer. Use setAccessBits() to calculate the bit patterns.</p>
+ *
+ * <h2>MIFARE Classic 4K (MF1S703x)</h2>
+ * <p>Has (32 sectors * 4 blocks/sector + 8 sectors * 16 blocks/sector) * 16 bytes/block = 4096 bytes.<br>
+ * The blocks are numbered 0-255.<br>
+ * The last block in each sector is the Sector Trailer like above.</p>
  * 
- * MIFARE Classic 1K (MF1S503x):
- * 		Has 16 sectors * 4 blocks/sector * 16 bytes/block = 1024 bytes.
- * 		The blocks are numbered 0-63.
- * 		Block 3 in each sector is the Sector Trailer. See http://www.mouser.com/ds/2/302/MF1S503x-89574.pdf sections 8.6 and 8.7:
- * 				Bytes 0-5:   Key A
- * 				Bytes 6-8:   Access Bits
- * 				Bytes 9:     User data
- * 				Bytes 10-15: Key B (or user data)
- * 		Block 0 is read-only manufacturer data.
- * 		To access a block, an authentication using a key from the block's sector must be performed first.
- * 		Example: To read from block 10, first authenticate using a key from sector 3 (blocks 8-11).
- * 		All keys are set to FFFFFFFFFFFFh at chip delivery.
- * 		Warning: Please read section 8.7 "Memory Access". It includes this text: if the PICC detects a format violation the whole sector is irreversibly blocked.
- *		To use a block in "value block" mode (for Increment/Decrement operations) you need to change the sector trailer. Use PICC_SetAccessBits() to calculate the bit patterns.
- * MIFARE Classic 4K (MF1S703x):
- * 		Has (32 sectors * 4 blocks/sector + 8 sectors * 16 blocks/sector) * 16 bytes/block = 4096 bytes.
- * 		The blocks are numbered 0-255.
- * 		The last block in each sector is the Sector Trailer like above.
- * MIFARE Classic Mini (MF1 IC S20):
- * 		Has 5 sectors * 4 blocks/sector * 16 bytes/block = 320 bytes.
- * 		The blocks are numbered 0-19.
- * 		The last block in each sector is the Sector Trailer like above.
+ * <h2>MIFARE Classic Mini (MF1 IC S20)</h2>
+ * <p>Has 5 sectors * 4 blocks/sector * 16 bytes/block = 320 bytes.<br>
+ * The blocks are numbered 0-19.<br>
+ * The last block in each sector is the Sector Trailer like above.</p>
  * 
- * MIFARE Ultralight (MF0ICU1):
- * 		Has 16 pages of 4 bytes = 64 bytes.
- * 		Pages 0 + 1 is used for the 7-byte UID.
- * 		Page 2 contains the last check digit for the UID, one byte manufacturer internal data, and the lock bytes (see http://www.nxp.com/documents/data_sheet/MF0ICU1.pdf section 8.5.2)
- * 		Page 3 is OTP, One Time Programmable bits. Once set to 1 they cannot revert to 0.
- * 		Pages 4-15 are read/write unless blocked by the lock bytes in page 2. 
- * MIFARE Ultralight C (MF0ICU2):
- * 		Has 48 pages of 4 bytes = 192 bytes.
- * 		Pages 0 + 1 is used for the 7-byte UID.
- * 		Page 2 contains the last check digit for the UID, one byte manufacturer internal data, and the lock bytes (see http://www.nxp.com/documents/data_sheet/MF0ICU1.pdf section 8.5.2)
- * 		Page 3 is OTP, One Time Programmable bits. Once set to 1 they cannot revert to 0.
- * 		Pages 4-39 are read/write unless blocked by the lock bytes in page 2. 
- * 		Page 40 Lock bytes
- * 		Page 41 16 bit one way counter
- * 		Pages 42-43 Authentication configuration
- * 		Pages 44-47 Authentication key 
+ * <h2>MIFARE Ultralight (MF0ICU1)</h2>
+ * <p>Has 16 pages of 4 bytes = 64 bytes.<br>
+ * Pages 0 + 1 is used for the 7-byte UID.<br>
+ * Page 2 contains the last check digit for the UID, one byte manufacturer internal data, and the lock bytes (see http://www.nxp.com/documents/data_sheet/MF0ICU1.pdf section 8.5.2).<br>
+ * Page 3 is OTP, One Time Programmable bits. Once set to 1 they cannot revert to 0.<br>
+ * Pages 4-15 are read/write unless blocked by the lock bytes in page 2.</p>
+ * 
+ * <h2>MIFARE Ultralight C (MF0ICU2)</h2>
+ * <p>Has 48 pages of 4 bytes = 192 bytes.<br>
+ * Pages 0 + 1 is used for the 7-byte UID.<br>
+ * Page 2 contains the last check digit for the UID, one byte manufacturer internal data, and the lock bytes (see http://www.nxp.com/documents/data_sheet/MF0ICU1.pdf section 8.5.2).<br>
+ * Page 3 is OTP, One Time Programmable bits. Once set to 1 they cannot revert to 0.<br>
+ * Pages 4-39 are read/write unless blocked by the lock bytes in page 2.<br>
+ * Page 40 Lock bytes<br>
+ * Page 41 16 bit one way counter<br>
+ * Pages 42-43 Authentication configuration<br>
+ * Pages 44-47 Authentication key</p>
+ * 
+ * <h2>Access conditions for sector trailer</h2>
+ * <pre>
+ *   KeyA  Bits  KeyB
+ *   R  W  R  W  R  W
+ * 0 -  A  A  -  A  A
+ * 1 -  A  A  A  A  A Default
+ * 2 -  -  A  -  A  -
+ * 3 -  B  AB B  -  B
+ * 4 -  B  AB -  -  B
+ * 5 -  -  AB B  -  -
+ * 6 -  -  AB -  -  -
+ * 7 -  -  AB -  -  -
+ * </pre>
+ * 
+ * <h2>Access conditions for data blocks</h2>
+ * <pre>
+ *     R   W   +  -X
+ * 0  AB  AB  AB  AB Data  Default
+ * 1  AB  --  --  AB Value
+ * 2  AB  --  --  -- Data
+ * 3   B   B  --  -- Data
+ * 4  AB   B  --  -- Data
+ * 5   B  --  --  -- Data
+ * 6  AB   B   B  AB Value
+ * 7  --  --  --  -- Data
+ * </pre>
+ * 
+ * <h2>Workflow</h2>
+ * <ol>
+ * <li>Call ISO_Request() to check to see if a tag is in range and if so get its ATQA.</li>
+ * <li>Upon success call ISO_Anticollision() which returns the UID of the active tag in range.</li>
+ * <li>Upon success call ISO_Select(UID) which selects the active tag in range by its UID and returns its SAK.</li>
+ * <li>If the card needs authentication call ISO_Authenticate(blockAddr, keyId, key, UID) to authenticate access to a block.</li>
+ * <li>Call ISO_StopCrypto() when you have finished talking to a card which requires authentication.</li>
+ * </ol>
  */
 public class MFRC522 implements Closeable {
 	public static final byte[] DEFAULT_KEY = { (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff };
