@@ -1,4 +1,4 @@
-package com.diozero.internal.provider.mmap.chip;
+package com.diozero.internal.board.chip;
 
 /*
  * #%L

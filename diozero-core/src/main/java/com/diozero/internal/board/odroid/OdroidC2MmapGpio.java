@@ -1,4 +1,4 @@
-package com.diozero.internal.provider.mmap.odroid;
+package com.diozero.internal.board.odroid;
 
 /*
  * #%L

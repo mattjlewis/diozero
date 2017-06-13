@@ -1,4 +1,4 @@
-package com.diozero.internal.provider.mmap.rpi;
+package com.diozero.internal.board.raspberrypi;
 
 /*
  * #%L
