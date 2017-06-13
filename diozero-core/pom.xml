@@ -33,7 +33,9 @@
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
-					<excludes>**/package-info.java</excludes>
+					<excludes>
+						<exclude>**/package-info.java</exclude>
+					</excludes>
 				</configuration>
 			</plugin>
 			<plugin>
