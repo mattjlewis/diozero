@@ -16,6 +16,6 @@ deploy:
   on:
     all-branches: true
   provider: bintray
-  file: distribution/target/diozero-distribution-0.10-SNAPSHOT-bin.zip
+  file: distribution/bintray.json
   user: mattjlewis
   key: $BINTRAY_API_KEY
