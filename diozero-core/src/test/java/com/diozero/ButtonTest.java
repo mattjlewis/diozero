@@ -39,12 +39,11 @@ import com.diozero.internal.provider.test.TestDigitalInputDevice;
 import com.diozero.internal.provider.test.TestDigitalOutputDevice;
 import com.diozero.util.SleepUtil;
 
-@SuppressWarnings("static-method")
 public class ButtonTest {
 	private int i;
 	
 	@BeforeClass
-	public void beforeClass() {
+	public static void beforeClass() {
 		TestDeviceFactory.setDigitalInputDeviceClass(TestDigitalInputDevice.class);
 		TestDeviceFactory.setDigitalOutputDeviceClass(TestDigitalOutputDevice.class);
 	}
@@ -61,7 +60,7 @@ public class ButtonTest {
 					() -> button.valueChanged(new DigitalInputEvent(button.getGpio(), System.currentTimeMillis(), System.nanoTime(), (i++ % 2) == 0)),
 					500, 500, TimeUnit.MILLISECONDS);
 			
-			SleepUtil.sleepSeconds(10);
+			SleepUtil.sleepSeconds(5);
 			
 			future.cancel(true);
 			executor.shutdownNow();

@@ -27,7 +27,7 @@ package com.diozero;
  */
 
 import org.junit.Assert;
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pmw.tinylog.Logger;
 
@@ -43,8 +43,8 @@ import com.diozero.util.RuntimeIOException;
  */
 @SuppressWarnings("static-method")
 public class LEDTest {
-	@Before
-	public void setup() {
+	@BeforeClass
+	public static void beforeClass() {
 		TestDeviceFactory.setDigitalInputDeviceClass(TestDigitalInputDevice.class);
 		TestDeviceFactory.setDigitalOutputDeviceClass(TestDigitalOutputDevice.class);
 	}

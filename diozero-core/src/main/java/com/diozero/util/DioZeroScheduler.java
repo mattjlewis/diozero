@@ -37,24 +37,34 @@ import java.util.function.Supplier;
 import org.pmw.tinylog.Logger;
 
 public class DioZeroScheduler {
-	private static DioZeroScheduler daemonInstance = new DioZeroScheduler(true);
-	private static DioZeroScheduler nonDaemonInstance = new DioZeroScheduler(false);
+	private static DioZeroScheduler daemonInstance;
+	private static DioZeroScheduler nonDaemonInstance;
 	
 	private ExecutorService executor;
 	private ScheduledExecutorService scheduler;
 	private DaemonThreadFactory threadFactory;
 	
-	public static DioZeroScheduler getDaemonInstance() {
+	public static synchronized DioZeroScheduler getDaemonInstance() {
+		if (daemonInstance == null || daemonInstance.isShutdown()) {
+			daemonInstance = new DioZeroScheduler(true);
+		}
 		return daemonInstance;
 	}
 	
-	public static DioZeroScheduler getNonDaemonInstance() {
+	public static synchronized DioZeroScheduler getNonDaemonInstance() {
+		if (nonDaemonInstance == null || nonDaemonInstance.isShutdown()) {
+			nonDaemonInstance = new DioZeroScheduler(false);
+		}
 		return nonDaemonInstance;
 	}
 	
 	public static void shutdownAll() {
-		daemonInstance.shutdown();
-		nonDaemonInstance.shutdown();
+		if (daemonInstance != null) {
+			daemonInstance.shutdown();
+		}
+		if (nonDaemonInstance != null) {
+			nonDaemonInstance.shutdown();
+		}
 	}
 	
 	private DioZeroScheduler(boolean daemon) {
@@ -84,6 +94,10 @@ public class DioZeroScheduler {
 		executor.shutdown();
 		scheduler.shutdown();
 		Logger.debug("Shutdown - done");
+	}
+	
+	public boolean isShutdown() {
+		return executor.isShutdown() || scheduler.isShutdown();
 	}
 	
 	static class DaemonThreadFactory implements ThreadFactory {

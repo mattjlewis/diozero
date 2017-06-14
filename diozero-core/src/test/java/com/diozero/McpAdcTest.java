@@ -25,10 +25,7 @@ package com.diozero;
  * THE SOFTWARE.
  * #L%
  */
-
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.pmw.tinylog.Logger;
 
 import com.diozero.api.AnalogInputDevice;
@@ -41,6 +38,11 @@ import com.diozero.util.SleepUtil;
  */
 public abstract class McpAdcTest {
 	protected McpAdc.Type type;
+
+	@BeforeClass
+	public static void beforeClass() {
+		TestDeviceFactory.setSpiDeviceClass(TestMcpAdcSpiDevice.class);
+	}
 	
 	public McpAdcTest(McpAdc.Type type) {
 		this.type = type;
@@ -50,7 +52,6 @@ public abstract class McpAdcTest {
 	public void setup() {
 		Logger.info("setup(), type=" + type);
 		TestMcpAdcSpiDevice.setType(type);
-		TestDeviceFactory.setSpiDeviceClass(TestMcpAdcSpiDevice.class);
 	}
 	
 	@Test

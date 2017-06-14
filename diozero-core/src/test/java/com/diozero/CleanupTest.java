@@ -30,7 +30,7 @@ package com.diozero;
 import java.nio.ByteBuffer;
 
 import org.junit.Assert;
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pmw.tinylog.Logger;
 
@@ -47,8 +47,8 @@ import com.diozero.util.RuntimeIOException;
 
 @SuppressWarnings("static-method")
 public class CleanupTest {
-	@Before
-	public void setup() {
+	@BeforeClass
+	public static void beforeClass() {
 		TestMcpAdcSpiDevice.setType(McpAdc.Type.MCP3008);
 		TestDeviceFactory.setI2CDeviceClass(TestI2CDevice.class);
 		TestDeviceFactory.setSpiDeviceClass(TestMcpAdcSpiDevice.class);
