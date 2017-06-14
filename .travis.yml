@@ -1,8 +1,9 @@
 language: java
 sudo: false
-
 jdk:
   - oraclejdk8
+os:
+  - linux
 
 script:
-  - mvn --projects '!diozero-provider-jdkdio10,!diozero-provider-jdkdio11,!diozero-imu-visualiser' clean compile package install
+  - mvn clean compile package install
