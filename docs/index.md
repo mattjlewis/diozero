@@ -1,5 +1,6 @@
 # diozero
 
+[![Build Status](https://travis-ci.org/com.diozero/diozero.svg?branch=master)](https://travis-ci.org/com.diozero/diozero)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.diozero/diozero/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.diozero/diozero)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Javadoc](https://javadoc-emblem.rhcloud.com/doc/com.diozero/diozero/badge.svg)](http://www.javadoc.io/doc/com.diozero/diozero)
