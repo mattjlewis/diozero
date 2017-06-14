@@ -11,3 +11,11 @@ cache:
 
 install: true
 script: mvn --projects '!diozero-provider-jdkdio10,!diozero-provider-jdkdio11,!diozero-imu-visualiser' clean compile package install
+
+deploy:
+  on:
+    all-branches: true
+  provider: bintray
+  file: distribution/target/diozero-distribution-0.10-SNAPSHOT-bin.zip
+  user: mattjlewis
+  key: $BINTRAY_API_KEY
