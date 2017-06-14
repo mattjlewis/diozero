@@ -30,16 +30,20 @@
 			<artifactId>diozero-provider-firmata</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<!--
 		<dependency>
 			<groupId>com.diozero</groupId>
 			<artifactId>diozero-provider-jdkdio10</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		-->
+		<!--
 		<dependency>
 			<groupId>com.diozero</groupId>
 			<artifactId>diozero-provider-jdkdio11</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		-->
 		<dependency>
 			<groupId>com.diozero</groupId>
 			<artifactId>diozero-provider-mmap</artifactId>
@@ -75,11 +79,13 @@
 			<artifactId>diozero-imu-sampleapp</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<!--
 		<dependency>
 			<groupId>com.diozero</groupId>
 			<artifactId>diozero-imu-visualiser</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		-->
 		<dependency>
 			<groupId>com.diozero</groupId>
 			<artifactId>diozero-sampleapps</artifactId>
