@@ -5,5 +5,9 @@ jdk:
 os:
   - linux
 
-script:
-  - mvn clean compile package install
+cache:
+  directories:
+  - $HOME/.m2
+
+install: true
+script: mvn --projects '!diozero-provider-jdkdio10,!diozero-provider-jdkdio11,!diozero-imu-visualiser' clean compile package install
