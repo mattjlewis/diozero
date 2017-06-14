@@ -1,4 +1,4 @@
-package com.diozero;
+package com.diozero.test;
 
 /*
  * #%L
@@ -27,8 +27,13 @@ package com.diozero;
  */
 
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.pmw.tinylog.Logger;
 
+import com.diozero.Servo;
+import com.diozero.internal.provider.test.TestDeviceFactory;
+import com.diozero.internal.provider.test.TestPwmOutputDevice;
 import com.diozero.util.ServoUtil;
 
 @SuppressWarnings("static-method")
@@ -37,9 +42,15 @@ public class ServoTest {
 	private static final double TOWERPRO_SG5010_MAX_MS = 2;
 	private static final double TOWERPRO_SG90_MIN_MS = 0.6;
 	private static final double TOWERPRO_SG90_MAX_MS = 2.5;
+	private static final float DELTA = 0.001f;
+
+	@BeforeClass
+	public static void beforeClass() {
+		TestDeviceFactory.setPwmOutputDeviceClass(TestPwmOutputDevice.class);
+	}
 	
 	@Test
-	public void test() {
+	public void testPulsewidthCalcs() {
 		int pwm_freq = 60;
 		int bits = 12;
 		int range = (int)Math.pow(2, bits);
@@ -79,10 +90,35 @@ public class ServoTest {
 		
 		double val = TOWERPRO_SG90_MIN_MS * pwm_freq / 1000f;
 		System.out.println("Pulse width of " + TOWERPRO_SG90_MIN_MS + "ms is " + (val * 100f) + "%");
-		Assert.assertEquals(0.036, val, 0.001);
+		Assert.assertEquals(0.036, val, DELTA);
 		
 		pulse_width_ms = val * 1000f / pwm_freq;
 		System.out.println("Val of " + (val * 100f) + "% is " + TOWERPRO_SG90_MIN_MS + "ms");
-		Assert.assertEquals(TOWERPRO_SG90_MIN_MS, pulse_width_ms, 0.01);
+		Assert.assertEquals(TOWERPRO_SG90_MIN_MS, pulse_width_ms, DELTA);
+	}
+	
+	@Test
+	public void servoTest() {
+		Servo.Trim trim = Servo.Trim.MG996R;
+		Logger.debug("Min Pulse Width: {}, Min Angle: {}", Float.valueOf(trim.getMinPulseWidthMs()),
+				Float.valueOf(trim.getMinAngle()));
+		Logger.debug("Mid Pulse Width: {}, Mid Angle: {}", Float.valueOf(trim.getMidPulseWidthMs()),
+				Float.valueOf(trim.getMidAngle()));
+		Logger.debug("Max Pulse Width: {}, Max Angle: {}", Float.valueOf(trim.getMaxPulseWidthMs()),
+				Float.valueOf(trim.getMaxAngle()));
+		try (Servo servo = new Servo(0, trim.getMidPulseWidthMs(), trim)) {
+			servo.setAngle(0);
+			Logger.debug("Value: {}, Pulse Width: {}, Angle: {}", Float.valueOf(servo.getValue()),
+					Float.valueOf(servo.getPulseWidthMs()), Float.valueOf(servo.getAngle()));
+			Assert.assertEquals(trim.getMidPulseWidthMs() - trim.getNinetyDegPulseWidthMs(), servo.getPulseWidthMs(), DELTA);
+			servo.setAngle(90);
+			Logger.debug("Value: {}, Pulse Width: {}, Angle: {}", Float.valueOf(servo.getValue()),
+					Float.valueOf(servo.getPulseWidthMs()), Float.valueOf(servo.getAngle()));
+			Assert.assertEquals(trim.getMidPulseWidthMs(), servo.getPulseWidthMs(), DELTA);
+			servo.setAngle(180);
+			Logger.debug("Value: {}, Pulse Width: {}, Angle: {}", Float.valueOf(servo.getValue()),
+					Float.valueOf(servo.getPulseWidthMs()), Float.valueOf(servo.getAngle()));
+			Assert.assertEquals(trim.getMidPulseWidthMs() + trim.getNinetyDegPulseWidthMs(), servo.getPulseWidthMs(), DELTA);
+		}
 	}
 }
