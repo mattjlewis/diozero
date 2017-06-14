@@ -231,17 +231,17 @@ This library provides support for a number of GPIO / I2C / SPI connected compone
 + [Output Devices](http://rtd.diozero.com/en/latest/OutputDevices/)
     - [Digital](http://rtd.diozero.com/en/latest/OutputDevices/#digital-led) and [PWM](http://rtd.diozero.com/en/latest/OutputDevices/#pwm-led)
 + [Expansion Boards](http://rtd.diozero.com/en/latest/ExpansionBoards/) for adding additional GPIO / Analog / PWM pins
-    - [Microchip Analog to Digital Converters](http://rtd.diozero.com/en/latest/ExpansionBoards/#mcp-adc), [Microchip GPIO Expansion Board](http://rtd.diozero.com/en/latest/ExpansionBoards/#mcp-gpio-expansion-board), [PWM / Servo Driver](http://rtd.diozero.com/en/latest/ExpansionBoards/#pwm-servo-driver)
+    - [Microchip Analog to Digital Converters](http://rtd.diozero.com/en/latest/ExpansionBoards/#mcp-adc), [NXP PCF8591 ADC / DAC](http://rtd.diozero.com/en/latest/ExpansionBoards/#pcf8591), [Microchip GPIO Expansion Board](http://rtd.diozero.com/en/latest/ExpansionBoards/#mcp-gpio-expansion-board), [PWM / Servo Driver](http://rtd.diozero.com/en/latest/ExpansionBoards/#pwm-servo-driver), [PCF8574](http://rtd.diozero.com/en/latest/ExpansionBoards#pcf8574)
 + [Motor Control](http://rtd.diozero.com/en/latest/MotorControl/) (support for common motor controller boards)
-    - [API](http://rtd.diozero.com/en/latest/MotorControl/#api), [Servos](http://rtd.diozero.com/en/latest/MotorControl/#servo), [CamJam EduKit](http://rtd.diozero.com/en/latest/MotorControl/#camjamkitdualmotor), [Ryanteck](http://rtd.diozero.com/en/latest/MotorControl/#ryanteckdualmotor), [Toshiba TB6612FNG](http://rtd.diozero.com/en/latest/MotorControl/#tb6612fngdualmotordriver)
+    - [API](http://rtd.diozero.com/en/latest/MotorControl/#api), [Servos](http://rtd.diozero.com/en/latest/MotorControl/#servo), [CamJam EduKit](http://rtd.diozero.com/en/latest/MotorControl/#camjamkitdualmotor), [Ryanteck](http://rtd.diozero.com/en/latest/MotorControl/#ryanteckdualmotor), [Toshiba TB6612FNG](http://rtd.diozero.com/en/latest/MotorControl/#tb6612fngdualmotordriver), [PiConZero](http://rtd.diozero.com/en/latest/MotorControl/#piconzero)
 + [Sensor Components](http://rtd.diozero.com/en/latest/SensorComponents/) (support for specific sensors, e.g. temperature, pressure, distance, luminosity)
-    - [HC-SR04 Ultrasonic Ranging Module](http://rtd.diozero.com/en/latest/SensorComponents/#hc-sr04), [Bosch BMP180](http://rtd.diozero.com/en/latest/SensorComponents/#bosch-bmp180), [TSL2561 Light Sensor](http://rtd.diozero.com/en/latest/SensorComponents/#tsl2561), [1-Wire Temperature Sensors e.g. DS18B20](http://rtd.diozero.com/en/latest/SensorComponents/#1-wire-temperature-sensors), [Mifare RC522 RFID Reader](http://rtd.diozero.com/en/latest/SensorComponents/#mfrc522)
+    - [HC-SR04 Ultrasonic Ranging Module](http://rtd.diozero.com/en/latest/SensorComponents/#hc-sr04), [Bosch BMP180](http://rtd.diozero.com/en/latest/SensorComponents/#bosch-bmp180), [Bosch BME280](http://rtd.diozero.com/en/latest/SensorComponents/#bosch-bme280),, [TSL2561 Light Sensor](http://rtd.diozero.com/en/latest/SensorComponents/#tsl2561), [STMicroelectronics HTS221 Humidity and Temperature Sensor](http://rtd.diozero.com/en/latest/SensorComponents/#hts221), [STMicroelectronics LPS25H Pressure and Temperature Sensor](http://rtd.diozero.com/en/latest/SensorComponents/#lps25h),, [1-Wire Temperature Sensors e.g. DS18B20](http://rtd.diozero.com/en/latest/SensorComponents/#1-wire-temperature-sensors), [Sharp GP2Y0A21YK distance sensor](http://rtd.diozero.com/en/latest/SensorComponents/#gp2y0a21yk), [Mifare RC522 RFID Reader](http://rtd.diozero.com/en/latest/SensorComponents/#mfrc522)
 + [LCD Displays](http://rtd.diozero.com/en/latest/LCDDisplays/)
-    - [I2C LCDs](http://rtd.diozero.com/en/latest#i2c-lcds) I2C attached displays (Hitachi HD44780 via the NCP PCF8754 I2C I/O expansion board)    
-+ [LED Strips](http://rtd.diozero.com/en/latest/LEDStrips/) Support for LED strips (WS2811B / WS2812B / Adafruit NeoPixel)
-    - [WS2811B / WS2812B](http://rtd.diozero.com/en/latest/LEDStrips/#ws281x)
+    - [HD44780 controlled LCDs](http://rtd.diozero.com/en/latest/LCDDisplays/#i2c-lcds)
 + [IMU Devices](http://rtd.diozero.com/en/latest/IMUDevices/) Work-in-progress API for interacting with Inertial Measurement Units such as the InvenSense MPU-9150 and the Analog Devices ADXL345
     - [API](http://rtd.diozero.com/en/latest/IMUDevices/#api), [Supported Devices](http://rtd.diozero.com/en/latest/IMUDevices/#supported-devices)
++ [LED Strips](http://rtd.diozero.com/en/latest/LEDStrips/) Support for LED strips (WS2811B / WS2812B / Adafruit NeoPixel)
+    - [WS2811B / WS2812B](http://rtd.diozero.com/en/latest/LEDStrips/#ws281x)
 
 ## Performance
 
@@ -296,8 +296,9 @@ This project is hosted on [GitHub](https://github.com/mattjlewis/diozero/), plea
 + A clean object-orientated API for IMUs
 + Native support for all devices via mmap (/dev/mem), in particular to improve performance and add support for GPIO pull up/down configuration.
 + Cleanup the logic for handling capabilities of different boards in a generic fashion (no more if / then / else)
-+ Arduino support (via USB cable)
-+ Particle Photon support (via wifi)
++ Firmata SPI support (via USB cable)
++ Wireless access to Firmata devices (network and Bluetooth). E.g. [ESP32](https://learn.sparkfun.com/tutorials/esp32-thing-hookup-guide?_ga=1.116824388.33505106.1471290985#installing-the-esp32-arduino-core) [Firmata GitHub issue #315](https://github.com/firmata/arduino/issues/315)
++ Particle Photon support (via wifi using [VoodooSpark "firmware"](https://github.com/voodootikigod/voodoospark) - [JavaScript implementation](https://github.com/rwaldron/particle-io/blob/master/lib/particle.js))
 
 ## Change-log
 
@@ -308,8 +309,8 @@ This project is hosted on [GitHub](https://github.com/mattjlewis/diozero/), plea
 + Release 0.6: Preparing for 1.0 release.
 + Release 0.7: Support for non-register based I2C device read / write
 + Release 0.8: Added Analog Output device support (added for the PCF8591). Introduced Java based sysfs and jpi providers. Bug fix to I2CLcd. Added support for BME280.
-+ Release 0.9: Native support for I2C and SPI in the sysfs provider. Support for CHIP, BeagleBone Black and Asus Tinker Board. Moved sysfs provider into diozero-core, use as the default provider. Preliminary support for devices that support the Firmata protocol (i.e. Arduinos).
-+ Release 0.10 (in progress): MFRC522 fully supported (finally). Added support for MCP EEPROMs. I2C SMBus implementation in the internal sysfs provider.
++ Release 0.9: Native support for I2C and SPI in the sysfs provider. Support for CHIP, BeagleBone Black and Asus Tinker Board. Moved sysfs provider into diozero-core, use as the default provider. Preliminary support for devices that support the Firmata protocol (i.e. Arduino).
++ Release 0.10 (in progress): Firmata I2C. Improvements to MFRC522. SDL Joystick JNI wrapper library. MFRC522 fully supported (finally). Added support for MCP EEPROMs. I2C SMBus implementation in the internal sysfs provider.
 
 ## License
 
