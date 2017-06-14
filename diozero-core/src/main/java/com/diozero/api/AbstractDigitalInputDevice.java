@@ -27,9 +27,6 @@ package com.diozero.api;
  */
 
 
-import com.diozero.internal.provider.GpioDigitalInputDeviceInterface;
-import com.diozero.util.RuntimeIOException;
-
 public abstract class AbstractDigitalInputDevice extends GpioInputDevice<DigitalInputEvent>
 implements DigitalInputDeviceInterface {
 	protected boolean activeHigh;

@@ -9,7 +9,7 @@ In theory the OpenJDK Device I/O service provider should provide the best platfo
 The device native service provider library is defined in the following order:
 
 1. System property com.diozero.devicefactory, e.g. `-Dcom.diozero.devicefactory=com.diozero.internal.provider.pi4j.Pi4jDeviceFactory`
-2. Service definition file on the classpath, file: `/META-INF/services/com.diozero.internal.spi.NativeDeviceFactoryInterface`. For example [the one for pi4j](https://github.com/mattjlewis/diozero/blob/master/diozero-provider-pi4j/src/main/resources/META-INF/services/com.diozero.internal.spi.NativeDeviceFactoryInterface)
+2. Service definition file on the classpath, file: `/META-INF/services/com.diozero.internal.provider.NativeDeviceFactoryInterface`. For example [the one for pi4j](https://github.com/mattjlewis/diozero/blob/master/diozero-provider-pi4j/src/main/resources/META-INF/services/com.diozero.internal.provider.NativeDeviceFactoryInterface)
 
 **Currently implemented service providers:**
 

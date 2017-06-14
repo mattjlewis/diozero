@@ -55,7 +55,7 @@ public class DigitalInputEvent extends DeviceEvent {
 
 	@Override
 	public String toString() {
-		return "DigitalPinEvent [gpio=" + getGpio() + ", epochTime=" + getEpochTime() +
+		return "DigitalInputEvent [gpio=" + getGpio() + ", epochTime=" + getEpochTime() +
 				", nanoTime=" + getNanoTime() + ", value=" + value + "]";
 	}
 }

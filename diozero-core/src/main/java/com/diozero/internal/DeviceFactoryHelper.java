@@ -36,7 +36,7 @@ import com.diozero.internal.provider.sysfs.SysFsDeviceFactory;
 
 /**
  * Helper class for instantiating different devices via the configured provider.
- * To set the provider edit META-INF/services/com.diozero.internal.spi.NativeDeviceFactoryInterface
+ * To set the provider edit META-INF/services/com.diozero.internal.provider.NativeDeviceFactoryInterface
  * While the ServiceLoader supports multiple service providers, only the first entry in this file is used.
  * Alternatively you can set the command line property "com.diozero.devicefactory" to override the ServiceLoader.
  */
@@ -80,7 +80,7 @@ public class DeviceFactoryHelper {
 			if (nativeDeviceFactory == null) {
 				// Shouldn't be possible
 				throw new IllegalStateException("Error: failed to load native device factory,"
-						+ " please configure META-INF/services/com.diozero.internal.spi.NativeDeviceFactoryInterface"
+						+ " please configure META-INF/services/" + NativeDeviceFactoryInterface.class.getName()
 						+ " or set -D" + SYSTEM_PROPERTY);
 			}
 		}

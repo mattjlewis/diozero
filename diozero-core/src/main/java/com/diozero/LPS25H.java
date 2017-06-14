@@ -39,6 +39,7 @@ import com.diozero.api.*;
  * http://www2.st.com/content/ccc/resource/technical/document/datasheet/58/d2/33/a4/42/89/42/0b/DM00066332.pdf/files/DM00066332.pdf/jcr:content/translations/en.DM00066332.pdf
  * Example implementation:
  * https://github.com/richards-tech/RTIMULib/blob/master/RTIMULib/IMUDrivers/RTPressureLPS25H.cpp
+ * Eclipse Kura implementation: https://github.com/eclipse/kura/tree/develop/kura/examples/org.eclipse.kura.raspberrypi.sensehat/src/main/java/org/eclipse/kura
  */
 @SuppressWarnings("unused")
 public class LPS25H implements ThermometerInterface, BarometerInterface, Closeable {

@@ -28,7 +28,7 @@ package com.diozero;
 
 import java.util.concurrent.*;
 
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pmw.tinylog.Logger;
 
@@ -43,8 +43,8 @@ import com.diozero.util.SleepUtil;
 public class ButtonTest {
 	private int i;
 	
-	@Before
-	public void setup() {
+	@BeforeClass
+	public void beforeClass() {
 		TestDeviceFactory.setDigitalInputDeviceClass(TestDigitalInputDevice.class);
 		TestDeviceFactory.setDigitalOutputDeviceClass(TestDigitalOutputDevice.class);
 	}

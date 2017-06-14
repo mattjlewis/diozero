@@ -41,6 +41,7 @@ public class TestDigitalOutputDevice extends AbstractDevice implements GpioDigit
 		super(key, deviceFactory);
 		
 		this.gpio = gpio;
+		this.value = initialValue;
 	}
 
 	@Override
