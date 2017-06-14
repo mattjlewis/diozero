@@ -1,11 +1,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	
+
 	<!--
 	Useful Maven commands:
+	To exclude specific submodules (in particular those with unresolvable dependencies such as JDK Device I/O) use the --projects '!submodule-a' option, e.g.:
+		mvn --projects '!diozero-provider-jdkdio10,!diozero-provider-jdkdio11,!diozero-imu-visualiser' package
 	Skip tests:
-		 -Dmaven.test.skip=true
-		 -DskipTests
+		-Dmaven.test.skip=true
+		-DskipTests
 	General lifecycle:
 		mvn package
 		mvn install

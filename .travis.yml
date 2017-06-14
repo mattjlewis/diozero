@@ -5,4 +5,4 @@ jdk:
   - oraclejdk8
 
 script:
-  - mvn clean compile package install -DskipTests
+  - mvn --projects '!diozero-provider-jdkdio10,!diozero-provider-jdkdio11,!diozero-imu-visualiser' clean compile package install -DskipTests
