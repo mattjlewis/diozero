@@ -117,23 +117,31 @@
 		
 		<maven.min-version>3.3.0</maven.min-version>
 		
-		<maven-assembly-plugin.version>2.6</maven-assembly-plugin.version>
-		<maven-checkstyle-plugin.version>2.17</maven-checkstyle-plugin.version>
+		<!-- Core plugins -->
 		<maven-clean-plugin.version>3.0.0</maven-clean-plugin.version>
-		<maven-compiler-plugin.version>3.5.1</maven-compiler-plugin.version>
-		<maven-dependency-plugin.version>2.10</maven-dependency-plugin.version>
+		<maven-compiler-plugin.version>3.6.1</maven-compiler-plugin.version>
 		<maven-deploy-plugin.version>2.8.2</maven-deploy-plugin.version>
-		<maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
 		<maven-install-plugin.version>2.5.2</maven-install-plugin.version>
-		<maven-jar-plugin.version>3.0.2</maven-jar-plugin.version>
-		<maven-javadoc-plugin.version>2.10.3</maven-javadoc-plugin.version>
-		<maven-project-info-reports-plugin.version>2.8.1</maven-project-info-reports-plugin.version>
-		<maven-release-plugin.version>2.5.3</maven-release-plugin.version>
-		<maven-resources-plugin.version>2.7</maven-resources-plugin.version>
-		<maven-site-plugin.version>3.5</maven-site-plugin.version>
-		<maven-source-plugin.version>3.0.1</maven-source-plugin.version>
-		<maven-surefire-plugin.version>2.19.1</maven-surefire-plugin.version>
+		<maven-resources-plugin.version>3.0.2</maven-resources-plugin.version>
+		<maven-site-plugin.version>3.6</maven-site-plugin.version>
+		<maven-surefire-plugin.version>2.20</maven-surefire-plugin.version>
 		
+		<!-- Packaging plugins -->
+		<maven-jar-plugin.version>3.0.2</maven-jar-plugin.version>
+		<maven-source-plugin.version>3.0.1</maven-source-plugin.version>
+		
+		<!-- Reporting plugins -->
+		<maven-checkstyle-plugin.version>2.17</maven-checkstyle-plugin.version>
+		<maven-javadoc-plugin.version>2.10.4</maven-javadoc-plugin.version>
+		<maven-project-info-reports-plugin.version>2.9</maven-project-info-reports-plugin.version>
+		
+		<!-- Tools plugins -->
+		<maven-assembly-plugin.version>3.0.0</maven-assembly-plugin.version>
+		<maven-dependency-plugin.version>3.0.1</maven-dependency-plugin.version>
+		<maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
+		<maven-release-plugin.version>2.5.3</maven-release-plugin.version>
+		
+		<!-- Other -->
 		<build-helper-maven-plugin.version>3.0.0</build-helper-maven-plugin.version>
 		<license-maven-plugin.version>1.8</license-maven-plugin.version>
 		<native-maven-plugin.version>1.0-alpha-8</native-maven-plugin.version>

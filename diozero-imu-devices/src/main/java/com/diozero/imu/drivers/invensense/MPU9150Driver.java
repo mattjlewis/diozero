@@ -32,7 +32,6 @@ import java.util.Arrays;
 
 import org.pmw.tinylog.Logger;
 
-import com.diozero.api.I2CConstants;
 import com.diozero.api.I2CDevice;
 import com.diozero.util.IOUtil;
 import com.diozero.util.RuntimeIOException;
@@ -866,7 +865,7 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 			// pwr_mgmt_1 == 0x6B, MPU9150_RA_PWR_MGMT_1
 			i2cDevice.writeByte(MPU9150_RA_PWR_MGMT_1, data);
 		} catch (RuntimeIOException ioe) {
-			System.out.format("Error in mpu_set_sensors(%x): %s%n", new Byte(newSensors), ioe);
+			System.out.format("Error in mpu_set_sensors(%x): %s%n", Byte.valueOf(newSensors), ioe);
 			ioe.printStackTrace();
 			sensors = 0;
 			return false;
@@ -890,7 +889,7 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 			// pwr_mgmt_2 == 0x6C == MPU9150_RA_PWR_MGMT_2
 			i2cDevice.writeByte(MPU9150_RA_PWR_MGMT_2, data);
 		} catch (RuntimeIOException ioe) {
-			System.out.format("Error in mpu_set_sensors(%x): %s%n", new Byte(newSensors), ioe);
+			System.out.format("Error in mpu_set_sensors(%x): %s%n", Byte.valueOf(newSensors), ioe);
 			ioe.printStackTrace();
 			sensors = 0;
 			return false;

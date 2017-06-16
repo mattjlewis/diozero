@@ -231,7 +231,7 @@ public class OdroidC2MmapGpio implements MmapGpioInterface {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 			try {
 				while (true) {
-					MemoryInspector.dumpMemory(mmap_gpio.gpioIntBuffer, C2_GPIO_PIN_BASE, 200);
+					Hex.dumpIntBuffer(mmap_gpio.gpioIntBuffer, C2_GPIO_PIN_BASE, 200);
 					String line = reader.readLine();
 					if (line == null || line.equals("q")) {
 						break;
@@ -292,6 +292,6 @@ public class OdroidC2MmapGpio implements MmapGpioInterface {
 			buffer.put(rand.nextInt());
 		}
 		buffer.flip();
-		MemoryInspector.dumpMemory(buffer, 0, 2);
+		Hex.dumpIntBuffer(buffer, 0, 2);
 	}
 }

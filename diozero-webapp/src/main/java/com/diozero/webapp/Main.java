@@ -101,7 +101,7 @@ public class Main {
 		}
 		
 		try {
-			Integer gpio = new Integer(gpio_param);
+			Integer gpio = Integer.valueOf(gpio_param);
 			
 			DigitalOutputDevice output = gpios.get(gpio);
 			if (output == null) {
@@ -130,7 +130,7 @@ public class Main {
 		}
 		
 		try {
-			Integer pwm = new Integer(pwm_param);
+			Integer pwm = Integer.valueOf(pwm_param);
 			
 			PwmOutputDevice output = pwms.get(pwm);
 			if (output == null) {

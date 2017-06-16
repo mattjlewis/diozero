@@ -27,6 +27,10 @@ package com.diozero.util;
  */
 
 
+import java.io.PrintStream;
+import java.nio.IntBuffer;
+import java.util.Random;
+
 public class Hex {
 	private static final char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();
 	private static final char BUNDLE_SEP = ' ';
@@ -74,11 +78,106 @@ public class Hex {
 		return digit;
 	}
 	
+	public static void dumpIntBuffer(IntBuffer buffer) {
+		dumpIntBuffer(buffer, 0, buffer.capacity());
+	}
+	
+	public static void dumpIntBuffer(IntBuffer buffer, int start, int end) {
+		int ints_per_line = 8;
+		int lines = (end-1) / ints_per_line + 1;
+		for (int i=0; i<lines; i++) {
+			System.out.format("%04x: ", Integer.valueOf(start + i*ints_per_line));
+			for (int j=0; j<ints_per_line && i*ints_per_line+j < end; j++) {
+				System.out.format("%08x ", Integer.valueOf(buffer.get(start+i*ints_per_line+j)));
+			}
+			System.out.println();
+		}
+	}
+	
+	public static void dumpByteArray(byte[] bytes) {
+		dumpByteArray(bytes, System.out);
+	}
+	
+	public static void dumpByteArray(byte[] bytes, PrintStream out) {
+		int bytes_per_line = 16;
+		String ascii = "";
+		int i;
+		for (i=0; i<bytes.length; i++) {
+			if (i % bytes_per_line == 0) {
+				out.format("s%04x: ", Integer.valueOf(i));
+			}
+			System.out.format("%02x ", Byte.valueOf(bytes[i]));
+			ascii += (bytes[i] < ' ' || bytes[i] > 'z') ? '.' : (char) bytes[i];
+			if (i % bytes_per_line == bytes_per_line/2 - 1) {
+				out.print(" ");
+			}
+			if (i % bytes_per_line == 15) {
+				out.println(" " + ascii);
+				ascii = "";
+			}
+		}
+		int last_line_bytes = i % bytes_per_line;
+		if (last_line_bytes != 0) {
+			for (int space=0; space<(bytes_per_line - (last_line_bytes)) * 3; space++) {
+				out.print(' ');
+			}
+			if (last_line_bytes < bytes_per_line/2) {
+				out.print(' ');
+			}
+			out.println(" " + ascii);
+			ascii = "";
+		}
+	}
+	
 	public static void main(String[] args) {
 		byte[] bytes = { (byte) 0xde, (byte) 0xad, (byte) 0xbe, (byte) 0xef };
 		String s = encodeHexString(bytes);
 		System.out.println(s);
 		System.out.println(encodeHexString(bytes, 2));
 		System.out.println(encodeHexString(decodeHex(s)));
+		
+		int num_ints = 35;
+		int[] ints = new int[num_ints];
+		Random rand = new Random();
+		for (int i=0; i<num_ints; i++) {
+			ints[i] = rand.nextInt();
+		}
+		dumpIntBuffer(IntBuffer.wrap(ints));
+		
+		int num_bytes = 39;
+		bytes = new byte[num_bytes];
+		rand.nextBytes(bytes);
+		dumpByteArray(bytes);
+		System.out.println();
+		
+		num_bytes = 40;
+		bytes = new byte[num_bytes];
+		rand.nextBytes(bytes);
+		dumpByteArray(bytes);
+		System.out.println();
+		
+		num_bytes = 41;
+		bytes = new byte[num_bytes];
+		rand.nextBytes(bytes);
+		dumpByteArray(bytes);
+		System.out.println();
+		
+		num_bytes = 31;
+		bytes = new byte[num_bytes];
+		rand.nextBytes(bytes);
+		dumpByteArray(bytes);
+		System.out.println();
+		
+		num_bytes = 32;
+		bytes = new byte[num_bytes];
+		rand.nextBytes(bytes);
+		dumpByteArray(bytes);
+		System.out.println();
+		
+		num_bytes = 33;
+		bytes = new byte[num_bytes];
+		rand.nextBytes(bytes);
+		dumpByteArray(bytes);
+		System.out.println();
 	}
 }
