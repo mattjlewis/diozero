@@ -145,7 +145,9 @@ public interface I2CSMBusInterface extends Closeable {
 	 * S Addr Wr [A] Comm [A] Count [A] Data [A] ...
 	 * 		S Addr Rd [A] [Count] A [Data] ... A P
 	 * @param register the register to write to
-	 * @param data data read
+	 * @param data data to write
+	 * @param length Length
+	 * @return data read
 	 */
 	byte[] blockProcessCall(int register, byte[] data, int length);
 
@@ -168,7 +170,7 @@ public interface I2CSMBusInterface extends Closeable {
 	 * Functionality flag: I2C_FUNC_SMBUS_READ_I2C_BLOCK
 	 * @param register the register to read from
 	 * @param length amount of data to read
-	 * @param data values to write
+	 * @return values to read
 	 */
 	byte[] readI2CBlockData(int register, int length);
 

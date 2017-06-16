@@ -10,17 +10,12 @@
 	<name>Device I/O Zero - Firmata</name>
 	<artifactId>diozero-provider-firmata</artifactId>
 	<packaging>jar</packaging>
+	
+	<properties>
+		<firmata4j.version>2.3.5</firmata4j.version>
+	</properties>
 
 	<dependencies>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.tinylog</groupId>
-			<artifactId>tinylog</artifactId>
-		</dependency>
 		<dependency>
 			<groupId>com.diozero</groupId>
 			<artifactId>diozero-core</artifactId>
@@ -29,21 +24,8 @@
 		<dependency>
 			<groupId>com.github.kurbatov</groupId>
 			<artifactId>firmata4j</artifactId>
-			<version>2.3.5</version>
+			<version>${firmata4j.version}</version>
 		</dependency>
 	</dependencies>
 
-	<build>
-		<plugins>
-			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<artifactId>maven-source-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<artifactId>maven-javadoc-plugin</artifactId>
-			</plugin>
-		</plugins>
-	</build>
 </project>

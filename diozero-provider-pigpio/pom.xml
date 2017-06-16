@@ -11,34 +11,20 @@
 	<artifactId>diozero-provider-pigpio</artifactId>
 	<packaging>jar</packaging>
 	
+	<properties>
+		<pigpioj.version>2.0-SNAPSHOT</pigpioj.version>
+	</properties>
+	
 	<dependencies>
 		<dependency>
 			<groupId>com.diozero</groupId>
 			<artifactId>diozero-core</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.tinylog</groupId>
-			<artifactId>tinylog</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>uk.pigpioj</groupId>
 			<artifactId>pigpioj-java</artifactId>
-			<version>2.0-SNAPSHOT</version>
+			<version>${pigpioj.version}</version>
 		</dependency>
 	</dependencies>
-	
-	<build>
-		<plugins>
-			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<artifactId>maven-source-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<artifactId>maven-javadoc-plugin</artifactId>
-			</plugin>
-		</plugins>
-	</build>
+
 </project>

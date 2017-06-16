@@ -552,7 +552,7 @@ public class MFRC522 implements Closeable {
 	/**
 	 * Get the current MFRC522 Receiver Gain (RxGain[2:0]) value.
 	 * See 9.3.3.6 / table 98 in http://www.nxp.com/documents/data_sheet/MFRC522.pdf
-	 * NOTE: Return value scrubbed with (0x07<<4)=01110000b as RCFfgReg may use reserved bits.
+	 * NOTE: Return value scrubbed with (0x07&lt;&lt;4)=01110000b as RCFfgReg may use reserved bits.
 	 * 
 	 * @return Value of the RxGain, scrubbed to the 3 bits used.
 	 */
@@ -563,8 +563,8 @@ public class MFRC522 implements Closeable {
 	/**
 	 * Set the MFRC522 Receiver Gain (RxGain) to value specified by given mask.
 	 * See 9.3.3.6 / table 98 in http://www.nxp.com/documents/data_sheet/MFRC522.pdf
-	 * NOTE: Given mask is scrubbed with (0x07<<4)=01110000b as RCFfgReg may use reserved bits.
-	 * @param mask New antenna gain value
+	 * NOTE: Given mask is scrubbed with (0x07&lt;&lt;4)=01110000b as RCFfgReg may use reserved bits.
+	 * @param gain New antenna gain value
 	 */
 	public void setAntennaGain(AntennaGain gain) {
 		if (getAntennaGain() != gain) {									// only bother if there is a change
@@ -959,9 +959,8 @@ public class MFRC522 implements Closeable {
 	 * 		double				 7						2				MIFARE Ultralight
 	 * 		triple				10						3				Not currently in use?
 	 * 
-	 * @param uid Pointer to Uid struct. Normally output, but can also be used to supply a known UID.
-	 * @param validBits The number of known UID bits supplied in *uid. Normally 0. If set you must also supply uid->size.
-	 * @return STATUS_OK on success, STATUS_??? otherwise.
+	 * @param validBits The number of known UID bits supplied in *uid. Normally 0. If set you must also supply uid-&gt;size.
+	 * @return UID object or null if there was an error.
 	 */
 	public UID select(byte validBits) {
 		byte[] buffer = new byte[9];	// The SELECT/ANTICOLLISION commands uses a 7 byte standard frame + 2 bytes CRC_A
@@ -1349,7 +1348,7 @@ public class MFRC522 implements Closeable {
 	 * Even though 16 bytes are transferred to the Ultralight PICC, only the least significant 4 bytes (bytes 0 to 3)
 	 * are written to the specified address. It is recommended to set the remaining bytes 04h to 0Fh to all logic 0.
 	 * 
-	 * @param blackAddr MIFARE Classic: The block (0-0xff) number. MIFARE Ultralight: The page (2-15) to write to.
+	 * @param blockAddr MIFARE Classic: The block (0-0xff) number. MIFARE Ultralight: The page (2-15) to write to.
 	 * @param buffer The 16 bytes to write to the PICC
 	 * @return STATUS_OK on success, STATUS_??? otherwise.
 	 */
@@ -1487,8 +1486,8 @@ public class MFRC522 implements Closeable {
 	 * is: with access bits [C1 C2 C3] = [110] or [001]. The sector containing
 	 * the block must be authenticated before calling this function. 
 	 * 
-	 * @param[in]   blockAddr   The block (0x00-0xff) number.
-	 * @return STATUS_OK on success, STATUS_??? otherwise.
+	 * @param blockAddr The block (0x00-0xff) number.
+	 * @return Integer value or null if error.
 	 */
 	public Integer mifareGetValue(byte blockAddr) {
 		// Read the block
@@ -1533,13 +1532,13 @@ public class MFRC522 implements Closeable {
 		return mifareWrite(blockAddr, buffer);
 	} // End MIFARE_SetValue()
 
-	/**
+	/*
 	 * Authenticate with a NTAG216.
 	 * 
 	 * Only for NTAG216. First implemented by Gargantuanman.
 	 * 
-	 * @param[in]   passWord   password.
-	 * @param[in]   pACK       result success???.
+	 * @param passWord   password.
+	 * @param pACK       result success???.
 	 * @return STATUS_OK on success, STATUS_??? otherwise.
 	 */
 	/*
@@ -1687,6 +1686,7 @@ public class MFRC522 implements Closeable {
 	 * not recognise anymore (see MFRC522::MIFARE_UnbrickUidSector).
 	 * 
 	 * Of course with non-bricked devices, you're free to select them before calling this function.
+	 * @return Status
 	 */
 	public boolean mifareOpenUidBackdoor() {
 		// Magic sequence:
@@ -1745,6 +1745,10 @@ public class MFRC522 implements Closeable {
 	 * manufacturer data.
 	 *
 	 * Make sure to have selected the card before this function is called.
+	 * @param newUid New UID.
+	 * @param uid Current UID
+	 * @param authKey Authentication key
+	 * @return Status
 	 */
 	public boolean mifareSetUid(byte[] newUid, UID uid, byte[] authKey) {
 		// UID + BCC byte can not be larger than 16 together
@@ -1823,6 +1827,7 @@ public class MFRC522 implements Closeable {
 	
 	/**
 	 * Resets entire sector 0 to zeroes, so the card can be read again by readers.
+	 * @return Status
 	 */
 	public boolean mifareUnbrickUidSector() {
 		mifareOpenUidBackdoor();
@@ -1904,7 +1909,7 @@ public class MFRC522 implements Closeable {
 	 * For MIFARE Classic the factory default key of 0xFFFFFFFFFFFF is tried.  
 	 *
 	 * @param uid UID returned from a successful PICC_Select().
-	 * @DEPRECATED Kept for backward compatibility
+	 * @deprecated Kept for backward compatibility
 	 */
 	public void dumpToConsole(UID uid) {
 		dumpToConsole(uid, DEFAULT_KEY);
@@ -1949,7 +1954,7 @@ public class MFRC522 implements Closeable {
 	 * Dumps card info (UID,SAK,Type) about the selected PICC to Serial.
 	 *
 	 * @param uid UID struct returned from a successful PICC_Select().
-	 * @DEPRECATED kept for backward compatibility
+	 * @deprecated kept for backward compatibility
 	 */
 	public static void dumpDetailsToConsole(UID uid) {
 		// UID

@@ -12,24 +12,14 @@
 	<packaging>jar</packaging>
 	
 	<properties>
-		<spark.version>2.5.5</spark.version>
+		<sparkjava.version>2.5.5</sparkjava.version>
 		<slf4j.version>1.7.25</slf4j.version>
 	</properties>
 
 	<dependencies>
 		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.tinylog</groupId>
-			<artifactId>tinylog</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>com.diozero</groupId>
 			<artifactId>diozero-core</artifactId>
-			<version>${project.version}</version>
 		</dependency>
 		<!-- Activate a specific diozero provider, otherwise leave blank to use the default built-in provider -->
 		<dependency>
@@ -40,19 +30,19 @@
 		<dependency>
 			<groupId>com.sparkjava</groupId>
 			<artifactId>spark-core</artifactId>
-			<version>${spark.version}</version>
+			<version>${sparkjava.version}</version>
 		</dependency>
 		<!--
 		<dependency>
 			<groupId>com.sparkjava</groupId>
 			<artifactId>spark-template-velocity</artifactId>
-			<version>${spark.version}</version>
+			<version>${sparkjava.version}</version>
 		</dependency>
 		-->
 		<dependency>
 			<groupId>com.sparkjava</groupId>
 			<artifactId>spark-template-freemarker</artifactId>
-			<version>${spark.version}</version>
+			<version>${sparkjava.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
@@ -64,18 +54,8 @@
 	<build>
 		<plugins>
 			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<artifactId>maven-source-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<artifactId>maven-javadoc-plugin</artifactId>
-			</plugin>
-			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-shade-plugin</artifactId>
-				<version>3.0.0</version>
 				<executions>
 					<execution>
 						<phase>package</phase>

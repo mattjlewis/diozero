@@ -13,34 +13,13 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-math3</artifactId>
-			<version>${commons-math3.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.tinylog</groupId>
-			<artifactId>tinylog</artifactId>
 		</dependency>
 	</dependencies>
 
-	<build>
+	<reporting>
 		<plugins>
-			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<excludes>
-						<exclude>**/package-info.java</exclude>
-					</excludes>
-				</configuration>
-			</plugin>
-			<plugin>
-				<artifactId>maven-source-plugin</artifactId>
-			</plugin>
 			<plugin>
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<configuration>
@@ -55,7 +34,7 @@
 						</group>
 						<group>
 							<title>Service Provider Interface</title>
-							<packages>com.diozero.internal.spi</packages>
+							<packages>com.diozero.internal.provider</packages>
 						</group>
 						<group>
 							<title>Sample Applications</title>
@@ -66,5 +45,5 @@
 				</configuration>
 			</plugin>
 		</plugins>
-	</build>
+	</reporting>
 </project>

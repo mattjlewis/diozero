@@ -96,7 +96,7 @@ public class LedBarGraph implements OutputDeviceInterface, Closeable {
 	
 	/**
 	 * Light a proportion of the LEDs using value as a percentage.
-	 * @param value Proportion of LEDs to light. 0..1 lights from left to right, 0..-1 lights from right to left.
+	 * @param newValue Proportion of LEDs to light. 0..1 lights from left to right, 0..-1 lights from right to left.
 	 */
 	@Override
 	public void setValue(float newValue) {

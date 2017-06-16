@@ -35,7 +35,7 @@ import com.diozero.util.RuntimeIOException;
  * <p>Reference <a href="https://www.kernel.org/doc/Documentation/i2c/dev-interface">Kernel I2C dev interface</a>
  * and <a href="https://www.kernel.org/doc/Documentation/i2c/smbus-protocol">SMBus Protocol</a>.</p>
  * <p>See <a href="https://github.com/bivab/smbus-cffi/blob/master/include/linux/i2c-dev.h">i2c-dev</a> for defintion of the inline functions.</p>
- * <p>See <a href="https://github.com/bivab/smbus-cffi/blob/master/smbus/smbus.py">Python CFFI implementation.</p>
+ * <p>See <a href="https://github.com/bivab/smbus-cffi/blob/master/smbus/smbus.py">Python CFFI implementation.</a></p>
  */
 public class NativeI2CDeviceSMBus implements I2CSMBusInterface {
 	private static final int I2C_FUNC_I2C                    = 0x00000001;

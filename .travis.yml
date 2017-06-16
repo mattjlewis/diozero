@@ -9,13 +9,17 @@ cache:
   directories:
   - $HOME/.m2
 
-install: true
-script: mvn --projects '!diozero-provider-jdkdio10,!diozero-provider-jdkdio11,!diozero-imu-visualiser' clean compile package install
+env:
+  global:
+    - DIOZERO_PROJECTS="!diozero-provider-jdkdio10,!diozero-provider-jdkdio11,!diozero-imu-visualiser"
 
-deploy:
-  on:
-    all-branches: true
-  provider: bintray
-  file: distribution/bintray.json
-  user: mattjlewis
-  key: $BINTRAY_API_KEY
+install: true
+script: mvn --projects '${DIOZERO_PROJECTS}' clean compile package install
+
+#deploy:
+#  on:
+#    all-branches: true
+#  provider: bintray
+#  file: distribution/bintray.json
+#  user: mattjlewis
+#  key: $BINTRAY_API_KEY

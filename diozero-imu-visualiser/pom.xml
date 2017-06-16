@@ -10,17 +10,20 @@
 	<name>Device I/O Zero - IMU Visualiser</name>
 	<artifactId>diozero-imu-visualiser</artifactId>
 	<packaging>jar</packaging>
-		
+
+	<properties>
+		<eclipse-paho-client-mqttv3.version>1.1.1</eclipse-paho-client-mqttv3.version>
+	</properties>
+
 	<dependencies>
 		<dependency>
 			<groupId>com.diozero</groupId>
 			<artifactId>diozero-core</artifactId>
-			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.paho</groupId>
 			<artifactId>org.eclipse.paho.client.mqttv3</artifactId>
-			<version>1.1.1</version>
+			<version>${eclipse-paho-client-mqttv3.version}</version>
 		</dependency>
 		<dependency>
 			<!--
@@ -35,9 +38,6 @@
 	
 	<build>
 		<plugins>
-			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
@@ -54,9 +54,6 @@
 						<exclude>**/models/*</exclude>
 					</excludes>
 				</configuration>
-			</plugin>
-			<plugin>
-				<artifactId>maven-javadoc-plugin</artifactId>
 			</plugin>
 		</plugins>
 	</build>

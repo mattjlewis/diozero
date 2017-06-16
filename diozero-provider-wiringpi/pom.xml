@@ -23,34 +23,20 @@
 		</repository>
 	</repositories>
 	
+	<properties>
+		<pi4j.version>1.1</pi4j.version>
+	</properties>
+	
 	<dependencies>
 		<dependency>
-			<groupId>org.tinylog</groupId>
-			<artifactId>tinylog</artifactId>
+			<groupId>com.diozero</groupId>
+			<artifactId>diozero-core</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.pi4j</groupId>
 			<artifactId>pi4j-core</artifactId>
-			<version>1.1</version>
-		</dependency>
-		<dependency>
-			<groupId>com.diozero</groupId>
-			<artifactId>diozero-core</artifactId>
-			<version>${project.version}</version>
+			<version>${pi4j.version}</version>
 		</dependency>
 	</dependencies>
 
-	<build>
-		<plugins>
-			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<artifactId>maven-source-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<artifactId>maven-javadoc-plugin</artifactId>
-			</plugin>
-		</plugins>
-	</build>
 </project>

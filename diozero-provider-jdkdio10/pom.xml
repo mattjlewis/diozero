@@ -11,34 +11,20 @@
 	<artifactId>diozero-provider-jdkdio10</artifactId>
 	<packaging>jar</packaging>
 	
+	<properties>
+		<jdk-device-io.version>1.0</jdk-device-io.version>
+	</properties>
+	
 	<dependencies>
 		<dependency>
-			<groupId>org.tinylog</groupId>
-			<artifactId>tinylog</artifactId>
+			<groupId>com.diozero</groupId>
+			<artifactId>diozero-core</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>jdk.dio</groupId>
 			<artifactId>device-io</artifactId>
-			<version>1.0</version>
-		</dependency>
-		<dependency>
-			<groupId>com.diozero</groupId>
-			<artifactId>diozero-core</artifactId>
-			<version>${project.version}</version>
+			<version>${jdk-device-io.version}</version>
 		</dependency>
 	</dependencies>
 
-	<build>
-		<plugins>
-			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<artifactId>maven-source-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<artifactId>maven-javadoc-plugin</artifactId>
-			</plugin>
-		</plugins>
-	</build>
 </project>

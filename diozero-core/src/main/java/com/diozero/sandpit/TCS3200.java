@@ -200,6 +200,7 @@ public class TCS3200 implements InputEventListener<DigitalInputEvent>, Runnable,
 	 * 2  H   L   20%
 	 * 3  H   H   100%
 	 * </pre>
+	 * @param f Sampling frequency
 	 */
 	public void setFrequency(Frequency f) {
 		if (s0 == null || s1 == null) {
@@ -232,7 +233,7 @@ public class TCS3200 implements InputEventListener<DigitalInputEvent>, Runnable,
 	
 	/**
 	 * Set the interval between RGB updates
-	 * @param interval the interval between RGB updates ( 0.1 <= interval < 2.0)
+	 * @param interval the interval between RGB updates ( 0.1 &lt;= interval &lt; 2.0)
 	 */
 	public void setUpdateInterval(double interval) {
 		this.interval = RangeUtil.constrain(interval, 0.1, 2.0);
@@ -248,7 +249,7 @@ public class TCS3200 implements InputEventListener<DigitalInputEvent>, Runnable,
 	
 	/**
 	 * Set the sample size (number of frequency cycles to accumulate)
-	 * @return the sample size
+	 * @param samples the sample size
 	 */
 	public void setSampleSize(int samples) {
 		this.samples = RangeUtil.constrain(samples, 10, 100);
@@ -275,7 +276,8 @@ public class TCS3200 implements InputEventListener<DigitalInputEvent>, Runnable,
 	 * 1  H   H   Green
 	 * 2  L   H   Blue
 	 * 3  H   L   Clear (no filter)
-    */
+	 * @param f Filter
+     */
 	public void setFilter(Filter f) {
 		switch (f) {
 		case RED:

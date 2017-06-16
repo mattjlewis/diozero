@@ -10,18 +10,5 @@
 	<name>Device I/O Zero - WS281x Java Wrapper</name>	
 	<artifactId>diozero-ws281x-java</artifactId>
 	<packaging>jar</packaging>
-	
-	<build>
-		<plugins>
-			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<artifactId>maven-source-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<artifactId>maven-javadoc-plugin</artifactId>
-			</plugin>
-		</plugins>
-	</build>
+
 </project>
