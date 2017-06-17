@@ -30,17 +30,35 @@
 		mvn deploy -P release
 		(go to https://oss.sonatype.org/#nexus-search;gav~com.diozero~diozero-core~~~~kw,versionexpand
 		then Staging Repositories close and release)
-	Release (can't get this to work correctly, messes up version numbers):
+	Release (can't get this to work correctly, messes up version numbers by deploying with the old snapshot version):
 		mvn release:prepare -DignoreSnapshots=true
 		mvn release:rollback & mvn release:clean 
 		mvn release:perform
+	Current release process:
+		Update version:
+			mvn versions:set -DnewVersion=xxx
+			mvn versions:commit
+		Check-in pom.xml files modified by mvn versions.
+		Build and push:
+			mvn deploy -P release
+		Add tag:
+			mvn scm:tag diozero-xxx
+		Alternatively:
+			git tag diozero-xxx
+			git push [dashdash] tags
+		To delete a local and remote tag:
+			git tag -d <tag>
+			git push origin :refs/tags/<tag>
+		Update version to next SNAPSHOT version:
+			mvn versions:set -DnewVersion=yyy-SNAPSHOT
+			mvn versions:commit
 	-->
 
 	<modelVersion>4.0.0</modelVersion>
 	
 	<groupId>com.diozero</groupId>
 	<artifactId>diozero</artifactId>
-	<version>0.10</version>
+	<version>0.11-SNAPSHOT</version>
 	<name>Device I/O Zero</name>
 	<description>Java Device I/O library with an API based on the Python GPIO Zero supporting portable across Single Board Computers (including Raspberry Pi, BeagleBone Black, Odroid C2, CHIP, Asus Tinker Board)</description>
 	<url>http://www.diozero.com/</url>
