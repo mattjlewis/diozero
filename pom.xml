@@ -71,8 +71,8 @@
 	</ciManagement>
 	
 	<scm>
-		<connection>scm:git:git://github.com/mattjlewis/diozero.git</connection>
-		<developerConnection>scm:git:git://github.com/mattjlewis/diozero.git</developerConnection>
+		<connection>scm:git:https://github.com/mattjlewis/diozero.git</connection>
+		<developerConnection>scm:git:https://github.com/mattjlewis/diozero.git</developerConnection>
 		<url>https://github.com/mattjlewis/diozero</url>
 	</scm>
 
