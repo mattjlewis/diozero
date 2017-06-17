@@ -7,14 +7,15 @@ os:
 
 cache:
   directories:
-  - $HOME/.m2
+    - $HOME/.m2
 
 env:
-  - DIOZERO_PROJECTS="!diozero-provider-jdkdio10,!diozero-provider-jdkdio11,!diozero-imu-visualiser"
+  - PROJECTS_TO_BUILD: "!diozero-provider-jdkdio10,!diozero-provider-jdkdio11,!diozero-imu-visualiser"
 
 install: true
 script: mvn --projects '!diozero-provider-jdkdio10,!diozero-provider-jdkdio11,!diozero-imu-visualiser' clean compile package install
 #script: mvn ${MAVEN_OPTS} clean compile package install
+#script: mvn --projects='${PROJECTS_TO_BUILD}' clean compile package install
 
 #deploy:
 #  on:

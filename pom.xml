@@ -61,14 +61,19 @@
 	</licenses>
 	
 	<issueManagement>
-		<system>GitHub</system>
+		<system>GitHub Issues</system>
 		<url>https://github.com/mattjlewis/diozero/issues</url>
 	</issueManagement>
+
+	<ciManagement>
+		<system>Travis CI</system>
+		<url>https://travis-ci.org/mattjlewis/diozero</url>
+	</ciManagement>
 	
 	<scm>
+		<connection>scm:git:git://github.com/mattjlewis/diozero.git</connection>
+		<developerConnection>scm:git:git://github.com/mattjlewis/diozero.git</developerConnection>
 		<url>https://github.com/mattjlewis/diozero</url>
-		<connection>scm:git:github.com/mattjlewis/diozero.git</connection>
-		<developerConnection>scm:git:git@github.com:mattjlewis/diozero.git</developerConnection>
 	</scm>
 
 	<developers>
@@ -129,6 +134,7 @@
 		<maven-source-plugin.version>3.0.1</maven-source-plugin.version>
 		
 		<!-- Reporting plugins -->
+		<maven-changelog-plugin.version>2.3</maven-changelog-plugin.version>
 		<maven-changes-plugin.version>2.12.1</maven-changes-plugin.version>
 		<maven-checkstyle-plugin.version>2.17</maven-checkstyle-plugin.version>
 		<maven-javadoc-plugin.version>2.10.4</maven-javadoc-plugin.version>
@@ -287,6 +293,11 @@
 				<!-- Reporting plugins -->
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-changelog-plugin</artifactId>
+					<version>${maven-changelog-plugin.version}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-changes-plugin</artifactId>
 					<version>${maven-changes-plugin.version}</version>
 				</plugin>
@@ -294,6 +305,10 @@
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-checkstyle-plugin</artifactId>
 					<version>${maven-checkstyle-plugin.version}</version>
+					<configuration>
+						<consoleOutput>true</consoleOutput>
+						<configLocation>${project.parent.basedir}/configuration/checkstyle.xml</configLocation>
+					</configuration>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -366,14 +381,6 @@
 		</pluginManagement>
 		
 		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-checkstyle-plugin</artifactId>
-				<configuration>
-					<consoleOutput>true</consoleOutput>
-					<configLocation>${project.parent.basedir}/configuration/checkstyle.xml</configLocation>
-				</configuration>
-			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
