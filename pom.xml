@@ -72,7 +72,7 @@
 	
 	<scm>
 		<connection>scm:git:https://github.com/mattjlewis/diozero.git</connection>
-		<developerConnection>scm:git:https://github.com/mattjlewis/diozero.git</developerConnection>
+		<developerConnection>scm:git:git@github.com:mattjlewis/diozero.git</developerConnection>
 		<url>https://github.com/mattjlewis/diozero</url>
 	</scm>
 
@@ -107,7 +107,8 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		
+
+		<project.scm.id>github</project.scm.id>		
 		<github.global.server>github</github.global.server>
 		
 		<maven.min-version>3.3.0</maven.min-version>
