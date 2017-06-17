@@ -72,7 +72,7 @@
 	
 	<scm>
 		<connection>scm:git:https://github.com/mattjlewis/diozero.git</connection>
-		<developerConnection>scm:git:git@github.com:mattjlewis/diozero.git</developerConnection>
+		<developerConnection>scm:git:git://github.com/mattjlewis/diozero.git</developerConnection>
 		<url>https://github.com/mattjlewis/diozero</url>
 	</scm>
 

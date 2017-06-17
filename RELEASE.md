@@ -35,7 +35,7 @@
 + Moved sysfs provider into diozero-core, use as the default provider.
 + Preliminary support for devices that support the Firmata protocol (i.e. Arduino).
 
-# Release 0.10 (in progress)
+# Release 0.10
 
 + Firmata I2C.
 + Improvements to MFRC522.
