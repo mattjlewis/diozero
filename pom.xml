@@ -58,7 +58,7 @@
 	
 	<groupId>com.diozero</groupId>
 	<artifactId>diozero</artifactId>
-	<version>0.11-SNAPSHOT</version>
+	<version>0.10</version>
 	<name>Device I/O Zero</name>
 	<description>Java Device I/O library with an API based on the Python GPIO Zero supporting portable across Single Board Computers (including Raspberry Pi, BeagleBone Black, Odroid C2, CHIP, Asus Tinker Board)</description>
 	<url>http://www.diozero.com/</url>
@@ -200,19 +200,21 @@
 		</site>
 	</distributionManagement>
 	
+	<!--
 	<repositories>
 		<repository>
-			<id>oss-snapshots-repo</id>
+			<id>ossrh</id>
 			<name>Sonatype OSS Maven Repository</name>
 			<url>https://oss.sonatype.org/content/groups/public</url>
 			<releases>
-				<enabled>true</enabled>
+				<enabled>false</enabled>
 			</releases>
 			<snapshots>
 				<enabled>true</enabled>
 			</snapshots>
 		</repository>
 	</repositories>
+	-->
 	
 	<dependencyManagement>
 		<dependencies>
@@ -635,6 +637,36 @@
 								</goals>
 							</execution>
 						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.sonatype.plugins</groupId>
+						<artifactId>nexus-staging-maven-plugin</artifactId>
+						<extensions>true</extensions>
+						<executions>
+							<execution>
+								<id>default-deploy</id>
+								<phase>deploy</phase>
+								<goals>
+									<goal>deploy</goal>
+								</goals>
+							</execution>
+						</executions>
+						<configuration>
+							<serverId>ossrh</serverId>
+							<nexusUrl>https://oss.sonatype.org/</nexusUrl>
+							<autoReleaseAfterClose>true</autoReleaseAfterClose>
+							<skipStaging>true</skipStaging>
+						</configuration>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-release-plugin</artifactId>
+						<configuration>
+							<autoVersionSubmodules>true</autoVersionSubmodules>
+							<useReleaseProfile>true</useReleaseProfile>
+							<releaseProfiles>release</releaseProfiles>
+							<goals>deploy</goals>
+						</configuration>
 					</plugin>
 				</plugins>
 			</build>
