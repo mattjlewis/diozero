@@ -34,7 +34,7 @@
 		mvn release:prepare -DignoreSnapshots=true
 		mvn release:rollback & mvn release:clean 
 		mvn release:perform
-	Current release process:
+	Current release process (see http://central.sonatype.org/pages/apache-maven.html):
 		Update version:
 			mvn versions:set -DnewVersion=xxx
 			mvn versions:commit
@@ -58,7 +58,7 @@
 	
 	<groupId>com.diozero</groupId>
 	<artifactId>diozero</artifactId>
-	<version>0.10</version>
+	<version>0.11-SNAPSHOT</version>
 	<name>Device I/O Zero</name>
 	<description>Java Device I/O library with an API based on the Python GPIO Zero supporting portable across Single Board Computers (including Raspberry Pi, BeagleBone Black, Odroid C2, CHIP, Asus Tinker Board)</description>
 	<url>http://www.diozero.com/</url>
@@ -483,7 +483,7 @@
 					<serverId>ossrh</serverId>
 					<nexusUrl>https://oss.sonatype.org/</nexusUrl>
 					<autoReleaseAfterClose>true</autoReleaseAfterClose>
-					<skipStaging>true</skipStaging>
+					<!-- <skipStaging>true</skipStaging> -->
 				</configuration>
 			</plugin>
 			<plugin>
@@ -655,7 +655,7 @@
 							<serverId>ossrh</serverId>
 							<nexusUrl>https://oss.sonatype.org/</nexusUrl>
 							<autoReleaseAfterClose>true</autoReleaseAfterClose>
-							<skipStaging>true</skipStaging>
+							<!-- <skipStaging>true</skipStaging> -->
 						</configuration>
 					</plugin>
 					<plugin>

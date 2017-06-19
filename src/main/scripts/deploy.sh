@@ -25,8 +25,8 @@
 ###
 #!/bin/sh
 
-version=0.10-SNAPSHOT
-pigpioj_version=2.0-SNAPSHOT
+version=0.11-SNAPSHOT
+pigpioj_version=2.0
 username=pi
 #host=george.local
 #host=sheldon.local

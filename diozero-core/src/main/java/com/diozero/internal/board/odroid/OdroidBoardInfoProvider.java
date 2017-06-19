@@ -37,8 +37,8 @@ public class OdroidBoardInfoProvider implements BoardInfoProvider {
 	public static final OdroidC2BoardInfo ODROID_C2 = new OdroidC2BoardInfo();
 	
 	public static final String MAKE = "Odroid";
-	private static final String C1_HARDWARE_ID = "ODROID-C1";
-	private static final String C2_HARDWARE_ID = "ODROID-C2";
+	public static final String C1_HARDWARE_ID = "ODROID-C1";
+	public static final String C2_HARDWARE_ID = "ODROID-C2";
 	
 	public static enum Model {
 		C0, U2_U3, C1, XU_3_4, C2;

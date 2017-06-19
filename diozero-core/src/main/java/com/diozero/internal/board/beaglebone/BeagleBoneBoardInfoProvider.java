@@ -52,12 +52,12 @@ public class BeagleBoneBoardInfoProvider implements BoardInfoProvider {
 		public static final String P9_HEADER = "P9";
 		public static final String P8_HEADER = "P8";
 		
-		private static final String BB_BLACK = "Black";
+		public static final String MODEL = "Black";
 		private static final int MEMORY = 512;
-		private static final String BBB_LIB_PATH = MAKE.toLowerCase() + "/" + BB_BLACK.toLowerCase();
+		private static final String BBB_LIB_PATH = MAKE.toLowerCase() + "/" + MODEL.toLowerCase();
 		
 		public BeagleBoneBlackBoardInfo() {
-			super(MAKE, BB_BLACK, MEMORY, BBB_LIB_PATH);
+			super(MAKE, MODEL, MEMORY, BBB_LIB_PATH);
 
 			addGpioPinInfo(P9_HEADER, 60, 12, PinInfo.DIGITAL_IN_OUT);
 			addGpioPinInfo(P9_HEADER, 48, 15, PinInfo.DIGITAL_IN_OUT);

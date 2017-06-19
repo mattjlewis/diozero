@@ -33,10 +33,10 @@ import com.diozero.api.*;
 import com.diozero.util.RuntimeIOException;
 
 /**
- * Datasheet: https://cdn-shop.adafruit.com/datasheets/BST-BME280_DS001-10.pdf
+ * <a href="https://cdn-shop.adafruit.com/datasheets/BST-BME280_DS001-10.pdf">Datasheet</a>
  * Sample implementations:
- * https://github.com/ControlEverythingCommunity/BME280/blob/master/Java/BME280.java
- * https://github.com/adafruit/Adafruit_BME280_Library/blob/master/
+ * <a href="https://github.com/ControlEverythingCommunity/BME280/blob/master/Java/BME280.java">Java</a>
+ * <a href="https://github.com/adafruit/Adafruit_BME280_Library/blob/master/">Adafruit / Python</a>
  * Adafruit_BME280.cpp
  */
 public class BME280 implements BarometerInterface, ThermometerInterface, HygrometerInterface, Closeable {
@@ -45,7 +45,7 @@ public class BME280 implements BarometerInterface, ThermometerInterface, Hygrome
 	private static final int CALIB_00_REG = 0x88;
 	private static final int CALIB_26_REG = 0xe1;
 	private static final int CTRL_HUM_REG = 0xF2;
-	private static final int STATUS_REG = 0xF3;
+	//private static final int STATUS_REG = 0xF3;
 	private static final int CTRL_MEAS_REG = 0xF4;
 	private static final int CONFIG_REG = 0xF5;
 	private static final int PRESS_MSB_REG = 0xF7;
@@ -139,8 +139,6 @@ public class BME280 implements BarometerInterface, ThermometerInterface, Hygrome
 			return mask;
 		}
 	}
-	
-	private static final byte SPI_EN = 0b1;
 	
 	private I2CDevice device;
 	private int digT1;

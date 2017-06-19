@@ -35,6 +35,9 @@ import com.diozero.api.LuminositySensorInterface;
 import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 
+/**
+ * <a href="https://cdn-shop.adafruit.com/datasheets/TSL2561.pdf">Datasheet</a>
+ */
 @SuppressWarnings("unused")
 public class TSL2561 implements Closeable, LuminositySensorInterface {
 	private static final int TSL2561_VISIBLE = 2; // channel 0 - channel 1
@@ -45,8 +48,10 @@ public class TSL2561 implements Closeable, LuminositySensorInterface {
 	private static final int DEVICE_ADDR = 0x39; // Default address (pin left floating)
 
 	// Lux calculations differ slightly for CS package
-	public static final int TSL2561_PACKAGE_CS = 0;
-	public static final int TSL2561_PACKAGE_T_FN_CL = 1;
+	public static enum TSL2561Package {
+		CHIP_SCALE,
+		T_FN_CL;
+	}
 
 	private static final int TSL2561_COMMAND_BIT = 0x80; // Must be 1
 	private static final int TSL2561_CLEAR_BIT = 0x40; // Clears any pending interrupt (write 1 to clear)
@@ -153,14 +158,14 @@ public class TSL2561 implements Closeable, LuminositySensorInterface {
 	private int gain;
 	private int broadband;
 	private int ir;
-	private int tsl2561Package;
+	private TSL2561Package tsl2561Package;
 	private I2CDevice i2cDevice;
 	
-	public TSL2561(int tsl2561Package) throws RuntimeIOException {
+	public TSL2561(TSL2561Package tsl2561Package) throws RuntimeIOException {
 		this(I2CConstants.BUS_1, I2CConstants.ADDR_SIZE_7, I2CConstants.DEFAULT_CLOCK_FREQUENCY, tsl2561Package);
 	}
 	
-	public TSL2561(int controllerNumber, int addressSize, int clockFreq, int tsl2561Package) throws RuntimeIOException {
+	public TSL2561(int controllerNumber, int addressSize, int clockFreq, TSL2561Package tsl2561Package) throws RuntimeIOException {
 		i2cDevice = new I2CDevice(controllerNumber, DEVICE_ADDR, addressSize, clockFreq);
 		this.tsl2561Package = tsl2561Package;
 		initialised = false;
@@ -388,7 +393,7 @@ public class TSL2561 implements Closeable, LuminositySensorInterface {
 		int b = 0;
 		int m = 0;
 		switch (tsl2561Package) {
-		case TSL2561_PACKAGE_CS:
+		case CHIP_SCALE:
 			if ((ratio >= 0) && (ratio <= TSL2561_LUX_K1C)) {
 				b = TSL2561_LUX_B1C;
 				m = TSL2561_LUX_M1C;
@@ -415,7 +420,7 @@ public class TSL2561 implements Closeable, LuminositySensorInterface {
 				m = TSL2561_LUX_M8C;
 			}
 			break;
-		case TSL2561_PACKAGE_T_FN_CL:
+		case T_FN_CL:
 			if ((ratio >= 0) && (ratio <= TSL2561_LUX_K1T)) {
 				b = TSL2561_LUX_B1T;
 				m = TSL2561_LUX_M1T;

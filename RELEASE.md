@@ -43,3 +43,7 @@
 + MFRC522 fully supported (finally).
 + Added support for MCP EEPROMs.
 + I2C SMBus implementation in the internal sysfs provider.
+
+# Release 0.11 (work in progress)
+
++ BH1750 luminosity sensor

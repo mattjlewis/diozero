@@ -36,8 +36,8 @@ public class TinylogTest {
 		Logger.info("hello - info");
 		Logger.debug("hello - debug");
 		Logger.trace("hello - trace");
-		Logger.info("double: {%.2f}", Double.valueOf(0.545464));
-		Logger.info("double: {}", String.format("%.2f", Double.valueOf(0.545464)));
+		Logger.info("double: {0.##}", Double.valueOf(5454.545464));
+		Logger.info("double: {}", String.format("%.2f", Double.valueOf(5454.545464)));
 		Logger.debug("setValue({}, {}), old_val=0x{}, new_val=0x{}",
 				Integer.valueOf(1), Boolean.valueOf(true), Integer.toHexString(b1), Integer.toHexString(b2));
 	}

@@ -34,16 +34,24 @@ import com.diozero.util.BoardInfoProvider;
 
 /**
  * See <a href="https://github.com/AndrewFromMelbourne/raspberry_pi_revision">this c library</a>.
+ * See also <a href="http://elinux.org/RPi_HardwareHistory">this table of revisions</a>.
  */
 public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 	public static final String MAKE = "RaspberryPi";
 	private static final String BCM_HARDWARE_PREFIX = "BCM";
 	
-	private static final String MODEL_A = "A";
-	private static final String MODEL_B = "B";
-	private static final String MODEL_A_PLUS = "A+";
-	private static final String MODEL_B_PLUS = "B+";
-	private static final String COMPUTE_MODULE = "CM";
+	public static final String MODEL_A = "A";
+	public static final String MODEL_B = "B";
+	public static final String MODEL_A_PLUS = "A+";
+	public static final String MODEL_B_PLUS = "B+";
+	public static final String MODEL_2B = "2B";
+	public static final String MODEL_ALPHA = "Alpha";
+	public static final String COMPUTE_MODULE = "CM";
+	public static final String MODEL_3B = "3B";
+	public static final String MODEL_ZERO = "Zero";
+	public static final String COMPUTE_MODULE_3 = "CM3";
+	public static final String MODEL_ZERO_W = "ZeroW";
+	
 	private static Map<Integer, String> MODELS;
 	static {
 		MODELS = new HashMap<>();
@@ -51,13 +59,13 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 		MODELS.put(Integer.valueOf(1), MODEL_B);
 		MODELS.put(Integer.valueOf(2), MODEL_A_PLUS);
 		MODELS.put(Integer.valueOf(3), MODEL_B_PLUS);
-		MODELS.put(Integer.valueOf(4), "2B");
-		MODELS.put(Integer.valueOf(5), "Alpha");
+		MODELS.put(Integer.valueOf(4), MODEL_2B);
+		MODELS.put(Integer.valueOf(5), MODEL_ALPHA);
 		MODELS.put(Integer.valueOf(6), COMPUTE_MODULE);
-		MODELS.put(Integer.valueOf(8), "3B");
-		MODELS.put(Integer.valueOf(9), "Zero");
-		MODELS.put(Integer.valueOf(10), "CM3");
-		MODELS.put(Integer.valueOf(12), "ZeroW");
+		MODELS.put(Integer.valueOf(8), MODEL_3B);
+		MODELS.put(Integer.valueOf(9), MODEL_ZERO);
+		MODELS.put(Integer.valueOf(10), COMPUTE_MODULE_3);
+		MODELS.put(Integer.valueOf(12), MODEL_ZERO_W);
 	}
 	
 	private static final String PCB_REV_1_0 = "1.0";
@@ -120,6 +128,7 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 		PI_BOARDS.put("0012", new PiABPlusBoardInfo("0012", MODEL_A_PLUS, PCB_REV_1_2, 256, SONY, BCM2835));
 		PI_BOARDS.put("0013", new PiABPlusBoardInfo("0013", MODEL_B_PLUS, PCB_REV_1_2, 512, EGOMAN, BCM2835));
 		PI_BOARDS.put("0014", new PiComputeModuleBoardInfo("0014", 512, EMBEST, BCM2835));
+		// Unknown as to whether this has 256MB or 512MB RAM
 		PI_BOARDS.put("0015", new PiABPlusBoardInfo("0015", MODEL_A_PLUS, PCB_REV_1_1, 256, EMBEST, BCM2835));
 	}
 	

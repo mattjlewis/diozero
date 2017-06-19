@@ -1,5 +1,7 @@
 package com.diozero.sampleapps;
 
+import org.pmw.tinylog.Logger;
+
 /*
  * #%L
  * Device I/O Zero - Core
@@ -53,9 +55,8 @@ public class BME280Test {
 		try (BME280 bme280 = new BME280()) {
 			for (int i=0; i<10; i++) {
 				float[] tph = bme280.getValues();
-				System.out.printf("Temperature in Celsius : %.2f C %n", Double.valueOf(tph[0]));
-				System.out.printf("Pressure : %.2f hPa %n", Double.valueOf(tph[1]));
-				System.out.printf("Relative Humidity : %.2f %% RH %n", Double.valueOf(tph[2]));
+				Logger.info("Temperature: {0.##} C. Pressure: {0.##} hPa. Relative Humidity: {0.##}% RH",
+						Double.valueOf(tph[0]), Double.valueOf(tph[1]), Double.valueOf(tph[2]));
 				
 				SleepUtil.sleepSeconds(1);
 			}

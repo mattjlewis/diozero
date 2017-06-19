@@ -32,6 +32,7 @@ import com.diozero.util.BoardInfoProvider;
 
 public class TinkerBoardBoardInfoProvider implements BoardInfoProvider {
 	public static final TinkerBoardBoardInfo TINKER_BOARD = new TinkerBoardBoardInfo();
+	public static final String MAKE = "Asus";
 	private static final String TINKER_BOARD_HARDWARE_ID = "Rockchip (Device Tree)";
 
 	@Override
@@ -43,8 +44,7 @@ public class TinkerBoardBoardInfoProvider implements BoardInfoProvider {
 	}
 	
 	public static class TinkerBoardBoardInfo extends BoardInfo {
-		private static final String MAKE = "Asus";
-		private static final String MODEL = "Tinker Board";
+		public static final String MODEL = "Tinker Board";
 		private static final int MEMORY = 2048;
 		private static final String LIBRARY_PATH = "tinkerboard";
 		
