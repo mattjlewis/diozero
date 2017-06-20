@@ -63,5 +63,8 @@ public class SystemInfoTest {
 				}
 			}
 		}
+
+		Logger.info("I2C buses: {}", board_info.getI2CBuses());
+		Logger.info("CPU Temperature: {0.##}", Float.valueOf(board_info.getCpuTemperature()));
 	}
 }

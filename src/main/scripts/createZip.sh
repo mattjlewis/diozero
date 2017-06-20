@@ -25,11 +25,11 @@
 ###
 #!/bin/sh
 
-pigpioj_version=1.0.1
-version=0.9-SNAPSHOT
+version=0.11-SNAPSHOT
+pigpioj_version=2.0
 
 files="../pigpioj/pigpioj-java/target/pigpioj-java-${pigpioj_version}.jar \
-	$USERPROFILE/.m2/repository/org/tinylog/tinylog/1.1/tinylog-1.1.jar \
+	$USERPROFILE/.m2/repository/org/tinylog/tinylog/1.2/tinylog-1.2.jar \
 	diozero-core/target/diozero-core-${version}.jar \
 	diozero-imu-devices/target/diozero-imu-devices-${version}.jar \
 	diozero-imu-sampleapp/target/diozero-imu-sampleapp-${version}.jar \

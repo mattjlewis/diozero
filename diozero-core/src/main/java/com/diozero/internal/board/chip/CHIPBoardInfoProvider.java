@@ -224,6 +224,7 @@ public class CHIPBoardInfoProvider implements BoardInfoProvider {
 			if (! xioGpioOffsetLoaded) {
 				// Determine the XIO GPIO base
 				Path gpio_sysfs_dir = FileSystems.getDefault().getPath("/sys/class/gpio");
+				// FIXME Treat as a stream
 				try (DirectoryStream<Path> dirs = Files.newDirectoryStream(gpio_sysfs_dir, "gpiochip*")) {
 					for (Path p : dirs) {
 						try (BufferedReader reader = new BufferedReader(new FileReader(p.resolve("label").toFile()))) {

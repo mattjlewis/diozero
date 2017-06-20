@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.diozero.api.PinInfo;
+import com.diozero.internal.provider.mmap.MmapGpioInterface;
 import com.diozero.util.BoardInfo;
 import com.diozero.util.BoardInfoProvider;
 
@@ -137,6 +138,11 @@ public class OdroidBoardInfoProvider implements BoardInfoProvider {
 		@Override
 		public int getPwmChip(int pwmNum) {
 			return 0;
+		}
+		
+		@Override
+		public MmapGpioInterface createMmapGpio() {
+			return new OdroidC2MmapGpio();
 		}
 	}
 }

@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.diozero.api.PinInfo;
+import com.diozero.internal.provider.mmap.MmapGpioInterface;
 import com.diozero.util.BoardInfo;
 import com.diozero.util.BoardInfoProvider;
 
@@ -250,6 +251,11 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 	
 		public String getProcessor() {
 			return processor;
+		}
+		
+		@Override
+		public MmapGpioInterface createMmapGpio() {
+			return new RaspberryPiMmapGpio();
 		}
 	
 		@Override

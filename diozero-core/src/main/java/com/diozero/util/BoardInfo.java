@@ -1,5 +1,14 @@
 package com.diozero.util;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import org.pmw.tinylog.Logger;
+
 import com.diozero.internal.provider.mmap.MmapGpioInterface;
 
 /*
@@ -31,6 +40,7 @@ import com.diozero.internal.provider.mmap.MmapGpioInterface;
 @SuppressWarnings("static-method")
 public class BoardInfo extends BoardPinInfo {
 	private static final float DEFAULT_ADC_VREF = 1.8f;
+	private static final String TEMP_FILE = "/sys/class/thermal/thermal_zone0/temp";
 	
 	private String make;
 	private String model;
@@ -84,6 +94,27 @@ public class BoardInfo extends BoardPinInfo {
 
 	public MmapGpioInterface createMmapGpio() {
 		return null;
+	}
+	
+	public float getCpuTemperature() {
+		try {
+			return Integer.parseInt(Files.lines(Paths.get(TEMP_FILE)).findFirst().orElse("0")) / 1000f;
+		} catch (IOException e) {
+			Logger.warn(e, "Error reading {}: {}", TEMP_FILE, e);
+			return 0;
+		}
+	}
+	
+	public Collection<Integer> getI2CBuses() {
+		try {
+			List<Integer> i2c_buses = new ArrayList<>();
+			Files.newDirectoryStream(Paths.get("/dev"), "i2c-*")
+					.forEach(path -> i2c_buses.add(Integer.valueOf(path.toString().split("-")[1])));
+			return i2c_buses;
+		} catch (IOException e) {
+			Logger.error(e, "Error: {}", e);
+			return null;
+		}
 	}
 
 	@Override

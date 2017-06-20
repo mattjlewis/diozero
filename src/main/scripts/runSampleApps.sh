@@ -26,8 +26,8 @@
 #!/bin/sh
 
 #provider_classpath=diozero-provider-jdkdio11-$DIOZERO_VERSION.jar:dio-1.1-dev-linux-armv6hf.jar
-provider_classpath=diozero-provider-pigpio-$DIOZERO_VERSION.jar:pigpioj-java-1.0.0.jar
-log_classpath=tinylog-1.0.3.jar
+provider_classpath=diozero-provider-pigpio-${DIOZERO_VERSION}.jar:pigpioj-java-2.0.jar
+log_classpath=tinylog-1.2.jar
 library_path=-Djava.library.path=.
 
 input_pin=25

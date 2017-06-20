@@ -89,6 +89,7 @@ public class BeagleBoneBoardInfoProvider implements BoardInfoProvider {
 			
 			Path chip_path = FileSystems.getDefault().getPath("/sys/devices/platform/ocp/" + chip + ".epwmss/" + address + ".pwm/pwm");
 			int pwm_chip = -1;
+			// FIXME Treat as a stream
 			try (DirectoryStream<Path> dirs = Files.newDirectoryStream(chip_path, "pwm*")) {
 				for (Path p : dirs) {
 					String dir = p.getFileName().toString();
@@ -102,5 +103,12 @@ public class BeagleBoneBoardInfoProvider implements BoardInfoProvider {
 			
 			return pwm_chip;
 		}
+		
+		/*
+		@Override
+		public MmapGpioInterface createMmapGpio() {
+			return new BeagleBoneBlackMmapGpio();
+		}
+		*/
 	}
 }

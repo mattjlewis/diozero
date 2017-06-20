@@ -25,7 +25,11 @@ package com.diozero.util;
  * THE SOFTWARE.
  * #L%
  */
-import java.io.*;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.Reader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Properties;
 import java.util.ServiceLoader;
 
@@ -53,40 +57,27 @@ public class SystemInfo {
 				Logger.warn("Error loading properties file '{}': {}", OS_RELEASE_FILE, e);
 			}
 			
-			ProcessBuilder pb = new ProcessBuilder("cat", CPUINFO_FILE);
 			try {
-				Process proc = pb.start();
-				try (BufferedReader reader = new BufferedReader(new InputStreamReader(proc.getInputStream()))) {
-					String line;
-					// Fully read the process output
-					do {
-						line = reader.readLine();
-						if (line != null && line.startsWith("Hardware")) {
-							hardware = line.split(":")[1].trim();
-						}
-						if (line != null && line.startsWith("Revision")) {
-							revision = line.split(":")[1].trim();
-						}
-					} while (line != null);
-				}
+				Files.lines(Paths.get(CPUINFO_FILE)).forEach(line -> {
+					if (line.startsWith("Hardware")) {
+						hardware = line.split(":")[1].trim();
+					} else if (line.startsWith("Revision")) {
+						revision = line.split(":")[1].trim();
+					}
+				});
+				Logger.debug("Hardware: {}. Revision: {}", hardware, revision);
 			} catch (IOException | NullPointerException | IndexOutOfBoundsException e) {
 				Logger.error(e, "Error reading {}: {}", CPUINFO_FILE, e.getMessage());
 			}
 
-			pb = new ProcessBuilder("cat", MEMINFO_FILE);
 			memoryKb = null;
 			try {
-				Process proc = pb.start();
-				try (BufferedReader reader = new BufferedReader(new InputStreamReader(proc.getInputStream()))) {
-					String line;
-					// Fully read the process output
-					do {
-						line = reader.readLine();
-						if (line != null && line.startsWith("MemTotal")) {
-							memoryKb = Integer.valueOf(line.split("\\s+")[1].trim());
-						}
-					} while (line != null);
-				}
+				Files.lines(Paths.get(MEMINFO_FILE)).forEach(line -> {
+					if (line.startsWith("MemTotal:")) {
+						memoryKb = Integer.valueOf(line.split("\\s+")[1].trim());
+					}
+				});
+				Logger.debug("MemTotal: {}", memoryKb);
 			} catch (IOException | NullPointerException | IndexOutOfBoundsException e) {
 				Logger.error(e, "Error reading {}: {}", MEMINFO_FILE, e.getMessage());
 			}

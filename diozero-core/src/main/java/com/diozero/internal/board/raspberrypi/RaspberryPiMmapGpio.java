@@ -37,7 +37,7 @@ import com.diozero.util.MmapBufferNative;
 import com.diozero.util.MmapByteBuffer;
 import com.diozero.util.SleepUtil;
 
-public class RPiMmapGpio implements MmapGpioInterface {
+public class RaspberryPiMmapGpio implements MmapGpioInterface {
 	private static final String GPIOMEM_DEVICE = "/dev/gpiomem";
 	private static final int GPIOMEM_LEN = 0xB4;
 	// Offset to the GPIO Input level registers for each GPIO pin
