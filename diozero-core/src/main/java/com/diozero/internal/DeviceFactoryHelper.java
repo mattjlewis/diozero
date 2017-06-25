@@ -27,8 +27,6 @@ package com.diozero.internal;
  */
 
 
-import java.util.ServiceLoader;
-
 import org.pmw.tinylog.Logger;
 
 import com.diozero.internal.provider.NativeDeviceFactoryInterface;
@@ -45,6 +43,7 @@ public class DeviceFactoryHelper {
 	
 	private static NativeDeviceFactoryInterface nativeDeviceFactory;
 
+	@SuppressWarnings("resource")
 	private static void init() {
 		synchronized (DeviceFactoryHelper.class) {
 			if (nativeDeviceFactory == null) {
@@ -60,18 +59,10 @@ public class DeviceFactoryHelper {
 				}
 				
 				// Otherwise use the ServiceLoader
-				if (nativeDeviceFactory == null) {
-					ServiceLoader<NativeDeviceFactoryInterface> service_loader = ServiceLoader
-							.load(NativeDeviceFactoryInterface.class);
-					for (NativeDeviceFactoryInterface device_provider_factory : service_loader) {
-						nativeDeviceFactory = device_provider_factory;
-						break;
-					}
-				}
-				
 				// If none found use the universal sysfs device factory
 				if (nativeDeviceFactory == null) {
-					nativeDeviceFactory = new SysFsDeviceFactory();
+					nativeDeviceFactory = NativeDeviceFactoryInterface.getNativeDeviceFactories().findFirst()
+							.orElse(new SysFsDeviceFactory());
 				}
 
 				Logger.info("Using native device factory class {}", nativeDeviceFactory.getClass().getSimpleName());

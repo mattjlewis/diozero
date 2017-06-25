@@ -30,8 +30,8 @@ import java.util.Random;
 
 import org.junit.Assert;
 
-import com.diozero.McpAdc;
 import com.diozero.api.SpiClockMode;
+import com.diozero.devices.McpAdc;
 import com.diozero.internal.provider.DeviceFactoryInterface;
 import com.diozero.util.RuntimeIOException;
 

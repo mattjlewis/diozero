@@ -1,7 +1,5 @@
 package com.diozero.internal.provider;
 
-import com.diozero.util.BoardInfo;
-
 /*
  * #%L
  * Device I/O Zero - Core
@@ -29,6 +27,12 @@ import com.diozero.util.BoardInfo;
  */
 
 
+import java.util.ServiceLoader;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
+
+import com.diozero.util.BoardInfo;
+
 public interface NativeDeviceFactoryInterface extends GpioDeviceFactoryInterface, SpiDeviceFactoryInterface,
 		I2CDeviceFactoryInterface, PwmOutputDeviceFactoryInterface, AnalogInputDeviceFactoryInterface,
 		AnalogOutputDeviceFactoryInterface {
@@ -36,4 +40,10 @@ public interface NativeDeviceFactoryInterface extends GpioDeviceFactoryInterface
 	void registerDeviceFactory(DeviceFactoryInterface deviceFactory);
 	BoardInfo initialiseBoardInfo();
 	BoardInfo getBoardInfo();
+	
+	static Stream<NativeDeviceFactoryInterface> getNativeDeviceFactories() {
+		ServiceLoader<NativeDeviceFactoryInterface> service_loader = ServiceLoader
+				.load(NativeDeviceFactoryInterface.class);
+		return StreamSupport.stream(service_loader.spliterator(), false);
+	}
 }

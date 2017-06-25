@@ -1907,10 +1907,12 @@ public class MFRC522 implements Closeable {
 	 * @param uid UID returned from a successful PICC_Select().
 	 * @deprecated Kept for backward compatibility
 	 */
+	@Deprecated
 	public void dumpToConsole(UID uid) {
 		dumpToConsole(uid, DEFAULT_KEY);
 	}
 	
+	@Deprecated
 	public void dumpToConsole(UID uid, byte[] key) {	
 		// Dump UID, SAK and Type
 		dumpDetailsToConsole(uid);
