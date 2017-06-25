@@ -568,7 +568,6 @@ public class HD44780Lcd implements Closeable {
 		backlightEnabled = false;
 		clear();
 		displayControl(false, false, false);
-		lcdConnection.close();
 	}
 	
 	public static class Characters {

@@ -30,6 +30,7 @@ package com.diozero.sampleapps;
 import java.io.*;
 
 import com.diozero.HD44780Lcd;
+import com.diozero.HD44780Lcd.LcdConnection;
 import com.diozero.api.Action;
 import com.diozero.api.I2CConstants;
 import com.diozero.util.RuntimeIOException;
@@ -131,14 +132,16 @@ public class I2CLcdSampleAppInteractive implements Closeable {
 		
 		int columns = Integer.parseInt(resolution[0]);
 		int rows = Integer.parseInt(resolution[1]);
-		lcd = new HD44780Lcd(new HD44780Lcd.PCF8574LcdConnection(controller, deviceAddress), columns, rows);
-		
-		running = true;
-		while (running) {
-			try {
-				prompt(mainMenu);
-			} catch (IllegalArgumentException iae) {
-				System.out.println("Error: " + iae);
+		try (LcdConnection lcd_connection = new HD44780Lcd.PCF8574LcdConnection(controller, deviceAddress)) {
+			lcd = new HD44780Lcd(lcd_connection, columns, rows);
+			
+			running = true;
+			while (running) {
+				try {
+					prompt(mainMenu);
+				} catch (IllegalArgumentException iae) {
+					System.out.println("Error: " + iae);
+				}
 			}
 		}
 	}
