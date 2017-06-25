@@ -121,6 +121,7 @@ public class SysFsI2cDevice extends AbstractDevice implements I2CDeviceInterface
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
+		Logger.debug("closeDevice()");
 		i2cDevice.close();
 	}
 }

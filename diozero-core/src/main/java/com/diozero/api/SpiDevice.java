@@ -28,7 +28,6 @@ package com.diozero.api;
 
 
 import java.io.Closeable;
-import java.nio.ByteBuffer;
 
 import org.pmw.tinylog.Logger;
 
@@ -76,11 +75,15 @@ public class SpiDevice implements Closeable, SPIConstants {
 		return device.getChipSelect();
 	}
 
-	public void write(ByteBuffer out) throws RuntimeIOException {
-		device.write(out);
+	public void write(byte[] txBuffer) throws RuntimeIOException {
+		device.write(txBuffer);
 	}
 
-	public ByteBuffer writeAndRead(ByteBuffer out) throws RuntimeIOException {
+	public void write(byte[] txBuffer, int txOffset, int length) throws RuntimeIOException {
+		device.write(txBuffer, txOffset, length);
+	}
+
+	public byte[] writeAndRead(byte[] out) throws RuntimeIOException {
 		return device.writeAndRead(out);
 	}
 }

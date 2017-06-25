@@ -143,10 +143,11 @@ public class McpAdc extends AbstractDeviceFactory implements AnalogInputDeviceFa
 					"Invalid channel number (" + adcPin + "), must be >= 0 and < " + type.getNumPins());
 		}
 		
-		ByteBuffer out;
+		byte[] tx;
+		int index = 0;
 		if (type == Type.MCP3301) {
 			// MCP3301 always operates in differential mode so has no control data - just send 2 bytes (0, 0)
-			out = ByteBuffer.allocate(2);
+			tx = new byte[2];
 		} else {
 			/*
 			 * The transmit bits start with a start bit "1" followed by the
@@ -155,22 +156,22 @@ public class McpAdc extends AbstractDeviceFactory implements AnalogInputDeviceFa
 			 * The remainder of the transmission are "don't care" bits (x).
 			 * Tx   0001MCCC xxxxxxxx xxxxxxxx
 			 */
-			out = ByteBuffer.allocate(3);
-			out.put((byte) (0x10 | (differentialRead ? 0 : 0x08 ) | adcPin));
+			tx = new byte[3];
+			tx[index++] = (byte) (0x10 | (differentialRead ? 0 : 0x08 ) | adcPin);
 		}
 		// Pad with 2 zero bytes
-		out.put((byte) 0);
-		out.put((byte) 0);
+		tx[index++] = (byte) 0;
+		tx[index++] = (byte) 0;
 		
-		out.flip();
-		ByteBuffer in = spiDevice.writeAndRead(out);
+		byte[] in = spiDevice.writeAndRead(tx);
 		//Logger.debug(String.format("0x%x, 0x%x, 0x%x",
 		//		Byte.valueOf(in.get(0)), Byte.valueOf(in.get(1)), Byte.valueOf(in.get(2))));
 
 		return extractValue(in);
 	}
 	
-	private int extractValue(ByteBuffer in) {
+	private int extractValue(byte[] rx) {
+		ByteBuffer in = ByteBuffer.wrap(rx);
 		// MCP3301 has just one input so doesn't need to send any control data, therefore only receives 2 bytes
 		// Skip the first byte for all other MCP33xx models
 		if (type != Type.MCP3301) {
@@ -283,11 +284,6 @@ public class McpAdc extends AbstractDeviceFactory implements AnalogInputDeviceFa
 		
 		public int getRange() {
 			return range;
-		}
-		
-		public boolean isModel33() {
-			// FIXME Need a cleaner way of doing this
-			return name().substring(0, 5).equals("MCP33");
 		}
 	}
 	

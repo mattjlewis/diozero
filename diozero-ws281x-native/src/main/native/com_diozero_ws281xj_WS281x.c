@@ -58,7 +58,8 @@ JNIEXPORT void JNICALL JNI_OnUnload(JavaVM* jvm, void* reserved) {
  * Method:    initialise
  * Signature: (IIIII)Ljava/nio/ByteBuffer
  */
-JNIEXPORT jobject JNICALL Java_com_diozero_ws281xj_WS281xNative_initialise(JNIEnv* env, jclass clz, jint frequency, jint dmaNum, jint gpioNum, jint brightness, jint numLeds) {
+JNIEXPORT jobject JNICALL Java_com_diozero_ws281xj_WS281xNative_initialise(
+		JNIEnv* env, jclass clz, jint frequency, jint dmaNum, jint gpioNum, jint brightness, jint numLeds) {
 	led_string.freq = frequency;
 	led_string.dmanum = dmaNum;
 	led_string.channel[0].gpionum = gpioNum;

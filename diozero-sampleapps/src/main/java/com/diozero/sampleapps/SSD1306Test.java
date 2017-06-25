@@ -55,12 +55,13 @@ import com.diozero.util.SleepUtil;
  */
 public class SSD1306Test {
 	public static void main(String[] args) {
+		Graphics2D g2d = null;
 		Random random = new Random();
 		try (DigitalOutputDevice dc_pin = new DigitalOutputDevice(22);
 				DigitalOutputDevice reset_pin = new DigitalOutputDevice(27);
-				SSD1306 display = new SSD1306(0, 0, dc_pin, reset_pin)) {
-			int width = display.getWidth();
-			int height = display.getHeight();
+				SSD1306 oled = new SSD1306(0, 0, dc_pin, reset_pin)) {
+			int width = oled.getWidth();
+			int height = oled.getHeight();
 			Logger.info("Sierpinski triangle");
 			int[][] corners = { { width/2, 0 }, { 0, height-1 }, { width-1, height-1 } };
 			int[] start_corner = corners[random.nextInt(3)];
@@ -70,14 +71,14 @@ public class SSD1306Test {
 				int[] target_corner = corners[random.nextInt(3)];
 				x += (target_corner[0] - x) / 2;
 				y += (target_corner[1] - y) / 2;
-				display.setPixel(x, y, true);
-				display.display();
+				oled.setPixel(x, y, true);
+				oled.display();
 				SleepUtil.sleepSeconds(0.005);
 			}
 			
 			Logger.info("Displaying custom image");
-			BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_BINARY);
-			Graphics2D g2d = image.createGraphics();
+			BufferedImage image = new BufferedImage(width, height, oled.getNativeImageType());
+			g2d = image.createGraphics();
 			g2d.setColor(Color.white);
 			g2d.setBackground(Color.black);
 			g2d.clearRect(0, 0, width, height);
@@ -90,30 +91,34 @@ public class SSD1306Test {
 			g2d.drawOval(width/2, height/2, width/3, height/3);
 			g2d.fillRect(width/4, 0, width/4, height/4);
 			g2d.fillOval(0, height/4, width/4, height/4);
-			display.display(image, 0.5f);
+			oled.display(image);
 			Logger.debug("Sleeping for 2 seconds");
 			SleepUtil.sleepSeconds(2);
 			
 			Logger.debug("Inverting");
-			display.invertDisplay(true);
+			oled.invertDisplay(true);
 			SleepUtil.sleepSeconds(1);
 			Logger.debug("Restoring to normal");
-			display.invertDisplay(false);
+			oled.invertDisplay(false);
 			SleepUtil.sleepSeconds(1);
 			
 			for (int i=0; i<255; i++) {
-				display.setContrast((byte) i);
+				oled.setContrast((byte) i);
 				SleepUtil.sleepSeconds(0.01);
 			}
 			
-			animateText(display, "SSD1306 Organic LED Display demo scroller. Java implementation by diozero (diozero.com).");
+			animateText(oled, "SSD1306 Organic LED Display demo scroller. Java implementation by diozero (diozero.com).");
+		} finally {
+			if (g2d != null) {
+				g2d.dispose();
+			}
 		}
 	}
 
-	private static void animateText(SSD1306 display, String text) {
-		int width = display.getWidth();
-		int height = display.getHeight();
-		BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_BINARY);
+	private static void animateText(SSD1306 oled, String text) {
+		int width = oled.getWidth();
+		int height = oled.getHeight();
+		BufferedImage image = new BufferedImage(width, height, oled.getNativeImageType());
 		Graphics2D g2d = image.createGraphics();
 		
 		g2d.setColor(Color.white);
@@ -131,7 +136,7 @@ public class SSD1306Test {
 		int startpos = width;
 		int pos = startpos;
 		int x;
-		for (int i=0; i<1_000; i++) {
+		for (int i=0; i<500; i++) {
 			g2d.clearRect(0, 0, width, height);
 			x = pos;
 
@@ -152,7 +157,7 @@ public class SSD1306Test {
 		        x += fm.charWidth(c);
 			}
 		    // Draw the image buffer.
-		    display.display(image, 0.5f);
+		    oled.display(image);
 		    // Move position for next frame.
 		    pos += velocity;
 		    // Start over if text has scrolled completely off left side of screen.

@@ -35,6 +35,7 @@ import org.pmw.tinylog.Logger;
 
 import com.diozero.api.DeviceMode;
 import com.diozero.api.DigitalInputEvent;
+import com.diozero.api.PinInfo;
 import com.diozero.internal.provider.AbstractInputDevice;
 import com.diozero.internal.provider.GpioDigitalInputOutputDeviceInterface;
 import com.diozero.util.*;
@@ -53,15 +54,15 @@ implements GpioDigitalInputOutputDeviceInterface, PollEventListener {
 	private RandomAccessFile valueFile;
 	private DeviceMode mode;
 
-	public SysFsDigitalInputOutputDevice(SysFsDeviceFactory deviceFactory, Path gpioDir, String key, int gpio,
-			DeviceMode mode) {
+	public SysFsDigitalInputOutputDevice(SysFsDeviceFactory deviceFactory, String key, PinInfo pinInfo, DeviceMode mode) {
 		super(key, deviceFactory);
 		
 		this.deviceFactory = deviceFactory;
-		this.gpio = gpio;
+		this.gpio = pinInfo.getSysFsNumber();
+		Path gpio_dir = deviceFactory.getGpioDirectoryPath(gpio);
 		epollNative = new EpollNative();
 		
-		valuePath = gpioDir.resolve(VALUE_FILE);
+		valuePath = gpio_dir.resolve(VALUE_FILE);
 		try {
 			valueFile = new RandomAccessFile(valuePath.toFile(), "rw");
 		} catch (IOException e) {
@@ -90,6 +91,7 @@ implements GpioDigitalInputOutputDeviceInterface, PollEventListener {
 	@Override
 	public boolean getValue() throws RuntimeIOException {
 		try {
+			// Note seek(0) is required
 			valueFile.seek(0);
 			return valueFile.readByte() == HIGH_VALUE;
 		} catch (IOException e) {
@@ -109,13 +111,13 @@ implements GpioDigitalInputOutputDeviceInterface, PollEventListener {
 	}
 
 	@Override
-	public void enableListener() {
+	protected void enableListener() {
 		epollNative.register(valuePath.toString(), Integer.valueOf(gpio), this);
 		DioZeroScheduler.getDaemonInstance().execute(epollNative::processEvents);
 	}
 
 	@Override
-	public void disableListener() {
+	protected void disableListener() {
 		epollNative.deregister(valuePath.toString());
 		epollNative.stop();
 	}

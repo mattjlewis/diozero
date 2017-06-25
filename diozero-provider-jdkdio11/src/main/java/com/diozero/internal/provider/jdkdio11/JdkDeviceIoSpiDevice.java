@@ -79,33 +79,51 @@ public class JdkDeviceIoSpiDevice extends AbstractDevice implements SpiDeviceInt
 	}
 	
 	@Override
-	public void write(ByteBuffer src) {
+	public void write(byte[] txBuffer) {
 		if (! device.isOpen()) {
 			throw new IllegalStateException("SPI Device " +
 					deviceConfig.getControllerNumber() + "-" + deviceConfig.getAddress() + " is closed");
 		}
 		
 		try {
-			device.write(src);
+			device.write(ByteBuffer.wrap(txBuffer));
+		} catch (IOException e) {
+			throw new RuntimeIOException(e);
+		}
+	}
+	
+	@Override
+	public void write(byte[] txBuffer, int offset, int length) {
+		if (! device.isOpen()) {
+			throw new IllegalStateException("SPI Device " +
+					deviceConfig.getControllerNumber() + "-" + deviceConfig.getAddress() + " is closed");
+		}
+		
+		try {
+			device.write(ByteBuffer.wrap(txBuffer, offset, length));
 		} catch (IOException e) {
 			throw new RuntimeIOException(e);
 		}
 	}
 
 	@Override
-	public ByteBuffer writeAndRead(ByteBuffer src) throws RuntimeIOException {
+	public byte[] writeAndRead(byte[] txBuffer) throws RuntimeIOException {
 		if (! device.isOpen()) {
 			throw new IllegalStateException("SPI Device " +
 					deviceConfig.getControllerNumber() + "-" + deviceConfig.getAddress() + " is closed");
 		}
 		
-		ByteBuffer dest = ByteBuffer.allocateDirect(src.capacity());
+		ByteBuffer rx_buffer = ByteBuffer.allocateDirect(txBuffer.length);
 		try {
-			device.writeAndRead(src, dest);
+			device.writeAndRead(ByteBuffer.wrap(txBuffer), rx_buffer);
 		} catch (IOException e) {
 			throw new RuntimeIOException(e);
 		}
-		return dest;
+		
+		byte[] rx = new byte[rx_buffer.remaining()];
+		rx_buffer.get(rx, 0, rx.length);
+		
+		return rx;
 	}
 
 	@Override

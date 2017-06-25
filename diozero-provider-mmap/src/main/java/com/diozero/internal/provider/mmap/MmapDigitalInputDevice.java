@@ -30,33 +30,22 @@ package com.diozero.internal.provider.mmap;
 import org.pmw.tinylog.Logger;
 
 import com.diozero.api.*;
-import com.diozero.internal.provider.AbstractInputDevice;
-import com.diozero.internal.provider.GpioDigitalInputDeviceInterface;
+import com.diozero.internal.provider.sysfs.SysFsDigitalInputDevice;
 import com.diozero.util.RuntimeIOException;
 
-public class MmapDigitalInputDevice extends AbstractInputDevice<DigitalInputEvent>
-implements GpioDigitalInputDeviceInterface, InputEventListener<DigitalInputEvent> {
+public class MmapDigitalInputDevice extends SysFsDigitalInputDevice {
 	private MmapGpioInterface mmapGpio;
 	private int gpio;
-	private GpioDigitalInputDeviceInterface sysFsDigitialInput;
 
 	MmapDigitalInputDevice(MmapDeviceFactory deviceFactory, String key, PinInfo pinInfo, GpioPullUpDown pud,
 			GpioEventTrigger trigger) {
-		super(key, deviceFactory);
+		super(deviceFactory, key, pinInfo, trigger);
 		
 		this.mmapGpio = deviceFactory.getMmapGpio();
 		this.gpio = pinInfo.getDeviceNumber();
 		
 		mmapGpio.setMode(gpio, DeviceMode.DIGITAL_INPUT);
 		mmapGpio.setPullUpDown(gpio, pud);
-
-		sysFsDigitialInput = deviceFactory.getSysFsDeviceFactory().provisionDigitalInputDevice(
-				pinInfo.getDeviceNumber(), pud, trigger);
-	}
-
-	@Override
-	public int getGpio() {
-		return gpio;
 	}
 
 	@Override
@@ -65,30 +54,11 @@ implements GpioDigitalInputDeviceInterface, InputEventListener<DigitalInputEvent
 	}
 
 	@Override
-	public void setDebounceTimeMillis(int debounceTime) {
-		throw new UnsupportedOperationException("Debounce not supported");
-	}
-	
-	@Override
-	protected void enableListener() {
-		sysFsDigitialInput.setListener(this);
-	}
-	
-	@Override
-	protected void disableListener() {
-		sysFsDigitialInput.removeListener();
-	}
-
-	@Override
 	protected void closeDevice() throws RuntimeIOException {
 		Logger.debug("closeDevice()");
-		disableListener();
-		if (sysFsDigitialInput != null) {
-			sysFsDigitialInput.close();
-			sysFsDigitialInput = null;
-		}
 		// FIXME No GPIO close method?
 		// TODO Revert to default input mode?
 		// What do wiringPi / pigpio do?
+		super.close();
 	}
 }

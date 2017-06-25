@@ -52,7 +52,8 @@ public class DeviceFactoryHelper {
 				String property = System.getProperty(SYSTEM_PROPERTY);
 				if (property != null && property.length() > 0) {
 					try {
-						nativeDeviceFactory = (NativeDeviceFactoryInterface) Class.forName(property).getDeclaredConstructor().newInstance();
+						nativeDeviceFactory = (NativeDeviceFactoryInterface) Class.forName(property)
+								.getDeclaredConstructor().newInstance();
 					} catch (ReflectiveOperationException e) {
 						Logger.error(e, "Cannot instantiate device factory class '{}'", property);
 					}
@@ -60,7 +61,8 @@ public class DeviceFactoryHelper {
 				
 				// Otherwise use the ServiceLoader
 				if (nativeDeviceFactory == null) {
-					ServiceLoader<NativeDeviceFactoryInterface> service_loader = ServiceLoader.load(NativeDeviceFactoryInterface.class);
+					ServiceLoader<NativeDeviceFactoryInterface> service_loader = ServiceLoader
+							.load(NativeDeviceFactoryInterface.class);
 					for (NativeDeviceFactoryInterface device_provider_factory : service_loader) {
 						nativeDeviceFactory = device_provider_factory;
 						break;

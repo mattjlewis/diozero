@@ -36,6 +36,7 @@ import org.pmw.tinylog.Logger;
 
 import com.diozero.api.DigitalInputEvent;
 import com.diozero.api.GpioEventTrigger;
+import com.diozero.api.PinInfo;
 import com.diozero.internal.provider.AbstractInputDevice;
 import com.diozero.internal.provider.GpioDigitalInputDeviceInterface;
 import com.diozero.util.*;
@@ -59,15 +60,16 @@ implements GpioDigitalInputDeviceInterface, PollEventListener {
 	private Path valuePath;
 	private RandomAccessFile valueFile;
 
-	public SysFsDigitalInputDevice(SysFsDeviceFactory deviceFactory, Path gpioDir,
-			String key, int gpio, GpioEventTrigger trigger) {
+	public SysFsDigitalInputDevice(SysFsDeviceFactory deviceFactory, String key, PinInfo pinInfo,
+			GpioEventTrigger trigger) {
 		super(key, deviceFactory);
 		
 		this.deviceFactory = deviceFactory;
-		this.gpio = gpio;
+		this.gpio = pinInfo.getSysFsNumber();
 		epollNative = new EpollNative();
+		Path gpio_dir = deviceFactory.getGpioDirectoryPath(gpio);
 
-		try (FileWriter writer = new FileWriter(gpioDir.resolve(EDGE_FILE).toFile())) {
+		try (FileWriter writer = new FileWriter(gpio_dir.resolve(EDGE_FILE).toFile())) {
 			writer.write(trigger.name().toLowerCase());
 		} catch (IOException e) {
 			Logger.warn(e, "Error writing to edge file for GPIO {}: {}", Integer.valueOf(gpio), e);
@@ -75,7 +77,7 @@ implements GpioDigitalInputDeviceInterface, PollEventListener {
 		
 		// Note: Not possible to set pull-up/down resistor configuration via /sys/class/gpio
 		
-		valuePath = gpioDir.resolve(VALUE_FILE);
+		valuePath = gpio_dir.resolve(VALUE_FILE);
 		try {
 			valueFile = new RandomAccessFile(valuePath.toFile(), "r");
 		} catch (IOException e) {
@@ -91,6 +93,7 @@ implements GpioDigitalInputDeviceInterface, PollEventListener {
 	@Override
 	public boolean getValue() throws RuntimeIOException {
 		try {
+			// Note seek(0) is required
 			valueFile.seek(0);
 			return valueFile.readByte() == HIGH_VALUE;
 		} catch (IOException e) {
@@ -104,13 +107,13 @@ implements GpioDigitalInputDeviceInterface, PollEventListener {
 	}
 
 	@Override
-	public void enableListener() {
+	protected void enableListener() {
 		epollNative.register(valuePath.toString(), Integer.valueOf(gpio), this);
 		DioZeroScheduler.getDaemonInstance().execute(epollNative::processEvents);
 	}
 
 	@Override
-	public void disableListener() {
+	protected void disableListener() {
 		epollNative.deregister(valuePath.toString());
 		epollNative.stop();
 	}

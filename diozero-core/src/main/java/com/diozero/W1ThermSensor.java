@@ -56,7 +56,7 @@ public class W1ThermSensor implements ThermometerInterface {
 	
 	public static List<W1ThermSensor> getAvailableSensors(String folder) {
 		Path sensor_path = FileSystems.getDefault().getPath(folder);
-		Predicate<Path> is_sensor = path -> path.toFile().isDirectory() && Type.isValidId(path.toFile().getName().substring(0, 2));
+		Predicate<Path> is_sensor = path -> path.toFile().isDirectory() && Type.isValid(path);
 		try {
 			return Files.list(sensor_path).filter(is_sensor).map(W1ThermSensor::new).collect(Collectors.toList());
 		} catch (IOException e) {
@@ -70,7 +70,7 @@ public class W1ThermSensor implements ThermometerInterface {
 	
 	private W1ThermSensor(Path path) {
 		this.type = Type.valueOf(path);
-		slaveFilePath = new File(path.toFile(), SLAVE_FILE).toPath();
+		slaveFilePath = path.resolve(SLAVE_FILE);
 		serialNumber = slaveFilePath.getParent().toFile().getName().split("-")[1];
 	}
 	
@@ -119,6 +119,10 @@ public class W1ThermSensor implements ThermometerInterface {
 			addType();
 		}
 		
+		public static boolean isValid(Path path) {
+			return isValidId(path.getFileName().toString().substring(0, 2));
+		}
+		
 		public static boolean isValidId(String idString) {
 			try {
 				return TYPES.containsKey(Integer.valueOf(idString, 16));
@@ -143,7 +147,7 @@ public class W1ThermSensor implements ThermometerInterface {
 		}
 		
 		public static Type valueOf(Path path) {
-			Type type = TYPES.get(Integer.valueOf(path.toFile().getName().substring(0, 2), 16));
+			Type type = TYPES.get(Integer.valueOf(path.getFileName().toString().substring(0, 2), 16));
 			if (type == null) {
 				throw new IllegalArgumentException("Invalid W1ThermSensor.Type slave='" + path.toFile().getName() + "'");
 			}

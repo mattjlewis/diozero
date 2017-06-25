@@ -81,19 +81,8 @@ implements GpioDigitalInputOutputDeviceInterface, PinEventListener {
 
 	@Override
 	public void setMode(DeviceMode mode) {
-		Mode firmata_mode;
-		switch (mode) {
-		case DIGITAL_INPUT:
-			firmata_mode = Mode.INPUT;
-			break;
-		case DIGITAL_OUTPUT:
-			firmata_mode = Mode.OUTPUT;
-			break;
-		default:
-			throw new IllegalArgumentException("Invalid mode " + mode);
-		}
 		try {
-			pin.setMode(firmata_mode);
+			pin.setMode(mode == DeviceMode.DIGITAL_INPUT ? Mode.INPUT : Mode.OUTPUT);
 			this.mode = mode;
 		} catch (IllegalArgumentException | IOException e) {
 			throw new RuntimeIOException("Error setting mode to " + mode + " for pin " + pin.getIndex());

@@ -12,7 +12,7 @@
 	<packaging>jar</packaging>
 	
 	<properties>
-		<pigpioj.version>2.0</pigpioj.version>
+		<pigpioj.version>2.1-SNAPSHOT</pigpioj.version>
 	</properties>
 	
 	<dependencies>

@@ -26,7 +26,6 @@ package com.diozero.internal.provider.test;
  * #L%
  */
 
-import java.nio.ByteBuffer;
 import java.util.Random;
 
 import org.junit.Assert;
@@ -55,45 +54,49 @@ public class TestMcpAdcSpiDevice extends TestSpiDevice {
 	}
 	
 	@Override
-	public void write(ByteBuffer out) throws RuntimeIOException {
+	public void write(byte[] txBuffer) throws RuntimeIOException {
+		
+	}
+	
+	@Override
+	public void write(byte[] txBuffer, int index, int length) throws RuntimeIOException {
 		
 	}
 
 	@Override
-	public ByteBuffer writeAndRead(ByteBuffer out) throws RuntimeIOException {
-		byte b = out.get();
+	public byte[] writeAndRead(byte[] txBuffer) throws RuntimeIOException {
+		byte b = txBuffer[0];
 		//out.put((byte) (0x10 | (differentialRead ? 0 : 0x08 ) | adcPin));
 		//int pin = b & 0x07;
 		//Logger.debug("Received read request for pin {}", Integer.valueOf(pin));
-		b = out.get();
+		b = txBuffer[1];
 		Assert.assertEquals(0, b);
-		b = out.get();
+		b = txBuffer[2];
 		Assert.assertEquals(0, b);
 		
 		int temp = random.nextInt(type.getRange());
 		// FIXME Support MCP3301
-		ByteBuffer dst = ByteBuffer.allocateDirect(3);
-		dst.put((byte)0);
+		byte[] dst = new byte[3];
+		dst[0] = (byte) 0;
 		switch (type.name().substring(0, 5)) {
 		case "MCP30":
 			// Rx x0RRRRRR RRRRxxxx for the 30xx (10-bit unsigned)
-			dst.put((byte)((temp >> 4) & 0x3f));
-			dst.put((byte)((temp << 4) & 0xf0));
+			dst[1] = (byte) ((temp >> 4) & 0x3f);
+			dst[2] = (byte) ((temp << 4) & 0xf0);
 			break;
 		case "MCP32":
 			// Rx x0RRRRRR RRRRRRxx for the 32xx (12-bit unsigned)
-			dst.put((byte)((temp >> 6) & 0x3f));
-			dst.put((byte)((temp << 2) & 0xfc));
+			dst[1] = (byte) ((temp >> 6) & 0x3f);
+			dst[2] = (byte) ((temp << 2) & 0xfc);
 			break;
 		case "MCP33":
 			// Signed
 			temp *= random.nextBoolean() ? 1 : -1;
 			// Rx x0SRRRRR RRRRRRRx for the 33xx (13-bit signed)
-			dst.put((byte)((temp >> 7) & 0x3f));
-			dst.put((byte)((temp << 1) & 0xfe));
+			dst[1] = (byte) ((temp >> 7) & 0x3f);
+			dst[2] = (byte) ((temp << 1) & 0xfe);
 			break;
 		}
-		dst.flip();
 		
 		return dst;
 	}

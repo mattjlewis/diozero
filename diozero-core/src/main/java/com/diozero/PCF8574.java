@@ -187,7 +187,6 @@ public class PCF8574 extends AbstractDeviceFactory implements GpioDeviceFactoryI
 
 		@Override
 		public void setDebounceTimeMillis(int debounceTime) {
-			// TODO Auto-generated method stub
 		}
 	}
 
@@ -228,12 +227,6 @@ public class PCF8574 extends AbstractDeviceFactory implements GpioDeviceFactoryI
 			removeListener();
 			pcf8574.closePin(gpio);
 		}
-		
-		private static void checkMode(DeviceMode mode) {
-			if (mode != DeviceMode.DIGITAL_INPUT && mode != DeviceMode.DIGITAL_OUTPUT) {
-				throw new IllegalArgumentException("Invalid mode, must be DIGITAL_INPUT or DIGITAL_OUTPUT");
-			}
-		}
 
 		@Override
 		public DeviceMode getMode() {
@@ -242,8 +235,6 @@ public class PCF8574 extends AbstractDeviceFactory implements GpioDeviceFactoryI
 
 		@Override
 		public void setMode(DeviceMode mode) {
-			checkMode(mode);
-			
 			if (mode == DeviceMode.DIGITAL_INPUT) {
 				pcf8574.setInputMode(gpio);
 			} else {

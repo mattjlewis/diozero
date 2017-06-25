@@ -74,6 +74,9 @@ public interface GpioDeviceFactoryInterface extends DeviceFactoryInterface {
 		if (pin_info == null || ! pin_info.getModes().containsAll(PinInfo.DIGITAL_IN_OUT)) {
 			throw new IllegalArgumentException("Invalid mode (digital input/output) for GPIO " + gpio);
 		}
+		if (mode != DeviceMode.DIGITAL_INPUT && mode != DeviceMode.DIGITAL_OUTPUT) {
+			throw new IllegalArgumentException("Invalid mode, must be DIGITAL_INPUT or DIGITAL_OUTPUT");
+		}
 		
 		String key = createPinKey(pin_info);
 		

@@ -83,31 +83,24 @@ public class SysFsDeviceFactory extends BaseNativeDeviceFactory {
 	@Override
 	public GpioDigitalInputDeviceInterface createDigitalInputDevice(String key, PinInfo pinInfo, GpioPullUpDown pud,
 			GpioEventTrigger trigger) throws RuntimeIOException {
-		int gpio = pinInfo.getDeviceNumber();
-		int sys_fs_gpio = getBoardPinInfo().mapToSysFsGpioNumber(gpio);
-		export(sys_fs_gpio, DeviceMode.DIGITAL_INPUT);
+		export(pinInfo.getSysFsNumber(), DeviceMode.DIGITAL_INPUT);
 		
-		return new SysFsDigitalInputDevice(this, getGpioDirectoryPath(sys_fs_gpio), key, sys_fs_gpio, trigger);
+		return new SysFsDigitalInputDevice(this, key, pinInfo, trigger);
 	}
 
 	@Override
 	public GpioDigitalOutputDeviceInterface createDigitalOutputDevice(String key, PinInfo pinInfo, boolean initialValue)
 			throws RuntimeIOException {
-		int gpio = pinInfo.getDeviceNumber();
-		int sys_fs_gpio = getBoardPinInfo().mapToSysFsGpioNumber(gpio);
-		export(sys_fs_gpio, DeviceMode.DIGITAL_OUTPUT);
+		export(pinInfo.getSysFsNumber(), DeviceMode.DIGITAL_OUTPUT);
 		
-		return new SysFsDigitalOutputDevice(this, getGpioDirectoryPath(sys_fs_gpio), key, sys_fs_gpio, initialValue);
+		return new SysFsDigitalOutputDevice(this, key, pinInfo, initialValue);
 	}
 
 	@Override
 	public GpioDigitalInputOutputDeviceInterface createDigitalInputOutputDevice(
 			String key, PinInfo pinInfo, DeviceMode mode)
 			throws RuntimeIOException {
-		int gpio = pinInfo.getDeviceNumber();
-		int sys_fs_gpio = getBoardPinInfo().mapToSysFsGpioNumber(gpio);
-		
-		return new SysFsDigitalInputOutputDevice(this, getGpioDirectoryPath(sys_fs_gpio), key, sys_fs_gpio, mode);
+		return new SysFsDigitalInputOutputDevice(this, key, pinInfo, mode);
 	}
 
 	@Override
@@ -116,7 +109,7 @@ public class SysFsDeviceFactory extends BaseNativeDeviceFactory {
 		int gpio = pinInfo.getDeviceNumber();
 		if (pinInfo instanceof PwmPinInfo) {
 			PwmPinInfo pwm_pin_info = (PwmPinInfo) pinInfo;
-			// Odroid C2 runs with an older kernel hence has a different interface
+			// Odroid C2 runs with an older 3.x kernel hence has a different sysfs interface
 			if (getBoardInfo().sameMakeAndModel(OdroidBoardInfoProvider.ODROID_C2)) {
 				return new OdroidC2SysFsPwmOutputDevice(key, this, pwm_pin_info, pwmFrequency, initialValue);
 			}
@@ -159,11 +152,6 @@ public class SysFsDeviceFactory extends BaseNativeDeviceFactory {
 	}
 	
 	void export(int gpio, DeviceMode mode) {
-		if (mode != DeviceMode.DIGITAL_INPUT && mode != DeviceMode.DIGITAL_OUTPUT) {
-			throw new IllegalArgumentException("Illegal mode (" + mode +
-					") must be " + DeviceMode.DIGITAL_INPUT + " or " + DeviceMode.DIGITAL_OUTPUT);
-		}
-		
 		Logger.debug("export({}, {})", Integer.valueOf(gpio), mode);
 		
 		if (! isExported(gpio)) {
@@ -200,7 +188,7 @@ public class SysFsDeviceFactory extends BaseNativeDeviceFactory {
 		}
 	}
 	
-	private Path getGpioDirectoryPath(int gpio) {
+	Path getGpioDirectoryPath(int gpio) {
 		return rootPath.resolve(GPIO_DIR_PREFIX + gpio);
 	}
 

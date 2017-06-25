@@ -27,7 +27,6 @@ package com.diozero.internal.provider.pi4j;
  */
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 
 import org.pmw.tinylog.Logger;
 
@@ -64,18 +63,27 @@ public class Pi4jSpiDevice extends AbstractDevice implements SpiDeviceInterface 
 	}
 	
 	@Override
-	public void write(ByteBuffer src) {
+	public void write(byte[] txBuffer) {
 		try {
-			spiDevice.write(src);
+			spiDevice.write(txBuffer);
+		} catch (IOException e) {
+			throw new RuntimeIOException(e);
+		}
+	}
+	
+	@Override
+	public void write(byte[] txBuffer, int offset, int length) {
+		try {
+			spiDevice.write(txBuffer, offset, length);
 		} catch (IOException e) {
 			throw new RuntimeIOException(e);
 		}
 	}
 
 	@Override
-	public ByteBuffer writeAndRead(ByteBuffer out) throws RuntimeIOException {
+	public byte[] writeAndRead(byte[] txBuffer) throws RuntimeIOException {
 		try {
-			return spiDevice.write(out);
+			return spiDevice.write(txBuffer);
 		} catch (IOException e) {
 			throw new RuntimeIOException(e);
 		}

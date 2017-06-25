@@ -72,12 +72,11 @@ public class CleanupTest {
 			
 			Assert.assertTrue(ds.size() == 0);
 			try (SpiDeviceInterface device = tdf.provisionSpiDevice(0, 0, 0, SpiClockMode.MODE_0, false)) {
-				ByteBuffer out = ByteBuffer.allocate(3);
-				out.put((byte) (0x10 | (false ? 0 : 0x08 ) | 1));
-				out.put((byte) 0);
-				out.put((byte) 0);
-				out.flip();
-				device.writeAndRead(out);
+				byte[] tx = new byte[3];
+				tx[0] = (byte) (0x10 | (false ? 0 : 0x08 ) | 1);
+				tx[1] = (byte) 0;
+				tx[2] = (byte) 0;
+				device.writeAndRead(tx);
 				Assert.assertTrue(ds.size() == 1);
 			} catch (RuntimeIOException e) {
 				Logger.error(e, "Error: {}", e);

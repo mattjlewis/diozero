@@ -33,6 +33,7 @@ import java.nio.file.Path;
 
 import org.pmw.tinylog.Logger;
 
+import com.diozero.api.PinInfo;
 import com.diozero.internal.provider.AbstractDevice;
 import com.diozero.internal.provider.GpioDigitalOutputDeviceInterface;
 import com.diozero.util.RuntimeIOException;
@@ -46,17 +47,17 @@ public class SysFsDigitalOutputDevice extends AbstractDevice implements GpioDigi
 	private int gpio;
 	private RandomAccessFile valueFile;
 
-	public SysFsDigitalOutputDevice(SysFsDeviceFactory deviceFactory, Path gpioDir, String key, int gpio,
-			boolean initialValue) {
+	public SysFsDigitalOutputDevice(SysFsDeviceFactory deviceFactory, String key, PinInfo pinInfo, boolean initialValue) {
 		super(key, deviceFactory);
 		
 		this.deviceFactory = deviceFactory;
-		this.gpio = gpio;
+		this.gpio = pinInfo.getSysFsNumber();
+		Path gpio_dir = deviceFactory.getGpioDirectoryPath(gpio);
 		
 		// TODO Set active_low value to 0
 		
 		try {
-			valueFile = new RandomAccessFile(gpioDir.resolve(VALUE_FILE).toFile(), "rw");
+			valueFile = new RandomAccessFile(gpio_dir.resolve(VALUE_FILE).toFile(), "rw");
 		} catch (IOException e) {
 			throw new RuntimeIOException("Error opening value file for GPIO " + gpio, e);
 		}
@@ -72,6 +73,7 @@ public class SysFsDigitalOutputDevice extends AbstractDevice implements GpioDigi
 	@Override
 	public boolean getValue() throws RuntimeIOException {
 		try {
+			// Note seek(0) is required
 			valueFile.seek(0);
 			return valueFile.readByte() == HIGH_VALUE;
 		} catch (IOException e) {

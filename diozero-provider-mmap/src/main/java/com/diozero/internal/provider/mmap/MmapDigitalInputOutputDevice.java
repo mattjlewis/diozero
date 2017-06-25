@@ -29,24 +29,22 @@ package com.diozero.internal.provider.mmap;
 
 import org.pmw.tinylog.Logger;
 
-import com.diozero.api.*;
-import com.diozero.internal.provider.AbstractInputDevice;
-import com.diozero.internal.provider.GpioDigitalInputDeviceInterface;
-import com.diozero.internal.provider.GpioDigitalInputOutputDeviceInterface;
+import com.diozero.api.DeviceMode;
+import com.diozero.api.GpioPullUpDown;
+import com.diozero.api.PinInfo;
+import com.diozero.internal.provider.sysfs.SysFsDigitalInputOutputDevice;
 import com.diozero.util.RuntimeIOException;
 
-public class MmapDigitalInputOutputDevice extends AbstractInputDevice<DigitalInputEvent>
-implements GpioDigitalInputOutputDeviceInterface, InputEventListener<DigitalInputEvent> {
+public class MmapDigitalInputOutputDevice extends SysFsDigitalInputOutputDevice {
 	private MmapDeviceFactory mmapDeviceFactory;
 	private MmapGpioInterface mmapGpio;
 	private int gpio;
 	private DeviceMode mode;
 	private GpioPullUpDown pud;
-	private GpioDigitalInputDeviceInterface sysFsDigitialInput;
 
 	public MmapDigitalInputOutputDevice(MmapDeviceFactory deviceFactory, String key,
 			PinInfo pinInfo, DeviceMode mode) {
-		super(key, deviceFactory);
+		super(deviceFactory, key, pinInfo, mode);
 		
 		this.mmapDeviceFactory = deviceFactory;
 		mmapGpio = mmapDeviceFactory.getMmapGpio();
@@ -57,12 +55,6 @@ implements GpioDigitalInputOutputDeviceInterface, InputEventListener<DigitalInpu
 		
 		setMode(mode);
 	}
-	
-	private static void checkMode(DeviceMode mode) {
-		if (mode != DeviceMode.DIGITAL_INPUT && mode != DeviceMode.DIGITAL_OUTPUT) {
-			throw new IllegalArgumentException("Invalid mode, must be DIGITAL_INPUT or DIGITAL_OUTPUT");
-		}
-	}
 
 	@Override
 	public DeviceMode getMode() {
@@ -71,19 +63,10 @@ implements GpioDigitalInputOutputDeviceInterface, InputEventListener<DigitalInpu
 
 	@Override
 	public void setMode(DeviceMode mode) {
-		checkMode(mode);
-		
-		// No change?
-		if (this.mode != null && mode == this.mode) {
-			return;
-		}
-
 		mmapGpio.setMode(gpio, mode);
 		this.mode = mode;
 		
 		if (mode == DeviceMode.DIGITAL_INPUT) {
-			sysFsDigitialInput = mmapDeviceFactory.getSysFsDeviceFactory().provisionDigitalInputDevice(
-					gpio, pud, GpioEventTrigger.BOTH);
 			mmapGpio.setPullUpDown(gpio, pud);
 		}
 	}
@@ -102,26 +85,12 @@ implements GpioDigitalInputOutputDeviceInterface, InputEventListener<DigitalInpu
 	}
 
 	@Override
-	public int getGpio() {
-		return gpio;
-	}
-	
-	@Override
-	protected void enableListener() {
-		sysFsDigitialInput.setListener(this);
-	}
-	
-	@Override
-	protected void disableListener() {
-		sysFsDigitialInput.removeListener();
-	}
-
-	@Override
 	protected void closeDevice() throws RuntimeIOException {
 		Logger.debug("closeDevice()");
 		disableListener();
 		// FIXME No GPIO close method?
 		// TODO Revert to default input mode?
 		// What do wiringPi / pigpio do?
+		super.closeDevice();
 	}
 }

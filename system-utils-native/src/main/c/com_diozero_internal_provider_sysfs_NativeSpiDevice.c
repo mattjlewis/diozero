@@ -118,10 +118,10 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeSpiDevice_
 /*
  * Class:     com_diozero_internal_provider_sysfs_NativeSpiDevice
  * Method:    spiTransfer
- * Signature: (I[B[BIIIBZ)I
+ * Signature: (I[BI[BIIIBZ)I
  */
 JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeSpiDevice_spiTransfer(
-		JNIEnv* env, jclass clazz, jint fileDescriptor, jbyteArray txBuffer,
+		JNIEnv* env, jclass clazz, jint fileDescriptor, jbyteArray txBuffer, jint txOffset,
 		jbyteArray rxBuffer, jint length, jint speedHz, jint delayUSecs, jbyte bitsPerWord, jboolean csChange) {
 	jboolean is_copy;
 	jbyte* tx_buf = NULL;
@@ -134,7 +134,7 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeSpiDevice_
 	}
 
 	struct spi_ioc_transfer tr = {
-		.tx_buf = (long_t) tx_buf
+		.tx_buf = (long_t) &tx_buf[txOffset]
 		, .rx_buf = (long_t) rx_buf
 
 		, .len = (uint32_t) length
@@ -166,7 +166,7 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeSpiDevice_
 		// JNI_ABORT 	Free the buffer without copying back the possible changes
 
 		// mode = 0 - Copy back the content and free the buffer (rx)
-		(*env)->ReleaseByteArrayElements(env, rxBuffer, rx_buf, 0);
+		(*env)->ReleaseByteArrayElements(env, rxBuffer, rx_buf, ret < 0 ? JNI_ABORT : 0);
 	}
 
 	return ret;

@@ -26,8 +26,6 @@ package com.diozero.internal.provider.pigpioj;
  * #L%
  */
 
-import java.nio.ByteBuffer;
-
 import org.pmw.tinylog.Logger;
 
 import com.diozero.api.SpiClockMode;
@@ -68,35 +66,42 @@ public class PigpioJSpiDevice extends AbstractDevice implements SpiDeviceInterfa
 	}
 	
 	@Override
-	public void write(ByteBuffer out) {
+	public void write(byte[] txBuffer) {
+		if (! isOpen()) {
+			throw new IllegalStateException("SPI Device " + controller + "-" + chipSelect + " is closed");
+		}
+				
+		int rc = pigpioImpl.spiWrite(handle, txBuffer, 0, txBuffer.length);
+		if (rc < 0) {
+			throw new RuntimeIOException("Error calling pigpioImpl.write(), response: " + rc);
+		}
+	}
+	
+	@Override
+	public void write(byte[] txBuffer, int offset, int length) {
 		if (! isOpen()) {
 			throw new IllegalStateException("SPI Device " + controller + "-" + chipSelect + " is closed");
 		}
 		
-		int count = out.remaining();
-		byte[] tx = new byte[count];
-		int rc = pigpioImpl.spiWrite(handle, tx, count);
+		int rc = pigpioImpl.spiWrite(handle, txBuffer, offset, length);
 		if (rc < 0) {
 			throw new RuntimeIOException("Error calling pigpioImpl.write(), response: " + rc);
 		}
 	}
 
 	@Override
-	public ByteBuffer writeAndRead(ByteBuffer out) throws RuntimeIOException {
+	public byte[] writeAndRead(byte[] txBuffer) throws RuntimeIOException {
 		if (! isOpen()) {
 			throw new IllegalStateException("SPI Device " + controller + "-" + chipSelect + " is closed");
 		}
 		
-		int count = out.remaining();
-		byte[] tx = new byte[count];
-		out.get(tx);
-		byte[] rx = new byte[count];
-		int rc = pigpioImpl.spiXfer(handle, tx, rx, count);
+		byte[] rx = new byte[txBuffer.length];
+		int rc = pigpioImpl.spiXfer(handle, txBuffer, rx, txBuffer.length);
 		if (rc < 0) {
 			throw new RuntimeIOException("Error calling pigpioImpl.spiXfer(), response: " + rc);
 		}
 		
-		return ByteBuffer.wrap(rx);
+		return rx;
 	}
 
 	@Override

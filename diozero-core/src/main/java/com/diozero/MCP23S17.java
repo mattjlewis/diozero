@@ -25,9 +25,6 @@ package com.diozero;
  * THE SOFTWARE.
  * #L%
  */
-
-import java.nio.ByteBuffer;
-
 import com.diozero.api.SPIConstants;
 import com.diozero.api.SpiClockMode;
 import com.diozero.api.SpiDevice;
@@ -79,24 +76,22 @@ public class MCP23S17 extends MCP23x17 {
 	
 	@Override
 	protected byte readByte(int register) {
-		ByteBuffer tx = ByteBuffer.allocate(3);
-		tx.put((byte) (boardAddress | READ_FLAG));
-		tx.put((byte) register);
-		tx.put((byte) 0);
-		tx.flip();
+		byte[] tx = new byte[3];
+		tx[0] = (byte) (boardAddress | READ_FLAG);
+		tx[1] = (byte) register;
+		tx[2] = (byte) 0;
 
-		ByteBuffer rx = device.writeAndRead(tx);
+		byte[] rx = device.writeAndRead(tx);
 
-		return (byte) (rx.get(2) & 0xFF);
+		return rx[2];
 	}
 	
 	@Override
 	protected void writeByte(int register, byte value) {
-		ByteBuffer tx = ByteBuffer.allocate(3);
-		tx.put((byte) (boardAddress | WRITE_FLAG));
-		tx.put((byte) register);
-		tx.put(value);
-		tx.flip();
+		byte[] tx = new byte[3];
+		tx[0] = (byte) (boardAddress | WRITE_FLAG);
+		tx[1] = (byte) register;
+		tx[2] = value;
 
 		device.write(tx);
 	}

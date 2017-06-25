@@ -64,16 +64,8 @@ public class DigitalInputOutputDevice extends AbstractDigitalInputDevice {
 			DeviceMode mode) throws RuntimeIOException {
 		super(gpio, false);
 		
-		checkMode(mode);
-		
 		this.device = deviceFactory.provisionDigitalInputOutputDevice(gpio, mode);
 		this.mode = mode;
-	}
-	
-	private static void checkMode(DeviceMode mode) {
-		if (mode != DeviceMode.DIGITAL_INPUT && mode != DeviceMode.DIGITAL_OUTPUT) {
-			throw new IllegalArgumentException("Invalid mode value, must be DIGITAL_INPUT or DIGITAL_OUTPUT");
-		}
 	}
 
 	@Override
@@ -98,7 +90,9 @@ public class DigitalInputOutputDevice extends AbstractDigitalInputDevice {
 		if (mode == this.mode) {
 			return;
 		}
-		checkMode(mode);
+		if (mode != DeviceMode.DIGITAL_INPUT && mode != DeviceMode.DIGITAL_OUTPUT) {
+			throw new IllegalArgumentException("Invalid mode value, must be DIGITAL_INPUT or DIGITAL_OUTPUT");
+		}
 		
 		device.setMode(mode);
 		this.mode = mode;

@@ -58,14 +58,21 @@ public class PinInfo {
 	private int pinNumber;
 	private String name;
 	private Set<DeviceMode> modes;
-
+	private int sysFsNumber;
+	
 	public PinInfo(String keyPrefix, String header, int deviceNumber, int pinNumber, String name, Set<DeviceMode> modes) {
+		this(keyPrefix, header, deviceNumber, pinNumber, name, modes, deviceNumber);
+	}
+	
+	public PinInfo(String keyPrefix, String header, int deviceNumber, int pinNumber, String name, Set<DeviceMode> modes,
+			int sysFsNumber) {
 		this.keyPrefix = keyPrefix;
 		this.header = header;
 		this.deviceNumber = deviceNumber;
 		this.pinNumber = pinNumber;
 		this.name = name;
 		this.modes = modes;
+		this.sysFsNumber = sysFsNumber;
 	}
 	
 	public String getKeyPrefix() {
@@ -114,6 +121,10 @@ public class PinInfo {
 	
 	public boolean isAnalogOutputSupported() {
 		return modes.contains(DeviceMode.ANALOG_OUTPUT);
+	}
+
+	public int getSysFsNumber() {
+		return sysFsNumber;
 	}
 
 	@Override

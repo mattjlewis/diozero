@@ -37,7 +37,6 @@ public class WiringPiDeviceFactory extends BaseNativeDeviceFactory {
 	private static final int PI_PWM_CLOCK_BASE_FREQUENCY = 19_200_000;
 	private static final int DEFAULT_HARDWARE_PWM_RANGE = 1024;
 	private static final int DEFAULT_HARDWARE_PWM_FREQUENCY = 100;
-	private static final int DEFAULT_SOFTWARE_PWM_FREQ = 100;
 	// See https://projects.drogon.net/raspberry-pi/wiringpi/software-pwm-library/
 	// You can lower the range to get a higher frequency, at the expense of resolution,
 	// or increase to get more resolution, but that will lower the frequency

@@ -27,7 +27,7 @@ package com.diozero.internal.provider.sysfs;
  */
 
 
-import java.nio.ByteBuffer;
+import org.pmw.tinylog.Logger;
 
 import com.diozero.api.SpiClockMode;
 import com.diozero.internal.provider.AbstractDevice;
@@ -47,6 +47,7 @@ public class SysFsSpiDevice extends AbstractDevice implements SpiDeviceInterface
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
+		Logger.debug("closeDevice()");
 		device.close();
 	}
 
@@ -61,12 +62,17 @@ public class SysFsSpiDevice extends AbstractDevice implements SpiDeviceInterface
 	}
 
 	@Override
-	public void write(ByteBuffer txBuffer) {
+	public void write(byte[] txBuffer) {
 		device.write(txBuffer, 0);
 	}
 
 	@Override
-	public ByteBuffer writeAndRead(ByteBuffer txBuffer) throws RuntimeIOException {
+	public void write(byte[] txBuffer, int txOffset, int length) {
+		device.write(txBuffer, txOffset, length, 0);
+	}
+
+	@Override
+	public byte[] writeAndRead(byte[] txBuffer) throws RuntimeIOException {
 		return device.writeAndRead(txBuffer, 0);
 	}
 }

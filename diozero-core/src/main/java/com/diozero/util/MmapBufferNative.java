@@ -27,6 +27,10 @@ package com.diozero.util;
  */
 
 public class MmapBufferNative {
+	static {
+		LibraryLoader.loadLibrary(MmapBufferNative.class, "diozero-system-utils");
+	}
+	
 	public static native MmapByteBuffer createMmapBuffer(String path, int offset, int length);
 	public static native void closeMmapBuffer(int fd, int mapPtr, int length);
 }

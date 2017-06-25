@@ -28,7 +28,6 @@ package com.diozero.internal.provider.sysfs;
 
 
 import java.io.Closeable;
-import java.nio.ByteBuffer;
 
 import org.pmw.tinylog.Logger;
 
@@ -37,12 +36,6 @@ import com.diozero.api.SpiClockMode;
 import com.diozero.util.LibraryLoader;
 import com.diozero.util.RuntimeIOException;
 
-/**
- * <p>Native Java implementation of the I2C SMBus commands using a single native method to select the slave address.</p>
- * <p>Reference <a href="https://www.kernel.org/doc/Documentation/i2c/dev-interface">Kernel I2C dev interface</a>
- * and <a href="https://www.kernel.org/doc/Documentation/i2c/smbus-protocol">SMBus Protocol</a>.</p>
- * <p><em>Warning</em> Not all methods have been tested!</p>
- */
 public class NativeSpiDevice implements Closeable {
 	static {
 		LibraryLoader.loadLibrary(NativeSpiDevice.class, "diozero-system-utils");
@@ -51,7 +44,7 @@ public class NativeSpiDevice implements Closeable {
 	private static native int spiOpen(String filename, byte mode, int speedHz, byte bitsPerWord, boolean lsbFirst);
 	private static native int spiConfig(int fileDescriptor, byte spiMode, int frequency, byte bitsPerWord, boolean lsbFirst);
 	private static native int spiClose(int fileDescriptor);
-	private static native int spiTransfer(int fileDescriptor, byte[] txBuffer,
+	private static native int spiTransfer(int fileDescriptor, byte[] txBuffer, int txOffset,
 			byte[] rxBuffer, int length, int speedHz, int delayUSecs, byte bitsPerWord, boolean csChange);
 	
 	private int controller;
@@ -77,35 +70,40 @@ public class NativeSpiDevice implements Closeable {
 		spiClose(fd);
 	}
 	
-	public void write(ByteBuffer txBuffer, int delayUSecs) {
+	public void write(byte[] txBuffer, int delayUSecs) {
 		write(txBuffer, delayUSecs, false);
 	}
 	
-	public void write(ByteBuffer txBuffer, int delayUSecs, boolean csChange) {
-		int length = txBuffer.remaining();
-		byte[] tx = new byte[length];
-		txBuffer.get(tx);
-		int rc = spiTransfer(fd, tx, null, length, speedHz, delayUSecs, bitsPerWord, csChange);
+	public void write(byte[] txBuffer, int delayUSecs, boolean csChange) {
+		int rc = spiTransfer(fd, txBuffer, 0, null, txBuffer.length, speedHz, delayUSecs, bitsPerWord, csChange);
 		if (rc < 0) {
 			throw new RuntimeIOException("Error in spiTransfer(), response: " + rc);
 		}
 	}
 	
-	public ByteBuffer writeAndRead(ByteBuffer txBuffer, int delayUSecs) {
+	public void write(byte[] txBuffer, int txOffset, int length, int delayUSecs) {
+		write(txBuffer, txOffset, length, delayUSecs, false);
+	}
+	
+	public void write(byte[] txBuffer, int txOffset, int length, int delayUSecs, boolean csChange) {
+		int rc = spiTransfer(fd, txBuffer, txOffset, null, length, speedHz, delayUSecs, bitsPerWord, csChange);
+		if (rc < 0) {
+			throw new RuntimeIOException("Error in spiTransfer(), response: " + rc);
+		}
+	}
+	
+	public byte[] writeAndRead(byte[] txBuffer, int delayUSecs) {
 		return writeAndRead(txBuffer, delayUSecs, false);
 	}
 	
-	public ByteBuffer writeAndRead(ByteBuffer txBuffer, int delayUSecs, boolean csChange) {
-		int length = txBuffer.remaining();
-		byte[] tx = new byte[length];
-		txBuffer.get(tx);
-		byte[] rx = new byte[length];
-		int rc = spiTransfer(fd, tx, rx, length, speedHz, delayUSecs, bitsPerWord, csChange);
+	public byte[] writeAndRead(byte[] txBuffer, int delayUSecs, boolean csChange) {
+		byte[] rx = new byte[txBuffer.length];
+		int rc = spiTransfer(fd, txBuffer, 0, rx, txBuffer.length, speedHz, delayUSecs, bitsPerWord, csChange);
 		if (rc < 0) {
 			throw new RuntimeIOException("Error in spiTransfer(), response: " + rc);
 		}
 		
-		return ByteBuffer.wrap(rx);
+		return rx;
 	}
 	
 	public int getController() {

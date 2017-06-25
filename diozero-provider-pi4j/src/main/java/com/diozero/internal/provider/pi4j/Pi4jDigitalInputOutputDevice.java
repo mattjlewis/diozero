@@ -73,22 +73,8 @@ implements GpioDigitalInputOutputDeviceInterface, GpioPinListenerDigital {
 		}
 
 		digitalInputOutputPin = gpioController.provisionDigitalMultipurposePin(pin,
-				"Digital InputOutput for BCM GPIO " + gpio, getPinMode(mode), ppr);
-	}
-	
-	private static PinMode getPinMode(DeviceMode mode) {
-		PinMode pm;
-		switch (mode) {
-		case DIGITAL_INPUT:
-			pm = PinMode.DIGITAL_INPUT;
-			break;
-		case DIGITAL_OUTPUT:
-			pm = PinMode.DIGITAL_OUTPUT;
-			break;
-		default:
-			throw new IllegalArgumentException("Invalid mode, must be DIGITAL_INPUT or DIGITAL_OUTPUT");
-		}
-		return pm;
+				"Digital InputOutput for BCM GPIO " + gpio,
+				mode == DeviceMode.DIGITAL_INPUT ? PinMode.DIGITAL_INPUT : PinMode.DIGITAL_OUTPUT, ppr);
 	}
 
 	@Override
@@ -98,7 +84,7 @@ implements GpioDigitalInputOutputDeviceInterface, GpioPinListenerDigital {
 
 	@Override
 	public void setMode(DeviceMode mode) {
-		digitalInputOutputPin.setMode(getPinMode(mode));
+		digitalInputOutputPin.setMode(mode == DeviceMode.DIGITAL_INPUT ? PinMode.DIGITAL_INPUT : PinMode.DIGITAL_OUTPUT);
 		this.mode = mode;
 	}
 

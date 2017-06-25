@@ -90,7 +90,8 @@ public class BoardPinInfo {
 	}
 	
 	protected PinInfo addGpioPinInfo(String header, int gpioNum, String name, int pin, Set<DeviceMode> modes) {
-		PinInfo pin_info = new PinInfo(GPIO_KEY_PREFIX, header, gpioNum, pin, name, modes);
+		PinInfo pin_info = new PinInfo(GPIO_KEY_PREFIX, header, gpioNum, pin, name, modes,
+				mapToSysFsGpioNumber(gpioNum));
 		addGpioPinInfo(pin_info);
 		return pin_info;
 	}
@@ -113,7 +114,8 @@ public class BoardPinInfo {
 	}
 	
 	protected PinInfo addPwmPinInfo(String header, int gpioNumber, String name, int pin, int pwmNum, Set<DeviceMode> modes) {
-		PinInfo pin_info = new PwmPinInfo(GPIO_KEY_PREFIX, header, gpioNumber, pin, pwmNum, name, modes);
+		PinInfo pin_info = new PwmPinInfo(GPIO_KEY_PREFIX, header, gpioNumber, pin, pwmNum, name, modes,
+				mapToSysFsGpioNumber(gpioNumber));
 		addGpioPinInfo(pin_info);
 		pwmNumToGpioMapping.put(Integer.valueOf(pwmNum), Integer.valueOf(gpioNumber));
 		return pin_info;

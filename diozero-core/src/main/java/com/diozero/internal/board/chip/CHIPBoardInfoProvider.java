@@ -27,8 +27,6 @@ package com.diozero.internal.board.chip;
  */
 
 
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.*;
 
@@ -227,6 +225,12 @@ public class CHIPBoardInfoProvider implements BoardInfoProvider {
 				// FIXME Treat as a stream
 				try (DirectoryStream<Path> dirs = Files.newDirectoryStream(gpio_sysfs_dir, "gpiochip*")) {
 					for (Path p : dirs) {
+						if (Files.lines(p.resolve("label")).filter(line -> line.equals("pcf8574a")).count() > 0) {
+							String dir_name = p.getFileName().toString();
+							xioGpioOffset = Integer.parseInt(dir_name.replace("gpiochip", ""));
+							break;
+						}
+						/*
 						try (BufferedReader reader = new BufferedReader(new FileReader(p.resolve("label").toFile()))) {
 							if (reader.readLine().equals("pcf8574a")) {
 								String dir_name = p.getFileName().toString();
@@ -234,6 +238,7 @@ public class CHIPBoardInfoProvider implements BoardInfoProvider {
 								break;
 							}
 						}
+						*/
 					}
 					Logger.debug("xioGpioOffset: {}", Integer.valueOf(xioGpioOffset));
 				} catch (IOException e) {

@@ -1,10 +1,10 @@
 package com.diozero.internal.provider.wiringpi;
 
-/*
+/*-
  * #%L
  * Device I/O Zero - wiringPi provider
  * %%
- * Copyright (C) 2016 diozero
+ * Copyright (C) 2016 - 2017 mattjlewis
  * %%
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,9 +25,6 @@ package com.diozero.internal.provider.wiringpi;
  * THE SOFTWARE.
  * #L%
  */
-
-import java.nio.ByteBuffer;
-
 import org.pmw.tinylog.Logger;
 
 import com.diozero.api.SpiClockMode;
@@ -87,29 +84,36 @@ public class WiringPiSpiDevice extends AbstractDevice implements SpiDeviceInterf
 	}
 
 	@Override
-	public void write(ByteBuffer tx) {
-		int count = tx.remaining();
-		byte[] buffer = new byte[count];
-		tx.get(buffer);
-		if (Spi.wiringPiSPIDataRW(controller, buffer) == -1) {
-			throw new RuntimeIOException("Error writing " + buffer.length + " bytes of data to SPI controller " + controller);
+	public void write(byte[] txBuffer) {
+		if (Spi.wiringPiSPIDataRW(controller, txBuffer) == -1) {
+			throw new RuntimeIOException("Error writing " + txBuffer.length + " bytes of data to SPI controller " + controller);
+		}
+	}
+	
+	@Override
+	public void write(byte[] txBuffer, int offset, int length) {
+		byte[] tx;
+		if (offset == 0 && txBuffer.length == length) {
+			tx = txBuffer;
+		} else {
+			tx = new byte[length];
+			System.arraycopy(txBuffer, offset, tx, 0, length);
+		}
+		if (Spi.wiringPiSPIDataRW(controller, tx) == -1) {
+			throw new RuntimeIOException("Error writing " + tx.length + " bytes of data to SPI controller " + controller);
 		}
 	}
 
 	@Override
-	public ByteBuffer writeAndRead(ByteBuffer tx) throws RuntimeIOException {
-		/*
-		byte[] out_array = out.array();
-		byte[] buffer = new byte[out_array.length];
-		System.arraycopy(out_array, 0, buffer, 0, out_array.length);
-		*/
-		int count = tx.remaining();
-		byte[] buffer = new byte[count];
-		tx.get(buffer);
+	public byte[] writeAndRead(byte[] txBuffer) throws RuntimeIOException {
+		byte[] buffer = new byte[txBuffer.length];
+		// Copy so that txBuffer isn't modified
+		System.arraycopy(txBuffer, 0, buffer, 0, txBuffer.length);
 		if (Spi.wiringPiSPIDataRW(controller, buffer) == -1) {
 			throw new RuntimeIOException("Error writing " + buffer.length + " bytes of data to SPI controller " + controller);
 		}
-		return ByteBuffer.wrap(buffer);
+		
+		return buffer;
 	}
 
 	@Override

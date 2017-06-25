@@ -65,7 +65,6 @@ public class SystemInfo {
 						revision = line.split(":")[1].trim();
 					}
 				});
-				Logger.debug("Hardware: {}. Revision: {}", hardware, revision);
 			} catch (IOException | NullPointerException | IndexOutOfBoundsException e) {
 				Logger.error(e, "Error reading {}: {}", CPUINFO_FILE, e.getMessage());
 			}
@@ -77,7 +76,6 @@ public class SystemInfo {
 						memoryKb = Integer.valueOf(line.split("\\s+")[1].trim());
 					}
 				});
-				Logger.debug("MemTotal: {}", memoryKb);
 			} catch (IOException | NullPointerException | IndexOutOfBoundsException e) {
 				Logger.error(e, "Error reading {}: {}", MEMINFO_FILE, e.getMessage());
 			}

@@ -28,7 +28,6 @@ package com.diozero;
 
 
 import java.io.Closeable;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -291,11 +290,10 @@ public class MFRC522 implements Closeable {
 					Integer.toHexString(value & 0xff));
 		}
 		
-		ByteBuffer tx = ByteBuffer.allocateDirect(2);
+		byte[] tx = new byte[2];
 		// Address Format: 0XXXXXX0, the left most "0" indicates a write
-		tx.put(register.getAddress());
-		tx.put(value);
-		tx.flip();
+		tx[0] = register.getAddress();
+		tx[1] = value;
 		
 		device.write(tx);
 	}
@@ -310,30 +308,28 @@ public class MFRC522 implements Closeable {
 					Hex.encodeHexString(values), Integer.valueOf(length));
 		}
 		
-		ByteBuffer tx = ByteBuffer.allocateDirect(length+1);
+		byte[] tx = new byte[length+1];
 		// Address Format: 0XXXXXX0, the left most "0" indicates a write
-		tx.put(register.getAddress());
-		tx.put(values, 0, length);
-		tx.flip();
+		tx[0] = register.getAddress();
+		System.arraycopy(values, 0, tx, 1, length);
 		
 		device.write(tx);
 	}
 	
 	private byte readRegister(PcdRegister register) {
-		ByteBuffer tx = ByteBuffer.allocateDirect(2);
+		byte[] tx = new byte[2];
 		// Address Format: 1XXXXXX0, the first "1" indicates a read
-		tx.put((byte) (register.getAddress() | 0x80));
-		tx.put((byte) 0);
-		tx.flip();
+		tx[0] = (byte) (register.getAddress() | 0x80);
+		tx[1] = (byte) 0;
 		
-		ByteBuffer rx = device.writeAndRead(tx);
+		byte[] rx = device.writeAndRead(tx);
 		
 		if (logReadsAndWrites) {
 			Logger.debug("(0x{}): 0x{}", Integer.toHexString(register.getValue() & 0xff),
-					Integer.toHexString(rx.get(1) & 0xff));
+					Integer.toHexString(rx[1] & 0xff));
 		}
 		
-		return rx.get(1);
+		return rx[1];
 	}
 	
 	private byte[] readRegister(PcdRegister register, int count, byte rxAlign) {
@@ -343,21 +339,21 @@ public class MFRC522 implements Closeable {
 		
 		// MSB == 1 is for reading. LSB is not used in address. Datasheet section 8.1.2.3.
 		byte address = (byte) (register.getAddress() | 0x80);
-		ByteBuffer tx = ByteBuffer.allocateDirect(count+1);
-		for (int i=0; i<count; i++) {
-			tx.put(address);
+		byte[] tx = new byte[count+1];
+		int i;
+		for (i=0; i<count; i++) {
+			tx[i] = address;
 		}
-		tx.put((byte) 0);
-		tx.flip();
+		tx[i] = (byte) 0;
 		
-		ByteBuffer rx = device.writeAndRead(tx);
+		byte[] rx = device.writeAndRead(tx);
 		
 		byte[] values = new byte[count];
 		
 		// Index in values array.
 		int index = 0;
 		int length = count;
-		rx.get();
+		i = 1;
 		// One read is performed outside of the loop
 		count--;
 		// Only update bit positions rxAlign..7 in values[0]
@@ -365,18 +361,18 @@ public class MFRC522 implements Closeable {
 			// Create bit mask for bit positions rxAlign..7
 			byte mask = (byte) ((0xFF << rxAlign) & 0xFF);
 			// Read value and tell that we want to read the same address again.
-			byte value = rx.get();
+			byte value = rx[i++];
 			// Apply mask to both current value of values[0] and the new data in value.
 			values[0] = (byte) ((values[0] & ~mask) | (value & mask));
 			index++;
 		}
 		while (index < count) {
 			// Read value and tell that we want to read the same address again.
-			values[index] = rx.get();
+			values[index] = rx[i++];
 			index++;
 		}
 		// Read the final byte. Send 0 to stop reading.
-		values[index] = rx.get();
+		values[index] = rx[i++];
 		
 		if (logReadsAndWrites) {
 			Logger.debug("(0x{}, {} bytes, {}): 0x{}", Integer.toHexString(register.getValue() & 0xff),

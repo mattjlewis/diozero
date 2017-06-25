@@ -91,7 +91,7 @@ public abstract class BaseNativeDeviceFactory extends AbstractDeviceFactory impl
 	
 	@Override
 	public void close() {
-		// 
+		// Stop all sheduled jobs
 		DioZeroScheduler.shutdownAll();
 		// Shutdown all of the other non-native device factories
 		for (DeviceFactoryInterface df : deviceFactories) {

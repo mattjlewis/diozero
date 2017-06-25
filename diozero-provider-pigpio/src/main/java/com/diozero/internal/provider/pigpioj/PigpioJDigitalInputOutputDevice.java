@@ -54,12 +54,6 @@ implements GpioDigitalInputOutputDeviceInterface, PigpioCallback {
 		
 		setMode(mode);
 	}
-	
-	private static void checkMode(DeviceMode mode) {
-		if (mode != DeviceMode.DIGITAL_INPUT && mode != DeviceMode.DIGITAL_OUTPUT) {
-			throw new IllegalArgumentException("Invalid mode, must be DIGITAL_INPUT or DIGITAL_OUTPUT");
-		}
-	}
 
 	@Override
 	public DeviceMode getMode() {
@@ -68,13 +62,6 @@ implements GpioDigitalInputOutputDeviceInterface, PigpioCallback {
 
 	@Override
 	public void setMode(DeviceMode mode) {
-		checkMode(mode);
-		
-		// No change?
-		if (this.mode != null && mode == this.mode) {
-			return;
-		}
-
 		if (mode == DeviceMode.DIGITAL_INPUT) {
 			int rc = pigpioImpl.setMode(gpio, PigpioConstants.MODE_PI_INPUT);
 			if (rc < 0) {
@@ -90,7 +77,7 @@ implements GpioDigitalInputOutputDeviceInterface, PigpioCallback {
 				throw new RuntimeIOException("Error calling pigpioImpl.setMode(), response: " + rc);
 			}
 		}
-		
+
 		this.mode = mode;
 	}
 

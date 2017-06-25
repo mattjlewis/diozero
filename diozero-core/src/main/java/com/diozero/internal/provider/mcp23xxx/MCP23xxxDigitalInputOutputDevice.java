@@ -70,12 +70,6 @@ public class MCP23xxxDigitalInputOutputDevice extends AbstractInputDevice<Digita
 		Logger.debug("closeDevice()");
 		mcp23xxx.closeGpio(gpio);
 	}
-	
-	private static void checkMode(DeviceMode mode) {
-		if (mode != DeviceMode.DIGITAL_INPUT && mode != DeviceMode.DIGITAL_OUTPUT) {
-			throw new IllegalArgumentException("Invalid mode, must be DIGITAL_INPUT or DIGITAL_OUTPUT");
-		}
-	}
 
 	@Override
 	public DeviceMode getMode() {
@@ -84,8 +78,6 @@ public class MCP23xxxDigitalInputOutputDevice extends AbstractInputDevice<Digita
 
 	@Override
 	public void setMode(DeviceMode mode) {
-		checkMode(mode);
-		
 		if (mode == DeviceMode.DIGITAL_INPUT) {
 			mcp23xxx.setInputMode(gpio, GpioPullUpDown.NONE, GpioEventTrigger.BOTH);
 		} else {
