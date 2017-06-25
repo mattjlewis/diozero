@@ -28,8 +28,8 @@ package com.diozero.sampleapps;
 
 import org.pmw.tinylog.Logger;
 
-import com.diozero.Button;
 import com.diozero.api.GpioPullUpDown;
+import com.diozero.devices.Button;
 import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 

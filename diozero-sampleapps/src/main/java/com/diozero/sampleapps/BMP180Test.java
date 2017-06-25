@@ -29,8 +29,8 @@ package com.diozero.sampleapps;
 
 import org.pmw.tinylog.Logger;
 
-import com.diozero.BMP180;
-import com.diozero.BMP180.BMPMode;
+import com.diozero.devices.BMP180;
+import com.diozero.devices.BMP180.BMPMode;
 import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 

@@ -30,7 +30,7 @@ import java.util.List;
 
 import org.pmw.tinylog.Logger;
 
-import com.diozero.W1ThermSensor;
+import com.diozero.devices.W1ThermSensor;
 
 /**
  * To run: 

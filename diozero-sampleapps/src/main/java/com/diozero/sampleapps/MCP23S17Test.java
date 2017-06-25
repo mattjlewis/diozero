@@ -29,10 +29,10 @@ package com.diozero.sampleapps;
 
 import org.pmw.tinylog.Logger;
 
-import com.diozero.Button;
-import com.diozero.MCP23S17;
 import com.diozero.api.GpioPullUpDown;
 import com.diozero.api.SPIConstants;
+import com.diozero.devices.Button;
+import com.diozero.devices.MCP23S17;
 import com.diozero.util.SleepUtil;
 
 public class MCP23S17Test {

@@ -1,5 +1,7 @@
 package com.diozero;
 
+import com.diozero.devices.McpAdc;
+
 /*
  * #%L
  * Device I/O Zero - Core

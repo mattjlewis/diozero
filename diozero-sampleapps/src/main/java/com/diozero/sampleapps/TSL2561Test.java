@@ -29,7 +29,7 @@ package com.diozero.sampleapps;
 
 import org.pmw.tinylog.Logger;
 
-import com.diozero.TSL2561;
+import com.diozero.devices.TSL2561;
 import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 

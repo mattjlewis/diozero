@@ -31,7 +31,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pmw.tinylog.Logger;
 
-import com.diozero.Servo;
+import com.diozero.devices.Servo;
 import com.diozero.internal.provider.test.TestDeviceFactory;
 import com.diozero.internal.provider.test.TestPwmOutputDevice;
 import com.diozero.util.ServoUtil;

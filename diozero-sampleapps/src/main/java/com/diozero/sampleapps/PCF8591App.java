@@ -29,7 +29,7 @@ package com.diozero.sampleapps;
 
 import org.pmw.tinylog.Logger;
 
-import com.diozero.PCF8591;
+import com.diozero.devices.PCF8591;
 import com.diozero.util.SleepUtil;
 
 /**

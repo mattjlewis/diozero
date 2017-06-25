@@ -35,11 +35,11 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.pmw.tinylog.Logger;
 
-import com.diozero.Button;
-import com.diozero.HD44780Lcd;
-import com.diozero.HD44780Lcd.LcdConnection;
-import com.diozero.HD44780Lcd.PCF8574LcdConnection;
 import com.diozero.api.I2CConstants;
+import com.diozero.devices.Button;
+import com.diozero.devices.HD44780Lcd;
+import com.diozero.devices.HD44780Lcd.LcdConnection;
+import com.diozero.devices.HD44780Lcd.PCF8574LcdConnection;
 import com.diozero.util.RangeUtil;
 import com.diozero.util.SleepUtil;
 

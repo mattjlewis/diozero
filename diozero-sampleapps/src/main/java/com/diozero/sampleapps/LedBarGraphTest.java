@@ -32,11 +32,11 @@ import java.util.List;
 
 import org.pmw.tinylog.Logger;
 
-import com.diozero.LedBarGraph;
-import com.diozero.MCP23008;
 import com.diozero.api.Animation;
 import com.diozero.api.AnimationInstance.KeyFrame;
 import com.diozero.api.easing.Sine;
+import com.diozero.devices.LedBarGraph;
+import com.diozero.devices.MCP23008;
 import com.diozero.util.SleepUtil;
 
 public class LedBarGraphTest {

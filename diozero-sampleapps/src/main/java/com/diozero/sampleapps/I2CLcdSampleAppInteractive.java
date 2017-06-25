@@ -29,10 +29,10 @@ package com.diozero.sampleapps;
 
 import java.io.*;
 
-import com.diozero.HD44780Lcd;
-import com.diozero.HD44780Lcd.LcdConnection;
 import com.diozero.api.Action;
 import com.diozero.api.I2CConstants;
+import com.diozero.devices.HD44780Lcd;
+import com.diozero.devices.HD44780Lcd.LcdConnection;
 import com.diozero.util.RuntimeIOException;
 
 /**

@@ -28,8 +28,8 @@ package com.diozero.sampleapps;
 
 import org.pmw.tinylog.Logger;
 
-import com.diozero.GP2Y0A21YK;
-import com.diozero.McpAdc;
+import com.diozero.devices.GP2Y0A21YK;
+import com.diozero.devices.McpAdc;
 import com.diozero.util.SleepUtil;
 
 /**

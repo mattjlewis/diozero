@@ -32,7 +32,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.pmw.tinylog.Logger;
 
-import com.diozero.PwmLed;
+import com.diozero.devices.PwmLed;
 import com.diozero.util.DioZeroScheduler;
 import com.diozero.util.SleepUtil;
 

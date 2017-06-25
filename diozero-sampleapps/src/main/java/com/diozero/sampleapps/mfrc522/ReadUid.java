@@ -32,8 +32,8 @@ import java.util.List;
 
 import org.pmw.tinylog.Logger;
 
-import com.diozero.MFRC522;
-import com.diozero.MFRC522.UID;
+import com.diozero.devices.MFRC522;
+import com.diozero.devices.MFRC522.UID;
 import com.diozero.util.Hex;
 import com.diozero.util.SleepUtil;
 

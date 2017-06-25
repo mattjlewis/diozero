@@ -28,9 +28,9 @@ package com.diozero.sampleapps;
 
 import org.pmw.tinylog.Logger;
 
-import com.diozero.HD44780Lcd;
-import com.diozero.HD44780Lcd.LcdConnection;
 import com.diozero.api.I2CConstants;
+import com.diozero.devices.HD44780Lcd;
+import com.diozero.devices.HD44780Lcd.LcdConnection;
 import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 

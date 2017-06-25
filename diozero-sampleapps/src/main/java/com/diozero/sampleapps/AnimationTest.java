@@ -36,11 +36,11 @@ import java.util.concurrent.Future;
 
 import org.pmw.tinylog.Logger;
 
-import com.diozero.PwmLed;
 import com.diozero.api.Animation;
 import com.diozero.api.AnimationInstance;
 import com.diozero.api.OutputDeviceInterface;
 import com.diozero.api.easing.Quad;
+import com.diozero.devices.PwmLed;
 import com.diozero.internal.DeviceFactoryHelper;
 
 public class AnimationTest {

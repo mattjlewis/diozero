@@ -30,11 +30,11 @@ import java.io.Closeable;
 
 import org.pmw.tinylog.Logger;
 
-import com.diozero.CamJamKitDualMotor;
-import com.diozero.HCSR04;
-import com.diozero.LED;
 import com.diozero.api.DigitalInputDevice;
 import com.diozero.api.motor.DualMotor;
+import com.diozero.devices.CamJamKitDualMotor;
+import com.diozero.devices.HCSR04;
+import com.diozero.devices.LED;
 import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;;
 

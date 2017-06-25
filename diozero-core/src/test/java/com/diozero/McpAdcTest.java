@@ -29,6 +29,7 @@ import org.junit.*;
 import org.pmw.tinylog.Logger;
 
 import com.diozero.api.AnalogInputDevice;
+import com.diozero.devices.McpAdc;
 import com.diozero.internal.provider.test.TestDeviceFactory;
 import com.diozero.internal.provider.test.TestMcpAdcSpiDevice;
 import com.diozero.util.SleepUtil;

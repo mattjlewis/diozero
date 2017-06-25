@@ -1,4 +1,4 @@
-package com.diozero;
+package com.diozero.devices;
 
 /*
  * #%L

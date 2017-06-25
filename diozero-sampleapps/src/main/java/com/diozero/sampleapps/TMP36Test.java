@@ -28,8 +28,8 @@ package com.diozero.sampleapps;
 
 import org.pmw.tinylog.Logger;
 
-import com.diozero.McpAdc;
-import com.diozero.TMP36;
+import com.diozero.devices.McpAdc;
+import com.diozero.devices.TMP36;
 import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 

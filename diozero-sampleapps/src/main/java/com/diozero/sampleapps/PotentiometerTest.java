@@ -29,8 +29,8 @@ package com.diozero.sampleapps;
 
 import org.pmw.tinylog.Logger;
 
-import com.diozero.McpAdc;
-import com.diozero.Potentiometer;
+import com.diozero.devices.McpAdc;
+import com.diozero.devices.Potentiometer;
 import com.diozero.util.SleepUtil;
 
 /**

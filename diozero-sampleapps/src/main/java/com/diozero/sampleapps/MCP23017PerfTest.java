@@ -29,8 +29,8 @@ package com.diozero.sampleapps;
 
 import org.pmw.tinylog.Logger;
 
-import com.diozero.MCP23017;
 import com.diozero.api.DigitalOutputDevice;
+import com.diozero.devices.MCP23017;
 
 /**
  * MCP23017 performance test application. To run (note this hangs the Pi when using wiringPi provider):

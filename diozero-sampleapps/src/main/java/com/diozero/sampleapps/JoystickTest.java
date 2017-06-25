@@ -29,9 +29,9 @@ package com.diozero.sampleapps;
 
 import org.pmw.tinylog.Logger;
 
-import com.diozero.PCF8591;
-import com.diozero.PwmLed;
 import com.diozero.api.AnalogInputDevice;
+import com.diozero.devices.PCF8591;
+import com.diozero.devices.PwmLed;
 import com.diozero.internal.DeviceFactoryHelper;
 import com.diozero.util.SleepUtil;
 

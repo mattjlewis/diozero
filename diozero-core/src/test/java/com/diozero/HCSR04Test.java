@@ -29,6 +29,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pmw.tinylog.Logger;
 
+import com.diozero.devices.HCSR04;
 import com.diozero.internal.provider.test.HCSR04EchoPin;
 import com.diozero.internal.provider.test.HCSR04TriggerPin;
 import com.diozero.internal.provider.test.TestDeviceFactory;

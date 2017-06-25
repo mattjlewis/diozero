@@ -1,4 +1,4 @@
-package com.diozero;
+package com.diozero.devices;
 
 import com.diozero.api.motor.DualMotor;
 import com.diozero.api.motor.PwmMotor;

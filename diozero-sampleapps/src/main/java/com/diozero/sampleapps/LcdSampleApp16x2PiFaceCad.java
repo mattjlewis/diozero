@@ -28,10 +28,10 @@ package com.diozero.sampleapps;
 
 import org.pmw.tinylog.Logger;
 
-import com.diozero.HD44780Lcd;
-import com.diozero.HD44780Lcd.LcdConnection;
-import com.diozero.HD44780Lcd.PiFaceCadLcdConnection;
 import com.diozero.api.SPIConstants;
+import com.diozero.devices.HD44780Lcd;
+import com.diozero.devices.HD44780Lcd.LcdConnection;
+import com.diozero.devices.HD44780Lcd.PiFaceCadLcdConnection;
 import com.diozero.util.RuntimeIOException;
 
 /**

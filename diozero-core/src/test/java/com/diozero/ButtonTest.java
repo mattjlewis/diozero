@@ -34,6 +34,7 @@ import org.pmw.tinylog.Logger;
 
 import com.diozero.api.DigitalInputEvent;
 import com.diozero.api.GpioPullUpDown;
+import com.diozero.devices.Button;
 import com.diozero.internal.provider.test.TestDeviceFactory;
 import com.diozero.internal.provider.test.TestDigitalInputDevice;
 import com.diozero.internal.provider.test.TestDigitalOutputDevice;

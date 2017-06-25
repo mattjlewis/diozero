@@ -29,7 +29,7 @@ package com.diozero.sampleapps;
 
 import org.pmw.tinylog.Logger;
 
-import com.diozero.CamJamKitDualMotor;
+import com.diozero.devices.CamJamKitDualMotor;
 import com.diozero.util.RuntimeIOException;;
 
 /**

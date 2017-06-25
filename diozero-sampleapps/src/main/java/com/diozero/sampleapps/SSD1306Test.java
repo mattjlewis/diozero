@@ -33,8 +33,8 @@ import java.util.Random;
 
 import org.pmw.tinylog.Logger;
 
-import com.diozero.SSD1306;
 import com.diozero.api.DigitalOutputDevice;
+import com.diozero.devices.SSD1306;
 import com.diozero.util.SleepUtil;
 
 /**

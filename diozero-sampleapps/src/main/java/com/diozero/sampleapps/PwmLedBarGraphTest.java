@@ -33,12 +33,12 @@ import java.util.concurrent.Future;
 
 import org.pmw.tinylog.Logger;
 
-import com.diozero.LedBarGraph;
-import com.diozero.MCP23008;
-import com.diozero.PwmLedBarGraph;
 import com.diozero.api.Animation;
 import com.diozero.api.AnimationInstance.KeyFrame;
 import com.diozero.api.easing.Sine;
+import com.diozero.devices.LedBarGraph;
+import com.diozero.devices.MCP23008;
+import com.diozero.devices.PwmLedBarGraph;
 import com.diozero.internal.DeviceFactoryHelper;
 import com.diozero.util.SleepUtil;
 

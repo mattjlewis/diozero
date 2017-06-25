@@ -1,6 +1,6 @@
 package com.diozero.sampleapps;
 
-import com.diozero.LPS25H;
+import com.diozero.devices.LPS25H;
 
 /*
  * #%L

@@ -46,7 +46,7 @@ import com.diozero.util.RuntimeIOException;
  * </p>
  * <p>
  * Note: The Raspberry Pi does not natively support analog input devices, see
- * {@link com.diozero.McpAdc McpAdc} for connecting to analog-to-digital
+ * {@link com.diozero.devices.McpAdc McpAdc} for connecting to analog-to-digital
  * converters.
  * </p>
  * <p>

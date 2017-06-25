@@ -28,7 +28,7 @@ package com.diozero.sampleapps;
 
 import org.pmw.tinylog.Logger;
 
-import com.diozero.McpEeprom;
+import com.diozero.devices.McpEeprom;
 
 public class EepromTest {
 	private static final String LOREM_IPSUM = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, "

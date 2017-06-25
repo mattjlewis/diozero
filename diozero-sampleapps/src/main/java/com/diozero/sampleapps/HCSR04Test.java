@@ -29,7 +29,7 @@ package com.diozero.sampleapps;
 
 import org.pmw.tinylog.Logger;
 
-import com.diozero.HCSR04;
+import com.diozero.devices.HCSR04;
 import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 

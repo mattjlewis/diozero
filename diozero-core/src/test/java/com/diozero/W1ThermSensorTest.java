@@ -31,7 +31,8 @@ import java.util.List;
 
 import org.pmw.tinylog.Logger;
 
-import com.diozero.W1ThermSensor.Type;
+import com.diozero.devices.W1ThermSensor;
+import com.diozero.devices.W1ThermSensor.Type;
 
 public class W1ThermSensorTest {
 	

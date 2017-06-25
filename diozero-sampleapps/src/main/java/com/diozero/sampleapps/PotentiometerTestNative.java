@@ -29,7 +29,7 @@ package com.diozero.sampleapps;
 
 import org.pmw.tinylog.Logger;
 
-import com.diozero.Potentiometer;
+import com.diozero.devices.Potentiometer;
 import com.diozero.internal.DeviceFactoryHelper;
 import com.diozero.util.SleepUtil;
 

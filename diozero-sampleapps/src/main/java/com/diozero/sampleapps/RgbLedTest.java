@@ -29,7 +29,7 @@ package com.diozero.sampleapps;
 
 import org.pmw.tinylog.Logger;
 
-import com.diozero.RgbLed;
+import com.diozero.devices.RgbLed;
 import com.diozero.util.SleepUtil;
 
 public class RgbLedTest {

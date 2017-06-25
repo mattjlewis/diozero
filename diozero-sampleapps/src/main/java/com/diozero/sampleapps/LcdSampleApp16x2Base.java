@@ -28,7 +28,7 @@ package com.diozero.sampleapps;
 
 import org.pmw.tinylog.Logger;
 
-import com.diozero.HD44780Lcd;
+import com.diozero.devices.HD44780Lcd;
 import com.diozero.util.SleepUtil;
 
 public class LcdSampleApp16x2Base {

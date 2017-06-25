@@ -28,7 +28,7 @@ package com.diozero.sampleapps;
 
 import org.pmw.tinylog.Logger;
 
-import com.diozero.PwmLed;
+import com.diozero.devices.PwmLed;
 import com.diozero.internal.DeviceFactoryHelper;
 import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;

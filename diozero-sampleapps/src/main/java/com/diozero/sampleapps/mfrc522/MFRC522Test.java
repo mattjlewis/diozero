@@ -2,7 +2,7 @@ package com.diozero.sampleapps.mfrc522;
 
 import org.pmw.tinylog.Logger;
 
-import com.diozero.MFRC522;
+import com.diozero.devices.MFRC522;
 import com.diozero.util.Hex;
 
 /*
