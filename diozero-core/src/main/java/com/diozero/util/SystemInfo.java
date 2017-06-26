@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Objects;
 import java.util.Properties;
 
 import org.pmw.tinylog.Logger;
@@ -103,8 +104,8 @@ public class SystemInfo {
 	}
 	
 	static BoardInfo lookupLocalBoardInfo(String hardware, String revision, Integer memoryKb) {
-		return BoardInfoProvider.loadInstances().findFirst().orElse(new UnknownBoardInfoProvider()).lookup(hardware, revision,
-				memoryKb);
+		return BoardInfoProvider.loadInstances().map(bip -> bip.lookup(hardware, revision, memoryKb))
+				.filter(Objects::nonNull).findFirst().orElseGet(() -> UnknownBoardInfo.get(hardware, revision, memoryKb));
 	}
 
 	public static String getOsReleaseProperty(String property) {
@@ -137,17 +138,14 @@ public class SystemInfo {
 		Logger.info(lookupLocalBoardInfo());
 	}
 	
-	public static final class UnknownBoardInfoProvider implements BoardInfoProvider {
-		@Override
-		public BoardInfo lookup(String hardware, String revision, Integer memoryKb) {
+	public static final class UnknownBoardInfo extends BoardInfo {
+		private static final String UNKNOWN = "unknown";
+		
+		static BoardInfo get(String hardware, String revision, Integer memoryKb) {
 			Logger.warn("Failed to resolve board info for hardware '{}' and revision '{}'. Local O/S: {}",
 					hardware, revision, System.getProperty("os.name"));
 			return new UnknownBoardInfo();
 		}
-	}
-	
-	public static final class UnknownBoardInfo extends BoardInfo {
-		private static final String UNKNOWN = "unknown";
 		
 		public UnknownBoardInfo() {
 			super(UNKNOWN, UNKNOWN, -1, UNKNOWN);

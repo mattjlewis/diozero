@@ -42,7 +42,6 @@ public class SystemInfoTest {
 		//System.out.println(osReleaseProperties);
 		//System.out.format("O/S Id='%s', Version='%s', Version Id='%s'%n",
 		//		getOperatingSystemId(), getOperatingSystemVersion(), getOperatingSystemVersionId());
-		String hardware;
 		
 		// CHIP
 		validateBoard("Allwinner sun4i/sun5i Families", "0000", CHIPBoardInfoProvider.MAKE,
@@ -58,7 +57,7 @@ public class SystemInfoTest {
 				OdroidBoardInfoProvider.Model.C2.toString(), 2048);
 		
 		// Raspberry Pi
-		hardware = "BCM2835";
+		String hardware = "BCM2835";
 		
 		String line = "Revision        : a02082\n";
 		validateBoard(hardware, line.split(":")[1].trim(), RaspberryPiBoardInfoProvider.MAKE,
@@ -141,7 +140,7 @@ public class SystemInfoTest {
 	
 	private static void validateBoard(String hardware, String revision, String expectedMake, String expectedModel, int expectedMemory) {
 		BoardInfo board_info = SystemInfo.lookupLocalBoardInfo(hardware, revision, null);
-		System.out.println(revision + ": " + board_info);
+		System.out.println(hardware + "/" + revision + ": " + board_info);
 		Assert.assertEquals(expectedMake, board_info.getMake());
 		Assert.assertEquals(expectedModel, board_info.getModel());
 		Assert.assertEquals(expectedMemory, board_info.getMemory());
