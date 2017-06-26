@@ -57,10 +57,8 @@ public class DeviceStates {
 	
 	public void closeAll() {
 		Logger.debug("closeAll()");
-		for (DeviceInterface device : devices.values()) {
-			// No need to remove from the Map as close() should always call closed()
-			device.close();
-		}
+		// No need to remove from the Map as close() should always call closed()
+		devices.values().forEach(DeviceInterface::close);
 	}
 
 	public DeviceInterface getDevice(String key) {

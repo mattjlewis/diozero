@@ -39,6 +39,7 @@ import uk.pigpioj.PigpioInterface;
 import uk.pigpioj.PigpioJ;
 
 public class PigpioJDeviceFactory extends BaseNativeDeviceFactory {
+	private static final int PIGPIO_SPI_BUFFER_SIZE = (int) (Math.pow(2, 16) - 1);
 	private int boardPwmFrequency;
 	private PigpioInterface pigpioImpl;
 
@@ -72,17 +73,10 @@ public class PigpioJDeviceFactory extends BaseNativeDeviceFactory {
 	public void setBoardPwmFrequency(int pwmFrequency) {
 		boardPwmFrequency = pwmFrequency;
 	}
-
-	protected DeviceMode getCurrentGpioMode(int gpio) {
-		int rc = pigpioImpl.getMode(gpio);
-		
-		if (rc == PigpioConstants.MODE_PI_INPUT) {
-			return DeviceMode.DIGITAL_INPUT;
-		} else if (rc == PigpioConstants.MODE_PI_OUTPUT) {
-			return DeviceMode.DIGITAL_OUTPUT;
-		}
-		
-		throw new RuntimeIOException("Error calling pigpioImpl.getMode(), response: " + rc);
+	
+	@Override
+	public int getSpiBufferSize() {
+		return PIGPIO_SPI_BUFFER_SIZE;
 	}
 
 	@Override

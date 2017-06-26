@@ -79,12 +79,7 @@ public abstract class SsdOled implements Closeable {
 	
 	protected void data() {
 		dcPin.setOn(true);
-		int written = 0;
-		do {
-			int to_write = Math.min(buffer.length - written, 2048);
-			spiDevice.write(buffer, written, to_write);
-			written += to_write;
-		} while (written < buffer.length);
+		spiDevice.write(buffer);
 	}
 	
 	protected void data(int offset, int length) {

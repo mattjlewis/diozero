@@ -42,6 +42,7 @@ import com.diozero.api.DigitalOutputDevice;
 import com.diozero.sampleapps.gol.GameOfLife;
 import com.diozero.sandpit.SSD1331;
 import com.diozero.sandpit.SsdOled;
+import com.diozero.util.DeviceFactoryHelper;
 import com.diozero.util.SleepUtil;
 
 /**
@@ -70,11 +71,15 @@ public class SSD1331Test {
 				DigitalOutputDevice reset_pin = new DigitalOutputDevice(27);
 				SSD1331 oled = new SSD1331(0, 0, dc_pin, reset_pin)) {
 			gameOfLife(oled, 500);
-			displayImages(oled);
-			sierpinskiTriangle(oled);
-			drawText(oled);
-			testJava2D(oled);
-			animateText(oled, "SSD1331 Organic LED Display demo scroller. Java implementation by diozero (diozero.com).");
+			//displayImages(oled);
+			//sierpinskiTriangle(oled, 250);
+			//drawText(oled);
+			//testJava2D(oled);
+			//animateText(oled, "SSD1331 Organic LED Display demo scroller. Java implementation by diozero (diozero.com).");
+		} finally {
+			// Required if there are non-daemon threads that will prevent the
+			// built-in clean-up routines from running
+			DeviceFactoryHelper.getNativeDeviceFactory().close();
 		}
 	}
 
@@ -186,23 +191,33 @@ public class SSD1331Test {
 		}	
 	}
 	
-	public static void sierpinskiTriangle(SSD1331 oled) {
+	public static void sierpinskiTriangle(SSD1331 oled, int iterations) {
 		Logger.info("Sierpinski triangle");
 		int width = oled.getWidth();
 		int height = oled.getHeight();
-		Random random = new Random();
+		final Random random = new Random();
 		oled.clear();
-		int[][] corners = { { width/2, 0 }, { 0, height-1 }, { width-1, height-1 } };
-		int[] start_corner = corners[random.nextInt(3)];
-		int x = start_corner[0];
-		int y = start_corner[1];
-		for (int i=0; i<1_000; i++) {
-			int[] target_corner = corners[random.nextInt(3)];
-			x += (target_corner[0] - x) / 2;
-			y += (target_corner[1] - y) / 2;
-			oled.setPixel(x, y, MAX_RED, (byte) 0, (byte) 0, true);
-			//oled.display();
-			SleepUtil.sleepSeconds(0.005);
+		
+		final Point[] corners = { new Point(width/2, 0), new Point(0, height-1), new Point(width-1, height-1) };
+		Point point = new Point(corners[random.nextInt(corners.length)]);
+		for (int i=0; i<iterations; i++) {
+			final Point target_corner = corners[random.nextInt(corners.length)];
+			point.x += (target_corner.x - point.x) / 2;
+			point.y += (target_corner.y - point.y) / 2;
+			oled.setPixel(point.x, point.y, MAX_RED, (byte) 0, (byte) 0, true);
+			//SleepUtil.sleepSeconds(0.005);
+		}
+	}
+	
+	private static final class Point {
+		int x, y;
+		Point(int x, int y) {
+			this.x = x;
+			this.y = y;
+		}
+		Point(Point p) {
+			this.x = p.x;
+			this.y = p.y;
 		}
 	}
 

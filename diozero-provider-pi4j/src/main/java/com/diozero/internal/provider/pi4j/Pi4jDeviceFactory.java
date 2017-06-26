@@ -89,6 +89,11 @@ public class Pi4jDeviceFactory extends BaseNativeDeviceFactory {
 	}
 	
 	@Override
+	public int getSpiBufferSize() {
+		return com.pi4j.io.spi.SpiDevice.MAX_SUPPORTED_BYTES;
+	}
+	
+	@Override
 	public void close() {
 		super.close();
 		gpioController.shutdown();

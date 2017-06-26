@@ -109,8 +109,6 @@ public class LedBarGraph implements OutputDeviceInterface, Closeable {
 
 	@Override
 	public void close() throws RuntimeIOException {
-		for (LED led : leds) {
-			led.close();
-		}
+		leds.forEach(LED::close);
 	}
 }

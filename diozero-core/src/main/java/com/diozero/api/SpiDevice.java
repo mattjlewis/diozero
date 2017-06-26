@@ -31,6 +31,7 @@ import java.io.Closeable;
 
 import org.pmw.tinylog.Logger;
 
+import com.diozero.internal.provider.NativeDeviceFactoryInterface;
 import com.diozero.internal.provider.SpiDeviceInterface;
 import com.diozero.util.DeviceFactoryHelper;
 import com.diozero.util.RuntimeIOException;
@@ -48,6 +49,7 @@ import com.diozero.util.RuntimeIOException;
  */
 public class SpiDevice implements Closeable, SPIConstants {
 	private SpiDeviceInterface device;
+	private int maxBufferSize;
 	
 	public SpiDevice(int chipSelect) throws RuntimeIOException {
 		this(DEFAULT_SPI_CONTROLLER, chipSelect, DEFAULT_SPI_CLOCK_FREQUENCY, DEFAULT_SPI_CLOCK_MODE, DEFAULT_LSB_FIRST);
@@ -57,8 +59,11 @@ public class SpiDevice implements Closeable, SPIConstants {
 		this(controller, chipSelect, DEFAULT_SPI_CLOCK_FREQUENCY, DEFAULT_SPI_CLOCK_MODE, DEFAULT_LSB_FIRST);
 	}
 	
+	@SuppressWarnings("resource")
 	public SpiDevice(int controller, int chipSelect, int frequency, SpiClockMode mode, boolean lsbFirst) throws RuntimeIOException {
-		device = DeviceFactoryHelper.getNativeDeviceFactory().provisionSpiDevice(controller, chipSelect, frequency, mode, lsbFirst);
+		NativeDeviceFactoryInterface ndf = DeviceFactoryHelper.getNativeDeviceFactory();
+		device = ndf.provisionSpiDevice(controller, chipSelect, frequency, mode, lsbFirst);
+		maxBufferSize = ndf.getSpiBufferSize();
 	}
 
 	@Override
@@ -76,7 +81,12 @@ public class SpiDevice implements Closeable, SPIConstants {
 	}
 
 	public void write(byte[] txBuffer) throws RuntimeIOException {
-		device.write(txBuffer);
+		int written = 0;
+		do {
+			int to_write = Math.min(txBuffer.length - written, maxBufferSize);
+			device.write(txBuffer, written, to_write);
+			written += to_write;
+		} while (written < txBuffer.length);
 	}
 
 	public void write(byte[] txBuffer, int txOffset, int length) throws RuntimeIOException {

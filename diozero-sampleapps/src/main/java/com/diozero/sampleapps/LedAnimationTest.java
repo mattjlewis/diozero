@@ -106,6 +106,8 @@ public class LedAnimationTest {
 		} catch (CancellationException | ExecutionException | InterruptedException e) {
 			Logger.debug("Finished {}", e);
 		} finally {
+			// Required if there are non-daemon threads that will prevent the
+			// built-in clean-up routines from running
 			DeviceFactoryHelper.getNativeDeviceFactory().close();
 		}
 	}
