@@ -1,4 +1,4 @@
-package com.diozero.internal;
+package com.diozero.util;
 
 /*
  * #%L
@@ -61,7 +61,7 @@ public class DeviceFactoryHelper {
 				// Otherwise use the ServiceLoader
 				// If none found use the universal sysfs device factory
 				if (nativeDeviceFactory == null) {
-					nativeDeviceFactory = NativeDeviceFactoryInterface.getNativeDeviceFactories().findFirst()
+					nativeDeviceFactory = NativeDeviceFactoryInterface.loadInstances().findFirst()
 							.orElse(new SysFsDeviceFactory());
 				}
 

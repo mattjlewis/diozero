@@ -29,8 +29,8 @@ package com.diozero.internal.provider;
 import org.pmw.tinylog.Logger;
 
 import com.diozero.api.PinInfo;
-import com.diozero.internal.DeviceFactoryHelper;
 import com.diozero.internal.DeviceStates;
+import com.diozero.util.DeviceFactoryHelper;
 
 public abstract class AbstractDeviceFactory implements DeviceFactoryInterface {
 	private String deviceFactoryPrefix;

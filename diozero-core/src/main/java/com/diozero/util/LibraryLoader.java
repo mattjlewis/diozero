@@ -37,8 +37,6 @@ import java.util.Map;
 
 import org.pmw.tinylog.Logger;
 
-import com.diozero.internal.DeviceFactoryHelper;
-
 public class LibraryLoader {
 	private static final Map<String, Boolean> LOADED_LIBRARIES = new HashMap<>();
 	

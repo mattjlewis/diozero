@@ -34,8 +34,8 @@ import java.util.List;
 
 import com.diozero.api.Action;
 import com.diozero.api.OutputDeviceInterface;
-import com.diozero.internal.DeviceFactoryHelper;
 import com.diozero.internal.provider.GpioDeviceFactoryInterface;
+import com.diozero.util.DeviceFactoryHelper;
 import com.diozero.util.RangeUtil;
 import com.diozero.util.RuntimeIOException;
 

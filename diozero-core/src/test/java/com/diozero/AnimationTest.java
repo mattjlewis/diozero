@@ -40,7 +40,7 @@ import com.diozero.api.AnimationInstance;
 import com.diozero.api.OutputDeviceInterface;
 import com.diozero.api.easing.EasingFunctions;
 import com.diozero.api.easing.Elastic;
-import com.diozero.internal.DeviceFactoryHelper;
+import com.diozero.util.DeviceFactoryHelper;
 
 public class AnimationTest {
 	public static void main(String[] args) {

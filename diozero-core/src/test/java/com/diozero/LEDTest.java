@@ -32,11 +32,11 @@ import org.junit.Test;
 import org.pmw.tinylog.Logger;
 
 import com.diozero.devices.LED;
-import com.diozero.internal.DeviceFactoryHelper;
 import com.diozero.internal.provider.NativeDeviceFactoryInterface;
 import com.diozero.internal.provider.test.TestDeviceFactory;
 import com.diozero.internal.provider.test.TestDigitalInputDevice;
 import com.diozero.internal.provider.test.TestDigitalOutputDevice;
+import com.diozero.util.DeviceFactoryHelper;
 import com.diozero.util.RuntimeIOException;
 
 /**

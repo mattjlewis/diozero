@@ -59,9 +59,9 @@ public abstract class BaseNativeDeviceFactory extends AbstractDeviceFactory impl
 		super(NATIVE_PREFIX);
 	}
 
-	@Override
-	public BoardInfo initialiseBoardInfo() {
-		return SystemInfo.lookupBoardInfo();
+	@SuppressWarnings("static-method")
+	protected BoardInfo initialiseBoardInfo() {
+		return SystemInfo.lookupLocalBoardInfo();
 	}
 	
 	@Override

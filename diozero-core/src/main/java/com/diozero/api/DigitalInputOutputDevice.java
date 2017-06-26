@@ -29,9 +29,9 @@ package com.diozero.api;
 
 import org.pmw.tinylog.Logger;
 
-import com.diozero.internal.DeviceFactoryHelper;
 import com.diozero.internal.provider.GpioDeviceFactoryInterface;
 import com.diozero.internal.provider.GpioDigitalInputOutputDeviceInterface;
+import com.diozero.util.DeviceFactoryHelper;
 import com.diozero.util.RuntimeIOException;
 
 public class DigitalInputOutputDevice extends AbstractDigitalInputDevice {

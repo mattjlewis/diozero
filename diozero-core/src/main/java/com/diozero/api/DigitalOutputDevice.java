@@ -28,12 +28,9 @@ package com.diozero.api;
 
 import org.pmw.tinylog.Logger;
 
-import com.diozero.internal.DeviceFactoryHelper;
 import com.diozero.internal.provider.GpioDeviceFactoryInterface;
 import com.diozero.internal.provider.GpioDigitalOutputDeviceInterface;
-import com.diozero.util.DioZeroScheduler;
-import com.diozero.util.RuntimeIOException;
-import com.diozero.util.SleepUtil;
+import com.diozero.util.*;
 
 /**
  * Provides generic digital (on/off) output control with support for active high

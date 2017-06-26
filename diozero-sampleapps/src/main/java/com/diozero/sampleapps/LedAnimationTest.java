@@ -40,7 +40,7 @@ import com.diozero.api.AnimationInstance;
 import com.diozero.api.OutputDeviceInterface;
 import com.diozero.api.easing.EasingFunction;
 import com.diozero.api.easing.EasingFunctions;
-import com.diozero.internal.DeviceFactoryHelper;
+import com.diozero.util.DeviceFactoryHelper;
 
 public class LedAnimationTest {
 	public static void main(String[] args) {

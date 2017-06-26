@@ -32,8 +32,8 @@ import java.io.Closeable;
 import org.pmw.tinylog.Logger;
 
 import com.diozero.api.DigitalOutputDevice;
-import com.diozero.internal.DeviceFactoryHelper;
 import com.diozero.internal.provider.GpioDeviceFactoryInterface;
+import com.diozero.util.DeviceFactoryHelper;
 import com.diozero.util.RuntimeIOException;
 
 public class DigitalMotor implements Closeable {

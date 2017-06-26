@@ -58,9 +58,9 @@ public class PigpioJDeviceFactory extends BaseNativeDeviceFactory {
 	}
 	
 	@Override
-	public BoardInfo initialiseBoardInfo() {
-		return new RaspberryPiBoardInfoProvider().lookup("BCM2835", Integer.toHexString(pigpioImpl.getHardwareRevision()),
-				null);
+	protected BoardInfo initialiseBoardInfo() {
+		return new RaspberryPiBoardInfoProvider().lookup("BCM2835",
+				Integer.toHexString(pigpioImpl.getHardwareRevision()), null);
 	}
 
 	@Override

@@ -140,7 +140,7 @@ public class SystemInfoTest {
 	}
 	
 	private static void validateBoard(String hardware, String revision, String expectedMake, String expectedModel, int expectedMemory) {
-		BoardInfo board_info = SystemInfo.lookupBoardInfo(hardware, revision, null);
+		BoardInfo board_info = SystemInfo.lookupLocalBoardInfo(hardware, revision, null);
 		System.out.println(revision + ": " + board_info);
 		Assert.assertEquals(expectedMake, board_info.getMake());
 		Assert.assertEquals(expectedModel, board_info.getModel());

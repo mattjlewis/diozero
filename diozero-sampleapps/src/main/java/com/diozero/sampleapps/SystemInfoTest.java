@@ -34,6 +34,7 @@ import org.pmw.tinylog.Logger;
 import com.diozero.api.PinInfo;
 import com.diozero.api.PwmPinInfo;
 import com.diozero.util.BoardInfo;
+import com.diozero.util.DeviceFactoryHelper;
 import com.diozero.util.SystemInfo;
 
 public class SystemInfoTest {
@@ -43,7 +44,7 @@ public class SystemInfoTest {
 		Logger.info("Operating System version: {} {}", SystemInfo.getOperatingSystemVersion(),
 				SystemInfo.getOperatingSystemVersionId());
 
-		BoardInfo board_info = SystemInfo.lookupBoardInfo();
+		BoardInfo board_info = DeviceFactoryHelper.getNativeDeviceFactory().getBoardInfo();
 
 		Logger.info("Name: {}", board_info.getName());
 		Logger.info("Make: {}", board_info.getMake());

@@ -31,12 +31,17 @@ import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Properties;
-import java.util.ServiceLoader;
 
 import org.pmw.tinylog.Logger;
 
 import com.diozero.api.PinInfo;
 
+/**
+ * <p>Utility class for accessing information for the system the application is
+ * executing on.</p>
+ * <p>Note some boards are accessed remotely (e.g. Firmata protocol and pigpio sockets)
+ * hence this information may differ to the actual device you are controlling.</p>
+ */
 public class SystemInfo {
 	private static final String OS_RELEASE_FILE = "/etc/os-release";
 	private static final String CPUINFO_FILE = "/proc/cpuinfo";
@@ -66,7 +71,7 @@ public class SystemInfo {
 					}
 				});
 			} catch (IOException | NullPointerException | IndexOutOfBoundsException e) {
-				Logger.error(e, "Error reading {}: {}", CPUINFO_FILE, e.getMessage());
+				Logger.error(e, "Error reading '{}': {}", CPUINFO_FILE, e.getMessage());
 			}
 
 			memoryKb = null;
@@ -77,32 +82,29 @@ public class SystemInfo {
 					}
 				});
 			} catch (IOException | NullPointerException | IndexOutOfBoundsException e) {
-				Logger.error(e, "Error reading {}: {}", MEMINFO_FILE, e.getMessage());
+				Logger.error(e, "Error reading '{}': {}", MEMINFO_FILE, e.getMessage());
 			}
 			
 			initialised = true;
 		}
 	}
 	
-	public static BoardInfo lookupBoardInfo() {
+	/**
+	 * Returns information for the local device only. Note some providers work
+	 * over a remote connection - if you want information for the device you are
+	 * controlling please use:<br>
+	 * {@code DeviceFactoryHelper.getNativeDeviceFactory().getBoardInfo()}
+	 * 
+	 * @return BoardInfo instance describing the local device.
+	 */
+	public static BoardInfo lookupLocalBoardInfo() {
 		initialise();
-		return lookupBoardInfo(hardware, revision, memoryKb);
+		return lookupLocalBoardInfo(hardware, revision, memoryKb);
 	}
 	
-	public static BoardInfo lookupBoardInfo(String hardware, String revision, Integer memoryKb) {
-		BoardInfo board_info = null;
-		ServiceLoader<BoardInfoProvider> service_loader = ServiceLoader.load(BoardInfoProvider.class);
-		for (BoardInfoProvider board_info_provider : service_loader) {
-			board_info = board_info_provider.lookup(hardware, revision, memoryKb);
-			if (board_info != null) {
-				break;
-			}
-		}
-		if (board_info == null) {
-			Logger.warn("Failed to resolve board info for hardware '{}' and revision '{}' {}", hardware, revision, System.getProperty("os.name"));
-			board_info = new UnknownBoardInfo();
-		}
-		return board_info;
+	static BoardInfo lookupLocalBoardInfo(String hardware, String revision, Integer memoryKb) {
+		return BoardInfoProvider.loadInstances().findFirst().orElse(new UnknownBoardInfoProvider()).lookup(hardware, revision,
+				memoryKb);
 	}
 
 	public static String getOsReleaseProperty(String property) {
@@ -132,7 +134,16 @@ public class SystemInfo {
 	public static void main(String[] args) {
 		initialise();
 		Logger.info(osReleaseProperties);
-		Logger.info(lookupBoardInfo());
+		Logger.info(lookupLocalBoardInfo());
+	}
+	
+	public static final class UnknownBoardInfoProvider implements BoardInfoProvider {
+		@Override
+		public BoardInfo lookup(String hardware, String revision, Integer memoryKb) {
+			Logger.warn("Failed to resolve board info for hardware '{}' and revision '{}'. Local O/S: {}",
+					hardware, revision, System.getProperty("os.name"));
+			return new UnknownBoardInfo();
+		}
 	}
 	
 	public static final class UnknownBoardInfo extends BoardInfo {

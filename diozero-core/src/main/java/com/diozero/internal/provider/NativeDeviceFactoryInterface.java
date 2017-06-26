@@ -38,12 +38,9 @@ public interface NativeDeviceFactoryInterface extends GpioDeviceFactoryInterface
 		AnalogOutputDeviceFactoryInterface {
 
 	void registerDeviceFactory(DeviceFactoryInterface deviceFactory);
-	BoardInfo initialiseBoardInfo();
 	BoardInfo getBoardInfo();
 	
-	static Stream<NativeDeviceFactoryInterface> getNativeDeviceFactories() {
-		ServiceLoader<NativeDeviceFactoryInterface> service_loader = ServiceLoader
-				.load(NativeDeviceFactoryInterface.class);
-		return StreamSupport.stream(service_loader.spliterator(), false);
+	static Stream<NativeDeviceFactoryInterface> loadInstances() {
+		return StreamSupport.stream(ServiceLoader.load(NativeDeviceFactoryInterface.class).spliterator(), false);
 	}
 }

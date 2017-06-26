@@ -39,7 +39,7 @@ import com.diozero.api.easing.Sine;
 import com.diozero.devices.LedBarGraph;
 import com.diozero.devices.MCP23008;
 import com.diozero.devices.PwmLedBarGraph;
-import com.diozero.internal.DeviceFactoryHelper;
+import com.diozero.util.DeviceFactoryHelper;
 import com.diozero.util.SleepUtil;
 
 public class PwmLedBarGraphTest {

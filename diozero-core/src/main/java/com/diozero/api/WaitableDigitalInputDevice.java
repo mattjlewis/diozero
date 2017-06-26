@@ -1,9 +1,5 @@
 package com.diozero.api;
 
-import com.diozero.internal.DeviceFactoryHelper;
-import com.diozero.internal.provider.GpioDeviceFactoryInterface;
-import com.diozero.util.Event;
-
 /*
  * #%L
  * Device I/O Zero - Core
@@ -29,6 +25,11 @@ import com.diozero.util.Event;
  * THE SOFTWARE.
  * #L%
  */
+
+
+import com.diozero.internal.provider.GpioDeviceFactoryInterface;
+import com.diozero.util.DeviceFactoryHelper;
+import com.diozero.util.Event;
 
 import com.diozero.util.RuntimeIOException;
 

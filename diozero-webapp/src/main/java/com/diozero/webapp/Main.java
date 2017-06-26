@@ -1,13 +1,5 @@
 package com.diozero.webapp;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import com.diozero.api.*;
-import com.diozero.internal.DeviceFactoryHelper;
-import com.diozero.util.BoardInfo;
-import com.diozero.util.RuntimeIOException;
-
 /*
  * #%L
  * Device I/O Zero - Web application
@@ -33,6 +25,16 @@ import com.diozero.util.RuntimeIOException;
  * THE SOFTWARE.
  * #L%
  */
+
+
+import java.util.HashMap;
+import java.util.Map;
+
+import com.diozero.api.*;
+import com.diozero.util.BoardInfo;
+import com.diozero.util.DeviceFactoryHelper;
+import com.diozero.util.RuntimeIOException;
+
 import spark.*;
 import spark.template.freemarker.FreeMarkerEngine;
 
