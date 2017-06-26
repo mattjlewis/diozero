@@ -1,4 +1,4 @@
-package com.diozero.sandpit;
+package com.diozero.devices;
 
 import java.awt.Graphics2D;
 
@@ -58,6 +58,13 @@ import com.diozero.api.DigitalOutputDevice;
  * </ul>
  */
 public class SSD1331 extends SsdOled {
+	private static final int RED_BITS = 5;
+	private static final int GREEN_BITS = 6;
+	private static final int BLUE_BITS = 5;
+	public static final byte MAX_RED = (byte) (Math.pow(2, RED_BITS) - 1);
+	public static final byte MAX_GREEN = (byte) (Math.pow(2, GREEN_BITS) - 1);
+	public static final byte MAX_BLUE = (byte) (Math.pow(2, BLUE_BITS) - 1);
+	
 	private static final int WIDTH = 96;
 	private static final int HEIGHT = 64;
 	
@@ -92,7 +99,7 @@ public class SSD1331 extends SsdOled {
 	 * Each pixel has 16-bit data.
 	 * Three sub-pixels for colour A, B and C have 5 bits, 6 bits and 5 bits respectively.
 	 */
-	private static short getColour(byte red, byte green, byte blue) {
+	private static short createColour565(byte red, byte green, byte blue) {
 		// 65k format 1 in normal order (ABC = RGB)
 		// (2 bytes): 1st byte C4C3C2C1C0B5B4B3, 2nd byte B2B1B0A4A3A2A1A0
 		//                     B4B3B2B1B0G5G4G3           G2G1G0R4R3R2R1R0
@@ -204,7 +211,7 @@ public class SSD1331 extends SsdOled {
 		// 65k format 1 in normal order (ABC = RGB)
 		// (2 bytes): 1st byte C4C3C2C1C0B5B4B3, 2nd byte B2B1B0A4A3A2A1A0
 		int index = 2 * (x + y*width);
-		short colour = getColour(red, green, blue);
+		short colour = createColour565(red, green, blue);
 		// (2 bytes): 1st byte C4C3C2C1C0B5B4B3, 2nd byte B2B1B0A4A3A2A1A0
 		//                     B4B3B2B1B0G5G4G3           G2G1G0R4R3R2R1R0
 		// Assume little endian, i.e. high byte is transmitted first
@@ -234,6 +241,7 @@ public class SSD1331 extends SsdOled {
 	 * @param invert
 	 *            Invert state
 	 */
+	@Override
 	public void invertDisplay(boolean invert) {
 		command(invert ? DISPLAY_MODE_INVERSE : DISPLAY_MODE_NORMAL);
 	}

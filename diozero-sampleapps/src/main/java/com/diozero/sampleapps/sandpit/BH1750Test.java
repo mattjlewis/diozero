@@ -28,9 +28,9 @@ package com.diozero.sampleapps.sandpit;
 
 import org.pmw.tinylog.Logger;
 
+import com.diozero.devices.BH1750;
 import com.diozero.devices.TSL2561;
 import com.diozero.devices.TSL2561.TSL2561Package;
-import com.diozero.sandpit.BH1750;
 import com.diozero.util.SleepUtil;
 
 public class BH1750Test {

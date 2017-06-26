@@ -39,9 +39,9 @@ import org.imgscalr.Scalr;
 import org.pmw.tinylog.Logger;
 
 import com.diozero.api.DigitalOutputDevice;
+import com.diozero.devices.SSD1331;
+import com.diozero.devices.SsdOled;
 import com.diozero.sampleapps.gol.GameOfLife;
-import com.diozero.sandpit.SSD1331;
-import com.diozero.sandpit.SsdOled;
 import com.diozero.util.DeviceFactoryHelper;
 import com.diozero.util.SleepUtil;
 
@@ -62,10 +62,6 @@ import com.diozero.util.SleepUtil;
  * </ul>
  */
 public class SSD1331Test {
-	private static final byte MAX_RED = (byte) (Math.pow(2, 5) - 1);
-	private static final byte MAX_GREEN = (byte) (Math.pow(2, 6) - 1);
-	private static final byte MAX_BLUE = (byte) (Math.pow(2, 5) - 1);
-
 	public static void main(String[] args) {
 		try (DigitalOutputDevice dc_pin = new DigitalOutputDevice(22);
 				DigitalOutputDevice reset_pin = new DigitalOutputDevice(27);
@@ -161,7 +157,7 @@ public class SSD1331Test {
 		for (int i=0; i<gol.getWidth(); i++) {
 			for (int j=0; j<gol.getHeight(); j++) {
 				if (gol.isAlive(i, j)) {
-					oled.setPixel(i, j, MAX_RED, MAX_GREEN, MAX_BLUE, false);
+					oled.setPixel(i, j, SSD1331.MAX_RED, SSD1331.MAX_GREEN, SSD1331.MAX_BLUE, false);
 				} else {
 					oled.setPixel(i, j, (byte) 0, (byte) 0, (byte) 0, false);
 				}

@@ -30,7 +30,6 @@ import java.awt.image.BufferedImage;
 import java.awt.image.Raster;
 
 import com.diozero.api.DigitalOutputDevice;
-import com.diozero.sandpit.SsdOled;
 
 /**
  * <p>128x64 Dot Matrix OLED/PLED Segment/Common Driver (128 segments and 64 commons).<br>
@@ -291,6 +290,7 @@ public class SSD1306 extends SsdOled {
 	 * @param invert
 	 *            Invert state
 	 */
+	@Override
 	public void invertDisplay(boolean invert) {
 		command(invert ? INVERSE_DISPLAY : NORMAL_DISPLAY);
 	}

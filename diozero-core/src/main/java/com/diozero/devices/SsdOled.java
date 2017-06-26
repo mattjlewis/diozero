@@ -1,4 +1,4 @@
-package com.diozero.sandpit;
+package com.diozero.devices;
 
 /*-
  * #%L
@@ -125,4 +125,6 @@ public abstract class SsdOled implements Closeable {
 	public int getNativeImageType() {
 		return imageType;
 	}
+
+	public abstract void invertDisplay(boolean invert);
 }
