@@ -2,7 +2,12 @@ package com.diozero.sampleapps;
 
 /*-
  * #%L
- * Device I/O Zero - Sample applications
+ * Organisation: mattjlewis
+ * Project:      Device I/O Zero - Sample applications
+ * Filename:     PiconZeroTest.java  
+ * 
+ * This file is part of the diozero project. More information about this project
+ * can be found at http://www.diozero.com/
  * %%
  * Copyright (C) 2016 - 2017 mattjlewis
  * %%
@@ -25,6 +30,7 @@ package com.diozero.sampleapps;
  * THE SOFTWARE.
  * #L%
  */
+
 
 import com.diozero.devices.PiconZero;
 import com.diozero.devices.PiconZero.OutputConfig;
