@@ -1,11 +1,5 @@
 package com.diozero.internal.provider;
 
-import org.pmw.tinylog.Logger;
-
-import com.diozero.api.DeviceAlreadyOpenedException;
-import com.diozero.api.DeviceMode;
-import com.diozero.api.PinInfo;
-
 /*
  * #%L
  * Device I/O Zero - Core
@@ -32,6 +26,12 @@ import com.diozero.api.PinInfo;
  * #L%
  */
 
+
+import org.pmw.tinylog.Logger;
+
+import com.diozero.api.DeviceAlreadyOpenedException;
+import com.diozero.api.DeviceMode;
+import com.diozero.api.PinInfo;
 import com.diozero.util.RuntimeIOException;
 
 public interface PwmOutputDeviceFactoryInterface extends DeviceFactoryInterface {

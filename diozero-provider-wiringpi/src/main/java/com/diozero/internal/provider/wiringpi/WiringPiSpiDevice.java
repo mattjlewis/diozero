@@ -25,6 +25,8 @@ package com.diozero.internal.provider.wiringpi;
  * THE SOFTWARE.
  * #L%
  */
+
+
 import org.pmw.tinylog.Logger;
 
 import com.diozero.api.SpiClockMode;

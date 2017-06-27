@@ -1,7 +1,5 @@
 package com.diozero.devices;
 
-import java.nio.ByteOrder;
-
 /*
  * #%L
  * Device I/O Zero - Core
@@ -27,6 +25,9 @@ import java.nio.ByteOrder;
  * THE SOFTWARE.
  * #L%
  */
+
+
+import java.nio.ByteOrder;
 
 import org.pmw.tinylog.Logger;
 

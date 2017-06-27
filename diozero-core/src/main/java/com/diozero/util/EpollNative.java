@@ -1,11 +1,5 @@
 package com.diozero.util;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import org.pmw.tinylog.Logger;
-
 /*
  * #%L
  * Device I/O Zero - Core
@@ -32,6 +26,12 @@ import org.pmw.tinylog.Logger;
  * #L%
  */
 
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import org.pmw.tinylog.Logger;
 
 public class EpollNative {
 	static {

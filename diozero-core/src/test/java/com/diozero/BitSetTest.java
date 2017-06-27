@@ -1,8 +1,5 @@
 package com.diozero;
 
-import java.nio.ByteBuffer;
-import java.util.concurrent.atomic.AtomicInteger;
-
 /*
  * #%L
  * Device I/O Zero - Core
@@ -29,6 +26,9 @@ import java.util.concurrent.atomic.AtomicInteger;
  * #L%
  */
 
+
+import java.nio.ByteBuffer;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Assert;
 import org.junit.Test;

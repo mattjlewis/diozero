@@ -1,7 +1,5 @@
 package com.diozero.util;
 
-import java.util.Map;
-
 /*
  * #%L
  * Device I/O Zero - Core
@@ -29,6 +27,7 @@ import java.util.Map;
  */
 
 
+import java.util.Map;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;

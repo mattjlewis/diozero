@@ -1,12 +1,5 @@
 package com.diozero.devices;
 
-import java.io.Closeable;
-
-import com.diozero.api.I2CDevice;
-import com.diozero.api.LuminositySensorInterface;
-import com.diozero.util.RuntimeIOException;
-import com.diozero.util.SleepUtil;
-
 /*
  * #%L
  * Device I/O Zero - Core
@@ -33,6 +26,13 @@ import com.diozero.util.SleepUtil;
  * #L%
  */
 
+
+import java.io.Closeable;
+
+import com.diozero.api.I2CDevice;
+import com.diozero.api.LuminositySensorInterface;
+import com.diozero.util.RuntimeIOException;
+import com.diozero.util.SleepUtil;
 
 /**
  * <a href="http://www.mouser.com/ds/2/348/bh1750fvi-e-186247.pdf">Datasheet</a>

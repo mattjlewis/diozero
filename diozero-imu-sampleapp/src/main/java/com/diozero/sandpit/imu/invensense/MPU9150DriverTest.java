@@ -31,7 +31,9 @@ import org.apache.commons.math3.geometry.euclidean.threed.*;
 import org.pmw.tinylog.Logger;
 
 import com.diozero.api.I2CConstants;
-import com.diozero.api.imu.*;
+import com.diozero.api.imu.ImuData;
+import com.diozero.api.imu.OrientationEvent;
+import com.diozero.api.imu.TapEvent;
 import com.diozero.imu.drivers.invensense.*;
 import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;
@@ -260,7 +262,7 @@ public class MPU9150DriverTest {
 		Logger.debug("Time between FIFO reads = {}ms", Long.valueOf(System.currentTimeMillis() - lastFifoRead));
 		lastFifoRead = fifo_data.getTimestamp();
 		
-		ImuData imu_data = ImuDataFactory.newInstance(fifo_data, mpu.mpu_get_compass_reg(),
+		ImuData imu_data = MPU9150DataFactory.newInstance(fifo_data, mpu.mpu_get_compass_reg(),
 				gyroFsr.getScale(), accelFsr.getScale(), AK8975Constants.COMPASS_SCALE,
 				MPU9150Constants.QUATERNION_SCALE, mpu.mpu_get_temperature());
 		

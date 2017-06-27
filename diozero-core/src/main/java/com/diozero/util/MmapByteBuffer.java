@@ -2,7 +2,7 @@ package com.diozero.util;
 
 /*
  * #%L
- * Device I/O Zero - Java Native provider for the Raspberry Pi
+ * Device I/O Zero - Core
  * %%
  * Copyright (C) 2016 mattjlewis
  * %%

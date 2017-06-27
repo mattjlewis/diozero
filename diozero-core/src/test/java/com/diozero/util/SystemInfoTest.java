@@ -1,14 +1,5 @@
 package com.diozero.util;
 
-import org.junit.Assert;
-import org.junit.Test;
-
-import com.diozero.internal.board.beaglebone.BeagleBoneBoardInfoProvider;
-import com.diozero.internal.board.chip.CHIPBoardInfoProvider;
-import com.diozero.internal.board.odroid.OdroidBoardInfoProvider;
-import com.diozero.internal.board.raspberrypi.RaspberryPiBoardInfoProvider;
-import com.diozero.internal.board.tinkerboard.TinkerBoardBoardInfoProvider;
-
 /*
  * #%L
  * Device I/O Zero - Core
@@ -34,6 +25,16 @@ import com.diozero.internal.board.tinkerboard.TinkerBoardBoardInfoProvider;
  * THE SOFTWARE.
  * #L%
  */
+
+
+import org.junit.Assert;
+import org.junit.Test;
+
+import com.diozero.internal.board.beaglebone.BeagleBoneBoardInfoProvider;
+import com.diozero.internal.board.chip.CHIPBoardInfoProvider;
+import com.diozero.internal.board.odroid.OdroidBoardInfoProvider;
+import com.diozero.internal.board.raspberrypi.RaspberryPiBoardInfoProvider;
+import com.diozero.internal.board.tinkerboard.TinkerBoardBoardInfoProvider;
 
 @SuppressWarnings("static-method")
 public class SystemInfoTest {

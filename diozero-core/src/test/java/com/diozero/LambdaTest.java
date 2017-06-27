@@ -1,8 +1,5 @@
 package com.diozero;
 
-import java.util.Random;
-import java.util.concurrent.*;
-
 /*
  * #%L
  * Device I/O Zero - Core
@@ -29,6 +26,9 @@ import java.util.concurrent.*;
  * #L%
  */
 
+
+import java.util.Random;
+import java.util.concurrent.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 

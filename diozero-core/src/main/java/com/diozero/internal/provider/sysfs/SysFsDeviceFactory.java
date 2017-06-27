@@ -39,6 +39,7 @@ import org.pmw.tinylog.Logger;
 import com.diozero.api.*;
 import com.diozero.internal.SoftwarePwmOutputDevice;
 import com.diozero.internal.board.odroid.OdroidBoardInfoProvider;
+import com.diozero.internal.board.odroid.OdroidC2SysFsPwmOutputDevice;
 import com.diozero.internal.provider.*;
 import com.diozero.util.RuntimeIOException;
 

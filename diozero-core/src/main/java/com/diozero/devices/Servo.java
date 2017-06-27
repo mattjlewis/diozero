@@ -1,9 +1,5 @@
 package com.diozero.devices;
 
-import java.io.Closeable;
-import java.util.Arrays;
-import java.util.Collection;
-
 /*
  * #%L
  * Device I/O Zero - Core
@@ -29,6 +25,11 @@ import java.util.Collection;
  * THE SOFTWARE.
  * #L%
  */
+
+
+import java.io.Closeable;
+import java.util.Arrays;
+import java.util.Collection;
 
 import org.pmw.tinylog.Logger;
 

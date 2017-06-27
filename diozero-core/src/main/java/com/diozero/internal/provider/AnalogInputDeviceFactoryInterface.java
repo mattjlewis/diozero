@@ -1,9 +1,5 @@
 package com.diozero.internal.provider;
 
-import com.diozero.api.DeviceAlreadyOpenedException;
-import com.diozero.api.DeviceMode;
-import com.diozero.api.PinInfo;
-
 /*
  * #%L
  * Device I/O Zero - Core
@@ -30,6 +26,10 @@ import com.diozero.api.PinInfo;
  * #L%
  */
 
+
+import com.diozero.api.DeviceAlreadyOpenedException;
+import com.diozero.api.DeviceMode;
+import com.diozero.api.PinInfo;
 import com.diozero.util.RuntimeIOException;
 
 public interface AnalogInputDeviceFactoryInterface extends DeviceFactoryInterface {

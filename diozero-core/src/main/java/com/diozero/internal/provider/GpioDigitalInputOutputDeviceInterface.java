@@ -1,9 +1,5 @@
 package com.diozero.internal.provider;
 
-import com.diozero.api.DeviceMode;
-import com.diozero.api.DigitalInputEvent;
-import com.diozero.api.InputEventListener;
-
 /*
  * #%L
  * Device I/O Zero - Core
@@ -29,6 +25,11 @@ import com.diozero.api.InputEventListener;
  * THE SOFTWARE.
  * #L%
  */
+
+
+import com.diozero.api.DeviceMode;
+import com.diozero.api.DigitalInputEvent;
+import com.diozero.api.InputEventListener;
 
 public interface GpioDigitalInputOutputDeviceInterface
 extends GpioDigitalOutputDeviceInterface {

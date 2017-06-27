@@ -1,10 +1,5 @@
 package com.diozero.sampleapps.mfrc522;
 
-import org.pmw.tinylog.Logger;
-
-import com.diozero.devices.MFRC522;
-import com.diozero.util.Hex;
-
 /*
  * #%L
  * Device I/O Zero - Core
@@ -32,6 +27,10 @@ import com.diozero.util.Hex;
  */
 
 
+import org.pmw.tinylog.Logger;
+
+import com.diozero.devices.MFRC522;
+import com.diozero.util.Hex;
 import com.diozero.util.SleepUtil;
 
 /**

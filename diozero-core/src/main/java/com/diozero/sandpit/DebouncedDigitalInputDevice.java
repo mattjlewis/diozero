@@ -1,9 +1,5 @@
 package com.diozero.sandpit;
 
-import com.diozero.api.GpioEventTrigger;
-import com.diozero.api.GpioPullUpDown;
-import com.diozero.api.WaitableDigitalInputDevice;
-
 /*
  * #%L
  * Device I/O Zero - Core
@@ -30,6 +26,10 @@ import com.diozero.api.WaitableDigitalInputDevice;
  * #L%
  */
 
+
+import com.diozero.api.GpioEventTrigger;
+import com.diozero.api.GpioPullUpDown;
+import com.diozero.api.WaitableDigitalInputDevice;
 import com.diozero.util.RuntimeIOException;
 
 /**

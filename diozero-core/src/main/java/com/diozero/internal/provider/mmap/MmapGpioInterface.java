@@ -1,9 +1,5 @@
 package com.diozero.internal.provider.mmap;
 
-import java.io.Closeable;
-
-import com.diozero.api.DeviceMode;
-
 /*
  * #%L
  * Device I/O Zero - Java Native provider for the Raspberry Pi
@@ -31,6 +27,9 @@ import com.diozero.api.DeviceMode;
  */
 
 
+import java.io.Closeable;
+
+import com.diozero.api.DeviceMode;
 import com.diozero.api.GpioPullUpDown;
 
 public interface MmapGpioInterface extends Closeable {

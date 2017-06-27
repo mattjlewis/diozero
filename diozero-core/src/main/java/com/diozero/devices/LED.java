@@ -1,7 +1,5 @@
 package com.diozero.devices;
 
-import com.diozero.api.Action;
-
 /*
  * #%L
  * Device I/O Zero - Core
@@ -28,6 +26,8 @@ import com.diozero.api.Action;
  * #L%
  */
 
+
+import com.diozero.api.Action;
 import com.diozero.api.DigitalOutputDevice;
 import com.diozero.internal.provider.GpioDeviceFactoryInterface;
 import com.diozero.util.RuntimeIOException;

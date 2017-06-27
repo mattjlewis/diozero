@@ -25,6 +25,8 @@ package com.diozero;
  * THE SOFTWARE.
  * #L%
  */
+
+
 import org.junit.*;
 import org.pmw.tinylog.Logger;
 

@@ -1,8 +1,6 @@
 package com.diozero.devices;
 
-import java.awt.Graphics2D;
-
-/*-
+/*
  * #%L
  * Device I/O Zero - Core
  * %%
@@ -27,6 +25,9 @@ import java.awt.Graphics2D;
  * THE SOFTWARE.
  * #L%
  */
+
+
+import java.awt.Graphics2D;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferUShort;

@@ -1,8 +1,5 @@
 package com.diozero.internal.provider.mcp23xxx;
 
-import com.diozero.api.PinInfo;
-import com.diozero.util.BoardPinInfo;
-
 /*
  * #%L
  * Device I/O Zero - Core
@@ -29,6 +26,9 @@ import com.diozero.util.BoardPinInfo;
  * #L%
  */
 
+
+import com.diozero.api.PinInfo;
+import com.diozero.util.BoardPinInfo;
 
 public abstract class MCP23x08 extends MCP23xxx {
 	private static final int NUM_PORTS = 1;

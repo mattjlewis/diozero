@@ -1,7 +1,5 @@
 package com.diozero.sampleapps;
 
-import java.util.Map;
-
 /*
  * #%L
  * Device I/O Zero - Core
@@ -28,6 +26,8 @@ import java.util.Map;
  * #L%
  */
 
+
+import java.util.Map;
 
 import org.pmw.tinylog.Logger;
 

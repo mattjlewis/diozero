@@ -25,6 +25,8 @@ package com.diozero.devices;
  * THE SOFTWARE.
  * #L%
  */
+
+
 import com.diozero.api.SPIConstants;
 import com.diozero.api.SpiClockMode;
 import com.diozero.api.SpiDevice;

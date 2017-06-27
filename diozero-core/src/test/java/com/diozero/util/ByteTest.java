@@ -4,7 +4,7 @@ package com.diozero.util;
  * #%L
  * Device I/O Zero - Core
  * %%
- * Copyright (C) 2016 - 2017 mattjlewis
+ * Copyright (C) 2016 diozero
  * %%
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,7 +27,6 @@ package com.diozero.util;
  */
 
 
-import java.io.IOException;
 import java.util.Random;
 
 import org.junit.Assert;
@@ -36,7 +35,7 @@ import org.junit.Test;
 @SuppressWarnings({ "static-method", "boxing" })
 public class ByteTest {
 	@Test
-	public void test() throws IOException {
+	public void test() {
 		byte b = -125;
 		//byte b = (byte) 0b11110000;
 		int i = b;

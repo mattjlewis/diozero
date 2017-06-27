@@ -1,7 +1,5 @@
 package com.diozero.internal.provider.pigpioj;
 
-import org.pmw.tinylog.Logger;
-
 /*
  * #%L
  * Device I/O Zero - pigpioj provider
@@ -27,6 +25,9 @@ import org.pmw.tinylog.Logger;
  * THE SOFTWARE.
  * #L%
  */
+
+
+import org.pmw.tinylog.Logger;
 
 import com.diozero.api.*;
 import com.diozero.internal.board.raspberrypi.RaspberryPiBoardInfoProvider;

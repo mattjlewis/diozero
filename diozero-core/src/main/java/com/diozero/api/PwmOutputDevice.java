@@ -1,7 +1,5 @@
 package com.diozero.api;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
 /*
  * #%L
  * Device I/O Zero - Core
@@ -27,6 +25,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * THE SOFTWARE.
  * #L%
  */
+
+
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.pmw.tinylog.Logger;
 

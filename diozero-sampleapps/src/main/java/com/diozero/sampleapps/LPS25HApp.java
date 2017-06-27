@@ -1,7 +1,5 @@
 package com.diozero.sampleapps;
 
-import com.diozero.devices.LPS25H;
-
 /*
  * #%L
  * Device I/O Zero - Core
@@ -29,6 +27,7 @@ import com.diozero.devices.LPS25H;
  */
 
 
+import com.diozero.devices.LPS25H;
 import com.diozero.util.SleepUtil;
 
 /**

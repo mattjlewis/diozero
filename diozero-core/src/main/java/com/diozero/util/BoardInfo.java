@@ -1,16 +1,5 @@
 package com.diozero.util;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import org.pmw.tinylog.Logger;
-
-import com.diozero.internal.provider.mmap.MmapGpioInterface;
-
 /*
  * #%L
  * Device I/O Zero - Core
@@ -36,6 +25,18 @@ import com.diozero.internal.provider.mmap.MmapGpioInterface;
  * THE SOFTWARE.
  * #L%
  */
+
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import org.pmw.tinylog.Logger;
+
+import com.diozero.internal.provider.mmap.MmapGpioInterface;
 
 @SuppressWarnings("static-method")
 public class BoardInfo extends BoardPinInfo {

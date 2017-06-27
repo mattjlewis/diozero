@@ -1,9 +1,5 @@
 package com.diozero.util;
 
-import java.util.concurrent.TimeUnit;
-
-import org.pmw.tinylog.Logger;
-
 /*
  * #%L
  * Device I/O Zero - Core
@@ -30,6 +26,10 @@ import org.pmw.tinylog.Logger;
  * #L%
  */
 
+
+import java.util.concurrent.TimeUnit;
+
+import org.pmw.tinylog.Logger;
 
 public class SleepUtil {
 	static {

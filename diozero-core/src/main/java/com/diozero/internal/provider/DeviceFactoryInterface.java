@@ -1,11 +1,5 @@
 package com.diozero.internal.provider;
 
-import java.io.Closeable;
-
-import com.diozero.api.PinInfo;
-import com.diozero.util.BoardPinInfo;
-import com.diozero.util.RuntimeIOException;
-
 /*
  * #%L
  * Device I/O Zero - Core
@@ -32,6 +26,12 @@ import com.diozero.util.RuntimeIOException;
  * #L%
  */
 
+
+import java.io.Closeable;
+
+import com.diozero.api.PinInfo;
+import com.diozero.util.BoardPinInfo;
+import com.diozero.util.RuntimeIOException;
 
 public interface DeviceFactoryInterface extends Closeable {
 	String getName();

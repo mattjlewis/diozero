@@ -1,7 +1,5 @@
 package com.diozero.api;
 
-import java.util.Arrays;
-
 /*
  * #%L
  * Device I/O Zero - Core
@@ -29,6 +27,7 @@ import java.util.Arrays;
  */
 
 
+import java.util.Arrays;
 import java.util.Collection;
 
 public class OutputDeviceCollection implements OutputDeviceInterface {

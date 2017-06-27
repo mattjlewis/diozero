@@ -1,9 +1,5 @@
 package com.diozero.devices;
 
-import java.io.Closeable;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-
 /*
  * #%L
  * Device I/O Zero - Core
@@ -29,6 +25,12 @@ import java.nio.ByteOrder;
  * THE SOFTWARE.
  * #L%
  */
+
+
+import java.io.Closeable;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+
 import com.diozero.api.*;
 import com.diozero.util.RuntimeIOException;
 

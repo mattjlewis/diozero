@@ -1,7 +1,5 @@
 package com.diozero.api.imu;
 
-import java.util.function.Consumer;
-
 /*
  * #%L
  * Device I/O Zero - Core
@@ -28,6 +26,8 @@ import java.util.function.Consumer;
  * #L%
  */
 
+
+import java.util.function.Consumer;
 
 @FunctionalInterface
 public interface TapListener extends Consumer<TapEvent> {

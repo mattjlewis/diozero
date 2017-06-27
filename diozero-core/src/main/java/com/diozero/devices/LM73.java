@@ -1,9 +1,5 @@
 package com.diozero.devices;
 
-import java.io.Closeable;
-
-import org.pmw.tinylog.Logger;
-
 /*
  * #%L
  * Device I/O Zero - Core
@@ -30,6 +26,10 @@ import org.pmw.tinylog.Logger;
  * #L%
  */
 
+
+import java.io.Closeable;
+
+import org.pmw.tinylog.Logger;
 
 import com.diozero.api.I2CDevice;
 import com.diozero.api.ThermometerInterface;

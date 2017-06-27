@@ -331,7 +331,7 @@ public class MPU9150DriverMqttPublisher implements MqttConstants {
 		Logger.debug("Time between FIFO reads = {}ms", Long.valueOf(System.currentTimeMillis() - lastFifoRead));
 		lastFifoRead = fifo_data.getTimestamp();
 		
-		ImuData imu_data = ImuDataFactory.newInstance(fifo_data, mpu.mpu_get_compass_reg(),
+		ImuData imu_data = MPU9150DataFactory.newInstance(fifo_data, mpu.mpu_get_compass_reg(),
 				gyroFsr.getScale(), accelFsr.getScale(), AK8975Constants.COMPASS_SCALE,
 				MPU9150Constants.QUATERNION_SCALE, mpu.mpu_get_temperature());
 		

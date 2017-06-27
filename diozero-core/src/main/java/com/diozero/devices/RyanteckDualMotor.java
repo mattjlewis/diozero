@@ -1,8 +1,5 @@
 package com.diozero.devices;
 
-import com.diozero.api.motor.DualMotor;
-import com.diozero.api.motor.PwmMotor;
-
 /*
  * #%L
  * Device I/O Zero - Core
@@ -29,6 +26,9 @@ import com.diozero.api.motor.PwmMotor;
  * #L%
  */
 
+
+import com.diozero.api.motor.DualMotor;
+import com.diozero.api.motor.PwmMotor;
 import com.diozero.util.RuntimeIOException;
 
 /**

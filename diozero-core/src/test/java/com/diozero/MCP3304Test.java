@@ -1,7 +1,5 @@
 package com.diozero;
 
-import com.diozero.devices.McpAdc;
-
 /*
  * #%L
  * Device I/O Zero - Core
@@ -27,6 +25,9 @@ import com.diozero.devices.McpAdc;
  * THE SOFTWARE.
  * #L%
  */
+
+
+import com.diozero.devices.McpAdc;
 
 /**
  * MCP3304 test using the test device factory
