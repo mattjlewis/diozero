@@ -200,7 +200,7 @@ public class SSD1331Test {
 			final Point target_corner = corners[random.nextInt(corners.length)];
 			point.x += (target_corner.x - point.x) / 2;
 			point.y += (target_corner.y - point.y) / 2;
-			oled.setPixel(point.x, point.y, MAX_RED, (byte) 0, (byte) 0, true);
+			oled.setPixel(point.x, point.y, SSD1331.MAX_RED, (byte) 0, (byte) 0, true);
 			//SleepUtil.sleepSeconds(0.005);
 		}
 	}
