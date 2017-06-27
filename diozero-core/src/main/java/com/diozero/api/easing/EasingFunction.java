@@ -2,7 +2,12 @@ package com.diozero.api.easing;
 
 /*
  * #%L
- * Device I/O Zero - Core
+ * Organisation: mattjlewis
+ * Project:      Device I/O Zero - Core
+ * Filename:     EasingFunction.java  
+ * 
+ * This file is part of the diozero project. More information about this project
+ * can be found at http://www.diozero.com/
  * %%
  * Copyright (C) 2016 - 2017 mattjlewis
  * %%
@@ -32,7 +37,7 @@ package com.diozero.api.easing;
  * See <a href="http://easings.net/">easings.net</a> for examples. See also
  * <a href=
  * "http://upshots.org/actionscript/jsas-understanding-easing">Understanding
- * Easing (Explaining Penner’s equations)</a>.
+ * Easing (Explaining Penner?s equations)</a>.
  * </p>
  * <p>
  * Implemented as a functional interface so that implementations can use method
@@ -45,7 +50,7 @@ public interface EasingFunction {
 	/**
 	 * @param t
 	 *            (time) is the current time (or position) of the tween. This
-	 *            can be seconds or frames, steps, seconds, ms, whatever – as
+	 *            can be seconds or frames, steps, seconds, ms, whatever ? as
 	 *            long as the unit is the same as is used for the total time
 	 *            [3].
 	 * @param b

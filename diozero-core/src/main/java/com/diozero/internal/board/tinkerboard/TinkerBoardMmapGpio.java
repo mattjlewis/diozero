@@ -2,7 +2,12 @@ package com.diozero.internal.board.tinkerboard;
 
 /*
  * #%L
- * Device I/O Zero - high performance memory map GPIO control
+ * Organisation: mattjlewis
+ * Project:      Device I/O Zero - Core
+ * Filename:     TinkerBoardMmapGpio.java  
+ * 
+ * This file is part of the diozero project. More information about this project
+ * can be found at http://www.diozero.com/
  * %%
  * Copyright (C) 2016 - 2017 mattjlewis
  * %%

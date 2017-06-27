@@ -1,8 +1,8 @@
 <#--
  #%L
  Organisation: mattjlewis
- Project:      Device I/O Zero - Web application
- Filename:     gpio.ftl  
+ Project:      Device I/O Zero
+ Filename:     descriptionTemplate.ftl  
  
  This file is part of the diozero project. More information about this project
  can be found at http://www.diozero.com/
@@ -28,20 +28,10 @@
  THE SOFTWARE.
  #L%
 -->
-<#import "masterTemplate.ftl" as layout />
+Organisation: ${organizationName}
+Project:      ${projectName}
+Filename:     ${file.name}  
 
-<@layout.masterTemplate title="GPIO">
-<#if output??>
-	<#assign pin = boardInfo.getByGpioNumber(output.gpio)>
-<h2>GPIO #${output.gpio} (${pin.name})</h2>
-<p>On? ${output.isOn()?c}</p>
-<p>Turn <#if output.isOn()><a href="/gpio/${output.gpio}/off">off</a><#else><a href="/gpio/${output.gpio}/on">on</a></#if>. <a href="/gpio/${output.gpio}/toggle">Toggle</a></p>
-<p>Supported modes:</p>
-<ul>
-	<#list pin.modes as mode><li>${mode}</li></#list>
-</ul>
-<#else>
-<h2>Error - GPIO not found</h2>
-</#if>
+This file is part of the diozero project. More information about this project
+can be found at http://www.diozero.com/
 
-</@layout.masterTemplate>

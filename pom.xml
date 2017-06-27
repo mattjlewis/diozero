@@ -515,6 +515,16 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>license-maven-plugin</artifactId>
+				<configuration>
+					<licenseName>mit</licenseName>
+					<canUpdateCopyright>true</canUpdateCopyright>
+					<canUpdateDescription>true</canUpdateDescription>
+					<descriptionTemplate>src/licence/descriptionTemplate.ftl</descriptionTemplate>
+					<emptyLineAfterHeader>true</emptyLineAfterHeader>
+					<roots>
+						<root>src</root>
+					</roots>
+				</configuration>
 				<executions>
 					<execution>
 						<id>download-licenses</id>
@@ -535,9 +545,6 @@
 						</goals>
 					</execution>
 				</executions>
-				<configuration>
-					<licenseName>mit</licenseName>
-				</configuration>
 			</plugin>
 		</plugins>
 	</build>

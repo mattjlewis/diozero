@@ -2,7 +2,12 @@ package com.diozero.devices;
 
 /*
  * #%L
- * Device I/O Zero - Core
+ * Organisation: mattjlewis
+ * Project:      Device I/O Zero - Core
+ * Filename:     SSD1306.java  
+ * 
+ * This file is part of the diozero project. More information about this project
+ * can be found at http://www.diozero.com/
  * %%
  * Copyright (C) 2016 - 2017 mattjlewis
  * %%
@@ -120,7 +125,7 @@ public class SSD1306 extends SsdOled {
 	private static final byte SET_SEGMENT_REMAP_ON = (byte) 0xA1;
 	// Set MUX ratio to N+1 MUX. From 16MUX to 64MUX, RESET=111111b (i.e. 63d, 64MUX)
 	private static final byte SET_MULTIPLEX_RATIO = (byte) 0xA8;
-	// Normal mode. Scan from COM0 to COM[N –1] (Default)
+	// Normal mode. Scan from COM0 to COM[N ?1] (Default)
 	private static final byte COM_OUTPUT_SCAN_DIR_NORMAL = (byte) 0xC0;
 	// Remapped mode. Scan from COM[N-1] to COM0 (vertically flipped)
 	private static final byte COM_OUTPUT_SCAN_DIR_REMAPPED = (byte) 0xC8;

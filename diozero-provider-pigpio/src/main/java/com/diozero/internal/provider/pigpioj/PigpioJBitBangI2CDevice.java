@@ -2,7 +2,12 @@ package com.diozero.internal.provider.pigpioj;
 
 /*
  * #%L
- * Device I/O Zero - pigpioj provider
+ * Organisation: mattjlewis
+ * Project:      Device I/O Zero - pigpioj provider
+ * Filename:     PigpioJBitBangI2CDevice.java  
+ * 
+ * This file is part of the diozero project. More information about this project
+ * can be found at http://www.diozero.com/
  * %%
  * Copyright (C) 2016 - 2017 mattjlewis
  * %%

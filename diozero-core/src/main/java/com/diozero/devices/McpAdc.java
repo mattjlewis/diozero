@@ -2,9 +2,14 @@ package com.diozero.devices;
 
 /*
  * #%L
- * Device I/O Zero - Core
+ * Organisation: mattjlewis
+ * Project:      Device I/O Zero - Core
+ * Filename:     McpAdc.java  
+ * 
+ * This file is part of the diozero project. More information about this project
+ * can be found at http://www.diozero.com/
  * %%
- * Copyright (C) 2016 mattjlewis
+ * Copyright (C) 2016 - 2017 mattjlewis
  * %%
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -224,7 +229,7 @@ public class McpAdc extends AbstractDeviceFactory implements AnalogInputDeviceFa
 	 * as single-ended inputs or pseudo-differential pairs.  When used in the pseudo-differential
 	 * mode, each channel pair (i.e., CH0 and CH1, CH2 and CH3 etc.) is programmed to be the IN+
 	 * and IN- inputs as part of the command string transmitted to the device. The IN+ input can
-	 * range from IN- to (VREF + IN-). The IN- input is limited to ±100 mV from the VSS rail.
+	 * range from IN- to (VREF + IN-). The IN- input is limited to ?100 mV from the VSS rail.
 	 * The IN- input can be used to cancel small signal common-mode noise which is present on both
 	 * the IN+ and IN- inputs.
 	 * When operating in the pseudo-differential mode, if the voltage level of IN+ is equal to

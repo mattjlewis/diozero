@@ -2,9 +2,14 @@ package com.diozero.devices;
 
 /*
  * #%L
- * Device I/O Zero - Core
+ * Organisation: mattjlewis
+ * Project:      Device I/O Zero - Core
+ * Filename:     LPS25H.java  
+ * 
+ * This file is part of the diozero project. More information about this project
+ * can be found at http://www.diozero.com/
  * %%
- * Copyright (C) 2016 mattjlewis
+ * Copyright (C) 2016 - 2017 mattjlewis
  * %%
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -128,7 +133,7 @@ public class LPS25H implements ThermometerInterface, BarometerInterface, Closeab
 	 */
 	private static final byte CR1_PD_CONTROL_BIT = 7;
 	/** The PD bit is used to turn on the device. The device is in power-down mode when
-	 * PD = ‘0’ (default value after boot). The device is active when PD is set to ‘1’. */
+	 * PD = ?0? (default value after boot). The device is active when PD is set to ?1?. */
 	private static final byte CR1_PD_CONTROL = (byte) (1 << CR1_PD_CONTROL_BIT);
 	private static final byte CR1_ODR_ONE_SHOT = 0b000 << 4;
 	private static final byte CR1_ODR_1HZ      = 0b001 << 4;
@@ -137,7 +142,7 @@ public class LPS25H implements ThermometerInterface, BarometerInterface, Closeab
 	private static final byte CR1_ODR_25HZ     = 0b100 << 4;
 	private static final byte CR1_DIFF_EN_BIT = 3;
 	/** Used to enable the circuitry for the computing of differential pressure output.
-	 * In default mode (DIFF_EN=’0’) the circuitry is turned off. It is suggested to turn
+	 * In default mode (DIFF_EN=?0?) the circuitry is turned off. It is suggested to turn
 	 * on the circuitry only after the configuration of REF_P_x and THS_P_x. */
 	private static final byte CR1_DIFF_EN = 1 << CR1_DIFF_EN_BIT;
 	private static final byte CR1_BDU_BIT = 2;

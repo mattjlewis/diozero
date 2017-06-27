@@ -2,9 +2,14 @@ package com.diozero.devices;
 
 /*
  * #%L
- * Device I/O Zero - Core
+ * Organisation: mattjlewis
+ * Project:      Device I/O Zero - Core
+ * Filename:     HD44780Lcd.java  
+ * 
+ * This file is part of the diozero project. More information about this project
+ * can be found at http://www.diozero.com/
  * %%
- * Copyright (C) 2016 mattjlewis
+ * Copyright (C) 2016 - 2017 mattjlewis
  * %%
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -534,7 +539,7 @@ public class HD44780Lcd implements Closeable {
 	
 	public HD44780Lcd createChar(int location, byte[] charMap) {
 		/* In the character generator RAM, the user can rewrite character patterns by program.
-		 * For 5×8 dots, eight character patterns can be written, and for 5×10 dots,
+		 * For 5?8 dots, eight character patterns can be written, and for 5?10 dots,
 		 * four character patterns can be written. */
 		if (characterFont5x8) {
 			if (location < 0 || location >= 8) {

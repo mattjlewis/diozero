@@ -2,9 +2,14 @@ package com.diozero.devices;
 
 /*
  * #%L
- * Device I/O Zero - Core
+ * Organisation: mattjlewis
+ * Project:      Device I/O Zero - Core
+ * Filename:     HTS221.java  
+ * 
+ * This file is part of the diozero project. More information about this project
+ * can be found at http://www.diozero.com/
  * %%
- * Copyright (C) 2016 mattjlewis
+ * Copyright (C) 2016 - 2017 mattjlewis
  * %%
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -84,7 +89,7 @@ public class HTS221 implements ThermometerInterface, HygrometerInterface, Closea
 	// Flags for Control Register 1
 	private static final byte CR1_PD_CONTROL_BIT = 7;
 	/** The PD bit is used to turn on the device. The device is in power-down mode when
-	 * PD = ‘0’ (default value after boot). The device is active when PD is set to ‘1’. */
+	 * PD = ?0? (default value after boot). The device is active when PD is set to ?1?. */
 	private static final byte CR1_PD_CONTROL = (byte) (1 << CR1_PD_CONTROL_BIT);
 	private static final byte CR1_BDU_BIT = 2;
 	/** (0: continuous update; 1: output registers not updated until MSB and LSB reading) */

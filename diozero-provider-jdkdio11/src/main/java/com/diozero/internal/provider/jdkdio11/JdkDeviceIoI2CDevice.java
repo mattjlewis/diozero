@@ -2,9 +2,14 @@ package com.diozero.internal.provider.jdkdio11;
 
 /*
  * #%L
- * Device I/O Zero - JDK Device I/O v1.0 provider
+ * Organisation: mattjlewis
+ * Project:      Device I/O Zero - JDK Device I/O v1.1 provider
+ * Filename:     JdkDeviceIoI2CDevice.java  
+ * 
+ * This file is part of the diozero project. More information about this project
+ * can be found at http://www.diozero.com/
  * %%
- * Copyright (C) 2016 diozero
+ * Copyright (C) 2016 - 2017 mattjlewis
  * %%
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal

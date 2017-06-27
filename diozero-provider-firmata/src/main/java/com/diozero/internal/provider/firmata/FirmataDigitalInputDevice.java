@@ -2,7 +2,12 @@ package com.diozero.internal.provider.firmata;
 
 /*
  * #%L
- * Device I/O Zero - Firmata
+ * Organisation: mattjlewis
+ * Project:      Device I/O Zero - Firmata
+ * Filename:     FirmataDigitalInputDevice.java  
+ * 
+ * This file is part of the diozero project. More information about this project
+ * can be found at http://www.diozero.com/
  * %%
  * Copyright (C) 2016 - 2017 mattjlewis
  * %%

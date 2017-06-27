@@ -2,7 +2,12 @@ package com.diozero.devices;
 
 /*
  * #%L
- * Device I/O Zero - Core
+ * Organisation: mattjlewis
+ * Project:      Device I/O Zero - Core
+ * Filename:     PCF8591.java  
+ * 
+ * This file is part of the diozero project. More information about this project
+ * can be found at http://www.diozero.com/
  * %%
  * Copyright (C) 2016 - 2017 mattjlewis
  * %%
@@ -54,7 +59,7 @@ import com.diozero.util.RuntimeIOException;
  * <ul>
  * <li>Jumper P4 for AIN1: The temperature sensed by the R6 thermister is provided to the ADC.</li>
  * <li>Jumper P5 to AIN0: The R7 photocell voltage (resistance drop) is provided to the DAC.</li>
- * <li>Jumper P6 to AIN3: The single turn 10K ohm trimpot voltage (resistance drop – brighter light, lower resistance).</li>
+ * <li>Jumper P6 to AIN3: The single turn 10K ohm trimpot voltage (resistance drop ? brighter light, lower resistance).</li>
  * </ul>
  * <p>From my experiments, the inputs / jumpers are configured as follows:</p>
  * <ul>

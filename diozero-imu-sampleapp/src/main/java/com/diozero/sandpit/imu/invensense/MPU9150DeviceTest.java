@@ -2,9 +2,14 @@ package com.diozero.sandpit.imu.invensense;
 
 /*
  * #%L
- * Device I/O Zero - IMU Sample App
+ * Organisation: mattjlewis
+ * Project:      Device I/O Zero - IMU Sample App
+ * Filename:     MPU9150DeviceTest.java  
+ * 
+ * This file is part of the diozero project. More information about this project
+ * can be found at http://www.diozero.com/
  * %%
- * Copyright (C) 2016 mattjlewis
+ * Copyright (C) 2016 - 2017 mattjlewis
  * %%
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal

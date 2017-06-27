@@ -2,9 +2,14 @@ package com.diozero.devices;
 
 /*
  * #%L
- * Device I/O Zero - Core
+ * Organisation: mattjlewis
+ * Project:      Device I/O Zero - Core
+ * Filename:     MFRC522.java  
+ * 
+ * This file is part of the diozero project. More information about this project
+ * can be found at http://www.diozero.com/
  * %%
- * Copyright (C) 2016 mattjlewis
+ * Copyright (C) 2016 - 2017 mattjlewis
  * %%
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -74,7 +79,7 @@ import com.diozero.util.SleepUtil;
  * <li>Contactless integrated circuit cards</li>
  * <li>Proximity cards</li>
  * <li>Part 3: Initialization and anticollision"</li>
- * <li>Chapter 6, Type A – Initialization and anticollision</li>
+ * <li>Chapter 6, Type A ? Initialization and anticollision</li>
  * </ul>
  * 
  * <p>If only the PICC UID is wanted, the above documents have all the information needed.<br>
@@ -462,10 +467,10 @@ public class MFRC522 implements Closeable {
 		
 		// OLD CODE - START
 		// The following formula is used to calculate the timer frequency if the 
-		// DEMOD_REG register’s TPrescalEven bit is set to logic 0:
+		// DEMOD_REG register?s TPrescalEven bit is set to logic 0:
 		// fTimer = 13.56 MHz / (2*TPreScaler+1).
 		// The following formula is used to calculate the timer frequency if the 
-		// DEMOD_REG register’s TPrescalEven bit inDemoReg is set to logic 1:
+		// DEMOD_REG register?s TPrescalEven bit inDemoReg is set to logic 1:
 		// fTimer = 13.56 MHz / (2*TPreScaler+2).
 		
 		// 110100111110 = 3390; 13_560_000 / 6781 -> fTimer = 1999
