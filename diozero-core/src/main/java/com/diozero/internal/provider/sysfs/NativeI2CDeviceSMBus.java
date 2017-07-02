@@ -89,7 +89,7 @@ public class NativeI2CDeviceSMBus implements I2CSMBusInterface {
 	@Override
 	public byte readByte() {
 		if ((funcs & NativeI2C.I2C_FUNC_SMBUS_READ_BYTE) == 0) {
-			Logger.error("Function I2C_FUNC_SMBUS_READ_BYTE isn't supported for device i2c-{}-0x{}",
+			Logger.warn("Function I2C_FUNC_SMBUS_READ_BYTE isn't supported for device i2c-{}-0x{}",
 					Integer.valueOf(controller), Integer.toHexString(deviceAddress));
 			// TODO Throw an exception now or attempt anyway?
 		}
@@ -105,7 +105,7 @@ public class NativeI2CDeviceSMBus implements I2CSMBusInterface {
 	@Override
 	public void writeByte(byte data) {
 		if ((funcs & NativeI2C.I2C_FUNC_SMBUS_WRITE_BYTE) == 0) {
-			Logger.error("Function I2C_FUNC_SMBUS_WRITE_BYTE isn't supported for device i2c-{}-0x{}",
+			Logger.warn("Function I2C_FUNC_SMBUS_WRITE_BYTE isn't supported for device i2c-{}-0x{}",
 					Integer.valueOf(controller), Integer.toHexString(deviceAddress));
 			// TODO Throw an exception now or attempt anyway?
 		}
@@ -145,7 +145,7 @@ public class NativeI2CDeviceSMBus implements I2CSMBusInterface {
 	@Override
 	public byte readByteData(int registerAddress) {
 		if ((funcs & NativeI2C.I2C_FUNC_SMBUS_READ_BYTE_DATA) == 0) {
-			Logger.error("Function I2C_FUNC_SMBUS_READ_BYTE_DATA isn't supported for device i2c-{}-0x{}",
+			Logger.warn("Function I2C_FUNC_SMBUS_READ_BYTE_DATA isn't supported for device i2c-{}-0x{}",
 					Integer.valueOf(controller), Integer.toHexString(deviceAddress));
 			// TODO Throw an exception now or attempt anyway?
 		}
@@ -161,7 +161,7 @@ public class NativeI2CDeviceSMBus implements I2CSMBusInterface {
 	@Override
 	public void writeByteData(int registerAddress, byte data) {
 		if ((funcs & NativeI2C.I2C_FUNC_SMBUS_WRITE_BYTE_DATA) == 0) {
-			Logger.error("Function I2C_FUNC_SMBUS_WRITE_BYTE_DATA isn't supported for device i2c-{}-0x{}",
+			Logger.warn("Function I2C_FUNC_SMBUS_WRITE_BYTE_DATA isn't supported for device i2c-{}-0x{}",
 					Integer.valueOf(controller), Integer.toHexString(deviceAddress));
 			// TODO Throw an exception now or attempt anyway?
 		}
@@ -175,7 +175,7 @@ public class NativeI2CDeviceSMBus implements I2CSMBusInterface {
 	@Override
 	public short readWordData(int registerAddress) {
 		if ((funcs & NativeI2C.I2C_FUNC_SMBUS_READ_WORD_DATA) == 0) {
-			Logger.error("Function I2C_FUNC_SMBUS_READ_WORD_DATA isn't supported for device i2c-{}-0x{}",
+			Logger.warn("Function I2C_FUNC_SMBUS_READ_WORD_DATA isn't supported for device i2c-{}-0x{}",
 					Integer.valueOf(controller), Integer.toHexString(deviceAddress));
 			// TODO Throw an exception now or attempt anyway?
 		}
@@ -191,7 +191,7 @@ public class NativeI2CDeviceSMBus implements I2CSMBusInterface {
 	@Override
 	public void writeWordData(int registerAddress, short data) {
 		if ((funcs & NativeI2C.I2C_FUNC_SMBUS_WRITE_WORD_DATA) == 0) {
-			Logger.error("Function I2C_FUNC_SMBUS_WRITE_WORD_DATA isn't supported for device i2c-{}-0x{}",
+			Logger.warn("Function I2C_FUNC_SMBUS_WRITE_WORD_DATA isn't supported for device i2c-{}-0x{}",
 					Integer.valueOf(controller), Integer.toHexString(deviceAddress));
 			// TODO Throw an exception now or attempt anyway?
 		}
@@ -205,7 +205,7 @@ public class NativeI2CDeviceSMBus implements I2CSMBusInterface {
 	@Override
 	public short processCall(int registerAddress, short data) {
 		if ((funcs & NativeI2C.I2C_FUNC_SMBUS_PROC_CALL) == 0) {
-			Logger.error("Function I2C_FUNC_SMBUS_PROC_CALL isn't supported for device i2c-{}-0x{}",
+			Logger.warn("Function I2C_FUNC_SMBUS_PROC_CALL isn't supported for device i2c-{}-0x{}",
 					Integer.valueOf(controller), Integer.toHexString(deviceAddress));
 			// TODO Throw an exception now or attempt anyway?
 		}
@@ -221,7 +221,7 @@ public class NativeI2CDeviceSMBus implements I2CSMBusInterface {
 	@Override
 	public byte[] readBlockData(int registerAddress) {
 		if ((funcs & NativeI2C.I2C_FUNC_SMBUS_READ_BLOCK_DATA) == 0) {
-			Logger.error("Function I2C_FUNC_SMBUS_READ_BLOCK_DATA isn't supported for device i2c-{}-0x{}",
+			Logger.warn("Function I2C_FUNC_SMBUS_READ_BLOCK_DATA isn't supported for device i2c-{}-0x{}",
 					Integer.valueOf(controller), Integer.toHexString(deviceAddress));
 			// TODO Throw an exception now or attempt anyway?
 		}
@@ -238,7 +238,7 @@ public class NativeI2CDeviceSMBus implements I2CSMBusInterface {
 	@Override
 	public void writeBlockData(int registerAddress, byte[] data) {
 		if ((funcs & NativeI2C.I2C_FUNC_SMBUS_WRITE_BLOCK_DATA) == 0) {
-			Logger.error("Function I2C_FUNC_SMBUS_WRITE_BLOCK_DATA isn't supported for device i2c-{}-0x{}",
+			Logger.warn("Function I2C_FUNC_SMBUS_WRITE_BLOCK_DATA isn't supported for device i2c-{}-0x{}",
 					Integer.valueOf(controller), Integer.toHexString(deviceAddress));
 			// TODO Throw an exception now or attempt anyway?
 		}
@@ -252,7 +252,7 @@ public class NativeI2CDeviceSMBus implements I2CSMBusInterface {
 	@Override
 	public byte[] blockProcessCall(int registerAddress, byte[] txData, int length) {
 		if ((funcs & NativeI2C.I2C_FUNC_SMBUS_BLOCK_PROC_CALL) == 0) {
-			Logger.error("Function I2C_FUNC_SMBUS_BLOCK_PROCESS_CALL isn't supported for device i2c-{}-0x{}",
+			Logger.warn("Function I2C_FUNC_SMBUS_BLOCK_PROCESS_CALL isn't supported for device i2c-{}-0x{}",
 					Integer.valueOf(controller), Integer.toHexString(deviceAddress));
 			// TODO Throw an exception now or attempt anyway?
 		}
@@ -269,7 +269,7 @@ public class NativeI2CDeviceSMBus implements I2CSMBusInterface {
 	@Override
 	public byte[] readI2CBlockData(int registerAddress, int length) {
 		if ((funcs & NativeI2C.I2C_FUNC_SMBUS_READ_I2C_BLOCK) == 0) {
-			Logger.error("Function I2C_FUNC_SMBUS_READ_I2C_BLOCK isn't supported for device i2c-{}-0x{}",
+			Logger.warn("Function I2C_FUNC_SMBUS_READ_I2C_BLOCK isn't supported for device i2c-{}-0x{}",
 					Integer.valueOf(controller), Integer.toHexString(deviceAddress));
 			// TODO Throw an exception now or attempt anyway?
 		}
@@ -286,7 +286,7 @@ public class NativeI2CDeviceSMBus implements I2CSMBusInterface {
 	@Override
 	public void writeI2CBlockData(int registerAddress, byte[] data) {
 		if ((funcs & NativeI2C.I2C_FUNC_SMBUS_WRITE_I2C_BLOCK) == 0) {
-			Logger.error("Function I2C_FUNC_SMBUS_WRITE_I2C_BLOCK isn't supported for device i2c-{}-0x{}",
+			Logger.warn("Function I2C_FUNC_SMBUS_WRITE_I2C_BLOCK isn't supported for device i2c-{}-0x{}",
 					Integer.valueOf(controller), Integer.toHexString(deviceAddress));
 			// TODO Throw an exception now or attempt anyway?
 		}
