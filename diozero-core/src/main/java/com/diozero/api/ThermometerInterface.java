@@ -31,13 +31,18 @@ package com.diozero.api;
  * #L%
  */
 
+import java.io.Closeable;
+
 import com.diozero.util.RuntimeIOException;
 
-public interface ThermometerInterface {
+public interface ThermometerInterface extends Closeable {
 	/**
 	 * Get temperature in degrees celsius
 	 * @return Temperature (deg C)
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	float getTemperature() throws RuntimeIOException;
+	
+	@Override
+	void close();
 }

@@ -31,8 +31,13 @@ package com.diozero.api;
  * #L%
  */
 
+import java.io.Closeable;
+
 import com.diozero.util.RuntimeIOException;
 
-public interface LuminositySensorInterface {
-	public float getLuminosity() throws RuntimeIOException;
+public interface LuminositySensorInterface extends Closeable {
+	float getLuminosity() throws RuntimeIOException;
+	
+	@Override
+	void close();
 }

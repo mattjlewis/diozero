@@ -30,6 +30,8 @@ package com.diozero.devices;
  * THE SOFTWARE.
  * #L%
  */
+
+
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
@@ -155,5 +157,10 @@ public class W1ThermSensor implements ThermometerInterface {
 			}
 			return type;
 		}
+	}
+	
+	@Override
+	public void close() {
+		// nop
 	}
 }

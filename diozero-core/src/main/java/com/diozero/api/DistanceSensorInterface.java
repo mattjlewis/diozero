@@ -31,11 +31,17 @@ package com.diozero.api;
  * #L%
  */
 
+
+import java.io.Closeable;
+
 import com.diozero.util.RuntimeIOException;
 
-public interface DistanceSensorInterface {
+public interface DistanceSensorInterface extends Closeable {
 	/**
 	 * @return distance in cm
 	 */
-	public float getDistanceCm() throws RuntimeIOException;
+	float getDistanceCm() throws RuntimeIOException;
+	
+	@Override
+	void close();
 }
