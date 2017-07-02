@@ -138,6 +138,14 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeI2C_writeB
 
 /*
  * Class:     com_diozero_internal_provider_sysfs_NativeI2C
+ * Method:    blockProcessCall
+ * Signature: (III[B[B)I
+ */
+JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeI2C_blockProcessCall(
+		JNIEnv* env, jclass clz, jint fd, jint registerAddress, jint txLength, jbyteArray txData, jbyteArray rxData);
+
+/*
+ * Class:     com_diozero_internal_provider_sysfs_NativeI2C
  * Method:    readI2CBlockData
  * Signature: (III[B)I
  */
@@ -151,14 +159,6 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeI2C_readI2
  */
 JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeI2C_writeI2CBlockData(
 		JNIEnv* env, jclass clz, jint fd, jint registerAddress, jint txLength, jbyteArray txData);
-
-/*
- * Class:     com_diozero_internal_provider_sysfs_NativeI2C
- * Method:    blockProcessCall
- * Signature: (III[B[B)I
- */
-JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeI2C_blockProcessCall(
-		JNIEnv* env, jclass clz, jint fd, jint registerAddress, jint txLength, jbyteArray txData, jbyteArray rxData);
 
 #ifdef __cplusplus
 }

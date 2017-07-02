@@ -228,6 +228,30 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeI2C_writeB
 	return rc < 0 ? -errno : rc;
 }
 
+JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeI2C_blockProcessCall(
+		JNIEnv* env, jclass clz, jint fd, jint registerAddress, jint txLength, jbyteArray txData, jbyteArray rxData) {
+	jboolean is_copy;
+	jbyte* rx_buf = (*env)->GetByteArrayElements(env, rxData, &is_copy);
+	jbyte* tx_buf = (*env)->GetByteArrayElements(env, txData, &is_copy);
+
+	int rc = i2c_smbus_block_process_call(fd, registerAddress, txLength, (uint8_t*) tx_buf);
+
+	(*env)->ReleaseByteArrayElements(env, txData, tx_buf, JNI_ABORT);
+
+	if (rc < 0) {
+		(*env)->ReleaseByteArrayElements(env, rxData, rx_buf, JNI_ABORT);
+		fprintf(stderr, "Error in I2C SMBus blockProcessCall: %s.\n", strerror(errno));
+
+		return -errno;
+	}
+
+	memcpy(rx_buf, tx_buf, rc);
+
+	(*env)->ReleaseByteArrayElements(env, rxData, rx_buf, 0);
+
+	return rc;
+}
+
 JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeI2C_readI2CBlockData(
 		JNIEnv* env, jclass clz, jint fd, jint registerAddress, jint rxLength, jbyteArray rxData) {
 	jboolean is_copy;
@@ -256,28 +280,4 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeI2C_writeI
 	(*env)->ReleaseByteArrayElements(env, txData, tx_buf, JNI_ABORT);
 
 	return rc < 0 ? -errno : rc;
-}
-
-JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeI2C_blockProcessCall(
-		JNIEnv* env, jclass clz, jint fd, jint registerAddress, jint txLength, jbyteArray txData, jbyteArray rxData) {
-	jboolean is_copy;
-	jbyte* rx_buf = (*env)->GetByteArrayElements(env, rxData, &is_copy);
-	jbyte* tx_buf = (*env)->GetByteArrayElements(env, txData, &is_copy);
-
-	int rc = i2c_smbus_block_process_call(fd, registerAddress, txLength, (uint8_t*) tx_buf);
-
-	(*env)->ReleaseByteArrayElements(env, txData, tx_buf, JNI_ABORT);
-
-	if (rc < 0) {
-		(*env)->ReleaseByteArrayElements(env, rxData, rx_buf, JNI_ABORT);
-		fprintf(stderr, "Error in I2C SMBus blockProcessCall: %s.\n", strerror(errno));
-
-		return -errno;
-	}
-
-	memcpy(rx_buf, tx_buf, rc);
-
-	(*env)->ReleaseByteArrayElements(env, rxData, rx_buf, 0);
-
-	return rc;
 }

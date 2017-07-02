@@ -69,7 +69,7 @@ public class NativeI2C {
 	static native int processCall(int fd, int registerAddress, short value);
 	static native int readBlockData(int fd, int registerAddress, byte[] rxData);
 	static native int writeBlockData(int fd, int registerAddress, int txLength, byte[] txData);
+	static native int blockProcessCall(int fd, int registerAddress, int txLength, byte[] txData, byte[] rxData);
 	static native int readI2CBlockData(int fd, int registerAddress, int rxLength, byte[] rxData);
 	static native int writeI2CBlockData(int fd, int registerAddress, int txLength, byte[] txData);
-	static native int blockProcessCall(int fd, int registerAddress, int txLength, byte[] txData, byte[] rxData);
 }
