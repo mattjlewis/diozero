@@ -111,8 +111,12 @@ public class SystemInfo {
 	}
 	
 	static BoardInfo lookupLocalBoardInfo(String hardware, String revision, Integer memoryKb) {
-		return BoardInfoProvider.loadInstances().map(bip -> bip.lookup(hardware, revision, memoryKb))
-				.filter(Objects::nonNull).findFirst().orElseGet(() -> UnknownBoardInfo.get(hardware, revision, memoryKb));
+		BoardInfo bi = BoardInfoProvider.loadInstances().map(bip -> bip.lookup(hardware, revision, memoryKb))
+				.filter(Objects::nonNull).findFirst()
+				.orElseGet(() -> UnknownBoardInfo.get(hardware, revision, memoryKb));
+		bi.initialisePins();
+		
+		return bi;
 	}
 
 	public static String getOsReleaseProperty(String property) {
@@ -156,6 +160,10 @@ public class SystemInfo {
 		
 		public UnknownBoardInfo() {
 			super(UNKNOWN, UNKNOWN, -1, UNKNOWN);
+		}
+		
+		@Override
+		public void initialisePins() {
 		}
 		
 		@Override

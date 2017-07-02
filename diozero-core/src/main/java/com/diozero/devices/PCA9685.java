@@ -39,8 +39,15 @@ import org.pmw.tinylog.Logger;
 import com.diozero.api.I2CConstants;
 import com.diozero.api.I2CDevice;
 import com.diozero.api.PinInfo;
-import com.diozero.internal.provider.*;
-import com.diozero.util.*;
+import com.diozero.internal.provider.AbstractDevice;
+import com.diozero.internal.provider.AbstractDeviceFactory;
+import com.diozero.internal.provider.PwmOutputDeviceFactoryInterface;
+import com.diozero.internal.provider.PwmOutputDeviceInterface;
+import com.diozero.util.BitManipulation;
+import com.diozero.util.BoardPinInfo;
+import com.diozero.util.RuntimeIOException;
+import com.diozero.util.ServoUtil;
+import com.diozero.util.SleepUtil;
 
 /**
  * PCA9685 I2C-bus controlled 16-channel 12-bit PWM controller as used in the popular Adafruit PWM add-on board
@@ -48,7 +55,7 @@ import com.diozero.util.*;
  */
 @SuppressWarnings("unused")
 public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFactoryInterface {
-	private static final int DEVICE_ADDRESS = 0x40;
+	public static final int DEFAULT_ADDRESS = 0x40;
 	private static final String DEVICE_NAME = "PCA9685";
 	private static final int NUM_CHANNELS = 16;
 	private static final int RANGE = (int) Math.pow(2, 12);
@@ -103,17 +110,18 @@ public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFac
 	private BoardPinInfo boardPinInfo;
 
 	public PCA9685(int pwmFrequency) throws RuntimeIOException {
-		this(I2CConstants.BUS_1, DEVICE_ADDRESS, pwmFrequency);
+		this(I2CConstants.BUS_1, DEFAULT_ADDRESS, pwmFrequency);
 	}
 
 	public PCA9685(int controller, int pwmFrequency) throws RuntimeIOException {
-		this(controller, DEVICE_ADDRESS, pwmFrequency);
+		this(controller, DEFAULT_ADDRESS, pwmFrequency);
 	}
 
 	public PCA9685(int controller, int address, int pwmFrequency) throws RuntimeIOException {
 		super(DEVICE_NAME + "-" + controller + "-" + address);
 		
-		i2cDevice = new I2CDevice(controller, address, I2CConstants.ADDR_SIZE_7, I2CConstants.DEFAULT_CLOCK_FREQUENCY, ByteOrder.LITTLE_ENDIAN);
+		i2cDevice = new I2CDevice(controller, address, I2CConstants.ADDR_SIZE_7, I2CConstants.DEFAULT_CLOCK_FREQUENCY,
+				ByteOrder.BIG_ENDIAN);
 		boardPinInfo = new PCA9685BoardPinInfo();
 		
 		reset();
@@ -156,21 +164,15 @@ public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFac
 	private int[] getPwm(int channel) throws RuntimeIOException {
 		validateChannel(channel);
 		
-		byte on_l = i2cDevice.readByte(LED0_ON_L + 4*channel);
-		byte on_h = i2cDevice.readByte(LED0_ON_H + 4*channel);
-		int on = ((on_h << 8) & 0xff00) | (on_l | 0xff);
-		// TODO Replace with readUShort()?
-		int on_with_read_short = i2cDevice.readUShort(LED0_ON_L + 4*channel);
+		short on_l = i2cDevice.readUByte(LED0_ON_L + 4*channel);
+		short on_h = i2cDevice.readUByte(LED0_ON_H + 4*channel);
+		int on = (on_h << 8) | on_l;
 		
-		byte off_l = i2cDevice.readByte(LED0_OFF_L + 4*channel);
-		byte off_h = i2cDevice.readByte(LED0_OFF_H + 4*channel);
-		int off = ((off_h << 8) & 0xff00) | (off_l | 0xff);
-		// TODO Replace with readUShort()?
-		int off_with_read_short = i2cDevice.readUShort(LED0_OFF_L + 4*channel);
+		short off_l = i2cDevice.readUByte(LED0_OFF_L + 4*channel);
+		short off_h = i2cDevice.readUByte(LED0_OFF_H + 4*channel);
+		int off = (off_h << 8) | off_l;
 		
-		Logger.debug("on={}, on_with_read_short={}, off={}, off_with_read_short={}",
-				Integer.valueOf(on), Integer.valueOf(on_with_read_short),
-				Integer.valueOf(off), Integer.valueOf(off_with_read_short));
+		Logger.debug("channel={}, on={}, off={}", Integer.valueOf(channel), Integer.valueOf(on), Integer.valueOf(off));
 		
 		return new int[] { on, off };
 	}
@@ -192,13 +194,17 @@ public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFac
 		validateChannel(channel);
 		validateOnOff(on, off);
 		
+		//Logger.debug("channel: {}, on: {}, off: {}", Integer.valueOf(channel), Integer.valueOf(on),
+		//		Integer.valueOf(off));
+		
 		// TODO Replace with writeShort()?
-		//writeShort(LED0_ON_L+4*channel, (short)on);
-		//writeShort(LED0_OFF_L+4*channel, (short)off);
+		//writeShort(LED0_ON_L+4*channel, (short) on);
+		//writeShort(LED0_OFF_L+4*channel, (short) off);
 		i2cDevice.writeByte(LED0_ON_L + 4*channel, on & 0xFF);
 		i2cDevice.writeByte(LED0_ON_H + 4*channel, on >> 8);
 		i2cDevice.writeByte(LED0_OFF_L + 4*channel, off & 0xFF);
 		i2cDevice.writeByte(LED0_OFF_H + 4*channel, off >> 8);
+		//SleepUtil.sleepMillis(50);
 	}
 	
 	private static void validateOnOff(int on, int off) {

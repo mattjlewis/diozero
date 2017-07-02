@@ -31,7 +31,7 @@ try (Button button = new Button(buttonPin, GpioPullUpDown.PULL_UP); LED led = ne
 }
 ```
 
-*class* **com.diozero.Button**{: .descname } (*gpio*, *pud=NONE*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/Button.java){: .viewcode-link } [&para;](InputDevices.md#button "Permalink to this definition"){: .headerlink }
+*class* **com.diozero.Button**{: .descname } (*gpio*, *pud=NONE*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/devices/Button.java){: .viewcode-link } [&para;](InputDevices.md#button "Permalink to this definition"){: .headerlink }
 
 : Extends [DigitalInputDevice](API.md#digitalinputdevice] to provide push button related utility methods.
     
@@ -82,7 +82,7 @@ try (Button button = new Button(buttonPin, GpioPullUpDown.PULL_UP); LED led = ne
 
 ### TMP36
 
-*class* **com.diozero.TMP36**{: .descname } (*gpio*, *vRef*, *tempOffset*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/TMP36.java){: .viewcode-link } [&para;](InputDevices.md#tmp36 "Permalink to this definition"){: .headerlink }
+*class* **com.diozero.TMP36**{: .descname } (*gpio*, *vRef*, *tempOffset*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/devices/TMP36.java){: .viewcode-link } [&para;](InputDevices.md#tmp36 "Permalink to this definition"){: .headerlink }
 
 : Extends [AnalogInputDevice](API.md#analoginputdevice] for reading temperature values from a [TMP36 Temperature Sensor by Analog Devices](http://www.analog.com/en/products/analog-to-digital-converters/integrated-special-purpose-converters/integrated-temperature-sensors/tmp36.html).
     
@@ -103,7 +103,7 @@ Generic [potentiometer](https://en.wikipedia.org/wiki/Potentiometer).
 
 TODO Wiring diagram.
 
-*class* **com.diozero.Potentiometer**{: .descname } (*gpio*, *vRef*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/Potentiometer.java){: .viewcode-link } [&para;](InputDevices.md#potentiometer "Permalink to this definition"){: .headerlink }
+*class* **com.diozero.Potentiometer**{: .descname } (*gpio*, *vRef*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/devices/Potentiometer.java){: .viewcode-link } [&para;](InputDevices.md#potentiometer "Permalink to this definition"){: .headerlink }
 
 : Extends [AnalogInputDevice](API.md#analoginputdevice] for taking readings from a potentiometer.
     
@@ -118,7 +118,7 @@ TODO Wiring diagram.
 
 ### LDR
 
-*class* **com.diozero.LDR**{: .descname } (*gpio*, *vRef*, *r1*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/LDR.java){: .viewcode-link } [&para;](InputDevices.md#ldr "Permalink to this definition"){: .headerlink }
+*class* **com.diozero.LDR**{: .descname } (*gpio*, *vRef*, *r1*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/devices/LDR.java){: .viewcode-link } [&para;](InputDevices.md#ldr "Permalink to this definition"){: .headerlink }
 
 : Extends [AnalogInputDevce](API.md#analoginputdevice). Generic [Photoresistor / Light-Dependent-Resistor (LDR)](https://en.wikipedia.org/wiki/Photoresistor).
     
@@ -144,7 +144,7 @@ TODO Wiring diagram.
 
 [Sharp GP2Y0A21YK](http://www.sharpsma.com/webfm_send/1208) Distance Sensor.
 
-*class* **com.diozero.GP2Y0A21YK**{: .descname } (*gpio*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/GP2Y0A21YK.java){: .viewcode-link } [&para;](InputDevices.md#sharp-gp2y0a21yk-distance-sensor "Permalink to this definition"){: .headerlink }
+*class* **com.diozero.GP2Y0A21YK**{: .descname } (*gpio*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/devices/GP2Y0A21YK.java){: .viewcode-link } [&para;](InputDevices.md#sharp-gp2y0a21yk-distance-sensor "Permalink to this definition"){: .headerlink }
 
 : Extends [AnalogInputDevice](API.md#analoginputdevice] for taking object proximity readings.
     

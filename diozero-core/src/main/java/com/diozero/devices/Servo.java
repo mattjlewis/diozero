@@ -225,8 +225,8 @@ public class Servo extends GpioDevice implements OutputDeviceInterface {
 	public static class Trim {
 		public static final float MID_ANGLE = 90;
 		
-		private static final float DEFAULT_MID = 1.5f;
-		private static final float DEFAULT_90_DELTA = 0.9f;
+		public static final float DEFAULT_MID = 1.5f;
+		public static final float DEFAULT_90_DELTA = 0.9f;
 		// Default to 180 degree range, from 0.6ms to 2.4ms with 1.5ms centre
 		public static final Trim DEFAULT = new Trim(DEFAULT_MID, DEFAULT_90_DELTA);
 		

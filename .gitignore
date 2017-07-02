@@ -1,3 +1,4 @@
 target/
 /piconzero/
 /.pydevproject
+/.settings/

@@ -191,8 +191,4 @@ public interface I2CSMBusInterface extends Closeable {
 	 * @param data values to write
 	 */
 	void writeI2CBlockData(int register, byte[] data);
-	
-	class NotSupportedException extends Exception {
-		private static final long serialVersionUID = -6962554229986493047L;
-	}
 }

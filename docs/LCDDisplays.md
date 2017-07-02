@@ -2,7 +2,7 @@
 
 ## HD44780 LCDs
 
-*class* **com.diozero.HD44780Lcd**{: .descname } (*controller=1*, *deviceAddress=0x27*, *columns*, *rows*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/HD44780Lcd.java){: .viewcode-link } [&para;](LCDDisplays.md#hd44780-lcd "Permalink to this definition"){: .headerlink }
+*class* **com.diozero.HD44780Lcd**{: .descname } (*controller=1*, *deviceAddress=0x27*, *columns*, *rows*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/devices/HD44780Lcd.java){: .viewcode-link } [&para;](LCDDisplays.md#hd44780-lcd "Permalink to this definition"){: .headerlink }
 
 : Support for Hitachi HD44780 controlled LCDs.
 

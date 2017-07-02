@@ -197,9 +197,15 @@ public class FirmataDeviceFactory extends BaseNativeDeviceFactory {
 	}
 	
 	public static class FirmataBoardInfo extends BoardInfo {
+		private IODevice ioDevice;
+		
 		public FirmataBoardInfo(IODevice ioDevice) {
 			super("Firmata", "Unknown", -1, "firmata");
-			
+			this.ioDevice = ioDevice;
+		}
+		
+		@Override
+		public void initialisePins() {
 			for (Pin pin : ioDevice.getPins()) {
 				int pin_number = pin.getIndex();
 				addGpioPinInfo(pin_number, pin_number, convertModes(pin.getSupportedModes()));

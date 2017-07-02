@@ -39,7 +39,6 @@ import org.pmw.tinylog.Logger;
 import com.diozero.internal.provider.AbstractDevice;
 import com.diozero.internal.provider.DeviceFactoryInterface;
 import com.diozero.internal.provider.I2CDeviceInterface;
-import com.diozero.internal.provider.sysfs.I2CSMBusInterface.NotSupportedException;
 import com.diozero.util.LibraryLoader;
 import com.diozero.util.PropertyUtil;
 import com.diozero.util.RuntimeIOException;
@@ -68,10 +67,10 @@ public class SysFsI2cDevice extends AbstractDevice implements I2CDeviceInterface
 		} else {
 			try {
 				i2cDevice = new NativeI2CDeviceSMBus(controller, address, force);
-			} catch (NotSupportedException e) {
-				Logger.warn(e, "Error initialising I2C SMBus for controller {}, device 0x{}: {}",
+			} catch (RuntimeIOException e) {
+				Logger.warn("Error initialising I2C SMBus for controller {}, device 0x{}: {}",
 						Integer.valueOf(controller), Integer.toHexString(address), e);
-				Logger.warn("Using sysfs for I2C communication");
+				Logger.warn("Trying to connect via sysfs ...");
 				i2cDevice = new NativeI2CDeviceSysFs(controller, address, force);
 			}
 		}

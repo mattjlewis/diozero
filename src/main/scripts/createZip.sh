@@ -31,7 +31,7 @@
 #!/bin/sh
 
 version=0.11-SNAPSHOT
-pigpioj_version=2.0
+pigpioj_version=2.1
 
 files="../pigpioj/pigpioj-java/target/pigpioj-java-${pigpioj_version}.jar \
 	$USERPROFILE/.m2/repository/org/tinylog/tinylog/1.2/tinylog-1.2.jar \

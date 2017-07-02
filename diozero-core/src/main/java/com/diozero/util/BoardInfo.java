@@ -44,7 +44,7 @@ import org.pmw.tinylog.Logger;
 import com.diozero.internal.provider.mmap.MmapGpioInterface;
 
 @SuppressWarnings("static-method")
-public class BoardInfo extends BoardPinInfo {
+public abstract class BoardInfo extends BoardPinInfo {
 	private static final float DEFAULT_ADC_VREF = 1.8f;
 	private static final String TEMP_FILE = "/sys/class/thermal/thermal_zone0/temp";
 	
@@ -65,6 +65,8 @@ public class BoardInfo extends BoardPinInfo {
 		this.libraryPath = libraryPath;
 		this.adcVRef = adcVRef;
 	}
+	
+	public abstract void initialisePins();
 
 	public String getMake() {
 		return make;

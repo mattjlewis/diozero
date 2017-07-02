@@ -305,7 +305,7 @@ Currently supports the following types of motors:
 !!! Warning "Work in progress"
     Only tested with pigpio hence in the sandpit package.
 
-*class* **com.diozero.sandpit.Servo**{: .descname } (*gpio*, *pwmFrequency*, *initialPulseWidthMs*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/sandpit/Servo.java){: .viewcode-link } [&para;](MotorControl.md#servo "Permalink to this definition"){: .headerlink }
+*class* **com.diozero.sandpit.Servo**{: .descname } (*gpio*, *pwmFrequency*, *initialPulseWidthMs*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/devices/Servo.java){: .viewcode-link } [&para;](MotorControl.md#servo "Permalink to this definition"){: .headerlink }
 
 : Represents a pulse-width controlled servo.
     
@@ -330,21 +330,21 @@ Currently supports the following types of motors:
 
 ### CamJamKitDualMotor
 
-*class* **com.diozero.CamJamKitDualMotor**{: .descname } [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/CamJamKitDualMotor.java){: .viewcode-link } [&para;](MotorControl.md#camjamkitdualmotor "Permalink to this definition"){: .headerlink }
+*class* **com.diozero.CamJamKitDualMotor**{: .descname } [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/devices/CamJamKitDualMotor.java){: .viewcode-link } [&para;](MotorControl.md#camjamkitdualmotor "Permalink to this definition"){: .headerlink }
 
 : Extends [DualMotor](#dualmotor). Convenience class for interfacing with the [CamJam EduKit #3 Motor Controller Board](http://camjam.me/?page_id=1035) with pre-configured GPIOs (left -&gt; 9 and 10, right -&gt; 7 and 8).
 
 
 ### RyanteckDualMotor
 
-*class* **com.diozero.RyanteckDualMotor**{: .descname } [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/RyanteckDualMotor.java){: .viewcode-link } [&para;](MotorControl.md#ryanteckdualmotor "Permalink to this definition"){: .headerlink }
+*class* **com.diozero.RyanteckDualMotor**{: .descname } [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/devices/RyanteckDualMotor.java){: .viewcode-link } [&para;](MotorControl.md#ryanteckdualmotor "Permalink to this definition"){: .headerlink }
 
 : Extends [DualMotor](#dualmotor). Convenience class for interfacing with the Ryanteck RPi Motor Controller Board with pre-configured GPIOs (left -&gt; 17 and 18, right -&gt; 22 and 23).
 
 
 ### TB6612FNGDualMotorDriver
 
-*class* **com.diozero.sandpit.TB6612FNGDualMotorDriver**{: .descname } [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/sandpit/TB6612FNGDualMotorDriver.java){: .viewcode-link } [&para;](MotorControl.md#tb6612fngdualmotordriver "Permalink to this definition"){: .headerlink }
+*class* **com.diozero.sandpit.TB6612FNGDualMotorDriver**{: .descname } [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/devices/sandpit/TB6612FNGDualMotorDriver.java){: .viewcode-link } [&para;](MotorControl.md#tb6612fngdualmotordriver "Permalink to this definition"){: .headerlink }
 
 : Extends [DualMotor](#dualmotor). Convenience class for interfacing with dual H-bridge motor drivers such as the [Toshiba TB6612FNG Dual Motor Driver](http://toshiba.semicon-storage.com/info/lookup.jsp?pid=TB6612FNG&lang=en) as used in the [Pololu Dual Motor Driver Carrier](https://www.pololu.com/product/713).
 

@@ -81,7 +81,10 @@ public class OdroidBoardInfoProvider implements BoardInfoProvider {
 		
 		public OdroidC1BoardInfo() {
 			super(MAKE, Model.C1.toString(), MEMORY, MAKE.toLowerCase() + "/" + Model.C1.toString().toLowerCase());
-
+		}
+		
+		@Override
+		public void initialisePins() {
 			// TODO Add pins when support for this board is added
 		}
 
@@ -100,7 +103,10 @@ public class OdroidBoardInfoProvider implements BoardInfoProvider {
 		
 		private OdroidC2BoardInfo() {
 			super(MAKE, Model.C2.toString(), MEMORY, MAKE.toLowerCase() + "/" + Model.C2.toString().toLowerCase());
-
+		}
+		
+		@Override
+		public void initialisePins() {
 			// 3V3 1 | 2 5V0
 			addGpioPinInfo(205, 3, PinInfo.DIGITAL_IN_OUT);			// I2C1-SDA
 			// 4 5V0

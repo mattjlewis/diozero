@@ -75,7 +75,10 @@ public class CHIPBoardInfoProvider implements BoardInfoProvider {
 		
 		public CHIPBoardInfo() {
 			super(MAKE, MODEL_CHIP, MEMORY, CHIP_LIBRARY_PATH, ADC_VREF);
-
+		}
+		
+		@Override
+		public void initialisePins() {
 			// http://www.chip-community.org/index.php/GPIO_Info#Interrupts
 			// Not all gpio pins support interrupts. Whether a pin supports
 			// interrupts can be seen by the presence of an "edge" file (e.g.
@@ -260,7 +263,10 @@ public class CHIPBoardInfoProvider implements BoardInfoProvider {
 		
 		public CHIPProBoardInfo() {
 			super(MAKE, MODEL_CHIP_PRO, MEMORY, CHIP_LIBRARY_PATH, ADC_VREF);
-			
+		}
+		
+		@Override
+		public void initialisePins() {
 			// https://docs.getchip.com/chip_pro.html#pin-descriptions
 
 			// Look at the letter that follows the "P", in this case it's "E".

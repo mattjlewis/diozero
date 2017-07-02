@@ -35,6 +35,8 @@ package com.diozero.util;
 public class RuntimeIOException extends RuntimeException {
 	private static final long serialVersionUID = -1676518784067421079L;
 	
+	private int error;
+	
 	public RuntimeIOException(Throwable cause) {
 		super(cause);
 	}
@@ -45,5 +47,14 @@ public class RuntimeIOException extends RuntimeException {
 
 	public RuntimeIOException(String message, Throwable t) {
 		super(message, t);
+	}
+
+	public RuntimeIOException(int error) {
+		super(Integer.toString(error));
+		this.error = error;
+	}
+	
+	public int getError() {
+		return error;
 	}
 }

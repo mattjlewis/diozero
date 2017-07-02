@@ -301,17 +301,7 @@ This project is hosted on [GitHub](https://github.com/mattjlewis/diozero/), plea
 + Wireless access to Firmata devices (network and Bluetooth). E.g. [ESP32](https://learn.sparkfun.com/tutorials/esp32-thing-hookup-guide?_ga=1.116824388.33505106.1471290985#installing-the-esp32-arduino-core) [Firmata GitHub issue #315](https://github.com/firmata/arduino/issues/315)
 + Particle Photon support (via wifi using [VoodooSpark "firmware"](https://github.com/voodootikigod/voodoospark) - [JavaScript implementation](https://github.com/rwaldron/particle-io/blob/master/lib/particle.js))
 
-## Change-log
-
-+ Release 0.2: First tagged release.
-+ Release 0.3: API change - analogue to analog.
-+ Release 0.4: Bug fixes, servo support.
-+ Release 0.5: Testing improvements.
-+ Release 0.6: Preparing for 1.0 release.
-+ Release 0.7: Support for non-register based I2C device read / write
-+ Release 0.8: Added Analog Output device support (added for the PCF8591). Introduced Java based sysfs and jpi providers. Bug fix to I2CLcd. Added support for BME280.
-+ Release 0.9: Native support for I2C and SPI in the sysfs provider. Support for CHIP, BeagleBone Black and Asus Tinker Board. Moved sysfs provider into diozero-core, use as the default provider. Preliminary support for devices that support the Firmata protocol (i.e. Arduino).
-+ Release 0.10 (in progress): Firmata I2C. Improvements to MFRC522. SDL Joystick JNI wrapper library. MFRC522 fully supported (finally). Added support for MCP EEPROMs. I2C SMBus implementation in the internal sysfs provider.
+[Release History](docs/RELEASE.md)
 
 ## License
 

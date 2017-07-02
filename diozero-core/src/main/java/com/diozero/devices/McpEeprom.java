@@ -88,7 +88,8 @@ public class McpEeprom implements Closeable {
 			return memorySizeBytes;
 		}
 	}
-	private static final int DEFAULT_ADDRESS = 0x50;
+	
+	public static final int DEFAULT_ADDRESS = 0x50;
 	
 	private I2CDevice device;
 	private Type type;

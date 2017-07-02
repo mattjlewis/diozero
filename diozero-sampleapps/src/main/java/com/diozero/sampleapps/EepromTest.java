@@ -34,6 +34,7 @@ package com.diozero.sampleapps;
 import org.pmw.tinylog.Logger;
 
 import com.diozero.devices.McpEeprom;
+import com.diozero.util.RuntimeIOException;
 
 public class EepromTest {
 	private static final String LOREM_IPSUM = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, "
@@ -44,7 +45,24 @@ public class EepromTest {
 			+ "deserunt mollit anim id est laborum.";
 
 	public static void main(String[] args) {
-		try (McpEeprom eeprom = new McpEeprom(2, McpEeprom.Type.MCP_24xx512)) {
+		if (args.length < 1) {
+			Logger.error("Usage: {} <i2c-controller> [device-address]", EepromTest.class.getName());
+			System.exit(1);
+		}
+		
+		int controller = Integer.parseInt(args[0]);
+		int device_address = McpEeprom.DEFAULT_ADDRESS;
+		if (args.length > 1) {
+			device_address = Integer.parseInt(args[1]);
+		}
+		
+		test(controller, 0x04);
+		test(controller, 0x05);
+		test(controller, device_address);
+	}
+	
+	private static void test(int controller, int deviceAddress) {
+		try (McpEeprom eeprom = new McpEeprom(controller, deviceAddress, McpEeprom.Type.MCP_24xx512)) {
 			// Validate write byte and random read
 			for (int address = 0; address<2; address++) {
 				Logger.info("Address: 0x{}", Integer.valueOf(address));
@@ -81,6 +99,8 @@ public class EepromTest {
 			Logger.debug("read " + data.length + " bytes");
 			String text = new String(data);
 			Logger.debug("Read '" + text + "'");
+		} catch (RuntimeIOException e) {
+			Logger.error(e, "Error: {}", e);
 		}
 	}
 }

@@ -63,7 +63,10 @@ public class BeagleBoneBoardInfoProvider implements BoardInfoProvider {
 		
 		public BeagleBoneBlackBoardInfo() {
 			super(MAKE, MODEL, MEMORY, BBB_LIB_PATH);
-
+		}
+		
+		@Override
+		public void initialisePins() {
 			addGpioPinInfo(P9_HEADER, 60, 12, PinInfo.DIGITAL_IN_OUT);
 			addGpioPinInfo(P9_HEADER, 48, 15, PinInfo.DIGITAL_IN_OUT);
 			addGpioPinInfo(P9_HEADER, 49, 23, PinInfo.DIGITAL_IN_OUT);

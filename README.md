@@ -1,4 +1,4 @@
-# DIO-Zero - a Java Device I/O wrapper for GPIO / I2C / SPI control
+# DIOZero - a Java Device I/O wrapper for GPIO / I2C / SPI control
 
 [![Build Status](https://travis-ci.org/mattjlewis/diozero.svg?branch=master)](https://travis-ci.org/mattjlewis/diozero)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.diozero/diozero/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.diozero/diozero)
@@ -32,14 +32,15 @@ names, for example, LED (on / off), LDR (get luminosity), Button (pressed / rele
 automatically closed by the `try (Device d = new Device()) { d.doSomething(); }` statement. This 
 is best illustrated by some simple examples.
 
-!!! note "Pin Numbering"
-    All pin numbers are device native, i.e. Broadcom for the Raspberry Pi, ASUS for the Tinker Board. Pin layouts:
+__Note "Pin Numbering"__
+
+All pin numbers are device native, i.e. Broadcom for the Raspberry Pi, ASUS for the Tinker Board. Pin layouts:
     
-    + [Raspberry pi](https://pinout.xyz/).
-    + [CHIP pin numbering](http://www.chip-community.org/index.php/Hardware_Information).
-    + [Odroid C2 pin layout](http://www.hardkernel.com/main/products/prdt_info.php?tab_idx=2).
-    + [BeagleBone Black](http://beagleboard.org/support/bone101).
-    + [Asus Tinker Board](https://www.asus.com/uk/Single-board-Computer/TINKER-BOARD/).
++ [Raspberry pi](https://pinout.xyz/).
++ [CHIP pin numbering](http://www.chip-community.org/index.php/Hardware_Information).
++ [Odroid C2 pin layout](http://www.hardkernel.com/main/products/prdt_info.php?tab_idx=2).
++ [BeagleBone Black](http://beagleboard.org/support/bone101).
++ [Asus Tinker Board](https://www.asus.com/uk/Single-board-Computer/TINKER-BOARD/).
 
 LED control:
 
@@ -209,17 +210,18 @@ To run:
 sudo groovy -cp $CLASSPATH test.groovy
 ```
 
-!!! note "Groovy JAVA_HOME config when running via sudo"
-    I was getting the error:
+__Note "Groovy JAVA_HOME config when running via sudo"__
+
+I was getting the error:
     
-    `groovy: JAVA_HOME is not defined correctly, can not execute: /usr/lib/jvm/default-java/bin/java`
+`groovy: JAVA_HOME is not defined correctly, can not execute: /usr/lib/jvm/default-java/bin/java`
     
-    I tried setting JAVA_HOME in /etc/environment and /etc/profile.d/jdk.sh to no affect. Eventually the following fixed it for me. 
-    Please let me know if there is a better way to fix this issue.
+I tried setting JAVA_HOME in /etc/environment and /etc/profile.d/jdk.sh to no affect. Eventually the following fixed it for me.
+Please let me know if there is a better way to fix this issue.
     
-    ```
-    ln -s /usr/lib/jvm/jdk-8-oracle-arm32-vfp-hflt /usr/lib/jvm/default-java
-    ```
+```
+ln -s /usr/lib/jvm/jdk-8-oracle-arm32-vfp-hflt /usr/lib/jvm/default-java
+```
 
 ## Devices
 
@@ -246,12 +248,12 @@ This library provides support for a number of GPIO / I2C / SPI connected compone
 
 ## Performance
 
-I've done some limited performance tests (turning a GPIO on then off, see 
-[GpioPerfTest](https://github.com/mattjlewis/diozero/blob/master/diozero-sampleapps/src/main/java/com/diozero/sampleapps/GpioPerfTest.java)) 
-on a Raspberry Pi 2 and 3 using the various native device factory providers. I've also run tests using JNI APIs 
-directly without going via my DIO-Zero wrapper to assess the overhead of using my library (see 
-[WiringPiRawPerfTest](https://github.com/mattjlewis/diozero/blob/master/diozero-provider-wiringpi/src/main/java/com/diozero/internal/provider/wiringpi/WiringPiRawPerfTest.java) and 
-[PigpioPerfTest](https://github.com/mattjlewis/pigpioj/blob/master/pigpioj-java/src/main/java/com/diozero/pigpioj/test/PigpioPerfTest.java)) - 
+I've done some limited performance tests (turning a GPIO on then off, see
+[GpioPerfTest](https://github.com/mattjlewis/diozero/blob/master/diozero-sampleapps/src/main/java/com/diozero/sampleapps/GpioPerfTest.java))
+on a Raspberry Pi 2 and 3 using the various native device factory providers. I've also run tests using JNI APIs
+directly without going via my DIO-Zero wrapper to assess the overhead of using my library (see
+[WiringPiRawPerfTest](https://github.com/mattjlewis/diozero/blob/master/diozero-provider-wiringpi/src/main/java/com/diozero/internal/provider/wiringpi/WiringPiRawPerfTest.java) and
+[PigpioPerfTest](https://github.com/mattjlewis/pigpioj/blob/master/pigpioj-java/src/main/java/com/diozero/pigpioj/test/PigpioPerfTest.java)) -
 the overhead of DIO-Zero is approximately 25% for both pigpio and wiringPi. Here are the results:
 
 | Provider | Device | Frequency (kHz) |
@@ -270,11 +272,11 @@ the overhead of DIO-Zero is approximately 25% for both pigpio and wiringPi. Here
 | mmap | Pi3 |  7,686 |
 | mmap (JNI) | Pi3 |   11,007 |
 
-![Performance](images/Performance.png "Performance") 
+![Performance](docs/images/Performance.png "Performance") 
 
-For a discussion on why Pi4j 1.0 was so slow, see this [issue](https://github.com/Pi4J/pi4j/issues/158). 
-These results are in-line with those documented in the book 
-["Raspberry Pi with Java: Programming the Internet of Things"](http://www.amazon.co.uk/Raspberry-Pi-Java-Programming-Internet/dp/0071842012). 
+For a discussion on why Pi4j 1.0 was so slow, see this [issue](https://github.com/Pi4J/pi4j/issues/158).
+These results are in-line with those documented in the book
+["Raspberry Pi with Java: Programming the Internet of Things"](http://www.amazon.co.uk/Raspberry-Pi-Java-Programming-Internet/dp/0071842012).
 For reference, the author's results were:
 
 | Library | Frequency (kHz) |
@@ -301,8 +303,7 @@ This project is hosted on [GitHub](https://github.com/mattjlewis/diozero/), plea
 + Wireless access to Firmata devices (network and Bluetooth). E.g. [ESP32](https://learn.sparkfun.com/tutorials/esp32-thing-hookup-guide?_ga=1.116824388.33505106.1471290985#installing-the-esp32-arduino-core) [Firmata GitHub issue #315](https://github.com/firmata/arduino/issues/315)
 + Particle Photon support (via wifi using [VoodooSpark "firmware"](https://github.com/voodootikigod/voodoospark) - [JavaScript implementation](https://github.com/rwaldron/particle-io/blob/master/lib/particle.js))
 
-
-[Release History](RELEASE.md)
+[Release History](docs/RELEASE.md)
 
 ## License
 

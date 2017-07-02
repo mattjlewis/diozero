@@ -57,7 +57,7 @@ public abstract class BaseNativeDeviceFactory extends AbstractDeviceFactory impl
 	private static final int DEFAULT_SPI_BUFFER_SIZE = 4096;
 	
 	private static String createI2CKey(int controller, int address) {
-		return I2C_PREFIX + controller + "-" + address;
+		return I2C_PREFIX + controller + "-0x" + Integer.toHexString(address);
 	}
 	
 	private static String createSpiKey(int controller, int chipSelect) {

@@ -22,7 +22,7 @@ try (LED led = new LED(pin)) {
 }
 ```
 
-*class* **com.diozero.LED**{: .descname } (*gpio*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/LED.java){: .viewcode-link } [&para;](OutputDevices.md#led "Permalink to this definition"){: .headerlink }
+*class* **com.diozero.LED**{: .descname } (*gpio*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/devices/LED.java){: .viewcode-link } [&para;](OutputDevices.md#led "Permalink to this definition"){: .headerlink }
 
 : Extends [DigitalOutputDevice](API.md#digitaloutputdevice) and provides utility methods for controlling a Light Emitting Diode (LED).
     
@@ -47,7 +47,7 @@ try (LED led = new LED(pin)) {
 
 ## Buzzer
 
-*class* **com.diozero.Buzzer**{: .descname } (*gpio*, *activeHigh*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/Buzzer.java){: .viewcode-link } [&para;](OutputDevices.md#buzzer "Permalink to this definition"){: .headerlink }
+*class* **com.diozero.Buzzer**{: .descname } (*gpio*, *activeHigh*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/devices/Buzzer.java){: .viewcode-link } [&para;](OutputDevices.md#buzzer "Permalink to this definition"){: .headerlink }
 
 : Extends [DigitalOutputDevice](API.md#digitaloutputdevice) and represents a digital buzzer component.
     
@@ -96,7 +96,7 @@ try (PwmLed led = new PwmLed(pin)) {
 }
 ```
 
-*class* **com.diozero.PwmLed**{: .descname } (*gpio*, *initialValue=0*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/PwmLed.java){: .viewcode-link } [&para;](OutputDevices.md#pwm-led "Permalink to this definition"){: .headerlink }
+*class* **com.diozero.PwmLed**{: .descname } (*gpio*, *initialValue=0*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/devices/PwmLed.java){: .viewcode-link } [&para;](OutputDevices.md#pwm-led "Permalink to this definition"){: .headerlink }
 
 : Extends [DigitalOutputDevice](API.md#digitaloutputdevice) and represents a PWM controlled LED.
     
@@ -139,7 +139,7 @@ try (PwmLed led = new PwmLed(pin)) {
 
 ## RGB LED
 
-*class* **com.diozero.RgbLed**{: .descname } (*redPin*, *greenPin*, *bluePin*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/RgbLed.java){: .viewcode-link } [&para;](OutputDevices.md#rgb-led "Permalink to this definition"){: .headerlink }
+*class* **com.diozero.RgbLed**{: .descname } (*redPin*, *greenPin*, *bluePin*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/devices/RgbLed.java){: .viewcode-link } [&para;](OutputDevices.md#rgb-led "Permalink to this definition"){: .headerlink }
 
 : Represents a digital RGB LED controlled by three separate red / green / blue digital LED devices.
 
@@ -172,7 +172,7 @@ try (PwmLed led = new PwmLed(pin)) {
 
 ## RGB PWM LED
 
-*class* **com.diozero.RgbPwmLed**{: .descname } (*redPin*, *greenPin*, *bluePin*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/RgbPwmLed.java){: .viewcode-link } [&para;](OutputDevices.md#rgb-pwm-led "Permalink to this definition"){: .headerlink }
+*class* **com.diozero.RgbPwmLed**{: .descname } (*redPin*, *greenPin*, *bluePin*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/devices/RgbPwmLed.java){: .viewcode-link } [&para;](OutputDevices.md#rgb-pwm-led "Permalink to this definition"){: .headerlink }
 
 : Represents a PWM RGB LED controlled by three separate red / green / blue PWM LED devices.
 

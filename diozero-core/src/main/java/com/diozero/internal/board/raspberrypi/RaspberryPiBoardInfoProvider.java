@@ -275,7 +275,10 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 	public static class PiBRev1BoardInfo extends PiBoardInfo {
 		public PiBRev1BoardInfo(String code, String pcbRevision, int memory, String manufacturer) {
 			super(code, MODEL_B, pcbRevision, memory, manufacturer, BCM2835);
-
+		}
+		
+		@Override
+		public void initialisePins() {
 			int pin = 1;
 			addGeneralPinInfo(pin++, PinInfo.VCC_3V3);
 			addGeneralPinInfo(pin++, PinInfo.VCC_5V);
@@ -311,7 +314,10 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 	public static class PiABRev2BoardInfo extends PiBoardInfo {
 		public PiABRev2BoardInfo(String code, String model, int memory, String manufacturer) {
 			super(code, model, PCB_REV_2_0, memory, manufacturer, BCM2835);
-
+		}
+		
+		@Override
+		public void initialisePins() {
 			int pin = 1;
 			addGeneralPinInfo(pin++, PinInfo.VCC_3V3);
 			addGeneralPinInfo(pin++, PinInfo.VCC_5V);
@@ -349,7 +355,10 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 		
 		public PiABPlusBoardInfo(String code, String model, String pcbRevision, int memory, String manufacturer, String processor) {
 			super(code, model, pcbRevision, memory, manufacturer, processor);
-
+		}
+		
+		@Override
+		public void initialisePins() {
 			int pin = 1;
 			addGeneralPinInfo(pin++, PinInfo.VCC_3V3);
 			addGeneralPinInfo(pin++, PinInfo.VCC_5V);
@@ -411,7 +420,10 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 	public static class PiComputeModuleBoardInfo extends PiBoardInfo {
 		public PiComputeModuleBoardInfo(String code, int memory, String manufacturer, String processor) {
 			super(code, COMPUTE_MODULE, PCB_REV_1_2, memory, manufacturer, processor);
-
+		}
+		
+		@Override
+		public void initialisePins() {
 			// See https://www.raspberrypi.org/documentation/hardware/computemodule/RPI-CM-DATASHEET-V1_0.pdf
 			addGpioPinInfo(0, 3, PinInfo.DIGITAL_IN_OUT);
 			addGpioPinInfo(1, 5, PinInfo.DIGITAL_IN_OUT);

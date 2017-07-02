@@ -41,7 +41,7 @@ import org.pmw.tinylog.Logger;
 import com.diozero.api.DigitalInputDevice;
 import com.diozero.api.GpioEventTrigger;
 import com.diozero.api.GpioPullUpDown;
-import com.diozero.sandpit.MotionSensor;
+import com.diozero.devices.sandpit.MotionSensor;
 import com.diozero.util.SleepUtil;
 
 public class MotionTest implements Closeable {

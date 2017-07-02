@@ -56,7 +56,10 @@ public class TinkerBoardBoardInfoProvider implements BoardInfoProvider {
 		
 		private TinkerBoardBoardInfo() {
 			super(MAKE, MODEL, MEMORY, LIBRARY_PATH);
-
+		}
+		
+		@Override
+		public void initialisePins() {
 			// GPIO0_C1
 			addGpioPinInfo(16+1, "GPIO0_C1", 7, PinInfo.DIGITAL_IN_OUT);
 			
