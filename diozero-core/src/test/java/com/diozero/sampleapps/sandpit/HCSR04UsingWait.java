@@ -32,11 +32,13 @@ package com.diozero.sampleapps.sandpit;
  */
 
 
-import java.io.Closeable;
-
 import org.pmw.tinylog.Logger;
 
-import com.diozero.api.*;
+import com.diozero.api.DigitalOutputDevice;
+import com.diozero.api.DistanceSensorInterface;
+import com.diozero.api.GpioEventTrigger;
+import com.diozero.api.GpioPullUpDown;
+import com.diozero.api.WaitableDigitalInputDevice;
 import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 
@@ -53,7 +55,7 @@ import com.diozero.util.SleepUtil;
  * object that is pulse width and the range in proportion. We suggest to use over
  * 60ms measurement cycle, in order to prevent trigger signal to the echo signal
  */
-public class HCSR04UsingWait implements DistanceSensorInterface, Closeable {
+public class HCSR04UsingWait implements DistanceSensorInterface {
 	public static void main(String[] args) {
 		if (args.length != 2) {
 			Logger.error("Usage: {} <trigger GPIO> <echo GPIO>", HCSR04UsingWait.class.getName());

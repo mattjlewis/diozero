@@ -32,11 +32,14 @@ package com.diozero.devices;
  */
 
 
-import java.io.Closeable;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
-import com.diozero.api.*;
+import com.diozero.api.BarometerInterface;
+import com.diozero.api.HygrometerInterface;
+import com.diozero.api.I2CConstants;
+import com.diozero.api.I2CDevice;
+import com.diozero.api.ThermometerInterface;
 import com.diozero.util.RuntimeIOException;
 
 /**
@@ -46,7 +49,7 @@ import com.diozero.util.RuntimeIOException;
  * <a href="https://github.com/adafruit/Adafruit_BME280_Library/blob/master/">Adafruit / Python</a>
  * Adafruit_BME280.cpp
  */
-public class BME280 implements BarometerInterface, ThermometerInterface, HygrometerInterface, Closeable {
+public class BME280 implements BarometerInterface, ThermometerInterface, HygrometerInterface {
 	private static final int DEFAULT_ADDRESS = 0x76;
 	
 	private static final int CALIB_00_REG = 0x88;

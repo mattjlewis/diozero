@@ -32,8 +32,6 @@ package com.diozero.devices;
  */
 
 
-import java.io.Closeable;
-
 import org.pmw.tinylog.Logger;
 
 import com.diozero.api.I2CDevice;
@@ -41,7 +39,7 @@ import com.diozero.api.ThermometerInterface;
 import com.diozero.util.BitManipulation;
 import com.diozero.util.RuntimeIOException;
 
-public class LM73 implements ThermometerInterface, Closeable {
+public class LM73 implements ThermometerInterface {
 	public static enum Configuration {
 		LM73_0_ADDRESS_PIN_FLOAT(0x48),
 		LM73_0_ADDRESS_PIN_GROUND(0x49),

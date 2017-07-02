@@ -40,7 +40,7 @@ import com.diozero.api.motor.DualMotor;
 import com.diozero.devices.HCSR04;
 import com.diozero.devices.LED;
 import com.diozero.util.RuntimeIOException;
-import com.diozero.util.SleepUtil;;
+import com.diozero.util.SleepUtil;
 
 public abstract class RobotTest implements Closeable {
 	private static final int LED_FRONT_LEFT_PIN = 18;

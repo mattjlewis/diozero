@@ -32,11 +32,16 @@ package com.diozero.devices;
  */
 
 
-import java.io.Closeable;
-
 import org.pmw.tinylog.Logger;
 
-import com.diozero.api.*;
+import com.diozero.api.DeviceMode;
+import com.diozero.api.DigitalInputDevice;
+import com.diozero.api.DigitalInputDeviceInterface;
+import com.diozero.api.DigitalInputOutputDevice;
+import com.diozero.api.DigitalOutputDevice;
+import com.diozero.api.DistanceSensorInterface;
+import com.diozero.api.GpioEventTrigger;
+import com.diozero.api.GpioPullUpDown;
 import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 
@@ -53,7 +58,7 @@ import com.diozero.util.SleepUtil;
  * object that is pulse width and the range in proportion. We suggest to use over
  * 60ms measurement cycle, in order to prevent trigger signal to the echo signal
  */
-public class HCSR04 implements DistanceSensorInterface, Closeable {
+public class HCSR04 implements DistanceSensorInterface {
 	// Spec says #10us pulse (min) = 10,000 ns
 	private static final int PULSE_NS = 10_000; 
 	private static final double MAX_DISTANCE_CM = 400; // Max distance measurement

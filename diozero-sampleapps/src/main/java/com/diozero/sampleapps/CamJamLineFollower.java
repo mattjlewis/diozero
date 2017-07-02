@@ -41,7 +41,7 @@ import com.diozero.devices.CamJamKitDualMotor;
 import com.diozero.devices.HCSR04;
 import com.diozero.devices.LED;
 import com.diozero.util.RuntimeIOException;
-import com.diozero.util.SleepUtil;;
+import com.diozero.util.SleepUtil;
 
 /**
  * Line follower test application with CamJam EduKit motor controller, 3 IR sensors, an HC-SR04 distance sensor and 4 LEDs. To run:

@@ -32,11 +32,15 @@ package com.diozero.sampleapps.sandpit;
  */
 
 
-import java.io.Closeable;
-
 import org.pmw.tinylog.Logger;
 
-import com.diozero.api.*;
+import com.diozero.api.DigitalInputDevice;
+import com.diozero.api.DigitalInputEvent;
+import com.diozero.api.DigitalOutputDevice;
+import com.diozero.api.DistanceSensorInterface;
+import com.diozero.api.GpioEventTrigger;
+import com.diozero.api.GpioPullUpDown;
+import com.diozero.api.InputEventListener;
 import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 
@@ -70,7 +74,7 @@ import com.diozero.util.SleepUtil;
  *  {@code sudo java -cp tinylog-1.2.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar:diozero-provider-pigpio-$DIOZERO_VERSION.jar:pigpioj-java-1.0.1.jar com.diozero.sampleapps.sandpit.HCSR04UsingEvents 17 27}</li>
  * </ul>
  */
-public class HCSR04UsingEvents implements DistanceSensorInterface, Closeable, InputEventListener<DigitalInputEvent> {
+public class HCSR04UsingEvents implements DistanceSensorInterface, InputEventListener<DigitalInputEvent> {
 	public static void main(String[] args) {
 		if (args.length != 2) {
 			Logger.error("Usage: {} <trigger GPIO> <echo GPIO>", HCSR04UsingEvents.class.getName());
