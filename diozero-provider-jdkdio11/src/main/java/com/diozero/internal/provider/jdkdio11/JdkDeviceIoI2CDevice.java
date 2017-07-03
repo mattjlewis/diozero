@@ -70,7 +70,7 @@ public class JdkDeviceIoI2CDevice extends AbstractDevice implements I2CDeviceInt
 	}
 
 	@Override
-	public void closeDevice() throws RuntimeIOException {
+	protected void closeDevice() throws RuntimeIOException {
 		Logger.debug("closeDevice()");
 		if (device.isOpen()) {
 			try {

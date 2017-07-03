@@ -32,18 +32,13 @@ package com.diozero.api;
  */
 
 
-import java.io.Closeable;
-
 import com.diozero.util.RuntimeIOException;
 
-public interface BarometerInterface extends Closeable {
+public interface BarometerInterface extends SensorInterface {
 	/**
 	 * Get the pressure in kPa
 	 * @return pressure in kPa
 	 * @throws RuntimeIOException if an IO error occurs
 	 */
 	float getPressure() throws RuntimeIOException;
-	
-	@Override
-	void close();
 }

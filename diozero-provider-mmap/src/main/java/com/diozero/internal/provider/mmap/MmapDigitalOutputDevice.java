@@ -70,7 +70,7 @@ public class MmapDigitalOutputDevice extends AbstractDevice implements GpioDigit
 	}
 
 	@Override
-	public void closeDevice() {
+	protected void closeDevice() {
 		Logger.debug("closeDevice()");
 		// FIXME No GPIO close method?
 		// TODO Revert to default input mode?

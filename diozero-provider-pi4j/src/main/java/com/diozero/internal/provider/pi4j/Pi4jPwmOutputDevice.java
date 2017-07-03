@@ -84,7 +84,7 @@ public class Pi4jPwmOutputDevice extends AbstractDevice implements PwmOutputDevi
 	}
 
 	@Override
-	public void closeDevice() {
+	protected void closeDevice() {
 		Logger.debug("closeDevice()");
 		//GpioFactory.getInstance().unprovisionPin(pwmOutputPin);
 		switch (pwmType) {

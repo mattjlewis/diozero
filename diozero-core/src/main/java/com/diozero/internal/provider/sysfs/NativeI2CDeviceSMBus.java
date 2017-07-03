@@ -79,11 +79,18 @@ public class NativeI2CDeviceSMBus implements I2CSMBusInterface {
 		fd = CLOSED;
 	}
 	
-	/**
-	 * <p>This sends a single bit to the device, at the place of the Rd/Wr bit.</p>
-	 * <pre>A Addr Rd/Wr [A] P</pre>
-	 */
-	public void writeQuick() {
+	@Override
+	public void writeQuick(byte bit) {
+		if ((funcs & NativeI2C.I2C_FUNC_SMBUS_QUICK) == 0) {
+			Logger.warn("Function I2C_FUNC_SMBUS_QUICK isn't supported for device i2c-{}-0x{}",
+					Integer.valueOf(controller), Integer.toHexString(deviceAddress));
+			// TODO Throw an exception now or attempt anyway?
+		}
+		int rc = NativeI2C.writeQuick(fd, bit);
+		if (rc < 0) {
+			throw new RuntimeIOException("Error in SMBus.writeQuick for device i2c-" + controller + "-0x"
+					+ Integer.toHexString(deviceAddress) + ": " + rc);
+		}
 	}
 
 	@Override

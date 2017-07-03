@@ -35,8 +35,15 @@ import java.nio.ByteBuffer;
 
 import org.pmw.tinylog.Logger;
 
-import com.diozero.api.*;
-import com.diozero.internal.provider.*;
+import com.diozero.api.AnalogInputEvent;
+import com.diozero.api.PinInfo;
+import com.diozero.api.SPIConstants;
+import com.diozero.api.SpiClockMode;
+import com.diozero.api.SpiDevice;
+import com.diozero.internal.provider.AbstractDeviceFactory;
+import com.diozero.internal.provider.AbstractInputDevice;
+import com.diozero.internal.provider.AnalogInputDeviceFactoryInterface;
+import com.diozero.internal.provider.AnalogInputDeviceInterface;
 import com.diozero.util.BoardPinInfo;
 import com.diozero.util.RuntimeIOException;
 
@@ -304,7 +311,7 @@ public class McpAdc extends AbstractDeviceFactory implements AnalogInputDeviceFa
 		}
 
 		@Override
-		public void closeDevice() {
+		protected void closeDevice() {
 			Logger.debug("closeDevice()");
 			// TODO Nothing to do?
 		}

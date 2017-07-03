@@ -32,9 +32,7 @@ package com.diozero.api;
  */
 
 
-import java.io.Closeable;
-
-public interface HygrometerInterface extends Closeable {
+public interface HygrometerInterface extends SensorInterface {
 	/**
 	 * Get the relative humidity in percent.
 	 * @return The relative humidity in percent.

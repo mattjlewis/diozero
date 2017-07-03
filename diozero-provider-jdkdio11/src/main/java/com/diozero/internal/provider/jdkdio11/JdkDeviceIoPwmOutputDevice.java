@@ -107,7 +107,7 @@ public class JdkDeviceIoPwmOutputDevice extends AbstractDevice implements PwmOut
 	}
 
 	@Override
-	public void closeDevice() throws RuntimeIOException {
+	protected void closeDevice() throws RuntimeIOException {
 		Logger.debug("closeDevice()");
 		if (pwmChannel.isOpen()) {
 			try {

@@ -52,7 +52,7 @@ public abstract class TestSpiDevice extends AbstractDevice implements SpiDeviceI
 	}
 
 	@Override
-	public void closeDevice() throws RuntimeIOException {
+	protected void closeDevice() throws RuntimeIOException {
 		Logger.debug("closeDevice()");
 	}
 

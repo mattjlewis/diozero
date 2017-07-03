@@ -57,7 +57,7 @@ public class NativeI2C {
 	// System Management Bus (SMBus) commands
 	static native int smbusOpen(String adapter, int deviceAddress, boolean force);
 	static native void smbusClose(int fd);
-	static native int writeQuick(int fd, byte value);
+	static native int writeQuick(int fd, byte bit);
 	static native int readByte(int fd);
 	static native int writeByte(int fd, byte value);
 	static native int readBytes(int fd, int rxLength, byte[] rxData);

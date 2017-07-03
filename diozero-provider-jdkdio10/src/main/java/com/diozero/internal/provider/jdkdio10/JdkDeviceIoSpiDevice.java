@@ -72,7 +72,7 @@ public class JdkDeviceIoSpiDevice extends AbstractDevice implements SpiDeviceInt
 	}
 
 	@Override
-	public void closeDevice() throws RuntimeIOException {
+	protected void closeDevice() throws RuntimeIOException {
 		Logger.debug("closeDevice()");
 		if (device.isOpen()) {
 			try {

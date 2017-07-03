@@ -84,7 +84,7 @@ public class WiringPiSpiDevice extends AbstractDevice implements SpiDeviceInterf
 	}
 
 	@Override
-	public void closeDevice() throws RuntimeIOException {
+	protected void closeDevice() throws RuntimeIOException {
 		Logger.debug("closeDevice()");
 		// No way to close a wiringPi SPI device file handle?!
 		handle = CLOSED;

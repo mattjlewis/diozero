@@ -55,7 +55,7 @@ public class PigpioJPwmOutputDevice extends AbstractDevice implements PwmOutputD
 	}
 
 	@Override
-	public void closeDevice() {
+	protected void closeDevice() {
 		// TODO Nothing to do?
 	}
 

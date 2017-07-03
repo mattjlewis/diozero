@@ -64,7 +64,7 @@ public class JdkDeviceIoGpioOutputDevice extends AbstractDevice implements GpioD
 	}
 
 	@Override
-	public void closeDevice() throws RuntimeIOException {
+	protected void closeDevice() throws RuntimeIOException {
 		Logger.debug("closeDevice()");
 		if (pin.isOpen()) {
 			try {

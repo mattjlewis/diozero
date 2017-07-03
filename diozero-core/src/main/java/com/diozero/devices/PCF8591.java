@@ -216,7 +216,7 @@ AnalogOutputDeviceFactoryInterface {
 		}
 
 		@Override
-		public void closeDevice() {
+		protected void closeDevice() {
 			Logger.debug("closeDevice()");
 			// TODO Nothing to do?
 		}

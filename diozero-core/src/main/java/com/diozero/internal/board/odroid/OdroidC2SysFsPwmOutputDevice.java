@@ -84,7 +84,7 @@ public class OdroidC2SysFsPwmOutputDevice extends AbstractDevice implements PwmO
 	}
 
 	@Override
-	public void closeDevice() {
+	protected void closeDevice() {
 		try {
 			dutyFile.close();
 		} catch (IOException e) {

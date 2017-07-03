@@ -84,7 +84,7 @@ public class SysFsPwmOutputDevice extends AbstractDevice implements PwmOutputDev
 	}
 
 	@Override
-	public void closeDevice() {
+	protected void closeDevice() {
 		try { setEnabled(false); } catch (Exception e) { }
 		try { dutyFile.close(); } catch (Exception e) { }
 		Path pwm_chip_root = FileSystems.getDefault().getPath("/sys/class/pwm/pwmchip" + pwmChip);

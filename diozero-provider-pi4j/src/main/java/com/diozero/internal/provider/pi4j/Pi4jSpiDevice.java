@@ -61,7 +61,7 @@ public class Pi4jSpiDevice extends AbstractDevice implements SpiDeviceInterface 
 	}
 
 	@Override
-	public void closeDevice() throws RuntimeIOException {
+	protected void closeDevice() throws RuntimeIOException {
 		Logger.debug("closeDevice()");
 		// No way to close a Pi4J SPI Device?!
 		//spiDevice.close();

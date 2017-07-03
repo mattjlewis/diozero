@@ -60,7 +60,7 @@ public class WiringPiDigitalOutputDevice extends AbstractDevice implements GpioD
 	}
 
 	@Override
-	public void closeDevice() {
+	protected void closeDevice() {
 		Logger.debug("closeDevice()");
 		GpioUtil.unexport(gpio);
 	}

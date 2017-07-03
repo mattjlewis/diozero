@@ -453,7 +453,7 @@ implements GpioDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, Gp
 		}
 	
 		@Override
-		public void closeDevice() throws RuntimeIOException {
+		protected void closeDevice() throws RuntimeIOException {
 			Logger.debug("closeDevice()");
 			removeListener();
 			mcp23008.closePin(gpio);

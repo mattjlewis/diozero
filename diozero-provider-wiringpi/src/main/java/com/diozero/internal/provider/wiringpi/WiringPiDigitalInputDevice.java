@@ -93,7 +93,7 @@ implements GpioDigitalInputDeviceInterface, GpioInterruptCallback {
 	}
 
 	@Override
-	public void closeDevice() {
+	protected void closeDevice() {
 		Logger.debug("closeDevice()");
 		removeListener();
 		GpioUtil.unexport(gpio);

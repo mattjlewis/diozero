@@ -72,6 +72,6 @@ public class TestDigitalInputDevice extends AbstractInputDevice<DigitalInputEven
 	}
 
 	@Override
-	public void closeDevice() throws RuntimeIOException {
+	protected void closeDevice() throws RuntimeIOException {
 	}
 }

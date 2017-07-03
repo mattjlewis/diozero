@@ -49,7 +49,7 @@ public class TestPwmOutputDevice extends AbstractDevice implements PwmOutputDevi
 	}
 
 	@Override
-	public void closeDevice() {
+	protected void closeDevice() {
 		Logger.debug("closeDevice()");
 	}
 

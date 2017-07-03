@@ -497,7 +497,7 @@ implements GpioDeviceFactoryInterface, PwmOutputDeviceFactoryInterface,
 		}
 	
 		@Override
-		public void closeDevice() {
+		protected void closeDevice() {
 			Logger.debug("closeDevice()");
 			piconZero.closeChannel(getChannel());
 		}
@@ -530,7 +530,7 @@ implements GpioDeviceFactoryInterface, PwmOutputDeviceFactoryInterface,
 		}
 		
 		@Override
-		public void closeDevice() {
+		protected void closeDevice() {
 			piconZero.closeChannel(getChannel());
 		}
 		
@@ -581,7 +581,7 @@ implements GpioDeviceFactoryInterface, PwmOutputDeviceFactoryInterface,
 		}
 	
 		@Override
-		public void closeDevice() {
+		protected void closeDevice() {
 			piconZero.closeChannel(channel);
 		}
 		

@@ -4,7 +4,7 @@ package com.diozero.api;
  * #%L
  * Organisation: mattjlewis
  * Project:      Device I/O Zero - Core
- * Filename:     ThermometerInterface.java  
+ * Filename:     SensorInterface.java  
  * 
  * This file is part of the diozero project. More information about this project
  * can be found at http://www.diozero.com/
@@ -32,13 +32,9 @@ package com.diozero.api;
  */
 
 
-import com.diozero.util.RuntimeIOException;
+import java.io.Closeable;
 
-public interface ThermometerInterface extends SensorInterface {
-	/**
-	 * Get temperature in degrees celsius
-	 * @return Temperature (deg C)
-	 * @throws RuntimeIOException if an I/O error occurs
-	 */
-	float getTemperature() throws RuntimeIOException;
+public interface SensorInterface extends Closeable {
+	@Override
+	void close();
 }

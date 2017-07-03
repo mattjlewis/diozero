@@ -80,7 +80,7 @@ public class WiringPiPwmOutputDevice extends AbstractDevice implements PwmOutput
 	}
 
 	@Override
-	public void closeDevice() throws RuntimeIOException {
+	protected void closeDevice() throws RuntimeIOException {
 		Logger.debug("closeDevice()");
 		switch (pwmType) {
 		case HARDWARE:

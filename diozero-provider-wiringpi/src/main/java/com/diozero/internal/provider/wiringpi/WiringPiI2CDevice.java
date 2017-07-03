@@ -78,7 +78,7 @@ public class WiringPiI2CDevice extends AbstractDevice implements I2CDeviceInterf
 	}
 
 	@Override
-	public void closeDevice() throws RuntimeIOException {
+	protected void closeDevice() throws RuntimeIOException {
 		Logger.debug("closeDevice()");
 		// No way to close a wiringPi I2C Device?!
 		//handle = CLOSED;

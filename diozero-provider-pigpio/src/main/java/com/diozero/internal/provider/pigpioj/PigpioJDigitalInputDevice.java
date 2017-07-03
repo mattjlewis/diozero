@@ -91,7 +91,7 @@ public class PigpioJDigitalInputDevice extends AbstractInputDevice<DigitalInputE
 	}
 
 	@Override
-	public void closeDevice() throws RuntimeIOException {
+	protected void closeDevice() throws RuntimeIOException {
 		Logger.debug("closeDevice()");
 		// No GPIO close method in pigpio
 		removeListener();

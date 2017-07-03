@@ -58,7 +58,7 @@ public class Pi4jDigitalOutputDevice extends AbstractDevice implements GpioDigit
 	}
 
 	@Override
-	public void closeDevice() {
+	protected void closeDevice() {
 		Logger.debug("closeDevice()");
 		digitalOutputPin.setState(false);
 		digitalOutputPin.unexport();

@@ -97,8 +97,8 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeI2CDeviceS
 }
 
 JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeI2C_writeQuick(
-		JNIEnv* env, jclass clz, jint fd, jbyte value) {
-	int rc = i2c_smbus_write_quick(fd, value);
+		JNIEnv* env, jclass clz, jint fd, jbyte bit) {
+	int rc = i2c_smbus_write_quick(fd, bit);
 	if (rc < 0) {
 		fprintf(stderr, "Error in I2C SMBus writeQuick: %s.\n", strerror(errno));
 	}

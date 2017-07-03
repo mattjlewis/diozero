@@ -86,6 +86,11 @@ public class NativeI2CDeviceSysFs implements I2CSMBusInterface {
 	}
 	
 	@Override
+	public void writeQuick(byte bit) {
+		throw new UnsupportedOperationException("I2C write quick isn't possible via sysfs");
+	}
+	
+	@Override
 	public byte readByte() {
 		try {
 			return (byte) deviceFile.readUnsignedByte();

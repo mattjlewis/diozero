@@ -105,7 +105,7 @@ implements GpioDigitalInputDeviceInterface, GpioPinListenerDigital {
 	}
 
 	@Override
-	public void closeDevice() {
+	protected void closeDevice() {
 		Logger.debug("closeDevice()");
 		removeListener();
 		digitalInputPin.removeAllTriggers();

@@ -50,7 +50,7 @@ public class TestDigitalOutputDevice extends AbstractDevice implements GpioDigit
 	}
 
 	@Override
-	public void closeDevice() {
+	protected void closeDevice() {
 		Logger.debug("closeDevice()");
 	}
 
