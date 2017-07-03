@@ -2,3 +2,4 @@ target/
 /piconzero/
 /.pydevproject
 /.settings/
+**/*.md.html
