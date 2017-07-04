@@ -18,6 +18,14 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeI2C_getFun
 
 /*
  * Class:     com_diozero_internal_provider_sysfs_NativeI2C
+ * Method:    selectSlave
+ * Signature: (IIZ)I
+ */
+JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeI2C_selectSlave(
+		JNIEnv* env, jclass clz, jint fd, jint deviceAddress, jboolean force);
+
+/*
+ * Class:     com_diozero_internal_provider_sysfs_NativeI2C
  * Method:    smbusOpen
  * Signature: (Ljava/lang/String;IZ)I
  */
@@ -31,14 +39,6 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeI2C_smbusO
  */
 JNIEXPORT void JNICALL Java_com_diozero_internal_provider_sysfs_NativeI2C_smbusClose(
 		JNIEnv* env, jclass clz, jint fd);
-
-/*
- * Class:     com_diozero_internal_provider_sysfs_NativeI2CDeviceSysFs
- * Method:    selectSlave
- * Signature: (IIZ)I
- */
-JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeI2CDeviceSysFs_selectSlave(
-		JNIEnv* env, jclass clz, jint fd, jint deviceAddress, jboolean force);
 
 /*
  * Class:     com_diozero_internal_provider_sysfs_NativeI2C

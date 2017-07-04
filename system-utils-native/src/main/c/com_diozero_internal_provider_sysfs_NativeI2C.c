@@ -47,16 +47,30 @@
 #define long_t uint64_t
 #endif
 
+int selectSlave(int fd, int deviceAddress, int force) {
+	if (ioctl(fd, force ? I2C_SLAVE_FORCE : I2C_SLAVE, deviceAddress) < 0) {
+		fprintf(stderr, "Error selecting I2C_SLAVE: %s.\n", strerror(errno));
+		return -errno;
+	}
+
+	return 0;
+}
+
 JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeI2C_getFuncs(
 		JNIEnv* env, jclass clz, jint fd) {
 	uint32_t funcs;
 	int rc = ioctl(fd, I2C_FUNCS, &funcs);
 	if (rc < 0) {
 		fprintf(stderr, "Error reading I2C_FUNCS: %s\n", strerror(errno));
-		return -errno;
+		return rc;
 	}
 
 	return funcs;
+}
+
+JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeI2C_selectSlave(
+		JNIEnv* env, jclass clz, jint fd, jint deviceAddress, jboolean force) {
+	return selectSlave(fd, deviceAddress, force == JNI_TRUE);
 }
 
 JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeI2C_smbusOpen(
@@ -71,9 +85,10 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeI2C_smbusO
 		return -errno;
 	}
 
-	if (ioctl(fd, force ? I2C_SLAVE_FORCE : I2C_SLAVE, deviceAddress) < 0) {
+	int rc = selectSlave(fd, deviceAddress, force == JNI_TRUE);
+	if (rc < 0) {
 		close(fd);
-		return -errno;
+		return rc;
 	}
 
 	return fd;
@@ -84,16 +99,6 @@ JNIEXPORT void JNICALL Java_com_diozero_internal_provider_sysfs_NativeI2C_smbusC
 	printf("smbusClose()\n");
 	fflush(stdout);
 	close(fd);
-}
-
-JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeI2CDeviceSysFs_selectSlave(
-		JNIEnv* env, jclass clz, jint fd, jint deviceAddress, jboolean force) {
-	if (ioctl(fd, force ? I2C_SLAVE_FORCE : I2C_SLAVE, deviceAddress) < 0) {
-		fprintf(stderr, "Error selecting I2C_SLAVE: %s.\n", strerror(errno));
-		return -errno;
-	}
-
-	return 0;
 }
 
 JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeI2C_writeQuick(
