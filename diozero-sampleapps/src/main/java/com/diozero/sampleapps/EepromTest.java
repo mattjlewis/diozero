@@ -65,7 +65,7 @@ public class EepromTest {
 		try (McpEeprom eeprom = new McpEeprom(controller, deviceAddress, McpEeprom.Type.MCP_24xx512)) {
 			// Validate write byte and random read
 			for (int address = 0; address<2; address++) {
-				Logger.info("Address: 0x{}", Integer.valueOf(address));
+				Logger.info("Testing write and read for memory address: 0x{}", Integer.valueOf(address));
 				for (int data=0; data<256; data++) {
 					eeprom.writeByte(address, data);
 					int data_read = eeprom.readByte(address) & 0xff;
