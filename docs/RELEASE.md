@@ -46,7 +46,7 @@
 
 # Release 0.11 (work in progress)
 
-+ New devices: BH1750 luminosity sensor, SSD1331 96x64 65k colour OLED
-+ Moved classes in com.diozero to com.diozero.devices
-+ Changed the SPI interface from ByteBuffer to byte[]
-+ Added experimental support for Particle Photon using the VoodooSpark Firmware
++ New devices: BH1750 luminosity sensor, SSD1331 96x64 65k colour OLED.
++ Moved classes in com.diozero to com.diozero.devices.
++ Changed the SPI interface from ByteBuffer to byte array.
++ Added experimental support for Particle Photon using the VoodooSpark Firmware.
