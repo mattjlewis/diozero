@@ -79,7 +79,7 @@ public class SystemInfo {
 					}
 				});
 			} catch (IOException | NullPointerException | IndexOutOfBoundsException e) {
-				Logger.error(e, "Error reading '{}': {}", CPUINFO_FILE, e.getMessage());
+				Logger.warn("Error reading '{}': {}", CPUINFO_FILE, e.getMessage());
 			}
 
 			memoryKb = null;
@@ -90,7 +90,7 @@ public class SystemInfo {
 					}
 				});
 			} catch (IOException | NullPointerException | IndexOutOfBoundsException e) {
-				Logger.error(e, "Error reading '{}': {}", MEMINFO_FILE, e.getMessage());
+				Logger.warn("Error reading '{}': {}", MEMINFO_FILE, e.getMessage());
 			}
 			
 			initialised = true;

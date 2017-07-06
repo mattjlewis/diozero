@@ -31,6 +31,8 @@ package com.diozero.internal.provider;
  * #L%
  */
 
+
+import com.diozero.api.DeviceMode;
 import com.diozero.api.DigitalInputEvent;
 import com.diozero.api.InputEventListener;
 
@@ -38,4 +40,9 @@ public interface GpioDigitalInputDeviceInterface extends GpioDigitalDeviceInterf
 	void setDebounceTimeMillis(int debounceTime);
 	void setListener(InputEventListener<DigitalInputEvent> listener);
 	void removeListener();
+	
+	@Override
+	default DeviceMode getMode() {
+		return DeviceMode.DIGITAL_INPUT;
+	}
 }

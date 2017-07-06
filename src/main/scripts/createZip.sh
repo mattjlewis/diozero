@@ -46,10 +46,12 @@ files="../pigpioj/pigpioj-java/target/pigpioj-java-${pigpioj_version}.jar \
 	diozero-provider-mmap/target/diozero-provider-mmap-${version}.jar \
 	diozero-provider-pi4j/target/diozero-provider-pi4j-${version}.jar \
 	diozero-provider-pigpio/target/diozero-provider-pigpio-${version}.jar \
+	diozero-provider-voodoospark/target/diozero-provider-voodoospark-${version}.jar \
 	diozero-provider-wiringpi/target/diozero-provider-wiringpi-${version}.jar \
 	diozero-ws281x-java/target/diozero-ws281x-java-${version}.jar \
 	diozero-sampleapps/target/diozero-sampleapps-${version}.jar \
-	diozero-webapp/target/diozero-webapp-${version}.jar"
+	diozero-webapp/target/diozero-webapp-${version}.jar \
+	diozero-webapp/target/diozero-mqtt-server-${version}.jar"
 
 
 rm -f diozero-${version}.zip

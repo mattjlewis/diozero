@@ -32,7 +32,12 @@ package com.diozero.internal.provider;
  */
 
 
-import com.diozero.api.*;
+import com.diozero.api.DeviceAlreadyOpenedException;
+import com.diozero.api.DeviceMode;
+import com.diozero.api.GpioEventTrigger;
+import com.diozero.api.GpioPullUpDown;
+import com.diozero.api.InvalidModeException;
+import com.diozero.api.PinInfo;
 import com.diozero.util.RuntimeIOException;
 
 public interface GpioDeviceFactoryInterface extends DeviceFactoryInterface {
@@ -40,7 +45,7 @@ public interface GpioDeviceFactoryInterface extends DeviceFactoryInterface {
 			GpioEventTrigger trigger) throws RuntimeIOException {
 		PinInfo pin_info = getBoardPinInfo().getByGpioNumber(gpio);
 		if (pin_info == null || !pin_info.isSupported(DeviceMode.DIGITAL_INPUT)) {
-			throw new IllegalArgumentException("Invalid mode (digital input) for GPIO " + gpio);
+			throw new InvalidModeException("Invalid mode (digital input) for GPIO " + gpio);
 		}
 
 		String key = createPinKey(pin_info);
@@ -60,7 +65,7 @@ public interface GpioDeviceFactoryInterface extends DeviceFactoryInterface {
 			throws RuntimeIOException {
 		PinInfo pin_info = getBoardPinInfo().getByGpioNumber(gpio);
 		if (pin_info == null || !pin_info.isSupported(DeviceMode.DIGITAL_OUTPUT)) {
-			throw new IllegalArgumentException("Invalid mode (digital output) for GPIO " + gpio);
+			throw new InvalidModeException("Invalid mode (digital output) for GPIO " + gpio);
 		}
 
 		String key = createPinKey(pin_info);
@@ -79,10 +84,10 @@ public interface GpioDeviceFactoryInterface extends DeviceFactoryInterface {
 	default GpioDigitalInputOutputDeviceInterface provisionDigitalInputOutputDevice(int gpio, DeviceMode mode) throws RuntimeIOException {
 		PinInfo pin_info = getBoardPinInfo().getByGpioNumber(gpio);
 		if (pin_info == null || ! pin_info.getModes().containsAll(PinInfo.DIGITAL_IN_OUT)) {
-			throw new IllegalArgumentException("Invalid mode (digital input/output) for GPIO " + gpio);
+			throw new InvalidModeException("Invalid mode (digital input/output) for GPIO " + gpio);
 		}
 		if (mode != DeviceMode.DIGITAL_INPUT && mode != DeviceMode.DIGITAL_OUTPUT) {
-			throw new IllegalArgumentException("Invalid mode, must be DIGITAL_INPUT or DIGITAL_OUTPUT");
+			throw new InvalidModeException("Invalid mode, must be DIGITAL_INPUT or DIGITAL_OUTPUT");
 		}
 		
 		String key = createPinKey(pin_info);

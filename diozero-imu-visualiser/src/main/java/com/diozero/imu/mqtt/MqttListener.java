@@ -35,7 +35,12 @@ package com.diozero.imu.mqtt;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
-import org.eclipse.paho.client.mqttv3.*;
+import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
+import org.eclipse.paho.client.mqttv3.MqttCallback;
+import org.eclipse.paho.client.mqttv3.MqttClient;
+import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
+import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
 import com.diozero.api.imu.MqttConstants;
@@ -44,17 +49,25 @@ import com.interactivemesh.jfx.importer.tds.TdsModelImporter;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
-import javafx.scene.*;
+import javafx.scene.Camera;
+import javafx.scene.Group;
+import javafx.scene.Node;
+import javafx.scene.PerspectiveCamera;
+import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Cylinder;
 import javafx.scene.shape.Shape3D;
-import javafx.scene.transform.*;
+import javafx.scene.transform.Affine;
+import javafx.scene.transform.MatrixType;
+import javafx.scene.transform.Rotate;
+import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
+@SuppressWarnings("restriction")
 public class MqttListener extends Application implements MqttCallback, MqttConstants {
 	private static final int QUAT_SCALER = 0;
 	private static final int QUAT_X = 1;
@@ -79,7 +92,7 @@ public class MqttListener extends Application implements MqttCallback, MqttConst
 			System.exit(2);
 		}
 		
-		MqttListener.launch(args);
+		Application.launch(args);
 	}
 	
 	public MqttListener() {
@@ -129,21 +142,21 @@ public class MqttListener extends Application implements MqttCallback, MqttConst
 		Rotate rx = new Rotate(Math.toDegrees(ypr[0]), Rotate.X_AXIS);
 		Rotate ry = new Rotate(Math.toDegrees(ypr[1]), Rotate.Y_AXIS);
 		Rotate rz = new Rotate(Math.toDegrees(ypr[2]), Rotate.Z_AXIS);
-		double[] idt={1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1};
+		
+		double[] idt = { 1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1 };
 		Affine matrix = new Affine(idt, MatrixType.MT_3D_3x4, 0);
 		// http://www.j3d.org/matrix_faq/matrfaq_latest.html#Q54
 		matrix.setMxx(1 - (2*y*y + 2*z*z));	matrix.setMxy(2*x*y + 2*z*w);		matrix.setMxz(2*x*z - 2*y*w);
 		matrix.setMyx(2*x*y - 2*z*w);		matrix.setMyy(1 - (2*x*x + 2*z*z));	matrix.setMyz(2*y*z + 2*x*w);
 		matrix.setMzx(2*x*z + 2*y*w);		matrix.setMzy(2*y*z - 2*x*w);		matrix.setMzz(1 - (2*x*x + 2*y*y));
-		if (!Platform.isFxApplicationThread()) {
-			Platform.runLater(new Runnable() {
-				@Override
-				public void run() {
+		
+		if (! Platform.isFxApplicationThread()) {
+			Platform.runLater(() -> {
 					testObject.getTransforms().setAll(matrix);
 					//testObject.getTransforms().clear();
 					//testObject.getTransforms().addAll(rx, ry, rz);
 				}
-			});
+			);
 		}
 	}
 

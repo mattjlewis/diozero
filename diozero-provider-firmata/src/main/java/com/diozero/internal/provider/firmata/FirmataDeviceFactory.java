@@ -42,8 +42,22 @@ import org.firmata4j.Pin.Mode;
 import org.firmata4j.firmata.FirmataDevice;
 import org.pmw.tinylog.Logger;
 
-import com.diozero.api.*;
-import com.diozero.internal.provider.*;
+import com.diozero.api.DeviceAlreadyOpenedException;
+import com.diozero.api.DeviceMode;
+import com.diozero.api.GpioEventTrigger;
+import com.diozero.api.GpioPullUpDown;
+import com.diozero.api.InvalidModeException;
+import com.diozero.api.PinInfo;
+import com.diozero.api.SpiClockMode;
+import com.diozero.internal.provider.AnalogInputDeviceInterface;
+import com.diozero.internal.provider.AnalogOutputDeviceInterface;
+import com.diozero.internal.provider.BaseNativeDeviceFactory;
+import com.diozero.internal.provider.GpioDigitalInputDeviceInterface;
+import com.diozero.internal.provider.GpioDigitalInputOutputDeviceInterface;
+import com.diozero.internal.provider.GpioDigitalOutputDeviceInterface;
+import com.diozero.internal.provider.I2CDeviceInterface;
+import com.diozero.internal.provider.PwmOutputDeviceInterface;
+import com.diozero.internal.provider.SpiDeviceInterface;
 import com.diozero.util.BoardInfo;
 import com.diozero.util.RuntimeIOException;
 
@@ -129,7 +143,7 @@ public class FirmataDeviceFactory extends BaseNativeDeviceFactory {
 		// Special case - The Arduino can switch between digital and analog input hence use of gpio rather than adc
 		PinInfo pin_info = getBoardPinInfo().getByGpioNumber(gpio);
 		if (pin_info == null || ! pin_info.isSupported(DeviceMode.ANALOG_INPUT)) {
-			throw new IllegalArgumentException("Invalid mode (analog input) for GPIO " + gpio);
+			throw new InvalidModeException("Invalid mode (analog input) for GPIO " + gpio);
 		}
 		
 		String key = createPinKey(pin_info);

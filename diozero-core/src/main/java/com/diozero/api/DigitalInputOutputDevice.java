@@ -96,7 +96,7 @@ public class DigitalInputOutputDevice extends AbstractDigitalInputDevice {
 			return;
 		}
 		if (mode != DeviceMode.DIGITAL_INPUT && mode != DeviceMode.DIGITAL_OUTPUT) {
-			throw new IllegalArgumentException("Invalid mode value, must be DIGITAL_INPUT or DIGITAL_OUTPUT");
+			throw new InvalidModeException("Invalid mode value, must be DIGITAL_INPUT or DIGITAL_OUTPUT");
 		}
 		
 		device.setMode(mode);

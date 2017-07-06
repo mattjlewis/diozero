@@ -57,7 +57,7 @@ public abstract class AbstractDevice implements DeviceInterface {
 	@Override
 	public final void close() {
 		Logger.debug("close(), key={}", key);
-		if (!isOpen()) {
+		if (! isOpen()) {
 			Logger.warn("Device '{}' already closed", key);
 			return;
 		}

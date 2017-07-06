@@ -36,6 +36,7 @@ import org.pmw.tinylog.Logger;
 
 import com.diozero.api.DeviceAlreadyOpenedException;
 import com.diozero.api.DeviceMode;
+import com.diozero.api.InvalidModeException;
 import com.diozero.api.PinInfo;
 import com.diozero.util.RuntimeIOException;
 
@@ -53,7 +54,7 @@ public interface PwmOutputDeviceFactoryInterface extends DeviceFactoryInterface 
 		} else if (pin_info != null && pin_info.isSupported(DeviceMode.DIGITAL_OUTPUT)) {
 			Logger.warn("Hardware PWM not available on pin {}, reverting to software", Integer.valueOf(pwmOrGpioNum));
 		} else {
-			throw new IllegalArgumentException("Invalid mode (PWM output) for GPIO " + pwmOrGpioNum);
+			throw new InvalidModeException("Invalid mode (PWM output) for GPIO " + pwmOrGpioNum);
 		}
 
 		String key = createPinKey(pin_info);

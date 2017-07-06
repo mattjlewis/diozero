@@ -7,7 +7,7 @@
 		<version>0.11-SNAPSHOT</version>
 	</parent>
 	
-	<name>Device I/O Zero - high performance memory map GPIO control</name>
+	<name>Device I/O Zero - High performance mmap GPIO control</name>
 	<artifactId>diozero-provider-mmap</artifactId>
 	<packaging>jar</packaging>
 	

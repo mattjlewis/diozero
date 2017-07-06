@@ -67,14 +67,14 @@ implements GpioDigitalInputOutputDeviceInterface, PollEventListener {
 		Path gpio_dir = deviceFactory.getGpioDirectoryPath(gpio);
 		epollNative = new EpollNative();
 		
+		setMode(mode);
+		
 		valuePath = gpio_dir.resolve(VALUE_FILE);
 		try {
 			valueFile = new RandomAccessFile(valuePath.toFile(), "rw");
 		} catch (IOException e) {
-			throw new RuntimeIOException("Error opening value file for GPIO " + gpio, e);
+			throw new RuntimeIOException("Error opening value file '" + valuePath + "' for GPIO " + gpio, e);
 		}
-		
-		setMode(mode);
 	}
 
 	@Override

@@ -172,9 +172,9 @@ TODO Insert wiring diagram.
     : Get the distance in cm.
 
 
-## Mifare RC522 {: #mfrc522 }
+## Mifare RC522 (MFRC522) {: #mfrc522 }
 
-*class* **com.diozero.sandpit.MFRC522**{: .descname } (*controller*, *chipSelect*, *resetGpio*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/sandpit/MFRC522.java){: .viewcode-link } [&para;](SensorComponents.md#mfrc522 "Permalink to this definition"){: .headerlink }
+*class* **com.diozero.sandpit.MFRC522**{: .descname } (*controller*, *chipSelect*, *resetGpio*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/devices/MFRC522.java){: .viewcode-link } [&para;](SensorComponents.md#mfrc522 "Permalink to this definition"){: .headerlink }
 
 : Implements support for RFID cards such as the [Mifare MFRC522](https://www.nxp.com/documents/data_sheet/MFRC522.pdf).
 

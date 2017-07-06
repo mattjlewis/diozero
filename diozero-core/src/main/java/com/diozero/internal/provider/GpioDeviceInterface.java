@@ -32,6 +32,9 @@ package com.diozero.internal.provider;
  */
 
 
+import com.diozero.api.DeviceMode;
+
 public interface GpioDeviceInterface extends DeviceInterface {
 	int getGpio();
+	DeviceMode getMode();
 }

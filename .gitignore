@@ -3,3 +3,4 @@ target/
 /.pydevproject
 /.settings/
 **/*.md.html
+**/.settings

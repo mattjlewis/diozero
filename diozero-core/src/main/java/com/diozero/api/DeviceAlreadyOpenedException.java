@@ -32,8 +32,9 @@ package com.diozero.api;
  */
 
 
+import com.diozero.util.RuntimeIOException;
 
-public class DeviceAlreadyOpenedException extends RuntimeException {
+public class DeviceAlreadyOpenedException extends RuntimeIOException {
 	private static final long serialVersionUID = 4497456846858554237L;
 
 	public DeviceAlreadyOpenedException(String message) {

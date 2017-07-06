@@ -31,8 +31,15 @@ package com.diozero.internal.provider;
  * #L%
  */
 
+
+import com.diozero.api.DeviceMode;
 import com.diozero.util.RuntimeIOException;
 
 public interface AnalogOutputDeviceInterface extends AnalogInputDeviceInterface {
 	void setValue(float value) throws RuntimeIOException;
+	
+	@Override
+	default DeviceMode getMode() {
+		return DeviceMode.ANALOG_OUTPUT;
+	}
 }

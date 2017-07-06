@@ -31,6 +31,8 @@ package com.diozero.internal.provider;
  * #L%
  */
 
+
+import com.diozero.api.DeviceMode;
 import com.diozero.util.RuntimeIOException;
 
 public interface PwmOutputDeviceInterface extends GpioDeviceInterface {
@@ -51,4 +53,9 @@ public interface PwmOutputDeviceInterface extends GpioDeviceInterface {
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	void setValue(float value) throws RuntimeIOException;
+	
+	@Override
+	default DeviceMode getMode() {
+		return DeviceMode.PWM_OUTPUT;
+	}
 }

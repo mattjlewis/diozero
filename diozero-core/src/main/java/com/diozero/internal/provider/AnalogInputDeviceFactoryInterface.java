@@ -34,6 +34,7 @@ package com.diozero.internal.provider;
 
 import com.diozero.api.DeviceAlreadyOpenedException;
 import com.diozero.api.DeviceMode;
+import com.diozero.api.InvalidModeException;
 import com.diozero.api.PinInfo;
 import com.diozero.util.RuntimeIOException;
 
@@ -41,7 +42,7 @@ public interface AnalogInputDeviceFactoryInterface extends DeviceFactoryInterfac
 	default AnalogInputDeviceInterface provisionAnalogInputDevice(int adcNumber) throws RuntimeIOException {
 		PinInfo pin_info = getBoardPinInfo().getByAdcNumber(adcNumber);
 		if (pin_info == null || ! pin_info.isSupported(DeviceMode.ANALOG_INPUT)) {
-			throw new IllegalArgumentException("Invalid mode (analog input) for adc " + adcNumber);
+			throw new InvalidModeException("Invalid mode (analog input) for adc " + adcNumber);
 		}
 		
 		String key = createPinKey(pin_info);

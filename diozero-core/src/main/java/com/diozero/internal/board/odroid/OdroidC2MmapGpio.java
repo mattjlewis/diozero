@@ -42,8 +42,12 @@ import java.util.Random;
 
 import com.diozero.api.DeviceMode;
 import com.diozero.api.GpioPullUpDown;
+import com.diozero.api.InvalidModeException;
 import com.diozero.internal.provider.mmap.MmapGpioInterface;
-import com.diozero.util.*;
+import com.diozero.util.Hex;
+import com.diozero.util.MmapBufferNative;
+import com.diozero.util.MmapByteBuffer;
+import com.diozero.util.SleepUtil;
 
 /**
  * See <a href="https://github.com/hardkernel/wiringPi/blob/master/wiringPi/wiringPi.c">Odroid wiringPi</a> fork.
@@ -122,7 +126,7 @@ public class OdroidC2MmapGpio implements MmapGpioInterface {
 			gpioIntBuffer.put(reg, gpioIntBuffer.get(reg) & ~(1 << shift));
 			break;
 		default:
-			throw new IllegalArgumentException("Invalid GPIO mode " + mode + " for pin " + gpio);
+			throw new InvalidModeException("Invalid GPIO mode " + mode + " for pin " + gpio);
 		}
 	}
 	

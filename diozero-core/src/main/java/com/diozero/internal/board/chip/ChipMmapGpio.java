@@ -37,8 +37,12 @@ import java.nio.IntBuffer;
 
 import com.diozero.api.DeviceMode;
 import com.diozero.api.GpioPullUpDown;
+import com.diozero.api.InvalidModeException;
 import com.diozero.internal.provider.mmap.MmapGpioInterface;
-import com.diozero.util.*;
+import com.diozero.util.LibraryLoader;
+import com.diozero.util.MmapBufferNative;
+import com.diozero.util.MmapByteBuffer;
+import com.diozero.util.SleepUtil;
 
 // Register mapping courtesy of WereCatf
 //https://bbs.nextthing.co/t/chippy-gonzales-fast-gpio/14056/6?u=xtacocorex
@@ -127,12 +131,12 @@ public class ChipMmapGpio implements MmapGpioInterface {
 			break;
 		case PWM_OUTPUT:
 			if (gpio != 34 && gpio != 205) {
-				throw new IllegalArgumentException("Invalid GPIO mode " + mode + " for pin " + gpio);
+				throw new InvalidModeException("Invalid GPIO mode " + mode + " for pin " + gpio);
 			}
 			gpioIntBuffer.put(config_reg, current_reg_val | (0b010 << shift));
 			break;
 		default:
-			throw new IllegalArgumentException("Invalid GPIO mode " + mode + " for pin " + gpio);
+			throw new InvalidModeException("Invalid GPIO mode " + mode + " for pin " + gpio);
 		}
 	}
 	
