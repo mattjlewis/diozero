@@ -18,6 +18,8 @@ pages:
     - 'LED Strips': 'LEDStrips.md'
     - 'IMU Devices': 'IMUDevices.md'
 - Providers: 'Providers.md'
+- 'BeagleBone Black Setup': 'BeagleBoneBlackSetup.md'
+- Release: 'RELEASE.md'
 - License: 'license.md'
 
 copyright: Copyright &copy; 2016 Matt Lewis

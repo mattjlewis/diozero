@@ -1,12 +1,14 @@
 # Beaglebone Black Setup
 
+[Useful site](http://elinux.org/BeagleBoardDebian) for running Debian on BeagleBone boards. [Google Group](https://groups.google.com/forum/#!categories/beagleboard/beaglebone-black).
+
 ## Flash the onboard eMMC
 
 Download the latest [Debian Jessie IoT image](https://beagleboard.org/latest-images).
-Burn to a microSD card using a tool like Win32DiskImager or Etcher and boot the BeagleBone Black from the microSD card.
+Burn to a microSD card using a tool like Win32 Disk Imager or [Etcher](http://etcher.io) and boot the BeagleBone Black from the microSD card.
 To turn these images into eMMC flasher images, edit the ```/boot/uEnv.txt``` file on the Linux partition on the microSD card and remove the '#' on the line with ```cmdline=init=/opt/scripts/tools/eMMC/init-eMMC-flasher-v3.sh```.
 Enabling this will cause booting the microSD card to flash the eMMC.
-Boot the BeagleBone with this config change and it should flash the eMMC; the LEDs will cycle for a few minutes.
+Boot the BeagleBone with this config change and it should flash the eMMC; the LEDs will cycle for a few minutes (cylon sweep pattern).
 Login and power off the device, take the microSD card out and power-on the BeagleBone - it should now boot from eMMC. Format the microSD card.
 
 ## Setup the debian user account
@@ -131,4 +133,12 @@ Edit /boot/uEnv.txt, under ```##Example v4.1.x```:
 ```
 cape_disable=bone_capemgr.disable_partno=BB-BONELT-HDMI,BB-BONELT-HDMIN
 cape_enable=bone_capemgr.enable_partno=BB-SPIDEV0,BB-SPIDEV1
+```
+
+## Latest kernel script
+
+```
+cd /opt/scripts/tools/
+git pull
+sudo ./update_kernel.sh <OPTIONS>
 ```
