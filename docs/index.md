@@ -301,7 +301,7 @@ This project is hosted on [GitHub](https://github.com/mattjlewis/diozero/), plea
 + Wireless access to Firmata devices (network and Bluetooth). E.g. [ESP32](https://learn.sparkfun.com/tutorials/esp32-thing-hookup-guide?_ga=1.116824388.33505106.1471290985#installing-the-esp32-arduino-core) [Firmata GitHub issue #315](https://github.com/firmata/arduino/issues/315)
 + Particle Photon support (via wifi using [VoodooSpark "firmware"](https://github.com/voodootikigod/voodoospark) - [JavaScript implementation](https://github.com/rwaldron/particle-io/blob/master/lib/particle.js))
 
-[Release History](docs/RELEASE.md)
+[Release History](RELEASE.md)
 
 ## License
 
