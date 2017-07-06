@@ -13,10 +13,14 @@ The device native service provider library is defined in the following order:
 
 **Currently implemented service providers:**
 
++ [BBBIOlib](https://github.com/VegetableAvenger/BBBIOlib)
++ [Firmata4j](https://github.com/kurbatov/firmata4j)
 + [JDK Device I/O](https://wiki.openjdk.java.net/display/dio/Main) - versions 1.0 and 1.1
++ mmap
 + [Pi4j](http://pi4j.com/)
-+ [wiringPi](http://wiringpi.com/) via the Pi4j JNI wrapper classes
 + [pigpio](http://abyz.co.uk/rpi/pigpio/index.html) via my [JNI wrapper library](https://github.com/mattjlewis/pigpioj)
++ [VoodooSpark](https://github.com/voodootikigod/voodoospark)
++ [wiringPi](http://wiringpi.com/) via the Pi4j JNI wrapper classes
 
 See below for provider specific details.
 

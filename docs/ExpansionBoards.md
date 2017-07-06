@@ -26,7 +26,7 @@ try (McpAdc adc = new McpAdc(type, chipSelect); LDR ldr = new LDR(adc, pin, vRef
 }
 ```
 
-*class* **com.diozero.McpAdc**{: .descname } (*type*, *chipSelect*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/devices/McpAdc.java){: .viewcode-link } [&para;](ExpansionBoards.md#mcpadc "Permalink to this definition"){: .headerlink }
+*class* **com.diozero.devices.McpAdc**{: .descname } (*type*, *chipSelect*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/devices/McpAdc.java){: .viewcode-link } [&para;](ExpansionBoards.md#mcpadc "Permalink to this definition"){: .headerlink }
 
 : Implementation class for all supported MCP analog-to-digital converters.
 
@@ -68,7 +68,7 @@ try (MCP23017 mcp23017 = new MCP23017(intAPin, intBPin);
 }
 ```
 
-*class* **com.diozero.MCP23017**{: .descname } (*controller=1*, *address=0x20*, *interruptGpioA*, *interruptGpioB=interruptGpioA*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/devices/MCP23017.java){: .viewcode-link } [&para;](ExpansionBoards.md#mcp23017 "Permalink to this definition"){: .headerlink }
+*class* **com.diozero.devices.MCP23017**{: .descname } (*controller=1*, *address=0x20*, *interruptGpioA*, *interruptGpioB=interruptGpioA*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/devices/MCP23017.java){: .viewcode-link } [&para;](ExpansionBoards.md#mcp23017 "Permalink to this definition"){: .headerlink }
 
 : Provides support for the Microchip [MCP23017](http://www.microchip.com/wwwproducts/Devices.aspx?product=MCP23017) 16-bit input/output port expander. Input device state change notifications will only work if at least one of the MCP23017 interrupt pins is connected to the Raspberry Pi.
 
@@ -97,7 +97,7 @@ try (MCP23017 mcp23017 = new MCP23017(intAPin, intBPin);
 
 ## PCF8591 ADC / DAC {: #pcf8591 }
 
-*class* **com.diozero.sandpit.PCF8591**{: .descname } (*controller*=1, *address=0x40*, *inputMode*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/devices/PCF8591.java){: .viewcode-link } [&para;](ExpansionBoards.md#pcf8591 "Permalink to this definition"){: .headerlink }
+*class* **com.diozero.devices.PCF8591**{: .descname } (*controller*=1, *address=0x40*, *inputMode*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/devices/PCF8591.java){: .viewcode-link } [&para;](ExpansionBoards.md#pcf8591 "Permalink to this definition"){: .headerlink }
 
 : Supports the [NXP PCF8591](http://www.nxp.com/documents/data_sheet/PCF8591.pdf) ADC / DAC.
 
@@ -124,7 +124,7 @@ try (MCP23017 mcp23017 = new MCP23017(intAPin, intBPin);
 
 ## PCA9685 PWM / Servo Driver {: #pwm-servo-driver }
 
-*class* **com.diozero.PCA9685**{: .descname } (*controller*=1, *address=0x40*, *pwmFrequency*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/devices/PCA9685.java){: .viewcode-link } [&para;](ExpansionBoards.md#pca9685 "Permalink to this definition"){: .headerlink }
+*class* **com.diozero.devices.PCA9685**{: .descname } (*controller*=1, *address=0x40*, *pwmFrequency*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/devices/PCA9685.java){: .viewcode-link } [&para;](ExpansionBoards.md#pca9685 "Permalink to this definition"){: .headerlink }
 
 : Provides support for the [PCA9685](http://www.nxp.com/products/power-management/lighting-driver-and-controller-ics/i2c-led-display-control/16-channel-12-bit-pwm-fm-plus-ic-bus-led-controller:PCA9685) 12-bit 16-channel PWM driver as used by the [Adafruit PWM Servo Driver](https://www.adafruit.com/product/815). Implements [PwmOutputDeviceFactoryInterface](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/internal/provider/PwmOutputDeviceFactoryInterface.java) hence can be passed into the constructor of PWM output devices.
 

@@ -4,7 +4,7 @@
 
 TODO Insert wiring diagram.
 
-*class* **com.diozero.HCSR04**{: .descname } (*triggerGpioNum*, *echoGpioNum*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/HCSR04.java){: .viewcode-link } [&para;](SensorComponents.md#hc-sr04 "Permalink to this definition"){: .headerlink }
+*class* **com.diozero.devices.HCSR04**{: .descname } (*triggerGpioNum*, *echoGpioNum*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/devices/HCSR04.java){: .viewcode-link } [&para;](SensorComponents.md#hc-sr04 "Permalink to this definition"){: .headerlink }
 
 : Implements support for the [HC-SR04](http://www.micropik.com/PDF/HCSR04.pdf) Ultrasonic Ranging Module.
     
@@ -19,7 +19,7 @@ TODO Insert wiring diagram.
 
 ## Bosch BMP180
 
-*class* **com.diozero.BMP180**{: .descname } (*mode*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/BMP180.java){: .viewcode-link } [&para;](SensorComponents.md#bosch-bmp180 "Permalink to this definition"){: .headerlink }
+*class* **com.diozero.devices.BMP180**{: .descname } (*mode*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/devices/BMP180.java){: .viewcode-link } [&para;](SensorComponents.md#bosch-bmp180 "Permalink to this definition"){: .headerlink }
 
 : Implements support for the [Bosch Sensortec BMP180](http://www.bosch-sensortec.com/bst/products/all_products/bmp180) temperature and pressure sensor.
     
@@ -36,7 +36,7 @@ TODO Insert wiring diagram.
 
 ## Bosch BME280
 
-*class* **com.diozero.BME280**{: .descname } (*bus=1*, *address=0x76*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/BME280.java){: .viewcode-link } [&para;](SensorComponents.md#bosch-bme280 "Permalink to this definition"){: .headerlink }
+*class* **com.diozero.devices.BME280**{: .descname } (*bus=1*, *address=0x76*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/devices/BME280.java){: .viewcode-link } [&para;](SensorComponents.md#bosch-bme280 "Permalink to this definition"){: .headerlink }
 
 : Implements support for the [Bosch Sensortec BME280](http://www.bosch-sensortec.com/bst/products/all_products/bme280) pressure, humidity and temperature sensor.
     
@@ -79,7 +79,7 @@ TODO Insert wiring diagram.
 
 ## TSL2561 Digital Luminosity / Lux / Light Sensor {: #tsl2561 }
 
-*class* **com.diozero.TSL2561**{: .descname } (*tsl2561Package*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/TSL2561.java){: .viewcode-link } [&para;](SensorComponents.md#tsl2561 "Permalink to this definition"){: .headerlink }
+*class* **com.diozero.devices.TSL2561**{: .descname } (*tsl2561Package*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/devices/TSL2561.java){: .viewcode-link } [&para;](SensorComponents.md#tsl2561 "Permalink to this definition"){: .headerlink }
 
 : Implements support for the [Adafruit](https://www.adafruit.com/products/439) Digital Luminosity / Lux / Light Sensor - [Datasheet](https://www.adafruit.com/datasheets/TSL2561.pdf).
     
@@ -104,7 +104,7 @@ TODO Insert wiring diagram.
 
 ## STMicroelectronics HTS221 Humidity and Temperature Sensor {: #hts221 }
 
-*class* **com.diozero.HTS221**{: .descname } [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/HTS221.java){: .viewcode-link } [&para;](SensorComponents.md#hts221 "Permalink to this definition"){: .headerlink }
+*class* **com.diozero.devices.HTS221**{: .descname } [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/devices/HTS221.java){: .viewcode-link } [&para;](SensorComponents.md#hts221 "Permalink to this definition"){: .headerlink }
 
 : Implements support for the [STMicroelectronics]() Humidity and Temperature Sensor - [Datasheet](http://www2.st.com/content/ccc/resource/technical/document/datasheet/4d/9a/9c/ad/25/07/42/34/DM00116291.pdf/files/DM00116291.pdf/jcr:content/translations/en.DM00116291.pdf).
 
@@ -119,7 +119,7 @@ TODO Insert wiring diagram.
 
 ## STMicroelectronics LPS25H Pressure and Temperature Sensor {: #lps25h }
 
-*class* **com.diozero.LPS25H**{: .descname } [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/LPS25H.java){: .viewcode-link } [&para;](SensorComponents.md#lps25h "Permalink to this definition"){: .headerlink }
+*class* **com.diozero.devices.LPS25H**{: .descname } [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/devices/LPS25H.java){: .viewcode-link } [&para;](SensorComponents.md#lps25h "Permalink to this definition"){: .headerlink }
 
 : Implements support for the [STMicroelectronics](http://www.st.com/content/st_com/en/products/mems-and-sensors/pressure-sensors/lps25h.html) Pressure and Temperature Sensor - [Datasheet](http://www2.st.com/content/ccc/resource/technical/document/datasheet/58/d2/33/a4/42/89/42/0b/DM00066332.pdf/files/DM00066332.pdf/jcr:content/translations/en.DM00066332.pdf).
 
@@ -134,7 +134,7 @@ TODO Insert wiring diagram.
 
 ## 1-Wire Temperature Sensors
 
-*class* **com.diozero.W1ThermSensor**{: .descname } [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/W1ThermSensor.java){: .viewcode-link } [&para;](SensorComponents.md#1-wire-temperature-sensors "Permalink to this definition"){: .headerlink }
+*class* **com.diozero.devices.W1ThermSensor**{: .descname } [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/devices/W1ThermSensor.java){: .viewcode-link } [&para;](SensorComponents.md#1-wire-temperature-sensors "Permalink to this definition"){: .headerlink }
 
 : Support for 1-wire temperature sensors such as the DS18B20. Adafruit has a good [article on connecting these](https://learn.adafruit.com/adafruits-raspberry-pi-lesson-11-ds18b20-temperature-sensing?view=all) to the Raspberry Pi. Currently supported types: DS18S20, DS1822, DS18B20, DS1825, DS28EA00, MAX31850K.
 
@@ -159,7 +159,7 @@ TODO Insert wiring diagram.
 
 ## Sharp GP2Y0A21YK {: #gp2y0a21yk }
 
-*class* **com.diozero.GP2Y0A21YK**{: .descname } (*gpio*, *vRef*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/GP2Y0A21YK.java){: .viewcode-link } [&para;](SensorComponents.md#gp2y0a21yk "Permalink to this definition"){: .headerlink }
+*class* **com.diozero.devices.GP2Y0A21YK**{: .descname } (*gpio*, *vRef*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/devices/GP2Y0A21YK.java){: .viewcode-link } [&para;](SensorComponents.md#gp2y0a21yk "Permalink to this definition"){: .headerlink }
 
 : Implements support for the [Sharp GP2Y0A21YK](http://www.sharpsma.com/webfm_send/1208) distance sensor - [Datasheet](http://oomlout.com/parts/IC-PROX-01-guide.pdf).
 
@@ -174,7 +174,7 @@ TODO Insert wiring diagram.
 
 ## Mifare RC522 (MFRC522) {: #mfrc522 }
 
-*class* **com.diozero.sandpit.MFRC522**{: .descname } (*controller*, *chipSelect*, *resetGpio*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/devices/MFRC522.java){: .viewcode-link } [&para;](SensorComponents.md#mfrc522 "Permalink to this definition"){: .headerlink }
+*class* **com.diozero.devices.MFRC522**{: .descname } (*controller*, *chipSelect*, *resetGpio*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/devices/devices/MFRC522.java){: .viewcode-link } [&para;](SensorComponents.md#mfrc522 "Permalink to this definition"){: .headerlink }
 
 : Implements support for RFID cards such as the [Mifare MFRC522](https://www.nxp.com/documents/data_sheet/MFRC522.pdf).
 
