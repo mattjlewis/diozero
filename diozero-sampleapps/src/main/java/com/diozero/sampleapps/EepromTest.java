@@ -31,6 +31,9 @@ package com.diozero.sampleapps;
  * #L%
  */
 
+
+import java.util.Arrays;
+
 import org.pmw.tinylog.Logger;
 
 import com.diozero.devices.McpEeprom;
@@ -86,9 +89,12 @@ public class EepromTest {
 			address = 0x10;
 			byte b = eeprom.readByte(address);
 			Logger.debug("Read '" + ((char) b) + "'");
-			for (int i=0; i<text_to_write.length()-1; i++) {
+			for (int i=1; i<text_to_write.length(); i++) {
 				b = eeprom.readCurrentAddress();
 				Logger.debug("Read '" + ((char) b) + "'");
+				if (((char) b) != text_to_write.charAt(i)) {
+					Logger.error("Error expected '{}', read '{}'", Character.valueOf(text_to_write.charAt(i)), Character.valueOf((char) b));
+				}
 			}
 			
 			// Test writing more that a page size
@@ -99,8 +105,11 @@ public class EepromTest {
 			Logger.debug("read " + data.length + " bytes");
 			String text = new String(data);
 			Logger.debug("Read '" + text + "'");
+			if (! Arrays.equals(LOREM_IPSUM.getBytes(), data)) {
+				Logger.error("Expected to read Lorem Ipsum text");
+			}
 		} catch (RuntimeIOException e) {
-			Logger.error(e, "Error: {}", e);
+			Logger.error(e);
 		}
 	}
 }
