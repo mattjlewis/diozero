@@ -74,7 +74,7 @@ public class FirmataI2CDevice extends AbstractDevice implements I2CDeviceInterfa
 		conditions = new HashMap<>();
 		eventQueues = new HashMap<>();
 		
-		Logger.info("Creating new Firmata I2CDevice for address 0x{}", Integer.toHexString(address));
+		Logger.debug("Creating new Firmata I2CDevice for address 0x{}", Integer.toHexString(address));
 		try {
 			i2cDevice = deviceFactory.getIoDevice().getI2CDevice((byte) address);
 		} catch (IOException e) {
@@ -120,8 +120,13 @@ public class FirmataI2CDevice extends AbstractDevice implements I2CDeviceInterfa
 	}
 	
 	@Override
+	public boolean probe(com.diozero.api.I2CDevice.ProbeMode mode) {
+		return readByte() >= 0;
+	}
+	
+	@Override
 	public byte readByte() {
-		Logger.info("read()");
+		Logger.debug("read()");
 		byte data;
 		try {
 			ByteBuffer buffer = ByteBuffer.allocateDirect(1);
@@ -167,7 +172,7 @@ public class FirmataI2CDevice extends AbstractDevice implements I2CDeviceInterfa
 	
 	@Override
 	public byte readByteData(int register) {
-		Logger.info("read(0x{})", Integer.toHexString(register));
+		Logger.debug("read(0x{})", Integer.toHexString(register));
 		byte data;
 		try {
 			ByteBuffer buffer = ByteBuffer.allocateDirect(1);
@@ -195,7 +200,7 @@ public class FirmataI2CDevice extends AbstractDevice implements I2CDeviceInterfa
 
 	@Override
 	public void readI2CBlockData(int register, int subAddressSize, ByteBuffer buffer) throws RuntimeIOException {
-		Logger.info("read(0x{})", Integer.toHexString(register));
+		Logger.debug("read(0x{})", Integer.toHexString(register));
 		try {
 			i2cDevice.ask(register, (byte) buffer.remaining(), this);
 			waitForData(register, buffer);
@@ -224,7 +229,7 @@ public class FirmataI2CDevice extends AbstractDevice implements I2CDeviceInterfa
 
 	@Override
 	public void onReceive(I2CEvent event) {
-		Logger.info(event);
+		Logger.debug(event);
 		Integer register = Integer.valueOf(event.getRegister());
 		lock.lock();
 		try {

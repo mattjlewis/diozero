@@ -47,6 +47,10 @@ import com.diozero.util.RuntimeIOException;
  * Utility class reading / writing to I2C devices.
  */
 public class I2CDevice implements Closeable, I2CConstants {
+	public static enum ProbeMode {
+		QUICK, READ, AUTO;
+	}
+
 	private I2CDeviceInterface device;
 	private int controller;
 	private int address;
@@ -169,6 +173,14 @@ public class I2CDevice implements Closeable, I2CConstants {
 	public void close() throws RuntimeIOException {
 		Logger.debug("close()");
 		device.close();
+	}
+	
+	public boolean probe() {
+		return probe(ProbeMode.AUTO);
+	}
+	
+	public boolean probe(ProbeMode mode) {
+		return device.probe(mode);
 	}
 
 	public final boolean isOpen() {

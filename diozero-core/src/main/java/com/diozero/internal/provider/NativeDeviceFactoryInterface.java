@@ -44,7 +44,6 @@ public interface NativeDeviceFactoryInterface extends GpioDeviceFactoryInterface
 
 	void registerDeviceFactory(DeviceFactoryInterface deviceFactory);
 	BoardInfo getBoardInfo();
-	public int getSpiBufferSize();
 	
 	static Stream<NativeDeviceFactoryInterface> loadInstances() {
 		return StreamSupport.stream(ServiceLoader.load(NativeDeviceFactoryInterface.class).spliterator(), false);

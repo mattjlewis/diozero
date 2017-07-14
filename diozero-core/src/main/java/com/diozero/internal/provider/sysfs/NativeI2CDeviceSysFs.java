@@ -37,6 +37,8 @@ import java.io.RandomAccessFile;
 
 import org.pmw.tinylog.Logger;
 
+import com.diozero.api.DeviceBusyException;
+import com.diozero.api.I2CDevice;
 import com.diozero.util.FileUtil;
 import com.diozero.util.RuntimeIOException;
 
@@ -48,6 +50,8 @@ import com.diozero.util.RuntimeIOException;
  * <p><em>Warning</em> Not all methods have been tested!</p>
  */
 public class NativeI2CDeviceSysFs implements I2CSMBusInterface {
+	private static final int EBUSY = -16;
+	
 	private RandomAccessFile deviceFile;
 	private int controller;
 	private int deviceAddress;
@@ -63,6 +67,10 @@ public class NativeI2CDeviceSysFs implements I2CSMBusInterface {
 			int rc = NativeI2C.selectSlave(fd, deviceAddress, force);
 			if (rc < 0) {
 				close();
+				if (rc == EBUSY) {
+					throw new DeviceBusyException("Error, I2C device " + controller + "-0x"
+							+ Integer.toHexString(deviceAddress) + " is busy");
+				}
 				throw new RuntimeIOException("Error selecting I2C address " + controller + "-0x"
 						+ Integer.toHexString(deviceAddress) + ": " + rc);
 			}
@@ -82,6 +90,15 @@ public class NativeI2CDeviceSysFs implements I2CSMBusInterface {
 				Logger.error(e, "Error closing I2C device {}-0x{}: {}", Integer.valueOf(controller),
 						Integer.toHexString(deviceAddress), e);
 			}
+		}
+	}
+	
+	@Override
+	public boolean probe(I2CDevice.ProbeMode mode) {
+		try {
+			return deviceFile.readUnsignedByte() >= 0;
+		} catch (IOException e) {
+			return false;
 		}
 	}
 	

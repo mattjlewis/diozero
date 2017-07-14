@@ -66,7 +66,8 @@ public class NativeSpiDevice implements Closeable {
 		this.spiMode = mode.getMode();
 		bitsPerWord = SPIConstants.DEFAULT_WORD_LENGTH;
 		String spidev = "/dev/spidev" + controller + "." + chipSelect;
-		Logger.debug("Opening {}", spidev);
+		
+		Logger.debug("Opening {}, frequency {} Hz, mode {}", spidev, Integer.valueOf(speedHz), mode);
 		fd = spiOpen(spidev, spiMode, speedHz, bitsPerWord, lsbFirst);
 	}
 	

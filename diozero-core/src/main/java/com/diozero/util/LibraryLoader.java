@@ -31,8 +31,6 @@ package com.diozero.util;
  * #L%
  */
 
-
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -44,6 +42,7 @@ import org.pmw.tinylog.Logger;
 
 public class LibraryLoader {
 	private static final Map<String, Boolean> LOADED_LIBRARIES = new HashMap<>();
+	private static final String LIBRARY_EXTENSION = System.getProperty("os.name").startsWith("Windows") ? ".dll" : ".so";
 	
 	public static void loadLibrary(Class<?> clz, String libName) throws UnsatisfiedLinkError {
 		synchronized (LOADED_LIBRARIES) {
@@ -51,23 +50,17 @@ public class LibraryLoader {
 				boolean loaded = false;
 				
 				// First try load the library from within the JAR file
-				@SuppressWarnings("resource")
-				InputStream is = clz.getResourceAsStream(
-						"/lib/" + DeviceFactoryHelper.getNativeDeviceFactory().getBoardInfo().getLibraryPath() + "/lib"
-								+ libName + ".so");
-				if (is != null) {
-					try {
-						Path path = Files.createTempFile("lib" + libName, ".so");
-						path.toFile().deleteOnExit();
-						Files.copy(is, path, StandardCopyOption.REPLACE_EXISTING);
-						Runtime.getRuntime().load(path.toString());
-						loaded = true;
-						Logger.info("Loaded library '{}' from classpath", libName);
-					} catch (Throwable t) {
-						Logger.warn("Error loading library '{}' from classpath, trying System.loadLibrary: {}", libName, t);
-					} finally {
-						try { is.close(); } catch (IOException e) { }
-					}
+				String lib_file = "/lib/" + DeviceFactoryHelper.getNativeDeviceFactory().getBoardInfo().getLibraryPath() + "/lib"
+						+ libName + LIBRARY_EXTENSION;
+				try (InputStream is = clz.getResourceAsStream(lib_file)) {
+					Path path = Files.createTempFile("lib" + libName, LIBRARY_EXTENSION);
+					path.toFile().deleteOnExit();
+					Files.copy(is, path, StandardCopyOption.REPLACE_EXISTING);
+					Runtime.getRuntime().load(path.toString());
+					loaded = true;
+					Logger.debug("Loaded library '{}' from classpath", libName);
+				} catch (Throwable t) {
+					Logger.warn("Error loading library '{}' from classpath, trying System.loadLibrary: {}", libName, t);
 				}
 				if (! loaded) {
 					// Try load from the Java system library path (-Djava.library.path)

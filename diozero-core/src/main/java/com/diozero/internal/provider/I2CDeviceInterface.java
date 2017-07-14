@@ -33,9 +33,12 @@ package com.diozero.internal.provider;
 
 import java.nio.ByteBuffer;
 
+import com.diozero.api.I2CDevice;
 import com.diozero.util.RuntimeIOException;
 
 public interface I2CDeviceInterface extends DeviceInterface {
+	boolean probe(I2CDevice.ProbeMode mode) throws RuntimeIOException;
+	
 	byte readByte() throws RuntimeException;
 	void writeByte(byte b) throws RuntimeException;
 	

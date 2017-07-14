@@ -50,6 +50,10 @@ public class NativeI2C {
 	static final int I2C_FUNC_SMBUS_WRITE_BLOCK_DATA = 0x02000000;
 	static final int I2C_FUNC_SMBUS_READ_I2C_BLOCK   = 0x04000000; /* I2C-like block xfer  */
 	static final int I2C_FUNC_SMBUS_WRITE_I2C_BLOCK  = 0x08000000; /* w/ 1-byte reg. addr. */
+	
+	/* smbus_access read or write markers */
+	public static final byte I2C_SMBUS_READ = 1;
+	public static final byte I2C_SMBUS_WRITE = 0;
 
 	static native int getFuncs(int fd);
 	static native int selectSlave(int fd, int deviceAddress, boolean force);

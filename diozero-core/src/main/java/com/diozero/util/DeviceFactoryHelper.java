@@ -70,7 +70,7 @@ public class DeviceFactoryHelper {
 							.orElse(new SysFsDeviceFactory());
 				}
 
-				Logger.info("Using native device factory class {}", nativeDeviceFactory.getClass().getSimpleName());
+				Logger.debug("Using native device factory class {}", nativeDeviceFactory.getClass().getSimpleName());
 					
 				Runtime.getRuntime().addShutdownHook(new ShutdownHandlerThread(nativeDeviceFactory));
 			}

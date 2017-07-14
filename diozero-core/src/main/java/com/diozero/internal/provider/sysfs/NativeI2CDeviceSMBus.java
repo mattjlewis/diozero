@@ -33,6 +33,7 @@ package com.diozero.internal.provider.sysfs;
 
 import org.pmw.tinylog.Logger;
 
+import com.diozero.api.I2CDevice;
 import com.diozero.util.RuntimeIOException;
 
 /**
@@ -77,6 +78,32 @@ public class NativeI2CDeviceSMBus implements I2CSMBusInterface {
 	public void close() {
 		NativeI2C.smbusClose(fd);
 		fd = CLOSED;
+	}
+	
+	@Override
+	/*
+	 * Code ported from <a href="https://fossies.org/dox/i2c-tools-3.1.2/i2cdetect_8c_source.html#l00080">i2c-tools</a>.
+	 */
+	public boolean probe(I2CDevice.ProbeMode mode) {
+		int res;
+		switch (mode) {
+		case QUICK:
+			/* This is known to corrupt the Atmel AT24RF08 EEPROM */
+			res = NativeI2C.writeQuick(fd, NativeI2C.I2C_SMBUS_WRITE);
+			break;
+		case READ:
+			/* This is known to lock SMBus on various write-only chips (mainly clock chips) */
+			res = NativeI2C.readByte(fd);
+			break;
+		default:
+			if ((deviceAddress >= 0x30 && deviceAddress <= 0x37) || (deviceAddress >= 0x50 && deviceAddress <= 0x5F) ||
+					(funcs & NativeI2C.I2C_FUNC_SMBUS_QUICK) == 0) {
+				res = NativeI2C.readByte(fd);
+			} else {
+				res = NativeI2C.writeQuick(fd, NativeI2C.I2C_SMBUS_WRITE);
+			}
+		}
+		return res >= 0;
 	}
 	
 	@Override

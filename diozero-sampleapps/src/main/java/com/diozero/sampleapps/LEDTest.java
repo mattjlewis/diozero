@@ -55,6 +55,8 @@ import com.diozero.util.SleepUtil;
  *  {@code sudo java -cp tinylog-1.2.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar:diozero-provider-pigpio-$DIOZERO_VERSION.jar:pigpioj-java-1.0.1.jar com.diozero.sampleapps.LEDTest 12}</li>
  * <li>mmap:<br>
  *  {@code java -cp tinylog-1.2.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar:diozero-provider-mmap-$DIOZERO_VERSION.jar com.diozero.sampleapps.LEDTest 12}</li>
+ * <li>Firmata4j:<br>
+ *  {@code java -cp tinylog-1.2.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar:diozero-provider-firmata4j-$DIOZERO_VERSION.jar:firmata4j-2.3.5.jar:jssc-2.8.0.jar com.diozero.sampleapps.LEDTest 12}</li>
  * </ul>
  */
 public class LEDTest {

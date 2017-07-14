@@ -34,5 +34,11 @@ package com.diozero.internal.provider;
 import com.diozero.util.RuntimeIOException;
 
 public interface I2CDeviceFactoryInterface extends DeviceFactoryInterface {
+	static final String I2C_PREFIX = "-I2C-";
+	
 	I2CDeviceInterface provisionI2CDevice(int controller, int address, int addressSize, int clockFrequency) throws RuntimeIOException;
+	
+	static String createI2CKey(String keyPrefix, int controller, int address) {
+		return keyPrefix + I2C_PREFIX + controller + "-0x" + Integer.toHexString(address);
+	}
 }

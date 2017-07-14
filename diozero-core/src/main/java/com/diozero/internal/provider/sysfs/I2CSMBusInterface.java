@@ -34,11 +34,19 @@ package com.diozero.internal.provider.sysfs;
 
 import java.io.Closeable;
 
+import com.diozero.api.I2CDevice;
+
 public interface I2CSMBusInterface extends Closeable {
 	static final int MAX_I2C_BLOCK_SIZE = 32;
 	
 	@Override
 	void close();
+	
+	/**
+	 * Probe this I2C device
+	 * @return True if the probe is successful
+	 */
+	boolean probe(I2CDevice.ProbeMode mode);
 	
 	/**
 	 * <p>SMBus Quick Command</p>

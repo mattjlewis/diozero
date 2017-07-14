@@ -36,6 +36,7 @@ import java.nio.ByteBuffer;
 
 import org.pmw.tinylog.Logger;
 
+import com.diozero.api.I2CDevice;
 import com.diozero.internal.provider.AbstractDevice;
 import com.diozero.internal.provider.DeviceFactoryInterface;
 import com.diozero.internal.provider.I2CDeviceInterface;
@@ -50,6 +51,11 @@ public class TestI2CDevice extends AbstractDevice implements I2CDeviceInterface 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
 		Logger.debug("closeDevice()");
+	}
+	
+	@Override
+	public boolean probe(I2CDevice.ProbeMode mode) {
+		return true;
 	}
 
 	@Override

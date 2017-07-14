@@ -80,6 +80,15 @@ public class Pi4jI2CDevice extends AbstractDevice implements I2CDeviceInterface 
 		// No way to tell if it is open?!
 		return device != null;
 	}
+	
+	@Override
+	public boolean probe(com.diozero.api.I2CDevice.ProbeMode mode) {
+		try {
+			return device.read() >= 0;
+		} catch (IOException e) {
+			return false;
+		}
+	}
 
 	@Override
 	public byte readByte() throws RuntimeException {

@@ -38,6 +38,7 @@ import org.pmw.tinylog.Logger;
 import com.diozero.internal.provider.AbstractDevice;
 import com.diozero.internal.provider.DeviceFactoryInterface;
 import com.diozero.internal.provider.I2CDeviceInterface;
+import com.diozero.internal.provider.sysfs.NativeI2C;
 import com.diozero.util.RuntimeIOException;
 
 import uk.pigpioj.PigpioInterface;
@@ -82,6 +83,28 @@ public class PigpioJI2CDevice extends AbstractDevice implements I2CDeviceInterfa
 		if (rc < 0) {
 			throw new RuntimeIOException("Error calling pigpioImpl.i2cClose(), response: " + rc);
 		}
+	}
+	
+	@Override
+	public boolean probe(com.diozero.api.I2CDevice.ProbeMode mode) {
+		int res;
+		switch (mode) {
+		case QUICK:
+			/* This is known to corrupt the Atmel AT24RF08 EEPROM */
+			res = pigpioImpl.i2cWriteQuick(handle, NativeI2C.I2C_SMBUS_WRITE);
+			break;
+		case READ:
+			/* This is known to lock SMBus on various write-only chips (mainly clock chips) */
+			res = pigpioImpl.i2cReadByte(handle);
+			break;
+		default:
+			if ((address >= 0x30 && address <= 0x37) || (address >= 0x50 && address <= 0x5F)) {
+				res = pigpioImpl.i2cReadByte(handle);
+			} else {
+				res = pigpioImpl.i2cWriteQuick(handle, NativeI2C.I2C_SMBUS_WRITE);
+			}
+		}
+		return res >= 0;
 	}
 
 	@Override

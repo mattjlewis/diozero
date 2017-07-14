@@ -86,6 +86,15 @@ public class WiringPiI2CDevice extends AbstractDevice implements I2CDeviceInterf
 		//i2cDevice.close();
 		device = null;
 	}
+	
+	@Override
+	public boolean probe(com.diozero.api.I2CDevice.ProbeMode mode) {
+		try {
+			return device.read() >= 0;
+		} catch (IOException e) {
+			return false;
+		}
+	}
 
 	@Override
 	public boolean isOpen() {

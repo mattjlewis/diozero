@@ -31,10 +31,34 @@ package com.diozero.internal.provider;
  * #L%
  */
 
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
+import org.pmw.tinylog.Logger;
+
 import com.diozero.api.SpiClockMode;
 import com.diozero.util.RuntimeIOException;
 
 public interface SpiDeviceFactoryInterface extends DeviceFactoryInterface {
+	static final int DEFAULT_SPI_BUFFER_SIZE = 4096;
+	static final String SPI_PREFIX = "-SPI-";
+	
 	SpiDeviceInterface provisionSpiDevice(int controller, int chipSelect, int frequency,
 			SpiClockMode spiClockMode, boolean lsbFirst) throws RuntimeIOException;
+
+	default int getSpiBufferSize() {
+		try {
+			return Files.lines(Paths.get("/sys/module/spidev/parameters/bufsiz")).mapToInt(Integer::parseInt).findFirst()
+					.orElse(DEFAULT_SPI_BUFFER_SIZE);
+		} catch (IOException e) {
+			Logger.warn("Unable to read kernel SPI buffer size, using default: {}", e);
+			return DEFAULT_SPI_BUFFER_SIZE;
+		}
+	}
+	
+	static String createSpiKey(String keyPrefix, int controller, int chipSelect) {
+		return keyPrefix + SPI_PREFIX + controller + "-" + chipSelect;
+	}
 }

@@ -30,9 +30,10 @@ package com.diozero.sampleapps;
  * THE SOFTWARE.
  * #L%
  */
-
-
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
@@ -44,11 +45,11 @@ import org.imgscalr.Scalr;
 import org.pmw.tinylog.Logger;
 
 import com.diozero.api.DigitalOutputDevice;
+import com.diozero.devices.LED;
 import com.diozero.devices.SSD1331;
 import com.diozero.devices.SsdOled;
 import com.diozero.sampleapps.gol.GameOfLife;
 import com.diozero.util.DeviceFactoryHelper;
-import com.diozero.util.SleepUtil;
 
 /**
  * <ul>
@@ -68,10 +69,17 @@ import com.diozero.util.SleepUtil;
  */
 public class SSD1331Test {
 	public static void main(String[] args) {
+		try (LED led = new LED(16)) {
+			led.on();
+			Thread.sleep(500);
+			led.off();
+			Thread.sleep(500);
+		} catch (InterruptedException e) {
+		}
 		try (DigitalOutputDevice dc_pin = new DigitalOutputDevice(22);
 				DigitalOutputDevice reset_pin = new DigitalOutputDevice(27);
 				SSD1331 oled = new SSD1331(0, 0, dc_pin, reset_pin)) {
-			gameOfLife(oled, 500);
+			gameOfLife(oled, 10_000);
 			//displayImages(oled);
 			//sierpinskiTriangle(oled, 250);
 			//drawText(oled);
@@ -138,22 +146,28 @@ public class SSD1331Test {
 		    }
 		    
 		    // Pause briefly before drawing next frame.
-			SleepUtil.sleepSeconds(0.05);
+			try {
+				Thread.sleep(50);
+			} catch (InterruptedException e) {
+			}
 		}
 	}
 	
-	public static void gameOfLife(SSD1331 oled, int iterations) {
+	public static void gameOfLife(SSD1331 oled, long duration) {
 		Logger.info("Game of Life");
 		oled.clear();
 		
 		GameOfLife gol = new GameOfLife(oled.getWidth(), oled.getHeight());
 		gol.randomise();
 		long start = System.currentTimeMillis();
-		for (int i=0; i<iterations; i++) {
+		long current_duration;
+		int iterations = 0;
+		do {
 			render(oled, gol);
 			gol.iterate();
-		}
-		long duration = System.currentTimeMillis() - start;
+			current_duration = System.currentTimeMillis() - start;
+			iterations++;
+		} while (current_duration < duration);
 		double fps = iterations / (duration / 1000.0);
 		Logger.info("FPS: {0.##}", Double.valueOf(fps));
 	}
@@ -188,7 +202,10 @@ public class SSD1331Test {
 			} catch (IOException e) {
 				Logger.error(e, "Error: {}", e);
 			}
-			SleepUtil.sleepSeconds(1);
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+			}
 		}	
 	}
 	
@@ -206,7 +223,12 @@ public class SSD1331Test {
 			point.x += (target_corner.x - point.x) / 2;
 			point.y += (target_corner.y - point.y) / 2;
 			oled.setPixel(point.x, point.y, SSD1331.MAX_RED, (byte) 0, (byte) 0, true);
-			//SleepUtil.sleepSeconds(0.005);
+			/*
+			try {
+				Thread.sleep(5);
+			} catch (InterruptedException e) {
+			}
+			*/
 		}
 	}
 	
@@ -242,7 +264,10 @@ public class SSD1331Test {
 		oled.display(image);
 		
 		g2d.dispose();
-		SleepUtil.sleepSeconds(1);
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+		}
 	}
 	
 	public static void testJava2D(SSD1331 oled) {
@@ -280,18 +305,30 @@ public class SSD1331Test {
 		g2d.dispose();
 		
 		Logger.debug("Sleeping for 2 seconds");
-		SleepUtil.sleepSeconds(2);
+		try {
+			Thread.sleep(2000);
+		} catch (InterruptedException e) {
+		}
 		
 		Logger.debug("Inverting");
 		oled.invertDisplay(true);
-		SleepUtil.sleepSeconds(1);
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+		}
 		Logger.debug("Restoring to normal");
 		oled.invertDisplay(false);
-		SleepUtil.sleepSeconds(1);
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+		}
 		
 		for (int i=0; i<255; i++) {
 			oled.setContrast((byte) i);
-			SleepUtil.sleepSeconds(0.01);
+			try {
+				Thread.sleep(10);
+			} catch (InterruptedException e) {
+			}
 		}
 	}
 }

@@ -38,8 +38,6 @@ import com.diozero.api.InputEventListener;
 
 public interface GpioDigitalInputOutputDeviceInterface
 extends GpioDigitalOutputDeviceInterface {
-	@Override
-	public DeviceMode getMode();
 	public void setMode(DeviceMode mode);
 	void setListener(InputEventListener<DigitalInputEvent> listener);
 	void removeListener();

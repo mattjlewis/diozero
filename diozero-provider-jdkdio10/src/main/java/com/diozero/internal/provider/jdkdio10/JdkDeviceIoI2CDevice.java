@@ -79,6 +79,15 @@ public class JdkDeviceIoI2CDevice extends AbstractDevice implements I2CDeviceInt
 			}
 		}
 	}
+	
+	@Override
+	public boolean probe(com.diozero.api.I2CDevice.ProbeMode mode) {
+		try {
+			return device.read() >= 0;
+		} catch (IOException e) {
+			return false;
+		}
+	}
 
 	@Override
 	public byte readByte() throws RuntimeException {

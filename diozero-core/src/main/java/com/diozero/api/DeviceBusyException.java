@@ -1,10 +1,10 @@
-package com.diozero.internal.provider;
+package com.diozero.api;
 
-/*
+/*-
  * #%L
  * Organisation: mattjlewis
  * Project:      Device I/O Zero - Core
- * Filename:     DeviceFactoryInterface.java  
+ * Filename:     DeviceBusyException.java  
  * 
  * This file is part of the diozero project. More information about this project
  * can be found at http://www.diozero.com/
@@ -31,24 +31,12 @@ package com.diozero.internal.provider;
  * #L%
  */
 
-
-import java.io.Closeable;
-
-import com.diozero.api.PinInfo;
-import com.diozero.util.BoardPinInfo;
 import com.diozero.util.RuntimeIOException;
 
-public interface DeviceFactoryInterface extends Closeable {
-	String getName();
-	boolean isDeviceOpened(String key);
-	void deviceOpened(DeviceInterface device);
-	void deviceClosed(DeviceInterface device);
-	BoardPinInfo getBoardPinInfo();
-	String createPinKey(PinInfo pinInfo);
-	String createSpiKey(int controller, int chipSelect);
-	@Override
-	void close() throws RuntimeIOException;
-	boolean isClosed();
-	DeviceInterface getDevice(String key);
-	<T extends DeviceInterface> T getDevice(String key, Class<T> deviceClass);
+public class DeviceBusyException extends RuntimeIOException {
+	private static final long serialVersionUID = 5369887775011026981L;
+
+	public DeviceBusyException(String message) {
+		super(message);
+	}
 }

@@ -154,7 +154,7 @@ public class SysFsDeviceFactory extends BaseNativeDeviceFactory {
 	@Override
 	public I2CDeviceInterface createI2CDevice(String key, int controller, int address, int addressSize,
 			int clockFrequency) throws RuntimeIOException {
-		return new SysFsI2cDevice(this, key, controller, address, addressSize, clockFrequency);
+		return new SysFsI2CDevice(this, key, controller, address, addressSize, clockFrequency);
 	}
 	
 	void export(int gpio, DeviceMode mode) {

@@ -36,7 +36,7 @@ import com.diozero.api.*;
 import com.diozero.internal.board.beaglebone.BeagleBoneBoardInfoProvider.BeagleBoneBlackBoardInfo;
 import com.diozero.internal.provider.*;
 import com.diozero.internal.provider.sysfs.SysFsDeviceFactory;
-import com.diozero.internal.provider.sysfs.SysFsI2cDevice;
+import com.diozero.internal.provider.sysfs.SysFsI2CDevice;
 import com.diozero.internal.provider.sysfs.SysFsSpiDevice;
 import com.diozero.util.RuntimeIOException;
 
@@ -121,7 +121,7 @@ public class BbbIoLibDeviceFactory extends BaseNativeDeviceFactory {
 	@Override
 	protected I2CDeviceInterface createI2CDevice(String key, int controller, int address, int addressSize,
 			int clockFrequency) throws RuntimeIOException {
-		return new SysFsI2cDevice(this, key, controller, address, addressSize, clockFrequency);
+		return new SysFsI2CDevice(this, key, controller, address, addressSize, clockFrequency);
 	}
 	
 	static byte getPort(PinInfo pinInfo) {

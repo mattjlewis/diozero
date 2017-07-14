@@ -58,6 +58,11 @@ public abstract class AbstractDeviceFactory implements DeviceFactoryInterface {
 	}
 	
 	@Override
+	public final String createSpiKey(int controller, int chipSelect) {
+		return SpiDeviceFactoryInterface.createSpiKey(deviceFactoryPrefix, controller, chipSelect);
+	}
+	
+	@Override
 	public void close() {
 		Logger.debug("close()");
 		deviceStates.closeAll();
@@ -84,8 +89,14 @@ public abstract class AbstractDeviceFactory implements DeviceFactoryInterface {
 		return deviceStates.isOpened(key);
 	}
 
+	@Override
+	public final DeviceInterface getDevice(String key) {
+		return deviceStates.getDevice(key);
+	}
+
+	@Override
 	@SuppressWarnings("unchecked")
-	public final <T extends DeviceInterface> T getDevice(String key, Class<T> clz) {
+	public final <T extends DeviceInterface> T getDevice(String key, Class<T> deviceClass) {
 		return (T) deviceStates.getDevice(key);
 	}
 }

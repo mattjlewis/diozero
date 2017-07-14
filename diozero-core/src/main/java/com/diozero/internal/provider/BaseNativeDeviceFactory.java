@@ -31,18 +31,17 @@ package com.diozero.internal.provider;
  * #L%
  */
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.pmw.tinylog.Logger;
-
 import com.diozero.api.DeviceAlreadyOpenedException;
 import com.diozero.api.SpiClockMode;
-import com.diozero.util.*;
+import com.diozero.util.BoardInfo;
+import com.diozero.util.BoardPinInfo;
+import com.diozero.util.DioZeroScheduler;
+import com.diozero.util.RuntimeIOException;
+import com.diozero.util.SystemInfo;
 
 /**
  * Helper class for instantiating different devices via the configured provider.
@@ -52,17 +51,6 @@ import com.diozero.util.*;
 
 public abstract class BaseNativeDeviceFactory extends AbstractDeviceFactory implements NativeDeviceFactoryInterface {
 	private static final String NATIVE_PREFIX = "Native";
-	private static final String I2C_PREFIX = NATIVE_PREFIX + "-I2C-";
-	private static final String SPI_PREFIX = NATIVE_PREFIX + "-SPI-";
-	private static final int DEFAULT_SPI_BUFFER_SIZE = 4096;
-	
-	private static String createI2CKey(int controller, int address) {
-		return I2C_PREFIX + controller + "-0x" + Integer.toHexString(address);
-	}
-	
-	private static String createSpiKey(int controller, int chipSelect) {
-		return SPI_PREFIX + controller + "-" + chipSelect;
-	}
 	
 	private List<DeviceFactoryInterface> deviceFactories = new ArrayList<>();
 	private BoardInfo boardInfo;
@@ -94,17 +82,6 @@ public abstract class BaseNativeDeviceFactory extends AbstractDeviceFactory impl
 	@Override
 	public float getVRef() {
 		return boardInfo.getAdcVRef();
-	}
-
-	@Override
-	public int getSpiBufferSize() {
-		try {
-			return Files.lines(Paths.get("/sys/module/spidev/parameters/bufsiz")).mapToInt(Integer::parseInt).findFirst()
-					.orElse(DEFAULT_SPI_BUFFER_SIZE);
-		} catch (IOException e) {
-			Logger.warn("Error: {}", e);
-			return DEFAULT_SPI_BUFFER_SIZE;
-		}
 	}
 	
 	@Override
@@ -144,7 +121,7 @@ public abstract class BaseNativeDeviceFactory extends AbstractDeviceFactory impl
 
 	@Override
 	public final I2CDeviceInterface provisionI2CDevice(int controller, int address, int addressSize, int clockFrequency) throws RuntimeIOException {
-		String key = createI2CKey(controller, address);
+		String key = I2CDeviceFactoryInterface.createI2CKey(NATIVE_PREFIX, controller, address);
 		
 		// Check if this pin is already provisioned
 		if (isDeviceOpened(key)) {
