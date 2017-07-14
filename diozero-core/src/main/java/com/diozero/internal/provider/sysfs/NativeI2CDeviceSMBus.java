@@ -33,6 +33,7 @@ package com.diozero.internal.provider.sysfs;
 
 import org.pmw.tinylog.Logger;
 
+import com.diozero.api.DeviceBusyException;
 import com.diozero.api.I2CDevice;
 import com.diozero.util.RuntimeIOException;
 
@@ -59,6 +60,10 @@ public class NativeI2CDeviceSMBus implements I2CSMBusInterface {
 
 		int rc = NativeI2C.smbusOpen(device_file, deviceAddress, force);
 		if (rc < 0) {
+			if (rc == -16) {
+				throw new DeviceBusyException("Error, I2C device " + controller + "-0x"
+						+ Integer.toHexString(deviceAddress) + " is busy");
+			}
 			throw new RuntimeIOException(rc);
 		}
 		fd = rc;

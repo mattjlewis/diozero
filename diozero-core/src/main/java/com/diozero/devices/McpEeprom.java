@@ -37,6 +37,7 @@ import java.io.Closeable;
 import org.pmw.tinylog.Logger;
 
 import com.diozero.api.I2CDevice;
+import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 
 /**
@@ -101,6 +102,9 @@ public class McpEeprom implements Closeable {
 	public McpEeprom(int controller, int address, Type type) {
 		this.type = type;
 		device = new I2CDevice(controller, address);
+		if (! device.probe()) {
+			throw new RuntimeIOException("No such device " + controller + "-0x" + Integer.toHexString(address));
+		}
 	}
 	
 	private byte[] getAddressByteArray(int address) {
