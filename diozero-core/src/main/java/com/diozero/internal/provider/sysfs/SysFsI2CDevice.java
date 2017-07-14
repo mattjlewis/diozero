@@ -4,7 +4,7 @@ package com.diozero.internal.provider.sysfs;
  * #%L
  * Organisation: mattjlewis
  * Project:      Device I/O Zero - Core
- * Filename:     SysFsI2cDevice.java  
+ * Filename:     SysFsI2CDevice.java  
  * 
  * This file is part of the diozero project. More information about this project
  * can be found at http://www.diozero.com/
@@ -36,6 +36,7 @@ import java.nio.ByteBuffer;
 
 import org.pmw.tinylog.Logger;
 
+import com.diozero.api.I2CDevice;
 import com.diozero.internal.provider.AbstractDevice;
 import com.diozero.internal.provider.DeviceFactoryInterface;
 import com.diozero.internal.provider.I2CDeviceInterface;
@@ -43,11 +44,11 @@ import com.diozero.util.LibraryLoader;
 import com.diozero.util.PropertyUtil;
 import com.diozero.util.RuntimeIOException;
 
-public class SysFsI2cDevice extends AbstractDevice implements I2CDeviceInterface {
+public class SysFsI2CDevice extends AbstractDevice implements I2CDeviceInterface {
 	private static boolean USE_SYSFS = false;
 	private static boolean I2C_SLAVE_FORCE = false;
 	static {
-		LibraryLoader.loadLibrary(SysFsI2cDevice.class, "diozero-system-utils");
+		LibraryLoader.loadLibrary(SysFsI2CDevice.class, "diozero-system-utils");
 		
 		USE_SYSFS = PropertyUtil.isPropertySet("I2C_USE_SYSFS");
 		I2C_SLAVE_FORCE = PropertyUtil.isPropertySet("I2C_SLAVE_FORCE");
@@ -55,7 +56,7 @@ public class SysFsI2cDevice extends AbstractDevice implements I2CDeviceInterface
 	
 	private I2CSMBusInterface i2cDevice;
 	
-	public SysFsI2cDevice(DeviceFactoryInterface deviceFactory, String key, int controller,
+	public SysFsI2CDevice(DeviceFactoryInterface deviceFactory, String key, int controller,
 			int address, int addressSize, int frequency) {
 		super(key, deviceFactory);
 		
@@ -65,15 +66,13 @@ public class SysFsI2cDevice extends AbstractDevice implements I2CDeviceInterface
 			Logger.warn("Using sysfs for I2C communication");
 			i2cDevice = new NativeI2CDeviceSysFs(controller, address, force);
 		} else {
-			try {
-				i2cDevice = new NativeI2CDeviceSMBus(controller, address, force);
-			} catch (RuntimeIOException e) {
-				Logger.warn("Error initialising I2C SMBus for controller {}, device 0x{}: {}",
-						Integer.valueOf(controller), Integer.toHexString(address), e);
-				Logger.warn("Trying to connect via sysfs ...");
-				i2cDevice = new NativeI2CDeviceSysFs(controller, address, force);
-			}
+			i2cDevice = new NativeI2CDeviceSMBus(controller, address, force);
 		}
+	}
+	
+	@Override
+	public boolean probe(I2CDevice.ProbeMode mode) {
+		return i2cDevice.probe(mode);
 	}
 	
 	@Override
