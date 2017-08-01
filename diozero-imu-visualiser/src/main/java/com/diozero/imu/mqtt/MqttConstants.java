@@ -1,4 +1,4 @@
-package com.diozero.api.imu;
+package com.diozero.imu.mqtt;
 
 /*
  * #%L
