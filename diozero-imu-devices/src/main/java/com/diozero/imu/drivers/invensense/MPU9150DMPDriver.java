@@ -34,13 +34,15 @@ package com.diozero.imu.drivers.invensense;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
-import javax.xml.bind.DatatypeConverter;
-
 import org.pmw.tinylog.Logger;
 
-import com.diozero.api.imu.*;
+import com.diozero.api.imu.OrientationEvent;
 import com.diozero.api.imu.OrientationEvent.OrientationType;
+import com.diozero.api.imu.OrientationListener;
+import com.diozero.api.imu.TapEvent;
 import com.diozero.api.imu.TapEvent.TapType;
+import com.diozero.api.imu.TapListener;
+import com.diozero.util.Hex;
 import com.diozero.util.RuntimeIOException;
 
 /**
@@ -734,7 +736,7 @@ public class MPU9150DMPDriver implements MPU9150DMPConstants {
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	public void decode_gesture(byte[] gesture) {
-		Logger.debug("decode_gesture()", DatatypeConverter.printHexBinary(gesture));
+		Logger.debug("decode_gesture()", Hex.encodeHexString(gesture));
 		if ((gesture[1] & INT_SRC_TAP) != 0) {
 			Logger.debug("decode_gesture() got Tap!");
 			byte tap = (byte) (0x3F & gesture[3]);
@@ -861,7 +863,7 @@ public class MPU9150DMPDriver implements MPU9150DMPConstants {
 		// unsigned char fifo_data[MAX_PACKET_LENGTH];
 		byte[] fifo_data = fifo_stream.getData();
 		if (DUMP_FIFO_DATA) {
-			Logger.trace("FIFO Data: {}", DatatypeConverter.printHexBinary(fifo_data));
+			Logger.trace("FIFO Data: {}", Hex.encodeHexString(fifo_data));
 		}
 		ByteBuffer fifo_data_buffer = ByteBuffer.wrap(fifo_data);
 

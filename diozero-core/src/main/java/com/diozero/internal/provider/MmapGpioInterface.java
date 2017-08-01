@@ -1,4 +1,4 @@
-package com.diozero.internal.provider.mmap;
+package com.diozero.internal.provider;
 
 /*
  * #%L

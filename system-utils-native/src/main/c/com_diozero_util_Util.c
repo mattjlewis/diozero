@@ -3,6 +3,7 @@
 #include <jni.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include <sys/time.h>
 
 /* Java VM interface */
@@ -22,5 +23,17 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* jvm, void* reserved) {
 unsigned long long getEpochTime() {
 	struct timeval tp;
 	gettimeofday(&tp, NULL);
-	return (unsigned long long)(tp.tv_sec) * 1000 + (unsigned long long)(tp.tv_usec) / 1000;
+	return ((long long) tp.tv_sec) * 1000 + tp.tv_usec / 1000;
+}
+
+unsigned long long getEpochTime2() {
+	struct timespec ts;
+	clock_gettime(CLOCK_REALTIME, &ts);
+	return ((unsigned long long) ts.tv_sec) * 1000 + ts.tv_nsec / 1000 / 1000;
+}
+
+long long getNanoTime() {
+	struct timespec ts;
+	clock_gettime(CLOCK_MONOTONIC, &ts);
+	return ((long long) ts.tv_sec) * 1000 * 1000 * 1000 + ts.tv_nsec;
 }

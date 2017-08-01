@@ -1959,6 +1959,7 @@ public class MFRC522 implements Closeable {
 	 * @param uid UID struct returned from a successful PICC_Select().
 	 * @deprecated kept for backward compatibility
 	 */
+	@Deprecated
 	public static void dumpDetailsToConsole(UID uid) {
 		// UID
 		System.out.println("Card UID: 0x" + Hex.encodeHexString(uid.getUidBytes()));

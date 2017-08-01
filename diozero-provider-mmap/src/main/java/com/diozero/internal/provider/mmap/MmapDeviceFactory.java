@@ -37,6 +37,7 @@ import com.diozero.api.*;
 import com.diozero.internal.provider.GpioDigitalInputDeviceInterface;
 import com.diozero.internal.provider.GpioDigitalInputOutputDeviceInterface;
 import com.diozero.internal.provider.GpioDigitalOutputDeviceInterface;
+import com.diozero.internal.provider.MmapGpioInterface;
 import com.diozero.internal.provider.sysfs.SysFsDeviceFactory;
 import com.diozero.util.RuntimeIOException;
 

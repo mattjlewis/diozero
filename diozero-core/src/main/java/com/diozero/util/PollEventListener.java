@@ -34,5 +34,5 @@ package com.diozero.util;
 
 @FunctionalInterface
 public interface PollEventListener {
-	void notify(Object ref, long epochTime, char value);
+	void notify(String filename, long epochTime, long nanoTime, char value);
 }

@@ -15,7 +15,7 @@ public class GpioMMapTest {
 	//#define BANK (gpio>>5)
 	//#define BIT  (1<<(gpio&0x1F))
 	
-	private static final int GPIOMEM_LEN = 0xB4;
+	private static final int GPIOMEM_LEN = 4096;
 	// Offset to the GPIO Input level registers for each GPIO pin
 	private static final byte GPLEV0 = 13;
 	private static final byte GPLEV1 = 14;
@@ -57,10 +57,19 @@ public class GpioMMapTest {
 	private static IntBuffer gpioReg;
 	
 	public static void main(String[] args) {
+		if (args.length < 1) {
+			System.err.println("Error: Usage " + GpioMMapTest.class.getName() + " <gpio> [iterations]");
+			System.exit(1);
+		}
+		int gpio = Integer.parseInt(args[0]);
+		int iterations = 40_000_000;
+		if (args.length > 1) {
+			iterations = Integer.parseInt(args[1]);
+		}
+		
 		MmapByteBuffer mmap = createMmapBuffer("/dev/gpiomem", 0, GPIOMEM_LEN);
 		if (mmap != null) {
 			gpioReg = mmap.getBuffer().order(ByteOrder.LITTLE_ENDIAN).asIntBuffer();
-			int gpio = 12;
 			System.out.println("mode for pin " + gpio + "=" + getMode(gpio));
 			setMode(gpio, PI_OUTPUT);
 			System.out.println("mode for pin " + gpio + "=" + getMode(gpio));
@@ -80,7 +89,6 @@ public class GpioMMapTest {
 			on = read(gpio);
 			System.out.println("on=" + on);
 			long start = System.currentTimeMillis();
-			int iterations = 40_000_000;
 			for (int i=0; i<iterations; i++) {
 				write(gpio, true);
 				write(gpio, false);

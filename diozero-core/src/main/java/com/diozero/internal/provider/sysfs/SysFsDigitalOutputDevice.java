@@ -38,6 +38,7 @@ import java.nio.file.Path;
 
 import org.pmw.tinylog.Logger;
 
+import com.diozero.api.DeviceMode;
 import com.diozero.api.PinInfo;
 import com.diozero.internal.provider.AbstractDevice;
 import com.diozero.internal.provider.GpioDigitalOutputDeviceInterface;
@@ -57,6 +58,9 @@ public class SysFsDigitalOutputDevice extends AbstractDevice implements GpioDigi
 		
 		this.deviceFactory = deviceFactory;
 		this.gpio = pinInfo.getSysFsNumber();
+
+		deviceFactory.export(pinInfo.getSysFsNumber(), DeviceMode.DIGITAL_OUTPUT);
+		
 		Path gpio_dir = deviceFactory.getGpioDirectoryPath(gpio);
 		
 		// TODO Set active_low value to 0

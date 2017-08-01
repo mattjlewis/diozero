@@ -36,7 +36,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.diozero.api.PinInfo;
-import com.diozero.internal.provider.mmap.MmapGpioInterface;
+import com.diozero.internal.provider.MmapGpioInterface;
 import com.diozero.util.BoardInfo;
 import com.diozero.util.BoardInfoProvider;
 

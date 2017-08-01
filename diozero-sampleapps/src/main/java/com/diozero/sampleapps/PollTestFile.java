@@ -49,7 +49,7 @@ public class PollTestFile {
 	private static void test(String filename) {
 		PollNative pn = new PollNative();
 		Logger.info("Calling poll()");
-		pn.poll(filename, -1, 1, (ref, epochTime, value)->Logger.info("notify(" + ref + ", " + epochTime + ", " + value + ")"));
+		pn.poll(filename, -1, 1, (file, epochTime, nanoTime, value)->Logger.info("notify(" + file + ", " + epochTime + ", " + nanoTime + ", " + value + ")"));
 		Logger.info("Poll returned");
 	}
 }

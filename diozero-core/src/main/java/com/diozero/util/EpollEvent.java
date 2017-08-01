@@ -36,12 +36,14 @@ public class EpollEvent {
 	private int fd;
 	private int eventMask;
 	private long epochTime;
+	private long nanoTime;
 	private char value;
 
-	public EpollEvent(int fd, int eventMask, long epochTime, byte value) {
+	public EpollEvent(int fd, int eventMask, long epochTime, long nanoTime, byte value) {
 		this.fd = fd;
 		this.eventMask = eventMask;
 		this.epochTime = epochTime;
+		this.nanoTime = nanoTime;
 		this.value = (char) value;
 	}
 
@@ -57,13 +59,17 @@ public class EpollEvent {
 		return epochTime;
 	}
 
+	public long getNanoTime() {
+		return nanoTime;
+	}
+
 	public char getValue() {
 		return value;
 	}
 
 	@Override
 	public String toString() {
-		return "EpollEvent [fd=" + fd + ", eventMask=" + eventMask + ", epochTime=" + epochTime + ", value=" + value
-				+ "]";
+		return "EpollEvent [fd=" + fd + ", eventMask=" + eventMask + ", epochTime=" + epochTime + ", nanoTime="
+				+ nanoTime + ", value=" + value + "]";
 	}
 }

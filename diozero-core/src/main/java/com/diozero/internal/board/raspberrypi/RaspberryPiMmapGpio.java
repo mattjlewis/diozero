@@ -37,19 +37,32 @@ import java.nio.IntBuffer;
 
 import com.diozero.api.DeviceMode;
 import com.diozero.api.GpioPullUpDown;
-import com.diozero.internal.provider.mmap.MmapGpioInterface;
+import com.diozero.internal.provider.MmapGpioInterface;
 import com.diozero.util.MmapBufferNative;
 import com.diozero.util.MmapByteBuffer;
 import com.diozero.util.SleepUtil;
 
+@SuppressWarnings("unused")
 public class RaspberryPiMmapGpio implements MmapGpioInterface {
 	private static final String GPIOMEM_DEVICE = "/dev/gpiomem";
-	private static final int GPIOMEM_LEN = 0xB4;
-	// Offset to the GPIO Input level registers for each GPIO pin
-	private static final byte[] GPIO_TO_GPLEV = {
-			13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,
-			14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14
-	};
+	//private static final int GPIOMEM_LEN = 0xB4;
+	private static final int GPIOMEM_LEN = 4096;
+	
+	// From BCM2835 data-sheet, p.91
+	private static final byte GPFSEL_OFFSET   = 0x00 >> 2;
+	private static final byte GPSET_OFFSET    = 0x1c >> 2;
+	private static final byte GPCLR_OFFSET    = 0x28 >> 2;
+	private static final byte GPLEV_OFFSET    = 0x34 >> 2;
+	private static final byte GPEDS_OFFSET    = 0x40 >> 2;
+	private static final byte GPREN_OFFSET    = 0x4c >> 2;
+	private static final byte GPFEN_OFFSET    = 0x58 >> 2;
+	private static final byte GPHEN_OFFSET    = 0x64 >> 2;
+	private static final byte GPLEN_OFFSET    = 0x70 >> 2;
+	private static final byte GPAREN_OFFSET   = 0x7c >> 2;
+	private static final byte GPAFEN_OFFSET   = 0x88 >> 2;
+	private static final byte GPPUD_OFFSET    = 0x94 >> 2;
+	private static final byte GPPUDCLK_OFFSET = 0x98 >> 2;
+
 	// Offset to the GPIO Set registers for each GPIO pin
 	private static final byte[] GPIO_TO_GPSET = {
 			7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
@@ -59,6 +72,11 @@ public class RaspberryPiMmapGpio implements MmapGpioInterface {
 	private static final byte[] GPIO_TO_GPCLR = {
 			10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,
 			11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11
+	};
+	// Offset to the GPIO Input level registers for each GPIO pin
+	private static final byte[] GPIO_TO_GPLEV = {
+			13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,
+			14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14
 	};
 	// GPIO Pin pull up/down register
 	private static final byte GPPUD = 37;

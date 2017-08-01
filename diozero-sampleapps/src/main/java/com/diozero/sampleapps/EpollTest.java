@@ -32,10 +32,16 @@ package com.diozero.sampleapps;
  */
 
 
+import java.util.Date;
+
 import org.pmw.tinylog.Logger;
 
 import com.diozero.util.EpollNative;
+import com.diozero.util.SleepUtil;
 
+/**
+ * Use mkfifo <file> to test in Linux, epoll doesn't work with regular files
+ */
 public class EpollTest {
 	public static void main(String[] args) {
 		if (args.length < 1) {
@@ -48,12 +54,39 @@ public class EpollTest {
 	
 	private static void test(String[] filenames) {
 		Logger.info("Calling epollCreate()");
-		EpollNative epoll = new EpollNative();
-		for (String filename : filenames) {
-			Logger.info("Calling addFile('{}')", filename);
-			epoll.register(filename, filename, (ref, epochTime, value) -> Logger.info("notify({}, {}, {})",
-					filename, Long.valueOf(epochTime), Character.valueOf(value)));
+		try (EpollNative epoll = new EpollNative()) {
+			int delay = 10;
+			
+			Logger.info("Enabling events");
+			epoll.enableEvents();
+			
+			for (String filename : filenames) {
+				Logger.info("Calling register('{}')", filename);
+				epoll.register(filename, EpollTest::notify);
+			}
+			
+			Logger.info("Waiting for {} seconds", Integer.valueOf(delay));
+			SleepUtil.sleepSeconds(delay);
+			
+			for (String filename : filenames) {
+				Logger.info("Calling deregister('{}')", filename);
+				epoll.deregister(filename);
+			}
+	
+			Logger.info("Waiting for {} seconds", Integer.valueOf(delay));
+			SleepUtil.sleepSeconds(delay);
+			
+			for (String filename : filenames) {
+				Logger.info("Calling register('{}')", filename);
+				epoll.register(filename, EpollTest::notify);
+			}
+			
+			Logger.info("Waiting for {} seconds", Integer.valueOf(delay));
+			SleepUtil.sleepSeconds(delay);
 		}
-		epoll.processEvents();
+	}
+	
+	private static void notify(String filename, long epochTime, long nanoTime, char value) {
+		Logger.info("notify({}, {}, {}, {})", filename, new Date(epochTime), Long.valueOf(nanoTime), Character.valueOf(value));
 	}
 }

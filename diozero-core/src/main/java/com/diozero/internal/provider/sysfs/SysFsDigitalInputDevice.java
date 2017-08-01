@@ -39,6 +39,7 @@ import java.nio.file.Path;
 
 import org.pmw.tinylog.Logger;
 
+import com.diozero.api.DeviceMode;
 import com.diozero.api.DigitalInputEvent;
 import com.diozero.api.GpioEventTrigger;
 import com.diozero.api.PinInfo;
@@ -58,7 +59,6 @@ implements GpioDigitalInputDeviceInterface, PollEventListener {
 	
 	// Note java.nio.file.WatchService doesn't work with /sys, /proc and network file-systems
 	// http://stackoverflow.com/questions/30190730/nio-watchservice-for-unix-sys-classes-gpio-files
-	private EpollNative epollNative;
 	
 	private SysFsDeviceFactory deviceFactory;
 	private int gpio;
@@ -71,9 +71,10 @@ implements GpioDigitalInputDeviceInterface, PollEventListener {
 		
 		this.deviceFactory = deviceFactory;
 		this.gpio = pinInfo.getSysFsNumber();
-		epollNative = new EpollNative();
+		
+		deviceFactory.export(pinInfo.getSysFsNumber(), DeviceMode.DIGITAL_INPUT);
+		
 		Path gpio_dir = deviceFactory.getGpioDirectoryPath(gpio);
-
 		try (FileWriter writer = new FileWriter(gpio_dir.resolve(EDGE_FILE).toFile())) {
 			writer.write(trigger.name().toLowerCase());
 		} catch (IOException e) {
@@ -113,21 +114,18 @@ implements GpioDigitalInputDeviceInterface, PollEventListener {
 
 	@Override
 	protected void enableListener() {
-		epollNative.register(valuePath.toString(), Integer.valueOf(gpio), this);
-		DioZeroScheduler.getDaemonInstance().execute(epollNative::processEvents);
+		deviceFactory.getEpoll().register(valuePath.toString(), this);
 	}
 
 	@Override
 	protected void disableListener() {
-		epollNative.deregister(valuePath.toString());
-		epollNative.stop();
+		deviceFactory.getEpoll().deregister(valuePath.toString());
 	}
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
 		Logger.debug("closeDevice()");
 		disableListener();
-		epollNative.close();
 		try {
 			valueFile.close();
 		} catch (IOException e) {
@@ -137,7 +135,7 @@ implements GpioDigitalInputDeviceInterface, PollEventListener {
 	}
 
 	@Override
-	public void notify(Object ref, long epochTime, char value) {
-		valueChanged(new DigitalInputEvent(gpio, epochTime, System.nanoTime(), value == HIGH_VALUE));
+	public void notify(String filename, long epochTime, long nanoTime, char value) {
+		valueChanged(new DigitalInputEvent(gpio, epochTime, nanoTime, value == HIGH_VALUE));
 	}
 }

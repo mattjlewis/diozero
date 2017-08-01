@@ -6,6 +6,8 @@ extern "C" {
 #endif
 
 unsigned long long getEpochTime();
+unsigned long long getEpochTime2();
+long long getNanoTime();
 
 #ifdef __cplusplus
 }

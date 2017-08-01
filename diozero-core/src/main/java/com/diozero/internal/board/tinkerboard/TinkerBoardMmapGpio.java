@@ -39,7 +39,7 @@ import org.pmw.tinylog.Logger;
 
 import com.diozero.api.DeviceMode;
 import com.diozero.api.GpioPullUpDown;
-import com.diozero.internal.provider.mmap.MmapGpioInterface;
+import com.diozero.internal.provider.MmapGpioInterface;
 import com.diozero.util.MmapBufferNative;
 import com.diozero.util.MmapByteBuffer;
 

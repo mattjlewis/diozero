@@ -41,11 +41,25 @@ import java.nio.file.Path;
 
 import org.pmw.tinylog.Logger;
 
-import com.diozero.api.*;
+import com.diozero.api.DeviceMode;
+import com.diozero.api.GpioEventTrigger;
+import com.diozero.api.GpioPullUpDown;
+import com.diozero.api.PinInfo;
+import com.diozero.api.PwmPinInfo;
+import com.diozero.api.SpiClockMode;
 import com.diozero.internal.SoftwarePwmOutputDevice;
 import com.diozero.internal.board.odroid.OdroidBoardInfoProvider;
 import com.diozero.internal.board.odroid.OdroidC2SysFsPwmOutputDevice;
-import com.diozero.internal.provider.*;
+import com.diozero.internal.provider.AnalogInputDeviceInterface;
+import com.diozero.internal.provider.AnalogOutputDeviceInterface;
+import com.diozero.internal.provider.BaseNativeDeviceFactory;
+import com.diozero.internal.provider.GpioDigitalInputDeviceInterface;
+import com.diozero.internal.provider.GpioDigitalInputOutputDeviceInterface;
+import com.diozero.internal.provider.GpioDigitalOutputDeviceInterface;
+import com.diozero.internal.provider.I2CDeviceInterface;
+import com.diozero.internal.provider.PwmOutputDeviceInterface;
+import com.diozero.internal.provider.SpiDeviceInterface;
+import com.diozero.util.EpollNative;
 import com.diozero.util.RuntimeIOException;
 
 public class SysFsDeviceFactory extends BaseNativeDeviceFactory {
@@ -57,9 +71,18 @@ public class SysFsDeviceFactory extends BaseNativeDeviceFactory {
 	
 	private Path rootPath;
 	private int boardPwmFrequency;
+	private EpollNative epoll;
 	
 	public SysFsDeviceFactory() {
 		rootPath = FileSystems.getDefault().getPath(GPIO_ROOT_DIR);
+	}
+	
+	@Override
+	public void close() {
+		if (epoll != null) {
+			epoll.close();
+		}
+		super.close();
 	}
 
 	/**
@@ -89,16 +112,12 @@ public class SysFsDeviceFactory extends BaseNativeDeviceFactory {
 	@Override
 	public GpioDigitalInputDeviceInterface createDigitalInputDevice(String key, PinInfo pinInfo, GpioPullUpDown pud,
 			GpioEventTrigger trigger) throws RuntimeIOException {
-		export(pinInfo.getSysFsNumber(), DeviceMode.DIGITAL_INPUT);
-		
 		return new SysFsDigitalInputDevice(this, key, pinInfo, trigger);
 	}
 
 	@Override
 	public GpioDigitalOutputDeviceInterface createDigitalOutputDevice(String key, PinInfo pinInfo, boolean initialValue)
 			throws RuntimeIOException {
-		export(pinInfo.getSysFsNumber(), DeviceMode.DIGITAL_OUTPUT);
-		
 		return new SysFsDigitalOutputDevice(this, key, pinInfo, initialValue);
 	}
 
@@ -206,5 +225,14 @@ public class SysFsDeviceFactory extends BaseNativeDeviceFactory {
 				throw new RuntimeIOException(e);
 			}
 		}
+	}
+	
+	synchronized EpollNative getEpoll() {
+		// Has to be lazy loaded as cannot call System.loadLibrary within device factory initialisation
+		if (epoll == null) {
+			epoll = new EpollNative();
+			epoll.enableEvents();
+		}
+		return epoll;
 	}
 }

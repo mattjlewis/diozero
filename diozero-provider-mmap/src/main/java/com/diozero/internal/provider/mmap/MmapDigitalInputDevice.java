@@ -32,9 +32,10 @@ package com.diozero.internal.provider.mmap;
  */
 
 
-import org.pmw.tinylog.Logger;
-
-import com.diozero.api.*;
+import com.diozero.api.GpioEventTrigger;
+import com.diozero.api.GpioPullUpDown;
+import com.diozero.api.PinInfo;
+import com.diozero.internal.provider.MmapGpioInterface;
 import com.diozero.internal.provider.sysfs.SysFsDigitalInputDevice;
 import com.diozero.util.RuntimeIOException;
 
@@ -49,21 +50,11 @@ public class MmapDigitalInputDevice extends SysFsDigitalInputDevice {
 		this.mmapGpio = deviceFactory.getMmapGpio();
 		this.gpio = pinInfo.getDeviceNumber();
 		
-		mmapGpio.setMode(gpio, DeviceMode.DIGITAL_INPUT);
 		mmapGpio.setPullUpDown(gpio, pud);
 	}
 
 	@Override
 	public boolean getValue() throws RuntimeIOException {
 		return mmapGpio.gpioRead(gpio);
-	}
-
-	@Override
-	protected void closeDevice() throws RuntimeIOException {
-		Logger.debug("closeDevice()");
-		// FIXME No GPIO close method?
-		// TODO Revert to default input mode?
-		// What do wiringPi / pigpio do?
-		super.close();
 	}
 }

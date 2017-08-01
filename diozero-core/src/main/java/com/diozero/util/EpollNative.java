@@ -32,76 +32,60 @@ package com.diozero.util;
  */
 
 
+import java.io.Closeable;
+
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.pmw.tinylog.Logger;
 
-public class EpollNative {
+public class EpollNative implements Closeable {
 	static {
 		LibraryLoader.loadLibrary(EpollNative.class, "diozero-system-utils");
 	}
-	
+
 	private static native int epollCreate();
 	private static native int addFile(int epollFd, String filename);
 	private static native int removeFile(int epollFd, int fileFd);
 	private static native EpollEvent[] waitForEvents(int epollFd);
 	private static native void stopWait(int epollFd);
 	private static native void shutdown(int epollFd);
-	
+
 	private int epollFd;
-	private Map<Integer, String> fdToFilename;
 	private Map<Integer, PollEventListener> fdToListener;
-	private Map<Integer, Object> fdToRef;
+	private Map<Integer, String> fdToFilename;
 	private Map<String, Integer> filenameToFd;
 	private AtomicBoolean running;
-	
+	private Queue<EpollEvent> eventQueue;
+	private Lock lock;
+	private Condition condition;
+
 	public EpollNative() {
-		running = new AtomicBoolean(false);
-		fdToFilename = new HashMap<>();
 		fdToListener = new HashMap<>();
-		fdToRef = new HashMap<>();
+		fdToFilename = new HashMap<>();
 		filenameToFd = new HashMap<>();
-		
+		running = new AtomicBoolean(false);
+		eventQueue = new ConcurrentLinkedQueue<>();
+		lock = new ReentrantLock();
+		condition = lock.newCondition();
+
 		int rc = epollCreate();
 		if (rc < 0) {
 			throw new RuntimeIOException("Error in epollCreate: " + rc);
 		}
-		
+
 		epollFd = rc;
 	}
-	
-	public void register(String filename, Object ref, PollEventListener listener) {
-		int file_fd = addFile(epollFd, filename);
-		if (file_fd == -1) {
-			throw new RuntimeIOException("Error registering file '" + filename + "' with epoll");
-		}
-		
-		fdToFilename.put(Integer.valueOf(file_fd), filename);
-		fdToListener.put(Integer.valueOf(file_fd), listener);
-		fdToRef.put(Integer.valueOf(file_fd), ref);
-		filenameToFd.put(filename, Integer.valueOf(file_fd));
-	}
-	
-	public void deregister(String filename) {
-		Integer file_fd = filenameToFd.get(filename);
-		if (file_fd == null) {
-			Logger.warn("No file descriptor for '{}'", filename);
-			return;
-		}
-		
-		int rc = removeFile(epollFd, file_fd.intValue());
-		if (rc < 0) {
-			Logger.warn("Error in epoll removeFile for file fd {}: {}", file_fd, Integer.valueOf(rc));
-		}
-		fdToFilename.remove(file_fd);
-		fdToListener.remove(file_fd);
-		fdToRef.remove(file_fd);
-		filenameToFd.remove(filename);
-	}
-	
-	public void processEvents() {
+
+	private void waitForEvents() {
+		Thread.currentThread().setName("diozero-EpollNative-waitForEvents-" + hashCode());
+
 		running.getAndSet(true);
 		while (running.get()) {
 			EpollEvent[] events = waitForEvents(epollFd);
@@ -109,21 +93,100 @@ public class EpollNative {
 				running.getAndSet(false);
 			} else {
 				for (EpollEvent event : events) {
-					PollEventListener listener = fdToListener.get(Integer.valueOf(event.getFd()));
-					if (listener != null) {
-						listener.notify(fdToRef.get(Integer.valueOf(event.getFd())), event.getEpochTime(), event.getValue());
-					}
+					eventQueue.add(event);
+				}
+				// Notify the process events thread that there are new events on the queue
+				lock.lock();
+				try {
+					condition.signalAll();
+				} finally {
+					lock.unlock();
 				}
 			}
 		}
 	}
-	
-	public void stop() {
-		running.getAndSet(false);
-		stopWait(epollFd);
+
+	private void processEvents() {
+		Thread.currentThread().setName("diozero-EpollNative-processEvents-" + hashCode());
+
+		while (running.get()) {
+			// Wait for an event on the queue
+			lock.lock();
+			try {
+				condition.await();
+			} catch (InterruptedException e) {
+			} finally {
+				lock.unlock();
+			}
+
+			// Process all of the events on the queue
+			// Note the event queue is a concurrent linked queue hence thread safe
+			do {
+				EpollEvent event = eventQueue.poll();
+
+				if (event != null) {
+					PollEventListener listener = fdToListener.get(Integer.valueOf(event.getFd()));
+					if (listener != null) {
+						listener.notify(fdToFilename.get(Integer.valueOf(event.getFd())), event.getEpochTime(),
+								event.getNanoTime(), event.getValue());
+					}
+				}
+			} while (!eventQueue.isEmpty());
+		}
 	}
-	
+
+	public void register(String filename, PollEventListener listener) {
+		int file_fd = addFile(epollFd, filename);
+		if (file_fd == -1) {
+			throw new RuntimeIOException("Error registering file '" + filename + "' with epoll");
+		}
+
+		fdToListener.put(Integer.valueOf(file_fd), listener);
+		fdToFilename.put(Integer.valueOf(file_fd), filename);
+		filenameToFd.put(filename, Integer.valueOf(file_fd));
+	}
+
+	public void deregister(String filename) {
+		Integer file_fd = filenameToFd.get(filename);
+		if (file_fd == null) {
+			Logger.warn("No file descriptor for '{}'", filename);
+			return;
+		}
+
+		int rc = removeFile(epollFd, file_fd.intValue());
+		if (rc < 0) {
+			Logger.warn("Error in epoll removeFile for file fd {}: {}", file_fd, Integer.valueOf(rc));
+		}
+
+		fdToListener.remove(file_fd);
+		fdToFilename.remove(file_fd);
+		filenameToFd.remove(filename);
+	}
+
+	public void enableEvents() {
+		DioZeroScheduler.getDaemonInstance().execute(this::waitForEvents);
+		DioZeroScheduler.getDaemonInstance().execute(this::processEvents);
+	}
+
+	public void disableEvents() {
+		running.getAndSet(false);
+		// Stop the epoll thread
+		stopWait(epollFd);
+		// Wake up the process events thread so that it can exit
+		lock.lock();
+		try {
+			condition.signalAll();
+		} finally {
+			lock.unlock();
+		}
+	}
+
+	@Override
 	public void close() {
+		disableEvents();
 		shutdown(epollFd);
+		fdToListener.clear();
+		fdToFilename.clear();
+		filenameToFd.clear();
 	}
 }
