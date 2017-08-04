@@ -108,7 +108,10 @@ public class FirmataDeviceFactory extends BaseNativeDeviceFactory {
 	
 	@Override
 	protected BoardInfo initialiseBoardInfo() {
-		return new FirmataBoardInfo(ioDevice);
+		BoardInfo board_info = new FirmataBoardInfo(ioDevice);
+		board_info.initialisePins();
+		
+		return board_info;
 	}
 	
 	@Override

@@ -189,7 +189,10 @@ public class VoodooSparkDeviceFactory extends BaseNativeDeviceFactory {
 	
 	@Override
 	protected BoardInfo initialiseBoardInfo() {
-		return new ParticlePhotonBoardInfo();
+		BoardInfo board_info = new ParticlePhotonBoardInfo();
+		board_info.initialisePins();
+		
+		return board_info;
 	}
 	
 	@Override
