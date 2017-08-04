@@ -1,5 +1,6 @@
 #include "com_diozero_util_EpollNative.h"
 
+#include <jni.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <stdio.h>
@@ -12,10 +13,9 @@
 
 #include "com_diozero_util_Util.h"
 
-static jclass systemClassRef = NULL;
-static jmethodID nanoTimeMethodId = NULL;
-static jclass epollEventClassRef = NULL;
-static jmethodID epollEventConstructor = NULL;
+extern jclass epollEventClassRef;
+extern jmethodID epollEventConstructor;
+const char INTERRUPT = 'I';
 
 /*
  * Class:     com_diozero_util_EpollNative
@@ -24,35 +24,6 @@ static jmethodID epollEventConstructor = NULL;
  */
 JNIEXPORT jint JNICALL Java_com_diozero_util_EpollNative_epollCreate(
 		JNIEnv * env, jclass clz) {
-	// Cache the System.nanoTime class/method references on start-up
-	jclass system_class = (*env)->FindClass(env, "java/lang/System");
-	if (system_class == NULL) {
-		fprintf(stderr, "Error looking up class java/lang/System");
-		return -1;
-	}
-	nanoTimeMethodId = (*env)->GetStaticMethodID(env, system_class, "nanoTime", "()J");
-	if (nanoTimeMethodId == NULL) {
-		fprintf(stderr, "Error looking up methodID for java/lang/System.nanoTime()J");
-		return -1;
-	}
-
-	char* class_name = "com/diozero/util/EpollEvent";
-	jclass epoll_event_class = (*env)->FindClass(env, class_name);
-	if (epoll_event_class == NULL) {
-		fprintf(stderr, "Could not find class '%s'\n", class_name);
-		return -1;
-	}
-
-	char* signature = "(IIJJB)V";
-	epollEventConstructor = (*env)->GetMethodID(env, epoll_event_class, "<init>", signature);
-	if (epollEventConstructor == NULL) {
-		fprintf(stderr, "Could not find constructor with signature '%s' in class '%s'\n", signature, class_name);
-		return -1;
-	}
-
-	systemClassRef = (*env)->NewGlobalRef(env, system_class);
-	epollEventClassRef = (*env)->NewGlobalRef(env, epoll_event_class);
-
 	// Note since Linux 2.6.8, the size argument is ignored, but must be greater than zero
 	return epoll_create(1);
 }
@@ -74,7 +45,7 @@ JNIEXPORT jint JNICALL Java_com_diozero_util_EpollNative_addFile(
 		return -1;
 	}
 
-	/* consume any prior interrupts */
+	/* Consume any prior interrupts */
 	char buf;
 	lseek(fd, 0, SEEK_SET);
 	read(fd, &buf, 1);
@@ -121,8 +92,8 @@ JNIEXPORT jobjectArray JNICALL Java_com_diozero_util_EpollNative_waitForEvents(
 	int max_events = 10;
 	struct epoll_event epoll_events[max_events];
 	int num_fds = epoll_wait(epollFd, epoll_events, max_events, -1);
-	// Get the Java nano time as early as possible
-	jlong nano_time = (*env)->CallStaticLongMethod(env, systemClassRef, nanoTimeMethodId);
+	// Get the Java nano time and epoch time as early as possible
+	jlong nano_time = getJavaNanoTime();
 	unsigned long long epoch_time = getEpochTime();
 	if (num_fds < 0) {
 		fprintf(stderr, "epoll_wait failed! %s\n", strerror(errno));
@@ -133,6 +104,7 @@ JNIEXPORT jobjectArray JNICALL Java_com_diozero_util_EpollNative_waitForEvents(
 	char val;
 	int i;
 	for (i=0; i<num_fds; i++) {
+		// Consume the interrupt
 		lseek(epoll_events[i].data.fd, 0, SEEK_SET);
 		read(epoll_events[i].data.fd, &val, 1);
 
@@ -146,28 +118,99 @@ JNIEXPORT jobjectArray JNICALL Java_com_diozero_util_EpollNative_waitForEvents(
 
 /*
  * Class:     com_diozero_util_EpollNative
+ * Method:    eventLoop
+ * Signature: (ILcom/diozero/util/PollEventListener;)V
+ */
+JNIEXPORT jint JNICALL Java_com_diozero_util_EpollNative_eventLoop(
+		JNIEnv * env, jclass clz, jint epollFd, jobject callback) {
+	jclass callback_class = (*env)->GetObjectClass(env, callback);
+	if ((*env)->ExceptionCheck(env) || callback_class == NULL) {
+		fprintf(stderr, "Error getting callback object class\n");
+		return -1;
+	}
+	jmethodID callback_method_id = (*env)->GetMethodID(env, callback_class, "callback", "(IIJJB)V");
+	if ((*env)->ExceptionCheck(env) || callback_method_id == NULL) {
+		fprintf(stderr, "Error getting callback method\n");
+		return -1;
+	}
+
+	int max_events = 40;
+	struct epoll_event epoll_events[max_events];
+
+	int running = 1;
+	while (running) {
+		int num_fds = epoll_wait(epollFd, epoll_events, max_events, -1);
+		// Get the Java nano time and epoch time as early as possible
+		jlong nano_time = getJavaNanoTime();
+		jlong epoch_time = getEpochTime();
+		if (num_fds < 0) {
+			fprintf(stderr, "epoll_wait failed! %s\n", strerror(errno));
+			return -1;
+		}
+
+		char val;
+		int i;
+		for (i=0; i<num_fds; i++) {
+			// Consume the interrupt
+			lseek(epoll_events[i].data.fd, 0, SEEK_SET);
+			read(epoll_events[i].data.fd, &val, 1);
+
+			if (val == INTERRUPT) {
+				running = 0;
+			} else {
+				(*env)->CallVoidMethod(env, callback, callback_method_id,
+						epoll_events[i].data.fd, epoll_events[i].events, epoch_time, nano_time, val);
+			}
+		}
+	}
+
+	return 0;
+}
+
+/*
+ * Class:     com_diozero_util_EpollNative
  * Method:    stopWait
  * Signature: (I)V
  */
 JNIEXPORT void JNICALL Java_com_diozero_util_EpollNative_stopWait(
 		JNIEnv * env, jclass clz, jint epollFd) {
-	 int pipefds[2] = {};
-	 struct epoll_event ev = {};
-	 pipe(pipefds);
-	 int read_pipe = pipefds[0];
-	 int write_pipe = pipefds[1];
+	int pipefds[2] = {};
+	struct epoll_event ev = {};
+	int rc = pipe(pipefds);
+	if (rc < 0) {
+		fprintf(stderr, "Error creating pipe: %s\n", strerror(errno));
+		return;
+	}
+	int read_pipe = pipefds[0];
+	int write_pipe = pipefds[1];
 
-	 // make read-end non-blocking
-	 int flags = fcntl(read_pipe, F_GETFL, 0);
-	 fcntl(write_pipe, F_SETFL, flags|O_NONBLOCK);
+	/*
+	// Make the read-end non-blocking
+	int flags = fcntl(read_pipe, F_GETFL, 0);
+	rc = fcntl(read_pipe, F_SETFL, flags | O_NONBLOCK);
+	if (rc < 0) {
+		fprintf(stderr, "Error calling fcntl on read pipe: %s\n", strerror(errno));
+		close(read_pipe);
+		close(write_pipe);
+		return;
+	}
+	*/
 
-	 // add the read end to the epoll
-	 ev.events = EPOLLIN;
-	 ev.data.fd = read_pipe;
-	 epoll_ctl(epollFd, EPOLL_CTL_ADD, read_pipe, &ev);
+	// Add the read end to the epoll
+	ev.events = EPOLLIN;
+	ev.data.fd = read_pipe;
+	rc = epoll_ctl(epollFd, EPOLL_CTL_ADD, read_pipe, &ev);
+	if (rc < 0) {
+		fprintf(stderr, "Error adding read pipe to epoll: %s\n", strerror(errno));
+		close(read_pipe);
+		close(write_pipe);
+		return;
+	}
 
-	 const char* terminate = "terminate";
-	 write(write_pipe, terminate, 1);
+	write(write_pipe, &INTERRUPT, 1);
+
+	rc = epoll_ctl(epollFd, EPOLL_CTL_DEL, read_pipe, NULL);
+	rc = close(write_pipe);
 }
 
 /*
@@ -178,7 +221,4 @@ JNIEXPORT void JNICALL Java_com_diozero_util_EpollNative_stopWait(
 JNIEXPORT void JNICALL Java_com_diozero_util_EpollNative_shutdown(
 		JNIEnv * env, jclass clz, jint epollFd) {
 	close(epollFd);
-
-	(*env)->DeleteGlobalRef(env, systemClassRef);
-	(*env)->DeleteGlobalRef(env, epollEventClassRef);
 }

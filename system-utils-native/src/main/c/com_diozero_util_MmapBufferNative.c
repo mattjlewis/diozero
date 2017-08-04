@@ -13,26 +13,16 @@
 #include <jni.h>
 #include "com_diozero_util_MmapBufferNative.h"
 
+extern jclass mmapByteBufferClassRef;
+extern jmethodID mmapByteBufferConstructor;
+
 static void* initMapMem(int fd, uint32_t offset, uint32_t length) {
 	return mmap(0, length, PROT_READ|PROT_WRITE, MAP_SHARED, fd, offset);
 	//return mmap(0, length, PROT_READ|PROT_WRITE, MAP_SHARED|MAP_LOCKED, fd, offset);
 }
 
 jobject createMmapByteBuffer(JNIEnv* env, int fd, void* map_ptr, long mapCapacity) {
-	char* class_name = "com/diozero/util/MmapByteBuffer";
-	jclass clz = (*env)->FindClass(env, class_name);
-	if (clz == NULL) {
-		printf("Error, could not find class '%s'\n", class_name);
-		return NULL;
-	}
-	char* signature = "(IIILjava/nio/ByteBuffer;)V";
-	jmethodID constructor = (*env)->GetMethodID(env, clz, "<init>", signature);
-	if (constructor == NULL) {
-		printf("Error, could not find constructor %s %s\n", class_name, signature);
-		return NULL;
-	}
-
-	return (*env)->NewObject(env, clz, constructor, fd, map_ptr, mapCapacity,
+	return (*env)->NewObject(env, mmapByteBufferClassRef, mmapByteBufferConstructor, fd, map_ptr, mapCapacity,
 			(*env)->NewDirectByteBuffer(env, map_ptr, mapCapacity));
 }
 

@@ -86,7 +86,7 @@ public class EpollTest {
 		}
 	}
 	
-	private static void notify(String filename, long epochTime, long nanoTime, char value) {
-		Logger.info("notify({}, {}, {}, {})", filename, new Date(epochTime), Long.valueOf(nanoTime), Character.valueOf(value));
+	private static void notify(long epochTime, long nanoTime, char value) {
+		Logger.info("notify({}, {}, {})", new Date(epochTime), Long.valueOf(nanoTime), Character.valueOf(value));
 	}
 }

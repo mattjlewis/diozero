@@ -84,7 +84,8 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeI2C_smbusO
 	jboolean is_copy;
 	const char* device = (*env)->GetStringUTFChars(env, i2cAdapter, &is_copy);
 
-	int fd = open(device, O_RDWR | O_NONBLOCK);
+	//int fd = open(device, O_RDWR | O_NONBLOCK);
+	int fd = open(device, O_RDWR);
 	(*env)->ReleaseStringUTFChars(env, i2cAdapter, device);
 	if (fd < 0) {
 #if LOG_ERRORS == 1

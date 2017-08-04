@@ -14,13 +14,6 @@
 #include <sys/file.h>
 #include <jni.h>
 
-/* Java VM interface */
-static JavaVM* globalJavaVM = NULL;
-
-JavaVM* getGlobalJavaVM() {
-	return globalJavaVM;
-}
-
 static void* initMapMem(int fd, uint32_t offset, uint32_t length) {
 	return mmap(0, length, PROT_READ|PROT_WRITE|PROT_EXEC, MAP_SHARED|MAP_LOCKED, fd, offset);
 }
@@ -45,8 +38,6 @@ jobject createMmapByteBuffer(JNIEnv* env, int fd, void* map_ptr, long mapCapacit
 
 /* The VM calls this function upon loading the native library. */
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* jvm, void* reserved) {
-	globalJavaVM = jvm;
-
 	return JNI_VERSION_1_8;
 }
 

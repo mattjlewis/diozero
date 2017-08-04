@@ -34,9 +34,21 @@ package com.diozero.internal.provider.pigpioj;
 
 import org.pmw.tinylog.Logger;
 
-import com.diozero.api.*;
+import com.diozero.api.DeviceMode;
+import com.diozero.api.GpioEventTrigger;
+import com.diozero.api.GpioPullUpDown;
+import com.diozero.api.PinInfo;
+import com.diozero.api.SpiClockMode;
 import com.diozero.internal.board.raspberrypi.RaspberryPiBoardInfoProvider;
-import com.diozero.internal.provider.*;
+import com.diozero.internal.provider.AnalogInputDeviceInterface;
+import com.diozero.internal.provider.AnalogOutputDeviceInterface;
+import com.diozero.internal.provider.BaseNativeDeviceFactory;
+import com.diozero.internal.provider.GpioDigitalInputDeviceInterface;
+import com.diozero.internal.provider.GpioDigitalInputOutputDeviceInterface;
+import com.diozero.internal.provider.GpioDigitalOutputDeviceInterface;
+import com.diozero.internal.provider.I2CDeviceInterface;
+import com.diozero.internal.provider.PwmOutputDeviceInterface;
+import com.diozero.internal.provider.SpiDeviceInterface;
 import com.diozero.util.BoardInfo;
 import com.diozero.util.RuntimeIOException;
 
@@ -66,8 +78,11 @@ public class PigpioJDeviceFactory extends BaseNativeDeviceFactory {
 	
 	@Override
 	protected BoardInfo initialiseBoardInfo() {
-		return new RaspberryPiBoardInfoProvider().lookup("BCM2835",
+		BoardInfo board_info = new RaspberryPiBoardInfoProvider().lookup("BCM2835",
 				Integer.toHexString(pigpioImpl.getHardwareRevision()), null);
+		board_info.initialisePins();
+		
+		return board_info;
 	}
 
 	@Override

@@ -136,7 +136,7 @@ implements GpioDigitalInputOutputDeviceInterface, PollEventListener {
 	}
 
 	@Override
-	public void notify(String filename, long epochTime, long nanoTime, char value) {
+	public void notify(long epochTime, long nanoTime, char value) {
 		valueChanged(new DigitalInputEvent(gpio, epochTime, nanoTime, value == HIGH_VALUE));
 	}
 }

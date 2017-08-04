@@ -33,24 +33,14 @@ ws2811_t led_string = {
 	}
 };
 
-/* Java VM interface */
-static JavaVM* globalJavaVM = NULL;
-
-JavaVM* getGlobalJavaVM() {
-	return globalJavaVM;
-}
-
 /* The VM calls this function upon loading the native library. */
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* jvm, void* reserved) {
-	globalJavaVM = jvm;
-
 	return JNI_VERSION_1_8;
 }
 
 /* This function is called when the native library gets unloaded by the VM. */
 JNIEXPORT void JNICALL JNI_OnUnload(JavaVM* jvm, void* reserved) {
 	ws2811_fini(&led_string);
-	globalJavaVM = NULL;
 }
 
 /*

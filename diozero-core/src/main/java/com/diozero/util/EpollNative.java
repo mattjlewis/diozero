@@ -33,7 +33,6 @@ package com.diozero.util;
 
 
 import java.io.Closeable;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Queue;
@@ -45,7 +44,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.pmw.tinylog.Logger;
 
-public class EpollNative implements Closeable {
+public class EpollNative implements EpollNativeCallback, Closeable {
 	static {
 		LibraryLoader.loadLibrary(EpollNative.class, "diozero-system-utils");
 	}
@@ -54,12 +53,12 @@ public class EpollNative implements Closeable {
 	private static native int addFile(int epollFd, String filename);
 	private static native int removeFile(int epollFd, int fileFd);
 	private static native EpollEvent[] waitForEvents(int epollFd);
+	private static native int eventLoop(int epollFd, EpollNativeCallback callback);
 	private static native void stopWait(int epollFd);
 	private static native void shutdown(int epollFd);
 
 	private int epollFd;
 	private Map<Integer, PollEventListener> fdToListener;
-	private Map<Integer, String> fdToFilename;
 	private Map<String, Integer> filenameToFd;
 	private AtomicBoolean running;
 	private Queue<EpollEvent> eventQueue;
@@ -68,7 +67,6 @@ public class EpollNative implements Closeable {
 
 	public EpollNative() {
 		fdToListener = new HashMap<>();
-		fdToFilename = new HashMap<>();
 		filenameToFd = new HashMap<>();
 		running = new AtomicBoolean(false);
 		eventQueue = new ConcurrentLinkedQueue<>();
@@ -85,11 +83,16 @@ public class EpollNative implements Closeable {
 
 	private void waitForEvents() {
 		Thread.currentThread().setName("diozero-EpollNative-waitForEvents-" + hashCode());
+		
+		if (eventLoop(epollFd, this) < 0) {
+			throw new RuntimeIOException("Error starting native epoll event loop");
+		}
 
-		running.getAndSet(true);
+		/*
 		while (running.get()) {
 			EpollEvent[] events = waitForEvents(epollFd);
 			if (events == null) {
+				Logger.debug("Got no events");
 				running.getAndSet(false);
 			} else {
 				for (EpollEvent event : events) {
@@ -98,11 +101,26 @@ public class EpollNative implements Closeable {
 				// Notify the process events thread that there are new events on the queue
 				lock.lock();
 				try {
-					condition.signalAll();
+					condition.signal();
 				} finally {
 					lock.unlock();
 				}
 			}
+		}
+		*/
+		
+		Logger.debug("Finished");
+	}
+	
+	@Override
+	public void callback(int fd, int eventMask, long epochTime, long nanoTime, byte value) {
+		// Notify the process events thread that there are new events on the queue
+		lock.lock();
+		eventQueue.add(new EpollEvent(fd, eventMask, epochTime, nanoTime, value));
+		try {
+			condition.signal();
+		} finally {
+			lock.unlock();
 		}
 	}
 
@@ -124,15 +142,22 @@ public class EpollNative implements Closeable {
 			do {
 				EpollEvent event = eventQueue.poll();
 
-				if (event != null) {
-					PollEventListener listener = fdToListener.get(Integer.valueOf(event.getFd()));
-					if (listener != null) {
-						listener.notify(fdToFilename.get(Integer.valueOf(event.getFd())), event.getEpochTime(),
-								event.getNanoTime(), event.getValue());
+				if (event == null) {
+					Logger.debug("No event returned");
+				} else {
+					Integer fd = Integer.valueOf(event.getFd());
+					PollEventListener listener = fdToListener.get(fd);
+					if (listener == null) {
+						Logger.warn("No listener for fd {}, event value: '{}'", fd,
+								Character.valueOf(event.getValue()));
+					} else {
+						listener.notify(event.getEpochTime(), event.getNanoTime(), event.getValue());
 					}
 				}
-			} while (!eventQueue.isEmpty());
+			} while (! eventQueue.isEmpty());
 		}
+		
+		Logger.debug("Finished");
 	}
 
 	public void register(String filename, PollEventListener listener) {
@@ -142,7 +167,6 @@ public class EpollNative implements Closeable {
 		}
 
 		fdToListener.put(Integer.valueOf(file_fd), listener);
-		fdToFilename.put(Integer.valueOf(file_fd), filename);
 		filenameToFd.put(filename, Integer.valueOf(file_fd));
 	}
 
@@ -159,13 +183,13 @@ public class EpollNative implements Closeable {
 		}
 
 		fdToListener.remove(file_fd);
-		fdToFilename.remove(file_fd);
 		filenameToFd.remove(filename);
 	}
 
 	public void enableEvents() {
-		DioZeroScheduler.getDaemonInstance().execute(this::waitForEvents);
+		running.getAndSet(true);
 		DioZeroScheduler.getDaemonInstance().execute(this::processEvents);
+		DioZeroScheduler.getDaemonInstance().execute(this::waitForEvents);
 	}
 
 	public void disableEvents() {
@@ -175,7 +199,7 @@ public class EpollNative implements Closeable {
 		// Wake up the process events thread so that it can exit
 		lock.lock();
 		try {
-			condition.signalAll();
+			condition.signal();
 		} finally {
 			lock.unlock();
 		}
@@ -186,7 +210,6 @@ public class EpollNative implements Closeable {
 		disableEvents();
 		shutdown(epollFd);
 		fdToListener.clear();
-		fdToFilename.clear();
 		filenameToFd.clear();
 	}
 }

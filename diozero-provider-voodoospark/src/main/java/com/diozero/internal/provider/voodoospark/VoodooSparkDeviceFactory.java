@@ -37,10 +37,10 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
-import java.util.Deque;
 import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
@@ -129,7 +129,7 @@ public class VoodooSparkDeviceFactory extends BaseNativeDeviceFactory {
 	private static final byte SERVO_WRITE = 0x41;
 	private static final byte ACTION_RANGE = 0x46;
 	
-	private Deque<ResponseMessage> messageQueue;
+	private Queue<ResponseMessage> messageQueue;
 	private EventLoopGroup workerGroup;
 	private Channel messageChannel;
 	private Lock lock;
@@ -296,7 +296,7 @@ public class VoodooSparkDeviceFactory extends BaseNativeDeviceFactory {
 			lastWriteFuture = messageChannel.writeAndFlush(message);
 			if (message.responseExpected ) {
 				if (condition.await(timeoutMs, TimeUnit.MILLISECONDS)) {
-					rm = messageQueue.pop();
+					rm = messageQueue.remove();
 					
 					if (rm.cmd != message.cmd) {
 						Logger.error("Unexpected response: {}, was expecting {}; discarding", Byte.valueOf(rm.cmd),

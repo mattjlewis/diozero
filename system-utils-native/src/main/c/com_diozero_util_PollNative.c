@@ -1,5 +1,6 @@
 #include "com_diozero_util_PollNative.h"
 
+#include <jni.h>
 #include <errno.h>
 #include <unistd.h>
 #include <stdio.h>
@@ -10,30 +11,21 @@
 #include <poll.h>
 #include "com_diozero_util_Util.h"
 
+extern jclass systemClassRef;
+extern jmethodID nanoTimeMethodId;
+
 JNIEXPORT void JNICALL Java_com_diozero_util_PollNative_poll(
 		JNIEnv* env, jobject pollNative, jstring filename, jint timeout, jobject ref, jobject callback) {
-	// Cache the System.nanoTime class/method references on start-up
-	jclass system_class = (*env)->FindClass(env, "java/lang/System");
-	if (system_class == NULL) {
-		fprintf(stderr, "Error looking up class java/lang/System");
-		return;
-	}
-	jmethodID nano_time_method_id = (*env)->GetStaticMethodID(env, system_class, "nanoTime", "()J");
-	if (nano_time_method_id == NULL) {
-		fprintf(stderr, "Error looking up methodID for java/lang/System.nanoTime()J");
-		return;
-	}
-
 	jclass callback_class = (*env)->GetObjectClass(env, callback);
 	if (callback_class == NULL) {
 		printf("Error: poll() could not get callback class\n");
 		return;
 	}
-	char* notify_method_name = "notify";
-	char* notify_signature = "(Ljava/lang/String;JC)V";
-	jmethodID notify_method_id = (*env)->GetMethodID(env, callback_class, notify_method_name, notify_signature);
-	if (notify_method_id == NULL) {
-		printf("Unable to find method '%s' with signature '%s' in callback object\n", notify_method_name, notify_signature);
+	char* method_name = "notify";
+	char* signature = "(Ljava/lang/String;JC)V";
+	jmethodID notify_method_id = (*env)->GetMethodID(env, callback_class, method_name, signature);
+	if ((*env)->ExceptionCheck(env) || notify_method_id == NULL) {
+		printf("Unable to find method '%s' with signature '%s' in callback object\n", method_name, signature);
 		return;
 	}
 
@@ -74,13 +66,14 @@ JNIEXPORT void JNICALL Java_com_diozero_util_PollNative_poll(
 	pfd.fd = fd;
 	pfd.events = POLLPRI | POLLERR | POLLHUP | POLLNVAL;
 	//pfd.events = POLLPRI;
-	unsigned long long epoch_time;
+	jlong nano_time;
+	jlong epoch_time;
 
 	while (1) {
 		// TODO How to interrupt the blocking poll call?
 		retval = poll(&pfd, 1, timeout);
 		// Get the Java nano time as early as possible
-		jlong nano_time = (*env)->CallStaticLongMethod(env, system_class, nano_time_method_id);
+		nano_time = getJavaNanoTime();
 		epoch_time = getEpochTime();
 
 		lseek(fd, 0, SEEK_SET); /* consume the interrupt */

@@ -64,7 +64,7 @@ public interface GpioDeviceFactoryInterface extends DeviceFactoryInterface {
 	default GpioDigitalOutputDeviceInterface provisionDigitalOutputDevice(int gpio, boolean initialValue)
 			throws RuntimeIOException {
 		PinInfo pin_info = getBoardPinInfo().getByGpioNumber(gpio);
-		if (pin_info == null || !pin_info.isSupported(DeviceMode.DIGITAL_OUTPUT)) {
+		if (pin_info == null || ! pin_info.isSupported(DeviceMode.DIGITAL_OUTPUT)) {
 			throw new InvalidModeException("Invalid mode (digital output) for GPIO " + gpio);
 		}
 
