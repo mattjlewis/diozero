@@ -1,0 +1,7 @@
+module com.diozero.imu_devices {
+	requires transitive com.diozero.core;
+	requires tinylog;
+	requires commons.math3;
+	
+	exports com.diozero.imu.drivers.invensense;
+}

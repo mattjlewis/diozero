@@ -1,0 +1,10 @@
+module com.diozero.provider.firmata {
+	requires transitive com.diozero.core;
+	requires tinylog;
+	requires commons.math3;
+	
+	requires firmata4j;
+	
+	provides com.diozero.internal.provider.NativeDeviceFactoryInterface
+		with com.diozero.internal.provider.firmata.FirmataDeviceFactory;
+}

@@ -1,0 +1,24 @@
+module com.diozero.core {
+	// Required for java.awt.image as used by SSD1306 and SSD1331
+	requires java.desktop;
+	requires tinylog;
+	requires commons.math3;
+	
+	uses com.diozero.internal.provider.NativeDeviceFactoryInterface;
+	uses com.diozero.util.BoardInfoProvider;
+	
+	exports com.diozero.api;
+	exports com.diozero.api.easing;
+	exports com.diozero.api.imu;
+	exports com.diozero.api.motor;
+	exports com.diozero.devices;
+	exports com.diozero.devices.sandpit;
+	exports com.diozero.util;
+	exports com.diozero.internal.provider;
+	exports com.diozero.internal.provider.sysfs to
+		com.diozero.provider.bbbiolib, com.diozero.provider.mmap;
+	exports com.diozero.internal.board.beaglebone to
+		com.diozero.provider.bbbiolib;
+	exports com.diozero.internal.board.raspberrypi to
+		com.diozero.provider.pigpio;
+}

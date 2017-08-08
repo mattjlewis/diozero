@@ -1,0 +1,9 @@
+module com.diozero.provider.pi4j {
+	requires transitive com.diozero.core;
+	requires tinylog;
+	
+	requires pi4j.core;
+	
+	provides com.diozero.internal.provider.NativeDeviceFactoryInterface
+		with com.diozero.internal.provider.pi4j.Pi4jDeviceFactory;
+}

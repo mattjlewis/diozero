@@ -1,0 +1,8 @@
+module com.diozero.provider.bbbiolib {
+	requires transitive com.diozero.core;
+	requires tinylog;
+	requires commons.math3;
+
+	provides com.diozero.internal.provider.NativeDeviceFactoryInterface
+		with com.diozero.internal.provider.bbbiolib.BbbIoLibDeviceFactory;
+}

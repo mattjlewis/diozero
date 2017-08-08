@@ -1,0 +1,8 @@
+module com.diozero.imu_sampleapp {
+	requires transitive com.diozero.imu_devices;
+	requires transitive com.diozero.core;
+	requires tinylog;
+	requires commons.math3;
+	
+	//requires mqtt;
+}
