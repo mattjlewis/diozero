@@ -1,0 +1,11 @@
+module com.diozero.mqtt_server {
+	requires transitive com.diozero.core;
+	requires tinylog;
+	requires commons.math3;
+	
+	exports com.diozero.remote to com.diozero.provider.remote;
+	exports com.diozero.remote.http to com.diozero.provider.remote;
+	exports com.diozero.remote.message to com.diozero.provider.remote;
+	exports com.diozero.remote.mqtt to com.diozero.provider.remote;
+	exports com.diozero.remote.websocket to com.diozero.provider.remote;
+}

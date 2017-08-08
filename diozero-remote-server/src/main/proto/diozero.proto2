@@ -1,0 +1,136 @@
+syntax = "proto2";
+
+package diozero;
+
+option java_package = "com.diozero.internal.provider.remote.message";
+option java_outer_classname = "DiozeroProtos";
+
+enum Status {
+	OK = 0;
+	ERROR = 1;
+}
+
+message MessageWrapper {
+	required string type = 1;
+	required bytes message = 2;
+}
+
+message Response {
+	required string correlationId = 1;
+	required Status status = 2;
+	optional string detail = 3;
+}
+
+message Gpio {
+	enum PullUpDown {
+		PUD_NONE = 0;
+		PUD_PULL_UP = 1;
+		PUD_PULL_DOWN = 2;
+	}
+	
+	enum Trigger {
+		TRIGGER_NONE = 0;
+		TRIGGER_RISING = 1;
+		TRIGGER_FALLING = 2;
+		TRIGGER_BOTH = 3;
+	}
+	
+	message ProvisionInput {
+		required string correlationId = 1;
+		required int32 gpio = 2;
+		optional PullUpDown pud = 3 [default = PUD_NONE];
+		optional Trigger trigger = 4 [default = TRIGGER_NONE];
+	}
+	
+	message ProvisionOutput {
+		required string correlationId = 1;
+		required int32 gpio = 2;
+		required bool initialValue = 3;
+	}
+	
+	message ProvisionInputOutput {
+		required string correlationId = 1;
+		required int32 gpio = 2;
+		required bool output = 3;
+	}
+	
+	message DigitalWrite {
+		required string correlationId = 1;
+		required int32 gpio = 2;
+		required bool value = 3;
+	}
+	
+	message DigitalRead {
+		required string correlationId = 1;
+		required int32 gpio = 2;
+	}
+	
+	message Events {
+		required string correlationId = 1;
+		required int32 gpio = 2;
+		required bool enabled = 3;
+	}
+	
+	message Close {
+		required string correlationId = 1;
+		required int32 gpio = 2;
+	}
+	
+	message DigitalReadResponse {
+		required string correlationId = 1;
+		required Status status = 2;
+		optional string detail = 3;
+		optional bool digitalValue = 4;
+	}
+	
+	message Notification {
+		required int32 gpio = 1;
+		required int64 epochTime = 2;
+		required bool value = 3;
+	}
+}
+
+message Spi {
+	enum ClockMode {
+		MODE_0 = 0;
+		MODE_1 = 1;
+		MODE_2 = 2;
+		MODE_3 = 3;
+	}
+	
+	message Provision {
+		required string correlationId = 1;
+		required int32 controller = 2;
+		required int32 chipSelect = 3;
+		required int32 frequency = 4;
+		required ClockMode clockMode = 5;
+		required bool lsbFirst = 6;
+	}
+	
+	message Write {
+		required string correlationId = 1;
+		required int32 controller = 2;
+		required int32 chipSelect = 3;
+		required bytes txData = 4;
+	}
+	
+	message WriteAndRead {
+		required string correlationId = 1;
+		required int32 controller = 2;
+		required int32 chipSelect = 3;
+		required bytes txData = 4;
+	}
+	
+	message Close {
+		required string correlationId = 1;
+		required int32 controller = 2;
+		required int32 chipSelect = 3;
+	}
+	
+	message SpiResponse {
+		required string correlationId = 1;
+		required Status status = 2;
+		optional string detail = 3;
+		optional bytes rxData = 4;
+	}
+}
