@@ -1,0 +1,8 @@
+module com.diozero.provider.remote {
+	requires transitive com.diozero.mqtt_server;
+	requires transitive com.diozero.core;
+	requires tinylog;
+
+	provides com.diozero.internal.provider.NativeDeviceFactoryInterface
+		with com.diozero.internal.provider.remote.devicefactory.RemoteDeviceFactory;
+}

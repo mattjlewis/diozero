@@ -1,0 +1,59 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	
+	<parent>
+		<groupId>com.diozero</groupId>
+		<artifactId>diozero</artifactId>
+		<version>0.11-SNAPSHOT</version>
+	</parent>
+	
+	<name>Device I/O Zero - Remote Provider</name>
+	<artifactId>diozero-provider-remote</artifactId>
+	<packaging>jar</packaging>
+
+	<properties>
+		<eclipse-paho-client-mqttv3.version>1.1.1</eclipse-paho-client-mqttv3.version>
+		<google-protocol-buffers.version>3.3.1</google-protocol-buffers.version>
+		<apache-httpcomponents-httpcore.version>4.4.6</apache-httpcomponents-httpcore.version>
+		<apache-httpcomponents-httpclient.version>4.5.3</apache-httpcomponents-httpclient.version>
+		<netty.version>4.1.9.Final</netty.version>
+	</properties>
+	
+	<dependencies>
+		<dependency>
+			<groupId>com.diozero</groupId>
+			<artifactId>diozero-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.diozero</groupId>
+			<artifactId>diozero-remote-server</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.paho</groupId>
+			<artifactId>org.eclipse.paho.client.mqttv3</artifactId>
+			<version>${eclipse-paho-client-mqttv3.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.protobuf</groupId>
+			<artifactId>protobuf-java</artifactId>
+			<version>${google-protocol-buffers.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpcore</artifactId>
+			<version>${apache-httpcomponents-httpcore.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<version>${apache-httpcomponents-httpclient.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.netty</groupId>
+			<artifactId>netty-all</artifactId>
+			<version>${netty.version}</version>
+		</dependency>
+	</dependencies>
+</project>
