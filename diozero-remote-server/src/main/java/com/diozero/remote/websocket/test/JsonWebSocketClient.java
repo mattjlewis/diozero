@@ -3,7 +3,7 @@ package com.diozero.remote.websocket.test;
 /*-
  * #%L
  * Organisation: mattjlewis
- * Project:      Device I/O Zero - MQTT Server Host Process
+ * Project:      Device I/O Zero - Remote Server
  * Filename:     JsonWebSocketClient.java  
  * 
  * This file is part of the diozero project. More information about this project

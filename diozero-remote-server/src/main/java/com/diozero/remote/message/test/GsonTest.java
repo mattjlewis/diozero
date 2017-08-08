@@ -3,7 +3,7 @@ package com.diozero.remote.message.test;
 /*-
  * #%L
  * Organisation: mattjlewis
- * Project:      Device I/O Zero - MQTT Server Host Process
+ * Project:      Device I/O Zero - Remote Server
  * Filename:     GsonTest.java  
  * 
  * This file is part of the diozero project. More information about this project
