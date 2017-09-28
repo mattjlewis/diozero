@@ -144,38 +144,38 @@
 		
 		<!-- Core plugins -->
 		<maven-clean-plugin.version>3.0.0</maven-clean-plugin.version>
-		<maven-compiler-plugin.version>3.6.2</maven-compiler-plugin.version>
+		<maven-compiler-plugin.version>3.7.0</maven-compiler-plugin.version>
 		<maven-deploy-plugin.version>2.8.2</maven-deploy-plugin.version>
 		<maven-install-plugin.version>2.5.2</maven-install-plugin.version>
 		<maven-resources-plugin.version>3.0.2</maven-resources-plugin.version>
 		<maven-site-plugin.version>3.6</maven-site-plugin.version>
-		<maven-surefire-plugin.version>2.20</maven-surefire-plugin.version>
+		<maven-surefire-plugin.version>2.20.1</maven-surefire-plugin.version>
 		
 		<!-- Packaging plugins -->
 		<maven-jar-plugin.version>3.0.2</maven-jar-plugin.version>
-		<maven-shade-plugin.version>3.0.0</maven-shade-plugin.version>
+		<maven-shade-plugin.version>3.1.0</maven-shade-plugin.version>
 		<maven-source-plugin.version>3.0.1</maven-source-plugin.version>
 		
 		<!-- Reporting plugins -->
 		<maven-changelog-plugin.version>2.3</maven-changelog-plugin.version>
 		<maven-changes-plugin.version>2.12.1</maven-changes-plugin.version>
 		<maven-checkstyle-plugin.version>2.17</maven-checkstyle-plugin.version>
-		<maven-javadoc-plugin.version>2.10.4</maven-javadoc-plugin.version>
+		<maven-javadoc-plugin.version>3.0.0-M1</maven-javadoc-plugin.version>
 		<maven-project-info-reports-plugin.version>2.9</maven-project-info-reports-plugin.version>
 		
 		<!-- Tools plugins -->
-		<maven-assembly-plugin.version>3.0.0</maven-assembly-plugin.version>
-		<maven-dependency-plugin.version>3.0.1</maven-dependency-plugin.version>
+		<maven-assembly-plugin.version>3.1.0</maven-assembly-plugin.version>
+		<maven-dependency-plugin.version>3.0.2</maven-dependency-plugin.version>
 		<maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
 		<maven-release-plugin.version>2.5.3</maven-release-plugin.version>
 		<maven-scm-plugin.version>1.9.5</maven-scm-plugin.version>
 		
 		<!-- Other plugins -->
 		<build-helper-maven-plugin.version>3.0.0</build-helper-maven-plugin.version>
-		<license-maven-plugin.version>1.13</license-maven-plugin.version>
+		<license-maven-plugin.version>1.14</license-maven-plugin.version>
 		<native-maven-plugin.version>1.0-alpha-8</native-maven-plugin.version>
 		<versions-maven-plugin.version>2.4</versions-maven-plugin.version>
-		<findbugs-maven-plugin.version>3.0.4</findbugs-maven-plugin.version>
+		<findbugs-maven-plugin.version>3.0.5</findbugs-maven-plugin.version>
 		<nexus-staging-maven-plugin.version>1.6.8</nexus-staging-maven-plugin.version>
 		<eclipse.m2e.lifecycle-mapping.version>1.0.0</eclipse.m2e.lifecycle-mapping.version>
 

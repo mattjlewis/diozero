@@ -12,7 +12,7 @@
 	<packaging>jar</packaging>
 
 	<properties>
-		<eclipse-paho-client-mqttv3.version>1.1.1</eclipse-paho-client-mqttv3.version>
+		<eclipse-paho-client-mqttv3.version>1.2.0</eclipse-paho-client-mqttv3.version>
 	</properties>
 
 	<dependencies>
@@ -25,6 +25,7 @@
 			<artifactId>org.eclipse.paho.client.mqttv3</artifactId>
 			<version>${eclipse-paho-client-mqttv3.version}</version>
 		</dependency>
+		<!-- Non-Maven dependencies -->
 		<dependency>
 			<!--
 			To install, run this command:
