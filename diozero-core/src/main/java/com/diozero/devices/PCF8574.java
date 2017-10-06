@@ -132,7 +132,9 @@ public class PCF8574 extends AbstractDeviceFactory implements GpioDeviceFactoryI
 
 	@Override
 	public void close() {
-		device.close();
+		if (device != null) {
+			device.close();
+		}
 	}
 
 	public void setInputMode(int gpio) {

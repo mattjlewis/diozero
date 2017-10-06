@@ -27,7 +27,7 @@
 		<dependency>
 			<groupId>com.diozero</groupId>
 			<artifactId>diozero-imu-devices</artifactId>
-			<version>${project.version}</version>
+			<version>${diozero.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.paho</groupId>

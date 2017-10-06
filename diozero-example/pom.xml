@@ -1,0 +1,25 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>diozero.example</groupId>
+	<artifactId>diozero-example-project</artifactId>
+	<version>0.1</version>
+	<packaging>jar</packaging>
+	
+	<name>diozero Example application</name>
+	
+	<parent>
+		<groupId>com.diozero</groupId>
+		<artifactId>diozero</artifactId>
+		<version>0.11-SNAPSHOT</version>
+		<relativePath></relativePath>
+	</parent>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.diozero</groupId>
+			<artifactId>diozero-core</artifactId>
+		</dependency>
+	</dependencies>
+
+</project>

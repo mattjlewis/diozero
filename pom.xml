@@ -135,6 +135,8 @@
 		
 		<maven.min-version>3.3.0</maven.min-version>
 
+		<diozero.version>0.11-SNAPSHOT</diozero.version>
+		
 		<!-- Java version -->
 		<java.version>8</java.version>
 		<jdk.source.version>1.${java.version}</jdk.source.version>
@@ -241,7 +243,7 @@
 			<dependency>
 				<groupId>com.diozero</groupId>
 				<artifactId>diozero-core</artifactId>
-				<version>${project.version}</version>
+				<version>${diozero.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

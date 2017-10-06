@@ -28,7 +28,7 @@
 		<dependency>
 			<groupId>com.diozero</groupId>
 			<artifactId>diozero-remote-server</artifactId>
-			<version>${project.version}</version>
+			<version>${diozero.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.paho</groupId>

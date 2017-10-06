@@ -18,98 +18,98 @@
 		<dependency>
 			<groupId>com.diozero</groupId>
 			<artifactId>diozero-core</artifactId>
-			<version>${project.version}</version>
+			<version>${diozero.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.diozero</groupId>
 			<artifactId>diozero-remote-server</artifactId>
-			<version>${project.version}</version>
+			<version>${diozero.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.diozero</groupId>
 			<artifactId>diozero-provider-bbbiolib</artifactId>
-			<version>${project.version}</version>
+			<version>${diozero.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.diozero</groupId>
 			<artifactId>diozero-provider-firmata</artifactId>
-			<version>${project.version}</version>
+			<version>${diozero.version}</version>
 		</dependency>
 		<!--
 		<dependency>
 			<groupId>com.diozero</groupId>
 			<artifactId>diozero-provider-jdkdio10</artifactId>
-			<version>${project.version}</version>
+			<version>${diozero.version}</version>
 		</dependency>
 		-->
 		<!--
 		<dependency>
 			<groupId>com.diozero</groupId>
 			<artifactId>diozero-provider-jdkdio11</artifactId>
-			<version>${project.version}</version>
+			<version>${diozero.version}</version>
 		</dependency>
 		-->
 		<dependency>
 			<groupId>com.diozero</groupId>
 			<artifactId>diozero-provider-mmap</artifactId>
-			<version>${project.version}</version>
+			<version>${diozero.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.diozero</groupId>
 			<artifactId>diozero-provider-remote</artifactId>
-			<version>${project.version}</version>
+			<version>${diozero.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.diozero</groupId>
 			<artifactId>diozero-provider-pi4j</artifactId>
-			<version>${project.version}</version>
+			<version>${diozero.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.diozero</groupId>
 			<artifactId>diozero-provider-pigpio</artifactId>
-			<version>${project.version}</version>
+			<version>${diozero.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.diozero</groupId>
 			<artifactId>diozero-provider-voodoospark</artifactId>
-			<version>${project.version}</version>
+			<version>${diozero.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.diozero</groupId>
 			<artifactId>diozero-provider-wiringpi</artifactId>
-			<version>${project.version}</version>
+			<version>${diozero.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.diozero</groupId>
 			<artifactId>diozero-ws281x-java</artifactId>
-			<version>${project.version}</version>
+			<version>${diozero.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.diozero</groupId>
 			<artifactId>diozero-imu-devices</artifactId>
-			<version>${project.version}</version>
+			<version>${diozero.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.diozero</groupId>
 			<artifactId>diozero-imu-sampleapp</artifactId>
-			<version>${project.version}</version>
+			<version>${diozero.version}</version>
 		</dependency>
 		<!--
 		<dependency>
 			<groupId>com.diozero</groupId>
 			<artifactId>diozero-imu-visualiser</artifactId>
-			<version>${project.version}</version>
+			<version>${diozero.version}</version>
 		</dependency>
 		-->
 		<dependency>
 			<groupId>com.diozero</groupId>
 			<artifactId>diozero-sampleapps</artifactId>
-			<version>${project.version}</version>
+			<version>${diozero.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.diozero</groupId>
 			<artifactId>diozero-webapp</artifactId>
-			<version>${project.version}</version>
+			<version>${diozero.version}</version>
 		</dependency>
 	</dependencies>
 
