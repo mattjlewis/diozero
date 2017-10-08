@@ -17,6 +17,7 @@ pages:
     - 'LCD Displays': 'LCDDisplays.md'
     - 'LED Strips': 'LEDStrips.md'
     - 'IMU Devices': 'IMUDevices.md'
+    - 'Create Your Own Application': 'Application.md'
 - Providers: 'Providers.md'
 - Release: 'RELEASE.md'
 - License: 'license.md'
