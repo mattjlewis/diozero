@@ -13,8 +13,7 @@ env:
   - PROJECTS_TO_BUILD: "!diozero-provider-jdkdio10,!diozero-provider-jdkdio11,!diozero-imu-visualiser"
 
 install: true
-script: mvn --version && mvn package
-#script: mvn --projects '!diozero-provider-jdkdio10,!diozero-provider-jdkdio11,!diozero-imu-visualiser' clean compile package install
+script: mvn --projects '!diozero-provider-jdkdio10,!diozero-provider-jdkdio11,!diozero-imu-visualiser' clean compile package install
 #script: mvn ${MAVEN_OPTS} clean compile package install
 #script: mvn --projects='${PROJECTS_TO_BUILD}' clean compile package install
 
