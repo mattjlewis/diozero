@@ -68,4 +68,4 @@ Make sure you select the correct Launch configuration for your application.
 
     ![Export Runnable JAR](images/ExportAppJAR.png)
 
-1. Use the Maven shade plugin to create a runnable JAR file that includes all dependencies. Run ```mvn package``` to create the runnable JAR file. See my [webapp project](https://github.com/mattjlewis/diozero/blob/master/diozero-webapp/pom.xml) for an example.
+1. Use the [Maven shade plugin](https://maven.apache.org/plugins/maven-shade-plugin/) to create a runnable JAR file that includes all dependencies. Run ```mvn package``` to create the runnable JAR file. See my [webapp project](https://github.com/mattjlewis/diozero/blob/master/diozero-webapp/pom.xml) for an example.
