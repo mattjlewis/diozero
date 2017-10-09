@@ -23,7 +23,8 @@ ws2811_t led_string = {
 			.gpionum = GPIO_PIN,
 			.count = LED_COUNT,
 			.invert = 0,
-			.brightness = 63
+			.brightness = 63,
+			.strip_type = WS2812_STRIP
 		}, [1] = {
 			.gpionum = 0,
 			.count = 0,
@@ -38,25 +39,22 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* jvm, void* reserved) {
 	return JNI_VERSION_1_8;
 }
 
-/* This function is called when the native library gets unloaded by the VM. */
-JNIEXPORT void JNICALL JNI_OnUnload(JavaVM* jvm, void* reserved) {
-	ws2811_fini(&led_string);
-}
-
 /*
  * Class:     com_diozero_ws281xj_WS281xNative
  * Method:    initialise
- * Signature: (IIIII)Ljava/nio/ByteBuffer
+ * Signature: (IIIIII)Ljava/nio/ByteBuffer
  */
 JNIEXPORT jobject JNICALL Java_com_diozero_ws281xj_WS281xNative_initialise(
-		JNIEnv* env, jclass clz, jint frequency, jint dmaNum, jint gpioNum, jint brightness, jint numLeds) {
+		JNIEnv* env, jclass clz, jint frequency, jint dmaNum, jint gpioNum, jint brightness, jint numLeds, jint stripType) {
 	led_string.freq = frequency;
 	led_string.dmanum = dmaNum;
 	led_string.channel[0].gpionum = gpioNum;
 	led_string.channel[0].count = numLeds;
 	led_string.channel[0].brightness = brightness;
+	led_string.channel[0].strip_type = stripType;
 	int rc = ws2811_init(&led_string);
 	if (rc != 0) {
+		fprintf(stderr, "ws2811_init failed: %s\n", ws2811_get_return_t_str(rc));
 		return NULL;
 	}
 
@@ -92,5 +90,7 @@ int main(int argc, char *argv[]) {
 	}
 	printf("led_string.channel[0].gpionum=%d\n", led_string.channel[0].gpionum);
 	printf("led_string.channel[0].strip_type=%d\n", led_string.channel[0].strip_type);
+	ws2811_fini(&led_string);
+
 	return 0;
 }

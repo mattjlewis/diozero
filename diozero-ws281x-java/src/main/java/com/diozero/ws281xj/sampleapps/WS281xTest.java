@@ -38,10 +38,12 @@ import com.diozero.ws281xj.WS281x;
 
 public class WS281xTest {
 	public static void main(String[] args) {
-		int gpio_num = 18;
+		int gpio_num = 10;
 		int brightness = 64;	// 0..255
 		//int num_pixels = 12;
 		int num_pixels = 60;
+		
+		System.out.println("Using GPIO " + gpio_num);
 		
 		try (WS281x ws281x = new WS281x(gpio_num, brightness, num_pixels)) {
 			rainbowColours(ws281x);

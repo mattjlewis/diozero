@@ -90,7 +90,7 @@ public class WS281x implements Closeable {
 	 * @param numPixels The number of pixels connected.
 	 */
 	public WS281x(int gpioNum, int brightness, int numPixels) {
-		this(DEFAULT_FREQUENCY, DEFAULT_DMA_NUM, gpioNum, brightness, numPixels);
+		this(DEFAULT_FREQUENCY, DEFAULT_DMA_NUM, gpioNum, brightness, numPixels, StripType.WS2812_STRIP);
 	}
 
 	/**
@@ -99,13 +99,17 @@ public class WS281x implements Closeable {
 	 * @param gpioNum GPIO pin to use to drive the LEDs.
 	 * @param brightness Brightness level (0..255).
 	 * @param numPixels The number of pixels connected.
+	 * @param stripType Strip type
 	 */
-	public WS281x(int frequency, int dmaNum, int gpioNum, int brightness, int numPixels) {
+	public WS281x(int frequency, int dmaNum, int gpioNum, int brightness, int numPixels, StripType stripType) {
 		init();
 
 		this.numPixels = numPixels;
 
-		ch0LedBuffer = WS281xNative.initialise(frequency, dmaNum, gpioNum, brightness, numPixels);
+		ch0LedBuffer = WS281xNative.initialise(frequency, dmaNum, gpioNum, brightness, numPixels, stripType.getType());
+		if (ch0LedBuffer == null) {
+			throw new RuntimeException("Error initialising the WS281x strip");
+		}
 		System.out.println("order=" + ch0LedBuffer.order());
 		ch0LedBuffer.order(ByteOrder.LITTLE_ENDIAN);
 	}
@@ -113,8 +117,10 @@ public class WS281x implements Closeable {
 	@Override
 	public void close() {
 		System.out.println("close()");
-		allOff();
-		ch0LedBuffer = null;
+		if (ch0LedBuffer != null) {
+			allOff();
+			ch0LedBuffer = null;
+		}
 		WS281xNative.terminate();
 	}
 
@@ -280,5 +286,39 @@ public class WS281x implements Closeable {
 		validatePixel(pixel);
 		int index = pixel * SIZE_OF_INT;
 		ch0LedBuffer.putInt(index, PixelColour.setBlueComponent(ch0LedBuffer.getInt(index), blue));
+	}
+	
+	public static enum StripType {
+		// 4 colour R, G, B and W ordering
+		SK6812_STRIP_RGBW(0x18100800),
+		SK6812_STRIP_RBGW(0x18100008),
+		SK6812_STRIP_GRBW(0x18081000),
+		SK6812_STRIP_GBRW(0x18080010),
+		SK6812_STRIP_BRGW(0x18001008),
+		SK6812_STRIP_BGRW(0x18000810),
+		SK6812_SHIFT_WMASK(0xf0000000),
+	
+		// 3 colour R, G and B ordering
+		WS2811_STRIP_RGB(0x00100800),
+		WS2811_STRIP_RBG(0x00100008),
+		WS2811_STRIP_GRB(0x00081000),
+		WS2811_STRIP_GBR(0x00080010),
+		WS2811_STRIP_BRG(0x00001008),
+		WS2811_STRIP_BGR(0x00000810);
+
+		private int type;
+		
+		private StripType(int type) {
+			this.type = type;
+		}
+		
+		public int getType() {
+			return type;
+		}
+		
+		// predefined fixed LED types
+		public static final StripType WS2812_STRIP = WS2811_STRIP_GRB;
+		public static final StripType SK6812_STRIP = WS2811_STRIP_GRB;
+		public static final StripType SK6812W_STRIP = SK6812_STRIP_GRBW;
 	}
 }
