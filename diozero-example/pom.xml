@@ -3,10 +3,10 @@
 
 	<groupId>diozero.example</groupId>
 	<artifactId>diozero-example-project</artifactId>
-	<version>0.1</version>
-	<packaging>jar</packaging>
-	
 	<name>diozero Example application</name>
+	<version>0.1</version>
+
+	<packaging>jar</packaging>
 	
 	<parent>
 		<groupId>com.diozero</groupId>

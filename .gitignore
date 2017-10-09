@@ -4,3 +4,4 @@ target/
 /.settings/
 **/*.md.html
 **/.settings
+.gradle/
