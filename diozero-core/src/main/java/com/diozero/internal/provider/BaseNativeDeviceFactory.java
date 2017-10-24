@@ -65,7 +65,7 @@ public abstract class BaseNativeDeviceFactory extends AbstractDeviceFactory impl
 	}
 	
 	@Override
-	public synchronized BoardInfo getBoardInfo() {
+	public synchronized final BoardInfo getBoardInfo() {
 		if (boardInfo == null) {
 			// Note this has been separated from the constructor to allow derived classes to
 			// override default behaviour, in particular remote devices using e.g. Firmata protocol
@@ -121,7 +121,7 @@ public abstract class BaseNativeDeviceFactory extends AbstractDeviceFactory impl
 
 	@Override
 	public final I2CDeviceInterface provisionI2CDevice(int controller, int address, int addressSize, int clockFrequency) throws RuntimeIOException {
-		String key = I2CDeviceFactoryInterface.createI2CKey(NATIVE_PREFIX, controller, address);
+		String key = createI2CKey(controller, address);
 		
 		// Check if this pin is already provisioned
 		if (isDeviceOpened(key)) {

@@ -36,18 +36,18 @@ public class GpioDigitalReadResponse extends Response {
 	
 	private boolean value;
 
-	public GpioDigitalReadResponse(boolean value) {
-		super(Response.Status.OK);
+	public GpioDigitalReadResponse(boolean value, String correlationId) {
+		super(Response.Status.OK, null, correlationId);
 
 		this.value = value;
 	}
 
-	public GpioDigitalReadResponse(String detail) {
-		super(Response.Status.ERROR, detail);
+	public GpioDigitalReadResponse(String detail, String correlationId) {
+		super(Response.Status.ERROR, detail, correlationId);
 	}
 
-	public GpioDigitalReadResponse(Response.Status status, String detail, boolean value) {
-		super(status, detail);
+	public GpioDigitalReadResponse(Response.Status status, String detail, boolean value, String correlationId) {
+		super(status, detail, correlationId);
 		
 		this.value = value;
 	}

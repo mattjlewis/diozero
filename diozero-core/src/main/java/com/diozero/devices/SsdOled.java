@@ -42,6 +42,7 @@ import com.diozero.util.SleepUtil;
 
 public abstract class SsdOled implements Closeable {
 	private static final int SPI_FREQUENCY = 8_000_000;
+	
 	private static final byte DISPLAY_OFF = (byte) 0xAE;
 	private static final byte DISPLAY_ON = (byte) 0xAF;
 	

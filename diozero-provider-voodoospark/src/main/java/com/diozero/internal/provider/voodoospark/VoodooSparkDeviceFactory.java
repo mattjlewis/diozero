@@ -41,6 +41,7 @@ import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
@@ -49,7 +50,9 @@ import java.util.function.Consumer;
 
 import org.pmw.tinylog.Logger;
 
+import com.diozero.api.AbstractDigitalInputDevice;
 import com.diozero.api.DeviceMode;
+import com.diozero.api.DigitalInputEvent;
 import com.diozero.api.GpioEventTrigger;
 import com.diozero.api.GpioPullUpDown;
 import com.diozero.api.PinInfo;
@@ -57,6 +60,7 @@ import com.diozero.api.SpiClockMode;
 import com.diozero.internal.provider.AnalogInputDeviceInterface;
 import com.diozero.internal.provider.AnalogOutputDeviceInterface;
 import com.diozero.internal.provider.BaseNativeDeviceFactory;
+import com.diozero.internal.provider.DeviceInterface;
 import com.diozero.internal.provider.GpioDigitalInputDeviceInterface;
 import com.diozero.internal.provider.GpioDigitalInputOutputDeviceInterface;
 import com.diozero.internal.provider.GpioDigitalOutputDeviceInterface;
@@ -149,6 +153,7 @@ public class VoodooSparkDeviceFactory extends BaseNativeDeviceFactory {
 		lock = new ReentrantLock();
 		condition = lock.newCondition();
 		
+		// Lookup the local IP address using the Particle "endpoint" custom variable
 		try {
 			URL url = new URL(String.format("https://api.particle.io/v1/devices/%s/endpoint?access_token=%s", device_id,
 					URLEncoder.encode(access_token, StandardCharsets.UTF_8.name())));
@@ -180,6 +185,31 @@ public class VoodooSparkDeviceFactory extends BaseNativeDeviceFactory {
 		
 		// Connect
 		messageChannel = b1.connect(host, port).sync().channel();
+	}
+
+	@Override
+	public void close() {
+		if (messageChannel == null || ! messageChannel.isOpen()) {
+			return;
+		}
+		
+		messageChannel.close();
+		
+		try {
+			messageChannel.closeFuture().sync();
+			
+			// Wait until all messages are flushed before closing the channel.
+			if (lastWriteFuture != null) {
+				lastWriteFuture.sync();
+			}
+		} catch (InterruptedException e) {
+			System.err.println("Error: " + e);
+			e.printStackTrace(System.err);
+		} finally {
+			workerGroup.shutdownGracefully();
+		}
+		
+		super.close();
 	}
 
 	@Override
@@ -251,73 +281,6 @@ public class VoodooSparkDeviceFactory extends BaseNativeDeviceFactory {
 			int clockFrequency) throws RuntimeIOException {
 		throw new UnsupportedOperationException("Not yet implemented");
 	}
-	
-	@Override
-	public void close() {
-		if (messageChannel == null || ! messageChannel.isOpen()) {
-			return;
-		}
-		
-		messageChannel.close();
-		
-		try {
-			messageChannel.closeFuture().sync();
-			
-			// Wait until all messages are flushed before closing the channel.
-			if (lastWriteFuture != null) {
-				lastWriteFuture.sync();
-			}
-		} catch (InterruptedException e) {
-			System.err.println("Error: " + e);
-			e.printStackTrace(System.err);
-		} finally {
-			workerGroup.shutdownGracefully();
-		}
-		
-		super.close();
-	}
-	
-	void messageReceived(ResponseMessage msg) {
-		if (msg.cmd == REPORTING) {
-			Logger.info("Reporting message: {}", msg);
-		} else {
-			lock.lock();
-			try {
-				messageQueue.add(msg);
-				condition.signalAll();
-			} finally {
-				lock.unlock();
-			}
-		}
-	}
-	
-	private synchronized ResponseMessage sendMessage(Message message) {
-		ResponseMessage rm = null;
-		
-		lock.lock();
-		try {
-			lastWriteFuture = messageChannel.writeAndFlush(message);
-			if (message.responseExpected ) {
-				if (condition.await(timeoutMs, TimeUnit.MILLISECONDS)) {
-					rm = messageQueue.remove();
-					
-					if (rm.cmd != message.cmd) {
-						Logger.error("Unexpected response: {}, was expecting {}; discarding", Byte.valueOf(rm.cmd),
-								Byte.valueOf(message.cmd));
-						rm = null;
-					}
-				} else {
-					Logger.error("Timeout waiting for response to command {}", Byte.valueOf(message.cmd));
-				}
-			}
-		} catch (InterruptedException e) {
-			Logger.error(e, "Interrupted: {}", e);
-		} finally {
-			lock.unlock();
-		}
-		
-		return rm;
-	}
 
 	void setPinMode(int gpio, PinMode mode) {
 		sendMessage(new PinModeMessage(gpio, mode));
@@ -368,6 +331,68 @@ public class VoodooSparkDeviceFactory extends BaseNativeDeviceFactory {
 	void setInternalRgb(byte red, byte green, byte blue) {
 		sendMessage(new InternalRgbMessage(red, green, blue));
 	}
+	
+	private synchronized ResponseMessage sendMessage(Message message) {
+		ResponseMessage rm = null;
+		
+		lock.lock();
+		try {
+			lastWriteFuture = messageChannel.writeAndFlush(message);
+			lastWriteFuture.get();
+			
+			if (message.responseExpected ) {
+				if (condition.await(timeoutMs, TimeUnit.MILLISECONDS)) {
+					rm = messageQueue.remove();
+					
+					if (rm.cmd != message.cmd) {
+						throw new RuntimeIOException(
+								"Unexpected response: " + rm.cmd + ", was expecting " + message.cmd + "; discarding");
+					}
+				} else {
+					throw new RuntimeIOException("Timeout waiting for response to command " + message.cmd);
+				}
+			}
+		} catch (ExecutionException e) {
+			throw new RuntimeIOException(e);
+		} catch (InterruptedException e) {
+			Logger.error(e, "Interrupted: {}", e);
+		} finally {
+			lock.unlock();
+		}
+		
+		return rm;
+	}
+	
+	void messageReceived(ResponseMessage msg) {
+		if (msg.cmd == REPORTING) {
+			long epoch_time = System.currentTimeMillis();
+			
+			Logger.info("Reporting message: {}", msg);
+			
+			// Notify the listeners for each GPIO in this port for which reporting has been enabled
+			for (int i=0; i<8; i++) {
+				// Note can only get reports for GPIOs 0-7 and 10-17
+				int gpio = msg.pinOrPort * 10 + i;
+				
+				// TODO Need to check that reporting has been enabled for this GPIO!
+				
+				PinInfo pin_info = getBoardPinInfo().getByGpioNumber(gpio);
+				DeviceInterface device = getDevice(createPinKey(pin_info));
+				if (device != null) {
+					AbstractDigitalInputDevice input_device = (AbstractDigitalInputDevice) device;
+					input_device.valueChanged(new DigitalInputEvent(gpio, epoch_time, 0, (msg.lsb & (1 << i)) != 0));
+				}
+			}
+		} else {
+			lock.lock();
+			try {
+				messageQueue.add(msg);
+				condition.signalAll();
+			} finally {
+				lock.unlock();
+			}
+		}
+	}
 
 	private static final class Endpoint {
 		String cmd;
@@ -401,6 +426,8 @@ public class VoodooSparkDeviceFactory extends BaseNativeDeviceFactory {
 		}
 	}
 	
+	// Classes to support Netty encode / decode
+	
 	static final class MessageEncoder extends MessageToByteEncoder<Message> {
 		@Override
 		protected void encode(ChannelHandlerContext ctx, Message msg, ByteBuf out) throws Exception {
@@ -421,6 +448,43 @@ public class VoodooSparkDeviceFactory extends BaseNativeDeviceFactory {
 		}
 	}
 	
+	@Sharable
+	static class ResponseHandler extends SimpleChannelInboundHandler<ResponseMessage> {
+		private Consumer<ResponseMessage> listener;
+		
+		ResponseHandler(Consumer<ResponseMessage> listener) {
+			this.listener = listener;
+		}
+		
+		@Override
+		protected void channelRead0(ChannelHandlerContext context, ResponseMessage msg) {
+			listener.accept(msg);
+		}
+		
+		@Override
+		public void exceptionCaught(ChannelHandlerContext context, Throwable cause) {
+			Logger.error(cause, "exceptionCaught: {}", cause);
+			context.close();
+		}
+	}
+	
+	static enum PinMode {
+		DIGITAL_INPUT(0),
+		DIGITAL_OUTPUT(1),
+		ANALOG_INPUT(2),
+		ANALOG_OUTPUT(3), // Note for PWM as well as true analog output
+		SERVO(4),
+		I2C(6);
+		
+		private byte mode;
+		private PinMode(int mode) {
+			this.mode = (byte) mode;
+		}
+
+		public byte getMode() {
+			return mode;
+		}
+	}
 	static abstract class Message {
 		byte cmd;
 		boolean responseExpected;
@@ -588,44 +652,6 @@ public class VoodooSparkDeviceFactory extends BaseNativeDeviceFactory {
 		}
 	}
 	
-	static enum PinMode {
-		DIGITAL_INPUT(0),
-		DIGITAL_OUTPUT(1),
-		ANALOG_INPUT(2),
-		ANALOG_OUTPUT(3), // Note for PWM as well as true analog output
-		SERVO(4),
-		I2C(6);
-		
-		private byte mode;
-		private PinMode(int mode) {
-			this.mode = (byte) mode;
-		}
-
-		public byte getMode() {
-			return mode;
-		}
-	}
-	
-	@Sharable
-	static class ResponseHandler extends SimpleChannelInboundHandler<ResponseMessage> {
-		private Consumer<ResponseMessage> listener;
-		
-		ResponseHandler(Consumer<ResponseMessage> listener) {
-			this.listener = listener;
-		}
-		
-		@Override
-		protected void channelRead0(ChannelHandlerContext context, ResponseMessage msg) {
-			listener.accept(msg);
-		}
-		
-		@Override
-		public void exceptionCaught(ChannelHandlerContext context, Throwable cause) {
-			Logger.error(cause, "exceptionCaught: {}", cause);
-			context.close();
-		}
-	}
-	
 	public static class ParticlePhotonBoardInfo extends BoardInfo {
 		public static final String MAKE = "Particle";
 		public static final String MODEL = "Photon";
@@ -643,35 +669,35 @@ public class VoodooSparkDeviceFactory extends BaseNativeDeviceFactory {
 			addGeneralPinInfo(pin++, PinInfo.VCC_5V);
 			addGeneralPinInfo(pin++, PinInfo.GROUND);
 			int gpio_num = 19;
-			addGpioPinInfo(gpio_num--, "UART TX", pin++, PinInfo.DIGITAL_IN_OUT_PWM);
-			addGpioPinInfo(gpio_num--, "UART RX", pin++, PinInfo.DIGITAL_IN_OUT_PWM);
+			addGpioPinInfo(gpio_num--, "UART TX", pin++, PinInfo.DIGITAL_IN_OUT_PWM); // GPIO 19
+			addGpioPinInfo(gpio_num--, "UART RX", pin++, PinInfo.DIGITAL_IN_OUT_PWM); // GPIO 18
 			// Active-high wakeup pin, wakes the module from sleep/standby modes
 			// When not used as a WAKEUP, this pin can also be used as a digital GPIO, ADC input or PWM
 			// Note aka A7
 			addGpioPinInfo(gpio_num--, "WKP", pin++, EnumSet.of(DeviceMode.ANALOG_INPUT, DeviceMode.DIGITAL_INPUT,
-					DeviceMode.DIGITAL_OUTPUT, DeviceMode.PWM_OUTPUT));
+					DeviceMode.DIGITAL_OUTPUT, DeviceMode.PWM_OUTPUT)); // GPIO 17
 			// 12-bit Digital-to-Analog (D/A) output (0-4095), and also a digital GPIO
 			// DAC is used as DAC or DAC1 in software, and A3 is a second DAC output used as DAC2 in software
 			// Note aka A6
 			addGpioPinInfo(gpio_num--, "DAC", pin++,
-					EnumSet.of(DeviceMode.ANALOG_OUTPUT, DeviceMode.DIGITAL_INPUT, DeviceMode.DIGITAL_OUTPUT));
+					EnumSet.of(DeviceMode.ANALOG_OUTPUT, DeviceMode.DIGITAL_INPUT, DeviceMode.DIGITAL_OUTPUT)); // GPIO 16
 			// 12-bit Analog-to-Digital (A/D) inputs (0-4095), and also digital GPIOs
 			// SPI1 MOSI
 			addGpioPinInfo(gpio_num--, "A5", pin++, EnumSet.of(DeviceMode.ANALOG_INPUT, DeviceMode.DIGITAL_INPUT,
-					DeviceMode.DIGITAL_OUTPUT, DeviceMode.PWM_OUTPUT));
+					DeviceMode.DIGITAL_OUTPUT, DeviceMode.PWM_OUTPUT)); // GPIO 15
 			// SPI1 MISO
 			addGpioPinInfo(gpio_num--, "A4", pin++, EnumSet.of(DeviceMode.ANALOG_INPUT, DeviceMode.DIGITAL_INPUT,
-					DeviceMode.DIGITAL_OUTPUT, DeviceMode.PWM_OUTPUT));
+					DeviceMode.DIGITAL_OUTPUT, DeviceMode.PWM_OUTPUT)); // GPIO 14
 			// SPI1 SCK
 			addGpioPinInfo(gpio_num--, "A3", pin++,
-					EnumSet.of(DeviceMode.ANALOG_INPUT, DeviceMode.DIGITAL_INPUT, DeviceMode.DIGITAL_OUTPUT));
+					EnumSet.of(DeviceMode.ANALOG_INPUT, DeviceMode.DIGITAL_INPUT, DeviceMode.DIGITAL_OUTPUT)); // GPIO 13
 			// SPI1 SS
 			addGpioPinInfo(gpio_num--, "A2", pin++,
-					EnumSet.of(DeviceMode.ANALOG_INPUT, DeviceMode.DIGITAL_INPUT, DeviceMode.DIGITAL_OUTPUT));
+					EnumSet.of(DeviceMode.ANALOG_INPUT, DeviceMode.DIGITAL_INPUT, DeviceMode.DIGITAL_OUTPUT)); // GPIO 12
 			addGpioPinInfo(gpio_num--, "A1", pin++, EnumSet.of(DeviceMode.ANALOG_INPUT, DeviceMode.DIGITAL_INPUT,
-					DeviceMode.DIGITAL_OUTPUT, DeviceMode.PWM_OUTPUT));
+					DeviceMode.DIGITAL_OUTPUT, DeviceMode.PWM_OUTPUT)); // GPIO 11
 			addGpioPinInfo(gpio_num--, "A0", pin++, EnumSet.of(DeviceMode.ANALOG_INPUT, DeviceMode.DIGITAL_INPUT,
-					DeviceMode.DIGITAL_OUTPUT, DeviceMode.PWM_OUTPUT));
+					DeviceMode.DIGITAL_OUTPUT, DeviceMode.PWM_OUTPUT)); // GPIO 10
 			// Digital only GPIO pins. D0-D3 may also be used as a PWM output
 			gpio_num = 0;
 			addGpioPinInfo(gpio_num++, "D0", pin++, PinInfo.DIGITAL_IN_OUT_PWM); // SDA

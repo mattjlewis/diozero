@@ -42,11 +42,11 @@ import org.pmw.tinylog.Logger;
 import com.diozero.api.DigitalInputEvent;
 import com.diozero.api.PinInfo;
 import com.diozero.internal.provider.NativeDeviceFactoryInterface;
-import com.diozero.internal.provider.remote.devicefactory.ProtocolHandlerInterface;
 import com.diozero.internal.provider.remote.devicefactory.RemoteDigitalInputDevice;
+import com.diozero.remote.message.RemoteProtocolInterface;
 import com.diozero.remote.message.Response;
 
-public abstract class BaseAsyncProtocolHandler implements ProtocolHandlerInterface {
+public abstract class BaseAsyncProtocolHandler implements RemoteProtocolInterface {
 	private NativeDeviceFactoryInterface deviceFactory;
 	protected Lock lock;
 	protected Map<String, Condition> conditions;
@@ -60,12 +60,12 @@ public abstract class BaseAsyncProtocolHandler implements ProtocolHandlerInterfa
 		responses = new HashMap<>();
 	}
 
-	protected void processResponse(Response response, String correlationId) {
-		responses.put(correlationId, response);
+	protected void processResponse(Response response) {
+		responses.put(response.getCorrelationId(), response);
 
-		Condition condition = conditions.remove(correlationId);
+		Condition condition = conditions.remove(response.getCorrelationId());
 		if (condition == null) {
-			Logger.error("No condition for correlation id {}", correlationId);
+			Logger.error("No condition for correlation id {}", response.getCorrelationId());
 		} else {
 			lock.lock();
 			try {

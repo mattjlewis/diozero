@@ -39,11 +39,11 @@ import com.diozero.util.RuntimeIOException;
 public interface I2CDeviceInterface extends DeviceInterface {
 	boolean probe(I2CDevice.ProbeMode mode) throws RuntimeIOException;
 	
-	byte readByte() throws RuntimeException;
-	void writeByte(byte b) throws RuntimeException;
+	byte readByte() throws RuntimeIOException;
+	void writeByte(byte b) throws RuntimeIOException;
 	
-	void read(ByteBuffer buffer) throws RuntimeException;
-	void write(ByteBuffer buffer) throws RuntimeException;
+	void read(ByteBuffer buffer) throws RuntimeIOException;
+	void write(ByteBuffer buffer) throws RuntimeIOException;
 	
 	byte readByteData(int register) throws RuntimeIOException;
 	void writeByteData(int register, byte b) throws RuntimeIOException;

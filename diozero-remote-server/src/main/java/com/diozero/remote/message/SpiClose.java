@@ -34,8 +34,8 @@ package com.diozero.remote.message;
 public class SpiClose extends SpiBase {
 	private static final long serialVersionUID = 3321338380918335736L;
 
-	public SpiClose(int controller, int chipSelect) {
-		super(controller, chipSelect);
+	public SpiClose(int controller, int chipSelect, String correlationId) {
+		super(controller, chipSelect, correlationId);
 	}
 
 	@Override

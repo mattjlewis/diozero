@@ -34,7 +34,6 @@ package com.diozero.internal.provider.remote.websocket;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.ByteBuffer;
-import java.util.UUID;
 
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.WebSocketListener;
@@ -47,21 +46,44 @@ import com.diozero.internal.provider.NativeDeviceFactoryInterface;
 import com.diozero.internal.provider.remote.ProtobufBaseAsyncProtocolHandler;
 import com.diozero.remote.message.DiozeroProtos;
 import com.diozero.remote.message.DiozeroProtosConverter;
+import com.diozero.remote.message.GetBoardGpioInfo;
+import com.diozero.remote.message.GetBoardGpioInfoResponse;
+import com.diozero.remote.message.GpioAnalogRead;
+import com.diozero.remote.message.GpioAnalogReadResponse;
+import com.diozero.remote.message.GpioAnalogWrite;
 import com.diozero.remote.message.GpioClose;
 import com.diozero.remote.message.GpioDigitalRead;
 import com.diozero.remote.message.GpioDigitalReadResponse;
 import com.diozero.remote.message.GpioDigitalWrite;
 import com.diozero.remote.message.GpioEvents;
+import com.diozero.remote.message.GpioPwmRead;
+import com.diozero.remote.message.GpioPwmReadResponse;
+import com.diozero.remote.message.GpioPwmWrite;
+import com.diozero.remote.message.I2CClose;
+import com.diozero.remote.message.I2COpen;
+import com.diozero.remote.message.I2CRead;
+import com.diozero.remote.message.I2CReadByte;
+import com.diozero.remote.message.I2CReadByteData;
+import com.diozero.remote.message.I2CReadByteResponse;
+import com.diozero.remote.message.I2CReadI2CBlockData;
+import com.diozero.remote.message.I2CReadResponse;
+import com.diozero.remote.message.I2CWrite;
+import com.diozero.remote.message.I2CWriteByte;
+import com.diozero.remote.message.I2CWriteByteData;
+import com.diozero.remote.message.I2CWriteI2CBlockData;
+import com.diozero.remote.message.ProvisionAnalogInputDevice;
+import com.diozero.remote.message.ProvisionAnalogOutputDevice;
 import com.diozero.remote.message.ProvisionDigitalInputDevice;
 import com.diozero.remote.message.ProvisionDigitalInputOutputDevice;
 import com.diozero.remote.message.ProvisionDigitalOutputDevice;
-import com.diozero.remote.message.ProvisionSpiDevice;
+import com.diozero.remote.message.ProvisionPwmOutputDevice;
 import com.diozero.remote.message.Response;
 import com.diozero.remote.message.SpiClose;
+import com.diozero.remote.message.SpiOpen;
 import com.diozero.remote.message.SpiResponse;
 import com.diozero.remote.message.SpiWrite;
 import com.diozero.remote.message.SpiWriteAndRead;
-import com.diozero.remote.websocket.MessageWrapperTypes;
+import com.diozero.remote.server.websocket.MessageWrapperTypes;
 import com.diozero.util.RuntimeIOException;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.GeneratedMessageV3;
@@ -105,71 +127,153 @@ public class ProtobufWebSocketProtocolHandler extends ProtobufBaseAsyncProtocolH
 	}
 
 	@Override
-	public Response sendRequest(ProvisionDigitalInputDevice request) {
-		String correlation_id = UUID.randomUUID().toString();
-		return requestResponse(URL, DiozeroProtosConverter.convert(request, correlation_id), correlation_id);
+	public GetBoardGpioInfoResponse request(GetBoardGpioInfo request) {
+		return (GetBoardGpioInfoResponse) requestResponse(URL, DiozeroProtosConverter.convert(request),
+				request.getCorrelationId());
 	}
 
 	@Override
-	public Response sendRequest(ProvisionDigitalOutputDevice request) {
-		String correlation_id = UUID.randomUUID().toString();
-		return requestResponse(URL, DiozeroProtosConverter.convert(request, correlation_id), correlation_id);
+	public Response request(ProvisionDigitalInputDevice request) {
+		return requestResponse(URL, DiozeroProtosConverter.convert(request), request.getCorrelationId());
 	}
 
 	@Override
-	public Response sendRequest(ProvisionDigitalInputOutputDevice request) {
-		String correlation_id = UUID.randomUUID().toString();
-		return requestResponse(URL, DiozeroProtosConverter.convert(request, correlation_id), correlation_id);
+	public Response request(ProvisionDigitalOutputDevice request) {
+		return requestResponse(URL, DiozeroProtosConverter.convert(request), request.getCorrelationId());
 	}
 
 	@Override
-	public GpioDigitalReadResponse sendRequest(GpioDigitalRead request) {
-		String correlation_id = UUID.randomUUID().toString();
-		return (GpioDigitalReadResponse) requestResponse(URL, DiozeroProtosConverter.convert(request, correlation_id),
-				correlation_id);
+	public Response request(ProvisionDigitalInputOutputDevice request) {
+		return requestResponse(URL, DiozeroProtosConverter.convert(request), request.getCorrelationId());
 	}
 
 	@Override
-	public Response sendRequest(GpioDigitalWrite request) {
-		String correlation_id = UUID.randomUUID().toString();
-		return requestResponse(URL, DiozeroProtosConverter.convert(request, correlation_id), correlation_id);
+	public Response request(ProvisionPwmOutputDevice request) {
+		return requestResponse(URL, DiozeroProtosConverter.convert(request), request.getCorrelationId());
 	}
 
 	@Override
-	public Response sendRequest(GpioEvents request) {
-		String correlation_id = UUID.randomUUID().toString();
-		return requestResponse(URL, DiozeroProtosConverter.convert(request, correlation_id), correlation_id);
+	public Response request(ProvisionAnalogInputDevice request) {
+		return requestResponse(URL, DiozeroProtosConverter.convert(request), request.getCorrelationId());
 	}
 
 	@Override
-	public Response sendRequest(GpioClose request) {
-		String correlation_id = UUID.randomUUID().toString();
-		return requestResponse(URL, DiozeroProtosConverter.convert(request, correlation_id), correlation_id);
+	public Response request(ProvisionAnalogOutputDevice request) {
+		return requestResponse(URL, DiozeroProtosConverter.convert(request), request.getCorrelationId());
 	}
 
 	@Override
-	public Response sendRequest(ProvisionSpiDevice request) {
-		String correlation_id = UUID.randomUUID().toString();
-		return requestResponse(URL, DiozeroProtosConverter.convert(request, correlation_id), correlation_id);
+	public GpioDigitalReadResponse request(GpioDigitalRead request) {
+		return (GpioDigitalReadResponse) requestResponse(URL, DiozeroProtosConverter.convert(request),
+				request.getCorrelationId());
 	}
 
 	@Override
-	public Response sendRequest(SpiWrite request) {
-		String correlation_id = UUID.randomUUID().toString();
-		return requestResponse(URL, DiozeroProtosConverter.convert(request, correlation_id), correlation_id);
+	public Response request(GpioDigitalWrite request) {
+		return requestResponse(URL, DiozeroProtosConverter.convert(request), request.getCorrelationId());
 	}
 
 	@Override
-	public SpiResponse sendRequest(SpiWriteAndRead request) {
-		String correlation_id = UUID.randomUUID().toString();
-		return (SpiResponse) requestResponse(URL, DiozeroProtosConverter.convert(request, correlation_id),
-				correlation_id);
+	public GpioPwmReadResponse request(GpioPwmRead request) {
+		return (GpioPwmReadResponse) requestResponse(URL, DiozeroProtosConverter.convert(request),
+				request.getCorrelationId());
 	}
 
 	@Override
-	public Response sendRequest(SpiClose request) {
-		String correlation_id = UUID.randomUUID().toString();
-		return requestResponse(URL, DiozeroProtosConverter.convert(request, correlation_id), correlation_id);
+	public Response request(GpioPwmWrite request) {
+		return requestResponse(URL, DiozeroProtosConverter.convert(request), request.getCorrelationId());
+	}
+
+	@Override
+	public GpioAnalogReadResponse request(GpioAnalogRead request) {
+		return (GpioAnalogReadResponse) requestResponse(URL, DiozeroProtosConverter.convert(request),
+				request.getCorrelationId());
+	}
+
+	@Override
+	public Response request(GpioAnalogWrite request) {
+		return requestResponse(URL, DiozeroProtosConverter.convert(request), request.getCorrelationId());
+	}
+
+	@Override
+	public Response request(GpioEvents request) {
+		return requestResponse(URL, DiozeroProtosConverter.convert(request), request.getCorrelationId());
+	}
+
+	@Override
+	public Response request(GpioClose request) {
+		return requestResponse(URL, DiozeroProtosConverter.convert(request), request.getCorrelationId());
+	}
+
+	@Override
+	public Response request(I2COpen request) {
+		return requestResponse(URL, DiozeroProtosConverter.convert(request), request.getCorrelationId());
+	}
+
+	@Override
+	public I2CReadByteResponse request(I2CReadByte request) {
+		return (I2CReadByteResponse) requestResponse(URL, DiozeroProtosConverter.convert(request), request.getCorrelationId());
+	}
+
+	@Override
+	public Response request(I2CWriteByte request) {
+		return requestResponse(URL, DiozeroProtosConverter.convert(request), request.getCorrelationId());
+	}
+
+	@Override
+	public I2CReadResponse request(I2CRead request) {
+		return (I2CReadResponse) requestResponse(URL, DiozeroProtosConverter.convert(request), request.getCorrelationId());
+	}
+
+	@Override
+	public Response request(I2CWrite request) {
+		return requestResponse(URL, DiozeroProtosConverter.convert(request), request.getCorrelationId());
+	}
+
+	@Override
+	public I2CReadByteResponse request(I2CReadByteData request) {
+		return (I2CReadByteResponse) requestResponse(URL, DiozeroProtosConverter.convert(request), request.getCorrelationId());
+	}
+
+	@Override
+	public Response request(I2CWriteByteData request) {
+		return requestResponse(URL, DiozeroProtosConverter.convert(request), request.getCorrelationId());
+	}
+
+	@Override
+	public I2CReadResponse request(I2CReadI2CBlockData request) {
+		return (I2CReadResponse) requestResponse(URL, DiozeroProtosConverter.convert(request), request.getCorrelationId());
+	}
+
+	@Override
+	public Response request(I2CWriteI2CBlockData request) {
+		return requestResponse(URL, DiozeroProtosConverter.convert(request), request.getCorrelationId());
+	}
+	
+	@Override
+	public Response request(I2CClose request) {
+		return requestResponse(URL, DiozeroProtosConverter.convert(request), request.getCorrelationId());
+	}
+
+	@Override
+	public Response request(SpiOpen request) {
+		return requestResponse(URL, DiozeroProtosConverter.convert(request), request.getCorrelationId());
+	}
+
+	@Override
+	public Response request(SpiWrite request) {
+		return requestResponse(URL, DiozeroProtosConverter.convert(request), request.getCorrelationId());
+	}
+
+	@Override
+	public SpiResponse request(SpiWriteAndRead request) {
+		return (SpiResponse) requestResponse(URL, DiozeroProtosConverter.convert(request),
+				request.getCorrelationId());
+	}
+
+	@Override
+	public Response request(SpiClose request) {
+		return requestResponse(URL, DiozeroProtosConverter.convert(request), request.getCorrelationId());
 	}
 
 	@Override
@@ -198,18 +302,17 @@ public class ProtobufWebSocketProtocolHandler extends ProtobufBaseAsyncProtocolH
 			case MessageWrapperTypes.RESPONSE:
 				DiozeroProtos.Response response = DiozeroProtos.Response
 						.parseFrom(message_wrapper.getMessage().toByteArray());
-				processResponse(DiozeroProtosConverter.convert(response), response.getCorrelationId());
+				processResponse(DiozeroProtosConverter.convert(response));
 				break;
 			case MessageWrapperTypes.GPIO_DIGITAL_READ_RESPONSE:
 				DiozeroProtos.Gpio.DigitalReadResponse digital_read_response = DiozeroProtos.Gpio.DigitalReadResponse
 						.parseFrom(message_wrapper.getMessage().toByteArray());
-				processResponse(DiozeroProtosConverter.convert(digital_read_response),
-						digital_read_response.getCorrelationId());
+				processResponse(DiozeroProtosConverter.convert(digital_read_response));
 				break;
 			case MessageWrapperTypes.SPI_RESPONSE:
 				DiozeroProtos.Spi.SpiResponse spi_response = DiozeroProtos.Spi.SpiResponse
 						.parseFrom(message_wrapper.getMessage().toByteArray());
-				processResponse(DiozeroProtosConverter.convert(spi_response), spi_response.getCorrelationId());
+				processResponse(DiozeroProtosConverter.convert(spi_response));
 				break;
 
 			case MessageWrapperTypes.DIGITAL_INPUT_EVENT:

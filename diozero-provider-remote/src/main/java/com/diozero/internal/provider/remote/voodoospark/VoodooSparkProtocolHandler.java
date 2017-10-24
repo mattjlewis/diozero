@@ -44,27 +44,53 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 
 import org.pmw.tinylog.Logger;
 
-import com.diozero.internal.provider.NativeDeviceFactoryInterface;
-import com.diozero.internal.provider.remote.devicefactory.ProtocolHandlerInterface;
+import com.diozero.api.DigitalInputEvent;
+import com.diozero.internal.provider.remote.devicefactory.RemoteDeviceFactory;
+import com.diozero.remote.message.GetBoardGpioInfo;
+import com.diozero.remote.message.GetBoardGpioInfoResponse;
+import com.diozero.remote.message.GpioAnalogRead;
+import com.diozero.remote.message.GpioAnalogReadResponse;
+import com.diozero.remote.message.GpioAnalogWrite;
 import com.diozero.remote.message.GpioClose;
 import com.diozero.remote.message.GpioDigitalRead;
 import com.diozero.remote.message.GpioDigitalReadResponse;
 import com.diozero.remote.message.GpioDigitalWrite;
 import com.diozero.remote.message.GpioEvents;
+import com.diozero.remote.message.GpioPwmRead;
+import com.diozero.remote.message.GpioPwmReadResponse;
+import com.diozero.remote.message.GpioPwmWrite;
+import com.diozero.remote.message.I2CClose;
+import com.diozero.remote.message.I2COpen;
+import com.diozero.remote.message.I2CRead;
+import com.diozero.remote.message.I2CReadByte;
+import com.diozero.remote.message.I2CReadByteData;
+import com.diozero.remote.message.I2CReadByteResponse;
+import com.diozero.remote.message.I2CReadI2CBlockData;
+import com.diozero.remote.message.I2CReadResponse;
+import com.diozero.remote.message.I2CWrite;
+import com.diozero.remote.message.I2CWriteByte;
+import com.diozero.remote.message.I2CWriteByteData;
+import com.diozero.remote.message.I2CWriteI2CBlockData;
+import com.diozero.remote.message.ProvisionAnalogInputDevice;
+import com.diozero.remote.message.ProvisionAnalogOutputDevice;
 import com.diozero.remote.message.ProvisionDigitalInputDevice;
 import com.diozero.remote.message.ProvisionDigitalInputOutputDevice;
 import com.diozero.remote.message.ProvisionDigitalOutputDevice;
-import com.diozero.remote.message.ProvisionSpiDevice;
+import com.diozero.remote.message.ProvisionPwmOutputDevice;
+import com.diozero.remote.message.RemoteProtocolInterface;
 import com.diozero.remote.message.Response;
 import com.diozero.remote.message.SpiClose;
+import com.diozero.remote.message.SpiOpen;
 import com.diozero.remote.message.SpiResponse;
 import com.diozero.remote.message.SpiWrite;
 import com.diozero.remote.message.SpiWriteAndRead;
 import com.diozero.util.PropertyUtil;
+import com.diozero.util.RangeUtil;
 import com.diozero.util.RuntimeIOException;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
@@ -84,12 +110,12 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.ByteToMessageDecoder;
 import io.netty.handler.codec.MessageToByteEncoder;
 
-public class VoodooSparkProtocolHandler implements ProtocolHandlerInterface {
+public class VoodooSparkProtocolHandler implements RemoteProtocolInterface {
 	private static final String DEVICE_ID_PROP = "PARTICLE_DEVICE_ID";
 	private static final String ACCESS_TOKEN_PROP = "PARTICLE_TOKEN";
 	
-	static final int MAX_ANALOG_VALUE = (int) (Math.pow(2, 12) - 1);
-	static final int MAX_PWM_VALUE = (int) (Math.pow(2, 8) - 1);
+	static final int ANALOG_MAX = (int) (Math.pow(2, 12) - 1);
+	static final int PWM_MAX = (int) (Math.pow(2, 8) - 1);
 	private static final int DEFAULT_FREQUENCY = 500;
 
 	// Voodoo Spark network commands
@@ -127,7 +153,7 @@ public class VoodooSparkProtocolHandler implements ProtocolHandlerInterface {
 	private static final byte SERVO_WRITE = 0x41;
 	private static final byte ACTION_RANGE = 0x46;
 	
-	private NativeDeviceFactoryInterface deviceFactory;
+	private RemoteDeviceFactory deviceFactory;
 	private Queue<ResponseMessage> messageQueue;
 	private EventLoopGroup workerGroup;
 	private Channel messageChannel;
@@ -135,19 +161,22 @@ public class VoodooSparkProtocolHandler implements ProtocolHandlerInterface {
 	private Condition condition;
 	private ChannelFuture lastWriteFuture;
 	private int timeoutMs;
-	
-	public VoodooSparkProtocolHandler(NativeDeviceFactoryInterface deviceFactory) {
+
+	public VoodooSparkProtocolHandler(RemoteDeviceFactory deviceFactory) {
 		this.deviceFactory = deviceFactory;
-		
-		messageQueue = new LinkedList<>();
 		
 		String device_id = PropertyUtil.getProperty(DEVICE_ID_PROP, null);
 		String access_token = PropertyUtil.getProperty(ACCESS_TOKEN_PROP, null);
 		if (device_id == null || access_token == null) {
 			Logger.error("Both {} and {} properties must be set", DEVICE_ID_PROP, ACCESS_TOKEN_PROP);
+			throw new IllegalArgumentException(String.format("Both %s and %s properties must be set",
+					DEVICE_ID_PROP, ACCESS_TOKEN_PROP));
 		}
 		
 		timeoutMs = 2000;
+		messageQueue = new LinkedList<>();
+		lock = new ReentrantLock();
+		condition = lock.newCondition();
 		
 		// Lookup the local IP address using the Particle "endpoint" custom variable
 		try {
@@ -182,19 +211,219 @@ public class VoodooSparkProtocolHandler implements ProtocolHandlerInterface {
 		// Connect
 		messageChannel = b1.connect(host, port).sync().channel();
 	}
-	
-	void messageReceived(ResponseMessage msg) {
-		if (msg.cmd == REPORTING) {
-			Logger.info("Reporting message: {}", msg);
-		} else {
-			lock.lock();
-			try {
-				messageQueue.add(msg);
-				condition.signal();
-			} finally {
-				lock.unlock();
-			}
+
+	@Override
+	public void close() {
+		if (messageChannel == null || ! messageChannel.isOpen()) {
+			return;
 		}
+		
+		messageChannel.close();
+		
+		try {
+			messageChannel.closeFuture().sync();
+			
+			// Wait until all messages are flushed before closing the channel.
+			if (lastWriteFuture != null) {
+				lastWriteFuture.sync();
+			}
+		} catch (InterruptedException e) {
+			System.err.println("Error: " + e);
+			e.printStackTrace(System.err);
+		} finally {
+			workerGroup.shutdownGracefully();
+		}
+	}
+
+	@Override
+	public GetBoardGpioInfoResponse request(GetBoardGpioInfo request) {
+		
+		return new GetBoardGpioInfoResponse(Response.Status.OK, null, request.getCorrelationId());
+	}
+
+	@Override
+	public Response request(ProvisionDigitalInputDevice request) {
+		sendMessage(new PinModeMessage(request.getGpio(), PinMode.DIGITAL_INPUT));
+		
+		return new Response(Response.Status.OK, null, request.getCorrelationId());
+	}
+
+	@Override
+	public Response request(ProvisionDigitalOutputDevice request) {
+		sendMessage(new PinModeMessage(request.getGpio(), PinMode.DIGITAL_OUTPUT));
+		
+		return new Response(Response.Status.OK, null, request.getCorrelationId());
+	}
+
+	@Override
+	public Response request(ProvisionDigitalInputOutputDevice request) {
+		sendMessage(new PinModeMessage(request.getGpio(), request.getOutput() ? PinMode.DIGITAL_OUTPUT : PinMode.DIGITAL_INPUT));
+		
+		return new Response(Response.Status.OK, null, request.getCorrelationId());
+	}
+
+	@Override
+	public Response request(ProvisionPwmOutputDevice request) {
+		sendMessage(new PinModeMessage(request.getGpio(), PinMode.ANALOG_OUTPUT));
+		
+		return new Response(Response.Status.OK, null, request.getCorrelationId());
+	}
+
+	@Override
+	public Response request(ProvisionAnalogInputDevice request) {
+		sendMessage(new PinModeMessage(request.getGpio(), PinMode.ANALOG_INPUT));
+		
+		return new Response(Response.Status.OK, null, request.getCorrelationId());
+	}
+
+	@Override
+	public Response request(ProvisionAnalogOutputDevice request) {
+		sendMessage(new PinModeMessage(request.getGpio(), PinMode.ANALOG_OUTPUT));
+		
+		return new Response(Response.Status.OK, null, request.getCorrelationId());
+	}
+
+	@Override
+	public GpioDigitalReadResponse request(GpioDigitalRead request) {
+		ResponseMessage rm = sendMessage(new DigitalReadMessage(request.getGpio()));
+		return new GpioDigitalReadResponse(rm.lsb != 0, request.getCorrelationId());
+	}
+
+	@Override
+	public Response request(GpioDigitalWrite request) {
+		sendMessage(new DigitalWriteMessage(request.getGpio(), request.getValue()));
+		
+		return new Response(Response.Status.OK, null, request.getCorrelationId());
+	}
+
+	@Override
+	public GpioPwmReadResponse request(GpioPwmRead request) {
+		ResponseMessage rm = sendMessage(new AnalogReadMessage(request.getGpio()));
+		float value = RangeUtil.map((rm.lsb & 0x7f) | ((rm.msb & 0x7f) << 7), 0, PWM_MAX, 0f, 1f, true);
+		
+		return new GpioPwmReadResponse(value, request.getCorrelationId());
+	}
+
+	@Override
+	public Response request(GpioPwmWrite request) {
+		int value = RangeUtil.map(request.getValue(), 0f, 1f, 0, PWM_MAX, true);
+		sendMessage(new AnalogWriteMessage(request.getGpio(), value));
+		
+		return new Response(Response.Status.OK, null, request.getCorrelationId());
+	}
+
+	@Override
+	public GpioAnalogReadResponse request(GpioAnalogRead request) {
+		ResponseMessage rm = sendMessage(new AnalogReadMessage(request.getGpio()));
+		float value = RangeUtil.map((rm.lsb & 0x7f) | ((rm.msb & 0x7f) << 7), 0, ANALOG_MAX, 0f, 1f, true);
+
+		return new GpioAnalogReadResponse(value, request.getCorrelationId());
+	}
+
+	@Override
+	public Response request(GpioAnalogWrite request) {
+		int value = RangeUtil.map(request.getValue(), 0f, 1f, 0, ANALOG_MAX, true);
+		sendMessage(new AnalogWriteMessage(request.getGpio(), value));
+		
+		return new Response(Response.Status.OK, null, request.getCorrelationId());
+	}
+
+	@Override
+	public Response request(GpioEvents request) {
+		sendMessage(new ReportingMessage(request.getGpio(), false));
+		
+		return new Response(Response.Status.OK, null, request.getCorrelationId());
+	}
+
+	@Override
+	public Response request(GpioClose request) {
+		sendMessage(new PinModeMessage(request.getGpio(), PinMode.DIGITAL_INPUT));
+		
+		return new Response(Response.Status.OK, null, request.getCorrelationId());
+	}
+
+	@Override
+	public Response request(I2COpen request) {
+		// TODO Implementation
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public I2CReadByteResponse request(I2CReadByte request) {
+		// TODO Implementation
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public Response request(I2CWriteByte request) {
+		// TODO Implementation
+		throw new UnsupportedOperationException();
+	}
+	
+	@Override
+	public I2CReadResponse request(I2CRead request) {
+		// TODO Implementation
+		throw new UnsupportedOperationException();
+	}
+	
+	@Override
+	public Response request(I2CWrite request) {
+		// TODO Implementation
+		throw new UnsupportedOperationException();
+	}
+	
+	@Override
+	public I2CReadByteResponse request(I2CReadByteData request) {
+		// TODO Implementation
+		throw new UnsupportedOperationException();
+	}
+	
+	@Override
+	public Response request(I2CWriteByteData request) {
+		// TODO Implementation
+		throw new UnsupportedOperationException();
+	}
+	
+	@Override
+	public I2CReadResponse request(I2CReadI2CBlockData request) {
+		// TODO Implementation
+		throw new UnsupportedOperationException();
+	}
+	
+	@Override
+	public Response request(I2CWriteI2CBlockData request) {
+		// TODO Implementation
+		throw new UnsupportedOperationException();
+	}
+	
+	@Override
+	public Response request(I2CClose request) {
+		// TODO Implementation
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public Response request(SpiOpen request) {
+		// TODO Implementation
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public Response request(SpiWrite request) {
+		// TODO Implementation
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public SpiResponse request(SpiWriteAndRead request) {
+		// TODO Implementation
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public Response request(SpiClose request) {
+		// TODO Implementation
+		throw new UnsupportedOperationException();
 	}
 	
 	private synchronized ResponseMessage sendMessage(Message message) {
@@ -227,96 +456,31 @@ public class VoodooSparkProtocolHandler implements ProtocolHandlerInterface {
 		
 		return rm;
 	}
-
-	@Override
-	public void close() {
-		if (messageChannel == null || ! messageChannel.isOpen()) {
-			return;
-		}
-		
-		messageChannel.close();
-		
-		try {
-			messageChannel.closeFuture().sync();
+	
+	void messageReceived(ResponseMessage msg) {
+		if (msg.cmd == REPORTING) {
+			long epoch_time = System.currentTimeMillis();
 			
-			// Wait until all messages are flushed before closing the channel.
-			if (lastWriteFuture != null) {
-				lastWriteFuture.sync();
+			Logger.info("Reporting message: {}", msg);
+			
+			// Notify the listeners for each GPIO in this port for which reporting has been enabled
+			for (int i=0; i<8; i++) {
+				// Note can only get reports for GPIOs 0-7 and 10-17
+				int gpio = msg.pinOrPort * 10 + i;
+				
+				// TODO Need to check that reporting has been enabled for this GPIO!
+				
+				deviceFactory.valueChanged(new DigitalInputEvent(gpio, epoch_time, 0, (msg.lsb & (1 << i)) != 0));
 			}
-		} catch (InterruptedException e) {
-			System.err.println("Error: " + e);
-			e.printStackTrace(System.err);
-		} finally {
-			workerGroup.shutdownGracefully();
+		} else {
+			lock.lock();
+			try {
+				messageQueue.add(msg);
+				condition.signal();
+			} finally {
+				lock.unlock();
+			}
 		}
-	}
-
-	@Override
-	public Response sendRequest(ProvisionDigitalInputDevice request) {
-		sendMessage(new PinModeMessage(request.getGpio(), PinMode.DIGITAL_INPUT));
-		
-		return Response.OK;
-	}
-
-	@Override
-	public Response sendRequest(ProvisionDigitalOutputDevice request) {
-		sendMessage(new PinModeMessage(request.getGpio(), PinMode.DIGITAL_OUTPUT));
-		
-		return Response.OK;
-	}
-
-	@Override
-	public Response sendRequest(ProvisionDigitalInputOutputDevice request) {
-		sendMessage(new PinModeMessage(request.getGpio(), request.getOutput() ? PinMode.DIGITAL_OUTPUT : PinMode.DIGITAL_INPUT));
-		
-		return Response.OK;
-	}
-
-	@Override
-	public GpioDigitalReadResponse sendRequest(GpioDigitalRead request) {
-		ResponseMessage rm = sendMessage(new DigitalReadMessage(request.getGpio()));
-		return new GpioDigitalReadResponse(rm.lsb != 0);
-	}
-
-	@Override
-	public Response sendRequest(GpioDigitalWrite request) {
-		sendMessage(new DigitalWriteMessage(request.getGpio(), request.getValue()));
-		
-		return Response.OK;
-	}
-
-	@Override
-	public Response sendRequest(GpioEvents request) {
-		sendMessage(new ReportingMessage(request.getGpio(), false));
-		
-		return Response.OK;
-	}
-
-	@Override
-	public Response sendRequest(GpioClose request) {
-		sendMessage(new PinModeMessage(request.getGpio(), PinMode.DIGITAL_INPUT));
-		
-		return Response.OK;
-	}
-
-	@Override
-	public Response sendRequest(ProvisionSpiDevice request) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public Response sendRequest(SpiWrite request) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public SpiResponse sendRequest(SpiWriteAndRead request) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public Response sendRequest(SpiClose request) {
-		throw new UnsupportedOperationException();
 	}
 
 	// Classes to support Particle Spark JSON variable API

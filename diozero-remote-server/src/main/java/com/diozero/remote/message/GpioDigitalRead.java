@@ -34,8 +34,8 @@ package com.diozero.remote.message;
 public class GpioDigitalRead extends GpioBase {
 	private static final long serialVersionUID = -7814404826985805429L;
 
-	public GpioDigitalRead(int gpio) {
-		super(gpio);
+	public GpioDigitalRead(int gpio, String correlationId) {
+		super(gpio, correlationId);
 	}
 
 	@Override

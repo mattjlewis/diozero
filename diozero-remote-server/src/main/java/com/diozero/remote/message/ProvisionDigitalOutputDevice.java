@@ -36,8 +36,8 @@ public class ProvisionDigitalOutputDevice extends GpioBase {
 
 	private boolean initialValue;
 
-	public ProvisionDigitalOutputDevice(int gpio, boolean initialValue) {
-		super(gpio);
+	public ProvisionDigitalOutputDevice(int gpio, boolean initialValue, String correlationId) {
+		super(gpio, correlationId);
 		
 		this.initialValue = initialValue;
 	}

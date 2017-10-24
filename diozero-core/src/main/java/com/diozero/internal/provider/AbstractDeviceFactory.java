@@ -58,6 +58,11 @@ public abstract class AbstractDeviceFactory implements DeviceFactoryInterface {
 	}
 	
 	@Override
+	public final String createI2CKey(int controller, int address) {
+		return I2CDeviceFactoryInterface.createI2CKey(deviceFactoryPrefix, controller, address);
+	}
+	
+	@Override
 	public final String createSpiKey(int controller, int chipSelect) {
 		return SpiDeviceFactoryInterface.createSpiKey(deviceFactoryPrefix, controller, chipSelect);
 	}

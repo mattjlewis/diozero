@@ -66,10 +66,9 @@ public class I2CDevice implements Closeable, I2CConstants {
 	 * @throws RuntimeIOException
 	 *             If an I/O error occurred
 	 */
-	public I2CDevice(int controller, int address)
-			throws RuntimeIOException {
-		this(DeviceFactoryHelper.getNativeDeviceFactory(), controller, address,
-				I2CConstants.ADDR_SIZE_7, I2CConstants.DEFAULT_CLOCK_FREQUENCY, IOUtil.DEFAULT_BYTE_ORDER);
+	public I2CDevice(int controller, int address) throws RuntimeIOException {
+		this(DeviceFactoryHelper.getNativeDeviceFactory(), controller, address, I2CConstants.ADDR_SIZE_7,
+				I2CConstants.DEFAULT_CLOCK_FREQUENCY, IOUtil.DEFAULT_BYTE_ORDER);
 	}
 
 	/**
@@ -82,10 +81,9 @@ public class I2CDevice implements Closeable, I2CConstants {
 	 * @throws RuntimeIOException
 	 *             If an I/O error occurred
 	 */
-	public I2CDevice(int controller, int address, ByteOrder order)
-			throws RuntimeIOException {
-		this(DeviceFactoryHelper.getNativeDeviceFactory(), controller, address,
-				I2CConstants.ADDR_SIZE_7, I2CConstants.DEFAULT_CLOCK_FREQUENCY, order);
+	public I2CDevice(int controller, int address, ByteOrder order) throws RuntimeIOException {
+		this(DeviceFactoryHelper.getNativeDeviceFactory(), controller, address, I2CConstants.ADDR_SIZE_7,
+				I2CConstants.DEFAULT_CLOCK_FREQUENCY, order);
 	}
 
 	/**
@@ -100,10 +98,9 @@ public class I2CDevice implements Closeable, I2CConstants {
 	 * @throws RuntimeIOException
 	 *             If an I/O error occurred
 	 */
-	public I2CDevice(int controller, int address, int addressSize, int clockFrequency)
-			throws RuntimeIOException {
-		this(DeviceFactoryHelper.getNativeDeviceFactory(), controller, address,
-				addressSize, clockFrequency, IOUtil.DEFAULT_BYTE_ORDER);
+	public I2CDevice(int controller, int address, int addressSize, int clockFrequency) throws RuntimeIOException {
+		this(DeviceFactoryHelper.getNativeDeviceFactory(), controller, address, addressSize, clockFrequency,
+				IOUtil.DEFAULT_BYTE_ORDER);
 	}
 
 	/**
@@ -122,8 +119,7 @@ public class I2CDevice implements Closeable, I2CConstants {
 	 */
 	public I2CDevice(int controller, int address, int addressSize, int clockFrequency, ByteOrder order)
 			throws RuntimeIOException {
-		this(DeviceFactoryHelper.getNativeDeviceFactory(), controller, address,
-				addressSize, clockFrequency, order);
+		this(DeviceFactoryHelper.getNativeDeviceFactory(), controller, address, addressSize, clockFrequency, order);
 	}
 
 	/**
@@ -174,11 +170,11 @@ public class I2CDevice implements Closeable, I2CConstants {
 		Logger.debug("close()");
 		device.close();
 	}
-	
+
 	public boolean probe() {
 		return probe(ProbeMode.AUTO);
 	}
-	
+
 	public boolean probe(ProbeMode mode) {
 		return device.probe(mode);
 	}
@@ -213,14 +209,14 @@ public class I2CDevice implements Closeable, I2CConstants {
 			device.writeI2CBlockData(regAddr, SUB_ADDRESS_SIZE_1_BYTE, buffer);
 		}
 	}
-	
+
 	public ByteBuffer read(int address, int count) {
 		ByteBuffer buffer = ByteBuffer.allocateDirect(count);
 		read(address, buffer);
 		return buffer;
 	}
-	
-	public void read(int address, ByteBuffer dst) throws RuntimeException {
+
+	public void read(int address, ByteBuffer dst) throws RuntimeIOException {
 		read(address, SUB_ADDRESS_SIZE_1_BYTE, dst);
 	}
 
@@ -555,30 +551,29 @@ public class I2CDevice implements Closeable, I2CConstants {
 	public void writeBytes(int regAddr, int length, byte[] data, int offset) throws RuntimeIOException {
 		/*
 		 * if (I2CDEV_SERIAL_DEBUG) { System.out.format(
-		 * "I2C (0x%x) writing %d bytes to 0x%x...%n", devAddr, length,
-		 * regAddr); }
+		 * "I2C (0x%x) writing %d bytes to 0x%x...%n", devAddr, length, regAddr); }
 		 */
 
 		byte[] dest = new byte[length];
 		System.arraycopy(data, offset, dest, 0, length);
 		write(regAddr, SUB_ADDRESS_SIZE_1_BYTE, dest);
 	}
-	
-	public void read(ByteBuffer dst) throws RuntimeException {
+
+	public void read(ByteBuffer dst) throws RuntimeIOException {
 		dst.order(order);
 		synchronized (device) {
 			device.read(dst);
 		}
 		dst.rewind();
 	}
-	
+
 	public byte readByte() throws RuntimeIOException {
 		synchronized (device) {
 			return device.readByte();
 		}
 	}
-	
-	public byte[] read(int count) throws RuntimeException {
+
+	public byte[] read(int count) throws RuntimeIOException {
 		ByteBuffer buffer = ByteBuffer.allocateDirect(count);
 		read(buffer);
 
@@ -587,12 +582,12 @@ public class I2CDevice implements Closeable, I2CConstants {
 
 		return data;
 	}
-	
-	public void write(byte[] data) throws RuntimeException {
+
+	public void write(byte[] data) throws RuntimeIOException {
 		write(data, order);
 	}
-	
-	public void write(byte[] data, ByteOrder order) throws RuntimeException {
+
+	public void write(byte[] data, ByteOrder order) throws RuntimeIOException {
 		ByteBuffer buffer = ByteBuffer.wrap(data);
 		buffer.order(order);
 		synchronized (device) {
@@ -600,7 +595,7 @@ public class I2CDevice implements Closeable, I2CConstants {
 		}
 	}
 
-	public void write(ByteBuffer buffer, int payloadLength, ByteOrder order) throws RuntimeException {
+	public void write(ByteBuffer buffer, int payloadLength, ByteOrder order) throws RuntimeIOException {
 		buffer.rewind();
 		int lim = buffer.limit();
 		if (payloadLength <= lim) {
@@ -613,11 +608,12 @@ public class I2CDevice implements Closeable, I2CConstants {
 		buffer.limit(lim);
 	}
 
-	public void write(ByteBuffer buffer, int payloadLength) throws RuntimeException {
+	public void write(ByteBuffer buffer, int payloadLength) throws RuntimeIOException {
 		write(buffer, payloadLength, order);
 	}
 
-	public void write(int registerAddress, int addressSize, ByteBuffer buffer, int payloadLength, ByteOrder order) throws RuntimeException {
+	public void write(int registerAddress, int addressSize, ByteBuffer buffer, int payloadLength, ByteOrder order)
+			throws RuntimeIOException {
 		buffer.rewind();
 		int lim = buffer.limit();
 		if (payloadLength <= lim) {
@@ -630,11 +626,11 @@ public class I2CDevice implements Closeable, I2CConstants {
 		buffer.limit(lim);
 	}
 
-	public void write(int registerAddress, ByteBuffer buffer, int payloadLength) throws RuntimeException {
+	public void write(int registerAddress, ByteBuffer buffer, int payloadLength) throws RuntimeIOException {
 		write(registerAddress, SUB_ADDRESS_SIZE_1_BYTE, buffer, payloadLength, order);
 	}
 
-	public void writeByte(byte data) throws RuntimeException {
+	public void writeByte(byte data) throws RuntimeIOException {
 		synchronized (device) {
 			device.writeByte(data);
 		}

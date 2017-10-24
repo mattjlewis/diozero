@@ -141,7 +141,7 @@ public class FirmataI2CDevice extends AbstractDevice implements I2CDeviceInterfa
 	}
 
 	@Override
-	public void writeByte(byte b) throws RuntimeException {
+	public void writeByte(byte b) throws RuntimeIOException {
 		try {
 			i2cDevice.tell(b);
 		} catch (IOException e) {
@@ -150,7 +150,7 @@ public class FirmataI2CDevice extends AbstractDevice implements I2CDeviceInterfa
 	}
 
 	@Override
-	public void read(ByteBuffer buffer) throws RuntimeException {
+	public void read(ByteBuffer buffer) throws RuntimeIOException {
 		try {
 			i2cDevice.ask((byte) buffer.remaining(), this);
 			waitForData(NO_REGISTER, buffer);
@@ -160,7 +160,7 @@ public class FirmataI2CDevice extends AbstractDevice implements I2CDeviceInterfa
 	}
 
 	@Override
-	public void write(ByteBuffer buffer) throws RuntimeException {
+	public void write(ByteBuffer buffer) throws RuntimeIOException {
 		byte[] data = new byte[buffer.remaining()];
 		buffer.get(data);
 		try {

@@ -36,10 +36,10 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pmw.tinylog.Logger;
 
+import com.diozero.devices.sandpit.HCSR04UsingWait;
 import com.diozero.internal.provider.test.HCSR04EchoPin;
 import com.diozero.internal.provider.test.HCSR04TriggerPin;
 import com.diozero.internal.provider.test.TestDeviceFactory;
-import com.diozero.sampleapps.sandpit.HCSR04UsingWait;
 import com.diozero.util.SleepUtil;
 
 @SuppressWarnings("static-method")

@@ -31,13 +31,14 @@ package com.diozero.internal.provider.remote.devicefactory;
  * #L%
  */
 
+import java.util.UUID;
 
 import org.pmw.tinylog.Logger;
 
 import com.diozero.api.SpiClockMode;
 import com.diozero.internal.provider.AbstractDevice;
 import com.diozero.internal.provider.SpiDeviceInterface;
-import com.diozero.remote.message.ProvisionSpiDevice;
+import com.diozero.remote.message.SpiOpen;
 import com.diozero.remote.message.Response;
 import com.diozero.remote.message.SpiClose;
 import com.diozero.remote.message.SpiResponse;
@@ -58,9 +59,10 @@ public class RemoteSpiDevice extends AbstractDevice implements SpiDeviceInterfac
 		this.controller = controller;
 		this.chipSelect = chipSelect;
 
-		ProvisionSpiDevice request = new ProvisionSpiDevice(controller, chipSelect, frequency, spiClockMode, lsbFirst);
+		SpiOpen request = new SpiOpen(controller, chipSelect, frequency, spiClockMode, lsbFirst,
+				UUID.randomUUID().toString());
 
-		Response response = deviceFactory.getProtocolHandler().sendRequest(request);
+		Response response = deviceFactory.getProtocolHandler().request(request);
 		if (response.getStatus() != Response.Status.OK) {
 			throw new RuntimeIOException("Error: " + response.getDetail());
 		}
@@ -83,9 +85,10 @@ public class RemoteSpiDevice extends AbstractDevice implements SpiDeviceInterfac
 
 	@Override
 	public void write(byte[] txBuffer, int txOffset, int length) {
-		SpiWrite request = new SpiWrite(controller, chipSelect, txBuffer, txOffset, length);
+		SpiWrite request = new SpiWrite(controller, chipSelect, txBuffer, txOffset, length,
+				UUID.randomUUID().toString());
 
-		Response response = deviceFactory.getProtocolHandler().sendRequest(request);
+		Response response = deviceFactory.getProtocolHandler().request(request);
 		if (response.getStatus() != Response.Status.OK) {
 			throw new RuntimeIOException("Error in SPI write: " + response.getDetail());
 		}
@@ -93,9 +96,9 @@ public class RemoteSpiDevice extends AbstractDevice implements SpiDeviceInterfac
 
 	@Override
 	public byte[] writeAndRead(byte[] txBuffer) throws RuntimeIOException {
-		SpiWriteAndRead request = new SpiWriteAndRead(controller, chipSelect, txBuffer);
+		SpiWriteAndRead request = new SpiWriteAndRead(controller, chipSelect, txBuffer, UUID.randomUUID().toString());
 
-		SpiResponse response = deviceFactory.getProtocolHandler().sendRequest(request);
+		SpiResponse response = deviceFactory.getProtocolHandler().request(request);
 		if (response.getStatus() != Response.Status.OK) {
 			throw new RuntimeIOException("Error in SPI writeAndRead: " + response.getDetail());
 		}
@@ -105,9 +108,9 @@ public class RemoteSpiDevice extends AbstractDevice implements SpiDeviceInterfac
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
-		SpiClose request = new SpiClose(controller, chipSelect);
+		SpiClose request = new SpiClose(controller, chipSelect, UUID.randomUUID().toString());
 
-		Response response = deviceFactory.getProtocolHandler().sendRequest(request);
+		Response response = deviceFactory.getProtocolHandler().request(request);
 		if (response.getStatus() != Response.Status.OK) {
 			Logger.error("Error closing device: " + response.getDetail());
 		}

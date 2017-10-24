@@ -49,10 +49,9 @@ public interface PwmOutputDeviceFactoryInterface extends DeviceFactoryInterface 
 		if (pin_info == null || !pin_info.isSupported(DeviceMode.PWM_OUTPUT)) {
 			pin_info = getBoardPinInfo().getByGpioNumber(pwmOrGpioNum);
 		}
-		if (pin_info != null && pin_info.isSupported(DeviceMode.PWM_OUTPUT)) {
+		if (pin_info != null
+				&& (pin_info.isSupported(DeviceMode.PWM_OUTPUT) || pin_info.isSupported(DeviceMode.DIGITAL_OUTPUT))) {
 			// Ok
-		} else if (pin_info != null && pin_info.isSupported(DeviceMode.DIGITAL_OUTPUT)) {
-			Logger.warn("Hardware PWM not available on pin {}, reverting to software", Integer.valueOf(pwmOrGpioNum));
 		} else {
 			throw new InvalidModeException("Invalid mode (PWM output) for GPIO " + pwmOrGpioNum);
 		}

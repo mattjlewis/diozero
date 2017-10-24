@@ -40,8 +40,8 @@ public class ProvisionDigitalInputDevice extends GpioBase {
 	private GpioPullUpDown pud;
 	private GpioEventTrigger trigger;
 
-	public ProvisionDigitalInputDevice(int gpio, GpioPullUpDown pud, GpioEventTrigger trigger) {
-		super(gpio);
+	public ProvisionDigitalInputDevice(int gpio, GpioPullUpDown pud, GpioEventTrigger trigger, String correlationId) {
+		super(gpio, correlationId);
 		
 		this.pud = pud;
 		this.trigger = trigger;

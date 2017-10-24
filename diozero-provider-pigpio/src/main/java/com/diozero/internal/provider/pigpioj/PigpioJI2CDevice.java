@@ -35,6 +35,7 @@ import java.nio.ByteBuffer;
 
 import org.pmw.tinylog.Logger;
 
+import com.diozero.api.I2CDevice;
 import com.diozero.internal.provider.AbstractDevice;
 import com.diozero.internal.provider.DeviceFactoryInterface;
 import com.diozero.internal.provider.I2CDeviceInterface;
@@ -86,7 +87,7 @@ public class PigpioJI2CDevice extends AbstractDevice implements I2CDeviceInterfa
 	}
 	
 	@Override
-	public boolean probe(com.diozero.api.I2CDevice.ProbeMode mode) {
+	public boolean probe(I2CDevice.ProbeMode mode) {
 		int res;
 		switch (mode) {
 		case QUICK:
@@ -108,7 +109,7 @@ public class PigpioJI2CDevice extends AbstractDevice implements I2CDeviceInterfa
 	}
 
 	@Override
-	public byte readByte() throws RuntimeException {
+	public byte readByte() throws RuntimeIOException {
 		if (! isOpen()) {
 			throw new IllegalStateException("I2C Device " + controller + "-" + address + " is closed");
 		}
@@ -122,7 +123,7 @@ public class PigpioJI2CDevice extends AbstractDevice implements I2CDeviceInterfa
 	}
 
 	@Override
-	public void writeByte(byte b) throws RuntimeException {
+	public void writeByte(byte b) throws RuntimeIOException {
 		if (! isOpen()) {
 			throw new IllegalStateException("I2C Device " + controller + "-" + address + " is closed");
 		}
@@ -134,7 +135,7 @@ public class PigpioJI2CDevice extends AbstractDevice implements I2CDeviceInterfa
 	}
 
 	@Override
-	public void read(ByteBuffer dst) throws RuntimeException {
+	public void read(ByteBuffer dst) throws RuntimeIOException {
 		if (! isOpen()) {
 			throw new IllegalStateException("I2C Device " + controller + "-" + address + " is closed");
 		}
@@ -150,7 +151,7 @@ public class PigpioJI2CDevice extends AbstractDevice implements I2CDeviceInterfa
 	}
 
 	@Override
-	public void write(ByteBuffer src) throws RuntimeException {
+	public void write(ByteBuffer src) throws RuntimeIOException {
 		if (! isOpen()) {
 			throw new IllegalStateException("I2C Device " + controller + "-" + address + " is closed");
 		}

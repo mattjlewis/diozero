@@ -36,8 +36,8 @@ public class GpioEvents extends GpioBase {
 	
 	private boolean enabled;
 	
-	public GpioEvents(int gpio, boolean enabled) {
-		super(gpio);
+	public GpioEvents(int gpio, boolean enabled, String correlationId) {
+		super(gpio, correlationId);
 		
 		this.enabled = enabled;
 	}

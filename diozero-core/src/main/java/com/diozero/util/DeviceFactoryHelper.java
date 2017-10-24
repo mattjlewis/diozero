@@ -44,7 +44,7 @@ import com.diozero.internal.provider.sysfs.SysFsDeviceFactory;
  * Alternatively you can set the command line property "com.diozero.devicefactory" to override the ServiceLoader.
  */
 public class DeviceFactoryHelper {
-	private static final String SYSTEM_PROPERTY = "com.diozero.devicefactory";
+	public static final String DEVICE_FACTORY_PROP = "com.diozero.devicefactory";
 	
 	private static NativeDeviceFactoryInterface nativeDeviceFactory;
 
@@ -53,7 +53,7 @@ public class DeviceFactoryHelper {
 		synchronized (DeviceFactoryHelper.class) {
 			if (nativeDeviceFactory == null) {
 				// First try load one defined as a system property
-				String property = System.getProperty(SYSTEM_PROPERTY);
+				String property = PropertyUtil.getProperty(DEVICE_FACTORY_PROP, null);
 				if (property != null && property.length() > 0) {
 					try {
 						nativeDeviceFactory = (NativeDeviceFactoryInterface) Class.forName(property)
@@ -79,7 +79,7 @@ public class DeviceFactoryHelper {
 				// Shouldn't be possible
 				throw new IllegalStateException("Error: failed to load native device factory,"
 						+ " please configure META-INF/services/" + NativeDeviceFactoryInterface.class.getName()
-						+ " or set -D" + SYSTEM_PROPERTY);
+						+ " or set -D" + DEVICE_FACTORY_PROP);
 			}
 		}
 	}

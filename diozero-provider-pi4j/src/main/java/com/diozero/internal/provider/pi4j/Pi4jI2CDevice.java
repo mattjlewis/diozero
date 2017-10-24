@@ -91,7 +91,7 @@ public class Pi4jI2CDevice extends AbstractDevice implements I2CDeviceInterface 
 	}
 
 	@Override
-	public byte readByte() throws RuntimeException {
+	public byte readByte() throws RuntimeIOException {
 		if (! isOpen()) {
 			throw new IllegalStateException("I2C Device " + controller + "-" + address + " is closed");
 		}
@@ -109,7 +109,7 @@ public class Pi4jI2CDevice extends AbstractDevice implements I2CDeviceInterface 
 	}
 
 	@Override
-	public void writeByte(byte b) throws RuntimeException {
+	public void writeByte(byte b) throws RuntimeIOException {
 		if (! isOpen()) {
 			throw new IllegalStateException("I2C Device " + controller + "-" + address + " is closed");
 		}
@@ -122,7 +122,7 @@ public class Pi4jI2CDevice extends AbstractDevice implements I2CDeviceInterface 
 	}
 
 	@Override
-	public void read(ByteBuffer dst) throws RuntimeException {
+	public void read(ByteBuffer dst) throws RuntimeIOException {
 		if (! isOpen()) {
 			throw new IllegalStateException("I2C Device " + controller + "-" + address + " is closed");
 		}
@@ -143,7 +143,7 @@ public class Pi4jI2CDevice extends AbstractDevice implements I2CDeviceInterface 
 	}
 
 	@Override
-	public void write(ByteBuffer src) throws RuntimeException {
+	public void write(ByteBuffer src) throws RuntimeIOException {
 		if (! isOpen()) {
 			throw new IllegalStateException("I2C Device " + controller + "-" + address + " is closed");
 		}

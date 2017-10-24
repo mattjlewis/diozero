@@ -36,14 +36,14 @@ public class SpiWrite extends SpiBase {
 	
 	private byte[] txData;
 
-	public SpiWrite(int controller, int chipSelect, byte[] txData) {
-		super(controller, chipSelect);
+	public SpiWrite(int controller, int chipSelect, byte[] txData, String correlationId) {
+		super(controller, chipSelect, correlationId);
 		
 		this.txData = txData;
 	}
 
-	public SpiWrite(int controller, int chipSelect, byte[] txData, int txOffset, int length) {
-		super(controller, chipSelect);
+	public SpiWrite(int controller, int chipSelect, byte[] txData, int txOffset, int length, String correlationId) {
+		super(controller, chipSelect, correlationId);
 
 		if (txOffset == 0 && length == txData.length) {
 			this.txData = txData;

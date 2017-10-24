@@ -32,8 +32,8 @@ package com.diozero.api;
  */
 
 
+import java.util.Collection;
 import java.util.EnumSet;
-import java.util.Set;
 
 public class PinInfo {
 	public static final EnumSet<DeviceMode> DIGITAL_IN = EnumSet.of(DeviceMode.DIGITAL_INPUT);
@@ -62,14 +62,14 @@ public class PinInfo {
 	private int deviceNumber;
 	private int pinNumber;
 	private String name;
-	private Set<DeviceMode> modes;
+	private Collection<DeviceMode> modes;
 	private int sysFsNumber;
 	
-	public PinInfo(String keyPrefix, String header, int deviceNumber, int pinNumber, String name, Set<DeviceMode> modes) {
+	public PinInfo(String keyPrefix, String header, int deviceNumber, int pinNumber, String name, Collection<DeviceMode> modes) {
 		this(keyPrefix, header, deviceNumber, pinNumber, name, modes, deviceNumber);
 	}
 	
-	public PinInfo(String keyPrefix, String header, int deviceNumber, int pinNumber, String name, Set<DeviceMode> modes,
+	public PinInfo(String keyPrefix, String header, int deviceNumber, int pinNumber, String name, Collection<DeviceMode> modes,
 			int sysFsNumber) {
 		this.keyPrefix = keyPrefix;
 		this.header = header;
@@ -100,7 +100,7 @@ public class PinInfo {
 		return name;
 	}
 
-	public Set<DeviceMode> getModes() {
+	public Collection<DeviceMode> getModes() {
 		return modes;
 	}
 	

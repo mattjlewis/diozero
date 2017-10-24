@@ -59,6 +59,7 @@ import com.diozero.internal.provider.I2CDeviceInterface;
 import com.diozero.internal.provider.PwmOutputDeviceInterface;
 import com.diozero.internal.provider.SpiDeviceInterface;
 import com.diozero.util.BoardInfo;
+import com.diozero.util.PropertyUtil;
 import com.diozero.util.RuntimeIOException;
 
 public class FirmataDeviceFactory extends BaseNativeDeviceFactory {
@@ -69,12 +70,9 @@ public class FirmataDeviceFactory extends BaseNativeDeviceFactory {
 	public FirmataDeviceFactory() {
 		Logger.warn("*** Do NOT use this device factory for servo control; not yet implemented!");
 		
-		String port_name = System.getProperty("FIRMATA_PORT");
+		String port_name = PropertyUtil.getProperty("FIRMATA_SERIAL_PORT", null);
 		if (port_name == null) {
-			port_name = System.getenv("FIRMATA_PORT");
-		}
-		if (port_name == null) {
-			throw new IllegalArgumentException("Error, FIRMATA_PORT not set");
+			throw new IllegalArgumentException("Error, FIRMATA_SERIAL_PORT not set");
 		}
 		ioDevice = new FirmataDevice(port_name);
 		

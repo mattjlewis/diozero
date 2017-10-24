@@ -31,8 +31,6 @@ package com.diozero.internal.provider.remote.mqtt;
  * #L%
  */
 
-import java.util.UUID;
-
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttClient;
@@ -46,21 +44,44 @@ import com.diozero.internal.provider.NativeDeviceFactoryInterface;
 import com.diozero.internal.provider.remote.ProtobufBaseAsyncProtocolHandler;
 import com.diozero.remote.message.DiozeroProtos;
 import com.diozero.remote.message.DiozeroProtosConverter;
+import com.diozero.remote.message.GetBoardGpioInfo;
+import com.diozero.remote.message.GetBoardGpioInfoResponse;
+import com.diozero.remote.message.GpioAnalogRead;
+import com.diozero.remote.message.GpioAnalogReadResponse;
+import com.diozero.remote.message.GpioAnalogWrite;
 import com.diozero.remote.message.GpioClose;
 import com.diozero.remote.message.GpioDigitalRead;
 import com.diozero.remote.message.GpioDigitalReadResponse;
 import com.diozero.remote.message.GpioDigitalWrite;
 import com.diozero.remote.message.GpioEvents;
+import com.diozero.remote.message.GpioPwmRead;
+import com.diozero.remote.message.GpioPwmReadResponse;
+import com.diozero.remote.message.GpioPwmWrite;
+import com.diozero.remote.message.I2CClose;
+import com.diozero.remote.message.I2COpen;
+import com.diozero.remote.message.I2CRead;
+import com.diozero.remote.message.I2CReadByte;
+import com.diozero.remote.message.I2CReadByteData;
+import com.diozero.remote.message.I2CReadByteResponse;
+import com.diozero.remote.message.I2CReadI2CBlockData;
+import com.diozero.remote.message.I2CReadResponse;
+import com.diozero.remote.message.I2CWrite;
+import com.diozero.remote.message.I2CWriteByte;
+import com.diozero.remote.message.I2CWriteByteData;
+import com.diozero.remote.message.I2CWriteI2CBlockData;
+import com.diozero.remote.message.ProvisionAnalogInputDevice;
+import com.diozero.remote.message.ProvisionAnalogOutputDevice;
 import com.diozero.remote.message.ProvisionDigitalInputDevice;
 import com.diozero.remote.message.ProvisionDigitalInputOutputDevice;
 import com.diozero.remote.message.ProvisionDigitalOutputDevice;
-import com.diozero.remote.message.ProvisionSpiDevice;
+import com.diozero.remote.message.ProvisionPwmOutputDevice;
 import com.diozero.remote.message.Response;
 import com.diozero.remote.message.SpiClose;
+import com.diozero.remote.message.SpiOpen;
 import com.diozero.remote.message.SpiResponse;
 import com.diozero.remote.message.SpiWrite;
 import com.diozero.remote.message.SpiWriteAndRead;
-import com.diozero.remote.mqtt.MqttProviderConstants;
+import com.diozero.remote.server.mqtt.MqttProviderConstants;
 import com.diozero.util.PropertyUtil;
 import com.diozero.util.RuntimeIOException;
 import com.google.protobuf.GeneratedMessageV3;
@@ -117,80 +138,177 @@ public class ProtobufMqttProtocolHandler extends ProtobufBaseAsyncProtocolHandle
 	}
 
 	@Override
-	public Response sendRequest(ProvisionDigitalInputDevice request) {
-		String correlation_id = UUID.randomUUID().toString();
-		return requestResponse(MqttProviderConstants.GPIO_PROVISION_INPUT_TOPIC,
-				DiozeroProtosConverter.convert(request, correlation_id), correlation_id);
+	public GetBoardGpioInfoResponse request(GetBoardGpioInfo request) {
+		return (GetBoardGpioInfoResponse) requestResponse(MqttProviderConstants.GET_BOARD_GPIO_INFO_TOPIC,
+				DiozeroProtosConverter.convert(request), request.getCorrelationId());
 	}
 
 	@Override
-	public Response sendRequest(ProvisionDigitalOutputDevice request) {
-		String correlation_id = UUID.randomUUID().toString();
-		return requestResponse(MqttProviderConstants.GPIO_PROVISION_OUTPUT_TOPIC,
-				DiozeroProtosConverter.convert(request, correlation_id), correlation_id);
+	public Response request(ProvisionDigitalInputDevice request) {
+		return requestResponse(MqttProviderConstants.GPIO_PROVISION_DIGITAL_INPUT_TOPIC,
+				DiozeroProtosConverter.convert(request), request.getCorrelationId());
 	}
 
 	@Override
-	public Response sendRequest(ProvisionDigitalInputOutputDevice request) {
-		String correlation_id = UUID.randomUUID().toString();
-		return requestResponse(MqttProviderConstants.GPIO_PROVISION_INPUT_OUTPUT_TOPIC,
-				DiozeroProtosConverter.convert(request, correlation_id), correlation_id);
+	public Response request(ProvisionDigitalOutputDevice request) {
+		return requestResponse(MqttProviderConstants.GPIO_PROVISION_DIGITAL_OUTPUT_TOPIC,
+				DiozeroProtosConverter.convert(request), request.getCorrelationId());
 	}
 
 	@Override
-	public GpioDigitalReadResponse sendRequest(GpioDigitalRead request) {
-		String correlation_id = UUID.randomUUID().toString();
+	public Response request(ProvisionDigitalInputOutputDevice request) {
+		return requestResponse(MqttProviderConstants.GPIO_PROVISION_DIGITAL_INPUT_OUTPUT_TOPIC,
+				DiozeroProtosConverter.convert(request), request.getCorrelationId());
+	}
+
+	@Override
+	public Response request(ProvisionPwmOutputDevice request) {
+		return requestResponse(MqttProviderConstants.GPIO_PROVISION_PWM_OUTPUT_TOPIC,
+				DiozeroProtosConverter.convert(request), request.getCorrelationId());
+	}
+
+	@Override
+	public Response request(ProvisionAnalogInputDevice request) {
+		return requestResponse(MqttProviderConstants.GPIO_PROVISION_ANALOG_INPUT_TOPIC,
+				DiozeroProtosConverter.convert(request), request.getCorrelationId());
+	}
+
+	@Override
+	public Response request(ProvisionAnalogOutputDevice request) {
+		return requestResponse(MqttProviderConstants.GPIO_PROVISION_ANALOG_OUTPUT_TOPIC,
+				DiozeroProtosConverter.convert(request), request.getCorrelationId());
+	}
+
+	@Override
+	public GpioDigitalReadResponse request(GpioDigitalRead request) {
 		return (GpioDigitalReadResponse) requestResponse(MqttProviderConstants.GPIO_DIGITAL_READ_TOPIC,
-				DiozeroProtosConverter.convert(request, correlation_id), correlation_id);
+				DiozeroProtosConverter.convert(request), request.getCorrelationId());
 	}
 
 	@Override
-	public Response sendRequest(GpioDigitalWrite request) {
-		String correlation_id = UUID.randomUUID().toString();
+	public Response request(GpioDigitalWrite request) {
 		return requestResponse(MqttProviderConstants.GPIO_DIGITAL_WRITE_TOPIC,
-				DiozeroProtosConverter.convert(request, correlation_id), correlation_id);
+				DiozeroProtosConverter.convert(request), request.getCorrelationId());
 	}
 
 	@Override
-	public Response sendRequest(GpioEvents request) {
-		String correlation_id = UUID.randomUUID().toString();
+	public GpioPwmReadResponse request(GpioPwmRead request) {
+		return (GpioPwmReadResponse) requestResponse(MqttProviderConstants.GPIO_PWM_READ_TOPIC,
+				DiozeroProtosConverter.convert(request), request.getCorrelationId());
+	}
+
+	@Override
+	public Response request(GpioPwmWrite request) {
+		return requestResponse(MqttProviderConstants.GPIO_PWM_WRITE_TOPIC,
+				DiozeroProtosConverter.convert(request), request.getCorrelationId());
+	}
+
+	@Override
+	public GpioAnalogReadResponse request(GpioAnalogRead request) {
+		return (GpioAnalogReadResponse) requestResponse(MqttProviderConstants.GPIO_ANALOG_READ_TOPIC,
+				DiozeroProtosConverter.convert(request), request.getCorrelationId());
+	}
+
+	@Override
+	public Response request(GpioAnalogWrite request) {
+		return requestResponse(MqttProviderConstants.GPIO_ANALOG_WRITE_TOPIC,
+				DiozeroProtosConverter.convert(request), request.getCorrelationId());
+	}
+
+	@Override
+	public Response request(GpioEvents request) {
 		return requestResponse(MqttProviderConstants.GPIO_EVENTS_TOPIC,
-				DiozeroProtosConverter.convert(request, correlation_id), correlation_id);
+				DiozeroProtosConverter.convert(request), request.getCorrelationId());
 	}
 
 	@Override
-	public Response sendRequest(GpioClose request) {
-		String correlation_id = UUID.randomUUID().toString();
+	public Response request(GpioClose request) {
 		return requestResponse(MqttProviderConstants.GPIO_CLOSE_TOPIC,
-				DiozeroProtosConverter.convert(request, correlation_id), correlation_id);
+				DiozeroProtosConverter.convert(request), request.getCorrelationId());
 	}
 
 	@Override
-	public Response sendRequest(ProvisionSpiDevice request) {
-		String correlation_id = UUID.randomUUID().toString();
-		return requestResponse(MqttProviderConstants.SPI_PROVISION_TOPIC,
-				DiozeroProtosConverter.convert(request, correlation_id), correlation_id);
+	public Response request(I2COpen request) {
+		return requestResponse(MqttProviderConstants.I2C_OPEN_TOPIC,
+				DiozeroProtosConverter.convert(request), request.getCorrelationId());
 	}
 
 	@Override
-	public Response sendRequest(SpiWrite request) {
-		String correlation_id = UUID.randomUUID().toString();
+	public I2CReadByteResponse request(I2CReadByte request) {
+		return (I2CReadByteResponse) requestResponse(MqttProviderConstants.I2C_READ_BYTE_TOPIC,
+				DiozeroProtosConverter.convert(request), request.getCorrelationId());
+	}
+
+	@Override
+	public Response request(I2CWriteByte request) {
+		return requestResponse(MqttProviderConstants.I2C_WRITE_BYTE_TOPIC,
+				DiozeroProtosConverter.convert(request), request.getCorrelationId());
+	}
+	
+	@Override
+	public I2CReadResponse request(I2CRead request) {
+		return (I2CReadResponse) requestResponse(MqttProviderConstants.I2C_READ_TOPIC,
+				DiozeroProtosConverter.convert(request), request.getCorrelationId());
+	}
+	
+	@Override
+	public Response request(I2CWrite request) {
+		return requestResponse(MqttProviderConstants.I2C_WRITE_TOPIC,
+				DiozeroProtosConverter.convert(request), request.getCorrelationId());
+	}
+	
+	@Override
+	public I2CReadByteResponse request(I2CReadByteData request) {
+		return (I2CReadByteResponse) requestResponse(MqttProviderConstants.I2C_READ_BYTE_DATA_TOPIC,
+				DiozeroProtosConverter.convert(request), request.getCorrelationId());
+	}
+	
+	@Override
+	public Response request(I2CWriteByteData request) {
+		return requestResponse(MqttProviderConstants.I2C_WRITE_BYTE_DATA_TOPIC,
+				DiozeroProtosConverter.convert(request), request.getCorrelationId());
+	}
+	
+	@Override
+	public I2CReadResponse request(I2CReadI2CBlockData request) {
+		return (I2CReadResponse) requestResponse(MqttProviderConstants.I2C_READ_I2C_BLOCK_DATA_TOPIC,
+				DiozeroProtosConverter.convert(request), request.getCorrelationId());
+	}
+	
+	@Override
+	public Response request(I2CWriteI2CBlockData request) {
+		return requestResponse(MqttProviderConstants.I2C_WRITE_I2C_BLOCK_DATA_TOPIC,
+				DiozeroProtosConverter.convert(request), request.getCorrelationId());
+	}
+	
+	@Override
+	public Response request(I2CClose request) {
+		return requestResponse(MqttProviderConstants.I2C_CLOSE_TOPIC,
+				DiozeroProtosConverter.convert(request), request.getCorrelationId());
+	}
+
+	@Override
+	public Response request(SpiOpen request) {
+		return requestResponse(MqttProviderConstants.SPI_OPEN_TOPIC,
+				DiozeroProtosConverter.convert(request), request.getCorrelationId());
+	}
+
+	@Override
+	public Response request(SpiWrite request) {
 		return requestResponse(MqttProviderConstants.SPI_WRITE_TOPIC,
-				DiozeroProtosConverter.convert(request, correlation_id), correlation_id);
+				DiozeroProtosConverter.convert(request), request.getCorrelationId());
 	}
 
 	@Override
-	public SpiResponse sendRequest(SpiWriteAndRead request) {
-		String correlation_id = UUID.randomUUID().toString();
+	public SpiResponse request(SpiWriteAndRead request) {
 		return (SpiResponse) requestResponse(MqttProviderConstants.SPI_WRITE_AND_READ_TOPIC,
-				DiozeroProtosConverter.convert(request, correlation_id), correlation_id);
+				DiozeroProtosConverter.convert(request), request.getCorrelationId());
 	}
 
 	@Override
-	public Response sendRequest(SpiClose request) {
-		String correlation_id = UUID.randomUUID().toString();
+	public Response request(SpiClose request) {
 		return requestResponse(MqttProviderConstants.SPI_CLOSE_TOPIC,
-				DiozeroProtosConverter.convert(request, correlation_id), correlation_id);
+				DiozeroProtosConverter.convert(request), request.getCorrelationId());
 	}
 
 	@Override
@@ -206,22 +324,41 @@ public class ProtobufMqttProtocolHandler extends ProtobufBaseAsyncProtocolHandle
 			switch (topic) {
 			case MqttProviderConstants.RESPONSE_TOPIC:
 				DiozeroProtos.Response response = DiozeroProtos.Response.parseFrom(message.getPayload());
-				processResponse(DiozeroProtosConverter.convert(response), response.getCorrelationId());
+				processResponse(DiozeroProtosConverter.convert(response));
 				break;
 			case MqttProviderConstants.GPIO_DIGITAL_READ_RESPONSE_TOPIC:
 				DiozeroProtos.Gpio.DigitalReadResponse digital_read_response = DiozeroProtos.Gpio.DigitalReadResponse
 						.parseFrom(message.getPayload());
-				processResponse(DiozeroProtosConverter.convert(digital_read_response),
-						digital_read_response.getCorrelationId());
+				processResponse(DiozeroProtosConverter.convert(digital_read_response));
 				break;
-			case MqttProviderConstants.SPI_RXDATA_RESPONSE_TOPIC:
-				DiozeroProtos.Spi.SpiResponse spi_response = DiozeroProtos.Spi.SpiResponse
+			case MqttProviderConstants.GPIO_PWM_READ_RESPONSE_TOPIC:
+				DiozeroProtos.Gpio.PwmReadResponse pwm_read_response = DiozeroProtos.Gpio.PwmReadResponse
 						.parseFrom(message.getPayload());
-				processResponse(DiozeroProtosConverter.convert(spi_response), spi_response.getCorrelationId());
+				processResponse(DiozeroProtosConverter.convert(pwm_read_response));
+				break;
+			case MqttProviderConstants.GPIO_ANALOG_READ_RESPONSE_TOPIC:
+				DiozeroProtos.Gpio.AnalogReadResponse analog_read_response = DiozeroProtos.Gpio.AnalogReadResponse
+						.parseFrom(message.getPayload());
+				processResponse(DiozeroProtosConverter.convert(analog_read_response));
 				break;
 			case MqttProviderConstants.GPIO_NOTIFICATION_TOPIC:
 				processEvent(DiozeroProtosConverter
 						.convert(DiozeroProtos.Gpio.Notification.parseFrom(message.getPayload())));
+				break;
+			case MqttProviderConstants.I2C_READ_BYTE_RESPONSE_TOPIC:
+				DiozeroProtos.I2C.ReadByteResponse i2c_read_byte_response = DiozeroProtos.I2C.ReadByteResponse
+						.parseFrom(message.getPayload());
+				processResponse(DiozeroProtosConverter.convert(i2c_read_byte_response));
+				break;
+			case MqttProviderConstants.I2C_READ_RESPONSE_TOPIC:
+				DiozeroProtos.I2C.ReadResponse i2c_read_response = DiozeroProtos.I2C.ReadResponse
+						.parseFrom(message.getPayload());
+				processResponse(DiozeroProtosConverter.convert(i2c_read_response));
+				break;
+			case MqttProviderConstants.SPI_RXDATA_RESPONSE_TOPIC:
+				DiozeroProtos.Spi.SpiResponse spi_response = DiozeroProtos.Spi.SpiResponse
+						.parseFrom(message.getPayload());
+				processResponse(DiozeroProtosConverter.convert(spi_response));
 				break;
 			default:
 				Logger.warn("Unrecognised topic {}", topic);

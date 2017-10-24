@@ -34,8 +34,8 @@ package com.diozero.remote.message;
 public class SpiWriteAndRead extends SpiWrite {
 	private static final long serialVersionUID = -6646697015124501700L;
 
-	public SpiWriteAndRead(int controller, int chipSelect, byte[] txData) {
-		super(controller, chipSelect, txData);
+	public SpiWriteAndRead(int controller, int chipSelect, byte[] txData, String correlationId) {
+		super(controller, chipSelect, txData, correlationId);
 	}
 
 	@Override

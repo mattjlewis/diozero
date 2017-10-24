@@ -31,6 +31,8 @@ package com.diozero.internal.provider.remote.devicefactory;
  * #L%
  */
 
+import java.util.UUID;
+
 import com.diozero.api.DeviceMode;
 import com.diozero.api.DigitalInputEvent;
 import com.diozero.api.PinInfo;
@@ -46,15 +48,17 @@ public class RemoteDigitalInputOutputDevice extends AbstractInputDevice<DigitalI
 	private int gpio;
 	private DeviceMode mode;
 
-	public RemoteDigitalInputOutputDevice(RemoteDeviceFactory deviceFactory, String key, PinInfo pinInfo, DeviceMode mode) {
+	public RemoteDigitalInputOutputDevice(RemoteDeviceFactory deviceFactory, String key, PinInfo pinInfo,
+			DeviceMode mode) {
 		super(key, deviceFactory);
 
 		this.deviceFactory = deviceFactory;
 		gpio = pinInfo.getDeviceNumber();
 
-		ProvisionDigitalInputOutputDevice request = new ProvisionDigitalInputOutputDevice(gpio, mode == DeviceMode.DIGITAL_OUTPUT);
-		
-		Response response = deviceFactory.getProtocolHandler().sendRequest(request);
+		ProvisionDigitalInputOutputDevice request = new ProvisionDigitalInputOutputDevice(gpio,
+				mode == DeviceMode.DIGITAL_OUTPUT, UUID.randomUUID().toString());
+
+		Response response = deviceFactory.getProtocolHandler().request(request);
 		if (response.getStatus() != Response.Status.OK) {
 			throw new RuntimeIOException("Error: " + response.getDetail());
 		}
@@ -74,12 +78,12 @@ public class RemoteDigitalInputOutputDevice extends AbstractInputDevice<DigitalI
 	public int getGpio() {
 		return gpio;
 	}
-	
+
 	@Override
 	public DeviceMode getMode() {
 		return mode;
 	}
-	
+
 	@Override
 	public void setMode(DeviceMode mode) {
 		// TODO Implement setMode

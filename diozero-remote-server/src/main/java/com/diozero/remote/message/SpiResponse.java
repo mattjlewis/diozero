@@ -36,18 +36,18 @@ public class SpiResponse extends Response {
 
 	private byte[] rxData;
 
-	public SpiResponse(byte[] rxData) {
-		super(Response.Status.OK);
+	public SpiResponse(byte[] rxData, String correlationId) {
+		super(Response.Status.OK, null, correlationId);
 		
 		this.rxData = rxData;
 	}
 
-	public SpiResponse(String detail) {
-		super(Response.Status.ERROR, detail);
+	public SpiResponse(String detail, String correlationId) {
+		super(Response.Status.ERROR, detail, correlationId);
 	}
 
-	public SpiResponse(Response.Status status, String detail, byte[] rxData) {
-		super(status, detail);
+	public SpiResponse(Response.Status status, String detail, byte[] rxData, String correlationId) {
+		super(status, detail, correlationId);
 		
 		this.rxData = rxData;
 	}

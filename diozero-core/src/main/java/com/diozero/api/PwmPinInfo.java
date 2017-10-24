@@ -31,13 +31,13 @@ package com.diozero.api;
  * #L%
  */
 
-import java.util.Set;
+import java.util.Collection;
 
 public class PwmPinInfo extends PinInfo {
 	private int pwmNum;
 
 	public PwmPinInfo(String keyPrefix, String header, int gpioNumber, int pinNumber, int pwmNum, String name,
-			Set<DeviceMode> modes, int sysFsNumber) {
+			Collection<DeviceMode> modes, int sysFsNumber) {
 		super(keyPrefix, header, gpioNumber, pinNumber, name, modes, sysFsNumber);
 
 		this.pwmNum = pwmNum;

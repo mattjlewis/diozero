@@ -31,6 +31,7 @@ package com.diozero.internal.provider.remote.devicefactory;
  * #L%
  */
 
+import java.util.UUID;
 
 import com.diozero.api.PinInfo;
 import com.diozero.internal.provider.AbstractDevice;
@@ -43,15 +44,17 @@ public class RemoteDigitalOutputDevice extends AbstractDevice implements GpioDig
 	private RemoteDeviceFactory deviceFactory;
 	private int gpio;
 
-	public RemoteDigitalOutputDevice(RemoteDeviceFactory deviceFactory, String key, PinInfo pinInfo, boolean initialValue) {
+	public RemoteDigitalOutputDevice(RemoteDeviceFactory deviceFactory, String key, PinInfo pinInfo,
+			boolean initialValue) {
 		super(key, deviceFactory);
 
 		this.deviceFactory = deviceFactory;
 		gpio = pinInfo.getDeviceNumber();
 
-		ProvisionDigitalOutputDevice request = new ProvisionDigitalOutputDevice(gpio, initialValue);
-		
-		Response response = deviceFactory.getProtocolHandler().sendRequest(request);
+		ProvisionDigitalOutputDevice request = new ProvisionDigitalOutputDevice(gpio, initialValue,
+				UUID.randomUUID().toString());
+
+		Response response = deviceFactory.getProtocolHandler().request(request);
 		if (response.getStatus() != Response.Status.OK) {
 			throw new RuntimeIOException("Error: " + response.getDetail());
 		}

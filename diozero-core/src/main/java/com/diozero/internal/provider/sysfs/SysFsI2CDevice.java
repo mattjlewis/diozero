@@ -76,24 +76,24 @@ public class SysFsI2CDevice extends AbstractDevice implements I2CDeviceInterface
 	}
 	
 	@Override
-	public byte readByte() throws RuntimeException {
+	public byte readByte() throws RuntimeIOException {
 		return i2cDevice.readByte();
 	}
 	
 	@Override
-	public void writeByte(byte b) throws RuntimeException {
+	public void writeByte(byte b) throws RuntimeIOException {
 		i2cDevice.writeByte(b);
 	}
 
 	@Override
-	public void read(ByteBuffer dst) throws RuntimeException {
+	public void read(ByteBuffer dst) throws RuntimeIOException {
 		byte[] buffer = i2cDevice.readBytes(dst.remaining());
 		dst.put(buffer);
 		dst.flip();
 	}
 
 	@Override
-	public void write(ByteBuffer src) throws RuntimeException {
+	public void write(ByteBuffer src) throws RuntimeIOException {
 		byte[] buffer = new byte[src.remaining()];
 		src.get(buffer);
 		i2cDevice.writeBytes(buffer);

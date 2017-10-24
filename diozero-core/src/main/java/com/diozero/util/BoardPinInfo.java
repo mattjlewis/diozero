@@ -31,8 +31,11 @@ package com.diozero.util;
  * #L%
  */
 
-
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeMap;
 
 import com.diozero.api.DeviceMode;
 import com.diozero.api.PinInfo;
@@ -77,26 +80,26 @@ public class BoardPinInfo {
 	}
 	
 	protected void addGeneralPinInfo(String header, int pin, String name) {
-		addGeneralPinInfo(new PinInfo("", header, -1, pin, name, Collections.emptySet()));
+		addGeneralPinInfo(new PinInfo("", header, PinInfo.NOT_DEFINED, pin, name, Collections.emptySet()));
 	}
 	
 	protected void addGeneralPinInfo(PinInfo pinInfo) {
 		getPinsForHeader(pinInfo.getHeader()).put(Integer.valueOf(pinInfo.getPinNumber()), pinInfo);
 	}
 	
-	protected PinInfo addGpioPinInfo(int gpioNum, int pin, Set<DeviceMode> modes) {
+	protected PinInfo addGpioPinInfo(int gpioNum, int pin, Collection<DeviceMode> modes) {
 		return addGpioPinInfo(PinInfo.DEFAULT_HEADER, gpioNum, DEFAULT_GPIO_NAME_PREFIX + gpioNum, pin, modes);
 	}
 	
-	protected PinInfo addGpioPinInfo(int gpioNum, String name, int pin, Set<DeviceMode> modes) {
+	protected PinInfo addGpioPinInfo(int gpioNum, String name, int pin, Collection<DeviceMode> modes) {
 		return addGpioPinInfo(PinInfo.DEFAULT_HEADER, gpioNum, name, pin, modes);
 	}
 	
-	protected PinInfo addGpioPinInfo(String header, int gpioNum, int pin, Set<DeviceMode> modes) {
+	protected PinInfo addGpioPinInfo(String header, int gpioNum, int pin, Collection<DeviceMode> modes) {
 		return addGpioPinInfo(header, gpioNum, DEFAULT_GPIO_NAME_PREFIX + gpioNum, pin, modes);
 	}
 	
-	protected PinInfo addGpioPinInfo(String header, int gpioNum, String name, int pin, Set<DeviceMode> modes) {
+	protected PinInfo addGpioPinInfo(String header, int gpioNum, String name, int pin, Collection<DeviceMode> modes) {
 		PinInfo pin_info = new PinInfo(GPIO_KEY_PREFIX, header, gpioNum, pin, name, modes,
 				mapToSysFsGpioNumber(gpioNum));
 		addGpioPinInfo(pin_info);
@@ -112,15 +115,16 @@ public class BoardPinInfo {
 		}
 	}
 
-	protected PinInfo addPwmPinInfo(int gpioNum, int pin, int pwmNum, Set<DeviceMode> modes) {
+	protected PinInfo addPwmPinInfo(int gpioNum, int pin, int pwmNum, Collection<DeviceMode> modes) {
 		return addPwmPinInfo(PinInfo.DEFAULT_HEADER, gpioNum, DEFAULT_GPIO_NAME_PREFIX + gpioNum, pin, pwmNum, modes);
 	}
 	
-	protected PinInfo addPwmPinInfo(int gpioNum, String name, int pin, int pwmNum, Set<DeviceMode> modes) {
+	protected PinInfo addPwmPinInfo(int gpioNum, String name, int pin, int pwmNum, Collection<DeviceMode> modes) {
 		return addPwmPinInfo(PinInfo.DEFAULT_HEADER, gpioNum, name, pin, pwmNum, modes);
 	}
 	
-	protected PinInfo addPwmPinInfo(String header, int gpioNumber, String name, int pin, int pwmNum, Set<DeviceMode> modes) {
+	protected PinInfo addPwmPinInfo(String header, int gpioNumber, String name, int pin, int pwmNum,
+			Collection<DeviceMode> modes) {
 		PinInfo pin_info = new PwmPinInfo(GPIO_KEY_PREFIX, header, gpioNumber, pin, pwmNum, name, modes,
 				mapToSysFsGpioNumber(gpioNumber));
 		addGpioPinInfo(pin_info);
@@ -209,11 +213,15 @@ public class BoardPinInfo {
 		return headers.values();
 	}
 	
-	public Collection<PinInfo> getADCs() {
+	public Collection<PinInfo> getGpioPins() {
+		return gpios.values();
+	}
+	
+	public Collection<PinInfo> getAdcPins() {
 		return adcs.values();
 	}
 	
-	public Collection<PinInfo> getDACs() {
+	public Collection<PinInfo> getDacPins() {
 		return dacs.values();
 	}
 	

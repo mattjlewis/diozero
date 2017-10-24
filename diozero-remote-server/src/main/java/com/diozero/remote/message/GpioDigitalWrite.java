@@ -36,8 +36,8 @@ public class GpioDigitalWrite extends GpioBase {
 
 	private boolean value;
 
-	public GpioDigitalWrite(int gpio, boolean value) {
-		super(gpio);
+	public GpioDigitalWrite(int gpio, boolean value, String correlationId) {
+		super(gpio, correlationId);
 		
 		this.value = value;
 	}

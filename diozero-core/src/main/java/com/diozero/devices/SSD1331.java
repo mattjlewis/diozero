@@ -33,20 +33,21 @@ package com.diozero.devices;
 
 
 import java.awt.Graphics2D;
-
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferUShort;
 
 import org.pmw.tinylog.Logger;
 
 import com.diozero.api.DigitalOutputDevice;
+import com.diozero.util.ColourUtil;
 
 /**
- * <p>Encapsulates the serial interface to the 16-bit color (5-6-5 RGB) SSD1331
- * OLED display hardware. On creation, an initialization sequence is pumped to
- * the display to properly configure it. Further control commands can then be
- * called to affect the brightness and other settings.</p>
- * <p>Wiring</p>
+ * <p>Encapsulates the serial interface to the 16-bit colour (5-6-5 RGB) SSD1331
+ * 96x64 OLED display hardware. On creation, an initialisation sequence is
+ * pumped to the display to properly configure it. Further control commands can
+ * then be called to affect the brightness and other settings.</p>
+ * 
+ * <p>Wiring:</p>
  * <pre>
  * GND .... Ground
  * Vcc .... 3v3
@@ -57,13 +58,18 @@ import com.diozero.api.DigitalOutputDevice;
  * CS  .... Chip Select (SPI)
  * </pre>
  * 
- * <p>Links</p>
+ * <p>
+ * Links
+ * </p>
  * <ul>
- * <li><a href="https://www.parallax.com/sites/default/files/downloads/28087-SSD1331_1.2.pdf">Datasheet</a></li>
- * <li><a href="https://github.com/rm-hull/luma.oled/blob/master/luma/oled/device.py">Python code</a></li>
+ * <li><a href=
+ * "https://www.parallax.com/sites/default/files/downloads/28087-SSD1331_1.2.pdf">Datasheet</a></li>
+ * <li><a href=
+ * "https://github.com/rm-hull/luma.oled/blob/master/luma/oled/device.py">Python
+ * code</a></li>
  * </ul>
  */
-public class SSD1331 extends SsdOled {
+public class SSD1331 extends ColourSsdOled {
 	private static final int RED_BITS = 5;
 	private static final int GREEN_BITS = 6;
 	private static final int BLUE_BITS = 5;
@@ -100,25 +106,6 @@ public class SSD1331 extends SsdOled {
 	private static final byte ENABLE_LINEAR_GRAY_SCALE_TABLE = (byte) 0xB9;
 	private static final byte PRECHARGE_LEVEL = (byte) 0xBB;
 	private static final byte VOLTAGE = (byte) 0xBE;
-	
-	/*
-	 * Each pixel has 16-bit data.
-	 * Three sub-pixels for colour A, B and C have 5 bits, 6 bits and 5 bits respectively.
-	 */
-	private static short createColour565(byte red, byte green, byte blue) {
-		// 65k format 1 in normal order (ABC = RGB)
-		// (2 bytes): 1st byte C4C3C2C1C0B5B4B3, 2nd byte B2B1B0A4A3A2A1A0
-		//                     B4B3B2B1B0G5G4G3           G2G1G0R4R3R2R1R0
-		// Assume little endian, i.e. high byte is transmitted first
-		int colour = blue & 0b11111;
-		colour |= (green & 0b111111) << 5;
-		colour |= (red & 0b11111) << 11;
-		/*
-		 * buf[i] = r & 0xF8 | g >> 5
-		 * buf[i + 1] = g << 5 & 0xE0 | b >> 3
-		 */
-		return (short) colour;
-	}
 
 	public SSD1331(int controller, int chipSelect, DigitalOutputDevice dcPin, DigitalOutputDevice resetPin) {
 		super(controller, chipSelect, dcPin, resetPin, WIDTH, HEIGHT, BufferedImage.TYPE_USHORT_565_RGB);
@@ -169,7 +156,7 @@ public class SSD1331 extends SsdOled {
 		// Master current control (default is 0x0F)
 		command(MASTER_CURRENT_CONTROL, (byte) 0x0F);
 		
-		setContrast(0xFF);
+		setContrast((byte) 0xFF);
 		clear();
 		setDisplayOn(true);
 	}
@@ -212,15 +199,23 @@ public class SSD1331 extends SsdOled {
 
 		display();
 	}
+
+	/**
+	 * Sets if the display should be inverted
+	 * 
+	 * @param invert
+	 *            Invert state
+	 */
+	@Override
+	public void invertDisplay(boolean invert) {
+		command(invert ? DISPLAY_MODE_INVERSE : DISPLAY_MODE_NORMAL);
+	}
 	
+	@Override
 	public void setPixel(int x, int y, byte red, byte green, byte blue, boolean display) {
-		// 65k format 1 in normal order (ABC = RGB)
-		// (2 bytes): 1st byte C4C3C2C1C0B5B4B3, 2nd byte B2B1B0A4A3A2A1A0
 		int index = 2 * (x + y*width);
-		short colour = createColour565(red, green, blue);
-		// (2 bytes): 1st byte C4C3C2C1C0B5B4B3, 2nd byte B2B1B0A4A3A2A1A0
-		//                     B4B3B2B1B0G5G4G3           G2G1G0R4R3R2R1R0
-		// Assume little endian, i.e. high byte is transmitted first
+		short colour = ColourUtil.createColour565(red, green, blue);
+		// MSB is transmitted first
 		buffer[index] = (byte) ((colour >> 8) & 0xff);
 		buffer[index+1] = (byte) (colour & 0xff);
 		
@@ -237,18 +232,8 @@ public class SSD1331 extends SsdOled {
 	 * this method is **NOT** suitable for fade-in/out animation.
 	 * @param level Desired contrast level in the range 0..255
 	 */
-	public void setContrast(int level) {
-		command(CONTRAST_COLOUR_A, (byte) level, CONTRAST_COLOUR_B, (byte) level, CONTRAST_COLOUR_C, (byte) level);
-	}
-
-	/**
-	 * Sets if the display should be inverted
-	 * 
-	 * @param invert
-	 *            Invert state
-	 */
 	@Override
-	public void invertDisplay(boolean invert) {
-		command(invert ? DISPLAY_MODE_INVERSE : DISPLAY_MODE_NORMAL);
+	public void setContrast(byte level) {
+		command(CONTRAST_COLOUR_A, level, CONTRAST_COLOUR_B, level, CONTRAST_COLOUR_C, level);
 	}
 }

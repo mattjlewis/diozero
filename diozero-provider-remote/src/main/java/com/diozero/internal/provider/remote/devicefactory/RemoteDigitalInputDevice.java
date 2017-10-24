@@ -31,6 +31,7 @@ package com.diozero.internal.provider.remote.devicefactory;
  * #L%
  */
 
+import java.util.UUID;
 
 import org.pmw.tinylog.Logger;
 
@@ -40,7 +41,6 @@ import com.diozero.api.GpioPullUpDown;
 import com.diozero.api.PinInfo;
 import com.diozero.internal.provider.AbstractInputDevice;
 import com.diozero.internal.provider.GpioDigitalInputDeviceInterface;
-import com.diozero.remote.message.GpioEvents;
 import com.diozero.remote.message.ProvisionDigitalInputDevice;
 import com.diozero.remote.message.Response;
 import com.diozero.util.RuntimeIOException;
@@ -57,9 +57,10 @@ public class RemoteDigitalInputDevice extends AbstractInputDevice<DigitalInputEv
 		this.deviceFactory = deviceFactory;
 		gpio = pinInfo.getDeviceNumber();
 
-		ProvisionDigitalInputDevice request = new ProvisionDigitalInputDevice(gpio, pud, trigger);
-		
-		Response response = deviceFactory.getProtocolHandler().sendRequest(request);
+		ProvisionDigitalInputDevice request = new ProvisionDigitalInputDevice(gpio, pud, trigger,
+				UUID.randomUUID().toString());
+
+		Response response = deviceFactory.getProtocolHandler().request(request);
 		if (response.getStatus() != Response.Status.OK) {
 			throw new RuntimeIOException("Error: " + response.getDetail());
 		}

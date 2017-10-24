@@ -46,22 +46,45 @@ import org.pmw.tinylog.Logger;
 import com.diozero.api.DigitalInputEvent;
 import com.diozero.internal.provider.NativeDeviceFactoryInterface;
 import com.diozero.internal.provider.remote.BaseAsyncProtocolHandler;
+import com.diozero.remote.message.GetBoardGpioInfo;
+import com.diozero.remote.message.GetBoardGpioInfoResponse;
+import com.diozero.remote.message.GpioAnalogRead;
+import com.diozero.remote.message.GpioAnalogReadResponse;
+import com.diozero.remote.message.GpioAnalogWrite;
 import com.diozero.remote.message.GpioClose;
 import com.diozero.remote.message.GpioDigitalRead;
 import com.diozero.remote.message.GpioDigitalReadResponse;
 import com.diozero.remote.message.GpioDigitalWrite;
 import com.diozero.remote.message.GpioEvents;
+import com.diozero.remote.message.GpioPwmRead;
+import com.diozero.remote.message.GpioPwmReadResponse;
+import com.diozero.remote.message.GpioPwmWrite;
+import com.diozero.remote.message.I2CClose;
+import com.diozero.remote.message.I2COpen;
+import com.diozero.remote.message.I2CRead;
+import com.diozero.remote.message.I2CReadByte;
+import com.diozero.remote.message.I2CReadByteData;
+import com.diozero.remote.message.I2CReadByteResponse;
+import com.diozero.remote.message.I2CReadI2CBlockData;
+import com.diozero.remote.message.I2CReadResponse;
+import com.diozero.remote.message.I2CWrite;
+import com.diozero.remote.message.I2CWriteByte;
+import com.diozero.remote.message.I2CWriteByteData;
+import com.diozero.remote.message.I2CWriteI2CBlockData;
+import com.diozero.remote.message.ProvisionAnalogInputDevice;
+import com.diozero.remote.message.ProvisionAnalogOutputDevice;
 import com.diozero.remote.message.ProvisionDigitalInputDevice;
 import com.diozero.remote.message.ProvisionDigitalInputOutputDevice;
 import com.diozero.remote.message.ProvisionDigitalOutputDevice;
-import com.diozero.remote.message.ProvisionSpiDevice;
+import com.diozero.remote.message.ProvisionPwmOutputDevice;
 import com.diozero.remote.message.Response;
 import com.diozero.remote.message.SpiClose;
+import com.diozero.remote.message.SpiOpen;
 import com.diozero.remote.message.SpiResponse;
 import com.diozero.remote.message.SpiWrite;
 import com.diozero.remote.message.SpiWriteAndRead;
-import com.diozero.remote.websocket.MessageWrapper;
-import com.diozero.remote.websocket.MessageWrapperTypes;
+import com.diozero.remote.server.websocket.MessageWrapper;
+import com.diozero.remote.server.websocket.MessageWrapperTypes;
 import com.diozero.util.RuntimeIOException;
 import com.google.gson.Gson;
 
@@ -108,7 +131,7 @@ public class JsonWebSocketProtocolHandler extends BaseAsyncProtocolHandler imple
 		lock.lock();
 		try {
 			session.getRemote().sendString(serialiser.toString(
-					new MessageWrapper(correlation_id, request.getClass().getSimpleName(), serialiser.toString(request))));
+					new MessageWrapper(request.getClass().getSimpleName(), serialiser.toString(request))));
 			condition.await(TIMEOUT_MS, TimeUnit.MILLISECONDS);
 		} catch (InterruptedException e) {
 			Logger.warn(e, "Interrupted: {}", e);
@@ -125,57 +148,147 @@ public class JsonWebSocketProtocolHandler extends BaseAsyncProtocolHandler imple
 	}
 
 	@Override
-	public Response sendRequest(ProvisionDigitalInputDevice request) {
+	public GetBoardGpioInfoResponse request(GetBoardGpioInfo request) {
+		return (GetBoardGpioInfoResponse) requestResponse(request);
+	}
+
+	@Override
+	public Response request(ProvisionDigitalInputDevice request) {
 		return requestResponse(request);
 	}
 
 	@Override
-	public Response sendRequest(ProvisionDigitalOutputDevice request) {
+	public Response request(ProvisionDigitalOutputDevice request) {
 		return requestResponse(request);
 	}
 
 	@Override
-	public Response sendRequest(ProvisionDigitalInputOutputDevice request) {
+	public Response request(ProvisionDigitalInputOutputDevice request) {
 		return requestResponse(request);
 	}
 
 	@Override
-	public GpioDigitalReadResponse sendRequest(GpioDigitalRead request) {
+	public Response request(ProvisionPwmOutputDevice request) {
+		return requestResponse(request);
+	}
+
+	@Override
+	public Response request(ProvisionAnalogInputDevice request) {
+		return requestResponse(request);
+	}
+
+	@Override
+	public Response request(ProvisionAnalogOutputDevice request) {
+		return requestResponse(request);
+	}
+
+	@Override
+	public GpioDigitalReadResponse request(GpioDigitalRead request) {
 		return (GpioDigitalReadResponse) requestResponse(request);
 	}
 
 	@Override
-	public Response sendRequest(GpioDigitalWrite request) {
+	public Response request(GpioDigitalWrite request) {
 		return requestResponse(request);
 	}
 
 	@Override
-	public Response sendRequest(GpioEvents request) {
+	public GpioPwmReadResponse request(GpioPwmRead request) {
+		return (GpioPwmReadResponse) requestResponse(request);
+	}
+
+	@Override
+	public Response request(GpioPwmWrite request) {
 		return requestResponse(request);
 	}
 
 	@Override
-	public Response sendRequest(GpioClose request) {
+	public GpioAnalogReadResponse request(GpioAnalogRead request) {
+		return (GpioAnalogReadResponse) requestResponse(request);
+	}
+
+	@Override
+	public Response request(GpioAnalogWrite request) {
 		return requestResponse(request);
 	}
 
 	@Override
-	public Response sendRequest(ProvisionSpiDevice request) {
+	public Response request(GpioEvents request) {
 		return requestResponse(request);
 	}
 
 	@Override
-	public Response sendRequest(SpiWrite request) {
+	public Response request(GpioClose request) {
 		return requestResponse(request);
 	}
 
 	@Override
-	public SpiResponse sendRequest(SpiWriteAndRead request) {
+	public Response request(I2COpen request) {
+		return requestResponse(request);
+	}
+
+	@Override
+	public I2CReadByteResponse request(I2CReadByte request) {
+		return (I2CReadByteResponse) requestResponse(request);
+	}
+
+	@Override
+	public Response request(I2CWriteByte request) {
+		return requestResponse(request);
+	}
+
+	@Override
+	public I2CReadResponse request(I2CRead request) {
+		return (I2CReadResponse) requestResponse(request);
+	}
+
+	@Override
+	public Response request(I2CWrite request) {
+		return requestResponse(request);
+	}
+
+	@Override
+	public I2CReadByteResponse request(I2CReadByteData request) {
+		return (I2CReadByteResponse) requestResponse(request);
+	}
+
+	@Override
+	public Response request(I2CWriteByteData request) {
+		return requestResponse(request);
+	}
+
+	@Override
+	public I2CReadResponse request(I2CReadI2CBlockData request) {
+		return (I2CReadResponse) requestResponse(request);
+	}
+
+	@Override
+	public Response request(I2CWriteI2CBlockData request) {
+		return requestResponse(request);
+	}
+	
+	@Override
+	public Response request(I2CClose request) {
+		return requestResponse(request);
+	}
+
+	@Override
+	public Response request(SpiOpen request) {
+		return requestResponse(request);
+	}
+	
+	@Override
+	public Response request(SpiWrite request) {
+		return requestResponse(request);
+	}
+
+	@Override
+	public SpiResponse request(SpiWriteAndRead request) {
 		return (SpiResponse) requestResponse(request);
 	}
 
 	@Override
-	public Response sendRequest(SpiClose request) {
+	public Response request(SpiClose request) {
 		return requestResponse(request);
 	}
 
@@ -205,21 +318,32 @@ public class JsonWebSocketProtocolHandler extends BaseAsyncProtocolHandler imple
 
 		switch (message_wrapper.getType()) {
 		case MessageWrapperTypes.RESPONSE:
-			processResponse(deserialiser.fromString(message_wrapper.getMessage(), Response.class),
-					message_wrapper.getCorrelationId());
-			break;
-		case MessageWrapperTypes.GPIO_DIGITAL_READ_RESPONSE:
-			processResponse(deserialiser.fromString(message_wrapper.getMessage(), GpioDigitalReadResponse.class),
-					message_wrapper.getCorrelationId());
-			break;
-		case MessageWrapperTypes.SPI_RESPONSE:
-			processResponse(deserialiser.fromString(message_wrapper.getMessage(), SpiResponse.class),
-					message_wrapper.getCorrelationId());
+			processResponse(deserialiser.fromString(message_wrapper.getMessage(), Response.class));
 			break;
 
+		case MessageWrapperTypes.GPIO_DIGITAL_READ_RESPONSE:
+			processResponse(deserialiser.fromString(message_wrapper.getMessage(), GpioDigitalReadResponse.class));
+			break;
+		case MessageWrapperTypes.GPIO_PWM_READ_RESPONSE:
+			processResponse(deserialiser.fromString(message_wrapper.getMessage(), GpioPwmReadResponse.class));
+			break;
+		case MessageWrapperTypes.GPIO_ANALOG_READ_RESPONSE:
+			processResponse(deserialiser.fromString(message_wrapper.getMessage(), GpioAnalogReadResponse.class));
+			break;
 		case MessageWrapperTypes.DIGITAL_INPUT_EVENT:
 			DigitalInputEvent event = deserialiser.fromString(message_wrapper.getMessage(), DigitalInputEvent.class);
 			processEvent(event);
+			break;
+
+		case MessageWrapperTypes.I2C_READ_BYTE_RESPONSE:
+			processResponse(deserialiser.fromString(message_wrapper.getMessage(), I2CReadByteResponse.class));
+			break;
+		case MessageWrapperTypes.I2C_READ_RESPONSE:
+			processResponse(deserialiser.fromString(message_wrapper.getMessage(), I2CReadResponse.class));
+			break;
+
+		case MessageWrapperTypes.SPI_RESPONSE:
+			processResponse(deserialiser.fromString(message_wrapper.getMessage(), SpiResponse.class));
 			break;
 
 		default:

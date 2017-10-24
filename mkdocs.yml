@@ -18,6 +18,7 @@ pages:
     - 'LED Strips': 'LEDStrips.md'
     - 'IMU Devices': 'IMUDevices.md'
     - 'Create Your Own Application': 'Application.md'
+    - 'Remote Control': 'RemoteControl.md'
 - Providers: 'Providers.md'
 - Release: 'RELEASE.md'
 - License: 'license.md'

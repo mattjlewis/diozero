@@ -37,21 +37,17 @@ public class Response implements Serializable {
 	public static enum Status {
 		OK, ERROR;
 	}
-	
-	public static final Response OK = new Response(Status.OK);
 
 	private static final long serialVersionUID = -6333455741476066202L;
 	
 	private Status status;
 	private String detail;
+	private String correlationId;
 	
-	public Response(Status status) {
-		this.status = status;
-	}
-	
-	public Response(Status status, String detail) {
+	public Response(Status status, String detail, String correlationId) {
 		this.status = status;
 		this.detail = detail;
+		this.correlationId = correlationId;
 	}
 
 	public Status getStatus() {
@@ -60,6 +56,10 @@ public class Response implements Serializable {
 
 	public String getDetail() {
 		return detail;
+	}
+
+	public String getCorrelationId() {
+		return correlationId;
 	}
 
 	@Override

@@ -59,24 +59,24 @@ public class TestI2CDevice extends AbstractDevice implements I2CDeviceInterface 
 	}
 
 	@Override
-	public byte readByte() throws RuntimeException {
+	public byte readByte() throws RuntimeIOException {
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
-	public void writeByte(byte b) throws RuntimeException {
+	public void writeByte(byte b) throws RuntimeIOException {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void read(ByteBuffer buffer) throws RuntimeException {
+	public void read(ByteBuffer buffer) throws RuntimeIOException {
 		// TODO Auto-generated method stub
 	}
 
 	@Override
-	public void write(ByteBuffer buffer) throws RuntimeException {
+	public void write(ByteBuffer buffer) throws RuntimeIOException {
 		// TODO Auto-generated method stub
 	}
 
