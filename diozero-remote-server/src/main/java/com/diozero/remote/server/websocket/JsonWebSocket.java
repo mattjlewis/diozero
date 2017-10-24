@@ -1,4 +1,4 @@
-package com.diozero.remote.websocket;
+package com.diozero.remote.server.websocket;
 
 /*-
  * #%L
@@ -37,7 +37,6 @@ import static spark.Spark.webSocket;
 
 import java.io.IOException;
 import java.util.Queue;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.eclipse.jetty.websocket.api.Session;
@@ -48,19 +47,36 @@ import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.pmw.tinylog.Logger;
 
 import com.diozero.api.DigitalInputEvent;
-import com.diozero.remote.BaseRemoteServer;
+import com.diozero.remote.message.GpioAnalogRead;
+import com.diozero.remote.message.GpioAnalogWrite;
 import com.diozero.remote.message.GpioClose;
 import com.diozero.remote.message.GpioDigitalRead;
 import com.diozero.remote.message.GpioDigitalWrite;
 import com.diozero.remote.message.GpioEvents;
+import com.diozero.remote.message.GpioPwmRead;
+import com.diozero.remote.message.GpioPwmWrite;
+import com.diozero.remote.message.I2CClose;
+import com.diozero.remote.message.I2COpen;
+import com.diozero.remote.message.I2CRead;
+import com.diozero.remote.message.I2CReadByte;
+import com.diozero.remote.message.I2CReadByteData;
+import com.diozero.remote.message.I2CReadI2CBlockData;
+import com.diozero.remote.message.I2CWrite;
+import com.diozero.remote.message.I2CWriteByte;
+import com.diozero.remote.message.I2CWriteByteData;
+import com.diozero.remote.message.I2CWriteI2CBlockData;
+import com.diozero.remote.message.ProvisionAnalogInputDevice;
+import com.diozero.remote.message.ProvisionAnalogOutputDevice;
 import com.diozero.remote.message.ProvisionDigitalInputDevice;
 import com.diozero.remote.message.ProvisionDigitalInputOutputDevice;
 import com.diozero.remote.message.ProvisionDigitalOutputDevice;
-import com.diozero.remote.message.ProvisionSpiDevice;
+import com.diozero.remote.message.ProvisionPwmOutputDevice;
 import com.diozero.remote.message.Response;
 import com.diozero.remote.message.SpiClose;
+import com.diozero.remote.message.SpiOpen;
 import com.diozero.remote.message.SpiWrite;
 import com.diozero.remote.message.SpiWriteAndRead;
+import com.diozero.remote.server.BaseRemoteServer;
 import com.google.gson.Gson;
 
 @SuppressWarnings("static-method")
@@ -93,39 +109,94 @@ public class JsonWebSocket extends BaseRemoteServer {
 		MessageWrapper wrapper = GSON.fromJson(message, MessageWrapper.class);
 		Response response = null;
 		switch (wrapper.getType()) {
+		// GPIO
 		case MessageWrapperTypes.PROVISION_DIGITAL_INPUT_DEVICE:
-			response = processRequest(GSON.fromJson(wrapper.getMessage(), ProvisionDigitalInputDevice.class));
+			response = request(GSON.fromJson(wrapper.getMessage(), ProvisionDigitalInputDevice.class));
 			break;
 		case MessageWrapperTypes.PROVISION_DIGITAL_OUTPUT_DEVICE:
-			response = processRequest(GSON.fromJson(wrapper.getMessage(), ProvisionDigitalOutputDevice.class));
+			response = request(GSON.fromJson(wrapper.getMessage(), ProvisionDigitalOutputDevice.class));
 			break;
 		case MessageWrapperTypes.PROVISION_DIGITAL_INPUT_OUTPUT_DEVICE:
-			response = processRequest(GSON.fromJson(wrapper.getMessage(), ProvisionDigitalInputOutputDevice.class));
+			response = request(GSON.fromJson(wrapper.getMessage(), ProvisionDigitalInputOutputDevice.class));
+			break;
+		case MessageWrapperTypes.PROVISION_PWM_OUTPUT_DEVICE:
+			response = request(GSON.fromJson(wrapper.getMessage(), ProvisionPwmOutputDevice.class));
+			break;
+		case MessageWrapperTypes.PROVISION_ANALOG_INPUT_DEVICE:
+			response = request(GSON.fromJson(wrapper.getMessage(), ProvisionAnalogInputDevice.class));
+			break;
+		case MessageWrapperTypes.PROVISION_ANALOG_OUTPUT_DEVICE:
+			response = request(GSON.fromJson(wrapper.getMessage(), ProvisionAnalogOutputDevice.class));
 			break;
 		case MessageWrapperTypes.GPIO_DIGITAL_READ:
-			response = processRequest(GSON.fromJson(wrapper.getMessage(), GpioDigitalRead.class));
+			response = request(GSON.fromJson(wrapper.getMessage(), GpioDigitalRead.class));
 			break;
 		case MessageWrapperTypes.GPIO_DIGITAL_WRITE:
-			response = processRequest(GSON.fromJson(wrapper.getMessage(), GpioDigitalWrite.class));
+			response = request(GSON.fromJson(wrapper.getMessage(), GpioDigitalWrite.class));
+			break;
+		case MessageWrapperTypes.GPIO_PWM_READ:
+			response = request(GSON.fromJson(wrapper.getMessage(), GpioPwmRead.class));
+			break;
+		case MessageWrapperTypes.GPIO_PWM_WRITE:
+			response = request(GSON.fromJson(wrapper.getMessage(), GpioPwmWrite.class));
+			break;
+		case MessageWrapperTypes.GPIO_ANALOG_READ:
+			response = request(GSON.fromJson(wrapper.getMessage(), GpioAnalogRead.class));
+			break;
+		case MessageWrapperTypes.GPIO_ANALOG_WRITE:
+			response = request(GSON.fromJson(wrapper.getMessage(), GpioAnalogWrite.class));
 			break;
 		case MessageWrapperTypes.GPIO_EVENTS:
-			response = processRequest(GSON.fromJson(wrapper.getMessage(), GpioEvents.class));
+			response = request(GSON.fromJson(wrapper.getMessage(), GpioEvents.class));
 			break;
 		case MessageWrapperTypes.GPIO_CLOSE:
-			response = processRequest(GSON.fromJson(wrapper.getMessage(), GpioClose.class));
+			response = request(GSON.fromJson(wrapper.getMessage(), GpioClose.class));
 			break;
 
-		case MessageWrapperTypes.PROVISION_SPI_DEVICE:
-			response = processRequest(GSON.fromJson(wrapper.getMessage(), ProvisionSpiDevice.class));
+		// I2C
+		case MessageWrapperTypes.I2C_OPEN:
+			response = request(GSON.fromJson(wrapper.getMessage(), I2COpen.class));
+			break;
+		case MessageWrapperTypes.I2C_READ_BYTE:
+			response = request(GSON.fromJson(wrapper.getMessage(), I2CReadByte.class));
+			break;
+		case MessageWrapperTypes.I2C_WRITE_BYTE:
+			response = request(GSON.fromJson(wrapper.getMessage(), I2CWriteByte.class));
+			break;
+		case MessageWrapperTypes.I2C_READ:
+			response = request(GSON.fromJson(wrapper.getMessage(), I2CRead.class));
+			break;
+		case MessageWrapperTypes.I2C_WRITE:
+			response = request(GSON.fromJson(wrapper.getMessage(), I2CWrite.class));
+			break;
+		case MessageWrapperTypes.I2C_READ_BYTE_DATA:
+			response = request(GSON.fromJson(wrapper.getMessage(), I2CReadByteData.class));
+			break;
+		case MessageWrapperTypes.I2C_WRITE_BYTE_DATA:
+			response = request(GSON.fromJson(wrapper.getMessage(), I2CWriteByteData.class));
+			break;
+		case MessageWrapperTypes.I2C_READ_I2C_BLOCK_DATA:
+			response = request(GSON.fromJson(wrapper.getMessage(), I2CReadI2CBlockData.class));
+			break;
+		case MessageWrapperTypes.I2C_WRITE_I2C_BLOCK_DATA:
+			response = request(GSON.fromJson(wrapper.getMessage(), I2CWriteI2CBlockData.class));
+			break;
+		case MessageWrapperTypes.I2C_CLOSE:
+			response = request(GSON.fromJson(wrapper.getMessage(), I2CClose.class));
+			break;
+
+		// SPI
+		case MessageWrapperTypes.SPI_OPEN:
+			response = request(GSON.fromJson(wrapper.getMessage(), SpiOpen.class));
 			break;
 		case MessageWrapperTypes.SPI_WRITE:
-			response = processRequest(GSON.fromJson(wrapper.getMessage(), SpiWrite.class));
+			response = request(GSON.fromJson(wrapper.getMessage(), SpiWrite.class));
 			break;
 		case MessageWrapperTypes.SPI_WRITE_AND_READ:
-			response = processRequest(GSON.fromJson(wrapper.getMessage(), SpiWriteAndRead.class));
+			response = request(GSON.fromJson(wrapper.getMessage(), SpiWriteAndRead.class));
 			break;
 		case MessageWrapperTypes.SPI_CLOSE:
-			response = processRequest(GSON.fromJson(wrapper.getMessage(), SpiClose.class));
+			response = request(GSON.fromJson(wrapper.getMessage(), SpiClose.class));
 			break;
 		default:
 			Logger.warn("Unhandled message type '{}'", wrapper.getType());
@@ -150,8 +221,7 @@ public class JsonWebSocket extends BaseRemoteServer {
 	}
 
 	private void sendMessage(Session session, Object o) {
-		MessageWrapper wrapper = new MessageWrapper(UUID.randomUUID().toString(), o.getClass().getSimpleName(),
-				GSON.toJson(o));
+		MessageWrapper wrapper = new MessageWrapper(o.getClass().getSimpleName(), GSON.toJson(o));
 		try {
 			session.getRemote().sendString(GSON.toJson(wrapper));
 		} catch (IOException e) {

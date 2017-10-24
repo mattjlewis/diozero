@@ -4,7 +4,7 @@ package com.diozero.remote.message;
  * #%L
  * Organisation: mattjlewis
  * Project:      Device I/O Zero - Remote Server
- * Filename:     ProvisionSpiDevice.java  
+ * Filename:     SpiOpen.java  
  * 
  * This file is part of the diozero project. More information about this project
  * can be found at http://www.diozero.com/

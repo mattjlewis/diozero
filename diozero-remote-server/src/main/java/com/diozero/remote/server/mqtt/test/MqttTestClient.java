@@ -1,4 +1,4 @@
-package com.diozero.remote.mqtt.test;
+package com.diozero.remote.server.mqtt.test;
 
 /*-
  * #%L
@@ -49,8 +49,8 @@ import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.pmw.tinylog.Logger;
 
 import com.diozero.remote.message.DiozeroProtos;
-import com.diozero.remote.mqtt.MqttProviderConstants;
-import com.diozero.remote.mqtt.MqttServer;
+import com.diozero.remote.server.mqtt.MqttProtobufServer;
+import com.diozero.remote.server.mqtt.MqttProviderConstants;
 import com.diozero.util.RuntimeIOException;
 import com.google.protobuf.GeneratedMessageV3;
 
@@ -60,7 +60,7 @@ public class MqttTestClient implements Closeable, MqttCallback {
 	public static void main(String[] args) {
 
 		if (args.length < 1) {
-			Logger.error("Usage: {} <MQTT-url>", MqttServer.class.getName());
+			Logger.error("Usage: {} <MQTT-url>", MqttProtobufServer.class.getName());
 			System.exit(1);
 		}
 
@@ -143,14 +143,15 @@ public class MqttTestClient implements Closeable, MqttCallback {
 
 	private void sendTestMessages(int gpio) throws MqttException {
 		try {
-			DiozeroProtos.Gpio.ProvisionOutput gpio_output = createGpioProvisionOutput(gpio, true);
-			DiozeroProtos.Response response = sendMessage(MqttProviderConstants.GPIO_PROVISION_OUTPUT_TOPIC,
-					gpio_output.getCorrelationId(), gpio_output);
+			DiozeroProtos.Gpio.ProvisionDigitalOutput digital_output = createGpioProvisionDigitalOutput(gpio, true);
+			DiozeroProtos.Response response = sendMessage(MqttProviderConstants.GPIO_PROVISION_DIGITAL_OUTPUT_TOPIC,
+					digital_output.getCorrelationId(), digital_output);
 			Logger.debug("Got response to provision output: {}", response);
 			Thread.sleep(500);
 
 			DiozeroProtos.Gpio.DigitalRead gpio_read = createGpioDigitalRead(gpio);
-			response = sendMessage(MqttProviderConstants.GPIO_DIGITAL_READ_TOPIC, gpio_read.getCorrelationId(), gpio_read);
+			response = sendMessage(MqttProviderConstants.GPIO_DIGITAL_READ_TOPIC, gpio_read.getCorrelationId(),
+					gpio_read);
 			Logger.debug("Got response to read: {}", response);
 
 			DiozeroProtos.Gpio.DigitalWrite gpio_write = createGpioDigitalWrite(gpio, false);
@@ -160,34 +161,38 @@ public class MqttTestClient implements Closeable, MqttCallback {
 			Thread.sleep(500);
 
 			gpio_read = createGpioDigitalRead(gpio);
-			response = sendMessage(MqttProviderConstants.GPIO_DIGITAL_READ_TOPIC, gpio_read.getCorrelationId(), gpio_read);
+			response = sendMessage(MqttProviderConstants.GPIO_DIGITAL_READ_TOPIC, gpio_read.getCorrelationId(),
+					gpio_read);
 			Logger.debug("Got response to read: {}", response);
 
 			DiozeroProtos.Gpio.Close gpio_close = createGpioClose(gpio);
 			response = sendMessage(MqttProviderConstants.GPIO_CLOSE_TOPIC, gpio_close.getCorrelationId(), gpio_close);
 			Logger.debug("Got response to close: {}", response);
 
-			DiozeroProtos.Gpio.ProvisionInput gpio_input = createGpioProvisionInput(gpio,
+			DiozeroProtos.Gpio.ProvisionDigitalInput digital_input = createGpioProvisionDigitalInput(gpio,
 					DiozeroProtos.Gpio.PullUpDown.PUD_NONE, DiozeroProtos.Gpio.Trigger.TRIGGER_BOTH);
-			response = sendMessage(MqttProviderConstants.GPIO_PROVISION_INPUT_TOPIC, gpio_input.getCorrelationId(), gpio_input);
+			response = sendMessage(MqttProviderConstants.GPIO_PROVISION_DIGITAL_INPUT_TOPIC,
+					digital_input.getCorrelationId(), digital_input);
 			Logger.debug("Got response to input: {}", response);
 
 			gpio_read = createGpioDigitalRead(gpio);
-			response = sendMessage(MqttProviderConstants.GPIO_DIGITAL_READ_TOPIC, gpio_read.getCorrelationId(), gpio_read);
+			response = sendMessage(MqttProviderConstants.GPIO_DIGITAL_READ_TOPIC, gpio_read.getCorrelationId(),
+					gpio_read);
 			Logger.debug("Got response to read: {}", response);
 
 			gpio_close = createGpioClose(gpio);
 			response = sendMessage(MqttProviderConstants.GPIO_CLOSE_TOPIC, gpio_close.getCorrelationId(), gpio_close);
 			Logger.debug("Got response to close: {}", response);
 
-			gpio_output = createGpioProvisionOutput(gpio, true);
-			response = sendMessage(MqttProviderConstants.GPIO_PROVISION_OUTPUT_TOPIC, gpio_output.getCorrelationId(),
-					gpio_output);
+			digital_output = createGpioProvisionDigitalOutput(gpio, true);
+			response = sendMessage(MqttProviderConstants.GPIO_PROVISION_DIGITAL_OUTPUT_TOPIC,
+					digital_output.getCorrelationId(), digital_output);
 			Logger.debug("Got response to output: {}", response);
 			Thread.sleep(500);
 
 			gpio_read = createGpioDigitalRead(gpio);
-			response = sendMessage(MqttProviderConstants.GPIO_DIGITAL_READ_TOPIC, gpio_read.getCorrelationId(), gpio_read);
+			response = sendMessage(MqttProviderConstants.GPIO_DIGITAL_READ_TOPIC, gpio_read.getCorrelationId(),
+					gpio_read);
 			Logger.debug("Got response to read: {}", response);
 
 			gpio_write = createGpioDigitalWrite(gpio, false);
@@ -197,20 +202,23 @@ public class MqttTestClient implements Closeable, MqttCallback {
 			Thread.sleep(500);
 
 			gpio_read = createGpioDigitalRead(gpio);
-			response = sendMessage(MqttProviderConstants.GPIO_DIGITAL_READ_TOPIC, gpio_read.getCorrelationId(), gpio_read);
+			response = sendMessage(MqttProviderConstants.GPIO_DIGITAL_READ_TOPIC, gpio_read.getCorrelationId(),
+					gpio_read);
 			Logger.debug("Got response to read: {}", response);
 
 			gpio_close = createGpioClose(gpio);
 			response = sendMessage(MqttProviderConstants.GPIO_CLOSE_TOPIC, gpio_close.getCorrelationId(), gpio_close);
 			Logger.debug("Got response to close: {}", response);
 
-			DiozeroProtos.Gpio.ProvisionInputOutput gpio_inout = createGpioProvisionInputOutput(gpio, true);
-			response = sendMessage(MqttProviderConstants.GPIO_PROVISION_INPUT_OUTPUT_TOPIC, gpio_inout.getCorrelationId(),
-					gpio_inout);
+			DiozeroProtos.Gpio.ProvisionDigitalInputOutput gpio_inout = createGpioProvisionDigitalInputOutput(gpio,
+					true);
+			response = sendMessage(MqttProviderConstants.GPIO_PROVISION_DIGITAL_INPUT_OUTPUT_TOPIC,
+					gpio_inout.getCorrelationId(), gpio_inout);
 			Logger.debug("Got response to inout: {}", response);
 
 			gpio_read = createGpioDigitalRead(gpio);
-			response = sendMessage(MqttProviderConstants.GPIO_DIGITAL_READ_TOPIC, gpio_read.getCorrelationId(), gpio_read);
+			response = sendMessage(MqttProviderConstants.GPIO_DIGITAL_READ_TOPIC, gpio_read.getCorrelationId(),
+					gpio_read);
 			Logger.debug("Got response to read: {}", response);
 
 			gpio_write = createGpioDigitalWrite(gpio, true);
@@ -220,7 +228,8 @@ public class MqttTestClient implements Closeable, MqttCallback {
 			Thread.sleep(500);
 
 			gpio_read = createGpioDigitalRead(gpio);
-			response = sendMessage(MqttProviderConstants.GPIO_DIGITAL_READ_TOPIC, gpio_read.getCorrelationId(), gpio_read);
+			response = sendMessage(MqttProviderConstants.GPIO_DIGITAL_READ_TOPIC, gpio_read.getCorrelationId(),
+					gpio_read);
 			Logger.debug("Got response to read: {}", response);
 
 			gpio_write = createGpioDigitalWrite(gpio, false);
@@ -230,7 +239,8 @@ public class MqttTestClient implements Closeable, MqttCallback {
 			Thread.sleep(500);
 
 			gpio_read = createGpioDigitalRead(gpio);
-			response = sendMessage(MqttProviderConstants.GPIO_DIGITAL_READ_TOPIC, gpio_read.getCorrelationId(), gpio_read);
+			response = sendMessage(MqttProviderConstants.GPIO_DIGITAL_READ_TOPIC, gpio_read.getCorrelationId(),
+					gpio_read);
 			Logger.debug("Got response to read: {}", response);
 
 			gpio_close = createGpioClose(gpio);
@@ -248,7 +258,8 @@ public class MqttTestClient implements Closeable, MqttCallback {
 
 		lock.lock();
 		try {
-			mqttClient.publish(topic, message.toByteArray(), MqttProviderConstants.DEFAULT_QOS, MqttProviderConstants.DEFAULT_RETAINED);
+			mqttClient.publish(topic, message.toByteArray(), MqttProviderConstants.DEFAULT_QOS,
+					MqttProviderConstants.DEFAULT_RETAINED);
 
 			Logger.info("Waiting for response...");
 			condition.await(TIMEOUT_MS, TimeUnit.MILLISECONDS);
@@ -266,20 +277,22 @@ public class MqttTestClient implements Closeable, MqttCallback {
 		return response;
 	}
 
-	public static DiozeroProtos.Gpio.ProvisionOutput createGpioProvisionOutput(int gpio, boolean initialValue) {
-		return DiozeroProtos.Gpio.ProvisionOutput.newBuilder().setCorrelationId(UUID.randomUUID().toString()).setGpio(gpio)
-				.setInitialValue(initialValue).build();
+	public static DiozeroProtos.Gpio.ProvisionDigitalOutput createGpioProvisionDigitalOutput(int gpio,
+			boolean initialValue) {
+		return DiozeroProtos.Gpio.ProvisionDigitalOutput.newBuilder().setCorrelationId(UUID.randomUUID().toString())
+				.setGpio(gpio).setInitialValue(initialValue).build();
 	}
 
-	public static DiozeroProtos.Gpio.ProvisionInput createGpioProvisionInput(int gpio,
+	public static DiozeroProtos.Gpio.ProvisionDigitalInput createGpioProvisionDigitalInput(int gpio,
 			DiozeroProtos.Gpio.PullUpDown pud, DiozeroProtos.Gpio.Trigger trigger) {
-		return DiozeroProtos.Gpio.ProvisionInput.newBuilder().setCorrelationId(UUID.randomUUID().toString())
+		return DiozeroProtos.Gpio.ProvisionDigitalInput.newBuilder().setCorrelationId(UUID.randomUUID().toString())
 				.setGpio(gpio).setPud(pud).setTrigger(trigger).build();
 	}
 
-	public static DiozeroProtos.Gpio.ProvisionInputOutput createGpioProvisionInputOutput(int gpio, boolean output) {
-		return DiozeroProtos.Gpio.ProvisionInputOutput.newBuilder().setCorrelationId(UUID.randomUUID().toString())
-				.setGpio(gpio).setOutput(output).build();
+	public static DiozeroProtos.Gpio.ProvisionDigitalInputOutput createGpioProvisionDigitalInputOutput(int gpio,
+			boolean output) {
+		return DiozeroProtos.Gpio.ProvisionDigitalInputOutput.newBuilder()
+				.setCorrelationId(UUID.randomUUID().toString()).setGpio(gpio).setOutput(output).build();
 	}
 
 	public static DiozeroProtos.Gpio.DigitalWrite createGpioDigitalWrite(int gpio, boolean value) {

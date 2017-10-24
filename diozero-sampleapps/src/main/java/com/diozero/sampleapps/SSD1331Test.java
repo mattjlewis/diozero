@@ -45,6 +45,7 @@ import org.imgscalr.Scalr;
 import org.pmw.tinylog.Logger;
 
 import com.diozero.api.DigitalOutputDevice;
+import com.diozero.devices.ColourSsdOled;
 import com.diozero.devices.LED;
 import com.diozero.devices.SSD1331;
 import com.diozero.devices.SsdOled;
@@ -78,13 +79,13 @@ public class SSD1331Test {
 		}
 		try (DigitalOutputDevice dc_pin = new DigitalOutputDevice(22);
 				DigitalOutputDevice reset_pin = new DigitalOutputDevice(27);
-				SSD1331 oled = new SSD1331(0, 0, dc_pin, reset_pin)) {
+				ColourSsdOled oled = new SSD1331(0, 0, dc_pin, reset_pin)) {
 			gameOfLife(oled, 10_000);
-			//displayImages(oled);
-			//sierpinskiTriangle(oled, 250);
-			//drawText(oled);
-			//testJava2D(oled);
-			//animateText(oled, "SSD1331 Organic LED Display demo scroller. Java implementation by diozero (diozero.com).");
+			displayImages(oled);
+			sierpinskiTriangle(oled, 250);
+			drawText(oled);
+			testJava2D(oled);
+			animateText(oled, "SSD1331 Organic LED Display demo scroller. Java implementation by diozero (diozero.com).");
 		} finally {
 			// Required if there are non-daemon threads that will prevent the
 			// built-in clean-up routines from running
@@ -153,7 +154,7 @@ public class SSD1331Test {
 		}
 	}
 	
-	public static void gameOfLife(SSD1331 oled, long duration) {
+	public static void gameOfLife(ColourSsdOled oled, long duration) {
 		Logger.info("Game of Life");
 		oled.clear();
 		
@@ -172,7 +173,7 @@ public class SSD1331Test {
 		Logger.info("FPS: {0.##}", Double.valueOf(fps));
 	}
 	
-	private static void render(SSD1331 oled, GameOfLife gol) {
+	private static void render(ColourSsdOled oled, GameOfLife gol) {
 		for (int i=0; i<gol.getWidth(); i++) {
 			for (int j=0; j<gol.getHeight(); j++) {
 				if (gol.isAlive(i, j)) {
@@ -209,7 +210,7 @@ public class SSD1331Test {
 		}	
 	}
 	
-	public static void sierpinskiTriangle(SSD1331 oled, int iterations) {
+	public static void sierpinskiTriangle(ColourSsdOled oled, int iterations) {
 		Logger.info("Sierpinski triangle");
 		int width = oled.getWidth();
 		int height = oled.getHeight();
@@ -270,7 +271,7 @@ public class SSD1331Test {
 		}
 	}
 	
-	public static void testJava2D(SSD1331 oled) {
+	public static void testJava2D(ColourSsdOled oled) {
 		Logger.info("Displaying custom image");
 		int width = oled.getWidth();
 		int height = oled.getHeight();

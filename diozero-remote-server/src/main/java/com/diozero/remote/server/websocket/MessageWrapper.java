@@ -1,10 +1,10 @@
-package com.diozero.remote.message;
+package com.diozero.remote.server.websocket;
 
 /*-
  * #%L
  * Organisation: mattjlewis
  * Project:      Device I/O Zero - Remote Server
- * Filename:     ProvisionSpiDevice.java  
+ * Filename:     MessageWrapper.java  
  * 
  * This file is part of the diozero project. More information about this project
  * can be found at http://www.diozero.com/
@@ -31,38 +31,20 @@ package com.diozero.remote.message;
  * #L%
  */
 
-import com.diozero.api.SpiClockMode;
-
-public class ProvisionSpiDevice extends SpiBase {
-	private static final long serialVersionUID = -8304223356554333329L;
-
-	private int frequency;
-	private SpiClockMode clockMode;
-	private boolean lsbFirst;
-
-	public ProvisionSpiDevice(int controller, int chipSelect, int frequency, SpiClockMode clockMode, boolean lsbFirst) {
-		super(controller, chipSelect);
-		
-		this.frequency = frequency;
-		this.clockMode = clockMode;
-		this.lsbFirst = lsbFirst;
+public class MessageWrapper {
+	private final String type;
+	private final String message;
+	
+	public MessageWrapper(String type, String message) {
+		this.type = type;
+		this.message = message;
 	}
-
-	public int getFrequency() {
-		return frequency;
+	
+	public final String getType() {
+		return type;
 	}
-
-	public SpiClockMode getClockMode() {
-		return clockMode;
-	}
-
-	public boolean getLsbFirst() {
-		return lsbFirst;
-	}
-
-	@Override
-	public String toString() {
-		return "ProvisionSpiDevice [clockMode=" + clockMode + ", frequency=" + frequency + ", lsbFirst=" + lsbFirst
-				+ ", controller=" + getController() + ", chipSelect=" + getChipSelect() + "]";
+	
+	public String getMessage() {
+		return message;
 	}
 }

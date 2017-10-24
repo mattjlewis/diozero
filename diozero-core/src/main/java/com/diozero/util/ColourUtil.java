@@ -1,10 +1,10 @@
-package com.diozero.remote.http;
+package com.diozero.util;
 
 /*-
  * #%L
  * Organisation: mattjlewis
- * Project:      Device I/O Zero - Remote Server
- * Filename:     DiozeroApp.java  
+ * Project:      Device I/O Zero - Core
+ * Filename:     ColourUtil.java  
  * 
  * This file is part of the diozero project. More information about this project
  * can be found at http://www.diozero.com/
@@ -31,20 +31,22 @@ package com.diozero.remote.http;
  * #L%
  */
 
-import static spark.Spark.port;
-
-import com.diozero.util.PropertyUtil;
-
-public class DiozeroApp {
-	private static final String PORT_PROP = "HTTP_PROVIDER_PORT";
-	private static final int DEFAULT_PORT = 8080;
-	
-	private static DiozeroController controller;
-
-	public static void main(String[] args) {
-		port(PropertyUtil.getIntProperty(PORT_PROP, DEFAULT_PORT));
-		
-		controller = new DiozeroController();
-		controller.init();
+public class ColourUtil {
+	/*
+	 * Each pixel has 16-bit data.
+	 * Three sub-pixels for colour A, B and C have 5 bits, 6 bits and 5 bits respectively.
+	 */
+	public static short createColour565(byte red, byte green, byte blue) {
+		// 65k format 1 in normal order (ABC = RGB)
+		// (2 bytes): MSB C4C3C2C1C0B5B4B3, LSB B2B1B0A4A3A2A1A0
+		//            MSB B4B3B2B1B0G5G4G3, LSB G2G1G0R4R3R2R1R0
+		int colour = blue & 0b11111;
+		colour |= (green & 0b111111) << 5;
+		colour |= (red & 0b11111) << 11;
+		/*
+		 * buf[i] = r & 0xF8 | g >> 5
+		 * buf[i + 1] = g << 5 & 0xE0 | b >> 3
+		 */
+		return (short) colour;
 	}
 }

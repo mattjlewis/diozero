@@ -1,10 +1,10 @@
-package com.diozero.remote.websocket;
+package com.diozero.remote.server.http;
 
 /*-
  * #%L
  * Organisation: mattjlewis
  * Project:      Device I/O Zero - Remote Server
- * Filename:     MessageWrapper.java  
+ * Filename:     DiozeroApp.java  
  * 
  * This file is part of the diozero project. More information about this project
  * can be found at http://www.diozero.com/
@@ -31,32 +31,20 @@ package com.diozero.remote.websocket;
  * #L%
  */
 
-public class MessageWrapper {
-	private final String type;
-	private final String message;
-	private final String correlationId;
+import static spark.Spark.port;
+
+import com.diozero.util.PropertyUtil;
+
+public class DiozeroApp {
+	private static final String PORT_PROP = "HTTP_PROVIDER_PORT";
+	private static final int DEFAULT_PORT = 8080;
 	
-	public MessageWrapper(String type, String message) {
-		this.type = type;
-		this.message = message;
-		correlationId = "";
-	}
-	
-	public MessageWrapper(String correlationId, String type, String message) {
-		this.correlationId = correlationId;
-		this.type = type;
-		this.message = message;
-	}
-	
-	public final String getType() {
-		return type;
-	}
-	
-	public String getMessage() {
-		return message;
-	}
-	
-	public String getCorrelationId() {
-		return correlationId;
+	private static DiozeroController controller;
+
+	public static void main(String[] args) {
+		port(PropertyUtil.getIntProperty(PORT_PROP, DEFAULT_PORT));
+		
+		controller = new DiozeroController();
+		controller.init();
 	}
 }

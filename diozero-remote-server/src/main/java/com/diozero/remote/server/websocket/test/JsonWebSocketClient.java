@@ -1,4 +1,4 @@
-package com.diozero.remote.websocket.test;
+package com.diozero.remote.server.websocket.test;
 
 /*-
  * #%L
@@ -42,8 +42,8 @@ import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.pmw.tinylog.Logger;
 
 import com.diozero.api.SpiClockMode;
-import com.diozero.remote.message.ProvisionSpiDevice;
-import com.diozero.remote.websocket.MessageWrapper;
+import com.diozero.remote.message.SpiOpen;
+import com.diozero.remote.server.websocket.MessageWrapper;
 import com.diozero.util.Hex;
 import com.google.gson.Gson;
 
@@ -51,6 +51,8 @@ public class JsonWebSocketClient implements WebSocketListener {
 	private static final Gson GSON = new Gson();
 
 	public static void main(String[] args) {
+		String correlation_id = UUID.randomUUID().toString();
+
 		WebSocketClient client = new WebSocketClient();
 		JsonWebSocketClient socket = new JsonWebSocketClient();
 
@@ -63,9 +65,10 @@ public class JsonWebSocketClient implements WebSocketListener {
 			Session session = future.get();
 			Logger.debug("Connected to: {}", uri);
 
-			ProvisionSpiDevice spi_request = new ProvisionSpiDevice(1, 2, 8_000_000, SpiClockMode.MODE_1, false);
-			MessageWrapper message = new MessageWrapper(UUID.randomUUID().toString(),
-					ProvisionSpiDevice.class.getSimpleName(), GSON.toJson(spi_request));
+			SpiOpen spi_request = new SpiOpen(1, 2, 8_000_000, SpiClockMode.MODE_1, false,
+					correlation_id);
+			MessageWrapper message = new MessageWrapper(SpiOpen.class.getSimpleName(),
+					GSON.toJson(spi_request));
 			session.getRemote().sendString(GSON.toJson(message));
 		} catch (Exception e) {
 			Logger.error(e, "Error: {}", e);
