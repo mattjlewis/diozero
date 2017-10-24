@@ -36,6 +36,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -61,6 +62,7 @@ import com.diozero.remote.message.GpioDigitalRead;
 import com.diozero.remote.message.GpioDigitalReadResponse;
 import com.diozero.remote.message.GpioDigitalWrite;
 import com.diozero.remote.message.GpioEvents;
+import com.diozero.remote.message.GpioInfo;
 import com.diozero.remote.message.GpioPwmRead;
 import com.diozero.remote.message.GpioPwmReadResponse;
 import com.diozero.remote.message.GpioPwmWrite;
@@ -237,8 +239,9 @@ public class VoodooSparkProtocolHandler implements RemoteProtocolInterface {
 
 	@Override
 	public GetBoardGpioInfoResponse request(GetBoardGpioInfo request) {
+		List<GpioInfo> gpios = new ArrayList<>();
 		
-		return new GetBoardGpioInfoResponse(Response.Status.OK, null, request.getCorrelationId());
+		return new GetBoardGpioInfoResponse(Response.Status.OK, null, gpios, request.getCorrelationId());
 	}
 
 	@Override
