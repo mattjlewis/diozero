@@ -30,6 +30,7 @@ package com.diozero.sampleapps;
  * THE SOFTWARE.
  * #L%
  */
+
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -46,8 +47,7 @@ import org.pmw.tinylog.Logger;
 
 import com.diozero.api.DigitalOutputDevice;
 import com.diozero.devices.ColourSsdOled;
-import com.diozero.devices.LED;
-import com.diozero.devices.SSD1331;
+import com.diozero.devices.SSD1351;
 import com.diozero.devices.SsdOled;
 import com.diozero.sampleapps.gol.GameOfLife;
 import com.diozero.util.DeviceFactoryHelper;
@@ -70,6 +70,7 @@ import com.diozero.util.DeviceFactoryHelper;
  */
 public class SSD1331Test {
 	public static void main(String[] args) {
+		/*
 		try (LED led = new LED(16)) {
 			led.on();
 			Thread.sleep(500);
@@ -77,15 +78,34 @@ public class SSD1331Test {
 			Thread.sleep(500);
 		} catch (InterruptedException e) {
 		}
-		try (DigitalOutputDevice dc_pin = new DigitalOutputDevice(22);
-				DigitalOutputDevice reset_pin = new DigitalOutputDevice(27);
-				ColourSsdOled oled = new SSD1331(0, 0, dc_pin, reset_pin)) {
+		*/
+		int dc_gpio = 185;
+		//int dc_gpio = 22;
+		int reset_gpio = 224;
+		//int reset_gpio = 27;
+		if (args.length > 1) {
+			dc_gpio = Integer.parseInt(args[0]);
+			reset_gpio = Integer.parseInt(args[1]);
+		}
+		int spi_controller = 2;
+		//int spi_controller = 0;
+		int chip_select = 0;
+		if (args.length > 3) {
+			spi_controller = Integer.parseInt(args[2]);
+			chip_select = Integer.parseInt(args[3]);
+		}
+		
+		try (DigitalOutputDevice dc_pin = new DigitalOutputDevice(dc_gpio);
+				DigitalOutputDevice reset_pin = new DigitalOutputDevice(reset_gpio);
+				ColourSsdOled oled = new SSD1351(spi_controller, chip_select, dc_pin, reset_pin)) {
 			gameOfLife(oled, 10_000);
 			displayImages(oled);
 			sierpinskiTriangle(oled, 250);
 			drawText(oled);
 			testJava2D(oled);
 			animateText(oled, "SSD1331 Organic LED Display demo scroller. Java implementation by diozero (diozero.com).");
+		} catch (RuntimeException e) {
+			Logger.error(e, "Error: {}", e);
 		} finally {
 			// Required if there are non-daemon threads that will prevent the
 			// built-in clean-up routines from running
@@ -177,7 +197,7 @@ public class SSD1331Test {
 		for (int i=0; i<gol.getWidth(); i++) {
 			for (int j=0; j<gol.getHeight(); j++) {
 				if (gol.isAlive(i, j)) {
-					oled.setPixel(i, j, SSD1331.MAX_RED, SSD1331.MAX_GREEN, SSD1331.MAX_BLUE, false);
+					oled.setPixel(i, j, ColourSsdOled.MAX_RED, ColourSsdOled.MAX_GREEN, ColourSsdOled.MAX_BLUE, false);
 				} else {
 					oled.setPixel(i, j, (byte) 0, (byte) 0, (byte) 0, false);
 				}
@@ -223,7 +243,7 @@ public class SSD1331Test {
 			final Point target_corner = corners[random.nextInt(corners.length)];
 			point.x += (target_corner.x - point.x) / 2;
 			point.y += (target_corner.y - point.y) / 2;
-			oled.setPixel(point.x, point.y, SSD1331.MAX_RED, (byte) 0, (byte) 0, true);
+			oled.setPixel(point.x, point.y, ColourSsdOled.MAX_RED, (byte) 0, (byte) 0, true);
 			/*
 			try {
 				Thread.sleep(5);

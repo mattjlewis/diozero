@@ -70,13 +70,6 @@ import com.diozero.util.ColourUtil;
  * </ul>
  */
 public class SSD1331 extends ColourSsdOled {
-	private static final int RED_BITS = 5;
-	private static final int GREEN_BITS = 6;
-	private static final int BLUE_BITS = 5;
-	public static final byte MAX_RED = (byte) (Math.pow(2, RED_BITS) - 1);
-	public static final byte MAX_GREEN = (byte) (Math.pow(2, GREEN_BITS) - 1);
-	public static final byte MAX_BLUE = (byte) (Math.pow(2, BLUE_BITS) - 1);
-	
 	private static final int WIDTH = 96;
 	private static final int HEIGHT = 64;
 	
@@ -109,9 +102,6 @@ public class SSD1331 extends ColourSsdOled {
 
 	public SSD1331(int controller, int chipSelect, DigitalOutputDevice dcPin, DigitalOutputDevice resetPin) {
 		super(controller, chipSelect, dcPin, resetPin, WIDTH, HEIGHT, BufferedImage.TYPE_USHORT_565_RGB);
-		
-		// 16 bit colour hence 2x
-		buffer = new byte[2 * width * height];
 		
 		init();
 	}

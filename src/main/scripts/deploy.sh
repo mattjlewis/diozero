@@ -32,7 +32,7 @@
 #!/bin/sh
 
 version=0.11-SNAPSHOT
-pigpioj_version=2.1
+pigpioj_version=2.2
 username=pi
 #host=george.local
 #host=sheldon.local

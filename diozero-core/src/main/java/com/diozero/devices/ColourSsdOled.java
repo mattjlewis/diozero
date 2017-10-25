@@ -34,9 +34,19 @@ package com.diozero.devices;
 import com.diozero.api.DigitalOutputDevice;
 
 public abstract class ColourSsdOled extends SsdOled {
+	private static final int RED_BITS = 5;
+	private static final int GREEN_BITS = 6;
+	private static final int BLUE_BITS = 5;
+	public static final byte MAX_RED = (byte) (Math.pow(2, RED_BITS) - 1);
+	public static final byte MAX_GREEN = (byte) (Math.pow(2, GREEN_BITS) - 1);
+	public static final byte MAX_BLUE = (byte) (Math.pow(2, BLUE_BITS) - 1);
+	
 	public ColourSsdOled(int controller, int chipSelect, DigitalOutputDevice dcPin, DigitalOutputDevice resetPin,
 			int width, int height, int imageType) {
 		super(controller, chipSelect, dcPin, resetPin, width, height, imageType);
+		
+		// 16 bit colour hence 2x
+		buffer = new byte[2 * width * height];
 	}
 
 	public abstract void setPixel(int x, int y, byte red, byte green, byte blue, boolean render);
