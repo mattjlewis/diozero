@@ -68,51 +68,41 @@ public class SSD1351 extends ColourSsdOled {
 	private static final int WIDTH = 128;
 	private static final int HEIGHT = 128;
 
-	private static final byte SET_COLUMN_ADDRESS = 0x15; // SSD1351_CMD_SETCOLUMN 		0x15
-	private static final byte SET_ROW_ADDRESS = 0x75; // SSD1351_CMD_SETROW    		0x75
-	private static final byte WRITE_RAM_COMMAND = 0x5C; // SSD1351_CMD_WRITERAM   		0x5C
-	private static final byte READ_RAM_COMMAND = 0x5D; // SSD1351_CMD_READRAM   		0x5D
-	private static final byte REMAP_AND_COLOUR_DEPTH = (byte) 0xA0; // SSD1351_CMD_SETREMAP 		0xA0
-	private static final byte DISPLAY_START_LINE = (byte) 0xA1; // SSD1351_CMD_STARTLINE 		0xA1
-	private static final byte DISPLAY_OFFSET = (byte) 0xA2; // SSD1351_CMD_DISPLAYOFFSET 	0xA2
-	private static final byte DISPLAY_MODE_ALL_OFF = (byte) 0xA4; // SSD1351_CMD_DISPLAYALLOFF 	0xA4
-	private static final byte DISPLAY_MODE_ALL_ON = (byte) 0xA5; // SSD1351_CMD_DISPLAYALLON  	0xA5
-	private static final byte DISPLAY_MODE_NORMAL = (byte) 0xA6; // SSD1351_CMD_NORMALDISPLAY 	0xA6
-	private static final byte DISPLAY_MODE_INVERSE = (byte) 0xA7; // SSD1351_CMD_INVERTDISPLAY 	0xA7
-	private static final byte FUNCTION_SELECTION = (byte) 0xAB; // SSD1351_CMD_FUNCTIONSELECT 	0xAB
-	private static final byte SET_RESET_PRECHARGE_PERIOD = (byte) 0xB1; // SSD1351_CMD_PRECHARGE 		0xB1
-	private static final byte DISPLAY_ENHANCEMENT = (byte) 0xB2; // SSD1351_CMD_DISPLAYENHANCE	0xB2
-	private static final byte DISPLAY_CLOCK_DIVIDER = (byte) 0xB3; // SSD1351_CMD_CLOCKDIV 		0xB3
-	private static final byte SET_VSL = (byte) 0xB4; // SSD1351_CMD_SETVSL 		0xB4
-	private static final byte SET_GPIO = (byte) 0xB5; // SSD1351_CMD_SETGPIO 		0xB5
-	private static final byte SET_SECOND_PRECHARGE_PERIOD = (byte) 0xB6; // SSD1351_CMD_PRECHARGE2 		0xB6
-	private static final byte SET_GRAY = (byte) 0xB8; // SSD1351_CMD_SETGRAY 		0xB8
-	private static final byte USE_LUT = (byte) 0xB9; // SSD1351_CMD_USELUT 		0xB9
-	private static final byte PRECHARGE_VOLTAGE = (byte) 0xBB; // SSD1351_CMD_PRECHARGELEVEL 	0xBB
-	private static final byte VCOMH_VOLTAGE = (byte) 0xBE; // SSD1351_CMD_VCOMH 		0xBE
-	private static final byte CONTRAST_COLOUR = (byte) 0xC1; // SSD1351_CMD_CONTRASTABC		0xC1
-	private static final byte MASTER_CONTRAST_CURRENT_CONTROL = (byte) 0xC7; // SSD1351_CMD_CONTRASTMASTER	0xC7
-	private static final byte MULTIPLEX_RATIO = (byte) 0xCA; // SSD1351_CMD_MUXRATIO            0xCA
-	private static final byte COMMAND_LOCK = (byte) 0xFD; // SSD1351_CMD_COMMANDLOCK         0xFD
-	private static final byte HORIZONTAL_SCROLL = (byte) 0x96;	// SSD1351_CMD_HORIZSCROLL         0x96
-	private static final byte STOP_SCROLL = (byte) 0x9E; // SSD1351_CMD_STOPSCROLL          0x9E
-	private static final byte START_SCROLL = (byte) 0x9F; // SSD1351_CMD_STARTSCROLL         0x9F
+	private static final byte SET_COLUMN_ADDRESS = 0x15;
+	private static final byte SET_ROW_ADDRESS = 0x75;
+	private static final byte WRITE_RAM_COMMAND = 0x5C;
+	private static final byte READ_RAM_COMMAND = 0x5D;
+	private static final byte REMAP_AND_COLOUR_DEPTH = (byte) 0xA0;
+	private static final byte DISPLAY_START_LINE = (byte) 0xA1;
+	private static final byte DISPLAY_OFFSET = (byte) 0xA2;
+	private static final byte DISPLAY_MODE_ALL_OFF = (byte) 0xA4;
+	private static final byte DISPLAY_MODE_ALL_ON = (byte) 0xA5;
+	private static final byte DISPLAY_MODE_NORMAL = (byte) 0xA6;
+	private static final byte DISPLAY_MODE_INVERSE = (byte) 0xA7;
+	private static final byte FUNCTION_SELECTION = (byte) 0xAB;
+	private static final byte SET_RESET_PRECHARGE_PERIOD = (byte) 0xB1;
+	private static final byte DISPLAY_ENHANCEMENT = (byte) 0xB2;
+	private static final byte DISPLAY_CLOCK_DIVIDER = (byte) 0xB3;
+	private static final byte SET_VSL = (byte) 0xB4;
+	private static final byte SET_GPIO = (byte) 0xB5;
+	private static final byte SET_SECOND_PRECHARGE_PERIOD = (byte) 0xB6;
+	private static final byte SET_GRAY = (byte) 0xB8;
+	private static final byte USE_LUT = (byte) 0xB9;
+	private static final byte PRECHARGE_VOLTAGE = (byte) 0xBB;
+	private static final byte VCOMH_VOLTAGE = (byte) 0xBE;
+	private static final byte CONTRAST_COLOUR = (byte) 0xC1;
+	private static final byte MASTER_CONTRAST_CURRENT_CONTROL = (byte) 0xC7;
+	private static final byte MULTIPLEX_RATIO = (byte) 0xCA;
+	private static final byte COMMAND_LOCK = (byte) 0xFD;
+	private static final byte HORIZONTAL_SCROLL = (byte) 0x96;
+	private static final byte STOP_SCROLL = (byte) 0x9E;
+	private static final byte START_SCROLL = (byte) 0x9F;
 	
 	public SSD1351(int controller, int chipSelect, DigitalOutputDevice dcPin, DigitalOutputDevice resetPin) {
 		// Limit to 5-6-5 image type for now (65k colours)
 		super(controller, chipSelect, dcPin, resetPin, WIDTH, HEIGHT, BufferedImage.TYPE_USHORT_565_RGB);
 		
 		init();
-	}
-	
-	@Override
-	protected void reset() {
-		resetPin.setOn(true);
-		SleepUtil.sleepMillis(10);
-		resetPin.setOn(false);
-		SleepUtil.sleepMillis(10);
-		resetPin.setOn(true);
-		SleepUtil.sleepMillis(10);
 	}
 	
 	private void commandAndData(byte command, byte... data) {
