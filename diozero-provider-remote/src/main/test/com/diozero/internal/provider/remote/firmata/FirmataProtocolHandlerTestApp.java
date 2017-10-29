@@ -33,8 +33,10 @@ package com.diozero.internal.provider.remote.firmata;
 
 import org.pmw.tinylog.Logger;
 
+import com.diozero.api.AnalogInputDevice;
 import com.diozero.devices.LED;
 import com.diozero.devices.PwmLed;
+import com.diozero.util.BoardInfo;
 import com.diozero.util.DeviceFactoryHelper;
 
 public class FirmataProtocolHandlerTestApp {
@@ -42,29 +44,47 @@ public class FirmataProtocolHandlerTestApp {
 		System.setProperty("FIRMATA_TCP_HOST", "192.168.1.215");
 		System.setProperty(DeviceFactoryHelper.DEVICE_FACTORY_PROP,
 				"com.diozero.internal.provider.remote.devicefactory.RemoteDeviceFactory");
+		
+		BoardInfo board_info =  DeviceFactoryHelper.getNativeDeviceFactory().getBoardInfo();
+		Logger.debug("Board info:");
+		Logger.debug("Name: {}, Make: {}, Model: {}", board_info.getName(), board_info.getMake(), board_info.getModel());
+		Logger.debug("GPIOs: {}", board_info.getGpioPins());
+		Logger.debug("ADCs: {}", board_info.getAdcPins());
+		Logger.debug("DACs: {}", board_info.getDacPins());
+		Logger.debug("Headers: {}", board_info.getHeaders());
 
-		int delay = 250;
+		int delay = 500;
 		try {
 			try (LED led = new LED(16, false)) {
-				for (int i = 0; i < 5; i++) {
+				for (int i = 0; i < 2; i++) {
 					Logger.debug("On");
 					led.on();
 					Thread.sleep(delay);
+					
 					Logger.debug("Off");
 					led.off();
+					Thread.sleep(delay);
+					
+					Logger.debug("Toggle");
+					led.toggle();
+					Thread.sleep(delay);
+					
+					Logger.debug("Toggle");
+					led.toggle();
 					Thread.sleep(delay);
 				}
 			}
 
-			delay = 20;
-			float step = 0.01f;
+			float step = 0.005f;
 			try (PwmLed pwm_led = new PwmLed(16, 0)) {
-				for (float f = 0; f < 1f; f += step) {
-					pwm_led.setValue(f);
-					Thread.sleep(delay);
-				}
-				for (float f = 1f; f >= 0; f -= step) {
-					pwm_led.setValue(f);
+				pwm_led.pulse(2, 50, 2, false);
+			}
+			
+			delay = 50;
+			try (AnalogInputDevice ai = new AnalogInputDevice(17, 3.3f); PwmLed pwm_led = new PwmLed(16, 1)) {
+				for (int i=0; i<200; i++) {
+					float unscaled = ai.getUnscaledValue();
+					pwm_led.setValue(1 - unscaled);
 					Thread.sleep(delay);
 				}
 			}

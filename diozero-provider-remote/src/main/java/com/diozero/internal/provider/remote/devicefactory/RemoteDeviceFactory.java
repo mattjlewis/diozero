@@ -52,8 +52,10 @@ import com.diozero.internal.provider.PwmOutputDeviceInterface;
 import com.diozero.internal.provider.SpiDeviceFactoryInterface;
 import com.diozero.internal.provider.SpiDeviceInterface;
 import com.diozero.internal.provider.remote.firmata.FirmataProtocolHandler;
-import com.diozero.remote.message.GetBoardGpioInfo;
-import com.diozero.remote.message.GetBoardGpioInfoResponse;
+import com.diozero.remote.message.GetBoardInfo;
+import com.diozero.remote.message.GetBoardInfoResponse;
+import com.diozero.remote.message.GpioAnalogRead;
+import com.diozero.remote.message.GpioAnalogReadResponse;
 import com.diozero.remote.message.GpioClose;
 import com.diozero.remote.message.GpioDigitalRead;
 import com.diozero.remote.message.GpioDigitalReadResponse;
@@ -93,10 +95,7 @@ public class RemoteDeviceFactory extends BaseNativeDeviceFactory {
 	
 	@Override
 	protected BoardInfo initialiseBoardInfo() {
-		BoardInfo bi = new RemoteBoardInfo(protocolHandler);
-		bi.initialisePins();
-		
-		return bi;
+		return new RemoteBoardInfo(protocolHandler.request(new GetBoardInfo(UUID.randomUUID().toString())));
 	}
 
 	@Override
@@ -143,8 +142,7 @@ public class RemoteDeviceFactory extends BaseNativeDeviceFactory {
 
 	@Override
 	public AnalogInputDeviceInterface createAnalogInputDevice(String key, PinInfo pinInfo) {
-		// TODO Auto-generated method stub
-		return null;
+		return new RemoteAnalogInputDevice(this, key, pinInfo);
 	}
 
 	@Override
@@ -205,6 +203,17 @@ public class RemoteDeviceFactory extends BaseNativeDeviceFactory {
 		}
 	}
 
+	float analogRead(int gpio) {
+		GpioAnalogRead request = new GpioAnalogRead(gpio, UUID.randomUUID().toString());
+
+		GpioAnalogReadResponse response = protocolHandler.request(request);
+		if (response.getStatus() != Response.Status.OK) {
+			throw new RuntimeIOException("Error in GPIO analog read: " + response.getDetail());
+		}
+
+		return response.getValue();
+	}
+
 	void enableEvents(int gpio, boolean b) {
 		GpioEvents request = new GpioEvents(gpio, true, UUID.randomUUID().toString());
 
@@ -237,18 +246,19 @@ public class RemoteDeviceFactory extends BaseNativeDeviceFactory {
 	}
 	
 	static class RemoteBoardInfo extends BoardInfo {
-		private RemoteProtocolInterface protocolHandler;
+		private GetBoardInfoResponse boardInfo;
 		
-		public RemoteBoardInfo(RemoteProtocolInterface protocolHandler) {
-			super("Remote", "Unknown", -1, "remote");
+		public RemoteBoardInfo(GetBoardInfoResponse boardInfo) {
+			super(boardInfo.getMake(), boardInfo.getModel(), -1, "remote", 3.3f);
 			
-			this.protocolHandler = protocolHandler;
+			this.boardInfo = boardInfo;
+			
+			initialisePins();
 		}
 		
 		@Override
 		public void initialisePins() {
-			GetBoardGpioInfoResponse response = protocolHandler.request(new GetBoardGpioInfo(UUID.randomUUID().toString()));
-			for (GpioInfo gpio_info : response.getGpios()) {
+			for (GpioInfo gpio_info : boardInfo.getGpios()) {
 				if (gpio_info.getModes().contains(DeviceMode.DIGITAL_OUTPUT)
 						|| gpio_info.getModes().contains(DeviceMode.DIGITAL_INPUT)) {
 					// FIXME GPIO number is not equal to pin number

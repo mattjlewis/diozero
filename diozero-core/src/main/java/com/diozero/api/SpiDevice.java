@@ -51,6 +51,10 @@ import com.diozero.util.RuntimeIOException;
  * - The SPI-1 clock is derived from the system clock therefore you have to be careful when over/underclocking to set the right divisor
  * - Limited IRQ support, no thresholding on the FIFO except "TX empty" or "done".
  * - No DMA support (no peripheral DREQ)
+ * 
+ * On a RPi 3 you have to change the GPU core frequency to 250 MHz, otherwise the SPI clock has the wrong frequency.
+ * Do this by adding the following line to /boot/config.txt and reboot.
+ * core_freq=250
  */
 public class SpiDevice implements Closeable, SPIConstants {
 	private SpiDeviceInterface device;

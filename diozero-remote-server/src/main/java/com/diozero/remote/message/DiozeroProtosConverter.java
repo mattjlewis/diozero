@@ -53,26 +53,27 @@ public class DiozeroProtosConverter {
 				.setCorrelationId(obj.getCorrelationId()).build();
 	}
 
-	public static GetBoardGpioInfo convert(DiozeroProtos.Gpio.GetBoardGpioInfo obj) {
-		return new GetBoardGpioInfo(obj.getCorrelationId());
+	public static GetBoardInfo convert(DiozeroProtos.Gpio.GetBoardInfo obj) {
+		return new GetBoardInfo(obj.getCorrelationId());
 	}
 
-	public static DiozeroProtos.Gpio.GetBoardGpioInfo convert(GetBoardGpioInfo obj) {
-		return DiozeroProtos.Gpio.GetBoardGpioInfo.newBuilder().setCorrelationId(obj.getCorrelationId()).build();
+	public static DiozeroProtos.Gpio.GetBoardInfo convert(GetBoardInfo obj) {
+		return DiozeroProtos.Gpio.GetBoardInfo.newBuilder().setCorrelationId(obj.getCorrelationId()).build();
 	}
 
-	public static GetBoardGpioInfoResponse convert(DiozeroProtos.Gpio.GetBoardGpioInfoResponse obj) {
+	public static GetBoardInfoResponse convert(DiozeroProtos.Gpio.GetBoardInfoResponse obj) {
 		List<GpioInfo> gpios = new ArrayList<>();
 		for (DiozeroProtos.Gpio.GpioInfo gpio_info : obj.getGpioInfoList()) {
 			gpios.add(convert(gpio_info));
 		}
-		return new GetBoardGpioInfoResponse(convert(obj.getStatus()), obj.getDetail(), gpios, obj.getCorrelationId());
+		return new GetBoardInfoResponse(convert(obj.getStatus()), obj.getDetail(), obj.getMake(), obj.getModel(),
+				obj.getMemory(), gpios, obj.getCorrelationId());
 	}
 
-	public static DiozeroProtos.Gpio.GetBoardGpioInfoResponse convert(GetBoardGpioInfoResponse obj) {
-		DiozeroProtos.Gpio.GetBoardGpioInfoResponse.Builder builder = DiozeroProtos.Gpio.GetBoardGpioInfoResponse
-				.newBuilder().setStatus(convert(obj.getStatus())).setDetail(obj.getDetail())
-				.setCorrelationId(obj.getCorrelationId());
+	public static DiozeroProtos.Gpio.GetBoardInfoResponse convert(GetBoardInfoResponse obj) {
+		DiozeroProtos.Gpio.GetBoardInfoResponse.Builder builder = DiozeroProtos.Gpio.GetBoardInfoResponse.newBuilder()
+				.setStatus(convert(obj.getStatus())).setDetail(obj.getDetail()).setMake(obj.getMake())
+				.setModel(obj.getModel()).setCorrelationId(obj.getCorrelationId());
 		for (GpioInfo gpio_info : obj.getGpios()) {
 			builder.addGpioInfo(convert(gpio_info));
 		}

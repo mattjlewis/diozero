@@ -35,7 +35,6 @@ import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.List;
 
-import com.diozero.internal.provider.remote.firmata.FirmataAdapter.AnalogMappingResponse;
 import com.diozero.internal.provider.remote.firmata.FirmataAdapter.FirmwareDetails;
 import com.diozero.internal.provider.remote.firmata.FirmataAdapter.PinState;
 import com.diozero.internal.provider.remote.firmata.FirmataAdapter.ProtocolVersion;
@@ -59,8 +58,6 @@ public class FirmataAdapterTestApp {
 		System.out.format("Firmware: v%d.%d '%s'%n", firmware.getMajor(), firmware.getMinor(), firmware.getName());
 		List<List<PinCapability>> board_capabilities = fa.getBoardCapabilities();
 		System.out.println("Board Capabilities: " + board_capabilities);
-		AnalogMappingResponse analog_mapping = fa.getAnalogMapping();
-		System.out.println("Analog Mapping: " + analog_mapping);
 		
 		byte gpio = 16;
 		int delay = 500;
@@ -83,18 +80,21 @@ public class FirmataAdapterTestApp {
 		Thread.sleep(delay);
 		PinState state = fa.getPinState(gpio);
 		System.out.println("State: " + state);
+		System.out.println("Value: " + fa.getValue(gpio));
 		
 		// Set value high (off as active high)
 		fa.setDigitalValue(gpio, true);
 		Thread.sleep(delay);
 		state = fa.getPinState(gpio);
 		System.out.println("State: " + state);
+		System.out.println("Value: " + fa.getValue(gpio));
 		
 		// Set value low (on as active high)
 		fa.setDigitalValue(gpio, false);
 		Thread.sleep(delay);
 		state = fa.getPinState(gpio);
 		System.out.println("State: " + state);
+		System.out.println("Value: " + fa.getValue(gpio));
 		
 		// Enable reporting for gpio
 		fa.enableDigitalReporting(gpio, true);
@@ -112,10 +112,12 @@ public class FirmataAdapterTestApp {
 		for (int i=0; i<5; i++) {
 			// Set value low
 			fa.setDigitalValue(gpio, false);
+			System.out.println("Value: " + fa.getValue(gpio));
 			Thread.sleep(delay);
 			
 			// Set value high
 			fa.setDigitalValue(gpio, true);
+			System.out.println("Value: " + fa.getValue(gpio));
 			Thread.sleep(delay);
 		}
 		
@@ -150,6 +152,14 @@ public class FirmataAdapterTestApp {
 		
 		fa.setPinMode(gpio, PinMode.DIGITAL_INPUT);
 		fa.enableDigitalReporting(gpio, false);
+		
+		gpio = 17;
+		delay = 100;
+		fa.setPinMode(gpio, PinMode.ANALOG_INPUT);
+		for (int i=0; i<100; i++) {
+			System.out.println("Analog value: " + fa.getValue(gpio));
+			Thread.sleep(delay);
+		}
 		
 		/*
 		byte[] rows = {5, 4, 2, 14};

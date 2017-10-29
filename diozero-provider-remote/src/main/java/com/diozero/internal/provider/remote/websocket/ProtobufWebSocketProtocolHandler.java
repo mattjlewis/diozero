@@ -46,8 +46,8 @@ import com.diozero.internal.provider.NativeDeviceFactoryInterface;
 import com.diozero.internal.provider.remote.ProtobufBaseAsyncProtocolHandler;
 import com.diozero.remote.message.DiozeroProtos;
 import com.diozero.remote.message.DiozeroProtosConverter;
-import com.diozero.remote.message.GetBoardGpioInfo;
-import com.diozero.remote.message.GetBoardGpioInfoResponse;
+import com.diozero.remote.message.GetBoardInfo;
+import com.diozero.remote.message.GetBoardInfoResponse;
 import com.diozero.remote.message.GpioAnalogRead;
 import com.diozero.remote.message.GpioAnalogReadResponse;
 import com.diozero.remote.message.GpioAnalogWrite;
@@ -127,8 +127,8 @@ public class ProtobufWebSocketProtocolHandler extends ProtobufBaseAsyncProtocolH
 	}
 
 	@Override
-	public GetBoardGpioInfoResponse request(GetBoardGpioInfo request) {
-		return (GetBoardGpioInfoResponse) requestResponse(URL, DiozeroProtosConverter.convert(request),
+	public GetBoardInfoResponse request(GetBoardInfo request) {
+		return (GetBoardInfoResponse) requestResponse(URL, DiozeroProtosConverter.convert(request),
 				request.getCorrelationId());
 	}
 

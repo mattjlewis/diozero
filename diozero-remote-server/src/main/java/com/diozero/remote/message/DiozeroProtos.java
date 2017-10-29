@@ -3,37 +3,6 @@
 
 package com.diozero.remote.message;
 
-/*-
- * #%L
- * Organisation: mattjlewis
- * Project:      Device I/O Zero - Remote Server
- * Filename:     DiozeroProtos.java  
- * 
- * This file is part of the diozero project. More information about this project
- * can be found at http://www.diozero.com/
- * %%
- * Copyright (C) 2016 - 2017 mattjlewis
- * %%
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- * 
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- * 
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- * #L%
- */
-
 public final class DiozeroProtos {
   private DiozeroProtos() {}
   public static void registerAllExtensions(
@@ -2700,8 +2669,8 @@ public final class DiozeroProtos {
 
     }
 
-    public interface GetBoardGpioInfoOrBuilder extends
-        // @@protoc_insertion_point(interface_extends:diozero.Gpio.GetBoardGpioInfo)
+    public interface GetBoardInfoOrBuilder extends
+        // @@protoc_insertion_point(interface_extends:diozero.Gpio.GetBoardInfo)
         com.google.protobuf.MessageOrBuilder {
 
       /**
@@ -2719,17 +2688,17 @@ public final class DiozeroProtos {
           getCorrelationIdBytes();
     }
     /**
-     * Protobuf type {@code diozero.Gpio.GetBoardGpioInfo}
+     * Protobuf type {@code diozero.Gpio.GetBoardInfo}
      */
-    public  static final class GetBoardGpioInfo extends
+    public  static final class GetBoardInfo extends
         com.google.protobuf.GeneratedMessageV3 implements
-        // @@protoc_insertion_point(message_implements:diozero.Gpio.GetBoardGpioInfo)
-        GetBoardGpioInfoOrBuilder {
-      // Use GetBoardGpioInfo.newBuilder() to construct.
-      private GetBoardGpioInfo(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+        // @@protoc_insertion_point(message_implements:diozero.Gpio.GetBoardInfo)
+        GetBoardInfoOrBuilder {
+      // Use GetBoardInfo.newBuilder() to construct.
+      private GetBoardInfo(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
         super(builder);
       }
-      private GetBoardGpioInfo() {
+      private GetBoardInfo() {
         correlationId_ = "";
       }
 
@@ -2738,7 +2707,7 @@ public final class DiozeroProtos {
       getUnknownFields() {
         return this.unknownFields;
       }
-      private GetBoardGpioInfo(
+      private GetBoardInfo(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
@@ -2781,14 +2750,14 @@ public final class DiozeroProtos {
       }
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return com.diozero.remote.message.DiozeroProtos.internal_static_diozero_Gpio_GetBoardGpioInfo_descriptor;
+        return com.diozero.remote.message.DiozeroProtos.internal_static_diozero_Gpio_GetBoardInfo_descriptor;
       }
 
       protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return com.diozero.remote.message.DiozeroProtos.internal_static_diozero_Gpio_GetBoardGpioInfo_fieldAccessorTable
+        return com.diozero.remote.message.DiozeroProtos.internal_static_diozero_Gpio_GetBoardInfo_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardGpioInfo.class, com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardGpioInfo.Builder.class);
+                com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardInfo.class, com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardInfo.Builder.class);
       }
 
       private int bitField0_;
@@ -2875,10 +2844,10 @@ public final class DiozeroProtos {
         if (obj == this) {
          return true;
         }
-        if (!(obj instanceof com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardGpioInfo)) {
+        if (!(obj instanceof com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardInfo)) {
           return super.equals(obj);
         }
-        com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardGpioInfo other = (com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardGpioInfo) obj;
+        com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardInfo other = (com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardInfo) obj;
 
         boolean result = true;
         result = result && (hasCorrelationId() == other.hasCorrelationId());
@@ -2906,69 +2875,69 @@ public final class DiozeroProtos {
         return hash;
       }
 
-      public static com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardGpioInfo parseFrom(
+      public static com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardInfo parseFrom(
           java.nio.ByteBuffer data)
           throws com.google.protobuf.InvalidProtocolBufferException {
         return PARSER.parseFrom(data);
       }
-      public static com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardGpioInfo parseFrom(
+      public static com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardInfo parseFrom(
           java.nio.ByteBuffer data,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
         return PARSER.parseFrom(data, extensionRegistry);
       }
-      public static com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardGpioInfo parseFrom(
+      public static com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardInfo parseFrom(
           com.google.protobuf.ByteString data)
           throws com.google.protobuf.InvalidProtocolBufferException {
         return PARSER.parseFrom(data);
       }
-      public static com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardGpioInfo parseFrom(
+      public static com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardInfo parseFrom(
           com.google.protobuf.ByteString data,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
         return PARSER.parseFrom(data, extensionRegistry);
       }
-      public static com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardGpioInfo parseFrom(byte[] data)
+      public static com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardInfo parseFrom(byte[] data)
           throws com.google.protobuf.InvalidProtocolBufferException {
         return PARSER.parseFrom(data);
       }
-      public static com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardGpioInfo parseFrom(
+      public static com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardInfo parseFrom(
           byte[] data,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
         return PARSER.parseFrom(data, extensionRegistry);
       }
-      public static com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardGpioInfo parseFrom(java.io.InputStream input)
+      public static com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardInfo parseFrom(java.io.InputStream input)
           throws java.io.IOException {
         return com.google.protobuf.GeneratedMessageV3
             .parseWithIOException(PARSER, input);
       }
-      public static com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardGpioInfo parseFrom(
+      public static com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardInfo parseFrom(
           java.io.InputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
         return com.google.protobuf.GeneratedMessageV3
             .parseWithIOException(PARSER, input, extensionRegistry);
       }
-      public static com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardGpioInfo parseDelimitedFrom(java.io.InputStream input)
+      public static com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardInfo parseDelimitedFrom(java.io.InputStream input)
           throws java.io.IOException {
         return com.google.protobuf.GeneratedMessageV3
             .parseDelimitedWithIOException(PARSER, input);
       }
-      public static com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardGpioInfo parseDelimitedFrom(
+      public static com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardInfo parseDelimitedFrom(
           java.io.InputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
         return com.google.protobuf.GeneratedMessageV3
             .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
       }
-      public static com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardGpioInfo parseFrom(
+      public static com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardInfo parseFrom(
           com.google.protobuf.CodedInputStream input)
           throws java.io.IOException {
         return com.google.protobuf.GeneratedMessageV3
             .parseWithIOException(PARSER, input);
       }
-      public static com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardGpioInfo parseFrom(
+      public static com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardInfo parseFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
@@ -2980,7 +2949,7 @@ public final class DiozeroProtos {
       public static Builder newBuilder() {
         return DEFAULT_INSTANCE.toBuilder();
       }
-      public static Builder newBuilder(com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardGpioInfo prototype) {
+      public static Builder newBuilder(com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardInfo prototype) {
         return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
       }
       public Builder toBuilder() {
@@ -2995,25 +2964,25 @@ public final class DiozeroProtos {
         return builder;
       }
       /**
-       * Protobuf type {@code diozero.Gpio.GetBoardGpioInfo}
+       * Protobuf type {@code diozero.Gpio.GetBoardInfo}
        */
       public static final class Builder extends
           com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-          // @@protoc_insertion_point(builder_implements:diozero.Gpio.GetBoardGpioInfo)
-          com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardGpioInfoOrBuilder {
+          // @@protoc_insertion_point(builder_implements:diozero.Gpio.GetBoardInfo)
+          com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardInfoOrBuilder {
         public static final com.google.protobuf.Descriptors.Descriptor
             getDescriptor() {
-          return com.diozero.remote.message.DiozeroProtos.internal_static_diozero_Gpio_GetBoardGpioInfo_descriptor;
+          return com.diozero.remote.message.DiozeroProtos.internal_static_diozero_Gpio_GetBoardInfo_descriptor;
         }
 
         protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
             internalGetFieldAccessorTable() {
-          return com.diozero.remote.message.DiozeroProtos.internal_static_diozero_Gpio_GetBoardGpioInfo_fieldAccessorTable
+          return com.diozero.remote.message.DiozeroProtos.internal_static_diozero_Gpio_GetBoardInfo_fieldAccessorTable
               .ensureFieldAccessorsInitialized(
-                  com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardGpioInfo.class, com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardGpioInfo.Builder.class);
+                  com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardInfo.class, com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardInfo.Builder.class);
         }
 
-        // Construct using com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardGpioInfo.newBuilder()
+        // Construct using com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardInfo.newBuilder()
         private Builder() {
           maybeForceBuilderInitialization();
         }
@@ -3037,23 +3006,23 @@ public final class DiozeroProtos {
 
         public com.google.protobuf.Descriptors.Descriptor
             getDescriptorForType() {
-          return com.diozero.remote.message.DiozeroProtos.internal_static_diozero_Gpio_GetBoardGpioInfo_descriptor;
+          return com.diozero.remote.message.DiozeroProtos.internal_static_diozero_Gpio_GetBoardInfo_descriptor;
         }
 
-        public com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardGpioInfo getDefaultInstanceForType() {
-          return com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardGpioInfo.getDefaultInstance();
+        public com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardInfo getDefaultInstanceForType() {
+          return com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardInfo.getDefaultInstance();
         }
 
-        public com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardGpioInfo build() {
-          com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardGpioInfo result = buildPartial();
+        public com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardInfo build() {
+          com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardInfo result = buildPartial();
           if (!result.isInitialized()) {
             throw newUninitializedMessageException(result);
           }
           return result;
         }
 
-        public com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardGpioInfo buildPartial() {
-          com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardGpioInfo result = new com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardGpioInfo(this);
+        public com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardInfo buildPartial() {
+          com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardInfo result = new com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardInfo(this);
           int from_bitField0_ = bitField0_;
           int to_bitField0_ = 0;
           if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
@@ -3092,16 +3061,16 @@ public final class DiozeroProtos {
           return (Builder) super.addRepeatedField(field, value);
         }
         public Builder mergeFrom(com.google.protobuf.Message other) {
-          if (other instanceof com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardGpioInfo) {
-            return mergeFrom((com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardGpioInfo)other);
+          if (other instanceof com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardInfo) {
+            return mergeFrom((com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardInfo)other);
           } else {
             super.mergeFrom(other);
             return this;
           }
         }
 
-        public Builder mergeFrom(com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardGpioInfo other) {
-          if (other == com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardGpioInfo.getDefaultInstance()) return this;
+        public Builder mergeFrom(com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardInfo other) {
+          if (other == com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardInfo.getDefaultInstance()) return this;
           if (other.hasCorrelationId()) {
             bitField0_ |= 0x00000001;
             correlationId_ = other.correlationId_;
@@ -3123,11 +3092,11 @@ public final class DiozeroProtos {
             com.google.protobuf.CodedInputStream input,
             com.google.protobuf.ExtensionRegistryLite extensionRegistry)
             throws java.io.IOException {
-          com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardGpioInfo parsedMessage = null;
+          com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardInfo parsedMessage = null;
           try {
             parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
           } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-            parsedMessage = (com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardGpioInfo) e.getUnfinishedMessage();
+            parsedMessage = (com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardInfo) e.getUnfinishedMessage();
             throw e.unwrapIOException();
           } finally {
             if (parsedMessage != null) {
@@ -3224,46 +3193,46 @@ public final class DiozeroProtos {
         }
 
 
-        // @@protoc_insertion_point(builder_scope:diozero.Gpio.GetBoardGpioInfo)
+        // @@protoc_insertion_point(builder_scope:diozero.Gpio.GetBoardInfo)
       }
 
-      // @@protoc_insertion_point(class_scope:diozero.Gpio.GetBoardGpioInfo)
-      private static final com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardGpioInfo DEFAULT_INSTANCE;
+      // @@protoc_insertion_point(class_scope:diozero.Gpio.GetBoardInfo)
+      private static final com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardInfo DEFAULT_INSTANCE;
       static {
-        DEFAULT_INSTANCE = new com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardGpioInfo();
+        DEFAULT_INSTANCE = new com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardInfo();
       }
 
-      public static com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardGpioInfo getDefaultInstance() {
+      public static com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardInfo getDefaultInstance() {
         return DEFAULT_INSTANCE;
       }
 
-      @java.lang.Deprecated public static final com.google.protobuf.Parser<GetBoardGpioInfo>
-          PARSER = new com.google.protobuf.AbstractParser<GetBoardGpioInfo>() {
-        public GetBoardGpioInfo parsePartialFrom(
+      @java.lang.Deprecated public static final com.google.protobuf.Parser<GetBoardInfo>
+          PARSER = new com.google.protobuf.AbstractParser<GetBoardInfo>() {
+        public GetBoardInfo parsePartialFrom(
             com.google.protobuf.CodedInputStream input,
             com.google.protobuf.ExtensionRegistryLite extensionRegistry)
             throws com.google.protobuf.InvalidProtocolBufferException {
-            return new GetBoardGpioInfo(input, extensionRegistry);
+            return new GetBoardInfo(input, extensionRegistry);
         }
       };
 
-      public static com.google.protobuf.Parser<GetBoardGpioInfo> parser() {
+      public static com.google.protobuf.Parser<GetBoardInfo> parser() {
         return PARSER;
       }
 
       @java.lang.Override
-      public com.google.protobuf.Parser<GetBoardGpioInfo> getParserForType() {
+      public com.google.protobuf.Parser<GetBoardInfo> getParserForType() {
         return PARSER;
       }
 
-      public com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardGpioInfo getDefaultInstanceForType() {
+      public com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardInfo getDefaultInstanceForType() {
         return DEFAULT_INSTANCE;
       }
 
     }
 
-    public interface GetBoardGpioInfoResponseOrBuilder extends
-        // @@protoc_insertion_point(interface_extends:diozero.Gpio.GetBoardGpioInfoResponse)
+    public interface GetBoardInfoResponseOrBuilder extends
+        // @@protoc_insertion_point(interface_extends:diozero.Gpio.GetBoardInfoResponse)
         com.google.protobuf.MessageOrBuilder {
 
       /**
@@ -3304,44 +3273,84 @@ public final class DiozeroProtos {
           getDetailBytes();
 
       /**
-       * <code>repeated .diozero.Gpio.GpioInfo gpioInfo = 4;</code>
+       * <code>optional string make = 4;</code>
+       */
+      boolean hasMake();
+      /**
+       * <code>optional string make = 4;</code>
+       */
+      java.lang.String getMake();
+      /**
+       * <code>optional string make = 4;</code>
+       */
+      com.google.protobuf.ByteString
+          getMakeBytes();
+
+      /**
+       * <code>optional string model = 5;</code>
+       */
+      boolean hasModel();
+      /**
+       * <code>optional string model = 5;</code>
+       */
+      java.lang.String getModel();
+      /**
+       * <code>optional string model = 5;</code>
+       */
+      com.google.protobuf.ByteString
+          getModelBytes();
+
+      /**
+       * <code>optional int32 memory = 6;</code>
+       */
+      boolean hasMemory();
+      /**
+       * <code>optional int32 memory = 6;</code>
+       */
+      int getMemory();
+
+      /**
+       * <code>repeated .diozero.Gpio.GpioInfo gpioInfo = 7;</code>
        */
       java.util.List<com.diozero.remote.message.DiozeroProtos.Gpio.GpioInfo> 
           getGpioInfoList();
       /**
-       * <code>repeated .diozero.Gpio.GpioInfo gpioInfo = 4;</code>
+       * <code>repeated .diozero.Gpio.GpioInfo gpioInfo = 7;</code>
        */
       com.diozero.remote.message.DiozeroProtos.Gpio.GpioInfo getGpioInfo(int index);
       /**
-       * <code>repeated .diozero.Gpio.GpioInfo gpioInfo = 4;</code>
+       * <code>repeated .diozero.Gpio.GpioInfo gpioInfo = 7;</code>
        */
       int getGpioInfoCount();
       /**
-       * <code>repeated .diozero.Gpio.GpioInfo gpioInfo = 4;</code>
+       * <code>repeated .diozero.Gpio.GpioInfo gpioInfo = 7;</code>
        */
       java.util.List<? extends com.diozero.remote.message.DiozeroProtos.Gpio.GpioInfoOrBuilder> 
           getGpioInfoOrBuilderList();
       /**
-       * <code>repeated .diozero.Gpio.GpioInfo gpioInfo = 4;</code>
+       * <code>repeated .diozero.Gpio.GpioInfo gpioInfo = 7;</code>
        */
       com.diozero.remote.message.DiozeroProtos.Gpio.GpioInfoOrBuilder getGpioInfoOrBuilder(
           int index);
     }
     /**
-     * Protobuf type {@code diozero.Gpio.GetBoardGpioInfoResponse}
+     * Protobuf type {@code diozero.Gpio.GetBoardInfoResponse}
      */
-    public  static final class GetBoardGpioInfoResponse extends
+    public  static final class GetBoardInfoResponse extends
         com.google.protobuf.GeneratedMessageV3 implements
-        // @@protoc_insertion_point(message_implements:diozero.Gpio.GetBoardGpioInfoResponse)
-        GetBoardGpioInfoResponseOrBuilder {
-      // Use GetBoardGpioInfoResponse.newBuilder() to construct.
-      private GetBoardGpioInfoResponse(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+        // @@protoc_insertion_point(message_implements:diozero.Gpio.GetBoardInfoResponse)
+        GetBoardInfoResponseOrBuilder {
+      // Use GetBoardInfoResponse.newBuilder() to construct.
+      private GetBoardInfoResponse(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
         super(builder);
       }
-      private GetBoardGpioInfoResponse() {
+      private GetBoardInfoResponse() {
         correlationId_ = "";
         status_ = 0;
         detail_ = "";
+        make_ = "";
+        model_ = "";
+        memory_ = 0;
         gpioInfo_ = java.util.Collections.emptyList();
       }
 
@@ -3350,7 +3359,7 @@ public final class DiozeroProtos {
       getUnknownFields() {
         return this.unknownFields;
       }
-      private GetBoardGpioInfoResponse(
+      private GetBoardInfoResponse(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
@@ -3397,9 +3406,26 @@ public final class DiozeroProtos {
                 break;
               }
               case 34: {
-                if (!((mutable_bitField0_ & 0x00000008) == 0x00000008)) {
+                com.google.protobuf.ByteString bs = input.readBytes();
+                bitField0_ |= 0x00000008;
+                make_ = bs;
+                break;
+              }
+              case 42: {
+                com.google.protobuf.ByteString bs = input.readBytes();
+                bitField0_ |= 0x00000010;
+                model_ = bs;
+                break;
+              }
+              case 48: {
+                bitField0_ |= 0x00000020;
+                memory_ = input.readInt32();
+                break;
+              }
+              case 58: {
+                if (!((mutable_bitField0_ & 0x00000040) == 0x00000040)) {
                   gpioInfo_ = new java.util.ArrayList<com.diozero.remote.message.DiozeroProtos.Gpio.GpioInfo>();
-                  mutable_bitField0_ |= 0x00000008;
+                  mutable_bitField0_ |= 0x00000040;
                 }
                 gpioInfo_.add(
                     input.readMessage(com.diozero.remote.message.DiozeroProtos.Gpio.GpioInfo.PARSER, extensionRegistry));
@@ -3413,7 +3439,7 @@ public final class DiozeroProtos {
           throw new com.google.protobuf.InvalidProtocolBufferException(
               e).setUnfinishedMessage(this);
         } finally {
-          if (((mutable_bitField0_ & 0x00000008) == 0x00000008)) {
+          if (((mutable_bitField0_ & 0x00000040) == 0x00000040)) {
             gpioInfo_ = java.util.Collections.unmodifiableList(gpioInfo_);
           }
           this.unknownFields = unknownFields.build();
@@ -3422,14 +3448,14 @@ public final class DiozeroProtos {
       }
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return com.diozero.remote.message.DiozeroProtos.internal_static_diozero_Gpio_GetBoardGpioInfoResponse_descriptor;
+        return com.diozero.remote.message.DiozeroProtos.internal_static_diozero_Gpio_GetBoardInfoResponse_descriptor;
       }
 
       protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return com.diozero.remote.message.DiozeroProtos.internal_static_diozero_Gpio_GetBoardGpioInfoResponse_fieldAccessorTable
+        return com.diozero.remote.message.DiozeroProtos.internal_static_diozero_Gpio_GetBoardInfoResponse_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardGpioInfoResponse.class, com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardGpioInfoResponse.Builder.class);
+                com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardInfoResponse.class, com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardInfoResponse.Builder.class);
       }
 
       private int bitField0_;
@@ -3533,35 +3559,134 @@ public final class DiozeroProtos {
         }
       }
 
-      public static final int GPIOINFO_FIELD_NUMBER = 4;
+      public static final int MAKE_FIELD_NUMBER = 4;
+      private volatile java.lang.Object make_;
+      /**
+       * <code>optional string make = 4;</code>
+       */
+      public boolean hasMake() {
+        return ((bitField0_ & 0x00000008) == 0x00000008);
+      }
+      /**
+       * <code>optional string make = 4;</code>
+       */
+      public java.lang.String getMake() {
+        java.lang.Object ref = make_;
+        if (ref instanceof java.lang.String) {
+          return (java.lang.String) ref;
+        } else {
+          com.google.protobuf.ByteString bs = 
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            make_ = s;
+          }
+          return s;
+        }
+      }
+      /**
+       * <code>optional string make = 4;</code>
+       */
+      public com.google.protobuf.ByteString
+          getMakeBytes() {
+        java.lang.Object ref = make_;
+        if (ref instanceof java.lang.String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          make_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+
+      public static final int MODEL_FIELD_NUMBER = 5;
+      private volatile java.lang.Object model_;
+      /**
+       * <code>optional string model = 5;</code>
+       */
+      public boolean hasModel() {
+        return ((bitField0_ & 0x00000010) == 0x00000010);
+      }
+      /**
+       * <code>optional string model = 5;</code>
+       */
+      public java.lang.String getModel() {
+        java.lang.Object ref = model_;
+        if (ref instanceof java.lang.String) {
+          return (java.lang.String) ref;
+        } else {
+          com.google.protobuf.ByteString bs = 
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            model_ = s;
+          }
+          return s;
+        }
+      }
+      /**
+       * <code>optional string model = 5;</code>
+       */
+      public com.google.protobuf.ByteString
+          getModelBytes() {
+        java.lang.Object ref = model_;
+        if (ref instanceof java.lang.String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          model_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+
+      public static final int MEMORY_FIELD_NUMBER = 6;
+      private int memory_;
+      /**
+       * <code>optional int32 memory = 6;</code>
+       */
+      public boolean hasMemory() {
+        return ((bitField0_ & 0x00000020) == 0x00000020);
+      }
+      /**
+       * <code>optional int32 memory = 6;</code>
+       */
+      public int getMemory() {
+        return memory_;
+      }
+
+      public static final int GPIOINFO_FIELD_NUMBER = 7;
       private java.util.List<com.diozero.remote.message.DiozeroProtos.Gpio.GpioInfo> gpioInfo_;
       /**
-       * <code>repeated .diozero.Gpio.GpioInfo gpioInfo = 4;</code>
+       * <code>repeated .diozero.Gpio.GpioInfo gpioInfo = 7;</code>
        */
       public java.util.List<com.diozero.remote.message.DiozeroProtos.Gpio.GpioInfo> getGpioInfoList() {
         return gpioInfo_;
       }
       /**
-       * <code>repeated .diozero.Gpio.GpioInfo gpioInfo = 4;</code>
+       * <code>repeated .diozero.Gpio.GpioInfo gpioInfo = 7;</code>
        */
       public java.util.List<? extends com.diozero.remote.message.DiozeroProtos.Gpio.GpioInfoOrBuilder> 
           getGpioInfoOrBuilderList() {
         return gpioInfo_;
       }
       /**
-       * <code>repeated .diozero.Gpio.GpioInfo gpioInfo = 4;</code>
+       * <code>repeated .diozero.Gpio.GpioInfo gpioInfo = 7;</code>
        */
       public int getGpioInfoCount() {
         return gpioInfo_.size();
       }
       /**
-       * <code>repeated .diozero.Gpio.GpioInfo gpioInfo = 4;</code>
+       * <code>repeated .diozero.Gpio.GpioInfo gpioInfo = 7;</code>
        */
       public com.diozero.remote.message.DiozeroProtos.Gpio.GpioInfo getGpioInfo(int index) {
         return gpioInfo_.get(index);
       }
       /**
-       * <code>repeated .diozero.Gpio.GpioInfo gpioInfo = 4;</code>
+       * <code>repeated .diozero.Gpio.GpioInfo gpioInfo = 7;</code>
        */
       public com.diozero.remote.message.DiozeroProtos.Gpio.GpioInfoOrBuilder getGpioInfoOrBuilder(
           int index) {
@@ -3603,8 +3728,17 @@ public final class DiozeroProtos {
         if (((bitField0_ & 0x00000004) == 0x00000004)) {
           com.google.protobuf.GeneratedMessageV3.writeString(output, 3, detail_);
         }
+        if (((bitField0_ & 0x00000008) == 0x00000008)) {
+          com.google.protobuf.GeneratedMessageV3.writeString(output, 4, make_);
+        }
+        if (((bitField0_ & 0x00000010) == 0x00000010)) {
+          com.google.protobuf.GeneratedMessageV3.writeString(output, 5, model_);
+        }
+        if (((bitField0_ & 0x00000020) == 0x00000020)) {
+          output.writeInt32(6, memory_);
+        }
         for (int i = 0; i < gpioInfo_.size(); i++) {
-          output.writeMessage(4, gpioInfo_.get(i));
+          output.writeMessage(7, gpioInfo_.get(i));
         }
         unknownFields.writeTo(output);
       }
@@ -3624,9 +3758,19 @@ public final class DiozeroProtos {
         if (((bitField0_ & 0x00000004) == 0x00000004)) {
           size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, detail_);
         }
+        if (((bitField0_ & 0x00000008) == 0x00000008)) {
+          size += com.google.protobuf.GeneratedMessageV3.computeStringSize(4, make_);
+        }
+        if (((bitField0_ & 0x00000010) == 0x00000010)) {
+          size += com.google.protobuf.GeneratedMessageV3.computeStringSize(5, model_);
+        }
+        if (((bitField0_ & 0x00000020) == 0x00000020)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeInt32Size(6, memory_);
+        }
         for (int i = 0; i < gpioInfo_.size(); i++) {
           size += com.google.protobuf.CodedOutputStream
-            .computeMessageSize(4, gpioInfo_.get(i));
+            .computeMessageSize(7, gpioInfo_.get(i));
         }
         size += unknownFields.getSerializedSize();
         memoizedSize = size;
@@ -3639,10 +3783,10 @@ public final class DiozeroProtos {
         if (obj == this) {
          return true;
         }
-        if (!(obj instanceof com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardGpioInfoResponse)) {
+        if (!(obj instanceof com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardInfoResponse)) {
           return super.equals(obj);
         }
-        com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardGpioInfoResponse other = (com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardGpioInfoResponse) obj;
+        com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardInfoResponse other = (com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardInfoResponse) obj;
 
         boolean result = true;
         result = result && (hasCorrelationId() == other.hasCorrelationId());
@@ -3658,6 +3802,21 @@ public final class DiozeroProtos {
         if (hasDetail()) {
           result = result && getDetail()
               .equals(other.getDetail());
+        }
+        result = result && (hasMake() == other.hasMake());
+        if (hasMake()) {
+          result = result && getMake()
+              .equals(other.getMake());
+        }
+        result = result && (hasModel() == other.hasModel());
+        if (hasModel()) {
+          result = result && getModel()
+              .equals(other.getModel());
+        }
+        result = result && (hasMemory() == other.hasMemory());
+        if (hasMemory()) {
+          result = result && (getMemory()
+              == other.getMemory());
         }
         result = result && getGpioInfoList()
             .equals(other.getGpioInfoList());
@@ -3684,6 +3843,18 @@ public final class DiozeroProtos {
           hash = (37 * hash) + DETAIL_FIELD_NUMBER;
           hash = (53 * hash) + getDetail().hashCode();
         }
+        if (hasMake()) {
+          hash = (37 * hash) + MAKE_FIELD_NUMBER;
+          hash = (53 * hash) + getMake().hashCode();
+        }
+        if (hasModel()) {
+          hash = (37 * hash) + MODEL_FIELD_NUMBER;
+          hash = (53 * hash) + getModel().hashCode();
+        }
+        if (hasMemory()) {
+          hash = (37 * hash) + MEMORY_FIELD_NUMBER;
+          hash = (53 * hash) + getMemory();
+        }
         if (getGpioInfoCount() > 0) {
           hash = (37 * hash) + GPIOINFO_FIELD_NUMBER;
           hash = (53 * hash) + getGpioInfoList().hashCode();
@@ -3693,69 +3864,69 @@ public final class DiozeroProtos {
         return hash;
       }
 
-      public static com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardGpioInfoResponse parseFrom(
+      public static com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardInfoResponse parseFrom(
           java.nio.ByteBuffer data)
           throws com.google.protobuf.InvalidProtocolBufferException {
         return PARSER.parseFrom(data);
       }
-      public static com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardGpioInfoResponse parseFrom(
+      public static com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardInfoResponse parseFrom(
           java.nio.ByteBuffer data,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
         return PARSER.parseFrom(data, extensionRegistry);
       }
-      public static com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardGpioInfoResponse parseFrom(
+      public static com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardInfoResponse parseFrom(
           com.google.protobuf.ByteString data)
           throws com.google.protobuf.InvalidProtocolBufferException {
         return PARSER.parseFrom(data);
       }
-      public static com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardGpioInfoResponse parseFrom(
+      public static com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardInfoResponse parseFrom(
           com.google.protobuf.ByteString data,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
         return PARSER.parseFrom(data, extensionRegistry);
       }
-      public static com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardGpioInfoResponse parseFrom(byte[] data)
+      public static com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardInfoResponse parseFrom(byte[] data)
           throws com.google.protobuf.InvalidProtocolBufferException {
         return PARSER.parseFrom(data);
       }
-      public static com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardGpioInfoResponse parseFrom(
+      public static com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardInfoResponse parseFrom(
           byte[] data,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
         return PARSER.parseFrom(data, extensionRegistry);
       }
-      public static com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardGpioInfoResponse parseFrom(java.io.InputStream input)
+      public static com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardInfoResponse parseFrom(java.io.InputStream input)
           throws java.io.IOException {
         return com.google.protobuf.GeneratedMessageV3
             .parseWithIOException(PARSER, input);
       }
-      public static com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardGpioInfoResponse parseFrom(
+      public static com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardInfoResponse parseFrom(
           java.io.InputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
         return com.google.protobuf.GeneratedMessageV3
             .parseWithIOException(PARSER, input, extensionRegistry);
       }
-      public static com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardGpioInfoResponse parseDelimitedFrom(java.io.InputStream input)
+      public static com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardInfoResponse parseDelimitedFrom(java.io.InputStream input)
           throws java.io.IOException {
         return com.google.protobuf.GeneratedMessageV3
             .parseDelimitedWithIOException(PARSER, input);
       }
-      public static com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardGpioInfoResponse parseDelimitedFrom(
+      public static com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardInfoResponse parseDelimitedFrom(
           java.io.InputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
         return com.google.protobuf.GeneratedMessageV3
             .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
       }
-      public static com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardGpioInfoResponse parseFrom(
+      public static com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardInfoResponse parseFrom(
           com.google.protobuf.CodedInputStream input)
           throws java.io.IOException {
         return com.google.protobuf.GeneratedMessageV3
             .parseWithIOException(PARSER, input);
       }
-      public static com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardGpioInfoResponse parseFrom(
+      public static com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardInfoResponse parseFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
@@ -3767,7 +3938,7 @@ public final class DiozeroProtos {
       public static Builder newBuilder() {
         return DEFAULT_INSTANCE.toBuilder();
       }
-      public static Builder newBuilder(com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardGpioInfoResponse prototype) {
+      public static Builder newBuilder(com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardInfoResponse prototype) {
         return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
       }
       public Builder toBuilder() {
@@ -3782,25 +3953,25 @@ public final class DiozeroProtos {
         return builder;
       }
       /**
-       * Protobuf type {@code diozero.Gpio.GetBoardGpioInfoResponse}
+       * Protobuf type {@code diozero.Gpio.GetBoardInfoResponse}
        */
       public static final class Builder extends
           com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-          // @@protoc_insertion_point(builder_implements:diozero.Gpio.GetBoardGpioInfoResponse)
-          com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardGpioInfoResponseOrBuilder {
+          // @@protoc_insertion_point(builder_implements:diozero.Gpio.GetBoardInfoResponse)
+          com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardInfoResponseOrBuilder {
         public static final com.google.protobuf.Descriptors.Descriptor
             getDescriptor() {
-          return com.diozero.remote.message.DiozeroProtos.internal_static_diozero_Gpio_GetBoardGpioInfoResponse_descriptor;
+          return com.diozero.remote.message.DiozeroProtos.internal_static_diozero_Gpio_GetBoardInfoResponse_descriptor;
         }
 
         protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
             internalGetFieldAccessorTable() {
-          return com.diozero.remote.message.DiozeroProtos.internal_static_diozero_Gpio_GetBoardGpioInfoResponse_fieldAccessorTable
+          return com.diozero.remote.message.DiozeroProtos.internal_static_diozero_Gpio_GetBoardInfoResponse_fieldAccessorTable
               .ensureFieldAccessorsInitialized(
-                  com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardGpioInfoResponse.class, com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardGpioInfoResponse.Builder.class);
+                  com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardInfoResponse.class, com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardInfoResponse.Builder.class);
         }
 
-        // Construct using com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardGpioInfoResponse.newBuilder()
+        // Construct using com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardInfoResponse.newBuilder()
         private Builder() {
           maybeForceBuilderInitialization();
         }
@@ -3824,9 +3995,15 @@ public final class DiozeroProtos {
           bitField0_ = (bitField0_ & ~0x00000002);
           detail_ = "";
           bitField0_ = (bitField0_ & ~0x00000004);
+          make_ = "";
+          bitField0_ = (bitField0_ & ~0x00000008);
+          model_ = "";
+          bitField0_ = (bitField0_ & ~0x00000010);
+          memory_ = 0;
+          bitField0_ = (bitField0_ & ~0x00000020);
           if (gpioInfoBuilder_ == null) {
             gpioInfo_ = java.util.Collections.emptyList();
-            bitField0_ = (bitField0_ & ~0x00000008);
+            bitField0_ = (bitField0_ & ~0x00000040);
           } else {
             gpioInfoBuilder_.clear();
           }
@@ -3835,23 +4012,23 @@ public final class DiozeroProtos {
 
         public com.google.protobuf.Descriptors.Descriptor
             getDescriptorForType() {
-          return com.diozero.remote.message.DiozeroProtos.internal_static_diozero_Gpio_GetBoardGpioInfoResponse_descriptor;
+          return com.diozero.remote.message.DiozeroProtos.internal_static_diozero_Gpio_GetBoardInfoResponse_descriptor;
         }
 
-        public com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardGpioInfoResponse getDefaultInstanceForType() {
-          return com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardGpioInfoResponse.getDefaultInstance();
+        public com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardInfoResponse getDefaultInstanceForType() {
+          return com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardInfoResponse.getDefaultInstance();
         }
 
-        public com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardGpioInfoResponse build() {
-          com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardGpioInfoResponse result = buildPartial();
+        public com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardInfoResponse build() {
+          com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardInfoResponse result = buildPartial();
           if (!result.isInitialized()) {
             throw newUninitializedMessageException(result);
           }
           return result;
         }
 
-        public com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardGpioInfoResponse buildPartial() {
-          com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardGpioInfoResponse result = new com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardGpioInfoResponse(this);
+        public com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardInfoResponse buildPartial() {
+          com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardInfoResponse result = new com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardInfoResponse(this);
           int from_bitField0_ = bitField0_;
           int to_bitField0_ = 0;
           if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
@@ -3866,10 +4043,22 @@ public final class DiozeroProtos {
             to_bitField0_ |= 0x00000004;
           }
           result.detail_ = detail_;
+          if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
+            to_bitField0_ |= 0x00000008;
+          }
+          result.make_ = make_;
+          if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
+            to_bitField0_ |= 0x00000010;
+          }
+          result.model_ = model_;
+          if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
+            to_bitField0_ |= 0x00000020;
+          }
+          result.memory_ = memory_;
           if (gpioInfoBuilder_ == null) {
-            if (((bitField0_ & 0x00000008) == 0x00000008)) {
+            if (((bitField0_ & 0x00000040) == 0x00000040)) {
               gpioInfo_ = java.util.Collections.unmodifiableList(gpioInfo_);
-              bitField0_ = (bitField0_ & ~0x00000008);
+              bitField0_ = (bitField0_ & ~0x00000040);
             }
             result.gpioInfo_ = gpioInfo_;
           } else {
@@ -3907,16 +4096,16 @@ public final class DiozeroProtos {
           return (Builder) super.addRepeatedField(field, value);
         }
         public Builder mergeFrom(com.google.protobuf.Message other) {
-          if (other instanceof com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardGpioInfoResponse) {
-            return mergeFrom((com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardGpioInfoResponse)other);
+          if (other instanceof com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardInfoResponse) {
+            return mergeFrom((com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardInfoResponse)other);
           } else {
             super.mergeFrom(other);
             return this;
           }
         }
 
-        public Builder mergeFrom(com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardGpioInfoResponse other) {
-          if (other == com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardGpioInfoResponse.getDefaultInstance()) return this;
+        public Builder mergeFrom(com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardInfoResponse other) {
+          if (other == com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardInfoResponse.getDefaultInstance()) return this;
           if (other.hasCorrelationId()) {
             bitField0_ |= 0x00000001;
             correlationId_ = other.correlationId_;
@@ -3930,11 +4119,24 @@ public final class DiozeroProtos {
             detail_ = other.detail_;
             onChanged();
           }
+          if (other.hasMake()) {
+            bitField0_ |= 0x00000008;
+            make_ = other.make_;
+            onChanged();
+          }
+          if (other.hasModel()) {
+            bitField0_ |= 0x00000010;
+            model_ = other.model_;
+            onChanged();
+          }
+          if (other.hasMemory()) {
+            setMemory(other.getMemory());
+          }
           if (gpioInfoBuilder_ == null) {
             if (!other.gpioInfo_.isEmpty()) {
               if (gpioInfo_.isEmpty()) {
                 gpioInfo_ = other.gpioInfo_;
-                bitField0_ = (bitField0_ & ~0x00000008);
+                bitField0_ = (bitField0_ & ~0x00000040);
               } else {
                 ensureGpioInfoIsMutable();
                 gpioInfo_.addAll(other.gpioInfo_);
@@ -3947,7 +4149,7 @@ public final class DiozeroProtos {
                 gpioInfoBuilder_.dispose();
                 gpioInfoBuilder_ = null;
                 gpioInfo_ = other.gpioInfo_;
-                bitField0_ = (bitField0_ & ~0x00000008);
+                bitField0_ = (bitField0_ & ~0x00000040);
                 gpioInfoBuilder_ = 
                   com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                      getGpioInfoFieldBuilder() : null;
@@ -3980,11 +4182,11 @@ public final class DiozeroProtos {
             com.google.protobuf.CodedInputStream input,
             com.google.protobuf.ExtensionRegistryLite extensionRegistry)
             throws java.io.IOException {
-          com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardGpioInfoResponse parsedMessage = null;
+          com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardInfoResponse parsedMessage = null;
           try {
             parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
           } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-            parsedMessage = (com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardGpioInfoResponse) e.getUnfinishedMessage();
+            parsedMessage = (com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardInfoResponse) e.getUnfinishedMessage();
             throw e.unwrapIOException();
           } finally {
             if (parsedMessage != null) {
@@ -4183,12 +4385,196 @@ public final class DiozeroProtos {
           return this;
         }
 
+        private java.lang.Object make_ = "";
+        /**
+         * <code>optional string make = 4;</code>
+         */
+        public boolean hasMake() {
+          return ((bitField0_ & 0x00000008) == 0x00000008);
+        }
+        /**
+         * <code>optional string make = 4;</code>
+         */
+        public java.lang.String getMake() {
+          java.lang.Object ref = make_;
+          if (!(ref instanceof java.lang.String)) {
+            com.google.protobuf.ByteString bs =
+                (com.google.protobuf.ByteString) ref;
+            java.lang.String s = bs.toStringUtf8();
+            if (bs.isValidUtf8()) {
+              make_ = s;
+            }
+            return s;
+          } else {
+            return (java.lang.String) ref;
+          }
+        }
+        /**
+         * <code>optional string make = 4;</code>
+         */
+        public com.google.protobuf.ByteString
+            getMakeBytes() {
+          java.lang.Object ref = make_;
+          if (ref instanceof String) {
+            com.google.protobuf.ByteString b = 
+                com.google.protobuf.ByteString.copyFromUtf8(
+                    (java.lang.String) ref);
+            make_ = b;
+            return b;
+          } else {
+            return (com.google.protobuf.ByteString) ref;
+          }
+        }
+        /**
+         * <code>optional string make = 4;</code>
+         */
+        public Builder setMake(
+            java.lang.String value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000008;
+          make_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>optional string make = 4;</code>
+         */
+        public Builder clearMake() {
+          bitField0_ = (bitField0_ & ~0x00000008);
+          make_ = getDefaultInstance().getMake();
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>optional string make = 4;</code>
+         */
+        public Builder setMakeBytes(
+            com.google.protobuf.ByteString value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000008;
+          make_ = value;
+          onChanged();
+          return this;
+        }
+
+        private java.lang.Object model_ = "";
+        /**
+         * <code>optional string model = 5;</code>
+         */
+        public boolean hasModel() {
+          return ((bitField0_ & 0x00000010) == 0x00000010);
+        }
+        /**
+         * <code>optional string model = 5;</code>
+         */
+        public java.lang.String getModel() {
+          java.lang.Object ref = model_;
+          if (!(ref instanceof java.lang.String)) {
+            com.google.protobuf.ByteString bs =
+                (com.google.protobuf.ByteString) ref;
+            java.lang.String s = bs.toStringUtf8();
+            if (bs.isValidUtf8()) {
+              model_ = s;
+            }
+            return s;
+          } else {
+            return (java.lang.String) ref;
+          }
+        }
+        /**
+         * <code>optional string model = 5;</code>
+         */
+        public com.google.protobuf.ByteString
+            getModelBytes() {
+          java.lang.Object ref = model_;
+          if (ref instanceof String) {
+            com.google.protobuf.ByteString b = 
+                com.google.protobuf.ByteString.copyFromUtf8(
+                    (java.lang.String) ref);
+            model_ = b;
+            return b;
+          } else {
+            return (com.google.protobuf.ByteString) ref;
+          }
+        }
+        /**
+         * <code>optional string model = 5;</code>
+         */
+        public Builder setModel(
+            java.lang.String value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000010;
+          model_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>optional string model = 5;</code>
+         */
+        public Builder clearModel() {
+          bitField0_ = (bitField0_ & ~0x00000010);
+          model_ = getDefaultInstance().getModel();
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>optional string model = 5;</code>
+         */
+        public Builder setModelBytes(
+            com.google.protobuf.ByteString value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000010;
+          model_ = value;
+          onChanged();
+          return this;
+        }
+
+        private int memory_ ;
+        /**
+         * <code>optional int32 memory = 6;</code>
+         */
+        public boolean hasMemory() {
+          return ((bitField0_ & 0x00000020) == 0x00000020);
+        }
+        /**
+         * <code>optional int32 memory = 6;</code>
+         */
+        public int getMemory() {
+          return memory_;
+        }
+        /**
+         * <code>optional int32 memory = 6;</code>
+         */
+        public Builder setMemory(int value) {
+          bitField0_ |= 0x00000020;
+          memory_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>optional int32 memory = 6;</code>
+         */
+        public Builder clearMemory() {
+          bitField0_ = (bitField0_ & ~0x00000020);
+          memory_ = 0;
+          onChanged();
+          return this;
+        }
+
         private java.util.List<com.diozero.remote.message.DiozeroProtos.Gpio.GpioInfo> gpioInfo_ =
           java.util.Collections.emptyList();
         private void ensureGpioInfoIsMutable() {
-          if (!((bitField0_ & 0x00000008) == 0x00000008)) {
+          if (!((bitField0_ & 0x00000040) == 0x00000040)) {
             gpioInfo_ = new java.util.ArrayList<com.diozero.remote.message.DiozeroProtos.Gpio.GpioInfo>(gpioInfo_);
-            bitField0_ |= 0x00000008;
+            bitField0_ |= 0x00000040;
            }
         }
 
@@ -4196,7 +4582,7 @@ public final class DiozeroProtos {
             com.diozero.remote.message.DiozeroProtos.Gpio.GpioInfo, com.diozero.remote.message.DiozeroProtos.Gpio.GpioInfo.Builder, com.diozero.remote.message.DiozeroProtos.Gpio.GpioInfoOrBuilder> gpioInfoBuilder_;
 
         /**
-         * <code>repeated .diozero.Gpio.GpioInfo gpioInfo = 4;</code>
+         * <code>repeated .diozero.Gpio.GpioInfo gpioInfo = 7;</code>
          */
         public java.util.List<com.diozero.remote.message.DiozeroProtos.Gpio.GpioInfo> getGpioInfoList() {
           if (gpioInfoBuilder_ == null) {
@@ -4206,7 +4592,7 @@ public final class DiozeroProtos {
           }
         }
         /**
-         * <code>repeated .diozero.Gpio.GpioInfo gpioInfo = 4;</code>
+         * <code>repeated .diozero.Gpio.GpioInfo gpioInfo = 7;</code>
          */
         public int getGpioInfoCount() {
           if (gpioInfoBuilder_ == null) {
@@ -4216,7 +4602,7 @@ public final class DiozeroProtos {
           }
         }
         /**
-         * <code>repeated .diozero.Gpio.GpioInfo gpioInfo = 4;</code>
+         * <code>repeated .diozero.Gpio.GpioInfo gpioInfo = 7;</code>
          */
         public com.diozero.remote.message.DiozeroProtos.Gpio.GpioInfo getGpioInfo(int index) {
           if (gpioInfoBuilder_ == null) {
@@ -4226,7 +4612,7 @@ public final class DiozeroProtos {
           }
         }
         /**
-         * <code>repeated .diozero.Gpio.GpioInfo gpioInfo = 4;</code>
+         * <code>repeated .diozero.Gpio.GpioInfo gpioInfo = 7;</code>
          */
         public Builder setGpioInfo(
             int index, com.diozero.remote.message.DiozeroProtos.Gpio.GpioInfo value) {
@@ -4243,7 +4629,7 @@ public final class DiozeroProtos {
           return this;
         }
         /**
-         * <code>repeated .diozero.Gpio.GpioInfo gpioInfo = 4;</code>
+         * <code>repeated .diozero.Gpio.GpioInfo gpioInfo = 7;</code>
          */
         public Builder setGpioInfo(
             int index, com.diozero.remote.message.DiozeroProtos.Gpio.GpioInfo.Builder builderForValue) {
@@ -4257,7 +4643,7 @@ public final class DiozeroProtos {
           return this;
         }
         /**
-         * <code>repeated .diozero.Gpio.GpioInfo gpioInfo = 4;</code>
+         * <code>repeated .diozero.Gpio.GpioInfo gpioInfo = 7;</code>
          */
         public Builder addGpioInfo(com.diozero.remote.message.DiozeroProtos.Gpio.GpioInfo value) {
           if (gpioInfoBuilder_ == null) {
@@ -4273,7 +4659,7 @@ public final class DiozeroProtos {
           return this;
         }
         /**
-         * <code>repeated .diozero.Gpio.GpioInfo gpioInfo = 4;</code>
+         * <code>repeated .diozero.Gpio.GpioInfo gpioInfo = 7;</code>
          */
         public Builder addGpioInfo(
             int index, com.diozero.remote.message.DiozeroProtos.Gpio.GpioInfo value) {
@@ -4290,7 +4676,7 @@ public final class DiozeroProtos {
           return this;
         }
         /**
-         * <code>repeated .diozero.Gpio.GpioInfo gpioInfo = 4;</code>
+         * <code>repeated .diozero.Gpio.GpioInfo gpioInfo = 7;</code>
          */
         public Builder addGpioInfo(
             com.diozero.remote.message.DiozeroProtos.Gpio.GpioInfo.Builder builderForValue) {
@@ -4304,7 +4690,7 @@ public final class DiozeroProtos {
           return this;
         }
         /**
-         * <code>repeated .diozero.Gpio.GpioInfo gpioInfo = 4;</code>
+         * <code>repeated .diozero.Gpio.GpioInfo gpioInfo = 7;</code>
          */
         public Builder addGpioInfo(
             int index, com.diozero.remote.message.DiozeroProtos.Gpio.GpioInfo.Builder builderForValue) {
@@ -4318,7 +4704,7 @@ public final class DiozeroProtos {
           return this;
         }
         /**
-         * <code>repeated .diozero.Gpio.GpioInfo gpioInfo = 4;</code>
+         * <code>repeated .diozero.Gpio.GpioInfo gpioInfo = 7;</code>
          */
         public Builder addAllGpioInfo(
             java.lang.Iterable<? extends com.diozero.remote.message.DiozeroProtos.Gpio.GpioInfo> values) {
@@ -4333,12 +4719,12 @@ public final class DiozeroProtos {
           return this;
         }
         /**
-         * <code>repeated .diozero.Gpio.GpioInfo gpioInfo = 4;</code>
+         * <code>repeated .diozero.Gpio.GpioInfo gpioInfo = 7;</code>
          */
         public Builder clearGpioInfo() {
           if (gpioInfoBuilder_ == null) {
             gpioInfo_ = java.util.Collections.emptyList();
-            bitField0_ = (bitField0_ & ~0x00000008);
+            bitField0_ = (bitField0_ & ~0x00000040);
             onChanged();
           } else {
             gpioInfoBuilder_.clear();
@@ -4346,7 +4732,7 @@ public final class DiozeroProtos {
           return this;
         }
         /**
-         * <code>repeated .diozero.Gpio.GpioInfo gpioInfo = 4;</code>
+         * <code>repeated .diozero.Gpio.GpioInfo gpioInfo = 7;</code>
          */
         public Builder removeGpioInfo(int index) {
           if (gpioInfoBuilder_ == null) {
@@ -4359,14 +4745,14 @@ public final class DiozeroProtos {
           return this;
         }
         /**
-         * <code>repeated .diozero.Gpio.GpioInfo gpioInfo = 4;</code>
+         * <code>repeated .diozero.Gpio.GpioInfo gpioInfo = 7;</code>
          */
         public com.diozero.remote.message.DiozeroProtos.Gpio.GpioInfo.Builder getGpioInfoBuilder(
             int index) {
           return getGpioInfoFieldBuilder().getBuilder(index);
         }
         /**
-         * <code>repeated .diozero.Gpio.GpioInfo gpioInfo = 4;</code>
+         * <code>repeated .diozero.Gpio.GpioInfo gpioInfo = 7;</code>
          */
         public com.diozero.remote.message.DiozeroProtos.Gpio.GpioInfoOrBuilder getGpioInfoOrBuilder(
             int index) {
@@ -4376,7 +4762,7 @@ public final class DiozeroProtos {
           }
         }
         /**
-         * <code>repeated .diozero.Gpio.GpioInfo gpioInfo = 4;</code>
+         * <code>repeated .diozero.Gpio.GpioInfo gpioInfo = 7;</code>
          */
         public java.util.List<? extends com.diozero.remote.message.DiozeroProtos.Gpio.GpioInfoOrBuilder> 
              getGpioInfoOrBuilderList() {
@@ -4387,14 +4773,14 @@ public final class DiozeroProtos {
           }
         }
         /**
-         * <code>repeated .diozero.Gpio.GpioInfo gpioInfo = 4;</code>
+         * <code>repeated .diozero.Gpio.GpioInfo gpioInfo = 7;</code>
          */
         public com.diozero.remote.message.DiozeroProtos.Gpio.GpioInfo.Builder addGpioInfoBuilder() {
           return getGpioInfoFieldBuilder().addBuilder(
               com.diozero.remote.message.DiozeroProtos.Gpio.GpioInfo.getDefaultInstance());
         }
         /**
-         * <code>repeated .diozero.Gpio.GpioInfo gpioInfo = 4;</code>
+         * <code>repeated .diozero.Gpio.GpioInfo gpioInfo = 7;</code>
          */
         public com.diozero.remote.message.DiozeroProtos.Gpio.GpioInfo.Builder addGpioInfoBuilder(
             int index) {
@@ -4402,7 +4788,7 @@ public final class DiozeroProtos {
               index, com.diozero.remote.message.DiozeroProtos.Gpio.GpioInfo.getDefaultInstance());
         }
         /**
-         * <code>repeated .diozero.Gpio.GpioInfo gpioInfo = 4;</code>
+         * <code>repeated .diozero.Gpio.GpioInfo gpioInfo = 7;</code>
          */
         public java.util.List<com.diozero.remote.message.DiozeroProtos.Gpio.GpioInfo.Builder> 
              getGpioInfoBuilderList() {
@@ -4415,7 +4801,7 @@ public final class DiozeroProtos {
             gpioInfoBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
                 com.diozero.remote.message.DiozeroProtos.Gpio.GpioInfo, com.diozero.remote.message.DiozeroProtos.Gpio.GpioInfo.Builder, com.diozero.remote.message.DiozeroProtos.Gpio.GpioInfoOrBuilder>(
                     gpioInfo_,
-                    ((bitField0_ & 0x00000008) == 0x00000008),
+                    ((bitField0_ & 0x00000040) == 0x00000040),
                     getParentForChildren(),
                     isClean());
             gpioInfo_ = null;
@@ -4433,39 +4819,39 @@ public final class DiozeroProtos {
         }
 
 
-        // @@protoc_insertion_point(builder_scope:diozero.Gpio.GetBoardGpioInfoResponse)
+        // @@protoc_insertion_point(builder_scope:diozero.Gpio.GetBoardInfoResponse)
       }
 
-      // @@protoc_insertion_point(class_scope:diozero.Gpio.GetBoardGpioInfoResponse)
-      private static final com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardGpioInfoResponse DEFAULT_INSTANCE;
+      // @@protoc_insertion_point(class_scope:diozero.Gpio.GetBoardInfoResponse)
+      private static final com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardInfoResponse DEFAULT_INSTANCE;
       static {
-        DEFAULT_INSTANCE = new com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardGpioInfoResponse();
+        DEFAULT_INSTANCE = new com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardInfoResponse();
       }
 
-      public static com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardGpioInfoResponse getDefaultInstance() {
+      public static com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardInfoResponse getDefaultInstance() {
         return DEFAULT_INSTANCE;
       }
 
-      @java.lang.Deprecated public static final com.google.protobuf.Parser<GetBoardGpioInfoResponse>
-          PARSER = new com.google.protobuf.AbstractParser<GetBoardGpioInfoResponse>() {
-        public GetBoardGpioInfoResponse parsePartialFrom(
+      @java.lang.Deprecated public static final com.google.protobuf.Parser<GetBoardInfoResponse>
+          PARSER = new com.google.protobuf.AbstractParser<GetBoardInfoResponse>() {
+        public GetBoardInfoResponse parsePartialFrom(
             com.google.protobuf.CodedInputStream input,
             com.google.protobuf.ExtensionRegistryLite extensionRegistry)
             throws com.google.protobuf.InvalidProtocolBufferException {
-            return new GetBoardGpioInfoResponse(input, extensionRegistry);
+            return new GetBoardInfoResponse(input, extensionRegistry);
         }
       };
 
-      public static com.google.protobuf.Parser<GetBoardGpioInfoResponse> parser() {
+      public static com.google.protobuf.Parser<GetBoardInfoResponse> parser() {
         return PARSER;
       }
 
       @java.lang.Override
-      public com.google.protobuf.Parser<GetBoardGpioInfoResponse> getParserForType() {
+      public com.google.protobuf.Parser<GetBoardInfoResponse> getParserForType() {
         return PARSER;
       }
 
-      public com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardGpioInfoResponse getDefaultInstanceForType() {
+      public com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardInfoResponse getDefaultInstanceForType() {
         return DEFAULT_INSTANCE;
       }
 
@@ -34239,15 +34625,15 @@ public final class DiozeroProtos {
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_diozero_Gpio_GpioInfo_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_diozero_Gpio_GetBoardGpioInfo_descriptor;
+    internal_static_diozero_Gpio_GetBoardInfo_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_diozero_Gpio_GetBoardGpioInfo_fieldAccessorTable;
+      internal_static_diozero_Gpio_GetBoardInfo_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_diozero_Gpio_GetBoardGpioInfoResponse_descriptor;
+    internal_static_diozero_Gpio_GetBoardInfoResponse_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_diozero_Gpio_GetBoardGpioInfoResponse_fieldAccessorTable;
+      internal_static_diozero_Gpio_GetBoardInfoResponse_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_diozero_Gpio_ProvisionDigitalInput_descriptor;
   private static final 
@@ -34446,101 +34832,102 @@ public final class DiozeroProtos {
       "\"/\n\016MessageWrapper\022\014\n\004type\030\001 \002(\t\022\017\n\007mess" +
       "age\030\002 \002(\014\"R\n\010Response\022\025\n\rcorrelationId\030\001" +
       " \002(\t\022\037\n\006status\030\002 \002(\0162\017.diozero.Status\022\016\n" +
-      "\006detail\030\003 \001(\t\"\242\017\n\004Gpio\032>\n\010GpioInfo\022\014\n\004gp" +
+      "\006detail\030\003 \001(\t\"\307\017\n\004Gpio\032>\n\010GpioInfo\022\014\n\004gp" +
       "io\030\001 \002(\005\022$\n\004mode\030\002 \003(\0162\026.diozero.Gpio.Gp" +
-      "ioMode\032)\n\020GetBoardGpioInfo\022\025\n\rcorrelatio" +
-      "nId\030\001 \002(\t\032\214\001\n\030GetBoardGpioInfoResponse\022\025" +
-      "\n\rcorrelationId\030\001 \002(\t\022\037\n\006status\030\002 \002(\0162\017." +
-      "diozero.Status\022\016\n\006detail\030\003 \001(\t\022(\n\010gpioIn",
-      "fo\030\004 \003(\0132\026.diozero.Gpio.GpioInfo\032\243\001\n\025Pro" +
-      "visionDigitalInput\022\025\n\rcorrelationId\030\001 \002(" +
-      "\t\022\014\n\004gpio\030\002 \002(\005\022/\n\003pud\030\003 \001(\0162\030.diozero.G" +
-      "pio.PullUpDown:\010PUD_NONE\0224\n\007trigger\030\004 \001(" +
-      "\0162\025.diozero.Gpio.Trigger:\014TRIGGER_NONE\032S" +
-      "\n\026ProvisionDigitalOutput\022\025\n\rcorrelationI" +
-      "d\030\001 \002(\t\022\014\n\004gpio\030\002 \002(\005\022\024\n\014initialValue\030\003 " +
-      "\002(\010\032R\n\033ProvisionDigitalInputOutput\022\025\n\rco" +
-      "rrelationId\030\001 \002(\t\022\014\n\004gpio\030\002 \002(\005\022\016\n\006outpu" +
-      "t\030\003 \002(\010\032b\n\022ProvisionPwmOutput\022\025\n\rcorrela",
-      "tionId\030\001 \002(\t\022\014\n\004gpio\030\002 \002(\005\022\021\n\tfrequency\030" +
-      "\003 \002(\005\022\024\n\014initialValue\030\004 \002(\002\032;\n\024Provision" +
-      "AnalogInput\022\025\n\rcorrelationId\030\001 \002(\t\022\014\n\004gp" +
-      "io\030\002 \002(\005\032R\n\025ProvisionAnalogOutput\022\025\n\rcor" +
-      "relationId\030\001 \002(\t\022\014\n\004gpio\030\002 \002(\005\022\024\n\014initia" +
-      "lValue\030\003 \002(\002\0322\n\013DigitalRead\022\025\n\rcorrelati" +
-      "onId\030\001 \002(\t\022\014\n\004gpio\030\002 \002(\005\032B\n\014DigitalWrite" +
-      "\022\025\n\rcorrelationId\030\001 \002(\t\022\014\n\004gpio\030\002 \002(\005\022\r\n" +
-      "\005value\030\003 \002(\010\032.\n\007PwmRead\022\025\n\rcorrelationId" +
-      "\030\001 \002(\t\022\014\n\004gpio\030\002 \002(\005\032>\n\010PwmWrite\022\025\n\rcorr",
-      "elationId\030\001 \002(\t\022\014\n\004gpio\030\002 \002(\005\022\r\n\005value\030\003" +
-      " \002(\002\0321\n\nAnalogRead\022\025\n\rcorrelationId\030\001 \002(" +
-      "\t\022\014\n\004gpio\030\002 \002(\005\032A\n\013AnalogWrite\022\025\n\rcorrel" +
-      "ationId\030\001 \002(\t\022\014\n\004gpio\030\002 \002(\005\022\r\n\005value\030\003 \002" +
-      "(\002\032>\n\006Events\022\025\n\rcorrelationId\030\001 \002(\t\022\014\n\004g" +
-      "pio\030\002 \002(\005\022\017\n\007enabled\030\003 \002(\010\032,\n\005Close\022\025\n\rc" +
-      "orrelationId\030\001 \002(\t\022\014\n\004gpio\030\002 \002(\005\032l\n\023Digi" +
-      "talReadResponse\022\025\n\rcorrelationId\030\001 \002(\t\022\037" +
-      "\n\006status\030\002 \002(\0162\017.diozero.Status\022\016\n\006detai" +
-      "l\030\003 \001(\t\022\r\n\005value\030\004 \001(\010\032h\n\017PwmReadRespons",
-      "e\022\025\n\rcorrelationId\030\001 \002(\t\022\037\n\006status\030\002 \002(\016" +
-      "2\017.diozero.Status\022\016\n\006detail\030\003 \001(\t\022\r\n\005val" +
-      "ue\030\004 \001(\002\032k\n\022AnalogReadResponse\022\025\n\rcorrel" +
+      "ioMode\032%\n\014GetBoardInfo\022\025\n\rcorrelationId\030" +
+      "\001 \002(\t\032\265\001\n\024GetBoardInfoResponse\022\025\n\rcorrel" +
       "ationId\030\001 \002(\t\022\037\n\006status\030\002 \002(\0162\017.diozero." +
-      "Status\022\016\n\006detail\030\003 \001(\t\022\r\n\005value\030\004 \001(\002\032>\n" +
-      "\014Notification\022\014\n\004gpio\030\001 \002(\005\022\021\n\tepochTime" +
-      "\030\002 \002(\003\022\r\n\005value\030\003 \002(\010\">\n\nPullUpDown\022\014\n\010P" +
-      "UD_NONE\020\000\022\017\n\013PUD_PULL_UP\020\001\022\021\n\rPUD_PULL_D" +
-      "OWN\020\002\"V\n\007Trigger\022\020\n\014TRIGGER_NONE\020\000\022\022\n\016TR" +
-      "IGGER_RISING\020\001\022\023\n\017TRIGGER_FALLING\020\002\022\020\n\014T",
-      "RIGGER_BOTH\020\003\"s\n\010GpioMode\022\021\n\rDIGITAL_INP" +
-      "UT\020\000\022\022\n\016DIGITAL_OUTPUT\020\001\022\016\n\nPWM_OUTPUT\020\002" +
-      "\022\020\n\014ANALOG_INPUT\020\003\022\021\n\rANALOG_OUTPUT\020\004\022\013\n" +
-      "\007UNKNOWN\020\005\"\377\010\n\003I2C\032o\n\004Open\022\025\n\rcorrelatio" +
-      "nId\030\001 \002(\t\022\022\n\ncontroller\030\002 \002(\005\022\017\n\007address" +
-      "\030\003 \002(\005\022\023\n\013addressSize\030\004 \002(\005\022\026\n\016clockFreq" +
-      "uency\030\005 \002(\005\032F\n\010ReadByte\022\025\n\rcorrelationId" +
-      "\030\001 \002(\t\022\022\n\ncontroller\030\002 \002(\005\022\017\n\007address\030\003 " +
-      "\002(\005\032U\n\tWriteByte\022\025\n\rcorrelationId\030\001 \002(\t\022" +
-      "\022\n\ncontroller\030\002 \002(\005\022\017\n\007address\030\003 \002(\005\022\014\n\004",
-      "data\030\004 \002(\005\032R\n\004Read\022\025\n\rcorrelationId\030\001 \002(" +
-      "\t\022\022\n\ncontroller\030\002 \002(\005\022\017\n\007address\030\003 \002(\005\022\016" +
-      "\n\006length\030\004 \002(\005\032Q\n\005Write\022\025\n\rcorrelationId" +
-      "\030\001 \002(\t\022\022\n\ncontroller\030\002 \002(\005\022\017\n\007address\030\003 " +
-      "\002(\005\022\014\n\004data\030\004 \002(\014\032\\\n\014ReadByteData\022\025\n\rcor" +
-      "relationId\030\001 \002(\t\022\022\n\ncontroller\030\002 \002(\005\022\017\n\007" +
-      "address\030\003 \002(\005\022\020\n\010register\030\004 \002(\005\032k\n\rWrite" +
-      "ByteData\022\025\n\rcorrelationId\030\001 \002(\t\022\022\n\ncontr" +
-      "oller\030\002 \002(\005\022\017\n\007address\030\003 \002(\005\022\020\n\010register" +
-      "\030\004 \002(\005\022\014\n\004data\030\005 \002(\005\032p\n\020ReadI2CBlockData",
-      "\022\025\n\rcorrelationId\030\001 \002(\t\022\022\n\ncontroller\030\002 " +
-      "\002(\005\022\017\n\007address\030\003 \002(\005\022\020\n\010register\030\004 \002(\005\022\016" +
-      "\n\006length\030\005 \002(\005\032o\n\021WriteI2CBlockData\022\025\n\rc" +
-      "orrelationId\030\001 \002(\t\022\022\n\ncontroller\030\002 \002(\005\022\017" +
-      "\n\007address\030\003 \002(\005\022\020\n\010register\030\004 \002(\005\022\014\n\004dat" +
-      "a\030\005 \002(\014\032C\n\005Close\022\025\n\rcorrelationId\030\001 \002(\t\022" +
-      "\022\n\ncontroller\030\002 \002(\005\022\017\n\007address\030\003 \002(\005\032h\n\020" +
-      "ReadByteResponse\022\025\n\rcorrelationId\030\001 \002(\t\022" +
-      "\037\n\006status\030\002 \002(\0162\017.diozero.Status\022\016\n\006deta" +
-      "il\030\003 \001(\t\022\014\n\004data\030\004 \001(\005\032d\n\014ReadResponse\022\025",
+      "Status\022\016\n\006detail\030\003 \001(\t\022\014\n\004make\030\004 \001(\t\022\r\n\005",
+      "model\030\005 \001(\t\022\016\n\006memory\030\006 \001(\005\022(\n\010gpioInfo\030" +
+      "\007 \003(\0132\026.diozero.Gpio.GpioInfo\032\243\001\n\025Provis" +
+      "ionDigitalInput\022\025\n\rcorrelationId\030\001 \002(\t\022\014" +
+      "\n\004gpio\030\002 \002(\005\022/\n\003pud\030\003 \001(\0162\030.diozero.Gpio" +
+      ".PullUpDown:\010PUD_NONE\0224\n\007trigger\030\004 \001(\0162\025" +
+      ".diozero.Gpio.Trigger:\014TRIGGER_NONE\032S\n\026P" +
+      "rovisionDigitalOutput\022\025\n\rcorrelationId\030\001" +
+      " \002(\t\022\014\n\004gpio\030\002 \002(\005\022\024\n\014initialValue\030\003 \002(\010" +
+      "\032R\n\033ProvisionDigitalInputOutput\022\025\n\rcorre" +
+      "lationId\030\001 \002(\t\022\014\n\004gpio\030\002 \002(\005\022\016\n\006output\030\003",
+      " \002(\010\032b\n\022ProvisionPwmOutput\022\025\n\rcorrelatio" +
+      "nId\030\001 \002(\t\022\014\n\004gpio\030\002 \002(\005\022\021\n\tfrequency\030\003 \002" +
+      "(\005\022\024\n\014initialValue\030\004 \002(\002\032;\n\024ProvisionAna" +
+      "logInput\022\025\n\rcorrelationId\030\001 \002(\t\022\014\n\004gpio\030" +
+      "\002 \002(\005\032R\n\025ProvisionAnalogOutput\022\025\n\rcorrel" +
+      "ationId\030\001 \002(\t\022\014\n\004gpio\030\002 \002(\005\022\024\n\014initialVa" +
+      "lue\030\003 \002(\002\0322\n\013DigitalRead\022\025\n\rcorrelationI" +
+      "d\030\001 \002(\t\022\014\n\004gpio\030\002 \002(\005\032B\n\014DigitalWrite\022\025\n" +
+      "\rcorrelationId\030\001 \002(\t\022\014\n\004gpio\030\002 \002(\005\022\r\n\005va" +
+      "lue\030\003 \002(\010\032.\n\007PwmRead\022\025\n\rcorrelationId\030\001 ",
+      "\002(\t\022\014\n\004gpio\030\002 \002(\005\032>\n\010PwmWrite\022\025\n\rcorrela" +
+      "tionId\030\001 \002(\t\022\014\n\004gpio\030\002 \002(\005\022\r\n\005value\030\003 \002(" +
+      "\002\0321\n\nAnalogRead\022\025\n\rcorrelationId\030\001 \002(\t\022\014" +
+      "\n\004gpio\030\002 \002(\005\032A\n\013AnalogWrite\022\025\n\rcorrelati" +
+      "onId\030\001 \002(\t\022\014\n\004gpio\030\002 \002(\005\022\r\n\005value\030\003 \002(\002\032" +
+      ">\n\006Events\022\025\n\rcorrelationId\030\001 \002(\t\022\014\n\004gpio" +
+      "\030\002 \002(\005\022\017\n\007enabled\030\003 \002(\010\032,\n\005Close\022\025\n\rcorr" +
+      "elationId\030\001 \002(\t\022\014\n\004gpio\030\002 \002(\005\032l\n\023Digital" +
+      "ReadResponse\022\025\n\rcorrelationId\030\001 \002(\t\022\037\n\006s" +
+      "tatus\030\002 \002(\0162\017.diozero.Status\022\016\n\006detail\030\003",
+      " \001(\t\022\r\n\005value\030\004 \001(\010\032h\n\017PwmReadResponse\022\025" +
       "\n\rcorrelationId\030\001 \002(\t\022\037\n\006status\030\002 \002(\0162\017." +
-      "diozero.Status\022\016\n\006detail\030\003 \001(\t\022\014\n\004data\030\004" +
-      " \001(\014\"\300\004\n\003Spi\032\225\001\n\004Open\022\025\n\rcorrelationId\030\001" +
-      " \002(\t\022\022\n\ncontroller\030\002 \002(\005\022\022\n\nchipSelect\030\003" +
-      " \002(\005\022\021\n\tfrequency\030\004 \002(\005\022)\n\tclockMode\030\005 \002" +
-      "(\0162\026.diozero.Spi.ClockMode\022\020\n\010lsbFirst\030\006" +
-      " \002(\010\032V\n\005Write\022\025\n\rcorrelationId\030\001 \002(\t\022\022\n\n" +
-      "controller\030\002 \002(\005\022\022\n\nchipSelect\030\003 \002(\005\022\016\n\006" +
-      "txData\030\004 \002(\014\032]\n\014WriteAndRead\022\025\n\rcorrelat" +
-      "ionId\030\001 \002(\t\022\022\n\ncontroller\030\002 \002(\005\022\022\n\nchipS",
-      "elect\030\003 \002(\005\022\016\n\006txData\030\004 \002(\014\032F\n\005Close\022\025\n\r" +
-      "correlationId\030\001 \002(\t\022\022\n\ncontroller\030\002 \002(\005\022" +
-      "\022\n\nchipSelect\030\003 \002(\005\032e\n\013SpiResponse\022\025\n\rco" +
-      "rrelationId\030\001 \002(\t\022\037\n\006status\030\002 \002(\0162\017.dioz" +
-      "ero.Status\022\016\n\006detail\030\003 \001(\t\022\016\n\006rxData\030\004 \001" +
-      "(\014\";\n\tClockMode\022\n\n\006MODE_0\020\000\022\n\n\006MODE_1\020\001\022" +
-      "\n\n\006MODE_2\020\002\022\n\n\006MODE_3\020\003*\033\n\006Status\022\006\n\002OK\020" +
-      "\000\022\t\n\005ERROR\020\001B+\n\032com.diozero.remote.messa" +
-      "geB\rDiozeroProtos"
+      "diozero.Status\022\016\n\006detail\030\003 \001(\t\022\r\n\005value\030" +
+      "\004 \001(\002\032k\n\022AnalogReadResponse\022\025\n\rcorrelati" +
+      "onId\030\001 \002(\t\022\037\n\006status\030\002 \002(\0162\017.diozero.Sta" +
+      "tus\022\016\n\006detail\030\003 \001(\t\022\r\n\005value\030\004 \001(\002\032>\n\014No" +
+      "tification\022\014\n\004gpio\030\001 \002(\005\022\021\n\tepochTime\030\002 " +
+      "\002(\003\022\r\n\005value\030\003 \002(\010\">\n\nPullUpDown\022\014\n\010PUD_" +
+      "NONE\020\000\022\017\n\013PUD_PULL_UP\020\001\022\021\n\rPUD_PULL_DOWN" +
+      "\020\002\"V\n\007Trigger\022\020\n\014TRIGGER_NONE\020\000\022\022\n\016TRIGG",
+      "ER_RISING\020\001\022\023\n\017TRIGGER_FALLING\020\002\022\020\n\014TRIG" +
+      "GER_BOTH\020\003\"s\n\010GpioMode\022\021\n\rDIGITAL_INPUT\020" +
+      "\000\022\022\n\016DIGITAL_OUTPUT\020\001\022\016\n\nPWM_OUTPUT\020\002\022\020\n" +
+      "\014ANALOG_INPUT\020\003\022\021\n\rANALOG_OUTPUT\020\004\022\013\n\007UN" +
+      "KNOWN\020\005\"\377\010\n\003I2C\032o\n\004Open\022\025\n\rcorrelationId" +
+      "\030\001 \002(\t\022\022\n\ncontroller\030\002 \002(\005\022\017\n\007address\030\003 " +
+      "\002(\005\022\023\n\013addressSize\030\004 \002(\005\022\026\n\016clockFrequen" +
+      "cy\030\005 \002(\005\032F\n\010ReadByte\022\025\n\rcorrelationId\030\001 " +
+      "\002(\t\022\022\n\ncontroller\030\002 \002(\005\022\017\n\007address\030\003 \002(\005" +
+      "\032U\n\tWriteByte\022\025\n\rcorrelationId\030\001 \002(\t\022\022\n\n",
+      "controller\030\002 \002(\005\022\017\n\007address\030\003 \002(\005\022\014\n\004dat" +
+      "a\030\004 \002(\005\032R\n\004Read\022\025\n\rcorrelationId\030\001 \002(\t\022\022" +
+      "\n\ncontroller\030\002 \002(\005\022\017\n\007address\030\003 \002(\005\022\016\n\006l" +
+      "ength\030\004 \002(\005\032Q\n\005Write\022\025\n\rcorrelationId\030\001 " +
+      "\002(\t\022\022\n\ncontroller\030\002 \002(\005\022\017\n\007address\030\003 \002(\005" +
+      "\022\014\n\004data\030\004 \002(\014\032\\\n\014ReadByteData\022\025\n\rcorrel" +
+      "ationId\030\001 \002(\t\022\022\n\ncontroller\030\002 \002(\005\022\017\n\007add" +
+      "ress\030\003 \002(\005\022\020\n\010register\030\004 \002(\005\032k\n\rWriteByt" +
+      "eData\022\025\n\rcorrelationId\030\001 \002(\t\022\022\n\ncontroll" +
+      "er\030\002 \002(\005\022\017\n\007address\030\003 \002(\005\022\020\n\010register\030\004 ",
+      "\002(\005\022\014\n\004data\030\005 \002(\005\032p\n\020ReadI2CBlockData\022\025\n" +
+      "\rcorrelationId\030\001 \002(\t\022\022\n\ncontroller\030\002 \002(\005" +
+      "\022\017\n\007address\030\003 \002(\005\022\020\n\010register\030\004 \002(\005\022\016\n\006l" +
+      "ength\030\005 \002(\005\032o\n\021WriteI2CBlockData\022\025\n\rcorr" +
+      "elationId\030\001 \002(\t\022\022\n\ncontroller\030\002 \002(\005\022\017\n\007a" +
+      "ddress\030\003 \002(\005\022\020\n\010register\030\004 \002(\005\022\014\n\004data\030\005" +
+      " \002(\014\032C\n\005Close\022\025\n\rcorrelationId\030\001 \002(\t\022\022\n\n" +
+      "controller\030\002 \002(\005\022\017\n\007address\030\003 \002(\005\032h\n\020Rea" +
+      "dByteResponse\022\025\n\rcorrelationId\030\001 \002(\t\022\037\n\006" +
+      "status\030\002 \002(\0162\017.diozero.Status\022\016\n\006detail\030",
+      "\003 \001(\t\022\014\n\004data\030\004 \001(\005\032d\n\014ReadResponse\022\025\n\rc" +
+      "orrelationId\030\001 \002(\t\022\037\n\006status\030\002 \002(\0162\017.dio" +
+      "zero.Status\022\016\n\006detail\030\003 \001(\t\022\014\n\004data\030\004 \001(" +
+      "\014\"\300\004\n\003Spi\032\225\001\n\004Open\022\025\n\rcorrelationId\030\001 \002(" +
+      "\t\022\022\n\ncontroller\030\002 \002(\005\022\022\n\nchipSelect\030\003 \002(" +
+      "\005\022\021\n\tfrequency\030\004 \002(\005\022)\n\tclockMode\030\005 \002(\0162" +
+      "\026.diozero.Spi.ClockMode\022\020\n\010lsbFirst\030\006 \002(" +
+      "\010\032V\n\005Write\022\025\n\rcorrelationId\030\001 \002(\t\022\022\n\ncon" +
+      "troller\030\002 \002(\005\022\022\n\nchipSelect\030\003 \002(\005\022\016\n\006txD" +
+      "ata\030\004 \002(\014\032]\n\014WriteAndRead\022\025\n\rcorrelation",
+      "Id\030\001 \002(\t\022\022\n\ncontroller\030\002 \002(\005\022\022\n\nchipSele" +
+      "ct\030\003 \002(\005\022\016\n\006txData\030\004 \002(\014\032F\n\005Close\022\025\n\rcor" +
+      "relationId\030\001 \002(\t\022\022\n\ncontroller\030\002 \002(\005\022\022\n\n" +
+      "chipSelect\030\003 \002(\005\032e\n\013SpiResponse\022\025\n\rcorre" +
+      "lationId\030\001 \002(\t\022\037\n\006status\030\002 \002(\0162\017.diozero" +
+      ".Status\022\016\n\006detail\030\003 \001(\t\022\016\n\006rxData\030\004 \001(\014\"" +
+      ";\n\tClockMode\022\n\n\006MODE_0\020\000\022\n\n\006MODE_1\020\001\022\n\n\006" +
+      "MODE_2\020\002\022\n\n\006MODE_3\020\003*\033\n\006Status\022\006\n\002OK\020\000\022\t" +
+      "\n\005ERROR\020\001B+\n\032com.diozero.remote.messageB" +
+      "\rDiozeroProtos"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -34578,18 +34965,18 @@ public final class DiozeroProtos {
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_diozero_Gpio_GpioInfo_descriptor,
         new java.lang.String[] { "Gpio", "Mode", });
-    internal_static_diozero_Gpio_GetBoardGpioInfo_descriptor =
+    internal_static_diozero_Gpio_GetBoardInfo_descriptor =
       internal_static_diozero_Gpio_descriptor.getNestedTypes().get(1);
-    internal_static_diozero_Gpio_GetBoardGpioInfo_fieldAccessorTable = new
+    internal_static_diozero_Gpio_GetBoardInfo_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_diozero_Gpio_GetBoardGpioInfo_descriptor,
+        internal_static_diozero_Gpio_GetBoardInfo_descriptor,
         new java.lang.String[] { "CorrelationId", });
-    internal_static_diozero_Gpio_GetBoardGpioInfoResponse_descriptor =
+    internal_static_diozero_Gpio_GetBoardInfoResponse_descriptor =
       internal_static_diozero_Gpio_descriptor.getNestedTypes().get(2);
-    internal_static_diozero_Gpio_GetBoardGpioInfoResponse_fieldAccessorTable = new
+    internal_static_diozero_Gpio_GetBoardInfoResponse_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_diozero_Gpio_GetBoardGpioInfoResponse_descriptor,
-        new java.lang.String[] { "CorrelationId", "Status", "Detail", "GpioInfo", });
+        internal_static_diozero_Gpio_GetBoardInfoResponse_descriptor,
+        new java.lang.String[] { "CorrelationId", "Status", "Detail", "Make", "Model", "Memory", "GpioInfo", });
     internal_static_diozero_Gpio_ProvisionDigitalInput_descriptor =
       internal_static_diozero_Gpio_descriptor.getNestedTypes().get(3);
     internal_static_diozero_Gpio_ProvisionDigitalInput_fieldAccessorTable = new

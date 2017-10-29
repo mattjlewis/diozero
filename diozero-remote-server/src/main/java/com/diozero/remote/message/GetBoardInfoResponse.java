@@ -4,7 +4,7 @@ package com.diozero.remote.message;
  * #%L
  * Organisation: mattjlewis
  * Project:      Device I/O Zero - Remote Server
- * Filename:     GetBoardGpioInfoResponse.java  
+ * Filename:     GetBoardInfoResponse.java  
  * 
  * This file is part of the diozero project. More information about this project
  * can be found at http://www.diozero.com/
@@ -33,19 +33,38 @@ package com.diozero.remote.message;
 
 import java.util.List;
 
-public class GetBoardGpioInfoResponse extends Response {
+public class GetBoardInfoResponse extends Response {
+	private static final long serialVersionUID = 1060208133208783116L;
+
+	private String make;
+	private String model;
+	private int memory;
 	private List<GpioInfo> gpios;
 	
-	public GetBoardGpioInfoResponse(List<GpioInfo> gpios, String correlationId) {
-		super(Status.OK, null, correlationId);
-		
-		this.gpios = gpios;
+	public GetBoardInfoResponse(String make, String model, int memory, List<GpioInfo> gpios, String correlationId) {
+		this(Status.OK, null, make, model, memory, gpios, correlationId);
 	}
 	
-	public GetBoardGpioInfoResponse(Status status, String detail, List<GpioInfo> gpios, String correlationId) {
+	public GetBoardInfoResponse(Status status, String detail, String make, String model, int memory,
+			List<GpioInfo> gpios, String correlationId) {
 		super(status, detail, correlationId);
 		
+		this.make = make;
+		this.model = model;
+		this.memory = memory;
 		this.gpios = gpios;
+	}
+
+	public String getMake() {
+		return make;
+	}
+
+	public String getModel() {
+		return model;
+	}
+	
+	public int getMemory() {
+		return memory;
 	}
 
 	public List<GpioInfo> getGpios() {

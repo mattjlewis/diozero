@@ -1,10 +1,10 @@
-package com.diozero.remote.message.test;
+package com.diozero.remote.message;
 
 /*-
  * #%L
  * Organisation: mattjlewis
  * Project:      Device I/O Zero - Remote Server
- * Filename:     GsonTest.java  
+ * Filename:     GetBoardInfo.java  
  * 
  * This file is part of the diozero project. More information about this project
  * can be found at http://www.diozero.com/
@@ -31,36 +31,10 @@ package com.diozero.remote.message.test;
  * #L%
  */
 
-import java.util.UUID;
+public class GetBoardInfo extends Request {
+	private static final long serialVersionUID = 2249011256642095722L;
 
-import com.diozero.api.GpioEventTrigger;
-import com.diozero.api.GpioPullUpDown;
-import com.diozero.remote.message.ProvisionDigitalInputDevice;
-import com.diozero.remote.message.SpiClose;
-import com.google.gson.Gson;
-
-public class GsonTest {
-	public static void main(String[] args) {
-		String correlation_id = UUID.randomUUID().toString();
-
-		Gson gson = new Gson();
-
-		SpiClose spi_close = new SpiClose(1, 0, correlation_id);
-		System.out.println(spi_close);
-
-		String json = gson.toJson(spi_close);
-		System.out.println(json);
-
-		spi_close = gson.fromJson(json, SpiClose.class);
-		System.out.println(spi_close);
-
-		ProvisionDigitalInputDevice gpio_input = new ProvisionDigitalInputDevice(22, GpioPullUpDown.PULL_DOWN,
-				GpioEventTrigger.RISING, correlation_id);
-
-		json = gson.toJson(gpio_input);
-		System.out.println(json);
-
-		gpio_input = gson.fromJson(json, ProvisionDigitalInputDevice.class);
-		System.out.println(gpio_input);
+	public GetBoardInfo(String correlationId) {
+		super(correlationId);
 	}
 }

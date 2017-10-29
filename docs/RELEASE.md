@@ -46,7 +46,12 @@
 
 # Release 0.11 (work in progress)
 
-+ New devices: BH1750 luminosity sensor, SSD1331 96x64 65k colour OLED.
++ New devices: BH1750 luminosity sensor, SSD1331 96x64 & SSD1351 128x128 65k colour OLEDs.
 + Moved classes in com.diozero to com.diozero.devices.
 + Changed the SPI interface from ByteBuffer to byte array.
-+ Added experimental support for Particle Photon using the VoodooSpark Firmware.
++ Added support for Particle Photon using the VoodooSpark Firmware.
++ Flexible APIs for remotely accessing devices over a variety of protocols.
++ Optimised GPIO input interrupt handling.
++ Updated rpi_ws281x library.
++ Experimental support for 433MHz receivers.
++ I2C detect capability.

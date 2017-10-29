@@ -31,15 +31,10 @@ package com.diozero.devices;
  * #L%
  */
 
-import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferUShort;
 
-import org.pmw.tinylog.Logger;
 
 import com.diozero.api.DigitalOutputDevice;
-import com.diozero.util.ColourUtil;
-import com.diozero.util.SleepUtil;
 
 /**
  * <p>Encapsulates the serial interface to the 16-bit (5-6-5 RGB) and 18-bit
@@ -62,6 +57,9 @@ import com.diozero.util.SleepUtil;
  * <p>Links:</p>
  * <ul>
  *  <li><a href="https://www.newhavendisplay.com/app_notes/SSD1351.pdf">Datasheet</a></li>
+ *  <li><a href="https://github.com/freetronics/FTOLED/">FTOLED</a></li>
+ *  <li><a href="https://github.com/kirberich/teensy_ssd1351">Teensy</a></li>
+ *  <li><a href="https://github.com/adafruit/Adafruit-SSD1351-library">Adafruit</a></li>
  * </ul>
  */
 public class SSD1351 extends ColourSsdOled {
@@ -101,8 +99,6 @@ public class SSD1351 extends ColourSsdOled {
 	public SSD1351(int controller, int chipSelect, DigitalOutputDevice dcPin, DigitalOutputDevice resetPin) {
 		// Limit to 5-6-5 image type for now (65k colours)
 		super(controller, chipSelect, dcPin, resetPin, WIDTH, HEIGHT, BufferedImage.TYPE_USHORT_565_RGB);
-		
-		init();
 	}
 	
 	private void commandAndData(byte command, byte... data) {
@@ -160,13 +156,13 @@ public class SSD1351 extends ColourSsdOled {
 		// A[7:6]=10, 262k Colour depth
 		// A[7:6]=11, 262k Colour depth (16-bit format 2)
 		commandAndData(REMAP_AND_COLOUR_DEPTH, (byte) 0x30);   // 0b00110000
-		//commandAndDataREMAP_AND_COLOUR_DEPTH, (byte) 0x74); // 0b01110100
+		//commandAndData(REMAP_AND_COLOUR_DEPTH, (byte) 0x74); // 0b01110100
 		// A[6:0]: Start Address. [reset=0]
 		// B[6:0]: End Address. [reset=127]
-		commandAndData(SET_COLUMN_ADDRESS, (byte) 0x00, (byte) 127);
+		commandAndData(SET_COLUMN_ADDRESS, (byte) 0x00, (byte) (width-1));
 		// A[6:0]: Start Address. [reset=0]
 		// B[6:0]: End Address. [reset=127]
-		commandAndData(SET_ROW_ADDRESS, (byte) 0x00, (byte) 127);
+		commandAndData(SET_ROW_ADDRESS, (byte) 0x00, (byte) (height-1));
 		// Set start line - this needs to be 0 for a 128x128 display and 96 for a 128x96 display
 		commandAndData(DISPLAY_START_LINE, (byte) 0x00);
 		commandAndData(DISPLAY_OFFSET, (byte) 0x00);
@@ -197,7 +193,7 @@ public class SSD1351 extends ColourSsdOled {
 		// A[7:0] Contrast Value Color A [reset=10001010b = 0x8A]
 		// B[7:0] Contrast Value Color B [reset=01010001b = 0x51]
 		// C[7:0] Contrast Value Color C [reset=10001010b = 0x8A]
-		commandAndData(CONTRAST_COLOUR, (byte) 0xC8, (byte) 0x80, (byte) 0xC8);
+		setContrast((byte) 0xC8, (byte) 0x80, (byte) 0xC8);
 		// A[3:0] :
 		//  0000b reduce output currents for all colors to 1/16
 		//  0001b reduce output currents for all colors to 2/16
@@ -227,55 +223,8 @@ public class SSD1351 extends ColourSsdOled {
 	}
 
 	@Override
-	protected void home() {
-		goTo(0, 0);
-	}
-
-	@Override
-	public void display(BufferedImage image) {
-		if (image.getWidth() != width || image.getHeight() != height) {
-			throw new IllegalArgumentException("Invalid input image dimensions (" + image.getWidth() + "x"
-					+ image.getHeight() + "), must be " + width + "x" + height);
-		}
-
-		// Make sure the image is of the correct type
-		BufferedImage image_to_display = image;
-		if (image.getType() != imageType ) {
-			Logger.warn("Source image type ({}) doesn't match native image type ({}); converting",
-					Integer.valueOf(image.getType()), Integer.valueOf(imageType));
-			image_to_display = new BufferedImage(width, height, imageType);
-			Graphics2D g2d = image_to_display.createGraphics();
-			
-			g2d.drawImage(image, 0, 0, null);
-			g2d.dispose();
-		}
-
-		short[] image_data = ((DataBufferUShort) image_to_display.getRaster().getDataBuffer()).getData();
-		for (int i=0; i<image_data.length; i++) {
-			buffer[2*i] = (byte) ((image_data[i] >> 8) & 0xff);
-			buffer[2*i+1] = (byte) (image_data[i] & 0xff);
-		}
-
-		display();
-	}
-
-	@Override
 	public void invertDisplay(boolean invert) {
 		command(invert ? DISPLAY_MODE_INVERSE : DISPLAY_MODE_NORMAL);
-	}
-	
-	@Override
-	public void setPixel(int x, int y, byte red, byte green, byte blue, boolean display) {
-		int index = 2 * (x + y*width);
-		short colour = ColourUtil.createColour565(red, green, blue);
-		// MSB is transmitted first
-		buffer[index] = (byte) ((colour >> 8) & 0xff);
-		buffer[index+1] = (byte) (colour & 0xff);
-		
-		if (display) {
-			goTo(x, y);
-			data(index, 2);
-		}
 	}
 
 	/**
@@ -286,5 +235,10 @@ public class SSD1351 extends ColourSsdOled {
 	@Override
 	public void setContrast(byte level) {
 		commandAndData(CONTRAST_COLOUR, level, level, level);
+	}
+	
+	@Override
+	public void setContrast(byte red, byte green, byte blue) {
+		commandAndData(CONTRAST_COLOUR, red, green, blue);
 	}
 }

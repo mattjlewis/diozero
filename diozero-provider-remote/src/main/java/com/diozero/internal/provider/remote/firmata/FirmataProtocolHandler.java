@@ -42,11 +42,12 @@ import org.pmw.tinylog.Logger;
 import com.diozero.api.DeviceMode;
 import com.diozero.api.GpioPullUpDown;
 import com.diozero.internal.provider.remote.devicefactory.RemoteDeviceFactory;
+import com.diozero.internal.provider.remote.firmata.FirmataAdapter.FirmwareDetails;
 import com.diozero.internal.provider.remote.firmata.FirmataAdapter.I2CResponse;
 import com.diozero.internal.provider.remote.firmata.FirmataProtocol.PinCapability;
 import com.diozero.internal.provider.remote.firmata.FirmataProtocol.PinMode;
-import com.diozero.remote.message.GetBoardGpioInfo;
-import com.diozero.remote.message.GetBoardGpioInfoResponse;
+import com.diozero.remote.message.GetBoardInfo;
+import com.diozero.remote.message.GetBoardInfoResponse;
 import com.diozero.remote.message.GpioAnalogRead;
 import com.diozero.remote.message.GpioAnalogReadResponse;
 import com.diozero.remote.message.GpioAnalogWrite;
@@ -93,8 +94,6 @@ public class FirmataProtocolHandler implements RemoteProtocolInterface {
 	private static final String SERIAL_PORT_PROP = "FIRMATA_SERIAL_PORT";
 
 	private static final int DEFAULT_TCP_PORT = 3030;
-	private static final int DEFAULT_PWM_MAX = (int) Math.pow(2, 10) - 1;
-	private static final int DEFAULT_ANALOG_MAX = (int) Math.pow(2, 14) - 1;
 
 	private FirmataAdapter adapter;
 
@@ -120,29 +119,28 @@ public class FirmataProtocolHandler implements RemoteProtocolInterface {
 	}
 	
 	@Override
-	public GetBoardGpioInfoResponse request(GetBoardGpioInfo request) {
-		try {
-			List<List<PinCapability>> board_capabilities = adapter.getBoardCapabilities();
-			List<GpioInfo> board_gpio_info = new ArrayList<>();
-			
-			int gpio = 0;
-			List<DeviceMode> modes;
-			for (List<PinCapability> pin_capabilities : board_capabilities) {
-				modes = new ArrayList<>();
-				for (PinCapability pin_capability : pin_capabilities) {
-					modes.add(convert(pin_capability.getMode()));
-				}
-				if (! modes.isEmpty()) {
-					board_gpio_info.add(new GpioInfo(gpio, modes));
-				}
-				
-				gpio++;
+	public GetBoardInfoResponse request(GetBoardInfo request) {
+		List<List<PinCapability>> board_capabilities = adapter.getBoardCapabilities();
+		List<GpioInfo> board_gpio_info = new ArrayList<>();
+		
+		int gpio = 0;
+		List<DeviceMode> modes;
+		for (List<PinCapability> pin_capabilities : board_capabilities) {
+			modes = new ArrayList<>();
+			for (PinCapability pin_capability : pin_capabilities) {
+				modes.add(convert(pin_capability.getMode()));
+			}
+			if (! modes.isEmpty()) {
+				board_gpio_info.add(new GpioInfo(gpio, modes));
 			}
 			
-			return new GetBoardGpioInfoResponse(board_gpio_info, request.getCorrelationId());
-		} catch (IOException e) {
-			throw new RuntimeIOException(e);
+			gpio++;
 		}
+		
+		FirmwareDetails firmware = adapter.getFirmware();
+		
+		return new GetBoardInfoResponse(firmware.getName(), "v" + firmware.getMajor() + "." + firmware.getMinor(), -1,
+				board_gpio_info, request.getCorrelationId());
 	}
 
 	private static DeviceMode convert(PinMode mode) {
@@ -197,8 +195,8 @@ public class FirmataProtocolHandler implements RemoteProtocolInterface {
 	public Response request(ProvisionPwmOutputDevice request) {
 		try {
 			adapter.setPinMode(request.getGpio(), PinMode.PWM);
-			// FIXME DEFAULT_PWM_MAX Should really come from the pin capability
-			adapter.setValue(request.getGpio(), RangeUtil.map(request.getInitialValue(), 0f, 1f, 0, DEFAULT_PWM_MAX, true));
+			adapter.setValue(request.getGpio(), RangeUtil.map(request.getInitialValue(), 0f, 1f, 0,
+					adapter.getMax(request.getGpio(), PinMode.PWM), true));
 		} catch (IOException e) {
 			throw new RuntimeIOException(e);
 		}
@@ -237,16 +235,16 @@ public class FirmataProtocolHandler implements RemoteProtocolInterface {
 
 	@Override
 	public GpioPwmReadResponse request(GpioPwmRead request) {
-		// FIXME DEFAULT_PWM_MAX Should really come from the pin capability
-		float value = RangeUtil.map(adapter.getValue(request.getGpio()), 0, DEFAULT_PWM_MAX, 0f, 1f, true);
+		float value = RangeUtil.map(adapter.getValue(request.getGpio()), 0,
+				adapter.getMax(request.getGpio(), PinMode.PWM), 0f, 1f, true);
 		return new GpioPwmReadResponse(value, UUID.randomUUID().toString());
 	}
 
 	@Override
 	public Response request(GpioPwmWrite request) {
 		try {
-			// FIXME DEFAULT_PWM_MAX Should really come from the pin capability
-			adapter.setValue(request.getGpio(), RangeUtil.map(request.getValue(), 0f, 1f, 0, DEFAULT_PWM_MAX, true));
+			adapter.setValue(request.getGpio(),
+					RangeUtil.map(request.getValue(), 0f, 1f, 0, adapter.getMax(request.getGpio(), PinMode.PWM), true));
 		} catch (IOException e) {
 			throw new RuntimeIOException(e);
 		}
@@ -255,16 +253,17 @@ public class FirmataProtocolHandler implements RemoteProtocolInterface {
 
 	@Override
 	public GpioAnalogReadResponse request(GpioAnalogRead request) {
-		// FIXME DEFAULT_ANALOG_MAX Should really come from the pin capability
-		float value = RangeUtil.map(adapter.getValue(request.getGpio()), 0, DEFAULT_ANALOG_MAX, 0f, 1f, true);
+		float value = RangeUtil.map(adapter.getValue(request.getGpio()), 0,
+				adapter.getMax(request.getGpio(), PinMode.ANALOG_INPUT), 0f, 1f, true);
 		return new GpioAnalogReadResponse(value, UUID.randomUUID().toString());
 	}
 
 	@Override
 	public Response request(GpioAnalogWrite request) {
 		try {
-			// FIXME DEFAULT_ANALOG_MAX Should really come from the pin capability
-			adapter.setValue(request.getGpio(), RangeUtil.map(request.getValue(), 0f, 1f, 0, DEFAULT_ANALOG_MAX, true));
+			// Firmata doesn't support analog output, ue PWM instead
+			adapter.setValue(request.getGpio(),
+					RangeUtil.map(request.getValue(), 0f, 1f, 0, adapter.getMax(request.getGpio(), PinMode.PWM), true));
 		} catch (IOException e) {
 			throw new RuntimeIOException(e);
 		}

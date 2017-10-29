@@ -49,15 +49,18 @@ message Gpio {
 		repeated GpioMode mode = 2;
 	}
 	
-	message GetBoardGpioInfo {
+	message GetBoardInfo {
 		required string correlationId = 1;
 	}
 	
-	message GetBoardGpioInfoResponse {
+	message GetBoardInfoResponse {
 		required string correlationId = 1;
 		required Status status = 2;
 		optional string detail = 3;
-		repeated GpioInfo gpioInfo = 4;
+		optional string make = 4;
+		optional string model = 5;
+		optional int32 memory = 6;
+		repeated GpioInfo gpioInfo = 7;
 	}
 	
 	message ProvisionDigitalInput {

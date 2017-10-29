@@ -52,8 +52,8 @@ import org.pmw.tinylog.Logger;
 
 import com.diozero.api.DigitalInputEvent;
 import com.diozero.internal.provider.remote.devicefactory.RemoteDeviceFactory;
-import com.diozero.remote.message.GetBoardGpioInfo;
-import com.diozero.remote.message.GetBoardGpioInfoResponse;
+import com.diozero.remote.message.GetBoardInfo;
+import com.diozero.remote.message.GetBoardInfoResponse;
 import com.diozero.remote.message.GpioAnalogRead;
 import com.diozero.remote.message.GpioAnalogReadResponse;
 import com.diozero.remote.message.GpioAnalogWrite;
@@ -238,10 +238,12 @@ public class VoodooSparkProtocolHandler implements RemoteProtocolInterface {
 	}
 
 	@Override
-	public GetBoardGpioInfoResponse request(GetBoardGpioInfo request) {
+	public GetBoardInfoResponse request(GetBoardInfo request) {
 		List<GpioInfo> gpios = new ArrayList<>();
 		
-		return new GetBoardGpioInfoResponse(Response.Status.OK, null, gpios, request.getCorrelationId());
+		// TODO Implementation
+		
+		return new GetBoardInfoResponse("VoodooSpark", "Unknown", -1, gpios, request.getCorrelationId());
 	}
 
 	@Override

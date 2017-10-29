@@ -31,7 +31,14 @@ package com.diozero.devices;
  * #L%
  */
 
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferUShort;
+
+import org.pmw.tinylog.Logger;
+
 import com.diozero.api.DigitalOutputDevice;
+import com.diozero.util.ColourUtil;
 
 public abstract class ColourSsdOled extends SsdOled {
 	private static final int RED_BITS = 5;
@@ -47,8 +54,56 @@ public abstract class ColourSsdOled extends SsdOled {
 		
 		// 16 bit colour hence 2x
 		buffer = new byte[2 * width * height];
+		
+		init();
 	}
+	
+	@Override
+	protected void home() {
+		goTo(0, 0);
+	}
+	
+	@Override
+	public void display(BufferedImage image) {
+		if (image.getWidth() != width || image.getHeight() != height) {
+			throw new IllegalArgumentException("Invalid input image dimensions (" + image.getWidth() + "x"
+					+ image.getHeight() + "), must be " + width + "x" + height);
+		}
 
-	public abstract void setPixel(int x, int y, byte red, byte green, byte blue, boolean render);
+		// Make sure the image is of the correct type
+		BufferedImage image_to_display = image;
+		if (image.getType() != imageType ) {
+			Logger.warn("Source image type ({}) doesn't match native image type ({}); converting",
+					Integer.valueOf(image.getType()), Integer.valueOf(imageType));
+			image_to_display = new BufferedImage(width, height, imageType);
+			Graphics2D g2d = image_to_display.createGraphics();
+			
+			g2d.drawImage(image, 0, 0, null);
+			g2d.dispose();
+		}
+
+		short[] image_data = ((DataBufferUShort) image_to_display.getRaster().getDataBuffer()).getData();
+		for (int i=0; i<image_data.length; i++) {
+			buffer[2*i] = (byte) ((image_data[i] >> 8) & 0xff);
+			buffer[2*i+1] = (byte) (image_data[i] & 0xff);
+		}
+
+		display();
+	}
+	
+	public void setPixel(int x, int y, byte red, byte green, byte blue, boolean display) {
+		int index = 2 * (x + y*width);
+		short colour = ColourUtil.createColour565(red, green, blue);
+		// MSB is transmitted first
+		buffer[index] = (byte) ((colour >> 8) & 0xff);
+		buffer[index+1] = (byte) (colour & 0xff);
+		
+		if (display) {
+			goTo(x, y);
+			data(index, 2);
+		}
+	}
+	
 	public abstract void setContrast(byte level);
+	public abstract void setContrast(byte red, byte green, byte blue);
 }

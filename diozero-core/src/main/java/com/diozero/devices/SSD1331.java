@@ -32,14 +32,9 @@ package com.diozero.devices;
  */
 
 
-import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferUShort;
-
-import org.pmw.tinylog.Logger;
 
 import com.diozero.api.DigitalOutputDevice;
-import com.diozero.util.ColourUtil;
 
 /**
  * <p>Encapsulates the serial interface to the 16-bit colour (5-6-5 RGB) SSD1331
@@ -102,8 +97,6 @@ public class SSD1331 extends ColourSsdOled {
 
 	public SSD1331(int controller, int chipSelect, DigitalOutputDevice dcPin, DigitalOutputDevice resetPin) {
 		super(controller, chipSelect, dcPin, resetPin, WIDTH, HEIGHT, BufferedImage.TYPE_USHORT_565_RGB);
-		
-		init();
 	}
 
 	@Override
@@ -156,39 +149,6 @@ public class SSD1331 extends ColourSsdOled {
 		command(SET_COLUMN_ADDRESS, (byte) x, (byte) (width - 1));
 		command(SET_ROW_ADDRESS, (byte) y, (byte) (height - 1));
 	}
-	
-	@Override
-	protected void home() {
-		goTo(0, 0);
-	}
-
-	@Override
-	public void display(BufferedImage image) {
-		if (image.getWidth() != width || image.getHeight() != height) {
-			throw new IllegalArgumentException("Invalid input image dimensions (" + image.getWidth() + "x"
-					+ image.getHeight() + "), must be " + width + "x" + height);
-		}
-
-		// Make sure the image is of the correct type
-		BufferedImage image_to_display = image;
-		if (image.getType() != imageType ) {
-			Logger.warn("Source image type ({}) doesn't match native image type ({}); converting",
-					Integer.valueOf(image.getType()), Integer.valueOf(imageType));
-			image_to_display = new BufferedImage(width, height, imageType);
-			Graphics2D g2d = image_to_display.createGraphics();
-			
-			g2d.drawImage(image, 0, 0, null);
-			g2d.dispose();
-		}
-
-		short[] image_data = ((DataBufferUShort) image_to_display.getRaster().getDataBuffer()).getData();
-		for (int i=0; i<image_data.length; i++) {
-			buffer[2*i] = (byte) ((image_data[i] >> 8) & 0xff);
-			buffer[2*i+1] = (byte) (image_data[i] & 0xff);
-		}
-
-		display();
-	}
 
 	/**
 	 * Sets if the display should be inverted
@@ -201,20 +161,6 @@ public class SSD1331 extends ColourSsdOled {
 		command(invert ? DISPLAY_MODE_INVERSE : DISPLAY_MODE_NORMAL);
 	}
 	
-	@Override
-	public void setPixel(int x, int y, byte red, byte green, byte blue, boolean display) {
-		int index = 2 * (x + y*width);
-		short colour = ColourUtil.createColour565(red, green, blue);
-		// MSB is transmitted first
-		buffer[index] = (byte) ((colour >> 8) & 0xff);
-		buffer[index+1] = (byte) (colour & 0xff);
-		
-		if (display) {
-			goTo(x, y);
-			data(index, 2);
-		}
-	}
-	
 	/**
 	 * Switches the display contrast to the desired level, in the range
 	 * 0-255. Note that setting the level to a low (or zero) value will
@@ -225,5 +171,10 @@ public class SSD1331 extends ColourSsdOled {
 	@Override
 	public void setContrast(byte level) {
 		command(CONTRAST_COLOUR_A, level, CONTRAST_COLOUR_B, level, CONTRAST_COLOUR_C, level);
+	}
+	
+	@Override
+	public void setContrast(byte red, byte green, byte blue) {
+		command(CONTRAST_COLOUR_A, red, CONTRAST_COLOUR_B, green, CONTRAST_COLOUR_C, blue);
 	}
 }

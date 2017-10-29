@@ -64,13 +64,7 @@ public class PropertyUtil {
 	}
 	
 	public static String getProperty(String key, String defaultValue) {
-		// Check -D<key> command line properties
-		String val = System.getProperty(key);
-		if (val == null) {
-			// If not set, check environment properties
-			val = System.getenv(key);
-		}
-		
-		return val == null ? defaultValue : val;
+		// System properties (-D) take priority over environment variables
+		return System.getProperties().getProperty(key, System.getenv().getOrDefault(key, defaultValue));
 	}
 }

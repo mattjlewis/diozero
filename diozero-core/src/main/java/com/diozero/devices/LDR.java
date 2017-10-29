@@ -115,7 +115,7 @@ public class LDR extends AnalogInputDevice {
 		// Get the scaled value (voltage)
 		float v_ldr = getScaledValue();
 
-		return r1 / (getVRef() / v_ldr - 1);
+		return r1 / (getRange() / v_ldr - 1);
 	}
 
 	/**

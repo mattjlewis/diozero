@@ -297,10 +297,13 @@ This project is hosted on [GitHub](https://github.com/mattjlewis/diozero/), plea
 + Thorough testing (various types of devices using each service provider)
 + A clean object-orientated API for IMUs
 + Native support for all devices via mmap (/dev/mem), in particular to improve performance and add support for GPIO pull up/down configuration.
-+ Cleanup the logic for handling capabilities of different boards in a generic fashion (no more if / then / else)
-+ Firmata SPI support (via USB cable)
 + Wireless access to Firmata devices (network and Bluetooth). E.g. [ESP32](https://learn.sparkfun.com/tutorials/esp32-thing-hookup-guide?_ga=1.116824388.33505106.1471290985#installing-the-esp32-arduino-core) [Firmata GitHub issue #315](https://github.com/firmata/arduino/issues/315)
-+ Particle Photon support (via wifi using [VoodooSpark "firmware"](https://github.com/voodootikigod/voodoospark) - [JavaScript implementation](https://github.com/rwaldron/particle-io/blob/master/lib/particle.js))
++ Remote API for board capabilities
++ SPI support for Arduino devices
++ Introduce Servo as a device type
++ Try out ConfigurableFirmata - is there actually any difference to the StandardFirmata protocol?
++ Complete ADSL1x15
++ BME680
 
 [Release History](RELEASE.md)
 

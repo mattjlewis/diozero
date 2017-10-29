@@ -100,10 +100,12 @@ public interface FirmataProtocol {
 	public static class PinCapability {
 		private PinMode mode;
 		private int resolution;
+		private int max;
 		
 		public PinCapability(PinMode mode, int resolution) {
 			this.mode = mode;
 			this.resolution = resolution;
+			this.max = (int) Math.pow(2, resolution) - 1;
 		}
 
 		public PinMode getMode() {
@@ -112,6 +114,10 @@ public interface FirmataProtocol {
 
 		public int getResolution() {
 			return resolution;
+		}
+		
+		public int getMax() {
+			return max;
 		}
 
 		@Override

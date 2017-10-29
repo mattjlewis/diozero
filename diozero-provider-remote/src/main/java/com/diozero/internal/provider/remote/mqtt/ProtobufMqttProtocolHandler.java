@@ -44,8 +44,8 @@ import com.diozero.internal.provider.NativeDeviceFactoryInterface;
 import com.diozero.internal.provider.remote.ProtobufBaseAsyncProtocolHandler;
 import com.diozero.remote.message.DiozeroProtos;
 import com.diozero.remote.message.DiozeroProtosConverter;
-import com.diozero.remote.message.GetBoardGpioInfo;
-import com.diozero.remote.message.GetBoardGpioInfoResponse;
+import com.diozero.remote.message.GetBoardInfo;
+import com.diozero.remote.message.GetBoardInfoResponse;
 import com.diozero.remote.message.GpioAnalogRead;
 import com.diozero.remote.message.GpioAnalogReadResponse;
 import com.diozero.remote.message.GpioAnalogWrite;
@@ -138,8 +138,8 @@ public class ProtobufMqttProtocolHandler extends ProtobufBaseAsyncProtocolHandle
 	}
 
 	@Override
-	public GetBoardGpioInfoResponse request(GetBoardGpioInfo request) {
-		return (GetBoardGpioInfoResponse) requestResponse(MqttProviderConstants.GET_BOARD_GPIO_INFO_TOPIC,
+	public GetBoardInfoResponse request(GetBoardInfo request) {
+		return (GetBoardInfoResponse) requestResponse(MqttProviderConstants.GET_BOARD_GPIO_INFO_TOPIC,
 				DiozeroProtosConverter.convert(request), request.getCorrelationId());
 	}
 

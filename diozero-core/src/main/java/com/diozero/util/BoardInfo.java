@@ -66,6 +66,10 @@ public abstract class BoardInfo extends BoardPinInfo {
 		this.adcVRef = adcVRef;
 	}
 	
+	/**
+	 * initialisePins is separate to the constructor as a lot of known BoardInfo
+	 * info instances get created on startup.
+	 */
 	public abstract void initialisePins();
 
 	public String getMake() {

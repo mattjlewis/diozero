@@ -53,8 +53,8 @@ import com.diozero.internal.provider.I2CDeviceInterface;
 import com.diozero.internal.provider.NativeDeviceFactoryInterface;
 import com.diozero.internal.provider.PwmOutputDeviceInterface;
 import com.diozero.internal.provider.SpiDeviceInterface;
-import com.diozero.remote.message.GetBoardGpioInfo;
-import com.diozero.remote.message.GetBoardGpioInfoResponse;
+import com.diozero.remote.message.GetBoardInfo;
+import com.diozero.remote.message.GetBoardInfoResponse;
 import com.diozero.remote.message.GpioAnalogRead;
 import com.diozero.remote.message.GpioAnalogReadResponse;
 import com.diozero.remote.message.GpioAnalogWrite;
@@ -92,7 +92,7 @@ import com.diozero.remote.message.SpiOpen;
 import com.diozero.remote.message.SpiResponse;
 import com.diozero.remote.message.SpiWrite;
 import com.diozero.remote.message.SpiWriteAndRead;
-import com.diozero.util.BoardPinInfo;
+import com.diozero.util.BoardInfo;
 import com.diozero.util.DeviceFactoryHelper;
 import com.diozero.util.RuntimeIOException;
 
@@ -109,17 +109,18 @@ public abstract class BaseRemoteServer implements InputEventListener<DigitalInpu
 	}
 	
 	@Override
-	public GetBoardGpioInfoResponse request(GetBoardGpioInfo request) {
-		BoardPinInfo pin_info = deviceFactory.getBoardPinInfo();
+	public GetBoardInfoResponse request(GetBoardInfo request) {
+		BoardInfo board_info = deviceFactory.getBoardInfo();
+		
+		Collection<PinInfo> gpio_pins = board_info.getGpioPins();
+		Collection<PinInfo> adc_pins = board_info.getAdcPins();
+		Collection<PinInfo> dac_pins = board_info.getDacPins();
 		
 		// TODO Implementation
-		BoardPinInfo board_pin_info = deviceFactory.getBoardPinInfo();
-		Collection<PinInfo> gpio_pins = board_pin_info.getGpioPins();
-		Collection<PinInfo> adc_pins = board_pin_info.getAdcPins();
-		Collection<PinInfo> dac_pins = board_pin_info.getDacPins();
 		List<GpioInfo> gpios = new ArrayList<>();
 		
-		GetBoardGpioInfoResponse response = new GetBoardGpioInfoResponse(gpios, request.getCorrelationId());
+		GetBoardInfoResponse response = new GetBoardInfoResponse(board_info.getMake(), board_info.getModel(),
+				board_info.getMemory(), gpios, request.getCorrelationId());
 		
 		return response;
 	}

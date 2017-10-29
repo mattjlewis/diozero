@@ -42,6 +42,10 @@ import com.diozero.api.SpiClockMode;
 import com.diozero.util.RuntimeIOException;
 
 public interface SpiDeviceFactoryInterface extends DeviceFactoryInterface {
+	/**
+	 * Many distributions have a maximum SPI transfer of 4096 bytes. This can be changed in /boot/cmdline.txt by appending
+	 *  spidev.bufsiz=32768
+ 	 */
 	static final int DEFAULT_SPI_BUFFER_SIZE = 4096;
 	static final String SPI_PREFIX = "-SPI-";
 	
