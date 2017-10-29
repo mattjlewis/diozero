@@ -10,10 +10,10 @@ extern "C" {
 /*
  * Class:     com_diozero_ws281xj_WS281xNative
  * Method:    initialise
- * Signature: (IIIIII)Ljava/nio/ByteBuffer;
+ * Signature: (IIIIIII)Ljava/nio/ByteBuffer;
  */
 JNIEXPORT jobject JNICALL Java_com_diozero_ws281xj_WS281xNative_initialise
-  (JNIEnv *, jclass, jint, jint, jint, jint, jint, jint);
+  (JNIEnv *, jclass, jint, jint, jint, jint, jint, jint, jint);
 
 /*
  * Class:     com_diozero_ws281xj_WS281xNative

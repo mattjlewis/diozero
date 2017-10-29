@@ -46,13 +46,19 @@ import java.nio.file.StandardCopyOption;
  * <a href="https://github.com/jgarff/rpi_ws281x">rpi_ws281x C library</a>.</p>
  * <p>Also see <a href="https://github.com/626Pilot/RaspberryPi-NeoPixel-WS2812">this implementation</a>.</p>
  * <p>All colours are represented as 24bit RGB values.</p>
+ * <p>Valid GPIO numbers:</p>
+ * <ul>
+ *  <li>12 / 18 (PWM)</li>
+ *  <li>21 / 31 (PCM)</li>
+ *  <li>10 (SPI)</li>
+ * </ul>
  */
 public class WS281x implements Closeable {
 	private static final int SIZE_OF_INT = 4;
 	private static final int DEFAULT_FREQUENCY = 800_000; // Or 400_000
-	// TODO Find out what options there are here... What do pigpio & wiringPi
-	// use?
+	// TODO Find out what options there are here... What do pigpio & wiringPi use?
 	private static final int DEFAULT_DMA_NUM = 5;
+	private static final int DEFAULT_CHANNEL = 0;
 
 	private static final String LIB_NAME = "ws281xj";
 	private static Boolean loaded = Boolean.FALSE;
@@ -90,7 +96,7 @@ public class WS281x implements Closeable {
 	 * @param numPixels The number of pixels connected.
 	 */
 	public WS281x(int gpioNum, int brightness, int numPixels) {
-		this(DEFAULT_FREQUENCY, DEFAULT_DMA_NUM, gpioNum, brightness, numPixels, StripType.WS2812_STRIP);
+		this(DEFAULT_FREQUENCY, DEFAULT_DMA_NUM, gpioNum, brightness, numPixels, StripType.WS2812_STRIP, DEFAULT_CHANNEL);
 	}
 
 	/**
@@ -102,11 +108,24 @@ public class WS281x implements Closeable {
 	 * @param stripType Strip type
 	 */
 	public WS281x(int frequency, int dmaNum, int gpioNum, int brightness, int numPixels, StripType stripType) {
+		this(DEFAULT_FREQUENCY, DEFAULT_DMA_NUM, gpioNum, brightness, numPixels, stripType, DEFAULT_CHANNEL);
+	}
+
+	/**
+	 * @param frequency Communication frequency, 800,000 or 400,000.
+	 * @param dmaNum DMA number.
+	 * @param gpioNum GPIO pin to use to drive the LEDs.
+	 * @param brightness Brightness level (0..255).
+	 * @param numPixels The number of pixels connected.
+	 * @param stripType Strip type
+	 * @param channel PWM channel
+	 */
+	public WS281x(int frequency, int dmaNum, int gpioNum, int brightness, int numPixels, StripType stripType, int channel) {
 		init();
 
 		this.numPixels = numPixels;
 
-		ch0LedBuffer = WS281xNative.initialise(frequency, dmaNum, gpioNum, brightness, numPixels, stripType.getType());
+		ch0LedBuffer = WS281xNative.initialise(frequency, dmaNum, gpioNum, brightness, numPixels, stripType.getType(), channel);
 		if (ch0LedBuffer == null) {
 			throw new RuntimeException("Error initialising the WS281x strip");
 		}
