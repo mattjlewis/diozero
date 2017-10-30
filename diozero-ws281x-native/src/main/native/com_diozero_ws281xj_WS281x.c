@@ -61,7 +61,7 @@ JNIEXPORT jobject JNICALL Java_com_diozero_ws281xj_WS281xNative_initialise(
 		return NULL;
 	}
 
-	jobject direct_buffer = (*env)->NewDirectByteBuffer(env, led_string.channel[0].leds, numLeds*sizeof(ws2811_led_t));
+	jobject direct_buffer = (*env)->NewDirectByteBuffer(env, led_string.channel[channel].leds, numLeds*sizeof(ws2811_led_t));
 
 	return direct_buffer;
 }
@@ -82,18 +82,4 @@ JNIEXPORT void JNICALL Java_com_diozero_ws281xj_WS281xNative_terminate(JNIEnv* e
  */
 JNIEXPORT jint JNICALL Java_com_diozero_ws281xj_WS281xNative_render(JNIEnv* env, jclass clz) {
 	return ws2811_render(&led_string);
-}
-
-int main(int argc, char *argv[]) {
-	printf("Hello\n");
-	int rc = ws2811_init(&led_string);
-	if (rc != 0) {
-		printf("Error %d\n", rc);
-		return -1;
-	}
-	printf("led_string.channel[0].gpionum=%d\n", led_string.channel[0].gpionum);
-	printf("led_string.channel[0].strip_type=%d\n", led_string.channel[0].strip_type);
-	ws2811_fini(&led_string);
-
-	return 0;
 }
