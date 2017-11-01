@@ -1,3 +1,5 @@
+#include "com_diozero_ws281xj_rpiws281x_WS281x.h"
+
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -8,7 +10,6 @@
 #include <pwm.h>
 #include <ws2811.h>
 
-#include "com_diozero_ws281xj_WS281x.h"
 
 #define TARGET_FREQ WS2811_TARGET_FREQ
 #define DMA 5
@@ -37,11 +38,11 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* jvm, void* reserved) {
 }
 
 /*
- * Class:     com_diozero_ws281xj_WS281xNative
+ * Class:     com_diozero_ws281xj_rpiws281x_WS281xNative
  * Method:    initialise
  * Signature: (IIIIIII)Ljava/nio/ByteBuffer
  */
-JNIEXPORT jobject JNICALL Java_com_diozero_ws281xj_WS281xNative_initialise(
+JNIEXPORT jobject JNICALL Java_com_diozero_ws281xj_rpiws281x_WS281xNative_initialise(
 		JNIEnv* env, jclass clz, jint frequency, jint dmaNum, jint gpioNum,
 		jint brightness, jint numLeds, jint stripType, jint channel) {
 	if (channel < 0 || channel >= RPI_PWM_CHANNELS) {
@@ -67,19 +68,19 @@ JNIEXPORT jobject JNICALL Java_com_diozero_ws281xj_WS281xNative_initialise(
 }
 
 /*
- * Class:     com_diozero_ws281xj_WS281xNative
+ * Class:     com_diozero_ws281xj_rpiws281x_WS281xNative
  * Method:    terminate
  * Signature: ()V
  */
-JNIEXPORT void JNICALL Java_com_diozero_ws281xj_WS281xNative_terminate(JNIEnv* env, jclass clz) {
+JNIEXPORT void JNICALL Java_com_diozero_ws281xj_rpiws281x_WS281xNative_terminate(JNIEnv* env, jclass clz) {
 	ws2811_fini(&led_string);
 }
 
 /*
- * Class:     com_diozero_ws281xj_WS281xNative
+ * Class:     com_diozero_ws281xj_rpiws281x_WS281xNative
  * Method:    render
  * Signature: ()I
  */
-JNIEXPORT jint JNICALL Java_com_diozero_ws281xj_WS281xNative_render(JNIEnv* env, jclass clz) {
+JNIEXPORT jint JNICALL Java_com_diozero_ws281xj_rpiws281x_WS281xNative_render(JNIEnv* env, jclass clz) {
 	return ws2811_render(&led_string);
 }

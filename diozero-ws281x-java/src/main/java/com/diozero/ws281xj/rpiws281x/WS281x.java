@@ -1,6 +1,6 @@
-package com.diozero.ws281xj;
+package com.diozero.ws281xj.rpiws281x;
 
-/*
+/*-
  * #%L
  * Organisation: mattjlewis
  * Project:      Device I/O Zero - WS281x Java Wrapper
@@ -31,13 +31,15 @@ package com.diozero.ws281xj;
  * #L%
  */
 
-import java.io.Closeable;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+
+import com.diozero.ws281xj.LedDriverInterface;
+import com.diozero.ws281xj.StripType;
 
 /**
  * <p>Provides support for
@@ -53,11 +55,12 @@ import java.nio.file.StandardCopyOption;
  *  <li>10 (SPI)</li>
  * </ul>
  */
-public class WS281x implements Closeable {
+public class WS281x implements LedDriverInterface {
 	private static final int SIZE_OF_INT = 4;
 	private static final int DEFAULT_FREQUENCY = 800_000; // Or 400_000
 	// TODO Find out what options there are here... What do pigpio & wiringPi use?
 	private static final int DEFAULT_DMA_NUM = 5;
+	private static final StripType DEFAULT_STRIP_TYPE = StripType.WS2812_STRIP;
 	private static final int DEFAULT_CHANNEL = 0;
 
 	private static final String LIB_NAME = "ws281xj";
@@ -96,7 +99,7 @@ public class WS281x implements Closeable {
 	 * @param numPixels The number of pixels connected.
 	 */
 	public WS281x(int gpioNum, int brightness, int numPixels) {
-		this(DEFAULT_FREQUENCY, DEFAULT_DMA_NUM, gpioNum, brightness, numPixels, StripType.WS2812_STRIP, DEFAULT_CHANNEL);
+		this(DEFAULT_FREQUENCY, DEFAULT_DMA_NUM, gpioNum, brightness, numPixels, DEFAULT_STRIP_TYPE, DEFAULT_CHANNEL);
 	}
 
 	/**
@@ -125,7 +128,8 @@ public class WS281x implements Closeable {
 
 		this.numPixels = numPixels;
 
-		ch0LedBuffer = WS281xNative.initialise(frequency, dmaNum, gpioNum, brightness, numPixels, stripType.getType(), channel);
+		ch0LedBuffer = WS281xNative.initialise(frequency, dmaNum, gpioNum, brightness, numPixels,
+				getRpiStripType(stripType), channel);
 		if (ch0LedBuffer == null) {
 			throw new RuntimeException("Error initialising the WS281x strip");
 		}
@@ -143,14 +147,12 @@ public class WS281x implements Closeable {
 		WS281xNative.terminate();
 	}
 
+	@Override
 	public int getNumPixels() {
 		return numPixels;
 	}
 
-	/**
-	 * Push any updated colours to the LED strip.
-	 */
-	@SuppressWarnings("static-method")
+	@Override
 	public void render() {
 		int rc = WS281xNative.render();
 		if (rc != 0) {
@@ -158,28 +160,13 @@ public class WS281x implements Closeable {
 		}
 	}
 
-	/*
-	public void testBufferOutOfBoundsError() {
-		int pixel = numPixels + 1;
-		try {
-			// This should fail with index out of bounds error...
-			int colour = ch0LedBuffer.getInt(pixel * SIZE_OF_INT);
-			System.out.format("led[%d]=0x%08x%n", Integer.valueOf(pixel), Integer.valueOf(colour));
-		} catch (IndexOutOfBoundsException e) {
-			System.out.println("Error: " + e);
-		}
-	}
-	*/
-
 	private void validatePixel(int pixel) {
 		if (pixel < 0 || pixel >= numPixels) {
 			throw new IllegalArgumentException("pixel must be 0.." + (numPixels - 1));
 		}
 	}
 
-	/**
-	 * Turn off all pixels.
-	 */
+	@Override
 	public void allOff() {
 		for (int i = 0; i < numPixels; i++) {
 			setPixelColour(i, 0);
@@ -187,157 +174,47 @@ public class WS281x implements Closeable {
 		render();
 	}
 
-	/**
-	 * Get the current colour for the specified pixel.
-	 * @param pixel Pixel number.
-	 * @return 24-bit RGB colour value.
-	 */
+	@Override
 	public int getPixelColour(int pixel) {
 		validatePixel(pixel);
 		return ch0LedBuffer.getInt(pixel * SIZE_OF_INT);
 	}
 
-	/**
-	 * Set the colour for the specified pixel.
-	 * @param pixel Pixel number.
-	 * @param colour Colour represented as a 24bit RGB integer (0x0RGB).
-	 */
+	@Override
 	public void setPixelColour(int pixel, int colour) {
 		validatePixel(pixel);
 		ch0LedBuffer.putInt(pixel * SIZE_OF_INT, colour);
 	}
 
-	/**
-	 * Set the colour for the specified pixel using individual red / green / blue 8-bit values.
-	 * @param pixel Pixel number.
-	 * @param red 8-bit value for the red component.
-	 * @param green 8-bit value for the green component.
-	 * @param blue 8-bit value for the blue component.
-	 */
-	public void setPixelColourRGB(int pixel, int red, int green, int blue) {
-		validatePixel(pixel);
-		ch0LedBuffer.putInt(pixel * SIZE_OF_INT, PixelColour.createColourRGB(red, green, blue));
-	}
-
-	/**
-	 * Set the colour for the specified pixel using Hue Saturation Brightness (HSB) values.
-	 * @param pixel Pixel number.
-	 * @param hue Float value in the range 0..1 representing the hue.
-	 * @param saturation Float value in the range 0..1 representing the colour saturation.
-	 * @param brightness Float value in the range 0..1 representing the colour brightness.
-	 */
-	public void setPixelColourHSB(int pixel, float hue, float saturation, float brightness) {
-		validatePixel(pixel);
-		ch0LedBuffer.putInt(pixel * SIZE_OF_INT, PixelColour.createColourHSB(hue, saturation, brightness));
-	}
-
-	/**
-	 * <p>Set the colour for the specified pixel using Hue Saturation Luminance (HSL) values.</p>
-	 * <p>HSL colour mapping code taken from <a href="https://tips4java.wordpress.com/2009/07/05/hsl-color/">this HSL Color class by Rob Camick</a>.</p>
-	 * @param pixel Pixel number.
-	 * @param hue Represents the colour (think colours of the rainbow), specified in degrees from 0 - 360. Red is 0, green is 120 and blue is 240.
-	 * @param saturation Represents the purity of the colour. Range is 0..1 with 1 fully saturated and 0 gray.
-	 * @param luminance Represents the brightness of the colour. Range is 0..1 with 1 white 0 black.
-	 */
-	public void setPixelColourHSL(int pixel, float hue, float saturation, float luminance) {
-		validatePixel(pixel);
-		ch0LedBuffer.putInt(pixel * SIZE_OF_INT, PixelColour.createColourHSL(hue, saturation, luminance));
-	}
-
-	/**
-	 * Get the 8-bit red component value for the specified pixel.
-	 * @param pixel Pixel number.
-	 * @return 8-bit red component value.
-	 */
-	public int getRedComponent(int pixel) {
-		validatePixel(pixel);
-		return PixelColour.getRedComponent(ch0LedBuffer.getInt(pixel * SIZE_OF_INT));
-	}
-
-	/**
-	 * Set the 8-bit red component value for the specified pixel.
-	 * @param pixel Pixel number.
-	 * @param red 8-bit red component value.
-	 */
-	public void setRedComponent(int pixel, int red) {
-		validatePixel(pixel);
-		int index = pixel * SIZE_OF_INT;
-		ch0LedBuffer.putInt(index, PixelColour.setRedComponent(ch0LedBuffer.getInt(index), red));
-	}
-
-	/**
-	 * Get the 8-bit green component value for the specified pixel.
-	 * @param pixel Pixel number.
-	 * @return 8-bit green component value.
-	 */
-	public int getGreenComponent(int pixel) {
-		validatePixel(pixel);
-		return PixelColour.getGreenComponet(ch0LedBuffer.getInt(pixel * SIZE_OF_INT));
-	}
-
-	/**
-	 * Set the 8-bit green component value for the specified pixel.
-	 * @param pixel Pixel number.
-	 * @param green 8-bit green component value.
-	 */
-	public void setGreenComponent(int pixel, int green) {
-		validatePixel(pixel);
-		int index = pixel * SIZE_OF_INT;
-		ch0LedBuffer.putInt(index, PixelColour.setGreenComponent(ch0LedBuffer.getInt(index), green));
-	}
-
-	/**
-	 * Get the 8-bit blue component value for the specified pixel.
-	 * @param pixel Pixel number.
-	 * @return 8-bit blue component value.
-	 */
-	public int getBlueComponent(int pixel) {
-		validatePixel(pixel);
-		return PixelColour.getBlueComponent(ch0LedBuffer.getInt(pixel * SIZE_OF_INT));
-	}
-
-	/**
-	 * Set the 8-bit blue component value for the specified pixel.
-	 * @param pixel Pixel number.
-	 * @param blue 8-bit blue component value.
-	 */
-	public void setBlueComponent(int pixel, int blue) {
-		validatePixel(pixel);
-		int index = pixel * SIZE_OF_INT;
-		ch0LedBuffer.putInt(index, PixelColour.setBlueComponent(ch0LedBuffer.getInt(index), blue));
-	}
+	private static int getRpiStripType(StripType stripType) {
+		switch (stripType) {
+		case SK6812_STRIP_RGBW:
+			return 0x18100800;
+		case SK6812_STRIP_RBGW:
+			return 0x18100008;
+		case SK6812_STRIP_GRBW:
+			return 0x18081000;
+		case SK6812_STRIP_GBRW:
+			return 0x18080010;
+		case SK6812_STRIP_BRGW:
+			return 0x18001008;
+		case SK6812_STRIP_BGRW:
+			return 0x18000810;
 	
-	public static enum StripType {
-		// 4 colour R, G, B and W ordering
-		SK6812_STRIP_RGBW(0x18100800),
-		SK6812_STRIP_RBGW(0x18100008),
-		SK6812_STRIP_GRBW(0x18081000),
-		SK6812_STRIP_GBRW(0x18080010),
-		SK6812_STRIP_BRGW(0x18001008),
-		SK6812_STRIP_BGRW(0x18000810),
-		SK6812_SHIFT_WMASK(0xf0000000),
-	
-		// 3 colour R, G and B ordering
-		WS2811_STRIP_RGB(0x00100800),
-		WS2811_STRIP_RBG(0x00100008),
-		WS2811_STRIP_GRB(0x00081000),
-		WS2811_STRIP_GBR(0x00080010),
-		WS2811_STRIP_BRG(0x00001008),
-		WS2811_STRIP_BGR(0x00000810);
-
-		private int type;
-		
-		private StripType(int type) {
-			this.type = type;
+		case WS2811_STRIP_RGB:
+			return 0x00100800;
+		case WS2811_STRIP_RBG:
+			return 0x00100008;
+		case WS2811_STRIP_GRB:
+			return 0x00081000;
+		case WS2811_STRIP_GBR:
+			return 0x00080010;
+		case WS2811_STRIP_BRG:
+			return 0x00001008;
+		case WS2811_STRIP_BGR:
+			return 0x00000810;
+		default:
+			return 0x00081000;
 		}
-		
-		public int getType() {
-			return type;
-		}
-		
-		// predefined fixed LED types
-		public static final StripType WS2812_STRIP = WS2811_STRIP_GRB;
-		public static final StripType SK6812_STRIP = WS2811_STRIP_GRB;
-		public static final StripType SK6812W_STRIP = SK6812_STRIP_GRBW;
 	}
 }
