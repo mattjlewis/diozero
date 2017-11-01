@@ -1,10 +1,10 @@
-package com.diozero.internal.provider;
+package com.diozero.firmata;
 
-/*
+/*-
  * #%L
  * Organisation: mattjlewis
- * Project:      Device I/O Zero - Core
- * Filename:     AbstractInputDevice.java  
+ * Project:      Device I/O Zero - Remote Provider
+ * Filename:     FirmataEventListener.java  
  * 
  * This file is part of the diozero project. More information about this project
  * can be found at http://www.diozero.com/
@@ -31,41 +31,11 @@ package com.diozero.internal.provider;
  * #L%
  */
 
-
-import com.diozero.api.DeviceEvent;
-import com.diozero.api.InputEventListener;
-
-public abstract class AbstractInputDevice<T extends DeviceEvent> extends AbstractDevice {
-	private InputEventListener<T> listener;
-
-	public AbstractInputDevice(String key, DeviceFactoryInterface deviceFactory) {
-		super(key, deviceFactory);
-	}
+@FunctionalInterface
+public interface FirmataEventListener {
+	void event(EventType eventType, int gpio, int value, long epochTime, long nanoTime);
 	
-	public void valueChanged(T event) {
-		if (listener != null) {
-			listener.valueChanged(event);
-		}
-	}
-	
-	@SuppressWarnings("static-method")
-	public boolean generatesEvents() {
-		return false;
-	}
-
-	public final void setListener(InputEventListener<T> listener) {
-		this.listener = listener;
-		enableListener();
-	}
-
-	public final void removeListener() {
-		disableListener();
-		listener = null;
-	}
-	
-	protected void enableListener() {
-	}
-	
-	protected void disableListener() {
+	public static enum EventType {
+		DIGITAL, ANALOG;
 	}
 }

@@ -57,6 +57,11 @@ public class FirmataAnalogInputDevice extends AbstractInputDevice<AnalogInputEve
 			throw new RuntimeIOException("Error setting pin mode to analog input for pin " + deviceNumber);
 		}
 	}
+	
+	@Override
+	public boolean generatesEvents() {
+		return true;
+	}
 
 	@Override
 	public float getValue() throws RuntimeIOException {

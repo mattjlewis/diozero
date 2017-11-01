@@ -181,7 +181,7 @@ public class TestDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	protected SpiDeviceInterface createSpiDevice(String key, int controller, int chipSelect, int frequency,
+	public SpiDeviceInterface createSpiDevice(String key, int controller, int chipSelect, int frequency,
 			SpiClockMode spiClockMode, boolean lsbFirst) throws RuntimeIOException {
 		if (spiDeviceClass == null) {
 			throw new IllegalArgumentException("SPI Device implementation class hasn't been set");
@@ -196,7 +196,7 @@ public class TestDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	protected I2CDeviceInterface createI2CDevice(String key, int controller, int address, int addressSize,
+	public I2CDeviceInterface createI2CDevice(String key, int controller, int address, int addressSize,
 			int clockFrequency) throws RuntimeIOException {
 		if (i2cDeviceClass == null) {
 			throw new IllegalArgumentException("I2C Device implementation class hasn't been set");

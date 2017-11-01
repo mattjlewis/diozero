@@ -141,13 +141,13 @@ public class WiringPiDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	protected SpiDeviceInterface createSpiDevice(String key, int controller, int chipSelect, int frequency,
+	public SpiDeviceInterface createSpiDevice(String key, int controller, int chipSelect, int frequency,
 			SpiClockMode spiClockMode, boolean lsbFirst) throws RuntimeIOException {
 		return new WiringPiSpiDevice(key, this, controller, chipSelect, frequency, spiClockMode, lsbFirst);
 	}
 
 	@Override
-	protected I2CDeviceInterface createI2CDevice(String key, int controller, int address, int addressSize, int clockFrequency)
+	public I2CDeviceInterface createI2CDevice(String key, int controller, int address, int addressSize, int clockFrequency)
 			throws RuntimeIOException {
 		return new WiringPiI2CDevice(key, this, controller, address, addressSize, clockFrequency);
 	}

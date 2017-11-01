@@ -42,8 +42,6 @@ import com.diozero.util.RuntimeIOException;
 public class MmapDigitalInputOutputDevice extends SysFsDigitalInputOutputDevice {
 	private MmapDeviceFactory mmapDeviceFactory;
 	private MmapGpioInterface mmapGpio;
-	private int gpio;
-	private DeviceMode mode;
 	private GpioPullUpDown pud;
 
 	public MmapDigitalInputOutputDevice(MmapDeviceFactory deviceFactory, String key,
@@ -52,7 +50,6 @@ public class MmapDigitalInputOutputDevice extends SysFsDigitalInputOutputDevice 
 		
 		this.mmapDeviceFactory = deviceFactory;
 		mmapGpio = mmapDeviceFactory.getMmapGpio();
-		this.gpio = pinInfo.getDeviceNumber();
 
 		// For when mode is set to input
 		this.pud = GpioPullUpDown.NONE;
@@ -77,7 +74,7 @@ public class MmapDigitalInputOutputDevice extends SysFsDigitalInputOutputDevice 
 	@Override
 	public void setValue(boolean value) throws RuntimeIOException {
 		if (mode != DeviceMode.DIGITAL_OUTPUT) {
-			throw new IllegalStateException("Can only set output value for digital output pins");
+			throw new IllegalStateException("Can only set output value for digital output pins (mode=" + mode + ")");
 		}
 		mmapGpio.gpioWrite(gpio, value);
 	}

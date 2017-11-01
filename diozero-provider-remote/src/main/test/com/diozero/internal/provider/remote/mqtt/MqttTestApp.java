@@ -48,10 +48,11 @@ import org.pmw.tinylog.Logger;
 import com.diozero.api.GpioEventTrigger;
 import com.diozero.api.GpioPullUpDown;
 import com.diozero.remote.message.GpioDigitalWrite;
+import com.diozero.remote.message.GpioPwmWrite;
 import com.diozero.remote.message.ProvisionDigitalInputDevice;
 import com.diozero.remote.message.ProvisionDigitalOutputDevice;
+import com.diozero.remote.message.ProvisionPwmOutputDevice;
 import com.diozero.remote.server.mqtt.MqttProviderConstants;
-import com.diozero.util.SleepUtil;
 import com.google.gson.Gson;
 
 public class MqttTestApp implements MqttCallback {
@@ -82,16 +83,12 @@ public class MqttTestApp implements MqttCallback {
 	}
 
 	public void run() throws MqttPersistenceException, MqttException {
-		ProvisionDigitalInputDevice o = new ProvisionDigitalInputDevice(2, null, null, UUID.randomUUID().toString());
-		System.out.println(GSON.toJson(o));
-		
 		MqttMessage message = new MqttMessage();
 
-		int gpio = 2;
+		int gpio = 16;
 
 		ProvisionDigitalInputDevice input = new ProvisionDigitalInputDevice(gpio, GpioPullUpDown.NONE, GpioEventTrigger.BOTH, UUID.randomUUID().toString());
 		message.setPayload(GSON.toJson(input).getBytes());
-		mqttClient.publish("json", message);
 		mqttClient.publish(MqttProviderConstants.GPIO_PROVISION_DIGITAL_INPUT_TOPIC, message);
 		Logger.debug("Sent: {}", message);
 
@@ -105,25 +102,36 @@ public class MqttTestApp implements MqttCallback {
 			message.setPayload(GSON.toJson(write).getBytes());
 			mqttClient.publish(MqttProviderConstants.GPIO_DIGITAL_WRITE_TOPIC, message);
 			Logger.debug("Sent: {}", message);
-			SleepUtil.sleepSeconds(1);
+			sleep(1000);
 
 			write = new GpioDigitalWrite(gpio, false, UUID.randomUUID().toString());
 			message.setPayload(GSON.toJson(write).getBytes());
 			mqttClient.publish(MqttProviderConstants.GPIO_DIGITAL_WRITE_TOPIC, message);
 			Logger.debug("Sent: {}", message);
-			SleepUtil.sleepSeconds(1);
+			sleep(1000);
 		}
 
-		for (int i=0; i<10; i++) {
-			String payload = Integer.toString(i % 2);
-			message.setPayload(payload.getBytes());
-			mqttClient.publish("inTopic", message);
-			Logger.debug("Sent {}", message);
-
-			SleepUtil.sleepSeconds(1);
+		ProvisionPwmOutputDevice pwm = new ProvisionPwmOutputDevice(gpio, 1000, 0.1f, UUID.randomUUID().toString());
+		message.setPayload(GSON.toJson(pwm).getBytes());
+		mqttClient.publish(MqttProviderConstants.GPIO_PROVISION_PWM_OUTPUT_TOPIC, message);
+		Logger.debug("Sent: {}", message);
+		
+		for (float f=0; f<1; f+=0.01) {
+			GpioPwmWrite pwm_write = new GpioPwmWrite(gpio, f, UUID.randomUUID().toString());
+			message.setPayload(GSON.toJson(pwm_write).getBytes());
+			mqttClient.publish(MqttProviderConstants.GPIO_PWM_WRITE_TOPIC, message);
+			Logger.debug("Sent: {}", message);
+			sleep(50);
+		}
+		for (float f=1; f>0; f-=0.01) {
+			GpioPwmWrite pwm_write = new GpioPwmWrite(gpio, f, UUID.randomUUID().toString());
+			message.setPayload(GSON.toJson(pwm_write).getBytes());
+			mqttClient.publish(MqttProviderConstants.GPIO_PWM_WRITE_TOPIC, message);
+			Logger.debug("Sent: {}", message);
+			sleep(50);
 		}
 
-		SleepUtil.sleepSeconds(1);
+		sleep(1000);
 
 		mqttClient.disconnect();
 		mqttClient.close();
@@ -142,5 +150,12 @@ public class MqttTestApp implements MqttCallback {
 	@Override
 	public void messageArrived(String topic, MqttMessage message) throws Exception {
 		Logger.debug("{}: {}", topic, message);
+	}
+	
+	private static void sleep(int millis) {
+		try {
+			Thread.sleep(millis);
+		} catch (InterruptedException e) {
+		}
 	}
 }

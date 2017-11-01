@@ -41,14 +41,12 @@ import com.diozero.util.RuntimeIOException;
 
 public class MmapDigitalInputDevice extends SysFsDigitalInputDevice {
 	private MmapGpioInterface mmapGpio;
-	private int gpio;
 
 	MmapDigitalInputDevice(MmapDeviceFactory deviceFactory, String key, PinInfo pinInfo, GpioPullUpDown pud,
 			GpioEventTrigger trigger) {
 		super(deviceFactory, key, pinInfo, trigger);
 		
 		this.mmapGpio = deviceFactory.getMmapGpio();
-		this.gpio = pinInfo.getDeviceNumber();
 		
 		mmapGpio.setPullUpDown(gpio, pud);
 	}

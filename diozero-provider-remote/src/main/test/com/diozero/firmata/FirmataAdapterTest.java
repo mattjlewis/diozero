@@ -1,4 +1,4 @@
-package com.diozero.internal.provider.remote.firmata;
+package com.diozero.firmata;
 
 /*-
  * #%L
@@ -33,6 +33,8 @@ package com.diozero.internal.provider.remote.firmata;
 
 import org.junit.Assert;
 import org.junit.Test;
+
+import com.diozero.firmata.FirmataAdapter;
 
 @SuppressWarnings("static-method")
 public class FirmataAdapterTest {

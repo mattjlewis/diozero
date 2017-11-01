@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/mattjlewis/diozero.svg?branch=master)](https://travis-ci.org/mattjlewis/diozero)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.diozero/diozero/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.diozero/diozero)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Javadoc](https://javadoc-emblem.rhcloud.com/doc/com.diozero/diozero/badge.svg)](http://www.javadoc.io/doc/com.diozero/diozero)
+[![Javadoc](https://javadoc-emblem.rhcloud.com/doc/com.diozero/diozero-core/badge.svg)](http://www.javadoc.io/doc/com.diozero/diozero-core)
 [![Documentation Status](https://readthedocs.org/projects/diozero/badge/?version=latest)](http://diozero.readthedocs.io/en/latest/?badge=latest)
 
 A Device I/O library written in Java that provides an object-orientated interface for a range of 
@@ -20,9 +20,9 @@ This library makes use of modern Java features such as
 [Method References](https://docs.oracle.com/javase/tutorial/java/javaOO/methodreferences.html) 
 where they simplify development and improve code readability.
 
-Created by [Matt Lewis](https://github.com/mattjlewis) (email [deviceiozero@gmail.com](mailto:deviceiozero@gmail.com)), 
+Created by [Matt Lewis](https://github.com/mattjlewis) (email [deviceiozero@gmail.com](mailto:deviceiozero@gmail.com)) ([blog](https://diozero.blogspot.co.uk/)), 
 inspired by [GPIO Zero](https://gpiozero.readthedocs.org/) and [Johnny Five](http://johnny-five.io/). 
-If you have any issues please use the [GitHub issues page](https://github.com/mattjlewis/diozero/issues). 
+If you have any issues please use the [GitHub issues page](https://github.com/mattjlewis/diozero/issues).
 For any other comments or suggestions, please use the [diozero Google Group](https://groups.google.com/forum/#!forum/diozero).
 
 ## Concepts

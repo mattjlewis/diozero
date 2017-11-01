@@ -61,7 +61,7 @@ implements GpioDigitalInputDeviceInterface, PollEventListener {
 	// http://stackoverflow.com/questions/30190730/nio-watchservice-for-unix-sys-classes-gpio-files
 	
 	private SysFsDeviceFactory deviceFactory;
-	private int gpio;
+	protected int gpio;
 	private Path valuePath;
 	private RandomAccessFile valueFile;
 

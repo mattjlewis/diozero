@@ -11,22 +11,17 @@ LFLAGS = -L/home/pi/rpi_ws281x
 
 LIBS = -lws2811
 
-SRCS = com_diozero_ws281xj_WS281x.c
+SRCS = com_diozero_ws281xj_rpiws281x_WS281x.c
 
 OBJS = $(SRCS:.c=.o)
 
 LIB_TARGET = libws281xj.so
-MAIN = ws281xj
 
-all: $(LIB_TARGET) $(MAIN)
+all: $(LIB_TARGET)
 
 $(LIB_TARGET): $(OBJS)
 	@echo [LINK] $(LIB_TARGET)
 	@$(CC) -shared -o $(LIB_TARGET) $(OBJS) $(LFLAGS) $(LIBS)
-
-$(MAIN): $(OBJS)
-	@echo [LINK] $(MAIN)
-	$(CC) -o $(MAIN) $(OBJS) $(LFLAGS) $(LIBS)
 
 .c.o:
 	@echo [COMPILE] $<

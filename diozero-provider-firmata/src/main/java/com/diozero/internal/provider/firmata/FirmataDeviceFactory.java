@@ -199,14 +199,14 @@ public class FirmataDeviceFactory extends BaseNativeDeviceFactory {
 	}
 	
 	@Override
-	protected SpiDeviceInterface createSpiDevice(String key, int controller, int chipSelect, int frequency,
+	public SpiDeviceInterface createSpiDevice(String key, int controller, int chipSelect, int frequency,
 			SpiClockMode spiClockMode, boolean lsbFirst) throws RuntimeIOException {
 		throw new UnsupportedOperationException("SPI is not supported by device factory '"
 				+ getClass().getSimpleName() + "' on device '" + getBoardInfo().getName() + "'");
 	}
 
 	@Override
-	protected I2CDeviceInterface createI2CDevice(String key, int controller, int address, int addressSize,
+	public I2CDeviceInterface createI2CDevice(String key, int controller, int address, int addressSize,
 			int clockFrequency) throws RuntimeIOException {
 		return new FirmataI2CDevice(this, key, controller, address, addressSize, clockFrequency);
 	}

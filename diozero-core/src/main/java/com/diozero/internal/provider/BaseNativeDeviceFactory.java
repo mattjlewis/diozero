@@ -91,7 +91,7 @@ public abstract class BaseNativeDeviceFactory extends AbstractDeviceFactory impl
 	
 	@Override
 	public void close() {
-		// Stop all sheduled jobs
+		// Stop all scheduled jobs
 		DioZeroScheduler.shutdownAll();
 		// Shutdown all of the other non-native device factories
 		for (DeviceFactoryInterface df : deviceFactories) {
@@ -102,40 +102,4 @@ public abstract class BaseNativeDeviceFactory extends AbstractDeviceFactory impl
 		// Now close all devices provisioned directly by this device factory
 		super.close();
 	}
-
-	@Override
-	public final SpiDeviceInterface provisionSpiDevice(int controller, int chipSelect,
-			int frequency, SpiClockMode spiClockMode, boolean lsbFirst) throws RuntimeIOException {
-		String key = createSpiKey(controller, chipSelect);
-		
-		// Check if this pin is already provisioned
-		if (isDeviceOpened(key)) {
-			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
-		}
-		
-		SpiDeviceInterface device = createSpiDevice(key, controller, chipSelect, frequency, spiClockMode, lsbFirst);
-		deviceOpened(device);
-		
-		return device;
-	}
-
-	@Override
-	public final I2CDeviceInterface provisionI2CDevice(int controller, int address, int addressSize, int clockFrequency) throws RuntimeIOException {
-		String key = createI2CKey(controller, address);
-		
-		// Check if this pin is already provisioned
-		if (isDeviceOpened(key)) {
-			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
-		}
-		
-		I2CDeviceInterface device = createI2CDevice(key, controller, address, addressSize, clockFrequency);
-		deviceOpened(device);
-		
-		return device;
-	}
-
-	protected abstract SpiDeviceInterface createSpiDevice(String key, int controller, int chipSelect, int frequency,
-			SpiClockMode spiClockMode, boolean lsbFirst) throws RuntimeIOException;
-	protected abstract I2CDeviceInterface createI2CDevice(String key, int controller, int address, int addressSize,
-			int clockFrequency) throws RuntimeIOException;
 }

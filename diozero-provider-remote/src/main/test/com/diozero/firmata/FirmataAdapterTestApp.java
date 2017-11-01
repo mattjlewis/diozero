@@ -1,4 +1,4 @@
-package com.diozero.internal.provider.remote.firmata;
+package com.diozero.firmata;
 
 /*-
  * #%L
@@ -35,19 +35,27 @@ import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.List;
 
-import com.diozero.internal.provider.remote.firmata.FirmataAdapter.FirmwareDetails;
-import com.diozero.internal.provider.remote.firmata.FirmataAdapter.PinState;
-import com.diozero.internal.provider.remote.firmata.FirmataAdapter.ProtocolVersion;
-import com.diozero.internal.provider.remote.firmata.FirmataProtocol.PinCapability;
-import com.diozero.internal.provider.remote.firmata.FirmataProtocol.PinMode;
+import com.diozero.firmata.FirmataAdapter;
+import com.diozero.firmata.SocketFirmataAdapter;
+import com.diozero.firmata.FirmataAdapter.FirmwareDetails;
+import com.diozero.firmata.FirmataAdapter.PinState;
+import com.diozero.firmata.FirmataAdapter.ProtocolVersion;
+import com.diozero.firmata.FirmataEventListener.EventType;
+import com.diozero.firmata.FirmataProtocol.PinCapability;
+import com.diozero.firmata.FirmataProtocol.PinMode;
 
 public class FirmataAdapterTestApp {
 	public static void main(String[] args) throws UnknownHostException, IOException, InterruptedException {
-		try (FirmataAdapter fa = new SocketFirmataAdapter("192.168.1.215", 3030)) {
+		try (FirmataAdapter fa = new SocketFirmataAdapter(FirmataAdapterTestApp::event, "192.168.1.215", 3030)) {
 			test(fa);
 		}
 		
 		System.out.println("main: done");
+	}
+	
+	private static void event(EventType eventType, int gpio, int value, long epochTime, long nanoTime) {
+		System.out.println(
+				"Event: " + eventType + ", #" + gpio + ": " + value + " @ " + epochTime + "ms (" + nanoTime + "ns)");
 	}
 
 	@SuppressWarnings("boxing")

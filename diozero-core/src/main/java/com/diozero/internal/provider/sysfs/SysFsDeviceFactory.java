@@ -39,8 +39,6 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import org.pmw.tinylog.Logger;
-
 import com.diozero.api.DeviceMode;
 import com.diozero.api.GpioEventTrigger;
 import com.diozero.api.GpioPullUpDown;
@@ -131,7 +129,6 @@ public class SysFsDeviceFactory extends BaseNativeDeviceFactory {
 	@Override
 	public PwmOutputDeviceInterface createPwmOutputDevice(String key, PinInfo pinInfo, int pwmFrequency,
 			float initialValue) throws RuntimeIOException {
-		int gpio = pinInfo.getDeviceNumber();
 		if (pinInfo instanceof PwmPinInfo) {
 			PwmPinInfo pwm_pin_info = (PwmPinInfo) pinInfo;
 			// Odroid C2 runs with an older 3.x kernel hence has a different sysfs interface
@@ -143,7 +140,6 @@ public class SysFsDeviceFactory extends BaseNativeDeviceFactory {
 					pwmFrequency, initialValue);
 		}
 
-		Logger.warn("Using software PWM on gpio {}", Integer.valueOf(gpio));
 		SoftwarePwmOutputDevice pwm = new SoftwarePwmOutputDevice(key, this,
 				createDigitalOutputDevice(createPinKey(pinInfo), pinInfo, false), pwmFrequency, initialValue);
 		return pwm;
@@ -177,8 +173,6 @@ public class SysFsDeviceFactory extends BaseNativeDeviceFactory {
 	}
 	
 	void export(int gpio, DeviceMode mode) {
-		Logger.debug("export({}, {})", Integer.valueOf(gpio), mode);
-		
 		if (! isExported(gpio)) {
 			try (Writer export_writer = new FileWriter(rootPath.resolve(EXPORT_FILE).toFile())) {
 				export_writer.write(String.valueOf(gpio));

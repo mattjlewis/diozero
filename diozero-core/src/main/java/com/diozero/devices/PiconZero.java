@@ -36,9 +36,33 @@ import java.nio.ByteOrder;
 
 import org.pmw.tinylog.Logger;
 
-import com.diozero.api.*;
-import com.diozero.internal.provider.*;
-import com.diozero.util.*;
+import com.diozero.api.AnalogInputEvent;
+import com.diozero.api.DeviceAlreadyOpenedException;
+import com.diozero.api.DeviceMode;
+import com.diozero.api.DigitalInputEvent;
+import com.diozero.api.GpioEventTrigger;
+import com.diozero.api.GpioPullUpDown;
+import com.diozero.api.I2CConstants;
+import com.diozero.api.I2CDevice;
+import com.diozero.api.InputEventListener;
+import com.diozero.api.PinInfo;
+import com.diozero.internal.provider.AbstractDevice;
+import com.diozero.internal.provider.AbstractDeviceFactory;
+import com.diozero.internal.provider.AbstractInputDevice;
+import com.diozero.internal.provider.AnalogInputDeviceFactoryInterface;
+import com.diozero.internal.provider.AnalogInputDeviceInterface;
+import com.diozero.internal.provider.AnalogOutputDeviceFactoryInterface;
+import com.diozero.internal.provider.AnalogOutputDeviceInterface;
+import com.diozero.internal.provider.GpioDeviceFactoryInterface;
+import com.diozero.internal.provider.GpioDigitalInputDeviceInterface;
+import com.diozero.internal.provider.GpioDigitalInputOutputDeviceInterface;
+import com.diozero.internal.provider.GpioDigitalOutputDeviceInterface;
+import com.diozero.internal.provider.PwmOutputDeviceFactoryInterface;
+import com.diozero.internal.provider.PwmOutputDeviceInterface;
+import com.diozero.util.BoardPinInfo;
+import com.diozero.util.RangeUtil;
+import com.diozero.util.RuntimeIOException;
+import com.diozero.util.SleepUtil;
 
 public class PiconZero extends AbstractDeviceFactory
 implements GpioDeviceFactoryInterface, PwmOutputDeviceFactoryInterface,
@@ -485,7 +509,8 @@ implements GpioDeviceFactoryInterface, PwmOutputDeviceFactoryInterface,
 		}
 	}
 	
-	public static class PiconZeroAnalogInputDevice extends AbstractDevice implements AnalogInputDeviceInterface {
+	public static class PiconZeroAnalogInputDevice extends AbstractInputDevice<AnalogInputEvent>
+			implements AnalogInputDeviceInterface {
 		private PiconZero piconZero;
 		private PinInfo pinInfo;
 	

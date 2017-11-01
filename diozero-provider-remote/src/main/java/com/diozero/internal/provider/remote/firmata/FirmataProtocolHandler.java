@@ -39,13 +39,17 @@ import java.util.UUID;
 import org.eclipse.jetty.io.RuntimeIOException;
 import org.pmw.tinylog.Logger;
 
+import com.diozero.api.AnalogInputEvent;
 import com.diozero.api.DeviceMode;
+import com.diozero.api.DigitalInputEvent;
 import com.diozero.api.GpioPullUpDown;
+import com.diozero.firmata.FirmataAdapter;
+import com.diozero.firmata.FirmataAdapter.I2CResponse;
+import com.diozero.firmata.FirmataEventListener;
+import com.diozero.firmata.FirmataProtocol.PinCapability;
+import com.diozero.firmata.FirmataProtocol.PinMode;
+import com.diozero.firmata.SocketFirmataAdapter;
 import com.diozero.internal.provider.remote.devicefactory.RemoteDeviceFactory;
-import com.diozero.internal.provider.remote.firmata.FirmataAdapter.FirmwareDetails;
-import com.diozero.internal.provider.remote.firmata.FirmataAdapter.I2CResponse;
-import com.diozero.internal.provider.remote.firmata.FirmataProtocol.PinCapability;
-import com.diozero.internal.provider.remote.firmata.FirmataProtocol.PinMode;
 import com.diozero.remote.message.GetBoardInfo;
 import com.diozero.remote.message.GetBoardInfoResponse;
 import com.diozero.remote.message.GpioAnalogRead;
@@ -88,21 +92,24 @@ import com.diozero.remote.message.SpiWriteAndRead;
 import com.diozero.util.PropertyUtil;
 import com.diozero.util.RangeUtil;
 
-public class FirmataProtocolHandler implements RemoteProtocolInterface {
+public class FirmataProtocolHandler implements RemoteProtocolInterface, FirmataEventListener {
 	private static final String TCP_HOST_PROP = "FIRMATA_TCP_HOST";
 	private static final String TCP_PORT_PROP = "FIRMATA_TCP_PORT";
 	private static final String SERIAL_PORT_PROP = "FIRMATA_SERIAL_PORT";
 
 	private static final int DEFAULT_TCP_PORT = 3030;
 
+	private RemoteDeviceFactory deviceFactory;
 	private FirmataAdapter adapter;
 
 	public FirmataProtocolHandler(RemoteDeviceFactory deviceFactory) {
+		this.deviceFactory = deviceFactory;
+		
 		String hostname = PropertyUtil.getProperty(TCP_HOST_PROP, null);
 		if (hostname != null) {
 			int port = PropertyUtil.getIntProperty(TCP_PORT_PROP, DEFAULT_TCP_PORT);
 			try {
-				adapter = new SocketFirmataAdapter(hostname, port);
+				adapter = new SocketFirmataAdapter(this, hostname, port);
 			} catch (IOException e) {
 				throw new RuntimeIOException(e);
 			}
@@ -137,7 +144,7 @@ public class FirmataProtocolHandler implements RemoteProtocolInterface {
 			gpio++;
 		}
 		
-		FirmwareDetails firmware = adapter.getFirmware();
+		FirmataAdapter.FirmwareDetails firmware = adapter.getFirmware();
 		
 		return new GetBoardInfoResponse(firmware.getName(), "v" + firmware.getMajor() + "." + firmware.getMinor(), -1,
 				board_gpio_info, request.getCorrelationId());
@@ -299,7 +306,7 @@ public class FirmataProtocolHandler implements RemoteProtocolInterface {
 	@Override
 	public I2CReadByteResponse request(I2CReadByte request) {
 		try {
-			I2CResponse response = adapter.i2cRead(request.getAddress(), false, false, 1);
+			FirmataAdapter.I2CResponse response = adapter.i2cRead(request.getAddress(), false, false, 1);
 			byte[] data = response.getData();
 			if (data.length != 1) {
 				throw new RuntimeIOException("I2C Error: Expected to read 1 byte, got " + data.length);
@@ -425,5 +432,19 @@ public class FirmataProtocolHandler implements RemoteProtocolInterface {
 	@Override
 	public void close() {
 		adapter.close();
+	}
+
+	@Override
+	public void event(FirmataEventListener.EventType eventType, int gpio, int value, long epochTime, long nanoTime) {
+		switch (eventType) {
+		case DIGITAL:
+			deviceFactory.valueChanged(new DigitalInputEvent(gpio, epochTime, nanoTime, value != 0));
+			break;
+		case ANALOG:
+			float f = RangeUtil.map(value, 0, adapter.getMax(gpio, PinMode.ANALOG_INPUT), 0f, 1f, true);
+			deviceFactory.valueChanged(new AnalogInputEvent(gpio, epochTime, nanoTime, f));
+			break;
+		default:
+		}
 	}
 }

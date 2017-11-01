@@ -1,4 +1,4 @@
-package com.diozero.internal.provider.remote.firmata;
+package com.diozero.firmata;
 
 /*-
  * #%L

@@ -31,13 +31,31 @@ package com.diozero.internal.provider;
  * #L%
  */
 
+
+import com.diozero.api.DeviceAlreadyOpenedException;
 import com.diozero.util.RuntimeIOException;
 
 public interface I2CDeviceFactoryInterface extends DeviceFactoryInterface {
 	static final String I2C_PREFIX = "-I2C-";
-	
-	I2CDeviceInterface provisionI2CDevice(int controller, int address, int addressSize, int clockFrequency) throws RuntimeIOException;
-	
+
+	default I2CDeviceInterface provisionI2CDevice(int controller, int address, int addressSize, int clockFrequency)
+			throws RuntimeIOException {
+		String key = createI2CKey(controller, address);
+
+		// Check if this pin is already provisioned
+		if (isDeviceOpened(key)) {
+			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
+		}
+
+		I2CDeviceInterface device = createI2CDevice(key, controller, address, addressSize, clockFrequency);
+		deviceOpened(device);
+
+		return device;
+	}
+
+	I2CDeviceInterface createI2CDevice(String key, int controller, int address, int addressSize, int clockFrequency)
+			throws RuntimeIOException;
+
 	static String createI2CKey(String keyPrefix, int controller, int address) {
 		return keyPrefix + I2C_PREFIX + controller + "-0x" + Integer.toHexString(address);
 	}

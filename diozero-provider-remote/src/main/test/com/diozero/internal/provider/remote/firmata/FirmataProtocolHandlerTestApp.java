@@ -75,7 +75,6 @@ public class FirmataProtocolHandlerTestApp {
 				}
 			}
 
-			float step = 0.005f;
 			try (PwmLed pwm_led = new PwmLed(16, 0)) {
 				pwm_led.pulse(2, 50, 2, false);
 			}

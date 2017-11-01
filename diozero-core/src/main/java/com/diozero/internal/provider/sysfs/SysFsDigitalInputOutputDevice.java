@@ -53,10 +53,10 @@ implements GpioDigitalInputOutputDeviceInterface, PollEventListener {
 	private static final byte HIGH_VALUE = '1';
 
 	private SysFsDeviceFactory deviceFactory;
-	private int gpio;
+	protected int gpio;
 	private Path valuePath;
 	private RandomAccessFile valueFile;
-	private DeviceMode mode;
+	protected DeviceMode mode;
 
 	public SysFsDigitalInputOutputDevice(SysFsDeviceFactory deviceFactory, String key, PinInfo pinInfo, DeviceMode mode) {
 		super(key, deviceFactory);

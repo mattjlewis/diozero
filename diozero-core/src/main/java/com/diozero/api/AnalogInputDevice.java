@@ -32,6 +32,7 @@ package com.diozero.api;
  */
 
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.pmw.tinylog.Logger;
 
@@ -81,7 +82,7 @@ public class AnalogInputDevice extends GpioInputDevice<AnalogInputEvent> impleme
 	private Float lastValue;
 	private int pollInterval = DEFAULT_POLL_INTERVAL;
 	private float percentChange;
-	private boolean stopScheduler;
+	private AtomicBoolean stopScheduler;
 	private float range;
 
 	/**
@@ -116,9 +117,7 @@ public class AnalogInputDevice extends GpioInputDevice<AnalogInputEvent> impleme
 	 */
 	public AnalogInputDevice(AnalogInputDeviceFactoryInterface deviceFactory, int gpio)
 			throws RuntimeIOException {
-		super(gpio);
-		this.range = deviceFactory.getVRef();
-		device = deviceFactory.provisionAnalogInputDevice(gpio);
+		this(deviceFactory, gpio, deviceFactory.getVRef());
 	}
 
 	/**
@@ -134,8 +133,10 @@ public class AnalogInputDevice extends GpioInputDevice<AnalogInputEvent> impleme
 	public AnalogInputDevice(AnalogInputDeviceFactoryInterface deviceFactory, int gpio, float range)
 			throws RuntimeIOException {
 		super(gpio);
+		
 		this.range = range;
 		device = deviceFactory.provisionAnalogInputDevice(gpio);
+		stopScheduler = new AtomicBoolean(true);
 	}
 	
 	public float getRange() {
@@ -145,33 +146,44 @@ public class AnalogInputDevice extends GpioInputDevice<AnalogInputEvent> impleme
 	@Override
 	public void close() throws RuntimeIOException {
 		Logger.debug("close()");
-		stopScheduler = true;
+		stopScheduler.set(true);
 		device.close();
 	}
 
 	@Override
 	protected void enableDeviceListener() {
-		DioZeroScheduler.getDaemonInstance().scheduleAtFixedRate(this, pollInterval, pollInterval,
-				TimeUnit.MILLISECONDS);
+		if (device.generatesEvents()) {
+			device.setListener(this);
+		} else {
+			stopScheduler.set(false);
+			DioZeroScheduler.getDaemonInstance().scheduleAtFixedRate(this, pollInterval, pollInterval,
+					TimeUnit.MILLISECONDS);
+		}
 	}
 
 	@Override
 	protected void disableDeviceListener() {
-		stopScheduler = true;
+		stopScheduler.set(true);
+		device.removeListener();
 	}
 
 	@Override
 	public void run() {
-		if (stopScheduler) {
+		if (stopScheduler.get()) {
 			throw new RuntimeException("Stopping scheduler due to close request, device key=" + device.getKey());
 		}
 
 		float unscaled = getUnscaledValue();
-		float scaled = getScaledValue();
 		if (changeDetected(unscaled)) {
-			valueChanged(new AnalogInputEvent(gpio, System.currentTimeMillis(), System.nanoTime(), unscaled, scaled));
+			valueChanged(new AnalogInputEvent(gpio, System.currentTimeMillis(), System.nanoTime(), unscaled));
 			lastValue = Float.valueOf(unscaled);
 		}
+	}
+	
+	@Override
+	public void valueChanged(AnalogInputEvent event) {
+		event.setRange(range);
+		super.valueChanged(event);
 	}
 
 	private boolean changeDetected(float value) {

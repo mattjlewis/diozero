@@ -271,13 +271,13 @@ public class VoodooSparkDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	protected SpiDeviceInterface createSpiDevice(String key, int controller, int chipSelect, int frequency,
+	public SpiDeviceInterface createSpiDevice(String key, int controller, int chipSelect, int frequency,
 			SpiClockMode spiClockMode, boolean lsbFirst) throws RuntimeIOException {
 		throw new UnsupportedOperationException("SPI isn't supported with Voodoo Spark firmware");
 	}
 
 	@Override
-	protected I2CDeviceInterface createI2CDevice(String key, int controller, int address, int addressSize,
+	public I2CDeviceInterface createI2CDevice(String key, int controller, int address, int addressSize,
 			int clockFrequency) throws RuntimeIOException {
 		throw new UnsupportedOperationException("Not yet implemented");
 	}
@@ -379,6 +379,7 @@ public class VoodooSparkDeviceFactory extends BaseNativeDeviceFactory {
 				PinInfo pin_info = getBoardPinInfo().getByGpioNumber(gpio);
 				DeviceInterface device = getDevice(createPinKey(pin_info));
 				if (device != null) {
+					// What about analog events?!
 					AbstractDigitalInputDevice input_device = (AbstractDigitalInputDevice) device;
 					input_device.valueChanged(new DigitalInputEvent(gpio, epoch_time, 0, (msg.lsb & (1 << i)) != 0));
 				}

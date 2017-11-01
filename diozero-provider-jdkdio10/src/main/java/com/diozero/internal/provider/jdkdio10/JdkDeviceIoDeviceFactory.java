@@ -111,13 +111,13 @@ public class JdkDeviceIoDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	protected SpiDeviceInterface createSpiDevice(String key, int controller, int chipSelect,
+	public SpiDeviceInterface createSpiDevice(String key, int controller, int chipSelect,
 			int frequency, SpiClockMode spiClockMode, boolean lsbFirst) throws RuntimeIOException {
 		return new JdkDeviceIoSpiDevice(key, this, controller, chipSelect, frequency, spiClockMode, lsbFirst);
 	}
 
 	@Override
-	protected I2CDeviceInterface createI2CDevice(String key, int controller, int address, int addressSize, int clockFrequency) throws RuntimeIOException {
+	public I2CDeviceInterface createI2CDevice(String key, int controller, int address, int addressSize, int clockFrequency) throws RuntimeIOException {
 		return new JdkDeviceIoI2CDevice(key, this, controller, address, addressSize, clockFrequency);
 	}
 }

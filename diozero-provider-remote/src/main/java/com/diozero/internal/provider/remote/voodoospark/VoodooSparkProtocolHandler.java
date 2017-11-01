@@ -464,6 +464,7 @@ public class VoodooSparkProtocolHandler implements RemoteProtocolInterface {
 	
 	void messageReceived(ResponseMessage msg) {
 		if (msg.cmd == REPORTING) {
+			long nano_time = System.currentTimeMillis();
 			long epoch_time = System.currentTimeMillis();
 			
 			Logger.info("Reporting message: {}", msg);
@@ -474,8 +475,10 @@ public class VoodooSparkProtocolHandler implements RemoteProtocolInterface {
 				int gpio = msg.pinOrPort * 10 + i;
 				
 				// TODO Need to check that reporting has been enabled for this GPIO!
+				// TODO What about analog events?
 				
-				deviceFactory.valueChanged(new DigitalInputEvent(gpio, epoch_time, 0, (msg.lsb & (1 << i)) != 0));
+				deviceFactory
+						.valueChanged(new DigitalInputEvent(gpio, epoch_time, nano_time, (msg.lsb & (1 << i)) != 0));
 			}
 		} else {
 			lock.lock();

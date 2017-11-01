@@ -38,6 +38,7 @@ import java.nio.file.Paths;
 
 import org.pmw.tinylog.Logger;
 
+import com.diozero.api.DeviceAlreadyOpenedException;
 import com.diozero.api.SpiClockMode;
 import com.diozero.util.RuntimeIOException;
 
@@ -49,7 +50,22 @@ public interface SpiDeviceFactoryInterface extends DeviceFactoryInterface {
 	static final int DEFAULT_SPI_BUFFER_SIZE = 4096;
 	static final String SPI_PREFIX = "-SPI-";
 	
-	SpiDeviceInterface provisionSpiDevice(int controller, int chipSelect, int frequency,
+	default SpiDeviceInterface provisionSpiDevice(int controller, int chipSelect,
+			int frequency, SpiClockMode spiClockMode, boolean lsbFirst) throws RuntimeIOException {
+		String key = createSpiKey(controller, chipSelect);
+		
+		// Check if this pin is already provisioned
+		if (isDeviceOpened(key)) {
+			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
+		}
+		
+		SpiDeviceInterface device = createSpiDevice(key, controller, chipSelect, frequency, spiClockMode, lsbFirst);
+		deviceOpened(device);
+		
+		return device;
+	}
+
+	SpiDeviceInterface createSpiDevice(String key, int controller, int chipSelect, int frequency,
 			SpiClockMode spiClockMode, boolean lsbFirst) throws RuntimeIOException;
 
 	default int getSpiBufferSize() {

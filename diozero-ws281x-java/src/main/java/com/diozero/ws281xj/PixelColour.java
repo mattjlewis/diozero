@@ -110,29 +110,29 @@ public class PixelColour {
 		return red<<16 | green << 8 | blue;
 	}
 
-    /**
-     * Creates a colour based on the specified values in the HSB colour model.
-     *
-     * @param hue The hue, in degrees, {@code 0.0 to 1.0}
-     * @param saturation The saturation %, {@code 0.0 to 1.0}
-     * @param brightness The brightness %, {@code 0.0 to 1.0}
-     * @return RGB colour integer value
-     * @throws IllegalArgumentException if {@code hue}, {@code saturation}, {@code brightness} are out of range
-     */
+	/**
+	 * Creates a colour based on the specified values in the HSB colour model.
+	 *
+	 * @param hue The hue, in degrees, {@code 0.0 to 1.0}
+	 * @param saturation The saturation %, {@code 0.0 to 1.0}
+	 * @param brightness The brightness %, {@code 0.0 to 1.0}
+	 * @return RGB colour integer value
+	 * @throws IllegalArgumentException if {@code hue}, {@code saturation}, {@code brightness} are out of range
+	 */
 	public static int createColourHSB(float hue, float saturation, float brightness) {
 		// Take advantage of Hue Saturation Brightness utility method in java.awt.Color
 		return Color.HSBtoRGB(hue, saturation, brightness) & WHITE_MASK;
 	}
 
-    /**
-     * Creates a colour based on the specified values in the HSL colour model.
-     *
-     * @param hue The hue, in degrees, {@code 0.0 to 360.0}
-     * @param saturation The saturation %, {@code 0.0 to 1.0}
-     * @param luminance The luminance %, {@code 0.0 to 1.0}
-     * @return RGB colour integer value
-     * @throws IllegalArgumentException if {@code hue}, {@code saturation}, {@code brightness} are out of range
-     */
+	/**
+	 * Creates a colour based on the specified values in the HSL colour model.
+	 *
+	 * @param hue The hue, in degrees, {@code 0.0 to 360.0}
+	 * @param saturation The saturation %, {@code 0.0 to 1.0}
+	 * @param luminance The luminance %, {@code 0.0 to 1.0}
+	 * @return RGB colour integer value
+	 * @throws IllegalArgumentException if {@code hue}, {@code saturation}, {@code brightness} are out of range
+	 */
 	public static int createColourHSL(float hue, float saturation, float luminance) {
 		// TODO Not sure this is correct - needs testing!
 		
@@ -216,7 +216,7 @@ public class PixelColour {
 		return new_colour;
 	}
 	
-	public static int getGreenComponet(int colour) {
+	public static int getGreenComponent(int colour) {
 		return (colour & GREEN_MASK) >> 8;
 	}
 	

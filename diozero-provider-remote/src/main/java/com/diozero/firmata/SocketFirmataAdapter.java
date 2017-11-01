@@ -1,4 +1,4 @@
-package com.diozero.internal.provider.remote.firmata;
+package com.diozero.firmata;
 
 /*-
  * #%L
@@ -37,7 +37,9 @@ import java.net.Socket;
 public class SocketFirmataAdapter extends FirmataAdapter {
 	private Socket socket;
 	
-	public SocketFirmataAdapter(String hostname, int port) throws IOException {
+	public SocketFirmataAdapter(FirmataEventListener eventListener, String hostname, int port) throws IOException {
+		super(eventListener);
+		
 		socket = new Socket(hostname, port);
 		
 		connect(socket.getInputStream(), socket.getOutputStream());

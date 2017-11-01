@@ -32,8 +32,6 @@ package com.diozero.internal.provider;
  */
 
 
-import org.pmw.tinylog.Logger;
-
 import com.diozero.api.DeviceAlreadyOpenedException;
 import com.diozero.api.DeviceMode;
 import com.diozero.api.InvalidModeException;

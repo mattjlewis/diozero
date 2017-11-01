@@ -35,6 +35,7 @@ import java.util.UUID;
 
 import org.pmw.tinylog.Logger;
 
+import com.diozero.api.AnalogInputEvent;
 import com.diozero.api.DeviceMode;
 import com.diozero.api.DigitalInputEvent;
 import com.diozero.api.GpioEventTrigger;
@@ -152,13 +153,13 @@ public class RemoteDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	protected I2CDeviceInterface createI2CDevice(String key, int controller, int address, int addressSize,
+	public I2CDeviceInterface createI2CDevice(String key, int controller, int address, int addressSize,
 			int clockFrequency) throws RuntimeIOException {
 		return new RemoteI2CDevice(this, key, controller, address, addressSize, clockFrequency);
 	}
 
 	@Override
-	protected SpiDeviceInterface createSpiDevice(String key, int controller, int chipSelect, int frequency,
+	public SpiDeviceInterface createSpiDevice(String key, int controller, int chipSelect, int frequency,
 			SpiClockMode spiClockMode, boolean lsbFirst) throws RuntimeIOException {
 		return new RemoteSpiDevice(this, key, controller, chipSelect, frequency, spiClockMode, lsbFirst);
 	}
@@ -227,6 +228,15 @@ public class RemoteDeviceFactory extends BaseNativeDeviceFactory {
 		PinInfo pin_info = getBoardPinInfo().getByGpioNumber(event.getGpio());
 		@SuppressWarnings("resource")
 		RemoteDigitalInputDevice device = getDevice(createPinKey(pin_info), RemoteDigitalInputDevice.class);
+		if (device != null) {
+			device.valueChanged(event);
+		}
+	}
+	
+	public void valueChanged(AnalogInputEvent event) {
+		PinInfo pin_info = getBoardPinInfo().getByGpioNumber(event.getGpio());
+		@SuppressWarnings("resource")
+		RemoteAnalogInputDevice device = getDevice(createPinKey(pin_info), RemoteAnalogInputDevice.class);
 		if (device != null) {
 			device.valueChanged(event);
 		}
