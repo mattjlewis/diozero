@@ -39,7 +39,7 @@ import org.pmw.tinylog.Logger;
 import com.diozero.util.EpollNative;
 import com.diozero.util.SleepUtil;
 
-/**
+/*
  * Use mkfifo <file> to test in Linux, epoll doesn't work with regular files
  */
 public class EpollTest {
