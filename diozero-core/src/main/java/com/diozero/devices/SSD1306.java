@@ -59,7 +59,7 @@ import com.diozero.api.DigitalOutputDevice;
  * Each + represents one bit of image data.</p>
  * <pre>
  *                       1 1 1 1 1 
- *        &lt- Segment -&gt;  2 2 2 2 2
+ *        &lt;- Segment -&gt;  2 2 2 2 2
  *     D 0 1 2 3 4 5 ... 3 4 5 6 7 COM
  * LSB 0 + + + + + + + + + + + + + 16
  *     1 + + + + + + + + + + + + + 17
