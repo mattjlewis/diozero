@@ -44,6 +44,7 @@ public interface I2CSMBusInterface extends Closeable {
 	
 	/**
 	 * Probe this I2C device
+	 * @param mode Probe mode
 	 * @return True if the probe is successful
 	 */
 	boolean probe(I2CDevice.ProbeMode mode);
@@ -52,6 +53,7 @@ public interface I2CSMBusInterface extends Closeable {
 	 * <p>SMBus Quick Command</p>
 	 * <p>This sends a single bit to the device, at the place of the Rd/Wr bit.</p>
 	 * <pre>A Addr Rd/Wr [A] P</pre>
+	 * @param bit The bit to write
 	 */
 	void writeQuick(byte bit);
 	
