@@ -56,20 +56,20 @@ public enum StripType {
 	// GND                  Pin 6 (GND)     -V or COM
 
 	// 4 colour R, G, B and W ordering
-	SK6812_STRIP_RGBW(3, 2, 1, 0),
-	SK6812_STRIP_RBGW(3, 2, 0, 1),
-	SK6812_STRIP_GRBW(3, 1, 2, 0),
-	SK6812_STRIP_GBRW(3, 1, 0, 2),
-	SK6812_STRIP_BRGW(3, 0, 2, 1),
-	SK6812_STRIP_BGRW(3, 0, 1, 2),
+	SK6812_RGBW(3, 2, 1, 0),
+	SK6812_RBGW(3, 2, 0, 1),
+	SK6812_GRBW(3, 1, 2, 0),
+	SK6812_GBRW(3, 1, 0, 2),
+	SK6812_BRGW(3, 0, 2, 1),
+	SK6812_BGRW(3, 0, 1, 2),
 
 	// 3 colour R, G and B ordering
-	WS2811_STRIP_RGB(2, 1, 0),
-	WS2811_STRIP_RBG(2, 0, 1),
-	WS2811_STRIP_GRB(1, 2, 0),
-	WS2811_STRIP_GBR(1, 0, 2),
-	WS2811_STRIP_BRG(0, 2, 1),
-	WS2811_STRIP_BGR(0, 1, 2);
+	WS2811_RGB(2, 1, 0),
+	WS2811_RBG(2, 0, 1),
+	WS2811_GRB(1, 2, 0),
+	WS2811_GBR(1, 0, 2),
+	WS2811_BRG(0, 2, 1),
+	WS2811_BGR(0, 1, 2);
 
 	private int whiteShift;
 	private int redShift;
@@ -110,7 +110,7 @@ public enum StripType {
 	}
 
 	// Predefined fixed LED types
-	public static final StripType WS2812_STRIP = WS2811_STRIP_GRB;
-	public static final StripType SK6812_STRIP = WS2811_STRIP_GRB;
-	public static final StripType SK6812W_STRIP = SK6812_STRIP_GRBW;
+	public static final StripType WS2812 = WS2811_GRB;
+	public static final StripType SK6812 = WS2811_GRB;
+	public static final StripType SK6812W = SK6812_GRBW;
 }

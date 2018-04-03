@@ -268,7 +268,7 @@ public class FirmataProtocolHandler implements RemoteProtocolInterface, FirmataE
 	@Override
 	public Response request(GpioAnalogWrite request) {
 		try {
-			// Firmata doesn't support analog output, ue PWM instead
+			// Firmata doesn't support analog output, use PWM instead
 			adapter.setValue(request.getGpio(),
 					RangeUtil.map(request.getValue(), 0f, 1f, 0, adapter.getMax(request.getGpio(), PinMode.PWM), true));
 		} catch (IOException e) {

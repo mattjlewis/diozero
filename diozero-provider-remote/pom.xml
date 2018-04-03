@@ -14,9 +14,9 @@
 
 	<properties>
 		<eclipse-paho-client-mqttv3.version>1.2.0</eclipse-paho-client-mqttv3.version>
-		<google-protocol-buffers.version>3.4.0</google-protocol-buffers.version>
-		<apache-httpcomponents-httpcore.version>4.4.8</apache-httpcomponents-httpcore.version>
-		<apache-httpcomponents-httpclient.version>4.5.3</apache-httpcomponents-httpclient.version>
+		<google-protocol-buffers.version>3.5.1</google-protocol-buffers.version>
+		<apache-httpcomponents-httpcore.version>4.4.9</apache-httpcomponents-httpcore.version>
+		<apache-httpcomponents-httpclient.version>4.5.5</apache-httpcomponents-httpclient.version>
 		<netty.version>4.1.16.Final</netty.version>
 	</properties>
 	

@@ -60,7 +60,7 @@ public class WS281x implements LedDriverInterface {
 	private static final int DEFAULT_FREQUENCY = 800_000; // Or 400_000
 	// TODO Find out what options there are here... What do pigpio & wiringPi use?
 	private static final int DEFAULT_DMA_NUM = 5;
-	private static final StripType DEFAULT_STRIP_TYPE = StripType.WS2812_STRIP;
+	private static final StripType DEFAULT_STRIP_TYPE = StripType.WS2812;
 	private static final int DEFAULT_CHANNEL = 0;
 
 	private static final String LIB_NAME = "ws281xj";
@@ -188,30 +188,30 @@ public class WS281x implements LedDriverInterface {
 
 	private static int getRpiStripType(StripType stripType) {
 		switch (stripType) {
-		case SK6812_STRIP_RGBW:
+		case SK6812_RGBW:
 			return 0x18100800;
-		case SK6812_STRIP_RBGW:
+		case SK6812_RBGW:
 			return 0x18100008;
-		case SK6812_STRIP_GRBW:
+		case SK6812_GRBW:
 			return 0x18081000;
-		case SK6812_STRIP_GBRW:
+		case SK6812_GBRW:
 			return 0x18080010;
-		case SK6812_STRIP_BRGW:
+		case SK6812_BRGW:
 			return 0x18001008;
-		case SK6812_STRIP_BGRW:
+		case SK6812_BGRW:
 			return 0x18000810;
 	
-		case WS2811_STRIP_RGB:
+		case WS2811_RGB:
 			return 0x00100800;
-		case WS2811_STRIP_RBG:
+		case WS2811_RBG:
 			return 0x00100008;
-		case WS2811_STRIP_GRB:
+		case WS2811_GRB:
 			return 0x00081000;
-		case WS2811_STRIP_GBR:
+		case WS2811_GBR:
 			return 0x00080010;
-		case WS2811_STRIP_BRG:
+		case WS2811_BRG:
 			return 0x00001008;
-		case WS2811_STRIP_BGR:
+		case WS2811_BGR:
 			return 0x00000810;
 		default:
 			return 0x00081000;

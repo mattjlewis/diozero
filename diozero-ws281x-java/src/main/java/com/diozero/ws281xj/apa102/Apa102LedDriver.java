@@ -40,6 +40,7 @@ import com.diozero.ws281xj.LedDriverInterface;
 
 /**
  * Reference: https://cpldcpu.com/2014/11/30/understanding-the-apa102-superled/
+ * Also: https://github.com/androidthings/contrib-drivers/blob/master/apa102/src/main/java/com/google/android/things/contrib/driver/apa102/Apa102.java
  */
 public class Apa102LedDriver implements LedDriverInterface {
 	private SpiDevice device;

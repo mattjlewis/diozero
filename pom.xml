@@ -183,7 +183,7 @@
 
 		<!-- Libraries -->		
 		<junit.version>4.12</junit.version>
-		<tinylog.version>1.2</tinylog.version>
+		<tinylog.version>1.3.4</tinylog.version>
 		<commons-math3.version>3.6.1</commons-math3.version>
 	</properties>
 	

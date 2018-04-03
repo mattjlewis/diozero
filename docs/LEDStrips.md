@@ -4,7 +4,7 @@
 
 TODO Insert wiring diagram.
 
-*class* **com.diozero.ws281xj.WS281x**{: .descname } (*frequency=800,000*, *dmaNum=5*, *gpioNum*, *brightness*, *numPixels*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-ws281x-java/src/main/java/com/diozero/ws281xj/WS281x.java){: .viewcode-link } [&para;](LEDStrips.md#ws281x "Permalink to this definition"){: .headerlink }
+*class* **com.diozero.ws281xj.rpiws281x.WS281x**{: .descname } (*frequency=800,000*, *dmaNum=5*, *gpioNum*, *brightness*, *numPixels*, *stripType*, *channel=0*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-ws281x-java/src/main/java/com/diozero/ws281xj/rpiws281x/WS281x.java){: .viewcode-link } [&para;](LEDStrips.md#ws281x "Permalink to this definition"){: .headerlink }
 
 : Provides support for [WS2811B / WS2812B aka Adafriut NeoPixel LEDs](https://learn.adafruit.com/adafruit-neopixel-uberguide) via a JNI wrapper around the [rpi_ws281x C library](https://github.com/jgarff/rpi_ws281x).
 

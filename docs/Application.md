@@ -9,19 +9,20 @@ There are 2 main approaches for incorporating diozero into your project using Ma
 
 1. Add diozero as a dependency in your application's Maven pom.xml. See my [Java Lego Car](https://github.com/mattjlewis/JavaLegoCar/blob/master/pom.xml) project as an example.
 Note make sure you enable Maven snapshot repositories if you want to use a diozero snapshot build.
-    ```xml
-    <repositories>
-    	<repository>
-    		<id>oss-snapshots-repo</id>
-    		<name>Sonatype OSS Maven Repository</name>
-    		<url>https://oss.sonatype.org/content/groups/public</url>
-    		<snapshots>
-    			<enabled>true</enabled>
-    			<updatePolicy>always</updatePolicy>
-    		</snapshots>
-    	</repository>
-    </repositories>
-    ```
+
+```xml
+<repositories>
+	<repository>
+		<id>oss-snapshots-repo</id>
+		<name>Sonatype OSS Maven Repository</name>
+		<url>https://oss.sonatype.org/content/groups/public</url>
+		<snapshots>
+			<enabled>true</enabled>
+			<updatePolicy>always</updatePolicy>
+		</snapshots>
+	</repository>
+</repositories>
+```
 
 If you want to manage the dependencies yourself, download and exract a diozero [distribution ZIP file](https://drive.google.com/open?id=0BxA10VX9SC74VDR6WTlLOEdpYzA) from Google Drive and add tinylog-1.2.jar and diozero-core.jar to your project's classpath.
 

@@ -34,17 +34,20 @@ package com.diozero.devices;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.pmw.tinylog.Logger;
-
 import com.diozero.api.DigitalInputDevice;
 import com.diozero.api.DigitalOutputDevice;
 import com.diozero.api.GpioEventTrigger;
 import com.diozero.api.GpioPullUpDown;
-import com.diozero.util.SleepUtil;
 
 /**
- * http://www.instructables.com/id/Connecting-a-4-x-4-Membrane-Keypad-to-an-Arduino/
- * https://github.com/Chris--A/Keypad/tree/master/src
+ * <p>References:</p>
+ * <ul>
+ *  <li><a href="http://www.instructables.com/id/Connecting-a-4-x-4-Membrane-Keypad-to-an-Arduino/">Connecting a 4x4 Membrane Keypad to an Arduino</a></li>
+ *  <li><a href="https://github.com/Chris--A/Keypad/tree/master/src">Arduino source code</a></li>
+ * </ul>
+ * <p>Note, this class should be run with the mmap provider as it configures input pull-up registers,
+ * something that cannot be done with the sysfs provider unfortunately. You can of course wire it up
+ * with your own pull-up resistors.</p>
  */
 public class Keypad {
 	public static final char NO_KEY = '\0';

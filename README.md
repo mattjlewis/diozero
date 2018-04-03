@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/mattjlewis/diozero.svg?branch=master)](https://travis-ci.org/mattjlewis/diozero)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.diozero/diozero/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.diozero/diozero)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Javadoc](https://javadoc-emblem.rhcloud.com/doc/com.diozero/diozero/badge.svg)](http://www.javadoc.io/doc/com.diozero/diozero)
+[![Javadoc](https://javadoc-emblem.rhcloud.com/doc/com.diozero/diozero-core/badge.svg)](http://www.javadoc.io/doc/com.diozero/diozero-core)
 [![Documentation Status](https://readthedocs.org/projects/diozero/badge/?version=latest)](http://diozero.readthedocs.io/en/latest/?badge=latest)
 
 A Device I/O library written in Java that provides an object-orientated interface for a range of 
@@ -20,7 +20,7 @@ This library makes use of modern Java features such as
 [Method References](https://docs.oracle.com/javase/tutorial/java/javaOO/methodreferences.html) 
 where they simplify development and improve code readability.
 
-Created by [Matt Lewis](https://github.com/mattjlewis) (email [deviceiozero@gmail.com](mailto:deviceiozero@gmail.com)), 
+Created by [Matt Lewis](https://github.com/mattjlewis) (email [deviceiozero@gmail.com](mailto:deviceiozero@gmail.com)) ([blog](https://diozero.blogspot.co.uk/)), 
 inspired by [GPIO Zero](https://gpiozero.readthedocs.org/) and [Johnny Five](http://johnny-five.io/). 
 If you have any issues please use the [GitHub issues page](https://github.com/mattjlewis/diozero/issues). 
 For any other comments or suggestions, please use the [diozero Google Group](https://groups.google.com/forum/#!forum/diozero).
@@ -299,10 +299,13 @@ This project is hosted on [GitHub](https://github.com/mattjlewis/diozero/), plea
 + Thorough testing (various types of devices using each service provider)
 + A clean object-orientated API for IMUs
 + Native support for all devices via mmap (/dev/mem), in particular to improve performance and add support for GPIO pull up/down configuration.
-+ Cleanup the logic for handling capabilities of different boards in a generic fashion (no more if / then / else)
-+ Firmata SPI support (via USB cable)
 + Wireless access to Firmata devices (network and Bluetooth). E.g. [ESP32](https://learn.sparkfun.com/tutorials/esp32-thing-hookup-guide?_ga=1.116824388.33505106.1471290985#installing-the-esp32-arduino-core) [Firmata GitHub issue #315](https://github.com/firmata/arduino/issues/315)
-+ Particle Photon support (via wifi using [VoodooSpark "firmware"](https://github.com/voodootikigod/voodoospark) - [JavaScript implementation](https://github.com/rwaldron/particle-io/blob/master/lib/particle.js))
++ Remote API for board capabilities
++ SPI support for Arduino devices
++ Introduce Servo as a device type
++ Try out ConfigurableFirmata - is there actually any difference to the StandardFirmata protocol?
++ Complete ADSL1x15
++ BME680
 
 [Release History](docs/RELEASE.md)
 

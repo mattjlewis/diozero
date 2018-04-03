@@ -41,7 +41,7 @@ import com.diozero.ws281xj.spi.WS281xSpi;
 
 public class WS281xSpiTest {
 	public static void main(String[] args) {
-		StripType strip_type = StripType.WS2812_STRIP;
+		StripType strip_type = StripType.WS2812;
 		
 		int pixels = 60;
 		if (args.length > 0) {
