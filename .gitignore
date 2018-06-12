@@ -5,3 +5,7 @@ target/
 **/*.md.html
 **/.settings
 .gradle/
+
+# IntelliJ Idea
+.idea/
+*.iml
