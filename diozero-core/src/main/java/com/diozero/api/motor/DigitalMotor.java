@@ -51,7 +51,7 @@ public class DigitalMotor implements Closeable {
 	
 	public DigitalMotor(GpioDeviceFactoryInterface deviceFactory, int forwardGpio, int backwardGpio) throws RuntimeIOException {
 		forward = new DigitalOutputDevice(deviceFactory, forwardGpio, true, false);
-		backward = new DigitalOutputDevice(deviceFactory, forwardGpio, true, false);
+		backward = new DigitalOutputDevice(deviceFactory, backwardGpio, true, false);
 	}
 
 	@Override

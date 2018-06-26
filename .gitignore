@@ -2,6 +2,15 @@ target/
 /piconzero/
 /.pydevproject
 /.settings/
+
 **/*.md.html
-**/.settings
-.gradle/
+**/.settings/
+**/.classpath
+**/.project
+**/.cproject
+**/.gradle/
+**/build.gradle
+
+# IntelliJ Idea
+.idea/
+*.iml
