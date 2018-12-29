@@ -25,6 +25,11 @@
 			<artifactId>org.eclipse.paho.client.mqttv3</artifactId>
 			<version>${eclipse-paho-client-mqttv3.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>org.openjfx</groupId>
+			<artifactId>javafx-swing</artifactId>
+			<version>11.0.1</version>
+		</dependency>
 		<!-- Non-Maven dependencies -->
 		<dependency>
 			<!--

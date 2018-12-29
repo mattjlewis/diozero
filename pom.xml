@@ -109,8 +109,8 @@
 		<module>diozero-remote-server</module>
 		<module>diozero-provider-bbbiolib</module>
 		<module>diozero-provider-firmata</module>
-		<module>diozero-provider-jdkdio10</module>
-		<module>diozero-provider-jdkdio11</module>
+		<!-- <module>diozero-provider-jdkdio10</module> -->
+		<!-- <module>diozero-provider-jdkdio11</module> -->
 		<module>diozero-provider-mmap</module>
 		<module>diozero-provider-pi4j</module>
 		<module>diozero-provider-pigpio</module>
@@ -135,7 +135,7 @@
 		
 		<maven.min-version>3.3.0</maven.min-version>
 
-		<diozero.version>0.11</diozero.version>
+		<diozero.version>0.12-SNAPSHOT</diozero.version>
 		
 		<!-- Java version -->
 		<java.version>8</java.version>
@@ -190,12 +190,12 @@
 	<distributionManagement>
 		<downloadUrl>https://oss.sonatype.org/index.html#nexus-search;gav~com.diozero~~~~</downloadUrl>
 		<snapshotRepository>
-			<id>ossrh</id>
+			<id>nexus-snapshots</id>
 			<name>Sonatype Open Source Maven Snapshots Repository</name>
 			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
 		</snapshotRepository>
 		<repository>
-			<id>ossrh</id>
+			<id>nexus-releases</id>
 			<name>Sonatype Open Source Maven Repository</name>
 			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
 		</repository>
@@ -205,7 +205,21 @@
 		</site>
 	</distributionManagement>
 	
-	<!--
+	<!-- Add to ~/.m2/settings.xml
+	<repositories>
+		<repository>
+			<id>nexus-snapshots</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+			<releases><enabled>flase</enabled></releases>
+			<snapshots><enabled>true</enabled></snapshots>
+		</repository>
+		<repository>
+			<id>nexus-releases</id>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+			<releases><enabled>true</enabled></releases>
+			<snapshots><enabled>false</enabled></snapshots>
+		</repository>
+	</repositories>
 	<repositories>
 		<repository>
 			<id>ossrh</id>

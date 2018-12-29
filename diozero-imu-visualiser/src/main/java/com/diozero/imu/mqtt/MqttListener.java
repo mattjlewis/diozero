@@ -67,7 +67,6 @@ import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
-@SuppressWarnings("restriction")
 public class MqttListener extends Application implements MqttCallback, MqttConstants {
 	private static final int QUAT_SCALER = 0;
 	private static final int QUAT_X = 1;
@@ -139,9 +138,9 @@ public class MqttListener extends Application implements MqttCallback, MqttConst
 				compass[0], compass[1], compass[2], accel[0], accel[1], accel[2],
 				gyro[0], gyro[1], gyro[2], quat[0], quat[1], quat[2], quat[3], ypr[0], ypr[1], ypr[2]);
 		
-		Rotate rx = new Rotate(Math.toDegrees(ypr[0]), Rotate.X_AXIS);
-		Rotate ry = new Rotate(Math.toDegrees(ypr[1]), Rotate.Y_AXIS);
-		Rotate rz = new Rotate(Math.toDegrees(ypr[2]), Rotate.Z_AXIS);
+		//Rotate rx = new Rotate(Math.toDegrees(ypr[0]), Rotate.X_AXIS);
+		//Rotate ry = new Rotate(Math.toDegrees(ypr[1]), Rotate.Y_AXIS);
+		//Rotate rz = new Rotate(Math.toDegrees(ypr[2]), Rotate.Z_AXIS);
 		
 		double[] idt = { 1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1 };
 		Affine matrix = new Affine(idt, MatrixType.MT_3D_3x4, 0);
