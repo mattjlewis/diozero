@@ -65,6 +65,29 @@ public class WS281x implements LedDriverInterface {
 
 	private static final String LIB_NAME = "ws281xj";
 	private static Boolean loaded = Boolean.FALSE;
+	
+	// 4 color R, G, B and W ordering
+	private static final int SK6812_STRIP_RGBW = 0x18100800;
+	private static final int SK6812_STRIP_RBGW = 0x18100008;
+	private static final int SK6812_STRIP_GRBW = 0x18081000;
+	private static final int SK6812_STRIP_GBRW = 0x18080010;
+	private static final int SK6812_STRIP_BRGW = 0x18001008;
+	private static final int SK6812_STRIP_BGRW = 0x18000810;
+	private static final int SK6812_SHIFT_WMASK = 0xf0000000;
+
+	// 3 color R, G and B ordering
+	private static final int WS2811_STRIP_RGB = 0x00100800;
+	private static final int WS2811_STRIP_RBG = 0x00100008;
+	private static final int WS2811_STRIP_GRB = 0x00081000;
+	private static final int WS2811_STRIP_GBR = 0x00080010;
+	private static final int WS2811_STRIP_BRG = 0x00001008;
+	private static final int WS2811_STRIP_BGR = 0x00000810;
+
+	// predefined fixed LED types
+	private static final int WS2812_STRIP = WS2811_STRIP_GRB;
+	private static final int SK6812_STRIP = WS2811_STRIP_GRB;
+	private static final int SK6812W_STRIP = SK6812_STRIP_GRBW;
+
 
 	private static void init() {
 		synchronized (loaded) {
@@ -189,32 +212,32 @@ public class WS281x implements LedDriverInterface {
 	private static int getRpiStripType(StripType stripType) {
 		switch (stripType) {
 		case SK6812_RGBW:
-			return 0x18100800;
+			return SK6812_STRIP_RGBW;
 		case SK6812_RBGW:
-			return 0x18100008;
+			return SK6812_STRIP_RBGW;
 		case SK6812_GRBW:
-			return 0x18081000;
+			return SK6812_STRIP_GRBW;
 		case SK6812_GBRW:
-			return 0x18080010;
+			return SK6812_STRIP_GBRW;
 		case SK6812_BRGW:
-			return 0x18001008;
+			return SK6812_STRIP_BRGW;
 		case SK6812_BGRW:
-			return 0x18000810;
+			return SK6812_STRIP_BGRW;
 	
 		case WS2811_RGB:
-			return 0x00100800;
+			return WS2811_STRIP_RGB;
 		case WS2811_RBG:
-			return 0x00100008;
+			return WS2811_STRIP_RBG;
 		case WS2811_GRB:
-			return 0x00081000;
+			return WS2811_STRIP_GRB;
 		case WS2811_GBR:
-			return 0x00080010;
+			return WS2811_STRIP_GBR;
 		case WS2811_BRG:
-			return 0x00001008;
+			return WS2811_STRIP_BRG;
 		case WS2811_BGR:
-			return 0x00000810;
+			return WS2811_STRIP_BGR;
 		default:
-			return 0x00081000;
+			return WS2812_STRIP;
 		}
 	}
 }

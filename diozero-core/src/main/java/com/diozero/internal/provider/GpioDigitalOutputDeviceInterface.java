@@ -40,6 +40,6 @@ public interface GpioDigitalOutputDeviceInterface extends GpioDigitalDeviceInter
 	
 	@Override
 	default DeviceMode getMode() {
-		return DeviceMode.DIGITAL_INPUT;
+		return DeviceMode.DIGITAL_OUTPUT;
 	}
 }

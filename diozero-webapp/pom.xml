@@ -42,7 +42,7 @@
 		<dependency>
 			<groupId>com.sparkjava</groupId>
 			<artifactId>spark-template-freemarker</artifactId>
-			<version>${sparkjava.version}</version>
+			<version>2.7.1</version>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
