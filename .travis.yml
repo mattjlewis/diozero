@@ -10,7 +10,7 @@ cache:
     - $HOME/.m2
 
 env:
-  - PROJECTS_TO_BUILD: "!diozero-provider-jdkdio10,!diozero-provider-jdkdio11,!diozero-imu-visualiser"
+  - PROJECTS_TO_BUILD: "!diozero-imu-visualiser"
 
 install: true
 script: mvn --projects '!diozero-provider-jdkdio10,!diozero-provider-jdkdio11,!diozero-imu-visualiser' clean compile package install
