@@ -31,7 +31,6 @@ package com.diozero.internal.provider.pigpioj;
  * #L%
  */
 
-
 import org.pmw.tinylog.Logger;
 
 import com.diozero.api.DeviceMode;
@@ -64,7 +63,7 @@ public class PigpioJDeviceFactory extends BaseNativeDeviceFactory {
 	public PigpioJDeviceFactory() {
 		pigpioImpl = PigpioJ.getImplementation();
 	}
-	
+
 	@Override
 	public void close() {
 		super.close();
@@ -75,13 +74,20 @@ public class PigpioJDeviceFactory extends BaseNativeDeviceFactory {
 	public String getName() {
 		return getClass().getSimpleName();
 	}
-	
+
 	@Override
 	protected BoardInfo initialiseBoardInfo() {
-		BoardInfo board_info = new RaspberryPiBoardInfoProvider().lookup("BCM2835",
-				Integer.toHexString(pigpioImpl.getHardwareRevision()), null);
+		int hw_rev = pigpioImpl.getHardwareRevision();
+		String hw_rev_hex = String.format("%04x", Integer.valueOf(hw_rev));
+		Logger.info("Hardware revision: {} (0x{})", Integer.valueOf(hw_rev), hw_rev_hex);
+		BoardInfo board_info = new RaspberryPiBoardInfoProvider().lookup("BCM2835", hw_rev_hex, null);
+		if (board_info == null) {
+			Logger.error("Failed to load RPi board info for {} (0x{})");
+			throw new RuntimeException(
+					"Error initialising board info for hardware revision " + hw_rev + " (0x" + hw_rev_hex + ")");
+		}
 		board_info.initialisePins();
-		
+
 		return board_info;
 	}
 
@@ -89,12 +95,12 @@ public class PigpioJDeviceFactory extends BaseNativeDeviceFactory {
 	public int getBoardPwmFrequency() {
 		return boardPwmFrequency;
 	}
-	
+
 	@Override
 	public void setBoardPwmFrequency(int pwmFrequency) {
 		boardPwmFrequency = pwmFrequency;
 	}
-	
+
 	@Override
 	public int getSpiBufferSize() {
 		return PIGPIO_SPI_BUFFER_SIZE;
@@ -146,7 +152,7 @@ public class PigpioJDeviceFactory extends BaseNativeDeviceFactory {
 			int clockFrequency) throws RuntimeIOException {
 		return new PigpioJI2CDevice(key, this, pigpioImpl, controller, address, addressSize);
 	}
-	
+
 	public PigpioJBitBangI2CDevice createI2CBitBangDevice(int sdaPin, int sclPin, int baud) {
 		return new PigpioJBitBangI2CDevice("PigpioJ-BitBangI2C-" + sdaPin, this, sdaPin, sclPin, baud);
 	}
@@ -160,15 +166,16 @@ public class PigpioJDeviceFactory extends BaseNativeDeviceFactory {
 		int new_freq = pigpioImpl.getPWMFrequency(gpio);
 		int new_range = pigpioImpl.getPWMRange(gpio);
 		int new_real_range = pigpioImpl.getPWMRealRange(gpio);
-		Logger.info("setPwmFrequency({}, {}), old freq={}, old real range={}, old range={},"
-				+ " new freq={}, new real range={}, new range={}",
-				Integer.valueOf(gpio), Integer.valueOf(pwmFrequency),
-				Integer.valueOf(old_freq), Integer.valueOf(old_real_range), Integer.valueOf(old_range),
-				Integer.valueOf(new_freq), Integer.valueOf(new_real_range), Integer.valueOf(new_range));
-		
+		Logger.info(
+				"setPwmFrequency({}, {}), old freq={}, old real range={}, old range={},"
+						+ " new freq={}, new real range={}, new range={}",
+				Integer.valueOf(gpio), Integer.valueOf(pwmFrequency), Integer.valueOf(old_freq),
+				Integer.valueOf(old_real_range), Integer.valueOf(old_range), Integer.valueOf(new_freq),
+				Integer.valueOf(new_real_range), Integer.valueOf(new_range));
+
 		return new_range;
 	}
-	
+
 	static int getPigpioJPullUpDown(GpioPullUpDown pud) {
 		int pigpio_pud;
 		switch (pud) {

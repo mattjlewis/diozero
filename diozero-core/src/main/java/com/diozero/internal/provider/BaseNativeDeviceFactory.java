@@ -35,12 +35,9 @@ package com.diozero.internal.provider;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.diozero.api.DeviceAlreadyOpenedException;
-import com.diozero.api.SpiClockMode;
 import com.diozero.util.BoardInfo;
 import com.diozero.util.BoardPinInfo;
 import com.diozero.util.DioZeroScheduler;
-import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SystemInfo;
 
 /**
