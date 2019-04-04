@@ -146,7 +146,7 @@ add an alternative method of compatibility, for example on the Udoo Quad.
 ## Getting Started
 
 Snapshot builds of the library are available in the [Nexus Repository Manager](https://oss.sonatype.org/index.html#nexus-search;gav~com.diozero~~~~). 
-For convenience a ZIP of all diozero JARs will also be available on [Google Drive](https://drive.google.com/open?id=0BxA10VX9SC74VDR6WTlLOEdpYzA).
+For convenience a ZIP of all diozero JARs will also be available on [Google Drive](https://drive.google.com/file/d/1xuY5y-mxYa7zaosLP0R-6FLcIDEUGpV5).
 
 Javadoc for the core library is also available via [javadoc.io](http://www.javadoc.io/doc/com.diozero/diozero-core/). 
 
@@ -156,7 +156,7 @@ and setup your classpath correctly. You can do this either via setting the `CLAS
 environment variable or as a command-line option (`java -cp <jar1>:<jar2>`). 
 The dependencies have been deliberately kept to as few libraries as possible, as 
 such this library is only dependent on [tinylog](http://www.tinylog.org) 
-[v1.1](https://github.com/pmwmedia/tinylog/releases/download/1.1/tinylog-1.1.zip).
+[v1.3.6](https://github.com/pmwmedia/tinylog/releases/download/1.3.6/tinylog-1.3.6.zip).
 
 To compile a diozero application you will need 2 JAR files - [tinylog](http://www.tinylog.org/), and diozero-core. 
 To run a diozero application, you will also need one of the supported device provider 
