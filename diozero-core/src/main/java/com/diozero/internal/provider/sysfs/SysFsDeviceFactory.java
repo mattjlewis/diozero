@@ -216,7 +216,10 @@ public class SysFsDeviceFactory extends BaseNativeDeviceFactory {
 			try (Writer unexport_writer = new FileWriter(rootPath.resolve(UNEXPORT_FILE).toFile())) {
 				unexport_writer.write(String.valueOf(gpio));
 			} catch (IOException e) {
-				throw new RuntimeIOException(e);
+				// Issue #27, BBB throws an IOException: Invalid argument when closing
+				if (!e.getMessage().equalsIgnoreCase("Invalid argument")) {
+					throw new RuntimeIOException(e);
+				}
 			}
 		}
 	}
