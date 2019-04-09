@@ -53,7 +53,7 @@ public class SoftwarePwmOutputDevice extends AbstractDevice implements PwmOutput
 			GpioDigitalOutputDeviceInterface digitalOutputDevice, int frequency, float initialValue) {
 		super(key, deviceFactory);
 		
-		Logger.warn("Hardware PWM not available for device {}, reverting to software", Integer.valueOf(key));
+		Logger.warn("Hardware PWM not available for device {}, reverting to software", key);
 		
 		this.digitalOutputDevice = digitalOutputDevice;
 		fullyOn = new AtomicBoolean();
