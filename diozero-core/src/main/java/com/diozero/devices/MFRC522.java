@@ -1355,9 +1355,9 @@ public class MFRC522 implements Closeable {
 	 */
 	public StatusCode mifareWrite(byte blockAddr, byte[] buffer) {
 		// Sanity check
-		if (buffer == null || buffer.length != 16) {
-			return StatusCode.INVALID;
-		}
+		//if (buffer == null || buffer.length != 16) {
+		//	return StatusCode.INVALID;
+		//}
 		
 		// Mifare Classic protocol requires two communications to perform a write.
 		// Step 1: Tell the PICC we want to write to block blockAddr.

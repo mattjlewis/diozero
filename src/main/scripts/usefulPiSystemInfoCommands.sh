@@ -7,7 +7,7 @@
 # This file is part of the diozero project. More information about this project
 # can be found at http://www.diozero.com/
 # %%
-# Copyright (C) 2016 - 2017 mattjlewis
+# Copyright (C) 2016 - 2019 mattjlewis
 # %%
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal

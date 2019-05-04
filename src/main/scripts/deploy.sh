@@ -2,12 +2,12 @@
 # #%L
 # Organisation: mattjlewis
 # Project:      Device I/O Zero
-# Filename:     deploy.sh  
-# 
+# Filename:     deploy.sh
+#
 # This file is part of the diozero project. More information about this project
 # can be found at http://www.diozero.com/
 # %%
-# Copyright (C) 2016 - 2017 mattjlewis
+# Copyright (C) 2016 - 2019 mattjlewis
 # %%
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -15,10 +15,10 @@
 # to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 # copies of the Software, and to permit persons to whom the Software is
 # furnished to do so, subject to the following conditions:
-# 
+#
 # The above copyright notice and this permission notice shall be included in
 # all copies or substantial portions of the Software.
-# 
+#
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -31,7 +31,7 @@
 
 #!/bin/sh
 
-version=0.11-SNAPSHOT
+version=0.12-SNAPSHOT
 pigpioj_version=2.2
 username=pi
 #host=george.local
@@ -48,7 +48,7 @@ install_folder=/home/${username}/diozero
 
 echo "Deploying version ${version} to ${username}@${host}:${install_folder}"
 
-files="../pigpioj/pigpioj-java/target/pigpioj-java-${pigpioj_version}.jar \
+files="../Personal/pigpioj/pigpioj-java/target/pigpioj-java-${pigpioj_version}.jar \
 	src/main/scripts/runSampleApps.sh \
 	diozero-core/target/diozero-core-${version}.jar \
 	diozero-imu-devices/target/diozero-imu-devices-${version}.jar \

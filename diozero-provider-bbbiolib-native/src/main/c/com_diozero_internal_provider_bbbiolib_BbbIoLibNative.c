@@ -4,7 +4,7 @@
 #include <jni_md.h>
 
 /* The VM calls this function upon loading the native library. */
-JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* jvm, void* reserved) {
+jint JNICALL JNI_OnLoad(JavaVM* jvm, void* reserved) {
 	return JNI_VERSION_1_8;
 }
 

@@ -42,16 +42,28 @@ import org.pmw.tinylog.Logger;
 
 public class LibraryLoader {
 	private static final Map<String, Boolean> LOADED_LIBRARIES = new HashMap<>();
-	private static final String LIBRARY_EXTENSION = System.getProperty("os.name").startsWith("Windows") ? ".dll" : ".so";
-	
+	private static final String LIBRARY_EXTENSION = System.getProperty("os.name").startsWith("Windows") ? ".dll"
+			: ".so";
+
 	public static void loadLibrary(Class<?> clz, String libName) throws UnsatisfiedLinkError {
+		loadLibrary(clz, libName, true);
+	}
+
+	public static void loadLibrary(Class<?> clz, String libName, boolean boardSpecific) throws UnsatisfiedLinkError {
 		synchronized (LOADED_LIBRARIES) {
 			if (LOADED_LIBRARIES.get(libName) == null) {
 				boolean loaded = false;
-				
+
 				// First try load the library from within the JAR file
-				String lib_file = "/lib/" + DeviceFactoryHelper.getNativeDeviceFactory().getBoardInfo().getLibraryPath() + "/lib"
-						+ libName + LIBRARY_EXTENSION;
+				String lib_file;
+				if (boardSpecific) {
+					lib_file = String.format("/lib/%s/lib%s%s",
+							DeviceFactoryHelper.getNativeDeviceFactory().getBoardInfo().getLibraryPath(), libName,
+							LIBRARY_EXTENSION);
+				} else {
+					lib_file = String.format("/lib/lib%s%s", libName, LIBRARY_EXTENSION);
+				}
+				Logger.debug("Looking for lib '" + lib_file + "' on classpath");
 				try (InputStream is = clz.getResourceAsStream(lib_file)) {
 					Path path = Files.createTempFile("lib" + libName, LIBRARY_EXTENSION);
 					path.toFile().deleteOnExit();
@@ -62,8 +74,9 @@ public class LibraryLoader {
 				} catch (Throwable t) {
 					Logger.warn("Error loading library '{}' from classpath, trying System.loadLibrary: {}", libName, t);
 				}
-				if (! loaded) {
+				if (!loaded) {
 					// Try load from the Java system library path (-Djava.library.path)
+					Logger.debug("Looking for lib '" + libName + "' on library path");
 					try {
 						System.loadLibrary(libName);
 						loaded = true;

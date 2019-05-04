@@ -31,7 +31,6 @@ package com.diozero.internal.provider.sysfs;
  * #L%
  */
 
-
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
@@ -66,15 +65,15 @@ public class SysFsDeviceFactory extends BaseNativeDeviceFactory {
 	private static final String UNEXPORT_FILE = "unexport";
 	private static final String GPIO_DIR_PREFIX = "gpio";
 	private static final String DIRECTION_FILE = "direction";
-	
+
 	private Path rootPath;
 	private int boardPwmFrequency;
 	private EpollNative epoll;
-	
+
 	public SysFsDeviceFactory() {
 		rootPath = FileSystems.getDefault().getPath(GPIO_ROOT_DIR);
 	}
-	
+
 	@Override
 	public void close() {
 		if (epoll != null) {
@@ -84,7 +83,9 @@ public class SysFsDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	/**
-	 * Check if this pin is exported by checking the existance of /sys/class/gpio/gpioxxx/
+	 * Check if this pin is exported by checking the existance of
+	 * /sys/class/gpio/gpioxxx/
+	 * 
 	 * @param gpio GPIO pin
 	 * @return Returns true if this pin is currently exported
 	 */
@@ -120,9 +121,8 @@ public class SysFsDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	public GpioDigitalInputOutputDeviceInterface createDigitalInputOutputDevice(
-			String key, PinInfo pinInfo, DeviceMode mode)
-			throws RuntimeIOException {
+	public GpioDigitalInputOutputDeviceInterface createDigitalInputOutputDevice(String key, PinInfo pinInfo,
+			DeviceMode mode) throws RuntimeIOException {
 		return new SysFsDigitalInputOutputDevice(this, key, pinInfo, mode);
 	}
 
@@ -136,8 +136,8 @@ public class SysFsDeviceFactory extends BaseNativeDeviceFactory {
 				return new OdroidC2SysFsPwmOutputDevice(key, this, pwm_pin_info, pwmFrequency, initialValue);
 			}
 
-			return new SysFsPwmOutputDevice(key, this, getBoardInfo().getPwmChip(pwm_pin_info.getPwmNum()), pwm_pin_info,
-					pwmFrequency, initialValue);
+			return new SysFsPwmOutputDevice(key, this, getBoardInfo().getPwmChip(pwm_pin_info.getPwmNum()),
+					pwm_pin_info, pwmFrequency, initialValue);
 		}
 
 		SoftwarePwmOutputDevice pwm = new SoftwarePwmOutputDevice(key, this,
@@ -146,16 +146,14 @@ public class SysFsDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	public AnalogInputDeviceInterface createAnalogInputDevice(String key, PinInfo pinInfo)
-			throws RuntimeIOException {
+	public AnalogInputDeviceInterface createAnalogInputDevice(String key, PinInfo pinInfo) throws RuntimeIOException {
 		// TODO How to work out the device number?
 		int device = 0;
 		return new SysFsAnalogInputDevice(this, key, device, pinInfo.getDeviceNumber());
 	}
 
 	@Override
-	public AnalogOutputDeviceInterface createAnalogOutputDevice(String key, PinInfo pinInfo)
-			throws RuntimeIOException {
+	public AnalogOutputDeviceInterface createAnalogOutputDevice(String key, PinInfo pinInfo) throws RuntimeIOException {
 		throw new UnsupportedOperationException("Analog output not supported by device factory '"
 				+ getClass().getSimpleName() + "' on device '" + getBoardInfo().getName() + "'");
 	}
@@ -171,22 +169,22 @@ public class SysFsDeviceFactory extends BaseNativeDeviceFactory {
 			int clockFrequency) throws RuntimeIOException {
 		return new SysFsI2CDevice(this, key, controller, address, addressSize, clockFrequency);
 	}
-	
+
 	void export(int gpio, DeviceMode mode) {
-		if (! isExported(gpio)) {
+		if (!isExported(gpio)) {
 			try (Writer export_writer = new FileWriter(rootPath.resolve(EXPORT_FILE).toFile())) {
 				export_writer.write(String.valueOf(gpio));
 			} catch (IOException e) {
 				throw new RuntimeIOException(e);
 			}
 		}
-		
+
 		Path direction_file = getGpioDirectoryPath(gpio).resolve(DIRECTION_FILE);
 		// TODO Is this polling actually required?
 		// Wait up to 500ms for the gpioxxx/direction file to exist
 		int delay = 500;
 		long start = System.currentTimeMillis();
-		while (! Files.isWritable(direction_file)) {
+		while (!Files.isWritable(direction_file)) {
 			try {
 				Thread.sleep(10);
 			} catch (InterruptedException ie) {
@@ -194,7 +192,8 @@ public class SysFsDeviceFactory extends BaseNativeDeviceFactory {
 			}
 			if (System.currentTimeMillis() - start > delay) {
 				unexport(gpio);
-				throw new RuntimeIOException("Waited for over " + delay + " ms for the GPIO pin to be created, aborting");
+				throw new RuntimeIOException(
+						"Waited for over " + delay + " ms for the GPIO pin to be created, aborting");
 			}
 		}
 
@@ -206,7 +205,7 @@ public class SysFsDeviceFactory extends BaseNativeDeviceFactory {
 			throw new RuntimeIOException("Error setting direction for GPIO " + gpio, e);
 		}
 	}
-	
+
 	Path getGpioDirectoryPath(int gpio) {
 		return rootPath.resolve(GPIO_DIR_PREFIX + gpio);
 	}
@@ -216,16 +215,18 @@ public class SysFsDeviceFactory extends BaseNativeDeviceFactory {
 			try (Writer unexport_writer = new FileWriter(rootPath.resolve(UNEXPORT_FILE).toFile())) {
 				unexport_writer.write(String.valueOf(gpio));
 			} catch (IOException e) {
-				// Issue #27, BBB throws an IOException: Invalid argument when closing
+				// Issue #27, BBB throws an IOException: Invalid argument when closing GPIOs if
+				// you have the universal cape enabled, https://github.com/fivdi/onoff/issues/50
 				if (!e.getMessage().equalsIgnoreCase("Invalid argument")) {
 					throw new RuntimeIOException(e);
 				}
 			}
 		}
 	}
-	
+
 	synchronized EpollNative getEpoll() {
-		// Has to be lazy loaded as cannot call System.loadLibrary within device factory initialisation
+		// Has to be lazy loaded as cannot call System.loadLibrary within device factory
+		// initialisation
 		if (epoll == null) {
 			epoll = new EpollNative();
 			epoll.enableEvents();
