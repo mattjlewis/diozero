@@ -87,6 +87,12 @@ public class BeagleBoneBoardInfoProvider implements BoardInfoProvider {
 			addGpioPinInfo(P8_HEADER, 27, 17, PinInfo.DIGITAL_IN_OUT);
 			addGpioPinInfo(P8_HEADER, 65, 18, PinInfo.DIGITAL_IN_OUT);
 			addGpioPinInfo(P8_HEADER, 61, 26, PinInfo.DIGITAL_IN_OUT);
+			
+			addAdcPinInfo(P9_HEADER, 0, "VDD_ADC", 32);
+			addPwmPinInfo(P9_HEADER, -1, "EHRPWM1A", 14, 0, PinInfo.DIGITAL_IN_OUT_PWM);
+			addPwmPinInfo(P9_HEADER, -1, "EHRPWM1B", 16, 1, PinInfo.DIGITAL_IN_OUT_PWM);
+			addPwmPinInfo(P8_HEADER, -1, "EHRPWM2A", 13, 3, PinInfo.DIGITAL_IN_OUT_PWM);
+			addPwmPinInfo(P8_HEADER, -1, "EHRPWM2B", 19, 4, PinInfo.DIGITAL_IN_OUT_PWM);
 		}
 
 		@Override
