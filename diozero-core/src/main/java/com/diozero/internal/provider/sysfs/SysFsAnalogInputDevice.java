@@ -31,9 +31,9 @@ package com.diozero.internal.provider.sysfs;
  * #L%
  */
 
-
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.io.File;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 
@@ -44,23 +44,27 @@ import com.diozero.internal.provider.AbstractInputDevice;
 import com.diozero.internal.provider.AnalogInputDeviceInterface;
 import com.diozero.util.RuntimeIOException;
 
-public class SysFsAnalogInputDevice extends AbstractInputDevice<AnalogInputEvent> implements AnalogInputDeviceInterface {
+public class SysFsAnalogInputDevice extends AbstractInputDevice<AnalogInputEvent>
+		implements AnalogInputDeviceInterface {
 	private static final String DEVICE_PATH = "/sys/bus/iio/devices/iio:device";
-	
+
 	private int adcNumber;
 	private RandomAccessFile voltageScale;
 	private RandomAccessFile voltageRaw;
 	private float vRef;
-	
+
 	public SysFsAnalogInputDevice(SysFsDeviceFactory deviceFactory, String key, int device, int adcNumber) {
 		super(key, deviceFactory);
-		
+
 		this.adcNumber = adcNumber;
 		vRef = deviceFactory.getVRef();
-		
+
 		Path device_path = FileSystems.getDefault().getPath(DEVICE_PATH + device);
+		File voltage_scale_file = device_path.resolve("in_voltage_scale").toFile();
 		try {
-			voltageScale = new RandomAccessFile(device_path.resolve("in_voltage_scale").toFile(), "r");
+			if (voltage_scale_file.exists()) {
+				voltageScale = new RandomAccessFile(voltage_scale_file, "r");
+			}
 			voltageRaw = new RandomAccessFile(device_path.resolve("in_voltage" + adcNumber + "_raw").toFile(), "r");
 		} catch (IOException e) {
 			throw new RuntimeIOException("Error opening sysfs analog input files for ADC " + adcNumber, e);
@@ -75,12 +79,27 @@ public class SysFsAnalogInputDevice extends AbstractInputDevice<AnalogInputEvent
 	@Override
 	public float getValue() throws RuntimeIOException {
 		try {
-			voltageScale.seek(0);
-			float scale = Float.parseFloat(voltageScale.readLine());
 			voltageRaw.seek(0);
 			float raw = Float.parseFloat(voltageRaw.readLine());
-			
-			return raw * scale / vRef / 1000f;
+
+			float value;
+			if (voltageScale != null) {
+				voltageScale.seek(0);
+				float scale = Float.parseFloat(voltageScale.readLine());
+				value = raw * scale / vRef / 1000f;
+
+				Logger.debug("raw: {}, scale: {}, vRef: {}", Float.valueOf(raw), Float.valueOf(scale),
+						Float.valueOf(vRef));
+			} else {
+				// FIXME Needs to be passed in, this assumes 12-bit
+				float range = (float) (Math.pow(2, 12) - 1);
+				value = raw / range;
+
+				Logger.debug("raw: {}, range: {}, vRef: {}", Float.valueOf(raw), Float.valueOf(range),
+						Float.valueOf(vRef));
+			}
+
+			return value;
 		} catch (IOException | NumberFormatException e) {
 			Logger.error("Error: {}" + e, e);
 			throw new RuntimeIOException("Error reading analog input files: " + e, e);
@@ -91,9 +110,12 @@ public class SysFsAnalogInputDevice extends AbstractInputDevice<AnalogInputEvent
 	protected void closeDevice() throws RuntimeIOException {
 		Logger.debug("closeDevice()");
 		try {
-			voltageScale.close();
+			if (voltageScale != null) {
+				voltageScale.close();
+			}
 			voltageRaw.close();
 		} catch (IOException e) {
+			// Ignore
 		}
 	}
 }

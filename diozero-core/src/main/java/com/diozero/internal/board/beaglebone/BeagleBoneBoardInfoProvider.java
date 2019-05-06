@@ -88,7 +88,15 @@ public class BeagleBoneBoardInfoProvider implements BoardInfoProvider {
 			addGpioPinInfo(P8_HEADER, 65, 18, PinInfo.DIGITAL_IN_OUT);
 			addGpioPinInfo(P8_HEADER, 61, 26, PinInfo.DIGITAL_IN_OUT);
 			
-			addAdcPinInfo(P9_HEADER, 0, "VDD_ADC", 32);
+			// To enable: sudo sh -c "echo 'BB-ADC' > /sys/devices/platform/bone_capemgr/slots"
+			addAdcPinInfo(P9_HEADER, 0, "AIN0", 39);
+			addAdcPinInfo(P9_HEADER, 1, "AIN1", 40);
+			addAdcPinInfo(P9_HEADER, 2, "AIN2", 37);
+			addAdcPinInfo(P9_HEADER, 3, "AIN3", 38);
+			addAdcPinInfo(P9_HEADER, 4, "AIN4", 33);
+			addAdcPinInfo(P9_HEADER, 5, "AIN5", 36);
+			addAdcPinInfo(P9_HEADER, 6, "AIN6", 35);
+			
 			addPwmPinInfo(P9_HEADER, -1, "EHRPWM1A", 14, 0, PinInfo.DIGITAL_IN_OUT_PWM);
 			addPwmPinInfo(P9_HEADER, -1, "EHRPWM1B", 16, 1, PinInfo.DIGITAL_IN_OUT_PWM);
 			addPwmPinInfo(P8_HEADER, -1, "EHRPWM2A", 13, 3, PinInfo.DIGITAL_IN_OUT_PWM);

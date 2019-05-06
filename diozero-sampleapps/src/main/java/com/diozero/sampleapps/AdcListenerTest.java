@@ -68,7 +68,7 @@ public class AdcListenerTest {
 
 	public static void test(int adcNumber, float vRef) {
 		try (AnalogInputDevice adc = new AnalogInputDevice(adcNumber, vRef)) {
-			adc.addListener((event) -> Logger.info("valueChanged({})", event));
+			//adc.addListener((event) -> Logger.info("valueChanged({})", event));
 			for (int i = 0; i < 10; i++) {
 				Logger.info("Scaled: {}, Unscaled: {}", Float.valueOf(adc.getScaledValue()),
 						Float.valueOf(adc.getUnscaledValue()));
