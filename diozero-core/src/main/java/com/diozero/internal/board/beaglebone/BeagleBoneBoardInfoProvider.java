@@ -97,6 +97,7 @@ public class BeagleBoneBoardInfoProvider implements BoardInfoProvider {
 			addAdcPinInfo(P9_HEADER, 5, "AIN5", 36);
 			addAdcPinInfo(P9_HEADER, 6, "AIN6", 35);
 			
+			// BB-PWM0,BB-PWM1,BB-PWM2
 			addPwmPinInfo(P9_HEADER, -1, "EHRPWM1A", 14, 0, PinInfo.DIGITAL_IN_OUT_PWM);
 			addPwmPinInfo(P9_HEADER, -1, "EHRPWM1B", 16, 1, PinInfo.DIGITAL_IN_OUT_PWM);
 			addPwmPinInfo(P8_HEADER, -1, "EHRPWM2A", 13, 3, PinInfo.DIGITAL_IN_OUT_PWM);

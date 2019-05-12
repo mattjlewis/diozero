@@ -32,6 +32,7 @@ package com.diozero.ws281xj.rpiws281x;
  */
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.file.Files;
@@ -42,17 +43,27 @@ import com.diozero.ws281xj.LedDriverInterface;
 import com.diozero.ws281xj.StripType;
 
 /**
- * <p>Provides support for
+ * <p>
+ * Provides support for
  * <a href="https://learn.adafruit.com/adafruit-neopixel-uberguide">WS2811B /
  * WS2812B aka Adafriut NeoPixel LEDs</a> via a JNI wrapper around the
- * <a href="https://github.com/jgarff/rpi_ws281x">rpi_ws281x C library</a>.</p>
- * <p>Also see <a href="https://github.com/626Pilot/RaspberryPi-NeoPixel-WS2812">this implementation</a>.</p>
- * <p>All colours are represented as 24bit RGB values.</p>
- * <p>Valid GPIO numbers:</p>
+ * <a href="https://github.com/jgarff/rpi_ws281x">rpi_ws281x C library</a>.
+ * </p>
+ * <p>
+ * Also see
+ * <a href="https://github.com/626Pilot/RaspberryPi-NeoPixel-WS2812">this
+ * implementation</a>.
+ * </p>
+ * <p>
+ * All colours are represented as 24bit RGB values.
+ * </p>
+ * <p>
+ * Valid GPIO numbers:
+ * </p>
  * <ul>
- *  <li>12 / 18 (PWM)</li>
- *  <li>21 / 31 (PCM)</li>
- *  <li>10 (SPI)</li>
+ * <li>12 / 18 (PWM)</li>
+ * <li>21 / 31 (PCM)</li>
+ * <li>10 (SPI)</li>
  * </ul>
  */
 public class WS281x implements LedDriverInterface {
@@ -65,7 +76,7 @@ public class WS281x implements LedDriverInterface {
 
 	private static final String LIB_NAME = "ws281xj";
 	private static Boolean loaded = Boolean.FALSE;
-	
+
 	// 4 color R, G, B and W ordering
 	private static final int SK6812_STRIP_RGBW = 0x18100800;
 	private static final int SK6812_STRIP_RBGW = 0x18100008;
@@ -88,24 +99,27 @@ public class WS281x implements LedDriverInterface {
 	private static final int SK6812_STRIP = WS2811_STRIP_GRB;
 	private static final int SK6812W_STRIP = SK6812_STRIP_GRBW;
 
-
 	private static void init() {
 		synchronized (loaded) {
 			if (!loaded.booleanValue()) {
-				try {
+				try (InputStream is = WS281x.class.getResourceAsStream("/lib/lib" + LIB_NAME + ".so")) {
 					Path path = Files.createTempFile("lib" + LIB_NAME, ".so");
 					path.toFile().deleteOnExit();
-					Files.copy(WS281x.class.getResourceAsStream("/lib/lib" + LIB_NAME + ".so"), path,
-							StandardCopyOption.REPLACE_EXISTING);
+					Files.copy(is, path, StandardCopyOption.REPLACE_EXISTING);
 					System.load(path.toString());
+					System.out.println("Loaded library '" + LIB_NAME + "' from classpath");
 					loaded = Boolean.TRUE;
-				} catch (IOException e) {
-					System.out.println("Error loading library from classpath: " + e);
-					e.printStackTrace();
+				} catch (Throwable t) {
+					System.out.println("Error loading library from classpath, trying from system library path");
 
 					// Try load the usual way...
-					System.loadLibrary(LIB_NAME);
-					loaded = Boolean.TRUE;
+					try {
+						System.loadLibrary(LIB_NAME);
+						System.out.println("Loaded library '" + LIB_NAME + "' from system library path");
+						loaded = Boolean.TRUE;
+					} catch (Throwable t2) {
+						System.err.println("Error loading library '" + LIB_NAME + "'");
+					}
 				}
 
 				Runtime.getRuntime().addShutdownHook(new Thread(WS281xNative::terminate, "WS281x Shutdown Handler"));
@@ -117,36 +131,37 @@ public class WS281x implements LedDriverInterface {
 	private int numPixels;
 
 	/**
-	 * @param gpioNum GPIO pin to use to drive the LEDs.
+	 * @param gpioNum    GPIO pin to use to drive the LEDs.
 	 * @param brightness Brightness level (0..255).
-	 * @param numPixels The number of pixels connected.
+	 * @param numPixels  The number of pixels connected.
 	 */
 	public WS281x(int gpioNum, int brightness, int numPixels) {
 		this(DEFAULT_FREQUENCY, DEFAULT_DMA_NUM, gpioNum, brightness, numPixels, DEFAULT_STRIP_TYPE, DEFAULT_CHANNEL);
 	}
 
 	/**
-	 * @param frequency Communication frequency, 800,000 or 400,000.
-	 * @param dmaNum DMA number.
-	 * @param gpioNum GPIO pin to use to drive the LEDs.
+	 * @param frequency  Communication frequency, 800,000 or 400,000.
+	 * @param dmaNum     DMA number.
+	 * @param gpioNum    GPIO pin to use to drive the LEDs.
 	 * @param brightness Brightness level (0..255).
-	 * @param numPixels The number of pixels connected.
-	 * @param stripType Strip type
+	 * @param numPixels  The number of pixels connected.
+	 * @param stripType  Strip type
 	 */
 	public WS281x(int frequency, int dmaNum, int gpioNum, int brightness, int numPixels, StripType stripType) {
 		this(DEFAULT_FREQUENCY, DEFAULT_DMA_NUM, gpioNum, brightness, numPixels, stripType, DEFAULT_CHANNEL);
 	}
 
 	/**
-	 * @param frequency Communication frequency, 800,000 or 400,000.
-	 * @param dmaNum DMA number.
-	 * @param gpioNum GPIO pin to use to drive the LEDs.
+	 * @param frequency  Communication frequency, 800,000 or 400,000.
+	 * @param dmaNum     DMA number.
+	 * @param gpioNum    GPIO pin to use to drive the LEDs.
 	 * @param brightness Brightness level (0..255).
-	 * @param numPixels The number of pixels connected.
-	 * @param stripType Strip type
-	 * @param channel PWM channel
+	 * @param numPixels  The number of pixels connected.
+	 * @param stripType  Strip type
+	 * @param channel    PWM channel
 	 */
-	public WS281x(int frequency, int dmaNum, int gpioNum, int brightness, int numPixels, StripType stripType, int channel) {
+	public WS281x(int frequency, int dmaNum, int gpioNum, int brightness, int numPixels, StripType stripType,
+			int channel) {
 		init();
 
 		this.numPixels = numPixels;
@@ -223,7 +238,7 @@ public class WS281x implements LedDriverInterface {
 			return SK6812_STRIP_BRGW;
 		case SK6812_BGRW:
 			return SK6812_STRIP_BGRW;
-	
+
 		case WS2811_RGB:
 			return WS2811_STRIP_RGB;
 		case WS2811_RBG:
