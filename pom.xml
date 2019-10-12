@@ -92,8 +92,8 @@
 		<connection>scm:git:https://github.com/mattjlewis/diozero.git</connection>
 		<developerConnection>scm:git:https://github.com/mattjlewis/diozero.git</developerConnection>
 		<url>https://github.com/mattjlewis/diozero</url>
-	  <tag>HEAD</tag>
-  </scm>
+		<tag>HEAD</tag>
+	</scm>
 
 	<developers>
 		<developer>
@@ -146,7 +146,7 @@
 		
 		<!-- Core plugins -->
 		<maven-clean-plugin.version>3.1.0</maven-clean-plugin.version>
-		<maven-compiler-plugin.version>3.8.0</maven-compiler-plugin.version>
+		<maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
 		<maven-deploy-plugin.version>2.8.2</maven-deploy-plugin.version>
 		<maven-install-plugin.version>2.5.2</maven-install-plugin.version>
 		<maven-resources-plugin.version>3.1.0</maven-resources-plugin.version>
@@ -156,13 +156,13 @@
 		<!-- Packaging plugins -->
 		<maven-jar-plugin.version>3.1.1</maven-jar-plugin.version>
 		<maven-shade-plugin.version>3.2.1</maven-shade-plugin.version>
-		<maven-source-plugin.version>3.0.1</maven-source-plugin.version>
+		<maven-source-plugin.version>3.1.0</maven-source-plugin.version>
 		
 		<!-- Reporting plugins -->
 		<maven-changelog-plugin.version>2.3</maven-changelog-plugin.version>
 		<maven-changes-plugin.version>2.12.1</maven-changes-plugin.version>
-		<maven-checkstyle-plugin.version>3.0.0</maven-checkstyle-plugin.version>
-		<maven-javadoc-plugin.version>3.0.1</maven-javadoc-plugin.version>
+		<maven-checkstyle-plugin.version>3.1.0</maven-checkstyle-plugin.version>
+		<maven-javadoc-plugin.version>3.1.0</maven-javadoc-plugin.version>
 		<maven-project-info-reports-plugin.version>3.0.0</maven-project-info-reports-plugin.version>
 		
 		<!-- Tools plugins -->
@@ -512,7 +512,7 @@
 					<dependency>
 						<groupId>org.apache.maven.doxia</groupId>
 						<artifactId>doxia-module-markdown</artifactId>
-						<version>1.8</version>
+						<version>1.9</version>
 					</dependency>
 				</dependencies>
               	<configuration>
@@ -681,7 +681,7 @@
 							</execution>
 						</executions>
 						<configuration>
-							<serverId>ossrh</serverId>
+							<serverId>nexus-releases</serverId>
 							<nexusUrl>https://oss.sonatype.org/</nexusUrl>
 							<autoReleaseAfterClose>true</autoReleaseAfterClose>
 							<!-- <skipStaging>true</skipStaging> -->

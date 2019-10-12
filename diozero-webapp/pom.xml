@@ -12,7 +12,7 @@
 	<packaging>jar</packaging>
 	
 	<properties>
-		<sparkjava.version>2.9.0</sparkjava.version>
+		<sparkjava.version>2.9.1</sparkjava.version>
 		<slf4j.version>1.7.25</slf4j.version>
 	</properties>
 
