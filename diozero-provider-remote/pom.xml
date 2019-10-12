@@ -13,11 +13,11 @@
 	<packaging>jar</packaging>
 
 	<properties>
-		<eclipse-paho-client-mqttv3.version>1.2.1</eclipse-paho-client-mqttv3.version>
-		<google-protocol-buffers.version>3.7.0</google-protocol-buffers.version>
-		<apache-httpcomponents-httpcore.version>4.4.11</apache-httpcomponents-httpcore.version>
-		<apache-httpcomponents-httpclient.version>4.5.8</apache-httpcomponents-httpclient.version>
-		<netty.version>4.1.16.Final</netty.version>
+		<eclipse-paho-client-mqttv3.version>1.2.2</eclipse-paho-client-mqttv3.version>
+		<google-protocol-buffers.version>3.10.0</google-protocol-buffers.version>
+		<apache-httpcomponents-httpcore.version>4.4.12</apache-httpcomponents-httpcore.version>
+		<apache-httpcomponents-httpclient.version>4.5.10</apache-httpcomponents-httpclient.version>
+		<netty.version>4.1.42.Final</netty.version>
 	</properties>
 	
 	<dependencies>

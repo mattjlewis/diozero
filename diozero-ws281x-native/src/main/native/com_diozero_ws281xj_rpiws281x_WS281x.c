@@ -32,6 +32,8 @@ ws2811_t led_string = {
 	}
 };
 
+unsigned char is_closed = 0;
+
 /* The VM calls this function upon loading the native library. */
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* jvm, void* reserved) {
 	return JNI_VERSION_1_8;
@@ -73,7 +75,10 @@ JNIEXPORT jobject JNICALL Java_com_diozero_ws281xj_rpiws281x_WS281xNative_initia
  * Signature: ()V
  */
 JNIEXPORT void JNICALL Java_com_diozero_ws281xj_rpiws281x_WS281xNative_terminate(JNIEnv* env, jclass clz) {
-	ws2811_fini(&led_string);
+	if (is_closed == 0) {
+		ws2811_fini(&led_string);
+	}
+	is_closed = 1;
 }
 
 /*

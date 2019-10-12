@@ -122,7 +122,7 @@ public class PixelAnimations {
 		PixelAnimations.rainbow(ledDriver, 20);
 		System.out.println("rainbowCycle");
 		PixelAnimations.rainbowCycle(ledDriver, 20);
-		System.out.println("theatreChaseRainbow");
-		PixelAnimations.theatreChaseRainbow(ledDriver, 50);
+		//System.out.println("theatreChaseRainbow");
+		//PixelAnimations.theatreChaseRainbow(ledDriver, 50);
 	}
 }

@@ -130,6 +130,20 @@ public class SystemInfoTest {
 		// obi - Pi Zero W
 		validateBoard(hardware, "9000c1", RaspberryPiBoardInfoProvider.MAKE,
 				RaspberryPiBoardInfoProvider.MODEL_ZERO_W, 512);
+		validateBoard(hardware, "9020e0", RaspberryPiBoardInfoProvider.MAKE,
+				RaspberryPiBoardInfoProvider.MODEL_3A_PLUS, 512);
+		validateBoard(hardware, "920092", RaspberryPiBoardInfoProvider.MAKE,
+				RaspberryPiBoardInfoProvider.MODEL_ZERO, 512);
+		validateBoard(hardware, "920093", RaspberryPiBoardInfoProvider.MAKE,
+				RaspberryPiBoardInfoProvider.MODEL_ZERO, 512);
+		validateBoard(hardware, "900061", RaspberryPiBoardInfoProvider.MAKE,
+				RaspberryPiBoardInfoProvider.COMPUTE_MODULE, 512);
+		validateBoard(hardware, "a020a0", RaspberryPiBoardInfoProvider.MAKE,
+				RaspberryPiBoardInfoProvider.COMPUTE_MODULE_3, 1024);
+		validateBoard(hardware, "a02042", RaspberryPiBoardInfoProvider.MAKE,
+				RaspberryPiBoardInfoProvider.MODEL_2B, 1024);
+		validateBoard(hardware, "a220a0", RaspberryPiBoardInfoProvider.MAKE,
+				RaspberryPiBoardInfoProvider.COMPUTE_MODULE_3, 1024);
 		// stuart - Pi3B, BCM2837, Sony, 1024MB
 		validateBoard(hardware, "a02082", RaspberryPiBoardInfoProvider.MAKE,
 				RaspberryPiBoardInfoProvider.MODEL_3B, 1024);
@@ -142,6 +156,22 @@ public class SystemInfoTest {
 		// Pi3B, BCM2837, Sony Japan, 1024MB
 		validateBoard(hardware, "a32082", RaspberryPiBoardInfoProvider.MAKE,
 				RaspberryPiBoardInfoProvider.MODEL_3B, 1024);
+		validateBoard(hardware, "a52082", RaspberryPiBoardInfoProvider.MAKE,
+				RaspberryPiBoardInfoProvider.MODEL_3B, 1024);
+		validateBoard(hardware, "a22083", RaspberryPiBoardInfoProvider.MAKE,
+				RaspberryPiBoardInfoProvider.MODEL_3B, 1024);
+		validateBoard(hardware, "a02100", RaspberryPiBoardInfoProvider.MAKE,
+				RaspberryPiBoardInfoProvider.MODEL_3B, 1024);
+		// Pi3B+
+		validateBoard(hardware, "a020d3", RaspberryPiBoardInfoProvider.MAKE,
+				RaspberryPiBoardInfoProvider.MODEL_3B_PLUS, 1024);
+		// Pi4B
+		validateBoard(hardware, "a03111", RaspberryPiBoardInfoProvider.MAKE,
+				RaspberryPiBoardInfoProvider.MODEL_4B, 1024);
+		validateBoard(hardware, "b03111", RaspberryPiBoardInfoProvider.MAKE,
+				RaspberryPiBoardInfoProvider.MODEL_4B, 2048);
+		validateBoard(hardware, "c03111", RaspberryPiBoardInfoProvider.MAKE,
+				RaspberryPiBoardInfoProvider.MODEL_4B, 4096);
 	}
 	
 	private static void validateBoard(String hardware, String revision, String expectedMake, String expectedModel, int expectedMemory) {

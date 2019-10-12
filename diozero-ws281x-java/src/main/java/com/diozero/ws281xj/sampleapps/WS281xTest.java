@@ -52,10 +52,7 @@ public class WS281xTest {
 			hsbTest(led_driver);
 			hslTest(led_driver);
 
-			while (true) {
-				System.out.println("loop()");
-				PixelAnimations.demo(led_driver);
-			}
+			PixelAnimations.demo(led_driver);
 		} catch (Throwable t) {
 			System.out.println("Error: " + t);
 			t.printStackTrace();

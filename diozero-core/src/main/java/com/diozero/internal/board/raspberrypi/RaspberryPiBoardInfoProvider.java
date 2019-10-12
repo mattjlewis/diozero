@@ -35,6 +35,8 @@ package com.diozero.internal.board.raspberrypi;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.pmw.tinylog.Logger;
+
 import com.diozero.api.PinInfo;
 import com.diozero.internal.provider.MmapGpioInterface;
 import com.diozero.util.BoardInfo;
@@ -56,8 +58,12 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 	public static final String MODEL_ALPHA = "Alpha";
 	public static final String COMPUTE_MODULE = "CM";
 	public static final String MODEL_3B = "3B";
+	public static final String MODEL_3B_PLUS = "3B+";
+	public static final String MODEL_3A_PLUS = "3A+";
+	public static final String MODEL_4B = "4B";
 	public static final String MODEL_ZERO = "Zero";
 	public static final String COMPUTE_MODULE_3 = "CM3";
+	public static final String COMPUTE_MODULE_3_PLUS = "CM3+";
 	public static final String MODEL_ZERO_W = "ZeroW";
 	
 	private static Map<Integer, String> MODELS;
@@ -74,6 +80,10 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 		MODELS.put(Integer.valueOf(9), MODEL_ZERO);
 		MODELS.put(Integer.valueOf(10), COMPUTE_MODULE_3);
 		MODELS.put(Integer.valueOf(12), MODEL_ZERO_W);
+		MODELS.put(Integer.valueOf(13), MODEL_3B_PLUS);
+		MODELS.put(Integer.valueOf(14), MODEL_3A_PLUS);
+		MODELS.put(Integer.valueOf(16), COMPUTE_MODULE_3_PLUS);
+		MODELS.put(Integer.valueOf(17), MODEL_4B);
 	}
 	
 	private static final String PCB_REV_1_0 = "1.0";
@@ -87,6 +97,8 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 		MEMORY.put(Integer.valueOf(0), Integer.valueOf(256));
 		MEMORY.put(Integer.valueOf(1), Integer.valueOf(512));
 		MEMORY.put(Integer.valueOf(2), Integer.valueOf(1024));
+		MEMORY.put(Integer.valueOf(3), Integer.valueOf(2048));
+		MEMORY.put(Integer.valueOf(4), Integer.valueOf(4096));
 	}
 	
 	private static final String SONY = "Sony";
@@ -94,6 +106,7 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 	private static final String EMBEST = "Embest";
 	private static final String SONY_JAPAN = "Sony Japan";
 	private static final String EMBEST_2 = "Embest-2";
+	private static final String STADIUM = "Stadium";
 	private static final String QISDA = "Qisda";
 	private static Map<Integer, String> MANUFACTURERS;
 	static {
@@ -103,18 +116,21 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 		MANUFACTURERS.put(Integer.valueOf(2), EMBEST);
 		MANUFACTURERS.put(Integer.valueOf(3), SONY_JAPAN);
 		MANUFACTURERS.put(Integer.valueOf(4), EMBEST_2);
+		MANUFACTURERS.put(Integer.valueOf(5), STADIUM);
 		MANUFACTURERS.put(Integer.valueOf(99), QISDA);
 	}
 	
 	private static final String BCM2835 = "BCM2835";
 	private static final String BCM2836 = "BCM2836";
 	private static final String BCM2837 = "BCM2837";
+	private static final String BCM2711 = "BCM2711";
 	private static Map<Integer, String> PROCESSORS;
 	static {
 		PROCESSORS = new HashMap<>();
 		PROCESSORS.put(Integer.valueOf(0), BCM2835);
 		PROCESSORS.put(Integer.valueOf(1), BCM2836);
 		PROCESSORS.put(Integer.valueOf(2), BCM2837);
+		PROCESSORS.put(Integer.valueOf(3), BCM2711);
 	}
 	
 	private static Map<String, BoardInfo> PI_BOARDS;
@@ -177,18 +193,22 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 				
 				String model_val = MODELS.get(Integer.valueOf(model));
 				if (model_val == null) {
+					Logger.warn("Unknown Pi model: " + model);
 					model_val = "UNKNOWN-" + model;
 				}
 				String proc_val = PROCESSORS.get(Integer.valueOf(proc));
 				if (proc_val == null) {
+					Logger.warn("Unknown Pi processor: " + proc);
 					proc_val = "UNKNOWN-" + proc;
 				}
 				String mfr_val = MANUFACTURERS.get(Integer.valueOf(mfr));
 				if (mfr_val == null) {
+					Logger.warn("Unknown Pi manufacturer: " + mfr);
 					mfr_val = "UNKNOWN-" + mfr;
 				}
 				Integer mem_val = MEMORY.get(Integer.valueOf(mem));
 				if (mem_val == null) {
+					Logger.warn("Unknown Pi memory value: " + mem);
 					mem_val = Integer.valueOf(0);
 				}
 				return new PiABPlusBoardInfo(revision, model_val, pcb_revision,
