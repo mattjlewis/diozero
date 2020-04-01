@@ -18,7 +18,6 @@
 		<dependency>
 			<groupId>com.diozero</groupId>
 			<artifactId>diozero-core</artifactId>
-			<version>${diozero.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.diozero</groupId>

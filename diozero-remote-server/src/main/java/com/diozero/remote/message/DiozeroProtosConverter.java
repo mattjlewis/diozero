@@ -41,6 +41,7 @@ import com.diozero.api.DigitalInputEvent;
 import com.diozero.api.GpioEventTrigger;
 import com.diozero.api.GpioPullUpDown;
 import com.diozero.api.SpiClockMode;
+import com.diozero.remote.message.protobuf.DiozeroProtos;
 import com.google.protobuf.ByteString;
 
 public class DiozeroProtosConverter {

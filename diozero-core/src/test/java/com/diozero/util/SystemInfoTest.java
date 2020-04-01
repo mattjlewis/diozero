@@ -160,8 +160,11 @@ public class SystemInfoTest {
 				RaspberryPiBoardInfoProvider.MODEL_3B, 1024);
 		validateBoard(hardware, "a22083", RaspberryPiBoardInfoProvider.MAKE,
 				RaspberryPiBoardInfoProvider.MODEL_3B, 1024);
+		
+		// CM3+
 		validateBoard(hardware, "a02100", RaspberryPiBoardInfoProvider.MAKE,
-				RaspberryPiBoardInfoProvider.MODEL_3B, 1024);
+				RaspberryPiBoardInfoProvider.COMPUTE_MODULE_3_PLUS, 1024);
+		
 		// Pi3B+
 		validateBoard(hardware, "a020d3", RaspberryPiBoardInfoProvider.MAKE,
 				RaspberryPiBoardInfoProvider.MODEL_3B_PLUS, 1024);

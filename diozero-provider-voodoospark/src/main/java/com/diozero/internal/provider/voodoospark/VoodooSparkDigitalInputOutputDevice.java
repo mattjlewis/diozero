@@ -83,5 +83,6 @@ implements GpioDigitalInputOutputDeviceInterface {
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
+		// Nothing to do
 	}
 }

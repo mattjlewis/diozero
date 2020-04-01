@@ -30,11 +30,14 @@ package com.diozero.internal.board.odroid;
  * THE SOFTWARE.
  * #L%
  */
-
-
-import java.io.*;
-import java.nio.file.FileSystems;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import com.diozero.api.PwmPinInfo;
 import com.diozero.internal.provider.AbstractDevice;
@@ -56,7 +59,7 @@ import com.diozero.util.RuntimeIOException;
  *}</pre>
  */
 public class OdroidC2SysFsPwmOutputDevice extends AbstractDevice implements PwmOutputDeviceInterface {
-	private static Path PWM_ROOT = FileSystems.getDefault().getPath("/sys/devices/platform/pwm-ctrl");
+	private static Path PWM_ROOT = Paths.get("/sys/devices/platform/pwm-ctrl");
 	
 	private int range;
 	private int gpio;

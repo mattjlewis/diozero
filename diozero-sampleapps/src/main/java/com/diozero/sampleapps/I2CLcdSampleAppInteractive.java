@@ -278,7 +278,7 @@ public class I2CLcdSampleAppInteractive implements Closeable {
 	@Override
 	public void close() {
 		if (lcd != null) { lcd.close(); }
-		if (reader != null) { try { reader.close(); } catch (IOException e) { } }
+		if (reader != null) { try { reader.close(); } catch (IOException e) {} }
 	}
 }
 

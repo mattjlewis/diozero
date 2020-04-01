@@ -44,7 +44,6 @@ import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.pmw.tinylog.Logger;
 
 import com.diozero.api.DigitalInputEvent;
-import com.diozero.remote.message.DiozeroProtos;
 import com.diozero.remote.message.DiozeroProtosConverter;
 import com.diozero.remote.message.GpioAnalogRead;
 import com.diozero.remote.message.GpioAnalogReadResponse;
@@ -81,6 +80,7 @@ import com.diozero.remote.message.SpiOpen;
 import com.diozero.remote.message.SpiResponse;
 import com.diozero.remote.message.SpiWrite;
 import com.diozero.remote.message.SpiWriteAndRead;
+import com.diozero.remote.message.protobuf.DiozeroProtos;
 import com.diozero.remote.server.BaseRemoteServer;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;

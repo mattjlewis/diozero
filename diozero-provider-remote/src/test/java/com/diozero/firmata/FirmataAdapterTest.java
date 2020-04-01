@@ -34,8 +34,6 @@ package com.diozero.firmata;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.diozero.firmata.FirmataAdapter;
-
 @SuppressWarnings("static-method")
 public class FirmataAdapterTest {
 	@Test

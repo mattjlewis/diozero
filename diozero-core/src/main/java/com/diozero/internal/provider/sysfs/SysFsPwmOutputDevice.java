@@ -30,11 +30,12 @@ package com.diozero.internal.provider.sysfs;
  * THE SOFTWARE.
  * #L%
  */
-
-
-import java.io.*;
-import java.nio.file.FileSystems;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import org.pmw.tinylog.Logger;
 
@@ -62,7 +63,7 @@ public class SysFsPwmOutputDevice extends AbstractDevice implements PwmOutputDev
 
 		periodNs = 1_000_000_000 / frequency;
 		
-		Path pwm_chip_root = FileSystems.getDefault().getPath("/sys/class/pwm/pwmchip" + pwmChip);
+		Path pwm_chip_root = Paths.get("/sys/class/pwm/pwmchip" + pwmChip);
 		pwmRoot = pwm_chip_root.resolve("pwm" + pwmNum);
 
 		try {
@@ -87,7 +88,7 @@ public class SysFsPwmOutputDevice extends AbstractDevice implements PwmOutputDev
 	protected void closeDevice() {
 		try { setEnabled(false); } catch (Exception e) { }
 		try { dutyFile.close(); } catch (Exception e) { }
-		Path pwm_chip_root = FileSystems.getDefault().getPath("/sys/class/pwm/pwmchip" + pwmChip);
+		Path pwm_chip_root = Paths.get("/sys/class/pwm/pwmchip" + pwmChip);
 		try (FileWriter writer = new FileWriter(pwm_chip_root.resolve("unexport").toFile())) {
 			writer.write(String.valueOf(pwmNum));
 		} catch (Exception e) {

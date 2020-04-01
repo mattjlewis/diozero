@@ -69,5 +69,6 @@ public class VoodooSparkDigitalOutputDevice extends AbstractDevice implements Gp
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
+		// Nothing to do
 	}
 }

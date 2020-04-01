@@ -14,10 +14,10 @@
 
 	<properties>
 		<eclipse-paho-client-mqttv3.version>1.2.2</eclipse-paho-client-mqttv3.version>
-		<google-protocol-buffers.version>3.10.0</google-protocol-buffers.version>
-		<apache-httpcomponents-httpcore.version>4.4.12</apache-httpcomponents-httpcore.version>
-		<apache-httpcomponents-httpclient.version>4.5.10</apache-httpcomponents-httpclient.version>
-		<netty.version>4.1.42.Final</netty.version>
+		<google-protocol-buffers.version>3.11.4</google-protocol-buffers.version>
+		<apache-httpcomponents-httpcore.version>4.4.13</apache-httpcomponents-httpcore.version>
+		<apache-httpcomponents-httpclient.version>4.5.12</apache-httpcomponents-httpclient.version>
+		<netty.version>4.1.48.Final</netty.version>
 	</properties>
 	
 	<dependencies>

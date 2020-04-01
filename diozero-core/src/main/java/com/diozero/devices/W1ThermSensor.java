@@ -33,9 +33,9 @@ package com.diozero.devices;
 
 
 import java.io.IOException;
-import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -59,7 +59,7 @@ public class W1ThermSensor implements ThermometerInterface {
 	}
 	
 	public static List<W1ThermSensor> getAvailableSensors(String folder) {
-		Path sensor_path = FileSystems.getDefault().getPath(folder);
+		Path sensor_path = Paths.get(folder);
 		Predicate<Path> is_sensor = path -> path.toFile().isDirectory() && Type.isValid(path);
 		try {
 			return Files.list(sensor_path).filter(is_sensor).map(W1ThermSensor::new).collect(Collectors.toList());

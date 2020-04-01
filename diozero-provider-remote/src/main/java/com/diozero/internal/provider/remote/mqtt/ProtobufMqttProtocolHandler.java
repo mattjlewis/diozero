@@ -42,7 +42,6 @@ import org.pmw.tinylog.Logger;
 
 import com.diozero.internal.provider.NativeDeviceFactoryInterface;
 import com.diozero.internal.provider.remote.ProtobufBaseAsyncProtocolHandler;
-import com.diozero.remote.message.DiozeroProtos;
 import com.diozero.remote.message.DiozeroProtosConverter;
 import com.diozero.remote.message.GetBoardInfo;
 import com.diozero.remote.message.GetBoardInfoResponse;
@@ -81,6 +80,7 @@ import com.diozero.remote.message.SpiOpen;
 import com.diozero.remote.message.SpiResponse;
 import com.diozero.remote.message.SpiWrite;
 import com.diozero.remote.message.SpiWriteAndRead;
+import com.diozero.remote.message.protobuf.DiozeroProtos;
 import com.diozero.remote.server.mqtt.MqttProviderConstants;
 import com.diozero.util.PropertyUtil;
 import com.diozero.util.RuntimeIOException;

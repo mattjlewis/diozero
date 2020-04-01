@@ -30,9 +30,15 @@ package com.diozero.sampleapps.sandpit;
  * THE SOFTWARE.
  * #L%
  */
-
-import java.io.*;
-import java.nio.file.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.RandomAccessFile;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 
 public class SysFsTest {
 	public static void main(String[] args) {
@@ -45,7 +51,7 @@ public class SysFsTest {
 	}
 	
 	private static void test(int gpio) throws IOException, InterruptedException {
-		Path direction_path = FileSystems.getDefault().getPath("/sys/class/gpio/gpio" + gpio + "/direction");
+		Path direction_path = Paths.get("/sys/class/gpio/gpio" + gpio + "/direction");
 		File direction_file = direction_path.toFile();
 		
 		if (! direction_file.exists()) {

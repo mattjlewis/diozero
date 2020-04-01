@@ -46,7 +46,7 @@ public abstract class AbstractDeviceFactory implements DeviceFactoryInterface {
 		this.deviceFactoryPrefix = deviceFactoryPrefix;
 		deviceStates = new DeviceStates();
 
-		// Regsiter all expansion boards so that they can be cleaned up on shutdown
+		// Register all expansion boards so that they can be cleaned up on shutdown
 		if (! (this instanceof BaseNativeDeviceFactory)) {
 			DeviceFactoryHelper.getNativeDeviceFactory().registerDeviceFactory(this);
 		}

@@ -13,7 +13,7 @@
 	
 	<properties>
 		<sparkjava.version>2.9.1</sparkjava.version>
-		<slf4j.version>1.7.25</slf4j.version>
+		<slf4j.version>1.7.30</slf4j.version>
 	</properties>
 
 	<dependencies>

@@ -1,5 +1,7 @@
 package com.diozero.internal.provider.sysfs;
 
+import java.io.File;
+
 /*
  * #%L
  * Organisation: mattjlewis
@@ -33,9 +35,8 @@ package com.diozero.internal.provider.sysfs;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.io.File;
-import java.nio.file.FileSystems;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import org.pmw.tinylog.Logger;
 
@@ -59,7 +60,7 @@ public class SysFsAnalogInputDevice extends AbstractInputDevice<AnalogInputEvent
 		this.adcNumber = adcNumber;
 		vRef = deviceFactory.getVRef();
 
-		Path device_path = FileSystems.getDefault().getPath(DEVICE_PATH + device);
+		Path device_path = Paths.get(DEVICE_PATH + device);
 		File voltage_scale_file = device_path.resolve("in_voltage_scale").toFile();
 		try {
 			if (voltage_scale_file.exists()) {

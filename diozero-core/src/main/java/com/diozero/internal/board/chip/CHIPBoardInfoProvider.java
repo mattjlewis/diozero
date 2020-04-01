@@ -33,7 +33,10 @@ package com.diozero.internal.board.chip;
 
 
 import java.io.IOException;
-import java.nio.file.*;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import org.pmw.tinylog.Logger;
 
@@ -229,7 +232,7 @@ public class CHIPBoardInfoProvider implements BoardInfoProvider {
 		private synchronized void loadXioGpioOffset() {
 			if (! xioGpioOffsetLoaded) {
 				// Determine the XIO GPIO base
-				Path gpio_sysfs_dir = FileSystems.getDefault().getPath("/sys/class/gpio");
+				Path gpio_sysfs_dir = Paths.get("/sys/class/gpio");
 				// FIXME Treat as a stream
 				try (DirectoryStream<Path> dirs = Files.newDirectoryStream(gpio_sysfs_dir, "gpiochip*")) {
 					for (Path p : dirs) {

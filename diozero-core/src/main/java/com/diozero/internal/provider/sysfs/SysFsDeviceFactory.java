@@ -34,9 +34,9 @@ package com.diozero.internal.provider.sysfs;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
-import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import com.diozero.api.DeviceMode;
 import com.diozero.api.GpioEventTrigger;
@@ -71,7 +71,7 @@ public class SysFsDeviceFactory extends BaseNativeDeviceFactory {
 	private EpollNative epoll;
 
 	public SysFsDeviceFactory() {
-		rootPath = FileSystems.getDefault().getPath(GPIO_ROOT_DIR);
+		rootPath = Paths.get(GPIO_ROOT_DIR);
 	}
 
 	@Override

@@ -32,7 +32,10 @@ package com.diozero.internal.board.beaglebone;
  */
 
 import java.io.IOException;
-import java.nio.file.*;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import org.pmw.tinylog.Logger;
 
@@ -110,7 +113,7 @@ public class BeagleBoneBoardInfoProvider implements BoardInfoProvider {
 			String chip = "48302000";
 			String address = "48302200";
 			
-			Path chip_path = FileSystems.getDefault().getPath("/sys/devices/platform/ocp/" + chip + ".epwmss/" + address + ".pwm/pwm");
+			Path chip_path = Paths.get("/sys/devices/platform/ocp/" + chip + ".epwmss/" + address + ".pwm/pwm");
 			int pwm_chip = -1;
 			// FIXME Treat as a stream
 			try (DirectoryStream<Path> dirs = Files.newDirectoryStream(chip_path, "pwm*")) {
