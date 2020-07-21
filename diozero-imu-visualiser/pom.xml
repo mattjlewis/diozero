@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>com.diozero</groupId>
 		<artifactId>diozero</artifactId>
-		<version>0.12-SNAPSHOT</version>
+		<version>0.12</version>
 	</parent>
 	
 	<name>Device I/O Zero - IMU Visualiser</name>
@@ -12,7 +12,7 @@
 	<packaging>jar</packaging>
 
 	<properties>
-		<eclipse-paho-client-mqttv3.version>1.2.2</eclipse-paho-client-mqttv3.version>
+		<eclipse-paho-client-mqttv3.version>1.2.5</eclipse-paho-client-mqttv3.version>
 	</properties>
 
 	<dependencies>
@@ -28,7 +28,7 @@
 		<dependency>
 			<groupId>org.openjfx</groupId>
 			<artifactId>javafx-swing</artifactId>
-			<version>11.0.1</version>
+			<version>11.0.2</version>
 		</dependency>
 		<!-- Non-Maven dependencies -->
 		<dependency>

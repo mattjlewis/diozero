@@ -64,7 +64,7 @@ public class PigpioJI2CDevice extends AbstractDevice implements I2CDeviceInterfa
 		if (rc < 0) {
 			handle = CLOSED;
 			throw new RuntimeIOException(String.format("Error opening I2C device on bus %d, address 0x%x, response: %d",
-					Integer.valueOf(controller), Integer.toHexString(address), Integer.valueOf(rc)));
+					Integer.valueOf(controller), Integer.valueOf(address), Integer.valueOf(rc)));
 		}
 		handle = rc;
 		Logger.debug("I2C device ({}, 0x{}) opened, handle={}",
@@ -116,7 +116,7 @@ public class PigpioJI2CDevice extends AbstractDevice implements I2CDeviceInterfa
 		
 		int read = pigpioImpl.i2cReadByte(handle);
 		if (read < 0) {
-			throw new RuntimeIOException("Error reading from I2C device: " + read);
+			throw new RuntimeIOException("Error calling pigpioImpl.i2cReadByte(), response: " + read);
 		}
 		
 		return (byte) read;
@@ -128,9 +128,9 @@ public class PigpioJI2CDevice extends AbstractDevice implements I2CDeviceInterfa
 			throw new IllegalStateException("I2C Device " + controller + "-" + address + " is closed");
 		}
 		
-		int rc = pigpioImpl.i2cWriteByte(handle, b);
+		int rc = pigpioImpl.i2cWriteByte(handle, 0xff & b);
 		if (rc < 0) {
-			throw new RuntimeIOException("Error calling pigpioImpl.i2cWriteI2CBlockData(), response: " + rc);
+			throw new RuntimeIOException("Error calling pigpioImpl.i2cWriteByte(), response: " + rc);
 		}
 	}
 
@@ -144,7 +144,7 @@ public class PigpioJI2CDevice extends AbstractDevice implements I2CDeviceInterfa
 		byte[] buffer = new byte[to_read];
 		int read = pigpioImpl.i2cReadDevice(handle, buffer, to_read);
 		if (read < 0 || read != to_read) {
-			throw new RuntimeIOException("Didn't read correct number of bytes, read " + read + ", expected " + to_read);
+			throw new RuntimeIOException("Didn't read correct number of bytes from i2cReadDevice(), read " + read + ", expected " + to_read);
 		}
 		dst.put(buffer);
 		dst.flip();
@@ -161,7 +161,7 @@ public class PigpioJI2CDevice extends AbstractDevice implements I2CDeviceInterfa
 		src.get(buffer, src.position(), to_write);
 		int rc = pigpioImpl.i2cWriteDevice(handle, buffer, to_write);
 		if (rc < 0) {
-			throw new RuntimeIOException("Error calling pigpioImpl.i2cWriteI2CBlockData(), response: " + rc);
+			throw new RuntimeIOException("Error calling pigpioImpl.i2cWriteDevice(), response: " + rc);
 		}
 	}
 
@@ -173,7 +173,7 @@ public class PigpioJI2CDevice extends AbstractDevice implements I2CDeviceInterfa
 		
 		int read = pigpioImpl.i2cReadByteData(handle, register);
 		if (read < 0) {
-			throw new RuntimeIOException("Error reading from I2C device: " + read);
+			throw new RuntimeIOException("Error calling pigpioImpl.i2cReadByteData(), response: " + read);
 		}
 
 		return (byte) read;
@@ -187,7 +187,7 @@ public class PigpioJI2CDevice extends AbstractDevice implements I2CDeviceInterfa
 		
 		int rc = pigpioImpl.i2cWriteByteData(handle, register, b);
 		if (rc < 0) {
-			throw new RuntimeIOException("Error calling pigpioImpl.i2cWriteI2CBlockData(), response: " + rc);
+			throw new RuntimeIOException("Error calling pigpioImpl.i2cWriteByteData(), response: " + rc);
 		}
 	}
 
@@ -201,7 +201,7 @@ public class PigpioJI2CDevice extends AbstractDevice implements I2CDeviceInterfa
 		byte[] buffer = new byte[to_read];
 		int read = pigpioImpl.i2cReadI2CBlockData(handle, register, buffer, to_read);
 		if (read < 0 || read != to_read) {
-			throw new RuntimeIOException("Didn't read correct number of bytes, read " + read + ", expected " + to_read);
+			throw new RuntimeIOException("Didn't read correct number of bytes from i2cReadI2CBlockData(), read " + read + ", expected " + to_read);
 		}
 		dst.put(buffer);
 		dst.flip();

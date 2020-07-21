@@ -46,12 +46,15 @@ import com.diozero.api.PinInfo;
 import com.diozero.internal.provider.AbstractDevice;
 import com.diozero.internal.provider.AbstractDeviceFactory;
 import com.diozero.internal.provider.AbstractInputDevice;
+import com.diozero.internal.provider.BaseNativeDeviceFactory;
 import com.diozero.internal.provider.GpioDeviceFactoryInterface;
 import com.diozero.internal.provider.GpioDigitalInputDeviceInterface;
 import com.diozero.internal.provider.GpioDigitalInputOutputDeviceInterface;
 import com.diozero.internal.provider.GpioDigitalOutputDeviceInterface;
+import com.diozero.internal.provider.I2CDeviceFactoryInterface;
 import com.diozero.util.BitManipulation;
 import com.diozero.util.BoardPinInfo;
+import com.diozero.util.DeviceFactoryHelper;
 import com.diozero.util.MutableByte;
 import com.diozero.util.RuntimeIOException;
 
@@ -65,11 +68,15 @@ public class PCF8574 extends AbstractDeviceFactory implements GpioDeviceFactoryI
 	private BoardPinInfo boardPinInfo;
 	
 	public PCF8574(int controller, int address, int addressSize, int frequency) {
+		this(DeviceFactoryHelper.getNativeDeviceFactory(), controller, address, addressSize, frequency);
+	}
+	
+	public PCF8574(I2CDeviceFactoryInterface deviceFactory, int controller, int address, int addressSize, int frequency) {
 		super(DEVICE_NAME + "-" + controller + "-" + address);
 		
 		boardPinInfo = new PCF8574BoardPinInfo();
 		
-		device = new I2CDevice(controller, address, addressSize, frequency, ByteOrder.LITTLE_ENDIAN);
+		device = new I2CDevice(deviceFactory, controller, address, addressSize, frequency, ByteOrder.LITTLE_ENDIAN);
 		directions = new MutableByte();
 	}
 

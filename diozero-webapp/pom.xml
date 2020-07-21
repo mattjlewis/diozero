@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>com.diozero</groupId>
 		<artifactId>diozero</artifactId>
-		<version>0.12-SNAPSHOT</version>
+		<version>0.12</version>
 	</parent>
 
 	<name>Device I/O Zero - Web application</name>
@@ -12,7 +12,7 @@
 	<packaging>jar</packaging>
 	
 	<properties>
-		<sparkjava.version>2.9.1</sparkjava.version>
+		<sparkjava.version>2.9.2</sparkjava.version>
 		<slf4j.version>1.7.30</slf4j.version>
 	</properties>
 

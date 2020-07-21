@@ -79,18 +79,18 @@ public class SSD1331Test {
 		} catch (InterruptedException e) {
 		}
 		*/
-		int dc_gpio = 185;
-		//int dc_gpio = 22;
-		int reset_gpio = 224;
-		//int reset_gpio = 27;
+		//int dc_gpio = 185;
+		int dc_gpio = 22;
+		//int reset_gpio = 224;
+		int reset_gpio = 27;
 		if (args.length > 1) {
 			dc_gpio = Integer.parseInt(args[0]);
 			reset_gpio = Integer.parseInt(args[1]);
 		}
-		int spi_controller = 2;
-		//int spi_controller = 0;
+		//int spi_controller = 2;
+		int spi_controller = 0;
 		int chip_select = 0;
-		if (args.length > 3) {
+		if (args.length > 2) {
 			spi_controller = Integer.parseInt(args[2]);
 			chip_select = Integer.parseInt(args[3]);
 		}

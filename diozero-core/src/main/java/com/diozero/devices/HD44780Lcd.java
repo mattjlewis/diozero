@@ -36,7 +36,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.diozero.api.I2CConstants;
+import com.diozero.internal.provider.I2CDeviceFactoryInterface;
 import com.diozero.internal.provider.mcp23xxx.MCP23xxx;
+import com.diozero.util.DeviceFactoryHelper;
 import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 
@@ -246,7 +248,8 @@ public class HD44780Lcd implements Closeable {
 		// Function set (Interface is 8 bits long).
 		write4Bits(true, (byte) (INST_FUNCTION_SET | FS_DATA_LENGTH_8BIT));
 		// Wait for more than 100us
-		SleepUtil.sleepMicros(100);
+		//SleepUtil.sleepMicros(100);
+		SleepUtil.busySleep(100_000);
 		// Function set (Interface is 8 bits long).
 		write4Bits(true, (byte) (INST_FUNCTION_SET | FS_DATA_LENGTH_8BIT));
 		// Now set it to 4-bit mode
@@ -291,10 +294,12 @@ public class HD44780Lcd implements Closeable {
 
 		lcdConnection.write((byte) (data | enableMask));
 		// 50us delay enough?
-		SleepUtil.sleepMicros(50);
+		//SleepUtil.sleepMicros(50);
+		SleepUtil.busySleep(50_000);
 		lcdConnection.write((byte) (data & ~enableMask));
 		// 50us delay enough?
-		SleepUtil.sleepMicros(50);
+		//SleepUtil.sleepMicros(50);
+		SleepUtil.busySleep(50_000);
 	}
 
 	public int getColumnCount() {
@@ -558,11 +563,13 @@ public class HD44780Lcd implements Closeable {
 		}
 	   
 		writeInstruction((byte) (INST_SET_CGRAM_ADDR | (location<<3)));
-		SleepUtil.sleepMicros(100);
+		//SleepUtil.sleepMicros(100);
+		SleepUtil.busySleep(100_000);
 
 		for (int i=0; i<charMap.length; i++) {
 			writeData((byte) (charMap[i] & 0b11111));
-			SleepUtil.sleepMicros(100);
+			//SleepUtil.sleepMicros(100);
+			SleepUtil.busySleep(100_000);
 		}
 		
 		return this;
@@ -824,7 +831,11 @@ public class HD44780Lcd implements Closeable {
 		}
 
 		public PCF8574LcdConnection(int controller, int deviceAddress) {
-			pcf8574 = new PCF8574(controller, deviceAddress, I2CConstants.ADDR_SIZE_7,
+			this(DeviceFactoryHelper.getNativeDeviceFactory(), controller, deviceAddress);
+		}
+
+		public PCF8574LcdConnection(I2CDeviceFactoryInterface deviceFactory, int controller, int deviceAddress) {
+			pcf8574 = new PCF8574(deviceFactory, controller, deviceAddress, I2CConstants.ADDR_SIZE_7,
 					I2CConstants.DEFAULT_CLOCK_FREQUENCY);
 		}
 

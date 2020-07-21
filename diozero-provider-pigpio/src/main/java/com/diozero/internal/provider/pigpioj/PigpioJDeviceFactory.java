@@ -63,6 +63,10 @@ public class PigpioJDeviceFactory extends BaseNativeDeviceFactory {
 	public PigpioJDeviceFactory() {
 		pigpioImpl = PigpioJ.getImplementation();
 	}
+	
+	public PigpioInterface getPigpio() {
+		return pigpioImpl;
+	}
 
 	@Override
 	public void close() {

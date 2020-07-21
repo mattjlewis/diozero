@@ -58,7 +58,7 @@
 	
 	<groupId>com.diozero</groupId>
 	<artifactId>diozero</artifactId>
-	<version>0.12-SNAPSHOT</version>
+	<version>0.12</version>
 	<name>Device I/O Zero</name>
 	<description>Java Device I/O library with an API based on the Python GPIO Zero supporting portable across Single Board Computers (including Raspberry Pi, BeagleBone Black, Odroid C2, CHIP, Asus Tinker Board)</description>
 	<url>http://www.diozero.com/</url>
@@ -135,7 +135,7 @@
 		
 		<maven.min-version>3.3.0</maven.min-version>
 
-		<diozero.version>0.12-SNAPSHOT</diozero.version>
+		<diozero.version>0.12</diozero.version>
 		
 		<!-- Java version -->
 		<java.version>8</java.version>
@@ -150,33 +150,33 @@
 		<maven-deploy-plugin.version>2.8.2</maven-deploy-plugin.version>
 		<maven-install-plugin.version>2.5.2</maven-install-plugin.version>
 		<maven-resources-plugin.version>3.1.0</maven-resources-plugin.version>
-		<maven-site-plugin.version>3.7.1</maven-site-plugin.version>
-		<maven-surefire-plugin.version>2.22.0</maven-surefire-plugin.version>
+		<maven-site-plugin.version>3.9.1</maven-site-plugin.version>
+		<maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
 		
 		<!-- Packaging plugins -->
-		<maven-jar-plugin.version>3.1.1</maven-jar-plugin.version>
-		<maven-shade-plugin.version>3.2.1</maven-shade-plugin.version>
-		<maven-source-plugin.version>3.1.0</maven-source-plugin.version>
+		<maven-jar-plugin.version>3.2.0</maven-jar-plugin.version>
+		<maven-shade-plugin.version>3.2.4</maven-shade-plugin.version>
+		<maven-source-plugin.version>3.2.1</maven-source-plugin.version>
 		
 		<!-- Reporting plugins -->
 		<maven-changelog-plugin.version>2.3</maven-changelog-plugin.version>
 		<maven-changes-plugin.version>2.12.1</maven-changes-plugin.version>
-		<maven-checkstyle-plugin.version>3.1.0</maven-checkstyle-plugin.version>
-		<maven-javadoc-plugin.version>3.1.0</maven-javadoc-plugin.version>
-		<maven-project-info-reports-plugin.version>3.0.0</maven-project-info-reports-plugin.version>
+		<maven-checkstyle-plugin.version>3.1.1</maven-checkstyle-plugin.version>
+		<maven-javadoc-plugin.version>3.2.0</maven-javadoc-plugin.version>
+		<maven-project-info-reports-plugin.version>3.1.0</maven-project-info-reports-plugin.version>
 		
 		<!-- Tools plugins -->
-		<maven-assembly-plugin.version>3.1.1</maven-assembly-plugin.version>
-		<maven-dependency-plugin.version>3.1.1</maven-dependency-plugin.version>
+		<maven-assembly-plugin.version>3.3.0</maven-assembly-plugin.version>
+		<maven-dependency-plugin.version>3.1.2</maven-dependency-plugin.version>
 		<maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
 		<maven-release-plugin.version>2.5.3</maven-release-plugin.version>
-		<maven-scm-plugin.version>1.11.1</maven-scm-plugin.version>
+		<maven-scm-plugin.version>1.11.2</maven-scm-plugin.version>
 		
 		<!-- Other plugins -->
-		<build-helper-maven-plugin.version>3.0.0</build-helper-maven-plugin.version>
-		<license-maven-plugin.version>1.16</license-maven-plugin.version>
-		<native-maven-plugin.version>1.0-alpha-9</native-maven-plugin.version>
-		<versions-maven-plugin.version>2.5</versions-maven-plugin.version>
+		<build-helper-maven-plugin.version>3.2.0</build-helper-maven-plugin.version>
+		<license-maven-plugin.version>2.0.0</license-maven-plugin.version>
+		<native-maven-plugin.version>1.0-alpha-11</native-maven-plugin.version>
+		<versions-maven-plugin.version>2.7</versions-maven-plugin.version>
 		<findbugs-maven-plugin.version>3.0.5</findbugs-maven-plugin.version>
 		<nexus-staging-maven-plugin.version>1.6.8</nexus-staging-maven-plugin.version>
 		<eclipse.m2e.lifecycle-mapping.version>1.0.0</eclipse.m2e.lifecycle-mapping.version>
@@ -190,12 +190,12 @@
 	<distributionManagement>
 		<downloadUrl>https://oss.sonatype.org/index.html#nexus-search;gav~com.diozero~~~~</downloadUrl>
 		<snapshotRepository>
-			<id>nexus-snapshots</id>
+			<id>ossrh</id>
 			<name>Sonatype Open Source Maven Snapshots Repository</name>
 			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
 		</snapshotRepository>
 		<repository>
-			<id>nexus-releases</id>
+			<id>ossrh</id>
 			<name>Sonatype Open Source Maven Repository</name>
 			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
 		</repository>
@@ -479,7 +479,8 @@
 				<executions>
 					<execution>
 						<id>sign-artifacts</id>
-						<phase>deploy</phase>
+						<!-- <phase>deploy</phase> -->
+						<phase>verify</phase>
 						<goals>
 							<goal>sign</goal>
 						</goals>
@@ -515,7 +516,7 @@
 						<version>1.9.1</version>
 					</dependency>
 				</dependencies>
-              	<configuration>
+        <configuration>
 					<generateProjectInfo>true</generateProjectInfo>
 					<generateReports>true</generateReports>
 					<generateSitemap>true</generateSitemap>
@@ -650,7 +651,8 @@
 							<execution>
 								<id>attach-sources</id>
 								<goals>
-									<goal>jar</goal>
+									<!-- <goal>jar</goal> -->
+									<goal>jar-no-fork</goal>
 								</goals>
 							</execution>
 						</executions>
@@ -681,7 +683,7 @@
 							</execution>
 						</executions>
 						<configuration>
-							<serverId>nexus-releases</serverId>
+							<serverId>ossrh</serverId>
 							<nexusUrl>https://oss.sonatype.org/</nexusUrl>
 							<autoReleaseAfterClose>true</autoReleaseAfterClose>
 							<!-- <skipStaging>true</skipStaging> -->

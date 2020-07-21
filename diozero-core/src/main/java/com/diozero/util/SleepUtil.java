@@ -98,9 +98,6 @@ public class SleepUtil {
 	}
 
 	public static void busySleep(final long nanos) {
-		if (nanos <= 0) {
-			return;
-		}
 		final long startTime = System.nanoTime();
 		do {
 		} while ((System.nanoTime() - startTime) < nanos);
