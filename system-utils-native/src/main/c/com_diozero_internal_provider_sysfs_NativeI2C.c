@@ -1,8 +1,13 @@
 /*
  * #%L
- * Device I/O Zero - Java Sysfs provider
+ * Organisation: diozero
+ * Project:      Device I/O Zero - Native System Utilities
+ * Filename:     com_diozero_internal_provider_sysfs_NativeI2C.c
+ *
+ * This file is part of the diozero project. More information about this project
+ * can be found at http://www.diozero.com/
  * %%
- * Copyright (C) 2016 mattjlewis
+ * Copyright (C) 2016 - 2020 diozero
  * %%
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
