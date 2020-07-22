@@ -446,36 +446,31 @@
 				<artifactId>license-maven-plugin</artifactId>
 				<configuration>
 					<licenseName>mit</licenseName>
+					<verbose>false</verbose>
+					<descriptionTemplate>src/licence/descriptionTemplate.ftl</descriptionTemplate>
 					<canUpdateCopyright>true</canUpdateCopyright>
 					<canUpdateDescription>true</canUpdateDescription>
-					<descriptionTemplate>src/licence/descriptionTemplate.ftl</descriptionTemplate>
+					<canUpdateLicense>true</canUpdateLicense>
 					<emptyLineAfterHeader>true</emptyLineAfterHeader>
 					<roots>
-						<root>src</root>
+						<root>src/main/java</root>
+						<root>src/test/java</root>
+						<root>src/main/native</root>
+						<root>src/main/c</root>
 					</roots>
-					<includes>
-						<include>**/*.java</include>
-						<include>**/*.c</include>
-					</includes>
+					<excludes>
+						<exclude>**/*.h</exclude>
+						<exclude>**/*.sh</exclude>
+						<exclude>**/*.json</exclude>
+					</excludes>
 				</configuration>
 				<executions>
 					<execution>
-						<id>download-licenses</id>
-						<goals>
-							<goal>download-licenses</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>update-project-license</id>
-						<goals>
-							<goal>update-project-license</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>update-file-header</id>
+						<id>append-license-file-headers</id>
 						<goals>
 							<goal>update-file-header</goal>
 						</goals>
+						<phase>process-sources</phase>
 					</execution>
 				</executions>
 			</plugin>
