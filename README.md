@@ -147,7 +147,7 @@ add an alternative method of compatibility, for example on the Udoo Quad.
 ## Getting Started
 
 Snapshot builds of the library are available in the [Nexus Repository Manager](https://oss.sonatype.org/index.html#nexus-search;gav~com.diozero~~~~). 
-For convenience a ZIP of all diozero JARs will also be available on [Google Drive](https://drive.google.com/file/d/1xuY5y-mxYa7zaosLP0R-6FLcIDEUGpV5).
+For convenience a ZIP of all diozero JARs (currently v0.13) will also be available on [Google Drive](https://drive.google.com/file/d/1WZH6zTwo_xlFDn7CVkx_ABkXbkYK6E2n/view?usp=sharing).
 
 Javadoc for the core library is also available via [javadoc.io](http://www.javadoc.io/doc/com.diozero/diozero-core/). 
 
