@@ -1,6 +1,6 @@
 package com.diozero.internal.provider.wiringpi;
 
-/*
+/*-
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - wiringPi provider
@@ -31,11 +31,24 @@ package com.diozero.internal.provider.wiringpi;
  * #L%
  */
 
+import org.tinylog.Logger;
 
-import org.pmw.tinylog.Logger;
-
-import com.diozero.api.*;
-import com.diozero.internal.provider.*;
+import com.diozero.api.DeviceMode;
+import com.diozero.api.GpioEventTrigger;
+import com.diozero.api.GpioPullUpDown;
+import com.diozero.api.PinInfo;
+import com.diozero.api.PwmPinInfo;
+import com.diozero.api.PwmType;
+import com.diozero.api.SpiClockMode;
+import com.diozero.internal.provider.AnalogInputDeviceInterface;
+import com.diozero.internal.provider.AnalogOutputDeviceInterface;
+import com.diozero.internal.provider.BaseNativeDeviceFactory;
+import com.diozero.internal.provider.GpioDigitalInputDeviceInterface;
+import com.diozero.internal.provider.GpioDigitalInputOutputDeviceInterface;
+import com.diozero.internal.provider.GpioDigitalOutputDeviceInterface;
+import com.diozero.internal.provider.I2CDeviceInterface;
+import com.diozero.internal.provider.PwmOutputDeviceInterface;
+import com.diozero.internal.provider.SpiDeviceInterface;
 import com.diozero.util.RuntimeIOException;
 import com.pi4j.wiringpi.Gpio;
 

@@ -1,6 +1,6 @@
 package com.diozero.internal.provider.pigpioj;
 
-/*
+/*-
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - pigpioj provider
@@ -31,7 +31,7 @@ package com.diozero.internal.provider.pigpioj;
  * #L%
  */
 
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.api.SpiClockMode;
 import com.diozero.internal.provider.AbstractDevice;
@@ -66,7 +66,7 @@ public class PigpioJSpiDevice extends AbstractDevice implements SpiDeviceInterfa
 					Integer.valueOf(controller), Integer.valueOf(chipSelect), Integer.valueOf(rc)));
 		}
 		handle = rc;
-		Logger.debug("SPI device ({}-{}) opened, handle={}", Integer.valueOf(controller),
+		Logger.trace("SPI device ({}-{}) opened, handle={}", Integer.valueOf(controller),
 				Integer.valueOf(chipSelect), Integer.valueOf(handle));
 	}
 	

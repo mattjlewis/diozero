@@ -37,7 +37,7 @@ import java.nio.ByteBuffer;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.api.I2CConstants;
 import com.diozero.api.SpiClockMode;

@@ -1,6 +1,6 @@
 package com.diozero.devices;
 
-/*
+/*-
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - Core
@@ -31,8 +31,7 @@ package com.diozero.devices;
  * #L%
  */
 
-
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.api.I2CDevice;
 import com.diozero.api.ThermometerInterface;

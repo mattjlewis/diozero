@@ -34,7 +34,7 @@ package com.diozero;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.devices.LED;
 import com.diozero.internal.provider.NativeDeviceFactoryInterface;

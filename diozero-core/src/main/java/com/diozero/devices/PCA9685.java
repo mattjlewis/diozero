@@ -34,7 +34,7 @@ package com.diozero.devices;
 
 import java.nio.ByteOrder;
 
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.api.I2CConstants;
 import com.diozero.api.I2CDevice;
@@ -273,14 +273,14 @@ public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFac
 	
 	@Override
 	public void close() throws RuntimeIOException {
-		Logger.debug("close()");
+		Logger.trace("close()");
 		// Close all open pins before closing the I2C device itself
 		super.close();
 		i2cDevice.close();
 	}
 	
 	public void closeChannel(int channel) throws RuntimeIOException {
-		Logger.debug("closeChannel({})", Integer.valueOf(channel));
+		Logger.trace("closeChannel({})", Integer.valueOf(channel));
 		setPwm(channel, 0, 0);
 	}
 
@@ -375,7 +375,7 @@ public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFac
 
 		@Override
 		protected void closeDevice() throws RuntimeIOException {
-			Logger.debug("closeDevice()");
+			Logger.trace("closeDevice()");
 			pca9685.closeChannel(channel);
 		}
 	}

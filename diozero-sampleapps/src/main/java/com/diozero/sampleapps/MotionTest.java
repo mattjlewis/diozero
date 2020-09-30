@@ -36,7 +36,7 @@ import java.io.Closeable;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.api.DigitalInputDevice;
 import com.diozero.api.GpioEventTrigger;
@@ -54,7 +54,6 @@ public class MotionTest implements Closeable {
 	
 	private List<DigitalInputDevice> sensors;
 	
-	@SuppressWarnings("resource")
 	private MotionTest(int... pins) {
 		sensors = new ArrayList<>();
 		

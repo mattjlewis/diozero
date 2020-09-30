@@ -36,7 +36,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.file.Path;
 
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.api.DeviceMode;
 import com.diozero.api.DigitalInputEvent;
@@ -125,7 +125,7 @@ implements GpioDigitalInputOutputDeviceInterface, PollEventListener {
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
-		Logger.debug("closeDevice()");
+		Logger.trace("closeDevice()");
 		disableListener();
 		try {
 			valueFile.close();

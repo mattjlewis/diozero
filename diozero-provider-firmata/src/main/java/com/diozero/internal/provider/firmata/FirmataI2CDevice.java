@@ -44,7 +44,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.firmata4j.I2CDevice;
 import org.firmata4j.I2CEvent;
 import org.firmata4j.I2CListener;
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.internal.provider.AbstractDevice;
 import com.diozero.internal.provider.I2CDeviceInterface;
@@ -74,7 +74,7 @@ public class FirmataI2CDevice extends AbstractDevice implements I2CDeviceInterfa
 		conditions = new HashMap<>();
 		eventQueues = new HashMap<>();
 		
-		Logger.debug("Creating new Firmata I2CDevice for address 0x{}", Integer.toHexString(address));
+		Logger.trace("Creating new Firmata I2CDevice for address 0x{}", Integer.toHexString(address));
 		try {
 			i2cDevice = deviceFactory.getIoDevice().getI2CDevice((byte) address);
 		} catch (IOException e) {

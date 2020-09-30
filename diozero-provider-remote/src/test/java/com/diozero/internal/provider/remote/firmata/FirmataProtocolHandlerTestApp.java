@@ -31,7 +31,7 @@ package com.diozero.internal.provider.remote.firmata;
  * #L%
  */
 
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.api.AnalogInputDevice;
 import com.diozero.devices.LED;

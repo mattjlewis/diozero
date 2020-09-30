@@ -34,14 +34,33 @@ package com.diozero.sandpit.imu.invensense;
 import java.nio.ByteBuffer;
 
 import org.apache.commons.math3.complex.Quaternion;
-import org.apache.commons.math3.geometry.euclidean.threed.*;
-import org.eclipse.paho.client.mqttv3.*;
+import org.apache.commons.math3.geometry.euclidean.threed.CardanEulerSingularityException;
+import org.apache.commons.math3.geometry.euclidean.threed.Rotation;
+import org.apache.commons.math3.geometry.euclidean.threed.RotationConvention;
+import org.apache.commons.math3.geometry.euclidean.threed.RotationOrder;
+import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
+import org.eclipse.paho.client.mqttv3.MqttClient;
+import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
+import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.api.I2CConstants;
-import com.diozero.api.imu.*;
-import com.diozero.imu.drivers.invensense.*;
+import com.diozero.api.imu.ImuData;
+import com.diozero.api.imu.MqttConstants;
+import com.diozero.api.imu.OrientationEvent;
+import com.diozero.api.imu.TapEvent;
+import com.diozero.imu.drivers.invensense.AK8975Constants;
+import com.diozero.imu.drivers.invensense.AccelFullScaleRange;
+import com.diozero.imu.drivers.invensense.GyroFullScaleRange;
+import com.diozero.imu.drivers.invensense.LowPassFilter;
+import com.diozero.imu.drivers.invensense.MPU9150Constants;
+import com.diozero.imu.drivers.invensense.MPU9150DMPConstants;
+import com.diozero.imu.drivers.invensense.MPU9150DMPDriver;
+import com.diozero.imu.drivers.invensense.MPU9150DataFactory;
+import com.diozero.imu.drivers.invensense.MPU9150Driver;
+import com.diozero.imu.drivers.invensense.MPU9150FIFOData;
 import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 

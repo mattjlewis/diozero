@@ -31,7 +31,6 @@ package com.diozero.ws281xj.rpiws281x;
  * #L%
  */
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;

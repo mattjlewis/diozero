@@ -1,6 +1,6 @@
 package com.diozero.internal.provider.pi4j;
 
-/*
+/*-
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - pi4j provider
@@ -31,7 +31,7 @@ package com.diozero.internal.provider.pi4j;
  * #L%
  */
 
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.api.PwmType;
 import com.diozero.internal.provider.AbstractDevice;
@@ -85,7 +85,7 @@ public class Pi4jPwmOutputDevice extends AbstractDevice implements PwmOutputDevi
 
 	@Override
 	protected void closeDevice() {
-		Logger.debug("closeDevice()");
+		Logger.trace("closeDevice()");
 		//GpioFactory.getInstance().unprovisionPin(pwmOutputPin);
 		switch (pwmType) {
 		case HARDWARE:

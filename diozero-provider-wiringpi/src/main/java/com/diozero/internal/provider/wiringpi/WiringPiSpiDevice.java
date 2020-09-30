@@ -31,8 +31,7 @@ package com.diozero.internal.provider.wiringpi;
  * #L%
  */
 
-
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.api.SpiClockMode;
 import com.diozero.internal.provider.AbstractDevice;
@@ -85,7 +84,7 @@ public class WiringPiSpiDevice extends AbstractDevice implements SpiDeviceInterf
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
-		Logger.debug("closeDevice()");
+		Logger.trace("closeDevice()");
 		// No way to close a wiringPi SPI device file handle?!
 		handle = CLOSED;
 	}

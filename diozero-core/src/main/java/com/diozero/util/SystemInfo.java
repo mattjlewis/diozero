@@ -40,7 +40,7 @@ import java.nio.file.Paths;
 import java.util.Objects;
 import java.util.Properties;
 
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.api.PinInfo;
 

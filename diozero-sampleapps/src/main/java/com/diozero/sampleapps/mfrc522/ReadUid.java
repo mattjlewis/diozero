@@ -35,7 +35,7 @@ package com.diozero.sampleapps.mfrc522;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.devices.MFRC522;
 import com.diozero.devices.MFRC522.UID;

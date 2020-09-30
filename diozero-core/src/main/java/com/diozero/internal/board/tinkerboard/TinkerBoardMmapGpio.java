@@ -35,7 +35,7 @@ package com.diozero.internal.board.tinkerboard;
 import java.nio.ByteOrder;
 import java.nio.IntBuffer;
 
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.api.DeviceMode;
 import com.diozero.api.GpioPullUpDown;

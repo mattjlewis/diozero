@@ -33,14 +33,14 @@ package com.diozero.internal.provider.remote.devicefactory;
 
 import java.util.UUID;
 
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.api.SpiClockMode;
 import com.diozero.internal.provider.AbstractDevice;
 import com.diozero.internal.provider.SpiDeviceInterface;
-import com.diozero.remote.message.SpiOpen;
 import com.diozero.remote.message.Response;
 import com.diozero.remote.message.SpiClose;
+import com.diozero.remote.message.SpiOpen;
 import com.diozero.remote.message.SpiResponse;
 import com.diozero.remote.message.SpiWrite;
 import com.diozero.remote.message.SpiWriteAndRead;

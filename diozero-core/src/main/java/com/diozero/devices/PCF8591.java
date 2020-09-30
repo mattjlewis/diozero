@@ -33,10 +33,19 @@ package com.diozero.devices;
 
 import java.nio.ByteOrder;
 
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
-import com.diozero.api.*;
-import com.diozero.internal.provider.*;
+import com.diozero.api.AnalogInputEvent;
+import com.diozero.api.I2CConstants;
+import com.diozero.api.I2CDevice;
+import com.diozero.api.PinInfo;
+import com.diozero.internal.provider.AbstractDevice;
+import com.diozero.internal.provider.AbstractDeviceFactory;
+import com.diozero.internal.provider.AbstractInputDevice;
+import com.diozero.internal.provider.AnalogInputDeviceFactoryInterface;
+import com.diozero.internal.provider.AnalogInputDeviceInterface;
+import com.diozero.internal.provider.AnalogOutputDeviceFactoryInterface;
+import com.diozero.internal.provider.AnalogOutputDeviceInterface;
 import com.diozero.util.BoardPinInfo;
 import com.diozero.util.RuntimeIOException;
 
@@ -217,7 +226,7 @@ AnalogOutputDeviceFactoryInterface {
 
 		@Override
 		protected void closeDevice() {
-			Logger.debug("closeDevice()");
+			Logger.trace("closeDevice()");
 			// TODO Nothing to do?
 		}
 
@@ -245,7 +254,7 @@ AnalogOutputDeviceFactoryInterface {
 
 		@Override
 		protected void closeDevice() throws RuntimeIOException {
-			Logger.debug("closeDevice()");
+			Logger.trace("closeDevice()");
 			// TODO Nothing to do?
 		}
 

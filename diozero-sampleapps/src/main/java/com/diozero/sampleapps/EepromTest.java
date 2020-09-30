@@ -34,7 +34,7 @@ package com.diozero.sampleapps;
 
 import java.util.Arrays;
 
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.devices.McpEeprom;
 import com.diozero.util.RuntimeIOException;

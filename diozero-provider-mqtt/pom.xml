@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>com.diozero</groupId>
 		<artifactId>diozero</artifactId>
-		<version>0.13-SNAPSHOT</version>
+		<version>0.13</version>
 	</parent>
 	
 	<name>Device I/O Zero - MQTT Provider</name>
@@ -13,7 +13,7 @@
 	<packaging>jar</packaging>
 
 	<properties>
-		<eclipse-paho-client-mqttv3.version>1.2.3</eclipse-paho-client-mqttv3.version>
+		<eclipse-paho-client-mqttv3.version>1.2.5</eclipse-paho-client-mqttv3.version>
 		<google-protocol-buffers.version>3.11.4</google-protocol-buffers.version>
 	</properties>
 	

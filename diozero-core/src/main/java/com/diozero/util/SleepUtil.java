@@ -34,7 +34,7 @@ package com.diozero.util;
 
 import java.util.concurrent.TimeUnit;
 
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 public class SleepUtil {
 	static {

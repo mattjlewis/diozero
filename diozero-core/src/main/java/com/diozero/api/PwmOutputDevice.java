@@ -34,11 +34,14 @@ package com.diozero.api;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.internal.provider.PwmOutputDeviceFactoryInterface;
 import com.diozero.internal.provider.PwmOutputDeviceInterface;
-import com.diozero.util.*;
+import com.diozero.util.DeviceFactoryHelper;
+import com.diozero.util.DioZeroScheduler;
+import com.diozero.util.RuntimeIOException;
+import com.diozero.util.SleepUtil;
 
 /**
  * Provide generic
@@ -128,19 +131,19 @@ public class PwmOutputDevice extends GpioDevice implements OutputDeviceInterface
 
 	@Override
 	public void close() {
-		Logger.debug("close()");
+		Logger.trace("close()");
 		if (running.get()) {
 			stopLoops();
 			Logger.debug("Interrupting background thread " + backgroundThread.getName());
 			backgroundThread.interrupt();
 		}
-		Logger.debug("Setting value to 0");
+		Logger.trace("Setting value to 0");
 		try {
 			device.setValue(0);
 		} catch (RuntimeIOException e) {
 		}
 		device.close();
-		Logger.debug("device closed");
+		Logger.trace("device closed");
 	}
 
 	protected void onOffLoop(float onTime, float offTime, int n, boolean background) throws RuntimeIOException {

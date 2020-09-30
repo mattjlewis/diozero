@@ -35,7 +35,7 @@ package com.diozero.sampleapps;
 import java.util.Arrays;
 import java.util.List;
 
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.api.Animation;
 import com.diozero.api.AnimationInstance.KeyFrame;

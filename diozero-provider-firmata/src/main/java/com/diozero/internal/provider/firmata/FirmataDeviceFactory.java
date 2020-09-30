@@ -40,7 +40,7 @@ import org.firmata4j.IODevice;
 import org.firmata4j.Pin;
 import org.firmata4j.Pin.Mode;
 import org.firmata4j.firmata.FirmataDevice;
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.api.DeviceAlreadyOpenedException;
 import com.diozero.api.DeviceMode;

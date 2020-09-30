@@ -38,7 +38,7 @@ import org.firmata4j.IOEvent;
 import org.firmata4j.Pin;
 import org.firmata4j.Pin.Mode;
 import org.firmata4j.PinEventListener;
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.api.DigitalInputEvent;
 import com.diozero.api.GpioEventTrigger;
@@ -92,13 +92,13 @@ implements GpioDigitalInputDeviceInterface, PinEventListener {
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
-		Logger.info("closeDevice()");
+		Logger.trace("closeDevice()");
 		disableListener();
 	}
 
 	@Override
 	public void onModeChange(IOEvent event) {
-		Logger.warn("Mode changed from digital input to ?");
+		Logger.warn("Mode changed from digital input to {}", event.getPin().getMode());
 	}
 
 	@Override

@@ -1,6 +1,6 @@
 package com.diozero.util;
 
-/*
+/*-
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - Core
@@ -31,8 +31,7 @@ package com.diozero.util;
  * #L%
  */
 
-
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.internal.provider.NativeDeviceFactoryInterface;
 import com.diozero.internal.provider.sysfs.SysFsDeviceFactory;

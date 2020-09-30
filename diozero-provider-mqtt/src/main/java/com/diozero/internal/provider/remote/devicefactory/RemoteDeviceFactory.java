@@ -33,7 +33,7 @@ package com.diozero.internal.provider.remote.devicefactory;
 
 import java.util.UUID;
 
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.api.AnalogInputEvent;
 import com.diozero.api.DeviceMode;
@@ -82,7 +82,7 @@ public class RemoteDeviceFactory extends BaseNativeDeviceFactory {
 
 	@Override
 	public void close() {
-		Logger.info("close()");
+		Logger.trace("close()");
 		protocolHandler.close();
 		super.close();
 	}

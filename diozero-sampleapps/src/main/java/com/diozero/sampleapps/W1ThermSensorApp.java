@@ -33,7 +33,7 @@ package com.diozero.sampleapps;
 
 import java.util.List;
 
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.devices.W1ThermSensor;
 

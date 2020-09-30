@@ -34,7 +34,7 @@ package com.diozero.sampleapps;
 
 import java.util.Date;
 
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.util.EpollNative;
 import com.diozero.util.SleepUtil;

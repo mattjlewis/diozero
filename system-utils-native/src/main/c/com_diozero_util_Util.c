@@ -36,6 +36,8 @@
 #include <time.h>
 #include <sys/time.h>
 
+static jint JNI_VERSION = JNI_VERSION_1_8;
+
 jclass epollEventClassRef = NULL;
 jmethodID epollEventConstructor = NULL;
 jclass mmapByteBufferClassRef = NULL;
@@ -44,7 +46,7 @@ jmethodID mmapByteBufferConstructor = NULL;
 /* The VM calls this function upon loading the native library. */
 jint JNI_OnLoad(JavaVM* jvm, void* reserved) {
 	JNIEnv* env;
-	if ((*jvm)->GetEnv(jvm, (void **) &env, JNI_VERSION_1_8) != JNI_OK) {
+	if ((*jvm)->GetEnv(jvm, (void **) &env, JNI_VERSION) != JNI_OK) {
 		fprintf(stderr, "Error, unable to get JNIEnv\n");
 		return JNI_ERR;
 	}
@@ -79,17 +81,30 @@ jint JNI_OnLoad(JavaVM* jvm, void* reserved) {
 		return JNI_ERR;
 	}
 
+	/*
+	 * https://stackoverflow.com/questions/10617735/in-jni-how-do-i-cache-the-class-methodid-and-fieldids-per-ibms-performance-r
+	 * Class IDs must be registered as global references to maintain the viability
+	 * of any associated Method ID / Field IDs. If this isn't done and the class
+	 * is unloaded from the JVM, on class reload, the Method IDs / Field IDs may
+	 * be different. If the Class ID is registered as a global reference, the
+	 * associated Method IDs and Field IDs do not need to be registered as global
+	 * references. Registering a Class ID as a global reference prevents the
+	 * associated Java class from unloading, therefore stabilizing the Method ID
+	 * / Field ID values. Global references, including the Class ID,s should be
+	 * removed in JNI_OnUnload().
+	 */
+
+	// Create global references to the classes
 	epollEventClassRef = (*env)->NewGlobalRef(env, epoll_event_class);
 	mmapByteBufferClassRef = (*env)->NewGlobalRef(env, mmap_byte_buffer_class);
 
-	return JNI_VERSION_1_8;
+	return JNI_VERSION;
 }
 
 // Is automatically called once the Classloader is destroyed
-void JNI_OnUnload(JavaVM *vm, void *reserved) {
+void JNI_OnUnload(JavaVM *jvm, void *reserved) {
 	JNIEnv* env;
-
-	if ((*vm)->GetEnv(vm, (void **) &env, JNI_VERSION_1_6) != JNI_OK) {
+	if ((*jvm)->GetEnv(jvm, (void **) &env, JNI_VERSION) != JNI_OK) {
 		// Nothing we can do about this
 		return;
 	}

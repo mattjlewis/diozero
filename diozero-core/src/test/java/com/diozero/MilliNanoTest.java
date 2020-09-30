@@ -33,7 +33,7 @@ package com.diozero;
 
 
 import org.junit.Test;
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.util.SleepUtil;
 

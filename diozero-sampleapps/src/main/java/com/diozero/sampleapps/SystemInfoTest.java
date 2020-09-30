@@ -34,7 +34,7 @@ package com.diozero.sampleapps;
 
 import java.util.Map;
 
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.api.PinInfo;
 import com.diozero.api.PwmPinInfo;

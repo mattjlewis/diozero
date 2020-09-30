@@ -1,6 +1,6 @@
 package com.diozero.internal.provider.pigpioj;
 
-/*
+/*-
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - pigpioj provider
@@ -31,7 +31,7 @@ package com.diozero.internal.provider.pigpioj;
  * #L%
  */
 
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.api.DeviceMode;
 import com.diozero.api.DigitalInputEvent;
@@ -113,7 +113,7 @@ implements GpioDigitalInputOutputDeviceInterface, PigpioCallback {
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
-		Logger.debug("closeDevice()");
+		Logger.trace("closeDevice()");
 		// FIXME No piogpio close method?
 		// TODO Revert to default input mode?
 		removeListener();

@@ -31,7 +31,7 @@ package com.diozero.internal.provider;
  * #L%
  */
 
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.util.RuntimeIOException;
 
@@ -56,7 +56,7 @@ public abstract class AbstractDevice implements DeviceInterface {
 	
 	@Override
 	public final void close() {
-		Logger.debug("close(), key={}", key);
+		Logger.trace("close(), key={}", key);
 		if (! isOpen()) {
 			Logger.warn("Device '{}' already closed", key);
 			return;

@@ -35,7 +35,7 @@ import java.io.Closeable;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.api.I2CDevice;
 import com.diozero.util.IOUtil;

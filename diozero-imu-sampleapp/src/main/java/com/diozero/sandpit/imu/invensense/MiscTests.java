@@ -1,6 +1,6 @@
 package com.diozero.sandpit.imu.invensense;
 
-/*
+/*-
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - IMU Sample App
@@ -31,7 +31,7 @@ package com.diozero.sandpit.imu.invensense;
  * #L%
  */
 
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.imu.drivers.invensense.AccelFullScaleRange;
 import com.diozero.imu.drivers.invensense.MPU9150DMPConstants;

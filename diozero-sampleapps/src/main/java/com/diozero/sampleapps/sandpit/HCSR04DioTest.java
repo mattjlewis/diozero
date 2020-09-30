@@ -1,6 +1,6 @@
 package com.diozero.sampleapps.sandpit;
 
-/*
+/*-
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - Sample applications
@@ -31,8 +31,7 @@ package com.diozero.sampleapps.sandpit;
  * #L%
  */
 
-
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.api.DeviceMode;
 import com.diozero.api.DigitalInputOutputDevice;

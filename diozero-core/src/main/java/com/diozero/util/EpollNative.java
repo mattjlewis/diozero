@@ -42,7 +42,7 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 public class EpollNative implements EpollNativeCallback, Closeable {
 	static {
@@ -109,7 +109,7 @@ public class EpollNative implements EpollNativeCallback, Closeable {
 		}
 		*/
 		
-		Logger.debug("Finished");
+		Logger.trace("Finished");
 	}
 	
 	@Override

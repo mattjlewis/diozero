@@ -34,7 +34,7 @@ package com.diozero.test;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.devices.Servo;
 import com.diozero.internal.provider.test.TestDeviceFactory;

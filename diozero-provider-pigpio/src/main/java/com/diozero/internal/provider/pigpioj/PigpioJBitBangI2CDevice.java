@@ -34,7 +34,7 @@ package com.diozero.internal.provider.pigpioj;
 
 import java.nio.ByteBuffer;
 
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.internal.provider.AbstractDevice;
 import com.diozero.internal.provider.DeviceFactoryInterface;
@@ -65,7 +65,7 @@ public class PigpioJBitBangI2CDevice extends AbstractDevice {
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
-		Logger.debug("closeDevice()");
+		Logger.trace("closeDevice()");
 		int rc = PigpioBitBangI2C.bbI2CClose(sda);
 		open = false;
 		if (rc < 0) {

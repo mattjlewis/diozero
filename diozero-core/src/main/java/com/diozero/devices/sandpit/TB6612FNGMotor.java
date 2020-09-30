@@ -1,6 +1,6 @@
 package com.diozero.devices.sandpit;
 
-/*
+/*-
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - Core
@@ -31,7 +31,7 @@ package com.diozero.devices.sandpit;
  * #L%
  */
 
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.api.DigitalOutputDevice;
 import com.diozero.api.PwmOutputDevice;
@@ -59,7 +59,7 @@ public class TB6612FNGMotor extends MotorBase {
 
 	@Override
 	public void close() {
-		Logger.debug("close()");
+		Logger.trace("close()");
 		if (motorForwardControlPin != null) { try { motorForwardControlPin.close(); } catch (Exception e) { } }
 		if (motorBackwardControlPin != null) { try { motorBackwardControlPin.close(); } catch (Exception e) { } }
 		if (motorPwmControl != null) { try { motorPwmControl.close(); } catch (Exception e) { } }

@@ -33,7 +33,7 @@ package com.diozero.internal.provider.pigpioj;
 
 import java.nio.ByteBuffer;
 
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.api.I2CDevice;
 import com.diozero.internal.provider.AbstractDevice;
@@ -67,7 +67,7 @@ public class PigpioJI2CDevice extends AbstractDevice implements I2CDeviceInterfa
 					Integer.valueOf(controller), Integer.valueOf(address), Integer.valueOf(rc)));
 		}
 		handle = rc;
-		Logger.debug("I2C device ({}, 0x{}) opened, handle={}",
+		Logger.trace("I2C device ({}, 0x{}) opened, handle={}",
 				Integer.valueOf(controller), Integer.toHexString(address), Integer.valueOf(handle));
 	}
 
@@ -78,7 +78,7 @@ public class PigpioJI2CDevice extends AbstractDevice implements I2CDeviceInterfa
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
-		Logger.debug("closeDevice()");
+		Logger.trace("closeDevice()");
 		int rc = pigpioImpl.i2cClose(handle);
 		handle = CLOSED;
 		if (rc < 0) {

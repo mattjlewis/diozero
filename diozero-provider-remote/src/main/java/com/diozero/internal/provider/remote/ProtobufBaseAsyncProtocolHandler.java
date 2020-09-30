@@ -34,7 +34,7 @@ package com.diozero.internal.provider.remote;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.internal.provider.NativeDeviceFactoryInterface;
 import com.diozero.remote.message.Response;

@@ -1,6 +1,6 @@
 package com.diozero.internal.provider.mmap;
 
-/*
+/*-
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - High performance mmap GPIO control
@@ -31,8 +31,7 @@ package com.diozero.internal.provider.mmap;
  * #L%
  */
 
-
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.api.DeviceMode;
 import com.diozero.api.PinInfo;
@@ -72,7 +71,7 @@ public class MmapDigitalOutputDevice extends AbstractDevice implements GpioDigit
 
 	@Override
 	protected void closeDevice() {
-		Logger.debug("closeDevice()");
+		Logger.trace("closeDevice()");
 		// FIXME No GPIO close method?
 		// TODO Revert to default input mode?
 		// What do wiringPi / pigpio do?

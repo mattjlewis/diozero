@@ -1,6 +1,6 @@
 package com.diozero.sampleapps.mfrc522;
 
-/*
+/*-
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - Sample applications
@@ -31,8 +31,7 @@ package com.diozero.sampleapps.mfrc522;
  * #L%
  */
 
-
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.devices.MFRC522;
 import com.diozero.util.Hex;

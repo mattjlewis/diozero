@@ -1,6 +1,6 @@
 package com.diozero.api.motor;
 
-/*
+/*-
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - Core
@@ -31,7 +31,7 @@ package com.diozero.api.motor;
  * #L%
  */
 
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.api.PwmOutputDevice;
 import com.diozero.internal.provider.PwmOutputDeviceFactoryInterface;
@@ -57,7 +57,7 @@ public class PwmMotor extends MotorBase {
 
 	@Override
 	public void close() {
-		Logger.debug("close()");
+		Logger.trace("close()");
 		forward.close();
 		backward.close();
 	}

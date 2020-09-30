@@ -31,7 +31,7 @@ package com.diozero.sampleapps.sandpit;
  * #L%
  */
 
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.devices.BH1750;
 import com.diozero.devices.TSL2561;

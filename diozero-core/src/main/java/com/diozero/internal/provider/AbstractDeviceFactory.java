@@ -31,7 +31,7 @@ package com.diozero.internal.provider;
  * #L%
  */
 
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.api.PinInfo;
 import com.diozero.internal.DeviceStates;
@@ -69,7 +69,7 @@ public abstract class AbstractDeviceFactory implements DeviceFactoryInterface {
 	
 	@Override
 	public void close() {
-		Logger.debug("close()");
+		Logger.trace("close()");
 		deviceStates.closeAll();
 		closed = true;
 	}

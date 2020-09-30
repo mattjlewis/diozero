@@ -1,6 +1,6 @@
 package com.diozero.internal.provider.test;
 
-/*
+/*-
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - Core
@@ -31,7 +31,7 @@ package com.diozero.internal.provider.test;
  * #L%
  */
 
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.internal.provider.AbstractDevice;
 import com.diozero.internal.provider.DeviceFactoryInterface;
@@ -51,7 +51,7 @@ public class TestDigitalOutputDevice extends AbstractDevice implements GpioDigit
 
 	@Override
 	protected void closeDevice() {
-		Logger.debug("closeDevice()");
+		Logger.trace("closeDevice()");
 	}
 
 	@Override

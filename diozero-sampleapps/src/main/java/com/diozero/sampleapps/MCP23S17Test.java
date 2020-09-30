@@ -1,6 +1,6 @@
 package com.diozero.sampleapps;
 
-/*
+/*-
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - Sample applications
@@ -31,8 +31,7 @@ package com.diozero.sampleapps;
  * #L%
  */
 
-
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.api.GpioPullUpDown;
 import com.diozero.api.SPIConstants;

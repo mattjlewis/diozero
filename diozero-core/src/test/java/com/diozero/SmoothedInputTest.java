@@ -30,15 +30,19 @@ package com.diozero;
  * THE SOFTWARE.
  * #L%
  */
-
-
-import java.util.concurrent.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
-import com.diozero.api.*;
+import com.diozero.api.DigitalInputEvent;
+import com.diozero.api.GpioPullUpDown;
+import com.diozero.api.InputEventListener;
+import com.diozero.api.SmoothedInputDevice;
 import com.diozero.internal.provider.test.TestDeviceFactory;
 import com.diozero.internal.provider.test.TestDigitalInputDevice;
 import com.diozero.internal.provider.test.TestDigitalOutputDevice;

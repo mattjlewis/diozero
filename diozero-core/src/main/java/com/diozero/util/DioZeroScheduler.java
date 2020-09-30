@@ -33,12 +33,18 @@ package com.diozero.util;
 
 
 import java.util.Map;
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 public class DioZeroScheduler {
 	private static DioZeroScheduler daemonInstance;
@@ -97,7 +103,7 @@ public class DioZeroScheduler {
 	private void shutdown() {
 		executor.shutdown();
 		scheduler.shutdown();
-		Logger.debug("Shutdown - done");
+		Logger.trace("Shutdown - done");
 	}
 	
 	public boolean isShutdown() {

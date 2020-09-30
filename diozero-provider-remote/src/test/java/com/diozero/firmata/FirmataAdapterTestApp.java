@@ -35,8 +35,6 @@ import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.List;
 
-import com.diozero.firmata.FirmataAdapter;
-import com.diozero.firmata.SocketFirmataAdapter;
 import com.diozero.firmata.FirmataAdapter.FirmwareDetails;
 import com.diozero.firmata.FirmataAdapter.PinState;
 import com.diozero.firmata.FirmataAdapter.ProtocolVersion;

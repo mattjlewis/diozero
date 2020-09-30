@@ -40,7 +40,7 @@ import java.nio.channels.FileChannel.MapMode;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 public class SysFsPerfTest {
 	public static void main(String[] args) {

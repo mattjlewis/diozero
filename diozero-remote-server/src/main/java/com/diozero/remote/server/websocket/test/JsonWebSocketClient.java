@@ -39,7 +39,7 @@ import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.WebSocketListener;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.api.SpiClockMode;
 import com.diozero.remote.message.SpiOpen;
@@ -82,7 +82,7 @@ public class JsonWebSocketClient implements WebSocketListener {
 
 	@Override
 	public void onWebSocketClose(int statusCode, String reason) {
-		Logger.debug("Closed");
+		Logger.debug("closed");
 	}
 
 	@Override

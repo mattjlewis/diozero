@@ -46,7 +46,7 @@ import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.remote.message.protobuf.DiozeroProtos;
 import com.diozero.remote.server.mqtt.MqttProtobufServer;

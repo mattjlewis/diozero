@@ -34,12 +34,13 @@ package com.diozero.internal.provider.remote.devicefactory;
 import java.nio.ByteBuffer;
 import java.util.UUID;
 
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.api.I2CDevice.ProbeMode;
 import com.diozero.internal.provider.AbstractDevice;
 import com.diozero.internal.provider.I2CDeviceInterface;
 import com.diozero.remote.message.I2CClose;
+import com.diozero.remote.message.I2COpen;
 import com.diozero.remote.message.I2CRead;
 import com.diozero.remote.message.I2CReadByte;
 import com.diozero.remote.message.I2CReadByteData;
@@ -50,7 +51,6 @@ import com.diozero.remote.message.I2CWrite;
 import com.diozero.remote.message.I2CWriteByte;
 import com.diozero.remote.message.I2CWriteByteData;
 import com.diozero.remote.message.I2CWriteI2CBlockData;
-import com.diozero.remote.message.I2COpen;
 import com.diozero.remote.message.Response;
 import com.diozero.util.RuntimeIOException;
 

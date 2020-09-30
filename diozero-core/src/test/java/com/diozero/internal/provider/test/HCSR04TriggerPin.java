@@ -34,7 +34,7 @@ package com.diozero.internal.provider.test;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.internal.provider.AbstractDevice;
 import com.diozero.internal.provider.DeviceFactoryInterface;
@@ -89,7 +89,7 @@ implements GpioDigitalOutputDeviceInterface, Runnable {
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
-		Logger.debug("closeDevice()");
+		Logger.trace("closeDevice()");
 		executor.shutdownNow();
 	}
 }

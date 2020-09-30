@@ -1,6 +1,6 @@
 package com.diozero.internal.provider.pi4j;
 
-/*
+/*-
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - pi4j provider
@@ -31,7 +31,7 @@ package com.diozero.internal.provider.pi4j;
  * #L%
  */
 
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.api.DigitalInputEvent;
 import com.diozero.api.GpioEventTrigger;
@@ -40,7 +40,13 @@ import com.diozero.internal.provider.AbstractInputDevice;
 import com.diozero.internal.provider.DeviceFactoryInterface;
 import com.diozero.internal.provider.GpioDigitalInputDeviceInterface;
 import com.diozero.util.RuntimeIOException;
-import com.pi4j.io.gpio.*;
+import com.pi4j.io.gpio.GpioController;
+import com.pi4j.io.gpio.GpioFactory;
+import com.pi4j.io.gpio.GpioPinDigitalInput;
+import com.pi4j.io.gpio.Pin;
+import com.pi4j.io.gpio.PinEdge;
+import com.pi4j.io.gpio.PinPullResistance;
+import com.pi4j.io.gpio.RaspiBcmPin;
 import com.pi4j.io.gpio.event.GpioPinDigitalStateChangeEvent;
 import com.pi4j.io.gpio.event.GpioPinListenerDigital;
 import com.pi4j.wiringpi.GpioUtil;
@@ -106,7 +112,7 @@ implements GpioDigitalInputDeviceInterface, GpioPinListenerDigital {
 
 	@Override
 	protected void closeDevice() {
-		Logger.debug("closeDevice()");
+		Logger.trace("closeDevice()");
 		removeListener();
 		digitalInputPin.removeAllTriggers();
 		digitalInputPin.unexport();

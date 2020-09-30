@@ -1,6 +1,6 @@
 package com.diozero.internal.provider.wiringpi;
 
-/*
+/*-
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - wiringPi provider
@@ -31,7 +31,7 @@ package com.diozero.internal.provider.wiringpi;
  * #L%
  */
 
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.internal.provider.AbstractDevice;
 import com.diozero.internal.provider.DeviceFactoryInterface;
@@ -61,7 +61,7 @@ public class WiringPiDigitalOutputDevice extends AbstractDevice implements GpioD
 
 	@Override
 	protected void closeDevice() {
-		Logger.debug("closeDevice()");
+		Logger.trace("closeDevice()");
 		GpioUtil.unexport(gpio);
 	}
 

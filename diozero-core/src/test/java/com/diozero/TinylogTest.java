@@ -1,6 +1,6 @@
 package com.diozero;
 
-/*
+/*-
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - Core
@@ -31,8 +31,7 @@ package com.diozero;
  * #L%
  */
 
-
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 public class TinylogTest {
 	public static void main(String[] args) {

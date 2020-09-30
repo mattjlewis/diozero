@@ -34,7 +34,7 @@ package com.diozero.api;
 
 import java.io.Closeable;
 
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.internal.provider.NativeDeviceFactoryInterface;
 import com.diozero.internal.provider.SpiDeviceInterface;
@@ -77,7 +77,7 @@ public class SpiDevice implements Closeable, SPIConstants {
 
 	@Override
 	public void close() throws RuntimeIOException {
-		Logger.debug("close()");
+		Logger.trace("close()");
 		device.close();
 	}
 	

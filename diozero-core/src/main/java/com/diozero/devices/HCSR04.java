@@ -1,6 +1,6 @@
 package com.diozero.devices;
 
-/*
+/*-
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - Core
@@ -31,8 +31,7 @@ package com.diozero.devices;
  * #L%
  */
 
-
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.api.DeviceMode;
 import com.diozero.api.DigitalInputDevice;
@@ -152,7 +151,7 @@ public class HCSR04 implements DistanceSensorInterface {
 	 */
 	@Override
 	public void close() {
-		Logger.debug("close()");
+		Logger.trace("close()");
 		if (triggerAndEcho == null) {
 			if (trigger != null) { trigger.close(); }
 			if (echo != null) { echo.close(); }

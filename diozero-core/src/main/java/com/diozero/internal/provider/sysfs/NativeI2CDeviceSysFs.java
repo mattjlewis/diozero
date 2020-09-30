@@ -35,7 +35,7 @@ package com.diozero.internal.provider.sysfs;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.api.DeviceBusyException;
 import com.diozero.api.I2CDevice;

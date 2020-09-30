@@ -1,6 +1,6 @@
 package com.diozero.internal.provider.bbbiolib;
 
-/*
+/*-
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - BBBioLib
@@ -31,10 +31,14 @@ package com.diozero.internal.provider.bbbiolib;
  * #L%
  */
 
+import org.tinylog.Logger;
 
-import org.pmw.tinylog.Logger;
-
-import com.diozero.api.*;
+import com.diozero.api.DeviceMode;
+import com.diozero.api.DigitalInputEvent;
+import com.diozero.api.GpioEventTrigger;
+import com.diozero.api.GpioPullUpDown;
+import com.diozero.api.InputEventListener;
+import com.diozero.api.PinInfo;
 import com.diozero.internal.provider.AbstractInputDevice;
 import com.diozero.internal.provider.GpioDigitalInputDeviceInterface;
 import com.diozero.internal.provider.GpioDigitalInputOutputDeviceInterface;
@@ -105,7 +109,7 @@ implements GpioDigitalInputOutputDeviceInterface, InputEventListener<DigitalInpu
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
-		Logger.debug("closeDevice()");
+		Logger.trace("closeDevice()");
 		disableListener();
 		// FIXME No BBBioLib close method?
 		setMode(DeviceMode.DIGITAL_INPUT);

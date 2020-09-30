@@ -1,6 +1,6 @@
 package com.diozero.internal.provider.wiringpi;
 
-/*
+/*-
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - wiringPi provider
@@ -31,7 +31,7 @@ package com.diozero.internal.provider.wiringpi;
  * #L%
  */
 
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.api.DigitalInputEvent;
 import com.diozero.api.GpioEventTrigger;
@@ -94,7 +94,7 @@ implements GpioDigitalInputDeviceInterface, GpioInterruptCallback {
 
 	@Override
 	protected void closeDevice() {
-		Logger.debug("closeDevice()");
+		Logger.trace("closeDevice()");
 		removeListener();
 		GpioUtil.unexport(gpio);
 	}

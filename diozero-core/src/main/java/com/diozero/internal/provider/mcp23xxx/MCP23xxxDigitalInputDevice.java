@@ -1,6 +1,6 @@
 package com.diozero.internal.provider.mcp23xxx;
 
-/*
+/*-
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - Core
@@ -31,8 +31,7 @@ package com.diozero.internal.provider.mcp23xxx;
  * #L%
  */
 
-
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.api.DigitalInputEvent;
 import com.diozero.api.GpioEventTrigger;
@@ -54,7 +53,7 @@ public class MCP23xxxDigitalInputDevice extends AbstractInputDevice<DigitalInput
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
-		Logger.debug("closeDevice()");
+		Logger.trace("closeDevice()");
 		removeListener();
 		mcp23xxx.closeGpio(gpio);
 	}

@@ -37,7 +37,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.file.Path;
 
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.api.DeviceMode;
 import com.diozero.api.DigitalInputEvent;
@@ -45,7 +45,8 @@ import com.diozero.api.GpioEventTrigger;
 import com.diozero.api.PinInfo;
 import com.diozero.internal.provider.AbstractInputDevice;
 import com.diozero.internal.provider.GpioDigitalInputDeviceInterface;
-import com.diozero.util.*;
+import com.diozero.util.PollEventListener;
+import com.diozero.util.RuntimeIOException;
 
 /**
  * Pure Java implementation using <a href="https://www.kernel.org/doc/Documentation/gpio/sysfs.txt">the sysfs (/sys/class/gpio)</a> kernel module.
@@ -124,7 +125,7 @@ implements GpioDigitalInputDeviceInterface, PollEventListener {
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
-		Logger.debug("closeDevice()");
+		Logger.trace("closeDevice()");
 		disableListener();
 		try {
 			valueFile.close();

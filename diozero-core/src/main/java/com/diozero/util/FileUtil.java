@@ -35,7 +35,7 @@ package com.diozero.util;
 import java.io.FileDescriptor;
 import java.lang.reflect.Field;
 
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 public class FileUtil {
 	private static boolean initialised;

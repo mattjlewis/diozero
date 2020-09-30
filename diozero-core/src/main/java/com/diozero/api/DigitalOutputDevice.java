@@ -1,6 +1,6 @@
 package com.diozero.api;
 
-/*
+/*-
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - Core
@@ -31,11 +31,14 @@ package com.diozero.api;
  * #L%
  */
 
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.internal.provider.GpioDeviceFactoryInterface;
 import com.diozero.internal.provider.GpioDigitalOutputDeviceInterface;
-import com.diozero.util.*;
+import com.diozero.util.DeviceFactoryHelper;
+import com.diozero.util.DioZeroScheduler;
+import com.diozero.util.RuntimeIOException;
+import com.diozero.util.SleepUtil;
 
 /**
  * Provides generic digital (on/off) output control with support for active high
@@ -97,7 +100,7 @@ public class DigitalOutputDevice extends GpioDevice implements OutputDeviceInter
 
 	@Override
 	public void close() {
-		Logger.debug("close()");
+		Logger.trace("close()");
 		setOn(false);
 		device.close();
 	}

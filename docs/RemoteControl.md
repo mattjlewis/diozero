@@ -8,7 +8,7 @@ For Arduino compatible devices communication is via USB using the excellent [fir
 Make sure you set the property ```FIRMATA_PORT``` to the serial port (COM on Windows) to which your Arduino is connected. This can be set either via the command line (e.g. ```-DFIRMATA_PORT=COM5```) or as an environment variable (command line takes precedence).
 Example command line:
 ```shell
-java -cp tinylog-1.2.jar:diozero-core-0.11-SNAPSHOT.jar:diozero-provider-firmata4j-0.11-SNAPSHOT.jar:firmata4j-2.3.5.jar:jssc-2.8.0.jar:diozero-sampleapps-0.11-SNAPSHOT.jar com.diozero.sampleapps.LEDTest -DFIRMATA_PORT=COM5 12
+java -cp tinylog-api-2.1.2.jar:tinylog-impl-2.1.2.jar:diozero-core-0.13.jar:diozero-provider-firmata4j-0.13.jar:firmata4j-2.3.8.jar:jssc-2.8.0.jar:diozero-sampleapps-0.13.jar com.diozero.sampleapps.LEDTest -DFIRMATA_PORT=COM5 12
 ```
 
 ## Particle Wi-Fi Connected Microcontrollers
@@ -18,7 +18,7 @@ You can upload the [VoodooSpark](https://github.com/voodootikigod/voodoospark) f
 Make sure you set the properties ```PARTICLE_DEVICE_ID``` and ```PARTICLE_TOKEN``` correctly (either via command line or as environment variables).
 Example command line:
 ```shell
-java -cp tinylog-1.2.jar:diozero-core-0.11-SNAPSHOT.jar:diozero-provider-voodoospark-0.11-SNAPSHOT.jar:diozero-sampleapps-0.11-SNAPSHOT.jar -DPARTICLE_DEVICE_ID=abc -DPARTICLE_TOKEN=xyz com.diozero.sampleapps.LEDTest 12
+java -cp tinylog-api-2.1.2.jar:tinylog-impl-2.1.2.jar:diozero-core-0.13.jar:diozero-provider-voodoospark-0.13.jar:diozero-sampleapps-0.13.jar -DPARTICLE_DEVICE_ID=abc -DPARTICLE_TOKEN=xyz com.diozero.sampleapps.LEDTest 12
 ```
 
 ## pigpio
@@ -40,7 +40,7 @@ You can also override the default pigpiod port value (8888) via the property ```
 Again these can be set either via command line or as environment variables.
 Example command line:
 ```shell
-java -cp tinylog-1.2.jar:diozero-core-0.11-SNAPSHOT.jar:diozero-provider-pigpio-0.11-SNAPSHOT.jar:pigpioj-java-2.2.jar:diozero-sampleapps-0.11-SNAPSHOT.jar -DPIGPIOD_HOST=raspberrypi com.diozero.sampleapps.LEDTest 12
+java -cp tinylog-api-2.1.2.jar:tinylog-impl-2.1.2.jar:diozero-core-0.13.jar:diozero-provider-pigpio-0.13.jar:pigpioj-java-2.4.jar:diozero-sampleapps-0.13.jar -DPIGPIOD_HOST=raspberrypi com.diozero.sampleapps.LEDTest 12
 ```
 
 ## Generic Remote Access Library (experimental)

@@ -34,7 +34,7 @@ package com.diozero.devices;
 
 import java.io.Closeable;
 
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.api.I2CDevice;
 import com.diozero.util.RuntimeIOException;

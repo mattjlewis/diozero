@@ -1,6 +1,6 @@
 package com.diozero.internal.provider.test;
 
-/*
+/*-
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - Core
@@ -31,7 +31,7 @@ package com.diozero.internal.provider.test;
  * #L%
  */
 
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.api.SpiClockMode;
 import com.diozero.internal.provider.AbstractDevice;
@@ -53,7 +53,7 @@ public abstract class TestSpiDevice extends AbstractDevice implements SpiDeviceI
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
-		Logger.debug("closeDevice()");
+		Logger.trace("closeDevice()");
 	}
 
 	@Override

@@ -37,7 +37,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.eclipse.jetty.io.RuntimeIOException;
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.api.AnalogInputEvent;
 import com.diozero.api.DeviceMode;

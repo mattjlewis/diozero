@@ -35,9 +35,12 @@ package com.diozero.devices;
 import java.io.Closeable;
 import java.nio.ByteOrder;
 
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
-import com.diozero.api.*;
+import com.diozero.api.BarometerInterface;
+import com.diozero.api.I2CConstants;
+import com.diozero.api.I2CDevice;
+import com.diozero.api.ThermometerInterface;
 
 /**
  * STMicroelectronics LPS25H "ultra compact absolute piezoresistive pressure sensor". Datasheet:

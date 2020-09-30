@@ -34,7 +34,7 @@ package com.diozero.devices;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.api.AnalogInputEvent;
 import com.diozero.api.DeviceAlreadyOpenedException;
@@ -473,13 +473,13 @@ implements GpioDeviceFactoryInterface, PwmOutputDeviceFactoryInterface,
 	}
 	
 	public void closeChannel(int channel) {
-		Logger.debug("closeChannel({})", Integer.valueOf(channel));
+		Logger.trace("closeChannel({})", Integer.valueOf(channel));
 		setInputConfig(channel, InputConfig.DIGITAL);
 	}
 
 	@Override
 	public void close() throws RuntimeIOException {
-		Logger.debug("close({})");
+		Logger.trace("close({})");
 		setMotor(0, 0);
 		setMotor(1, 0);
 		reset();
@@ -523,7 +523,7 @@ implements GpioDeviceFactoryInterface, PwmOutputDeviceFactoryInterface,
 	
 		@Override
 		protected void closeDevice() {
-			Logger.debug("closeDevice()");
+			Logger.trace("closeDevice()");
 			piconZero.closeChannel(getChannel());
 		}
 	
@@ -672,7 +672,7 @@ implements GpioDeviceFactoryInterface, PwmOutputDeviceFactoryInterface,
 	
 		@Override
 		protected void closeDevice() throws RuntimeIOException {
-			Logger.debug("closeDevice()");
+			Logger.trace("closeDevice()");
 			piconZero.closeChannel(channel);
 		}
 	}
@@ -709,7 +709,7 @@ implements GpioDeviceFactoryInterface, PwmOutputDeviceFactoryInterface,
 
 		@Override
 		protected void closeDevice() throws RuntimeIOException {
-			Logger.debug("closeDevice()");
+			Logger.trace("closeDevice()");
 			setValue(0);
 		}
 	}

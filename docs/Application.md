@@ -24,7 +24,7 @@ Note make sure you enable Maven snapshot repositories if you want to use a dioze
 </repositories>
 ```
 
-If you want to manage the dependencies yourself, download and exract a diozero [distribution ZIP file](https://drive.google.com/open?id=0BxA10VX9SC74VDR6WTlLOEdpYzA) from Google Drive and add tinylog-1.2.jar and diozero-core.jar to your project's classpath.
+If you want to manage the dependencies yourself, download and extract a diozero [distribution ZIP file](https://drive.google.com/open?id=0BxA10VX9SC74VDR6WTlLOEdpYzA) from Google Drive and add tinylog-2.1.2.jar and diozero-core-0.13.jar to your project's classpath.
 
 ## Step-by-step Instructions
 
@@ -58,7 +58,7 @@ To package your application so you can copy it to your device again there are a 
 
 1. Export your application as a JAR file and include all run-time dependencies via the classpath.
 Simply run ```mvn package``` to create the JAR file for your application.
-Note this will not generate a runnable JAR hence you will need to run your application as ```java -cp tinylog-1.2.jar:diozero-core.jar:yourapp.jar <<your-main-class>>```.
+Note this will not generate a runnable JAR hence you will need to run your application as ```java -cp tinylog-2.1.2.jar:diozero-core-0.13.jar:yourapp.jar <<your-main-class>>```.
 
 1. You can use Eclipse to create an runnable JAR file that includes all dependencies and sets.
 Note a runnable JAR file is one that can be run from the command line using ```java -jar yourapp.jar```.

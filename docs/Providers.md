@@ -40,7 +40,7 @@ export JAVA_HOME=/usr/lib/jvm/jdk-8-oracle-arm-vfp-hflt
 export PATH=$JAVA_HOME/bin:$PATH
 export PI_TOOLS=/usr
 make bundle PI_TOOLS=$PI_TOOLS osgi
-cp build/deviceio/lib/ext/dio.jar dio-1.0.jar
+cp build/deviceio/lib/ext/dio.jar ../dio-1.0.jar
 sudo cp build/deviceio/lib/ext/dio.jar $JAVA_HOME/jre/lib/ext/.
 sudo cp build/deviceio/lib/arm/libdio.so $JAVA_HOME/jre/lib/arm/.
 ```
@@ -56,13 +56,14 @@ hg clone http://hg.openjdk.java.net/dio/dev
 cd dev
 export JAVA_HOME=/usr/lib/jvm/jdk-8-oracle-arm-vfp-hflt
 export PATH=$JAVA_HOME/bin:$PATH
-export PI_TOOLS=/usr
+export CROSS_TOOL=/usr/bin/
 make osgi
+cp build/jar/dio.jar ../dio-1.1.jar
 ```
 
 ## wiringPi & Pi4j
 
-Make sure you have wiringPi installed (`sudo apt-get update && sudo apt-get install wiringpi`). I recommend using the latest [Pi4j 1.1 snapshot build](https://oss.sonatype.org/service/local/repositories/snapshots/content/com/pi4j/pi4j-core/1.1-SNAPSHOT/pi4j-core-1.1-20160407.175636-41.jar).
+Make sure you have wiringPi installed (`sudo apt-get update && sudo apt-get install wiringpi`). You also need to include [Pi4j 1.2](https://pi4j.com/download/pi4j-1.2.zip) on the classpath.
 
 ## pigpio
 

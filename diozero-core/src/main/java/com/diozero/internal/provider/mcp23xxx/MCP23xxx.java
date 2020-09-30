@@ -1,6 +1,6 @@
 package com.diozero.internal.provider.mcp23xxx;
 
-/*
+/*-
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - Core
@@ -31,12 +31,27 @@ package com.diozero.internal.provider.mcp23xxx;
  * #L%
  */
 
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
-import com.diozero.api.*;
+import com.diozero.api.DeviceMode;
+import com.diozero.api.DigitalInputDevice;
+import com.diozero.api.DigitalInputEvent;
+import com.diozero.api.GpioEventTrigger;
+import com.diozero.api.GpioExpander;
+import com.diozero.api.GpioPullUpDown;
+import com.diozero.api.InputEventListener;
+import com.diozero.api.PinInfo;
 import com.diozero.internal.SoftwarePwmOutputDevice;
-import com.diozero.internal.provider.*;
-import com.diozero.util.*;
+import com.diozero.internal.provider.AbstractDeviceFactory;
+import com.diozero.internal.provider.GpioDeviceFactoryInterface;
+import com.diozero.internal.provider.GpioDigitalInputDeviceInterface;
+import com.diozero.internal.provider.GpioDigitalInputOutputDeviceInterface;
+import com.diozero.internal.provider.GpioDigitalOutputDeviceInterface;
+import com.diozero.internal.provider.PwmOutputDeviceFactoryInterface;
+import com.diozero.internal.provider.PwmOutputDeviceInterface;
+import com.diozero.util.BitManipulation;
+import com.diozero.util.MutableByte;
+import com.diozero.util.RuntimeIOException;
 
 /**
  * Support for both MCP23008 and MCP23017 GPIO expansion boards.
@@ -312,7 +327,7 @@ public abstract class MCP23xxx extends AbstractDeviceFactory implements GpioDevi
 	
 	@Override
 	public void close() throws RuntimeIOException {
-		Logger.debug("close()");
+		Logger.trace("close()");
 		// Close the interrupt GPIOs
 		for (DigitalInputDevice interrupt_gpio : interruptGpios) {
 			if (interrupt_gpio != null) { interrupt_gpio.close(); }
@@ -322,7 +337,7 @@ public abstract class MCP23xxx extends AbstractDeviceFactory implements GpioDevi
 	}
 
 	public void closeGpio(int gpio) throws RuntimeIOException {
-		Logger.debug("closeGpio({})", Integer.valueOf(gpio));
+		Logger.trace("closeGpio({})", Integer.valueOf(gpio));
 		
 		if (gpio < 0 || gpio >= numGpios) {
 			throw new IllegalArgumentException("Invalid GPIO: " + gpio + ". "

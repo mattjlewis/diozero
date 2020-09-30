@@ -1,6 +1,6 @@
 package com.diozero.internal.provider.mmap;
 
-/*
+/*-
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - High performance mmap GPIO control
@@ -31,9 +31,12 @@ package com.diozero.internal.provider.mmap;
  * #L%
  */
 
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
-import com.diozero.api.*;
+import com.diozero.api.DeviceMode;
+import com.diozero.api.GpioEventTrigger;
+import com.diozero.api.GpioPullUpDown;
+import com.diozero.api.PinInfo;
 import com.diozero.internal.provider.GpioDigitalInputDeviceInterface;
 import com.diozero.internal.provider.GpioDigitalInputOutputDeviceInterface;
 import com.diozero.internal.provider.GpioDigitalOutputDeviceInterface;
@@ -65,7 +68,7 @@ public class MmapDeviceFactory extends SysFsDeviceFactory {
 	
 	@Override
 	public void close() {
-		Logger.debug("close()");
+		Logger.trace("close()");
 		super.close();
 		if (mmapGpio != null) {
 			mmapGpio.close();

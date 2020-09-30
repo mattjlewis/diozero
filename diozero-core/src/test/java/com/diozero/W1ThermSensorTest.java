@@ -39,7 +39,7 @@ import java.util.Map;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.devices.W1ThermSensor;
 import com.diozero.devices.W1ThermSensor.Type;

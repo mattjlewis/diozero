@@ -1,6 +1,6 @@
 package com.diozero.internal.provider.pi4j;
 
-/*
+/*-
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - pi4j provider
@@ -31,13 +31,29 @@ package com.diozero.internal.provider.pi4j;
  * #L%
  */
 
+import org.tinylog.Logger;
 
-import org.pmw.tinylog.Logger;
-
-import com.diozero.api.*;
-import com.diozero.internal.provider.*;
+import com.diozero.api.DeviceMode;
+import com.diozero.api.GpioEventTrigger;
+import com.diozero.api.GpioPullUpDown;
+import com.diozero.api.PinInfo;
+import com.diozero.api.PwmPinInfo;
+import com.diozero.api.PwmType;
+import com.diozero.api.SpiClockMode;
+import com.diozero.internal.provider.AnalogInputDeviceInterface;
+import com.diozero.internal.provider.AnalogOutputDeviceInterface;
+import com.diozero.internal.provider.BaseNativeDeviceFactory;
+import com.diozero.internal.provider.GpioDigitalInputDeviceInterface;
+import com.diozero.internal.provider.GpioDigitalInputOutputDeviceInterface;
+import com.diozero.internal.provider.GpioDigitalOutputDeviceInterface;
+import com.diozero.internal.provider.I2CDeviceInterface;
+import com.diozero.internal.provider.PwmOutputDeviceInterface;
+import com.diozero.internal.provider.SpiDeviceInterface;
 import com.diozero.util.RuntimeIOException;
-import com.pi4j.io.gpio.*;
+import com.pi4j.io.gpio.GpioController;
+import com.pi4j.io.gpio.GpioFactory;
+import com.pi4j.io.gpio.RaspiGpioProvider;
+import com.pi4j.io.gpio.RaspiPinNumberingScheme;
 import com.pi4j.wiringpi.Gpio;
 
 public class Pi4jDeviceFactory extends BaseNativeDeviceFactory {

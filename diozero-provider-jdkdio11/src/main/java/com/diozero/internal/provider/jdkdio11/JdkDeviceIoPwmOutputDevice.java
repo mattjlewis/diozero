@@ -33,7 +33,7 @@ package com.diozero.internal.provider.jdkdio11;
 
 import java.io.IOException;
 
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.api.PwmType;
 import com.diozero.internal.provider.AbstractDevice;
@@ -108,7 +108,7 @@ public class JdkDeviceIoPwmOutputDevice extends AbstractDevice implements PwmOut
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
-		Logger.debug("closeDevice()");
+		Logger.trace("closeDevice()");
 		if (pwmChannel.isOpen()) {
 			try {
 				pwmChannel.close();

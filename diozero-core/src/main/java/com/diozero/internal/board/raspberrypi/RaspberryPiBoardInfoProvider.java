@@ -35,7 +35,7 @@ package com.diozero.internal.board.raspberrypi;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.api.PinInfo;
 import com.diozero.internal.provider.MmapGpioInterface;

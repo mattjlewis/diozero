@@ -34,7 +34,7 @@ package com.diozero.sampleapps.sandpit;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.api.DigitalInputDevice;
 import com.diozero.util.SleepUtil;

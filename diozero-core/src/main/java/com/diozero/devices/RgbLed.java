@@ -34,7 +34,7 @@ package com.diozero.devices;
 
 import java.io.Closeable;
 
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.internal.provider.GpioDeviceFactoryInterface;
 import com.diozero.util.DeviceFactoryHelper;
@@ -78,7 +78,7 @@ public class RgbLed implements Closeable {
 	
 	@Override
 	public void close() {
-		Logger.debug("close()");
+		Logger.trace("close()");
 		redLED.close();
 		greenLED.close();
 		blueLED.close();

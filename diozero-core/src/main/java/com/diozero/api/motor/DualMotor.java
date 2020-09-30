@@ -35,7 +35,7 @@ package com.diozero.api.motor;
 import java.io.Closeable;
 import java.io.IOException;
 
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.util.RuntimeIOException;
 
@@ -53,7 +53,7 @@ public class DualMotor implements Closeable {
 
 	@Override
 	public void close() {
-		Logger.debug("close()");
+		Logger.trace("close()");
 		if (leftMotor != null) { try { leftMotor.close(); } catch (IOException e) { } }
 		if (rightMotor != null) { try { rightMotor.close(); } catch (IOException e) { } }
 	}

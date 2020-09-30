@@ -36,7 +36,7 @@ import java.io.Closeable;
 import java.util.Arrays;
 import java.util.Collection;
 
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.api.GpioDevice;
 import com.diozero.api.OutputDeviceCollection;
@@ -110,7 +110,7 @@ public class Servo extends GpioDevice implements OutputDeviceInterface {
 	@Override
 	public void close() {
 		device.close();
-		Logger.debug("device closed");
+		Logger.trace("device closed");
 	}
 
 	public int getPwmFrequency() {

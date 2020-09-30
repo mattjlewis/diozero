@@ -37,9 +37,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
-import com.diozero.api.*;
+import com.diozero.api.DigitalOutputDevice;
+import com.diozero.api.SPIConstants;
+import com.diozero.api.SpiClockMode;
+import com.diozero.api.SpiDevice;
 import com.diozero.util.Hex;
 import com.diozero.util.SleepUtil;
 

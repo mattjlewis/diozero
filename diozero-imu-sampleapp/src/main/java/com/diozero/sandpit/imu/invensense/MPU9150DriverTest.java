@@ -32,14 +32,27 @@ package com.diozero.sandpit.imu.invensense;
  */
 
 import org.apache.commons.math3.complex.Quaternion;
-import org.apache.commons.math3.geometry.euclidean.threed.*;
-import org.pmw.tinylog.Logger;
+import org.apache.commons.math3.geometry.euclidean.threed.CardanEulerSingularityException;
+import org.apache.commons.math3.geometry.euclidean.threed.Rotation;
+import org.apache.commons.math3.geometry.euclidean.threed.RotationConvention;
+import org.apache.commons.math3.geometry.euclidean.threed.RotationOrder;
+import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
+import org.tinylog.Logger;
 
 import com.diozero.api.I2CConstants;
 import com.diozero.api.imu.ImuData;
 import com.diozero.api.imu.OrientationEvent;
 import com.diozero.api.imu.TapEvent;
-import com.diozero.imu.drivers.invensense.*;
+import com.diozero.imu.drivers.invensense.AK8975Constants;
+import com.diozero.imu.drivers.invensense.AccelFullScaleRange;
+import com.diozero.imu.drivers.invensense.GyroFullScaleRange;
+import com.diozero.imu.drivers.invensense.LowPassFilter;
+import com.diozero.imu.drivers.invensense.MPU9150Constants;
+import com.diozero.imu.drivers.invensense.MPU9150DMPConstants;
+import com.diozero.imu.drivers.invensense.MPU9150DMPDriver;
+import com.diozero.imu.drivers.invensense.MPU9150DataFactory;
+import com.diozero.imu.drivers.invensense.MPU9150Driver;
+import com.diozero.imu.drivers.invensense.MPU9150FIFOData;
 import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 

@@ -35,7 +35,7 @@ import java.io.Closeable;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.internal.provider.I2CDeviceFactoryInterface;
 import com.diozero.internal.provider.I2CDeviceInterface;
@@ -167,7 +167,7 @@ public class I2CDevice implements Closeable, I2CConstants {
 
 	@Override
 	public void close() throws RuntimeIOException {
-		Logger.debug("close()");
+		Logger.trace("close()");
 		device.close();
 	}
 
@@ -205,6 +205,7 @@ public class I2CDevice implements Closeable, I2CConstants {
 		ByteBuffer buffer = ByteBuffer.allocateDirect(2);
 		buffer.putShort(val);
 		buffer.flip();
+
 		synchronized (device) {
 			device.writeI2CBlockData(regAddr, SUB_ADDRESS_SIZE_1_BYTE, buffer);
 		}
@@ -527,9 +528,15 @@ public class I2CDevice implements Closeable, I2CConstants {
 		buffer.putShort((short) data);
 		buffer.flip();
 
+		/*
 		byte[] array = new byte[buffer.remaining()];
 		buffer.get(array);
 		write(regAddr, SUB_ADDRESS_SIZE_2_BYTES, array);
+		*/
+		
+		synchronized (device) {
+			device.writeI2CBlockData(regAddr, SUB_ADDRESS_SIZE_2_BYTES, buffer);
+		}
 	}
 
 	/**

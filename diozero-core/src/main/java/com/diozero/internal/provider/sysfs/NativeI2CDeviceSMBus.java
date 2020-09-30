@@ -1,6 +1,6 @@
 package com.diozero.internal.provider.sysfs;
 
-/*
+/*-
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - Core
@@ -31,7 +31,7 @@ package com.diozero.internal.provider.sysfs;
  * #L%
  */
 
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.api.DeviceBusyException;
 import com.diozero.api.I2CDevice;

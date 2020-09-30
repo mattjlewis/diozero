@@ -1,6 +1,6 @@
 package com.diozero.devices.sandpit;
 
-/*
+/*-
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - Core
@@ -31,8 +31,7 @@ package com.diozero.devices.sandpit;
  * #L%
  */
 
-
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.api.DigitalOutputDevice;
 import com.diozero.api.DistanceSensorInterface;
@@ -158,7 +157,7 @@ public class HCSR04UsingWait implements DistanceSensorInterface {
 	 */
 	@Override
 	public void close() {
-		Logger.debug("close()");
+		Logger.trace("close()");
 		if (trigger != null) { trigger.close(); }
 		if (echo != null) { echo.close(); }
 	}

@@ -35,9 +35,12 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
-import com.diozero.internal.provider.*;
+import com.diozero.internal.provider.AbstractDevice;
+import com.diozero.internal.provider.DeviceFactoryInterface;
+import com.diozero.internal.provider.GpioDigitalOutputDeviceInterface;
+import com.diozero.internal.provider.PwmOutputDeviceInterface;
 import com.diozero.util.DioZeroScheduler;
 import com.diozero.util.RangeUtil;
 import com.diozero.util.SleepUtil;
@@ -89,7 +92,7 @@ public class SoftwarePwmOutputDevice extends AbstractDevice implements PwmOutput
 
 	@Override
 	protected void closeDevice() {
-		Logger.debug("closeDevice() {}", getKey());
+		Logger.trace("closeDevice() {}", getKey());
 		stop();
 		if (digitalOutputDevice != null) {
 			digitalOutputDevice.close();

@@ -33,7 +33,7 @@ package com.diozero.internal.provider.remote.devicefactory;
 
 import java.util.UUID;
 
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.api.DigitalInputEvent;
 import com.diozero.api.GpioEventTrigger;

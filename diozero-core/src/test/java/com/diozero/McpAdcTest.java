@@ -30,10 +30,11 @@ package com.diozero;
  * THE SOFTWARE.
  * #L%
  */
-
-
-import org.junit.*;
-import org.pmw.tinylog.Logger;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.tinylog.Logger;
 
 import com.diozero.api.AnalogInputDevice;
 import com.diozero.devices.McpAdc;

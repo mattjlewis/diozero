@@ -33,7 +33,7 @@ package com.diozero.sampleapps;
 
 import java.io.Closeable;
 
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.api.DigitalInputDevice;
 import com.diozero.api.motor.DualMotor;

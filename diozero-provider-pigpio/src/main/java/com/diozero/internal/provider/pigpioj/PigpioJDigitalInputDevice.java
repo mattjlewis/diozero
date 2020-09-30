@@ -1,6 +1,6 @@
 package com.diozero.internal.provider.pigpioj;
 
-/*
+/*-
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - pigpioj provider
@@ -31,8 +31,7 @@ package com.diozero.internal.provider.pigpioj;
  * #L%
  */
 
-
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.api.DigitalInputEvent;
 import com.diozero.api.GpioEventTrigger;
@@ -92,7 +91,7 @@ public class PigpioJDigitalInputDevice extends AbstractInputDevice<DigitalInputE
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
-		Logger.debug("closeDevice()");
+		Logger.trace("closeDevice()");
 		// No GPIO close method in pigpio
 		removeListener();
 	}

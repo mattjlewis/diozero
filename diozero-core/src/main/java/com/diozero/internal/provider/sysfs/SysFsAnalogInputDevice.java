@@ -38,7 +38,7 @@ import java.io.RandomAccessFile;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.api.AnalogInputEvent;
 import com.diozero.internal.provider.AbstractInputDevice;
@@ -109,7 +109,7 @@ public class SysFsAnalogInputDevice extends AbstractInputDevice<AnalogInputEvent
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
-		Logger.debug("closeDevice()");
+		Logger.trace("closeDevice()");
 		try {
 			if (voltageScale != null) {
 				voltageScale.close();

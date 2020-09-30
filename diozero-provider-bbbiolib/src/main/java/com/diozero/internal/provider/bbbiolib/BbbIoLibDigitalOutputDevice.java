@@ -1,6 +1,6 @@
 package com.diozero.internal.provider.bbbiolib;
 
-/*
+/*-
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - BBBioLib
@@ -31,8 +31,7 @@ package com.diozero.internal.provider.bbbiolib;
  * #L%
  */
 
-
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.api.PinInfo;
 import com.diozero.internal.provider.AbstractDevice;
@@ -76,7 +75,7 @@ public class BbbIoLibDigitalOutputDevice extends AbstractDevice implements GpioD
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
-		Logger.debug("closeDevice()");
+		Logger.trace("closeDevice()");
 		// Revert to input mode?
 		BbbIoLibNative.setDir(BbbIoLibDeviceFactory.getPort(pinInfo), (byte) pinInfo.getPinNumber(),
 				BbbIoLibNative.BBBIO_DIR_IN);

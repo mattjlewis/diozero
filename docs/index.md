@@ -155,11 +155,11 @@ and setup your classpath correctly. You can do this either via setting the `CLAS
 environment variable or as a command-line option (`java -cp <jar1>:<jar2>`). 
 The dependencies have been deliberately kept to as few libraries as possible, as 
 such this library is only dependent on [tinylog](http://www.tinylog.org) 
-[v1.1](https://github.com/pmwmedia/tinylog/releases/download/1.1/tinylog-1.1.zip).
+[v2.1.2](https://github.com/pmwmedia/tinylog/releases/download/2.1.2/tinylog-2.1.2.zip).
 
-To compile a diozero application you will need 2 JAR files - [tinylog](http://www.tinylog.org/), and diozero-core. 
-To run a diozero application, you will also need one of the supported device provider 
-libraries and the corresponding diozero provider wrapper library. Note the built-in sysfs
+To compile a diozero application you will need 3 JAR files - [tinylog](http://www.tinylog.org/) (API and Impl), and diozero-core. 
+To run a diozero application, you can also include one of the supported device provider 
+libraries and the corresponding diozero provider wrapper library. Note that the built-in sysfs
 device provider gives maximum portability but has some limitations such as not being able 
 to configure internal pull up/down resistors.
 
@@ -179,7 +179,7 @@ To run the [LEDTest](https://github.com/mattjlewis/diozero/blob/master/diozero-s
 sample application using the pigpioj provider:
 
 ```sh
-sudo java -cp tinylog-1.1.jar:diozero-core-0.9-SNAPSHOT.jar:diozero-sampleapps-0.9-SNAPSHOT.jar:diozero-provider-pigpio-0.9-SNAPSHOT.jar:pigpioj-java-1.0.1.jar com.diozero.sampleapps.LEDTest 12
+sudo java -cp tinylog-api-2.1.2.jar:tinylog-impl-2.1.2.jar:diozero-core-0.13.jar:diozero-sampleapps-0.13.jar:diozero-provider-pigpio-0.13.jar:pigpioj-java-2.4.jar com.diozero.sampleapps.LEDTest 12
 ```
 
 For an experience similar to Python where source code is interpreted rather than compiled try 

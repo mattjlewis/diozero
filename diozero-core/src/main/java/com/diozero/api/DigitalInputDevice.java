@@ -1,6 +1,6 @@
 package com.diozero.api;
 
-/*
+/*-
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - Core
@@ -31,7 +31,7 @@ package com.diozero.api;
  * #L%
  */
 
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.internal.provider.GpioDeviceFactoryInterface;
 import com.diozero.internal.provider.GpioDigitalInputDeviceInterface;
@@ -95,7 +95,7 @@ public class DigitalInputDevice extends AbstractDigitalInputDevice {
 
 	@Override
 	public void close() {
-		Logger.debug("close()");
+		Logger.trace("close()");
 		device.close();
 	}
 

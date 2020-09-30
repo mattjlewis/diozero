@@ -36,7 +36,7 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.api.DigitalInputDevice;
 import com.diozero.api.DigitalInputEvent;
@@ -169,7 +169,7 @@ public class HCSR04UsingEvents implements DistanceSensorInterface, InputEventLis
 	 */
 	@Override
 	public void close() {
-		Logger.debug("close()");
+		Logger.trace("close()");
 		if (trigger != null) { trigger.close(); }
 		if (echo != null) { echo.close(); }
 	}

@@ -33,7 +33,7 @@ package com.diozero.devices;
 
 import java.nio.ByteBuffer;
 
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.api.AnalogInputEvent;
 import com.diozero.api.PinInfo;
@@ -98,7 +98,7 @@ public class McpAdc extends AbstractDeviceFactory implements AnalogInputDeviceFa
 	
 	@Override
 	public void close() throws RuntimeIOException {
-		Logger.debug("close()");
+		Logger.trace("close()");
 		// Close all open pins before closing the SPI device itself
 		super.close();
 		spiDevice.close();
@@ -312,7 +312,7 @@ public class McpAdc extends AbstractDeviceFactory implements AnalogInputDeviceFa
 
 		@Override
 		protected void closeDevice() {
-			Logger.debug("closeDevice()");
+			Logger.trace("closeDevice()");
 			// TODO Nothing to do?
 		}
 

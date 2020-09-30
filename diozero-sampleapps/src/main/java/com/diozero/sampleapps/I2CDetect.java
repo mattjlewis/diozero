@@ -31,7 +31,7 @@ package com.diozero.sampleapps;
  * #L%
  */
 
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.api.DeviceBusyException;
 import com.diozero.api.I2CDevice;

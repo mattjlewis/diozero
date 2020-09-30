@@ -1,6 +1,6 @@
 package com.diozero.internal.provider.test;
 
-/*
+/*-
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - Core
@@ -31,9 +31,11 @@ package com.diozero.internal.provider.test;
  * #L%
  */
 
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
-import com.diozero.internal.provider.*;
+import com.diozero.internal.provider.AbstractDevice;
+import com.diozero.internal.provider.DeviceFactoryInterface;
+import com.diozero.internal.provider.PwmOutputDeviceInterface;
 import com.diozero.util.RuntimeIOException;
 
 public class TestPwmOutputDevice extends AbstractDevice implements PwmOutputDeviceInterface {
@@ -50,7 +52,7 @@ public class TestPwmOutputDevice extends AbstractDevice implements PwmOutputDevi
 
 	@Override
 	protected void closeDevice() {
-		Logger.debug("closeDevice()");
+		Logger.trace("closeDevice()");
 	}
 
 	@Override

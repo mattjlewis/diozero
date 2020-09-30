@@ -31,7 +31,7 @@ package com.diozero.ws281xj.sampleapps;
  * #L%
  */
 
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.util.SleepUtil;
 import com.diozero.ws281xj.LedDriverInterface;

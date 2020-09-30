@@ -34,7 +34,7 @@ package com.diozero.api.motor;
 
 import java.io.Closeable;
 
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.api.DigitalOutputDevice;
 import com.diozero.internal.provider.GpioDeviceFactoryInterface;
@@ -56,7 +56,7 @@ public class DigitalMotor implements Closeable {
 
 	@Override
 	public void close() {
-		Logger.debug("close()");
+		Logger.trace("close()");
 		forward.close();
 		backward.close();
 	}

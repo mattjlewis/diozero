@@ -54,7 +54,7 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 public class FirmataAdapter implements FirmataProtocol, Runnable, Closeable {
 	private static final int I2C_NO_REGISTER = 0;

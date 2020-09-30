@@ -34,7 +34,7 @@ package com.diozero.internal.provider.sysfs;
 
 import java.nio.ByteBuffer;
 
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.api.I2CDevice;
 import com.diozero.internal.provider.AbstractDevice;
@@ -124,7 +124,7 @@ public class SysFsI2CDevice extends AbstractDevice implements I2CDeviceInterface
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
-		Logger.debug("closeDevice()");
+		Logger.trace("closeDevice()");
 		i2cDevice.close();
 	}
 }

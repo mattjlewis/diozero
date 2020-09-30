@@ -33,7 +33,7 @@ package com.diozero.internal.provider.jdkdio11;
 
 import java.io.IOException;
 
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.internal.provider.AbstractDevice;
 import com.diozero.internal.provider.DeviceFactoryInterface;
@@ -65,7 +65,7 @@ public class JdkDeviceIoGpioOutputDevice extends AbstractDevice implements GpioD
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
-		Logger.debug("closeDevice()");
+		Logger.trace("closeDevice()");
 		if (pin.isOpen()) {
 			try {
 				pin.close();

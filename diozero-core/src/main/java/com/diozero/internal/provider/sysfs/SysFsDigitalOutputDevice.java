@@ -36,7 +36,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.file.Path;
 
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.api.DeviceMode;
 import com.diozero.api.PinInfo;
@@ -102,7 +102,7 @@ public class SysFsDigitalOutputDevice extends AbstractDevice implements GpioDigi
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
-		Logger.debug("closeDevice()");
+		Logger.trace("closeDevice()");
 		try {
 			valueFile.close();
 		} catch (IOException e) {

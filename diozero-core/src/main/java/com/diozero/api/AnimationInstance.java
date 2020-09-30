@@ -30,11 +30,12 @@ package com.diozero.api;
  * THE SOFTWARE.
  * #L%
  */
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 
-
-import java.util.*;
-
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.api.easing.EasingFunction;
 import com.diozero.api.easing.EasingFunctions;

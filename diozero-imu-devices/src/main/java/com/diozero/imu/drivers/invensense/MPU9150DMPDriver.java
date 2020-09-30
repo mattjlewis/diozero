@@ -34,7 +34,7 @@ package com.diozero.imu.drivers.invensense;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.api.imu.OrientationEvent;
 import com.diozero.api.imu.OrientationEvent.OrientationType;

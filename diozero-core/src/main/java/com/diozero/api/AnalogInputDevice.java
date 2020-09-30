@@ -34,7 +34,7 @@ package com.diozero.api;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.internal.provider.AnalogInputDeviceFactoryInterface;
 import com.diozero.internal.provider.AnalogInputDeviceInterface;
@@ -145,7 +145,7 @@ public class AnalogInputDevice extends GpioInputDevice<AnalogInputEvent> impleme
 
 	@Override
 	public void close() throws RuntimeIOException {
-		Logger.debug("close()");
+		Logger.trace("close()");
 		stopScheduler.set(true);
 		device.close();
 	}

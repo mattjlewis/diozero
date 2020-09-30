@@ -1,6 +1,6 @@
 package com.diozero.internal.provider.sysfs;
 
-/*
+/*-
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - Core
@@ -31,8 +31,7 @@ package com.diozero.internal.provider.sysfs;
  * #L%
  */
 
-
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.api.SpiClockMode;
 import com.diozero.internal.provider.AbstractDevice;
@@ -52,7 +51,7 @@ public class SysFsSpiDevice extends AbstractDevice implements SpiDeviceInterface
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
-		Logger.debug("closeDevice()");
+		Logger.trace("closeDevice()");
 		device.close();
 	}
 

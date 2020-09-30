@@ -1,6 +1,6 @@
 package com.diozero.internal.provider.wiringpi;
 
-/*
+/*-
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - wiringPi provider
@@ -31,7 +31,7 @@ package com.diozero.internal.provider.wiringpi;
  * #L%
  */
 
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.api.PwmType;
 import com.diozero.internal.provider.AbstractDevice;
@@ -81,7 +81,7 @@ public class WiringPiPwmOutputDevice extends AbstractDevice implements PwmOutput
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
-		Logger.debug("closeDevice()");
+		Logger.trace("closeDevice()");
 		switch (pwmType) {
 		case HARDWARE:
 			GpioUtil.unexport(gpio);

@@ -35,7 +35,7 @@ package com.diozero.internal.provider.jdkdio11;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.api.I2CConstants;
 import com.diozero.internal.provider.AbstractDevice;
@@ -71,7 +71,7 @@ public class JdkDeviceIoI2CDevice extends AbstractDevice implements I2CDeviceInt
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
-		Logger.debug("closeDevice()");
+		Logger.trace("closeDevice()");
 		if (device.isOpen()) {
 			try {
 				device.close();

@@ -34,7 +34,7 @@ package com.diozero.internal.provider.jdkdio11;
 
 import java.io.IOException;
 
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.api.DigitalInputEvent;
 import com.diozero.api.GpioEventTrigger;
@@ -46,7 +46,10 @@ import com.diozero.util.RuntimeIOException;
 
 import jdk.dio.DeviceConfig;
 import jdk.dio.DeviceManager;
-import jdk.dio.gpio.*;
+import jdk.dio.gpio.GPIOPin;
+import jdk.dio.gpio.GPIOPinConfig;
+import jdk.dio.gpio.PinEvent;
+import jdk.dio.gpio.PinListener;
 
 public class JdkDeviceIoDigitalInputDevice extends AbstractInputDevice<DigitalInputEvent>
 implements GpioDigitalInputDeviceInterface, PinListener {
@@ -96,7 +99,7 @@ implements GpioDigitalInputDeviceInterface, PinListener {
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
-		Logger.debug("closeDevice()");
+		Logger.trace("closeDevice()");
 		removeListener();
 		if (pin.isOpen()) {
 			try {

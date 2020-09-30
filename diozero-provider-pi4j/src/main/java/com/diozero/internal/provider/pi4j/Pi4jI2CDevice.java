@@ -35,7 +35,7 @@ package com.diozero.internal.provider.pi4j;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.internal.provider.AbstractDevice;
 import com.diozero.internal.provider.DeviceFactoryInterface;
@@ -69,7 +69,7 @@ public class Pi4jI2CDevice extends AbstractDevice implements I2CDeviceInterface 
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
-		Logger.debug("closeDevice()");
+		Logger.trace("closeDevice()");
 		// No way to close a Pi4J I2C Device?!
 		//i2cDevice.close();
 		device = null;

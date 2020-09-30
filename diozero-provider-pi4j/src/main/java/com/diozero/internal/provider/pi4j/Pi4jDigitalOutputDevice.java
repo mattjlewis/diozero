@@ -1,6 +1,6 @@
 package com.diozero.internal.provider.pi4j;
 
-/*
+/*-
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - pi4j provider
@@ -31,13 +31,18 @@ package com.diozero.internal.provider.pi4j;
  * #L%
  */
 
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.internal.provider.AbstractDevice;
 import com.diozero.internal.provider.DeviceFactoryInterface;
 import com.diozero.internal.provider.GpioDigitalOutputDeviceInterface;
 import com.diozero.util.RuntimeIOException;
-import com.pi4j.io.gpio.*;
+import com.pi4j.io.gpio.GpioController;
+import com.pi4j.io.gpio.GpioFactory;
+import com.pi4j.io.gpio.GpioPinDigitalOutput;
+import com.pi4j.io.gpio.Pin;
+import com.pi4j.io.gpio.PinState;
+import com.pi4j.io.gpio.RaspiBcmPin;
 
 public class Pi4jDigitalOutputDevice extends AbstractDevice implements GpioDigitalOutputDeviceInterface {
 	private GpioPinDigitalOutput digitalOutputPin;
@@ -59,7 +64,7 @@ public class Pi4jDigitalOutputDevice extends AbstractDevice implements GpioDigit
 
 	@Override
 	protected void closeDevice() {
-		Logger.debug("closeDevice()");
+		Logger.trace("closeDevice()");
 		digitalOutputPin.setState(false);
 		digitalOutputPin.unexport();
 		GpioFactory.getInstance().unprovisionPin(digitalOutputPin);

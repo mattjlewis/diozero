@@ -34,7 +34,7 @@ package com.diozero.internal.provider.jdkdio11;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.api.SPIConstants;
 import com.diozero.api.SpiClockMode;
@@ -73,7 +73,7 @@ public class JdkDeviceIoSpiDevice extends AbstractDevice implements SpiDeviceInt
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
-		Logger.debug("closeDevice()");
+		Logger.trace("closeDevice()");
 		if (device.isOpen()) {
 			try {
 				device.close();

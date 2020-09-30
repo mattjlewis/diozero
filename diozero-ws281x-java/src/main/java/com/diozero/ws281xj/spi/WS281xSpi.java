@@ -33,7 +33,7 @@ package com.diozero.ws281xj.spi;
 
 import java.util.Arrays;
 
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.api.SPIConstants;
 import com.diozero.api.SpiClockMode;
@@ -104,7 +104,7 @@ public class WS281xSpi implements LedDriverInterface {
 	
 	@Override
 	public void close() {
-		Logger.debug("Turning all off before close");
+		Logger.trace("Turning all off before close");
 		allOff();
 		device.close();
 	}

@@ -34,7 +34,7 @@ package com.diozero.internal;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.internal.provider.DeviceInterface;
 
@@ -54,14 +54,14 @@ public class DeviceStates {
 	}
 	
 	public void closed(DeviceInterface device) {
-		Logger.debug("closed({})", device.getKey());
+		Logger.trace("closed({})", device.getKey());
 		if (devices.remove(device.getKey()) == null) {
 			Logger.warn("Request to close unknown device with key '{}'", device.getKey());
 		}
 	}
 	
 	public void closeAll() {
-		Logger.debug("closeAll()");
+		Logger.trace("closeAll()");
 		// No need to remove from the Map as close() should always call closed()
 		devices.values().forEach(DeviceInterface::close);
 	}

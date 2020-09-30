@@ -34,7 +34,7 @@ package com.diozero.devices;
 
 import java.nio.ByteOrder;
 
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import com.diozero.api.DeviceMode;
 import com.diozero.api.DigitalInputEvent;
@@ -46,7 +46,6 @@ import com.diozero.api.PinInfo;
 import com.diozero.internal.provider.AbstractDevice;
 import com.diozero.internal.provider.AbstractDeviceFactory;
 import com.diozero.internal.provider.AbstractInputDevice;
-import com.diozero.internal.provider.BaseNativeDeviceFactory;
 import com.diozero.internal.provider.GpioDeviceFactoryInterface;
 import com.diozero.internal.provider.GpioDigitalInputDeviceInterface;
 import com.diozero.internal.provider.GpioDigitalInputOutputDeviceInterface;
@@ -162,7 +161,7 @@ public class PCF8574 extends AbstractDeviceFactory implements GpioDeviceFactoryI
 	}
 
 	public void closePin(int gpio) {
-		Logger.debug("closePin({})", Integer.valueOf(gpio));
+		Logger.trace("closePin({})", Integer.valueOf(gpio));
 		
 		if (gpio < 0 || gpio >= NUM_PINS) {
 			throw new IllegalArgumentException("Invalid GPIO: " + gpio + ". "
@@ -199,7 +198,7 @@ public class PCF8574 extends AbstractDeviceFactory implements GpioDeviceFactoryI
 
 		@Override
 		protected void closeDevice() throws RuntimeIOException {
-			Logger.debug("closeDevice()");
+			Logger.trace("closeDevice()");
 			removeListener();
 			pcf8574.closePin(gpio);
 		}
@@ -252,7 +251,7 @@ public class PCF8574 extends AbstractDeviceFactory implements GpioDeviceFactoryI
 
 		@Override
 		protected void closeDevice() throws RuntimeIOException {
-			Logger.debug("closeDevice()");
+			Logger.trace("closeDevice()");
 			removeListener();
 			pcf8574.closePin(gpio);
 		}
@@ -303,7 +302,7 @@ public class PCF8574 extends AbstractDeviceFactory implements GpioDeviceFactoryI
 
 		@Override
 		protected void closeDevice() throws RuntimeIOException {
-			Logger.debug("closeDevice()");
+			Logger.trace("closeDevice()");
 			pcf8574.closePin(gpio);
 		}
 	}

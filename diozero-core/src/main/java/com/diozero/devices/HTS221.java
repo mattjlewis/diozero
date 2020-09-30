@@ -35,9 +35,12 @@ package com.diozero.devices;
 import java.io.Closeable;
 import java.nio.ByteOrder;
 
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
-import com.diozero.api.*;
+import com.diozero.api.HygrometerInterface;
+import com.diozero.api.I2CConstants;
+import com.diozero.api.I2CDevice;
+import com.diozero.api.ThermometerInterface;
 import com.diozero.util.RuntimeIOException;
 
 /**
