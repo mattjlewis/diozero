@@ -1,15 +1,53 @@
-#include <errno.h>
-#include <fcntl.h>
-#include <unistd.h>
+/*
+ * #%L
+ * Organisation: diozero
+ * Project:      Device I/O Zero - Native System Utilities
+ * Filename:     com_diozero_internal_provider_sysfs_NativeSerialDevice.c
+ *
+ * This file is part of the diozero project. More information about this project
+ * can be found at http://www.diozero.com/
+ * %%
+ * Copyright (C) 2016 - 2020 diozero
+ * %%
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ * #L%
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
+#include <unistd.h>
+
+#include <errno.h>
 #include <string.h>
+
+#include <fcntl.h>
 #include <sys/file.h>
 #include <sys/ioctl.h>
+
 #include <termios.h>
 #include <linux/serial.h>
 
 #include "com_diozero_internal_provider_sysfs_NativeSerialDevice.h"
+
+#define SERIAL_READ_NO_DATA -1
+#define SERIAL_READ_FAILED -2
 
 #define DATA_BITS_5_ORDINAL 0
 #define DATA_BITS_6_ORDINAL 1
@@ -140,6 +178,7 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeSerialDevi
   (JNIEnv* env, jclass clz, jint fd, jint baud, jint dataBits, jint parity, jint stopBits) {
 	struct termios options = {0};
 	tcgetattr(fd, &options);
+
 	options.c_cflag &= ~(CSIZE | PARENB | CMSPAR | PARODD);
 	options.c_cflag |= (getDataBitsFlag(dataBits) | getParityFlag(parity) | CLOCAL | CREAD);
 
@@ -163,7 +202,20 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeSerialDevi
  */
 JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeSerialDevice_serialReadByte
   (JNIEnv* env, jclass clz, jint fd) {
-	return -1;
+	char x;
+	int rc = read(fd, &x, 1);
+
+	if (rc == 1) {
+		return ((int) x) & 0xFF;
+	}
+
+	if ((rc == -1) && (errno == EAGAIN)) {
+		// No data
+		return SERIAL_READ_NO_DATA;
+	}
+
+	// Read failed
+	return SERIAL_READ_FAILED;
 }
 
 /*
@@ -173,7 +225,8 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeSerialDevi
  */
 JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeSerialDevice_serialWriteByte
   (JNIEnv* env, jclass clz, jint fd, jint bVal) {
-	return -1;
+	unsigned char c = (unsigned char) bVal;
+	return write(fd, &c, 1);
 }
 
 /*
@@ -182,8 +235,15 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeSerialDevi
  * Signature: (I[B)I
  */
 JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeSerialDevice_serialRead
-  (JNIEnv* env, jclass clz, jint fd, jbyteArray byteArray) {
-	return -1;
+  (JNIEnv* env, jclass clz, jint fd, jbyteArray rxData) {
+	jbyte* rx_buf = (*env)->GetByteArrayElements(env, rxData, NULL);
+	int rx_length = (*env)->GetArrayLength(env, rxData);
+
+	int rc = read(fd, (uint8_t*) rx_buf, rx_length);
+
+	(*env)->ReleaseByteArrayElements(env, rxData, rx_buf, 0);
+
+	return rc;
 }
 
 /*
@@ -192,8 +252,15 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeSerialDevi
  * Signature: (I[B)I
  */
 JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeSerialDevice_serialWrite
-  (JNIEnv* env, jclass clz, jint fd, jbyteArray byteArray) {
-	return -1;
+  (JNIEnv* env, jclass clz, jint fd, jbyteArray txData) {
+	jbyte* tx_buf = (*env)->GetByteArrayElements(env, txData, NULL);
+	int tx_length = (*env)->GetArrayLength(env, txData);
+
+	int rc = write(fd, (uint8_t*) tx_buf, tx_length);
+
+	(*env)->ReleaseByteArrayElements(env, txData, tx_buf, 0);
+
+	return rc;
 }
 
 /*
@@ -203,7 +270,12 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeSerialDevi
  */
 JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeSerialDevice_serialBytesAvailable
   (JNIEnv* env, jclass clz, jint fd) {
-	return -1;
+	int result;
+	int rc = ioctl(fd, FIONREAD, &result);
+	if (rc < 0) {
+		return rc;
+	}
+	return result;
 }
 
 /*
