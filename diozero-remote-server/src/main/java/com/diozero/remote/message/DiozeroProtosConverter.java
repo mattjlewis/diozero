@@ -40,6 +40,7 @@ import com.diozero.api.DeviceMode;
 import com.diozero.api.DigitalInputEvent;
 import com.diozero.api.GpioEventTrigger;
 import com.diozero.api.GpioPullUpDown;
+import com.diozero.api.SerialDevice;
 import com.diozero.api.SpiClockMode;
 import com.diozero.remote.message.protobuf.DiozeroProtos;
 import com.google.protobuf.ByteString;
@@ -309,8 +310,8 @@ public class DiozeroProtosConverter {
 	}
 
 	public static I2CReadI2CBlockData convert(DiozeroProtos.I2C.ReadI2CBlockData obj) {
-		return new I2CReadI2CBlockData(obj.getController(), obj.getAddress(), obj.getRegister(), obj.getLength(),
-				obj.getCorrelationId());
+		return new I2CReadI2CBlockData(obj.getController(), obj.getAddress(), obj.getRegister(),
+				obj.getSubAddressSize(), obj.getLength(), obj.getCorrelationId());
 	}
 
 	public static DiozeroProtos.I2C.ReadI2CBlockData convert(I2CReadI2CBlockData obj) {
@@ -321,7 +322,7 @@ public class DiozeroProtosConverter {
 
 	public static I2CWriteI2CBlockData convert(DiozeroProtos.I2C.WriteI2CBlockData obj) {
 		return new I2CWriteI2CBlockData(obj.getController(), obj.getAddress(), obj.getRegister(),
-				obj.getData().toByteArray(), obj.getCorrelationId());
+				obj.getSubAddressSize(), obj.getData().toByteArray(), obj.getCorrelationId());
 	}
 
 	public static DiozeroProtos.I2C.WriteI2CBlockData convert(I2CWriteI2CBlockData obj) {
@@ -512,6 +513,99 @@ public class DiozeroProtosConverter {
 			Logger.error("Invalid Spi.ClockMode value: {}", clockMode);
 			return DiozeroProtos.Spi.ClockMode.MODE_0;
 		}
+	}
+
+	public static SerialOpen convert(DiozeroProtos.Serial.Open obj) {
+		return new SerialOpen(obj.getTty(), obj.getBaud(), SerialDevice.DataBits.values()[obj.getDataBits()],
+				SerialDevice.Parity.values()[obj.getParity()], SerialDevice.StopBits.values()[obj.getStopBits()],
+				obj.getCorrelationId());
+	}
+
+	public static DiozeroProtos.Serial.Open convert(SerialOpen obj) {
+		return DiozeroProtos.Serial.Open.newBuilder().setTty(obj.getTty()).setBaud(obj.getBaud())
+				.setDataBits(obj.getDataBits().ordinal()).setParity(obj.getParity().ordinal())
+				.setStopBits(obj.getStopBits().ordinal()).setCorrelationId(obj.getCorrelationId()).build();
+	}
+
+	public static SerialReadByte convert(DiozeroProtos.Serial.ReadByte obj) {
+		return new SerialReadByte(obj.getTty(), obj.getCorrelationId());
+	}
+
+	public static DiozeroProtos.Serial.ReadByte convert(SerialReadByte obj) {
+		return DiozeroProtos.Serial.ReadByte.newBuilder().setTty(obj.getTty()).setCorrelationId(obj.getCorrelationId())
+				.build();
+	}
+
+	public static SerialWriteByte convert(DiozeroProtos.Serial.WriteByte obj) {
+		return new SerialWriteByte(obj.getTty(), (byte) obj.getData(), obj.getCorrelationId());
+	}
+
+	public static DiozeroProtos.Serial.WriteByte convert(SerialWriteByte obj) {
+		return DiozeroProtos.Serial.WriteByte.newBuilder().setTty(obj.getTty()).setData(obj.getData())
+				.setCorrelationId(obj.getCorrelationId()).build();
+	}
+
+	public static SerialRead convert(DiozeroProtos.Serial.Read obj) {
+		return new SerialRead(obj.getTty(), obj.getLength(), obj.getCorrelationId());
+	}
+
+	public static DiozeroProtos.Serial.Read convert(SerialRead obj) {
+		return DiozeroProtos.Serial.Read.newBuilder().setTty(obj.getTty()).setLength(obj.getLength())
+				.setCorrelationId(obj.getCorrelationId()).build();
+	}
+
+	public static SerialWrite convert(DiozeroProtos.Serial.Write obj) {
+		return new SerialWrite(obj.getTty(), obj.getData().toByteArray(), obj.getCorrelationId());
+	}
+
+	public static DiozeroProtos.Serial.Write convert(SerialWrite obj) {
+		return DiozeroProtos.Serial.Write.newBuilder().setTty(obj.getTty()).setData(ByteString.copyFrom(obj.getData()))
+				.setCorrelationId(obj.getCorrelationId()).build();
+	}
+
+	public static SerialBytesAvailable convert(DiozeroProtos.Serial.BytesAvailable obj) {
+		return new SerialBytesAvailable(obj.getTty(), obj.getCorrelationId());
+	}
+
+	public static DiozeroProtos.Serial.BytesAvailable convert(SerialBytesAvailable obj) {
+		return DiozeroProtos.Serial.BytesAvailable.newBuilder().setTty(obj.getTty())
+				.setCorrelationId(obj.getCorrelationId()).build();
+	}
+
+	public static SerialClose convert(DiozeroProtos.Serial.Close obj) {
+		return new SerialClose(obj.getTty(), obj.getCorrelationId());
+	}
+
+	public static DiozeroProtos.Serial.Close convert(SerialClose obj) {
+		return DiozeroProtos.Serial.Close.newBuilder().setTty(obj.getTty()).setCorrelationId(obj.getCorrelationId())
+				.build();
+	}
+
+	public static SerialReadByteResponse convert(DiozeroProtos.Serial.ReadByteResponse obj) {
+		return new SerialReadByteResponse((byte) obj.getData(), obj.getCorrelationId());
+	}
+
+	public static DiozeroProtos.Serial.ReadByteResponse convert(SerialReadByteResponse obj) {
+		return DiozeroProtos.Serial.ReadByteResponse.newBuilder().setData(obj.getData())
+				.setCorrelationId(obj.getCorrelationId()).build();
+	}
+
+	public static SerialReadResponse convert(DiozeroProtos.Serial.ReadResponse obj) {
+		return new SerialReadResponse(obj.getData().toByteArray(), obj.getCorrelationId());
+	}
+
+	public static DiozeroProtos.Serial.ReadResponse convert(SerialReadResponse obj) {
+		return DiozeroProtos.Serial.ReadResponse.newBuilder().setData(ByteString.copyFrom(obj.getData()))
+				.setCorrelationId(obj.getCorrelationId()).build();
+	}
+
+	public static SerialBytesAvailableResponse convert(DiozeroProtos.Serial.BytesAvailableResponse obj) {
+		return new SerialBytesAvailableResponse(obj.getBytesAvailable(), obj.getCorrelationId());
+	}
+
+	public static DiozeroProtos.Serial.BytesAvailableResponse convert(SerialBytesAvailableResponse obj) {
+		return DiozeroProtos.Serial.BytesAvailableResponse.newBuilder().setBytesAvailable(obj.getBytesAvailable())
+				.setCorrelationId(obj.getCorrelationId()).build();
 	}
 
 	private static Response.Status convert(DiozeroProtos.Status status) {

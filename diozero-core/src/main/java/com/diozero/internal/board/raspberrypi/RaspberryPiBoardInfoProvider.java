@@ -99,6 +99,7 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 		MEMORY.put(Integer.valueOf(2), Integer.valueOf(1024));
 		MEMORY.put(Integer.valueOf(3), Integer.valueOf(2048));
 		MEMORY.put(Integer.valueOf(4), Integer.valueOf(4096));
+		MEMORY.put(Integer.valueOf(5), Integer.valueOf(8192));
 	}
 	
 	private static final String SONY = "Sony";

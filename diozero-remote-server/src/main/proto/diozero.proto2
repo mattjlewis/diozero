@@ -2,7 +2,7 @@ syntax = "proto2";
 
 package diozero;
 
-option java_package = "com.diozero.remote.message";
+option java_package = "com.diozero.remote.message.protobuf";
 option java_outer_classname = "DiozeroProtos";
 
 enum Status {
@@ -228,7 +228,8 @@ message I2C {
 		required int32 controller = 2;
 		required int32 address = 3;
 		required int32 register = 4;
-		required int32 length = 5;
+		required int32 subAddressSize = 5;
+		required int32 length = 6;
 	}
 	
 	message WriteI2CBlockData {
@@ -236,7 +237,8 @@ message I2C {
 		required int32 controller = 2;
 		required int32 address = 3;
 		required int32 register = 4;
-		required bytes data = 5;
+		required int32 subAddressSize = 5;
+		required bytes data = 6;
 	}
 	
 	message Close {
@@ -302,5 +304,70 @@ message Spi {
 		required Status status = 2;
 		optional string detail = 3;
 		optional bytes rxData = 4;
+	}
+}
+
+message Serial {
+	message Open {
+		required string correlationId = 1;
+		required string tty = 2;
+		required int32 baud = 3;
+		required int32 dataBits = 4;
+		required int32 parity = 5;
+		required int32 stopBits = 6;
+	}
+	
+	message ReadByte {
+		required string correlationId = 1;
+		required string tty = 2;
+	}
+	
+	message WriteByte {
+		required string correlationId = 1;
+		required string tty = 2;
+		required int32 data = 3;
+	}
+	
+	message Read {
+		required string correlationId = 1;
+		required string tty = 2;
+		required int32 length = 3;
+	}
+	
+	message Write {
+		required string correlationId = 1;
+		required string tty = 2;
+		required bytes data = 3;
+	}
+	
+	message BytesAvailable {
+		required string correlationId = 1;
+		required string tty = 2;
+	}
+
+	message Close {
+		required string correlationId = 1;
+		required string tty = 2;
+	}
+	
+	message ReadByteResponse {
+		required string correlationId = 1;
+		required Status status = 2;
+		optional string detail = 3;
+		optional int32 data = 4;
+	}
+	
+	message ReadResponse {
+		required string correlationId = 1;
+		required Status status = 2;
+		optional string detail = 3;
+		optional bytes data = 4;
+	}
+	
+	message BytesAvailableResponse {
+		required string correlationId = 1;
+		required Status status = 2;
+		optional string detail = 3;
+		optional int32 bytesAvailable = 4;
 	}
 }

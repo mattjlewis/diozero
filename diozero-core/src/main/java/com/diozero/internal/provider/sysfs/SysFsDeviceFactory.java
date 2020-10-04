@@ -43,6 +43,7 @@ import com.diozero.api.GpioEventTrigger;
 import com.diozero.api.GpioPullUpDown;
 import com.diozero.api.PinInfo;
 import com.diozero.api.PwmPinInfo;
+import com.diozero.api.SerialDevice;
 import com.diozero.api.SpiClockMode;
 import com.diozero.internal.SoftwarePwmOutputDevice;
 import com.diozero.internal.board.odroid.OdroidBoardInfoProvider;
@@ -55,6 +56,7 @@ import com.diozero.internal.provider.GpioDigitalInputOutputDeviceInterface;
 import com.diozero.internal.provider.GpioDigitalOutputDeviceInterface;
 import com.diozero.internal.provider.I2CDeviceInterface;
 import com.diozero.internal.provider.PwmOutputDeviceInterface;
+import com.diozero.internal.provider.SerialDeviceInterface;
 import com.diozero.internal.provider.SpiDeviceInterface;
 import com.diozero.util.EpollNative;
 import com.diozero.util.RuntimeIOException;
@@ -153,7 +155,8 @@ public class SysFsDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	public AnalogOutputDeviceInterface createAnalogOutputDevice(String key, PinInfo pinInfo) throws RuntimeIOException {
+	public AnalogOutputDeviceInterface createAnalogOutputDevice(String key, PinInfo pinInfo, float initialValue)
+			throws RuntimeIOException {
 		throw new UnsupportedOperationException("Analog output not supported by device factory '"
 				+ getClass().getSimpleName() + "' on device '" + getBoardInfo().getName() + "'");
 	}
@@ -168,6 +171,12 @@ public class SysFsDeviceFactory extends BaseNativeDeviceFactory {
 	public I2CDeviceInterface createI2CDevice(String key, int controller, int address, int addressSize,
 			int clockFrequency) throws RuntimeIOException {
 		return new SysFsI2CDevice(this, key, controller, address, addressSize, clockFrequency);
+	}
+
+	@Override
+	public SerialDeviceInterface createSerialDevice(String key, String tty, int baud, SerialDevice.DataBits dataBits,
+			SerialDevice.Parity parity, SerialDevice.StopBits stopBits) throws RuntimeIOException {
+		return new SysFsSerialDevice(this, key, tty, baud, dataBits, parity, stopBits);
 	}
 
 	void export(int gpio, DeviceMode mode) {

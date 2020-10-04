@@ -30,11 +30,23 @@ package com.diozero.internal.provider.bbbiolib;
  * THE SOFTWARE.
  * #L%
  */
-
-
-import com.diozero.api.*;
+import com.diozero.api.DeviceMode;
+import com.diozero.api.GpioEventTrigger;
+import com.diozero.api.GpioPullUpDown;
+import com.diozero.api.PinInfo;
+import com.diozero.api.SerialDevice;
+import com.diozero.api.SpiClockMode;
 import com.diozero.internal.board.beaglebone.BeagleBoneBoardInfoProvider.BeagleBoneBlackBoardInfo;
-import com.diozero.internal.provider.*;
+import com.diozero.internal.provider.AnalogInputDeviceInterface;
+import com.diozero.internal.provider.AnalogOutputDeviceInterface;
+import com.diozero.internal.provider.BaseNativeDeviceFactory;
+import com.diozero.internal.provider.GpioDigitalInputDeviceInterface;
+import com.diozero.internal.provider.GpioDigitalInputOutputDeviceInterface;
+import com.diozero.internal.provider.GpioDigitalOutputDeviceInterface;
+import com.diozero.internal.provider.I2CDeviceInterface;
+import com.diozero.internal.provider.PwmOutputDeviceInterface;
+import com.diozero.internal.provider.SerialDeviceInterface;
+import com.diozero.internal.provider.SpiDeviceInterface;
 import com.diozero.internal.provider.sysfs.SysFsDeviceFactory;
 import com.diozero.internal.provider.sysfs.SysFsI2CDevice;
 import com.diozero.internal.provider.sysfs.SysFsSpiDevice;
@@ -43,7 +55,7 @@ import com.diozero.util.RuntimeIOException;
 public class BbbIoLibDeviceFactory extends BaseNativeDeviceFactory {
 	private int boardPwmFrequency;
 	private SysFsDeviceFactory sysFsDeviceFactory;
-	
+
 	public BbbIoLibDeviceFactory() {
 		int rc = BbbIoLibNative.init();
 		if (rc < 0) {
@@ -51,7 +63,7 @@ public class BbbIoLibDeviceFactory extends BaseNativeDeviceFactory {
 		}
 		sysFsDeviceFactory = new SysFsDeviceFactory();
 	}
-	
+
 	SysFsDeviceFactory getSysFsDeviceFactory() {
 		return sysFsDeviceFactory;
 	}
@@ -60,7 +72,7 @@ public class BbbIoLibDeviceFactory extends BaseNativeDeviceFactory {
 	public String getName() {
 		return getClass().getSimpleName();
 	}
-	
+
 	@Override
 	public void close() {
 		BbbIoLibNative.shutdown();
@@ -99,7 +111,7 @@ public class BbbIoLibDeviceFactory extends BaseNativeDeviceFactory {
 	public PwmOutputDeviceInterface createPwmOutputDevice(String key, PinInfo pinInfo, int pwmFrequency,
 			float initialValue) {
 		throw new UnsupportedOperationException("PWM output support not yet implemented");
-		//return new BbbIoLibPwmOutputDevice(this, key, pinInfo, initialValue);
+		// return new BbbIoLibPwmOutputDevice(this, key, pinInfo, initialValue);
 	}
 
 	@Override
@@ -108,7 +120,7 @@ public class BbbIoLibDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	public AnalogOutputDeviceInterface createAnalogOutputDevice(String key, PinInfo pinInfo) {
+	public AnalogOutputDeviceInterface createAnalogOutputDevice(String key, PinInfo pinInfo, float initialValue) {
 		throw new UnsupportedOperationException("Analog output not supported");
 	}
 
@@ -123,7 +135,13 @@ public class BbbIoLibDeviceFactory extends BaseNativeDeviceFactory {
 			int clockFrequency) throws RuntimeIOException {
 		return new SysFsI2CDevice(this, key, controller, address, addressSize, clockFrequency);
 	}
-	
+
+	@Override
+	public SerialDeviceInterface createSerialDevice(String key, String tty, int baud, SerialDevice.DataBits dataBits,
+			SerialDevice.Parity parity, SerialDevice.StopBits stopBits) throws RuntimeIOException {
+		throw new UnsupportedOperationException("Serial communication not available in the device factory");
+	}
+
 	static byte getPort(PinInfo pinInfo) {
 		return (byte) (pinInfo.getHeader() == BeagleBoneBlackBoardInfo.P8_HEADER ? 8 : 9);
 	}

@@ -61,8 +61,10 @@ import com.diozero.remote.message.I2COpen;
 import com.diozero.remote.message.I2CRead;
 import com.diozero.remote.message.I2CReadByte;
 import com.diozero.remote.message.I2CReadByteData;
+import com.diozero.remote.message.I2CReadByteDataResponse;
 import com.diozero.remote.message.I2CReadByteResponse;
 import com.diozero.remote.message.I2CReadI2CBlockData;
+import com.diozero.remote.message.I2CReadI2CBlockDataResponse;
 import com.diozero.remote.message.I2CReadResponse;
 import com.diozero.remote.message.I2CWrite;
 import com.diozero.remote.message.I2CWriteByte;
@@ -75,6 +77,16 @@ import com.diozero.remote.message.ProvisionDigitalInputOutputDevice;
 import com.diozero.remote.message.ProvisionDigitalOutputDevice;
 import com.diozero.remote.message.ProvisionPwmOutputDevice;
 import com.diozero.remote.message.Response;
+import com.diozero.remote.message.SerialBytesAvailable;
+import com.diozero.remote.message.SerialBytesAvailableResponse;
+import com.diozero.remote.message.SerialClose;
+import com.diozero.remote.message.SerialOpen;
+import com.diozero.remote.message.SerialRead;
+import com.diozero.remote.message.SerialReadByte;
+import com.diozero.remote.message.SerialReadByteResponse;
+import com.diozero.remote.message.SerialReadResponse;
+import com.diozero.remote.message.SerialWrite;
+import com.diozero.remote.message.SerialWriteByte;
 import com.diozero.remote.message.SpiClose;
 import com.diozero.remote.message.SpiOpen;
 import com.diozero.remote.message.SpiResponse;
@@ -186,8 +198,8 @@ public class ProtobufMqttProtocolHandler extends ProtobufBaseAsyncProtocolHandle
 
 	@Override
 	public Response request(GpioDigitalWrite request) {
-		return requestResponse(MqttProviderConstants.GPIO_DIGITAL_WRITE_TOPIC,
-				DiozeroProtosConverter.convert(request), request.getCorrelationId());
+		return requestResponse(MqttProviderConstants.GPIO_DIGITAL_WRITE_TOPIC, DiozeroProtosConverter.convert(request),
+				request.getCorrelationId());
 	}
 
 	@Override
@@ -198,8 +210,8 @@ public class ProtobufMqttProtocolHandler extends ProtobufBaseAsyncProtocolHandle
 
 	@Override
 	public Response request(GpioPwmWrite request) {
-		return requestResponse(MqttProviderConstants.GPIO_PWM_WRITE_TOPIC,
-				DiozeroProtosConverter.convert(request), request.getCorrelationId());
+		return requestResponse(MqttProviderConstants.GPIO_PWM_WRITE_TOPIC, DiozeroProtosConverter.convert(request),
+				request.getCorrelationId());
 	}
 
 	@Override
@@ -210,26 +222,26 @@ public class ProtobufMqttProtocolHandler extends ProtobufBaseAsyncProtocolHandle
 
 	@Override
 	public Response request(GpioAnalogWrite request) {
-		return requestResponse(MqttProviderConstants.GPIO_ANALOG_WRITE_TOPIC,
-				DiozeroProtosConverter.convert(request), request.getCorrelationId());
+		return requestResponse(MqttProviderConstants.GPIO_ANALOG_WRITE_TOPIC, DiozeroProtosConverter.convert(request),
+				request.getCorrelationId());
 	}
 
 	@Override
 	public Response request(GpioEvents request) {
-		return requestResponse(MqttProviderConstants.GPIO_EVENTS_TOPIC,
-				DiozeroProtosConverter.convert(request), request.getCorrelationId());
+		return requestResponse(MqttProviderConstants.GPIO_EVENTS_TOPIC, DiozeroProtosConverter.convert(request),
+				request.getCorrelationId());
 	}
 
 	@Override
 	public Response request(GpioClose request) {
-		return requestResponse(MqttProviderConstants.GPIO_CLOSE_TOPIC,
-				DiozeroProtosConverter.convert(request), request.getCorrelationId());
+		return requestResponse(MqttProviderConstants.GPIO_CLOSE_TOPIC, DiozeroProtosConverter.convert(request),
+				request.getCorrelationId());
 	}
 
 	@Override
 	public Response request(I2COpen request) {
-		return requestResponse(MqttProviderConstants.I2C_OPEN_TOPIC,
-				DiozeroProtosConverter.convert(request), request.getCorrelationId());
+		return requestResponse(MqttProviderConstants.I2C_OPEN_TOPIC, DiozeroProtosConverter.convert(request),
+				request.getCorrelationId());
 	}
 
 	@Override
@@ -240,62 +252,62 @@ public class ProtobufMqttProtocolHandler extends ProtobufBaseAsyncProtocolHandle
 
 	@Override
 	public Response request(I2CWriteByte request) {
-		return requestResponse(MqttProviderConstants.I2C_WRITE_BYTE_TOPIC,
-				DiozeroProtosConverter.convert(request), request.getCorrelationId());
+		return requestResponse(MqttProviderConstants.I2C_WRITE_BYTE_TOPIC, DiozeroProtosConverter.convert(request),
+				request.getCorrelationId());
 	}
-	
+
 	@Override
 	public I2CReadResponse request(I2CRead request) {
 		return (I2CReadResponse) requestResponse(MqttProviderConstants.I2C_READ_TOPIC,
 				DiozeroProtosConverter.convert(request), request.getCorrelationId());
 	}
-	
+
 	@Override
 	public Response request(I2CWrite request) {
-		return requestResponse(MqttProviderConstants.I2C_WRITE_TOPIC,
-				DiozeroProtosConverter.convert(request), request.getCorrelationId());
+		return requestResponse(MqttProviderConstants.I2C_WRITE_TOPIC, DiozeroProtosConverter.convert(request),
+				request.getCorrelationId());
 	}
-	
+
 	@Override
-	public I2CReadByteResponse request(I2CReadByteData request) {
-		return (I2CReadByteResponse) requestResponse(MqttProviderConstants.I2C_READ_BYTE_DATA_TOPIC,
+	public I2CReadByteDataResponse request(I2CReadByteData request) {
+		return (I2CReadByteDataResponse) requestResponse(MqttProviderConstants.I2C_READ_BYTE_DATA_TOPIC,
 				DiozeroProtosConverter.convert(request), request.getCorrelationId());
 	}
-	
+
 	@Override
 	public Response request(I2CWriteByteData request) {
-		return requestResponse(MqttProviderConstants.I2C_WRITE_BYTE_DATA_TOPIC,
-				DiozeroProtosConverter.convert(request), request.getCorrelationId());
+		return requestResponse(MqttProviderConstants.I2C_WRITE_BYTE_DATA_TOPIC, DiozeroProtosConverter.convert(request),
+				request.getCorrelationId());
 	}
-	
+
 	@Override
-	public I2CReadResponse request(I2CReadI2CBlockData request) {
-		return (I2CReadResponse) requestResponse(MqttProviderConstants.I2C_READ_I2C_BLOCK_DATA_TOPIC,
+	public I2CReadI2CBlockDataResponse request(I2CReadI2CBlockData request) {
+		return (I2CReadI2CBlockDataResponse) requestResponse(MqttProviderConstants.I2C_READ_I2C_BLOCK_DATA_TOPIC,
 				DiozeroProtosConverter.convert(request), request.getCorrelationId());
 	}
-	
+
 	@Override
 	public Response request(I2CWriteI2CBlockData request) {
 		return requestResponse(MqttProviderConstants.I2C_WRITE_I2C_BLOCK_DATA_TOPIC,
 				DiozeroProtosConverter.convert(request), request.getCorrelationId());
 	}
-	
+
 	@Override
 	public Response request(I2CClose request) {
-		return requestResponse(MqttProviderConstants.I2C_CLOSE_TOPIC,
-				DiozeroProtosConverter.convert(request), request.getCorrelationId());
+		return requestResponse(MqttProviderConstants.I2C_CLOSE_TOPIC, DiozeroProtosConverter.convert(request),
+				request.getCorrelationId());
 	}
 
 	@Override
 	public Response request(SpiOpen request) {
-		return requestResponse(MqttProviderConstants.SPI_OPEN_TOPIC,
-				DiozeroProtosConverter.convert(request), request.getCorrelationId());
+		return requestResponse(MqttProviderConstants.SPI_OPEN_TOPIC, DiozeroProtosConverter.convert(request),
+				request.getCorrelationId());
 	}
 
 	@Override
 	public Response request(SpiWrite request) {
-		return requestResponse(MqttProviderConstants.SPI_WRITE_TOPIC,
-				DiozeroProtosConverter.convert(request), request.getCorrelationId());
+		return requestResponse(MqttProviderConstants.SPI_WRITE_TOPIC, DiozeroProtosConverter.convert(request),
+				request.getCorrelationId());
 	}
 
 	@Override
@@ -306,8 +318,50 @@ public class ProtobufMqttProtocolHandler extends ProtobufBaseAsyncProtocolHandle
 
 	@Override
 	public Response request(SpiClose request) {
-		return requestResponse(MqttProviderConstants.SPI_CLOSE_TOPIC,
+		return requestResponse(MqttProviderConstants.SPI_CLOSE_TOPIC, DiozeroProtosConverter.convert(request),
+				request.getCorrelationId());
+	}
+
+	@Override
+	public Response request(SerialOpen request) {
+		return requestResponse(MqttProviderConstants.SERIAL_OPEN_TOPIC, DiozeroProtosConverter.convert(request),
+				request.getCorrelationId());
+	}
+
+	@Override
+	public SerialReadByteResponse request(SerialReadByte request) {
+		return (SerialReadByteResponse) requestResponse(MqttProviderConstants.SERIAL_READ_BYTE_TOPIC,
 				DiozeroProtosConverter.convert(request), request.getCorrelationId());
+	}
+
+	@Override
+	public Response request(SerialWriteByte request) {
+		return requestResponse(MqttProviderConstants.SERIAL_WRITE_BYTE_TOPIC, DiozeroProtosConverter.convert(request),
+				request.getCorrelationId());
+	}
+
+	@Override
+	public SerialReadResponse request(SerialRead request) {
+		return (SerialReadResponse) requestResponse(MqttProviderConstants.SERIAL_READ_TOPIC,
+				DiozeroProtosConverter.convert(request), request.getCorrelationId());
+	}
+
+	@Override
+	public Response request(SerialWrite request) {
+		return requestResponse(MqttProviderConstants.SERIAL_WRITE_TOPIC, DiozeroProtosConverter.convert(request),
+				request.getCorrelationId());
+	}
+
+	@Override
+	public SerialBytesAvailableResponse request(SerialBytesAvailable request) {
+		return (SerialBytesAvailableResponse) requestResponse(MqttProviderConstants.SERIAL_BYTES_AVAILABLE_TOPIC,
+				DiozeroProtosConverter.convert(request), request.getCorrelationId());
+	}
+
+	@Override
+	public Response request(SerialClose request) {
+		return requestResponse(MqttProviderConstants.SERIAL_CLOSE_TOPIC, DiozeroProtosConverter.convert(request),
+				request.getCorrelationId());
 	}
 
 	@Override

@@ -85,6 +85,7 @@ public class SleepUtil {
 	 * Sleep for the specific number of microseconds
 	 * @param micros Number of microseconds to sleep for
 	 */
+	@Deprecated
 	public static void sleepMicros(int micros) {
 		sleepNanos((int) TimeUnit.MICROSECONDS.toNanos(micros));
 	}
@@ -93,6 +94,7 @@ public class SleepUtil {
 	 * Sleep for the specified number of nanoseconds.
 	 * @param nanos Number of nanoseconds
 	 */
+	@Deprecated
 	public static void sleepNanos(int nanos) {
 		sleepNanos(0, nanos);
 	}

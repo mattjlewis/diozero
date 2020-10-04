@@ -43,6 +43,7 @@ import com.diozero.api.DeviceMode;
 import com.diozero.api.GpioEventTrigger;
 import com.diozero.api.GpioPullUpDown;
 import com.diozero.api.PinInfo;
+import com.diozero.api.SerialDevice;
 import com.diozero.api.SpiClockMode;
 import com.diozero.internal.provider.AnalogInputDeviceInterface;
 import com.diozero.internal.provider.AnalogOutputDeviceInterface;
@@ -52,13 +53,15 @@ import com.diozero.internal.provider.GpioDigitalInputOutputDeviceInterface;
 import com.diozero.internal.provider.GpioDigitalOutputDeviceInterface;
 import com.diozero.internal.provider.I2CDeviceInterface;
 import com.diozero.internal.provider.PwmOutputDeviceInterface;
+import com.diozero.internal.provider.SerialDeviceInterface;
 import com.diozero.internal.provider.SpiDeviceInterface;
 import com.diozero.util.RuntimeIOException;
 
 public class JdkDeviceIoDeviceFactory extends BaseNativeDeviceFactory {
 
 	public JdkDeviceIoDeviceFactory() {
-		// Prevent having to reference a local GPIO policy file via -Djava.security.policy=<policy-file> command line
+		// Prevent having to reference a local GPIO policy file via
+		// -Djava.security.policy=<policy-file> command line
 		if (System.getSecurityManager() == null) {
 			try {
 				Path policy_file_path = Files.createTempFile("diozero-gpio-", ".policy");
@@ -72,7 +75,7 @@ public class JdkDeviceIoDeviceFactory extends BaseNativeDeviceFactory {
 			}
 		}
 	}
-	
+
 	@Override
 	public String getName() {
 		return getClass().getSimpleName() + "10";
@@ -95,13 +98,14 @@ public class JdkDeviceIoDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	public GpioDigitalOutputDeviceInterface createDigitalOutputDevice(String key, PinInfo pinInfo, boolean initialValue) throws RuntimeIOException {
+	public GpioDigitalOutputDeviceInterface createDigitalOutputDevice(String key, PinInfo pinInfo, boolean initialValue)
+			throws RuntimeIOException {
 		return new JdkDeviceIoGpioOutputDevice(key, this, pinInfo.getDeviceNumber(), initialValue);
 	}
 
 	@Override
-	public GpioDigitalInputOutputDeviceInterface createDigitalInputOutputDevice(String key, PinInfo pinInfo, DeviceMode mode)
-			throws RuntimeIOException {
+	public GpioDigitalInputOutputDeviceInterface createDigitalInputOutputDevice(String key, PinInfo pinInfo,
+			DeviceMode mode) throws RuntimeIOException {
 		throw new UnsupportedOperationException("Digital Input / Output devices not yet supported by this provider");
 	}
 
@@ -117,18 +121,26 @@ public class JdkDeviceIoDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	public AnalogOutputDeviceInterface createAnalogOutputDevice(String key, PinInfo pinInfo) throws RuntimeIOException {
+	public AnalogOutputDeviceInterface createAnalogOutputDevice(String key, PinInfo pinInfo, float initialValue)
+			throws RuntimeIOException {
 		throw new UnsupportedOperationException("Analog devices aren't supported on this device");
 	}
 
 	@Override
-	public SpiDeviceInterface createSpiDevice(String key, int controller, int chipSelect,
-			int frequency, SpiClockMode spiClockMode, boolean lsbFirst) throws RuntimeIOException {
+	public SpiDeviceInterface createSpiDevice(String key, int controller, int chipSelect, int frequency,
+			SpiClockMode spiClockMode, boolean lsbFirst) throws RuntimeIOException {
 		return new JdkDeviceIoSpiDevice(key, this, controller, chipSelect, frequency, spiClockMode, lsbFirst);
 	}
 
 	@Override
-	public I2CDeviceInterface createI2CDevice(String key, int controller, int address, int addressSize, int clockFrequency) throws RuntimeIOException {
+	public I2CDeviceInterface createI2CDevice(String key, int controller, int address, int addressSize,
+			int clockFrequency) throws RuntimeIOException {
 		return new JdkDeviceIoI2CDevice(key, this, controller, address, addressSize, clockFrequency);
+	}
+
+	@Override
+	public SerialDeviceInterface createSerialDevice(String key, String tty, int baud, SerialDevice.DataBits dataBits,
+			SerialDevice.Parity parity, SerialDevice.StopBits stopBits) throws RuntimeIOException {
+		throw new UnsupportedOperationException("Serial communication not available in the device factory");
 	}
 }

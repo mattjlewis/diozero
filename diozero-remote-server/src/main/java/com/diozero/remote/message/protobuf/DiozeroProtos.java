@@ -176,7 +176,7 @@ public final class DiozeroProtos {
   /**
    * Protobuf type {@code diozero.MessageWrapper}
    */
-  public  static final class MessageWrapper extends
+  public static final class MessageWrapper extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:diozero.MessageWrapper)
       MessageWrapperOrBuilder {
@@ -271,6 +271,7 @@ public final class DiozeroProtos {
      * <code>required string type = 1;</code>
      * @return Whether the type field is set.
      */
+    @java.lang.Override
     public boolean hasType() {
       return ((bitField0_ & 0x00000001) != 0);
     }
@@ -278,6 +279,7 @@ public final class DiozeroProtos {
      * <code>required string type = 1;</code>
      * @return The type.
      */
+    @java.lang.Override
     public java.lang.String getType() {
       java.lang.Object ref = type_;
       if (ref instanceof java.lang.String) {
@@ -296,6 +298,7 @@ public final class DiozeroProtos {
      * <code>required string type = 1;</code>
      * @return The bytes for type.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString
         getTypeBytes() {
       java.lang.Object ref = type_;
@@ -316,6 +319,7 @@ public final class DiozeroProtos {
      * <code>required bytes message = 2;</code>
      * @return Whether the message field is set.
      */
+    @java.lang.Override
     public boolean hasMessage() {
       return ((bitField0_ & 0x00000002) != 0);
     }
@@ -323,6 +327,7 @@ public final class DiozeroProtos {
      * <code>required bytes message = 2;</code>
      * @return The message.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString getMessage() {
       return message_;
     }
@@ -530,7 +535,7 @@ public final class DiozeroProtos {
                 com.diozero.remote.message.protobuf.DiozeroProtos.MessageWrapper.class, com.diozero.remote.message.protobuf.DiozeroProtos.MessageWrapper.Builder.class);
       }
 
-      // Construct using com.diozero.remote.message.DiozeroProtos.MessageWrapper.newBuilder()
+      // Construct using com.diozero.remote.message.protobuf.DiozeroProtos.MessageWrapper.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -770,6 +775,7 @@ public final class DiozeroProtos {
        * <code>required bytes message = 2;</code>
        * @return Whether the message field is set.
        */
+      @java.lang.Override
       public boolean hasMessage() {
         return ((bitField0_ & 0x00000002) != 0);
       }
@@ -777,6 +783,7 @@ public final class DiozeroProtos {
        * <code>required bytes message = 2;</code>
        * @return The message.
        */
+      @java.lang.Override
       public com.google.protobuf.ByteString getMessage() {
         return message_;
       }
@@ -909,7 +916,7 @@ public final class DiozeroProtos {
   /**
    * Protobuf type {@code diozero.Response}
    */
-  public  static final class Response extends
+  public static final class Response extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:diozero.Response)
       ResponseOrBuilder {
@@ -1018,6 +1025,7 @@ public final class DiozeroProtos {
      * <code>required string correlationId = 1;</code>
      * @return Whether the correlationId field is set.
      */
+    @java.lang.Override
     public boolean hasCorrelationId() {
       return ((bitField0_ & 0x00000001) != 0);
     }
@@ -1025,6 +1033,7 @@ public final class DiozeroProtos {
      * <code>required string correlationId = 1;</code>
      * @return The correlationId.
      */
+    @java.lang.Override
     public java.lang.String getCorrelationId() {
       java.lang.Object ref = correlationId_;
       if (ref instanceof java.lang.String) {
@@ -1043,6 +1052,7 @@ public final class DiozeroProtos {
      * <code>required string correlationId = 1;</code>
      * @return The bytes for correlationId.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString
         getCorrelationIdBytes() {
       java.lang.Object ref = correlationId_;
@@ -1063,14 +1073,14 @@ public final class DiozeroProtos {
      * <code>required .diozero.Status status = 2;</code>
      * @return Whether the status field is set.
      */
-    public boolean hasStatus() {
+    @java.lang.Override public boolean hasStatus() {
       return ((bitField0_ & 0x00000002) != 0);
     }
     /**
      * <code>required .diozero.Status status = 2;</code>
      * @return The status.
      */
-    public com.diozero.remote.message.protobuf.DiozeroProtos.Status getStatus() {
+    @java.lang.Override public com.diozero.remote.message.protobuf.DiozeroProtos.Status getStatus() {
       @SuppressWarnings("deprecation")
       com.diozero.remote.message.protobuf.DiozeroProtos.Status result = com.diozero.remote.message.protobuf.DiozeroProtos.Status.valueOf(status_);
       return result == null ? com.diozero.remote.message.protobuf.DiozeroProtos.Status.OK : result;
@@ -1082,6 +1092,7 @@ public final class DiozeroProtos {
      * <code>optional string detail = 3;</code>
      * @return Whether the detail field is set.
      */
+    @java.lang.Override
     public boolean hasDetail() {
       return ((bitField0_ & 0x00000004) != 0);
     }
@@ -1089,6 +1100,7 @@ public final class DiozeroProtos {
      * <code>optional string detail = 3;</code>
      * @return The detail.
      */
+    @java.lang.Override
     public java.lang.String getDetail() {
       java.lang.Object ref = detail_;
       if (ref instanceof java.lang.String) {
@@ -1107,6 +1119,7 @@ public final class DiozeroProtos {
      * <code>optional string detail = 3;</code>
      * @return The bytes for detail.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString
         getDetailBytes() {
       java.lang.Object ref = detail_;
@@ -1338,7 +1351,7 @@ public final class DiozeroProtos {
                 com.diozero.remote.message.protobuf.DiozeroProtos.Response.class, com.diozero.remote.message.protobuf.DiozeroProtos.Response.Builder.class);
       }
 
-      // Construct using com.diozero.remote.message.DiozeroProtos.Response.newBuilder()
+      // Construct using com.diozero.remote.message.protobuf.DiozeroProtos.Response.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -1589,13 +1602,14 @@ public final class DiozeroProtos {
        * <code>required .diozero.Status status = 2;</code>
        * @return Whether the status field is set.
        */
-      public boolean hasStatus() {
+      @java.lang.Override public boolean hasStatus() {
         return ((bitField0_ & 0x00000002) != 0);
       }
       /**
        * <code>required .diozero.Status status = 2;</code>
        * @return The status.
        */
+      @java.lang.Override
       public com.diozero.remote.message.protobuf.DiozeroProtos.Status getStatus() {
         @SuppressWarnings("deprecation")
         com.diozero.remote.message.protobuf.DiozeroProtos.Status result = com.diozero.remote.message.protobuf.DiozeroProtos.Status.valueOf(status_);
@@ -1769,7 +1783,7 @@ public final class DiozeroProtos {
   /**
    * Protobuf type {@code diozero.Gpio}
    */
-  public  static final class Gpio extends
+  public static final class Gpio extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:diozero.Gpio)
       GpioOrBuilder {
@@ -2229,7 +2243,7 @@ public final class DiozeroProtos {
     /**
      * Protobuf type {@code diozero.Gpio.GpioInfo}
      */
-    public  static final class GpioInfo extends
+    public static final class GpioInfo extends
         com.google.protobuf.GeneratedMessageV3 implements
         // @@protoc_insertion_point(message_implements:diozero.Gpio.GpioInfo)
         GpioInfoOrBuilder {
@@ -2355,6 +2369,7 @@ public final class DiozeroProtos {
        * <code>required int32 gpio = 1;</code>
        * @return Whether the gpio field is set.
        */
+      @java.lang.Override
       public boolean hasGpio() {
         return ((bitField0_ & 0x00000001) != 0);
       }
@@ -2362,6 +2377,7 @@ public final class DiozeroProtos {
        * <code>required int32 gpio = 1;</code>
        * @return The gpio.
        */
+      @java.lang.Override
       public int getGpio() {
         return gpio_;
       }
@@ -2382,6 +2398,7 @@ public final class DiozeroProtos {
        * <code>repeated .diozero.Gpio.GpioMode mode = 2;</code>
        * @return A list containing the mode.
        */
+      @java.lang.Override
       public java.util.List<com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.GpioMode> getModeList() {
         return new com.google.protobuf.Internal.ListAdapter<
             java.lang.Integer, com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.GpioMode>(mode_, mode_converter_);
@@ -2390,6 +2407,7 @@ public final class DiozeroProtos {
        * <code>repeated .diozero.Gpio.GpioMode mode = 2;</code>
        * @return The count of mode.
        */
+      @java.lang.Override
       public int getModeCount() {
         return mode_.size();
       }
@@ -2398,6 +2416,7 @@ public final class DiozeroProtos {
        * @param index The index of the element to return.
        * @return The mode at the given index.
        */
+      @java.lang.Override
       public com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.GpioMode getMode(int index) {
         return mode_converter_.convert(mode_.get(index));
       }
@@ -2603,7 +2622,7 @@ public final class DiozeroProtos {
                   com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.GpioInfo.class, com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.GpioInfo.Builder.class);
         }
 
-        // Construct using com.diozero.remote.message.DiozeroProtos.Gpio.GpioInfo.newBuilder()
+        // Construct using com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.GpioInfo.newBuilder()
         private Builder() {
           maybeForceBuilderInitialization();
         }
@@ -2762,6 +2781,7 @@ public final class DiozeroProtos {
          * <code>required int32 gpio = 1;</code>
          * @return Whether the gpio field is set.
          */
+        @java.lang.Override
         public boolean hasGpio() {
           return ((bitField0_ & 0x00000001) != 0);
         }
@@ -2769,6 +2789,7 @@ public final class DiozeroProtos {
          * <code>required int32 gpio = 1;</code>
          * @return The gpio.
          */
+        @java.lang.Override
         public int getGpio() {
           return gpio_;
         }
@@ -2956,7 +2977,7 @@ public final class DiozeroProtos {
     /**
      * Protobuf type {@code diozero.Gpio.GetBoardInfo}
      */
-    public  static final class GetBoardInfo extends
+    public static final class GetBoardInfo extends
         com.google.protobuf.GeneratedMessageV3 implements
         // @@protoc_insertion_point(message_implements:diozero.Gpio.GetBoardInfo)
         GetBoardInfoOrBuilder {
@@ -3045,6 +3066,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return Whether the correlationId field is set.
        */
+      @java.lang.Override
       public boolean hasCorrelationId() {
         return ((bitField0_ & 0x00000001) != 0);
       }
@@ -3052,6 +3074,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return The correlationId.
        */
+      @java.lang.Override
       public java.lang.String getCorrelationId() {
         java.lang.Object ref = correlationId_;
         if (ref instanceof java.lang.String) {
@@ -3070,6 +3093,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return The bytes for correlationId.
        */
+      @java.lang.Override
       public com.google.protobuf.ByteString
           getCorrelationIdBytes() {
         java.lang.Object ref = correlationId_;
@@ -3267,7 +3291,7 @@ public final class DiozeroProtos {
                   com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.GetBoardInfo.class, com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.GetBoardInfo.Builder.class);
         }
 
-        // Construct using com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardInfo.newBuilder()
+        // Construct using com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.GetBoardInfo.newBuilder()
         private Builder() {
           maybeForceBuilderInitialization();
         }
@@ -3663,7 +3687,7 @@ public final class DiozeroProtos {
     /**
      * Protobuf type {@code diozero.Gpio.GetBoardInfoResponse}
      */
-    public  static final class GetBoardInfoResponse extends
+    public static final class GetBoardInfoResponse extends
         com.google.protobuf.GeneratedMessageV3 implements
         // @@protoc_insertion_point(message_implements:diozero.Gpio.GetBoardInfoResponse)
         GetBoardInfoResponseOrBuilder {
@@ -3804,6 +3828,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return Whether the correlationId field is set.
        */
+      @java.lang.Override
       public boolean hasCorrelationId() {
         return ((bitField0_ & 0x00000001) != 0);
       }
@@ -3811,6 +3836,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return The correlationId.
        */
+      @java.lang.Override
       public java.lang.String getCorrelationId() {
         java.lang.Object ref = correlationId_;
         if (ref instanceof java.lang.String) {
@@ -3829,6 +3855,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return The bytes for correlationId.
        */
+      @java.lang.Override
       public com.google.protobuf.ByteString
           getCorrelationIdBytes() {
         java.lang.Object ref = correlationId_;
@@ -3849,14 +3876,14 @@ public final class DiozeroProtos {
        * <code>required .diozero.Status status = 2;</code>
        * @return Whether the status field is set.
        */
-      public boolean hasStatus() {
+      @java.lang.Override public boolean hasStatus() {
         return ((bitField0_ & 0x00000002) != 0);
       }
       /**
        * <code>required .diozero.Status status = 2;</code>
        * @return The status.
        */
-      public com.diozero.remote.message.protobuf.DiozeroProtos.Status getStatus() {
+      @java.lang.Override public com.diozero.remote.message.protobuf.DiozeroProtos.Status getStatus() {
         @SuppressWarnings("deprecation")
         com.diozero.remote.message.protobuf.DiozeroProtos.Status result = com.diozero.remote.message.protobuf.DiozeroProtos.Status.valueOf(status_);
         return result == null ? com.diozero.remote.message.protobuf.DiozeroProtos.Status.OK : result;
@@ -3868,6 +3895,7 @@ public final class DiozeroProtos {
        * <code>optional string detail = 3;</code>
        * @return Whether the detail field is set.
        */
+      @java.lang.Override
       public boolean hasDetail() {
         return ((bitField0_ & 0x00000004) != 0);
       }
@@ -3875,6 +3903,7 @@ public final class DiozeroProtos {
        * <code>optional string detail = 3;</code>
        * @return The detail.
        */
+      @java.lang.Override
       public java.lang.String getDetail() {
         java.lang.Object ref = detail_;
         if (ref instanceof java.lang.String) {
@@ -3893,6 +3922,7 @@ public final class DiozeroProtos {
        * <code>optional string detail = 3;</code>
        * @return The bytes for detail.
        */
+      @java.lang.Override
       public com.google.protobuf.ByteString
           getDetailBytes() {
         java.lang.Object ref = detail_;
@@ -3913,6 +3943,7 @@ public final class DiozeroProtos {
        * <code>optional string make = 4;</code>
        * @return Whether the make field is set.
        */
+      @java.lang.Override
       public boolean hasMake() {
         return ((bitField0_ & 0x00000008) != 0);
       }
@@ -3920,6 +3951,7 @@ public final class DiozeroProtos {
        * <code>optional string make = 4;</code>
        * @return The make.
        */
+      @java.lang.Override
       public java.lang.String getMake() {
         java.lang.Object ref = make_;
         if (ref instanceof java.lang.String) {
@@ -3938,6 +3970,7 @@ public final class DiozeroProtos {
        * <code>optional string make = 4;</code>
        * @return The bytes for make.
        */
+      @java.lang.Override
       public com.google.protobuf.ByteString
           getMakeBytes() {
         java.lang.Object ref = make_;
@@ -3958,6 +3991,7 @@ public final class DiozeroProtos {
        * <code>optional string model = 5;</code>
        * @return Whether the model field is set.
        */
+      @java.lang.Override
       public boolean hasModel() {
         return ((bitField0_ & 0x00000010) != 0);
       }
@@ -3965,6 +3999,7 @@ public final class DiozeroProtos {
        * <code>optional string model = 5;</code>
        * @return The model.
        */
+      @java.lang.Override
       public java.lang.String getModel() {
         java.lang.Object ref = model_;
         if (ref instanceof java.lang.String) {
@@ -3983,6 +4018,7 @@ public final class DiozeroProtos {
        * <code>optional string model = 5;</code>
        * @return The bytes for model.
        */
+      @java.lang.Override
       public com.google.protobuf.ByteString
           getModelBytes() {
         java.lang.Object ref = model_;
@@ -4003,6 +4039,7 @@ public final class DiozeroProtos {
        * <code>optional int32 memory = 6;</code>
        * @return Whether the memory field is set.
        */
+      @java.lang.Override
       public boolean hasMemory() {
         return ((bitField0_ & 0x00000020) != 0);
       }
@@ -4010,6 +4047,7 @@ public final class DiozeroProtos {
        * <code>optional int32 memory = 6;</code>
        * @return The memory.
        */
+      @java.lang.Override
       public int getMemory() {
         return memory_;
       }
@@ -4019,12 +4057,14 @@ public final class DiozeroProtos {
       /**
        * <code>repeated .diozero.Gpio.GpioInfo gpioInfo = 7;</code>
        */
+      @java.lang.Override
       public java.util.List<com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.GpioInfo> getGpioInfoList() {
         return gpioInfo_;
       }
       /**
        * <code>repeated .diozero.Gpio.GpioInfo gpioInfo = 7;</code>
        */
+      @java.lang.Override
       public java.util.List<? extends com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.GpioInfoOrBuilder> 
           getGpioInfoOrBuilderList() {
         return gpioInfo_;
@@ -4032,18 +4072,21 @@ public final class DiozeroProtos {
       /**
        * <code>repeated .diozero.Gpio.GpioInfo gpioInfo = 7;</code>
        */
+      @java.lang.Override
       public int getGpioInfoCount() {
         return gpioInfo_.size();
       }
       /**
        * <code>repeated .diozero.Gpio.GpioInfo gpioInfo = 7;</code>
        */
+      @java.lang.Override
       public com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.GpioInfo getGpioInfo(int index) {
         return gpioInfo_.get(index);
       }
       /**
        * <code>repeated .diozero.Gpio.GpioInfo gpioInfo = 7;</code>
        */
+      @java.lang.Override
       public com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.GpioInfoOrBuilder getGpioInfoOrBuilder(
           int index) {
         return gpioInfo_.get(index);
@@ -4331,7 +4374,7 @@ public final class DiozeroProtos {
                   com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.GetBoardInfoResponse.class, com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.GetBoardInfoResponse.Builder.class);
         }
 
-        // Construct using com.diozero.remote.message.DiozeroProtos.Gpio.GetBoardInfoResponse.newBuilder()
+        // Construct using com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.GetBoardInfoResponse.newBuilder()
         private Builder() {
           maybeForceBuilderInitialization();
         }
@@ -4660,13 +4703,14 @@ public final class DiozeroProtos {
          * <code>required .diozero.Status status = 2;</code>
          * @return Whether the status field is set.
          */
-        public boolean hasStatus() {
+        @java.lang.Override public boolean hasStatus() {
           return ((bitField0_ & 0x00000002) != 0);
         }
         /**
          * <code>required .diozero.Status status = 2;</code>
          * @return The status.
          */
+        @java.lang.Override
         public com.diozero.remote.message.protobuf.DiozeroProtos.Status getStatus() {
           @SuppressWarnings("deprecation")
           com.diozero.remote.message.protobuf.DiozeroProtos.Status result = com.diozero.remote.message.protobuf.DiozeroProtos.Status.valueOf(status_);
@@ -4954,6 +4998,7 @@ public final class DiozeroProtos {
          * <code>optional int32 memory = 6;</code>
          * @return Whether the memory field is set.
          */
+        @java.lang.Override
         public boolean hasMemory() {
           return ((bitField0_ & 0x00000020) != 0);
         }
@@ -4961,6 +5006,7 @@ public final class DiozeroProtos {
          * <code>optional int32 memory = 6;</code>
          * @return The memory.
          */
+        @java.lang.Override
         public int getMemory() {
           return memory_;
         }
@@ -5335,7 +5381,7 @@ public final class DiozeroProtos {
     /**
      * Protobuf type {@code diozero.Gpio.ProvisionDigitalInput}
      */
-    public  static final class ProvisionDigitalInput extends
+    public static final class ProvisionDigitalInput extends
         com.google.protobuf.GeneratedMessageV3 implements
         // @@protoc_insertion_point(message_implements:diozero.Gpio.ProvisionDigitalInput)
         ProvisionDigitalInputOrBuilder {
@@ -5455,6 +5501,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return Whether the correlationId field is set.
        */
+      @java.lang.Override
       public boolean hasCorrelationId() {
         return ((bitField0_ & 0x00000001) != 0);
       }
@@ -5462,6 +5509,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return The correlationId.
        */
+      @java.lang.Override
       public java.lang.String getCorrelationId() {
         java.lang.Object ref = correlationId_;
         if (ref instanceof java.lang.String) {
@@ -5480,6 +5528,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return The bytes for correlationId.
        */
+      @java.lang.Override
       public com.google.protobuf.ByteString
           getCorrelationIdBytes() {
         java.lang.Object ref = correlationId_;
@@ -5500,6 +5549,7 @@ public final class DiozeroProtos {
        * <code>required int32 gpio = 2;</code>
        * @return Whether the gpio field is set.
        */
+      @java.lang.Override
       public boolean hasGpio() {
         return ((bitField0_ & 0x00000002) != 0);
       }
@@ -5507,6 +5557,7 @@ public final class DiozeroProtos {
        * <code>required int32 gpio = 2;</code>
        * @return The gpio.
        */
+      @java.lang.Override
       public int getGpio() {
         return gpio_;
       }
@@ -5517,14 +5568,14 @@ public final class DiozeroProtos {
        * <code>optional .diozero.Gpio.PullUpDown pud = 3 [default = PUD_NONE];</code>
        * @return Whether the pud field is set.
        */
-      public boolean hasPud() {
+      @java.lang.Override public boolean hasPud() {
         return ((bitField0_ & 0x00000004) != 0);
       }
       /**
        * <code>optional .diozero.Gpio.PullUpDown pud = 3 [default = PUD_NONE];</code>
        * @return The pud.
        */
-      public com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.PullUpDown getPud() {
+      @java.lang.Override public com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.PullUpDown getPud() {
         @SuppressWarnings("deprecation")
         com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.PullUpDown result = com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.PullUpDown.valueOf(pud_);
         return result == null ? com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.PullUpDown.PUD_NONE : result;
@@ -5536,14 +5587,14 @@ public final class DiozeroProtos {
        * <code>optional .diozero.Gpio.Trigger trigger = 4 [default = TRIGGER_NONE];</code>
        * @return Whether the trigger field is set.
        */
-      public boolean hasTrigger() {
+      @java.lang.Override public boolean hasTrigger() {
         return ((bitField0_ & 0x00000008) != 0);
       }
       /**
        * <code>optional .diozero.Gpio.Trigger trigger = 4 [default = TRIGGER_NONE];</code>
        * @return The trigger.
        */
-      public com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.Trigger getTrigger() {
+      @java.lang.Override public com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.Trigger getTrigger() {
         @SuppressWarnings("deprecation")
         com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.Trigger result = com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.Trigger.valueOf(trigger_);
         return result == null ? com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.Trigger.TRIGGER_NONE : result;
@@ -5782,7 +5833,7 @@ public final class DiozeroProtos {
                   com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.ProvisionDigitalInput.class, com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.ProvisionDigitalInput.Builder.class);
         }
 
-        // Construct using com.diozero.remote.message.DiozeroProtos.Gpio.ProvisionDigitalInput.newBuilder()
+        // Construct using com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.ProvisionDigitalInput.newBuilder()
         private Builder() {
           maybeForceBuilderInitialization();
         }
@@ -6040,6 +6091,7 @@ public final class DiozeroProtos {
          * <code>required int32 gpio = 2;</code>
          * @return Whether the gpio field is set.
          */
+        @java.lang.Override
         public boolean hasGpio() {
           return ((bitField0_ & 0x00000002) != 0);
         }
@@ -6047,6 +6099,7 @@ public final class DiozeroProtos {
          * <code>required int32 gpio = 2;</code>
          * @return The gpio.
          */
+        @java.lang.Override
         public int getGpio() {
           return gpio_;
         }
@@ -6077,13 +6130,14 @@ public final class DiozeroProtos {
          * <code>optional .diozero.Gpio.PullUpDown pud = 3 [default = PUD_NONE];</code>
          * @return Whether the pud field is set.
          */
-        public boolean hasPud() {
+        @java.lang.Override public boolean hasPud() {
           return ((bitField0_ & 0x00000004) != 0);
         }
         /**
          * <code>optional .diozero.Gpio.PullUpDown pud = 3 [default = PUD_NONE];</code>
          * @return The pud.
          */
+        @java.lang.Override
         public com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.PullUpDown getPud() {
           @SuppressWarnings("deprecation")
           com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.PullUpDown result = com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.PullUpDown.valueOf(pud_);
@@ -6119,13 +6173,14 @@ public final class DiozeroProtos {
          * <code>optional .diozero.Gpio.Trigger trigger = 4 [default = TRIGGER_NONE];</code>
          * @return Whether the trigger field is set.
          */
-        public boolean hasTrigger() {
+        @java.lang.Override public boolean hasTrigger() {
           return ((bitField0_ & 0x00000008) != 0);
         }
         /**
          * <code>optional .diozero.Gpio.Trigger trigger = 4 [default = TRIGGER_NONE];</code>
          * @return The trigger.
          */
+        @java.lang.Override
         public com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.Trigger getTrigger() {
           @SuppressWarnings("deprecation")
           com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.Trigger result = com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.Trigger.valueOf(trigger_);
@@ -6254,7 +6309,7 @@ public final class DiozeroProtos {
     /**
      * Protobuf type {@code diozero.Gpio.ProvisionDigitalOutput}
      */
-    public  static final class ProvisionDigitalOutput extends
+    public static final class ProvisionDigitalOutput extends
         com.google.protobuf.GeneratedMessageV3 implements
         // @@protoc_insertion_point(message_implements:diozero.Gpio.ProvisionDigitalOutput)
         ProvisionDigitalOutputOrBuilder {
@@ -6353,6 +6408,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return Whether the correlationId field is set.
        */
+      @java.lang.Override
       public boolean hasCorrelationId() {
         return ((bitField0_ & 0x00000001) != 0);
       }
@@ -6360,6 +6416,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return The correlationId.
        */
+      @java.lang.Override
       public java.lang.String getCorrelationId() {
         java.lang.Object ref = correlationId_;
         if (ref instanceof java.lang.String) {
@@ -6378,6 +6435,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return The bytes for correlationId.
        */
+      @java.lang.Override
       public com.google.protobuf.ByteString
           getCorrelationIdBytes() {
         java.lang.Object ref = correlationId_;
@@ -6398,6 +6456,7 @@ public final class DiozeroProtos {
        * <code>required int32 gpio = 2;</code>
        * @return Whether the gpio field is set.
        */
+      @java.lang.Override
       public boolean hasGpio() {
         return ((bitField0_ & 0x00000002) != 0);
       }
@@ -6405,6 +6464,7 @@ public final class DiozeroProtos {
        * <code>required int32 gpio = 2;</code>
        * @return The gpio.
        */
+      @java.lang.Override
       public int getGpio() {
         return gpio_;
       }
@@ -6415,6 +6475,7 @@ public final class DiozeroProtos {
        * <code>required bool initialValue = 3;</code>
        * @return Whether the initialValue field is set.
        */
+      @java.lang.Override
       public boolean hasInitialValue() {
         return ((bitField0_ & 0x00000004) != 0);
       }
@@ -6422,6 +6483,7 @@ public final class DiozeroProtos {
        * <code>required bool initialValue = 3;</code>
        * @return The initialValue.
        */
+      @java.lang.Override
       public boolean getInitialValue() {
         return initialValue_;
       }
@@ -6650,7 +6712,7 @@ public final class DiozeroProtos {
                   com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.ProvisionDigitalOutput.class, com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.ProvisionDigitalOutput.Builder.class);
         }
 
-        // Construct using com.diozero.remote.message.DiozeroProtos.Gpio.ProvisionDigitalOutput.newBuilder()
+        // Construct using com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.ProvisionDigitalOutput.newBuilder()
         private Builder() {
           maybeForceBuilderInitialization();
         }
@@ -6902,6 +6964,7 @@ public final class DiozeroProtos {
          * <code>required int32 gpio = 2;</code>
          * @return Whether the gpio field is set.
          */
+        @java.lang.Override
         public boolean hasGpio() {
           return ((bitField0_ & 0x00000002) != 0);
         }
@@ -6909,6 +6972,7 @@ public final class DiozeroProtos {
          * <code>required int32 gpio = 2;</code>
          * @return The gpio.
          */
+        @java.lang.Override
         public int getGpio() {
           return gpio_;
         }
@@ -6939,6 +7003,7 @@ public final class DiozeroProtos {
          * <code>required bool initialValue = 3;</code>
          * @return Whether the initialValue field is set.
          */
+        @java.lang.Override
         public boolean hasInitialValue() {
           return ((bitField0_ & 0x00000004) != 0);
         }
@@ -6946,6 +7011,7 @@ public final class DiozeroProtos {
          * <code>required bool initialValue = 3;</code>
          * @return The initialValue.
          */
+        @java.lang.Override
         public boolean getInitialValue() {
           return initialValue_;
         }
@@ -7069,7 +7135,7 @@ public final class DiozeroProtos {
     /**
      * Protobuf type {@code diozero.Gpio.ProvisionDigitalInputOutput}
      */
-    public  static final class ProvisionDigitalInputOutput extends
+    public static final class ProvisionDigitalInputOutput extends
         com.google.protobuf.GeneratedMessageV3 implements
         // @@protoc_insertion_point(message_implements:diozero.Gpio.ProvisionDigitalInputOutput)
         ProvisionDigitalInputOutputOrBuilder {
@@ -7168,6 +7234,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return Whether the correlationId field is set.
        */
+      @java.lang.Override
       public boolean hasCorrelationId() {
         return ((bitField0_ & 0x00000001) != 0);
       }
@@ -7175,6 +7242,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return The correlationId.
        */
+      @java.lang.Override
       public java.lang.String getCorrelationId() {
         java.lang.Object ref = correlationId_;
         if (ref instanceof java.lang.String) {
@@ -7193,6 +7261,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return The bytes for correlationId.
        */
+      @java.lang.Override
       public com.google.protobuf.ByteString
           getCorrelationIdBytes() {
         java.lang.Object ref = correlationId_;
@@ -7213,6 +7282,7 @@ public final class DiozeroProtos {
        * <code>required int32 gpio = 2;</code>
        * @return Whether the gpio field is set.
        */
+      @java.lang.Override
       public boolean hasGpio() {
         return ((bitField0_ & 0x00000002) != 0);
       }
@@ -7220,6 +7290,7 @@ public final class DiozeroProtos {
        * <code>required int32 gpio = 2;</code>
        * @return The gpio.
        */
+      @java.lang.Override
       public int getGpio() {
         return gpio_;
       }
@@ -7230,6 +7301,7 @@ public final class DiozeroProtos {
        * <code>required bool output = 3;</code>
        * @return Whether the output field is set.
        */
+      @java.lang.Override
       public boolean hasOutput() {
         return ((bitField0_ & 0x00000004) != 0);
       }
@@ -7237,6 +7309,7 @@ public final class DiozeroProtos {
        * <code>required bool output = 3;</code>
        * @return The output.
        */
+      @java.lang.Override
       public boolean getOutput() {
         return output_;
       }
@@ -7465,7 +7538,7 @@ public final class DiozeroProtos {
                   com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.ProvisionDigitalInputOutput.class, com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.ProvisionDigitalInputOutput.Builder.class);
         }
 
-        // Construct using com.diozero.remote.message.DiozeroProtos.Gpio.ProvisionDigitalInputOutput.newBuilder()
+        // Construct using com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.ProvisionDigitalInputOutput.newBuilder()
         private Builder() {
           maybeForceBuilderInitialization();
         }
@@ -7717,6 +7790,7 @@ public final class DiozeroProtos {
          * <code>required int32 gpio = 2;</code>
          * @return Whether the gpio field is set.
          */
+        @java.lang.Override
         public boolean hasGpio() {
           return ((bitField0_ & 0x00000002) != 0);
         }
@@ -7724,6 +7798,7 @@ public final class DiozeroProtos {
          * <code>required int32 gpio = 2;</code>
          * @return The gpio.
          */
+        @java.lang.Override
         public int getGpio() {
           return gpio_;
         }
@@ -7754,6 +7829,7 @@ public final class DiozeroProtos {
          * <code>required bool output = 3;</code>
          * @return Whether the output field is set.
          */
+        @java.lang.Override
         public boolean hasOutput() {
           return ((bitField0_ & 0x00000004) != 0);
         }
@@ -7761,6 +7837,7 @@ public final class DiozeroProtos {
          * <code>required bool output = 3;</code>
          * @return The output.
          */
+        @java.lang.Override
         public boolean getOutput() {
           return output_;
         }
@@ -7895,7 +7972,7 @@ public final class DiozeroProtos {
     /**
      * Protobuf type {@code diozero.Gpio.ProvisionPwmOutput}
      */
-    public  static final class ProvisionPwmOutput extends
+    public static final class ProvisionPwmOutput extends
         com.google.protobuf.GeneratedMessageV3 implements
         // @@protoc_insertion_point(message_implements:diozero.Gpio.ProvisionPwmOutput)
         ProvisionPwmOutputOrBuilder {
@@ -7999,6 +8076,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return Whether the correlationId field is set.
        */
+      @java.lang.Override
       public boolean hasCorrelationId() {
         return ((bitField0_ & 0x00000001) != 0);
       }
@@ -8006,6 +8084,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return The correlationId.
        */
+      @java.lang.Override
       public java.lang.String getCorrelationId() {
         java.lang.Object ref = correlationId_;
         if (ref instanceof java.lang.String) {
@@ -8024,6 +8103,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return The bytes for correlationId.
        */
+      @java.lang.Override
       public com.google.protobuf.ByteString
           getCorrelationIdBytes() {
         java.lang.Object ref = correlationId_;
@@ -8044,6 +8124,7 @@ public final class DiozeroProtos {
        * <code>required int32 gpio = 2;</code>
        * @return Whether the gpio field is set.
        */
+      @java.lang.Override
       public boolean hasGpio() {
         return ((bitField0_ & 0x00000002) != 0);
       }
@@ -8051,6 +8132,7 @@ public final class DiozeroProtos {
        * <code>required int32 gpio = 2;</code>
        * @return The gpio.
        */
+      @java.lang.Override
       public int getGpio() {
         return gpio_;
       }
@@ -8061,6 +8143,7 @@ public final class DiozeroProtos {
        * <code>required int32 frequency = 3;</code>
        * @return Whether the frequency field is set.
        */
+      @java.lang.Override
       public boolean hasFrequency() {
         return ((bitField0_ & 0x00000004) != 0);
       }
@@ -8068,6 +8151,7 @@ public final class DiozeroProtos {
        * <code>required int32 frequency = 3;</code>
        * @return The frequency.
        */
+      @java.lang.Override
       public int getFrequency() {
         return frequency_;
       }
@@ -8078,6 +8162,7 @@ public final class DiozeroProtos {
        * <code>required float initialValue = 4;</code>
        * @return Whether the initialValue field is set.
        */
+      @java.lang.Override
       public boolean hasInitialValue() {
         return ((bitField0_ & 0x00000008) != 0);
       }
@@ -8085,6 +8170,7 @@ public final class DiozeroProtos {
        * <code>required float initialValue = 4;</code>
        * @return The initialValue.
        */
+      @java.lang.Override
       public float getInitialValue() {
         return initialValue_;
       }
@@ -8334,7 +8420,7 @@ public final class DiozeroProtos {
                   com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.ProvisionPwmOutput.class, com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.ProvisionPwmOutput.Builder.class);
         }
 
-        // Construct using com.diozero.remote.message.DiozeroProtos.Gpio.ProvisionPwmOutput.newBuilder()
+        // Construct using com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.ProvisionPwmOutput.newBuilder()
         private Builder() {
           maybeForceBuilderInitialization();
         }
@@ -8598,6 +8684,7 @@ public final class DiozeroProtos {
          * <code>required int32 gpio = 2;</code>
          * @return Whether the gpio field is set.
          */
+        @java.lang.Override
         public boolean hasGpio() {
           return ((bitField0_ & 0x00000002) != 0);
         }
@@ -8605,6 +8692,7 @@ public final class DiozeroProtos {
          * <code>required int32 gpio = 2;</code>
          * @return The gpio.
          */
+        @java.lang.Override
         public int getGpio() {
           return gpio_;
         }
@@ -8635,6 +8723,7 @@ public final class DiozeroProtos {
          * <code>required int32 frequency = 3;</code>
          * @return Whether the frequency field is set.
          */
+        @java.lang.Override
         public boolean hasFrequency() {
           return ((bitField0_ & 0x00000004) != 0);
         }
@@ -8642,6 +8731,7 @@ public final class DiozeroProtos {
          * <code>required int32 frequency = 3;</code>
          * @return The frequency.
          */
+        @java.lang.Override
         public int getFrequency() {
           return frequency_;
         }
@@ -8672,6 +8762,7 @@ public final class DiozeroProtos {
          * <code>required float initialValue = 4;</code>
          * @return Whether the initialValue field is set.
          */
+        @java.lang.Override
         public boolean hasInitialValue() {
           return ((bitField0_ & 0x00000008) != 0);
         }
@@ -8679,6 +8770,7 @@ public final class DiozeroProtos {
          * <code>required float initialValue = 4;</code>
          * @return The initialValue.
          */
+        @java.lang.Override
         public float getInitialValue() {
           return initialValue_;
         }
@@ -8791,7 +8883,7 @@ public final class DiozeroProtos {
     /**
      * Protobuf type {@code diozero.Gpio.ProvisionAnalogInput}
      */
-    public  static final class ProvisionAnalogInput extends
+    public static final class ProvisionAnalogInput extends
         com.google.protobuf.GeneratedMessageV3 implements
         // @@protoc_insertion_point(message_implements:diozero.Gpio.ProvisionAnalogInput)
         ProvisionAnalogInputOrBuilder {
@@ -8885,6 +8977,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return Whether the correlationId field is set.
        */
+      @java.lang.Override
       public boolean hasCorrelationId() {
         return ((bitField0_ & 0x00000001) != 0);
       }
@@ -8892,6 +8985,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return The correlationId.
        */
+      @java.lang.Override
       public java.lang.String getCorrelationId() {
         java.lang.Object ref = correlationId_;
         if (ref instanceof java.lang.String) {
@@ -8910,6 +9004,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return The bytes for correlationId.
        */
+      @java.lang.Override
       public com.google.protobuf.ByteString
           getCorrelationIdBytes() {
         java.lang.Object ref = correlationId_;
@@ -8930,6 +9025,7 @@ public final class DiozeroProtos {
        * <code>required int32 gpio = 2;</code>
        * @return Whether the gpio field is set.
        */
+      @java.lang.Override
       public boolean hasGpio() {
         return ((bitField0_ & 0x00000002) != 0);
       }
@@ -8937,6 +9033,7 @@ public final class DiozeroProtos {
        * <code>required int32 gpio = 2;</code>
        * @return The gpio.
        */
+      @java.lang.Override
       public int getGpio() {
         return gpio_;
       }
@@ -9144,7 +9241,7 @@ public final class DiozeroProtos {
                   com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.ProvisionAnalogInput.class, com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.ProvisionAnalogInput.Builder.class);
         }
 
-        // Construct using com.diozero.remote.message.DiozeroProtos.Gpio.ProvisionAnalogInput.newBuilder()
+        // Construct using com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.ProvisionAnalogInput.newBuilder()
         private Builder() {
           maybeForceBuilderInitialization();
         }
@@ -9384,6 +9481,7 @@ public final class DiozeroProtos {
          * <code>required int32 gpio = 2;</code>
          * @return Whether the gpio field is set.
          */
+        @java.lang.Override
         public boolean hasGpio() {
           return ((bitField0_ & 0x00000002) != 0);
         }
@@ -9391,6 +9489,7 @@ public final class DiozeroProtos {
          * <code>required int32 gpio = 2;</code>
          * @return The gpio.
          */
+        @java.lang.Override
         public int getGpio() {
           return gpio_;
         }
@@ -9514,7 +9613,7 @@ public final class DiozeroProtos {
     /**
      * Protobuf type {@code diozero.Gpio.ProvisionAnalogOutput}
      */
-    public  static final class ProvisionAnalogOutput extends
+    public static final class ProvisionAnalogOutput extends
         com.google.protobuf.GeneratedMessageV3 implements
         // @@protoc_insertion_point(message_implements:diozero.Gpio.ProvisionAnalogOutput)
         ProvisionAnalogOutputOrBuilder {
@@ -9613,6 +9712,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return Whether the correlationId field is set.
        */
+      @java.lang.Override
       public boolean hasCorrelationId() {
         return ((bitField0_ & 0x00000001) != 0);
       }
@@ -9620,6 +9720,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return The correlationId.
        */
+      @java.lang.Override
       public java.lang.String getCorrelationId() {
         java.lang.Object ref = correlationId_;
         if (ref instanceof java.lang.String) {
@@ -9638,6 +9739,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return The bytes for correlationId.
        */
+      @java.lang.Override
       public com.google.protobuf.ByteString
           getCorrelationIdBytes() {
         java.lang.Object ref = correlationId_;
@@ -9658,6 +9760,7 @@ public final class DiozeroProtos {
        * <code>required int32 gpio = 2;</code>
        * @return Whether the gpio field is set.
        */
+      @java.lang.Override
       public boolean hasGpio() {
         return ((bitField0_ & 0x00000002) != 0);
       }
@@ -9665,6 +9768,7 @@ public final class DiozeroProtos {
        * <code>required int32 gpio = 2;</code>
        * @return The gpio.
        */
+      @java.lang.Override
       public int getGpio() {
         return gpio_;
       }
@@ -9675,6 +9779,7 @@ public final class DiozeroProtos {
        * <code>required float initialValue = 3;</code>
        * @return Whether the initialValue field is set.
        */
+      @java.lang.Override
       public boolean hasInitialValue() {
         return ((bitField0_ & 0x00000004) != 0);
       }
@@ -9682,6 +9787,7 @@ public final class DiozeroProtos {
        * <code>required float initialValue = 3;</code>
        * @return The initialValue.
        */
+      @java.lang.Override
       public float getInitialValue() {
         return initialValue_;
       }
@@ -9911,7 +10017,7 @@ public final class DiozeroProtos {
                   com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.ProvisionAnalogOutput.class, com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.ProvisionAnalogOutput.Builder.class);
         }
 
-        // Construct using com.diozero.remote.message.DiozeroProtos.Gpio.ProvisionAnalogOutput.newBuilder()
+        // Construct using com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.ProvisionAnalogOutput.newBuilder()
         private Builder() {
           maybeForceBuilderInitialization();
         }
@@ -10163,6 +10269,7 @@ public final class DiozeroProtos {
          * <code>required int32 gpio = 2;</code>
          * @return Whether the gpio field is set.
          */
+        @java.lang.Override
         public boolean hasGpio() {
           return ((bitField0_ & 0x00000002) != 0);
         }
@@ -10170,6 +10277,7 @@ public final class DiozeroProtos {
          * <code>required int32 gpio = 2;</code>
          * @return The gpio.
          */
+        @java.lang.Override
         public int getGpio() {
           return gpio_;
         }
@@ -10200,6 +10308,7 @@ public final class DiozeroProtos {
          * <code>required float initialValue = 3;</code>
          * @return Whether the initialValue field is set.
          */
+        @java.lang.Override
         public boolean hasInitialValue() {
           return ((bitField0_ & 0x00000004) != 0);
         }
@@ -10207,6 +10316,7 @@ public final class DiozeroProtos {
          * <code>required float initialValue = 3;</code>
          * @return The initialValue.
          */
+        @java.lang.Override
         public float getInitialValue() {
           return initialValue_;
         }
@@ -10319,7 +10429,7 @@ public final class DiozeroProtos {
     /**
      * Protobuf type {@code diozero.Gpio.DigitalRead}
      */
-    public  static final class DigitalRead extends
+    public static final class DigitalRead extends
         com.google.protobuf.GeneratedMessageV3 implements
         // @@protoc_insertion_point(message_implements:diozero.Gpio.DigitalRead)
         DigitalReadOrBuilder {
@@ -10413,6 +10523,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return Whether the correlationId field is set.
        */
+      @java.lang.Override
       public boolean hasCorrelationId() {
         return ((bitField0_ & 0x00000001) != 0);
       }
@@ -10420,6 +10531,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return The correlationId.
        */
+      @java.lang.Override
       public java.lang.String getCorrelationId() {
         java.lang.Object ref = correlationId_;
         if (ref instanceof java.lang.String) {
@@ -10438,6 +10550,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return The bytes for correlationId.
        */
+      @java.lang.Override
       public com.google.protobuf.ByteString
           getCorrelationIdBytes() {
         java.lang.Object ref = correlationId_;
@@ -10458,6 +10571,7 @@ public final class DiozeroProtos {
        * <code>required int32 gpio = 2;</code>
        * @return Whether the gpio field is set.
        */
+      @java.lang.Override
       public boolean hasGpio() {
         return ((bitField0_ & 0x00000002) != 0);
       }
@@ -10465,6 +10579,7 @@ public final class DiozeroProtos {
        * <code>required int32 gpio = 2;</code>
        * @return The gpio.
        */
+      @java.lang.Override
       public int getGpio() {
         return gpio_;
       }
@@ -10672,7 +10787,7 @@ public final class DiozeroProtos {
                   com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.DigitalRead.class, com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.DigitalRead.Builder.class);
         }
 
-        // Construct using com.diozero.remote.message.DiozeroProtos.Gpio.DigitalRead.newBuilder()
+        // Construct using com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.DigitalRead.newBuilder()
         private Builder() {
           maybeForceBuilderInitialization();
         }
@@ -10912,6 +11027,7 @@ public final class DiozeroProtos {
          * <code>required int32 gpio = 2;</code>
          * @return Whether the gpio field is set.
          */
+        @java.lang.Override
         public boolean hasGpio() {
           return ((bitField0_ & 0x00000002) != 0);
         }
@@ -10919,6 +11035,7 @@ public final class DiozeroProtos {
          * <code>required int32 gpio = 2;</code>
          * @return The gpio.
          */
+        @java.lang.Override
         public int getGpio() {
           return gpio_;
         }
@@ -11042,7 +11159,7 @@ public final class DiozeroProtos {
     /**
      * Protobuf type {@code diozero.Gpio.DigitalWrite}
      */
-    public  static final class DigitalWrite extends
+    public static final class DigitalWrite extends
         com.google.protobuf.GeneratedMessageV3 implements
         // @@protoc_insertion_point(message_implements:diozero.Gpio.DigitalWrite)
         DigitalWriteOrBuilder {
@@ -11141,6 +11258,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return Whether the correlationId field is set.
        */
+      @java.lang.Override
       public boolean hasCorrelationId() {
         return ((bitField0_ & 0x00000001) != 0);
       }
@@ -11148,6 +11266,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return The correlationId.
        */
+      @java.lang.Override
       public java.lang.String getCorrelationId() {
         java.lang.Object ref = correlationId_;
         if (ref instanceof java.lang.String) {
@@ -11166,6 +11285,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return The bytes for correlationId.
        */
+      @java.lang.Override
       public com.google.protobuf.ByteString
           getCorrelationIdBytes() {
         java.lang.Object ref = correlationId_;
@@ -11186,6 +11306,7 @@ public final class DiozeroProtos {
        * <code>required int32 gpio = 2;</code>
        * @return Whether the gpio field is set.
        */
+      @java.lang.Override
       public boolean hasGpio() {
         return ((bitField0_ & 0x00000002) != 0);
       }
@@ -11193,6 +11314,7 @@ public final class DiozeroProtos {
        * <code>required int32 gpio = 2;</code>
        * @return The gpio.
        */
+      @java.lang.Override
       public int getGpio() {
         return gpio_;
       }
@@ -11203,6 +11325,7 @@ public final class DiozeroProtos {
        * <code>required bool value = 3;</code>
        * @return Whether the value field is set.
        */
+      @java.lang.Override
       public boolean hasValue() {
         return ((bitField0_ & 0x00000004) != 0);
       }
@@ -11210,6 +11333,7 @@ public final class DiozeroProtos {
        * <code>required bool value = 3;</code>
        * @return The value.
        */
+      @java.lang.Override
       public boolean getValue() {
         return value_;
       }
@@ -11438,7 +11562,7 @@ public final class DiozeroProtos {
                   com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.DigitalWrite.class, com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.DigitalWrite.Builder.class);
         }
 
-        // Construct using com.diozero.remote.message.DiozeroProtos.Gpio.DigitalWrite.newBuilder()
+        // Construct using com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.DigitalWrite.newBuilder()
         private Builder() {
           maybeForceBuilderInitialization();
         }
@@ -11690,6 +11814,7 @@ public final class DiozeroProtos {
          * <code>required int32 gpio = 2;</code>
          * @return Whether the gpio field is set.
          */
+        @java.lang.Override
         public boolean hasGpio() {
           return ((bitField0_ & 0x00000002) != 0);
         }
@@ -11697,6 +11822,7 @@ public final class DiozeroProtos {
          * <code>required int32 gpio = 2;</code>
          * @return The gpio.
          */
+        @java.lang.Override
         public int getGpio() {
           return gpio_;
         }
@@ -11727,6 +11853,7 @@ public final class DiozeroProtos {
          * <code>required bool value = 3;</code>
          * @return Whether the value field is set.
          */
+        @java.lang.Override
         public boolean hasValue() {
           return ((bitField0_ & 0x00000004) != 0);
         }
@@ -11734,6 +11861,7 @@ public final class DiozeroProtos {
          * <code>required bool value = 3;</code>
          * @return The value.
          */
+        @java.lang.Override
         public boolean getValue() {
           return value_;
         }
@@ -11846,7 +11974,7 @@ public final class DiozeroProtos {
     /**
      * Protobuf type {@code diozero.Gpio.PwmRead}
      */
-    public  static final class PwmRead extends
+    public static final class PwmRead extends
         com.google.protobuf.GeneratedMessageV3 implements
         // @@protoc_insertion_point(message_implements:diozero.Gpio.PwmRead)
         PwmReadOrBuilder {
@@ -11940,6 +12068,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return Whether the correlationId field is set.
        */
+      @java.lang.Override
       public boolean hasCorrelationId() {
         return ((bitField0_ & 0x00000001) != 0);
       }
@@ -11947,6 +12076,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return The correlationId.
        */
+      @java.lang.Override
       public java.lang.String getCorrelationId() {
         java.lang.Object ref = correlationId_;
         if (ref instanceof java.lang.String) {
@@ -11965,6 +12095,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return The bytes for correlationId.
        */
+      @java.lang.Override
       public com.google.protobuf.ByteString
           getCorrelationIdBytes() {
         java.lang.Object ref = correlationId_;
@@ -11985,6 +12116,7 @@ public final class DiozeroProtos {
        * <code>required int32 gpio = 2;</code>
        * @return Whether the gpio field is set.
        */
+      @java.lang.Override
       public boolean hasGpio() {
         return ((bitField0_ & 0x00000002) != 0);
       }
@@ -11992,6 +12124,7 @@ public final class DiozeroProtos {
        * <code>required int32 gpio = 2;</code>
        * @return The gpio.
        */
+      @java.lang.Override
       public int getGpio() {
         return gpio_;
       }
@@ -12199,7 +12332,7 @@ public final class DiozeroProtos {
                   com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.PwmRead.class, com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.PwmRead.Builder.class);
         }
 
-        // Construct using com.diozero.remote.message.DiozeroProtos.Gpio.PwmRead.newBuilder()
+        // Construct using com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.PwmRead.newBuilder()
         private Builder() {
           maybeForceBuilderInitialization();
         }
@@ -12439,6 +12572,7 @@ public final class DiozeroProtos {
          * <code>required int32 gpio = 2;</code>
          * @return Whether the gpio field is set.
          */
+        @java.lang.Override
         public boolean hasGpio() {
           return ((bitField0_ & 0x00000002) != 0);
         }
@@ -12446,6 +12580,7 @@ public final class DiozeroProtos {
          * <code>required int32 gpio = 2;</code>
          * @return The gpio.
          */
+        @java.lang.Override
         public int getGpio() {
           return gpio_;
         }
@@ -12569,7 +12704,7 @@ public final class DiozeroProtos {
     /**
      * Protobuf type {@code diozero.Gpio.PwmWrite}
      */
-    public  static final class PwmWrite extends
+    public static final class PwmWrite extends
         com.google.protobuf.GeneratedMessageV3 implements
         // @@protoc_insertion_point(message_implements:diozero.Gpio.PwmWrite)
         PwmWriteOrBuilder {
@@ -12668,6 +12803,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return Whether the correlationId field is set.
        */
+      @java.lang.Override
       public boolean hasCorrelationId() {
         return ((bitField0_ & 0x00000001) != 0);
       }
@@ -12675,6 +12811,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return The correlationId.
        */
+      @java.lang.Override
       public java.lang.String getCorrelationId() {
         java.lang.Object ref = correlationId_;
         if (ref instanceof java.lang.String) {
@@ -12693,6 +12830,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return The bytes for correlationId.
        */
+      @java.lang.Override
       public com.google.protobuf.ByteString
           getCorrelationIdBytes() {
         java.lang.Object ref = correlationId_;
@@ -12713,6 +12851,7 @@ public final class DiozeroProtos {
        * <code>required int32 gpio = 2;</code>
        * @return Whether the gpio field is set.
        */
+      @java.lang.Override
       public boolean hasGpio() {
         return ((bitField0_ & 0x00000002) != 0);
       }
@@ -12720,6 +12859,7 @@ public final class DiozeroProtos {
        * <code>required int32 gpio = 2;</code>
        * @return The gpio.
        */
+      @java.lang.Override
       public int getGpio() {
         return gpio_;
       }
@@ -12730,6 +12870,7 @@ public final class DiozeroProtos {
        * <code>required float value = 3;</code>
        * @return Whether the value field is set.
        */
+      @java.lang.Override
       public boolean hasValue() {
         return ((bitField0_ & 0x00000004) != 0);
       }
@@ -12737,6 +12878,7 @@ public final class DiozeroProtos {
        * <code>required float value = 3;</code>
        * @return The value.
        */
+      @java.lang.Override
       public float getValue() {
         return value_;
       }
@@ -12966,7 +13108,7 @@ public final class DiozeroProtos {
                   com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.PwmWrite.class, com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.PwmWrite.Builder.class);
         }
 
-        // Construct using com.diozero.remote.message.DiozeroProtos.Gpio.PwmWrite.newBuilder()
+        // Construct using com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.PwmWrite.newBuilder()
         private Builder() {
           maybeForceBuilderInitialization();
         }
@@ -13218,6 +13360,7 @@ public final class DiozeroProtos {
          * <code>required int32 gpio = 2;</code>
          * @return Whether the gpio field is set.
          */
+        @java.lang.Override
         public boolean hasGpio() {
           return ((bitField0_ & 0x00000002) != 0);
         }
@@ -13225,6 +13368,7 @@ public final class DiozeroProtos {
          * <code>required int32 gpio = 2;</code>
          * @return The gpio.
          */
+        @java.lang.Override
         public int getGpio() {
           return gpio_;
         }
@@ -13255,6 +13399,7 @@ public final class DiozeroProtos {
          * <code>required float value = 3;</code>
          * @return Whether the value field is set.
          */
+        @java.lang.Override
         public boolean hasValue() {
           return ((bitField0_ & 0x00000004) != 0);
         }
@@ -13262,6 +13407,7 @@ public final class DiozeroProtos {
          * <code>required float value = 3;</code>
          * @return The value.
          */
+        @java.lang.Override
         public float getValue() {
           return value_;
         }
@@ -13374,7 +13520,7 @@ public final class DiozeroProtos {
     /**
      * Protobuf type {@code diozero.Gpio.AnalogRead}
      */
-    public  static final class AnalogRead extends
+    public static final class AnalogRead extends
         com.google.protobuf.GeneratedMessageV3 implements
         // @@protoc_insertion_point(message_implements:diozero.Gpio.AnalogRead)
         AnalogReadOrBuilder {
@@ -13468,6 +13614,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return Whether the correlationId field is set.
        */
+      @java.lang.Override
       public boolean hasCorrelationId() {
         return ((bitField0_ & 0x00000001) != 0);
       }
@@ -13475,6 +13622,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return The correlationId.
        */
+      @java.lang.Override
       public java.lang.String getCorrelationId() {
         java.lang.Object ref = correlationId_;
         if (ref instanceof java.lang.String) {
@@ -13493,6 +13641,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return The bytes for correlationId.
        */
+      @java.lang.Override
       public com.google.protobuf.ByteString
           getCorrelationIdBytes() {
         java.lang.Object ref = correlationId_;
@@ -13513,6 +13662,7 @@ public final class DiozeroProtos {
        * <code>required int32 gpio = 2;</code>
        * @return Whether the gpio field is set.
        */
+      @java.lang.Override
       public boolean hasGpio() {
         return ((bitField0_ & 0x00000002) != 0);
       }
@@ -13520,6 +13670,7 @@ public final class DiozeroProtos {
        * <code>required int32 gpio = 2;</code>
        * @return The gpio.
        */
+      @java.lang.Override
       public int getGpio() {
         return gpio_;
       }
@@ -13727,7 +13878,7 @@ public final class DiozeroProtos {
                   com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.AnalogRead.class, com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.AnalogRead.Builder.class);
         }
 
-        // Construct using com.diozero.remote.message.DiozeroProtos.Gpio.AnalogRead.newBuilder()
+        // Construct using com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.AnalogRead.newBuilder()
         private Builder() {
           maybeForceBuilderInitialization();
         }
@@ -13967,6 +14118,7 @@ public final class DiozeroProtos {
          * <code>required int32 gpio = 2;</code>
          * @return Whether the gpio field is set.
          */
+        @java.lang.Override
         public boolean hasGpio() {
           return ((bitField0_ & 0x00000002) != 0);
         }
@@ -13974,6 +14126,7 @@ public final class DiozeroProtos {
          * <code>required int32 gpio = 2;</code>
          * @return The gpio.
          */
+        @java.lang.Override
         public int getGpio() {
           return gpio_;
         }
@@ -14097,7 +14250,7 @@ public final class DiozeroProtos {
     /**
      * Protobuf type {@code diozero.Gpio.AnalogWrite}
      */
-    public  static final class AnalogWrite extends
+    public static final class AnalogWrite extends
         com.google.protobuf.GeneratedMessageV3 implements
         // @@protoc_insertion_point(message_implements:diozero.Gpio.AnalogWrite)
         AnalogWriteOrBuilder {
@@ -14196,6 +14349,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return Whether the correlationId field is set.
        */
+      @java.lang.Override
       public boolean hasCorrelationId() {
         return ((bitField0_ & 0x00000001) != 0);
       }
@@ -14203,6 +14357,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return The correlationId.
        */
+      @java.lang.Override
       public java.lang.String getCorrelationId() {
         java.lang.Object ref = correlationId_;
         if (ref instanceof java.lang.String) {
@@ -14221,6 +14376,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return The bytes for correlationId.
        */
+      @java.lang.Override
       public com.google.protobuf.ByteString
           getCorrelationIdBytes() {
         java.lang.Object ref = correlationId_;
@@ -14241,6 +14397,7 @@ public final class DiozeroProtos {
        * <code>required int32 gpio = 2;</code>
        * @return Whether the gpio field is set.
        */
+      @java.lang.Override
       public boolean hasGpio() {
         return ((bitField0_ & 0x00000002) != 0);
       }
@@ -14248,6 +14405,7 @@ public final class DiozeroProtos {
        * <code>required int32 gpio = 2;</code>
        * @return The gpio.
        */
+      @java.lang.Override
       public int getGpio() {
         return gpio_;
       }
@@ -14258,6 +14416,7 @@ public final class DiozeroProtos {
        * <code>required float value = 3;</code>
        * @return Whether the value field is set.
        */
+      @java.lang.Override
       public boolean hasValue() {
         return ((bitField0_ & 0x00000004) != 0);
       }
@@ -14265,6 +14424,7 @@ public final class DiozeroProtos {
        * <code>required float value = 3;</code>
        * @return The value.
        */
+      @java.lang.Override
       public float getValue() {
         return value_;
       }
@@ -14494,7 +14654,7 @@ public final class DiozeroProtos {
                   com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.AnalogWrite.class, com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.AnalogWrite.Builder.class);
         }
 
-        // Construct using com.diozero.remote.message.DiozeroProtos.Gpio.AnalogWrite.newBuilder()
+        // Construct using com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.AnalogWrite.newBuilder()
         private Builder() {
           maybeForceBuilderInitialization();
         }
@@ -14746,6 +14906,7 @@ public final class DiozeroProtos {
          * <code>required int32 gpio = 2;</code>
          * @return Whether the gpio field is set.
          */
+        @java.lang.Override
         public boolean hasGpio() {
           return ((bitField0_ & 0x00000002) != 0);
         }
@@ -14753,6 +14914,7 @@ public final class DiozeroProtos {
          * <code>required int32 gpio = 2;</code>
          * @return The gpio.
          */
+        @java.lang.Override
         public int getGpio() {
           return gpio_;
         }
@@ -14783,6 +14945,7 @@ public final class DiozeroProtos {
          * <code>required float value = 3;</code>
          * @return Whether the value field is set.
          */
+        @java.lang.Override
         public boolean hasValue() {
           return ((bitField0_ & 0x00000004) != 0);
         }
@@ -14790,6 +14953,7 @@ public final class DiozeroProtos {
          * <code>required float value = 3;</code>
          * @return The value.
          */
+        @java.lang.Override
         public float getValue() {
           return value_;
         }
@@ -14913,7 +15077,7 @@ public final class DiozeroProtos {
     /**
      * Protobuf type {@code diozero.Gpio.Events}
      */
-    public  static final class Events extends
+    public static final class Events extends
         com.google.protobuf.GeneratedMessageV3 implements
         // @@protoc_insertion_point(message_implements:diozero.Gpio.Events)
         EventsOrBuilder {
@@ -15012,6 +15176,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return Whether the correlationId field is set.
        */
+      @java.lang.Override
       public boolean hasCorrelationId() {
         return ((bitField0_ & 0x00000001) != 0);
       }
@@ -15019,6 +15184,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return The correlationId.
        */
+      @java.lang.Override
       public java.lang.String getCorrelationId() {
         java.lang.Object ref = correlationId_;
         if (ref instanceof java.lang.String) {
@@ -15037,6 +15203,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return The bytes for correlationId.
        */
+      @java.lang.Override
       public com.google.protobuf.ByteString
           getCorrelationIdBytes() {
         java.lang.Object ref = correlationId_;
@@ -15057,6 +15224,7 @@ public final class DiozeroProtos {
        * <code>required int32 gpio = 2;</code>
        * @return Whether the gpio field is set.
        */
+      @java.lang.Override
       public boolean hasGpio() {
         return ((bitField0_ & 0x00000002) != 0);
       }
@@ -15064,6 +15232,7 @@ public final class DiozeroProtos {
        * <code>required int32 gpio = 2;</code>
        * @return The gpio.
        */
+      @java.lang.Override
       public int getGpio() {
         return gpio_;
       }
@@ -15074,6 +15243,7 @@ public final class DiozeroProtos {
        * <code>required bool enabled = 3;</code>
        * @return Whether the enabled field is set.
        */
+      @java.lang.Override
       public boolean hasEnabled() {
         return ((bitField0_ & 0x00000004) != 0);
       }
@@ -15081,6 +15251,7 @@ public final class DiozeroProtos {
        * <code>required bool enabled = 3;</code>
        * @return The enabled.
        */
+      @java.lang.Override
       public boolean getEnabled() {
         return enabled_;
       }
@@ -15309,7 +15480,7 @@ public final class DiozeroProtos {
                   com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.Events.class, com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.Events.Builder.class);
         }
 
-        // Construct using com.diozero.remote.message.DiozeroProtos.Gpio.Events.newBuilder()
+        // Construct using com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.Events.newBuilder()
         private Builder() {
           maybeForceBuilderInitialization();
         }
@@ -15561,6 +15732,7 @@ public final class DiozeroProtos {
          * <code>required int32 gpio = 2;</code>
          * @return Whether the gpio field is set.
          */
+        @java.lang.Override
         public boolean hasGpio() {
           return ((bitField0_ & 0x00000002) != 0);
         }
@@ -15568,6 +15740,7 @@ public final class DiozeroProtos {
          * <code>required int32 gpio = 2;</code>
          * @return The gpio.
          */
+        @java.lang.Override
         public int getGpio() {
           return gpio_;
         }
@@ -15598,6 +15771,7 @@ public final class DiozeroProtos {
          * <code>required bool enabled = 3;</code>
          * @return Whether the enabled field is set.
          */
+        @java.lang.Override
         public boolean hasEnabled() {
           return ((bitField0_ & 0x00000004) != 0);
         }
@@ -15605,6 +15779,7 @@ public final class DiozeroProtos {
          * <code>required bool enabled = 3;</code>
          * @return The enabled.
          */
+        @java.lang.Override
         public boolean getEnabled() {
           return enabled_;
         }
@@ -15717,7 +15892,7 @@ public final class DiozeroProtos {
     /**
      * Protobuf type {@code diozero.Gpio.Close}
      */
-    public  static final class Close extends
+    public static final class Close extends
         com.google.protobuf.GeneratedMessageV3 implements
         // @@protoc_insertion_point(message_implements:diozero.Gpio.Close)
         CloseOrBuilder {
@@ -15811,6 +15986,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return Whether the correlationId field is set.
        */
+      @java.lang.Override
       public boolean hasCorrelationId() {
         return ((bitField0_ & 0x00000001) != 0);
       }
@@ -15818,6 +15994,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return The correlationId.
        */
+      @java.lang.Override
       public java.lang.String getCorrelationId() {
         java.lang.Object ref = correlationId_;
         if (ref instanceof java.lang.String) {
@@ -15836,6 +16013,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return The bytes for correlationId.
        */
+      @java.lang.Override
       public com.google.protobuf.ByteString
           getCorrelationIdBytes() {
         java.lang.Object ref = correlationId_;
@@ -15856,6 +16034,7 @@ public final class DiozeroProtos {
        * <code>required int32 gpio = 2;</code>
        * @return Whether the gpio field is set.
        */
+      @java.lang.Override
       public boolean hasGpio() {
         return ((bitField0_ & 0x00000002) != 0);
       }
@@ -15863,6 +16042,7 @@ public final class DiozeroProtos {
        * <code>required int32 gpio = 2;</code>
        * @return The gpio.
        */
+      @java.lang.Override
       public int getGpio() {
         return gpio_;
       }
@@ -16070,7 +16250,7 @@ public final class DiozeroProtos {
                   com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.Close.class, com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.Close.Builder.class);
         }
 
-        // Construct using com.diozero.remote.message.DiozeroProtos.Gpio.Close.newBuilder()
+        // Construct using com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.Close.newBuilder()
         private Builder() {
           maybeForceBuilderInitialization();
         }
@@ -16310,6 +16490,7 @@ public final class DiozeroProtos {
          * <code>required int32 gpio = 2;</code>
          * @return Whether the gpio field is set.
          */
+        @java.lang.Override
         public boolean hasGpio() {
           return ((bitField0_ & 0x00000002) != 0);
         }
@@ -16317,6 +16498,7 @@ public final class DiozeroProtos {
          * <code>required int32 gpio = 2;</code>
          * @return The gpio.
          */
+        @java.lang.Override
         public int getGpio() {
           return gpio_;
         }
@@ -16457,7 +16639,7 @@ public final class DiozeroProtos {
     /**
      * Protobuf type {@code diozero.Gpio.DigitalReadResponse}
      */
-    public  static final class DigitalReadResponse extends
+    public static final class DigitalReadResponse extends
         com.google.protobuf.GeneratedMessageV3 implements
         // @@protoc_insertion_point(message_implements:diozero.Gpio.DigitalReadResponse)
         DigitalReadResponseOrBuilder {
@@ -16571,6 +16753,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return Whether the correlationId field is set.
        */
+      @java.lang.Override
       public boolean hasCorrelationId() {
         return ((bitField0_ & 0x00000001) != 0);
       }
@@ -16578,6 +16761,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return The correlationId.
        */
+      @java.lang.Override
       public java.lang.String getCorrelationId() {
         java.lang.Object ref = correlationId_;
         if (ref instanceof java.lang.String) {
@@ -16596,6 +16780,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return The bytes for correlationId.
        */
+      @java.lang.Override
       public com.google.protobuf.ByteString
           getCorrelationIdBytes() {
         java.lang.Object ref = correlationId_;
@@ -16616,14 +16801,14 @@ public final class DiozeroProtos {
        * <code>required .diozero.Status status = 2;</code>
        * @return Whether the status field is set.
        */
-      public boolean hasStatus() {
+      @java.lang.Override public boolean hasStatus() {
         return ((bitField0_ & 0x00000002) != 0);
       }
       /**
        * <code>required .diozero.Status status = 2;</code>
        * @return The status.
        */
-      public com.diozero.remote.message.protobuf.DiozeroProtos.Status getStatus() {
+      @java.lang.Override public com.diozero.remote.message.protobuf.DiozeroProtos.Status getStatus() {
         @SuppressWarnings("deprecation")
         com.diozero.remote.message.protobuf.DiozeroProtos.Status result = com.diozero.remote.message.protobuf.DiozeroProtos.Status.valueOf(status_);
         return result == null ? com.diozero.remote.message.protobuf.DiozeroProtos.Status.OK : result;
@@ -16635,6 +16820,7 @@ public final class DiozeroProtos {
        * <code>optional string detail = 3;</code>
        * @return Whether the detail field is set.
        */
+      @java.lang.Override
       public boolean hasDetail() {
         return ((bitField0_ & 0x00000004) != 0);
       }
@@ -16642,6 +16828,7 @@ public final class DiozeroProtos {
        * <code>optional string detail = 3;</code>
        * @return The detail.
        */
+      @java.lang.Override
       public java.lang.String getDetail() {
         java.lang.Object ref = detail_;
         if (ref instanceof java.lang.String) {
@@ -16660,6 +16847,7 @@ public final class DiozeroProtos {
        * <code>optional string detail = 3;</code>
        * @return The bytes for detail.
        */
+      @java.lang.Override
       public com.google.protobuf.ByteString
           getDetailBytes() {
         java.lang.Object ref = detail_;
@@ -16680,6 +16868,7 @@ public final class DiozeroProtos {
        * <code>optional bool value = 4;</code>
        * @return Whether the value field is set.
        */
+      @java.lang.Override
       public boolean hasValue() {
         return ((bitField0_ & 0x00000008) != 0);
       }
@@ -16687,6 +16876,7 @@ public final class DiozeroProtos {
        * <code>optional bool value = 4;</code>
        * @return The value.
        */
+      @java.lang.Override
       public boolean getValue() {
         return value_;
       }
@@ -16925,7 +17115,7 @@ public final class DiozeroProtos {
                   com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.DigitalReadResponse.class, com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.DigitalReadResponse.Builder.class);
         }
 
-        // Construct using com.diozero.remote.message.DiozeroProtos.Gpio.DigitalReadResponse.newBuilder()
+        // Construct using com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.DigitalReadResponse.newBuilder()
         private Builder() {
           maybeForceBuilderInitialization();
         }
@@ -17185,13 +17375,14 @@ public final class DiozeroProtos {
          * <code>required .diozero.Status status = 2;</code>
          * @return Whether the status field is set.
          */
-        public boolean hasStatus() {
+        @java.lang.Override public boolean hasStatus() {
           return ((bitField0_ & 0x00000002) != 0);
         }
         /**
          * <code>required .diozero.Status status = 2;</code>
          * @return The status.
          */
+        @java.lang.Override
         public com.diozero.remote.message.protobuf.DiozeroProtos.Status getStatus() {
           @SuppressWarnings("deprecation")
           com.diozero.remote.message.protobuf.DiozeroProtos.Status result = com.diozero.remote.message.protobuf.DiozeroProtos.Status.valueOf(status_);
@@ -17311,6 +17502,7 @@ public final class DiozeroProtos {
          * <code>optional bool value = 4;</code>
          * @return Whether the value field is set.
          */
+        @java.lang.Override
         public boolean hasValue() {
           return ((bitField0_ & 0x00000008) != 0);
         }
@@ -17318,6 +17510,7 @@ public final class DiozeroProtos {
          * <code>optional bool value = 4;</code>
          * @return The value.
          */
+        @java.lang.Override
         public boolean getValue() {
           return value_;
         }
@@ -17458,7 +17651,7 @@ public final class DiozeroProtos {
     /**
      * Protobuf type {@code diozero.Gpio.PwmReadResponse}
      */
-    public  static final class PwmReadResponse extends
+    public static final class PwmReadResponse extends
         com.google.protobuf.GeneratedMessageV3 implements
         // @@protoc_insertion_point(message_implements:diozero.Gpio.PwmReadResponse)
         PwmReadResponseOrBuilder {
@@ -17572,6 +17765,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return Whether the correlationId field is set.
        */
+      @java.lang.Override
       public boolean hasCorrelationId() {
         return ((bitField0_ & 0x00000001) != 0);
       }
@@ -17579,6 +17773,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return The correlationId.
        */
+      @java.lang.Override
       public java.lang.String getCorrelationId() {
         java.lang.Object ref = correlationId_;
         if (ref instanceof java.lang.String) {
@@ -17597,6 +17792,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return The bytes for correlationId.
        */
+      @java.lang.Override
       public com.google.protobuf.ByteString
           getCorrelationIdBytes() {
         java.lang.Object ref = correlationId_;
@@ -17617,14 +17813,14 @@ public final class DiozeroProtos {
        * <code>required .diozero.Status status = 2;</code>
        * @return Whether the status field is set.
        */
-      public boolean hasStatus() {
+      @java.lang.Override public boolean hasStatus() {
         return ((bitField0_ & 0x00000002) != 0);
       }
       /**
        * <code>required .diozero.Status status = 2;</code>
        * @return The status.
        */
-      public com.diozero.remote.message.protobuf.DiozeroProtos.Status getStatus() {
+      @java.lang.Override public com.diozero.remote.message.protobuf.DiozeroProtos.Status getStatus() {
         @SuppressWarnings("deprecation")
         com.diozero.remote.message.protobuf.DiozeroProtos.Status result = com.diozero.remote.message.protobuf.DiozeroProtos.Status.valueOf(status_);
         return result == null ? com.diozero.remote.message.protobuf.DiozeroProtos.Status.OK : result;
@@ -17636,6 +17832,7 @@ public final class DiozeroProtos {
        * <code>optional string detail = 3;</code>
        * @return Whether the detail field is set.
        */
+      @java.lang.Override
       public boolean hasDetail() {
         return ((bitField0_ & 0x00000004) != 0);
       }
@@ -17643,6 +17840,7 @@ public final class DiozeroProtos {
        * <code>optional string detail = 3;</code>
        * @return The detail.
        */
+      @java.lang.Override
       public java.lang.String getDetail() {
         java.lang.Object ref = detail_;
         if (ref instanceof java.lang.String) {
@@ -17661,6 +17859,7 @@ public final class DiozeroProtos {
        * <code>optional string detail = 3;</code>
        * @return The bytes for detail.
        */
+      @java.lang.Override
       public com.google.protobuf.ByteString
           getDetailBytes() {
         java.lang.Object ref = detail_;
@@ -17681,6 +17880,7 @@ public final class DiozeroProtos {
        * <code>optional float value = 4;</code>
        * @return Whether the value field is set.
        */
+      @java.lang.Override
       public boolean hasValue() {
         return ((bitField0_ & 0x00000008) != 0);
       }
@@ -17688,6 +17888,7 @@ public final class DiozeroProtos {
        * <code>optional float value = 4;</code>
        * @return The value.
        */
+      @java.lang.Override
       public float getValue() {
         return value_;
       }
@@ -17927,7 +18128,7 @@ public final class DiozeroProtos {
                   com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.PwmReadResponse.class, com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.PwmReadResponse.Builder.class);
         }
 
-        // Construct using com.diozero.remote.message.DiozeroProtos.Gpio.PwmReadResponse.newBuilder()
+        // Construct using com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.PwmReadResponse.newBuilder()
         private Builder() {
           maybeForceBuilderInitialization();
         }
@@ -18187,13 +18388,14 @@ public final class DiozeroProtos {
          * <code>required .diozero.Status status = 2;</code>
          * @return Whether the status field is set.
          */
-        public boolean hasStatus() {
+        @java.lang.Override public boolean hasStatus() {
           return ((bitField0_ & 0x00000002) != 0);
         }
         /**
          * <code>required .diozero.Status status = 2;</code>
          * @return The status.
          */
+        @java.lang.Override
         public com.diozero.remote.message.protobuf.DiozeroProtos.Status getStatus() {
           @SuppressWarnings("deprecation")
           com.diozero.remote.message.protobuf.DiozeroProtos.Status result = com.diozero.remote.message.protobuf.DiozeroProtos.Status.valueOf(status_);
@@ -18313,6 +18515,7 @@ public final class DiozeroProtos {
          * <code>optional float value = 4;</code>
          * @return Whether the value field is set.
          */
+        @java.lang.Override
         public boolean hasValue() {
           return ((bitField0_ & 0x00000008) != 0);
         }
@@ -18320,6 +18523,7 @@ public final class DiozeroProtos {
          * <code>optional float value = 4;</code>
          * @return The value.
          */
+        @java.lang.Override
         public float getValue() {
           return value_;
         }
@@ -18460,7 +18664,7 @@ public final class DiozeroProtos {
     /**
      * Protobuf type {@code diozero.Gpio.AnalogReadResponse}
      */
-    public  static final class AnalogReadResponse extends
+    public static final class AnalogReadResponse extends
         com.google.protobuf.GeneratedMessageV3 implements
         // @@protoc_insertion_point(message_implements:diozero.Gpio.AnalogReadResponse)
         AnalogReadResponseOrBuilder {
@@ -18574,6 +18778,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return Whether the correlationId field is set.
        */
+      @java.lang.Override
       public boolean hasCorrelationId() {
         return ((bitField0_ & 0x00000001) != 0);
       }
@@ -18581,6 +18786,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return The correlationId.
        */
+      @java.lang.Override
       public java.lang.String getCorrelationId() {
         java.lang.Object ref = correlationId_;
         if (ref instanceof java.lang.String) {
@@ -18599,6 +18805,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return The bytes for correlationId.
        */
+      @java.lang.Override
       public com.google.protobuf.ByteString
           getCorrelationIdBytes() {
         java.lang.Object ref = correlationId_;
@@ -18619,14 +18826,14 @@ public final class DiozeroProtos {
        * <code>required .diozero.Status status = 2;</code>
        * @return Whether the status field is set.
        */
-      public boolean hasStatus() {
+      @java.lang.Override public boolean hasStatus() {
         return ((bitField0_ & 0x00000002) != 0);
       }
       /**
        * <code>required .diozero.Status status = 2;</code>
        * @return The status.
        */
-      public com.diozero.remote.message.protobuf.DiozeroProtos.Status getStatus() {
+      @java.lang.Override public com.diozero.remote.message.protobuf.DiozeroProtos.Status getStatus() {
         @SuppressWarnings("deprecation")
         com.diozero.remote.message.protobuf.DiozeroProtos.Status result = com.diozero.remote.message.protobuf.DiozeroProtos.Status.valueOf(status_);
         return result == null ? com.diozero.remote.message.protobuf.DiozeroProtos.Status.OK : result;
@@ -18638,6 +18845,7 @@ public final class DiozeroProtos {
        * <code>optional string detail = 3;</code>
        * @return Whether the detail field is set.
        */
+      @java.lang.Override
       public boolean hasDetail() {
         return ((bitField0_ & 0x00000004) != 0);
       }
@@ -18645,6 +18853,7 @@ public final class DiozeroProtos {
        * <code>optional string detail = 3;</code>
        * @return The detail.
        */
+      @java.lang.Override
       public java.lang.String getDetail() {
         java.lang.Object ref = detail_;
         if (ref instanceof java.lang.String) {
@@ -18663,6 +18872,7 @@ public final class DiozeroProtos {
        * <code>optional string detail = 3;</code>
        * @return The bytes for detail.
        */
+      @java.lang.Override
       public com.google.protobuf.ByteString
           getDetailBytes() {
         java.lang.Object ref = detail_;
@@ -18683,6 +18893,7 @@ public final class DiozeroProtos {
        * <code>optional float value = 4;</code>
        * @return Whether the value field is set.
        */
+      @java.lang.Override
       public boolean hasValue() {
         return ((bitField0_ & 0x00000008) != 0);
       }
@@ -18690,6 +18901,7 @@ public final class DiozeroProtos {
        * <code>optional float value = 4;</code>
        * @return The value.
        */
+      @java.lang.Override
       public float getValue() {
         return value_;
       }
@@ -18929,7 +19141,7 @@ public final class DiozeroProtos {
                   com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.AnalogReadResponse.class, com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.AnalogReadResponse.Builder.class);
         }
 
-        // Construct using com.diozero.remote.message.DiozeroProtos.Gpio.AnalogReadResponse.newBuilder()
+        // Construct using com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.AnalogReadResponse.newBuilder()
         private Builder() {
           maybeForceBuilderInitialization();
         }
@@ -19189,13 +19401,14 @@ public final class DiozeroProtos {
          * <code>required .diozero.Status status = 2;</code>
          * @return Whether the status field is set.
          */
-        public boolean hasStatus() {
+        @java.lang.Override public boolean hasStatus() {
           return ((bitField0_ & 0x00000002) != 0);
         }
         /**
          * <code>required .diozero.Status status = 2;</code>
          * @return The status.
          */
+        @java.lang.Override
         public com.diozero.remote.message.protobuf.DiozeroProtos.Status getStatus() {
           @SuppressWarnings("deprecation")
           com.diozero.remote.message.protobuf.DiozeroProtos.Status result = com.diozero.remote.message.protobuf.DiozeroProtos.Status.valueOf(status_);
@@ -19315,6 +19528,7 @@ public final class DiozeroProtos {
          * <code>optional float value = 4;</code>
          * @return Whether the value field is set.
          */
+        @java.lang.Override
         public boolean hasValue() {
           return ((bitField0_ & 0x00000008) != 0);
         }
@@ -19322,6 +19536,7 @@ public final class DiozeroProtos {
          * <code>optional float value = 4;</code>
          * @return The value.
          */
+        @java.lang.Override
         public float getValue() {
           return value_;
         }
@@ -19439,7 +19654,7 @@ public final class DiozeroProtos {
     /**
      * Protobuf type {@code diozero.Gpio.Notification}
      */
-    public  static final class Notification extends
+    public static final class Notification extends
         com.google.protobuf.GeneratedMessageV3 implements
         // @@protoc_insertion_point(message_implements:diozero.Gpio.Notification)
         NotificationOrBuilder {
@@ -19536,6 +19751,7 @@ public final class DiozeroProtos {
        * <code>required int32 gpio = 1;</code>
        * @return Whether the gpio field is set.
        */
+      @java.lang.Override
       public boolean hasGpio() {
         return ((bitField0_ & 0x00000001) != 0);
       }
@@ -19543,6 +19759,7 @@ public final class DiozeroProtos {
        * <code>required int32 gpio = 1;</code>
        * @return The gpio.
        */
+      @java.lang.Override
       public int getGpio() {
         return gpio_;
       }
@@ -19553,6 +19770,7 @@ public final class DiozeroProtos {
        * <code>required int64 epochTime = 2;</code>
        * @return Whether the epochTime field is set.
        */
+      @java.lang.Override
       public boolean hasEpochTime() {
         return ((bitField0_ & 0x00000002) != 0);
       }
@@ -19560,6 +19778,7 @@ public final class DiozeroProtos {
        * <code>required int64 epochTime = 2;</code>
        * @return The epochTime.
        */
+      @java.lang.Override
       public long getEpochTime() {
         return epochTime_;
       }
@@ -19570,6 +19789,7 @@ public final class DiozeroProtos {
        * <code>required bool value = 3;</code>
        * @return Whether the value field is set.
        */
+      @java.lang.Override
       public boolean hasValue() {
         return ((bitField0_ & 0x00000004) != 0);
       }
@@ -19577,6 +19797,7 @@ public final class DiozeroProtos {
        * <code>required bool value = 3;</code>
        * @return The value.
        */
+      @java.lang.Override
       public boolean getValue() {
         return value_;
       }
@@ -19807,7 +20028,7 @@ public final class DiozeroProtos {
                   com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.Notification.class, com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.Notification.Builder.class);
         }
 
-        // Construct using com.diozero.remote.message.DiozeroProtos.Gpio.Notification.newBuilder()
+        // Construct using com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.Notification.newBuilder()
         private Builder() {
           maybeForceBuilderInitialization();
         }
@@ -19973,6 +20194,7 @@ public final class DiozeroProtos {
          * <code>required int32 gpio = 1;</code>
          * @return Whether the gpio field is set.
          */
+        @java.lang.Override
         public boolean hasGpio() {
           return ((bitField0_ & 0x00000001) != 0);
         }
@@ -19980,6 +20202,7 @@ public final class DiozeroProtos {
          * <code>required int32 gpio = 1;</code>
          * @return The gpio.
          */
+        @java.lang.Override
         public int getGpio() {
           return gpio_;
         }
@@ -20010,6 +20233,7 @@ public final class DiozeroProtos {
          * <code>required int64 epochTime = 2;</code>
          * @return Whether the epochTime field is set.
          */
+        @java.lang.Override
         public boolean hasEpochTime() {
           return ((bitField0_ & 0x00000002) != 0);
         }
@@ -20017,6 +20241,7 @@ public final class DiozeroProtos {
          * <code>required int64 epochTime = 2;</code>
          * @return The epochTime.
          */
+        @java.lang.Override
         public long getEpochTime() {
           return epochTime_;
         }
@@ -20047,6 +20272,7 @@ public final class DiozeroProtos {
          * <code>required bool value = 3;</code>
          * @return Whether the value field is set.
          */
+        @java.lang.Override
         public boolean hasValue() {
           return ((bitField0_ & 0x00000004) != 0);
         }
@@ -20054,6 +20280,7 @@ public final class DiozeroProtos {
          * <code>required bool value = 3;</code>
          * @return The value.
          */
+        @java.lang.Override
         public boolean getValue() {
           return value_;
         }
@@ -20295,7 +20522,7 @@ public final class DiozeroProtos {
                 com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.class, com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.Builder.class);
       }
 
-      // Construct using com.diozero.remote.message.DiozeroProtos.Gpio.newBuilder()
+      // Construct using com.diozero.remote.message.protobuf.DiozeroProtos.Gpio.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -20475,7 +20702,7 @@ public final class DiozeroProtos {
   /**
    * Protobuf type {@code diozero.I2C}
    */
-  public  static final class I2C extends
+  public static final class I2C extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:diozero.I2C)
       I2COrBuilder {
@@ -20617,7 +20844,7 @@ public final class DiozeroProtos {
     /**
      * Protobuf type {@code diozero.I2C.Open}
      */
-    public  static final class Open extends
+    public static final class Open extends
         com.google.protobuf.GeneratedMessageV3 implements
         // @@protoc_insertion_point(message_implements:diozero.I2C.Open)
         OpenOrBuilder {
@@ -20726,6 +20953,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return Whether the correlationId field is set.
        */
+      @java.lang.Override
       public boolean hasCorrelationId() {
         return ((bitField0_ & 0x00000001) != 0);
       }
@@ -20733,6 +20961,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return The correlationId.
        */
+      @java.lang.Override
       public java.lang.String getCorrelationId() {
         java.lang.Object ref = correlationId_;
         if (ref instanceof java.lang.String) {
@@ -20751,6 +20980,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return The bytes for correlationId.
        */
+      @java.lang.Override
       public com.google.protobuf.ByteString
           getCorrelationIdBytes() {
         java.lang.Object ref = correlationId_;
@@ -20771,6 +21001,7 @@ public final class DiozeroProtos {
        * <code>required int32 controller = 2;</code>
        * @return Whether the controller field is set.
        */
+      @java.lang.Override
       public boolean hasController() {
         return ((bitField0_ & 0x00000002) != 0);
       }
@@ -20778,6 +21009,7 @@ public final class DiozeroProtos {
        * <code>required int32 controller = 2;</code>
        * @return The controller.
        */
+      @java.lang.Override
       public int getController() {
         return controller_;
       }
@@ -20788,6 +21020,7 @@ public final class DiozeroProtos {
        * <code>required int32 address = 3;</code>
        * @return Whether the address field is set.
        */
+      @java.lang.Override
       public boolean hasAddress() {
         return ((bitField0_ & 0x00000004) != 0);
       }
@@ -20795,6 +21028,7 @@ public final class DiozeroProtos {
        * <code>required int32 address = 3;</code>
        * @return The address.
        */
+      @java.lang.Override
       public int getAddress() {
         return address_;
       }
@@ -20805,6 +21039,7 @@ public final class DiozeroProtos {
        * <code>required int32 addressSize = 4;</code>
        * @return Whether the addressSize field is set.
        */
+      @java.lang.Override
       public boolean hasAddressSize() {
         return ((bitField0_ & 0x00000008) != 0);
       }
@@ -20812,6 +21047,7 @@ public final class DiozeroProtos {
        * <code>required int32 addressSize = 4;</code>
        * @return The addressSize.
        */
+      @java.lang.Override
       public int getAddressSize() {
         return addressSize_;
       }
@@ -20822,6 +21058,7 @@ public final class DiozeroProtos {
        * <code>required int32 clockFrequency = 5;</code>
        * @return Whether the clockFrequency field is set.
        */
+      @java.lang.Override
       public boolean hasClockFrequency() {
         return ((bitField0_ & 0x00000010) != 0);
       }
@@ -20829,6 +21066,7 @@ public final class DiozeroProtos {
        * <code>required int32 clockFrequency = 5;</code>
        * @return The clockFrequency.
        */
+      @java.lang.Override
       public int getClockFrequency() {
         return clockFrequency_;
       }
@@ -21096,7 +21334,7 @@ public final class DiozeroProtos {
                   com.diozero.remote.message.protobuf.DiozeroProtos.I2C.Open.class, com.diozero.remote.message.protobuf.DiozeroProtos.I2C.Open.Builder.class);
         }
 
-        // Construct using com.diozero.remote.message.DiozeroProtos.I2C.Open.newBuilder()
+        // Construct using com.diozero.remote.message.protobuf.DiozeroProtos.I2C.Open.newBuilder()
         private Builder() {
           maybeForceBuilderInitialization();
         }
@@ -21372,6 +21610,7 @@ public final class DiozeroProtos {
          * <code>required int32 controller = 2;</code>
          * @return Whether the controller field is set.
          */
+        @java.lang.Override
         public boolean hasController() {
           return ((bitField0_ & 0x00000002) != 0);
         }
@@ -21379,6 +21618,7 @@ public final class DiozeroProtos {
          * <code>required int32 controller = 2;</code>
          * @return The controller.
          */
+        @java.lang.Override
         public int getController() {
           return controller_;
         }
@@ -21409,6 +21649,7 @@ public final class DiozeroProtos {
          * <code>required int32 address = 3;</code>
          * @return Whether the address field is set.
          */
+        @java.lang.Override
         public boolean hasAddress() {
           return ((bitField0_ & 0x00000004) != 0);
         }
@@ -21416,6 +21657,7 @@ public final class DiozeroProtos {
          * <code>required int32 address = 3;</code>
          * @return The address.
          */
+        @java.lang.Override
         public int getAddress() {
           return address_;
         }
@@ -21446,6 +21688,7 @@ public final class DiozeroProtos {
          * <code>required int32 addressSize = 4;</code>
          * @return Whether the addressSize field is set.
          */
+        @java.lang.Override
         public boolean hasAddressSize() {
           return ((bitField0_ & 0x00000008) != 0);
         }
@@ -21453,6 +21696,7 @@ public final class DiozeroProtos {
          * <code>required int32 addressSize = 4;</code>
          * @return The addressSize.
          */
+        @java.lang.Override
         public int getAddressSize() {
           return addressSize_;
         }
@@ -21483,6 +21727,7 @@ public final class DiozeroProtos {
          * <code>required int32 clockFrequency = 5;</code>
          * @return Whether the clockFrequency field is set.
          */
+        @java.lang.Override
         public boolean hasClockFrequency() {
           return ((bitField0_ & 0x00000010) != 0);
         }
@@ -21490,6 +21735,7 @@ public final class DiozeroProtos {
          * <code>required int32 clockFrequency = 5;</code>
          * @return The clockFrequency.
          */
+        @java.lang.Override
         public int getClockFrequency() {
           return clockFrequency_;
         }
@@ -21613,7 +21859,7 @@ public final class DiozeroProtos {
     /**
      * Protobuf type {@code diozero.I2C.ReadByte}
      */
-    public  static final class ReadByte extends
+    public static final class ReadByte extends
         com.google.protobuf.GeneratedMessageV3 implements
         // @@protoc_insertion_point(message_implements:diozero.I2C.ReadByte)
         ReadByteOrBuilder {
@@ -21712,6 +21958,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return Whether the correlationId field is set.
        */
+      @java.lang.Override
       public boolean hasCorrelationId() {
         return ((bitField0_ & 0x00000001) != 0);
       }
@@ -21719,6 +21966,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return The correlationId.
        */
+      @java.lang.Override
       public java.lang.String getCorrelationId() {
         java.lang.Object ref = correlationId_;
         if (ref instanceof java.lang.String) {
@@ -21737,6 +21985,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return The bytes for correlationId.
        */
+      @java.lang.Override
       public com.google.protobuf.ByteString
           getCorrelationIdBytes() {
         java.lang.Object ref = correlationId_;
@@ -21757,6 +22006,7 @@ public final class DiozeroProtos {
        * <code>required int32 controller = 2;</code>
        * @return Whether the controller field is set.
        */
+      @java.lang.Override
       public boolean hasController() {
         return ((bitField0_ & 0x00000002) != 0);
       }
@@ -21764,6 +22014,7 @@ public final class DiozeroProtos {
        * <code>required int32 controller = 2;</code>
        * @return The controller.
        */
+      @java.lang.Override
       public int getController() {
         return controller_;
       }
@@ -21774,6 +22025,7 @@ public final class DiozeroProtos {
        * <code>required int32 address = 3;</code>
        * @return Whether the address field is set.
        */
+      @java.lang.Override
       public boolean hasAddress() {
         return ((bitField0_ & 0x00000004) != 0);
       }
@@ -21781,6 +22033,7 @@ public final class DiozeroProtos {
        * <code>required int32 address = 3;</code>
        * @return The address.
        */
+      @java.lang.Override
       public int getAddress() {
         return address_;
       }
@@ -22008,7 +22261,7 @@ public final class DiozeroProtos {
                   com.diozero.remote.message.protobuf.DiozeroProtos.I2C.ReadByte.class, com.diozero.remote.message.protobuf.DiozeroProtos.I2C.ReadByte.Builder.class);
         }
 
-        // Construct using com.diozero.remote.message.DiozeroProtos.I2C.ReadByte.newBuilder()
+        // Construct using com.diozero.remote.message.protobuf.DiozeroProtos.I2C.ReadByte.newBuilder()
         private Builder() {
           maybeForceBuilderInitialization();
         }
@@ -22260,6 +22513,7 @@ public final class DiozeroProtos {
          * <code>required int32 controller = 2;</code>
          * @return Whether the controller field is set.
          */
+        @java.lang.Override
         public boolean hasController() {
           return ((bitField0_ & 0x00000002) != 0);
         }
@@ -22267,6 +22521,7 @@ public final class DiozeroProtos {
          * <code>required int32 controller = 2;</code>
          * @return The controller.
          */
+        @java.lang.Override
         public int getController() {
           return controller_;
         }
@@ -22297,6 +22552,7 @@ public final class DiozeroProtos {
          * <code>required int32 address = 3;</code>
          * @return Whether the address field is set.
          */
+        @java.lang.Override
         public boolean hasAddress() {
           return ((bitField0_ & 0x00000004) != 0);
         }
@@ -22304,6 +22560,7 @@ public final class DiozeroProtos {
          * <code>required int32 address = 3;</code>
          * @return The address.
          */
+        @java.lang.Override
         public int getAddress() {
           return address_;
         }
@@ -22438,7 +22695,7 @@ public final class DiozeroProtos {
     /**
      * Protobuf type {@code diozero.I2C.WriteByte}
      */
-    public  static final class WriteByte extends
+    public static final class WriteByte extends
         com.google.protobuf.GeneratedMessageV3 implements
         // @@protoc_insertion_point(message_implements:diozero.I2C.WriteByte)
         WriteByteOrBuilder {
@@ -22542,6 +22799,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return Whether the correlationId field is set.
        */
+      @java.lang.Override
       public boolean hasCorrelationId() {
         return ((bitField0_ & 0x00000001) != 0);
       }
@@ -22549,6 +22807,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return The correlationId.
        */
+      @java.lang.Override
       public java.lang.String getCorrelationId() {
         java.lang.Object ref = correlationId_;
         if (ref instanceof java.lang.String) {
@@ -22567,6 +22826,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return The bytes for correlationId.
        */
+      @java.lang.Override
       public com.google.protobuf.ByteString
           getCorrelationIdBytes() {
         java.lang.Object ref = correlationId_;
@@ -22587,6 +22847,7 @@ public final class DiozeroProtos {
        * <code>required int32 controller = 2;</code>
        * @return Whether the controller field is set.
        */
+      @java.lang.Override
       public boolean hasController() {
         return ((bitField0_ & 0x00000002) != 0);
       }
@@ -22594,6 +22855,7 @@ public final class DiozeroProtos {
        * <code>required int32 controller = 2;</code>
        * @return The controller.
        */
+      @java.lang.Override
       public int getController() {
         return controller_;
       }
@@ -22604,6 +22866,7 @@ public final class DiozeroProtos {
        * <code>required int32 address = 3;</code>
        * @return Whether the address field is set.
        */
+      @java.lang.Override
       public boolean hasAddress() {
         return ((bitField0_ & 0x00000004) != 0);
       }
@@ -22611,6 +22874,7 @@ public final class DiozeroProtos {
        * <code>required int32 address = 3;</code>
        * @return The address.
        */
+      @java.lang.Override
       public int getAddress() {
         return address_;
       }
@@ -22621,6 +22885,7 @@ public final class DiozeroProtos {
        * <code>required int32 data = 4;</code>
        * @return Whether the data field is set.
        */
+      @java.lang.Override
       public boolean hasData() {
         return ((bitField0_ & 0x00000008) != 0);
       }
@@ -22628,6 +22893,7 @@ public final class DiozeroProtos {
        * <code>required int32 data = 4;</code>
        * @return The data.
        */
+      @java.lang.Override
       public int getData() {
         return data_;
       }
@@ -22875,7 +23141,7 @@ public final class DiozeroProtos {
                   com.diozero.remote.message.protobuf.DiozeroProtos.I2C.WriteByte.class, com.diozero.remote.message.protobuf.DiozeroProtos.I2C.WriteByte.Builder.class);
         }
 
-        // Construct using com.diozero.remote.message.DiozeroProtos.I2C.WriteByte.newBuilder()
+        // Construct using com.diozero.remote.message.protobuf.DiozeroProtos.I2C.WriteByte.newBuilder()
         private Builder() {
           maybeForceBuilderInitialization();
         }
@@ -23139,6 +23405,7 @@ public final class DiozeroProtos {
          * <code>required int32 controller = 2;</code>
          * @return Whether the controller field is set.
          */
+        @java.lang.Override
         public boolean hasController() {
           return ((bitField0_ & 0x00000002) != 0);
         }
@@ -23146,6 +23413,7 @@ public final class DiozeroProtos {
          * <code>required int32 controller = 2;</code>
          * @return The controller.
          */
+        @java.lang.Override
         public int getController() {
           return controller_;
         }
@@ -23176,6 +23444,7 @@ public final class DiozeroProtos {
          * <code>required int32 address = 3;</code>
          * @return Whether the address field is set.
          */
+        @java.lang.Override
         public boolean hasAddress() {
           return ((bitField0_ & 0x00000004) != 0);
         }
@@ -23183,6 +23452,7 @@ public final class DiozeroProtos {
          * <code>required int32 address = 3;</code>
          * @return The address.
          */
+        @java.lang.Override
         public int getAddress() {
           return address_;
         }
@@ -23213,6 +23483,7 @@ public final class DiozeroProtos {
          * <code>required int32 data = 4;</code>
          * @return Whether the data field is set.
          */
+        @java.lang.Override
         public boolean hasData() {
           return ((bitField0_ & 0x00000008) != 0);
         }
@@ -23220,6 +23491,7 @@ public final class DiozeroProtos {
          * <code>required int32 data = 4;</code>
          * @return The data.
          */
+        @java.lang.Override
         public int getData() {
           return data_;
         }
@@ -23354,7 +23626,7 @@ public final class DiozeroProtos {
     /**
      * Protobuf type {@code diozero.I2C.Read}
      */
-    public  static final class Read extends
+    public static final class Read extends
         com.google.protobuf.GeneratedMessageV3 implements
         // @@protoc_insertion_point(message_implements:diozero.I2C.Read)
         ReadOrBuilder {
@@ -23458,6 +23730,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return Whether the correlationId field is set.
        */
+      @java.lang.Override
       public boolean hasCorrelationId() {
         return ((bitField0_ & 0x00000001) != 0);
       }
@@ -23465,6 +23738,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return The correlationId.
        */
+      @java.lang.Override
       public java.lang.String getCorrelationId() {
         java.lang.Object ref = correlationId_;
         if (ref instanceof java.lang.String) {
@@ -23483,6 +23757,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return The bytes for correlationId.
        */
+      @java.lang.Override
       public com.google.protobuf.ByteString
           getCorrelationIdBytes() {
         java.lang.Object ref = correlationId_;
@@ -23503,6 +23778,7 @@ public final class DiozeroProtos {
        * <code>required int32 controller = 2;</code>
        * @return Whether the controller field is set.
        */
+      @java.lang.Override
       public boolean hasController() {
         return ((bitField0_ & 0x00000002) != 0);
       }
@@ -23510,6 +23786,7 @@ public final class DiozeroProtos {
        * <code>required int32 controller = 2;</code>
        * @return The controller.
        */
+      @java.lang.Override
       public int getController() {
         return controller_;
       }
@@ -23520,6 +23797,7 @@ public final class DiozeroProtos {
        * <code>required int32 address = 3;</code>
        * @return Whether the address field is set.
        */
+      @java.lang.Override
       public boolean hasAddress() {
         return ((bitField0_ & 0x00000004) != 0);
       }
@@ -23527,6 +23805,7 @@ public final class DiozeroProtos {
        * <code>required int32 address = 3;</code>
        * @return The address.
        */
+      @java.lang.Override
       public int getAddress() {
         return address_;
       }
@@ -23537,6 +23816,7 @@ public final class DiozeroProtos {
        * <code>required int32 length = 4;</code>
        * @return Whether the length field is set.
        */
+      @java.lang.Override
       public boolean hasLength() {
         return ((bitField0_ & 0x00000008) != 0);
       }
@@ -23544,6 +23824,7 @@ public final class DiozeroProtos {
        * <code>required int32 length = 4;</code>
        * @return The length.
        */
+      @java.lang.Override
       public int getLength() {
         return length_;
       }
@@ -23791,7 +24072,7 @@ public final class DiozeroProtos {
                   com.diozero.remote.message.protobuf.DiozeroProtos.I2C.Read.class, com.diozero.remote.message.protobuf.DiozeroProtos.I2C.Read.Builder.class);
         }
 
-        // Construct using com.diozero.remote.message.DiozeroProtos.I2C.Read.newBuilder()
+        // Construct using com.diozero.remote.message.protobuf.DiozeroProtos.I2C.Read.newBuilder()
         private Builder() {
           maybeForceBuilderInitialization();
         }
@@ -24055,6 +24336,7 @@ public final class DiozeroProtos {
          * <code>required int32 controller = 2;</code>
          * @return Whether the controller field is set.
          */
+        @java.lang.Override
         public boolean hasController() {
           return ((bitField0_ & 0x00000002) != 0);
         }
@@ -24062,6 +24344,7 @@ public final class DiozeroProtos {
          * <code>required int32 controller = 2;</code>
          * @return The controller.
          */
+        @java.lang.Override
         public int getController() {
           return controller_;
         }
@@ -24092,6 +24375,7 @@ public final class DiozeroProtos {
          * <code>required int32 address = 3;</code>
          * @return Whether the address field is set.
          */
+        @java.lang.Override
         public boolean hasAddress() {
           return ((bitField0_ & 0x00000004) != 0);
         }
@@ -24099,6 +24383,7 @@ public final class DiozeroProtos {
          * <code>required int32 address = 3;</code>
          * @return The address.
          */
+        @java.lang.Override
         public int getAddress() {
           return address_;
         }
@@ -24129,6 +24414,7 @@ public final class DiozeroProtos {
          * <code>required int32 length = 4;</code>
          * @return Whether the length field is set.
          */
+        @java.lang.Override
         public boolean hasLength() {
           return ((bitField0_ & 0x00000008) != 0);
         }
@@ -24136,6 +24422,7 @@ public final class DiozeroProtos {
          * <code>required int32 length = 4;</code>
          * @return The length.
          */
+        @java.lang.Override
         public int getLength() {
           return length_;
         }
@@ -24270,7 +24557,7 @@ public final class DiozeroProtos {
     /**
      * Protobuf type {@code diozero.I2C.Write}
      */
-    public  static final class Write extends
+    public static final class Write extends
         com.google.protobuf.GeneratedMessageV3 implements
         // @@protoc_insertion_point(message_implements:diozero.I2C.Write)
         WriteOrBuilder {
@@ -24375,6 +24662,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return Whether the correlationId field is set.
        */
+      @java.lang.Override
       public boolean hasCorrelationId() {
         return ((bitField0_ & 0x00000001) != 0);
       }
@@ -24382,6 +24670,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return The correlationId.
        */
+      @java.lang.Override
       public java.lang.String getCorrelationId() {
         java.lang.Object ref = correlationId_;
         if (ref instanceof java.lang.String) {
@@ -24400,6 +24689,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return The bytes for correlationId.
        */
+      @java.lang.Override
       public com.google.protobuf.ByteString
           getCorrelationIdBytes() {
         java.lang.Object ref = correlationId_;
@@ -24420,6 +24710,7 @@ public final class DiozeroProtos {
        * <code>required int32 controller = 2;</code>
        * @return Whether the controller field is set.
        */
+      @java.lang.Override
       public boolean hasController() {
         return ((bitField0_ & 0x00000002) != 0);
       }
@@ -24427,6 +24718,7 @@ public final class DiozeroProtos {
        * <code>required int32 controller = 2;</code>
        * @return The controller.
        */
+      @java.lang.Override
       public int getController() {
         return controller_;
       }
@@ -24437,6 +24729,7 @@ public final class DiozeroProtos {
        * <code>required int32 address = 3;</code>
        * @return Whether the address field is set.
        */
+      @java.lang.Override
       public boolean hasAddress() {
         return ((bitField0_ & 0x00000004) != 0);
       }
@@ -24444,6 +24737,7 @@ public final class DiozeroProtos {
        * <code>required int32 address = 3;</code>
        * @return The address.
        */
+      @java.lang.Override
       public int getAddress() {
         return address_;
       }
@@ -24454,6 +24748,7 @@ public final class DiozeroProtos {
        * <code>required bytes data = 4;</code>
        * @return Whether the data field is set.
        */
+      @java.lang.Override
       public boolean hasData() {
         return ((bitField0_ & 0x00000008) != 0);
       }
@@ -24461,6 +24756,7 @@ public final class DiozeroProtos {
        * <code>required bytes data = 4;</code>
        * @return The data.
        */
+      @java.lang.Override
       public com.google.protobuf.ByteString getData() {
         return data_;
       }
@@ -24708,7 +25004,7 @@ public final class DiozeroProtos {
                   com.diozero.remote.message.protobuf.DiozeroProtos.I2C.Write.class, com.diozero.remote.message.protobuf.DiozeroProtos.I2C.Write.Builder.class);
         }
 
-        // Construct using com.diozero.remote.message.DiozeroProtos.I2C.Write.newBuilder()
+        // Construct using com.diozero.remote.message.protobuf.DiozeroProtos.I2C.Write.newBuilder()
         private Builder() {
           maybeForceBuilderInitialization();
         }
@@ -24972,6 +25268,7 @@ public final class DiozeroProtos {
          * <code>required int32 controller = 2;</code>
          * @return Whether the controller field is set.
          */
+        @java.lang.Override
         public boolean hasController() {
           return ((bitField0_ & 0x00000002) != 0);
         }
@@ -24979,6 +25276,7 @@ public final class DiozeroProtos {
          * <code>required int32 controller = 2;</code>
          * @return The controller.
          */
+        @java.lang.Override
         public int getController() {
           return controller_;
         }
@@ -25009,6 +25307,7 @@ public final class DiozeroProtos {
          * <code>required int32 address = 3;</code>
          * @return Whether the address field is set.
          */
+        @java.lang.Override
         public boolean hasAddress() {
           return ((bitField0_ & 0x00000004) != 0);
         }
@@ -25016,6 +25315,7 @@ public final class DiozeroProtos {
          * <code>required int32 address = 3;</code>
          * @return The address.
          */
+        @java.lang.Override
         public int getAddress() {
           return address_;
         }
@@ -25046,6 +25346,7 @@ public final class DiozeroProtos {
          * <code>required bytes data = 4;</code>
          * @return Whether the data field is set.
          */
+        @java.lang.Override
         public boolean hasData() {
           return ((bitField0_ & 0x00000008) != 0);
         }
@@ -25053,6 +25354,7 @@ public final class DiozeroProtos {
          * <code>required bytes data = 4;</code>
          * @return The data.
          */
+        @java.lang.Override
         public com.google.protobuf.ByteString getData() {
           return data_;
         }
@@ -25190,7 +25492,7 @@ public final class DiozeroProtos {
     /**
      * Protobuf type {@code diozero.I2C.ReadByteData}
      */
-    public  static final class ReadByteData extends
+    public static final class ReadByteData extends
         com.google.protobuf.GeneratedMessageV3 implements
         // @@protoc_insertion_point(message_implements:diozero.I2C.ReadByteData)
         ReadByteDataOrBuilder {
@@ -25294,6 +25596,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return Whether the correlationId field is set.
        */
+      @java.lang.Override
       public boolean hasCorrelationId() {
         return ((bitField0_ & 0x00000001) != 0);
       }
@@ -25301,6 +25604,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return The correlationId.
        */
+      @java.lang.Override
       public java.lang.String getCorrelationId() {
         java.lang.Object ref = correlationId_;
         if (ref instanceof java.lang.String) {
@@ -25319,6 +25623,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return The bytes for correlationId.
        */
+      @java.lang.Override
       public com.google.protobuf.ByteString
           getCorrelationIdBytes() {
         java.lang.Object ref = correlationId_;
@@ -25339,6 +25644,7 @@ public final class DiozeroProtos {
        * <code>required int32 controller = 2;</code>
        * @return Whether the controller field is set.
        */
+      @java.lang.Override
       public boolean hasController() {
         return ((bitField0_ & 0x00000002) != 0);
       }
@@ -25346,6 +25652,7 @@ public final class DiozeroProtos {
        * <code>required int32 controller = 2;</code>
        * @return The controller.
        */
+      @java.lang.Override
       public int getController() {
         return controller_;
       }
@@ -25356,6 +25663,7 @@ public final class DiozeroProtos {
        * <code>required int32 address = 3;</code>
        * @return Whether the address field is set.
        */
+      @java.lang.Override
       public boolean hasAddress() {
         return ((bitField0_ & 0x00000004) != 0);
       }
@@ -25363,6 +25671,7 @@ public final class DiozeroProtos {
        * <code>required int32 address = 3;</code>
        * @return The address.
        */
+      @java.lang.Override
       public int getAddress() {
         return address_;
       }
@@ -25373,6 +25682,7 @@ public final class DiozeroProtos {
        * <code>required int32 register = 4;</code>
        * @return Whether the register field is set.
        */
+      @java.lang.Override
       public boolean hasRegister() {
         return ((bitField0_ & 0x00000008) != 0);
       }
@@ -25380,6 +25690,7 @@ public final class DiozeroProtos {
        * <code>required int32 register = 4;</code>
        * @return The register.
        */
+      @java.lang.Override
       public int getRegister() {
         return register_;
       }
@@ -25627,7 +25938,7 @@ public final class DiozeroProtos {
                   com.diozero.remote.message.protobuf.DiozeroProtos.I2C.ReadByteData.class, com.diozero.remote.message.protobuf.DiozeroProtos.I2C.ReadByteData.Builder.class);
         }
 
-        // Construct using com.diozero.remote.message.DiozeroProtos.I2C.ReadByteData.newBuilder()
+        // Construct using com.diozero.remote.message.protobuf.DiozeroProtos.I2C.ReadByteData.newBuilder()
         private Builder() {
           maybeForceBuilderInitialization();
         }
@@ -25891,6 +26202,7 @@ public final class DiozeroProtos {
          * <code>required int32 controller = 2;</code>
          * @return Whether the controller field is set.
          */
+        @java.lang.Override
         public boolean hasController() {
           return ((bitField0_ & 0x00000002) != 0);
         }
@@ -25898,6 +26210,7 @@ public final class DiozeroProtos {
          * <code>required int32 controller = 2;</code>
          * @return The controller.
          */
+        @java.lang.Override
         public int getController() {
           return controller_;
         }
@@ -25928,6 +26241,7 @@ public final class DiozeroProtos {
          * <code>required int32 address = 3;</code>
          * @return Whether the address field is set.
          */
+        @java.lang.Override
         public boolean hasAddress() {
           return ((bitField0_ & 0x00000004) != 0);
         }
@@ -25935,6 +26249,7 @@ public final class DiozeroProtos {
          * <code>required int32 address = 3;</code>
          * @return The address.
          */
+        @java.lang.Override
         public int getAddress() {
           return address_;
         }
@@ -25965,6 +26280,7 @@ public final class DiozeroProtos {
          * <code>required int32 register = 4;</code>
          * @return Whether the register field is set.
          */
+        @java.lang.Override
         public boolean hasRegister() {
           return ((bitField0_ & 0x00000008) != 0);
         }
@@ -25972,6 +26288,7 @@ public final class DiozeroProtos {
          * <code>required int32 register = 4;</code>
          * @return The register.
          */
+        @java.lang.Override
         public int getRegister() {
           return register_;
         }
@@ -26117,7 +26434,7 @@ public final class DiozeroProtos {
     /**
      * Protobuf type {@code diozero.I2C.WriteByteData}
      */
-    public  static final class WriteByteData extends
+    public static final class WriteByteData extends
         com.google.protobuf.GeneratedMessageV3 implements
         // @@protoc_insertion_point(message_implements:diozero.I2C.WriteByteData)
         WriteByteDataOrBuilder {
@@ -26226,6 +26543,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return Whether the correlationId field is set.
        */
+      @java.lang.Override
       public boolean hasCorrelationId() {
         return ((bitField0_ & 0x00000001) != 0);
       }
@@ -26233,6 +26551,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return The correlationId.
        */
+      @java.lang.Override
       public java.lang.String getCorrelationId() {
         java.lang.Object ref = correlationId_;
         if (ref instanceof java.lang.String) {
@@ -26251,6 +26570,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return The bytes for correlationId.
        */
+      @java.lang.Override
       public com.google.protobuf.ByteString
           getCorrelationIdBytes() {
         java.lang.Object ref = correlationId_;
@@ -26271,6 +26591,7 @@ public final class DiozeroProtos {
        * <code>required int32 controller = 2;</code>
        * @return Whether the controller field is set.
        */
+      @java.lang.Override
       public boolean hasController() {
         return ((bitField0_ & 0x00000002) != 0);
       }
@@ -26278,6 +26599,7 @@ public final class DiozeroProtos {
        * <code>required int32 controller = 2;</code>
        * @return The controller.
        */
+      @java.lang.Override
       public int getController() {
         return controller_;
       }
@@ -26288,6 +26610,7 @@ public final class DiozeroProtos {
        * <code>required int32 address = 3;</code>
        * @return Whether the address field is set.
        */
+      @java.lang.Override
       public boolean hasAddress() {
         return ((bitField0_ & 0x00000004) != 0);
       }
@@ -26295,6 +26618,7 @@ public final class DiozeroProtos {
        * <code>required int32 address = 3;</code>
        * @return The address.
        */
+      @java.lang.Override
       public int getAddress() {
         return address_;
       }
@@ -26305,6 +26629,7 @@ public final class DiozeroProtos {
        * <code>required int32 register = 4;</code>
        * @return Whether the register field is set.
        */
+      @java.lang.Override
       public boolean hasRegister() {
         return ((bitField0_ & 0x00000008) != 0);
       }
@@ -26312,6 +26637,7 @@ public final class DiozeroProtos {
        * <code>required int32 register = 4;</code>
        * @return The register.
        */
+      @java.lang.Override
       public int getRegister() {
         return register_;
       }
@@ -26322,6 +26648,7 @@ public final class DiozeroProtos {
        * <code>required int32 data = 5;</code>
        * @return Whether the data field is set.
        */
+      @java.lang.Override
       public boolean hasData() {
         return ((bitField0_ & 0x00000010) != 0);
       }
@@ -26329,6 +26656,7 @@ public final class DiozeroProtos {
        * <code>required int32 data = 5;</code>
        * @return The data.
        */
+      @java.lang.Override
       public int getData() {
         return data_;
       }
@@ -26596,7 +26924,7 @@ public final class DiozeroProtos {
                   com.diozero.remote.message.protobuf.DiozeroProtos.I2C.WriteByteData.class, com.diozero.remote.message.protobuf.DiozeroProtos.I2C.WriteByteData.Builder.class);
         }
 
-        // Construct using com.diozero.remote.message.DiozeroProtos.I2C.WriteByteData.newBuilder()
+        // Construct using com.diozero.remote.message.protobuf.DiozeroProtos.I2C.WriteByteData.newBuilder()
         private Builder() {
           maybeForceBuilderInitialization();
         }
@@ -26872,6 +27200,7 @@ public final class DiozeroProtos {
          * <code>required int32 controller = 2;</code>
          * @return Whether the controller field is set.
          */
+        @java.lang.Override
         public boolean hasController() {
           return ((bitField0_ & 0x00000002) != 0);
         }
@@ -26879,6 +27208,7 @@ public final class DiozeroProtos {
          * <code>required int32 controller = 2;</code>
          * @return The controller.
          */
+        @java.lang.Override
         public int getController() {
           return controller_;
         }
@@ -26909,6 +27239,7 @@ public final class DiozeroProtos {
          * <code>required int32 address = 3;</code>
          * @return Whether the address field is set.
          */
+        @java.lang.Override
         public boolean hasAddress() {
           return ((bitField0_ & 0x00000004) != 0);
         }
@@ -26916,6 +27247,7 @@ public final class DiozeroProtos {
          * <code>required int32 address = 3;</code>
          * @return The address.
          */
+        @java.lang.Override
         public int getAddress() {
           return address_;
         }
@@ -26946,6 +27278,7 @@ public final class DiozeroProtos {
          * <code>required int32 register = 4;</code>
          * @return Whether the register field is set.
          */
+        @java.lang.Override
         public boolean hasRegister() {
           return ((bitField0_ & 0x00000008) != 0);
         }
@@ -26953,6 +27286,7 @@ public final class DiozeroProtos {
          * <code>required int32 register = 4;</code>
          * @return The register.
          */
+        @java.lang.Override
         public int getRegister() {
           return register_;
         }
@@ -26983,6 +27317,7 @@ public final class DiozeroProtos {
          * <code>required int32 data = 5;</code>
          * @return Whether the data field is set.
          */
+        @java.lang.Override
         public boolean hasData() {
           return ((bitField0_ & 0x00000010) != 0);
         }
@@ -26990,6 +27325,7 @@ public final class DiozeroProtos {
          * <code>required int32 data = 5;</code>
          * @return The data.
          */
+        @java.lang.Override
         public int getData() {
           return data_;
         }
@@ -27122,12 +27458,23 @@ public final class DiozeroProtos {
       int getRegister();
 
       /**
-       * <code>required int32 length = 5;</code>
+       * <code>required int32 subAddressSize = 5;</code>
+       * @return Whether the subAddressSize field is set.
+       */
+      boolean hasSubAddressSize();
+      /**
+       * <code>required int32 subAddressSize = 5;</code>
+       * @return The subAddressSize.
+       */
+      int getSubAddressSize();
+
+      /**
+       * <code>required int32 length = 6;</code>
        * @return Whether the length field is set.
        */
       boolean hasLength();
       /**
-       * <code>required int32 length = 5;</code>
+       * <code>required int32 length = 6;</code>
        * @return The length.
        */
       int getLength();
@@ -27135,7 +27482,7 @@ public final class DiozeroProtos {
     /**
      * Protobuf type {@code diozero.I2C.ReadI2CBlockData}
      */
-    public  static final class ReadI2CBlockData extends
+    public static final class ReadI2CBlockData extends
         com.google.protobuf.GeneratedMessageV3 implements
         // @@protoc_insertion_point(message_implements:diozero.I2C.ReadI2CBlockData)
         ReadI2CBlockDataOrBuilder {
@@ -27202,6 +27549,11 @@ public final class DiozeroProtos {
               }
               case 40: {
                 bitField0_ |= 0x00000010;
+                subAddressSize_ = input.readInt32();
+                break;
+              }
+              case 48: {
+                bitField0_ |= 0x00000020;
                 length_ = input.readInt32();
                 break;
               }
@@ -27244,6 +27596,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return Whether the correlationId field is set.
        */
+      @java.lang.Override
       public boolean hasCorrelationId() {
         return ((bitField0_ & 0x00000001) != 0);
       }
@@ -27251,6 +27604,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return The correlationId.
        */
+      @java.lang.Override
       public java.lang.String getCorrelationId() {
         java.lang.Object ref = correlationId_;
         if (ref instanceof java.lang.String) {
@@ -27269,6 +27623,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return The bytes for correlationId.
        */
+      @java.lang.Override
       public com.google.protobuf.ByteString
           getCorrelationIdBytes() {
         java.lang.Object ref = correlationId_;
@@ -27289,6 +27644,7 @@ public final class DiozeroProtos {
        * <code>required int32 controller = 2;</code>
        * @return Whether the controller field is set.
        */
+      @java.lang.Override
       public boolean hasController() {
         return ((bitField0_ & 0x00000002) != 0);
       }
@@ -27296,6 +27652,7 @@ public final class DiozeroProtos {
        * <code>required int32 controller = 2;</code>
        * @return The controller.
        */
+      @java.lang.Override
       public int getController() {
         return controller_;
       }
@@ -27306,6 +27663,7 @@ public final class DiozeroProtos {
        * <code>required int32 address = 3;</code>
        * @return Whether the address field is set.
        */
+      @java.lang.Override
       public boolean hasAddress() {
         return ((bitField0_ & 0x00000004) != 0);
       }
@@ -27313,6 +27671,7 @@ public final class DiozeroProtos {
        * <code>required int32 address = 3;</code>
        * @return The address.
        */
+      @java.lang.Override
       public int getAddress() {
         return address_;
       }
@@ -27323,6 +27682,7 @@ public final class DiozeroProtos {
        * <code>required int32 register = 4;</code>
        * @return Whether the register field is set.
        */
+      @java.lang.Override
       public boolean hasRegister() {
         return ((bitField0_ & 0x00000008) != 0);
       }
@@ -27330,23 +27690,45 @@ public final class DiozeroProtos {
        * <code>required int32 register = 4;</code>
        * @return The register.
        */
+      @java.lang.Override
       public int getRegister() {
         return register_;
       }
 
-      public static final int LENGTH_FIELD_NUMBER = 5;
-      private int length_;
+      public static final int SUBADDRESSSIZE_FIELD_NUMBER = 5;
+      private int subAddressSize_;
       /**
-       * <code>required int32 length = 5;</code>
-       * @return Whether the length field is set.
+       * <code>required int32 subAddressSize = 5;</code>
+       * @return Whether the subAddressSize field is set.
        */
-      public boolean hasLength() {
+      @java.lang.Override
+      public boolean hasSubAddressSize() {
         return ((bitField0_ & 0x00000010) != 0);
       }
       /**
-       * <code>required int32 length = 5;</code>
+       * <code>required int32 subAddressSize = 5;</code>
+       * @return The subAddressSize.
+       */
+      @java.lang.Override
+      public int getSubAddressSize() {
+        return subAddressSize_;
+      }
+
+      public static final int LENGTH_FIELD_NUMBER = 6;
+      private int length_;
+      /**
+       * <code>required int32 length = 6;</code>
+       * @return Whether the length field is set.
+       */
+      @java.lang.Override
+      public boolean hasLength() {
+        return ((bitField0_ & 0x00000020) != 0);
+      }
+      /**
+       * <code>required int32 length = 6;</code>
        * @return The length.
        */
+      @java.lang.Override
       public int getLength() {
         return length_;
       }
@@ -27374,6 +27756,10 @@ public final class DiozeroProtos {
           memoizedIsInitialized = 0;
           return false;
         }
+        if (!hasSubAddressSize()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
         if (!hasLength()) {
           memoizedIsInitialized = 0;
           return false;
@@ -27398,7 +27784,10 @@ public final class DiozeroProtos {
           output.writeInt32(4, register_);
         }
         if (((bitField0_ & 0x00000010) != 0)) {
-          output.writeInt32(5, length_);
+          output.writeInt32(5, subAddressSize_);
+        }
+        if (((bitField0_ & 0x00000020) != 0)) {
+          output.writeInt32(6, length_);
         }
         unknownFields.writeTo(output);
       }
@@ -27426,7 +27815,11 @@ public final class DiozeroProtos {
         }
         if (((bitField0_ & 0x00000010) != 0)) {
           size += com.google.protobuf.CodedOutputStream
-            .computeInt32Size(5, length_);
+            .computeInt32Size(5, subAddressSize_);
+        }
+        if (((bitField0_ & 0x00000020) != 0)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeInt32Size(6, length_);
         }
         size += unknownFields.getSerializedSize();
         memoizedSize = size;
@@ -27463,6 +27856,11 @@ public final class DiozeroProtos {
           if (getRegister()
               != other.getRegister()) return false;
         }
+        if (hasSubAddressSize() != other.hasSubAddressSize()) return false;
+        if (hasSubAddressSize()) {
+          if (getSubAddressSize()
+              != other.getSubAddressSize()) return false;
+        }
         if (hasLength() != other.hasLength()) return false;
         if (hasLength()) {
           if (getLength()
@@ -27494,6 +27892,10 @@ public final class DiozeroProtos {
         if (hasRegister()) {
           hash = (37 * hash) + REGISTER_FIELD_NUMBER;
           hash = (53 * hash) + getRegister();
+        }
+        if (hasSubAddressSize()) {
+          hash = (37 * hash) + SUBADDRESSSIZE_FIELD_NUMBER;
+          hash = (53 * hash) + getSubAddressSize();
         }
         if (hasLength()) {
           hash = (37 * hash) + LENGTH_FIELD_NUMBER;
@@ -27614,7 +28016,7 @@ public final class DiozeroProtos {
                   com.diozero.remote.message.protobuf.DiozeroProtos.I2C.ReadI2CBlockData.class, com.diozero.remote.message.protobuf.DiozeroProtos.I2C.ReadI2CBlockData.Builder.class);
         }
 
-        // Construct using com.diozero.remote.message.DiozeroProtos.I2C.ReadI2CBlockData.newBuilder()
+        // Construct using com.diozero.remote.message.protobuf.DiozeroProtos.I2C.ReadI2CBlockData.newBuilder()
         private Builder() {
           maybeForceBuilderInitialization();
         }
@@ -27640,8 +28042,10 @@ public final class DiozeroProtos {
           bitField0_ = (bitField0_ & ~0x00000004);
           register_ = 0;
           bitField0_ = (bitField0_ & ~0x00000008);
-          length_ = 0;
+          subAddressSize_ = 0;
           bitField0_ = (bitField0_ & ~0x00000010);
+          length_ = 0;
+          bitField0_ = (bitField0_ & ~0x00000020);
           return this;
         }
 
@@ -27687,8 +28091,12 @@ public final class DiozeroProtos {
             to_bitField0_ |= 0x00000008;
           }
           if (((from_bitField0_ & 0x00000010) != 0)) {
-            result.length_ = length_;
+            result.subAddressSize_ = subAddressSize_;
             to_bitField0_ |= 0x00000010;
+          }
+          if (((from_bitField0_ & 0x00000020) != 0)) {
+            result.length_ = length_;
+            to_bitField0_ |= 0x00000020;
           }
           result.bitField0_ = to_bitField0_;
           onBuilt();
@@ -27753,6 +28161,9 @@ public final class DiozeroProtos {
           if (other.hasRegister()) {
             setRegister(other.getRegister());
           }
+          if (other.hasSubAddressSize()) {
+            setSubAddressSize(other.getSubAddressSize());
+          }
           if (other.hasLength()) {
             setLength(other.getLength());
           }
@@ -27773,6 +28184,9 @@ public final class DiozeroProtos {
             return false;
           }
           if (!hasRegister()) {
+            return false;
+          }
+          if (!hasSubAddressSize()) {
             return false;
           }
           if (!hasLength()) {
@@ -27890,6 +28304,7 @@ public final class DiozeroProtos {
          * <code>required int32 controller = 2;</code>
          * @return Whether the controller field is set.
          */
+        @java.lang.Override
         public boolean hasController() {
           return ((bitField0_ & 0x00000002) != 0);
         }
@@ -27897,6 +28312,7 @@ public final class DiozeroProtos {
          * <code>required int32 controller = 2;</code>
          * @return The controller.
          */
+        @java.lang.Override
         public int getController() {
           return controller_;
         }
@@ -27927,6 +28343,7 @@ public final class DiozeroProtos {
          * <code>required int32 address = 3;</code>
          * @return Whether the address field is set.
          */
+        @java.lang.Override
         public boolean hasAddress() {
           return ((bitField0_ & 0x00000004) != 0);
         }
@@ -27934,6 +28351,7 @@ public final class DiozeroProtos {
          * <code>required int32 address = 3;</code>
          * @return The address.
          */
+        @java.lang.Override
         public int getAddress() {
           return address_;
         }
@@ -27964,6 +28382,7 @@ public final class DiozeroProtos {
          * <code>required int32 register = 4;</code>
          * @return Whether the register field is set.
          */
+        @java.lang.Override
         public boolean hasRegister() {
           return ((bitField0_ & 0x00000008) != 0);
         }
@@ -27971,6 +28390,7 @@ public final class DiozeroProtos {
          * <code>required int32 register = 4;</code>
          * @return The register.
          */
+        @java.lang.Override
         public int getRegister() {
           return register_;
         }
@@ -27996,38 +28416,79 @@ public final class DiozeroProtos {
           return this;
         }
 
-        private int length_ ;
+        private int subAddressSize_ ;
         /**
-         * <code>required int32 length = 5;</code>
-         * @return Whether the length field is set.
+         * <code>required int32 subAddressSize = 5;</code>
+         * @return Whether the subAddressSize field is set.
          */
-        public boolean hasLength() {
+        @java.lang.Override
+        public boolean hasSubAddressSize() {
           return ((bitField0_ & 0x00000010) != 0);
         }
         /**
-         * <code>required int32 length = 5;</code>
+         * <code>required int32 subAddressSize = 5;</code>
+         * @return The subAddressSize.
+         */
+        @java.lang.Override
+        public int getSubAddressSize() {
+          return subAddressSize_;
+        }
+        /**
+         * <code>required int32 subAddressSize = 5;</code>
+         * @param value The subAddressSize to set.
+         * @return This builder for chaining.
+         */
+        public Builder setSubAddressSize(int value) {
+          bitField0_ |= 0x00000010;
+          subAddressSize_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>required int32 subAddressSize = 5;</code>
+         * @return This builder for chaining.
+         */
+        public Builder clearSubAddressSize() {
+          bitField0_ = (bitField0_ & ~0x00000010);
+          subAddressSize_ = 0;
+          onChanged();
+          return this;
+        }
+
+        private int length_ ;
+        /**
+         * <code>required int32 length = 6;</code>
+         * @return Whether the length field is set.
+         */
+        @java.lang.Override
+        public boolean hasLength() {
+          return ((bitField0_ & 0x00000020) != 0);
+        }
+        /**
+         * <code>required int32 length = 6;</code>
          * @return The length.
          */
+        @java.lang.Override
         public int getLength() {
           return length_;
         }
         /**
-         * <code>required int32 length = 5;</code>
+         * <code>required int32 length = 6;</code>
          * @param value The length to set.
          * @return This builder for chaining.
          */
         public Builder setLength(int value) {
-          bitField0_ |= 0x00000010;
+          bitField0_ |= 0x00000020;
           length_ = value;
           onChanged();
           return this;
         }
         /**
-         * <code>required int32 length = 5;</code>
+         * <code>required int32 length = 6;</code>
          * @return This builder for chaining.
          */
         public Builder clearLength() {
-          bitField0_ = (bitField0_ & ~0x00000010);
+          bitField0_ = (bitField0_ & ~0x00000020);
           length_ = 0;
           onChanged();
           return this;
@@ -28140,12 +28601,23 @@ public final class DiozeroProtos {
       int getRegister();
 
       /**
-       * <code>required bytes data = 5;</code>
+       * <code>required int32 subAddressSize = 5;</code>
+       * @return Whether the subAddressSize field is set.
+       */
+      boolean hasSubAddressSize();
+      /**
+       * <code>required int32 subAddressSize = 5;</code>
+       * @return The subAddressSize.
+       */
+      int getSubAddressSize();
+
+      /**
+       * <code>required bytes data = 6;</code>
        * @return Whether the data field is set.
        */
       boolean hasData();
       /**
-       * <code>required bytes data = 5;</code>
+       * <code>required bytes data = 6;</code>
        * @return The data.
        */
       com.google.protobuf.ByteString getData();
@@ -28153,7 +28625,7 @@ public final class DiozeroProtos {
     /**
      * Protobuf type {@code diozero.I2C.WriteI2CBlockData}
      */
-    public  static final class WriteI2CBlockData extends
+    public static final class WriteI2CBlockData extends
         com.google.protobuf.GeneratedMessageV3 implements
         // @@protoc_insertion_point(message_implements:diozero.I2C.WriteI2CBlockData)
         WriteI2CBlockDataOrBuilder {
@@ -28219,8 +28691,13 @@ public final class DiozeroProtos {
                 register_ = input.readInt32();
                 break;
               }
-              case 42: {
+              case 40: {
                 bitField0_ |= 0x00000010;
+                subAddressSize_ = input.readInt32();
+                break;
+              }
+              case 50: {
+                bitField0_ |= 0x00000020;
                 data_ = input.readBytes();
                 break;
               }
@@ -28263,6 +28740,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return Whether the correlationId field is set.
        */
+      @java.lang.Override
       public boolean hasCorrelationId() {
         return ((bitField0_ & 0x00000001) != 0);
       }
@@ -28270,6 +28748,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return The correlationId.
        */
+      @java.lang.Override
       public java.lang.String getCorrelationId() {
         java.lang.Object ref = correlationId_;
         if (ref instanceof java.lang.String) {
@@ -28288,6 +28767,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return The bytes for correlationId.
        */
+      @java.lang.Override
       public com.google.protobuf.ByteString
           getCorrelationIdBytes() {
         java.lang.Object ref = correlationId_;
@@ -28308,6 +28788,7 @@ public final class DiozeroProtos {
        * <code>required int32 controller = 2;</code>
        * @return Whether the controller field is set.
        */
+      @java.lang.Override
       public boolean hasController() {
         return ((bitField0_ & 0x00000002) != 0);
       }
@@ -28315,6 +28796,7 @@ public final class DiozeroProtos {
        * <code>required int32 controller = 2;</code>
        * @return The controller.
        */
+      @java.lang.Override
       public int getController() {
         return controller_;
       }
@@ -28325,6 +28807,7 @@ public final class DiozeroProtos {
        * <code>required int32 address = 3;</code>
        * @return Whether the address field is set.
        */
+      @java.lang.Override
       public boolean hasAddress() {
         return ((bitField0_ & 0x00000004) != 0);
       }
@@ -28332,6 +28815,7 @@ public final class DiozeroProtos {
        * <code>required int32 address = 3;</code>
        * @return The address.
        */
+      @java.lang.Override
       public int getAddress() {
         return address_;
       }
@@ -28342,6 +28826,7 @@ public final class DiozeroProtos {
        * <code>required int32 register = 4;</code>
        * @return Whether the register field is set.
        */
+      @java.lang.Override
       public boolean hasRegister() {
         return ((bitField0_ & 0x00000008) != 0);
       }
@@ -28349,23 +28834,45 @@ public final class DiozeroProtos {
        * <code>required int32 register = 4;</code>
        * @return The register.
        */
+      @java.lang.Override
       public int getRegister() {
         return register_;
       }
 
-      public static final int DATA_FIELD_NUMBER = 5;
-      private com.google.protobuf.ByteString data_;
+      public static final int SUBADDRESSSIZE_FIELD_NUMBER = 5;
+      private int subAddressSize_;
       /**
-       * <code>required bytes data = 5;</code>
-       * @return Whether the data field is set.
+       * <code>required int32 subAddressSize = 5;</code>
+       * @return Whether the subAddressSize field is set.
        */
-      public boolean hasData() {
+      @java.lang.Override
+      public boolean hasSubAddressSize() {
         return ((bitField0_ & 0x00000010) != 0);
       }
       /**
-       * <code>required bytes data = 5;</code>
+       * <code>required int32 subAddressSize = 5;</code>
+       * @return The subAddressSize.
+       */
+      @java.lang.Override
+      public int getSubAddressSize() {
+        return subAddressSize_;
+      }
+
+      public static final int DATA_FIELD_NUMBER = 6;
+      private com.google.protobuf.ByteString data_;
+      /**
+       * <code>required bytes data = 6;</code>
+       * @return Whether the data field is set.
+       */
+      @java.lang.Override
+      public boolean hasData() {
+        return ((bitField0_ & 0x00000020) != 0);
+      }
+      /**
+       * <code>required bytes data = 6;</code>
        * @return The data.
        */
+      @java.lang.Override
       public com.google.protobuf.ByteString getData() {
         return data_;
       }
@@ -28393,6 +28900,10 @@ public final class DiozeroProtos {
           memoizedIsInitialized = 0;
           return false;
         }
+        if (!hasSubAddressSize()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
         if (!hasData()) {
           memoizedIsInitialized = 0;
           return false;
@@ -28417,7 +28928,10 @@ public final class DiozeroProtos {
           output.writeInt32(4, register_);
         }
         if (((bitField0_ & 0x00000010) != 0)) {
-          output.writeBytes(5, data_);
+          output.writeInt32(5, subAddressSize_);
+        }
+        if (((bitField0_ & 0x00000020) != 0)) {
+          output.writeBytes(6, data_);
         }
         unknownFields.writeTo(output);
       }
@@ -28445,7 +28959,11 @@ public final class DiozeroProtos {
         }
         if (((bitField0_ & 0x00000010) != 0)) {
           size += com.google.protobuf.CodedOutputStream
-            .computeBytesSize(5, data_);
+            .computeInt32Size(5, subAddressSize_);
+        }
+        if (((bitField0_ & 0x00000020) != 0)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeBytesSize(6, data_);
         }
         size += unknownFields.getSerializedSize();
         memoizedSize = size;
@@ -28482,6 +29000,11 @@ public final class DiozeroProtos {
           if (getRegister()
               != other.getRegister()) return false;
         }
+        if (hasSubAddressSize() != other.hasSubAddressSize()) return false;
+        if (hasSubAddressSize()) {
+          if (getSubAddressSize()
+              != other.getSubAddressSize()) return false;
+        }
         if (hasData() != other.hasData()) return false;
         if (hasData()) {
           if (!getData()
@@ -28513,6 +29036,10 @@ public final class DiozeroProtos {
         if (hasRegister()) {
           hash = (37 * hash) + REGISTER_FIELD_NUMBER;
           hash = (53 * hash) + getRegister();
+        }
+        if (hasSubAddressSize()) {
+          hash = (37 * hash) + SUBADDRESSSIZE_FIELD_NUMBER;
+          hash = (53 * hash) + getSubAddressSize();
         }
         if (hasData()) {
           hash = (37 * hash) + DATA_FIELD_NUMBER;
@@ -28633,7 +29160,7 @@ public final class DiozeroProtos {
                   com.diozero.remote.message.protobuf.DiozeroProtos.I2C.WriteI2CBlockData.class, com.diozero.remote.message.protobuf.DiozeroProtos.I2C.WriteI2CBlockData.Builder.class);
         }
 
-        // Construct using com.diozero.remote.message.DiozeroProtos.I2C.WriteI2CBlockData.newBuilder()
+        // Construct using com.diozero.remote.message.protobuf.DiozeroProtos.I2C.WriteI2CBlockData.newBuilder()
         private Builder() {
           maybeForceBuilderInitialization();
         }
@@ -28659,8 +29186,10 @@ public final class DiozeroProtos {
           bitField0_ = (bitField0_ & ~0x00000004);
           register_ = 0;
           bitField0_ = (bitField0_ & ~0x00000008);
-          data_ = com.google.protobuf.ByteString.EMPTY;
+          subAddressSize_ = 0;
           bitField0_ = (bitField0_ & ~0x00000010);
+          data_ = com.google.protobuf.ByteString.EMPTY;
+          bitField0_ = (bitField0_ & ~0x00000020);
           return this;
         }
 
@@ -28706,7 +29235,11 @@ public final class DiozeroProtos {
             to_bitField0_ |= 0x00000008;
           }
           if (((from_bitField0_ & 0x00000010) != 0)) {
+            result.subAddressSize_ = subAddressSize_;
             to_bitField0_ |= 0x00000010;
+          }
+          if (((from_bitField0_ & 0x00000020) != 0)) {
+            to_bitField0_ |= 0x00000020;
           }
           result.data_ = data_;
           result.bitField0_ = to_bitField0_;
@@ -28772,6 +29305,9 @@ public final class DiozeroProtos {
           if (other.hasRegister()) {
             setRegister(other.getRegister());
           }
+          if (other.hasSubAddressSize()) {
+            setSubAddressSize(other.getSubAddressSize());
+          }
           if (other.hasData()) {
             setData(other.getData());
           }
@@ -28792,6 +29328,9 @@ public final class DiozeroProtos {
             return false;
           }
           if (!hasRegister()) {
+            return false;
+          }
+          if (!hasSubAddressSize()) {
             return false;
           }
           if (!hasData()) {
@@ -28909,6 +29448,7 @@ public final class DiozeroProtos {
          * <code>required int32 controller = 2;</code>
          * @return Whether the controller field is set.
          */
+        @java.lang.Override
         public boolean hasController() {
           return ((bitField0_ & 0x00000002) != 0);
         }
@@ -28916,6 +29456,7 @@ public final class DiozeroProtos {
          * <code>required int32 controller = 2;</code>
          * @return The controller.
          */
+        @java.lang.Override
         public int getController() {
           return controller_;
         }
@@ -28946,6 +29487,7 @@ public final class DiozeroProtos {
          * <code>required int32 address = 3;</code>
          * @return Whether the address field is set.
          */
+        @java.lang.Override
         public boolean hasAddress() {
           return ((bitField0_ & 0x00000004) != 0);
         }
@@ -28953,6 +29495,7 @@ public final class DiozeroProtos {
          * <code>required int32 address = 3;</code>
          * @return The address.
          */
+        @java.lang.Override
         public int getAddress() {
           return address_;
         }
@@ -28983,6 +29526,7 @@ public final class DiozeroProtos {
          * <code>required int32 register = 4;</code>
          * @return Whether the register field is set.
          */
+        @java.lang.Override
         public boolean hasRegister() {
           return ((bitField0_ & 0x00000008) != 0);
         }
@@ -28990,6 +29534,7 @@ public final class DiozeroProtos {
          * <code>required int32 register = 4;</code>
          * @return The register.
          */
+        @java.lang.Override
         public int getRegister() {
           return register_;
         }
@@ -29015,23 +29560,64 @@ public final class DiozeroProtos {
           return this;
         }
 
-        private com.google.protobuf.ByteString data_ = com.google.protobuf.ByteString.EMPTY;
+        private int subAddressSize_ ;
         /**
-         * <code>required bytes data = 5;</code>
-         * @return Whether the data field is set.
+         * <code>required int32 subAddressSize = 5;</code>
+         * @return Whether the subAddressSize field is set.
          */
-        public boolean hasData() {
+        @java.lang.Override
+        public boolean hasSubAddressSize() {
           return ((bitField0_ & 0x00000010) != 0);
         }
         /**
-         * <code>required bytes data = 5;</code>
+         * <code>required int32 subAddressSize = 5;</code>
+         * @return The subAddressSize.
+         */
+        @java.lang.Override
+        public int getSubAddressSize() {
+          return subAddressSize_;
+        }
+        /**
+         * <code>required int32 subAddressSize = 5;</code>
+         * @param value The subAddressSize to set.
+         * @return This builder for chaining.
+         */
+        public Builder setSubAddressSize(int value) {
+          bitField0_ |= 0x00000010;
+          subAddressSize_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>required int32 subAddressSize = 5;</code>
+         * @return This builder for chaining.
+         */
+        public Builder clearSubAddressSize() {
+          bitField0_ = (bitField0_ & ~0x00000010);
+          subAddressSize_ = 0;
+          onChanged();
+          return this;
+        }
+
+        private com.google.protobuf.ByteString data_ = com.google.protobuf.ByteString.EMPTY;
+        /**
+         * <code>required bytes data = 6;</code>
+         * @return Whether the data field is set.
+         */
+        @java.lang.Override
+        public boolean hasData() {
+          return ((bitField0_ & 0x00000020) != 0);
+        }
+        /**
+         * <code>required bytes data = 6;</code>
          * @return The data.
          */
+        @java.lang.Override
         public com.google.protobuf.ByteString getData() {
           return data_;
         }
         /**
-         * <code>required bytes data = 5;</code>
+         * <code>required bytes data = 6;</code>
          * @param value The data to set.
          * @return This builder for chaining.
          */
@@ -29039,17 +29625,17 @@ public final class DiozeroProtos {
           if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000010;
+  bitField0_ |= 0x00000020;
           data_ = value;
           onChanged();
           return this;
         }
         /**
-         * <code>required bytes data = 5;</code>
+         * <code>required bytes data = 6;</code>
          * @return This builder for chaining.
          */
         public Builder clearData() {
-          bitField0_ = (bitField0_ & ~0x00000010);
+          bitField0_ = (bitField0_ & ~0x00000020);
           data_ = getDefaultInstance().getData();
           onChanged();
           return this;
@@ -29153,7 +29739,7 @@ public final class DiozeroProtos {
     /**
      * Protobuf type {@code diozero.I2C.Close}
      */
-    public  static final class Close extends
+    public static final class Close extends
         com.google.protobuf.GeneratedMessageV3 implements
         // @@protoc_insertion_point(message_implements:diozero.I2C.Close)
         CloseOrBuilder {
@@ -29252,6 +29838,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return Whether the correlationId field is set.
        */
+      @java.lang.Override
       public boolean hasCorrelationId() {
         return ((bitField0_ & 0x00000001) != 0);
       }
@@ -29259,6 +29846,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return The correlationId.
        */
+      @java.lang.Override
       public java.lang.String getCorrelationId() {
         java.lang.Object ref = correlationId_;
         if (ref instanceof java.lang.String) {
@@ -29277,6 +29865,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return The bytes for correlationId.
        */
+      @java.lang.Override
       public com.google.protobuf.ByteString
           getCorrelationIdBytes() {
         java.lang.Object ref = correlationId_;
@@ -29297,6 +29886,7 @@ public final class DiozeroProtos {
        * <code>required int32 controller = 2;</code>
        * @return Whether the controller field is set.
        */
+      @java.lang.Override
       public boolean hasController() {
         return ((bitField0_ & 0x00000002) != 0);
       }
@@ -29304,6 +29894,7 @@ public final class DiozeroProtos {
        * <code>required int32 controller = 2;</code>
        * @return The controller.
        */
+      @java.lang.Override
       public int getController() {
         return controller_;
       }
@@ -29314,6 +29905,7 @@ public final class DiozeroProtos {
        * <code>required int32 address = 3;</code>
        * @return Whether the address field is set.
        */
+      @java.lang.Override
       public boolean hasAddress() {
         return ((bitField0_ & 0x00000004) != 0);
       }
@@ -29321,6 +29913,7 @@ public final class DiozeroProtos {
        * <code>required int32 address = 3;</code>
        * @return The address.
        */
+      @java.lang.Override
       public int getAddress() {
         return address_;
       }
@@ -29548,7 +30141,7 @@ public final class DiozeroProtos {
                   com.diozero.remote.message.protobuf.DiozeroProtos.I2C.Close.class, com.diozero.remote.message.protobuf.DiozeroProtos.I2C.Close.Builder.class);
         }
 
-        // Construct using com.diozero.remote.message.DiozeroProtos.I2C.Close.newBuilder()
+        // Construct using com.diozero.remote.message.protobuf.DiozeroProtos.I2C.Close.newBuilder()
         private Builder() {
           maybeForceBuilderInitialization();
         }
@@ -29800,6 +30393,7 @@ public final class DiozeroProtos {
          * <code>required int32 controller = 2;</code>
          * @return Whether the controller field is set.
          */
+        @java.lang.Override
         public boolean hasController() {
           return ((bitField0_ & 0x00000002) != 0);
         }
@@ -29807,6 +30401,7 @@ public final class DiozeroProtos {
          * <code>required int32 controller = 2;</code>
          * @return The controller.
          */
+        @java.lang.Override
         public int getController() {
           return controller_;
         }
@@ -29837,6 +30432,7 @@ public final class DiozeroProtos {
          * <code>required int32 address = 3;</code>
          * @return Whether the address field is set.
          */
+        @java.lang.Override
         public boolean hasAddress() {
           return ((bitField0_ & 0x00000004) != 0);
         }
@@ -29844,6 +30440,7 @@ public final class DiozeroProtos {
          * <code>required int32 address = 3;</code>
          * @return The address.
          */
+        @java.lang.Override
         public int getAddress() {
           return address_;
         }
@@ -29984,7 +30581,7 @@ public final class DiozeroProtos {
     /**
      * Protobuf type {@code diozero.I2C.ReadByteResponse}
      */
-    public  static final class ReadByteResponse extends
+    public static final class ReadByteResponse extends
         com.google.protobuf.GeneratedMessageV3 implements
         // @@protoc_insertion_point(message_implements:diozero.I2C.ReadByteResponse)
         ReadByteResponseOrBuilder {
@@ -30098,6 +30695,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return Whether the correlationId field is set.
        */
+      @java.lang.Override
       public boolean hasCorrelationId() {
         return ((bitField0_ & 0x00000001) != 0);
       }
@@ -30105,6 +30703,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return The correlationId.
        */
+      @java.lang.Override
       public java.lang.String getCorrelationId() {
         java.lang.Object ref = correlationId_;
         if (ref instanceof java.lang.String) {
@@ -30123,6 +30722,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return The bytes for correlationId.
        */
+      @java.lang.Override
       public com.google.protobuf.ByteString
           getCorrelationIdBytes() {
         java.lang.Object ref = correlationId_;
@@ -30143,14 +30743,14 @@ public final class DiozeroProtos {
        * <code>required .diozero.Status status = 2;</code>
        * @return Whether the status field is set.
        */
-      public boolean hasStatus() {
+      @java.lang.Override public boolean hasStatus() {
         return ((bitField0_ & 0x00000002) != 0);
       }
       /**
        * <code>required .diozero.Status status = 2;</code>
        * @return The status.
        */
-      public com.diozero.remote.message.protobuf.DiozeroProtos.Status getStatus() {
+      @java.lang.Override public com.diozero.remote.message.protobuf.DiozeroProtos.Status getStatus() {
         @SuppressWarnings("deprecation")
         com.diozero.remote.message.protobuf.DiozeroProtos.Status result = com.diozero.remote.message.protobuf.DiozeroProtos.Status.valueOf(status_);
         return result == null ? com.diozero.remote.message.protobuf.DiozeroProtos.Status.OK : result;
@@ -30162,6 +30762,7 @@ public final class DiozeroProtos {
        * <code>optional string detail = 3;</code>
        * @return Whether the detail field is set.
        */
+      @java.lang.Override
       public boolean hasDetail() {
         return ((bitField0_ & 0x00000004) != 0);
       }
@@ -30169,6 +30770,7 @@ public final class DiozeroProtos {
        * <code>optional string detail = 3;</code>
        * @return The detail.
        */
+      @java.lang.Override
       public java.lang.String getDetail() {
         java.lang.Object ref = detail_;
         if (ref instanceof java.lang.String) {
@@ -30187,6 +30789,7 @@ public final class DiozeroProtos {
        * <code>optional string detail = 3;</code>
        * @return The bytes for detail.
        */
+      @java.lang.Override
       public com.google.protobuf.ByteString
           getDetailBytes() {
         java.lang.Object ref = detail_;
@@ -30207,6 +30810,7 @@ public final class DiozeroProtos {
        * <code>optional int32 data = 4;</code>
        * @return Whether the data field is set.
        */
+      @java.lang.Override
       public boolean hasData() {
         return ((bitField0_ & 0x00000008) != 0);
       }
@@ -30214,6 +30818,7 @@ public final class DiozeroProtos {
        * <code>optional int32 data = 4;</code>
        * @return The data.
        */
+      @java.lang.Override
       public int getData() {
         return data_;
       }
@@ -30451,7 +31056,7 @@ public final class DiozeroProtos {
                   com.diozero.remote.message.protobuf.DiozeroProtos.I2C.ReadByteResponse.class, com.diozero.remote.message.protobuf.DiozeroProtos.I2C.ReadByteResponse.Builder.class);
         }
 
-        // Construct using com.diozero.remote.message.DiozeroProtos.I2C.ReadByteResponse.newBuilder()
+        // Construct using com.diozero.remote.message.protobuf.DiozeroProtos.I2C.ReadByteResponse.newBuilder()
         private Builder() {
           maybeForceBuilderInitialization();
         }
@@ -30711,13 +31316,14 @@ public final class DiozeroProtos {
          * <code>required .diozero.Status status = 2;</code>
          * @return Whether the status field is set.
          */
-        public boolean hasStatus() {
+        @java.lang.Override public boolean hasStatus() {
           return ((bitField0_ & 0x00000002) != 0);
         }
         /**
          * <code>required .diozero.Status status = 2;</code>
          * @return The status.
          */
+        @java.lang.Override
         public com.diozero.remote.message.protobuf.DiozeroProtos.Status getStatus() {
           @SuppressWarnings("deprecation")
           com.diozero.remote.message.protobuf.DiozeroProtos.Status result = com.diozero.remote.message.protobuf.DiozeroProtos.Status.valueOf(status_);
@@ -30837,6 +31443,7 @@ public final class DiozeroProtos {
          * <code>optional int32 data = 4;</code>
          * @return Whether the data field is set.
          */
+        @java.lang.Override
         public boolean hasData() {
           return ((bitField0_ & 0x00000008) != 0);
         }
@@ -30844,6 +31451,7 @@ public final class DiozeroProtos {
          * <code>optional int32 data = 4;</code>
          * @return The data.
          */
+        @java.lang.Override
         public int getData() {
           return data_;
         }
@@ -30984,7 +31592,7 @@ public final class DiozeroProtos {
     /**
      * Protobuf type {@code diozero.I2C.ReadResponse}
      */
-    public  static final class ReadResponse extends
+    public static final class ReadResponse extends
         com.google.protobuf.GeneratedMessageV3 implements
         // @@protoc_insertion_point(message_implements:diozero.I2C.ReadResponse)
         ReadResponseOrBuilder {
@@ -31099,6 +31707,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return Whether the correlationId field is set.
        */
+      @java.lang.Override
       public boolean hasCorrelationId() {
         return ((bitField0_ & 0x00000001) != 0);
       }
@@ -31106,6 +31715,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return The correlationId.
        */
+      @java.lang.Override
       public java.lang.String getCorrelationId() {
         java.lang.Object ref = correlationId_;
         if (ref instanceof java.lang.String) {
@@ -31124,6 +31734,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return The bytes for correlationId.
        */
+      @java.lang.Override
       public com.google.protobuf.ByteString
           getCorrelationIdBytes() {
         java.lang.Object ref = correlationId_;
@@ -31144,14 +31755,14 @@ public final class DiozeroProtos {
        * <code>required .diozero.Status status = 2;</code>
        * @return Whether the status field is set.
        */
-      public boolean hasStatus() {
+      @java.lang.Override public boolean hasStatus() {
         return ((bitField0_ & 0x00000002) != 0);
       }
       /**
        * <code>required .diozero.Status status = 2;</code>
        * @return The status.
        */
-      public com.diozero.remote.message.protobuf.DiozeroProtos.Status getStatus() {
+      @java.lang.Override public com.diozero.remote.message.protobuf.DiozeroProtos.Status getStatus() {
         @SuppressWarnings("deprecation")
         com.diozero.remote.message.protobuf.DiozeroProtos.Status result = com.diozero.remote.message.protobuf.DiozeroProtos.Status.valueOf(status_);
         return result == null ? com.diozero.remote.message.protobuf.DiozeroProtos.Status.OK : result;
@@ -31163,6 +31774,7 @@ public final class DiozeroProtos {
        * <code>optional string detail = 3;</code>
        * @return Whether the detail field is set.
        */
+      @java.lang.Override
       public boolean hasDetail() {
         return ((bitField0_ & 0x00000004) != 0);
       }
@@ -31170,6 +31782,7 @@ public final class DiozeroProtos {
        * <code>optional string detail = 3;</code>
        * @return The detail.
        */
+      @java.lang.Override
       public java.lang.String getDetail() {
         java.lang.Object ref = detail_;
         if (ref instanceof java.lang.String) {
@@ -31188,6 +31801,7 @@ public final class DiozeroProtos {
        * <code>optional string detail = 3;</code>
        * @return The bytes for detail.
        */
+      @java.lang.Override
       public com.google.protobuf.ByteString
           getDetailBytes() {
         java.lang.Object ref = detail_;
@@ -31208,6 +31822,7 @@ public final class DiozeroProtos {
        * <code>optional bytes data = 4;</code>
        * @return Whether the data field is set.
        */
+      @java.lang.Override
       public boolean hasData() {
         return ((bitField0_ & 0x00000008) != 0);
       }
@@ -31215,6 +31830,7 @@ public final class DiozeroProtos {
        * <code>optional bytes data = 4;</code>
        * @return The data.
        */
+      @java.lang.Override
       public com.google.protobuf.ByteString getData() {
         return data_;
       }
@@ -31452,7 +32068,7 @@ public final class DiozeroProtos {
                   com.diozero.remote.message.protobuf.DiozeroProtos.I2C.ReadResponse.class, com.diozero.remote.message.protobuf.DiozeroProtos.I2C.ReadResponse.Builder.class);
         }
 
-        // Construct using com.diozero.remote.message.DiozeroProtos.I2C.ReadResponse.newBuilder()
+        // Construct using com.diozero.remote.message.protobuf.DiozeroProtos.I2C.ReadResponse.newBuilder()
         private Builder() {
           maybeForceBuilderInitialization();
         }
@@ -31712,13 +32328,14 @@ public final class DiozeroProtos {
          * <code>required .diozero.Status status = 2;</code>
          * @return Whether the status field is set.
          */
-        public boolean hasStatus() {
+        @java.lang.Override public boolean hasStatus() {
           return ((bitField0_ & 0x00000002) != 0);
         }
         /**
          * <code>required .diozero.Status status = 2;</code>
          * @return The status.
          */
+        @java.lang.Override
         public com.diozero.remote.message.protobuf.DiozeroProtos.Status getStatus() {
           @SuppressWarnings("deprecation")
           com.diozero.remote.message.protobuf.DiozeroProtos.Status result = com.diozero.remote.message.protobuf.DiozeroProtos.Status.valueOf(status_);
@@ -31838,6 +32455,7 @@ public final class DiozeroProtos {
          * <code>optional bytes data = 4;</code>
          * @return Whether the data field is set.
          */
+        @java.lang.Override
         public boolean hasData() {
           return ((bitField0_ & 0x00000008) != 0);
         }
@@ -31845,6 +32463,7 @@ public final class DiozeroProtos {
          * <code>optional bytes data = 4;</code>
          * @return The data.
          */
+        @java.lang.Override
         public com.google.protobuf.ByteString getData() {
           return data_;
         }
@@ -32089,7 +32708,7 @@ public final class DiozeroProtos {
                 com.diozero.remote.message.protobuf.DiozeroProtos.I2C.class, com.diozero.remote.message.protobuf.DiozeroProtos.I2C.Builder.class);
       }
 
-      // Construct using com.diozero.remote.message.DiozeroProtos.I2C.newBuilder()
+      // Construct using com.diozero.remote.message.protobuf.DiozeroProtos.I2C.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -32269,7 +32888,7 @@ public final class DiozeroProtos {
   /**
    * Protobuf type {@code diozero.Spi}
    */
-  public  static final class Spi extends
+  public static final class Spi extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:diozero.Spi)
       SpiOrBuilder {
@@ -32536,7 +33155,7 @@ public final class DiozeroProtos {
     /**
      * Protobuf type {@code diozero.Spi.Open}
      */
-    public  static final class Open extends
+    public static final class Open extends
         com.google.protobuf.GeneratedMessageV3 implements
         // @@protoc_insertion_point(message_implements:diozero.Spi.Open)
         OpenOrBuilder {
@@ -32658,6 +33277,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return Whether the correlationId field is set.
        */
+      @java.lang.Override
       public boolean hasCorrelationId() {
         return ((bitField0_ & 0x00000001) != 0);
       }
@@ -32665,6 +33285,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return The correlationId.
        */
+      @java.lang.Override
       public java.lang.String getCorrelationId() {
         java.lang.Object ref = correlationId_;
         if (ref instanceof java.lang.String) {
@@ -32683,6 +33304,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return The bytes for correlationId.
        */
+      @java.lang.Override
       public com.google.protobuf.ByteString
           getCorrelationIdBytes() {
         java.lang.Object ref = correlationId_;
@@ -32703,6 +33325,7 @@ public final class DiozeroProtos {
        * <code>required int32 controller = 2;</code>
        * @return Whether the controller field is set.
        */
+      @java.lang.Override
       public boolean hasController() {
         return ((bitField0_ & 0x00000002) != 0);
       }
@@ -32710,6 +33333,7 @@ public final class DiozeroProtos {
        * <code>required int32 controller = 2;</code>
        * @return The controller.
        */
+      @java.lang.Override
       public int getController() {
         return controller_;
       }
@@ -32720,6 +33344,7 @@ public final class DiozeroProtos {
        * <code>required int32 chipSelect = 3;</code>
        * @return Whether the chipSelect field is set.
        */
+      @java.lang.Override
       public boolean hasChipSelect() {
         return ((bitField0_ & 0x00000004) != 0);
       }
@@ -32727,6 +33352,7 @@ public final class DiozeroProtos {
        * <code>required int32 chipSelect = 3;</code>
        * @return The chipSelect.
        */
+      @java.lang.Override
       public int getChipSelect() {
         return chipSelect_;
       }
@@ -32737,6 +33363,7 @@ public final class DiozeroProtos {
        * <code>required int32 frequency = 4;</code>
        * @return Whether the frequency field is set.
        */
+      @java.lang.Override
       public boolean hasFrequency() {
         return ((bitField0_ & 0x00000008) != 0);
       }
@@ -32744,6 +33371,7 @@ public final class DiozeroProtos {
        * <code>required int32 frequency = 4;</code>
        * @return The frequency.
        */
+      @java.lang.Override
       public int getFrequency() {
         return frequency_;
       }
@@ -32754,14 +33382,14 @@ public final class DiozeroProtos {
        * <code>required .diozero.Spi.ClockMode clockMode = 5;</code>
        * @return Whether the clockMode field is set.
        */
-      public boolean hasClockMode() {
+      @java.lang.Override public boolean hasClockMode() {
         return ((bitField0_ & 0x00000010) != 0);
       }
       /**
        * <code>required .diozero.Spi.ClockMode clockMode = 5;</code>
        * @return The clockMode.
        */
-      public com.diozero.remote.message.protobuf.DiozeroProtos.Spi.ClockMode getClockMode() {
+      @java.lang.Override public com.diozero.remote.message.protobuf.DiozeroProtos.Spi.ClockMode getClockMode() {
         @SuppressWarnings("deprecation")
         com.diozero.remote.message.protobuf.DiozeroProtos.Spi.ClockMode result = com.diozero.remote.message.protobuf.DiozeroProtos.Spi.ClockMode.valueOf(clockMode_);
         return result == null ? com.diozero.remote.message.protobuf.DiozeroProtos.Spi.ClockMode.MODE_0 : result;
@@ -32773,6 +33401,7 @@ public final class DiozeroProtos {
        * <code>required bool lsbFirst = 6;</code>
        * @return Whether the lsbFirst field is set.
        */
+      @java.lang.Override
       public boolean hasLsbFirst() {
         return ((bitField0_ & 0x00000020) != 0);
       }
@@ -32780,6 +33409,7 @@ public final class DiozeroProtos {
        * <code>required bool lsbFirst = 6;</code>
        * @return The lsbFirst.
        */
+      @java.lang.Override
       public boolean getLsbFirst() {
         return lsbFirst_;
       }
@@ -33067,7 +33697,7 @@ public final class DiozeroProtos {
                   com.diozero.remote.message.protobuf.DiozeroProtos.Spi.Open.class, com.diozero.remote.message.protobuf.DiozeroProtos.Spi.Open.Builder.class);
         }
 
-        // Construct using com.diozero.remote.message.DiozeroProtos.Spi.Open.newBuilder()
+        // Construct using com.diozero.remote.message.protobuf.DiozeroProtos.Spi.Open.newBuilder()
         private Builder() {
           maybeForceBuilderInitialization();
         }
@@ -33355,6 +33985,7 @@ public final class DiozeroProtos {
          * <code>required int32 controller = 2;</code>
          * @return Whether the controller field is set.
          */
+        @java.lang.Override
         public boolean hasController() {
           return ((bitField0_ & 0x00000002) != 0);
         }
@@ -33362,6 +33993,7 @@ public final class DiozeroProtos {
          * <code>required int32 controller = 2;</code>
          * @return The controller.
          */
+        @java.lang.Override
         public int getController() {
           return controller_;
         }
@@ -33392,6 +34024,7 @@ public final class DiozeroProtos {
          * <code>required int32 chipSelect = 3;</code>
          * @return Whether the chipSelect field is set.
          */
+        @java.lang.Override
         public boolean hasChipSelect() {
           return ((bitField0_ & 0x00000004) != 0);
         }
@@ -33399,6 +34032,7 @@ public final class DiozeroProtos {
          * <code>required int32 chipSelect = 3;</code>
          * @return The chipSelect.
          */
+        @java.lang.Override
         public int getChipSelect() {
           return chipSelect_;
         }
@@ -33429,6 +34063,7 @@ public final class DiozeroProtos {
          * <code>required int32 frequency = 4;</code>
          * @return Whether the frequency field is set.
          */
+        @java.lang.Override
         public boolean hasFrequency() {
           return ((bitField0_ & 0x00000008) != 0);
         }
@@ -33436,6 +34071,7 @@ public final class DiozeroProtos {
          * <code>required int32 frequency = 4;</code>
          * @return The frequency.
          */
+        @java.lang.Override
         public int getFrequency() {
           return frequency_;
         }
@@ -33466,13 +34102,14 @@ public final class DiozeroProtos {
          * <code>required .diozero.Spi.ClockMode clockMode = 5;</code>
          * @return Whether the clockMode field is set.
          */
-        public boolean hasClockMode() {
+        @java.lang.Override public boolean hasClockMode() {
           return ((bitField0_ & 0x00000010) != 0);
         }
         /**
          * <code>required .diozero.Spi.ClockMode clockMode = 5;</code>
          * @return The clockMode.
          */
+        @java.lang.Override
         public com.diozero.remote.message.protobuf.DiozeroProtos.Spi.ClockMode getClockMode() {
           @SuppressWarnings("deprecation")
           com.diozero.remote.message.protobuf.DiozeroProtos.Spi.ClockMode result = com.diozero.remote.message.protobuf.DiozeroProtos.Spi.ClockMode.valueOf(clockMode_);
@@ -33508,6 +34145,7 @@ public final class DiozeroProtos {
          * <code>required bool lsbFirst = 6;</code>
          * @return Whether the lsbFirst field is set.
          */
+        @java.lang.Override
         public boolean hasLsbFirst() {
           return ((bitField0_ & 0x00000020) != 0);
         }
@@ -33515,6 +34153,7 @@ public final class DiozeroProtos {
          * <code>required bool lsbFirst = 6;</code>
          * @return The lsbFirst.
          */
+        @java.lang.Override
         public boolean getLsbFirst() {
           return lsbFirst_;
         }
@@ -33649,7 +34288,7 @@ public final class DiozeroProtos {
     /**
      * Protobuf type {@code diozero.Spi.Write}
      */
-    public  static final class Write extends
+    public static final class Write extends
         com.google.protobuf.GeneratedMessageV3 implements
         // @@protoc_insertion_point(message_implements:diozero.Spi.Write)
         WriteOrBuilder {
@@ -33754,6 +34393,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return Whether the correlationId field is set.
        */
+      @java.lang.Override
       public boolean hasCorrelationId() {
         return ((bitField0_ & 0x00000001) != 0);
       }
@@ -33761,6 +34401,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return The correlationId.
        */
+      @java.lang.Override
       public java.lang.String getCorrelationId() {
         java.lang.Object ref = correlationId_;
         if (ref instanceof java.lang.String) {
@@ -33779,6 +34420,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return The bytes for correlationId.
        */
+      @java.lang.Override
       public com.google.protobuf.ByteString
           getCorrelationIdBytes() {
         java.lang.Object ref = correlationId_;
@@ -33799,6 +34441,7 @@ public final class DiozeroProtos {
        * <code>required int32 controller = 2;</code>
        * @return Whether the controller field is set.
        */
+      @java.lang.Override
       public boolean hasController() {
         return ((bitField0_ & 0x00000002) != 0);
       }
@@ -33806,6 +34449,7 @@ public final class DiozeroProtos {
        * <code>required int32 controller = 2;</code>
        * @return The controller.
        */
+      @java.lang.Override
       public int getController() {
         return controller_;
       }
@@ -33816,6 +34460,7 @@ public final class DiozeroProtos {
        * <code>required int32 chipSelect = 3;</code>
        * @return Whether the chipSelect field is set.
        */
+      @java.lang.Override
       public boolean hasChipSelect() {
         return ((bitField0_ & 0x00000004) != 0);
       }
@@ -33823,6 +34468,7 @@ public final class DiozeroProtos {
        * <code>required int32 chipSelect = 3;</code>
        * @return The chipSelect.
        */
+      @java.lang.Override
       public int getChipSelect() {
         return chipSelect_;
       }
@@ -33833,6 +34479,7 @@ public final class DiozeroProtos {
        * <code>required bytes txData = 4;</code>
        * @return Whether the txData field is set.
        */
+      @java.lang.Override
       public boolean hasTxData() {
         return ((bitField0_ & 0x00000008) != 0);
       }
@@ -33840,6 +34487,7 @@ public final class DiozeroProtos {
        * <code>required bytes txData = 4;</code>
        * @return The txData.
        */
+      @java.lang.Override
       public com.google.protobuf.ByteString getTxData() {
         return txData_;
       }
@@ -34087,7 +34735,7 @@ public final class DiozeroProtos {
                   com.diozero.remote.message.protobuf.DiozeroProtos.Spi.Write.class, com.diozero.remote.message.protobuf.DiozeroProtos.Spi.Write.Builder.class);
         }
 
-        // Construct using com.diozero.remote.message.DiozeroProtos.Spi.Write.newBuilder()
+        // Construct using com.diozero.remote.message.protobuf.DiozeroProtos.Spi.Write.newBuilder()
         private Builder() {
           maybeForceBuilderInitialization();
         }
@@ -34351,6 +34999,7 @@ public final class DiozeroProtos {
          * <code>required int32 controller = 2;</code>
          * @return Whether the controller field is set.
          */
+        @java.lang.Override
         public boolean hasController() {
           return ((bitField0_ & 0x00000002) != 0);
         }
@@ -34358,6 +35007,7 @@ public final class DiozeroProtos {
          * <code>required int32 controller = 2;</code>
          * @return The controller.
          */
+        @java.lang.Override
         public int getController() {
           return controller_;
         }
@@ -34388,6 +35038,7 @@ public final class DiozeroProtos {
          * <code>required int32 chipSelect = 3;</code>
          * @return Whether the chipSelect field is set.
          */
+        @java.lang.Override
         public boolean hasChipSelect() {
           return ((bitField0_ & 0x00000004) != 0);
         }
@@ -34395,6 +35046,7 @@ public final class DiozeroProtos {
          * <code>required int32 chipSelect = 3;</code>
          * @return The chipSelect.
          */
+        @java.lang.Override
         public int getChipSelect() {
           return chipSelect_;
         }
@@ -34425,6 +35077,7 @@ public final class DiozeroProtos {
          * <code>required bytes txData = 4;</code>
          * @return Whether the txData field is set.
          */
+        @java.lang.Override
         public boolean hasTxData() {
           return ((bitField0_ & 0x00000008) != 0);
         }
@@ -34432,6 +35085,7 @@ public final class DiozeroProtos {
          * <code>required bytes txData = 4;</code>
          * @return The txData.
          */
+        @java.lang.Override
         public com.google.protobuf.ByteString getTxData() {
           return txData_;
         }
@@ -34569,7 +35223,7 @@ public final class DiozeroProtos {
     /**
      * Protobuf type {@code diozero.Spi.WriteAndRead}
      */
-    public  static final class WriteAndRead extends
+    public static final class WriteAndRead extends
         com.google.protobuf.GeneratedMessageV3 implements
         // @@protoc_insertion_point(message_implements:diozero.Spi.WriteAndRead)
         WriteAndReadOrBuilder {
@@ -34674,6 +35328,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return Whether the correlationId field is set.
        */
+      @java.lang.Override
       public boolean hasCorrelationId() {
         return ((bitField0_ & 0x00000001) != 0);
       }
@@ -34681,6 +35336,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return The correlationId.
        */
+      @java.lang.Override
       public java.lang.String getCorrelationId() {
         java.lang.Object ref = correlationId_;
         if (ref instanceof java.lang.String) {
@@ -34699,6 +35355,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return The bytes for correlationId.
        */
+      @java.lang.Override
       public com.google.protobuf.ByteString
           getCorrelationIdBytes() {
         java.lang.Object ref = correlationId_;
@@ -34719,6 +35376,7 @@ public final class DiozeroProtos {
        * <code>required int32 controller = 2;</code>
        * @return Whether the controller field is set.
        */
+      @java.lang.Override
       public boolean hasController() {
         return ((bitField0_ & 0x00000002) != 0);
       }
@@ -34726,6 +35384,7 @@ public final class DiozeroProtos {
        * <code>required int32 controller = 2;</code>
        * @return The controller.
        */
+      @java.lang.Override
       public int getController() {
         return controller_;
       }
@@ -34736,6 +35395,7 @@ public final class DiozeroProtos {
        * <code>required int32 chipSelect = 3;</code>
        * @return Whether the chipSelect field is set.
        */
+      @java.lang.Override
       public boolean hasChipSelect() {
         return ((bitField0_ & 0x00000004) != 0);
       }
@@ -34743,6 +35403,7 @@ public final class DiozeroProtos {
        * <code>required int32 chipSelect = 3;</code>
        * @return The chipSelect.
        */
+      @java.lang.Override
       public int getChipSelect() {
         return chipSelect_;
       }
@@ -34753,6 +35414,7 @@ public final class DiozeroProtos {
        * <code>required bytes txData = 4;</code>
        * @return Whether the txData field is set.
        */
+      @java.lang.Override
       public boolean hasTxData() {
         return ((bitField0_ & 0x00000008) != 0);
       }
@@ -34760,6 +35422,7 @@ public final class DiozeroProtos {
        * <code>required bytes txData = 4;</code>
        * @return The txData.
        */
+      @java.lang.Override
       public com.google.protobuf.ByteString getTxData() {
         return txData_;
       }
@@ -35007,7 +35670,7 @@ public final class DiozeroProtos {
                   com.diozero.remote.message.protobuf.DiozeroProtos.Spi.WriteAndRead.class, com.diozero.remote.message.protobuf.DiozeroProtos.Spi.WriteAndRead.Builder.class);
         }
 
-        // Construct using com.diozero.remote.message.DiozeroProtos.Spi.WriteAndRead.newBuilder()
+        // Construct using com.diozero.remote.message.protobuf.DiozeroProtos.Spi.WriteAndRead.newBuilder()
         private Builder() {
           maybeForceBuilderInitialization();
         }
@@ -35271,6 +35934,7 @@ public final class DiozeroProtos {
          * <code>required int32 controller = 2;</code>
          * @return Whether the controller field is set.
          */
+        @java.lang.Override
         public boolean hasController() {
           return ((bitField0_ & 0x00000002) != 0);
         }
@@ -35278,6 +35942,7 @@ public final class DiozeroProtos {
          * <code>required int32 controller = 2;</code>
          * @return The controller.
          */
+        @java.lang.Override
         public int getController() {
           return controller_;
         }
@@ -35308,6 +35973,7 @@ public final class DiozeroProtos {
          * <code>required int32 chipSelect = 3;</code>
          * @return Whether the chipSelect field is set.
          */
+        @java.lang.Override
         public boolean hasChipSelect() {
           return ((bitField0_ & 0x00000004) != 0);
         }
@@ -35315,6 +35981,7 @@ public final class DiozeroProtos {
          * <code>required int32 chipSelect = 3;</code>
          * @return The chipSelect.
          */
+        @java.lang.Override
         public int getChipSelect() {
           return chipSelect_;
         }
@@ -35345,6 +36012,7 @@ public final class DiozeroProtos {
          * <code>required bytes txData = 4;</code>
          * @return Whether the txData field is set.
          */
+        @java.lang.Override
         public boolean hasTxData() {
           return ((bitField0_ & 0x00000008) != 0);
         }
@@ -35352,6 +36020,7 @@ public final class DiozeroProtos {
          * <code>required bytes txData = 4;</code>
          * @return The txData.
          */
+        @java.lang.Override
         public com.google.protobuf.ByteString getTxData() {
           return txData_;
         }
@@ -35478,7 +36147,7 @@ public final class DiozeroProtos {
     /**
      * Protobuf type {@code diozero.Spi.Close}
      */
-    public  static final class Close extends
+    public static final class Close extends
         com.google.protobuf.GeneratedMessageV3 implements
         // @@protoc_insertion_point(message_implements:diozero.Spi.Close)
         CloseOrBuilder {
@@ -35577,6 +36246,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return Whether the correlationId field is set.
        */
+      @java.lang.Override
       public boolean hasCorrelationId() {
         return ((bitField0_ & 0x00000001) != 0);
       }
@@ -35584,6 +36254,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return The correlationId.
        */
+      @java.lang.Override
       public java.lang.String getCorrelationId() {
         java.lang.Object ref = correlationId_;
         if (ref instanceof java.lang.String) {
@@ -35602,6 +36273,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return The bytes for correlationId.
        */
+      @java.lang.Override
       public com.google.protobuf.ByteString
           getCorrelationIdBytes() {
         java.lang.Object ref = correlationId_;
@@ -35622,6 +36294,7 @@ public final class DiozeroProtos {
        * <code>required int32 controller = 2;</code>
        * @return Whether the controller field is set.
        */
+      @java.lang.Override
       public boolean hasController() {
         return ((bitField0_ & 0x00000002) != 0);
       }
@@ -35629,6 +36302,7 @@ public final class DiozeroProtos {
        * <code>required int32 controller = 2;</code>
        * @return The controller.
        */
+      @java.lang.Override
       public int getController() {
         return controller_;
       }
@@ -35639,6 +36313,7 @@ public final class DiozeroProtos {
        * <code>required int32 chipSelect = 3;</code>
        * @return Whether the chipSelect field is set.
        */
+      @java.lang.Override
       public boolean hasChipSelect() {
         return ((bitField0_ & 0x00000004) != 0);
       }
@@ -35646,6 +36321,7 @@ public final class DiozeroProtos {
        * <code>required int32 chipSelect = 3;</code>
        * @return The chipSelect.
        */
+      @java.lang.Override
       public int getChipSelect() {
         return chipSelect_;
       }
@@ -35873,7 +36549,7 @@ public final class DiozeroProtos {
                   com.diozero.remote.message.protobuf.DiozeroProtos.Spi.Close.class, com.diozero.remote.message.protobuf.DiozeroProtos.Spi.Close.Builder.class);
         }
 
-        // Construct using com.diozero.remote.message.DiozeroProtos.Spi.Close.newBuilder()
+        // Construct using com.diozero.remote.message.protobuf.DiozeroProtos.Spi.Close.newBuilder()
         private Builder() {
           maybeForceBuilderInitialization();
         }
@@ -36125,6 +36801,7 @@ public final class DiozeroProtos {
          * <code>required int32 controller = 2;</code>
          * @return Whether the controller field is set.
          */
+        @java.lang.Override
         public boolean hasController() {
           return ((bitField0_ & 0x00000002) != 0);
         }
@@ -36132,6 +36809,7 @@ public final class DiozeroProtos {
          * <code>required int32 controller = 2;</code>
          * @return The controller.
          */
+        @java.lang.Override
         public int getController() {
           return controller_;
         }
@@ -36162,6 +36840,7 @@ public final class DiozeroProtos {
          * <code>required int32 chipSelect = 3;</code>
          * @return Whether the chipSelect field is set.
          */
+        @java.lang.Override
         public boolean hasChipSelect() {
           return ((bitField0_ & 0x00000004) != 0);
         }
@@ -36169,6 +36848,7 @@ public final class DiozeroProtos {
          * <code>required int32 chipSelect = 3;</code>
          * @return The chipSelect.
          */
+        @java.lang.Override
         public int getChipSelect() {
           return chipSelect_;
         }
@@ -36309,7 +36989,7 @@ public final class DiozeroProtos {
     /**
      * Protobuf type {@code diozero.Spi.SpiResponse}
      */
-    public  static final class SpiResponse extends
+    public static final class SpiResponse extends
         com.google.protobuf.GeneratedMessageV3 implements
         // @@protoc_insertion_point(message_implements:diozero.Spi.SpiResponse)
         SpiResponseOrBuilder {
@@ -36424,6 +37104,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return Whether the correlationId field is set.
        */
+      @java.lang.Override
       public boolean hasCorrelationId() {
         return ((bitField0_ & 0x00000001) != 0);
       }
@@ -36431,6 +37112,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return The correlationId.
        */
+      @java.lang.Override
       public java.lang.String getCorrelationId() {
         java.lang.Object ref = correlationId_;
         if (ref instanceof java.lang.String) {
@@ -36449,6 +37131,7 @@ public final class DiozeroProtos {
        * <code>required string correlationId = 1;</code>
        * @return The bytes for correlationId.
        */
+      @java.lang.Override
       public com.google.protobuf.ByteString
           getCorrelationIdBytes() {
         java.lang.Object ref = correlationId_;
@@ -36469,14 +37152,14 @@ public final class DiozeroProtos {
        * <code>required .diozero.Status status = 2;</code>
        * @return Whether the status field is set.
        */
-      public boolean hasStatus() {
+      @java.lang.Override public boolean hasStatus() {
         return ((bitField0_ & 0x00000002) != 0);
       }
       /**
        * <code>required .diozero.Status status = 2;</code>
        * @return The status.
        */
-      public com.diozero.remote.message.protobuf.DiozeroProtos.Status getStatus() {
+      @java.lang.Override public com.diozero.remote.message.protobuf.DiozeroProtos.Status getStatus() {
         @SuppressWarnings("deprecation")
         com.diozero.remote.message.protobuf.DiozeroProtos.Status result = com.diozero.remote.message.protobuf.DiozeroProtos.Status.valueOf(status_);
         return result == null ? com.diozero.remote.message.protobuf.DiozeroProtos.Status.OK : result;
@@ -36488,6 +37171,7 @@ public final class DiozeroProtos {
        * <code>optional string detail = 3;</code>
        * @return Whether the detail field is set.
        */
+      @java.lang.Override
       public boolean hasDetail() {
         return ((bitField0_ & 0x00000004) != 0);
       }
@@ -36495,6 +37179,7 @@ public final class DiozeroProtos {
        * <code>optional string detail = 3;</code>
        * @return The detail.
        */
+      @java.lang.Override
       public java.lang.String getDetail() {
         java.lang.Object ref = detail_;
         if (ref instanceof java.lang.String) {
@@ -36513,6 +37198,7 @@ public final class DiozeroProtos {
        * <code>optional string detail = 3;</code>
        * @return The bytes for detail.
        */
+      @java.lang.Override
       public com.google.protobuf.ByteString
           getDetailBytes() {
         java.lang.Object ref = detail_;
@@ -36533,6 +37219,7 @@ public final class DiozeroProtos {
        * <code>optional bytes rxData = 4;</code>
        * @return Whether the rxData field is set.
        */
+      @java.lang.Override
       public boolean hasRxData() {
         return ((bitField0_ & 0x00000008) != 0);
       }
@@ -36540,6 +37227,7 @@ public final class DiozeroProtos {
        * <code>optional bytes rxData = 4;</code>
        * @return The rxData.
        */
+      @java.lang.Override
       public com.google.protobuf.ByteString getRxData() {
         return rxData_;
       }
@@ -36777,7 +37465,7 @@ public final class DiozeroProtos {
                   com.diozero.remote.message.protobuf.DiozeroProtos.Spi.SpiResponse.class, com.diozero.remote.message.protobuf.DiozeroProtos.Spi.SpiResponse.Builder.class);
         }
 
-        // Construct using com.diozero.remote.message.DiozeroProtos.Spi.SpiResponse.newBuilder()
+        // Construct using com.diozero.remote.message.protobuf.DiozeroProtos.Spi.SpiResponse.newBuilder()
         private Builder() {
           maybeForceBuilderInitialization();
         }
@@ -37037,13 +37725,14 @@ public final class DiozeroProtos {
          * <code>required .diozero.Status status = 2;</code>
          * @return Whether the status field is set.
          */
-        public boolean hasStatus() {
+        @java.lang.Override public boolean hasStatus() {
           return ((bitField0_ & 0x00000002) != 0);
         }
         /**
          * <code>required .diozero.Status status = 2;</code>
          * @return The status.
          */
+        @java.lang.Override
         public com.diozero.remote.message.protobuf.DiozeroProtos.Status getStatus() {
           @SuppressWarnings("deprecation")
           com.diozero.remote.message.protobuf.DiozeroProtos.Status result = com.diozero.remote.message.protobuf.DiozeroProtos.Status.valueOf(status_);
@@ -37163,6 +37852,7 @@ public final class DiozeroProtos {
          * <code>optional bytes rxData = 4;</code>
          * @return Whether the rxData field is set.
          */
+        @java.lang.Override
         public boolean hasRxData() {
           return ((bitField0_ & 0x00000008) != 0);
         }
@@ -37170,6 +37860,7 @@ public final class DiozeroProtos {
          * <code>optional bytes rxData = 4;</code>
          * @return The rxData.
          */
+        @java.lang.Override
         public com.google.protobuf.ByteString getRxData() {
           return rxData_;
         }
@@ -37414,7 +38105,7 @@ public final class DiozeroProtos {
                 com.diozero.remote.message.protobuf.DiozeroProtos.Spi.class, com.diozero.remote.message.protobuf.DiozeroProtos.Spi.Builder.class);
       }
 
-      // Construct using com.diozero.remote.message.DiozeroProtos.Spi.newBuilder()
+      // Construct using com.diozero.remote.message.protobuf.DiozeroProtos.Spi.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -37582,6 +38273,9821 @@ public final class DiozeroProtos {
 
     @java.lang.Override
     public com.diozero.remote.message.protobuf.DiozeroProtos.Spi getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface SerialOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:diozero.Serial)
+      com.google.protobuf.MessageOrBuilder {
+  }
+  /**
+   * Protobuf type {@code diozero.Serial}
+   */
+  public static final class Serial extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:diozero.Serial)
+      SerialOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use Serial.newBuilder() to construct.
+    private Serial(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private Serial() {
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new Serial();
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private Serial(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return com.diozero.remote.message.protobuf.DiozeroProtos.internal_static_diozero_Serial_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return com.diozero.remote.message.protobuf.DiozeroProtos.internal_static_diozero_Serial_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              com.diozero.remote.message.protobuf.DiozeroProtos.Serial.class, com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Builder.class);
+    }
+
+    public interface OpenOrBuilder extends
+        // @@protoc_insertion_point(interface_extends:diozero.Serial.Open)
+        com.google.protobuf.MessageOrBuilder {
+
+      /**
+       * <code>required string correlationId = 1;</code>
+       * @return Whether the correlationId field is set.
+       */
+      boolean hasCorrelationId();
+      /**
+       * <code>required string correlationId = 1;</code>
+       * @return The correlationId.
+       */
+      java.lang.String getCorrelationId();
+      /**
+       * <code>required string correlationId = 1;</code>
+       * @return The bytes for correlationId.
+       */
+      com.google.protobuf.ByteString
+          getCorrelationIdBytes();
+
+      /**
+       * <code>required string tty = 2;</code>
+       * @return Whether the tty field is set.
+       */
+      boolean hasTty();
+      /**
+       * <code>required string tty = 2;</code>
+       * @return The tty.
+       */
+      java.lang.String getTty();
+      /**
+       * <code>required string tty = 2;</code>
+       * @return The bytes for tty.
+       */
+      com.google.protobuf.ByteString
+          getTtyBytes();
+
+      /**
+       * <code>required int32 baud = 3;</code>
+       * @return Whether the baud field is set.
+       */
+      boolean hasBaud();
+      /**
+       * <code>required int32 baud = 3;</code>
+       * @return The baud.
+       */
+      int getBaud();
+
+      /**
+       * <code>required int32 dataBits = 4;</code>
+       * @return Whether the dataBits field is set.
+       */
+      boolean hasDataBits();
+      /**
+       * <code>required int32 dataBits = 4;</code>
+       * @return The dataBits.
+       */
+      int getDataBits();
+
+      /**
+       * <code>required int32 parity = 5;</code>
+       * @return Whether the parity field is set.
+       */
+      boolean hasParity();
+      /**
+       * <code>required int32 parity = 5;</code>
+       * @return The parity.
+       */
+      int getParity();
+
+      /**
+       * <code>required int32 stopBits = 6;</code>
+       * @return Whether the stopBits field is set.
+       */
+      boolean hasStopBits();
+      /**
+       * <code>required int32 stopBits = 6;</code>
+       * @return The stopBits.
+       */
+      int getStopBits();
+    }
+    /**
+     * Protobuf type {@code diozero.Serial.Open}
+     */
+    public static final class Open extends
+        com.google.protobuf.GeneratedMessageV3 implements
+        // @@protoc_insertion_point(message_implements:diozero.Serial.Open)
+        OpenOrBuilder {
+    private static final long serialVersionUID = 0L;
+      // Use Open.newBuilder() to construct.
+      private Open(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+        super(builder);
+      }
+      private Open() {
+        correlationId_ = "";
+        tty_ = "";
+      }
+
+      @java.lang.Override
+      @SuppressWarnings({"unused"})
+      protected java.lang.Object newInstance(
+          UnusedPrivateParameter unused) {
+        return new Open();
+      }
+
+      @java.lang.Override
+      public final com.google.protobuf.UnknownFieldSet
+      getUnknownFields() {
+        return this.unknownFields;
+      }
+      private Open(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        this();
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
+        int mutable_bitField0_ = 0;
+        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+            com.google.protobuf.UnknownFieldSet.newBuilder();
+        try {
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                com.google.protobuf.ByteString bs = input.readBytes();
+                bitField0_ |= 0x00000001;
+                correlationId_ = bs;
+                break;
+              }
+              case 18: {
+                com.google.protobuf.ByteString bs = input.readBytes();
+                bitField0_ |= 0x00000002;
+                tty_ = bs;
+                break;
+              }
+              case 24: {
+                bitField0_ |= 0x00000004;
+                baud_ = input.readInt32();
+                break;
+              }
+              case 32: {
+                bitField0_ |= 0x00000008;
+                dataBits_ = input.readInt32();
+                break;
+              }
+              case 40: {
+                bitField0_ |= 0x00000010;
+                parity_ = input.readInt32();
+                break;
+              }
+              case 48: {
+                bitField0_ |= 0x00000020;
+                stopBits_ = input.readInt32();
+                break;
+              }
+              default: {
+                if (!parseUnknownField(
+                    input, unknownFields, extensionRegistry, tag)) {
+                  done = true;
+                }
+                break;
+              }
+            }
+          }
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(this);
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(
+              e).setUnfinishedMessage(this);
+        } finally {
+          this.unknownFields = unknownFields.build();
+          makeExtensionsImmutable();
+        }
+      }
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return com.diozero.remote.message.protobuf.DiozeroProtos.internal_static_diozero_Serial_Open_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return com.diozero.remote.message.protobuf.DiozeroProtos.internal_static_diozero_Serial_Open_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Open.class, com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Open.Builder.class);
+      }
+
+      private int bitField0_;
+      public static final int CORRELATIONID_FIELD_NUMBER = 1;
+      private volatile java.lang.Object correlationId_;
+      /**
+       * <code>required string correlationId = 1;</code>
+       * @return Whether the correlationId field is set.
+       */
+      @java.lang.Override
+      public boolean hasCorrelationId() {
+        return ((bitField0_ & 0x00000001) != 0);
+      }
+      /**
+       * <code>required string correlationId = 1;</code>
+       * @return The correlationId.
+       */
+      @java.lang.Override
+      public java.lang.String getCorrelationId() {
+        java.lang.Object ref = correlationId_;
+        if (ref instanceof java.lang.String) {
+          return (java.lang.String) ref;
+        } else {
+          com.google.protobuf.ByteString bs = 
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            correlationId_ = s;
+          }
+          return s;
+        }
+      }
+      /**
+       * <code>required string correlationId = 1;</code>
+       * @return The bytes for correlationId.
+       */
+      @java.lang.Override
+      public com.google.protobuf.ByteString
+          getCorrelationIdBytes() {
+        java.lang.Object ref = correlationId_;
+        if (ref instanceof java.lang.String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          correlationId_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+
+      public static final int TTY_FIELD_NUMBER = 2;
+      private volatile java.lang.Object tty_;
+      /**
+       * <code>required string tty = 2;</code>
+       * @return Whether the tty field is set.
+       */
+      @java.lang.Override
+      public boolean hasTty() {
+        return ((bitField0_ & 0x00000002) != 0);
+      }
+      /**
+       * <code>required string tty = 2;</code>
+       * @return The tty.
+       */
+      @java.lang.Override
+      public java.lang.String getTty() {
+        java.lang.Object ref = tty_;
+        if (ref instanceof java.lang.String) {
+          return (java.lang.String) ref;
+        } else {
+          com.google.protobuf.ByteString bs = 
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            tty_ = s;
+          }
+          return s;
+        }
+      }
+      /**
+       * <code>required string tty = 2;</code>
+       * @return The bytes for tty.
+       */
+      @java.lang.Override
+      public com.google.protobuf.ByteString
+          getTtyBytes() {
+        java.lang.Object ref = tty_;
+        if (ref instanceof java.lang.String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          tty_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+
+      public static final int BAUD_FIELD_NUMBER = 3;
+      private int baud_;
+      /**
+       * <code>required int32 baud = 3;</code>
+       * @return Whether the baud field is set.
+       */
+      @java.lang.Override
+      public boolean hasBaud() {
+        return ((bitField0_ & 0x00000004) != 0);
+      }
+      /**
+       * <code>required int32 baud = 3;</code>
+       * @return The baud.
+       */
+      @java.lang.Override
+      public int getBaud() {
+        return baud_;
+      }
+
+      public static final int DATABITS_FIELD_NUMBER = 4;
+      private int dataBits_;
+      /**
+       * <code>required int32 dataBits = 4;</code>
+       * @return Whether the dataBits field is set.
+       */
+      @java.lang.Override
+      public boolean hasDataBits() {
+        return ((bitField0_ & 0x00000008) != 0);
+      }
+      /**
+       * <code>required int32 dataBits = 4;</code>
+       * @return The dataBits.
+       */
+      @java.lang.Override
+      public int getDataBits() {
+        return dataBits_;
+      }
+
+      public static final int PARITY_FIELD_NUMBER = 5;
+      private int parity_;
+      /**
+       * <code>required int32 parity = 5;</code>
+       * @return Whether the parity field is set.
+       */
+      @java.lang.Override
+      public boolean hasParity() {
+        return ((bitField0_ & 0x00000010) != 0);
+      }
+      /**
+       * <code>required int32 parity = 5;</code>
+       * @return The parity.
+       */
+      @java.lang.Override
+      public int getParity() {
+        return parity_;
+      }
+
+      public static final int STOPBITS_FIELD_NUMBER = 6;
+      private int stopBits_;
+      /**
+       * <code>required int32 stopBits = 6;</code>
+       * @return Whether the stopBits field is set.
+       */
+      @java.lang.Override
+      public boolean hasStopBits() {
+        return ((bitField0_ & 0x00000020) != 0);
+      }
+      /**
+       * <code>required int32 stopBits = 6;</code>
+       * @return The stopBits.
+       */
+      @java.lang.Override
+      public int getStopBits() {
+        return stopBits_;
+      }
+
+      private byte memoizedIsInitialized = -1;
+      @java.lang.Override
+      public final boolean isInitialized() {
+        byte isInitialized = memoizedIsInitialized;
+        if (isInitialized == 1) return true;
+        if (isInitialized == 0) return false;
+
+        if (!hasCorrelationId()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+        if (!hasTty()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+        if (!hasBaud()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+        if (!hasDataBits()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+        if (!hasParity()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+        if (!hasStopBits()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+        memoizedIsInitialized = 1;
+        return true;
+      }
+
+      @java.lang.Override
+      public void writeTo(com.google.protobuf.CodedOutputStream output)
+                          throws java.io.IOException {
+        if (((bitField0_ & 0x00000001) != 0)) {
+          com.google.protobuf.GeneratedMessageV3.writeString(output, 1, correlationId_);
+        }
+        if (((bitField0_ & 0x00000002) != 0)) {
+          com.google.protobuf.GeneratedMessageV3.writeString(output, 2, tty_);
+        }
+        if (((bitField0_ & 0x00000004) != 0)) {
+          output.writeInt32(3, baud_);
+        }
+        if (((bitField0_ & 0x00000008) != 0)) {
+          output.writeInt32(4, dataBits_);
+        }
+        if (((bitField0_ & 0x00000010) != 0)) {
+          output.writeInt32(5, parity_);
+        }
+        if (((bitField0_ & 0x00000020) != 0)) {
+          output.writeInt32(6, stopBits_);
+        }
+        unknownFields.writeTo(output);
+      }
+
+      @java.lang.Override
+      public int getSerializedSize() {
+        int size = memoizedSize;
+        if (size != -1) return size;
+
+        size = 0;
+        if (((bitField0_ & 0x00000001) != 0)) {
+          size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, correlationId_);
+        }
+        if (((bitField0_ & 0x00000002) != 0)) {
+          size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, tty_);
+        }
+        if (((bitField0_ & 0x00000004) != 0)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeInt32Size(3, baud_);
+        }
+        if (((bitField0_ & 0x00000008) != 0)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeInt32Size(4, dataBits_);
+        }
+        if (((bitField0_ & 0x00000010) != 0)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeInt32Size(5, parity_);
+        }
+        if (((bitField0_ & 0x00000020) != 0)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeInt32Size(6, stopBits_);
+        }
+        size += unknownFields.getSerializedSize();
+        memoizedSize = size;
+        return size;
+      }
+
+      @java.lang.Override
+      public boolean equals(final java.lang.Object obj) {
+        if (obj == this) {
+         return true;
+        }
+        if (!(obj instanceof com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Open)) {
+          return super.equals(obj);
+        }
+        com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Open other = (com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Open) obj;
+
+        if (hasCorrelationId() != other.hasCorrelationId()) return false;
+        if (hasCorrelationId()) {
+          if (!getCorrelationId()
+              .equals(other.getCorrelationId())) return false;
+        }
+        if (hasTty() != other.hasTty()) return false;
+        if (hasTty()) {
+          if (!getTty()
+              .equals(other.getTty())) return false;
+        }
+        if (hasBaud() != other.hasBaud()) return false;
+        if (hasBaud()) {
+          if (getBaud()
+              != other.getBaud()) return false;
+        }
+        if (hasDataBits() != other.hasDataBits()) return false;
+        if (hasDataBits()) {
+          if (getDataBits()
+              != other.getDataBits()) return false;
+        }
+        if (hasParity() != other.hasParity()) return false;
+        if (hasParity()) {
+          if (getParity()
+              != other.getParity()) return false;
+        }
+        if (hasStopBits() != other.hasStopBits()) return false;
+        if (hasStopBits()) {
+          if (getStopBits()
+              != other.getStopBits()) return false;
+        }
+        if (!unknownFields.equals(other.unknownFields)) return false;
+        return true;
+      }
+
+      @java.lang.Override
+      public int hashCode() {
+        if (memoizedHashCode != 0) {
+          return memoizedHashCode;
+        }
+        int hash = 41;
+        hash = (19 * hash) + getDescriptor().hashCode();
+        if (hasCorrelationId()) {
+          hash = (37 * hash) + CORRELATIONID_FIELD_NUMBER;
+          hash = (53 * hash) + getCorrelationId().hashCode();
+        }
+        if (hasTty()) {
+          hash = (37 * hash) + TTY_FIELD_NUMBER;
+          hash = (53 * hash) + getTty().hashCode();
+        }
+        if (hasBaud()) {
+          hash = (37 * hash) + BAUD_FIELD_NUMBER;
+          hash = (53 * hash) + getBaud();
+        }
+        if (hasDataBits()) {
+          hash = (37 * hash) + DATABITS_FIELD_NUMBER;
+          hash = (53 * hash) + getDataBits();
+        }
+        if (hasParity()) {
+          hash = (37 * hash) + PARITY_FIELD_NUMBER;
+          hash = (53 * hash) + getParity();
+        }
+        if (hasStopBits()) {
+          hash = (37 * hash) + STOPBITS_FIELD_NUMBER;
+          hash = (53 * hash) + getStopBits();
+        }
+        hash = (29 * hash) + unknownFields.hashCode();
+        memoizedHashCode = hash;
+        return hash;
+      }
+
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Open parseFrom(
+          java.nio.ByteBuffer data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Open parseFrom(
+          java.nio.ByteBuffer data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data, extensionRegistry);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Open parseFrom(
+          com.google.protobuf.ByteString data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Open parseFrom(
+          com.google.protobuf.ByteString data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data, extensionRegistry);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Open parseFrom(byte[] data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Open parseFrom(
+          byte[] data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data, extensionRegistry);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Open parseFrom(java.io.InputStream input)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseWithIOException(PARSER, input);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Open parseFrom(
+          java.io.InputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseWithIOException(PARSER, input, extensionRegistry);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Open parseDelimitedFrom(java.io.InputStream input)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseDelimitedWithIOException(PARSER, input);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Open parseDelimitedFrom(
+          java.io.InputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Open parseFrom(
+          com.google.protobuf.CodedInputStream input)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseWithIOException(PARSER, input);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Open parseFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseWithIOException(PARSER, input, extensionRegistry);
+      }
+
+      @java.lang.Override
+      public Builder newBuilderForType() { return newBuilder(); }
+      public static Builder newBuilder() {
+        return DEFAULT_INSTANCE.toBuilder();
+      }
+      public static Builder newBuilder(com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Open prototype) {
+        return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+      }
+      @java.lang.Override
+      public Builder toBuilder() {
+        return this == DEFAULT_INSTANCE
+            ? new Builder() : new Builder().mergeFrom(this);
+      }
+
+      @java.lang.Override
+      protected Builder newBuilderForType(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        Builder builder = new Builder(parent);
+        return builder;
+      }
+      /**
+       * Protobuf type {@code diozero.Serial.Open}
+       */
+      public static final class Builder extends
+          com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+          // @@protoc_insertion_point(builder_implements:diozero.Serial.Open)
+          com.diozero.remote.message.protobuf.DiozeroProtos.Serial.OpenOrBuilder {
+        public static final com.google.protobuf.Descriptors.Descriptor
+            getDescriptor() {
+          return com.diozero.remote.message.protobuf.DiozeroProtos.internal_static_diozero_Serial_Open_descriptor;
+        }
+
+        @java.lang.Override
+        protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+            internalGetFieldAccessorTable() {
+          return com.diozero.remote.message.protobuf.DiozeroProtos.internal_static_diozero_Serial_Open_fieldAccessorTable
+              .ensureFieldAccessorsInitialized(
+                  com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Open.class, com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Open.Builder.class);
+        }
+
+        // Construct using com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Open.newBuilder()
+        private Builder() {
+          maybeForceBuilderInitialization();
+        }
+
+        private Builder(
+            com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+          super(parent);
+          maybeForceBuilderInitialization();
+        }
+        private void maybeForceBuilderInitialization() {
+          if (com.google.protobuf.GeneratedMessageV3
+                  .alwaysUseFieldBuilders) {
+          }
+        }
+        @java.lang.Override
+        public Builder clear() {
+          super.clear();
+          correlationId_ = "";
+          bitField0_ = (bitField0_ & ~0x00000001);
+          tty_ = "";
+          bitField0_ = (bitField0_ & ~0x00000002);
+          baud_ = 0;
+          bitField0_ = (bitField0_ & ~0x00000004);
+          dataBits_ = 0;
+          bitField0_ = (bitField0_ & ~0x00000008);
+          parity_ = 0;
+          bitField0_ = (bitField0_ & ~0x00000010);
+          stopBits_ = 0;
+          bitField0_ = (bitField0_ & ~0x00000020);
+          return this;
+        }
+
+        @java.lang.Override
+        public com.google.protobuf.Descriptors.Descriptor
+            getDescriptorForType() {
+          return com.diozero.remote.message.protobuf.DiozeroProtos.internal_static_diozero_Serial_Open_descriptor;
+        }
+
+        @java.lang.Override
+        public com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Open getDefaultInstanceForType() {
+          return com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Open.getDefaultInstance();
+        }
+
+        @java.lang.Override
+        public com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Open build() {
+          com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Open result = buildPartial();
+          if (!result.isInitialized()) {
+            throw newUninitializedMessageException(result);
+          }
+          return result;
+        }
+
+        @java.lang.Override
+        public com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Open buildPartial() {
+          com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Open result = new com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Open(this);
+          int from_bitField0_ = bitField0_;
+          int to_bitField0_ = 0;
+          if (((from_bitField0_ & 0x00000001) != 0)) {
+            to_bitField0_ |= 0x00000001;
+          }
+          result.correlationId_ = correlationId_;
+          if (((from_bitField0_ & 0x00000002) != 0)) {
+            to_bitField0_ |= 0x00000002;
+          }
+          result.tty_ = tty_;
+          if (((from_bitField0_ & 0x00000004) != 0)) {
+            result.baud_ = baud_;
+            to_bitField0_ |= 0x00000004;
+          }
+          if (((from_bitField0_ & 0x00000008) != 0)) {
+            result.dataBits_ = dataBits_;
+            to_bitField0_ |= 0x00000008;
+          }
+          if (((from_bitField0_ & 0x00000010) != 0)) {
+            result.parity_ = parity_;
+            to_bitField0_ |= 0x00000010;
+          }
+          if (((from_bitField0_ & 0x00000020) != 0)) {
+            result.stopBits_ = stopBits_;
+            to_bitField0_ |= 0x00000020;
+          }
+          result.bitField0_ = to_bitField0_;
+          onBuilt();
+          return result;
+        }
+
+        @java.lang.Override
+        public Builder clone() {
+          return super.clone();
+        }
+        @java.lang.Override
+        public Builder setField(
+            com.google.protobuf.Descriptors.FieldDescriptor field,
+            java.lang.Object value) {
+          return super.setField(field, value);
+        }
+        @java.lang.Override
+        public Builder clearField(
+            com.google.protobuf.Descriptors.FieldDescriptor field) {
+          return super.clearField(field);
+        }
+        @java.lang.Override
+        public Builder clearOneof(
+            com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+          return super.clearOneof(oneof);
+        }
+        @java.lang.Override
+        public Builder setRepeatedField(
+            com.google.protobuf.Descriptors.FieldDescriptor field,
+            int index, java.lang.Object value) {
+          return super.setRepeatedField(field, index, value);
+        }
+        @java.lang.Override
+        public Builder addRepeatedField(
+            com.google.protobuf.Descriptors.FieldDescriptor field,
+            java.lang.Object value) {
+          return super.addRepeatedField(field, value);
+        }
+        @java.lang.Override
+        public Builder mergeFrom(com.google.protobuf.Message other) {
+          if (other instanceof com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Open) {
+            return mergeFrom((com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Open)other);
+          } else {
+            super.mergeFrom(other);
+            return this;
+          }
+        }
+
+        public Builder mergeFrom(com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Open other) {
+          if (other == com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Open.getDefaultInstance()) return this;
+          if (other.hasCorrelationId()) {
+            bitField0_ |= 0x00000001;
+            correlationId_ = other.correlationId_;
+            onChanged();
+          }
+          if (other.hasTty()) {
+            bitField0_ |= 0x00000002;
+            tty_ = other.tty_;
+            onChanged();
+          }
+          if (other.hasBaud()) {
+            setBaud(other.getBaud());
+          }
+          if (other.hasDataBits()) {
+            setDataBits(other.getDataBits());
+          }
+          if (other.hasParity()) {
+            setParity(other.getParity());
+          }
+          if (other.hasStopBits()) {
+            setStopBits(other.getStopBits());
+          }
+          this.mergeUnknownFields(other.unknownFields);
+          onChanged();
+          return this;
+        }
+
+        @java.lang.Override
+        public final boolean isInitialized() {
+          if (!hasCorrelationId()) {
+            return false;
+          }
+          if (!hasTty()) {
+            return false;
+          }
+          if (!hasBaud()) {
+            return false;
+          }
+          if (!hasDataBits()) {
+            return false;
+          }
+          if (!hasParity()) {
+            return false;
+          }
+          if (!hasStopBits()) {
+            return false;
+          }
+          return true;
+        }
+
+        @java.lang.Override
+        public Builder mergeFrom(
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
+          com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Open parsedMessage = null;
+          try {
+            parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+            parsedMessage = (com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Open) e.getUnfinishedMessage();
+            throw e.unwrapIOException();
+          } finally {
+            if (parsedMessage != null) {
+              mergeFrom(parsedMessage);
+            }
+          }
+          return this;
+        }
+        private int bitField0_;
+
+        private java.lang.Object correlationId_ = "";
+        /**
+         * <code>required string correlationId = 1;</code>
+         * @return Whether the correlationId field is set.
+         */
+        public boolean hasCorrelationId() {
+          return ((bitField0_ & 0x00000001) != 0);
+        }
+        /**
+         * <code>required string correlationId = 1;</code>
+         * @return The correlationId.
+         */
+        public java.lang.String getCorrelationId() {
+          java.lang.Object ref = correlationId_;
+          if (!(ref instanceof java.lang.String)) {
+            com.google.protobuf.ByteString bs =
+                (com.google.protobuf.ByteString) ref;
+            java.lang.String s = bs.toStringUtf8();
+            if (bs.isValidUtf8()) {
+              correlationId_ = s;
+            }
+            return s;
+          } else {
+            return (java.lang.String) ref;
+          }
+        }
+        /**
+         * <code>required string correlationId = 1;</code>
+         * @return The bytes for correlationId.
+         */
+        public com.google.protobuf.ByteString
+            getCorrelationIdBytes() {
+          java.lang.Object ref = correlationId_;
+          if (ref instanceof String) {
+            com.google.protobuf.ByteString b = 
+                com.google.protobuf.ByteString.copyFromUtf8(
+                    (java.lang.String) ref);
+            correlationId_ = b;
+            return b;
+          } else {
+            return (com.google.protobuf.ByteString) ref;
+          }
+        }
+        /**
+         * <code>required string correlationId = 1;</code>
+         * @param value The correlationId to set.
+         * @return This builder for chaining.
+         */
+        public Builder setCorrelationId(
+            java.lang.String value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+          correlationId_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>required string correlationId = 1;</code>
+         * @return This builder for chaining.
+         */
+        public Builder clearCorrelationId() {
+          bitField0_ = (bitField0_ & ~0x00000001);
+          correlationId_ = getDefaultInstance().getCorrelationId();
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>required string correlationId = 1;</code>
+         * @param value The bytes for correlationId to set.
+         * @return This builder for chaining.
+         */
+        public Builder setCorrelationIdBytes(
+            com.google.protobuf.ByteString value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+          correlationId_ = value;
+          onChanged();
+          return this;
+        }
+
+        private java.lang.Object tty_ = "";
+        /**
+         * <code>required string tty = 2;</code>
+         * @return Whether the tty field is set.
+         */
+        public boolean hasTty() {
+          return ((bitField0_ & 0x00000002) != 0);
+        }
+        /**
+         * <code>required string tty = 2;</code>
+         * @return The tty.
+         */
+        public java.lang.String getTty() {
+          java.lang.Object ref = tty_;
+          if (!(ref instanceof java.lang.String)) {
+            com.google.protobuf.ByteString bs =
+                (com.google.protobuf.ByteString) ref;
+            java.lang.String s = bs.toStringUtf8();
+            if (bs.isValidUtf8()) {
+              tty_ = s;
+            }
+            return s;
+          } else {
+            return (java.lang.String) ref;
+          }
+        }
+        /**
+         * <code>required string tty = 2;</code>
+         * @return The bytes for tty.
+         */
+        public com.google.protobuf.ByteString
+            getTtyBytes() {
+          java.lang.Object ref = tty_;
+          if (ref instanceof String) {
+            com.google.protobuf.ByteString b = 
+                com.google.protobuf.ByteString.copyFromUtf8(
+                    (java.lang.String) ref);
+            tty_ = b;
+            return b;
+          } else {
+            return (com.google.protobuf.ByteString) ref;
+          }
+        }
+        /**
+         * <code>required string tty = 2;</code>
+         * @param value The tty to set.
+         * @return This builder for chaining.
+         */
+        public Builder setTty(
+            java.lang.String value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+          tty_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>required string tty = 2;</code>
+         * @return This builder for chaining.
+         */
+        public Builder clearTty() {
+          bitField0_ = (bitField0_ & ~0x00000002);
+          tty_ = getDefaultInstance().getTty();
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>required string tty = 2;</code>
+         * @param value The bytes for tty to set.
+         * @return This builder for chaining.
+         */
+        public Builder setTtyBytes(
+            com.google.protobuf.ByteString value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+          tty_ = value;
+          onChanged();
+          return this;
+        }
+
+        private int baud_ ;
+        /**
+         * <code>required int32 baud = 3;</code>
+         * @return Whether the baud field is set.
+         */
+        @java.lang.Override
+        public boolean hasBaud() {
+          return ((bitField0_ & 0x00000004) != 0);
+        }
+        /**
+         * <code>required int32 baud = 3;</code>
+         * @return The baud.
+         */
+        @java.lang.Override
+        public int getBaud() {
+          return baud_;
+        }
+        /**
+         * <code>required int32 baud = 3;</code>
+         * @param value The baud to set.
+         * @return This builder for chaining.
+         */
+        public Builder setBaud(int value) {
+          bitField0_ |= 0x00000004;
+          baud_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>required int32 baud = 3;</code>
+         * @return This builder for chaining.
+         */
+        public Builder clearBaud() {
+          bitField0_ = (bitField0_ & ~0x00000004);
+          baud_ = 0;
+          onChanged();
+          return this;
+        }
+
+        private int dataBits_ ;
+        /**
+         * <code>required int32 dataBits = 4;</code>
+         * @return Whether the dataBits field is set.
+         */
+        @java.lang.Override
+        public boolean hasDataBits() {
+          return ((bitField0_ & 0x00000008) != 0);
+        }
+        /**
+         * <code>required int32 dataBits = 4;</code>
+         * @return The dataBits.
+         */
+        @java.lang.Override
+        public int getDataBits() {
+          return dataBits_;
+        }
+        /**
+         * <code>required int32 dataBits = 4;</code>
+         * @param value The dataBits to set.
+         * @return This builder for chaining.
+         */
+        public Builder setDataBits(int value) {
+          bitField0_ |= 0x00000008;
+          dataBits_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>required int32 dataBits = 4;</code>
+         * @return This builder for chaining.
+         */
+        public Builder clearDataBits() {
+          bitField0_ = (bitField0_ & ~0x00000008);
+          dataBits_ = 0;
+          onChanged();
+          return this;
+        }
+
+        private int parity_ ;
+        /**
+         * <code>required int32 parity = 5;</code>
+         * @return Whether the parity field is set.
+         */
+        @java.lang.Override
+        public boolean hasParity() {
+          return ((bitField0_ & 0x00000010) != 0);
+        }
+        /**
+         * <code>required int32 parity = 5;</code>
+         * @return The parity.
+         */
+        @java.lang.Override
+        public int getParity() {
+          return parity_;
+        }
+        /**
+         * <code>required int32 parity = 5;</code>
+         * @param value The parity to set.
+         * @return This builder for chaining.
+         */
+        public Builder setParity(int value) {
+          bitField0_ |= 0x00000010;
+          parity_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>required int32 parity = 5;</code>
+         * @return This builder for chaining.
+         */
+        public Builder clearParity() {
+          bitField0_ = (bitField0_ & ~0x00000010);
+          parity_ = 0;
+          onChanged();
+          return this;
+        }
+
+        private int stopBits_ ;
+        /**
+         * <code>required int32 stopBits = 6;</code>
+         * @return Whether the stopBits field is set.
+         */
+        @java.lang.Override
+        public boolean hasStopBits() {
+          return ((bitField0_ & 0x00000020) != 0);
+        }
+        /**
+         * <code>required int32 stopBits = 6;</code>
+         * @return The stopBits.
+         */
+        @java.lang.Override
+        public int getStopBits() {
+          return stopBits_;
+        }
+        /**
+         * <code>required int32 stopBits = 6;</code>
+         * @param value The stopBits to set.
+         * @return This builder for chaining.
+         */
+        public Builder setStopBits(int value) {
+          bitField0_ |= 0x00000020;
+          stopBits_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>required int32 stopBits = 6;</code>
+         * @return This builder for chaining.
+         */
+        public Builder clearStopBits() {
+          bitField0_ = (bitField0_ & ~0x00000020);
+          stopBits_ = 0;
+          onChanged();
+          return this;
+        }
+        @java.lang.Override
+        public final Builder setUnknownFields(
+            final com.google.protobuf.UnknownFieldSet unknownFields) {
+          return super.setUnknownFields(unknownFields);
+        }
+
+        @java.lang.Override
+        public final Builder mergeUnknownFields(
+            final com.google.protobuf.UnknownFieldSet unknownFields) {
+          return super.mergeUnknownFields(unknownFields);
+        }
+
+
+        // @@protoc_insertion_point(builder_scope:diozero.Serial.Open)
+      }
+
+      // @@protoc_insertion_point(class_scope:diozero.Serial.Open)
+      private static final com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Open DEFAULT_INSTANCE;
+      static {
+        DEFAULT_INSTANCE = new com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Open();
+      }
+
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Open getDefaultInstance() {
+        return DEFAULT_INSTANCE;
+      }
+
+      @java.lang.Deprecated public static final com.google.protobuf.Parser<Open>
+          PARSER = new com.google.protobuf.AbstractParser<Open>() {
+        @java.lang.Override
+        public Open parsePartialFrom(
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return new Open(input, extensionRegistry);
+        }
+      };
+
+      public static com.google.protobuf.Parser<Open> parser() {
+        return PARSER;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Parser<Open> getParserForType() {
+        return PARSER;
+      }
+
+      @java.lang.Override
+      public com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Open getDefaultInstanceForType() {
+        return DEFAULT_INSTANCE;
+      }
+
+    }
+
+    public interface ReadByteOrBuilder extends
+        // @@protoc_insertion_point(interface_extends:diozero.Serial.ReadByte)
+        com.google.protobuf.MessageOrBuilder {
+
+      /**
+       * <code>required string correlationId = 1;</code>
+       * @return Whether the correlationId field is set.
+       */
+      boolean hasCorrelationId();
+      /**
+       * <code>required string correlationId = 1;</code>
+       * @return The correlationId.
+       */
+      java.lang.String getCorrelationId();
+      /**
+       * <code>required string correlationId = 1;</code>
+       * @return The bytes for correlationId.
+       */
+      com.google.protobuf.ByteString
+          getCorrelationIdBytes();
+
+      /**
+       * <code>required string tty = 2;</code>
+       * @return Whether the tty field is set.
+       */
+      boolean hasTty();
+      /**
+       * <code>required string tty = 2;</code>
+       * @return The tty.
+       */
+      java.lang.String getTty();
+      /**
+       * <code>required string tty = 2;</code>
+       * @return The bytes for tty.
+       */
+      com.google.protobuf.ByteString
+          getTtyBytes();
+    }
+    /**
+     * Protobuf type {@code diozero.Serial.ReadByte}
+     */
+    public static final class ReadByte extends
+        com.google.protobuf.GeneratedMessageV3 implements
+        // @@protoc_insertion_point(message_implements:diozero.Serial.ReadByte)
+        ReadByteOrBuilder {
+    private static final long serialVersionUID = 0L;
+      // Use ReadByte.newBuilder() to construct.
+      private ReadByte(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+        super(builder);
+      }
+      private ReadByte() {
+        correlationId_ = "";
+        tty_ = "";
+      }
+
+      @java.lang.Override
+      @SuppressWarnings({"unused"})
+      protected java.lang.Object newInstance(
+          UnusedPrivateParameter unused) {
+        return new ReadByte();
+      }
+
+      @java.lang.Override
+      public final com.google.protobuf.UnknownFieldSet
+      getUnknownFields() {
+        return this.unknownFields;
+      }
+      private ReadByte(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        this();
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
+        int mutable_bitField0_ = 0;
+        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+            com.google.protobuf.UnknownFieldSet.newBuilder();
+        try {
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                com.google.protobuf.ByteString bs = input.readBytes();
+                bitField0_ |= 0x00000001;
+                correlationId_ = bs;
+                break;
+              }
+              case 18: {
+                com.google.protobuf.ByteString bs = input.readBytes();
+                bitField0_ |= 0x00000002;
+                tty_ = bs;
+                break;
+              }
+              default: {
+                if (!parseUnknownField(
+                    input, unknownFields, extensionRegistry, tag)) {
+                  done = true;
+                }
+                break;
+              }
+            }
+          }
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(this);
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(
+              e).setUnfinishedMessage(this);
+        } finally {
+          this.unknownFields = unknownFields.build();
+          makeExtensionsImmutable();
+        }
+      }
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return com.diozero.remote.message.protobuf.DiozeroProtos.internal_static_diozero_Serial_ReadByte_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return com.diozero.remote.message.protobuf.DiozeroProtos.internal_static_diozero_Serial_ReadByte_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadByte.class, com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadByte.Builder.class);
+      }
+
+      private int bitField0_;
+      public static final int CORRELATIONID_FIELD_NUMBER = 1;
+      private volatile java.lang.Object correlationId_;
+      /**
+       * <code>required string correlationId = 1;</code>
+       * @return Whether the correlationId field is set.
+       */
+      @java.lang.Override
+      public boolean hasCorrelationId() {
+        return ((bitField0_ & 0x00000001) != 0);
+      }
+      /**
+       * <code>required string correlationId = 1;</code>
+       * @return The correlationId.
+       */
+      @java.lang.Override
+      public java.lang.String getCorrelationId() {
+        java.lang.Object ref = correlationId_;
+        if (ref instanceof java.lang.String) {
+          return (java.lang.String) ref;
+        } else {
+          com.google.protobuf.ByteString bs = 
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            correlationId_ = s;
+          }
+          return s;
+        }
+      }
+      /**
+       * <code>required string correlationId = 1;</code>
+       * @return The bytes for correlationId.
+       */
+      @java.lang.Override
+      public com.google.protobuf.ByteString
+          getCorrelationIdBytes() {
+        java.lang.Object ref = correlationId_;
+        if (ref instanceof java.lang.String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          correlationId_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+
+      public static final int TTY_FIELD_NUMBER = 2;
+      private volatile java.lang.Object tty_;
+      /**
+       * <code>required string tty = 2;</code>
+       * @return Whether the tty field is set.
+       */
+      @java.lang.Override
+      public boolean hasTty() {
+        return ((bitField0_ & 0x00000002) != 0);
+      }
+      /**
+       * <code>required string tty = 2;</code>
+       * @return The tty.
+       */
+      @java.lang.Override
+      public java.lang.String getTty() {
+        java.lang.Object ref = tty_;
+        if (ref instanceof java.lang.String) {
+          return (java.lang.String) ref;
+        } else {
+          com.google.protobuf.ByteString bs = 
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            tty_ = s;
+          }
+          return s;
+        }
+      }
+      /**
+       * <code>required string tty = 2;</code>
+       * @return The bytes for tty.
+       */
+      @java.lang.Override
+      public com.google.protobuf.ByteString
+          getTtyBytes() {
+        java.lang.Object ref = tty_;
+        if (ref instanceof java.lang.String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          tty_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+
+      private byte memoizedIsInitialized = -1;
+      @java.lang.Override
+      public final boolean isInitialized() {
+        byte isInitialized = memoizedIsInitialized;
+        if (isInitialized == 1) return true;
+        if (isInitialized == 0) return false;
+
+        if (!hasCorrelationId()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+        if (!hasTty()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+        memoizedIsInitialized = 1;
+        return true;
+      }
+
+      @java.lang.Override
+      public void writeTo(com.google.protobuf.CodedOutputStream output)
+                          throws java.io.IOException {
+        if (((bitField0_ & 0x00000001) != 0)) {
+          com.google.protobuf.GeneratedMessageV3.writeString(output, 1, correlationId_);
+        }
+        if (((bitField0_ & 0x00000002) != 0)) {
+          com.google.protobuf.GeneratedMessageV3.writeString(output, 2, tty_);
+        }
+        unknownFields.writeTo(output);
+      }
+
+      @java.lang.Override
+      public int getSerializedSize() {
+        int size = memoizedSize;
+        if (size != -1) return size;
+
+        size = 0;
+        if (((bitField0_ & 0x00000001) != 0)) {
+          size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, correlationId_);
+        }
+        if (((bitField0_ & 0x00000002) != 0)) {
+          size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, tty_);
+        }
+        size += unknownFields.getSerializedSize();
+        memoizedSize = size;
+        return size;
+      }
+
+      @java.lang.Override
+      public boolean equals(final java.lang.Object obj) {
+        if (obj == this) {
+         return true;
+        }
+        if (!(obj instanceof com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadByte)) {
+          return super.equals(obj);
+        }
+        com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadByte other = (com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadByte) obj;
+
+        if (hasCorrelationId() != other.hasCorrelationId()) return false;
+        if (hasCorrelationId()) {
+          if (!getCorrelationId()
+              .equals(other.getCorrelationId())) return false;
+        }
+        if (hasTty() != other.hasTty()) return false;
+        if (hasTty()) {
+          if (!getTty()
+              .equals(other.getTty())) return false;
+        }
+        if (!unknownFields.equals(other.unknownFields)) return false;
+        return true;
+      }
+
+      @java.lang.Override
+      public int hashCode() {
+        if (memoizedHashCode != 0) {
+          return memoizedHashCode;
+        }
+        int hash = 41;
+        hash = (19 * hash) + getDescriptor().hashCode();
+        if (hasCorrelationId()) {
+          hash = (37 * hash) + CORRELATIONID_FIELD_NUMBER;
+          hash = (53 * hash) + getCorrelationId().hashCode();
+        }
+        if (hasTty()) {
+          hash = (37 * hash) + TTY_FIELD_NUMBER;
+          hash = (53 * hash) + getTty().hashCode();
+        }
+        hash = (29 * hash) + unknownFields.hashCode();
+        memoizedHashCode = hash;
+        return hash;
+      }
+
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadByte parseFrom(
+          java.nio.ByteBuffer data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadByte parseFrom(
+          java.nio.ByteBuffer data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data, extensionRegistry);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadByte parseFrom(
+          com.google.protobuf.ByteString data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadByte parseFrom(
+          com.google.protobuf.ByteString data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data, extensionRegistry);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadByte parseFrom(byte[] data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadByte parseFrom(
+          byte[] data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data, extensionRegistry);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadByte parseFrom(java.io.InputStream input)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseWithIOException(PARSER, input);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadByte parseFrom(
+          java.io.InputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseWithIOException(PARSER, input, extensionRegistry);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadByte parseDelimitedFrom(java.io.InputStream input)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseDelimitedWithIOException(PARSER, input);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadByte parseDelimitedFrom(
+          java.io.InputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadByte parseFrom(
+          com.google.protobuf.CodedInputStream input)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseWithIOException(PARSER, input);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadByte parseFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseWithIOException(PARSER, input, extensionRegistry);
+      }
+
+      @java.lang.Override
+      public Builder newBuilderForType() { return newBuilder(); }
+      public static Builder newBuilder() {
+        return DEFAULT_INSTANCE.toBuilder();
+      }
+      public static Builder newBuilder(com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadByte prototype) {
+        return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+      }
+      @java.lang.Override
+      public Builder toBuilder() {
+        return this == DEFAULT_INSTANCE
+            ? new Builder() : new Builder().mergeFrom(this);
+      }
+
+      @java.lang.Override
+      protected Builder newBuilderForType(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        Builder builder = new Builder(parent);
+        return builder;
+      }
+      /**
+       * Protobuf type {@code diozero.Serial.ReadByte}
+       */
+      public static final class Builder extends
+          com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+          // @@protoc_insertion_point(builder_implements:diozero.Serial.ReadByte)
+          com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadByteOrBuilder {
+        public static final com.google.protobuf.Descriptors.Descriptor
+            getDescriptor() {
+          return com.diozero.remote.message.protobuf.DiozeroProtos.internal_static_diozero_Serial_ReadByte_descriptor;
+        }
+
+        @java.lang.Override
+        protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+            internalGetFieldAccessorTable() {
+          return com.diozero.remote.message.protobuf.DiozeroProtos.internal_static_diozero_Serial_ReadByte_fieldAccessorTable
+              .ensureFieldAccessorsInitialized(
+                  com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadByte.class, com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadByte.Builder.class);
+        }
+
+        // Construct using com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadByte.newBuilder()
+        private Builder() {
+          maybeForceBuilderInitialization();
+        }
+
+        private Builder(
+            com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+          super(parent);
+          maybeForceBuilderInitialization();
+        }
+        private void maybeForceBuilderInitialization() {
+          if (com.google.protobuf.GeneratedMessageV3
+                  .alwaysUseFieldBuilders) {
+          }
+        }
+        @java.lang.Override
+        public Builder clear() {
+          super.clear();
+          correlationId_ = "";
+          bitField0_ = (bitField0_ & ~0x00000001);
+          tty_ = "";
+          bitField0_ = (bitField0_ & ~0x00000002);
+          return this;
+        }
+
+        @java.lang.Override
+        public com.google.protobuf.Descriptors.Descriptor
+            getDescriptorForType() {
+          return com.diozero.remote.message.protobuf.DiozeroProtos.internal_static_diozero_Serial_ReadByte_descriptor;
+        }
+
+        @java.lang.Override
+        public com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadByte getDefaultInstanceForType() {
+          return com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadByte.getDefaultInstance();
+        }
+
+        @java.lang.Override
+        public com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadByte build() {
+          com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadByte result = buildPartial();
+          if (!result.isInitialized()) {
+            throw newUninitializedMessageException(result);
+          }
+          return result;
+        }
+
+        @java.lang.Override
+        public com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadByte buildPartial() {
+          com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadByte result = new com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadByte(this);
+          int from_bitField0_ = bitField0_;
+          int to_bitField0_ = 0;
+          if (((from_bitField0_ & 0x00000001) != 0)) {
+            to_bitField0_ |= 0x00000001;
+          }
+          result.correlationId_ = correlationId_;
+          if (((from_bitField0_ & 0x00000002) != 0)) {
+            to_bitField0_ |= 0x00000002;
+          }
+          result.tty_ = tty_;
+          result.bitField0_ = to_bitField0_;
+          onBuilt();
+          return result;
+        }
+
+        @java.lang.Override
+        public Builder clone() {
+          return super.clone();
+        }
+        @java.lang.Override
+        public Builder setField(
+            com.google.protobuf.Descriptors.FieldDescriptor field,
+            java.lang.Object value) {
+          return super.setField(field, value);
+        }
+        @java.lang.Override
+        public Builder clearField(
+            com.google.protobuf.Descriptors.FieldDescriptor field) {
+          return super.clearField(field);
+        }
+        @java.lang.Override
+        public Builder clearOneof(
+            com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+          return super.clearOneof(oneof);
+        }
+        @java.lang.Override
+        public Builder setRepeatedField(
+            com.google.protobuf.Descriptors.FieldDescriptor field,
+            int index, java.lang.Object value) {
+          return super.setRepeatedField(field, index, value);
+        }
+        @java.lang.Override
+        public Builder addRepeatedField(
+            com.google.protobuf.Descriptors.FieldDescriptor field,
+            java.lang.Object value) {
+          return super.addRepeatedField(field, value);
+        }
+        @java.lang.Override
+        public Builder mergeFrom(com.google.protobuf.Message other) {
+          if (other instanceof com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadByte) {
+            return mergeFrom((com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadByte)other);
+          } else {
+            super.mergeFrom(other);
+            return this;
+          }
+        }
+
+        public Builder mergeFrom(com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadByte other) {
+          if (other == com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadByte.getDefaultInstance()) return this;
+          if (other.hasCorrelationId()) {
+            bitField0_ |= 0x00000001;
+            correlationId_ = other.correlationId_;
+            onChanged();
+          }
+          if (other.hasTty()) {
+            bitField0_ |= 0x00000002;
+            tty_ = other.tty_;
+            onChanged();
+          }
+          this.mergeUnknownFields(other.unknownFields);
+          onChanged();
+          return this;
+        }
+
+        @java.lang.Override
+        public final boolean isInitialized() {
+          if (!hasCorrelationId()) {
+            return false;
+          }
+          if (!hasTty()) {
+            return false;
+          }
+          return true;
+        }
+
+        @java.lang.Override
+        public Builder mergeFrom(
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
+          com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadByte parsedMessage = null;
+          try {
+            parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+            parsedMessage = (com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadByte) e.getUnfinishedMessage();
+            throw e.unwrapIOException();
+          } finally {
+            if (parsedMessage != null) {
+              mergeFrom(parsedMessage);
+            }
+          }
+          return this;
+        }
+        private int bitField0_;
+
+        private java.lang.Object correlationId_ = "";
+        /**
+         * <code>required string correlationId = 1;</code>
+         * @return Whether the correlationId field is set.
+         */
+        public boolean hasCorrelationId() {
+          return ((bitField0_ & 0x00000001) != 0);
+        }
+        /**
+         * <code>required string correlationId = 1;</code>
+         * @return The correlationId.
+         */
+        public java.lang.String getCorrelationId() {
+          java.lang.Object ref = correlationId_;
+          if (!(ref instanceof java.lang.String)) {
+            com.google.protobuf.ByteString bs =
+                (com.google.protobuf.ByteString) ref;
+            java.lang.String s = bs.toStringUtf8();
+            if (bs.isValidUtf8()) {
+              correlationId_ = s;
+            }
+            return s;
+          } else {
+            return (java.lang.String) ref;
+          }
+        }
+        /**
+         * <code>required string correlationId = 1;</code>
+         * @return The bytes for correlationId.
+         */
+        public com.google.protobuf.ByteString
+            getCorrelationIdBytes() {
+          java.lang.Object ref = correlationId_;
+          if (ref instanceof String) {
+            com.google.protobuf.ByteString b = 
+                com.google.protobuf.ByteString.copyFromUtf8(
+                    (java.lang.String) ref);
+            correlationId_ = b;
+            return b;
+          } else {
+            return (com.google.protobuf.ByteString) ref;
+          }
+        }
+        /**
+         * <code>required string correlationId = 1;</code>
+         * @param value The correlationId to set.
+         * @return This builder for chaining.
+         */
+        public Builder setCorrelationId(
+            java.lang.String value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+          correlationId_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>required string correlationId = 1;</code>
+         * @return This builder for chaining.
+         */
+        public Builder clearCorrelationId() {
+          bitField0_ = (bitField0_ & ~0x00000001);
+          correlationId_ = getDefaultInstance().getCorrelationId();
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>required string correlationId = 1;</code>
+         * @param value The bytes for correlationId to set.
+         * @return This builder for chaining.
+         */
+        public Builder setCorrelationIdBytes(
+            com.google.protobuf.ByteString value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+          correlationId_ = value;
+          onChanged();
+          return this;
+        }
+
+        private java.lang.Object tty_ = "";
+        /**
+         * <code>required string tty = 2;</code>
+         * @return Whether the tty field is set.
+         */
+        public boolean hasTty() {
+          return ((bitField0_ & 0x00000002) != 0);
+        }
+        /**
+         * <code>required string tty = 2;</code>
+         * @return The tty.
+         */
+        public java.lang.String getTty() {
+          java.lang.Object ref = tty_;
+          if (!(ref instanceof java.lang.String)) {
+            com.google.protobuf.ByteString bs =
+                (com.google.protobuf.ByteString) ref;
+            java.lang.String s = bs.toStringUtf8();
+            if (bs.isValidUtf8()) {
+              tty_ = s;
+            }
+            return s;
+          } else {
+            return (java.lang.String) ref;
+          }
+        }
+        /**
+         * <code>required string tty = 2;</code>
+         * @return The bytes for tty.
+         */
+        public com.google.protobuf.ByteString
+            getTtyBytes() {
+          java.lang.Object ref = tty_;
+          if (ref instanceof String) {
+            com.google.protobuf.ByteString b = 
+                com.google.protobuf.ByteString.copyFromUtf8(
+                    (java.lang.String) ref);
+            tty_ = b;
+            return b;
+          } else {
+            return (com.google.protobuf.ByteString) ref;
+          }
+        }
+        /**
+         * <code>required string tty = 2;</code>
+         * @param value The tty to set.
+         * @return This builder for chaining.
+         */
+        public Builder setTty(
+            java.lang.String value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+          tty_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>required string tty = 2;</code>
+         * @return This builder for chaining.
+         */
+        public Builder clearTty() {
+          bitField0_ = (bitField0_ & ~0x00000002);
+          tty_ = getDefaultInstance().getTty();
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>required string tty = 2;</code>
+         * @param value The bytes for tty to set.
+         * @return This builder for chaining.
+         */
+        public Builder setTtyBytes(
+            com.google.protobuf.ByteString value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+          tty_ = value;
+          onChanged();
+          return this;
+        }
+        @java.lang.Override
+        public final Builder setUnknownFields(
+            final com.google.protobuf.UnknownFieldSet unknownFields) {
+          return super.setUnknownFields(unknownFields);
+        }
+
+        @java.lang.Override
+        public final Builder mergeUnknownFields(
+            final com.google.protobuf.UnknownFieldSet unknownFields) {
+          return super.mergeUnknownFields(unknownFields);
+        }
+
+
+        // @@protoc_insertion_point(builder_scope:diozero.Serial.ReadByte)
+      }
+
+      // @@protoc_insertion_point(class_scope:diozero.Serial.ReadByte)
+      private static final com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadByte DEFAULT_INSTANCE;
+      static {
+        DEFAULT_INSTANCE = new com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadByte();
+      }
+
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadByte getDefaultInstance() {
+        return DEFAULT_INSTANCE;
+      }
+
+      @java.lang.Deprecated public static final com.google.protobuf.Parser<ReadByte>
+          PARSER = new com.google.protobuf.AbstractParser<ReadByte>() {
+        @java.lang.Override
+        public ReadByte parsePartialFrom(
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return new ReadByte(input, extensionRegistry);
+        }
+      };
+
+      public static com.google.protobuf.Parser<ReadByte> parser() {
+        return PARSER;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Parser<ReadByte> getParserForType() {
+        return PARSER;
+      }
+
+      @java.lang.Override
+      public com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadByte getDefaultInstanceForType() {
+        return DEFAULT_INSTANCE;
+      }
+
+    }
+
+    public interface WriteByteOrBuilder extends
+        // @@protoc_insertion_point(interface_extends:diozero.Serial.WriteByte)
+        com.google.protobuf.MessageOrBuilder {
+
+      /**
+       * <code>required string correlationId = 1;</code>
+       * @return Whether the correlationId field is set.
+       */
+      boolean hasCorrelationId();
+      /**
+       * <code>required string correlationId = 1;</code>
+       * @return The correlationId.
+       */
+      java.lang.String getCorrelationId();
+      /**
+       * <code>required string correlationId = 1;</code>
+       * @return The bytes for correlationId.
+       */
+      com.google.protobuf.ByteString
+          getCorrelationIdBytes();
+
+      /**
+       * <code>required string tty = 2;</code>
+       * @return Whether the tty field is set.
+       */
+      boolean hasTty();
+      /**
+       * <code>required string tty = 2;</code>
+       * @return The tty.
+       */
+      java.lang.String getTty();
+      /**
+       * <code>required string tty = 2;</code>
+       * @return The bytes for tty.
+       */
+      com.google.protobuf.ByteString
+          getTtyBytes();
+
+      /**
+       * <code>required int32 data = 3;</code>
+       * @return Whether the data field is set.
+       */
+      boolean hasData();
+      /**
+       * <code>required int32 data = 3;</code>
+       * @return The data.
+       */
+      int getData();
+    }
+    /**
+     * Protobuf type {@code diozero.Serial.WriteByte}
+     */
+    public static final class WriteByte extends
+        com.google.protobuf.GeneratedMessageV3 implements
+        // @@protoc_insertion_point(message_implements:diozero.Serial.WriteByte)
+        WriteByteOrBuilder {
+    private static final long serialVersionUID = 0L;
+      // Use WriteByte.newBuilder() to construct.
+      private WriteByte(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+        super(builder);
+      }
+      private WriteByte() {
+        correlationId_ = "";
+        tty_ = "";
+      }
+
+      @java.lang.Override
+      @SuppressWarnings({"unused"})
+      protected java.lang.Object newInstance(
+          UnusedPrivateParameter unused) {
+        return new WriteByte();
+      }
+
+      @java.lang.Override
+      public final com.google.protobuf.UnknownFieldSet
+      getUnknownFields() {
+        return this.unknownFields;
+      }
+      private WriteByte(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        this();
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
+        int mutable_bitField0_ = 0;
+        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+            com.google.protobuf.UnknownFieldSet.newBuilder();
+        try {
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                com.google.protobuf.ByteString bs = input.readBytes();
+                bitField0_ |= 0x00000001;
+                correlationId_ = bs;
+                break;
+              }
+              case 18: {
+                com.google.protobuf.ByteString bs = input.readBytes();
+                bitField0_ |= 0x00000002;
+                tty_ = bs;
+                break;
+              }
+              case 24: {
+                bitField0_ |= 0x00000004;
+                data_ = input.readInt32();
+                break;
+              }
+              default: {
+                if (!parseUnknownField(
+                    input, unknownFields, extensionRegistry, tag)) {
+                  done = true;
+                }
+                break;
+              }
+            }
+          }
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(this);
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(
+              e).setUnfinishedMessage(this);
+        } finally {
+          this.unknownFields = unknownFields.build();
+          makeExtensionsImmutable();
+        }
+      }
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return com.diozero.remote.message.protobuf.DiozeroProtos.internal_static_diozero_Serial_WriteByte_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return com.diozero.remote.message.protobuf.DiozeroProtos.internal_static_diozero_Serial_WriteByte_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                com.diozero.remote.message.protobuf.DiozeroProtos.Serial.WriteByte.class, com.diozero.remote.message.protobuf.DiozeroProtos.Serial.WriteByte.Builder.class);
+      }
+
+      private int bitField0_;
+      public static final int CORRELATIONID_FIELD_NUMBER = 1;
+      private volatile java.lang.Object correlationId_;
+      /**
+       * <code>required string correlationId = 1;</code>
+       * @return Whether the correlationId field is set.
+       */
+      @java.lang.Override
+      public boolean hasCorrelationId() {
+        return ((bitField0_ & 0x00000001) != 0);
+      }
+      /**
+       * <code>required string correlationId = 1;</code>
+       * @return The correlationId.
+       */
+      @java.lang.Override
+      public java.lang.String getCorrelationId() {
+        java.lang.Object ref = correlationId_;
+        if (ref instanceof java.lang.String) {
+          return (java.lang.String) ref;
+        } else {
+          com.google.protobuf.ByteString bs = 
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            correlationId_ = s;
+          }
+          return s;
+        }
+      }
+      /**
+       * <code>required string correlationId = 1;</code>
+       * @return The bytes for correlationId.
+       */
+      @java.lang.Override
+      public com.google.protobuf.ByteString
+          getCorrelationIdBytes() {
+        java.lang.Object ref = correlationId_;
+        if (ref instanceof java.lang.String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          correlationId_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+
+      public static final int TTY_FIELD_NUMBER = 2;
+      private volatile java.lang.Object tty_;
+      /**
+       * <code>required string tty = 2;</code>
+       * @return Whether the tty field is set.
+       */
+      @java.lang.Override
+      public boolean hasTty() {
+        return ((bitField0_ & 0x00000002) != 0);
+      }
+      /**
+       * <code>required string tty = 2;</code>
+       * @return The tty.
+       */
+      @java.lang.Override
+      public java.lang.String getTty() {
+        java.lang.Object ref = tty_;
+        if (ref instanceof java.lang.String) {
+          return (java.lang.String) ref;
+        } else {
+          com.google.protobuf.ByteString bs = 
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            tty_ = s;
+          }
+          return s;
+        }
+      }
+      /**
+       * <code>required string tty = 2;</code>
+       * @return The bytes for tty.
+       */
+      @java.lang.Override
+      public com.google.protobuf.ByteString
+          getTtyBytes() {
+        java.lang.Object ref = tty_;
+        if (ref instanceof java.lang.String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          tty_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+
+      public static final int DATA_FIELD_NUMBER = 3;
+      private int data_;
+      /**
+       * <code>required int32 data = 3;</code>
+       * @return Whether the data field is set.
+       */
+      @java.lang.Override
+      public boolean hasData() {
+        return ((bitField0_ & 0x00000004) != 0);
+      }
+      /**
+       * <code>required int32 data = 3;</code>
+       * @return The data.
+       */
+      @java.lang.Override
+      public int getData() {
+        return data_;
+      }
+
+      private byte memoizedIsInitialized = -1;
+      @java.lang.Override
+      public final boolean isInitialized() {
+        byte isInitialized = memoizedIsInitialized;
+        if (isInitialized == 1) return true;
+        if (isInitialized == 0) return false;
+
+        if (!hasCorrelationId()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+        if (!hasTty()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+        if (!hasData()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+        memoizedIsInitialized = 1;
+        return true;
+      }
+
+      @java.lang.Override
+      public void writeTo(com.google.protobuf.CodedOutputStream output)
+                          throws java.io.IOException {
+        if (((bitField0_ & 0x00000001) != 0)) {
+          com.google.protobuf.GeneratedMessageV3.writeString(output, 1, correlationId_);
+        }
+        if (((bitField0_ & 0x00000002) != 0)) {
+          com.google.protobuf.GeneratedMessageV3.writeString(output, 2, tty_);
+        }
+        if (((bitField0_ & 0x00000004) != 0)) {
+          output.writeInt32(3, data_);
+        }
+        unknownFields.writeTo(output);
+      }
+
+      @java.lang.Override
+      public int getSerializedSize() {
+        int size = memoizedSize;
+        if (size != -1) return size;
+
+        size = 0;
+        if (((bitField0_ & 0x00000001) != 0)) {
+          size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, correlationId_);
+        }
+        if (((bitField0_ & 0x00000002) != 0)) {
+          size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, tty_);
+        }
+        if (((bitField0_ & 0x00000004) != 0)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeInt32Size(3, data_);
+        }
+        size += unknownFields.getSerializedSize();
+        memoizedSize = size;
+        return size;
+      }
+
+      @java.lang.Override
+      public boolean equals(final java.lang.Object obj) {
+        if (obj == this) {
+         return true;
+        }
+        if (!(obj instanceof com.diozero.remote.message.protobuf.DiozeroProtos.Serial.WriteByte)) {
+          return super.equals(obj);
+        }
+        com.diozero.remote.message.protobuf.DiozeroProtos.Serial.WriteByte other = (com.diozero.remote.message.protobuf.DiozeroProtos.Serial.WriteByte) obj;
+
+        if (hasCorrelationId() != other.hasCorrelationId()) return false;
+        if (hasCorrelationId()) {
+          if (!getCorrelationId()
+              .equals(other.getCorrelationId())) return false;
+        }
+        if (hasTty() != other.hasTty()) return false;
+        if (hasTty()) {
+          if (!getTty()
+              .equals(other.getTty())) return false;
+        }
+        if (hasData() != other.hasData()) return false;
+        if (hasData()) {
+          if (getData()
+              != other.getData()) return false;
+        }
+        if (!unknownFields.equals(other.unknownFields)) return false;
+        return true;
+      }
+
+      @java.lang.Override
+      public int hashCode() {
+        if (memoizedHashCode != 0) {
+          return memoizedHashCode;
+        }
+        int hash = 41;
+        hash = (19 * hash) + getDescriptor().hashCode();
+        if (hasCorrelationId()) {
+          hash = (37 * hash) + CORRELATIONID_FIELD_NUMBER;
+          hash = (53 * hash) + getCorrelationId().hashCode();
+        }
+        if (hasTty()) {
+          hash = (37 * hash) + TTY_FIELD_NUMBER;
+          hash = (53 * hash) + getTty().hashCode();
+        }
+        if (hasData()) {
+          hash = (37 * hash) + DATA_FIELD_NUMBER;
+          hash = (53 * hash) + getData();
+        }
+        hash = (29 * hash) + unknownFields.hashCode();
+        memoizedHashCode = hash;
+        return hash;
+      }
+
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.WriteByte parseFrom(
+          java.nio.ByteBuffer data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.WriteByte parseFrom(
+          java.nio.ByteBuffer data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data, extensionRegistry);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.WriteByte parseFrom(
+          com.google.protobuf.ByteString data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.WriteByte parseFrom(
+          com.google.protobuf.ByteString data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data, extensionRegistry);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.WriteByte parseFrom(byte[] data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.WriteByte parseFrom(
+          byte[] data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data, extensionRegistry);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.WriteByte parseFrom(java.io.InputStream input)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseWithIOException(PARSER, input);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.WriteByte parseFrom(
+          java.io.InputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseWithIOException(PARSER, input, extensionRegistry);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.WriteByte parseDelimitedFrom(java.io.InputStream input)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseDelimitedWithIOException(PARSER, input);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.WriteByte parseDelimitedFrom(
+          java.io.InputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.WriteByte parseFrom(
+          com.google.protobuf.CodedInputStream input)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseWithIOException(PARSER, input);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.WriteByte parseFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseWithIOException(PARSER, input, extensionRegistry);
+      }
+
+      @java.lang.Override
+      public Builder newBuilderForType() { return newBuilder(); }
+      public static Builder newBuilder() {
+        return DEFAULT_INSTANCE.toBuilder();
+      }
+      public static Builder newBuilder(com.diozero.remote.message.protobuf.DiozeroProtos.Serial.WriteByte prototype) {
+        return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+      }
+      @java.lang.Override
+      public Builder toBuilder() {
+        return this == DEFAULT_INSTANCE
+            ? new Builder() : new Builder().mergeFrom(this);
+      }
+
+      @java.lang.Override
+      protected Builder newBuilderForType(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        Builder builder = new Builder(parent);
+        return builder;
+      }
+      /**
+       * Protobuf type {@code diozero.Serial.WriteByte}
+       */
+      public static final class Builder extends
+          com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+          // @@protoc_insertion_point(builder_implements:diozero.Serial.WriteByte)
+          com.diozero.remote.message.protobuf.DiozeroProtos.Serial.WriteByteOrBuilder {
+        public static final com.google.protobuf.Descriptors.Descriptor
+            getDescriptor() {
+          return com.diozero.remote.message.protobuf.DiozeroProtos.internal_static_diozero_Serial_WriteByte_descriptor;
+        }
+
+        @java.lang.Override
+        protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+            internalGetFieldAccessorTable() {
+          return com.diozero.remote.message.protobuf.DiozeroProtos.internal_static_diozero_Serial_WriteByte_fieldAccessorTable
+              .ensureFieldAccessorsInitialized(
+                  com.diozero.remote.message.protobuf.DiozeroProtos.Serial.WriteByte.class, com.diozero.remote.message.protobuf.DiozeroProtos.Serial.WriteByte.Builder.class);
+        }
+
+        // Construct using com.diozero.remote.message.protobuf.DiozeroProtos.Serial.WriteByte.newBuilder()
+        private Builder() {
+          maybeForceBuilderInitialization();
+        }
+
+        private Builder(
+            com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+          super(parent);
+          maybeForceBuilderInitialization();
+        }
+        private void maybeForceBuilderInitialization() {
+          if (com.google.protobuf.GeneratedMessageV3
+                  .alwaysUseFieldBuilders) {
+          }
+        }
+        @java.lang.Override
+        public Builder clear() {
+          super.clear();
+          correlationId_ = "";
+          bitField0_ = (bitField0_ & ~0x00000001);
+          tty_ = "";
+          bitField0_ = (bitField0_ & ~0x00000002);
+          data_ = 0;
+          bitField0_ = (bitField0_ & ~0x00000004);
+          return this;
+        }
+
+        @java.lang.Override
+        public com.google.protobuf.Descriptors.Descriptor
+            getDescriptorForType() {
+          return com.diozero.remote.message.protobuf.DiozeroProtos.internal_static_diozero_Serial_WriteByte_descriptor;
+        }
+
+        @java.lang.Override
+        public com.diozero.remote.message.protobuf.DiozeroProtos.Serial.WriteByte getDefaultInstanceForType() {
+          return com.diozero.remote.message.protobuf.DiozeroProtos.Serial.WriteByte.getDefaultInstance();
+        }
+
+        @java.lang.Override
+        public com.diozero.remote.message.protobuf.DiozeroProtos.Serial.WriteByte build() {
+          com.diozero.remote.message.protobuf.DiozeroProtos.Serial.WriteByte result = buildPartial();
+          if (!result.isInitialized()) {
+            throw newUninitializedMessageException(result);
+          }
+          return result;
+        }
+
+        @java.lang.Override
+        public com.diozero.remote.message.protobuf.DiozeroProtos.Serial.WriteByte buildPartial() {
+          com.diozero.remote.message.protobuf.DiozeroProtos.Serial.WriteByte result = new com.diozero.remote.message.protobuf.DiozeroProtos.Serial.WriteByte(this);
+          int from_bitField0_ = bitField0_;
+          int to_bitField0_ = 0;
+          if (((from_bitField0_ & 0x00000001) != 0)) {
+            to_bitField0_ |= 0x00000001;
+          }
+          result.correlationId_ = correlationId_;
+          if (((from_bitField0_ & 0x00000002) != 0)) {
+            to_bitField0_ |= 0x00000002;
+          }
+          result.tty_ = tty_;
+          if (((from_bitField0_ & 0x00000004) != 0)) {
+            result.data_ = data_;
+            to_bitField0_ |= 0x00000004;
+          }
+          result.bitField0_ = to_bitField0_;
+          onBuilt();
+          return result;
+        }
+
+        @java.lang.Override
+        public Builder clone() {
+          return super.clone();
+        }
+        @java.lang.Override
+        public Builder setField(
+            com.google.protobuf.Descriptors.FieldDescriptor field,
+            java.lang.Object value) {
+          return super.setField(field, value);
+        }
+        @java.lang.Override
+        public Builder clearField(
+            com.google.protobuf.Descriptors.FieldDescriptor field) {
+          return super.clearField(field);
+        }
+        @java.lang.Override
+        public Builder clearOneof(
+            com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+          return super.clearOneof(oneof);
+        }
+        @java.lang.Override
+        public Builder setRepeatedField(
+            com.google.protobuf.Descriptors.FieldDescriptor field,
+            int index, java.lang.Object value) {
+          return super.setRepeatedField(field, index, value);
+        }
+        @java.lang.Override
+        public Builder addRepeatedField(
+            com.google.protobuf.Descriptors.FieldDescriptor field,
+            java.lang.Object value) {
+          return super.addRepeatedField(field, value);
+        }
+        @java.lang.Override
+        public Builder mergeFrom(com.google.protobuf.Message other) {
+          if (other instanceof com.diozero.remote.message.protobuf.DiozeroProtos.Serial.WriteByte) {
+            return mergeFrom((com.diozero.remote.message.protobuf.DiozeroProtos.Serial.WriteByte)other);
+          } else {
+            super.mergeFrom(other);
+            return this;
+          }
+        }
+
+        public Builder mergeFrom(com.diozero.remote.message.protobuf.DiozeroProtos.Serial.WriteByte other) {
+          if (other == com.diozero.remote.message.protobuf.DiozeroProtos.Serial.WriteByte.getDefaultInstance()) return this;
+          if (other.hasCorrelationId()) {
+            bitField0_ |= 0x00000001;
+            correlationId_ = other.correlationId_;
+            onChanged();
+          }
+          if (other.hasTty()) {
+            bitField0_ |= 0x00000002;
+            tty_ = other.tty_;
+            onChanged();
+          }
+          if (other.hasData()) {
+            setData(other.getData());
+          }
+          this.mergeUnknownFields(other.unknownFields);
+          onChanged();
+          return this;
+        }
+
+        @java.lang.Override
+        public final boolean isInitialized() {
+          if (!hasCorrelationId()) {
+            return false;
+          }
+          if (!hasTty()) {
+            return false;
+          }
+          if (!hasData()) {
+            return false;
+          }
+          return true;
+        }
+
+        @java.lang.Override
+        public Builder mergeFrom(
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
+          com.diozero.remote.message.protobuf.DiozeroProtos.Serial.WriteByte parsedMessage = null;
+          try {
+            parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+            parsedMessage = (com.diozero.remote.message.protobuf.DiozeroProtos.Serial.WriteByte) e.getUnfinishedMessage();
+            throw e.unwrapIOException();
+          } finally {
+            if (parsedMessage != null) {
+              mergeFrom(parsedMessage);
+            }
+          }
+          return this;
+        }
+        private int bitField0_;
+
+        private java.lang.Object correlationId_ = "";
+        /**
+         * <code>required string correlationId = 1;</code>
+         * @return Whether the correlationId field is set.
+         */
+        public boolean hasCorrelationId() {
+          return ((bitField0_ & 0x00000001) != 0);
+        }
+        /**
+         * <code>required string correlationId = 1;</code>
+         * @return The correlationId.
+         */
+        public java.lang.String getCorrelationId() {
+          java.lang.Object ref = correlationId_;
+          if (!(ref instanceof java.lang.String)) {
+            com.google.protobuf.ByteString bs =
+                (com.google.protobuf.ByteString) ref;
+            java.lang.String s = bs.toStringUtf8();
+            if (bs.isValidUtf8()) {
+              correlationId_ = s;
+            }
+            return s;
+          } else {
+            return (java.lang.String) ref;
+          }
+        }
+        /**
+         * <code>required string correlationId = 1;</code>
+         * @return The bytes for correlationId.
+         */
+        public com.google.protobuf.ByteString
+            getCorrelationIdBytes() {
+          java.lang.Object ref = correlationId_;
+          if (ref instanceof String) {
+            com.google.protobuf.ByteString b = 
+                com.google.protobuf.ByteString.copyFromUtf8(
+                    (java.lang.String) ref);
+            correlationId_ = b;
+            return b;
+          } else {
+            return (com.google.protobuf.ByteString) ref;
+          }
+        }
+        /**
+         * <code>required string correlationId = 1;</code>
+         * @param value The correlationId to set.
+         * @return This builder for chaining.
+         */
+        public Builder setCorrelationId(
+            java.lang.String value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+          correlationId_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>required string correlationId = 1;</code>
+         * @return This builder for chaining.
+         */
+        public Builder clearCorrelationId() {
+          bitField0_ = (bitField0_ & ~0x00000001);
+          correlationId_ = getDefaultInstance().getCorrelationId();
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>required string correlationId = 1;</code>
+         * @param value The bytes for correlationId to set.
+         * @return This builder for chaining.
+         */
+        public Builder setCorrelationIdBytes(
+            com.google.protobuf.ByteString value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+          correlationId_ = value;
+          onChanged();
+          return this;
+        }
+
+        private java.lang.Object tty_ = "";
+        /**
+         * <code>required string tty = 2;</code>
+         * @return Whether the tty field is set.
+         */
+        public boolean hasTty() {
+          return ((bitField0_ & 0x00000002) != 0);
+        }
+        /**
+         * <code>required string tty = 2;</code>
+         * @return The tty.
+         */
+        public java.lang.String getTty() {
+          java.lang.Object ref = tty_;
+          if (!(ref instanceof java.lang.String)) {
+            com.google.protobuf.ByteString bs =
+                (com.google.protobuf.ByteString) ref;
+            java.lang.String s = bs.toStringUtf8();
+            if (bs.isValidUtf8()) {
+              tty_ = s;
+            }
+            return s;
+          } else {
+            return (java.lang.String) ref;
+          }
+        }
+        /**
+         * <code>required string tty = 2;</code>
+         * @return The bytes for tty.
+         */
+        public com.google.protobuf.ByteString
+            getTtyBytes() {
+          java.lang.Object ref = tty_;
+          if (ref instanceof String) {
+            com.google.protobuf.ByteString b = 
+                com.google.protobuf.ByteString.copyFromUtf8(
+                    (java.lang.String) ref);
+            tty_ = b;
+            return b;
+          } else {
+            return (com.google.protobuf.ByteString) ref;
+          }
+        }
+        /**
+         * <code>required string tty = 2;</code>
+         * @param value The tty to set.
+         * @return This builder for chaining.
+         */
+        public Builder setTty(
+            java.lang.String value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+          tty_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>required string tty = 2;</code>
+         * @return This builder for chaining.
+         */
+        public Builder clearTty() {
+          bitField0_ = (bitField0_ & ~0x00000002);
+          tty_ = getDefaultInstance().getTty();
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>required string tty = 2;</code>
+         * @param value The bytes for tty to set.
+         * @return This builder for chaining.
+         */
+        public Builder setTtyBytes(
+            com.google.protobuf.ByteString value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+          tty_ = value;
+          onChanged();
+          return this;
+        }
+
+        private int data_ ;
+        /**
+         * <code>required int32 data = 3;</code>
+         * @return Whether the data field is set.
+         */
+        @java.lang.Override
+        public boolean hasData() {
+          return ((bitField0_ & 0x00000004) != 0);
+        }
+        /**
+         * <code>required int32 data = 3;</code>
+         * @return The data.
+         */
+        @java.lang.Override
+        public int getData() {
+          return data_;
+        }
+        /**
+         * <code>required int32 data = 3;</code>
+         * @param value The data to set.
+         * @return This builder for chaining.
+         */
+        public Builder setData(int value) {
+          bitField0_ |= 0x00000004;
+          data_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>required int32 data = 3;</code>
+         * @return This builder for chaining.
+         */
+        public Builder clearData() {
+          bitField0_ = (bitField0_ & ~0x00000004);
+          data_ = 0;
+          onChanged();
+          return this;
+        }
+        @java.lang.Override
+        public final Builder setUnknownFields(
+            final com.google.protobuf.UnknownFieldSet unknownFields) {
+          return super.setUnknownFields(unknownFields);
+        }
+
+        @java.lang.Override
+        public final Builder mergeUnknownFields(
+            final com.google.protobuf.UnknownFieldSet unknownFields) {
+          return super.mergeUnknownFields(unknownFields);
+        }
+
+
+        // @@protoc_insertion_point(builder_scope:diozero.Serial.WriteByte)
+      }
+
+      // @@protoc_insertion_point(class_scope:diozero.Serial.WriteByte)
+      private static final com.diozero.remote.message.protobuf.DiozeroProtos.Serial.WriteByte DEFAULT_INSTANCE;
+      static {
+        DEFAULT_INSTANCE = new com.diozero.remote.message.protobuf.DiozeroProtos.Serial.WriteByte();
+      }
+
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.WriteByte getDefaultInstance() {
+        return DEFAULT_INSTANCE;
+      }
+
+      @java.lang.Deprecated public static final com.google.protobuf.Parser<WriteByte>
+          PARSER = new com.google.protobuf.AbstractParser<WriteByte>() {
+        @java.lang.Override
+        public WriteByte parsePartialFrom(
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return new WriteByte(input, extensionRegistry);
+        }
+      };
+
+      public static com.google.protobuf.Parser<WriteByte> parser() {
+        return PARSER;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Parser<WriteByte> getParserForType() {
+        return PARSER;
+      }
+
+      @java.lang.Override
+      public com.diozero.remote.message.protobuf.DiozeroProtos.Serial.WriteByte getDefaultInstanceForType() {
+        return DEFAULT_INSTANCE;
+      }
+
+    }
+
+    public interface ReadOrBuilder extends
+        // @@protoc_insertion_point(interface_extends:diozero.Serial.Read)
+        com.google.protobuf.MessageOrBuilder {
+
+      /**
+       * <code>required string correlationId = 1;</code>
+       * @return Whether the correlationId field is set.
+       */
+      boolean hasCorrelationId();
+      /**
+       * <code>required string correlationId = 1;</code>
+       * @return The correlationId.
+       */
+      java.lang.String getCorrelationId();
+      /**
+       * <code>required string correlationId = 1;</code>
+       * @return The bytes for correlationId.
+       */
+      com.google.protobuf.ByteString
+          getCorrelationIdBytes();
+
+      /**
+       * <code>required string tty = 2;</code>
+       * @return Whether the tty field is set.
+       */
+      boolean hasTty();
+      /**
+       * <code>required string tty = 2;</code>
+       * @return The tty.
+       */
+      java.lang.String getTty();
+      /**
+       * <code>required string tty = 2;</code>
+       * @return The bytes for tty.
+       */
+      com.google.protobuf.ByteString
+          getTtyBytes();
+
+      /**
+       * <code>required int32 length = 3;</code>
+       * @return Whether the length field is set.
+       */
+      boolean hasLength();
+      /**
+       * <code>required int32 length = 3;</code>
+       * @return The length.
+       */
+      int getLength();
+    }
+    /**
+     * Protobuf type {@code diozero.Serial.Read}
+     */
+    public static final class Read extends
+        com.google.protobuf.GeneratedMessageV3 implements
+        // @@protoc_insertion_point(message_implements:diozero.Serial.Read)
+        ReadOrBuilder {
+    private static final long serialVersionUID = 0L;
+      // Use Read.newBuilder() to construct.
+      private Read(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+        super(builder);
+      }
+      private Read() {
+        correlationId_ = "";
+        tty_ = "";
+      }
+
+      @java.lang.Override
+      @SuppressWarnings({"unused"})
+      protected java.lang.Object newInstance(
+          UnusedPrivateParameter unused) {
+        return new Read();
+      }
+
+      @java.lang.Override
+      public final com.google.protobuf.UnknownFieldSet
+      getUnknownFields() {
+        return this.unknownFields;
+      }
+      private Read(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        this();
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
+        int mutable_bitField0_ = 0;
+        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+            com.google.protobuf.UnknownFieldSet.newBuilder();
+        try {
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                com.google.protobuf.ByteString bs = input.readBytes();
+                bitField0_ |= 0x00000001;
+                correlationId_ = bs;
+                break;
+              }
+              case 18: {
+                com.google.protobuf.ByteString bs = input.readBytes();
+                bitField0_ |= 0x00000002;
+                tty_ = bs;
+                break;
+              }
+              case 24: {
+                bitField0_ |= 0x00000004;
+                length_ = input.readInt32();
+                break;
+              }
+              default: {
+                if (!parseUnknownField(
+                    input, unknownFields, extensionRegistry, tag)) {
+                  done = true;
+                }
+                break;
+              }
+            }
+          }
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(this);
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(
+              e).setUnfinishedMessage(this);
+        } finally {
+          this.unknownFields = unknownFields.build();
+          makeExtensionsImmutable();
+        }
+      }
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return com.diozero.remote.message.protobuf.DiozeroProtos.internal_static_diozero_Serial_Read_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return com.diozero.remote.message.protobuf.DiozeroProtos.internal_static_diozero_Serial_Read_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Read.class, com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Read.Builder.class);
+      }
+
+      private int bitField0_;
+      public static final int CORRELATIONID_FIELD_NUMBER = 1;
+      private volatile java.lang.Object correlationId_;
+      /**
+       * <code>required string correlationId = 1;</code>
+       * @return Whether the correlationId field is set.
+       */
+      @java.lang.Override
+      public boolean hasCorrelationId() {
+        return ((bitField0_ & 0x00000001) != 0);
+      }
+      /**
+       * <code>required string correlationId = 1;</code>
+       * @return The correlationId.
+       */
+      @java.lang.Override
+      public java.lang.String getCorrelationId() {
+        java.lang.Object ref = correlationId_;
+        if (ref instanceof java.lang.String) {
+          return (java.lang.String) ref;
+        } else {
+          com.google.protobuf.ByteString bs = 
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            correlationId_ = s;
+          }
+          return s;
+        }
+      }
+      /**
+       * <code>required string correlationId = 1;</code>
+       * @return The bytes for correlationId.
+       */
+      @java.lang.Override
+      public com.google.protobuf.ByteString
+          getCorrelationIdBytes() {
+        java.lang.Object ref = correlationId_;
+        if (ref instanceof java.lang.String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          correlationId_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+
+      public static final int TTY_FIELD_NUMBER = 2;
+      private volatile java.lang.Object tty_;
+      /**
+       * <code>required string tty = 2;</code>
+       * @return Whether the tty field is set.
+       */
+      @java.lang.Override
+      public boolean hasTty() {
+        return ((bitField0_ & 0x00000002) != 0);
+      }
+      /**
+       * <code>required string tty = 2;</code>
+       * @return The tty.
+       */
+      @java.lang.Override
+      public java.lang.String getTty() {
+        java.lang.Object ref = tty_;
+        if (ref instanceof java.lang.String) {
+          return (java.lang.String) ref;
+        } else {
+          com.google.protobuf.ByteString bs = 
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            tty_ = s;
+          }
+          return s;
+        }
+      }
+      /**
+       * <code>required string tty = 2;</code>
+       * @return The bytes for tty.
+       */
+      @java.lang.Override
+      public com.google.protobuf.ByteString
+          getTtyBytes() {
+        java.lang.Object ref = tty_;
+        if (ref instanceof java.lang.String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          tty_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+
+      public static final int LENGTH_FIELD_NUMBER = 3;
+      private int length_;
+      /**
+       * <code>required int32 length = 3;</code>
+       * @return Whether the length field is set.
+       */
+      @java.lang.Override
+      public boolean hasLength() {
+        return ((bitField0_ & 0x00000004) != 0);
+      }
+      /**
+       * <code>required int32 length = 3;</code>
+       * @return The length.
+       */
+      @java.lang.Override
+      public int getLength() {
+        return length_;
+      }
+
+      private byte memoizedIsInitialized = -1;
+      @java.lang.Override
+      public final boolean isInitialized() {
+        byte isInitialized = memoizedIsInitialized;
+        if (isInitialized == 1) return true;
+        if (isInitialized == 0) return false;
+
+        if (!hasCorrelationId()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+        if (!hasTty()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+        if (!hasLength()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+        memoizedIsInitialized = 1;
+        return true;
+      }
+
+      @java.lang.Override
+      public void writeTo(com.google.protobuf.CodedOutputStream output)
+                          throws java.io.IOException {
+        if (((bitField0_ & 0x00000001) != 0)) {
+          com.google.protobuf.GeneratedMessageV3.writeString(output, 1, correlationId_);
+        }
+        if (((bitField0_ & 0x00000002) != 0)) {
+          com.google.protobuf.GeneratedMessageV3.writeString(output, 2, tty_);
+        }
+        if (((bitField0_ & 0x00000004) != 0)) {
+          output.writeInt32(3, length_);
+        }
+        unknownFields.writeTo(output);
+      }
+
+      @java.lang.Override
+      public int getSerializedSize() {
+        int size = memoizedSize;
+        if (size != -1) return size;
+
+        size = 0;
+        if (((bitField0_ & 0x00000001) != 0)) {
+          size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, correlationId_);
+        }
+        if (((bitField0_ & 0x00000002) != 0)) {
+          size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, tty_);
+        }
+        if (((bitField0_ & 0x00000004) != 0)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeInt32Size(3, length_);
+        }
+        size += unknownFields.getSerializedSize();
+        memoizedSize = size;
+        return size;
+      }
+
+      @java.lang.Override
+      public boolean equals(final java.lang.Object obj) {
+        if (obj == this) {
+         return true;
+        }
+        if (!(obj instanceof com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Read)) {
+          return super.equals(obj);
+        }
+        com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Read other = (com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Read) obj;
+
+        if (hasCorrelationId() != other.hasCorrelationId()) return false;
+        if (hasCorrelationId()) {
+          if (!getCorrelationId()
+              .equals(other.getCorrelationId())) return false;
+        }
+        if (hasTty() != other.hasTty()) return false;
+        if (hasTty()) {
+          if (!getTty()
+              .equals(other.getTty())) return false;
+        }
+        if (hasLength() != other.hasLength()) return false;
+        if (hasLength()) {
+          if (getLength()
+              != other.getLength()) return false;
+        }
+        if (!unknownFields.equals(other.unknownFields)) return false;
+        return true;
+      }
+
+      @java.lang.Override
+      public int hashCode() {
+        if (memoizedHashCode != 0) {
+          return memoizedHashCode;
+        }
+        int hash = 41;
+        hash = (19 * hash) + getDescriptor().hashCode();
+        if (hasCorrelationId()) {
+          hash = (37 * hash) + CORRELATIONID_FIELD_NUMBER;
+          hash = (53 * hash) + getCorrelationId().hashCode();
+        }
+        if (hasTty()) {
+          hash = (37 * hash) + TTY_FIELD_NUMBER;
+          hash = (53 * hash) + getTty().hashCode();
+        }
+        if (hasLength()) {
+          hash = (37 * hash) + LENGTH_FIELD_NUMBER;
+          hash = (53 * hash) + getLength();
+        }
+        hash = (29 * hash) + unknownFields.hashCode();
+        memoizedHashCode = hash;
+        return hash;
+      }
+
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Read parseFrom(
+          java.nio.ByteBuffer data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Read parseFrom(
+          java.nio.ByteBuffer data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data, extensionRegistry);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Read parseFrom(
+          com.google.protobuf.ByteString data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Read parseFrom(
+          com.google.protobuf.ByteString data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data, extensionRegistry);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Read parseFrom(byte[] data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Read parseFrom(
+          byte[] data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data, extensionRegistry);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Read parseFrom(java.io.InputStream input)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseWithIOException(PARSER, input);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Read parseFrom(
+          java.io.InputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseWithIOException(PARSER, input, extensionRegistry);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Read parseDelimitedFrom(java.io.InputStream input)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseDelimitedWithIOException(PARSER, input);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Read parseDelimitedFrom(
+          java.io.InputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Read parseFrom(
+          com.google.protobuf.CodedInputStream input)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseWithIOException(PARSER, input);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Read parseFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseWithIOException(PARSER, input, extensionRegistry);
+      }
+
+      @java.lang.Override
+      public Builder newBuilderForType() { return newBuilder(); }
+      public static Builder newBuilder() {
+        return DEFAULT_INSTANCE.toBuilder();
+      }
+      public static Builder newBuilder(com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Read prototype) {
+        return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+      }
+      @java.lang.Override
+      public Builder toBuilder() {
+        return this == DEFAULT_INSTANCE
+            ? new Builder() : new Builder().mergeFrom(this);
+      }
+
+      @java.lang.Override
+      protected Builder newBuilderForType(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        Builder builder = new Builder(parent);
+        return builder;
+      }
+      /**
+       * Protobuf type {@code diozero.Serial.Read}
+       */
+      public static final class Builder extends
+          com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+          // @@protoc_insertion_point(builder_implements:diozero.Serial.Read)
+          com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadOrBuilder {
+        public static final com.google.protobuf.Descriptors.Descriptor
+            getDescriptor() {
+          return com.diozero.remote.message.protobuf.DiozeroProtos.internal_static_diozero_Serial_Read_descriptor;
+        }
+
+        @java.lang.Override
+        protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+            internalGetFieldAccessorTable() {
+          return com.diozero.remote.message.protobuf.DiozeroProtos.internal_static_diozero_Serial_Read_fieldAccessorTable
+              .ensureFieldAccessorsInitialized(
+                  com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Read.class, com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Read.Builder.class);
+        }
+
+        // Construct using com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Read.newBuilder()
+        private Builder() {
+          maybeForceBuilderInitialization();
+        }
+
+        private Builder(
+            com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+          super(parent);
+          maybeForceBuilderInitialization();
+        }
+        private void maybeForceBuilderInitialization() {
+          if (com.google.protobuf.GeneratedMessageV3
+                  .alwaysUseFieldBuilders) {
+          }
+        }
+        @java.lang.Override
+        public Builder clear() {
+          super.clear();
+          correlationId_ = "";
+          bitField0_ = (bitField0_ & ~0x00000001);
+          tty_ = "";
+          bitField0_ = (bitField0_ & ~0x00000002);
+          length_ = 0;
+          bitField0_ = (bitField0_ & ~0x00000004);
+          return this;
+        }
+
+        @java.lang.Override
+        public com.google.protobuf.Descriptors.Descriptor
+            getDescriptorForType() {
+          return com.diozero.remote.message.protobuf.DiozeroProtos.internal_static_diozero_Serial_Read_descriptor;
+        }
+
+        @java.lang.Override
+        public com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Read getDefaultInstanceForType() {
+          return com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Read.getDefaultInstance();
+        }
+
+        @java.lang.Override
+        public com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Read build() {
+          com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Read result = buildPartial();
+          if (!result.isInitialized()) {
+            throw newUninitializedMessageException(result);
+          }
+          return result;
+        }
+
+        @java.lang.Override
+        public com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Read buildPartial() {
+          com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Read result = new com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Read(this);
+          int from_bitField0_ = bitField0_;
+          int to_bitField0_ = 0;
+          if (((from_bitField0_ & 0x00000001) != 0)) {
+            to_bitField0_ |= 0x00000001;
+          }
+          result.correlationId_ = correlationId_;
+          if (((from_bitField0_ & 0x00000002) != 0)) {
+            to_bitField0_ |= 0x00000002;
+          }
+          result.tty_ = tty_;
+          if (((from_bitField0_ & 0x00000004) != 0)) {
+            result.length_ = length_;
+            to_bitField0_ |= 0x00000004;
+          }
+          result.bitField0_ = to_bitField0_;
+          onBuilt();
+          return result;
+        }
+
+        @java.lang.Override
+        public Builder clone() {
+          return super.clone();
+        }
+        @java.lang.Override
+        public Builder setField(
+            com.google.protobuf.Descriptors.FieldDescriptor field,
+            java.lang.Object value) {
+          return super.setField(field, value);
+        }
+        @java.lang.Override
+        public Builder clearField(
+            com.google.protobuf.Descriptors.FieldDescriptor field) {
+          return super.clearField(field);
+        }
+        @java.lang.Override
+        public Builder clearOneof(
+            com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+          return super.clearOneof(oneof);
+        }
+        @java.lang.Override
+        public Builder setRepeatedField(
+            com.google.protobuf.Descriptors.FieldDescriptor field,
+            int index, java.lang.Object value) {
+          return super.setRepeatedField(field, index, value);
+        }
+        @java.lang.Override
+        public Builder addRepeatedField(
+            com.google.protobuf.Descriptors.FieldDescriptor field,
+            java.lang.Object value) {
+          return super.addRepeatedField(field, value);
+        }
+        @java.lang.Override
+        public Builder mergeFrom(com.google.protobuf.Message other) {
+          if (other instanceof com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Read) {
+            return mergeFrom((com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Read)other);
+          } else {
+            super.mergeFrom(other);
+            return this;
+          }
+        }
+
+        public Builder mergeFrom(com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Read other) {
+          if (other == com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Read.getDefaultInstance()) return this;
+          if (other.hasCorrelationId()) {
+            bitField0_ |= 0x00000001;
+            correlationId_ = other.correlationId_;
+            onChanged();
+          }
+          if (other.hasTty()) {
+            bitField0_ |= 0x00000002;
+            tty_ = other.tty_;
+            onChanged();
+          }
+          if (other.hasLength()) {
+            setLength(other.getLength());
+          }
+          this.mergeUnknownFields(other.unknownFields);
+          onChanged();
+          return this;
+        }
+
+        @java.lang.Override
+        public final boolean isInitialized() {
+          if (!hasCorrelationId()) {
+            return false;
+          }
+          if (!hasTty()) {
+            return false;
+          }
+          if (!hasLength()) {
+            return false;
+          }
+          return true;
+        }
+
+        @java.lang.Override
+        public Builder mergeFrom(
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
+          com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Read parsedMessage = null;
+          try {
+            parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+            parsedMessage = (com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Read) e.getUnfinishedMessage();
+            throw e.unwrapIOException();
+          } finally {
+            if (parsedMessage != null) {
+              mergeFrom(parsedMessage);
+            }
+          }
+          return this;
+        }
+        private int bitField0_;
+
+        private java.lang.Object correlationId_ = "";
+        /**
+         * <code>required string correlationId = 1;</code>
+         * @return Whether the correlationId field is set.
+         */
+        public boolean hasCorrelationId() {
+          return ((bitField0_ & 0x00000001) != 0);
+        }
+        /**
+         * <code>required string correlationId = 1;</code>
+         * @return The correlationId.
+         */
+        public java.lang.String getCorrelationId() {
+          java.lang.Object ref = correlationId_;
+          if (!(ref instanceof java.lang.String)) {
+            com.google.protobuf.ByteString bs =
+                (com.google.protobuf.ByteString) ref;
+            java.lang.String s = bs.toStringUtf8();
+            if (bs.isValidUtf8()) {
+              correlationId_ = s;
+            }
+            return s;
+          } else {
+            return (java.lang.String) ref;
+          }
+        }
+        /**
+         * <code>required string correlationId = 1;</code>
+         * @return The bytes for correlationId.
+         */
+        public com.google.protobuf.ByteString
+            getCorrelationIdBytes() {
+          java.lang.Object ref = correlationId_;
+          if (ref instanceof String) {
+            com.google.protobuf.ByteString b = 
+                com.google.protobuf.ByteString.copyFromUtf8(
+                    (java.lang.String) ref);
+            correlationId_ = b;
+            return b;
+          } else {
+            return (com.google.protobuf.ByteString) ref;
+          }
+        }
+        /**
+         * <code>required string correlationId = 1;</code>
+         * @param value The correlationId to set.
+         * @return This builder for chaining.
+         */
+        public Builder setCorrelationId(
+            java.lang.String value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+          correlationId_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>required string correlationId = 1;</code>
+         * @return This builder for chaining.
+         */
+        public Builder clearCorrelationId() {
+          bitField0_ = (bitField0_ & ~0x00000001);
+          correlationId_ = getDefaultInstance().getCorrelationId();
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>required string correlationId = 1;</code>
+         * @param value The bytes for correlationId to set.
+         * @return This builder for chaining.
+         */
+        public Builder setCorrelationIdBytes(
+            com.google.protobuf.ByteString value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+          correlationId_ = value;
+          onChanged();
+          return this;
+        }
+
+        private java.lang.Object tty_ = "";
+        /**
+         * <code>required string tty = 2;</code>
+         * @return Whether the tty field is set.
+         */
+        public boolean hasTty() {
+          return ((bitField0_ & 0x00000002) != 0);
+        }
+        /**
+         * <code>required string tty = 2;</code>
+         * @return The tty.
+         */
+        public java.lang.String getTty() {
+          java.lang.Object ref = tty_;
+          if (!(ref instanceof java.lang.String)) {
+            com.google.protobuf.ByteString bs =
+                (com.google.protobuf.ByteString) ref;
+            java.lang.String s = bs.toStringUtf8();
+            if (bs.isValidUtf8()) {
+              tty_ = s;
+            }
+            return s;
+          } else {
+            return (java.lang.String) ref;
+          }
+        }
+        /**
+         * <code>required string tty = 2;</code>
+         * @return The bytes for tty.
+         */
+        public com.google.protobuf.ByteString
+            getTtyBytes() {
+          java.lang.Object ref = tty_;
+          if (ref instanceof String) {
+            com.google.protobuf.ByteString b = 
+                com.google.protobuf.ByteString.copyFromUtf8(
+                    (java.lang.String) ref);
+            tty_ = b;
+            return b;
+          } else {
+            return (com.google.protobuf.ByteString) ref;
+          }
+        }
+        /**
+         * <code>required string tty = 2;</code>
+         * @param value The tty to set.
+         * @return This builder for chaining.
+         */
+        public Builder setTty(
+            java.lang.String value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+          tty_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>required string tty = 2;</code>
+         * @return This builder for chaining.
+         */
+        public Builder clearTty() {
+          bitField0_ = (bitField0_ & ~0x00000002);
+          tty_ = getDefaultInstance().getTty();
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>required string tty = 2;</code>
+         * @param value The bytes for tty to set.
+         * @return This builder for chaining.
+         */
+        public Builder setTtyBytes(
+            com.google.protobuf.ByteString value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+          tty_ = value;
+          onChanged();
+          return this;
+        }
+
+        private int length_ ;
+        /**
+         * <code>required int32 length = 3;</code>
+         * @return Whether the length field is set.
+         */
+        @java.lang.Override
+        public boolean hasLength() {
+          return ((bitField0_ & 0x00000004) != 0);
+        }
+        /**
+         * <code>required int32 length = 3;</code>
+         * @return The length.
+         */
+        @java.lang.Override
+        public int getLength() {
+          return length_;
+        }
+        /**
+         * <code>required int32 length = 3;</code>
+         * @param value The length to set.
+         * @return This builder for chaining.
+         */
+        public Builder setLength(int value) {
+          bitField0_ |= 0x00000004;
+          length_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>required int32 length = 3;</code>
+         * @return This builder for chaining.
+         */
+        public Builder clearLength() {
+          bitField0_ = (bitField0_ & ~0x00000004);
+          length_ = 0;
+          onChanged();
+          return this;
+        }
+        @java.lang.Override
+        public final Builder setUnknownFields(
+            final com.google.protobuf.UnknownFieldSet unknownFields) {
+          return super.setUnknownFields(unknownFields);
+        }
+
+        @java.lang.Override
+        public final Builder mergeUnknownFields(
+            final com.google.protobuf.UnknownFieldSet unknownFields) {
+          return super.mergeUnknownFields(unknownFields);
+        }
+
+
+        // @@protoc_insertion_point(builder_scope:diozero.Serial.Read)
+      }
+
+      // @@protoc_insertion_point(class_scope:diozero.Serial.Read)
+      private static final com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Read DEFAULT_INSTANCE;
+      static {
+        DEFAULT_INSTANCE = new com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Read();
+      }
+
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Read getDefaultInstance() {
+        return DEFAULT_INSTANCE;
+      }
+
+      @java.lang.Deprecated public static final com.google.protobuf.Parser<Read>
+          PARSER = new com.google.protobuf.AbstractParser<Read>() {
+        @java.lang.Override
+        public Read parsePartialFrom(
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return new Read(input, extensionRegistry);
+        }
+      };
+
+      public static com.google.protobuf.Parser<Read> parser() {
+        return PARSER;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Parser<Read> getParserForType() {
+        return PARSER;
+      }
+
+      @java.lang.Override
+      public com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Read getDefaultInstanceForType() {
+        return DEFAULT_INSTANCE;
+      }
+
+    }
+
+    public interface WriteOrBuilder extends
+        // @@protoc_insertion_point(interface_extends:diozero.Serial.Write)
+        com.google.protobuf.MessageOrBuilder {
+
+      /**
+       * <code>required string correlationId = 1;</code>
+       * @return Whether the correlationId field is set.
+       */
+      boolean hasCorrelationId();
+      /**
+       * <code>required string correlationId = 1;</code>
+       * @return The correlationId.
+       */
+      java.lang.String getCorrelationId();
+      /**
+       * <code>required string correlationId = 1;</code>
+       * @return The bytes for correlationId.
+       */
+      com.google.protobuf.ByteString
+          getCorrelationIdBytes();
+
+      /**
+       * <code>required string tty = 2;</code>
+       * @return Whether the tty field is set.
+       */
+      boolean hasTty();
+      /**
+       * <code>required string tty = 2;</code>
+       * @return The tty.
+       */
+      java.lang.String getTty();
+      /**
+       * <code>required string tty = 2;</code>
+       * @return The bytes for tty.
+       */
+      com.google.protobuf.ByteString
+          getTtyBytes();
+
+      /**
+       * <code>required bytes data = 3;</code>
+       * @return Whether the data field is set.
+       */
+      boolean hasData();
+      /**
+       * <code>required bytes data = 3;</code>
+       * @return The data.
+       */
+      com.google.protobuf.ByteString getData();
+    }
+    /**
+     * Protobuf type {@code diozero.Serial.Write}
+     */
+    public static final class Write extends
+        com.google.protobuf.GeneratedMessageV3 implements
+        // @@protoc_insertion_point(message_implements:diozero.Serial.Write)
+        WriteOrBuilder {
+    private static final long serialVersionUID = 0L;
+      // Use Write.newBuilder() to construct.
+      private Write(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+        super(builder);
+      }
+      private Write() {
+        correlationId_ = "";
+        tty_ = "";
+        data_ = com.google.protobuf.ByteString.EMPTY;
+      }
+
+      @java.lang.Override
+      @SuppressWarnings({"unused"})
+      protected java.lang.Object newInstance(
+          UnusedPrivateParameter unused) {
+        return new Write();
+      }
+
+      @java.lang.Override
+      public final com.google.protobuf.UnknownFieldSet
+      getUnknownFields() {
+        return this.unknownFields;
+      }
+      private Write(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        this();
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
+        int mutable_bitField0_ = 0;
+        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+            com.google.protobuf.UnknownFieldSet.newBuilder();
+        try {
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                com.google.protobuf.ByteString bs = input.readBytes();
+                bitField0_ |= 0x00000001;
+                correlationId_ = bs;
+                break;
+              }
+              case 18: {
+                com.google.protobuf.ByteString bs = input.readBytes();
+                bitField0_ |= 0x00000002;
+                tty_ = bs;
+                break;
+              }
+              case 26: {
+                bitField0_ |= 0x00000004;
+                data_ = input.readBytes();
+                break;
+              }
+              default: {
+                if (!parseUnknownField(
+                    input, unknownFields, extensionRegistry, tag)) {
+                  done = true;
+                }
+                break;
+              }
+            }
+          }
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(this);
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(
+              e).setUnfinishedMessage(this);
+        } finally {
+          this.unknownFields = unknownFields.build();
+          makeExtensionsImmutable();
+        }
+      }
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return com.diozero.remote.message.protobuf.DiozeroProtos.internal_static_diozero_Serial_Write_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return com.diozero.remote.message.protobuf.DiozeroProtos.internal_static_diozero_Serial_Write_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Write.class, com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Write.Builder.class);
+      }
+
+      private int bitField0_;
+      public static final int CORRELATIONID_FIELD_NUMBER = 1;
+      private volatile java.lang.Object correlationId_;
+      /**
+       * <code>required string correlationId = 1;</code>
+       * @return Whether the correlationId field is set.
+       */
+      @java.lang.Override
+      public boolean hasCorrelationId() {
+        return ((bitField0_ & 0x00000001) != 0);
+      }
+      /**
+       * <code>required string correlationId = 1;</code>
+       * @return The correlationId.
+       */
+      @java.lang.Override
+      public java.lang.String getCorrelationId() {
+        java.lang.Object ref = correlationId_;
+        if (ref instanceof java.lang.String) {
+          return (java.lang.String) ref;
+        } else {
+          com.google.protobuf.ByteString bs = 
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            correlationId_ = s;
+          }
+          return s;
+        }
+      }
+      /**
+       * <code>required string correlationId = 1;</code>
+       * @return The bytes for correlationId.
+       */
+      @java.lang.Override
+      public com.google.protobuf.ByteString
+          getCorrelationIdBytes() {
+        java.lang.Object ref = correlationId_;
+        if (ref instanceof java.lang.String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          correlationId_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+
+      public static final int TTY_FIELD_NUMBER = 2;
+      private volatile java.lang.Object tty_;
+      /**
+       * <code>required string tty = 2;</code>
+       * @return Whether the tty field is set.
+       */
+      @java.lang.Override
+      public boolean hasTty() {
+        return ((bitField0_ & 0x00000002) != 0);
+      }
+      /**
+       * <code>required string tty = 2;</code>
+       * @return The tty.
+       */
+      @java.lang.Override
+      public java.lang.String getTty() {
+        java.lang.Object ref = tty_;
+        if (ref instanceof java.lang.String) {
+          return (java.lang.String) ref;
+        } else {
+          com.google.protobuf.ByteString bs = 
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            tty_ = s;
+          }
+          return s;
+        }
+      }
+      /**
+       * <code>required string tty = 2;</code>
+       * @return The bytes for tty.
+       */
+      @java.lang.Override
+      public com.google.protobuf.ByteString
+          getTtyBytes() {
+        java.lang.Object ref = tty_;
+        if (ref instanceof java.lang.String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          tty_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+
+      public static final int DATA_FIELD_NUMBER = 3;
+      private com.google.protobuf.ByteString data_;
+      /**
+       * <code>required bytes data = 3;</code>
+       * @return Whether the data field is set.
+       */
+      @java.lang.Override
+      public boolean hasData() {
+        return ((bitField0_ & 0x00000004) != 0);
+      }
+      /**
+       * <code>required bytes data = 3;</code>
+       * @return The data.
+       */
+      @java.lang.Override
+      public com.google.protobuf.ByteString getData() {
+        return data_;
+      }
+
+      private byte memoizedIsInitialized = -1;
+      @java.lang.Override
+      public final boolean isInitialized() {
+        byte isInitialized = memoizedIsInitialized;
+        if (isInitialized == 1) return true;
+        if (isInitialized == 0) return false;
+
+        if (!hasCorrelationId()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+        if (!hasTty()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+        if (!hasData()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+        memoizedIsInitialized = 1;
+        return true;
+      }
+
+      @java.lang.Override
+      public void writeTo(com.google.protobuf.CodedOutputStream output)
+                          throws java.io.IOException {
+        if (((bitField0_ & 0x00000001) != 0)) {
+          com.google.protobuf.GeneratedMessageV3.writeString(output, 1, correlationId_);
+        }
+        if (((bitField0_ & 0x00000002) != 0)) {
+          com.google.protobuf.GeneratedMessageV3.writeString(output, 2, tty_);
+        }
+        if (((bitField0_ & 0x00000004) != 0)) {
+          output.writeBytes(3, data_);
+        }
+        unknownFields.writeTo(output);
+      }
+
+      @java.lang.Override
+      public int getSerializedSize() {
+        int size = memoizedSize;
+        if (size != -1) return size;
+
+        size = 0;
+        if (((bitField0_ & 0x00000001) != 0)) {
+          size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, correlationId_);
+        }
+        if (((bitField0_ & 0x00000002) != 0)) {
+          size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, tty_);
+        }
+        if (((bitField0_ & 0x00000004) != 0)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeBytesSize(3, data_);
+        }
+        size += unknownFields.getSerializedSize();
+        memoizedSize = size;
+        return size;
+      }
+
+      @java.lang.Override
+      public boolean equals(final java.lang.Object obj) {
+        if (obj == this) {
+         return true;
+        }
+        if (!(obj instanceof com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Write)) {
+          return super.equals(obj);
+        }
+        com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Write other = (com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Write) obj;
+
+        if (hasCorrelationId() != other.hasCorrelationId()) return false;
+        if (hasCorrelationId()) {
+          if (!getCorrelationId()
+              .equals(other.getCorrelationId())) return false;
+        }
+        if (hasTty() != other.hasTty()) return false;
+        if (hasTty()) {
+          if (!getTty()
+              .equals(other.getTty())) return false;
+        }
+        if (hasData() != other.hasData()) return false;
+        if (hasData()) {
+          if (!getData()
+              .equals(other.getData())) return false;
+        }
+        if (!unknownFields.equals(other.unknownFields)) return false;
+        return true;
+      }
+
+      @java.lang.Override
+      public int hashCode() {
+        if (memoizedHashCode != 0) {
+          return memoizedHashCode;
+        }
+        int hash = 41;
+        hash = (19 * hash) + getDescriptor().hashCode();
+        if (hasCorrelationId()) {
+          hash = (37 * hash) + CORRELATIONID_FIELD_NUMBER;
+          hash = (53 * hash) + getCorrelationId().hashCode();
+        }
+        if (hasTty()) {
+          hash = (37 * hash) + TTY_FIELD_NUMBER;
+          hash = (53 * hash) + getTty().hashCode();
+        }
+        if (hasData()) {
+          hash = (37 * hash) + DATA_FIELD_NUMBER;
+          hash = (53 * hash) + getData().hashCode();
+        }
+        hash = (29 * hash) + unknownFields.hashCode();
+        memoizedHashCode = hash;
+        return hash;
+      }
+
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Write parseFrom(
+          java.nio.ByteBuffer data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Write parseFrom(
+          java.nio.ByteBuffer data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data, extensionRegistry);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Write parseFrom(
+          com.google.protobuf.ByteString data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Write parseFrom(
+          com.google.protobuf.ByteString data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data, extensionRegistry);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Write parseFrom(byte[] data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Write parseFrom(
+          byte[] data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data, extensionRegistry);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Write parseFrom(java.io.InputStream input)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseWithIOException(PARSER, input);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Write parseFrom(
+          java.io.InputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseWithIOException(PARSER, input, extensionRegistry);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Write parseDelimitedFrom(java.io.InputStream input)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseDelimitedWithIOException(PARSER, input);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Write parseDelimitedFrom(
+          java.io.InputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Write parseFrom(
+          com.google.protobuf.CodedInputStream input)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseWithIOException(PARSER, input);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Write parseFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseWithIOException(PARSER, input, extensionRegistry);
+      }
+
+      @java.lang.Override
+      public Builder newBuilderForType() { return newBuilder(); }
+      public static Builder newBuilder() {
+        return DEFAULT_INSTANCE.toBuilder();
+      }
+      public static Builder newBuilder(com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Write prototype) {
+        return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+      }
+      @java.lang.Override
+      public Builder toBuilder() {
+        return this == DEFAULT_INSTANCE
+            ? new Builder() : new Builder().mergeFrom(this);
+      }
+
+      @java.lang.Override
+      protected Builder newBuilderForType(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        Builder builder = new Builder(parent);
+        return builder;
+      }
+      /**
+       * Protobuf type {@code diozero.Serial.Write}
+       */
+      public static final class Builder extends
+          com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+          // @@protoc_insertion_point(builder_implements:diozero.Serial.Write)
+          com.diozero.remote.message.protobuf.DiozeroProtos.Serial.WriteOrBuilder {
+        public static final com.google.protobuf.Descriptors.Descriptor
+            getDescriptor() {
+          return com.diozero.remote.message.protobuf.DiozeroProtos.internal_static_diozero_Serial_Write_descriptor;
+        }
+
+        @java.lang.Override
+        protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+            internalGetFieldAccessorTable() {
+          return com.diozero.remote.message.protobuf.DiozeroProtos.internal_static_diozero_Serial_Write_fieldAccessorTable
+              .ensureFieldAccessorsInitialized(
+                  com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Write.class, com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Write.Builder.class);
+        }
+
+        // Construct using com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Write.newBuilder()
+        private Builder() {
+          maybeForceBuilderInitialization();
+        }
+
+        private Builder(
+            com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+          super(parent);
+          maybeForceBuilderInitialization();
+        }
+        private void maybeForceBuilderInitialization() {
+          if (com.google.protobuf.GeneratedMessageV3
+                  .alwaysUseFieldBuilders) {
+          }
+        }
+        @java.lang.Override
+        public Builder clear() {
+          super.clear();
+          correlationId_ = "";
+          bitField0_ = (bitField0_ & ~0x00000001);
+          tty_ = "";
+          bitField0_ = (bitField0_ & ~0x00000002);
+          data_ = com.google.protobuf.ByteString.EMPTY;
+          bitField0_ = (bitField0_ & ~0x00000004);
+          return this;
+        }
+
+        @java.lang.Override
+        public com.google.protobuf.Descriptors.Descriptor
+            getDescriptorForType() {
+          return com.diozero.remote.message.protobuf.DiozeroProtos.internal_static_diozero_Serial_Write_descriptor;
+        }
+
+        @java.lang.Override
+        public com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Write getDefaultInstanceForType() {
+          return com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Write.getDefaultInstance();
+        }
+
+        @java.lang.Override
+        public com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Write build() {
+          com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Write result = buildPartial();
+          if (!result.isInitialized()) {
+            throw newUninitializedMessageException(result);
+          }
+          return result;
+        }
+
+        @java.lang.Override
+        public com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Write buildPartial() {
+          com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Write result = new com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Write(this);
+          int from_bitField0_ = bitField0_;
+          int to_bitField0_ = 0;
+          if (((from_bitField0_ & 0x00000001) != 0)) {
+            to_bitField0_ |= 0x00000001;
+          }
+          result.correlationId_ = correlationId_;
+          if (((from_bitField0_ & 0x00000002) != 0)) {
+            to_bitField0_ |= 0x00000002;
+          }
+          result.tty_ = tty_;
+          if (((from_bitField0_ & 0x00000004) != 0)) {
+            to_bitField0_ |= 0x00000004;
+          }
+          result.data_ = data_;
+          result.bitField0_ = to_bitField0_;
+          onBuilt();
+          return result;
+        }
+
+        @java.lang.Override
+        public Builder clone() {
+          return super.clone();
+        }
+        @java.lang.Override
+        public Builder setField(
+            com.google.protobuf.Descriptors.FieldDescriptor field,
+            java.lang.Object value) {
+          return super.setField(field, value);
+        }
+        @java.lang.Override
+        public Builder clearField(
+            com.google.protobuf.Descriptors.FieldDescriptor field) {
+          return super.clearField(field);
+        }
+        @java.lang.Override
+        public Builder clearOneof(
+            com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+          return super.clearOneof(oneof);
+        }
+        @java.lang.Override
+        public Builder setRepeatedField(
+            com.google.protobuf.Descriptors.FieldDescriptor field,
+            int index, java.lang.Object value) {
+          return super.setRepeatedField(field, index, value);
+        }
+        @java.lang.Override
+        public Builder addRepeatedField(
+            com.google.protobuf.Descriptors.FieldDescriptor field,
+            java.lang.Object value) {
+          return super.addRepeatedField(field, value);
+        }
+        @java.lang.Override
+        public Builder mergeFrom(com.google.protobuf.Message other) {
+          if (other instanceof com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Write) {
+            return mergeFrom((com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Write)other);
+          } else {
+            super.mergeFrom(other);
+            return this;
+          }
+        }
+
+        public Builder mergeFrom(com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Write other) {
+          if (other == com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Write.getDefaultInstance()) return this;
+          if (other.hasCorrelationId()) {
+            bitField0_ |= 0x00000001;
+            correlationId_ = other.correlationId_;
+            onChanged();
+          }
+          if (other.hasTty()) {
+            bitField0_ |= 0x00000002;
+            tty_ = other.tty_;
+            onChanged();
+          }
+          if (other.hasData()) {
+            setData(other.getData());
+          }
+          this.mergeUnknownFields(other.unknownFields);
+          onChanged();
+          return this;
+        }
+
+        @java.lang.Override
+        public final boolean isInitialized() {
+          if (!hasCorrelationId()) {
+            return false;
+          }
+          if (!hasTty()) {
+            return false;
+          }
+          if (!hasData()) {
+            return false;
+          }
+          return true;
+        }
+
+        @java.lang.Override
+        public Builder mergeFrom(
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
+          com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Write parsedMessage = null;
+          try {
+            parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+            parsedMessage = (com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Write) e.getUnfinishedMessage();
+            throw e.unwrapIOException();
+          } finally {
+            if (parsedMessage != null) {
+              mergeFrom(parsedMessage);
+            }
+          }
+          return this;
+        }
+        private int bitField0_;
+
+        private java.lang.Object correlationId_ = "";
+        /**
+         * <code>required string correlationId = 1;</code>
+         * @return Whether the correlationId field is set.
+         */
+        public boolean hasCorrelationId() {
+          return ((bitField0_ & 0x00000001) != 0);
+        }
+        /**
+         * <code>required string correlationId = 1;</code>
+         * @return The correlationId.
+         */
+        public java.lang.String getCorrelationId() {
+          java.lang.Object ref = correlationId_;
+          if (!(ref instanceof java.lang.String)) {
+            com.google.protobuf.ByteString bs =
+                (com.google.protobuf.ByteString) ref;
+            java.lang.String s = bs.toStringUtf8();
+            if (bs.isValidUtf8()) {
+              correlationId_ = s;
+            }
+            return s;
+          } else {
+            return (java.lang.String) ref;
+          }
+        }
+        /**
+         * <code>required string correlationId = 1;</code>
+         * @return The bytes for correlationId.
+         */
+        public com.google.protobuf.ByteString
+            getCorrelationIdBytes() {
+          java.lang.Object ref = correlationId_;
+          if (ref instanceof String) {
+            com.google.protobuf.ByteString b = 
+                com.google.protobuf.ByteString.copyFromUtf8(
+                    (java.lang.String) ref);
+            correlationId_ = b;
+            return b;
+          } else {
+            return (com.google.protobuf.ByteString) ref;
+          }
+        }
+        /**
+         * <code>required string correlationId = 1;</code>
+         * @param value The correlationId to set.
+         * @return This builder for chaining.
+         */
+        public Builder setCorrelationId(
+            java.lang.String value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+          correlationId_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>required string correlationId = 1;</code>
+         * @return This builder for chaining.
+         */
+        public Builder clearCorrelationId() {
+          bitField0_ = (bitField0_ & ~0x00000001);
+          correlationId_ = getDefaultInstance().getCorrelationId();
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>required string correlationId = 1;</code>
+         * @param value The bytes for correlationId to set.
+         * @return This builder for chaining.
+         */
+        public Builder setCorrelationIdBytes(
+            com.google.protobuf.ByteString value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+          correlationId_ = value;
+          onChanged();
+          return this;
+        }
+
+        private java.lang.Object tty_ = "";
+        /**
+         * <code>required string tty = 2;</code>
+         * @return Whether the tty field is set.
+         */
+        public boolean hasTty() {
+          return ((bitField0_ & 0x00000002) != 0);
+        }
+        /**
+         * <code>required string tty = 2;</code>
+         * @return The tty.
+         */
+        public java.lang.String getTty() {
+          java.lang.Object ref = tty_;
+          if (!(ref instanceof java.lang.String)) {
+            com.google.protobuf.ByteString bs =
+                (com.google.protobuf.ByteString) ref;
+            java.lang.String s = bs.toStringUtf8();
+            if (bs.isValidUtf8()) {
+              tty_ = s;
+            }
+            return s;
+          } else {
+            return (java.lang.String) ref;
+          }
+        }
+        /**
+         * <code>required string tty = 2;</code>
+         * @return The bytes for tty.
+         */
+        public com.google.protobuf.ByteString
+            getTtyBytes() {
+          java.lang.Object ref = tty_;
+          if (ref instanceof String) {
+            com.google.protobuf.ByteString b = 
+                com.google.protobuf.ByteString.copyFromUtf8(
+                    (java.lang.String) ref);
+            tty_ = b;
+            return b;
+          } else {
+            return (com.google.protobuf.ByteString) ref;
+          }
+        }
+        /**
+         * <code>required string tty = 2;</code>
+         * @param value The tty to set.
+         * @return This builder for chaining.
+         */
+        public Builder setTty(
+            java.lang.String value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+          tty_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>required string tty = 2;</code>
+         * @return This builder for chaining.
+         */
+        public Builder clearTty() {
+          bitField0_ = (bitField0_ & ~0x00000002);
+          tty_ = getDefaultInstance().getTty();
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>required string tty = 2;</code>
+         * @param value The bytes for tty to set.
+         * @return This builder for chaining.
+         */
+        public Builder setTtyBytes(
+            com.google.protobuf.ByteString value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+          tty_ = value;
+          onChanged();
+          return this;
+        }
+
+        private com.google.protobuf.ByteString data_ = com.google.protobuf.ByteString.EMPTY;
+        /**
+         * <code>required bytes data = 3;</code>
+         * @return Whether the data field is set.
+         */
+        @java.lang.Override
+        public boolean hasData() {
+          return ((bitField0_ & 0x00000004) != 0);
+        }
+        /**
+         * <code>required bytes data = 3;</code>
+         * @return The data.
+         */
+        @java.lang.Override
+        public com.google.protobuf.ByteString getData() {
+          return data_;
+        }
+        /**
+         * <code>required bytes data = 3;</code>
+         * @param value The data to set.
+         * @return This builder for chaining.
+         */
+        public Builder setData(com.google.protobuf.ByteString value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000004;
+          data_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>required bytes data = 3;</code>
+         * @return This builder for chaining.
+         */
+        public Builder clearData() {
+          bitField0_ = (bitField0_ & ~0x00000004);
+          data_ = getDefaultInstance().getData();
+          onChanged();
+          return this;
+        }
+        @java.lang.Override
+        public final Builder setUnknownFields(
+            final com.google.protobuf.UnknownFieldSet unknownFields) {
+          return super.setUnknownFields(unknownFields);
+        }
+
+        @java.lang.Override
+        public final Builder mergeUnknownFields(
+            final com.google.protobuf.UnknownFieldSet unknownFields) {
+          return super.mergeUnknownFields(unknownFields);
+        }
+
+
+        // @@protoc_insertion_point(builder_scope:diozero.Serial.Write)
+      }
+
+      // @@protoc_insertion_point(class_scope:diozero.Serial.Write)
+      private static final com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Write DEFAULT_INSTANCE;
+      static {
+        DEFAULT_INSTANCE = new com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Write();
+      }
+
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Write getDefaultInstance() {
+        return DEFAULT_INSTANCE;
+      }
+
+      @java.lang.Deprecated public static final com.google.protobuf.Parser<Write>
+          PARSER = new com.google.protobuf.AbstractParser<Write>() {
+        @java.lang.Override
+        public Write parsePartialFrom(
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return new Write(input, extensionRegistry);
+        }
+      };
+
+      public static com.google.protobuf.Parser<Write> parser() {
+        return PARSER;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Parser<Write> getParserForType() {
+        return PARSER;
+      }
+
+      @java.lang.Override
+      public com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Write getDefaultInstanceForType() {
+        return DEFAULT_INSTANCE;
+      }
+
+    }
+
+    public interface BytesAvailableOrBuilder extends
+        // @@protoc_insertion_point(interface_extends:diozero.Serial.BytesAvailable)
+        com.google.protobuf.MessageOrBuilder {
+
+      /**
+       * <code>required string correlationId = 1;</code>
+       * @return Whether the correlationId field is set.
+       */
+      boolean hasCorrelationId();
+      /**
+       * <code>required string correlationId = 1;</code>
+       * @return The correlationId.
+       */
+      java.lang.String getCorrelationId();
+      /**
+       * <code>required string correlationId = 1;</code>
+       * @return The bytes for correlationId.
+       */
+      com.google.protobuf.ByteString
+          getCorrelationIdBytes();
+
+      /**
+       * <code>required string tty = 2;</code>
+       * @return Whether the tty field is set.
+       */
+      boolean hasTty();
+      /**
+       * <code>required string tty = 2;</code>
+       * @return The tty.
+       */
+      java.lang.String getTty();
+      /**
+       * <code>required string tty = 2;</code>
+       * @return The bytes for tty.
+       */
+      com.google.protobuf.ByteString
+          getTtyBytes();
+    }
+    /**
+     * Protobuf type {@code diozero.Serial.BytesAvailable}
+     */
+    public static final class BytesAvailable extends
+        com.google.protobuf.GeneratedMessageV3 implements
+        // @@protoc_insertion_point(message_implements:diozero.Serial.BytesAvailable)
+        BytesAvailableOrBuilder {
+    private static final long serialVersionUID = 0L;
+      // Use BytesAvailable.newBuilder() to construct.
+      private BytesAvailable(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+        super(builder);
+      }
+      private BytesAvailable() {
+        correlationId_ = "";
+        tty_ = "";
+      }
+
+      @java.lang.Override
+      @SuppressWarnings({"unused"})
+      protected java.lang.Object newInstance(
+          UnusedPrivateParameter unused) {
+        return new BytesAvailable();
+      }
+
+      @java.lang.Override
+      public final com.google.protobuf.UnknownFieldSet
+      getUnknownFields() {
+        return this.unknownFields;
+      }
+      private BytesAvailable(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        this();
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
+        int mutable_bitField0_ = 0;
+        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+            com.google.protobuf.UnknownFieldSet.newBuilder();
+        try {
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                com.google.protobuf.ByteString bs = input.readBytes();
+                bitField0_ |= 0x00000001;
+                correlationId_ = bs;
+                break;
+              }
+              case 18: {
+                com.google.protobuf.ByteString bs = input.readBytes();
+                bitField0_ |= 0x00000002;
+                tty_ = bs;
+                break;
+              }
+              default: {
+                if (!parseUnknownField(
+                    input, unknownFields, extensionRegistry, tag)) {
+                  done = true;
+                }
+                break;
+              }
+            }
+          }
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(this);
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(
+              e).setUnfinishedMessage(this);
+        } finally {
+          this.unknownFields = unknownFields.build();
+          makeExtensionsImmutable();
+        }
+      }
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return com.diozero.remote.message.protobuf.DiozeroProtos.internal_static_diozero_Serial_BytesAvailable_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return com.diozero.remote.message.protobuf.DiozeroProtos.internal_static_diozero_Serial_BytesAvailable_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                com.diozero.remote.message.protobuf.DiozeroProtos.Serial.BytesAvailable.class, com.diozero.remote.message.protobuf.DiozeroProtos.Serial.BytesAvailable.Builder.class);
+      }
+
+      private int bitField0_;
+      public static final int CORRELATIONID_FIELD_NUMBER = 1;
+      private volatile java.lang.Object correlationId_;
+      /**
+       * <code>required string correlationId = 1;</code>
+       * @return Whether the correlationId field is set.
+       */
+      @java.lang.Override
+      public boolean hasCorrelationId() {
+        return ((bitField0_ & 0x00000001) != 0);
+      }
+      /**
+       * <code>required string correlationId = 1;</code>
+       * @return The correlationId.
+       */
+      @java.lang.Override
+      public java.lang.String getCorrelationId() {
+        java.lang.Object ref = correlationId_;
+        if (ref instanceof java.lang.String) {
+          return (java.lang.String) ref;
+        } else {
+          com.google.protobuf.ByteString bs = 
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            correlationId_ = s;
+          }
+          return s;
+        }
+      }
+      /**
+       * <code>required string correlationId = 1;</code>
+       * @return The bytes for correlationId.
+       */
+      @java.lang.Override
+      public com.google.protobuf.ByteString
+          getCorrelationIdBytes() {
+        java.lang.Object ref = correlationId_;
+        if (ref instanceof java.lang.String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          correlationId_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+
+      public static final int TTY_FIELD_NUMBER = 2;
+      private volatile java.lang.Object tty_;
+      /**
+       * <code>required string tty = 2;</code>
+       * @return Whether the tty field is set.
+       */
+      @java.lang.Override
+      public boolean hasTty() {
+        return ((bitField0_ & 0x00000002) != 0);
+      }
+      /**
+       * <code>required string tty = 2;</code>
+       * @return The tty.
+       */
+      @java.lang.Override
+      public java.lang.String getTty() {
+        java.lang.Object ref = tty_;
+        if (ref instanceof java.lang.String) {
+          return (java.lang.String) ref;
+        } else {
+          com.google.protobuf.ByteString bs = 
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            tty_ = s;
+          }
+          return s;
+        }
+      }
+      /**
+       * <code>required string tty = 2;</code>
+       * @return The bytes for tty.
+       */
+      @java.lang.Override
+      public com.google.protobuf.ByteString
+          getTtyBytes() {
+        java.lang.Object ref = tty_;
+        if (ref instanceof java.lang.String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          tty_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+
+      private byte memoizedIsInitialized = -1;
+      @java.lang.Override
+      public final boolean isInitialized() {
+        byte isInitialized = memoizedIsInitialized;
+        if (isInitialized == 1) return true;
+        if (isInitialized == 0) return false;
+
+        if (!hasCorrelationId()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+        if (!hasTty()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+        memoizedIsInitialized = 1;
+        return true;
+      }
+
+      @java.lang.Override
+      public void writeTo(com.google.protobuf.CodedOutputStream output)
+                          throws java.io.IOException {
+        if (((bitField0_ & 0x00000001) != 0)) {
+          com.google.protobuf.GeneratedMessageV3.writeString(output, 1, correlationId_);
+        }
+        if (((bitField0_ & 0x00000002) != 0)) {
+          com.google.protobuf.GeneratedMessageV3.writeString(output, 2, tty_);
+        }
+        unknownFields.writeTo(output);
+      }
+
+      @java.lang.Override
+      public int getSerializedSize() {
+        int size = memoizedSize;
+        if (size != -1) return size;
+
+        size = 0;
+        if (((bitField0_ & 0x00000001) != 0)) {
+          size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, correlationId_);
+        }
+        if (((bitField0_ & 0x00000002) != 0)) {
+          size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, tty_);
+        }
+        size += unknownFields.getSerializedSize();
+        memoizedSize = size;
+        return size;
+      }
+
+      @java.lang.Override
+      public boolean equals(final java.lang.Object obj) {
+        if (obj == this) {
+         return true;
+        }
+        if (!(obj instanceof com.diozero.remote.message.protobuf.DiozeroProtos.Serial.BytesAvailable)) {
+          return super.equals(obj);
+        }
+        com.diozero.remote.message.protobuf.DiozeroProtos.Serial.BytesAvailable other = (com.diozero.remote.message.protobuf.DiozeroProtos.Serial.BytesAvailable) obj;
+
+        if (hasCorrelationId() != other.hasCorrelationId()) return false;
+        if (hasCorrelationId()) {
+          if (!getCorrelationId()
+              .equals(other.getCorrelationId())) return false;
+        }
+        if (hasTty() != other.hasTty()) return false;
+        if (hasTty()) {
+          if (!getTty()
+              .equals(other.getTty())) return false;
+        }
+        if (!unknownFields.equals(other.unknownFields)) return false;
+        return true;
+      }
+
+      @java.lang.Override
+      public int hashCode() {
+        if (memoizedHashCode != 0) {
+          return memoizedHashCode;
+        }
+        int hash = 41;
+        hash = (19 * hash) + getDescriptor().hashCode();
+        if (hasCorrelationId()) {
+          hash = (37 * hash) + CORRELATIONID_FIELD_NUMBER;
+          hash = (53 * hash) + getCorrelationId().hashCode();
+        }
+        if (hasTty()) {
+          hash = (37 * hash) + TTY_FIELD_NUMBER;
+          hash = (53 * hash) + getTty().hashCode();
+        }
+        hash = (29 * hash) + unknownFields.hashCode();
+        memoizedHashCode = hash;
+        return hash;
+      }
+
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.BytesAvailable parseFrom(
+          java.nio.ByteBuffer data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.BytesAvailable parseFrom(
+          java.nio.ByteBuffer data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data, extensionRegistry);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.BytesAvailable parseFrom(
+          com.google.protobuf.ByteString data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.BytesAvailable parseFrom(
+          com.google.protobuf.ByteString data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data, extensionRegistry);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.BytesAvailable parseFrom(byte[] data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.BytesAvailable parseFrom(
+          byte[] data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data, extensionRegistry);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.BytesAvailable parseFrom(java.io.InputStream input)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseWithIOException(PARSER, input);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.BytesAvailable parseFrom(
+          java.io.InputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseWithIOException(PARSER, input, extensionRegistry);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.BytesAvailable parseDelimitedFrom(java.io.InputStream input)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseDelimitedWithIOException(PARSER, input);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.BytesAvailable parseDelimitedFrom(
+          java.io.InputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.BytesAvailable parseFrom(
+          com.google.protobuf.CodedInputStream input)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseWithIOException(PARSER, input);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.BytesAvailable parseFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseWithIOException(PARSER, input, extensionRegistry);
+      }
+
+      @java.lang.Override
+      public Builder newBuilderForType() { return newBuilder(); }
+      public static Builder newBuilder() {
+        return DEFAULT_INSTANCE.toBuilder();
+      }
+      public static Builder newBuilder(com.diozero.remote.message.protobuf.DiozeroProtos.Serial.BytesAvailable prototype) {
+        return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+      }
+      @java.lang.Override
+      public Builder toBuilder() {
+        return this == DEFAULT_INSTANCE
+            ? new Builder() : new Builder().mergeFrom(this);
+      }
+
+      @java.lang.Override
+      protected Builder newBuilderForType(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        Builder builder = new Builder(parent);
+        return builder;
+      }
+      /**
+       * Protobuf type {@code diozero.Serial.BytesAvailable}
+       */
+      public static final class Builder extends
+          com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+          // @@protoc_insertion_point(builder_implements:diozero.Serial.BytesAvailable)
+          com.diozero.remote.message.protobuf.DiozeroProtos.Serial.BytesAvailableOrBuilder {
+        public static final com.google.protobuf.Descriptors.Descriptor
+            getDescriptor() {
+          return com.diozero.remote.message.protobuf.DiozeroProtos.internal_static_diozero_Serial_BytesAvailable_descriptor;
+        }
+
+        @java.lang.Override
+        protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+            internalGetFieldAccessorTable() {
+          return com.diozero.remote.message.protobuf.DiozeroProtos.internal_static_diozero_Serial_BytesAvailable_fieldAccessorTable
+              .ensureFieldAccessorsInitialized(
+                  com.diozero.remote.message.protobuf.DiozeroProtos.Serial.BytesAvailable.class, com.diozero.remote.message.protobuf.DiozeroProtos.Serial.BytesAvailable.Builder.class);
+        }
+
+        // Construct using com.diozero.remote.message.protobuf.DiozeroProtos.Serial.BytesAvailable.newBuilder()
+        private Builder() {
+          maybeForceBuilderInitialization();
+        }
+
+        private Builder(
+            com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+          super(parent);
+          maybeForceBuilderInitialization();
+        }
+        private void maybeForceBuilderInitialization() {
+          if (com.google.protobuf.GeneratedMessageV3
+                  .alwaysUseFieldBuilders) {
+          }
+        }
+        @java.lang.Override
+        public Builder clear() {
+          super.clear();
+          correlationId_ = "";
+          bitField0_ = (bitField0_ & ~0x00000001);
+          tty_ = "";
+          bitField0_ = (bitField0_ & ~0x00000002);
+          return this;
+        }
+
+        @java.lang.Override
+        public com.google.protobuf.Descriptors.Descriptor
+            getDescriptorForType() {
+          return com.diozero.remote.message.protobuf.DiozeroProtos.internal_static_diozero_Serial_BytesAvailable_descriptor;
+        }
+
+        @java.lang.Override
+        public com.diozero.remote.message.protobuf.DiozeroProtos.Serial.BytesAvailable getDefaultInstanceForType() {
+          return com.diozero.remote.message.protobuf.DiozeroProtos.Serial.BytesAvailable.getDefaultInstance();
+        }
+
+        @java.lang.Override
+        public com.diozero.remote.message.protobuf.DiozeroProtos.Serial.BytesAvailable build() {
+          com.diozero.remote.message.protobuf.DiozeroProtos.Serial.BytesAvailable result = buildPartial();
+          if (!result.isInitialized()) {
+            throw newUninitializedMessageException(result);
+          }
+          return result;
+        }
+
+        @java.lang.Override
+        public com.diozero.remote.message.protobuf.DiozeroProtos.Serial.BytesAvailable buildPartial() {
+          com.diozero.remote.message.protobuf.DiozeroProtos.Serial.BytesAvailable result = new com.diozero.remote.message.protobuf.DiozeroProtos.Serial.BytesAvailable(this);
+          int from_bitField0_ = bitField0_;
+          int to_bitField0_ = 0;
+          if (((from_bitField0_ & 0x00000001) != 0)) {
+            to_bitField0_ |= 0x00000001;
+          }
+          result.correlationId_ = correlationId_;
+          if (((from_bitField0_ & 0x00000002) != 0)) {
+            to_bitField0_ |= 0x00000002;
+          }
+          result.tty_ = tty_;
+          result.bitField0_ = to_bitField0_;
+          onBuilt();
+          return result;
+        }
+
+        @java.lang.Override
+        public Builder clone() {
+          return super.clone();
+        }
+        @java.lang.Override
+        public Builder setField(
+            com.google.protobuf.Descriptors.FieldDescriptor field,
+            java.lang.Object value) {
+          return super.setField(field, value);
+        }
+        @java.lang.Override
+        public Builder clearField(
+            com.google.protobuf.Descriptors.FieldDescriptor field) {
+          return super.clearField(field);
+        }
+        @java.lang.Override
+        public Builder clearOneof(
+            com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+          return super.clearOneof(oneof);
+        }
+        @java.lang.Override
+        public Builder setRepeatedField(
+            com.google.protobuf.Descriptors.FieldDescriptor field,
+            int index, java.lang.Object value) {
+          return super.setRepeatedField(field, index, value);
+        }
+        @java.lang.Override
+        public Builder addRepeatedField(
+            com.google.protobuf.Descriptors.FieldDescriptor field,
+            java.lang.Object value) {
+          return super.addRepeatedField(field, value);
+        }
+        @java.lang.Override
+        public Builder mergeFrom(com.google.protobuf.Message other) {
+          if (other instanceof com.diozero.remote.message.protobuf.DiozeroProtos.Serial.BytesAvailable) {
+            return mergeFrom((com.diozero.remote.message.protobuf.DiozeroProtos.Serial.BytesAvailable)other);
+          } else {
+            super.mergeFrom(other);
+            return this;
+          }
+        }
+
+        public Builder mergeFrom(com.diozero.remote.message.protobuf.DiozeroProtos.Serial.BytesAvailable other) {
+          if (other == com.diozero.remote.message.protobuf.DiozeroProtos.Serial.BytesAvailable.getDefaultInstance()) return this;
+          if (other.hasCorrelationId()) {
+            bitField0_ |= 0x00000001;
+            correlationId_ = other.correlationId_;
+            onChanged();
+          }
+          if (other.hasTty()) {
+            bitField0_ |= 0x00000002;
+            tty_ = other.tty_;
+            onChanged();
+          }
+          this.mergeUnknownFields(other.unknownFields);
+          onChanged();
+          return this;
+        }
+
+        @java.lang.Override
+        public final boolean isInitialized() {
+          if (!hasCorrelationId()) {
+            return false;
+          }
+          if (!hasTty()) {
+            return false;
+          }
+          return true;
+        }
+
+        @java.lang.Override
+        public Builder mergeFrom(
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
+          com.diozero.remote.message.protobuf.DiozeroProtos.Serial.BytesAvailable parsedMessage = null;
+          try {
+            parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+            parsedMessage = (com.diozero.remote.message.protobuf.DiozeroProtos.Serial.BytesAvailable) e.getUnfinishedMessage();
+            throw e.unwrapIOException();
+          } finally {
+            if (parsedMessage != null) {
+              mergeFrom(parsedMessage);
+            }
+          }
+          return this;
+        }
+        private int bitField0_;
+
+        private java.lang.Object correlationId_ = "";
+        /**
+         * <code>required string correlationId = 1;</code>
+         * @return Whether the correlationId field is set.
+         */
+        public boolean hasCorrelationId() {
+          return ((bitField0_ & 0x00000001) != 0);
+        }
+        /**
+         * <code>required string correlationId = 1;</code>
+         * @return The correlationId.
+         */
+        public java.lang.String getCorrelationId() {
+          java.lang.Object ref = correlationId_;
+          if (!(ref instanceof java.lang.String)) {
+            com.google.protobuf.ByteString bs =
+                (com.google.protobuf.ByteString) ref;
+            java.lang.String s = bs.toStringUtf8();
+            if (bs.isValidUtf8()) {
+              correlationId_ = s;
+            }
+            return s;
+          } else {
+            return (java.lang.String) ref;
+          }
+        }
+        /**
+         * <code>required string correlationId = 1;</code>
+         * @return The bytes for correlationId.
+         */
+        public com.google.protobuf.ByteString
+            getCorrelationIdBytes() {
+          java.lang.Object ref = correlationId_;
+          if (ref instanceof String) {
+            com.google.protobuf.ByteString b = 
+                com.google.protobuf.ByteString.copyFromUtf8(
+                    (java.lang.String) ref);
+            correlationId_ = b;
+            return b;
+          } else {
+            return (com.google.protobuf.ByteString) ref;
+          }
+        }
+        /**
+         * <code>required string correlationId = 1;</code>
+         * @param value The correlationId to set.
+         * @return This builder for chaining.
+         */
+        public Builder setCorrelationId(
+            java.lang.String value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+          correlationId_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>required string correlationId = 1;</code>
+         * @return This builder for chaining.
+         */
+        public Builder clearCorrelationId() {
+          bitField0_ = (bitField0_ & ~0x00000001);
+          correlationId_ = getDefaultInstance().getCorrelationId();
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>required string correlationId = 1;</code>
+         * @param value The bytes for correlationId to set.
+         * @return This builder for chaining.
+         */
+        public Builder setCorrelationIdBytes(
+            com.google.protobuf.ByteString value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+          correlationId_ = value;
+          onChanged();
+          return this;
+        }
+
+        private java.lang.Object tty_ = "";
+        /**
+         * <code>required string tty = 2;</code>
+         * @return Whether the tty field is set.
+         */
+        public boolean hasTty() {
+          return ((bitField0_ & 0x00000002) != 0);
+        }
+        /**
+         * <code>required string tty = 2;</code>
+         * @return The tty.
+         */
+        public java.lang.String getTty() {
+          java.lang.Object ref = tty_;
+          if (!(ref instanceof java.lang.String)) {
+            com.google.protobuf.ByteString bs =
+                (com.google.protobuf.ByteString) ref;
+            java.lang.String s = bs.toStringUtf8();
+            if (bs.isValidUtf8()) {
+              tty_ = s;
+            }
+            return s;
+          } else {
+            return (java.lang.String) ref;
+          }
+        }
+        /**
+         * <code>required string tty = 2;</code>
+         * @return The bytes for tty.
+         */
+        public com.google.protobuf.ByteString
+            getTtyBytes() {
+          java.lang.Object ref = tty_;
+          if (ref instanceof String) {
+            com.google.protobuf.ByteString b = 
+                com.google.protobuf.ByteString.copyFromUtf8(
+                    (java.lang.String) ref);
+            tty_ = b;
+            return b;
+          } else {
+            return (com.google.protobuf.ByteString) ref;
+          }
+        }
+        /**
+         * <code>required string tty = 2;</code>
+         * @param value The tty to set.
+         * @return This builder for chaining.
+         */
+        public Builder setTty(
+            java.lang.String value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+          tty_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>required string tty = 2;</code>
+         * @return This builder for chaining.
+         */
+        public Builder clearTty() {
+          bitField0_ = (bitField0_ & ~0x00000002);
+          tty_ = getDefaultInstance().getTty();
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>required string tty = 2;</code>
+         * @param value The bytes for tty to set.
+         * @return This builder for chaining.
+         */
+        public Builder setTtyBytes(
+            com.google.protobuf.ByteString value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+          tty_ = value;
+          onChanged();
+          return this;
+        }
+        @java.lang.Override
+        public final Builder setUnknownFields(
+            final com.google.protobuf.UnknownFieldSet unknownFields) {
+          return super.setUnknownFields(unknownFields);
+        }
+
+        @java.lang.Override
+        public final Builder mergeUnknownFields(
+            final com.google.protobuf.UnknownFieldSet unknownFields) {
+          return super.mergeUnknownFields(unknownFields);
+        }
+
+
+        // @@protoc_insertion_point(builder_scope:diozero.Serial.BytesAvailable)
+      }
+
+      // @@protoc_insertion_point(class_scope:diozero.Serial.BytesAvailable)
+      private static final com.diozero.remote.message.protobuf.DiozeroProtos.Serial.BytesAvailable DEFAULT_INSTANCE;
+      static {
+        DEFAULT_INSTANCE = new com.diozero.remote.message.protobuf.DiozeroProtos.Serial.BytesAvailable();
+      }
+
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.BytesAvailable getDefaultInstance() {
+        return DEFAULT_INSTANCE;
+      }
+
+      @java.lang.Deprecated public static final com.google.protobuf.Parser<BytesAvailable>
+          PARSER = new com.google.protobuf.AbstractParser<BytesAvailable>() {
+        @java.lang.Override
+        public BytesAvailable parsePartialFrom(
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return new BytesAvailable(input, extensionRegistry);
+        }
+      };
+
+      public static com.google.protobuf.Parser<BytesAvailable> parser() {
+        return PARSER;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Parser<BytesAvailable> getParserForType() {
+        return PARSER;
+      }
+
+      @java.lang.Override
+      public com.diozero.remote.message.protobuf.DiozeroProtos.Serial.BytesAvailable getDefaultInstanceForType() {
+        return DEFAULT_INSTANCE;
+      }
+
+    }
+
+    public interface CloseOrBuilder extends
+        // @@protoc_insertion_point(interface_extends:diozero.Serial.Close)
+        com.google.protobuf.MessageOrBuilder {
+
+      /**
+       * <code>required string correlationId = 1;</code>
+       * @return Whether the correlationId field is set.
+       */
+      boolean hasCorrelationId();
+      /**
+       * <code>required string correlationId = 1;</code>
+       * @return The correlationId.
+       */
+      java.lang.String getCorrelationId();
+      /**
+       * <code>required string correlationId = 1;</code>
+       * @return The bytes for correlationId.
+       */
+      com.google.protobuf.ByteString
+          getCorrelationIdBytes();
+
+      /**
+       * <code>required string tty = 2;</code>
+       * @return Whether the tty field is set.
+       */
+      boolean hasTty();
+      /**
+       * <code>required string tty = 2;</code>
+       * @return The tty.
+       */
+      java.lang.String getTty();
+      /**
+       * <code>required string tty = 2;</code>
+       * @return The bytes for tty.
+       */
+      com.google.protobuf.ByteString
+          getTtyBytes();
+    }
+    /**
+     * Protobuf type {@code diozero.Serial.Close}
+     */
+    public static final class Close extends
+        com.google.protobuf.GeneratedMessageV3 implements
+        // @@protoc_insertion_point(message_implements:diozero.Serial.Close)
+        CloseOrBuilder {
+    private static final long serialVersionUID = 0L;
+      // Use Close.newBuilder() to construct.
+      private Close(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+        super(builder);
+      }
+      private Close() {
+        correlationId_ = "";
+        tty_ = "";
+      }
+
+      @java.lang.Override
+      @SuppressWarnings({"unused"})
+      protected java.lang.Object newInstance(
+          UnusedPrivateParameter unused) {
+        return new Close();
+      }
+
+      @java.lang.Override
+      public final com.google.protobuf.UnknownFieldSet
+      getUnknownFields() {
+        return this.unknownFields;
+      }
+      private Close(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        this();
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
+        int mutable_bitField0_ = 0;
+        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+            com.google.protobuf.UnknownFieldSet.newBuilder();
+        try {
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                com.google.protobuf.ByteString bs = input.readBytes();
+                bitField0_ |= 0x00000001;
+                correlationId_ = bs;
+                break;
+              }
+              case 18: {
+                com.google.protobuf.ByteString bs = input.readBytes();
+                bitField0_ |= 0x00000002;
+                tty_ = bs;
+                break;
+              }
+              default: {
+                if (!parseUnknownField(
+                    input, unknownFields, extensionRegistry, tag)) {
+                  done = true;
+                }
+                break;
+              }
+            }
+          }
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(this);
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(
+              e).setUnfinishedMessage(this);
+        } finally {
+          this.unknownFields = unknownFields.build();
+          makeExtensionsImmutable();
+        }
+      }
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return com.diozero.remote.message.protobuf.DiozeroProtos.internal_static_diozero_Serial_Close_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return com.diozero.remote.message.protobuf.DiozeroProtos.internal_static_diozero_Serial_Close_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Close.class, com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Close.Builder.class);
+      }
+
+      private int bitField0_;
+      public static final int CORRELATIONID_FIELD_NUMBER = 1;
+      private volatile java.lang.Object correlationId_;
+      /**
+       * <code>required string correlationId = 1;</code>
+       * @return Whether the correlationId field is set.
+       */
+      @java.lang.Override
+      public boolean hasCorrelationId() {
+        return ((bitField0_ & 0x00000001) != 0);
+      }
+      /**
+       * <code>required string correlationId = 1;</code>
+       * @return The correlationId.
+       */
+      @java.lang.Override
+      public java.lang.String getCorrelationId() {
+        java.lang.Object ref = correlationId_;
+        if (ref instanceof java.lang.String) {
+          return (java.lang.String) ref;
+        } else {
+          com.google.protobuf.ByteString bs = 
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            correlationId_ = s;
+          }
+          return s;
+        }
+      }
+      /**
+       * <code>required string correlationId = 1;</code>
+       * @return The bytes for correlationId.
+       */
+      @java.lang.Override
+      public com.google.protobuf.ByteString
+          getCorrelationIdBytes() {
+        java.lang.Object ref = correlationId_;
+        if (ref instanceof java.lang.String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          correlationId_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+
+      public static final int TTY_FIELD_NUMBER = 2;
+      private volatile java.lang.Object tty_;
+      /**
+       * <code>required string tty = 2;</code>
+       * @return Whether the tty field is set.
+       */
+      @java.lang.Override
+      public boolean hasTty() {
+        return ((bitField0_ & 0x00000002) != 0);
+      }
+      /**
+       * <code>required string tty = 2;</code>
+       * @return The tty.
+       */
+      @java.lang.Override
+      public java.lang.String getTty() {
+        java.lang.Object ref = tty_;
+        if (ref instanceof java.lang.String) {
+          return (java.lang.String) ref;
+        } else {
+          com.google.protobuf.ByteString bs = 
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            tty_ = s;
+          }
+          return s;
+        }
+      }
+      /**
+       * <code>required string tty = 2;</code>
+       * @return The bytes for tty.
+       */
+      @java.lang.Override
+      public com.google.protobuf.ByteString
+          getTtyBytes() {
+        java.lang.Object ref = tty_;
+        if (ref instanceof java.lang.String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          tty_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+
+      private byte memoizedIsInitialized = -1;
+      @java.lang.Override
+      public final boolean isInitialized() {
+        byte isInitialized = memoizedIsInitialized;
+        if (isInitialized == 1) return true;
+        if (isInitialized == 0) return false;
+
+        if (!hasCorrelationId()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+        if (!hasTty()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+        memoizedIsInitialized = 1;
+        return true;
+      }
+
+      @java.lang.Override
+      public void writeTo(com.google.protobuf.CodedOutputStream output)
+                          throws java.io.IOException {
+        if (((bitField0_ & 0x00000001) != 0)) {
+          com.google.protobuf.GeneratedMessageV3.writeString(output, 1, correlationId_);
+        }
+        if (((bitField0_ & 0x00000002) != 0)) {
+          com.google.protobuf.GeneratedMessageV3.writeString(output, 2, tty_);
+        }
+        unknownFields.writeTo(output);
+      }
+
+      @java.lang.Override
+      public int getSerializedSize() {
+        int size = memoizedSize;
+        if (size != -1) return size;
+
+        size = 0;
+        if (((bitField0_ & 0x00000001) != 0)) {
+          size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, correlationId_);
+        }
+        if (((bitField0_ & 0x00000002) != 0)) {
+          size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, tty_);
+        }
+        size += unknownFields.getSerializedSize();
+        memoizedSize = size;
+        return size;
+      }
+
+      @java.lang.Override
+      public boolean equals(final java.lang.Object obj) {
+        if (obj == this) {
+         return true;
+        }
+        if (!(obj instanceof com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Close)) {
+          return super.equals(obj);
+        }
+        com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Close other = (com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Close) obj;
+
+        if (hasCorrelationId() != other.hasCorrelationId()) return false;
+        if (hasCorrelationId()) {
+          if (!getCorrelationId()
+              .equals(other.getCorrelationId())) return false;
+        }
+        if (hasTty() != other.hasTty()) return false;
+        if (hasTty()) {
+          if (!getTty()
+              .equals(other.getTty())) return false;
+        }
+        if (!unknownFields.equals(other.unknownFields)) return false;
+        return true;
+      }
+
+      @java.lang.Override
+      public int hashCode() {
+        if (memoizedHashCode != 0) {
+          return memoizedHashCode;
+        }
+        int hash = 41;
+        hash = (19 * hash) + getDescriptor().hashCode();
+        if (hasCorrelationId()) {
+          hash = (37 * hash) + CORRELATIONID_FIELD_NUMBER;
+          hash = (53 * hash) + getCorrelationId().hashCode();
+        }
+        if (hasTty()) {
+          hash = (37 * hash) + TTY_FIELD_NUMBER;
+          hash = (53 * hash) + getTty().hashCode();
+        }
+        hash = (29 * hash) + unknownFields.hashCode();
+        memoizedHashCode = hash;
+        return hash;
+      }
+
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Close parseFrom(
+          java.nio.ByteBuffer data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Close parseFrom(
+          java.nio.ByteBuffer data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data, extensionRegistry);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Close parseFrom(
+          com.google.protobuf.ByteString data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Close parseFrom(
+          com.google.protobuf.ByteString data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data, extensionRegistry);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Close parseFrom(byte[] data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Close parseFrom(
+          byte[] data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data, extensionRegistry);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Close parseFrom(java.io.InputStream input)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseWithIOException(PARSER, input);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Close parseFrom(
+          java.io.InputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseWithIOException(PARSER, input, extensionRegistry);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Close parseDelimitedFrom(java.io.InputStream input)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseDelimitedWithIOException(PARSER, input);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Close parseDelimitedFrom(
+          java.io.InputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Close parseFrom(
+          com.google.protobuf.CodedInputStream input)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseWithIOException(PARSER, input);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Close parseFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseWithIOException(PARSER, input, extensionRegistry);
+      }
+
+      @java.lang.Override
+      public Builder newBuilderForType() { return newBuilder(); }
+      public static Builder newBuilder() {
+        return DEFAULT_INSTANCE.toBuilder();
+      }
+      public static Builder newBuilder(com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Close prototype) {
+        return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+      }
+      @java.lang.Override
+      public Builder toBuilder() {
+        return this == DEFAULT_INSTANCE
+            ? new Builder() : new Builder().mergeFrom(this);
+      }
+
+      @java.lang.Override
+      protected Builder newBuilderForType(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        Builder builder = new Builder(parent);
+        return builder;
+      }
+      /**
+       * Protobuf type {@code diozero.Serial.Close}
+       */
+      public static final class Builder extends
+          com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+          // @@protoc_insertion_point(builder_implements:diozero.Serial.Close)
+          com.diozero.remote.message.protobuf.DiozeroProtos.Serial.CloseOrBuilder {
+        public static final com.google.protobuf.Descriptors.Descriptor
+            getDescriptor() {
+          return com.diozero.remote.message.protobuf.DiozeroProtos.internal_static_diozero_Serial_Close_descriptor;
+        }
+
+        @java.lang.Override
+        protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+            internalGetFieldAccessorTable() {
+          return com.diozero.remote.message.protobuf.DiozeroProtos.internal_static_diozero_Serial_Close_fieldAccessorTable
+              .ensureFieldAccessorsInitialized(
+                  com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Close.class, com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Close.Builder.class);
+        }
+
+        // Construct using com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Close.newBuilder()
+        private Builder() {
+          maybeForceBuilderInitialization();
+        }
+
+        private Builder(
+            com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+          super(parent);
+          maybeForceBuilderInitialization();
+        }
+        private void maybeForceBuilderInitialization() {
+          if (com.google.protobuf.GeneratedMessageV3
+                  .alwaysUseFieldBuilders) {
+          }
+        }
+        @java.lang.Override
+        public Builder clear() {
+          super.clear();
+          correlationId_ = "";
+          bitField0_ = (bitField0_ & ~0x00000001);
+          tty_ = "";
+          bitField0_ = (bitField0_ & ~0x00000002);
+          return this;
+        }
+
+        @java.lang.Override
+        public com.google.protobuf.Descriptors.Descriptor
+            getDescriptorForType() {
+          return com.diozero.remote.message.protobuf.DiozeroProtos.internal_static_diozero_Serial_Close_descriptor;
+        }
+
+        @java.lang.Override
+        public com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Close getDefaultInstanceForType() {
+          return com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Close.getDefaultInstance();
+        }
+
+        @java.lang.Override
+        public com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Close build() {
+          com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Close result = buildPartial();
+          if (!result.isInitialized()) {
+            throw newUninitializedMessageException(result);
+          }
+          return result;
+        }
+
+        @java.lang.Override
+        public com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Close buildPartial() {
+          com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Close result = new com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Close(this);
+          int from_bitField0_ = bitField0_;
+          int to_bitField0_ = 0;
+          if (((from_bitField0_ & 0x00000001) != 0)) {
+            to_bitField0_ |= 0x00000001;
+          }
+          result.correlationId_ = correlationId_;
+          if (((from_bitField0_ & 0x00000002) != 0)) {
+            to_bitField0_ |= 0x00000002;
+          }
+          result.tty_ = tty_;
+          result.bitField0_ = to_bitField0_;
+          onBuilt();
+          return result;
+        }
+
+        @java.lang.Override
+        public Builder clone() {
+          return super.clone();
+        }
+        @java.lang.Override
+        public Builder setField(
+            com.google.protobuf.Descriptors.FieldDescriptor field,
+            java.lang.Object value) {
+          return super.setField(field, value);
+        }
+        @java.lang.Override
+        public Builder clearField(
+            com.google.protobuf.Descriptors.FieldDescriptor field) {
+          return super.clearField(field);
+        }
+        @java.lang.Override
+        public Builder clearOneof(
+            com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+          return super.clearOneof(oneof);
+        }
+        @java.lang.Override
+        public Builder setRepeatedField(
+            com.google.protobuf.Descriptors.FieldDescriptor field,
+            int index, java.lang.Object value) {
+          return super.setRepeatedField(field, index, value);
+        }
+        @java.lang.Override
+        public Builder addRepeatedField(
+            com.google.protobuf.Descriptors.FieldDescriptor field,
+            java.lang.Object value) {
+          return super.addRepeatedField(field, value);
+        }
+        @java.lang.Override
+        public Builder mergeFrom(com.google.protobuf.Message other) {
+          if (other instanceof com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Close) {
+            return mergeFrom((com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Close)other);
+          } else {
+            super.mergeFrom(other);
+            return this;
+          }
+        }
+
+        public Builder mergeFrom(com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Close other) {
+          if (other == com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Close.getDefaultInstance()) return this;
+          if (other.hasCorrelationId()) {
+            bitField0_ |= 0x00000001;
+            correlationId_ = other.correlationId_;
+            onChanged();
+          }
+          if (other.hasTty()) {
+            bitField0_ |= 0x00000002;
+            tty_ = other.tty_;
+            onChanged();
+          }
+          this.mergeUnknownFields(other.unknownFields);
+          onChanged();
+          return this;
+        }
+
+        @java.lang.Override
+        public final boolean isInitialized() {
+          if (!hasCorrelationId()) {
+            return false;
+          }
+          if (!hasTty()) {
+            return false;
+          }
+          return true;
+        }
+
+        @java.lang.Override
+        public Builder mergeFrom(
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
+          com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Close parsedMessage = null;
+          try {
+            parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+            parsedMessage = (com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Close) e.getUnfinishedMessage();
+            throw e.unwrapIOException();
+          } finally {
+            if (parsedMessage != null) {
+              mergeFrom(parsedMessage);
+            }
+          }
+          return this;
+        }
+        private int bitField0_;
+
+        private java.lang.Object correlationId_ = "";
+        /**
+         * <code>required string correlationId = 1;</code>
+         * @return Whether the correlationId field is set.
+         */
+        public boolean hasCorrelationId() {
+          return ((bitField0_ & 0x00000001) != 0);
+        }
+        /**
+         * <code>required string correlationId = 1;</code>
+         * @return The correlationId.
+         */
+        public java.lang.String getCorrelationId() {
+          java.lang.Object ref = correlationId_;
+          if (!(ref instanceof java.lang.String)) {
+            com.google.protobuf.ByteString bs =
+                (com.google.protobuf.ByteString) ref;
+            java.lang.String s = bs.toStringUtf8();
+            if (bs.isValidUtf8()) {
+              correlationId_ = s;
+            }
+            return s;
+          } else {
+            return (java.lang.String) ref;
+          }
+        }
+        /**
+         * <code>required string correlationId = 1;</code>
+         * @return The bytes for correlationId.
+         */
+        public com.google.protobuf.ByteString
+            getCorrelationIdBytes() {
+          java.lang.Object ref = correlationId_;
+          if (ref instanceof String) {
+            com.google.protobuf.ByteString b = 
+                com.google.protobuf.ByteString.copyFromUtf8(
+                    (java.lang.String) ref);
+            correlationId_ = b;
+            return b;
+          } else {
+            return (com.google.protobuf.ByteString) ref;
+          }
+        }
+        /**
+         * <code>required string correlationId = 1;</code>
+         * @param value The correlationId to set.
+         * @return This builder for chaining.
+         */
+        public Builder setCorrelationId(
+            java.lang.String value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+          correlationId_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>required string correlationId = 1;</code>
+         * @return This builder for chaining.
+         */
+        public Builder clearCorrelationId() {
+          bitField0_ = (bitField0_ & ~0x00000001);
+          correlationId_ = getDefaultInstance().getCorrelationId();
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>required string correlationId = 1;</code>
+         * @param value The bytes for correlationId to set.
+         * @return This builder for chaining.
+         */
+        public Builder setCorrelationIdBytes(
+            com.google.protobuf.ByteString value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+          correlationId_ = value;
+          onChanged();
+          return this;
+        }
+
+        private java.lang.Object tty_ = "";
+        /**
+         * <code>required string tty = 2;</code>
+         * @return Whether the tty field is set.
+         */
+        public boolean hasTty() {
+          return ((bitField0_ & 0x00000002) != 0);
+        }
+        /**
+         * <code>required string tty = 2;</code>
+         * @return The tty.
+         */
+        public java.lang.String getTty() {
+          java.lang.Object ref = tty_;
+          if (!(ref instanceof java.lang.String)) {
+            com.google.protobuf.ByteString bs =
+                (com.google.protobuf.ByteString) ref;
+            java.lang.String s = bs.toStringUtf8();
+            if (bs.isValidUtf8()) {
+              tty_ = s;
+            }
+            return s;
+          } else {
+            return (java.lang.String) ref;
+          }
+        }
+        /**
+         * <code>required string tty = 2;</code>
+         * @return The bytes for tty.
+         */
+        public com.google.protobuf.ByteString
+            getTtyBytes() {
+          java.lang.Object ref = tty_;
+          if (ref instanceof String) {
+            com.google.protobuf.ByteString b = 
+                com.google.protobuf.ByteString.copyFromUtf8(
+                    (java.lang.String) ref);
+            tty_ = b;
+            return b;
+          } else {
+            return (com.google.protobuf.ByteString) ref;
+          }
+        }
+        /**
+         * <code>required string tty = 2;</code>
+         * @param value The tty to set.
+         * @return This builder for chaining.
+         */
+        public Builder setTty(
+            java.lang.String value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+          tty_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>required string tty = 2;</code>
+         * @return This builder for chaining.
+         */
+        public Builder clearTty() {
+          bitField0_ = (bitField0_ & ~0x00000002);
+          tty_ = getDefaultInstance().getTty();
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>required string tty = 2;</code>
+         * @param value The bytes for tty to set.
+         * @return This builder for chaining.
+         */
+        public Builder setTtyBytes(
+            com.google.protobuf.ByteString value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+          tty_ = value;
+          onChanged();
+          return this;
+        }
+        @java.lang.Override
+        public final Builder setUnknownFields(
+            final com.google.protobuf.UnknownFieldSet unknownFields) {
+          return super.setUnknownFields(unknownFields);
+        }
+
+        @java.lang.Override
+        public final Builder mergeUnknownFields(
+            final com.google.protobuf.UnknownFieldSet unknownFields) {
+          return super.mergeUnknownFields(unknownFields);
+        }
+
+
+        // @@protoc_insertion_point(builder_scope:diozero.Serial.Close)
+      }
+
+      // @@protoc_insertion_point(class_scope:diozero.Serial.Close)
+      private static final com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Close DEFAULT_INSTANCE;
+      static {
+        DEFAULT_INSTANCE = new com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Close();
+      }
+
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Close getDefaultInstance() {
+        return DEFAULT_INSTANCE;
+      }
+
+      @java.lang.Deprecated public static final com.google.protobuf.Parser<Close>
+          PARSER = new com.google.protobuf.AbstractParser<Close>() {
+        @java.lang.Override
+        public Close parsePartialFrom(
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return new Close(input, extensionRegistry);
+        }
+      };
+
+      public static com.google.protobuf.Parser<Close> parser() {
+        return PARSER;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Parser<Close> getParserForType() {
+        return PARSER;
+      }
+
+      @java.lang.Override
+      public com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Close getDefaultInstanceForType() {
+        return DEFAULT_INSTANCE;
+      }
+
+    }
+
+    public interface ReadByteResponseOrBuilder extends
+        // @@protoc_insertion_point(interface_extends:diozero.Serial.ReadByteResponse)
+        com.google.protobuf.MessageOrBuilder {
+
+      /**
+       * <code>required string correlationId = 1;</code>
+       * @return Whether the correlationId field is set.
+       */
+      boolean hasCorrelationId();
+      /**
+       * <code>required string correlationId = 1;</code>
+       * @return The correlationId.
+       */
+      java.lang.String getCorrelationId();
+      /**
+       * <code>required string correlationId = 1;</code>
+       * @return The bytes for correlationId.
+       */
+      com.google.protobuf.ByteString
+          getCorrelationIdBytes();
+
+      /**
+       * <code>required .diozero.Status status = 2;</code>
+       * @return Whether the status field is set.
+       */
+      boolean hasStatus();
+      /**
+       * <code>required .diozero.Status status = 2;</code>
+       * @return The status.
+       */
+      com.diozero.remote.message.protobuf.DiozeroProtos.Status getStatus();
+
+      /**
+       * <code>optional string detail = 3;</code>
+       * @return Whether the detail field is set.
+       */
+      boolean hasDetail();
+      /**
+       * <code>optional string detail = 3;</code>
+       * @return The detail.
+       */
+      java.lang.String getDetail();
+      /**
+       * <code>optional string detail = 3;</code>
+       * @return The bytes for detail.
+       */
+      com.google.protobuf.ByteString
+          getDetailBytes();
+
+      /**
+       * <code>optional int32 data = 4;</code>
+       * @return Whether the data field is set.
+       */
+      boolean hasData();
+      /**
+       * <code>optional int32 data = 4;</code>
+       * @return The data.
+       */
+      int getData();
+    }
+    /**
+     * Protobuf type {@code diozero.Serial.ReadByteResponse}
+     */
+    public static final class ReadByteResponse extends
+        com.google.protobuf.GeneratedMessageV3 implements
+        // @@protoc_insertion_point(message_implements:diozero.Serial.ReadByteResponse)
+        ReadByteResponseOrBuilder {
+    private static final long serialVersionUID = 0L;
+      // Use ReadByteResponse.newBuilder() to construct.
+      private ReadByteResponse(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+        super(builder);
+      }
+      private ReadByteResponse() {
+        correlationId_ = "";
+        status_ = 0;
+        detail_ = "";
+      }
+
+      @java.lang.Override
+      @SuppressWarnings({"unused"})
+      protected java.lang.Object newInstance(
+          UnusedPrivateParameter unused) {
+        return new ReadByteResponse();
+      }
+
+      @java.lang.Override
+      public final com.google.protobuf.UnknownFieldSet
+      getUnknownFields() {
+        return this.unknownFields;
+      }
+      private ReadByteResponse(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        this();
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
+        int mutable_bitField0_ = 0;
+        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+            com.google.protobuf.UnknownFieldSet.newBuilder();
+        try {
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                com.google.protobuf.ByteString bs = input.readBytes();
+                bitField0_ |= 0x00000001;
+                correlationId_ = bs;
+                break;
+              }
+              case 16: {
+                int rawValue = input.readEnum();
+                  @SuppressWarnings("deprecation")
+                com.diozero.remote.message.protobuf.DiozeroProtos.Status value = com.diozero.remote.message.protobuf.DiozeroProtos.Status.valueOf(rawValue);
+                if (value == null) {
+                  unknownFields.mergeVarintField(2, rawValue);
+                } else {
+                  bitField0_ |= 0x00000002;
+                  status_ = rawValue;
+                }
+                break;
+              }
+              case 26: {
+                com.google.protobuf.ByteString bs = input.readBytes();
+                bitField0_ |= 0x00000004;
+                detail_ = bs;
+                break;
+              }
+              case 32: {
+                bitField0_ |= 0x00000008;
+                data_ = input.readInt32();
+                break;
+              }
+              default: {
+                if (!parseUnknownField(
+                    input, unknownFields, extensionRegistry, tag)) {
+                  done = true;
+                }
+                break;
+              }
+            }
+          }
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(this);
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(
+              e).setUnfinishedMessage(this);
+        } finally {
+          this.unknownFields = unknownFields.build();
+          makeExtensionsImmutable();
+        }
+      }
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return com.diozero.remote.message.protobuf.DiozeroProtos.internal_static_diozero_Serial_ReadByteResponse_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return com.diozero.remote.message.protobuf.DiozeroProtos.internal_static_diozero_Serial_ReadByteResponse_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadByteResponse.class, com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadByteResponse.Builder.class);
+      }
+
+      private int bitField0_;
+      public static final int CORRELATIONID_FIELD_NUMBER = 1;
+      private volatile java.lang.Object correlationId_;
+      /**
+       * <code>required string correlationId = 1;</code>
+       * @return Whether the correlationId field is set.
+       */
+      @java.lang.Override
+      public boolean hasCorrelationId() {
+        return ((bitField0_ & 0x00000001) != 0);
+      }
+      /**
+       * <code>required string correlationId = 1;</code>
+       * @return The correlationId.
+       */
+      @java.lang.Override
+      public java.lang.String getCorrelationId() {
+        java.lang.Object ref = correlationId_;
+        if (ref instanceof java.lang.String) {
+          return (java.lang.String) ref;
+        } else {
+          com.google.protobuf.ByteString bs = 
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            correlationId_ = s;
+          }
+          return s;
+        }
+      }
+      /**
+       * <code>required string correlationId = 1;</code>
+       * @return The bytes for correlationId.
+       */
+      @java.lang.Override
+      public com.google.protobuf.ByteString
+          getCorrelationIdBytes() {
+        java.lang.Object ref = correlationId_;
+        if (ref instanceof java.lang.String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          correlationId_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+
+      public static final int STATUS_FIELD_NUMBER = 2;
+      private int status_;
+      /**
+       * <code>required .diozero.Status status = 2;</code>
+       * @return Whether the status field is set.
+       */
+      @java.lang.Override public boolean hasStatus() {
+        return ((bitField0_ & 0x00000002) != 0);
+      }
+      /**
+       * <code>required .diozero.Status status = 2;</code>
+       * @return The status.
+       */
+      @java.lang.Override public com.diozero.remote.message.protobuf.DiozeroProtos.Status getStatus() {
+        @SuppressWarnings("deprecation")
+        com.diozero.remote.message.protobuf.DiozeroProtos.Status result = com.diozero.remote.message.protobuf.DiozeroProtos.Status.valueOf(status_);
+        return result == null ? com.diozero.remote.message.protobuf.DiozeroProtos.Status.OK : result;
+      }
+
+      public static final int DETAIL_FIELD_NUMBER = 3;
+      private volatile java.lang.Object detail_;
+      /**
+       * <code>optional string detail = 3;</code>
+       * @return Whether the detail field is set.
+       */
+      @java.lang.Override
+      public boolean hasDetail() {
+        return ((bitField0_ & 0x00000004) != 0);
+      }
+      /**
+       * <code>optional string detail = 3;</code>
+       * @return The detail.
+       */
+      @java.lang.Override
+      public java.lang.String getDetail() {
+        java.lang.Object ref = detail_;
+        if (ref instanceof java.lang.String) {
+          return (java.lang.String) ref;
+        } else {
+          com.google.protobuf.ByteString bs = 
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            detail_ = s;
+          }
+          return s;
+        }
+      }
+      /**
+       * <code>optional string detail = 3;</code>
+       * @return The bytes for detail.
+       */
+      @java.lang.Override
+      public com.google.protobuf.ByteString
+          getDetailBytes() {
+        java.lang.Object ref = detail_;
+        if (ref instanceof java.lang.String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          detail_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+
+      public static final int DATA_FIELD_NUMBER = 4;
+      private int data_;
+      /**
+       * <code>optional int32 data = 4;</code>
+       * @return Whether the data field is set.
+       */
+      @java.lang.Override
+      public boolean hasData() {
+        return ((bitField0_ & 0x00000008) != 0);
+      }
+      /**
+       * <code>optional int32 data = 4;</code>
+       * @return The data.
+       */
+      @java.lang.Override
+      public int getData() {
+        return data_;
+      }
+
+      private byte memoizedIsInitialized = -1;
+      @java.lang.Override
+      public final boolean isInitialized() {
+        byte isInitialized = memoizedIsInitialized;
+        if (isInitialized == 1) return true;
+        if (isInitialized == 0) return false;
+
+        if (!hasCorrelationId()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+        if (!hasStatus()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+        memoizedIsInitialized = 1;
+        return true;
+      }
+
+      @java.lang.Override
+      public void writeTo(com.google.protobuf.CodedOutputStream output)
+                          throws java.io.IOException {
+        if (((bitField0_ & 0x00000001) != 0)) {
+          com.google.protobuf.GeneratedMessageV3.writeString(output, 1, correlationId_);
+        }
+        if (((bitField0_ & 0x00000002) != 0)) {
+          output.writeEnum(2, status_);
+        }
+        if (((bitField0_ & 0x00000004) != 0)) {
+          com.google.protobuf.GeneratedMessageV3.writeString(output, 3, detail_);
+        }
+        if (((bitField0_ & 0x00000008) != 0)) {
+          output.writeInt32(4, data_);
+        }
+        unknownFields.writeTo(output);
+      }
+
+      @java.lang.Override
+      public int getSerializedSize() {
+        int size = memoizedSize;
+        if (size != -1) return size;
+
+        size = 0;
+        if (((bitField0_ & 0x00000001) != 0)) {
+          size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, correlationId_);
+        }
+        if (((bitField0_ & 0x00000002) != 0)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeEnumSize(2, status_);
+        }
+        if (((bitField0_ & 0x00000004) != 0)) {
+          size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, detail_);
+        }
+        if (((bitField0_ & 0x00000008) != 0)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeInt32Size(4, data_);
+        }
+        size += unknownFields.getSerializedSize();
+        memoizedSize = size;
+        return size;
+      }
+
+      @java.lang.Override
+      public boolean equals(final java.lang.Object obj) {
+        if (obj == this) {
+         return true;
+        }
+        if (!(obj instanceof com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadByteResponse)) {
+          return super.equals(obj);
+        }
+        com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadByteResponse other = (com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadByteResponse) obj;
+
+        if (hasCorrelationId() != other.hasCorrelationId()) return false;
+        if (hasCorrelationId()) {
+          if (!getCorrelationId()
+              .equals(other.getCorrelationId())) return false;
+        }
+        if (hasStatus() != other.hasStatus()) return false;
+        if (hasStatus()) {
+          if (status_ != other.status_) return false;
+        }
+        if (hasDetail() != other.hasDetail()) return false;
+        if (hasDetail()) {
+          if (!getDetail()
+              .equals(other.getDetail())) return false;
+        }
+        if (hasData() != other.hasData()) return false;
+        if (hasData()) {
+          if (getData()
+              != other.getData()) return false;
+        }
+        if (!unknownFields.equals(other.unknownFields)) return false;
+        return true;
+      }
+
+      @java.lang.Override
+      public int hashCode() {
+        if (memoizedHashCode != 0) {
+          return memoizedHashCode;
+        }
+        int hash = 41;
+        hash = (19 * hash) + getDescriptor().hashCode();
+        if (hasCorrelationId()) {
+          hash = (37 * hash) + CORRELATIONID_FIELD_NUMBER;
+          hash = (53 * hash) + getCorrelationId().hashCode();
+        }
+        if (hasStatus()) {
+          hash = (37 * hash) + STATUS_FIELD_NUMBER;
+          hash = (53 * hash) + status_;
+        }
+        if (hasDetail()) {
+          hash = (37 * hash) + DETAIL_FIELD_NUMBER;
+          hash = (53 * hash) + getDetail().hashCode();
+        }
+        if (hasData()) {
+          hash = (37 * hash) + DATA_FIELD_NUMBER;
+          hash = (53 * hash) + getData();
+        }
+        hash = (29 * hash) + unknownFields.hashCode();
+        memoizedHashCode = hash;
+        return hash;
+      }
+
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadByteResponse parseFrom(
+          java.nio.ByteBuffer data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadByteResponse parseFrom(
+          java.nio.ByteBuffer data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data, extensionRegistry);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadByteResponse parseFrom(
+          com.google.protobuf.ByteString data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadByteResponse parseFrom(
+          com.google.protobuf.ByteString data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data, extensionRegistry);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadByteResponse parseFrom(byte[] data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadByteResponse parseFrom(
+          byte[] data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data, extensionRegistry);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadByteResponse parseFrom(java.io.InputStream input)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseWithIOException(PARSER, input);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadByteResponse parseFrom(
+          java.io.InputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseWithIOException(PARSER, input, extensionRegistry);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadByteResponse parseDelimitedFrom(java.io.InputStream input)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseDelimitedWithIOException(PARSER, input);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadByteResponse parseDelimitedFrom(
+          java.io.InputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadByteResponse parseFrom(
+          com.google.protobuf.CodedInputStream input)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseWithIOException(PARSER, input);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadByteResponse parseFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseWithIOException(PARSER, input, extensionRegistry);
+      }
+
+      @java.lang.Override
+      public Builder newBuilderForType() { return newBuilder(); }
+      public static Builder newBuilder() {
+        return DEFAULT_INSTANCE.toBuilder();
+      }
+      public static Builder newBuilder(com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadByteResponse prototype) {
+        return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+      }
+      @java.lang.Override
+      public Builder toBuilder() {
+        return this == DEFAULT_INSTANCE
+            ? new Builder() : new Builder().mergeFrom(this);
+      }
+
+      @java.lang.Override
+      protected Builder newBuilderForType(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        Builder builder = new Builder(parent);
+        return builder;
+      }
+      /**
+       * Protobuf type {@code diozero.Serial.ReadByteResponse}
+       */
+      public static final class Builder extends
+          com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+          // @@protoc_insertion_point(builder_implements:diozero.Serial.ReadByteResponse)
+          com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadByteResponseOrBuilder {
+        public static final com.google.protobuf.Descriptors.Descriptor
+            getDescriptor() {
+          return com.diozero.remote.message.protobuf.DiozeroProtos.internal_static_diozero_Serial_ReadByteResponse_descriptor;
+        }
+
+        @java.lang.Override
+        protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+            internalGetFieldAccessorTable() {
+          return com.diozero.remote.message.protobuf.DiozeroProtos.internal_static_diozero_Serial_ReadByteResponse_fieldAccessorTable
+              .ensureFieldAccessorsInitialized(
+                  com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadByteResponse.class, com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadByteResponse.Builder.class);
+        }
+
+        // Construct using com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadByteResponse.newBuilder()
+        private Builder() {
+          maybeForceBuilderInitialization();
+        }
+
+        private Builder(
+            com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+          super(parent);
+          maybeForceBuilderInitialization();
+        }
+        private void maybeForceBuilderInitialization() {
+          if (com.google.protobuf.GeneratedMessageV3
+                  .alwaysUseFieldBuilders) {
+          }
+        }
+        @java.lang.Override
+        public Builder clear() {
+          super.clear();
+          correlationId_ = "";
+          bitField0_ = (bitField0_ & ~0x00000001);
+          status_ = 0;
+          bitField0_ = (bitField0_ & ~0x00000002);
+          detail_ = "";
+          bitField0_ = (bitField0_ & ~0x00000004);
+          data_ = 0;
+          bitField0_ = (bitField0_ & ~0x00000008);
+          return this;
+        }
+
+        @java.lang.Override
+        public com.google.protobuf.Descriptors.Descriptor
+            getDescriptorForType() {
+          return com.diozero.remote.message.protobuf.DiozeroProtos.internal_static_diozero_Serial_ReadByteResponse_descriptor;
+        }
+
+        @java.lang.Override
+        public com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadByteResponse getDefaultInstanceForType() {
+          return com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadByteResponse.getDefaultInstance();
+        }
+
+        @java.lang.Override
+        public com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadByteResponse build() {
+          com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadByteResponse result = buildPartial();
+          if (!result.isInitialized()) {
+            throw newUninitializedMessageException(result);
+          }
+          return result;
+        }
+
+        @java.lang.Override
+        public com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadByteResponse buildPartial() {
+          com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadByteResponse result = new com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadByteResponse(this);
+          int from_bitField0_ = bitField0_;
+          int to_bitField0_ = 0;
+          if (((from_bitField0_ & 0x00000001) != 0)) {
+            to_bitField0_ |= 0x00000001;
+          }
+          result.correlationId_ = correlationId_;
+          if (((from_bitField0_ & 0x00000002) != 0)) {
+            to_bitField0_ |= 0x00000002;
+          }
+          result.status_ = status_;
+          if (((from_bitField0_ & 0x00000004) != 0)) {
+            to_bitField0_ |= 0x00000004;
+          }
+          result.detail_ = detail_;
+          if (((from_bitField0_ & 0x00000008) != 0)) {
+            result.data_ = data_;
+            to_bitField0_ |= 0x00000008;
+          }
+          result.bitField0_ = to_bitField0_;
+          onBuilt();
+          return result;
+        }
+
+        @java.lang.Override
+        public Builder clone() {
+          return super.clone();
+        }
+        @java.lang.Override
+        public Builder setField(
+            com.google.protobuf.Descriptors.FieldDescriptor field,
+            java.lang.Object value) {
+          return super.setField(field, value);
+        }
+        @java.lang.Override
+        public Builder clearField(
+            com.google.protobuf.Descriptors.FieldDescriptor field) {
+          return super.clearField(field);
+        }
+        @java.lang.Override
+        public Builder clearOneof(
+            com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+          return super.clearOneof(oneof);
+        }
+        @java.lang.Override
+        public Builder setRepeatedField(
+            com.google.protobuf.Descriptors.FieldDescriptor field,
+            int index, java.lang.Object value) {
+          return super.setRepeatedField(field, index, value);
+        }
+        @java.lang.Override
+        public Builder addRepeatedField(
+            com.google.protobuf.Descriptors.FieldDescriptor field,
+            java.lang.Object value) {
+          return super.addRepeatedField(field, value);
+        }
+        @java.lang.Override
+        public Builder mergeFrom(com.google.protobuf.Message other) {
+          if (other instanceof com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadByteResponse) {
+            return mergeFrom((com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadByteResponse)other);
+          } else {
+            super.mergeFrom(other);
+            return this;
+          }
+        }
+
+        public Builder mergeFrom(com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadByteResponse other) {
+          if (other == com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadByteResponse.getDefaultInstance()) return this;
+          if (other.hasCorrelationId()) {
+            bitField0_ |= 0x00000001;
+            correlationId_ = other.correlationId_;
+            onChanged();
+          }
+          if (other.hasStatus()) {
+            setStatus(other.getStatus());
+          }
+          if (other.hasDetail()) {
+            bitField0_ |= 0x00000004;
+            detail_ = other.detail_;
+            onChanged();
+          }
+          if (other.hasData()) {
+            setData(other.getData());
+          }
+          this.mergeUnknownFields(other.unknownFields);
+          onChanged();
+          return this;
+        }
+
+        @java.lang.Override
+        public final boolean isInitialized() {
+          if (!hasCorrelationId()) {
+            return false;
+          }
+          if (!hasStatus()) {
+            return false;
+          }
+          return true;
+        }
+
+        @java.lang.Override
+        public Builder mergeFrom(
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
+          com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadByteResponse parsedMessage = null;
+          try {
+            parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+            parsedMessage = (com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadByteResponse) e.getUnfinishedMessage();
+            throw e.unwrapIOException();
+          } finally {
+            if (parsedMessage != null) {
+              mergeFrom(parsedMessage);
+            }
+          }
+          return this;
+        }
+        private int bitField0_;
+
+        private java.lang.Object correlationId_ = "";
+        /**
+         * <code>required string correlationId = 1;</code>
+         * @return Whether the correlationId field is set.
+         */
+        public boolean hasCorrelationId() {
+          return ((bitField0_ & 0x00000001) != 0);
+        }
+        /**
+         * <code>required string correlationId = 1;</code>
+         * @return The correlationId.
+         */
+        public java.lang.String getCorrelationId() {
+          java.lang.Object ref = correlationId_;
+          if (!(ref instanceof java.lang.String)) {
+            com.google.protobuf.ByteString bs =
+                (com.google.protobuf.ByteString) ref;
+            java.lang.String s = bs.toStringUtf8();
+            if (bs.isValidUtf8()) {
+              correlationId_ = s;
+            }
+            return s;
+          } else {
+            return (java.lang.String) ref;
+          }
+        }
+        /**
+         * <code>required string correlationId = 1;</code>
+         * @return The bytes for correlationId.
+         */
+        public com.google.protobuf.ByteString
+            getCorrelationIdBytes() {
+          java.lang.Object ref = correlationId_;
+          if (ref instanceof String) {
+            com.google.protobuf.ByteString b = 
+                com.google.protobuf.ByteString.copyFromUtf8(
+                    (java.lang.String) ref);
+            correlationId_ = b;
+            return b;
+          } else {
+            return (com.google.protobuf.ByteString) ref;
+          }
+        }
+        /**
+         * <code>required string correlationId = 1;</code>
+         * @param value The correlationId to set.
+         * @return This builder for chaining.
+         */
+        public Builder setCorrelationId(
+            java.lang.String value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+          correlationId_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>required string correlationId = 1;</code>
+         * @return This builder for chaining.
+         */
+        public Builder clearCorrelationId() {
+          bitField0_ = (bitField0_ & ~0x00000001);
+          correlationId_ = getDefaultInstance().getCorrelationId();
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>required string correlationId = 1;</code>
+         * @param value The bytes for correlationId to set.
+         * @return This builder for chaining.
+         */
+        public Builder setCorrelationIdBytes(
+            com.google.protobuf.ByteString value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+          correlationId_ = value;
+          onChanged();
+          return this;
+        }
+
+        private int status_ = 0;
+        /**
+         * <code>required .diozero.Status status = 2;</code>
+         * @return Whether the status field is set.
+         */
+        @java.lang.Override public boolean hasStatus() {
+          return ((bitField0_ & 0x00000002) != 0);
+        }
+        /**
+         * <code>required .diozero.Status status = 2;</code>
+         * @return The status.
+         */
+        @java.lang.Override
+        public com.diozero.remote.message.protobuf.DiozeroProtos.Status getStatus() {
+          @SuppressWarnings("deprecation")
+          com.diozero.remote.message.protobuf.DiozeroProtos.Status result = com.diozero.remote.message.protobuf.DiozeroProtos.Status.valueOf(status_);
+          return result == null ? com.diozero.remote.message.protobuf.DiozeroProtos.Status.OK : result;
+        }
+        /**
+         * <code>required .diozero.Status status = 2;</code>
+         * @param value The status to set.
+         * @return This builder for chaining.
+         */
+        public Builder setStatus(com.diozero.remote.message.protobuf.DiozeroProtos.Status value) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          bitField0_ |= 0x00000002;
+          status_ = value.getNumber();
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>required .diozero.Status status = 2;</code>
+         * @return This builder for chaining.
+         */
+        public Builder clearStatus() {
+          bitField0_ = (bitField0_ & ~0x00000002);
+          status_ = 0;
+          onChanged();
+          return this;
+        }
+
+        private java.lang.Object detail_ = "";
+        /**
+         * <code>optional string detail = 3;</code>
+         * @return Whether the detail field is set.
+         */
+        public boolean hasDetail() {
+          return ((bitField0_ & 0x00000004) != 0);
+        }
+        /**
+         * <code>optional string detail = 3;</code>
+         * @return The detail.
+         */
+        public java.lang.String getDetail() {
+          java.lang.Object ref = detail_;
+          if (!(ref instanceof java.lang.String)) {
+            com.google.protobuf.ByteString bs =
+                (com.google.protobuf.ByteString) ref;
+            java.lang.String s = bs.toStringUtf8();
+            if (bs.isValidUtf8()) {
+              detail_ = s;
+            }
+            return s;
+          } else {
+            return (java.lang.String) ref;
+          }
+        }
+        /**
+         * <code>optional string detail = 3;</code>
+         * @return The bytes for detail.
+         */
+        public com.google.protobuf.ByteString
+            getDetailBytes() {
+          java.lang.Object ref = detail_;
+          if (ref instanceof String) {
+            com.google.protobuf.ByteString b = 
+                com.google.protobuf.ByteString.copyFromUtf8(
+                    (java.lang.String) ref);
+            detail_ = b;
+            return b;
+          } else {
+            return (com.google.protobuf.ByteString) ref;
+          }
+        }
+        /**
+         * <code>optional string detail = 3;</code>
+         * @param value The detail to set.
+         * @return This builder for chaining.
+         */
+        public Builder setDetail(
+            java.lang.String value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000004;
+          detail_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>optional string detail = 3;</code>
+         * @return This builder for chaining.
+         */
+        public Builder clearDetail() {
+          bitField0_ = (bitField0_ & ~0x00000004);
+          detail_ = getDefaultInstance().getDetail();
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>optional string detail = 3;</code>
+         * @param value The bytes for detail to set.
+         * @return This builder for chaining.
+         */
+        public Builder setDetailBytes(
+            com.google.protobuf.ByteString value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000004;
+          detail_ = value;
+          onChanged();
+          return this;
+        }
+
+        private int data_ ;
+        /**
+         * <code>optional int32 data = 4;</code>
+         * @return Whether the data field is set.
+         */
+        @java.lang.Override
+        public boolean hasData() {
+          return ((bitField0_ & 0x00000008) != 0);
+        }
+        /**
+         * <code>optional int32 data = 4;</code>
+         * @return The data.
+         */
+        @java.lang.Override
+        public int getData() {
+          return data_;
+        }
+        /**
+         * <code>optional int32 data = 4;</code>
+         * @param value The data to set.
+         * @return This builder for chaining.
+         */
+        public Builder setData(int value) {
+          bitField0_ |= 0x00000008;
+          data_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>optional int32 data = 4;</code>
+         * @return This builder for chaining.
+         */
+        public Builder clearData() {
+          bitField0_ = (bitField0_ & ~0x00000008);
+          data_ = 0;
+          onChanged();
+          return this;
+        }
+        @java.lang.Override
+        public final Builder setUnknownFields(
+            final com.google.protobuf.UnknownFieldSet unknownFields) {
+          return super.setUnknownFields(unknownFields);
+        }
+
+        @java.lang.Override
+        public final Builder mergeUnknownFields(
+            final com.google.protobuf.UnknownFieldSet unknownFields) {
+          return super.mergeUnknownFields(unknownFields);
+        }
+
+
+        // @@protoc_insertion_point(builder_scope:diozero.Serial.ReadByteResponse)
+      }
+
+      // @@protoc_insertion_point(class_scope:diozero.Serial.ReadByteResponse)
+      private static final com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadByteResponse DEFAULT_INSTANCE;
+      static {
+        DEFAULT_INSTANCE = new com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadByteResponse();
+      }
+
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadByteResponse getDefaultInstance() {
+        return DEFAULT_INSTANCE;
+      }
+
+      @java.lang.Deprecated public static final com.google.protobuf.Parser<ReadByteResponse>
+          PARSER = new com.google.protobuf.AbstractParser<ReadByteResponse>() {
+        @java.lang.Override
+        public ReadByteResponse parsePartialFrom(
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return new ReadByteResponse(input, extensionRegistry);
+        }
+      };
+
+      public static com.google.protobuf.Parser<ReadByteResponse> parser() {
+        return PARSER;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Parser<ReadByteResponse> getParserForType() {
+        return PARSER;
+      }
+
+      @java.lang.Override
+      public com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadByteResponse getDefaultInstanceForType() {
+        return DEFAULT_INSTANCE;
+      }
+
+    }
+
+    public interface ReadResponseOrBuilder extends
+        // @@protoc_insertion_point(interface_extends:diozero.Serial.ReadResponse)
+        com.google.protobuf.MessageOrBuilder {
+
+      /**
+       * <code>required string correlationId = 1;</code>
+       * @return Whether the correlationId field is set.
+       */
+      boolean hasCorrelationId();
+      /**
+       * <code>required string correlationId = 1;</code>
+       * @return The correlationId.
+       */
+      java.lang.String getCorrelationId();
+      /**
+       * <code>required string correlationId = 1;</code>
+       * @return The bytes for correlationId.
+       */
+      com.google.protobuf.ByteString
+          getCorrelationIdBytes();
+
+      /**
+       * <code>required .diozero.Status status = 2;</code>
+       * @return Whether the status field is set.
+       */
+      boolean hasStatus();
+      /**
+       * <code>required .diozero.Status status = 2;</code>
+       * @return The status.
+       */
+      com.diozero.remote.message.protobuf.DiozeroProtos.Status getStatus();
+
+      /**
+       * <code>optional string detail = 3;</code>
+       * @return Whether the detail field is set.
+       */
+      boolean hasDetail();
+      /**
+       * <code>optional string detail = 3;</code>
+       * @return The detail.
+       */
+      java.lang.String getDetail();
+      /**
+       * <code>optional string detail = 3;</code>
+       * @return The bytes for detail.
+       */
+      com.google.protobuf.ByteString
+          getDetailBytes();
+
+      /**
+       * <code>optional bytes data = 4;</code>
+       * @return Whether the data field is set.
+       */
+      boolean hasData();
+      /**
+       * <code>optional bytes data = 4;</code>
+       * @return The data.
+       */
+      com.google.protobuf.ByteString getData();
+    }
+    /**
+     * Protobuf type {@code diozero.Serial.ReadResponse}
+     */
+    public static final class ReadResponse extends
+        com.google.protobuf.GeneratedMessageV3 implements
+        // @@protoc_insertion_point(message_implements:diozero.Serial.ReadResponse)
+        ReadResponseOrBuilder {
+    private static final long serialVersionUID = 0L;
+      // Use ReadResponse.newBuilder() to construct.
+      private ReadResponse(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+        super(builder);
+      }
+      private ReadResponse() {
+        correlationId_ = "";
+        status_ = 0;
+        detail_ = "";
+        data_ = com.google.protobuf.ByteString.EMPTY;
+      }
+
+      @java.lang.Override
+      @SuppressWarnings({"unused"})
+      protected java.lang.Object newInstance(
+          UnusedPrivateParameter unused) {
+        return new ReadResponse();
+      }
+
+      @java.lang.Override
+      public final com.google.protobuf.UnknownFieldSet
+      getUnknownFields() {
+        return this.unknownFields;
+      }
+      private ReadResponse(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        this();
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
+        int mutable_bitField0_ = 0;
+        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+            com.google.protobuf.UnknownFieldSet.newBuilder();
+        try {
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                com.google.protobuf.ByteString bs = input.readBytes();
+                bitField0_ |= 0x00000001;
+                correlationId_ = bs;
+                break;
+              }
+              case 16: {
+                int rawValue = input.readEnum();
+                  @SuppressWarnings("deprecation")
+                com.diozero.remote.message.protobuf.DiozeroProtos.Status value = com.diozero.remote.message.protobuf.DiozeroProtos.Status.valueOf(rawValue);
+                if (value == null) {
+                  unknownFields.mergeVarintField(2, rawValue);
+                } else {
+                  bitField0_ |= 0x00000002;
+                  status_ = rawValue;
+                }
+                break;
+              }
+              case 26: {
+                com.google.protobuf.ByteString bs = input.readBytes();
+                bitField0_ |= 0x00000004;
+                detail_ = bs;
+                break;
+              }
+              case 34: {
+                bitField0_ |= 0x00000008;
+                data_ = input.readBytes();
+                break;
+              }
+              default: {
+                if (!parseUnknownField(
+                    input, unknownFields, extensionRegistry, tag)) {
+                  done = true;
+                }
+                break;
+              }
+            }
+          }
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(this);
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(
+              e).setUnfinishedMessage(this);
+        } finally {
+          this.unknownFields = unknownFields.build();
+          makeExtensionsImmutable();
+        }
+      }
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return com.diozero.remote.message.protobuf.DiozeroProtos.internal_static_diozero_Serial_ReadResponse_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return com.diozero.remote.message.protobuf.DiozeroProtos.internal_static_diozero_Serial_ReadResponse_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadResponse.class, com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadResponse.Builder.class);
+      }
+
+      private int bitField0_;
+      public static final int CORRELATIONID_FIELD_NUMBER = 1;
+      private volatile java.lang.Object correlationId_;
+      /**
+       * <code>required string correlationId = 1;</code>
+       * @return Whether the correlationId field is set.
+       */
+      @java.lang.Override
+      public boolean hasCorrelationId() {
+        return ((bitField0_ & 0x00000001) != 0);
+      }
+      /**
+       * <code>required string correlationId = 1;</code>
+       * @return The correlationId.
+       */
+      @java.lang.Override
+      public java.lang.String getCorrelationId() {
+        java.lang.Object ref = correlationId_;
+        if (ref instanceof java.lang.String) {
+          return (java.lang.String) ref;
+        } else {
+          com.google.protobuf.ByteString bs = 
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            correlationId_ = s;
+          }
+          return s;
+        }
+      }
+      /**
+       * <code>required string correlationId = 1;</code>
+       * @return The bytes for correlationId.
+       */
+      @java.lang.Override
+      public com.google.protobuf.ByteString
+          getCorrelationIdBytes() {
+        java.lang.Object ref = correlationId_;
+        if (ref instanceof java.lang.String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          correlationId_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+
+      public static final int STATUS_FIELD_NUMBER = 2;
+      private int status_;
+      /**
+       * <code>required .diozero.Status status = 2;</code>
+       * @return Whether the status field is set.
+       */
+      @java.lang.Override public boolean hasStatus() {
+        return ((bitField0_ & 0x00000002) != 0);
+      }
+      /**
+       * <code>required .diozero.Status status = 2;</code>
+       * @return The status.
+       */
+      @java.lang.Override public com.diozero.remote.message.protobuf.DiozeroProtos.Status getStatus() {
+        @SuppressWarnings("deprecation")
+        com.diozero.remote.message.protobuf.DiozeroProtos.Status result = com.diozero.remote.message.protobuf.DiozeroProtos.Status.valueOf(status_);
+        return result == null ? com.diozero.remote.message.protobuf.DiozeroProtos.Status.OK : result;
+      }
+
+      public static final int DETAIL_FIELD_NUMBER = 3;
+      private volatile java.lang.Object detail_;
+      /**
+       * <code>optional string detail = 3;</code>
+       * @return Whether the detail field is set.
+       */
+      @java.lang.Override
+      public boolean hasDetail() {
+        return ((bitField0_ & 0x00000004) != 0);
+      }
+      /**
+       * <code>optional string detail = 3;</code>
+       * @return The detail.
+       */
+      @java.lang.Override
+      public java.lang.String getDetail() {
+        java.lang.Object ref = detail_;
+        if (ref instanceof java.lang.String) {
+          return (java.lang.String) ref;
+        } else {
+          com.google.protobuf.ByteString bs = 
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            detail_ = s;
+          }
+          return s;
+        }
+      }
+      /**
+       * <code>optional string detail = 3;</code>
+       * @return The bytes for detail.
+       */
+      @java.lang.Override
+      public com.google.protobuf.ByteString
+          getDetailBytes() {
+        java.lang.Object ref = detail_;
+        if (ref instanceof java.lang.String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          detail_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+
+      public static final int DATA_FIELD_NUMBER = 4;
+      private com.google.protobuf.ByteString data_;
+      /**
+       * <code>optional bytes data = 4;</code>
+       * @return Whether the data field is set.
+       */
+      @java.lang.Override
+      public boolean hasData() {
+        return ((bitField0_ & 0x00000008) != 0);
+      }
+      /**
+       * <code>optional bytes data = 4;</code>
+       * @return The data.
+       */
+      @java.lang.Override
+      public com.google.protobuf.ByteString getData() {
+        return data_;
+      }
+
+      private byte memoizedIsInitialized = -1;
+      @java.lang.Override
+      public final boolean isInitialized() {
+        byte isInitialized = memoizedIsInitialized;
+        if (isInitialized == 1) return true;
+        if (isInitialized == 0) return false;
+
+        if (!hasCorrelationId()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+        if (!hasStatus()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+        memoizedIsInitialized = 1;
+        return true;
+      }
+
+      @java.lang.Override
+      public void writeTo(com.google.protobuf.CodedOutputStream output)
+                          throws java.io.IOException {
+        if (((bitField0_ & 0x00000001) != 0)) {
+          com.google.protobuf.GeneratedMessageV3.writeString(output, 1, correlationId_);
+        }
+        if (((bitField0_ & 0x00000002) != 0)) {
+          output.writeEnum(2, status_);
+        }
+        if (((bitField0_ & 0x00000004) != 0)) {
+          com.google.protobuf.GeneratedMessageV3.writeString(output, 3, detail_);
+        }
+        if (((bitField0_ & 0x00000008) != 0)) {
+          output.writeBytes(4, data_);
+        }
+        unknownFields.writeTo(output);
+      }
+
+      @java.lang.Override
+      public int getSerializedSize() {
+        int size = memoizedSize;
+        if (size != -1) return size;
+
+        size = 0;
+        if (((bitField0_ & 0x00000001) != 0)) {
+          size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, correlationId_);
+        }
+        if (((bitField0_ & 0x00000002) != 0)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeEnumSize(2, status_);
+        }
+        if (((bitField0_ & 0x00000004) != 0)) {
+          size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, detail_);
+        }
+        if (((bitField0_ & 0x00000008) != 0)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeBytesSize(4, data_);
+        }
+        size += unknownFields.getSerializedSize();
+        memoizedSize = size;
+        return size;
+      }
+
+      @java.lang.Override
+      public boolean equals(final java.lang.Object obj) {
+        if (obj == this) {
+         return true;
+        }
+        if (!(obj instanceof com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadResponse)) {
+          return super.equals(obj);
+        }
+        com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadResponse other = (com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadResponse) obj;
+
+        if (hasCorrelationId() != other.hasCorrelationId()) return false;
+        if (hasCorrelationId()) {
+          if (!getCorrelationId()
+              .equals(other.getCorrelationId())) return false;
+        }
+        if (hasStatus() != other.hasStatus()) return false;
+        if (hasStatus()) {
+          if (status_ != other.status_) return false;
+        }
+        if (hasDetail() != other.hasDetail()) return false;
+        if (hasDetail()) {
+          if (!getDetail()
+              .equals(other.getDetail())) return false;
+        }
+        if (hasData() != other.hasData()) return false;
+        if (hasData()) {
+          if (!getData()
+              .equals(other.getData())) return false;
+        }
+        if (!unknownFields.equals(other.unknownFields)) return false;
+        return true;
+      }
+
+      @java.lang.Override
+      public int hashCode() {
+        if (memoizedHashCode != 0) {
+          return memoizedHashCode;
+        }
+        int hash = 41;
+        hash = (19 * hash) + getDescriptor().hashCode();
+        if (hasCorrelationId()) {
+          hash = (37 * hash) + CORRELATIONID_FIELD_NUMBER;
+          hash = (53 * hash) + getCorrelationId().hashCode();
+        }
+        if (hasStatus()) {
+          hash = (37 * hash) + STATUS_FIELD_NUMBER;
+          hash = (53 * hash) + status_;
+        }
+        if (hasDetail()) {
+          hash = (37 * hash) + DETAIL_FIELD_NUMBER;
+          hash = (53 * hash) + getDetail().hashCode();
+        }
+        if (hasData()) {
+          hash = (37 * hash) + DATA_FIELD_NUMBER;
+          hash = (53 * hash) + getData().hashCode();
+        }
+        hash = (29 * hash) + unknownFields.hashCode();
+        memoizedHashCode = hash;
+        return hash;
+      }
+
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadResponse parseFrom(
+          java.nio.ByteBuffer data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadResponse parseFrom(
+          java.nio.ByteBuffer data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data, extensionRegistry);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadResponse parseFrom(
+          com.google.protobuf.ByteString data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadResponse parseFrom(
+          com.google.protobuf.ByteString data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data, extensionRegistry);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadResponse parseFrom(byte[] data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadResponse parseFrom(
+          byte[] data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data, extensionRegistry);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadResponse parseFrom(java.io.InputStream input)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseWithIOException(PARSER, input);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadResponse parseFrom(
+          java.io.InputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseWithIOException(PARSER, input, extensionRegistry);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadResponse parseDelimitedFrom(java.io.InputStream input)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseDelimitedWithIOException(PARSER, input);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadResponse parseDelimitedFrom(
+          java.io.InputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadResponse parseFrom(
+          com.google.protobuf.CodedInputStream input)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseWithIOException(PARSER, input);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadResponse parseFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseWithIOException(PARSER, input, extensionRegistry);
+      }
+
+      @java.lang.Override
+      public Builder newBuilderForType() { return newBuilder(); }
+      public static Builder newBuilder() {
+        return DEFAULT_INSTANCE.toBuilder();
+      }
+      public static Builder newBuilder(com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadResponse prototype) {
+        return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+      }
+      @java.lang.Override
+      public Builder toBuilder() {
+        return this == DEFAULT_INSTANCE
+            ? new Builder() : new Builder().mergeFrom(this);
+      }
+
+      @java.lang.Override
+      protected Builder newBuilderForType(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        Builder builder = new Builder(parent);
+        return builder;
+      }
+      /**
+       * Protobuf type {@code diozero.Serial.ReadResponse}
+       */
+      public static final class Builder extends
+          com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+          // @@protoc_insertion_point(builder_implements:diozero.Serial.ReadResponse)
+          com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadResponseOrBuilder {
+        public static final com.google.protobuf.Descriptors.Descriptor
+            getDescriptor() {
+          return com.diozero.remote.message.protobuf.DiozeroProtos.internal_static_diozero_Serial_ReadResponse_descriptor;
+        }
+
+        @java.lang.Override
+        protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+            internalGetFieldAccessorTable() {
+          return com.diozero.remote.message.protobuf.DiozeroProtos.internal_static_diozero_Serial_ReadResponse_fieldAccessorTable
+              .ensureFieldAccessorsInitialized(
+                  com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadResponse.class, com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadResponse.Builder.class);
+        }
+
+        // Construct using com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadResponse.newBuilder()
+        private Builder() {
+          maybeForceBuilderInitialization();
+        }
+
+        private Builder(
+            com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+          super(parent);
+          maybeForceBuilderInitialization();
+        }
+        private void maybeForceBuilderInitialization() {
+          if (com.google.protobuf.GeneratedMessageV3
+                  .alwaysUseFieldBuilders) {
+          }
+        }
+        @java.lang.Override
+        public Builder clear() {
+          super.clear();
+          correlationId_ = "";
+          bitField0_ = (bitField0_ & ~0x00000001);
+          status_ = 0;
+          bitField0_ = (bitField0_ & ~0x00000002);
+          detail_ = "";
+          bitField0_ = (bitField0_ & ~0x00000004);
+          data_ = com.google.protobuf.ByteString.EMPTY;
+          bitField0_ = (bitField0_ & ~0x00000008);
+          return this;
+        }
+
+        @java.lang.Override
+        public com.google.protobuf.Descriptors.Descriptor
+            getDescriptorForType() {
+          return com.diozero.remote.message.protobuf.DiozeroProtos.internal_static_diozero_Serial_ReadResponse_descriptor;
+        }
+
+        @java.lang.Override
+        public com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadResponse getDefaultInstanceForType() {
+          return com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadResponse.getDefaultInstance();
+        }
+
+        @java.lang.Override
+        public com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadResponse build() {
+          com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadResponse result = buildPartial();
+          if (!result.isInitialized()) {
+            throw newUninitializedMessageException(result);
+          }
+          return result;
+        }
+
+        @java.lang.Override
+        public com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadResponse buildPartial() {
+          com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadResponse result = new com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadResponse(this);
+          int from_bitField0_ = bitField0_;
+          int to_bitField0_ = 0;
+          if (((from_bitField0_ & 0x00000001) != 0)) {
+            to_bitField0_ |= 0x00000001;
+          }
+          result.correlationId_ = correlationId_;
+          if (((from_bitField0_ & 0x00000002) != 0)) {
+            to_bitField0_ |= 0x00000002;
+          }
+          result.status_ = status_;
+          if (((from_bitField0_ & 0x00000004) != 0)) {
+            to_bitField0_ |= 0x00000004;
+          }
+          result.detail_ = detail_;
+          if (((from_bitField0_ & 0x00000008) != 0)) {
+            to_bitField0_ |= 0x00000008;
+          }
+          result.data_ = data_;
+          result.bitField0_ = to_bitField0_;
+          onBuilt();
+          return result;
+        }
+
+        @java.lang.Override
+        public Builder clone() {
+          return super.clone();
+        }
+        @java.lang.Override
+        public Builder setField(
+            com.google.protobuf.Descriptors.FieldDescriptor field,
+            java.lang.Object value) {
+          return super.setField(field, value);
+        }
+        @java.lang.Override
+        public Builder clearField(
+            com.google.protobuf.Descriptors.FieldDescriptor field) {
+          return super.clearField(field);
+        }
+        @java.lang.Override
+        public Builder clearOneof(
+            com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+          return super.clearOneof(oneof);
+        }
+        @java.lang.Override
+        public Builder setRepeatedField(
+            com.google.protobuf.Descriptors.FieldDescriptor field,
+            int index, java.lang.Object value) {
+          return super.setRepeatedField(field, index, value);
+        }
+        @java.lang.Override
+        public Builder addRepeatedField(
+            com.google.protobuf.Descriptors.FieldDescriptor field,
+            java.lang.Object value) {
+          return super.addRepeatedField(field, value);
+        }
+        @java.lang.Override
+        public Builder mergeFrom(com.google.protobuf.Message other) {
+          if (other instanceof com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadResponse) {
+            return mergeFrom((com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadResponse)other);
+          } else {
+            super.mergeFrom(other);
+            return this;
+          }
+        }
+
+        public Builder mergeFrom(com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadResponse other) {
+          if (other == com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadResponse.getDefaultInstance()) return this;
+          if (other.hasCorrelationId()) {
+            bitField0_ |= 0x00000001;
+            correlationId_ = other.correlationId_;
+            onChanged();
+          }
+          if (other.hasStatus()) {
+            setStatus(other.getStatus());
+          }
+          if (other.hasDetail()) {
+            bitField0_ |= 0x00000004;
+            detail_ = other.detail_;
+            onChanged();
+          }
+          if (other.hasData()) {
+            setData(other.getData());
+          }
+          this.mergeUnknownFields(other.unknownFields);
+          onChanged();
+          return this;
+        }
+
+        @java.lang.Override
+        public final boolean isInitialized() {
+          if (!hasCorrelationId()) {
+            return false;
+          }
+          if (!hasStatus()) {
+            return false;
+          }
+          return true;
+        }
+
+        @java.lang.Override
+        public Builder mergeFrom(
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
+          com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadResponse parsedMessage = null;
+          try {
+            parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+            parsedMessage = (com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadResponse) e.getUnfinishedMessage();
+            throw e.unwrapIOException();
+          } finally {
+            if (parsedMessage != null) {
+              mergeFrom(parsedMessage);
+            }
+          }
+          return this;
+        }
+        private int bitField0_;
+
+        private java.lang.Object correlationId_ = "";
+        /**
+         * <code>required string correlationId = 1;</code>
+         * @return Whether the correlationId field is set.
+         */
+        public boolean hasCorrelationId() {
+          return ((bitField0_ & 0x00000001) != 0);
+        }
+        /**
+         * <code>required string correlationId = 1;</code>
+         * @return The correlationId.
+         */
+        public java.lang.String getCorrelationId() {
+          java.lang.Object ref = correlationId_;
+          if (!(ref instanceof java.lang.String)) {
+            com.google.protobuf.ByteString bs =
+                (com.google.protobuf.ByteString) ref;
+            java.lang.String s = bs.toStringUtf8();
+            if (bs.isValidUtf8()) {
+              correlationId_ = s;
+            }
+            return s;
+          } else {
+            return (java.lang.String) ref;
+          }
+        }
+        /**
+         * <code>required string correlationId = 1;</code>
+         * @return The bytes for correlationId.
+         */
+        public com.google.protobuf.ByteString
+            getCorrelationIdBytes() {
+          java.lang.Object ref = correlationId_;
+          if (ref instanceof String) {
+            com.google.protobuf.ByteString b = 
+                com.google.protobuf.ByteString.copyFromUtf8(
+                    (java.lang.String) ref);
+            correlationId_ = b;
+            return b;
+          } else {
+            return (com.google.protobuf.ByteString) ref;
+          }
+        }
+        /**
+         * <code>required string correlationId = 1;</code>
+         * @param value The correlationId to set.
+         * @return This builder for chaining.
+         */
+        public Builder setCorrelationId(
+            java.lang.String value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+          correlationId_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>required string correlationId = 1;</code>
+         * @return This builder for chaining.
+         */
+        public Builder clearCorrelationId() {
+          bitField0_ = (bitField0_ & ~0x00000001);
+          correlationId_ = getDefaultInstance().getCorrelationId();
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>required string correlationId = 1;</code>
+         * @param value The bytes for correlationId to set.
+         * @return This builder for chaining.
+         */
+        public Builder setCorrelationIdBytes(
+            com.google.protobuf.ByteString value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+          correlationId_ = value;
+          onChanged();
+          return this;
+        }
+
+        private int status_ = 0;
+        /**
+         * <code>required .diozero.Status status = 2;</code>
+         * @return Whether the status field is set.
+         */
+        @java.lang.Override public boolean hasStatus() {
+          return ((bitField0_ & 0x00000002) != 0);
+        }
+        /**
+         * <code>required .diozero.Status status = 2;</code>
+         * @return The status.
+         */
+        @java.lang.Override
+        public com.diozero.remote.message.protobuf.DiozeroProtos.Status getStatus() {
+          @SuppressWarnings("deprecation")
+          com.diozero.remote.message.protobuf.DiozeroProtos.Status result = com.diozero.remote.message.protobuf.DiozeroProtos.Status.valueOf(status_);
+          return result == null ? com.diozero.remote.message.protobuf.DiozeroProtos.Status.OK : result;
+        }
+        /**
+         * <code>required .diozero.Status status = 2;</code>
+         * @param value The status to set.
+         * @return This builder for chaining.
+         */
+        public Builder setStatus(com.diozero.remote.message.protobuf.DiozeroProtos.Status value) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          bitField0_ |= 0x00000002;
+          status_ = value.getNumber();
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>required .diozero.Status status = 2;</code>
+         * @return This builder for chaining.
+         */
+        public Builder clearStatus() {
+          bitField0_ = (bitField0_ & ~0x00000002);
+          status_ = 0;
+          onChanged();
+          return this;
+        }
+
+        private java.lang.Object detail_ = "";
+        /**
+         * <code>optional string detail = 3;</code>
+         * @return Whether the detail field is set.
+         */
+        public boolean hasDetail() {
+          return ((bitField0_ & 0x00000004) != 0);
+        }
+        /**
+         * <code>optional string detail = 3;</code>
+         * @return The detail.
+         */
+        public java.lang.String getDetail() {
+          java.lang.Object ref = detail_;
+          if (!(ref instanceof java.lang.String)) {
+            com.google.protobuf.ByteString bs =
+                (com.google.protobuf.ByteString) ref;
+            java.lang.String s = bs.toStringUtf8();
+            if (bs.isValidUtf8()) {
+              detail_ = s;
+            }
+            return s;
+          } else {
+            return (java.lang.String) ref;
+          }
+        }
+        /**
+         * <code>optional string detail = 3;</code>
+         * @return The bytes for detail.
+         */
+        public com.google.protobuf.ByteString
+            getDetailBytes() {
+          java.lang.Object ref = detail_;
+          if (ref instanceof String) {
+            com.google.protobuf.ByteString b = 
+                com.google.protobuf.ByteString.copyFromUtf8(
+                    (java.lang.String) ref);
+            detail_ = b;
+            return b;
+          } else {
+            return (com.google.protobuf.ByteString) ref;
+          }
+        }
+        /**
+         * <code>optional string detail = 3;</code>
+         * @param value The detail to set.
+         * @return This builder for chaining.
+         */
+        public Builder setDetail(
+            java.lang.String value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000004;
+          detail_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>optional string detail = 3;</code>
+         * @return This builder for chaining.
+         */
+        public Builder clearDetail() {
+          bitField0_ = (bitField0_ & ~0x00000004);
+          detail_ = getDefaultInstance().getDetail();
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>optional string detail = 3;</code>
+         * @param value The bytes for detail to set.
+         * @return This builder for chaining.
+         */
+        public Builder setDetailBytes(
+            com.google.protobuf.ByteString value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000004;
+          detail_ = value;
+          onChanged();
+          return this;
+        }
+
+        private com.google.protobuf.ByteString data_ = com.google.protobuf.ByteString.EMPTY;
+        /**
+         * <code>optional bytes data = 4;</code>
+         * @return Whether the data field is set.
+         */
+        @java.lang.Override
+        public boolean hasData() {
+          return ((bitField0_ & 0x00000008) != 0);
+        }
+        /**
+         * <code>optional bytes data = 4;</code>
+         * @return The data.
+         */
+        @java.lang.Override
+        public com.google.protobuf.ByteString getData() {
+          return data_;
+        }
+        /**
+         * <code>optional bytes data = 4;</code>
+         * @param value The data to set.
+         * @return This builder for chaining.
+         */
+        public Builder setData(com.google.protobuf.ByteString value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000008;
+          data_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>optional bytes data = 4;</code>
+         * @return This builder for chaining.
+         */
+        public Builder clearData() {
+          bitField0_ = (bitField0_ & ~0x00000008);
+          data_ = getDefaultInstance().getData();
+          onChanged();
+          return this;
+        }
+        @java.lang.Override
+        public final Builder setUnknownFields(
+            final com.google.protobuf.UnknownFieldSet unknownFields) {
+          return super.setUnknownFields(unknownFields);
+        }
+
+        @java.lang.Override
+        public final Builder mergeUnknownFields(
+            final com.google.protobuf.UnknownFieldSet unknownFields) {
+          return super.mergeUnknownFields(unknownFields);
+        }
+
+
+        // @@protoc_insertion_point(builder_scope:diozero.Serial.ReadResponse)
+      }
+
+      // @@protoc_insertion_point(class_scope:diozero.Serial.ReadResponse)
+      private static final com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadResponse DEFAULT_INSTANCE;
+      static {
+        DEFAULT_INSTANCE = new com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadResponse();
+      }
+
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadResponse getDefaultInstance() {
+        return DEFAULT_INSTANCE;
+      }
+
+      @java.lang.Deprecated public static final com.google.protobuf.Parser<ReadResponse>
+          PARSER = new com.google.protobuf.AbstractParser<ReadResponse>() {
+        @java.lang.Override
+        public ReadResponse parsePartialFrom(
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return new ReadResponse(input, extensionRegistry);
+        }
+      };
+
+      public static com.google.protobuf.Parser<ReadResponse> parser() {
+        return PARSER;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Parser<ReadResponse> getParserForType() {
+        return PARSER;
+      }
+
+      @java.lang.Override
+      public com.diozero.remote.message.protobuf.DiozeroProtos.Serial.ReadResponse getDefaultInstanceForType() {
+        return DEFAULT_INSTANCE;
+      }
+
+    }
+
+    public interface BytesAvailableResponseOrBuilder extends
+        // @@protoc_insertion_point(interface_extends:diozero.Serial.BytesAvailableResponse)
+        com.google.protobuf.MessageOrBuilder {
+
+      /**
+       * <code>required string correlationId = 1;</code>
+       * @return Whether the correlationId field is set.
+       */
+      boolean hasCorrelationId();
+      /**
+       * <code>required string correlationId = 1;</code>
+       * @return The correlationId.
+       */
+      java.lang.String getCorrelationId();
+      /**
+       * <code>required string correlationId = 1;</code>
+       * @return The bytes for correlationId.
+       */
+      com.google.protobuf.ByteString
+          getCorrelationIdBytes();
+
+      /**
+       * <code>required .diozero.Status status = 2;</code>
+       * @return Whether the status field is set.
+       */
+      boolean hasStatus();
+      /**
+       * <code>required .diozero.Status status = 2;</code>
+       * @return The status.
+       */
+      com.diozero.remote.message.protobuf.DiozeroProtos.Status getStatus();
+
+      /**
+       * <code>optional string detail = 3;</code>
+       * @return Whether the detail field is set.
+       */
+      boolean hasDetail();
+      /**
+       * <code>optional string detail = 3;</code>
+       * @return The detail.
+       */
+      java.lang.String getDetail();
+      /**
+       * <code>optional string detail = 3;</code>
+       * @return The bytes for detail.
+       */
+      com.google.protobuf.ByteString
+          getDetailBytes();
+
+      /**
+       * <code>optional int32 bytesAvailable = 4;</code>
+       * @return Whether the bytesAvailable field is set.
+       */
+      boolean hasBytesAvailable();
+      /**
+       * <code>optional int32 bytesAvailable = 4;</code>
+       * @return The bytesAvailable.
+       */
+      int getBytesAvailable();
+    }
+    /**
+     * Protobuf type {@code diozero.Serial.BytesAvailableResponse}
+     */
+    public static final class BytesAvailableResponse extends
+        com.google.protobuf.GeneratedMessageV3 implements
+        // @@protoc_insertion_point(message_implements:diozero.Serial.BytesAvailableResponse)
+        BytesAvailableResponseOrBuilder {
+    private static final long serialVersionUID = 0L;
+      // Use BytesAvailableResponse.newBuilder() to construct.
+      private BytesAvailableResponse(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+        super(builder);
+      }
+      private BytesAvailableResponse() {
+        correlationId_ = "";
+        status_ = 0;
+        detail_ = "";
+      }
+
+      @java.lang.Override
+      @SuppressWarnings({"unused"})
+      protected java.lang.Object newInstance(
+          UnusedPrivateParameter unused) {
+        return new BytesAvailableResponse();
+      }
+
+      @java.lang.Override
+      public final com.google.protobuf.UnknownFieldSet
+      getUnknownFields() {
+        return this.unknownFields;
+      }
+      private BytesAvailableResponse(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        this();
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
+        int mutable_bitField0_ = 0;
+        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+            com.google.protobuf.UnknownFieldSet.newBuilder();
+        try {
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                com.google.protobuf.ByteString bs = input.readBytes();
+                bitField0_ |= 0x00000001;
+                correlationId_ = bs;
+                break;
+              }
+              case 16: {
+                int rawValue = input.readEnum();
+                  @SuppressWarnings("deprecation")
+                com.diozero.remote.message.protobuf.DiozeroProtos.Status value = com.diozero.remote.message.protobuf.DiozeroProtos.Status.valueOf(rawValue);
+                if (value == null) {
+                  unknownFields.mergeVarintField(2, rawValue);
+                } else {
+                  bitField0_ |= 0x00000002;
+                  status_ = rawValue;
+                }
+                break;
+              }
+              case 26: {
+                com.google.protobuf.ByteString bs = input.readBytes();
+                bitField0_ |= 0x00000004;
+                detail_ = bs;
+                break;
+              }
+              case 32: {
+                bitField0_ |= 0x00000008;
+                bytesAvailable_ = input.readInt32();
+                break;
+              }
+              default: {
+                if (!parseUnknownField(
+                    input, unknownFields, extensionRegistry, tag)) {
+                  done = true;
+                }
+                break;
+              }
+            }
+          }
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(this);
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(
+              e).setUnfinishedMessage(this);
+        } finally {
+          this.unknownFields = unknownFields.build();
+          makeExtensionsImmutable();
+        }
+      }
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return com.diozero.remote.message.protobuf.DiozeroProtos.internal_static_diozero_Serial_BytesAvailableResponse_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return com.diozero.remote.message.protobuf.DiozeroProtos.internal_static_diozero_Serial_BytesAvailableResponse_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                com.diozero.remote.message.protobuf.DiozeroProtos.Serial.BytesAvailableResponse.class, com.diozero.remote.message.protobuf.DiozeroProtos.Serial.BytesAvailableResponse.Builder.class);
+      }
+
+      private int bitField0_;
+      public static final int CORRELATIONID_FIELD_NUMBER = 1;
+      private volatile java.lang.Object correlationId_;
+      /**
+       * <code>required string correlationId = 1;</code>
+       * @return Whether the correlationId field is set.
+       */
+      @java.lang.Override
+      public boolean hasCorrelationId() {
+        return ((bitField0_ & 0x00000001) != 0);
+      }
+      /**
+       * <code>required string correlationId = 1;</code>
+       * @return The correlationId.
+       */
+      @java.lang.Override
+      public java.lang.String getCorrelationId() {
+        java.lang.Object ref = correlationId_;
+        if (ref instanceof java.lang.String) {
+          return (java.lang.String) ref;
+        } else {
+          com.google.protobuf.ByteString bs = 
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            correlationId_ = s;
+          }
+          return s;
+        }
+      }
+      /**
+       * <code>required string correlationId = 1;</code>
+       * @return The bytes for correlationId.
+       */
+      @java.lang.Override
+      public com.google.protobuf.ByteString
+          getCorrelationIdBytes() {
+        java.lang.Object ref = correlationId_;
+        if (ref instanceof java.lang.String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          correlationId_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+
+      public static final int STATUS_FIELD_NUMBER = 2;
+      private int status_;
+      /**
+       * <code>required .diozero.Status status = 2;</code>
+       * @return Whether the status field is set.
+       */
+      @java.lang.Override public boolean hasStatus() {
+        return ((bitField0_ & 0x00000002) != 0);
+      }
+      /**
+       * <code>required .diozero.Status status = 2;</code>
+       * @return The status.
+       */
+      @java.lang.Override public com.diozero.remote.message.protobuf.DiozeroProtos.Status getStatus() {
+        @SuppressWarnings("deprecation")
+        com.diozero.remote.message.protobuf.DiozeroProtos.Status result = com.diozero.remote.message.protobuf.DiozeroProtos.Status.valueOf(status_);
+        return result == null ? com.diozero.remote.message.protobuf.DiozeroProtos.Status.OK : result;
+      }
+
+      public static final int DETAIL_FIELD_NUMBER = 3;
+      private volatile java.lang.Object detail_;
+      /**
+       * <code>optional string detail = 3;</code>
+       * @return Whether the detail field is set.
+       */
+      @java.lang.Override
+      public boolean hasDetail() {
+        return ((bitField0_ & 0x00000004) != 0);
+      }
+      /**
+       * <code>optional string detail = 3;</code>
+       * @return The detail.
+       */
+      @java.lang.Override
+      public java.lang.String getDetail() {
+        java.lang.Object ref = detail_;
+        if (ref instanceof java.lang.String) {
+          return (java.lang.String) ref;
+        } else {
+          com.google.protobuf.ByteString bs = 
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            detail_ = s;
+          }
+          return s;
+        }
+      }
+      /**
+       * <code>optional string detail = 3;</code>
+       * @return The bytes for detail.
+       */
+      @java.lang.Override
+      public com.google.protobuf.ByteString
+          getDetailBytes() {
+        java.lang.Object ref = detail_;
+        if (ref instanceof java.lang.String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          detail_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+
+      public static final int BYTESAVAILABLE_FIELD_NUMBER = 4;
+      private int bytesAvailable_;
+      /**
+       * <code>optional int32 bytesAvailable = 4;</code>
+       * @return Whether the bytesAvailable field is set.
+       */
+      @java.lang.Override
+      public boolean hasBytesAvailable() {
+        return ((bitField0_ & 0x00000008) != 0);
+      }
+      /**
+       * <code>optional int32 bytesAvailable = 4;</code>
+       * @return The bytesAvailable.
+       */
+      @java.lang.Override
+      public int getBytesAvailable() {
+        return bytesAvailable_;
+      }
+
+      private byte memoizedIsInitialized = -1;
+      @java.lang.Override
+      public final boolean isInitialized() {
+        byte isInitialized = memoizedIsInitialized;
+        if (isInitialized == 1) return true;
+        if (isInitialized == 0) return false;
+
+        if (!hasCorrelationId()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+        if (!hasStatus()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+        memoizedIsInitialized = 1;
+        return true;
+      }
+
+      @java.lang.Override
+      public void writeTo(com.google.protobuf.CodedOutputStream output)
+                          throws java.io.IOException {
+        if (((bitField0_ & 0x00000001) != 0)) {
+          com.google.protobuf.GeneratedMessageV3.writeString(output, 1, correlationId_);
+        }
+        if (((bitField0_ & 0x00000002) != 0)) {
+          output.writeEnum(2, status_);
+        }
+        if (((bitField0_ & 0x00000004) != 0)) {
+          com.google.protobuf.GeneratedMessageV3.writeString(output, 3, detail_);
+        }
+        if (((bitField0_ & 0x00000008) != 0)) {
+          output.writeInt32(4, bytesAvailable_);
+        }
+        unknownFields.writeTo(output);
+      }
+
+      @java.lang.Override
+      public int getSerializedSize() {
+        int size = memoizedSize;
+        if (size != -1) return size;
+
+        size = 0;
+        if (((bitField0_ & 0x00000001) != 0)) {
+          size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, correlationId_);
+        }
+        if (((bitField0_ & 0x00000002) != 0)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeEnumSize(2, status_);
+        }
+        if (((bitField0_ & 0x00000004) != 0)) {
+          size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, detail_);
+        }
+        if (((bitField0_ & 0x00000008) != 0)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeInt32Size(4, bytesAvailable_);
+        }
+        size += unknownFields.getSerializedSize();
+        memoizedSize = size;
+        return size;
+      }
+
+      @java.lang.Override
+      public boolean equals(final java.lang.Object obj) {
+        if (obj == this) {
+         return true;
+        }
+        if (!(obj instanceof com.diozero.remote.message.protobuf.DiozeroProtos.Serial.BytesAvailableResponse)) {
+          return super.equals(obj);
+        }
+        com.diozero.remote.message.protobuf.DiozeroProtos.Serial.BytesAvailableResponse other = (com.diozero.remote.message.protobuf.DiozeroProtos.Serial.BytesAvailableResponse) obj;
+
+        if (hasCorrelationId() != other.hasCorrelationId()) return false;
+        if (hasCorrelationId()) {
+          if (!getCorrelationId()
+              .equals(other.getCorrelationId())) return false;
+        }
+        if (hasStatus() != other.hasStatus()) return false;
+        if (hasStatus()) {
+          if (status_ != other.status_) return false;
+        }
+        if (hasDetail() != other.hasDetail()) return false;
+        if (hasDetail()) {
+          if (!getDetail()
+              .equals(other.getDetail())) return false;
+        }
+        if (hasBytesAvailable() != other.hasBytesAvailable()) return false;
+        if (hasBytesAvailable()) {
+          if (getBytesAvailable()
+              != other.getBytesAvailable()) return false;
+        }
+        if (!unknownFields.equals(other.unknownFields)) return false;
+        return true;
+      }
+
+      @java.lang.Override
+      public int hashCode() {
+        if (memoizedHashCode != 0) {
+          return memoizedHashCode;
+        }
+        int hash = 41;
+        hash = (19 * hash) + getDescriptor().hashCode();
+        if (hasCorrelationId()) {
+          hash = (37 * hash) + CORRELATIONID_FIELD_NUMBER;
+          hash = (53 * hash) + getCorrelationId().hashCode();
+        }
+        if (hasStatus()) {
+          hash = (37 * hash) + STATUS_FIELD_NUMBER;
+          hash = (53 * hash) + status_;
+        }
+        if (hasDetail()) {
+          hash = (37 * hash) + DETAIL_FIELD_NUMBER;
+          hash = (53 * hash) + getDetail().hashCode();
+        }
+        if (hasBytesAvailable()) {
+          hash = (37 * hash) + BYTESAVAILABLE_FIELD_NUMBER;
+          hash = (53 * hash) + getBytesAvailable();
+        }
+        hash = (29 * hash) + unknownFields.hashCode();
+        memoizedHashCode = hash;
+        return hash;
+      }
+
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.BytesAvailableResponse parseFrom(
+          java.nio.ByteBuffer data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.BytesAvailableResponse parseFrom(
+          java.nio.ByteBuffer data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data, extensionRegistry);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.BytesAvailableResponse parseFrom(
+          com.google.protobuf.ByteString data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.BytesAvailableResponse parseFrom(
+          com.google.protobuf.ByteString data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data, extensionRegistry);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.BytesAvailableResponse parseFrom(byte[] data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.BytesAvailableResponse parseFrom(
+          byte[] data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data, extensionRegistry);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.BytesAvailableResponse parseFrom(java.io.InputStream input)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseWithIOException(PARSER, input);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.BytesAvailableResponse parseFrom(
+          java.io.InputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseWithIOException(PARSER, input, extensionRegistry);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.BytesAvailableResponse parseDelimitedFrom(java.io.InputStream input)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseDelimitedWithIOException(PARSER, input);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.BytesAvailableResponse parseDelimitedFrom(
+          java.io.InputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.BytesAvailableResponse parseFrom(
+          com.google.protobuf.CodedInputStream input)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseWithIOException(PARSER, input);
+      }
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.BytesAvailableResponse parseFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseWithIOException(PARSER, input, extensionRegistry);
+      }
+
+      @java.lang.Override
+      public Builder newBuilderForType() { return newBuilder(); }
+      public static Builder newBuilder() {
+        return DEFAULT_INSTANCE.toBuilder();
+      }
+      public static Builder newBuilder(com.diozero.remote.message.protobuf.DiozeroProtos.Serial.BytesAvailableResponse prototype) {
+        return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+      }
+      @java.lang.Override
+      public Builder toBuilder() {
+        return this == DEFAULT_INSTANCE
+            ? new Builder() : new Builder().mergeFrom(this);
+      }
+
+      @java.lang.Override
+      protected Builder newBuilderForType(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        Builder builder = new Builder(parent);
+        return builder;
+      }
+      /**
+       * Protobuf type {@code diozero.Serial.BytesAvailableResponse}
+       */
+      public static final class Builder extends
+          com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+          // @@protoc_insertion_point(builder_implements:diozero.Serial.BytesAvailableResponse)
+          com.diozero.remote.message.protobuf.DiozeroProtos.Serial.BytesAvailableResponseOrBuilder {
+        public static final com.google.protobuf.Descriptors.Descriptor
+            getDescriptor() {
+          return com.diozero.remote.message.protobuf.DiozeroProtos.internal_static_diozero_Serial_BytesAvailableResponse_descriptor;
+        }
+
+        @java.lang.Override
+        protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+            internalGetFieldAccessorTable() {
+          return com.diozero.remote.message.protobuf.DiozeroProtos.internal_static_diozero_Serial_BytesAvailableResponse_fieldAccessorTable
+              .ensureFieldAccessorsInitialized(
+                  com.diozero.remote.message.protobuf.DiozeroProtos.Serial.BytesAvailableResponse.class, com.diozero.remote.message.protobuf.DiozeroProtos.Serial.BytesAvailableResponse.Builder.class);
+        }
+
+        // Construct using com.diozero.remote.message.protobuf.DiozeroProtos.Serial.BytesAvailableResponse.newBuilder()
+        private Builder() {
+          maybeForceBuilderInitialization();
+        }
+
+        private Builder(
+            com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+          super(parent);
+          maybeForceBuilderInitialization();
+        }
+        private void maybeForceBuilderInitialization() {
+          if (com.google.protobuf.GeneratedMessageV3
+                  .alwaysUseFieldBuilders) {
+          }
+        }
+        @java.lang.Override
+        public Builder clear() {
+          super.clear();
+          correlationId_ = "";
+          bitField0_ = (bitField0_ & ~0x00000001);
+          status_ = 0;
+          bitField0_ = (bitField0_ & ~0x00000002);
+          detail_ = "";
+          bitField0_ = (bitField0_ & ~0x00000004);
+          bytesAvailable_ = 0;
+          bitField0_ = (bitField0_ & ~0x00000008);
+          return this;
+        }
+
+        @java.lang.Override
+        public com.google.protobuf.Descriptors.Descriptor
+            getDescriptorForType() {
+          return com.diozero.remote.message.protobuf.DiozeroProtos.internal_static_diozero_Serial_BytesAvailableResponse_descriptor;
+        }
+
+        @java.lang.Override
+        public com.diozero.remote.message.protobuf.DiozeroProtos.Serial.BytesAvailableResponse getDefaultInstanceForType() {
+          return com.diozero.remote.message.protobuf.DiozeroProtos.Serial.BytesAvailableResponse.getDefaultInstance();
+        }
+
+        @java.lang.Override
+        public com.diozero.remote.message.protobuf.DiozeroProtos.Serial.BytesAvailableResponse build() {
+          com.diozero.remote.message.protobuf.DiozeroProtos.Serial.BytesAvailableResponse result = buildPartial();
+          if (!result.isInitialized()) {
+            throw newUninitializedMessageException(result);
+          }
+          return result;
+        }
+
+        @java.lang.Override
+        public com.diozero.remote.message.protobuf.DiozeroProtos.Serial.BytesAvailableResponse buildPartial() {
+          com.diozero.remote.message.protobuf.DiozeroProtos.Serial.BytesAvailableResponse result = new com.diozero.remote.message.protobuf.DiozeroProtos.Serial.BytesAvailableResponse(this);
+          int from_bitField0_ = bitField0_;
+          int to_bitField0_ = 0;
+          if (((from_bitField0_ & 0x00000001) != 0)) {
+            to_bitField0_ |= 0x00000001;
+          }
+          result.correlationId_ = correlationId_;
+          if (((from_bitField0_ & 0x00000002) != 0)) {
+            to_bitField0_ |= 0x00000002;
+          }
+          result.status_ = status_;
+          if (((from_bitField0_ & 0x00000004) != 0)) {
+            to_bitField0_ |= 0x00000004;
+          }
+          result.detail_ = detail_;
+          if (((from_bitField0_ & 0x00000008) != 0)) {
+            result.bytesAvailable_ = bytesAvailable_;
+            to_bitField0_ |= 0x00000008;
+          }
+          result.bitField0_ = to_bitField0_;
+          onBuilt();
+          return result;
+        }
+
+        @java.lang.Override
+        public Builder clone() {
+          return super.clone();
+        }
+        @java.lang.Override
+        public Builder setField(
+            com.google.protobuf.Descriptors.FieldDescriptor field,
+            java.lang.Object value) {
+          return super.setField(field, value);
+        }
+        @java.lang.Override
+        public Builder clearField(
+            com.google.protobuf.Descriptors.FieldDescriptor field) {
+          return super.clearField(field);
+        }
+        @java.lang.Override
+        public Builder clearOneof(
+            com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+          return super.clearOneof(oneof);
+        }
+        @java.lang.Override
+        public Builder setRepeatedField(
+            com.google.protobuf.Descriptors.FieldDescriptor field,
+            int index, java.lang.Object value) {
+          return super.setRepeatedField(field, index, value);
+        }
+        @java.lang.Override
+        public Builder addRepeatedField(
+            com.google.protobuf.Descriptors.FieldDescriptor field,
+            java.lang.Object value) {
+          return super.addRepeatedField(field, value);
+        }
+        @java.lang.Override
+        public Builder mergeFrom(com.google.protobuf.Message other) {
+          if (other instanceof com.diozero.remote.message.protobuf.DiozeroProtos.Serial.BytesAvailableResponse) {
+            return mergeFrom((com.diozero.remote.message.protobuf.DiozeroProtos.Serial.BytesAvailableResponse)other);
+          } else {
+            super.mergeFrom(other);
+            return this;
+          }
+        }
+
+        public Builder mergeFrom(com.diozero.remote.message.protobuf.DiozeroProtos.Serial.BytesAvailableResponse other) {
+          if (other == com.diozero.remote.message.protobuf.DiozeroProtos.Serial.BytesAvailableResponse.getDefaultInstance()) return this;
+          if (other.hasCorrelationId()) {
+            bitField0_ |= 0x00000001;
+            correlationId_ = other.correlationId_;
+            onChanged();
+          }
+          if (other.hasStatus()) {
+            setStatus(other.getStatus());
+          }
+          if (other.hasDetail()) {
+            bitField0_ |= 0x00000004;
+            detail_ = other.detail_;
+            onChanged();
+          }
+          if (other.hasBytesAvailable()) {
+            setBytesAvailable(other.getBytesAvailable());
+          }
+          this.mergeUnknownFields(other.unknownFields);
+          onChanged();
+          return this;
+        }
+
+        @java.lang.Override
+        public final boolean isInitialized() {
+          if (!hasCorrelationId()) {
+            return false;
+          }
+          if (!hasStatus()) {
+            return false;
+          }
+          return true;
+        }
+
+        @java.lang.Override
+        public Builder mergeFrom(
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
+          com.diozero.remote.message.protobuf.DiozeroProtos.Serial.BytesAvailableResponse parsedMessage = null;
+          try {
+            parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+            parsedMessage = (com.diozero.remote.message.protobuf.DiozeroProtos.Serial.BytesAvailableResponse) e.getUnfinishedMessage();
+            throw e.unwrapIOException();
+          } finally {
+            if (parsedMessage != null) {
+              mergeFrom(parsedMessage);
+            }
+          }
+          return this;
+        }
+        private int bitField0_;
+
+        private java.lang.Object correlationId_ = "";
+        /**
+         * <code>required string correlationId = 1;</code>
+         * @return Whether the correlationId field is set.
+         */
+        public boolean hasCorrelationId() {
+          return ((bitField0_ & 0x00000001) != 0);
+        }
+        /**
+         * <code>required string correlationId = 1;</code>
+         * @return The correlationId.
+         */
+        public java.lang.String getCorrelationId() {
+          java.lang.Object ref = correlationId_;
+          if (!(ref instanceof java.lang.String)) {
+            com.google.protobuf.ByteString bs =
+                (com.google.protobuf.ByteString) ref;
+            java.lang.String s = bs.toStringUtf8();
+            if (bs.isValidUtf8()) {
+              correlationId_ = s;
+            }
+            return s;
+          } else {
+            return (java.lang.String) ref;
+          }
+        }
+        /**
+         * <code>required string correlationId = 1;</code>
+         * @return The bytes for correlationId.
+         */
+        public com.google.protobuf.ByteString
+            getCorrelationIdBytes() {
+          java.lang.Object ref = correlationId_;
+          if (ref instanceof String) {
+            com.google.protobuf.ByteString b = 
+                com.google.protobuf.ByteString.copyFromUtf8(
+                    (java.lang.String) ref);
+            correlationId_ = b;
+            return b;
+          } else {
+            return (com.google.protobuf.ByteString) ref;
+          }
+        }
+        /**
+         * <code>required string correlationId = 1;</code>
+         * @param value The correlationId to set.
+         * @return This builder for chaining.
+         */
+        public Builder setCorrelationId(
+            java.lang.String value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+          correlationId_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>required string correlationId = 1;</code>
+         * @return This builder for chaining.
+         */
+        public Builder clearCorrelationId() {
+          bitField0_ = (bitField0_ & ~0x00000001);
+          correlationId_ = getDefaultInstance().getCorrelationId();
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>required string correlationId = 1;</code>
+         * @param value The bytes for correlationId to set.
+         * @return This builder for chaining.
+         */
+        public Builder setCorrelationIdBytes(
+            com.google.protobuf.ByteString value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+          correlationId_ = value;
+          onChanged();
+          return this;
+        }
+
+        private int status_ = 0;
+        /**
+         * <code>required .diozero.Status status = 2;</code>
+         * @return Whether the status field is set.
+         */
+        @java.lang.Override public boolean hasStatus() {
+          return ((bitField0_ & 0x00000002) != 0);
+        }
+        /**
+         * <code>required .diozero.Status status = 2;</code>
+         * @return The status.
+         */
+        @java.lang.Override
+        public com.diozero.remote.message.protobuf.DiozeroProtos.Status getStatus() {
+          @SuppressWarnings("deprecation")
+          com.diozero.remote.message.protobuf.DiozeroProtos.Status result = com.diozero.remote.message.protobuf.DiozeroProtos.Status.valueOf(status_);
+          return result == null ? com.diozero.remote.message.protobuf.DiozeroProtos.Status.OK : result;
+        }
+        /**
+         * <code>required .diozero.Status status = 2;</code>
+         * @param value The status to set.
+         * @return This builder for chaining.
+         */
+        public Builder setStatus(com.diozero.remote.message.protobuf.DiozeroProtos.Status value) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          bitField0_ |= 0x00000002;
+          status_ = value.getNumber();
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>required .diozero.Status status = 2;</code>
+         * @return This builder for chaining.
+         */
+        public Builder clearStatus() {
+          bitField0_ = (bitField0_ & ~0x00000002);
+          status_ = 0;
+          onChanged();
+          return this;
+        }
+
+        private java.lang.Object detail_ = "";
+        /**
+         * <code>optional string detail = 3;</code>
+         * @return Whether the detail field is set.
+         */
+        public boolean hasDetail() {
+          return ((bitField0_ & 0x00000004) != 0);
+        }
+        /**
+         * <code>optional string detail = 3;</code>
+         * @return The detail.
+         */
+        public java.lang.String getDetail() {
+          java.lang.Object ref = detail_;
+          if (!(ref instanceof java.lang.String)) {
+            com.google.protobuf.ByteString bs =
+                (com.google.protobuf.ByteString) ref;
+            java.lang.String s = bs.toStringUtf8();
+            if (bs.isValidUtf8()) {
+              detail_ = s;
+            }
+            return s;
+          } else {
+            return (java.lang.String) ref;
+          }
+        }
+        /**
+         * <code>optional string detail = 3;</code>
+         * @return The bytes for detail.
+         */
+        public com.google.protobuf.ByteString
+            getDetailBytes() {
+          java.lang.Object ref = detail_;
+          if (ref instanceof String) {
+            com.google.protobuf.ByteString b = 
+                com.google.protobuf.ByteString.copyFromUtf8(
+                    (java.lang.String) ref);
+            detail_ = b;
+            return b;
+          } else {
+            return (com.google.protobuf.ByteString) ref;
+          }
+        }
+        /**
+         * <code>optional string detail = 3;</code>
+         * @param value The detail to set.
+         * @return This builder for chaining.
+         */
+        public Builder setDetail(
+            java.lang.String value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000004;
+          detail_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>optional string detail = 3;</code>
+         * @return This builder for chaining.
+         */
+        public Builder clearDetail() {
+          bitField0_ = (bitField0_ & ~0x00000004);
+          detail_ = getDefaultInstance().getDetail();
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>optional string detail = 3;</code>
+         * @param value The bytes for detail to set.
+         * @return This builder for chaining.
+         */
+        public Builder setDetailBytes(
+            com.google.protobuf.ByteString value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000004;
+          detail_ = value;
+          onChanged();
+          return this;
+        }
+
+        private int bytesAvailable_ ;
+        /**
+         * <code>optional int32 bytesAvailable = 4;</code>
+         * @return Whether the bytesAvailable field is set.
+         */
+        @java.lang.Override
+        public boolean hasBytesAvailable() {
+          return ((bitField0_ & 0x00000008) != 0);
+        }
+        /**
+         * <code>optional int32 bytesAvailable = 4;</code>
+         * @return The bytesAvailable.
+         */
+        @java.lang.Override
+        public int getBytesAvailable() {
+          return bytesAvailable_;
+        }
+        /**
+         * <code>optional int32 bytesAvailable = 4;</code>
+         * @param value The bytesAvailable to set.
+         * @return This builder for chaining.
+         */
+        public Builder setBytesAvailable(int value) {
+          bitField0_ |= 0x00000008;
+          bytesAvailable_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>optional int32 bytesAvailable = 4;</code>
+         * @return This builder for chaining.
+         */
+        public Builder clearBytesAvailable() {
+          bitField0_ = (bitField0_ & ~0x00000008);
+          bytesAvailable_ = 0;
+          onChanged();
+          return this;
+        }
+        @java.lang.Override
+        public final Builder setUnknownFields(
+            final com.google.protobuf.UnknownFieldSet unknownFields) {
+          return super.setUnknownFields(unknownFields);
+        }
+
+        @java.lang.Override
+        public final Builder mergeUnknownFields(
+            final com.google.protobuf.UnknownFieldSet unknownFields) {
+          return super.mergeUnknownFields(unknownFields);
+        }
+
+
+        // @@protoc_insertion_point(builder_scope:diozero.Serial.BytesAvailableResponse)
+      }
+
+      // @@protoc_insertion_point(class_scope:diozero.Serial.BytesAvailableResponse)
+      private static final com.diozero.remote.message.protobuf.DiozeroProtos.Serial.BytesAvailableResponse DEFAULT_INSTANCE;
+      static {
+        DEFAULT_INSTANCE = new com.diozero.remote.message.protobuf.DiozeroProtos.Serial.BytesAvailableResponse();
+      }
+
+      public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial.BytesAvailableResponse getDefaultInstance() {
+        return DEFAULT_INSTANCE;
+      }
+
+      @java.lang.Deprecated public static final com.google.protobuf.Parser<BytesAvailableResponse>
+          PARSER = new com.google.protobuf.AbstractParser<BytesAvailableResponse>() {
+        @java.lang.Override
+        public BytesAvailableResponse parsePartialFrom(
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return new BytesAvailableResponse(input, extensionRegistry);
+        }
+      };
+
+      public static com.google.protobuf.Parser<BytesAvailableResponse> parser() {
+        return PARSER;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Parser<BytesAvailableResponse> getParserForType() {
+        return PARSER;
+      }
+
+      @java.lang.Override
+      public com.diozero.remote.message.protobuf.DiozeroProtos.Serial.BytesAvailableResponse getDefaultInstanceForType() {
+        return DEFAULT_INSTANCE;
+      }
+
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof com.diozero.remote.message.protobuf.DiozeroProtos.Serial)) {
+        return super.equals(obj);
+      }
+      com.diozero.remote.message.protobuf.DiozeroProtos.Serial other = (com.diozero.remote.message.protobuf.DiozeroProtos.Serial) obj;
+
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(com.diozero.remote.message.protobuf.DiozeroProtos.Serial prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code diozero.Serial}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:diozero.Serial)
+        com.diozero.remote.message.protobuf.DiozeroProtos.SerialOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return com.diozero.remote.message.protobuf.DiozeroProtos.internal_static_diozero_Serial_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return com.diozero.remote.message.protobuf.DiozeroProtos.internal_static_diozero_Serial_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                com.diozero.remote.message.protobuf.DiozeroProtos.Serial.class, com.diozero.remote.message.protobuf.DiozeroProtos.Serial.Builder.class);
+      }
+
+      // Construct using com.diozero.remote.message.protobuf.DiozeroProtos.Serial.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return com.diozero.remote.message.protobuf.DiozeroProtos.internal_static_diozero_Serial_descriptor;
+      }
+
+      @java.lang.Override
+      public com.diozero.remote.message.protobuf.DiozeroProtos.Serial getDefaultInstanceForType() {
+        return com.diozero.remote.message.protobuf.DiozeroProtos.Serial.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public com.diozero.remote.message.protobuf.DiozeroProtos.Serial build() {
+        com.diozero.remote.message.protobuf.DiozeroProtos.Serial result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public com.diozero.remote.message.protobuf.DiozeroProtos.Serial buildPartial() {
+        com.diozero.remote.message.protobuf.DiozeroProtos.Serial result = new com.diozero.remote.message.protobuf.DiozeroProtos.Serial(this);
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof com.diozero.remote.message.protobuf.DiozeroProtos.Serial) {
+          return mergeFrom((com.diozero.remote.message.protobuf.DiozeroProtos.Serial)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(com.diozero.remote.message.protobuf.DiozeroProtos.Serial other) {
+        if (other == com.diozero.remote.message.protobuf.DiozeroProtos.Serial.getDefaultInstance()) return this;
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        com.diozero.remote.message.protobuf.DiozeroProtos.Serial parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (com.diozero.remote.message.protobuf.DiozeroProtos.Serial) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:diozero.Serial)
+    }
+
+    // @@protoc_insertion_point(class_scope:diozero.Serial)
+    private static final com.diozero.remote.message.protobuf.DiozeroProtos.Serial DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new com.diozero.remote.message.protobuf.DiozeroProtos.Serial();
+    }
+
+    public static com.diozero.remote.message.protobuf.DiozeroProtos.Serial getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    @java.lang.Deprecated public static final com.google.protobuf.Parser<Serial>
+        PARSER = new com.google.protobuf.AbstractParser<Serial>() {
+      @java.lang.Override
+      public Serial parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new Serial(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<Serial> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<Serial> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.diozero.remote.message.protobuf.DiozeroProtos.Serial getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
@@ -37802,6 +48308,61 @@ public final class DiozeroProtos {
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_diozero_Spi_SpiResponse_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_diozero_Serial_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_diozero_Serial_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_diozero_Serial_Open_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_diozero_Serial_Open_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_diozero_Serial_ReadByte_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_diozero_Serial_ReadByte_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_diozero_Serial_WriteByte_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_diozero_Serial_WriteByte_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_diozero_Serial_Read_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_diozero_Serial_Read_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_diozero_Serial_Write_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_diozero_Serial_Write_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_diozero_Serial_BytesAvailable_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_diozero_Serial_BytesAvailable_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_diozero_Serial_Close_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_diozero_Serial_Close_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_diozero_Serial_ReadByteResponse_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_diozero_Serial_ReadByteResponse_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_diozero_Serial_ReadResponse_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_diozero_Serial_ReadResponse_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_diozero_Serial_BytesAvailableResponse_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_diozero_Serial_BytesAvailableResponse_fieldAccessorTable;
 
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -37865,7 +48426,7 @@ public final class DiozeroProtos {
       "GER_BOTH\020\003\"s\n\010GpioMode\022\021\n\rDIGITAL_INPUT\020" +
       "\000\022\022\n\016DIGITAL_OUTPUT\020\001\022\016\n\nPWM_OUTPUT\020\002\022\020\n" +
       "\014ANALOG_INPUT\020\003\022\021\n\rANALOG_OUTPUT\020\004\022\013\n\007UN" +
-      "KNOWN\020\005\"\377\010\n\003I2C\032o\n\004Open\022\025\n\rcorrelationId" +
+      "KNOWN\020\005\"\261\t\n\003I2C\032o\n\004Open\022\025\n\rcorrelationId" +
       "\030\001 \002(\t\022\022\n\ncontroller\030\002 \002(\005\022\017\n\007address\030\003 " +
       "\002(\005\022\023\n\013addressSize\030\004 \002(\005\022\026\n\016clockFrequen" +
       "cy\030\005 \002(\005\032F\n\010ReadByte\022\025\n\rcorrelationId\030\001 " +
@@ -37881,36 +48442,57 @@ public final class DiozeroProtos {
       "ress\030\003 \002(\005\022\020\n\010register\030\004 \002(\005\032k\n\rWriteByt" +
       "eData\022\025\n\rcorrelationId\030\001 \002(\t\022\022\n\ncontroll" +
       "er\030\002 \002(\005\022\017\n\007address\030\003 \002(\005\022\020\n\010register\030\004 " +
-      "\002(\005\022\014\n\004data\030\005 \002(\005\032p\n\020ReadI2CBlockData\022\025\n" +
-      "\rcorrelationId\030\001 \002(\t\022\022\n\ncontroller\030\002 \002(\005" +
-      "\022\017\n\007address\030\003 \002(\005\022\020\n\010register\030\004 \002(\005\022\016\n\006l" +
-      "ength\030\005 \002(\005\032o\n\021WriteI2CBlockData\022\025\n\rcorr" +
-      "elationId\030\001 \002(\t\022\022\n\ncontroller\030\002 \002(\005\022\017\n\007a" +
-      "ddress\030\003 \002(\005\022\020\n\010register\030\004 \002(\005\022\014\n\004data\030\005" +
-      " \002(\014\032C\n\005Close\022\025\n\rcorrelationId\030\001 \002(\t\022\022\n\n" +
-      "controller\030\002 \002(\005\022\017\n\007address\030\003 \002(\005\032h\n\020Rea" +
-      "dByteResponse\022\025\n\rcorrelationId\030\001 \002(\t\022\037\n\006" +
-      "status\030\002 \002(\0162\017.diozero.Status\022\016\n\006detail\030" +
-      "\003 \001(\t\022\014\n\004data\030\004 \001(\005\032d\n\014ReadResponse\022\025\n\rc" +
-      "orrelationId\030\001 \002(\t\022\037\n\006status\030\002 \002(\0162\017.dio" +
-      "zero.Status\022\016\n\006detail\030\003 \001(\t\022\014\n\004data\030\004 \001(" +
-      "\014\"\300\004\n\003Spi\032\225\001\n\004Open\022\025\n\rcorrelationId\030\001 \002(" +
-      "\t\022\022\n\ncontroller\030\002 \002(\005\022\022\n\nchipSelect\030\003 \002(" +
-      "\005\022\021\n\tfrequency\030\004 \002(\005\022)\n\tclockMode\030\005 \002(\0162" +
-      "\026.diozero.Spi.ClockMode\022\020\n\010lsbFirst\030\006 \002(" +
-      "\010\032V\n\005Write\022\025\n\rcorrelationId\030\001 \002(\t\022\022\n\ncon" +
-      "troller\030\002 \002(\005\022\022\n\nchipSelect\030\003 \002(\005\022\016\n\006txD" +
-      "ata\030\004 \002(\014\032]\n\014WriteAndRead\022\025\n\rcorrelation" +
-      "Id\030\001 \002(\t\022\022\n\ncontroller\030\002 \002(\005\022\022\n\nchipSele" +
-      "ct\030\003 \002(\005\022\016\n\006txData\030\004 \002(\014\032F\n\005Close\022\025\n\rcor" +
-      "relationId\030\001 \002(\t\022\022\n\ncontroller\030\002 \002(\005\022\022\n\n" +
-      "chipSelect\030\003 \002(\005\032e\n\013SpiResponse\022\025\n\rcorre" +
-      "lationId\030\001 \002(\t\022\037\n\006status\030\002 \002(\0162\017.diozero" +
-      ".Status\022\016\n\006detail\030\003 \001(\t\022\016\n\006rxData\030\004 \001(\014\"" +
-      ";\n\tClockMode\022\n\n\006MODE_0\020\000\022\n\n\006MODE_1\020\001\022\n\n\006" +
-      "MODE_2\020\002\022\n\n\006MODE_3\020\003*\033\n\006Status\022\006\n\002OK\020\000\022\t" +
-      "\n\005ERROR\020\001B+\n\032com.diozero.remote.messageB" +
-      "\rDiozeroProtos"
+      "\002(\005\022\014\n\004data\030\005 \002(\005\032\210\001\n\020ReadI2CBlockData\022\025" +
+      "\n\rcorrelationId\030\001 \002(\t\022\022\n\ncontroller\030\002 \002(" +
+      "\005\022\017\n\007address\030\003 \002(\005\022\020\n\010register\030\004 \002(\005\022\026\n\016" +
+      "subAddressSize\030\005 \002(\005\022\016\n\006length\030\006 \002(\005\032\207\001\n" +
+      "\021WriteI2CBlockData\022\025\n\rcorrelationId\030\001 \002(" +
+      "\t\022\022\n\ncontroller\030\002 \002(\005\022\017\n\007address\030\003 \002(\005\022\020" +
+      "\n\010register\030\004 \002(\005\022\026\n\016subAddressSize\030\005 \002(\005" +
+      "\022\014\n\004data\030\006 \002(\014\032C\n\005Close\022\025\n\rcorrelationId" +
+      "\030\001 \002(\t\022\022\n\ncontroller\030\002 \002(\005\022\017\n\007address\030\003 " +
+      "\002(\005\032h\n\020ReadByteResponse\022\025\n\rcorrelationId" +
+      "\030\001 \002(\t\022\037\n\006status\030\002 \002(\0162\017.diozero.Status\022" +
+      "\016\n\006detail\030\003 \001(\t\022\014\n\004data\030\004 \001(\005\032d\n\014ReadRes" +
+      "ponse\022\025\n\rcorrelationId\030\001 \002(\t\022\037\n\006status\030\002" +
+      " \002(\0162\017.diozero.Status\022\016\n\006detail\030\003 \001(\t\022\014\n" +
+      "\004data\030\004 \001(\014\"\300\004\n\003Spi\032\225\001\n\004Open\022\025\n\rcorrelat" +
+      "ionId\030\001 \002(\t\022\022\n\ncontroller\030\002 \002(\005\022\022\n\nchipS" +
+      "elect\030\003 \002(\005\022\021\n\tfrequency\030\004 \002(\005\022)\n\tclockM" +
+      "ode\030\005 \002(\0162\026.diozero.Spi.ClockMode\022\020\n\010lsb" +
+      "First\030\006 \002(\010\032V\n\005Write\022\025\n\rcorrelationId\030\001 " +
+      "\002(\t\022\022\n\ncontroller\030\002 \002(\005\022\022\n\nchipSelect\030\003 " +
+      "\002(\005\022\016\n\006txData\030\004 \002(\014\032]\n\014WriteAndRead\022\025\n\rc" +
+      "orrelationId\030\001 \002(\t\022\022\n\ncontroller\030\002 \002(\005\022\022" +
+      "\n\nchipSelect\030\003 \002(\005\022\016\n\006txData\030\004 \002(\014\032F\n\005Cl" +
+      "ose\022\025\n\rcorrelationId\030\001 \002(\t\022\022\n\ncontroller" +
+      "\030\002 \002(\005\022\022\n\nchipSelect\030\003 \002(\005\032e\n\013SpiRespons" +
+      "e\022\025\n\rcorrelationId\030\001 \002(\t\022\037\n\006status\030\002 \002(\016" +
+      "2\017.diozero.Status\022\016\n\006detail\030\003 \001(\t\022\016\n\006rxD" +
+      "ata\030\004 \001(\014\";\n\tClockMode\022\n\n\006MODE_0\020\000\022\n\n\006MO" +
+      "DE_1\020\001\022\n\n\006MODE_2\020\002\022\n\n\006MODE_3\020\003\"\211\006\n\006Seria" +
+      "l\032l\n\004Open\022\025\n\rcorrelationId\030\001 \002(\t\022\013\n\003tty\030" +
+      "\002 \002(\t\022\014\n\004baud\030\003 \002(\005\022\020\n\010dataBits\030\004 \002(\005\022\016\n" +
+      "\006parity\030\005 \002(\005\022\020\n\010stopBits\030\006 \002(\005\032.\n\010ReadB" +
+      "yte\022\025\n\rcorrelationId\030\001 \002(\t\022\013\n\003tty\030\002 \002(\t\032" +
+      "=\n\tWriteByte\022\025\n\rcorrelationId\030\001 \002(\t\022\013\n\003t" +
+      "ty\030\002 \002(\t\022\014\n\004data\030\003 \002(\005\032:\n\004Read\022\025\n\rcorrel" +
+      "ationId\030\001 \002(\t\022\013\n\003tty\030\002 \002(\t\022\016\n\006length\030\003 \002" +
+      "(\005\0329\n\005Write\022\025\n\rcorrelationId\030\001 \002(\t\022\013\n\003tt" +
+      "y\030\002 \002(\t\022\014\n\004data\030\003 \002(\014\0324\n\016BytesAvailable\022" +
+      "\025\n\rcorrelationId\030\001 \002(\t\022\013\n\003tty\030\002 \002(\t\032+\n\005C" +
+      "lose\022\025\n\rcorrelationId\030\001 \002(\t\022\013\n\003tty\030\002 \002(\t" +
+      "\032h\n\020ReadByteResponse\022\025\n\rcorrelationId\030\001 " +
+      "\002(\t\022\037\n\006status\030\002 \002(\0162\017.diozero.Status\022\016\n\006" +
+      "detail\030\003 \001(\t\022\014\n\004data\030\004 \001(\005\032d\n\014ReadRespon" +
+      "se\022\025\n\rcorrelationId\030\001 \002(\t\022\037\n\006status\030\002 \002(" +
+      "\0162\017.diozero.Status\022\016\n\006detail\030\003 \001(\t\022\014\n\004da" +
+      "ta\030\004 \001(\014\032x\n\026BytesAvailableResponse\022\025\n\rco" +
+      "rrelationId\030\001 \002(\t\022\037\n\006status\030\002 \002(\0162\017.dioz" +
+      "ero.Status\022\016\n\006detail\030\003 \001(\t\022\026\n\016bytesAvail" +
+      "able\030\004 \001(\005*\033\n\006Status\022\006\n\002OK\020\000\022\t\n\005ERROR\020\001B" +
+      "4\n#com.diozero.remote.message.protobufB\r" +
+      "DiozeroProtos"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -38113,13 +48695,13 @@ public final class DiozeroProtos {
     internal_static_diozero_I2C_ReadI2CBlockData_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_diozero_I2C_ReadI2CBlockData_descriptor,
-        new java.lang.String[] { "CorrelationId", "Controller", "Address", "Register", "Length", });
+        new java.lang.String[] { "CorrelationId", "Controller", "Address", "Register", "SubAddressSize", "Length", });
     internal_static_diozero_I2C_WriteI2CBlockData_descriptor =
       internal_static_diozero_I2C_descriptor.getNestedTypes().get(8);
     internal_static_diozero_I2C_WriteI2CBlockData_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_diozero_I2C_WriteI2CBlockData_descriptor,
-        new java.lang.String[] { "CorrelationId", "Controller", "Address", "Register", "Data", });
+        new java.lang.String[] { "CorrelationId", "Controller", "Address", "Register", "SubAddressSize", "Data", });
     internal_static_diozero_I2C_Close_descriptor =
       internal_static_diozero_I2C_descriptor.getNestedTypes().get(9);
     internal_static_diozero_I2C_Close_fieldAccessorTable = new
@@ -38174,6 +48756,72 @@ public final class DiozeroProtos {
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_diozero_Spi_SpiResponse_descriptor,
         new java.lang.String[] { "CorrelationId", "Status", "Detail", "RxData", });
+    internal_static_diozero_Serial_descriptor =
+      getDescriptor().getMessageTypes().get(5);
+    internal_static_diozero_Serial_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_diozero_Serial_descriptor,
+        new java.lang.String[] { });
+    internal_static_diozero_Serial_Open_descriptor =
+      internal_static_diozero_Serial_descriptor.getNestedTypes().get(0);
+    internal_static_diozero_Serial_Open_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_diozero_Serial_Open_descriptor,
+        new java.lang.String[] { "CorrelationId", "Tty", "Baud", "DataBits", "Parity", "StopBits", });
+    internal_static_diozero_Serial_ReadByte_descriptor =
+      internal_static_diozero_Serial_descriptor.getNestedTypes().get(1);
+    internal_static_diozero_Serial_ReadByte_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_diozero_Serial_ReadByte_descriptor,
+        new java.lang.String[] { "CorrelationId", "Tty", });
+    internal_static_diozero_Serial_WriteByte_descriptor =
+      internal_static_diozero_Serial_descriptor.getNestedTypes().get(2);
+    internal_static_diozero_Serial_WriteByte_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_diozero_Serial_WriteByte_descriptor,
+        new java.lang.String[] { "CorrelationId", "Tty", "Data", });
+    internal_static_diozero_Serial_Read_descriptor =
+      internal_static_diozero_Serial_descriptor.getNestedTypes().get(3);
+    internal_static_diozero_Serial_Read_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_diozero_Serial_Read_descriptor,
+        new java.lang.String[] { "CorrelationId", "Tty", "Length", });
+    internal_static_diozero_Serial_Write_descriptor =
+      internal_static_diozero_Serial_descriptor.getNestedTypes().get(4);
+    internal_static_diozero_Serial_Write_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_diozero_Serial_Write_descriptor,
+        new java.lang.String[] { "CorrelationId", "Tty", "Data", });
+    internal_static_diozero_Serial_BytesAvailable_descriptor =
+      internal_static_diozero_Serial_descriptor.getNestedTypes().get(5);
+    internal_static_diozero_Serial_BytesAvailable_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_diozero_Serial_BytesAvailable_descriptor,
+        new java.lang.String[] { "CorrelationId", "Tty", });
+    internal_static_diozero_Serial_Close_descriptor =
+      internal_static_diozero_Serial_descriptor.getNestedTypes().get(6);
+    internal_static_diozero_Serial_Close_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_diozero_Serial_Close_descriptor,
+        new java.lang.String[] { "CorrelationId", "Tty", });
+    internal_static_diozero_Serial_ReadByteResponse_descriptor =
+      internal_static_diozero_Serial_descriptor.getNestedTypes().get(7);
+    internal_static_diozero_Serial_ReadByteResponse_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_diozero_Serial_ReadByteResponse_descriptor,
+        new java.lang.String[] { "CorrelationId", "Status", "Detail", "Data", });
+    internal_static_diozero_Serial_ReadResponse_descriptor =
+      internal_static_diozero_Serial_descriptor.getNestedTypes().get(8);
+    internal_static_diozero_Serial_ReadResponse_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_diozero_Serial_ReadResponse_descriptor,
+        new java.lang.String[] { "CorrelationId", "Status", "Detail", "Data", });
+    internal_static_diozero_Serial_BytesAvailableResponse_descriptor =
+      internal_static_diozero_Serial_descriptor.getNestedTypes().get(9);
+    internal_static_diozero_Serial_BytesAvailableResponse_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_diozero_Serial_BytesAvailableResponse_descriptor,
+        new java.lang.String[] { "CorrelationId", "Status", "Detail", "BytesAvailable", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)

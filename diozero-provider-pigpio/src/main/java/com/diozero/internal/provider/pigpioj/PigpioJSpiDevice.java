@@ -78,7 +78,7 @@ public class PigpioJSpiDevice extends AbstractDevice implements SpiDeviceInterfa
 				
 		int rc = pigpioImpl.spiWrite(handle, txBuffer, 0, txBuffer.length);
 		if (rc < 0) {
-			throw new RuntimeIOException("Error calling pigpioImpl.write(), response: " + rc);
+			throw new RuntimeIOException("Error calling pigpioImpl.spiWrite(), response: " + rc);
 		}
 	}
 	
@@ -90,7 +90,7 @@ public class PigpioJSpiDevice extends AbstractDevice implements SpiDeviceInterfa
 		
 		int rc = pigpioImpl.spiWrite(handle, txBuffer, offset, length);
 		if (rc < 0) {
-			throw new RuntimeIOException("Error calling pigpioImpl.write(), response: " + rc);
+			throw new RuntimeIOException("Error calling pigpioImpl.spiWrite(), response: " + rc);
 		}
 	}
 

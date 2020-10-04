@@ -93,4 +93,20 @@ public interface HttpProviderConstants {
 	static final String SPI_CLOSE_URL = SPI_REQUEST_URL + "/close";
 	// SPI Responses
 	static final String SPI_RXDATA_RESPONSE_URL = RESPONSE_URL + "/spiRxData";
+
+	// Serial
+	static final String SERIAL_SUB_URL = "/serial";
+	static final String SERIAL_REQUEST_URL = REQUEST_URL + SERIAL_SUB_URL;
+	// Serial Requests
+	static final String SERIAL_OPEN_URL = SERIAL_REQUEST_URL + "/open";
+	static final String SERIAL_READ_BYTE_URL = SERIAL_REQUEST_URL + "/readByte";
+	static final String SERIAL_WRITE_BYTE_URL = SERIAL_REQUEST_URL + "/writeByte";
+	static final String SERIAL_READ_URL = SERIAL_REQUEST_URL + "/read";
+	static final String SERIAL_WRITE_URL = SERIAL_REQUEST_URL + "/write";
+	static final String SERIAL_BYTES_AVAILABLE_URL = SERIAL_REQUEST_URL + "/bytesAvailable";
+	static final String SERIAL_CLOSE_URL = SERIAL_REQUEST_URL + "/close";
+	// Serial Responses
+	static final String SERIAL_READ_BYTE_RESPONSE_URL = RESPONSE_URL + "/serialReadByte";
+	static final String SERIAL_READ_RESPONSE_URL = RESPONSE_URL + "/serialRead";
+	static final String SERIAL_BYTES_AVAILABLE_RESPONSE_URL = RESPONSE_URL + "/serialBytesAvailable";
 }

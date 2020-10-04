@@ -94,4 +94,19 @@ public interface MqttProviderConstants {
 	static final String SPI_CLOSE_TOPIC = SPI_REQUEST_TOPIC + "/close";
 	// SPI Responses
 	static final String SPI_RXDATA_RESPONSE_TOPIC = RESPONSE_TOPIC + "/spiRxData";
+
+	// Serial
+	static final String SERIAL_SUB_TOPIC = "/serial";
+	static final String SERIAL_REQUEST_TOPIC = REQUEST_TOPIC + SERIAL_SUB_TOPIC;
+	// Serial Requests
+	static final String SERIAL_OPEN_TOPIC = SERIAL_REQUEST_TOPIC + "/open";
+	static final String SERIAL_READ_BYTE_TOPIC = SPI_REQUEST_TOPIC + "/readByte";
+	static final String SERIAL_WRITE_BYTE_TOPIC = SPI_REQUEST_TOPIC + "/writeByte";
+	static final String SERIAL_READ_TOPIC = SPI_REQUEST_TOPIC + "/read";
+	static final String SERIAL_WRITE_TOPIC = SPI_REQUEST_TOPIC + "/write";
+	static final String SERIAL_BYTES_AVAILABLE_TOPIC = SPI_REQUEST_TOPIC + "/bytesAvailable";
+	static final String SERIAL_CLOSE_TOPIC = SPI_REQUEST_TOPIC + "/close";
+	// Serial Responses
+	static final String SERIAL_READ_BYTE_RESPONSE_TOPIC = RESPONSE_TOPIC + "/serialReadByte";
+	static final String SERIAL_READ_RESPONSE_TOPIC = RESPONSE_TOPIC + "/serialReadResponse";
 }

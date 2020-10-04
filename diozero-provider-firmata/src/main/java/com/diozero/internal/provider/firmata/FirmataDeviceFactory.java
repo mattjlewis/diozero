@@ -31,7 +31,6 @@ package com.diozero.internal.provider.firmata;
  * #L%
  */
 
-
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
@@ -48,6 +47,7 @@ import com.diozero.api.GpioEventTrigger;
 import com.diozero.api.GpioPullUpDown;
 import com.diozero.api.InvalidModeException;
 import com.diozero.api.PinInfo;
+import com.diozero.api.SerialDevice;
 import com.diozero.api.SpiClockMode;
 import com.diozero.internal.provider.AnalogInputDeviceInterface;
 import com.diozero.internal.provider.AnalogOutputDeviceInterface;
@@ -57,6 +57,7 @@ import com.diozero.internal.provider.GpioDigitalInputOutputDeviceInterface;
 import com.diozero.internal.provider.GpioDigitalOutputDeviceInterface;
 import com.diozero.internal.provider.I2CDeviceInterface;
 import com.diozero.internal.provider.PwmOutputDeviceInterface;
+import com.diozero.internal.provider.SerialDeviceInterface;
 import com.diozero.internal.provider.SpiDeviceInterface;
 import com.diozero.util.BoardInfo;
 import com.diozero.util.PropertyUtil;
@@ -64,18 +65,18 @@ import com.diozero.util.RuntimeIOException;
 
 public class FirmataDeviceFactory extends BaseNativeDeviceFactory {
 	public static final String DEVICE_NAME = "Firmata";
-	
+
 	private IODevice ioDevice;
-	
+
 	public FirmataDeviceFactory() {
 		Logger.warn("*** Do NOT use this device factory for servo control; not yet implemented!");
-		
+
 		String port_name = PropertyUtil.getProperty("FIRMATA_SERIAL_PORT", null);
 		if (port_name == null) {
 			throw new IllegalArgumentException("Error, FIRMATA_SERIAL_PORT not set");
 		}
 		ioDevice = new FirmataDevice(port_name);
-		
+
 		try {
 			ioDevice.start();
 			Logger.info("Waiting for Firmata device '" + port_name + "' to initialise");
@@ -85,16 +86,19 @@ public class FirmataDeviceFactory extends BaseNativeDeviceFactory {
 			throw new RuntimeIOException(e);
 		}
 	}
-	
+
 	@Override
 	public void close() {
 		Logger.info("close()");
 		super.close();
 		if (ioDevice != null) {
-			try { ioDevice.stop(); } catch (Exception e) {}
+			try {
+				ioDevice.stop();
+			} catch (Exception e) {
+			}
 		}
 	}
-	
+
 	IODevice getIoDevice() {
 		return ioDevice;
 	}
@@ -103,15 +107,15 @@ public class FirmataDeviceFactory extends BaseNativeDeviceFactory {
 	public String getName() {
 		return DEVICE_NAME;
 	}
-	
+
 	@Override
 	protected BoardInfo initialiseBoardInfo() {
 		BoardInfo board_info = new FirmataBoardInfo(ioDevice);
 		board_info.initialisePins();
-		
+
 		return board_info;
 	}
-	
+
 	@Override
 	public int getBoardPwmFrequency() {
 		/*
@@ -128,44 +132,45 @@ public class FirmataDeviceFactory extends BaseNativeDeviceFactory {
 			return 62500;
 		}
 		return -1;
-		*/
+		 */
 		//
 		return 62500;
 	}
-	
+
 	@Override
 	public void setBoardPwmFrequency(int frequency) {
 		// Ignore
 		Logger.warn("Not implemented");
 	}
-	
+
 	@Override
 	public AnalogInputDeviceInterface provisionAnalogInputDevice(int gpio) {
-		// Special case - The Arduino can switch between digital and analog input hence use of gpio rather than adc
+		// Special case - The Arduino can switch between digital and analog input hence
+		// use of gpio rather than adc
 		PinInfo pin_info = getBoardPinInfo().getByGpioNumber(gpio);
-		if (pin_info == null || ! pin_info.isSupported(DeviceMode.ANALOG_INPUT)) {
+		if (pin_info == null || !pin_info.isSupported(DeviceMode.ANALOG_INPUT)) {
 			throw new InvalidModeException("Invalid mode (analog input) for GPIO " + gpio);
 		}
-		
+
 		String key = createPinKey(pin_info);
-		
+
 		// Check if this pin is already provisioned
 		if (isDeviceOpened(key)) {
 			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
 		}
-		
+
 		AnalogInputDeviceInterface device = createAnalogInputDevice(key, pin_info);
 		deviceOpened(device);
-		
+
 		return device;
 	}
-	
+
 	@Override
 	public GpioDigitalInputDeviceInterface createDigitalInputDevice(String key, PinInfo pinInfo, GpioPullUpDown pud,
 			GpioEventTrigger trigger) throws RuntimeIOException {
 		return new FirmataDigitalInputDevice(this, key, pinInfo.getDeviceNumber(), pud, trigger);
 	}
-	
+
 	@Override
 	public GpioDigitalOutputDeviceInterface createDigitalOutputDevice(String key, PinInfo pinInfo, boolean initialValue)
 			throws RuntimeIOException {
@@ -173,36 +178,34 @@ public class FirmataDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	public GpioDigitalInputOutputDeviceInterface createDigitalInputOutputDevice(
-			String key, PinInfo pinInfo, DeviceMode mode)
-			throws RuntimeIOException {
+	public GpioDigitalInputOutputDeviceInterface createDigitalInputOutputDevice(String key, PinInfo pinInfo,
+			DeviceMode mode) throws RuntimeIOException {
 		return new FirmataDigitalInputOutputDevice(this, key, pinInfo.getDeviceNumber(), mode);
 	}
-	
+
 	@Override
-	public PwmOutputDeviceInterface createPwmOutputDevice(String key, PinInfo pinInfo, int pwmFrequency, float initialValue)
-			throws RuntimeIOException {
+	public PwmOutputDeviceInterface createPwmOutputDevice(String key, PinInfo pinInfo, int pwmFrequency,
+			float initialValue) throws RuntimeIOException {
 		return new FirmataPwmOutputDevice(this, key, pinInfo.getDeviceNumber(), initialValue);
 	}
-	
+
 	@Override
-	public AnalogInputDeviceInterface createAnalogInputDevice(String key, PinInfo pinInfo)
-			throws RuntimeIOException {
+	public AnalogInputDeviceInterface createAnalogInputDevice(String key, PinInfo pinInfo) throws RuntimeIOException {
 		return new FirmataAnalogInputDevice(this, key, pinInfo.getDeviceNumber());
 	}
-	
+
 	@Override
-	public AnalogOutputDeviceInterface createAnalogOutputDevice(String key, PinInfo pinInfo)
+	public AnalogOutputDeviceInterface createAnalogOutputDevice(String key, PinInfo pinInfo, float initialValue)
 			throws RuntimeIOException {
 		throw new UnsupportedOperationException("Analog output not supported by device factory '"
 				+ getClass().getSimpleName() + "' on device '" + getBoardInfo().getName() + "'");
 	}
-	
+
 	@Override
 	public SpiDeviceInterface createSpiDevice(String key, int controller, int chipSelect, int frequency,
 			SpiClockMode spiClockMode, boolean lsbFirst) throws RuntimeIOException {
-		throw new UnsupportedOperationException("SPI is not supported by device factory '"
-				+ getClass().getSimpleName() + "' on device '" + getBoardInfo().getName() + "'");
+		throw new UnsupportedOperationException("SPI is not supported by device factory '" + getClass().getSimpleName()
+				+ "' on device '" + getBoardInfo().getName() + "'");
 	}
 
 	@Override
@@ -210,15 +213,21 @@ public class FirmataDeviceFactory extends BaseNativeDeviceFactory {
 			int clockFrequency) throws RuntimeIOException {
 		return new FirmataI2CDevice(this, key, controller, address, addressSize, clockFrequency);
 	}
-	
+
+	@Override
+	public SerialDeviceInterface createSerialDevice(String key, String tty, int baud, SerialDevice.DataBits dataBits,
+			SerialDevice.Parity parity, SerialDevice.StopBits stopBits) throws RuntimeIOException {
+		throw new UnsupportedOperationException("Serial communication not available in the device factory");
+	}
+
 	public static class FirmataBoardInfo extends BoardInfo {
 		private IODevice ioDevice;
-		
+
 		public FirmataBoardInfo(IODevice ioDevice) {
 			super("Firmata", "Unknown", -1, "firmata");
 			this.ioDevice = ioDevice;
 		}
-		
+
 		@Override
 		public void initialisePins() {
 			for (Pin pin : ioDevice.getPins()) {
@@ -229,7 +238,7 @@ public class FirmataDeviceFactory extends BaseNativeDeviceFactory {
 
 		private static Set<DeviceMode> convertModes(Set<Mode> firmataModes) {
 			Set<DeviceMode> modes = new HashSet<>();
-			
+
 			for (Mode firmata_mode : firmataModes) {
 				switch (firmata_mode) {
 				case INPUT:
@@ -248,7 +257,7 @@ public class FirmataDeviceFactory extends BaseNativeDeviceFactory {
 					// Ignore
 				}
 			}
-			
+
 			return modes;
 		}
 	}

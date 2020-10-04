@@ -61,9 +61,9 @@ public interface RemoteProtocolInterface extends Closeable {
 	Response request(I2CWriteByte request);
 	I2CReadResponse request(I2CRead request);
 	Response request(I2CWrite request);
-	I2CReadByteResponse request(I2CReadByteData request);
+	I2CReadByteDataResponse request(I2CReadByteData request);
 	Response request(I2CWriteByteData request);
-	I2CReadResponse request(I2CReadI2CBlockData request);
+	I2CReadI2CBlockDataResponse request(I2CReadI2CBlockData request);
 	Response request(I2CWriteI2CBlockData request);
 	Response request(I2CClose request);
 	
@@ -72,4 +72,13 @@ public interface RemoteProtocolInterface extends Closeable {
 	Response request(SpiWrite request);
 	SpiResponse request(SpiWriteAndRead request);
 	Response request(SpiClose request);
+	
+	// Serial
+	Response request(SerialOpen request);
+	SerialReadByteResponse request(SerialReadByte request);
+	Response request(SerialWriteByte request);
+	SerialReadResponse request(SerialRead request);
+	Response request(SerialWrite request);
+	SerialBytesAvailableResponse request(SerialBytesAvailable request);
+	Response request(SerialClose request);
 }

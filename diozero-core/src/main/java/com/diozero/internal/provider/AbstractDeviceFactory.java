@@ -41,54 +41,59 @@ public abstract class AbstractDeviceFactory implements DeviceFactoryInterface {
 	private String deviceFactoryPrefix;
 	protected DeviceStates deviceStates;
 	protected boolean closed;
-	
+
 	public AbstractDeviceFactory(String deviceFactoryPrefix) {
 		this.deviceFactoryPrefix = deviceFactoryPrefix;
 		deviceStates = new DeviceStates();
 
 		// Register all expansion boards so that they can be cleaned up on shutdown
-		if (! (this instanceof BaseNativeDeviceFactory)) {
+		if (!(this instanceof BaseNativeDeviceFactory)) {
 			DeviceFactoryHelper.getNativeDeviceFactory().registerDeviceFactory(this);
 		}
 	}
-	
+
 	@Override
 	public final String createPinKey(PinInfo pinInfo) {
 		return deviceFactoryPrefix + "-" + pinInfo.getKeyPrefix() + "-" + pinInfo.getDeviceNumber();
 	}
-	
+
 	@Override
 	public final String createI2CKey(int controller, int address) {
 		return I2CDeviceFactoryInterface.createI2CKey(deviceFactoryPrefix, controller, address);
 	}
-	
+
 	@Override
 	public final String createSpiKey(int controller, int chipSelect) {
 		return SpiDeviceFactoryInterface.createSpiKey(deviceFactoryPrefix, controller, chipSelect);
 	}
-	
+
+	@Override
+	public final String createSerialKey(String tty) {
+		return SerialDeviceFactoryInterface.createSerialKey(deviceFactoryPrefix, tty);
+	}
+
 	@Override
 	public void close() {
 		Logger.trace("close()");
 		deviceStates.closeAll();
 		closed = true;
 	}
-	
+
 	@Override
 	public final boolean isClosed() {
 		return closed;
 	}
-	
+
 	@Override
 	public final void deviceOpened(DeviceInterface device) {
 		deviceStates.opened(device);
 	}
-	
+
 	@Override
 	public final void deviceClosed(DeviceInterface device) {
 		deviceStates.closed(device);
 	}
-	
+
 	@Override
 	public final boolean isDeviceOpened(String key) {
 		return deviceStates.isOpened(key);

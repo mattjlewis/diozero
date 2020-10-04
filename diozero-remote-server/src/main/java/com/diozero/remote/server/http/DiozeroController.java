@@ -59,6 +59,13 @@ import com.diozero.remote.message.ProvisionDigitalInputOutputDevice;
 import com.diozero.remote.message.ProvisionDigitalOutputDevice;
 import com.diozero.remote.message.ProvisionPwmOutputDevice;
 import com.diozero.remote.message.Response;
+import com.diozero.remote.message.SerialBytesAvailable;
+import com.diozero.remote.message.SerialClose;
+import com.diozero.remote.message.SerialOpen;
+import com.diozero.remote.message.SerialRead;
+import com.diozero.remote.message.SerialReadByte;
+import com.diozero.remote.message.SerialWrite;
+import com.diozero.remote.message.SerialWriteByte;
 import com.diozero.remote.message.SpiClose;
 import com.diozero.remote.message.SpiOpen;
 import com.diozero.remote.message.SpiWrite;
@@ -165,6 +172,29 @@ public class DiozeroController extends BaseRemoteServer {
 		}, gson::toJson);
 		post(HttpProviderConstants.SPI_CLOSE_URL, (req, res) -> {
 			return request(gson.fromJson(req.body(), SpiClose.class));
+		}, gson::toJson);
+		
+		// Serial
+		post(HttpProviderConstants.SERIAL_OPEN_URL, (req, res) -> {
+			return request(gson.fromJson(req.body(), SerialOpen.class));
+		}, gson::toJson);
+		post(HttpProviderConstants.SERIAL_READ_BYTE_URL, (req, res) -> {
+			return request(gson.fromJson(req.body(), SerialReadByte.class));
+		}, gson::toJson);
+		post(HttpProviderConstants.SERIAL_WRITE_BYTE_URL, (req, res) -> {
+			return request(gson.fromJson(req.body(), SerialWriteByte.class));
+		}, gson::toJson);
+		post(HttpProviderConstants.SERIAL_READ_URL, (req, res) -> {
+			return request(gson.fromJson(req.body(), SerialRead.class));
+		}, gson::toJson);
+		post(HttpProviderConstants.SERIAL_WRITE_URL, (req, res) -> {
+			return request(gson.fromJson(req.body(), SerialWrite.class));
+		}, gson::toJson);
+		post(HttpProviderConstants.SERIAL_BYTES_AVAILABLE_URL, (req, res) -> {
+			return request(gson.fromJson(req.body(), SerialBytesAvailable.class));
+		}, gson::toJson);
+		post(HttpProviderConstants.SERIAL_CLOSE_URL, (req, res) -> {
+			return request(gson.fromJson(req.body(), SerialClose.class));
 		}, gson::toJson);
 	}
 

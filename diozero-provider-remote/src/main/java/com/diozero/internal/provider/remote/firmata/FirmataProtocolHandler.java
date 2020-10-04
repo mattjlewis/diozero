@@ -69,8 +69,10 @@ import com.diozero.remote.message.I2COpen;
 import com.diozero.remote.message.I2CRead;
 import com.diozero.remote.message.I2CReadByte;
 import com.diozero.remote.message.I2CReadByteData;
+import com.diozero.remote.message.I2CReadByteDataResponse;
 import com.diozero.remote.message.I2CReadByteResponse;
 import com.diozero.remote.message.I2CReadI2CBlockData;
+import com.diozero.remote.message.I2CReadI2CBlockDataResponse;
 import com.diozero.remote.message.I2CReadResponse;
 import com.diozero.remote.message.I2CWrite;
 import com.diozero.remote.message.I2CWriteByte;
@@ -84,6 +86,16 @@ import com.diozero.remote.message.ProvisionDigitalOutputDevice;
 import com.diozero.remote.message.ProvisionPwmOutputDevice;
 import com.diozero.remote.message.RemoteProtocolInterface;
 import com.diozero.remote.message.Response;
+import com.diozero.remote.message.SerialBytesAvailable;
+import com.diozero.remote.message.SerialBytesAvailableResponse;
+import com.diozero.remote.message.SerialClose;
+import com.diozero.remote.message.SerialOpen;
+import com.diozero.remote.message.SerialRead;
+import com.diozero.remote.message.SerialReadByte;
+import com.diozero.remote.message.SerialReadByteResponse;
+import com.diozero.remote.message.SerialReadResponse;
+import com.diozero.remote.message.SerialWrite;
+import com.diozero.remote.message.SerialWriteByte;
 import com.diozero.remote.message.SpiClose;
 import com.diozero.remote.message.SpiOpen;
 import com.diozero.remote.message.SpiResponse;
@@ -353,14 +365,14 @@ public class FirmataProtocolHandler implements RemoteProtocolInterface, FirmataE
 	}
 
 	@Override
-	public I2CReadByteResponse request(I2CReadByteData request) {
+	public I2CReadByteDataResponse request(I2CReadByteData request) {
 		try {
 			I2CResponse response = adapter.i2cReadData(request.getAddress(), false, false, request.getRegister(), 1);
 			byte[] data = response.getData();
 			if (data.length != 1) {
 				throw new RuntimeIOException("I2C Error: Expected to read 1 byte, got " + data.length);
 			}
-			return new I2CReadByteResponse(data[0], request.getCorrelationId());
+			return new I2CReadByteDataResponse(data[0], request.getCorrelationId());
 		} catch (IOException e) {
 			throw new RuntimeIOException(e);
 		}
@@ -378,7 +390,7 @@ public class FirmataProtocolHandler implements RemoteProtocolInterface, FirmataE
 	}
 
 	@Override
-	public I2CReadResponse request(I2CReadI2CBlockData request) {
+	public I2CReadI2CBlockDataResponse request(I2CReadI2CBlockData request) {
 		try {
 			I2CResponse response = adapter.i2cReadData(request.getAddress(), false, false, request.getRegister(),
 					request.getLength());
@@ -387,7 +399,7 @@ public class FirmataProtocolHandler implements RemoteProtocolInterface, FirmataE
 				throw new RuntimeIOException(
 						"I2C Error: Expected to read " + request.getLength() + " bytes, got " + data.length);
 			}
-			return new I2CReadResponse(data, request.getCorrelationId());
+			return new I2CReadI2CBlockDataResponse(data, request.getCorrelationId());
 		} catch (IOException e) {
 			throw new RuntimeIOException(e);
 		}
@@ -427,6 +439,41 @@ public class FirmataProtocolHandler implements RemoteProtocolInterface, FirmataE
 	@Override
 	public Response request(SpiClose request) {
 		throw new UnsupportedOperationException("SPI support not yet included in StandardFirmata");
+	}
+
+	@Override
+	public Response request(SerialOpen request) {
+		throw new UnsupportedOperationException("Serial support not yet included in StandardFirmata");
+	}
+
+	@Override
+	public SerialReadByteResponse request(SerialReadByte request) {
+		throw new UnsupportedOperationException("Serial support not yet included in StandardFirmata");
+	}
+
+	@Override
+	public Response request(SerialWriteByte request) {
+		throw new UnsupportedOperationException("Serial support not yet included in StandardFirmata");
+	}
+
+	@Override
+	public SerialReadResponse request(SerialRead request) {
+		throw new UnsupportedOperationException("Serial support not yet included in StandardFirmata");
+	}
+
+	@Override
+	public Response request(SerialWrite request) {
+		throw new UnsupportedOperationException("Serial support not yet included in StandardFirmata");
+	}
+
+	@Override
+	public SerialBytesAvailableResponse request(SerialBytesAvailable request) {
+		throw new UnsupportedOperationException("Serial support not yet included in StandardFirmata");
+	}
+
+	@Override
+	public Response request(SerialClose request) {
+		throw new UnsupportedOperationException("Serial support not yet included in StandardFirmata");
 	}
 
 	@Override

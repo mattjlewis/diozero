@@ -39,6 +39,7 @@ import com.diozero.api.GpioPullUpDown;
 import com.diozero.api.PinInfo;
 import com.diozero.api.PwmPinInfo;
 import com.diozero.api.PwmType;
+import com.diozero.api.SerialDevice;
 import com.diozero.api.SpiClockMode;
 import com.diozero.internal.provider.AnalogInputDeviceInterface;
 import com.diozero.internal.provider.AnalogOutputDeviceInterface;
@@ -48,6 +49,7 @@ import com.diozero.internal.provider.GpioDigitalInputOutputDeviceInterface;
 import com.diozero.internal.provider.GpioDigitalOutputDeviceInterface;
 import com.diozero.internal.provider.I2CDeviceInterface;
 import com.diozero.internal.provider.PwmOutputDeviceInterface;
+import com.diozero.internal.provider.SerialDeviceInterface;
 import com.diozero.internal.provider.SpiDeviceInterface;
 import com.diozero.util.RuntimeIOException;
 import com.pi4j.wiringpi.Gpio;
@@ -57,21 +59,23 @@ public class WiringPiDeviceFactory extends BaseNativeDeviceFactory {
 	private static final int DEFAULT_HARDWARE_PWM_RANGE = 1024;
 	private static final int DEFAULT_HARDWARE_PWM_FREQUENCY = 100;
 	// See https://projects.drogon.net/raspberry-pi/wiringpi/software-pwm-library/
-	// You can lower the range to get a higher frequency, at the expense of resolution,
+	// You can lower the range to get a higher frequency, at the expense of
+	// resolution,
 	// or increase to get more resolution, but that will lower the frequency
 	private static final int PI4J_MIN_SOFTWARE_PULSE_WIDTH_US = 100;
-	
+
 	private int boardPwmFrequency;
 	private int hardwarePwmRange;
-	
+
 	public WiringPiDeviceFactory() {
 		// Initialise using native pin numbering scheme
 		int status = Gpio.wiringPiSetupGpio();
 		if (status != 0) {
 			throw new RuntimeException("Error initialising wiringPi: " + status);
 		}
-		
-		// Default mode is balanced, actually want mark-space which gives traditional PWM with
+
+		// Default mode is balanced, actually want mark-space which gives traditional
+		// PWM with
 		// predictable PWM frequencies
 		setHardwarePwmFrequency(DEFAULT_HARDWARE_PWM_FREQUENCY);
 	}
@@ -85,12 +89,12 @@ public class WiringPiDeviceFactory extends BaseNativeDeviceFactory {
 	public int getBoardPwmFrequency() {
 		return boardPwmFrequency;
 	}
-	
+
 	@Override
 	public void setBoardPwmFrequency(int pwmFrequency) {
 		setHardwarePwmFrequency(pwmFrequency);
 	}
-	
+
 	private void setHardwarePwmFrequency(int pwmFrequency) {
 		// TODO Validate the requested PWM frequency
 		hardwarePwmRange = DEFAULT_HARDWARE_PWM_RANGE;
@@ -99,8 +103,8 @@ public class WiringPiDeviceFactory extends BaseNativeDeviceFactory {
 		Gpio.pwmSetClock(divisor);
 		Gpio.pwmSetMode(Gpio.PWM_MODE_MS);
 		this.boardPwmFrequency = pwmFrequency;
-		Logger.info("setHardwarePwmFrequency({}) - range={}, divisor={}",
-				Integer.valueOf(pwmFrequency), Integer.valueOf(hardwarePwmRange), Integer.valueOf(divisor));
+		Logger.info("setHardwarePwmFrequency({}) - range={}, divisor={}", Integer.valueOf(pwmFrequency),
+				Integer.valueOf(hardwarePwmRange), Integer.valueOf(divisor));
 	}
 
 	private static int calcSoftwarePwmRange(int pwmFrequency) {
@@ -114,8 +118,8 @@ public class WiringPiDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	public GpioDigitalOutputDeviceInterface createDigitalOutputDevice(String key, PinInfo pinInfo,
-			boolean initialValue) throws RuntimeIOException {
+	public GpioDigitalOutputDeviceInterface createDigitalOutputDevice(String key, PinInfo pinInfo, boolean initialValue)
+			throws RuntimeIOException {
 		return new WiringPiDigitalOutputDevice(key, this, pinInfo.getDeviceNumber(), initialValue);
 	}
 
@@ -134,13 +138,16 @@ public class WiringPiDeviceFactory extends BaseNativeDeviceFactory {
 			pwm_type = PwmType.HARDWARE;
 			// PWM frequency is shared across all PWM outputs when using hardware PWM
 			if (pwmFrequency != boardPwmFrequency) {
-				Logger.warn("Requested PWM frequency ({}) is different to that configured for the board ({})"
-						+ "; using board value", Integer.valueOf(pwmFrequency), Integer.valueOf(boardPwmFrequency));
+				Logger.warn(
+						"Requested PWM frequency ({}) is different to that configured for the board ({})"
+								+ "; using board value",
+						Integer.valueOf(pwmFrequency), Integer.valueOf(boardPwmFrequency));
 			}
 		}
 
 		return new WiringPiPwmOutputDevice(key, this, pwm_type,
-				pwm_type == PwmType.HARDWARE ? hardwarePwmRange : calcSoftwarePwmRange(pwmFrequency), gpio, initialValue);
+				pwm_type == PwmType.HARDWARE ? hardwarePwmRange : calcSoftwarePwmRange(pwmFrequency), gpio,
+				initialValue);
 	}
 
 	@Override
@@ -149,7 +156,8 @@ public class WiringPiDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	public AnalogOutputDeviceInterface createAnalogOutputDevice(String key, PinInfo pinInfo) throws RuntimeIOException {
+	public AnalogOutputDeviceInterface createAnalogOutputDevice(String key, PinInfo pinInfo, float initialValue)
+			throws RuntimeIOException {
 		throw new UnsupportedOperationException("Analog devices aren't supported on this device");
 	}
 
@@ -160,8 +168,14 @@ public class WiringPiDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	public I2CDeviceInterface createI2CDevice(String key, int controller, int address, int addressSize, int clockFrequency)
-			throws RuntimeIOException {
+	public I2CDeviceInterface createI2CDevice(String key, int controller, int address, int addressSize,
+			int clockFrequency) throws RuntimeIOException {
 		return new WiringPiI2CDevice(key, this, controller, address, addressSize, clockFrequency);
+	}
+
+	@Override
+	public SerialDeviceInterface createSerialDevice(String key, String tty, int baud, SerialDevice.DataBits dataBits,
+			SerialDevice.Parity parity, SerialDevice.StopBits stopBits) throws RuntimeIOException {
+		throw new UnsupportedOperationException("Serial devices not yet supported in this provider");
 	}
 }

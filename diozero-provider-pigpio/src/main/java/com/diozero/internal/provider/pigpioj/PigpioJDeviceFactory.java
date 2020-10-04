@@ -37,6 +37,7 @@ import com.diozero.api.DeviceMode;
 import com.diozero.api.GpioEventTrigger;
 import com.diozero.api.GpioPullUpDown;
 import com.diozero.api.PinInfo;
+import com.diozero.api.SerialDevice;
 import com.diozero.api.SpiClockMode;
 import com.diozero.internal.board.raspberrypi.RaspberryPiBoardInfoProvider;
 import com.diozero.internal.provider.AnalogInputDeviceInterface;
@@ -47,6 +48,7 @@ import com.diozero.internal.provider.GpioDigitalInputOutputDeviceInterface;
 import com.diozero.internal.provider.GpioDigitalOutputDeviceInterface;
 import com.diozero.internal.provider.I2CDeviceInterface;
 import com.diozero.internal.provider.PwmOutputDeviceInterface;
+import com.diozero.internal.provider.SerialDeviceInterface;
 import com.diozero.internal.provider.SpiDeviceInterface;
 import com.diozero.util.BoardInfo;
 import com.diozero.util.RuntimeIOException;
@@ -63,7 +65,7 @@ public class PigpioJDeviceFactory extends BaseNativeDeviceFactory {
 	public PigpioJDeviceFactory() {
 		pigpioImpl = PigpioJ.getImplementation();
 	}
-	
+
 	public PigpioInterface getPigpio() {
 		return pigpioImpl;
 	}
@@ -83,7 +85,7 @@ public class PigpioJDeviceFactory extends BaseNativeDeviceFactory {
 	protected BoardInfo initialiseBoardInfo() {
 		int hw_rev = pigpioImpl.getHardwareRevision();
 		String hw_rev_hex = String.format("%04x", Integer.valueOf(hw_rev));
-		Logger.info("Hardware revision: {} (0x{})", Integer.valueOf(hw_rev), hw_rev_hex);
+		Logger.debug("Hardware revision: {} (0x{})", Integer.valueOf(hw_rev), hw_rev_hex);
 		BoardInfo board_info = new RaspberryPiBoardInfoProvider().lookup("BCM2835", hw_rev_hex, null);
 		if (board_info == null) {
 			Logger.error("Failed to load RPi board info for {} (0x{})");
@@ -141,8 +143,9 @@ public class PigpioJDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	public AnalogOutputDeviceInterface createAnalogOutputDevice(String key, PinInfo pinInfo) throws RuntimeIOException {
-		throw new UnsupportedOperationException("Analog devices aren't supported on this device");
+	public AnalogOutputDeviceInterface createAnalogOutputDevice(String key, PinInfo pinInfo, float initialValue)
+			throws RuntimeIOException {
+		throw new UnsupportedOperationException("Analog output devices aren't supported on this device");
 	}
 
 	@Override
@@ -155,6 +158,12 @@ public class PigpioJDeviceFactory extends BaseNativeDeviceFactory {
 	public I2CDeviceInterface createI2CDevice(String key, int controller, int address, int addressSize,
 			int clockFrequency) throws RuntimeIOException {
 		return new PigpioJI2CDevice(key, this, pigpioImpl, controller, address, addressSize);
+	}
+
+	@Override
+	public SerialDeviceInterface createSerialDevice(String key, String tty, int baud, SerialDevice.DataBits dataBits,
+			SerialDevice.Parity parity, SerialDevice.StopBits stopBits) throws RuntimeIOException {
+		return new PigpioJSerialDevice(key, this, pigpioImpl, tty, baud, dataBits, parity, stopBits);
 	}
 
 	public PigpioJBitBangI2CDevice createI2CBitBangDevice(int sdaPin, int sclPin, int baud) {

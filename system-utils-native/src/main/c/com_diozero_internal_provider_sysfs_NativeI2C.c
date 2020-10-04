@@ -41,6 +41,7 @@
 #include <unistd.h>
 
 #include <linux/i2c-dev.h>
+#include <i2c/smbus.h>
 #include <sys/ioctl.h>
 
 #include "com_diozero_internal_provider_sysfs_NativeI2C.h"

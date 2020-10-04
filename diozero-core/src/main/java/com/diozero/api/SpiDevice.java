@@ -68,7 +68,6 @@ public class SpiDevice implements Closeable, SPIConstants {
 		this(controller, chipSelect, DEFAULT_SPI_CLOCK_FREQUENCY, DEFAULT_SPI_CLOCK_MODE, DEFAULT_LSB_FIRST);
 	}
 	
-	@SuppressWarnings("resource")
 	public SpiDevice(int controller, int chipSelect, int frequency, SpiClockMode mode, boolean lsbFirst) throws RuntimeIOException {
 		NativeDeviceFactoryInterface ndf = DeviceFactoryHelper.getNativeDeviceFactory();
 		device = ndf.provisionSpiDevice(controller, chipSelect, frequency, mode, lsbFirst);

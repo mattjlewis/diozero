@@ -71,8 +71,10 @@ import com.diozero.remote.message.I2COpen;
 import com.diozero.remote.message.I2CRead;
 import com.diozero.remote.message.I2CReadByte;
 import com.diozero.remote.message.I2CReadByteData;
+import com.diozero.remote.message.I2CReadByteDataResponse;
 import com.diozero.remote.message.I2CReadByteResponse;
 import com.diozero.remote.message.I2CReadI2CBlockData;
+import com.diozero.remote.message.I2CReadI2CBlockDataResponse;
 import com.diozero.remote.message.I2CReadResponse;
 import com.diozero.remote.message.I2CWrite;
 import com.diozero.remote.message.I2CWriteByte;
@@ -86,6 +88,16 @@ import com.diozero.remote.message.ProvisionDigitalOutputDevice;
 import com.diozero.remote.message.ProvisionPwmOutputDevice;
 import com.diozero.remote.message.RemoteProtocolInterface;
 import com.diozero.remote.message.Response;
+import com.diozero.remote.message.SerialBytesAvailable;
+import com.diozero.remote.message.SerialBytesAvailableResponse;
+import com.diozero.remote.message.SerialClose;
+import com.diozero.remote.message.SerialOpen;
+import com.diozero.remote.message.SerialRead;
+import com.diozero.remote.message.SerialReadByte;
+import com.diozero.remote.message.SerialReadByteResponse;
+import com.diozero.remote.message.SerialReadResponse;
+import com.diozero.remote.message.SerialWrite;
+import com.diozero.remote.message.SerialWriteByte;
 import com.diozero.remote.message.SpiClose;
 import com.diozero.remote.message.SpiOpen;
 import com.diozero.remote.message.SpiResponse;
@@ -378,7 +390,7 @@ public class VoodooSparkProtocolHandler implements RemoteProtocolInterface {
 	}
 	
 	@Override
-	public I2CReadByteResponse request(I2CReadByteData request) {
+	public I2CReadByteDataResponse request(I2CReadByteData request) {
 		// TODO Implementation
 		throw new UnsupportedOperationException();
 	}
@@ -390,7 +402,7 @@ public class VoodooSparkProtocolHandler implements RemoteProtocolInterface {
 	}
 	
 	@Override
-	public I2CReadResponse request(I2CReadI2CBlockData request) {
+	public I2CReadI2CBlockDataResponse request(I2CReadI2CBlockData request) {
 		// TODO Implementation
 		throw new UnsupportedOperationException();
 	}
@@ -431,6 +443,48 @@ public class VoodooSparkProtocolHandler implements RemoteProtocolInterface {
 		throw new UnsupportedOperationException();
 	}
 	
+	@Override
+	public Response request(SerialOpen request) {
+		// TODO Implementation
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public SerialReadByteResponse request(SerialReadByte request) {
+		// TODO Implementation
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public Response request(SerialWriteByte request) {
+		// TODO Implementation
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public SerialReadResponse request(SerialRead request) {
+		// TODO Implementation
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public Response request(SerialWrite request) {
+		// TODO Implementation
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public SerialBytesAvailableResponse request(SerialBytesAvailable request) {
+		// TODO Implementation
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public Response request(SerialClose request) {
+		// TODO Implementation
+		throw new UnsupportedOperationException();
+	}
+
 	private synchronized ResponseMessage sendMessage(Message message) {
 		ResponseMessage rm = null;
 		

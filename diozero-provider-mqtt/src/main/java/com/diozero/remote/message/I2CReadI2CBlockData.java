@@ -35,17 +35,23 @@ public class I2CReadI2CBlockData extends I2CBase {
 	private static final long serialVersionUID = -4619708096918301017L;
 
 	private int register;
+	private int subAddressSize;
 	private int length;
 
-	public I2CReadI2CBlockData(int controller, int address, int register, int length, String correlationId) {
+	public I2CReadI2CBlockData(int controller, int address, int register, int subAddressSize, int length, String correlationId) {
 		super(controller, address, correlationId);
 		
 		this.register = register;
+		this.subAddressSize = subAddressSize;
 		this.length = length;
 	}
 
 	public int getRegister() {
 		return register;
+	}
+	
+	public int getSubAddressSize() {
+		return subAddressSize;
 	}
 
 	public int getLength() {

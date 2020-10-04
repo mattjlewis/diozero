@@ -41,6 +41,7 @@ import com.diozero.api.DigitalInputEvent;
 import com.diozero.api.GpioEventTrigger;
 import com.diozero.api.GpioPullUpDown;
 import com.diozero.api.PinInfo;
+import com.diozero.api.SerialDevice;
 import com.diozero.api.SpiClockMode;
 import com.diozero.internal.provider.AnalogInputDeviceInterface;
 import com.diozero.internal.provider.AnalogOutputDeviceInterface;
@@ -50,6 +51,7 @@ import com.diozero.internal.provider.GpioDigitalInputOutputDeviceInterface;
 import com.diozero.internal.provider.GpioDigitalOutputDeviceInterface;
 import com.diozero.internal.provider.I2CDeviceInterface;
 import com.diozero.internal.provider.PwmOutputDeviceInterface;
+import com.diozero.internal.provider.SerialDeviceInterface;
 import com.diozero.internal.provider.SpiDeviceFactoryInterface;
 import com.diozero.internal.provider.SpiDeviceInterface;
 import com.diozero.internal.provider.remote.mqtt.ProtobufMqttProtocolHandler;
@@ -57,6 +59,7 @@ import com.diozero.remote.message.GetBoardInfo;
 import com.diozero.remote.message.GetBoardInfoResponse;
 import com.diozero.remote.message.GpioAnalogRead;
 import com.diozero.remote.message.GpioAnalogReadResponse;
+import com.diozero.remote.message.GpioAnalogWrite;
 import com.diozero.remote.message.GpioClose;
 import com.diozero.remote.message.GpioDigitalRead;
 import com.diozero.remote.message.GpioDigitalReadResponse;
@@ -91,7 +94,7 @@ public class RemoteDeviceFactory extends BaseNativeDeviceFactory {
 	public String getName() {
 		return DEVICE_NAME;
 	}
-	
+
 	@Override
 	protected BoardInfo initialiseBoardInfo() {
 		return new RemoteBoardInfo(protocolHandler.request(new GetBoardInfo(UUID.randomUUID().toString())));
@@ -145,9 +148,8 @@ public class RemoteDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	public AnalogOutputDeviceInterface createAnalogOutputDevice(String key, PinInfo pinInfo) {
-		// TODO Auto-generated method stub
-		return null;
+	public AnalogOutputDeviceInterface createAnalogOutputDevice(String key, PinInfo pinInfo, float initialValue) {
+		return new RemoteAnalogOutputDevice(this, key, pinInfo, initialValue);
 	}
 
 	@Override
@@ -160,6 +162,12 @@ public class RemoteDeviceFactory extends BaseNativeDeviceFactory {
 	public SpiDeviceInterface createSpiDevice(String key, int controller, int chipSelect, int frequency,
 			SpiClockMode spiClockMode, boolean lsbFirst) throws RuntimeIOException {
 		return new RemoteSpiDevice(this, key, controller, chipSelect, frequency, spiClockMode, lsbFirst);
+	}
+
+	@Override
+	public SerialDeviceInterface createSerialDevice(String key, String tty, int baud, SerialDevice.DataBits dataBits,
+			SerialDevice.Parity parity, SerialDevice.StopBits stopBits) throws RuntimeIOException {
+		return new RemoteSerialDevice(this, key, tty, baud, dataBits, parity, stopBits);
 	}
 
 	boolean digitalRead(int gpio) {
@@ -213,27 +221,34 @@ public class RemoteDeviceFactory extends BaseNativeDeviceFactory {
 		return response.getValue();
 	}
 
+	void analogWrite(int gpio, float value) {
+		GpioAnalogWrite request = new GpioAnalogWrite(gpio, value, UUID.randomUUID().toString());
+
+		Response response = protocolHandler.request(request);
+		if (response.getStatus() != Response.Status.OK) {
+			throw new RuntimeIOException("Error in GPIO analog write: " + response.getDetail());
+		}
+	}
+
 	void enableEvents(int gpio, boolean b) {
-		GpioEvents request = new GpioEvents(gpio, true, UUID.randomUUID().toString());
+		GpioEvents request = new GpioEvents(gpio, b, UUID.randomUUID().toString());
 
 		Response response = protocolHandler.request(request);
 		if (response.getStatus() != Response.Status.OK) {
 			throw new RuntimeIOException("Error reading GPIO: " + response.getDetail());
 		}
 	}
-	
+
 	public void valueChanged(DigitalInputEvent event) {
 		PinInfo pin_info = getBoardPinInfo().getByGpioNumber(event.getGpio());
-		@SuppressWarnings("resource")
 		RemoteDigitalInputDevice device = getDevice(createPinKey(pin_info), RemoteDigitalInputDevice.class);
 		if (device != null) {
 			device.valueChanged(event);
 		}
 	}
-	
+
 	public void valueChanged(AnalogInputEvent event) {
 		PinInfo pin_info = getBoardPinInfo().getByGpioNumber(event.getGpio());
-		@SuppressWarnings("resource")
 		RemoteAnalogInputDevice device = getDevice(createPinKey(pin_info), RemoteAnalogInputDevice.class);
 		if (device != null) {
 			device.valueChanged(event);
@@ -252,18 +267,18 @@ public class RemoteDeviceFactory extends BaseNativeDeviceFactory {
 	RemoteProtocolInterface getProtocolHandler() {
 		return protocolHandler;
 	}
-	
+
 	static class RemoteBoardInfo extends BoardInfo {
 		private GetBoardInfoResponse boardInfo;
-		
+
 		public RemoteBoardInfo(GetBoardInfoResponse boardInfo) {
 			super(boardInfo.getMake(), boardInfo.getModel(), -1, "remote", 3.3f);
-			
+
 			this.boardInfo = boardInfo;
-			
+
 			initialisePins();
 		}
-		
+
 		@Override
 		public void initialisePins() {
 			for (GpioInfo gpio_info : boardInfo.getGpios()) {

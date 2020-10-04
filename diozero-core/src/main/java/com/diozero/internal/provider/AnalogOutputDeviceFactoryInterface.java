@@ -39,7 +39,7 @@ import com.diozero.api.PinInfo;
 import com.diozero.util.RuntimeIOException;
 
 public interface AnalogOutputDeviceFactoryInterface extends DeviceFactoryInterface {
-	default AnalogOutputDeviceInterface provisionAnalogOutputDevice(int dacNumber) throws RuntimeIOException {
+	default AnalogOutputDeviceInterface provisionAnalogOutputDevice(int dacNumber, float initialValue) throws RuntimeIOException {
 		PinInfo pin_info = getBoardPinInfo().getByDacNumber(dacNumber);
 		if (pin_info == null || ! pin_info.isSupported(DeviceMode.ANALOG_OUTPUT)) {
 			throw new InvalidModeException("Invalid mode (analog output) for DAC " + dacNumber);
@@ -52,11 +52,11 @@ public interface AnalogOutputDeviceFactoryInterface extends DeviceFactoryInterfa
 			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
 		}
 		
-		AnalogOutputDeviceInterface device = createAnalogOutputDevice(key, pin_info);
+		AnalogOutputDeviceInterface device = createAnalogOutputDevice(key, pin_info, initialValue);
 		deviceOpened(device);
 		
 		return device;
 	}
 
-	AnalogOutputDeviceInterface createAnalogOutputDevice(String key, PinInfo pinInfo);
+	AnalogOutputDeviceInterface createAnalogOutputDevice(String key, PinInfo pinInfo, float initialValue);
 }

@@ -44,8 +44,10 @@ import com.diozero.remote.message.I2COpen;
 import com.diozero.remote.message.I2CRead;
 import com.diozero.remote.message.I2CReadByte;
 import com.diozero.remote.message.I2CReadByteData;
+import com.diozero.remote.message.I2CReadByteDataResponse;
 import com.diozero.remote.message.I2CReadByteResponse;
 import com.diozero.remote.message.I2CReadI2CBlockData;
+import com.diozero.remote.message.I2CReadI2CBlockDataResponse;
 import com.diozero.remote.message.I2CReadResponse;
 import com.diozero.remote.message.I2CWrite;
 import com.diozero.remote.message.I2CWriteByte;
@@ -67,8 +69,7 @@ public class RemoteI2CDevice extends AbstractDevice implements I2CDeviceInterfac
 		this.controller = controller;
 		this.address = address;
 
-		I2COpen request = new I2COpen(controller, address, addressSize, clockFrequency,
-				UUID.randomUUID().toString());
+		I2COpen request = new I2COpen(controller, address, addressSize, clockFrequency, UUID.randomUUID().toString());
 
 		Response response = deviceFactory.getProtocolHandler().request(request);
 		if (response.getStatus() != Response.Status.OK) {
@@ -133,7 +134,7 @@ public class RemoteI2CDevice extends AbstractDevice implements I2CDeviceInterfac
 	public byte readByteData(int register) throws RuntimeIOException {
 		I2CReadByteData request = new I2CReadByteData(controller, address, register, UUID.randomUUID().toString());
 
-		I2CReadByteResponse response = deviceFactory.getProtocolHandler().request(request);
+		I2CReadByteDataResponse response = deviceFactory.getProtocolHandler().request(request);
 		if (response.getStatus() != Response.Status.OK) {
 			throw new RuntimeIOException("Error in I2C read: " + response.getDetail());
 		}
@@ -153,10 +154,10 @@ public class RemoteI2CDevice extends AbstractDevice implements I2CDeviceInterfac
 
 	@Override
 	public void readI2CBlockData(int register, int subAddressSize, ByteBuffer buffer) throws RuntimeIOException {
-		I2CReadI2CBlockData request = new I2CReadI2CBlockData(controller, address, register, buffer.remaining(),
-				UUID.randomUUID().toString());
+		I2CReadI2CBlockData request = new I2CReadI2CBlockData(controller, address, register, subAddressSize,
+				buffer.remaining(), UUID.randomUUID().toString());
 
-		I2CReadResponse response = deviceFactory.getProtocolHandler().request(request);
+		I2CReadI2CBlockDataResponse response = deviceFactory.getProtocolHandler().request(request);
 		if (response.getStatus() != Response.Status.OK) {
 			throw new RuntimeIOException("Error in I2C read: " + response.getDetail());
 		}
@@ -170,7 +171,7 @@ public class RemoteI2CDevice extends AbstractDevice implements I2CDeviceInterfac
 		byte[] data = new byte[buffer.remaining()];
 		buffer.get(data);
 
-		I2CWriteI2CBlockData request = new I2CWriteI2CBlockData(controller, address, register, data,
+		I2CWriteI2CBlockData request = new I2CWriteI2CBlockData(controller, address, register, subAddressSize, data,
 				UUID.randomUUID().toString());
 
 		Response response = deviceFactory.getProtocolHandler().request(request);

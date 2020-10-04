@@ -62,8 +62,10 @@ import com.diozero.remote.message.I2COpen;
 import com.diozero.remote.message.I2CRead;
 import com.diozero.remote.message.I2CReadByte;
 import com.diozero.remote.message.I2CReadByteData;
+import com.diozero.remote.message.I2CReadByteDataResponse;
 import com.diozero.remote.message.I2CReadByteResponse;
 import com.diozero.remote.message.I2CReadI2CBlockData;
+import com.diozero.remote.message.I2CReadI2CBlockDataResponse;
 import com.diozero.remote.message.I2CReadResponse;
 import com.diozero.remote.message.I2CWrite;
 import com.diozero.remote.message.I2CWriteByte;
@@ -77,6 +79,16 @@ import com.diozero.remote.message.ProvisionDigitalOutputDevice;
 import com.diozero.remote.message.ProvisionPwmOutputDevice;
 import com.diozero.remote.message.RemoteProtocolInterface;
 import com.diozero.remote.message.Response;
+import com.diozero.remote.message.SerialBytesAvailable;
+import com.diozero.remote.message.SerialBytesAvailableResponse;
+import com.diozero.remote.message.SerialClose;
+import com.diozero.remote.message.SerialOpen;
+import com.diozero.remote.message.SerialRead;
+import com.diozero.remote.message.SerialReadByte;
+import com.diozero.remote.message.SerialReadByteResponse;
+import com.diozero.remote.message.SerialReadResponse;
+import com.diozero.remote.message.SerialWrite;
+import com.diozero.remote.message.SerialWriteByte;
 import com.diozero.remote.message.SpiClose;
 import com.diozero.remote.message.SpiOpen;
 import com.diozero.remote.message.SpiResponse;
@@ -234,8 +246,8 @@ public class JsonHttpProtocolHandler implements RemoteProtocolInterface {
 	}
 
 	@Override
-	public I2CReadByteResponse request(I2CReadByteData request) {
-		return requestResponse(HttpProviderConstants.I2C_READ_BYTE_DATA_URL, request, I2CReadByteResponse.class);
+	public I2CReadByteDataResponse request(I2CReadByteData request) {
+		return requestResponse(HttpProviderConstants.I2C_READ_BYTE_DATA_URL, request, I2CReadByteDataResponse.class);
 	}
 
 	@Override
@@ -244,8 +256,9 @@ public class JsonHttpProtocolHandler implements RemoteProtocolInterface {
 	}
 
 	@Override
-	public I2CReadResponse request(I2CReadI2CBlockData request) {
-		return requestResponse(HttpProviderConstants.I2C_READ_I2C_BLOCK_DATA_URL, request, I2CReadResponse.class);
+	public I2CReadI2CBlockDataResponse request(I2CReadI2CBlockData request) {
+		return requestResponse(HttpProviderConstants.I2C_READ_I2C_BLOCK_DATA_URL, request,
+				I2CReadI2CBlockDataResponse.class);
 	}
 
 	@Override
@@ -276,5 +289,41 @@ public class JsonHttpProtocolHandler implements RemoteProtocolInterface {
 	@Override
 	public Response request(SpiClose request) {
 		return requestResponse(HttpProviderConstants.SPI_CLOSE_URL, request, Response.class);
+	}
+
+	@Override
+	public Response request(SerialOpen request) {
+		return requestResponse(HttpProviderConstants.SERIAL_OPEN_URL, request, Response.class);
+	}
+
+	@Override
+	public SerialReadByteResponse request(SerialReadByte request) {
+		return requestResponse(HttpProviderConstants.SERIAL_READ_BYTE_URL, request, SerialReadByteResponse.class);
+	}
+
+	@Override
+	public Response request(SerialWriteByte request) {
+		return requestResponse(HttpProviderConstants.SERIAL_WRITE_BYTE_URL, request, Response.class);
+	}
+
+	@Override
+	public SerialReadResponse request(SerialRead request) {
+		return requestResponse(HttpProviderConstants.SERIAL_READ_URL, request, SerialReadResponse.class);
+	}
+
+	@Override
+	public Response request(SerialWrite request) {
+		return requestResponse(HttpProviderConstants.SERIAL_WRITE_URL, request, Response.class);
+	}
+
+	@Override
+	public SerialBytesAvailableResponse request(SerialBytesAvailable request) {
+		return requestResponse(HttpProviderConstants.SERIAL_BYTES_AVAILABLE_URL, request,
+				SerialBytesAvailableResponse.class);
+	}
+
+	@Override
+	public Response request(SerialClose request) {
+		return requestResponse(HttpProviderConstants.SERIAL_CLOSE_URL, request, Response.class);
 	}
 }

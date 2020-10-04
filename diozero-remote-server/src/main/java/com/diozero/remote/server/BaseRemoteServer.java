@@ -52,6 +52,7 @@ import com.diozero.internal.provider.GpioDigitalOutputDeviceInterface;
 import com.diozero.internal.provider.I2CDeviceInterface;
 import com.diozero.internal.provider.NativeDeviceFactoryInterface;
 import com.diozero.internal.provider.PwmOutputDeviceInterface;
+import com.diozero.internal.provider.SerialDeviceInterface;
 import com.diozero.internal.provider.SpiDeviceInterface;
 import com.diozero.remote.message.GetBoardInfo;
 import com.diozero.remote.message.GetBoardInfoResponse;
@@ -72,8 +73,10 @@ import com.diozero.remote.message.I2COpen;
 import com.diozero.remote.message.I2CRead;
 import com.diozero.remote.message.I2CReadByte;
 import com.diozero.remote.message.I2CReadByteData;
+import com.diozero.remote.message.I2CReadByteDataResponse;
 import com.diozero.remote.message.I2CReadByteResponse;
 import com.diozero.remote.message.I2CReadI2CBlockData;
+import com.diozero.remote.message.I2CReadI2CBlockDataResponse;
 import com.diozero.remote.message.I2CReadResponse;
 import com.diozero.remote.message.I2CWrite;
 import com.diozero.remote.message.I2CWriteByte;
@@ -87,6 +90,16 @@ import com.diozero.remote.message.ProvisionDigitalOutputDevice;
 import com.diozero.remote.message.ProvisionPwmOutputDevice;
 import com.diozero.remote.message.RemoteProtocolInterface;
 import com.diozero.remote.message.Response;
+import com.diozero.remote.message.SerialBytesAvailable;
+import com.diozero.remote.message.SerialBytesAvailableResponse;
+import com.diozero.remote.message.SerialClose;
+import com.diozero.remote.message.SerialOpen;
+import com.diozero.remote.message.SerialRead;
+import com.diozero.remote.message.SerialReadByte;
+import com.diozero.remote.message.SerialReadByteResponse;
+import com.diozero.remote.message.SerialReadResponse;
+import com.diozero.remote.message.SerialWrite;
+import com.diozero.remote.message.SerialWriteByte;
 import com.diozero.remote.message.SpiClose;
 import com.diozero.remote.message.SpiOpen;
 import com.diozero.remote.message.SpiResponse;
@@ -107,21 +120,21 @@ public abstract class BaseRemoteServer implements InputEventListener<DigitalInpu
 	public BaseRemoteServer(NativeDeviceFactoryInterface deviceFactory) {
 		this.deviceFactory = deviceFactory;
 	}
-	
+
 	@Override
 	public GetBoardInfoResponse request(GetBoardInfo request) {
 		BoardInfo board_info = deviceFactory.getBoardInfo();
-		
+
 		Collection<PinInfo> gpio_pins = board_info.getGpioPins();
 		Collection<PinInfo> adc_pins = board_info.getAdcPins();
 		Collection<PinInfo> dac_pins = board_info.getDacPins();
-		
+
 		// TODO Implementation
 		List<GpioInfo> gpios = new ArrayList<>();
-		
+
 		GetBoardInfoResponse response = new GetBoardInfoResponse(board_info.getMake(), board_info.getModel(),
 				board_info.getMemory(), gpios, request.getCorrelationId());
-		
+
 		return response;
 	}
 
@@ -226,17 +239,17 @@ public abstract class BaseRemoteServer implements InputEventListener<DigitalInpu
 	@Override
 	public Response request(ProvisionPwmOutputDevice request) {
 		Logger.debug("PWM output request");
-	
+
 		PinInfo pin_info = deviceFactory.getBoardPinInfo().getByGpioNumber(request.getGpio());
 		String key = deviceFactory.createPinKey(pin_info);
 		DeviceInterface device = deviceFactory.getDevice(key);
-	
+
 		Response response;
 		try {
 			if (device == null) {
 				deviceFactory.provisionPwmOutputDevice(request.getGpio(), request.getFrequency(),
 						request.getInitialValue());
-	
+
 				response = new Response(Response.Status.OK, null, request.getCorrelationId());
 			} else if (device instanceof PwmOutputDeviceInterface) {
 				((PwmOutputDeviceInterface) device).setValue(request.getInitialValue());
@@ -248,7 +261,7 @@ public abstract class BaseRemoteServer implements InputEventListener<DigitalInpu
 			Logger.error(e, "Error: {}", e);
 			response = new Response(Response.Status.ERROR, "Runtime Error: " + e, request.getCorrelationId());
 		}
-	
+
 		return response;
 	}
 
@@ -289,7 +302,8 @@ public abstract class BaseRemoteServer implements InputEventListener<DigitalInpu
 		Response response;
 		try {
 			if (device == null) {
-				AnalogOutputDeviceInterface output = deviceFactory.provisionAnalogOutputDevice(request.getGpio());
+				AnalogOutputDeviceInterface output = deviceFactory.provisionAnalogOutputDevice(request.getGpio(),
+						request.getInitialValue());
 				output.setValue(request.getInitialValue());
 
 				response = new Response(Response.Status.OK, null, request.getCorrelationId());
@@ -322,7 +336,8 @@ public abstract class BaseRemoteServer implements InputEventListener<DigitalInpu
 		}
 
 		try {
-			response = new GpioDigitalReadResponse(((GpioDigitalDeviceInterface) device).getValue(), request.getCorrelationId());
+			response = new GpioDigitalReadResponse(((GpioDigitalDeviceInterface) device).getValue(),
+					request.getCorrelationId());
 		} catch (RuntimeIOException e) {
 			Logger.error(e, "Error: {}", e);
 			response = new GpioDigitalReadResponse("Runtime Error: " + e, request.getCorrelationId());
@@ -354,8 +369,8 @@ public abstract class BaseRemoteServer implements InputEventListener<DigitalInpu
 				response = new Response(Response.Status.ERROR, "Runtime Error: " + e, request.getCorrelationId());
 			}
 		} else {
-			response = new Response(Response.Status.ERROR,
-					"Invalid mode, device class: " + device.getClass().getName(), request.getCorrelationId());
+			response = new Response(Response.Status.ERROR, "Invalid mode, device class: " + device.getClass().getName(),
+					request.getCorrelationId());
 		}
 
 		return response;
@@ -375,7 +390,8 @@ public abstract class BaseRemoteServer implements InputEventListener<DigitalInpu
 		}
 
 		try {
-			response = new GpioPwmReadResponse(((PwmOutputDeviceInterface) device).getValue(), request.getCorrelationId());
+			response = new GpioPwmReadResponse(((PwmOutputDeviceInterface) device).getValue(),
+					request.getCorrelationId());
 		} catch (RuntimeIOException e) {
 			Logger.error(e, "Error: {}", e);
 			response = new GpioPwmReadResponse("Runtime Error: " + e, request.getCorrelationId());
@@ -406,8 +422,8 @@ public abstract class BaseRemoteServer implements InputEventListener<DigitalInpu
 				response = new Response(Response.Status.ERROR, "Runtime Error: " + e, request.getCorrelationId());
 			}
 		} else {
-			response = new Response(Response.Status.ERROR,
-					"Invalid mode, device class: " + device.getClass().getName(), request.getCorrelationId());
+			response = new Response(Response.Status.ERROR, "Invalid mode, device class: " + device.getClass().getName(),
+					request.getCorrelationId());
 		}
 
 		return response;
@@ -427,7 +443,8 @@ public abstract class BaseRemoteServer implements InputEventListener<DigitalInpu
 		}
 
 		try {
-			response = new GpioAnalogReadResponse(((AnalogOutputDeviceInterface) device).getValue(), request.getCorrelationId());
+			response = new GpioAnalogReadResponse(((AnalogOutputDeviceInterface) device).getValue(),
+					request.getCorrelationId());
 		} catch (RuntimeIOException e) {
 			Logger.error(e, "Error: {}", e);
 			response = new GpioAnalogReadResponse("Runtime Error: " + e, request.getCorrelationId());
@@ -458,8 +475,8 @@ public abstract class BaseRemoteServer implements InputEventListener<DigitalInpu
 				response = new Response(Response.Status.ERROR, "Runtime Error: " + e, request.getCorrelationId());
 			}
 		} else {
-			response = new Response(Response.Status.ERROR,
-					"Invalid mode, device class: " + device.getClass().getName(), request.getCorrelationId());
+			response = new Response(Response.Status.ERROR, "Invalid mode, device class: " + device.getClass().getName(),
+					request.getCorrelationId());
 		}
 
 		return response;
@@ -468,15 +485,15 @@ public abstract class BaseRemoteServer implements InputEventListener<DigitalInpu
 	@Override
 	public Response request(GpioEvents request) {
 		Logger.debug("GPIO events request");
-	
+
 		PinInfo pin_info = deviceFactory.getBoardPinInfo().getByGpioNumber(request.getGpio());
 		String key = deviceFactory.createPinKey(pin_info);
 		DeviceInterface device = deviceFactory.getDevice(key);
-	
+
 		if (device == null) {
 			return new Response(Response.Status.ERROR, "GPIO not provisioned", request.getCorrelationId());
 		}
-	
+
 		Response response;
 		try {
 			if (device instanceof GpioDigitalInputDeviceInterface) {
@@ -486,7 +503,7 @@ public abstract class BaseRemoteServer implements InputEventListener<DigitalInpu
 				} else {
 					input.removeListener();
 				}
-	
+
 				response = new Response(Response.Status.OK, null, request.getCorrelationId());
 			} else if (device instanceof GpioDigitalInputOutputDeviceInterface) {
 				GpioDigitalInputOutputDeviceInterface inout = (GpioDigitalInputOutputDeviceInterface) device;
@@ -495,7 +512,7 @@ public abstract class BaseRemoteServer implements InputEventListener<DigitalInpu
 				} else {
 					inout.removeListener();
 				}
-	
+
 				response = new Response(Response.Status.OK, null, request.getCorrelationId());
 			} else {
 				response = new Response(Response.Status.ERROR,
@@ -505,7 +522,7 @@ public abstract class BaseRemoteServer implements InputEventListener<DigitalInpu
 			Logger.error(e, "Error: {}", e);
 			response = new Response(Response.Status.ERROR, "Runtime Error: " + e, request.getCorrelationId());
 		}
-	
+
 		return response;
 	}
 
@@ -537,7 +554,7 @@ public abstract class BaseRemoteServer implements InputEventListener<DigitalInpu
 	@Override
 	public Response request(I2COpen request) {
 		Logger.debug("I2C open request {}", request);
-		
+
 		int controller = request.getController();
 		int address = request.getAddress();
 		String key = deviceFactory.createI2CKey(controller, address);
@@ -549,7 +566,8 @@ public abstract class BaseRemoteServer implements InputEventListener<DigitalInpu
 
 		Response response;
 		try {
-			deviceFactory.provisionI2CDevice(controller, address, request.getAddressSize(), request.getClockFrequency());
+			deviceFactory.provisionI2CDevice(controller, address, request.getAddressSize(),
+					request.getClockFrequency());
 
 			response = new Response(Response.Status.OK, null, request.getCorrelationId());
 		} catch (RuntimeIOException e) {
@@ -559,7 +577,7 @@ public abstract class BaseRemoteServer implements InputEventListener<DigitalInpu
 
 		return response;
 	}
-	
+
 	@Override
 	public I2CReadByteResponse request(I2CReadByte request) {
 		Logger.debug("I2C read byte request");
@@ -585,7 +603,7 @@ public abstract class BaseRemoteServer implements InputEventListener<DigitalInpu
 
 		return response;
 	}
-	
+
 	@Override
 	public Response request(I2CWriteByte request) {
 		Logger.debug("I2C write byte request");
@@ -596,7 +614,7 @@ public abstract class BaseRemoteServer implements InputEventListener<DigitalInpu
 
 		I2CDeviceInterface device = deviceFactory.getDevice(key, I2CDeviceInterface.class);
 		if (device == null) {
-			return new I2CReadByteResponse("I2C device not provisioned", request.getCorrelationId());
+			return new Response(Response.Status.ERROR, "I2C device not provisioned", request.getCorrelationId());
 		}
 
 		Response response;
@@ -611,7 +629,7 @@ public abstract class BaseRemoteServer implements InputEventListener<DigitalInpu
 
 		return response;
 	}
-	
+
 	@Override
 	public I2CReadResponse request(I2CRead request) {
 		Logger.debug("I2C read request");
@@ -640,37 +658,168 @@ public abstract class BaseRemoteServer implements InputEventListener<DigitalInpu
 
 		return response;
 	}
-	
+
 	@Override
 	public Response request(I2CWrite request) {
-		return null;
+		Logger.debug("I2C write request");
+
+		int controller = request.getController();
+		int address = request.getAddress();
+		String key = deviceFactory.createI2CKey(controller, address);
+
+		I2CDeviceInterface device = deviceFactory.getDevice(key, I2CDeviceInterface.class);
+		if (device == null) {
+			return new Response(Response.Status.ERROR, "I2C device not provisioned", request.getCorrelationId());
+		}
+
+		Response response;
+		try {
+			byte[] data = request.getData();
+			device.write(ByteBuffer.wrap(data));
+
+			response = new Response(Response.Status.OK, null, request.getCorrelationId());
+		} catch (RuntimeIOException e) {
+			Logger.error(e, "Error: {}", e);
+			response = new Response(Response.Status.ERROR, "Runtime Error: " + e, request.getCorrelationId());
+		}
+
+		return response;
 	}
-	
+
 	@Override
-	public I2CReadByteResponse request(I2CReadByteData request) {
-		return null;
+	public I2CReadByteDataResponse request(I2CReadByteData request) {
+		Logger.debug("I2C read byte data request");
+
+		int controller = request.getController();
+		int address = request.getAddress();
+		String key = deviceFactory.createI2CKey(controller, address);
+
+		I2CDeviceInterface device = deviceFactory.getDevice(key, I2CDeviceInterface.class);
+		if (device == null) {
+			return new I2CReadByteDataResponse("I2C device not provisioned", request.getCorrelationId());
+		}
+
+		I2CReadByteDataResponse response;
+		try {
+			byte data = device.readByteData(request.getRegister());
+
+			response = new I2CReadByteDataResponse(data, request.getCorrelationId());
+		} catch (RuntimeIOException e) {
+			Logger.error(e, "Error: {}", e);
+			response = new I2CReadByteDataResponse("Runtime Error: " + e, request.getCorrelationId());
+		}
+
+		return response;
 	}
-	
+
 	@Override
 	public Response request(I2CWriteByteData request) {
-		return null;
+		Logger.debug("I2C write byte data request");
+
+		int controller = request.getController();
+		int address = request.getAddress();
+		String key = deviceFactory.createI2CKey(controller, address);
+
+		I2CDeviceInterface device = deviceFactory.getDevice(key, I2CDeviceInterface.class);
+		if (device == null) {
+			return new Response(Response.Status.ERROR, "I2C device not provisioned", request.getCorrelationId());
+		}
+
+		Response response;
+		try {
+			device.writeByteData(request.getRegister(), request.getData());
+
+			response = new Response(Response.Status.OK, null, request.getCorrelationId());
+		} catch (RuntimeIOException e) {
+			Logger.error(e, "Error: {}", e);
+			response = new Response(Response.Status.ERROR, "Runtime Error: " + e, request.getCorrelationId());
+		}
+
+		return response;
 	}
-	
+
 	@Override
-	public I2CReadResponse request(I2CReadI2CBlockData request) {
-		return null;
+	public I2CReadI2CBlockDataResponse request(I2CReadI2CBlockData request) {
+		Logger.debug("I2C read I2C block data request");
+
+		int controller = request.getController();
+		int address = request.getAddress();
+		String key = deviceFactory.createI2CKey(controller, address);
+
+		I2CDeviceInterface device = deviceFactory.getDevice(key, I2CDeviceInterface.class);
+		if (device == null) {
+			return new I2CReadI2CBlockDataResponse("I2C device not provisioned", request.getCorrelationId());
+		}
+
+		I2CReadI2CBlockDataResponse response;
+		try {
+			ByteBuffer buffer = ByteBuffer.allocate(request.getLength());
+			device.readI2CBlockData(request.getRegister(), request.getSubAddressSize(), buffer);
+
+			byte[] data = new byte[buffer.remaining()];
+			buffer.get(data);
+			response = new I2CReadI2CBlockDataResponse(data, request.getCorrelationId());
+		} catch (RuntimeIOException e) {
+			Logger.error(e, "Error: {}", e);
+			response = new I2CReadI2CBlockDataResponse("Runtime Error: " + e, request.getCorrelationId());
+		}
+
+		return response;
 	}
-	
+
 	@Override
 	public Response request(I2CWriteI2CBlockData request) {
-		return null;
+		Logger.debug("I2C write I2C block data request");
+
+		int controller = request.getController();
+		int address = request.getAddress();
+		String key = deviceFactory.createI2CKey(controller, address);
+
+		I2CDeviceInterface device = deviceFactory.getDevice(key, I2CDeviceInterface.class);
+		if (device == null) {
+			return new Response(Response.Status.ERROR, "I2C device not provisioned", request.getCorrelationId());
+		}
+
+		Response response;
+		try {
+			byte[] data = request.getData();
+			device.writeI2CBlockData(request.getRegister(), request.getSubAddressSize(), ByteBuffer.wrap(data));
+
+			response = new Response(Response.Status.OK, null, request.getCorrelationId());
+		} catch (RuntimeIOException e) {
+			Logger.error(e, "Error: {}", e);
+			response = new Response(Response.Status.ERROR, "Runtime Error: " + e, request.getCorrelationId());
+		}
+
+		return response;
 	}
-	
+
 	@Override
 	public Response request(I2CClose request) {
-		return null;
+		Logger.debug("I2C close request");
+
+		int controller = request.getController();
+		int address = request.getAddress();
+		String key = deviceFactory.createI2CKey(controller, address);
+
+		I2CDeviceInterface device = deviceFactory.getDevice(key, I2CDeviceInterface.class);
+		if (device == null) {
+			return new SpiResponse("I2C device not provisioned", request.getCorrelationId());
+		}
+
+		Response response;
+		try {
+			device.close();
+
+			response = new Response(Response.Status.OK, null, request.getCorrelationId());
+		} catch (RuntimeIOException e) {
+			Logger.error(e, "Error: {}", e);
+			response = new Response(Response.Status.ERROR, "Runtime Error: " + e, request.getCorrelationId());
+		}
+
+		return response;
 	}
-	
+
 	@Override
 	public Response request(SpiOpen request) {
 		Logger.debug("SPI open request {}", request);
@@ -717,7 +866,8 @@ public abstract class BaseRemoteServer implements InputEventListener<DigitalInpu
 			long start = System.currentTimeMillis();
 			device.write(data);
 			long duration = System.currentTimeMillis() - start;
-			System.out.println("Inner time: " + duration + " ms for " + data.length + " bytes, class: " + device.getClass().getName());
+			System.out.println("Inner time: " + duration + " ms for " + data.length + " bytes, class: "
+					+ device.getClass().getName());
 
 			response = new Response(Response.Status.OK, null, request.getCorrelationId());
 		} catch (RuntimeIOException e) {
@@ -727,7 +877,7 @@ public abstract class BaseRemoteServer implements InputEventListener<DigitalInpu
 
 		return response;
 	}
-	
+
 	@Override
 	public SpiResponse request(SpiWriteAndRead request) {
 		Logger.debug("SPI write and read request");
@@ -753,7 +903,7 @@ public abstract class BaseRemoteServer implements InputEventListener<DigitalInpu
 
 		return response;
 	}
-	
+
 	@Override
 	public Response request(SpiClose request) {
 		Logger.debug("SPI close request");
@@ -765,6 +915,186 @@ public abstract class BaseRemoteServer implements InputEventListener<DigitalInpu
 		SpiDeviceInterface device = deviceFactory.getDevice(key, SpiDeviceInterface.class);
 		if (device == null) {
 			return new SpiResponse("SPI device not provisioned", request.getCorrelationId());
+		}
+
+		Response response;
+		try {
+			device.close();
+
+			response = new Response(Response.Status.OK, null, request.getCorrelationId());
+		} catch (RuntimeIOException e) {
+			Logger.error(e, "Error: {}", e);
+			response = new Response(Response.Status.ERROR, "Runtime Error: " + e, request.getCorrelationId());
+		}
+
+		return response;
+	}
+
+	@Override
+	public Response request(SerialOpen request) {
+		Logger.debug("Serial open request {}", request);
+
+		String tty = request.getTty();
+		String key = deviceFactory.createSerialKey(tty);
+
+		DeviceInterface device = deviceFactory.getDevice(key);
+		if (device != null) {
+			return new Response(Response.Status.ERROR, "Serial device already provisioned", request.getCorrelationId());
+		}
+
+		Response response;
+		try {
+			deviceFactory.provisionSerialDevice(tty, request.getBaud(), request.getDataBits(), request.getParity(),
+					request.getStopBits());
+
+			response = new Response(Response.Status.OK, null, request.getCorrelationId());
+		} catch (RuntimeIOException e) {
+			Logger.error(e, "Error: {}", e);
+			response = new Response(Response.Status.ERROR, "Runtime Error: " + e, request.getCorrelationId());
+		}
+
+		return response;
+	}
+
+	@Override
+	public SerialReadByteResponse request(SerialReadByte request) {
+		Logger.debug("Serial read byte request");
+
+		String tty = request.getTty();
+		String key = deviceFactory.createSerialKey(tty);
+
+		SerialDeviceInterface device = deviceFactory.getDevice(key, SerialDeviceInterface.class);
+		if (device == null) {
+			return new SerialReadByteResponse("Serial device not provisioned", request.getCorrelationId());
+		}
+
+		SerialReadByteResponse response;
+		try {
+			byte data = device.readByte();
+
+			response = new SerialReadByteResponse(data, request.getCorrelationId());
+		} catch (RuntimeIOException e) {
+			Logger.error(e, "Error: {}", e);
+			response = new SerialReadByteResponse("Runtime Error: " + e, request.getCorrelationId());
+		}
+
+		return response;
+	}
+
+	@Override
+	public Response request(SerialWriteByte request) {
+		Logger.debug("Serial write byte request");
+
+		String tty = request.getTty();
+		String key = deviceFactory.createSerialKey(tty);
+
+		SerialDeviceInterface device = deviceFactory.getDevice(key, SerialDeviceInterface.class);
+		if (device == null) {
+			return new Response(Response.Status.ERROR, "Serial device not provisioned", request.getCorrelationId());
+		}
+
+		Response response;
+		try {
+			device.writeByte(request.getData());
+
+			response = new Response(Response.Status.OK, null, request.getCorrelationId());
+		} catch (RuntimeIOException e) {
+			Logger.error(e, "Error: {}", e);
+			response = new Response(Response.Status.ERROR, "Runtime Error: " + e, request.getCorrelationId());
+		}
+
+		return response;
+	}
+
+	@Override
+	public SerialReadResponse request(SerialRead request) {
+		Logger.debug("Serial read request");
+
+		String tty = request.getTty();
+		String key = deviceFactory.createSerialKey(tty);
+
+		SerialDeviceInterface device = deviceFactory.getDevice(key, SerialDeviceInterface.class);
+		if (device == null) {
+			return new SerialReadResponse("Serial device not provisioned", request.getCorrelationId());
+		}
+
+		SerialReadResponse response;
+		try {
+			ByteBuffer buffer = ByteBuffer.allocate(request.getLength());
+			device.read(buffer);
+
+			byte[] data = new byte[buffer.remaining()];
+			buffer.get(data);
+			response = new SerialReadResponse(data, request.getCorrelationId());
+		} catch (RuntimeIOException e) {
+			Logger.error(e, "Error: {}", e);
+			response = new SerialReadResponse("Runtime Error: " + e, request.getCorrelationId());
+		}
+
+		return response;
+	}
+
+	@Override
+	public Response request(SerialWrite request) {
+		Logger.debug("Serial write request");
+
+		String tty = request.getTty();
+		String key = deviceFactory.createSerialKey(tty);
+
+		SerialDeviceInterface device = deviceFactory.getDevice(key, SerialDeviceInterface.class);
+		if (device == null) {
+			return new Response(Response.Status.ERROR, "Serial device not provisioned", request.getCorrelationId());
+		}
+
+		Response response;
+		try {
+			byte[] data = request.getData();
+			device.write(ByteBuffer.wrap(data));
+
+			response = new Response(Response.Status.OK, null, request.getCorrelationId());
+		} catch (RuntimeIOException e) {
+			Logger.error(e, "Error: {}", e);
+			response = new Response(Response.Status.ERROR, "Runtime Error: " + e, request.getCorrelationId());
+		}
+
+		return response;
+	}
+
+	@Override
+	public SerialBytesAvailableResponse request(SerialBytesAvailable request) {
+		Logger.debug("Serial bytes available request");
+
+		String tty = request.getTty();
+		String key = deviceFactory.createSerialKey(tty);
+
+		SerialDeviceInterface device = deviceFactory.getDevice(key, SerialDeviceInterface.class);
+		if (device == null) {
+			return new SerialBytesAvailableResponse("Serial device not provisioned", request.getCorrelationId());
+		}
+
+		SerialBytesAvailableResponse response;
+		try {
+			int bytes_available = device.bytesAvailable();
+
+			response = new SerialBytesAvailableResponse(bytes_available, request.getCorrelationId());
+		} catch (RuntimeIOException e) {
+			Logger.error(e, "Error: {}", e);
+			response = new SerialBytesAvailableResponse("Runtime Error: " + e, request.getCorrelationId());
+		}
+
+		return response;
+	}
+
+	@Override
+	public Response request(SerialClose request) {
+		Logger.debug("Serial close request");
+
+		String tty = request.getTty();
+		String key = deviceFactory.createSerialKey(tty);
+
+		SerialDeviceInterface device = deviceFactory.getDevice(key, SerialDeviceInterface.class);
+		if (device == null) {
+			return new SpiResponse("Serial device not provisioned", request.getCorrelationId());
 		}
 
 		Response response;

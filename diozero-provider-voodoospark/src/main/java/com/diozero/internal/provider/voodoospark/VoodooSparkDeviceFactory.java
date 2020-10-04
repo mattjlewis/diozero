@@ -56,6 +56,7 @@ import com.diozero.api.DigitalInputEvent;
 import com.diozero.api.GpioEventTrigger;
 import com.diozero.api.GpioPullUpDown;
 import com.diozero.api.PinInfo;
+import com.diozero.api.SerialDevice;
 import com.diozero.api.SpiClockMode;
 import com.diozero.internal.provider.AnalogInputDeviceInterface;
 import com.diozero.internal.provider.AnalogOutputDeviceInterface;
@@ -66,6 +67,7 @@ import com.diozero.internal.provider.GpioDigitalInputOutputDeviceInterface;
 import com.diozero.internal.provider.GpioDigitalOutputDeviceInterface;
 import com.diozero.internal.provider.I2CDeviceInterface;
 import com.diozero.internal.provider.PwmOutputDeviceInterface;
+import com.diozero.internal.provider.SerialDeviceInterface;
 import com.diozero.internal.provider.SpiDeviceInterface;
 import com.diozero.util.BoardInfo;
 import com.diozero.util.PropertyUtil;
@@ -90,10 +92,10 @@ import io.netty.handler.codec.MessageToByteEncoder;
 
 public class VoodooSparkDeviceFactory extends BaseNativeDeviceFactory {
 	public static final String DEVICE_NAME = "VoodooSpark";
-	
+
 	private static final String DEVICE_ID_PROP = "PARTICLE_DEVICE_ID";
 	private static final String ACCESS_TOKEN_PROP = "PARTICLE_TOKEN";
-	
+
 	static final int MAX_ANALOG_VALUE = (int) (Math.pow(2, 12) - 1);
 	static final int MAX_PWM_VALUE = (int) (Math.pow(2, 8) - 1);
 	private static final int DEFAULT_FREQUENCY = 500;
@@ -109,20 +111,20 @@ public class VoodooSparkDeviceFactory extends BaseNativeDeviceFactory {
 	private static final byte INTERNAL_RGB = 0x07;
 	private static final byte PING_READ = 0x08;
 	/* NOTE GAP */
-	//private static final byte SERIAL_BEGIN = 0x10;
-	//private static final byte SERIAL_END = 0x11;
-	//private static final byte SERIAL_PEEK = 0x12;
-	//private static final byte SERIAL_AVAILABLE = 0x13;
-	//private static final byte SERIAL_WRITE = 0x14;
-	//private static final byte SERIAL_READ = 0x15;
-	//private static final byte SERIAL_FLUSH = 0x16;
+	// private static final byte SERIAL_BEGIN = 0x10;
+	// private static final byte SERIAL_END = 0x11;
+	// private static final byte SERIAL_PEEK = 0x12;
+	// private static final byte SERIAL_AVAILABLE = 0x13;
+	// private static final byte SERIAL_WRITE = 0x14;
+	// private static final byte SERIAL_READ = 0x15;
+	// private static final byte SERIAL_FLUSH = 0x16;
 	/* NOTE GAP */
-	//private static final byte SPI_BEGIN = 0x20;
-	//private static final byte SPI_END = 0x21;
-	//private static final byte SPI_SET_BIT_ORDER = 0x22;
-	//private static final byte SPI_SET_CLOCK = 0x23;
-	//private static final byte SPI_SET_DATA_MODE = 0x24;
-	//private static final byte SPI_TRANSFER = 0x25;
+	// private static final byte SPI_BEGIN = 0x20;
+	// private static final byte SPI_END = 0x21;
+	// private static final byte SPI_SET_BIT_ORDER = 0x22;
+	// private static final byte SPI_SET_CLOCK = 0x23;
+	// private static final byte SPI_SET_DATA_MODE = 0x24;
+	// private static final byte SPI_TRANSFER = 0x25;
 	// /* NOTE GAP */
 	private static final byte I2C_CONFIG = 0x30;
 	private static final byte I2C_WRITE = 0x31;
@@ -132,7 +134,7 @@ public class VoodooSparkDeviceFactory extends BaseNativeDeviceFactory {
 	/* NOTE GAP */
 	private static final byte SERVO_WRITE = 0x41;
 	private static final byte ACTION_RANGE = 0x46;
-	
+
 	private Queue<ResponseMessage> messageQueue;
 	private EventLoopGroup workerGroup;
 	private Channel messageChannel;
@@ -147,12 +149,12 @@ public class VoodooSparkDeviceFactory extends BaseNativeDeviceFactory {
 		if (device_id == null || access_token == null) {
 			Logger.error("Both {} and {} properties must be set", DEVICE_ID_PROP, ACCESS_TOKEN_PROP);
 		}
-		
+
 		timeoutMs = 2000;
 		messageQueue = new LinkedList<>();
 		lock = new ReentrantLock();
 		condition = lock.newCondition();
-		
+
 		// Lookup the local IP address using the Particle "endpoint" custom variable
 		try {
 			URL url = new URL(String.format("https://api.particle.io/v1/devices/%s/endpoint?access_token=%s", device_id,
@@ -160,7 +162,7 @@ public class VoodooSparkDeviceFactory extends BaseNativeDeviceFactory {
 			Endpoint endpoint = new Gson().fromJson(new InputStreamReader(url.openStream()), Endpoint.class);
 			Logger.debug(endpoint);
 			String[] ip_port = endpoint.result.split(":");
-			
+
 			connect(ip_port[0], Integer.parseInt(ip_port[1]));
 		} catch (IOException | NumberFormatException | InterruptedException e) {
 			// 403 - device id not found
@@ -169,12 +171,12 @@ public class VoodooSparkDeviceFactory extends BaseNativeDeviceFactory {
 			throw new RuntimeIOException("Error getting local endpoint", e);
 		}
 	}
-	
+
 	private void connect(String host, int port) throws InterruptedException {
 		workerGroup = new NioEventLoopGroup();
-		
+
 		ResponseHandler rh = new ResponseHandler(this::messageReceived);
-		
+
 		Bootstrap b1 = new Bootstrap();
 		b1.group(workerGroup).channel(NioSocketChannel.class).handler(new ChannelInitializer<SocketChannel>() {
 			@Override
@@ -182,22 +184,22 @@ public class VoodooSparkDeviceFactory extends BaseNativeDeviceFactory {
 				ch.pipeline().addLast(new ResponseDecoder(), new MessageEncoder(), rh);
 			}
 		});
-		
+
 		// Connect
 		messageChannel = b1.connect(host, port).sync().channel();
 	}
 
 	@Override
 	public void close() {
-		if (messageChannel == null || ! messageChannel.isOpen()) {
+		if (messageChannel == null || !messageChannel.isOpen()) {
 			return;
 		}
-		
+
 		messageChannel.close();
-		
+
 		try {
 			messageChannel.closeFuture().sync();
-			
+
 			// Wait until all messages are flushed before closing the channel.
 			if (lastWriteFuture != null) {
 				lastWriteFuture.sync();
@@ -208,7 +210,7 @@ public class VoodooSparkDeviceFactory extends BaseNativeDeviceFactory {
 		} finally {
 			workerGroup.shutdownGracefully();
 		}
-		
+
 		super.close();
 	}
 
@@ -216,15 +218,15 @@ public class VoodooSparkDeviceFactory extends BaseNativeDeviceFactory {
 	public String getName() {
 		return DEVICE_NAME;
 	}
-	
+
 	@Override
 	protected BoardInfo initialiseBoardInfo() {
 		BoardInfo board_info = new ParticlePhotonBoardInfo();
 		board_info.initialisePins();
-		
+
 		return board_info;
 	}
-	
+
 	@Override
 	public int getBoardPwmFrequency() {
 		return DEFAULT_FREQUENCY;
@@ -266,8 +268,8 @@ public class VoodooSparkDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	public AnalogOutputDeviceInterface createAnalogOutputDevice(String key, PinInfo pinInfo) {
-		return new VoodooSparkAnalogOutputDevice(this, key, pinInfo);
+	public AnalogOutputDeviceInterface createAnalogOutputDevice(String key, PinInfo pinInfo, float initialValue) {
+		return new VoodooSparkAnalogOutputDevice(this, key, pinInfo, initialValue);
 	}
 
 	@Override
@@ -279,6 +281,12 @@ public class VoodooSparkDeviceFactory extends BaseNativeDeviceFactory {
 	@Override
 	public I2CDeviceInterface createI2CDevice(String key, int controller, int address, int addressSize,
 			int clockFrequency) throws RuntimeIOException {
+		throw new UnsupportedOperationException("Not yet implemented");
+	}
+
+	@Override
+	public SerialDeviceInterface createSerialDevice(String key, String tty, int baud, SerialDevice.DataBits dataBits,
+			SerialDevice.Parity parity, SerialDevice.StopBits stopBits) throws RuntimeIOException {
 		throw new UnsupportedOperationException("Not yet implemented");
 	}
 
@@ -298,11 +306,11 @@ public class VoodooSparkDeviceFactory extends BaseNativeDeviceFactory {
 		}
 		return response.lsb != 0;
 	}
-	
+
 	void setValue(int gpio, boolean value) {
 		sendMessage(new DigitalWriteMessage(gpio, value));
 	}
-	
+
 	int getAnalogValue(int gpio) {
 		ResponseMessage response = sendMessage(new AnalogReadMessage(gpio));
 		if (response == null) {
@@ -315,35 +323,35 @@ public class VoodooSparkDeviceFactory extends BaseNativeDeviceFactory {
 		}
 		return (response.msb << 7) | response.lsb;
 	}
-	
+
 	void setAnalogValue(int gpio, int value) {
 		sendMessage(new AnalogWriteMessage(gpio, value));
 	}
-	
+
 	void addReporting(int gpio, boolean analog) {
 		sendMessage(new ReportingMessage((byte) gpio, analog));
 	}
-	
+
 	void setSampleInterval(int intervalMs) {
 		sendMessage(new SetSampleIntervalMessage(intervalMs));
 	}
-	
+
 	void setInternalRgb(byte red, byte green, byte blue) {
 		sendMessage(new InternalRgbMessage(red, green, blue));
 	}
-	
+
 	private synchronized ResponseMessage sendMessage(Message message) {
 		ResponseMessage rm = null;
-		
+
 		lock.lock();
 		try {
 			lastWriteFuture = messageChannel.writeAndFlush(message);
 			lastWriteFuture.get();
-			
-			if (message.responseExpected ) {
+
+			if (message.responseExpected) {
 				if (condition.await(timeoutMs, TimeUnit.MILLISECONDS)) {
 					rm = messageQueue.remove();
-					
+
 					if (rm.cmd != message.cmd) {
 						throw new RuntimeIOException(
 								"Unexpected response: " + rm.cmd + ", was expecting " + message.cmd + "; discarding");
@@ -359,23 +367,24 @@ public class VoodooSparkDeviceFactory extends BaseNativeDeviceFactory {
 		} finally {
 			lock.unlock();
 		}
-		
+
 		return rm;
 	}
-	
+
 	void messageReceived(ResponseMessage msg) {
 		if (msg.cmd == REPORTING) {
 			long epoch_time = System.currentTimeMillis();
-			
+
 			Logger.info("Reporting message: {}", msg);
-			
-			// Notify the listeners for each GPIO in this port for which reporting has been enabled
-			for (int i=0; i<8; i++) {
+
+			// Notify the listeners for each GPIO in this port for which reporting has been
+			// enabled
+			for (int i = 0; i < 8; i++) {
 				// Note can only get reports for GPIOs 0-7 and 10-17
 				int gpio = msg.pinOrPort * 10 + i;
-				
+
 				// TODO Need to check that reporting has been enabled for this GPIO!
-				
+
 				PinInfo pin_info = getBoardPinInfo().getByGpioNumber(gpio);
 				DeviceInterface device = getDevice(createPinKey(pin_info));
 				if (device != null) {
@@ -400,13 +409,13 @@ public class VoodooSparkDeviceFactory extends BaseNativeDeviceFactory {
 		String name;
 		String result;
 		CoreInfo coreInfo;
-		
+
 		@Override
 		public String toString() {
 			return "Endpoint [cmd=" + cmd + ", name=" + name + ", result=" + result + ", coreInfo=" + coreInfo + "]";
 		}
 	}
-	
+
 	private static final class CoreInfo {
 		@SerializedName("last_app")
 		String lastApp;
@@ -419,23 +428,24 @@ public class VoodooSparkDeviceFactory extends BaseNativeDeviceFactory {
 		String deviceId;
 		@SerializedName("product_id")
 		int productId;
-		
+
 		@Override
 		public String toString() {
 			return "CoreInfo [lastApp=" + lastApp + ", lastHeard=" + lastHeard + ", connected=" + connected
-					+ ", lastHandshakeAt=" + lastHandshakeAt + ", deviceId=" + deviceId + ", productId=" + productId + "]";
+					+ ", lastHandshakeAt=" + lastHandshakeAt + ", deviceId=" + deviceId + ", productId=" + productId
+					+ "]";
 		}
 	}
-	
+
 	// Classes to support Netty encode / decode
-	
+
 	static final class MessageEncoder extends MessageToByteEncoder<Message> {
 		@Override
 		protected void encode(ChannelHandlerContext ctx, Message msg, ByteBuf out) throws Exception {
 			out.writeBytes(msg.encode());
 		}
 	}
-	
+
 	static final class ResponseDecoder extends ByteToMessageDecoder {
 		@Override
 		protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
@@ -444,40 +454,38 @@ public class VoodooSparkDeviceFactory extends BaseNativeDeviceFactory {
 				in.resetReaderIndex();
 				return;
 			}
-			
+
 			out.add(new ResponseMessage(in.readByte(), in.readByte(), in.readByte(), in.readByte()));
 		}
 	}
-	
+
 	@Sharable
 	static class ResponseHandler extends SimpleChannelInboundHandler<ResponseMessage> {
 		private Consumer<ResponseMessage> listener;
-		
+
 		ResponseHandler(Consumer<ResponseMessage> listener) {
 			this.listener = listener;
 		}
-		
+
 		@Override
 		protected void channelRead0(ChannelHandlerContext context, ResponseMessage msg) {
 			listener.accept(msg);
 		}
-		
+
 		@Override
 		public void exceptionCaught(ChannelHandlerContext context, Throwable cause) {
 			Logger.error(cause, "exceptionCaught: {}", cause);
 			context.close();
 		}
 	}
-	
+
 	static enum PinMode {
-		DIGITAL_INPUT(0),
-		DIGITAL_OUTPUT(1),
-		ANALOG_INPUT(2),
-		ANALOG_OUTPUT(3), // Note for PWM as well as true analog output
-		SERVO(4),
-		I2C(6);
-		
+		DIGITAL_INPUT(0), DIGITAL_OUTPUT(1), ANALOG_INPUT(2), ANALOG_OUTPUT(3), // Note for PWM as well as true analog
+																				// output
+		SERVO(4), I2C(6);
+
 		private byte mode;
+
 		private PinMode(int mode) {
 			this.mode = (byte) mode;
 		}
@@ -486,48 +494,49 @@ public class VoodooSparkDeviceFactory extends BaseNativeDeviceFactory {
 			return mode;
 		}
 	}
+
 	static abstract class Message {
 		byte cmd;
 		boolean responseExpected;
-		
+
 		public Message(byte cmd) {
 			this(cmd, false);
 		}
-		
+
 		public Message(byte cmd, boolean responseExpected) {
 			this.cmd = cmd;
 			this.responseExpected = responseExpected;
 		}
-		
+
 		abstract byte[] encode();
 	}
-	
+
 	static class PinModeMessage extends Message {
 		byte gpio;
 		PinMode mode;
-		
+
 		PinModeMessage(int gpio, PinMode mode) {
 			super(VoodooSparkDeviceFactory.PIN_MODE);
 			this.gpio = (byte) gpio;
 			this.mode = mode;
 		}
-		
+
 		@Override
 		byte[] encode() {
 			return new byte[] { cmd, gpio, mode.getMode() };
 		}
 	}
-	
+
 	static class DigitalWriteMessage extends Message {
 		byte gpio;
 		boolean value;
-		
+
 		public DigitalWriteMessage(int gpio, boolean value) {
 			super(VoodooSparkDeviceFactory.DIGITAL_WRITE);
 			this.gpio = (byte) gpio;
 			this.value = value;
 		}
-		
+
 		@Override
 		byte[] encode() {
 			return new byte[] { cmd, gpio, value ? (byte) 1 : 0 };
@@ -538,17 +547,17 @@ public class VoodooSparkDeviceFactory extends BaseNativeDeviceFactory {
 			return "DigitalWriteMessage [gpio=" + gpio + ", value=" + value + "]";
 		}
 	}
-	
+
 	static class AnalogWriteMessage extends Message {
 		byte gpio;
 		int value;
-		
+
 		public AnalogWriteMessage(int gpio, int value) {
 			super(VoodooSparkDeviceFactory.ANALOG_WRITE);
 			this.gpio = (byte) gpio;
 			this.value = value;
 		}
-		
+
 		@Override
 		byte[] encode() {
 			return new byte[] { cmd, gpio, (byte) (value & 0x7f), (byte) ((value >> 7) & 0x7f) };
@@ -559,87 +568,87 @@ public class VoodooSparkDeviceFactory extends BaseNativeDeviceFactory {
 			return "AnalogWriteMessage [gpio=" + gpio + ", value=" + value + "]";
 		}
 	}
-	
+
 	static class DigitalReadMessage extends Message {
 		byte gpio;
-		
+
 		public DigitalReadMessage(int gpio) {
 			super(VoodooSparkDeviceFactory.DIGITAL_READ, true);
 			this.gpio = (byte) gpio;
 		}
-		
+
 		@Override
 		byte[] encode() {
 			return new byte[] { cmd, gpio };
 		}
 	}
-	
+
 	static class AnalogReadMessage extends Message {
 		byte gpio;
-		
+
 		public AnalogReadMessage(int gpio) {
 			super(ANALOG_READ, true);
 			this.gpio = (byte) gpio;
 		}
-		
+
 		@Override
 		byte[] encode() {
 			return new byte[] { cmd, gpio };
 		}
 	}
-	
+
 	static class ReportingMessage extends Message {
 		private static final byte DIGITAL = 1;
 		private static final byte ANALOG = 2;
-		
+
 		byte gpio;
 		boolean analog;
-		
+
 		public ReportingMessage(byte gpio, boolean analog) {
 			super(REPORTING);
 			this.gpio = gpio;
 			this.analog = analog;
 		}
-		
+
 		@Override
 		public byte[] encode() {
 			return new byte[] { cmd, gpio, analog ? ANALOG : DIGITAL };
 		}
 	}
-	
+
 	static class SetSampleIntervalMessage extends Message {
 		int intervalMs;
-		
+
 		public SetSampleIntervalMessage(int intervalMs) {
 			super(SET_SAMPLE_INTERVAL);
 			this.intervalMs = intervalMs;
 		}
-		
+
 		@Override
 		public byte[] encode() {
 			return new byte[] { cmd, (byte) (intervalMs & 0x7f), (byte) ((intervalMs >> 7) & 0x7f) };
 		}
 	}
-	
+
 	static class InternalRgbMessage extends Message {
 		byte red, green, blue;
-		
+
 		public InternalRgbMessage(byte red, byte green, byte blue) {
 			super(VoodooSparkDeviceFactory.INTERNAL_RGB);
 			this.red = red;
 			this.green = green;
 			this.blue = blue;
 		}
-		
+
 		@Override
 		byte[] encode() {
 			return new byte[] { cmd, red, green, blue };
 		}
 	}
-	
+
 	static class ResponseMessage {
 		byte cmd, pinOrPort, lsb, msb;
-		
+
 		public ResponseMessage(byte cmd, byte pinOrPort, byte lsb, byte msb) {
 			this.cmd = cmd;
 			this.pinOrPort = pinOrPort;
@@ -652,11 +661,11 @@ public class VoodooSparkDeviceFactory extends BaseNativeDeviceFactory {
 			return "ResponseMessage [cmd=" + cmd + ", pinOrPort=" + pinOrPort + ", lsb=" + lsb + ", msb=" + msb + "]";
 		}
 	}
-	
+
 	public static class ParticlePhotonBoardInfo extends BoardInfo {
 		public static final String MAKE = "Particle";
 		public static final String MODEL = "Photon";
-		
+
 		public ParticlePhotonBoardInfo() {
 			super(MAKE, MODEL, -1, MAKE.toLowerCase());
 		}
@@ -666,22 +675,26 @@ public class VoodooSparkDeviceFactory extends BaseNativeDeviceFactory {
 			int pin = 1;
 			// This pin can be used as an input or output
 			// As an input, supply 3.6 to 5.5VDC to power the Photon
-			// When the Photon is powered via the USB port, this pin will output a voltage of approximately 4.8VDC
+			// When the Photon is powered via the USB port, this pin will output a voltage
+			// of approximately 4.8VDC
 			addGeneralPinInfo(pin++, PinInfo.VCC_5V);
 			addGeneralPinInfo(pin++, PinInfo.GROUND);
 			int gpio_num = 19;
 			addGpioPinInfo(gpio_num--, "UART TX", pin++, PinInfo.DIGITAL_IN_OUT_PWM); // GPIO 19
 			addGpioPinInfo(gpio_num--, "UART RX", pin++, PinInfo.DIGITAL_IN_OUT_PWM); // GPIO 18
 			// Active-high wakeup pin, wakes the module from sleep/standby modes
-			// When not used as a WAKEUP, this pin can also be used as a digital GPIO, ADC input or PWM
+			// When not used as a WAKEUP, this pin can also be used as a digital GPIO, ADC
+			// input or PWM
 			// Note aka A7
 			addGpioPinInfo(gpio_num--, "WKP", pin++, EnumSet.of(DeviceMode.ANALOG_INPUT, DeviceMode.DIGITAL_INPUT,
 					DeviceMode.DIGITAL_OUTPUT, DeviceMode.PWM_OUTPUT)); // GPIO 17
 			// 12-bit Digital-to-Analog (D/A) output (0-4095), and also a digital GPIO
-			// DAC is used as DAC or DAC1 in software, and A3 is a second DAC output used as DAC2 in software
+			// DAC is used as DAC or DAC1 in software, and A3 is a second DAC output used as
+			// DAC2 in software
 			// Note aka A6
 			addGpioPinInfo(gpio_num--, "DAC", pin++,
-					EnumSet.of(DeviceMode.ANALOG_OUTPUT, DeviceMode.DIGITAL_INPUT, DeviceMode.DIGITAL_OUTPUT)); // GPIO 16
+					EnumSet.of(DeviceMode.ANALOG_OUTPUT, DeviceMode.DIGITAL_INPUT, DeviceMode.DIGITAL_OUTPUT)); // GPIO
+																												// 16
 			// 12-bit Analog-to-Digital (A/D) inputs (0-4095), and also digital GPIOs
 			// SPI1 MOSI
 			addGpioPinInfo(gpio_num--, "A5", pin++, EnumSet.of(DeviceMode.ANALOG_INPUT, DeviceMode.DIGITAL_INPUT,
@@ -691,10 +704,12 @@ public class VoodooSparkDeviceFactory extends BaseNativeDeviceFactory {
 					DeviceMode.DIGITAL_OUTPUT, DeviceMode.PWM_OUTPUT)); // GPIO 14
 			// SPI1 SCK
 			addGpioPinInfo(gpio_num--, "A3", pin++,
-					EnumSet.of(DeviceMode.ANALOG_INPUT, DeviceMode.DIGITAL_INPUT, DeviceMode.DIGITAL_OUTPUT)); // GPIO 13
+					EnumSet.of(DeviceMode.ANALOG_INPUT, DeviceMode.DIGITAL_INPUT, DeviceMode.DIGITAL_OUTPUT)); // GPIO
+																												// 13
 			// SPI1 SS
 			addGpioPinInfo(gpio_num--, "A2", pin++,
-					EnumSet.of(DeviceMode.ANALOG_INPUT, DeviceMode.DIGITAL_INPUT, DeviceMode.DIGITAL_OUTPUT)); // GPIO 12
+					EnumSet.of(DeviceMode.ANALOG_INPUT, DeviceMode.DIGITAL_INPUT, DeviceMode.DIGITAL_OUTPUT)); // GPIO
+																												// 12
 			addGpioPinInfo(gpio_num--, "A1", pin++, EnumSet.of(DeviceMode.ANALOG_INPUT, DeviceMode.DIGITAL_INPUT,
 					DeviceMode.DIGITAL_OUTPUT, DeviceMode.PWM_OUTPUT)); // GPIO 11
 			addGpioPinInfo(gpio_num--, "A0", pin++, EnumSet.of(DeviceMode.ANALOG_INPUT, DeviceMode.DIGITAL_INPUT,
@@ -705,8 +720,8 @@ public class VoodooSparkDeviceFactory extends BaseNativeDeviceFactory {
 			addGpioPinInfo(gpio_num++, "D1", pin++, PinInfo.DIGITAL_IN_OUT_PWM); // SCL
 			addGpioPinInfo(gpio_num++, "D2", pin++, PinInfo.DIGITAL_IN_OUT_PWM); // SPI3 MOSI
 			addGpioPinInfo(gpio_num++, "D3", pin++, PinInfo.DIGITAL_IN_OUT_PWM); // SPI3 MISO
-			addGpioPinInfo(gpio_num++, "D4", pin++, PinInfo.DIGITAL_IN_OUT);     // SPI3 SCK
-			addGpioPinInfo(gpio_num++, "D5", pin++, PinInfo.DIGITAL_IN_OUT);     // SPI3 SS
+			addGpioPinInfo(gpio_num++, "D4", pin++, PinInfo.DIGITAL_IN_OUT); // SPI3 SCK
+			addGpioPinInfo(gpio_num++, "D5", pin++, PinInfo.DIGITAL_IN_OUT); // SPI3 SS
 			addGpioPinInfo(gpio_num++, "D6", pin++, PinInfo.DIGITAL_IN_OUT);
 			// Onboard LED
 			addGpioPinInfo(gpio_num++, "D7", pin++, PinInfo.DIGITAL_IN_OUT);
@@ -718,7 +733,7 @@ public class VoodooSparkDeviceFactory extends BaseNativeDeviceFactory {
 			addGeneralPinInfo(pin++, PinInfo.VCC_3V3);
 		}
 	}
-	
+
 	public static void main(String[] args) throws InterruptedException {
 		try (VoodooSparkDeviceFactory df = new VoodooSparkDeviceFactory()) {
 			int gpio = 7;
@@ -726,19 +741,19 @@ public class VoodooSparkDeviceFactory extends BaseNativeDeviceFactory {
 			boolean value = false;
 			try (GpioDigitalOutputDeviceInterface output = df.createDigitalOutputDevice("GPIO-" + gpio,
 					new PinInfo("GPIO", "default", gpio, pin, "GPIO-" + gpio, PinInfo.DIGITAL_IN_OUT_PWM), value)) {
-				for (int i=0; i<4; i++) {
+				for (int i = 0; i < 4; i++) {
 					value = output.getValue();
-					output.setValue(! value);
+					output.setValue(!value);
 					Thread.sleep(500);
 				}
 			}
-			
+
 			gpio = 0;
 			df.setPinMode(gpio, PinMode.DIGITAL_OUTPUT);
-			//df.addReporting(gpio, false);
-			//df.setSampleInterval(100);
-			
-			for (int i=0; i<5; i++) {
+			// df.addReporting(gpio, false);
+			// df.setSampleInterval(100);
+
+			for (int i = 0; i < 5; i++) {
 				df.setValue(gpio, true);
 				Thread.sleep(500);
 				df.setValue(gpio, false);
@@ -746,21 +761,15 @@ public class VoodooSparkDeviceFactory extends BaseNativeDeviceFactory {
 			}
 
 			/*
-			for (int red=0; red<255; red++) {
-				df.setInternalRgb((byte) red, (byte) 0, (byte) 0);
-				Thread.sleep(50);
-			}
-			
-			for (int green=0; green<255; green++) {
-				df.setInternalRgb((byte) 0, (byte) green, (byte) 0);
-				Thread.sleep(50);
-			}
-			
-			for (int blue=0; blue<255; blue++) {
-				df.setInternalRgb((byte) 0, (byte) 0, (byte) blue);
-				Thread.sleep(50);
-			}
-			*/
+			 * for (int red=0; red<255; red++) { df.setInternalRgb((byte) red, (byte) 0,
+			 * (byte) 0); Thread.sleep(50); }
+			 * 
+			 * for (int green=0; green<255; green++) { df.setInternalRgb((byte) 0, (byte)
+			 * green, (byte) 0); Thread.sleep(50); }
+			 * 
+			 * for (int blue=0; blue<255; blue++) { df.setInternalRgb((byte) 0, (byte) 0,
+			 * (byte) blue); Thread.sleep(50); }
+			 */
 
 			analogTest(df, gpio);
 			gpio = 13;
@@ -769,45 +778,45 @@ public class VoodooSparkDeviceFactory extends BaseNativeDeviceFactory {
 			analogTest(df, gpio);
 		}
 	}
-	
+
 	private static void analogTest(VoodooSparkDeviceFactory df, int gpio) throws InterruptedException {
 		df.setPinMode(gpio, PinMode.ANALOG_OUTPUT);
-		//df.addReporting(gpio, true);
-		
+		// df.addReporting(gpio, true);
+
 		int max = gpio < 10 ? MAX_PWM_VALUE : MAX_ANALOG_VALUE;
-		int step = (max+1) / 256;
-		
+		int step = (max + 1) / 256;
+
 		int val = 0;
 		df.setAnalogValue(gpio, val);
 		System.out.println("Min. val = " + val);
 		Thread.sleep(500);
-		
+
 		val = max / 2;
 		df.setAnalogValue(gpio, val);
 		System.out.println("Mid. val = " + val);
 		Thread.sleep(500);
-		
+
 		val = max;
 		df.setAnalogValue(gpio, val);
 		System.out.println("Max. val = " + val);
 		Thread.sleep(500);
-		
+
 		val = max / 2;
 		df.setAnalogValue(gpio, val);
 		System.out.println("Mid. val = " + val);
 		Thread.sleep(500);
-		
+
 		val = 0;
 		df.setAnalogValue(gpio, val);
 		System.out.println("Min. val = " + val);
 		Thread.sleep(500);
-		
-		for (int i=0; i<max+1; i+=step) {
+
+		for (int i = 0; i < max + 1; i += step) {
 			df.setAnalogValue(gpio, i);
 			Thread.sleep(20);
 		}
-		for (int i=0; i<max+1; i+=step) {
-			df.setAnalogValue(gpio, max-i);
+		for (int i = 0; i < max + 1; i += step) {
+			df.setAnalogValue(gpio, max - i);
 			Thread.sleep(20);
 		}
 	}

@@ -185,7 +185,7 @@ public class PigpioJI2CDevice extends AbstractDevice implements I2CDeviceInterfa
 			throw new IllegalStateException("I2C Device " + controller + "-" + address + " is closed");
 		}
 		
-		int rc = pigpioImpl.i2cWriteByteData(handle, register, b);
+		int rc = pigpioImpl.i2cWriteByteData(handle, register, b & 0xFF);
 		if (rc < 0) {
 			throw new RuntimeIOException("Error calling pigpioImpl.i2cWriteByteData(), response: " + rc);
 		}

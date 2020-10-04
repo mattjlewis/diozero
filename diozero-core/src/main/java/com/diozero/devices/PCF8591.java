@@ -63,25 +63,37 @@ import com.diozero.util.RuntimeIOException;
  * driver states there is a <em>known bug when reading digital values from
  * PCF8591 if analog output is disabled</em>.
  * </p>
- * <p><a href="https://brainfyre.wordpress.com/2012/10/25/pcf8591-yl-40-ad-da-module-review/">Instructions</a>:<br>
- * The jumpers control whether analog input channels of the IC are connected to the analog sources:</p>
+ * <p>
+ * <a href=
+ * "https://brainfyre.wordpress.com/2012/10/25/pcf8591-yl-40-ad-da-module-review/">Instructions</a>:<br>
+ * The jumpers control whether analog input channels of the IC are connected to
+ * the analog sources:
+ * </p>
  * <ul>
- * <li>Jumper P4 for AIN1: The temperature sensed by the R6 thermister is provided to the ADC.</li>
- * <li>Jumper P5 to AIN0: The R7 photocell voltage (resistance drop) is provided to the DAC.</li>
- * <li>Jumper P6 to AIN3: The single turn 10K ohm trimpot voltage (resistance drop ? brighter light, lower resistance).</li>
+ * <li>Jumper P4 for AIN1: The temperature sensed by the R6 thermister is
+ * provided to the ADC.</li>
+ * <li>Jumper P5 to AIN0: The R7 photocell voltage (resistance drop) is provided
+ * to the DAC.</li>
+ * <li>Jumper P6 to AIN3: The single turn 10K ohm trimpot voltage (resistance
+ * drop ? brighter light, lower resistance).</li>
  * </ul>
- * <p>From my experiments, the inputs / jumpers are configured as follows:</p>
+ * <p>
+ * From my experiments, the inputs / jumpers are configured as follows:
+ * </p>
  * <ul>
  * <li>AIN0: trimpot (P6)</li>
  * <li>AIN1: LDR (P5)</li>
  * <li>AIN2: ?temp? (P4)</li>
  * <li>AIN3: AIN3</li>
  * </ul>
- * <p>Removing a jumper allows an input channel to be fed from one of the external pins, labelled accordingly.</p>
+ * <p>
+ * Removing a jumper allows an input channel to be fed from one of the external
+ * pins, labelled accordingly.
+ * </p>
  */
 @SuppressWarnings("unused")
-public class PCF8591 extends AbstractDeviceFactory implements AnalogInputDeviceFactoryInterface,
-AnalogOutputDeviceFactoryInterface {
+public class PCF8591 extends AbstractDeviceFactory
+		implements AnalogInputDeviceFactoryInterface, AnalogOutputDeviceFactoryInterface {
 	private static final String DEVICE_NAME = "PCF8591";
 	private static final int RESOLUTION = 8;
 	private static final float RANGE = (float) Math.pow(2, RESOLUTION);
@@ -89,48 +101,50 @@ AnalogOutputDeviceFactoryInterface {
 	private static final int DEFAULT_ADDRESS = 0x48;
 	// Flags for the control byte
 	// [0:1] A/D Channel Number
-	//   [2] Auto increment flag (active if 1)
-	//   [3] 0
+	// [2] Auto increment flag (active if 1)
+	// [3] 0
 	// [4:5] Analog input mode
-	//   [6] Analog output enable flag (analog output active if 1)
-	//   [7] 0
-	/** If the auto-increment flag is set to 1, the channel number is incremented
-	 * automatically after each A/D conversion. */
-	private static final byte AUTO_INCREMENT_FLAG       = 0b0000_0100; // 0x04
+	// [6] Analog output enable flag (analog output active if 1)
+	// [7] 0
+	/**
+	 * If the auto-increment flag is set to 1, the channel number is incremented
+	 * automatically after each A/D conversion.
+	 */
+	private static final byte AUTO_INCREMENT_FLAG = 0b0000_0100; // 0x04
 	private static final byte ANALOG_OUTPUT_ENABLE_MASK = 0b0100_0000; // 0x40
-	
+
 	private I2CDevice device;
 	private boolean outputEnabled = false;
 	private InputMode inputMode;
 	private BoardPinInfo boardPinInfo;
 	private float vRef;
-	
+
 	public PCF8591() {
 		this(I2CConstants.BUS_1, DEFAULT_ADDRESS, InputMode.FOUR_SINGLE_ENDED_INPUTS, true, DEFAULT_VREF);
 	}
-	
+
 	public PCF8591(int controller) {
 		this(controller, DEFAULT_ADDRESS, InputMode.FOUR_SINGLE_ENDED_INPUTS, true, DEFAULT_VREF);
 	}
 
 	public PCF8591(int controller, int address, InputMode inputMode, boolean outputEnabled, float vRef) {
 		super(DEVICE_NAME + "-" + controller + "-" + address);
-		
+
 		this.inputMode = inputMode;
 		this.outputEnabled = outputEnabled;
 		this.vRef = vRef;
-		
-		device = new I2CDevice(controller, address, I2CConstants.ADDR_SIZE_7,
-				I2CConstants.DEFAULT_CLOCK_FREQUENCY, ByteOrder.LITTLE_ENDIAN);
-		
+
+		device = new I2CDevice(controller, address, I2CConstants.ADDR_SIZE_7, I2CConstants.DEFAULT_CLOCK_FREQUENCY,
+				ByteOrder.LITTLE_ENDIAN);
+
 		boardPinInfo = new PCF8591BoardPinInfo(inputMode);
 	}
-	
+
 	@Override
 	public float getVRef() {
 		return vRef;
 	}
-	
+
 	@Override
 	public BoardPinInfo getBoardPinInfo() {
 		return boardPinInfo;
@@ -152,12 +166,14 @@ AnalogOutputDeviceFactoryInterface {
 	}
 
 	@Override
-	public AnalogOutputDeviceInterface createAnalogOutputDevice(String key, PinInfo pinInfo) throws RuntimeIOException {
-		return new PCF8591AnalogOutputDevice(this, key, pinInfo.getDeviceNumber());
+	public AnalogOutputDeviceInterface createAnalogOutputDevice(String key, PinInfo pinInfo, float initialValue)
+			throws RuntimeIOException {
+		return new PCF8591AnalogOutputDevice(this, key, pinInfo.getDeviceNumber(), initialValue);
 	}
-	
+
 	/**
 	 * Read the analog value in the range 0..1
+	 * 
 	 * @param adcPin Pin on the MCP device
 	 * @return The unscaled value (0..1)
 	 * @throws RuntimeIOException if an I/O error occurs
@@ -165,11 +181,12 @@ AnalogOutputDeviceFactoryInterface {
 	public float getValue(int adcPin) throws RuntimeIOException {
 		return getRawValue(adcPin) / RANGE;
 	}
-	
+
 	/**
 	 * Set the analog output value.
+	 * 
 	 * @param dacPin The analog output channel.
-	 * @param value Analogue output value (0..1).
+	 * @param value  Analogue output value (0..1).
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	public void setValue(int dacPin, float value) throws RuntimeIOException {
@@ -180,46 +197,51 @@ AnalogOutputDeviceFactoryInterface {
 		if (value < 0 || value >= 1) {
 			throw new IllegalArgumentException("Invalid output value (" + value + ", must be 0..1");
 		}
-		//device.writeByte(ANALOG_OUTPUT_ENABLE_MASK, (byte) (value * (RANGE-1)));
+		// device.writeByte(ANALOG_OUTPUT_ENABLE_MASK, (byte) (value * (RANGE-1)));
 		byte[] data = new byte[2];
 		data[0] = ANALOG_OUTPUT_ENABLE_MASK;
-		data[1] = (byte) (value * (RANGE-1));
+		data[1] = (byte) (value * (RANGE - 1));
 		device.write(data);
 	}
 
 	private int getRawValue(int adcPin) {
 		if (adcPin < 0 || adcPin >= inputMode.getNumPins()) {
-			throw new IllegalArgumentException("Invalid input channel number (" + adcPin + ") for input mode " + inputMode.getName());
+			throw new IllegalArgumentException(
+					"Invalid input channel number (" + adcPin + ") for input mode " + inputMode.getName());
 		}
-		
+
 		// Set output enable?
-		byte control_byte = (byte) ((outputEnabled ? ANALOG_OUTPUT_ENABLE_MASK : 0) | inputMode.getControlFlags() | adcPin);
-		// Note if the auto-increment flag is set you need to read 5 bytes (if all channels are in single input mode),
+		byte control_byte = (byte) ((outputEnabled ? ANALOG_OUTPUT_ENABLE_MASK : 0) | inputMode.getControlFlags()
+				| adcPin);
+		// Note if the auto-increment flag is set you need to read 5 bytes (if all
+		// channels are in single input mode),
 		// 1 for the previous value + 1 for each channel.
-		
+
 		device.writeByte(control_byte);
 
 		byte[] data = device.read(2);
-		// Note data[0] is the previous value held in the DAC register, data[1] is value of data byte 1
-		
+		// Note data[0] is the previous value held in the DAC register, data[1] is value
+		// of data byte 1
+
 		return data[1] & 0xff;
 	}
 
 	public int getNumPins() {
 		return inputMode.getNumPins();
 	}
-	
+
 	public void setOutputEnabledFlag(boolean outputEnabled) {
 		this.outputEnabled = outputEnabled;
 	}
-	
-	private static class PCF8591AnalogInputDevice extends AbstractInputDevice<AnalogInputEvent> implements AnalogInputDeviceInterface {
+
+	private static class PCF8591AnalogInputDevice extends AbstractInputDevice<AnalogInputEvent>
+			implements AnalogInputDeviceInterface {
 		private PCF8591 pcf8591;
 		private int adcNumber;
 
 		public PCF8591AnalogInputDevice(PCF8591 pcf8591, String key, int adcNumber) {
 			super(key, pcf8591);
-			
+
 			this.pcf8591 = pcf8591;
 			this.adcNumber = adcNumber;
 		}
@@ -240,16 +262,18 @@ AnalogOutputDeviceFactoryInterface {
 			return adcNumber;
 		}
 	}
-	
+
 	private static class PCF8591AnalogOutputDevice extends AbstractDevice implements AnalogOutputDeviceInterface {
 		private int adcNumber;
 		private PCF8591 pcf8591;
 
-		public PCF8591AnalogOutputDevice(PCF8591 pcf8591, String key, int adcNumber) {
+		public PCF8591AnalogOutputDevice(PCF8591 pcf8591, String key, int adcNumber, float initialValue) {
 			super(key, pcf8591);
-			
+
 			this.pcf8591 = pcf8591;
 			this.adcNumber = adcNumber;
+			
+			setValue(initialValue);
 		}
 
 		@Override
@@ -273,7 +297,7 @@ AnalogOutputDeviceFactoryInterface {
 			pcf8591.setValue(adcNumber, value);
 		}
 	}
-	
+
 	public static enum InputMode {
 		FOUR_SINGLE_ENDED_INPUTS(0b00, 4, "Four single-ended inputs"),
 		/** Channel 0=AIN0-AIN3, Channel 1=AIN1-AIN3, Channel 2=AIN2-AIN3. */
@@ -282,26 +306,27 @@ AnalogOutputDeviceFactoryInterface {
 		SINGLE_ENDED_AND_DIFFERENTIAL_MIXED(0b10, 3, "Single-ended and differential mixed"),
 		/** Channel 0=AIN0-AIN1, Channel 1=AIN2-AIN3. */
 		TWO_DIFFERENTIAL_INPUTS(0b11, 2, "Two differential inputs");
+
 		private static final int INPUT_MODE_SHIFT_LEFT = 4;
-		
+
 		private byte controlFlags;
 		private int numPins;
 		private String name;
-		
+
 		private InputMode(int val, int numPins, String name) {
 			this.controlFlags = (byte) (val << INPUT_MODE_SHIFT_LEFT);
 			this.numPins = numPins;
 			this.name = name;
 		}
-		
+
 		public byte getControlFlags() {
 			return controlFlags;
 		}
-		
+
 		public int getNumPins() {
 			return numPins;
 		}
-		
+
 		public String getName() {
 			return name;
 		}
@@ -309,7 +334,7 @@ AnalogOutputDeviceFactoryInterface {
 
 	public static class PCF8591BoardPinInfo extends BoardPinInfo {
 		private InputMode inputMode;
-		
+
 		public PCF8591BoardPinInfo(InputMode inputMode) {
 			this.inputMode = inputMode;
 

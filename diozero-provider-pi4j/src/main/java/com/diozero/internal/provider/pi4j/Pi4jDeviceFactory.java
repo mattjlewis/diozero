@@ -39,6 +39,7 @@ import com.diozero.api.GpioPullUpDown;
 import com.diozero.api.PinInfo;
 import com.diozero.api.PwmPinInfo;
 import com.diozero.api.PwmType;
+import com.diozero.api.SerialDevice;
 import com.diozero.api.SpiClockMode;
 import com.diozero.internal.provider.AnalogInputDeviceInterface;
 import com.diozero.internal.provider.AnalogOutputDeviceInterface;
@@ -48,6 +49,7 @@ import com.diozero.internal.provider.GpioDigitalInputOutputDeviceInterface;
 import com.diozero.internal.provider.GpioDigitalOutputDeviceInterface;
 import com.diozero.internal.provider.I2CDeviceInterface;
 import com.diozero.internal.provider.PwmOutputDeviceInterface;
+import com.diozero.internal.provider.SerialDeviceInterface;
 import com.diozero.internal.provider.SpiDeviceInterface;
 import com.diozero.util.RuntimeIOException;
 import com.pi4j.io.gpio.GpioController;
@@ -61,20 +63,22 @@ public class Pi4jDeviceFactory extends BaseNativeDeviceFactory {
 	private static final int DEFAULT_HARDWARE_PWM_RANGE = 1024;
 	private static final int DEFAULT_HARDWARE_PWM_FREQUENCY = 100;
 	// See https://projects.drogon.net/raspberry-pi/wiringpi/software-pwm-library/
-	// You can lower the range to get a higher frequency, at the expense of resolution,
+	// You can lower the range to get a higher frequency, at the expense of
+	// resolution,
 	// or increase to get more resolution, but that will lower the frequency
 	private static final int PI4J_MIN_SOFTWARE_PULSE_WIDTH_US = 100;
-	
+
 	private int boardPwmFrequency;
 	private int hardwarePwmRange;
-	
+
 	private GpioController gpioController;
-	
+
 	public Pi4jDeviceFactory() {
 		GpioFactory.setDefaultProvider(new RaspiGpioProvider(RaspiPinNumberingScheme.BROADCOM_PIN_NUMBERING));
 		gpioController = GpioFactory.getInstance();
-		
-		// Default mode is balanced, actually want mark-space which gives traditional PWM with
+
+		// Default mode is balanced, actually want mark-space which gives traditional
+		// PWM with
 		// predictable PWM frequencies
 		setHardwarePwmFrequency(DEFAULT_HARDWARE_PWM_FREQUENCY);
 	}
@@ -88,12 +92,12 @@ public class Pi4jDeviceFactory extends BaseNativeDeviceFactory {
 	public int getBoardPwmFrequency() {
 		return boardPwmFrequency;
 	}
-	
+
 	@Override
 	public void setBoardPwmFrequency(int pwmFrequency) {
 		setHardwarePwmFrequency(pwmFrequency);
 	}
-	
+
 	private void setHardwarePwmFrequency(int pwmFrequency) {
 		// TODO Validate the requested PWM frequency
 		hardwarePwmRange = DEFAULT_HARDWARE_PWM_RANGE;
@@ -102,19 +106,19 @@ public class Pi4jDeviceFactory extends BaseNativeDeviceFactory {
 		Gpio.pwmSetClock(divisor);
 		Gpio.pwmSetMode(Gpio.PWM_MODE_MS);
 		this.boardPwmFrequency = pwmFrequency;
-		Logger.info("setHardwarePwmFrequency({}) - range={}, divisor={}",
-				Integer.valueOf(pwmFrequency), Integer.valueOf(hardwarePwmRange), Integer.valueOf(divisor));
+		Logger.info("setHardwarePwmFrequency({}) - range={}, divisor={}", Integer.valueOf(pwmFrequency),
+				Integer.valueOf(hardwarePwmRange), Integer.valueOf(divisor));
 	}
-	
+
 	private static int getSoftwarePwmRange(int pwmFrequency) {
 		return 1_000_000 / (PI4J_MIN_SOFTWARE_PULSE_WIDTH_US * pwmFrequency);
 	}
-	
+
 	@Override
 	public int getSpiBufferSize() {
 		return com.pi4j.io.spi.SpiDevice.MAX_SUPPORTED_BYTES;
 	}
-	
+
 	@Override
 	public void close() {
 		super.close();
@@ -122,21 +126,20 @@ public class Pi4jDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	public GpioDigitalInputDeviceInterface createDigitalInputDevice(String key, PinInfo pinInfo,
-			GpioPullUpDown pud, GpioEventTrigger trigger) throws RuntimeIOException {
+	public GpioDigitalInputDeviceInterface createDigitalInputDevice(String key, PinInfo pinInfo, GpioPullUpDown pud,
+			GpioEventTrigger trigger) throws RuntimeIOException {
 		return new Pi4jDigitalInputDevice(key, this, gpioController, pinInfo.getDeviceNumber(), pud, trigger);
 	}
 
 	@Override
-	public GpioDigitalOutputDeviceInterface createDigitalOutputDevice(String key, PinInfo pinInfo,
-			boolean initialValue) throws RuntimeIOException {
+	public GpioDigitalOutputDeviceInterface createDigitalOutputDevice(String key, PinInfo pinInfo, boolean initialValue)
+			throws RuntimeIOException {
 		return new Pi4jDigitalOutputDevice(key, this, gpioController, pinInfo.getDeviceNumber(), initialValue);
 	}
 
 	@Override
 	public GpioDigitalInputOutputDeviceInterface createDigitalInputOutputDevice(String key, PinInfo pinInfo,
-			DeviceMode mode)
-			throws RuntimeIOException {
+			DeviceMode mode) throws RuntimeIOException {
 		return new Pi4jDigitalInputOutputDevice(key, this, gpioController, pinInfo.getDeviceNumber(), mode);
 	}
 
@@ -149,8 +152,10 @@ public class Pi4jDeviceFactory extends BaseNativeDeviceFactory {
 			pwm_type = PwmType.HARDWARE;
 			// PWM frequency is shared across all PWM outputs when using hardware PWM
 			if (pwmFrequency != boardPwmFrequency) {
-				Logger.warn("Requested PWM frequency ({}) is different to that configured for the board ({})"
-						+ "; using board value", Integer.valueOf(pwmFrequency), Integer.valueOf(boardPwmFrequency));
+				Logger.warn(
+						"Requested PWM frequency ({}) is different to that configured for the board ({})"
+								+ "; using board value",
+						Integer.valueOf(pwmFrequency), Integer.valueOf(boardPwmFrequency));
 			}
 		}
 
@@ -164,18 +169,26 @@ public class Pi4jDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	public AnalogOutputDeviceInterface createAnalogOutputDevice(String key, PinInfo pinInfo) throws RuntimeIOException {
+	public AnalogOutputDeviceInterface createAnalogOutputDevice(String key, PinInfo pinInfo, float initialValue)
+			throws RuntimeIOException {
 		throw new UnsupportedOperationException("Analog devices aren't supported on this device");
 	}
 
 	@Override
-	public SpiDeviceInterface createSpiDevice(String key, int controller, int chipSelect,
-			int frequency, SpiClockMode spiClockMode, boolean lsbFirst) throws RuntimeIOException {
+	public SpiDeviceInterface createSpiDevice(String key, int controller, int chipSelect, int frequency,
+			SpiClockMode spiClockMode, boolean lsbFirst) throws RuntimeIOException {
 		return new Pi4jSpiDevice(key, this, controller, chipSelect, frequency, spiClockMode, lsbFirst);
 	}
 
 	@Override
-	public I2CDeviceInterface createI2CDevice(String key, int controller, int address, int addressSize, int clockFrequency) throws RuntimeIOException {
+	public I2CDeviceInterface createI2CDevice(String key, int controller, int address, int addressSize,
+			int clockFrequency) throws RuntimeIOException {
 		return new Pi4jI2CDevice(key, this, controller, address, addressSize, clockFrequency);
+	}
+
+	@Override
+	public SerialDeviceInterface createSerialDevice(String key, String tty, int baud, SerialDevice.DataBits dataBits,
+			SerialDevice.Parity parity, SerialDevice.StopBits stopBits) throws RuntimeIOException {
+		throw new UnsupportedOperationException("Serial communication not available in the device factory");
 	}
 }

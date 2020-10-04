@@ -64,8 +64,10 @@ import com.diozero.remote.message.I2COpen;
 import com.diozero.remote.message.I2CRead;
 import com.diozero.remote.message.I2CReadByte;
 import com.diozero.remote.message.I2CReadByteData;
+import com.diozero.remote.message.I2CReadByteDataResponse;
 import com.diozero.remote.message.I2CReadByteResponse;
 import com.diozero.remote.message.I2CReadI2CBlockData;
+import com.diozero.remote.message.I2CReadI2CBlockDataResponse;
 import com.diozero.remote.message.I2CReadResponse;
 import com.diozero.remote.message.I2CWrite;
 import com.diozero.remote.message.I2CWriteByte;
@@ -78,6 +80,16 @@ import com.diozero.remote.message.ProvisionDigitalInputOutputDevice;
 import com.diozero.remote.message.ProvisionDigitalOutputDevice;
 import com.diozero.remote.message.ProvisionPwmOutputDevice;
 import com.diozero.remote.message.Response;
+import com.diozero.remote.message.SerialBytesAvailable;
+import com.diozero.remote.message.SerialBytesAvailableResponse;
+import com.diozero.remote.message.SerialClose;
+import com.diozero.remote.message.SerialOpen;
+import com.diozero.remote.message.SerialRead;
+import com.diozero.remote.message.SerialReadByte;
+import com.diozero.remote.message.SerialReadByteResponse;
+import com.diozero.remote.message.SerialReadResponse;
+import com.diozero.remote.message.SerialWrite;
+import com.diozero.remote.message.SerialWriteByte;
 import com.diozero.remote.message.SpiClose;
 import com.diozero.remote.message.SpiOpen;
 import com.diozero.remote.message.SpiResponse;
@@ -103,7 +115,7 @@ public class JsonWebSocketProtocolHandler extends BaseAsyncProtocolHandler imple
 
 		serialiser = GSON::toJson;
 		deserialiser = GSON::fromJson;
-		
+
 		webSocketClient = new WebSocketClient();
 		try {
 			webSocketClient.start();
@@ -130,8 +142,8 @@ public class JsonWebSocketProtocolHandler extends BaseAsyncProtocolHandler imple
 
 		lock.lock();
 		try {
-			session.getRemote().sendString(serialiser.toString(
-					new MessageWrapper(request.getClass().getSimpleName(), serialiser.toString(request))));
+			session.getRemote().sendString(serialiser
+					.toString(new MessageWrapper(request.getClass().getSimpleName(), serialiser.toString(request))));
 			condition.await(TIMEOUT_MS, TimeUnit.MILLISECONDS);
 		} catch (InterruptedException e) {
 			Logger.warn(e, "Interrupted: {}", e);
@@ -248,8 +260,8 @@ public class JsonWebSocketProtocolHandler extends BaseAsyncProtocolHandler imple
 	}
 
 	@Override
-	public I2CReadByteResponse request(I2CReadByteData request) {
-		return (I2CReadByteResponse) requestResponse(request);
+	public I2CReadByteDataResponse request(I2CReadByteData request) {
+		return (I2CReadByteDataResponse) requestResponse(request);
 	}
 
 	@Override
@@ -258,15 +270,15 @@ public class JsonWebSocketProtocolHandler extends BaseAsyncProtocolHandler imple
 	}
 
 	@Override
-	public I2CReadResponse request(I2CReadI2CBlockData request) {
-		return (I2CReadResponse) requestResponse(request);
+	public I2CReadI2CBlockDataResponse request(I2CReadI2CBlockData request) {
+		return (I2CReadI2CBlockDataResponse) requestResponse(request);
 	}
 
 	@Override
 	public Response request(I2CWriteI2CBlockData request) {
 		return requestResponse(request);
 	}
-	
+
 	@Override
 	public Response request(I2CClose request) {
 		return requestResponse(request);
@@ -276,7 +288,7 @@ public class JsonWebSocketProtocolHandler extends BaseAsyncProtocolHandler imple
 	public Response request(SpiOpen request) {
 		return requestResponse(request);
 	}
-	
+
 	@Override
 	public Response request(SpiWrite request) {
 		return requestResponse(request);
@@ -289,6 +301,41 @@ public class JsonWebSocketProtocolHandler extends BaseAsyncProtocolHandler imple
 
 	@Override
 	public Response request(SpiClose request) {
+		return requestResponse(request);
+	}
+
+	@Override
+	public Response request(SerialOpen request) {
+		return requestResponse(request);
+	}
+
+	@Override
+	public SerialReadByteResponse request(SerialReadByte request) {
+		return (SerialReadByteResponse) requestResponse(request);
+	}
+
+	@Override
+	public Response request(SerialWriteByte request) {
+		return requestResponse(request);
+	}
+
+	@Override
+	public SerialReadResponse request(SerialRead request) {
+		return (SerialReadResponse) requestResponse(request);
+	}
+
+	@Override
+	public Response request(SerialWrite request) {
+		return requestResponse(request);
+	}
+
+	@Override
+	public SerialBytesAvailableResponse request(SerialBytesAvailable request) {
+		return (SerialBytesAvailableResponse) requestResponse(request);
+	}
+
+	@Override
+	public Response request(SerialClose request) {
 		return requestResponse(request);
 	}
 
@@ -355,7 +402,7 @@ public class JsonWebSocketProtocolHandler extends BaseAsyncProtocolHandler imple
 	public static interface Serialiser {
 		String toString(Object o);
 	}
-	
+
 	public static interface Deserialiser {
 		<T> T fromString(String source, Class<T> classOfT);
 	}

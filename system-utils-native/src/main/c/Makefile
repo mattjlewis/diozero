@@ -10,6 +10,7 @@ LIBS =
 
 SRCS = com_diozero_internal_provider_sysfs_NativeI2C.c \
 	com_diozero_internal_provider_sysfs_NativeSpiDevice.c \
+	com_diozero_internal_provider_sysfs_NativeSerialDevice.c \
 	com_diozero_util_EpollNative.c \
 	com_diozero_util_MmapBufferNative.c \
 	com_diozero_util_PollNative.c \

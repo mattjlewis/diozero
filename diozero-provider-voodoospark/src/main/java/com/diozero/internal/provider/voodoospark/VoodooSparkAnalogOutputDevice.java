@@ -39,12 +39,15 @@ import com.diozero.util.RuntimeIOException;
 public class VoodooSparkAnalogOutputDevice extends AbstractDevice implements AnalogOutputDeviceInterface {
 	private VoodooSparkDeviceFactory deviceFactory;
 	private int gpio;
-	
-	public VoodooSparkAnalogOutputDevice(VoodooSparkDeviceFactory deviceFactory, String key, PinInfo pinInfo) {
+
+	public VoodooSparkAnalogOutputDevice(VoodooSparkDeviceFactory deviceFactory, String key, PinInfo pinInfo,
+			float initialValue) {
 		super(key, deviceFactory);
-		
+
 		this.deviceFactory = deviceFactory;
 		this.gpio = pinInfo.getDeviceNumber();
+		
+		setValue(initialValue);
 	}
 
 	@Override
