@@ -1,7 +1,5 @@
 package com.diozero.internal.provider.sysfs;
 
-import java.nio.ByteBuffer;
-
 /*-
  * #%L
  * Organisation: diozero
@@ -56,6 +54,11 @@ public class SysFsSerialDevice extends AbstractDevice implements SerialDeviceInt
 		Logger.trace("closeDevice()");
 		device.close();
 	}
+	
+	@Override
+	public int read() {
+		return device.read();
+	}
 
 	@Override
 	public byte readByte() {
@@ -68,13 +71,13 @@ public class SysFsSerialDevice extends AbstractDevice implements SerialDeviceInt
 	}
 
 	@Override
-	public void read(ByteBuffer dst) {
-		device.read(dst);
+	public void read(byte[] buffer) {
+		device.read(buffer);
 	}
 
 	@Override
-	public void write(ByteBuffer src) {
-		device.write(src);
+	public void write(byte[] data) {
+		device.write(data);
 	}
 
 	@Override

@@ -33,9 +33,6 @@ package com.diozero.firmata;
 
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -56,15 +53,15 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.tinylog.Logger;
 
-public class FirmataAdapter implements FirmataProtocol, Runnable, Closeable {
+import com.diozero.util.RuntimeIOException;
+
+public abstract class FirmataAdapter implements FirmataProtocol, Runnable, Closeable {
 	private static final int I2C_NO_REGISTER = 0;
 	private static final int NOT_SET = -1;
 	private static final byte ANALOG_NOT_SUPPORTED = 127;
 
 	private FirmataEventListener eventListener;
 	private AtomicBoolean running;
-	private InputStream is;
-	private OutputStream os;
 	private Queue<ResponseMessage> responseQueue;
 	private Lock lock;
 	private Condition condition;
@@ -87,11 +84,12 @@ public class FirmataAdapter implements FirmataProtocol, Runnable, Closeable {
 
 		executor = Executors.newSingleThreadExecutor();
 	}
+	
+	abstract int read();
+	abstract byte readByte();
+	abstract void write(byte[] data);
 
-	protected void connect(InputStream input, OutputStream output) throws IOException {
-		this.is = input;
-		this.os = output;
-
+	protected final void connected() {
 		future = executor.submit(this);
 
 		initialiseBoard();
@@ -105,7 +103,7 @@ public class FirmataAdapter implements FirmataProtocol, Runnable, Closeable {
 		return pin.getMax(mode);
 	}
 
-	public void initialiseBoard() throws IOException {
+	public void initialiseBoard() {
 		firmware = getFirmwareInternal();
 
 		CapabilityResponse board_capabilities = sendMessage(new byte[] { START_SYSEX, CAPABILITY_QUERY, END_SYSEX },
@@ -131,7 +129,7 @@ public class FirmataAdapter implements FirmataProtocol, Runnable, Closeable {
 		}
 	}
 
-	public ProtocolVersion getProtocolVersion() throws IOException {
+	public ProtocolVersion getProtocolVersion() {
 		return sendMessage(new byte[] { PROTOCOL_VERSION }, ProtocolVersion.class);
 	}
 
@@ -139,7 +137,7 @@ public class FirmataAdapter implements FirmataProtocol, Runnable, Closeable {
 		return firmware;
 	}
 
-	private FirmwareDetails getFirmwareInternal() throws IOException {
+	private FirmwareDetails getFirmwareInternal() {
 		return sendMessage(new byte[] { START_SYSEX, REPORT_FIRMWARE, END_SYSEX }, FirmwareDetails.class);
 	}
 
@@ -147,7 +145,7 @@ public class FirmataAdapter implements FirmataProtocol, Runnable, Closeable {
 		return boardCapabilities;
 	}
 
-	public PinState getPinState(int gpio) throws IOException {
+	public PinState getPinState(int gpio) {
 		PinState pin_state = sendMessage(new byte[] { START_SYSEX, PIN_STATE_QUERY, (byte) gpio, END_SYSEX },
 				PinState.class);
 
@@ -167,14 +165,14 @@ public class FirmataAdapter implements FirmataProtocol, Runnable, Closeable {
 		return pin_state;
 	}
 
-	public void setSamplingInterval(int intervalMs) throws IOException {
+	public void setSamplingInterval(int intervalMs) {
 		byte[] lsb_msb = convertToLsbMsb(intervalMs);
 		sendMessage(new byte[] { START_SYSEX, SAMPLING_INTERVAL, (byte) (intervalMs & 0x7f), lsb_msb[0], lsb_msb[1],
 				END_SYSEX });
 	}
 
 	// Note enables / disables reporting for all GPIOs in this bank of GPIOs
-	public void enableDigitalReporting(int gpio, boolean enabled) throws IOException {
+	public void enableDigitalReporting(int gpio, boolean enabled) {
 		Logger.debug("Enable digital reporting: " + enabled);
 		sendMessage(new byte[] { (byte) (REPORT_DIGITAL_PORT | (gpio >> 3)), (byte) gpio, (byte) (enabled ? 1 : 0) });
 	}
@@ -187,7 +185,7 @@ public class FirmataAdapter implements FirmataProtocol, Runnable, Closeable {
 		return pin.getMode();
 	}
 
-	public void setPinMode(int gpio, PinMode pinMode) throws IOException {
+	public void setPinMode(int gpio, PinMode pinMode) {
 		Logger.debug("setPinMode(" + gpio + ", " + pinMode + ")");
 		sendMessage(new byte[] { SET_PIN_MODE, (byte) gpio, (byte) pinMode.ordinal() });
 
@@ -198,7 +196,7 @@ public class FirmataAdapter implements FirmataProtocol, Runnable, Closeable {
 		}
 	}
 
-	public void setDigitalValues(int port, byte values) throws IOException {
+	public void setDigitalValues(int port, byte values) {
 		Logger.debug("setValues({}, {})", Integer.valueOf(port), Integer.valueOf(values));
 		byte[] lsb_msb = convertToLsbMsb(values);
 		sendMessage(new byte[] { (byte) (DIGITAL_IO_START | (port & 0x0f)), lsb_msb[0], lsb_msb[1] });
@@ -222,7 +220,7 @@ public class FirmataAdapter implements FirmataProtocol, Runnable, Closeable {
 		return pin.getValue() != 0;
 	}
 
-	public void setDigitalValue(int gpio, boolean value) throws IOException {
+	public void setDigitalValue(int gpio, boolean value) {
 		sendMessage(new byte[] { SET_DIGITAL_PIN_VALUE, (byte) gpio, (byte) (value ? 1 : 0) });
 
 		// Update the cached value
@@ -241,7 +239,7 @@ public class FirmataAdapter implements FirmataProtocol, Runnable, Closeable {
 		return pin.getValue();
 	}
 
-	public void setValue(int gpio, int value) throws IOException {
+	public void setValue(int gpio, int value) {
 		// Non-extended analog accommodates 16 ports (E0-Ef), with a max value of 16384
 		// (2^14)
 		if (gpio < 16 && value < 16384) {
@@ -259,12 +257,12 @@ public class FirmataAdapter implements FirmataProtocol, Runnable, Closeable {
 		}
 	}
 
-	private AnalogMappingResponse getAnalogMapping() throws IOException {
+	private AnalogMappingResponse getAnalogMapping() throws RuntimeIOException {
 		return sendMessage(new byte[] { START_SYSEX, ANALOG_MAPPING_QUERY, END_SYSEX }, AnalogMappingResponse.class);
 	}
 
 	public I2CResponse i2cRead(int slaveAddress, boolean autoRestart, boolean addressSize10Bit, int length)
-			throws IOException {
+			throws RuntimeIOException {
 		byte[] data = new byte[7];
 		int index = 0;
 		data[index++] = START_SYSEX;
@@ -282,12 +280,12 @@ public class FirmataAdapter implements FirmataProtocol, Runnable, Closeable {
 	}
 
 	public void i2cWrite(int slaveAddress, boolean autoRestart, boolean addressSize10Bit, byte[] data)
-			throws IOException {
+			throws RuntimeIOException {
 		i2cWriteData(slaveAddress, autoRestart, addressSize10Bit, I2C_NO_REGISTER, data);
 	}
 
 	public I2CResponse i2cReadData(int slaveAddress, boolean autoRestart, boolean addressSize10Bit, int register,
-			int length) throws IOException {
+			int length) {
 		byte[] data = new byte[9];
 		int index = 0;
 		data[index++] = START_SYSEX;
@@ -308,7 +306,7 @@ public class FirmataAdapter implements FirmataProtocol, Runnable, Closeable {
 	}
 
 	public void i2cWriteData(int slaveAddress, boolean autoRestart, boolean addressSize10Bit, int register, byte[] data)
-			throws IOException {
+			throws RuntimeIOException {
 		byte[] buffer = new byte[7 + 2 * data.length];
 		int index = 0;
 		buffer[index++] = START_SYSEX;
@@ -330,17 +328,17 @@ public class FirmataAdapter implements FirmataProtocol, Runnable, Closeable {
 		sendMessage(buffer);
 	}
 
-	private void sendMessage(byte[] request) throws IOException {
+	private void sendMessage(byte[] request) throws RuntimeIOException {
 		sendMessage(request, null);
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T extends ResponseMessage> T sendMessage(byte[] request, Class<T> responseClass) throws IOException {
+	private <T extends ResponseMessage> T sendMessage(byte[] request, Class<T> responseClass) throws RuntimeIOException {
 		ResponseMessage response = null;
 
 		lock.lock();
 		try {
-			os.write(request);
+			write(request);
 
 			if (responseClass != null) {
 				// Wait for the response message
@@ -366,22 +364,9 @@ public class FirmataAdapter implements FirmataProtocol, Runnable, Closeable {
 		}
 
 		running.compareAndSet(true, false);
-		if (!future.cancel(true)) {
-			Logger.warn("Task could not be cancelled");
-		}
-
-		if (is != null) {
-			try {
-				is.close();
-				is = null;
-			} catch (IOException e) {
-			}
-		}
-		if (os != null) {
-			try {
-				os.close();
-				os = null;
-			} catch (IOException e) {
+		if (future != null) {
+			if (!future.cancel(true)) {
+				Logger.warn("Task could not be cancelled");
 			}
 		}
 
@@ -397,8 +382,9 @@ public class FirmataAdapter implements FirmataProtocol, Runnable, Closeable {
 
 		try {
 			while (running.get()) {
-				int i = is.read();
+				int i = read();
 				if (i == -1) {
+					Logger.warn("Read -1 from device, exiting read responses loop...");
 					running.compareAndSet(true, false);
 					break;
 				}
@@ -406,7 +392,7 @@ public class FirmataAdapter implements FirmataProtocol, Runnable, Closeable {
 				long nano_time = System.nanoTime();
 				long epoch_time = System.currentTimeMillis();
 
-				byte b = (byte) i;
+				byte b = (byte) (i & 0xff);
 				if (b == START_SYSEX) {
 					lock.lock();
 					try {
@@ -428,12 +414,12 @@ public class FirmataAdapter implements FirmataProtocol, Runnable, Closeable {
 				} else if (b >= ANALOG_IO_START && b <= ANALOG_IO_END) {
 					processAnalogResponse(readDataResponse(b - ANALOG_IO_START), epoch_time, nano_time);
 				} else {
-					Logger.warn("Unrecognised response: " + b);
+					Logger.warn("Unrecognised response: 0x{}", Integer.toHexString(b));
 				}
 			}
-		} catch (IOException e) {
+		} catch (RuntimeIOException e) {
 			running.compareAndSet(true, false);
-			Logger.debug("I/O error: {}", e);
+			Logger.error(e, "I/O error: {}", e);
 		}
 
 		Logger.debug("Thread: done");
@@ -469,7 +455,7 @@ public class FirmataAdapter implements FirmataProtocol, Runnable, Closeable {
 		}
 	}
 
-	private SysExResponse readSysEx() throws IOException {
+	private SysExResponse readSysEx() {
 		byte sysex_cmd = readByte();
 		// long start = System.currentTimeMillis();
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -544,23 +530,15 @@ public class FirmataAdapter implements FirmataProtocol, Runnable, Closeable {
 		return response;
 	}
 
-	private ProtocolVersion readVersionResponse() throws IOException {
+	private ProtocolVersion readVersionResponse() {
 		return new ProtocolVersion(readByte(), readByte());
 	}
 
-	private DataResponse readDataResponse(int port) throws IOException {
+	private DataResponse readDataResponse(int port) {
 		return new DataResponse(port, readShort());
 	}
 
-	private byte readByte() throws IOException {
-		int i = is.read();
-		if (i == -1) {
-			throw new IOException("End of stream unexpected");
-		}
-		return (byte) i;
-	}
-
-	private int readShort() throws IOException {
+	private int readShort() {
 		// LSB (bits 0-6), MSB(bits 7-13)
 		return convertToValue(readByte(), readByte());
 		// return ((msb & 0x7f) << 7) | (lsb & 0x7f);

@@ -52,7 +52,7 @@ import com.diozero.remote.message.GpioPwmWrite;
 import com.diozero.remote.message.ProvisionDigitalInputDevice;
 import com.diozero.remote.message.ProvisionDigitalOutputDevice;
 import com.diozero.remote.message.ProvisionPwmOutputDevice;
-import com.diozero.remote.server.mqtt.MqttProviderConstants;
+import com.diozero.remote.mqtt.MqttProviderConstants;
 import com.google.gson.Gson;
 
 public class MqttTestApp implements MqttCallback {

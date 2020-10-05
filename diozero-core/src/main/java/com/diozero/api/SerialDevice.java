@@ -58,6 +58,10 @@ public class SerialDevice implements SerialConstants, Closeable {
 		device.close();
 	}
 	
+	public int read() {
+		return device.read();
+	}
+	
 	public byte readByte() {
 		return device.readByte();
 	}
@@ -66,11 +70,11 @@ public class SerialDevice implements SerialConstants, Closeable {
 		device.writeByte(bVal);
 	}
 	
-	public void read(ByteBuffer buffer) {
+	public void read(byte[] buffer) {
 		device.read(buffer);
 	}
 	
-	public void write(ByteBuffer buffer) {
+	public void write(byte[] buffer) {
 		device.write(buffer);
 	}
 	

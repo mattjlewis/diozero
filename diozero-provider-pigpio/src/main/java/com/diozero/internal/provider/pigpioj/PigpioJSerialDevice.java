@@ -81,6 +81,15 @@ public class PigpioJSerialDevice extends AbstractDevice implements SerialDeviceI
 			throw new RuntimeIOException("Error calling pigpioImpl.serWriteByte(), response: " + rc);
 		}
 	}
+	
+	@Override
+	public int read() {
+		if (!isOpen()) {
+			throw new IllegalStateException("Serial Device " + tty + " is closed");
+		}
+
+		return pigpioImpl.serReadByte(handle);
+	}
 
 	@Override
 	public byte readByte() {
@@ -97,35 +106,28 @@ public class PigpioJSerialDevice extends AbstractDevice implements SerialDeviceI
 	}
 
 	@Override
-	public void write(ByteBuffer src) {
+	public void write(byte[] data) {
 		if (!isOpen()) {
 			throw new IllegalStateException("Serial Device " + tty + " is closed");
 		}
 
-		int to_write = src.remaining();
-		byte[] buffer = new byte[to_write];
-		src.get(buffer, src.position(), to_write);
-		int rc = pigpioImpl.serWrite(handle, buffer, to_write);
+		int rc = pigpioImpl.serWrite(handle, data, data.length);
 		if (rc < 0) {
 			throw new RuntimeIOException("Error calling pigpioImpl.serWrite(), response: " + rc);
 		}
 	}
 
 	@Override
-	public void read(ByteBuffer dst) {
+	public void read(byte[] buffer) {
 		if (!isOpen()) {
 			throw new IllegalStateException("Serial Device " + tty + " is closed");
 		}
 
-		int to_read = dst.remaining();
-		byte[] buffer = new byte[to_read];
-		int rc = pigpioImpl.serRead(handle, buffer, to_read);
-		if (rc < 0 || rc != to_read) {
+		int rc = pigpioImpl.serRead(handle, buffer, buffer.length);
+		if (rc < 0 || rc != buffer.length) {
 			throw new RuntimeIOException(
-					"Didn't read correct number of bytes from serRead(), read " + rc + ", expected " + to_read);
+					"Didn't read correct number of bytes from serRead(), read " + rc + ", expected " + buffer.length);
 		}
-		dst.put(buffer);
-		dst.flip();
 	}
 
 	@Override

@@ -47,7 +47,6 @@ public class DeviceFactoryHelper {
 	
 	private static NativeDeviceFactoryInterface nativeDeviceFactory;
 
-	@SuppressWarnings("resource")
 	private static void init() {
 		synchronized (DeviceFactoryHelper.class) {
 			if (nativeDeviceFactory == null) {

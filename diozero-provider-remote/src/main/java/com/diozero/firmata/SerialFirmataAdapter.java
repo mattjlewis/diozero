@@ -31,20 +31,44 @@ package com.diozero.firmata;
  * #L%
  */
 
-public class SerialFirmataAdapter extends FirmataAdapter {
-	//private SerialConnection connection;
+import com.diozero.api.SerialDevice;
+import com.diozero.internal.provider.sysfs.NativeSerialDevice;
 
-	public SerialFirmataAdapter(FirmataEventListener eventListener, String tty, int baud, int flags) {
+public class SerialFirmataAdapter extends FirmataAdapter {
+	private NativeSerialDevice device;
+
+	public SerialFirmataAdapter(FirmataEventListener eventListener, String tty, int baud,
+			SerialDevice.DataBits dataBits, SerialDevice.Parity parity, SerialDevice.StopBits stopBits) {
 		super(eventListener);
-		
-		// TODO Open the serial connection
+
+		device = new NativeSerialDevice(tty, baud, dataBits, parity, stopBits);
+
+		connected();
 	}
 
 	@Override
 	public void close() {
 		super.close();
-		
-		// TODO Close the serial connection
-		//try { connection.close(); } catch (IOException e) { } 
+
+		try {
+			device.close();
+		} catch (Exception e) {
+			// Ignore
+		}
+	}
+
+	@Override
+	int read() {
+		return device.read();
+	}
+
+	@Override
+	byte readByte() {
+		return device.readByte();
+	}
+
+	@Override
+	void write(byte[] data) {
+		device.write(data);
 	}
 }

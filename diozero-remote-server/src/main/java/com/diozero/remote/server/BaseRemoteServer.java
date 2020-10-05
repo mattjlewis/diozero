@@ -97,9 +97,11 @@ import com.diozero.remote.message.SerialOpen;
 import com.diozero.remote.message.SerialRead;
 import com.diozero.remote.message.SerialReadByte;
 import com.diozero.remote.message.SerialReadByteResponse;
+import com.diozero.remote.message.SerialReadBytes;
+import com.diozero.remote.message.SerialReadBytesResponse;
 import com.diozero.remote.message.SerialReadResponse;
-import com.diozero.remote.message.SerialWrite;
 import com.diozero.remote.message.SerialWriteByte;
+import com.diozero.remote.message.SerialWriteBytes;
 import com.diozero.remote.message.SpiClose;
 import com.diozero.remote.message.SpiOpen;
 import com.diozero.remote.message.SpiResponse;
@@ -957,6 +959,31 @@ public abstract class BaseRemoteServer implements InputEventListener<DigitalInpu
 	}
 
 	@Override
+	public SerialReadResponse request(SerialRead request) {
+		Logger.debug("Serial read request");
+
+		String tty = request.getTty();
+		String key = deviceFactory.createSerialKey(tty);
+
+		SerialDeviceInterface device = deviceFactory.getDevice(key, SerialDeviceInterface.class);
+		if (device == null) {
+			return new SerialReadResponse("Serial device not provisioned", request.getCorrelationId());
+		}
+
+		SerialReadResponse response;
+		try {
+			int data = device.read();
+
+			response = new SerialReadResponse(data, request.getCorrelationId());
+		} catch (RuntimeIOException e) {
+			Logger.error(e, "Error: {}", e);
+			response = new SerialReadResponse("Runtime Error: " + e, request.getCorrelationId());
+		}
+
+		return response;
+	}
+
+	@Override
 	public SerialReadByteResponse request(SerialReadByte request) {
 		Logger.debug("Serial read byte request");
 
@@ -1007,36 +1034,34 @@ public abstract class BaseRemoteServer implements InputEventListener<DigitalInpu
 	}
 
 	@Override
-	public SerialReadResponse request(SerialRead request) {
-		Logger.debug("Serial read request");
+	public SerialReadBytesResponse request(SerialReadBytes request) {
+		Logger.debug("Serial read bytes request");
 
 		String tty = request.getTty();
 		String key = deviceFactory.createSerialKey(tty);
 
 		SerialDeviceInterface device = deviceFactory.getDevice(key, SerialDeviceInterface.class);
 		if (device == null) {
-			return new SerialReadResponse("Serial device not provisioned", request.getCorrelationId());
+			return new SerialReadBytesResponse("Serial device not provisioned", request.getCorrelationId());
 		}
 
-		SerialReadResponse response;
+		SerialReadBytesResponse response;
 		try {
-			ByteBuffer buffer = ByteBuffer.allocate(request.getLength());
-			device.read(buffer);
+			byte[] data = new byte[request.getLength()];
+			device.read(data);
 
-			byte[] data = new byte[buffer.remaining()];
-			buffer.get(data);
-			response = new SerialReadResponse(data, request.getCorrelationId());
+			response = new SerialReadBytesResponse(data, request.getCorrelationId());
 		} catch (RuntimeIOException e) {
 			Logger.error(e, "Error: {}", e);
-			response = new SerialReadResponse("Runtime Error: " + e, request.getCorrelationId());
+			response = new SerialReadBytesResponse("Runtime Error: " + e, request.getCorrelationId());
 		}
 
 		return response;
 	}
 
 	@Override
-	public Response request(SerialWrite request) {
-		Logger.debug("Serial write request");
+	public Response request(SerialWriteBytes request) {
+		Logger.debug("Serial write bytes request");
 
 		String tty = request.getTty();
 		String key = deviceFactory.createSerialKey(tty);
@@ -1048,8 +1073,7 @@ public abstract class BaseRemoteServer implements InputEventListener<DigitalInpu
 
 		Response response;
 		try {
-			byte[] data = request.getData();
-			device.write(ByteBuffer.wrap(data));
+			device.write(request.getData());
 
 			response = new Response(Response.Status.OK, null, request.getCorrelationId());
 		} catch (RuntimeIOException e) {

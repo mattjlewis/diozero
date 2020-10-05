@@ -77,6 +77,8 @@ import com.diozero.remote.message.SpiOpen;
 import com.diozero.remote.message.SpiWrite;
 import com.diozero.remote.message.SpiWriteAndRead;
 import com.diozero.remote.server.BaseRemoteServer;
+import com.diozero.remote.websocket.MessageWrapper;
+import com.diozero.remote.websocket.MessageWrapperTypes;
 import com.google.gson.Gson;
 
 @SuppressWarnings("static-method")

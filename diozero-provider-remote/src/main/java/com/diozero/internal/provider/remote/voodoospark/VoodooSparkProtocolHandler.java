@@ -95,9 +95,11 @@ import com.diozero.remote.message.SerialOpen;
 import com.diozero.remote.message.SerialRead;
 import com.diozero.remote.message.SerialReadByte;
 import com.diozero.remote.message.SerialReadByteResponse;
+import com.diozero.remote.message.SerialReadBytes;
+import com.diozero.remote.message.SerialReadBytesResponse;
 import com.diozero.remote.message.SerialReadResponse;
-import com.diozero.remote.message.SerialWrite;
 import com.diozero.remote.message.SerialWriteByte;
+import com.diozero.remote.message.SerialWriteBytes;
 import com.diozero.remote.message.SpiClose;
 import com.diozero.remote.message.SpiOpen;
 import com.diozero.remote.message.SpiResponse;
@@ -450,6 +452,12 @@ public class VoodooSparkProtocolHandler implements RemoteProtocolInterface {
 	}
 
 	@Override
+	public SerialReadResponse request(SerialRead request) {
+		// TODO Implementation
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
 	public SerialReadByteResponse request(SerialReadByte request) {
 		// TODO Implementation
 		throw new UnsupportedOperationException();
@@ -462,13 +470,13 @@ public class VoodooSparkProtocolHandler implements RemoteProtocolInterface {
 	}
 
 	@Override
-	public SerialReadResponse request(SerialRead request) {
+	public SerialReadBytesResponse request(SerialReadBytes request) {
 		// TODO Implementation
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public Response request(SerialWrite request) {
+	public Response request(SerialWriteBytes request) {
 		// TODO Implementation
 		throw new UnsupportedOperationException();
 	}

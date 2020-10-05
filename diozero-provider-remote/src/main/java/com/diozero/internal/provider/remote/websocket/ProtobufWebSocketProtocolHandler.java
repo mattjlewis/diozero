@@ -86,16 +86,18 @@ import com.diozero.remote.message.SerialOpen;
 import com.diozero.remote.message.SerialRead;
 import com.diozero.remote.message.SerialReadByte;
 import com.diozero.remote.message.SerialReadByteResponse;
+import com.diozero.remote.message.SerialReadBytes;
+import com.diozero.remote.message.SerialReadBytesResponse;
 import com.diozero.remote.message.SerialReadResponse;
-import com.diozero.remote.message.SerialWrite;
 import com.diozero.remote.message.SerialWriteByte;
+import com.diozero.remote.message.SerialWriteBytes;
 import com.diozero.remote.message.SpiClose;
 import com.diozero.remote.message.SpiOpen;
 import com.diozero.remote.message.SpiResponse;
 import com.diozero.remote.message.SpiWrite;
 import com.diozero.remote.message.SpiWriteAndRead;
 import com.diozero.remote.message.protobuf.DiozeroProtos;
-import com.diozero.remote.server.websocket.MessageWrapperTypes;
+import com.diozero.remote.websocket.MessageWrapperTypes;
 import com.diozero.util.RuntimeIOException;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.GeneratedMessageV3;
@@ -297,6 +299,12 @@ public class ProtobufWebSocketProtocolHandler extends ProtobufBaseAsyncProtocolH
 	}
 
 	@Override
+	public SerialReadResponse request(SerialRead request) {
+		return (SerialReadResponse) requestResponse(URL, DiozeroProtosConverter.convert(request),
+				request.getCorrelationId());
+	}
+
+	@Override
 	public SerialReadByteResponse request(SerialReadByte request) {
 		return (SerialReadByteResponse) requestResponse(URL, DiozeroProtosConverter.convert(request),
 				request.getCorrelationId());
@@ -308,13 +316,13 @@ public class ProtobufWebSocketProtocolHandler extends ProtobufBaseAsyncProtocolH
 	}
 
 	@Override
-	public SerialReadResponse request(SerialRead request) {
-		return (SerialReadResponse) requestResponse(URL, DiozeroProtosConverter.convert(request),
+	public SerialReadBytesResponse request(SerialReadBytes request) {
+		return (SerialReadBytesResponse) requestResponse(URL, DiozeroProtosConverter.convert(request),
 				request.getCorrelationId());
 	}
 
 	@Override
-	public Response request(SerialWrite request) {
+	public Response request(SerialWriteBytes request) {
 		return requestResponse(URL, DiozeroProtosConverter.convert(request), request.getCorrelationId());
 	}
 

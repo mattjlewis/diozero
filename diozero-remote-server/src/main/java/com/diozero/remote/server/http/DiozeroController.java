@@ -34,6 +34,7 @@ package com.diozero.remote.server.http;
 import static spark.Spark.post;
 
 import com.diozero.api.DigitalInputEvent;
+import com.diozero.remote.http.HttpProviderConstants;
 import com.diozero.remote.message.GpioAnalogRead;
 import com.diozero.remote.message.GpioAnalogWrite;
 import com.diozero.remote.message.GpioClose;
@@ -64,7 +65,8 @@ import com.diozero.remote.message.SerialClose;
 import com.diozero.remote.message.SerialOpen;
 import com.diozero.remote.message.SerialRead;
 import com.diozero.remote.message.SerialReadByte;
-import com.diozero.remote.message.SerialWrite;
+import com.diozero.remote.message.SerialReadBytes;
+import com.diozero.remote.message.SerialWriteBytes;
 import com.diozero.remote.message.SerialWriteByte;
 import com.diozero.remote.message.SpiClose;
 import com.diozero.remote.message.SpiOpen;
@@ -178,17 +180,20 @@ public class DiozeroController extends BaseRemoteServer {
 		post(HttpProviderConstants.SERIAL_OPEN_URL, (req, res) -> {
 			return request(gson.fromJson(req.body(), SerialOpen.class));
 		}, gson::toJson);
+		post(HttpProviderConstants.SERIAL_READ_URL, (req, res) -> {
+			return request(gson.fromJson(req.body(), SerialRead.class));
+		}, gson::toJson);
 		post(HttpProviderConstants.SERIAL_READ_BYTE_URL, (req, res) -> {
 			return request(gson.fromJson(req.body(), SerialReadByte.class));
 		}, gson::toJson);
 		post(HttpProviderConstants.SERIAL_WRITE_BYTE_URL, (req, res) -> {
 			return request(gson.fromJson(req.body(), SerialWriteByte.class));
 		}, gson::toJson);
-		post(HttpProviderConstants.SERIAL_READ_URL, (req, res) -> {
-			return request(gson.fromJson(req.body(), SerialRead.class));
+		post(HttpProviderConstants.SERIAL_READ_BYTES_URL, (req, res) -> {
+			return request(gson.fromJson(req.body(), SerialReadBytes.class));
 		}, gson::toJson);
-		post(HttpProviderConstants.SERIAL_WRITE_URL, (req, res) -> {
-			return request(gson.fromJson(req.body(), SerialWrite.class));
+		post(HttpProviderConstants.SERIAL_WRITE_BYTES_URL, (req, res) -> {
+			return request(gson.fromJson(req.body(), SerialWriteBytes.class));
 		}, gson::toJson);
 		post(HttpProviderConstants.SERIAL_BYTES_AVAILABLE_URL, (req, res) -> {
 			return request(gson.fromJson(req.body(), SerialBytesAvailable.class));

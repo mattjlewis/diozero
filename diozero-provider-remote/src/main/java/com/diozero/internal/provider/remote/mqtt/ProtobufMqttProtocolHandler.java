@@ -84,16 +84,18 @@ import com.diozero.remote.message.SerialOpen;
 import com.diozero.remote.message.SerialRead;
 import com.diozero.remote.message.SerialReadByte;
 import com.diozero.remote.message.SerialReadByteResponse;
+import com.diozero.remote.message.SerialReadBytes;
+import com.diozero.remote.message.SerialReadBytesResponse;
 import com.diozero.remote.message.SerialReadResponse;
-import com.diozero.remote.message.SerialWrite;
 import com.diozero.remote.message.SerialWriteByte;
+import com.diozero.remote.message.SerialWriteBytes;
 import com.diozero.remote.message.SpiClose;
 import com.diozero.remote.message.SpiOpen;
 import com.diozero.remote.message.SpiResponse;
 import com.diozero.remote.message.SpiWrite;
 import com.diozero.remote.message.SpiWriteAndRead;
 import com.diozero.remote.message.protobuf.DiozeroProtos;
-import com.diozero.remote.server.mqtt.MqttProviderConstants;
+import com.diozero.remote.mqtt.MqttProviderConstants;
 import com.diozero.util.PropertyUtil;
 import com.diozero.util.RuntimeIOException;
 import com.google.protobuf.GeneratedMessageV3;
@@ -330,6 +332,12 @@ public class ProtobufMqttProtocolHandler extends ProtobufBaseAsyncProtocolHandle
 	}
 
 	@Override
+	public SerialReadResponse request(SerialRead request) {
+		return (SerialReadResponse) requestResponse(MqttProviderConstants.SERIAL_READ_TOPIC,
+				DiozeroProtosConverter.convert(request), request.getCorrelationId());
+	}
+
+	@Override
 	public SerialReadByteResponse request(SerialReadByte request) {
 		return (SerialReadByteResponse) requestResponse(MqttProviderConstants.SERIAL_READ_BYTE_TOPIC,
 				DiozeroProtosConverter.convert(request), request.getCorrelationId());
@@ -342,14 +350,14 @@ public class ProtobufMqttProtocolHandler extends ProtobufBaseAsyncProtocolHandle
 	}
 
 	@Override
-	public SerialReadResponse request(SerialRead request) {
-		return (SerialReadResponse) requestResponse(MqttProviderConstants.SERIAL_READ_TOPIC,
+	public SerialReadBytesResponse request(SerialReadBytes request) {
+		return (SerialReadBytesResponse) requestResponse(MqttProviderConstants.SERIAL_READ_BYTES_TOPIC,
 				DiozeroProtosConverter.convert(request), request.getCorrelationId());
 	}
 
 	@Override
-	public Response request(SerialWrite request) {
-		return requestResponse(MqttProviderConstants.SERIAL_WRITE_TOPIC, DiozeroProtosConverter.convert(request),
+	public Response request(SerialWriteBytes request) {
+		return requestResponse(MqttProviderConstants.SERIAL_WRITE_BYTES_TOPIC, DiozeroProtosConverter.convert(request),
 				request.getCorrelationId());
 	}
 

@@ -92,7 +92,7 @@ public class SystemInfo {
 			} catch (IOException | NullPointerException | IndexOutOfBoundsException e) {
 				Logger.warn("Error reading '{}': {}", MEMINFO_FILE, e.getMessage());
 			}
-			
+
 			initialised = true;
 		}
 	}
@@ -159,7 +159,7 @@ public class SystemInfo {
 		}
 		
 		public UnknownBoardInfo() {
-			super(UNKNOWN, UNKNOWN, -1, UNKNOWN);
+			super(UNKNOWN, UNKNOWN, -1, System.getProperty("os.name").replace(" ", "").toLowerCase());
 		}
 		
 		@Override

@@ -31,32 +31,54 @@ package com.diozero.util;
  * #L%
  */
 
-
 import java.io.FileDescriptor;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 
 import org.tinylog.Logger;
 
 public class FileUtil {
 	private static boolean initialised;
 	private static Field fdField;
-	
-	public static synchronized int getNativeFileDescriptor(FileDescriptor fd) {
-		if (! initialised) {
+	private static Constructor<FileDescriptor> fdConstructor;
+
+	private static synchronized void initialise() {
+		if (!initialised) {
 			try {
 				fdField = FileDescriptor.class.getDeclaredField("fd");
 				fdField.setAccessible(true);
-				
+
+				fdConstructor = FileDescriptor.class.getDeclaredConstructor(int.class);
+				fdConstructor.setAccessible(true);
+
 				initialised = true;
-			} catch (NoSuchFieldException | SecurityException e) {
+			} catch (NoSuchFieldException | SecurityException | NoSuchMethodException e) {
 				Logger.error(e, "Error: {}", e);
-				throw new RuntimeIOException("Error getting native file descriptor declared field: " + e, e);
+				throw new RuntimeIOException("Error getting native file descriptor declared field / constructor: " + e,
+						e);
 			}
 		}
+	}
+
+	public static synchronized int getNativeFileDescriptor(FileDescriptor fd) {
+		initialise();
 
 		try {
 			return ((Integer) fdField.get(fd)).intValue();
 		} catch (IllegalArgumentException | IllegalAccessException e) {
+			Logger.error(e, "Error: {}", e);
+			throw new RuntimeIOException("Error accessing private fd attribute: " + e, e);
+		}
+	}
+
+	public static FileDescriptor createFileDescriptor(int fd) {
+		initialise();
+
+		try {
+			return fdConstructor.newInstance(Integer.valueOf(fd));
+		} catch (IllegalArgumentException | IllegalAccessException | InstantiationException
+				| InvocationTargetException e) {
 			Logger.error(e, "Error: {}", e);
 			throw new RuntimeIOException("Error accessing private fd attribute: " + e, e);
 		}

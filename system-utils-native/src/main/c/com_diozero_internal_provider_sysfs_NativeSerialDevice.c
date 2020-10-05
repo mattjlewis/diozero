@@ -42,9 +42,21 @@
 #include <sys/ioctl.h>
 
 #include <termios.h>
+#if defined(__linux__)
 #include <linux/serial.h>
+#elif defined(__APPLE__)
+#include <CoreFoundation/CoreFoundation.h>
+#include <IOKit/IOKitLib.h>
+#include <IOKit/serial/IOSerialKeys.h>
+#include <IOKit/serial/ioss.h>
+#endif
 
 #include "com_diozero_internal_provider_sysfs_NativeSerialDevice.h"
+
+// Forced definitions
+#ifndef CMSPAR
+#define CMSPAR 010000000000
+#endif
 
 #define SERIAL_READ_NO_DATA -1
 #define SERIAL_READ_FAILED -2
@@ -154,13 +166,10 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeSerialDevi
 	struct termios options = {0};
 	tcgetattr(fd, &options);
 	cfmakeraw(&options);
-
-	options.c_cc[VMIN]  = 0;
-	//options.c_cc[VTIME] = readTimeout / 100
-	options.c_cc[VTIME] = 0;
-
-	tcflush(fd, TCIFLUSH);
+	options.c_iflag |= BRKINT;
 	tcsetattr(fd, TCSANOW, &options);
+
+	//tcflush(fd, TCIFLUSH);
 
 	// Configure the port parameters
 	Java_com_diozero_internal_provider_sysfs_NativeSerialDevice_serialConfigPort(
@@ -179,6 +188,23 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeSerialDevi
 	struct termios options = {0};
 	tcgetattr(fd, &options);
 
+	int flags = fcntl(fd, F_GETFL);
+
+	// Read Blocking with timeout
+	//flags &= ~O_NONBLOCK;
+	//options.c_cc[VMIN] = 0;
+	//options.c_cc[VTIME] = readTimeout / 100
+
+	// Read Blocking without timeout
+	flags &= ~O_NONBLOCK;
+	options.c_cc[VMIN] = 1;
+	options.c_cc[VTIME] = 0;
+
+	// Non-blocking
+	//flags |= O_NONBLOCK;
+	//options.c_cc[VMIN]  = 0;
+	//options.c_cc[VTIME] = 0;
+
 	options.c_cflag &= ~(CSIZE | PARENB | CMSPAR | PARODD);
 	options.c_cflag |= (getDataBitsFlag(dataBits) | getParityFlag(parity) | CLOCAL | CREAD);
 
@@ -192,6 +218,7 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeSerialDevi
 	cfsetispeed(&options, speed);
 	cfsetospeed(&options, speed);
 
+	fcntl(fd, F_SETFL, flags);
 	return tcsetattr(fd, TCSANOW, &options);
 }
 

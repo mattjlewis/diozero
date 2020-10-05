@@ -32,17 +32,23 @@ package com.diozero.internal.provider.sysfs;
  */
 
 import java.io.Closeable;
-import java.nio.ByteBuffer;
+import java.io.FileDescriptor;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 import org.tinylog.Logger;
 
 import com.diozero.api.SerialDevice;
+import com.diozero.util.FileUtil;
 import com.diozero.util.LibraryLoader;
 import com.diozero.util.RuntimeIOException;
 
 public class NativeSerialDevice implements Closeable {
+	private static final int FD_NOT_INITIALISED = -1;
+
 	static {
-		LibraryLoader.loadLibrary(NativeSpiDevice.class, "diozero-system-utils");
+		LibraryLoader.loadLibrary(NativeSerialDevice.class, "diozero-system-utils");
 	}
 
 	private static native int serialOpen(String device, int baud, int dataBits, int stopBits, int parity);
@@ -54,84 +60,146 @@ public class NativeSerialDevice implements Closeable {
 	private static native int serialBytesAvailable(int fd);
 	private static native int serialClose(int fd);
 
-	private int fd;
-	private String tty;
+	private int fd = FD_NOT_INITIALISED;
+	private FileInputStream inputStream;
+	private FileOutputStream outputStream;
+	private String deviceName;
 
 	/**
 	 * Open a new serial device
 	 * 
-	 * @param tty      Device name
-	 * @param baud     Default is 9600.
-	 * @param dataBits The number of data bits to use per word; default is 8, values
-	 *                 from 5 to 8 are acceptable.
-	 * @param parity   Specifies how error detection is carried out; valid values
-	 *                 are NO_PARITY, EVEN_PARITY, ODD_PARITY, MARK_PARITY, and
-	 *                 SPACE_PARITY
-	 * @param stopBits The number of stop bits; default is 1, but 2 bits can also be
-	 *                 used or even 1.5 on Windows machines.
+	 * @param deviceName Device name
+	 * @param baud       Default is 9600.
+	 * @param dataBits   The number of data bits to use per word; default is 8,
+	 *                   values from 5 to 8 are acceptable.
+	 * @param parity     Specifies how error detection is carried out; valid values
+	 *                   are NO_PARITY, EVEN_PARITY, ODD_PARITY, MARK_PARITY, and
+	 *                   SPACE_PARITY
+	 * @param stopBits   The number of stop bits; default is 1, but 2 bits can also
+	 *                   be used or even 1.5 on Windows machines.
 	 */
-	public NativeSerialDevice(String tty, int baud, SerialDevice.DataBits dataBits, SerialDevice.Parity parity,
+	public NativeSerialDevice(String deviceName, int baud, SerialDevice.DataBits dataBits, SerialDevice.Parity parity,
 			SerialDevice.StopBits stopBits) {
-		this.tty = tty;
-		int rc = serialOpen("/dev/" + tty, baud, dataBits.ordinal(), parity.ordinal(), stopBits.ordinal());
+		this.deviceName = deviceName;
+
+		int rc = serialOpen(deviceName, baud, dataBits.ordinal(), parity.ordinal(), stopBits.ordinal());
 		if (rc < 0) {
-			throw new RuntimeIOException("Error opening serial device '" + tty + "': " + rc);
+			throw new RuntimeIOException("Error opening serial device '" + deviceName + "': " + rc);
 		}
 		fd = rc;
+
+		FileDescriptor file_desc = FileUtil.createFileDescriptor(fd);
+		inputStream = new FileInputStream(file_desc);
+		outputStream = new FileOutputStream(file_desc);
+	}
+
+	public int read() {
+		try {
+			return inputStream.read();
+		} catch (IOException e) {
+			throw new RuntimeIOException("Error in serial device read for '" + deviceName + "': " + e.getMessage(), e);
+		}
 	}
 
 	public byte readByte() {
-		int rc = serialReadByte(fd);
-		if (rc < 0) {
-			throw new RuntimeIOException("Error in serial device readByte for '" + tty + "': " + rc);
+		try {
+			int read = inputStream.read();
+			if (read == -1) {
+				// TODO Need to check if we get this with non-blocking I/O and therefore should
+				// not treat as an error...
+				throw new RuntimeIOException("End of file reached");
+			}
+			return (byte) (read & 0xff);
+		} catch (IOException e) {
+			throw new RuntimeIOException("Error in serial device readByte for '" + deviceName + "': " + e.getMessage(),
+					e);
 		}
-		return (byte) (rc & 0xff);
+
+		// int rc = serialReadByte(fd);
+		// if (rc < 0) {
+		// throw new RuntimeIOException("Error in serial device readByte for '" +
+		// deviceName + "': " + rc);
+		// }
+		// return (byte) (rc & 0xff);
 	}
 
 	public void writeByte(byte value) {
-		int rc = serialWriteByte(fd, value & 0xff);
-		if (rc == -1) {
-			throw new RuntimeIOException("Error in serial device writeByte for '" + tty + "': " + rc);
+		try {
+			outputStream.write(value & 0xff);
+			outputStream.flush();
+		} catch (IOException e) {
+			throw new RuntimeIOException("Error in serial device writeByte for '" + deviceName + "': " + e.getMessage(),
+					e);
 		}
+
+		// int rc = serialWriteByte(fd, value & 0xff);
+		// if (rc == -1) {
+		// throw new RuntimeIOException("Error in serial device writeByte for '" +
+		// deviceName + "': " + rc);
+		// }
 	}
 
-	public void read(ByteBuffer dst) {
-		byte[] buffer = new byte[dst.remaining()];
-		int rc = serialRead(fd, buffer);
-		if (rc < 0) {
-			throw new RuntimeIOException("Error in serial device read for '" + tty + "': " + rc);
+	public void read(byte[] buffer) {
+		try {
+			inputStream.read(buffer);
+		} catch (IOException e) {
+			throw new RuntimeIOException("Error in serial device read for '" + deviceName + "': " + e.getMessage(), e);
 		}
 
-		dst.put(buffer);
-		dst.flip();
+		// int rc = serialRead(fd, buffer);
+		// if (rc < 0) {
+		// throw new RuntimeIOException("Error in serial device read for '" + deviceName
+		// + "': " + rc);
+		// }
 	}
 
-	public void write(ByteBuffer src) {
-		byte[] buffer = new byte[src.remaining()];
-		src.get(buffer);
-		int rc = serialWrite(fd, buffer);
-		if (rc < 0) {
-			throw new RuntimeIOException("Error in serial device write for '" + tty + "': " + rc);
+	public void write(byte[] data) {
+		try {
+			outputStream.write(data);
+		} catch (IOException e) {
+			throw new RuntimeIOException("Error in serial device write for '" + deviceName + "': " + e.getMessage(), e);
 		}
+
+		// int rc = serialWrite(fd, data);
+		// if (rc < 0) {
+		// throw new RuntimeIOException("Error in serial device write for '" +
+		// deviceName + "': " + rc);
+		// }
 	}
 
 	public int bytesAvailable() {
-		int rc = serialBytesAvailable(fd);
-		if (rc < 0) {
-			throw new RuntimeIOException("Error in serial device bytesAvailable for '" + tty + "': " + rc);
+		try {
+			return inputStream.available();
+		} catch (IOException e) {
+			throw new RuntimeIOException("Error in serial device bytesAvailable for '" + deviceName + "'");
 		}
-		return rc;
+
+		// int rc = serialBytesAvailable(fd);
+		// if (rc < 0) {
+		// throw new RuntimeIOException("Error in serial device bytesAvailable for '" +
+		// deviceName + "': " + rc);
+		// }
+		// return rc;
 	}
 
 	@Override
 	public void close() {
+		try {
+			inputStream.close();
+		} catch (IOException e) {
+		}
+		try {
+			outputStream.close();
+		} catch (IOException e) {
+		}
 		int rc = serialClose(fd);
 		if (rc < 0) {
-			Logger.error("Error closing serial device {}: {}", tty, Integer.valueOf(rc));
+			Logger.error("Error closing serial device {}: {}", deviceName, Integer.valueOf(rc));
 		}
+		fd = FD_NOT_INITIALISED;
 	}
 
-	public String getTty() {
-		return tty;
+	public String getDeviceName() {
+		return deviceName;
 	}
 }

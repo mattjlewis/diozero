@@ -1,8 +1,6 @@
 package com.diozero.internal.provider.remote.devicefactory;
 
-import java.nio.ByteBuffer;
-
-/*
+/*-
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - Remote Provider
@@ -48,9 +46,11 @@ import com.diozero.remote.message.SerialOpen;
 import com.diozero.remote.message.SerialRead;
 import com.diozero.remote.message.SerialReadByte;
 import com.diozero.remote.message.SerialReadByteResponse;
+import com.diozero.remote.message.SerialReadBytes;
+import com.diozero.remote.message.SerialReadBytesResponse;
 import com.diozero.remote.message.SerialReadResponse;
-import com.diozero.remote.message.SerialWrite;
 import com.diozero.remote.message.SerialWriteByte;
+import com.diozero.remote.message.SerialWriteBytes;
 import com.diozero.util.RuntimeIOException;
 
 public class RemoteSerialDevice extends AbstractDevice implements SerialDeviceInterface {
@@ -70,6 +70,18 @@ public class RemoteSerialDevice extends AbstractDevice implements SerialDeviceIn
 		if (response.getStatus() != Response.Status.OK) {
 			throw new RuntimeIOException("Error: " + response.getDetail());
 		}
+	}
+	
+	@Override
+	public int read() {
+		SerialRead request = new SerialRead(tty, UUID.randomUUID().toString());
+
+		SerialReadResponse response = deviceFactory.getProtocolHandler().request(request);
+		if (response.getStatus() != Response.Status.OK) {
+			throw new RuntimeIOException("Error in Serial readByte: " + response.getDetail());
+		}
+
+		return response.getData();
 	}
 
 	@Override
@@ -95,24 +107,21 @@ public class RemoteSerialDevice extends AbstractDevice implements SerialDeviceIn
 	}
 
 	@Override
-	public void read(ByteBuffer buffer) {
-		SerialRead request = new SerialRead(tty, buffer.remaining(), UUID.randomUUID().toString());
+	public void read(byte[] buffer) {
+		SerialReadBytes request = new SerialReadBytes(tty, buffer.length, UUID.randomUUID().toString());
 
-		SerialReadResponse response = deviceFactory.getProtocolHandler().request(request);
+		SerialReadBytesResponse response = deviceFactory.getProtocolHandler().request(request);
 		if (response.getStatus() != Response.Status.OK) {
 			throw new RuntimeIOException("Error in Serial read: " + response.getDetail());
 		}
 
-		buffer.put(response.getData());
-		buffer.flip();
+		byte[] result = response.getData();
+		System.arraycopy(result, 0, buffer, 0, result.length);
 	}
 
 	@Override
-	public void write(ByteBuffer buffer) {
-		byte[] data = new byte[buffer.remaining()];
-		buffer.get(data);
-
-		SerialWrite request = new SerialWrite(tty, data, UUID.randomUUID().toString());
+	public void write(byte[] data) {
+		SerialWriteBytes request = new SerialWriteBytes(tty, data, UUID.randomUUID().toString());
 
 		Response response = deviceFactory.getProtocolHandler().request(request);
 		if (response.getStatus() != Response.Status.OK) {

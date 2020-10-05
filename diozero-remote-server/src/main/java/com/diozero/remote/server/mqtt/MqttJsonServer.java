@@ -81,6 +81,7 @@ import com.diozero.remote.message.SpiResponse;
 import com.diozero.remote.message.SpiWrite;
 import com.diozero.remote.message.SpiWriteAndRead;
 import com.diozero.remote.message.protobuf.DiozeroProtos;
+import com.diozero.remote.mqtt.MqttProviderConstants;
 import com.diozero.remote.server.BaseRemoteServer;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;

@@ -53,6 +53,7 @@ import com.diozero.remote.message.I2CReadResponse;
 import com.diozero.remote.message.Response;
 import com.diozero.remote.message.SpiResponse;
 import com.diozero.remote.message.protobuf.DiozeroProtos;
+import com.diozero.remote.mqtt.MqttProviderConstants;
 import com.diozero.remote.server.BaseRemoteServer;
 import com.google.protobuf.InvalidProtocolBufferException;
 

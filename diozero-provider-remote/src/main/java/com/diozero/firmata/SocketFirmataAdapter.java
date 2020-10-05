@@ -32,23 +32,73 @@ package com.diozero.firmata;
  */
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.Socket;
+
+import com.diozero.util.RuntimeIOException;
 
 public class SocketFirmataAdapter extends FirmataAdapter {
 	private Socket socket;
-	
+	private InputStream is;
+	private OutputStream os;
+
 	public SocketFirmataAdapter(FirmataEventListener eventListener, String hostname, int port) throws IOException {
 		super(eventListener);
-		
+
 		socket = new Socket(hostname, port);
-		
-		connect(socket.getInputStream(), socket.getOutputStream());
+		this.is = socket.getInputStream();
+		this.os = socket.getOutputStream();
+
+		connected();
 	}
-	
+
+	@Override
+	int read() throws RuntimeIOException {
+		try {
+			return is.read();
+		} catch (IOException e) {
+			throw new RuntimeIOException(e);
+		}
+	}
+
+	@Override
+	byte readByte() throws RuntimeIOException {
+		try {
+			int i = is.read();
+			if (i == -1) {
+				throw new RuntimeIOException("End of stream unexpected");
+			}
+			return (byte) i;
+		} catch (IOException e) {
+			throw new RuntimeIOException(e);
+		}
+	}
+
+	@Override
+	void write(byte[] data) throws RuntimeIOException {
+		try {
+			os.write(data);
+		} catch (IOException e) {
+			throw new RuntimeIOException(e);
+		}
+	}
+
 	@Override
 	public void close() {
 		super.close();
-		
-		try { socket.close(); } catch (IOException e) { }
+
+		try {
+			is.close();
+		} catch (IOException e) {
+		}
+		try {
+			os.close();
+		} catch (IOException e) {
+		}
+		try {
+			socket.close();
+		} catch (IOException e) {
+		}
 	}
 }

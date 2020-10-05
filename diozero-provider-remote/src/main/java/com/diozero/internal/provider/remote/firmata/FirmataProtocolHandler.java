@@ -36,18 +36,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import org.eclipse.jetty.io.RuntimeIOException;
 import org.tinylog.Logger;
 
 import com.diozero.api.AnalogInputEvent;
 import com.diozero.api.DeviceMode;
 import com.diozero.api.DigitalInputEvent;
 import com.diozero.api.GpioPullUpDown;
+import com.diozero.api.SerialConstants;
 import com.diozero.firmata.FirmataAdapter;
 import com.diozero.firmata.FirmataAdapter.I2CResponse;
 import com.diozero.firmata.FirmataEventListener;
 import com.diozero.firmata.FirmataProtocol.PinCapability;
 import com.diozero.firmata.FirmataProtocol.PinMode;
+import com.diozero.firmata.SerialFirmataAdapter;
 import com.diozero.firmata.SocketFirmataAdapter;
 import com.diozero.internal.provider.remote.devicefactory.RemoteDeviceFactory;
 import com.diozero.remote.message.GetBoardInfo;
@@ -93,9 +94,11 @@ import com.diozero.remote.message.SerialOpen;
 import com.diozero.remote.message.SerialRead;
 import com.diozero.remote.message.SerialReadByte;
 import com.diozero.remote.message.SerialReadByteResponse;
+import com.diozero.remote.message.SerialReadBytes;
+import com.diozero.remote.message.SerialReadBytesResponse;
 import com.diozero.remote.message.SerialReadResponse;
-import com.diozero.remote.message.SerialWrite;
 import com.diozero.remote.message.SerialWriteByte;
+import com.diozero.remote.message.SerialWriteBytes;
 import com.diozero.remote.message.SpiClose;
 import com.diozero.remote.message.SpiOpen;
 import com.diozero.remote.message.SpiResponse;
@@ -103,6 +106,7 @@ import com.diozero.remote.message.SpiWrite;
 import com.diozero.remote.message.SpiWriteAndRead;
 import com.diozero.util.PropertyUtil;
 import com.diozero.util.RangeUtil;
+import com.diozero.util.RuntimeIOException;
 
 public class FirmataProtocolHandler implements RemoteProtocolInterface, FirmataEventListener {
 	private static final String TCP_HOST_PROP = "FIRMATA_TCP_HOST";
@@ -116,7 +120,7 @@ public class FirmataProtocolHandler implements RemoteProtocolInterface, FirmataE
 
 	public FirmataProtocolHandler(RemoteDeviceFactory deviceFactory) {
 		this.deviceFactory = deviceFactory;
-		
+
 		String hostname = PropertyUtil.getProperty(TCP_HOST_PROP, null);
 		if (hostname != null) {
 			int port = PropertyUtil.getIntProperty(TCP_PORT_PROP, DEFAULT_TCP_PORT);
@@ -125,23 +129,25 @@ public class FirmataProtocolHandler implements RemoteProtocolInterface, FirmataE
 			} catch (IOException e) {
 				throw new RuntimeIOException(e);
 			}
-			// } else {
-			// String serial_port = PropertyUtil.getProperty(SERIAL_PORT_PROP, null);
-			// if (serial_port != null) {
-			// adapter = new SerialFirmataAdapter(serial_port)
-			// }
+		} else {
+			String serial_port = PropertyUtil.getProperty(SERIAL_PORT_PROP, null);
+			if (serial_port != null) {
+				adapter = new SerialFirmataAdapter(this, serial_port, SerialConstants.DEFAULT_BAUD,
+						SerialConstants.DEFAULT_DATA_BITS, SerialConstants.DEFAULT_PARITY,
+						SerialConstants.DEFAULT_STOP_BITS);
+			}
 		}
 		if (adapter == null) {
 			Logger.error("Please set either {} or {} property", TCP_HOST_PROP, SERIAL_PORT_PROP);
 			throw new IllegalArgumentException("Either " + TCP_HOST_PROP + " or " + SERIAL_PORT_PROP + " must be set");
 		}
 	}
-	
+
 	@Override
 	public GetBoardInfoResponse request(GetBoardInfo request) {
 		List<List<PinCapability>> board_capabilities = adapter.getBoardCapabilities();
 		List<GpioInfo> board_gpio_info = new ArrayList<>();
-		
+
 		int gpio = 0;
 		List<DeviceMode> modes;
 		for (List<PinCapability> pin_capabilities : board_capabilities) {
@@ -149,15 +155,15 @@ public class FirmataProtocolHandler implements RemoteProtocolInterface, FirmataE
 			for (PinCapability pin_capability : pin_capabilities) {
 				modes.add(convert(pin_capability.getMode()));
 			}
-			if (! modes.isEmpty()) {
+			if (!modes.isEmpty()) {
 				board_gpio_info.add(new GpioInfo(gpio, modes));
 			}
-			
+
 			gpio++;
 		}
-		
+
 		FirmataAdapter.FirmwareDetails firmware = adapter.getFirmware();
-		
+
 		return new GetBoardInfoResponse(firmware.getName(), "v" + firmware.getMajor() + "." + firmware.getMinor(), -1,
 				board_gpio_info, request.getCorrelationId());
 	}
@@ -180,55 +186,35 @@ public class FirmataProtocolHandler implements RemoteProtocolInterface, FirmataE
 
 	@Override
 	public Response request(ProvisionDigitalInputDevice request) {
-		try {
-			adapter.setPinMode(request.getGpio(),
-					request.getPud() == GpioPullUpDown.PULL_UP ? PinMode.INPUT_PULLUP : PinMode.DIGITAL_INPUT);
-		} catch (IOException e) {
-			throw new RuntimeIOException(e);
-		}
+		adapter.setPinMode(request.getGpio(),
+				request.getPud() == GpioPullUpDown.PULL_UP ? PinMode.INPUT_PULLUP : PinMode.DIGITAL_INPUT);
 		return new Response(Response.Status.OK, null, request.getCorrelationId());
 	}
 
 	@Override
 	public Response request(ProvisionDigitalOutputDevice request) {
-		try {
-			adapter.setPinMode(request.getGpio(), PinMode.DIGITAL_OUTPUT);
-			adapter.setDigitalValue(request.getGpio(), request.getInitialValue());
-		} catch (IOException e) {
-			throw new RuntimeIOException(e);
-		}
+		adapter.setPinMode(request.getGpio(), PinMode.DIGITAL_OUTPUT);
+		adapter.setDigitalValue(request.getGpio(), request.getInitialValue());
 		return new Response(Response.Status.OK, null, request.getCorrelationId());
 	}
 
 	@Override
 	public Response request(ProvisionDigitalInputOutputDevice request) {
-		try {
-			adapter.setPinMode(request.getGpio(), request.getOutput() ? PinMode.DIGITAL_OUTPUT : PinMode.DIGITAL_INPUT);
-		} catch (IOException e) {
-			throw new RuntimeIOException(e);
-		}
+		adapter.setPinMode(request.getGpio(), request.getOutput() ? PinMode.DIGITAL_OUTPUT : PinMode.DIGITAL_INPUT);
 		return new Response(Response.Status.OK, null, request.getCorrelationId());
 	}
 
 	@Override
 	public Response request(ProvisionPwmOutputDevice request) {
-		try {
-			adapter.setPinMode(request.getGpio(), PinMode.PWM);
-			adapter.setValue(request.getGpio(), RangeUtil.map(request.getInitialValue(), 0f, 1f, 0,
-					adapter.getMax(request.getGpio(), PinMode.PWM), true));
-		} catch (IOException e) {
-			throw new RuntimeIOException(e);
-		}
+		adapter.setPinMode(request.getGpio(), PinMode.PWM);
+		adapter.setValue(request.getGpio(), RangeUtil.map(request.getInitialValue(), 0f, 1f, 0,
+				adapter.getMax(request.getGpio(), PinMode.PWM), true));
 		return new Response(Response.Status.OK, null, request.getCorrelationId());
 	}
 
 	@Override
 	public Response request(ProvisionAnalogInputDevice request) {
-		try {
-			adapter.setPinMode(request.getGpio(), PinMode.ANALOG_INPUT);
-		} catch (IOException e) {
-			throw new RuntimeIOException(e);
-		}
+		adapter.setPinMode(request.getGpio(), PinMode.ANALOG_INPUT);
 		return new Response(Response.Status.OK, null, request.getCorrelationId());
 	}
 
@@ -244,11 +230,7 @@ public class FirmataProtocolHandler implements RemoteProtocolInterface, FirmataE
 
 	@Override
 	public Response request(GpioDigitalWrite request) {
-		try {
-			adapter.setDigitalValue(request.getGpio(), request.getValue());
-		} catch (IOException e) {
-			throw new RuntimeIOException(e);
-		}
+		adapter.setDigitalValue(request.getGpio(), request.getValue());
 		return new Response(Response.Status.OK, null, request.getCorrelationId());
 	}
 
@@ -261,12 +243,8 @@ public class FirmataProtocolHandler implements RemoteProtocolInterface, FirmataE
 
 	@Override
 	public Response request(GpioPwmWrite request) {
-		try {
-			adapter.setValue(request.getGpio(),
-					RangeUtil.map(request.getValue(), 0f, 1f, 0, adapter.getMax(request.getGpio(), PinMode.PWM), true));
-		} catch (IOException e) {
-			throw new RuntimeIOException(e);
-		}
+		adapter.setValue(request.getGpio(),
+				RangeUtil.map(request.getValue(), 0f, 1f, 0, adapter.getMax(request.getGpio(), PinMode.PWM), true));
 		return new Response(Response.Status.OK, null, request.getCorrelationId());
 	}
 
@@ -279,33 +257,21 @@ public class FirmataProtocolHandler implements RemoteProtocolInterface, FirmataE
 
 	@Override
 	public Response request(GpioAnalogWrite request) {
-		try {
-			// Firmata doesn't support analog output, use PWM instead
-			adapter.setValue(request.getGpio(),
-					RangeUtil.map(request.getValue(), 0f, 1f, 0, adapter.getMax(request.getGpio(), PinMode.PWM), true));
-		} catch (IOException e) {
-			throw new RuntimeIOException(e);
-		}
+		// Firmata doesn't support analog output, use PWM instead
+		adapter.setValue(request.getGpio(),
+				RangeUtil.map(request.getValue(), 0f, 1f, 0, adapter.getMax(request.getGpio(), PinMode.PWM), true));
 		return new Response(Response.Status.OK, null, request.getCorrelationId());
 	}
 
 	@Override
 	public Response request(GpioEvents request) {
-		try {
-			adapter.enableDigitalReporting(request.getGpio(), request.getEnabled());
-		} catch (IOException e) {
-			throw new RuntimeIOException(e);
-		}
+		adapter.enableDigitalReporting(request.getGpio(), request.getEnabled());
 		return new Response(Response.Status.OK, null, request.getCorrelationId());
 	}
 
 	@Override
 	public Response request(GpioClose request) {
-		try {
-			adapter.setPinMode(request.getGpio(), PinMode.DIGITAL_INPUT);
-		} catch (IOException e) {
-			throw new RuntimeIOException(e);
-		}
+		adapter.setPinMode(request.getGpio(), PinMode.DIGITAL_INPUT);
 		return new Response(Response.Status.OK, null, request.getCorrelationId());
 	}
 
@@ -317,101 +283,69 @@ public class FirmataProtocolHandler implements RemoteProtocolInterface, FirmataE
 
 	@Override
 	public I2CReadByteResponse request(I2CReadByte request) {
-		try {
-			FirmataAdapter.I2CResponse response = adapter.i2cRead(request.getAddress(), false, false, 1);
-			byte[] data = response.getData();
-			if (data.length != 1) {
-				throw new RuntimeIOException("I2C Error: Expected to read 1 byte, got " + data.length);
-			}
-			return new I2CReadByteResponse(data[0], request.getCorrelationId());
-		} catch (IOException e) {
-			throw new RuntimeIOException(e);
+		FirmataAdapter.I2CResponse response = adapter.i2cRead(request.getAddress(), false, false, 1);
+		byte[] data = response.getData();
+		if (data.length != 1) {
+			throw new RuntimeIOException("I2C Error: Expected to read 1 byte, got " + data.length);
 		}
+		return new I2CReadByteResponse(data[0], request.getCorrelationId());
 	}
 
 	@Override
 	public Response request(I2CWriteByte request) {
-		try {
-			adapter.i2cWrite(request.getAddress(), false, false, new byte[] { request.getData() });
-		} catch (IOException e) {
-			throw new RuntimeIOException(e);
-		}
+		adapter.i2cWrite(request.getAddress(), false, false, new byte[] { request.getData() });
 		return new Response(Response.Status.OK, null, request.getCorrelationId());
 	}
 
 	@Override
 	public I2CReadResponse request(I2CRead request) {
-		try {
-			I2CResponse response = adapter.i2cRead(request.getAddress(), false, false, request.getLength());
-			byte[] data = response.getData();
-			if (data.length != request.getLength()) {
-				throw new RuntimeIOException(
-						"I2C Error: Expected to read " + request.getLength() + " bytes, got " + data.length);
-			}
-			return new I2CReadResponse(data, request.getCorrelationId());
-		} catch (IOException e) {
-			throw new RuntimeIOException(e);
+		I2CResponse response = adapter.i2cRead(request.getAddress(), false, false, request.getLength());
+		byte[] data = response.getData();
+		if (data.length != request.getLength()) {
+			throw new RuntimeIOException(
+					"I2C Error: Expected to read " + request.getLength() + " bytes, got " + data.length);
 		}
+		return new I2CReadResponse(data, request.getCorrelationId());
 	}
 
 	@Override
 	public Response request(I2CWrite request) {
-		try {
-			adapter.i2cWrite(request.getAddress(), false, false, request.getData());
-		} catch (IOException e) {
-			throw new RuntimeIOException(e);
-		}
+		adapter.i2cWrite(request.getAddress(), false, false, request.getData());
 		return new Response(Response.Status.OK, null, request.getCorrelationId());
 	}
 
 	@Override
 	public I2CReadByteDataResponse request(I2CReadByteData request) {
-		try {
-			I2CResponse response = adapter.i2cReadData(request.getAddress(), false, false, request.getRegister(), 1);
-			byte[] data = response.getData();
-			if (data.length != 1) {
-				throw new RuntimeIOException("I2C Error: Expected to read 1 byte, got " + data.length);
-			}
-			return new I2CReadByteDataResponse(data[0], request.getCorrelationId());
-		} catch (IOException e) {
-			throw new RuntimeIOException(e);
+		I2CResponse response = adapter.i2cReadData(request.getAddress(), false, false, request.getRegister(), 1);
+		byte[] data = response.getData();
+		if (data.length != 1) {
+			throw new RuntimeIOException("I2C Error: Expected to read 1 byte, got " + data.length);
 		}
+		return new I2CReadByteDataResponse(data[0], request.getCorrelationId());
 	}
 
 	@Override
 	public Response request(I2CWriteByteData request) {
-		try {
-			adapter.i2cWriteData(request.getAddress(), false, false, request.getRegister(),
-					new byte[] { request.getData() });
-		} catch (IOException e) {
-			throw new RuntimeIOException(e);
-		}
+		adapter.i2cWriteData(request.getAddress(), false, false, request.getRegister(),
+				new byte[] { request.getData() });
 		return new Response(Response.Status.OK, null, request.getCorrelationId());
 	}
 
 	@Override
 	public I2CReadI2CBlockDataResponse request(I2CReadI2CBlockData request) {
-		try {
-			I2CResponse response = adapter.i2cReadData(request.getAddress(), false, false, request.getRegister(),
-					request.getLength());
-			byte[] data = response.getData();
-			if (data.length != request.getLength()) {
-				throw new RuntimeIOException(
-						"I2C Error: Expected to read " + request.getLength() + " bytes, got " + data.length);
-			}
-			return new I2CReadI2CBlockDataResponse(data, request.getCorrelationId());
-		} catch (IOException e) {
-			throw new RuntimeIOException(e);
+		I2CResponse response = adapter.i2cReadData(request.getAddress(), false, false, request.getRegister(),
+				request.getLength());
+		byte[] data = response.getData();
+		if (data.length != request.getLength()) {
+			throw new RuntimeIOException(
+					"I2C Error: Expected to read " + request.getLength() + " bytes, got " + data.length);
 		}
+		return new I2CReadI2CBlockDataResponse(data, request.getCorrelationId());
 	}
 
 	@Override
 	public Response request(I2CWriteI2CBlockData request) {
-		try {
-			adapter.i2cWriteData(request.getAddress(), false, false, request.getRegister(), request.getData());
-		} catch (IOException e) {
-			throw new RuntimeIOException(e);
-		}
+		adapter.i2cWriteData(request.getAddress(), false, false, request.getRegister(), request.getData());
 		return new Response(Response.Status.OK, null, request.getCorrelationId());
 	}
 
@@ -447,6 +381,11 @@ public class FirmataProtocolHandler implements RemoteProtocolInterface, FirmataE
 	}
 
 	@Override
+	public SerialReadResponse request(SerialRead request) {
+		throw new UnsupportedOperationException("Serial support not yet included in StandardFirmata");
+	}
+
+	@Override
 	public SerialReadByteResponse request(SerialReadByte request) {
 		throw new UnsupportedOperationException("Serial support not yet included in StandardFirmata");
 	}
@@ -457,12 +396,12 @@ public class FirmataProtocolHandler implements RemoteProtocolInterface, FirmataE
 	}
 
 	@Override
-	public SerialReadResponse request(SerialRead request) {
+	public SerialReadBytesResponse request(SerialReadBytes request) {
 		throw new UnsupportedOperationException("Serial support not yet included in StandardFirmata");
 	}
 
 	@Override
-	public Response request(SerialWrite request) {
+	public Response request(SerialWriteBytes request) {
 		throw new UnsupportedOperationException("Serial support not yet included in StandardFirmata");
 	}
 

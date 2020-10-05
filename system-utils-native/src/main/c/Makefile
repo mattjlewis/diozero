@@ -2,17 +2,17 @@ RM = rm -f
 CC = gcc
 
 CFLAGS = -Wall -fPIC -O3
-INCLUDES = -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/linux
+INCLUDES = -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/linux -I$(JAVA_HOME)/include/darwin
 LFLAGS = 
 SO_FILE_EXT = so
 
 LIBS = 
 
-SRCS = com_diozero_internal_provider_sysfs_NativeI2C.c \
+SRCS = com_diozero_internal_provider_sysfs_NativeSerialDevice.c \
 	com_diozero_internal_provider_sysfs_NativeSpiDevice.c \
-	com_diozero_internal_provider_sysfs_NativeSerialDevice.c \
-	com_diozero_util_EpollNative.c \
+	com_diozero_internal_provider_sysfs_NativeI2C.c \
 	com_diozero_util_MmapBufferNative.c \
+	com_diozero_util_EpollNative.c \
 	com_diozero_util_PollNative.c \
 	com_diozero_util_SleepUtil.c \
 	com_diozero_util_Util.c

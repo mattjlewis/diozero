@@ -125,18 +125,20 @@
 
 	<modules>
 		<module>diozero-core</module>
-		<module>diozero-provider-bbbiolib</module>
-		<module>diozero-provider-firmata</module>
-		<!-- Deprecated: <module>diozero-provider-jdkdio10</module> -->
-		<!-- Deprecated: <module>diozero-provider-jdkdio11</module> -->
 		<module>diozero-provider-mmap</module>
+		<module>diozero-provider-pigpio</module>
+		<module>diozero-provider-bbbiolib</module>
 		<module>diozero-provider-mqtt</module>
 		<module>diozero-provider-pi4j</module>
-		<module>diozero-provider-pigpio</module>
-		<module>diozero-provider-remote</module>
-		<module>diozero-provider-voodoospark</module>
 		<module>diozero-provider-wiringpi</module>
+		<module>diozero-provider-firmata</module>
+		<module>diozero-provider-voodoospark</module>
+		<!-- Deprecated: <module>diozero-provider-jdkdio10</module> -->
+		<!-- Deprecated: <module>diozero-provider-jdkdio11</module> -->
+		<module>diozero-remote-common</module>
 		<module>diozero-remote-server</module>
+		<module>diozero-provider-remote</module>
+		<module>diozero-mqtt-client-app</module>
 		<module>diozero-imu-devices</module>
 		<module>diozero-imu-sampleapp</module>
 		<!-- To build run: mvn install:install-file -Dfile=diozero-imu-visualiser/lib/jim3dsModelImporterJFX.jar -DgroupId=interactivemesh.org -DartifactId=3dsModelImporterJFX -Dversion=0.7 -Dpackaging=jar -->
@@ -144,7 +146,6 @@
 		<module>diozero-sampleapps</module>
 		<module>diozero-webapp</module>
 		<module>diozero-ws281x-java</module>
-		<module>diozero-mqtt-client-app</module>
 		<module>distribution</module>
 	</modules>
 

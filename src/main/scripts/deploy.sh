@@ -1,11 +1,9 @@
 #!/bin/sh
 
-version=0.13-SNAPSHOT
-pigpioj_version=2.2
+version=0.14-SNAPSHOT
+pigpioj_version=2.5-SNAPSHOT
 username=pi
-#host=george.local
-#host=sheldon.local
-host=stuart.local
+host=pi4.local
 # FIXME Should really use getopts...
 if [ $# -gt 0 ]; then
 	host=$1
@@ -17,12 +15,13 @@ install_folder=/home/${username}/diozero
 
 echo "Deploying version ${version} to ${username}@${host}:${install_folder}"
 
-files="../Personal/pigpioj/pigpioj-java/target/pigpioj-java-${pigpioj_version}.jar \
+files="../pigpioj/pigpioj-java/target/pigpioj-java-${pigpioj_version}.jar \
 	src/main/scripts/runSampleApps.sh \
 	diozero-core/target/diozero-core-${version}.jar \
 	diozero-imu-devices/target/diozero-imu-devices-${version}.jar \
 	diozero-imu-sampleapp/target/diozero-imu-sampleapp-${version}.jar \
 	diozero-imu-visualiser/target/diozero-imu-visualiser-${version}.jar \
+	diozero-remote-common/target/diozero-remote-common-${version}.jar \
 	diozero-remote-server/target/diozero-remote-server-${version}.jar \
 	diozero-provider-bbbiolib/target/diozero-provider-bbbiolib-${version}.jar \
 	diozero-provider-firmata/target/diozero-provider-firmata-${version}.jar \

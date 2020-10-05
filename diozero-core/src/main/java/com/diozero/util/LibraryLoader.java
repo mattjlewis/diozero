@@ -57,9 +57,8 @@ public class LibraryLoader {
 				// First try load the library from within the JAR file
 				String lib_file;
 				if (boardSpecific) {
-					lib_file = String.format("/lib/%s/lib%s%s",
-							DeviceFactoryHelper.getNativeDeviceFactory().getBoardInfo().getLibraryPath(), libName,
-							LIBRARY_EXTENSION);
+					lib_file = String.format("/lib/%s/lib%s%s", SystemInfo.lookupLocalBoardInfo().getLibraryPath(),
+							libName, LIBRARY_EXTENSION);
 				} else {
 					lib_file = String.format("/lib/lib%s%s", libName, LIBRARY_EXTENSION);
 				}

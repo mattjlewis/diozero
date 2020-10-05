@@ -44,6 +44,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 
 import com.diozero.internal.provider.NativeDeviceFactoryInterface;
+import com.diozero.remote.http.HttpProviderConstants;
 import com.diozero.remote.message.GetBoardInfo;
 import com.diozero.remote.message.GetBoardInfoResponse;
 import com.diozero.remote.message.GpioAnalogRead;
@@ -86,15 +87,16 @@ import com.diozero.remote.message.SerialOpen;
 import com.diozero.remote.message.SerialRead;
 import com.diozero.remote.message.SerialReadByte;
 import com.diozero.remote.message.SerialReadByteResponse;
+import com.diozero.remote.message.SerialReadBytes;
+import com.diozero.remote.message.SerialReadBytesResponse;
 import com.diozero.remote.message.SerialReadResponse;
-import com.diozero.remote.message.SerialWrite;
 import com.diozero.remote.message.SerialWriteByte;
+import com.diozero.remote.message.SerialWriteBytes;
 import com.diozero.remote.message.SpiClose;
 import com.diozero.remote.message.SpiOpen;
 import com.diozero.remote.message.SpiResponse;
 import com.diozero.remote.message.SpiWrite;
 import com.diozero.remote.message.SpiWriteAndRead;
-import com.diozero.remote.server.http.HttpProviderConstants;
 import com.diozero.util.PropertyUtil;
 import com.diozero.util.RuntimeIOException;
 import com.google.gson.Gson;
@@ -297,6 +299,11 @@ public class JsonHttpProtocolHandler implements RemoteProtocolInterface {
 	}
 
 	@Override
+	public SerialReadResponse request(SerialRead request) {
+		return requestResponse(HttpProviderConstants.SERIAL_READ_URL, request, SerialReadResponse.class);
+	}
+
+	@Override
 	public SerialReadByteResponse request(SerialReadByte request) {
 		return requestResponse(HttpProviderConstants.SERIAL_READ_BYTE_URL, request, SerialReadByteResponse.class);
 	}
@@ -307,13 +314,13 @@ public class JsonHttpProtocolHandler implements RemoteProtocolInterface {
 	}
 
 	@Override
-	public SerialReadResponse request(SerialRead request) {
-		return requestResponse(HttpProviderConstants.SERIAL_READ_URL, request, SerialReadResponse.class);
+	public SerialReadBytesResponse request(SerialReadBytes request) {
+		return requestResponse(HttpProviderConstants.SERIAL_READ_BYTES_URL, request, SerialReadBytesResponse.class);
 	}
 
 	@Override
-	public Response request(SerialWrite request) {
-		return requestResponse(HttpProviderConstants.SERIAL_WRITE_URL, request, Response.class);
+	public Response request(SerialWriteBytes request) {
+		return requestResponse(HttpProviderConstants.SERIAL_WRITE_BYTES_URL, request, Response.class);
 	}
 
 	@Override

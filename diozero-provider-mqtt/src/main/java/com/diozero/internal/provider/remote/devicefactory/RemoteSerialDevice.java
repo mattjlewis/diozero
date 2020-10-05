@@ -31,54 +31,123 @@ package com.diozero.internal.provider.remote.devicefactory;
  * #L%
  */
 
-import java.nio.ByteBuffer;
+import java.util.UUID;
+
+import org.tinylog.Logger;
 
 import com.diozero.api.SerialDevice;
 import com.diozero.internal.provider.AbstractDevice;
 import com.diozero.internal.provider.SerialDeviceInterface;
+import com.diozero.remote.message.Response;
+import com.diozero.remote.message.SerialBytesAvailable;
+import com.diozero.remote.message.SerialBytesAvailableResponse;
+import com.diozero.remote.message.SerialClose;
+import com.diozero.remote.message.SerialOpen;
+import com.diozero.remote.message.SerialRead;
+import com.diozero.remote.message.SerialReadByte;
+import com.diozero.remote.message.SerialReadByteResponse;
+import com.diozero.remote.message.SerialReadBytes;
+import com.diozero.remote.message.SerialReadBytesResponse;
+import com.diozero.remote.message.SerialReadResponse;
+import com.diozero.remote.message.SerialWriteByte;
+import com.diozero.remote.message.SerialWriteBytes;
 import com.diozero.util.RuntimeIOException;
 
 public class RemoteSerialDevice extends AbstractDevice implements SerialDeviceInterface {
+	private RemoteDeviceFactory deviceFactory;
+	private String tty;
 
 	public RemoteSerialDevice(RemoteDeviceFactory deviceFactory, String key, String tty, int baud,
 			SerialDevice.DataBits dataBits, SerialDevice.Parity parity, SerialDevice.StopBits stopBits) {
 		super(key, deviceFactory);
 
-		throw new UnsupportedOperationException("Serial communication not available in the device factory");
+		this.deviceFactory = deviceFactory;
+		this.tty = tty;
+
+		SerialOpen request = new SerialOpen(tty, baud, dataBits, parity, stopBits, UUID.randomUUID().toString());
+
+		Response response = deviceFactory.getProtocolHandler().request(request);
+		if (response.getStatus() != Response.Status.OK) {
+			throw new RuntimeIOException("Error: " + response.getDetail());
+		}
+	}
+	
+	@Override
+	public int read() {
+		SerialRead request = new SerialRead(tty, UUID.randomUUID().toString());
+
+		SerialReadResponse response = deviceFactory.getProtocolHandler().request(request);
+		if (response.getStatus() != Response.Status.OK) {
+			throw new RuntimeIOException("Error in Serial readByte: " + response.getDetail());
+		}
+
+		return response.getData();
 	}
 
 	@Override
-	public boolean isOpen() {
-		throw new UnsupportedOperationException("Serial communication not available in the device factory");
+	public byte readByte() throws RuntimeIOException {
+		SerialReadByte request = new SerialReadByte(tty, UUID.randomUUID().toString());
+
+		SerialReadByteResponse response = deviceFactory.getProtocolHandler().request(request);
+		if (response.getStatus() != Response.Status.OK) {
+			throw new RuntimeIOException("Error in Serial readByte: " + response.getDetail());
+		}
+
+		return response.getData();
 	}
 
 	@Override
 	public void writeByte(byte bVal) {
-		throw new UnsupportedOperationException("Serial communication not available in the device factory");
+		SerialWriteByte request = new SerialWriteByte(tty, bVal, UUID.randomUUID().toString());
+
+		Response response = deviceFactory.getProtocolHandler().request(request);
+		if (response.getStatus() != Response.Status.OK) {
+			throw new RuntimeIOException("Error in Serial writeByte: " + response.getDetail());
+		}
 	}
 
 	@Override
-	public byte readByte() {
-		throw new UnsupportedOperationException("Serial communication not available in the device factory");
+	public void read(byte[] buffer) {
+		SerialReadBytes request = new SerialReadBytes(tty, buffer.length, UUID.randomUUID().toString());
+
+		SerialReadBytesResponse response = deviceFactory.getProtocolHandler().request(request);
+		if (response.getStatus() != Response.Status.OK) {
+			throw new RuntimeIOException("Error in Serial read: " + response.getDetail());
+		}
+
+		byte[] result = response.getData();
+		System.arraycopy(result, 0, buffer, 0, result.length);
 	}
 
 	@Override
-	public void write(ByteBuffer buffer) {
-		throw new UnsupportedOperationException("Serial communication not available in the device factory");
-	}
+	public void write(byte[] data) {
+		SerialWriteBytes request = new SerialWriteBytes(tty, data, UUID.randomUUID().toString());
 
-	@Override
-	public void read(ByteBuffer buffer) {
-		throw new UnsupportedOperationException("Serial communication not available in the device factory");
+		Response response = deviceFactory.getProtocolHandler().request(request);
+		if (response.getStatus() != Response.Status.OK) {
+			throw new RuntimeIOException("Error in Serial write: " + response.getDetail());
+		}
 	}
 
 	@Override
 	public int bytesAvailable() {
-		throw new UnsupportedOperationException("Serial communication not available in the device factory");
+		SerialBytesAvailable request = new SerialBytesAvailable(tty, UUID.randomUUID().toString());
+
+		SerialBytesAvailableResponse response = deviceFactory.getProtocolHandler().request(request);
+		if (response.getStatus() != Response.Status.OK) {
+			throw new RuntimeIOException("Error in Serial bytesAvailable: " + response.getDetail());
+		}
+
+		return response.getBytesAvailable();
 	}
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
-		throw new UnsupportedOperationException("Serial communication not available in the device factory");
+		SerialClose request = new SerialClose(tty, UUID.randomUUID().toString());
+
+		Response response = deviceFactory.getProtocolHandler().request(request);
+		if (response.getStatus() != Response.Status.OK) {
+			Logger.error("Error closing device: " + response.getDetail());
+		}
 	}
 }

@@ -1,0 +1,385 @@
+syntax = "proto2";
+
+package diozero;
+
+option java_package = "com.diozero.remote.message.protobuf";
+option java_outer_classname = "DiozeroProtos";
+
+enum Status {
+	OK = 0;
+	ERROR = 1;
+}
+
+message MessageWrapper {
+	required string type = 1;
+	required bytes message = 2;
+}
+
+message Response {
+	required string correlationId = 1;
+	required Status status = 2;
+	optional string detail = 3;
+}
+
+message Gpio {
+	enum PullUpDown {
+		PUD_NONE = 0;
+		PUD_PULL_UP = 1;
+		PUD_PULL_DOWN = 2;
+	}
+	
+	enum Trigger {
+		TRIGGER_NONE = 0;
+		TRIGGER_RISING = 1;
+		TRIGGER_FALLING = 2;
+		TRIGGER_BOTH = 3;
+	}
+	
+	enum GpioMode {
+		DIGITAL_INPUT = 0;
+		DIGITAL_OUTPUT = 1;
+		PWM_OUTPUT = 2;
+		ANALOG_INPUT = 3;
+		ANALOG_OUTPUT = 4;
+		UNKNOWN = 5;
+	}
+	
+	message GpioInfo {
+		required int32 gpio = 1;
+		repeated GpioMode mode = 2;
+	}
+	
+	message GetBoardInfo {
+		required string correlationId = 1;
+	}
+	
+	message GetBoardInfoResponse {
+		required string correlationId = 1;
+		required Status status = 2;
+		optional string detail = 3;
+		optional string make = 4;
+		optional string model = 5;
+		optional int32 memory = 6;
+		repeated GpioInfo gpioInfo = 7;
+	}
+	
+	message ProvisionDigitalInput {
+		required string correlationId = 1;
+		required int32 gpio = 2;
+		optional PullUpDown pud = 3 [default = PUD_NONE];
+		optional Trigger trigger = 4 [default = TRIGGER_NONE];
+	}
+	
+	message ProvisionDigitalOutput {
+		required string correlationId = 1;
+		required int32 gpio = 2;
+		required bool initialValue = 3;
+	}
+	
+	message ProvisionDigitalInputOutput {
+		required string correlationId = 1;
+		required int32 gpio = 2;
+		required bool output = 3;
+	}
+	
+	message ProvisionPwmOutput {
+		required string correlationId = 1;
+		required int32 gpio = 2;
+		required int32 frequency = 3;
+		required float initialValue = 4;
+	}
+	
+	message ProvisionAnalogInput {
+		required string correlationId = 1;
+		required int32 gpio = 2;
+	}
+	
+	message ProvisionAnalogOutput {
+		required string correlationId = 1;
+		required int32 gpio = 2;
+		required float initialValue = 3;
+	}
+	
+	message DigitalRead {
+		required string correlationId = 1;
+		required int32 gpio = 2;
+	}
+	
+	message DigitalWrite {
+		required string correlationId = 1;
+		required int32 gpio = 2;
+		required bool value = 3;
+	}
+	
+	message PwmRead {
+		required string correlationId = 1;
+		required int32 gpio = 2;
+	}
+	
+	message PwmWrite {
+		required string correlationId = 1;
+		required int32 gpio = 2;
+		required float value = 3;
+	}
+	
+	message AnalogRead {
+		required string correlationId = 1;
+		required int32 gpio = 2;
+	}
+	
+	message AnalogWrite {
+		required string correlationId = 1;
+		required int32 gpio = 2;
+		required float value = 3;
+	}
+	
+	message Events {
+		required string correlationId = 1;
+		required int32 gpio = 2;
+		required bool enabled = 3;
+	}
+	
+	message Close {
+		required string correlationId = 1;
+		required int32 gpio = 2;
+	}
+	
+	message DigitalReadResponse {
+		required string correlationId = 1;
+		required Status status = 2;
+		optional string detail = 3;
+		optional bool value = 4;
+	}
+	
+	message PwmReadResponse {
+		required string correlationId = 1;
+		required Status status = 2;
+		optional string detail = 3;
+		optional float value = 4;
+	}
+	
+	message AnalogReadResponse {
+		required string correlationId = 1;
+		required Status status = 2;
+		optional string detail = 3;
+		optional float value = 4;
+	}
+	
+	message Notification {
+		required int32 gpio = 1;
+		required int64 epochTime = 2;
+		required bool value = 3;
+	}
+}
+
+message I2C {
+	message Open {
+		required string correlationId = 1;
+		required int32 controller = 2;
+		required int32 address = 3;
+		required int32 addressSize = 4;
+		required int32 clockFrequency = 5;
+	}
+	
+	message ReadByte {
+		required string correlationId = 1;
+		required int32 controller = 2;
+		required int32 address = 3;
+	}
+	
+	message WriteByte {
+		required string correlationId = 1;
+		required int32 controller = 2;
+		required int32 address = 3;
+		required int32 data = 4;
+	}
+	
+	message Read {
+		required string correlationId = 1;
+		required int32 controller = 2;
+		required int32 address = 3;
+		required int32 length = 4;
+	}
+	
+	message Write {
+		required string correlationId = 1;
+		required int32 controller = 2;
+		required int32 address = 3;
+		required bytes data = 4;
+	}
+	
+	message ReadByteData {
+		required string correlationId = 1;
+		required int32 controller = 2;
+		required int32 address = 3;
+		required int32 register = 4;
+	}
+	
+	message WriteByteData {
+		required string correlationId = 1;
+		required int32 controller = 2;
+		required int32 address = 3;
+		required int32 register = 4;
+		required int32 data = 5;
+	}
+	
+	message ReadI2CBlockData {
+		required string correlationId = 1;
+		required int32 controller = 2;
+		required int32 address = 3;
+		required int32 register = 4;
+		required int32 subAddressSize = 5;
+		required int32 length = 6;
+	}
+	
+	message WriteI2CBlockData {
+		required string correlationId = 1;
+		required int32 controller = 2;
+		required int32 address = 3;
+		required int32 register = 4;
+		required int32 subAddressSize = 5;
+		required bytes data = 6;
+	}
+	
+	message Close {
+		required string correlationId = 1;
+		required int32 controller = 2;
+		required int32 address = 3;
+	}
+	
+	message ReadByteResponse {
+		required string correlationId = 1;
+		required Status status = 2;
+		optional string detail = 3;
+		optional int32 data = 4;
+	}
+	
+	message ReadResponse {
+		required string correlationId = 1;
+		required Status status = 2;
+		optional string detail = 3;
+		optional bytes data = 4;
+	}
+}
+
+message Spi {
+	enum ClockMode {
+		MODE_0 = 0;
+		MODE_1 = 1;
+		MODE_2 = 2;
+		MODE_3 = 3;
+	}
+	
+	message Open {
+		required string correlationId = 1;
+		required int32 controller = 2;
+		required int32 chipSelect = 3;
+		required int32 frequency = 4;
+		required ClockMode clockMode = 5;
+		required bool lsbFirst = 6;
+	}
+	
+	message Write {
+		required string correlationId = 1;
+		required int32 controller = 2;
+		required int32 chipSelect = 3;
+		required bytes txData = 4;
+	}
+	
+	message WriteAndRead {
+		required string correlationId = 1;
+		required int32 controller = 2;
+		required int32 chipSelect = 3;
+		required bytes txData = 4;
+	}
+	
+	message Close {
+		required string correlationId = 1;
+		required int32 controller = 2;
+		required int32 chipSelect = 3;
+	}
+	
+	message SpiResponse {
+		required string correlationId = 1;
+		required Status status = 2;
+		optional string detail = 3;
+		optional bytes rxData = 4;
+	}
+}
+
+message Serial {
+	message Open {
+		required string correlationId = 1;
+		required string tty = 2;
+		required int32 baud = 3;
+		required int32 dataBits = 4;
+		required int32 parity = 5;
+		required int32 stopBits = 6;
+	}
+	
+	message Read {
+		required string correlationId = 1;
+		required string tty = 2;
+	}
+	
+	message ReadByte {
+		required string correlationId = 1;
+		required string tty = 2;
+	}
+	
+	message WriteByte {
+		required string correlationId = 1;
+		required string tty = 2;
+		required int32 data = 3;
+	}
+	
+	message ReadBytes {
+		required string correlationId = 1;
+		required string tty = 2;
+		required int32 length = 3;
+	}
+	
+	message WriteBytes {
+		required string correlationId = 1;
+		required string tty = 2;
+		required bytes data = 3;
+	}
+	
+	message BytesAvailable {
+		required string correlationId = 1;
+		required string tty = 2;
+	}
+
+	message Close {
+		required string correlationId = 1;
+		required string tty = 2;
+	}
+	
+	message ReadResponse {
+		required string correlationId = 1;
+		required Status status = 2;
+		optional string detail = 3;
+		optional int32 data = 4;
+	}
+	
+	message ReadByteResponse {
+		required string correlationId = 1;
+		required Status status = 2;
+		optional string detail = 3;
+		optional int32 data = 4;
+	}
+	
+	message ReadBytesResponse {
+		required string correlationId = 1;
+		required Status status = 2;
+		optional string detail = 3;
+		optional bytes data = 4;
+	}
+	
+	message BytesAvailableResponse {
+		required string correlationId = 1;
+		required Status status = 2;
+		optional string detail = 3;
+		optional int32 bytesAvailable = 4;
+	}
+}

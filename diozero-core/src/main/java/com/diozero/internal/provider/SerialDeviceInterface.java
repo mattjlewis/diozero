@@ -31,12 +31,11 @@ package com.diozero.internal.provider;
  * #L%
  */
 
-import java.nio.ByteBuffer;
-
 public interface SerialDeviceInterface extends DeviceInterface {
+	int read();
 	byte readByte();
 	void writeByte(byte bVal);
-	void read(ByteBuffer buffer);
-	void write(ByteBuffer buffer);
+	void read(byte[] buffer);
+	void write(byte[] data);
 	int bytesAvailable();
 }

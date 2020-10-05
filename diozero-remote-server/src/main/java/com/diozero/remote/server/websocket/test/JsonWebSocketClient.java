@@ -43,7 +43,7 @@ import org.tinylog.Logger;
 
 import com.diozero.api.SpiClockMode;
 import com.diozero.remote.message.SpiOpen;
-import com.diozero.remote.server.websocket.MessageWrapper;
+import com.diozero.remote.websocket.MessageWrapper;
 import com.diozero.util.Hex;
 import com.google.gson.Gson;
 

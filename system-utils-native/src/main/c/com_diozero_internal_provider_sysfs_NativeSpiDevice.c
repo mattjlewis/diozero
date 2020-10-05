@@ -45,8 +45,10 @@
 #endif
 
 #include <sys/ioctl.h>
+#if defined(__linux__)
 #include <linux/types.h>
 #include <linux/spi/spidev.h>
+#endif
 
 /*
  * Class:     com_diozero_internal_provider_sysfs_NativeSpiDevice
