@@ -49,8 +49,6 @@ public class SocketFirmataAdapter extends FirmataAdapter {
 		socket = new Socket(hostname, port);
 		this.is = socket.getInputStream();
 		this.os = socket.getOutputStream();
-
-		connected();
 	}
 
 	@Override

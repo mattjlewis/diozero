@@ -154,7 +154,6 @@ public abstract class MCP23xxx extends AbstractDeviceFactory implements GpioDevi
 		// Initialise
 		// Read the I/O configuration value
 		byte start_iocon = readByte(getIOConReg(0));
-		System.out.println(start_iocon);
 		Logger.debug("Default power-on values for IOCON: 0x{}", Integer.toHexString(start_iocon));
 		if (numPorts > 1) {
 			// Is there an IOCONB value?

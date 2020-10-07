@@ -34,6 +34,8 @@ package com.diozero.remote.message;
 import java.io.Closeable;
 
 public interface RemoteProtocolInterface extends Closeable {
+	void start();
+	
 	@Override
 	void close();
 	

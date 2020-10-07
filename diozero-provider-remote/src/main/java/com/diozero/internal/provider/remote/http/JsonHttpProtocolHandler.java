@@ -125,6 +125,11 @@ public class JsonHttpProtocolHandler implements RemoteProtocolInterface {
 		httpClient = HttpClients.createDefault();
 		gson = new Gson();
 	}
+	
+	@Override
+	public void start() {
+		// Ignore
+	}
 
 	@Override
 	public void close() {

@@ -119,6 +119,10 @@ public class JsonWebSocketProtocolHandler extends BaseAsyncProtocolHandler imple
 		deserialiser = GSON::fromJson;
 
 		webSocketClient = new WebSocketClient();
+	}
+	
+	@Override
+	public void start() {
 		try {
 			webSocketClient.start();
 

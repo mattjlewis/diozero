@@ -84,11 +84,17 @@ public class RemoteDeviceFactory extends BaseNativeDeviceFactory {
 		// protocolHandler = new JsonHttpProtocolHandler(this);
 		protocolHandler = new FirmataProtocolHandler(this);
 	}
+	
+	@Override
+	public void start() {
+		protocolHandler.start();
+	}
 
 	@Override
 	public void close() {
 		Logger.trace("close()");
 		protocolHandler.close();
+		
 		super.close();
 	}
 

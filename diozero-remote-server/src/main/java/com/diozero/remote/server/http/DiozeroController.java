@@ -81,7 +81,8 @@ public class DiozeroController extends BaseRemoteServer {
 	public DiozeroController() {
 	}
 
-	public void init() {
+	@Override
+	public void start() {
 		// GPIO
 		post(HttpProviderConstants.GPIO_PROVISION_DIGITAL_INPUT_URL, (req, res) -> {
 			return request(gson.fromJson(req.body(), ProvisionDigitalInputDevice.class));

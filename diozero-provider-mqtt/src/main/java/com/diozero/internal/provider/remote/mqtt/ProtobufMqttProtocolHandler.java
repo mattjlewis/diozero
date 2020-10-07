@@ -122,7 +122,14 @@ public class ProtobufMqttProtocolHandler extends ProtobufBaseAsyncProtocolHandle
 			con_opts.setCleanSession(true);
 			mqttClient.connect(con_opts);
 			Logger.debug("Connected to {}", mqtt_url);
-
+		} catch (MqttException e) {
+			throw new RuntimeIOException(e);
+		}
+	}
+	
+	@Override
+	public void start() {
+		try {
 			// Subscribe
 			Logger.debug("Subscribing to response and notification topics...");
 			mqttClient.subscribe(MqttProviderConstants.RESPONSE_TOPIC);
@@ -141,6 +148,7 @@ public class ProtobufMqttProtocolHandler extends ProtobufBaseAsyncProtocolHandle
 				mqttClient.disconnect();
 				mqttClient.close();
 			} catch (Exception e) {
+				// Ignore
 			}
 		}
 	}

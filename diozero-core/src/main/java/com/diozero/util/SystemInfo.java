@@ -63,36 +63,38 @@ public class SystemInfo {
 	
 	private static synchronized void initialise() throws RuntimeIOException {
 		if (! initialised) {
-			osReleaseProperties = new Properties();
-			try (Reader reader = new FileReader(OS_RELEASE_FILE)) {
-				osReleaseProperties.load(reader);
-			} catch (IOException e) {
-				Logger.warn("Error loading properties file '{}': {}", OS_RELEASE_FILE, e);
+			String os_name = System.getProperty("os.name");
+			if (!os_name.startsWith("Windows")) {
+				osReleaseProperties = new Properties();
+				try (Reader reader = new FileReader(OS_RELEASE_FILE)) {
+					osReleaseProperties.load(reader);
+				} catch (IOException e) {
+					Logger.warn("Error loading properties file '{}': {}", OS_RELEASE_FILE, e);
+				}
+				
+				try {
+					Files.lines(Paths.get(CPUINFO_FILE)).forEach(line -> {
+						if (line.startsWith("Hardware")) {
+							hardware = line.split(":")[1].trim();
+						} else if (line.startsWith("Revision")) {
+							revision = line.split(":")[1].trim();
+						}
+					});
+				} catch (IOException | NullPointerException | IndexOutOfBoundsException e) {
+					Logger.warn("Error reading '{}': {}", CPUINFO_FILE, e.getMessage());
+				}
+	
+				memoryKb = null;
+				try {
+					Files.lines(Paths.get(MEMINFO_FILE)).forEach(line -> {
+						if (line.startsWith("MemTotal:")) {
+							memoryKb = Integer.valueOf(line.split("\\s+")[1].trim());
+						}
+					});
+				} catch (IOException | NullPointerException | IndexOutOfBoundsException e) {
+					Logger.warn("Error reading '{}': {}", MEMINFO_FILE, e.getMessage());
+				}
 			}
-			
-			try {
-				Files.lines(Paths.get(CPUINFO_FILE)).forEach(line -> {
-					if (line.startsWith("Hardware")) {
-						hardware = line.split(":")[1].trim();
-					} else if (line.startsWith("Revision")) {
-						revision = line.split(":")[1].trim();
-					}
-				});
-			} catch (IOException | NullPointerException | IndexOutOfBoundsException e) {
-				Logger.warn("Error reading '{}': {}", CPUINFO_FILE, e.getMessage());
-			}
-
-			memoryKb = null;
-			try {
-				Files.lines(Paths.get(MEMINFO_FILE)).forEach(line -> {
-					if (line.startsWith("MemTotal:")) {
-						memoryKb = Integer.valueOf(line.split("\\s+")[1].trim());
-					}
-				});
-			} catch (IOException | NullPointerException | IndexOutOfBoundsException e) {
-				Logger.warn("Error reading '{}': {}", MEMINFO_FILE, e.getMessage());
-			}
-
 			initialised = true;
 		}
 	}

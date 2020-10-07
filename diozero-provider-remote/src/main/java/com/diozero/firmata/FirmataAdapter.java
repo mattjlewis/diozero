@@ -53,6 +53,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.tinylog.Logger;
 
+import com.diozero.util.DioZeroScheduler;
 import com.diozero.util.RuntimeIOException;
 
 public abstract class FirmataAdapter implements FirmataProtocol, Runnable, Closeable {
@@ -65,7 +66,6 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, Close
 	private Queue<ResponseMessage> responseQueue;
 	private Lock lock;
 	private Condition condition;
-	private ExecutorService executor;
 	private Future<?> future;
 	private FirmwareDetails firmware;
 	private Map<Integer, Pin> pins;
@@ -81,18 +81,37 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, Close
 		condition = lock.newCondition();
 		pins = new ConcurrentHashMap<>();
 		adcToGpioMapping = new ConcurrentHashMap<>();
-
-		executor = Executors.newSingleThreadExecutor();
 	}
-	
+
 	abstract int read();
+
 	abstract byte readByte();
+
 	abstract void write(byte[] data);
 
-	protected final void connected() {
-		future = executor.submit(this);
+	public final void start() {
+		future = DioZeroScheduler.getNonDaemonInstance().submit(this);
 
 		initialiseBoard();
+	}
+
+	@Override
+	public void close() {
+		Logger.trace("FirmataAdapter::closing...");
+		lock.lock();
+		try {
+			condition.signal();
+		} finally {
+			lock.unlock();
+		}
+
+		running.compareAndSet(true, false);
+		if (future != null) {
+			if (!future.cancel(true)) {
+				Logger.warn("Task could not be cancelled");
+			}
+		}
+		Logger.trace("FirmataAdapter::closed.");
 	}
 
 	public int getMax(int gpio, PinMode mode) {
@@ -104,8 +123,17 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, Close
 	}
 
 	public void initialiseBoard() {
+		Logger.debug("initialiseBoard()");
+
+		/*
+		System.out.println("initialiseBoard::Getting protocol version ...");
+		ProtocolVersion p_version = getProtocolVersion();
+		System.out.println("initialiseBoard::Got protocol version " + p_version);
+		*/
+
 		firmware = getFirmwareInternal();
 
+		Logger.debug("Getting board capabilities...");
 		CapabilityResponse board_capabilities = sendMessage(new byte[] { START_SYSEX, CAPABILITY_QUERY, END_SYSEX },
 				CapabilityResponse.class);
 
@@ -129,15 +157,16 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, Close
 		}
 	}
 
-	public ProtocolVersion getProtocolVersion() {
-		return sendMessage(new byte[] { PROTOCOL_VERSION }, ProtocolVersion.class);
-	}
-
 	public FirmwareDetails getFirmware() {
 		return firmware;
 	}
 
+	public ProtocolVersion getProtocolVersion() {
+		return sendMessage(new byte[] { PROTOCOL_VERSION }, ProtocolVersion.class);
+	}
+
 	private FirmwareDetails getFirmwareInternal() {
+		Logger.debug("Getting firmware...");
 		return sendMessage(new byte[] { START_SYSEX, REPORT_FIRMWARE, END_SYSEX }, FirmwareDetails.class);
 	}
 
@@ -333,44 +362,33 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, Close
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T extends ResponseMessage> T sendMessage(byte[] request, Class<T> responseClass) throws RuntimeIOException {
+	private <T extends ResponseMessage> T sendMessage(byte[] request, Class<T> responseClass)
+			throws RuntimeIOException {
 		ResponseMessage response = null;
 
+		// Acquire the lock before sending the message
 		lock.lock();
 		try {
 			write(request);
 
 			if (responseClass != null) {
-				// Wait for the response message
-				condition.await();
-				response = responseQueue.remove();
+				do {
+					// Wait for a response message by waiting for a signal on the lock condition
+					condition.await();
+					// Lock is now re-acquired, process the messages on the queue (should only be one!)
+					do {
+						response = responseQueue.remove();
+					} while (!response.getClass().isAssignableFrom(responseClass));
+				} while (!response.getClass().isAssignableFrom(responseClass));
 			}
 		} catch (InterruptedException e) {
 			// Ignore
 		} finally {
+			// Release the lock
 			lock.unlock();
 		}
 
 		return (T) response;
-	}
-
-	@Override
-	public void close() {
-		lock.lock();
-		try {
-			condition.signal();
-		} finally {
-			lock.unlock();
-		}
-
-		running.compareAndSet(true, false);
-		if (future != null) {
-			if (!future.cancel(true)) {
-				Logger.warn("Task could not be cancelled");
-			}
-		}
-
-		executor.shutdown();
 	}
 
 	@Override
@@ -382,6 +400,12 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, Close
 
 		try {
 			while (running.get()) {
+				/*
+				 * When attempting to read a file (other than a pipe or FIFO) that supports
+				 * non-blocking reads and has no data currently available: If O_NONBLOCK is set,
+				 * read() shall return -1 and set errno to [EAGAIN]. If O_NONBLOCK is clear,
+				 * read() shall block the calling thread until some data becomes available.
+				 */
 				int i = read();
 				if (i == -1) {
 					Logger.warn("Read -1 from device, exiting read responses loop...");
@@ -414,7 +438,7 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, Close
 				} else if (b >= ANALOG_IO_START && b <= ANALOG_IO_END) {
 					processAnalogResponse(readDataResponse(b - ANALOG_IO_START), epoch_time, nano_time);
 				} else {
-					Logger.warn("Unrecognised response: 0x{}", Integer.toHexString(b));
+					Logger.warn("Unrecognised response: 0x{}", Integer.toHexString(b & 0xff));
 				}
 			}
 		} catch (RuntimeIOException e) {
@@ -472,6 +496,12 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, Close
 
 		SysExResponse response = null;
 		switch (sysex_cmd) {
+		case STRING_DATA:
+			byte[] string_data_buffer = new byte[buffer.remaining()];
+			buffer.get(string_data_buffer);
+			String string_data = new String(string_data_buffer, Charset.forName("UTF-16LE"));
+			response = new StringDataResponse(string_data);
+			break;
 		case REPORT_FIRMWARE:
 			byte major = buffer.get();
 			byte minor = buffer.get();
@@ -575,12 +605,11 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, Close
 	}
 
 	/*
-	 * slave address (MSB) + read/write and address mode bits
-	 * {bit 7: always 0}
-	 * {bit 6: auto restart transmission, 0 = stop (default), 1 = restart}
-	 * {bit 5: address mode, 1 = 10-bit mode}
-	 * {bits 4-3: read/write, 00 = write, 01 = read once, 10 = read continuously, 11 = stop reading}
-	 * {bits 2-0: slave address MSB in 10-bit mode, not used in 7-bit mode}
+	 * slave address (MSB) + read/write and address mode bits {bit 7: always 0} {bit
+	 * 6: auto restart transmission, 0 = stop (default), 1 = restart} {bit 5:
+	 * address mode, 1 = 10-bit mode} {bits 4-3: read/write, 00 = write, 01 = read
+	 * once, 10 = read continuously, 11 = stop reading} {bits 2-0: slave address MSB
+	 * in 10-bit mode, not used in 7-bit mode}
 	 */
 	static byte[] convertToI2CSlaveAddressLsbMsb(int slaveAddress, boolean autoRestart, boolean addressSize10Bit,
 			I2CMode mode) {
@@ -602,6 +631,23 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, Close
 	}
 
 	static class SysExResponse extends ResponseMessage {
+	}
+	
+	public static class StringDataResponse extends SysExResponse {
+		private String value;
+
+		public StringDataResponse(String value) {
+			this.value = value;
+		}
+
+		public String getValue() {
+			return value;
+		}
+
+		@Override
+		public String toString() {
+			return "StringDataResponse [value=" + value + "]";
+		}
 	}
 
 	public static class FirmwareDetails extends SysExResponse {
@@ -629,7 +675,7 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, Close
 
 		@Override
 		public String toString() {
-			return "FirmwareResponse [major=" + major + ", minor=" + minor + ", name=" + name + "]";
+			return "FirmwareDetails [major=" + major + ", minor=" + minor + ", name=" + name + "]";
 		}
 	}
 

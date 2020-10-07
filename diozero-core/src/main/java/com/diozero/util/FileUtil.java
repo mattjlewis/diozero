@@ -32,16 +32,14 @@ package com.diozero.util;
  */
 
 import java.io.FileDescriptor;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 
 import org.tinylog.Logger;
 
 public class FileUtil {
 	private static boolean initialised;
 	private static Field fdField;
-	private static Constructor<FileDescriptor> fdConstructor;
+	//private static Constructor<FileDescriptor> fdConstructor;
 
 	private static synchronized void initialise() {
 		if (!initialised) {
@@ -49,11 +47,13 @@ public class FileUtil {
 				fdField = FileDescriptor.class.getDeclaredField("fd");
 				fdField.setAccessible(true);
 
+				/*
 				fdConstructor = FileDescriptor.class.getDeclaredConstructor(int.class);
 				fdConstructor.setAccessible(true);
+				*/
 
 				initialised = true;
-			} catch (NoSuchFieldException | SecurityException | NoSuchMethodException e) {
+			} catch (NoSuchFieldException | SecurityException e) {
 				Logger.error(e, "Error: {}", e);
 				throw new RuntimeIOException("Error getting native file descriptor declared field / constructor: " + e,
 						e);
@@ -72,6 +72,7 @@ public class FileUtil {
 		}
 	}
 
+	/*
 	public static FileDescriptor createFileDescriptor(int fd) {
 		initialise();
 
@@ -83,4 +84,5 @@ public class FileUtil {
 			throw new RuntimeIOException("Error accessing private fd attribute: " + e, e);
 		}
 	}
+	*/
 }

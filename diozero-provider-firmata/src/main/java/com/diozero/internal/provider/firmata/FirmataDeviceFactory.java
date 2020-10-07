@@ -66,22 +66,26 @@ import com.diozero.util.RuntimeIOException;
 public class FirmataDeviceFactory extends BaseNativeDeviceFactory {
 	public static final String DEVICE_NAME = "Firmata";
 
+	private String portName;
 	private IODevice ioDevice;
 
 	public FirmataDeviceFactory() {
 		Logger.warn("*** Do NOT use this device factory for servo control; not yet implemented!");
 
-		String port_name = PropertyUtil.getProperty("FIRMATA_SERIAL_PORT", null);
-		if (port_name == null) {
+		portName = PropertyUtil.getProperty("FIRMATA_SERIAL_PORT", null);
+		if (portName == null) {
 			throw new IllegalArgumentException("Error, FIRMATA_SERIAL_PORT not set");
 		}
-		ioDevice = new FirmataDevice(port_name);
-
+		ioDevice = new FirmataDevice(portName);
+	}
+	
+	@Override
+	public void start() {
 		try {
 			ioDevice.start();
-			Logger.info("Waiting for Firmata device '" + port_name + "' to initialise");
+			Logger.info("Waiting for Firmata device '" + portName + "' to initialise");
 			ioDevice.ensureInitializationIsDone();
-			Logger.info("Firmata device '" + port_name + "' successfully initialised");
+			Logger.info("Firmata device '" + portName + "' successfully initialised");
 		} catch (IOException | InterruptedException e) {
 			throw new RuntimeIOException(e);
 		}
@@ -89,14 +93,14 @@ public class FirmataDeviceFactory extends BaseNativeDeviceFactory {
 
 	@Override
 	public void close() {
-		Logger.info("close()");
-		super.close();
+		Logger.trace("close()");
 		if (ioDevice != null) {
 			try {
 				ioDevice.stop();
 			} catch (Exception e) {
 			}
 		}
+		super.close();
 	}
 
 	IODevice getIoDevice() {

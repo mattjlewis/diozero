@@ -75,6 +75,10 @@
 #define ONE_STOP_BIT_ORDINAL 0
 #define TWO_STOP_BITS_ORDINAL 1
 
+extern jclass fileDescClassRef;
+extern jmethodID fileDescConstructor;
+extern jfieldID fileDescFdField;
+
 tcflag_t getDataBitsFlag(int dataBits) {
 	tcflag_t data_bits_flag;
 	switch (dataBits) {
@@ -149,16 +153,16 @@ speed_t getBaudVal(int baud) {
 /*
  * Class:     com_diozero_internal_provider_sysfs_NativeSerialDevice
  * Method:    serialOpen
- * Signature: (Ljava/lang/String;IIII)I
+ * Signature: (Ljava/lang/String;IIII)Ljava/io/FileDescriptor;
  */
-JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeSerialDevice_serialOpen
+JNIEXPORT jobject JNICALL Java_com_diozero_internal_provider_sysfs_NativeSerialDevice_serialOpen
   (JNIEnv* env, jclass clz, jstring device, jint baud, jint dataBits, jint stopBits, jint parity) {
 	const char* filename = (*env)->GetStringUTFChars(env, device, NULL);
 	int fd = open(filename, O_RDWR | O_NOCTTY | O_NONBLOCK);
 	(*env)->ReleaseStringUTFChars(env, device, filename);
 
 	if (fd < 0) {
-		return fd;
+		return NULL;
 	}
 
 	// Clear any serial port flags and set up raw, non-canonical port parameters
@@ -175,7 +179,13 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeSerialDevi
 	Java_com_diozero_internal_provider_sysfs_NativeSerialDevice_serialConfigPort(
 			env, clz, fd, baud, dataBits, stopBits, parity);
 
-	return fd;
+	// construct a new FileDescriptor
+	jobject ret = (*env)->NewObject(env, fileDescClassRef, fileDescConstructor);
+
+	// poke the "fd" field with the file descriptor
+	(*env)->SetIntField(env, ret, fileDescFdField, fd);
+
+	return ret;
 }
 
 /*
@@ -190,15 +200,29 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeSerialDevi
 
 	int flags = fcntl(fd, F_GETFL);
 
+	// Read Semi-blocking with timeout
+	//flags &= ~O_NONBLOCK;
+	//options.c_cc[VMIN] = 0;
+	//options.c_cc[VTIME] = readTimeoutMs / 100;
+
+	// Read Semi-blocking without timeout
+	flags &= ~O_NONBLOCK;
+	// Minimum number of characters to read
+	options.c_cc[VMIN] = 1;
+	// Time to wait for data (tenths of seconds)
+	options.c_cc[VTIME] = 0;
+
 	// Read Blocking with timeout
 	//flags &= ~O_NONBLOCK;
 	//options.c_cc[VMIN] = 0;
-	//options.c_cc[VTIME] = readTimeout / 100
+	//options.c_cc[VTIME] = readTimeoutMs / 100
 
 	// Read Blocking without timeout
-	flags &= ~O_NONBLOCK;
-	options.c_cc[VMIN] = 1;
-	options.c_cc[VTIME] = 0;
+	//flags &= ~O_NONBLOCK;
+	// Minimum number of characters to read
+	//options.c_cc[VMIN] = 1;
+	// Time to wait for data (tenths of seconds)
+	//options.c_cc[VTIME] = 0;
 
 	// Non-blocking
 	//flags |= O_NONBLOCK;
@@ -219,6 +243,7 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeSerialDevi
 	cfsetospeed(&options, speed);
 
 	fcntl(fd, F_SETFL, flags);
+
 	return tcsetattr(fd, TCSANOW, &options);
 }
 

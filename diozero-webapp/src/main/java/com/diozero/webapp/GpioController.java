@@ -38,7 +38,6 @@ import spark.Response;
 import spark.TemplateViewRoute;
 
 public class GpioController {
-	@SuppressWarnings("resource")
 	public TemplateViewRoute control = (Request request, Response response) -> {
 		DigitalOutputDevice output = Main.getOutputDevice(request);
 		if (output != null) {

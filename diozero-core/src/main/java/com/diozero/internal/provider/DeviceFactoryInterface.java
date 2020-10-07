@@ -39,6 +39,10 @@ import com.diozero.util.BoardPinInfo;
 import com.diozero.util.RuntimeIOException;
 
 public interface DeviceFactoryInterface extends Closeable {
+	default void start() {
+		// Do nothing
+	}
+	
 	String getName();
 	boolean isDeviceOpened(String key);
 	void deviceOpened(DeviceInterface device);

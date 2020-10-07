@@ -55,6 +55,7 @@ import com.diozero.remote.message.SpiResponse;
 import com.diozero.remote.message.protobuf.DiozeroProtos;
 import com.diozero.remote.mqtt.MqttProviderConstants;
 import com.diozero.remote.server.BaseRemoteServer;
+import com.diozero.util.RuntimeIOException;
 import com.google.protobuf.InvalidProtocolBufferException;
 
 public class MqttProtobufServer extends BaseRemoteServer implements MqttCallback {
@@ -102,22 +103,26 @@ public class MqttProtobufServer extends BaseRemoteServer implements MqttCallback
 		super.close();
 	}
 
-	public void start() throws MqttException {
-		// Subscribe
-		Logger.debug("Subscribing...");
-		mqttClient.subscribe(MqttProviderConstants.GPIO_REQUEST_TOPIC + "/+");
-		mqttClient.subscribe(MqttProviderConstants.SPI_REQUEST_TOPIC + "/+");
-		mqttClient.subscribe(MqttProviderConstants.I2C_REQUEST_TOPIC + "/+");
-		Logger.debug("Subscribed");
-
-		monitor = new Object();
+	public void start() {
 		try {
-			// Wait forever
-			synchronized (monitor) {
-				monitor.wait();
+			// Subscribe
+			Logger.debug("Subscribing...");
+			mqttClient.subscribe(MqttProviderConstants.GPIO_REQUEST_TOPIC + "/+");
+			mqttClient.subscribe(MqttProviderConstants.SPI_REQUEST_TOPIC + "/+");
+			mqttClient.subscribe(MqttProviderConstants.I2C_REQUEST_TOPIC + "/+");
+			Logger.debug("Subscribed");
+	
+			monitor = new Object();
+			try {
+				// Wait forever
+				synchronized (monitor) {
+					monitor.wait();
+				}
+			} catch (InterruptedException e) {
+				Logger.warn(e, "Interrupted: {}", e);
 			}
-		} catch (InterruptedException e) {
-			Logger.warn(e, "Interrupted: {}", e);
+		} catch (MqttException e) {
+			throw new RuntimeIOException(e);
 		}
 	}
 

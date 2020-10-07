@@ -35,6 +35,8 @@ package com.diozero.internal.provider;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.tinylog.Logger;
+
 import com.diozero.util.BoardInfo;
 import com.diozero.util.BoardPinInfo;
 import com.diozero.util.DioZeroScheduler;
@@ -88,6 +90,11 @@ public abstract class BaseNativeDeviceFactory extends AbstractDeviceFactory impl
 	
 	@Override
 	public void close() {
+		if (isClosed()) {
+			return;
+		}
+		
+		Logger.trace("close()");
 		// Stop all scheduled jobs
 		DioZeroScheduler.shutdownAll();
 		// Shutdown all of the other non-native device factories

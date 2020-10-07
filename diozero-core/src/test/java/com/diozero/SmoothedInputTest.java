@@ -75,16 +75,16 @@ public class SmoothedInputTest implements InputEventListener<DigitalInputEvent> 
 			
 			// Generate 1 event every 100ms -> 10 events per second, therefore should get a smoothed event every 1s
 			ScheduledFuture<?> future = scheduler.scheduleAtFixedRate(event_generator, 100, 100, TimeUnit.MILLISECONDS);
-			Logger.debug("Sleeping for {}s", Float.valueOf(delay));
+			Logger.info("Sleeping for {}s", Float.valueOf(delay));
 			SleepUtil.sleepSeconds(delay);
 			
-			Logger.debug("Stopping event generation and sleeping for {}s", Float.valueOf(delay));
+			Logger.info("Stopping event generation and sleeping for {}s", Float.valueOf(delay));
 			future.cancel(true);
 			SleepUtil.sleepSeconds(delay);
 			
 			// Generate 1 event every 50ms -> 20 events per second
 			future = scheduler.scheduleAtFixedRate(event_generator, 100, 100, TimeUnit.MILLISECONDS);
-			Logger.debug("Restarting event generation and sleeping for {}s", Float.valueOf(delay));
+			Logger.info("Restarting event generation and sleeping for {}s", Float.valueOf(delay));
 			SleepUtil.sleepSeconds(delay);
 			future.cancel(true);
 			
@@ -96,6 +96,6 @@ public class SmoothedInputTest implements InputEventListener<DigitalInputEvent> 
 
 	@Override
 	public void valueChanged(DigitalInputEvent event) {
-		Logger.debug("valueChanged({})", event);
+		Logger.info("valueChanged({})", event);
 	}
 }

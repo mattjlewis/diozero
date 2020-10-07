@@ -37,10 +37,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import org.tinylog.Logger;
-
 import com.diozero.api.SerialDevice;
-import com.diozero.util.FileUtil;
 import com.diozero.util.LibraryLoader;
 import com.diozero.util.RuntimeIOException;
 
@@ -51,7 +48,8 @@ public class NativeSerialDevice implements Closeable {
 		LibraryLoader.loadLibrary(NativeSerialDevice.class, "diozero-system-utils");
 	}
 
-	private static native int serialOpen(String device, int baud, int dataBits, int stopBits, int parity);
+	// See https://www.cmrr.umn.edu/~strupp/serial.html
+	private static native FileDescriptor serialOpen(String device, int baud, int dataBits, int stopBits, int parity);
 	private static native int serialConfigPort(int fd, int baud, int dataBits, int stopBits, int parity);
 	private static native int serialReadByte(int fd);
 	private static native int serialWriteByte(int fd, int bVal);
@@ -60,7 +58,7 @@ public class NativeSerialDevice implements Closeable {
 	private static native int serialBytesAvailable(int fd);
 	private static native int serialClose(int fd);
 
-	private int fd = FD_NOT_INITIALISED;
+	private FileDescriptor fd;
 	private FileInputStream inputStream;
 	private FileOutputStream outputStream;
 	private String deviceName;
@@ -82,15 +80,13 @@ public class NativeSerialDevice implements Closeable {
 			SerialDevice.StopBits stopBits) {
 		this.deviceName = deviceName;
 
-		int rc = serialOpen(deviceName, baud, dataBits.ordinal(), parity.ordinal(), stopBits.ordinal());
-		if (rc < 0) {
-			throw new RuntimeIOException("Error opening serial device '" + deviceName + "': " + rc);
+		FileDescriptor fd = serialOpen(deviceName, baud, dataBits.ordinal(), parity.ordinal(), stopBits.ordinal());
+		if (fd == null) {
+			throw new RuntimeIOException("Error opening serial device '" + deviceName + "'");
 		}
-		fd = rc;
 
-		FileDescriptor file_desc = FileUtil.createFileDescriptor(fd);
-		inputStream = new FileInputStream(file_desc);
-		outputStream = new FileOutputStream(file_desc);
+		inputStream = new FileInputStream(fd);
+		outputStream = new FileOutputStream(fd);
 	}
 
 	public int read() {
@@ -184,19 +180,9 @@ public class NativeSerialDevice implements Closeable {
 
 	@Override
 	public void close() {
-		try {
-			inputStream.close();
-		} catch (IOException e) {
-		}
-		try {
-			outputStream.close();
-		} catch (IOException e) {
-		}
-		int rc = serialClose(fd);
-		if (rc < 0) {
-			Logger.error("Error closing serial device {}: {}", deviceName, Integer.valueOf(rc));
-		}
-		fd = FD_NOT_INITIALISED;
+		if (inputStream != null) { try { inputStream.close(); } catch (IOException e) { } }
+		if (outputStream != null) { try { outputStream.close(); } catch (IOException e) { } }
+		fd = null;
 	}
 
 	public String getDeviceName() {

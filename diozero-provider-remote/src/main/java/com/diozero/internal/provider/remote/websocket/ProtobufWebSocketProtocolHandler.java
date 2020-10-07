@@ -113,6 +113,10 @@ public class ProtobufWebSocketProtocolHandler extends ProtobufBaseAsyncProtocolH
 		super(deviceFactory);
 
 		webSocketClient = new WebSocketClient();
+	}
+	
+	@Override
+	public void start() {
 		try {
 			webSocketClient.start();
 

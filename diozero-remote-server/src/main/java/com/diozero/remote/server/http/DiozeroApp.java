@@ -45,6 +45,6 @@ public class DiozeroApp {
 		port(PropertyUtil.getIntProperty(PORT_PROP, DEFAULT_PORT));
 		
 		controller = new DiozeroController();
-		controller.init();
+		controller.start();
 	}
 }

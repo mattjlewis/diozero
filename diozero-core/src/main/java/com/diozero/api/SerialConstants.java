@@ -32,7 +32,38 @@ package com.diozero.api;
  */
 
 public interface SerialConstants {
-	static final int DEFAULT_BAUD = 9600;
+	// Baud rates
+	static final int BAUD_50 = 50;
+	static final int BAUD_B75 = 75;
+	static final int BAUD_110 = 110;
+	static final int BAUD_134 = 134;
+	static final int BAUD_150 = 150;
+	static final int BAUD_200 = 200;
+	static final int BAUD_300 = 300;
+	static final int BAUD_600 = 600;
+	static final int BAUD_1200 = 1200;
+	static final int BAUD_1800 = 1800;
+	static final int BAUD_2400 = 2400;
+	static final int BAUD_4800 = 4800;
+	static final int BAUD_9600 = 9600;
+	static final int BAUD_19200 = 9600;
+	static final int BAUD_38400 = 38400;
+	static final int BAUD_57600 = 57600;
+	static final int BAUD_115200 = 15200;
+	static final int BAUD_230400 = 230400;
+	static final int BAUD_460800 = 460800;
+	static final int BAUD_500000 = 500000;
+	static final int BAUD_576000 = 576000;
+	static final int BAUD_921600 = 921600;
+	static final int BAUD_1000000 = 1000000;
+	static final int BAUD_1152000 = 1152000;
+	static final int BAUD_1500000 = 1500000;
+	static final int BAUD_2000000 = 2000000;
+	static final int BAUD_2500000 = 2500000;
+	static final int BAUD_3000000 = 3000000;
+	static final int BAUD_3500000 = 3500000;
+	static final int BAUD_4000000 = 4000000;
+	static final int DEFAULT_BAUD = BAUD_9600;
 
 	/**
 	 * The number of data bits to use per word.

@@ -42,6 +42,9 @@ jclass epollEventClassRef = NULL;
 jmethodID epollEventConstructor = NULL;
 jclass mmapByteBufferClassRef = NULL;
 jmethodID mmapByteBufferConstructor = NULL;
+jclass fileDescClassRef;
+jmethodID fileDescConstructor = NULL;
+jfieldID fileDescFdField = NULL;
 
 /* The VM calls this function upon loading the native library. */
 jint JNI_OnLoad(JavaVM* jvm, void* reserved) {
@@ -81,6 +84,28 @@ jint JNI_OnLoad(JavaVM* jvm, void* reserved) {
 		return JNI_ERR;
 	}
 
+	// Cache the FileDescriptor class / method / field
+	class_name = "java/io/FileDescriptor";
+	jclass fdesc_class = (*env)->FindClass(env, class_name);
+	if ((*env)->ExceptionCheck(env) || fdesc_class == NULL) {
+		printf("Error, could not find class '%s'\n", class_name);
+		return JNI_ERR;
+	}
+	method_name = "<init>";
+	signature = "()V";
+	fileDescConstructor = (*env)->GetMethodID(env, fdesc_class, method_name, signature);
+	if ((*env)->ExceptionCheck(env) || fileDescConstructor == NULL) {
+		fprintf(stderr, "Error looking up methodID for %s.%s%s\n", class_name, method_name, signature);
+		return JNI_ERR;
+	}
+	char* field_name = "fd";
+	signature = "I";
+	fileDescFdField = (*env)->GetFieldID(env, fdesc_class, field_name, signature);
+	if ((*env)->ExceptionCheck(env) || fileDescFdField == NULL) {
+		fprintf(stderr, "Error looking up fieldID for %s.%s%s\n", class_name, field_name, signature);
+		return JNI_ERR;
+	}
+
 	/*
 	 * https://stackoverflow.com/questions/10617735/in-jni-how-do-i-cache-the-class-methodid-and-fieldids-per-ibms-performance-r
 	 * Class IDs must be registered as global references to maintain the viability
@@ -90,13 +115,17 @@ jint JNI_OnLoad(JavaVM* jvm, void* reserved) {
 	 * associated Method IDs and Field IDs do not need to be registered as global
 	 * references. Registering a Class ID as a global reference prevents the
 	 * associated Java class from unloading, therefore stabilizing the Method ID
-	 * / Field ID values. Global references, including the Class ID,s should be
+	 * / Field ID values. Global references, including the Class IDs should be
 	 * removed in JNI_OnUnload().
 	 */
 
 	// Create global references to the classes
 	epollEventClassRef = (*env)->NewGlobalRef(env, epoll_event_class);
+	(*env)->DeleteLocalRef(env, epoll_event_class);
 	mmapByteBufferClassRef = (*env)->NewGlobalRef(env, mmap_byte_buffer_class);
+	(*env)->DeleteLocalRef(env, mmap_byte_buffer_class);
+	fileDescClassRef = (*env)->NewGlobalRef(env, fdesc_class);
+	(*env)->DeleteLocalRef(env, fdesc_class);
 
 	return JNI_VERSION;
 }
@@ -114,6 +143,9 @@ void JNI_OnUnload(JavaVM *jvm, void *reserved) {
 	}
 	if (mmapByteBufferClassRef != NULL) {
 		(*env)->DeleteGlobalRef(env, mmapByteBufferClassRef);
+	}
+	if (fileDescClassRef != NULL) {
+		(*env)->DeleteGlobalRef(env, fileDescClassRef);
 	}
 }
 

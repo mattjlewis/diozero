@@ -72,8 +72,8 @@ public class PigpioJDeviceFactory extends BaseNativeDeviceFactory {
 
 	@Override
 	public void close() {
-		super.close();
 		pigpioImpl.close();
+		super.close();
 	}
 
 	@Override

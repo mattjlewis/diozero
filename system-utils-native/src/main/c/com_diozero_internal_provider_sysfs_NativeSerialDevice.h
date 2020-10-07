@@ -10,9 +10,9 @@ extern "C" {
 /*
  * Class:     com_diozero_internal_provider_sysfs_NativeSerialDevice
  * Method:    serialOpen
- * Signature: (Ljava/lang/String;IIII)I
+ * Signature: (Ljava/lang/String;IIII)Ljava/io/FileDescriptor;
  */
-JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeSerialDevice_serialOpen
+JNIEXPORT jobject JNICALL Java_com_diozero_internal_provider_sysfs_NativeSerialDevice_serialOpen
   (JNIEnv *, jclass, jstring, jint, jint, jint, jint);
 
 /*

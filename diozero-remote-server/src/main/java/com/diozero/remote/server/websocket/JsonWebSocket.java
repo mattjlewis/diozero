@@ -90,6 +90,10 @@ public class JsonWebSocket extends BaseRemoteServer {
 	public static void main(String[] args) {
 		port(8080);
 		webSocket("/diozero", JsonWebSocket.class);
+	}
+	
+	@Override
+	public void start() {
 		init(); // Needed if you don't define any HTTP routes after your WebSocket routes
 	}
 

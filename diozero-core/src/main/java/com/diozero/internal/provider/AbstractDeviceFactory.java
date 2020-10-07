@@ -74,9 +74,11 @@ public abstract class AbstractDeviceFactory implements DeviceFactoryInterface {
 
 	@Override
 	public void close() {
-		Logger.trace("close()");
-		deviceStates.closeAll();
-		closed = true;
+		if (!closed) {
+			Logger.trace("close()");
+			deviceStates.closeAll();
+			closed = true;
+		}
 	}
 
 	@Override

@@ -177,13 +177,15 @@ public class VoodooSparkProtocolHandler implements RemoteProtocolInterface {
 	private Condition condition;
 	private ChannelFuture lastWriteFuture;
 	private int timeoutMs;
+	private String deviceId;
+	private String accessToken;
 
 	public VoodooSparkProtocolHandler(RemoteDeviceFactory deviceFactory) {
 		this.deviceFactory = deviceFactory;
 		
-		String device_id = PropertyUtil.getProperty(DEVICE_ID_PROP, null);
-		String access_token = PropertyUtil.getProperty(ACCESS_TOKEN_PROP, null);
-		if (device_id == null || access_token == null) {
+		deviceId = PropertyUtil.getProperty(DEVICE_ID_PROP, null);
+		accessToken = PropertyUtil.getProperty(ACCESS_TOKEN_PROP, null);
+		if (deviceId == null || accessToken == null) {
 			Logger.error("Both {} and {} properties must be set", DEVICE_ID_PROP, ACCESS_TOKEN_PROP);
 			throw new IllegalArgumentException(String.format("Both %s and %s properties must be set",
 					DEVICE_ID_PROP, ACCESS_TOKEN_PROP));
@@ -193,11 +195,14 @@ public class VoodooSparkProtocolHandler implements RemoteProtocolInterface {
 		messageQueue = new LinkedList<>();
 		lock = new ReentrantLock();
 		condition = lock.newCondition();
-		
+	}
+
+	@Override
+	public void start() {
 		// Lookup the local IP address using the Particle "endpoint" custom variable
 		try {
-			URL url = new URL(String.format("https://api.particle.io/v1/devices/%s/endpoint?access_token=%s", device_id,
-					URLEncoder.encode(access_token, StandardCharsets.UTF_8.name())));
+			URL url = new URL(String.format("https://api.particle.io/v1/devices/%s/endpoint?access_token=%s", deviceId,
+					URLEncoder.encode(accessToken, StandardCharsets.UTF_8.name())));
 			Endpoint endpoint = new Gson().fromJson(new InputStreamReader(url.openStream()), Endpoint.class);
 			Logger.debug(endpoint);
 			String[] ip_port = endpoint.result.split(":");
@@ -210,7 +215,7 @@ public class VoodooSparkProtocolHandler implements RemoteProtocolInterface {
 			throw new RuntimeIOException("Error getting local endpoint", e);
 		}
 	}
-	
+
 	private void connect(String host, int port) throws InterruptedException {
 		workerGroup = new NioEventLoopGroup();
 		

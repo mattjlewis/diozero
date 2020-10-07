@@ -71,13 +71,8 @@ public class DeviceFactoryHelper {
 				Logger.debug("Using native device factory class {}", nativeDeviceFactory.getClass().getSimpleName());
 					
 				Runtime.getRuntime().addShutdownHook(new ShutdownHandlerThread(nativeDeviceFactory));
-			}
-			
-			if (nativeDeviceFactory == null) {
-				// Shouldn't be possible
-				throw new IllegalStateException("Error: failed to load native device factory,"
-						+ " please configure META-INF/services/" + NativeDeviceFactoryInterface.class.getName()
-						+ " or set -D" + DEVICE_FACTORY_PROP);
+				
+				nativeDeviceFactory.start();
 			}
 		}
 	}
@@ -109,8 +104,10 @@ class ShutdownHandlerThread extends Thread {
 	
 	@Override
 	public void run() {
-		Logger.debug("Shutdown handler running");
-		deviceFactory.close();
-		Logger.debug("Shutdown handler finished");
+		if (!deviceFactory.isClosed()) {
+			Logger.debug("Shutdown handler running");
+			deviceFactory.close();
+			Logger.debug("Shutdown handler finished");
+		}
 	}
 }

@@ -121,8 +121,8 @@ public class Pi4jDeviceFactory extends BaseNativeDeviceFactory {
 
 	@Override
 	public void close() {
-		super.close();
 		gpioController.shutdown();
+		super.close();
 	}
 
 	@Override

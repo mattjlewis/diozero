@@ -49,6 +49,7 @@ import com.diozero.util.RuntimeIOException;
  * and <a href="https://www.kernel.org/doc/Documentation/i2c/smbus-protocol">SMBus Protocol</a>.</p>
  * <p><em>Warning</em> Not all methods have been tested!</p>
  */
+@Deprecated
 public class NativeI2CDeviceSysFs implements I2CSMBusInterface {
 	private static final int EBUSY = -16;
 	

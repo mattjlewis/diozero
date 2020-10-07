@@ -38,6 +38,7 @@ public interface FirmataProtocol {
 	// Message types
 	public static final byte I2C_REQUEST			= (byte) 0x76;
 	public static final byte I2C_REPLY				= (byte) 0x77;
+	public static final byte I2C_CONFIG				= (byte) 0x78;
 	public static final byte DIGITAL_IO_START		= (byte) 0x90;
 	public static final byte DIGITAL_IO_END			= (byte) 0x9F;
 	public static final byte ANALOG_IO_START		= (byte) 0xE0;
