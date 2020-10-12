@@ -67,9 +67,7 @@ public class MmapDeviceFactory extends SysFsDeviceFactory {
 	}
 	
 	@Override
-	public void close() {
-		Logger.trace("close()");
-		super.close();
+	public void shutdown() {
 		if (mmapGpio != null) {
 			mmapGpio.close();
 		}

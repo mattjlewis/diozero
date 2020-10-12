@@ -31,6 +31,8 @@ package com.diozero.firmata;
  * #L%
  */
 
+import org.tinylog.Logger;
+
 import com.diozero.api.SerialDevice;
 import com.diozero.internal.provider.sysfs.NativeSerialDevice;
 
@@ -38,14 +40,17 @@ public class SerialFirmataAdapter extends FirmataAdapter {
 	private NativeSerialDevice device;
 
 	public SerialFirmataAdapter(FirmataEventListener eventListener, String deviceName, int baud,
-			SerialDevice.DataBits dataBits, SerialDevice.Parity parity, SerialDevice.StopBits stopBits) {
+			SerialDevice.DataBits dataBits, SerialDevice.StopBits stopBits, SerialDevice.Parity parity,
+			boolean readBlocking, int minReadChars, int readTimeoutMillis) {
 		super(eventListener);
 
-		device = new NativeSerialDevice(deviceName, baud, dataBits, parity, stopBits);
+		device = new NativeSerialDevice(deviceName, baud, dataBits, stopBits, parity, readBlocking, minReadChars,
+				readTimeoutMillis);
 	}
 
 	@Override
 	public void close() {
+		Logger.trace("closing...");
 		super.close();
 
 		try {
@@ -53,6 +58,7 @@ public class SerialFirmataAdapter extends FirmataAdapter {
 		} catch (Exception e) {
 			// Ignore
 		}
+		Logger.trace("closed.");
 	}
 
 	@Override

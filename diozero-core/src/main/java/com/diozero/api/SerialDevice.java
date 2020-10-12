@@ -33,7 +33,6 @@ package com.diozero.api;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 
 import org.tinylog.Logger;
 
@@ -41,15 +40,89 @@ import com.diozero.internal.provider.SerialDeviceInterface;
 import com.diozero.util.DeviceFactoryHelper;
 
 public class SerialDevice implements SerialConstants, Closeable {
+	public static class DeviceInfo {
+		private String deviceName;
+		private String friendlyName;
+		
+		public DeviceInfo(String deviceName, String friendlyName) {
+			this.deviceName = deviceName;
+			this.friendlyName = friendlyName;
+		}
+
+		public String getDeviceName() {
+			return deviceName;
+		}
+
+		public String getFriendlyName() {
+			return friendlyName;
+		}
+	}
+	
+	public static DeviceInfo[] getLocalSerialDevices() {
+		/*
+		 * On Linux:
+		 * > cd /system/devices
+		 * > find . -name \*tty\*
+		 * ./platform/scb/fd500000.pcie/pci0000:00/0000:00:00.0/0000:01:00.0/usb1/1-1/1-1.2/1-1.2:1.0/ttyUSB0
+		 * ./platform/scb/fd500000.pcie/pci0000:00/0000:00:00.0/0000:01:00.0/usb1/1-1/1-1.2/1-1.2:1.0/ttyUSB0/tty
+		 * ./platform/scb/fd500000.pcie/pci0000:00/0000:00:00.0/0000:01:00.0/usb1/1-1/1-1.2/1-1.2:1.0/ttyUSB0/tty/ttyUSB0
+		 * ./platform/soc/fe201000.serial/tty
+		 * ./platform/soc/fe201000.serial/tty/ttyAMA0
+		 * ./virtual/tty
+		 * ./virtual/tty/tty58
+		 * ...
+		 * 
+		 * > find . -name product
+		 * ./platform/scb/fd500000.pcie/pci0000:00/0000:00:00.0/0000:01:00.0/usb1/product
+		 * ./platform/scb/fd500000.pcie/pci0000:00/0000:00:00.0/0000:01:00.0/usb1/1-1/product
+		 * ./platform/scb/fd500000.pcie/pci0000:00/0000:00:00.0/0000:01:00.0/usb1/1-1/1-1.2/product
+		 * ./platform/scb/fd500000.pcie/pci0000:00/0000:00:00.0/0000:01:00.0/usb2/product
+		 * 
+		 * > cat ./platform/scb/fd500000.pcie/pci0000:00/0000:00:00.0/0000:01:00.0/usb1/1-1/1-1.2/product
+		 * USB2.0-Serial
+		 */
+		return new DeviceInfo[] {};
+	}
+
 	private SerialDeviceInterface device;
 	
 	public SerialDevice(String deviceName) {
-		this(deviceName, DEFAULT_BAUD, DEFAULT_DATA_BITS, DEFAULT_PARITY, DEFAULT_STOP_BITS);
+		this(deviceName, DEFAULT_BAUD, DEFAULT_DATA_BITS, DEFAULT_STOP_BITS, DEFAULT_PARITY, DEFAULT_READ_BLOCKING,
+				DEFAULT_MIN_READ_CHARS, DEFAULT_READ_TIMEOUT_MILLIS);
 	}
 
-	public SerialDevice(String deviceName, int baud, DataBits dataBits, Parity parity, StopBits stopBits) {
-		device = DeviceFactoryHelper.getNativeDeviceFactory().provisionSerialDevice(deviceName, baud, dataBits, parity,
-				stopBits);
+	public SerialDevice(String deviceName, int baud, DataBits dataBits, StopBits stopBits, Parity parity) {
+		this(deviceName, baud, dataBits, stopBits, parity, DEFAULT_READ_BLOCKING, DEFAULT_MIN_READ_CHARS,
+				DEFAULT_READ_TIMEOUT_MILLIS);
+	}
+
+	/**
+	 * Create a new serial device
+	 *
+	 * @param deviceName        The O/S file name for the device
+	 * @param baud              Baud rate, see
+	 *                          {@link com.diozero.api.SerialConstants
+	 *                          SerialConstants} for valid baud rate values
+	 * @param dataBits          Number of data bits as per the enum
+	 *                          {@link com.diozero.api.SerialConstants.DataBits
+	 *                          DataBits}
+	 * @param stopBits          Number of stop bits as per the enum
+	 *                          {@link com.diozero.api.SerialConstants.StopBits
+	 *                          StopBits}
+	 * @param parity            Parity as per the enum
+	 *                          {@link com.diozero.api.SerialConstants.Parity
+	 *                          Parity}
+	 * @param readBlocking      Should all read operations block until data is
+	 *                          available?
+	 * @param minReadChars      Minimum number of characters to read (note actually
+	 *                          an unsigned char hence max value is 255)
+	 * @param readTimeoutMillis The read timeout value in milliseconds (note
+	 *                          converted to tenths of a second as an unsigned char)
+	 */
+	public SerialDevice(String deviceName, int baud, DataBits dataBits, StopBits stopBits, Parity parity,
+			boolean readBlocking, int minReadChars, int readTimeoutMillis) {
+		device = DeviceFactoryHelper.getNativeDeviceFactory().provisionSerialDevice(deviceName, baud, dataBits,
+				stopBits, parity, readBlocking, minReadChars, readTimeoutMillis);
 	}
 
 	@Override

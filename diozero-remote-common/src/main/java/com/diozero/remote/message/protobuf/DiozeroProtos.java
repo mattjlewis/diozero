@@ -3,37 +3,6 @@
 
 package com.diozero.remote.message.protobuf;
 
-/*-
- * #%L
- * Organisation: diozero
- * Project:      Device I/O Zero - Remote Common
- * Filename:     DiozeroProtos.java  
- * 
- * This file is part of the diozero project. More information about this project
- * can be found at http://www.diozero.com/
- * %%
- * Copyright (C) 2016 - 2020 diozero
- * %%
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- * 
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- * 
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- * #L%
- */
-
 public final class DiozeroProtos {
   private DiozeroProtos() {}
   public static void registerAllExtensions(
@@ -38381,21 +38350,21 @@ public final class DiozeroProtos {
           getCorrelationIdBytes();
 
       /**
-       * <code>required string tty = 2;</code>
-       * @return Whether the tty field is set.
+       * <code>required string deviceName = 2;</code>
+       * @return Whether the deviceName field is set.
        */
-      boolean hasTty();
+      boolean hasDeviceName();
       /**
-       * <code>required string tty = 2;</code>
-       * @return The tty.
+       * <code>required string deviceName = 2;</code>
+       * @return The deviceName.
        */
-      java.lang.String getTty();
+      java.lang.String getDeviceName();
       /**
-       * <code>required string tty = 2;</code>
-       * @return The bytes for tty.
+       * <code>required string deviceName = 2;</code>
+       * @return The bytes for deviceName.
        */
       com.google.protobuf.ByteString
-          getTtyBytes();
+          getDeviceNameBytes();
 
       /**
        * <code>required int32 baud = 3;</code>
@@ -38420,26 +38389,59 @@ public final class DiozeroProtos {
       int getDataBits();
 
       /**
-       * <code>required int32 parity = 5;</code>
+       * <code>required int32 stopBits = 5;</code>
+       * @return Whether the stopBits field is set.
+       */
+      boolean hasStopBits();
+      /**
+       * <code>required int32 stopBits = 5;</code>
+       * @return The stopBits.
+       */
+      int getStopBits();
+
+      /**
+       * <code>required int32 parity = 6;</code>
        * @return Whether the parity field is set.
        */
       boolean hasParity();
       /**
-       * <code>required int32 parity = 5;</code>
+       * <code>required int32 parity = 6;</code>
        * @return The parity.
        */
       int getParity();
 
       /**
-       * <code>required int32 stopBits = 6;</code>
-       * @return Whether the stopBits field is set.
+       * <code>required bool readBlocking = 7;</code>
+       * @return Whether the readBlocking field is set.
        */
-      boolean hasStopBits();
+      boolean hasReadBlocking();
       /**
-       * <code>required int32 stopBits = 6;</code>
-       * @return The stopBits.
+       * <code>required bool readBlocking = 7;</code>
+       * @return The readBlocking.
        */
-      int getStopBits();
+      boolean getReadBlocking();
+
+      /**
+       * <code>required int32 minReadChars = 8;</code>
+       * @return Whether the minReadChars field is set.
+       */
+      boolean hasMinReadChars();
+      /**
+       * <code>required int32 minReadChars = 8;</code>
+       * @return The minReadChars.
+       */
+      int getMinReadChars();
+
+      /**
+       * <code>required int32 readTimeoutMillis = 9;</code>
+       * @return Whether the readTimeoutMillis field is set.
+       */
+      boolean hasReadTimeoutMillis();
+      /**
+       * <code>required int32 readTimeoutMillis = 9;</code>
+       * @return The readTimeoutMillis.
+       */
+      int getReadTimeoutMillis();
     }
     /**
      * Protobuf type {@code diozero.Serial.Open}
@@ -38455,7 +38457,7 @@ public final class DiozeroProtos {
       }
       private Open() {
         correlationId_ = "";
-        tty_ = "";
+        deviceName_ = "";
       }
 
       @java.lang.Override
@@ -38498,7 +38500,7 @@ public final class DiozeroProtos {
               case 18: {
                 com.google.protobuf.ByteString bs = input.readBytes();
                 bitField0_ |= 0x00000002;
-                tty_ = bs;
+                deviceName_ = bs;
                 break;
               }
               case 24: {
@@ -38513,12 +38515,27 @@ public final class DiozeroProtos {
               }
               case 40: {
                 bitField0_ |= 0x00000010;
-                parity_ = input.readInt32();
+                stopBits_ = input.readInt32();
                 break;
               }
               case 48: {
                 bitField0_ |= 0x00000020;
-                stopBits_ = input.readInt32();
+                parity_ = input.readInt32();
+                break;
+              }
+              case 56: {
+                bitField0_ |= 0x00000040;
+                readBlocking_ = input.readBool();
+                break;
+              }
+              case 64: {
+                bitField0_ |= 0x00000080;
+                minReadChars_ = input.readInt32();
+                break;
+              }
+              case 72: {
+                bitField0_ |= 0x00000100;
+                readTimeoutMillis_ = input.readInt32();
                 break;
               }
               default: {
@@ -38602,23 +38619,23 @@ public final class DiozeroProtos {
         }
       }
 
-      public static final int TTY_FIELD_NUMBER = 2;
-      private volatile java.lang.Object tty_;
+      public static final int DEVICENAME_FIELD_NUMBER = 2;
+      private volatile java.lang.Object deviceName_;
       /**
-       * <code>required string tty = 2;</code>
-       * @return Whether the tty field is set.
+       * <code>required string deviceName = 2;</code>
+       * @return Whether the deviceName field is set.
        */
       @java.lang.Override
-      public boolean hasTty() {
+      public boolean hasDeviceName() {
         return ((bitField0_ & 0x00000002) != 0);
       }
       /**
-       * <code>required string tty = 2;</code>
-       * @return The tty.
+       * <code>required string deviceName = 2;</code>
+       * @return The deviceName.
        */
       @java.lang.Override
-      public java.lang.String getTty() {
-        java.lang.Object ref = tty_;
+      public java.lang.String getDeviceName() {
+        java.lang.Object ref = deviceName_;
         if (ref instanceof java.lang.String) {
           return (java.lang.String) ref;
         } else {
@@ -38626,24 +38643,24 @@ public final class DiozeroProtos {
               (com.google.protobuf.ByteString) ref;
           java.lang.String s = bs.toStringUtf8();
           if (bs.isValidUtf8()) {
-            tty_ = s;
+            deviceName_ = s;
           }
           return s;
         }
       }
       /**
-       * <code>required string tty = 2;</code>
-       * @return The bytes for tty.
+       * <code>required string deviceName = 2;</code>
+       * @return The bytes for deviceName.
        */
       @java.lang.Override
       public com.google.protobuf.ByteString
-          getTtyBytes() {
-        java.lang.Object ref = tty_;
+          getDeviceNameBytes() {
+        java.lang.Object ref = deviceName_;
         if (ref instanceof java.lang.String) {
           com.google.protobuf.ByteString b = 
               com.google.protobuf.ByteString.copyFromUtf8(
                   (java.lang.String) ref);
-          tty_ = b;
+          deviceName_ = b;
           return b;
         } else {
           return (com.google.protobuf.ByteString) ref;
@@ -38688,18 +38705,37 @@ public final class DiozeroProtos {
         return dataBits_;
       }
 
-      public static final int PARITY_FIELD_NUMBER = 5;
+      public static final int STOPBITS_FIELD_NUMBER = 5;
+      private int stopBits_;
+      /**
+       * <code>required int32 stopBits = 5;</code>
+       * @return Whether the stopBits field is set.
+       */
+      @java.lang.Override
+      public boolean hasStopBits() {
+        return ((bitField0_ & 0x00000010) != 0);
+      }
+      /**
+       * <code>required int32 stopBits = 5;</code>
+       * @return The stopBits.
+       */
+      @java.lang.Override
+      public int getStopBits() {
+        return stopBits_;
+      }
+
+      public static final int PARITY_FIELD_NUMBER = 6;
       private int parity_;
       /**
-       * <code>required int32 parity = 5;</code>
+       * <code>required int32 parity = 6;</code>
        * @return Whether the parity field is set.
        */
       @java.lang.Override
       public boolean hasParity() {
-        return ((bitField0_ & 0x00000010) != 0);
+        return ((bitField0_ & 0x00000020) != 0);
       }
       /**
-       * <code>required int32 parity = 5;</code>
+       * <code>required int32 parity = 6;</code>
        * @return The parity.
        */
       @java.lang.Override
@@ -38707,23 +38743,61 @@ public final class DiozeroProtos {
         return parity_;
       }
 
-      public static final int STOPBITS_FIELD_NUMBER = 6;
-      private int stopBits_;
+      public static final int READBLOCKING_FIELD_NUMBER = 7;
+      private boolean readBlocking_;
       /**
-       * <code>required int32 stopBits = 6;</code>
-       * @return Whether the stopBits field is set.
+       * <code>required bool readBlocking = 7;</code>
+       * @return Whether the readBlocking field is set.
        */
       @java.lang.Override
-      public boolean hasStopBits() {
-        return ((bitField0_ & 0x00000020) != 0);
+      public boolean hasReadBlocking() {
+        return ((bitField0_ & 0x00000040) != 0);
       }
       /**
-       * <code>required int32 stopBits = 6;</code>
-       * @return The stopBits.
+       * <code>required bool readBlocking = 7;</code>
+       * @return The readBlocking.
        */
       @java.lang.Override
-      public int getStopBits() {
-        return stopBits_;
+      public boolean getReadBlocking() {
+        return readBlocking_;
+      }
+
+      public static final int MINREADCHARS_FIELD_NUMBER = 8;
+      private int minReadChars_;
+      /**
+       * <code>required int32 minReadChars = 8;</code>
+       * @return Whether the minReadChars field is set.
+       */
+      @java.lang.Override
+      public boolean hasMinReadChars() {
+        return ((bitField0_ & 0x00000080) != 0);
+      }
+      /**
+       * <code>required int32 minReadChars = 8;</code>
+       * @return The minReadChars.
+       */
+      @java.lang.Override
+      public int getMinReadChars() {
+        return minReadChars_;
+      }
+
+      public static final int READTIMEOUTMILLIS_FIELD_NUMBER = 9;
+      private int readTimeoutMillis_;
+      /**
+       * <code>required int32 readTimeoutMillis = 9;</code>
+       * @return Whether the readTimeoutMillis field is set.
+       */
+      @java.lang.Override
+      public boolean hasReadTimeoutMillis() {
+        return ((bitField0_ & 0x00000100) != 0);
+      }
+      /**
+       * <code>required int32 readTimeoutMillis = 9;</code>
+       * @return The readTimeoutMillis.
+       */
+      @java.lang.Override
+      public int getReadTimeoutMillis() {
+        return readTimeoutMillis_;
       }
 
       private byte memoizedIsInitialized = -1;
@@ -38737,7 +38811,7 @@ public final class DiozeroProtos {
           memoizedIsInitialized = 0;
           return false;
         }
-        if (!hasTty()) {
+        if (!hasDeviceName()) {
           memoizedIsInitialized = 0;
           return false;
         }
@@ -38749,11 +38823,23 @@ public final class DiozeroProtos {
           memoizedIsInitialized = 0;
           return false;
         }
+        if (!hasStopBits()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
         if (!hasParity()) {
           memoizedIsInitialized = 0;
           return false;
         }
-        if (!hasStopBits()) {
+        if (!hasReadBlocking()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+        if (!hasMinReadChars()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+        if (!hasReadTimeoutMillis()) {
           memoizedIsInitialized = 0;
           return false;
         }
@@ -38768,7 +38854,7 @@ public final class DiozeroProtos {
           com.google.protobuf.GeneratedMessageV3.writeString(output, 1, correlationId_);
         }
         if (((bitField0_ & 0x00000002) != 0)) {
-          com.google.protobuf.GeneratedMessageV3.writeString(output, 2, tty_);
+          com.google.protobuf.GeneratedMessageV3.writeString(output, 2, deviceName_);
         }
         if (((bitField0_ & 0x00000004) != 0)) {
           output.writeInt32(3, baud_);
@@ -38777,10 +38863,19 @@ public final class DiozeroProtos {
           output.writeInt32(4, dataBits_);
         }
         if (((bitField0_ & 0x00000010) != 0)) {
-          output.writeInt32(5, parity_);
+          output.writeInt32(5, stopBits_);
         }
         if (((bitField0_ & 0x00000020) != 0)) {
-          output.writeInt32(6, stopBits_);
+          output.writeInt32(6, parity_);
+        }
+        if (((bitField0_ & 0x00000040) != 0)) {
+          output.writeBool(7, readBlocking_);
+        }
+        if (((bitField0_ & 0x00000080) != 0)) {
+          output.writeInt32(8, minReadChars_);
+        }
+        if (((bitField0_ & 0x00000100) != 0)) {
+          output.writeInt32(9, readTimeoutMillis_);
         }
         unknownFields.writeTo(output);
       }
@@ -38795,7 +38890,7 @@ public final class DiozeroProtos {
           size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, correlationId_);
         }
         if (((bitField0_ & 0x00000002) != 0)) {
-          size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, tty_);
+          size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, deviceName_);
         }
         if (((bitField0_ & 0x00000004) != 0)) {
           size += com.google.protobuf.CodedOutputStream
@@ -38807,11 +38902,23 @@ public final class DiozeroProtos {
         }
         if (((bitField0_ & 0x00000010) != 0)) {
           size += com.google.protobuf.CodedOutputStream
-            .computeInt32Size(5, parity_);
+            .computeInt32Size(5, stopBits_);
         }
         if (((bitField0_ & 0x00000020) != 0)) {
           size += com.google.protobuf.CodedOutputStream
-            .computeInt32Size(6, stopBits_);
+            .computeInt32Size(6, parity_);
+        }
+        if (((bitField0_ & 0x00000040) != 0)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeBoolSize(7, readBlocking_);
+        }
+        if (((bitField0_ & 0x00000080) != 0)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeInt32Size(8, minReadChars_);
+        }
+        if (((bitField0_ & 0x00000100) != 0)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeInt32Size(9, readTimeoutMillis_);
         }
         size += unknownFields.getSerializedSize();
         memoizedSize = size;
@@ -38833,10 +38940,10 @@ public final class DiozeroProtos {
           if (!getCorrelationId()
               .equals(other.getCorrelationId())) return false;
         }
-        if (hasTty() != other.hasTty()) return false;
-        if (hasTty()) {
-          if (!getTty()
-              .equals(other.getTty())) return false;
+        if (hasDeviceName() != other.hasDeviceName()) return false;
+        if (hasDeviceName()) {
+          if (!getDeviceName()
+              .equals(other.getDeviceName())) return false;
         }
         if (hasBaud() != other.hasBaud()) return false;
         if (hasBaud()) {
@@ -38848,15 +38955,30 @@ public final class DiozeroProtos {
           if (getDataBits()
               != other.getDataBits()) return false;
         }
+        if (hasStopBits() != other.hasStopBits()) return false;
+        if (hasStopBits()) {
+          if (getStopBits()
+              != other.getStopBits()) return false;
+        }
         if (hasParity() != other.hasParity()) return false;
         if (hasParity()) {
           if (getParity()
               != other.getParity()) return false;
         }
-        if (hasStopBits() != other.hasStopBits()) return false;
-        if (hasStopBits()) {
-          if (getStopBits()
-              != other.getStopBits()) return false;
+        if (hasReadBlocking() != other.hasReadBlocking()) return false;
+        if (hasReadBlocking()) {
+          if (getReadBlocking()
+              != other.getReadBlocking()) return false;
+        }
+        if (hasMinReadChars() != other.hasMinReadChars()) return false;
+        if (hasMinReadChars()) {
+          if (getMinReadChars()
+              != other.getMinReadChars()) return false;
+        }
+        if (hasReadTimeoutMillis() != other.hasReadTimeoutMillis()) return false;
+        if (hasReadTimeoutMillis()) {
+          if (getReadTimeoutMillis()
+              != other.getReadTimeoutMillis()) return false;
         }
         if (!unknownFields.equals(other.unknownFields)) return false;
         return true;
@@ -38873,9 +38995,9 @@ public final class DiozeroProtos {
           hash = (37 * hash) + CORRELATIONID_FIELD_NUMBER;
           hash = (53 * hash) + getCorrelationId().hashCode();
         }
-        if (hasTty()) {
-          hash = (37 * hash) + TTY_FIELD_NUMBER;
-          hash = (53 * hash) + getTty().hashCode();
+        if (hasDeviceName()) {
+          hash = (37 * hash) + DEVICENAME_FIELD_NUMBER;
+          hash = (53 * hash) + getDeviceName().hashCode();
         }
         if (hasBaud()) {
           hash = (37 * hash) + BAUD_FIELD_NUMBER;
@@ -38885,13 +39007,26 @@ public final class DiozeroProtos {
           hash = (37 * hash) + DATABITS_FIELD_NUMBER;
           hash = (53 * hash) + getDataBits();
         }
+        if (hasStopBits()) {
+          hash = (37 * hash) + STOPBITS_FIELD_NUMBER;
+          hash = (53 * hash) + getStopBits();
+        }
         if (hasParity()) {
           hash = (37 * hash) + PARITY_FIELD_NUMBER;
           hash = (53 * hash) + getParity();
         }
-        if (hasStopBits()) {
-          hash = (37 * hash) + STOPBITS_FIELD_NUMBER;
-          hash = (53 * hash) + getStopBits();
+        if (hasReadBlocking()) {
+          hash = (37 * hash) + READBLOCKING_FIELD_NUMBER;
+          hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+              getReadBlocking());
+        }
+        if (hasMinReadChars()) {
+          hash = (37 * hash) + MINREADCHARS_FIELD_NUMBER;
+          hash = (53 * hash) + getMinReadChars();
+        }
+        if (hasReadTimeoutMillis()) {
+          hash = (37 * hash) + READTIMEOUTMILLIS_FIELD_NUMBER;
+          hash = (53 * hash) + getReadTimeoutMillis();
         }
         hash = (29 * hash) + unknownFields.hashCode();
         memoizedHashCode = hash;
@@ -39028,16 +39163,22 @@ public final class DiozeroProtos {
           super.clear();
           correlationId_ = "";
           bitField0_ = (bitField0_ & ~0x00000001);
-          tty_ = "";
+          deviceName_ = "";
           bitField0_ = (bitField0_ & ~0x00000002);
           baud_ = 0;
           bitField0_ = (bitField0_ & ~0x00000004);
           dataBits_ = 0;
           bitField0_ = (bitField0_ & ~0x00000008);
-          parity_ = 0;
-          bitField0_ = (bitField0_ & ~0x00000010);
           stopBits_ = 0;
+          bitField0_ = (bitField0_ & ~0x00000010);
+          parity_ = 0;
           bitField0_ = (bitField0_ & ~0x00000020);
+          readBlocking_ = false;
+          bitField0_ = (bitField0_ & ~0x00000040);
+          minReadChars_ = 0;
+          bitField0_ = (bitField0_ & ~0x00000080);
+          readTimeoutMillis_ = 0;
+          bitField0_ = (bitField0_ & ~0x00000100);
           return this;
         }
 
@@ -39073,7 +39214,7 @@ public final class DiozeroProtos {
           if (((from_bitField0_ & 0x00000002) != 0)) {
             to_bitField0_ |= 0x00000002;
           }
-          result.tty_ = tty_;
+          result.deviceName_ = deviceName_;
           if (((from_bitField0_ & 0x00000004) != 0)) {
             result.baud_ = baud_;
             to_bitField0_ |= 0x00000004;
@@ -39083,12 +39224,24 @@ public final class DiozeroProtos {
             to_bitField0_ |= 0x00000008;
           }
           if (((from_bitField0_ & 0x00000010) != 0)) {
-            result.parity_ = parity_;
+            result.stopBits_ = stopBits_;
             to_bitField0_ |= 0x00000010;
           }
           if (((from_bitField0_ & 0x00000020) != 0)) {
-            result.stopBits_ = stopBits_;
+            result.parity_ = parity_;
             to_bitField0_ |= 0x00000020;
+          }
+          if (((from_bitField0_ & 0x00000040) != 0)) {
+            result.readBlocking_ = readBlocking_;
+            to_bitField0_ |= 0x00000040;
+          }
+          if (((from_bitField0_ & 0x00000080) != 0)) {
+            result.minReadChars_ = minReadChars_;
+            to_bitField0_ |= 0x00000080;
+          }
+          if (((from_bitField0_ & 0x00000100) != 0)) {
+            result.readTimeoutMillis_ = readTimeoutMillis_;
+            to_bitField0_ |= 0x00000100;
           }
           result.bitField0_ = to_bitField0_;
           onBuilt();
@@ -39144,9 +39297,9 @@ public final class DiozeroProtos {
             correlationId_ = other.correlationId_;
             onChanged();
           }
-          if (other.hasTty()) {
+          if (other.hasDeviceName()) {
             bitField0_ |= 0x00000002;
-            tty_ = other.tty_;
+            deviceName_ = other.deviceName_;
             onChanged();
           }
           if (other.hasBaud()) {
@@ -39155,11 +39308,20 @@ public final class DiozeroProtos {
           if (other.hasDataBits()) {
             setDataBits(other.getDataBits());
           }
+          if (other.hasStopBits()) {
+            setStopBits(other.getStopBits());
+          }
           if (other.hasParity()) {
             setParity(other.getParity());
           }
-          if (other.hasStopBits()) {
-            setStopBits(other.getStopBits());
+          if (other.hasReadBlocking()) {
+            setReadBlocking(other.getReadBlocking());
+          }
+          if (other.hasMinReadChars()) {
+            setMinReadChars(other.getMinReadChars());
+          }
+          if (other.hasReadTimeoutMillis()) {
+            setReadTimeoutMillis(other.getReadTimeoutMillis());
           }
           this.mergeUnknownFields(other.unknownFields);
           onChanged();
@@ -39171,7 +39333,7 @@ public final class DiozeroProtos {
           if (!hasCorrelationId()) {
             return false;
           }
-          if (!hasTty()) {
+          if (!hasDeviceName()) {
             return false;
           }
           if (!hasBaud()) {
@@ -39180,10 +39342,19 @@ public final class DiozeroProtos {
           if (!hasDataBits()) {
             return false;
           }
+          if (!hasStopBits()) {
+            return false;
+          }
           if (!hasParity()) {
             return false;
           }
-          if (!hasStopBits()) {
+          if (!hasReadBlocking()) {
+            return false;
+          }
+          if (!hasMinReadChars()) {
+            return false;
+          }
+          if (!hasReadTimeoutMillis()) {
             return false;
           }
           return true;
@@ -39293,26 +39464,26 @@ public final class DiozeroProtos {
           return this;
         }
 
-        private java.lang.Object tty_ = "";
+        private java.lang.Object deviceName_ = "";
         /**
-         * <code>required string tty = 2;</code>
-         * @return Whether the tty field is set.
+         * <code>required string deviceName = 2;</code>
+         * @return Whether the deviceName field is set.
          */
-        public boolean hasTty() {
+        public boolean hasDeviceName() {
           return ((bitField0_ & 0x00000002) != 0);
         }
         /**
-         * <code>required string tty = 2;</code>
-         * @return The tty.
+         * <code>required string deviceName = 2;</code>
+         * @return The deviceName.
          */
-        public java.lang.String getTty() {
-          java.lang.Object ref = tty_;
+        public java.lang.String getDeviceName() {
+          java.lang.Object ref = deviceName_;
           if (!(ref instanceof java.lang.String)) {
             com.google.protobuf.ByteString bs =
                 (com.google.protobuf.ByteString) ref;
             java.lang.String s = bs.toStringUtf8();
             if (bs.isValidUtf8()) {
-              tty_ = s;
+              deviceName_ = s;
             }
             return s;
           } else {
@@ -39320,59 +39491,59 @@ public final class DiozeroProtos {
           }
         }
         /**
-         * <code>required string tty = 2;</code>
-         * @return The bytes for tty.
+         * <code>required string deviceName = 2;</code>
+         * @return The bytes for deviceName.
          */
         public com.google.protobuf.ByteString
-            getTtyBytes() {
-          java.lang.Object ref = tty_;
+            getDeviceNameBytes() {
+          java.lang.Object ref = deviceName_;
           if (ref instanceof String) {
             com.google.protobuf.ByteString b = 
                 com.google.protobuf.ByteString.copyFromUtf8(
                     (java.lang.String) ref);
-            tty_ = b;
+            deviceName_ = b;
             return b;
           } else {
             return (com.google.protobuf.ByteString) ref;
           }
         }
         /**
-         * <code>required string tty = 2;</code>
-         * @param value The tty to set.
+         * <code>required string deviceName = 2;</code>
+         * @param value The deviceName to set.
          * @return This builder for chaining.
          */
-        public Builder setTty(
+        public Builder setDeviceName(
             java.lang.String value) {
           if (value == null) {
     throw new NullPointerException();
   }
   bitField0_ |= 0x00000002;
-          tty_ = value;
+          deviceName_ = value;
           onChanged();
           return this;
         }
         /**
-         * <code>required string tty = 2;</code>
+         * <code>required string deviceName = 2;</code>
          * @return This builder for chaining.
          */
-        public Builder clearTty() {
+        public Builder clearDeviceName() {
           bitField0_ = (bitField0_ & ~0x00000002);
-          tty_ = getDefaultInstance().getTty();
+          deviceName_ = getDefaultInstance().getDeviceName();
           onChanged();
           return this;
         }
         /**
-         * <code>required string tty = 2;</code>
-         * @param value The bytes for tty to set.
+         * <code>required string deviceName = 2;</code>
+         * @param value The bytes for deviceName to set.
          * @return This builder for chaining.
          */
-        public Builder setTtyBytes(
+        public Builder setDeviceNameBytes(
             com.google.protobuf.ByteString value) {
           if (value == null) {
     throw new NullPointerException();
   }
   bitField0_ |= 0x00000002;
-          tty_ = value;
+          deviceName_ = value;
           onChanged();
           return this;
         }
@@ -39455,56 +39626,17 @@ public final class DiozeroProtos {
           return this;
         }
 
-        private int parity_ ;
-        /**
-         * <code>required int32 parity = 5;</code>
-         * @return Whether the parity field is set.
-         */
-        @java.lang.Override
-        public boolean hasParity() {
-          return ((bitField0_ & 0x00000010) != 0);
-        }
-        /**
-         * <code>required int32 parity = 5;</code>
-         * @return The parity.
-         */
-        @java.lang.Override
-        public int getParity() {
-          return parity_;
-        }
-        /**
-         * <code>required int32 parity = 5;</code>
-         * @param value The parity to set.
-         * @return This builder for chaining.
-         */
-        public Builder setParity(int value) {
-          bitField0_ |= 0x00000010;
-          parity_ = value;
-          onChanged();
-          return this;
-        }
-        /**
-         * <code>required int32 parity = 5;</code>
-         * @return This builder for chaining.
-         */
-        public Builder clearParity() {
-          bitField0_ = (bitField0_ & ~0x00000010);
-          parity_ = 0;
-          onChanged();
-          return this;
-        }
-
         private int stopBits_ ;
         /**
-         * <code>required int32 stopBits = 6;</code>
+         * <code>required int32 stopBits = 5;</code>
          * @return Whether the stopBits field is set.
          */
         @java.lang.Override
         public boolean hasStopBits() {
-          return ((bitField0_ & 0x00000020) != 0);
+          return ((bitField0_ & 0x00000010) != 0);
         }
         /**
-         * <code>required int32 stopBits = 6;</code>
+         * <code>required int32 stopBits = 5;</code>
          * @return The stopBits.
          */
         @java.lang.Override
@@ -39512,23 +39644,179 @@ public final class DiozeroProtos {
           return stopBits_;
         }
         /**
-         * <code>required int32 stopBits = 6;</code>
+         * <code>required int32 stopBits = 5;</code>
          * @param value The stopBits to set.
          * @return This builder for chaining.
          */
         public Builder setStopBits(int value) {
-          bitField0_ |= 0x00000020;
+          bitField0_ |= 0x00000010;
           stopBits_ = value;
           onChanged();
           return this;
         }
         /**
-         * <code>required int32 stopBits = 6;</code>
+         * <code>required int32 stopBits = 5;</code>
          * @return This builder for chaining.
          */
         public Builder clearStopBits() {
-          bitField0_ = (bitField0_ & ~0x00000020);
+          bitField0_ = (bitField0_ & ~0x00000010);
           stopBits_ = 0;
+          onChanged();
+          return this;
+        }
+
+        private int parity_ ;
+        /**
+         * <code>required int32 parity = 6;</code>
+         * @return Whether the parity field is set.
+         */
+        @java.lang.Override
+        public boolean hasParity() {
+          return ((bitField0_ & 0x00000020) != 0);
+        }
+        /**
+         * <code>required int32 parity = 6;</code>
+         * @return The parity.
+         */
+        @java.lang.Override
+        public int getParity() {
+          return parity_;
+        }
+        /**
+         * <code>required int32 parity = 6;</code>
+         * @param value The parity to set.
+         * @return This builder for chaining.
+         */
+        public Builder setParity(int value) {
+          bitField0_ |= 0x00000020;
+          parity_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>required int32 parity = 6;</code>
+         * @return This builder for chaining.
+         */
+        public Builder clearParity() {
+          bitField0_ = (bitField0_ & ~0x00000020);
+          parity_ = 0;
+          onChanged();
+          return this;
+        }
+
+        private boolean readBlocking_ ;
+        /**
+         * <code>required bool readBlocking = 7;</code>
+         * @return Whether the readBlocking field is set.
+         */
+        @java.lang.Override
+        public boolean hasReadBlocking() {
+          return ((bitField0_ & 0x00000040) != 0);
+        }
+        /**
+         * <code>required bool readBlocking = 7;</code>
+         * @return The readBlocking.
+         */
+        @java.lang.Override
+        public boolean getReadBlocking() {
+          return readBlocking_;
+        }
+        /**
+         * <code>required bool readBlocking = 7;</code>
+         * @param value The readBlocking to set.
+         * @return This builder for chaining.
+         */
+        public Builder setReadBlocking(boolean value) {
+          bitField0_ |= 0x00000040;
+          readBlocking_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>required bool readBlocking = 7;</code>
+         * @return This builder for chaining.
+         */
+        public Builder clearReadBlocking() {
+          bitField0_ = (bitField0_ & ~0x00000040);
+          readBlocking_ = false;
+          onChanged();
+          return this;
+        }
+
+        private int minReadChars_ ;
+        /**
+         * <code>required int32 minReadChars = 8;</code>
+         * @return Whether the minReadChars field is set.
+         */
+        @java.lang.Override
+        public boolean hasMinReadChars() {
+          return ((bitField0_ & 0x00000080) != 0);
+        }
+        /**
+         * <code>required int32 minReadChars = 8;</code>
+         * @return The minReadChars.
+         */
+        @java.lang.Override
+        public int getMinReadChars() {
+          return minReadChars_;
+        }
+        /**
+         * <code>required int32 minReadChars = 8;</code>
+         * @param value The minReadChars to set.
+         * @return This builder for chaining.
+         */
+        public Builder setMinReadChars(int value) {
+          bitField0_ |= 0x00000080;
+          minReadChars_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>required int32 minReadChars = 8;</code>
+         * @return This builder for chaining.
+         */
+        public Builder clearMinReadChars() {
+          bitField0_ = (bitField0_ & ~0x00000080);
+          minReadChars_ = 0;
+          onChanged();
+          return this;
+        }
+
+        private int readTimeoutMillis_ ;
+        /**
+         * <code>required int32 readTimeoutMillis = 9;</code>
+         * @return Whether the readTimeoutMillis field is set.
+         */
+        @java.lang.Override
+        public boolean hasReadTimeoutMillis() {
+          return ((bitField0_ & 0x00000100) != 0);
+        }
+        /**
+         * <code>required int32 readTimeoutMillis = 9;</code>
+         * @return The readTimeoutMillis.
+         */
+        @java.lang.Override
+        public int getReadTimeoutMillis() {
+          return readTimeoutMillis_;
+        }
+        /**
+         * <code>required int32 readTimeoutMillis = 9;</code>
+         * @param value The readTimeoutMillis to set.
+         * @return This builder for chaining.
+         */
+        public Builder setReadTimeoutMillis(int value) {
+          bitField0_ |= 0x00000100;
+          readTimeoutMillis_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>required int32 readTimeoutMillis = 9;</code>
+         * @return This builder for chaining.
+         */
+        public Builder clearReadTimeoutMillis() {
+          bitField0_ = (bitField0_ & ~0x00000100);
+          readTimeoutMillis_ = 0;
           onChanged();
           return this;
         }
@@ -39607,21 +39895,21 @@ public final class DiozeroProtos {
           getCorrelationIdBytes();
 
       /**
-       * <code>required string tty = 2;</code>
-       * @return Whether the tty field is set.
+       * <code>required string deviceName = 2;</code>
+       * @return Whether the deviceName field is set.
        */
-      boolean hasTty();
+      boolean hasDeviceName();
       /**
-       * <code>required string tty = 2;</code>
-       * @return The tty.
+       * <code>required string deviceName = 2;</code>
+       * @return The deviceName.
        */
-      java.lang.String getTty();
+      java.lang.String getDeviceName();
       /**
-       * <code>required string tty = 2;</code>
-       * @return The bytes for tty.
+       * <code>required string deviceName = 2;</code>
+       * @return The bytes for deviceName.
        */
       com.google.protobuf.ByteString
-          getTtyBytes();
+          getDeviceNameBytes();
     }
     /**
      * Protobuf type {@code diozero.Serial.Read}
@@ -39637,7 +39925,7 @@ public final class DiozeroProtos {
       }
       private Read() {
         correlationId_ = "";
-        tty_ = "";
+        deviceName_ = "";
       }
 
       @java.lang.Override
@@ -39680,7 +39968,7 @@ public final class DiozeroProtos {
               case 18: {
                 com.google.protobuf.ByteString bs = input.readBytes();
                 bitField0_ |= 0x00000002;
-                tty_ = bs;
+                deviceName_ = bs;
                 break;
               }
               default: {
@@ -39764,23 +40052,23 @@ public final class DiozeroProtos {
         }
       }
 
-      public static final int TTY_FIELD_NUMBER = 2;
-      private volatile java.lang.Object tty_;
+      public static final int DEVICENAME_FIELD_NUMBER = 2;
+      private volatile java.lang.Object deviceName_;
       /**
-       * <code>required string tty = 2;</code>
-       * @return Whether the tty field is set.
+       * <code>required string deviceName = 2;</code>
+       * @return Whether the deviceName field is set.
        */
       @java.lang.Override
-      public boolean hasTty() {
+      public boolean hasDeviceName() {
         return ((bitField0_ & 0x00000002) != 0);
       }
       /**
-       * <code>required string tty = 2;</code>
-       * @return The tty.
+       * <code>required string deviceName = 2;</code>
+       * @return The deviceName.
        */
       @java.lang.Override
-      public java.lang.String getTty() {
-        java.lang.Object ref = tty_;
+      public java.lang.String getDeviceName() {
+        java.lang.Object ref = deviceName_;
         if (ref instanceof java.lang.String) {
           return (java.lang.String) ref;
         } else {
@@ -39788,24 +40076,24 @@ public final class DiozeroProtos {
               (com.google.protobuf.ByteString) ref;
           java.lang.String s = bs.toStringUtf8();
           if (bs.isValidUtf8()) {
-            tty_ = s;
+            deviceName_ = s;
           }
           return s;
         }
       }
       /**
-       * <code>required string tty = 2;</code>
-       * @return The bytes for tty.
+       * <code>required string deviceName = 2;</code>
+       * @return The bytes for deviceName.
        */
       @java.lang.Override
       public com.google.protobuf.ByteString
-          getTtyBytes() {
-        java.lang.Object ref = tty_;
+          getDeviceNameBytes() {
+        java.lang.Object ref = deviceName_;
         if (ref instanceof java.lang.String) {
           com.google.protobuf.ByteString b = 
               com.google.protobuf.ByteString.copyFromUtf8(
                   (java.lang.String) ref);
-          tty_ = b;
+          deviceName_ = b;
           return b;
         } else {
           return (com.google.protobuf.ByteString) ref;
@@ -39823,7 +40111,7 @@ public final class DiozeroProtos {
           memoizedIsInitialized = 0;
           return false;
         }
-        if (!hasTty()) {
+        if (!hasDeviceName()) {
           memoizedIsInitialized = 0;
           return false;
         }
@@ -39838,7 +40126,7 @@ public final class DiozeroProtos {
           com.google.protobuf.GeneratedMessageV3.writeString(output, 1, correlationId_);
         }
         if (((bitField0_ & 0x00000002) != 0)) {
-          com.google.protobuf.GeneratedMessageV3.writeString(output, 2, tty_);
+          com.google.protobuf.GeneratedMessageV3.writeString(output, 2, deviceName_);
         }
         unknownFields.writeTo(output);
       }
@@ -39853,7 +40141,7 @@ public final class DiozeroProtos {
           size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, correlationId_);
         }
         if (((bitField0_ & 0x00000002) != 0)) {
-          size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, tty_);
+          size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, deviceName_);
         }
         size += unknownFields.getSerializedSize();
         memoizedSize = size;
@@ -39875,10 +40163,10 @@ public final class DiozeroProtos {
           if (!getCorrelationId()
               .equals(other.getCorrelationId())) return false;
         }
-        if (hasTty() != other.hasTty()) return false;
-        if (hasTty()) {
-          if (!getTty()
-              .equals(other.getTty())) return false;
+        if (hasDeviceName() != other.hasDeviceName()) return false;
+        if (hasDeviceName()) {
+          if (!getDeviceName()
+              .equals(other.getDeviceName())) return false;
         }
         if (!unknownFields.equals(other.unknownFields)) return false;
         return true;
@@ -39895,9 +40183,9 @@ public final class DiozeroProtos {
           hash = (37 * hash) + CORRELATIONID_FIELD_NUMBER;
           hash = (53 * hash) + getCorrelationId().hashCode();
         }
-        if (hasTty()) {
-          hash = (37 * hash) + TTY_FIELD_NUMBER;
-          hash = (53 * hash) + getTty().hashCode();
+        if (hasDeviceName()) {
+          hash = (37 * hash) + DEVICENAME_FIELD_NUMBER;
+          hash = (53 * hash) + getDeviceName().hashCode();
         }
         hash = (29 * hash) + unknownFields.hashCode();
         memoizedHashCode = hash;
@@ -40034,7 +40322,7 @@ public final class DiozeroProtos {
           super.clear();
           correlationId_ = "";
           bitField0_ = (bitField0_ & ~0x00000001);
-          tty_ = "";
+          deviceName_ = "";
           bitField0_ = (bitField0_ & ~0x00000002);
           return this;
         }
@@ -40071,7 +40359,7 @@ public final class DiozeroProtos {
           if (((from_bitField0_ & 0x00000002) != 0)) {
             to_bitField0_ |= 0x00000002;
           }
-          result.tty_ = tty_;
+          result.deviceName_ = deviceName_;
           result.bitField0_ = to_bitField0_;
           onBuilt();
           return result;
@@ -40126,9 +40414,9 @@ public final class DiozeroProtos {
             correlationId_ = other.correlationId_;
             onChanged();
           }
-          if (other.hasTty()) {
+          if (other.hasDeviceName()) {
             bitField0_ |= 0x00000002;
-            tty_ = other.tty_;
+            deviceName_ = other.deviceName_;
             onChanged();
           }
           this.mergeUnknownFields(other.unknownFields);
@@ -40141,7 +40429,7 @@ public final class DiozeroProtos {
           if (!hasCorrelationId()) {
             return false;
           }
-          if (!hasTty()) {
+          if (!hasDeviceName()) {
             return false;
           }
           return true;
@@ -40251,26 +40539,26 @@ public final class DiozeroProtos {
           return this;
         }
 
-        private java.lang.Object tty_ = "";
+        private java.lang.Object deviceName_ = "";
         /**
-         * <code>required string tty = 2;</code>
-         * @return Whether the tty field is set.
+         * <code>required string deviceName = 2;</code>
+         * @return Whether the deviceName field is set.
          */
-        public boolean hasTty() {
+        public boolean hasDeviceName() {
           return ((bitField0_ & 0x00000002) != 0);
         }
         /**
-         * <code>required string tty = 2;</code>
-         * @return The tty.
+         * <code>required string deviceName = 2;</code>
+         * @return The deviceName.
          */
-        public java.lang.String getTty() {
-          java.lang.Object ref = tty_;
+        public java.lang.String getDeviceName() {
+          java.lang.Object ref = deviceName_;
           if (!(ref instanceof java.lang.String)) {
             com.google.protobuf.ByteString bs =
                 (com.google.protobuf.ByteString) ref;
             java.lang.String s = bs.toStringUtf8();
             if (bs.isValidUtf8()) {
-              tty_ = s;
+              deviceName_ = s;
             }
             return s;
           } else {
@@ -40278,59 +40566,59 @@ public final class DiozeroProtos {
           }
         }
         /**
-         * <code>required string tty = 2;</code>
-         * @return The bytes for tty.
+         * <code>required string deviceName = 2;</code>
+         * @return The bytes for deviceName.
          */
         public com.google.protobuf.ByteString
-            getTtyBytes() {
-          java.lang.Object ref = tty_;
+            getDeviceNameBytes() {
+          java.lang.Object ref = deviceName_;
           if (ref instanceof String) {
             com.google.protobuf.ByteString b = 
                 com.google.protobuf.ByteString.copyFromUtf8(
                     (java.lang.String) ref);
-            tty_ = b;
+            deviceName_ = b;
             return b;
           } else {
             return (com.google.protobuf.ByteString) ref;
           }
         }
         /**
-         * <code>required string tty = 2;</code>
-         * @param value The tty to set.
+         * <code>required string deviceName = 2;</code>
+         * @param value The deviceName to set.
          * @return This builder for chaining.
          */
-        public Builder setTty(
+        public Builder setDeviceName(
             java.lang.String value) {
           if (value == null) {
     throw new NullPointerException();
   }
   bitField0_ |= 0x00000002;
-          tty_ = value;
+          deviceName_ = value;
           onChanged();
           return this;
         }
         /**
-         * <code>required string tty = 2;</code>
+         * <code>required string deviceName = 2;</code>
          * @return This builder for chaining.
          */
-        public Builder clearTty() {
+        public Builder clearDeviceName() {
           bitField0_ = (bitField0_ & ~0x00000002);
-          tty_ = getDefaultInstance().getTty();
+          deviceName_ = getDefaultInstance().getDeviceName();
           onChanged();
           return this;
         }
         /**
-         * <code>required string tty = 2;</code>
-         * @param value The bytes for tty to set.
+         * <code>required string deviceName = 2;</code>
+         * @param value The bytes for deviceName to set.
          * @return This builder for chaining.
          */
-        public Builder setTtyBytes(
+        public Builder setDeviceNameBytes(
             com.google.protobuf.ByteString value) {
           if (value == null) {
     throw new NullPointerException();
   }
   bitField0_ |= 0x00000002;
-          tty_ = value;
+          deviceName_ = value;
           onChanged();
           return this;
         }
@@ -40409,21 +40697,21 @@ public final class DiozeroProtos {
           getCorrelationIdBytes();
 
       /**
-       * <code>required string tty = 2;</code>
-       * @return Whether the tty field is set.
+       * <code>required string deviceName = 2;</code>
+       * @return Whether the deviceName field is set.
        */
-      boolean hasTty();
+      boolean hasDeviceName();
       /**
-       * <code>required string tty = 2;</code>
-       * @return The tty.
+       * <code>required string deviceName = 2;</code>
+       * @return The deviceName.
        */
-      java.lang.String getTty();
+      java.lang.String getDeviceName();
       /**
-       * <code>required string tty = 2;</code>
-       * @return The bytes for tty.
+       * <code>required string deviceName = 2;</code>
+       * @return The bytes for deviceName.
        */
       com.google.protobuf.ByteString
-          getTtyBytes();
+          getDeviceNameBytes();
     }
     /**
      * Protobuf type {@code diozero.Serial.ReadByte}
@@ -40439,7 +40727,7 @@ public final class DiozeroProtos {
       }
       private ReadByte() {
         correlationId_ = "";
-        tty_ = "";
+        deviceName_ = "";
       }
 
       @java.lang.Override
@@ -40482,7 +40770,7 @@ public final class DiozeroProtos {
               case 18: {
                 com.google.protobuf.ByteString bs = input.readBytes();
                 bitField0_ |= 0x00000002;
-                tty_ = bs;
+                deviceName_ = bs;
                 break;
               }
               default: {
@@ -40566,23 +40854,23 @@ public final class DiozeroProtos {
         }
       }
 
-      public static final int TTY_FIELD_NUMBER = 2;
-      private volatile java.lang.Object tty_;
+      public static final int DEVICENAME_FIELD_NUMBER = 2;
+      private volatile java.lang.Object deviceName_;
       /**
-       * <code>required string tty = 2;</code>
-       * @return Whether the tty field is set.
+       * <code>required string deviceName = 2;</code>
+       * @return Whether the deviceName field is set.
        */
       @java.lang.Override
-      public boolean hasTty() {
+      public boolean hasDeviceName() {
         return ((bitField0_ & 0x00000002) != 0);
       }
       /**
-       * <code>required string tty = 2;</code>
-       * @return The tty.
+       * <code>required string deviceName = 2;</code>
+       * @return The deviceName.
        */
       @java.lang.Override
-      public java.lang.String getTty() {
-        java.lang.Object ref = tty_;
+      public java.lang.String getDeviceName() {
+        java.lang.Object ref = deviceName_;
         if (ref instanceof java.lang.String) {
           return (java.lang.String) ref;
         } else {
@@ -40590,24 +40878,24 @@ public final class DiozeroProtos {
               (com.google.protobuf.ByteString) ref;
           java.lang.String s = bs.toStringUtf8();
           if (bs.isValidUtf8()) {
-            tty_ = s;
+            deviceName_ = s;
           }
           return s;
         }
       }
       /**
-       * <code>required string tty = 2;</code>
-       * @return The bytes for tty.
+       * <code>required string deviceName = 2;</code>
+       * @return The bytes for deviceName.
        */
       @java.lang.Override
       public com.google.protobuf.ByteString
-          getTtyBytes() {
-        java.lang.Object ref = tty_;
+          getDeviceNameBytes() {
+        java.lang.Object ref = deviceName_;
         if (ref instanceof java.lang.String) {
           com.google.protobuf.ByteString b = 
               com.google.protobuf.ByteString.copyFromUtf8(
                   (java.lang.String) ref);
-          tty_ = b;
+          deviceName_ = b;
           return b;
         } else {
           return (com.google.protobuf.ByteString) ref;
@@ -40625,7 +40913,7 @@ public final class DiozeroProtos {
           memoizedIsInitialized = 0;
           return false;
         }
-        if (!hasTty()) {
+        if (!hasDeviceName()) {
           memoizedIsInitialized = 0;
           return false;
         }
@@ -40640,7 +40928,7 @@ public final class DiozeroProtos {
           com.google.protobuf.GeneratedMessageV3.writeString(output, 1, correlationId_);
         }
         if (((bitField0_ & 0x00000002) != 0)) {
-          com.google.protobuf.GeneratedMessageV3.writeString(output, 2, tty_);
+          com.google.protobuf.GeneratedMessageV3.writeString(output, 2, deviceName_);
         }
         unknownFields.writeTo(output);
       }
@@ -40655,7 +40943,7 @@ public final class DiozeroProtos {
           size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, correlationId_);
         }
         if (((bitField0_ & 0x00000002) != 0)) {
-          size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, tty_);
+          size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, deviceName_);
         }
         size += unknownFields.getSerializedSize();
         memoizedSize = size;
@@ -40677,10 +40965,10 @@ public final class DiozeroProtos {
           if (!getCorrelationId()
               .equals(other.getCorrelationId())) return false;
         }
-        if (hasTty() != other.hasTty()) return false;
-        if (hasTty()) {
-          if (!getTty()
-              .equals(other.getTty())) return false;
+        if (hasDeviceName() != other.hasDeviceName()) return false;
+        if (hasDeviceName()) {
+          if (!getDeviceName()
+              .equals(other.getDeviceName())) return false;
         }
         if (!unknownFields.equals(other.unknownFields)) return false;
         return true;
@@ -40697,9 +40985,9 @@ public final class DiozeroProtos {
           hash = (37 * hash) + CORRELATIONID_FIELD_NUMBER;
           hash = (53 * hash) + getCorrelationId().hashCode();
         }
-        if (hasTty()) {
-          hash = (37 * hash) + TTY_FIELD_NUMBER;
-          hash = (53 * hash) + getTty().hashCode();
+        if (hasDeviceName()) {
+          hash = (37 * hash) + DEVICENAME_FIELD_NUMBER;
+          hash = (53 * hash) + getDeviceName().hashCode();
         }
         hash = (29 * hash) + unknownFields.hashCode();
         memoizedHashCode = hash;
@@ -40836,7 +41124,7 @@ public final class DiozeroProtos {
           super.clear();
           correlationId_ = "";
           bitField0_ = (bitField0_ & ~0x00000001);
-          tty_ = "";
+          deviceName_ = "";
           bitField0_ = (bitField0_ & ~0x00000002);
           return this;
         }
@@ -40873,7 +41161,7 @@ public final class DiozeroProtos {
           if (((from_bitField0_ & 0x00000002) != 0)) {
             to_bitField0_ |= 0x00000002;
           }
-          result.tty_ = tty_;
+          result.deviceName_ = deviceName_;
           result.bitField0_ = to_bitField0_;
           onBuilt();
           return result;
@@ -40928,9 +41216,9 @@ public final class DiozeroProtos {
             correlationId_ = other.correlationId_;
             onChanged();
           }
-          if (other.hasTty()) {
+          if (other.hasDeviceName()) {
             bitField0_ |= 0x00000002;
-            tty_ = other.tty_;
+            deviceName_ = other.deviceName_;
             onChanged();
           }
           this.mergeUnknownFields(other.unknownFields);
@@ -40943,7 +41231,7 @@ public final class DiozeroProtos {
           if (!hasCorrelationId()) {
             return false;
           }
-          if (!hasTty()) {
+          if (!hasDeviceName()) {
             return false;
           }
           return true;
@@ -41053,26 +41341,26 @@ public final class DiozeroProtos {
           return this;
         }
 
-        private java.lang.Object tty_ = "";
+        private java.lang.Object deviceName_ = "";
         /**
-         * <code>required string tty = 2;</code>
-         * @return Whether the tty field is set.
+         * <code>required string deviceName = 2;</code>
+         * @return Whether the deviceName field is set.
          */
-        public boolean hasTty() {
+        public boolean hasDeviceName() {
           return ((bitField0_ & 0x00000002) != 0);
         }
         /**
-         * <code>required string tty = 2;</code>
-         * @return The tty.
+         * <code>required string deviceName = 2;</code>
+         * @return The deviceName.
          */
-        public java.lang.String getTty() {
-          java.lang.Object ref = tty_;
+        public java.lang.String getDeviceName() {
+          java.lang.Object ref = deviceName_;
           if (!(ref instanceof java.lang.String)) {
             com.google.protobuf.ByteString bs =
                 (com.google.protobuf.ByteString) ref;
             java.lang.String s = bs.toStringUtf8();
             if (bs.isValidUtf8()) {
-              tty_ = s;
+              deviceName_ = s;
             }
             return s;
           } else {
@@ -41080,59 +41368,59 @@ public final class DiozeroProtos {
           }
         }
         /**
-         * <code>required string tty = 2;</code>
-         * @return The bytes for tty.
+         * <code>required string deviceName = 2;</code>
+         * @return The bytes for deviceName.
          */
         public com.google.protobuf.ByteString
-            getTtyBytes() {
-          java.lang.Object ref = tty_;
+            getDeviceNameBytes() {
+          java.lang.Object ref = deviceName_;
           if (ref instanceof String) {
             com.google.protobuf.ByteString b = 
                 com.google.protobuf.ByteString.copyFromUtf8(
                     (java.lang.String) ref);
-            tty_ = b;
+            deviceName_ = b;
             return b;
           } else {
             return (com.google.protobuf.ByteString) ref;
           }
         }
         /**
-         * <code>required string tty = 2;</code>
-         * @param value The tty to set.
+         * <code>required string deviceName = 2;</code>
+         * @param value The deviceName to set.
          * @return This builder for chaining.
          */
-        public Builder setTty(
+        public Builder setDeviceName(
             java.lang.String value) {
           if (value == null) {
     throw new NullPointerException();
   }
   bitField0_ |= 0x00000002;
-          tty_ = value;
+          deviceName_ = value;
           onChanged();
           return this;
         }
         /**
-         * <code>required string tty = 2;</code>
+         * <code>required string deviceName = 2;</code>
          * @return This builder for chaining.
          */
-        public Builder clearTty() {
+        public Builder clearDeviceName() {
           bitField0_ = (bitField0_ & ~0x00000002);
-          tty_ = getDefaultInstance().getTty();
+          deviceName_ = getDefaultInstance().getDeviceName();
           onChanged();
           return this;
         }
         /**
-         * <code>required string tty = 2;</code>
-         * @param value The bytes for tty to set.
+         * <code>required string deviceName = 2;</code>
+         * @param value The bytes for deviceName to set.
          * @return This builder for chaining.
          */
-        public Builder setTtyBytes(
+        public Builder setDeviceNameBytes(
             com.google.protobuf.ByteString value) {
           if (value == null) {
     throw new NullPointerException();
   }
   bitField0_ |= 0x00000002;
-          tty_ = value;
+          deviceName_ = value;
           onChanged();
           return this;
         }
@@ -41211,21 +41499,21 @@ public final class DiozeroProtos {
           getCorrelationIdBytes();
 
       /**
-       * <code>required string tty = 2;</code>
-       * @return Whether the tty field is set.
+       * <code>required string deviceName = 2;</code>
+       * @return Whether the deviceName field is set.
        */
-      boolean hasTty();
+      boolean hasDeviceName();
       /**
-       * <code>required string tty = 2;</code>
-       * @return The tty.
+       * <code>required string deviceName = 2;</code>
+       * @return The deviceName.
        */
-      java.lang.String getTty();
+      java.lang.String getDeviceName();
       /**
-       * <code>required string tty = 2;</code>
-       * @return The bytes for tty.
+       * <code>required string deviceName = 2;</code>
+       * @return The bytes for deviceName.
        */
       com.google.protobuf.ByteString
-          getTtyBytes();
+          getDeviceNameBytes();
 
       /**
        * <code>required int32 data = 3;</code>
@@ -41252,7 +41540,7 @@ public final class DiozeroProtos {
       }
       private WriteByte() {
         correlationId_ = "";
-        tty_ = "";
+        deviceName_ = "";
       }
 
       @java.lang.Override
@@ -41295,7 +41583,7 @@ public final class DiozeroProtos {
               case 18: {
                 com.google.protobuf.ByteString bs = input.readBytes();
                 bitField0_ |= 0x00000002;
-                tty_ = bs;
+                deviceName_ = bs;
                 break;
               }
               case 24: {
@@ -41384,23 +41672,23 @@ public final class DiozeroProtos {
         }
       }
 
-      public static final int TTY_FIELD_NUMBER = 2;
-      private volatile java.lang.Object tty_;
+      public static final int DEVICENAME_FIELD_NUMBER = 2;
+      private volatile java.lang.Object deviceName_;
       /**
-       * <code>required string tty = 2;</code>
-       * @return Whether the tty field is set.
+       * <code>required string deviceName = 2;</code>
+       * @return Whether the deviceName field is set.
        */
       @java.lang.Override
-      public boolean hasTty() {
+      public boolean hasDeviceName() {
         return ((bitField0_ & 0x00000002) != 0);
       }
       /**
-       * <code>required string tty = 2;</code>
-       * @return The tty.
+       * <code>required string deviceName = 2;</code>
+       * @return The deviceName.
        */
       @java.lang.Override
-      public java.lang.String getTty() {
-        java.lang.Object ref = tty_;
+      public java.lang.String getDeviceName() {
+        java.lang.Object ref = deviceName_;
         if (ref instanceof java.lang.String) {
           return (java.lang.String) ref;
         } else {
@@ -41408,24 +41696,24 @@ public final class DiozeroProtos {
               (com.google.protobuf.ByteString) ref;
           java.lang.String s = bs.toStringUtf8();
           if (bs.isValidUtf8()) {
-            tty_ = s;
+            deviceName_ = s;
           }
           return s;
         }
       }
       /**
-       * <code>required string tty = 2;</code>
-       * @return The bytes for tty.
+       * <code>required string deviceName = 2;</code>
+       * @return The bytes for deviceName.
        */
       @java.lang.Override
       public com.google.protobuf.ByteString
-          getTtyBytes() {
-        java.lang.Object ref = tty_;
+          getDeviceNameBytes() {
+        java.lang.Object ref = deviceName_;
         if (ref instanceof java.lang.String) {
           com.google.protobuf.ByteString b = 
               com.google.protobuf.ByteString.copyFromUtf8(
                   (java.lang.String) ref);
-          tty_ = b;
+          deviceName_ = b;
           return b;
         } else {
           return (com.google.protobuf.ByteString) ref;
@@ -41462,7 +41750,7 @@ public final class DiozeroProtos {
           memoizedIsInitialized = 0;
           return false;
         }
-        if (!hasTty()) {
+        if (!hasDeviceName()) {
           memoizedIsInitialized = 0;
           return false;
         }
@@ -41481,7 +41769,7 @@ public final class DiozeroProtos {
           com.google.protobuf.GeneratedMessageV3.writeString(output, 1, correlationId_);
         }
         if (((bitField0_ & 0x00000002) != 0)) {
-          com.google.protobuf.GeneratedMessageV3.writeString(output, 2, tty_);
+          com.google.protobuf.GeneratedMessageV3.writeString(output, 2, deviceName_);
         }
         if (((bitField0_ & 0x00000004) != 0)) {
           output.writeInt32(3, data_);
@@ -41499,7 +41787,7 @@ public final class DiozeroProtos {
           size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, correlationId_);
         }
         if (((bitField0_ & 0x00000002) != 0)) {
-          size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, tty_);
+          size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, deviceName_);
         }
         if (((bitField0_ & 0x00000004) != 0)) {
           size += com.google.protobuf.CodedOutputStream
@@ -41525,10 +41813,10 @@ public final class DiozeroProtos {
           if (!getCorrelationId()
               .equals(other.getCorrelationId())) return false;
         }
-        if (hasTty() != other.hasTty()) return false;
-        if (hasTty()) {
-          if (!getTty()
-              .equals(other.getTty())) return false;
+        if (hasDeviceName() != other.hasDeviceName()) return false;
+        if (hasDeviceName()) {
+          if (!getDeviceName()
+              .equals(other.getDeviceName())) return false;
         }
         if (hasData() != other.hasData()) return false;
         if (hasData()) {
@@ -41550,9 +41838,9 @@ public final class DiozeroProtos {
           hash = (37 * hash) + CORRELATIONID_FIELD_NUMBER;
           hash = (53 * hash) + getCorrelationId().hashCode();
         }
-        if (hasTty()) {
-          hash = (37 * hash) + TTY_FIELD_NUMBER;
-          hash = (53 * hash) + getTty().hashCode();
+        if (hasDeviceName()) {
+          hash = (37 * hash) + DEVICENAME_FIELD_NUMBER;
+          hash = (53 * hash) + getDeviceName().hashCode();
         }
         if (hasData()) {
           hash = (37 * hash) + DATA_FIELD_NUMBER;
@@ -41693,7 +41981,7 @@ public final class DiozeroProtos {
           super.clear();
           correlationId_ = "";
           bitField0_ = (bitField0_ & ~0x00000001);
-          tty_ = "";
+          deviceName_ = "";
           bitField0_ = (bitField0_ & ~0x00000002);
           data_ = 0;
           bitField0_ = (bitField0_ & ~0x00000004);
@@ -41732,7 +42020,7 @@ public final class DiozeroProtos {
           if (((from_bitField0_ & 0x00000002) != 0)) {
             to_bitField0_ |= 0x00000002;
           }
-          result.tty_ = tty_;
+          result.deviceName_ = deviceName_;
           if (((from_bitField0_ & 0x00000004) != 0)) {
             result.data_ = data_;
             to_bitField0_ |= 0x00000004;
@@ -41791,9 +42079,9 @@ public final class DiozeroProtos {
             correlationId_ = other.correlationId_;
             onChanged();
           }
-          if (other.hasTty()) {
+          if (other.hasDeviceName()) {
             bitField0_ |= 0x00000002;
-            tty_ = other.tty_;
+            deviceName_ = other.deviceName_;
             onChanged();
           }
           if (other.hasData()) {
@@ -41809,7 +42097,7 @@ public final class DiozeroProtos {
           if (!hasCorrelationId()) {
             return false;
           }
-          if (!hasTty()) {
+          if (!hasDeviceName()) {
             return false;
           }
           if (!hasData()) {
@@ -41922,26 +42210,26 @@ public final class DiozeroProtos {
           return this;
         }
 
-        private java.lang.Object tty_ = "";
+        private java.lang.Object deviceName_ = "";
         /**
-         * <code>required string tty = 2;</code>
-         * @return Whether the tty field is set.
+         * <code>required string deviceName = 2;</code>
+         * @return Whether the deviceName field is set.
          */
-        public boolean hasTty() {
+        public boolean hasDeviceName() {
           return ((bitField0_ & 0x00000002) != 0);
         }
         /**
-         * <code>required string tty = 2;</code>
-         * @return The tty.
+         * <code>required string deviceName = 2;</code>
+         * @return The deviceName.
          */
-        public java.lang.String getTty() {
-          java.lang.Object ref = tty_;
+        public java.lang.String getDeviceName() {
+          java.lang.Object ref = deviceName_;
           if (!(ref instanceof java.lang.String)) {
             com.google.protobuf.ByteString bs =
                 (com.google.protobuf.ByteString) ref;
             java.lang.String s = bs.toStringUtf8();
             if (bs.isValidUtf8()) {
-              tty_ = s;
+              deviceName_ = s;
             }
             return s;
           } else {
@@ -41949,59 +42237,59 @@ public final class DiozeroProtos {
           }
         }
         /**
-         * <code>required string tty = 2;</code>
-         * @return The bytes for tty.
+         * <code>required string deviceName = 2;</code>
+         * @return The bytes for deviceName.
          */
         public com.google.protobuf.ByteString
-            getTtyBytes() {
-          java.lang.Object ref = tty_;
+            getDeviceNameBytes() {
+          java.lang.Object ref = deviceName_;
           if (ref instanceof String) {
             com.google.protobuf.ByteString b = 
                 com.google.protobuf.ByteString.copyFromUtf8(
                     (java.lang.String) ref);
-            tty_ = b;
+            deviceName_ = b;
             return b;
           } else {
             return (com.google.protobuf.ByteString) ref;
           }
         }
         /**
-         * <code>required string tty = 2;</code>
-         * @param value The tty to set.
+         * <code>required string deviceName = 2;</code>
+         * @param value The deviceName to set.
          * @return This builder for chaining.
          */
-        public Builder setTty(
+        public Builder setDeviceName(
             java.lang.String value) {
           if (value == null) {
     throw new NullPointerException();
   }
   bitField0_ |= 0x00000002;
-          tty_ = value;
+          deviceName_ = value;
           onChanged();
           return this;
         }
         /**
-         * <code>required string tty = 2;</code>
+         * <code>required string deviceName = 2;</code>
          * @return This builder for chaining.
          */
-        public Builder clearTty() {
+        public Builder clearDeviceName() {
           bitField0_ = (bitField0_ & ~0x00000002);
-          tty_ = getDefaultInstance().getTty();
+          deviceName_ = getDefaultInstance().getDeviceName();
           onChanged();
           return this;
         }
         /**
-         * <code>required string tty = 2;</code>
-         * @param value The bytes for tty to set.
+         * <code>required string deviceName = 2;</code>
+         * @param value The bytes for deviceName to set.
          * @return This builder for chaining.
          */
-        public Builder setTtyBytes(
+        public Builder setDeviceNameBytes(
             com.google.protobuf.ByteString value) {
           if (value == null) {
     throw new NullPointerException();
   }
   bitField0_ |= 0x00000002;
-          tty_ = value;
+          deviceName_ = value;
           onChanged();
           return this;
         }
@@ -42119,21 +42407,21 @@ public final class DiozeroProtos {
           getCorrelationIdBytes();
 
       /**
-       * <code>required string tty = 2;</code>
-       * @return Whether the tty field is set.
+       * <code>required string deviceName = 2;</code>
+       * @return Whether the deviceName field is set.
        */
-      boolean hasTty();
+      boolean hasDeviceName();
       /**
-       * <code>required string tty = 2;</code>
-       * @return The tty.
+       * <code>required string deviceName = 2;</code>
+       * @return The deviceName.
        */
-      java.lang.String getTty();
+      java.lang.String getDeviceName();
       /**
-       * <code>required string tty = 2;</code>
-       * @return The bytes for tty.
+       * <code>required string deviceName = 2;</code>
+       * @return The bytes for deviceName.
        */
       com.google.protobuf.ByteString
-          getTtyBytes();
+          getDeviceNameBytes();
 
       /**
        * <code>required int32 length = 3;</code>
@@ -42160,7 +42448,7 @@ public final class DiozeroProtos {
       }
       private ReadBytes() {
         correlationId_ = "";
-        tty_ = "";
+        deviceName_ = "";
       }
 
       @java.lang.Override
@@ -42203,7 +42491,7 @@ public final class DiozeroProtos {
               case 18: {
                 com.google.protobuf.ByteString bs = input.readBytes();
                 bitField0_ |= 0x00000002;
-                tty_ = bs;
+                deviceName_ = bs;
                 break;
               }
               case 24: {
@@ -42292,23 +42580,23 @@ public final class DiozeroProtos {
         }
       }
 
-      public static final int TTY_FIELD_NUMBER = 2;
-      private volatile java.lang.Object tty_;
+      public static final int DEVICENAME_FIELD_NUMBER = 2;
+      private volatile java.lang.Object deviceName_;
       /**
-       * <code>required string tty = 2;</code>
-       * @return Whether the tty field is set.
+       * <code>required string deviceName = 2;</code>
+       * @return Whether the deviceName field is set.
        */
       @java.lang.Override
-      public boolean hasTty() {
+      public boolean hasDeviceName() {
         return ((bitField0_ & 0x00000002) != 0);
       }
       /**
-       * <code>required string tty = 2;</code>
-       * @return The tty.
+       * <code>required string deviceName = 2;</code>
+       * @return The deviceName.
        */
       @java.lang.Override
-      public java.lang.String getTty() {
-        java.lang.Object ref = tty_;
+      public java.lang.String getDeviceName() {
+        java.lang.Object ref = deviceName_;
         if (ref instanceof java.lang.String) {
           return (java.lang.String) ref;
         } else {
@@ -42316,24 +42604,24 @@ public final class DiozeroProtos {
               (com.google.protobuf.ByteString) ref;
           java.lang.String s = bs.toStringUtf8();
           if (bs.isValidUtf8()) {
-            tty_ = s;
+            deviceName_ = s;
           }
           return s;
         }
       }
       /**
-       * <code>required string tty = 2;</code>
-       * @return The bytes for tty.
+       * <code>required string deviceName = 2;</code>
+       * @return The bytes for deviceName.
        */
       @java.lang.Override
       public com.google.protobuf.ByteString
-          getTtyBytes() {
-        java.lang.Object ref = tty_;
+          getDeviceNameBytes() {
+        java.lang.Object ref = deviceName_;
         if (ref instanceof java.lang.String) {
           com.google.protobuf.ByteString b = 
               com.google.protobuf.ByteString.copyFromUtf8(
                   (java.lang.String) ref);
-          tty_ = b;
+          deviceName_ = b;
           return b;
         } else {
           return (com.google.protobuf.ByteString) ref;
@@ -42370,7 +42658,7 @@ public final class DiozeroProtos {
           memoizedIsInitialized = 0;
           return false;
         }
-        if (!hasTty()) {
+        if (!hasDeviceName()) {
           memoizedIsInitialized = 0;
           return false;
         }
@@ -42389,7 +42677,7 @@ public final class DiozeroProtos {
           com.google.protobuf.GeneratedMessageV3.writeString(output, 1, correlationId_);
         }
         if (((bitField0_ & 0x00000002) != 0)) {
-          com.google.protobuf.GeneratedMessageV3.writeString(output, 2, tty_);
+          com.google.protobuf.GeneratedMessageV3.writeString(output, 2, deviceName_);
         }
         if (((bitField0_ & 0x00000004) != 0)) {
           output.writeInt32(3, length_);
@@ -42407,7 +42695,7 @@ public final class DiozeroProtos {
           size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, correlationId_);
         }
         if (((bitField0_ & 0x00000002) != 0)) {
-          size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, tty_);
+          size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, deviceName_);
         }
         if (((bitField0_ & 0x00000004) != 0)) {
           size += com.google.protobuf.CodedOutputStream
@@ -42433,10 +42721,10 @@ public final class DiozeroProtos {
           if (!getCorrelationId()
               .equals(other.getCorrelationId())) return false;
         }
-        if (hasTty() != other.hasTty()) return false;
-        if (hasTty()) {
-          if (!getTty()
-              .equals(other.getTty())) return false;
+        if (hasDeviceName() != other.hasDeviceName()) return false;
+        if (hasDeviceName()) {
+          if (!getDeviceName()
+              .equals(other.getDeviceName())) return false;
         }
         if (hasLength() != other.hasLength()) return false;
         if (hasLength()) {
@@ -42458,9 +42746,9 @@ public final class DiozeroProtos {
           hash = (37 * hash) + CORRELATIONID_FIELD_NUMBER;
           hash = (53 * hash) + getCorrelationId().hashCode();
         }
-        if (hasTty()) {
-          hash = (37 * hash) + TTY_FIELD_NUMBER;
-          hash = (53 * hash) + getTty().hashCode();
+        if (hasDeviceName()) {
+          hash = (37 * hash) + DEVICENAME_FIELD_NUMBER;
+          hash = (53 * hash) + getDeviceName().hashCode();
         }
         if (hasLength()) {
           hash = (37 * hash) + LENGTH_FIELD_NUMBER;
@@ -42601,7 +42889,7 @@ public final class DiozeroProtos {
           super.clear();
           correlationId_ = "";
           bitField0_ = (bitField0_ & ~0x00000001);
-          tty_ = "";
+          deviceName_ = "";
           bitField0_ = (bitField0_ & ~0x00000002);
           length_ = 0;
           bitField0_ = (bitField0_ & ~0x00000004);
@@ -42640,7 +42928,7 @@ public final class DiozeroProtos {
           if (((from_bitField0_ & 0x00000002) != 0)) {
             to_bitField0_ |= 0x00000002;
           }
-          result.tty_ = tty_;
+          result.deviceName_ = deviceName_;
           if (((from_bitField0_ & 0x00000004) != 0)) {
             result.length_ = length_;
             to_bitField0_ |= 0x00000004;
@@ -42699,9 +42987,9 @@ public final class DiozeroProtos {
             correlationId_ = other.correlationId_;
             onChanged();
           }
-          if (other.hasTty()) {
+          if (other.hasDeviceName()) {
             bitField0_ |= 0x00000002;
-            tty_ = other.tty_;
+            deviceName_ = other.deviceName_;
             onChanged();
           }
           if (other.hasLength()) {
@@ -42717,7 +43005,7 @@ public final class DiozeroProtos {
           if (!hasCorrelationId()) {
             return false;
           }
-          if (!hasTty()) {
+          if (!hasDeviceName()) {
             return false;
           }
           if (!hasLength()) {
@@ -42830,26 +43118,26 @@ public final class DiozeroProtos {
           return this;
         }
 
-        private java.lang.Object tty_ = "";
+        private java.lang.Object deviceName_ = "";
         /**
-         * <code>required string tty = 2;</code>
-         * @return Whether the tty field is set.
+         * <code>required string deviceName = 2;</code>
+         * @return Whether the deviceName field is set.
          */
-        public boolean hasTty() {
+        public boolean hasDeviceName() {
           return ((bitField0_ & 0x00000002) != 0);
         }
         /**
-         * <code>required string tty = 2;</code>
-         * @return The tty.
+         * <code>required string deviceName = 2;</code>
+         * @return The deviceName.
          */
-        public java.lang.String getTty() {
-          java.lang.Object ref = tty_;
+        public java.lang.String getDeviceName() {
+          java.lang.Object ref = deviceName_;
           if (!(ref instanceof java.lang.String)) {
             com.google.protobuf.ByteString bs =
                 (com.google.protobuf.ByteString) ref;
             java.lang.String s = bs.toStringUtf8();
             if (bs.isValidUtf8()) {
-              tty_ = s;
+              deviceName_ = s;
             }
             return s;
           } else {
@@ -42857,59 +43145,59 @@ public final class DiozeroProtos {
           }
         }
         /**
-         * <code>required string tty = 2;</code>
-         * @return The bytes for tty.
+         * <code>required string deviceName = 2;</code>
+         * @return The bytes for deviceName.
          */
         public com.google.protobuf.ByteString
-            getTtyBytes() {
-          java.lang.Object ref = tty_;
+            getDeviceNameBytes() {
+          java.lang.Object ref = deviceName_;
           if (ref instanceof String) {
             com.google.protobuf.ByteString b = 
                 com.google.protobuf.ByteString.copyFromUtf8(
                     (java.lang.String) ref);
-            tty_ = b;
+            deviceName_ = b;
             return b;
           } else {
             return (com.google.protobuf.ByteString) ref;
           }
         }
         /**
-         * <code>required string tty = 2;</code>
-         * @param value The tty to set.
+         * <code>required string deviceName = 2;</code>
+         * @param value The deviceName to set.
          * @return This builder for chaining.
          */
-        public Builder setTty(
+        public Builder setDeviceName(
             java.lang.String value) {
           if (value == null) {
     throw new NullPointerException();
   }
   bitField0_ |= 0x00000002;
-          tty_ = value;
+          deviceName_ = value;
           onChanged();
           return this;
         }
         /**
-         * <code>required string tty = 2;</code>
+         * <code>required string deviceName = 2;</code>
          * @return This builder for chaining.
          */
-        public Builder clearTty() {
+        public Builder clearDeviceName() {
           bitField0_ = (bitField0_ & ~0x00000002);
-          tty_ = getDefaultInstance().getTty();
+          deviceName_ = getDefaultInstance().getDeviceName();
           onChanged();
           return this;
         }
         /**
-         * <code>required string tty = 2;</code>
-         * @param value The bytes for tty to set.
+         * <code>required string deviceName = 2;</code>
+         * @param value The bytes for deviceName to set.
          * @return This builder for chaining.
          */
-        public Builder setTtyBytes(
+        public Builder setDeviceNameBytes(
             com.google.protobuf.ByteString value) {
           if (value == null) {
     throw new NullPointerException();
   }
   bitField0_ |= 0x00000002;
-          tty_ = value;
+          deviceName_ = value;
           onChanged();
           return this;
         }
@@ -43027,21 +43315,21 @@ public final class DiozeroProtos {
           getCorrelationIdBytes();
 
       /**
-       * <code>required string tty = 2;</code>
-       * @return Whether the tty field is set.
+       * <code>required string deviceName = 2;</code>
+       * @return Whether the deviceName field is set.
        */
-      boolean hasTty();
+      boolean hasDeviceName();
       /**
-       * <code>required string tty = 2;</code>
-       * @return The tty.
+       * <code>required string deviceName = 2;</code>
+       * @return The deviceName.
        */
-      java.lang.String getTty();
+      java.lang.String getDeviceName();
       /**
-       * <code>required string tty = 2;</code>
-       * @return The bytes for tty.
+       * <code>required string deviceName = 2;</code>
+       * @return The bytes for deviceName.
        */
       com.google.protobuf.ByteString
-          getTtyBytes();
+          getDeviceNameBytes();
 
       /**
        * <code>required bytes data = 3;</code>
@@ -43068,7 +43356,7 @@ public final class DiozeroProtos {
       }
       private WriteBytes() {
         correlationId_ = "";
-        tty_ = "";
+        deviceName_ = "";
         data_ = com.google.protobuf.ByteString.EMPTY;
       }
 
@@ -43112,7 +43400,7 @@ public final class DiozeroProtos {
               case 18: {
                 com.google.protobuf.ByteString bs = input.readBytes();
                 bitField0_ |= 0x00000002;
-                tty_ = bs;
+                deviceName_ = bs;
                 break;
               }
               case 26: {
@@ -43201,23 +43489,23 @@ public final class DiozeroProtos {
         }
       }
 
-      public static final int TTY_FIELD_NUMBER = 2;
-      private volatile java.lang.Object tty_;
+      public static final int DEVICENAME_FIELD_NUMBER = 2;
+      private volatile java.lang.Object deviceName_;
       /**
-       * <code>required string tty = 2;</code>
-       * @return Whether the tty field is set.
+       * <code>required string deviceName = 2;</code>
+       * @return Whether the deviceName field is set.
        */
       @java.lang.Override
-      public boolean hasTty() {
+      public boolean hasDeviceName() {
         return ((bitField0_ & 0x00000002) != 0);
       }
       /**
-       * <code>required string tty = 2;</code>
-       * @return The tty.
+       * <code>required string deviceName = 2;</code>
+       * @return The deviceName.
        */
       @java.lang.Override
-      public java.lang.String getTty() {
-        java.lang.Object ref = tty_;
+      public java.lang.String getDeviceName() {
+        java.lang.Object ref = deviceName_;
         if (ref instanceof java.lang.String) {
           return (java.lang.String) ref;
         } else {
@@ -43225,24 +43513,24 @@ public final class DiozeroProtos {
               (com.google.protobuf.ByteString) ref;
           java.lang.String s = bs.toStringUtf8();
           if (bs.isValidUtf8()) {
-            tty_ = s;
+            deviceName_ = s;
           }
           return s;
         }
       }
       /**
-       * <code>required string tty = 2;</code>
-       * @return The bytes for tty.
+       * <code>required string deviceName = 2;</code>
+       * @return The bytes for deviceName.
        */
       @java.lang.Override
       public com.google.protobuf.ByteString
-          getTtyBytes() {
-        java.lang.Object ref = tty_;
+          getDeviceNameBytes() {
+        java.lang.Object ref = deviceName_;
         if (ref instanceof java.lang.String) {
           com.google.protobuf.ByteString b = 
               com.google.protobuf.ByteString.copyFromUtf8(
                   (java.lang.String) ref);
-          tty_ = b;
+          deviceName_ = b;
           return b;
         } else {
           return (com.google.protobuf.ByteString) ref;
@@ -43279,7 +43567,7 @@ public final class DiozeroProtos {
           memoizedIsInitialized = 0;
           return false;
         }
-        if (!hasTty()) {
+        if (!hasDeviceName()) {
           memoizedIsInitialized = 0;
           return false;
         }
@@ -43298,7 +43586,7 @@ public final class DiozeroProtos {
           com.google.protobuf.GeneratedMessageV3.writeString(output, 1, correlationId_);
         }
         if (((bitField0_ & 0x00000002) != 0)) {
-          com.google.protobuf.GeneratedMessageV3.writeString(output, 2, tty_);
+          com.google.protobuf.GeneratedMessageV3.writeString(output, 2, deviceName_);
         }
         if (((bitField0_ & 0x00000004) != 0)) {
           output.writeBytes(3, data_);
@@ -43316,7 +43604,7 @@ public final class DiozeroProtos {
           size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, correlationId_);
         }
         if (((bitField0_ & 0x00000002) != 0)) {
-          size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, tty_);
+          size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, deviceName_);
         }
         if (((bitField0_ & 0x00000004) != 0)) {
           size += com.google.protobuf.CodedOutputStream
@@ -43342,10 +43630,10 @@ public final class DiozeroProtos {
           if (!getCorrelationId()
               .equals(other.getCorrelationId())) return false;
         }
-        if (hasTty() != other.hasTty()) return false;
-        if (hasTty()) {
-          if (!getTty()
-              .equals(other.getTty())) return false;
+        if (hasDeviceName() != other.hasDeviceName()) return false;
+        if (hasDeviceName()) {
+          if (!getDeviceName()
+              .equals(other.getDeviceName())) return false;
         }
         if (hasData() != other.hasData()) return false;
         if (hasData()) {
@@ -43367,9 +43655,9 @@ public final class DiozeroProtos {
           hash = (37 * hash) + CORRELATIONID_FIELD_NUMBER;
           hash = (53 * hash) + getCorrelationId().hashCode();
         }
-        if (hasTty()) {
-          hash = (37 * hash) + TTY_FIELD_NUMBER;
-          hash = (53 * hash) + getTty().hashCode();
+        if (hasDeviceName()) {
+          hash = (37 * hash) + DEVICENAME_FIELD_NUMBER;
+          hash = (53 * hash) + getDeviceName().hashCode();
         }
         if (hasData()) {
           hash = (37 * hash) + DATA_FIELD_NUMBER;
@@ -43510,7 +43798,7 @@ public final class DiozeroProtos {
           super.clear();
           correlationId_ = "";
           bitField0_ = (bitField0_ & ~0x00000001);
-          tty_ = "";
+          deviceName_ = "";
           bitField0_ = (bitField0_ & ~0x00000002);
           data_ = com.google.protobuf.ByteString.EMPTY;
           bitField0_ = (bitField0_ & ~0x00000004);
@@ -43549,7 +43837,7 @@ public final class DiozeroProtos {
           if (((from_bitField0_ & 0x00000002) != 0)) {
             to_bitField0_ |= 0x00000002;
           }
-          result.tty_ = tty_;
+          result.deviceName_ = deviceName_;
           if (((from_bitField0_ & 0x00000004) != 0)) {
             to_bitField0_ |= 0x00000004;
           }
@@ -43608,9 +43896,9 @@ public final class DiozeroProtos {
             correlationId_ = other.correlationId_;
             onChanged();
           }
-          if (other.hasTty()) {
+          if (other.hasDeviceName()) {
             bitField0_ |= 0x00000002;
-            tty_ = other.tty_;
+            deviceName_ = other.deviceName_;
             onChanged();
           }
           if (other.hasData()) {
@@ -43626,7 +43914,7 @@ public final class DiozeroProtos {
           if (!hasCorrelationId()) {
             return false;
           }
-          if (!hasTty()) {
+          if (!hasDeviceName()) {
             return false;
           }
           if (!hasData()) {
@@ -43739,26 +44027,26 @@ public final class DiozeroProtos {
           return this;
         }
 
-        private java.lang.Object tty_ = "";
+        private java.lang.Object deviceName_ = "";
         /**
-         * <code>required string tty = 2;</code>
-         * @return Whether the tty field is set.
+         * <code>required string deviceName = 2;</code>
+         * @return Whether the deviceName field is set.
          */
-        public boolean hasTty() {
+        public boolean hasDeviceName() {
           return ((bitField0_ & 0x00000002) != 0);
         }
         /**
-         * <code>required string tty = 2;</code>
-         * @return The tty.
+         * <code>required string deviceName = 2;</code>
+         * @return The deviceName.
          */
-        public java.lang.String getTty() {
-          java.lang.Object ref = tty_;
+        public java.lang.String getDeviceName() {
+          java.lang.Object ref = deviceName_;
           if (!(ref instanceof java.lang.String)) {
             com.google.protobuf.ByteString bs =
                 (com.google.protobuf.ByteString) ref;
             java.lang.String s = bs.toStringUtf8();
             if (bs.isValidUtf8()) {
-              tty_ = s;
+              deviceName_ = s;
             }
             return s;
           } else {
@@ -43766,59 +44054,59 @@ public final class DiozeroProtos {
           }
         }
         /**
-         * <code>required string tty = 2;</code>
-         * @return The bytes for tty.
+         * <code>required string deviceName = 2;</code>
+         * @return The bytes for deviceName.
          */
         public com.google.protobuf.ByteString
-            getTtyBytes() {
-          java.lang.Object ref = tty_;
+            getDeviceNameBytes() {
+          java.lang.Object ref = deviceName_;
           if (ref instanceof String) {
             com.google.protobuf.ByteString b = 
                 com.google.protobuf.ByteString.copyFromUtf8(
                     (java.lang.String) ref);
-            tty_ = b;
+            deviceName_ = b;
             return b;
           } else {
             return (com.google.protobuf.ByteString) ref;
           }
         }
         /**
-         * <code>required string tty = 2;</code>
-         * @param value The tty to set.
+         * <code>required string deviceName = 2;</code>
+         * @param value The deviceName to set.
          * @return This builder for chaining.
          */
-        public Builder setTty(
+        public Builder setDeviceName(
             java.lang.String value) {
           if (value == null) {
     throw new NullPointerException();
   }
   bitField0_ |= 0x00000002;
-          tty_ = value;
+          deviceName_ = value;
           onChanged();
           return this;
         }
         /**
-         * <code>required string tty = 2;</code>
+         * <code>required string deviceName = 2;</code>
          * @return This builder for chaining.
          */
-        public Builder clearTty() {
+        public Builder clearDeviceName() {
           bitField0_ = (bitField0_ & ~0x00000002);
-          tty_ = getDefaultInstance().getTty();
+          deviceName_ = getDefaultInstance().getDeviceName();
           onChanged();
           return this;
         }
         /**
-         * <code>required string tty = 2;</code>
-         * @param value The bytes for tty to set.
+         * <code>required string deviceName = 2;</code>
+         * @param value The bytes for deviceName to set.
          * @return This builder for chaining.
          */
-        public Builder setTtyBytes(
+        public Builder setDeviceNameBytes(
             com.google.protobuf.ByteString value) {
           if (value == null) {
     throw new NullPointerException();
   }
   bitField0_ |= 0x00000002;
-          tty_ = value;
+          deviceName_ = value;
           onChanged();
           return this;
         }
@@ -43939,21 +44227,21 @@ public final class DiozeroProtos {
           getCorrelationIdBytes();
 
       /**
-       * <code>required string tty = 2;</code>
-       * @return Whether the tty field is set.
+       * <code>required string deviceName = 2;</code>
+       * @return Whether the deviceName field is set.
        */
-      boolean hasTty();
+      boolean hasDeviceName();
       /**
-       * <code>required string tty = 2;</code>
-       * @return The tty.
+       * <code>required string deviceName = 2;</code>
+       * @return The deviceName.
        */
-      java.lang.String getTty();
+      java.lang.String getDeviceName();
       /**
-       * <code>required string tty = 2;</code>
-       * @return The bytes for tty.
+       * <code>required string deviceName = 2;</code>
+       * @return The bytes for deviceName.
        */
       com.google.protobuf.ByteString
-          getTtyBytes();
+          getDeviceNameBytes();
     }
     /**
      * Protobuf type {@code diozero.Serial.BytesAvailable}
@@ -43969,7 +44257,7 @@ public final class DiozeroProtos {
       }
       private BytesAvailable() {
         correlationId_ = "";
-        tty_ = "";
+        deviceName_ = "";
       }
 
       @java.lang.Override
@@ -44012,7 +44300,7 @@ public final class DiozeroProtos {
               case 18: {
                 com.google.protobuf.ByteString bs = input.readBytes();
                 bitField0_ |= 0x00000002;
-                tty_ = bs;
+                deviceName_ = bs;
                 break;
               }
               default: {
@@ -44096,23 +44384,23 @@ public final class DiozeroProtos {
         }
       }
 
-      public static final int TTY_FIELD_NUMBER = 2;
-      private volatile java.lang.Object tty_;
+      public static final int DEVICENAME_FIELD_NUMBER = 2;
+      private volatile java.lang.Object deviceName_;
       /**
-       * <code>required string tty = 2;</code>
-       * @return Whether the tty field is set.
+       * <code>required string deviceName = 2;</code>
+       * @return Whether the deviceName field is set.
        */
       @java.lang.Override
-      public boolean hasTty() {
+      public boolean hasDeviceName() {
         return ((bitField0_ & 0x00000002) != 0);
       }
       /**
-       * <code>required string tty = 2;</code>
-       * @return The tty.
+       * <code>required string deviceName = 2;</code>
+       * @return The deviceName.
        */
       @java.lang.Override
-      public java.lang.String getTty() {
-        java.lang.Object ref = tty_;
+      public java.lang.String getDeviceName() {
+        java.lang.Object ref = deviceName_;
         if (ref instanceof java.lang.String) {
           return (java.lang.String) ref;
         } else {
@@ -44120,24 +44408,24 @@ public final class DiozeroProtos {
               (com.google.protobuf.ByteString) ref;
           java.lang.String s = bs.toStringUtf8();
           if (bs.isValidUtf8()) {
-            tty_ = s;
+            deviceName_ = s;
           }
           return s;
         }
       }
       /**
-       * <code>required string tty = 2;</code>
-       * @return The bytes for tty.
+       * <code>required string deviceName = 2;</code>
+       * @return The bytes for deviceName.
        */
       @java.lang.Override
       public com.google.protobuf.ByteString
-          getTtyBytes() {
-        java.lang.Object ref = tty_;
+          getDeviceNameBytes() {
+        java.lang.Object ref = deviceName_;
         if (ref instanceof java.lang.String) {
           com.google.protobuf.ByteString b = 
               com.google.protobuf.ByteString.copyFromUtf8(
                   (java.lang.String) ref);
-          tty_ = b;
+          deviceName_ = b;
           return b;
         } else {
           return (com.google.protobuf.ByteString) ref;
@@ -44155,7 +44443,7 @@ public final class DiozeroProtos {
           memoizedIsInitialized = 0;
           return false;
         }
-        if (!hasTty()) {
+        if (!hasDeviceName()) {
           memoizedIsInitialized = 0;
           return false;
         }
@@ -44170,7 +44458,7 @@ public final class DiozeroProtos {
           com.google.protobuf.GeneratedMessageV3.writeString(output, 1, correlationId_);
         }
         if (((bitField0_ & 0x00000002) != 0)) {
-          com.google.protobuf.GeneratedMessageV3.writeString(output, 2, tty_);
+          com.google.protobuf.GeneratedMessageV3.writeString(output, 2, deviceName_);
         }
         unknownFields.writeTo(output);
       }
@@ -44185,7 +44473,7 @@ public final class DiozeroProtos {
           size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, correlationId_);
         }
         if (((bitField0_ & 0x00000002) != 0)) {
-          size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, tty_);
+          size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, deviceName_);
         }
         size += unknownFields.getSerializedSize();
         memoizedSize = size;
@@ -44207,10 +44495,10 @@ public final class DiozeroProtos {
           if (!getCorrelationId()
               .equals(other.getCorrelationId())) return false;
         }
-        if (hasTty() != other.hasTty()) return false;
-        if (hasTty()) {
-          if (!getTty()
-              .equals(other.getTty())) return false;
+        if (hasDeviceName() != other.hasDeviceName()) return false;
+        if (hasDeviceName()) {
+          if (!getDeviceName()
+              .equals(other.getDeviceName())) return false;
         }
         if (!unknownFields.equals(other.unknownFields)) return false;
         return true;
@@ -44227,9 +44515,9 @@ public final class DiozeroProtos {
           hash = (37 * hash) + CORRELATIONID_FIELD_NUMBER;
           hash = (53 * hash) + getCorrelationId().hashCode();
         }
-        if (hasTty()) {
-          hash = (37 * hash) + TTY_FIELD_NUMBER;
-          hash = (53 * hash) + getTty().hashCode();
+        if (hasDeviceName()) {
+          hash = (37 * hash) + DEVICENAME_FIELD_NUMBER;
+          hash = (53 * hash) + getDeviceName().hashCode();
         }
         hash = (29 * hash) + unknownFields.hashCode();
         memoizedHashCode = hash;
@@ -44366,7 +44654,7 @@ public final class DiozeroProtos {
           super.clear();
           correlationId_ = "";
           bitField0_ = (bitField0_ & ~0x00000001);
-          tty_ = "";
+          deviceName_ = "";
           bitField0_ = (bitField0_ & ~0x00000002);
           return this;
         }
@@ -44403,7 +44691,7 @@ public final class DiozeroProtos {
           if (((from_bitField0_ & 0x00000002) != 0)) {
             to_bitField0_ |= 0x00000002;
           }
-          result.tty_ = tty_;
+          result.deviceName_ = deviceName_;
           result.bitField0_ = to_bitField0_;
           onBuilt();
           return result;
@@ -44458,9 +44746,9 @@ public final class DiozeroProtos {
             correlationId_ = other.correlationId_;
             onChanged();
           }
-          if (other.hasTty()) {
+          if (other.hasDeviceName()) {
             bitField0_ |= 0x00000002;
-            tty_ = other.tty_;
+            deviceName_ = other.deviceName_;
             onChanged();
           }
           this.mergeUnknownFields(other.unknownFields);
@@ -44473,7 +44761,7 @@ public final class DiozeroProtos {
           if (!hasCorrelationId()) {
             return false;
           }
-          if (!hasTty()) {
+          if (!hasDeviceName()) {
             return false;
           }
           return true;
@@ -44583,26 +44871,26 @@ public final class DiozeroProtos {
           return this;
         }
 
-        private java.lang.Object tty_ = "";
+        private java.lang.Object deviceName_ = "";
         /**
-         * <code>required string tty = 2;</code>
-         * @return Whether the tty field is set.
+         * <code>required string deviceName = 2;</code>
+         * @return Whether the deviceName field is set.
          */
-        public boolean hasTty() {
+        public boolean hasDeviceName() {
           return ((bitField0_ & 0x00000002) != 0);
         }
         /**
-         * <code>required string tty = 2;</code>
-         * @return The tty.
+         * <code>required string deviceName = 2;</code>
+         * @return The deviceName.
          */
-        public java.lang.String getTty() {
-          java.lang.Object ref = tty_;
+        public java.lang.String getDeviceName() {
+          java.lang.Object ref = deviceName_;
           if (!(ref instanceof java.lang.String)) {
             com.google.protobuf.ByteString bs =
                 (com.google.protobuf.ByteString) ref;
             java.lang.String s = bs.toStringUtf8();
             if (bs.isValidUtf8()) {
-              tty_ = s;
+              deviceName_ = s;
             }
             return s;
           } else {
@@ -44610,59 +44898,59 @@ public final class DiozeroProtos {
           }
         }
         /**
-         * <code>required string tty = 2;</code>
-         * @return The bytes for tty.
+         * <code>required string deviceName = 2;</code>
+         * @return The bytes for deviceName.
          */
         public com.google.protobuf.ByteString
-            getTtyBytes() {
-          java.lang.Object ref = tty_;
+            getDeviceNameBytes() {
+          java.lang.Object ref = deviceName_;
           if (ref instanceof String) {
             com.google.protobuf.ByteString b = 
                 com.google.protobuf.ByteString.copyFromUtf8(
                     (java.lang.String) ref);
-            tty_ = b;
+            deviceName_ = b;
             return b;
           } else {
             return (com.google.protobuf.ByteString) ref;
           }
         }
         /**
-         * <code>required string tty = 2;</code>
-         * @param value The tty to set.
+         * <code>required string deviceName = 2;</code>
+         * @param value The deviceName to set.
          * @return This builder for chaining.
          */
-        public Builder setTty(
+        public Builder setDeviceName(
             java.lang.String value) {
           if (value == null) {
     throw new NullPointerException();
   }
   bitField0_ |= 0x00000002;
-          tty_ = value;
+          deviceName_ = value;
           onChanged();
           return this;
         }
         /**
-         * <code>required string tty = 2;</code>
+         * <code>required string deviceName = 2;</code>
          * @return This builder for chaining.
          */
-        public Builder clearTty() {
+        public Builder clearDeviceName() {
           bitField0_ = (bitField0_ & ~0x00000002);
-          tty_ = getDefaultInstance().getTty();
+          deviceName_ = getDefaultInstance().getDeviceName();
           onChanged();
           return this;
         }
         /**
-         * <code>required string tty = 2;</code>
-         * @param value The bytes for tty to set.
+         * <code>required string deviceName = 2;</code>
+         * @param value The bytes for deviceName to set.
          * @return This builder for chaining.
          */
-        public Builder setTtyBytes(
+        public Builder setDeviceNameBytes(
             com.google.protobuf.ByteString value) {
           if (value == null) {
     throw new NullPointerException();
   }
   bitField0_ |= 0x00000002;
-          tty_ = value;
+          deviceName_ = value;
           onChanged();
           return this;
         }
@@ -44741,21 +45029,21 @@ public final class DiozeroProtos {
           getCorrelationIdBytes();
 
       /**
-       * <code>required string tty = 2;</code>
-       * @return Whether the tty field is set.
+       * <code>required string deviceName = 2;</code>
+       * @return Whether the deviceName field is set.
        */
-      boolean hasTty();
+      boolean hasDeviceName();
       /**
-       * <code>required string tty = 2;</code>
-       * @return The tty.
+       * <code>required string deviceName = 2;</code>
+       * @return The deviceName.
        */
-      java.lang.String getTty();
+      java.lang.String getDeviceName();
       /**
-       * <code>required string tty = 2;</code>
-       * @return The bytes for tty.
+       * <code>required string deviceName = 2;</code>
+       * @return The bytes for deviceName.
        */
       com.google.protobuf.ByteString
-          getTtyBytes();
+          getDeviceNameBytes();
     }
     /**
      * Protobuf type {@code diozero.Serial.Close}
@@ -44771,7 +45059,7 @@ public final class DiozeroProtos {
       }
       private Close() {
         correlationId_ = "";
-        tty_ = "";
+        deviceName_ = "";
       }
 
       @java.lang.Override
@@ -44814,7 +45102,7 @@ public final class DiozeroProtos {
               case 18: {
                 com.google.protobuf.ByteString bs = input.readBytes();
                 bitField0_ |= 0x00000002;
-                tty_ = bs;
+                deviceName_ = bs;
                 break;
               }
               default: {
@@ -44898,23 +45186,23 @@ public final class DiozeroProtos {
         }
       }
 
-      public static final int TTY_FIELD_NUMBER = 2;
-      private volatile java.lang.Object tty_;
+      public static final int DEVICENAME_FIELD_NUMBER = 2;
+      private volatile java.lang.Object deviceName_;
       /**
-       * <code>required string tty = 2;</code>
-       * @return Whether the tty field is set.
+       * <code>required string deviceName = 2;</code>
+       * @return Whether the deviceName field is set.
        */
       @java.lang.Override
-      public boolean hasTty() {
+      public boolean hasDeviceName() {
         return ((bitField0_ & 0x00000002) != 0);
       }
       /**
-       * <code>required string tty = 2;</code>
-       * @return The tty.
+       * <code>required string deviceName = 2;</code>
+       * @return The deviceName.
        */
       @java.lang.Override
-      public java.lang.String getTty() {
-        java.lang.Object ref = tty_;
+      public java.lang.String getDeviceName() {
+        java.lang.Object ref = deviceName_;
         if (ref instanceof java.lang.String) {
           return (java.lang.String) ref;
         } else {
@@ -44922,24 +45210,24 @@ public final class DiozeroProtos {
               (com.google.protobuf.ByteString) ref;
           java.lang.String s = bs.toStringUtf8();
           if (bs.isValidUtf8()) {
-            tty_ = s;
+            deviceName_ = s;
           }
           return s;
         }
       }
       /**
-       * <code>required string tty = 2;</code>
-       * @return The bytes for tty.
+       * <code>required string deviceName = 2;</code>
+       * @return The bytes for deviceName.
        */
       @java.lang.Override
       public com.google.protobuf.ByteString
-          getTtyBytes() {
-        java.lang.Object ref = tty_;
+          getDeviceNameBytes() {
+        java.lang.Object ref = deviceName_;
         if (ref instanceof java.lang.String) {
           com.google.protobuf.ByteString b = 
               com.google.protobuf.ByteString.copyFromUtf8(
                   (java.lang.String) ref);
-          tty_ = b;
+          deviceName_ = b;
           return b;
         } else {
           return (com.google.protobuf.ByteString) ref;
@@ -44957,7 +45245,7 @@ public final class DiozeroProtos {
           memoizedIsInitialized = 0;
           return false;
         }
-        if (!hasTty()) {
+        if (!hasDeviceName()) {
           memoizedIsInitialized = 0;
           return false;
         }
@@ -44972,7 +45260,7 @@ public final class DiozeroProtos {
           com.google.protobuf.GeneratedMessageV3.writeString(output, 1, correlationId_);
         }
         if (((bitField0_ & 0x00000002) != 0)) {
-          com.google.protobuf.GeneratedMessageV3.writeString(output, 2, tty_);
+          com.google.protobuf.GeneratedMessageV3.writeString(output, 2, deviceName_);
         }
         unknownFields.writeTo(output);
       }
@@ -44987,7 +45275,7 @@ public final class DiozeroProtos {
           size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, correlationId_);
         }
         if (((bitField0_ & 0x00000002) != 0)) {
-          size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, tty_);
+          size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, deviceName_);
         }
         size += unknownFields.getSerializedSize();
         memoizedSize = size;
@@ -45009,10 +45297,10 @@ public final class DiozeroProtos {
           if (!getCorrelationId()
               .equals(other.getCorrelationId())) return false;
         }
-        if (hasTty() != other.hasTty()) return false;
-        if (hasTty()) {
-          if (!getTty()
-              .equals(other.getTty())) return false;
+        if (hasDeviceName() != other.hasDeviceName()) return false;
+        if (hasDeviceName()) {
+          if (!getDeviceName()
+              .equals(other.getDeviceName())) return false;
         }
         if (!unknownFields.equals(other.unknownFields)) return false;
         return true;
@@ -45029,9 +45317,9 @@ public final class DiozeroProtos {
           hash = (37 * hash) + CORRELATIONID_FIELD_NUMBER;
           hash = (53 * hash) + getCorrelationId().hashCode();
         }
-        if (hasTty()) {
-          hash = (37 * hash) + TTY_FIELD_NUMBER;
-          hash = (53 * hash) + getTty().hashCode();
+        if (hasDeviceName()) {
+          hash = (37 * hash) + DEVICENAME_FIELD_NUMBER;
+          hash = (53 * hash) + getDeviceName().hashCode();
         }
         hash = (29 * hash) + unknownFields.hashCode();
         memoizedHashCode = hash;
@@ -45168,7 +45456,7 @@ public final class DiozeroProtos {
           super.clear();
           correlationId_ = "";
           bitField0_ = (bitField0_ & ~0x00000001);
-          tty_ = "";
+          deviceName_ = "";
           bitField0_ = (bitField0_ & ~0x00000002);
           return this;
         }
@@ -45205,7 +45493,7 @@ public final class DiozeroProtos {
           if (((from_bitField0_ & 0x00000002) != 0)) {
             to_bitField0_ |= 0x00000002;
           }
-          result.tty_ = tty_;
+          result.deviceName_ = deviceName_;
           result.bitField0_ = to_bitField0_;
           onBuilt();
           return result;
@@ -45260,9 +45548,9 @@ public final class DiozeroProtos {
             correlationId_ = other.correlationId_;
             onChanged();
           }
-          if (other.hasTty()) {
+          if (other.hasDeviceName()) {
             bitField0_ |= 0x00000002;
-            tty_ = other.tty_;
+            deviceName_ = other.deviceName_;
             onChanged();
           }
           this.mergeUnknownFields(other.unknownFields);
@@ -45275,7 +45563,7 @@ public final class DiozeroProtos {
           if (!hasCorrelationId()) {
             return false;
           }
-          if (!hasTty()) {
+          if (!hasDeviceName()) {
             return false;
           }
           return true;
@@ -45385,26 +45673,26 @@ public final class DiozeroProtos {
           return this;
         }
 
-        private java.lang.Object tty_ = "";
+        private java.lang.Object deviceName_ = "";
         /**
-         * <code>required string tty = 2;</code>
-         * @return Whether the tty field is set.
+         * <code>required string deviceName = 2;</code>
+         * @return Whether the deviceName field is set.
          */
-        public boolean hasTty() {
+        public boolean hasDeviceName() {
           return ((bitField0_ & 0x00000002) != 0);
         }
         /**
-         * <code>required string tty = 2;</code>
-         * @return The tty.
+         * <code>required string deviceName = 2;</code>
+         * @return The deviceName.
          */
-        public java.lang.String getTty() {
-          java.lang.Object ref = tty_;
+        public java.lang.String getDeviceName() {
+          java.lang.Object ref = deviceName_;
           if (!(ref instanceof java.lang.String)) {
             com.google.protobuf.ByteString bs =
                 (com.google.protobuf.ByteString) ref;
             java.lang.String s = bs.toStringUtf8();
             if (bs.isValidUtf8()) {
-              tty_ = s;
+              deviceName_ = s;
             }
             return s;
           } else {
@@ -45412,59 +45700,59 @@ public final class DiozeroProtos {
           }
         }
         /**
-         * <code>required string tty = 2;</code>
-         * @return The bytes for tty.
+         * <code>required string deviceName = 2;</code>
+         * @return The bytes for deviceName.
          */
         public com.google.protobuf.ByteString
-            getTtyBytes() {
-          java.lang.Object ref = tty_;
+            getDeviceNameBytes() {
+          java.lang.Object ref = deviceName_;
           if (ref instanceof String) {
             com.google.protobuf.ByteString b = 
                 com.google.protobuf.ByteString.copyFromUtf8(
                     (java.lang.String) ref);
-            tty_ = b;
+            deviceName_ = b;
             return b;
           } else {
             return (com.google.protobuf.ByteString) ref;
           }
         }
         /**
-         * <code>required string tty = 2;</code>
-         * @param value The tty to set.
+         * <code>required string deviceName = 2;</code>
+         * @param value The deviceName to set.
          * @return This builder for chaining.
          */
-        public Builder setTty(
+        public Builder setDeviceName(
             java.lang.String value) {
           if (value == null) {
     throw new NullPointerException();
   }
   bitField0_ |= 0x00000002;
-          tty_ = value;
+          deviceName_ = value;
           onChanged();
           return this;
         }
         /**
-         * <code>required string tty = 2;</code>
+         * <code>required string deviceName = 2;</code>
          * @return This builder for chaining.
          */
-        public Builder clearTty() {
+        public Builder clearDeviceName() {
           bitField0_ = (bitField0_ & ~0x00000002);
-          tty_ = getDefaultInstance().getTty();
+          deviceName_ = getDefaultInstance().getDeviceName();
           onChanged();
           return this;
         }
         /**
-         * <code>required string tty = 2;</code>
-         * @param value The bytes for tty to set.
+         * <code>required string deviceName = 2;</code>
+         * @param value The bytes for deviceName to set.
          * @return This builder for chaining.
          */
-        public Builder setTtyBytes(
+        public Builder setDeviceNameBytes(
             com.google.protobuf.ByteString value) {
           if (value == null) {
     throw new NullPointerException();
   }
   bitField0_ |= 0x00000002;
-          tty_ = value;
+          deviceName_ = value;
           onChanged();
           return this;
         }
@@ -50293,33 +50581,36 @@ public final class DiozeroProtos {
       "e\022\025\n\rcorrelationId\030\001 \002(\t\022\037\n\006status\030\002 \002(\016" +
       "2\017.diozero.Status\022\016\n\006detail\030\003 \001(\t\022\016\n\006rxD" +
       "ata\030\004 \001(\014\";\n\tClockMode\022\n\n\006MODE_0\020\000\022\n\n\006MO" +
-      "DE_1\020\001\022\n\n\006MODE_2\020\002\022\n\n\006MODE_3\020\003\"\252\007\n\006Seria" +
-      "l\032l\n\004Open\022\025\n\rcorrelationId\030\001 \002(\t\022\013\n\003tty\030" +
-      "\002 \002(\t\022\014\n\004baud\030\003 \002(\005\022\020\n\010dataBits\030\004 \002(\005\022\016\n" +
-      "\006parity\030\005 \002(\005\022\020\n\010stopBits\030\006 \002(\005\032*\n\004Read\022" +
-      "\025\n\rcorrelationId\030\001 \002(\t\022\013\n\003tty\030\002 \002(\t\032.\n\010R" +
-      "eadByte\022\025\n\rcorrelationId\030\001 \002(\t\022\013\n\003tty\030\002 " +
-      "\002(\t\032=\n\tWriteByte\022\025\n\rcorrelationId\030\001 \002(\t\022" +
-      "\013\n\003tty\030\002 \002(\t\022\014\n\004data\030\003 \002(\005\032?\n\tReadBytes\022" +
-      "\025\n\rcorrelationId\030\001 \002(\t\022\013\n\003tty\030\002 \002(\t\022\016\n\006l" +
-      "ength\030\003 \002(\005\032>\n\nWriteBytes\022\025\n\rcorrelation" +
-      "Id\030\001 \002(\t\022\013\n\003tty\030\002 \002(\t\022\014\n\004data\030\003 \002(\014\0324\n\016B" +
-      "ytesAvailable\022\025\n\rcorrelationId\030\001 \002(\t\022\013\n\003" +
-      "tty\030\002 \002(\t\032+\n\005Close\022\025\n\rcorrelationId\030\001 \002(" +
-      "\t\022\013\n\003tty\030\002 \002(\t\032d\n\014ReadResponse\022\025\n\rcorrel" +
-      "ationId\030\001 \002(\t\022\037\n\006status\030\002 \002(\0162\017.diozero." +
-      "Status\022\016\n\006detail\030\003 \001(\t\022\014\n\004data\030\004 \001(\005\032h\n\020" +
-      "ReadByteResponse\022\025\n\rcorrelationId\030\001 \002(\t\022" +
-      "\037\n\006status\030\002 \002(\0162\017.diozero.Status\022\016\n\006deta" +
-      "il\030\003 \001(\t\022\014\n\004data\030\004 \001(\005\032i\n\021ReadBytesRespo" +
+      "DE_1\020\001\022\n\n\006MODE_2\020\002\022\n\n\006MODE_3\020\003\"\252\010\n\006Seria" +
+      "l\032\272\001\n\004Open\022\025\n\rcorrelationId\030\001 \002(\t\022\022\n\ndev" +
+      "iceName\030\002 \002(\t\022\014\n\004baud\030\003 \002(\005\022\020\n\010dataBits\030" +
+      "\004 \002(\005\022\020\n\010stopBits\030\005 \002(\005\022\016\n\006parity\030\006 \002(\005\022" +
+      "\024\n\014readBlocking\030\007 \002(\010\022\024\n\014minReadChars\030\010 " +
+      "\002(\005\022\031\n\021readTimeoutMillis\030\t \002(\005\0321\n\004Read\022\025" +
+      "\n\rcorrelationId\030\001 \002(\t\022\022\n\ndeviceName\030\002 \002(" +
+      "\t\0325\n\010ReadByte\022\025\n\rcorrelationId\030\001 \002(\t\022\022\n\n" +
+      "deviceName\030\002 \002(\t\032D\n\tWriteByte\022\025\n\rcorrela" +
+      "tionId\030\001 \002(\t\022\022\n\ndeviceName\030\002 \002(\t\022\014\n\004data" +
+      "\030\003 \002(\005\032F\n\tReadBytes\022\025\n\rcorrelationId\030\001 \002" +
+      "(\t\022\022\n\ndeviceName\030\002 \002(\t\022\016\n\006length\030\003 \002(\005\032E" +
+      "\n\nWriteBytes\022\025\n\rcorrelationId\030\001 \002(\t\022\022\n\nd" +
+      "eviceName\030\002 \002(\t\022\014\n\004data\030\003 \002(\014\032;\n\016BytesAv" +
+      "ailable\022\025\n\rcorrelationId\030\001 \002(\t\022\022\n\ndevice" +
+      "Name\030\002 \002(\t\0322\n\005Close\022\025\n\rcorrelationId\030\001 \002" +
+      "(\t\022\022\n\ndeviceName\030\002 \002(\t\032d\n\014ReadResponse\022\025" +
+      "\n\rcorrelationId\030\001 \002(\t\022\037\n\006status\030\002 \002(\0162\017." +
+      "diozero.Status\022\016\n\006detail\030\003 \001(\t\022\014\n\004data\030\004" +
+      " \001(\005\032h\n\020ReadByteResponse\022\025\n\rcorrelationI" +
+      "d\030\001 \002(\t\022\037\n\006status\030\002 \002(\0162\017.diozero.Status" +
+      "\022\016\n\006detail\030\003 \001(\t\022\014\n\004data\030\004 \001(\005\032i\n\021ReadBy" +
+      "tesResponse\022\025\n\rcorrelationId\030\001 \002(\t\022\037\n\006st" +
+      "atus\030\002 \002(\0162\017.diozero.Status\022\016\n\006detail\030\003 " +
+      "\001(\t\022\014\n\004data\030\004 \001(\014\032x\n\026BytesAvailableRespo" +
       "nse\022\025\n\rcorrelationId\030\001 \002(\t\022\037\n\006status\030\002 \002" +
-      "(\0162\017.diozero.Status\022\016\n\006detail\030\003 \001(\t\022\014\n\004d" +
-      "ata\030\004 \001(\014\032x\n\026BytesAvailableResponse\022\025\n\rc" +
-      "orrelationId\030\001 \002(\t\022\037\n\006status\030\002 \002(\0162\017.dio" +
-      "zero.Status\022\016\n\006detail\030\003 \001(\t\022\026\n\016bytesAvai" +
-      "lable\030\004 \001(\005*\033\n\006Status\022\006\n\002OK\020\000\022\t\n\005ERROR\020\001" +
-      "B4\n#com.diozero.remote.message.protobufB" +
-      "\rDiozeroProtos"
+      "(\0162\017.diozero.Status\022\016\n\006detail\030\003 \001(\t\022\026\n\016b" +
+      "ytesAvailable\030\004 \001(\005*\033\n\006Status\022\006\n\002OK\020\000\022\t\n" +
+      "\005ERROR\020\001B4\n#com.diozero.remote.message.p" +
+      "rotobufB\rDiozeroProtos"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -50594,49 +50885,49 @@ public final class DiozeroProtos {
     internal_static_diozero_Serial_Open_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_diozero_Serial_Open_descriptor,
-        new java.lang.String[] { "CorrelationId", "Tty", "Baud", "DataBits", "Parity", "StopBits", });
+        new java.lang.String[] { "CorrelationId", "DeviceName", "Baud", "DataBits", "StopBits", "Parity", "ReadBlocking", "MinReadChars", "ReadTimeoutMillis", });
     internal_static_diozero_Serial_Read_descriptor =
       internal_static_diozero_Serial_descriptor.getNestedTypes().get(1);
     internal_static_diozero_Serial_Read_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_diozero_Serial_Read_descriptor,
-        new java.lang.String[] { "CorrelationId", "Tty", });
+        new java.lang.String[] { "CorrelationId", "DeviceName", });
     internal_static_diozero_Serial_ReadByte_descriptor =
       internal_static_diozero_Serial_descriptor.getNestedTypes().get(2);
     internal_static_diozero_Serial_ReadByte_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_diozero_Serial_ReadByte_descriptor,
-        new java.lang.String[] { "CorrelationId", "Tty", });
+        new java.lang.String[] { "CorrelationId", "DeviceName", });
     internal_static_diozero_Serial_WriteByte_descriptor =
       internal_static_diozero_Serial_descriptor.getNestedTypes().get(3);
     internal_static_diozero_Serial_WriteByte_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_diozero_Serial_WriteByte_descriptor,
-        new java.lang.String[] { "CorrelationId", "Tty", "Data", });
+        new java.lang.String[] { "CorrelationId", "DeviceName", "Data", });
     internal_static_diozero_Serial_ReadBytes_descriptor =
       internal_static_diozero_Serial_descriptor.getNestedTypes().get(4);
     internal_static_diozero_Serial_ReadBytes_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_diozero_Serial_ReadBytes_descriptor,
-        new java.lang.String[] { "CorrelationId", "Tty", "Length", });
+        new java.lang.String[] { "CorrelationId", "DeviceName", "Length", });
     internal_static_diozero_Serial_WriteBytes_descriptor =
       internal_static_diozero_Serial_descriptor.getNestedTypes().get(5);
     internal_static_diozero_Serial_WriteBytes_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_diozero_Serial_WriteBytes_descriptor,
-        new java.lang.String[] { "CorrelationId", "Tty", "Data", });
+        new java.lang.String[] { "CorrelationId", "DeviceName", "Data", });
     internal_static_diozero_Serial_BytesAvailable_descriptor =
       internal_static_diozero_Serial_descriptor.getNestedTypes().get(6);
     internal_static_diozero_Serial_BytesAvailable_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_diozero_Serial_BytesAvailable_descriptor,
-        new java.lang.String[] { "CorrelationId", "Tty", });
+        new java.lang.String[] { "CorrelationId", "DeviceName", });
     internal_static_diozero_Serial_Close_descriptor =
       internal_static_diozero_Serial_descriptor.getNestedTypes().get(7);
     internal_static_diozero_Serial_Close_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_diozero_Serial_Close_descriptor,
-        new java.lang.String[] { "CorrelationId", "Tty", });
+        new java.lang.String[] { "CorrelationId", "DeviceName", });
     internal_static_diozero_Serial_ReadResponse_descriptor =
       internal_static_diozero_Serial_descriptor.getNestedTypes().get(8);
     internal_static_diozero_Serial_ReadResponse_fieldAccessorTable = new

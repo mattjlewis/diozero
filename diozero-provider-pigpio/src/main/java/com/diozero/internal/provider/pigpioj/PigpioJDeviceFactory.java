@@ -71,9 +71,8 @@ public class PigpioJDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	public void close() {
+	public void shutdown() {
 		pigpioImpl.close();
-		super.close();
 	}
 
 	@Override
@@ -161,9 +160,10 @@ public class PigpioJDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	public SerialDeviceInterface createSerialDevice(String key, String tty, int baud, SerialDevice.DataBits dataBits,
-			SerialDevice.Parity parity, SerialDevice.StopBits stopBits) throws RuntimeIOException {
-		return new PigpioJSerialDevice(key, this, pigpioImpl, tty, baud, dataBits, parity, stopBits);
+	public SerialDeviceInterface createSerialDevice(String key, String deviceName, int baud, SerialDevice.DataBits dataBits,
+			SerialDevice.StopBits stopBits, SerialDevice.Parity parity, boolean readBlocking, int minReadChars,
+			int readTimeoutMillis) throws RuntimeIOException {
+		return new PigpioJSerialDevice(key, this, pigpioImpl, deviceName, baud, dataBits, stopBits, parity);
 	}
 
 	public PigpioJBitBangI2CDevice createI2CBitBangDevice(int sdaPin, int sclPin, int baud) {

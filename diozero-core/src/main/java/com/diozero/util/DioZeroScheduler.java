@@ -101,8 +101,8 @@ public class DioZeroScheduler {
 	}
 	
 	private void shutdown() {
-		executor.shutdown();
-		scheduler.shutdown();
+		executor.shutdownNow();
+		scheduler.shutdownNow();
 		Logger.trace("Shutdown - done");
 	}
 	

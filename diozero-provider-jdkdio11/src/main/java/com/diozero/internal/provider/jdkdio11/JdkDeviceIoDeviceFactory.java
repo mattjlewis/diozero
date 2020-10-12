@@ -80,6 +80,11 @@ public class JdkDeviceIoDeviceFactory extends BaseNativeDeviceFactory {
 	public String getName() {
 		return getClass().getSimpleName() + "11";
 	}
+	
+	@Override
+	public void shutdown() {
+		// Ignore
+	}
 
 	@Override
 	public int getBoardPwmFrequency() {
@@ -139,8 +144,9 @@ public class JdkDeviceIoDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	public SerialDeviceInterface createSerialDevice(String key, String tty, int baud, SerialDevice.DataBits dataBits,
-			SerialDevice.Parity parity, SerialDevice.StopBits stopBits) throws RuntimeIOException {
+	public SerialDeviceInterface createSerialDevice(String key, String deviceName, int baud, SerialDevice.DataBits dataBits,
+			SerialDevice.StopBits stopBits, SerialDevice.Parity parity, boolean readBlocking, int minReadChars,
+			int readTimeoutMillis) throws RuntimeIOException {
 		throw new UnsupportedOperationException("Serial communication not available in the device factory");
 	}
 }

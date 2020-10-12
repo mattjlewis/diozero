@@ -38,17 +38,24 @@ public class SerialOpen extends SerialBase {
 
 	private int baud;
 	private SerialDevice.DataBits dataBits;
-	private SerialDevice.Parity parity;
 	private SerialDevice.StopBits stopBits;
+	private SerialDevice.Parity parity;
+	private boolean readBlocking;
+	private int minReadChars;
+	private int readTimeoutMillis;
 
-	public SerialOpen(String tty, int baud, SerialDevice.DataBits dataBits, SerialDevice.Parity parity,
-			SerialDevice.StopBits stopBits, String correlationId) {
-		super(tty, correlationId);
+	public SerialOpen(String deviceName, int baud, SerialDevice.DataBits dataBits, SerialDevice.StopBits stopBits,
+			SerialDevice.Parity parity, boolean readBlocking, int minReadChars, int readTimeoutMillis,
+			String correlationId) {
+		super(deviceName, correlationId);
 
 		this.baud = baud;
 		this.dataBits = dataBits;
-		this.parity = parity;
 		this.stopBits = stopBits;
+		this.parity = parity;
+		this.readBlocking = readBlocking;
+		this.minReadChars = minReadChars;
+		this.readTimeoutMillis = readTimeoutMillis;
 	}
 
 	public static long getSerialversionuid() {
@@ -63,11 +70,23 @@ public class SerialOpen extends SerialBase {
 		return dataBits;
 	}
 
+	public SerialDevice.StopBits getStopBits() {
+		return stopBits;
+	}
+
 	public SerialDevice.Parity getParity() {
 		return parity;
 	}
 
-	public SerialDevice.StopBits getStopBits() {
-		return stopBits;
+	public boolean isReadBlocking() {
+		return readBlocking;
+	}
+
+	public int getMinReadChars() {
+		return minReadChars;
+	}
+
+	public int getReadTimeoutMillis() {
+		return readTimeoutMillis;
 	}
 }

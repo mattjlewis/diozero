@@ -310,49 +310,52 @@ message Spi {
 message Serial {
 	message Open {
 		required string correlationId = 1;
-		required string tty = 2;
+		required string deviceName = 2;
 		required int32 baud = 3;
 		required int32 dataBits = 4;
-		required int32 parity = 5;
-		required int32 stopBits = 6;
+		required int32 stopBits = 5;
+		required int32 parity = 6;
+		required bool readBlocking = 7;
+		required int32 minReadChars = 8;
+		required int32 readTimeoutMillis = 9;
 	}
 	
 	message Read {
 		required string correlationId = 1;
-		required string tty = 2;
+		required string deviceName = 2;
 	}
 	
 	message ReadByte {
 		required string correlationId = 1;
-		required string tty = 2;
+		required string deviceName = 2;
 	}
 	
 	message WriteByte {
 		required string correlationId = 1;
-		required string tty = 2;
+		required string deviceName = 2;
 		required int32 data = 3;
 	}
 	
 	message ReadBytes {
 		required string correlationId = 1;
-		required string tty = 2;
+		required string deviceName = 2;
 		required int32 length = 3;
 	}
 	
 	message WriteBytes {
 		required string correlationId = 1;
-		required string tty = 2;
+		required string deviceName = 2;
 		required bytes data = 3;
 	}
 	
 	message BytesAvailable {
 		required string correlationId = 1;
-		required string tty = 2;
+		required string deviceName = 2;
 	}
 
 	message Close {
 		required string correlationId = 1;
-		required string tty = 2;
+		required string deviceName = 2;
 	}
 	
 	message ReadResponse {

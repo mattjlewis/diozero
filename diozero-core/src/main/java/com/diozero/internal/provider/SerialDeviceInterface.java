@@ -35,7 +35,7 @@ public interface SerialDeviceInterface extends DeviceInterface {
 	int read();
 	byte readByte();
 	void writeByte(byte bVal);
-	void read(byte[] buffer);
+	int read(byte[] buffer);
 	void write(byte[] data);
 	int bytesAvailable();
 }

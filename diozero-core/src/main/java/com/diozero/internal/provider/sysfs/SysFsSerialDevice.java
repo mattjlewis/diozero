@@ -42,11 +42,13 @@ import com.diozero.util.RuntimeIOException;
 public class SysFsSerialDevice extends AbstractDevice implements SerialDeviceInterface {
 	private NativeSerialDevice device;
 
-	public SysFsSerialDevice(DeviceFactoryInterface deviceFactory, String key, String tty, int baud,
-			SerialDevice.DataBits dataBits, SerialDevice.Parity parity, SerialDevice.StopBits stopBits) {
+	public SysFsSerialDevice(DeviceFactoryInterface deviceFactory, String key, String deviceName, int baud,
+			SerialDevice.DataBits dataBits, SerialDevice.StopBits stopBits, SerialDevice.Parity parity,
+			boolean readBlocking, int minReadChars, int readTimeoutMillis) {
 		super(key, deviceFactory);
 
-		device = new NativeSerialDevice(tty, baud, dataBits, parity, stopBits);
+		device = new NativeSerialDevice(deviceName, baud, dataBits, stopBits, parity, readBlocking, minReadChars,
+				readTimeoutMillis);
 	}
 
 	@Override
@@ -54,7 +56,7 @@ public class SysFsSerialDevice extends AbstractDevice implements SerialDeviceInt
 		Logger.trace("closeDevice()");
 		device.close();
 	}
-	
+
 	@Override
 	public int read() {
 		return device.read();
@@ -71,8 +73,8 @@ public class SysFsSerialDevice extends AbstractDevice implements SerialDeviceInt
 	}
 
 	@Override
-	public void read(byte[] buffer) {
-		device.read(buffer);
+	public int read(byte[] buffer) {
+		return device.read(buffer);
 	}
 
 	@Override

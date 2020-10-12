@@ -7,6 +7,8 @@ repo_url: https://github.com/mattjlewis/diozero
 
 pages:
 - Home: 'index.md'
+- Create Your Own Application: 'Application.md'
+- Remote Control: 'RemoteControl.md'
 - Devices:
     - 'API': 'API.md'
     - 'Input Devices': 'InputDevices.md'
@@ -17,17 +19,15 @@ pages:
     - 'LCD Displays': 'LCDDisplays.md'
     - 'LED Strips': 'LEDStrips.md'
     - 'IMU Devices': 'IMUDevices.md'
-    - 'Create Your Own Application': 'Application.md'
-    - 'Remote Control': 'RemoteControl.md'
 - Providers: 'Providers.md'
 - Release: 'RELEASE.md'
 - License: 'license.md'
 
-copyright: Copyright &copy; 2016 Matt Lewis
+copyright: Copyright &copy; 2020 Matt Lewis
 google_analytics: ['UA-73764647-1', 'rtd.diozero.com']
 # theme: sphinx_rtd_theme
 theme: readthedocs
 markdown_extensions:
-    - admonition
-    - attr_list
-    - def_list
+- admonition
+- attr_list
+- def_list

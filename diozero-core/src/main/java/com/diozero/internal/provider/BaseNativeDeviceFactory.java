@@ -89,21 +89,25 @@ public abstract class BaseNativeDeviceFactory extends AbstractDeviceFactory impl
 	}
 	
 	@Override
-	public void close() {
-		if (isClosed()) {
-			return;
-		}
-		
+	public final void close() {
 		Logger.trace("close()");
+		
 		// Stop all scheduled jobs
 		DioZeroScheduler.shutdownAll();
+		
 		// Shutdown all of the other non-native device factories
 		for (DeviceFactoryInterface df : deviceFactories) {
 			if (! df.isClosed()) {
 				df.close();
 			}
 		}
+		
 		// Now close all devices provisioned directly by this device factory
 		super.close();
+		
+		// Finally invoke the shutdown hook on the device factory itself
+		shutdown();
 	}
+	
+	public abstract void shutdown();
 }

@@ -40,7 +40,9 @@ public class NativeDeviceTest {
 		System.getProperties().forEach((key, value) -> System.out.println(key + " = " + value));
 		System.exit(1);
 		try (NativeSerialDevice dev = new NativeSerialDevice(args[0], SerialConstants.DEFAULT_BAUD,
-				SerialConstants.DEFAULT_DATA_BITS, SerialConstants.DEFAULT_PARITY, SerialConstants.DEFAULT_STOP_BITS)) {
+				SerialConstants.DEFAULT_DATA_BITS, SerialConstants.DEFAULT_STOP_BITS, SerialConstants.DEFAULT_PARITY,
+				SerialConstants.DEFAULT_READ_BLOCKING, SerialConstants.DEFAULT_MIN_READ_CHARS,
+				SerialConstants.DEFAULT_READ_TIMEOUT_MILLIS)) {
 			dev.read();
 		}
 	}

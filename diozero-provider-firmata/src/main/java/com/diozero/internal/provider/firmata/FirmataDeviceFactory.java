@@ -92,15 +92,15 @@ public class FirmataDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	public void close() {
-		Logger.trace("close()");
+	public void shutdown() {
+		Logger.trace("shutdown()");
+
 		if (ioDevice != null) {
 			try {
 				ioDevice.stop();
 			} catch (Exception e) {
 			}
 		}
-		super.close();
 	}
 
 	IODevice getIoDevice() {
@@ -219,8 +219,9 @@ public class FirmataDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	public SerialDeviceInterface createSerialDevice(String key, String tty, int baud, SerialDevice.DataBits dataBits,
-			SerialDevice.Parity parity, SerialDevice.StopBits stopBits) throws RuntimeIOException {
+	public SerialDeviceInterface createSerialDevice(String key, String deviceName, int baud, SerialDevice.DataBits dataBits,
+			SerialDevice.StopBits stopBits, SerialDevice.Parity parity, boolean readBlocking, int minReadChars,
+			int readTimeoutMillis) throws RuntimeIOException {
 		throw new UnsupportedOperationException("Serial communication not available in the device factory");
 	}
 

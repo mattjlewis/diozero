@@ -37,11 +37,11 @@ is best illustrated by some simple examples.
 !!! note "Pin Numbering"
     All pin numbers are device native, i.e. Broadcom for the Raspberry Pi, ASUS for the Tinker Board. Pin layouts:
     
-    + [Raspberry pi](https://pinout.xyz/).
-    + [CHIP pin numbering](http://www.chip-community.org/index.php/Hardware_Information).
-    + [Odroid C2 pin layout](http://www.hardkernel.com/main/products/prdt_info.php?tab_idx=2).
-    + [BeagleBone Black](http://beagleboard.org/support/bone101).
-    + [Asus Tinker Board](https://www.asus.com/uk/Single-board-Computer/TINKER-BOARD/).
+    * [Raspberry pi](https://pinout.xyz/).
+    * [CHIP pin numbering](http://www.chip-community.org/index.php/Hardware_Information).
+    * [Odroid C2 pin layout](http://www.hardkernel.com/main/products/prdt_info.php?tab_idx=2).
+    * [BeagleBone Black](http://beagleboard.org/support/bone101).
+    * [Asus Tinker Board](https://www.asus.com/uk/Single-board-Computer/TINKER-BOARD/).
 
 LED control:
 
@@ -133,11 +133,11 @@ try (McpAdc adc = new McpAdc(McpAdc.Type.MCP3008, chipSelect); LDR ldr = new LDR
 
 diozero has out of the box support for the following Single Board Computers:
 
-+ [Raspberry Pi](http://www.raspberyrpi.org/) (all versions).
-+ [Odroid C2](http://www.hardkernel.com/main/products/prdt_info.php).
-+ [Beagle Bone Black](https://beagleboard.org/black).
-+ [Asus Tinker Board](https://www.asus.com/uk/Single-board-Computer/TINKER-BOARD/).
-+ [The Next Thing Co CHIP](https://getchip.com/pages/chip).
+* [Raspberry Pi](http://www.raspberyrpi.org/) (all versions).
+* [Odroid C2](http://www.hardkernel.com/main/products/prdt_info.php).
+* [Beagle Bone Black](https://beagleboard.org/black).
+* [Asus Tinker Board](https://www.asus.com/uk/Single-board-Computer/TINKER-BOARD/).
+* [The Next Thing Co CHIP](https://getchip.com/pages/chip).
 
 The builtin sysfs provider is designed to be portable across different boards. 
 In addition, the [JDK Device I/O](https://wiki.openjdk.java.net/display/dio/Main) providers 
@@ -227,24 +227,24 @@ sudo groovy -cp $CLASSPATH test.groovy
 
 This library provides support for a number of GPIO / I2C / SPI connected components and devices, I have categorised them as follows:
 
-+ [API](API.md) for lower-level interactions
-    - [Input](API.md#input-devices), [Output](API.md#output-devices), [I2C](API.md#i2c-support), [SPI](API.md#spi-support)
-+ [Input Devices](InputDevices.md)
-    - [Digital](InputDevices.md#digital-input-devices) and [Analog](InputDevices.md#analog-input-devices)
-+ [Output Devices](OutputDevices.md)
-    - [Digital](OutputDevices.md#digital-led) and [PWM](OutputDevices.md#pwm-led)
-+ [Expansion Boards](ExpansionBoards.md) for adding additional GPIO / Analog / PWM pins
-    - [Microchip Analog to Digital Converters](ExpansionBoards.md#mcp-adc), [NXP PCF8591 ADC / DAC](ExpansionBoards.md#pcf8591), [Microchip GPIO Expansion Boards](ExpansionBoards.md#mcp-gpio-expansion-board), [PWM / Servo Driver](ExpansionBoards.md#pwm-servo-driver), [PCF8574](ExpansionBoards.md#pcf8574)
-+ [Motor Control](MotorControl.md) (support for common motor controller boards)
-    - [API](MotorControl.md#api), [Servos](MotorControl.md#servo), [CamJam EduKit](MotorControl.md#camjamkitdualmotor), [Ryanteck](MotorControl.md#ryanteckdualmotor), [Toshiba TB6612FNG](MotorControl.md#tb6612fngdualmotordriver), [PiConZero](MotorControl.md#piconzero)
-+ [Sensor Components](SensorComponents.md) (support for specific sensors, e.g. temperature, pressure, distance, luminosity)
-    - [HC-SR04 Ultrasonic Ranging Module](SensorComponents.md#hc-sr04), [Bosch BMP180](SensorComponents.md#bosch-bmp180), [Bosch BME280](SensorComponents.md#bosch-bme280), [TSL2561 Light Sensor](SensorComponents.md#tsl2561), [STMicroelectronics HTS221 Humidity and Temperature Sensor](SensorComponents.md#hts221), [STMicroelectronics LPS25H Pressure and Temperature Sensor](SensorComponents.md#lps25h), [1-Wire Temperature Sensors e.g. DS18B20](SensorComponents.md#1-wire-temperature-sensors), [Sharp GP2Y0A21YK distance sensor](SensorComponents.md#gp2y0a21yk), [Mifare MFRC522 RFID Reader](SensorComponents.md#mfrc522)
-+ [LCD Displays](LCDDisplays.md)
-    - [HD44780 controlled LCDs](LCDDisplays.md#hd44780-lcds)
-+ [IMU Devices](IMUDevices.md) Work-in-progress API for interacting with Inertial Measurement Units such as the InvenSense MPU-9150 and the Analog Devices ADXL345
-    - [API](IMUDevices.md#api), [Supported Devices](IMUDevices.md#supported-devices)
-+ [LED Strips](LEDStrips.md) Support for LED strips (WS2811B / WS2812B / Adafruit NeoPixel)
-    - [WS2811B / WS2812B](LEDStrips.md#ws281x)
+* [API](API.md) for lower-level interactions
+    * [Input](API.md#input-devices), [Output](API.md#output-devices), [I2C](API.md#i2c-support), [SPI](API.md#spi-support)
+* [Input Devices](InputDevices.md)
+    * [Digital](InputDevices.md#digital-input-devices) and [Analog](InputDevices.md#analog-input-devices)
+* [Output Devices](OutputDevices.md)
+    * [Digital](OutputDevices.md#digital-led) and [PWM](OutputDevices.md#pwm-led)
+* [Expansion Boards](ExpansionBoards.md) for adding additional GPIO / Analog / PWM pins
+    * [Microchip Analog to Digital Converters](ExpansionBoards.md#mcp-adc), [NXP PCF8591 ADC / DAC](ExpansionBoards.md#pcf8591), [Microchip GPIO Expansion Boards](ExpansionBoards.md#mcp-gpio-expansion-board), [PWM / Servo Driver](ExpansionBoards.md#pwm-servo-driver), [PCF8574](ExpansionBoards.md#pcf8574)
+* [Motor Control](MotorControl.md) (support for common motor controller boards)
+    * [API](MotorControl.md#api), [Servos](MotorControl.md#servo), [CamJam EduKit](MotorControl.md#camjamkitdualmotor), [Ryanteck](MotorControl.md#ryanteckdualmotor), [Toshiba TB6612FNG](MotorControl.md#tb6612fngdualmotordriver), [PiConZero](MotorControl.md#piconzero)
+* [Sensor Components](SensorComponents.md) (support for specific sensors, e.g. temperature, pressure, distance, luminosity)
+    * [HC-SR04 Ultrasonic Ranging Module](SensorComponents.md#hc-sr04), [Bosch BMP180](SensorComponents.md#bosch-bmp180), [Bosch BME280](SensorComponents.md#bosch-bme280), [TSL2561 Light Sensor](SensorComponents.md#tsl2561), [STMicroelectronics HTS221 Humidity and Temperature Sensor](SensorComponents.md#hts221), [STMicroelectronics LPS25H Pressure and Temperature Sensor](SensorComponents.md#lps25h), [1-Wire Temperature Sensors e.g. DS18B20](SensorComponents.md#1-wire-temperature-sensors), [Sharp GP2Y0A21YK distance sensor](SensorComponents.md#gp2y0a21yk), [Mifare MFRC522 RFID Reader](SensorComponents.md#mfrc522)
+* [LCD Displays](LCDDisplays.md)
+    * [HD44780 controlled LCDs](LCDDisplays.md#hd44780-lcds)
+* [IMU Devices](IMUDevices.md) Work-in-progress API for interacting with Inertial Measurement Units such as the InvenSense MPU-9150 and the Analog Devices ADXL345
+    * [API](IMUDevices.md#api), [Supported Devices](IMUDevices.md#supported-devices)
+* [LED Strips](LEDStrips.md) Support for LED strips (WS2811B / WS2812B / Adafruit NeoPixel)
+    * [WS2811B / WS2812B](LEDStrips.md#ws281x)
 
 ## Performance
 
@@ -289,22 +289,22 @@ For reference, the author's results were:
 
 This project is hosted on [GitHub](https://github.com/mattjlewis/diozero/), please feel free to join in:
 
-+ Make suggestions for [fixes and enhancements](https://github.com/mattjlewis/diozero/issues)
-+ Provide sample applications
-+ Contribute to development
+* Make suggestions for [fixes and enhancements](https://github.com/mattjlewis/diozero/issues)
+* Provide sample applications
+* Contribute to development
 
 ## To-Do
 
-+ Thorough testing (various types of devices using each service provider)
-+ A clean object-orientated API for IMUs
-+ Native support for all devices via mmap (/dev/mem), in particular to improve performance and add support for GPIO pull up/down configuration.
-+ Wireless access to Firmata devices (network and Bluetooth). E.g. [ESP32](https://learn.sparkfun.com/tutorials/esp32-thing-hookup-guide?_ga=1.116824388.33505106.1471290985#installing-the-esp32-arduino-core) [Firmata GitHub issue #315](https://github.com/firmata/arduino/issues/315)
-+ Remote API for board capabilities
-+ SPI support for Arduino devices
-+ Introduce Servo as a device type
-+ Try out ConfigurableFirmata - is there actually any difference to the StandardFirmata protocol?
-+ Complete ADSL1x15
-+ BME680
+* Thorough testing (various types of devices using each service provider)
+* A clean object-orientated API for IMUs
+* Remote API for board capabilities
+* SPI support for Arduino devices
+* Introduce Servo as a device type
+* Try out ConfigurableFirmata - is there actually any difference to the StandardFirmata protocol?
+* Complete ADSL1x15
+* BME680
+* DONE Native support for all devices via mmap (/dev/mem), in particular to improve performance and add support for GPIO pull up/down configuration.
+* DONE Wireless access to Firmata devices (network and Bluetooth). E.g. [ESP32](https://learn.sparkfun.com/tutorials/esp32-thing-hookup-guide?_ga=1.116824388.33505106.1471290985#installing-the-esp32-arduino-core) [Firmata GitHub issue #315](https://github.com/firmata/arduino/issues/315)
 
 [Release History](RELEASE.md)
 

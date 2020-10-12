@@ -88,4 +88,18 @@ public interface SerialConstants {
 		NO_PARITY, EVEN_PARITY, ODD_PARITY, MARK_PARITY, SPACE_PARITY;
 	}
 	static final Parity DEFAULT_PARITY = Parity.NO_PARITY;
+	
+	static final boolean DEFAULT_READ_BLOCKING = true;
+	
+	// 0 == non-blocking
+	static final int DEFAULT_MIN_READ_CHARS = 1;
+	
+	// 0 == no read timeout
+	static final int DEFAULT_READ_TIMEOUT_MILLIS = 0;
+	
+	// Convenience enum for read modes
+	public static enum ReadMode {
+		READ_SEMI_BLOCKING_WITH_TIMEOUT, READ_SEMI_BLOCKING_NO_TIMEOUT, READ_BLOCKING_WITH_TIMEOUT,
+		READ_BLOCKING_NO_TIMEOUT, NONBLOCKING;
+	}
 }

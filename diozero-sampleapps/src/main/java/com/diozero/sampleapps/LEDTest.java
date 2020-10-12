@@ -69,6 +69,7 @@ public class LEDTest {
 	}
 	
 	public static void test(int pin) {
+		int blinks = 5;
 		try (LED led = new LED(pin)) {
 			Logger.info("On");
 			led.on();
@@ -83,8 +84,8 @@ public class LEDTest {
 			led.toggle();
 			SleepUtil.sleepSeconds(1);
 			
-			Logger.info("Blink 10 times");
-			led.blink(0.5f, 0.5f, 10, false);
+			Logger.info("Blink {} times", Integer.valueOf(blinks));
+			led.blink(0.5f, 0.5f, blinks, false);
 			
 			Logger.info("Done");
 		} catch (RuntimeIOException e) {

@@ -84,10 +84,9 @@ public class RemoteDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	public void close() {
-		Logger.trace("close()");
+	public void shutdown() {
+		Logger.trace("shutdown()");
 		protocolHandler.close();
-		super.close();
 	}
 
 	@Override
@@ -165,9 +164,11 @@ public class RemoteDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	public SerialDeviceInterface createSerialDevice(String key, String tty, int baud, SerialDevice.DataBits dataBits,
-			SerialDevice.Parity parity, SerialDevice.StopBits stopBits) throws RuntimeIOException {
-		return new RemoteSerialDevice(this, key, tty, baud, dataBits, parity, stopBits);
+	public SerialDeviceInterface createSerialDevice(String key, String deviceName, int baud, SerialDevice.DataBits dataBits,
+			SerialDevice.StopBits stopBits, SerialDevice.Parity parity, boolean readBlocking, int minReadChars,
+			int readTimeoutMillis) throws RuntimeIOException {
+		return new RemoteSerialDevice(this, key, deviceName, baud, dataBits, stopBits, parity, readBlocking, minReadChars,
+				readTimeoutMillis);
 	}
 
 	boolean digitalRead(int gpio) {

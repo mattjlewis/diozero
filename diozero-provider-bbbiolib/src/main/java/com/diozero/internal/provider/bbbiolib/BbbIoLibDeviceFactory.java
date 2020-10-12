@@ -74,9 +74,8 @@ public class BbbIoLibDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	public void close() {
+	public void shutdown() {
 		BbbIoLibNative.shutdown();
-		super.close();
 	}
 
 	@Override
@@ -137,8 +136,9 @@ public class BbbIoLibDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	public SerialDeviceInterface createSerialDevice(String key, String tty, int baud, SerialDevice.DataBits dataBits,
-			SerialDevice.Parity parity, SerialDevice.StopBits stopBits) throws RuntimeIOException {
+	public SerialDeviceInterface createSerialDevice(String key, String deviceName, int baud, SerialDevice.DataBits dataBits,
+			SerialDevice.StopBits stopBits, SerialDevice.Parity parity, boolean readBlocking, int minReadChars,
+			int readTimeoutMillis) throws RuntimeIOException {
 		throw new UnsupportedOperationException("Serial communication not available in the device factory");
 	}
 

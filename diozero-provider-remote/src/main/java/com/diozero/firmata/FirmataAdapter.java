@@ -43,8 +43,6 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Condition;
@@ -90,14 +88,16 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, Close
 	abstract void write(byte[] data);
 
 	public final void start() {
-		future = DioZeroScheduler.getNonDaemonInstance().submit(this);
+		future = DioZeroScheduler.getDaemonInstance().submit(this);
 
 		initialiseBoard();
 	}
 
 	@Override
 	public void close() {
-		Logger.trace("FirmataAdapter::closing...");
+		Logger.trace("closing...");
+
+		// Wake anything up that is waiting on the lock (i.e. sendMessage that calls condition.await())
 		lock.lock();
 		try {
 			condition.signal();
@@ -105,13 +105,18 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, Close
 			lock.unlock();
 		}
 
+		// Stop the thread that is reading responses (in particular the inputStream.read
+		// call when used with blocking I/O)
 		running.compareAndSet(true, false);
 		if (future != null) {
+			Logger.debug("future.isCancelled: {}, future.isDone: {}", Boolean.valueOf(future.isCancelled()),
+					Boolean.valueOf(future.isDone()));
 			if (!future.cancel(true)) {
 				Logger.warn("Task could not be cancelled");
 			}
 		}
-		Logger.trace("FirmataAdapter::closed.");
+
+		Logger.trace("closed.");
 	}
 
 	public int getMax(int gpio, PinMode mode) {
@@ -126,10 +131,10 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, Close
 		Logger.debug("initialiseBoard()");
 
 		/*
-		System.out.println("initialiseBoard::Getting protocol version ...");
-		ProtocolVersion p_version = getProtocolVersion();
-		System.out.println("initialiseBoard::Got protocol version " + p_version);
-		*/
+		 * System.out.println("initialiseBoard::Getting protocol version ...");
+		 * ProtocolVersion p_version = getProtocolVersion();
+		 * System.out.println("initialiseBoard::Got protocol version " + p_version);
+		 */
 
 		firmware = getFirmwareInternal();
 
@@ -375,7 +380,8 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, Close
 				do {
 					// Wait for a response message by waiting for a signal on the lock condition
 					condition.await();
-					// Lock is now re-acquired, process the messages on the queue (should only be one!)
+					// Lock is now re-acquired, process the messages on the queue (should only be
+					// one!)
 					do {
 						response = responseQueue.remove();
 					} while (!response.getClass().isAssignableFrom(responseClass));
@@ -383,6 +389,7 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, Close
 			}
 		} catch (InterruptedException e) {
 			// Ignore
+			Logger.trace("Interrupted");
 		} finally {
 			// Release the lock
 			lock.unlock();
@@ -632,7 +639,7 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, Close
 
 	static class SysExResponse extends ResponseMessage {
 	}
-	
+
 	public static class StringDataResponse extends SysExResponse {
 		private String value;
 

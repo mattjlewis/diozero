@@ -10,18 +10,18 @@ extern "C" {
 /*
  * Class:     com_diozero_internal_provider_sysfs_NativeSerialDevice
  * Method:    serialOpen
- * Signature: (Ljava/lang/String;IIII)Ljava/io/FileDescriptor;
+ * Signature: (Ljava/lang/String;IIIIZII)Ljava/io/FileDescriptor;
  */
 JNIEXPORT jobject JNICALL Java_com_diozero_internal_provider_sysfs_NativeSerialDevice_serialOpen
-  (JNIEnv *, jclass, jstring, jint, jint, jint, jint);
+  (JNIEnv *, jclass, jstring, jint, jint, jint, jint, jboolean, jint, jint);
 
 /*
  * Class:     com_diozero_internal_provider_sysfs_NativeSerialDevice
  * Method:    serialConfigPort
- * Signature: (IIIII)I
+ * Signature: (IIIIIZII)I
  */
 JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeSerialDevice_serialConfigPort
-  (JNIEnv *, jclass, jint, jint, jint, jint, jint);
+  (JNIEnv *, jclass, jint, jint, jint, jint, jint, jboolean, jint, jint);
 
 /*
  * Class:     com_diozero_internal_provider_sysfs_NativeSerialDevice
@@ -66,10 +66,10 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeSerialDevi
 /*
  * Class:     com_diozero_internal_provider_sysfs_NativeSerialDevice
  * Method:    serialClose
- * Signature: (I)I
+ * Signature: (Ljava/io/FileDescriptor;)I
  */
 JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeSerialDevice_serialClose
-  (JNIEnv *, jclass, jint);
+  (JNIEnv *, jclass, jobject);
 
 #ifdef __cplusplus
 }

@@ -190,7 +190,7 @@ public class VoodooSparkDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	public void close() {
+	public void shutdown() {
 		if (messageChannel == null || !messageChannel.isOpen()) {
 			return;
 		}
@@ -210,8 +210,6 @@ public class VoodooSparkDeviceFactory extends BaseNativeDeviceFactory {
 		} finally {
 			workerGroup.shutdownGracefully();
 		}
-
-		super.close();
 	}
 
 	@Override
@@ -285,8 +283,9 @@ public class VoodooSparkDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	public SerialDeviceInterface createSerialDevice(String key, String tty, int baud, SerialDevice.DataBits dataBits,
-			SerialDevice.Parity parity, SerialDevice.StopBits stopBits) throws RuntimeIOException {
+	public SerialDeviceInterface createSerialDevice(String key, String deviceName, int baud,
+			SerialDevice.DataBits dataBits, SerialDevice.StopBits stopBits, SerialDevice.Parity parity,
+			boolean readBlocking, int minReadChars, int readTimeoutMillis) throws RuntimeIOException {
 		throw new UnsupportedOperationException("Not yet implemented");
 	}
 

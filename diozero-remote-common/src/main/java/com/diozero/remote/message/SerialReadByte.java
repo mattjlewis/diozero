@@ -34,7 +34,7 @@ package com.diozero.remote.message;
 public class SerialReadByte extends SerialBase {
 	private static final long serialVersionUID = 6277190172988509921L;
 
-	public SerialReadByte(String tty, String correlationId) {
-		super(tty, correlationId);
+	public SerialReadByte(String deviceName, String correlationId) {
+		super(deviceName, correlationId);
 	}
 }

@@ -68,8 +68,8 @@ public abstract class AbstractDeviceFactory implements DeviceFactoryInterface {
 	}
 
 	@Override
-	public final String createSerialKey(String tty) {
-		return SerialDeviceFactoryInterface.createSerialKey(deviceFactoryPrefix, tty);
+	public final String createSerialKey(String deviceName) {
+		return SerialDeviceFactoryInterface.createSerialKey(deviceFactoryPrefix, deviceName);
 	}
 
 	@Override

@@ -79,6 +79,35 @@ extern jclass fileDescClassRef;
 extern jmethodID fileDescConstructor;
 extern jfieldID fileDescFdField;
 
+speed_t getBaudVal(int baud) {
+	speed_t speed;
+	switch (baud) {
+	case     50: speed =     B50; break;
+	case     75: speed =     B75; break;
+	case    110: speed =    B110; break;
+	case    134: speed =    B134; break;
+	case    150: speed =    B150; break;
+	case    200: speed =    B200; break;
+	case    300: speed =    B300; break;
+	case    600: speed =    B600; break;
+	case   1200: speed =   B1200; break;
+	case   1800: speed =   B1800; break;
+	case   2400: speed =   B2400; break;
+	case   4800: speed =   B4800; break;
+	case   9600: speed =   B9600; break;
+	case  19200: speed =  B19200; break;
+	case  38400: speed =  B38400; break;
+	case  57600: speed =  B57600; break;
+	case 115200: speed = B115200; break;
+	case 230400: speed = B230400; break;
+
+	default:
+		speed = B9600;
+	}
+
+	return speed;
+}
+
 tcflag_t getDataBitsFlag(int dataBits) {
 	tcflag_t data_bits_flag;
 	switch (dataBits) {
@@ -121,44 +150,16 @@ tcflag_t getParityFlag(int parity) {
 	return parity_flag;
 }
 
-speed_t getBaudVal(int baud) {
-	speed_t speed;
-	switch (baud) {
-	case     50: speed =     B50; break;
-	case     75: speed =     B75; break;
-	case    110: speed =    B110; break;
-	case    134: speed =    B134; break;
-	case    150: speed =    B150; break;
-	case    200: speed =    B200; break;
-	case    300: speed =    B300; break;
-	case    600: speed =    B600; break;
-	case   1200: speed =   B1200; break;
-	case   1800: speed =   B1800; break;
-	case   2400: speed =   B2400; break;
-	case   4800: speed =   B4800; break;
-	case   9600: speed =   B9600; break;
-	case  19200: speed =  B19200; break;
-	case  38400: speed =  B38400; break;
-	case  57600: speed =  B57600; break;
-	case 115200: speed = B115200; break;
-	case 230400: speed = B230400; break;
-
-	default:
-		speed = B9600;
-	}
-
-	return speed;
-}
-
 /*
  * Class:     com_diozero_internal_provider_sysfs_NativeSerialDevice
  * Method:    serialOpen
- * Signature: (Ljava/lang/String;IIII)Ljava/io/FileDescriptor;
+ * Signature: (Ljava/lang/String;IIIIZII)Ljava/io/FileDescriptor;
  */
 JNIEXPORT jobject JNICALL Java_com_diozero_internal_provider_sysfs_NativeSerialDevice_serialOpen
-  (JNIEnv* env, jclass clz, jstring device, jint baud, jint dataBits, jint stopBits, jint parity) {
+  (JNIEnv* env, jclass clz, jstring device, jint baud, jint dataBits, jint stopBits,
+		  jint parity, jboolean readBlocking, jint minReadChars, jint readTimeoutMillis) {
 	const char* filename = (*env)->GetStringUTFChars(env, device, NULL);
-	int fd = open(filename, O_RDWR | O_NOCTTY | O_NONBLOCK);
+	int fd = open(filename, O_RDWR | O_NOCTTY | O_NDELAY | (readBlocking ? 0 : O_NONBLOCK));
 	(*env)->ReleaseStringUTFChars(env, device, filename);
 
 	if (fd < 0) {
@@ -176,73 +177,114 @@ JNIEXPORT jobject JNICALL Java_com_diozero_internal_provider_sysfs_NativeSerialD
 	//tcflush(fd, TCIFLUSH);
 
 	// Configure the port parameters
-	Java_com_diozero_internal_provider_sysfs_NativeSerialDevice_serialConfigPort(
-			env, clz, fd, baud, dataBits, stopBits, parity);
+	int rc = Java_com_diozero_internal_provider_sysfs_NativeSerialDevice_serialConfigPort(
+			env, clz, fd, baud, dataBits, stopBits, parity, readBlocking, minReadChars, readTimeoutMillis);
+	if (rc < 0) {
+		fprintf(stderr, "Error: Unable to configure the serial port: %d\n", rc);
+		return NULL;
+	}
 
-	// construct a new FileDescriptor
-	jobject ret = (*env)->NewObject(env, fileDescClassRef, fileDescConstructor);
+	// Construct a new FileDescriptor
+	jobject file_desc = (*env)->NewObject(env, fileDescClassRef, fileDescConstructor);
 
-	// poke the "fd" field with the file descriptor
-	(*env)->SetIntField(env, ret, fileDescFdField, fd);
+	// Set the private fd attribute with the file descriptor returned from open
+	(*env)->SetIntField(env, file_desc, fileDescFdField, fd);
 
-	return ret;
+	return file_desc;
 }
 
 /*
  * Class:     com_diozero_internal_provider_sysfs_NativeSerialDevice
  * Method:    serialConfigPort
- * Signature: (IIIII)I
+ * Signature: (IIIIIZII)I
  */
 JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeSerialDevice_serialConfigPort
-  (JNIEnv* env, jclass clz, jint fd, jint baud, jint dataBits, jint parity, jint stopBits) {
+  (JNIEnv* env, jclass clz, jint fd, jint baud, jint dataBits, jint stopBits, jint parity,
+		  jboolean blockingRead, jint minReadChars, jint readTimeoutMillis) {
 	struct termios options = {0};
 	tcgetattr(fd, &options);
 
+	// Get the file status flags
 	int flags = fcntl(fd, F_GETFL);
+	if (blockingRead) {
+		flags &= ~O_NONBLOCK;
+	} else {
+		flags |= O_NONBLOCK;
+	}
+	int rc = fcntl(fd, F_SETFL, flags);
+	if (rc < 0) {
+		fprintf(stderr, "Error: Unable to set the file status flags: %d\n", rc);
+		return rc;
+	}
 
+	// c_cc: Control characters
+	// [VMIN]: Minimum number of characters to read - unsigned char
+	// [VTIME]: Time to wait for data (tenths of seconds) - unsigned char
+	options.c_cc[VMIN] = (unsigned char) (minReadChars & 0xff);
+	options.c_cc[VTIME] = (unsigned char) ((readTimeoutMillis / 100) & 0xff);
+	/*
+	if (blockingRead) {
 	// Read Semi-blocking with timeout
 	//flags &= ~O_NONBLOCK;
 	//options.c_cc[VMIN] = 0;
-	//options.c_cc[VTIME] = readTimeoutMs / 100;
+		//options.c_cc[VTIME] = readTimeoutMillis / 100;
 
 	// Read Semi-blocking without timeout
 	flags &= ~O_NONBLOCK;
-	// Minimum number of characters to read
 	options.c_cc[VMIN] = 1;
-	// Time to wait for data (tenths of seconds)
 	options.c_cc[VTIME] = 0;
 
 	// Read Blocking with timeout
 	//flags &= ~O_NONBLOCK;
 	//options.c_cc[VMIN] = 0;
-	//options.c_cc[VTIME] = readTimeoutMs / 100
+		//options.c_cc[VTIME] = readTimeoutMillis / 100
 
 	// Read Blocking without timeout
 	//flags &= ~O_NONBLOCK;
-	// Minimum number of characters to read
 	//options.c_cc[VMIN] = 1;
-	// Time to wait for data (tenths of seconds)
 	//options.c_cc[VTIME] = 0;
-
+	} else {
 	// Non-blocking
 	//flags |= O_NONBLOCK;
 	//options.c_cc[VMIN]  = 0;
 	//options.c_cc[VTIME] = 0;
+	}
+	*/
 
+	// c_cflag: Control options
+	// CSTOPB: 2 stop bits (1 otherwise)
+	// CREAD: Enable receiver
+	// PARENB: Enable parity bit
+	// PARODD: Use odd parity instead of even
+	// HUPCL: Hangup (drop DTR) on last close
+	// CLOCAL: Local line - do not change "owner" of port
 	options.c_cflag &= ~(CSIZE | PARENB | CMSPAR | PARODD);
 	options.c_cflag |= (getDataBitsFlag(dataBits) | getParityFlag(parity) | CLOCAL | CREAD);
 
-	if (stopBits == ONE_STOP_BIT_ORDINAL) {
-		options.c_cflag &= ~CSTOPB;
-	} else {
+	if (stopBits == TWO_STOP_BITS_ORDINAL) {
 		options.c_cflag |= CSTOPB;
+	} else {
+		options.c_cflag &= ~CSTOPB;
+	}
+
+	// c_iflag: Input options
+	// PARMRK: Mark parity errors
+	// ISTRIP: Strip parity bits
+	// INPCK: Enable parity check
+	// IGNPAR: Ignore parity errors
+	options.c_iflag &= ~(INPCK | IGNPAR | PARMRK | ISTRIP);
+
+	if (dataBits < DATA_BITS_8_ORDINAL) {
+		options.c_iflag |= ISTRIP;
+	}
+
+	if (parity != NO_PARITY_ORDINAL) {
+		options.c_iflag |= (INPCK | IGNPAR);
 	}
 
 	speed_t speed = getBaudVal(baud);
 	cfsetispeed(&options, speed);
 	cfsetospeed(&options, speed);
-
-	fcntl(fd, F_SETFL, flags);
 
 	return tcsetattr(fd, TCSANOW, &options);
 }
@@ -333,9 +375,12 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeSerialDevi
 /*
  * Class:     com_diozero_internal_provider_sysfs_NativeSerialDevice
  * Method:    serialClose
- * Signature: (I)I
+ * Signature: (Ljava/io/FileDescriptor;)I
  */
 JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeSerialDevice_serialClose
-  (JNIEnv* env, jclass clz, jint fd) {
+  (JNIEnv* env, jclass clz, jobject fileDesc) {
+	// Get the private fd attribute
+	int fd = (*env)->GetIntField(env, fileDesc, fileDescFdField);
+
 	return close(fd);
 }

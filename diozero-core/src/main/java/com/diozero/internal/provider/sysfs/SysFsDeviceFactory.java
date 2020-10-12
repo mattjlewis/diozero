@@ -38,6 +38,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import org.tinylog.Logger;
+
 import com.diozero.api.DeviceMode;
 import com.diozero.api.GpioEventTrigger;
 import com.diozero.api.GpioPullUpDown;
@@ -77,11 +79,12 @@ public class SysFsDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	public void close() {
+	public void shutdown() {
+		Logger.trace("shutdown()");
+
 		if (epoll != null) {
 			epoll.close();
 		}
-		super.close();
 	}
 
 	/**
@@ -174,9 +177,11 @@ public class SysFsDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	public SerialDeviceInterface createSerialDevice(String key, String tty, int baud, SerialDevice.DataBits dataBits,
-			SerialDevice.Parity parity, SerialDevice.StopBits stopBits) throws RuntimeIOException {
-		return new SysFsSerialDevice(this, key, tty, baud, dataBits, parity, stopBits);
+	public SerialDeviceInterface createSerialDevice(String key, String deviceName, int baud,
+			SerialDevice.DataBits dataBits, SerialDevice.StopBits stopBits, SerialDevice.Parity parity,
+			boolean readBlocking, int minReadChars, int readTimeoutMillis) throws RuntimeIOException {
+		return new SysFsSerialDevice(this, key, deviceName, baud, dataBits, stopBits, parity, readBlocking,
+				minReadChars, readTimeoutMillis);
 	}
 
 	void export(int gpio, DeviceMode mode) {

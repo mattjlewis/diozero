@@ -58,7 +58,6 @@ import com.diozero.internal.provider.SpiDeviceInterface;
 import com.diozero.util.RuntimeIOException;
 
 public class JdkDeviceIoDeviceFactory extends BaseNativeDeviceFactory {
-
 	public JdkDeviceIoDeviceFactory() {
 		// Prevent having to reference a local GPIO policy file via
 		// -Djava.security.policy=<policy-file> command line
@@ -79,6 +78,11 @@ public class JdkDeviceIoDeviceFactory extends BaseNativeDeviceFactory {
 	@Override
 	public String getName() {
 		return getClass().getSimpleName() + "10";
+	}
+	
+	@Override
+	public void shutdown() {
+		// Ignore
 	}
 
 	@Override
@@ -139,8 +143,9 @@ public class JdkDeviceIoDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	public SerialDeviceInterface createSerialDevice(String key, String tty, int baud, SerialDevice.DataBits dataBits,
-			SerialDevice.Parity parity, SerialDevice.StopBits stopBits) throws RuntimeIOException {
+	public SerialDeviceInterface createSerialDevice(String key, String deviceName, int baud, SerialDevice.DataBits dataBits,
+			SerialDevice.StopBits stopBits, SerialDevice.Parity parity, boolean readBlocking, int minReadChars,
+			int readTimeoutMillis) throws RuntimeIOException {
 		throw new UnsupportedOperationException("Serial communication not available in the device factory");
 	}
 }

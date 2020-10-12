@@ -34,15 +34,15 @@ names, for example, LED (on / off), LDR (get luminosity), Button (pressed / rele
 automatically closed by the `try (Device d = new Device()) { d.doSomething(); }` statement. This 
 is best illustrated by some simple examples.
 
-__Note "Pin Numbering"__
-
-All pin numbers are device native, i.e. Broadcom for the Raspberry Pi, ASUS for the Tinker Board. Pin layouts:
-    
-+ [Raspberry pi](https://pinout.xyz/).
-+ [CHIP pin numbering](http://www.chip-community.org/index.php/Hardware_Information).
-+ [Odroid C2 pin layout](http://www.hardkernel.com/main/products/prdt_info.php?tab_idx=2).
-+ [BeagleBone Black](http://beagleboard.org/support/bone101).
-+ [Asus Tinker Board](https://www.asus.com/uk/Single-board-Computer/TINKER-BOARD/).
+> **Note: "Pin Numbering"**
+> 
+> All pin numbers are device native, i.e. Broadcom for the Raspberry Pi, ASUS for the Tinker Board. Pin layouts:
+> 
+> * [Raspberry pi](https://pinout.xyz/).
+> * [CHIP pin numbering](http://www.chip-community.org/index.php/Hardware_Information).
+> * [Odroid C2 pin layout](http://www.hardkernel.com/main/products/prdt_info.php?tab_idx=2).
+> * [BeagleBone Black](http://beagleboard.org/support/bone101).
+> * [Asus Tinker Board](https://www.asus.com/uk/Single-board-Computer/TINKER-BOARD/).
 
 LED control:
 
@@ -134,11 +134,11 @@ try (McpAdc adc = new McpAdc(McpAdc.Type.MCP3008, chipSelect); LDR ldr = new LDR
 
 diozero has out of the box support for the following Single Board Computers:
 
-+ [Raspberry Pi](http://www.raspberyrpi.org/) (all versions).
-+ [Odroid C2](http://www.hardkernel.com/main/products/prdt_info.php).
-+ [Beagle Bone Black](https://beagleboard.org/black).
-+ [Asus Tinker Board](https://www.asus.com/uk/Single-board-Computer/TINKER-BOARD/).
-+ [The Next Thing Co CHIP](https://getchip.com/pages/chip).
+* [Raspberry Pi](http://www.raspberyrpi.org/) (all versions).
+* [Odroid C2](http://www.hardkernel.com/main/products/prdt_info.php).
+* [Beagle Bone Black](https://beagleboard.org/black).
+* [Asus Tinker Board](https://www.asus.com/uk/Single-board-Computer/TINKER-BOARD/).
+* [The Next Thing Co CHIP](https://getchip.com/pages/chip).
 
 The builtin sysfs provider is designed to be portable across different boards. 
 In addition, the [JDK Device I/O](https://wiki.openjdk.java.net/display/dio/Main) providers 
@@ -212,41 +212,41 @@ To run:
 sudo groovy -cp $CLASSPATH test.groovy
 ```
 
-__Note "Groovy JAVA_HOME config when running via sudo"__
-
-I was getting the error:
-    
-`groovy: JAVA_HOME is not defined correctly, can not execute: /usr/lib/jvm/default-java/bin/java`
-    
-I tried setting JAVA_HOME in /etc/environment and /etc/profile.d/jdk.sh to no affect. Eventually the following fixed it for me.
-Please let me know if there is a better way to fix this issue.
-    
-```
-ln -s /usr/lib/jvm/jdk-8-oracle-arm32-vfp-hflt /usr/lib/jvm/default-java
-```
+> **Note: "Groovy JAVA_HOME config when running via sudo"**
+>
+> I was getting the error:
+>
+> `groovy: JAVA_HOME is not defined correctly, can not execute: /usr/lib/jvm/default-java/bin/java`
+>
+> I tried setting JAVA_HOME in /etc/environment and /etc/profile.d/jdk.sh to no affect. Eventually the following fixed it for me.
+> Please let me know if there is a better way to fix this issue.
+>
+> ```
+> ln -s /usr/lib/jvm/jdk-8-oracle-arm32-vfp-hflt /usr/lib/jvm/default-java
+> ```
 
 ## Devices
 
 This library provides support for a number of GPIO / I2C / SPI connected components and devices, I have categorised them as follows:
 
-+ [API](http://rtd.diozero.com/en/latest/API/) for lower-level interactions
-    - [Input](http://rtd.diozero.com/en/latest/API/#input-devices), [Output](http://rtd.diozero.com/en/latest/API/#output-devices), [I2C](http://rtd.diozero.com/en/latest/API/#i2c-support), [SPI](http://rtd.diozero.com/en/latest/API/#spi-support)
-+ [Input Devices](http://rtd.diozero.com/en/latest/InputDevices/)
-    - [Digital](http://rtd.diozero.com/en/latest/InputDevices/#digital-input-devices) and [Analog](http://rtd.diozero.com/en/latest/InputDevices/#analog-input-devices)
-+ [Output Devices](http://rtd.diozero.com/en/latest/OutputDevices/)
-    - [Digital](http://rtd.diozero.com/en/latest/OutputDevices/#digital-led) and [PWM](http://rtd.diozero.com/en/latest/OutputDevices/#pwm-led)
-+ [Expansion Boards](http://rtd.diozero.com/en/latest/ExpansionBoards/) for adding additional GPIO / Analog / PWM pins
-    - [Microchip Analog to Digital Converters](http://rtd.diozero.com/en/latest/ExpansionBoards/#mcp-adc), [NXP PCF8591 ADC / DAC](http://rtd.diozero.com/en/latest/ExpansionBoards/#pcf8591), [Microchip GPIO Expansion Board](http://rtd.diozero.com/en/latest/ExpansionBoards/#mcp-gpio-expansion-board), [PWM / Servo Driver](http://rtd.diozero.com/en/latest/ExpansionBoards/#pwm-servo-driver), [PCF8574](http://rtd.diozero.com/en/latest/ExpansionBoards#pcf8574)
-+ [Motor Control](http://rtd.diozero.com/en/latest/MotorControl/) (support for common motor controller boards)
-    - [API](http://rtd.diozero.com/en/latest/MotorControl/#api), [Servos](http://rtd.diozero.com/en/latest/MotorControl/#servo), [CamJam EduKit](http://rtd.diozero.com/en/latest/MotorControl/#camjamkitdualmotor), [Ryanteck](http://rtd.diozero.com/en/latest/MotorControl/#ryanteckdualmotor), [Toshiba TB6612FNG](http://rtd.diozero.com/en/latest/MotorControl/#tb6612fngdualmotordriver), [PiConZero](http://rtd.diozero.com/en/latest/MotorControl/#piconzero)
-+ [Sensor Components](http://rtd.diozero.com/en/latest/SensorComponents/) (support for specific sensors, e.g. temperature, pressure, distance, luminosity)
-    - [HC-SR04 Ultrasonic Ranging Module](http://rtd.diozero.com/en/latest/SensorComponents/#hc-sr04), [Bosch BMP180](http://rtd.diozero.com/en/latest/SensorComponents/#bosch-bmp180), [Bosch BME280](http://rtd.diozero.com/en/latest/SensorComponents/#bosch-bme280), [TSL2561 Light Sensor](http://rtd.diozero.com/en/latest/SensorComponents/#tsl2561), [STMicroelectronics HTS221 Humidity and Temperature Sensor](http://rtd.diozero.com/en/latest/SensorComponents/#hts221), [STMicroelectronics LPS25H Pressure and Temperature Sensor](http://rtd.diozero.com/en/latest/SensorComponents/#lps25h),, [1-Wire Temperature Sensors e.g. DS18B20](http://rtd.diozero.com/en/latest/SensorComponents/#1-wire-temperature-sensors), [Sharp GP2Y0A21YK distance sensor](http://rtd.diozero.com/en/latest/SensorComponents/#gp2y0a21yk), [Mifare MFRC522 RFID Reader](http://rtd.diozero.com/en/latest/SensorComponents/#mfrc522)
-+ [LCD Displays](http://rtd.diozero.com/en/latest/LCDDisplays/)
-    - [HD44780 controlled LCDs](http://rtd.diozero.com/en/latest/LCDDisplays/#i2c-lcds)
-+ [IMU Devices](http://rtd.diozero.com/en/latest/IMUDevices/) Work-in-progress API for interacting with Inertial Measurement Units such as the InvenSense MPU-9150 and the Analog Devices ADXL345
-    - [API](http://rtd.diozero.com/en/latest/IMUDevices/#api), [Supported Devices](http://rtd.diozero.com/en/latest/IMUDevices/#supported-devices)
-+ [LED Strips](http://rtd.diozero.com/en/latest/LEDStrips/) Support for LED strips (WS2811B / WS2812B / Adafruit NeoPixel)
-    - [WS2811B / WS2812B](http://rtd.diozero.com/en/latest/LEDStrips/#ws281x)
+* [API](docs/API.md) for lower-level interactions
+    * [Input](docs/API.md#input-devices), [Output](docs/API.md#output-devices), [I2C](docs/API.md#i2c-support), [SPI](docs/API.md#spi-support)
+* [Input Devices](docs/InputDevices.md)
+    * [Digital](http://rtd.diozero.com/en/latest/InputDevices/#digital-input-devices) and [Analog](http://rtd.diozero.com/en/latest/InputDevices/#analog-input-devices)
+* [Output Devices](http://rtd.diozero.com/en/latest/OutputDevices/)
+    * [Digital](http://rtd.diozero.com/en/latest/OutputDevices/#digital-led) and [PWM](http://rtd.diozero.com/en/latest/OutputDevices/#pwm-led)
+* [Expansion Boards](http://rtd.diozero.com/en/latest/ExpansionBoards/) for adding additional GPIO / Analog / PWM pins
+    * [Microchip Analog to Digital Converters](http://rtd.diozero.com/en/latest/ExpansionBoards/#mcp-adc), [NXP PCF8591 ADC / DAC](http://rtd.diozero.com/en/latest/ExpansionBoards/#pcf8591), [Microchip GPIO Expansion Board](http://rtd.diozero.com/en/latest/ExpansionBoards/#mcp-gpio-expansion-board), [PWM / Servo Driver](http://rtd.diozero.com/en/latest/ExpansionBoards/#pwm-servo-driver), [PCF8574](http://rtd.diozero.com/en/latest/ExpansionBoards#pcf8574)
+* [Motor Control](http://rtd.diozero.com/en/latest/MotorControl/) (support for common motor controller boards)
+    * [API](http://rtd.diozero.com/en/latest/MotorControl/#api), [Servos](http://rtd.diozero.com/en/latest/MotorControl/#servo), [CamJam EduKit](http://rtd.diozero.com/en/latest/MotorControl/#camjamkitdualmotor), [Ryanteck](http://rtd.diozero.com/en/latest/MotorControl/#ryanteckdualmotor), [Toshiba TB6612FNG](http://rtd.diozero.com/en/latest/MotorControl/#tb6612fngdualmotordriver), [PiConZero](http://rtd.diozero.com/en/latest/MotorControl/#piconzero)
+* [Sensor Components](http://rtd.diozero.com/en/latest/SensorComponents/) (support for specific sensors, e.g. temperature, pressure, distance, luminosity)
+    * [HC-SR04 Ultrasonic Ranging Module](http://rtd.diozero.com/en/latest/SensorComponents/#hc-sr04), [Bosch BMP180](http://rtd.diozero.com/en/latest/SensorComponents/#bosch-bmp180), [Bosch BME280](http://rtd.diozero.com/en/latest/SensorComponents/#bosch-bme280), [TSL2561 Light Sensor](http://rtd.diozero.com/en/latest/SensorComponents/#tsl2561), [STMicroelectronics HTS221 Humidity and Temperature Sensor](http://rtd.diozero.com/en/latest/SensorComponents/#hts221), [STMicroelectronics LPS25H Pressure and Temperature Sensor](http://rtd.diozero.com/en/latest/SensorComponents/#lps25h),, [1-Wire Temperature Sensors e.g. DS18B20](http://rtd.diozero.com/en/latest/SensorComponents/#1-wire-temperature-sensors), [Sharp GP2Y0A21YK distance sensor](http://rtd.diozero.com/en/latest/SensorComponents/#gp2y0a21yk), [Mifare MFRC522 RFID Reader](http://rtd.diozero.com/en/latest/SensorComponents/#mfrc522)
+* [LCD Displays](http://rtd.diozero.com/en/latest/LCDDisplays/)
+    * [HD44780 controlled LCDs](http://rtd.diozero.com/en/latest/LCDDisplays/#i2c-lcds)
+* [IMU Devices](http://rtd.diozero.com/en/latest/IMUDevices/) Work-in-progress API for interacting with Inertial Measurement Units such as the InvenSense MPU-9150 and the Analog Devices ADXL345
+    * [API](http://rtd.diozero.com/en/latest/IMUDevices/#api), [Supported Devices](http://rtd.diozero.com/en/latest/IMUDevices/#supported-devices)
+* [LED Strips](http://rtd.diozero.com/en/latest/LEDStrips/) Support for LED strips (WS2811B / WS2812B / Adafruit NeoPixel)
+    * [WS2811B / WS2812B](http://rtd.diozero.com/en/latest/LEDStrips/#ws281x)
 
 ## Performance
 
@@ -291,25 +291,25 @@ For reference, the author's results were:
 
 This project is hosted on [GitHub](https://github.com/mattjlewis/diozero/), please feel free to join in:
 
-+ Make suggestions for [fixes and enhancements](https://github.com/mattjlewis/diozero/issues)
-+ Provide sample applications
-+ Contribute to development
+* Make suggestions for [fixes and enhancements](https://github.com/mattjlewis/diozero/issues)
+* Provide sample applications
+* Contribute to development
 
 ## To-Do
 
-+ Thorough testing (various types of devices using each service provider)
-+ A clean object-orientated API for IMUs
-+ Native support for all devices via mmap (/dev/mem), in particular to improve performance and add support for GPIO pull up/down configuration.
-+ Wireless access to Firmata devices (network and Bluetooth). E.g. [ESP32](https://learn.sparkfun.com/tutorials/esp32-thing-hookup-guide?_ga=1.116824388.33505106.1471290985#installing-the-esp32-arduino-core) [Firmata GitHub issue #315](https://github.com/firmata/arduino/issues/315)
-+ Remote API for board capabilities
-+ SPI support for Arduino devices
-+ Introduce Servo as a device type
-+ Try out ConfigurableFirmata - is there actually any difference to the StandardFirmata protocol?
-+ Complete ADSL1x15
-+ BME680
+* Thorough testing (various types of devices using each service provider)
+* A clean object-orientated API for IMUs
+* Remote API for board capabilities
+* SPI support for Arduino devices
+* Introduce Servo as a device type
+* Try out ConfigurableFirmata - is there actually any difference to the StandardFirmata protocol?
+* Complete ADSL1x15
+* BME680
+* DONE Native support for all devices via mmap (/dev/mem), in particular to improve performance and add support for GPIO pull up/down configuration.
+* DONE Wireless access to Firmata devices (network and Bluetooth). E.g. [ESP32](https://learn.sparkfun.com/tutorials/esp32-thing-hookup-guide?_ga=1.116824388.33505106.1471290985#installing-the-esp32-arduino-core) [Firmata GitHub issue #315](https://github.com/firmata/arduino/issues/315)
 
 [Release History](docs/RELEASE.md)
 
 ## License
 
-This work is provided under the [MIT License](http://rtd.diozero.com/en/latest/license/).
+This work is provided under the [MIT License](docs/license.md).

@@ -132,9 +132,12 @@ public class FirmataProtocolHandler implements RemoteProtocolInterface, FirmataE
 		} else {
 			String serial_port = PropertyUtil.getProperty(SERIAL_PORT_PROP, null);
 			if (serial_port != null) {
+				//adapter = new SerialFirmataAdapter(this, serial_port, SerialConstants.BAUD_57600,
+				//		SerialConstants.DataBits.CS8, SerialConstants.StopBits.ONE_STOP_BIT,
+				//		SerialConstants.Parity.NO_PARITY, false, 1, 100);
 				adapter = new SerialFirmataAdapter(this, serial_port, SerialConstants.BAUD_57600,
-						SerialConstants.DEFAULT_DATA_BITS, SerialConstants.DEFAULT_PARITY,
-						SerialConstants.DEFAULT_STOP_BITS);
+						SerialConstants.DataBits.CS8, SerialConstants.StopBits.ONE_STOP_BIT,
+						SerialConstants.Parity.NO_PARITY, true, 1, 0);
 			}
 		}
 		if (adapter == null) {
@@ -142,7 +145,7 @@ public class FirmataProtocolHandler implements RemoteProtocolInterface, FirmataE
 			throw new IllegalArgumentException("Either " + TCP_HOST_PROP + " or " + SERIAL_PORT_PROP + " must be set");
 		}
 	}
-	
+
 	@Override
 	public void start() {
 		adapter.start();

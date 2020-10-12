@@ -107,6 +107,11 @@ public class TestDeviceFactory extends BaseNativeDeviceFactory {
 	public String getName() {
 		return getClass().getName();
 	}
+	
+	@Override
+	public void shutdown() {
+		// Ignore
+	}
 
 	@Override
 	public GpioDigitalInputDeviceInterface createDigitalInputDevice(String key, PinInfo pinInfo, GpioPullUpDown pud,
@@ -226,8 +231,9 @@ public class TestDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	public SerialDeviceInterface createSerialDevice(String key, String tty, int baud, SerialDevice.DataBits dataBits,
-			SerialDevice.Parity parity, SerialDevice.StopBits stopBits) throws RuntimeIOException {
+	public SerialDeviceInterface createSerialDevice(String key, String deviceName, int baud,
+			SerialDevice.DataBits dataBits, SerialDevice.StopBits stopBits, SerialDevice.Parity parity,
+			boolean readBlocking, int minReadChars, int readTimeoutMillis) throws RuntimeIOException {
 		if (serialDeviceClass == null) {
 			throw new IllegalArgumentException("Serial Device implementation class hasn't been set");
 		}
@@ -235,8 +241,9 @@ public class TestDeviceFactory extends BaseNativeDeviceFactory {
 		try {
 			return serialDeviceClass
 					.getConstructor(String.class, DeviceFactoryInterface.class, String.class, int.class,
-							SerialDevice.DataBits.class, SerialDevice.Parity.class, SerialDevice.StopBits.class)
-					.newInstance(key, this, tty, Integer.valueOf(baud), dataBits, parity, stopBits);
+							SerialDevice.DataBits.class, SerialDevice.StopBits.class, SerialDevice.Parity.class,
+							boolean.class, int.class, int.class)
+					.newInstance(key, this, deviceName, Integer.valueOf(baud), dataBits, stopBits, parity);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}

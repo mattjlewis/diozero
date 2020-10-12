@@ -34,7 +34,7 @@ package com.diozero.remote.message;
 public class SerialClose extends SerialBase {
 	private static final long serialVersionUID = -6178658571641591502L;
 
-	public SerialClose(String tty, String correlationId) {
-		super(tty, correlationId);
+	public SerialClose(String deviceName, String correlationId) {
+		super(deviceName, correlationId);
 	}
 }

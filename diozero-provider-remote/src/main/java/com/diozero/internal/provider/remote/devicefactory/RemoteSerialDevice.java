@@ -55,26 +55,28 @@ import com.diozero.util.RuntimeIOException;
 
 public class RemoteSerialDevice extends AbstractDevice implements SerialDeviceInterface {
 	private RemoteDeviceFactory deviceFactory;
-	private String tty;
+	private String deviceName;
 
-	public RemoteSerialDevice(RemoteDeviceFactory deviceFactory, String key, String tty, int baud,
-			SerialDevice.DataBits dataBits, SerialDevice.Parity parity, SerialDevice.StopBits stopBits) {
+	public RemoteSerialDevice(RemoteDeviceFactory deviceFactory, String key, String deviceName, int baud,
+			SerialDevice.DataBits dataBits, SerialDevice.StopBits stopBits, SerialDevice.Parity parity,
+			boolean readBlocking, int minReadChars, int readTimeoutMillis) {
 		super(key, deviceFactory);
 
 		this.deviceFactory = deviceFactory;
-		this.tty = tty;
+		this.deviceName = deviceName;
 
-		SerialOpen request = new SerialOpen(tty, baud, dataBits, parity, stopBits, UUID.randomUUID().toString());
+		SerialOpen request = new SerialOpen(deviceName, baud, dataBits, stopBits, parity, readBlocking, minReadChars,
+				readTimeoutMillis, UUID.randomUUID().toString());
 
 		Response response = deviceFactory.getProtocolHandler().request(request);
 		if (response.getStatus() != Response.Status.OK) {
 			throw new RuntimeIOException("Error: " + response.getDetail());
 		}
 	}
-	
+
 	@Override
 	public int read() {
-		SerialRead request = new SerialRead(tty, UUID.randomUUID().toString());
+		SerialRead request = new SerialRead(deviceName, UUID.randomUUID().toString());
 
 		SerialReadResponse response = deviceFactory.getProtocolHandler().request(request);
 		if (response.getStatus() != Response.Status.OK) {
@@ -86,7 +88,7 @@ public class RemoteSerialDevice extends AbstractDevice implements SerialDeviceIn
 
 	@Override
 	public byte readByte() throws RuntimeIOException {
-		SerialReadByte request = new SerialReadByte(tty, UUID.randomUUID().toString());
+		SerialReadByte request = new SerialReadByte(deviceName, UUID.randomUUID().toString());
 
 		SerialReadByteResponse response = deviceFactory.getProtocolHandler().request(request);
 		if (response.getStatus() != Response.Status.OK) {
@@ -98,7 +100,7 @@ public class RemoteSerialDevice extends AbstractDevice implements SerialDeviceIn
 
 	@Override
 	public void writeByte(byte bVal) {
-		SerialWriteByte request = new SerialWriteByte(tty, bVal, UUID.randomUUID().toString());
+		SerialWriteByte request = new SerialWriteByte(deviceName, bVal, UUID.randomUUID().toString());
 
 		Response response = deviceFactory.getProtocolHandler().request(request);
 		if (response.getStatus() != Response.Status.OK) {
@@ -107,8 +109,8 @@ public class RemoteSerialDevice extends AbstractDevice implements SerialDeviceIn
 	}
 
 	@Override
-	public void read(byte[] buffer) {
-		SerialReadBytes request = new SerialReadBytes(tty, buffer.length, UUID.randomUUID().toString());
+	public int read(byte[] buffer) {
+		SerialReadBytes request = new SerialReadBytes(deviceName, buffer.length, UUID.randomUUID().toString());
 
 		SerialReadBytesResponse response = deviceFactory.getProtocolHandler().request(request);
 		if (response.getStatus() != Response.Status.OK) {
@@ -117,11 +119,13 @@ public class RemoteSerialDevice extends AbstractDevice implements SerialDeviceIn
 
 		byte[] result = response.getData();
 		System.arraycopy(result, 0, buffer, 0, result.length);
+		
+		return result.length;
 	}
 
 	@Override
 	public void write(byte[] data) {
-		SerialWriteBytes request = new SerialWriteBytes(tty, data, UUID.randomUUID().toString());
+		SerialWriteBytes request = new SerialWriteBytes(deviceName, data, UUID.randomUUID().toString());
 
 		Response response = deviceFactory.getProtocolHandler().request(request);
 		if (response.getStatus() != Response.Status.OK) {
@@ -131,7 +135,7 @@ public class RemoteSerialDevice extends AbstractDevice implements SerialDeviceIn
 
 	@Override
 	public int bytesAvailable() {
-		SerialBytesAvailable request = new SerialBytesAvailable(tty, UUID.randomUUID().toString());
+		SerialBytesAvailable request = new SerialBytesAvailable(deviceName, UUID.randomUUID().toString());
 
 		SerialBytesAvailableResponse response = deviceFactory.getProtocolHandler().request(request);
 		if (response.getStatus() != Response.Status.OK) {
@@ -143,7 +147,7 @@ public class RemoteSerialDevice extends AbstractDevice implements SerialDeviceIn
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
-		SerialClose request = new SerialClose(tty, UUID.randomUUID().toString());
+		SerialClose request = new SerialClose(deviceName, UUID.randomUUID().toString());
 
 		Response response = deviceFactory.getProtocolHandler().request(request);
 		if (response.getStatus() != Response.Status.OK) {

@@ -37,6 +37,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import org.tinylog.Logger;
+
 import com.diozero.api.SerialDevice;
 import com.diozero.util.LibraryLoader;
 import com.diozero.util.RuntimeIOException;
@@ -49,16 +51,20 @@ public class NativeSerialDevice implements Closeable {
 	}
 
 	// See https://www.cmrr.umn.edu/~strupp/serial.html
-	private static native FileDescriptor serialOpen(String device, int baud, int dataBits, int stopBits, int parity);
-	private static native int serialConfigPort(int fd, int baud, int dataBits, int stopBits, int parity);
-	private static native int serialReadByte(int fd);
-	private static native int serialWriteByte(int fd, int bVal);
-	private static native int serialRead(int fd, byte[] buffer);
-	private static native int serialWrite(int fd, byte[] data);
-	private static native int serialBytesAvailable(int fd);
-	private static native int serialClose(int fd);
+	private static native FileDescriptor serialOpen(String device, int baud, int dataBits, int stopBits, int parity,
+			boolean readBlocking, int minReadChars, int readTimeoutMillis);
 
-	private FileDescriptor fd;
+	// private static native int serialConfigPort(int fd, int baud, int dataBits,
+	// int stopBits, int parity,
+	// boolean readBlocking, int minReadChars, int readTimeoutMillis);
+	// private static native int serialReadByte(int fd);
+	// private static native int serialWriteByte(int fd, int bVal);
+	// private static native int serialRead(int fd, byte[] buffer);
+	// private static native int serialWrite(int fd, byte[] data);
+	// private static native int serialBytesAvailable(int fd);
+	private static native int serialClose(FileDescriptor fd);
+
+	private FileDescriptor fileDescriptor;
 	private FileInputStream inputStream;
 	private FileOutputStream outputStream;
 	private String deviceName;
@@ -66,27 +72,33 @@ public class NativeSerialDevice implements Closeable {
 	/**
 	 * Open a new serial device
 	 * 
-	 * @param deviceName Device name
-	 * @param baud       Default is 9600.
-	 * @param dataBits   The number of data bits to use per word; default is 8,
-	 *                   values from 5 to 8 are acceptable.
-	 * @param parity     Specifies how error detection is carried out; valid values
-	 *                   are NO_PARITY, EVEN_PARITY, ODD_PARITY, MARK_PARITY, and
-	 *                   SPACE_PARITY
-	 * @param stopBits   The number of stop bits; default is 1, but 2 bits can also
-	 *                   be used or even 1.5 on Windows machines.
+	 * @param deviceName        Device name
+	 * @param baud              Default is 9600.
+	 * @param dataBits          The number of data bits to use per word; default is
+	 *                          8, values from 5 to 8 are acceptable.
+	 * @param stopBits          The number of stop bits; default is 1, but 2 bits
+	 *                          can also be used or even 1.5 on Windows machines.
+	 * @param parity            Specifies how error detection is carried out; valid
+	 *                          values are NO_PARITY, EVEN_PARITY, ODD_PARITY,
+	 *                          MARK_PARITY, and SPACE_PARITY
+	 * @param readBlocking      Should blocking I/O be used for read operations?
+	 * @param minReadChars      Minimum number of characters to read
+	 * @param readTimeoutMillis Duration in milliseconds for read timeouts; must be
+	 *                          in units of 100.
 	 */
-	public NativeSerialDevice(String deviceName, int baud, SerialDevice.DataBits dataBits, SerialDevice.Parity parity,
-			SerialDevice.StopBits stopBits) {
+	public NativeSerialDevice(String deviceName, int baud, SerialDevice.DataBits dataBits,
+			SerialDevice.StopBits stopBits, SerialDevice.Parity parity, boolean readBlocking, int minReadChars,
+			int readTimeoutMillis) {
 		this.deviceName = deviceName;
 
-		FileDescriptor fd = serialOpen(deviceName, baud, dataBits.ordinal(), parity.ordinal(), stopBits.ordinal());
-		if (fd == null) {
+		fileDescriptor = serialOpen(deviceName, baud, dataBits.ordinal(), stopBits.ordinal(), parity.ordinal(),
+				readBlocking, minReadChars, readTimeoutMillis);
+		if (fileDescriptor == null) {
 			throw new RuntimeIOException("Error opening serial device '" + deviceName + "'");
 		}
 
-		inputStream = new FileInputStream(fd);
-		outputStream = new FileOutputStream(fd);
+		inputStream = new FileInputStream(fileDescriptor);
+		outputStream = new FileOutputStream(fileDescriptor);
 	}
 
 	public int read() {
@@ -135,9 +147,9 @@ public class NativeSerialDevice implements Closeable {
 		// }
 	}
 
-	public void read(byte[] buffer) {
+	public int read(byte[] buffer) {
 		try {
-			inputStream.read(buffer);
+			return inputStream.read(buffer);
 		} catch (IOException e) {
 			throw new RuntimeIOException("Error in serial device read for '" + deviceName + "': " + e.getMessage(), e);
 		}
@@ -180,9 +192,34 @@ public class NativeSerialDevice implements Closeable {
 
 	@Override
 	public void close() {
-		if (inputStream != null) { try { inputStream.close(); } catch (IOException e) { } }
-		if (outputStream != null) { try { outputStream.close(); } catch (IOException e) { } }
-		fd = null;
+		Logger.trace("closing...");
+
+		if (fileDescriptor == null) {
+			Logger.trace("Already closed...");
+			return;
+		}
+
+		serialClose(fileDescriptor);
+
+		if (inputStream != null) {
+			try {
+				inputStream.close();
+			} catch (IOException e) {
+			}
+			inputStream = null;
+		}
+
+		if (outputStream != null) {
+			try {
+				outputStream.close();
+			} catch (IOException e) {
+			}
+			outputStream = null;
+		}
+
+		fileDescriptor = null;
+
+		Logger.trace("closed");
 	}
 
 	public String getDeviceName() {

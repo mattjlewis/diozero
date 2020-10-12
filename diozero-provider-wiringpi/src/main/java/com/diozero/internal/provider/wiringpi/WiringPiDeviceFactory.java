@@ -86,6 +86,11 @@ public class WiringPiDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
+	public void shutdown() {
+		// Ignore
+	}
+
+	@Override
 	public int getBoardPwmFrequency() {
 		return boardPwmFrequency;
 	}
@@ -174,8 +179,9 @@ public class WiringPiDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	public SerialDeviceInterface createSerialDevice(String key, String tty, int baud, SerialDevice.DataBits dataBits,
-			SerialDevice.Parity parity, SerialDevice.StopBits stopBits) throws RuntimeIOException {
+	public SerialDeviceInterface createSerialDevice(String key, String deviceName, int baud,
+			SerialDevice.DataBits dataBits, SerialDevice.StopBits stopBits, SerialDevice.Parity parity,
+			boolean readBlocking, int minReadChars, int readTimeoutMillis) throws RuntimeIOException {
 		throw new UnsupportedOperationException("Serial devices not yet supported in this provider");
 	}
 }
