@@ -32,13 +32,18 @@ package com.diozero;
  */
 
 import com.diozero.api.SerialConstants;
+import com.diozero.api.SerialDevice;
 import com.diozero.internal.provider.sysfs.NativeSerialDevice;
 
 public class NativeDeviceTest {
 	public static void main(String[] args) {
 		System.out.println(System.getProperty("os.name"));
-		System.getProperties().forEach((key, value) -> System.out.println(key + " = " + value));
+
+		SerialDevice.getLocalSerialDevices()
+				.forEach(device -> System.out.println(device.getDeviceName() + ": " + device.getFriendlyName()));
+
 		System.exit(1);
+
 		try (NativeSerialDevice dev = new NativeSerialDevice(args[0], SerialConstants.DEFAULT_BAUD,
 				SerialConstants.DEFAULT_DATA_BITS, SerialConstants.DEFAULT_STOP_BITS, SerialConstants.DEFAULT_PARITY,
 				SerialConstants.DEFAULT_READ_BLOCKING, SerialConstants.DEFAULT_MIN_READ_CHARS,

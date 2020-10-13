@@ -33,6 +33,11 @@ package com.diozero.api;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.tinylog.Logger;
 
@@ -43,7 +48,7 @@ public class SerialDevice implements SerialConstants, Closeable {
 	public static class DeviceInfo {
 		private String deviceName;
 		private String friendlyName;
-		
+
 		public DeviceInfo(String deviceName, String friendlyName) {
 			this.deviceName = deviceName;
 			this.friendlyName = friendlyName;
@@ -57,12 +62,11 @@ public class SerialDevice implements SerialConstants, Closeable {
 			return friendlyName;
 		}
 	}
-	
-	public static DeviceInfo[] getLocalSerialDevices() {
-		/*
+
+	public static List<DeviceInfo> getLocalSerialDevices() {
+		/*-
 		 * On Linux:
-		 * > cd /system/devices
-		 * > find . -name \*tty\*
+		 * > cd /sys/devices > find . -name \*tty\*
 		 * ./platform/scb/fd500000.pcie/pci0000:00/0000:00:00.0/0000:01:00.0/usb1/1-1/1-1.2/1-1.2:1.0/ttyUSB0
 		 * ./platform/scb/fd500000.pcie/pci0000:00/0000:00:00.0/0000:01:00.0/usb1/1-1/1-1.2/1-1.2:1.0/ttyUSB0/tty
 		 * ./platform/scb/fd500000.pcie/pci0000:00/0000:00:00.0/0000:01:00.0/usb1/1-1/1-1.2/1-1.2:1.0/ttyUSB0/tty/ttyUSB0
@@ -81,11 +85,52 @@ public class SerialDevice implements SerialConstants, Closeable {
 		 * > cat ./platform/scb/fd500000.pcie/pci0000:00/0000:00:00.0/0000:01:00.0/usb1/1-1/1-1.2/product
 		 * USB2.0-Serial
 		 */
-		return new DeviceInfo[] {};
+		List<DeviceInfo> serial_devices = new ArrayList<>();
+		lookForSerialDevices(Paths.get("/sys/devices/platform"), serial_devices);
+
+		return serial_devices;
+	}
+
+	private static void lookForSerialDevices(Path parent, List<DeviceInfo> serialDevices) {
+		if (!parent.toFile().exists()) {
+			return;
+		}
+		
+		try {
+			// Ignore hidden files, symbolic links and "virtual"
+			Files.newDirectoryStream(parent, p -> p.toFile().isDirectory() && !p.toFile().isHidden()
+					&& !Files.isSymbolicLink(p) && !p.getFileName().toString().equals("virtual")).forEach(p -> {
+						String file_name = p.getFileName().toString();
+						if (file_name.length() > 3 && (file_name.startsWith("tty") || file_name.startsWith("rfc"))) {
+							Logger.debug("Found device with path {}", p);
+							String friendly_name;
+
+							// Look for a product description file
+							Path product_file = p.getParent().getParent().resolve("product");
+							if (product_file.toFile().exists()) {
+								try {
+									friendly_name = Files.lines(product_file).findFirst().orElse("Unknown");
+								} catch (IOException e) {
+									Logger.error(e, "Error reading serial device product file: {}", e.getMessage());
+									friendly_name = "Error";
+								}
+							} else {
+								// TODO Can also look for p.resolve("/driver/module/drivers") then read the interface file in
+								// p.getParent().resolve("interface") or p.resolve("device").getParent().resolve("interface")
+								friendly_name = "Physical Port";
+							}
+							serialDevices.add(new DeviceInfo("/dev/" + file_name, friendly_name));
+						} else {
+							lookForSerialDevices(p, serialDevices);
+						}
+					});
+		} catch (IOException e) {
+			Logger.error(e, "Error looking for serial devices: {}", e.getMessage());
+		}
 	}
 
 	private SerialDeviceInterface device;
-	
+
 	public SerialDevice(String deviceName) {
 		this(deviceName, DEFAULT_BAUD, DEFAULT_DATA_BITS, DEFAULT_STOP_BITS, DEFAULT_PARITY, DEFAULT_READ_BLOCKING,
 				DEFAULT_MIN_READ_CHARS, DEFAULT_READ_TIMEOUT_MILLIS);
@@ -130,27 +175,27 @@ public class SerialDevice implements SerialConstants, Closeable {
 		Logger.trace("close()");
 		device.close();
 	}
-	
+
 	public int read() {
 		return device.read();
 	}
-	
+
 	public byte readByte() {
 		return device.readByte();
 	}
-	
+
 	public void readByte(byte bVal) {
 		device.writeByte(bVal);
 	}
-	
+
 	public void read(byte[] buffer) {
 		device.read(buffer);
 	}
-	
+
 	public void write(byte[] buffer) {
 		device.write(buffer);
 	}
-	
+
 	public int bytesAvailable() {
 		return device.bytesAvailable();
 	}

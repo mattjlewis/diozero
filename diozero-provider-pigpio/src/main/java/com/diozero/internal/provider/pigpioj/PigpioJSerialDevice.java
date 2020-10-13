@@ -33,6 +33,7 @@ package com.diozero.internal.provider.pigpioj;
 
 import org.tinylog.Logger;
 
+import com.diozero.api.SerialConstants;
 import com.diozero.api.SerialDevice;
 import com.diozero.internal.provider.AbstractDevice;
 import com.diozero.internal.provider.DeviceFactoryInterface;
@@ -53,14 +54,21 @@ public class PigpioJSerialDevice extends AbstractDevice implements SerialDeviceI
 	private PigpioInterface pigpioImpl;
 	private int handle = CLOSED;
 	private String deviceName;
+	private boolean readBlocking;
+	private int minReadChars;
+	private int readTimeoutMillis;
 
 	public PigpioJSerialDevice(String key, DeviceFactoryInterface deviceFactory, PigpioInterface pigpioImpl,
 			String deviceName, int baud, SerialDevice.DataBits dataBits, SerialDevice.StopBits stopBits,
-			SerialDevice.Parity parity) throws RuntimeIOException {
+			SerialDevice.Parity parity, boolean readBlocking, int minReadChars, int readTimeoutMillis)
+			throws RuntimeIOException {
 		super(key, deviceFactory);
 
 		this.pigpioImpl = pigpioImpl;
 		this.deviceName = deviceName;
+		this.readBlocking = readBlocking;
+		this.minReadChars = minReadChars;
+		this.readTimeoutMillis = readTimeoutMillis;
 
 		// Note flags must be 0 - dataBits, parity and stopBits are ignored
 		int rc = pigpioImpl.serOpen(deviceName, baud, 0);
@@ -100,9 +108,18 @@ public class PigpioJSerialDevice extends AbstractDevice implements SerialDeviceI
 			if (read == PI_SER_READ_FAILED || read == PI_BAD_HANDLE) {
 				throw new RuntimeIOException("Error in pigpioImpl.serReadByte - read failed");
 			}
+			
 			if (read >= 0) {
 				break;
 			}
+			
+			if (!readBlocking) {
+				read = SerialConstants.READ_TIMEOUT;
+				break;
+			}
+			
+			// FIXME Read timeouts
+			
 			SleepUtil.sleepMillis(READ_DELAY);
 		}
 
@@ -132,22 +149,35 @@ public class PigpioJSerialDevice extends AbstractDevice implements SerialDeviceI
 			throw new IllegalStateException("Serial Device " + deviceName + " is closed");
 		}
 
-		int read;
+		int read = 0;
 		while (true) {
-			// Returns PI_SER_READ_NO_DATA (-87) if there is no data available, can also return PI_SER_READ_FAILED (-86)
-			int rc = pigpioImpl.serRead(handle, buffer, buffer.length);
-			
+			byte[] read_buffer = new byte[buffer.length];
+			// Returns PI_SER_READ_NO_DATA (-87) if there is no data available, can also
+			// return PI_SER_READ_FAILED (-86)
+			int rc = pigpioImpl.serRead(handle, read_buffer, read_buffer.length - read);
+
 			if (rc == PI_SER_READ_FAILED || rc == PI_BAD_HANDLE) {
 				throw new RuntimeIOException("Error in pigpioImpl.serRead - read failed");
 			}
-			
+
 			if (rc > 0) {
-				read = rc;
-				break;
+				System.arraycopy(read_buffer, 0, buffer, read, rc);
+				read += rc;
+				
+				if (read == buffer.length) {
+					break;
+				}
 			}
 			
+			if (!readBlocking) {
+				break;
+			}
+
+			// TODO Read timeouts and min read chars
+			
+			SleepUtil.sleepMillis(READ_DELAY);
 		}
-		
+
 		return read;
 	}
 

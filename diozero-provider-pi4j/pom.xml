@@ -27,6 +27,16 @@
 		<pi4j.version>1.2</pi4j.version>
 	</properties>
 	
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>com.pi4j</groupId>
+				<artifactId>pi4j-core</artifactId>
+				<version>${pi4j.version}</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+	
 	<dependencies>
 		<dependency>
 			<groupId>com.diozero</groupId>
@@ -35,7 +45,6 @@
 		<dependency>
 			<groupId>com.pi4j</groupId>
 			<artifactId>pi4j-core</artifactId>
-			<version>${pi4j.version}</version>
 		</dependency>
 	</dependencies>
 

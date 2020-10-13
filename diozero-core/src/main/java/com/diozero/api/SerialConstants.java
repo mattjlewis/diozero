@@ -32,6 +32,8 @@ package com.diozero.api;
  */
 
 public interface SerialConstants {
+	static final int READ_TIMEOUT = -1;
+	
 	// Baud rates
 	static final int BAUD_50 = 50;
 	static final int BAUD_B75 = 75;

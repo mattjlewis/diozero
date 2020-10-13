@@ -15,6 +15,16 @@
 		<jdk-device-io.version>1.1</jdk-device-io.version>
 	</properties>
 	
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>jdk.dio</groupId>
+				<artifactId>device-io</artifactId>
+				<version>${jdk-device-io.version}</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+	
 	<dependencies>
 		<dependency>
 			<groupId>com.diozero</groupId>
@@ -23,7 +33,6 @@
 		<dependency>
 			<groupId>jdk.dio</groupId>
 			<artifactId>device-io</artifactId>
-			<version>${jdk-device-io.version}</version>
 		</dependency>
 	</dependencies>
 

@@ -12,20 +12,6 @@
 	<artifactId>diozero-remote-common</artifactId>
 	<packaging>jar</packaging>
 
-	<properties>
-		<google-protocol-buffers.version>3.13.0</google-protocol-buffers.version>
-	</properties>
-	
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>com.google.protobuf</groupId>
-				<artifactId>protobuf-java</artifactId>
-				<version>${google-protocol-buffers.version}</version>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
-
 	<dependencies>
 		<dependency>
 			<groupId>com.diozero</groupId>
