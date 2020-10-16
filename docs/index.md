@@ -253,7 +253,7 @@ I've done some limited performance tests (turning a GPIO on then off, see
 on a Raspberry Pi 2 and 3 using the various native device factory providers. I've also run tests using JNI APIs
 directly without going via my DIO-Zero wrapper to assess the overhead of using my library (see
 [WiringPiRawPerfTest](https://github.com/mattjlewis/diozero/blob/master/diozero-provider-wiringpi/src/main/java/com/diozero/internal/provider/wiringpi/WiringPiRawPerfTest.java) and
-[PigpioPerfTest](https://github.com/mattjlewis/pigpioj/blob/master/pigpioj-java/src/main/java/com/diozero/pigpioj/test/PigpioPerfTest.java)) -
+[PigpioPerfTest](https://github.com/mattjlewis/pigpioj/blob/master/pigpioj-java/src/main/java/uk/pigpioj/test/PigpioPerfTest.java)) -
 the overhead of DIO-Zero is approximately 25% for both pigpio and wiringPi. Here are the results:
 
 | Provider | Device | Frequency (kHz) |
