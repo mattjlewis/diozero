@@ -1,4 +1,6 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<!--
 	Useful Maven commands:
@@ -56,7 +58,7 @@
 	-->
 
 	<modelVersion>4.0.0</modelVersion>
-	
+
 	<groupId>com.diozero</groupId>
 	<artifactId>diozero</artifactId>
 	<version>0.14-SNAPSHOT</version>
@@ -65,12 +67,12 @@
 	<url>http://www.diozero.com/</url>
 	<inceptionYear>2016</inceptionYear>
 	<packaging>pom</packaging>
-	
+
 	<organization>
 		<name>diozero</name>
 		<url>http://www.diozero.com</url>
 	</organization>
-	
+
 	<licenses>
 		<license>
 			<name>MIT License</name>
@@ -87,14 +89,14 @@
 			<url>https://github.com/mattjlewis</url>
 		</developer>
 	</developers>
-	
+
 	<scm>
 		<connection>scm:git:https://github.com/mattjlewis/diozero.git</connection>
 		<developerConnection>scm:git:https://github.com/mattjlewis/diozero.git</developerConnection>
 		<url>https://github.com/mattjlewis/diozero</url>
 		<tag>HEAD</tag>
 	</scm>
-	
+
 	<issueManagement>
 		<system>GitHub Issues</system>
 		<url>https://github.com/mattjlewis/diozero/issues</url>
@@ -104,7 +106,7 @@
 		<system>Travis CI</system>
 		<url>https://travis-ci.org/mattjlewis/diozero</url>
 	</ciManagement>
-	
+
 	<distributionManagement>
 		<downloadUrl>https://oss.sonatype.org/index.html#nexus-search;gav~com.diozero~~~~</downloadUrl>
 		<snapshotRepository>
@@ -153,20 +155,17 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-		<project.scm.id>github</project.scm.id>		
+		<project.scm.id>github</project.scm.id>
 		<github.global.server>github</github.global.server>
-		
+
 		<maven.min-version>3.3.0</maven.min-version>
 
 		<diozero.version>0.14-SNAPSHOT</diozero.version>
-		
+
 		<!-- Java version -->
-		<java.version>8</java.version>
-		<jdk.source.version>1.${java.version}</jdk.source.version>
-		<jdk.target.version>1.${java.version}</jdk.target.version>
-		<maven.compiler.source>${jdk.source.version}</maven.compiler.source>
-		<maven.compiler.target>${jdk.target.version}</maven.compiler.target>
-		
+		<maven.compiler.source>11</maven.compiler.source>
+		<maven.compiler.release>8</maven.compiler.release>
+
 		<!-- Maven plugins -->
 		<maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
 		<maven-checkstyle-plugin.version>3.1.1</maven-checkstyle-plugin.version>
@@ -181,7 +180,7 @@
 		<maven-release-plugin.version>2.5.3</maven-release-plugin.version>
 		<maven-site-plugin.version>3.9.1</maven-site-plugin.version>
 		<maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
-		
+
 		<!-- Other plugins -->
 		<nexus-staging-maven-plugin.version>1.6.8</nexus-staging-maven-plugin.version>
 		<build-helper-maven-plugin.version>3.2.0</build-helper-maven-plugin.version>
@@ -191,16 +190,17 @@
 		<findbugs-maven-plugin.version>3.0.5</findbugs-maven-plugin.version>
 		<eclipse.m2e.lifecycle-mapping.version>1.0.0</eclipse.m2e.lifecycle-mapping.version>
 
-		<!-- Libraries -->		
+		<!-- Libraries -->
 		<tinylog.version>2.1.2</tinylog.version>
 		<commons-math3.version>3.6.1</commons-math3.version>
 		<eclipse-paho-client-mqttv3.version>1.2.5</eclipse-paho-client-mqttv3.version>
 		<google-gson.version>2.8.6</google-gson.version>
 		<google-protocol-buffers.version>3.13.0</google-protocol-buffers.version>
 		<netty.version>4.1.52.Final</netty.version>
-		<junit.version>4.13.1</junit.version>
+		<grpc.version>1.32.2</grpc.version>
+		<junit.version>5.7.0</junit.version>
 	</properties>
-	
+
 	<dependencyManagement>
 		<dependencies>
 			<!-- Libraries -->
@@ -245,14 +245,15 @@
 				<version>${netty.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>junit</groupId>
-				<artifactId>junit</artifactId>
-				<version>${junit.version}</version>
-				<scope>test</scope>
+				<groupId>org.junit</groupId>
+				<artifactId>junit-bom</artifactId>
+				<version>5.7.0</version>
+				<type>pom</type>
+				<scope>import</scope>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
-	
+
 	<!-- Core dependencies common to all projects -->
 	<dependencies>
 		<dependency>
@@ -264,12 +265,12 @@
 			<artifactId>tinylog-impl</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter</artifactId>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-	
+
 	<build>
 		<pluginManagement>
 			<plugins>
@@ -342,7 +343,7 @@
 					<artifactId>maven-release-plugin</artifactId>
 					<version>${maven-release-plugin.version}</version>
 				</plugin>
-			
+
 				<!-- Other plugins -->
 				<plugin>
 					<groupId>org.sonatype.plugins</groupId>
@@ -379,7 +380,7 @@
 				</plugin>
 			</plugins>
 		</pluginManagement>
-		
+
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -464,12 +465,12 @@
 			</plugin>
 		</plugins>
 	</build>
-	
+
 	<profiles>
 		<profile>
 			<id>m2e</id>
 			<!-- This profile is only active when the property "m2e.version"
-				 is set, which is the case when building in Eclipse with m2e. -->
+			is set, which is the case when building in Eclipse with m2e. -->
 			<activation>
 				<property>
 					<name>m2e.version</name>
@@ -478,7 +479,7 @@
 			<build>
 				<pluginManagement>
 					<plugins>
-						<!-- Fix for the Eclipse "execution not covered by lifecycle configuration" warning -->
+						<!-- Fix for the Eclipse "execution not covered by lifecycle configuration"  warning -->
 						<plugin>
 							<groupId>org.eclipse.m2e</groupId>
 							<artifactId>lifecycle-mapping</artifactId>
@@ -509,7 +510,7 @@
 				</pluginManagement>
 			</build>
 		</profile>
-		
+
 		<profile>
 			<id>release</id>
 			<activation>

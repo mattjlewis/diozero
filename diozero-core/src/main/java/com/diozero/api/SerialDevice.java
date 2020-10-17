@@ -176,9 +176,16 @@ public class SerialDevice implements SerialConstants, Closeable {
 
 		// Look for a product description file
 		Path product_file = p.getParent().getParent().resolve("product");
+		boolean primary_method = true;
+		if (!product_file.toFile().exists()) {
+			product_file = p.resolve("device").getParent().resolve("product");
+			if (product_file.toFile().exists()) {
+				primary_method = false;
+			}
+		}
 		if (product_file.toFile().exists()) {
 			// I believe this means that this is a USB-connected device
-			Path usb_root = p.getParent().getParent();
+			Path usb_root = primary_method ? p.getParent().getParent() : p.resolve("device").getParent();
 			description = Files.lines(product_file).findFirst().orElse(null);
 			// Get the driver name, e.g. "usb-serial:ch341-uart"
 			driver_name = Files.list(p.resolve("driver").resolve("module").resolve("drivers"))

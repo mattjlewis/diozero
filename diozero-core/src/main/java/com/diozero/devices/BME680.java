@@ -274,8 +274,6 @@ public class BME680 implements BarometerInterface, ThermometerInterface, Hygrome
 	private I2CDevice device;
 	// Raw temperature data
 	private int temperatureFine;
-	// Switching error range
-	private int rangeSwitchingError;
 
 	// Look up tables for the possible gas range values
 	final long GAS_RANGE_LOOKUP_TABLE_1[] = { 2147483647L, 2147483647L, 2147483647L, 2147483647L, 2147483647L,
@@ -394,16 +392,18 @@ public class BME680 implements BarometerInterface, ThermometerInterface, Hygrome
 
 		// It is highly recommended to set first osrs_h<2:0> followed by osrs_t<2:0> and
 		// osrs_p<2:0> in one write command (see Section 3.3).
-		setHumidityOversample(OversamplingMultiplier.X1); // 0x72
-		setTemperatureOversample(OversamplingMultiplier.X1); // 0x74
-		setPressureOversample(OversamplingMultiplier.X1); // 0x74
+		setHumidityOversample(OversamplingMultiplier.X2); // 0x72
+		setTemperatureOversample(OversamplingMultiplier.X4); // 0x74
+		setPressureOversample(OversamplingMultiplier.X8); // 0x74
 
-		setFilter(FilterSize.NONE);
+		setFilter(FilterSize.SIZE_3);
 
-		setHeaterEnabled(true);
+		//setHeaterEnabled(true);
 		setGasMeasurementEnabled(true);
 
 		setTemperatureOffset(0);
+		
+		getSensorData();
 	}
 
 	/**
@@ -456,7 +456,8 @@ public class BME680 implements BarometerInterface, ThermometerInterface, Hygrome
 
 		powerMode = value;
 
-		while (powerMode != getPowerMode()) {
+		// Wait for the power mode to switch to the requested value
+		while (getPowerMode() != value) {
 			SleepUtil.sleepMillis(POLL_PERIOD_MILLISECONDS);
 		}
 	}
@@ -731,14 +732,15 @@ public class BME680 implements BarometerInterface, ThermometerInterface, Hygrome
 		// Read other heater calibration data
 		// res_heat_range is the heater range stored in register address 0x02 <5:4>
 		calibration.resistanceHeaterRange = (device.readByte(RESISTANCE_HEAT_RANGE_ADDRESS)
-				& RESISTANCE_HEAT_RANGE_MASK) / 16;
+				& RESISTANCE_HEAT_RANGE_MASK) >> 4;
 		// res_heat_val is the heater resistance correction factor stored in register
 		// address 0x00
 		// (signed, value from -128 to 127)
 		calibration.resistanceHeaterValue = device.readByte(RESISTANCE_HEAT_VALUE_ADDRESS);
 
 		// Range switching error from register address 0x04 <7:4> (signed 4 bit)
-		rangeSwitchingError = (device.readByte(RANGE_SWITCHING_ERROR_ADDRESS) & RANGE_SWITCHING_ERROR_MASK) / 16;
+		calibration.rangeSwitchingError = (device.readByte(RANGE_SWITCHING_ERROR_ADDRESS)
+				& RANGE_SWITCHING_ERROR_MASK) >> 4;
 	}
 
 	// Read calibration array
@@ -775,10 +777,9 @@ public class BME680 implements BarometerInterface, ThermometerInterface, Hygrome
 				final int adc_hum = (buffer[8] << 8) | (buffer[9] & 0xff);
 				final int adc_gas_resistance = ((buffer[13] & 0xff) << 2) | ((buffer[14] & 0xff) >> 6);
 				final int gas_range = buffer[14] & GAS_RANGE_MASK;
-				System.out.println("gas_range = " + gas_range);
 
-				data.gasMeasurementValid = (buffer[14] & GASM_VALID_MASK) == 0 ? false : true;
-				data.heaterTempStable = (buffer[14] & HEAT_STABLE_MASK) == 0 ? false : true;
+				data.gasMeasurementValid = (buffer[14] & GASM_VALID_MASK) > 0;
+				data.heaterTempStable = (buffer[14] & HEAT_STABLE_MASK) > 0;
 
 				int temperature = calculateTemperature(adc_temp);
 				data.temperature = temperature / 100.0f;
@@ -795,7 +796,7 @@ public class BME680 implements BarometerInterface, ThermometerInterface, Hygrome
 			/* Delay to poll the data */
 			SleepUtil.sleepMillis(POLL_PERIOD_MILLISECONDS);
 		} while (--tries > 0);
-		
+
 		return data;
 	}
 
@@ -860,13 +861,9 @@ public class BME680 implements BarometerInterface, ThermometerInterface, Hygrome
 	}
 
 	private int calculateGasResistance(final int gasResistanceAdc, final int gasRange) {
-		System.out.println("gasResistanceAdc = " + gasResistanceAdc + ", gasRange = " + gasRange);
-		final long var1 = (1340 + (5L * rangeSwitchingError)) * GAS_RANGE_LOOKUP_TABLE_1[gasRange] >> 16;
-		System.out.println("var1 = " + var1);
+		final long var1 = (1340 + (5L * calibration.rangeSwitchingError)) * GAS_RANGE_LOOKUP_TABLE_1[gasRange] >> 16;
 		final long var2 = (((((long) gasResistanceAdc) << 15) - 16777216L) + var1);
-		System.out.println("var2 = " + var2);
 		final long var3 = ((GAS_RANGE_LOOKUP_TABLE_2[gasRange] * var1) >> 9);
-		System.out.println("var3 = " + var3);
 
 		return (int) ((var3 + (var2 >> 1)) / var2);
 	}
@@ -970,6 +967,8 @@ public class BME680 implements BarometerInterface, ThermometerInterface, Hygrome
 		private int resistanceHeaterRange;
 		// Heater resistance value
 		private int resistanceHeaterValue;
+		// Switching error range
+		private int rangeSwitchingError;
 	}
 
 	public static class GasSettings {
@@ -1014,34 +1013,43 @@ public class BME680 implements BarometerInterface, ThermometerInterface, Hygrome
 		private int gasResistance = 0;
 		// Indoor air quality score index
 		private float airQualityScore = 0.0f;
-		
+
 		public boolean isNewData() {
 			return newData;
 		}
+
 		public boolean isHeaterTempStable() {
 			return heaterTempStable;
 		}
+
 		public boolean isGasMeasurementValid() {
 			return gasMeasurementValid;
 		}
+
 		public int getGasMeasurementIndex() {
 			return gasMeasurementIndex;
 		}
+
 		public byte getMeasureIndex() {
 			return measureIndex;
 		}
+
 		public float getTemperature() {
 			return temperature;
 		}
+
 		public float getPressure() {
 			return pressure;
 		}
+
 		public float getHumidity() {
 			return humidity;
 		}
+
 		public int getGasResistance() {
 			return gasResistance;
 		}
+
 		public float getAirQualityScore() {
 			return airQualityScore;
 		}
