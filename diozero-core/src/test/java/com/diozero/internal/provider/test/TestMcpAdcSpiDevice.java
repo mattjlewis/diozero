@@ -33,7 +33,7 @@ package com.diozero.internal.provider.test;
 
 import java.util.Random;
 
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 import com.diozero.api.SpiClockMode;
 import com.diozero.devices.McpAdc;
@@ -75,9 +75,9 @@ public class TestMcpAdcSpiDevice extends TestSpiDevice {
 		//int pin = b & 0x07;
 		//Logger.debug("Received read request for pin {}", Integer.valueOf(pin));
 		b = txBuffer[1];
-		Assert.assertEquals(0, b);
+		Assertions.assertEquals(0, b);
 		b = txBuffer[2];
-		Assert.assertEquals(0, b);
+		Assertions.assertEquals(0, b);
 		
 		int temp = random.nextInt(type.getRange());
 		// FIXME Support MCP3301

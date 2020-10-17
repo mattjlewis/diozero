@@ -34,8 +34,8 @@ package com.diozero.util;
 
 import java.util.Random;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 @SuppressWarnings({ "static-method", "boxing" })
 public class ByteTest {
@@ -62,8 +62,8 @@ public class ByteTest {
 		b = (byte) 0xff;
 		byte bit = 0;
 		
-		Assert.assertEquals(0, b & bit);
-		Assert.assertTrue(BitManipulation.isBitSet(b, bit));
+		Assertions.assertEquals(0, b & bit);
+		Assertions.assertTrue(BitManipulation.isBitSet(b, bit));
 		
 		int num_bytes = 35;
 		byte[] bytes = new byte[num_bytes];

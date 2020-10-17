@@ -51,7 +51,7 @@ import com.diozero.firmata.FirmataProtocol.PinMode;
 import com.diozero.firmata.SerialFirmataAdapter;
 import com.diozero.firmata.SocketFirmataAdapter;
 import com.diozero.internal.provider.remote.devicefactory.RemoteDeviceFactory;
-import com.diozero.remote.message.GetBoardInfo;
+import com.diozero.remote.message.GetBoardInfoRequest;
 import com.diozero.remote.message.GetBoardInfoResponse;
 import com.diozero.remote.message.GpioAnalogRead;
 import com.diozero.remote.message.GpioAnalogReadResponse;
@@ -152,7 +152,7 @@ public class FirmataProtocolHandler implements RemoteProtocolInterface, FirmataE
 	}
 
 	@Override
-	public GetBoardInfoResponse request(GetBoardInfo request) {
+	public GetBoardInfoResponse request(GetBoardInfoRequest request) {
 		List<List<PinCapability>> board_capabilities = adapter.getBoardCapabilities();
 		List<GpioInfo> board_gpio_info = new ArrayList<>();
 

@@ -55,7 +55,7 @@ import com.diozero.internal.provider.SerialDeviceInterface;
 import com.diozero.internal.provider.SpiDeviceFactoryInterface;
 import com.diozero.internal.provider.SpiDeviceInterface;
 import com.diozero.internal.provider.remote.firmata.FirmataProtocolHandler;
-import com.diozero.remote.message.GetBoardInfo;
+import com.diozero.remote.message.GetBoardInfoRequest;
 import com.diozero.remote.message.GetBoardInfoResponse;
 import com.diozero.remote.message.GpioAnalogRead;
 import com.diozero.remote.message.GpioAnalogReadResponse;
@@ -103,7 +103,7 @@ public class RemoteDeviceFactory extends BaseNativeDeviceFactory {
 
 	@Override
 	protected BoardInfo initialiseBoardInfo() {
-		return new RemoteBoardInfo(protocolHandler.request(new GetBoardInfo(UUID.randomUUID().toString())));
+		return new RemoteBoardInfo(protocolHandler.request(new GetBoardInfoRequest(UUID.randomUUID().toString())));
 	}
 
 	@Override

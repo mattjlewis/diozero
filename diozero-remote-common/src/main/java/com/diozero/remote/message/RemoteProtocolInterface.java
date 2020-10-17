@@ -39,7 +39,7 @@ public interface RemoteProtocolInterface extends Closeable {
 	@Override
 	void close();
 	
-	GetBoardInfoResponse request(GetBoardInfo request);
+	GetBoardInfoResponse request(GetBoardInfoRequest request);
 	
 	// GPIO
 	Response request(ProvisionDigitalInputDevice request);

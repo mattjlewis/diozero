@@ -31,21 +31,27 @@
 
 #include "com_diozero_util_EpollNative.h"
 
-#include <jni.h>
-#include <errno.h>
-#include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
-#include <string.h>
-#include <sys/time.h>
 #include <unistd.h>
+#include <string.h>
+#include <errno.h>
+
+#include <fcntl.h>
+#include <sys/time.h>
+
+#if defined(__linux__)
 #include <sys/epoll.h>
+#endif
+
+#include <jni.h>
 
 #include "com_diozero_util_Util.h"
 
 extern jclass epollEventClassRef;
 extern jmethodID epollEventConstructor;
+
 const char INTERRUPT = 'I';
 
 /*
@@ -56,7 +62,11 @@ const char INTERRUPT = 'I';
 JNIEXPORT jint JNICALL Java_com_diozero_util_EpollNative_epollCreate(
 		JNIEnv * env, jclass clz) {
 	// Note since Linux 2.6.8, the size argument is ignored, but must be greater than zero
+#if defined(__linux__)
 	return epoll_create(1);
+#else
+	return -1;
+#endif
 }
 
 /*
@@ -66,6 +76,7 @@ JNIEXPORT jint JNICALL Java_com_diozero_util_EpollNative_epollCreate(
  */
 JNIEXPORT jint JNICALL Java_com_diozero_util_EpollNative_addFile(
 		JNIEnv * env, jclass clz, jint epollFd, jstring filename) {
+#if defined(__linux__)
 	jsize len = (*env)->GetStringLength(env, filename);
 	char c_filename[len];
 	(*env)->GetStringUTFRegion(env, filename, 0, len, c_filename);
@@ -91,6 +102,9 @@ JNIEXPORT jint JNICALL Java_com_diozero_util_EpollNative_addFile(
 	}
 
 	return fd;
+#else
+	return -1;
+#endif
 }
 
 /*
@@ -101,6 +115,7 @@ JNIEXPORT jint JNICALL Java_com_diozero_util_EpollNative_addFile(
 JNIEXPORT jint JNICALL Java_com_diozero_util_EpollNative_removeFile(
 		JNIEnv * env, jclass clz, jint epollFd, jint fileFd)
 {
+#if defined(__linux__)
 	int rc = epoll_ctl(epollFd, EPOLL_CTL_DEL, fileFd, NULL);
 	if (rc != 0) {
 		fprintf(stderr, "close: error in epoll_ctl(%d, EPOLL_CTL_DEL, %d), %s\n", epollFd, fileFd, strerror(errno));
@@ -111,6 +126,9 @@ JNIEXPORT jint JNICALL Java_com_diozero_util_EpollNative_removeFile(
 		fprintf(stderr, "close: error closing fd %d, %s\n", fileFd, strerror(errno));
 	}
 	return rc;
+#else
+	return -1;
+#endif
 }
 
 /*
@@ -120,6 +138,7 @@ JNIEXPORT jint JNICALL Java_com_diozero_util_EpollNative_removeFile(
  */
 JNIEXPORT jobjectArray JNICALL Java_com_diozero_util_EpollNative_waitForEvents(
 		JNIEnv * env, jclass clz, jint epollFd) {
+#if defined(__linux__)
 	int max_events = 10;
 	struct epoll_event epoll_events[max_events];
 	int num_fds = epoll_wait(epollFd, epoll_events, max_events, -1);
@@ -145,6 +164,9 @@ JNIEXPORT jobjectArray JNICALL Java_com_diozero_util_EpollNative_waitForEvents(
 	}
 
 	return poll_events;
+#else
+	return NULL;
+#endif
 }
 
 /*
@@ -154,6 +176,7 @@ JNIEXPORT jobjectArray JNICALL Java_com_diozero_util_EpollNative_waitForEvents(
  */
 JNIEXPORT jint JNICALL Java_com_diozero_util_EpollNative_eventLoop(
 		JNIEnv * env, jclass clz, jint epollFd, jobject callback) {
+#if defined(__linux__)
 	jclass callback_class = (*env)->GetObjectClass(env, callback);
 	if ((*env)->ExceptionCheck(env) || callback_class == NULL) {
 		fprintf(stderr, "Error getting callback object class\n");
@@ -196,6 +219,9 @@ JNIEXPORT jint JNICALL Java_com_diozero_util_EpollNative_eventLoop(
 	}
 
 	return 0;
+#else
+	return -1;
+#endif
 }
 
 /*
@@ -205,6 +231,7 @@ JNIEXPORT jint JNICALL Java_com_diozero_util_EpollNative_eventLoop(
  */
 JNIEXPORT void JNICALL Java_com_diozero_util_EpollNative_stopWait(
 		JNIEnv * env, jclass clz, jint epollFd) {
+#if defined(__linux__)
 	int pipefds[2] = {};
 	struct epoll_event ev = {};
 	int rc = pipe(pipefds);
@@ -242,6 +269,7 @@ JNIEXPORT void JNICALL Java_com_diozero_util_EpollNative_stopWait(
 
 	rc = epoll_ctl(epollFd, EPOLL_CTL_DEL, read_pipe, NULL);
 	rc = close(write_pipe);
+#endif
 }
 
 /*

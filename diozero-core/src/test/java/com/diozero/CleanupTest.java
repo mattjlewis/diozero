@@ -34,9 +34,9 @@ package com.diozero;
 
 import java.nio.ByteBuffer;
 
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.tinylog.Logger;
 
 import com.diozero.api.I2CConstants;
@@ -53,8 +53,8 @@ import com.diozero.util.RuntimeIOException;
 
 @SuppressWarnings("static-method")
 public class CleanupTest {
-	@BeforeClass
-	public static void beforeClass() {
+	@BeforeAll
+	public static void beforeAll() {
 		TestMcpAdcSpiDevice.setType(McpAdc.Type.MCP3008);
 		TestDeviceFactory.setI2CDeviceClass(TestI2CDevice.class);
 		TestDeviceFactory.setSpiDeviceClass(TestMcpAdcSpiDevice.class);
@@ -64,31 +64,31 @@ public class CleanupTest {
 	public void test() {
 		try (TestDeviceFactory tdf = (TestDeviceFactory)DeviceFactoryHelper.getNativeDeviceFactory()) {
 			DeviceStates ds = tdf.getDeviceStates();
-			Assert.assertTrue(ds.size() == 0);
+			Assertions.assertTrue(ds.size() == 0);
 			
 			try (I2CDeviceInterface device = tdf.provisionI2CDevice(0, 0, 0, 0)) {
 				device.readI2CBlockData(0, I2CConstants.ADDR_SIZE_7, ByteBuffer.allocateDirect(5));
-				Assert.assertTrue(ds.size() == 1);
+				Assertions.assertTrue(ds.size() == 1);
 				device.close();
-				Assert.assertTrue(ds.size() == 0);
+				Assertions.assertTrue(ds.size() == 0);
 			} catch (RuntimeIOException e) {
 				Logger.error(e, "Error: {}", e);
 			}
 			// Check the log for the above - make sure there is a warning about closing already closed device
 			
-			Assert.assertTrue(ds.size() == 0);
+			Assertions.assertTrue(ds.size() == 0);
 			try (SpiDeviceInterface device = tdf.provisionSpiDevice(0, 0, 0, SpiClockMode.MODE_0, false)) {
 				byte[] tx = new byte[3];
 				tx[0] = (byte) (0x10 | (false ? 0 : 0x08 ) | 1);
 				tx[1] = (byte) 0;
 				tx[2] = (byte) 0;
 				device.writeAndRead(tx);
-				Assert.assertTrue(ds.size() == 1);
+				Assertions.assertTrue(ds.size() == 1);
 			} catch (RuntimeIOException e) {
 				Logger.error(e, "Error: {}", e);
 			}
 			
-			Assert.assertTrue(ds.size() == 0);
+			Assertions.assertTrue(ds.size() == 0);
 		}			
 	}
 }

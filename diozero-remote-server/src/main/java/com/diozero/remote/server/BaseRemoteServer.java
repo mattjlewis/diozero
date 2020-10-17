@@ -54,7 +54,7 @@ import com.diozero.internal.provider.NativeDeviceFactoryInterface;
 import com.diozero.internal.provider.PwmOutputDeviceInterface;
 import com.diozero.internal.provider.SerialDeviceInterface;
 import com.diozero.internal.provider.SpiDeviceInterface;
-import com.diozero.remote.message.GetBoardInfo;
+import com.diozero.remote.message.GetBoardInfoRequest;
 import com.diozero.remote.message.GetBoardInfoResponse;
 import com.diozero.remote.message.GpioAnalogRead;
 import com.diozero.remote.message.GpioAnalogReadResponse;
@@ -124,7 +124,7 @@ public abstract class BaseRemoteServer implements InputEventListener<DigitalInpu
 	}
 
 	@Override
-	public GetBoardInfoResponse request(GetBoardInfo request) {
+	public GetBoardInfoResponse request(GetBoardInfoRequest request) {
 		BoardInfo board_info = deviceFactory.getBoardInfo();
 
 		Collection<PinInfo> gpio_pins = board_info.getGpioPins();

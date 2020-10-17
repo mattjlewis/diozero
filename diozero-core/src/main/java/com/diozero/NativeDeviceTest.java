@@ -39,8 +39,7 @@ public class NativeDeviceTest {
 	public static void main(String[] args) {
 		System.out.println(System.getProperty("os.name"));
 
-		SerialDevice.getLocalSerialDevices()
-				.forEach(device -> System.out.println(device.getDeviceName() + ": " + device.getFriendlyName()));
+		SerialDevice.getLocalSerialDevices().forEach(device -> print(device));
 
 		System.exit(1);
 
@@ -49,6 +48,17 @@ public class NativeDeviceTest {
 				SerialConstants.DEFAULT_READ_BLOCKING, SerialConstants.DEFAULT_MIN_READ_CHARS,
 				SerialConstants.DEFAULT_READ_TIMEOUT_MILLIS)) {
 			dev.read();
+		}
+	}
+	
+	private static void print(SerialDevice.DeviceInfo deviceInfo) {
+		System.out.format(
+				"Name: %s, File: %s, Description: %s, Driver: %s, USB Vendor Id: %s, USB Product Id %s%n",
+				deviceInfo.getDeviceName(), deviceInfo.getDeviceFile(), deviceInfo.getDescription(), deviceInfo.getDriverName(),
+				deviceInfo.getUsbVendorId(), deviceInfo.getUsbProductId());
+		if (deviceInfo.getUsbVendorId() != null) {
+			String[] usb_info = SerialDevice.UsbInfo.resolve(deviceInfo.getUsbVendorId(), deviceInfo.getUsbProductId());
+			System.out.format("USB device Vendor: %s; Product: %s%n", usb_info[0], usb_info[1]);
 		}
 	}
 }

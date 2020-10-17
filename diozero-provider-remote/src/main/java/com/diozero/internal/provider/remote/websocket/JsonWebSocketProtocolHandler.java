@@ -46,7 +46,7 @@ import org.tinylog.Logger;
 import com.diozero.api.DigitalInputEvent;
 import com.diozero.internal.provider.NativeDeviceFactoryInterface;
 import com.diozero.internal.provider.remote.BaseAsyncProtocolHandler;
-import com.diozero.remote.message.GetBoardInfo;
+import com.diozero.remote.message.GetBoardInfoRequest;
 import com.diozero.remote.message.GetBoardInfoResponse;
 import com.diozero.remote.message.GpioAnalogRead;
 import com.diozero.remote.message.GpioAnalogReadResponse;
@@ -166,7 +166,7 @@ public class JsonWebSocketProtocolHandler extends BaseAsyncProtocolHandler imple
 	}
 
 	@Override
-	public GetBoardInfoResponse request(GetBoardInfo request) {
+	public GetBoardInfoResponse request(GetBoardInfoRequest request) {
 		return (GetBoardInfoResponse) requestResponse(request);
 	}
 

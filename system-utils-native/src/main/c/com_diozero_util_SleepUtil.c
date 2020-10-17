@@ -30,6 +30,8 @@
  */
 
 #include <time.h>
+#include <jni.h>
+
 #include "com_diozero_util_SleepUtil.h"
 
 JNIEXPORT jlong JNICALL Java_com_diozero_util_SleepUtil_sleepNanos(JNIEnv* env, jclass clz, jint secs, jlong nanos) {

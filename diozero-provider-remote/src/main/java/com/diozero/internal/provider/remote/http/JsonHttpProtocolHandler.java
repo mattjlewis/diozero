@@ -45,7 +45,7 @@ import org.apache.http.util.EntityUtils;
 
 import com.diozero.internal.provider.NativeDeviceFactoryInterface;
 import com.diozero.remote.http.HttpProviderConstants;
-import com.diozero.remote.message.GetBoardInfo;
+import com.diozero.remote.message.GetBoardInfoRequest;
 import com.diozero.remote.message.GetBoardInfoResponse;
 import com.diozero.remote.message.GpioAnalogRead;
 import com.diozero.remote.message.GpioAnalogReadResponse;
@@ -153,7 +153,7 @@ public class JsonHttpProtocolHandler implements RemoteProtocolInterface {
 	}
 
 	@Override
-	public GetBoardInfoResponse request(GetBoardInfo request) {
+	public GetBoardInfoResponse request(GetBoardInfoRequest request) {
 		return requestResponse(HttpProviderConstants.GET_BOARD_GPIO_INFO, request, GetBoardInfoResponse.class);
 	}
 

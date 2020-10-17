@@ -143,18 +143,19 @@ public class MqttTestClient implements Closeable, MqttCallback {
 
 	private void sendTestMessages(int gpio) throws MqttException {
 		try {
-			DiozeroProtos.Gpio.ProvisionDigitalOutput digital_output = createGpioProvisionDigitalOutput(gpio, true);
+			DiozeroProtos.Gpio.ProvisionDigitalOutputRequest digital_output = createGpioProvisionDigitalOutput(gpio,
+					true);
 			DiozeroProtos.Response response = sendMessage(MqttProviderConstants.GPIO_PROVISION_DIGITAL_OUTPUT_TOPIC,
 					digital_output.getCorrelationId(), digital_output);
 			Logger.debug("Got response to provision output: {}", response);
 			Thread.sleep(500);
 
-			DiozeroProtos.Gpio.DigitalRead gpio_read = createGpioDigitalRead(gpio);
+			DiozeroProtos.Gpio.DigitalReadRequest gpio_read = createGpioDigitalRead(gpio);
 			response = sendMessage(MqttProviderConstants.GPIO_DIGITAL_READ_TOPIC, gpio_read.getCorrelationId(),
 					gpio_read);
 			Logger.debug("Got response to read: {}", response);
 
-			DiozeroProtos.Gpio.DigitalWrite gpio_write = createGpioDigitalWrite(gpio, false);
+			DiozeroProtos.Gpio.DigitalWriteRequest gpio_write = createGpioDigitalWrite(gpio, false);
 			response = sendMessage(MqttProviderConstants.GPIO_DIGITAL_WRITE_TOPIC, gpio_write.getCorrelationId(),
 					gpio_write);
 			Logger.debug("Got response to output: {}", response);
@@ -165,11 +166,11 @@ public class MqttTestClient implements Closeable, MqttCallback {
 					gpio_read);
 			Logger.debug("Got response to read: {}", response);
 
-			DiozeroProtos.Gpio.Close gpio_close = createGpioClose(gpio);
+			DiozeroProtos.Gpio.CloseRequest gpio_close = createGpioClose(gpio);
 			response = sendMessage(MqttProviderConstants.GPIO_CLOSE_TOPIC, gpio_close.getCorrelationId(), gpio_close);
 			Logger.debug("Got response to close: {}", response);
 
-			DiozeroProtos.Gpio.ProvisionDigitalInput digital_input = createGpioProvisionDigitalInput(gpio,
+			DiozeroProtos.Gpio.ProvisionDigitalInputRequest digital_input = createGpioProvisionDigitalInput(gpio,
 					DiozeroProtos.Gpio.PullUpDown.PUD_NONE, DiozeroProtos.Gpio.Trigger.TRIGGER_BOTH);
 			response = sendMessage(MqttProviderConstants.GPIO_PROVISION_DIGITAL_INPUT_TOPIC,
 					digital_input.getCorrelationId(), digital_input);
@@ -210,8 +211,8 @@ public class MqttTestClient implements Closeable, MqttCallback {
 			response = sendMessage(MqttProviderConstants.GPIO_CLOSE_TOPIC, gpio_close.getCorrelationId(), gpio_close);
 			Logger.debug("Got response to close: {}", response);
 
-			DiozeroProtos.Gpio.ProvisionDigitalInputOutput gpio_inout = createGpioProvisionDigitalInputOutput(gpio,
-					true);
+			DiozeroProtos.Gpio.ProvisionDigitalInputOutputRequest gpio_inout = createGpioProvisionDigitalInputOutput(
+					gpio, true);
 			response = sendMessage(MqttProviderConstants.GPIO_PROVISION_DIGITAL_INPUT_OUTPUT_TOPIC,
 					gpio_inout.getCorrelationId(), gpio_inout);
 			Logger.debug("Got response to inout: {}", response);
@@ -277,36 +278,36 @@ public class MqttTestClient implements Closeable, MqttCallback {
 		return response;
 	}
 
-	public static DiozeroProtos.Gpio.ProvisionDigitalOutput createGpioProvisionDigitalOutput(int gpio,
+	public static DiozeroProtos.Gpio.ProvisionDigitalOutputRequest createGpioProvisionDigitalOutput(int gpio,
 			boolean initialValue) {
-		return DiozeroProtos.Gpio.ProvisionDigitalOutput.newBuilder().setCorrelationId(UUID.randomUUID().toString())
-				.setGpio(gpio).setInitialValue(initialValue).build();
+		return DiozeroProtos.Gpio.ProvisionDigitalOutputRequest.newBuilder()
+				.setCorrelationId(UUID.randomUUID().toString()).setGpio(gpio).setInitialValue(initialValue).build();
 	}
 
-	public static DiozeroProtos.Gpio.ProvisionDigitalInput createGpioProvisionDigitalInput(int gpio,
+	public static DiozeroProtos.Gpio.ProvisionDigitalInputRequest createGpioProvisionDigitalInput(int gpio,
 			DiozeroProtos.Gpio.PullUpDown pud, DiozeroProtos.Gpio.Trigger trigger) {
-		return DiozeroProtos.Gpio.ProvisionDigitalInput.newBuilder().setCorrelationId(UUID.randomUUID().toString())
-				.setGpio(gpio).setPud(pud).setTrigger(trigger).build();
+		return DiozeroProtos.Gpio.ProvisionDigitalInputRequest.newBuilder()
+				.setCorrelationId(UUID.randomUUID().toString()).setGpio(gpio).setPud(pud).setTrigger(trigger).build();
 	}
 
-	public static DiozeroProtos.Gpio.ProvisionDigitalInputOutput createGpioProvisionDigitalInputOutput(int gpio,
+	public static DiozeroProtos.Gpio.ProvisionDigitalInputOutputRequest createGpioProvisionDigitalInputOutput(int gpio,
 			boolean output) {
-		return DiozeroProtos.Gpio.ProvisionDigitalInputOutput.newBuilder()
+		return DiozeroProtos.Gpio.ProvisionDigitalInputOutputRequest.newBuilder()
 				.setCorrelationId(UUID.randomUUID().toString()).setGpio(gpio).setOutput(output).build();
 	}
 
-	public static DiozeroProtos.Gpio.DigitalWrite createGpioDigitalWrite(int gpio, boolean value) {
-		return DiozeroProtos.Gpio.DigitalWrite.newBuilder().setCorrelationId(UUID.randomUUID().toString()).setGpio(gpio)
-				.setValue(value).build();
+	public static DiozeroProtos.Gpio.DigitalWriteRequest createGpioDigitalWrite(int gpio, boolean value) {
+		return DiozeroProtos.Gpio.DigitalWriteRequest.newBuilder().setCorrelationId(UUID.randomUUID().toString())
+				.setGpio(gpio).setValue(value).build();
 	}
 
-	public static DiozeroProtos.Gpio.DigitalRead createGpioDigitalRead(int gpio) {
-		return DiozeroProtos.Gpio.DigitalRead.newBuilder().setCorrelationId(UUID.randomUUID().toString()).setGpio(gpio)
-				.build();
+	public static DiozeroProtos.Gpio.DigitalReadRequest createGpioDigitalRead(int gpio) {
+		return DiozeroProtos.Gpio.DigitalReadRequest.newBuilder().setCorrelationId(UUID.randomUUID().toString())
+				.setGpio(gpio).build();
 	}
 
-	public static DiozeroProtos.Gpio.Close createGpioClose(int gpio) {
-		return DiozeroProtos.Gpio.Close.newBuilder().setCorrelationId(UUID.randomUUID().toString()).setGpio(gpio)
+	public static DiozeroProtos.Gpio.CloseRequest createGpioClose(int gpio) {
+		return DiozeroProtos.Gpio.CloseRequest.newBuilder().setCorrelationId(UUID.randomUUID().toString()).setGpio(gpio)
 				.build();
 	}
 }

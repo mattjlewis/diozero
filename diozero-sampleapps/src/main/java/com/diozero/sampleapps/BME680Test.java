@@ -56,16 +56,21 @@ import com.diozero.util.SleepUtil;
 public class BME680Test {
 	public static void main(String[] args) {
 		try (BME680 bme680 = new BME680()) {
-			for (int i = 0; i < 10; i++) {
-				float temp = bme680.getTemperature();
-				float pressure = bme680.getPressure();
-				float humidity = bme680.getRelativeHumidity();
-				float gas_resistance = bme680.getGasResistance();
-				float air_quality = bme680.getAirQuality();
-				Logger.info(
-						"Temperature: {0.##} C. Pressure: {0.##} hPa. Relative Humidity: {0.##}% RH. Gas Resistance: {0.##} ??. Air Quality: {0.##} ??.",
-						Float.valueOf(temp), Float.valueOf(pressure), Float.valueOf(humidity),
-						Float.valueOf(gas_resistance), Float.valueOf(air_quality));
+			bme680.setHumidityOversample(BME680.OversamplingMultiplier.X2);
+			bme680.setPressureOversample(BME680.OversamplingMultiplier.X4);
+			bme680.setTemperatureOversample(BME680.OversamplingMultiplier.X8);
+			bme680.setFilter(BME680.FilterSize.SIZE_3);
+			bme680.setGasMeasurementEnabled(true);
+			
+			bme680.setGasConfig(BME680.HeaterProfile.PROFILE_0, 320, 150);
+			
+			for (int i = 0; i < 20; i++) {
+				BME680.Data data = bme680.getSensorData();
+				System.out.format(
+						"Temperature: %.2f C. Pressure: %.2f hPa. Relative Humidity: %.2f %%rH. Gas Resistance: %.2f Ohms (stable: %b). Air Quality: %.2f ??.%n",
+						Float.valueOf(data.getTemperature()), Float.valueOf(data.getPressure()),
+						Float.valueOf(data.getHumidity()), Float.valueOf(data.getGasResistance()),
+						Boolean.valueOf(data.isHeaterTempStable()), Float.valueOf(data.getAirQualityScore()));
 
 				SleepUtil.sleepSeconds(1);
 			}

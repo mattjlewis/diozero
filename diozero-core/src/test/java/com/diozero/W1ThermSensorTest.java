@@ -36,9 +36,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.tinylog.Logger;
 
 import com.diozero.devices.W1ThermSensor;
@@ -49,8 +49,8 @@ public class W1ThermSensorTest {
 	private static Map<String, W1ThermSensor.Type> expectedTypes;
 	private static Map<String, Double> expectedTemperatures;
 	
-	@BeforeClass
-	public static void beforeClass() {
+	@BeforeAll
+	public static void beforeAll() {
 		expectedTypes = new HashMap<>();
 		expectedTemperatures = new HashMap<>();
 		
@@ -73,15 +73,15 @@ public class W1ThermSensorTest {
 		System.out.println(Type.valueOf(Type.DS1822.name()));
 		
 		List<W1ThermSensor> sensors = W1ThermSensor.getAvailableSensors("src/test/resources/devices");
-		Assert.assertEquals(5, sensors.size());
+		Assertions.assertEquals(5, sensors.size());
 		for (W1ThermSensor sensor : sensors) {
 			Logger.debug("Serial number=" + sensor.getSerialNumber());
 			Logger.debug("Type=" + sensor.getType());
-			Assert.assertEquals(expectedTypes.get(sensor.getSerialNumber()), sensor.getType());
+			Assertions.assertEquals(expectedTypes.get(sensor.getSerialNumber()), sensor.getType());
 			Double expected_temp = expectedTemperatures.get(sensor.getSerialNumber());
 			if (expected_temp != null) {
 				Logger.debug("Temperature={}", Float.valueOf(sensor.getTemperature()));
-				Assert.assertEquals(expected_temp.doubleValue(), sensor.getTemperature(), 0.001);
+				Assertions.assertEquals(expected_temp.doubleValue(), sensor.getTemperature(), 0.001);
 			}
 		}
 	}

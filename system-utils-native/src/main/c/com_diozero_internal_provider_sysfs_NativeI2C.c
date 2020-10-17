@@ -32,19 +32,25 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
-
-#include <errno.h>
-#include <string.h>
-
-#include <sys/stat.h>
-#include <fcntl.h>
 #include <unistd.h>
+#include <string.h>
+#include <errno.h>
 
-#include <linux/i2c-dev.h>
-#include <i2c/smbus.h>
+#include <fcntl.h>
+#include <sys/stat.h>
 #include <sys/ioctl.h>
 
+#if defined(__linux__)
+#include <linux/i2c-dev.h>
+#include <i2c/smbus.h>
+#else
+#define I2C_SLAVE 0
+#define I2C_SLAVE_FORCE 0
+#define I2C_FUNCS 0
+#endif
+
 #include "com_diozero_internal_provider_sysfs_NativeI2C.h"
+#include <jni.h>
 
 #if __WORDSIZE == 32
 #define long_t uint32_t
@@ -52,14 +58,9 @@
 #define long_t uint64_t
 #endif
 
-#define LOG_ERRORS 0
-
 int selectSlave(int fd, int deviceAddress, uint8_t force) {
 	int rc = ioctl(fd, force ? I2C_SLAVE_FORCE : I2C_SLAVE, deviceAddress);
 	if (rc < 0) {
-#if LOG_ERRORS == 1
-		fprintf(stderr, "Error selecting I2C_SLAVE for device 0x%02x: %s\n", deviceAddress, strerror(errno));
-#endif
 		return -errno;
 	}
 
@@ -71,9 +72,6 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeI2C_getFun
 	uint32_t funcs;
 	int rc = ioctl(fd, I2C_FUNCS, &funcs);
 	if (rc < 0) {
-#if LOG_ERRORS == 1
-		fprintf(stderr, "Error reading I2C_FUNCS: %s\n", strerror(errno));
-#endif
 		return -errno;
 	}
 
@@ -94,9 +92,6 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeI2C_smbusO
 	int fd = open(device, O_RDWR);
 	(*env)->ReleaseStringUTFChars(env, i2cAdapter, device);
 	if (fd < 0) {
-#if LOG_ERRORS == 1
-		fprintf(stderr, "Error opening I2C device 0x%02x: %s\n", deviceAddress, strerror(errno));
-#endif
 		return -errno;
 	}
 
@@ -117,33 +112,18 @@ JNIEXPORT void JNICALL Java_com_diozero_internal_provider_sysfs_NativeI2C_smbusC
 JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeI2C_writeQuick(
 		JNIEnv* env, jclass clz, jint fd, jbyte bit) {
 	int rc = i2c_smbus_write_quick(fd, bit);
-#if LOG_ERRORS == 1
-	if (rc < 0) {
-		fprintf(stderr, "Error in I2C SMBus writeQuick: %s\n", strerror(errno));
-	}
-#endif
 	return rc < 0 ? -errno : rc;
 }
 
 JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeI2C_readByte(
 		JNIEnv* env, jclass clz, jint fd) {
 	int rc = i2c_smbus_read_byte(fd);
-#if LOG_ERRORS == 1
-	if (rc < 0) {
-		fprintf(stderr, "Error in I2C SMBus readByte: %s\n", strerror(errno));
-	}
-#endif
 	return rc < 0 ? -errno : rc;
 }
 
 JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeI2C_writeByte(
 		JNIEnv* env, jclass clz, jint fd, jbyte value) {
 	int rc = i2c_smbus_write_byte(fd, value);
-#if LOG_ERRORS == 1
-	if (rc < 0) {
-		fprintf(stderr, "Error in I2C SMBus writeByte: %s\n", strerror(errno));
-	}
-#endif
 	return rc < 0 ? -errno : rc;
 }
 
@@ -153,11 +133,6 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeI2C_readBy
 	jbyte* rx_buf = (*env)->GetByteArrayElements(env, rxData, &is_copy);
 
 	int rc = read(fd, (uint8_t*) rx_buf, rxLength);
-#if LOG_ERRORS == 1
-	if (rc < 0) {
-		fprintf(stderr, "Error in I2C SMBus readBytes: %s\n", strerror(errno));
-	}
-#endif
 
 	(*env)->ReleaseByteArrayElements(env, rxData, rx_buf, 0);
 
@@ -170,11 +145,6 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeI2C_writeB
 	jbyte* tx_buf = (*env)->GetByteArrayElements(env, txData, &is_copy);
 
 	int rc = write(fd, tx_buf, txLength);
-#if LOG_ERRORS == 1
-	if (rc < 0) {
-		fprintf(stderr, "Error in I2C SMBus writeBytes: %s\n", strerror(errno));
-	}
-#endif
 
 	(*env)->ReleaseByteArrayElements(env, txData, tx_buf, JNI_ABORT);
 
@@ -184,55 +154,30 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeI2C_writeB
 JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeI2C_readByteData(
 		JNIEnv* env, jclass clz, jint fd, jint registerAddress) {
 	int rc = i2c_smbus_read_byte_data(fd, registerAddress);
-#if LOG_ERRORS == 1
-	if (rc < 0) {
-		fprintf(stderr, "Error in I2C SMBus writeByteData: %s\n", strerror(errno));
-	}
-#endif
 	return rc < 0 ? -errno : rc;
 }
 
 JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeI2C_writeByteData(
 		JNIEnv* env, jclass clz, jint fd, jint registerAddress, jbyte value) {
 	int rc = i2c_smbus_write_byte_data(fd, registerAddress, value);
-#if LOG_ERRORS == 1
-	if (rc < 0) {
-		fprintf(stderr, "Error in I2C SMBus writeByteData: %s\n", strerror(errno));
-	}
-#endif
 	return rc < 0 ? -errno : rc;
 }
 
 JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeI2C_readWordData(
 		JNIEnv* env, jclass clz, jint fd, jint registerAddress) {
 	int rc = i2c_smbus_read_word_data(fd, registerAddress);
-#if LOG_ERRORS == 1
-	if (rc < 0) {
-		fprintf(stderr, "Error in I2C SMBus readWordData: %s\n", strerror(errno));
-	}
-#endif
 	return rc < 0 ? -errno : rc;
 }
 
 JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeI2C_writeWordData(
 		JNIEnv* env, jclass clz, jint fd, jint registerAddress, jshort value) {
 	int rc = i2c_smbus_write_word_data(fd, registerAddress, value);
-#if LOG_ERRORS == 1
-	if (rc < 0) {
-		fprintf(stderr, "Error in I2C SMBus writeWordData: %s\n", strerror(errno));
-	}
-#endif
 	return rc < 0 ? -errno : rc;
 }
 
 JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeI2C_processCall(
 		JNIEnv* env, jclass clz, jint fd, jint registerAddress, jshort value) {
 	int rc = i2c_smbus_process_call(fd, registerAddress, value);
-#if LOG_ERRORS == 1
-	if (rc < 0) {
-		fprintf(stderr, "Error in I2C SMBus processCall: %s\n", strerror(errno));
-	}
-#endif
 	return rc < 0 ? -errno : rc;
 }
 
@@ -242,11 +187,6 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeI2C_readBl
 	jbyte* rx_buf = (*env)->GetByteArrayElements(env, rxData, &is_copy);
 
 	int rc = i2c_smbus_read_block_data(fd, registerAddress, (uint8_t*) rx_buf);
-#if LOG_ERRORS == 1
-	if (rc < 0) {
-		fprintf(stderr, "Error in I2C SMBus readBlockData: %s\n", strerror(errno));
-	}
-#endif
 
 	(*env)->ReleaseByteArrayElements(env, rxData, rx_buf, 0);
 
@@ -259,11 +199,6 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeI2C_writeB
 	jbyte* tx_buf = (*env)->GetByteArrayElements(env, txData, &is_copy);
 
 	int rc = i2c_smbus_write_block_data(fd, registerAddress, txLength, (uint8_t*) tx_buf);
-#if LOG_ERRORS == 1
-	if (rc < 0) {
-		fprintf(stderr, "Error in I2C SMBus writeBlockData: %s\n", strerror(errno));
-	}
-#endif
 
 	(*env)->ReleaseByteArrayElements(env, txData, tx_buf, JNI_ABORT);
 
@@ -282,9 +217,6 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeI2C_blockP
 
 	if (rc < 0) {
 		(*env)->ReleaseByteArrayElements(env, rxData, rx_buf, JNI_ABORT);
-#if LOG_ERRORS == 1
-		fprintf(stderr, "Error in I2C SMBus blockProcessCall: %s\n", strerror(errno));
-#endif
 
 		return -errno;
 	}
@@ -302,11 +234,6 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeI2C_readI2
 	jbyte* rx_buf = (*env)->GetByteArrayElements(env, rxData, &is_copy);
 
 	int rc = i2c_smbus_read_i2c_block_data(fd, registerAddress, rxLength, (uint8_t*) rx_buf);
-#if LOG_ERRORS == 1
-	if (rc < 0) {
-		fprintf(stderr, "Error in I2C SMBus readI2CBlockData: %s\n", strerror(errno));
-	}
-#endif
 
 	(*env)->ReleaseByteArrayElements(env, rxData, rx_buf, 0);
 
@@ -319,11 +246,6 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeI2C_writeI
 	jbyte* tx_buf = (*env)->GetByteArrayElements(env, txData, &is_copy);
 
 	int rc = i2c_smbus_write_i2c_block_data(fd, registerAddress, txLength, (uint8_t*) tx_buf);
-#if LOG_ERRORS == 1
-	if (rc < 0) {
-		fprintf(stderr, "Error in I2C SMBus writeI2CBlockData: %s\n", strerror(errno));
-	}
-#endif
 
 	(*env)->ReleaseByteArrayElements(env, txData, tx_buf, JNI_ABORT);
 

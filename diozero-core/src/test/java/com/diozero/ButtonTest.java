@@ -35,8 +35,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.tinylog.Logger;
 
 import com.diozero.api.DigitalInputEvent;
@@ -50,8 +50,8 @@ import com.diozero.util.SleepUtil;
 public class ButtonTest {
 	private int i;
 	
-	@BeforeClass
-	public static void beforeClass() {
+	@BeforeAll
+	public static void beforeAll() {
 		TestDeviceFactory.setDigitalInputDeviceClass(TestDigitalInputDevice.class);
 		TestDeviceFactory.setDigitalOutputDeviceClass(TestDigitalOutputDevice.class);
 	}

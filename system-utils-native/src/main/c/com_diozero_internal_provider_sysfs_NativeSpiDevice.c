@@ -29,25 +29,29 @@
  * #L%
  */
 
-#include <errno.h>
-#include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <unistd.h>
 #include <string.h>
+#include <errno.h>
+
 #include <fcntl.h>
+#include <sys/ioctl.h>
+
+#if defined(__linux__)
+#include <linux/types.h>
+#include <linux/spi/spidev.h>
+#endif
+
+#include <jni.h>
+
 #include "com_diozero_internal_provider_sysfs_NativeSpiDevice.h"
 
 #if __WORDSIZE == 32
 #define long_t uint32_t
 #else
 #define long_t uint64_t
-#endif
-
-#include <sys/ioctl.h>
-#if defined(__linux__)
-#include <linux/types.h>
-#include <linux/spi/spidev.h>
 #endif
 
 /*
@@ -82,6 +86,7 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeSpiDevice_
  */
 JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeSpiDevice_spiConfig(
 		JNIEnv* env, jclass clz, jint fileDescriptor, jbyte mode, jint speed, jbyte bitsPerWord, jboolean lsbFirst) {
+#if defined(__linux__)
 	if (ioctl(fileDescriptor, SPI_IOC_WR_MODE, &mode) < 0) {
 		printf("Cannot set SPI mode: %s", strerror(errno));
 		return -1 ;
@@ -136,6 +141,9 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeSpiDevice_
 	}
 
 	return 0;
+#else
+	return -1;
+#endif
 }
 
 /*
@@ -156,6 +164,7 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeSpiDevice_
 JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeSpiDevice_spiTransfer(
 		JNIEnv* env, jclass clz, jint fileDescriptor, jbyteArray txBuffer, jint txOffset,
 		jbyteArray rxBuffer, jint length, jint speedHz, jint delayUSecs, jbyte bitsPerWord, jboolean csChange) {
+#if defined(__linux__)
 	jboolean is_copy;
 	jbyte* tx_buf = NULL;
 	if (txBuffer != NULL) {
@@ -203,4 +212,7 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeSpiDevice_
 	}
 
 	return ret;
+#else
+	return -1;
+#endif
 }

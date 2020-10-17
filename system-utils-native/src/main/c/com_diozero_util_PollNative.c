@@ -31,15 +31,17 @@
 
 #include "com_diozero_util_PollNative.h"
 
-#include <jni.h>
-#include <errno.h>
-#include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
+#include <unistd.h>
 #include <string.h>
+#include <errno.h>
+
 #include <fcntl.h>
 #include <poll.h>
+
+#include <jni.h>
+
 #include "com_diozero_util_Util.h"
 
 extern jclass systemClassRef;
@@ -49,14 +51,14 @@ JNIEXPORT void JNICALL Java_com_diozero_util_PollNative_poll(
 		JNIEnv* env, jobject pollNative, jstring filename, jint timeout, jobject ref, jobject callback) {
 	jclass callback_class = (*env)->GetObjectClass(env, callback);
 	if (callback_class == NULL) {
-		printf("Error: poll() could not get callback class\n");
+		fprintf(stderr, "Error: poll() could not get callback class\n");
 		return;
 	}
 	char* method_name = "notify";
 	char* signature = "(Ljava/lang/String;JC)V";
 	jmethodID notify_method_id = (*env)->GetMethodID(env, callback_class, method_name, signature);
 	if ((*env)->ExceptionCheck(env) || notify_method_id == NULL) {
-		printf("Unable to find method '%s' with signature '%s' in callback object\n", method_name, signature);
+		fprintf(stderr, "Unable to find method '%s' with signature '%s' in callback object\n", method_name, signature);
 		return;
 	}
 

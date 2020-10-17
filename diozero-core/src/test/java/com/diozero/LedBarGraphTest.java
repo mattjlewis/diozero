@@ -34,8 +34,8 @@ package com.diozero;
 
 import java.util.Arrays;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import com.diozero.util.RangeUtil;
 
@@ -51,73 +51,73 @@ public class LedBarGraphTest {
 		setValues(leds, value);
 		int i;
 		for (i=0; i<leds.length; i++) {
-			Assert.assertEquals(i<8 ? 1 : 0, leds[i], DELTA_F);
+			Assertions.assertEquals(i<8 ? 1 : 0, leds[i], DELTA_F);
 		}
 		
 		value = 0.5f;
 		setValues(leds, value);
 		for (i=0; i<leds.length; i++) {
-			Assert.assertEquals(i<5 ? 1 : 0, leds[i], DELTA_F);
+			Assertions.assertEquals(i<5 ? 1 : 0, leds[i], DELTA_F);
 		}
 		
 		value = 0.55f;
 		setValues(leds, value);
 		for (i=0; i<5; i++) {
-			Assert.assertEquals(1, leds[i], DELTA_F);
+			Assertions.assertEquals(1, leds[i], DELTA_F);
 		}
-		Assert.assertEquals(0.5, leds[i++], DELTA_F);
+		Assertions.assertEquals(0.5, leds[i++], DELTA_F);
 		for (; i<leds.length; i++) {
-			Assert.assertEquals(0, leds[i], DELTA_F);
+			Assertions.assertEquals(0, leds[i], DELTA_F);
 		}
 		
 		value = 0.14f;
 		setValues(leds, value);
-		Assert.assertEquals(1, leds[0], DELTA_F);
-		Assert.assertEquals(0.4, leds[1], DELTA_F);
+		Assertions.assertEquals(1, leds[0], DELTA_F);
+		Assertions.assertEquals(0.4, leds[1], DELTA_F);
 		for (i=2; i<leds.length; i++) {
-			Assert.assertEquals(0, leds[i], DELTA_F);
+			Assertions.assertEquals(0, leds[i], DELTA_F);
 		}
 		
 		value = 2f;
 		setValues(leds, value);
 		for (i=0; i<leds.length; i++) {
-			Assert.assertEquals(1, leds[i], DELTA_F);
+			Assertions.assertEquals(1, leds[i], DELTA_F);
 		}
 		
 		value = -0.8f;
 		setValues(leds, value);
 		for (i=0; i<leds.length; i++) {
-			Assert.assertEquals(i<2 ? 0 : 1, leds[i], DELTA_F);
+			Assertions.assertEquals(i<2 ? 0 : 1, leds[i], DELTA_F);
 		}
 		
 		value = -0.5f;
 		setValues(leds, value);
 		for (i=0; i<leds.length; i++) {
-			Assert.assertEquals(i<5 ? 0 : 1, leds[i], DELTA_F);
+			Assertions.assertEquals(i<5 ? 0 : 1, leds[i], DELTA_F);
 		}
 		
 		value = -0.55f;
 		setValues(leds, value);
 		for (i=0; i<4; i++) {
-			Assert.assertEquals(0, leds[i], DELTA_F);
+			Assertions.assertEquals(0, leds[i], DELTA_F);
 		}
-		Assert.assertEquals(0.5, leds[i++], DELTA_F);
+		Assertions.assertEquals(0.5, leds[i++], DELTA_F);
 		for (; i<leds.length; i++) {
-			Assert.assertEquals(1, leds[i], DELTA_F);
+			Assertions.assertEquals(1, leds[i], DELTA_F);
 		}
 		
 		value = -0.14f;
 		setValues(leds, value);
 		for (i=0; i<8; i++) {
-			Assert.assertEquals(0, leds[i], DELTA_F);
+			Assertions.assertEquals(0, leds[i], DELTA_F);
 		}
-		Assert.assertEquals(0.4, leds[i++], DELTA_F);
-		Assert.assertEquals(1, leds[i++], DELTA_F);
+		Assertions.assertEquals(0.4, leds[i++], DELTA_F);
+		Assertions.assertEquals(1, leds[i++], DELTA_F);
 		
 		value = -2f;
 		setValues(leds, value);
 		for (i=0; i<leds.length; i++) {
-			Assert.assertEquals(1, leds[i], DELTA_F);
+			Assertions.assertEquals(1, leds[i], DELTA_F);
 		}
 	}
 	

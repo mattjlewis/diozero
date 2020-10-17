@@ -103,6 +103,7 @@ public class MqttProtobufServer extends BaseRemoteServer implements MqttCallback
 		super.close();
 	}
 
+	@Override
 	public void start() {
 		try {
 			// Subscribe
@@ -111,7 +112,7 @@ public class MqttProtobufServer extends BaseRemoteServer implements MqttCallback
 			mqttClient.subscribe(MqttProviderConstants.SPI_REQUEST_TOPIC + "/+");
 			mqttClient.subscribe(MqttProviderConstants.I2C_REQUEST_TOPIC + "/+");
 			Logger.debug("Subscribed");
-	
+
 			monitor = new Object();
 			try {
 				// Wait forever
@@ -137,137 +138,144 @@ public class MqttProtobufServer extends BaseRemoteServer implements MqttCallback
 			switch (topic) {
 			// GPIO
 			case MqttProviderConstants.GPIO_PROVISION_DIGITAL_INPUT_TOPIC:
-				DiozeroProtos.Gpio.ProvisionDigitalInput digital_input = DiozeroProtos.Gpio.ProvisionDigitalInput
+				DiozeroProtos.Gpio.ProvisionDigitalInputRequest digital_input = DiozeroProtos.Gpio.ProvisionDigitalInputRequest
 						.parseFrom(message.getPayload());
 				publishResponse(request(DiozeroProtosConverter.convert(digital_input)));
 				break;
 			case MqttProviderConstants.GPIO_PROVISION_DIGITAL_OUTPUT_TOPIC:
-				DiozeroProtos.Gpio.ProvisionDigitalOutput digital_output = DiozeroProtos.Gpio.ProvisionDigitalOutput
+				DiozeroProtos.Gpio.ProvisionDigitalOutputRequest digital_output = DiozeroProtos.Gpio.ProvisionDigitalOutputRequest
 						.parseFrom(message.getPayload());
 				publishResponse(request(DiozeroProtosConverter.convert(digital_output)));
 				break;
 			case MqttProviderConstants.GPIO_PROVISION_DIGITAL_INPUT_OUTPUT_TOPIC:
-				DiozeroProtos.Gpio.ProvisionDigitalInputOutput digital_inout = DiozeroProtos.Gpio.ProvisionDigitalInputOutput
+				DiozeroProtos.Gpio.ProvisionDigitalInputOutputRequest digital_inout = DiozeroProtos.Gpio.ProvisionDigitalInputOutputRequest
 						.parseFrom(message.getPayload());
 				publishResponse(request(DiozeroProtosConverter.convert(digital_inout)));
 				break;
 			case MqttProviderConstants.GPIO_PROVISION_PWM_OUTPUT_TOPIC:
-				DiozeroProtos.Gpio.ProvisionPwmOutput pwm_output = DiozeroProtos.Gpio.ProvisionPwmOutput
+				DiozeroProtos.Gpio.ProvisionPwmOutputRequest pwm_output = DiozeroProtos.Gpio.ProvisionPwmOutputRequest
 						.parseFrom(message.getPayload());
 				publishResponse(request(DiozeroProtosConverter.convert(pwm_output)));
 				break;
 			case MqttProviderConstants.GPIO_PROVISION_ANALOG_INPUT_TOPIC:
-				DiozeroProtos.Gpio.ProvisionAnalogInput analog_input = DiozeroProtos.Gpio.ProvisionAnalogInput
+				DiozeroProtos.Gpio.ProvisionAnalogInputRequest analog_input = DiozeroProtos.Gpio.ProvisionAnalogInputRequest
 						.parseFrom(message.getPayload());
 				publishResponse(request(DiozeroProtosConverter.convert(analog_input)));
 				break;
 			case MqttProviderConstants.GPIO_PROVISION_ANALOG_OUTPUT_TOPIC:
-				DiozeroProtos.Gpio.ProvisionAnalogOutput analog_output = DiozeroProtos.Gpio.ProvisionAnalogOutput
+				DiozeroProtos.Gpio.ProvisionAnalogOutputRequest analog_output = DiozeroProtos.Gpio.ProvisionAnalogOutputRequest
 						.parseFrom(message.getPayload());
 				publishResponse(request(DiozeroProtosConverter.convert(analog_output)));
 				break;
 			case MqttProviderConstants.GPIO_DIGITAL_READ_TOPIC:
-				DiozeroProtos.Gpio.DigitalRead digital_read = DiozeroProtos.Gpio.DigitalRead
+				DiozeroProtos.Gpio.DigitalReadRequest digital_read = DiozeroProtos.Gpio.DigitalReadRequest
 						.parseFrom(message.getPayload());
 				publishResponse(request(DiozeroProtosConverter.convert(digital_read)));
 				break;
 			case MqttProviderConstants.GPIO_DIGITAL_WRITE_TOPIC:
-				DiozeroProtos.Gpio.DigitalWrite digital_write = DiozeroProtos.Gpio.DigitalWrite
+				DiozeroProtos.Gpio.DigitalWriteRequest digital_write = DiozeroProtos.Gpio.DigitalWriteRequest
 						.parseFrom(message.getPayload());
 				publishResponse(request(DiozeroProtosConverter.convert(digital_write)));
 				break;
 			case MqttProviderConstants.GPIO_PWM_READ_TOPIC:
-				DiozeroProtos.Gpio.PwmRead pwm_read = DiozeroProtos.Gpio.PwmRead
+				DiozeroProtos.Gpio.PwmReadRequest pwm_read = DiozeroProtos.Gpio.PwmReadRequest
 						.parseFrom(message.getPayload());
 				publishResponse(request(DiozeroProtosConverter.convert(pwm_read)));
 				break;
 			case MqttProviderConstants.GPIO_PWM_WRITE_TOPIC:
-				DiozeroProtos.Gpio.PwmWrite pwm_write = DiozeroProtos.Gpio.PwmWrite
+				DiozeroProtos.Gpio.PwmWriteRequest pwm_write = DiozeroProtos.Gpio.PwmWriteRequest
 						.parseFrom(message.getPayload());
 				publishResponse(request(DiozeroProtosConverter.convert(pwm_write)));
 				break;
 			case MqttProviderConstants.GPIO_ANALOG_READ_TOPIC:
-				DiozeroProtos.Gpio.AnalogRead analog_read = DiozeroProtos.Gpio.AnalogRead
+				DiozeroProtos.Gpio.AnalogReadRequest analog_read = DiozeroProtos.Gpio.AnalogReadRequest
 						.parseFrom(message.getPayload());
 				publishResponse(request(DiozeroProtosConverter.convert(analog_read)));
 				break;
 			case MqttProviderConstants.GPIO_ANALOG_WRITE_TOPIC:
-				DiozeroProtos.Gpio.AnalogWrite analog_write = DiozeroProtos.Gpio.AnalogWrite
+				DiozeroProtos.Gpio.AnalogWriteRequest analog_write = DiozeroProtos.Gpio.AnalogWriteRequest
 						.parseFrom(message.getPayload());
 				publishResponse(request(DiozeroProtosConverter.convert(analog_write)));
 				break;
 			case MqttProviderConstants.GPIO_EVENTS_TOPIC:
-				DiozeroProtos.Gpio.Events gpio_events = DiozeroProtos.Gpio.Events.parseFrom(message.getPayload());
+				DiozeroProtos.Gpio.EventsRequest gpio_events = DiozeroProtos.Gpio.EventsRequest
+						.parseFrom(message.getPayload());
 				publishResponse(request(DiozeroProtosConverter.convert(gpio_events)));
 				break;
 			case MqttProviderConstants.GPIO_CLOSE_TOPIC:
-				DiozeroProtos.Gpio.Close gpio_close = DiozeroProtos.Gpio.Close.parseFrom(message.getPayload());
+				DiozeroProtos.Gpio.CloseRequest gpio_close = DiozeroProtos.Gpio.CloseRequest
+						.parseFrom(message.getPayload());
 				publishResponse(request(DiozeroProtosConverter.convert(gpio_close)));
 				break;
 
 			// I2C
 			case MqttProviderConstants.I2C_OPEN_TOPIC:
-				DiozeroProtos.I2C.Open i2c_open = DiozeroProtos.I2C.Open.parseFrom(message.getPayload());
+				DiozeroProtos.I2C.OpenRequest i2c_open = DiozeroProtos.I2C.OpenRequest.parseFrom(message.getPayload());
 				publishResponse(request(DiozeroProtosConverter.convert(i2c_open)));
 				break;
 			case MqttProviderConstants.I2C_READ_BYTE_TOPIC:
-				DiozeroProtos.I2C.ReadByte i2c_read_byte = DiozeroProtos.I2C.ReadByte.parseFrom(message.getPayload());
+				DiozeroProtos.I2C.ReadByteRequest i2c_read_byte = DiozeroProtos.I2C.ReadByteRequest
+						.parseFrom(message.getPayload());
 				publishResponse(request(DiozeroProtosConverter.convert(i2c_read_byte)));
 				break;
 			case MqttProviderConstants.I2C_WRITE_BYTE_TOPIC:
-				DiozeroProtos.I2C.WriteByte i2c_write_byte = DiozeroProtos.I2C.WriteByte
+				DiozeroProtos.I2C.WriteByteRequest i2c_write_byte = DiozeroProtos.I2C.WriteByteRequest
 						.parseFrom(message.getPayload());
 				publishResponse(request(DiozeroProtosConverter.convert(i2c_write_byte)));
 				break;
 			case MqttProviderConstants.I2C_READ_TOPIC:
-				DiozeroProtos.I2C.Read i2c_read = DiozeroProtos.I2C.Read.parseFrom(message.getPayload());
+				DiozeroProtos.I2C.ReadRequest i2c_read = DiozeroProtos.I2C.ReadRequest.parseFrom(message.getPayload());
 				publishResponse(request(DiozeroProtosConverter.convert(i2c_read)));
 				break;
 			case MqttProviderConstants.I2C_WRITE_TOPIC:
-				DiozeroProtos.I2C.Write i2c_write = DiozeroProtos.I2C.Write.parseFrom(message.getPayload());
+				DiozeroProtos.I2C.WriteRequest i2c_write = DiozeroProtos.I2C.WriteRequest
+						.parseFrom(message.getPayload());
 				publishResponse(request(DiozeroProtosConverter.convert(i2c_write)));
 				break;
 			case MqttProviderConstants.I2C_READ_BYTE_DATA_TOPIC:
-				DiozeroProtos.I2C.ReadByteData i2c_read_byte_data = DiozeroProtos.I2C.ReadByteData
+				DiozeroProtos.I2C.ReadByteDataRequest i2c_read_byte_data = DiozeroProtos.I2C.ReadByteDataRequest
 						.parseFrom(message.getPayload());
 				publishResponse(request(DiozeroProtosConverter.convert(i2c_read_byte_data)));
 				break;
 			case MqttProviderConstants.I2C_WRITE_BYTE_DATA_TOPIC:
-				DiozeroProtos.I2C.WriteByteData i2c_write_byte_data = DiozeroProtos.I2C.WriteByteData
+				DiozeroProtos.I2C.WriteByteDataRequest i2c_write_byte_data = DiozeroProtos.I2C.WriteByteDataRequest
 						.parseFrom(message.getPayload());
 				publishResponse(request(DiozeroProtosConverter.convert(i2c_write_byte_data)));
 				break;
 			case MqttProviderConstants.I2C_READ_I2C_BLOCK_DATA_TOPIC:
-				DiozeroProtos.I2C.ReadI2CBlockData i2c_read_i2c_block_data = DiozeroProtos.I2C.ReadI2CBlockData
+				DiozeroProtos.I2C.ReadI2CBlockDataRequest i2c_read_i2c_block_data = DiozeroProtos.I2C.ReadI2CBlockDataRequest
 						.parseFrom(message.getPayload());
 				publishResponse(request(DiozeroProtosConverter.convert(i2c_read_i2c_block_data)));
 				break;
 			case MqttProviderConstants.I2C_WRITE_I2C_BLOCK_DATA_TOPIC:
-				DiozeroProtos.I2C.WriteI2CBlockData i2c_write_i2c_block_data = DiozeroProtos.I2C.WriteI2CBlockData
+				DiozeroProtos.I2C.WriteI2CBlockDataRequest i2c_write_i2c_block_data = DiozeroProtos.I2C.WriteI2CBlockDataRequest
 						.parseFrom(message.getPayload());
 				publishResponse(request(DiozeroProtosConverter.convert(i2c_write_i2c_block_data)));
 				break;
 			case MqttProviderConstants.I2C_CLOSE_TOPIC:
-				DiozeroProtos.I2C.Close i2c_close = DiozeroProtos.I2C.Close.parseFrom(message.getPayload());
+				DiozeroProtos.I2C.CloseRequest i2c_close = DiozeroProtos.I2C.CloseRequest
+						.parseFrom(message.getPayload());
 				publishResponse(request(DiozeroProtosConverter.convert(i2c_close)));
 				break;
-			
+
 			// SPI
 			case MqttProviderConstants.SPI_OPEN_TOPIC:
-				DiozeroProtos.Spi.Open spi_open = DiozeroProtos.Spi.Open.parseFrom(message.getPayload());
+				DiozeroProtos.Spi.OpenRequest spi_open = DiozeroProtos.Spi.OpenRequest.parseFrom(message.getPayload());
 				publishResponse(request(DiozeroProtosConverter.convert(spi_open)));
 				break;
 			case MqttProviderConstants.SPI_WRITE_TOPIC:
-				DiozeroProtos.Spi.Write spi_write = DiozeroProtos.Spi.Write.parseFrom(message.getPayload());
+				DiozeroProtos.Spi.WriteRequest spi_write = DiozeroProtos.Spi.WriteRequest
+						.parseFrom(message.getPayload());
 				publishResponse(request(DiozeroProtosConverter.convert(spi_write)));
 				break;
 			case MqttProviderConstants.SPI_WRITE_AND_READ_TOPIC:
-				DiozeroProtos.Spi.WriteAndRead spi_write_and_read = DiozeroProtos.Spi.WriteAndRead
+				DiozeroProtos.Spi.WriteAndReadRequest spi_write_and_read = DiozeroProtos.Spi.WriteAndReadRequest
 						.parseFrom(message.getPayload());
 				publishResponse(request(DiozeroProtosConverter.convert(spi_write_and_read)));
 				break;
 			case MqttProviderConstants.SPI_CLOSE_TOPIC:
-				DiozeroProtos.Spi.Close spi_close = DiozeroProtos.Spi.Close.parseFrom(message.getPayload());
+				DiozeroProtos.Spi.CloseRequest spi_close = DiozeroProtos.Spi.CloseRequest
+						.parseFrom(message.getPayload());
 				publishResponse(request(DiozeroProtosConverter.convert(spi_close)));
 				break;
 			default:

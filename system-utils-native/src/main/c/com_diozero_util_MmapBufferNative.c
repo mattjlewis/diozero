@@ -32,16 +32,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
-#include <stdarg.h>
-#include <ctype.h>
 #include <unistd.h>
+
 #include <fcntl.h>
 #include <sys/ioctl.h>
 #include <sys/mman.h>
 #include <sys/types.h>
-#include <sys/stat.h>
 #include <sys/file.h>
+
 #include <jni.h>
+
 #include "com_diozero_util_MmapBufferNative.h"
 
 extern jclass mmapByteBufferClassRef;

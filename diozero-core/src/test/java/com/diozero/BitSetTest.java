@@ -35,8 +35,8 @@ package com.diozero;
 import java.nio.ByteBuffer;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.tinylog.Logger;
 
 import com.diozero.devices.McpAdc;
@@ -155,48 +155,48 @@ public class BitSetTest {
 		byte val = 0;
 		val = BitManipulation.setBitValue(val, true, 1);
 		byte expected_val = 2;
-		Assert.assertEquals(expected_val, val);
+		Assertions.assertEquals(expected_val, val);
 		val = BitManipulation.setBitValue(val, true, 0);
 		expected_val += 1;
-		Assert.assertEquals(expected_val, val);
+		Assertions.assertEquals(expected_val, val);
 		val = BitManipulation.setBitValue(val, true, 4);
 		expected_val += 16;
-		Assert.assertEquals(expected_val, val);
+		Assertions.assertEquals(expected_val, val);
 		val = BitManipulation.setBitValue(val, false, 5);
-		Assert.assertEquals(expected_val, val);
+		Assertions.assertEquals(expected_val, val);
 		val = BitManipulation.setBitValue(val, false, 1);
 		expected_val -= 2;
-		Assert.assertEquals(expected_val, val);
+		Assertions.assertEquals(expected_val, val);
 		
 		byte mask = BitManipulation.getBitMask(4, 5);
-		Assert.assertEquals(16+32, mask);
+		Assertions.assertEquals(16+32, mask);
 	}
 	
 	@Test
 	public void testMcp23017() {
 		int gpio = 7;
 		byte bit = (byte)(gpio % PINS_PER_PORT);
-		Assert.assertEquals(7, bit);
+		Assertions.assertEquals(7, bit);
 		int port = gpio / PINS_PER_PORT;
-		Assert.assertEquals(0, port);
+		Assertions.assertEquals(0, port);
 		
 		gpio = 0;
 		bit = (byte)(gpio % PINS_PER_PORT);
-		Assert.assertEquals(0, bit);
+		Assertions.assertEquals(0, bit);
 		port = gpio / PINS_PER_PORT;
-		Assert.assertEquals(0, port);
+		Assertions.assertEquals(0, port);
 		
 		gpio = 8;
 		bit = (byte)(gpio % PINS_PER_PORT);
-		Assert.assertEquals(0, bit);
+		Assertions.assertEquals(0, bit);
 		port = gpio / PINS_PER_PORT;
-		Assert.assertEquals(1, port);
+		Assertions.assertEquals(1, port);
 		
 		gpio = 15;
 		bit = (byte)(gpio % PINS_PER_PORT);
-		Assert.assertEquals(7, bit);
+		Assertions.assertEquals(7, bit);
 		port = gpio / PINS_PER_PORT;
-		Assert.assertEquals(1, port);
+		Assertions.assertEquals(1, port);
 	}
 	
 	@Test
@@ -232,17 +232,17 @@ public class BitSetTest {
 			buffer.put(values[i][1]);
 			buffer.flip();
 			int v = extractValue(buffer, McpAdc.Type.MCP3304);
-			Assert.assertEquals(expected[i], v);
+			Assertions.assertEquals(expected[i], v);
 			buffer.clear();
 		}
 
 		int resolution = 12;
 		int m = (1 << resolution-8) - 1;
-		Assert.assertEquals(0b00001111, m);
+		Assertions.assertEquals(0b00001111, m);
 		
 		resolution = 10;
 		m = (1 << resolution-8) - 1;
-		Assert.assertEquals(0b00000011, m);
+		Assertions.assertEquals(0b00000011, m);
 		
 		// Rx   x0RRRRRR RRRRxxxx for the 300x (10 bit)
 		// Rx   x0RRRRRR RRRRRRxx for the 320x (12 bit)
@@ -251,35 +251,35 @@ public class BitSetTest {
 		buffer.put((byte)0xfe);
 		buffer.flip();
 		int v = (buffer.getShort() << 2) >> 3;
-		Assert.assertEquals(255, v);
+		Assertions.assertEquals(255, v);
 		
 		buffer.clear();
 		buffer.put((byte) 0b00011111);
 		buffer.put((byte) 0xfe);
 		buffer.flip();
 		v = ((short)(buffer.getShort() << 2)) >> 3;
-		Assert.assertEquals(4095, v);
+		Assertions.assertEquals(4095, v);
 		
 		buffer.clear();
 		buffer.put((byte)0b00111111);
 		buffer.put((byte)0xfe);
 		buffer.flip();
 		v = ((short)(buffer.getShort() << 2)) >> 3;
-		Assert.assertEquals(-1, v);
+		Assertions.assertEquals(-1, v);
 		
 		buffer.clear();
 		buffer.put((byte)0b00100000);
 		buffer.put((byte)0x00);
 		buffer.flip();
 		v = ((short)(buffer.getShort() << 2)) >> 3;
-		Assert.assertEquals(-4096, v);
+		Assertions.assertEquals(-4096, v);
 		
-		Assert.assertTrue("MCP3301".substring(0, 5).equals("MCP33"));
-		Assert.assertTrue("MCP3302".substring(0, 5).equals("MCP33"));
-		Assert.assertTrue("MCP3304".substring(0, 5).equals("MCP33"));
+		Assertions.assertTrue("MCP3301".substring(0, 5).equals("MCP33"));
+		Assertions.assertTrue("MCP3302".substring(0, 5).equals("MCP33"));
+		Assertions.assertTrue("MCP3304".substring(0, 5).equals("MCP33"));
 		
 		McpAdc.Type type = McpAdc.Type.valueOf("MCP3008");
-		Assert.assertEquals(McpAdc.Type.MCP3008, type);
+		Assertions.assertEquals(McpAdc.Type.MCP3008, type);
 		
 		// Unsigned
 		type = McpAdc.Type.MCP3208;

@@ -29,12 +29,14 @@
  * #L%
  */
 
-#include "com_diozero_util_Util.h"
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 #include <sys/time.h>
+
+#include <jni.h>
+
+#include "com_diozero_util_Util.h"
 
 static jint JNI_VERSION = JNI_VERSION_1_8;
 
@@ -73,7 +75,7 @@ jint JNI_OnLoad(JavaVM* jvm, void* reserved) {
 	class_name = "com/diozero/util/MmapByteBuffer";
 	jclass mmap_byte_buffer_class = (*env)->FindClass(env, class_name);
 	if ((*env)->ExceptionCheck(env) || mmap_byte_buffer_class == NULL) {
-		printf("Error, could not find class '%s'\n", class_name);
+		fprintf(stderr, "Error, could not find class '%s'\n", class_name);
 		return JNI_ERR;
 	}
 	method_name = "<init>";
@@ -88,7 +90,7 @@ jint JNI_OnLoad(JavaVM* jvm, void* reserved) {
 	class_name = "java/io/FileDescriptor";
 	jclass fdesc_class = (*env)->FindClass(env, class_name);
 	if ((*env)->ExceptionCheck(env) || fdesc_class == NULL) {
-		printf("Error, could not find class '%s'\n", class_name);
+		fprintf(stderr, "Error, could not find class '%s'\n", class_name);
 		return JNI_ERR;
 	}
 	method_name = "<init>";

@@ -31,10 +31,10 @@ package com.diozero.remote.message;
  * #L%
  */
 
-public class GetBoardInfo extends Request {
+public class GetBoardInfoRequest extends Request {
 	private static final long serialVersionUID = 2249011256642095722L;
 
-	public GetBoardInfo(String correlationId) {
+	public GetBoardInfoRequest(String correlationId) {
 		super(correlationId);
 	}
 }
