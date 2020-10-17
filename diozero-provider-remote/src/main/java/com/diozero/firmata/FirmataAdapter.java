@@ -35,6 +35,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -506,7 +507,7 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, Close
 		case STRING_DATA:
 			byte[] string_data_buffer = new byte[buffer.remaining()];
 			buffer.get(string_data_buffer);
-			String string_data = new String(string_data_buffer, Charset.forName("UTF-16LE"));
+			String string_data = new String(string_data_buffer, StandardCharsets.UTF_16LE);
 			response = new StringDataResponse(string_data);
 			break;
 		case REPORT_FIRMWARE:
@@ -515,7 +516,7 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, Close
 
 			byte[] name_buffer = new byte[buffer.remaining()];
 			buffer.get(name_buffer);
-			String name = new String(name_buffer, Charset.forName("UTF-16LE"));
+			String name = new String(name_buffer, StandardCharsets.UTF_16LE);
 
 			response = new FirmwareDetails(major, minor, name);
 			break;
