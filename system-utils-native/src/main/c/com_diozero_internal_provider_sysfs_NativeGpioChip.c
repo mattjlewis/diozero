@@ -35,7 +35,7 @@ extern jmethodID nativeGpioChipConstructor;
 extern jclass gpioLineClassRef;
 extern jmethodID gpioLineConstructor;
 
-extern jmethodID gpioLineEventListenerMethodId;
+extern jmethodID gpioLineEventListenerMethod;
 
 static int dir_filter(const struct dirent *dir) {
 	return !strncmp(dir->d_name, "gpiochip", 8);
@@ -284,30 +284,10 @@ JNIEXPORT void JNICALL Java_com_diozero_internal_provider_sysfs_NativeGpioChip_e
 				// https://github.com/torvalds/linux/blob/v5.4/include/uapi/linux/gpio.h#L140
 				// id: either GPIOEVENT_EVENT_RISING_EDGE or GPIOEVENT_EVENT_FALLING_EDGE
 				// timestamp: best estimate of time of event occurrence, in nanoseconds
-				(*env)->CallVoidMethod(env, callback, gpioLineEventListenerMethodId,
+				(*env)->CallVoidMethod(env, callback, gpioLineEventListenerMethod,
 						epoll_events[i].data.fd, evdata.id, evdata.timestamp);
 			}
 		}
-		/*-
-		 * Remove - old poll code
-		if (pfd.revents & (POLLRDHUP | POLLERR | POLLHUP | POLLNVAL)) {
-			fprintf(stderr, "poll revents indicates poll loop should exit\n");
-			break;
-		}
-
-		if (pfd.revents & POLLIN) {
-			// Read the event data
-			if (read(pfd.fd, &evdata, sizeof(evdata)) < 0) {
-				perror("Error reading event data from line fd");
-				break;
-			}
-
-			// https://github.com/torvalds/linux/blob/v5.4/include/uapi/linux/gpio.h#L140
-			// id: either GPIOEVENT_EVENT_RISING_EDGE or GPIOEVENT_EVENT_FALLING_EDGE
-			// timestamp: best estimate of time of event occurrence, in nanoseconds
-			(*env)->CallVoidMethod(env, callback, gpioLineEventListenerMethodId, gpioOffset, evdata.id, evdata.timestamp);
-		}
-		*/
 	}
 }
 

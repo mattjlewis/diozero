@@ -69,7 +69,7 @@ jmethodID nativeGpioChipConstructor = NULL;
 jclass gpioLineClassRef = NULL;
 jmethodID gpioLineConstructor = NULL;
 
-jmethodID gpioLineEventListenerMethodId = NULL;
+jmethodID gpioLineEventListenerMethod = NULL;
 
 /* The VM calls this function upon loading the native library. */
 jint JNI_OnLoad(JavaVM* jvm, void* reserved) {
@@ -235,8 +235,8 @@ jint JNI_OnLoad(JavaVM* jvm, void* reserved) {
 	}
 	method_name = "event";
 	signature = "(IIJ)V";
-	gpioLineEventListenerMethodId = (*env)->GetMethodID(env, gpio_line_event_listener_class, method_name, signature);
-	if ((*env)->ExceptionCheck(env) || gpioLineEventListenerMethodId == NULL) {
+	gpioLineEventListenerMethod = (*env)->GetMethodID(env, gpio_line_event_listener_class, method_name, signature);
+	if ((*env)->ExceptionCheck(env) || gpioLineEventListenerMethod == NULL) {
 		fprintf(stderr, "Error looking up methodID for %s.%s%s\n", class_name, method_name, signature);
 		return JNI_ERR;
 	}
@@ -288,14 +288,45 @@ void JNI_OnUnload(JavaVM *jvm, void *reserved) {
 		return;
 	}
 
-	if (epollEventClassRef != NULL) {
-		(*env)->DeleteGlobalRef(env, epollEventClassRef);
-	}
-	if (mmapByteBufferClassRef != NULL) {
-		(*env)->DeleteGlobalRef(env, mmapByteBufferClassRef);
+	if (arrayListClassRef == NULL) {
+		(*env)->DeleteGlobalRef(env, arrayListClassRef);
+		arrayListClassRef = NULL;
 	}
 	if (fileDescClassRef != NULL) {
 		(*env)->DeleteGlobalRef(env, fileDescClassRef);
+		fileDescClassRef = NULL;
+	}
+	if (epollEventClassRef != NULL) {
+		(*env)->DeleteGlobalRef(env, epollEventClassRef);
+		epollEventClassRef = NULL;
+	}
+	if (epollNativeCallbackClassRef != NULL) {
+		(*env)->DeleteGlobalRef(env, epollNativeCallbackClassRef);
+		epollNativeCallbackClassRef = NULL;
+	}
+	if (pollEventListenerClassRef != NULL) {
+		(*env)->DeleteGlobalRef(env, pollEventListenerClassRef);
+		pollEventListenerClassRef = NULL;
+	}
+	if (epollEventClassRef != NULL) {
+		(*env)->DeleteGlobalRef(env, epollEventClassRef);
+		epollEventClassRef = NULL;
+	}
+	if (mmapByteBufferClassRef != NULL) {
+		(*env)->DeleteGlobalRef(env, mmapByteBufferClassRef);
+		mmapByteBufferClassRef = NULL;
+	}
+	if (gpioChipInfoClassRef != NULL) {
+		(*env)->DeleteGlobalRef(env, gpioChipInfoClassRef);
+		gpioChipInfoClassRef = NULL;
+	}
+	if (nativeGpioChipClassRef != NULL) {
+		(*env)->DeleteGlobalRef(env, nativeGpioChipClassRef);
+		nativeGpioChipClassRef = NULL;
+	}
+	if (gpioLineClassRef != NULL) {
+		(*env)->DeleteGlobalRef(env, gpioLineClassRef);
+		gpioLineClassRef = NULL;
 	}
 }
 
