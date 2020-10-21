@@ -34,7 +34,7 @@ package com.diozero.util;
 import org.tinylog.Logger;
 
 import com.diozero.internal.provider.NativeDeviceFactoryInterface;
-import com.diozero.internal.provider.sysfs.SysFsDeviceFactory;
+import com.diozero.internal.provider.sysfs.DefaultDeviceFactory;
 
 /**
  * Helper class for instantiating different devices via the configured provider.
@@ -65,7 +65,7 @@ public class DeviceFactoryHelper {
 				// If none found use the universal sysfs device factory
 				if (nativeDeviceFactory == null) {
 					nativeDeviceFactory = NativeDeviceFactoryInterface.loadInstances().findFirst()
-							.orElse(new SysFsDeviceFactory());
+							.orElse(new DefaultDeviceFactory());
 				}
 
 				Logger.debug("Using native device factory class {}", nativeDeviceFactory.getClass().getSimpleName());

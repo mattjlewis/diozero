@@ -234,7 +234,7 @@ public class ChipMmapGpio implements MmapGpioInterface {
 	}
 	
 	public static void main(String[] args) {
-		LibraryLoader.loadLibrary(ChipMmapGpio.class, "diozero-system-utils");
+		LibraryLoader.loadSystemUtils();
 		try (ChipMmapGpio mmap_gpio = new ChipMmapGpio()) {
 			mmap_gpio.initialise();
 			int gpio = 135; // PE7, CSID3

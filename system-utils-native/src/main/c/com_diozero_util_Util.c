@@ -40,13 +40,36 @@
 
 static jint JNI_VERSION = JNI_VERSION_1_8;
 
-jclass epollEventClassRef = NULL;
-jmethodID epollEventConstructor = NULL;
-jclass mmapByteBufferClassRef = NULL;
-jmethodID mmapByteBufferConstructor = NULL;
+jclass arrayListClassRef = NULL;
+jmethodID arrayListConstructor = NULL;
+jmethodID arrayListAddMethod = NULL;
+
 jclass fileDescClassRef;
 jmethodID fileDescConstructor = NULL;
 jfieldID fileDescFdField = NULL;
+
+jclass epollNativeCallbackClassRef = NULL;
+jmethodID epollNativeCallbackMethod = NULL;
+
+jclass pollEventListenerClassRef = NULL;
+jmethodID pollEventListenerNotifyMethod = NULL;
+
+jclass epollEventClassRef = NULL;
+jmethodID epollEventConstructor = NULL;
+
+jclass mmapByteBufferClassRef = NULL;
+jmethodID mmapByteBufferConstructor = NULL;
+
+jclass gpioChipInfoClassRef = NULL;
+jmethodID gpioChipInfoConstructor = NULL;
+
+jclass nativeGpioChipClassRef = NULL;
+jmethodID nativeGpioChipConstructor = NULL;
+
+jclass gpioLineClassRef = NULL;
+jmethodID gpioLineConstructor = NULL;
+
+jmethodID gpioLineEventListenerMethodId = NULL;
 
 /* The VM calls this function upon loading the native library. */
 jint JNI_OnLoad(JavaVM* jvm, void* reserved) {
@@ -56,32 +79,22 @@ jint JNI_OnLoad(JavaVM* jvm, void* reserved) {
 		return JNI_ERR;
 	}
 
-	// Cache the EpollEvent constructor on startup
-	char* class_name = "com/diozero/util/EpollEvent";
-	jclass epoll_event_class = (*env)->FindClass(env, class_name);
-	if ((*env)->ExceptionCheck(env) || epoll_event_class == NULL) {
+	// Cache the ArrayList class, constructor and add method on startup
+	char* class_name = "java/util/ArrayList";
+	jclass array_list_class = (*env)->FindClass(env, class_name);
+	if ((*env)->ExceptionCheck(env) || array_list_class == NULL) {
 		fprintf(stderr, "Error looking up class %s\n", class_name);
 		return JNI_ERR;
 	}
 	char* method_name = "<init>";
-	char* signature = "(IIJJB)V";
-	epollEventConstructor = (*env)->GetMethodID(env, epoll_event_class, method_name, signature);
-	if ((*env)->ExceptionCheck(env) || epollEventConstructor == NULL) {
+	char* signature = "()V";
+	arrayListConstructor = (*env)->GetMethodID(env, array_list_class, method_name, signature);
+	if ((*env)->ExceptionCheck(env) || arrayListConstructor == NULL) {
 		fprintf(stderr, "Error looking up methodID for %s.%s%s\n", class_name, method_name, signature);
 		return JNI_ERR;
 	}
-
-	// Cache the MmapByteBuffer constructor on startup
-	class_name = "com/diozero/util/MmapByteBuffer";
-	jclass mmap_byte_buffer_class = (*env)->FindClass(env, class_name);
-	if ((*env)->ExceptionCheck(env) || mmap_byte_buffer_class == NULL) {
-		fprintf(stderr, "Error, could not find class '%s'\n", class_name);
-		return JNI_ERR;
-	}
-	method_name = "<init>";
-	signature = "(IIILjava/nio/ByteBuffer;)V";
-	mmapByteBufferConstructor = (*env)->GetMethodID(env, mmap_byte_buffer_class, method_name, signature);
-	if ((*env)->ExceptionCheck(env) || mmapByteBufferConstructor == NULL) {
+	arrayListAddMethod = (*env)->GetMethodID(env, array_list_class, "add", "(Ljava/lang/Object;)Z");
+	if ((*env)->ExceptionCheck(env) || arrayListAddMethod == NULL) {
 		fprintf(stderr, "Error looking up methodID for %s.%s%s\n", class_name, method_name, signature);
 		return JNI_ERR;
 	}
@@ -108,6 +121,129 @@ jint JNI_OnLoad(JavaVM* jvm, void* reserved) {
 		return JNI_ERR;
 	}
 
+	// Cache the EpollNativeCallback class and callback method on startup
+	class_name = "com/diozero/util/EpollNativeCallback";
+	jclass epoll_native_callback_class = (*env)->FindClass(env, class_name);
+	if ((*env)->ExceptionCheck(env) || epoll_native_callback_class == NULL) {
+		fprintf(stderr, "Error looking up class %s\n", class_name);
+		return JNI_ERR;
+	}
+	method_name = "callback";
+	signature = "(IIJJB)V";
+	epollNativeCallbackMethod = (*env)->GetMethodID(env, epoll_native_callback_class, method_name, signature);
+	if ((*env)->ExceptionCheck(env) || epollNativeCallbackMethod == NULL) {
+		fprintf(stderr, "Error looking up methodID for %s.%s%s\n", class_name, method_name, signature);
+		return JNI_ERR;
+	}
+
+	// Cache the EpollEvent class and constructor on startup
+	class_name = "com/diozero/util/EpollEvent";
+	jclass epoll_event_class = (*env)->FindClass(env, class_name);
+	if ((*env)->ExceptionCheck(env) || epoll_event_class == NULL) {
+		fprintf(stderr, "Error looking up class %s\n", class_name);
+		return JNI_ERR;
+	}
+	method_name = "<init>";
+	signature = "(IIJJB)V";
+	epollEventConstructor = (*env)->GetMethodID(env, epoll_event_class, method_name, signature);
+	if ((*env)->ExceptionCheck(env) || epollEventConstructor == NULL) {
+		fprintf(stderr, "Error looking up methodID for %s.%s%s\n", class_name, method_name, signature);
+		return JNI_ERR;
+	}
+
+	// Cache the PollEventListener class and notify method on startup
+	class_name = "com/diozero/util/PollEventListener";
+	jclass poll_event_listener_class = (*env)->FindClass(env, class_name);
+	if ((*env)->ExceptionCheck(env) || poll_event_listener_class == NULL) {
+		fprintf(stderr, "Error, could not find class '%s'\n", class_name);
+		return JNI_ERR;
+	}
+	method_name = "notify";
+	signature = "(JJC)V";
+	pollEventListenerNotifyMethod = (*env)->GetMethodID(env, poll_event_listener_class, method_name, signature);
+	if ((*env)->ExceptionCheck(env) || pollEventListenerNotifyMethod == NULL) {
+		fprintf(stderr, "Error looking up methodID for %s.%s%s\n", class_name, method_name, signature);
+		return JNI_ERR;
+	}
+
+	// Cache the MmapByteBuffer class and constructor on startup
+	class_name = "com/diozero/util/MmapByteBuffer";
+	jclass mmap_byte_buffer_class = (*env)->FindClass(env, class_name);
+	if ((*env)->ExceptionCheck(env) || mmap_byte_buffer_class == NULL) {
+		fprintf(stderr, "Error, could not find class '%s'\n", class_name);
+		return JNI_ERR;
+	}
+	method_name = "<init>";
+	signature = "(IIILjava/nio/ByteBuffer;)V";
+	mmapByteBufferConstructor = (*env)->GetMethodID(env, mmap_byte_buffer_class, method_name, signature);
+	if ((*env)->ExceptionCheck(env) || mmapByteBufferConstructor == NULL) {
+		fprintf(stderr, "Error looking up methodID for %s.%s%s\n", class_name, method_name, signature);
+		return JNI_ERR;
+	}
+
+	// Cache the GpioChipInfo constructor on startup
+	class_name = "com/diozero/internal/provider/sysfs/GpioChipInfo";
+	jclass gpio_chip_info_class = (*env)->FindClass(env, class_name);
+	if ((*env)->ExceptionCheck(env) || gpio_chip_info_class == NULL) {
+		fprintf(stderr, "Error looking up class %s\n", class_name);
+		return JNI_ERR;
+	}
+	method_name = "<init>";
+	signature = "(Ljava/lang/String;Ljava/lang/String;I)V";
+	gpioChipInfoConstructor = (*env)->GetMethodID(env, gpio_chip_info_class, method_name, signature);
+	if ((*env)->ExceptionCheck(env) || gpioChipInfoConstructor == NULL) {
+		fprintf(stderr, "Error looking up methodID for %s.%s%s\n", class_name, method_name, signature);
+		return JNI_ERR;
+	}
+
+	// Cache the NativeGpioChip class and constructor on startup
+	class_name = "com/diozero/internal/provider/sysfs/NativeGpioChip";
+	jclass native_gpio_chip_class = (*env)->FindClass(env, class_name);
+	if ((*env)->ExceptionCheck(env) || native_gpio_chip_class == NULL) {
+		fprintf(stderr, "Error looking up class %s\n", class_name);
+		return JNI_ERR;
+	}
+	method_name = "<init>";
+	signature = "(Ljava/lang/String;Ljava/lang/String;I[Lcom/diozero/internal/provider/sysfs/GpioLine;)V";
+	nativeGpioChipConstructor = (*env)->GetMethodID(env, native_gpio_chip_class, method_name, signature);
+	if ((*env)->ExceptionCheck(env) || gpioChipInfoConstructor == NULL) {
+		fprintf(stderr, "Error looking up methodID for %s.%s%s\n", class_name, method_name, signature);
+		return JNI_ERR;
+	}
+
+	// Cache the GpioLine class and constructor on startup
+	class_name = "com/diozero/internal/provider/sysfs/GpioLine";
+	jclass gpio_line_class = (*env)->FindClass(env, class_name);
+	if ((*env)->ExceptionCheck(env) || gpio_line_class == NULL) {
+		fprintf(stderr, "Error looking up class %s\n", class_name);
+		return JNI_ERR;
+	}
+	method_name = "<init>";
+	signature = "(IILjava/lang/String;Ljava/lang/String;)V";
+	gpioLineConstructor = (*env)->GetMethodID(env, gpio_line_class, method_name, signature);
+	if ((*env)->ExceptionCheck(env) || gpioLineConstructor == NULL) {
+		fprintf(stderr, "Error looking up methodID for %s.%s%s\n", class_name, method_name, signature);
+		return JNI_ERR;
+	}
+
+	// Cache the GpioLineEventListener class and method on startup
+	class_name = "com/diozero/internal/provider/sysfs/GpioLineEventListener";
+	jclass gpio_line_event_listener_class = (*env)->FindClass(env, class_name);
+	if ((*env)->ExceptionCheck(env) || gpio_line_event_listener_class == NULL) {
+		fprintf(stderr, "Error looking up class %s\n", class_name);
+		return JNI_ERR;
+	}
+	method_name = "event";
+	signature = "(IIJ)V";
+	gpioLineEventListenerMethodId = (*env)->GetMethodID(env, gpio_line_event_listener_class, method_name, signature);
+	if ((*env)->ExceptionCheck(env) || gpioLineEventListenerMethodId == NULL) {
+		fprintf(stderr, "Error looking up methodID for %s.%s%s\n", class_name, method_name, signature);
+		return JNI_ERR;
+	}
+	(*env)->DeleteLocalRef(env, gpio_line_event_listener_class);
+
+	//
+
 	/*
 	 * https://stackoverflow.com/questions/10617735/in-jni-how-do-i-cache-the-class-methodid-and-fieldids-per-ibms-performance-r
 	 * Class IDs must be registered as global references to maintain the viability
@@ -122,12 +258,24 @@ jint JNI_OnLoad(JavaVM* jvm, void* reserved) {
 	 */
 
 	// Create global references to the classes
-	epollEventClassRef = (*env)->NewGlobalRef(env, epoll_event_class);
-	(*env)->DeleteLocalRef(env, epoll_event_class);
-	mmapByteBufferClassRef = (*env)->NewGlobalRef(env, mmap_byte_buffer_class);
-	(*env)->DeleteLocalRef(env, mmap_byte_buffer_class);
+	arrayListClassRef = (*env)->NewGlobalRef(env, array_list_class);
+	(*env)->DeleteLocalRef(env, array_list_class);
 	fileDescClassRef = (*env)->NewGlobalRef(env, fdesc_class);
 	(*env)->DeleteLocalRef(env, fdesc_class);
+	epollNativeCallbackClassRef = (*env)->NewGlobalRef(env, epoll_native_callback_class);
+	(*env)->DeleteLocalRef(env, epoll_native_callback_class);
+	epollEventClassRef = (*env)->NewGlobalRef(env, epoll_event_class);
+	(*env)->DeleteLocalRef(env, epoll_event_class);
+	pollEventListenerClassRef = (*env)->NewGlobalRef(env, poll_event_listener_class);
+	(*env)->DeleteLocalRef(env, poll_event_listener_class);
+	mmapByteBufferClassRef = (*env)->NewGlobalRef(env, mmap_byte_buffer_class);
+	(*env)->DeleteLocalRef(env, mmap_byte_buffer_class);
+	gpioChipInfoClassRef = (*env)->NewGlobalRef(env, gpio_chip_info_class);
+	(*env)->DeleteLocalRef(env, gpio_chip_info_class);
+	nativeGpioChipClassRef = (*env)->NewGlobalRef(env, native_gpio_chip_class);
+	(*env)->DeleteLocalRef(env, native_gpio_chip_class);
+	gpioLineClassRef = (*env)->NewGlobalRef(env, gpio_line_class);
+	(*env)->DeleteLocalRef(env, gpio_line_class);
 
 	return JNI_VERSION;
 }

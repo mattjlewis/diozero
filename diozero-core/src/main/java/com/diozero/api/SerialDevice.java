@@ -51,17 +51,19 @@ public class SerialDevice implements SerialConstants, Closeable {
 		private String deviceFile;
 		private String description;
 		private String driverName;
+		private String manufacturer;
 		private String usbVendorId;
 		// private String usbVendorName;
 		private String usbProductId;
 		// private String usbProductName;
 
 		public DeviceInfo(String deviceName, String deviceFile, String description, String driverName,
-				String usbVendorId, String usbProductId) {
+				String manufacturer, String usbVendorId, String usbProductId) {
 			this.deviceName = deviceName;
 			this.deviceFile = deviceFile;
 			this.description = description;
 			this.driverName = driverName;
+			this.manufacturer = manufacturer;
 			this.usbVendorId = usbVendorId;
 			this.usbProductId = usbProductId;
 		}
@@ -80,6 +82,10 @@ public class SerialDevice implements SerialConstants, Closeable {
 
 		public String getDriverName() {
 			return driverName;
+		}
+
+		public String getManufacturer() {
+			return manufacturer;
 		}
 
 		public String getUsbVendorId() {
@@ -153,7 +159,7 @@ public class SerialDevice implements SerialConstants, Closeable {
 							try {
 								serialDevices.add(getDeviceInfo(p));
 							} catch (IOException e) {
-
+								Logger.error(e, "Error: {}", e);
 							}
 						} else {
 							lookForSerialDevices(p, serialDevices);
@@ -172,42 +178,50 @@ public class SerialDevice implements SerialConstants, Closeable {
 		String device_name = p.getFileName().toString();
 		Logger.debug("Found device with path {}", p);
 
-		String description, driver_name, usb_vendor_id, usb_product_id;
+		String description = null, driver_name = null, manufacturer = null, usb_vendor_id = null, usb_product_id = null;
 
 		// Look for a product description file
-		Path product_file = p.getParent().getParent().resolve("product");
-		boolean primary_method = true;
+		// For ttyUSBx devices
+		Path device_root = p.getParent().getParent();
+		Path product_file = device_root.resolve("product");
 		if (!product_file.toFile().exists()) {
-			product_file = p.resolve("device").getParent().resolve("product");
-			if (product_file.toFile().exists()) {
-				primary_method = false;
-			}
+			// For ttyACMx devices
+			device_root = p.getParent().getParent().getParent();
+			product_file = device_root.resolve("product");
 		}
 		if (product_file.toFile().exists()) {
+			Logger.debug("Processing device {} in {}", device_name, device_root);
+
 			// I believe this means that this is a USB-connected device
-			Path usb_root = primary_method ? p.getParent().getParent() : p.resolve("device").getParent();
 			description = Files.lines(product_file).findFirst().orElse(null);
 			// Get the driver name, e.g. "usb-serial:ch341-uart"
-			driver_name = Files.list(p.resolve("driver").resolve("module").resolve("drivers"))
-					.filter(path -> path.toFile().isDirectory()).filter(path -> !path.toFile().isHidden())
-					.map(path -> path.getFileName().toString()).findFirst().orElse(null);
+			Path drivers_path = p.resolve("driver").resolve("module").resolve("drivers");
+			if (!drivers_path.toFile().exists()) {
+				drivers_path = p.resolve("device").resolve("driver").resolve("module").resolve("drivers");
+			}
+			if (drivers_path.toFile().exists()) {
+				driver_name = Files.list(drivers_path).filter(path -> path.toFile().isDirectory())
+						.filter(path -> !path.toFile().isHidden()).map(path -> path.getFileName().toString())
+						.findFirst().orElse(null);
+			}
 			// Look for USB vendor and product identifiers
-			usb_vendor_id = Files.lines(usb_root.resolve("idVendor")).findFirst().orElse(null);
-			usb_product_id = Files.lines(usb_root.resolve("idProduct")).findFirst().orElse(null);
+			Path manufacturer_path = device_root.resolve("manufacturer");
+			if (manufacturer_path.toFile().exists()) {
+				manufacturer = Files.lines(manufacturer_path).findFirst().orElse(null);
+			}
+			usb_vendor_id = Files.lines(device_root.resolve("idVendor")).findFirst().orElse(null);
+			usb_product_id = Files.lines(device_root.resolve("idProduct")).findFirst().orElse(null);
 		} else {
 			// Must be a physical (or emulated) port
 			description = "Physical Port";
 			Path driver_path = p.resolve("device").resolve("driver");
 			if (driver_path.toFile().exists()) {
 				driver_name = Paths.get(driver_path.toFile().getCanonicalPath()).getFileName().toString();
-			} else {
-				driver_name = "Unknown";
 			}
-			usb_vendor_id = null;
-			usb_product_id = null;
 		}
 
-		return new DeviceInfo(device_name, "/dev/" + device_name, description, driver_name, usb_vendor_id, usb_product_id);
+		return new DeviceInfo(device_name, "/dev/" + device_name, description, driver_name, manufacturer, usb_vendor_id,
+				usb_product_id);
 	}
 
 	private SerialDeviceInterface device;
@@ -285,16 +299,19 @@ public class SerialDevice implements SerialConstants, Closeable {
 		public static String[] resolve(String vendorId, String productId) {
 			String vendor_name = null;
 			String product_name = null;
-			
+
 			try {
 				Iterator<String> it = Files.lines(Paths.get("/var/lib/usbutils/usb.ids"))
 						.filter(line -> !line.startsWith("#")).filter(line -> !line.trim().isEmpty()).iterator();
 				while (it.hasNext()) {
 					String line = it.next();
+					if (line.startsWith("C ")) {
+						break;
+					}
 					if (line.startsWith(vendorId)) {
 						vendor_name = line.substring(vendorId.length()).trim();
 						// Now search for the product name
-						do {
+						while (it.hasNext()) {
 							line = it.next();
 							if (!line.startsWith("\t")) {
 								break;
@@ -303,14 +320,14 @@ public class SerialDevice implements SerialConstants, Closeable {
 								product_name = line.trim().substring(productId.length()).trim();
 								break;
 							}
-						} while (true);
+						}
 						break;
 					}
 				}
 			} catch (IOException e) {
 				Logger.error(e);
 			}
-			
+
 			return new String[] { vendor_name, product_name };
 		}
 	}

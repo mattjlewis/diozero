@@ -193,7 +193,7 @@ public class PCF8574 extends AbstractDeviceFactory implements GpioDeviceFactoryI
 
 			this.pcf8574 = pcf8574;
 			this.gpio = gpio;
-			// Note trigger is current ignored
+			// Note trigger is currently ignored
 		}
 
 		@Override

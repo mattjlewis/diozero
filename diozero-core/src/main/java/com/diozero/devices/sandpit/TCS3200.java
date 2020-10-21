@@ -51,7 +51,7 @@ import com.diozero.util.SleepUtil;
  * S2/S3 Colour filter selection.
  * </pre>
  * <ul>
- * <li>OUT is a square wave whose frequency is proprtional to the
+ * <li>OUT is a square wave whose frequency is proportional to the
  * intensity of the selected filter colour.</li>
  * <li>S2/S3 selects between red, green, blue, and no filter.</li>
  * <li>S0/S1 scales the frequency at 100%, 20%, 2% or off.</li>

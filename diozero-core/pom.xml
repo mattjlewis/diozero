@@ -30,6 +30,16 @@
 					</environmentVariables>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<compilerArgs>
+	                    <arg>-h</arg>
+	                    <arg>target/headers</arg>
+	                 </compilerArgs>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 

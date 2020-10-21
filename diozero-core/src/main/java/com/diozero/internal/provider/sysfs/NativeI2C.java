@@ -31,7 +31,13 @@ package com.diozero.internal.provider.sysfs;
  * #L%
  */
 
+import com.diozero.util.LibraryLoader;
+
 public class NativeI2C {
+	static {
+		LibraryLoader.loadSystemUtils();
+	}
+	
 	static final int I2C_FUNC_I2C                    = 0x00000001;
 	static final int I2C_FUNC_10BIT_ADDR             = 0x00000002;
 	static final int I2C_FUNC_PROTOCOL_MANGLING      = 0x00000004; /* I2C_M_IGNORE_NAK etc. */

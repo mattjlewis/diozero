@@ -46,7 +46,7 @@ import org.tinylog.Logger;
 
 public class EpollNative implements EpollNativeCallback, Closeable {
 	static {
-		LibraryLoader.loadLibrary(EpollNative.class, "diozero-system-utils");
+		LibraryLoader.loadSystemUtils();
 	}
 
 	private static native int epollCreate();
@@ -133,6 +133,8 @@ public class EpollNative implements EpollNativeCallback, Closeable {
 			try {
 				condition.await();
 			} catch (InterruptedException e) {
+				Logger.debug("Interrupted!");
+				break;
 			} finally {
 				lock.unlock();
 			}

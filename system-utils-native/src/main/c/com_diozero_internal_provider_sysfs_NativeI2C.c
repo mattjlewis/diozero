@@ -134,6 +134,7 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeI2C_readBy
 
 	int rc = read(fd, (uint8_t*) rx_buf, rxLength);
 
+	// mode = 0 : copy back the content and free the elems buffer
 	(*env)->ReleaseByteArrayElements(env, rxData, rx_buf, 0);
 
 	return rc < 0 ? -errno : rc;
@@ -146,6 +147,7 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeI2C_writeB
 
 	int rc = write(fd, tx_buf, txLength);
 
+	// mode = JNI_ABORT as there were no changes made
 	(*env)->ReleaseByteArrayElements(env, txData, tx_buf, JNI_ABORT);
 
 	return rc < 0 ? -errno : rc;

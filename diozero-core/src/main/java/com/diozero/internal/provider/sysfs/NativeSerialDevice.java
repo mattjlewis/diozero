@@ -47,16 +47,15 @@ public class NativeSerialDevice implements Closeable {
 	private static final int FD_NOT_INITIALISED = -1;
 
 	static {
-		LibraryLoader.loadLibrary(NativeSerialDevice.class, "diozero-system-utils");
+		LibraryLoader.loadSystemUtils();
 	}
 
 	// See https://www.cmrr.umn.edu/~strupp/serial.html
 	private static native FileDescriptor serialOpen(String device, int baud, int dataBits, int stopBits, int parity,
 			boolean readBlocking, int minReadChars, int readTimeoutMillis);
 
-	// private static native int serialConfigPort(int fd, int baud, int dataBits,
-	// int stopBits, int parity,
-	// boolean readBlocking, int minReadChars, int readTimeoutMillis);
+	private static native int serialConfigPort(int fd, int baud, int dataBits, int stopBits, int parity,
+			boolean readBlocking, int minReadChars, int readTimeoutMillis);
 	// private static native int serialReadByte(int fd);
 	// private static native int serialWriteByte(int fd, int bVal);
 	// private static native int serialRead(int fd, byte[] buffer);

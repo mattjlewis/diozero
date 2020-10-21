@@ -39,10 +39,10 @@ import com.diozero.internal.provider.DeviceFactoryInterface;
 import com.diozero.internal.provider.SpiDeviceInterface;
 import com.diozero.util.RuntimeIOException;
 
-public class SysFsSpiDevice extends AbstractDevice implements SpiDeviceInterface {
+public class NativeSpiDeviceWrapper extends AbstractDevice implements SpiDeviceInterface {
 	private NativeSpiDevice device;
 	
-	public SysFsSpiDevice(DeviceFactoryInterface deviceFactory, String key, int controller,
+	public NativeSpiDeviceWrapper(DeviceFactoryInterface deviceFactory, String key, int controller,
 			int chipSelect, int frequency, SpiClockMode spiClockMode, boolean lsbFirst) {
 		super(key, deviceFactory);
 		

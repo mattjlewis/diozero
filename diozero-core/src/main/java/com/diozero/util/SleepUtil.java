@@ -39,7 +39,7 @@ import org.tinylog.Logger;
 public class SleepUtil {
 	static {
 		try {
-			LibraryLoader.loadLibrary(SleepUtil.class, "diozero-system-utils");
+			LibraryLoader.loadSystemUtils();
 		} catch (Throwable t) {
 			Logger.error(t, "Error loading diozero-system-utils: " + t);
 		}

@@ -28,16 +28,24 @@ JNIEXPORT jint JNICALL Java_com_diozero_util_EpollNative_addFile
  * Method:    removeFile
  * Signature: (II)I
  */
-JNIEXPORT jint JNICALL Java_com_diozero_util_EpollNative_removeFile(
-		JNIEnv *, jclass, jint, jint);
+JNIEXPORT jint JNICALL Java_com_diozero_util_EpollNative_removeFile
+  (JNIEnv *, jclass, jint, jint);
 
 /*
  * Class:     com_diozero_util_EpollNative
  * Method:    waitForEvents
- * Signature: (I)[Lcom/diozero/util/NativePollEvent;
+ * Signature: (I)[Lcom/diozero/util/EpollEvent;
  */
 JNIEXPORT jobjectArray JNICALL Java_com_diozero_util_EpollNative_waitForEvents
   (JNIEnv *, jclass, jint);
+
+/*
+ * Class:     com_diozero_util_EpollNative
+ * Method:    eventLoop
+ * Signature: (ILcom/diozero/util/EpollNativeCallback;)I
+ */
+JNIEXPORT jint JNICALL Java_com_diozero_util_EpollNative_eventLoop
+  (JNIEnv *, jclass, jint, jobject);
 
 /*
  * Class:     com_diozero_util_EpollNative

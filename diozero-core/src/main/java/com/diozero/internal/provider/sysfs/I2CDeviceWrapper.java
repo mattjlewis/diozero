@@ -44,11 +44,11 @@ import com.diozero.util.LibraryLoader;
 import com.diozero.util.PropertyUtil;
 import com.diozero.util.RuntimeIOException;
 
-public class SysFsI2CDevice extends AbstractDevice implements I2CDeviceInterface {
+public class I2CDeviceWrapper extends AbstractDevice implements I2CDeviceInterface {
 	private static boolean USE_SYSFS = false;
 	private static boolean I2C_SLAVE_FORCE = false;
 	static {
-		LibraryLoader.loadLibrary(SysFsI2CDevice.class, "diozero-system-utils");
+		LibraryLoader.loadSystemUtils();
 		
 		USE_SYSFS = PropertyUtil.isPropertySet("I2C_USE_SYSFS");
 		I2C_SLAVE_FORCE = PropertyUtil.isPropertySet("I2C_SLAVE_FORCE");
@@ -56,7 +56,7 @@ public class SysFsI2CDevice extends AbstractDevice implements I2CDeviceInterface
 	
 	private I2CSMBusInterface i2cDevice;
 	
-	public SysFsI2CDevice(DeviceFactoryInterface deviceFactory, String key, int controller,
+	public I2CDeviceWrapper(DeviceFactoryInterface deviceFactory, String key, int controller,
 			int address, int addressSize, int frequency) {
 		super(key, deviceFactory);
 		

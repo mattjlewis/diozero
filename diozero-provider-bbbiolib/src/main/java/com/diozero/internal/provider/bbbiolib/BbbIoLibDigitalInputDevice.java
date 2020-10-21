@@ -45,7 +45,7 @@ import com.diozero.util.RuntimeIOException;
 public class BbbIoLibDigitalInputDevice extends AbstractInputDevice<DigitalInputEvent>
 		implements GpioDigitalInputDeviceInterface, InputEventListener<DigitalInputEvent> {
 	private PinInfo pinInfo;
-	private GpioDigitalInputDeviceInterface sysFsDigitialInput;
+	private GpioDigitalInputDeviceInterface defaultDigitialInput;
 
 	public BbbIoLibDigitalInputDevice(BbbIoLibDeviceFactory deviceFactory, String key, PinInfo pinInfo,
 			GpioPullUpDown pud, GpioEventTrigger trigger) {
@@ -59,7 +59,7 @@ public class BbbIoLibDigitalInputDevice extends AbstractInputDevice<DigitalInput
 			throw new RuntimeIOException("Error in BBBioLib.setDir(" + getGpio() + ", " + BbbIoLibNative.BBBIO_DIR_IN + ")");
 		}
 
-		sysFsDigitialInput = deviceFactory.getSysFsDeviceFactory().provisionDigitalInputDevice(
+		defaultDigitialInput = deviceFactory.getDefaultDeviceFactory().provisionDigitalInputDevice(
 				getGpio(), pud, trigger);
 	}
 
@@ -85,21 +85,21 @@ public class BbbIoLibDigitalInputDevice extends AbstractInputDevice<DigitalInput
 	
 	@Override
 	protected void enableListener() {
-		sysFsDigitialInput.setListener(this);
+		defaultDigitialInput.setListener(this);
 	}
 	
 	@Override
 	protected void disableListener() {
-		sysFsDigitialInput.removeListener();
+		defaultDigitialInput.removeListener();
 	}
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
 		Logger.trace("closeDevice()");
 		disableListener();
-		if (sysFsDigitialInput != null) {
-			sysFsDigitialInput.close();
-			sysFsDigitialInput = null;
+		if (defaultDigitialInput != null) {
+			defaultDigitialInput.close();
+			defaultDigitialInput = null;
 		}
 	}
 }

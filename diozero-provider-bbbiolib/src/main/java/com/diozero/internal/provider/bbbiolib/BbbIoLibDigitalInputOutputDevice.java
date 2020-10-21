@@ -48,7 +48,7 @@ public class BbbIoLibDigitalInputOutputDevice extends AbstractInputDevice<Digita
 implements GpioDigitalInputOutputDeviceInterface, InputEventListener<DigitalInputEvent> {
 	private PinInfo pinInfo;
 	private DeviceMode mode;
-	private GpioDigitalInputDeviceInterface sysFsDigitialInput;
+	private GpioDigitalInputDeviceInterface defaultDigitialInput;
 
 	public BbbIoLibDigitalInputOutputDevice(BbbIoLibDeviceFactory deviceFactory, String key, PinInfo pinInfo,
 			DeviceMode mode) {
@@ -56,7 +56,7 @@ implements GpioDigitalInputOutputDeviceInterface, InputEventListener<DigitalInpu
 		
 		this.pinInfo = pinInfo;
 
-		sysFsDigitialInput = deviceFactory.getSysFsDeviceFactory().provisionDigitalInputDevice(
+		defaultDigitialInput = deviceFactory.getDefaultDeviceFactory().provisionDigitalInputDevice(
 				getGpio(), GpioPullUpDown.NONE, GpioEventTrigger.BOTH);
 		
 		setMode(mode);
@@ -99,12 +99,12 @@ implements GpioDigitalInputOutputDeviceInterface, InputEventListener<DigitalInpu
 	
 	@Override
 	protected void enableListener() {
-		sysFsDigitialInput.setListener(this);
+		defaultDigitialInput.setListener(this);
 	}
 	
 	@Override
 	protected void disableListener() {
-		sysFsDigitialInput.removeListener();
+		defaultDigitialInput.removeListener();
 	}
 
 	@Override

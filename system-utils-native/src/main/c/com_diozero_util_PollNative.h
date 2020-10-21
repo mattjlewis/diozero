@@ -11,10 +11,10 @@ extern "C" {
 /*
  * Class:     com_diozero_util_PollNative
  * Method:    poll
- * Signature: (ILjava/lang/Object;com/diozero/util/PollEventListener;)V
+ * Signature: (Ljava/lang/String;IILcom/diozero/util/PollEventListener;)V
  */
 JNIEXPORT void JNICALL Java_com_diozero_util_PollNative_poll
-  (JNIEnv *, jobject, jstring, jint, jobject, jobject);
+  (JNIEnv *, jobject, jstring, jint, jint, jobject);
 
 /*
  * Class:     com_diozero_util_PollNative

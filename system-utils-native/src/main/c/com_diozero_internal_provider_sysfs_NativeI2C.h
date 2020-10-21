@@ -35,7 +35,7 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeI2C_smbusO
 /*
  * Class:     com_diozero_internal_provider_sysfs_NativeI2C
  * Method:    smbusClose
- * Signature: (I)
+ * Signature: (I)V
  */
 JNIEXPORT void JNICALL Java_com_diozero_internal_provider_sysfs_NativeI2C_smbusClose(
 		JNIEnv* env, jclass clz, jint fd);

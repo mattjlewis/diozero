@@ -52,18 +52,18 @@ implements GpioDigitalInputOutputDeviceInterface, PollEventListener {
 	private static final byte LOW_VALUE = '0';
 	private static final byte HIGH_VALUE = '1';
 
-	private SysFsDeviceFactory deviceFactory;
+	private DefaultDeviceFactory deviceFactory;
 	protected int gpio;
 	private Path valuePath;
 	private RandomAccessFile valueFile;
 	protected DeviceMode mode;
 
-	public SysFsDigitalInputOutputDevice(SysFsDeviceFactory deviceFactory, String key, PinInfo pinInfo, DeviceMode mode) {
+	public SysFsDigitalInputOutputDevice(DefaultDeviceFactory deviceFactory, String key, PinInfo pinInfo, DeviceMode mode) {
 		super(key, deviceFactory);
 		
 		this.deviceFactory = deviceFactory;
 		this.gpio = pinInfo.getSysFsNumber();
-		Path gpio_dir = deviceFactory.getGpioDirectoryPath(gpio);
+		Path gpio_dir = SysFsGpioUtil.getGpioDirectoryPath(gpio);
 		
 		setMode(mode);
 		
@@ -82,7 +82,7 @@ implements GpioDigitalInputOutputDeviceInterface, PollEventListener {
 	
 	@Override
 	public void setMode(DeviceMode mode) {
-		deviceFactory.export(gpio, mode);
+		SysFsGpioUtil.export(gpio, mode);
 		this.mode = mode;
 	}
 
@@ -132,7 +132,7 @@ implements GpioDigitalInputOutputDeviceInterface, PollEventListener {
 		} catch (IOException e) {
 			throw new RuntimeIOException(e);
 		}
-		deviceFactory.unexport(gpio);
+		SysFsGpioUtil.unexport(gpio);
 	}
 
 	@Override

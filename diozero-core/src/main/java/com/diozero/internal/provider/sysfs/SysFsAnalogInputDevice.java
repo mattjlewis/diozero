@@ -54,7 +54,7 @@ public class SysFsAnalogInputDevice extends AbstractInputDevice<AnalogInputEvent
 	private RandomAccessFile voltageRaw;
 	private float vRef;
 
-	public SysFsAnalogInputDevice(SysFsDeviceFactory deviceFactory, String key, int device, int adcNumber) {
+	public SysFsAnalogInputDevice(DefaultDeviceFactory deviceFactory, String key, int device, int adcNumber) {
 		super(key, deviceFactory);
 
 		this.adcNumber = adcNumber;

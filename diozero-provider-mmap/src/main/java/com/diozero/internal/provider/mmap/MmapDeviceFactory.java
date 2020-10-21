@@ -31,8 +31,6 @@ package com.diozero.internal.provider.mmap;
  * #L%
  */
 
-import org.tinylog.Logger;
-
 import com.diozero.api.DeviceMode;
 import com.diozero.api.GpioEventTrigger;
 import com.diozero.api.GpioPullUpDown;
@@ -41,18 +39,17 @@ import com.diozero.internal.provider.GpioDigitalInputDeviceInterface;
 import com.diozero.internal.provider.GpioDigitalInputOutputDeviceInterface;
 import com.diozero.internal.provider.GpioDigitalOutputDeviceInterface;
 import com.diozero.internal.provider.MmapGpioInterface;
-import com.diozero.internal.provider.sysfs.SysFsDeviceFactory;
+import com.diozero.internal.provider.sysfs.DefaultDeviceFactory;
 import com.diozero.util.RuntimeIOException;
 
-public class MmapDeviceFactory extends SysFsDeviceFactory {
+public class MmapDeviceFactory extends DefaultDeviceFactory {
 	private MmapGpioInterface mmapGpio;
 	
-	/*
-	 * Note this cannot be called in the constructor as createMmapGpio() calls
-	 * LibraryLoader.loadLibrary() which in turn calls
-	 * DeviceFactoryHelper.getNativeDeviceFactory().getBoardInfo().getLibraryPath()
-	 * which causes an infinite loop as this class is constructed by
-	 * DeviceFactoryHelper.getNativeDeviceFactory() 
+	/*-
+	 * Note this cannot be called in the constructor as createMmapGpio() calls LibraryLoader.loadLibrary() which in turn
+	 * calls DeviceFactoryHelper.getNativeDeviceFactory().getBoardInfo().getLibraryPath() which causes an infinite loop
+	 * as this class is constructed by DeviceFactoryHelper.getNativeDeviceFactory() .
+	 * FIXME Update - this issue is fixed now and shouldn't be a problem as LibraryLoader no longer calls getNativeDeviceFactory()
 	 */
 	synchronized MmapGpioInterface getMmapGpio() {
 		if (mmapGpio == null) {

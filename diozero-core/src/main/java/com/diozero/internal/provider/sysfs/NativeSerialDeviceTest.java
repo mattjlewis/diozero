@@ -4,7 +4,7 @@ package com.diozero.internal.provider.sysfs;
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - Core
- * Filename:     SysFsSerialDevice.java  
+ * Filename:     NativeDeviceTest.java  
  * 
  * This file is part of the diozero project. More information about this project
  * can be found at http://www.diozero.com/
@@ -31,59 +31,31 @@ package com.diozero.internal.provider.sysfs;
  * #L%
  */
 
-import org.tinylog.Logger;
-
+import com.diozero.api.SerialConstants;
 import com.diozero.api.SerialDevice;
-import com.diozero.internal.provider.AbstractDevice;
-import com.diozero.internal.provider.DeviceFactoryInterface;
-import com.diozero.internal.provider.SerialDeviceInterface;
-import com.diozero.util.RuntimeIOException;
 
-public class SysFsSerialDevice extends AbstractDevice implements SerialDeviceInterface {
-	private NativeSerialDevice device;
+public class NativeSerialDeviceTest {
+	public static void main(String[] args) {
+		SerialDevice.getLocalSerialDevices().forEach(device -> print(device));
 
-	public SysFsSerialDevice(DeviceFactoryInterface deviceFactory, String key, String deviceName, int baud,
-			SerialDevice.DataBits dataBits, SerialDevice.StopBits stopBits, SerialDevice.Parity parity,
-			boolean readBlocking, int minReadChars, int readTimeoutMillis) {
-		super(key, deviceFactory);
+		System.exit(1);
 
-		device = new NativeSerialDevice(deviceName, baud, dataBits, stopBits, parity, readBlocking, minReadChars,
-				readTimeoutMillis);
+		try (NativeSerialDevice dev = new NativeSerialDevice(args[0], SerialConstants.DEFAULT_BAUD,
+				SerialConstants.DEFAULT_DATA_BITS, SerialConstants.DEFAULT_STOP_BITS, SerialConstants.DEFAULT_PARITY,
+				SerialConstants.DEFAULT_READ_BLOCKING, SerialConstants.DEFAULT_MIN_READ_CHARS,
+				SerialConstants.DEFAULT_READ_TIMEOUT_MILLIS)) {
+			dev.read();
+		}
 	}
-
-	@Override
-	protected void closeDevice() throws RuntimeIOException {
-		Logger.trace("closeDevice()");
-		device.close();
-	}
-
-	@Override
-	public int read() {
-		return device.read();
-	}
-
-	@Override
-	public byte readByte() {
-		return device.readByte();
-	}
-
-	@Override
-	public void writeByte(byte bVal) {
-		device.writeByte(bVal);
-	}
-
-	@Override
-	public int read(byte[] buffer) {
-		return device.read(buffer);
-	}
-
-	@Override
-	public void write(byte[] data) {
-		device.write(data);
-	}
-
-	@Override
-	public int bytesAvailable() {
-		return device.bytesAvailable();
+	
+	private static void print(SerialDevice.DeviceInfo deviceInfo) {
+		System.out.format(
+				"Name: %s, File: %s, Description: %s, Driver: %s, Manufacturer: %s, USB Vendor Id: %s, USB Product Id: %s%n",
+				deviceInfo.getDeviceName(), deviceInfo.getDeviceFile(), deviceInfo.getDescription(), deviceInfo.getDriverName(),
+				deviceInfo.getManufacturer(), deviceInfo.getUsbVendorId(), deviceInfo.getUsbProductId());
+		if (deviceInfo.getUsbVendorId() != null) {
+			String[] usb_info = SerialDevice.UsbInfo.resolve(deviceInfo.getUsbVendorId(), deviceInfo.getUsbProductId());
+			System.out.format("USB device Vendor: %s; Product: %s%n", usb_info[0], usb_info[1]);
+		}
 	}
 }

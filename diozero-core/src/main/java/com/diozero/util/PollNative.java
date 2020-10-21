@@ -34,15 +34,16 @@ package com.diozero.util;
 
 public class PollNative {
 	static {
-		LibraryLoader.loadLibrary(PollNative.class, "diozero-system-utils");
+		LibraryLoader.loadSystemUtils();
 	}
 	
 	private int fd;
 	
 	public synchronized native void poll(String filename, int timeout, int ref, PollEventListener listener);
+	public synchronized native void poll(int fd, int timeout, int ref, PollEventListener listener);
 	private native void stop(int fd);
 	
-	public void setFd(int fd) {
+	private void setFd(int fd) {
 		this.fd = fd;
 	}
 	

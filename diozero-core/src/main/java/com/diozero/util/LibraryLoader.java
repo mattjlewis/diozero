@@ -44,6 +44,10 @@ public class LibraryLoader {
 	private static final Map<String, Boolean> LOADED_LIBRARIES = new HashMap<>();
 	private static final String LIBRARY_EXTENSION = System.getProperty("os.name").startsWith("Windows") ? ".dll"
 			: ".so";
+	
+	public static void loadSystemUtils() {
+		loadLibrary(LibraryLoader.class, "diozero-system-utils", true);
+	}
 
 	public static void loadLibrary(Class<?> clz, String libName) throws UnsatisfiedLinkError {
 		loadLibrary(clz, libName, true);

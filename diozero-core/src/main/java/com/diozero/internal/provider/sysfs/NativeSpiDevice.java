@@ -43,7 +43,7 @@ import com.diozero.util.RuntimeIOException;
 
 public class NativeSpiDevice implements Closeable {
 	static {
-		LibraryLoader.loadLibrary(NativeSpiDevice.class, "diozero-system-utils");
+		LibraryLoader.loadSystemUtils();
 	}
 	
 	private static native int spiOpen(String filename, byte mode, int speedHz, byte bitsPerWord, boolean lsbFirst);

@@ -61,21 +61,21 @@ implements GpioDigitalInputDeviceInterface, PollEventListener {
 	// Note java.nio.file.WatchService doesn't work with /sys, /proc and network file-systems
 	// http://stackoverflow.com/questions/30190730/nio-watchservice-for-unix-sys-classes-gpio-files
 	
-	private SysFsDeviceFactory deviceFactory;
+	private DefaultDeviceFactory deviceFactory;
 	protected int gpio;
 	private Path valuePath;
 	private RandomAccessFile valueFile;
 
-	public SysFsDigitalInputDevice(SysFsDeviceFactory deviceFactory, String key, PinInfo pinInfo,
+	public SysFsDigitalInputDevice(DefaultDeviceFactory deviceFactory, String key, PinInfo pinInfo,
 			GpioEventTrigger trigger) {
 		super(key, deviceFactory);
 		
 		this.deviceFactory = deviceFactory;
 		this.gpio = pinInfo.getSysFsNumber();
 		
-		deviceFactory.export(pinInfo.getSysFsNumber(), DeviceMode.DIGITAL_INPUT);
+		SysFsGpioUtil.export(pinInfo.getSysFsNumber(), DeviceMode.DIGITAL_INPUT);
 		
-		Path gpio_dir = deviceFactory.getGpioDirectoryPath(gpio);
+		Path gpio_dir = SysFsGpioUtil.getGpioDirectoryPath(gpio);
 		try (FileWriter writer = new FileWriter(gpio_dir.resolve(EDGE_FILE).toFile())) {
 			writer.write(trigger.name().toLowerCase());
 		} catch (IOException e) {
@@ -132,7 +132,7 @@ implements GpioDigitalInputDeviceInterface, PollEventListener {
 		} catch (IOException e) {
 			throw new RuntimeIOException(e);
 		}
-		deviceFactory.unexport(gpio);
+		SysFsGpioUtil.unexport(gpio);
 	}
 
 	@Override

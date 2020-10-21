@@ -33,6 +33,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <unistd.h>
 #include <string.h>
 #include <errno.h>
@@ -47,21 +48,10 @@
 extern jclass systemClassRef;
 extern jmethodID nanoTimeMethodId;
 
-JNIEXPORT void JNICALL Java_com_diozero_util_PollNative_poll(
-		JNIEnv* env, jobject pollNative, jstring filename, jint timeout, jobject ref, jobject callback) {
-	jclass callback_class = (*env)->GetObjectClass(env, callback);
-	if (callback_class == NULL) {
-		fprintf(stderr, "Error: poll() could not get callback class\n");
-		return;
-	}
-	char* method_name = "notify";
-	char* signature = "(Ljava/lang/String;JC)V";
-	jmethodID notify_method_id = (*env)->GetMethodID(env, callback_class, method_name, signature);
-	if ((*env)->ExceptionCheck(env) || notify_method_id == NULL) {
-		fprintf(stderr, "Unable to find method '%s' with signature '%s' in callback object\n", method_name, signature);
-		return;
-	}
+extern jmethodID pollEventListenerNotifyMethod;
 
+JNIEXPORT void JNICALL Java_com_diozero_util_PollNative_poll(
+		JNIEnv* env, jobject pollNative, jstring filename, jint timeout, jint ref, jobject callback) {
 	jsize len = (*env)->GetStringLength(env, filename);
 	char c_filename[len];
 	(*env)->GetStringUTFRegion(env, filename, 0, len, c_filename);
@@ -117,7 +107,7 @@ JNIEXPORT void JNICALL Java_com_diozero_util_PollNative_poll(
 			printf("Invalid response");
 			break;
 		} else if (retval > 0) {
-			(*env)->CallVoidMethod(env, callback, notify_method_id, ref, epoch_time, nano_time, c[0]);
+			(*env)->CallVoidMethod(env, callback, pollEventListenerNotifyMethod, ref, epoch_time, nano_time, c[0]);
 		}
 	}
 

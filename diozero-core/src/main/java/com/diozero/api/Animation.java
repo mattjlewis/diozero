@@ -143,7 +143,7 @@ public class Animation implements Runnable {
 		currentAnimationInstance = animationInstances.removeFirst();
 		runSegment = 0;
 		runStep = 0;
-		future = DioZeroScheduler.getNonDaemonInstance().scheduleAtFixedRate(this, 0, periodMs, TimeUnit.MILLISECONDS);
+		future = DioZeroScheduler.getDaemonInstance().scheduleAtFixedRate(this, 0, periodMs, TimeUnit.MILLISECONDS);
 		if (onStart != null) {
 			onStart.action();
 		}

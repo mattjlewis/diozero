@@ -7,8 +7,6 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-#undef com_diozero_internal_provider_sysfs_NativeSpiDevice_LSB_FIRST
-#define com_diozero_internal_provider_sysfs_NativeSpiDevice_LSB_FIRST 0L
 /*
  * Class:     com_diozero_internal_provider_sysfs_NativeSpiDevice
  * Method:    spiOpen

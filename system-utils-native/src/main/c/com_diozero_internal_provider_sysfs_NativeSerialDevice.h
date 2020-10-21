@@ -25,46 +25,6 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeSerialDevi
 
 /*
  * Class:     com_diozero_internal_provider_sysfs_NativeSerialDevice
- * Method:    serialReadByte
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeSerialDevice_serialReadByte
-  (JNIEnv *, jclass, jint);
-
-/*
- * Class:     com_diozero_internal_provider_sysfs_NativeSerialDevice
- * Method:    serialWriteByte
- * Signature: (II)I
- */
-JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeSerialDevice_serialWriteByte
-  (JNIEnv *, jclass, jint, jint);
-
-/*
- * Class:     com_diozero_internal_provider_sysfs_NativeSerialDevice
- * Method:    serialRead
- * Signature: (I[B)I
- */
-JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeSerialDevice_serialRead
-  (JNIEnv *, jclass, jint, jbyteArray);
-
-/*
- * Class:     com_diozero_internal_provider_sysfs_NativeSerialDevice
- * Method:    serialWrite
- * Signature: (I[B)I
- */
-JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeSerialDevice_serialWrite
-  (JNIEnv *, jclass, jint, jbyteArray);
-
-/*
- * Class:     com_diozero_internal_provider_sysfs_NativeSerialDevice
- * Method:    serialBytesAvailable
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeSerialDevice_serialBytesAvailable
-  (JNIEnv *, jclass, jint);
-
-/*
- * Class:     com_diozero_internal_provider_sysfs_NativeSerialDevice
  * Method:    serialClose
  * Signature: (Ljava/io/FileDescriptor;)I
  */
