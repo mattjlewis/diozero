@@ -37,7 +37,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.tinylog.Logger;
@@ -50,20 +49,20 @@ public class SerialDevice implements SerialConstants, Closeable {
 		private String deviceName;
 		private String deviceFile;
 		private String description;
-		private String driverName;
 		private String manufacturer;
+		private String driverName;
 		private String usbVendorId;
 		// private String usbVendorName;
 		private String usbProductId;
 		// private String usbProductName;
 
-		public DeviceInfo(String deviceName, String deviceFile, String description, String driverName,
-				String manufacturer, String usbVendorId, String usbProductId) {
+		public DeviceInfo(String deviceName, String deviceFile, String description, String manufacturer, String driverName,
+				String usbVendorId, String usbProductId) {
 			this.deviceName = deviceName;
 			this.deviceFile = deviceFile;
 			this.description = description;
-			this.driverName = driverName;
 			this.manufacturer = manufacturer;
+			this.driverName = driverName;
 			this.usbVendorId = usbVendorId;
 			this.usbProductId = usbProductId;
 		}
@@ -80,12 +79,12 @@ public class SerialDevice implements SerialConstants, Closeable {
 			return description;
 		}
 
-		public String getDriverName() {
-			return driverName;
-		}
-
 		public String getManufacturer() {
 			return manufacturer;
+		}
+
+		public String getDriverName() {
+			return driverName;
 		}
 
 		public String getUsbVendorId() {
@@ -162,6 +161,7 @@ public class SerialDevice implements SerialConstants, Closeable {
 								Logger.error(e, "Error: {}", e);
 							}
 						} else {
+							// Continue searching in sub-directories
 							lookForSerialDevices(p, serialDevices);
 						}
 					});
@@ -189,11 +189,19 @@ public class SerialDevice implements SerialConstants, Closeable {
 			device_root = p.getParent().getParent().getParent();
 			product_file = device_root.resolve("product");
 		}
+		
 		if (product_file.toFile().exists()) {
 			Logger.debug("Processing device {} in {}", device_name, device_root);
 
 			// I believe this means that this is a USB-connected device
 			description = Files.lines(product_file).findFirst().orElse(null);
+			
+			// GEt the manufacturer
+			Path manufacturer_path = device_root.resolve("manufacturer");
+			if (manufacturer_path.toFile().exists()) {
+				manufacturer = Files.lines(manufacturer_path).findFirst().orElse(null);
+			}
+			
 			// Get the driver name, e.g. "usb-serial:ch341-uart"
 			Path drivers_path = p.resolve("driver").resolve("module").resolve("drivers");
 			if (!drivers_path.toFile().exists()) {
@@ -204,13 +212,16 @@ public class SerialDevice implements SerialConstants, Closeable {
 						.filter(path -> !path.toFile().isHidden()).map(path -> path.getFileName().toString())
 						.findFirst().orElse(null);
 			}
-			// Look for USB vendor and product identifiers
-			Path manufacturer_path = device_root.resolve("manufacturer");
-			if (manufacturer_path.toFile().exists()) {
-				manufacturer = Files.lines(manufacturer_path).findFirst().orElse(null);
-			}
+			
+			// Get the USB vendor and product identifiers
 			usb_vendor_id = Files.lines(device_root.resolve("idVendor")).findFirst().orElse(null);
 			usb_product_id = Files.lines(device_root.resolve("idProduct")).findFirst().orElse(null);
+			
+			// Sometimes the manufacturer isn't set - default it to the USB vendor id as per udevadm
+			// Example: Vendor=QinHeng Electronics, Product=HL-340 USB-Serial adapter
+			if (manufacturer == null) {
+				manufacturer = usb_vendor_id;
+			}
 		} else {
 			// Must be a physical (or emulated) port
 			description = "Physical Port";
@@ -220,7 +231,7 @@ public class SerialDevice implements SerialConstants, Closeable {
 			}
 		}
 
-		return new DeviceInfo(device_name, "/dev/" + device_name, description, driver_name, manufacturer, usb_vendor_id,
+		return new DeviceInfo(device_name, "/dev/" + device_name, description, manufacturer, driver_name, usb_vendor_id,
 				usb_product_id);
 	}
 
@@ -293,42 +304,5 @@ public class SerialDevice implements SerialConstants, Closeable {
 
 	public int bytesAvailable() {
 		return device.bytesAvailable();
-	}
-
-	public static class UsbInfo {
-		public static String[] resolve(String vendorId, String productId) {
-			String vendor_name = null;
-			String product_name = null;
-
-			try {
-				Iterator<String> it = Files.lines(Paths.get("/var/lib/usbutils/usb.ids"))
-						.filter(line -> !line.startsWith("#")).filter(line -> !line.trim().isEmpty()).iterator();
-				while (it.hasNext()) {
-					String line = it.next();
-					if (line.startsWith("C ")) {
-						break;
-					}
-					if (line.startsWith(vendorId)) {
-						vendor_name = line.substring(vendorId.length()).trim();
-						// Now search for the product name
-						while (it.hasNext()) {
-							line = it.next();
-							if (!line.startsWith("\t")) {
-								break;
-							}
-							if (line.trim().startsWith(productId)) {
-								product_name = line.trim().substring(productId.length()).trim();
-								break;
-							}
-						}
-						break;
-					}
-				}
-			} catch (IOException e) {
-				Logger.error(e);
-			}
-
-			return new String[] { vendor_name, product_name };
-		}
 	}
 }

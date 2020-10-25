@@ -39,7 +39,6 @@ import org.tinylog.Logger;
 
 import com.diozero.api.DeviceMode;
 import com.diozero.api.GpioPullUpDown;
-import com.diozero.internal.board.chip.ChipMmapGpio;
 import com.diozero.internal.provider.MmapGpioInterface;
 import com.diozero.util.LibraryLoader;
 import com.diozero.util.MmapBufferNative;
@@ -51,7 +50,7 @@ import com.diozero.util.SleepUtil;
  * https://chromium.googlesource.com/chromiumos/third_party/coreboot/+/chromeos-2013.04/src/soc/rockchip/rk3288/gpio.c
  */
 public class TinkerBoardMmapGpio implements MmapGpioInterface {
-	private static final String MEM_DEVICE = "/dev/mem";
+	private static final String MEM_DEVICE = "/dev/gpiomem";
 	private static final int PMU_BASE		= 0xff730000;
 	private static final int GPIO_BASE		= 0xff750000;
 	private static final int GRF_BASE		= 0xff770000;
@@ -104,6 +103,7 @@ public class TinkerBoardMmapGpio implements MmapGpioInterface {
 		if (gpioBanks == null) {
 			gpioBanks = new GpioBank[9];
 			for (int i=0; i<gpioBanks.length; i++) {
+				// #define RK3128_GPIO(x)		(GPIO_BASE+x*GPIO_LENGTH+(x>0)*GPIO_CHANNEL)
 				gpioBanks[i] = new GpioBank(GPIO_BASE + i*GPIO_LENGTH + (i>0 ? GPIO_CHANNEL : 0));
 			}
 			pmuMmap = MmapBufferNative.createMmapBuffer(MEM_DEVICE, PMU_BASE, PAGE_SIZE);
@@ -255,6 +255,18 @@ public class TinkerBoardMmapGpio implements MmapGpioInterface {
 
 	@Override
 	public boolean gpioRead(int gpio) {
+		/*-
+		 int bank, shift;
+		 if (0 < gpio && gpio<=24) {
+		   bank = gpio / 32;
+		   shift = gpio % 32;
+		 } else {
+		   bank = (gpio + 8) / 32;
+		   shift = (gpio + 8) % 32;
+		 }
+		 return ((*(gpio0[bank] + GPIO_EXT_PORTA_OFFSET / 4)) & (1 << shift)) >> shift;
+		 */
+		
 		int bank;
 		int shift;
 		if (gpio < 24) {
@@ -269,6 +281,23 @@ public class TinkerBoardMmapGpio implements MmapGpioInterface {
 
 	@Override
 	public void gpioWrite(int gpio, boolean value) {
+		// Note this no longer works, needs assembler code. See:
+		// https://github.com/TinkerBoard/gpio_lib_c/blob/sbc/tinkerboard/c/wiringPi/wiringTB.c#L735
+		/*-
+		 int bank, shift;
+		 if (0 < gpio && gpio<=24) {
+		   bank = gpio / 32;
+		   shift = gpio % 32;
+		 } else {
+		   bank = (gpio + 8) / 32;
+		   shift = (gpio + 8) % 32;
+		 }
+		 if (value == 1) {
+		   *(gpio0[bank] + GPIO_SWPORTA_DR_OFFSET / 4) |= (1 << shift);
+		 } else {
+		   *(gpio0[bank] + GPIO_SWPORTA_DR_OFFSET / 4) &= ~(1 << shift);
+		 }
+		 */
 		int bank;
 		int shift;
 		if (gpio < 24) {
@@ -280,9 +309,9 @@ public class TinkerBoardMmapGpio implements MmapGpioInterface {
 		}
 		int reg_val = gpioBanks[bank].gpioIntBuffer.get(GPIO_SWPORTA_DR_INT_OFFSET);
 		if (value) {
-			reg_val |= (1<<shift);
+			reg_val |= (1 << shift);
 		} else {
-			reg_val &= ~(1<<shift);
+			reg_val &= ~(1 << shift);
 		}
 		gpioBanks[bank].gpioIntBuffer.put(GPIO_SWPORTA_DR_INT_OFFSET, reg_val);
 	}
@@ -490,13 +519,13 @@ public class TinkerBoardMmapGpio implements MmapGpioInterface {
 			mmap_gpio.setMode(gpio, DeviceMode.DIGITAL_OUTPUT);
 			
 			for (int i=0; i<10; i++) {
-				Logger.debug("GPIO #{} On", Integer.valueOf(gpio));
+				Logger.debug("Setting GPIO #{} to On", Integer.valueOf(gpio));
 				mmap_gpio.gpioWrite(gpio, true);
 				Logger.debug("Mode for GPIO #{}: {}, value: {}", Integer.valueOf(gpio), mmap_gpio.getMode(gpio),
 						Boolean.valueOf(mmap_gpio.gpioRead(gpio)));
 				SleepUtil.sleepSeconds(1);
 				
-				Logger.debug("GPIO #{} Off", Integer.valueOf(gpio));
+				Logger.debug("Setting GPIO #{} to Off", Integer.valueOf(gpio));
 				mmap_gpio.gpioWrite(gpio, false);
 				Logger.debug("Mode for GPIO #{}: {}, value: {}", Integer.valueOf(gpio), mmap_gpio.getMode(gpio),
 						Boolean.valueOf(mmap_gpio.gpioRead(gpio)));

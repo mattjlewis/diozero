@@ -2,6 +2,9 @@ package com.diozero.internal.provider.sysfs;
 
 // struct gpiod_line
 public class GpioLine {
+	private static final String GPIO_LINE_NUMBER_PATTERN = "GPIO(\\d+)";
+	private static final int INVALID_GPIO_NUM = -1;
+	
 	public static enum Direction {
 		INPUT, OUTPUT;
 	}
@@ -23,6 +26,7 @@ public class GpioLine {
 	private String name;
 	private String consumer;
 	private int fd;
+	private int gpioNum = INVALID_GPIO_NUM;
 	
 	public GpioLine(int offset, int flags, String name, String consumer) {
 		this.offset = offset;
@@ -33,6 +37,18 @@ public class GpioLine {
 		this.openSource = ((flags & GPIOLINE_FLAG_OPEN_SOURCE) == 0) ? false : true;;;
 		this.name = name;
 		this.consumer = consumer;
+		
+		if (name.matches(GPIO_LINE_NUMBER_PATTERN)) {
+			gpioNum = Integer.parseInt(name.replaceAll(GPIO_LINE_NUMBER_PATTERN, "$1"));
+		}
+	}
+	
+	public boolean isGpio() {
+		return gpioNum != INVALID_GPIO_NUM;
+	}
+	
+	public int getGpioNum() {
+		return gpioNum;
 	}
 
 	public int getOffset() {

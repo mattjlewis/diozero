@@ -52,7 +52,6 @@ JNIEXPORT jobject JNICALL Java_com_diozero_internal_provider_sysfs_NativeGpioChi
 	jobject chip_array = (*env)->NewObject(env, arrayListClassRef, arrayListConstructor);
 	int i;
 	for (i=0; i<num_chips; i++) {
-		printf("dirs[i]->d_name = %s\n", dirs[i]->d_name);
 		char* chrdev_name;
 		if (asprintf(&chrdev_name, "/dev/%s", dirs[i]->d_name) < 0) {
 			perror("Error defining chip char dev name");
@@ -86,15 +85,14 @@ JNIEXPORT jobject JNICALL Java_com_diozero_internal_provider_sysfs_NativeGpioChi
 }
 
 JNIEXPORT jobject JNICALL Java_com_diozero_internal_provider_sysfs_NativeGpioChip_openChip(
-		JNIEnv* env, jclass clz, int chipNum) {
-	char* chrdev_name;
-	if (asprintf(&chrdev_name, "/dev/gpiochip%u", chipNum) < 0) {
-		perror("Error defining chip char dev name");
+		JNIEnv* env, jclass clz, jstring filename) {
+	const char* chrdev_name = (*env)->GetStringUTFChars(env, filename, NULL);
+	int chip_fd = open(chrdev_name, O_RDWR | O_CLOEXEC);
+	(*env)->ReleaseStringUTFChars(env, filename, chrdev_name);
+	if (chip_fd < 0) {
+		perror("Error opening gpiochip file");
 		return NULL;
 	}
-	int chip_fd = open(chrdev_name, O_RDWR | O_CLOEXEC);
-
-	free(chrdev_name);
 
 	struct gpiochip_info cinfo;
 	if (ioctl(chip_fd, GPIO_GET_CHIPINFO_IOCTL, &cinfo) < 0) {

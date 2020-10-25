@@ -18,10 +18,10 @@ public class NativeGpioChipTest {
 		chips.forEach(chip -> Logger.info("Chip {} ({}) - {} lines", chip.getName(), chip.getLabel(),
 				Integer.valueOf(chip.getNumLines())));
 
-		int chip_num = 0;
-		NativeGpioChip chip = NativeGpioChip.openChip(chip_num);
+		GpioChipInfo chip_info = chips.get(0);
+		NativeGpioChip chip = NativeGpioChip.openChip("/dev/" + chip_info.getName());
 		if (chip == null) {
-			Logger.error("No GPIO chip for number {}", Integer.valueOf(chip_num));
+			Logger.error("Unable to open chip {}", chip);
 			return;
 		}
 		Logger.info("Got Chip {} ({}) - {} lines", chip.getName(), chip.getLabel(),

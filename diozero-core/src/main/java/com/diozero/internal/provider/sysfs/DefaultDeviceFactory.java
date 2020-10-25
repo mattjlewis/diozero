@@ -1,5 +1,12 @@
 package com.diozero.internal.provider.sysfs;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import org.tinylog.Logger;
 
 import com.diozero.api.DeviceMode;
@@ -28,19 +35,34 @@ import com.diozero.util.RuntimeIOException;
 
 public class DefaultDeviceFactory extends BaseNativeDeviceFactory {
 	private static final String USE_GPIO_CHARDEV_PROP = "diozero.gpio.chardev";
-	
+
 	private int boardPwmFrequency;
 	private EpollNative epoll;
-	private NativeGpioChip gpioChip;
+	private Map<Integer, NativeGpioChip> chips;
+	private Map<Integer, NativeGpioChip> gpioToChipMapping;
 	private boolean useGpioCharDev = false;
 
 	public DefaultDeviceFactory() {
 		useGpioCharDev = PropertyUtil.getBooleanProperty(USE_GPIO_CHARDEV_PROP, useGpioCharDev);
+	}
 
+	@Override
+	public void start() {
 		if (useGpioCharDev) {
 			Logger.warn("Note using new NativeGpioChip char-dev GPIO implementation");
-			// FIXME Determine the GPIO chip number!
-			gpioChip = NativeGpioChip.openChip(0);
+			try {
+				chips = Files.list(Paths.get("/dev")).filter(p -> p.toFile().isFile())
+						.filter(p -> p.getFileName().toString().startsWith("gpiochip"))
+						.map(p -> NativeGpioChip.openChip(p.toString().toString()))
+						.collect(Collectors.toMap(NativeGpioChip::getChipId, chip -> chip));
+				gpioToChipMapping = new HashMap<>();
+				chips.values().forEach(chip -> {
+					chip.getGpioLines()
+							.forEach(gpio_line -> gpioToChipMapping.put(Integer.valueOf(gpio_line.getGpioNum()), chip));
+				});
+			} catch (IOException e) {
+				throw new RuntimeIOException("Error initialising GPIO chips: " + e.getMessage(), e);
+			}
 		}
 	}
 
@@ -72,7 +94,8 @@ public class DefaultDeviceFactory extends BaseNativeDeviceFactory {
 	public GpioDigitalInputDeviceInterface createDigitalInputDevice(String key, PinInfo pinInfo, GpioPullUpDown pud,
 			GpioEventTrigger trigger) throws RuntimeIOException {
 		if (useGpioCharDev) {
-			return new NativeGpioInputDevice(this, key, gpioChip, pinInfo, pud, trigger);
+			return new NativeGpioInputDevice(this, key,
+					gpioToChipMapping.get(Integer.valueOf(pinInfo.getDeviceNumber())), pinInfo, pud, trigger);
 		}
 		return new SysFsDigitalInputDevice(this, key, pinInfo, trigger);
 	}
@@ -81,7 +104,8 @@ public class DefaultDeviceFactory extends BaseNativeDeviceFactory {
 	public GpioDigitalOutputDeviceInterface createDigitalOutputDevice(String key, PinInfo pinInfo, boolean initialValue)
 			throws RuntimeIOException {
 		if (useGpioCharDev) {
-			return new NativeGpioOutputDevice(this, key, gpioChip, pinInfo, initialValue);
+			return new NativeGpioOutputDevice(this, key,
+					gpioToChipMapping.get(Integer.valueOf(pinInfo.getDeviceNumber())), pinInfo, initialValue);
 		}
 		return new SysFsDigitalOutputDevice(this, key, pinInfo, initialValue);
 	}
@@ -90,7 +114,8 @@ public class DefaultDeviceFactory extends BaseNativeDeviceFactory {
 	public GpioDigitalInputOutputDeviceInterface createDigitalInputOutputDevice(String key, PinInfo pinInfo,
 			DeviceMode mode) throws RuntimeIOException {
 		if (useGpioCharDev) {
-			return new NativeGpioInputOutputDevice(this, key, gpioChip, pinInfo, mode);
+			return new NativeGpioInputOutputDevice(this, key,
+					gpioToChipMapping.get(Integer.valueOf(pinInfo.getDeviceNumber())), pinInfo, mode);
 		}
 		return new SysFsDigitalInputOutputDevice(this, key, pinInfo, mode);
 	}

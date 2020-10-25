@@ -63,6 +63,11 @@ public class BbbIoLibDeviceFactory extends BaseNativeDeviceFactory {
 		}
 		defaultDeviceFactory = new DefaultDeviceFactory();
 	}
+	
+	@Override
+	public void start() {
+		defaultDeviceFactory.start();
+	}
 
 	DefaultDeviceFactory getDefaultDeviceFactory() {
 		return defaultDeviceFactory;

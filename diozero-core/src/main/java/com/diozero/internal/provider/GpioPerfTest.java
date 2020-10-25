@@ -1,10 +1,10 @@
-package com.diozero.internal.provider.sysfs;
+package com.diozero.internal.provider;
 
 /*-
  * #%L
  * Organisation: diozero
- * Project:      Device I/O Zero - Core
- * Filename:     NativeDeviceTest.java  
+ * Project:      Device I/O Zero - Sample applications
+ * Filename:     GpioPerfTest.java  
  * 
  * This file is part of the diozero project. More information about this project
  * can be found at http://www.diozero.com/
@@ -31,31 +31,46 @@ package com.diozero.internal.provider.sysfs;
  * #L%
  */
 
-import com.diozero.api.SerialConstants;
-import com.diozero.api.SerialDevice;
+import org.tinylog.Logger;
 
-public class NativeSerialDeviceTest {
+import com.diozero.util.DeviceFactoryHelper;
+import com.diozero.util.RuntimeIOException;
+
+public class GpioPerfTest {
+	private static final int ITERATIONS = 1_000_000;
+
 	public static void main(String[] args) {
-		SerialDevice.getLocalSerialDevices().forEach(device -> print(device));
-
-		System.exit(1);
-
-		try (NativeSerialDevice dev = new NativeSerialDevice(args[0], SerialConstants.DEFAULT_BAUD,
-				SerialConstants.DEFAULT_DATA_BITS, SerialConstants.DEFAULT_STOP_BITS, SerialConstants.DEFAULT_PARITY,
-				SerialConstants.DEFAULT_READ_BLOCKING, SerialConstants.DEFAULT_MIN_READ_CHARS,
-				SerialConstants.DEFAULT_READ_TIMEOUT_MILLIS)) {
-			dev.read();
+		if (args.length < 1) {
+			Logger.error("Usage: {} <pin-number> [<iterations>]", GpioPerfTest.class.getName());
+			System.exit(1);
 		}
+
+		int pin = Integer.parseInt(args[0]);
+
+		int iterations = ITERATIONS;
+		if (args.length > 1) {
+			iterations = Integer.parseInt(args[1]);
+		}
+
+		test(pin, iterations);
 	}
-	
-	private static void print(SerialDevice.DeviceInfo deviceInfo) {
-		System.out.format(
-				"Name: %s, File: %s, Description: %s, Driver: %s, Manufacturer: %s, USB Vendor Id: %s, USB Product Id: %s%n",
-				deviceInfo.getDeviceName(), deviceInfo.getDeviceFile(), deviceInfo.getDescription(), deviceInfo.getDriverName(),
-				deviceInfo.getManufacturer(), deviceInfo.getUsbVendorId(), deviceInfo.getUsbProductId());
-		if (deviceInfo.getUsbVendorId() != null) {
-			String[] usb_info = SerialDevice.UsbInfo.resolve(deviceInfo.getUsbVendorId(), deviceInfo.getUsbProductId());
-			System.out.format("USB device Vendor: %s; Product: %s%n", usb_info[0], usb_info[1]);
+
+	public static void test(int pin, int iterations) {
+		try (NativeDeviceFactoryInterface df = DeviceFactoryHelper.getNativeDeviceFactory();
+				GpioDigitalOutputDeviceInterface gpio = df.provisionDigitalOutputDevice(pin, false)) {
+			for (int j = 0; j < 5; j++) {
+				long start_nano = System.nanoTime();
+				for (int i = 0; i < iterations; i++) {
+					gpio.setValue(true);
+					gpio.setValue(false);
+				}
+				long duration_ns = System.nanoTime() - start_nano;
+
+				Logger.info("Duration for {} iterations: {}s", Integer.valueOf(iterations),
+						String.format("%.4f", Float.valueOf(((float) duration_ns) / 1000 / 1000 / 1000)));
+			}
+		} catch (RuntimeIOException e) {
+			Logger.error(e, "Error: {}", e);
 		}
 	}
 }

@@ -2,6 +2,7 @@ package com.diozero.internal.provider.sysfs;
 
 import java.io.Closeable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Queue;
@@ -24,8 +25,13 @@ public class NativeGpioChip extends GpioChipInfo implements Closeable, GpioLineE
 		LibraryLoader.loadSystemUtils();
 	}
 	
-	static native ArrayList<GpioChipInfo> getChips();
-	static native NativeGpioChip openChip(int chipNum);
+	public static native ArrayList<GpioChipInfo> getChips();
+	/**
+	 * Open the specified GPIO chip
+	 * @param filename File path to the chip, e.g. /dev/gpiochip0
+	 * @return The NativeGpioChip
+	 */
+	public static native NativeGpioChip openChip(String filename);
 
 	private static native int provisionGpioInputDevice(int fd, int offset, int handleFlags, int eventFlags);
 	private static native int provisionGpioOutputDevice(int fd, int offset, int initialValue);
@@ -44,8 +50,8 @@ public class NativeGpioChip extends GpioChipInfo implements Closeable, GpioLineE
 
 	private static final int EPOLL_FD_NOT_CREATED = -1;
 
+	private static final String GPIO_CHIP_FILENAME_PREFIX = "gpiochip";
 	private static final String GPIO_LINE_NAME_PREFIX = "GPIO";
-	private static final String GPIO_LINE_NUMBER_PATTERN = "GPIO(\\d+)";
 	
 	// Linerequest flags
 	// https://elixir.bootlin.com/linux/v4.9.127/source/include/uapi/linux/gpio.h#L58
@@ -66,6 +72,7 @@ public class NativeGpioChip extends GpioChipInfo implements Closeable, GpioLineE
 	static final int GPIOEVENT_EVENT_RISING_EDGE = 0x01;
 	static final int GPIOEVENT_EVENT_FALLING_EDGE = 0x02;
 	
+	private int chipId;
 	private int fd;
 	private GpioLine[] lines;
 	private Map<String, GpioLine> linesByName;
@@ -80,14 +87,15 @@ public class NativeGpioChip extends GpioChipInfo implements Closeable, GpioLineE
 	public NativeGpioChip(String name, String label, int fd, GpioLine[] lines) {
 		super(name, label, lines.length);
 
+		chipId = Integer.parseInt(name.substring(GPIO_CHIP_FILENAME_PREFIX.length()));
 		this.fd = fd;
 		this.lines = lines;
 		linesByName = new HashMap<>();
 		linesByGpioNumber = new HashMap<>();
 		for (GpioLine line : lines) {
 			linesByName.put(line.getName(), line);
-			if (line.getName().matches(GPIO_LINE_NUMBER_PATTERN)) {
-				linesByGpioNumber.put(Integer.valueOf(line.getName().replaceAll(GPIO_LINE_NUMBER_PATTERN, "$1")), line);
+			if (line.isGpio()) {
+				linesByGpioNumber.put(Integer.valueOf(line.getGpioNum()), line);
 			}
 		}
 		
@@ -100,9 +108,17 @@ public class NativeGpioChip extends GpioChipInfo implements Closeable, GpioLineE
 		lock = new ReentrantLock();
 		condition = lock.newCondition();
 	}
+	
+	public int getChipId() {
+		return chipId;
+	}
 
 	public GpioLine[] getLines() {
 		return lines;
+	}
+
+	public Collection<GpioLine> getGpioLines() {
+		return linesByGpioNumber.values();
 	}
 
 	public GpioLine getLineByName(String name) {

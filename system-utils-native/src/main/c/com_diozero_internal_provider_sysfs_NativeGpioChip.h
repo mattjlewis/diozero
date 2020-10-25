@@ -19,10 +19,10 @@ JNIEXPORT jobject JNICALL Java_com_diozero_internal_provider_sysfs_NativeGpioChi
 /*
  * Class:     com_diozero_internal_provider_sysfs_NativeGpioChip
  * Method:    openChip
- * Signature: (I)Lcom/diozero/internal/provider/sysfs/NativeGpioChip;
+ * Signature: (Ljava/lang/String;)Lcom/diozero/internal/provider/sysfs/NativeGpioChip;
  */
 JNIEXPORT jobject JNICALL Java_com_diozero_internal_provider_sysfs_NativeGpioChip_openChip
-  (JNIEnv *, jclass, jint);
+  (JNIEnv *, jclass, jstring);
 
 /*
  * Class:     com_diozero_internal_provider_sysfs_NativeGpioChip

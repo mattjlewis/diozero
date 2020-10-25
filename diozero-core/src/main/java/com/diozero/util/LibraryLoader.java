@@ -54,7 +54,7 @@ public class LibraryLoader {
 	}
 
 	public static void loadLibrary(Class<?> clz, String libName, boolean boardSpecific) throws UnsatisfiedLinkError {
-		synchronized (LOADED_LIBRARIES) {
+		synchronized (LibraryLoader.class) {
 			if (LOADED_LIBRARIES.get(libName) == null) {
 				boolean loaded = false;
 
