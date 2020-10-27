@@ -131,7 +131,8 @@ public class BoardPinInfo {
 
 	protected void addGpioPinInfo(PinInfo pinInfo) {
 		if (pinInfo.getDeviceNumber() == PinInfo.NOT_DEFINED) {
-			throw new IllegalArgumentException("Invalid GPIO pin " + pinInfo);
+			// Ignore
+			return;
 		}
 		
 		gpios.put(Integer.valueOf(pinInfo.getDeviceNumber()), pinInfo);

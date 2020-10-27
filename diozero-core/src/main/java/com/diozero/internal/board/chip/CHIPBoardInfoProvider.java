@@ -255,7 +255,7 @@ public class CHIPBoardInfoProvider implements BoardInfoProvider {
 					}
 					Logger.debug("xioGpioOffset: {}", Integer.valueOf(xioGpioOffset));
 				} catch (IOException e) {
-					Logger.error(e, "Error determining XIO GPIO base: {}", e);
+					Logger.warn(e, "Unable to determine XIO GPIO offset: {}", e);
 				}
 				
 				xioGpioOffsetLoaded = true;
