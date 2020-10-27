@@ -1,11 +1,14 @@
 language: java
+
 sudo: false
-os: linux
-jdk: openjdk11
-script:
-  - jdk_switcher use openjdk11
-  - export JAVA_HOME=$HOME/openjdk11
-  - $TRAVIS_BUILD_DIR/install-jdk.sh --install openjdk11 --target $JAVA_HOME
+
+os:
+  - linux
+
+dist: xenial
+
+jdk:
+  - openjdk11
 
 cache:
   directories:
@@ -15,6 +18,7 @@ env:
   - PROJECTS_TO_BUILD: "!diozero-imu-visualiser"
 
 install: true
+
 script: mvn --projects '!diozero-imu-visualiser' clean compile package install
 #script: mvn ${MAVEN_OPTS} clean compile package install
 #script: mvn --projects='${PROJECTS_TO_BUILD}' clean compile package install
