@@ -283,7 +283,7 @@ public class VoodooSparkDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	public SerialDeviceInterface createSerialDevice(String key, String deviceName, int baud,
+	public SerialDeviceInterface createSerialDevice(String key, String deviceFile, int baud,
 			SerialDevice.DataBits dataBits, SerialDevice.StopBits stopBits, SerialDevice.Parity parity,
 			boolean readBlocking, int minReadChars, int readTimeoutMillis) throws RuntimeIOException {
 		throw new UnsupportedOperationException("Not yet implemented");

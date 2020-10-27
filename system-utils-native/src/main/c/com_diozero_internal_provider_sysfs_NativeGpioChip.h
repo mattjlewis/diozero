@@ -43,18 +43,18 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeGpioChip_p
 /*
  * Class:     com_diozero_internal_provider_sysfs_NativeGpioChip
  * Method:    getValue
- * Signature: (II)I
+ * Signature: (I)I
  */
 JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeGpioChip_getValue
-  (JNIEnv *, jclass, jint, jint);
+  (JNIEnv *, jclass, jint);
 
 /*
  * Class:     com_diozero_internal_provider_sysfs_NativeGpioChip
  * Method:    setValue
- * Signature: (III)I
+ * Signature: (II)I
  */
 JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeGpioChip_setValue
-  (JNIEnv *, jclass, jint, jint, jint);
+  (JNIEnv *, jclass, jint, jint);
 
 /*
  * Class:     com_diozero_internal_provider_sysfs_NativeGpioChip

@@ -14,7 +14,6 @@ public class NativeGpioInputDevice extends AbstractInputDevice<DigitalInputEvent
 		implements GpioDigitalInputDeviceInterface, GpioLineEventListener {
 	private NativeGpioChip chip;
 	private int gpio;
-	private int offset;
 	private GpioLine line;
 
 	public NativeGpioInputDevice(DefaultDeviceFactory deviceFactory, String key, NativeGpioChip chip, PinInfo pinInfo,
@@ -22,13 +21,13 @@ public class NativeGpioInputDevice extends AbstractInputDevice<DigitalInputEvent
 		super(key, deviceFactory);
 
 		gpio = pinInfo.getDeviceNumber();
-		offset = chip.getOffset(gpio);
-		if (offset == -1) {
-			throw new IllegalArgumentException("Invalid GPIO " + gpio + " - offset not found");
+		int offset = pinInfo.getLineOffset();
+		if (offset == PinInfo.NOT_DEFINED) {
+			throw new IllegalArgumentException("Line offset not defined for pin " + pinInfo);
 		}
 		this.chip = chip;
 
-		line = chip.provisionGpioInputDevice(gpio, pud, trigger);
+		line = chip.provisionGpioInputDevice(offset, pud, trigger);
 	}
 
 	@Override
@@ -38,7 +37,7 @@ public class NativeGpioInputDevice extends AbstractInputDevice<DigitalInputEvent
 
 	@Override
 	public boolean getValue() throws RuntimeIOException {
-		return chip.getValue(offset) == 0 ? false : true;
+		return chip.getValue(line) == 0 ? false : true;
 	}
 
 	@Override
@@ -62,7 +61,7 @@ public class NativeGpioInputDevice extends AbstractInputDevice<DigitalInputEvent
 	}
 
 	@Override
-	public void event(int gpioOffset, int eventDataId, long timestampNanos) {
+	public void event(int lineFd, int eventDataId, long timestampNanos) {
 		valueChanged(new DigitalInputEvent(gpio, timestampNanos / 1_000_000, timestampNanos,
 				eventDataId == NativeGpioChip.GPIOEVENT_EVENT_RISING_EDGE));
 	}

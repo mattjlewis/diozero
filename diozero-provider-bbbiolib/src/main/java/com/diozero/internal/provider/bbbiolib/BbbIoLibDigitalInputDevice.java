@@ -50,17 +50,19 @@ public class BbbIoLibDigitalInputDevice extends AbstractInputDevice<DigitalInput
 	public BbbIoLibDigitalInputDevice(BbbIoLibDeviceFactory deviceFactory, String key, PinInfo pinInfo,
 			GpioPullUpDown pud, GpioEventTrigger trigger) {
 		super(key, deviceFactory);
-		
+
 		this.pinInfo = pinInfo;
-		
+
 		// pud?
-		int rc = BbbIoLibNative.setDir(BbbIoLibDeviceFactory.getPort(pinInfo), (byte) pinInfo.getPinNumber(), BbbIoLibNative.BBBIO_DIR_IN);
+		int rc = BbbIoLibNative.setDir(BbbIoLibDeviceFactory.getPort(pinInfo), (byte) pinInfo.getPhysicalPin(),
+				BbbIoLibNative.BBBIO_DIR_IN);
 		if (rc < 0) {
-			throw new RuntimeIOException("Error in BBBioLib.setDir(" + getGpio() + ", " + BbbIoLibNative.BBBIO_DIR_IN + ")");
+			throw new RuntimeIOException(
+					"Error in BBBioLib.setDir(" + getGpio() + ", " + BbbIoLibNative.BBBIO_DIR_IN + ")");
 		}
 
-		defaultDigitialInput = deviceFactory.getDefaultDeviceFactory().provisionDigitalInputDevice(
-				getGpio(), pud, trigger);
+		defaultDigitialInput = deviceFactory.getDefaultDeviceFactory().provisionDigitalInputDevice(pinInfo, pud,
+				trigger);
 	}
 
 	@Override
@@ -70,11 +72,11 @@ public class BbbIoLibDigitalInputDevice extends AbstractInputDevice<DigitalInput
 
 	@Override
 	public boolean getValue() throws RuntimeIOException {
-		int rc = BbbIoLibNative.getValue(BbbIoLibDeviceFactory.getPort(pinInfo), (byte) pinInfo.getPinNumber());
+		int rc = BbbIoLibNative.getValue(BbbIoLibDeviceFactory.getPort(pinInfo), (byte) pinInfo.getPhysicalPin());
 		if (rc < 0) {
 			throw new RuntimeIOException("Error in BBBioLib.getValue(" + getGpio() + ")");
 		}
-		
+
 		return rc != 0;
 	}
 
@@ -82,12 +84,12 @@ public class BbbIoLibDigitalInputDevice extends AbstractInputDevice<DigitalInput
 	public void setDebounceTimeMillis(int debounceTime) {
 		throw new UnsupportedOperationException("Debounce not supported in pigpioj");
 	}
-	
+
 	@Override
 	protected void enableListener() {
 		defaultDigitialInput.setListener(this);
 	}
-	
+
 	@Override
 	protected void disableListener() {
 		defaultDigitialInput.removeListener();

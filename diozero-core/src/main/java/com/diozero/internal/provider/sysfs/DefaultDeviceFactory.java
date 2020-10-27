@@ -3,7 +3,6 @@ package com.diozero.internal.provider.sysfs;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -29,6 +28,7 @@ import com.diozero.internal.provider.I2CDeviceInterface;
 import com.diozero.internal.provider.PwmOutputDeviceInterface;
 import com.diozero.internal.provider.SerialDeviceInterface;
 import com.diozero.internal.provider.SpiDeviceInterface;
+import com.diozero.util.BoardPinInfo;
 import com.diozero.util.EpollNative;
 import com.diozero.util.PropertyUtil;
 import com.diozero.util.RuntimeIOException;
@@ -39,26 +39,77 @@ public class DefaultDeviceFactory extends BaseNativeDeviceFactory {
 	private int boardPwmFrequency;
 	private EpollNative epoll;
 	private Map<Integer, NativeGpioChip> chips;
-	private Map<Integer, NativeGpioChip> gpioToChipMapping;
 	private boolean useGpioCharDev = false;
 
 	public DefaultDeviceFactory() {
 		useGpioCharDev = PropertyUtil.getBooleanProperty(USE_GPIO_CHARDEV_PROP, useGpioCharDev);
 	}
 
+	private static final String GPIO_LINE_NUMBER_PATTERN = "GPIO(\\d+)";
+
 	@Override
 	public void start() {
 		if (useGpioCharDev) {
 			Logger.warn("Note using new NativeGpioChip char-dev GPIO implementation");
+
 			try {
-				chips = Files.list(Paths.get("/dev")).filter(p -> p.toFile().isFile())
-						.filter(p -> p.getFileName().toString().startsWith("gpiochip"))
-						.map(p -> NativeGpioChip.openChip(p.toString().toString()))
+				// Get all gpiochips
+				chips = Files.list(Paths.get("/dev")).filter(p -> p.getFileName().toString().startsWith("gpiochip"))
+						.map(p -> NativeGpioChip.openChip(p.toString()))
 						.collect(Collectors.toMap(NativeGpioChip::getChipId, chip -> chip));
-				gpioToChipMapping = new HashMap<>();
+
+				Logger.debug("Found {} GPIO chips", Integer.valueOf(chips.size()));
+
+				// Validate the data in BoardPinInfo
+				BoardPinInfo bpi = getBoardPinInfo();
+
 				chips.values().forEach(chip -> {
-					chip.getGpioLines()
-							.forEach(gpio_line -> gpioToChipMapping.put(Integer.valueOf(gpio_line.getGpioNum()), chip));
+					for (GpioLine gpio_line : chip.getLines()) {
+						PinInfo pin_info = null;
+						String line_name = gpio_line.getName().trim();
+						// To to find this GPIO in the board pin info by the assume system name
+						if (!line_name.isEmpty()) {
+							pin_info = bpi.getByName(line_name);
+						}
+
+						// If the pin couldn't be found for the assigned name try to find the pin info
+						// by chip and line offset number
+						if (pin_info == null) {
+							pin_info = bpi.getByChipAndOffset(chip.getChipId(), gpio_line.getOffset());
+						}
+
+						// Finally, if still not found see if the name is in the format GPIOnn and
+						// lookup by GPIO number
+						if (pin_info == null && line_name.matches(GPIO_LINE_NUMBER_PATTERN)) {
+							// Note that this isn't reliable - GPIO names are often missing or not in this
+							// format
+							pin_info = bpi.getByGpioNumber(
+									Integer.parseInt(line_name.replaceAll(GPIO_LINE_NUMBER_PATTERN, "$1")));
+						}
+
+						if (pin_info == null && !line_name.isEmpty()) {
+							Logger.debug("Detected GPIO line ({} {}-{}) that isn't configured in BoardPinInfo",
+									line_name, Integer.valueOf(chip.getChipId()),
+									Integer.valueOf(gpio_line.getOffset()));
+							// TODO Add a new pin info to the board pin info?
+						} else if (pin_info != null) {
+							if (pin_info.getChip() != chip.getChipId()
+									|| pin_info.getLineOffset() != gpio_line.getOffset()) {
+								Logger.warn(
+										"Configured pin chip and line offset ({}-{}) doesn't match that detected ({}-{}) - updating",
+										Integer.valueOf(pin_info.getChip()), Integer.valueOf(pin_info.getLineOffset()),
+										Integer.valueOf(chip.getChipId()), Integer.valueOf(gpio_line.getOffset()));
+								pin_info.setChip(chip.getChipId());
+								pin_info.setLineOffset(gpio_line.getOffset());
+							}
+
+							if (!pin_info.getName().equals(line_name)) {
+								Logger.warn("Configured pin name ({}) doesn't match that detected ({})",
+										pin_info.getName(), line_name);
+								// TODO What to do about it - update the board pin info?
+							}
+						}
+					}
 				});
 			} catch (IOException e) {
 				throw new RuntimeIOException("Error initialising GPIO chips: " + e.getMessage(), e);
@@ -69,6 +120,11 @@ public class DefaultDeviceFactory extends BaseNativeDeviceFactory {
 	@Override
 	public void shutdown() {
 		Logger.trace("shutdown()");
+
+		if (chips != null) {
+			chips.values().forEach(chip -> chip.close());
+			chips.clear();
+		}
 
 		if (epoll != null) {
 			epoll.close();
@@ -94,9 +150,18 @@ public class DefaultDeviceFactory extends BaseNativeDeviceFactory {
 	public GpioDigitalInputDeviceInterface createDigitalInputDevice(String key, PinInfo pinInfo, GpioPullUpDown pud,
 			GpioEventTrigger trigger) throws RuntimeIOException {
 		if (useGpioCharDev) {
-			return new NativeGpioInputDevice(this, key,
-					gpioToChipMapping.get(Integer.valueOf(pinInfo.getDeviceNumber())), pinInfo, pud, trigger);
+			if (pinInfo.getChip() == PinInfo.NOT_DEFINED) {
+				throw new IllegalArgumentException("Chip not defined for pin " + pinInfo);
+			}
+
+			NativeGpioChip chip = chips.get(Integer.valueOf(pinInfo.getChip()));
+			if (chip == null) {
+				throw new IllegalArgumentException("Can't find chip for id " + pinInfo.getChip());
+			}
+
+			return new NativeGpioInputDevice(this, key, chip, pinInfo, pud, trigger);
 		}
+
 		return new SysFsDigitalInputDevice(this, key, pinInfo, trigger);
 	}
 
@@ -104,9 +169,18 @@ public class DefaultDeviceFactory extends BaseNativeDeviceFactory {
 	public GpioDigitalOutputDeviceInterface createDigitalOutputDevice(String key, PinInfo pinInfo, boolean initialValue)
 			throws RuntimeIOException {
 		if (useGpioCharDev) {
-			return new NativeGpioOutputDevice(this, key,
-					gpioToChipMapping.get(Integer.valueOf(pinInfo.getDeviceNumber())), pinInfo, initialValue);
+			if (pinInfo.getChip() == PinInfo.NOT_DEFINED) {
+				throw new IllegalArgumentException("Chip not defined for pin " + pinInfo);
+			}
+
+			NativeGpioChip chip = chips.get(Integer.valueOf(pinInfo.getChip()));
+			if (chip == null) {
+				throw new IllegalArgumentException("Can't find chip for id " + pinInfo.getChip());
+			}
+
+			return new NativeGpioOutputDevice(this, key, chip, pinInfo, initialValue);
 		}
+
 		return new SysFsDigitalOutputDevice(this, key, pinInfo, initialValue);
 	}
 
@@ -114,9 +188,18 @@ public class DefaultDeviceFactory extends BaseNativeDeviceFactory {
 	public GpioDigitalInputOutputDeviceInterface createDigitalInputOutputDevice(String key, PinInfo pinInfo,
 			DeviceMode mode) throws RuntimeIOException {
 		if (useGpioCharDev) {
-			return new NativeGpioInputOutputDevice(this, key,
-					gpioToChipMapping.get(Integer.valueOf(pinInfo.getDeviceNumber())), pinInfo, mode);
+			if (pinInfo.getChip() == PinInfo.NOT_DEFINED) {
+				throw new IllegalArgumentException("Chip not defined for pin " + pinInfo);
+			}
+
+			NativeGpioChip chip = chips.get(Integer.valueOf(pinInfo.getChip()));
+			if (chip == null) {
+				throw new IllegalArgumentException("Can't find chip for id " + pinInfo.getChip());
+			}
+
+			return new NativeGpioInputOutputDevice(this, key, chip, pinInfo, mode);
 		}
+
 		return new SysFsDigitalInputOutputDevice(this, key, pinInfo, mode);
 	}
 
@@ -134,14 +217,13 @@ public class DefaultDeviceFactory extends BaseNativeDeviceFactory {
 					pwm_pin_info, pwmFrequency, initialValue);
 		}
 
-		SoftwarePwmOutputDevice pwm = new SoftwarePwmOutputDevice(key, this,
-				createDigitalOutputDevice(createPinKey(pinInfo), pinInfo, false), pwmFrequency, initialValue);
-		return pwm;
+		return new SoftwarePwmOutputDevice(key, this, createDigitalOutputDevice(createPinKey(pinInfo), pinInfo, false),
+				pwmFrequency, initialValue);
 	}
 
 	@Override
 	public AnalogInputDeviceInterface createAnalogInputDevice(String key, PinInfo pinInfo) throws RuntimeIOException {
-		// TODO How to work out the device number?
+		// FIXME Work out the system device number! ("/sys/bus/iio/devices/iio:deviceN")
 		int device = 0;
 		return new SysFsAnalogInputDevice(this, key, device, pinInfo.getDeviceNumber());
 	}
@@ -166,10 +248,10 @@ public class DefaultDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	public SerialDeviceInterface createSerialDevice(String key, String deviceName, int baud,
+	public SerialDeviceInterface createSerialDevice(String key, String deviceFile, int baud,
 			SerialDevice.DataBits dataBits, SerialDevice.StopBits stopBits, SerialDevice.Parity parity,
 			boolean readBlocking, int minReadChars, int readTimeoutMillis) throws RuntimeIOException {
-		return new NativeSerialDeviceWrapper(this, key, deviceName, baud, dataBits, stopBits, parity, readBlocking,
+		return new NativeSerialDeviceWrapper(this, key, deviceFile, baud, dataBits, stopBits, parity, readBlocking,
 				minReadChars, readTimeoutMillis);
 	}
 

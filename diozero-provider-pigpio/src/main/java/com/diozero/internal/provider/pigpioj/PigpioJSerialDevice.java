@@ -53,39 +53,39 @@ public class PigpioJSerialDevice extends AbstractDevice implements SerialDeviceI
 
 	private PigpioInterface pigpioImpl;
 	private int handle = CLOSED;
-	private String deviceName;
+	private String deviceFile;
 	private boolean readBlocking;
 	private int minReadChars;
 	private int readTimeoutMillis;
 
 	public PigpioJSerialDevice(String key, DeviceFactoryInterface deviceFactory, PigpioInterface pigpioImpl,
-			String deviceName, int baud, SerialDevice.DataBits dataBits, SerialDevice.StopBits stopBits,
+			String deviceFile, int baud, SerialDevice.DataBits dataBits, SerialDevice.StopBits stopBits,
 			SerialDevice.Parity parity, boolean readBlocking, int minReadChars, int readTimeoutMillis)
 			throws RuntimeIOException {
 		super(key, deviceFactory);
 
 		this.pigpioImpl = pigpioImpl;
-		this.deviceName = deviceName;
+		this.deviceFile = deviceFile;
 		this.readBlocking = readBlocking;
 		this.minReadChars = minReadChars;
 		this.readTimeoutMillis = readTimeoutMillis;
 
 		// Note flags must be 0 - dataBits, parity and stopBits are ignored
-		int rc = pigpioImpl.serOpen(deviceName, baud, 0);
+		int rc = pigpioImpl.serOpen(deviceFile, baud, 0);
 		if (rc < 0) {
 			handle = CLOSED;
 			throw new RuntimeIOException(
-					String.format("Error opening Serial device '%s', baud %d, flags %d, response: %d", deviceName,
+					String.format("Error opening Serial device '%s', baud %d, flags %d, response: %d", deviceFile,
 							Integer.valueOf(baud), Integer.valueOf(0), Integer.valueOf(rc)));
 		}
 		handle = rc;
-		Logger.trace("Serial device ({}) opened, handle={}", deviceName, Integer.valueOf(handle));
+		Logger.trace("Serial device ({}) opened, handle={}", deviceFile, Integer.valueOf(handle));
 	}
 
 	@Override
 	public void writeByte(byte bVal) {
 		if (!isOpen()) {
-			throw new IllegalStateException("Serial Device " + deviceName + " is closed");
+			throw new IllegalStateException("Serial Device " + deviceFile + " is closed");
 		}
 
 		int rc = pigpioImpl.serWriteByte(handle, bVal & 0xFF);
@@ -97,7 +97,7 @@ public class PigpioJSerialDevice extends AbstractDevice implements SerialDeviceI
 	@Override
 	public int read() {
 		if (!isOpen()) {
-			throw new IllegalStateException("Serial Device " + deviceName + " is closed");
+			throw new IllegalStateException("Serial Device " + deviceFile + " is closed");
 		}
 
 		int read;
@@ -134,7 +134,7 @@ public class PigpioJSerialDevice extends AbstractDevice implements SerialDeviceI
 	@Override
 	public void write(byte[] data) {
 		if (!isOpen()) {
-			throw new IllegalStateException("Serial Device " + deviceName + " is closed");
+			throw new IllegalStateException("Serial Device " + deviceFile + " is closed");
 		}
 
 		int rc = pigpioImpl.serWrite(handle, data, data.length);
@@ -146,7 +146,7 @@ public class PigpioJSerialDevice extends AbstractDevice implements SerialDeviceI
 	@Override
 	public int read(byte[] buffer) {
 		if (!isOpen()) {
-			throw new IllegalStateException("Serial Device " + deviceName + " is closed");
+			throw new IllegalStateException("Serial Device " + deviceFile + " is closed");
 		}
 
 		int read = 0;
@@ -184,7 +184,7 @@ public class PigpioJSerialDevice extends AbstractDevice implements SerialDeviceI
 	@Override
 	public int bytesAvailable() {
 		if (!isOpen()) {
-			throw new IllegalStateException("Serial Device " + deviceName + " is closed");
+			throw new IllegalStateException("Serial Device " + deviceFile + " is closed");
 		}
 
 		int rc = pigpioImpl.serDataAvailable(handle);
@@ -198,7 +198,7 @@ public class PigpioJSerialDevice extends AbstractDevice implements SerialDeviceI
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
 		if (!isOpen()) {
-			throw new IllegalStateException("Serial Device " + deviceName + " is closed");
+			throw new IllegalStateException("Serial Device " + deviceFile + " is closed");
 		}
 
 		int rc = pigpioImpl.serClose(handle);

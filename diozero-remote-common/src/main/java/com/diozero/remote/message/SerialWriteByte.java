@@ -36,8 +36,8 @@ public class SerialWriteByte extends SerialBase {
 
 	private byte data;
 	
-	public SerialWriteByte(String deviceName, byte data, String correlationId) {
-		super(deviceName, correlationId);
+	public SerialWriteByte(String deviceFile, byte data, String correlationId) {
+		super(deviceFile, correlationId);
 		
 		this.data = data;
 	}

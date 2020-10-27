@@ -156,11 +156,11 @@ tcflag_t getParityFlag(int parity) {
  * Signature: (Ljava/lang/String;IIIIZII)Ljava/io/FileDescriptor;
  */
 JNIEXPORT jobject JNICALL Java_com_diozero_internal_provider_sysfs_NativeSerialDevice_serialOpen
-  (JNIEnv* env, jclass clz, jstring device, jint baud, jint dataBits, jint stopBits,
+  (JNIEnv* env, jclass clz, jstring deviceFile, jint baud, jint dataBits, jint stopBits,
 		  jint parity, jboolean readBlocking, jint minReadChars, jint readTimeoutMillis) {
-	const char* filename = (*env)->GetStringUTFChars(env, device, NULL);
+	const char* filename = (*env)->GetStringUTFChars(env, deviceFile, NULL);
 	int fd = open(filename, O_RDWR | O_NOCTTY | O_NDELAY | (readBlocking ? 0 : O_NONBLOCK));
-	(*env)->ReleaseStringUTFChars(env, device, filename);
+	(*env)->ReleaseStringUTFChars(env, deviceFile, filename);
 
 	if (fd < 0) {
 		return NULL;

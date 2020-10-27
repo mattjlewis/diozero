@@ -2,11 +2,11 @@ package com.diozero.internal.provider.sysfs;
 
 import java.io.Closeable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
@@ -32,20 +32,27 @@ public class NativeGpioChip extends GpioChipInfo implements Closeable, GpioLineE
 	 * @return The NativeGpioChip
 	 */
 	public static native NativeGpioChip openChip(String filename);
+	public static NativeGpioChip openChip(int chipNum) {
+		return openChip("/dev/" + GPIO_CHIP_FILENAME_PREFIX + "/" + chipNum);
+	}
 
-	private static native int provisionGpioInputDevice(int fd, int offset, int handleFlags, int eventFlags);
-	private static native int provisionGpioOutputDevice(int fd, int offset, int initialValue);
-	private static native int getValue(int fd, int offset);
-	private static native int setValue(int fd, int offset, int value);
+	private static native int provisionGpioInputDevice(int chipFd, int offset, int handleFlags, int eventFlags);
+	private static native int provisionGpioOutputDevice(int chipFd, int offset, int initialValue);
+	private static native int getValue(int lineFd);
+	private static native int setValue(int lineFd, int value);
 	private static native int epollCreate();
-	private static native int epollAddFileDescriptor(int epollFd, int fd);
-	private static native int epollRemoveFileDescriptor(int epollFd, int fd);
+	private static native int epollAddFileDescriptor(int epollFd, int lineFd);
+	private static native int epollRemoveFileDescriptor(int epollFd, int lineFd);
 	/*-
 	 * The timeout argument specifies the number of milliseconds that epoll_wait() will block
 	 * Specifying a timeout of -1 causes epoll_wait() to block indefinitely, while specifying a timeout
 	 * equal to zero cause epoll_wait() to return immediately, even if no events are available
 	 */
 	private static native int eventLoop(int epollFd, int timeoutMillis, GpioLineEventListener listener);
+	/**
+	 * Close a file descriptor
+	 * @param fd The file descriptor to close
+	 */
 	static native void close(int fd);
 
 	private static final int EPOLL_FD_NOT_CREATED = -1;
@@ -76,13 +83,15 @@ public class NativeGpioChip extends GpioChipInfo implements Closeable, GpioLineE
 	private int fd;
 	private GpioLine[] lines;
 	private Map<String, GpioLine> linesByName;
-	private Map<Integer, GpioLine> linesByGpioNumber;
 	private int epollFd;
 	private Map<Integer, GpioLineEventListener> fdToListener;
 	private AtomicBoolean running;
 	private Queue<NativeGpioEvent> eventQueue;
 	private Lock lock;
 	private Condition condition;
+
+	private Future<?> processEventsFuture;
+	private Future<?> eventLoopFuture;
 
 	public NativeGpioChip(String name, String label, int fd, GpioLine[] lines) {
 		super(name, label, lines.length);
@@ -91,12 +100,8 @@ public class NativeGpioChip extends GpioChipInfo implements Closeable, GpioLineE
 		this.fd = fd;
 		this.lines = lines;
 		linesByName = new HashMap<>();
-		linesByGpioNumber = new HashMap<>();
 		for (GpioLine line : lines) {
 			linesByName.put(line.getName(), line);
-			if (line.isGpio()) {
-				linesByGpioNumber.put(Integer.valueOf(line.getGpioNum()), line);
-			}
 		}
 		
 		epollFd = EPOLL_FD_NOT_CREATED;
@@ -117,27 +122,11 @@ public class NativeGpioChip extends GpioChipInfo implements Closeable, GpioLineE
 		return lines;
 	}
 
-	public Collection<GpioLine> getGpioLines() {
-		return linesByGpioNumber.values();
-	}
-
 	public GpioLine getLineByName(String name) {
 		if (linesByName == null) {
 			return null;
 		}
 		return linesByName.get(name);
-	}
-
-	public GpioLine getLineByGpioNumber(int gpioNumber) {
-		return linesByGpioNumber.get(Integer.valueOf(gpioNumber));
-	}
-
-	int getOffset(int gpioNumber) {
-		GpioLine line = getLineByGpioNumber(gpioNumber);
-		if (line == null) {
-			return -1;
-		}
-		return line.getOffset();
 	}
 
 	GpioLine provisionGpioInputDevice(int offset, GpioPullUpDown pud, GpioEventTrigger trigger) {
@@ -183,34 +172,65 @@ public class NativeGpioChip extends GpioChipInfo implements Closeable, GpioLineE
 
 		return lines[offset];
 	}
-
-	int getValue(int offset) {
-		if (offset < 0 || offset >= lines.length) {
-			throw new IllegalArgumentException("Invalid GPIO offset " + offset + " must 0.." + (lines.length - 1));
+	
+	int getValue(GpioLine line) {
+		int rc = getValue(line.getFd());
+		if (rc < 0) {
+			throw new RuntimeIOException("Error in getValue(" + line.getOffset() + "): " + rc);
 		}
-		int value = getValue(lines[offset].getFd(), offset);
-		if (value < 0) {
-			throw new RuntimeIOException("Error in getValue(" + offset + "): " + value);
+		return rc;
+	}
+	
+	void setValue(GpioLine line, int value) {
+		int rc = setValue(line.getFd(), value);
+		if (rc < 0) {
+			throw new RuntimeIOException("Error in setValue(" + line.getOffset() + ", " + value + "): " + rc);
 		}
-		return value;
 	}
 
-	void setValue(int offset, int value) {
+	int getLineValue(int offset) {
 		if (offset < 0 || offset >= lines.length) {
 			throw new IllegalArgumentException("Invalid GPIO offset " + offset + " must 0.." + (lines.length - 1));
 		}
-		int rc = setValue(lines[offset].getFd(), offset, value);
-		if (rc < 0) {
-			throw new RuntimeIOException("Error in setValue(" + offset + ", " + value + "): " + rc);
+		return getValue(lines[offset]);
+	}
+
+	void setLineValue(int offset, int value) {
+		if (offset < 0 || offset >= lines.length) {
+			throw new IllegalArgumentException("Invalid GPIO offset " + offset + " must 0.." + (lines.length - 1));
 		}
+		setValue(lines[offset], value);
 	}
 
 	@Override
 	public void close() {
-		// First close all of the lines
+		if (running.get()) {
+			running.getAndSet(false);
+	
+			lock.lock();
+			try {
+				// Attempt to interrupt the condition
+				condition.signal();
+			} finally {
+				lock.unlock();
+			}
+			
+			// Stop the eventLoop and processEvents threads
+			if (eventLoopFuture != null) {
+				eventLoopFuture.cancel(true);
+			}
+			if (processEventsFuture != null) {
+				processEventsFuture.cancel(true);
+			}
+		}
+		
+		// Close all of the lines
 		for (GpioLine line : lines) {
 			close(line.getFd());
 		}
+		lines = null;
+		linesByName.clear();
+		
 		// Then close the chip
 		close(fd);
 	}
@@ -225,8 +245,8 @@ public class NativeGpioChip extends GpioChipInfo implements Closeable, GpioLineE
 			epollFd = rc;
 			
 			running.getAndSet(true);
-			DioZeroScheduler.getDaemonInstance().execute(this::processEvents);
-			DioZeroScheduler.getDaemonInstance().execute(this::eventLoop);
+			processEventsFuture = DioZeroScheduler.getDaemonInstance().submit(this::processEvents);
+			eventLoopFuture = DioZeroScheduler.getDaemonInstance().submit(this::eventLoop);
 		}
 		
 		int rc = epollAddFileDescriptor(epollFd, fd);

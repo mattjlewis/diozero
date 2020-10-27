@@ -13,7 +13,6 @@ public class NativeGpioInputOutputDevice extends AbstractInputDevice<DigitalInpu
 		implements GpioDigitalInputOutputDeviceInterface, GpioLineEventListener {
 	private NativeGpioChip chip;
 	private int gpio;
-	private int offset;
 	private GpioLine line;
 
 	public NativeGpioInputOutputDevice(DefaultDeviceFactory deviceFactory, String key, NativeGpioChip chip,
@@ -21,18 +20,18 @@ public class NativeGpioInputOutputDevice extends AbstractInputDevice<DigitalInpu
 		super(key, deviceFactory);
 
 		gpio = pinInfo.getDeviceNumber();
-		offset = chip.getOffset(gpio);
-		if (offset == -1) {
-			throw new IllegalArgumentException("Invalid GPIO " + gpio + " - offset not found");
+		int offset = pinInfo.getLineOffset();
+		if (offset == PinInfo.NOT_DEFINED) {
+			throw new IllegalArgumentException("Line offset not defined for pin " + pinInfo);
 		}
 		this.chip = chip;
 
 		switch (mode) {
 		case DIGITAL_INPUT:
-			line = chip.provisionGpioInputDevice(gpio, GpioPullUpDown.NONE, GpioEventTrigger.BOTH);
+			line = chip.provisionGpioInputDevice(offset, GpioPullUpDown.NONE, GpioEventTrigger.BOTH);
 			break;
 		case DIGITAL_OUTPUT:
-			line = chip.provisionGpioOutputDevice(gpio, 0);
+			line = chip.provisionGpioOutputDevice(offset, 0);
 			break;
 		default:
 			throw new IllegalArgumentException("Invalid line mode " + mode);
@@ -72,12 +71,12 @@ public class NativeGpioInputOutputDevice extends AbstractInputDevice<DigitalInpu
 
 	@Override
 	public boolean getValue() throws RuntimeIOException {
-		return chip.getValue(offset) == 0 ? false : true;
+		return chip.getValue(line) == 0 ? false : true;
 	}
 
 	@Override
 	public void setValue(boolean value) throws RuntimeIOException {
-		chip.setValue(offset, value ? 1 : 0);
+		chip.setValue(line, value ? 1 : 0);
 	}
 
 	@Override

@@ -66,12 +66,12 @@ public class NativeSerialDevice implements Closeable {
 	private FileDescriptor fileDescriptor;
 	private FileInputStream inputStream;
 	private FileOutputStream outputStream;
-	private String deviceName;
+	private String deviceFile;
 
 	/**
 	 * Open a new serial device
 	 * 
-	 * @param deviceName        Device name
+	 * @param deviceFile        Serial device filename including path, e.g. /dev/ttyACM0
 	 * @param baud              Default is 9600.
 	 * @param dataBits          The number of data bits to use per word; default is
 	 *                          8, values from 5 to 8 are acceptable.
@@ -85,15 +85,15 @@ public class NativeSerialDevice implements Closeable {
 	 * @param readTimeoutMillis Duration in milliseconds for read timeouts; must be
 	 *                          in units of 100.
 	 */
-	public NativeSerialDevice(String deviceName, int baud, SerialDevice.DataBits dataBits,
+	public NativeSerialDevice(String deviceFile, int baud, SerialDevice.DataBits dataBits,
 			SerialDevice.StopBits stopBits, SerialDevice.Parity parity, boolean readBlocking, int minReadChars,
 			int readTimeoutMillis) {
-		this.deviceName = deviceName;
+		this.deviceFile = deviceFile;
 
-		fileDescriptor = serialOpen(deviceName, baud, dataBits.ordinal(), stopBits.ordinal(), parity.ordinal(),
+		fileDescriptor = serialOpen(deviceFile, baud, dataBits.ordinal(), stopBits.ordinal(), parity.ordinal(),
 				readBlocking, minReadChars, readTimeoutMillis);
 		if (fileDescriptor == null) {
-			throw new RuntimeIOException("Error opening serial device '" + deviceName + "'");
+			throw new RuntimeIOException("Error opening serial device '" + deviceFile + "'");
 		}
 
 		inputStream = new FileInputStream(fileDescriptor);
@@ -104,7 +104,7 @@ public class NativeSerialDevice implements Closeable {
 		try {
 			return inputStream.read();
 		} catch (IOException e) {
-			throw new RuntimeIOException("Error in serial device read for '" + deviceName + "': " + e.getMessage(), e);
+			throw new RuntimeIOException("Error in serial device read for '" + deviceFile + "': " + e.getMessage(), e);
 		}
 	}
 
@@ -118,14 +118,14 @@ public class NativeSerialDevice implements Closeable {
 			}
 			return (byte) (read & 0xff);
 		} catch (IOException e) {
-			throw new RuntimeIOException("Error in serial device readByte for '" + deviceName + "': " + e.getMessage(),
+			throw new RuntimeIOException("Error in serial device readByte for '" + deviceFile + "': " + e.getMessage(),
 					e);
 		}
 
 		// int rc = serialReadByte(fd);
 		// if (rc < 0) {
 		// throw new RuntimeIOException("Error in serial device readByte for '" +
-		// deviceName + "': " + rc);
+		// deviceFile + "': " + rc);
 		// }
 		// return (byte) (rc & 0xff);
 	}
@@ -135,14 +135,14 @@ public class NativeSerialDevice implements Closeable {
 			outputStream.write(value & 0xff);
 			outputStream.flush();
 		} catch (IOException e) {
-			throw new RuntimeIOException("Error in serial device writeByte for '" + deviceName + "': " + e.getMessage(),
+			throw new RuntimeIOException("Error in serial device writeByte for '" + deviceFile + "': " + e.getMessage(),
 					e);
 		}
 
 		// int rc = serialWriteByte(fd, value & 0xff);
 		// if (rc == -1) {
 		// throw new RuntimeIOException("Error in serial device writeByte for '" +
-		// deviceName + "': " + rc);
+		// deviceFile + "': " + rc);
 		// }
 	}
 
@@ -150,12 +150,12 @@ public class NativeSerialDevice implements Closeable {
 		try {
 			return inputStream.read(buffer);
 		} catch (IOException e) {
-			throw new RuntimeIOException("Error in serial device read for '" + deviceName + "': " + e.getMessage(), e);
+			throw new RuntimeIOException("Error in serial device read for '" + deviceFile + "': " + e.getMessage(), e);
 		}
 
 		// int rc = serialRead(fd, buffer);
 		// if (rc < 0) {
-		// throw new RuntimeIOException("Error in serial device read for '" + deviceName
+		// throw new RuntimeIOException("Error in serial device read for '" + deviceFile
 		// + "': " + rc);
 		// }
 	}
@@ -164,13 +164,13 @@ public class NativeSerialDevice implements Closeable {
 		try {
 			outputStream.write(data);
 		} catch (IOException e) {
-			throw new RuntimeIOException("Error in serial device write for '" + deviceName + "': " + e.getMessage(), e);
+			throw new RuntimeIOException("Error in serial device write for '" + deviceFile + "': " + e.getMessage(), e);
 		}
 
 		// int rc = serialWrite(fd, data);
 		// if (rc < 0) {
 		// throw new RuntimeIOException("Error in serial device write for '" +
-		// deviceName + "': " + rc);
+		// deviceFile + "': " + rc);
 		// }
 	}
 
@@ -178,13 +178,13 @@ public class NativeSerialDevice implements Closeable {
 		try {
 			return inputStream.available();
 		} catch (IOException e) {
-			throw new RuntimeIOException("Error in serial device bytesAvailable for '" + deviceName + "'");
+			throw new RuntimeIOException("Error in serial device bytesAvailable for '" + deviceFile + "'");
 		}
 
 		// int rc = serialBytesAvailable(fd);
 		// if (rc < 0) {
 		// throw new RuntimeIOException("Error in serial device bytesAvailable for '" +
-		// deviceName + "': " + rc);
+		// deviceFile + "': " + rc);
 		// }
 		// return rc;
 	}
@@ -221,7 +221,7 @@ public class NativeSerialDevice implements Closeable {
 		Logger.trace("closed");
 	}
 
-	public String getDeviceName() {
-		return deviceName;
+	public String getDeviceFile() {
+		return deviceFile;
 	}
 }

@@ -34,15 +34,15 @@ package com.diozero.remote.message;
 public abstract class SerialBase extends Request {
 	private static final long serialVersionUID = 8947756831838717159L;
 
-	private String deviceName;
+	private String deviceFile;
 	
-	public SerialBase(String deviceName, String correlationId) {
+	public SerialBase(String deviceFile, String correlationId) {
 		super(correlationId);
 		
-		this.deviceName = deviceName;
+		this.deviceFile = deviceFile;
 	}
 	
-	public String getDeviceName() {
-		return deviceName;
+	public String getDeviceFile() {
+		return deviceFile;
 	}
 }

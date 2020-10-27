@@ -107,8 +107,8 @@ public class DiozeroProtosConverter {
 	}
 
 	public static DiozeroProtos.Gpio.ProvisionDigitalInputOutputRequest convert(ProvisionDigitalInputOutputDevice obj) {
-		return DiozeroProtos.Gpio.ProvisionDigitalInputOutputRequest.newBuilder().setCorrelationId(obj.getCorrelationId())
-				.setGpio(obj.getGpio()).setOutput(obj.getOutput()).build();
+		return DiozeroProtos.Gpio.ProvisionDigitalInputOutputRequest.newBuilder()
+				.setCorrelationId(obj.getCorrelationId()).setGpio(obj.getGpio()).setOutput(obj.getOutput()).build();
 	}
 
 	public static ProvisionPwmOutputDevice convert(DiozeroProtos.Gpio.ProvisionPwmOutputRequest obj) {
@@ -172,8 +172,8 @@ public class DiozeroProtosConverter {
 	}
 
 	public static DiozeroProtos.Gpio.PwmReadRequest convert(GpioPwmRead obj) {
-		return DiozeroProtos.Gpio.PwmReadRequest.newBuilder().setCorrelationId(obj.getCorrelationId()).setGpio(obj.getGpio())
-				.build();
+		return DiozeroProtos.Gpio.PwmReadRequest.newBuilder().setCorrelationId(obj.getCorrelationId())
+				.setGpio(obj.getGpio()).build();
 	}
 
 	public static GpioPwmReadResponse convert(DiozeroProtos.Gpio.PwmReadResponse obj) {
@@ -191,8 +191,8 @@ public class DiozeroProtosConverter {
 	}
 
 	public static DiozeroProtos.Gpio.PwmWriteRequest convert(GpioPwmWrite obj) {
-		return DiozeroProtos.Gpio.PwmWriteRequest.newBuilder().setCorrelationId(obj.getCorrelationId()).setGpio(obj.getGpio())
-				.setValue(obj.getValue()).build();
+		return DiozeroProtos.Gpio.PwmWriteRequest.newBuilder().setCorrelationId(obj.getCorrelationId())
+				.setGpio(obj.getGpio()).setValue(obj.getValue()).build();
 	}
 
 	public static GpioAnalogRead convert(DiozeroProtos.Gpio.AnalogReadRequest obj) {
@@ -228,8 +228,8 @@ public class DiozeroProtosConverter {
 	}
 
 	public static DiozeroProtos.Gpio.EventsRequest convert(GpioEvents obj) {
-		return DiozeroProtos.Gpio.EventsRequest.newBuilder().setCorrelationId(obj.getCorrelationId()).setGpio(obj.getGpio())
-				.setEnabled(obj.getEnabled()).build();
+		return DiozeroProtos.Gpio.EventsRequest.newBuilder().setCorrelationId(obj.getCorrelationId())
+				.setGpio(obj.getGpio()).setEnabled(obj.getEnabled()).build();
 	}
 
 	public static GpioClose convert(DiozeroProtos.Gpio.CloseRequest obj) {
@@ -237,8 +237,8 @@ public class DiozeroProtosConverter {
 	}
 
 	public static DiozeroProtos.Gpio.CloseRequest convert(GpioClose obj) {
-		return DiozeroProtos.Gpio.CloseRequest.newBuilder().setCorrelationId(obj.getCorrelationId()).setGpio(obj.getGpio())
-				.build();
+		return DiozeroProtos.Gpio.CloseRequest.newBuilder().setCorrelationId(obj.getCorrelationId())
+				.setGpio(obj.getGpio()).build();
 	}
 
 	public static I2COpen convert(DiozeroProtos.I2C.OpenRequest obj) {
@@ -247,9 +247,9 @@ public class DiozeroProtosConverter {
 	}
 
 	public static DiozeroProtos.I2C.OpenRequest convert(I2COpen obj) {
-		return DiozeroProtos.I2C.OpenRequest.newBuilder().setController(obj.getController()).setAddress(obj.getAddress())
-				.setAddressSize(obj.getAddressSize()).setClockFrequency(obj.getClockFrequency())
-				.setCorrelationId(obj.getCorrelationId()).build();
+		return DiozeroProtos.I2C.OpenRequest.newBuilder().setController(obj.getController())
+				.setAddress(obj.getAddress()).setAddressSize(obj.getAddressSize())
+				.setClockFrequency(obj.getClockFrequency()).setCorrelationId(obj.getCorrelationId()).build();
 	}
 
 	public static I2CReadByte convert(DiozeroProtos.I2C.ReadByteRequest obj) {
@@ -257,8 +257,8 @@ public class DiozeroProtosConverter {
 	}
 
 	public static DiozeroProtos.I2C.ReadByteRequest convert(I2CReadByte obj) {
-		return DiozeroProtos.I2C.ReadByteRequest.newBuilder().setController(obj.getController()).setAddress(obj.getAddress())
-				.setCorrelationId(obj.getCorrelationId()).build();
+		return DiozeroProtos.I2C.ReadByteRequest.newBuilder().setController(obj.getController())
+				.setAddress(obj.getAddress()).setCorrelationId(obj.getCorrelationId()).build();
 	}
 
 	public static I2CWriteByte convert(DiozeroProtos.I2C.WriteByteRequest obj) {
@@ -266,8 +266,8 @@ public class DiozeroProtosConverter {
 	}
 
 	public static DiozeroProtos.I2C.WriteByteRequest convert(I2CWriteByte obj) {
-		return DiozeroProtos.I2C.WriteByteRequest.newBuilder().setController(obj.getController()).setAddress(obj.getAddress())
-				.setData(obj.getData()).setCorrelationId(obj.getCorrelationId()).build();
+		return DiozeroProtos.I2C.WriteByteRequest.newBuilder().setController(obj.getController())
+				.setAddress(obj.getAddress()).setData(obj.getData()).setCorrelationId(obj.getCorrelationId()).build();
 	}
 
 	public static I2CRead convert(DiozeroProtos.I2C.ReadRequest obj) {
@@ -275,8 +275,9 @@ public class DiozeroProtosConverter {
 	}
 
 	public static DiozeroProtos.I2C.ReadRequest convert(I2CRead obj) {
-		return DiozeroProtos.I2C.ReadRequest.newBuilder().setController(obj.getController()).setAddress(obj.getAddress())
-				.setLength(obj.getLength()).setCorrelationId(obj.getCorrelationId()).build();
+		return DiozeroProtos.I2C.ReadRequest.newBuilder().setController(obj.getController())
+				.setAddress(obj.getAddress()).setLength(obj.getLength()).setCorrelationId(obj.getCorrelationId())
+				.build();
 	}
 
 	public static I2CWrite convert(DiozeroProtos.I2C.WriteRequest obj) {
@@ -284,8 +285,9 @@ public class DiozeroProtosConverter {
 	}
 
 	public static DiozeroProtos.I2C.WriteRequest convert(I2CWrite obj) {
-		return DiozeroProtos.I2C.WriteRequest.newBuilder().setController(obj.getController()).setAddress(obj.getAddress())
-				.setData(ByteString.copyFrom(obj.getData())).setCorrelationId(obj.getCorrelationId()).build();
+		return DiozeroProtos.I2C.WriteRequest.newBuilder().setController(obj.getController())
+				.setAddress(obj.getAddress()).setData(ByteString.copyFrom(obj.getData()))
+				.setCorrelationId(obj.getCorrelationId()).build();
 	}
 
 	public static I2CReadByteData convert(DiozeroProtos.I2C.ReadByteDataRequest obj) {
@@ -336,8 +338,8 @@ public class DiozeroProtosConverter {
 	}
 
 	public static DiozeroProtos.I2C.CloseRequest convert(I2CClose obj) {
-		return DiozeroProtos.I2C.CloseRequest.newBuilder().setController(obj.getController()).setAddress(obj.getAddress())
-				.setCorrelationId(obj.getCorrelationId()).build();
+		return DiozeroProtos.I2C.CloseRequest.newBuilder().setController(obj.getController())
+				.setAddress(obj.getAddress()).setCorrelationId(obj.getCorrelationId()).build();
 	}
 
 	public static I2CReadByteResponse convert(DiozeroProtos.I2C.ReadByteResponse obj) {
@@ -516,13 +518,13 @@ public class DiozeroProtosConverter {
 	}
 
 	public static SerialOpen convert(DiozeroProtos.Serial.OpenRequest obj) {
-		return new SerialOpen(obj.getDeviceName(), obj.getBaud(), SerialDevice.DataBits.values()[obj.getDataBits()],
+		return new SerialOpen(obj.getDeviceFile(), obj.getBaud(), SerialDevice.DataBits.values()[obj.getDataBits()],
 				SerialDevice.StopBits.values()[obj.getStopBits()], SerialDevice.Parity.values()[obj.getParity()],
 				obj.getReadBlocking(), obj.getMinReadChars(), obj.getReadTimeoutMillis(), obj.getCorrelationId());
 	}
 
 	public static DiozeroProtos.Serial.OpenRequest convert(SerialOpen obj) {
-		return DiozeroProtos.Serial.OpenRequest.newBuilder().setDeviceName(obj.getDeviceName()).setBaud(obj.getBaud())
+		return DiozeroProtos.Serial.OpenRequest.newBuilder().setDeviceFile(obj.getDeviceFile()).setBaud(obj.getBaud())
 				.setDataBits(obj.getDataBits().ordinal()).setStopBits(obj.getStopBits().ordinal())
 				.setParity(obj.getParity().ordinal()).setReadBlocking(obj.isReadBlocking())
 				.setMinReadChars(obj.getMinReadChars()).setReadTimeoutMillis(obj.getReadTimeoutMillis())
@@ -530,66 +532,66 @@ public class DiozeroProtosConverter {
 	}
 
 	public static SerialRead convert(DiozeroProtos.Serial.ReadRequest obj) {
-		return new SerialRead(obj.getDeviceName(), obj.getCorrelationId());
+		return new SerialRead(obj.getDeviceFile(), obj.getCorrelationId());
 	}
 
 	public static DiozeroProtos.Serial.ReadRequest convert(SerialRead obj) {
-		return DiozeroProtos.Serial.ReadRequest.newBuilder().setDeviceName(obj.getDeviceName()).setCorrelationId(obj.getCorrelationId())
-				.build();
+		return DiozeroProtos.Serial.ReadRequest.newBuilder().setDeviceFile(obj.getDeviceFile())
+				.setCorrelationId(obj.getCorrelationId()).build();
 	}
 
 	public static SerialReadByte convert(DiozeroProtos.Serial.ReadByteRequest obj) {
-		return new SerialReadByte(obj.getDeviceName(), obj.getCorrelationId());
+		return new SerialReadByte(obj.getDeviceFile(), obj.getCorrelationId());
 	}
 
 	public static DiozeroProtos.Serial.ReadByteRequest convert(SerialReadByte obj) {
-		return DiozeroProtos.Serial.ReadByteRequest.newBuilder().setDeviceName(obj.getDeviceName()).setCorrelationId(obj.getCorrelationId())
-				.build();
+		return DiozeroProtos.Serial.ReadByteRequest.newBuilder().setDeviceFile(obj.getDeviceFile())
+				.setCorrelationId(obj.getCorrelationId()).build();
 	}
 
 	public static SerialWriteByte convert(DiozeroProtos.Serial.WriteByteRequest obj) {
-		return new SerialWriteByte(obj.getDeviceName(), (byte) obj.getData(), obj.getCorrelationId());
+		return new SerialWriteByte(obj.getDeviceFile(), (byte) obj.getData(), obj.getCorrelationId());
 	}
 
 	public static DiozeroProtos.Serial.WriteByteRequest convert(SerialWriteByte obj) {
-		return DiozeroProtos.Serial.WriteByteRequest.newBuilder().setDeviceName(obj.getDeviceName()).setData(obj.getData())
-				.setCorrelationId(obj.getCorrelationId()).build();
+		return DiozeroProtos.Serial.WriteByteRequest.newBuilder().setDeviceFile(obj.getDeviceFile())
+				.setData(obj.getData()).setCorrelationId(obj.getCorrelationId()).build();
 	}
 
 	public static SerialReadBytes convert(DiozeroProtos.Serial.ReadBytesRequest obj) {
-		return new SerialReadBytes(obj.getDeviceName(), obj.getLength(), obj.getCorrelationId());
+		return new SerialReadBytes(obj.getDeviceFile(), obj.getLength(), obj.getCorrelationId());
 	}
 
 	public static DiozeroProtos.Serial.ReadBytesRequest convert(SerialReadBytes obj) {
-		return DiozeroProtos.Serial.ReadBytesRequest.newBuilder().setDeviceName(obj.getDeviceName()).setLength(obj.getLength())
-				.setCorrelationId(obj.getCorrelationId()).build();
+		return DiozeroProtos.Serial.ReadBytesRequest.newBuilder().setDeviceFile(obj.getDeviceFile())
+				.setLength(obj.getLength()).setCorrelationId(obj.getCorrelationId()).build();
 	}
 
 	public static SerialWriteBytes convert(DiozeroProtos.Serial.WriteBytesRequest obj) {
-		return new SerialWriteBytes(obj.getDeviceName(), obj.getData().toByteArray(), obj.getCorrelationId());
+		return new SerialWriteBytes(obj.getDeviceFile(), obj.getData().toByteArray(), obj.getCorrelationId());
 	}
 
 	public static DiozeroProtos.Serial.WriteBytesRequest convert(SerialWriteBytes obj) {
-		return DiozeroProtos.Serial.WriteBytesRequest.newBuilder().setDeviceName(obj.getDeviceName())
+		return DiozeroProtos.Serial.WriteBytesRequest.newBuilder().setDeviceFile(obj.getDeviceFile())
 				.setData(ByteString.copyFrom(obj.getData())).setCorrelationId(obj.getCorrelationId()).build();
 	}
 
 	public static SerialBytesAvailable convert(DiozeroProtos.Serial.BytesAvailableRequest obj) {
-		return new SerialBytesAvailable(obj.getDeviceName(), obj.getCorrelationId());
+		return new SerialBytesAvailable(obj.getDeviceFile(), obj.getCorrelationId());
 	}
 
 	public static DiozeroProtos.Serial.BytesAvailableRequest convert(SerialBytesAvailable obj) {
-		return DiozeroProtos.Serial.BytesAvailableRequest.newBuilder().setDeviceName(obj.getDeviceName())
+		return DiozeroProtos.Serial.BytesAvailableRequest.newBuilder().setDeviceFile(obj.getDeviceFile())
 				.setCorrelationId(obj.getCorrelationId()).build();
 	}
 
 	public static SerialClose convert(DiozeroProtos.Serial.CloseRequest obj) {
-		return new SerialClose(obj.getDeviceName(), obj.getCorrelationId());
+		return new SerialClose(obj.getDeviceFile(), obj.getCorrelationId());
 	}
 
 	public static DiozeroProtos.Serial.CloseRequest convert(SerialClose obj) {
-		return DiozeroProtos.Serial.CloseRequest.newBuilder().setDeviceName(obj.getDeviceName()).setCorrelationId(obj.getCorrelationId())
-				.build();
+		return DiozeroProtos.Serial.CloseRequest.newBuilder().setDeviceFile(obj.getDeviceFile())
+				.setCorrelationId(obj.getCorrelationId()).build();
 	}
 
 	public static SerialReadResponse convert(DiozeroProtos.Serial.ReadResponse obj) {

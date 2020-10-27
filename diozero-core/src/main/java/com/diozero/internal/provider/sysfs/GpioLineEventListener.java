@@ -1,5 +1,5 @@
 package com.diozero.internal.provider.sysfs;
 
 public interface GpioLineEventListener {
-	void event(int gpioOffset, int eventDataId, long timestampNanos);
+	void event(int lineFd, int eventDataId, long timestampNanos);
 }

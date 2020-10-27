@@ -42,12 +42,12 @@ import com.diozero.util.RuntimeIOException;
 public class NativeSerialDeviceWrapper extends AbstractDevice implements SerialDeviceInterface {
 	private NativeSerialDevice device;
 
-	public NativeSerialDeviceWrapper(DeviceFactoryInterface deviceFactory, String key, String deviceName, int baud,
+	public NativeSerialDeviceWrapper(DeviceFactoryInterface deviceFactory, String key, String deviceFile, int baud,
 			SerialDevice.DataBits dataBits, SerialDevice.StopBits stopBits, SerialDevice.Parity parity,
 			boolean readBlocking, int minReadChars, int readTimeoutMillis) {
 		super(key, deviceFactory);
 
-		device = new NativeSerialDevice(deviceName, baud, dataBits, stopBits, parity, readBlocking, minReadChars,
+		device = new NativeSerialDevice(deviceFile, baud, dataBits, stopBits, parity, readBlocking, minReadChars,
 				readTimeoutMillis);
 	}
 

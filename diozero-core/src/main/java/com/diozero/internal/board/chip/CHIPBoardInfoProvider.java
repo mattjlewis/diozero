@@ -82,6 +82,8 @@ public class CHIPBoardInfoProvider implements BoardInfoProvider {
 		
 		@Override
 		public void initialisePins() {
+			// FIXME Externalise this to a file
+			
 			// http://www.chip-community.org/index.php/GPIO_Info#Interrupts
 			// Not all gpio pins support interrupts. Whether a pin supports
 			// interrupts can be seen by the presence of an "edge" file (e.g.

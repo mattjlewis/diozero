@@ -6,7 +6,7 @@ INCLUDES = -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/linux -I$(JAVA_HOME)/in
 LFLAGS = 
 SO_FILE_EXT = so
 
-LIBS = -li2c
+LIBS = -li2c -lgpiod
 
 SRCS = com_diozero_internal_provider_sysfs_NativeGpioChip.c \
 	com_diozero_internal_provider_sysfs_NativeSerialDevice.c \

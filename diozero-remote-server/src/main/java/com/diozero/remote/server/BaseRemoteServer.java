@@ -131,7 +131,7 @@ public abstract class BaseRemoteServer implements InputEventListener<DigitalInpu
 		Collection<PinInfo> adc_pins = board_info.getAdcPins();
 		Collection<PinInfo> dac_pins = board_info.getDacPins();
 
-		// TODO Implementation
+		// TODO Added board pin info to the API
 		List<GpioInfo> gpios = new ArrayList<>();
 
 		GetBoardInfoResponse response = new GetBoardInfoResponse(board_info.getMake(), board_info.getModel(),
@@ -151,7 +151,7 @@ public abstract class BaseRemoteServer implements InputEventListener<DigitalInpu
 		Response response;
 		try {
 			if (device == null) {
-				deviceFactory.provisionDigitalInputDevice(request.getGpio(), request.getPud(), request.getTrigger());
+				deviceFactory.provisionDigitalInputDevice(pin_info, request.getPud(), request.getTrigger());
 				response = new Response(Response.Status.OK, null, request.getCorrelationId());
 			} else if (device instanceof GpioDigitalInputOutputDeviceInterface) {
 				GpioDigitalInputOutputDeviceInterface inout = (GpioDigitalInputOutputDeviceInterface) device;
@@ -183,7 +183,7 @@ public abstract class BaseRemoteServer implements InputEventListener<DigitalInpu
 		Response response;
 		try {
 			if (device == null) {
-				deviceFactory.provisionDigitalOutputDevice(request.getGpio(), request.getInitialValue());
+				deviceFactory.provisionDigitalOutputDevice(pin_info, request.getInitialValue());
 
 				response = new Response(Response.Status.OK, null, request.getCorrelationId());
 			} else if (device instanceof GpioDigitalInputOutputDeviceInterface) {
@@ -218,7 +218,7 @@ public abstract class BaseRemoteServer implements InputEventListener<DigitalInpu
 		Response response;
 		try {
 			if (device == null) {
-				deviceFactory.provisionDigitalInputOutputDevice(request.getGpio(),
+				deviceFactory.provisionDigitalInputOutputDevice(pin_info,
 						request.getOutput() ? DeviceMode.DIGITAL_OUTPUT : DeviceMode.DIGITAL_INPUT);
 
 				response = new Response(Response.Status.OK, null, request.getCorrelationId());
@@ -936,8 +936,8 @@ public abstract class BaseRemoteServer implements InputEventListener<DigitalInpu
 	public Response request(SerialOpen request) {
 		Logger.debug("Serial open request {}", request);
 
-		String device_name = request.getDeviceName();
-		String key = deviceFactory.createSerialKey(device_name);
+		String device_file = request.getDeviceFile();
+		String key = deviceFactory.createSerialKey(device_file);
 
 		DeviceInterface device = deviceFactory.getDevice(key);
 		if (device != null) {
@@ -946,8 +946,8 @@ public abstract class BaseRemoteServer implements InputEventListener<DigitalInpu
 
 		Response response;
 		try {
-			deviceFactory.provisionSerialDevice(device_name, request.getBaud(), request.getDataBits(), request.getStopBits(),
-					request.getParity(), request.isReadBlocking(), request.getMinReadChars(),
+			deviceFactory.provisionSerialDevice(device_file, request.getBaud(), request.getDataBits(),
+					request.getStopBits(), request.getParity(), request.isReadBlocking(), request.getMinReadChars(),
 					request.getReadTimeoutMillis());
 
 			response = new Response(Response.Status.OK, null, request.getCorrelationId());
@@ -963,8 +963,8 @@ public abstract class BaseRemoteServer implements InputEventListener<DigitalInpu
 	public SerialReadResponse request(SerialRead request) {
 		Logger.debug("Serial read request");
 
-		String device_name = request.getDeviceName();
-		String key = deviceFactory.createSerialKey(device_name);
+		String device_file = request.getDeviceFile();
+		String key = deviceFactory.createSerialKey(device_file);
 
 		SerialDeviceInterface device = deviceFactory.getDevice(key, SerialDeviceInterface.class);
 		if (device == null) {
@@ -988,8 +988,8 @@ public abstract class BaseRemoteServer implements InputEventListener<DigitalInpu
 	public SerialReadByteResponse request(SerialReadByte request) {
 		Logger.debug("Serial read byte request");
 
-		String device_name = request.getDeviceName();
-		String key = deviceFactory.createSerialKey(device_name);
+		String device_file = request.getDeviceFile();
+		String key = deviceFactory.createSerialKey(device_file);
 
 		SerialDeviceInterface device = deviceFactory.getDevice(key, SerialDeviceInterface.class);
 		if (device == null) {
@@ -1013,8 +1013,8 @@ public abstract class BaseRemoteServer implements InputEventListener<DigitalInpu
 	public Response request(SerialWriteByte request) {
 		Logger.debug("Serial write byte request");
 
-		String device_name = request.getDeviceName();
-		String key = deviceFactory.createSerialKey(device_name);
+		String device_file = request.getDeviceFile();
+		String key = deviceFactory.createSerialKey(device_file);
 
 		SerialDeviceInterface device = deviceFactory.getDevice(key, SerialDeviceInterface.class);
 		if (device == null) {
@@ -1038,8 +1038,8 @@ public abstract class BaseRemoteServer implements InputEventListener<DigitalInpu
 	public SerialReadBytesResponse request(SerialReadBytes request) {
 		Logger.debug("Serial read bytes request");
 
-		String device_name = request.getDeviceName();
-		String key = deviceFactory.createSerialKey(device_name);
+		String device_file = request.getDeviceFile();
+		String key = deviceFactory.createSerialKey(device_file);
 
 		SerialDeviceInterface device = deviceFactory.getDevice(key, SerialDeviceInterface.class);
 		if (device == null) {
@@ -1064,8 +1064,8 @@ public abstract class BaseRemoteServer implements InputEventListener<DigitalInpu
 	public Response request(SerialWriteBytes request) {
 		Logger.debug("Serial write bytes request");
 
-		String device_name = request.getDeviceName();
-		String key = deviceFactory.createSerialKey(device_name);
+		String device_file = request.getDeviceFile();
+		String key = deviceFactory.createSerialKey(device_file);
 
 		SerialDeviceInterface device = deviceFactory.getDevice(key, SerialDeviceInterface.class);
 		if (device == null) {
@@ -1089,8 +1089,8 @@ public abstract class BaseRemoteServer implements InputEventListener<DigitalInpu
 	public SerialBytesAvailableResponse request(SerialBytesAvailable request) {
 		Logger.debug("Serial bytes available request");
 
-		String device_name = request.getDeviceName();
-		String key = deviceFactory.createSerialKey(device_name);
+		String device_file = request.getDeviceFile();
+		String key = deviceFactory.createSerialKey(device_file);
 
 		SerialDeviceInterface device = deviceFactory.getDevice(key, SerialDeviceInterface.class);
 		if (device == null) {
@@ -1114,8 +1114,8 @@ public abstract class BaseRemoteServer implements InputEventListener<DigitalInpu
 	public Response request(SerialClose request) {
 		Logger.debug("Serial close request");
 
-		String device_name = request.getDeviceName();
-		String key = deviceFactory.createSerialKey(device_name);
+		String device_file = request.getDeviceFile();
+		String key = deviceFactory.createSerialKey(device_file);
 
 		SerialDeviceInterface device = deviceFactory.getDevice(key, SerialDeviceInterface.class);
 		if (device == null) {

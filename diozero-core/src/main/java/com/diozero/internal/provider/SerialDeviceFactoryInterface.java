@@ -40,8 +40,8 @@ public interface SerialDeviceFactoryInterface extends DeviceFactoryInterface {
 
 	/**
 	 * Provision a serial device.
-	 * @param deviceName The O/S name of the device, e.g. "/dev/ttyUSB0"
-	 * @param baud Baut rate
+	 * @param deviceFile The O/S name of the device, e.g. "/dev/ttyUSB0"
+	 * @param baud Baud rate
 	 * @param dataBits Number of data bits
 	 * @param stopBits Number of stop bits
 	 * @param parity Parity option
@@ -51,30 +51,30 @@ public interface SerialDeviceFactoryInterface extends DeviceFactoryInterface {
 	 * @return Serial device instance
 	 * @throws RuntimeIOException
 	 */
-	default SerialDeviceInterface provisionSerialDevice(String deviceName, int baud, SerialDevice.DataBits dataBits,
+	default SerialDeviceInterface provisionSerialDevice(String deviceFile, int baud, SerialDevice.DataBits dataBits,
 			SerialDevice.StopBits stopBits, SerialDevice.Parity parity, boolean readBlocking, int minReadChars,
 			int readTimeoutMillis)
 			throws RuntimeIOException {
-		String key = createSerialKey(deviceName);
+		String key = createSerialKey(deviceFile);
 
 		// Check if this pin is already provisioned
 		if (isDeviceOpened(key)) {
 			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
 		}
 
-		SerialDeviceInterface device = createSerialDevice(key, deviceName, baud, dataBits, stopBits, parity, readBlocking,
+		SerialDeviceInterface device = createSerialDevice(key, deviceFile, baud, dataBits, stopBits, parity, readBlocking,
 				minReadChars, readTimeoutMillis);
 		deviceOpened(device);
 
 		return device;
 	}
 
-	SerialDeviceInterface createSerialDevice(String key, String deviceName, int baud, SerialDevice.DataBits dataBits,
+	SerialDeviceInterface createSerialDevice(String key, String deviceFile, int baud, SerialDevice.DataBits dataBits,
 			SerialDevice.StopBits stopBits, SerialDevice.Parity parity, boolean readBlocking, int minReadChars,
 			int readTimeoutMillis)
 			throws RuntimeIOException;
 
-	static String createSerialKey(String keyPrefix, String deviceName) {
-		return keyPrefix + SERIAL_PREFIX + deviceName;
+	static String createSerialKey(String keyPrefix, String deviceFile) {
+		return keyPrefix + SERIAL_PREFIX + deviceFile;
 	}
 }

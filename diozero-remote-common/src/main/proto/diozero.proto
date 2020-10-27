@@ -335,7 +335,7 @@ message Spi {
 message Serial {
 	message OpenRequest {
 		string correlationId = 1;
-		string deviceName = 2;
+		string deviceFile = 2;
 		int32 baud = 3;
 		int32 dataBits = 4;
 		int32 stopBits = 5;
@@ -347,40 +347,40 @@ message Serial {
 	
 	message ReadRequest {
 		string correlationId = 1;
-		string deviceName = 2;
+		string deviceFile = 2;
 	}
 	
 	message ReadByteRequest {
 		string correlationId = 1;
-		string deviceName = 2;
+		string deviceFile = 2;
 	}
 	
 	message WriteByteRequest {
 		string correlationId = 1;
-		string deviceName = 2;
+		string deviceFile = 2;
 		int32 data = 3;
 	}
 	
 	message ReadBytesRequest {
 		string correlationId = 1;
-		string deviceName = 2;
+		string deviceFile = 2;
 		int32 length = 3;
 	}
 	
 	message WriteBytesRequest {
 		string correlationId = 1;
-		string deviceName = 2;
+		string deviceFile = 2;
 		bytes data = 3;
 	}
 	
 	message BytesAvailableRequest {
 		string correlationId = 1;
-		string deviceName = 2;
+		string deviceFile = 2;
 	}
 
 	message CloseRequest {
 		string correlationId = 1;
-		string deviceName = 2;
+		string deviceFile = 2;
 	}
 	
 	message ReadResponse {

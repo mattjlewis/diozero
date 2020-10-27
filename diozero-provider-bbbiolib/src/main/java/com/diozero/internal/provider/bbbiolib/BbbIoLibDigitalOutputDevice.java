@@ -47,7 +47,7 @@ public class BbbIoLibDigitalOutputDevice extends AbstractDevice implements GpioD
 
 		this.pinInfo = pinInfo;
 
-		BbbIoLibNative.setDir(BbbIoLibDeviceFactory.getPort(pinInfo), (byte) pinInfo.getPinNumber(),
+		BbbIoLibNative.setDir(BbbIoLibDeviceFactory.getPort(pinInfo), (byte) pinInfo.getPhysicalPin(),
 				BbbIoLibNative.BBBIO_DIR_OUT);
 
 		setValue(initialValue);
@@ -60,7 +60,7 @@ public class BbbIoLibDigitalOutputDevice extends AbstractDevice implements GpioD
 
 	@Override
 	public boolean getValue() throws RuntimeIOException {
-		int rc = BbbIoLibNative.getValue(BbbIoLibDeviceFactory.getPort(pinInfo), (byte) pinInfo.getPinNumber());
+		int rc = BbbIoLibNative.getValue(BbbIoLibDeviceFactory.getPort(pinInfo), (byte) pinInfo.getPhysicalPin());
 		if (rc < 0) {
 			throw new RuntimeIOException("Error in BBBioLib.getValue(" + getGpio() + ")");
 		}
@@ -70,14 +70,14 @@ public class BbbIoLibDigitalOutputDevice extends AbstractDevice implements GpioD
 
 	@Override
 	public void setValue(boolean value) throws RuntimeIOException {
-		BbbIoLibNative.setValue(BbbIoLibDeviceFactory.getPort(pinInfo), (byte) pinInfo.getPinNumber(), value);
+		BbbIoLibNative.setValue(BbbIoLibDeviceFactory.getPort(pinInfo), (byte) pinInfo.getPhysicalPin(), value);
 	}
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
 		Logger.trace("closeDevice()");
 		// Revert to input mode?
-		BbbIoLibNative.setDir(BbbIoLibDeviceFactory.getPort(pinInfo), (byte) pinInfo.getPinNumber(),
+		BbbIoLibNative.setDir(BbbIoLibDeviceFactory.getPort(pinInfo), (byte) pinInfo.getPhysicalPin(),
 				BbbIoLibNative.BBBIO_DIR_IN);
 	}
 }

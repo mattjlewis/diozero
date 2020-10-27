@@ -44,10 +44,10 @@ public class SerialOpen extends SerialBase {
 	private int minReadChars;
 	private int readTimeoutMillis;
 
-	public SerialOpen(String deviceName, int baud, SerialDevice.DataBits dataBits, SerialDevice.StopBits stopBits,
+	public SerialOpen(String deviceFile, int baud, SerialDevice.DataBits dataBits, SerialDevice.StopBits stopBits,
 			SerialDevice.Parity parity, boolean readBlocking, int minReadChars, int readTimeoutMillis,
 			String correlationId) {
-		super(deviceName, correlationId);
+		super(deviceFile, correlationId);
 
 		this.baud = baud;
 		this.dataBits = dataBits;

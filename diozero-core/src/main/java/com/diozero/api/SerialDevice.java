@@ -67,12 +67,12 @@ public class SerialDevice implements SerialConstants, Closeable {
 			this.usbProductId = usbProductId;
 		}
 
-		public String getDeviceFile() {
-			return deviceFile;
-		}
-
 		public String getDeviceName() {
 			return deviceName;
+		}
+
+		public String getDeviceFile() {
+			return deviceFile;
 		}
 
 		public String getDescription() {
@@ -237,20 +237,20 @@ public class SerialDevice implements SerialConstants, Closeable {
 
 	private SerialDeviceInterface device;
 
-	public SerialDevice(String deviceName) {
-		this(deviceName, DEFAULT_BAUD, DEFAULT_DATA_BITS, DEFAULT_STOP_BITS, DEFAULT_PARITY, DEFAULT_READ_BLOCKING,
+	public SerialDevice(String deviceFile) {
+		this(deviceFile, DEFAULT_BAUD, DEFAULT_DATA_BITS, DEFAULT_STOP_BITS, DEFAULT_PARITY, DEFAULT_READ_BLOCKING,
 				DEFAULT_MIN_READ_CHARS, DEFAULT_READ_TIMEOUT_MILLIS);
 	}
 
-	public SerialDevice(String deviceName, int baud, DataBits dataBits, StopBits stopBits, Parity parity) {
-		this(deviceName, baud, dataBits, stopBits, parity, DEFAULT_READ_BLOCKING, DEFAULT_MIN_READ_CHARS,
+	public SerialDevice(String deviceFile, int baud, DataBits dataBits, StopBits stopBits, Parity parity) {
+		this(deviceFile, baud, dataBits, stopBits, parity, DEFAULT_READ_BLOCKING, DEFAULT_MIN_READ_CHARS,
 				DEFAULT_READ_TIMEOUT_MILLIS);
 	}
 
 	/**
 	 * Create a new serial device
 	 *
-	 * @param deviceName        The O/S file name for the device
+	 * @param deviceFile        The O/S file name for the device, e.g. /dev/ttyACM0
 	 * @param baud              Baud rate, see
 	 *                          {@link com.diozero.api.SerialConstants
 	 *                          SerialConstants} for valid baud rate values
@@ -270,9 +270,9 @@ public class SerialDevice implements SerialConstants, Closeable {
 	 * @param readTimeoutMillis The read timeout value in milliseconds (note
 	 *                          converted to tenths of a second as an unsigned char)
 	 */
-	public SerialDevice(String deviceName, int baud, DataBits dataBits, StopBits stopBits, Parity parity,
+	public SerialDevice(String deviceFile, int baud, DataBits dataBits, StopBits stopBits, Parity parity,
 			boolean readBlocking, int minReadChars, int readTimeoutMillis) {
-		device = DeviceFactoryHelper.getNativeDeviceFactory().provisionSerialDevice(deviceName, baud, dataBits,
+		device = DeviceFactoryHelper.getNativeDeviceFactory().provisionSerialDevice(deviceFile, baud, dataBits,
 				stopBits, parity, readBlocking, minReadChars, readTimeoutMillis);
 	}
 

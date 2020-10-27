@@ -8,7 +8,6 @@ import com.diozero.util.RuntimeIOException;
 public class NativeGpioOutputDevice extends AbstractDevice implements GpioDigitalOutputDeviceInterface {
 	private NativeGpioChip chip;
 	private int gpio;
-	private int offset;
 	private GpioLine line;
 	
 	public NativeGpioOutputDevice(DefaultDeviceFactory deviceFactory, String key, NativeGpioChip chip,
@@ -16,13 +15,13 @@ public class NativeGpioOutputDevice extends AbstractDevice implements GpioDigita
 		super(key, deviceFactory);
 		
 		gpio = pinInfo.getDeviceNumber();
-		offset = chip.getOffset(gpio);
-		if (offset == -1) {
-			throw new IllegalArgumentException("Invalid GPIO " + gpio + " - offset not found");
+		int offset = pinInfo.getLineOffset();
+		if (offset == PinInfo.NOT_DEFINED) {
+			throw new IllegalArgumentException("Line offset not defined for pin " + pinInfo);
 		}
 		this.chip = chip;
 
-		line = chip.provisionGpioOutputDevice(gpio, initialValue ? 1 : 0);
+		line = chip.provisionGpioOutputDevice(offset, initialValue ? 1 : 0);
 	}
 
 	@Override
@@ -32,12 +31,12 @@ public class NativeGpioOutputDevice extends AbstractDevice implements GpioDigita
 
 	@Override
 	public boolean getValue() throws RuntimeIOException {
-		return chip.getValue(offset) == 0 ? false : true;
+		return chip.getValue(line) == 0 ? false : true;
 	}
 
 	@Override
 	public void setValue(boolean value) throws RuntimeIOException {
-		chip.setValue(offset, value ? 1 : 0);
+		chip.setValue(line, value ? 1 : 0);
 	}
 	
 	@Override

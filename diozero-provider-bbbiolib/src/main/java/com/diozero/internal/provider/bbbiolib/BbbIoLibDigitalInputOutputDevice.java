@@ -45,7 +45,7 @@ import com.diozero.internal.provider.GpioDigitalInputOutputDeviceInterface;
 import com.diozero.util.RuntimeIOException;
 
 public class BbbIoLibDigitalInputOutputDevice extends AbstractInputDevice<DigitalInputEvent>
-implements GpioDigitalInputOutputDeviceInterface, InputEventListener<DigitalInputEvent> {
+		implements GpioDigitalInputOutputDeviceInterface, InputEventListener<DigitalInputEvent> {
 	private PinInfo pinInfo;
 	private DeviceMode mode;
 	private GpioDigitalInputDeviceInterface defaultDigitialInput;
@@ -53,12 +53,12 @@ implements GpioDigitalInputOutputDeviceInterface, InputEventListener<DigitalInpu
 	public BbbIoLibDigitalInputOutputDevice(BbbIoLibDeviceFactory deviceFactory, String key, PinInfo pinInfo,
 			DeviceMode mode) {
 		super(key, deviceFactory);
-		
+
 		this.pinInfo = pinInfo;
 
-		defaultDigitialInput = deviceFactory.getDefaultDeviceFactory().provisionDigitalInputDevice(
-				getGpio(), GpioPullUpDown.NONE, GpioEventTrigger.BOTH);
-		
+		defaultDigitialInput = deviceFactory.getDefaultDeviceFactory().provisionDigitalInputDevice(pinInfo,
+				GpioPullUpDown.NONE, GpioEventTrigger.BOTH);
+
 		setMode(mode);
 	}
 
@@ -69,17 +69,17 @@ implements GpioDigitalInputOutputDeviceInterface, InputEventListener<DigitalInpu
 
 	@Override
 	public boolean getValue() throws RuntimeIOException {
-		int rc = BbbIoLibNative.getValue(BbbIoLibDeviceFactory.getPort(pinInfo), (byte) pinInfo.getPinNumber());
+		int rc = BbbIoLibNative.getValue(BbbIoLibDeviceFactory.getPort(pinInfo), (byte) pinInfo.getPhysicalPin());
 		if (rc < 0) {
 			throw new RuntimeIOException("Error in BBBioLib.getValue(" + getGpio() + ")");
 		}
-		
+
 		return rc == 1;
 	}
 
 	@Override
 	public void setValue(boolean value) throws RuntimeIOException {
-		BbbIoLibNative.setValue(BbbIoLibDeviceFactory.getPort(pinInfo), (byte) pinInfo.getPinNumber(), value);
+		BbbIoLibNative.setValue(BbbIoLibDeviceFactory.getPort(pinInfo), (byte) pinInfo.getPhysicalPin(), value);
 	}
 
 	@Override
@@ -89,19 +89,19 @@ implements GpioDigitalInputOutputDeviceInterface, InputEventListener<DigitalInpu
 
 	@Override
 	public void setMode(DeviceMode mode) {
-		int rc = BbbIoLibNative.setDir(BbbIoLibDeviceFactory.getPort(pinInfo), (byte) pinInfo.getPinNumber(),
+		int rc = BbbIoLibNative.setDir(BbbIoLibDeviceFactory.getPort(pinInfo), (byte) pinInfo.getPhysicalPin(),
 				mode == DeviceMode.DIGITAL_INPUT ? BbbIoLibNative.BBBIO_DIR_IN : BbbIoLibNative.BBBIO_DIR_OUT);
 		if (rc < 0) {
 			throw new RuntimeIOException("Error setting direction for gpio " + getGpio());
 		}
 		this.mode = mode;
 	}
-	
+
 	@Override
 	protected void enableListener() {
 		defaultDigitialInput.setListener(this);
 	}
-	
+
 	@Override
 	protected void disableListener() {
 		defaultDigitialInput.removeListener();

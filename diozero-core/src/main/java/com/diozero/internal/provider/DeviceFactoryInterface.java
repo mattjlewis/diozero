@@ -51,7 +51,7 @@ public interface DeviceFactoryInterface extends Closeable {
 	String createPinKey(PinInfo pinInfo);
 	String createI2CKey(int controller, int address);
 	String createSpiKey(int controller, int chipSelect);
-	String createSerialKey(String deviceName);
+	String createSerialKey(String deviceFile);
 	@Override
 	void close() throws RuntimeIOException;
 	boolean isClosed();

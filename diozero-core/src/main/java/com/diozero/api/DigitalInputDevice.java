@@ -47,48 +47,54 @@ public class DigitalInputDevice extends AbstractDigitalInputDevice {
 	private GpioEventTrigger trigger;
 
 	/**
-	 * @param gpio
-	 *            GPIO to which the device is connected.
-	 * @throws RuntimeIOException
-	 *             If an I/O error occurs.
+	 * @param gpio GPIO to which the device is connected.
+	 * @throws RuntimeIOException If an I/O error occurs.
 	 */
 	public DigitalInputDevice(int gpio) throws RuntimeIOException {
 		this(DeviceFactoryHelper.getNativeDeviceFactory(), gpio, GpioPullUpDown.NONE, GpioEventTrigger.BOTH);
 	}
 
 	/**
-	 * @param gpio
-	 *            GPIO to which the device is connected.
-	 * @param pud
-	 *            Pull up/down configuration, values: NONE, PULL_UP, PULL_DOWN.
-	 * @param trigger
-	 *            Event trigger configuration, values: NONE, RISING, FALLING,
-	 *            BOTH.
-	 * @throws RuntimeIOException
-	 *             If an I/O error occurs.
+	 * @param gpio    GPIO to which the device is connected.
+	 * @param pud     Pull up/down configuration, values: NONE, PULL_UP, PULL_DOWN.
+	 * @param trigger Event trigger configuration, values: NONE, RISING, FALLING,
+	 *                BOTH.
+	 * @throws RuntimeIOException If an I/O error occurs.
 	 */
 	public DigitalInputDevice(int gpio, GpioPullUpDown pud, GpioEventTrigger trigger) throws RuntimeIOException {
 		this(DeviceFactoryHelper.getNativeDeviceFactory(), gpio, pud, trigger);
 	}
 
 	/**
-	 * @param deviceFactory
-	 *            Device factory to use to provision this digital input device.
-	 * @param gpio
-	 *            GPIO to which the device is connected.
-	 * @param pud
-	 *            Pull up/down configuration, values: NONE, PULL_UP, PULL_DOWN.
-	 * @param trigger
-	 *            Event trigger configuration, values: NONE, RISING, FALLING,
-	 *            BOTH.
-	 * @throws RuntimeIOException
-	 *             If an I/O error occurs.
+	 * @param deviceFactory Device factory to use to provision this digital input
+	 *                      device.
+	 * @param gpio          GPIO to which the device is connected.
+	 * @param pud           Pull up/down configuration, values: NONE, PULL_UP,
+	 *                      PULL_DOWN.
+	 * @param trigger       Event trigger configuration, values: NONE, RISING,
+	 *                      FALLING, BOTH.
+	 * @throws RuntimeIOException If an I/O error occurs.
 	 */
 	public DigitalInputDevice(GpioDeviceFactoryInterface deviceFactory, int gpio, GpioPullUpDown pud,
 			GpioEventTrigger trigger) throws RuntimeIOException {
-		super(gpio, pud != GpioPullUpDown.PULL_UP);
+		this(deviceFactory, deviceFactory.getBoardPinInfo().getByGpioNumber(gpio), pud, trigger);
+	}
 
-		this.device = deviceFactory.provisionDigitalInputDevice(gpio, pud, trigger);
+	/**
+	 * @param deviceFactory Device factory to use to provision this digital input
+	 *                      device.
+	 * @param pinInfo       Information about the GPIO pin to which the device is connected.
+	 * @param pud           Pull up/down configuration, values: NONE, PULL_UP,
+	 *                      PULL_DOWN.
+	 * @param trigger       Event trigger configuration, values: NONE, RISING,
+	 *                      FALLING, BOTH.
+	 * @throws RuntimeIOException If an I/O error occurs.
+	 */
+	public DigitalInputDevice(GpioDeviceFactoryInterface deviceFactory, PinInfo pinInfo, GpioPullUpDown pud,
+			GpioEventTrigger trigger) throws RuntimeIOException {
+		super(pinInfo.getDeviceNumber(), pud != GpioPullUpDown.PULL_UP);
+
+		this.device = deviceFactory.provisionDigitalInputDevice(pinInfo, pud, trigger);
 		this.pud = pud;
 		this.trigger = trigger;
 	}
@@ -118,12 +124,11 @@ public class DigitalInputDevice extends AbstractDigitalInputDevice {
 	}
 
 	/**
-	 * Read the current underlying state of the input pin. Does not factor in
-	 * active high logic.
+	 * Read the current underlying state of the input pin. Does not factor in active
+	 * high logic.
 	 * 
 	 * @return Device state.
-	 * @throws RuntimeIOException
-	 *             If an I/O error occurred.
+	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
 	@Override
 	public boolean getValue() throws RuntimeIOException {
@@ -131,24 +136,22 @@ public class DigitalInputDevice extends AbstractDigitalInputDevice {
 	}
 
 	/**
-	 * Read the current on/off state for this device taking into account the
-	 * pull up / down configuration. If the input is pulled up
-	 * {@code isActive()} will return {@code true} when when the value is
-	 * {@code false}.
+	 * Read the current on/off state for this device taking into account the pull up
+	 * / down configuration. If the input is pulled up {@code isActive()} will
+	 * return {@code true} when when the value is {@code false}.
 	 * 
 	 * @return Device active state.
-	 * @throws RuntimeIOException
-	 *             If an I/O error occurred.
+	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
 	public boolean isActive() throws RuntimeIOException {
 		return device.getValue() == activeHigh;
 	}
-	
+
 	@Override
 	protected void setListener() {
 		device.setListener(this);
 	}
-	
+
 	@Override
 	protected void removeListener() {
 		device.removeListener();

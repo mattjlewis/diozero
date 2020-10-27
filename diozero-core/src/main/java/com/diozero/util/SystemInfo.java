@@ -31,7 +31,6 @@ package com.diozero.util;
  * #L%
  */
 
-
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
@@ -45,24 +44,29 @@ import org.tinylog.Logger;
 import com.diozero.api.PinInfo;
 
 /**
- * <p>Utility class for accessing information for the system the application is
- * executing on.</p>
- * <p>Note some boards are accessed remotely (e.g. Firmata protocol and pigpio sockets)
- * hence this information may differ to the actual device you are controlling.</p>
+ * <p>
+ * Utility class for accessing information for the system the application is
+ * executing on.
+ * </p>
+ * <p>
+ * Note some boards are accessed remotely (e.g. Firmata protocol and pigpio
+ * sockets) hence this information may differ to the actual device you are
+ * controlling.
+ * </p>
  */
 public class SystemInfo {
 	private static final String OS_RELEASE_FILE = "/etc/os-release";
 	private static final String CPUINFO_FILE = "/proc/cpuinfo";
 	private static final String MEMINFO_FILE = "/proc/meminfo";
-	
+
 	private static boolean initialised;
 	private static Properties osReleaseProperties;
 	private static String hardware;
 	private static String revision;
 	private static Integer memoryKb;
-	
+
 	private static synchronized void initialise() throws RuntimeIOException {
-		if (! initialised) {
+		if (!initialised) {
 			String os_name = System.getProperty("os.name");
 			if (!os_name.startsWith("Windows")) {
 				osReleaseProperties = new Properties();
@@ -71,7 +75,7 @@ public class SystemInfo {
 				} catch (IOException e) {
 					Logger.warn("Error loading properties file '{}': {}", OS_RELEASE_FILE, e);
 				}
-				
+
 				try {
 					Files.lines(Paths.get(CPUINFO_FILE)).forEach(line -> {
 						if (line.startsWith("Hardware")) {
@@ -83,7 +87,24 @@ public class SystemInfo {
 				} catch (IOException | NullPointerException | IndexOutOfBoundsException e) {
 					Logger.warn("Error reading '{}': {}", CPUINFO_FILE, e.getMessage());
 				}
-	
+				if (hardware == null) {
+					// arm64 doesn't have Hardware info in /proc/cpuinfo
+					try {
+						hardware = Files.lines(Paths.get("/proc/device-tree/model")).findFirst().map(s -> s.trim())
+								.orElse(null);
+					} catch (IOException e) {
+						// Ignore
+					}
+				}
+				if (revision == null) {
+					// arm64 doesn't have Revision info in /proc/cpuinfo
+					try {
+						revision = new String(Files.readAllBytes(Paths.get("/proc/device-tree/serial-number"))).trim();
+					} catch (IOException e) {
+						// Ignore
+					}
+				}
+
 				memoryKb = null;
 				try {
 					Files.lines(Paths.get(MEMINFO_FILE)).forEach(line -> {
@@ -98,10 +119,10 @@ public class SystemInfo {
 			initialised = true;
 		}
 	}
-	
+
 	/**
-	 * Returns information for the local device only. Note some providers work
-	 * over a remote connection - if you want information for the device you are
+	 * Returns information for the local device only. Note some providers work over
+	 * a remote connection - if you want information for the device you are
 	 * controlling please use:<br>
 	 * {@code DeviceFactoryHelper.getNativeDeviceFactory().getBoardInfo()}
 	 * 
@@ -111,63 +132,63 @@ public class SystemInfo {
 		initialise();
 		return lookupLocalBoardInfo(hardware, revision, memoryKb);
 	}
-	
+
 	static BoardInfo lookupLocalBoardInfo(String hardware, String revision, Integer memoryKb) {
 		BoardInfo bi = BoardInfoProvider.loadInstances().map(bip -> bip.lookup(hardware, revision, memoryKb))
 				.filter(Objects::nonNull).findFirst()
 				.orElseGet(() -> UnknownBoardInfo.get(hardware, revision, memoryKb));
 		bi.initialisePins();
-		
+
 		return bi;
 	}
 
 	public static String getOsReleaseProperty(String property) {
 		initialise();
-		
+
 		return osReleaseProperties.getProperty(property);
 	}
 
 	public static String getOperatingSystemId() {
 		initialise();
-		
+
 		return osReleaseProperties.getProperty("ID");
 	}
 
 	public static String getOperatingSystemVersion() {
 		initialise();
-		
+
 		return osReleaseProperties.getProperty("VERSION");
 	}
 
 	public static String getOperatingSystemVersionId() {
 		initialise();
-		
+
 		return osReleaseProperties.getProperty("VERSION_ID");
 	}
-	
+
 	public static void main(String[] args) {
 		initialise();
 		Logger.info(osReleaseProperties);
 		Logger.info(lookupLocalBoardInfo());
 	}
-	
+
 	public static final class UnknownBoardInfo extends BoardInfo {
 		private static final String UNKNOWN = "unknown";
-		
+
 		static BoardInfo get(String hardware, String revision, Integer memoryKb) {
-			Logger.warn("Failed to resolve board info for hardware '{}' and revision '{}'. Local O/S: {}",
-					hardware, revision, System.getProperty("os.name"));
+			Logger.warn("Failed to resolve board info for hardware '{}' and revision '{}'. Local O/S: {}", hardware,
+					revision, System.getProperty("os.name"));
 			return new UnknownBoardInfo();
 		}
-		
+
 		public UnknownBoardInfo() {
 			super(UNKNOWN, UNKNOWN, -1, System.getProperty("os.name").replace(" ", "").toLowerCase());
 		}
-		
+
 		@Override
 		public void initialisePins() {
 		}
-		
+
 		@Override
 		public PinInfo getByGpioNumber(int gpio) {
 			PinInfo pin_info = super.getByGpioNumber(gpio);
@@ -176,7 +197,7 @@ public class SystemInfo {
 			}
 			return pin_info;
 		}
-		
+
 		@Override
 		public PinInfo getByAdcNumber(int adcNumber) {
 			PinInfo pin_info = super.getByAdcNumber(adcNumber);
@@ -185,7 +206,7 @@ public class SystemInfo {
 			}
 			return pin_info;
 		}
-		
+
 		@Override
 		public PinInfo getByDacNumber(int dacNumber) {
 			PinInfo pin_info = super.getByDacNumber(dacNumber);

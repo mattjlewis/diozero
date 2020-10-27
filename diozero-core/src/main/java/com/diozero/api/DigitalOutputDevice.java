@@ -54,47 +54,51 @@ public class DigitalOutputDevice extends GpioDevice implements OutputDeviceInter
 	/**
 	 * Defaults to active high logic, initial value is off.
 	 * 
-	 * @param gpio
-	 *            GPIO to which the output device is connected.
-	 * @throws RuntimeIOException
-	 *             If an I/O error occurred.
+	 * @param gpio GPIO to which the output device is connected.
+	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
 	public DigitalOutputDevice(int gpio) throws RuntimeIOException {
 		this(gpio, true, false);
 	}
 
 	/**
-	 * @param gpio
-	 *            GPIO to which the output device is connected.
-	 * @param activeHigh
-	 *            If true then setting the value to true will turn on the
-	 *            connected device.
-	 * @param initialValue
-	 *            Initial output value.
-	 * @throws RuntimeIOException
-	 *             If an I/O error occurred.
+	 * @param gpio         GPIO to which the output device is connected.
+	 * @param activeHigh   If true then setting the value to true will turn on the
+	 *                     connected device.
+	 * @param initialValue Initial output value.
+	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
 	public DigitalOutputDevice(int gpio, boolean activeHigh, boolean initialValue) throws RuntimeIOException {
 		this(DeviceFactoryHelper.getNativeDeviceFactory(), gpio, activeHigh, initialValue);
 	}
 
 	/**
-	 * @param deviceFactory
-	 *            Device factory to use to construct the device.
-	 * @param gpio
-	 *            GPIO to which the output device is connected.
-	 * @param activeHigh
-	 *            If true then setting the value to true will turn on the
-	 *            connected device.
-	 * @param initialValue
-	 *            Initial output value.
-	 * @throws RuntimeIOException
-	 *             If an I/O error occurred.
+	 * @param deviceFactory Device factory to use to construct the device.
+	 * @param gpio          GPIO to which the output device is connected.
+	 * @param activeHigh    If true then setting the value to true will turn on the
+	 *                      connected device.
+	 * @param initialValue  Initial output value.
+	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
 	public DigitalOutputDevice(GpioDeviceFactoryInterface deviceFactory, int gpio, boolean activeHigh,
 			boolean initialValue) throws RuntimeIOException {
-		super(gpio);
-		this.device = deviceFactory.provisionDigitalOutputDevice(gpio, activeHigh & initialValue);
+		this(deviceFactory, deviceFactory.getBoardPinInfo().getByGpioNumber(gpio), activeHigh, initialValue);
+	}
+
+	/**
+	 * @param deviceFactory Device factory to use to construct the device.
+	 * @param pinInfo       Information about the GPIO pin to which the output device is
+	 *                      connected.
+	 * @param activeHigh    If true then setting the value to true will turn on the
+	 *                      connected device.
+	 * @param initialValue  Initial output value.
+	 * @throws RuntimeIOException If an I/O error occurred.
+	 */
+	public DigitalOutputDevice(GpioDeviceFactoryInterface deviceFactory, PinInfo pinInfo, boolean activeHigh,
+			boolean initialValue) throws RuntimeIOException {
+		super(pinInfo.getDeviceNumber());
+
+		this.device = deviceFactory.provisionDigitalOutputDevice(pinInfo, activeHigh & initialValue);
 		this.activeHigh = activeHigh;
 	}
 
@@ -145,8 +149,7 @@ public class DigitalOutputDevice extends GpioDevice implements OutputDeviceInter
 	/**
 	 * Turn on the device.
 	 * 
-	 * @throws RuntimeIOException
-	 *             If an I/O error occurred.
+	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
 	public void on() throws RuntimeIOException {
 		stopOnOffLoop();
@@ -156,8 +159,7 @@ public class DigitalOutputDevice extends GpioDevice implements OutputDeviceInter
 	/**
 	 * Turn off the device.
 	 * 
-	 * @throws RuntimeIOException
-	 *             If an I/O error occurred.
+	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
 	public void off() throws RuntimeIOException {
 		stopOnOffLoop();
@@ -167,8 +169,7 @@ public class DigitalOutputDevice extends GpioDevice implements OutputDeviceInter
 	/**
 	 * Toggle the state of the device.
 	 * 
-	 * @throws RuntimeIOException
-	 *             If an I/O error occurred.
+	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
 	public void toggle() throws RuntimeIOException {
 		stopOnOffLoop();
@@ -179,8 +180,7 @@ public class DigitalOutputDevice extends GpioDevice implements OutputDeviceInter
 	 * Get the device on / off status.
 	 * 
 	 * @return Returns true if the device is currently on.
-	 * @throws RuntimeIOException
-	 *             If an I/O error occurred.
+	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
 	public boolean isOn() throws RuntimeIOException {
 		return activeHigh == device.getValue();
@@ -189,10 +189,8 @@ public class DigitalOutputDevice extends GpioDevice implements OutputDeviceInter
 	/**
 	 * Turn the device on or off.
 	 * 
-	 * @param on
-	 *            New on/off value.
-	 * @throws RuntimeIOException
-	 *             If an I/O error occurred.
+	 * @param on New on/off value.
+	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
 	public void setOn(boolean on) throws RuntimeIOException {
 		stopOnOffLoop();
@@ -203,15 +201,13 @@ public class DigitalOutputDevice extends GpioDevice implements OutputDeviceInter
 	 * Unsafe operation that has no synchronisation checks and doesn't compensate
 	 * for active low logic. Included primarily for performance tests.
 	 * 
-	 * @param value
-	 *            The new value
-	 * @throws RuntimeIOException
-	 *             If an I/O error occurs
+	 * @param value The new value
+	 * @throws RuntimeIOException If an I/O error occurs
 	 */
 	public void setValueUnsafe(boolean value) throws RuntimeIOException {
 		device.setValue(value);
 	}
-	
+
 	@Override
 	public void setValue(float value) {
 		setValueUnsafe(value != 0);
@@ -220,22 +216,17 @@ public class DigitalOutputDevice extends GpioDevice implements OutputDeviceInter
 	/**
 	 * Toggle the device on-off.
 	 * 
-	 * @param onTime
-	 *            On time in seconds.
-	 * @param offTime
-	 *            Off time in seconds.
-	 * @param n
-	 *            Number of iterations. Set to &lt;0 to blink indefinitely.
-	 * @param background
-	 *            If true start a background thread to control the blink and
-	 *            return immediately. If false, only return once the blink
-	 *            iterations have finished.
-	 * @param stopAction
-	 *            Action to perform when the loop finishes
-	 * @throws RuntimeIOException
-	 *            If an I/O error occurs
+	 * @param onTime     On time in seconds.
+	 * @param offTime    Off time in seconds.
+	 * @param n          Number of iterations. Set to &lt;0 to blink indefinitely.
+	 * @param background If true start a background thread to control the blink and
+	 *                   return immediately. If false, only return once the blink
+	 *                   iterations have finished.
+	 * @param stopAction Action to perform when the loop finishes
+	 * @throws RuntimeIOException If an I/O error occurs
 	 */
-	public void onOffLoop(float onTime, float offTime, int n, boolean background, Action stopAction) throws RuntimeIOException {
+	public void onOffLoop(float onTime, float offTime, int n, boolean background, Action stopAction)
+			throws RuntimeIOException {
 		stopOnOffLoop();
 		if (background) {
 			DioZeroScheduler.getDaemonInstance().execute(() -> onOffLoop(onTime, offTime, n, stopAction));

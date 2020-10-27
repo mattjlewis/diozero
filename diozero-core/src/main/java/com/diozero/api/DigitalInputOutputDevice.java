@@ -43,32 +43,39 @@ public class DigitalInputOutputDevice extends AbstractDigitalInputDevice {
 	private DeviceMode mode;
 
 	/**
-	 * @param gpio
-	 *            GPIO to which the device is connected.
-	 * @param mode
-	 *            Input or output {@link com.diozero.api.DeviceMode Mode}
-	 * @throws RuntimeIOException
-	 *             If an I/O error occurs.
+	 * @param gpio GPIO to which the device is connected.
+	 * @param mode Input or output {@link com.diozero.api.DeviceMode Mode}
+	 * @throws RuntimeIOException If an I/O error occurs.
 	 */
 	public DigitalInputOutputDevice(int gpio, DeviceMode mode) throws RuntimeIOException {
 		this(DeviceFactoryHelper.getNativeDeviceFactory(), gpio, mode);
 	}
 
 	/**
-	 * @param deviceFactory
-	 *            Device factory to use to provision this digital input device.
-	 * @param gpio
-	 *            GPIO to which the device is connected.
-	 * @param mode
-	 *            Input or output {@link com.diozero.api.DeviceMode Mode}
-	 * @throws RuntimeIOException
-	 *             If an I/O error occurs.
+	 * @param deviceFactory Device factory to use to provision this digital input
+	 *                      device.
+	 * @param gpio          GPIO to which the device is connected.
+	 * @param mode          Input or output {@link com.diozero.api.DeviceMode Mode}
+	 * @throws RuntimeIOException If an I/O error occurs.
 	 */
-	public DigitalInputOutputDevice(GpioDeviceFactoryInterface deviceFactory, int gpio,
-			DeviceMode mode) throws RuntimeIOException {
-		super(gpio, false);
-		
-		this.device = deviceFactory.provisionDigitalInputOutputDevice(gpio, mode);
+	public DigitalInputOutputDevice(GpioDeviceFactoryInterface deviceFactory, int gpio, DeviceMode mode)
+			throws RuntimeIOException {
+		this(deviceFactory, deviceFactory.getBoardPinInfo().getByGpioNumber(gpio), mode);
+	}
+
+	/**
+	 * @param deviceFactory Device factory to use to provision this digital input
+	 *                      device.
+	 * @param pinInfo       Information about the GPIO pin to which the device is
+	 *                      connected.
+	 * @param mode          Input or output {@link com.diozero.api.DeviceMode Mode}
+	 * @throws RuntimeIOException If an I/O error occurs.
+	 */
+	public DigitalInputOutputDevice(GpioDeviceFactoryInterface deviceFactory, PinInfo pinInfo, DeviceMode mode)
+			throws RuntimeIOException {
+		super(pinInfo.getDeviceNumber(), false);
+
+		this.device = deviceFactory.provisionDigitalInputOutputDevice(pinInfo, mode);
 		this.mode = mode;
 	}
 
@@ -77,18 +84,22 @@ public class DigitalInputOutputDevice extends AbstractDigitalInputDevice {
 		Logger.trace("close()");
 		device.close();
 	}
-	
+
 	/**
 	 * Get the input / output mode
+	 * 
 	 * @return current mode
 	 */
 	public DeviceMode getMode() {
 		return mode;
 	}
-	
+
 	/**
 	 * Set the input / output mode
-	 * @param mode new mode, valid values are {@link com.diozero.api.DeviceMode DIGITAL_INPUT} and {@link com.diozero.api.DeviceMode DIGITAL_OUTPUT}
+	 * 
+	 * @param mode new mode, valid values are {@link com.diozero.api.DeviceMode
+	 *             DIGITAL_INPUT} and {@link com.diozero.api.DeviceMode
+	 *             DIGITAL_OUTPUT}
 	 */
 	public void setMode(DeviceMode mode) {
 		if (mode == this.mode) {
@@ -97,18 +108,17 @@ public class DigitalInputOutputDevice extends AbstractDigitalInputDevice {
 		if (mode != DeviceMode.DIGITAL_INPUT && mode != DeviceMode.DIGITAL_OUTPUT) {
 			throw new InvalidModeException("Invalid mode value, must be DIGITAL_INPUT or DIGITAL_OUTPUT");
 		}
-		
+
 		device.setMode(mode);
 		this.mode = mode;
 	}
 
 	/**
-	 * Read the current underlying state of the input pin. Does not factor in
-	 * active high logic.
+	 * Read the current underlying state of the input pin. Does not factor in active
+	 * high logic.
 	 * 
 	 * @return Device state.
-	 * @throws RuntimeIOException
-	 *             If an I/O error occurred.
+	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
 	@Override
 	public boolean getValue() throws RuntimeIOException {
@@ -118,10 +128,8 @@ public class DigitalInputOutputDevice extends AbstractDigitalInputDevice {
 	/**
 	 * Set the output value (if mode.
 	 * 
-	 * @param value
-	 *            The new value
-	 * @throws RuntimeIOException
-	 *             If an I/O error occurs
+	 * @param value The new value
+	 * @throws RuntimeIOException If an I/O error occurs
 	 */
 	public void setValue(boolean value) throws RuntimeIOException {
 		if (mode != DeviceMode.DIGITAL_OUTPUT) {

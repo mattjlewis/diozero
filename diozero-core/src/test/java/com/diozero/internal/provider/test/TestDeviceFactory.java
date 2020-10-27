@@ -231,7 +231,7 @@ public class TestDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	public SerialDeviceInterface createSerialDevice(String key, String deviceName, int baud,
+	public SerialDeviceInterface createSerialDevice(String key, String deviceFile, int baud,
 			SerialDevice.DataBits dataBits, SerialDevice.StopBits stopBits, SerialDevice.Parity parity,
 			boolean readBlocking, int minReadChars, int readTimeoutMillis) throws RuntimeIOException {
 		if (serialDeviceClass == null) {
@@ -243,7 +243,7 @@ public class TestDeviceFactory extends BaseNativeDeviceFactory {
 					.getConstructor(String.class, DeviceFactoryInterface.class, String.class, int.class,
 							SerialDevice.DataBits.class, SerialDevice.StopBits.class, SerialDevice.Parity.class,
 							boolean.class, int.class, int.class)
-					.newInstance(key, this, deviceName, Integer.valueOf(baud), dataBits, stopBits, parity);
+					.newInstance(key, this, deviceFile, Integer.valueOf(baud), dataBits, stopBits, parity);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}

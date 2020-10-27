@@ -36,8 +36,8 @@ public class SerialReadBytes extends SerialBase {
 	
 	private int length;
 
-	public SerialReadBytes(String deviceName, int length, String correlationId) {
-		super(deviceName, correlationId);
+	public SerialReadBytes(String deviceFile, int length, String correlationId) {
+		super(deviceFile, correlationId);
 		
 		this.length = length;
 	}

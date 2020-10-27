@@ -70,6 +70,7 @@ public class BeagleBoneBoardInfoProvider implements BoardInfoProvider {
 		
 		@Override
 		public void initialisePins() {
+			// FIXME Externalise this to a file
 			addGpioPinInfo(P9_HEADER, 60, 12, PinInfo.DIGITAL_IN_OUT);
 			addGpioPinInfo(P9_HEADER, 48, 15, PinInfo.DIGITAL_IN_OUT);
 			addGpioPinInfo(P9_HEADER, 49, 23, PinInfo.DIGITAL_IN_OUT);

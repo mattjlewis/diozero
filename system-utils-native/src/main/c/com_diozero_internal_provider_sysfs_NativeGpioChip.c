@@ -99,7 +99,6 @@ JNIEXPORT jobject JNICALL Java_com_diozero_internal_provider_sysfs_NativeGpioChi
 		perror("Error getting chip info");
 		return NULL;
 	}
-	fprintf(stdout, "GPIO chip: %s, \"%s\", %u GPIO lines\n", cinfo.name, cinfo.label, cinfo.lines);
 
 	// Loop over the lines
 	jobjectArray lines = (*env)->NewObjectArray(env, cinfo.lines, gpioLineClassRef, NULL);
@@ -183,9 +182,9 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeGpioChip_p
 }
 
 JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeGpioChip_getValue(
-		JNIEnv* env, jclass clz, jint chipFd, jint gpioOffset) {
+		JNIEnv* env, jclass clz, jint lineFd) {
 	struct gpiohandle_data data;
-	if (ioctl(chipFd, GPIOHANDLE_GET_LINE_VALUES_IOCTL, &data) < 0) {
+	if (ioctl(lineFd, GPIOHANDLE_GET_LINE_VALUES_IOCTL, &data) < 0) {
 		perror("Error setting GPIO values");
 		return -errno;
 	}
@@ -194,12 +193,12 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeGpioChip_g
 }
 
 JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeGpioChip_setValue(
-		JNIEnv* env, jclass clz, jint chipFd, jint gpioOffset, jint value) {
+		JNIEnv* env, jclass clz, jint lineFd, jint value) {
 	struct gpiohandle_data data;
 	memset(&data, 0, sizeof(data));
 
 	data.values[0] = value;
-	if (ioctl(chipFd, GPIOHANDLE_SET_LINE_VALUES_IOCTL, &data) < 0) {
+	if (ioctl(lineFd, GPIOHANDLE_SET_LINE_VALUES_IOCTL, &data) < 0) {
 		perror("Error setting GPIO value");
 		return -errno;
 	}
@@ -214,12 +213,12 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeGpioChip_e
 }
 
 JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeGpioChip_epollAddFileDescriptor(
-		JNIEnv* env, jclass clz, jint epollFd, jint fd) {
+		JNIEnv* env, jclass clz, jint epollFd, jint lineFd) {
 	struct epoll_event ev;
 	ev.events = EPOLLIN | EPOLLPRI | EPOLLET;
-	ev.data.fd = fd;
+	ev.data.fd = lineFd;
 
-	int rc = epoll_ctl(epollFd, EPOLL_CTL_ADD, fd, &ev);
+	int rc = epoll_ctl(epollFd, EPOLL_CTL_ADD, lineFd, &ev);
 	if (rc < 0) {
 		perror("Error in epoll_ctl EPOLL_CTL_ADD");
 		return -errno;
@@ -229,8 +228,8 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeGpioChip_e
 }
 
 JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_sysfs_NativeGpioChip_epollRemoveFileDescriptor(
-		JNIEnv* env, jclass clz, jint epollFd, jint fd) {
-	int rc = epoll_ctl(epollFd, EPOLL_CTL_DEL, fd, NULL);
+		JNIEnv* env, jclass clz, jint epollFd, jint lineFd) {
+	int rc = epoll_ctl(epollFd, EPOLL_CTL_DEL, lineFd, NULL);
 	if (rc < 0) {
 		perror("Error in epoll_ctl EPOLL_CTL_DEL");
 		return -errno;
@@ -268,7 +267,7 @@ JNIEXPORT void JNICALL Java_com_diozero_internal_provider_sysfs_NativeGpioChip_e
 		int i;
 		for (i=0; i<num_fds; i++) {
 			if (epoll_events[i].events & (EPOLLRDHUP | EPOLLERR | EPOLLHUP)) {
-				fprintf(stderr, "epoll events indicates that fd %d should be removed\n",
+				fprintf(stderr, "TODO: epoll events indicates that fd %d should be removed\n",
 						epoll_events[i].data.fd	);
 				continue;
 			}
@@ -280,7 +279,7 @@ JNIEXPORT void JNICALL Java_com_diozero_internal_provider_sysfs_NativeGpioChip_e
 				}
 
 				// https://github.com/torvalds/linux/blob/v5.4/include/uapi/linux/gpio.h#L140
-				// id: either GPIOEVENT_EVENT_RISING_EDGE or GPIOEVENT_EVENT_FALLING_EDGE
+				// evdata.id: either GPIOEVENT_EVENT_RISING_EDGE or GPIOEVENT_EVENT_FALLING_EDGE
 				// timestamp: best estimate of time of event occurrence, in nanoseconds
 				(*env)->CallVoidMethod(env, callback, gpioLineEventListenerMethod,
 						epoll_events[i].data.fd, evdata.id, evdata.timestamp);

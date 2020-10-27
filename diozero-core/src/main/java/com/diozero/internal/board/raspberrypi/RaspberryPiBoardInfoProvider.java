@@ -31,7 +31,6 @@ package com.diozero.internal.board.raspberrypi;
  * #L%
  */
 
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -43,29 +42,32 @@ import com.diozero.util.BoardInfo;
 import com.diozero.util.BoardInfoProvider;
 
 /**
- * See <a href="https://github.com/AndrewFromMelbourne/raspberry_pi_revision">this c library</a>.
- * See also <a href="http://elinux.org/RPi_HardwareHistory">this table of revisions</a>.
+ * See
+ * <a href="https://github.com/AndrewFromMelbourne/raspberry_pi_revision">this c
+ * library</a>. See also <a href="http://elinux.org/RPi_HardwareHistory">this
+ * table of revisions</a>.
  */
 public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
-	public static final String MAKE = "RaspberryPi";
+	public static final String MAKE = "Raspberry Pi";
+	private static final String LIBRARY_PATH = "raspberrypi";
 	private static final String BCM_HARDWARE_PREFIX = "BCM";
-	
+
 	public static final String MODEL_A = "A";
 	public static final String MODEL_B = "B";
 	public static final String MODEL_A_PLUS = "A+";
 	public static final String MODEL_B_PLUS = "B+";
-	public static final String MODEL_2B = "2B";
+	public static final String MODEL_2B = "2 Model B";
 	public static final String MODEL_ALPHA = "Alpha";
 	public static final String COMPUTE_MODULE = "CM";
-	public static final String MODEL_3B = "3B";
-	public static final String MODEL_3B_PLUS = "3B+";
-	public static final String MODEL_3A_PLUS = "3A+";
-	public static final String MODEL_4B = "4B";
+	public static final String MODEL_3B = "3 Model B";
+	public static final String MODEL_3B_PLUS = "3 Model B+";
+	public static final String MODEL_3A_PLUS = "3 Model A+";
+	public static final String MODEL_4B = "4 Model B";
 	public static final String MODEL_ZERO = "Zero";
 	public static final String COMPUTE_MODULE_3 = "CM3";
 	public static final String COMPUTE_MODULE_3_PLUS = "CM3+";
 	public static final String MODEL_ZERO_W = "ZeroW";
-	
+
 	private static Map<Integer, String> MODELS;
 	static {
 		MODELS = new HashMap<>();
@@ -85,12 +87,12 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 		MODELS.put(Integer.valueOf(16), COMPUTE_MODULE_3_PLUS);
 		MODELS.put(Integer.valueOf(17), MODEL_4B);
 	}
-	
+
 	private static final String PCB_REV_1_0 = "1.0";
 	private static final String PCB_REV_1_1 = "1.1";
 	private static final String PCB_REV_1_2 = "1.2";
 	private static final String PCB_REV_2_0 = "2.0";
-	
+
 	private static Map<Integer, Integer> MEMORY;
 	static {
 		MEMORY = new HashMap<>();
@@ -101,7 +103,7 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 		MEMORY.put(Integer.valueOf(4), Integer.valueOf(4096));
 		MEMORY.put(Integer.valueOf(5), Integer.valueOf(8192));
 	}
-	
+
 	private static final String SONY = "Sony";
 	private static final String EGOMAN = "Egoman";
 	private static final String EMBEST = "Embest";
@@ -120,7 +122,7 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 		MANUFACTURERS.put(Integer.valueOf(5), STADIUM);
 		MANUFACTURERS.put(Integer.valueOf(99), QISDA);
 	}
-	
+
 	private static final String BCM2835 = "BCM2835";
 	private static final String BCM2836 = "BCM2836";
 	private static final String BCM2837 = "BCM2837";
@@ -133,7 +135,7 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 		PROCESSORS.put(Integer.valueOf(2), BCM2837);
 		PROCESSORS.put(Integer.valueOf(3), BCM2711);
 	}
-	
+
 	private static Map<String, BoardInfo> PI_BOARDS;
 	static {
 		PI_BOARDS = new HashMap<>();
@@ -156,16 +158,16 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 		// Unknown as to whether this has 256MB or 512MB RAM
 		PI_BOARDS.put("0015", new PiABPlusBoardInfo("0015", MODEL_A_PLUS, PCB_REV_1_1, 256, EMBEST, BCM2835));
 	}
-	
+
 	@Override
 	public BoardInfo lookup(String hardware, String revision, Integer memoryKb) {
 		if (hardware == null || revision == null) {
 			return null;
 		}
-		if (! hardware.startsWith(BCM_HARDWARE_PREFIX) || revision.length() < 4) {
+		if (!hardware.startsWith(BCM_HARDWARE_PREFIX) || revision.length() < 4) {
 			return null;
 		}
-		
+
 		try {
 			int rev_int = Integer.parseInt(revision, 16);
 			// With the release of the Raspberry Pi 2, there is a new encoding of the
@@ -190,40 +192,46 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 				int proc = (rev_int & (0x0F << 12)) >> 12;
 				int mfr = (rev_int & (0x0F << 16)) >> 16;
 				int mem = (rev_int & (0x07 << 20)) >> 20;
-				//boolean warranty_void = (revision & (0x03 << 24)) != 0;
-				
+				// boolean warranty_void = (revision & (0x03 << 24)) != 0;
+
 				String model_val = MODELS.get(Integer.valueOf(model));
 				if (model_val == null) {
 					Logger.warn("Unknown Pi model: " + model);
 					model_val = "UNKNOWN-" + model;
 				}
+
 				String proc_val = PROCESSORS.get(Integer.valueOf(proc));
 				if (proc_val == null) {
 					Logger.warn("Unknown Pi processor: " + proc);
 					proc_val = "UNKNOWN-" + proc;
 				}
+
 				String mfr_val = MANUFACTURERS.get(Integer.valueOf(mfr));
 				if (mfr_val == null) {
 					Logger.warn("Unknown Pi manufacturer: " + mfr);
 					mfr_val = "UNKNOWN-" + mfr;
 				}
+
 				Integer mem_val = MEMORY.get(Integer.valueOf(mem));
 				if (mem_val == null) {
 					Logger.warn("Unknown Pi memory value: " + mem);
 					mem_val = Integer.valueOf(0);
 				}
-				return new PiABPlusBoardInfo(revision, model_val, pcb_revision,
-						mem_val.intValue(), mfr_val, proc_val);
+
+				return new PiABPlusBoardInfo(revision, model_val, pcb_revision, mem_val.intValue(), mfr_val, proc_val);
 			}
 		} catch (NumberFormatException nfe) {
 			// Ignore
 		}
-		
-		return PI_BOARDS.get(revision.substring(revision.length()-4));
+
+		return PI_BOARDS.get(revision.substring(revision.length() - 4));
 	}
-	
+
 	/**
-	 * <p>See <a href="https://pinout.xyz/">https://pinout.xyz/</a></p>
+	 * <p>
+	 * See <a href="https://pinout.xyz/">https://pinout.xyz/</a>
+	 * </p>
+	 * 
 	 * <pre>
 	 *  +-----+-----+---------+------+---+---Pi 2---+---+------+---------+-----+-----+
 	 *  | BCM | wPi |   Name  | Mode | V | Physical | V | Mode | Name    | wPi | BCM |
@@ -251,18 +259,18 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 	 *  +-----+-----+---------+------+---+----++----+---+------+---------+-----+-----+
 	 *  | BCM | wPi |   Name  | Mode | V | Physical | V | Mode | Name    | wPi | BCM |
 	 *  +-----+-----+---------+------+---+---Pi 2---+---+------+---------+-----+-----+
-	 *  </pre>
+	 * </pre>
 	 */
 	static abstract class PiBoardInfo extends BoardInfo {
 		private String code;
 		private String pcbRevision;
 		private String manufacturer;
 		private String processor;
-		
-		public PiBoardInfo(String code, String model, String pcbRevision, int memory,
-				String manufacturer, String processor) {
-			super(MAKE, model, memory, MAKE.toLowerCase());
-			
+
+		public PiBoardInfo(String code, String model, String pcbRevision, int memory, String manufacturer,
+				String processor) {
+			super(MAKE, model, memory, LIBRARY_PATH);
+
 			this.code = code;
 			this.pcbRevision = pcbRevision;
 			this.manufacturer = manufacturer;
@@ -272,87 +280,88 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 		public String getRevision() {
 			return pcbRevision;
 		}
-	
+
 		public String getManufacturer() {
 			return manufacturer;
 		}
-	
+
 		public String getProcessor() {
 			return processor;
 		}
-		
+
 		@Override
 		public MmapGpioInterface createMmapGpio() {
 			return new RaspberryPiMmapGpio();
 		}
-	
+
 		@Override
 		public String toString() {
 			return "PiBoardInfo [" + super.toString() + ", code=" + code + ", pcbRevision=" + pcbRevision
 					+ ", manufacturer=" + manufacturer + ", processor=" + processor + "]";
 		}
 	}
-	
+
 	public static class PiBRev1BoardInfo extends PiBoardInfo {
 		public PiBRev1BoardInfo(String code, String pcbRevision, int memory, String manufacturer) {
 			super(code, MODEL_B, pcbRevision, memory, manufacturer, BCM2835);
 		}
-		
+
 		@Override
 		public void initialisePins() {
-			int pin = 1;
-			addGeneralPinInfo(pin++, PinInfo.VCC_3V3);
-			addGeneralPinInfo(pin++, PinInfo.VCC_5V);
-			addGpioPinInfo(0, pin++, PinInfo.DIGITAL_IN_OUT);	// I2C SDA
-			addGeneralPinInfo(pin++, PinInfo.VCC_5V);
-			addGpioPinInfo(1, pin++, PinInfo.DIGITAL_IN_OUT);	// I2C SCL
-			addGeneralPinInfo(pin++, PinInfo.GROUND);
-			addGpioPinInfo(4, pin++, PinInfo.DIGITAL_IN_OUT);
-			addGpioPinInfo(14, pin++, PinInfo.DIGITAL_IN_OUT);	// UART TXD
-			addGeneralPinInfo(pin++, PinInfo.GROUND);
-			addGpioPinInfo(15, pin++, PinInfo.DIGITAL_IN_OUT);	// UART RXD
-			addGpioPinInfo(17, pin++, PinInfo.DIGITAL_IN_OUT);
-			// TODO Try enabling sysfs PWM, see http://www.jumpnowtek.com/rpi/Using-the-Raspberry-Pi-Hardware-PWM-timers.html
-			//addPwmPinInfo(18, pin++, 0, PinInfo.DIGITAL_IN_OUT_PWM);
-			addGpioPinInfo(18, pin++, PinInfo.DIGITAL_IN_OUT);
-			addGpioPinInfo(21, pin++, PinInfo.DIGITAL_IN_OUT);
-			addGeneralPinInfo(pin++, PinInfo.GROUND);
-			addGpioPinInfo(22, pin++, PinInfo.DIGITAL_IN_OUT);
-			addGpioPinInfo(23, pin++, PinInfo.DIGITAL_IN_OUT);
-			addGeneralPinInfo(pin++, PinInfo.VCC_3V3);
-			addGpioPinInfo(24, pin++, PinInfo.DIGITAL_IN_OUT);
-			addGpioPinInfo(10, pin++, PinInfo.DIGITAL_IN_OUT);	// SPI MOSI
-			addGeneralPinInfo(pin++, PinInfo.GROUND);
-			addGpioPinInfo(9, pin++, PinInfo.DIGITAL_IN_OUT);	// SPI MISO
-			addGpioPinInfo(25, pin++, PinInfo.DIGITAL_IN_OUT);
-			addGpioPinInfo(11, pin++, PinInfo.DIGITAL_IN_OUT);	// SPI CLK
-			addGpioPinInfo(8, pin++, PinInfo.DIGITAL_IN_OUT);	// SPI CE0
-			addGeneralPinInfo(pin++, PinInfo.GROUND);
-			addGpioPinInfo(7, pin++, PinInfo.DIGITAL_IN_OUT);	// SPI CE1
+			addGeneralPinInfo(1, PinInfo.VCC_3V3);
+			addGeneralPinInfo(2, PinInfo.VCC_5V);
+			addGpioPinInfo(0, 3, PinInfo.DIGITAL_IN_OUT); // I2C SDA
+			addGeneralPinInfo(4, PinInfo.VCC_5V);
+			addGpioPinInfo(1, 5, PinInfo.DIGITAL_IN_OUT); // I2C SCL
+			addGeneralPinInfo(6, PinInfo.GROUND);
+			addGpioPinInfo(4, 7, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(14, 8, PinInfo.DIGITAL_IN_OUT); // UART TXD
+			addGeneralPinInfo(9, PinInfo.GROUND);
+			addGpioPinInfo(15, 10, PinInfo.DIGITAL_IN_OUT); // UART RXD
+			addGpioPinInfo(17, 11, PinInfo.DIGITAL_IN_OUT);
+			// TODO Try enabling sysfs PWM, see
+			// http://www.jumpnowtek.com/rpi/Using-the-Raspberry-Pi-Hardware-PWM-timers.html
+			// addPwmPinInfo(18, 12, 0, PinInfo.DIGITAL_IN_OUT_PWM);
+			addGpioPinInfo(18, 12, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(21, 13, PinInfo.DIGITAL_IN_OUT);
+			addGeneralPinInfo(14, PinInfo.GROUND);
+			addGpioPinInfo(22, 15, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(23, 16, PinInfo.DIGITAL_IN_OUT);
+			addGeneralPinInfo(17, PinInfo.VCC_3V3);
+			addGpioPinInfo(24, 18, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(10, 19, PinInfo.DIGITAL_IN_OUT); // SPI MOSI
+			addGeneralPinInfo(20, PinInfo.GROUND);
+			addGpioPinInfo(9, 21, PinInfo.DIGITAL_IN_OUT); // SPI MISO
+			addGpioPinInfo(25, 22, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(11, 23, PinInfo.DIGITAL_IN_OUT); // SPI CLK
+			addGpioPinInfo(8, 24, PinInfo.DIGITAL_IN_OUT); // SPI CE0
+			addGeneralPinInfo(25, PinInfo.GROUND);
+			addGpioPinInfo(7, 26, PinInfo.DIGITAL_IN_OUT); // SPI CE1
 		}
 	}
-	
+
 	public static class PiABRev2BoardInfo extends PiBoardInfo {
 		public PiABRev2BoardInfo(String code, String model, int memory, String manufacturer) {
 			super(code, model, PCB_REV_2_0, memory, manufacturer, BCM2835);
 		}
-		
+
 		@Override
 		public void initialisePins() {
 			int pin = 1;
 			addGeneralPinInfo(pin++, PinInfo.VCC_3V3);
 			addGeneralPinInfo(pin++, PinInfo.VCC_5V);
-			addGpioPinInfo(2, pin++, PinInfo.DIGITAL_IN_OUT);	// I2C SDA
+			addGpioPinInfo(2, pin++, PinInfo.DIGITAL_IN_OUT); // I2C SDA
 			addGeneralPinInfo(pin++, PinInfo.VCC_5V);
-			addGpioPinInfo(3, pin++, PinInfo.DIGITAL_IN_OUT);	// I2C SCL
+			addGpioPinInfo(3, pin++, PinInfo.DIGITAL_IN_OUT); // I2C SCL
 			addGeneralPinInfo(pin++, PinInfo.GROUND);
 			addGpioPinInfo(4, pin++, PinInfo.DIGITAL_IN_OUT);
-			addGpioPinInfo(14, pin++, PinInfo.DIGITAL_IN_OUT);	// UART TXD
+			addGpioPinInfo(14, pin++, PinInfo.DIGITAL_IN_OUT); // UART TXD
 			addGeneralPinInfo(pin++, PinInfo.GROUND);
-			addGpioPinInfo(15, pin++, PinInfo.DIGITAL_IN_OUT);	// UART RXD
+			addGpioPinInfo(15, pin++, PinInfo.DIGITAL_IN_OUT); // UART RXD
 			addGpioPinInfo(17, pin++, PinInfo.DIGITAL_IN_OUT);
-			// TODO Try enabling sysfs PWM, see http://www.jumpnowtek.com/rpi/Using-the-Raspberry-Pi-Hardware-PWM-timers.html
-			//addPwmPinInfo(18, pin++, 0, PinInfo.DIGITAL_IN_OUT_PWM);
+			// TODO Try enabling sysfs PWM, see
+			// http://www.jumpnowtek.com/rpi/Using-the-Raspberry-Pi-Hardware-PWM-timers.html
+			// addPwmPinInfo(18, pin++, 0, PinInfo.DIGITAL_IN_OUT_PWM);
 			addGpioPinInfo(18, pin++, PinInfo.DIGITAL_IN_OUT);
 			addGpioPinInfo(27, pin++, PinInfo.DIGITAL_IN_OUT);
 			addGeneralPinInfo(pin++, PinInfo.GROUND);
@@ -360,92 +369,101 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 			addGpioPinInfo(23, pin++, PinInfo.DIGITAL_IN_OUT);
 			addGeneralPinInfo(pin++, PinInfo.VCC_3V3);
 			addGpioPinInfo(24, pin++, PinInfo.DIGITAL_IN_OUT);
-			addGpioPinInfo(10, pin++, PinInfo.DIGITAL_IN_OUT);	// SPI MOSI
+			addGpioPinInfo(10, pin++, PinInfo.DIGITAL_IN_OUT); // SPI MOSI
 			addGeneralPinInfo(pin++, PinInfo.GROUND);
-			addGpioPinInfo(9, pin++, PinInfo.DIGITAL_IN_OUT);	// SPI MISO
+			addGpioPinInfo(9, pin++, PinInfo.DIGITAL_IN_OUT); // SPI MISO
 			addGpioPinInfo(25, pin++, PinInfo.DIGITAL_IN_OUT);
-			addGpioPinInfo(11, pin++, PinInfo.DIGITAL_IN_OUT);	// SPI CLK
-			addGpioPinInfo(8, pin++, PinInfo.DIGITAL_IN_OUT);	// SPI CE0
+			addGpioPinInfo(11, pin++, PinInfo.DIGITAL_IN_OUT); // SPI CLK
+			addGpioPinInfo(8, pin++, PinInfo.DIGITAL_IN_OUT); // SPI CE0
 			addGeneralPinInfo(pin++, PinInfo.GROUND);
-			addGpioPinInfo(7, pin++, PinInfo.DIGITAL_IN_OUT);	// SPI CE1
+			addGpioPinInfo(7, pin++, PinInfo.DIGITAL_IN_OUT); // SPI CE1
 		}
 	}
-	
+
 	public static class PiABPlusBoardInfo extends PiBoardInfo {
 		public static final String P5_HEADER = "P5";
-		
-		public PiABPlusBoardInfo(String code, String model, String pcbRevision, int memory, String manufacturer, String processor) {
+
+		public PiABPlusBoardInfo(String code, String model, String pcbRevision, int memory, String manufacturer,
+				String processor) {
 			super(code, model, pcbRevision, memory, manufacturer, processor);
 		}
-		
+
 		@Override
 		public void initialisePins() {
-			int pin = 1;
-			addGeneralPinInfo(pin++, PinInfo.VCC_3V3);
-			addGeneralPinInfo(pin++, PinInfo.VCC_5V);
-			addGpioPinInfo(2, pin++, PinInfo.DIGITAL_IN_OUT);					// I2C-SDA
-			addGeneralPinInfo(pin++, PinInfo.VCC_5V);
-			addGpioPinInfo(3, pin++, PinInfo.DIGITAL_IN_OUT);					// I2C-SCL
-			addGeneralPinInfo(pin++, PinInfo.GROUND);
-			addGpioPinInfo(4, pin++, PinInfo.DIGITAL_IN_OUT);					// GPCLK0
-			addGpioPinInfo(14, pin++, PinInfo.DIGITAL_IN_OUT);					// UART-TXD
-			addGeneralPinInfo(pin++, PinInfo.GROUND);
-			addGpioPinInfo(15, pin++, PinInfo.DIGITAL_IN_OUT);					// UART-RXD
-			addGpioPinInfo(17, pin++, PinInfo.DIGITAL_IN_OUT);					// Alt4 = SPI1-CE1
-			// TODO Try enabling sysfs PWM, see http://www.jumpnowtek.com/rpi/Using-the-Raspberry-Pi-Hardware-PWM-timers.html
-			//addPwmPinInfo(18, pin++, 0, PinInfo.DIGITAL_IN_OUT_PWM);
-			addGpioPinInfo(18, pin++, PinInfo.DIGITAL_IN_OUT);					// Alt0 = PCM-CLK, Alt4 = SPI1-CE0, Alt5 = PWM0
-			addGpioPinInfo(27, pin++, PinInfo.DIGITAL_IN_OUT);
-			addGeneralPinInfo(pin++, PinInfo.GROUND);
-			addGpioPinInfo(22, pin++, PinInfo.DIGITAL_IN_OUT);
-			addGpioPinInfo(23, pin++, PinInfo.DIGITAL_IN_OUT);
-			addGeneralPinInfo(pin++, PinInfo.VCC_3V3);
-			addGpioPinInfo(24, pin++, PinInfo.DIGITAL_IN_OUT);
-			addGpioPinInfo(10, pin++, PinInfo.DIGITAL_IN_OUT);					// SPI0-MOSI
-			addGeneralPinInfo(pin++, PinInfo.GROUND);
-			addGpioPinInfo(9, pin++, PinInfo.DIGITAL_IN_OUT);					// SPI0-MISO
-			addGpioPinInfo(25, pin++, PinInfo.DIGITAL_IN_OUT);
-			addGpioPinInfo(11, pin++, PinInfo.DIGITAL_IN_OUT);					// SPI0-CLK
-			addGpioPinInfo(8, pin++, PinInfo.DIGITAL_IN_OUT);					// SPI0-CE0
-			addGeneralPinInfo(pin++, PinInfo.GROUND);
-			addGpioPinInfo(7, pin++, PinInfo.DIGITAL_IN_OUT);					// SPI0-CE1
-			addGeneralPinInfo(pin++, "BCM 0 (ID_SD)");
-			addGeneralPinInfo(pin++, "BCM 1 (ID_SC)");
-			addGpioPinInfo(5, pin++, PinInfo.DIGITAL_IN_OUT);
-			addGeneralPinInfo(pin++, PinInfo.GROUND);
-			addGpioPinInfo(6, pin++, PinInfo.DIGITAL_IN_OUT);
-			// TODO Try enabling sysfs PWM, see http://www.jumpnowtek.com/rpi/Using-the-Raspberry-Pi-Hardware-PWM-timers.html
-			//addPwmPinInfo(12, pin++, 0, PinInfo.DIGITAL_IN_OUT_PWM);
-			addGpioPinInfo(12, pin++, PinInfo.DIGITAL_IN_OUT);					// Alt0 = PWM0
-			// TODO Try enabling sysfs PWM, see http://www.jumpnowtek.com/rpi/Using-the-Raspberry-Pi-Hardware-PWM-timers.html
-			//addPwmPinInfo(13, pin++, 1, PinInfo.DIGITAL_IN_OUT_PWM);
-			addGpioPinInfo(13, pin++, PinInfo.DIGITAL_IN_OUT);					// Alt0 = PWM1
-			addGeneralPinInfo(pin++, PinInfo.GROUND);
-			// TODO Try enabling sysfs PWM, see http://www.jumpnowtek.com/rpi/Using-the-Raspberry-Pi-Hardware-PWM-timers.html
-			//addPwmPinInfo(19, pin++, 1, PinInfo.DIGITAL_IN_OUT_PWM);
-			addGpioPinInfo(19, pin++, PinInfo.DIGITAL_IN_OUT);					// Alt4 = SPI1-MISO, Alt5 = PWM1
-			addGpioPinInfo(16, pin++, PinInfo.DIGITAL_IN_OUT);					// Alt4 = SPI1-CE2
-			addGpioPinInfo(26, pin++, PinInfo.DIGITAL_IN_OUT);
-			addGpioPinInfo(20, pin++, PinInfo.DIGITAL_IN_OUT);					// Alt4 = SPI1-MOSI
-			addGeneralPinInfo(pin++, PinInfo.GROUND);
-			addGpioPinInfo(21, pin++, PinInfo.DIGITAL_IN_OUT);					// Alt4 = SPI1-SCLK
+			// FIXME Externalise this to a file
+
+			int chip = 0;
+			addGeneralPinInfo(1, PinInfo.VCC_3V3);
+			addGeneralPinInfo(2, PinInfo.VCC_5V);
+			addGpioPinInfo(2, "SDA1", 3, PinInfo.DIGITAL_IN_OUT, chip, 2); // I2C-SDA
+			addGeneralPinInfo(4, PinInfo.VCC_5V);
+			addGpioPinInfo(3, "SCL1", 5, PinInfo.DIGITAL_IN_OUT, chip, 3); // I2C-SCL
+			addGeneralPinInfo(6, PinInfo.GROUND);
+			addGpioPinInfo(4, "GPIO_GCLK", 7, PinInfo.DIGITAL_IN_OUT, chip, 4); // GPCLK0
+			addGpioPinInfo(14, 8, PinInfo.DIGITAL_IN_OUT); // UART-TXD
+			addGeneralPinInfo(9, PinInfo.GROUND);
+			addGpioPinInfo(15, 10, PinInfo.DIGITAL_IN_OUT); // UART-RXD
+			addGpioPinInfo(17, "GPIO17", 11, PinInfo.DIGITAL_IN_OUT, chip, 17); // Alt4 = SPI1-CE1
+			// TODO Try enabling sysfs PWM, see
+			// http://www.jumpnowtek.com/rpi/Using-the-Raspberry-Pi-Hardware-PWM-timers.html
+			// addPwmPinInfo(18, 12, 0, PinInfo.DIGITAL_IN_OUT_PWM);
+			addGpioPinInfo(18, "GPIO18", 12, PinInfo.DIGITAL_IN_OUT, chip, 18); // Alt0 = PCM-CLK, Alt4 = SPI1-CE0, Alt5
+																				// = PWM0
+			addGpioPinInfo(27, "GPIO27", 13, PinInfo.DIGITAL_IN_OUT, chip, 27);
+			addGeneralPinInfo(14, PinInfo.GROUND);
+			addGpioPinInfo(22, "GPIO22", 15, PinInfo.DIGITAL_IN_OUT, chip, 22);
+			addGpioPinInfo(23, "GPIO23", 16, PinInfo.DIGITAL_IN_OUT, chip, 23);
+			addGeneralPinInfo(17, PinInfo.VCC_3V3);
+			addGpioPinInfo(24, "GPIO24", 18, PinInfo.DIGITAL_IN_OUT, chip, 24);
+			addGpioPinInfo(10, "SPI_MOSI", 19, PinInfo.DIGITAL_IN_OUT, chip, 10);// SPI0-MOSI
+			addGeneralPinInfo(20, PinInfo.GROUND);
+			addGpioPinInfo(9, "SPI_MISO", 21, PinInfo.DIGITAL_IN_OUT, chip, 9); // SPI0-MISO
+			addGpioPinInfo(25, "GPIO25", 22, PinInfo.DIGITAL_IN_OUT, chip, 25);
+			addGpioPinInfo(11, "SPI_SCLK", 23, PinInfo.DIGITAL_IN_OUT, chip, 11);// SPI0-CLK
+			addGpioPinInfo(8, "SPI_CE0_N", 24, PinInfo.DIGITAL_IN_OUT, chip, 8); // SPI0-CE0
+			addGeneralPinInfo(25, PinInfo.GROUND);
+			addGpioPinInfo(7, "SPI_CE1_N", 26, PinInfo.DIGITAL_IN_OUT, chip, 7); // SPI0-CE1
+			addGeneralPinInfo(27, "ID_SDA", chip, 0);
+			addGeneralPinInfo(28, "ID_SCL", chip, 1);
+			addGpioPinInfo(5, "GPIO5", 29, PinInfo.DIGITAL_IN_OUT, chip, 5);
+			addGeneralPinInfo(30, PinInfo.GROUND);
+			addGpioPinInfo(6, "GPIO6", 31, PinInfo.DIGITAL_IN_OUT, chip, 6);
+			// TODO Try enabling sysfs PWM, see
+			// http://www.jumpnowtek.com/rpi/Using-the-Raspberry-Pi-Hardware-PWM-timers.html
+			// addPwmPinInfo(12, 32, 0, PinInfo.DIGITAL_IN_OUT_PWM);
+			addGpioPinInfo(12, "GPIO12", 32, PinInfo.DIGITAL_IN_OUT, chip, 12); // Alt0 = PWM0
+			// TODO Try enabling sysfs PWM, see
+			// http://www.jumpnowtek.com/rpi/Using-the-Raspberry-Pi-Hardware-PWM-timers.html
+			// addPwmPinInfo(13, 33, 1, PinInfo.DIGITAL_IN_OUT_PWM);
+			addGpioPinInfo(13, "GPIO13", 33, PinInfo.DIGITAL_IN_OUT, chip, 13); // Alt0 = PWM1
+			addGeneralPinInfo(34, PinInfo.GROUND);
+			// TODO Try enabling sysfs PWM, see
+			// http://www.jumpnowtek.com/rpi/Using-the-Raspberry-Pi-Hardware-PWM-timers.html
+			// addPwmPinInfo(19, 35, 1, PinInfo.DIGITAL_IN_OUT_PWM);
+			addGpioPinInfo(19, "GPIO19", 35, PinInfo.DIGITAL_IN_OUT, chip, 19); // Alt4 = SPI1-MISO, Alt5 = PWM1
+			addGpioPinInfo(16, "GPIO16", 36, PinInfo.DIGITAL_IN_OUT, chip, 16); // Alt4 = SPI1-CE2
+			addGpioPinInfo(26, "GPIO26", 37, PinInfo.DIGITAL_IN_OUT, chip, 26);
+			addGpioPinInfo(20, "GPIO20", 38, PinInfo.DIGITAL_IN_OUT, chip, 20); // Alt4 = SPI1-MOSI
+			addGeneralPinInfo(39, PinInfo.GROUND);
+			addGpioPinInfo(21, "GPIO21", 40, PinInfo.DIGITAL_IN_OUT, chip, 21); // Alt4 = SPI1-SCLK
+
 			// P5 Header
-			pin = 1;
-			addGpioPinInfo(P5_HEADER, 28, pin++, PinInfo.DIGITAL_IN_OUT);
-			addGpioPinInfo(P5_HEADER, 29, pin++, PinInfo.DIGITAL_IN_OUT);
-			addGpioPinInfo(P5_HEADER, 30, pin++, PinInfo.DIGITAL_IN_OUT);
-			addGpioPinInfo(P5_HEADER, 31, pin++, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(P5_HEADER, 28, 1, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(P5_HEADER, 29, 2, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(P5_HEADER, 30, 3, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(P5_HEADER, 31, 4, PinInfo.DIGITAL_IN_OUT);
 		}
 	}
-	
+
 	public static class PiComputeModuleBoardInfo extends PiBoardInfo {
 		public PiComputeModuleBoardInfo(String code, int memory, String manufacturer, String processor) {
 			super(code, COMPUTE_MODULE, PCB_REV_1_2, memory, manufacturer, processor);
 		}
-		
+
 		@Override
 		public void initialisePins() {
-			// See https://www.raspberrypi.org/documentation/hardware/computemodule/RPI-CM-DATASHEET-V1_0.pdf
+			// See
+			// https://www.raspberrypi.org/documentation/hardware/computemodule/RPI-CM-DATASHEET-V1_0.pdf
 			addGpioPinInfo(0, 3, PinInfo.DIGITAL_IN_OUT);
 			addGpioPinInfo(1, 5, PinInfo.DIGITAL_IN_OUT);
 			addGpioPinInfo(2, 9, PinInfo.DIGITAL_IN_OUT);
@@ -453,13 +471,13 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 			addGpioPinInfo(4, 15, PinInfo.DIGITAL_IN_OUT);
 			addGpioPinInfo(5, 17, PinInfo.DIGITAL_IN_OUT);
 			addGpioPinInfo(6, 21, PinInfo.DIGITAL_IN_OUT);
-			addGpioPinInfo(7, 23, PinInfo.DIGITAL_IN_OUT);			// SPI0-CE1
-			addGpioPinInfo(8, 27, PinInfo.DIGITAL_IN_OUT);			// SPI0-CE0
-			addGpioPinInfo(9, 29, PinInfo.DIGITAL_IN_OUT);			// SPI0-MISO
-			addGpioPinInfo(10, 33, PinInfo.DIGITAL_IN_OUT);			// SPI0-MOSI
-			addGpioPinInfo(11, 35, PinInfo.DIGITAL_IN_OUT);			// SPI0-SCLK
-			addPwmPinInfo(12, 45, 0, PinInfo.DIGITAL_IN_OUT_PWM);	// PWM0
-			addPwmPinInfo(13, 47, 1, PinInfo.DIGITAL_IN_OUT_PWM);	// PWM1
+			addGpioPinInfo(7, 23, PinInfo.DIGITAL_IN_OUT); // SPI0-CE1
+			addGpioPinInfo(8, 27, PinInfo.DIGITAL_IN_OUT); // SPI0-CE0
+			addGpioPinInfo(9, 29, PinInfo.DIGITAL_IN_OUT); // SPI0-MISO
+			addGpioPinInfo(10, 33, PinInfo.DIGITAL_IN_OUT); // SPI0-MOSI
+			addGpioPinInfo(11, 35, PinInfo.DIGITAL_IN_OUT); // SPI0-SCLK
+			addPwmPinInfo(12, 45, 0, PinInfo.DIGITAL_IN_OUT_PWM); // PWM0
+			addPwmPinInfo(13, 47, 1, PinInfo.DIGITAL_IN_OUT_PWM); // PWM1
 			// TODO Complete this (up to GPIO45)
 		}
 	}

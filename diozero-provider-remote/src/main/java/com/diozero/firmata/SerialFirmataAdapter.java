@@ -39,12 +39,12 @@ import com.diozero.internal.provider.sysfs.NativeSerialDevice;
 public class SerialFirmataAdapter extends FirmataAdapter {
 	private NativeSerialDevice device;
 
-	public SerialFirmataAdapter(FirmataEventListener eventListener, String deviceName, int baud,
+	public SerialFirmataAdapter(FirmataEventListener eventListener, String deviceFile, int baud,
 			SerialDevice.DataBits dataBits, SerialDevice.StopBits stopBits, SerialDevice.Parity parity,
 			boolean readBlocking, int minReadChars, int readTimeoutMillis) {
 		super(eventListener);
 
-		device = new NativeSerialDevice(deviceName, baud, dataBits, stopBits, parity, readBlocking, minReadChars,
+		device = new NativeSerialDevice(deviceFile, baud, dataBits, stopBits, parity, readBlocking, minReadChars,
 				readTimeoutMillis);
 	}
 

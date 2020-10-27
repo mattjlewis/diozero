@@ -441,7 +441,7 @@ public class PiconZero extends AbstractDeviceFactory implements GpioDeviceFactor
 	@Override
 	public GpioDigitalInputDeviceInterface createDigitalInputDevice(String key, PinInfo pinInfo, GpioPullUpDown pud,
 			GpioEventTrigger trigger) throws RuntimeIOException {
-		setInputConfig(pinInfo.getPinNumber(),
+		setInputConfig(pinInfo.getPhysicalPin(),
 				pud == GpioPullUpDown.PULL_UP ? InputConfig.DIGITAL_PULL_UP : InputConfig.DIGITAL);
 		return new PiconZeroDigitalInputDevice(this, key, pinInfo, pud, trigger);
 	}
@@ -449,8 +449,8 @@ public class PiconZero extends AbstractDeviceFactory implements GpioDeviceFactor
 	@Override
 	public GpioDigitalOutputDeviceInterface createDigitalOutputDevice(String key, PinInfo pinInfo, boolean initialValue)
 			throws RuntimeIOException {
-		setOutputConfig(pinInfo.getPinNumber(), OutputConfig.DIGITAL);
-		return new PiconZeroDigitalOutputDevice(this, key, pinInfo.getDeviceNumber(), pinInfo.getPinNumber(),
+		setOutputConfig(pinInfo.getPhysicalPin(), OutputConfig.DIGITAL);
+		return new PiconZeroDigitalOutputDevice(this, key, pinInfo.getDeviceNumber(), pinInfo.getPhysicalPin(),
 				initialValue);
 	}
 
@@ -463,13 +463,13 @@ public class PiconZero extends AbstractDeviceFactory implements GpioDeviceFactor
 	@Override
 	public PwmOutputDeviceInterface createPwmOutputDevice(String key, PinInfo pinInfo, int pwmFrequency,
 			float initialValue) throws RuntimeIOException {
-		setOutputConfig(pinInfo.getPinNumber(), OutputConfig.PWM);
-		return new PiconZeroPwmOutputDevice(this, key, pinInfo.getDeviceNumber(), pinInfo.getPinNumber(), initialValue);
+		setOutputConfig(pinInfo.getPhysicalPin(), OutputConfig.PWM);
+		return new PiconZeroPwmOutputDevice(this, key, pinInfo.getDeviceNumber(), pinInfo.getPhysicalPin(), initialValue);
 	}
 
 	@Override
 	public AnalogInputDeviceInterface createAnalogInputDevice(String key, PinInfo pinInfo) {
-		setInputConfig(pinInfo.getPinNumber(), InputConfig.ANALOG);
+		setInputConfig(pinInfo.getPhysicalPin(), InputConfig.ANALOG);
 
 		return new PiconZeroAnalogInputDevice(this, key, pinInfo);
 	}
@@ -477,7 +477,7 @@ public class PiconZero extends AbstractDeviceFactory implements GpioDeviceFactor
 	@Override
 	public AnalogOutputDeviceInterface createAnalogOutputDevice(String key, PinInfo pinInfo, float initialValue)
 			throws RuntimeIOException {
-		return new PiconZeroAnalogOutputDevice(this, key, pinInfo.getDeviceNumber(), pinInfo.getPinNumber(),
+		return new PiconZeroAnalogOutputDevice(this, key, pinInfo.getDeviceNumber(), pinInfo.getPhysicalPin(),
 				initialValue);
 	}
 
@@ -569,7 +569,7 @@ public class PiconZero extends AbstractDeviceFactory implements GpioDeviceFactor
 		}
 
 		public int getChannel() {
-			return pinInfo.getPinNumber();
+			return pinInfo.getPhysicalPin();
 		}
 	}
 
@@ -596,7 +596,7 @@ public class PiconZero extends AbstractDeviceFactory implements GpioDeviceFactor
 		}
 
 		public int getChannel() {
-			return pinInfo.getPinNumber();
+			return pinInfo.getPhysicalPin();
 		}
 
 		@Override

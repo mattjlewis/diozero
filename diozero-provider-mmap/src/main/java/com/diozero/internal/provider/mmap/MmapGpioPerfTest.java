@@ -55,14 +55,15 @@ public class MmapGpioPerfTest {
 		test(pin, iterations);
 	}
 
-	public static void test(int pin, int iterations) {
+	public static void test(int gpio, int iterations) {
 		try (MmapDeviceFactory df = new MmapDeviceFactory();
-				GpioDigitalOutputDeviceInterface gpio = df.provisionDigitalOutputDevice(pin, false)) {
+				GpioDigitalOutputDeviceInterface gpio_device = df
+						.provisionDigitalOutputDevice(df.getBoardPinInfo().getByGpioNumber(gpio), false)) {
 			for (int j = 0; j < 5; j++) {
 				long start_nano = System.nanoTime();
 				for (int i = 0; i < iterations; i++) {
-					gpio.setValue(true);
-					gpio.setValue(false);
+					gpio_device.setValue(true);
+					gpio_device.setValue(false);
 				}
 				long duration_ns = System.nanoTime() - start_nano;
 

@@ -37,8 +37,8 @@ public class PwmPinInfo extends PinInfo {
 	private int pwmNum;
 
 	public PwmPinInfo(String keyPrefix, String header, int gpioNumber, int pinNumber, int pwmNum, String name,
-			Collection<DeviceMode> modes, int sysFsNumber) {
-		super(keyPrefix, header, gpioNumber, pinNumber, name, modes, sysFsNumber);
+			Collection<DeviceMode> modes, int sysFsNumber, int chip, int line) {
+		super(keyPrefix, header, gpioNumber, pinNumber, name, modes, sysFsNumber, chip, line);
 
 		this.pwmNum = pwmNum;
 	}
