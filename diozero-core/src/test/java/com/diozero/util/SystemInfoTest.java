@@ -137,7 +137,7 @@ public class SystemInfoTest {
 
 	private static void validateBoard(String hardware, String revision, String expectedMake, String expectedModel,
 			int expectedMemory) {
-		validateBoard(hardware, revision, expectedMake, expectedModel, expectedMemory);
+		validateBoard(BoardInfo.UNKNOWN, hardware, revision, expectedMake, expectedModel, expectedMemory);
 	}
 	
 	private static void validateBoard(String model, String hardware, String revision, String expectedMake, String expectedModel,
