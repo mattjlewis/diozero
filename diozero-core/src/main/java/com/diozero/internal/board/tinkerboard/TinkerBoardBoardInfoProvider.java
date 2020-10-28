@@ -53,6 +53,7 @@ public class TinkerBoardBoardInfoProvider implements BoardInfoProvider {
 		public static final String MODEL = "Tinker Board";
 		private static final int MEMORY = 2048;
 		private static final String LIBRARY_PATH = "tinkerboard";
+		//private static final String LIBRARY_PATH = "linux-arm";
 
 		private TinkerBoardBoardInfo() {
 			super(MAKE, MODEL, MEMORY, LIBRARY_PATH);

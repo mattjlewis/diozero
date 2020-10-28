@@ -45,6 +45,8 @@ import com.diozero.internal.provider.MmapGpioInterface;
 
 @SuppressWarnings("static-method")
 public abstract class BoardInfo extends BoardPinInfo {
+	public static final String UNKNOWN = "unknown";
+	
 	private static final float DEFAULT_ADC_VREF = 1.8f;
 	private static final String TEMP_FILE = "/sys/class/thermal/thermal_zone0/temp";
 	

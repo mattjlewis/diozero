@@ -50,6 +50,8 @@ public class MmapDeviceFactory extends DefaultDeviceFactory {
 	 * calls DeviceFactoryHelper.getNativeDeviceFactory().getBoardInfo().getLibraryPath() which causes an infinite loop
 	 * as this class is constructed by DeviceFactoryHelper.getNativeDeviceFactory() .
 	 * FIXME Update - this issue is fixed now and shouldn't be a problem as LibraryLoader no longer calls getNativeDeviceFactory()
+	 * 
+	 * Thoughts on a generic mmap driver: https://github.com/torvalds/linux/blob/master/drivers/gpio/gpio-mmio.c
 	 */
 	synchronized MmapGpioInterface getMmapGpio() {
 		if (mmapGpio == null) {

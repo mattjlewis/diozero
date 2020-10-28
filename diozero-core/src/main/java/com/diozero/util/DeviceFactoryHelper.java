@@ -47,7 +47,7 @@ public class DeviceFactoryHelper {
 	
 	private static NativeDeviceFactoryInterface nativeDeviceFactory;
 
-	private static void init() {
+	private static void initialise() {
 		synchronized (DeviceFactoryHelper.class) {
 			if (nativeDeviceFactory == null) {
 				// First try load one defined as a system property
@@ -78,7 +78,7 @@ public class DeviceFactoryHelper {
 	}
 	
 	public static NativeDeviceFactoryInterface getNativeDeviceFactory() {
-		init();
+		initialise();
 		
 		return nativeDeviceFactory;
 	}

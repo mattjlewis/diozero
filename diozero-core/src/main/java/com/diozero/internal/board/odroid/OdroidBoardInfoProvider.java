@@ -35,8 +35,6 @@ package com.diozero.internal.board.odroid;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.tinylog.Logger;
-
 import com.diozero.api.PinInfo;
 import com.diozero.internal.provider.MmapGpioInterface;
 import com.diozero.util.BoardInfo;
@@ -82,7 +80,7 @@ public class OdroidBoardInfoProvider implements BoardInfoProvider {
 		private static final int MEMORY = 1024;
 		
 		public OdroidC1BoardInfo() {
-			super(MAKE, Model.C1.toString(), MEMORY, MAKE.toLowerCase() + "/" + Model.C1.toString().toLowerCase());
+			super(MAKE, Model.C1.toString(), MEMORY, MAKE.toLowerCase() + "-" + Model.C1.toString().toLowerCase());
 		}
 		
 		@Override

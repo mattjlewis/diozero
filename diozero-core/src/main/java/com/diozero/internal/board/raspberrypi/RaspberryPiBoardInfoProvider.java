@@ -50,6 +50,7 @@ import com.diozero.util.BoardInfoProvider;
 public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 	public static final String MAKE = "Raspberry Pi";
 	private static final String LIBRARY_PATH = "raspberrypi";
+	//private static final String LIBRARY_PATH = "linux-arm";
 	private static final String BCM_HARDWARE_PREFIX = "BCM";
 
 	public static final String MODEL_A = "A";

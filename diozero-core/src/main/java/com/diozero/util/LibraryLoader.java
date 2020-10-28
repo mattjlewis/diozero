@@ -42,10 +42,13 @@ import org.tinylog.Logger;
 
 public class LibraryLoader {
 	private static final Map<String, Boolean> LOADED_LIBRARIES = new HashMap<>();
-	private static final String LIBRARY_EXTENSION = System.getProperty("os.name").startsWith("Windows") ? ".dll"
-			: ".so";
-	
+	private static final String LIBRARY_EXTENSION = System.getProperty(SystemInfoConstants.OS_NAME_SYSTEM_PROPERTY)
+			.startsWith("Windows") ? ".dll" : ".so";
+
 	public static void loadSystemUtils() {
+		// Possibly replace with this library?
+		// https://github.com/vsergeev/c-periphery
+		// Also look at this library: https://github.com/google/periph/tree/master/host
 		loadLibrary(LibraryLoader.class, "diozero-system-utils", true);
 	}
 

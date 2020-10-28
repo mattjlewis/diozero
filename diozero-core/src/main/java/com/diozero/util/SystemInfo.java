@@ -41,7 +41,7 @@ import java.util.Properties;
 
 import org.tinylog.Logger;
 
-import com.diozero.api.PinInfo;
+import com.diozero.internal.board.UnknownBoardInfo;
 
 /**
  * <p>
@@ -54,43 +54,85 @@ import com.diozero.api.PinInfo;
  * controlling.
  * </p>
  */
-public class SystemInfo {
-	private static final String OS_RELEASE_FILE = "/etc/os-release";
-	private static final String CPUINFO_FILE = "/proc/cpuinfo";
-	private static final String MEMINFO_FILE = "/proc/meminfo";
-
+public class SystemInfo implements SystemInfoConstants {
 	private static boolean initialised;
 	private static Properties osReleaseProperties;
 	private static String hardware;
 	private static String revision;
+	private static String model;
 	private static Integer memoryKb;
+	private static BoardInfo localBoardInfo;
 
+	/*-
+	 * Notes...
+	 * Board: TinkerBoard
+	 * /etc/os-release PRETTY_NAME:     Armbian 20.08.17 Focal
+	 * /proc/device-tree/compatible:    asus,rk3288-tinker
+	 * /proc/device-tree/model:         Rockchip RK3288 Asus Tinker Board
+	 * /proc/device-tree/serial-number: <No such file>
+	 * /proc/cpuinfo:
+	 *   Hardware : Rockchip (Device Tree)
+	 *   Revision : 0000
+	 *   Serial   : 0000000000000000
+	 * os.name: Linux
+	 * os.arch: arm
+	 * sun.arch.data.model: 32
+	 *
+	 * Board: Raspberry Pi 4 Model B
+	 * /etc/os-release PRETTY_NAME:     Raspbian GNU/Linux 10 (buster)
+	 * /proc/device-tree/compatible:    raspberrypi,4-model-b^@brcm,bcm2711^@
+	 * /proc/device-tree/model:         Raspberry Pi 4 Model B Rev 1.1^@
+	 * /proc/device-tree/serial-number: 100000002914db7e^@
+	 * /proc/cpuinfo:
+	 *   Hardware   : BCM2711
+	 *   Revision   : b03111
+	 *   Serial     : 100000002914db7e
+	 *   Model      : Raspberry Pi 4 Model B Rev 1.1
+	 * os.name: Linux
+	 * os.arch: arm
+	 * sun.arch.data.model: 32
+	 * 
+	 * Board: Odroid C2
+	 * /etc/os-release PRETTY_NAME:     Armbian 20.08.17 Buster
+	 * /proc/device-tree/compatible:    hardkernel,odroid-c2^@amlogic,meson-gxbb^@
+	 * /proc/device-tree/model:         Hardkernel ODROID-C2^@
+	 * /proc/device-tree/serial-number: HKC213254DFD1F85M-^H^@
+	 * /proc/cpuinfo:
+	 *   Hardware : <<Not present>>
+	 *   Revision : <<Not present>>
+	 *   Serial   : <<Not present>>
+	 * os.name: Linux
+	 * os.arch: aarch64
+	 * sun.arch.data.model: 64
+	 */
 	private static synchronized void initialise() throws RuntimeIOException {
 		if (!initialised) {
-			String os_name = System.getProperty("os.name");
+			String os_name = System.getProperty(OS_NAME_SYSTEM_PROPERTY);
 			if (!os_name.startsWith("Windows")) {
 				osReleaseProperties = new Properties();
-				try (Reader reader = new FileReader(OS_RELEASE_FILE)) {
+				try (Reader reader = new FileReader(LINUX_OS_RELEASE_FILE)) {
 					osReleaseProperties.load(reader);
 				} catch (IOException e) {
-					Logger.warn("Error loading properties file '{}': {}", OS_RELEASE_FILE, e);
+					Logger.warn("Error loading properties file '{}': {}", LINUX_OS_RELEASE_FILE, e);
 				}
 
 				try {
-					Files.lines(Paths.get(CPUINFO_FILE)).forEach(line -> {
+					Files.lines(Paths.get(LINUX_CPUINFO_FILE)).forEach(line -> {
 						if (line.startsWith("Hardware")) {
 							hardware = line.split(":")[1].trim();
 						} else if (line.startsWith("Revision")) {
 							revision = line.split(":")[1].trim();
+						} else if (line.startsWith("Model")) {
+							model = line.split(":")[1].trim();
 						}
 					});
 				} catch (IOException | NullPointerException | IndexOutOfBoundsException e) {
-					Logger.warn("Error reading '{}': {}", CPUINFO_FILE, e.getMessage());
+					Logger.warn("Error reading '{}': {}", LINUX_CPUINFO_FILE, e.getMessage());
 				}
 				if (hardware == null) {
 					// arm64 doesn't have Hardware info in /proc/cpuinfo
 					try {
-						hardware = Files.lines(Paths.get("/proc/device-tree/model")).findFirst().map(s -> s.trim())
+						hardware = Files.lines(Paths.get(LINUX_DEVICE_TREE_MODEL_FILE)).findFirst().map(s -> s.trim())
 								.orElse(null);
 					} catch (IOException e) {
 						// Ignore
@@ -99,7 +141,15 @@ public class SystemInfo {
 				if (revision == null) {
 					// arm64 doesn't have Revision info in /proc/cpuinfo
 					try {
-						revision = new String(Files.readAllBytes(Paths.get("/proc/device-tree/serial-number"))).trim();
+						revision = new String(Files.readAllBytes(Paths.get(LINUX_DEVICE_TREE_SERIAL_NUMBER_FILE))).trim();
+					} catch (IOException e) {
+						// Ignore
+					}
+				}
+				if (model == null) {
+					// arm64 doesn't have Revision info in /proc/cpuinfo
+					try {
+						model = new String(Files.readAllBytes(Paths.get(LINUX_DEVICE_TREE_MODEL_FILE))).trim();
 					} catch (IOException e) {
 						// Ignore
 					}
@@ -107,15 +157,18 @@ public class SystemInfo {
 
 				memoryKb = null;
 				try {
-					Files.lines(Paths.get(MEMINFO_FILE)).forEach(line -> {
+					Files.lines(Paths.get(LINUX_MEMINFO_FILE)).forEach(line -> {
 						if (line.startsWith("MemTotal:")) {
 							memoryKb = Integer.valueOf(line.split("\\s+")[1].trim());
 						}
 					});
 				} catch (IOException | NullPointerException | IndexOutOfBoundsException e) {
-					Logger.warn("Error reading '{}': {}", MEMINFO_FILE, e.getMessage());
+					Logger.warn("Error reading '{}': {}", LINUX_MEMINFO_FILE, e.getMessage());
 				}
 			}
+			
+			localBoardInfo = lookupLocalBoardInfo(model, hardware, revision, memoryKb);
+			
 			initialised = true;
 		}
 	}
@@ -130,13 +183,15 @@ public class SystemInfo {
 	 */
 	public static BoardInfo lookupLocalBoardInfo() {
 		initialise();
-		return lookupLocalBoardInfo(hardware, revision, memoryKb);
+		
+		return localBoardInfo;
 	}
 
-	static BoardInfo lookupLocalBoardInfo(String hardware, String revision, Integer memoryKb) {
+	// Package private purely for unit tests
+	static BoardInfo lookupLocalBoardInfo(String model, String hardware, String revision, Integer memoryKb) {
 		BoardInfo bi = BoardInfoProvider.loadInstances().map(bip -> bip.lookup(hardware, revision, memoryKb))
 				.filter(Objects::nonNull).findFirst()
-				.orElseGet(() -> UnknownBoardInfo.get(hardware, revision, memoryKb));
+				.orElseGet(() -> UnknownBoardInfo.get(model, hardware, revision, memoryKb));
 		bi.initialisePins();
 
 		return bi;
@@ -170,50 +225,5 @@ public class SystemInfo {
 		initialise();
 		Logger.info(osReleaseProperties);
 		Logger.info(lookupLocalBoardInfo());
-	}
-
-	public static final class UnknownBoardInfo extends BoardInfo {
-		private static final String UNKNOWN = "unknown";
-
-		static BoardInfo get(String hardware, String revision, Integer memoryKb) {
-			Logger.warn("Failed to resolve board info for hardware '{}' and revision '{}'. Local O/S: {}", hardware,
-					revision, System.getProperty("os.name"));
-			return new UnknownBoardInfo();
-		}
-
-		public UnknownBoardInfo() {
-			super(UNKNOWN, UNKNOWN, -1, System.getProperty("os.name").replace(" ", "").toLowerCase());
-		}
-
-		@Override
-		public void initialisePins() {
-		}
-
-		@Override
-		public PinInfo getByGpioNumber(int gpio) {
-			PinInfo pin_info = super.getByGpioNumber(gpio);
-			if (pin_info == null) {
-				pin_info = addGpioPinInfo(gpio, gpio, PinInfo.DIGITAL_IN_OUT);
-			}
-			return pin_info;
-		}
-
-		@Override
-		public PinInfo getByAdcNumber(int adcNumber) {
-			PinInfo pin_info = super.getByAdcNumber(adcNumber);
-			if (pin_info == null) {
-				pin_info = addAdcPinInfo(adcNumber, adcNumber);
-			}
-			return pin_info;
-		}
-
-		@Override
-		public PinInfo getByDacNumber(int dacNumber) {
-			PinInfo pin_info = super.getByDacNumber(dacNumber);
-			if (pin_info == null) {
-				pin_info = addDacPinInfo(dacNumber, dacNumber);
-			}
-			return pin_info;
-		}
 	}
 }

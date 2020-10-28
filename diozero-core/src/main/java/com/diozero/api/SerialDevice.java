@@ -43,6 +43,7 @@ import org.tinylog.Logger;
 
 import com.diozero.internal.provider.SerialDeviceInterface;
 import com.diozero.util.DeviceFactoryHelper;
+import com.diozero.util.RuntimeIOException;
 
 public class SerialDevice implements SerialConstants, Closeable {
 	public static class DeviceInfo {
@@ -56,8 +57,8 @@ public class SerialDevice implements SerialConstants, Closeable {
 		private String usbProductId;
 		// private String usbProductName;
 
-		public DeviceInfo(String deviceName, String deviceFile, String description, String manufacturer, String driverName,
-				String usbVendorId, String usbProductId) {
+		public DeviceInfo(String deviceName, String deviceFile, String description, String manufacturer,
+				String driverName, String usbVendorId, String usbProductId) {
 			this.deviceName = deviceName;
 			this.deviceFile = deviceFile;
 			this.description = description;
@@ -189,19 +190,19 @@ public class SerialDevice implements SerialConstants, Closeable {
 			device_root = p.getParent().getParent().getParent();
 			product_file = device_root.resolve("product");
 		}
-		
+
 		if (product_file.toFile().exists()) {
 			Logger.debug("Processing device {} in {}", device_name, device_root);
 
 			// I believe this means that this is a USB-connected device
 			description = Files.lines(product_file).findFirst().orElse(null);
-			
+
 			// GEt the manufacturer
 			Path manufacturer_path = device_root.resolve("manufacturer");
 			if (manufacturer_path.toFile().exists()) {
 				manufacturer = Files.lines(manufacturer_path).findFirst().orElse(null);
 			}
-			
+
 			// Get the driver name, e.g. "usb-serial:ch341-uart"
 			Path drivers_path = p.resolve("driver").resolve("module").resolve("drivers");
 			if (!drivers_path.toFile().exists()) {
@@ -212,12 +213,13 @@ public class SerialDevice implements SerialConstants, Closeable {
 						.filter(path -> !path.toFile().isHidden()).map(path -> path.getFileName().toString())
 						.findFirst().orElse(null);
 			}
-			
+
 			// Get the USB vendor and product identifiers
 			usb_vendor_id = Files.lines(device_root.resolve("idVendor")).findFirst().orElse(null);
 			usb_product_id = Files.lines(device_root.resolve("idProduct")).findFirst().orElse(null);
-			
-			// Sometimes the manufacturer isn't set - default it to the USB vendor id as per udevadm
+
+			// Sometimes the manufacturer isn't set - default it to the USB vendor id as per
+			// udevadm
 			// Example: Vendor=QinHeng Electronics, Product=HL-340 USB-Serial adapter
 			if (manufacturer == null) {
 				manufacturer = usb_vendor_id;
@@ -282,15 +284,27 @@ public class SerialDevice implements SerialConstants, Closeable {
 		device.close();
 	}
 
+	/**
+	 * Read a single byte returning error responses
+	 * 
+	 * @return Signed integer representation of the data read, including error
+	 *         responses (values < 0)
+	 */
 	public int read() {
 		return device.read();
 	}
 
-	public byte readByte() {
+	/**
+	 * Read a single byte, throw an exception if unable to read any data
+	 * 
+	 * @return The data read
+	 * @throws RuntimeIOException If unable to read data
+	 */
+	public byte readByte() throws RuntimeIOException {
 		return device.readByte();
 	}
 
-	public void readByte(byte bVal) {
+	public void writeByte(byte bVal) {
 		device.writeByte(bVal);
 	}
 

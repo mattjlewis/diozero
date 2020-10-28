@@ -83,22 +83,31 @@ public class DefaultDeviceFactory extends BaseNativeDeviceFactory {
 						if (pin_info == null && line_name.matches(GPIO_LINE_NUMBER_PATTERN)) {
 							// Note that this isn't reliable - GPIO names are often missing or not in this
 							// format
-							pin_info = bpi.getByGpioNumber(
-									Integer.parseInt(line_name.replaceAll(GPIO_LINE_NUMBER_PATTERN, "$1")));
+							// Note that the unknown / generic board info classes will create missing pin
+							// info objects if you call getByGpioNumber - we don't want that to happen here
+							pin_info = bpi.getGpios()
+									.get(Integer.valueOf(line_name.replaceAll(GPIO_LINE_NUMBER_PATTERN, "$1")));
 						}
 
 						if (pin_info == null && !line_name.isEmpty()) {
 							Logger.debug("Detected GPIO line ({} {}-{}) that isn't configured in BoardPinInfo",
 									line_name, Integer.valueOf(chip.getChipId()),
 									Integer.valueOf(gpio_line.getOffset()));
-							// TODO Add a new pin info to the board pin info?
+							// Add a new pin info to the board pin info
+							if (line_name.matches(GPIO_LINE_NUMBER_PATTERN)) {
+								pin_info = bpi.addGpioPinInfo(
+										Integer.parseInt(line_name.replaceAll(GPIO_LINE_NUMBER_PATTERN, "$1")),
+										line_name, PinInfo.NOT_DEFINED, PinInfo.DIGITAL_IN_OUT, chip.getChipId(),
+										gpio_line.getOffset());
+							}
 						} else if (pin_info != null) {
 							if (pin_info.getChip() != chip.getChipId()
 									|| pin_info.getLineOffset() != gpio_line.getOffset()) {
 								Logger.warn(
-										"Configured pin chip and line offset ({}-{}) doesn't match that detected ({}-{}) - updating",
+										"Configured pin chip and line offset ({}-{}) doesn't match that detected ({}-{}), line name '{}' - updating",
 										Integer.valueOf(pin_info.getChip()), Integer.valueOf(pin_info.getLineOffset()),
-										Integer.valueOf(chip.getChipId()), Integer.valueOf(gpio_line.getOffset()));
+										Integer.valueOf(chip.getChipId()), Integer.valueOf(gpio_line.getOffset()),
+										gpio_line.getName());
 								pin_info.setChip(chip.getChipId());
 								pin_info.setLineOffset(gpio_line.getOffset());
 							}

@@ -31,10 +31,11 @@ package com.diozero.devices;
  * #L%
  */
 
-
 import com.diozero.api.Action;
 import com.diozero.api.DigitalOutputDevice;
+import com.diozero.api.PinInfo;
 import com.diozero.internal.provider.GpioDeviceFactoryInterface;
+import com.diozero.util.DeviceFactoryHelper;
 import com.diozero.util.RuntimeIOException;
 
 /**
@@ -43,8 +44,8 @@ import com.diozero.util.RuntimeIOException;
  * Connect the cathode (short leg, flat side) of the LED to a ground pin;
  * connect the anode (longer leg) to a limiting resistor; connect the other side
  * of the limiting resistor to a GPIO pin (the limiting resistor can be placed
- * either side of the LED). Example LED control, taken from
- * <a href="https://github.com/mattjlewis/diozero/blob/master/diozero-sampleapps/src/main/java/com/diozero/sampleapps/LEDTest.java">LEDTest</a>:
+ * either side of the LED). Example LED control, taken from <a href=
+ * "https://github.com/mattjlewis/diozero/blob/master/diozero-sampleapps/src/main/java/com/diozero/sampleapps/LEDTest.java">LEDTest</a>:
  * </p>
  * 
  * <pre>
@@ -63,52 +64,48 @@ import com.diozero.util.RuntimeIOException;
  * </pre>
  */
 public class LED extends DigitalOutputDevice {
+	/**
+	 * @param pinInfo      GPIO to which the LED is connected.
+	 * @param activeHigh   Set to true if a high output value represents on.
+	 * @param initialValue Initial value.
+	 * @throws RuntimeIOException If an I/O error occurred.
+	 */
+	public LED(PinInfo pinInfo, boolean activeHigh, boolean initialValue) throws RuntimeIOException {
+		super(DeviceFactoryHelper.getNativeDeviceFactory(), pinInfo, activeHigh, initialValue);
+	}
 
 	/**
-	 * @param gpio
-	 *            GPIO to which the LED is connected.
-	 * @throws RuntimeIOException
-	 *             If an I/O error occurred.
+	 * @param gpio GPIO to which the LED is connected.
+	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
 	public LED(int gpio) throws RuntimeIOException {
 		super(gpio);
 	}
 
 	/**
-	 * @param gpio
-	 *            GPIO to which the LED is connected.
-	 * @param activeHigh
-	 *            Set to true if a high output value represents on.
-	 * @throws RuntimeIOException
-	 *             If an I/O error occurred.
+	 * @param gpio       GPIO to which the LED is connected.
+	 * @param activeHigh Set to true if a high output value represents on.
+	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
 	public LED(int gpio, boolean activeHigh) throws RuntimeIOException {
 		super(gpio, activeHigh, !activeHigh);
 	}
 
 	/**
-	 * @param deviceFactory
-	 *            Device factory to use to construct the device.
-	 * @param gpio
-	 *            GPIO to which the LED is connected.
-	 * @throws RuntimeIOException
-	 *             If an I/O error occurred.
+	 * @param deviceFactory Device factory to use to construct the device.
+	 * @param gpio          GPIO to which the LED is connected.
+	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
 	public LED(GpioDeviceFactoryInterface deviceFactory, int gpio) throws RuntimeIOException {
 		super(deviceFactory, gpio, true, false);
 	}
 
 	/**
-	 * @param deviceFactory
-	 *            Device factory to use to construct the device.
-	 * @param gpio
-	 *            GPIO to which the LED is connected.
-	 * @param activeHigh
-	 *            Set to true if a high output value represents on.
-	 * @param initialValue
-	 *            Initial value.
-	 * @throws RuntimeIOException
-	 *             If an I/O error occurred.
+	 * @param deviceFactory Device factory to use to construct the device.
+	 * @param gpio          GPIO to which the LED is connected.
+	 * @param activeHigh    Set to true if a high output value represents on.
+	 * @param initialValue  Initial value.
+	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
 	public LED(GpioDeviceFactoryInterface deviceFactory, int gpio, boolean activeHigh, boolean initialValue) {
 		super(deviceFactory, gpio, activeHigh, initialValue);
@@ -117,8 +114,7 @@ public class LED extends DigitalOutputDevice {
 	/**
 	 * Blink indefinitely with 1 second on and 1 second off.
 	 * 
-	 * @throws RuntimeIOException
-	 *             If an I/O error occurred.
+	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
 	public void blink() throws RuntimeIOException {
 		blink(1, 1, INFINITE_ITERATIONS, true, null);
@@ -126,10 +122,9 @@ public class LED extends DigitalOutputDevice {
 
 	/**
 	 * Blink indefinitely with 1 second on and 1 second off.
-	 * @param stopAction
-	 *             Action to invoke when the animation stops.
-	 * @throws RuntimeIOException
-	 *             If an I/O error occurred.
+	 * 
+	 * @param stopAction Action to invoke when the animation stops.
+	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
 	public void blink(Action stopAction) throws RuntimeIOException {
 		blink(1, 1, INFINITE_ITERATIONS, true, stopAction);
@@ -138,18 +133,13 @@ public class LED extends DigitalOutputDevice {
 	/**
 	 * Blink.
 	 * 
-	 * @param onTime
-	 *            On time in seconds.
-	 * @param offTime
-	 *            Off time in seconds.
-	 * @param n
-	 *            Number of iterations. Set to &lt;0 to blink indefinitely.
-	 * @param background
-	 *            If true start a background thread to control the blink and
-	 *            return immediately. If false, only return once the blink
-	 *            iterations have finished.
-	 * @throws RuntimeIOException
-	 *             If an I/O error occurred.
+	 * @param onTime     On time in seconds.
+	 * @param offTime    Off time in seconds.
+	 * @param n          Number of iterations. Set to &lt;0 to blink indefinitely.
+	 * @param background If true start a background thread to control the blink and
+	 *                   return immediately. If false, only return once the blink
+	 *                   iterations have finished.
+	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
 	public void blink(float onTime, float offTime, int n, boolean background) throws RuntimeIOException {
 		blink(onTime, offTime, n, background, null);
@@ -158,22 +148,17 @@ public class LED extends DigitalOutputDevice {
 	/**
 	 * Blink.
 	 * 
-	 * @param onTime
-	 *            On time in seconds.
-	 * @param offTime
-	 *            Off time in seconds.
-	 * @param n
-	 *            Number of iterations. Set to &lt;0 to blink indefinitely.
-	 * @param background
-	 *            If true start a background thread to control the blink and
-	 *            return immediately. If false, only return once the blink
-	 *            iterations have finished.
-	 * @param stopAction
-	 *            Action to invoke when the animation stops.
-	 * @throws RuntimeIOException
-	 *            If an I/O error occurred.
+	 * @param onTime     On time in seconds.
+	 * @param offTime    Off time in seconds.
+	 * @param n          Number of iterations. Set to &lt;0 to blink indefinitely.
+	 * @param background If true start a background thread to control the blink and
+	 *                   return immediately. If false, only return once the blink
+	 *                   iterations have finished.
+	 * @param stopAction Action to invoke when the animation stops.
+	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
-	public void blink(float onTime, float offTime, int n, boolean background, Action stopAction) throws RuntimeIOException {
+	public void blink(float onTime, float offTime, int n, boolean background, Action stopAction)
+			throws RuntimeIOException {
 		onOffLoop(onTime, offTime, n, background, stopAction);
 	}
 
@@ -181,8 +166,7 @@ public class LED extends DigitalOutputDevice {
 	 * Return true if the LED is currently on.
 	 * 
 	 * @return True if the LED is on, false if off.
-	 * @throws RuntimeIOException
-	 *             If an I/O error occurred.
+	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
 	public boolean isLit() throws RuntimeIOException {
 		return isOn();
