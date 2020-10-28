@@ -67,8 +67,8 @@ public class SystemInfo implements SystemInfoConstants {
 	 * Notes...
 	 * Board: TinkerBoard
 	 * /etc/os-release PRETTY_NAME:     Armbian 20.08.17 Focal
-	 * /proc/device-tree/compatible:    asus,rk3288-tinker
-	 * /proc/device-tree/model:         Rockchip RK3288 Asus Tinker Board
+	 * /proc/device-tree/compatible:    asus,rk3288-tinker^@rockchip,rk3288^@
+	 * /proc/device-tree/model:         Rockchip RK3288 Asus Tinker Board^@
 	 * /proc/device-tree/serial-number: <No such file>
 	 * /proc/cpuinfo:
 	 *   Hardware : Rockchip (Device Tree)
