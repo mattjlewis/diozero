@@ -36,7 +36,7 @@ import com.diozero.api.DeviceMode;
 import com.diozero.api.GpioPullUpDown;
 import com.diozero.api.PinInfo;
 import com.diozero.internal.provider.MmapGpioInterface;
-import com.diozero.internal.provider.sysfs.SysFsDigitalInputOutputDevice;
+import com.diozero.internal.provider.builtin.SysFsDigitalInputOutputDevice;
 import com.diozero.util.RuntimeIOException;
 
 public class MmapDigitalInputOutputDevice extends SysFsDigitalInputOutputDevice {

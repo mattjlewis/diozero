@@ -8,12 +8,12 @@ SO_FILE_EXT = so
 
 LIBS = -li2c -lgpiod
 
-SRCS = com_diozero_internal_provider_sysfs_NativeGpioChip.c \
-	com_diozero_internal_provider_sysfs_NativeSerialDevice.c \
-	com_diozero_internal_provider_sysfs_NativeSpiDevice.c \
-	com_diozero_internal_provider_sysfs_NativeI2C.c \
-	com_diozero_util_MmapBufferNative.c \
+SRCS = com_diozero_internal_provider_builtin_gpio_NativeGpioDevice.c \
+	com_diozero_internal_provider_builtin_i2c_NativeI2C.c \
+	com_diozero_internal_provider_builtin_serial_NativeSerialDevice.c \
+	com_diozero_internal_provider_builtin_spi_NativeSpiDevice.c \
 	com_diozero_util_EpollNative.c \
+	com_diozero_util_MmapBufferNative.c \
 	com_diozero_util_PollNative.c \
 	com_diozero_util_SleepUtil.c \
 	com_diozero_util_Util.c

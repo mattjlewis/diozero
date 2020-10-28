@@ -39,7 +39,7 @@ import com.diozero.internal.provider.GpioDigitalInputDeviceInterface;
 import com.diozero.internal.provider.GpioDigitalInputOutputDeviceInterface;
 import com.diozero.internal.provider.GpioDigitalOutputDeviceInterface;
 import com.diozero.internal.provider.MmapGpioInterface;
-import com.diozero.internal.provider.sysfs.DefaultDeviceFactory;
+import com.diozero.internal.provider.builtin.DefaultDeviceFactory;
 import com.diozero.util.RuntimeIOException;
 
 public class MmapDeviceFactory extends DefaultDeviceFactory {

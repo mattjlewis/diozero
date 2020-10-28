@@ -47,9 +47,9 @@ import com.diozero.internal.provider.I2CDeviceInterface;
 import com.diozero.internal.provider.PwmOutputDeviceInterface;
 import com.diozero.internal.provider.SerialDeviceInterface;
 import com.diozero.internal.provider.SpiDeviceInterface;
-import com.diozero.internal.provider.sysfs.DefaultDeviceFactory;
-import com.diozero.internal.provider.sysfs.I2CDeviceWrapper;
-import com.diozero.internal.provider.sysfs.NativeSpiDeviceWrapper;
+import com.diozero.internal.provider.builtin.DefaultDeviceFactory;
+import com.diozero.internal.provider.builtin.DefaultI2CDevice;
+import com.diozero.internal.provider.builtin.DefaultNativeSpiDevice;
 import com.diozero.util.RuntimeIOException;
 
 public class BbbIoLibDeviceFactory extends BaseNativeDeviceFactory {
@@ -131,13 +131,13 @@ public class BbbIoLibDeviceFactory extends BaseNativeDeviceFactory {
 	@Override
 	public SpiDeviceInterface createSpiDevice(String key, int controller, int chipSelect, int frequency,
 			SpiClockMode spiClockMode, boolean lsbFirst) throws RuntimeIOException {
-		return new NativeSpiDeviceWrapper(this, key, controller, chipSelect, frequency, spiClockMode, lsbFirst);
+		return new DefaultNativeSpiDevice(this, key, controller, chipSelect, frequency, spiClockMode, lsbFirst);
 	}
 
 	@Override
 	public I2CDeviceInterface createI2CDevice(String key, int controller, int address, int addressSize,
 			int clockFrequency) throws RuntimeIOException {
-		return new I2CDeviceWrapper(this, key, controller, address, addressSize, clockFrequency);
+		return new DefaultI2CDevice(this, key, controller, address, addressSize, clockFrequency);
 	}
 
 	@Override

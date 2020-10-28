@@ -5,7 +5,7 @@ sudo: false
 os:
   - linux
 
-dist: xenial
+#dist: xenial
 
 jdk:
   - openjdk11
@@ -13,9 +13,6 @@ jdk:
 cache:
   directories:
     - $HOME/.m2
-
-env:
-  - PROJECTS_TO_BUILD: "!diozero-imu-visualiser"
 
 install: true
 

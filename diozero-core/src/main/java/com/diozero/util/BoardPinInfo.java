@@ -225,7 +225,7 @@ public class BoardPinInfo {
 		return gpios.get(Integer.valueOf(gpio));
 	}
 	
-	public PinInfo getByChipAndOffset(int chipId, int lineOffset) {
+	public PinInfo getByChipAndLineOffset(int chipId, int lineOffset) {
 		if (chipId == PinInfo.NOT_DEFINED || lineOffset == PinInfo.NOT_DEFINED) {
 			return null;
 		}

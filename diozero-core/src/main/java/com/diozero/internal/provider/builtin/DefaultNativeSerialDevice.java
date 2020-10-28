@@ -1,10 +1,10 @@
-package com.diozero.firmata;
+package com.diozero.internal.provider.builtin;
 
 /*-
  * #%L
  * Organisation: diozero
- * Project:      Device I/O Zero - Remote Provider
- * Filename:     SerialFirmataAdapter.java  
+ * Project:      Device I/O Zero - Core
+ * Filename:     SysFsSerialDevice.java  
  * 
  * This file is part of the diozero project. More information about this project
  * can be found at http://www.diozero.com/
@@ -34,45 +34,57 @@ package com.diozero.firmata;
 import org.tinylog.Logger;
 
 import com.diozero.api.SerialDevice;
+import com.diozero.internal.provider.AbstractDevice;
+import com.diozero.internal.provider.DeviceFactoryInterface;
+import com.diozero.internal.provider.SerialDeviceInterface;
 import com.diozero.internal.provider.builtin.serial.NativeSerialDevice;
+import com.diozero.util.RuntimeIOException;
 
-public class SerialFirmataAdapter extends FirmataAdapter {
+public class DefaultNativeSerialDevice extends AbstractDevice implements SerialDeviceInterface {
 	private NativeSerialDevice device;
 
-	public SerialFirmataAdapter(FirmataEventListener eventListener, String deviceFile, int baud,
+	public DefaultNativeSerialDevice(DeviceFactoryInterface deviceFactory, String key, String deviceFile, int baud,
 			SerialDevice.DataBits dataBits, SerialDevice.StopBits stopBits, SerialDevice.Parity parity,
 			boolean readBlocking, int minReadChars, int readTimeoutMillis) {
-		super(eventListener);
+		super(key, deviceFactory);
 
 		device = new NativeSerialDevice(deviceFile, baud, dataBits, stopBits, parity, readBlocking, minReadChars,
 				readTimeoutMillis);
 	}
 
 	@Override
-	public void close() {
-		Logger.trace("closing...");
-		super.close();
-
-		try {
-			device.close();
-		} catch (Exception e) {
-			// Ignore
-		}
-		Logger.trace("closed.");
+	protected void closeDevice() throws RuntimeIOException {
+		Logger.trace("closeDevice()");
+		device.close();
 	}
 
 	@Override
-	int read() {
+	public int read() {
 		return device.read();
 	}
 
 	@Override
-	byte readByte() {
+	public byte readByte() {
 		return device.readByte();
 	}
 
 	@Override
-	void write(byte[] data) {
+	public void writeByte(byte bVal) {
+		device.writeByte(bVal);
+	}
+
+	@Override
+	public int read(byte[] buffer) {
+		return device.read(buffer);
+	}
+
+	@Override
+	public void write(byte[] data) {
 		device.write(data);
+	}
+
+	@Override
+	public int bytesAvailable() {
+		return device.bytesAvailable();
 	}
 }

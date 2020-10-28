@@ -1,7 +1,5 @@
 package com.diozero.internal.board;
 
-import java.util.Map;
-
 import org.tinylog.Logger;
 
 import com.diozero.api.PinInfo;
@@ -37,16 +35,6 @@ public class UnknownBoardInfo extends BoardInfo {
 		PinInfo pin_info = super.getByGpioNumber(gpio);
 		if (pin_info == null) {
 			pin_info = addGpioPinInfo(gpio, gpio, PinInfo.DIGITAL_IN_OUT);
-		}
-		return pin_info;
-	}
-
-	@Override
-	public PinInfo getByChipAndOffset(int chipId, int lineOffset) {
-		PinInfo pin_info = super.getByChipAndOffset(chipId, lineOffset);
-		if (pin_info == null) {
-			pin_info = addGpioPinInfo(PinInfo.NOT_DEFINED, "GPIO-" + chipId + ":" + lineOffset, PinInfo.NOT_DEFINED,
-					PinInfo.DIGITAL_IN_OUT, chipId, lineOffset);
 		}
 		return pin_info;
 	}

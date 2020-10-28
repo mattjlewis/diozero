@@ -2,13 +2,13 @@ package com.diozero.sampleapps;
 
 import org.tinylog.Logger;
 
-import com.diozero.internal.provider.sysfs.GpioLine;
-import com.diozero.internal.provider.sysfs.NativeGpioChip;
+import com.diozero.internal.provider.builtin.gpio.GpioChip;
+import com.diozero.internal.provider.builtin.gpio.GpioLine;
 
 public class GpioDetect {
 	public static void main(String[] args) {
 		if (args.length == 0) {
-			NativeGpioChip.getChips().forEach(chip -> System.out.format("%s [%s] (%d lines)%n", chip.getName(),
+			GpioChip.getChips().forEach(chip -> System.out.format("%s [%s] (%d lines)%n", chip.getName(),
 					chip.getLabel(), Integer.valueOf(chip.getNumLines())));
 			return;
 		}
@@ -21,7 +21,7 @@ public class GpioDetect {
 			chip_name = args[0];
 		}
 
-		try (NativeGpioChip chip = NativeGpioChip.openChip("/dev/" + chip_name)) {
+		try (GpioChip chip = GpioChip.openChip("/dev/" + chip_name)) {
 			if (chip == null) {
 				Logger.error("Unable to open chip {}", chip_name);
 				return;

@@ -63,8 +63,8 @@ jmethodID mmapByteBufferConstructor = NULL;
 jclass gpioChipInfoClassRef = NULL;
 jmethodID gpioChipInfoConstructor = NULL;
 
-jclass nativeGpioChipClassRef = NULL;
-jmethodID nativeGpioChipConstructor = NULL;
+jclass gpioChipClassRef = NULL;
+jmethodID gpioChipConstructor = NULL;
 
 jclass gpioLineClassRef = NULL;
 jmethodID gpioLineConstructor = NULL;
@@ -182,7 +182,7 @@ jint JNI_OnLoad(JavaVM* jvm, void* reserved) {
 	}
 
 	// Cache the GpioChipInfo constructor on startup
-	class_name = "com/diozero/internal/provider/sysfs/GpioChipInfo";
+	class_name = "com/diozero/internal/provider/builtin/gpio/GpioChipInfo";
 	jclass gpio_chip_info_class = (*env)->FindClass(env, class_name);
 	if ((*env)->ExceptionCheck(env) || gpio_chip_info_class == NULL) {
 		fprintf(stderr, "Error looking up class %s\n", class_name);
@@ -196,23 +196,23 @@ jint JNI_OnLoad(JavaVM* jvm, void* reserved) {
 		return JNI_ERR;
 	}
 
-	// Cache the NativeGpioChip class and constructor on startup
-	class_name = "com/diozero/internal/provider/sysfs/NativeGpioChip";
-	jclass native_gpio_chip_class = (*env)->FindClass(env, class_name);
-	if ((*env)->ExceptionCheck(env) || native_gpio_chip_class == NULL) {
+	// Cache the GpioChip class and constructor on startup
+	class_name = "com/diozero/internal/provider/builtin/gpio/GpioChip";
+	jclass gpio_chip_class = (*env)->FindClass(env, class_name);
+	if ((*env)->ExceptionCheck(env) || gpio_chip_class == NULL) {
 		fprintf(stderr, "Error looking up class %s\n", class_name);
 		return JNI_ERR;
 	}
 	method_name = "<init>";
-	signature = "(Ljava/lang/String;Ljava/lang/String;I[Lcom/diozero/internal/provider/sysfs/GpioLine;)V";
-	nativeGpioChipConstructor = (*env)->GetMethodID(env, native_gpio_chip_class, method_name, signature);
+	signature = "(Ljava/lang/String;Ljava/lang/String;I[Lcom/diozero/internal/provider/builtin/gpio/GpioLine;)V";
+	gpioChipConstructor = (*env)->GetMethodID(env, gpio_chip_class, method_name, signature);
 	if ((*env)->ExceptionCheck(env) || gpioChipInfoConstructor == NULL) {
 		fprintf(stderr, "Error looking up methodID for %s.%s%s\n", class_name, method_name, signature);
 		return JNI_ERR;
 	}
 
 	// Cache the GpioLine class and constructor on startup
-	class_name = "com/diozero/internal/provider/sysfs/GpioLine";
+	class_name = "com/diozero/internal/provider/builtin/gpio/GpioLine";
 	jclass gpio_line_class = (*env)->FindClass(env, class_name);
 	if ((*env)->ExceptionCheck(env) || gpio_line_class == NULL) {
 		fprintf(stderr, "Error looking up class %s\n", class_name);
@@ -227,7 +227,7 @@ jint JNI_OnLoad(JavaVM* jvm, void* reserved) {
 	}
 
 	// Cache the GpioLineEventListener class and method on startup
-	class_name = "com/diozero/internal/provider/sysfs/GpioLineEventListener";
+	class_name = "com/diozero/internal/provider/builtin/gpio/GpioLineEventListener";
 	jclass gpio_line_event_listener_class = (*env)->FindClass(env, class_name);
 	if ((*env)->ExceptionCheck(env) || gpio_line_event_listener_class == NULL) {
 		fprintf(stderr, "Error looking up class %s\n", class_name);
@@ -272,8 +272,8 @@ jint JNI_OnLoad(JavaVM* jvm, void* reserved) {
 	(*env)->DeleteLocalRef(env, mmap_byte_buffer_class);
 	gpioChipInfoClassRef = (*env)->NewGlobalRef(env, gpio_chip_info_class);
 	(*env)->DeleteLocalRef(env, gpio_chip_info_class);
-	nativeGpioChipClassRef = (*env)->NewGlobalRef(env, native_gpio_chip_class);
-	(*env)->DeleteLocalRef(env, native_gpio_chip_class);
+	gpioChipClassRef = (*env)->NewGlobalRef(env, gpio_chip_class);
+	(*env)->DeleteLocalRef(env, gpio_chip_class);
 	gpioLineClassRef = (*env)->NewGlobalRef(env, gpio_line_class);
 	(*env)->DeleteLocalRef(env, gpio_line_class);
 
@@ -320,9 +320,9 @@ void JNI_OnUnload(JavaVM *jvm, void *reserved) {
 		(*env)->DeleteGlobalRef(env, gpioChipInfoClassRef);
 		gpioChipInfoClassRef = NULL;
 	}
-	if (nativeGpioChipClassRef != NULL) {
-		(*env)->DeleteGlobalRef(env, nativeGpioChipClassRef);
-		nativeGpioChipClassRef = NULL;
+	if (gpioChipClassRef != NULL) {
+		(*env)->DeleteGlobalRef(env, gpioChipClassRef);
+		gpioChipClassRef = NULL;
 	}
 	if (gpioLineClassRef != NULL) {
 		(*env)->DeleteGlobalRef(env, gpioLineClassRef);
