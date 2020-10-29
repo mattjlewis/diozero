@@ -64,18 +64,18 @@ public class GpioPerfTest {
 			System.exit(1);
 		}
 		
-		int pin = Integer.parseInt(args[0]);
+		int gpio_num = Integer.parseInt(args[0]);
 		
 		int iterations = ITERATIONS;
 		if (args.length > 1) {
 			iterations = Integer.parseInt(args[1]);
 		}
 		
-		test(pin, iterations);
+		test(gpio_num, iterations);
 	}
 	
-	public static void test(int pin, int iterations) {
-		try (DigitalOutputDevice gpio = new DigitalOutputDevice(pin)) {
+	public static void test(int gpioNum, int iterations) {
+		try (DigitalOutputDevice gpio = new DigitalOutputDevice(gpioNum)) {
 			for (int j=0; j<5; j++) {
 				long start_nano = System.nanoTime();
 				for (int i=0; i<iterations; i++) {

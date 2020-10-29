@@ -71,14 +71,17 @@ public class LibraryLoader {
 				}
 				Logger.debug("Looking for lib '" + lib_file + "' on classpath");
 				try (InputStream is = clz.getResourceAsStream(lib_file)) {
-					Path path = Files.createTempFile("lib" + libName, LIBRARY_EXTENSION);
-					path.toFile().deleteOnExit();
-					Files.copy(is, path, StandardCopyOption.REPLACE_EXISTING);
-					Runtime.getRuntime().load(path.toString());
-					loaded = true;
-					Logger.debug("Loaded library '{}' from classpath", libName);
+					if (is != null) {
+						Path path = Files.createTempFile("lib" + libName, LIBRARY_EXTENSION);
+						Files.copy(is, path, StandardCopyOption.REPLACE_EXISTING);
+						Runtime.getRuntime().load(path.toString());
+						path.toFile().delete();
+						loaded = true;
+						Logger.debug("Loaded library '{}' from classpath", libName);
+					}
 				} catch (Throwable t) {
-					Logger.warn("Error loading library '{}' from classpath, trying System.loadLibrary: {}", libName, t);
+					Logger.warn("Error loading library '{}' from classpath, trying System.loadLibrary: {}", libName,
+							t.getMessage());
 				}
 				if (!loaded) {
 					// Try load from the Java system library path (-Djava.library.path)

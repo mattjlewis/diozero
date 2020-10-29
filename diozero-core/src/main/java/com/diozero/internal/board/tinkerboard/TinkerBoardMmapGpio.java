@@ -31,7 +31,6 @@ package com.diozero.internal.board.tinkerboard;
  * #L%
  */
 
-
 import java.nio.ByteOrder;
 import java.nio.IntBuffer;
 
@@ -45,28 +44,30 @@ import com.diozero.util.MmapBufferNative;
 import com.diozero.util.MmapByteBuffer;
 import com.diozero.util.SleepUtil;
 
-/*
+/*-
  * https://github.com/torvalds/linux/blob/master/arch/arm/boot/dts/rk3288.dtsi
  * https://chromium.googlesource.com/chromiumos/third_party/coreboot/+/chromeos-2013.04/src/soc/rockchip/rk3288/gpio.c
+ * Note wiringTB was updated to use in-line asm for digital writes:
+ * https://github.com/TinkerBoard/gpio_lib_c/blob/sbc/tinkerboard/c/wiringPi/wiringTB.c#L735
  */
 public class TinkerBoardMmapGpio implements MmapGpioInterface {
 	private static final String MEM_DEVICE = "/dev/gpiomem";
-	private static final int PMU_BASE		= 0xff730000;
-	private static final int GPIO_BASE		= 0xff750000;
-	private static final int GRF_BASE		= 0xff770000;
-	private static final int GPIO_LENGTH	= 0x00010000;
-	private static final int GPIO_CHANNEL	= 0x00020000;
-	
+	private static final int PMU_BASE = 0xff730000;
+	private static final int GPIO_BASE = 0xff750000;
+	private static final int GRF_BASE = 0xff770000;
+	private static final int GPIO_LENGTH = 0x00010000;
+	private static final int GPIO_CHANNEL = 0x00020000;
+
 	private static final int PAGE_SIZE = 4 * 0x400;
-	
+
 	private static final int UNKNOWN = -1;
-	
+
 	private static final int PMU_GPIO0C_IOMUX_INT_OFFSET = 0x008c / 4;
 	private static final int GRF_GPIO5B_IOMUX_INT_OFFSET = 0x0050 / 4;
 	private static final int GRF_GPIO5C_IOMUX_INT_OFFSET = 0x0054 / 4;
 	private static final int GRF_GPIO6A_IOMUX_INT_OFFSET = 0x005c / 4;
-	//private static final int GRF_GPIO6B_IOMUX_INT_OFFSET = 0x0060 / 4;
-	//private static final int GRF_GPIO6C_IOMUX_INT_OFFSET = 0x0064 / 4;
+	private static final int GRF_GPIO6B_IOMUX_INT_OFFSET = 0x0060 / 4;
+	private static final int GRF_GPIO6C_IOMUX_INT_OFFSET = 0x0064 / 4;
 	private static final int GRF_GPIO7A_IOMUX_INT_OFFSET = 0x006c / 4;
 	private static final int GRF_GPIO7B_IOMUX_INT_OFFSET = 0x0070 / 4;
 	private static final int GRF_GPIO7CL_IOMUX_INT_OFFSET = 0x0074 / 4;
@@ -78,33 +79,34 @@ public class TinkerBoardMmapGpio implements MmapGpioInterface {
 	private static final int GRF_GPIO5B_P_INT_OFFSET = 0x0184 / 4;
 	private static final int GRF_GPIO5C_P_INT_OFFSET = 0x0188 / 4;
 	private static final int GRF_GPIO6A_P_INT_OFFSET = 0x0190 / 4;
-	//private static final int GRF_GPIO6B_P_INT_OFFSET = 0x0194 / 4;
-	//private static final int GRF_GPIO6C_P_INT_OFFSET = 0x0198 / 4;
+	// private static final int GRF_GPIO6B_P_INT_OFFSET = 0x0194 / 4;
+	// private static final int GRF_GPIO6C_P_INT_OFFSET = 0x0198 / 4;
 	private static final int GRF_GPIO7A_P_INT_OFFSET = 0x01a0 / 4;
 	private static final int GRF_GPIO7B_P_INT_OFFSET = 0x01a4 / 4;
 	private static final int GRF_GPIO7C_P_INT_OFFSET = 0x01a8 / 4;
 	private static final int GRF_GPIO8A_P_INT_OFFSET = 0x01b0 / 4;
 	private static final int GRF_GPIO8B_P_INT_OFFSET = 0x01b4 / 4;
-	
+
 	private static final int GPIO_SWPORTA_DR_INT_OFFSET = 0x0000 / 4;
 	private static final int GPIO_SWPORTA_DDR_INT_OFFSET = 0x0004 / 4;
 	private static final int GPIO_EXT_PORTA_INT_OFFSET = 0x0050 / 4;
+
 	private static final int MUX_FUNC_GPIO = 0;
+	// Only for GPIO7_C6 and GPIO7_C7
 	private static final int MUX_FUNC_PWM = 3;
-	
+
 	private GpioBank[] gpioBanks;
 	private MmapByteBuffer pmuMmap;
 	private IntBuffer pmuIntBuffer;
 	private MmapByteBuffer grfMmap;
 	private IntBuffer grfIntBuffer;
-	
+
 	@Override
 	public synchronized void initialise() {
 		if (gpioBanks == null) {
 			gpioBanks = new GpioBank[9];
-			for (int i=0; i<gpioBanks.length; i++) {
-				// #define RK3128_GPIO(x)		(GPIO_BASE+x*GPIO_LENGTH+(x>0)*GPIO_CHANNEL)
-				gpioBanks[i] = new GpioBank(GPIO_BASE + i*GPIO_LENGTH + (i>0 ? GPIO_CHANNEL : 0));
+			for (int i = 0; i < gpioBanks.length; i++) {
+				gpioBanks[i] = new GpioBank(GPIO_BASE + i * GPIO_LENGTH + (i > 0 ? GPIO_CHANNEL : 0));
 			}
 			pmuMmap = MmapBufferNative.createMmapBuffer(MEM_DEVICE, PMU_BASE, PAGE_SIZE);
 			pmuIntBuffer = pmuMmap.getBuffer().order(ByteOrder.LITTLE_ENDIAN).asIntBuffer();
@@ -116,21 +118,19 @@ public class TinkerBoardMmapGpio implements MmapGpioInterface {
 	@Override
 	public synchronized void close() {
 		if (gpioBanks != null) {
-			for (int i=0; i<gpioBanks.length; i++) {
+			for (int i = 0; i < gpioBanks.length; i++) {
 				MmapBufferNative.closeMmapBuffer(gpioBanks[i].mmap.getFd(), gpioBanks[i].mmap.getAddress(),
 						gpioBanks[i].mmap.getLength());
 			}
 			gpioBanks = null;
 		}
 		if (pmuMmap != null) {
-			MmapBufferNative.closeMmapBuffer(pmuMmap.getFd(), pmuMmap.getAddress(),
-					pmuMmap.getLength());
+			MmapBufferNative.closeMmapBuffer(pmuMmap.getFd(), pmuMmap.getAddress(), pmuMmap.getLength());
 			pmuMmap = null;
 			pmuIntBuffer = null;
 		}
 		if (grfMmap != null) {
-			MmapBufferNative.closeMmapBuffer(grfMmap.getFd(), grfMmap.getAddress(),
-					grfMmap.getLength());
+			MmapBufferNative.closeMmapBuffer(grfMmap.getFd(), grfMmap.getAddress(), grfMmap.getLength());
 			grfMmap = null;
 			grfIntBuffer = null;
 		}
@@ -138,83 +138,117 @@ public class TinkerBoardMmapGpio implements MmapGpioInterface {
 
 	@Override
 	public DeviceMode getMode(int gpio) {
+		// https://github.com/TinkerBoard/gpio_lib_c/blob/sbc/tinkerboard/c/wiringPi/wiringTB.c#L370
 		IntBuffer mux_int_buffer = (gpio < 24) ? pmuIntBuffer : grfIntBuffer;
+
 		int iomux_offset = getIoMuxOffsetForGpio(gpio);
 		if (iomux_offset == UNKNOWN) {
 			Logger.warn("Unknown IOMUX offset for GPIO #{}", Integer.valueOf(gpio));
 			return DeviceMode.UNKNOWN;
 		}
-		int config_val = mux_int_buffer.get(iomux_offset);
-		int mux_func;
+
 		int mux_mask = getMuxMask(gpio);
+		if (mux_mask == UNKNOWN) {
+			Logger.warn("Unknown mux mode for GPIO #{}", Integer.valueOf(gpio));
+			return DeviceMode.UNKNOWN;
+		}
+
+		int config_val = mux_int_buffer.get(iomux_offset);
+
+		int mux_func;
 		if (gpio == 238 || gpio == 239) {
-			mux_func = (config_val >> (((gpio-4)%8)*4)) & mux_mask;
+			// The two PWM pins
+			mux_func = (config_val >> (((gpio - 4) % 8) * 4)) & mux_mask;
 		} else {
-			mux_func = (config_val >> ((gpio%8)*2)) & mux_mask;
+			mux_func = (config_val >> ((gpio % 8) * 2)) & mux_mask;
 		}
 
 		DeviceMode mode;
 		if (mux_func == MUX_FUNC_GPIO) {
+			// gpioToBank -
+			// https://github.com/TinkerBoard/gpio_lib_c/blob/sbc/tinkerboard/c/wiringPi/wiringTB.c#L164
+			// gpioToBankPin -
+			// https://github.com/TinkerBoard/gpio_lib_c/blob/sbc/tinkerboard/c/wiringPi/wiringTB.c#L172
 			int bank;
 			int shift;
 			if (gpio < 24) {
-				bank = gpio / 32;
-				shift = gpio % 32;
+				// bank = gpio / 32;
+				bank = 0;
+				// shift = gpio % 32;
+				shift = gpio;
 			} else {
+				// ((gpio - 24) / 32) + 1
 				bank = (gpio + 8) / 32;
+				// (gpio - 24) % 32
 				shift = (gpio + 8) % 32;
 			}
-			if ((gpioBanks[bank].gpioIntBuffer.get(GPIO_SWPORTA_DDR_INT_OFFSET) & 1<<shift) != 0) {
+			if ((gpioBanks[bank].gpioIntBuffer.get(GPIO_SWPORTA_DDR_INT_OFFSET) & 1 << shift) != 0) {
 				mode = DeviceMode.DIGITAL_OUTPUT;
 			} else {
 				mode = DeviceMode.DIGITAL_INPUT;
 			}
-		} else if (mux_func == MUX_FUNC_PWM && (gpio == 238 || gpio == 239)) {
+		} else if ((gpio == 238 || gpio == 239) && mux_func == MUX_FUNC_PWM) {
 			// PWM can be selected on 238 / 239
 			mode = DeviceMode.PWM_OUTPUT;
 		} else {
 			mode = DeviceMode.UNKNOWN;
 		}
-		
+
 		return mode;
 	}
 
 	@Override
 	public void setMode(int gpio, DeviceMode mode) {
 		IntBuffer mux_int_buffer = (gpio < 24) ? pmuIntBuffer : grfIntBuffer;
+
 		int iomux_offset = getIoMuxOffsetForGpio(gpio);
 		if (iomux_offset == UNKNOWN) {
 			Logger.warn("Unknown IOMUX offset for GPIO #{}", Integer.valueOf(gpio));
 			return;
 		}
-		// Configure mode
+
+		// Get the current mode register value
 		int config_val = mux_int_buffer.get(iomux_offset);
+
+		// Configure mode
 		switch (mode) {
 		case DIGITAL_INPUT:
 		case DIGITAL_OUTPUT:
-			if (gpio == 238 || gpio == 239) {
-				config_val = (config_val | (0x0f<<(16+(gpio%8-4)*4))) & (~(0x0f<<((gpio%8-4)*4)));
+			// 1. Configure as GPIO
+			if (gpio == 233 || gpio == 234) {
+				// *(grf+GRF_GPIO7CL_IOMUX/4) = (*(grf+GRF_GPIO7CL_IOMUX/4) |
+				// (0x0f<<(16+(pin%8)*4))) & (~(0x0f<<((pin%8)*4)));
+				config_val = (config_val | (0x0f << (16 + (gpio % 8) * 4))) & (~(0x0f << ((gpio % 8) * 4)));
+			} else if (gpio == 238 || gpio == 239) {
+				config_val = (config_val | (0x0f << (16 + (gpio % 8 - 4) * 4))) & (~(0x0f << ((gpio % 8 - 4) * 4)));
 			} else {
-				config_val = (config_val | (0x03<<((gpio%8)*2+16))) & (~(0x03<<((gpio%8)*2)));
+				config_val = (config_val | (0x03 << ((gpio % 8) * 2 + 16))) & (~(0x03 << ((gpio % 8) * 2)));
 			}
+
+			// Update the mode register
 			mux_int_buffer.put(iomux_offset, config_val);
-			
-			// Set digital direction
+
+			// 2. Set the GPIO direction
 			int bank;
 			int shift;
 			if (gpio < 24) {
-				bank = gpio / 32;
-				shift = gpio % 32;
+				bank = 0;
+				shift = gpio;
 			} else {
 				bank = (gpio + 8) / 32;
 				shift = (gpio + 8) % 32;
 			}
+
+			// Get the current GPIO direction register
 			int gpio_val = gpioBanks[bank].gpioIntBuffer.get(GPIO_SWPORTA_DDR_INT_OFFSET);
+
 			if (mode == DeviceMode.DIGITAL_INPUT) {
-				gpio_val &= ~(1<<shift);
+				gpio_val &= ~(1 << shift);
 			} else {
-				gpio_val |= (1<<shift);
+				gpio_val |= (1 << shift);
 			}
+
+			// Update the GPIO direction register
 			gpioBanks[bank].gpioIntBuffer.put(GPIO_SWPORTA_DDR_INT_OFFSET, gpio_val);
 			break;
 		case PWM_OUTPUT:
@@ -224,6 +258,9 @@ public class TinkerBoardMmapGpio implements MmapGpioInterface {
 			Logger.warn("Invalid mode ({}) for GPIO #{}", mode, Integer.valueOf(gpio));
 			return;
 		}
+		
+		// Seem to need a small delay...
+		SleepUtil.sleepMillis(1);
 	}
 
 	@Override
@@ -250,23 +287,12 @@ public class TinkerBoardMmapGpio implements MmapGpioInterface {
 		int_buffer.put(pud_offset,
 				(int_buffer.get(pud_offset) | (0x03 << ((gpio % 8) * 2 + 16))) & (~(0x03 << ((gpio % 8) * 2)))
 						| (bit1 << ((gpio % 8) * 2 + 1)) | (bit0 << ((gpio % 8) * 2)));
-		//*(grf+pud) = (*(grf+pud) | (0x03<<((pin%8)*2+16))) & (~(0x03<<((pin%8)*2))) | (bit1<<((pin%8)*2+1)) | (bit0<<((pin%8)*2));
+		// *(grf+pud) = (*(grf+pud) | (0x03<<((pin%8)*2+16))) & (~(0x03<<((pin%8)*2))) |
+		// (bit1<<((pin%8)*2+1)) | (bit0<<((pin%8)*2));
 	}
 
 	@Override
 	public boolean gpioRead(int gpio) {
-		/*-
-		 int bank, shift;
-		 if (0 < gpio && gpio<=24) {
-		   bank = gpio / 32;
-		   shift = gpio % 32;
-		 } else {
-		   bank = (gpio + 8) / 32;
-		   shift = (gpio + 8) % 32;
-		 }
-		 return ((*(gpio0[bank] + GPIO_EXT_PORTA_OFFSET / 4)) & (1 << shift)) >> shift;
-		 */
-		
 		int bank;
 		int shift;
 		if (gpio < 24) {
@@ -281,23 +307,6 @@ public class TinkerBoardMmapGpio implements MmapGpioInterface {
 
 	@Override
 	public void gpioWrite(int gpio, boolean value) {
-		// Note this no longer works, needs assembler code. See:
-		// https://github.com/TinkerBoard/gpio_lib_c/blob/sbc/tinkerboard/c/wiringPi/wiringTB.c#L735
-		/*-
-		 int bank, shift;
-		 if (0 < gpio && gpio<=24) {
-		   bank = gpio / 32;
-		   shift = gpio % 32;
-		 } else {
-		   bank = (gpio + 8) / 32;
-		   shift = (gpio + 8) % 32;
-		 }
-		 if (value == 1) {
-		   *(gpio0[bank] + GPIO_SWPORTA_DR_OFFSET / 4) |= (1 << shift);
-		 } else {
-		   *(gpio0[bank] + GPIO_SWPORTA_DR_OFFSET / 4) &= ~(1 << shift);
-		 }
-		 */
 		int bank;
 		int shift;
 		if (gpio < 24) {
@@ -315,7 +324,7 @@ public class TinkerBoardMmapGpio implements MmapGpioInterface {
 		}
 		gpioBanks[bank].gpioIntBuffer.put(GPIO_SWPORTA_DR_INT_OFFSET, reg_val);
 	}
-	
+
 	private static int getIoMuxOffsetForGpio(int gpio) {
 		switch (gpio) {
 		// GPIO0_C1
@@ -372,7 +381,7 @@ public class TinkerBoardMmapGpio implements MmapGpioInterface {
 			return UNKNOWN;
 		}
 	}
-	
+
 	private static int getMuxMask(int gpio) {
 		switch (gpio) {
 		// GPIO0_C1
@@ -431,7 +440,7 @@ public class TinkerBoardMmapGpio implements MmapGpioInterface {
 			return UNKNOWN;
 		}
 	}
-	
+
 	private static int getPudOffsetForGpio(int gpio) {
 		switch (gpio) {
 		// GPIO0
@@ -487,49 +496,76 @@ public class TinkerBoardMmapGpio implements MmapGpioInterface {
 			return UNKNOWN;
 		}
 	}
-	
+
 	private static class GpioBank {
 		MmapByteBuffer mmap;
 		IntBuffer gpioIntBuffer;
-		
+
 		public GpioBank(int offset) {
 			mmap = MmapBufferNative.createMmapBuffer(MEM_DEVICE, offset, PAGE_SIZE);
 			gpioIntBuffer = mmap.getBuffer().order(ByteOrder.LITTLE_ENDIAN).asIntBuffer();
 		}
 	}
-	
+
 	public static void main(String[] args) {
 		LibraryLoader.loadSystemUtils();
+		
+		int gpio;
+		if (args.length > 0) {
+			gpio = Integer.parseInt(args[0]);
+		} else {
+			gpio = 171;
+		}
+		
 		try (TinkerBoardMmapGpio mmap_gpio = new TinkerBoardMmapGpio()) {
 			mmap_gpio.initialise();
-			
-			int gpio = 184;
-			
-			for (int i=0; i<10; i++) {
-				DeviceMode mode = mmap_gpio.getMode(gpio);
-				Logger.debug("Mode for GPIO #{}: {}, value: {}", Integer.valueOf(gpio), mode,
-						Boolean.valueOf(mmap_gpio.gpioRead(gpio)));
-				SleepUtil.sleepSeconds(1);
 
+			DeviceMode mode = mmap_gpio.getMode(gpio);
+			Logger.debug("Mode for GPIO #{}: {}, value: {}", Integer.valueOf(gpio), mode,
+					Boolean.valueOf(mmap_gpio.gpioRead(gpio)));
+
+			for (int i = 0; i < 5; i++) {
 				// Toggle input/output mode
-				mmap_gpio.setMode(gpio,
-						mode == DeviceMode.DIGITAL_INPUT ? DeviceMode.DIGITAL_OUTPUT : DeviceMode.DIGITAL_INPUT);
+				mode = (mode == DeviceMode.DIGITAL_INPUT) ? DeviceMode.DIGITAL_OUTPUT : DeviceMode.DIGITAL_INPUT;
+
+				Logger.debug("Setting mode for GPIO #{} to {}", Integer.valueOf(gpio), mode);
+				mmap_gpio.setMode(gpio, mode);
+				Logger.debug("Configured mode for GPIO #{}: {}, value: {}", Integer.valueOf(gpio),
+						mmap_gpio.getMode(gpio), Boolean.valueOf(mmap_gpio.gpioRead(gpio)));
+
+				SleepUtil.sleepMillis(500);
 			}
-			
+
 			mmap_gpio.setMode(gpio, DeviceMode.DIGITAL_OUTPUT);
-			
-			for (int i=0; i<10; i++) {
+			SleepUtil.sleepMillis(10);
+
+			for (int i = 0; i < 5; i++) {
 				Logger.debug("Setting GPIO #{} to On", Integer.valueOf(gpio));
 				mmap_gpio.gpioWrite(gpio, true);
 				Logger.debug("Mode for GPIO #{}: {}, value: {}", Integer.valueOf(gpio), mmap_gpio.getMode(gpio),
 						Boolean.valueOf(mmap_gpio.gpioRead(gpio)));
-				SleepUtil.sleepSeconds(1);
-				
+
+				SleepUtil.sleepMillis(300);
+
 				Logger.debug("Setting GPIO #{} to Off", Integer.valueOf(gpio));
 				mmap_gpio.gpioWrite(gpio, false);
 				Logger.debug("Mode for GPIO #{}: {}, value: {}", Integer.valueOf(gpio), mmap_gpio.getMode(gpio),
 						Boolean.valueOf(mmap_gpio.gpioRead(gpio)));
-				SleepUtil.sleepSeconds(1);
+
+				SleepUtil.sleepMillis(300);
+			}
+			
+			int iterations = 1_000_000;
+			for (int j = 0; j < 5; j++) {
+				long start_nano = System.nanoTime();
+				for (int i = 0; i < iterations; i++) {
+					mmap_gpio.gpioWrite(gpio, true);
+					mmap_gpio.gpioWrite(gpio, false);
+				}
+				long duration_ns = System.nanoTime() - start_nano;
+
+				Logger.info("Duration for {} iterations: {}s", Integer.valueOf(iterations),
+						String.format("%.4f", Float.valueOf(((float) duration_ns) / 1000 / 1000 / 1000)));
 			}
 		}
 	}

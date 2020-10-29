@@ -15,15 +15,22 @@ public class UnknownBoardInfo extends BoardInfo {
 
 		if (os_name.equals(SystemInfoConstants.LINUX_OS_NAME) && (os_arch.equals(SystemInfoConstants.ARM_32_OS_ARCH)
 				|| os_arch.equals(SystemInfoConstants.ARM_64_OS_ARCH))) {
-			return new GenericLinuxArmBoardInfo(model, revision, memoryKb, os_name, os_arch);
+			return new GenericLinuxArmBoardInfo(UNKNOWN, model, memoryKb, os_name, os_arch);
 		}
 
 		return new UnknownBoardInfo(model, memoryKb, os_name, os_arch);
 	}
 
 	public UnknownBoardInfo(String model, Integer memoryKb, String osName, String osArch) {
-		super(UNKNOWN, model, memoryKb == null ? -1 : memoryKb.intValue(),
-				osName.replace(" ", "").toLowerCase() + "-" + osArch.toLowerCase());
+		this(UNKNOWN, model, memoryKb, osName, osArch);
+	}
+
+	public UnknownBoardInfo(String make, String model, Integer memoryKb, String osName, String osArch) {
+		this(make, model, memoryKb, osName.replace(" ", "").toLowerCase() + "-" + osArch.toLowerCase());
+	}
+
+	public UnknownBoardInfo(String make, String model, Integer memoryKb, String libraryPath) {
+		super(make, model, memoryKb == null ? -1 : memoryKb.intValue(), libraryPath);
 	}
 
 	@Override

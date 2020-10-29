@@ -37,6 +37,7 @@ import java.util.Map;
 import org.tinylog.Logger;
 
 import com.diozero.api.PinInfo;
+import com.diozero.internal.board.GenericLinuxArmBoardInfo;
 import com.diozero.internal.provider.MmapGpioInterface;
 import com.diozero.util.BoardInfo;
 import com.diozero.util.BoardInfoProvider;
@@ -97,12 +98,12 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 	private static Map<Integer, Integer> MEMORY;
 	static {
 		MEMORY = new HashMap<>();
-		MEMORY.put(Integer.valueOf(0), Integer.valueOf(256));
-		MEMORY.put(Integer.valueOf(1), Integer.valueOf(512));
-		MEMORY.put(Integer.valueOf(2), Integer.valueOf(1024));
-		MEMORY.put(Integer.valueOf(3), Integer.valueOf(2048));
-		MEMORY.put(Integer.valueOf(4), Integer.valueOf(4096));
-		MEMORY.put(Integer.valueOf(5), Integer.valueOf(8192));
+		MEMORY.put(Integer.valueOf(0), Integer.valueOf(256_000));
+		MEMORY.put(Integer.valueOf(1), Integer.valueOf(512_000));
+		MEMORY.put(Integer.valueOf(2), Integer.valueOf(1_024_000));
+		MEMORY.put(Integer.valueOf(3), Integer.valueOf(2_048_000));
+		MEMORY.put(Integer.valueOf(4), Integer.valueOf(4_096_000));
+		MEMORY.put(Integer.valueOf(5), Integer.valueOf(8_192_000));
 	}
 
 	private static final String SONY = "Sony";
@@ -262,7 +263,7 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 	 *  +-----+-----+---------+------+---+---Pi 2---+---+------+---------+-----+-----+
 	 * </pre>
 	 */
-	static abstract class PiBoardInfo extends BoardInfo {
+	static abstract class PiBoardInfo extends GenericLinuxArmBoardInfo {
 		private String code;
 		private String pcbRevision;
 		private String manufacturer;
@@ -270,7 +271,7 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 
 		public PiBoardInfo(String code, String model, String pcbRevision, int memory, String manufacturer,
 				String processor) {
-			super(MAKE, model, memory, LIBRARY_PATH);
+			super(MAKE, model, Integer.valueOf(memory), LIBRARY_PATH);
 
 			this.code = code;
 			this.pcbRevision = pcbRevision;
@@ -389,10 +390,7 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 			super(code, model, pcbRevision, memory, manufacturer, processor);
 		}
 
-		@Override
-		public void initialisePins() {
-			// FIXME Externalise this to a file
-
+		public void initialisePinsOld() {
 			int chip = 0;
 			addGeneralPinInfo(1, PinInfo.VCC_3V3);
 			addGeneralPinInfo(2, PinInfo.VCC_5V);
