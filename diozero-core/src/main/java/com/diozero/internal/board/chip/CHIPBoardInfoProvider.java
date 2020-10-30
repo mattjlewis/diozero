@@ -71,7 +71,7 @@ public class CHIPBoardInfoProvider implements BoardInfoProvider {
 		public static final String U13_HEADER = "U13";
 		public static final String U14_HEADER = "U14";
 		
-		private static final int MEMORY = 512;
+		private static final int MEMORY = 512_000;
 		
 		private int xioGpioOffset = 0;
 		private boolean xioGpioOffsetLoaded;

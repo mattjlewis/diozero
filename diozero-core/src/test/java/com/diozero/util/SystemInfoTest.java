@@ -20,23 +20,23 @@ public class SystemInfoTest {
 
 		// CHIP
 		validateBoard("Allwinner sun4i/sun5i Families", "0000", CHIPBoardInfoProvider.MAKE,
-				CHIPBoardInfoProvider.MODEL_CHIP, 512);
+				CHIPBoardInfoProvider.MODEL_CHIP, 512_000);
 		// BeagleBone Black
 		validateBoard("Generic AM33XX (Flattened Device Tree)", "0000", BeagleBoneBoardInfoProvider.MAKE,
-				BeagleBoneBoardInfoProvider.BeagleBoneBlackBoardInfo.MODEL, 512);
+				BeagleBoneBoardInfoProvider.BeagleBoneBlackBoardInfo.MODEL, 512_000);
 		// Asus Tinker Board
 		validateBoard("Rockchip (Device Tree)", "0000", TinkerBoardBoardInfoProvider.MAKE,
-				TinkerBoardBoardInfoProvider.TinkerBoardBoardInfo.MODEL, 2048);
+				TinkerBoardBoardInfoProvider.TinkerBoardBoardInfo.MODEL, 2_048_000);
 		// Odroid C2
 		validateBoard("ODROID-C2", "020b", OdroidBoardInfoProvider.MAKE, OdroidBoardInfoProvider.Model.C2.toString(),
-				2048);
+				2_048_000);
 
 		// Raspberry Pi
 		String hardware = "BCM2835";
 
 		String line = "Revision        : a02082\n";
 		validateBoard(hardware, line.split(":")[1].trim(), RaspberryPiBoardInfoProvider.MAKE,
-				RaspberryPiBoardInfoProvider.MODEL_3B, 1024);
+				RaspberryPiBoardInfoProvider.MODEL_3B, 1_024_000);
 
 		validateBoard(hardware, "0002", RaspberryPiBoardInfoProvider.MAKE, RaspberryPiBoardInfoProvider.MODEL_B, 256);
 		validateBoard(hardware, "0003", RaspberryPiBoardInfoProvider.MAKE, RaspberryPiBoardInfoProvider.MODEL_B, 256);
@@ -63,76 +63,76 @@ public class SystemInfoTest {
 				256);
 		// Pi2B, BCM2836, Sony, 1024MB
 		validateBoard(hardware, "a01040", RaspberryPiBoardInfoProvider.MAKE, RaspberryPiBoardInfoProvider.MODEL_2B,
-				1024);
+				1_024_000);
 		// leonard - Pi2B, BCM2836, 1024MB
 		validateBoard(hardware, "a01041", RaspberryPiBoardInfoProvider.MAKE, RaspberryPiBoardInfoProvider.MODEL_2B,
-				1024);
+				1_024_000);
 		// Pi2B, BCM2836, Embest, 1024MB
 		validateBoard(hardware, "a21041", RaspberryPiBoardInfoProvider.MAKE, RaspberryPiBoardInfoProvider.MODEL_2B,
-				1024);
+				1_024_000);
 		// Pi2B, BCM2837, Embest, 1024MB
 		validateBoard(hardware, "a22042", RaspberryPiBoardInfoProvider.MAKE, RaspberryPiBoardInfoProvider.MODEL_2B,
-				1024);
+				1_024_000);
 		// PiA+, BCM2835, Sony, 512
 		validateBoard(hardware, "900021", RaspberryPiBoardInfoProvider.MAKE, RaspberryPiBoardInfoProvider.MODEL_A_PLUS,
-				512);
+				512_000);
 		// PiB+, BCM2835, Sony, 512
 		validateBoard(hardware, "900032", RaspberryPiBoardInfoProvider.MAKE, RaspberryPiBoardInfoProvider.MODEL_B_PLUS,
-				512);
+				512_000);
 		// matt, shirley - Pi Zero, BCM2835, Sony, 512MB
 		validateBoard(hardware, "900092", RaspberryPiBoardInfoProvider.MAKE, RaspberryPiBoardInfoProvider.MODEL_ZERO,
-				512);
+				512_000);
 		// Pi Zero with DSI camera connector?
 		validateBoard(hardware, "900093", RaspberryPiBoardInfoProvider.MAKE, RaspberryPiBoardInfoProvider.MODEL_ZERO,
-				512);
+				512_000);
 		// obi - Pi Zero W
 		validateBoard(hardware, "9000c1", RaspberryPiBoardInfoProvider.MAKE, RaspberryPiBoardInfoProvider.MODEL_ZERO_W,
-				512);
+				512_000);
 		validateBoard(hardware, "9020e0", RaspberryPiBoardInfoProvider.MAKE, RaspberryPiBoardInfoProvider.MODEL_3A_PLUS,
-				512);
+				512_000);
 		validateBoard(hardware, "920092", RaspberryPiBoardInfoProvider.MAKE, RaspberryPiBoardInfoProvider.MODEL_ZERO,
-				512);
+				512_000);
 		validateBoard(hardware, "920093", RaspberryPiBoardInfoProvider.MAKE, RaspberryPiBoardInfoProvider.MODEL_ZERO,
-				512);
+				512_000);
 		validateBoard(hardware, "900061", RaspberryPiBoardInfoProvider.MAKE,
-				RaspberryPiBoardInfoProvider.COMPUTE_MODULE, 512);
+				RaspberryPiBoardInfoProvider.COMPUTE_MODULE, 512_000);
 		validateBoard(hardware, "a020a0", RaspberryPiBoardInfoProvider.MAKE,
-				RaspberryPiBoardInfoProvider.COMPUTE_MODULE_3, 1024);
+				RaspberryPiBoardInfoProvider.COMPUTE_MODULE_3, 1_024_000);
 		validateBoard(hardware, "a02042", RaspberryPiBoardInfoProvider.MAKE, RaspberryPiBoardInfoProvider.MODEL_2B,
-				1024);
+				1_024_000);
 		validateBoard(hardware, "a220a0", RaspberryPiBoardInfoProvider.MAKE,
-				RaspberryPiBoardInfoProvider.COMPUTE_MODULE_3, 1024);
+				RaspberryPiBoardInfoProvider.COMPUTE_MODULE_3, 1_024_000);
 		// stuart - Pi3B, BCM2837, Sony, 1024MB
 		validateBoard(hardware, "a02082", RaspberryPiBoardInfoProvider.MAKE, RaspberryPiBoardInfoProvider.MODEL_3B,
-				1024);
+				1_024_000);
 		// PiCM3, BCM2837, Sony, 1024MB
 		validateBoard(hardware, "a020a2", RaspberryPiBoardInfoProvider.MAKE,
-				RaspberryPiBoardInfoProvider.COMPUTE_MODULE_3, 1024);
+				RaspberryPiBoardInfoProvider.COMPUTE_MODULE_3, 1_024_000);
 		// Pi3B, BCM2837, Embest, 1024MB
 		validateBoard(hardware, "a22082", RaspberryPiBoardInfoProvider.MAKE, RaspberryPiBoardInfoProvider.MODEL_3B,
-				1024);
+				1_024_000);
 		// Pi3B, BCM2837, Sony Japan, 1024MB
 		validateBoard(hardware, "a32082", RaspberryPiBoardInfoProvider.MAKE, RaspberryPiBoardInfoProvider.MODEL_3B,
-				1024);
+				1_024_000);
 		validateBoard(hardware, "a52082", RaspberryPiBoardInfoProvider.MAKE, RaspberryPiBoardInfoProvider.MODEL_3B,
-				1024);
+				1_024_000);
 		validateBoard(hardware, "a22083", RaspberryPiBoardInfoProvider.MAKE, RaspberryPiBoardInfoProvider.MODEL_3B,
-				1024);
+				1_024_000);
 
 		// CM3+
 		validateBoard(hardware, "a02100", RaspberryPiBoardInfoProvider.MAKE,
-				RaspberryPiBoardInfoProvider.COMPUTE_MODULE_3_PLUS, 1024);
+				RaspberryPiBoardInfoProvider.COMPUTE_MODULE_3_PLUS, 1_024_000);
 
 		// Pi3B+
 		validateBoard(hardware, "a020d3", RaspberryPiBoardInfoProvider.MAKE, RaspberryPiBoardInfoProvider.MODEL_3B_PLUS,
-				1024);
+				1_024_000);
 		// Pi4B
 		validateBoard(RaspberryPiBoardInfoProvider.MAKE + RaspberryPiBoardInfoProvider.MODEL_4B, hardware, "a03111",
-				RaspberryPiBoardInfoProvider.MAKE, RaspberryPiBoardInfoProvider.MODEL_4B, 1024);
+				RaspberryPiBoardInfoProvider.MAKE, RaspberryPiBoardInfoProvider.MODEL_4B, 1_024_000);
 		validateBoard(hardware, "b03111", RaspberryPiBoardInfoProvider.MAKE, RaspberryPiBoardInfoProvider.MODEL_4B,
-				2048);
+				2_048_000);
 		validateBoard(hardware, "c03111", RaspberryPiBoardInfoProvider.MAKE, RaspberryPiBoardInfoProvider.MODEL_4B,
-				4096);
+				4_096_000);
 	}
 
 	private static void validateBoard(String hardware, String revision, String expectedMake, String expectedModel,

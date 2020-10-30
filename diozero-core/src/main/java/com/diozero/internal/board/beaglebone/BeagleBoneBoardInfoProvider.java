@@ -61,7 +61,7 @@ public class BeagleBoneBoardInfoProvider implements BoardInfoProvider {
 		public static final String P8_HEADER = "P8";
 		
 		public static final String MODEL = "Black";
-		private static final int MEMORY = 512;
+		private static final int MEMORY = 512_000;
 		private static final String BBB_LIB_PATH = MAKE.toLowerCase() + "/" + MODEL.toLowerCase();
 		
 		public BeagleBoneBlackBoardInfo() {
