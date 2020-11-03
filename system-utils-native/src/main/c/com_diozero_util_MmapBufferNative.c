@@ -76,7 +76,8 @@ JNIEXPORT jobject JNICALL Java_com_diozero_util_MmapBufferNative_createMmapBuffe
 	return createMmapByteBuffer(env, fd, map_ptr, length);
 }
 
-JNIEXPORT void JNICALL Java_com_diozero_util_MmapBufferNative_closeMmapBuffer(JNIEnv *env, jclass clz, jint fd, jint mapPtr, jint length) {
+JNIEXPORT void JNICALL Java_com_diozero_util_MmapBufferNative_closeMmapBuffer(
+		JNIEnv *env, jclass clz, jint fd, jint mapPtr, jint length) {
 	munmap((void*) mapPtr, length);
 	close((int) fd);
 }

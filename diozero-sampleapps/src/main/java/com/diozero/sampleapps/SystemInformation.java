@@ -62,6 +62,7 @@ public class SystemInformation {
 					"+ GP# + %" + max_length + "s +  gpiod + Physical + gpiod  + %-" + max_length + "s + GP# +%n",
 					"Name", "Name");
 			System.out.format("+-----+-%s-+--------+----------+--------+-%s-+-----+%n", name_dash, name_dash);
+
 			Map<Integer, PinInfo> pins = header_pins_entry.getValue();
 			int index = 0;
 			for (PinInfo pin_info : pins.values()) {
@@ -95,7 +96,7 @@ public class SystemInformation {
 		System.out.format("CPU Temperature: %.2f%n", Float.valueOf(board_info.getCpuTemperature()));
 	}
 
-	private static String getNotDefined(int value) {
+	public static String getNotDefined(int value) {
 		return value == PinInfo.NOT_DEFINED ? "" : Integer.toString(value);
 	}
 }

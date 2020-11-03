@@ -92,6 +92,20 @@ public class SystemInfo implements SystemInfoConstants {
 	 * os.arch: arm
 	 * sun.arch.data.model: 32
 	 * 
+	 * Board: Raspberry Pi 3 Model B
+	 * /etc/os-release PRETTY_NAME:     Raspbian GNU/Linux 10 (buster)
+	 * /proc/device-tree/compatible:	raspberrypi,3-model-b^@brcm,bcm2837^@
+	 * /proc/device-tree/model:         Raspberry Pi 3 Model B Rev 1.2^@
+	 * /proc/device-tree/serial-number: 00000000c2b16ad3^@
+	 * /proc/cpuinfo:
+	 *   Hardware	: BCM2835
+	 *   Revision	: a02082
+	 *   Serial		: 00000000c2b16ad3
+	 *   Model		: Raspberry Pi 3 Model B Rev 1.2
+	 * os.name: Linux
+	 * os.arch: arm
+	 * sun.arch.data.model: 32
+	 * 
 	 * Board: Odroid C2
 	 * /etc/os-release PRETTY_NAME:     Armbian 20.08.17 Buster
 	 * /proc/device-tree/compatible:    hardkernel,odroid-c2^@amlogic,meson-gxbb^@

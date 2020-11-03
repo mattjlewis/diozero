@@ -20,6 +20,8 @@ import com.diozero.util.SleepUtil;
  * Humidity: 10-95 %r.H.
  * IAQ: 0-500
  * https://cdn-shop.adafruit.com/product-files/3660/BME680.pdf
+ * https://github.com/BoschSensortec/BME680_driver/blob/master/bme680.c
+ * https://github.com/pimoroni/bme680-python/blob/master/library/bme680/__init__.py
  */
 public class BME680 implements BarometerInterface, ThermometerInterface, HygrometerInterface {
 	/**

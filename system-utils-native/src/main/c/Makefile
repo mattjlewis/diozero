@@ -6,7 +6,7 @@ INCLUDES = -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/linux -I$(JAVA_HOME)/in
 LFLAGS = 
 SO_FILE_EXT = so
 
-LIBS = -li2c -lgpiod
+LIBS = -Wl,-Bstatic -li2c -lgpiod -Wl,-Bdynamic
 
 SRCS = com_diozero_internal_provider_builtin_gpio_NativeGpioDevice.c \
 	com_diozero_internal_provider_builtin_i2c_NativeI2C.c \

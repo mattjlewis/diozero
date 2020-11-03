@@ -46,6 +46,7 @@ public class GenericLinuxArmBoardInfo extends UnknownBoardInfo {
 			/*- Examples:
 			 * [asus,rk3288-tinker, rockchip,rk3288]
 			 * [raspberrypi,4-model-b,brcm,bcm2711]
+			 * [raspberrypi,3-model-b,brcm,bcm2837]
 			 * [hardkernel,odroid-c2, amlogic,meson-gxbb]
 			 */
 			for (String compatibility : compatible) {

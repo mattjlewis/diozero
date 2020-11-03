@@ -1,4 +1,6 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
@@ -12,8 +14,8 @@
 	<packaging>pom</packaging>
 
 	<!-- NOTE: These dependency declarations are only required to sort this 
-		project to the end of the line in the multi-module build. We need to
-		ensure this distribution project builds AFTER all diozero modules -->
+		project to the end of the line in the multi-module build. We need to ensure 
+		this distribution project builds AFTER all diozero modules -->
 	<dependencies>
 		<dependency>
 			<groupId>com.diozero</groupId>
@@ -37,14 +39,13 @@
 		<!--
 		<dependency>
 			<groupId>com.diozero</groupId>
-			<artifactId>diozero-provider-jdkdio10</artifactId>
+			<artifactId>diozero-provider-jdkdio10</artifactId> 
 			<version>${diozero.version}</version>
-		</dependency>
-		-->
+		</dependency> -->
 		<!--
 		<dependency>
 			<groupId>com.diozero</groupId>
-			<artifactId>diozero-provider-jdkdio11</artifactId>
+			<artifactId>diozero-provider-jdkdio11</artifactId> 
 			<version>${diozero.version}</version>
 		</dependency>
 		-->
@@ -96,7 +97,7 @@
 		<!--
 		<dependency>
 			<groupId>com.diozero</groupId>
-			<artifactId>diozero-imu-visualiser</artifactId>
+			<artifactId>diozero-imu-visualiser</artifactId> 
 			<version>${diozero.version}</version>
 		</dependency>
 		-->

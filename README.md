@@ -304,8 +304,9 @@ This project is hosted on [GitHub](https://github.com/mattjlewis/diozero/), plea
 * Introduce Servo as a device type
 * Try out ConfigurableFirmata - is there actually any difference to the StandardFirmata protocol?
 * Complete ADSL1x15
-* BME680
-* DONE Native support for all devices via mmap (/dev/mem), in particular to improve performance and add support for GPIO pull up/down configuration.
+* Create a Maven archetype
+* DONE BME680
+* DONE Native support for all devices via mmap (/dev/gpiomem), in particular to improve performance and add support for GPIO pull up/down configuration.
 * DONE Wireless access to Firmata devices (network and Bluetooth). E.g. [ESP32](https://learn.sparkfun.com/tutorials/esp32-thing-hookup-guide?_ga=1.116824388.33505106.1471290985#installing-the-esp32-arduino-core) [Firmata GitHub issue #315](https://github.com/firmata/arduino/issues/315)
 
 [Release History](docs/RELEASE.md)

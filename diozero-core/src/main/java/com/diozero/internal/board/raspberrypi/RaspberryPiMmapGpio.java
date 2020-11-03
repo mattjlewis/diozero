@@ -40,6 +40,7 @@ import com.diozero.api.GpioPullUpDown;
 import com.diozero.internal.provider.MmapGpioInterface;
 import com.diozero.util.MmapBufferNative;
 import com.diozero.util.MmapByteBuffer;
+import com.diozero.util.MmapIntBuffer;
 import com.diozero.util.SleepUtil;
 
 @SuppressWarnings("unused")
@@ -78,6 +79,13 @@ public class RaspberryPiMmapGpio implements MmapGpioInterface {
 			13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,
 			14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14
 	};
+	
+	/* BCM2711 has different pulls */
+	private static final int GPPUPPDN0 = 57;
+	private static final int GPPUPPDN1 = 58;
+	private static final int GPPUPPDN2 = 59;
+	private static final int GPPUPPDN3 = 60;
+	
 	// GPIO Pin pull up/down register
 	private static final byte GPPUD = 37;
 	// Offset to the Pull Up Down Clock register
@@ -86,19 +94,26 @@ public class RaspberryPiMmapGpio implements MmapGpioInterface {
 			39,39,39,39,39,39,39,39,39,39,39,39,39,39,39,39,39,39,39,39,39,39,39,39,39,39,39,39,39,39,39,39
 	};
 	
-	private static final int PI_PUD_OFF = 0;
-	private static final int PI_PUD_DOWN = 1;
-	private static final int PI_PUD_UP = 2;
+	private static final int PI_2711_PUD_OFF = 0;
+	private static final int PI_2711_PUD_DOWN = 2;
+	private static final int PI_2711_PUD_UP = 1;
+	
+	private static final int PI_28XX_PUD_OFF = 0;
+	private static final int PI_28XX_PUD_DOWN = 1;
+	private static final int PI_28XX_PUD_UP = 2;
 	
 	private boolean initialised;
-	private MmapByteBuffer mmap;
-	private IntBuffer gpioIntBuffer;
+	private boolean piIs2711;
+	private MmapIntBuffer mmapIntBuffer;
+	
+	public RaspberryPiMmapGpio(boolean piIs2711) {
+		this.piIs2711 = piIs2711;
+	}
 	
 	@Override
 	public synchronized void initialise() {
 		if (! initialised) {
-			mmap = MmapBufferNative.createMmapBuffer(GPIOMEM_DEVICE, 0, GPIOMEM_LEN);
-			gpioIntBuffer = mmap.getBuffer().order(ByteOrder.LITTLE_ENDIAN).asIntBuffer();
+			mmapIntBuffer = new MmapIntBuffer(GPIOMEM_DEVICE, 0, GPIOMEM_LEN, ByteOrder.LITTLE_ENDIAN);
 			
 			initialised = true;
 		}
@@ -107,7 +122,8 @@ public class RaspberryPiMmapGpio implements MmapGpioInterface {
 	@Override
 	public synchronized void close() {
 		if (initialised) {
-			MmapBufferNative.closeMmapBuffer(mmap.getFd(), mmap.getAddress(), mmap.getLength());
+			mmapIntBuffer.close();
+			mmapIntBuffer = null;
 		}
 	}
 	
@@ -121,7 +137,7 @@ public class RaspberryPiMmapGpio implements MmapGpioInterface {
 		int reg = gpio / 10;
 		int shift = (gpio % 10) * 3;
 
-		switch ((gpioIntBuffer.get(reg) >> shift) & 7) {
+		switch (mmapIntBuffer.getShiftRight(reg, shift, 7)) {
 		case 0:
 			return DeviceMode.DIGITAL_INPUT;
 		case 1:
@@ -136,12 +152,23 @@ public class RaspberryPiMmapGpio implements MmapGpioInterface {
 		int reg = gpio / 10;
 		int shift = (gpio % 10) * 3;
 		
+		/*-
+		 * Pi modes:
+		 * #define PI_INPUT  0
+		 * #define PI_OUTPUT 1
+		 * #define PI_ALT0   4
+		 * #define PI_ALT1   5
+		 * #define PI_ALT2   6
+		 * #define PI_ALT3   7
+		 * #define PI_ALT4   3
+		 * #define PI_ALT5   2
+		 */
 		switch (mode) {
 		case DIGITAL_INPUT:
-			gpioIntBuffer.put(reg, gpioIntBuffer.get(reg) & ~(7 << shift));
+			mmapIntBuffer.update(reg, ~(7 << shift));
 			break;
 		case DIGITAL_OUTPUT:
-			gpioIntBuffer.put(reg, (gpioIntBuffer.get(reg) & ~(7 << shift)) | (1 << shift));
+			mmapIntBuffer.update(reg, ~(7 << shift) | (1 << shift));
 			break;
 		default:
 			throw new IllegalArgumentException("Invalid GPIO mode " + mode + " for pin " + gpio);
@@ -150,45 +177,74 @@ public class RaspberryPiMmapGpio implements MmapGpioInterface {
 	
 	@Override
 	public void setPullUpDown(int gpio, GpioPullUpDown pud) {
-		// pigpio:
-		/*
-		gpioReg.put(GPPUD, pud);
-		// Sleep 20us
-		SleepUtil.busySleep(20_000);
-		gpioReg.put(GPPUDCLK0 + gpio >> 5, 1 << (gpio & 0x1F));
-		SleepUtil.busySleep(20_000);
-		gpioReg.put(GPPUD, 0);
-		gpioReg.put(GPPUDCLK0 + gpio >> 5, 0);
-		*/
-		int pi_pud;
-		switch (pud) {
-		case PULL_UP:
-			pi_pud = PI_PUD_UP;
-			break;
-		case PULL_DOWN:
-			pi_pud = PI_PUD_DOWN;
-			break;
-		default:
-		case NONE:
-			pi_pud = PI_PUD_OFF;
-			break;
-		}
+		// See pigpio: https://github.com/joan2937/pigpio/blob/master/pigpio.c#L8880
+		int shift = (gpio & 0xf) << 1;
 		
-		// wiringPi:
-		gpioIntBuffer.put(GPPUD, pi_pud & 3);
-		SleepUtil.busySleep(5_000);
-	    gpioIntBuffer.put(GPIO_TO_PUDCLK[gpio], 1 << (gpio & 0x1F));
-		SleepUtil.busySleep(5_000);
-	    gpioIntBuffer.put(GPPUD, 0);
-		SleepUtil.busySleep(5_000);
-	    gpioIntBuffer.put(GPIO_TO_PUDCLK[gpio], 0);
-		SleepUtil.busySleep(5_000);
+		if (piIs2711) {
+			int pull;
+			switch (pud) {
+			case PULL_UP:
+				pull = PI_2711_PUD_UP;
+				break;
+			case PULL_DOWN:
+				pull = PI_2711_PUD_DOWN;
+				break;
+			case NONE:
+			default:
+				pull = PI_2711_PUD_OFF;
+				break;
+			}
+			
+			/*-
+			 * 
+			bits = *(gpioReg + GPPUPPDN0 + (gpio>>4));
+			bits &= ~(3 << shift);
+			bits |= (pull << shift);
+			*(gpioReg + GPPUPPDN0 + (gpio>>4)) = bits;
+			*/
+			int bits = mmapIntBuffer.get(GPPUPPDN0 + (gpio>>4));
+			bits &= ~(3 << shift);
+			bits |= (pull << shift);
+			mmapIntBuffer.put(GPPUPPDN0 + (gpio>>4), bits);
+		} else {
+			int pull;
+			switch (pud) {
+			case PULL_UP:
+				pull = PI_28XX_PUD_UP;
+				break;
+			case PULL_DOWN:
+				pull = PI_28XX_PUD_DOWN;
+				break;
+			case NONE:
+			default:
+				pull = PI_28XX_PUD_OFF;
+				break;
+			}
+			
+			/*-
+			#define BANK (gpio >> 5)
+			#define BIT  (1 << (gpio & 0x1F))
+			*(gpioReg + GPPUD) = pud;
+			myGpioDelay(1);
+			*(gpioReg + GPPUDCLK0 + BANK) = BIT;
+			myGpioDelay(1);
+			*(gpioReg + GPPUD) = 0;
+			*(gpioReg + GPPUDCLK0 + BANK) = 0;
+			*/
+			mmapIntBuffer.put(GPPUD, pull);
+			SleepUtil.busySleep(1_000);
+			mmapIntBuffer.put(GPIO_TO_PUDCLK[gpio], 1 << (gpio & 0x1F));
+			SleepUtil.busySleep(1_000);
+			mmapIntBuffer.put(GPPUD, 0);
+			mmapIntBuffer.put(GPIO_TO_PUDCLK[gpio], 0);
+		}
 	}
 	
 	@Override
 	public boolean gpioRead(int gpio) {
 		//return (gpioReg.get(GPLEV0 + (gpio >> 5)) & (1 << (gpio & 0x1F))) != 0;
-		return (gpioIntBuffer.get(GPIO_TO_GPLEV[gpio]) & (1 << (gpio & 0x1F))) != 0;
+		//return (mmapIntBuffer.get(GPIO_TO_GPLEV[gpio]) & (1 << (gpio & 0x1F))) != 0;
+		return mmapIntBuffer.get(GPIO_TO_GPLEV[gpio], 1 << (gpio & 0x1F)) != 0;
 	}
 	
 	@Override
@@ -197,12 +253,12 @@ public class RaspberryPiMmapGpio implements MmapGpioInterface {
 			// pigpio
 			//gpioReg.put(GPSET0 + gpio >> 5, 1 << (gpio & 0x1F));
 			// wiringPi
-			gpioIntBuffer.put(GPIO_TO_GPSET[gpio], 1 << (gpio & 0x1F));
+			mmapIntBuffer.put(GPIO_TO_GPSET[gpio], 1 << (gpio & 0x1F));
 		} else {
 			// pigpio
 			//gpioReg.put(GPCLR0 + gpio >> 5, 1 << (gpio & 0x1F));
 			// wiringPi
-			gpioIntBuffer.put(GPIO_TO_GPCLR[gpio], 1 << (gpio & 0x1F));
+			mmapIntBuffer.put(GPIO_TO_GPCLR[gpio], 1 << (gpio & 0x1F));
 		}
 	}
 }
