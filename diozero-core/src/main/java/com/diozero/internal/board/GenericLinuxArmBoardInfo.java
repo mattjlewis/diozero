@@ -19,6 +19,11 @@ import com.diozero.api.DeviceMode;
 import com.diozero.util.SystemInfoConstants;
 
 public class GenericLinuxArmBoardInfo extends UnknownBoardInfo {
+	public GenericLinuxArmBoardInfo(String make, String model, Integer memoryKb) {
+		this(make, model, memoryKb, System.getProperty(SystemInfoConstants.OS_NAME_SYSTEM_PROPERTY),
+				System.getProperty(SystemInfoConstants.OS_ARCH_SYSTEM_PROPERTY));
+	}
+
 	public GenericLinuxArmBoardInfo(String make, String model, Integer memoryKb, String osName, String osArch) {
 		super(make, model, memoryKb, osName, osArch);
 	}

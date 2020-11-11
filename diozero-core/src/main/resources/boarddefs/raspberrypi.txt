@@ -14,6 +14,7 @@ General, DEFAULT, 39, GND
 # TODO Try enabling sysfs PWM, see
 # http://www.jumpnowtek.com/rpi/Using-the-Raspberry-Pi-Hardware-PWM-timers.html
 
+# GPIO, Header, GPIO#, Name, Physical Pin, Modes, Chip, Line
 GPIO, DEFAULT, 0, ID_SDA, 27, , 0, 0
 GPIO, DEFAULT, 1, ID_SCL, 28, , 0, 1
 GPIO, DEFAULT, 2, SDA1, 3, DIGITAL_INPUT | DIGITAL_OUTPUT, 0, 2

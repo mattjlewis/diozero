@@ -118,6 +118,19 @@ public class SystemInfo implements SystemInfoConstants {
 	 * os.name: Linux
 	 * os.arch: aarch64
 	 * sun.arch.data.model: 64
+	 * 
+	 * Board: NanoPi Duo2
+	 * /etc/os-release PRETTY_NAME:     Armbian 20.08.17 Buster
+	 * /proc/device-tree/compatible:    friendlyarm,nanopi-duo2^@allwinner,sun8i-h3^@
+	 * /proc/device-tree/model:         FriendlyElec NanoPi-Duo2^@
+	 * /proc/device-tree/serial-number:	02c00081f71a3058^@
+	 * /proc/cpuinfo:
+	 *   Hardware	: Allwinner sun8i Family
+	 *   Revision	: 0000
+	 *   Serial		: 02c00081f71a3058
+	 * os.name: Linux
+	 * os.arch: arm
+	 * sun.arch.data.model: 32
 	 */
 	private static synchronized void initialise() throws RuntimeIOException {
 		if (!initialised) {

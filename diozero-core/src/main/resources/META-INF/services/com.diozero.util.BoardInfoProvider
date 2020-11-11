@@ -1,3 +1,4 @@
+com.diozero.internal.board.allwinner.AllwinnerSun8iBoardInfoProvider
 com.diozero.internal.board.beaglebone.BeagleBoneBoardInfoProvider
 com.diozero.internal.board.chip.CHIPBoardInfoProvider
 com.diozero.internal.board.odroid.OdroidBoardInfoProvider
