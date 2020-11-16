@@ -568,8 +568,7 @@ public abstract class BaseRemoteServer implements InputEventListener<DigitalInpu
 
 		Response response;
 		try {
-			deviceFactory.provisionI2CDevice(controller, address, request.getAddressSize(),
-					request.getClockFrequency());
+			deviceFactory.provisionI2CDevice(controller, address, request.getAddressSize());
 
 			response = new Response(Response.Status.OK, null, request.getCorrelationId());
 		} catch (RuntimeIOException e) {

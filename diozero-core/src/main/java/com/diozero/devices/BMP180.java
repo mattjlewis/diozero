@@ -96,25 +96,27 @@ public class BMP180 implements ThermometerInterface, BarometerInterface, Closeab
 	// Barometer configuration
 	private BMPMode mode;
 	private I2CDevice i2cDevice;
-	
+
 	/**
 	 * Constructor
+	 * 
 	 * @param mode BMP180 operating mode (low power .. ultra-high resolution)
 	 * @throws RuntimeIOException if an I/O error occurs
 	 **/
 	public BMP180(BMPMode mode) throws RuntimeIOException {
-		this(I2CConstants.BUS_1, I2CConstants.DEFAULT_CLOCK_FREQUENCY, mode);
+		this(I2CConstants.BUS_1, mode);
 	}
-	
-	public BMP180(int controllerNumber, int clockFrequency, BMPMode mode) throws RuntimeIOException {
-		i2cDevice = new I2CDevice(controllerNumber, BMP180_ADDR, I2CConstants.ADDR_SIZE_7, clockFrequency);
-		
+
+	public BMP180(int controllerNumber, BMPMode mode) throws RuntimeIOException {
+		i2cDevice = new I2CDevice(controllerNumber, BMP180_ADDR, I2CConstants.ADDR_SIZE_7);
+
 		this.mode = mode;
 	}
 
 	/**
-	 * This method reads the calibration data common for the Temperature sensor
-	 * and Barometer sensor included in the BMP180
+	 * This method reads the calibration data common for the Temperature sensor and
+	 * Barometer sensor included in the BMP180
+	 * 
 	 * @throws RuntimeIOException if an I/O error occurs
 	 **/
 	public void readCalibrationData() throws RuntimeIOException {
@@ -152,14 +154,13 @@ public class BMP180 implements ThermometerInterface, BarometerInterface, Closeab
 	}
 
 	/**
-	 * Method for reading the temperature. Remember the sensor will provide us
-	 * with raw data, and we need to transform in some analysed value to make
-	 * sense. All the calculations are normally provided by the manufacturer. In
-	 * our case we use the calibration data collected at construction time.
+	 * Method for reading the temperature. Remember the sensor will provide us with
+	 * raw data, and we need to transform in some analysed value to make sense. All
+	 * the calculations are normally provided by the manufacturer. In our case we
+	 * use the calibration data collected at construction time.
 	 *
 	 * @return Temperature in Celsius as a double
-	 * @throws RuntimeIOException
-	 *             If there is an IO error reading the sensor
+	 * @throws RuntimeIOException If there is an IO error reading the sensor
 	 */
 	@Override
 	public float getTemperature() throws RuntimeIOException {
@@ -185,7 +186,7 @@ public class BMP180 implements ThermometerInterface, BarometerInterface, Closeab
 		long val = i2cDevice.readUInt(PRESS_ADDR, I2CConstants.SUB_ADDRESS_SIZE_1_BYTE, 3);
 
 		// ((msb << 16) + (lsb << 8) + xlsb) >> (8 - self._mode)
-		
+
 		return (int) (val >> (8 - mode.getSamplingMode()));
 	}
 
@@ -236,8 +237,8 @@ public class BMP180 implements ThermometerInterface, BarometerInterface, Closeab
 
 	/**
 	 * Relationship between sampling mode and conversion delay (in ms) for each
-	 * sampling mode Ultra low power: 4.5 ms minimum conversion delay Standard:
-	 * 7.5 ms High Resolution: 13.5 ms Ultra high Resolution: 25.5 ms
+	 * sampling mode Ultra low power: 4.5 ms minimum conversion delay Standard: 7.5
+	 * ms High Resolution: 13.5 ms Ultra high Resolution: 25.5 ms
 	 */
 	public static enum BMPMode {
 
@@ -271,8 +272,7 @@ public class BMP180 implements ThermometerInterface, BarometerInterface, Closeab
 		}
 
 		/**
-		 * Return the conversion delay (in ms) associated with this sampling
-		 * mode
+		 * Return the conversion delay (in ms) associated with this sampling mode
 		 *
 		 * @return delay
 		 */
@@ -281,8 +281,7 @@ public class BMP180 implements ThermometerInterface, BarometerInterface, Closeab
 		}
 
 		/**
-		 * Return the pressure command to the control register for this sampling
-		 * mode
+		 * Return the pressure command to the control register for this sampling mode
 		 *
 		 * @return command
 		 */

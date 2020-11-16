@@ -120,8 +120,7 @@ public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFac
 	public PCA9685(int controller, int address, int pwmFrequency) throws RuntimeIOException {
 		super(DEVICE_NAME + "-" + controller + "-" + address);
 		
-		i2cDevice = new I2CDevice(controller, address, I2CConstants.ADDR_SIZE_7, I2CConstants.DEFAULT_CLOCK_FREQUENCY,
-				ByteOrder.BIG_ENDIAN);
+		i2cDevice = new I2CDevice(controller, address, I2CConstants.ADDR_SIZE_7, ByteOrder.BIG_ENDIAN);
 		boardPinInfo = new PCA9685BoardPinInfo();
 		
 		reset();

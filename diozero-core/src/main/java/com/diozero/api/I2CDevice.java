@@ -55,97 +55,64 @@ public class I2CDevice implements Closeable, I2CConstants {
 	private int controller;
 	private int address;
 	private int addressSize;
-	private int clockFrequency;
 	private ByteOrder order;
 
 	/**
-	 * @param controller
-	 *            I2C bus
-	 * @param address
-	 *            I2C device address
-	 * @throws RuntimeIOException
-	 *             If an I/O error occurred
+	 * @param controller I2C bus
+	 * @param address    I2C device address
+	 * @throws RuntimeIOException If an I/O error occurred
 	 */
 	public I2CDevice(int controller, int address) throws RuntimeIOException {
 		this(DeviceFactoryHelper.getNativeDeviceFactory(), controller, address, I2CConstants.ADDR_SIZE_7,
-				I2CConstants.DEFAULT_CLOCK_FREQUENCY, IOUtil.DEFAULT_BYTE_ORDER);
-	}
-
-	/**
-	 * @param controller
-	 *            I2C bus
-	 * @param address
-	 *            I2C device address
-	 * @param order
-	 *            Default byte order for this device
-	 * @throws RuntimeIOException
-	 *             If an I/O error occurred
-	 */
-	public I2CDevice(int controller, int address, ByteOrder order) throws RuntimeIOException {
-		this(DeviceFactoryHelper.getNativeDeviceFactory(), controller, address, I2CConstants.ADDR_SIZE_7,
-				I2CConstants.DEFAULT_CLOCK_FREQUENCY, order);
-	}
-
-	/**
-	 * @param controller
-	 *            I2C bus
-	 * @param address
-	 *            I2C device address
-	 * @param addressSize
-	 *            I2C device address size. Can be 7 or 10
-	 * @param clockFrequency
-	 *            I2C clock frequency
-	 * @throws RuntimeIOException
-	 *             If an I/O error occurred
-	 */
-	public I2CDevice(int controller, int address, int addressSize, int clockFrequency) throws RuntimeIOException {
-		this(DeviceFactoryHelper.getNativeDeviceFactory(), controller, address, addressSize, clockFrequency,
 				IOUtil.DEFAULT_BYTE_ORDER);
 	}
 
 	/**
-	 * @param controller
-	 *            I2C bus
-	 * @param address
-	 *            I2C device address
-	 * @param addressSize
-	 *            I2C device address size. Can be 7 or 10
-	 * @param clockFrequency
-	 *            I2C clock frequency
-	 * @param order
-	 *            Default byte order for this device
-	 * @throws RuntimeIOException
-	 *             If an I/O error occurred.
+	 * @param controller I2C bus
+	 * @param address    I2C device address
+	 * @param order      Default byte order for this device
+	 * @throws RuntimeIOException If an I/O error occurred
 	 */
-	public I2CDevice(int controller, int address, int addressSize, int clockFrequency, ByteOrder order)
-			throws RuntimeIOException {
-		this(DeviceFactoryHelper.getNativeDeviceFactory(), controller, address, addressSize, clockFrequency, order);
+	public I2CDevice(int controller, int address, ByteOrder order) throws RuntimeIOException {
+		this(DeviceFactoryHelper.getNativeDeviceFactory(), controller, address, I2CConstants.ADDR_SIZE_7, order);
 	}
 
 	/**
-	 * @param deviceFactory
-	 *            Device factory to use to provision this device
-	 * @param controller
-	 *            I2C bus
-	 * @param address
-	 *            I2C device address
-	 * @param addressSize
-	 *            I2C device address size. Can be 7 or 10
-	 * @param clockFrequency
-	 *            I2C clock frequency
-	 * @param order
-	 *            Default byte order for this device
-	 * @throws RuntimeIOException
-	 *             If an I/O error occurred
+	 * @param controller  I2C bus
+	 * @param address     I2C device address
+	 * @param addressSize I2C device address size. Can be 7 or 10
+	 * @throws RuntimeIOException If an I/O error occurred
+	 */
+	public I2CDevice(int controller, int address, int addressSize) throws RuntimeIOException {
+		this(DeviceFactoryHelper.getNativeDeviceFactory(), controller, address, addressSize, IOUtil.DEFAULT_BYTE_ORDER);
+	}
+
+	/**
+	 * @param controller  I2C bus
+	 * @param address     I2C device address
+	 * @param addressSize I2C device address size. Can be 7 or 10
+	 * @param order       Default byte order for this device
+	 * @throws RuntimeIOException If an I/O error occurred.
+	 */
+	public I2CDevice(int controller, int address, int addressSize, ByteOrder order) throws RuntimeIOException {
+		this(DeviceFactoryHelper.getNativeDeviceFactory(), controller, address, addressSize, order);
+	}
+
+	/**
+	 * @param deviceFactory Device factory to use to provision this device
+	 * @param controller    I2C bus
+	 * @param address       I2C device address
+	 * @param addressSize   I2C device address size. Can be 7 or 10
+	 * @param order         Default byte order for this device
+	 * @throws RuntimeIOException If an I/O error occurred
 	 */
 	public I2CDevice(I2CDeviceFactoryInterface deviceFactory, int controller, int address, int addressSize,
-			int clockFrequency, ByteOrder order) throws RuntimeIOException {
-		device = deviceFactory.provisionI2CDevice(controller, address, addressSize, clockFrequency);
+			ByteOrder order) throws RuntimeIOException {
+		device = deviceFactory.provisionI2CDevice(controller, address, addressSize);
 
 		this.controller = controller;
 		this.address = address;
 		this.addressSize = addressSize;
-		this.clockFrequency = clockFrequency;
 		this.order = order;
 	}
 
@@ -159,10 +126,6 @@ public class I2CDevice implements Closeable, I2CConstants {
 
 	public int getAddressSize() {
 		return addressSize;
-	}
-
-	public int getClockFrequency() {
-		return clockFrequency;
 	}
 
 	@Override
@@ -186,14 +149,10 @@ public class I2CDevice implements Closeable, I2CConstants {
 	/**
 	 * Writes a single byte to a register
 	 *
-	 * @param register
-	 *            Register to write
-	 * @param subAddressSize
-	 *            sub-address size in bytes (1 or 2)
-	 * @param value
-	 *            Bytes to be written
-	 * @throws RuntimeIOException
-	 *             if an I/O error occurs
+	 * @param register       Register to write
+	 * @param subAddressSize sub-address size in bytes (1 or 2)
+	 * @param value          Bytes to be written
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	public void write(int register, int subAddressSize, byte[] value) throws RuntimeIOException {
 		synchronized (device) {
@@ -242,10 +201,8 @@ public class I2CDevice implements Closeable, I2CConstants {
 	/**
 	 * Read a single byte from an 8-bit device register
 	 * 
-	 * @param regAddr
-	 *            Register regAddr to read from
-	 * @throws RuntimeIOException
-	 *             if an I/O error occurs
+	 * @param regAddr Register regAddr to read from
+	 * @throws RuntimeIOException if an I/O error occurs
 	 * @return the byte read
 	 */
 	public byte readByte(int regAddr) throws RuntimeIOException {
@@ -324,13 +281,10 @@ public class I2CDevice implements Closeable, I2CConstants {
 	/**
 	 * Read a single bit from an 8-bit device register
 	 * 
-	 * @param regAddr
-	 *            Register regAddr to read from
-	 * @param bitNum
-	 *            Bit position to read (0-7)
+	 * @param regAddr Register regAddr to read from
+	 * @param bitNum  Bit position to read (0-7)
 	 * @return bit on/off value
-	 * @throws RuntimeIOException
-	 *             if an I/O error occurs
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	public boolean readBit(int regAddr, int bitNum) throws RuntimeIOException {
 		// int8_t I2Cdev::readBit(uint8_t devAddr, uint8_t regAddr, uint8_t
@@ -343,15 +297,11 @@ public class I2CDevice implements Closeable, I2CConstants {
 	/**
 	 * Read multiple bits from an 8-bit device register
 	 * 
-	 * @param regAddr
-	 *            Register regAddr to read from
-	 * @param bitStart
-	 *            First bit position to read (0-7)
-	 * @param length
-	 *            Number of bits to read (not more than 8)
+	 * @param regAddr  Register regAddr to read from
+	 * @param bitStart First bit position to read (0-7)
+	 * @param length   Number of bits to read (not more than 8)
 	 * @return the byte read
-	 * @throws RuntimeIOException
-	 *             if an I/O error occurs
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	public byte readBits(int regAddr, int bitStart, int length) throws RuntimeIOException {
 		// int8_t I2Cdev::readBits(uint8_t devAddr, uint8_t regAddr, uint8_t
@@ -367,12 +317,9 @@ public class I2CDevice implements Closeable, I2CConstants {
 	/**
 	 * Read multiple bytes from an 8-bit device register
 	 * 
-	 * @param regAddr
-	 *            First register regAddr to read from
-	 * @param length
-	 *            Number of bytes to read
-	 * @throws RuntimeIOException
-	 *             if an I/O error occurs
+	 * @param regAddr First register regAddr to read from
+	 * @param length  Number of bytes to read
+	 * @throws RuntimeIOException if an I/O error occurs
 	 * @return the bytes read
 	 */
 	public byte[] readBytes(int regAddr, int length) throws RuntimeIOException {
@@ -384,14 +331,10 @@ public class I2CDevice implements Closeable, I2CConstants {
 	/**
 	 * write a single bit in an 8-bit device register
 	 * 
-	 * @param regAddr
-	 *            Register regAddr to write to
-	 * @param bitNum
-	 *            Bit position to write (0-7)
-	 * @param value
-	 *            New bit value to write
-	 * @throws RuntimeIOException
-	 *             if an I/O error occurs
+	 * @param regAddr Register regAddr to write to
+	 * @param bitNum  Bit position to write (0-7)
+	 * @param value   New bit value to write
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	public void writeBit(int regAddr, int bitNum, int value) throws RuntimeIOException {
 		// bool I2Cdev::writeBit(uint8_t devAddr, uint8_t regAddr, uint8_t
@@ -402,14 +345,10 @@ public class I2CDevice implements Closeable, I2CConstants {
 	/**
 	 * write a single bit in an 8-bit device register
 	 * 
-	 * @param regAddr
-	 *            Register regAddr to write to
-	 * @param bitNum
-	 *            Bit position to write (0-7)
-	 * @param value
-	 *            New bit value to write
-	 * @throws RuntimeIOException
-	 *             if an I/O error occurs
+	 * @param regAddr Register regAddr to write to
+	 * @param bitNum  Bit position to write (0-7)
+	 * @param value   New bit value to write
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	public void writeBit(int regAddr, int bitNum, boolean value) throws RuntimeIOException {
 		// bool I2Cdev::writeBit(uint8_t devAddr, uint8_t regAddr, uint8_t
@@ -422,16 +361,11 @@ public class I2CDevice implements Closeable, I2CConstants {
 	/**
 	 * Write multiple bits in an 8-bit device register
 	 * 
-	 * @param regAddr
-	 *            Register regAddr to write to
-	 * @param bitStart
-	 *            First bit position to write (0-7)
-	 * @param length
-	 *            Number of bits to write (not more than 8)
-	 * @param data
-	 *            Right-aligned value to write
-	 * @throws RuntimeIOException
-	 *             if an I/O error occurs
+	 * @param regAddr  Register regAddr to write to
+	 * @param bitStart First bit position to write (0-7)
+	 * @param length   Number of bits to write (not more than 8)
+	 * @param data     Right-aligned value to write
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	public void writeBits(int regAddr, int bitStart, int length, int data) throws RuntimeIOException {
 		// bool I2Cdev::writeBits(uint8_t devAddr, uint8_t regAddr, uint8_t
@@ -459,14 +393,10 @@ public class I2CDevice implements Closeable, I2CConstants {
 	/**
 	 * Writes a single byte to a register
 	 *
-	 * @param register
-	 *            Register to write
-	 * @param subAddressSize
-	 *            sub-address size in bytes (1 or 2)
-	 * @param value
-	 *            Byte to be written
-	 * @throws RuntimeIOException
-	 *             if an I/O error occurs
+	 * @param register       Register to write
+	 * @param subAddressSize sub-address size in bytes (1 or 2)
+	 * @param value          Byte to be written
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	public void write(int register, int subAddressSize, byte value) throws RuntimeIOException {
 		synchronized (device) {
@@ -477,12 +407,9 @@ public class I2CDevice implements Closeable, I2CConstants {
 	/**
 	 * Write a single byte to an 8-bit device register
 	 * 
-	 * @param regAddr
-	 *            Register address to write to
-	 * @param data
-	 *            New byte value to write
-	 * @throws RuntimeIOException
-	 *             if an I/O error occurs
+	 * @param regAddr Register address to write to
+	 * @param data    New byte value to write
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	public void writeByte(int regAddr, int data) throws RuntimeIOException {
 		// bool I2Cdev::writeByte(uint8_t devAddr, uint8_t regAddr, uint8_t
@@ -495,12 +422,9 @@ public class I2CDevice implements Closeable, I2CConstants {
 	/**
 	 * Write a single byte to an 8-bit device register
 	 * 
-	 * @param regAddr
-	 *            Register address to write to
-	 * @param data
-	 *            New byte value to write
-	 * @throws RuntimeIOException
-	 *             if an I/O error occurs
+	 * @param regAddr Register address to write to
+	 * @param data    New byte value to write
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	public void writeByte(int regAddr, byte data) throws RuntimeIOException {
 		// bool I2Cdev::writeByte(uint8_t devAddr, uint8_t regAddr, uint8_t
@@ -513,12 +437,9 @@ public class I2CDevice implements Closeable, I2CConstants {
 	/**
 	 * Write a single word to a 16-bit device register
 	 * 
-	 * @param regAddr
-	 *            Register address to write to
-	 * @param data
-	 *            New word value to write
-	 * @throws RuntimeIOException
-	 *             if an I/O error occurs
+	 * @param regAddr Register address to write to
+	 * @param data    New word value to write
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	public void writeWord(int regAddr, int data) throws RuntimeIOException {
 		// bool I2Cdev::writeWord(uint8_t devAddr, uint8_t regAddr, uint16_t
@@ -529,11 +450,10 @@ public class I2CDevice implements Closeable, I2CConstants {
 		buffer.flip();
 
 		/*
-		byte[] array = new byte[buffer.remaining()];
-		buffer.get(array);
-		write(regAddr, SUB_ADDRESS_SIZE_2_BYTES, array);
-		*/
-		
+		 * byte[] array = new byte[buffer.remaining()]; buffer.get(array);
+		 * write(regAddr, SUB_ADDRESS_SIZE_2_BYTES, array);
+		 */
+
 		synchronized (device) {
 			device.writeI2CBlockData(regAddr, SUB_ADDRESS_SIZE_2_BYTES, buffer);
 		}
@@ -542,14 +462,10 @@ public class I2CDevice implements Closeable, I2CConstants {
 	/**
 	 * Write multiple bytes to an 8-bit device register
 	 * 
-	 * @param regAddr
-	 *            First register address to write to
-	 * @param length
-	 *            Number of bytes to write
-	 * @param data
-	 *            Buffer to copy new data from
-	 * @throws RuntimeIOException
-	 *             if an I/O error occurs
+	 * @param regAddr First register address to write to
+	 * @param length  Number of bytes to write
+	 * @param data    Buffer to copy new data from
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	public void writeBytes(int regAddr, int length, byte[] data) throws RuntimeIOException {
 		writeBytes(regAddr, length, data, 0);
@@ -597,6 +513,12 @@ public class I2CDevice implements Closeable, I2CConstants {
 	public void write(byte[] data, ByteOrder order) throws RuntimeIOException {
 		ByteBuffer buffer = ByteBuffer.wrap(data);
 		buffer.order(order);
+		synchronized (device) {
+			device.write(buffer);
+		}
+	}
+
+	public void write(ByteBuffer buffer) throws RuntimeIOException {
 		synchronized (device) {
 			device.write(buffer);
 		}

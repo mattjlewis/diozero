@@ -242,14 +242,13 @@ public class DiozeroProtosConverter {
 	}
 
 	public static I2COpen convert(DiozeroProtos.I2C.OpenRequest obj) {
-		return new I2COpen(obj.getController(), obj.getAddress(), obj.getAddressSize(), obj.getClockFrequency(),
-				obj.getCorrelationId());
+		return new I2COpen(obj.getController(), obj.getAddress(), obj.getAddressSize(), obj.getCorrelationId());
 	}
 
 	public static DiozeroProtos.I2C.OpenRequest convert(I2COpen obj) {
 		return DiozeroProtos.I2C.OpenRequest.newBuilder().setController(obj.getController())
 				.setAddress(obj.getAddress()).setAddressSize(obj.getAddressSize())
-				.setClockFrequency(obj.getClockFrequency()).setCorrelationId(obj.getCorrelationId()).build();
+				.setCorrelationId(obj.getCorrelationId()).build();
 	}
 
 	public static I2CReadByte convert(DiozeroProtos.I2C.ReadByteRequest obj) {

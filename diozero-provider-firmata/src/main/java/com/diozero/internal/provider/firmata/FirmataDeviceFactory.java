@@ -213,9 +213,9 @@ public class FirmataDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	public I2CDeviceInterface createI2CDevice(String key, int controller, int address, int addressSize,
-			int clockFrequency) throws RuntimeIOException {
-		return new FirmataI2CDevice(this, key, controller, address, addressSize, clockFrequency);
+	public I2CDeviceInterface createI2CDevice(String key, int controller, int address, int addressSize)
+			throws RuntimeIOException {
+		return new FirmataI2CDevice(this, key, controller, address, addressSize);
 	}
 
 	@Override

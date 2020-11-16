@@ -106,8 +106,8 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 	 * @param addressSize Address size (7 or 10)
 	 * @param clockFreq I2C clock frequency
 	 */
-	public MPU9150Driver(int controllerNumber, int addressSize, int clockFreq) throws RuntimeIOException {
-		this(controllerNumber, addressSize, clockFreq, MPU9150_DEFAULT_ADDRESS);
+	public MPU9150Driver(int controllerNumber, int addressSize) throws RuntimeIOException {
+		this(controllerNumber, addressSize, MPU9150_DEFAULT_ADDRESS);
 	}
 	
 	/**
@@ -118,8 +118,8 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 	 * @param devAddr address I2C address
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
-	public MPU9150Driver(int controllerNumber, int addressSize, int clockFreq, int devAddr) throws RuntimeIOException {
-		i2cDevice = new I2CDevice(controllerNumber, devAddr, addressSize, clockFreq);
+	public MPU9150Driver(int controllerNumber, int addressSize, int devAddr) throws RuntimeIOException {
+		i2cDevice = new I2CDevice(controllerNumber, devAddr, addressSize);
 		this.devAddr = devAddr;
 	}
 	
@@ -1434,14 +1434,14 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 
 		compass_addr = akm_addr;
 
-		magSensor = new AK8975Driver(i2cDevice.getController(), i2cDevice.getAddressSize(), i2cDevice.getClockFrequency(), compass_addr);
+		magSensor = new AK8975Driver(i2cDevice.getController(), i2cDevice.getAddressSize(), compass_addr);
 		magSensor.init();
 
 		mpu_set_bypass(false);
 		
 		/* Set up master mode, master clock, and ES bit. */
 		byte data = 0x40;
-		/*
+		/*-
 		 * IST_MST_CLK is Bit3-Bit0
 		 * I2C_MST_CLK	I2C Master Clock Speed	8MHz Clock Divider
 		 * 0			348 kHz					23

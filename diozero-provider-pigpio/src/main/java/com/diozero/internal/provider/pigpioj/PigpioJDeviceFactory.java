@@ -154,8 +154,8 @@ public class PigpioJDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	public I2CDeviceInterface createI2CDevice(String key, int controller, int address, int addressSize,
-			int clockFrequency) throws RuntimeIOException {
+	public I2CDeviceInterface createI2CDevice(String key, int controller, int address, int addressSize)
+			throws RuntimeIOException {
 		return new PigpioJI2CDevice(key, this, pigpioImpl, controller, address, addressSize);
 	}
 

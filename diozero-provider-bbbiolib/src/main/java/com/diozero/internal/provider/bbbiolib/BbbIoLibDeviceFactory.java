@@ -135,9 +135,9 @@ public class BbbIoLibDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	public I2CDeviceInterface createI2CDevice(String key, int controller, int address, int addressSize,
-			int clockFrequency) throws RuntimeIOException {
-		return new DefaultI2CDevice(this, key, controller, address, addressSize, clockFrequency);
+	public I2CDeviceInterface createI2CDevice(String key, int controller, int address, int addressSize)
+			throws RuntimeIOException {
+		return new DefaultI2CDevice(this, key, controller, address, addressSize);
 	}
 
 	@Override

@@ -54,7 +54,7 @@ public class WiringPiI2CDevice extends AbstractDevice implements I2CDeviceInterf
 	private I2CDevice device;
 	
 	public WiringPiI2CDevice(String key, DeviceFactoryInterface deviceFactory, int controller, int address,
-			int addressSize, int clockFrequency) throws RuntimeIOException {
+			int addressSize) throws RuntimeIOException {
 		super(key, deviceFactory);
 		
 		this.controller = controller;

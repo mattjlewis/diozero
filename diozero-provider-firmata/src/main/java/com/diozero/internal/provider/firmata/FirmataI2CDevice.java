@@ -67,7 +67,7 @@ public class FirmataI2CDevice extends AbstractDevice implements I2CDeviceInterfa
 	private Map<Integer, LinkedList<I2CEvent>> eventQueues;
 
 	public FirmataI2CDevice(FirmataDeviceFactory deviceFactory, String key, int controller, int address,
-			int addressSize, int clockFrequency) {
+			int addressSize) {
 		super(key, deviceFactory);
 		
 		lock = new ReentrantLock();

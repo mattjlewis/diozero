@@ -31,7 +31,6 @@ package com.diozero.internal.provider.builtin;
  * #L%
  */
 
-
 import java.nio.ByteBuffer;
 
 import org.tinylog.Logger;
@@ -52,17 +51,17 @@ public class DefaultI2CDevice extends AbstractDevice implements I2CDeviceInterfa
 	private static boolean I2C_SLAVE_FORCE = false;
 	static {
 		LibraryLoader.loadSystemUtils();
-		
+
 		USE_SYSFS = PropertyUtil.isPropertySet("I2C_USE_SYSFS");
 		I2C_SLAVE_FORCE = PropertyUtil.isPropertySet("I2C_SLAVE_FORCE");
 	}
-	
+
 	private I2CSMBusInterface i2cDevice;
-	
-	public DefaultI2CDevice(DeviceFactoryInterface deviceFactory, String key, int controller,
-			int address, int addressSize, int frequency) {
+
+	public DefaultI2CDevice(DeviceFactoryInterface deviceFactory, String key, int controller, int address,
+			int addressSize) {
 		super(key, deviceFactory);
-		
+
 		boolean force = I2C_SLAVE_FORCE;
 
 		if (USE_SYSFS) {
@@ -72,17 +71,17 @@ public class DefaultI2CDevice extends AbstractDevice implements I2CDeviceInterfa
 			i2cDevice = new NativeI2CDeviceSMBus(controller, address, force);
 		}
 	}
-	
+
 	@Override
 	public boolean probe(I2CDevice.ProbeMode mode) {
 		return i2cDevice.probe(mode);
 	}
-	
+
 	@Override
 	public byte readByte() throws RuntimeIOException {
 		return i2cDevice.readByte();
 	}
-	
+
 	@Override
 	public void writeByte(byte b) throws RuntimeIOException {
 		i2cDevice.writeByte(b);

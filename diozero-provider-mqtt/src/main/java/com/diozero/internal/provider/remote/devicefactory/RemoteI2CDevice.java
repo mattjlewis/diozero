@@ -61,15 +61,15 @@ public class RemoteI2CDevice extends AbstractDevice implements I2CDeviceInterfac
 	private int controller;
 	private int address;
 
-	public RemoteI2CDevice(RemoteDeviceFactory deviceFactory, String key, int controller, int address, int addressSize,
-			int clockFrequency) {
+	public RemoteI2CDevice(RemoteDeviceFactory deviceFactory, String key, int controller, int address,
+			int addressSize) {
 		super(key, deviceFactory);
 
 		this.deviceFactory = deviceFactory;
 		this.controller = controller;
 		this.address = address;
 
-		I2COpen request = new I2COpen(controller, address, addressSize, clockFrequency, UUID.randomUUID().toString());
+		I2COpen request = new I2COpen(controller, address, addressSize, UUID.randomUUID().toString());
 
 		Response response = deviceFactory.getProtocolHandler().request(request);
 		if (response.getStatus() != Response.Status.OK) {

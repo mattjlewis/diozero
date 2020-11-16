@@ -152,9 +152,9 @@ public class RemoteDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	public I2CDeviceInterface createI2CDevice(String key, int controller, int address, int addressSize,
-			int clockFrequency) throws RuntimeIOException {
-		return new RemoteI2CDevice(this, key, controller, address, addressSize, clockFrequency);
+	public I2CDeviceInterface createI2CDevice(String key, int controller, int address, int addressSize)
+			throws RuntimeIOException {
+		return new RemoteI2CDevice(this, key, controller, address, addressSize);
 	}
 
 	@Override
@@ -164,11 +164,11 @@ public class RemoteDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	public SerialDeviceInterface createSerialDevice(String key, String deviceFile, int baud, SerialDevice.DataBits dataBits,
-			SerialDevice.StopBits stopBits, SerialDevice.Parity parity, boolean readBlocking, int minReadChars,
-			int readTimeoutMillis) throws RuntimeIOException {
-		return new RemoteSerialDevice(this, key, deviceFile, baud, dataBits, stopBits, parity, readBlocking, minReadChars,
-				readTimeoutMillis);
+	public SerialDeviceInterface createSerialDevice(String key, String deviceFile, int baud,
+			SerialDevice.DataBits dataBits, SerialDevice.StopBits stopBits, SerialDevice.Parity parity,
+			boolean readBlocking, int minReadChars, int readTimeoutMillis) throws RuntimeIOException {
+		return new RemoteSerialDevice(this, key, deviceFile, baud, dataBits, stopBits, parity, readBlocking,
+				minReadChars, readTimeoutMillis);
 	}
 
 	boolean digitalRead(int gpio) {

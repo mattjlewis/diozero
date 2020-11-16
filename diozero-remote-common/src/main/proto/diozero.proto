@@ -203,7 +203,6 @@ message I2C {
 		int32 controller = 2;
 		int32 address = 3;
 		int32 addressSize = 4;
-		int32 clockFrequency = 5;
 	}
 	
 	message ReadByteRequest {

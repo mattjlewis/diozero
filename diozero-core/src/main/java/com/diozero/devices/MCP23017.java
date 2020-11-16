@@ -78,7 +78,7 @@ public class MCP23017 extends MCP23x17 {
 	public MCP23017(int controller, int address, int interruptGpioA, int interruptGpioB) throws RuntimeIOException {
 		super(DEVICE_NAME + "-" + controller + "-" + address, interruptGpioA, interruptGpioB);
 		
-		device = new I2CDevice(controller, address, I2CConstants.ADDR_SIZE_7, I2CConstants.DEFAULT_CLOCK_FREQUENCY);
+		device = new I2CDevice(controller, address, I2CConstants.ADDR_SIZE_7);
 		
 		initialise();
 	}

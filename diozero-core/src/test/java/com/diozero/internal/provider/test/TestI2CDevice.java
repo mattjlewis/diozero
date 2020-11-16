@@ -31,7 +31,6 @@ package com.diozero.internal.provider.test;
  * #L%
  */
 
-
 import java.nio.ByteBuffer;
 
 import org.tinylog.Logger;
@@ -43,8 +42,8 @@ import com.diozero.internal.provider.I2CDeviceInterface;
 import com.diozero.util.RuntimeIOException;
 
 public class TestI2CDevice extends AbstractDevice implements I2CDeviceInterface {
-	public TestI2CDevice(String key, DeviceFactoryInterface deviceFactory, int controller,
-			int address, int addressSize, int clockFrequency) {
+	public TestI2CDevice(String key, DeviceFactoryInterface deviceFactory, int controller, int address,
+			int addressSize) {
 		super(key, deviceFactory);
 	}
 
@@ -52,7 +51,7 @@ public class TestI2CDevice extends AbstractDevice implements I2CDeviceInterface 
 	protected void closeDevice() throws RuntimeIOException {
 		Logger.trace("closeDevice()");
 	}
-	
+
 	@Override
 	public boolean probe(I2CDevice.ProbeMode mode) {
 		return true;
@@ -67,7 +66,7 @@ public class TestI2CDevice extends AbstractDevice implements I2CDeviceInterface 
 	@Override
 	public void writeByte(byte b) throws RuntimeIOException {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override

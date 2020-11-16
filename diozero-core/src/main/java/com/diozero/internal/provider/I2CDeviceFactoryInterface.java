@@ -38,7 +38,7 @@ import com.diozero.util.RuntimeIOException;
 public interface I2CDeviceFactoryInterface extends DeviceFactoryInterface {
 	static final String I2C_PREFIX = "-I2C-";
 
-	default I2CDeviceInterface provisionI2CDevice(int controller, int address, int addressSize, int clockFrequency)
+	default I2CDeviceInterface provisionI2CDevice(int controller, int address, int addressSize)
 			throws RuntimeIOException {
 		String key = createI2CKey(controller, address);
 
@@ -47,13 +47,13 @@ public interface I2CDeviceFactoryInterface extends DeviceFactoryInterface {
 			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
 		}
 
-		I2CDeviceInterface device = createI2CDevice(key, controller, address, addressSize, clockFrequency);
+		I2CDeviceInterface device = createI2CDevice(key, controller, address, addressSize);
 		deviceOpened(device);
 
 		return device;
 	}
 
-	I2CDeviceInterface createI2CDevice(String key, int controller, int address, int addressSize, int clockFrequency)
+	I2CDeviceInterface createI2CDevice(String key, int controller, int address, int addressSize)
 			throws RuntimeIOException;
 
 	static String createI2CKey(String keyPrefix, int controller, int address) {

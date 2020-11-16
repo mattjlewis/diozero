@@ -66,16 +66,16 @@ public class PCF8574 extends AbstractDeviceFactory implements GpioDeviceFactoryI
 	private MutableByte directions;
 	private BoardPinInfo boardPinInfo;
 	
-	public PCF8574(int controller, int address, int addressSize, int frequency) {
-		this(DeviceFactoryHelper.getNativeDeviceFactory(), controller, address, addressSize, frequency);
+	public PCF8574(int controller, int address, int addressSize) {
+		this(DeviceFactoryHelper.getNativeDeviceFactory(), controller, address, addressSize);
 	}
 	
-	public PCF8574(I2CDeviceFactoryInterface deviceFactory, int controller, int address, int addressSize, int frequency) {
+	public PCF8574(I2CDeviceFactoryInterface deviceFactory, int controller, int address, int addressSize) {
 		super(DEVICE_NAME + "-" + controller + "-" + address);
 		
 		boardPinInfo = new PCF8574BoardPinInfo();
 		
-		device = new I2CDevice(deviceFactory, controller, address, addressSize, frequency, ByteOrder.LITTLE_ENDIAN);
+		device = new I2CDevice(deviceFactory, controller, address, addressSize, ByteOrder.LITTLE_ENDIAN);
 		directions = new MutableByte();
 	}
 

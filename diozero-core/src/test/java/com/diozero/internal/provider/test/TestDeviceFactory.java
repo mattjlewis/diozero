@@ -215,16 +215,16 @@ public class TestDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	public I2CDeviceInterface createI2CDevice(String key, int controller, int address, int addressSize,
-			int clockFrequency) throws RuntimeIOException {
+	public I2CDeviceInterface createI2CDevice(String key, int controller, int address, int addressSize)
+			throws RuntimeIOException {
 		if (i2cDeviceClass == null) {
 			throw new IllegalArgumentException("I2C Device implementation class hasn't been set");
 		}
 
 		try {
 			return i2cDeviceClass.getConstructor(String.class, DeviceFactoryInterface.class, int.class, int.class,
-					int.class, int.class).newInstance(key, this, Integer.valueOf(controller), Integer.valueOf(address),
-							Integer.valueOf(addressSize), Integer.valueOf(clockFrequency));
+					int.class).newInstance(key, this, Integer.valueOf(controller), Integer.valueOf(address),
+							Integer.valueOf(addressSize));
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}

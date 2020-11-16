@@ -44,12 +44,12 @@ public class AK8975Driver implements Closeable, AK8975Constants {
 	private short[] mag_sens_adj = new short[3];
 	private I2CDevice i2cDevice;
 
-	public AK8975Driver(int controllerNumber, int addressSize, int clockFrequency) throws RuntimeIOException {
-		this(controllerNumber, addressSize, clockFrequency, AK8975_MAG_ADDRESS);
+	public AK8975Driver(int controllerNumber, int addressSize) throws RuntimeIOException {
+		this(controllerNumber, addressSize, AK8975_MAG_ADDRESS);
 	}
 
-	public AK8975Driver(int controllerNumber, int addressSize, int clockFrequency, int address) throws RuntimeIOException {
-		i2cDevice = new I2CDevice(controllerNumber, address, addressSize, clockFrequency);
+	public AK8975Driver(int controllerNumber, int addressSize, int address) throws RuntimeIOException {
+		i2cDevice = new I2CDevice(controllerNumber, address, addressSize);
 	}
 	
 	public void init() throws RuntimeIOException {

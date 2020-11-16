@@ -31,7 +31,6 @@ package com.diozero.devices;
  * #L%
  */
 
-
 import java.io.Closeable;
 import java.nio.ByteOrder;
 
@@ -44,8 +43,9 @@ import com.diozero.api.ThermometerInterface;
 import com.diozero.util.RuntimeIOException;
 
 /**
- * STMicroelectronics HTS221 "ultra compact sensor for relative humidity and temperature". Datasheet:
- * <a href="http://www2.st.com/content/ccc/resource/technical/document/datasheet/4d/9a/9c/ad/25/07/42/34/DM00116291.pdf/files/DM00116291.pdf/jcr:content/translations/en.DM00116291.pdf">http://www2.st.com/content/ccc/resource/technical/document/datasheet/4d/9a/9c/ad/25/07/42/34/DM00116291.pdf/files/DM00116291.pdf/jcr:content/translations/en.DM00116291.pdf</a>
+ * STMicroelectronics HTS221 "ultra compact sensor for relative humidity and
+ * temperature". Datasheet: <a href=
+ * "http://www2.st.com/content/ccc/resource/technical/document/datasheet/4d/9a/9c/ad/25/07/42/34/DM00116291.pdf/files/DM00116291.pdf/jcr:content/translations/en.DM00116291.pdf">http://www2.st.com/content/ccc/resource/technical/document/datasheet/4d/9a/9c/ad/25/07/42/34/DM00116291.pdf/files/DM00116291.pdf/jcr:content/translations/en.DM00116291.pdf</a>
  */
 @SuppressWarnings("unused")
 public class HTS221 implements ThermometerInterface, HygrometerInterface, Closeable {
@@ -56,20 +56,25 @@ public class HTS221 implements ThermometerInterface, HygrometerInterface, Closea
 	private static final int READ = 0x80;
 	/** Humidity and temperature average configuration. */
 	private static final int AV_CONF = 0x10;
-	/** Control Register 1 (power down control, block data update, output data rate). */
+	/**
+	 * Control Register 1 (power down control, block data update, output data rate).
+	 */
 	private static final int CTRL_REG1 = 0x20;
 	/** Control Register 2 (reboot, heater, one shot enable). */
 	private static final int CTRL_REG2 = 0x21;
 	/** Control Register 3 (data ready output signal). */
 	private static final int CTRL_REG3 = 0x22;
-	/** Status register; the content of this register is updated every one-shot reading,
-	 * and after completion of every ODR cycle, regardless of BDU value in CTRL_REG1. */
+	/**
+	 * Status register; the content of this register is updated every one-shot
+	 * reading, and after completion of every ODR cycle, regardless of BDU value in
+	 * CTRL_REG1.
+	 */
 	private static final int STATUS_REG = 0x27;
 	/** Humidity output registers (2s complement, signed short). */
 	private static final int HUMIDITY_OUT = 0x28;
 	/** Temperature output registers (2s complement, signed short). */
 	private static final int TEMP_OUT = 0x2a;
-	
+
 	// Calibration data registers
 	/** Unsigned byte. */
 	private static final int H0_rH_x2 = 0x30;
@@ -88,35 +93,38 @@ public class HTS221 implements ThermometerInterface, HygrometerInterface, Closea
 	private static final int T0_OUT = 0x3c;
 	/** Signed short. */
 	private static final int T1_OUT = 0x3e;
-	
+
 	// Flags for Control Register 1
 	private static final byte CR1_PD_CONTROL_BIT = 7;
-	/** The PD bit is used to turn on the device. The device is in power-down mode when
-	 * PD = ?0? (default value after boot). The device is active when PD is set to ?1?. */
+	/**
+	 * The PD bit is used to turn on the device. The device is in power-down mode
+	 * when PD = ?0? (default value after boot). The device is active when PD is set
+	 * to ?1?.
+	 */
 	private static final byte CR1_PD_CONTROL = (byte) (1 << CR1_PD_CONTROL_BIT);
 	private static final byte CR1_BDU_BIT = 2;
-	/** (0: continuous update; 1: output registers not updated until MSB and LSB reading) */
+	/**
+	 * (0: continuous update; 1: output registers not updated until MSB and LSB
+	 * reading)
+	 */
 	private static final byte CR1_BDU = 1 << CR1_BDU_BIT;
 	private static final byte CR1_ODR_ONE_SHOT = 0b00;
-	private static final byte CR1_ODR_1HZ      = 0b01;
-	private static final byte CR1_ODR_7HZ      = 0b10;
-	private static final byte CR1_ODR_12_5HZ   = 0b11;
-	
+	private static final byte CR1_ODR_1HZ = 0b01;
+	private static final byte CR1_ODR_7HZ = 0b10;
+	private static final byte CR1_ODR_12_5HZ = 0b11;
+
 	/*
-	 * Flags for Status Register
-	 * [7:2]  Reserved
-	 *   [1]  H_DA: Humidity data available. Default value: 0
-	 *        (0: new data for humidity is not yet available;
-	 *         1: new data for humidity is available)
-	 *   [0]  T_DA: Temperature data available. Default value: 0
-	 *        (0: new data for temperature is not yet available;
-	 *         1: new data for temperature is available)
+	 * Flags for Status Register [7:2] Reserved [1] H_DA: Humidity data available.
+	 * Default value: 0 (0: new data for humidity is not yet available; 1: new data
+	 * for humidity is available) [0] T_DA: Temperature data available. Default
+	 * value: 0 (0: new data for temperature is not yet available; 1: new data for
+	 * temperature is available)
 	 */
 	private static final byte SR_H_DA_BIT = 1;
 	private static final byte SR_H_DA = 1 << SR_H_DA_BIT;
 	private static final byte SR_T_DA_BIT = 0;
 	private static final byte SR_T_DA = 1 << SR_T_DA_BIT;
-	
+
 	private I2CDevice device;
 	private float h0Rh;
 	private float h1Rh;
@@ -126,36 +134,37 @@ public class HTS221 implements ThermometerInterface, HygrometerInterface, Closea
 	private float t1DegC;
 	private short t0Out;
 	private short t1Out;
-	
+
 	public HTS221() {
 		this(I2CConstants.BUS_1, DEFAULT_DEVICE_ADDRESS);
 	}
-	
+
 	public HTS221(int controller, int address) throws RuntimeIOException {
-		device = new I2CDevice(controller, address, I2CConstants.ADDR_SIZE_7,
-				I2CConstants.DEFAULT_CLOCK_FREQUENCY, ByteOrder.LITTLE_ENDIAN);
-		
-		// Select average configuration register
-		// Bits [5:3] AVGT2-0 To select the numbers of averaged temperature samples (2 - 256).
-		// Bits [2:0] AVGH2-0 To select the numbers of averaged humidity samples (4 - 512).
-		// Val | Nr. Samples | Noise (RMS)
-		//     | Temp | Hum. | T Deg C | rH% 
-		// 000 |   2  |   4  |  0.08   | 0.4l
-		// 001 |   4  |   8  |  0.05   | 0.3
-		// 010 |   8  |  16  |  0.04   | 0.2
-		// 011 |  16  |  32  |  0.03   | 0.15
-		// 100 |  32  |  64  |  0.02   | 0.1
-		// 101 |  64  | 128  |  0.015  | 0.07
-		// 110 | 128  | 256  |  0.01   | 0.05
-		// 111 | 256  | 512  |  0.007  | 0.03
-		// Temperature average samples = 16, humidity average samples = 32
+		device = new I2CDevice(controller, address, I2CConstants.ADDR_SIZE_7, ByteOrder.LITTLE_ENDIAN);
+
+		/*-
+		 * Select average configuration register
+		 * Bits [5:3] AVGT2-0 To select the numbers of averaged temperature samples (2 - 256).
+		 * Bits [2:0] AVGH2-0 To select the numbers of averaged humidity samples (4 - 512).
+		 * Val | Nr. Samples | Noise (RMS)
+		 *     | Temp | Hum. | T Deg C | rH% 
+		 * 000 |   2  |   4  |  0.08   | 0.4l
+		 * 001 |   4  |   8  |  0.05   | 0.3
+		 * 010 |   8  |  16  |  0.04   | 0.2
+		 * 011 |  16  |  32  |  0.03   | 0.15
+		 * 100 |  32  |  64  |  0.02   | 0.1
+		 * 101 |  64  | 128  |  0.015  | 0.07
+		 * 110 | 128  | 256  |  0.01   | 0.05
+		 * 111 | 256  | 512  |  0.007  | 0.03
+		 * Temperature average samples = 16, humidity average samples = 32
+		 */
 		device.writeByte(AV_CONF, (byte) (0b011 << 3 | 0b011));
-		
+
 		// Select control register1
 		// Power on, block data update, data rate o/p = 12.5 Hz (0x85 / 0b10000101)
 		// RTIMULib uses 0x87 (0b10000111) - 12.5Hz
 		device.writeByte(CTRL_REG1, (byte) (CR1_PD_CONTROL | CR1_BDU | CR1_ODR_12_5HZ));
-		//Thread.sleep(500);
+		// Thread.sleep(500);
 
 		// Read Calibration values from the non-volatile memory of the device
 		// Humidity Calibration values
@@ -172,12 +181,12 @@ public class HTS221 implements ThermometerInterface, HygrometerInterface, Closea
 		// Temperature calibration values (10-bit unsigned)
 		t0DegC = (((t1_t0_msb & 0b0011) << 8) | device.readUByte(T0_degC_x8 | READ)) / 8f;
 		t1DegC = (((t1_t0_msb & 0b1100) << 6) | device.readUByte(T1_degC_x8 | READ)) / 8f;
-		
+
 		// Read T0_OUT & T1_OUT registers
 		t0Out = device.readShort(T0_OUT | READ);
 		t1Out = device.readShort(T1_OUT | READ);
 	}
-	
+
 	@Override
 	public float getRelativeHumidity() {
 		byte status = device.readByte(STATUS_REG);
@@ -185,15 +194,16 @@ public class HTS221 implements ThermometerInterface, HygrometerInterface, Closea
 			Logger.warn("Humidity data not available");
 			return -1;
 		}
-		
+
 		// Read raw humidity
 		short humidity_raw = device.readShort(HUMIDITY_OUT | READ);
-		
+
 		return (h1Rh - h0Rh) * (humidity_raw - h0T0Out) / (h1T0Out - h0T0Out) + h0Rh;
 	}
-	
+
 	/**
 	 * Get temperature (degrees C).
+	 * 
 	 * @return Temperature in degrees C.
 	 */
 	@Override
@@ -203,10 +213,10 @@ public class HTS221 implements ThermometerInterface, HygrometerInterface, Closea
 			Logger.warn("Temperature data not available");
 			return -1;
 		}
-		
+
 		// Read raw temperature
 		int temp_raw = device.readShort(TEMP_OUT | READ);
-		
+
 		return (t1DegC - t0DegC) * (temp_raw - t0Out) / (t1Out - t0Out) + t0DegC;
 	}
 

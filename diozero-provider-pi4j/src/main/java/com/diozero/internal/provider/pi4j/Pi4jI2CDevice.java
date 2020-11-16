@@ -51,7 +51,7 @@ public class Pi4jI2CDevice extends AbstractDevice implements I2CDeviceInterface 
 	private I2CDevice device;
 	
 	public Pi4jI2CDevice(String key, DeviceFactoryInterface deviceFactory, int controller, int address,
-			int addressSize, int clockFrequency) throws RuntimeIOException {
+			int addressSize) throws RuntimeIOException {
 		super(key, deviceFactory);
 		
 		this.controller = controller;

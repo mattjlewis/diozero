@@ -31,7 +31,6 @@ package com.diozero.internal.provider.jdkdio10;
  * #L%
  */
 
-
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
@@ -51,18 +50,19 @@ public class JdkDeviceIoI2CDevice extends AbstractDevice implements I2CDeviceInt
 	private I2CDeviceConfig deviceConfig;
 	private I2CDevice device;
 
-	public JdkDeviceIoI2CDevice(String key, DeviceFactoryInterface deviceFactory,
-			int controllerNumber, int address, int addressSize, int clockFrequency) throws RuntimeIOException {
+	public JdkDeviceIoI2CDevice(String key, DeviceFactoryInterface deviceFactory, int controllerNumber, int address,
+			int addressSize) throws RuntimeIOException {
 		super(key, deviceFactory);
-		
-		this.deviceConfig = new I2CDeviceConfig(controllerNumber, address, addressSize, clockFrequency);
+
+		this.deviceConfig = new I2CDeviceConfig(controllerNumber, address, addressSize,
+				I2CConstants.DEFAULT_CLOCK_FREQUENCY);
 		try {
 			device = DeviceManager.open(deviceConfig);
 		} catch (IOException e) {
 			throw new RuntimeIOException(e);
 		}
 	}
-	
+
 	@Override
 	public boolean isOpen() {
 		return device.isOpen();
@@ -79,7 +79,7 @@ public class JdkDeviceIoI2CDevice extends AbstractDevice implements I2CDeviceInt
 			}
 		}
 	}
-	
+
 	@Override
 	public boolean probe(com.diozero.api.I2CDevice.ProbeMode mode) {
 		try {
@@ -91,9 +91,9 @@ public class JdkDeviceIoI2CDevice extends AbstractDevice implements I2CDeviceInt
 
 	@Override
 	public byte readByte() throws RuntimeIOException {
-		if (! device.isOpen()) {
-			throw new IllegalStateException("I2C Device " +
-					deviceConfig.getControllerNumber() + "-" + deviceConfig.getAddress() + " is closed");
+		if (!device.isOpen()) {
+			throw new IllegalStateException("I2C Device " + deviceConfig.getControllerNumber() + "-"
+					+ deviceConfig.getAddress() + " is closed");
 		}
 
 		byte b;
@@ -106,17 +106,17 @@ public class JdkDeviceIoI2CDevice extends AbstractDevice implements I2CDeviceInt
 		} catch (IOException e) {
 			throw new RuntimeIOException(e);
 		}
-		
+
 		return b;
 	}
 
 	@Override
 	public void writeByte(byte b) throws RuntimeIOException {
-		if (! device.isOpen()) {
-			throw new IllegalStateException("I2C Device " +
-					deviceConfig.getControllerNumber() + "-" + deviceConfig.getAddress() + " is closed");
+		if (!device.isOpen()) {
+			throw new IllegalStateException("I2C Device " + deviceConfig.getControllerNumber() + "-"
+					+ deviceConfig.getAddress() + " is closed");
 		}
-		
+
 		try {
 			device.write(b);
 		} catch (IOException e) {
@@ -126,11 +126,11 @@ public class JdkDeviceIoI2CDevice extends AbstractDevice implements I2CDeviceInt
 
 	@Override
 	public void read(ByteBuffer dst) throws RuntimeIOException {
-		if (! device.isOpen()) {
-			throw new IllegalStateException("I2C Device " +
-					deviceConfig.getControllerNumber() + "-" + deviceConfig.getAddress() + " is closed");
+		if (!device.isOpen()) {
+			throw new IllegalStateException("I2C Device " + deviceConfig.getControllerNumber() + "-"
+					+ deviceConfig.getAddress() + " is closed");
 		}
-		
+
 		int to_read = dst.remaining();
 		try {
 			int read = device.read(dst);
@@ -145,11 +145,11 @@ public class JdkDeviceIoI2CDevice extends AbstractDevice implements I2CDeviceInt
 
 	@Override
 	public void write(ByteBuffer src) throws RuntimeIOException {
-		if (! device.isOpen()) {
-			throw new IllegalStateException("I2C Device " +
-					deviceConfig.getControllerNumber() + "-" + deviceConfig.getAddress() + " is closed");
+		if (!device.isOpen()) {
+			throw new IllegalStateException("I2C Device " + deviceConfig.getControllerNumber() + "-"
+					+ deviceConfig.getAddress() + " is closed");
 		}
-		
+
 		int to_write = src.remaining();
 		try {
 			int written = device.write(src);
@@ -164,11 +164,11 @@ public class JdkDeviceIoI2CDevice extends AbstractDevice implements I2CDeviceInt
 
 	@Override
 	public byte readByteData(int address) throws RuntimeIOException {
-		if (! device.isOpen()) {
-			throw new IllegalStateException("I2C Device " +
-					deviceConfig.getControllerNumber() + "-" + deviceConfig.getAddress() + " is closed");
+		if (!device.isOpen()) {
+			throw new IllegalStateException("I2C Device " + deviceConfig.getControllerNumber() + "-"
+					+ deviceConfig.getAddress() + " is closed");
 		}
-		
+
 		byte b;
 		try {
 			ByteBuffer buffer = ByteBuffer.allocateDirect(1);
@@ -180,24 +180,23 @@ public class JdkDeviceIoI2CDevice extends AbstractDevice implements I2CDeviceInt
 		} catch (IOException e) {
 			throw new RuntimeIOException(e);
 		}
-		
+
 		return b;
 	}
 
 	@Override
 	public void writeByteData(int register, byte b) throws RuntimeIOException {
-		if (! device.isOpen()) {
-			throw new IllegalStateException("I2C Device " +
-					deviceConfig.getControllerNumber() + "-" + deviceConfig.getAddress() + " is closed");
+		if (!device.isOpen()) {
+			throw new IllegalStateException("I2C Device " + deviceConfig.getControllerNumber() + "-"
+					+ deviceConfig.getAddress() + " is closed");
 		}
-		
+
 		try {
 			ByteBuffer buffer = ByteBuffer.allocateDirect(1);
 			buffer.put(b);
 			int written = device.write(register, I2CConstants.SUB_ADDRESS_SIZE_1_BYTE, buffer);
 			if (written != 1) {
-				throw new RuntimeIOException(
-						"Didn't write correct number of bytes, wrote " + written + ", expected 1");
+				throw new RuntimeIOException("Didn't write correct number of bytes, wrote " + written + ", expected 1");
 			}
 		} catch (IOException e) {
 			throw new RuntimeIOException(e);
@@ -206,11 +205,11 @@ public class JdkDeviceIoI2CDevice extends AbstractDevice implements I2CDeviceInt
 
 	@Override
 	public void readI2CBlockData(int address, int subAddressSize, ByteBuffer dst) throws RuntimeIOException {
-		if (! device.isOpen()) {
-			throw new IllegalStateException("I2C Device " +
-					deviceConfig.getControllerNumber() + "-" + deviceConfig.getAddress() + " is closed");
+		if (!device.isOpen()) {
+			throw new IllegalStateException("I2C Device " + deviceConfig.getControllerNumber() + "-"
+					+ deviceConfig.getAddress() + " is closed");
 		}
-		
+
 		int to_read = dst.remaining();
 		try {
 			int read = device.read(address, subAddressSize, dst);
@@ -225,11 +224,11 @@ public class JdkDeviceIoI2CDevice extends AbstractDevice implements I2CDeviceInt
 
 	@Override
 	public void writeI2CBlockData(int register, int subAddressSize, ByteBuffer src) throws RuntimeIOException {
-		if (! device.isOpen()) {
-			throw new IllegalStateException("I2C Device " +
-					deviceConfig.getControllerNumber() + "-" + deviceConfig.getAddress() + " is closed");
+		if (!device.isOpen()) {
+			throw new IllegalStateException("I2C Device " + deviceConfig.getControllerNumber() + "-"
+					+ deviceConfig.getAddress() + " is closed");
 		}
-		
+
 		int to_write = src.remaining();
 		try {
 			int written = device.write(register, subAddressSize, src);

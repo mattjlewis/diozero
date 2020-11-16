@@ -52,11 +52,11 @@ public class JdkDeviceIoI2CDevice extends AbstractDevice implements I2CDeviceInt
 	private I2CDevice device;
 
 	public JdkDeviceIoI2CDevice(String key, DeviceFactoryInterface deviceFactory,
-			int controllerNumber, int address, int addressSize, int clockFrequency) throws RuntimeIOException {
+			int controllerNumber, int address, int addressSize) throws RuntimeIOException {
 		super(key, deviceFactory);
 		
 		deviceConfig = new I2CDeviceConfig.Builder().setControllerNumber(controllerNumber)
-				.setAddress(address, addressSize).setClockFrequency(clockFrequency).build();
+				.setAddress(address, addressSize).setClockFrequency(I2CConstants.DEFAULT_CLOCK_FREQUENCY).build();
 		try {
 			device = DeviceManager.open(deviceConfig);
 		} catch (IOException e) {
