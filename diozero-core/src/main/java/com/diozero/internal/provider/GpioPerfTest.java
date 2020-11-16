@@ -3,7 +3,7 @@ package com.diozero.internal.provider;
 /*-
  * #%L
  * Organisation: diozero
- * Project:      Device I/O Zero - Sample applications
+ * Project:      Device I/O Zero - Core
  * Filename:     GpioPerfTest.java  
  * 
  * This file is part of the diozero project. More information about this project

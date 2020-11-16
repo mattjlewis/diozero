@@ -4,7 +4,7 @@ package com.diozero.internal.provider.builtin;
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - Core
- * Filename:     SysFsI2CDevice.java  
+ * Filename:     DefaultI2CDevice.java  
  * 
  * This file is part of the diozero project. More information about this project
  * can be found at http://www.diozero.com/

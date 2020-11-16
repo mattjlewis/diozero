@@ -288,7 +288,7 @@ public class SerialDevice implements SerialConstants, Closeable {
 	 * Read a single byte returning error responses
 	 * 
 	 * @return Signed integer representation of the data read, including error
-	 *         responses (values < 0)
+	 *         responses (values &lt; 0)
 	 */
 	public int read() {
 		return device.read();

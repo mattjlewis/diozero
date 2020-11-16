@@ -1,6 +1,36 @@
 package com.diozero.devices;
 
-import java.io.IOException;
+/*-
+ * #%L
+ * Organisation: diozero
+ * Project:      Device I/O Zero - Core
+ * Filename:     BME680.java  
+ * 
+ * This file is part of the diozero project. More information about this project
+ * can be found at http://www.diozero.com/
+ * %%
+ * Copyright (C) 2016 - 2020 diozero
+ * %%
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ * #L%
+ */
+
 import java.util.concurrent.LinkedBlockingQueue;
 
 import org.tinylog.Logger;
@@ -310,7 +340,6 @@ public class BME680 implements BarometerInterface, ThermometerInterface, Hygrome
 	 * Create a new BME680 sensor driver connected on the given bus.
 	 *
 	 * @param controller I2C bus the sensor is connected to.
-	 * @throws IOException
 	 */
 	public BME680(final int controller) {
 		this(controller, DEFAULT_I2C_ADDRESS);
@@ -321,7 +350,6 @@ public class BME680 implements BarometerInterface, ThermometerInterface, Hygrome
 	 *
 	 * @param controller I2C bus the sensor is connected to.
 	 * @param address    I2C address of the sensor.
-	 * @throws IOException
 	 */
 	public BME680(final int controller, final int address) {
 		connect(new I2CDevice(controller, address));
@@ -331,7 +359,6 @@ public class BME680 implements BarometerInterface, ThermometerInterface, Hygrome
 	 * Create a new BME680 sensor driver connected to the given I2c device.
 	 *
 	 * @param device I2C device of the sensor.
-	 * @throws IOException
 	 */
 	/* package */ BME680(I2CDevice device) {
 		connect(device);
