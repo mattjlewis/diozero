@@ -6,7 +6,7 @@ import java.util.Collections;
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - Sample applications
- * Filename:     SystemInfoTest.java  
+ * Filename:     SystemInformation.java  
  * 
  * This file is part of the diozero project. More information about this project
  * can be found at http://www.diozero.com/
