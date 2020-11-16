@@ -43,14 +43,12 @@ import com.diozero.api.I2CDevice;
 import com.diozero.api.ThermometerInterface;
 import com.diozero.util.RuntimeIOException;
 
-/**
- * <a href=
- * "https://cdn-shop.adafruit.com/datasheets/BST-BME280_DS001-10.pdf">Datasheet</a>
- * Sample implementations: <a href=
- * "https://github.com/ControlEverythingCommunity/BME280/blob/master/Java/BME280.java">Java</a>
- * <a href=
- * "https://github.com/adafruit/Adafruit_BME280_Library/blob/master/">Adafruit /
- * Python</a> Adafruit_BME280.cpp
+/*-
+ * Datasheet: https://cdn-shop.adafruit.com/datasheets/BST-BME280_DS001-10.pdf
+ * Reference implementation: https://github.com/BoschSensortec/BME280_driver
+ * Sample implementations:
+ * Java: https://github.com/ControlEverythingCommunity/BME280/blob/master/Java/BME280.java
+ * Adafruit / Python: https://github.com/adafruit/Adafruit_BME280_Library/blob/master/Adafruit_BME280.cpp
  */
 public class BME280 implements BarometerInterface, ThermometerInterface, HygrometerInterface {
 	private static final int DEFAULT_ADDRESS = 0x76;
