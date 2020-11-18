@@ -1,9 +1,0 @@
-module com.diozero.provider.wiringpi {
-	requires transitive com.diozero.core;
-	requires tinylog;
-	
-	requires pi4j.core;
-	
-	provides com.diozero.internal.provider.NativeDeviceFactoryInterface
-		with com.diozero.internal.provider.wiringpi.WiringPiDeviceFactory;
-}

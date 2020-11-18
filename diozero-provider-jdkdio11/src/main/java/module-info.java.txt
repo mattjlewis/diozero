@@ -1,7 +1,0 @@
-module com.diozero.provider.jdkdio11 {
-	requires transitive com.diozero.core;
-	requires device.io;
-	
-	provides com.diozero.internal.provider.NativeDeviceFactoryInterface
-		with com.diozero.internal.provider.jdkdio11.JdkDeviceIoDeviceFactory;
-}
