@@ -42,7 +42,7 @@ import java.util.function.Supplier;
 
 import org.tinylog.Logger;
 
-import com.diozero.util.DioZeroScheduler;
+import com.diozero.util.DiozeroScheduler;
 import com.diozero.util.SleepUtil;
 
 public class LambdaTest {
@@ -67,7 +67,7 @@ public class LambdaTest {
 		}
 		
 		Logger.info("Using DioZeroScheduler.invokeAtFixedRate()");
-		ScheduledFuture<?> future1 = DioZeroScheduler.getDaemonInstance().invokeAtFixedRate(t::getValue, t::setValue, 100, 1000, TimeUnit.MILLISECONDS);
+		ScheduledFuture<?> future1 = DiozeroScheduler.getDaemonInstance().invokeAtFixedRate(t::getValue, t::setValue, 100, 1000, TimeUnit.MILLISECONDS);
 		for (int i=0; i<10; i++) {
 			SleepUtil.sleepSeconds(1);
 		}

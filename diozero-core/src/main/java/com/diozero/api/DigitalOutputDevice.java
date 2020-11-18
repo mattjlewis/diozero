@@ -36,7 +36,7 @@ import org.tinylog.Logger;
 import com.diozero.internal.provider.GpioDeviceFactoryInterface;
 import com.diozero.internal.provider.GpioDigitalOutputDeviceInterface;
 import com.diozero.util.DeviceFactoryHelper;
-import com.diozero.util.DioZeroScheduler;
+import com.diozero.util.DiozeroScheduler;
 import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 
@@ -229,7 +229,7 @@ public class DigitalOutputDevice extends GpioDevice implements OutputDeviceInter
 			throws RuntimeIOException {
 		stopOnOffLoop();
 		if (background) {
-			DioZeroScheduler.getDaemonInstance().execute(() -> onOffLoop(onTime, offTime, n, stopAction));
+			DiozeroScheduler.getDaemonInstance().execute(() -> onOffLoop(onTime, offTime, n, stopAction));
 		} else {
 			onOffLoop(onTime, offTime, n, stopAction);
 		}

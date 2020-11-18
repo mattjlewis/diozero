@@ -84,6 +84,11 @@ public class RemoteDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
+	public void start() {
+		protocolHandler.start();
+	}
+
+	@Override
 	public void shutdown() {
 		Logger.trace("shutdown()");
 		protocolHandler.close();

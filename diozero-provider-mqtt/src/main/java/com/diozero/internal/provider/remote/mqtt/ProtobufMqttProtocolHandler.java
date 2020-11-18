@@ -56,20 +56,29 @@ import com.diozero.remote.message.GpioEvents;
 import com.diozero.remote.message.GpioPwmRead;
 import com.diozero.remote.message.GpioPwmReadResponse;
 import com.diozero.remote.message.GpioPwmWrite;
+import com.diozero.remote.message.I2CBlockProcessCall;
+import com.diozero.remote.message.I2CBooleanResponse;
+import com.diozero.remote.message.I2CByteResponse;
+import com.diozero.remote.message.I2CBytesResponse;
 import com.diozero.remote.message.I2CClose;
 import com.diozero.remote.message.I2COpen;
-import com.diozero.remote.message.I2CRead;
+import com.diozero.remote.message.I2CProbe;
+import com.diozero.remote.message.I2CProcessCall;
+import com.diozero.remote.message.I2CReadBlockData;
+import com.diozero.remote.message.I2CReadBlockDataResponse;
 import com.diozero.remote.message.I2CReadByte;
 import com.diozero.remote.message.I2CReadByteData;
-import com.diozero.remote.message.I2CReadByteDataResponse;
-import com.diozero.remote.message.I2CReadByteResponse;
+import com.diozero.remote.message.I2CReadBytes;
 import com.diozero.remote.message.I2CReadI2CBlockData;
-import com.diozero.remote.message.I2CReadI2CBlockDataResponse;
-import com.diozero.remote.message.I2CReadResponse;
-import com.diozero.remote.message.I2CWrite;
+import com.diozero.remote.message.I2CReadWordData;
+import com.diozero.remote.message.I2CWordResponse;
+import com.diozero.remote.message.I2CWriteBlockData;
 import com.diozero.remote.message.I2CWriteByte;
 import com.diozero.remote.message.I2CWriteByteData;
+import com.diozero.remote.message.I2CWriteBytes;
 import com.diozero.remote.message.I2CWriteI2CBlockData;
+import com.diozero.remote.message.I2CWriteQuick;
+import com.diozero.remote.message.I2CWriteWordData;
 import com.diozero.remote.message.ProvisionAnalogInputDevice;
 import com.diozero.remote.message.ProvisionAnalogOutputDevice;
 import com.diozero.remote.message.ProvisionDigitalInputDevice;
@@ -126,7 +135,7 @@ public class ProtobufMqttProtocolHandler extends ProtobufBaseAsyncProtocolHandle
 			throw new RuntimeIOException(e);
 		}
 	}
-	
+
 	@Override
 	public void start() {
 		try {
@@ -256,8 +265,20 @@ public class ProtobufMqttProtocolHandler extends ProtobufBaseAsyncProtocolHandle
 	}
 
 	@Override
-	public I2CReadByteResponse request(I2CReadByte request) {
-		return (I2CReadByteResponse) requestResponse(MqttProviderConstants.I2C_READ_BYTE_TOPIC,
+	public I2CBooleanResponse request(I2CProbe request) {
+		return (I2CBooleanResponse) requestResponse(MqttProviderConstants.I2C_PROBE_TOPIC,
+				DiozeroProtosConverter.convert(request), request.getCorrelationId());
+	}
+
+	@Override
+	public Response request(I2CWriteQuick request) {
+		return requestResponse(MqttProviderConstants.I2C_WRITE_QUICK_TOPIC, DiozeroProtosConverter.convert(request),
+				request.getCorrelationId());
+	}
+
+	@Override
+	public I2CByteResponse request(I2CReadByte request) {
+		return (I2CByteResponse) requestResponse(MqttProviderConstants.I2C_READ_BYTE_TOPIC,
 				DiozeroProtosConverter.convert(request), request.getCorrelationId());
 	}
 
@@ -268,20 +289,20 @@ public class ProtobufMqttProtocolHandler extends ProtobufBaseAsyncProtocolHandle
 	}
 
 	@Override
-	public I2CReadResponse request(I2CRead request) {
-		return (I2CReadResponse) requestResponse(MqttProviderConstants.I2C_READ_TOPIC,
+	public I2CBytesResponse request(I2CReadBytes request) {
+		return (I2CBytesResponse) requestResponse(MqttProviderConstants.I2C_READ_BYTES_TOPIC,
 				DiozeroProtosConverter.convert(request), request.getCorrelationId());
 	}
 
 	@Override
-	public Response request(I2CWrite request) {
-		return requestResponse(MqttProviderConstants.I2C_WRITE_TOPIC, DiozeroProtosConverter.convert(request),
+	public Response request(I2CWriteBytes request) {
+		return requestResponse(MqttProviderConstants.I2C_WRITE_BYTES_TOPIC, DiozeroProtosConverter.convert(request),
 				request.getCorrelationId());
 	}
 
 	@Override
-	public I2CReadByteDataResponse request(I2CReadByteData request) {
-		return (I2CReadByteDataResponse) requestResponse(MqttProviderConstants.I2C_READ_BYTE_DATA_TOPIC,
+	public I2CByteResponse request(I2CReadByteData request) {
+		return (I2CByteResponse) requestResponse(MqttProviderConstants.I2C_READ_BYTE_DATA_TOPIC,
 				DiozeroProtosConverter.convert(request), request.getCorrelationId());
 	}
 
@@ -292,8 +313,44 @@ public class ProtobufMqttProtocolHandler extends ProtobufBaseAsyncProtocolHandle
 	}
 
 	@Override
-	public I2CReadI2CBlockDataResponse request(I2CReadI2CBlockData request) {
-		return (I2CReadI2CBlockDataResponse) requestResponse(MqttProviderConstants.I2C_READ_I2C_BLOCK_DATA_TOPIC,
+	public I2CWordResponse request(I2CReadWordData request) {
+		return (I2CWordResponse) requestResponse(MqttProviderConstants.I2C_READ_BYTE_DATA_TOPIC,
+				DiozeroProtosConverter.convert(request), request.getCorrelationId());
+	}
+
+	@Override
+	public Response request(I2CWriteWordData request) {
+		return requestResponse(MqttProviderConstants.I2C_WRITE_WORD_DATA_TOPIC, DiozeroProtosConverter.convert(request),
+				request.getCorrelationId());
+	}
+
+	@Override
+	public I2CWordResponse request(I2CProcessCall request) {
+		return (I2CWordResponse) requestResponse(MqttProviderConstants.I2C_PROCESS_CALL_TOPIC,
+				DiozeroProtosConverter.convert(request), request.getCorrelationId());
+	}
+
+	@Override
+	public I2CReadBlockDataResponse request(I2CReadBlockData request) {
+		return (I2CReadBlockDataResponse) requestResponse(MqttProviderConstants.I2C_READ_BLOCK_DATA_TOPIC,
+				DiozeroProtosConverter.convert(request), request.getCorrelationId());
+	}
+
+	@Override
+	public Response request(I2CWriteBlockData request) {
+		return requestResponse(MqttProviderConstants.I2C_WRITE_BLOCK_DATA_TOPIC,
+				DiozeroProtosConverter.convert(request), request.getCorrelationId());
+	}
+
+	@Override
+	public I2CBytesResponse request(I2CBlockProcessCall request) {
+		return (I2CBytesResponse) requestResponse(MqttProviderConstants.I2C_BLOCK_PROCESS_CALL_TOPIC,
+				DiozeroProtosConverter.convert(request), request.getCorrelationId());
+	}
+
+	@Override
+	public I2CBytesResponse request(I2CReadI2CBlockData request) {
+		return (I2CBytesResponse) requestResponse(MqttProviderConstants.I2C_READ_I2C_BLOCK_DATA_TOPIC,
 				DiozeroProtosConverter.convert(request), request.getCorrelationId());
 	}
 
@@ -415,15 +472,30 @@ public class ProtobufMqttProtocolHandler extends ProtobufBaseAsyncProtocolHandle
 				processEvent(DiozeroProtosConverter
 						.convert(DiozeroProtos.Gpio.Notification.parseFrom(message.getPayload())));
 				break;
-			case MqttProviderConstants.I2C_READ_BYTE_RESPONSE_TOPIC:
-				DiozeroProtos.I2C.ReadByteResponse i2c_read_byte_response = DiozeroProtos.I2C.ReadByteResponse
+			case MqttProviderConstants.I2C_BOOLEAN_RESPONSE_TOPIC:
+				DiozeroProtos.I2C.BooleanResponse i2c_bool_response = DiozeroProtos.I2C.BooleanResponse
 						.parseFrom(message.getPayload());
-				processResponse(DiozeroProtosConverter.convert(i2c_read_byte_response));
+				processResponse(DiozeroProtosConverter.convert(i2c_bool_response));
 				break;
-			case MqttProviderConstants.I2C_READ_RESPONSE_TOPIC:
-				DiozeroProtos.I2C.ReadResponse i2c_read_response = DiozeroProtos.I2C.ReadResponse
+			case MqttProviderConstants.I2C_BYTE_RESPONSE_TOPIC:
+				DiozeroProtos.I2C.ByteResponse i2c_byte_response = DiozeroProtos.I2C.ByteResponse
 						.parseFrom(message.getPayload());
-				processResponse(DiozeroProtosConverter.convert(i2c_read_response));
+				processResponse(DiozeroProtosConverter.convert(i2c_byte_response));
+				break;
+			case MqttProviderConstants.I2C_WORD_RESPONSE_TOPIC:
+				DiozeroProtos.I2C.WordResponse i2c_word_response = DiozeroProtos.I2C.WordResponse
+						.parseFrom(message.getPayload());
+				processResponse(DiozeroProtosConverter.convert(i2c_word_response));
+				break;
+			case MqttProviderConstants.I2C_BYTES_RESPONSE_TOPIC:
+				DiozeroProtos.I2C.BytesResponse i2c_bytes_response = DiozeroProtos.I2C.BytesResponse
+						.parseFrom(message.getPayload());
+				processResponse(DiozeroProtosConverter.convert(i2c_bytes_response));
+				break;
+			case MqttProviderConstants.I2C_READ_BLOCK_DATA_RESPONSE_TOPIC:
+				DiozeroProtos.I2C.ReadBlockDataResponse i2c_read_block_data_response = DiozeroProtos.I2C.ReadBlockDataResponse
+						.parseFrom(message.getPayload());
+				processResponse(DiozeroProtosConverter.convert(i2c_read_block_data_response));
 				break;
 			case MqttProviderConstants.SPI_RXDATA_RESPONSE_TOPIC:
 				DiozeroProtos.Spi.SpiResponse spi_response = DiozeroProtos.Spi.SpiResponse

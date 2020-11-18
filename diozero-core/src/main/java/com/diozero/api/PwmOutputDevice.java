@@ -39,7 +39,7 @@ import org.tinylog.Logger;
 import com.diozero.internal.provider.PwmOutputDeviceFactoryInterface;
 import com.diozero.internal.provider.PwmOutputDeviceInterface;
 import com.diozero.util.DeviceFactoryHelper;
-import com.diozero.util.DioZeroScheduler;
+import com.diozero.util.DiozeroScheduler;
 import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 
@@ -149,7 +149,7 @@ public class PwmOutputDevice extends GpioDevice implements OutputDeviceInterface
 	protected void onOffLoop(float onTime, float offTime, int n, boolean background) throws RuntimeIOException {
 		stopLoops();
 		if (background) {
-			DioZeroScheduler.getDaemonInstance().execute(() -> {
+			DiozeroScheduler.getDaemonInstance().execute(() -> {
 				backgroundThread = Thread.currentThread();
 				onOffLoop(onTime, offTime, n);
 				Logger.debug("Background on-off loop finished");
@@ -178,7 +178,7 @@ public class PwmOutputDevice extends GpioDevice implements OutputDeviceInterface
 			throws RuntimeIOException {
 		stopLoops();
 		if (background) {
-			DioZeroScheduler.getDaemonInstance().execute(() -> {
+			DiozeroScheduler.getDaemonInstance().execute(() -> {
 				backgroundThread = Thread.currentThread();
 				fadeInOutLoop(fadeTime, steps, iterations);
 				Logger.debug("Background fade in-out loop finished");

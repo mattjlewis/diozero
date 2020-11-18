@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>com.diozero</groupId>
 		<artifactId>diozero</artifactId>
-		<version>0.14</version>
+		<version>1.0.0-SNAPSHOT</version>
 	</parent>
 
 	<name>Device I/O Zero - Distribution</name>
@@ -36,19 +36,6 @@
 			<artifactId>diozero-provider-firmata</artifactId>
 			<version>${diozero.version}</version>
 		</dependency>
-		<!--
-		<dependency>
-			<groupId>com.diozero</groupId>
-			<artifactId>diozero-provider-jdkdio10</artifactId> 
-			<version>${diozero.version}</version>
-		</dependency> -->
-		<!--
-		<dependency>
-			<groupId>com.diozero</groupId>
-			<artifactId>diozero-provider-jdkdio11</artifactId> 
-			<version>${diozero.version}</version>
-		</dependency>
-		-->
 		<dependency>
 			<groupId>com.diozero</groupId>
 			<artifactId>diozero-provider-mmap</artifactId>
@@ -61,22 +48,12 @@
 		</dependency>
 		<dependency>
 			<groupId>com.diozero</groupId>
-			<artifactId>diozero-provider-pi4j</artifactId>
-			<version>${diozero.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.diozero</groupId>
 			<artifactId>diozero-provider-pigpio</artifactId>
 			<version>${diozero.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.diozero</groupId>
 			<artifactId>diozero-provider-voodoospark</artifactId>
-			<version>${diozero.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.diozero</groupId>
-			<artifactId>diozero-provider-wiringpi</artifactId>
 			<version>${diozero.version}</version>
 		</dependency>
 		<dependency>
@@ -94,13 +71,11 @@
 			<artifactId>diozero-imu-sampleapp</artifactId>
 			<version>${diozero.version}</version>
 		</dependency>
-		<!--
 		<dependency>
 			<groupId>com.diozero</groupId>
 			<artifactId>diozero-imu-visualiser</artifactId> 
 			<version>${diozero.version}</version>
 		</dependency>
-		-->
 		<dependency>
 			<groupId>com.diozero</groupId>
 			<artifactId>diozero-sampleapps</artifactId>

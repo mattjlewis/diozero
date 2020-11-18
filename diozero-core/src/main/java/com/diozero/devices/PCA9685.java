@@ -129,8 +129,8 @@ public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFac
 	}
 	
 	private void reset() throws RuntimeIOException {
-		i2cDevice.writeByte(MODE1, 0); // Normal mode
-		i2cDevice.writeByte(MODE2, OUTDRV_MASK); // Set output driver to totem pole mode (rather than open drain)
+		i2cDevice.writeByteData(MODE1, 0); // Normal mode
+		i2cDevice.writeByteData(MODE2, OUTDRV_MASK); // Set output driver to totem pole mode (rather than open drain)
 	}
 	
 	/**
@@ -150,14 +150,14 @@ public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFac
 				Integer.valueOf(pwmFrequency), String.format("%.2f", Float.valueOf(prescale_flt)),
 				Integer.valueOf(prescale_int));
 
-		byte oldmode = i2cDevice.readByte(MODE1);
-		i2cDevice.writeByte(MODE1, (byte)((oldmode & 0x7F) | SLEEP_MASK));	// Enter low power mode (set the sleep bit)
-		i2cDevice.writeByte(PRESCALE, (byte)(prescale_int));
+		byte oldmode = i2cDevice.readByteData(MODE1);
+		i2cDevice.writeByteData(MODE1, (byte)((oldmode & 0x7F) | SLEEP_MASK));	// Enter low power mode (set the sleep bit)
+		i2cDevice.writeByteData(PRESCALE, (byte)(prescale_int));
 		this.boardPwmFrequency = pwmFrequency;
 		pulseMsPerBit = ServoUtil.calcPulseMsPerBit(pwmFrequency, RANGE);
-		i2cDevice.writeByte(MODE1, oldmode);								// Restore the previous mode1 value
+		i2cDevice.writeByteData(MODE1, oldmode);								// Restore the previous mode1 value
 		SleepUtil.sleepMillis(1);											// Wait min 500us for the oscillator to stabilise
-		i2cDevice.writeByte(MODE1, (byte)(oldmode | RESTART_MASK));			// Set restart enabled
+		i2cDevice.writeByteData(MODE1, (byte)(oldmode | RESTART_MASK));			// Set restart enabled
 	}
 
 	private int[] getPwm(int channel) throws RuntimeIOException {
@@ -199,10 +199,10 @@ public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFac
 		// TODO Replace with writeShort()?
 		//writeShort(LED0_ON_L+4*channel, (short) on);
 		//writeShort(LED0_OFF_L+4*channel, (short) off);
-		i2cDevice.writeByte(LED0_ON_L + 4*channel, on & 0xFF);
-		i2cDevice.writeByte(LED0_ON_H + 4*channel, on >> 8);
-		i2cDevice.writeByte(LED0_OFF_L + 4*channel, off & 0xFF);
-		i2cDevice.writeByte(LED0_OFF_H + 4*channel, off >> 8);
+		i2cDevice.writeByteData(LED0_ON_L + 4*channel, on & 0xFF);
+		i2cDevice.writeByteData(LED0_ON_H + 4*channel, on >> 8);
+		i2cDevice.writeByteData(LED0_OFF_L + 4*channel, off & 0xFF);
+		i2cDevice.writeByteData(LED0_OFF_H + 4*channel, off >> 8);
 		//SleepUtil.sleepMillis(50);
 	}
 	
@@ -242,10 +242,10 @@ public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFac
 		// TODO Replace with writeShort()?
 		//i2cDevice.writeShort(ALL_LED_ON_L, (short)on);
 		//i2cDevice.writeShort(ALL_LED_OFF_L, (short)off);
-		i2cDevice.writeByte(ALL_LED_ON_L, on & 0xFF);
-		i2cDevice.writeByte(ALL_LED_ON_H, on >> 8);
-		i2cDevice.writeByte(ALL_LED_OFF_L, off & 0xFF);
-		i2cDevice.writeByte(ALL_LED_OFF_H, off >> 8);
+		i2cDevice.writeByteData(ALL_LED_ON_L, on & 0xFF);
+		i2cDevice.writeByteData(ALL_LED_ON_H, on >> 8);
+		i2cDevice.writeByteData(ALL_LED_OFF_L, off & 0xFF);
+		i2cDevice.writeByteData(ALL_LED_OFF_H, off >> 8);
 	}
 	
 	/**

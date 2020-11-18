@@ -35,7 +35,6 @@ package com.diozero.devices;
 import java.io.Closeable;
 
 import com.diozero.api.I2CDevice;
-import com.diozero.api.LuminositySensorInterface;
 import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 

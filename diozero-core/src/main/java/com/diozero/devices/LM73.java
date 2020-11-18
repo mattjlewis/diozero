@@ -34,7 +34,6 @@ package com.diozero.devices;
 import org.tinylog.Logger;
 
 import com.diozero.api.I2CDevice;
-import com.diozero.api.ThermometerInterface;
 import com.diozero.util.BitManipulation;
 import com.diozero.util.RuntimeIOException;
 
@@ -137,8 +136,8 @@ public class LM73 implements ThermometerInterface {
 	}
 	
 	public void setResolution(Resolution resolution) {
-		byte value = device.readByte(CTRL_STATUS_REG);
-		device.writeByte(CTRL_STATUS_REG, resolution.getValue(value));
+		byte value = device.readByteData(CTRL_STATUS_REG);
+		device.writeByteData(CTRL_STATUS_REG, resolution.getValue(value));
 	}
 	
 	public void setPower(boolean on) {
@@ -147,7 +146,7 @@ public class LM73 implements ThermometerInterface {
 	}
 	
 	public boolean isDataAvailable() {
-		return BitManipulation.isBitSet(device.readByte(CTRL_STATUS_REG), CONTROL_DATA_AVAILABLE_BIT);
+		return BitManipulation.isBitSet(device.readByteData(CTRL_STATUS_REG), CONTROL_DATA_AVAILABLE_BIT);
 	}
 	
 	@Override

@@ -34,7 +34,7 @@ package com.diozero.sandpit.imu.invensense;
 
 import org.apache.commons.math3.filter.KalmanFilter;
 
-import com.diozero.api.imu.ImuData;
+import com.diozero.devices.imu.ImuData;
 
 public class RTFusionKalman4 implements FusionInterface {
 	private KalmanFilter filter;

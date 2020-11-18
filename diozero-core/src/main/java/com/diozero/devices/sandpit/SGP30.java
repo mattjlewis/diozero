@@ -41,7 +41,7 @@ import java.util.function.Consumer;
 import org.tinylog.Logger;
 
 import com.diozero.api.I2CDevice;
-import com.diozero.util.DioZeroScheduler;
+import com.diozero.util.DiozeroScheduler;
 import com.diozero.util.SleepUtil;
 
 /*!
@@ -158,7 +158,7 @@ public class SGP30 implements Closeable, Runnable {
 		// According to the datasheet there is a measurement immediately after init
 		measureIaq();
 		startTimeMs = System.currentTimeMillis();
-		future = DioZeroScheduler.getDaemonInstance().scheduleAtFixedRate(this, 1000, 1000, TimeUnit.MILLISECONDS);
+		future = DiozeroScheduler.getDaemonInstance().scheduleAtFixedRate(this, 1000, 1000, TimeUnit.MILLISECONDS);
 	}
 
 	public void stop() {
@@ -261,14 +261,14 @@ public class SGP30 implements Closeable, Runnable {
 			}
 		}
 		buffer.rewind();
-		device.write(buffer);
+		device.writeBytes(buffer);
 
 		SleepUtil.sleepMillis(delayMs);
 
 		int[] response = new int[responseLength];
 		if (responseLength > 0) {
 			buffer = ByteBuffer.allocateDirect(3 * responseLength);
-			device.read(buffer);
+			buffer = device.readBytesAsByteBuffer(3 * responseLength);
 			for (int i = 0; i < responseLength; i++) {
 				int data = buffer.getShort() & 0xffff;
 				int crc = buffer.get() & 0xff;

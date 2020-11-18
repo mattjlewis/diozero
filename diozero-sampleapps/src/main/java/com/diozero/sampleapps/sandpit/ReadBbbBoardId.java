@@ -40,18 +40,18 @@ public class ReadBbbBoardId {
 	public static void main(String[] args) {
 		try (I2CDevice device = new I2CDevice(0, 0x50, ByteOrder.LITTLE_ENDIAN)) {
 			byte[] address = { (byte) 0, 0 };
-			device.write(address);
+			device.writeBytes(address);
 			for (int i=0; i<4; i++) {
 				System.out.println("read 0x" + Integer.toHexString(0xff & device.readByte()));
 			}
 			
-			device.write(address);
+			device.writeBytes(address);
 			for (int i=0; i<4; i++) {
 				System.out.println("read 0x" + Integer.toHexString(0xff & device.readByte()));
 			}
 			
-			device.write(address);
-			byte[] eeprom_data = device.read(28);
+			device.writeBytes(address);
+			byte[] eeprom_data = device.readBytes(28);
 			for (int i=0; i<4; i++) {
 				System.out.println("Header[" + i + "]: 0x" + Integer.toHexString(0xFF & eeprom_data[i]));
 			}

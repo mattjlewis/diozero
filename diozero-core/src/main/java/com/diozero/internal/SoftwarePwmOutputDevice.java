@@ -41,7 +41,7 @@ import com.diozero.internal.provider.AbstractDevice;
 import com.diozero.internal.provider.DeviceFactoryInterface;
 import com.diozero.internal.provider.GpioDigitalOutputDeviceInterface;
 import com.diozero.internal.provider.PwmOutputDeviceInterface;
-import com.diozero.util.DioZeroScheduler;
+import com.diozero.util.DiozeroScheduler;
 import com.diozero.util.RangeUtil;
 import com.diozero.util.SleepUtil;
 
@@ -67,7 +67,7 @@ public class SoftwarePwmOutputDevice extends AbstractDevice implements PwmOutput
 	}
 	
 	public void start() {
-		future = DioZeroScheduler.getNonDaemonInstance().scheduleAtFixedRate(this, periodMs, periodMs, TimeUnit.MILLISECONDS);
+		future = DiozeroScheduler.getNonDaemonInstance().scheduleAtFixedRate(this, periodMs, periodMs, TimeUnit.MILLISECONDS);
 	}
 	
 	public void stop() {

@@ -70,12 +70,20 @@ public interface HttpProviderConstants {
 	static final String I2C_REQUEST_URL = REQUEST_URL + I2C_SUB_URL;
 	// I2C Requests
 	static final String I2C_OPEN_URL = I2C_REQUEST_URL + "/open";
+	static final String I2C_PROBE_URL = I2C_REQUEST_URL + "/probe";
+	static final String I2C_WRITE_QUICK_URL = I2C_REQUEST_URL + "/writeQuick";
 	static final String I2C_READ_BYTE_URL = I2C_REQUEST_URL + "/readByte";
 	static final String I2C_WRITE_BYTE_URL = I2C_REQUEST_URL + "/writeByte";
-	static final String I2C_READ_URL = I2C_REQUEST_URL + "/read";
-	static final String I2C_WRITE_URL = I2C_REQUEST_URL + "/write";
+	static final String I2C_READ_BYTES_URL = I2C_REQUEST_URL + "/read";
+	static final String I2C_WRITE_BYTES_URL = I2C_REQUEST_URL + "/write";
 	static final String I2C_READ_BYTE_DATA_URL = I2C_REQUEST_URL + "/readByteData";
 	static final String I2C_WRITE_BYTE_DATA_URL = I2C_REQUEST_URL + "/writeByteData";
+	static final String I2C_READ_WORD_DATA_URL = I2C_REQUEST_URL + "/readWordData";
+	static final String I2C_WRITE_WORD_DATA_URL = I2C_REQUEST_URL + "/writeWordData";
+	static final String I2C_PROCESS_CALL_URL = I2C_REQUEST_URL + "/processCall";
+	static final String I2C_READ_BLOCK_DATA_URL = I2C_REQUEST_URL + "/readBlockData";
+	static final String I2C_WRITE_BLOCK_DATA_URL = I2C_REQUEST_URL + "/writeBlockData";
+	static final String I2C_BLOCK_PROCESS_CALL_URL = I2C_REQUEST_URL + "/blockProcessCall";
 	static final String I2C_READ_I2C_BLOCK_DATA_URL = I2C_REQUEST_URL + "/readI2CBlockData";
 	static final String I2C_WRITE_I2C_BLOCK_DATA_URL = I2C_REQUEST_URL + "/writeI2CBlockData";
 	static final String I2C_CLOSE_URL = I2C_REQUEST_URL + "/close";

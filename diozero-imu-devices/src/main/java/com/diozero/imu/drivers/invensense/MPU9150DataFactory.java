@@ -35,8 +35,8 @@ package com.diozero.imu.drivers.invensense;
 import org.apache.commons.math3.complex.Quaternion;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 
-import com.diozero.api.imu.ImuData;
-import com.diozero.api.imu.ImuDataFactory;
+import com.diozero.devices.imu.ImuData;
+import com.diozero.devices.imu.ImuDataFactory;
 
 public class MPU9150DataFactory {
 	

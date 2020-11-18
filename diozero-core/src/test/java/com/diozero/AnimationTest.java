@@ -40,11 +40,11 @@ import java.util.concurrent.Future;
 
 import org.tinylog.Logger;
 
-import com.diozero.api.Animation;
-import com.diozero.api.AnimationInstance;
+import com.diozero.animation.Animation;
+import com.diozero.animation.AnimationInstance;
+import com.diozero.animation.easing.EasingFunctions;
+import com.diozero.animation.easing.Elastic;
 import com.diozero.api.OutputDeviceInterface;
-import com.diozero.api.easing.EasingFunctions;
-import com.diozero.api.easing.Elastic;
 import com.diozero.util.DeviceFactoryHelper;
 
 public class AnimationTest {

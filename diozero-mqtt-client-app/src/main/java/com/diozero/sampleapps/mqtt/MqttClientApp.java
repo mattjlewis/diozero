@@ -57,7 +57,7 @@ import com.diozero.devices.HD44780Lcd.LcdConnection;
 import com.diozero.devices.HD44780Lcd.PCF8574LcdConnection;
 import com.diozero.devices.SSD1351;
 import com.diozero.devices.SsdOled;
-import com.diozero.util.DioZeroScheduler;
+import com.diozero.util.DiozeroScheduler;
 import com.diozero.util.SleepUtil;
 import com.google.gson.Gson;
 
@@ -113,7 +113,7 @@ public class MqttClientApp implements AutoCloseable, IMqttMessageListener, Runna
 		oledResetPin = new DigitalOutputDevice(reset_gpio);
 		oled = new SSD1351(spi_controller, chip_select, oledDcPin, oledResetPin);
 		
-		DioZeroScheduler.getDaemonInstance().scheduleAtFixedRate(this, 1, 10, TimeUnit.SECONDS);
+		DiozeroScheduler.getDaemonInstance().scheduleAtFixedRate(this, 1, 10, TimeUnit.SECONDS);
 	
 		button = new Button(DEFAULT_BUTTON_GPIO, GpioPullUpDown.PULL_UP);
 		button.addListener(event -> {

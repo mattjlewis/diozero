@@ -57,18 +57,29 @@ public interface MessageWrapperTypes {
 	
 	// I2C Requests
 	static final String I2C_OPEN = "I2COpen";
+	static final String I2C_PROBE = "I2CProbe";
+	static final String I2C_WRITE_QUICK = "I2CWriteQuick";
 	static final String I2C_READ_BYTE = "I2CReadByte";
 	static final String I2C_WRITE_BYTE = "I2CWriteByte";
-	static final String I2C_READ = "I2CRead";
-	static final String I2C_WRITE = "I2CWrite";
+	static final String I2C_READ_BYTES = "I2CReadBytes";
+	static final String I2C_WRITE_BYTES = "I2CWriteBytes";
 	static final String I2C_READ_BYTE_DATA = "I2CReadByteData";
 	static final String I2C_WRITE_BYTE_DATA = "I2CWriteByteData";
+	static final String I2C_READ_WORD_DATA = "I2CReadWordData";
+	static final String I2C_WRITE_WORD_DATA = "I2CWriteWordData";
+	static final String I2C_PROCESS_CALL = "I2CProcessCall";
+	static final String I2C_READ_BLOCK_DATA = "I2CReadBlockData";
+	static final String I2C_WRITE_BLOCK_DATA = "I2CWriteBlockData";
+	static final String I2C_BLOCK_PROCESS_CALL = "I2CBlockProcessCall";
 	static final String I2C_READ_I2C_BLOCK_DATA = "I2CReadI2CBlockData";
 	static final String I2C_WRITE_I2C_BLOCK_DATA = "I2CWriteI2CBlockData";
 	static final String I2C_CLOSE = "I2CClose";
 	// I2C Responses
-	static final String I2C_READ_BYTE_RESPONSE = "I2CReadByteResponse";
-	static final String I2C_READ_RESPONSE = "I2CReadResponse";
+	static final String I2C_BOOLEAN_RESPONSE = "I2CBooleanResponse";
+	static final String I2C_BYTE_RESPONSE = "I2CByteResponse";
+	static final String I2C_BYTES_RESPONSE = "I2CBytesResponse";
+	static final String I2C_WORD_RESPONSE = "I2CWordsResponse";
+	static final String I2C_READ_BLOCK_DATA_RESPONSE = "I2CReadBlockDataResponse";
 	
 	// SPI Requests
 	static final String SPI_OPEN = "SpiOpen";

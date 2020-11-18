@@ -35,13 +35,13 @@ import java.util.concurrent.TimeUnit;
 
 import com.diozero.devices.Button;
 import com.diozero.devices.LED;
-import com.diozero.util.DioZeroScheduler;
+import com.diozero.util.DiozeroScheduler;
 
 public class Listener {
 	public static void main(String[] args) {
 		try (Button button = new Button(16); LED led = new LED(22)) {
 			// Toggle the LED every second
-			DioZeroScheduler.getNonDaemonInstance().scheduleAtFixedRate(() -> led.toggle(), 0, 1, TimeUnit.SECONDS);
+			DiozeroScheduler.getNonDaemonInstance().scheduleAtFixedRate(() -> led.toggle(), 0, 1, TimeUnit.SECONDS);
 			
 			// Do something whenever the button is pressed
 			button.whenPressed(() -> {

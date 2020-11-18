@@ -31,20 +31,17 @@ package com.diozero.internal.provider.builtin;
  * #L%
  */
 
-import java.nio.ByteBuffer;
-
 import org.tinylog.Logger;
 
 import com.diozero.api.I2CDevice;
+import com.diozero.api.I2CSMBusInterface;
 import com.diozero.internal.provider.AbstractDevice;
 import com.diozero.internal.provider.DeviceFactoryInterface;
 import com.diozero.internal.provider.I2CDeviceInterface;
-import com.diozero.internal.provider.builtin.i2c.I2CSMBusInterface;
 import com.diozero.internal.provider.builtin.i2c.NativeI2CDeviceSMBus;
 import com.diozero.internal.provider.builtin.i2c.NativeI2CDeviceSysFs;
 import com.diozero.util.LibraryLoader;
 import com.diozero.util.PropertyUtil;
-import com.diozero.util.RuntimeIOException;
 
 public class DefaultI2CDevice extends AbstractDevice implements I2CDeviceInterface {
 	private static boolean USE_SYSFS = false;
@@ -78,54 +75,83 @@ public class DefaultI2CDevice extends AbstractDevice implements I2CDeviceInterfa
 	}
 
 	@Override
-	public byte readByte() throws RuntimeIOException {
+	public void writeQuick(byte bit) {
+		i2cDevice.writeQuick(bit);
+	}
+
+	@Override
+	public byte readByte() {
 		return i2cDevice.readByte();
 	}
 
 	@Override
-	public void writeByte(byte b) throws RuntimeIOException {
+	public void writeByte(byte b) {
 		i2cDevice.writeByte(b);
 	}
 
 	@Override
-	public void read(ByteBuffer dst) throws RuntimeIOException {
-		byte[] buffer = i2cDevice.readBytes(dst.remaining());
-		dst.put(buffer);
-		dst.flip();
-	}
-
-	@Override
-	public void write(ByteBuffer src) throws RuntimeIOException {
-		byte[] buffer = new byte[src.remaining()];
-		src.get(buffer);
-		i2cDevice.writeBytes(buffer);
-	}
-
-	@Override
-	public byte readByteData(int register) throws RuntimeIOException {
+	public byte readByteData(int register) {
 		return i2cDevice.readByteData(register);
 	}
 
 	@Override
-	public void writeByteData(int register, byte b) throws RuntimeIOException {
+	public void writeByteData(int register, byte b) {
 		i2cDevice.writeByteData(register, b);
 	}
-
+	
 	@Override
-	public void readI2CBlockData(int register, int subAddressSize, ByteBuffer dst) throws RuntimeIOException {
-		dst.put(i2cDevice.readI2CBlockData(register, dst.remaining()));
-		dst.flip();
+	public short readWordData(int register) {
+		// TODO Implementation	
+		return (short) 1;
+	}
+	
+	@Override
+	public void writeWordData(int register, short data) {
+		// TODO Implementation	
 	}
 
 	@Override
-	public void writeI2CBlockData(int register, int subAddressSize, ByteBuffer src) throws RuntimeIOException {
-		byte[] buffer = new byte[src.remaining()];
-		src.get(buffer);
-		i2cDevice.writeI2CBlockData(register, buffer);
+	public int readBytes(byte[] buffer) {
+		return i2cDevice.readBytes(buffer);
 	}
 
 	@Override
-	protected void closeDevice() throws RuntimeIOException {
+	public void writeBytes(byte[] data) {
+		i2cDevice.writeBytes(data);
+	}
+	
+	@Override
+	public short processCall(int register, short data) {
+		return i2cDevice.processCall(register, data);
+	}
+	
+	@Override
+	public int readBlockData(int register, byte[] buffer) {
+		return i2cDevice.readBlockData(register, buffer);
+	}
+	
+	@Override
+	public void writeBlockData(int register, byte[] buffer) {
+		i2cDevice.writeBlockData(register, buffer);
+	}
+	
+	@Override
+	public byte[] blockProcessCall(int register, byte[] data) {
+		return i2cDevice.blockProcessCall(register, data);
+	}
+
+	@Override
+	public void readI2CBlockData(int register, byte[] buffer) {
+		i2cDevice.readI2CBlockData(register, buffer);
+	}
+
+	@Override
+	public void writeI2CBlockData(int register, byte[] data) {
+		i2cDevice.writeI2CBlockData(register, data);
+	}
+
+	@Override
+	protected void closeDevice() {
 		Logger.trace("closeDevice()");
 		i2cDevice.close();
 	}

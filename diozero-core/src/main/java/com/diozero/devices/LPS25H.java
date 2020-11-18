@@ -37,10 +37,8 @@ import java.nio.ByteOrder;
 
 import org.tinylog.Logger;
 
-import com.diozero.api.BarometerInterface;
 import com.diozero.api.I2CConstants;
 import com.diozero.api.I2CDevice;
-import com.diozero.api.ThermometerInterface;
 
 /**
  * STMicroelectronics LPS25H "ultra compact absolute piezoresistive pressure sensor". Datasheet:
@@ -306,25 +304,26 @@ public class LPS25H implements ThermometerInterface, BarometerInterface, Closeab
 		device = new I2CDevice(controller, address, I2CConstants.ADDR_SIZE_7, ByteOrder.LITTLE_ENDIAN);
 
 		// Power on, 25Hz output data rate, output registers not updated until both MSB & LSB read
-		device.writeByte(CTRL_REG1, CR1_PD_CONTROL | CR1_ODR_25HZ | CR1_BDU);
+		device.writeByteData(CTRL_REG1, CR1_PD_CONTROL | CR1_ODR_25HZ | CR1_BDU);
 		// Configure the number of pressure and temperature samples
-		device.writeByte(RES_CONF, RC_PRESSURE_32_SAMPLES | RC_TEMP_16_SAMPLES);
+		device.writeByteData(RES_CONF, RC_PRESSURE_32_SAMPLES | RC_TEMP_16_SAMPLES);
 		// Configure the FIFO (mean mode)
 		// TODO Configure number of WTM samples?!
-		device.writeByte(FIFO_CTRL, FC_FIFO_MEAN_MODE);
+		device.writeByteData(FIFO_CTRL, FC_FIFO_MEAN_MODE);
 		// Enable the FIFO
-		device.writeByte(CTRL_REG2, CR2_FIFO_EN);
+		device.writeByteData(CTRL_REG2, CR2_FIFO_EN);
 	}
 	
 	@Override
 	public float getPressure() {
-		byte status = device.readByte(STATUS_REG);
+		byte status = device.readByteData(STATUS_REG);
 		if ((status & SR_P_DA) == 0) {
 			Logger.warn("Pressure data not available");
 			return -1;
 		}
 		
-		byte[] raw_data = device.readBytes(PRESS_OUT_XL | READ, 3);
+		byte[] raw_data = new byte[3];
+		device.readI2CBlockData(PRESS_OUT_XL | READ, raw_data);
 		
 		int raw_pressure = raw_data[2] << 16 | (raw_data[1] & 0xff) << 8 | (raw_data[0] & 0xff);
 		
@@ -333,7 +332,7 @@ public class LPS25H implements ThermometerInterface, BarometerInterface, Closeab
 	
 	@Override
 	public float getTemperature() {
-		byte status = device.readByte(STATUS_REG);
+		byte status = device.readByteData(STATUS_REG);
 		if ((status & SR_T_DA) == 0) {
 			Logger.warn("Temperature data not available");
 			return -1;

@@ -84,7 +84,6 @@ public abstract class BaseAsyncProtocolHandler implements RemoteProtocolInterfac
 			return;
 		}
 
-		@SuppressWarnings("resource")
 		RemoteDigitalInputDevice input_device = deviceFactory.getDevice(deviceFactory.createPinKey(pin_info),
 				RemoteDigitalInputDevice.class);
 		if (input_device == null) {

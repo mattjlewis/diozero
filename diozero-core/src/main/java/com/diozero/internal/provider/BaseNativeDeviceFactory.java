@@ -39,7 +39,7 @@ import org.tinylog.Logger;
 
 import com.diozero.util.BoardInfo;
 import com.diozero.util.BoardPinInfo;
-import com.diozero.util.DioZeroScheduler;
+import com.diozero.util.DiozeroScheduler;
 import com.diozero.util.SystemInfo;
 
 /**
@@ -93,7 +93,7 @@ public abstract class BaseNativeDeviceFactory extends AbstractDeviceFactory impl
 		Logger.trace("close()");
 		
 		// Stop all scheduled jobs
-		DioZeroScheduler.shutdownAll();
+		DiozeroScheduler.shutdownAll();
 		
 		// Shutdown all of the other non-native device factories
 		for (DeviceFactoryInterface df : deviceFactories) {

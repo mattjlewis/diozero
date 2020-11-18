@@ -39,7 +39,7 @@ import java.util.Collection;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 
 import com.diozero.api.I2CConstants;
-import com.diozero.api.imu.*;
+import com.diozero.devices.imu.*;
 import com.diozero.util.RuntimeIOException;
 
 public class MPU9150Device implements Closeable, ImuInterface {

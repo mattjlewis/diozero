@@ -42,12 +42,12 @@ import java.util.concurrent.Future;
 
 import org.tinylog.Logger;
 
-import com.diozero.api.Animation;
-import com.diozero.api.AnimationInstance;
+import com.diozero.animation.Animation;
+import com.diozero.animation.AnimationInstance;
+import com.diozero.animation.easing.Cubic;
+import com.diozero.animation.easing.EasingFunction;
+import com.diozero.animation.easing.Elastic;
 import com.diozero.api.OutputDeviceInterface;
-import com.diozero.api.easing.Cubic;
-import com.diozero.api.easing.EasingFunction;
-import com.diozero.api.easing.Elastic;
 import com.diozero.util.DeviceFactoryHelper;
 import com.google.gson.Gson;
 

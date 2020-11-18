@@ -56,18 +56,29 @@ import com.diozero.remote.message.GpioEvents;
 import com.diozero.remote.message.GpioPwmRead;
 import com.diozero.remote.message.GpioPwmReadResponse;
 import com.diozero.remote.message.GpioPwmWrite;
+import com.diozero.remote.message.I2CBlockProcessCall;
+import com.diozero.remote.message.I2CBooleanResponse;
+import com.diozero.remote.message.I2CByteResponse;
+import com.diozero.remote.message.I2CBytesResponse;
 import com.diozero.remote.message.I2CClose;
 import com.diozero.remote.message.I2COpen;
-import com.diozero.remote.message.I2CRead;
+import com.diozero.remote.message.I2CProbe;
+import com.diozero.remote.message.I2CProcessCall;
+import com.diozero.remote.message.I2CReadBlockData;
+import com.diozero.remote.message.I2CReadBlockDataResponse;
 import com.diozero.remote.message.I2CReadByte;
 import com.diozero.remote.message.I2CReadByteData;
-import com.diozero.remote.message.I2CReadByteResponse;
+import com.diozero.remote.message.I2CReadBytes;
 import com.diozero.remote.message.I2CReadI2CBlockData;
-import com.diozero.remote.message.I2CReadResponse;
-import com.diozero.remote.message.I2CWrite;
+import com.diozero.remote.message.I2CReadWordData;
+import com.diozero.remote.message.I2CWordResponse;
+import com.diozero.remote.message.I2CWriteBlockData;
 import com.diozero.remote.message.I2CWriteByte;
 import com.diozero.remote.message.I2CWriteByteData;
+import com.diozero.remote.message.I2CWriteBytes;
 import com.diozero.remote.message.I2CWriteI2CBlockData;
+import com.diozero.remote.message.I2CWriteQuick;
+import com.diozero.remote.message.I2CWriteWordData;
 import com.diozero.remote.message.ProvisionAnalogInputDevice;
 import com.diozero.remote.message.ProvisionAnalogOutputDevice;
 import com.diozero.remote.message.ProvisionDigitalInputDevice;
@@ -235,6 +246,14 @@ public class MqttJsonServer extends BaseRemoteServer implements MqttCallback {
 				I2COpen i2c_open = GSON.fromJson(new String(message.getPayload()), I2COpen.class);
 				publishResponse(request(i2c_open));
 				break;
+			case MqttProviderConstants.I2C_PROBE_TOPIC:
+				I2CProbe i2c_probe = GSON.fromJson(new String(message.getPayload()), I2CProbe.class);
+				publishResponse(request(i2c_probe));
+				break;
+			case MqttProviderConstants.I2C_WRITE_QUICK_TOPIC:
+				I2CWriteQuick i2c_write_quick = GSON.fromJson(new String(message.getPayload()), I2CWriteQuick.class);
+				publishResponse(request(i2c_write_quick));
+				break;
 			case MqttProviderConstants.I2C_READ_BYTE_TOPIC:
 				I2CReadByte i2c_read_byte = GSON.fromJson(new String(message.getPayload()), I2CReadByte.class);
 				publishResponse(request(i2c_read_byte));
@@ -243,12 +262,12 @@ public class MqttJsonServer extends BaseRemoteServer implements MqttCallback {
 				I2CWriteByte i2c_write_byte = GSON.fromJson(new String(message.getPayload()), I2CWriteByte.class);
 				publishResponse(request(i2c_write_byte));
 				break;
-			case MqttProviderConstants.I2C_READ_TOPIC:
-				I2CRead i2c_read = GSON.fromJson(new String(message.getPayload()), I2CRead.class);
+			case MqttProviderConstants.I2C_READ_BYTES_TOPIC:
+				I2CReadBytes i2c_read = GSON.fromJson(new String(message.getPayload()), I2CReadBytes.class);
 				publishResponse(request(i2c_read));
 				break;
-			case MqttProviderConstants.I2C_WRITE_TOPIC:
-				I2CWrite i2c_write = GSON.fromJson(new String(message.getPayload()), I2CWrite.class);
+			case MqttProviderConstants.I2C_WRITE_BYTES_TOPIC:
+				I2CWriteBytes i2c_write = GSON.fromJson(new String(message.getPayload()), I2CWriteBytes.class);
 				publishResponse(request(i2c_write));
 				break;
 			case MqttProviderConstants.I2C_READ_BYTE_DATA_TOPIC:
@@ -258,6 +277,30 @@ public class MqttJsonServer extends BaseRemoteServer implements MqttCallback {
 			case MqttProviderConstants.I2C_WRITE_BYTE_DATA_TOPIC:
 				I2CWriteByteData i2c_write_byte_data = GSON.fromJson(new String(message.getPayload()), I2CWriteByteData.class);
 				publishResponse(request(i2c_write_byte_data));
+				break;
+			case MqttProviderConstants.I2C_READ_WORD_DATA_TOPIC:
+				I2CReadWordData i2c_read_word_data = GSON.fromJson(new String(message.getPayload()), I2CReadWordData.class);
+				publishResponse(request(i2c_read_word_data));
+				break;
+			case MqttProviderConstants.I2C_WRITE_WORD_DATA_TOPIC:
+				I2CWriteWordData i2c_write_word_data = GSON.fromJson(new String(message.getPayload()), I2CWriteWordData.class);
+				publishResponse(request(i2c_write_word_data));
+				break;
+			case MqttProviderConstants.I2C_PROCESS_CALL_TOPIC:
+				I2CProcessCall i2c_process_call = GSON.fromJson(new String(message.getPayload()), I2CProcessCall.class);
+				publishResponse(request(i2c_process_call));
+				break;
+			case MqttProviderConstants.I2C_READ_BLOCK_DATA_TOPIC:
+				I2CReadBlockData i2c_read_block_data = GSON.fromJson(new String(message.getPayload()), I2CReadBlockData.class);
+				publishResponse(request(i2c_read_block_data));
+				break;
+			case MqttProviderConstants.I2C_WRITE_BLOCK_DATA_TOPIC:
+				I2CWriteBlockData i2c_write_block_data = GSON.fromJson(new String(message.getPayload()), I2CWriteBlockData.class);
+				publishResponse(request(i2c_write_block_data));
+				break;
+			case MqttProviderConstants.I2C_BLOCK_PROCESS_CALL_TOPIC:
+				I2CBlockProcessCall i2c_block_process_call = GSON.fromJson(new String(message.getPayload()), I2CBlockProcessCall.class);
+				publishResponse(request(i2c_block_process_call));
 				break;
 			case MqttProviderConstants.I2C_READ_I2C_BLOCK_DATA_TOPIC:
 				I2CReadI2CBlockData i2c_read_i2c_block_data = GSON.fromJson(new String(message.getPayload()), I2CReadI2CBlockData.class);
@@ -323,13 +366,28 @@ public class MqttJsonServer extends BaseRemoteServer implements MqttCallback {
 				MqttProviderConstants.DEFAULT_QOS, MqttProviderConstants.DEFAULT_RETAINED);
 	}
 	
-	private void publishResponse(I2CReadByteResponse response) throws MqttException {
-		mqttClient.publish(MqttProviderConstants.I2C_READ_BYTE_RESPONSE_TOPIC, GSON.toJson(response).getBytes(),
+	private void publishResponse(I2CBooleanResponse response) throws MqttException {
+		mqttClient.publish(MqttProviderConstants.I2C_BOOLEAN_RESPONSE_TOPIC, GSON.toJson(response).getBytes(),
 				MqttProviderConstants.DEFAULT_QOS, MqttProviderConstants.DEFAULT_RETAINED);
 	}
 	
-	private void publishResponse(I2CReadResponse response) throws MqttException {
-		mqttClient.publish(MqttProviderConstants.I2C_READ_RESPONSE_TOPIC, GSON.toJson(response).getBytes(),
+	private void publishResponse(I2CByteResponse response) throws MqttException {
+		mqttClient.publish(MqttProviderConstants.I2C_BYTE_RESPONSE_TOPIC, GSON.toJson(response).getBytes(),
+				MqttProviderConstants.DEFAULT_QOS, MqttProviderConstants.DEFAULT_RETAINED);
+	}
+	
+	private void publishResponse(I2CWordResponse response) throws MqttException {
+		mqttClient.publish(MqttProviderConstants.I2C_WORD_RESPONSE_TOPIC, GSON.toJson(response).getBytes(),
+				MqttProviderConstants.DEFAULT_QOS, MqttProviderConstants.DEFAULT_RETAINED);
+	}
+	
+	private void publishResponse(I2CBytesResponse response) throws MqttException {
+		mqttClient.publish(MqttProviderConstants.I2C_BYTES_RESPONSE_TOPIC, GSON.toJson(response).getBytes(),
+				MqttProviderConstants.DEFAULT_QOS, MqttProviderConstants.DEFAULT_RETAINED);
+	}
+	
+	private void publishResponse(I2CReadBlockDataResponse response) throws MqttException {
+		mqttClient.publish(MqttProviderConstants.I2C_READ_BLOCK_DATA_RESPONSE_TOPIC, GSON.toJson(response).getBytes(),
 				MqttProviderConstants.DEFAULT_QOS, MqttProviderConstants.DEFAULT_RETAINED);
 	}
 	

@@ -55,16 +55,24 @@ import com.diozero.remote.message.GpioDigitalWrite;
 import com.diozero.remote.message.GpioEvents;
 import com.diozero.remote.message.GpioPwmRead;
 import com.diozero.remote.message.GpioPwmWrite;
+import com.diozero.remote.message.I2CBlockProcessCall;
 import com.diozero.remote.message.I2CClose;
 import com.diozero.remote.message.I2COpen;
-import com.diozero.remote.message.I2CRead;
+import com.diozero.remote.message.I2CProbe;
+import com.diozero.remote.message.I2CProcessCall;
+import com.diozero.remote.message.I2CReadBlockData;
 import com.diozero.remote.message.I2CReadByte;
 import com.diozero.remote.message.I2CReadByteData;
+import com.diozero.remote.message.I2CReadBytes;
 import com.diozero.remote.message.I2CReadI2CBlockData;
-import com.diozero.remote.message.I2CWrite;
+import com.diozero.remote.message.I2CReadWordData;
+import com.diozero.remote.message.I2CWriteBlockData;
 import com.diozero.remote.message.I2CWriteByte;
 import com.diozero.remote.message.I2CWriteByteData;
+import com.diozero.remote.message.I2CWriteBytes;
 import com.diozero.remote.message.I2CWriteI2CBlockData;
+import com.diozero.remote.message.I2CWriteQuick;
+import com.diozero.remote.message.I2CWriteWordData;
 import com.diozero.remote.message.ProvisionAnalogInputDevice;
 import com.diozero.remote.message.ProvisionAnalogOutputDevice;
 import com.diozero.remote.message.ProvisionDigitalInputDevice;
@@ -163,23 +171,47 @@ public class JsonWebSocket extends BaseRemoteServer {
 		case MessageWrapperTypes.I2C_OPEN:
 			response = request(GSON.fromJson(wrapper.getMessage(), I2COpen.class));
 			break;
+		case MessageWrapperTypes.I2C_PROBE:
+			response = request(GSON.fromJson(wrapper.getMessage(), I2CProbe.class));
+			break;
+		case MessageWrapperTypes.I2C_WRITE_QUICK:
+			response = request(GSON.fromJson(wrapper.getMessage(), I2CWriteQuick.class));
+			break;
 		case MessageWrapperTypes.I2C_READ_BYTE:
 			response = request(GSON.fromJson(wrapper.getMessage(), I2CReadByte.class));
 			break;
 		case MessageWrapperTypes.I2C_WRITE_BYTE:
 			response = request(GSON.fromJson(wrapper.getMessage(), I2CWriteByte.class));
 			break;
-		case MessageWrapperTypes.I2C_READ:
-			response = request(GSON.fromJson(wrapper.getMessage(), I2CRead.class));
+		case MessageWrapperTypes.I2C_READ_BYTES:
+			response = request(GSON.fromJson(wrapper.getMessage(), I2CReadBytes.class));
 			break;
-		case MessageWrapperTypes.I2C_WRITE:
-			response = request(GSON.fromJson(wrapper.getMessage(), I2CWrite.class));
+		case MessageWrapperTypes.I2C_WRITE_BYTES:
+			response = request(GSON.fromJson(wrapper.getMessage(), I2CWriteBytes.class));
 			break;
 		case MessageWrapperTypes.I2C_READ_BYTE_DATA:
 			response = request(GSON.fromJson(wrapper.getMessage(), I2CReadByteData.class));
 			break;
 		case MessageWrapperTypes.I2C_WRITE_BYTE_DATA:
 			response = request(GSON.fromJson(wrapper.getMessage(), I2CWriteByteData.class));
+			break;
+		case MessageWrapperTypes.I2C_READ_WORD_DATA:
+			response = request(GSON.fromJson(wrapper.getMessage(), I2CReadWordData.class));
+			break;
+		case MessageWrapperTypes.I2C_WRITE_WORD_DATA:
+			response = request(GSON.fromJson(wrapper.getMessage(), I2CWriteWordData.class));
+			break;
+		case MessageWrapperTypes.I2C_PROCESS_CALL:
+			response = request(GSON.fromJson(wrapper.getMessage(), I2CProcessCall.class));
+			break;
+		case MessageWrapperTypes.I2C_READ_BLOCK_DATA:
+			response = request(GSON.fromJson(wrapper.getMessage(), I2CReadBlockData.class));
+			break;
+		case MessageWrapperTypes.I2C_WRITE_BLOCK_DATA:
+			response = request(GSON.fromJson(wrapper.getMessage(), I2CWriteBlockData.class));
+			break;
+		case MessageWrapperTypes.I2C_BLOCK_PROCESS_CALL:
+			response = request(GSON.fromJson(wrapper.getMessage(), I2CBlockProcessCall.class));
 			break;
 		case MessageWrapperTypes.I2C_READ_I2C_BLOCK_DATA:
 			response = request(GSON.fromJson(wrapper.getMessage(), I2CReadI2CBlockData.class));

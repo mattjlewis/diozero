@@ -42,7 +42,6 @@ import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import com.diozero.api.ThermometerInterface;
 import com.diozero.util.RuntimeIOException;
 
 /**

@@ -35,11 +35,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import org.tinylog.Logger;
 
-import com.diozero.api.BarometerInterface;
-import com.diozero.api.HygrometerInterface;
 import com.diozero.api.I2CConstants;
 import com.diozero.api.I2CDevice;
-import com.diozero.api.ThermometerInterface;
 import com.diozero.util.SleepUtil;
 
 /*-
@@ -72,12 +69,12 @@ public class BME680 implements BarometerInterface, ThermometerInterface, Hygrome
 	/**
 	 * Default I2C address for the sensor.
 	 */
-	private static final int DEFAULT_I2C_ADDRESS = 0x76;
+	private static final int DEVICE_ADDRESS = 0x76;
 
 	/**
 	 * Alternative I2C address for the sensor.
 	 */
-	private static final int ALTERNATIVE_I2C_ADDRESS = 0x77;
+	private static final int ALT_DEVICE_ADDRESS = 0x77;
 
 	/**
 	 * Minimum pressure in hPa the sensor can measure.
@@ -333,7 +330,7 @@ public class BME680 implements BarometerInterface, ThermometerInterface, Hygrome
 	private int offsetTemperature;
 
 	public BME680() {
-		this(I2CConstants.BUS_1, DEFAULT_I2C_ADDRESS);
+		this(I2CConstants.BUS_1, DEVICE_ADDRESS);
 	}
 
 	/**
@@ -342,7 +339,7 @@ public class BME680 implements BarometerInterface, ThermometerInterface, Hygrome
 	 * @param controller I2C bus the sensor is connected to.
 	 */
 	public BME680(final int controller) {
-		this(controller, DEFAULT_I2C_ADDRESS);
+		this(controller, DEVICE_ADDRESS);
 	}
 
 	/**
@@ -409,7 +406,7 @@ public class BME680 implements BarometerInterface, ThermometerInterface, Hygrome
 			gasResistanceData.add(Long.valueOf(0));
 		}
 
-		chipId = device.readByte(CHIP_ID_ADDRESS);
+		chipId = device.readByteData(CHIP_ID_ADDRESS);
 		if (chipId != CHIP_ID_BME680) {
 			throw new IllegalStateException(String.format("%s %s not found.", CHIP_VENDOR, CHIP_NAME));
 		}
@@ -427,11 +424,11 @@ public class BME680 implements BarometerInterface, ThermometerInterface, Hygrome
 
 		setFilter(FilterSize.SIZE_3);
 
-		//setHeaterEnabled(true);
+		// setHeaterEnabled(true);
 		setGasMeasurementEnabled(true);
 
 		setTemperatureOffset(0);
-		
+
 		getSensorData();
 	}
 
@@ -453,7 +450,7 @@ public class BME680 implements BarometerInterface, ThermometerInterface, Hygrome
 
 	// Initiate a soft reset
 	private void softReset() {
-		device.writeByte(SOFT_RESET_ADDRESS, (byte) SOFT_RESET_COMMAND);
+		device.writeByteData(SOFT_RESET_ADDRESS, (byte) SOFT_RESET_COMMAND);
 
 		SleepUtil.sleepMillis(RESET_PERIOD_MILLISECONDS);
 	}
@@ -474,7 +471,7 @@ public class BME680 implements BarometerInterface, ThermometerInterface, Hygrome
 
 	// Get power mode
 	public PowerMode getPowerMode() {
-		powerMode = PowerMode.values()[device.readByte(CONFIG_T_P_MODE_ADDRESS) & MODE_MASK];
+		powerMode = PowerMode.values()[device.readByteData(CONFIG_T_P_MODE_ADDRESS) & MODE_MASK];
 
 		return powerMode;
 	}
@@ -493,7 +490,7 @@ public class BME680 implements BarometerInterface, ThermometerInterface, Hygrome
 
 	// Get temperature oversampling
 	public OversamplingMultiplier getTemperatureOversample() {
-		return OversamplingMultiplier.values()[(device.readByte(CONFIG_T_P_MODE_ADDRESS)
+		return OversamplingMultiplier.values()[(device.readByteData(CONFIG_T_P_MODE_ADDRESS)
 				& OVERSAMPLING_TEMPERATURE_MASK) >> OVERSAMPLING_TEMPERATURE_POSITION];
 	}
 
@@ -511,7 +508,7 @@ public class BME680 implements BarometerInterface, ThermometerInterface, Hygrome
 
 	// Get humidity oversampling
 	public OversamplingMultiplier getHumidityOversample() {
-		return OversamplingMultiplier.values()[(device.readByte(CONFIG_OS_H_ADDRESS)
+		return OversamplingMultiplier.values()[(device.readByteData(CONFIG_OS_H_ADDRESS)
 				& OVERSAMPLING_HUMIDITY_MASK) >> OVERSAMPLING_HUMIDITY_POSITION];
 	}
 
@@ -529,7 +526,7 @@ public class BME680 implements BarometerInterface, ThermometerInterface, Hygrome
 
 	// Get pressure oversampling
 	public OversamplingMultiplier getPressureOversample() {
-		return OversamplingMultiplier.values()[(device.readByte(CONFIG_T_P_MODE_ADDRESS)
+		return OversamplingMultiplier.values()[(device.readByteData(CONFIG_T_P_MODE_ADDRESS)
 				& OVERSAMPLING_PRESSURE_MASK) >> OVERSAMPLING_PRESSURE_POSITION];
 	}
 
@@ -547,7 +544,7 @@ public class BME680 implements BarometerInterface, ThermometerInterface, Hygrome
 
 	// Get IIR filter size
 	public FilterSize getFilter() {
-		return FilterSize.values()[(device.readByte(CONFIG_ODR_FILTER_ADDRESS) & FILTER_MASK) >> FILTER_POSITION];
+		return FilterSize.values()[(device.readByteData(CONFIG_ODR_FILTER_ADDRESS) & FILTER_MASK) >> FILTER_POSITION];
 	}
 
 	// Set IIR filter size
@@ -577,10 +574,11 @@ public class BME680 implements BarometerInterface, ThermometerInterface, Hygrome
 
 			/* ! The index of the heater profile used */
 			// uint8_t gas_index;
-			device.writeByte(RESISTANCE_HEAT0_ADDRESS + profile.ordinal(),
+			device.writeByteData(RESISTANCE_HEAT0_ADDRESS + profile.ordinal(),
 					(byte) calculateHeaterResistance(heaterTemperature, ambientTemperature, calibration));
 			// uint16_t heatr_dur;
-			device.writeByte(GAS_WAIT0_ADDRESS + profile.ordinal(), (byte) calculateGasHeaterDuration(heaterDuration));
+			device.writeByteData(GAS_WAIT0_ADDRESS + profile.ordinal(),
+					(byte) calculateGasHeaterDuration(heaterDuration));
 
 			// Bosch code only uses profile 0
 			// dev->gas_sett.nb_conv = 0;
@@ -589,7 +587,7 @@ public class BME680 implements BarometerInterface, ThermometerInterface, Hygrome
 
 	// Get gas sensor conversion profile: 0 to 9
 	public HeaterProfile getGasHeaterProfile() {
-		return HeaterProfile.values()[device.readByte(CONFIG_ODR_RUN_GAS_NBC_ADDRESS) & NBCONVERSION_MASK];
+		return HeaterProfile.values()[device.readByteData(CONFIG_ODR_RUN_GAS_NBC_ADDRESS) & NBCONVERSION_MASK];
 	}
 
 	// Set current gas sensor conversion profile: 0 to 9. Select one of the 10
@@ -602,9 +600,8 @@ public class BME680 implements BarometerInterface, ThermometerInterface, Hygrome
 	}
 
 	public boolean isHeaterEnabled() {
-		return ((device.readByte(CONFIG_HEATER_CONTROL_ADDRESS) & HEATER_CONTROL_MASK) >> HEATER_CONTROL_POSITION) == 1
-				? false
-				: true;
+		return ((device.readByteData(CONFIG_HEATER_CONTROL_ADDRESS)
+				& HEATER_CONTROL_MASK) >> HEATER_CONTROL_POSITION) == 1 ? false : true;
 	}
 
 	public void setHeaterEnabled(boolean heaterEnabled) {
@@ -617,7 +614,7 @@ public class BME680 implements BarometerInterface, ThermometerInterface, Hygrome
 
 	// Get the current gas status
 	public boolean isGasMeasurementEnabled() {
-		return ((device.readByte(CONFIG_ODR_RUN_GAS_NBC_ADDRESS) & RUN_GAS_MASK) >> RUN_GAS_POSITION) == 1 ? true
+		return ((device.readByteData(CONFIG_ODR_RUN_GAS_NBC_ADDRESS) & RUN_GAS_MASK) >> RUN_GAS_POSITION) == 1 ? true
 				: false;
 	}
 
@@ -760,22 +757,24 @@ public class BME680 implements BarometerInterface, ThermometerInterface, Hygrome
 		/* Other coefficients */
 		// Read other heater calibration data
 		// res_heat_range is the heater range stored in register address 0x02 <5:4>
-		calibration.resistanceHeaterRange = (device.readByte(RESISTANCE_HEAT_RANGE_ADDRESS)
+		calibration.resistanceHeaterRange = (device.readByteData(RESISTANCE_HEAT_RANGE_ADDRESS)
 				& RESISTANCE_HEAT_RANGE_MASK) >> 4;
 		// res_heat_val is the heater resistance correction factor stored in register
 		// address 0x00
 		// (signed, value from -128 to 127)
-		calibration.resistanceHeaterValue = device.readByte(RESISTANCE_HEAT_VALUE_ADDRESS);
+		calibration.resistanceHeaterValue = device.readByteData(RESISTANCE_HEAT_VALUE_ADDRESS);
 
 		// Range switching error from register address 0x04 <7:4> (signed 4 bit)
-		calibration.rangeSwitchingError = (device.readByte(RANGE_SWITCHING_ERROR_ADDRESS)
+		calibration.rangeSwitchingError = (device.readByteData(RANGE_SWITCHING_ERROR_ADDRESS)
 				& RANGE_SWITCHING_ERROR_MASK) >> 4;
 	}
 
 	// Read calibration array
 	private byte[] readCalibrationData() {
-		final byte[] part1 = device.readBytes(COEFFICIENT_ADDRESS1, COEFFICIENT_ADDRESS1_LEN);
-		final byte[] part2 = device.readBytes(COEFFICIENT_ADDRESS2, COEFFICIENT_ADDRESS2_LEN);
+		final byte[] part1 = new byte[COEFFICIENT_ADDRESS1_LEN];
+		device.readI2CBlockData(COEFFICIENT_ADDRESS1, part1);
+		final byte[] part2 = new byte[COEFFICIENT_ADDRESS2_LEN];
+		device.readI2CBlockData(COEFFICIENT_ADDRESS2, part2);
 
 		final byte[] calibration_data = new byte[COEFFICIENT_ADDRESS1_LEN + COEFFICIENT_ADDRESS2_LEN];
 		System.arraycopy(part1, 0, calibration_data, 0, part1.length);
@@ -790,7 +789,8 @@ public class BME680 implements BarometerInterface, ThermometerInterface, Hygrome
 
 		int tries = 10;
 		do {
-			final byte[] buffer = device.readBytes(FIELD0_ADDRESS, FIELD_LENGTH);
+			final byte[] buffer = new byte[FIELD_LENGTH];
+			device.readI2CBlockData(FIELD0_ADDRESS, buffer);
 
 			// Set to 1 during measurements, goes to 0 when measurements are completed
 			boolean new_data = (buffer[0] & NEW_DATA_MASK) == 0 ? true : false;
@@ -957,7 +957,7 @@ public class BME680 implements BarometerInterface, ThermometerInterface, Hygrome
 	}
 
 	private void setRegByte(final int address, final byte mask, final int position, final int value) {
-		final byte oldData = device.readByte(address);
+		final byte oldData = device.readByteData(address);
 
 		byte newData;
 		if (position == 0) {
@@ -965,7 +965,7 @@ public class BME680 implements BarometerInterface, ThermometerInterface, Hygrome
 		} else {
 			newData = (byte) ((oldData & ~mask) | ((value << position) & mask));
 		}
-		device.writeByte(address, newData);
+		device.writeByteData(address, newData);
 	}
 
 	private static int bytesToWord(final int msb, final int lsb, final boolean isSigned) {

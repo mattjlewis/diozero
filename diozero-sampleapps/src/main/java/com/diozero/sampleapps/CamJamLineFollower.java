@@ -36,10 +36,10 @@ import java.io.Closeable;
 import org.tinylog.Logger;
 
 import com.diozero.api.DigitalInputDevice;
-import com.diozero.api.motor.DualMotor;
 import com.diozero.devices.CamJamKitDualMotor;
 import com.diozero.devices.HCSR04;
 import com.diozero.devices.LED;
+import com.diozero.devices.motor.DualMotor;
 import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 

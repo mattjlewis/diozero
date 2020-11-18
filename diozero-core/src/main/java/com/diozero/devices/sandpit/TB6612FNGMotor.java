@@ -35,7 +35,7 @@ import org.tinylog.Logger;
 
 import com.diozero.api.DigitalOutputDevice;
 import com.diozero.api.PwmOutputDevice;
-import com.diozero.api.motor.MotorBase;
+import com.diozero.devices.motor.MotorBase;
 import com.diozero.util.RuntimeIOException;
 
 /**

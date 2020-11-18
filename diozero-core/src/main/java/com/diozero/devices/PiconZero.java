@@ -184,7 +184,7 @@ public class PiconZero extends AbstractDeviceFactory implements GpioDeviceFactor
 	private void writeByte(int register, int value) throws RuntimeIOException {
 		for (int i = 0; i < MAX_I2C_RETRIES; i++) {
 			try {
-				device.writeByte(register, value);
+				device.writeByteData(register, value);
 				SleepUtil.sleepMillis(1);
 				return;
 			} catch (RuntimeIOException e) {
@@ -193,8 +193,8 @@ public class PiconZero extends AbstractDeviceFactory implements GpioDeviceFactor
 		}
 	}
 
-	private void writeBytes(int register, int length, byte[] data) throws RuntimeIOException {
-		device.writeBytes(register, length, data);
+	private void writeBytes(int register, byte[] data) throws RuntimeIOException {
+		device.writeI2CBlockData(register, data);
 		SleepUtil.sleepMillis(1);
 	}
 
@@ -212,7 +212,7 @@ public class PiconZero extends AbstractDeviceFactory implements GpioDeviceFactor
 	 *         version
 	 */
 	public byte[] getRevision() {
-		ByteBuffer buffer = device.read(REVISION_REG, 2);
+		ByteBuffer buffer = device.readI2CBlockDataByteBuffer(REVISION_REG, 2);
 		byte[] arr = new byte[buffer.remaining()];
 		buffer.get(arr);
 		return arr;
@@ -390,7 +390,7 @@ public class PiconZero extends AbstractDeviceFactory implements GpioDeviceFactor
 		// pixelData = [Pixel, Red, Green, Blue]
 		// bus.write_i2c_block_data (pzaddr, Update, pixelData)
 		byte[] pixel_data = new byte[] { (byte) pixel, (byte) red, (byte) green, (byte) blue };
-		writeBytes(update ? WS2812B_SET_PIXEL_UPDATE_REG : WS2812B_SET_PIXEL_NOUPDATE_REG, 4, pixel_data);
+		writeBytes(update ? WS2812B_SET_PIXEL_UPDATE_REG : WS2812B_SET_PIXEL_NOUPDATE_REG, pixel_data);
 	}
 
 	/**

@@ -63,7 +63,7 @@ public class BitManipulation {
 		return (byte)(1 << bit);
 	}
 
-	public static boolean isBitSet(byte value, byte bit) {
+	public static boolean isBitSet(byte value, int bit) {
 		return (value & getBitMask(bit)) != 0;
 	}
 }

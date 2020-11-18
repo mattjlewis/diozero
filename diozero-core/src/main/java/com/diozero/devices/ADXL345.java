@@ -38,7 +38,7 @@ import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 
 import com.diozero.api.I2CConstants;
 import com.diozero.api.I2CDevice;
-import com.diozero.api.imu.*;
+import com.diozero.devices.imu.*;
 import com.diozero.util.BitManipulation;
 import com.diozero.util.RuntimeIOException;
 
@@ -58,20 +58,20 @@ public class ADXL345 implements ImuInterface {
 	private static final int[] RANGE_LIST = { 2, 4, 8, 16 };
 
 	// Registers
-	private static final int THRESH_TAP = 0x1D; // Tap threshold
+	private static final int THRESH_TAP_REG = 0x1D; // Tap threshold
 	private static final int OFSX = 0x1E; // X-axis offset
 	private static final int OFSY = 0x1F; // Y-axis offset
 	private static final int OFSZ = 0x20; // Z-axis offset
 	private static final int TAP_DUR = 0x21; // Tap duration
 	private static final int TAP_LATENCY = 0x22; // Tap latency
-	private static final int TAP_WINDOW = 0x23; // Tap window
-	private static final int THRESH_ACT = 0x24; // Activity threshold
-	private static final int THRESH_INACT = 0x25; // Inactivity threshold
-	private static final int TIME_INACT = 0x26; // Inactivity time
-	private static final int ACT_INACT_CTL = 0x27; // Axis enable control for activity and inactivity detection
-	private static final int THRESH_FF = 0x28; // Free-fall threshold
-	private static final int TIME_FF = 0x29; // Free-fall time
-	private static final int TAP_AXES = 0x2A; // Axis control for single tap/double tap
+	private static final int TAP_WINDOW_REG = 0x23; // Tap window
+	private static final int THRESH_ACT_REG = 0x24; // Activity threshold
+	private static final int THRESH_INACT_REG = 0x25; // Inactivity threshold
+	private static final int TIME_INACT_REG = 0x26; // Inactivity time
+	private static final int ACT_INACT_CTL_REG = 0x27; // Axis enable control for activity and inactivity detection
+	private static final int THRESH_FF_REG = 0x28; // Free-fall threshold
+	private static final int TIME_FF_REG = 0x29; // Free-fall time
+	private static final int TAP_AXES_REG = 0x2A; // Axis control for single tap/double tap
 	private static final int ACT_TAP_STATUS = 0x2B; // Source of single tap/double tap
 	private static final int BW_RATE = 0x2C; // Data rate and power mode control
 	private static final int POWER_CTL = 0x2D; // Power-saving features control
@@ -134,7 +134,7 @@ public class ADXL345 implements ImuInterface {
 	 * @return Tap threshold (g)
 	 */
 	public float getTapThreshold() {
-		return device.readUByte(THRESH_TAP) * THRESH_TAP_LSB;
+		return device.readUByte(THRESH_TAP_REG) * THRESH_TAP_LSB;
 	}
 
 	/**
@@ -147,19 +147,19 @@ public class ADXL345 implements ImuInterface {
 			throw new IllegalArgumentException(
 					"Illegal tap threshold value (" + tapThreshold + "), must be 0.." + THRESH_TAP_RANGE);
 		}
-		device.writeByte(THRESH_TAP, (byte) (Math.floor(tapThreshold / THRESH_TAP_LSB)));
+		device.writeByteData(THRESH_TAP_REG, (byte) (Math.floor(tapThreshold / THRESH_TAP_LSB)));
 	}
 
 	private float getOffset(int register) {
 		// Signed 8-bit
-		return device.readByte(register) * OFFSET_LSB;
+		return device.readByteData(register) * OFFSET_LSB;
 	}
 
 	private void setOffset(int register, float offset) {
 		if (offset < 0 || offset > OFFSET_RANGE) {
 			throw new IllegalArgumentException("Illegal offset value (" + offset + "), must be 0.." + OFFSET_RANGE);
 		}
-		device.writeByte(register, (byte) (Math.floor(offset / OFFSET_LSB)));
+		device.writeByteData(register, (byte) (Math.floor(offset / OFFSET_LSB)));
 	}
 
 	public float getOffsetX() {
@@ -231,7 +231,7 @@ public class ADXL345 implements ImuInterface {
 			throw new IllegalArgumentException(
 					"Illegal tap duration value (" + tapDuration + "), must be 0.." + TAP_DURATION_MS_RANGE);
 		}
-		device.writeByte(TAP_DUR, (byte) (Math.floor(tapDuration / TAP_DURATION_MS_LSB)));
+		device.writeByteData(TAP_DUR, (byte) (Math.floor(tapDuration / TAP_DURATION_MS_LSB)));
 	}
 
 	/**
@@ -255,7 +255,7 @@ public class ADXL345 implements ImuInterface {
 			throw new IllegalArgumentException(
 					"Illegal tap latency value (" + tapLatency + "), must be 0.." + TAP_LATENCY_MS_RANGE);
 		}
-		device.writeByte(TAP_LATENCY, (byte) (Math.floor(tapLatency / TAP_LATENCY_MS_LSB)));
+		device.writeByteData(TAP_LATENCY, (byte) (Math.floor(tapLatency / TAP_LATENCY_MS_LSB)));
 	}
 
 	/**
@@ -264,7 +264,7 @@ public class ADXL345 implements ImuInterface {
 	 * @return Tap window (milliseconds)
 	 */
 	public float getTapWindow() {
-		return device.readUByte(TAP_WINDOW) * TAP_WINDOW_MS_LSB;
+		return device.readUByte(TAP_WINDOW_REG) * TAP_WINDOW_MS_LSB;
 	}
 
 	/**
@@ -278,11 +278,11 @@ public class ADXL345 implements ImuInterface {
 			throw new IllegalArgumentException(
 					"Illegal tap window value (" + tapWindow + "), must be 0.." + TAP_WINDOW_MS_RANGE);
 		}
-		device.writeByte(TAP_WINDOW, (byte) (Math.floor(tapWindow / TAP_WINDOW_MS_LSB)));
+		device.writeByteData(TAP_WINDOW_REG, (byte) (Math.floor(tapWindow / TAP_WINDOW_MS_LSB)));
 	}
 
 	public float getActivityThreshold() {
-		return device.readUByte(THRESH_ACT) * ACTIVITY_THRESHOLD_LSB;
+		return device.readUByte(THRESH_ACT_REG) * ACTIVITY_THRESHOLD_LSB;
 	}
 
 	/**
@@ -295,11 +295,11 @@ public class ADXL345 implements ImuInterface {
 			throw new IllegalArgumentException("Illegal activity threshold value (" + activityThreshold
 					+ "), must be 0.." + ACTIVITY_THRESHOLD_RANGE);
 		}
-		device.writeByte(THRESH_ACT, (byte) (Math.floor(activityThreshold / ACTIVITY_THRESHOLD_LSB)));
+		device.writeByteData(THRESH_ACT_REG, (byte) (Math.floor(activityThreshold / ACTIVITY_THRESHOLD_LSB)));
 	}
 
 	public float getInactivityThreshold() {
-		return device.readUByte(THRESH_INACT) * INACTIVITY_THRESHOLD_LSB;
+		return device.readUByte(THRESH_INACT_REG) * INACTIVITY_THRESHOLD_LSB;
 	}
 
 	/**
@@ -312,11 +312,11 @@ public class ADXL345 implements ImuInterface {
 			throw new IllegalArgumentException("Illegal inactivity threshold value (" + inactivityThreshold
 					+ "), must be 0.." + INACTIVITY_THRESHOLD_RANGE);
 		}
-		device.writeByte(THRESH_INACT, (byte) (Math.floor(inactivityThreshold / INACTIVITY_THRESHOLD_LSB)));
+		device.writeByteData(THRESH_INACT_REG, (byte) (Math.floor(inactivityThreshold / INACTIVITY_THRESHOLD_LSB)));
 	}
 
 	public float getInactivityTime() {
-		return device.readUByte(TIME_INACT) * INACTIVITY_TIME_LSB;
+		return device.readUByte(TIME_INACT_REG) * INACTIVITY_TIME_LSB;
 	}
 
 	/**
@@ -331,7 +331,7 @@ public class ADXL345 implements ImuInterface {
 			throw new IllegalArgumentException(
 					"Illegal inactivity time value (" + inactivityTime + "), must be 0.." + INACTIVITY_TIME_RANGE);
 		}
-		device.writeByte(TIME_INACT, (byte) (Math.floor(inactivityTime / INACTIVITY_TIME_LSB)));
+		device.writeByteData(TIME_INACT_REG, (byte) (Math.floor(inactivityTime / INACTIVITY_TIME_LSB)));
 	}
 
 	/**
@@ -358,15 +358,15 @@ public class ADXL345 implements ImuInterface {
 	 * @return Activity / inativity control flags
 	 */
 	public byte getActivityInactivityControlFlags() {
-		return device.readByte(ACT_INACT_CTL);
+		return device.readByteData(ACT_INACT_CTL_REG);
 	}
 
 	public void setActivityInactivityControlFlags(byte flags) {
-		device.writeByte(ACT_INACT_CTL, flags);
+		device.writeByteData(ACT_INACT_CTL_REG, flags);
 	}
 
 	public float getFreefallThreshold() {
-		return device.readUByte(THRESH_FF) * FREEFALL_THRESHOLD_LSB;
+		return device.readUByte(THRESH_FF_REG) * FREEFALL_THRESHOLD_LSB;
 	}
 
 	/**
@@ -379,11 +379,11 @@ public class ADXL345 implements ImuInterface {
 			throw new IllegalArgumentException("Illegal freefall threshold value (" + freefallThreshold
 					+ "), must be 0.." + FREEFALL_THRESHOLD_RANGE);
 		}
-		device.writeByte(THRESH_FF, (byte) (Math.floor(freefallThreshold / FREEFALL_THRESHOLD_LSB)));
+		device.writeByteData(THRESH_FF_REG, (byte) (Math.floor(freefallThreshold / FREEFALL_THRESHOLD_LSB)));
 	}
 
 	public float getFreefallTime() {
-		return device.readUByte(TIME_FF) * FREEFALL_TIME_LSB;
+		return device.readUByte(TIME_FF_REG) * FREEFALL_TIME_LSB;
 	}
 
 	/**
@@ -398,43 +398,43 @@ public class ADXL345 implements ImuInterface {
 			throw new IllegalArgumentException(
 					"Illegal freefall time value (" + freefallTime + "), must be 0.." + FREEFALL_TIME_RANGE);
 		}
-		device.writeByte(TIME_FF, (byte) (Math.floor(freefallTime / FREEFALL_TIME_LSB)));
+		device.writeByteData(TIME_FF_REG, (byte) (Math.floor(freefallTime / FREEFALL_TIME_LSB)));
 	}
 
 	public boolean isDoubleTapSuppressed() {
-		return (device.readByte(TAP_AXES) & SUPPRESS_DOUBLE_TAP) != 0;
+		return (device.readByteData(TAP_AXES_REG) & SUPPRESS_DOUBLE_TAP) != 0;
 	}
 
 	public void setDoubleTapSuppressed(boolean doubleTapSuppressed) {
-		byte old_val = device.readByte(TAP_AXES);
+		byte old_val = device.readByteData(TAP_AXES_REG);
 		if (doubleTapSuppressed != ((old_val & SUPPRESS_DOUBLE_TAP) != 0)) {
-			device.writeByte(TAP_AXES,
+			device.writeByteData(TAP_AXES_REG,
 					doubleTapSuppressed ? old_val | SUPPRESS_DOUBLE_TAP : old_val & ~SUPPRESS_DOUBLE_TAP);
 		}
 	}
 
 	public byte getTapActivityStatusFlags() {
-		return device.readByte(ACT_TAP_STATUS);
+		return device.readByteData(ACT_TAP_STATUS);
 	}
 
 	public boolean isLowPowerMode() {
-		return (device.readByte(BW_RATE) & LOW_POWER_MODE) != 0;
+		return (device.readByteData(BW_RATE) & LOW_POWER_MODE) != 0;
 	}
 
 	public void setLowPowerMode(boolean lowPowerMode) {
-		byte old_val = device.readByte(BW_RATE);
+		byte old_val = device.readByteData(BW_RATE);
 		if (lowPowerMode != ((old_val & LOW_POWER_MODE) != 0)) {
-			device.writeByte(BW_RATE, lowPowerMode ? old_val | LOW_POWER_MODE : old_val & ~LOW_POWER_MODE);
+			device.writeByteData(BW_RATE, lowPowerMode ? old_val | LOW_POWER_MODE : old_val & ~LOW_POWER_MODE);
 		}
 	}
 
 	public OutputDataRateType getBandwidthDataRate() throws RuntimeIOException {
-		return OutputDataRateType.TYPES[device.readByte(BW_RATE) & 0x0f];
+		return OutputDataRateType.TYPES[device.readByteData(BW_RATE) & 0x0f];
 	}
 
 	public void setBandwidthRate(OutputDataRateType dataRate) throws RuntimeIOException {
-		byte old_val = device.readByte(BW_RATE);
-		device.writeByte(BW_RATE, (old_val & 0xf0) | dataRate.code);
+		byte old_val = device.readByteData(BW_RATE);
+		device.writeByteData(BW_RATE, (old_val & 0xf0) | dataRate.code);
 	}
 
 	public void setNormalMeasurementMode() throws RuntimeIOException {
@@ -443,59 +443,59 @@ public class ADXL345 implements ImuInterface {
 
 	public void setPowerControlFlags(byte powerControlValue) throws RuntimeIOException {
 		// Enable measure mode
-		device.writeByte(POWER_CTL, powerControlValue);
+		device.writeByteData(POWER_CTL, powerControlValue);
 	}
 
 	public byte getInterruptEnableFlags() {
-		return device.readByte(INT_ENABLE);
+		return device.readByteData(INT_ENABLE);
 	}
 
 	public void setInterruptEnableFlags(byte flags) {
-		device.writeByte(INT_ENABLE, flags);
+		device.writeByteData(INT_ENABLE, flags);
 	}
 
 	public byte getInterruptMapFlags() {
-		return device.readByte(INT_MAP);
+		return device.readByteData(INT_MAP);
 	}
 
 	public void setInterruptMapFlagS(byte flags) {
-		device.writeByte(INT_MAP, flags);
+		device.writeByteData(INT_MAP, flags);
 	}
 
 	public byte getInterruptSourceFlags() {
-		return device.readByte(INT_SOURCE);
+		return device.readByteData(INT_SOURCE);
 	}
 
 	public boolean isFullResolutionMode() {
-		return (device.readByte(DATA_FORMAT) & FULL_RESOLUTION_MODE) != 0;
+		return (device.readByteData(DATA_FORMAT) & FULL_RESOLUTION_MODE) != 0;
 	}
 
 	public void setFullResolutionMode(boolean fullResolution) {
-		byte old_val = device.readByte(DATA_FORMAT);
+		byte old_val = device.readByteData(DATA_FORMAT);
 		if (fullResolution != ((old_val & FULL_RESOLUTION_MODE) != 0)) {
-			device.writeByte(DATA_FORMAT, fullResolution ? old_val | FULL_RESOLUTION_MODE : old_val & ~SELF_TEST_MODE);
+			device.writeByteData(DATA_FORMAT, fullResolution ? old_val | FULL_RESOLUTION_MODE : old_val & ~SELF_TEST_MODE);
 		}
 	}
 
 	public boolean isSelfTestMode() {
-		return (device.readByte(DATA_FORMAT) & SELF_TEST_MODE) != 0;
+		return (device.readByteData(DATA_FORMAT) & SELF_TEST_MODE) != 0;
 	}
 
 	public void setSelfTestMode(boolean selfTest) {
-		byte old_val = device.readByte(DATA_FORMAT);
+		byte old_val = device.readByteData(DATA_FORMAT);
 		if (selfTest != ((old_val & SELF_TEST_MODE) != 0)) {
-			device.writeByte(DATA_FORMAT, selfTest ? old_val | SELF_TEST_MODE : old_val & ~SELF_TEST_MODE);
+			device.writeByteData(DATA_FORMAT, selfTest ? old_val | SELF_TEST_MODE : old_val & ~SELF_TEST_MODE);
 		}
 	}
 
 	public int getAccelFsr() {
-		return RANGE_LIST[device.readByte(DATA_FORMAT) & 0x3];
+		return RANGE_LIST[device.readByteData(DATA_FORMAT) & 0x3];
 	}
 
 	public void setAccelFsr(int range) {
 		for (int i : RANGE_LIST) {
 			if (RANGE_LIST[i] == range) {
-				device.writeByte(DATA_FORMAT, i);
+				device.writeByteData(DATA_FORMAT, i);
 				return;
 			}
 		}
@@ -527,11 +527,11 @@ public class ADXL345 implements ImuInterface {
 	 * @return FIFO Control flags
 	 */
 	public byte getFifoControlFlags() {
-		return device.readByte(FIFO_CTL);
+		return device.readByteData(FIFO_CTL);
 	}
 
 	public void setFifoControlFlags(byte flags) {
-		device.writeByte(FIFO_CTL, flags);
+		device.writeByteData(FIFO_CTL, flags);
 	}
 
 	/**
@@ -548,7 +548,7 @@ public class ADXL345 implements ImuInterface {
 	 * @return FIFO status
 	 */
 	public byte getFifoStatus() {
-		return device.readByte(FIFO_STATUS);
+		return device.readByteData(FIFO_STATUS);
 	}
 
 	@Override
@@ -564,10 +564,12 @@ public class ADXL345 implements ImuInterface {
 
 	@Override
 	public Vector3D getAccelerometerData() throws RuntimeIOException {
-		ByteBuffer data = ByteBuffer.wrap(device.readBytes(AXES_DATA, 6));
-		short x = data.getShort();
-		short y = data.getShort();
-		short z = data.getShort();
+		byte[] data = new byte[6];
+		device.readI2CBlockData(AXES_DATA, data);
+		ByteBuffer buffer = ByteBuffer.wrap(data);
+		short x = buffer.getShort();
+		short y = buffer.getShort();
+		short z = buffer.getShort();
 
 		return ImuDataFactory.createVector(new short[] { x, y, z }, SCALE_FACTOR);
 	}

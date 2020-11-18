@@ -52,7 +52,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.tinylog.Logger;
 
-import com.diozero.util.DioZeroScheduler;
+import com.diozero.util.DiozeroScheduler;
 import com.diozero.util.RuntimeIOException;
 
 public abstract class FirmataAdapter implements FirmataProtocol, Runnable, Closeable {
@@ -89,7 +89,7 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, Close
 	abstract void write(byte[] data);
 
 	public final void start() {
-		future = DioZeroScheduler.getDaemonInstance().submit(this);
+		future = DiozeroScheduler.getDaemonInstance().submit(this);
 
 		initialiseBoard();
 	}

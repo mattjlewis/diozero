@@ -36,12 +36,12 @@ import java.util.Arrays;
 
 import org.tinylog.Logger;
 
-import com.diozero.api.imu.OrientationEvent;
-import com.diozero.api.imu.OrientationEvent.OrientationType;
-import com.diozero.api.imu.OrientationListener;
-import com.diozero.api.imu.TapEvent;
-import com.diozero.api.imu.TapEvent.TapType;
-import com.diozero.api.imu.TapListener;
+import com.diozero.devices.imu.OrientationEvent;
+import com.diozero.devices.imu.OrientationListener;
+import com.diozero.devices.imu.TapEvent;
+import com.diozero.devices.imu.TapListener;
+import com.diozero.devices.imu.OrientationEvent.OrientationType;
+import com.diozero.devices.imu.TapEvent.TapType;
 import com.diozero.util.Hex;
 import com.diozero.util.RuntimeIOException;
 
@@ -103,8 +103,8 @@ public class MPU9150DMPDriver implements MPU9150DMPConstants {
 		accel_regs[2] = accel_axes[(orient >> 6) & 3];
 
 		/* Chip-to-body, axes only. */
-		mpu.mpu_write_mem(DMP612.FCFG_1, 3, gyro_regs);
-		mpu.mpu_write_mem(DMP612.FCFG_2, 3, accel_regs);
+		mpu.mpu_write_mem(DMP612.FCFG_1, gyro_regs);
+		mpu.mpu_write_mem(DMP612.FCFG_2, accel_regs);
 
 		// memcpy(dest, src, length);
 		// memcpy(gyro_regs, gyro_sign, 3);
@@ -125,8 +125,8 @@ public class MPU9150DMPDriver implements MPU9150DMPConstants {
 		}
 
 		/* Chip-to-body, sign only. */
-		mpu.mpu_write_mem(DMP612.FCFG_3, 3, gyro_regs);
-		mpu.mpu_write_mem(DMP612.FCFG_7, 3, accel_regs);
+		mpu.mpu_write_mem(DMP612.FCFG_3, gyro_regs);
+		mpu.mpu_write_mem(DMP612.FCFG_7, accel_regs);
 
 		this.orient = orient;
 	}
@@ -172,19 +172,19 @@ public class MPU9150DMPDriver implements MPU9150DMPConstants {
 		regs[1] = (byte) ((gyro_bias_body[0] >> 16) & 0xFF);
 		regs[2] = (byte) ((gyro_bias_body[0] >> 8) & 0xFF);
 		regs[3] = (byte) (gyro_bias_body[0] & 0xFF);
-		mpu.mpu_write_mem(D_EXT_GYRO_BIAS_X, 4, regs);
+		mpu.mpu_write_mem(D_EXT_GYRO_BIAS_X, regs);
 
 		regs[0] = (byte) ((gyro_bias_body[1] >> 24) & 0xFF);
 		regs[1] = (byte) ((gyro_bias_body[1] >> 16) & 0xFF);
 		regs[2] = (byte) ((gyro_bias_body[1] >> 8) & 0xFF);
 		regs[3] = (byte) (gyro_bias_body[1] & 0xFF);
-		mpu.mpu_write_mem(D_EXT_GYRO_BIAS_Y, 4, regs);
+		mpu.mpu_write_mem(D_EXT_GYRO_BIAS_Y, regs);
 
 		regs[0] = (byte) ((gyro_bias_body[2] >> 24) & 0xFF);
 		regs[1] = (byte) ((gyro_bias_body[2] >> 16) & 0xFF);
 		regs[2] = (byte) ((gyro_bias_body[2] >> 8) & 0xFF);
 		regs[3] = (byte) (gyro_bias_body[2] & 0xFF);
-		mpu.mpu_write_mem(D_EXT_GYRO_BIAS_Z, 4, regs);
+		mpu.mpu_write_mem(D_EXT_GYRO_BIAS_Z, regs);
 	}
 
 	/**
@@ -228,7 +228,7 @@ public class MPU9150DMPDriver implements MPU9150DMPConstants {
 		regs[9] = (byte) ((accel_bias_body[2] >> 16) & 0xFF);
 		regs[10] = (byte) ((accel_bias_body[2] >> 8) & 0xFF);
 		regs[11] = (byte) (accel_bias_body[2] & 0xFF);
-		mpu.mpu_write_mem(DMP612.D_ACCEL_BIAS, 12, regs);
+		mpu.mpu_write_mem(DMP612.D_ACCEL_BIAS, regs);
 	}
 
 	/**
@@ -250,11 +250,11 @@ public class MPU9150DMPDriver implements MPU9150DMPConstants {
 		byte[] tmp = new byte[2];
 		tmp[0] = (byte) ((div >> 8) & 0xFF);
 		tmp[1] = (byte) (div & 0xFF);
-		mpu.mpu_write_mem(DMP612.D_0_22, 2, tmp);
+		mpu.mpu_write_mem(DMP612.D_0_22, tmp);
 
 		byte[] regs_end = { DINAFE, DINAF2, DINAAB, (byte) 0xc4, DINAAA, DINAF1, DINADF, DINADF, (byte) 0xBB,
 				(byte) 0xAF, DINADF, DINADF };
-		mpu.mpu_write_mem(DMP612.CFG_6, 12, regs_end);
+		mpu.mpu_write_mem(DMP612.CFG_6, regs_end);
 
 		fifo_rate = rate;
 	}
@@ -320,16 +320,16 @@ public class MPU9150DMPDriver implements MPU9150DMPConstants {
 	    tmp2[1] = (byte)(dmp_thresh_2 & 0xFF);
 
 	    if ((axis & TAP_X) != 0) {
-	        mpu.mpu_write_mem(DMP612.DMP_TAP_THX, 2, tmp1);
-	        mpu.mpu_write_mem(DMP612.D_1_36, 2, tmp2);
+	        mpu.mpu_write_mem(DMP612.DMP_TAP_THX, tmp1);
+	        mpu.mpu_write_mem(DMP612.D_1_36, tmp2);
 	    }
 	    if ((axis & TAP_Y) != 0) {
-	        mpu.mpu_write_mem(DMP612.DMP_TAP_THY, 2, tmp1);
-	        mpu.mpu_write_mem(DMP612.D_1_40, 2, tmp2);
+	        mpu.mpu_write_mem(DMP612.DMP_TAP_THY, tmp1);
+	        mpu.mpu_write_mem(DMP612.D_1_40, tmp2);
 	    }
 	    if ((axis & TAP_Z) != 0) {
-	        mpu.mpu_write_mem(DMP612.DMP_TAP_THZ, 2, tmp1);
-	        mpu.mpu_write_mem(DMP612.D_1_44, 2, tmp2);
+	        mpu.mpu_write_mem(DMP612.DMP_TAP_THZ, tmp1);
+	        mpu.mpu_write_mem(DMP612.D_1_44, tmp2);
 	    }
 	    return true;
 	}
@@ -351,7 +351,7 @@ public class MPU9150DMPDriver implements MPU9150DMPConstants {
 	    if ((axis & TAP_Z) != 0) {
 	        tmp |= 0x03;
 	    }
-	    mpu.mpu_write_mem(DMP612.D_1_72, 1, new byte[] { tmp });
+	    mpu.mpu_write_mem(DMP612.D_1_72, new byte[] { tmp });
 	}
 
 	/**
@@ -369,7 +369,7 @@ public class MPU9150DMPDriver implements MPU9150DMPConstants {
 		}
 
 		tmp = (byte)(min_taps - 1);
-		mpu.mpu_write_mem(DMP612.D_1_79, 1, new byte[] { tmp });
+		mpu.mpu_write_mem(DMP612.D_1_79, new byte[] { tmp });
 	}
 
 	/**
@@ -383,7 +383,7 @@ public class MPU9150DMPDriver implements MPU9150DMPConstants {
 	    byte[] tmp = new byte[2];
 	    tmp[0] = (byte)(dmp_time >> 8);
 	    tmp[1] = (byte)(dmp_time & 0xFF);
-	    mpu.mpu_write_mem(DMPMap.DMP_TAPW_MIN, 2, tmp);
+	    mpu.mpu_write_mem(DMPMap.DMP_TAPW_MIN, tmp);
 	}
 
 	/**
@@ -396,7 +396,7 @@ public class MPU9150DMPDriver implements MPU9150DMPConstants {
 		byte[] tmp = new byte[2];
 		tmp[0] = (byte)(dmp_time >> 8);
 		tmp[1] = (byte)(dmp_time & 0xFF);
-		mpu.mpu_write_mem(DMP612.D_1_218, 2, tmp);
+		mpu.mpu_write_mem(DMP612.D_1_218, tmp);
 	}
 
 	/**
@@ -413,7 +413,7 @@ public class MPU9150DMPDriver implements MPU9150DMPConstants {
 	    tmp[1] = (byte)((thresh_scaled >> 16) & 0xFF);
 	    tmp[2] = (byte)((thresh_scaled >> 8) & 0xFF);
 	    tmp[3] = (byte)(thresh_scaled & 0xFF);
-	    mpu.mpu_write_mem(DMP612.D_1_92, 4, tmp);
+	    mpu.mpu_write_mem(DMP612.D_1_92, tmp);
 	}
 
 	/**
@@ -429,7 +429,7 @@ public class MPU9150DMPDriver implements MPU9150DMPConstants {
 	    byte[] tmp = new byte[2];
 	    tmp[0] = (byte)(time >> 8);
 	    tmp[1] = (byte)(time & 0xFF);
-	    mpu.mpu_write_mem(DMP612.D_1_90, 2, tmp);
+	    mpu.mpu_write_mem(DMP612.D_1_90, tmp);
 	}
 
 	/**
@@ -445,7 +445,7 @@ public class MPU9150DMPDriver implements MPU9150DMPConstants {
 		byte[] tmp = new byte[2];
 		tmp[0] = (byte)(time >> 8);
 		tmp[1] = (byte)(time & 0xFF);
-	    mpu.mpu_write_mem(DMP612.D_1_88,2,tmp);
+	    mpu.mpu_write_mem(DMP612.D_1_88, tmp);
 	}
 
 	/**
@@ -474,7 +474,7 @@ public class MPU9150DMPDriver implements MPU9150DMPConstants {
 		tmp[1] = (byte)((count >> 16) & 0xFF);
 		tmp[2] = (byte)((count >> 8) & 0xFF);
 		tmp[3] = (byte)(count & 0xFF);
-		mpu.mpu_write_mem(DMP612.D_PEDSTD_STEPCTR, 4, tmp);
+		mpu.mpu_write_mem(DMP612.D_PEDSTD_STEPCTR, tmp);
 	}
 
 	/**
@@ -504,7 +504,7 @@ public class MPU9150DMPDriver implements MPU9150DMPConstants {
 	    tmp[1] = (byte)((time >> 16) & 0xFF);
 	    tmp[2] = (byte)((time >> 8) & 0xFF);
 	    tmp[3] = (byte)(time & 0xFF);
-	    mpu.mpu_write_mem(DMP612.D_PEDSTD_TIMECTR, 4, tmp);
+	    mpu.mpu_write_mem(DMP612.D_PEDSTD_TIMECTR, tmp);
 	}
 
 	/**
@@ -523,19 +523,20 @@ public class MPU9150DMPDriver implements MPU9150DMPConstants {
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	public void dmp_enable_feature(int mask) throws RuntimeIOException {
-		byte[] tmp = new byte[10];
 
 		/*
 		 * TODO: All of these settings can probably be integrated into the default DMP image.
 		 */
 		/* Set integration scale factor. */
+		byte[] tmp = new byte[4];
 		tmp[0] = (byte) ((GYRO_SF >> 24) & 0xFF);
 		tmp[1] = (byte) ((GYRO_SF >> 16) & 0xFF);
 		tmp[2] = (byte) ((GYRO_SF >> 8) & 0xFF);
 		tmp[3] = (byte) (GYRO_SF & 0xFF);
-		mpu.mpu_write_mem(DMP612.D_0_104, 4, tmp);
+		mpu.mpu_write_mem(DMP612.D_0_104, tmp);
 
 		/* Send sensor data to the FIFO. */
+		tmp = new byte[10];
 		tmp[0] = (byte) 0xA3;
 		if ((mask & DMP_FEATURE_SEND_RAW_ACCEL) != 0) {
 			tmp[1] = (byte) 0xC0;
@@ -558,15 +559,16 @@ public class MPU9150DMPDriver implements MPU9150DMPConstants {
 		tmp[7] = (byte) 0xA3;
 		tmp[8] = (byte) 0xA3;
 		tmp[9] = (byte) 0xA3;
-		mpu.mpu_write_mem(DMP612.CFG_15, 10, tmp);
+		mpu.mpu_write_mem(DMP612.CFG_15, tmp);
 
 		/* Send gesture data to the FIFO. */
+		tmp = new byte[1];
 		if ((mask & (DMP_FEATURE_TAP | DMP_FEATURE_ANDROID_ORIENT)) != 0) {
 			tmp[0] = DINA20;
 		} else {
 			tmp[0] = (byte) 0xD8;
 		}
-		mpu.mpu_write_mem(DMP612.CFG_27, 1, tmp);
+		mpu.mpu_write_mem(DMP612.CFG_27, tmp);
 
 		if ((mask & DMP_FEATURE_GYRO_CAL) != 0) {
 			dmp_enable_gyro_cal(true);
@@ -575,6 +577,7 @@ public class MPU9150DMPDriver implements MPU9150DMPConstants {
 		}
 
 		if ((mask & DMP_FEATURE_SEND_ANY_GYRO) != 0) {
+			tmp = new byte[4];
 			if ((mask & DMP_FEATURE_SEND_CAL_GYRO) != 0) {
 				tmp[0] = (byte) 0xB2;
 				tmp[1] = (byte) 0x8B;
@@ -586,13 +589,14 @@ public class MPU9150DMPDriver implements MPU9150DMPConstants {
 				tmp[2] = DINAC2;
 				tmp[3] = DINA90;
 			}
-			mpu.mpu_write_mem(DMP612.CFG_GYRO_RAW_DATA, 4, tmp);
+			mpu.mpu_write_mem(DMP612.CFG_GYRO_RAW_DATA, tmp);
 		}
 
+		tmp = new byte[1];
 		if ((mask & DMP_FEATURE_TAP) != 0) {
 			/* Enable tap. */
 			tmp[0] = (byte) 0xF8;
-			mpu.mpu_write_mem(DMP612.CFG_20, 1, tmp);
+			mpu.mpu_write_mem(DMP612.CFG_20, tmp);
 			dmp_set_tap_thresh(TAP_XYZ, 250);
 			dmp_set_tap_axes(TAP_XYZ);
 			dmp_set_tap_count((byte)1);
@@ -604,15 +608,16 @@ public class MPU9150DMPDriver implements MPU9150DMPConstants {
 			dmp_set_shake_reject_timeout(10);
 		} else {
 			tmp[0] = (byte) 0xD8;
-			mpu.mpu_write_mem(DMP612.CFG_20, 1, tmp);
+			mpu.mpu_write_mem(DMP612.CFG_20, tmp);
 		}
 
+		tmp = new byte[1];
 		if ((mask & DMP_FEATURE_ANDROID_ORIENT) != 0) {
 			tmp[0] = (byte) 0xD9;
 		} else {
 			tmp[0] = (byte) 0xD8;
 		}
-		mpu.mpu_write_mem(DMP612.CFG_ANDROID_ORIENT_INT, 1, tmp);
+		mpu.mpu_write_mem(DMP612.CFG_ANDROID_ORIENT_INT, tmp);
 
 		if ((mask & DMP_FEATURE_LP_QUAT) != 0) {
 			dmp_enable_lp_quat(true);
@@ -667,11 +672,11 @@ public class MPU9150DMPDriver implements MPU9150DMPConstants {
 		if (enable) {
 			byte[] regs = new byte[] { (byte) 0xb8, (byte) 0xaa, (byte) 0xb3, (byte) 0x8d, (byte) 0xb4, (byte) 0x98,
 					(byte) 0x0d, (byte) 0x35, (byte) 0x5d };
-			mpu.mpu_write_mem(DMP612.CFG_MOTION_BIAS, 9, regs);
+			mpu.mpu_write_mem(DMP612.CFG_MOTION_BIAS, regs);
 		} else {
 			byte[] regs = new byte[] { (byte) 0xb8, (byte) 0xaa, (byte) 0xaa, (byte) 0xaa, (byte) 0xb0, (byte) 0x88,
 					(byte) 0xc3, (byte) 0xc5, (byte) 0xc7 };
-			mpu.mpu_write_mem(DMP612.CFG_MOTION_BIAS, 9, regs);
+			mpu.mpu_write_mem(DMP612.CFG_MOTION_BIAS, regs);
 		}
 	}
 
@@ -699,7 +704,7 @@ public class MPU9150DMPDriver implements MPU9150DMPConstants {
 			regs[3] = (byte) 0x8B;
 		}
 
-		mpu.mpu_write_mem(DMP612.CFG_LP_QUAT, 4, regs);
+		mpu.mpu_write_mem(DMP612.CFG_LP_QUAT, regs);
 
 		mpu.mpu_reset_fifo();
 	}
@@ -725,7 +730,7 @@ public class MPU9150DMPDriver implements MPU9150DMPConstants {
 			regs[3] = (byte) 0xA3;
 		}
 
-		mpu.mpu_write_mem(DMP612.CFG_8, 4, regs);
+		mpu.mpu_write_mem(DMP612.CFG_8, regs);
 
 		mpu.mpu_reset_fifo();
 	}
@@ -822,10 +827,10 @@ public class MPU9150DMPDriver implements MPU9150DMPConstants {
 
 		switch (mode) {
 		case DMP_INT_CONTINUOUS:
-			mpu.mpu_write_mem(DMP612.CFG_FIFO_ON_EVENT, 11, regs_continuous);
+			mpu.mpu_write_mem(DMP612.CFG_FIFO_ON_EVENT, regs_continuous);
 			break;
 		case DMP_INT_GESTURE:
-			mpu.mpu_write_mem(DMP612.CFG_FIFO_ON_EVENT, 11, regs_gesture);
+			mpu.mpu_write_mem(DMP612.CFG_FIFO_ON_EVENT, regs_gesture);
 			break;
 		}
 	}

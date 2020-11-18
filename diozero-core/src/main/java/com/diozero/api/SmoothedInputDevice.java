@@ -38,7 +38,7 @@ import java.util.function.Predicate;
 
 import com.diozero.internal.provider.GpioDeviceFactoryInterface;
 import com.diozero.util.DeviceFactoryHelper;
-import com.diozero.util.DioZeroScheduler;
+import com.diozero.util.DiozeroScheduler;
 import com.diozero.util.RuntimeIOException;
 
 /**
@@ -115,7 +115,7 @@ public class SmoothedInputDevice extends WaitableDigitalInputDevice {
 		this.eventDetectPeriod = eventDetectPeriod;
 
 		queue = new LinkedList<>();
-		DioZeroScheduler.getDaemonInstance().scheduleAtFixedRate(new EventDetection(), eventDetectPeriod,
+		DiozeroScheduler.getDaemonInstance().scheduleAtFixedRate(new EventDetection(), eventDetectPeriod,
 				eventDetectPeriod, TimeUnit.MILLISECONDS);
 	}
 

@@ -58,20 +58,29 @@ import com.diozero.remote.message.GpioEvents;
 import com.diozero.remote.message.GpioPwmRead;
 import com.diozero.remote.message.GpioPwmReadResponse;
 import com.diozero.remote.message.GpioPwmWrite;
+import com.diozero.remote.message.I2CBlockProcessCall;
+import com.diozero.remote.message.I2CBooleanResponse;
+import com.diozero.remote.message.I2CByteResponse;
+import com.diozero.remote.message.I2CBytesResponse;
 import com.diozero.remote.message.I2CClose;
 import com.diozero.remote.message.I2COpen;
-import com.diozero.remote.message.I2CRead;
+import com.diozero.remote.message.I2CProbe;
+import com.diozero.remote.message.I2CProcessCall;
+import com.diozero.remote.message.I2CReadBlockData;
+import com.diozero.remote.message.I2CReadBlockDataResponse;
 import com.diozero.remote.message.I2CReadByte;
 import com.diozero.remote.message.I2CReadByteData;
-import com.diozero.remote.message.I2CReadByteDataResponse;
-import com.diozero.remote.message.I2CReadByteResponse;
+import com.diozero.remote.message.I2CReadBytes;
 import com.diozero.remote.message.I2CReadI2CBlockData;
-import com.diozero.remote.message.I2CReadI2CBlockDataResponse;
-import com.diozero.remote.message.I2CReadResponse;
-import com.diozero.remote.message.I2CWrite;
+import com.diozero.remote.message.I2CReadWordData;
+import com.diozero.remote.message.I2CWordResponse;
+import com.diozero.remote.message.I2CWriteBlockData;
 import com.diozero.remote.message.I2CWriteByte;
 import com.diozero.remote.message.I2CWriteByteData;
+import com.diozero.remote.message.I2CWriteBytes;
 import com.diozero.remote.message.I2CWriteI2CBlockData;
+import com.diozero.remote.message.I2CWriteQuick;
+import com.diozero.remote.message.I2CWriteWordData;
 import com.diozero.remote.message.ProvisionAnalogInputDevice;
 import com.diozero.remote.message.ProvisionAnalogOutputDevice;
 import com.diozero.remote.message.ProvisionDigitalInputDevice;
@@ -106,14 +115,11 @@ public class JsonHttpProtocolHandler implements RemoteProtocolInterface {
 	private static final String PORT_PROP = "HTTP_PROVIDER_PORT";
 	private static final int DEFAULT_PORT = 8080;
 
-	private NativeDeviceFactoryInterface deviceFactory;
 	private HttpHost httpHost;
 	private HttpClient httpClient;
 	private Gson gson;
 
 	public JsonHttpProtocolHandler(NativeDeviceFactoryInterface deviceFactory) {
-		this.deviceFactory = deviceFactory;
-
 		String hostname = PropertyUtil.getProperty(HOSTNAME_PROP, null);
 		if (hostname == null) {
 			throw new RuntimeIOException("Property '" + HOSTNAME_PROP + "' must be set");
@@ -125,7 +131,7 @@ public class JsonHttpProtocolHandler implements RemoteProtocolInterface {
 		httpClient = HttpClients.createDefault();
 		gson = new Gson();
 	}
-	
+
 	@Override
 	public void start() {
 		// Ignore
@@ -233,8 +239,18 @@ public class JsonHttpProtocolHandler implements RemoteProtocolInterface {
 	}
 
 	@Override
-	public I2CReadByteResponse request(I2CReadByte request) {
-		return requestResponse(HttpProviderConstants.I2C_READ_BYTE_URL, request, I2CReadByteResponse.class);
+	public I2CBooleanResponse request(I2CProbe request) {
+		return requestResponse(HttpProviderConstants.I2C_PROBE_URL, request, I2CBooleanResponse.class);
+	}
+
+	@Override
+	public Response request(I2CWriteQuick request) {
+		return requestResponse(HttpProviderConstants.I2C_WRITE_QUICK_URL, request, Response.class);
+	}
+
+	@Override
+	public I2CByteResponse request(I2CReadByte request) {
+		return requestResponse(HttpProviderConstants.I2C_READ_BYTE_URL, request, I2CByteResponse.class);
 	}
 
 	@Override
@@ -243,18 +259,18 @@ public class JsonHttpProtocolHandler implements RemoteProtocolInterface {
 	}
 
 	@Override
-	public I2CReadResponse request(I2CRead request) {
-		return requestResponse(HttpProviderConstants.I2C_READ_URL, request, I2CReadResponse.class);
+	public I2CBytesResponse request(I2CReadBytes request) {
+		return requestResponse(HttpProviderConstants.I2C_READ_BYTES_URL, request, I2CBytesResponse.class);
 	}
 
 	@Override
-	public Response request(I2CWrite request) {
-		return requestResponse(HttpProviderConstants.I2C_WRITE_URL, request, Response.class);
+	public Response request(I2CWriteBytes request) {
+		return requestResponse(HttpProviderConstants.I2C_WRITE_BYTES_URL, request, Response.class);
 	}
 
 	@Override
-	public I2CReadByteDataResponse request(I2CReadByteData request) {
-		return requestResponse(HttpProviderConstants.I2C_READ_BYTE_DATA_URL, request, I2CReadByteDataResponse.class);
+	public I2CByteResponse request(I2CReadByteData request) {
+		return requestResponse(HttpProviderConstants.I2C_READ_BYTE_DATA_URL, request, I2CByteResponse.class);
 	}
 
 	@Override
@@ -263,9 +279,38 @@ public class JsonHttpProtocolHandler implements RemoteProtocolInterface {
 	}
 
 	@Override
-	public I2CReadI2CBlockDataResponse request(I2CReadI2CBlockData request) {
-		return requestResponse(HttpProviderConstants.I2C_READ_I2C_BLOCK_DATA_URL, request,
-				I2CReadI2CBlockDataResponse.class);
+	public I2CWordResponse request(I2CReadWordData request) {
+		return requestResponse(HttpProviderConstants.I2C_READ_WORD_DATA_URL, request, I2CWordResponse.class);
+	}
+
+	@Override
+	public Response request(I2CWriteWordData request) {
+		return requestResponse(HttpProviderConstants.I2C_WRITE_WORD_DATA_URL, request, Response.class);
+	}
+
+	@Override
+	public I2CWordResponse request(I2CProcessCall request) {
+		return requestResponse(HttpProviderConstants.I2C_PROCESS_CALL_URL, request, I2CWordResponse.class);
+	}
+
+	@Override
+	public I2CReadBlockDataResponse request(I2CReadBlockData request) {
+		return requestResponse(HttpProviderConstants.I2C_READ_BLOCK_DATA_URL, request, I2CReadBlockDataResponse.class);
+	}
+
+	@Override
+	public Response request(I2CWriteBlockData request) {
+		return requestResponse(HttpProviderConstants.I2C_WRITE_BLOCK_DATA_URL, request, Response.class);
+	}
+
+	@Override
+	public I2CBytesResponse request(I2CBlockProcessCall request) {
+		return requestResponse(HttpProviderConstants.I2C_BLOCK_PROCESS_CALL_URL, request, I2CBytesResponse.class);
+	}
+
+	@Override
+	public I2CBytesResponse request(I2CReadI2CBlockData request) {
+		return requestResponse(HttpProviderConstants.I2C_READ_I2C_BLOCK_DATA_URL, request, I2CBytesResponse.class);
 	}
 
 	@Override

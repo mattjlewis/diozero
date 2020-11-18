@@ -59,20 +59,29 @@ import com.diozero.remote.message.GpioEvents;
 import com.diozero.remote.message.GpioPwmRead;
 import com.diozero.remote.message.GpioPwmReadResponse;
 import com.diozero.remote.message.GpioPwmWrite;
+import com.diozero.remote.message.I2CBlockProcessCall;
+import com.diozero.remote.message.I2CBooleanResponse;
+import com.diozero.remote.message.I2CByteResponse;
+import com.diozero.remote.message.I2CBytesResponse;
 import com.diozero.remote.message.I2CClose;
 import com.diozero.remote.message.I2COpen;
-import com.diozero.remote.message.I2CRead;
+import com.diozero.remote.message.I2CProbe;
+import com.diozero.remote.message.I2CProcessCall;
+import com.diozero.remote.message.I2CReadBlockData;
+import com.diozero.remote.message.I2CReadBlockDataResponse;
 import com.diozero.remote.message.I2CReadByte;
 import com.diozero.remote.message.I2CReadByteData;
-import com.diozero.remote.message.I2CReadByteDataResponse;
-import com.diozero.remote.message.I2CReadByteResponse;
+import com.diozero.remote.message.I2CReadBytes;
 import com.diozero.remote.message.I2CReadI2CBlockData;
-import com.diozero.remote.message.I2CReadI2CBlockDataResponse;
-import com.diozero.remote.message.I2CReadResponse;
-import com.diozero.remote.message.I2CWrite;
+import com.diozero.remote.message.I2CReadWordData;
+import com.diozero.remote.message.I2CWordResponse;
+import com.diozero.remote.message.I2CWriteBlockData;
 import com.diozero.remote.message.I2CWriteByte;
 import com.diozero.remote.message.I2CWriteByteData;
+import com.diozero.remote.message.I2CWriteBytes;
 import com.diozero.remote.message.I2CWriteI2CBlockData;
+import com.diozero.remote.message.I2CWriteQuick;
+import com.diozero.remote.message.I2CWriteWordData;
 import com.diozero.remote.message.ProvisionAnalogInputDevice;
 import com.diozero.remote.message.ProvisionAnalogOutputDevice;
 import com.diozero.remote.message.ProvisionDigitalInputDevice;
@@ -246,8 +255,18 @@ public class JsonWebSocketProtocolHandler extends BaseAsyncProtocolHandler imple
 	}
 
 	@Override
-	public I2CReadByteResponse request(I2CReadByte request) {
-		return (I2CReadByteResponse) requestResponse(request);
+	public I2CBooleanResponse request(I2CProbe request) {
+		return (I2CBooleanResponse) requestResponse(request);
+	}
+
+	@Override
+	public Response request(I2CWriteQuick request) {
+		return requestResponse(request);
+	}
+
+	@Override
+	public I2CByteResponse request(I2CReadByte request) {
+		return (I2CByteResponse) requestResponse(request);
 	}
 
 	@Override
@@ -256,18 +275,28 @@ public class JsonWebSocketProtocolHandler extends BaseAsyncProtocolHandler imple
 	}
 
 	@Override
-	public I2CReadResponse request(I2CRead request) {
-		return (I2CReadResponse) requestResponse(request);
+	public I2CWordResponse request(I2CReadWordData request) {
+		return (I2CWordResponse) requestResponse(request);
 	}
 
 	@Override
-	public Response request(I2CWrite request) {
+	public Response request(I2CWriteWordData request) {
 		return requestResponse(request);
 	}
 
 	@Override
-	public I2CReadByteDataResponse request(I2CReadByteData request) {
-		return (I2CReadByteDataResponse) requestResponse(request);
+	public I2CBytesResponse request(I2CReadBytes request) {
+		return (I2CBytesResponse) requestResponse(request);
+	}
+
+	@Override
+	public Response request(I2CWriteBytes request) {
+		return requestResponse(request);
+	}
+
+	@Override
+	public I2CByteResponse request(I2CReadByteData request) {
+		return (I2CByteResponse) requestResponse(request);
 	}
 
 	@Override
@@ -276,8 +305,28 @@ public class JsonWebSocketProtocolHandler extends BaseAsyncProtocolHandler imple
 	}
 
 	@Override
-	public I2CReadI2CBlockDataResponse request(I2CReadI2CBlockData request) {
-		return (I2CReadI2CBlockDataResponse) requestResponse(request);
+	public I2CWordResponse request(I2CProcessCall request) {
+		return (I2CWordResponse) requestResponse(request);
+	}
+
+	@Override
+	public I2CReadBlockDataResponse request(I2CReadBlockData request) {
+		return (I2CReadBlockDataResponse) requestResponse(request);
+	}
+
+	@Override
+	public Response request(I2CWriteBlockData request) {
+		return requestResponse(request);
+	}
+
+	@Override
+	public I2CBytesResponse request(I2CBlockProcessCall request) {
+		return (I2CBytesResponse) requestResponse(request);
+	}
+
+	@Override
+	public I2CBytesResponse request(I2CReadI2CBlockData request) {
+		return (I2CBytesResponse) requestResponse(request);
 	}
 
 	@Override
@@ -393,11 +442,20 @@ public class JsonWebSocketProtocolHandler extends BaseAsyncProtocolHandler imple
 			processEvent(event);
 			break;
 
-		case MessageWrapperTypes.I2C_READ_BYTE_RESPONSE:
-			processResponse(deserialiser.fromString(message_wrapper.getMessage(), I2CReadByteResponse.class));
+		case MessageWrapperTypes.I2C_BOOLEAN_RESPONSE:
+			processResponse(deserialiser.fromString(message_wrapper.getMessage(), I2CBooleanResponse.class));
 			break;
-		case MessageWrapperTypes.I2C_READ_RESPONSE:
-			processResponse(deserialiser.fromString(message_wrapper.getMessage(), I2CReadResponse.class));
+		case MessageWrapperTypes.I2C_BYTE_RESPONSE:
+			processResponse(deserialiser.fromString(message_wrapper.getMessage(), I2CByteResponse.class));
+			break;
+		case MessageWrapperTypes.I2C_BYTES_RESPONSE:
+			processResponse(deserialiser.fromString(message_wrapper.getMessage(), I2CBytesResponse.class));
+			break;
+		case MessageWrapperTypes.I2C_WORD_RESPONSE:
+			processResponse(deserialiser.fromString(message_wrapper.getMessage(), I2CWordResponse.class));
+			break;
+		case MessageWrapperTypes.I2C_READ_BLOCK_DATA_RESPONSE:
+			processResponse(deserialiser.fromString(message_wrapper.getMessage(), I2CReadBlockDataResponse.class));
 			break;
 
 		case MessageWrapperTypes.SPI_RESPONSE:

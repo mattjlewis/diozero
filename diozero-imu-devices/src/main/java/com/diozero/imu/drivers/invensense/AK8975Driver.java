@@ -55,11 +55,11 @@ public class AK8975Driver implements Closeable, AK8975Constants {
 	public void init() throws RuntimeIOException {
 		byte[] data = new byte[4];
 		data[0] = AKM_POWER_DOWN;
-		i2cDevice.writeByte(AKM_REG_CNTL, data[0]);
+		i2cDevice.writeByteData(AKM_REG_CNTL, data[0]);
 		SleepUtil.sleepMillis(1);
 
 		data[0] = AKM_FUSE_ROM_ACCESS;
-		i2cDevice.writeByte(AKM_REG_CNTL, data[0]);
+		i2cDevice.writeByteData(AKM_REG_CNTL, data[0]);
 		SleepUtil.sleepMillis(1);
 
 		/* Get sensitivity adjustment data from fuse ROM. */
@@ -69,7 +69,7 @@ public class AK8975Driver implements Closeable, AK8975Constants {
 		mag_sens_adj[2] = (short)(data[2] + 128);
 
 		data[0] = AKM_POWER_DOWN;
-		i2cDevice.writeByte(AKM_REG_CNTL, data[0]);
+		i2cDevice.writeByteData(AKM_REG_CNTL, data[0]);
 		SleepUtil.sleepMillis(1);
 	}
 

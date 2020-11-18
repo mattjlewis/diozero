@@ -75,11 +75,11 @@ public class MCP23008 extends MCP23x08 {
 
 	@Override
 	protected byte readByte(int register) {
-		return device.readByte(register);
+		return device.readByteData(register);
 	}
 
 	@Override
 	protected void writeByte(int register, byte value) {
-		device.writeByte(register, value);
+		device.writeByteData(register, value);
 	}
 }

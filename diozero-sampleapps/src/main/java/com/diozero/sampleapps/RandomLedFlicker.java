@@ -38,7 +38,7 @@ import java.util.concurrent.TimeUnit;
 import org.tinylog.Logger;
 
 import com.diozero.devices.PwmLed;
-import com.diozero.util.DioZeroScheduler;
+import com.diozero.util.DiozeroScheduler;
 import com.diozero.util.SleepUtil;
 
 /**
@@ -68,7 +68,7 @@ public class RandomLedFlicker {
 
 	private static void test(int pin) {
 		try (PwmLed led = new PwmLed(pin)) {
-			DioZeroScheduler.getDaemonInstance().invokeAtFixedRate(RANDOM::nextFloat, led::setValue, 50, 50, TimeUnit.MILLISECONDS);
+			DiozeroScheduler.getDaemonInstance().invokeAtFixedRate(RANDOM::nextFloat, led::setValue, 50, 50, TimeUnit.MILLISECONDS);
 			SleepUtil.sleepSeconds(10);
 		}
 	}

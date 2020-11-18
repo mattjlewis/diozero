@@ -32,14 +32,11 @@ package com.diozero;
  */
 
 
-import java.nio.ByteBuffer;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.tinylog.Logger;
 
-import com.diozero.api.I2CConstants;
 import com.diozero.api.SpiClockMode;
 import com.diozero.devices.McpAdc;
 import com.diozero.internal.DeviceStates;
@@ -67,7 +64,8 @@ public class CleanupTest {
 			Assertions.assertTrue(ds.size() == 0);
 			
 			try (I2CDeviceInterface device = tdf.provisionI2CDevice(0, 0, 0)) {
-				device.readI2CBlockData(0, I2CConstants.ADDR_SIZE_7, ByteBuffer.allocateDirect(5));
+				byte[] buf = new byte[5];
+				device.readI2CBlockData(0, buf);
 				Assertions.assertTrue(ds.size() == 1);
 				device.close();
 				Assertions.assertTrue(ds.size() == 0);

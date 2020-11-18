@@ -35,14 +35,30 @@ import org.tinylog.Logger;
 
 import com.diozero.api.DeviceBusyException;
 import com.diozero.api.I2CDevice;
+import com.diozero.api.I2CSMBusInterface;
 import com.diozero.util.RuntimeIOException;
 
 /**
- * <p>JNI wrapper of SMBus interface.</p>
- * <p>Reference <a href="https://www.kernel.org/doc/Documentation/i2c/dev-interface">Kernel I2C dev interface</a>
- * and <a href="https://www.kernel.org/doc/Documentation/i2c/smbus-protocol">SMBus Protocol</a>.</p>
- * <p>See <a href="https://github.com/bivab/smbus-cffi/blob/master/include/linux/i2c-dev.h">i2c-dev</a> for defintion of the inline functions.</p>
- * <p>See <a href="https://github.com/bivab/smbus-cffi/blob/master/smbus/smbus.py">Python CFFI implementation.</a></p>
+ * <p>
+ * JNI wrapper of SMBus interface.
+ * </p>
+ * <p>
+ * Reference
+ * <a href="https://www.kernel.org/doc/Documentation/i2c/dev-interface">Kernel
+ * I2C dev interface</a> and
+ * <a href="https://www.kernel.org/doc/Documentation/i2c/smbus-protocol">SMBus
+ * Protocol</a>.
+ * </p>
+ * <p>
+ * See <a href=
+ * "https://github.com/bivab/smbus-cffi/blob/master/include/linux/i2c-dev.h">i2c-dev</a>
+ * for defintion of the inline functions.
+ * </p>
+ * <p>
+ * See <a href=
+ * "https://github.com/bivab/smbus-cffi/blob/master/smbus/smbus.py">Python CFFI
+ * implementation.</a>
+ * </p>
  */
 public class NativeI2CDeviceSMBus implements I2CSMBusInterface {
 	private static final int CLOSED = -1;
@@ -52,8 +68,7 @@ public class NativeI2CDeviceSMBus implements I2CSMBusInterface {
 	private int fd = CLOSED;
 	private int funcs;
 
-	public NativeI2CDeviceSMBus(int controller, int deviceAddress, boolean force)
-			throws RuntimeIOException {
+	public NativeI2CDeviceSMBus(int controller, int deviceAddress, boolean force) throws RuntimeIOException {
 		this.controller = controller;
 		this.deviceAddress = deviceAddress;
 		String device_file = "/dev/i2c-" + controller;
@@ -61,8 +76,8 @@ public class NativeI2CDeviceSMBus implements I2CSMBusInterface {
 		int rc = NativeI2C.smbusOpen(device_file, deviceAddress, force);
 		if (rc < 0) {
 			if (rc == -16) {
-				throw new DeviceBusyException("Error, I2C device " + controller + "-0x"
-						+ Integer.toHexString(deviceAddress) + " is busy");
+				throw new DeviceBusyException(
+						"Error, I2C device " + controller + "-0x" + Integer.toHexString(deviceAddress) + " is busy");
 			}
 			throw new RuntimeIOException(rc);
 		}
@@ -74,7 +89,7 @@ public class NativeI2CDeviceSMBus implements I2CSMBusInterface {
 			throw new RuntimeIOException("Error reading I2C_FUNCS for device i2c-" + controller + "-0x"
 					+ Integer.toHexString(deviceAddress) + ": " + rc);
 		}
-		
+
 		funcs = rc;
 		Logger.debug("I2C_FUNCS for controller {}: 0x{}", Integer.toString(controller), Integer.toHexString(funcs));
 	}
@@ -84,10 +99,12 @@ public class NativeI2CDeviceSMBus implements I2CSMBusInterface {
 		NativeI2C.smbusClose(fd);
 		fd = CLOSED;
 	}
-	
+
 	@Override
 	/*
-	 * Code ported from <a href="https://fossies.org/dox/i2c-tools-3.1.2/i2cdetect_8c_source.html#l00080">i2c-tools</a>.
+	 * Code ported from <a href=
+	 * "https://fossies.org/dox/i2c-tools-3.1.2/i2cdetect_8c_source.html#l00080">i2c
+	 * -tools</a>.
 	 */
 	public boolean probe(I2CDevice.ProbeMode mode) {
 		int res;
@@ -97,12 +114,14 @@ public class NativeI2CDeviceSMBus implements I2CSMBusInterface {
 			res = NativeI2C.writeQuick(fd, NativeI2C.I2C_SMBUS_WRITE);
 			break;
 		case READ:
-			/* This is known to lock SMBus on various write-only chips (mainly clock chips) */
+			/*
+			 * This is known to lock SMBus on various write-only chips (mainly clock chips)
+			 */
 			res = NativeI2C.readByte(fd);
 			break;
 		default:
-			if ((deviceAddress >= 0x30 && deviceAddress <= 0x37) || (deviceAddress >= 0x50 && deviceAddress <= 0x5F) ||
-					(funcs & NativeI2C.I2C_FUNC_SMBUS_QUICK) == 0) {
+			if ((deviceAddress >= 0x30 && deviceAddress <= 0x37) || (deviceAddress >= 0x50 && deviceAddress <= 0x5F)
+					|| (funcs & NativeI2C.I2C_FUNC_SMBUS_QUICK) == 0) {
 				res = NativeI2C.readByte(fd);
 			} else {
 				res = NativeI2C.writeQuick(fd, NativeI2C.I2C_SMBUS_WRITE);
@@ -110,7 +129,7 @@ public class NativeI2CDeviceSMBus implements I2CSMBusInterface {
 		}
 		return res >= 0;
 	}
-	
+
 	@Override
 	public void writeQuick(byte bit) {
 		if ((funcs & NativeI2C.I2C_FUNC_SMBUS_QUICK) == 0) {
@@ -156,26 +175,28 @@ public class NativeI2CDeviceSMBus implements I2CSMBusInterface {
 	}
 
 	@Override
-	public byte[] readBytes(int length) {
-		/*
-		 * byte[] data = new byte[length]; for (int i=0; i<length; i++) {
-		 * data[i] = readByte(); }
-		 * 
-		 * return data;
-		 */
-		byte[] data = new byte[length];
-		int rc = NativeI2C.readBytes(fd, length, data);
-		if (rc < 0 || rc != length) {
+	public int readBytes(byte[] buffer) {
+		if (buffer.length > MAX_I2C_BLOCK_SIZE) {
+			throw new RuntimeIOException("Invalid buffer length - max length is " + MAX_I2C_BLOCK_SIZE);
+		}
+		
+		int rc = NativeI2C.readBytes(fd, buffer.length, buffer);
+		if (rc < 0) {
 			throw new RuntimeIOException("Error in SMBus.readBytes for device i2c-" + controller + "-0x"
 					+ Integer.toHexString(deviceAddress) + ": " + rc);
 		}
-		return data;
+		
+		return rc;
 	}
 
 	@Override
 	public void writeBytes(byte[] data) {
+		if (data.length > MAX_I2C_BLOCK_SIZE) {
+			throw new RuntimeIOException("Invalid data length - max length is " + MAX_I2C_BLOCK_SIZE);
+		}
+
 		int rc = NativeI2C.writeBytes(fd, data.length, data);
-		if (rc < 0 || rc != data.length) {
+		if (rc < 0 || rc < data.length) {
 			throw new RuntimeIOException("Error in SMBus.writeBytes for device i2c-" + controller + "-0x"
 					+ Integer.toHexString(deviceAddress) + ": " + rc);
 		}
@@ -258,20 +279,25 @@ public class NativeI2CDeviceSMBus implements I2CSMBusInterface {
 	}
 
 	@Override
-	public byte[] readBlockData(int registerAddress) {
+	public int readBlockData(int registerAddress, byte[] buffer) {
 		if ((funcs & NativeI2C.I2C_FUNC_SMBUS_READ_BLOCK_DATA) == 0) {
 			Logger.warn("Function I2C_FUNC_SMBUS_READ_BLOCK_DATA isn't supported for device i2c-{}-0x{}",
 					Integer.valueOf(controller), Integer.toHexString(deviceAddress));
 			// TODO Throw an exception now or attempt anyway?
 		}
-		byte[] data = new byte[MAX_I2C_BLOCK_SIZE];
-		int rc = NativeI2C.readBlockData(fd, registerAddress, data);
+
+		if (buffer.length < MAX_I2C_BLOCK_SIZE) {
+			throw new RuntimeIOException("Error in SMBus.readBlockData for device i2c-" + controller + "-0x"
+					+ Integer.toHexString(deviceAddress) + ": array length must be at least 32, is " + buffer.length);
+		}
+
+		int rc = NativeI2C.readBlockData(fd, registerAddress, buffer);
 		if (rc < 0) {
 			throw new RuntimeIOException("Error in SMBus.readBlockData for device i2c-" + controller + "-0x"
 					+ Integer.toHexString(deviceAddress) + ": " + rc);
 		}
 
-		return data;
+		return rc;
 	}
 
 	@Override
@@ -281,6 +307,7 @@ public class NativeI2CDeviceSMBus implements I2CSMBusInterface {
 					Integer.valueOf(controller), Integer.toHexString(deviceAddress));
 			// TODO Throw an exception now or attempt anyway?
 		}
+
 		int rc = NativeI2C.writeBlockData(fd, registerAddress, data.length, data);
 		if (rc < 0) {
 			throw new RuntimeIOException("Error in SMBus.writeBlockData for device i2c-" + controller + "-0x"
@@ -289,13 +316,15 @@ public class NativeI2CDeviceSMBus implements I2CSMBusInterface {
 	}
 
 	@Override
-	public byte[] blockProcessCall(int registerAddress, byte[] txData, int length) {
+	public byte[] blockProcessCall(int registerAddress, byte[] txData) {
 		if ((funcs & NativeI2C.I2C_FUNC_SMBUS_BLOCK_PROC_CALL) == 0) {
 			Logger.warn("Function I2C_FUNC_SMBUS_BLOCK_PROCESS_CALL isn't supported for device i2c-{}-0x{}",
 					Integer.valueOf(controller), Integer.toHexString(deviceAddress));
 			// TODO Throw an exception now or attempt anyway?
 		}
-		byte[] rx_data = new byte[length];
+		
+		byte[] rx_data = new byte[txData.length];
+		
 		int rc = NativeI2C.blockProcessCall(fd, registerAddress, txData.length, txData, rx_data);
 		if (rc < 0) {
 			throw new RuntimeIOException("Error in SMBus.blockProcessCall for device i2c-" + controller + "-0x"
@@ -306,20 +335,22 @@ public class NativeI2CDeviceSMBus implements I2CSMBusInterface {
 	}
 
 	@Override
-	public byte[] readI2CBlockData(int registerAddress, int length) {
+	public void readI2CBlockData(int registerAddress, byte[] buffer) {
 		if ((funcs & NativeI2C.I2C_FUNC_SMBUS_READ_I2C_BLOCK) == 0) {
 			Logger.warn("Function I2C_FUNC_SMBUS_READ_I2C_BLOCK isn't supported for device i2c-{}-0x{}",
 					Integer.valueOf(controller), Integer.toHexString(deviceAddress));
 			// TODO Throw an exception now or attempt anyway?
 		}
-		byte[] data = new byte[length];
-		int rc = NativeI2C.readI2CBlockData(fd, registerAddress, length, data);
+		
+		if (buffer.length > MAX_I2C_BLOCK_SIZE) {
+			throw new RuntimeIOException("Invalid buffer length - max length is " + MAX_I2C_BLOCK_SIZE);
+		}
+		
+		int rc = NativeI2C.readI2CBlockData(fd, registerAddress, buffer.length, buffer);
 		if (rc < 0) {
 			throw new RuntimeIOException("Error in SMBus.readI2CBlockData for device i2c-" + controller + "-0x"
 					+ Integer.toHexString(deviceAddress) + ": " + rc);
 		}
-
-		return data;
 	}
 
 	@Override
@@ -329,6 +360,7 @@ public class NativeI2CDeviceSMBus implements I2CSMBusInterface {
 					Integer.valueOf(controller), Integer.toHexString(deviceAddress));
 			// TODO Throw an exception now or attempt anyway?
 		}
+		
 		int rc = NativeI2C.writeI2CBlockData(fd, registerAddress, data.length, data);
 		if (rc < 0) {
 			throw new RuntimeIOException("Error in SMBus.writeI2CBlockData for device i2c-" + controller + "-0x"

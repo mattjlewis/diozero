@@ -52,7 +52,7 @@ import org.tinylog.Logger;
 
 import com.diozero.api.GpioEventTrigger;
 import com.diozero.api.GpioPullUpDown;
-import com.diozero.util.DioZeroScheduler;
+import com.diozero.util.DiozeroScheduler;
 import com.diozero.util.LibraryLoader;
 import com.diozero.util.RuntimeIOException;
 
@@ -258,8 +258,8 @@ public class GpioChip extends GpioChipInfo implements Closeable, GpioLineEventLi
 			epollFd = rc;
 
 			running.getAndSet(true);
-			processEventsFuture = DioZeroScheduler.getDaemonInstance().submit(this::processEvents);
-			eventLoopFuture = DioZeroScheduler.getDaemonInstance().submit(this::eventLoop);
+			processEventsFuture = DiozeroScheduler.getDaemonInstance().submit(this::processEvents);
+			eventLoopFuture = DiozeroScheduler.getDaemonInstance().submit(this::eventLoop);
 		}
 
 		int rc = NativeGpioDevice.epollAddFileDescriptor(epollFd, fd);

@@ -66,20 +66,29 @@ import com.diozero.remote.message.GpioInfo;
 import com.diozero.remote.message.GpioPwmRead;
 import com.diozero.remote.message.GpioPwmReadResponse;
 import com.diozero.remote.message.GpioPwmWrite;
+import com.diozero.remote.message.I2CBlockProcessCall;
+import com.diozero.remote.message.I2CBooleanResponse;
+import com.diozero.remote.message.I2CByteResponse;
+import com.diozero.remote.message.I2CBytesResponse;
 import com.diozero.remote.message.I2CClose;
 import com.diozero.remote.message.I2COpen;
-import com.diozero.remote.message.I2CRead;
+import com.diozero.remote.message.I2CProbe;
+import com.diozero.remote.message.I2CProcessCall;
+import com.diozero.remote.message.I2CReadBlockData;
+import com.diozero.remote.message.I2CReadBlockDataResponse;
 import com.diozero.remote.message.I2CReadByte;
 import com.diozero.remote.message.I2CReadByteData;
-import com.diozero.remote.message.I2CReadByteDataResponse;
-import com.diozero.remote.message.I2CReadByteResponse;
+import com.diozero.remote.message.I2CReadBytes;
 import com.diozero.remote.message.I2CReadI2CBlockData;
-import com.diozero.remote.message.I2CReadI2CBlockDataResponse;
-import com.diozero.remote.message.I2CReadResponse;
-import com.diozero.remote.message.I2CWrite;
+import com.diozero.remote.message.I2CReadWordData;
+import com.diozero.remote.message.I2CWordResponse;
+import com.diozero.remote.message.I2CWriteBlockData;
 import com.diozero.remote.message.I2CWriteByte;
 import com.diozero.remote.message.I2CWriteByteData;
+import com.diozero.remote.message.I2CWriteBytes;
 import com.diozero.remote.message.I2CWriteI2CBlockData;
+import com.diozero.remote.message.I2CWriteQuick;
+import com.diozero.remote.message.I2CWriteWordData;
 import com.diozero.remote.message.ProvisionAnalogInputDevice;
 import com.diozero.remote.message.ProvisionAnalogOutputDevice;
 import com.diozero.remote.message.ProvisionDigitalInputDevice;
@@ -373,8 +382,17 @@ public class VoodooSparkProtocolHandler implements RemoteProtocolInterface {
 	}
 
 	@Override
-	public I2CReadByteResponse request(I2CReadByte request) {
-		// TODO Implementation
+	public I2CBooleanResponse request(I2CProbe request) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public Response request(I2CWriteQuick request) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public I2CByteResponse request(I2CReadByte request) {
 		throw new UnsupportedOperationException();
 	}
 
@@ -385,23 +403,22 @@ public class VoodooSparkProtocolHandler implements RemoteProtocolInterface {
 	}
 	
 	@Override
-	public I2CReadResponse request(I2CRead request) {
-		// TODO Implementation
+	public I2CBytesResponse request(I2CReadBytes request) {
 		throw new UnsupportedOperationException();
 	}
-	
+
 	@Override
-	public Response request(I2CWrite request) {
+	public Response request(I2CWriteBytes request) {
 		// TODO Implementation
 		throw new UnsupportedOperationException();
 	}
-	
+
 	@Override
-	public I2CReadByteDataResponse request(I2CReadByteData request) {
+	public I2CByteResponse request(I2CReadByteData request) {
 		// TODO Implementation
 		throw new UnsupportedOperationException();
 	}
-	
+
 	@Override
 	public Response request(I2CWriteByteData request) {
 		// TODO Implementation
@@ -409,11 +426,47 @@ public class VoodooSparkProtocolHandler implements RemoteProtocolInterface {
 	}
 	
 	@Override
-	public I2CReadI2CBlockDataResponse request(I2CReadI2CBlockData request) {
+	public I2CWordResponse request(I2CReadWordData request) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Response request(I2CWriteWordData request) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public I2CWordResponse request(I2CProcessCall request) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public I2CReadBlockDataResponse request(I2CReadBlockData request) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Response request(I2CWriteBlockData request) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public I2CBytesResponse request(I2CBlockProcessCall request) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public I2CBytesResponse request(I2CReadI2CBlockData request) {
 		// TODO Implementation
 		throw new UnsupportedOperationException();
 	}
-	
+
 	@Override
 	public Response request(I2CWriteI2CBlockData request) {
 		// TODO Implementation

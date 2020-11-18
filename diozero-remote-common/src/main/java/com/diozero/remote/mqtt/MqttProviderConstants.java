@@ -71,18 +71,29 @@ public interface MqttProviderConstants {
 	static final String I2C_REQUEST_TOPIC = REQUEST_TOPIC + I2C_SUB_TOPIC;
 	// I2C Requests
 	static final String I2C_OPEN_TOPIC = I2C_REQUEST_TOPIC + "/open";
+	static final String I2C_PROBE_TOPIC = I2C_REQUEST_TOPIC + "/probe";
+	static final String I2C_WRITE_QUICK_TOPIC = I2C_REQUEST_TOPIC + "/writeQuick";
 	static final String I2C_READ_BYTE_TOPIC = I2C_REQUEST_TOPIC + "/readByte";
 	static final String I2C_WRITE_BYTE_TOPIC = I2C_REQUEST_TOPIC + "/writeByte";
-	static final String I2C_READ_TOPIC = I2C_REQUEST_TOPIC + "/read";
-	static final String I2C_WRITE_TOPIC = I2C_REQUEST_TOPIC + "/write";
+	static final String I2C_READ_BYTES_TOPIC = I2C_REQUEST_TOPIC + "/read";
+	static final String I2C_WRITE_BYTES_TOPIC = I2C_REQUEST_TOPIC + "/write";
 	static final String I2C_READ_BYTE_DATA_TOPIC = I2C_REQUEST_TOPIC + "/readByteData";
 	static final String I2C_WRITE_BYTE_DATA_TOPIC = I2C_REQUEST_TOPIC + "/writeByteData";
+	static final String I2C_READ_WORD_DATA_TOPIC = I2C_REQUEST_TOPIC + "/readWordData";
+	static final String I2C_WRITE_WORD_DATA_TOPIC = I2C_REQUEST_TOPIC + "/writeWordData";
+	static final String I2C_PROCESS_CALL_TOPIC = I2C_REQUEST_TOPIC + "/processCall";
+	static final String I2C_READ_BLOCK_DATA_TOPIC = I2C_REQUEST_TOPIC + "/readBlockData";
+	static final String I2C_WRITE_BLOCK_DATA_TOPIC = I2C_REQUEST_TOPIC + "/writeBlockData";
+	static final String I2C_BLOCK_PROCESS_CALL_TOPIC = I2C_REQUEST_TOPIC + "/blockProcessCall";
 	static final String I2C_READ_I2C_BLOCK_DATA_TOPIC = I2C_REQUEST_TOPIC + "/readI2CBlockData";
 	static final String I2C_WRITE_I2C_BLOCK_DATA_TOPIC = I2C_REQUEST_TOPIC + "/writeI2CBlockData";
 	static final String I2C_CLOSE_TOPIC = I2C_REQUEST_TOPIC + "/close";
 	// I2C Responses
-	static final String I2C_READ_BYTE_RESPONSE_TOPIC = RESPONSE_TOPIC + "/i2cReadByte";
-	static final String I2C_READ_RESPONSE_TOPIC = RESPONSE_TOPIC + "/i2cRead";
+	static final String I2C_BOOLEAN_RESPONSE_TOPIC = RESPONSE_TOPIC + "/i2cBoolean";
+	static final String I2C_BYTE_RESPONSE_TOPIC = RESPONSE_TOPIC + "/i2cByte";
+	static final String I2C_BYTES_RESPONSE_TOPIC = RESPONSE_TOPIC + "/i2cBytes";
+	static final String I2C_WORD_RESPONSE_TOPIC = RESPONSE_TOPIC + "/i2cWord";
+	static final String I2C_READ_BLOCK_DATA_RESPONSE_TOPIC = RESPONSE_TOPIC + "/i2cReadBlockData";
 
 	// SPI
 	static final String SPI_SUB_TOPIC = "/spi";

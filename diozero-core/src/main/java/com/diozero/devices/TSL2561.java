@@ -36,7 +36,6 @@ import java.nio.ByteOrder;
 
 import com.diozero.api.I2CConstants;
 import com.diozero.api.I2CDevice;
-import com.diozero.api.LuminositySensorInterface;
 import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 
@@ -50,7 +49,7 @@ public class TSL2561 implements Closeable, LuminositySensorInterface {
 	private static final int TSL2561_FULLSPECTRUM = 0; // channel 0
 	//
 	// Device address for TSL2561
-	private static final int DEVICE_ADDR = 0x39; // Default address (pin left floating)
+	private static final int DEVICE_ADDRESS = 0x39; // Default address (pin left floating)
 
 	// Lux calculations differ slightly for CS package
 	public static enum TSL2561Package {
@@ -171,7 +170,7 @@ public class TSL2561 implements Closeable, LuminositySensorInterface {
 	}
 	
 	public TSL2561(int controllerNumber, int addressSize, TSL2561Package tsl2561Package) throws RuntimeIOException {
-		i2cDevice = new I2CDevice(controllerNumber, DEVICE_ADDR, addressSize);
+		i2cDevice = new I2CDevice(controllerNumber, DEVICE_ADDRESS, addressSize, ByteOrder.LITTLE_ENDIAN);
 		this.tsl2561Package = tsl2561Package;
 		initialised = false;
 		autoGain = false;
@@ -190,7 +189,7 @@ public class TSL2561 implements Closeable, LuminositySensorInterface {
 	}
 
 	private boolean begin() throws RuntimeIOException {
-		int x = i2cDevice.readByte(TSL2561_REGISTER_ID);
+		int x = i2cDevice.readByteData(TSL2561_REGISTER_ID);
 		// if not(x & 0x0A):
 		if ((x & 0x0A) == 0) {
 			return false;
@@ -212,14 +211,14 @@ public class TSL2561 implements Closeable, LuminositySensorInterface {
 	 * Enables the device
 	 */
 	private void enable() throws RuntimeIOException {
-		i2cDevice.writeByte(TSL2561_COMMAND_BIT | TSL2561_REGISTER_CONTROL, TSL2561_CONTROL_POWERON);
+		i2cDevice.writeByteData(TSL2561_COMMAND_BIT | TSL2561_REGISTER_CONTROL, TSL2561_CONTROL_POWERON);
 	}
 
 	/**
 	 * Disables the device (putting it in lower power sleep mode)
 	 */
 	private void disable() throws RuntimeIOException {
-		i2cDevice.writeByte(TSL2561_COMMAND_BIT | TSL2561_REGISTER_CONTROL, TSL2561_CONTROL_POWEROFF);
+		i2cDevice.writeByteData(TSL2561_COMMAND_BIT | TSL2561_REGISTER_CONTROL, TSL2561_CONTROL_POWEROFF);
 	}
 
 	/**
@@ -238,12 +237,10 @@ public class TSL2561 implements Closeable, LuminositySensorInterface {
 		}
 
 		// Reads a two byte value from channel 0 (visible + infrared)
-		broadband = i2cDevice.readUShort(TSL2561_COMMAND_BIT | TSL2561_WORD_BIT | TSL2561_REGISTER_CHAN0_LOW,
-				I2CConstants.SUB_ADDRESS_SIZE_1_BYTE, ByteOrder.LITTLE_ENDIAN);
+		broadband = i2cDevice.readUShort(TSL2561_COMMAND_BIT | TSL2561_WORD_BIT | TSL2561_REGISTER_CHAN0_LOW);
 
 		// Reads a two byte value from channel 1 (infrared)
-		ir = i2cDevice.readUShort(TSL2561_COMMAND_BIT | TSL2561_WORD_BIT | TSL2561_REGISTER_CHAN1_LOW,
-				I2CConstants.SUB_ADDRESS_SIZE_1_BYTE, ByteOrder.LITTLE_ENDIAN);
+		ir = i2cDevice.readUShort(TSL2561_COMMAND_BIT | TSL2561_WORD_BIT | TSL2561_REGISTER_CHAN1_LOW);
 
 		// Turn the device off to save power
 		disable();
@@ -254,7 +251,7 @@ public class TSL2561 implements Closeable, LuminositySensorInterface {
 		enable();
 
 		// Update the timing register
-		i2cDevice.writeByte(TSL2561_COMMAND_BIT | TSL2561_REGISTER_TIMING, (byte) (time | gain));
+		i2cDevice.writeByteData(TSL2561_COMMAND_BIT | TSL2561_REGISTER_TIMING, (byte) (time | gain));
 
 		integrationTime = time;
 
@@ -272,7 +269,7 @@ public class TSL2561 implements Closeable, LuminositySensorInterface {
 		enable();
 
 		// Update the timing register
-		i2cDevice.writeByte(TSL2561_COMMAND_BIT | TSL2561_REGISTER_TIMING, (byte) (integrationTime | gain));
+		i2cDevice.writeByteData(TSL2561_COMMAND_BIT | TSL2561_REGISTER_TIMING, (byte) (integrationTime | gain));
 
 		this.gain = gain;
 

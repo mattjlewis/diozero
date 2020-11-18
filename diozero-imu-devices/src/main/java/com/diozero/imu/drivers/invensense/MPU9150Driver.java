@@ -145,7 +145,7 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 				tmp = 0x00;
 			}
 			// int_enable == 0x38 == MPU9150_RA_INT_ENABLE
-			i2cDevice.writeByte(MPU9150_RA_INT_ENABLE, tmp);
+			i2cDevice.writeByteData(MPU9150_RA_INT_ENABLE, tmp);
 			int_enable = enable;
 		} else {
 			if (sensors == 0) {
@@ -160,7 +160,7 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 				tmp = 0x00;
 			}
 			// int_enable == 0x38 == MPU9150_RA_INT_ENABLE
-			i2cDevice.writeByte(MPU9150_RA_INT_ENABLE, tmp);
+			i2cDevice.writeByteData(MPU9150_RA_INT_ENABLE, tmp);
 			int_enable = enable;
 		}
 		return true;
@@ -181,11 +181,11 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 	public void mpu_init() throws RuntimeIOException {
 		/* Reset device. */
 		// pwr_mgmt_1 == 0x6B, MPU9150_RA_PWR_MGMT_1, BIT_RESET (pin 7, 0x80)
-		i2cDevice.writeByte(MPU9150_RA_PWR_MGMT_1, BIT_RESET);
+		i2cDevice.writeByteData(MPU9150_RA_PWR_MGMT_1, BIT_RESET);
 		SleepUtil.sleepMillis(100);
 
 		/* Wake up chip. */
-		i2cDevice.writeByte(MPU9150_RA_PWR_MGMT_1, 0);
+		i2cDevice.writeByteData(MPU9150_RA_PWR_MGMT_1, 0);
 
 		accel_half = false;
 		
@@ -249,7 +249,7 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 			mpu_set_int_latched(false);
 			tmp[0] = 0;
 			tmp[1] = BIT_STBY_XYZG;
-			i2cDevice.writeBytes(MPU9150_RA_PWR_MGMT_1, 2, tmp);
+			i2cDevice.writeI2CBlockData(MPU9150_RA_PWR_MGMT_1, tmp);
 			lp_accel_mode = false;
 			return true;
 		}
@@ -278,7 +278,7 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 		}
 		tmp[1] = (byte) (((tmp[1]&0xff) << 6) | BIT_STBY_XYZG);
 		// pwr_mgmt_1 == 0x6B, MPU9150_RA_PWR_MGMT_1, BIT_RESET (pin 7, 0x80)
-		i2cDevice.writeBytes(MPU9150_RA_PWR_MGMT_1, 2, tmp);
+		i2cDevice.writeI2CBlockData(MPU9150_RA_PWR_MGMT_1, tmp);
 		sensors = INV_XYZ_ACCEL;
 		clk_src = ClockSource.INV_CLK_INTERNAL;
 		lp_accel_mode = true;
@@ -298,10 +298,10 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 		}
 	
 		// raw_gyro == 0x43 == MPU9150_RA_GYRO_XOUT_H
-		ByteBuffer buffer = ByteBuffer.wrap(i2cDevice.readBytes(MPU9150_RA_GYRO_XOUT_H, 6));
-		short x = IOUtil.getShort(buffer);
-		short y = IOUtil.getShort(buffer);
-		short z = IOUtil.getShort(buffer);
+		ByteBuffer buffer = i2cDevice.readI2CBlockDataByteBuffer(MPU9150_RA_GYRO_XOUT_H, 6);
+		short x = buffer.getShort();
+		short y = buffer.getShort();
+		short z = buffer.getShort();
 		System.out.format("gyro reg values = (%d, %d, %d)%n", Short.valueOf(x), Short.valueOf(y), Short.valueOf(z));
 		/*byte[] data = readBytes(MPU9150_RA_GYRO_XOUT_H, 6)
 		short x = (short)((data[0] << 8) | (data[1] & 0xff));
@@ -328,11 +328,11 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 		}
 	
 		// raw_accel == 0x3B == MPU9150_RA_ACCEL_XOUT_H
-		ByteBuffer buffer = ByteBuffer.wrap(i2cDevice.readBytes(MPU9150_RA_ACCEL_XOUT_H, 6));
+		ByteBuffer buffer = i2cDevice.readI2CBlockDataByteBuffer(MPU9150_RA_ACCEL_XOUT_H, 6);
 		short x = buffer.getShort();
 		short y = buffer.getShort();
 		short z = buffer.getShort();
-		/*
+		/*-
 		byte[] data = readBytes(MPU9150_RA_ACCEL_XOUT_H, 6);
 		short x = (short)((data[0] << 8) | (data[1] & 0xff));
 		short y = (short)((data[2] << 8) | (data[3] & 0xff));
@@ -343,13 +343,13 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 	}
 
 	/**
-	 *	  Read temperature data directly from the registers.
-	 *  The scale factor and offset for the temperature sensor are found in the Electrical
-	 *  Specifications table in the MPU-9150 Product Specification document.
-	 *  The temperature in degrees C for a given register value may be computed as:
-	 *  Temperature in degrees C = (TEMP_OUT Register Value as a signed quantity)/340 + 35
-	 *  Please note that the math in the above equation is in decimal.
-	 *  @return		Temperature
+	 * Read temperature data directly from the registers.
+	 * The scale factor and offset for the temperature sensor are found in the Electrical
+	 * Specifications table in the MPU-9150 Product Specification document.
+	 * The temperature in degrees C for a given register value may be computed as:
+	 * Temperature in degrees C = (TEMP_OUT Register Value as a signed quantity)/340 + 35
+	 * Please note that the math in the above equation is in decimal.
+	 * @return		Temperature
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	public float mpu_get_temperature() throws RuntimeIOException {
@@ -384,10 +384,10 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 		accel_bias[1] = (bias_y_bytes[2] << 8) | (bias_y_bytes[3] & 0xff);
 		accel_bias[2] = (bias_z_bytes[4] << 8) | (bias_z_bytes[5] & 0xff);
 		*/
-		ByteBuffer buffer = ByteBuffer.wrap(i2cDevice.readBytes(MPU9150_RA_XA_OFFS_H, 6));
-		accel_bias[0] = IOUtil.getShort(buffer);
-		accel_bias[1] = IOUtil.getShort(buffer);
-		accel_bias[2] = IOUtil.getShort(buffer);
+		ByteBuffer buffer = i2cDevice.readI2CBlockDataByteBuffer(MPU9150_RA_XA_OFFS_H, 6);
+		accel_bias[0] = buffer.getShort();
+		accel_bias[1] = buffer.getShort();
+		accel_bias[2] = buffer.getShort();
 		
 		return accel_bias;
 	}
@@ -413,9 +413,9 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 		data[4] = (byte)((gyro_bias[2] >> 8) & 0xff);
 		data[5] = (byte)((gyro_bias[2]) & 0xff);
 		*/
-		i2cDevice.writeShort(MPU9150_RA_XG_OFFS_USRH, gyro_bias[0]);
-		i2cDevice.writeShort(MPU9150_RA_YG_OFFS_USRH, gyro_bias[1]);
-		i2cDevice.writeShort(MPU9150_RA_ZG_OFFS_USRH, gyro_bias[2]);
+		i2cDevice.writeWordData(MPU9150_RA_XG_OFFS_USRH, gyro_bias[0]);
+		i2cDevice.writeWordData(MPU9150_RA_YG_OFFS_USRH, gyro_bias[1]);
+		i2cDevice.writeWordData(MPU9150_RA_ZG_OFFS_USRH, gyro_bias[2]);
 	}
 
 	/**
@@ -443,9 +443,9 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 		data[5] = (byte)((accel_reg_bias[2]) & 0xff);
 		*/
 	
-		i2cDevice.writeShort(MPU9150_RA_XA_OFFS_H, accel_reg_bias[0]);
-		i2cDevice.writeShort(MPU9150_RA_YA_OFFS_H, accel_reg_bias[1]);
-		i2cDevice.writeShort(MPU9150_RA_ZA_OFFS_H, accel_reg_bias[2]);
+		i2cDevice.writeWordData(MPU9150_RA_XA_OFFS_H, accel_reg_bias[0]);
+		i2cDevice.writeWordData(MPU9150_RA_YA_OFFS_H, accel_reg_bias[1]);
+		i2cDevice.writeWordData(MPU9150_RA_ZA_OFFS_H, accel_reg_bias[2]);
 	}
 
 	/**
@@ -461,44 +461,44 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 	
 		byte data = 0;
 		// int_enable == 0x38 == MPU9150_RA_INT_ENABLE
-		i2cDevice.writeByte(MPU9150_RA_INT_ENABLE, data);
+		i2cDevice.writeByteData(MPU9150_RA_INT_ENABLE, data);
 		// fifo_en == 0x23 == MPU9150_RA_FIFO_EN
-		i2cDevice.writeByte(MPU9150_RA_FIFO_EN, data);
+		i2cDevice.writeByteData(MPU9150_RA_FIFO_EN, data);
 		// user_ctrl == 0x6a == MPU9150_RA_USER_CTRL for MPU-6050
-		i2cDevice.writeByte(MPU9150_RA_USER_CTRL, data);
+		i2cDevice.writeByteData(MPU9150_RA_USER_CTRL, data);
 	
 		if (dmp_on) {
 			data = BIT_FIFO_RST | BIT_DMP_RST;
 			// user_ctrl == 0x6a == MPU9150_RA_USER_CTRL for MPU-6050
-			i2cDevice.writeByte(MPU9150_RA_USER_CTRL, data);
+			i2cDevice.writeByteData(MPU9150_RA_USER_CTRL, data);
 			SleepUtil.sleepMillis(50);
 			data = BIT_DMP_EN | BIT_FIFO_EN;
 			if ((sensors & INV_XYZ_COMPASS) != 0) {
 				data |= BIT_AUX_IF_EN;
 			}
 			// user_ctrl == 0x6a == MPU9150_RA_USER_CTRL for MPU-6050
-			i2cDevice.writeByte(MPU9150_RA_USER_CTRL, data);
+			i2cDevice.writeByteData(MPU9150_RA_USER_CTRL, data);
 			if (int_enable) {
 				data = BIT_DMP_INT_EN;
 			} else {
 				data = 0;
 			}
 			// int_enable == 0x38 == MPU9150_RA_INT_ENABLE
-			i2cDevice.writeByte(MPU9150_RA_INT_ENABLE, data);
+			i2cDevice.writeByteData(MPU9150_RA_INT_ENABLE, data);
 			data = 0;
 			// fifo_en == 0x23 == MPU9150_RA_FIFO_EN
-			i2cDevice.writeByte(MPU9150_RA_FIFO_EN, data);
+			i2cDevice.writeByteData(MPU9150_RA_FIFO_EN, data);
 		} else {
 			data = BIT_FIFO_RST;
 			// user_ctrl == 0x6a == MPU9150_RA_USER_CTRL for MPU-6050
-			i2cDevice.writeByte(MPU9150_RA_USER_CTRL, data);
+			i2cDevice.writeByteData(MPU9150_RA_USER_CTRL, data);
 			if ((bypass_mode != null && bypass_mode.booleanValue()) || ((sensors & INV_XYZ_COMPASS) == 0)) {
 				data = BIT_FIFO_EN;
 			} else {
 				data = BIT_FIFO_EN | BIT_AUX_IF_EN;
 			}
 			// user_ctrl == 0x6a == MPU9150_RA_USER_CTRL for MPU-6050
-			i2cDevice.writeByte(MPU9150_RA_USER_CTRL, data);
+			i2cDevice.writeByteData(MPU9150_RA_USER_CTRL, data);
 			SleepUtil.sleepMillis(50);
 			if (int_enable) {
 				data = BIT_DATA_RDY_EN;
@@ -506,9 +506,9 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 				data = 0;
 			}
 			// int_enable == 0x38 == MPU9150_RA_INT_ENABLE
-			i2cDevice.writeByte(MPU9150_RA_INT_ENABLE, data);
+			i2cDevice.writeByteData(MPU9150_RA_INT_ENABLE, data);
 			// fifo_en == 0x23 == MPU9150_RA_FIFO_EN
-			i2cDevice.writeByte(MPU9150_RA_FIFO_EN, fifo_enable);
+			i2cDevice.writeByteData(MPU9150_RA_FIFO_EN, fifo_enable);
 		}
 		
 		return true;
@@ -539,7 +539,7 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 
 		System.out.format("Setting gyro config to 0x%x%n", Byte.valueOf(fsr.getBitVal()));
 		// gyro_cfg == 0x1B == MPU9150_RA_GYRO_CONFIG
-		i2cDevice.writeByte(MPU9150_RA_GYRO_CONFIG, fsr.getBitVal());
+		i2cDevice.writeByteData(MPU9150_RA_GYRO_CONFIG, fsr.getBitVal());
 		
 		gyro_fsr = fsr;
 
@@ -571,7 +571,7 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 
 		System.out.format("Setting accel config to 0x%x%n", Byte.valueOf(fsr.getBitVal()));
 		// accel_cfg == 0x1C == MPU9150_RA_ACCEL_CONFIG
-		i2cDevice.writeByte(MPU9150_RA_ACCEL_CONFIG, fsr.getBitVal());
+		i2cDevice.writeByteData(MPU9150_RA_ACCEL_CONFIG, fsr.getBitVal());
 		accel_fsr = fsr;
 		
 		return true;
@@ -610,7 +610,7 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 
 		System.out.format("Setting LPF to %d, bit value 0x%x%n", Integer.valueOf(lpf.getFreq()), Byte.valueOf(lpf.getBitVal()));
 		// lpf == 0x1A == MPU9150_RA_CONFIG
-		i2cDevice.writeByte(MPU9150_RA_CONFIG, lpf.getBitVal());
+		i2cDevice.writeByteData(MPU9150_RA_CONFIG, lpf.getBitVal());
 		
 		this.lpf = lpf;
 		
@@ -663,7 +663,7 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 		int data = 1000 / new_rate - 1;
 		Logger.debug("Setting sample rate to {}", data);
 		// rate_div == 0x19 == MPU9150_RA_SMPL_RATE_DIV
-		i2cDevice.writeByte(MPU9150_RA_SMPL_RATE_DIV, data);
+		i2cDevice.writeByteData(MPU9150_RA_SMPL_RATE_DIV, data);
 
 		sample_rate = 1000 / (1 + data);
 
@@ -700,7 +700,7 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 	
 		byte div = (byte)(sample_rate / rate - 1);
 		// s4_ctrl == 0x34 == MPU9150_RA_I2C_SLV4_CTRL
-		i2cDevice.writeByte(MPU9150_RA_I2C_SLV4_CTRL, div);
+		i2cDevice.writeByteData(MPU9150_RA_I2C_SLV4_CTRL, div);
 		compass_sample_rate = sample_rate / (div + 1);
 		
 		return true;
@@ -866,7 +866,7 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 		}
 		try {
 			// pwr_mgmt_1 == 0x6B, MPU9150_RA_PWR_MGMT_1
-			i2cDevice.writeByte(MPU9150_RA_PWR_MGMT_1, data);
+			i2cDevice.writeByteData(MPU9150_RA_PWR_MGMT_1, data);
 		} catch (RuntimeIOException ioe) {
 			System.out.format("Error in mpu_set_sensors(%x): %s%n", Byte.valueOf(newSensors), ioe);
 			ioe.printStackTrace();
@@ -890,7 +890,7 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 		}
 		try {
 			// pwr_mgmt_2 == 0x6C == MPU9150_RA_PWR_MGMT_2
-			i2cDevice.writeByte(MPU9150_RA_PWR_MGMT_2, data);
+			i2cDevice.writeByteData(MPU9150_RA_PWR_MGMT_2, data);
 		} catch (RuntimeIOException ioe) {
 			System.out.format("Error in mpu_set_sensors(%x): %s%n", Byte.valueOf(newSensors), ioe);
 			ioe.printStackTrace();
@@ -905,7 +905,7 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 	
 	//#ifdef AK89xx_SECONDARY
 		// user_ctrl == 0x6a == MPU9150_RA_USER_CTRL for MPU-6050
-		user_ctrl = i2cDevice.readByte(MPU9150_RA_USER_CTRL);
+		user_ctrl = i2cDevice.readByteData(MPU9150_RA_USER_CTRL);
 		/* Handle AKM power management. */
 		if ((newSensors & INV_XYZ_COMPASS) != 0) {
 			data = AKM_SINGLE_MEASUREMENT;
@@ -920,10 +920,10 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 			user_ctrl &= ~BIT_DMP_EN;
 		}
 		// s1_do == 0x64 == MPU9150_RA_I2C_SLV1_DO
-		i2cDevice.writeByte(MPU9150_RA_I2C_SLV1_DO, data);
+		i2cDevice.writeByteData(MPU9150_RA_I2C_SLV1_DO, data);
 		/* Enable/disable I2C master mode. */
 		// user_ctrl == 0x6a == MPU9150_RA_USER_CTRL for MPU-6050
-		i2cDevice.writeByte(MPU9150_RA_USER_CTRL, user_ctrl);
+		i2cDevice.writeByteData(MPU9150_RA_USER_CTRL, user_ctrl);
 	//#endif
 	
 		sensors = newSensors;
@@ -1011,7 +1011,7 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 			System.out.format("mpu_read_fifo() fifo_count(%d) is more than 50% full");
 			/* FIFO is 50% full, better check overflow bit. */
 			// int_status == 0x3a == MPU9150_RA_INT_STATUS
-			data[0] = i2cDevice.readByte(MPU9150_RA_INT_STATUS);
+			data[0] = i2cDevice.readByteData(MPU9150_RA_INT_STATUS);
 			if ((data[0] & BIT_FIFO_OVERFLOW) != 0) {
 				System.out.format("mpu_read_fifo() overflow bit is set");
 				mpu_reset_fifo();
@@ -1087,7 +1087,7 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 		if (fifo_count > (MAX_FIFO >> 1)) {
 			/* FIFO is 50% full, better check overflow bit. */
 			// int_status == 0x3a == MPU9150_RA_INT_STATUS
-			byte int_status = i2cDevice.readByte(MPU9150_RA_INT_STATUS);
+			byte int_status = i2cDevice.readByteData(MPU9150_RA_INT_STATUS);
 			if ((int_status & BIT_FIFO_OVERFLOW) != 0) {
 				Logger.info("resetting FIFO as overflowing");
 				mpu_reset_fifo();
@@ -1123,10 +1123,10 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 
 		if (bypass_on) {
 			// user_ctrl == 0x6a == MPU9150_RA_USER_CTRL for MPU-6050
-			tmp = i2cDevice.readByte(MPU9150_RA_USER_CTRL);
+			tmp = i2cDevice.readByteData(MPU9150_RA_USER_CTRL);
 			// BIT_AUX_IF_EN == 0x20 (bit 5, I2C_MST_EN, MPU9150_USERCTRL_I2C_MST_EN_BIT)
 			tmp &= ~BIT_AUX_IF_EN;
-			i2cDevice.writeByte(MPU9150_RA_USER_CTRL, tmp);
+			i2cDevice.writeByteData(MPU9150_RA_USER_CTRL, tmp);
 			// Can be achieved by this instead:
 			//setI2CMasterModeEnabled(true);
 			
@@ -1144,16 +1144,16 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 				tmp |= BIT_LATCH_EN | BIT_ANY_RD_CLR;
 			}
 			// int_pin_cfg == 0x37 == MPU9150_RA_INT_PIN_CFG
-			i2cDevice.writeByte(MPU9150_RA_INT_PIN_CFG, tmp);
+			i2cDevice.writeByteData(MPU9150_RA_INT_PIN_CFG, tmp);
 		} else {
 			/* Enable I2C master mode if compass is being used. */
-			tmp = i2cDevice.readByte(MPU9150_RA_USER_CTRL);
+			tmp = i2cDevice.readByteData(MPU9150_RA_USER_CTRL);
 			if ((sensors & INV_XYZ_COMPASS) != 0) {
 				tmp |= BIT_AUX_IF_EN;
 			} else {
 				tmp &= ~BIT_AUX_IF_EN;
 			}
-			i2cDevice.writeByte(MPU9150_RA_USER_CTRL, tmp);
+			i2cDevice.writeByteData(MPU9150_RA_USER_CTRL, tmp);
 			SleepUtil.sleepMillis(3);
 			if (active_low_int) {
 				tmp = BIT_ACTL;
@@ -1163,7 +1163,7 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 			if (latched_int) {
 				tmp |= BIT_LATCH_EN | BIT_ANY_RD_CLR;
 			}
-			i2cDevice.writeByte(MPU9150_RA_INT_PIN_CFG, tmp);
+			i2cDevice.writeByteData(MPU9150_RA_INT_PIN_CFG, tmp);
 		}
 		bypass_mode = Boolean.valueOf(bypass_on);
 	}
@@ -1200,13 +1200,13 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 			tmp |= BIT_ACTL;
 		}
 		// int_pin_cfg == 0x37 == MPU9150_RA_INT_PIN_CFG
-		i2cDevice.writeByte(MPU9150_RA_INT_PIN_CFG, tmp);
+		i2cDevice.writeByteData(MPU9150_RA_INT_PIN_CFG, tmp);
 		latched_int = enable;
 	}
 	
 	public float[] get_accel_prod_shift() throws RuntimeIOException {
 		byte[] tmp = new byte[4];
-		tmp = i2cDevice.readBytes(0x0D, 4);
+		i2cDevice.readI2CBlockData(0x0D, tmp);
 		//if (i2c_read(st.hw->addr, 0x0D, 4, tmp))
 		// return 0x07;
 
@@ -1241,11 +1241,10 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 	 *  This function prevents I2C writes past the bank boundaries. The DMP memory
 	 *  is only accessible when the chip is awake.
 	 *  @param  mem_addr	Memory location (bank &lt;&lt; 8 | start address)
-	 *  @param  length	  Number of bytes to write.
 	 *  @param  data		Bytes to write to memory.
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
-	public void mpu_write_mem(int mem_addr, int length, byte[] data) throws RuntimeIOException {
+	public void mpu_write_mem(int mem_addr, byte[] data) throws RuntimeIOException {
 		if (sensors == 0) {
 			Logger.warn("mpu_write_mem(), sensors == 0, returning");
 			return;
@@ -1259,17 +1258,17 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 
 		/* Check bank boundaries. */
 		int start_address = tmp[1] & 0xFF;
-		if (start_address + length > MPU9150_DMP_MEMORY_BANK_SIZE) {
+		if (start_address + data.length > MPU9150_DMP_MEMORY_BANK_SIZE) {
 			Logger.error("mpu_write_mem(), check bank boundaries failed");
 			return;
 		}
 
 		// bank_sel == 0x6D == MPU9150_RA_BANK_SEL
 		//if (i2c_write(st.hw->addr, st.reg->bank_sel, 2, tmp))
-		i2cDevice.writeBytes(MPU9150_RA_BANK_SEL, 2, tmp);
+		i2cDevice.writeI2CBlockData(MPU9150_RA_BANK_SEL, tmp);
 		// mem_r_w == 0x6F == MPU9150_RA_MEM_R_W
 		//if (i2c_write(st.hw->addr, st.reg->mem_r_w, length, data))
-		i2cDevice.writeBytes(MPU9150_RA_MEM_R_W, length, data);
+		i2cDevice.writeI2CBlockData(MPU9150_RA_MEM_R_W, data);
 	}
 	
 	/**
@@ -1300,7 +1299,7 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 
 		// bank_sel == 0x6D == MPU9150_RA_BANK_SEL
 		//if (i2c_write(st.hw->addr, st.reg->bank_sel, 2, tmp))
-		i2cDevice.writeBytes(MPU9150_RA_BANK_SEL, 2, tmp);
+		i2cDevice.writeI2CBlockData(MPU9150_RA_BANK_SEL, tmp);
 		
 		// mem_r_w == 0x6F == MPU9150_RA_MEM_R_W
 		//if (i2c_read(st.hw->addr, st.reg->mem_r_w, length, data))
@@ -1334,7 +1333,7 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 				return -1;
 			*/
 			byte[] chunk = Arrays.copyOfRange(firmware, ii, ii+this_write);
-			mpu_write_mem(ii, this_write, chunk);
+			mpu_write_mem(ii, chunk);
 			/*
 			if (mpu_read_mem(ii, this_write, cur))
 				return -1;
@@ -1354,7 +1353,7 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 		tmp[1] = (short)(start_addr & 0xFF);
 		*/
 		// prgm_start_h == 0x70 == MPU9150_RA_DMP_CFG_1
-		i2cDevice.writeShort(MPU9150_RA_DMP_CFG_1, start_addr);
+		i2cDevice.writeWordData(MPU9150_RA_DMP_CFG_1, start_addr);
 
 		dmp_loaded = true;
 		dmp_sample_rate = sample_rate;
@@ -1384,7 +1383,7 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 			mpu_set_sample_rate(dmp_sample_rate);
 			/* Remove FIFO elements. */
 			tmp = 0;
-			i2cDevice.writeByte(MPU9150_RA_FIFO_EN, tmp);
+			i2cDevice.writeByteData(MPU9150_RA_FIFO_EN, tmp);
 			dmp_on = true;
 			/* Enable DMP interrupt. */
 			set_int_enable(true);
@@ -1394,7 +1393,7 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 			set_int_enable(false);
 			/* Restore FIFO settings. */
 			tmp = fifo_enable;
-			i2cDevice.writeByte(MPU9150_RA_FIFO_EN, tmp);
+			i2cDevice.writeByteData(MPU9150_RA_FIFO_EN, tmp);
 			dmp_on = true;
 			mpu_reset_fifo();
 		}
@@ -1460,53 +1459,53 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 		 * 15			364 kHz					22
 		 */
 		// i2c_mst == 0x24 == MPU9150_RA_I2C_MST_CTRL
-		i2cDevice.writeByte(MPU9150_RA_I2C_MST_CTRL, data);
+		i2cDevice.writeByteData(MPU9150_RA_I2C_MST_CTRL, data);
 
 		/* Slave 0 reads from AKM data registers. */
 		data = (byte)(BIT_I2C_READ | compass_addr);
 		// s0_addr == 0x25 == MPU9150_RA_I2C_SLV0_ADDR
-		i2cDevice.writeByte(MPU9150_RA_I2C_SLV0_ADDR, data);
+		i2cDevice.writeByteData(MPU9150_RA_I2C_SLV0_ADDR, data);
 
 		/* Compass reads start at this register. */
 		data = AKM_REG_ST1;
 		// s0_reg == 0x26 == MPU9150_RA_I2C_SLV0_REG
-		i2cDevice.writeByte(MPU9150_RA_I2C_SLV0_REG, data);
+		i2cDevice.writeByteData(MPU9150_RA_I2C_SLV0_REG, data);
 
 		/* Enable slave 0, 8-byte reads. */
 		data = BIT_SLAVE_EN | 8;
 		// s0_ctrl == 0x27 == MPU9150_RA_I2C_SLV0_CTRL
-		i2cDevice.writeByte(MPU9150_RA_I2C_SLV0_CTRL, data);
+		i2cDevice.writeByteData(MPU9150_RA_I2C_SLV0_CTRL, data);
 
 		/* Slave 1 changes AKM measurement mode. */
 		data = compass_addr;
 		// s1_addr == 0x28 == MPU9150_RA_I2C_SLV1_ADDR
-		i2cDevice.writeByte(MPU9150_RA_I2C_SLV1_ADDR, data);
+		i2cDevice.writeByteData(MPU9150_RA_I2C_SLV1_ADDR, data);
 
 		/* AKM measurement mode register. */
 		data = AKM_REG_CNTL;
 		// s1_reg == 0x29 == MPU9150_RA_I2C_SLV1_REG
-		i2cDevice.writeByte(MPU9150_RA_I2C_SLV1_REG, data);
+		i2cDevice.writeByteData(MPU9150_RA_I2C_SLV1_REG, data);
 
 		/* Enable slave 1, 1-byte writes. */
 		data = BIT_SLAVE_EN | 1;
 		// s1_ctrl == 0x2A == MPU9150_RA_I2C_SLV1_CTRL
-		i2cDevice.writeByte(MPU9150_RA_I2C_SLV1_CTRL, data);
+		i2cDevice.writeByteData(MPU9150_RA_I2C_SLV1_CTRL, data);
 
 		/* Set slave 1 data. */
 		data = AKM_SINGLE_MEASUREMENT;
 		// s1_do == 0x64 == MPU9150_RA_I2C_SLV1_DO
-		i2cDevice.writeByte(MPU9150_RA_I2C_SLV1_DO, data);
+		i2cDevice.writeByteData(MPU9150_RA_I2C_SLV1_DO, data);
 
 		/* Trigger slave 0 and slave 1 actions at each sample. */
 		data = 0x03;
 		// i2c_delay_ctrl == 0x67 == MPU9150_RA_I2C_MST_DELAY_CTRL
-		i2cDevice.writeByte(MPU9150_RA_I2C_MST_DELAY_CTRL, data);
+		i2cDevice.writeByteData(MPU9150_RA_I2C_MST_DELAY_CTRL, data);
 
 	//#ifdef MPU9150
 		/* For the MPU9150, the auxiliary I2C bus needs to be set to VDD. */
 		data = BIT_I2C_MST_VDDIO;
 		// yg_offs_tc == 0x01 == MPU9150_RA_YG_OFFS_TC
-		i2cDevice.writeByte(MPU9150_RA_YG_OFFS_TC, data);
+		i2cDevice.writeByteData(MPU9150_RA_YG_OFFS_TC, data);
 	//#endif
 
 		return true;

@@ -1,37 +1,5 @@
 package com.diozero.remote.server;
 
-/*-
- * #%L
- * Organisation: diozero
- * Project:      Device I/O Zero - Remote Server
- * Filename:     BaseRemoteServer.java  
- * 
- * This file is part of the diozero project. More information about this project
- * can be found at http://www.diozero.com/
- * %%
- * Copyright (C) 2016 - 2020 diozero
- * %%
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- * 
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- * 
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- * #L%
- */
-
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -40,6 +8,7 @@ import org.tinylog.Logger;
 
 import com.diozero.api.DeviceMode;
 import com.diozero.api.DigitalInputEvent;
+import com.diozero.api.I2CSMBusInterface;
 import com.diozero.api.InputEventListener;
 import com.diozero.api.PinInfo;
 import com.diozero.internal.provider.AnalogInputDeviceInterface;
@@ -68,20 +37,29 @@ import com.diozero.remote.message.GpioInfo;
 import com.diozero.remote.message.GpioPwmRead;
 import com.diozero.remote.message.GpioPwmReadResponse;
 import com.diozero.remote.message.GpioPwmWrite;
+import com.diozero.remote.message.I2CBlockProcessCall;
+import com.diozero.remote.message.I2CBooleanResponse;
+import com.diozero.remote.message.I2CByteResponse;
+import com.diozero.remote.message.I2CBytesResponse;
 import com.diozero.remote.message.I2CClose;
 import com.diozero.remote.message.I2COpen;
-import com.diozero.remote.message.I2CRead;
+import com.diozero.remote.message.I2CProbe;
+import com.diozero.remote.message.I2CProcessCall;
+import com.diozero.remote.message.I2CReadBlockData;
+import com.diozero.remote.message.I2CReadBlockDataResponse;
 import com.diozero.remote.message.I2CReadByte;
 import com.diozero.remote.message.I2CReadByteData;
-import com.diozero.remote.message.I2CReadByteDataResponse;
-import com.diozero.remote.message.I2CReadByteResponse;
+import com.diozero.remote.message.I2CReadBytes;
 import com.diozero.remote.message.I2CReadI2CBlockData;
-import com.diozero.remote.message.I2CReadI2CBlockDataResponse;
-import com.diozero.remote.message.I2CReadResponse;
-import com.diozero.remote.message.I2CWrite;
+import com.diozero.remote.message.I2CReadWordData;
+import com.diozero.remote.message.I2CWordResponse;
+import com.diozero.remote.message.I2CWriteBlockData;
 import com.diozero.remote.message.I2CWriteByte;
 import com.diozero.remote.message.I2CWriteByteData;
+import com.diozero.remote.message.I2CWriteBytes;
 import com.diozero.remote.message.I2CWriteI2CBlockData;
+import com.diozero.remote.message.I2CWriteQuick;
+import com.diozero.remote.message.I2CWriteWordData;
 import com.diozero.remote.message.ProvisionAnalogInputDevice;
 import com.diozero.remote.message.ProvisionAnalogOutputDevice;
 import com.diozero.remote.message.ProvisionDigitalInputDevice;
@@ -556,19 +534,71 @@ public abstract class BaseRemoteServer implements InputEventListener<DigitalInpu
 	@Override
 	public Response request(I2COpen request) {
 		Logger.debug("I2C open request {}", request);
+	
+		int controller = request.getController();
+		int address = request.getAddress();
+		String key = deviceFactory.createI2CKey(controller, address);
+	
+		DeviceInterface device = deviceFactory.getDevice(key);
+		if (device != null) {
+			return new Response(Response.Status.ERROR, "I2C device already provisioned", request.getCorrelationId());
+		}
+	
+		Response response;
+		try {
+			deviceFactory.provisionI2CDevice(controller, address, request.getAddressSize());
+	
+			response = new Response(Response.Status.OK, null, request.getCorrelationId());
+		} catch (RuntimeIOException e) {
+			Logger.error(e, "Error: {}", e);
+			response = new Response(Response.Status.ERROR, "Runtime Error: " + e, request.getCorrelationId());
+		}
+	
+		return response;
+	}
+
+	@Override
+	public I2CBooleanResponse request(I2CProbe request) {
+		Logger.debug("I2C probe request");
 
 		int controller = request.getController();
 		int address = request.getAddress();
 		String key = deviceFactory.createI2CKey(controller, address);
 
-		DeviceInterface device = deviceFactory.getDevice(key);
-		if (device != null) {
-			return new Response(Response.Status.ERROR, "I2C device already provisioned", request.getCorrelationId());
+		I2CDeviceInterface device = deviceFactory.getDevice(key, I2CDeviceInterface.class);
+		if (device == null) {
+			return new I2CBooleanResponse("I2C device not provisioned", request.getCorrelationId());
+		}
+
+		I2CBooleanResponse response;
+		try {
+			boolean result = device.probe(request.getProbeMode());
+
+			response = new I2CBooleanResponse(result, request.getCorrelationId());
+		} catch (RuntimeIOException e) {
+			Logger.error(e, "Error: {}", e);
+			response = new I2CBooleanResponse("Runtime Error: " + e, request.getCorrelationId());
+		}
+
+		return response;
+	}
+
+	@Override
+	public Response request(I2CWriteQuick request) {
+		Logger.debug("I2C write quick request");
+
+		int controller = request.getController();
+		int address = request.getAddress();
+		String key = deviceFactory.createI2CKey(controller, address);
+
+		I2CDeviceInterface device = deviceFactory.getDevice(key, I2CDeviceInterface.class);
+		if (device == null) {
+			return new Response(Response.Status.ERROR, "I2C device not provisioned", request.getCorrelationId());
 		}
 
 		Response response;
 		try {
-			deviceFactory.provisionI2CDevice(controller, address, request.getAddressSize());
+			device.writeQuick((byte) request.getBit());
 
 			response = new Response(Response.Status.OK, null, request.getCorrelationId());
 		} catch (RuntimeIOException e) {
@@ -580,7 +610,7 @@ public abstract class BaseRemoteServer implements InputEventListener<DigitalInpu
 	}
 
 	@Override
-	public I2CReadByteResponse request(I2CReadByte request) {
+	public I2CByteResponse request(I2CReadByte request) {
 		Logger.debug("I2C read byte request");
 
 		int controller = request.getController();
@@ -589,17 +619,17 @@ public abstract class BaseRemoteServer implements InputEventListener<DigitalInpu
 
 		I2CDeviceInterface device = deviceFactory.getDevice(key, I2CDeviceInterface.class);
 		if (device == null) {
-			return new I2CReadByteResponse("I2C device not provisioned", request.getCorrelationId());
+			return new I2CByteResponse("I2C device not provisioned", request.getCorrelationId());
 		}
 
-		I2CReadByteResponse response;
+		I2CByteResponse response;
 		try {
 			byte data = device.readByte();
 
-			response = new I2CReadByteResponse(data, request.getCorrelationId());
+			response = new I2CByteResponse(data, request.getCorrelationId());
 		} catch (RuntimeIOException e) {
 			Logger.error(e, "Error: {}", e);
-			response = new I2CReadByteResponse("Runtime Error: " + e, request.getCorrelationId());
+			response = new I2CByteResponse("Runtime Error: " + e, request.getCorrelationId());
 		}
 
 		return response;
@@ -632,7 +662,7 @@ public abstract class BaseRemoteServer implements InputEventListener<DigitalInpu
 	}
 
 	@Override
-	public I2CReadResponse request(I2CRead request) {
+	public I2CBytesResponse request(I2CReadBytes request) {
 		Logger.debug("I2C read request");
 
 		int controller = request.getController();
@@ -641,27 +671,25 @@ public abstract class BaseRemoteServer implements InputEventListener<DigitalInpu
 
 		I2CDeviceInterface device = deviceFactory.getDevice(key, I2CDeviceInterface.class);
 		if (device == null) {
-			return new I2CReadResponse("I2C device not provisioned", request.getCorrelationId());
+			return new I2CBytesResponse("I2C device not provisioned", request.getCorrelationId());
 		}
 
-		I2CReadResponse response;
+		I2CBytesResponse response;
 		try {
-			ByteBuffer buffer = ByteBuffer.allocate(request.getLength());
-			device.read(buffer);
+			byte[] buffer = new byte[request.getLength()];
+			device.readBytes(buffer);
 
-			byte[] data = new byte[buffer.remaining()];
-			buffer.get(data);
-			response = new I2CReadResponse(data, request.getCorrelationId());
+			response = new I2CBytesResponse(buffer, request.getCorrelationId());
 		} catch (RuntimeIOException e) {
 			Logger.error(e, "Error: {}", e);
-			response = new I2CReadResponse("Runtime Error: " + e, request.getCorrelationId());
+			response = new I2CBytesResponse("Runtime Error: " + e, request.getCorrelationId());
 		}
 
 		return response;
 	}
 
 	@Override
-	public Response request(I2CWrite request) {
+	public Response request(I2CWriteBytes request) {
 		Logger.debug("I2C write request");
 
 		int controller = request.getController();
@@ -676,7 +704,7 @@ public abstract class BaseRemoteServer implements InputEventListener<DigitalInpu
 		Response response;
 		try {
 			byte[] data = request.getData();
-			device.write(ByteBuffer.wrap(data));
+			device.writeBytes(data);
 
 			response = new Response(Response.Status.OK, null, request.getCorrelationId());
 		} catch (RuntimeIOException e) {
@@ -688,7 +716,7 @@ public abstract class BaseRemoteServer implements InputEventListener<DigitalInpu
 	}
 
 	@Override
-	public I2CReadByteDataResponse request(I2CReadByteData request) {
+	public I2CByteResponse request(I2CReadByteData request) {
 		Logger.debug("I2C read byte data request");
 
 		int controller = request.getController();
@@ -697,17 +725,17 @@ public abstract class BaseRemoteServer implements InputEventListener<DigitalInpu
 
 		I2CDeviceInterface device = deviceFactory.getDevice(key, I2CDeviceInterface.class);
 		if (device == null) {
-			return new I2CReadByteDataResponse("I2C device not provisioned", request.getCorrelationId());
+			return new I2CByteResponse("I2C device not provisioned", request.getCorrelationId());
 		}
 
-		I2CReadByteDataResponse response;
+		I2CByteResponse response;
 		try {
 			byte data = device.readByteData(request.getRegister());
 
-			response = new I2CReadByteDataResponse(data, request.getCorrelationId());
+			response = new I2CByteResponse(data, request.getCorrelationId());
 		} catch (RuntimeIOException e) {
 			Logger.error(e, "Error: {}", e);
-			response = new I2CReadByteDataResponse("Runtime Error: " + e, request.getCorrelationId());
+			response = new I2CByteResponse("Runtime Error: " + e, request.getCorrelationId());
 		}
 
 		return response;
@@ -740,7 +768,164 @@ public abstract class BaseRemoteServer implements InputEventListener<DigitalInpu
 	}
 
 	@Override
-	public I2CReadI2CBlockDataResponse request(I2CReadI2CBlockData request) {
+	public I2CWordResponse request(I2CReadWordData request) {
+		Logger.debug("I2C read word request");
+	
+		int controller = request.getController();
+		int address = request.getAddress();
+		String key = deviceFactory.createI2CKey(controller, address);
+	
+		I2CDeviceInterface device = deviceFactory.getDevice(key, I2CDeviceInterface.class);
+		if (device == null) {
+			return new I2CWordResponse("I2C device not provisioned", request.getCorrelationId());
+		}
+	
+		I2CWordResponse response;
+		try {
+			short data = device.readWordData(request.getRegister());
+	
+			response = new I2CWordResponse(data, request.getCorrelationId());
+		} catch (RuntimeIOException e) {
+			Logger.error(e, "Error: {}", e);
+			response = new I2CWordResponse("Runtime Error: " + e, request.getCorrelationId());
+		}
+	
+		return response;
+	}
+
+	@Override
+	public Response request(I2CWriteWordData request) {
+		Logger.debug("I2C write word data request");
+	
+		int controller = request.getController();
+		int address = request.getAddress();
+		String key = deviceFactory.createI2CKey(controller, address);
+	
+		I2CDeviceInterface device = deviceFactory.getDevice(key, I2CDeviceInterface.class);
+		if (device == null) {
+			return new Response(Response.Status.ERROR, "I2C device not provisioned", request.getCorrelationId());
+		}
+	
+		Response response;
+		try {
+			device.writeWordData(request.getRegister(), (short) request.getData());
+	
+			response = new Response(Response.Status.OK, null, request.getCorrelationId());
+		} catch (RuntimeIOException e) {
+			Logger.error(e, "Error: {}", e);
+			response = new Response(Response.Status.ERROR, "Runtime Error: " + e, request.getCorrelationId());
+		}
+	
+		return response;
+	}
+
+	@Override
+	public I2CReadBlockDataResponse request(I2CReadBlockData request) {
+		Logger.debug("I2C read block data request");
+
+		int controller = request.getController();
+		int address = request.getAddress();
+		String key = deviceFactory.createI2CKey(controller, address);
+
+		I2CDeviceInterface device = deviceFactory.getDevice(key, I2CDeviceInterface.class);
+		if (device == null) {
+			return new I2CReadBlockDataResponse("I2C device not provisioned", request.getCorrelationId());
+		}
+
+		I2CReadBlockDataResponse response;
+		try {
+			byte[] buffer = new byte[I2CSMBusInterface.MAX_I2C_BLOCK_SIZE];
+			int bytes_read = device.readBlockData(request.getRegister(), buffer);
+
+			response = new I2CReadBlockDataResponse(bytes_read, buffer, request.getCorrelationId());
+		} catch (RuntimeIOException e) {
+			Logger.error(e, "Error: {}", e);
+			response = new I2CReadBlockDataResponse("Runtime Error: " + e, request.getCorrelationId());
+		}
+
+		return response;
+	}
+
+	@Override
+	public Response request(I2CWriteBlockData request) {
+		Logger.debug("I2C write block data request");
+
+		int controller = request.getController();
+		int address = request.getAddress();
+		String key = deviceFactory.createI2CKey(controller, address);
+
+		I2CDeviceInterface device = deviceFactory.getDevice(key, I2CDeviceInterface.class);
+		if (device == null) {
+			return new Response(Response.Status.ERROR, "I2C device not provisioned", request.getCorrelationId());
+		}
+
+		Response response;
+		try {
+			device.writeBlockData(request.getRegister(), request.getData());
+
+			response = new Response(Response.Status.OK, null, request.getCorrelationId());
+		} catch (RuntimeIOException e) {
+			Logger.error(e, "Error: {}", e);
+			response = new Response(Response.Status.ERROR, "Runtime Error: " + e, request.getCorrelationId());
+		}
+
+		return response;
+	}
+
+	@Override
+	public I2CWordResponse request(I2CProcessCall request) {
+		Logger.debug("I2C process call request");
+
+		int controller = request.getController();
+		int address = request.getAddress();
+		String key = deviceFactory.createI2CKey(controller, address);
+
+		I2CDeviceInterface device = deviceFactory.getDevice(key, I2CDeviceInterface.class);
+		if (device == null) {
+			return new I2CWordResponse("I2C device not provisioned", request.getCorrelationId());
+		}
+
+		I2CWordResponse response;
+		try {
+			short result = device.processCall(request.getRegister(), (short) request.getData());
+
+			response = new I2CWordResponse(result, request.getCorrelationId());
+		} catch (RuntimeIOException e) {
+			Logger.error(e, "Error: {}", e);
+			response = new I2CWordResponse("Runtime Error: " + e, request.getCorrelationId());
+		}
+
+		return response;
+	}
+
+	@Override
+	public I2CBytesResponse request(I2CBlockProcessCall request) {
+		Logger.debug("I2C block process call request");
+
+		int controller = request.getController();
+		int address = request.getAddress();
+		String key = deviceFactory.createI2CKey(controller, address);
+
+		I2CDeviceInterface device = deviceFactory.getDevice(key, I2CDeviceInterface.class);
+		if (device == null) {
+			return new I2CBytesResponse("I2C device not provisioned", request.getCorrelationId());
+		}
+
+		I2CBytesResponse response;
+		try {
+			byte[] result = device.blockProcessCall(request.getRegister(), request.getData());
+
+			response = new I2CBytesResponse(result, request.getCorrelationId());
+		} catch (RuntimeIOException e) {
+			Logger.error(e, "Error: {}", e);
+			response = new I2CBytesResponse("Runtime Error: " + e, request.getCorrelationId());
+		}
+
+		return response;
+	}
+
+	@Override
+	public I2CBytesResponse request(I2CReadI2CBlockData request) {
 		Logger.debug("I2C read I2C block data request");
 
 		int controller = request.getController();
@@ -749,20 +934,18 @@ public abstract class BaseRemoteServer implements InputEventListener<DigitalInpu
 
 		I2CDeviceInterface device = deviceFactory.getDevice(key, I2CDeviceInterface.class);
 		if (device == null) {
-			return new I2CReadI2CBlockDataResponse("I2C device not provisioned", request.getCorrelationId());
+			return new I2CBytesResponse("I2C device not provisioned", request.getCorrelationId());
 		}
 
-		I2CReadI2CBlockDataResponse response;
+		I2CBytesResponse response;
 		try {
-			ByteBuffer buffer = ByteBuffer.allocate(request.getLength());
-			device.readI2CBlockData(request.getRegister(), request.getSubAddressSize(), buffer);
+			byte[] buffer = new byte[request.getLength()];
+			device.readI2CBlockData(request.getRegister(), buffer);
 
-			byte[] data = new byte[buffer.remaining()];
-			buffer.get(data);
-			response = new I2CReadI2CBlockDataResponse(data, request.getCorrelationId());
+			response = new I2CBytesResponse(buffer, request.getCorrelationId());
 		} catch (RuntimeIOException e) {
 			Logger.error(e, "Error: {}", e);
-			response = new I2CReadI2CBlockDataResponse("Runtime Error: " + e, request.getCorrelationId());
+			response = new I2CBytesResponse("Runtime Error: " + e, request.getCorrelationId());
 		}
 
 		return response;
@@ -783,8 +966,7 @@ public abstract class BaseRemoteServer implements InputEventListener<DigitalInpu
 
 		Response response;
 		try {
-			byte[] data = request.getData();
-			device.writeI2CBlockData(request.getRegister(), request.getSubAddressSize(), ByteBuffer.wrap(data));
+			device.writeI2CBlockData(request.getRegister(), request.getData());
 
 			response = new Response(Response.Status.OK, null, request.getCorrelationId());
 		} catch (RuntimeIOException e) {

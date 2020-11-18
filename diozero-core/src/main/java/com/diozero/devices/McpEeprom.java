@@ -122,13 +122,13 @@ public class McpEeprom implements Closeable {
 	}
 	
 	public byte readByte(int address) {
-		device.write(getAddressByteArray(address));
+		device.writeBytes(getAddressByteArray(address));
 		return device.readByte();
 	}
 	
 	public byte[] readBytes(int address, int length) {
-		device.write(getAddressByteArray(address));
-		return device.read(length);
+		device.writeBytes(getAddressByteArray(address));
+		return device.readBytes(length);
 	}
 	
 	public void writeByte(int address, int data) {
@@ -140,7 +140,7 @@ public class McpEeprom implements Closeable {
 		byte[] buffer = new byte[addr_bytes.length+1];
 		System.arraycopy(addr_bytes, 0, buffer, 0, addr_bytes.length);
 		buffer[addr_bytes.length] = data;
-		device.write(buffer);
+		device.writeBytes(buffer);
 		SleepUtil.sleepMillis(type.getWriteCycleTimeMillis());
 	}
 	
@@ -160,7 +160,7 @@ public class McpEeprom implements Closeable {
 			byte[] buffer = new byte[addr_bytes.length+bytes_to_write];
 			System.arraycopy(addr_bytes, 0, buffer, 0, addr_bytes.length);
 			System.arraycopy(data, data.length - bytes_remaining, buffer, addr_bytes.length, bytes_to_write);
-			device.write(buffer);
+			device.writeBytes(buffer);
 			
 			bytes_remaining -= bytes_to_write;
 			page++;

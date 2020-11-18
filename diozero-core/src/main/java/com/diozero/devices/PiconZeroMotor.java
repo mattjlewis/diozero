@@ -33,7 +33,7 @@ package com.diozero.devices;
 
 import java.io.IOException;
 
-import com.diozero.api.motor.MotorBase;
+import com.diozero.devices.motor.MotorBase;
 import com.diozero.util.RuntimeIOException;
 
 public class PiconZeroMotor extends MotorBase {

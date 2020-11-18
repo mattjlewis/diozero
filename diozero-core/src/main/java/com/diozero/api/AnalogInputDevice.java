@@ -39,7 +39,7 @@ import org.tinylog.Logger;
 import com.diozero.internal.provider.AnalogInputDeviceFactoryInterface;
 import com.diozero.internal.provider.AnalogInputDeviceInterface;
 import com.diozero.util.DeviceFactoryHelper;
-import com.diozero.util.DioZeroScheduler;
+import com.diozero.util.DiozeroScheduler;
 import com.diozero.util.RuntimeIOException;
 
 /**
@@ -156,7 +156,7 @@ public class AnalogInputDevice extends GpioInputDevice<AnalogInputEvent> impleme
 			device.setListener(this);
 		} else {
 			stopScheduler.set(false);
-			DioZeroScheduler.getDaemonInstance().scheduleAtFixedRate(this, pollInterval, pollInterval,
+			DiozeroScheduler.getDaemonInstance().scheduleAtFixedRate(this, pollInterval, pollInterval,
 					TimeUnit.MILLISECONDS);
 		}
 	}

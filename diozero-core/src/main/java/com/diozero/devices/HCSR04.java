@@ -38,7 +38,6 @@ import com.diozero.api.DigitalInputDevice;
 import com.diozero.api.DigitalInputDeviceInterface;
 import com.diozero.api.DigitalInputOutputDevice;
 import com.diozero.api.DigitalOutputDevice;
-import com.diozero.api.DistanceSensorInterface;
 import com.diozero.api.GpioEventTrigger;
 import com.diozero.api.GpioPullUpDown;
 import com.diozero.util.RuntimeIOException;

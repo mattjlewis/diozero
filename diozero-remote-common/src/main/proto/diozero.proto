@@ -198,11 +198,31 @@ message Gpio {
 }
 
 message I2C {
+  enum ProbeMode {
+  	QUICK = 0;
+  	READ = 1;
+  	AUTO = 2;
+  }
+  
 	message OpenRequest {
 		string correlationId = 1;
 		int32 controller = 2;
 		int32 address = 3;
 		int32 addressSize = 4;
+	}
+	
+	message ProbeRequest {
+		string correlationId = 1;
+		int32 controller = 2;
+		int32 address = 3;
+		ProbeMode probeMode = 4;
+	}
+	
+	message WriteQuickRequest {
+		string correlationId = 1;
+		int32 controller = 2;
+		int32 address = 3;
+		int32 bit = 4;
 	}
 	
 	message ReadByteRequest {
@@ -218,14 +238,14 @@ message I2C {
 		int32 data = 4;
 	}
 	
-	message ReadRequest {
+	message ReadBytesRequest {
 		string correlationId = 1;
 		int32 controller = 2;
 		int32 address = 3;
 		int32 length = 4;
 	}
 	
-	message WriteRequest {
+	message WriteBytesRequest {
 		string correlationId = 1;
 		int32 controller = 2;
 		int32 address = 3;
@@ -247,13 +267,58 @@ message I2C {
 		int32 data = 5;
 	}
 	
+	message ReadWordDataRequest {
+		string correlationId = 1;
+		int32 controller = 2;
+		int32 address = 3;
+		int32 register = 4;
+	}
+	
+	message WriteWordDataRequest {
+		string correlationId = 1;
+		int32 controller = 2;
+		int32 address = 3;
+		int32 register = 4;
+		int32 data = 5;
+	}
+	
+	message ProcessCallRequest {
+		string correlationId = 1;
+		int32 controller = 2;
+		int32 address = 3;
+		int32 register = 4;
+		int32 data = 5;
+	}
+	
+	message ReadBlockDataRequest {
+		string correlationId = 1;
+		int32 controller = 2;
+		int32 address = 3;
+		int32 register = 4;
+	}
+	
+	message WriteBlockDataRequest {
+		string correlationId = 1;
+		int32 controller = 2;
+		int32 address = 3;
+		int32 register = 4;
+		bytes data = 5;
+	}
+	
+	message BlockProcessCallRequest {
+		string correlationId = 1;
+		int32 controller = 2;
+		int32 address = 3;
+		int32 register = 4;
+		bytes data = 5;
+	}
+	
 	message ReadI2CBlockDataRequest {
 		string correlationId = 1;
 		int32 controller = 2;
 		int32 address = 3;
 		int32 register = 4;
-		int32 subAddressSize = 5;
-		int32 length = 6;
+		int32 length = 5;
 	}
 	
 	message WriteI2CBlockDataRequest {
@@ -261,8 +326,7 @@ message I2C {
 		int32 controller = 2;
 		int32 address = 3;
 		int32 register = 4;
-		int32 subAddressSize = 5;
-		bytes data = 6;
+		bytes data = 5;
 	}
 	
 	message CloseRequest {
@@ -271,18 +335,42 @@ message I2C {
 		int32 address = 3;
 	}
 	
-	message ReadByteResponse {
+	// I2C Responses
+	
+	message BooleanResponse {
+		string correlationId = 1;
+		Status status = 2;
+		string detail = 3;
+		bool result = 4;
+	}
+	
+	message ByteResponse {
 		string correlationId = 1;
 		Status status = 2;
 		string detail = 3;
 		int32 data = 4;
 	}
 	
-	message ReadResponse {
+	message WordResponse {
+		string correlationId = 1;
+		Status status = 2;
+		string detail = 3;
+		int32 data = 4;
+	}
+	
+	message BytesResponse {
 		string correlationId = 1;
 		Status status = 2;
 		string detail = 3;
 		bytes data = 4;
+	}
+	
+	message ReadBlockDataResponse {
+		string correlationId = 1;
+		Status status = 2;
+		string detail = 3;
+		int32 bytesRead = 4;
+		bytes data = 5;
 	}
 }
 

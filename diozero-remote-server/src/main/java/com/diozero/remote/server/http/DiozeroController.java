@@ -43,16 +43,24 @@ import com.diozero.remote.message.GpioDigitalWrite;
 import com.diozero.remote.message.GpioEvents;
 import com.diozero.remote.message.GpioPwmRead;
 import com.diozero.remote.message.GpioPwmWrite;
+import com.diozero.remote.message.I2CBlockProcessCall;
 import com.diozero.remote.message.I2CClose;
 import com.diozero.remote.message.I2COpen;
-import com.diozero.remote.message.I2CRead;
+import com.diozero.remote.message.I2CProbe;
+import com.diozero.remote.message.I2CProcessCall;
+import com.diozero.remote.message.I2CReadBlockData;
 import com.diozero.remote.message.I2CReadByte;
 import com.diozero.remote.message.I2CReadByteData;
+import com.diozero.remote.message.I2CReadBytes;
 import com.diozero.remote.message.I2CReadI2CBlockData;
-import com.diozero.remote.message.I2CWrite;
+import com.diozero.remote.message.I2CReadWordData;
+import com.diozero.remote.message.I2CWriteBlockData;
 import com.diozero.remote.message.I2CWriteByte;
 import com.diozero.remote.message.I2CWriteByteData;
+import com.diozero.remote.message.I2CWriteBytes;
 import com.diozero.remote.message.I2CWriteI2CBlockData;
+import com.diozero.remote.message.I2CWriteQuick;
+import com.diozero.remote.message.I2CWriteWordData;
 import com.diozero.remote.message.ProvisionAnalogInputDevice;
 import com.diozero.remote.message.ProvisionAnalogOutputDevice;
 import com.diozero.remote.message.ProvisionDigitalInputDevice;
@@ -66,8 +74,8 @@ import com.diozero.remote.message.SerialOpen;
 import com.diozero.remote.message.SerialRead;
 import com.diozero.remote.message.SerialReadByte;
 import com.diozero.remote.message.SerialReadBytes;
-import com.diozero.remote.message.SerialWriteBytes;
 import com.diozero.remote.message.SerialWriteByte;
+import com.diozero.remote.message.SerialWriteBytes;
 import com.diozero.remote.message.SpiClose;
 import com.diozero.remote.message.SpiOpen;
 import com.diozero.remote.message.SpiWrite;
@@ -131,23 +139,47 @@ public class DiozeroController extends BaseRemoteServer {
 		post(HttpProviderConstants.I2C_OPEN_URL, (req, res) -> {
 			return request(gson.fromJson(req.body(), I2COpen.class));
 		}, gson::toJson);
+		post(HttpProviderConstants.I2C_PROBE_URL, (req, res) -> {
+			return request(gson.fromJson(req.body(), I2CProbe.class));
+		}, gson::toJson);
+		post(HttpProviderConstants.I2C_WRITE_QUICK_URL, (req, res) -> {
+			return request(gson.fromJson(req.body(), I2CWriteQuick.class));
+		}, gson::toJson);
 		post(HttpProviderConstants.I2C_READ_BYTE_URL, (req, res) -> {
 			return request(gson.fromJson(req.body(), I2CReadByte.class));
 		}, gson::toJson);
 		post(HttpProviderConstants.I2C_WRITE_BYTE_URL, (req, res) -> {
 			return request(gson.fromJson(req.body(), I2CWriteByte.class));
 		}, gson::toJson);
-		post(HttpProviderConstants.I2C_READ_URL, (req, res) -> {
-			return request(gson.fromJson(req.body(), I2CRead.class));
+		post(HttpProviderConstants.I2C_READ_BYTES_URL, (req, res) -> {
+			return request(gson.fromJson(req.body(), I2CReadBytes.class));
 		}, gson::toJson);
-		post(HttpProviderConstants.I2C_WRITE_URL, (req, res) -> {
-			return request(gson.fromJson(req.body(), I2CWrite.class));
+		post(HttpProviderConstants.I2C_WRITE_BYTES_URL, (req, res) -> {
+			return request(gson.fromJson(req.body(), I2CWriteBytes.class));
 		}, gson::toJson);
 		post(HttpProviderConstants.I2C_READ_BYTE_DATA_URL, (req, res) -> {
 			return request(gson.fromJson(req.body(), I2CReadByteData.class));
 		}, gson::toJson);
 		post(HttpProviderConstants.I2C_WRITE_BYTE_DATA_URL, (req, res) -> {
 			return request(gson.fromJson(req.body(), I2CWriteByteData.class));
+		}, gson::toJson);
+		post(HttpProviderConstants.I2C_READ_WORD_DATA_URL, (req, res) -> {
+			return request(gson.fromJson(req.body(), I2CReadWordData.class));
+		}, gson::toJson);
+		post(HttpProviderConstants.I2C_WRITE_WORD_DATA_URL, (req, res) -> {
+			return request(gson.fromJson(req.body(), I2CWriteWordData.class));
+		}, gson::toJson);
+		post(HttpProviderConstants.I2C_PROCESS_CALL_URL, (req, res) -> {
+			return request(gson.fromJson(req.body(), I2CProcessCall.class));
+		}, gson::toJson);
+		post(HttpProviderConstants.I2C_READ_BLOCK_DATA_URL, (req, res) -> {
+			return request(gson.fromJson(req.body(), I2CReadBlockData.class));
+		}, gson::toJson);
+		post(HttpProviderConstants.I2C_WRITE_BLOCK_DATA_URL, (req, res) -> {
+			return request(gson.fromJson(req.body(), I2CWriteBlockData.class));
+		}, gson::toJson);
+		post(HttpProviderConstants.I2C_BLOCK_PROCESS_CALL_URL, (req, res) -> {
+			return request(gson.fromJson(req.body(), I2CBlockProcessCall.class));
 		}, gson::toJson);
 		post(HttpProviderConstants.I2C_READ_I2C_BLOCK_DATA_URL, (req, res) -> {
 			return request(gson.fromJson(req.body(), I2CReadI2CBlockData.class));

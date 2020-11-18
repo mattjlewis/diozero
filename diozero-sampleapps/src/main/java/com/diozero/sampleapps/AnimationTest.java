@@ -41,10 +41,10 @@ import java.util.concurrent.Future;
 
 import org.tinylog.Logger;
 
-import com.diozero.api.Animation;
-import com.diozero.api.AnimationInstance;
+import com.diozero.animation.Animation;
+import com.diozero.animation.AnimationInstance;
+import com.diozero.animation.easing.Quad;
 import com.diozero.api.OutputDeviceInterface;
-import com.diozero.api.easing.Quad;
 import com.diozero.devices.PwmLed;
 import com.diozero.util.DeviceFactoryHelper;
 

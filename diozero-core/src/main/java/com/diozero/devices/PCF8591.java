@@ -200,7 +200,7 @@ public class PCF8591 extends AbstractDeviceFactory
 		byte[] data = new byte[2];
 		data[0] = ANALOG_OUTPUT_ENABLE_MASK;
 		data[1] = (byte) (value * (RANGE - 1));
-		device.write(data);
+		device.writeBytes(data);
 	}
 
 	private int getRawValue(int adcPin) {
@@ -218,7 +218,7 @@ public class PCF8591 extends AbstractDeviceFactory
 
 		device.writeByte(control_byte);
 
-		byte[] data = device.read(2);
+		byte[] data = device.readBytes(2);
 		// Note data[0] is the previous value held in the DAC register, data[1] is value
 		// of data byte 1
 

@@ -36,11 +36,8 @@ import java.nio.ByteOrder;
 
 import org.tinylog.Logger;
 
-import com.diozero.api.BarometerInterface;
-import com.diozero.api.HygrometerInterface;
 import com.diozero.api.I2CConstants;
 import com.diozero.api.I2CDevice;
-import com.diozero.api.ThermometerInterface;
 import com.diozero.util.RuntimeIOException;
 
 /*-
@@ -192,7 +189,7 @@ public class BME280 implements BarometerInterface, ThermometerInterface, Hygrome
 
 	private void readCoefficients() {
 		// Read 24 bytes of data from address 0x88(136)
-		ByteBuffer buffer = device.read(CALIB_00_REG, 26);
+		ByteBuffer buffer = device.readI2CBlockDataByteBuffer(CALIB_00_REG, 24);
 
 		// Temp coefficients
 		digT1 = buffer.getShort() & 0xffff;
@@ -215,7 +212,7 @@ public class BME280 implements BarometerInterface, ThermometerInterface, Hygrome
 		digH1 = (short) (buffer.get() & 0xff);
 
 		// Read 7 bytes of data from address 0xE1(225)
-		buffer = device.read(CALIB_26_REG, 7);
+		buffer = device.readI2CBlockDataByteBuffer(CALIB_26_REG, 7);
 
 		// Humidity coefficients
 		digH2 = buffer.getShort();
@@ -230,20 +227,20 @@ public class BME280 implements BarometerInterface, ThermometerInterface, Hygrome
 	public void setOperatingModes(TemperatureOversampling tempOversampling, PressureOversampling pressOversampling,
 			HumidityOversampling humOversampling, OperatingMode operatingMode) {
 		// Humidity over sampling rate = 1
-		device.writeByte(CTRL_HUM_REG, humOversampling.getMask());
+		device.writeByteData(CTRL_HUM_REG, humOversampling.getMask());
 		// Normal mode, temp and pressure oversampling rate = 1
-		device.writeByte(CTRL_MEAS_REG,
+		device.writeByteData(CTRL_MEAS_REG,
 				(byte) (tempOversampling.getMask() | pressOversampling.getMask() | operatingMode.getMask()));
 	}
 
 	public void setStandbyAndFilterModes(StandbyMode standbyMode, FilterMode filterMode) {
 		// Stand_by time = 1000 ms, filter off
-		device.writeByte(CONFIG_REG, (byte) (standbyMode.getMask() | filterMode.getMask()));
+		device.writeByteData(CONFIG_REG, (byte) (standbyMode.getMask() | filterMode.getMask()));
 	}
 
 	public float[] getValues() {
 		// Read the 3 pressure registers
-		ByteBuffer buffer = device.read(PRESS_MSB_REG, 8);
+		ByteBuffer buffer = device.readI2CBlockDataByteBuffer(PRESS_MSB_REG, 8);
 
 		// Unpack the raw 20-bit unsigned pressure value
 		int adc_p = ((buffer.get() & 0xff) << 12) | ((buffer.get() & 0xff) << 4) | ((buffer.get() & 0xf0) >> 4);

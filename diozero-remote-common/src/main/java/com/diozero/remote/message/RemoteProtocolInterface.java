@@ -59,13 +59,21 @@ public interface RemoteProtocolInterface extends Closeable {
 	
 	// I2C
 	Response request(I2COpen request);
-	I2CReadByteResponse request(I2CReadByte request);
+	I2CBooleanResponse request(I2CProbe request);
+	Response request(I2CWriteQuick request);
+	I2CByteResponse request(I2CReadByte request);
 	Response request(I2CWriteByte request);
-	I2CReadResponse request(I2CRead request);
-	Response request(I2CWrite request);
-	I2CReadByteDataResponse request(I2CReadByteData request);
+	I2CBytesResponse request(I2CReadBytes request);
+	Response request(I2CWriteBytes request);
+	I2CByteResponse request(I2CReadByteData request);
 	Response request(I2CWriteByteData request);
-	I2CReadI2CBlockDataResponse request(I2CReadI2CBlockData request);
+	I2CWordResponse request(I2CReadWordData request);
+	Response request(I2CWriteWordData request);
+	I2CWordResponse request(I2CProcessCall request);
+	I2CReadBlockDataResponse request(I2CReadBlockData request);
+	Response request(I2CWriteBlockData request);
+	I2CBytesResponse request(I2CBlockProcessCall request);
+	I2CBytesResponse request(I2CReadI2CBlockData request);
 	Response request(I2CWriteI2CBlockData request);
 	Response request(I2CClose request);
 	

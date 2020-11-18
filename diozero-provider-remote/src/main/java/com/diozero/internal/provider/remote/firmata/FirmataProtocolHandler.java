@@ -65,20 +65,29 @@ import com.diozero.remote.message.GpioInfo;
 import com.diozero.remote.message.GpioPwmRead;
 import com.diozero.remote.message.GpioPwmReadResponse;
 import com.diozero.remote.message.GpioPwmWrite;
+import com.diozero.remote.message.I2CBlockProcessCall;
+import com.diozero.remote.message.I2CBooleanResponse;
+import com.diozero.remote.message.I2CByteResponse;
+import com.diozero.remote.message.I2CBytesResponse;
 import com.diozero.remote.message.I2CClose;
 import com.diozero.remote.message.I2COpen;
-import com.diozero.remote.message.I2CRead;
+import com.diozero.remote.message.I2CProbe;
+import com.diozero.remote.message.I2CProcessCall;
+import com.diozero.remote.message.I2CReadBlockData;
+import com.diozero.remote.message.I2CReadBlockDataResponse;
 import com.diozero.remote.message.I2CReadByte;
 import com.diozero.remote.message.I2CReadByteData;
-import com.diozero.remote.message.I2CReadByteDataResponse;
-import com.diozero.remote.message.I2CReadByteResponse;
+import com.diozero.remote.message.I2CReadBytes;
 import com.diozero.remote.message.I2CReadI2CBlockData;
-import com.diozero.remote.message.I2CReadI2CBlockDataResponse;
-import com.diozero.remote.message.I2CReadResponse;
-import com.diozero.remote.message.I2CWrite;
+import com.diozero.remote.message.I2CReadWordData;
+import com.diozero.remote.message.I2CWordResponse;
+import com.diozero.remote.message.I2CWriteBlockData;
 import com.diozero.remote.message.I2CWriteByte;
 import com.diozero.remote.message.I2CWriteByteData;
+import com.diozero.remote.message.I2CWriteBytes;
 import com.diozero.remote.message.I2CWriteI2CBlockData;
+import com.diozero.remote.message.I2CWriteQuick;
+import com.diozero.remote.message.I2CWriteWordData;
 import com.diozero.remote.message.ProvisionAnalogInputDevice;
 import com.diozero.remote.message.ProvisionAnalogOutputDevice;
 import com.diozero.remote.message.ProvisionDigitalInputDevice;
@@ -290,13 +299,23 @@ public class FirmataProtocolHandler implements RemoteProtocolInterface, FirmataE
 	}
 
 	@Override
-	public I2CReadByteResponse request(I2CReadByte request) {
+	public I2CBooleanResponse request(I2CProbe request) {
+		throw new UnsupportedOperationException("I2C probe not supported in Firmata");
+	}
+
+	@Override
+	public I2CBooleanResponse request(I2CWriteQuick request) {
+		throw new UnsupportedOperationException("I2C writeQuick not supported in Firmata");
+	}
+
+	@Override
+	public I2CByteResponse request(I2CReadByte request) {
 		FirmataAdapter.I2CResponse response = adapter.i2cRead(request.getAddress(), false, false, 1);
 		byte[] data = response.getData();
 		if (data.length != 1) {
 			throw new RuntimeIOException("I2C Error: Expected to read 1 byte, got " + data.length);
 		}
-		return new I2CReadByteResponse(data[0], request.getCorrelationId());
+		return new I2CByteResponse(data[0], request.getCorrelationId());
 	}
 
 	@Override
@@ -306,30 +325,30 @@ public class FirmataProtocolHandler implements RemoteProtocolInterface, FirmataE
 	}
 
 	@Override
-	public I2CReadResponse request(I2CRead request) {
+	public I2CBytesResponse request(I2CReadBytes request) {
 		I2CResponse response = adapter.i2cRead(request.getAddress(), false, false, request.getLength());
 		byte[] data = response.getData();
 		if (data.length != request.getLength()) {
 			throw new RuntimeIOException(
 					"I2C Error: Expected to read " + request.getLength() + " bytes, got " + data.length);
 		}
-		return new I2CReadResponse(data, request.getCorrelationId());
+		return new I2CBytesResponse(data, request.getCorrelationId());
 	}
 
 	@Override
-	public Response request(I2CWrite request) {
+	public Response request(I2CWriteBytes request) {
 		adapter.i2cWrite(request.getAddress(), false, false, request.getData());
 		return new Response(Response.Status.OK, null, request.getCorrelationId());
 	}
 
 	@Override
-	public I2CReadByteDataResponse request(I2CReadByteData request) {
+	public I2CByteResponse request(I2CReadByteData request) {
 		I2CResponse response = adapter.i2cReadData(request.getAddress(), false, false, request.getRegister(), 1);
 		byte[] data = response.getData();
 		if (data.length != 1) {
 			throw new RuntimeIOException("I2C Error: Expected to read 1 byte, got " + data.length);
 		}
-		return new I2CReadByteDataResponse(data[0], request.getCorrelationId());
+		return new I2CByteResponse(data[0], request.getCorrelationId());
 	}
 
 	@Override
@@ -340,7 +359,44 @@ public class FirmataProtocolHandler implements RemoteProtocolInterface, FirmataE
 	}
 
 	@Override
-	public I2CReadI2CBlockDataResponse request(I2CReadI2CBlockData request) {
+	public I2CWordResponse request(I2CReadWordData request) {
+		I2CResponse response = adapter.i2cReadData(request.getAddress(), false, false, request.getRegister(), 1);
+		byte[] data = response.getData();
+		if (data.length != 2) {
+			throw new RuntimeIOException("I2C Error: Expected to read 2 byte2, got " + data.length);
+		}
+		return new I2CWordResponse((data[0] & 0xff) & ((data[1] & 0xff) >> 8), request.getCorrelationId());
+	}
+
+	@Override
+	public Response request(I2CWriteWordData request) {
+		adapter.i2cWriteData(request.getAddress(), false, false, request.getRegister(),
+				new byte[] { (byte) (request.getData() & 0xff), (byte) ((request.getData() >> 8) & 0xff) });
+		return new Response(Response.Status.OK, null, request.getCorrelationId());
+	}
+
+	@Override
+	public I2CWordResponse request(I2CProcessCall request) {
+		throw new UnsupportedOperationException("I2C processCall not supported in Firmata");
+	}
+
+	@Override
+	public I2CReadBlockDataResponse request(I2CReadBlockData request) {
+		throw new UnsupportedOperationException("I2C readBlockData not supported in Firmata");
+	}
+
+	@Override
+	public Response request(I2CWriteBlockData request) {
+		throw new UnsupportedOperationException("I2C writeBlockData not supported in Firmata");
+	}
+
+	@Override
+	public I2CBytesResponse request(I2CBlockProcessCall request) {
+		throw new UnsupportedOperationException("I2C blockProcessCall not supported in Firmata");
+	}
+
+	@Override
+	public I2CBytesResponse request(I2CReadI2CBlockData request) {
 		I2CResponse response = adapter.i2cReadData(request.getAddress(), false, false, request.getRegister(),
 				request.getLength());
 		byte[] data = response.getData();
@@ -348,7 +404,7 @@ public class FirmataProtocolHandler implements RemoteProtocolInterface, FirmataE
 			throw new RuntimeIOException(
 					"I2C Error: Expected to read " + request.getLength() + " bytes, got " + data.length);
 		}
-		return new I2CReadI2CBlockDataResponse(data, request.getCorrelationId());
+		return new I2CBytesResponse(data, request.getCorrelationId());
 	}
 
 	@Override

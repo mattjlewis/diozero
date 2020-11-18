@@ -36,10 +36,8 @@ import java.nio.ByteOrder;
 
 import org.tinylog.Logger;
 
-import com.diozero.api.HygrometerInterface;
 import com.diozero.api.I2CConstants;
 import com.diozero.api.I2CDevice;
-import com.diozero.api.ThermometerInterface;
 import com.diozero.util.RuntimeIOException;
 
 /**
@@ -158,12 +156,12 @@ public class HTS221 implements ThermometerInterface, HygrometerInterface, Closea
 		 * 111 | 256  | 512  |  0.007  | 0.03
 		 * Temperature average samples = 16, humidity average samples = 32
 		 */
-		device.writeByte(AV_CONF, (byte) (0b011 << 3 | 0b011));
+		device.writeByteData(AV_CONF, (byte) (0b011 << 3 | 0b011));
 
 		// Select control register1
 		// Power on, block data update, data rate o/p = 12.5 Hz (0x85 / 0b10000101)
 		// RTIMULib uses 0x87 (0b10000111) - 12.5Hz
-		device.writeByte(CTRL_REG1, (byte) (CR1_PD_CONTROL | CR1_BDU | CR1_ODR_12_5HZ));
+		device.writeByteData(CTRL_REG1, (byte) (CR1_PD_CONTROL | CR1_BDU | CR1_ODR_12_5HZ));
 		// Thread.sleep(500);
 
 		// Read Calibration values from the non-volatile memory of the device
@@ -176,7 +174,7 @@ public class HTS221 implements ThermometerInterface, HygrometerInterface, Closea
 		h1T0Out = device.readShort(H1_T0_OUT | READ);
 
 		// Read the MSB values for T0 and T1
-		byte t1_t0_msb = (byte) (device.readByte(T1_T0_MSB | READ) & 0x0F);
+		byte t1_t0_msb = (byte) (device.readByteData(T1_T0_MSB | READ) & 0x0F);
 
 		// Temperature calibration values (10-bit unsigned)
 		t0DegC = (((t1_t0_msb & 0b0011) << 8) | device.readUByte(T0_degC_x8 | READ)) / 8f;
@@ -189,7 +187,7 @@ public class HTS221 implements ThermometerInterface, HygrometerInterface, Closea
 
 	@Override
 	public float getRelativeHumidity() {
-		byte status = device.readByte(STATUS_REG);
+		byte status = device.readByteData(STATUS_REG);
 		if ((status & SR_H_DA) == 0) {
 			Logger.warn("Humidity data not available");
 			return -1;
@@ -208,7 +206,7 @@ public class HTS221 implements ThermometerInterface, HygrometerInterface, Closea
 	 */
 	@Override
 	public float getTemperature() {
-		byte status = device.readByte(STATUS_REG);
+		byte status = device.readByteData(STATUS_REG);
 		if ((status & SR_T_DA) == 0) {
 			Logger.warn("Temperature data not available");
 			return -1;

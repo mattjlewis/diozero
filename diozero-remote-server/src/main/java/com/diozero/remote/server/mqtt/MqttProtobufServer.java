@@ -48,8 +48,11 @@ import com.diozero.remote.message.DiozeroProtosConverter;
 import com.diozero.remote.message.GpioAnalogReadResponse;
 import com.diozero.remote.message.GpioDigitalReadResponse;
 import com.diozero.remote.message.GpioPwmReadResponse;
-import com.diozero.remote.message.I2CReadByteResponse;
-import com.diozero.remote.message.I2CReadResponse;
+import com.diozero.remote.message.I2CBooleanResponse;
+import com.diozero.remote.message.I2CByteResponse;
+import com.diozero.remote.message.I2CBytesResponse;
+import com.diozero.remote.message.I2CReadBlockDataResponse;
+import com.diozero.remote.message.I2CWordResponse;
 import com.diozero.remote.message.Response;
 import com.diozero.remote.message.SpiResponse;
 import com.diozero.remote.message.protobuf.DiozeroProtos;
@@ -213,6 +216,16 @@ public class MqttProtobufServer extends BaseRemoteServer implements MqttCallback
 				DiozeroProtos.I2C.OpenRequest i2c_open = DiozeroProtos.I2C.OpenRequest.parseFrom(message.getPayload());
 				publishResponse(request(DiozeroProtosConverter.convert(i2c_open)));
 				break;
+			case MqttProviderConstants.I2C_PROBE_TOPIC:
+				DiozeroProtos.I2C.ProbeRequest i2c_probe = DiozeroProtos.I2C.ProbeRequest
+						.parseFrom(message.getPayload());
+				publishResponse(request(DiozeroProtosConverter.convert(i2c_probe)));
+				break;
+			case MqttProviderConstants.I2C_WRITE_QUICK_TOPIC:
+				DiozeroProtos.I2C.WriteQuickRequest i2c_write_quick = DiozeroProtos.I2C.WriteQuickRequest
+						.parseFrom(message.getPayload());
+				publishResponse(request(DiozeroProtosConverter.convert(i2c_write_quick)));
+				break;
 			case MqttProviderConstants.I2C_READ_BYTE_TOPIC:
 				DiozeroProtos.I2C.ReadByteRequest i2c_read_byte = DiozeroProtos.I2C.ReadByteRequest
 						.parseFrom(message.getPayload());
@@ -223,12 +236,13 @@ public class MqttProtobufServer extends BaseRemoteServer implements MqttCallback
 						.parseFrom(message.getPayload());
 				publishResponse(request(DiozeroProtosConverter.convert(i2c_write_byte)));
 				break;
-			case MqttProviderConstants.I2C_READ_TOPIC:
-				DiozeroProtos.I2C.ReadRequest i2c_read = DiozeroProtos.I2C.ReadRequest.parseFrom(message.getPayload());
+			case MqttProviderConstants.I2C_READ_BYTES_TOPIC:
+				DiozeroProtos.I2C.ReadBytesRequest i2c_read = DiozeroProtos.I2C.ReadBytesRequest
+						.parseFrom(message.getPayload());
 				publishResponse(request(DiozeroProtosConverter.convert(i2c_read)));
 				break;
-			case MqttProviderConstants.I2C_WRITE_TOPIC:
-				DiozeroProtos.I2C.WriteRequest i2c_write = DiozeroProtos.I2C.WriteRequest
+			case MqttProviderConstants.I2C_WRITE_BYTES_TOPIC:
+				DiozeroProtos.I2C.WriteBytesRequest i2c_write = DiozeroProtos.I2C.WriteBytesRequest
 						.parseFrom(message.getPayload());
 				publishResponse(request(DiozeroProtosConverter.convert(i2c_write)));
 				break;
@@ -241,6 +255,36 @@ public class MqttProtobufServer extends BaseRemoteServer implements MqttCallback
 				DiozeroProtos.I2C.WriteByteDataRequest i2c_write_byte_data = DiozeroProtos.I2C.WriteByteDataRequest
 						.parseFrom(message.getPayload());
 				publishResponse(request(DiozeroProtosConverter.convert(i2c_write_byte_data)));
+				break;
+			case MqttProviderConstants.I2C_READ_WORD_DATA_TOPIC:
+				DiozeroProtos.I2C.ReadWordDataRequest i2c_read_word_data = DiozeroProtos.I2C.ReadWordDataRequest
+						.parseFrom(message.getPayload());
+				publishResponse(request(DiozeroProtosConverter.convert(i2c_read_word_data)));
+				break;
+			case MqttProviderConstants.I2C_WRITE_WORD_DATA_TOPIC:
+				DiozeroProtos.I2C.WriteWordDataRequest i2c_write_word_data = DiozeroProtos.I2C.WriteWordDataRequest
+						.parseFrom(message.getPayload());
+				publishResponse(request(DiozeroProtosConverter.convert(i2c_write_word_data)));
+				break;
+			case MqttProviderConstants.I2C_PROCESS_CALL_TOPIC:
+				DiozeroProtos.I2C.ProcessCallRequest i2c_process_call_data = DiozeroProtos.I2C.ProcessCallRequest
+						.parseFrom(message.getPayload());
+				publishResponse(request(DiozeroProtosConverter.convert(i2c_process_call_data)));
+				break;
+			case MqttProviderConstants.I2C_READ_BLOCK_DATA_TOPIC:
+				DiozeroProtos.I2C.ReadBlockDataRequest i2c_read_block_data = DiozeroProtos.I2C.ReadBlockDataRequest
+						.parseFrom(message.getPayload());
+				publishResponse(request(DiozeroProtosConverter.convert(i2c_read_block_data)));
+				break;
+			case MqttProviderConstants.I2C_WRITE_BLOCK_DATA_TOPIC:
+				DiozeroProtos.I2C.WriteBlockDataRequest i2c_write_block_data = DiozeroProtos.I2C.WriteBlockDataRequest
+						.parseFrom(message.getPayload());
+				publishResponse(request(DiozeroProtosConverter.convert(i2c_write_block_data)));
+				break;
+			case MqttProviderConstants.I2C_BLOCK_PROCESS_CALL_TOPIC:
+				DiozeroProtos.I2C.BlockProcessCallRequest i2c_block_process_call_data = DiozeroProtos.I2C.BlockProcessCallRequest
+						.parseFrom(message.getPayload());
+				publishResponse(request(DiozeroProtosConverter.convert(i2c_block_process_call_data)));
 				break;
 			case MqttProviderConstants.I2C_READ_I2C_BLOCK_DATA_TOPIC:
 				DiozeroProtos.I2C.ReadI2CBlockDataRequest i2c_read_i2c_block_data = DiozeroProtos.I2C.ReadI2CBlockDataRequest
@@ -320,17 +364,38 @@ public class MqttProtobufServer extends BaseRemoteServer implements MqttCallback
 				MqttProviderConstants.DEFAULT_QOS, MqttProviderConstants.DEFAULT_RETAINED);
 	}
 
-	private void publishResponse(I2CReadByteResponse response) throws MqttException {
-		DiozeroProtos.I2C.ReadByteResponse message = DiozeroProtosConverter.convert(response);
+	private void publishResponse(I2CBooleanResponse response) throws MqttException {
+		DiozeroProtos.I2C.BooleanResponse message = DiozeroProtosConverter.convert(response);
 
-		mqttClient.publish(MqttProviderConstants.I2C_READ_BYTE_RESPONSE_TOPIC, message.toByteArray(),
+		mqttClient.publish(MqttProviderConstants.I2C_BOOLEAN_RESPONSE_TOPIC, message.toByteArray(),
 				MqttProviderConstants.DEFAULT_QOS, MqttProviderConstants.DEFAULT_RETAINED);
 	}
 
-	private void publishResponse(I2CReadResponse response) throws MqttException {
-		DiozeroProtos.I2C.ReadResponse message = DiozeroProtosConverter.convert(response);
+	private void publishResponse(I2CByteResponse response) throws MqttException {
+		DiozeroProtos.I2C.ByteResponse message = DiozeroProtosConverter.convert(response);
 
-		mqttClient.publish(MqttProviderConstants.I2C_READ_RESPONSE_TOPIC, message.toByteArray(),
+		mqttClient.publish(MqttProviderConstants.I2C_BYTE_RESPONSE_TOPIC, message.toByteArray(),
+				MqttProviderConstants.DEFAULT_QOS, MqttProviderConstants.DEFAULT_RETAINED);
+	}
+
+	private void publishResponse(I2CBytesResponse response) throws MqttException {
+		DiozeroProtos.I2C.BytesResponse message = DiozeroProtosConverter.convert(response);
+
+		mqttClient.publish(MqttProviderConstants.I2C_BYTES_RESPONSE_TOPIC, message.toByteArray(),
+				MqttProviderConstants.DEFAULT_QOS, MqttProviderConstants.DEFAULT_RETAINED);
+	}
+
+	private void publishResponse(I2CWordResponse response) throws MqttException {
+		DiozeroProtos.I2C.WordResponse message = DiozeroProtosConverter.convert(response);
+
+		mqttClient.publish(MqttProviderConstants.I2C_WORD_RESPONSE_TOPIC, message.toByteArray(),
+				MqttProviderConstants.DEFAULT_QOS, MqttProviderConstants.DEFAULT_RETAINED);
+	}
+
+	private void publishResponse(I2CReadBlockDataResponse response) throws MqttException {
+		DiozeroProtos.I2C.ReadBlockDataResponse message = DiozeroProtosConverter.convert(response);
+
+		mqttClient.publish(MqttProviderConstants.I2C_READ_BLOCK_DATA_RESPONSE_TOPIC, message.toByteArray(),
 				MqttProviderConstants.DEFAULT_QOS, MqttProviderConstants.DEFAULT_RETAINED);
 	}
 

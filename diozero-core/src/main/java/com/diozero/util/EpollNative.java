@@ -190,8 +190,8 @@ public class EpollNative implements EpollNativeCallback, Closeable {
 
 	public void enableEvents() {
 		running.getAndSet(true);
-		DioZeroScheduler.getDaemonInstance().execute(this::processEvents);
-		DioZeroScheduler.getDaemonInstance().execute(this::waitForEvents);
+		DiozeroScheduler.getDaemonInstance().execute(this::processEvents);
+		DiozeroScheduler.getDaemonInstance().execute(this::waitForEvents);
 	}
 
 	public void disableEvents() {

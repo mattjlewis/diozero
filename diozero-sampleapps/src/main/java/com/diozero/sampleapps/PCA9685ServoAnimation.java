@@ -39,9 +39,9 @@ import java.util.concurrent.Future;
 
 import org.tinylog.Logger;
 
-import com.diozero.api.Animation;
-import com.diozero.api.AnimationInstance;
-import com.diozero.api.easing.Sine;
+import com.diozero.animation.Animation;
+import com.diozero.animation.AnimationInstance;
+import com.diozero.animation.easing.Sine;
 import com.diozero.devices.PCA9685;
 import com.diozero.devices.Servo;
 

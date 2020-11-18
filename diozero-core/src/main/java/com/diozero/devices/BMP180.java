@@ -33,6 +33,7 @@ package com.diozero.devices;
 
 import java.io.Closeable;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 import com.diozero.api.*;
 import com.diozero.util.IOUtil;
@@ -108,7 +109,7 @@ public class BMP180 implements ThermometerInterface, BarometerInterface, Closeab
 	}
 
 	public BMP180(int controllerNumber, BMPMode mode) throws RuntimeIOException {
-		i2cDevice = new I2CDevice(controllerNumber, BMP180_ADDR, I2CConstants.ADDR_SIZE_7);
+		i2cDevice = new I2CDevice(controllerNumber, BMP180_ADDR, I2CConstants.ADDR_SIZE_7, ByteOrder.BIG_ENDIAN);
 
 		this.mode = mode;
 	}
@@ -121,8 +122,7 @@ public class BMP180 implements ThermometerInterface, BarometerInterface, Closeab
 	 **/
 	public void readCalibrationData() throws RuntimeIOException {
 		// Read all of the calibration data into a byte array
-		ByteBuffer calibData = ByteBuffer.allocateDirect(CALIBRATION_BYTES);
-		i2cDevice.read(EEPROM_START, I2CConstants.SUB_ADDRESS_SIZE_1_BYTE, calibData);
+		ByteBuffer calibData = i2cDevice.readI2CBlockDataByteBuffer(EEPROM_START, CALIBRATION_BYTES);
 		// Read each of the pairs of data as a signed short
 		calibData.rewind();
 		calAC1 = calibData.getShort();
@@ -144,13 +144,13 @@ public class BMP180 implements ThermometerInterface, BarometerInterface, Closeab
 
 	private int readRawTemperature() throws RuntimeIOException {
 		// Write the read temperature command to the command register
-		i2cDevice.writeByte(CONTROL_REGISTER, GET_TEMP_CMD);
+		i2cDevice.writeByteData(CONTROL_REGISTER, GET_TEMP_CMD);
 
 		// Wait 5m before reading the temperature
 		SleepUtil.sleepMillis(5);
 
 		// Read uncompressed data
-		return i2cDevice.readUShort(TEMP_ADDR, I2CConstants.SUB_ADDRESS_SIZE_1_BYTE);
+		return i2cDevice.readUShort(TEMP_ADDR);
 	}
 
 	/**
@@ -176,14 +176,14 @@ public class BMP180 implements ThermometerInterface, BarometerInterface, Closeab
 
 	private int readRawPressure() throws RuntimeIOException {
 		// Write the read pressure command to the command register
-		i2cDevice.writeByte(CONTROL_REGISTER, mode.getPressureCommand());
+		i2cDevice.writeByteData(CONTROL_REGISTER, mode.getPressureCommand());
 
 		// Delay before reading the pressure - use the value determined by the
 		// sampling mode
 		SleepUtil.sleepMillis(mode.getDelay());
 
 		// Read the non-compensated pressure value
-		long val = i2cDevice.readUInt(PRESS_ADDR, I2CConstants.SUB_ADDRESS_SIZE_1_BYTE, 3);
+		long val = i2cDevice.readUInt(PRESS_ADDR, 3);
 
 		// ((msb << 16) + (lsb << 8) + xlsb) >> (8 - self._mode)
 

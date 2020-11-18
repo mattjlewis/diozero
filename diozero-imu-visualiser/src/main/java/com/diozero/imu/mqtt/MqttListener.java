@@ -43,7 +43,7 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
-import com.diozero.api.imu.MqttConstants;
+import com.diozero.devices.imu.MqttConstants;
 import com.interactivemesh.jfx.importer.tds.TdsModelImporter;
 
 import javafx.application.Application;

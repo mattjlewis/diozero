@@ -107,7 +107,7 @@ public class PCF8574 extends AbstractDeviceFactory implements GpioDeviceFactoryI
 	}
 
 	public byte getValues(int port) {
-		return device.readByte(1);
+		return device.readByteData(1);
 	}
 
 	@Override
