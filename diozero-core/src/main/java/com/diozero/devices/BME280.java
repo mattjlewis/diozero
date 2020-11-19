@@ -189,7 +189,7 @@ public class BME280 implements BarometerInterface, ThermometerInterface, Hygrome
 
 	private void readCoefficients() {
 		// Read 24 bytes of data from address 0x88(136)
-		ByteBuffer buffer = device.readI2CBlockDataByteBuffer(CALIB_00_REG, 24);
+		ByteBuffer buffer = device.readI2CBlockDataByteBuffer(CALIB_00_REG, 26);
 
 		// Temp coefficients
 		digT1 = buffer.getShort() & 0xffff;
