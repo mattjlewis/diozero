@@ -71,11 +71,13 @@
 			<artifactId>diozero-imu-sampleapp</artifactId>
 			<version>${diozero.version}</version>
 		</dependency>
+		<!--
 		<dependency>
 			<groupId>com.diozero</groupId>
 			<artifactId>diozero-imu-visualiser</artifactId> 
 			<version>${diozero.version}</version>
 		</dependency>
+		-->
 		<dependency>
 			<groupId>com.diozero</groupId>
 			<artifactId>diozero-sampleapps</artifactId>
