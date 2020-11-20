@@ -33,19 +33,32 @@ package com.diozero.api;
 
 import java.io.Closeable;
 
+import com.diozero.util.RuntimeIOException;
+
 public interface I2CSMBusInterface extends Closeable {
 	static final int MAX_I2C_BLOCK_SIZE = 32;
 
 	@Override
 	void close();
+	
+	/**
+	 * Probe this I2C device using {@link I2CDevice.ProbeMode#AUTO Auto} probe mode
+	 * 
+	 * @return True if the probe is successful
+	 * @throws RuntimeIOException if an I/O error occurs
+	 */
+	default boolean probe() throws RuntimeIOException {
+		return probe(I2CDevice.ProbeMode.AUTO);
+	}
 
 	/**
 	 * Probe this I2C device
 	 * 
 	 * @param mode Probe mode
 	 * @return True if the probe is successful
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
-	boolean probe(I2CDevice.ProbeMode mode);
+	boolean probe(I2CDevice.ProbeMode mode) throws RuntimeIOException;
 
 	/**
 	 * <p>
@@ -60,8 +73,9 @@ public interface I2CSMBusInterface extends Closeable {
 	 * </pre>
 	 * 
 	 * @param bit The bit to write
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
-	void writeQuick(byte bit);
+	void writeQuick(byte bit) throws RuntimeIOException;
 
 	/**
 	 * <p>
@@ -78,9 +92,10 @@ public interface I2CSMBusInterface extends Closeable {
 	 * S Addr Rd [A] [Data] NA P
 	 * </pre>
 	 * 
-	 * @return Unsigned byte
+	 * @return The byte data read (note caller needs to handle conversion to unsigned)
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
-	byte readByte();
+	byte readByte() throws RuntimeIOException;
 
 	/**
 	 * <p>
@@ -96,12 +111,13 @@ public interface I2CSMBusInterface extends Closeable {
 	 * </pre>
 	 * 
 	 * @param data value to write
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
-	void writeByte(byte data);
+	void writeByte(byte data) throws RuntimeIOException;
 
-	int readBytes(byte[] buffer);
+	int readBytes(byte[] buffer) throws RuntimeIOException;
 
-	void writeBytes(byte[] data);
+	void writeBytes(byte[] data) throws RuntimeIOException;
 
 	/**
 	 * <p>
@@ -117,9 +133,10 @@ public interface I2CSMBusInterface extends Closeable {
 	 * </pre>
 	 * 
 	 * @param register the register to read from
-	 * @return data read as unsigned byte
+	 * @return data read as byte (note caller needs to handle conversion to unsigned)
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
-	byte readByteData(int register);
+	byte readByteData(int register) throws RuntimeIOException;
 
 	/**
 	 * <p>
@@ -137,8 +154,9 @@ public interface I2CSMBusInterface extends Closeable {
 	 * 
 	 * @param register the register to write to
 	 * @param data     value to write
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
-	void writeByteData(int register, byte data);
+	void writeByteData(int register, byte data) throws RuntimeIOException;
 
 	/**
 	 * <p>
@@ -156,8 +174,9 @@ public interface I2CSMBusInterface extends Closeable {
 	 * 
 	 * @param register the register to read from
 	 * @return data read as unsigned short
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
-	short readWordData(int register);
+	short readWordData(int register) throws RuntimeIOException;
 
 	/**
 	 * <p>
@@ -175,8 +194,9 @@ public interface I2CSMBusInterface extends Closeable {
 	 * 
 	 * @param register the register to write to
 	 * @param data     value to write
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
-	void writeWordData(int register, short data);
+	void writeWordData(int register, short data) throws RuntimeIOException;
 
 	/**
 	 * <p>
@@ -195,8 +215,9 @@ public interface I2CSMBusInterface extends Closeable {
 	 * @param register the register to write to / read from
 	 * @param data     value to write
 	 * @return the value read
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
-	short processCall(int register, short data);
+	short processCall(int register, short data) throws RuntimeIOException;
 
 	/**
 	 * <p>
@@ -217,8 +238,9 @@ public interface I2CSMBusInterface extends Closeable {
 	 * @param buffer   TODO
 	 * @param offset   TODO
 	 * @return the number of bytes actually read (0..31)
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
-	int readBlockData(int register, byte[] buffer);
+	int readBlockData(int register, byte[] buffer) throws RuntimeIOException;
 
 	/**
 	 * <p>
@@ -236,8 +258,9 @@ public interface I2CSMBusInterface extends Closeable {
 	 * 
 	 * @param register the register to write to
 	 * @param data     the data to write
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
-	void writeBlockData(int register, byte[] data);
+	void writeBlockData(int register, byte[] data) throws RuntimeIOException;
 
 	/**
 	 * <p>
@@ -257,8 +280,9 @@ public interface I2CSMBusInterface extends Closeable {
 	 * 
 	 * @param register the register to write to
 	 * @param txData   the byte array from which the data is written
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
-	byte[] blockProcessCall(int register, byte[] txData);
+	byte[] blockProcessCall(int register, byte[] txData) throws RuntimeIOException;
 
 	/*-
 	 * I2C Block Transactions
@@ -286,8 +310,9 @@ public interface I2CSMBusInterface extends Closeable {
 	 * @param register the register to read from
 	 * @param buffer   TODO
 	 * @return values to read
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
-	void readI2CBlockData(int register, byte[] buffer);
+	void readI2CBlockData(int register, byte[] buffer) throws RuntimeIOException;
 
 	/**
 	 * <p>
@@ -308,6 +333,7 @@ public interface I2CSMBusInterface extends Closeable {
 	 * @param data     values to write
 	 * @param offset
 	 * @param length   the number of bytes to read
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
-	void writeI2CBlockData(int register, byte[] data);
+	void writeI2CBlockData(int register, byte[] data) throws RuntimeIOException;
 }

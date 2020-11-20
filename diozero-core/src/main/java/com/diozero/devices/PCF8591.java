@@ -134,7 +134,7 @@ public class PCF8591 extends AbstractDeviceFactory
 		this.outputEnabled = outputEnabled;
 		this.vRef = vRef;
 
-		device = new I2CDevice(controller, address, I2CConstants.ADDR_SIZE_7, ByteOrder.LITTLE_ENDIAN);
+		device = new I2CDevice(controller, address, I2CConstants.AddressSize.SIZE_7, ByteOrder.LITTLE_ENDIAN);
 
 		boardPinInfo = new PCF8591BoardPinInfo(inputMode);
 	}

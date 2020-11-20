@@ -37,8 +37,8 @@ import java.util.Arrays;
 
 import org.tinylog.Logger;
 
+import com.diozero.api.I2CConstants;
 import com.diozero.api.I2CDevice;
-import com.diozero.util.IOUtil;
 import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 
@@ -105,7 +105,7 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 	 * @param controllerNumber I2C contrller
 	 * @param addressSize Address size (7 or 10)
 	 */
-	public MPU9150Driver(int controllerNumber, int addressSize) throws RuntimeIOException {
+	public MPU9150Driver(int controllerNumber, I2CConstants.AddressSize addressSize) throws RuntimeIOException {
 		this(controllerNumber, addressSize, MPU9150_DEFAULT_ADDRESS);
 	}
 	
@@ -116,7 +116,7 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 	 * @param devAddr address I2C address
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
-	public MPU9150Driver(int controllerNumber, int addressSize, int devAddr) throws RuntimeIOException {
+	public MPU9150Driver(int controllerNumber, I2CConstants.AddressSize addressSize, int devAddr) throws RuntimeIOException {
 		i2cDevice = new I2CDevice(controllerNumber, devAddr, addressSize);
 		this.devAddr = devAddr;
 	}

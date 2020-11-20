@@ -8,6 +8,7 @@ import org.tinylog.Logger;
 
 import com.diozero.api.DeviceMode;
 import com.diozero.api.DigitalInputEvent;
+import com.diozero.api.I2CConstants;
 import com.diozero.api.I2CSMBusInterface;
 import com.diozero.api.InputEventListener;
 import com.diozero.api.PinInfo;
@@ -534,26 +535,27 @@ public abstract class BaseRemoteServer implements InputEventListener<DigitalInpu
 	@Override
 	public Response request(I2COpen request) {
 		Logger.debug("I2C open request {}", request);
-	
+
 		int controller = request.getController();
 		int address = request.getAddress();
 		String key = deviceFactory.createI2CKey(controller, address);
-	
+
 		DeviceInterface device = deviceFactory.getDevice(key);
 		if (device != null) {
 			return new Response(Response.Status.ERROR, "I2C device already provisioned", request.getCorrelationId());
 		}
-	
+
 		Response response;
 		try {
-			deviceFactory.provisionI2CDevice(controller, address, request.getAddressSize());
-	
+			deviceFactory.provisionI2CDevice(controller, address,
+					I2CConstants.AddressSize.valueOf(request.getAddressSize()));
+
 			response = new Response(Response.Status.OK, null, request.getCorrelationId());
 		} catch (RuntimeIOException e) {
 			Logger.error(e, "Error: {}", e);
 			response = new Response(Response.Status.ERROR, "Runtime Error: " + e, request.getCorrelationId());
 		}
-	
+
 		return response;
 	}
 
@@ -770,52 +772,52 @@ public abstract class BaseRemoteServer implements InputEventListener<DigitalInpu
 	@Override
 	public I2CWordResponse request(I2CReadWordData request) {
 		Logger.debug("I2C read word request");
-	
+
 		int controller = request.getController();
 		int address = request.getAddress();
 		String key = deviceFactory.createI2CKey(controller, address);
-	
+
 		I2CDeviceInterface device = deviceFactory.getDevice(key, I2CDeviceInterface.class);
 		if (device == null) {
 			return new I2CWordResponse("I2C device not provisioned", request.getCorrelationId());
 		}
-	
+
 		I2CWordResponse response;
 		try {
 			short data = device.readWordData(request.getRegister());
-	
+
 			response = new I2CWordResponse(data, request.getCorrelationId());
 		} catch (RuntimeIOException e) {
 			Logger.error(e, "Error: {}", e);
 			response = new I2CWordResponse("Runtime Error: " + e, request.getCorrelationId());
 		}
-	
+
 		return response;
 	}
 
 	@Override
 	public Response request(I2CWriteWordData request) {
 		Logger.debug("I2C write word data request");
-	
+
 		int controller = request.getController();
 		int address = request.getAddress();
 		String key = deviceFactory.createI2CKey(controller, address);
-	
+
 		I2CDeviceInterface device = deviceFactory.getDevice(key, I2CDeviceInterface.class);
 		if (device == null) {
 			return new Response(Response.Status.ERROR, "I2C device not provisioned", request.getCorrelationId());
 		}
-	
+
 		Response response;
 		try {
 			device.writeWordData(request.getRegister(), (short) request.getData());
-	
+
 			response = new Response(Response.Status.OK, null, request.getCorrelationId());
 		} catch (RuntimeIOException e) {
 			Logger.error(e, "Error: {}", e);
 			response = new Response(Response.Status.ERROR, "Runtime Error: " + e, request.getCorrelationId());
 		}
-	
+
 		return response;
 	}
 

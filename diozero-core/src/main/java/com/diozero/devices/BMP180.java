@@ -109,7 +109,7 @@ public class BMP180 implements ThermometerInterface, BarometerInterface, Closeab
 	}
 
 	public BMP180(int controllerNumber, BMPMode mode) throws RuntimeIOException {
-		i2cDevice = new I2CDevice(controllerNumber, BMP180_ADDR, I2CConstants.ADDR_SIZE_7, ByteOrder.BIG_ENDIAN);
+		i2cDevice = new I2CDevice(controllerNumber, BMP180_ADDR, I2CConstants.AddressSize.SIZE_7, ByteOrder.BIG_ENDIAN);
 
 		this.mode = mode;
 	}

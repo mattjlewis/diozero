@@ -40,6 +40,8 @@ import java.nio.ByteOrder;
 import java.nio.IntBuffer;
 import java.util.Random;
 
+import org.tinylog.Logger;
+
 import com.diozero.api.DeviceMode;
 import com.diozero.api.GpioPullUpDown;
 import com.diozero.api.InvalidModeException;
@@ -77,7 +79,8 @@ public class OdroidC2MmapGpio implements MmapGpioInterface {
 	private static final int C2_GPIOX_PUPD_REG_OFFSET = 0x13E;
 	private static final int C2_GPIOX_PUEN_REG_OFFSET = 0x14C;
 	
-	private static final int[] C2_GP_TO_SHIFT_REG = new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
+	private static final int[] C2_GP_TO_SHIFT_REG = new int[] { //
+			0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, //
 			0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22 };
 	
 	private boolean initialised;
@@ -103,6 +106,11 @@ public class OdroidC2MmapGpio implements MmapGpioInterface {
 	
 	@Override
 	public DeviceMode getMode(int gpio) {
+		if (gpio < C2_GPIOY_PIN_START || gpio >= C2_GPIOX_PIN_END) {
+			Logger.error("Invalid GPIO {}", Integer.valueOf(gpio));
+			return DeviceMode.UNKNOWN;
+		}
+		
 		int reg = gpio < C2_GPIOX_PIN_START ? C2_GPIOY_FSEL_REG_OFFSET : C2_GPIOX_FSEL_REG_OFFSET;
 		int shift = C2_GP_TO_SHIFT_REG[gpio - C2_GPIOY_PIN_START];
 		
@@ -119,6 +127,11 @@ public class OdroidC2MmapGpio implements MmapGpioInterface {
 	
 	@Override
 	public void setMode(int gpio, DeviceMode mode) {
+		if (gpio < C2_GPIOY_PIN_START || gpio >= C2_GPIOX_PIN_END) {
+			Logger.error("Invalid GPIO {}", Integer.valueOf(gpio));
+			return;
+		}
+		
 		int reg = gpio < C2_GPIOX_PIN_START ? C2_GPIOY_FSEL_REG_OFFSET : C2_GPIOX_FSEL_REG_OFFSET;
 		int shift = C2_GP_TO_SHIFT_REG[gpio - C2_GPIOY_PIN_START];
 		switch (mode) {
@@ -135,6 +148,11 @@ public class OdroidC2MmapGpio implements MmapGpioInterface {
 	
 	@Override
 	public void setPullUpDown(int gpio, GpioPullUpDown pud) {
+		if (gpio < C2_GPIOY_PIN_START || gpio >= C2_GPIOX_PIN_END) {
+			Logger.error("Invalid GPIO {}", Integer.valueOf(gpio));
+			return;
+		}
+		
 		int shift = C2_GP_TO_SHIFT_REG[gpio - C2_GPIOY_PIN_START];
 		int pud_en_reg = gpio < C2_GPIOX_PIN_START ? C2_GPIOY_PUEN_REG_OFFSET : C2_GPIOX_PUEN_REG_OFFSET;
 		if (pud == GpioPullUpDown.NONE) {
@@ -154,6 +172,11 @@ public class OdroidC2MmapGpio implements MmapGpioInterface {
 	
 	@Override
 	public boolean gpioRead(int gpio) {
+		if (gpio < C2_GPIOY_PIN_START || gpio >= C2_GPIOX_PIN_END) {
+			Logger.error("Invalid GPIO {}", Integer.valueOf(gpio));
+			return false;
+		}
+		
 		int shift = C2_GP_TO_SHIFT_REG[gpio - C2_GPIOY_PIN_START];
 		int gp_lev_reg = gpio < C2_GPIOX_PIN_START ? C2_GPIOY_INP_REG_OFFSET : C2_GPIOX_INP_REG_OFFSET;
 		return (gpioIntBuffer.get(gp_lev_reg) & (1 << shift)) != 0;
@@ -161,6 +184,8 @@ public class OdroidC2MmapGpio implements MmapGpioInterface {
 	
 	@Override
 	public void gpioWrite(int gpio, boolean value) {
+		// Note no boundary checks for performance reasons
+		
 		int shift = C2_GP_TO_SHIFT_REG[gpio - C2_GPIOY_PIN_START];
 		int gp_set_reg = gpio < C2_GPIOX_PIN_START ? C2_GPIOY_OUTP_REG_OFFSET : C2_GPIOX_OUTP_REG_OFFSET;
 		if (value) {
@@ -172,7 +197,7 @@ public class OdroidC2MmapGpio implements MmapGpioInterface {
 	
 	private static int gpioToGPSETReg(int gpio) {
 		if (gpio >= C2_GPIOX_PIN_START && gpio <= C2_GPIOX_PIN_END) {
-			return  C2_GPIOX_OUTP_REG_OFFSET;
+			return C2_GPIOX_OUTP_REG_OFFSET;
 		}
 		if (gpio >= C2_GPIOY_PIN_START && gpio <= C2_GPIOY_PIN_END) {
 			return C2_GPIOY_OUTP_REG_OFFSET;

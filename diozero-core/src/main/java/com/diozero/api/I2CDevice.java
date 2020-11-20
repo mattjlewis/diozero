@@ -53,36 +53,53 @@ public class I2CDevice implements I2CConstants, I2CSMBusInterface {
 	private I2CDeviceInterface delegate;
 	private int controller;
 	private int address;
-	private int addressSize;
+	private I2CConstants.AddressSize addressSize;
 	private ByteOrder byteOrder;
 
 	/**
-	 * @param controller I2C bus
+	 * Use the default {@link I2CConstants.AddressSize#SIZE_7 7-bit} address size
+	 * and {@link I2CConstants#DEFAULT_BYTE_ORDER default} {@link java.nio.ByteOrder
+	 * byte order}
+	 * 
+	 * @see <a href="https://i2c.info/i2c-bus-specification">I2C Bus
+	 *      Specification</a>
+	 * 
+	 * @param controller I2C bus controller number
 	 * @param address    I2C device address
 	 * @throws RuntimeIOException If an I/O error occurred
 	 */
 	public I2CDevice(int controller, int address) throws RuntimeIOException {
-		this(DeviceFactoryHelper.getNativeDeviceFactory(), controller, address, I2CConstants.ADDR_SIZE_7,
-				DEFAULT_BYTE_ORDER);
+		this(DeviceFactoryHelper.getNativeDeviceFactory(), controller, address, I2CConstants.AddressSize.SIZE_7,
+				I2CConstants.DEFAULT_BYTE_ORDER);
 	}
 
 	/**
-	 * @param controller I2C bus
+	 * Use the default {@link I2CConstants.AddressSize#SIZE_7 7-bit} address size
+	 * 
+	 * @see <a href="https://i2c.info/i2c-bus-specification">I2C Bus
+	 *      Specification</a>
+	 * 
+	 * @param controller I2C bus controller number
 	 * @param address    I2C device address
-	 * @param byteOrder  Default byte order for this device
+	 * @param byteOrder  Default {@link java.nio.ByteOrder byte order} for this
+	 *                   device
 	 * @throws RuntimeIOException If an I/O error occurred
 	 */
 	public I2CDevice(int controller, int address, ByteOrder byteOrder) throws RuntimeIOException {
-		this(DeviceFactoryHelper.getNativeDeviceFactory(), controller, address, I2CConstants.ADDR_SIZE_7, byteOrder);
+		this(DeviceFactoryHelper.getNativeDeviceFactory(), controller, address, I2CConstants.AddressSize.SIZE_7,
+				byteOrder);
 	}
 
 	/**
+	 * Use the {@link I2CConstants#DEFAULT_BYTE_ORDER default}
+	 * {@link java.nio.ByteOrder byte order}
+	 * 
 	 * @param controller  I2C bus
 	 * @param address     I2C device address
 	 * @param addressSize I2C device address size. Can be 7 or 10
 	 * @throws RuntimeIOException If an I/O error occurred
 	 */
-	public I2CDevice(int controller, int address, int addressSize) throws RuntimeIOException {
+	public I2CDevice(int controller, int address, I2CConstants.AddressSize addressSize) throws RuntimeIOException {
 		this(DeviceFactoryHelper.getNativeDeviceFactory(), controller, address, addressSize, DEFAULT_BYTE_ORDER);
 	}
 
@@ -93,7 +110,8 @@ public class I2CDevice implements I2CConstants, I2CSMBusInterface {
 	 * @param byteOrder   Default byte order for this device
 	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
-	public I2CDevice(int controller, int address, int addressSize, ByteOrder byteOrder) throws RuntimeIOException {
+	public I2CDevice(int controller, int address, I2CConstants.AddressSize addressSize, ByteOrder byteOrder)
+			throws RuntimeIOException {
 		this(DeviceFactoryHelper.getNativeDeviceFactory(), controller, address, addressSize, byteOrder);
 	}
 
@@ -105,8 +123,8 @@ public class I2CDevice implements I2CConstants, I2CSMBusInterface {
 	 * @param byteOrder     Default byte order for this device
 	 * @throws RuntimeIOException If an I/O error occurred
 	 */
-	public I2CDevice(I2CDeviceFactoryInterface deviceFactory, int controller, int address, int addressSize,
-			ByteOrder byteOrder) throws RuntimeIOException {
+	public I2CDevice(I2CDeviceFactoryInterface deviceFactory, int controller, int address,
+			I2CConstants.AddressSize addressSize, ByteOrder byteOrder) throws RuntimeIOException {
 		delegate = deviceFactory.provisionI2CDevice(controller, address, addressSize);
 
 		this.controller = controller;
@@ -123,7 +141,7 @@ public class I2CDevice implements I2CConstants, I2CSMBusInterface {
 		return address;
 	}
 
-	public int getAddressSize() {
+	public I2CConstants.AddressSize getAddressSize() {
 		return addressSize;
 	}
 
@@ -141,17 +159,9 @@ public class I2CDevice implements I2CConstants, I2CSMBusInterface {
 		delegate.close();
 	}
 
-	public boolean probe() {
-		return probe(ProbeMode.AUTO);
-	}
-
-	@Override
-	public void writeQuick(byte bit) {
-		synchronized (delegate) {
-			delegate.writeQuick(bit);
-		}
-	}
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean probe(ProbeMode mode) {
 		synchronized (delegate) {
@@ -159,6 +169,19 @@ public class I2CDevice implements I2CConstants, I2CSMBusInterface {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void writeQuick(byte bit) {
+		synchronized (delegate) {
+			delegate.writeQuick(bit);
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public byte readByte() throws RuntimeIOException {
 		synchronized (delegate) {
@@ -166,6 +189,9 @@ public class I2CDevice implements I2CConstants, I2CSMBusInterface {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void writeByte(byte data) throws RuntimeIOException {
 		synchronized (delegate) {
@@ -174,11 +200,7 @@ public class I2CDevice implements I2CConstants, I2CSMBusInterface {
 	}
 
 	/**
-	 * Read a single byte from an 8-bit device register
-	 * 
-	 * @param register Register regAddr to read from
-	 * @throws RuntimeIOException if an I/O error occurs
-	 * @return the byte read
+	 * {@inheritDoc}
 	 */
 	@Override
 	public byte readByteData(int register) throws RuntimeIOException {
@@ -188,11 +210,7 @@ public class I2CDevice implements I2CConstants, I2CSMBusInterface {
 	}
 
 	/**
-	 * Writes a single byte to a register
-	 *
-	 * @param register Register to write
-	 * @param value    Byte to be written
-	 * @throws RuntimeIOException if an I/O error occurs
+	 * {@inheritDoc}
 	 */
 	@Override
 	public void writeByteData(int register, byte value) throws RuntimeIOException {
@@ -201,6 +219,9 @@ public class I2CDevice implements I2CConstants, I2CSMBusInterface {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public short readWordData(int register) throws RuntimeIOException {
 		synchronized (delegate) {
@@ -208,6 +229,9 @@ public class I2CDevice implements I2CConstants, I2CSMBusInterface {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void writeWordData(int register, short value) throws RuntimeIOException {
 		synchronized (delegate) {
@@ -215,6 +239,9 @@ public class I2CDevice implements I2CConstants, I2CSMBusInterface {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public int readBytes(byte[] buffer) throws RuntimeIOException {
 		synchronized (delegate) {
@@ -222,6 +249,9 @@ public class I2CDevice implements I2CConstants, I2CSMBusInterface {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void writeBytes(byte[] data) throws RuntimeIOException {
 		synchronized (delegate) {
@@ -229,6 +259,9 @@ public class I2CDevice implements I2CConstants, I2CSMBusInterface {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public short processCall(int register, short data) {
 		synchronized (delegate) {
@@ -236,6 +269,9 @@ public class I2CDevice implements I2CConstants, I2CSMBusInterface {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public int readBlockData(int register, byte[] buffer) {
 		synchronized (delegate) {
@@ -243,6 +279,9 @@ public class I2CDevice implements I2CConstants, I2CSMBusInterface {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void writeBlockData(int register, byte[] data) {
 		synchronized (delegate) {
@@ -250,6 +289,9 @@ public class I2CDevice implements I2CConstants, I2CSMBusInterface {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public byte[] blockProcessCall(int register, byte[] txData) {
 		synchronized (delegate) {
@@ -257,6 +299,9 @@ public class I2CDevice implements I2CConstants, I2CSMBusInterface {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void readI2CBlockData(int register, byte[] buffer) {
 		synchronized (delegate) {
@@ -264,6 +309,9 @@ public class I2CDevice implements I2CConstants, I2CSMBusInterface {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void writeI2CBlockData(int register, byte[] data) throws RuntimeIOException {
 		synchronized (delegate) {
@@ -275,33 +323,101 @@ public class I2CDevice implements I2CConstants, I2CSMBusInterface {
 	// Utility methods
 	//
 
+	/**
+	 * Utility method that simply casts the int data parameter to byte and calls
+	 * {@link I2CDevice#writeByteData(int, byte)}
+	 * 
+	 * @see I2CDevice#writeByteData(int, byte)
+	 * 
+	 * @param register the register to write to
+	 * @param data     value to write
+	 * @throws RuntimeIOException if an I/O error occurs
+	 */
 	public void writeByteData(int register, int data) throws RuntimeIOException {
 		writeByteData(register, (byte) data);
 	}
 
+	/**
+	 * Utility method that simply converts the response from
+	 * {@link I2CDevice#readByteData(int)} to an unsigned byte
+	 * 
+	 * @see I2CDevice#readByteData(int)
+	 * 
+	 * @param register the register to read from
+	 * @return byte data returned converted to unsigned byte (represented as a
+	 *         short)
+	 * @throws RuntimeIOException if an I/O error occurs
+	 */
 	public short readUByte(int register) throws RuntimeIOException {
 		return (short) (readByteData(register) & 0xff);
 	}
 
-	public ByteBuffer readBytesAsByteBuffer(int length) {
+	/**
+	 * Utility method that wraps the response from {@link I2CDevice#readBytes(int)}
+	 * in a ByteBuffer using the byte ordering specified in the constructor.
+	 * 
+	 * @see I2CDevice#readBytes(int)
+	 * @see java.nio.ByteBuffer#wrap(byte[])
+	 * 
+	 * @param length number of bytes to read
+	 * @return A {@link java.nio.ByteBuffer ByteBuffer} containing the bytes read
+	 *         using the byte order specified in the constructor
+	 * @throws RuntimeIOException if an I/O error occurs
+	 */
+	public ByteBuffer readBytesAsByteBuffer(int length) throws RuntimeIOException {
 		ByteBuffer buffer = ByteBuffer.wrap(readBytes(length));
 		buffer.order(byteOrder);
 		return buffer;
 	}
 
-	public void writeBytes(ByteBuffer buffer) {
+	/**
+	 * Utility method that wraps {@link I2CDevice#writeBytes(byte[])} to write the
+	 * available bytes in the specified {@link java.nio.ByteBuffer ByteBuffer}
+	 * 
+	 * @see I2CDevice#writeBytes(byte[])
+	 * @see java.nio.ByteBuffer#put(byte[])
+	 * 
+	 * @param buffer the {@link java.nio.ByteBuffer ByteBuffer} containing the data
+	 *               to write
+	 * @throws RuntimeIOException if an I/O error occurs
+	 */
+	public void writeBytes(ByteBuffer buffer) throws RuntimeIOException {
 		byte[] tx_buf = new byte[buffer.remaining()];
 		buffer.put(tx_buf);
 		writeBytes(tx_buf);
 	}
 
-	public byte[] readI2CBlockDataByteArray(int register, int length) {
+	/**
+	 * Utility method that wraps {@link I2CDevice#readI2CBlockData(int, byte)} to
+	 * read the specified number of bytes and return as a new byte array
+	 * 
+	 * @see I2CDevice#readI2CBlockData(int, byte[])
+	 * 
+	 * @param register the register to read from
+	 * @param length   the number of bytes to read
+	 * @return the data read
+	 * @throws RuntimeIOException if an I/O error occurs
+	 */
+	public byte[] readI2CBlockDataByteArray(int register, int length) throws RuntimeIOException {
 		byte[] data = new byte[length];
 		readI2CBlockData(register, data);
 		return data;
 	}
 
-	public ByteBuffer readI2CBlockDataByteBuffer(int register, int length) {
+	/**
+	 * Utility method that wraps {@link I2CDevice#readI2CBlockData(int, byte)} to
+	 * read the specified number of bytes and return as a {@link java.nio.ByteBuffer
+	 * ByteBuffer}
+	 * 
+	 * @see I2CDevice#readI2CBlockData(int, byte[])
+	 * @see java.nio.ByteBuffer#wrap(byte[])
+	 * 
+	 * @param register the register to read from
+	 * @param length   the number of bytes to read
+	 * @return the data read
+	 * @throws RuntimeIOException if an I/O error occurs
+	 */
+	public ByteBuffer readI2CBlockDataByteBuffer(int register, int length) throws RuntimeIOException {
 		byte[] data = new byte[length];
 		readI2CBlockData(register, data);
 		ByteBuffer buffer = ByteBuffer.wrap(data);
@@ -345,22 +461,22 @@ public class I2CDevice implements I2CConstants, I2CSMBusInterface {
 		return val;
 	}
 
-	public byte[] readBytes(int length) {
+	public byte[] readBytes(int length) throws RuntimeIOException {
 		byte[] buffer = new byte[length];
 		readBytes(buffer);
 		return buffer;
 	}
 
-	public boolean readBit(int register, int bit) {
+	public boolean readBit(int register, int bit) throws RuntimeIOException {
 		return BitManipulation.isBitSet(readByteData(register), bit);
 	}
 
-	public void writeBit(int register, int bit, boolean value) {
+	public void writeBit(int register, int bit, boolean value) throws RuntimeIOException {
 		byte cur_val = readByteData(register);
 		writeByteData(register, BitManipulation.setBitValue(cur_val, value, bit));
 	}
 
-	public byte[] readBytes(int register, int length) {
+	public byte[] readBytes(int register, int length) throws RuntimeIOException {
 		byte[] buffer = new byte[length];
 		readI2CBlockData(register, buffer);
 		return buffer;

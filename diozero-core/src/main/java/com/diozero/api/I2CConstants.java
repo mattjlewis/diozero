@@ -35,13 +35,31 @@ import java.nio.ByteOrder;
 
 
 public interface I2CConstants {
-	public static final int UNASSIGNED = -1;
-	public static final int ADDR_SIZE_7 = 7;
-	public static final int ADDR_SIZE_10 = 10;
-	public static final int DEFAULT_CLOCK_FREQUENCY = UNASSIGNED;
 	public static final int SUB_ADDRESS_SIZE_1_BYTE = 1;
 	public static final int SUB_ADDRESS_SIZE_2_BYTES = 2;
 	public static final int BUS_0 = 0;
 	public static final int BUS_1 = 1;
 	public static final ByteOrder DEFAULT_BYTE_ORDER = ByteOrder.BIG_ENDIAN;
+	
+	public static enum AddressSize {
+		SIZE_7(7), SIZE_10(10);
+		
+		private int size;
+		
+		private AddressSize(int size) {
+			this.size = size;
+		}
+		
+		public int getSize() {
+			return size;
+		}
+
+		public static AddressSize valueOf(int addressSize) {
+			if (addressSize == SIZE_10.getSize()) {
+				return SIZE_10;
+			}
+			// Ignore invalid values, default to SIZE_7
+			return SIZE_7;
+		}
+	}
 }

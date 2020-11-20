@@ -33,6 +33,7 @@ package com.diozero.internal.provider.bbbiolib;
 import com.diozero.api.DeviceMode;
 import com.diozero.api.GpioEventTrigger;
 import com.diozero.api.GpioPullUpDown;
+import com.diozero.api.I2CConstants;
 import com.diozero.api.PinInfo;
 import com.diozero.api.SerialDevice;
 import com.diozero.api.SpiClockMode;
@@ -63,7 +64,7 @@ public class BbbIoLibDeviceFactory extends BaseNativeDeviceFactory {
 		}
 		defaultDeviceFactory = new DefaultDeviceFactory();
 	}
-	
+
 	@Override
 	public void start() {
 		defaultDeviceFactory.start();
@@ -135,15 +136,15 @@ public class BbbIoLibDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	public I2CDeviceInterface createI2CDevice(String key, int controller, int address, int addressSize)
-			throws RuntimeIOException {
+	public I2CDeviceInterface createI2CDevice(String key, int controller, int address,
+			I2CConstants.AddressSize addressSize) throws RuntimeIOException {
 		return new DefaultI2CDevice(this, key, controller, address, addressSize);
 	}
 
 	@Override
-	public SerialDeviceInterface createSerialDevice(String key, String deviceFile, int baud, SerialDevice.DataBits dataBits,
-			SerialDevice.StopBits stopBits, SerialDevice.Parity parity, boolean readBlocking, int minReadChars,
-			int readTimeoutMillis) throws RuntimeIOException {
+	public SerialDeviceInterface createSerialDevice(String key, String deviceFile, int baud,
+			SerialDevice.DataBits dataBits, SerialDevice.StopBits stopBits, SerialDevice.Parity parity,
+			boolean readBlocking, int minReadChars, int readTimeoutMillis) throws RuntimeIOException {
 		throw new UnsupportedOperationException("Serial communication not available in the device factory");
 	}
 

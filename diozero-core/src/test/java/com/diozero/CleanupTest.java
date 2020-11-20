@@ -31,12 +31,12 @@ package com.diozero;
  * #L%
  */
 
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.tinylog.Logger;
 
+import com.diozero.api.I2CConstants;
 import com.diozero.api.SpiClockMode;
 import com.diozero.devices.McpAdc;
 import com.diozero.internal.DeviceStates;
@@ -56,14 +56,14 @@ public class CleanupTest {
 		TestDeviceFactory.setI2CDeviceClass(TestI2CDevice.class);
 		TestDeviceFactory.setSpiDeviceClass(TestMcpAdcSpiDevice.class);
 	}
-	
+
 	@Test
 	public void test() {
-		try (TestDeviceFactory tdf = (TestDeviceFactory)DeviceFactoryHelper.getNativeDeviceFactory()) {
+		try (TestDeviceFactory tdf = (TestDeviceFactory) DeviceFactoryHelper.getNativeDeviceFactory()) {
 			DeviceStates ds = tdf.getDeviceStates();
 			Assertions.assertTrue(ds.size() == 0);
-			
-			try (I2CDeviceInterface device = tdf.provisionI2CDevice(0, 0, 0)) {
+
+			try (I2CDeviceInterface device = tdf.provisionI2CDevice(0, 0, I2CConstants.AddressSize.SIZE_7)) {
 				byte[] buf = new byte[5];
 				device.readI2CBlockData(0, buf);
 				Assertions.assertTrue(ds.size() == 1);
@@ -72,12 +72,13 @@ public class CleanupTest {
 			} catch (RuntimeIOException e) {
 				Logger.error(e, "Error: {}", e);
 			}
-			// Check the log for the above - make sure there is a warning about closing already closed device
-			
+			// Check the log for the above - make sure there is a warning about closing
+			// already closed device
+
 			Assertions.assertTrue(ds.size() == 0);
 			try (SpiDeviceInterface device = tdf.provisionSpiDevice(0, 0, 0, SpiClockMode.MODE_0, false)) {
 				byte[] tx = new byte[3];
-				tx[0] = (byte) (0x10 | (false ? 0 : 0x08 ) | 1);
+				tx[0] = (byte) (0x10 | (false ? 0 : 0x08) | 1);
 				tx[1] = (byte) 0;
 				tx[2] = (byte) 0;
 				device.writeAndRead(tx);
@@ -85,8 +86,8 @@ public class CleanupTest {
 			} catch (RuntimeIOException e) {
 				Logger.error(e, "Error: {}", e);
 			}
-			
+
 			Assertions.assertTrue(ds.size() == 0);
-		}			
+		}
 	}
 }

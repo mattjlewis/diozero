@@ -59,7 +59,7 @@ public class MPU9150Device implements Closeable, ImuInterface {
 		orientationListeners = new ArrayList<>();
 		tapListeners = new ArrayList<>();
 		
-		mpu = new MPU9150Driver(controller, I2CConstants.ADDR_SIZE_7, I2CConstants.DEFAULT_CLOCK_FREQUENCY);
+		mpu = new MPU9150Driver(controller, I2CConstants.AddressSize.SIZE_7);
 		mpu.mpu_init();
 		dmp = new MPU9150DMPDriver(mpu);
 		

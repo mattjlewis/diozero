@@ -33,6 +33,7 @@ package com.diozero.internal.provider.test;
 import com.diozero.api.DeviceMode;
 import com.diozero.api.GpioEventTrigger;
 import com.diozero.api.GpioPullUpDown;
+import com.diozero.api.I2CConstants;
 import com.diozero.api.PinInfo;
 import com.diozero.api.SerialDevice;
 import com.diozero.api.SpiClockMode;
@@ -107,7 +108,7 @@ public class TestDeviceFactory extends BaseNativeDeviceFactory {
 	public String getName() {
 		return getClass().getName();
 	}
-	
+
 	@Override
 	public void shutdown() {
 		// Ignore
@@ -215,16 +216,17 @@ public class TestDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	public I2CDeviceInterface createI2CDevice(String key, int controller, int address, int addressSize)
-			throws RuntimeIOException {
+	public I2CDeviceInterface createI2CDevice(String key, int controller, int address,
+			I2CConstants.AddressSize addressSize) throws RuntimeIOException {
 		if (i2cDeviceClass == null) {
 			throw new IllegalArgumentException("I2C Device implementation class hasn't been set");
 		}
 
 		try {
-			return i2cDeviceClass.getConstructor(String.class, DeviceFactoryInterface.class, int.class, int.class,
-					int.class).newInstance(key, this, Integer.valueOf(controller), Integer.valueOf(address),
-							Integer.valueOf(addressSize));
+			return i2cDeviceClass
+					.getConstructor(String.class, DeviceFactoryInterface.class, int.class, int.class,
+							I2CConstants.AddressSize.class)
+					.newInstance(key, this, Integer.valueOf(controller), Integer.valueOf(address), addressSize);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}

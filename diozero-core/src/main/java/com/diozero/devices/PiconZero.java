@@ -140,7 +140,7 @@ public class PiconZero extends AbstractDeviceFactory implements GpioDeviceFactor
 	public PiconZero(int controller, int address) {
 		super(DEVICE_NAME + "-" + controller + "-" + address);
 
-		device = new I2CDevice(controller, address, I2CConstants.ADDR_SIZE_7, ByteOrder.LITTLE_ENDIAN);
+		device = new I2CDevice(controller, address, I2CConstants.AddressSize.SIZE_7, ByteOrder.LITTLE_ENDIAN);
 
 		reset();
 	}

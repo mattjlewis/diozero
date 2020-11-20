@@ -31,7 +31,6 @@ package com.diozero.devices;
  * #L%
  */
 
-
 import java.nio.ByteOrder;
 
 import org.tinylog.Logger;
@@ -41,6 +40,7 @@ import com.diozero.api.DigitalInputEvent;
 import com.diozero.api.GpioEventTrigger;
 import com.diozero.api.GpioExpander;
 import com.diozero.api.GpioPullUpDown;
+import com.diozero.api.I2CConstants;
 import com.diozero.api.I2CDevice;
 import com.diozero.api.PinInfo;
 import com.diozero.internal.spi.AbstractDevice;
@@ -61,20 +61,21 @@ public class PCF8574 extends AbstractDeviceFactory implements GpioDeviceFactoryI
 	private static final String DEVICE_NAME = "PCF8574";
 
 	private static final int NUM_PINS = 8;
-	
+
 	private I2CDevice device;
 	private MutableByte directions;
 	private BoardPinInfo boardPinInfo;
-	
-	public PCF8574(int controller, int address, int addressSize) {
+
+	public PCF8574(int controller, int address, I2CConstants.AddressSize addressSize) {
 		this(DeviceFactoryHelper.getNativeDeviceFactory(), controller, address, addressSize);
 	}
-	
-	public PCF8574(I2CDeviceFactoryInterface deviceFactory, int controller, int address, int addressSize) {
+
+	public PCF8574(I2CDeviceFactoryInterface deviceFactory, int controller, int address,
+			I2CConstants.AddressSize addressSize) {
 		super(DEVICE_NAME + "-" + controller + "-" + address);
-		
+
 		boardPinInfo = new PCF8574BoardPinInfo();
-		
+
 		device = new I2CDevice(deviceFactory, controller, address, addressSize, ByteOrder.LITTLE_ENDIAN);
 		directions = new MutableByte();
 	}
@@ -88,8 +89,8 @@ public class PCF8574 extends AbstractDeviceFactory implements GpioDeviceFactoryI
 	}
 
 	@Override
-	public GpioDigitalOutputDeviceInterface createDigitalOutputDevice(String key, PinInfo pinInfo,
-			boolean initialValue) throws RuntimeIOException {
+	public GpioDigitalOutputDeviceInterface createDigitalOutputDevice(String key, PinInfo pinInfo, boolean initialValue)
+			throws RuntimeIOException {
 		int gpio = pinInfo.getDeviceNumber();
 		setOutputMode(gpio);
 		return new PCF8574DigitalOutputDevice(this, key, gpio, initialValue);
@@ -100,7 +101,7 @@ public class PCF8574 extends AbstractDeviceFactory implements GpioDeviceFactoryI
 			DeviceMode mode) throws RuntimeIOException {
 		return new PCF8574DigitalInputOutputDevice(this, key, pinInfo.getDeviceNumber(), mode);
 	}
-	
+
 	@Override
 	public void setDirections(int port, byte directions) {
 		this.directions = new MutableByte(directions);
@@ -117,22 +118,22 @@ public class PCF8574 extends AbstractDeviceFactory implements GpioDeviceFactoryI
 
 	public boolean getValue(int gpio) {
 		if (gpio < 0 || gpio >= NUM_PINS) {
-			throw new IllegalArgumentException("Invalid GPIO: " + gpio + ". "
-					+ DEVICE_NAME + " has " + NUM_PINS + " GPIOs; must be 0.." + (NUM_PINS - 1));
+			throw new IllegalArgumentException("Invalid GPIO: " + gpio + ". " + DEVICE_NAME + " has " + NUM_PINS
+					+ " GPIOs; must be 0.." + (NUM_PINS - 1));
 		}
-		
+
 		return (getValues(0) & gpio) != 0;
 	}
-	
+
 	public void setValue(int gpio, boolean value) {
 		if (gpio < 0 || gpio >= NUM_PINS) {
-			throw new IllegalArgumentException("Invalid GPIO: " + gpio + ". "
-					+ DEVICE_NAME + " has " + NUM_PINS + " GPIOs; must be 0.." + (NUM_PINS - 1));
+			throw new IllegalArgumentException("Invalid GPIO: " + gpio + ". " + DEVICE_NAME + " has " + NUM_PINS
+					+ " GPIOs; must be 0.." + (NUM_PINS - 1));
 		}
-		
+
 		byte old_val = getValues(0);
 		byte new_val = BitManipulation.setBitValue(old_val, value, gpio);
-		
+
 		setValues(0, new_val);
 	}
 
@@ -145,13 +146,13 @@ public class PCF8574 extends AbstractDeviceFactory implements GpioDeviceFactoryI
 
 	public void setInputMode(int gpio) {
 		// Note nothing to do to set the in / out direction for the PCF8574
-		// We do need to make note of pin direction though 
+		// We do need to make note of pin direction though
 		directions.setBit((byte) gpio);
 	}
 
 	public void setOutputMode(int gpio) {
 		// Note nothing to do to set the in / out direction for the PCF8574
-		// We do need to make note of pin direction though 
+		// We do need to make note of pin direction though
 		directions.unsetBit((byte) gpio);
 	}
 
@@ -162,12 +163,12 @@ public class PCF8574 extends AbstractDeviceFactory implements GpioDeviceFactoryI
 
 	public void closePin(int gpio) {
 		Logger.trace("closePin({})", Integer.valueOf(gpio));
-		
+
 		if (gpio < 0 || gpio >= NUM_PINS) {
-			throw new IllegalArgumentException("Invalid GPIO: " + gpio + ". "
-					+ DEVICE_NAME + " has " + NUM_PINS + " GPIOs; must be 0.." + (NUM_PINS - 1));
+			throw new IllegalArgumentException("Invalid GPIO: " + gpio + ". " + DEVICE_NAME + " has " + NUM_PINS
+					+ " GPIOs; must be 0.." + (NUM_PINS - 1));
 		}
-		
+
 		setInputMode(gpio);
 	}
 
@@ -175,16 +176,17 @@ public class PCF8574 extends AbstractDeviceFactory implements GpioDeviceFactoryI
 	public BoardPinInfo getBoardPinInfo() {
 		return boardPinInfo;
 	}
-	
+
 	public static class PCF8574BoardPinInfo extends BoardPinInfo {
 		public PCF8574BoardPinInfo() {
-			for (int i=0; i<NUM_PINS; i++) {
+			for (int i = 0; i < NUM_PINS; i++) {
 				addGpioPinInfo(i, i, PinInfo.DIGITAL_IN_OUT);
 			}
 		}
 	}
 
-	private static class PCF8574DigitalInputDevice extends AbstractInputDevice<DigitalInputEvent> implements GpioDigitalInputDeviceInterface {
+	private static class PCF8574DigitalInputDevice extends AbstractInputDevice<DigitalInputEvent>
+			implements GpioDigitalInputDeviceInterface {
 		private PCF8574 pcf8574;
 		private int gpio;
 
@@ -218,14 +220,15 @@ public class PCF8574 extends AbstractDeviceFactory implements GpioDeviceFactoryI
 		}
 	}
 
-	private static class PCF8574DigitalInputOutputDevice extends AbstractInputDevice<DigitalInputEvent> implements GpioDigitalInputOutputDeviceInterface {
+	private static class PCF8574DigitalInputOutputDevice extends AbstractInputDevice<DigitalInputEvent>
+			implements GpioDigitalInputOutputDeviceInterface {
 		private PCF8574 pcf8574;
 		private int gpio;
 		private DeviceMode mode;
 
 		public PCF8574DigitalInputOutputDevice(PCF8574 pcf8574, String key, int gpio, DeviceMode mode) {
 			super(key, pcf8574);
-			
+
 			this.pcf8574 = pcf8574;
 			this.gpio = gpio;
 			setMode(mode);
@@ -271,17 +274,17 @@ public class PCF8574 extends AbstractDeviceFactory implements GpioDeviceFactoryI
 			this.mode = mode;
 		}
 	}
-	
+
 	private static class PCF8574DigitalOutputDevice extends AbstractDevice implements GpioDigitalOutputDeviceInterface {
 		private PCF8574 pcf8574;
 		private int gpio;
 
 		public PCF8574DigitalOutputDevice(PCF8574 pcf8574, String key, int gpio, boolean initialValue) {
 			super(key, pcf8574);
-			
+
 			this.pcf8574 = pcf8574;
 			this.gpio = gpio;
-			
+
 			setValue(initialValue);
 		}
 

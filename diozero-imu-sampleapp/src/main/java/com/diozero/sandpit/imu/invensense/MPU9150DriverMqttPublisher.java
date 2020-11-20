@@ -153,7 +153,7 @@ public class MPU9150DriverMqttPublisher implements MqttConstants {
 	}
 	
 	public void run() {
-		try (MPU9150Driver mpu = new MPU9150Driver(I2CConstants.BUS_1, I2CConstants.ADDR_SIZE_7,
+		try (MPU9150Driver mpu = new MPU9150Driver(I2CConstants.BUS_1, I2CConstants.AddressSize.SIZE_7,
 				MPU9150Constants.I2C_CLOCK_FREQUENCY_FAST)) {
 			mpuInit(mpu);
 			mqttInit();

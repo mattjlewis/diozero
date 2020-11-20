@@ -36,6 +36,7 @@ import org.tinylog.Logger;
 import com.diozero.api.DeviceMode;
 import com.diozero.api.GpioEventTrigger;
 import com.diozero.api.GpioPullUpDown;
+import com.diozero.api.I2CConstants;
 import com.diozero.api.PinInfo;
 import com.diozero.api.SerialDevice;
 import com.diozero.api.SpiClockMode;
@@ -154,8 +155,8 @@ public class PigpioJDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	public I2CDeviceInterface createI2CDevice(String key, int controller, int address, int addressSize)
-			throws RuntimeIOException {
+	public I2CDeviceInterface createI2CDevice(String key, int controller, int address,
+			I2CConstants.AddressSize addressSize) throws RuntimeIOException {
 		return new PigpioJI2CDevice(key, this, pigpioImpl, controller, address, addressSize);
 	}
 

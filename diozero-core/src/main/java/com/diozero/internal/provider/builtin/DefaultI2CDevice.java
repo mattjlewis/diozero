@@ -33,6 +33,7 @@ package com.diozero.internal.provider.builtin;
 
 import org.tinylog.Logger;
 
+import com.diozero.api.I2CConstants;
 import com.diozero.api.I2CDevice;
 import com.diozero.api.I2CSMBusInterface;
 import com.diozero.internal.provider.builtin.i2c.NativeI2CDeviceSMBus;
@@ -56,7 +57,7 @@ public class DefaultI2CDevice extends AbstractDevice implements I2CDeviceInterfa
 	private I2CSMBusInterface i2cDevice;
 
 	public DefaultI2CDevice(DeviceFactoryInterface deviceFactory, String key, int controller, int address,
-			int addressSize) {
+			I2CConstants.AddressSize addressSize) {
 		super(key, deviceFactory);
 
 		boolean force = I2C_SLAVE_FORCE;
@@ -65,7 +66,7 @@ public class DefaultI2CDevice extends AbstractDevice implements I2CDeviceInterfa
 			Logger.warn("Using sysfs for I2C communication");
 			i2cDevice = new NativeI2CDeviceSysFs(controller, address, force);
 		} else {
-			i2cDevice = new NativeI2CDeviceSMBus(controller, address, force);
+			i2cDevice = new NativeI2CDeviceSMBus(controller, address, addressSize, force);
 		}
 	}
 

@@ -34,6 +34,7 @@ package com.diozero.internal.provider.builtin.i2c;
 import org.tinylog.Logger;
 
 import com.diozero.api.DeviceBusyException;
+import com.diozero.api.I2CConstants;
 import com.diozero.api.I2CDevice;
 import com.diozero.api.I2CSMBusInterface;
 import com.diozero.util.RuntimeIOException;
@@ -68,11 +69,13 @@ public class NativeI2CDeviceSMBus implements I2CSMBusInterface {
 	private int fd = CLOSED;
 	private int funcs;
 
-	public NativeI2CDeviceSMBus(int controller, int deviceAddress, boolean force) throws RuntimeIOException {
+	public NativeI2CDeviceSMBus(int controller, int deviceAddress, I2CConstants.AddressSize addressSize, boolean force)
+			throws RuntimeIOException {
 		this.controller = controller;
 		this.deviceAddress = deviceAddress;
 		String device_file = "/dev/i2c-" + controller;
 
+		// TODO Support for 10-bit address sizing
 		int rc = NativeI2C.smbusOpen(device_file, deviceAddress, force);
 		if (rc < 0) {
 			if (rc == -16) {
@@ -179,13 +182,13 @@ public class NativeI2CDeviceSMBus implements I2CSMBusInterface {
 		if (buffer.length > MAX_I2C_BLOCK_SIZE) {
 			throw new RuntimeIOException("Invalid buffer length - max length is " + MAX_I2C_BLOCK_SIZE);
 		}
-		
+
 		int rc = NativeI2C.readBytes(fd, buffer.length, buffer);
 		if (rc < 0) {
 			throw new RuntimeIOException("Error in SMBus.readBytes for device i2c-" + controller + "-0x"
 					+ Integer.toHexString(deviceAddress) + ": " + rc);
 		}
-		
+
 		return rc;
 	}
 
@@ -322,9 +325,9 @@ public class NativeI2CDeviceSMBus implements I2CSMBusInterface {
 					Integer.valueOf(controller), Integer.toHexString(deviceAddress));
 			// TODO Throw an exception now or attempt anyway?
 		}
-		
+
 		byte[] rx_data = new byte[txData.length];
-		
+
 		int rc = NativeI2C.blockProcessCall(fd, registerAddress, txData.length, txData, rx_data);
 		if (rc < 0) {
 			throw new RuntimeIOException("Error in SMBus.blockProcessCall for device i2c-" + controller + "-0x"
@@ -341,11 +344,11 @@ public class NativeI2CDeviceSMBus implements I2CSMBusInterface {
 					Integer.valueOf(controller), Integer.toHexString(deviceAddress));
 			// TODO Throw an exception now or attempt anyway?
 		}
-		
+
 		if (buffer.length > MAX_I2C_BLOCK_SIZE) {
 			throw new RuntimeIOException("Invalid buffer length - max length is " + MAX_I2C_BLOCK_SIZE);
 		}
-		
+
 		int rc = NativeI2C.readI2CBlockData(fd, registerAddress, buffer.length, buffer);
 		if (rc < 0) {
 			throw new RuntimeIOException("Error in SMBus.readI2CBlockData for device i2c-" + controller + "-0x"
@@ -360,7 +363,7 @@ public class NativeI2CDeviceSMBus implements I2CSMBusInterface {
 					Integer.valueOf(controller), Integer.toHexString(deviceAddress));
 			// TODO Throw an exception now or attempt anyway?
 		}
-		
+
 		int rc = NativeI2C.writeI2CBlockData(fd, registerAddress, data.length, data);
 		if (rc < 0) {
 			throw new RuntimeIOException("Error in SMBus.writeI2CBlockData for device i2c-" + controller + "-0x"

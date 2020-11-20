@@ -2,6 +2,7 @@ package com.diozero.internal.provider.test;
 
 import org.tinylog.Logger;
 
+import com.diozero.api.I2CConstants;
 import com.diozero.api.I2CDevice;
 import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.DeviceFactoryInterface;
@@ -10,7 +11,7 @@ import com.diozero.util.RuntimeIOException;
 
 public class TestI2CDevice extends AbstractDevice implements I2CDeviceInterface {
 	public TestI2CDevice(String key, DeviceFactoryInterface deviceFactory, int controller, int address,
-			int addressSize) {
+			I2CConstants.AddressSize addressSize) {
 		super(key, deviceFactory);
 	}
 

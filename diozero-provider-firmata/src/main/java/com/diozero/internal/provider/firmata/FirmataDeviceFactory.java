@@ -45,6 +45,7 @@ import com.diozero.api.DeviceAlreadyOpenedException;
 import com.diozero.api.DeviceMode;
 import com.diozero.api.GpioEventTrigger;
 import com.diozero.api.GpioPullUpDown;
+import com.diozero.api.I2CConstants;
 import com.diozero.api.InvalidModeException;
 import com.diozero.api.PinInfo;
 import com.diozero.api.SerialDevice;
@@ -78,7 +79,7 @@ public class FirmataDeviceFactory extends BaseNativeDeviceFactory {
 		}
 		ioDevice = new FirmataDevice(portName);
 	}
-	
+
 	@Override
 	public void start() {
 		try {
@@ -123,19 +124,10 @@ public class FirmataDeviceFactory extends BaseNativeDeviceFactory {
 	@Override
 	public int getBoardPwmFrequency() {
 		/*
-		 * https://www.arduino.cc/en/Tutorial/SecretsOfArduinoPWM
-		// Note that the base frequency for pins 3, 9, 10, and 11 is 31250 Hz and for pins 5 and 6 is 62500 Hz
-		switch (gpio) {
-		case 3:
-		case 9:
-		case 10:
-		case 11:
-			return 31250;
-		case 5:
-		case 6:
-			return 62500;
-		}
-		return -1;
+		 * https://www.arduino.cc/en/Tutorial/SecretsOfArduinoPWM // Note that the base
+		 * frequency for pins 3, 9, 10, and 11 is 31250 Hz and for pins 5 and 6 is 62500
+		 * Hz switch (gpio) { case 3: case 9: case 10: case 11: return 31250; case 5:
+		 * case 6: return 62500; } return -1;
 		 */
 		//
 		return 62500;
@@ -213,15 +205,15 @@ public class FirmataDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	public I2CDeviceInterface createI2CDevice(String key, int controller, int address, int addressSize)
-			throws RuntimeIOException {
+	public I2CDeviceInterface createI2CDevice(String key, int controller, int address,
+			I2CConstants.AddressSize addressSize) throws RuntimeIOException {
 		return new FirmataI2CDevice(this, key, controller, address, addressSize);
 	}
 
 	@Override
-	public SerialDeviceInterface createSerialDevice(String key, String deviceFile, int baud, SerialDevice.DataBits dataBits,
-			SerialDevice.StopBits stopBits, SerialDevice.Parity parity, boolean readBlocking, int minReadChars,
-			int readTimeoutMillis) throws RuntimeIOException {
+	public SerialDeviceInterface createSerialDevice(String key, String deviceFile, int baud,
+			SerialDevice.DataBits dataBits, SerialDevice.StopBits stopBits, SerialDevice.Parity parity,
+			boolean readBlocking, int minReadChars, int readTimeoutMillis) throws RuntimeIOException {
 		throw new UnsupportedOperationException("Serial communication not available in the device factory");
 	}
 

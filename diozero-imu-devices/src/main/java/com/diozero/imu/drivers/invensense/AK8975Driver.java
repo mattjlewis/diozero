@@ -33,6 +33,7 @@ package com.diozero.imu.drivers.invensense;
 
 import java.io.Closeable;
 
+import com.diozero.api.I2CConstants;
 import com.diozero.api.I2CDevice;
 import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;
@@ -44,11 +45,11 @@ public class AK8975Driver implements Closeable, AK8975Constants {
 	private short[] mag_sens_adj = new short[3];
 	private I2CDevice i2cDevice;
 
-	public AK8975Driver(int controllerNumber, int addressSize) throws RuntimeIOException {
+	public AK8975Driver(int controllerNumber, I2CConstants.AddressSize addressSize) throws RuntimeIOException {
 		this(controllerNumber, addressSize, AK8975_MAG_ADDRESS);
 	}
 
-	public AK8975Driver(int controllerNumber, int addressSize, int address) throws RuntimeIOException {
+	public AK8975Driver(int controllerNumber, I2CConstants.AddressSize addressSize, int address) throws RuntimeIOException {
 		i2cDevice = new I2CDevice(controllerNumber, address, addressSize);
 	}
 	

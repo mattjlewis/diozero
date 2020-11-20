@@ -835,7 +835,7 @@ public class HD44780Lcd implements Closeable {
 		}
 
 		public PCF8574LcdConnection(I2CDeviceFactoryInterface deviceFactory, int controller, int deviceAddress) {
-			pcf8574 = new PCF8574(deviceFactory, controller, deviceAddress, I2CConstants.ADDR_SIZE_7);
+			pcf8574 = new PCF8574(deviceFactory, controller, deviceAddress, I2CConstants.AddressSize.SIZE_7);
 		}
 
 		@Override

@@ -33,6 +33,7 @@ package com.diozero.internal.provider.pigpioj;
 
 import org.tinylog.Logger;
 
+import com.diozero.api.I2CConstants;
 import com.diozero.api.I2CDevice;
 import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.DeviceFactoryInterface;
@@ -51,7 +52,7 @@ public class PigpioJI2CDevice extends AbstractDevice implements I2CDeviceInterfa
 	private int handle = CLOSED;
 
 	public PigpioJI2CDevice(String key, DeviceFactoryInterface deviceFactory, PigpioInterface pigpioImpl,
-			int controller, int address, int addressSize) throws RuntimeIOException {
+			int controller, int address, I2CConstants.AddressSize addressSize) throws RuntimeIOException {
 		super(key, deviceFactory);
 
 		this.pigpioImpl = pigpioImpl;

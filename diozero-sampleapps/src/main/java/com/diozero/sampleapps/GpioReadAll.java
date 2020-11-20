@@ -36,6 +36,7 @@ import java.util.Map;
 
 import org.tinylog.Logger;
 
+import com.diozero.api.DeviceMode;
 import com.diozero.api.PinInfo;
 import com.diozero.internal.spi.MmapGpioInterface;
 import com.diozero.util.BoardInfo;
@@ -74,20 +75,38 @@ public class GpioReadAll {
 		for (PinInfo pin_info : pins.values()) {
 			int gpio = pin_info.getDeviceNumber();
 			if (index++ % 2 == 0) {
-				System.out.format("| %3s | %" + max_name_length + "s | %4s | %1s | %6s | %2s |",
-						getNotDefined(gpio), pin_info.getName(), getModeString(mmap_gpio, gpio),
-						gpio == PinInfo.NOT_DEFINED ? " " : mmap_gpio.gpioRead(gpio) ? "1" : "0",
-						getGpiodName(pin_info.getChip(), pin_info.getLineOffset()),
+				System.out.format("| %3s | %" + max_name_length + "s | %4s | %1s | %6s | %2s |", getNotDefined(gpio), //
+						pin_info.getName(), //
+						getModeString(mmap_gpio, pin_info), //
+						gpioRead(mmap_gpio, pin_info), //
+						getGpiodName(pin_info.getChip(), pin_info.getLineOffset()), //
 						getNotDefined(pin_info.getPhysicalPin()));
 			} else {
 				System.out.format("| %-2s | %-6s | %1s | %-4s | %-" + max_name_length + "s | %-3s |%n",
-						getNotDefined(pin_info.getPhysicalPin()), getGpiodName(pin_info.getChip(), pin_info.getLineOffset()),
-						gpio == PinInfo.NOT_DEFINED ? " " : mmap_gpio.gpioRead(gpio) ? "1" : "0",
-						getModeString(mmap_gpio, gpio), pin_info.getName(), getNotDefined(gpio));
+						getNotDefined(pin_info.getPhysicalPin()), //
+						getGpiodName(pin_info.getChip(), pin_info.getLineOffset()), //
+						gpioRead(mmap_gpio, pin_info), //
+						getModeString(mmap_gpio, pin_info), //
+						pin_info.getName(), //
+						getNotDefined(gpio));
 			}
 		}
 		System.out.format("+-----+-%s-+------+---+--------+----------+--------+---+------+-%s-+-----+%n", name_dash,
 				name_dash);
+	}
+
+	private static String gpioRead(MmapGpioInterface mmapGpio, PinInfo pinInfo) {
+		int gpio = pinInfo.getDeviceNumber();
+		if (gpio == PinInfo.NOT_DEFINED) {
+			return " ";
+		}
+
+		if (pinInfo.getModes().contains(DeviceMode.DIGITAL_INPUT)
+				|| pinInfo.getModes().contains(DeviceMode.DIGITAL_OUTPUT)) {
+			return mmapGpio.gpioRead(gpio) ? "1" : "0";
+		}
+
+		return " ";
 	}
 
 	private static String getGpiodName(int chip, int lineOffset) {
@@ -97,19 +116,25 @@ public class GpioReadAll {
 		return String.format("%2s:%-3s", Integer.valueOf(chip), Integer.valueOf(lineOffset));
 	}
 
-	private static String getModeString(MmapGpioInterface mmapGpio, int gpio) {
+	private static String getModeString(MmapGpioInterface mmapGpio, PinInfo pinInfo) {
+		int gpio = pinInfo.getDeviceNumber();
 		if (gpio == PinInfo.NOT_DEFINED) {
 			return "";
 		}
 
-		switch (mmapGpio.getMode(gpio)) {
-		case DIGITAL_OUTPUT:
-			return "Out";
-		case DIGITAL_INPUT:
-			return "In";
-		default:
-			return "Unkn";
+		if (pinInfo.getModes().contains(DeviceMode.DIGITAL_INPUT)
+				|| pinInfo.getModes().contains(DeviceMode.DIGITAL_OUTPUT)) {
+			switch (mmapGpio.getMode(gpio)) {
+			case DIGITAL_OUTPUT:
+				return "Out";
+			case DIGITAL_INPUT:
+				return "In";
+			default:
+				return "Unkn";
+			}
 		}
+
+		return "Unkn";
 	}
 
 	public static String getNotDefined(int value) {

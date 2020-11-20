@@ -31,14 +31,14 @@ package com.diozero.internal.spi;
  * #L%
  */
 
-
 import com.diozero.api.DeviceAlreadyOpenedException;
+import com.diozero.api.I2CConstants;
 import com.diozero.util.RuntimeIOException;
 
 public interface I2CDeviceFactoryInterface extends DeviceFactoryInterface {
 	static final String I2C_PREFIX = "-I2C-";
 
-	default I2CDeviceInterface provisionI2CDevice(int controller, int address, int addressSize)
+	default I2CDeviceInterface provisionI2CDevice(int controller, int address, I2CConstants.AddressSize addressSize)
 			throws RuntimeIOException {
 		String key = createI2CKey(controller, address);
 
@@ -53,7 +53,7 @@ public interface I2CDeviceFactoryInterface extends DeviceFactoryInterface {
 		return device;
 	}
 
-	I2CDeviceInterface createI2CDevice(String key, int controller, int address, int addressSize)
+	I2CDeviceInterface createI2CDevice(String key, int controller, int address, I2CConstants.AddressSize addressSize)
 			throws RuntimeIOException;
 
 	static String createI2CKey(String keyPrefix, int controller, int address) {

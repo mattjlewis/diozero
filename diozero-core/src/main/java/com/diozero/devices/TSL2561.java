@@ -53,8 +53,7 @@ public class TSL2561 implements Closeable, LuminositySensorInterface {
 
 	// Lux calculations differ slightly for CS package
 	public static enum TSL2561Package {
-		CHIP_SCALE,
-		T_FN_CL;
+		CHIP_SCALE, T_FN_CL;
 	}
 
 	private static final int TSL2561_COMMAND_BIT = 0x80; // Must be 1
@@ -164,12 +163,13 @@ public class TSL2561 implements Closeable, LuminositySensorInterface {
 	private int ir;
 	private TSL2561Package tsl2561Package;
 	private I2CDevice i2cDevice;
-	
+
 	public TSL2561(TSL2561Package tsl2561Package) throws RuntimeIOException {
-		this(I2CConstants.BUS_1, I2CConstants.ADDR_SIZE_7, tsl2561Package);
+		this(I2CConstants.BUS_1, I2CConstants.AddressSize.SIZE_7, tsl2561Package);
 	}
-	
-	public TSL2561(int controllerNumber, int addressSize, TSL2561Package tsl2561Package) throws RuntimeIOException {
+
+	public TSL2561(int controllerNumber, I2CConstants.AddressSize addressSize, TSL2561Package tsl2561Package)
+			throws RuntimeIOException {
 		i2cDevice = new I2CDevice(controllerNumber, DEVICE_ADDRESS, addressSize, ByteOrder.LITTLE_ENDIAN);
 		this.tsl2561Package = tsl2561Package;
 		initialised = false;
@@ -182,6 +182,7 @@ public class TSL2561 implements Closeable, LuminositySensorInterface {
 
 	/**
 	 * Enables or disables the auto-gain settings when reading data from the sensor
+	 * 
 	 * @param autoGain enable/disable
 	 */
 	public void setAutoGain(boolean autoGain) {
@@ -261,6 +262,7 @@ public class TSL2561 implements Closeable, LuminositySensorInterface {
 
 	/**
 	 * Adjusts the gain on the TSL2561 (adjusts the sensitivity to light)
+	 * 
 	 * @param gain gain value
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
@@ -341,8 +343,8 @@ public class TSL2561 implements Closeable, LuminositySensorInterface {
 	}
 
 	/**
-	 * Converts the raw sensor values to the standard SI lux equivalent. Returns
-	 * 0 if the sensor is saturated and the values are unreliable.
+	 * Converts the raw sensor values to the standard SI lux equivalent. Returns 0
+	 * if the sensor is saturated and the values are unreliable.
 	 */
 	@Override
 	public float getLuminosity() throws RuntimeIOException {

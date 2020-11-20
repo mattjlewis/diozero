@@ -179,7 +179,7 @@ public class BME280 implements BarometerInterface, ThermometerInterface, Hygrome
 	}
 
 	public BME280(int bus, int address) {
-		device = new I2CDevice(bus, address, I2CConstants.ADDR_SIZE_7, ByteOrder.LITTLE_ENDIAN);
+		device = new I2CDevice(bus, address, I2CConstants.AddressSize.SIZE_7, ByteOrder.LITTLE_ENDIAN);
 
 		readCoefficients();
 		setOperatingModes(TemperatureOversampling.OVERSAMPLING_1, PressureOversampling.OVERSAMPLING_1,

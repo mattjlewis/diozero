@@ -62,7 +62,7 @@ public class MCP23008 extends MCP23x08 {
 	public MCP23008(int controller, int address, int interruptGpioA, int interruptGpioB) throws RuntimeIOException {
 		super(DEVICE_NAME + "-" + controller + "-" + address, interruptGpioA, interruptGpioB);
 		
-		device = new I2CDevice(controller, address, I2CConstants.ADDR_SIZE_7);
+		device = new I2CDevice(controller, address, I2CConstants.AddressSize.SIZE_7);
 		
 		initialise();
 	}

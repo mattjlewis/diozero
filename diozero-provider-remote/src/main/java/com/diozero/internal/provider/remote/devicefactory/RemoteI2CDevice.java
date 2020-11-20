@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import org.tinylog.Logger;
 
+import com.diozero.api.I2CConstants;
 import com.diozero.api.I2CDevice.ProbeMode;
 import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.I2CDeviceInterface;
@@ -40,14 +41,14 @@ public class RemoteI2CDevice extends AbstractDevice implements I2CDeviceInterfac
 	private int address;
 
 	public RemoteI2CDevice(RemoteDeviceFactory deviceFactory, String key, int controller, int address,
-			int addressSize) {
+			I2CConstants.AddressSize addressSize) {
 		super(key, deviceFactory);
 
 		this.remoteProtocol = deviceFactory.getProtocolHandler();
 		this.controller = controller;
 		this.address = address;
 
-		I2COpen request = new I2COpen(controller, address, addressSize, UUID.randomUUID().toString());
+		I2COpen request = new I2COpen(controller, address, addressSize.getSize(), UUID.randomUUID().toString());
 
 		Response response = remoteProtocol.request(request);
 		if (response.getStatus() != Response.Status.OK) {
