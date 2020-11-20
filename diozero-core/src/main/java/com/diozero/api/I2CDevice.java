@@ -354,7 +354,7 @@ public class I2CDevice implements I2CConstants, I2CSMBusInterface {
 
 	/**
 	 * Utility method that wraps the response from {@link I2CDevice#readBytes(int)}
-	 * in a ByteBuffer using the byte ordering specified in the constructor.
+	 * in a ByteBuffer using the byte order specified in the constructor.
 	 * 
 	 * @see I2CDevice#readBytes(int)
 	 * @see java.nio.ByteBuffer#wrap(byte[])
@@ -388,7 +388,7 @@ public class I2CDevice implements I2CConstants, I2CSMBusInterface {
 	}
 
 	/**
-	 * Utility method that wraps {@link I2CDevice#readI2CBlockData(int, byte)} to
+	 * Utility method that wraps {@link I2CDevice#readI2CBlockData(int, byte[])} to
 	 * read the specified number of bytes and return as a new byte array
 	 * 
 	 * @see I2CDevice#readI2CBlockData(int, byte[])
@@ -425,24 +425,73 @@ public class I2CDevice implements I2CConstants, I2CSMBusInterface {
 		return buffer;
 	}
 
-	public short readShort(int address) throws RuntimeIOException {
-		return readI2CBlockDataByteBuffer(address, 2).getShort();
+	/**
+	 * Utility method that wraps
+	 * {@link I2CDevice#readI2CBlockDataByteBuffer(int, int)} to read a signed short
+	 * value from the requested register using the byte order specified in the
+	 * constructor
+	 * 
+	 * @param register register to read from
+	 * @return the signed short value read
+	 * @throws RuntimeIOException if an I/O error occurs
+	 */
+	public short readShort(int register) throws RuntimeIOException {
+		return readI2CBlockDataByteBuffer(register, 2).getShort();
 	}
 
-	public int readUShort(int address) throws RuntimeIOException {
-		return readShort(address) & 0xffff;
+	/**
+	 * Utility method that wraps {@link I2CDevice#readShort(int)} to read an
+	 * unsigned short value from the requested register using the byte order
+	 * specified in the constructor
+	 * 
+	 * @param register register to read from
+	 * @return the unsigned short value read
+	 * @throws RuntimeIOException if an I/O error occurs
+	 */
+	public int readUShort(int register) throws RuntimeIOException {
+		return readShort(register) & 0xffff;
 	}
 
-	public long readInt(int address) throws RuntimeIOException {
-		return readI2CBlockDataByteBuffer(address, 4).getInt();
+	/**
+	 * Utility method that wraps
+	 * {@link I2CDevice#readI2CBlockDataByteBuffer(int, int)} to read a signed int
+	 * value from the requested register using the byte order specified in the
+	 * constructor
+	 * 
+	 * @param register register to read from
+	 * @return the signed int value read
+	 * @throws RuntimeIOException if an I/O error occurs
+	 */
+	public int readInt(int register) throws RuntimeIOException {
+		return readI2CBlockDataByteBuffer(register, 4).getInt();
 	}
 
-	public long readUInt(int address) throws RuntimeIOException {
-		return readInt(address) & 0xffffffffL;
+	/**
+	 * Utility method that wraps {@link I2CDevice#readInt(int)} to read an unsigned
+	 * int value from the requested register using the byte order specified in the
+	 * constructor
+	 * 
+	 * @param register register to read from
+	 * @return the unsigned int value read
+	 * @throws RuntimeIOException if an I/O error occurs
+	 */
+	public long readUInt(int register) throws RuntimeIOException {
+		return readInt(register) & 0xffffffffL;
 	}
 
-	public long readUInt(int address, int numBytes) throws RuntimeIOException {
-		if (numBytes > 4) {
+	/**
+	 * Utility method that wraps
+	 * {@link I2CDevice#readI2CBlockDataByteArray(int, int)} to read an unsigned int
+	 * value on the specified length from the requested register using the byte
+	 * order specified in the constructor
+	 * 
+	 * @param register register to read from
+	 * @param numBytes number of bytes to read (1..4)
+	 * @return the unsigned int value read
+	 * @throws RuntimeIOException if an I/O error occurs
+	 */
+	public long readUInt(int register, int numBytes) throws RuntimeIOException {
+		if (numBytes < 1 || numBytes > 4) {
 			throw new IllegalArgumentException("Maximum int length is 4 bytes - you requested " + numBytes);
 		}
 
@@ -450,7 +499,7 @@ public class I2CDevice implements I2CConstants, I2CSMBusInterface {
 			return readUInt(address);
 		}
 
-		byte[] data = readI2CBlockDataByteArray(address, numBytes);
+		byte[] data = readI2CBlockDataByteArray(register, numBytes);
 
 		long val = 0;
 		for (int i = 0; i < numBytes; i++) {
@@ -461,24 +510,48 @@ public class I2CDevice implements I2CConstants, I2CSMBusInterface {
 		return val;
 	}
 
+	/**
+	 * Utility method that wraps {@link I2CDevice#readBytes(byte[])} to read the
+	 * specified number of bytes
+	 * 
+	 * @param length the number of bytes to read
+	 * @return the bytes read from the device
+	 * @throws RuntimeIOException if an I/O error occurs
+	 */
 	public byte[] readBytes(int length) throws RuntimeIOException {
 		byte[] buffer = new byte[length];
 		readBytes(buffer);
 		return buffer;
 	}
 
+	/**
+	 * Utility method that wraps {@link I2CDevice#readByteData(int)} to check if the
+	 * specified bit number is set
+	 * 
+	 * @see BitManipulation#isBitSet(byte, int)
+	 * 
+	 * @param register the register to read
+	 * @param bit      the bit number to check
+	 * @return true if the specified bit number is set
+	 * @throws RuntimeIOException if an I/O error occurs
+	 */
 	public boolean readBit(int register, int bit) throws RuntimeIOException {
 		return BitManipulation.isBitSet(readByteData(register), bit);
 	}
 
+	/**
+	 * Utility method that wraps {@link I2CDevice#writeByteData(int)} to set the
+	 * specified bit number
+	 * 
+	 * @see BitManipulation#setBitSet(byte, boolean, int)
+	 * 
+	 * @param register the register to update
+	 * @param bit      the bit number to set
+	 * @param value    the value to set the bit to
+	 * @throws RuntimeIOException if an I/O error occurs
+	 */
 	public void writeBit(int register, int bit, boolean value) throws RuntimeIOException {
 		byte cur_val = readByteData(register);
 		writeByteData(register, BitManipulation.setBitValue(cur_val, value, bit));
-	}
-
-	public byte[] readBytes(int register, int length) throws RuntimeIOException {
-		byte[] buffer = new byte[length];
-		readI2CBlockData(register, buffer);
-		return buffer;
 	}
 }

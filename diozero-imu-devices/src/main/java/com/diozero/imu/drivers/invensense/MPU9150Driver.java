@@ -998,7 +998,7 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 		byte[] data = new byte[MAX_PACKET_LENGTH];
 		// fifo_count_h == 0x72 == MPU9150_RA_FIFO_COUNTH
 		//fifo_count = readUShort(MPU9150_RA_FIFO_COUNTH, SUB_ADDRESS_SIZE_1_BYTE);
-		data = i2cDevice.readBytes(MPU9150_RA_FIFO_COUNTH, 2);
+		data = i2cDevice.readI2CBlockDataByteArray(MPU9150_RA_FIFO_COUNTH, 2);
 		int fifo_count = ((data[0] & 0xff) << 8) | (data[1] & 0xff);
 		//fifo_count = (data[0] << 8) | data[1];
 		if (fifo_count < packet_size) {
@@ -1021,7 +1021,7 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 		long timestamp = System.currentTimeMillis();
 
 		// fifo_r_w == 0x74 == MPU9150_RA_FIFO_R_W
-		data = i2cDevice.readBytes(MPU9150_RA_FIFO_R_W, packet_size);
+		data = i2cDevice.readI2CBlockDataByteArray(MPU9150_RA_FIFO_R_W, packet_size);
 		
 		int more = fifo_count / packet_size - 1;
 		short fifo_sensors = 0;
@@ -1074,7 +1074,7 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 		
 		// fifo_count_h == 0x72 == MPU9150_RA_FIFO_COUNTH
 		//int fifo_count = readUShort(MPU9150_RA_FIFO_COUNTH, SUB_ADDRESS_SIZE_1_BYTE);
-		byte[] tmp = i2cDevice.readBytes(MPU9150_RA_FIFO_COUNTH, 2);
+		byte[] tmp = i2cDevice.readI2CBlockDataByteArray(MPU9150_RA_FIFO_COUNTH, 2);
 		//System.out.format("mpu_read_fifo_stream(), fifo count msb=0x%x, lsb=0x%x%n",
 		//		Byte.valueOf(tmp[0]), Byte.valueOf(tmp[1]));
 		int fifo_count = ((tmp[0] & 0xff) << 8) | (tmp[1] & 0xff);
@@ -1096,7 +1096,7 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 		}
 
 		// fifo_r_w == 0x74 == MPU9150_RA_FIFO_R_W
-		byte[] data = i2cDevice.readBytes(MPU9150_RA_FIFO_R_W, length);
+		byte[] data = i2cDevice.readI2CBlockDataByteArray(MPU9150_RA_FIFO_R_W, length);
 		// unsigned char more;
 		short more = (short)(fifo_count / length - 1);
 
@@ -1303,7 +1303,7 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 		
 		// mem_r_w == 0x6F == MPU9150_RA_MEM_R_W
 		//if (i2c_read(st.hw->addr, st.reg->mem_r_w, length, data))
-		return i2cDevice.readBytes(MPU9150_RA_MEM_R_W, length);
+		return i2cDevice.readI2CBlockDataByteArray(MPU9150_RA_MEM_R_W, length);
 	}
 	
 	/**
@@ -1523,7 +1523,7 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 		}
 
 		// raw_compass == 0x49 == MPU9150_RA_EXT_SENS_DATA_00
-		byte[] tmp = i2cDevice.readBytes(MPU9150_RA_EXT_SENS_DATA_00, 8);
+		byte[] tmp = i2cDevice.readI2CBlockDataByteArray(MPU9150_RA_EXT_SENS_DATA_00, 8);
 		/* AK8975 doesn't have the overrun error bit. */
 		if ((tmp[0] & AKM_DATA_READY) == 0) {
 			return null;

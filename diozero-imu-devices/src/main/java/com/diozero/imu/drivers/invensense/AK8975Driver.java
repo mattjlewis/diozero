@@ -64,7 +64,7 @@ public class AK8975Driver implements Closeable, AK8975Constants {
 		SleepUtil.sleepMillis(1);
 
 		/* Get sensitivity adjustment data from fuse ROM. */
-		data = i2cDevice.readBytes(AKM_REG_ASAX, 3);
+		data = i2cDevice.readI2CBlockDataByteArray(AKM_REG_ASAX, 3);
 		mag_sens_adj[0] = (short)(data[0] + 128);
 		mag_sens_adj[1] = (short)(data[1] + 128);
 		mag_sens_adj[2] = (short)(data[2] + 128);
