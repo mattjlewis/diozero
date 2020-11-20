@@ -36,8 +36,8 @@ import java.io.Closeable;
 
 import org.tinylog.Logger;
 
-import com.diozero.internal.provider.NativeDeviceFactoryInterface;
-import com.diozero.internal.provider.SpiDeviceInterface;
+import com.diozero.internal.spi.NativeDeviceFactoryInterface;
+import com.diozero.internal.spi.SpiDeviceInterface;
 import com.diozero.util.DeviceFactoryHelper;
 import com.diozero.util.RuntimeIOException;
 

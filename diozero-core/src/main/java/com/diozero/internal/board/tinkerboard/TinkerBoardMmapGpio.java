@@ -37,7 +37,7 @@ import org.tinylog.Logger;
 
 import com.diozero.api.DeviceMode;
 import com.diozero.api.GpioPullUpDown;
-import com.diozero.internal.provider.MmapGpioInterface;
+import com.diozero.internal.spi.MmapGpioInterface;
 import com.diozero.util.LibraryLoader;
 import com.diozero.util.MmapIntBuffer;
 import com.diozero.util.SleepUtil;

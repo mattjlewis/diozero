@@ -35,11 +35,11 @@ import com.diozero.api.DeviceMode;
 import com.diozero.api.GpioEventTrigger;
 import com.diozero.api.GpioPullUpDown;
 import com.diozero.api.PinInfo;
-import com.diozero.internal.provider.GpioDigitalInputDeviceInterface;
-import com.diozero.internal.provider.GpioDigitalInputOutputDeviceInterface;
-import com.diozero.internal.provider.GpioDigitalOutputDeviceInterface;
-import com.diozero.internal.provider.MmapGpioInterface;
 import com.diozero.internal.provider.builtin.DefaultDeviceFactory;
+import com.diozero.internal.spi.GpioDigitalInputDeviceInterface;
+import com.diozero.internal.spi.GpioDigitalInputOutputDeviceInterface;
+import com.diozero.internal.spi.GpioDigitalOutputDeviceInterface;
+import com.diozero.internal.spi.MmapGpioInterface;
 import com.diozero.util.RuntimeIOException;
 
 public class MmapDeviceFactory extends DefaultDeviceFactory {

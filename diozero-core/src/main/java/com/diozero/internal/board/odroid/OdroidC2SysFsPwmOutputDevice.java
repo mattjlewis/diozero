@@ -40,9 +40,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import com.diozero.api.PwmPinInfo;
-import com.diozero.internal.provider.AbstractDevice;
-import com.diozero.internal.provider.DeviceFactoryInterface;
-import com.diozero.internal.provider.PwmOutputDeviceInterface;
+import com.diozero.internal.spi.AbstractDevice;
+import com.diozero.internal.spi.DeviceFactoryInterface;
+import com.diozero.internal.spi.PwmOutputDeviceInterface;
 import com.diozero.util.RuntimeIOException;
 
 /**

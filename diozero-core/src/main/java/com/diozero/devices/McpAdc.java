@@ -40,10 +40,10 @@ import com.diozero.api.PinInfo;
 import com.diozero.api.SPIConstants;
 import com.diozero.api.SpiClockMode;
 import com.diozero.api.SpiDevice;
-import com.diozero.internal.provider.AbstractDeviceFactory;
-import com.diozero.internal.provider.AbstractInputDevice;
-import com.diozero.internal.provider.AnalogInputDeviceFactoryInterface;
-import com.diozero.internal.provider.AnalogInputDeviceInterface;
+import com.diozero.internal.spi.AbstractDeviceFactory;
+import com.diozero.internal.spi.AbstractInputDevice;
+import com.diozero.internal.spi.AnalogInputDeviceFactoryInterface;
+import com.diozero.internal.spi.AnalogInputDeviceInterface;
 import com.diozero.util.BoardPinInfo;
 import com.diozero.util.RuntimeIOException;
 

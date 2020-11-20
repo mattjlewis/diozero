@@ -41,7 +41,7 @@ import java.util.List;
 
 import org.tinylog.Logger;
 
-import com.diozero.internal.provider.SerialDeviceInterface;
+import com.diozero.internal.spi.SerialDeviceInterface;
 import com.diozero.util.DeviceFactoryHelper;
 import com.diozero.util.RuntimeIOException;
 

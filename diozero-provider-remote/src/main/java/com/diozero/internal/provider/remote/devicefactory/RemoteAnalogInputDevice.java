@@ -35,8 +35,8 @@ import java.util.UUID;
 
 import com.diozero.api.AnalogInputEvent;
 import com.diozero.api.PinInfo;
-import com.diozero.internal.provider.AbstractInputDevice;
-import com.diozero.internal.provider.AnalogInputDeviceInterface;
+import com.diozero.internal.spi.AbstractInputDevice;
+import com.diozero.internal.spi.AnalogInputDeviceInterface;
 import com.diozero.remote.message.ProvisionAnalogInputDevice;
 import com.diozero.remote.message.Response;
 import com.diozero.util.RuntimeIOException;

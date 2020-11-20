@@ -38,7 +38,7 @@ import java.nio.IntBuffer;
 import com.diozero.api.DeviceMode;
 import com.diozero.api.GpioPullUpDown;
 import com.diozero.api.InvalidModeException;
-import com.diozero.internal.provider.MmapGpioInterface;
+import com.diozero.internal.spi.MmapGpioInterface;
 import com.diozero.util.LibraryLoader;
 import com.diozero.util.MmapBufferNative;
 import com.diozero.util.MmapByteBuffer;

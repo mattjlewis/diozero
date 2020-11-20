@@ -37,7 +37,7 @@ import java.io.Closeable;
 import org.tinylog.Logger;
 
 import com.diozero.api.DigitalOutputDevice;
-import com.diozero.internal.provider.GpioDeviceFactoryInterface;
+import com.diozero.internal.spi.GpioDeviceFactoryInterface;
 import com.diozero.util.DeviceFactoryHelper;
 import com.diozero.util.RuntimeIOException;
 

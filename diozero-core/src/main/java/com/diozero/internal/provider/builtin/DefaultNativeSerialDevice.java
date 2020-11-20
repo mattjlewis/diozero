@@ -34,10 +34,10 @@ package com.diozero.internal.provider.builtin;
 import org.tinylog.Logger;
 
 import com.diozero.api.SerialDevice;
-import com.diozero.internal.provider.AbstractDevice;
-import com.diozero.internal.provider.DeviceFactoryInterface;
-import com.diozero.internal.provider.SerialDeviceInterface;
 import com.diozero.internal.provider.builtin.serial.NativeSerialDevice;
+import com.diozero.internal.spi.AbstractDevice;
+import com.diozero.internal.spi.DeviceFactoryInterface;
+import com.diozero.internal.spi.SerialDeviceInterface;
 import com.diozero.util.RuntimeIOException;
 
 public class DefaultNativeSerialDevice extends AbstractDevice implements SerialDeviceInterface {

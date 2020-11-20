@@ -37,7 +37,7 @@ import org.junit.jupiter.api.Assertions;
 
 import com.diozero.api.SpiClockMode;
 import com.diozero.devices.McpAdc;
-import com.diozero.internal.provider.DeviceFactoryInterface;
+import com.diozero.internal.spi.DeviceFactoryInterface;
 import com.diozero.util.RuntimeIOException;
 
 public class TestMcpAdcSpiDevice extends TestSpiDevice {

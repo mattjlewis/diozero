@@ -33,8 +33,8 @@ package com.diozero.util;
 
 import org.tinylog.Logger;
 
-import com.diozero.internal.provider.NativeDeviceFactoryInterface;
 import com.diozero.internal.provider.builtin.DefaultDeviceFactory;
+import com.diozero.internal.spi.NativeDeviceFactoryInterface;
 
 /**
  * Helper class for instantiating different devices via the configured provider.

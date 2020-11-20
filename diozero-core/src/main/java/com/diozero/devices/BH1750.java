@@ -39,6 +39,7 @@ import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 
 /**
+ * BH1750 Luminosity sensor
  * <a href="http://www.mouser.com/ds/2/348/bh1750fvi-e-186247.pdf">Datasheet</a>
  * <a href="https://gist.github.com/oskar456/95c66d564c58361ecf9f">Python code</a>
  */

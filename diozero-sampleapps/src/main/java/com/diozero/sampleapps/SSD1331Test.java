@@ -46,9 +46,9 @@ import org.imgscalr.Scalr;
 import org.tinylog.Logger;
 
 import com.diozero.api.DigitalOutputDevice;
-import com.diozero.devices.ColourSsdOled;
-import com.diozero.devices.SSD1351;
-import com.diozero.devices.SsdOled;
+import com.diozero.devices.oled.ColourSsdOled;
+import com.diozero.devices.oled.SSD1351;
+import com.diozero.devices.oled.SsdOled;
 import com.diozero.sampleapps.gol.GameOfLife;
 import com.diozero.util.DeviceFactoryHelper;
 

@@ -40,8 +40,8 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.tinylog.Logger;
 
-import com.diozero.internal.provider.NativeDeviceFactoryInterface;
 import com.diozero.internal.provider.remote.ProtobufBaseAsyncProtocolHandler;
+import com.diozero.internal.spi.NativeDeviceFactoryInterface;
 import com.diozero.remote.message.DiozeroProtosConverter;
 import com.diozero.remote.message.GetBoardInfoRequest;
 import com.diozero.remote.message.GetBoardInfoResponse;

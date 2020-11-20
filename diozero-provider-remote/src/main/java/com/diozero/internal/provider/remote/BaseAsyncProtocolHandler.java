@@ -41,8 +41,8 @@ import org.tinylog.Logger;
 
 import com.diozero.api.DigitalInputEvent;
 import com.diozero.api.PinInfo;
-import com.diozero.internal.provider.NativeDeviceFactoryInterface;
 import com.diozero.internal.provider.remote.devicefactory.RemoteDigitalInputDevice;
+import com.diozero.internal.spi.NativeDeviceFactoryInterface;
 import com.diozero.remote.message.RemoteProtocolInterface;
 import com.diozero.remote.message.Response;
 

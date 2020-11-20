@@ -33,8 +33,8 @@ package com.diozero.api;
 
 import org.tinylog.Logger;
 
-import com.diozero.internal.provider.GpioDeviceFactoryInterface;
-import com.diozero.internal.provider.GpioDigitalOutputDeviceInterface;
+import com.diozero.internal.spi.GpioDeviceFactoryInterface;
+import com.diozero.internal.spi.GpioDigitalOutputDeviceInterface;
 import com.diozero.util.DeviceFactoryHelper;
 import com.diozero.util.DiozeroScheduler;
 import com.diozero.util.RuntimeIOException;

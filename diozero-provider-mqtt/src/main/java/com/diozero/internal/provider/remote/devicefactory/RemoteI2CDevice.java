@@ -5,8 +5,8 @@ import java.util.UUID;
 import org.tinylog.Logger;
 
 import com.diozero.api.I2CDevice.ProbeMode;
-import com.diozero.internal.provider.AbstractDevice;
-import com.diozero.internal.provider.I2CDeviceInterface;
+import com.diozero.internal.spi.AbstractDevice;
+import com.diozero.internal.spi.I2CDeviceInterface;
 import com.diozero.remote.message.I2CBlockProcessCall;
 import com.diozero.remote.message.I2CBooleanResponse;
 import com.diozero.remote.message.I2CByteResponse;

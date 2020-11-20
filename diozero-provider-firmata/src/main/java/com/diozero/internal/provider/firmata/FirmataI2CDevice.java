@@ -47,8 +47,8 @@ import org.firmata4j.I2CEvent;
 import org.firmata4j.I2CListener;
 import org.tinylog.Logger;
 
-import com.diozero.internal.provider.AbstractDevice;
-import com.diozero.internal.provider.I2CDeviceInterface;
+import com.diozero.internal.spi.AbstractDevice;
+import com.diozero.internal.spi.I2CDeviceInterface;
 import com.diozero.util.RuntimeIOException;
 
 /**

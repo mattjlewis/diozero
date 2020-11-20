@@ -33,7 +33,7 @@ package com.diozero.devices;
 
 import com.diozero.api.I2CConstants;
 import com.diozero.api.I2CDevice;
-import com.diozero.internal.provider.mcp23xxx.MCP23x17;
+import com.diozero.devices.mcp23xxx.MCP23x17;
 import com.diozero.util.RuntimeIOException;
 
 /**

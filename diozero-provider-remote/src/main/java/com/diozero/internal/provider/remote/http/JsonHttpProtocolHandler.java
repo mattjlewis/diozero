@@ -43,7 +43,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 
-import com.diozero.internal.provider.NativeDeviceFactoryInterface;
+import com.diozero.internal.spi.NativeDeviceFactoryInterface;
 import com.diozero.remote.http.HttpProviderConstants;
 import com.diozero.remote.message.GetBoardInfoRequest;
 import com.diozero.remote.message.GetBoardInfoResponse;

@@ -36,7 +36,7 @@ import java.io.Closeable;
 
 import org.tinylog.Logger;
 
-import com.diozero.internal.provider.PwmOutputDeviceFactoryInterface;
+import com.diozero.internal.spi.PwmOutputDeviceFactoryInterface;
 import com.diozero.util.DeviceFactoryHelper;
 import com.diozero.util.RuntimeIOException;
 

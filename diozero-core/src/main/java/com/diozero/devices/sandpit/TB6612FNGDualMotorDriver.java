@@ -34,7 +34,7 @@ package com.diozero.devices.sandpit;
 import com.diozero.api.DigitalOutputDevice;
 import com.diozero.api.PwmOutputDevice;
 import com.diozero.devices.motor.DualMotor;
-import com.diozero.internal.provider.PwmOutputDeviceFactoryInterface;
+import com.diozero.internal.spi.PwmOutputDeviceFactoryInterface;
 import com.diozero.util.RuntimeIOException;
 
 /**

@@ -35,9 +35,9 @@ import org.tinylog.Logger;
 
 import com.diozero.api.DeviceMode;
 import com.diozero.api.PinInfo;
-import com.diozero.internal.provider.AbstractDevice;
-import com.diozero.internal.provider.GpioDigitalOutputDeviceInterface;
-import com.diozero.internal.provider.MmapGpioInterface;
+import com.diozero.internal.spi.AbstractDevice;
+import com.diozero.internal.spi.GpioDigitalOutputDeviceInterface;
+import com.diozero.internal.spi.MmapGpioInterface;
 import com.diozero.util.RuntimeIOException;
 
 public class MmapDigitalOutputDevice extends AbstractDevice implements GpioDigitalOutputDeviceInterface {

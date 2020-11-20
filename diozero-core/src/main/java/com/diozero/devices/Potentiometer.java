@@ -33,7 +33,7 @@ package com.diozero.devices;
 
 
 import com.diozero.api.AnalogInputDevice;
-import com.diozero.internal.provider.AnalogInputDeviceFactoryInterface;
+import com.diozero.internal.spi.AnalogInputDeviceFactoryInterface;
 import com.diozero.util.DeviceFactoryHelper;
 
 /**

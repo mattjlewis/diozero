@@ -36,7 +36,7 @@ import java.util.concurrent.locks.Condition;
 
 import org.tinylog.Logger;
 
-import com.diozero.internal.provider.NativeDeviceFactoryInterface;
+import com.diozero.internal.spi.NativeDeviceFactoryInterface;
 import com.diozero.remote.message.Response;
 import com.diozero.util.RuntimeIOException;
 import com.google.protobuf.GeneratedMessageV3;

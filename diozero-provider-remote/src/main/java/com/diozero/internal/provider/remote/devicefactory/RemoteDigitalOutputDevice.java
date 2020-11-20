@@ -34,8 +34,8 @@ package com.diozero.internal.provider.remote.devicefactory;
 import java.util.UUID;
 
 import com.diozero.api.PinInfo;
-import com.diozero.internal.provider.AbstractDevice;
-import com.diozero.internal.provider.GpioDigitalOutputDeviceInterface;
+import com.diozero.internal.spi.AbstractDevice;
+import com.diozero.internal.spi.GpioDigitalOutputDeviceInterface;
 import com.diozero.remote.message.ProvisionDigitalOutputDevice;
 import com.diozero.remote.message.Response;
 import com.diozero.util.RuntimeIOException;

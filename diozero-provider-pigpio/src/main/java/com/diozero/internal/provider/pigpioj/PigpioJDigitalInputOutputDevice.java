@@ -36,8 +36,8 @@ import org.tinylog.Logger;
 import com.diozero.api.DeviceMode;
 import com.diozero.api.DigitalInputEvent;
 import com.diozero.api.GpioPullUpDown;
-import com.diozero.internal.provider.AbstractInputDevice;
-import com.diozero.internal.provider.GpioDigitalInputOutputDeviceInterface;
+import com.diozero.internal.spi.AbstractInputDevice;
+import com.diozero.internal.spi.GpioDigitalInputOutputDeviceInterface;
 import com.diozero.util.RuntimeIOException;
 
 import uk.pigpioj.PigpioCallback;

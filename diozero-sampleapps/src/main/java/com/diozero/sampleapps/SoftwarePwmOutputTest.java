@@ -33,7 +33,7 @@ package com.diozero.sampleapps;
 
 import com.diozero.devices.MCP23008;
 import com.diozero.devices.PwmLed;
-import com.diozero.internal.provider.PwmOutputDeviceFactoryInterface;
+import com.diozero.internal.spi.PwmOutputDeviceFactoryInterface;
 import com.diozero.util.DeviceFactoryHelper;
 import com.diozero.util.SleepUtil;
 

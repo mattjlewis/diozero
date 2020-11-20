@@ -35,8 +35,8 @@ package com.diozero.internal.provider.mmap;
 import com.diozero.api.GpioEventTrigger;
 import com.diozero.api.GpioPullUpDown;
 import com.diozero.api.PinInfo;
-import com.diozero.internal.provider.MmapGpioInterface;
 import com.diozero.internal.provider.builtin.SysFsDigitalInputDevice;
+import com.diozero.internal.spi.MmapGpioInterface;
 import com.diozero.util.RuntimeIOException;
 
 public class MmapDigitalInputDevice extends SysFsDigitalInputDevice {

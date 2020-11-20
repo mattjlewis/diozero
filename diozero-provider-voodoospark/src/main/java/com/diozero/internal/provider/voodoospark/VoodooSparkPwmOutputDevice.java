@@ -32,9 +32,9 @@ package com.diozero.internal.provider.voodoospark;
  */
 
 import com.diozero.api.PinInfo;
-import com.diozero.internal.provider.AbstractDevice;
-import com.diozero.internal.provider.PwmOutputDeviceInterface;
 import com.diozero.internal.provider.voodoospark.VoodooSparkDeviceFactory.PinMode;
+import com.diozero.internal.spi.AbstractDevice;
+import com.diozero.internal.spi.PwmOutputDeviceInterface;
 import com.diozero.util.RuntimeIOException;
 
 public class VoodooSparkPwmOutputDevice extends AbstractDevice implements PwmOutputDeviceInterface {

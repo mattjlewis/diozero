@@ -44,8 +44,8 @@ import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.tinylog.Logger;
 
 import com.diozero.api.DigitalInputEvent;
-import com.diozero.internal.provider.NativeDeviceFactoryInterface;
 import com.diozero.internal.provider.remote.BaseAsyncProtocolHandler;
+import com.diozero.internal.spi.NativeDeviceFactoryInterface;
 import com.diozero.remote.message.GetBoardInfoRequest;
 import com.diozero.remote.message.GetBoardInfoResponse;
 import com.diozero.remote.message.GpioAnalogRead;

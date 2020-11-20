@@ -41,7 +41,7 @@ import java.util.List;
 
 import org.tinylog.Logger;
 
-import com.diozero.internal.provider.MmapGpioInterface;
+import com.diozero.internal.spi.MmapGpioInterface;
 
 @SuppressWarnings("static-method")
 public abstract class BoardInfo extends BoardPinInfo {

@@ -35,7 +35,7 @@ package com.diozero.devices;
 import com.diozero.api.SPIConstants;
 import com.diozero.api.SpiClockMode;
 import com.diozero.api.SpiDevice;
-import com.diozero.internal.provider.mcp23xxx.MCP23x17;
+import com.diozero.devices.mcp23xxx.MCP23x17;
 import com.diozero.util.RuntimeIOException;
 
 public class MCP23S17 extends MCP23x17 {

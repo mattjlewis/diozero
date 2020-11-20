@@ -36,8 +36,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.tinylog.Logger;
 
-import com.diozero.internal.provider.AnalogInputDeviceFactoryInterface;
-import com.diozero.internal.provider.AnalogInputDeviceInterface;
+import com.diozero.internal.spi.AnalogInputDeviceFactoryInterface;
+import com.diozero.internal.spi.AnalogInputDeviceInterface;
 import com.diozero.util.DeviceFactoryHelper;
 import com.diozero.util.DiozeroScheduler;
 import com.diozero.util.RuntimeIOException;

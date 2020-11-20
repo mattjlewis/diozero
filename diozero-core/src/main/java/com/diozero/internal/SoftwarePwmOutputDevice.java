@@ -37,10 +37,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.tinylog.Logger;
 
-import com.diozero.internal.provider.AbstractDevice;
-import com.diozero.internal.provider.DeviceFactoryInterface;
-import com.diozero.internal.provider.GpioDigitalOutputDeviceInterface;
-import com.diozero.internal.provider.PwmOutputDeviceInterface;
+import com.diozero.internal.spi.AbstractDevice;
+import com.diozero.internal.spi.DeviceFactoryInterface;
+import com.diozero.internal.spi.GpioDigitalOutputDeviceInterface;
+import com.diozero.internal.spi.PwmOutputDeviceInterface;
 import com.diozero.util.DiozeroScheduler;
 import com.diozero.util.RangeUtil;
 import com.diozero.util.SleepUtil;

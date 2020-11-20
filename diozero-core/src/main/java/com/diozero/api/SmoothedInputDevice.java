@@ -36,7 +36,7 @@ import java.util.Queue;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 
-import com.diozero.internal.provider.GpioDeviceFactoryInterface;
+import com.diozero.internal.spi.GpioDeviceFactoryInterface;
 import com.diozero.util.DeviceFactoryHelper;
 import com.diozero.util.DiozeroScheduler;
 import com.diozero.util.RuntimeIOException;

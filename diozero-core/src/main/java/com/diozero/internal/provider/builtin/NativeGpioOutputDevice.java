@@ -32,9 +32,9 @@ package com.diozero.internal.provider.builtin;
  */
 
 import com.diozero.api.PinInfo;
-import com.diozero.internal.provider.AbstractDevice;
-import com.diozero.internal.provider.GpioDigitalOutputDeviceInterface;
 import com.diozero.internal.provider.builtin.gpio.GpioLine;
+import com.diozero.internal.spi.AbstractDevice;
+import com.diozero.internal.spi.GpioDigitalOutputDeviceInterface;
 import com.diozero.internal.provider.builtin.gpio.GpioChip;
 import com.diozero.util.RuntimeIOException;
 

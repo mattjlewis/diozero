@@ -40,7 +40,7 @@ import java.util.Random;
 import org.tinylog.Logger;
 
 import com.diozero.api.DigitalOutputDevice;
-import com.diozero.devices.SSD1306;
+import com.diozero.devices.oled.SSD1306;
 import com.diozero.util.SleepUtil;
 
 /**

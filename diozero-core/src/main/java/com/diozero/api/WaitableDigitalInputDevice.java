@@ -31,8 +31,7 @@ package com.diozero.api;
  * #L%
  */
 
-
-import com.diozero.internal.provider.GpioDeviceFactoryInterface;
+import com.diozero.internal.spi.GpioDeviceFactoryInterface;
 import com.diozero.util.DeviceFactoryHelper;
 import com.diozero.util.Event;
 

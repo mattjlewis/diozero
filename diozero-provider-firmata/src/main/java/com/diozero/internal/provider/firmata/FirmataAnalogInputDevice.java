@@ -38,8 +38,8 @@ import org.firmata4j.Pin;
 import org.firmata4j.Pin.Mode;
 
 import com.diozero.api.AnalogInputEvent;
-import com.diozero.internal.provider.AbstractInputDevice;
-import com.diozero.internal.provider.AnalogInputDeviceInterface;
+import com.diozero.internal.spi.AbstractInputDevice;
+import com.diozero.internal.spi.AnalogInputDeviceInterface;
 import com.diozero.util.RuntimeIOException;
 
 public class FirmataAnalogInputDevice extends AbstractInputDevice<AnalogInputEvent> implements AnalogInputDeviceInterface {

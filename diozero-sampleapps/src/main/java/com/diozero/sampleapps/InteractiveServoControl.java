@@ -40,7 +40,7 @@ import org.tinylog.Logger;
 
 import com.diozero.devices.PCA9685;
 import com.diozero.devices.Servo;
-import com.diozero.internal.provider.PwmOutputDeviceFactoryInterface;
+import com.diozero.internal.spi.PwmOutputDeviceFactoryInterface;
 
 public class InteractiveServoControl {
 	public static void main(String[] args) {

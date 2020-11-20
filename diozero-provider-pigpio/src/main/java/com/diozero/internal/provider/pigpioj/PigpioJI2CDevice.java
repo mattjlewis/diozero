@@ -34,9 +34,9 @@ package com.diozero.internal.provider.pigpioj;
 import org.tinylog.Logger;
 
 import com.diozero.api.I2CDevice;
-import com.diozero.internal.provider.AbstractDevice;
-import com.diozero.internal.provider.DeviceFactoryInterface;
-import com.diozero.internal.provider.I2CDeviceInterface;
+import com.diozero.internal.spi.AbstractDevice;
+import com.diozero.internal.spi.DeviceFactoryInterface;
+import com.diozero.internal.spi.I2CDeviceInterface;
 import com.diozero.util.RuntimeIOException;
 
 import uk.pigpioj.PigpioInterface;
