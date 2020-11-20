@@ -44,7 +44,7 @@ import com.diozero.util.SystemInfo;
 
 /**
  * Helper class for instantiating different devices via the configured provider.
- * To set the provider edit META-INF/services/com.diozero.internal.provider.NativeDeviceFactoryInterface
+ * To set the provider edit META-INF/services/com.diozero.spi.provider.NativeDeviceFactoryInterface
  * While the ServiceLoader supports multiple service providers, only the first entry in this file is used
  */
 

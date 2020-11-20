@@ -34,11 +34,8 @@ package com.diozero.sampleapps.perf;
 import org.tinylog.Logger;
 
 import com.diozero.api.DeviceMode;
-import com.diozero.internal.provider.mmap.MmapDeviceFactory;
-import com.diozero.internal.spi.GpioDigitalOutputDeviceInterface;
 import com.diozero.internal.spi.MmapGpioInterface;
 import com.diozero.util.DeviceFactoryHelper;
-import com.diozero.util.RuntimeIOException;
 
 public class MmapGpioPerfTest {
 	private static final int ITERATIONS = 1_000_000;
