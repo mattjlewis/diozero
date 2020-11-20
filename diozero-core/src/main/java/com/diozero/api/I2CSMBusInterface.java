@@ -40,7 +40,7 @@ public interface I2CSMBusInterface extends Closeable {
 
 	@Override
 	void close();
-	
+
 	/**
 	 * Probe this I2C device using {@link I2CDevice.ProbeMode#AUTO Auto} probe mode
 	 * 
@@ -92,7 +92,8 @@ public interface I2CSMBusInterface extends Closeable {
 	 * S Addr Rd [A] [Data] NA P
 	 * </pre>
 	 * 
-	 * @return The byte data read (note caller needs to handle conversion to unsigned)
+	 * @return The byte data read (note caller needs to handle conversion to
+	 *         unsigned)
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	byte readByte() throws RuntimeIOException;
@@ -115,8 +116,22 @@ public interface I2CSMBusInterface extends Closeable {
 	 */
 	void writeByte(byte data) throws RuntimeIOException;
 
+	/**
+	 * SMBus extension to read the specified number of bytes from the device
+	 * 
+	 * @param buffer byte array to populate, the length of the byte array indicates
+	 *               the number of bytes to read
+	 * @return the number of bytes read
+	 * @throws RuntimeIOException if an I/O error occurs
+	 */
 	int readBytes(byte[] buffer) throws RuntimeIOException;
 
+	/**
+	 * SMBus extension to write the specified byte array to the device
+	 * 
+	 * @param data the data to write
+	 * @throws RuntimeIOException if an I/O error occurs
+	 */
 	void writeBytes(byte[] data) throws RuntimeIOException;
 
 	/**
@@ -133,7 +148,8 @@ public interface I2CSMBusInterface extends Closeable {
 	 * </pre>
 	 * 
 	 * @param register the register to read from
-	 * @return data read as byte (note caller needs to handle conversion to unsigned)
+	 * @return data read as byte (note caller needs to handle conversion to
+	 *         unsigned)
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	byte readByteData(int register) throws RuntimeIOException;
