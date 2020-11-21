@@ -37,7 +37,6 @@ import java.nio.ByteOrder;
 import org.tinylog.Logger;
 
 import com.diozero.internal.spi.I2CDeviceFactoryInterface;
-import com.diozero.internal.spi.I2CDeviceInterface;
 import com.diozero.util.BitManipulation;
 import com.diozero.util.DeviceFactoryHelper;
 import com.diozero.util.RuntimeIOException;
@@ -45,7 +44,7 @@ import com.diozero.util.RuntimeIOException;
 /**
  * Utility class reading / writing to I2C devices.
  */
-public class I2CDevice implements I2CConstants, I2CSMBusInterface {
+public class I2CDevice implements I2CConstants, I2CDeviceInterface {
 	public static enum ProbeMode {
 		QUICK, READ, AUTO;
 	}
@@ -148,11 +147,26 @@ public class I2CDevice implements I2CConstants, I2CSMBusInterface {
 	public ByteOrder getByteOrder() {
 		return byteOrder;
 	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String getKey() {
+		return delegate.getKey();
+	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public final boolean isOpen() {
 		return delegate.isOpen();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void close() throws RuntimeIOException {
 		Logger.trace("close()");

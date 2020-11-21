@@ -37,7 +37,7 @@ import org.tinylog.Logger;
 
 import com.diozero.api.AnalogInputEvent;
 import com.diozero.api.PinInfo;
-import com.diozero.api.SPIConstants;
+import com.diozero.api.SpiConstants;
 import com.diozero.api.SpiClockMode;
 import com.diozero.api.SpiDevice;
 import com.diozero.internal.spi.AbstractDeviceFactory;
@@ -77,7 +77,7 @@ public class McpAdc extends AbstractDeviceFactory implements AnalogInputDeviceFa
 	private float vRef;
 	
 	public McpAdc(Type type, int chipSelect, float vRef) throws RuntimeIOException {
-		this(type, SPIConstants.DEFAULT_SPI_CONTROLLER, chipSelect, vRef);
+		this(type, SpiConstants.DEFAULT_SPI_CONTROLLER, chipSelect, vRef);
 	}
 
 	public McpAdc(Type type, int controller, int chipSelect, float vRef) throws RuntimeIOException {

@@ -46,6 +46,8 @@ public class SystemInformation {
 				SystemInfo.getOperatingSystemVersion(), SystemInfo.getOperatingSystemVersionId());
 
 		BoardInfo board_info = DeviceFactoryHelper.getNativeDeviceFactory().getBoardInfo();
+		
+		System.out.println("Board Info: " + board_info);
 
 		System.out.println();
 		System.out.format("SBC Name: %s (RAM: %d bytes)%n", board_info.getName(),

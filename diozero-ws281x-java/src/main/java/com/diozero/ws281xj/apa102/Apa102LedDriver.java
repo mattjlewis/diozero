@@ -33,7 +33,7 @@ package com.diozero.ws281xj.apa102;
 
 import java.util.Arrays;
 
-import com.diozero.api.SPIConstants;
+import com.diozero.api.SpiConstants;
 import com.diozero.api.SpiClockMode;
 import com.diozero.api.SpiDevice;
 import com.diozero.ws281xj.LedDriverInterface;
@@ -49,7 +49,7 @@ public class Apa102LedDriver implements LedDriverInterface {
 	private byte[] spiBuffer;
 	
 	public Apa102LedDriver(int controller, int chipSelect, int frequency, int numLeds, int brightness) {
-		device = new SpiDevice(controller, chipSelect, frequency, SpiClockMode.MODE_0, SPIConstants.DEFAULT_LSB_FIRST);
+		device = new SpiDevice(controller, chipSelect, frequency, SpiClockMode.MODE_0, SpiConstants.DEFAULT_LSB_FIRST);
 		
 		this.brightness = brightness & 0x1F;
 		

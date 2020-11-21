@@ -33,6 +33,7 @@ package com.diozero.internal.spi;
 
 import org.tinylog.Logger;
 
+import com.diozero.api.DeviceInterface;
 import com.diozero.util.RuntimeIOException;
 
 public abstract class AbstractDevice implements DeviceInterface {

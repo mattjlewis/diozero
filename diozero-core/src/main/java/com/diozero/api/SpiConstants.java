@@ -1,10 +1,10 @@
-package com.diozero.internal.spi;
+package com.diozero.api;
 
-/*-
+/*
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - Core
- * Filename:     SerialDeviceInterface.java  
+ * Filename:     SPIConstants.java  
  * 
  * This file is part of the diozero project. More information about this project
  * can be found at http://www.diozero.com/
@@ -31,11 +31,15 @@ package com.diozero.internal.spi;
  * #L%
  */
 
-public interface SerialDeviceInterface extends DeviceInterface {
-	int read();
-	byte readByte();
-	void writeByte(byte bVal);
-	int read(byte[] buffer);
-	void write(byte[] data);
-	int bytesAvailable();
+
+public interface SpiConstants {
+	public static final byte DEFAULT_WORD_LENGTH = 8;
+	public static final int DEFAULT_SPI_CONTROLLER = 0;
+	public static final int DEFAULT_SPI_CLOCK_FREQUENCY = 2_000_000;
+	public static final boolean DEFAULT_LSB_FIRST = false;
+	public static final SpiClockMode DEFAULT_SPI_CLOCK_MODE = SpiClockMode.MODE_0;
+	public static final int CE0 = 0;
+	public static final int CE1 = 1;
+	public static final int CE2 = 2;
+	public static final int CE3 = 3;
 }

@@ -1,6 +1,4 @@
-package com.diozero.internal.spi;
-
-import com.diozero.api.I2CSMBusInterface;
+package com.diozero.api;
 
 public interface I2CDeviceInterface extends DeviceInterface, I2CSMBusInterface {
 }

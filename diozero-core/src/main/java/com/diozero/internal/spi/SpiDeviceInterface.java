@@ -1,5 +1,7 @@
 package com.diozero.internal.spi;
 
+import com.diozero.api.DeviceInterface;
+
 /*
  * #%L
  * Organisation: diozero

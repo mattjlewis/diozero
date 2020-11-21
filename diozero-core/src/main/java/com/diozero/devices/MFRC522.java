@@ -40,7 +40,7 @@ import java.util.List;
 import org.tinylog.Logger;
 
 import com.diozero.api.DigitalOutputDevice;
-import com.diozero.api.SPIConstants;
+import com.diozero.api.SpiConstants;
 import com.diozero.api.SpiClockMode;
 import com.diozero.api.SpiDevice;
 import com.diozero.util.Hex;
@@ -257,7 +257,7 @@ public class MFRC522 implements Closeable {
 	private boolean logReadsAndWrites = false;
 	
 	public MFRC522(int chipSelect, int resetGpio) {
-		this(SPIConstants.DEFAULT_SPI_CONTROLLER, chipSelect, resetGpio);
+		this(SpiConstants.DEFAULT_SPI_CONTROLLER, chipSelect, resetGpio);
 	}
 	
 	@SuppressWarnings("resource")

@@ -35,7 +35,7 @@ import java.util.Arrays;
 
 import org.tinylog.Logger;
 
-import com.diozero.api.SPIConstants;
+import com.diozero.api.SpiConstants;
 import com.diozero.api.SpiClockMode;
 import com.diozero.api.SpiDevice;
 import com.diozero.util.SleepUtil;
@@ -81,7 +81,7 @@ public class WS281xSpi implements LedDriverInterface {
 	public WS281xSpi(int controller, int chipSelect, Protocol protocol, StripType stripType, int numLeds,
 			int brightness) {
 		device = new SpiDevice(controller, chipSelect, protocol.getFrequency() * 3, SpiClockMode.MODE_0,
-				SPIConstants.DEFAULT_LSB_FIRST);
+				SpiConstants.DEFAULT_LSB_FIRST);
 		
 		this.protocol = protocol;
 		this.stripType = stripType;

@@ -33,7 +33,7 @@ package com.diozero.sampleapps.lcd;
 
 import org.tinylog.Logger;
 
-import com.diozero.api.SPIConstants;
+import com.diozero.api.SpiConstants;
 import com.diozero.devices.HD44780Lcd;
 import com.diozero.devices.HD44780Lcd.LcdConnection;
 import com.diozero.devices.HD44780Lcd.PiFaceCadLcdConnection;
@@ -59,7 +59,7 @@ import com.diozero.util.RuntimeIOException;
 public class LcdSampleApp16x2PiFaceCad {
 	// Main program block
 	public static void main(String[] args) {
-		int controller = SPIConstants.DEFAULT_SPI_CONTROLLER;
+		int controller = SpiConstants.DEFAULT_SPI_CONTROLLER;
 		if (args.length > 0) {
 			controller = Integer.parseInt(args[0]);
 		}

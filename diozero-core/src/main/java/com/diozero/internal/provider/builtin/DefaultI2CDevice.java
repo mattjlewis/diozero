@@ -35,12 +35,12 @@ import org.tinylog.Logger;
 
 import com.diozero.api.I2CConstants;
 import com.diozero.api.I2CDevice;
+import com.diozero.api.I2CDeviceInterface;
 import com.diozero.api.I2CSMBusInterface;
 import com.diozero.internal.provider.builtin.i2c.NativeI2CDeviceSMBus;
 import com.diozero.internal.provider.builtin.i2c.NativeI2CDeviceSysFs;
 import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.DeviceFactoryInterface;
-import com.diozero.internal.spi.I2CDeviceInterface;
 import com.diozero.util.LibraryLoader;
 import com.diozero.util.PropertyUtil;
 

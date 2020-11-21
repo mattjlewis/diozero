@@ -36,8 +36,8 @@ import java.util.UUID;
 import org.tinylog.Logger;
 
 import com.diozero.api.SerialDevice;
+import com.diozero.api.SerialDeviceInterface;
 import com.diozero.internal.spi.AbstractDevice;
-import com.diozero.internal.spi.SerialDeviceInterface;
 import com.diozero.remote.message.Response;
 import com.diozero.remote.message.SerialBytesAvailable;
 import com.diozero.remote.message.SerialBytesAvailableResponse;

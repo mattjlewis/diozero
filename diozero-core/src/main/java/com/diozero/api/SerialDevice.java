@@ -1,37 +1,5 @@
 package com.diozero.api;
 
-/*-
- * #%L
- * Organisation: diozero
- * Project:      Device I/O Zero - Core
- * Filename:     SerialDevice.java  
- * 
- * This file is part of the diozero project. More information about this project
- * can be found at http://www.diozero.com/
- * %%
- * Copyright (C) 2016 - 2020 diozero
- * %%
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- * 
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- * 
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- * #L%
- */
-
-import java.io.Closeable;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -41,11 +9,10 @@ import java.util.List;
 
 import org.tinylog.Logger;
 
-import com.diozero.internal.spi.SerialDeviceInterface;
 import com.diozero.util.DeviceFactoryHelper;
 import com.diozero.util.RuntimeIOException;
 
-public class SerialDevice implements SerialConstants, Closeable {
+public class SerialDevice implements SerialConstants, SerialDeviceInterface {
 	public static class DeviceInfo {
 		private String deviceName;
 		private String deviceFile;
@@ -53,9 +20,7 @@ public class SerialDevice implements SerialConstants, Closeable {
 		private String manufacturer;
 		private String driverName;
 		private String usbVendorId;
-		// private String usbVendorName;
 		private String usbProductId;
-		// private String usbProductName;
 
 		public DeviceInfo(String deviceName, String deviceFile, String description, String manufacturer,
 				String driverName, String usbVendorId, String usbProductId) {
@@ -97,6 +62,12 @@ public class SerialDevice implements SerialConstants, Closeable {
 		}
 	}
 
+	/**
+	 * Attempt to discover the locally attached serial devices using Linux device
+	 * tree
+	 * 
+	 * @return A list of locally attached devices
+	 */
 	public static List<DeviceInfo> getLocalSerialDevices() {
 		/*-
 		 * On Linux:
@@ -122,7 +93,7 @@ public class SerialDevice implements SerialConstants, Closeable {
 		 * 
 		 * For USB connected devices, the main files are under /sys/devices/platform/scb/<xxx.pcie>/.../usbx
 		 * Search for a directory that starts with "tty" and is more than 3 characters in length
-		 * Standard is 7 characters I think - ttyXXXN where XXX is something like USB|ACM|AMA and N is the instance number
+		 * Standard is 7 characters I think - ttyYYYN where YYY is something like USB|ACM|AMA and N is the instance number
 		 * E.g. usb1/1-1/1-1.2/1-1.2:1.0/ttyUSB0
 		 * Then navigate up two levels, e.g. usb1/1-1/1-1.2
 		 * Important files in this directory:
@@ -237,13 +208,54 @@ public class SerialDevice implements SerialConstants, Closeable {
 				usb_product_id);
 	}
 
-	private SerialDeviceInterface device;
+	private SerialDeviceInterface delegate;
+	private String deviceFilename;
 
+	/**
+	 * Create a new serial device using default values for
+	 * {@link SerialConstants#DEFAULT_BAUD baud},
+	 * {@link SerialConstants#DEFAULT_DATA_BITS data bits},
+	 * {@link SerialConstants#DEFAULT_STOP_BITS stop bits},
+	 * {@link SerialConstants#DEFAULT_PARITY parity},
+	 * {@link SerialConstants#DEFAULT_READ_BLOCKING read blocking},
+	 * {@link SerialConstants#DEFAULT_MIN_READ_CHARS min read chars} and
+	 * {@link SerialConstants#DEFAULT_READ_TIMEOUT_MILLIS read timeout}
+	 *
+	 * @param deviceFilename The O/S file name for the device, e.g. /dev/ttyACM0
+	 * @param baud           Baud rate, see {@link com.diozero.api.SerialConstants
+	 *                       SerialConstants} for valid baud rate values
+	 * @param dataBits       Number of
+	 *                       {@link com.diozero.api.SerialConstants.DataBits data
+	 *                       bits}
+	 * @param stopBits       Number of
+	 *                       {@link com.diozero.api.SerialConstants.StopBits stop
+	 *                       bits}
+	 * @param parity         Device error detection
+	 *                       {@link com.diozero.api.SerialConstants.Parity parity}
+	 */
 	public SerialDevice(String deviceFile) {
 		this(deviceFile, DEFAULT_BAUD, DEFAULT_DATA_BITS, DEFAULT_STOP_BITS, DEFAULT_PARITY, DEFAULT_READ_BLOCKING,
 				DEFAULT_MIN_READ_CHARS, DEFAULT_READ_TIMEOUT_MILLIS);
 	}
 
+	/**
+	 * Create a new serial device using default values for
+	 * {@link SerialConstants#DEFAULT_READ_BLOCKING read blocking},
+	 * {@link SerialConstants#DEFAULT_MIN_READ_CHARS min read chars} and
+	 * {@link SerialConstants#DEFAULT_READ_TIMEOUT_MILLIS read timeout}
+	 *
+	 * @param deviceFilename The O/S file name for the device, e.g. /dev/ttyACM0
+	 * @param baud           Baud rate, see {@link com.diozero.api.SerialConstants
+	 *                       SerialConstants} for valid baud rate values
+	 * @param dataBits       Number of
+	 *                       {@link com.diozero.api.SerialConstants.DataBits data
+	 *                       bits}
+	 * @param stopBits       Number of
+	 *                       {@link com.diozero.api.SerialConstants.StopBits stop
+	 *                       bits}
+	 * @param parity         Device error detection
+	 *                       {@link com.diozero.api.SerialConstants.Parity parity}
+	 */
 	public SerialDevice(String deviceFile, int baud, DataBits dataBits, StopBits stopBits, Parity parity) {
 		this(deviceFile, baud, dataBits, stopBits, parity, DEFAULT_READ_BLOCKING, DEFAULT_MIN_READ_CHARS,
 				DEFAULT_READ_TIMEOUT_MILLIS);
@@ -252,19 +264,19 @@ public class SerialDevice implements SerialConstants, Closeable {
 	/**
 	 * Create a new serial device
 	 *
-	 * @param deviceFile        The O/S file name for the device, e.g. /dev/ttyACM0
+	 * @param deviceFilename    The O/S file name for the device, e.g. /dev/ttyACM0
 	 * @param baud              Baud rate, see
 	 *                          {@link com.diozero.api.SerialConstants
 	 *                          SerialConstants} for valid baud rate values
-	 * @param dataBits          Number of data bits as per the enum
-	 *                          {@link com.diozero.api.SerialConstants.DataBits
-	 *                          DataBits}
-	 * @param stopBits          Number of stop bits as per the enum
-	 *                          {@link com.diozero.api.SerialConstants.StopBits
-	 *                          StopBits}
-	 * @param parity            Parity as per the enum
+	 * @param dataBits          Number of
+	 *                          {@link com.diozero.api.SerialConstants.DataBits data
+	 *                          bits}
+	 * @param stopBits          Number of
+	 *                          {@link com.diozero.api.SerialConstants.StopBits stop
+	 *                          bits}
+	 * @param parity            Device error detection
 	 *                          {@link com.diozero.api.SerialConstants.Parity
-	 *                          Parity}
+	 *                          parity}
 	 * @param readBlocking      Should all read operations block until data is
 	 *                          available?
 	 * @param minReadChars      Minimum number of characters to read (note actually
@@ -272,51 +284,93 @@ public class SerialDevice implements SerialConstants, Closeable {
 	 * @param readTimeoutMillis The read timeout value in milliseconds (note
 	 *                          converted to tenths of a second as an unsigned char)
 	 */
-	public SerialDevice(String deviceFile, int baud, DataBits dataBits, StopBits stopBits, Parity parity,
+	public SerialDevice(String deviceFilename, int baud, DataBits dataBits, StopBits stopBits, Parity parity,
 			boolean readBlocking, int minReadChars, int readTimeoutMillis) {
-		device = DeviceFactoryHelper.getNativeDeviceFactory().provisionSerialDevice(deviceFile, baud, dataBits,
+		delegate = DeviceFactoryHelper.getNativeDeviceFactory().provisionSerialDevice(deviceFilename, baud, dataBits,
 				stopBits, parity, readBlocking, minReadChars, readTimeoutMillis);
+
+		this.deviceFilename = deviceFilename;
 	}
 
+	/**
+	 * Get the device filename
+	 * 
+	 * @return the device filename, e.g. /dev/ttyUSB0
+	 */
+	public String getDeviceFilename() {
+		return deviceFilename;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	public void close() throws IOException {
+	public String getKey() {
+		return delegate.getKey();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean isOpen() {
+		return delegate.isOpen();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void close() {
 		Logger.trace("close()");
-		device.close();
+		delegate.close();
 	}
 
 	/**
-	 * Read a single byte returning error responses
-	 * 
-	 * @return Signed integer representation of the data read, including error
-	 *         responses (values &lt; 0)
+	 * {@inheritDoc}
 	 */
-	public int read() {
-		return device.read();
+	@Override
+	public int read() throws RuntimeIOException {
+		return delegate.read();
 	}
 
 	/**
-	 * Read a single byte, throw an exception if unable to read any data
-	 * 
-	 * @return The data read
-	 * @throws RuntimeIOException If unable to read data
+	 * {@inheritDoc}
 	 */
+	@Override
 	public byte readByte() throws RuntimeIOException {
-		return device.readByte();
+		return delegate.readByte();
 	}
 
-	public void writeByte(byte bVal) {
-		device.writeByte(bVal);
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void writeByte(byte bVal) throws RuntimeIOException {
+		delegate.writeByte(bVal);
 	}
 
-	public void read(byte[] buffer) {
-		device.read(buffer);
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public int read(byte[] buffer) throws RuntimeIOException {
+		return delegate.read(buffer);
 	}
 
-	public void write(byte[] buffer) {
-		device.write(buffer);
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void write(byte[] buffer) throws RuntimeIOException {
+		delegate.write(buffer);
 	}
 
-	public int bytesAvailable() {
-		return device.bytesAvailable();
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public int bytesAvailable() throws RuntimeIOException {
+		return delegate.bytesAvailable();
 	}
 }

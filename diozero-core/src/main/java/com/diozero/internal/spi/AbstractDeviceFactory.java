@@ -33,6 +33,7 @@ package com.diozero.internal.spi;
 
 import org.tinylog.Logger;
 
+import com.diozero.api.DeviceInterface;
 import com.diozero.api.PinInfo;
 import com.diozero.internal.DeviceStates;
 import com.diozero.util.DeviceFactoryHelper;

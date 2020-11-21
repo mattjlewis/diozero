@@ -32,7 +32,7 @@ package com.diozero.devices;
  */
 
 
-import com.diozero.api.SPIConstants;
+import com.diozero.api.SpiConstants;
 import com.diozero.api.SpiClockMode;
 import com.diozero.api.SpiDevice;
 import com.diozero.devices.mcp23xxx.MCP23x17;
@@ -50,15 +50,15 @@ public class MCP23S17 extends MCP23x17 {
 	private byte boardAddress;
 
 	public MCP23S17(int address) throws RuntimeIOException {
-		this(SPIConstants.DEFAULT_SPI_CONTROLLER, SPIConstants.CE0, address, INTERRUPT_GPIO_NOT_SET, INTERRUPT_GPIO_NOT_SET);
+		this(SpiConstants.DEFAULT_SPI_CONTROLLER, SpiConstants.CE0, address, INTERRUPT_GPIO_NOT_SET, INTERRUPT_GPIO_NOT_SET);
 	}
 
 	public MCP23S17(int address, int interruptGpio) throws RuntimeIOException {
-		this(SPIConstants.DEFAULT_SPI_CONTROLLER, SPIConstants.CE0, address, interruptGpio, interruptGpio);
+		this(SpiConstants.DEFAULT_SPI_CONTROLLER, SpiConstants.CE0, address, interruptGpio, interruptGpio);
 	}
 
 	public MCP23S17(int address, int interruptGpioA, int interruptGpioB) throws RuntimeIOException {
-		this(SPIConstants.DEFAULT_SPI_CONTROLLER, SPIConstants.CE0, address, interruptGpioA, interruptGpioB);
+		this(SpiConstants.DEFAULT_SPI_CONTROLLER, SpiConstants.CE0, address, interruptGpioA, interruptGpioB);
 	}
 
 	public MCP23S17(int controller, int chipSelect, int address, int interruptGpio) throws RuntimeIOException {

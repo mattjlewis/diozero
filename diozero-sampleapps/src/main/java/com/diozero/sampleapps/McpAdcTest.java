@@ -33,7 +33,7 @@ package com.diozero.sampleapps;
 
 import org.tinylog.Logger;
 
-import com.diozero.api.SPIConstants;
+import com.diozero.api.SpiConstants;
 import com.diozero.devices.McpAdc;
 import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;
@@ -71,7 +71,7 @@ public class McpAdcTest {
 		
 		int spi_chip_select = Integer.parseInt(args[1]);
 		int adc_pin = Integer.parseInt(args[2]);
-		int spi_controller = SPIConstants.DEFAULT_SPI_CONTROLLER;
+		int spi_controller = SpiConstants.DEFAULT_SPI_CONTROLLER;
 		if (args.length > 2) {
 			spi_controller = Integer.parseInt(args[3]);
 		}

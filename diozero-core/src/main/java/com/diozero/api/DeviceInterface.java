@@ -1,4 +1,4 @@
-package com.diozero.internal.spi;
+package com.diozero.api;
 
 /*
  * #%L
@@ -31,12 +31,26 @@ package com.diozero.internal.spi;
  * #L%
  */
 
-
 import java.io.Closeable;
 
 public interface DeviceInterface extends Closeable {
+	/**
+	 * Get the unique key for this device
+	 * 
+	 * @return unique device identifier
+	 */
 	String getKey();
+
+	/**
+	 * Check if this device is open or closed
+	 * 
+	 * @return true if this device is open
+	 */
 	boolean isOpen();
+
+	/**
+	 * Close this device
+	 */
 	@Override
 	void close();
 }

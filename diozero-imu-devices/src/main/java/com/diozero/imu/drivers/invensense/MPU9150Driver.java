@@ -997,7 +997,7 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 
 		byte[] data = new byte[MAX_PACKET_LENGTH];
 		// fifo_count_h == 0x72 == MPU9150_RA_FIFO_COUNTH
-		//fifo_count = readUShort(MPU9150_RA_FIFO_COUNTH, SUB_ADDRESS_SIZE_1_BYTE);
+		//fifo_count = readUShort(MPU9150_RA_FIFO_COUNTH);
 		data = i2cDevice.readI2CBlockDataByteArray(MPU9150_RA_FIFO_COUNTH, 2);
 		int fifo_count = ((data[0] & 0xff) << 8) | (data[1] & 0xff);
 		//fifo_count = (data[0] << 8) | data[1];
@@ -1073,12 +1073,12 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 		}
 		
 		// fifo_count_h == 0x72 == MPU9150_RA_FIFO_COUNTH
-		//int fifo_count = readUShort(MPU9150_RA_FIFO_COUNTH, SUB_ADDRESS_SIZE_1_BYTE);
+		//int fifo_count = readUShort(MPU9150_RA_FIFO_COUNTH);
 		byte[] tmp = i2cDevice.readI2CBlockDataByteArray(MPU9150_RA_FIFO_COUNTH, 2);
 		//System.out.format("mpu_read_fifo_stream(), fifo count msb=0x%x, lsb=0x%x%n",
 		//		Byte.valueOf(tmp[0]), Byte.valueOf(tmp[1]));
 		int fifo_count = ((tmp[0] & 0xff) << 8) | (tmp[1] & 0xff);
-		//int fifo_count = readUShort(MPU9150_RA_FIFO_COUNTH, SUB_ADDRESS_SIZE_1_BYTE);
+		//int fifo_count = readUShort(MPU9150_RA_FIFO_COUNTH);
 		if (fifo_count < length) {
 			//Logger.trace("mpu_read_fifo_stream() fifo_count ({}) < length ({})", fifo_count, length);
 			return null;

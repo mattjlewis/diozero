@@ -35,9 +35,9 @@ import org.tinylog.Logger;
 
 import com.diozero.api.SerialConstants;
 import com.diozero.api.SerialDevice;
+import com.diozero.api.SerialDeviceInterface;
 import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.DeviceFactoryInterface;
-import com.diozero.internal.spi.SerialDeviceInterface;
 import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 

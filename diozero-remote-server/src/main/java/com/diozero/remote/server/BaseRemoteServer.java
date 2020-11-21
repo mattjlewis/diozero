@@ -6,23 +6,23 @@ import java.util.List;
 
 import org.tinylog.Logger;
 
+import com.diozero.api.DeviceInterface;
 import com.diozero.api.DeviceMode;
 import com.diozero.api.DigitalInputEvent;
 import com.diozero.api.I2CConstants;
+import com.diozero.api.I2CDeviceInterface;
 import com.diozero.api.I2CSMBusInterface;
 import com.diozero.api.InputEventListener;
 import com.diozero.api.PinInfo;
+import com.diozero.api.SerialDeviceInterface;
 import com.diozero.internal.spi.AnalogInputDeviceInterface;
 import com.diozero.internal.spi.AnalogOutputDeviceInterface;
-import com.diozero.internal.spi.DeviceInterface;
 import com.diozero.internal.spi.GpioDigitalDeviceInterface;
 import com.diozero.internal.spi.GpioDigitalInputDeviceInterface;
 import com.diozero.internal.spi.GpioDigitalInputOutputDeviceInterface;
 import com.diozero.internal.spi.GpioDigitalOutputDeviceInterface;
-import com.diozero.internal.spi.I2CDeviceInterface;
 import com.diozero.internal.spi.NativeDeviceFactoryInterface;
 import com.diozero.internal.spi.PwmOutputDeviceInterface;
-import com.diozero.internal.spi.SerialDeviceInterface;
 import com.diozero.internal.spi.SpiDeviceInterface;
 import com.diozero.remote.message.GetBoardInfoRequest;
 import com.diozero.remote.message.GetBoardInfoResponse;

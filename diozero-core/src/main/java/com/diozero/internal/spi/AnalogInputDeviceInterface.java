@@ -32,6 +32,7 @@ package com.diozero.internal.spi;
  */
 
 import com.diozero.api.AnalogInputEvent;
+import com.diozero.api.DeviceInterface;
 import com.diozero.api.DeviceMode;
 import com.diozero.api.InputEventListener;
 import com.diozero.util.RuntimeIOException;

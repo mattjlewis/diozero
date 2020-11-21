@@ -34,7 +34,7 @@ package com.diozero.sampleapps;
 import org.tinylog.Logger;
 
 import com.diozero.api.GpioPullUpDown;
-import com.diozero.api.SPIConstants;
+import com.diozero.api.SpiConstants;
 import com.diozero.devices.Button;
 import com.diozero.devices.MCP23S17;
 import com.diozero.util.SleepUtil;
@@ -42,7 +42,7 @@ import com.diozero.util.SleepUtil;
 public class MCP23S17Test {
 	public static void main(String[] args) {
 		int address = 0;
-		try (MCP23S17 mcp23s17 = new MCP23S17(SPIConstants.DEFAULT_SPI_CONTROLLER, SPIConstants.CE1, address, 25);
+		try (MCP23S17 mcp23s17 = new MCP23S17(SpiConstants.DEFAULT_SPI_CONTROLLER, SpiConstants.CE1, address, 25);
 				Button button0 = new Button(mcp23s17, 0, GpioPullUpDown.PULL_UP);
 				Button button1 = new Button(mcp23s17, 1, GpioPullUpDown.PULL_UP);
 				Button button2 = new Button(mcp23s17, 2, GpioPullUpDown.PULL_UP);

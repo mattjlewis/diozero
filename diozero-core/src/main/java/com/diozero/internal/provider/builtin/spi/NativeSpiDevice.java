@@ -36,7 +36,7 @@ import java.io.Closeable;
 
 import org.tinylog.Logger;
 
-import com.diozero.api.SPIConstants;
+import com.diozero.api.SpiConstants;
 import com.diozero.api.SpiClockMode;
 import com.diozero.util.LibraryLoader;
 import com.diozero.util.RuntimeIOException;
@@ -64,7 +64,7 @@ public class NativeSpiDevice implements Closeable {
 		this.chipSelect = chipSelect;
 		this.speedHz = speedHz;
 		this.spiMode = mode.getMode();
-		bitsPerWord = SPIConstants.DEFAULT_WORD_LENGTH;
+		bitsPerWord = SpiConstants.DEFAULT_WORD_LENGTH;
 		String spidev = "/dev/spidev" + controller + "." + chipSelect;
 		
 		Logger.trace("Opening {}, frequency {} Hz, mode {}", spidev, Integer.valueOf(speedHz), mode);
