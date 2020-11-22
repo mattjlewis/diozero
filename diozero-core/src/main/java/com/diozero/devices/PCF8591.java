@@ -46,7 +46,7 @@ import com.diozero.internal.spi.AnalogInputDeviceFactoryInterface;
 import com.diozero.internal.spi.AnalogInputDeviceInterface;
 import com.diozero.internal.spi.AnalogOutputDeviceFactoryInterface;
 import com.diozero.internal.spi.AnalogOutputDeviceInterface;
-import com.diozero.util.BoardPinInfo;
+import com.diozero.sbc.BoardPinInfo;
 import com.diozero.util.RuntimeIOException;
 
 /**

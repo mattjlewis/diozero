@@ -35,7 +35,7 @@ import org.tinylog.Logger;
 
 import com.diozero.api.PwmOutputDevice;
 import com.diozero.internal.spi.PwmOutputDeviceFactoryInterface;
-import com.diozero.util.DeviceFactoryHelper;
+import com.diozero.sbc.DeviceFactoryHelper;
 import com.diozero.util.RuntimeIOException;
 
 /**

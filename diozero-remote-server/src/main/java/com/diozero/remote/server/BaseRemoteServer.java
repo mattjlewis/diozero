@@ -86,8 +86,8 @@ import com.diozero.remote.message.SpiOpen;
 import com.diozero.remote.message.SpiResponse;
 import com.diozero.remote.message.SpiWrite;
 import com.diozero.remote.message.SpiWriteAndRead;
-import com.diozero.util.BoardInfo;
-import com.diozero.util.DeviceFactoryHelper;
+import com.diozero.sbc.BoardInfo;
+import com.diozero.sbc.DeviceFactoryHelper;
 import com.diozero.util.RuntimeIOException;
 
 @SuppressWarnings("resource")

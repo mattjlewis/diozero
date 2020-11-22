@@ -60,7 +60,7 @@ import com.diozero.internal.spi.GpioDigitalInputDeviceInterface;
 import com.diozero.internal.spi.GpioDigitalInputOutputDeviceInterface;
 import com.diozero.internal.spi.GpioDigitalOutputDeviceInterface;
 import com.diozero.internal.spi.PwmOutputDeviceInterface;
-import com.diozero.util.BoardInfo;
+import com.diozero.sbc.BoardInfo;
 import com.diozero.util.PropertyUtil;
 import com.diozero.util.RuntimeIOException;
 

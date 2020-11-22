@@ -43,7 +43,7 @@ import com.diozero.api.OutputDeviceCollection;
 import com.diozero.api.OutputDeviceInterface;
 import com.diozero.internal.spi.PwmOutputDeviceFactoryInterface;
 import com.diozero.internal.spi.PwmOutputDeviceInterface;
-import com.diozero.util.DeviceFactoryHelper;
+import com.diozero.sbc.DeviceFactoryHelper;
 import com.diozero.util.RangeUtil;
 import com.diozero.util.RuntimeIOException;
 

@@ -1,4 +1,4 @@
-package com.diozero.util;
+package com.diozero.sbc;
 
 /*
  * #%L
@@ -41,7 +41,8 @@ import java.util.Properties;
 
 import org.tinylog.Logger;
 
-import com.diozero.internal.board.UnknownBoardInfo;
+import com.diozero.internal.spi.BoardInfoProvider;
+import com.diozero.util.RuntimeIOException;
 
 /**
  * <p>

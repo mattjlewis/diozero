@@ -1,7 +1,5 @@
 package com.diozero.api;
 
-import com.diozero.util.RuntimeIOException;
-
 /*-
  * #%L
  * Organisation: diozero
@@ -32,6 +30,8 @@ import com.diozero.util.RuntimeIOException;
  * THE SOFTWARE.
  * #L%
  */
+
+import com.diozero.util.RuntimeIOException;
 
 public interface SerialDeviceInterface extends DeviceInterface {
 	/**

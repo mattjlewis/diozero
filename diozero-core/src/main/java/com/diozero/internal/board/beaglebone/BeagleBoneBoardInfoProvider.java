@@ -40,8 +40,8 @@ import java.nio.file.Paths;
 import org.tinylog.Logger;
 
 import com.diozero.api.PinInfo;
-import com.diozero.util.BoardInfo;
-import com.diozero.util.BoardInfoProvider;
+import com.diozero.internal.spi.BoardInfoProvider;
+import com.diozero.sbc.BoardInfo;
 
 public class BeagleBoneBoardInfoProvider implements BoardInfoProvider {
 	public static final String MAKE = "BeagleBone";

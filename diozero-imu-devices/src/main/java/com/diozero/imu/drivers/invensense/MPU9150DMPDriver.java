@@ -320,15 +320,15 @@ public class MPU9150DMPDriver implements MPU9150DMPConstants {
 	    tmp2[1] = (byte)(dmp_thresh_2 & 0xFF);
 
 	    if ((axis & TAP_X) != 0) {
-	        mpu.mpu_write_mem(DMP612.DMP_TAP_THX, tmp1);
+	        mpu.mpu_write_mem(DMPMap.DMP_TAP_THX, tmp1);
 	        mpu.mpu_write_mem(DMP612.D_1_36, tmp2);
 	    }
 	    if ((axis & TAP_Y) != 0) {
-	        mpu.mpu_write_mem(DMP612.DMP_TAP_THY, tmp1);
+	        mpu.mpu_write_mem(DMPMap.DMP_TAP_THY, tmp1);
 	        mpu.mpu_write_mem(DMP612.D_1_40, tmp2);
 	    }
 	    if ((axis & TAP_Z) != 0) {
-	        mpu.mpu_write_mem(DMP612.DMP_TAP_THZ, tmp1);
+	        mpu.mpu_write_mem(DMPMap.DMP_TAP_THZ, tmp1);
 	        mpu.mpu_write_mem(DMP612.D_1_44, tmp2);
 	    }
 	    return true;

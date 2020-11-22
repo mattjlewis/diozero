@@ -36,7 +36,7 @@ import org.tinylog.Logger;
 import com.diozero.api.DeviceInterface;
 import com.diozero.api.PinInfo;
 import com.diozero.internal.DeviceStates;
-import com.diozero.util.DeviceFactoryHelper;
+import com.diozero.sbc.DeviceFactoryHelper;
 
 public abstract class AbstractDeviceFactory implements DeviceFactoryInterface {
 	private String deviceFactoryPrefix;

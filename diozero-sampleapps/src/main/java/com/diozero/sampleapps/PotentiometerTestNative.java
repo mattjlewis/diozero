@@ -34,7 +34,7 @@ package com.diozero.sampleapps;
 import org.tinylog.Logger;
 
 import com.diozero.devices.Potentiometer;
-import com.diozero.util.DeviceFactoryHelper;
+import com.diozero.sbc.DeviceFactoryHelper;
 import com.diozero.util.SleepUtil;
 
 /**

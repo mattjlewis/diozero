@@ -35,7 +35,7 @@ package com.diozero.api;
 import org.tinylog.Logger;
 
 import com.diozero.internal.spi.NativeDeviceFactoryInterface;
-import com.diozero.util.DeviceFactoryHelper;
+import com.diozero.sbc.DeviceFactoryHelper;
 import com.diozero.util.RuntimeIOException;
 
 /**

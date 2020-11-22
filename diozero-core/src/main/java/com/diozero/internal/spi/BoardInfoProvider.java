@@ -1,10 +1,10 @@
-package com.diozero.util;
+package com.diozero.internal.spi;
 
-/*-
+/*
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - Core
- * Filename:     SystemInfoConstants.java  
+ * Filename:     BoardInfoProvider.java  
  * 
  * This file is part of the diozero project. More information about this project
  * can be found at http://www.diozero.com/
@@ -31,18 +31,16 @@ package com.diozero.util;
  * #L%
  */
 
-public interface SystemInfoConstants {
-	static final String OS_NAME_SYSTEM_PROPERTY = "os.name";
-	static final String OS_ARCH_SYSTEM_PROPERTY = "os.arch";
-	static final String ARM_32_OS_ARCH = "arm";
-	static final String ARM_64_OS_ARCH = "aarch64";
-	static final String LINUX_OS_NAME = "Linux";
+import java.util.ServiceLoader;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
-	// Linux system files used for discovery
-	static final String LINUX_OS_RELEASE_FILE = "/etc/os-release";
-	static final String LINUX_CPUINFO_FILE = "/proc/cpuinfo";
-	static final String LINUX_MEMINFO_FILE = "/proc/meminfo";
-	static final String LINUX_DEVICE_TREE_COMPATIBLE_FILE = "/proc/device-tree/compatible";
-	static final String LINUX_DEVICE_TREE_MODEL_FILE = "/proc/device-tree/model";
-	static final String LINUX_DEVICE_TREE_SERIAL_NUMBER_FILE = "/proc/device-tree/serial-number";
+import com.diozero.sbc.BoardInfo;
+
+public interface BoardInfoProvider {
+	BoardInfo lookup(String hardware, String revision, Integer memoryKb);
+
+	static Stream<BoardInfoProvider> loadInstances() {
+		return StreamSupport.stream(ServiceLoader.load(BoardInfoProvider.class).spliterator(), false);
+	}
 }

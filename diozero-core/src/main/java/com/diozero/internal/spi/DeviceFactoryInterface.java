@@ -36,7 +36,7 @@ import java.io.Closeable;
 
 import com.diozero.api.DeviceInterface;
 import com.diozero.api.PinInfo;
-import com.diozero.util.BoardPinInfo;
+import com.diozero.sbc.BoardPinInfo;
 import com.diozero.util.RuntimeIOException;
 
 public interface DeviceFactoryInterface extends Closeable {

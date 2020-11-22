@@ -32,9 +32,9 @@ package com.diozero.internal.board.tinkerboard;
  */
 
 import com.diozero.internal.board.GenericLinuxArmBoardInfo;
+import com.diozero.internal.spi.BoardInfoProvider;
 import com.diozero.internal.spi.MmapGpioInterface;
-import com.diozero.util.BoardInfo;
-import com.diozero.util.BoardInfoProvider;
+import com.diozero.sbc.BoardInfo;
 
 public class TinkerBoardBoardInfoProvider implements BoardInfoProvider {
 	public static final TinkerBoardBoardInfo TINKER_BOARD = new TinkerBoardBoardInfo();

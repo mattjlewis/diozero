@@ -63,7 +63,6 @@ public class CamJamRobot extends RobotTest {
 		}
 	}
 	
-	@SuppressWarnings("resource")
 	public CamJamRobot() {
 		super(new CamJamKitDualMotor());
 	}

@@ -35,7 +35,7 @@ import org.tinylog.Logger;
 
 import com.diozero.api.DeviceMode;
 import com.diozero.internal.spi.MmapGpioInterface;
-import com.diozero.util.DeviceFactoryHelper;
+import com.diozero.sbc.DeviceFactoryHelper;
 
 public class MmapGpioPerfTest {
 	private static final int ITERATIONS = 1_000_000;

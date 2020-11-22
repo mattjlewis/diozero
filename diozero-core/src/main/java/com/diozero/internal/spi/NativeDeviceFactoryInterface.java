@@ -36,7 +36,7 @@ import java.util.ServiceLoader;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import com.diozero.util.BoardInfo;
+import com.diozero.sbc.BoardInfo;
 
 public interface NativeDeviceFactoryInterface extends GpioDeviceFactoryInterface, SpiDeviceFactoryInterface,
 		I2CDeviceFactoryInterface, PwmOutputDeviceFactoryInterface, AnalogInputDeviceFactoryInterface,

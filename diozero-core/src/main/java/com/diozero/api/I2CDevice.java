@@ -37,8 +37,8 @@ import java.nio.ByteOrder;
 import org.tinylog.Logger;
 
 import com.diozero.internal.spi.I2CDeviceFactoryInterface;
+import com.diozero.sbc.DeviceFactoryHelper;
 import com.diozero.util.BitManipulation;
-import com.diozero.util.DeviceFactoryHelper;
 import com.diozero.util.RuntimeIOException;
 
 /**

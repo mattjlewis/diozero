@@ -40,7 +40,7 @@ import java.util.List;
 import com.diozero.api.Action;
 import com.diozero.api.OutputDeviceInterface;
 import com.diozero.internal.spi.GpioDeviceFactoryInterface;
-import com.diozero.util.DeviceFactoryHelper;
+import com.diozero.sbc.DeviceFactoryHelper;
 import com.diozero.util.RangeUtil;
 import com.diozero.util.RuntimeIOException;
 

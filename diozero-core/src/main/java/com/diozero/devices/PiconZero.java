@@ -59,7 +59,7 @@ import com.diozero.internal.spi.GpioDigitalInputOutputDeviceInterface;
 import com.diozero.internal.spi.GpioDigitalOutputDeviceInterface;
 import com.diozero.internal.spi.PwmOutputDeviceFactoryInterface;
 import com.diozero.internal.spi.PwmOutputDeviceInterface;
-import com.diozero.util.BoardPinInfo;
+import com.diozero.sbc.BoardPinInfo;
 import com.diozero.util.RangeUtil;
 import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;

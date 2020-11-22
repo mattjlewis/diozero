@@ -48,7 +48,7 @@ import com.diozero.animation.easing.Cubic;
 import com.diozero.animation.easing.EasingFunction;
 import com.diozero.animation.easing.Elastic;
 import com.diozero.api.OutputDeviceInterface;
-import com.diozero.util.DeviceFactoryHelper;
+import com.diozero.sbc.DeviceFactoryHelper;
 import com.google.gson.Gson;
 
 public class GsonAnimationTest {

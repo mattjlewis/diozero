@@ -36,9 +36,9 @@ import java.util.Collections;
 import java.util.Map;
 
 import com.diozero.api.PinInfo;
-import com.diozero.util.BoardInfo;
-import com.diozero.util.DeviceFactoryHelper;
-import com.diozero.util.SystemInfo;
+import com.diozero.sbc.BoardInfo;
+import com.diozero.sbc.DeviceFactoryHelper;
+import com.diozero.sbc.SystemInfo;
 
 public class SystemInformation {
 	public static void main(String[] args) {

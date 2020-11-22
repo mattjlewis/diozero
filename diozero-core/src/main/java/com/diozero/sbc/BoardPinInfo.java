@@ -1,4 +1,4 @@
-package com.diozero.util;
+package com.diozero.sbc;
 
 /*
  * #%L

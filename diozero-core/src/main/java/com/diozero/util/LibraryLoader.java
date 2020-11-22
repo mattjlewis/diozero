@@ -40,6 +40,9 @@ import java.util.Map;
 
 import org.tinylog.Logger;
 
+import com.diozero.sbc.SystemInfo;
+import com.diozero.sbc.SystemInfoConstants;
+
 public class LibraryLoader {
 	private static final Map<String, Boolean> LOADED_LIBRARIES = new HashMap<>();
 	private static final String LIBRARY_EXTENSION = System.getProperty(SystemInfoConstants.OS_NAME_SYSTEM_PROPERTY)

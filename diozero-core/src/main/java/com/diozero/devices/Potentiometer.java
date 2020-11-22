@@ -34,7 +34,7 @@ package com.diozero.devices;
 
 import com.diozero.api.AnalogInputDevice;
 import com.diozero.internal.spi.AnalogInputDeviceFactoryInterface;
-import com.diozero.util.DeviceFactoryHelper;
+import com.diozero.sbc.DeviceFactoryHelper;
 
 /**
  * Supports taking readings from a <a href="https://en.wikipedia.org/wiki/Potentiometer">potentiometer</a>.

@@ -45,7 +45,7 @@ import com.diozero.internal.DeviceStates;
 import com.diozero.internal.provider.test.TestDeviceFactory;
 import com.diozero.internal.provider.test.TestI2CDevice;
 import com.diozero.internal.provider.test.TestMcpAdcSpiDevice;
-import com.diozero.util.DeviceFactoryHelper;
+import com.diozero.sbc.DeviceFactoryHelper;
 import com.diozero.util.RuntimeIOException;
 
 @SuppressWarnings("static-method")

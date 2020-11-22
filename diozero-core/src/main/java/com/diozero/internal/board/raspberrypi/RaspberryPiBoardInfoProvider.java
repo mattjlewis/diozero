@@ -38,9 +38,9 @@ import org.tinylog.Logger;
 
 import com.diozero.api.PinInfo;
 import com.diozero.internal.board.GenericLinuxArmBoardInfo;
+import com.diozero.internal.spi.BoardInfoProvider;
 import com.diozero.internal.spi.MmapGpioInterface;
-import com.diozero.util.BoardInfo;
-import com.diozero.util.BoardInfoProvider;
+import com.diozero.sbc.BoardInfo;
 
 /**
  * See

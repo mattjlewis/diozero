@@ -44,7 +44,7 @@ import com.diozero.internal.spi.AbstractDeviceFactory;
 import com.diozero.internal.spi.AbstractInputDevice;
 import com.diozero.internal.spi.AnalogInputDeviceFactoryInterface;
 import com.diozero.internal.spi.AnalogInputDeviceInterface;
-import com.diozero.util.BoardPinInfo;
+import com.diozero.sbc.BoardPinInfo;
 import com.diozero.util.RuntimeIOException;
 
 public class McpAdc extends AbstractDeviceFactory implements AnalogInputDeviceFactoryInterface {

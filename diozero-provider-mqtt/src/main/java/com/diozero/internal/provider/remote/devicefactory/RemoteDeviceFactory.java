@@ -72,7 +72,7 @@ import com.diozero.remote.message.GpioPwmReadResponse;
 import com.diozero.remote.message.GpioPwmWrite;
 import com.diozero.remote.message.RemoteProtocolInterface;
 import com.diozero.remote.message.Response;
-import com.diozero.util.BoardInfo;
+import com.diozero.sbc.BoardInfo;
 import com.diozero.util.RuntimeIOException;
 
 public class RemoteDeviceFactory extends BaseNativeDeviceFactory {

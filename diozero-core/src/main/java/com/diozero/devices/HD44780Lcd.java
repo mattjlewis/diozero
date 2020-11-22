@@ -38,7 +38,7 @@ import java.util.Map;
 import com.diozero.api.I2CConstants;
 import com.diozero.devices.mcp23xxx.MCP23xxx;
 import com.diozero.internal.spi.I2CDeviceFactoryInterface;
-import com.diozero.util.DeviceFactoryHelper;
+import com.diozero.sbc.DeviceFactoryHelper;
 import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 

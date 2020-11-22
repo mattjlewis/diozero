@@ -35,7 +35,7 @@ import org.tinylog.Logger;
 
 import com.diozero.internal.spi.GpioDigitalOutputDeviceInterface;
 import com.diozero.internal.spi.NativeDeviceFactoryInterface;
-import com.diozero.util.DeviceFactoryHelper;
+import com.diozero.sbc.DeviceFactoryHelper;
 import com.diozero.util.RuntimeIOException;
 
 public class SpiGpioPerfTest {

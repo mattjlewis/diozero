@@ -41,7 +41,7 @@ import com.diozero.internal.provider.test.TestDeviceFactory;
 import com.diozero.internal.provider.test.TestDigitalInputDevice;
 import com.diozero.internal.provider.test.TestDigitalOutputDevice;
 import com.diozero.internal.spi.NativeDeviceFactoryInterface;
-import com.diozero.util.DeviceFactoryHelper;
+import com.diozero.sbc.DeviceFactoryHelper;
 import com.diozero.util.RuntimeIOException;
 
 /**

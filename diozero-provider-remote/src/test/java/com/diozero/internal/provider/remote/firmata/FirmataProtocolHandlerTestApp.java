@@ -36,8 +36,8 @@ import org.tinylog.Logger;
 import com.diozero.api.AnalogInputDevice;
 import com.diozero.devices.LED;
 import com.diozero.devices.PwmLed;
-import com.diozero.util.BoardInfo;
-import com.diozero.util.DeviceFactoryHelper;
+import com.diozero.sbc.BoardInfo;
+import com.diozero.sbc.DeviceFactoryHelper;
 
 public class FirmataProtocolHandlerTestApp {
 	public static void main(String[] args) {

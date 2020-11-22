@@ -33,7 +33,7 @@ package com.diozero.devices.mcp23xxx;
 
 
 import com.diozero.api.PinInfo;
-import com.diozero.util.BoardPinInfo;
+import com.diozero.sbc.BoardPinInfo;
 
 public abstract class MCP23x08 extends MCP23xxx {
 	private static final int NUM_PORTS = 1;

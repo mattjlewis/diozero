@@ -68,7 +68,8 @@ public class GpioChip extends GpioChipInfo implements Closeable, GpioLineEventLi
 				.collect(Collectors.toMap(GpioChip::getChipId, chip -> chip));
 
 		// Calculate the line offset for the chips
-		// This allows GPIOs to be auto-detected as the GPIO number is chip offset + line offset
+		// This allows GPIOs to be auto-detected as the GPIO number is chip offset +
+		// line offset
 		AtomicInteger offset = new AtomicInteger(0);
 		chips.entrySet().stream().sorted(Map.Entry.comparingByKey()).forEach(entry -> {
 			entry.getValue().setLineOffset(offset.getAndAdd(entry.getValue().getNumLines()));
@@ -76,7 +77,7 @@ public class GpioChip extends GpioChipInfo implements Closeable, GpioLineEventLi
 
 		return chips;
 	}
-	
+
 	public static ArrayList<GpioChipInfo> getChips() {
 		return NativeGpioDevice.getChips();
 	}
@@ -94,39 +95,39 @@ public class GpioChip extends GpioChipInfo implements Closeable, GpioLineEventLi
 
 	// Linerequest flags
 	// https://elixir.bootlin.com/linux/v4.9.127/source/include/uapi/linux/gpio.h#L58
-	private static final int GPIOHANDLE_REQUEST_INPUT = (1 << 0);
-	private static final int GPIOHANDLE_REQUEST_OUTPUT = (1 << 1);
-	private static final int GPIOHANDLE_REQUEST_ACTIVE_LOW = (1 << 2);
-	private static final int GPIOHANDLE_REQUEST_OPEN_DRAIN = (1 << 3);
-	private static final int GPIOHANDLE_REQUEST_OPEN_SOURCE = (1 << 4);
+	private static final int GPIOHANDLE_REQUEST_INPUT = 1 << 0;
+	private static final int GPIOHANDLE_REQUEST_OUTPUT = 1 << 1;
+	private static final int GPIOHANDLE_REQUEST_ACTIVE_LOW = 1 << 2;
+	private static final int GPIOHANDLE_REQUEST_OPEN_DRAIN = 1 << 3;
+	private static final int GPIOHANDLE_REQUEST_OPEN_SOURCE = 1 << 4;
 
 	// Eventrequest flags
 	// https://elixir.bootlin.com/linux/v4.9.127/source/include/uapi/linux/gpio.h#L109
-	private static final int GPIOEVENT_REQUEST_RISING_EDGE = (1 << 0);
-	private static final int GPIOEVENT_REQUEST_FALLING_EDGE = (1 << 1);
-	private static final int GPIOEVENT_REQUEST_BOTH_EDGES = ((1 << 0) | (1 << 1));
+	private static final int GPIOEVENT_REQUEST_RISING_EDGE = 1 << 0;
+	private static final int GPIOEVENT_REQUEST_FALLING_EDGE = 1 << 1;
+	private static final int GPIOEVENT_REQUEST_BOTH_EDGES = (1 << 0) | (1 << 1);
 
 	// GPIO event types
 	// https://elixir.bootlin.com/linux/v4.9.127/source/include/uapi/linux/gpio.h#L136
 	public static final int GPIOEVENT_EVENT_RISING_EDGE = 0x01;
 	public static final int GPIOEVENT_EVENT_FALLING_EDGE = 0x02;
 
-	private int chipId;
-	private int fd;
+	private final int chipId;
+	private final int fd;
 	private int lineOffset;
 	private GpioLine[] lines;
-	private Map<String, GpioLine> linesByName;
+	private final Map<String, GpioLine> linesByName;
 	private int epollFd;
-	private Map<Integer, GpioLineEventListener> fdToListener;
-	private AtomicBoolean running;
-	private Queue<NativeGpioEvent> eventQueue;
-	private Lock lock;
-	private Condition condition;
+	private final Map<Integer, GpioLineEventListener> fdToListener;
+	private final AtomicBoolean running;
+	private final Queue<NativeGpioEvent> eventQueue;
+	private final Lock lock;
+	private final Condition condition;
 
 	private Future<?> processEventsFuture;
 	private Future<?> eventLoopFuture;
 
-	private GpioChip(String name, String label, int fd, GpioLine[] lines) {
+	private GpioChip(String name, String label, int fd, GpioLine... lines) {
 		super(name, label, lines.length);
 
 		chipId = Integer.parseInt(name.substring(GPIO_CHIP_FILENAME_PREFIX.length()));
@@ -150,11 +151,11 @@ public class GpioChip extends GpioChipInfo implements Closeable, GpioLineEventLi
 	public int getChipId() {
 		return chipId;
 	}
-	
+
 	public int getLineOffset() {
 		return lineOffset;
 	}
-	
+
 	private void setLineOffset(int lineOffset) {
 		this.lineOffset = lineOffset;
 	}
@@ -321,10 +322,11 @@ public class GpioChip extends GpioChipInfo implements Closeable, GpioLineEventLi
 				if (event == null) {
 					Logger.debug("No event returned");
 				} else {
-					Integer fd = Integer.valueOf(event.fd);
-					GpioLineEventListener listener = fdToListener.get(fd);
+					Integer event_fd = Integer.valueOf(event.fd);
+					GpioLineEventListener listener = fdToListener.get(event_fd);
 					if (listener == null) {
-						Logger.warn("No listener for fd {}, event data: '{}'", fd, Integer.valueOf(event.eventDataId));
+						Logger.warn("No listener for fd {}, event data: '{}'", event_fd,
+								Integer.valueOf(event.eventDataId));
 					} else {
 						listener.event(event.fd, event.eventDataId, event.timestampNanos);
 					}

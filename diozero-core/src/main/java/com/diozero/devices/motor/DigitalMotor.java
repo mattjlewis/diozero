@@ -38,7 +38,7 @@ import org.tinylog.Logger;
 
 import com.diozero.api.DigitalOutputDevice;
 import com.diozero.internal.spi.GpioDeviceFactoryInterface;
-import com.diozero.util.DeviceFactoryHelper;
+import com.diozero.sbc.DeviceFactoryHelper;
 import com.diozero.util.RuntimeIOException;
 
 public class DigitalMotor implements Closeable {

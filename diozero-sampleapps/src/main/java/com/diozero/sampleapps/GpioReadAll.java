@@ -39,8 +39,8 @@ import org.tinylog.Logger;
 import com.diozero.api.DeviceMode;
 import com.diozero.api.PinInfo;
 import com.diozero.internal.spi.MmapGpioInterface;
-import com.diozero.util.BoardInfo;
-import com.diozero.util.DeviceFactoryHelper;
+import com.diozero.sbc.BoardInfo;
+import com.diozero.sbc.DeviceFactoryHelper;
 
 public class GpioReadAll {
 	public static void main(String[] args) {

@@ -35,9 +35,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.diozero.internal.board.GenericLinuxArmBoardInfo;
+import com.diozero.internal.spi.BoardInfoProvider;
 import com.diozero.internal.spi.MmapGpioInterface;
-import com.diozero.util.BoardInfo;
-import com.diozero.util.BoardInfoProvider;
+import com.diozero.sbc.BoardInfo;
 
 public class OdroidBoardInfoProvider implements BoardInfoProvider {
 	public static final OdroidC1BoardInfo ODROID_C1 = new OdroidC1BoardInfo();

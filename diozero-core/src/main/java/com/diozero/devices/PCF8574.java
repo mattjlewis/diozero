@@ -51,9 +51,9 @@ import com.diozero.internal.spi.GpioDigitalInputDeviceInterface;
 import com.diozero.internal.spi.GpioDigitalInputOutputDeviceInterface;
 import com.diozero.internal.spi.GpioDigitalOutputDeviceInterface;
 import com.diozero.internal.spi.I2CDeviceFactoryInterface;
+import com.diozero.sbc.BoardPinInfo;
+import com.diozero.sbc.DeviceFactoryHelper;
 import com.diozero.util.BitManipulation;
-import com.diozero.util.BoardPinInfo;
-import com.diozero.util.DeviceFactoryHelper;
 import com.diozero.util.MutableByte;
 import com.diozero.util.RuntimeIOException;
 

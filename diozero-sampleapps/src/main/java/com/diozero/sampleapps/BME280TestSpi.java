@@ -5,11 +5,9 @@
  */
 package com.diozero.sampleapps;
 
-import java.io.IOException;
-
 import com.diozero.api.SpiConstants;
 import com.diozero.devices.BME280;
-import com.diozero.util.DeviceFactoryHelper;
+import com.diozero.sbc.DeviceFactoryHelper;
 import com.diozero.util.SleepUtil;
 
 /**
@@ -21,7 +19,7 @@ public class BME280TestSpi {
 	/**
 	 * @param args the command line arguments
 	 */
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) {
 		System.out.println("--- USING SPI ----");
 		try (BME280 bme280 = new BME280(SpiConstants.CE0)) {
 			for (int i = 0; i < 3; i++) {

@@ -43,7 +43,7 @@ import com.diozero.api.I2CConstants;
 import com.diozero.api.I2CDeviceInterface;
 import com.diozero.api.PinInfo;
 import com.diozero.api.PwmPinInfo;
-import com.diozero.api.SerialDevice;
+import com.diozero.api.SerialConstants;
 import com.diozero.api.SerialDeviceInterface;
 import com.diozero.api.SpiClockMode;
 import com.diozero.api.SpiDeviceInterface;
@@ -59,7 +59,7 @@ import com.diozero.internal.spi.GpioDigitalInputDeviceInterface;
 import com.diozero.internal.spi.GpioDigitalInputOutputDeviceInterface;
 import com.diozero.internal.spi.GpioDigitalOutputDeviceInterface;
 import com.diozero.internal.spi.PwmOutputDeviceInterface;
-import com.diozero.util.BoardPinInfo;
+import com.diozero.sbc.BoardPinInfo;
 import com.diozero.util.EpollNative;
 import com.diozero.util.PropertyUtil;
 import com.diozero.util.RuntimeIOException;
@@ -292,7 +292,7 @@ public class DefaultDeviceFactory extends BaseNativeDeviceFactory {
 
 	@Override
 	public SerialDeviceInterface createSerialDevice(String key, String deviceFile, int baud,
-			SerialDevice.DataBits dataBits, SerialDevice.StopBits stopBits, SerialDevice.Parity parity,
+			SerialConstants.DataBits dataBits, SerialConstants.StopBits stopBits, SerialConstants.Parity parity,
 			boolean readBlocking, int minReadChars, int readTimeoutMillis) throws RuntimeIOException {
 		return new DefaultNativeSerialDevice(this, key, deviceFile, baud, dataBits, stopBits, parity, readBlocking,
 				minReadChars, readTimeoutMillis);

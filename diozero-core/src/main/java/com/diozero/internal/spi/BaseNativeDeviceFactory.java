@@ -37,10 +37,10 @@ import java.util.List;
 
 import org.tinylog.Logger;
 
-import com.diozero.util.BoardInfo;
-import com.diozero.util.BoardPinInfo;
+import com.diozero.sbc.BoardInfo;
+import com.diozero.sbc.BoardPinInfo;
+import com.diozero.sbc.SystemInfo;
 import com.diozero.util.DiozeroScheduler;
-import com.diozero.util.SystemInfo;
 
 /**
  * Helper class for instantiating different devices via the configured provider.

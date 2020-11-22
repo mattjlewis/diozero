@@ -50,7 +50,7 @@ import com.diozero.devices.oled.ColourSsdOled;
 import com.diozero.devices.oled.SSD1351;
 import com.diozero.devices.oled.SsdOled;
 import com.diozero.sampleapps.gol.GameOfLife;
-import com.diozero.util.DeviceFactoryHelper;
+import com.diozero.sbc.DeviceFactoryHelper;
 
 /**
  * <ul>

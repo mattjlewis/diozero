@@ -46,7 +46,7 @@ import com.diozero.animation.AnimationInstance;
 import com.diozero.animation.easing.Quad;
 import com.diozero.api.OutputDeviceInterface;
 import com.diozero.devices.PwmLed;
-import com.diozero.util.DeviceFactoryHelper;
+import com.diozero.sbc.DeviceFactoryHelper;
 
 public class AnimationTest {
 	public static void main(String[] args) {

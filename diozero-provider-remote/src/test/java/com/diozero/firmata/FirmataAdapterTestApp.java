@@ -57,7 +57,7 @@ public class FirmataAdapterTestApp {
 	}
 
 	@SuppressWarnings("boxing")
-	private static void test(FirmataAdapter fa) throws IOException, InterruptedException {
+	private static void test(FirmataAdapter fa) throws InterruptedException {
 		ProtocolVersion version = fa.getProtocolVersion();
 		System.out.format("Protocol version: %d.%d%n", version.getMajor(), version.getMinor());
 		FirmwareDetails firmware = fa.getFirmware();

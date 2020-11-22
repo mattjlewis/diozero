@@ -1,4 +1,4 @@
-package com.diozero.internal.board;
+package com.diozero.sbc;
 
 /*-
  * #%L
@@ -34,8 +34,7 @@ package com.diozero.internal.board;
 import org.tinylog.Logger;
 
 import com.diozero.api.PinInfo;
-import com.diozero.util.BoardInfo;
-import com.diozero.util.SystemInfoConstants;
+import com.diozero.internal.board.GenericLinuxArmBoardInfo;
 
 public class UnknownBoardInfo extends BoardInfo {
 	public static BoardInfo get(String model, String hardware, String revision, Integer memoryKb) {

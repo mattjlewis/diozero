@@ -43,20 +43,20 @@ public class GpioLine implements Closeable {
 
 	// Line informational flags
 	// https://elixir.bootlin.com/linux/v4.9.127/source/include/uapi/linux/gpio.h#L29
-	private static final int GPIOLINE_FLAG_KERNEL = (1 << 0);
-	private static final int GPIOLINE_FLAG_IS_OUT = (1 << 1);
-	private static final int GPIOLINE_FLAG_ACTIVE_LOW = (1 << 2);
-	private static final int GPIOLINE_FLAG_OPEN_DRAIN = (1 << 3);
-	private static final int GPIOLINE_FLAG_OPEN_SOURCE = (1 << 4);
+	private static final int GPIOLINE_FLAG_KERNEL = 1 << 0;
+	private static final int GPIOLINE_FLAG_IS_OUT = 1 << 1;
+	private static final int GPIOLINE_FLAG_ACTIVE_LOW = 1 << 2;
+	private static final int GPIOLINE_FLAG_OPEN_DRAIN = 1 << 3;
+	private static final int GPIOLINE_FLAG_OPEN_SOURCE = 1 << 4;
 
-	private int offset;
-	private boolean reserved;
-	private Direction direction;
-	private boolean activeLow;
-	private boolean openDrain;
-	private boolean openSource;
-	private String name;
-	private String consumer;
+	private final int offset;
+	private final boolean reserved;
+	private final Direction direction;
+	private final boolean activeLow;
+	private final boolean openDrain;
+	private final boolean openSource;
+	private final String name;
+	private final String consumer;
 	private int fd;
 
 	public GpioLine(int offset, int flags, String name, String consumer) {
@@ -109,7 +109,7 @@ public class GpioLine implements Closeable {
 	void setFd(int fd) {
 		this.fd = fd;
 	}
-	
+
 	public int getValue() {
 		int rc = NativeGpioDevice.getValue(fd);
 		if (rc < 0) {
@@ -117,14 +117,14 @@ public class GpioLine implements Closeable {
 		}
 		return rc;
 	}
-	
+
 	public void setValue(int value) {
 		int rc = NativeGpioDevice.setValue(fd, value);
 		if (rc < 0) {
 			throw new RuntimeIOException("Error in setValue(" + value + ") for line " + offset + ": " + rc);
 		}
 	}
-	
+
 	@Override
 	public void close() {
 		NativeGpioDevice.close(fd);

@@ -49,27 +49,29 @@ import com.diozero.util.SleepUtil;
 
 public class ButtonTest {
 	private int i;
-	
+
 	@BeforeAll
 	public static void beforeAll() {
 		TestDeviceFactory.setDigitalInputDeviceClass(TestDigitalInputDevice.class);
 		TestDeviceFactory.setDigitalOutputDeviceClass(TestDigitalOutputDevice.class);
 	}
-	
+
 	@Test
 	public void test() {
 		try (Button button = new Button(1, GpioPullUpDown.PULL_UP)) {
 			button.whenPressed(() -> Logger.info("Pressed"));
 			button.whenReleased(() -> Logger.info("Released"));
 			button.addListener((event) -> Logger.info("valueChanged({})", event));
-			
+
 			ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
-			ScheduledFuture<?> future = executor.scheduleAtFixedRate(
-					() -> button.valueChanged(new DigitalInputEvent(button.getGpio(), System.currentTimeMillis(), System.nanoTime(), (i++ % 2) == 0)),
-					500, 500, TimeUnit.MILLISECONDS);
-			
+			ScheduledFuture<?> future = executor
+					.scheduleAtFixedRate(
+							() -> button.valueChanged(new DigitalInputEvent(button.getGpio(),
+									System.currentTimeMillis(), System.nanoTime(), (i++ % 2) == 0)),
+							500, 500, TimeUnit.MILLISECONDS);
+
 			SleepUtil.sleepSeconds(5);
-			
+
 			future.cancel(true);
 			executor.shutdownNow();
 		}

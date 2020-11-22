@@ -5,10 +5,8 @@
  */
 package com.diozero.sampleapps;
 
-import java.io.IOException;
-
 import com.diozero.devices.BME280;
-import com.diozero.util.DeviceFactoryHelper;
+import com.diozero.sbc.DeviceFactoryHelper;
 import com.diozero.util.SleepUtil;
 
 /**
@@ -20,7 +18,7 @@ public class BME280TestI2C {
 	/**
 	 * @param args the command line arguments
 	 */
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) {
 		System.out.println("--- USING I2C ----");
 		try (BME280 bme280 = new BME280()) {
 			for (int i = 0; i < 3; i++) {

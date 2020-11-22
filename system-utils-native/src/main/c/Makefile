@@ -1,7 +1,7 @@
 RM = rm -f
 CC = gcc
 
-CFLAGS = -Wall -fPIC -O3
+CFLAGS = -Wall -fPIC -O3 -march=armv6 -mfpu=vfp -mfloat-abi=hard
 INCLUDES = -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/linux -I$(JAVA_HOME)/include/darwin
 LFLAGS = 
 SO_FILE_EXT = so

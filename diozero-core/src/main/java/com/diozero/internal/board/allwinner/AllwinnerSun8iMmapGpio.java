@@ -214,6 +214,7 @@ public class AllwinnerSun8iMmapGpio implements MmapGpioInterface {
 		mmapIntBuffer.put(addr_int_offset, reg_val);
 	}
 
+	@SuppressWarnings("boxing")
 	public static void main(String[] args) {
 		// Computed values for GPIO mode register
 		for (int gpio = 0; gpio < 224; gpio++) {

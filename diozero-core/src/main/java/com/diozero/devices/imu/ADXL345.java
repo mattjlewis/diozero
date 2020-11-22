@@ -1,4 +1,4 @@
-package com.diozero.devices;
+package com.diozero.devices.imu;
 
 /*
  * #%L
@@ -38,7 +38,6 @@ import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 
 import com.diozero.api.I2CConstants;
 import com.diozero.api.I2CDevice;
-import com.diozero.devices.imu.*;
 import com.diozero.util.BitManipulation;
 import com.diozero.util.RuntimeIOException;
 

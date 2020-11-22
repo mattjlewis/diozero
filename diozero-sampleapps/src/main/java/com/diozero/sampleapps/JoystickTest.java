@@ -36,7 +36,7 @@ import org.tinylog.Logger;
 import com.diozero.api.AnalogInputDevice;
 import com.diozero.devices.PCF8591;
 import com.diozero.devices.PwmLed;
-import com.diozero.util.DeviceFactoryHelper;
+import com.diozero.sbc.DeviceFactoryHelper;
 import com.diozero.util.SleepUtil;
 
 public class JoystickTest {

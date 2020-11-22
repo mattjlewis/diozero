@@ -47,7 +47,8 @@ import java.util.stream.Collectors;
 import org.tinylog.Logger;
 
 import com.diozero.api.DeviceMode;
-import com.diozero.util.SystemInfoConstants;
+import com.diozero.sbc.SystemInfoConstants;
+import com.diozero.sbc.UnknownBoardInfo;
 
 public class GenericLinuxArmBoardInfo extends UnknownBoardInfo {
 	public GenericLinuxArmBoardInfo(String make, String model, Integer memoryKb) {
@@ -98,9 +99,12 @@ public class GenericLinuxArmBoardInfo extends UnknownBoardInfo {
 				}
 			}
 		} catch (IOException e) {
-			// This file should exist on a Linux system
-			Logger.warn(e, "Unable to read file {}: {}", SystemInfoConstants.LINUX_DEVICE_TREE_COMPATIBLE_FILE,
-					e.getMessage());
+			if (System.getProperty(SystemInfoConstants.OS_NAME_SYSTEM_PROPERTY)
+					.equals(SystemInfoConstants.LINUX_OS_NAME)) {
+				// This file should exist on a Linux system
+				Logger.warn(e, "Unable to read file {}: {}", SystemInfoConstants.LINUX_DEVICE_TREE_COMPATIBLE_FILE,
+						e.getMessage());
+			}
 		}
 
 		// Note that if this fails the GPIO character implementation in the device

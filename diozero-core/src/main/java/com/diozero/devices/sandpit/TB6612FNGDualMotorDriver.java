@@ -41,7 +41,6 @@ import com.diozero.util.RuntimeIOException;
  * Dual bi-directional motor controlled by a single PWM pin and separate forward / backward GPIO pins
  * Toshiba TB6612FNG Dual Motor Driver such as this one from Pololu: https://www.pololu.com/product/713
  */
-@SuppressWarnings("resource")
 public class TB6612FNGDualMotorDriver extends DualMotor {
 	public TB6612FNGDualMotorDriver(int leftMotorClockwiseControlGpio, int leftMotorCounterClockwiseControlGpio,
 			int leftMotorPwmGpio,
