@@ -35,6 +35,9 @@ import java.io.Closeable;
 
 import com.diozero.util.RuntimeIOException;
 
+/**
+ * I2C device interface
+ */
 public interface I2CSMBusInterface extends Closeable {
 	static final int MAX_I2C_BLOCK_SIZE = 32;
 
@@ -55,10 +58,10 @@ public interface I2CSMBusInterface extends Closeable {
 	}
 
 	/**
-	 * Probe this I2C device
+	 * Probe this I2C device to see if it is connected
 	 * 
 	 * @param mode Probe mode
-	 * @return True if the probe is successful
+	 * @return True if the probe is successful and the device is connected
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	boolean probe(I2CDevice.ProbeMode mode) throws RuntimeIOException;
@@ -120,24 +123,6 @@ public interface I2CSMBusInterface extends Closeable {
 	void writeByte(byte data) throws RuntimeIOException;
 
 	/**
-	 * SMBus extension to read the specified number of bytes from the device
-	 * 
-	 * @param buffer byte array to populate, the length of the byte array indicates
-	 *               the number of bytes to read
-	 * @return the number of bytes read
-	 * @throws RuntimeIOException if an I/O error occurs
-	 */
-	int readBytes(byte[] buffer) throws RuntimeIOException;
-
-	/**
-	 * SMBus extension to write the specified byte array to the device
-	 * 
-	 * @param data the data to write
-	 * @throws RuntimeIOException if an I/O error occurs
-	 */
-	void writeBytes(byte[] data) throws RuntimeIOException;
-
-	/**
 	 * <p>
 	 * SMBus Read Byte: <code>i2c_smbus_read_byte_data()</code>
 	 * </p>
@@ -184,7 +169,9 @@ public interface I2CSMBusInterface extends Closeable {
 	 * <p>
 	 * This operation is very like Read Byte; again, data is read from a device,
 	 * from a designated register that is specified through the Comm byte. But this
-	 * time, the data is a complete word (16 bits).
+	 * time, the data is a complete word (16 bits) in
+	 * {@link java.nio.ByteOrder#LITTLE_ENDIAN Little Endian} format as per the
+	 * SMBus specification.
 	 * </p>
 	 * 
 	 * <pre>
@@ -204,7 +191,9 @@ public interface I2CSMBusInterface extends Closeable {
 	 * <p>
 	 * This is the opposite of the Read Word operation. 16 bits of data is written
 	 * to a device, to the designated register that is specified through the Comm
-	 * byte.
+	 * byte. Note that the specified data is in
+	 * {@link java.nio.ByteOrder#LITTLE_ENDIAN Little Endian} format as per the
+	 * SMBus specification.
 	 * </p>
 	 * 
 	 * <pre>
@@ -254,8 +243,8 @@ public interface I2CSMBusInterface extends Closeable {
 	 * </pre>
 	 * 
 	 * @param register the register to read from
-	 * @param buffer   TODO
-	 * @param offset   TODO
+	 * @param buffer   the buffer to store the data in, the length of the buffer
+	 *                 specifies the number of bytes to read (up to 32 bytes)
 	 * @return the number of bytes actually read (0..31)
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
@@ -276,7 +265,7 @@ public interface I2CSMBusInterface extends Closeable {
 	 * </pre>
 	 * 
 	 * @param register the register to write to
-	 * @param data     the data to write
+	 * @param data     the data to write (up to 32 bytes)
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	void writeBlockData(int register, byte[] data) throws RuntimeIOException;
@@ -297,8 +286,10 @@ public interface I2CSMBusInterface extends Closeable {
 	 * 		S Addr Rd [A] [Count] A [Data] ... A P
 	 * </pre>
 	 * 
-	 * @param register the register to write to
-	 * @param txData   the byte array from which the data is written
+	 * @param register the register to write to and read from
+	 * @param txData   the byte array from which the data is written (up to 32
+	 *                 bytes)
+	 * @return the data read (up to 32 bytes)
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	byte[] blockProcessCall(int register, byte[] txData) throws RuntimeIOException;
@@ -327,8 +318,8 @@ public interface I2CSMBusInterface extends Closeable {
 	 * </pre>
 	 * 
 	 * @param register the register to read from
-	 * @param buffer   TODO
-	 * @return values to read
+	 * @param buffer   the buffer to read the data into, the buffer length specifies
+	 *                 the number of bytes to read
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	void readI2CBlockData(int register, byte[] buffer) throws RuntimeIOException;
@@ -350,9 +341,25 @@ public interface I2CSMBusInterface extends Closeable {
 	 * 
 	 * @param register the register to write to
 	 * @param data     values to write
-	 * @param offset
-	 * @param length   the number of bytes to read
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	void writeI2CBlockData(int register, byte[] data) throws RuntimeIOException;
+
+	/**
+	 * SMBus extension to read the specified number of bytes from the device
+	 * 
+	 * @param buffer byte array to populate, the length of the byte array indicates
+	 *               the number of bytes to read
+	 * @return the number of bytes read
+	 * @throws RuntimeIOException if an I/O error occurs
+	 */
+	int readBytes(byte[] buffer) throws RuntimeIOException;
+
+	/**
+	 * SMBus extension to write the specified byte array to the device
+	 * 
+	 * @param data the data to write
+	 * @throws RuntimeIOException if an I/O error occurs
+	 */
+	void writeBytes(byte[] data) throws RuntimeIOException;
 }

@@ -39,10 +39,8 @@
 #include <fcntl.h>
 #include <sys/ioctl.h>
 
-#if defined(__linux__)
 #include <linux/types.h>
 #include <linux/spi/spidev.h>
-#endif
 
 #include <jni.h>
 
@@ -53,6 +51,8 @@
 #else
 #define long_t uint64_t
 #endif
+
+const uint8_t SPI_MODE_MASK = 0x3;
 
 /*
  * Class:     com_diozero_internal_provider_builtin_spi_NativeSpiDevice
@@ -85,19 +85,21 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_builtin_spi_NativeSpiD
  * Signature: (IBIBZ)I
  */
 JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_builtin_spi_NativeSpiDevice_spiConfig(
-		JNIEnv* env, jclass clz, jint fileDescriptor, jbyte mode, jint speed, jbyte bitsPerWord, jboolean lsbFirst) {
-#if defined(__linux__)
-	if (ioctl(fileDescriptor, SPI_IOC_WR_MODE, &mode) < 0) {
-		printf("Cannot set SPI mode: %s", strerror(errno));
-		return -1 ;
-	}
-	uint8_t actual_mode;
-	if (ioctl(fileDescriptor, SPI_IOC_RD_MODE, &actual_mode) < 0) {
+		JNIEnv* env, jclass clz, jint fileDescriptor, jbyte spiMode, jint speed, jbyte bitsPerWord, jboolean lsbFirst) {
+	// Note mode also includes SPI_CS_HIGH (0x04), SPI_LSB_FIRST (0x08), SPI_3WIRE (0x10),
+	// SPI_LOOP (0x20), SPI_NO_CS (0x40) and SPI_READY (0x80)
+	// Get the current mode value
+	uint8_t mode;
+	if (ioctl(fileDescriptor, SPI_IOC_RD_MODE, &mode) < 0) {
 		printf("Cannot get SPI mode: %s", strerror(errno));
 		return -1 ;
 	}
-	if (actual_mode != mode) {
-		printf("Warning SPI mode (%d) does not equal that set (%d)\n", actual_mode, mode);
+	// Set only the new SPI mode value
+	mode &= ~SPI_MODE_MASK;
+	mode |= spiMode;
+	if (ioctl(fileDescriptor, SPI_IOC_WR_MODE, &mode) < 0) {
+		printf("Cannot set SPI mode: %s", strerror(errno));
+		return -1 ;
 	}
 
 	if (ioctl(fileDescriptor, SPI_IOC_WR_BITS_PER_WORD, &bitsPerWord) < 0) {
@@ -141,9 +143,6 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_builtin_spi_NativeSpiD
 	}
 
 	return 0;
-#else
-	return -1;
-#endif
 }
 
 /*
@@ -164,7 +163,6 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_builtin_spi_NativeSpiD
 JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_builtin_spi_NativeSpiDevice_spiTransfer(
 		JNIEnv* env, jclass clz, jint fileDescriptor, jbyteArray txBuffer, jint txOffset,
 		jbyteArray rxBuffer, jint length, jint speedHz, jint delayUSecs, jbyte bitsPerWord, jboolean csChange) {
-#if defined(__linux__)
 	jboolean is_copy;
 	jbyte* tx_buf = NULL;
 	if (txBuffer != NULL) {
@@ -212,7 +210,4 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_builtin_spi_NativeSpiD
 	}
 
 	return ret;
-#else
-	return -1;
-#endif
 }

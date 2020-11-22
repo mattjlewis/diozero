@@ -34,9 +34,9 @@ package com.diozero.internal.provider.pigpioj;
 import org.tinylog.Logger;
 
 import com.diozero.api.SpiClockMode;
+import com.diozero.api.SpiDeviceInterface;
 import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.DeviceFactoryInterface;
-import com.diozero.internal.spi.SpiDeviceInterface;
 import com.diozero.util.RuntimeIOException;
 
 import uk.pigpioj.PigpioInterface;

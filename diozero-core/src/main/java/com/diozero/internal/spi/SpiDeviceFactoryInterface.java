@@ -40,6 +40,7 @@ import org.tinylog.Logger;
 
 import com.diozero.api.DeviceAlreadyOpenedException;
 import com.diozero.api.SpiClockMode;
+import com.diozero.api.SpiDeviceInterface;
 import com.diozero.util.RuntimeIOException;
 
 public interface SpiDeviceFactoryInterface extends DeviceFactoryInterface {

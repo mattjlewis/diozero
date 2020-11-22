@@ -42,7 +42,10 @@ import com.diozero.util.DeviceFactoryHelper;
 import com.diozero.util.RuntimeIOException;
 
 /**
- * Utility class reading / writing to I2C devices.
+ * Utility class for interfacing with to I2C devices.
+ * 
+ * @see <a href="https://i2c.info/i2c-bus-specification">I2C Bus
+ *      Specification</a>
  */
 public class I2CDevice implements I2CConstants, I2CDeviceInterface {
 	public static enum ProbeMode {
@@ -93,7 +96,10 @@ public class I2CDevice implements I2CConstants, I2CDeviceInterface {
 	 * Use the {@link I2CConstants#DEFAULT_BYTE_ORDER default}
 	 * {@link java.nio.ByteOrder byte order}
 	 * 
-	 * @param controller  I2C bus
+	 * @see <a href="https://i2c.info/i2c-bus-specification">I2C Bus
+	 *      Specification</a>
+	 * 
+	 * @param controller  I2C bus controller number
 	 * @param address     I2C device address
 	 * @param addressSize I2C device address size. Can be 7 or 10
 	 * @throws RuntimeIOException If an I/O error occurred
@@ -103,7 +109,12 @@ public class I2CDevice implements I2CConstants, I2CDeviceInterface {
 	}
 
 	/**
-	 * @param controller  I2C bus
+	 * Use the default native device factory
+	 * 
+	 * @see <a href="https://i2c.info/i2c-bus-specification">I2C Bus
+	 *      Specification</a>
+	 * 
+	 * @param controller  I2C bus controller number
 	 * @param address     I2C device address
 	 * @param addressSize I2C device address size. Can be 7 or 10
 	 * @param byteOrder   Default byte order for this device
@@ -115,8 +126,15 @@ public class I2CDevice implements I2CConstants, I2CDeviceInterface {
 	}
 
 	/**
+	 * Construct an I2C device using the specified I2C bus / controller, device
+	 * address, address size and byte order. Note that the byte order is only used
+	 * in the utility methods.
+	 * 
+	 * @see <a href="https://i2c.info/i2c-bus-specification">I2C Bus
+	 *      Specification</a>
+	 * 
 	 * @param deviceFactory Device factory to use to provision this device
-	 * @param controller    I2C bus
+	 * @param controller    I2C bus controller number
 	 * @param address       I2C device address
 	 * @param addressSize   I2C device address size. Can be 7 or 10
 	 * @param byteOrder     Default byte order for this device
@@ -147,7 +165,7 @@ public class I2CDevice implements I2CConstants, I2CDeviceInterface {
 	public ByteOrder getByteOrder() {
 		return byteOrder;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -235,6 +253,10 @@ public class I2CDevice implements I2CConstants, I2CDeviceInterface {
 
 	/**
 	 * {@inheritDoc}
+	 * 
+	 * <strong>Note</strong> that the byte order for the returned short is
+	 * {@link ByteOrder#LITTLE_ENDIAN Little Endian} as per the SMBus specification,
+	 * regardless of the byte order specified in the constructor
 	 */
 	@Override
 	public short readWordData(int register) throws RuntimeIOException {
@@ -245,31 +267,15 @@ public class I2CDevice implements I2CConstants, I2CDeviceInterface {
 
 	/**
 	 * {@inheritDoc}
+	 * 
+	 * <strong>Note</strong> that the byte order for the input value is
+	 * {@link ByteOrder#LITTLE_ENDIAN Little Endian} as per the SMBus specification,
+	 * regardless of the byte order specified in the constructor
 	 */
 	@Override
 	public void writeWordData(int register, short value) throws RuntimeIOException {
 		synchronized (delegate) {
 			delegate.writeWordData(register, value);
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public int readBytes(byte[] buffer) throws RuntimeIOException {
-		synchronized (delegate) {
-			return delegate.readBytes(buffer);
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void writeBytes(byte[] data) throws RuntimeIOException {
-		synchronized (delegate) {
-			delegate.writeBytes(data);
 		}
 	}
 
@@ -330,6 +336,26 @@ public class I2CDevice implements I2CConstants, I2CDeviceInterface {
 	public void writeI2CBlockData(int register, byte[] data) throws RuntimeIOException {
 		synchronized (delegate) {
 			delegate.writeI2CBlockData(register, data);
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public int readBytes(byte[] buffer) throws RuntimeIOException {
+		synchronized (delegate) {
+			return delegate.readBytes(buffer);
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void writeBytes(byte[] data) throws RuntimeIOException {
+		synchronized (delegate) {
+			delegate.writeBytes(data);
 		}
 	}
 
@@ -419,9 +445,10 @@ public class I2CDevice implements I2CConstants, I2CDeviceInterface {
 	}
 
 	/**
-	 * Utility method that wraps {@link I2CDevice#readI2CBlockData(int, byte)} to
+	 * Utility method that wraps {@link I2CDevice#readI2CBlockData(int, byte[])} to
 	 * read the specified number of bytes and return as a {@link java.nio.ByteBuffer
-	 * ByteBuffer}
+	 * ByteBuffer} using the {@link ByteOrder byte order} specified in the device
+	 * constructor
 	 * 
 	 * @see I2CDevice#readI2CBlockData(int, byte[])
 	 * @see java.nio.ByteBuffer#wrap(byte[])
@@ -433,9 +460,11 @@ public class I2CDevice implements I2CConstants, I2CDeviceInterface {
 	 */
 	public ByteBuffer readI2CBlockDataByteBuffer(int register, int length) throws RuntimeIOException {
 		byte[] data = new byte[length];
+
 		readI2CBlockData(register, data);
 		ByteBuffer buffer = ByteBuffer.wrap(data);
 		buffer.order(byteOrder);
+
 		return buffer;
 	}
 
@@ -554,10 +583,10 @@ public class I2CDevice implements I2CConstants, I2CDeviceInterface {
 	}
 
 	/**
-	 * Utility method that wraps {@link I2CDevice#writeByteData(int)} to set the
-	 * specified bit number
+	 * Utility method that wraps {@link I2CDevice#readByteData(int)} and
+	 * {@link I2CDevice#writeByteData(int, byte)} to update the specified bit number
 	 * 
-	 * @see BitManipulation#setBitSet(byte, boolean, int)
+	 * @see BitManipulation#setBitValue(byte, boolean, int)
 	 * 
 	 * @param register the register to update
 	 * @param bit      the bit number to set

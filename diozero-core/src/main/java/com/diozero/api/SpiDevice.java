@@ -31,12 +31,10 @@ package com.diozero.api;
  * #L%
  */
 
-import java.io.Closeable;
 
 import org.tinylog.Logger;
 
 import com.diozero.internal.spi.NativeDeviceFactoryInterface;
-import com.diozero.internal.spi.SpiDeviceInterface;
 import com.diozero.util.DeviceFactoryHelper;
 import com.diozero.util.RuntimeIOException;
 
@@ -57,7 +55,7 @@ import com.diozero.util.RuntimeIOException;
  * the SPI clock has the wrong frequency. Do this by adding the following line
  * to /boot/config.txt and reboot. core_freq=250
  */
-public class SpiDevice implements Closeable, SpiConstants {
+public class SpiDevice implements SpiDeviceInterface, SpiConstants {
 	private SpiDeviceInterface delegate;
 	private int maxBufferSize;
 
@@ -77,20 +75,51 @@ public class SpiDevice implements Closeable, SpiConstants {
 		maxBufferSize = ndf.getSpiBufferSize();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String getKey() {
+		return delegate.getKey();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean isOpen() {
+		return delegate.isOpen();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void close() throws RuntimeIOException {
 		Logger.trace("close()");
 		delegate.close();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public int getController() {
 		return delegate.getController();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public int getChipSelect() {
 		return delegate.getChipSelect();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public void write(byte[] txBuffer) throws RuntimeIOException {
 		int written = 0;
 		do {
@@ -100,10 +129,18 @@ public class SpiDevice implements Closeable, SpiConstants {
 		} while (written < txBuffer.length);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public void write(byte[] txBuffer, int txOffset, int length) throws RuntimeIOException {
 		delegate.write(txBuffer, txOffset, length);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public byte[] writeAndRead(byte[] out) throws RuntimeIOException {
 		return delegate.writeAndRead(out);
 	}

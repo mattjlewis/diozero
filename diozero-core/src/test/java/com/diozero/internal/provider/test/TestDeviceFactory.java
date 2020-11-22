@@ -39,6 +39,7 @@ import com.diozero.api.PinInfo;
 import com.diozero.api.SerialDevice;
 import com.diozero.api.SerialDeviceInterface;
 import com.diozero.api.SpiClockMode;
+import com.diozero.api.SpiDeviceInterface;
 import com.diozero.internal.DeviceStates;
 import com.diozero.internal.spi.AnalogInputDeviceInterface;
 import com.diozero.internal.spi.AnalogOutputDeviceInterface;
@@ -48,7 +49,6 @@ import com.diozero.internal.spi.GpioDigitalInputDeviceInterface;
 import com.diozero.internal.spi.GpioDigitalInputOutputDeviceInterface;
 import com.diozero.internal.spi.GpioDigitalOutputDeviceInterface;
 import com.diozero.internal.spi.PwmOutputDeviceInterface;
-import com.diozero.internal.spi.SpiDeviceInterface;
 import com.diozero.util.RuntimeIOException;
 
 public class TestDeviceFactory extends BaseNativeDeviceFactory {

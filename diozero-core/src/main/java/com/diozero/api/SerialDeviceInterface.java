@@ -52,9 +52,9 @@ public interface SerialDeviceInterface extends DeviceInterface {
 	byte readByte() throws RuntimeIOException;
 
 	/**
-	 * Read a single byte, throw an exception if unable to write the data
+	 * Write a single byte, throw an exception if unable to write the data
 	 * 
-	 * @return The data to write
+	 * @param bVal The data to write
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	void writeByte(byte bVal) throws RuntimeIOException;

@@ -35,7 +35,7 @@ import java.io.Closeable;
 
 public interface DeviceInterface extends Closeable {
 	/**
-	 * Get the unique key for this device
+	 * Get the unique device identifier for this device
 	 * 
 	 * @return unique device identifier
 	 */

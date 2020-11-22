@@ -280,7 +280,7 @@ public class BME280 implements BarometerInterface, ThermometerInterface, Hygrome
 	 */
 	public BME280(int bus, int address) throws RuntimeIOException {
 		useI2C = true;
-		
+
 		deviceI = new I2CDevice(bus, address, I2CConstants.AddressSize.SIZE_7, ByteOrder.LITTLE_ENDIAN);
 
 		setUp280();
@@ -291,7 +291,7 @@ public class BME280 implements BarometerInterface, ThermometerInterface, Hygrome
 	 * line; all other SPI instantiation parameters are set to the default.
 	 * 
 	 * @param chipSelect the chip select line used
-	 * @throws IOException if instance cannot be created
+	 * @throws RuntimeIOException if instance cannot be created
 	 */
 	public BME280(int chipSelect) throws RuntimeIOException {
 		this(SpiConstants.DEFAULT_SPI_CONTROLLER, chipSelect, SpiConstants.DEFAULT_SPI_CLOCK_FREQUENCY,
@@ -350,17 +350,17 @@ public class BME280 implements BarometerInterface, ThermometerInterface, Hygrome
 		digP7 = buffer.getShort();
 		digP8 = buffer.getShort();
 		digP9 = buffer.getShort();
-		
+
 		if (model == Model.BME280) {
 			// Skip 1 byte
 			buffer.get();
 			// Read 1 byte of data from address 0xA1(161)
 			digH1 = (short) (buffer.get() & 0xff);
-	
+
 			// Read 7 bytes of data from address 0xE1(225)
 			// buffer = device.readI2CBlockDataByteBuffer(CALIB_26_REG, 7);
 			buffer = readByteBlock(CALIB_26_REG, 7);
-	
+
 			// Humidity coefficients
 			digH2 = buffer.getShort();
 			digH3 = buffer.get() & 0xff;
@@ -442,7 +442,7 @@ public class BME280 implements BarometerInterface, ThermometerInterface, Hygrome
 		int adc_p = ((buffer.get() & 0xff) << 12) | ((buffer.get() & 0xff) << 4) | ((buffer.get() & 0xf0) >> 4);
 		// Unpack the raw 20-bit unsigned temperature value
 		int adc_t = ((buffer.get() & 0xff) << 12) | ((buffer.get() & 0xff) << 4) | ((buffer.get() & 0xf0) >> 4);
-		
+
 		int adc_h = 0;
 		if (model == Model.BME280) {
 			// Unpack the raw 16-bit unsigned humidity value
@@ -479,14 +479,14 @@ public class BME280 implements BarometerInterface, ThermometerInterface, Hygrome
 		if (model == Model.BME280) {
 			int v_x1_u32r = t_fine - 76800;
 			v_x1_u32r = ((((adc_h << 14) - (digH4 << 20) - (digH5 * v_x1_u32r)) + 16384) >> 15)
-					* (((((((v_x1_u32r * digH6) >> 10) * (((v_x1_u32r * digH3) >> 11) + 32768)) >> 10) + 2097152) * digH2
-							+ 8192) >> 14);
+					* (((((((v_x1_u32r * digH6) >> 10) * (((v_x1_u32r * digH3) >> 11) + 32768)) >> 10) + 2097152)
+							* digH2 + 8192) >> 14);
 			v_x1_u32r = v_x1_u32r - (((((v_x1_u32r >> 15) * (v_x1_u32r >> 15)) >> 7) * digH1) >> 4);
 			v_x1_u32r = v_x1_u32r < 0 ? 0 : v_x1_u32r;
 			v_x1_u32r = v_x1_u32r > 419430400 ? 419430400 : v_x1_u32r;
 			humidity = ((long) v_x1_u32r) >> 12;
 		}
-		
+
 		return new float[] { temp / 100.0f, pressure / 2560.0f, humidity / 1024.0f };
 	}
 

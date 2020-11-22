@@ -36,8 +36,8 @@ import java.util.UUID;
 import org.tinylog.Logger;
 
 import com.diozero.api.SpiClockMode;
+import com.diozero.api.SpiDeviceInterface;
 import com.diozero.internal.spi.AbstractDevice;
-import com.diozero.internal.spi.SpiDeviceInterface;
 import com.diozero.remote.message.Response;
 import com.diozero.remote.message.SpiClose;
 import com.diozero.remote.message.SpiOpen;

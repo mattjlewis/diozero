@@ -222,19 +222,10 @@ public class SerialDevice implements SerialConstants, SerialDeviceInterface {
 	 * {@link SerialConstants#DEFAULT_READ_TIMEOUT_MILLIS read timeout}
 	 *
 	 * @param deviceFilename The O/S file name for the device, e.g. /dev/ttyACM0
-	 * @param baud           Baud rate, see {@link com.diozero.api.SerialConstants
-	 *                       SerialConstants} for valid baud rate values
-	 * @param dataBits       Number of
-	 *                       {@link com.diozero.api.SerialConstants.DataBits data
-	 *                       bits}
-	 * @param stopBits       Number of
-	 *                       {@link com.diozero.api.SerialConstants.StopBits stop
-	 *                       bits}
-	 * @param parity         Device error detection
-	 *                       {@link com.diozero.api.SerialConstants.Parity parity}
+	 * @throws RuntimeIOException If an I/O error occurs
 	 */
-	public SerialDevice(String deviceFile) {
-		this(deviceFile, DEFAULT_BAUD, DEFAULT_DATA_BITS, DEFAULT_STOP_BITS, DEFAULT_PARITY, DEFAULT_READ_BLOCKING,
+	public SerialDevice(String deviceFilename) throws RuntimeIOException {
+		this(deviceFilename, DEFAULT_BAUD, DEFAULT_DATA_BITS, DEFAULT_STOP_BITS, DEFAULT_PARITY, DEFAULT_READ_BLOCKING,
 				DEFAULT_MIN_READ_CHARS, DEFAULT_READ_TIMEOUT_MILLIS);
 	}
 
@@ -255,9 +246,11 @@ public class SerialDevice implements SerialConstants, SerialDeviceInterface {
 	 *                       bits}
 	 * @param parity         Device error detection
 	 *                       {@link com.diozero.api.SerialConstants.Parity parity}
+	 * @throws RuntimeIOException If an I/O error occurs
 	 */
-	public SerialDevice(String deviceFile, int baud, DataBits dataBits, StopBits stopBits, Parity parity) {
-		this(deviceFile, baud, dataBits, stopBits, parity, DEFAULT_READ_BLOCKING, DEFAULT_MIN_READ_CHARS,
+	public SerialDevice(String deviceFilename, int baud, DataBits dataBits, StopBits stopBits, Parity parity)
+			throws RuntimeIOException {
+		this(deviceFilename, baud, dataBits, stopBits, parity, DEFAULT_READ_BLOCKING, DEFAULT_MIN_READ_CHARS,
 				DEFAULT_READ_TIMEOUT_MILLIS);
 	}
 
@@ -283,9 +276,10 @@ public class SerialDevice implements SerialConstants, SerialDeviceInterface {
 	 *                          an unsigned char hence max value is 255)
 	 * @param readTimeoutMillis The read timeout value in milliseconds (note
 	 *                          converted to tenths of a second as an unsigned char)
+	 * @throws RuntimeIOException If an I/O error occurs
 	 */
 	public SerialDevice(String deviceFilename, int baud, DataBits dataBits, StopBits stopBits, Parity parity,
-			boolean readBlocking, int minReadChars, int readTimeoutMillis) {
+			boolean readBlocking, int minReadChars, int readTimeoutMillis) throws RuntimeIOException {
 		delegate = DeviceFactoryHelper.getNativeDeviceFactory().provisionSerialDevice(deviceFilename, baud, dataBits,
 				stopBits, parity, readBlocking, minReadChars, readTimeoutMillis);
 

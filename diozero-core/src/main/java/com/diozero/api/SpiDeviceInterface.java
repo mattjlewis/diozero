@@ -1,6 +1,4 @@
-package com.diozero.internal.spi;
-
-import com.diozero.api.DeviceInterface;
+package com.diozero.api;
 
 /*
  * #%L
@@ -35,10 +33,50 @@ import com.diozero.api.DeviceInterface;
 
 import com.diozero.util.RuntimeIOException;
 
+/**
+ * <a href="https://en.wikipedia.org/wiki/Serial_Peripheral_Interface">Serial Peripheral Interface (SPI)</a>
+ */
 public interface SpiDeviceInterface extends DeviceInterface {
-	public void write(byte[] txBuffer);
-	public void write(byte[] txBuffer, int txOffset, int length);
-	byte[] writeAndRead(byte[] txBuffer) throws RuntimeIOException;
+	/**
+	 * Get the SPI controller
+	 * 
+	 * @return the SPI controller
+	 */
 	int getController();
+
+	/**
+	 * Get the SPI Chip Select
+	 * 
+	 * @return the SPI chip select
+	 */
 	int getChipSelect();
+
+	/**
+	 * Write the entire contents of <code>data</code> to the device
+	 * 
+	 * @param data the data to write
+	 * @throws RuntimeIOException if an I/O error occurs
+	 */
+	public void write(byte[] data) throws RuntimeIOException;
+
+	/**
+	 * Write <code>length</code> bytes from <code>data</code> starting at
+	 * <code>offset</code>
+	 * 
+	 * @param data   the data to write.
+	 * @param offset the start offset in the data.
+	 * @param length the number of bytes to write.
+	 * @throws RuntimeIOException if an I/O error occurs
+	 */
+	public void write(byte[] data, int offset, int length) throws RuntimeIOException;
+
+	/**
+	 * Write the <code>data</code> to the device then read <code>data.length</code>
+	 * bytes from the device
+	 * 
+	 * @param data the data to write.
+	 * @return the data read from the device, same length as the data written.
+	 * @throws RuntimeIOException if an I/O error occurs
+	 */
+	byte[] writeAndRead(byte[] data) throws RuntimeIOException;
 }
