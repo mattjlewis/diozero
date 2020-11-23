@@ -31,7 +31,6 @@ package com.diozero.sbc;
  * #L%
  */
 
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -43,73 +42,142 @@ import org.tinylog.Logger;
 
 import com.diozero.internal.spi.MmapGpioInterface;
 
+/**
+ * Information about the connected SBC. Note that the connected board instance
+ * might be a remote device, e.g. connected via serial, Bluetooth or TCP/IP. The
+ * BoardInfo instance for the connected device must be obtained by calling
+ * {@link com.diozero.internal.spi.NativeDeviceFactoryInterface#getBoardInfo()
+ * getBoardInfo()} the on the
+ * {@link com.diozero.internal.spi.NativeDeviceFactoryInterface
+ * NativeDeviceFactoryInterface} instance returned from
+ * {@link DeviceFactoryHelper#getNativeDeviceFactory()}.
+ */
 @SuppressWarnings("static-method")
 public abstract class BoardInfo extends BoardPinInfo {
 	public static final String UNKNOWN = "unknown";
-	
+
 	private static final float DEFAULT_ADC_VREF = 1.8f;
 	private static final String TEMP_FILE = "/sys/class/thermal/thermal_zone0/temp";
-	
+
 	private String make;
 	private String model;
-	private int memory;
+	private int memoryKb;
 	private String libraryPath;
 	private float adcVRef;
-	
+
 	public BoardInfo(String make, String model, int memory, String libraryPath) {
 		this(make, model, memory, libraryPath, DEFAULT_ADC_VREF);
 	}
-	
+
 	public BoardInfo(String make, String model, int memory, String libraryPath, float adcVRef) {
 		this.make = make;
 		this.model = model;
-		this.memory = memory;
+		this.memoryKb = memory;
 		this.libraryPath = libraryPath;
 		this.adcVRef = adcVRef;
 	}
-	
+
 	/**
-	 * initialisePins is separate to the constructor as a lot of known BoardInfo
-	 * info instances get created on startup.
+	 * Pin initialisation is done separately to the constructor since all known
+	 * BoardInfo instances get instantiated on startup by the Java ServiceLoader.
 	 */
 	public abstract void initialisePins();
 
+	/**
+	 * The make of the connected board, e.g. "Raspberry Pi"
+	 * 
+	 * @return the make of the connected board
+	 */
 	public String getMake() {
 		return make;
 	}
 
+	/**
+	 * The model of the connected board, e.g. "3 Model B+"
+	 * 
+	 * @return the model of the connected board
+	 */
 	public String getModel() {
 		return model;
 	}
 
-	public int getMemory() {
-		return memory;
+	/**
+	 * Get the memory (in KB) of the connected board
+	 * 
+	 * @return memory in KB
+	 */
+	public int getMemoryKb() {
+		return memoryKb;
 	}
 
+	/**
+	 * Internal diozero method to get the library path prefix to be used when
+	 * loading native libraries for this device.
+	 * 
+	 * @return the library path prefix
+	 */
 	public String getLibraryPath() {
 		return libraryPath;
 	}
-	
+
+	/**
+	 * Get the Analog to Digital converter reference voltage to be used when taking
+	 * ADC readings
+	 * 
+	 * @return the reference voltage for this board
+	 */
 	public float getAdcVRef() {
 		return adcVRef;
 	}
-	
+
+	/**
+	 * Get the name of this board - usual a concatenation of make and model
+	 * 
+	 * @return the name of this board
+	 */
 	public String getName() {
 		return make + " " + model;
 	}
 
-	public boolean sameMakeAndModel(BoardInfo boardInfo) {
+	/**
+	 * Compare make and model
+	 * 
+	 * @param boardInfo the compare against
+	 * @return true if the make and model are the same
+	 */
+	public boolean compareMakeAndModel(BoardInfo boardInfo) {
 		return make.equals(boardInfo.getMake()) && model.equals(boardInfo.getModel());
 	}
-	
+
+	/**
+	 * Get the PWM chip for the specified PWM number. Only actually relevant for
+	 * sysfs PWM control on the BeagleBone Black.
+	 * 
+	 * @param pwmNum The sysfs PWM channel number
+	 * @return The PWM chip number for the requested PWM channel number, -1 if not
+	 *         found / not relevant
+	 */
 	public int getPwmChip(int pwmNum) {
 		return -1;
 	}
 
+	/**
+	 * Instantiate the memory mapped GPIO interface for this board. Not that the
+	 * caller needs to call {@link MmapGpioInterface#initialise initialise} prior to
+	 * use.
+	 * 
+	 * @return the MMAP GPIO interface implementation for this board, null if there
+	 *         isn't one
+	 */
 	public MmapGpioInterface createMmapGpio() {
 		return null;
 	}
-	
+
+	/**
+	 * Utility method to get the CPU temperate of the attached board
+	 * 
+	 * @return the CPU temperature
+	 */
 	public float getCpuTemperature() {
 		try {
 			return Integer.parseInt(Files.lines(Paths.get(TEMP_FILE)).findFirst().orElse("0")) / 1000f;
@@ -118,7 +186,12 @@ public abstract class BoardInfo extends BoardPinInfo {
 			return 0;
 		}
 	}
-	
+
+	/**
+	 * Detect the I2C bus controller numbers that are available on this board.
+	 * 
+	 * @return collection of I2C bus controller numbers
+	 */
 	public Collection<Integer> getI2CBuses() {
 		try {
 			List<Integer> i2c_buses = new ArrayList<>();
@@ -133,7 +206,7 @@ public abstract class BoardInfo extends BoardPinInfo {
 
 	@Override
 	public String toString() {
-		return "BoardInfo [make=" + make + ", model=" + model + ", memory=" + memory + ", libraryPath=" + libraryPath
+		return "BoardInfo [make=" + make + ", model=" + model + ", memory=" + memoryKb + ", libraryPath=" + libraryPath
 				+ ", adcVRef=" + adcVRef + "]";
 	}
 }

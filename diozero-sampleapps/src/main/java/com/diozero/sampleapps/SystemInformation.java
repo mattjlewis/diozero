@@ -51,7 +51,7 @@ public class SystemInformation {
 
 		System.out.println();
 		System.out.format("SBC Name: %s (RAM: %d bytes)%n", board_info.getName(),
-				Integer.valueOf(board_info.getMemory()));
+				Integer.valueOf(board_info.getMemoryKb()));
 		for (Map.Entry<String, Map<Integer, PinInfo>> header_pins_entry : board_info.getHeaders().entrySet()) {
 			// Get the maximum pin name length
 			int max_length = Math.max(8, header_pins_entry.getValue().values().stream()

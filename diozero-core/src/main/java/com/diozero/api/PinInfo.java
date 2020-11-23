@@ -55,7 +55,6 @@ public class PinInfo {
 	public static final String GROUND = "GND";
 	public static final String VCC_5V = "5V";
 	public static final String VCC_3V3 = "3.3V";
-	public static final String VCC_1V8 = "1.8V";
 
 	private String keyPrefix;
 	private String header;

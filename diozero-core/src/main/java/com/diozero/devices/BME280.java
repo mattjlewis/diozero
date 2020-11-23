@@ -41,9 +41,6 @@ import com.diozero.api.I2CDevice;
 import com.diozero.api.SpiClockMode;
 import com.diozero.api.SpiConstants;
 import com.diozero.api.SpiDevice;
-import com.diozero.devices.BarometerInterface;
-import com.diozero.devices.HygrometerInterface;
-import com.diozero.devices.ThermometerInterface;
 import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 
@@ -319,15 +316,16 @@ public class BME280 implements BarometerInterface, ThermometerInterface, Hygrome
 	}
 
 	private void setUp280() {
-		getDeviceId();
+		readDeviceModel();
 		readCoefficients();
+		
 		setOperatingModes(TemperatureOversampling.OVERSAMPLING_1, PressureOversampling.OVERSAMPLING_1,
 				HumidityOversampling.OVERSAMPLING_1, OperatingMode.MODE_NORMAL);
 		setStandbyAndFilterModes(StandbyDuration.STANDBY_1_S, FilterCoefficient.FILTER_OFF);
 	}
 
 	private void readCoefficients() {
-		// wait for NVM to be copied
+		// Wait for NVM to be copied
 		while ((readByte(STATUS_REG) & 0x01) != 0) {
 			SleepUtil.sleepMillis(10);
 		}
@@ -335,7 +333,7 @@ public class BME280 implements BarometerInterface, ThermometerInterface, Hygrome
 		// Read 26 bytes of data from address 0x88(136)
 		ByteBuffer buffer = readByteBlock(CALIB_00_REG, model == Model.BMP280 ? 24 : 26);
 
-		// Temp coefficients
+		// Temperature coefficients
 		digT1 = buffer.getShort() & 0xffff;
 		digT2 = buffer.getShort();
 		digT3 = buffer.getShort();
@@ -382,11 +380,13 @@ public class BME280 implements BarometerInterface, ThermometerInterface, Hygrome
 	 */
 	public void setOperatingModes(TemperatureOversampling tempOversampling, PressureOversampling pressOversampling,
 			HumidityOversampling humOversampling, OperatingMode operatingMode) {
-		// Humidity over sampling rate = 1
-		writeByte(CTRL_HUM_REG, humOversampling.getMask());
 		// Normal mode, temp and pressure oversampling rate = 1
 		writeByte(CTRL_MEAS_REG,
 				(byte) (tempOversampling.getMask() | pressOversampling.getMask() | operatingMode.getMask()));
+		if (model == Model.BME280) {
+			// Humidity over sampling rate = 1
+			writeByte(CTRL_HUM_REG, humOversampling.getMask());
+		}
 	}
 
 	/**
@@ -487,7 +487,7 @@ public class BME280 implements BarometerInterface, ThermometerInterface, Hygrome
 			humidity = ((long) v_x1_u32r) >> 12;
 		}
 
-		return new float[] { temp / 100.0f, pressure / 2560.0f, humidity / 1024.0f };
+		return new float[] { temp / 100.0f, pressure / 25600.0f, humidity / 1024.0f };
 	}
 
 	/**
@@ -505,7 +505,7 @@ public class BME280 implements BarometerInterface, ThermometerInterface, Hygrome
 	 * Reads the temperature, pressure, and humidity registers; compensates the raw
 	 * values to provide meaningful results.
 	 * 
-	 * @return pressure
+	 * @return pressure in hectoPascals (hPa)
 	 */
 	@Override
 	public float getPressure() {
@@ -544,25 +544,16 @@ public class BME280 implements BarometerInterface, ThermometerInterface, Hygrome
 		writeByte(RESET_REG, (byte) 0xB6);
 	}
 
-	private ByteBuffer readByteBlock(int register, int length) {
-		byte[] data = new byte[length];
-
+	private byte readByte(int register) {
 		if (useI2C) {
-			deviceI.readI2CBlockData(register, data);
-		} else {
-			byte[] tx = new byte[length + 1];
-
-			tx[0] = (byte) (register | 0x80);
-			/* NOTE: rest of array initialized to 0 */
-
-			byte[] ret = deviceS.writeAndRead(tx);
-
-			System.arraycopy(ret, 1, data, 0, length);
+			return deviceI.readByteData(register);
 		}
-
-		ByteBuffer buffer = ByteBuffer.wrap(data);
-		buffer.order(ByteOrder.LITTLE_ENDIAN);
-		return buffer;
+	
+		byte[] tx = { (byte) (register | 0x80), 0 };
+	
+		byte[] ret = deviceS.writeAndRead(tx);
+	
+		return ret[1];
 	}
 
 	private void writeByte(int register, byte value) {
@@ -570,30 +561,37 @@ public class BME280 implements BarometerInterface, ThermometerInterface, Hygrome
 			deviceI.writeByteData(register, value);
 		} else {
 			byte[] tx = new byte[2];
-			tx[0] = (byte) (register & 0x7f); // msb must be 0
+			tx[0] = (byte) (register & 0x7f); // MSB must be 0
 			tx[1] = value;
 
 			deviceS.write(tx);
-
 		}
 	}
 
-	private byte readByte(int register) {
+	private ByteBuffer readByteBlock(int register, int length) {
+		byte[] data = new byte[length];
+	
 		if (useI2C) {
-			return deviceI.readByteData(register);
+			deviceI.readI2CBlockData(register, data);
+		} else {
+			byte[] tx = new byte[length + 1];
+	
+			tx[0] = (byte) (register | 0x80);
+			/* NOTE: rest of array initialized to 0 */
+	
+			byte[] ret = deviceS.writeAndRead(tx);
+	
+			System.arraycopy(ret, 1, data, 0, length);
 		}
-
-		byte[] tx = { (byte) register, 0 };
-		// tx[0] = (byte) register;
-		// tx[1] = 0;
-
-		byte[] ret = deviceS.writeAndRead(tx);
-
-		return ret[1];
+	
+		ByteBuffer buffer = ByteBuffer.wrap(data);
+		buffer.order(ByteOrder.LITTLE_ENDIAN);
+		
+		return buffer;
 	}
 
-	private void getDeviceId() throws RuntimeIOException {
-		// check the device ID
+	private void readDeviceModel() throws RuntimeIOException {
+		// Detect the device model by reading the ID register
 		int id = readByte(ID_REG);
 		if (id == Model.BMP280.getDeviceId()) {
 			model = Model.BMP280;

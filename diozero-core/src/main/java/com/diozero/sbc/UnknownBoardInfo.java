@@ -36,6 +36,10 @@ import org.tinylog.Logger;
 import com.diozero.api.PinInfo;
 import com.diozero.internal.board.GenericLinuxArmBoardInfo;
 
+/**
+ * Attempt to handle generic boards thatdon't have explicit support within
+ * diozero
+ */
 public class UnknownBoardInfo extends BoardInfo {
 	public static BoardInfo get(String model, String hardware, String revision, Integer memoryKb) {
 		String os_name = System.getProperty(SystemInfoConstants.OS_NAME_SYSTEM_PROPERTY);
@@ -63,10 +67,17 @@ public class UnknownBoardInfo extends BoardInfo {
 		super(make, model, memoryKb == null ? -1 : memoryKb.intValue(), libraryPath);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void initialisePins() {
+		//
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public PinInfo getByGpioNumber(int gpio) {
 		PinInfo pin_info = super.getByGpioNumber(gpio);
@@ -76,6 +87,9 @@ public class UnknownBoardInfo extends BoardInfo {
 		return pin_info;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public PinInfo getByAdcNumber(int adcNumber) {
 		PinInfo pin_info = super.getByAdcNumber(adcNumber);
@@ -85,6 +99,9 @@ public class UnknownBoardInfo extends BoardInfo {
 		return pin_info;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public PinInfo getByDacNumber(int dacNumber) {
 		PinInfo pin_info = super.getByDacNumber(dacNumber);

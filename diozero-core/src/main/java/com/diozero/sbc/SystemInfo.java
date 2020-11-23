@@ -169,7 +169,8 @@ public class SystemInfo implements SystemInfoConstants {
 				if (revision == null) {
 					// arm64 doesn't have Revision info in /proc/cpuinfo
 					try {
-						revision = new String(Files.readAllBytes(Paths.get(LINUX_DEVICE_TREE_SERIAL_NUMBER_FILE))).trim();
+						revision = new String(Files.readAllBytes(Paths.get(LINUX_DEVICE_TREE_SERIAL_NUMBER_FILE)))
+								.trim();
 					} catch (IOException e) {
 						// Ignore
 					}
@@ -194,9 +195,9 @@ public class SystemInfo implements SystemInfoConstants {
 					Logger.warn("Error reading '{}': {}", LINUX_MEMINFO_FILE, e.getMessage());
 				}
 			}
-			
+
 			localBoardInfo = lookupLocalBoardInfo(model, hardware, revision, memoryKb);
-			
+
 			initialised = true;
 		}
 	}
@@ -211,7 +212,7 @@ public class SystemInfo implements SystemInfoConstants {
 	 */
 	public static BoardInfo lookupLocalBoardInfo() {
 		initialise();
-		
+
 		return localBoardInfo;
 	}
 
@@ -225,33 +226,52 @@ public class SystemInfo implements SystemInfoConstants {
 		return bi;
 	}
 
+	/**
+	 * Get a property from the operating system release file
+	 * <code>/etc/os-release</code>
+	 * 
+	 * @param property the property to get
+	 * @return property value
+	 */
 	public static String getOsReleaseProperty(String property) {
 		initialise();
 
 		return osReleaseProperties.getProperty(property);
 	}
 
+	/**
+	 * Get the local operating system id as defined by the ID property in
+	 * <code>/etc/os-release</code>
+	 * 
+	 * @return value of the ID property
+	 */
 	public static String getOperatingSystemId() {
 		initialise();
 
 		return osReleaseProperties.getProperty("ID");
 	}
 
+	/**
+	 * Get the local operating system version as defined by the VERSION property in
+	 * <code>/etc/os-release</code>
+	 * 
+	 * @return value of the VERSION property
+	 */
 	public static String getOperatingSystemVersion() {
 		initialise();
 
 		return osReleaseProperties.getProperty("VERSION");
 	}
 
+	/**
+	 * Get the local operating system version id as defined by the VERSION_ID
+	 * property in <code>/etc/os-release</code>
+	 * 
+	 * @return value of the VERSION_ID property
+	 */
 	public static String getOperatingSystemVersionId() {
 		initialise();
 
 		return osReleaseProperties.getProperty("VERSION_ID");
-	}
-
-	public static void main(String[] args) {
-		initialise();
-		Logger.info(osReleaseProperties);
-		Logger.info(lookupLocalBoardInfo());
 	}
 }

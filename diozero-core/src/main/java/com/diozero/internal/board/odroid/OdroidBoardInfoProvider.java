@@ -100,6 +100,7 @@ public class OdroidBoardInfoProvider implements BoardInfoProvider {
 	 */
 	public static class OdroidC2BoardInfo extends GenericLinuxArmBoardInfo {
 		private static final int MEMORY = 2_048_000;
+		private static final float ADC_VREF = 1.8f;
 
 		private OdroidC2BoardInfo() {
 			super(MAKE, Model.C2.toString(), Integer.valueOf(MEMORY),
@@ -114,6 +115,11 @@ public class OdroidBoardInfoProvider implements BoardInfoProvider {
 		@Override
 		public MmapGpioInterface createMmapGpio() {
 			return new OdroidC2MmapGpio();
+		}
+		
+		@Override
+		public float getAdcVRef() {
+			return ADC_VREF;
 		}
 	}
 }

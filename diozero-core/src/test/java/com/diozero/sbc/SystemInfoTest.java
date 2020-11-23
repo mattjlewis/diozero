@@ -179,6 +179,6 @@ public class SystemInfoTest {
 		System.out.println(hardware + "/" + revision + ": " + board_info);
 		Assertions.assertEquals(expectedMake, board_info.getMake());
 		Assertions.assertEquals(expectedModel, board_info.getModel());
-		Assertions.assertEquals(expectedMemory, board_info.getMemory());
+		Assertions.assertEquals(expectedMemory, board_info.getMemoryKb());
 	}
 }

@@ -49,7 +49,7 @@ public class CHIPBoardInfoProvider implements BoardInfoProvider {
 	public static final String MAKE = "Next Thing Company";
 	public static final String MODEL_CHIP = "CHIP";
 	public static final String MODEL_CHIP_PRO = "CHIP Pro";
-	private static final String CHIP_LIBRARY_PATH = MODEL_CHIP.toLowerCase();
+	static final String CHIP_LIBRARY_PATH = MODEL_CHIP.toLowerCase();
 	
 	public static final CHIPBoardInfo CHIP_BOARD_INFO = new CHIPBoardInfo();
 	public static final CHIPProBoardInfo CHIP_PRO_BOARD_INFO = new CHIPProBoardInfo();

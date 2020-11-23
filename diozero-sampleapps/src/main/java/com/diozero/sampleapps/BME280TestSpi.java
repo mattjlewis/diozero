@@ -26,8 +26,7 @@ public class BME280TestSpi {
 				bme280.waitDataAvailable(10, 5);
 				float[] tph = bme280.getValues();
 				float tF = tph[0] * (9f / 5f) + 32f;
-				// System.out.println("T=" + tph[0] + " P=" + tph[1] + " H=" + tph[2]);
-				System.out.format("T=%.2f C (%.2f F) P=%.2f H=%.2f%n", Float.valueOf(tph[0]), Float.valueOf(tF),
+				System.out.format("T=%.2f C (%.2f F) P=%.2f hPa H=%.2f%% RH%n", Float.valueOf(tph[0]), Float.valueOf(tF),
 						Float.valueOf(tph[1]), Float.valueOf(tph[2]));
 
 				SleepUtil.sleepSeconds(1);

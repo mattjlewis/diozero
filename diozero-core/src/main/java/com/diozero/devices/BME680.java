@@ -62,11 +62,6 @@ public class BME680 implements BarometerInterface, ThermometerInterface, Hygrome
 	private static final String CHIP_NAME = "BME680";
 
 	/**
-	 * Chip ID for the BME680
-	 */
-	private static final int CHIP_ID_BME680 = 0x61;
-
-	/**
 	 * Default I2C address for the sensor.
 	 */
 	private static final int DEVICE_ADDRESS = 0x76;
@@ -75,6 +70,11 @@ public class BME680 implements BarometerInterface, ThermometerInterface, Hygrome
 	 * Alternative I2C address for the sensor.
 	 */
 	private static final int ALT_DEVICE_ADDRESS = 0x77;
+
+	/**
+	 * Chip ID for the BME680
+	 */
+	private static final int CHIP_ID_BME680 = 0x61;
 
 	/**
 	 * Minimum pressure in hPa the sensor can measure.
@@ -349,87 +349,78 @@ public class BME680 implements BarometerInterface, ThermometerInterface, Hygrome
 	 * @param address    I2C address of the sensor.
 	 */
 	public BME680(final int controller, final int address) {
-		connect(new I2CDevice(controller, address));
+		this.device = new I2CDevice(controller, address);
+		
+		initialise();
 	}
 
-	/**
-	 * Create a new BME680 sensor driver connected to the given I2c device.
-	 *
-	 * @param device I2C device of the sensor.
-	 */
-	/* package */ BME680(I2CDevice device) {
-		connect(device);
+	private void initialise() {
+		calibration = new Calibration();
+		sensorSettings = new SensorSettings();
+		gasSettings = new GasSettings();
+		data = new Data();
+	
+		for (int i = 0; i < DATA_GAS_BURN_IN; i++) {
+			gasResistanceData.add(Long.valueOf(0));
+		}
+	
+		chipId = device.readByteData(CHIP_ID_ADDRESS);
+		if (chipId != CHIP_ID_BME680) {
+			throw new IllegalStateException(String.format("%s %s not found.", CHIP_VENDOR, CHIP_NAME));
+		}
+	
+		softReset();
+		setPowerMode(PowerMode.SLEEP);
+	
+		getCalibrationData();
+	
+		// It is highly recommended to set first osrs_h<2:0> followed by osrs_t<2:0> and
+		// osrs_p<2:0> in one write command (see Section 3.3).
+		setHumidityOversample(OversamplingMultiplier.X2); // 0x72
+		setTemperatureOversample(OversamplingMultiplier.X4); // 0x74
+		setPressureOversample(OversamplingMultiplier.X8); // 0x74
+	
+		setFilter(FilterSize.SIZE_3);
+	
+		// setHeaterEnabled(true);
+		setGasMeasurementEnabled(true);
+	
+		setTemperatureOffset(0);
+	
+		getSensorData();
 	}
 
 	@Override
 	public float getTemperature() {
 		getSensorData();
 
-		return data.temperature;
+		return data.getTemperature();
 	}
 
 	@Override
 	public float getPressure() {
 		getSensorData();
 
-		return data.pressure;
+		return data.getPressure();
 	}
 
 	@Override
 	public float getRelativeHumidity() {
 		getSensorData();
 
-		return data.humidity;
+		return data.getHumidity();
 	}
 
 	public float getGasResistance() {
 		getSensorData();
 
-		return data.gasResistance;
+		return data.getGasResistance();
 	}
 
 	public float getAirQuality() {
 		getSensorData();
 
-		return data.airQualityScore;
-	}
-
-	private void connect(I2CDevice device) {
-		this.device = device;
-
-		calibration = new Calibration();
-		sensorSettings = new SensorSettings();
-		gasSettings = new GasSettings();
-		data = new Data();
-
-		for (int i = 0; i < DATA_GAS_BURN_IN; i++) {
-			gasResistanceData.add(Long.valueOf(0));
-		}
-
-		chipId = device.readByteData(CHIP_ID_ADDRESS);
-		if (chipId != CHIP_ID_BME680) {
-			throw new IllegalStateException(String.format("%s %s not found.", CHIP_VENDOR, CHIP_NAME));
-		}
-
-		softReset();
-		setPowerMode(PowerMode.SLEEP);
-
-		getCalibrationData();
-
-		// It is highly recommended to set first osrs_h<2:0> followed by osrs_t<2:0> and
-		// osrs_p<2:0> in one write command (see Section 3.3).
-		setHumidityOversample(OversamplingMultiplier.X2); // 0x72
-		setTemperatureOversample(OversamplingMultiplier.X4); // 0x74
-		setPressureOversample(OversamplingMultiplier.X8); // 0x74
-
-		setFilter(FilterSize.SIZE_3);
-
-		// setHeaterEnabled(true);
-		setGasMeasurementEnabled(true);
-
-		setTemperatureOffset(0);
-
-		getSensorData();
+		return data.getAirQualityScore();
 	}
 
 	/**
@@ -993,11 +984,11 @@ public class BME680 implements BarometerInterface, ThermometerInterface, Hygrome
 		final int[] humidity = new int[7];
 		final int[] gasHeater = new int[3];
 		// Heater resistance range
-		private int resistanceHeaterRange;
+		int resistanceHeaterRange;
 		// Heater resistance value
-		private int resistanceHeaterValue;
+		int resistanceHeaterValue;
 		// Switching error range
-		private int rangeSwitchingError;
+		int rangeSwitchingError;
 	}
 
 	public static class GasSettings {
@@ -1025,23 +1016,23 @@ public class BME680 implements BarometerInterface, ThermometerInterface, Hygrome
 
 	public static class Data {
 		// Contains new_data, gasm_valid & heat_stab
-		private boolean newData;
-		private boolean heaterTempStable;
-		private boolean gasMeasurementValid;
+		boolean newData;
+		boolean heaterTempStable;
+		boolean gasMeasurementValid;
 		// The index of the heater profile used
-		private int gasMeasurementIndex = -1;
+		int gasMeasurementIndex = -1;
 		// Measurement index to track order
-		private byte measureIndex = -1;
+		byte measureIndex = -1;
 		// Temperature in degree celsius x100
-		private float temperature;
+		float temperature;
 		// Pressure in Pascal
-		private float pressure;
+		float pressure;
 		// Humidity in % relative humidity x1000
-		private float humidity;
+		float humidity;
 		// Gas resistance in Ohms
-		private int gasResistance = 0;
+		int gasResistance = 0;
 		// Indoor air quality score index
-		private float airQualityScore = 0.0f;
+		float airQualityScore = 0.0f;
 
 		public boolean isNewData() {
 			return newData;

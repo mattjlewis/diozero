@@ -45,6 +45,10 @@ import com.diozero.api.PwmPinInfo;
  * cat /sys/kernel/debug/gpio
  * https://github.com/google/periph/tree/master/host
  */
+/**
+ * Provide information about the GPIOs that are available on the connected
+ * board.
+ */
 public class BoardPinInfo {
 	public static final String GPIO_KEY_PREFIX = "GPIO";
 	public static final String DEFAULT_GPIO_NAME_PREFIX = GPIO_KEY_PREFIX;
@@ -132,7 +136,7 @@ public class BoardPinInfo {
 
 	public void addGpioPinInfo(PinInfo pinInfo) {
 		pinsByName.put(pinInfo.getName(), pinInfo);
-		
+
 		if (pinInfo.getDeviceNumber() != PinInfo.NOT_DEFINED) {
 			gpios.put(Integer.valueOf(pinInfo.getDeviceNumber()), pinInfo);
 		}
@@ -147,13 +151,12 @@ public class BoardPinInfo {
 				modes);
 	}
 
-	public PinInfo addPwmPinInfo(int gpioNum, String name, int physicalPin, int pwmNum,
-			Collection<DeviceMode> modes) {
+	public PinInfo addPwmPinInfo(int gpioNum, String name, int physicalPin, int pwmNum, Collection<DeviceMode> modes) {
 		return addPwmPinInfo(PinInfo.DEFAULT_HEADER, gpioNum, name, physicalPin, pwmNum, modes);
 	}
 
-	public PinInfo addPwmPinInfo(int gpioNum, String name, int physicalPin, int pwmNum,
-			Collection<DeviceMode> modes, int chip, int line) {
+	public PinInfo addPwmPinInfo(int gpioNum, String name, int physicalPin, int pwmNum, Collection<DeviceMode> modes,
+			int chip, int line) {
 		return addPwmPinInfo(PinInfo.DEFAULT_HEADER, gpioNum, name, physicalPin, pwmNum, modes, chip, line);
 	}
 
@@ -224,7 +227,7 @@ public class BoardPinInfo {
 	public PinInfo getByGpioNumber(int gpio) {
 		return gpios.get(Integer.valueOf(gpio));
 	}
-	
+
 	public PinInfo getByChipAndLineOffset(int chipId, int lineOffset) {
 		if (chipId == PinInfo.NOT_DEFINED || lineOffset == PinInfo.NOT_DEFINED) {
 			return null;

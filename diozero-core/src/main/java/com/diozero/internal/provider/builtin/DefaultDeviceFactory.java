@@ -252,7 +252,7 @@ public class DefaultDeviceFactory extends BaseNativeDeviceFactory {
 		if (pinInfo instanceof PwmPinInfo) {
 			PwmPinInfo pwm_pin_info = (PwmPinInfo) pinInfo;
 			// Odroid C2 runs with an older 3.x kernel hence has a different sysfs interface
-			if (getBoardInfo().sameMakeAndModel(OdroidBoardInfoProvider.ODROID_C2)) {
+			if (getBoardInfo().compareMakeAndModel(OdroidBoardInfoProvider.ODROID_C2)) {
 				return new OdroidC2SysFsPwmOutputDevice(key, this, pwm_pin_info, pwmFrequency, initialValue);
 			}
 

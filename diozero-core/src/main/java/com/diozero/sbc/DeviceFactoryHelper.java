@@ -38,14 +38,23 @@ import com.diozero.internal.spi.NativeDeviceFactoryInterface;
 import com.diozero.util.PropertyUtil;
 
 /**
- * Helper class for instantiating different devices via the configured provider.
- * To set the provider edit META-INF/services/com.diozero.internal.provider.NativeDeviceFactoryInterface
- * While the ServiceLoader supports multiple service providers, only the first entry in this file is used.
- * Alternatively you can set the command line property "com.diozero.devicefactory" to override the ServiceLoader.
+ * Helper class for automatically detecting the
+ * {@link NativeDeviceFactoryInterface native device factory} that will be used
+ * for provisioning I/O devices. Uses the Java
+ * {@link java.util.ServiceLoader#load ServiceLoader} to detect
+ * NativeDeviceFactoryInterface implementations that are available on the
+ * class-path as defined in
+ * <code>META-INF/services/com.diozero.internal.provider.NativeDeviceFactoryInterface</code>.
+ * The first entry is used if there are multiple implementations present on the
+ * class-path. Alternatively you can specify the class to use via the command
+ * line or environment property <code>diozero.devicefactory</code>. The
+ * {@link com.diozero.internal.provider.builtin.DefaultDeviceFactory built-in
+ * device factory} is used if the above logic fails to instantiate a device
+ * factory implementation.
  */
 public class DeviceFactoryHelper {
-	public static final String DEVICE_FACTORY_PROP = "com.diozero.devicefactory";
-	
+	public static final String DEVICE_FACTORY_PROP = "diozero.devicefactory";
+
 	private static NativeDeviceFactoryInterface nativeDeviceFactory;
 
 	private static void initialise() {
@@ -61,7 +70,7 @@ public class DeviceFactoryHelper {
 						Logger.error(e, "Cannot instantiate device factory class '{}'", property);
 					}
 				}
-				
+
 				// Otherwise use the ServiceLoader
 				// If none found use the default built-in device factory
 				if (nativeDeviceFactory == null) {
@@ -70,27 +79,33 @@ public class DeviceFactoryHelper {
 				}
 
 				Logger.debug("Using native device factory class {}", nativeDeviceFactory.getClass().getSimpleName());
-					
+
 				Runtime.getRuntime().addShutdownHook(new ShutdownHandlerThread(nativeDeviceFactory));
-				
+
 				nativeDeviceFactory.start();
 			}
 		}
 	}
-	
+
+	/**
+	 * Auto-detect the native device factory class to be used for provisioning I/O
+	 * devices in this lookup order:
+	 * <ol>
+	 * <li>Command line {@link PropertyUtil#getProperty(String, String) property / environment} variable
+	 * <code>diozero.devicefactory</code></li>
+	 * <li>Java {@link java.util.ServiceLoader#load ServiceLoader} using the class
+	 * <code>com.diozero.internal.provider.NativeDeviceFactoryInterface</code></li>
+	 * <li>The {@link com.diozero.internal.provider.builtin.DefaultDeviceFactory
+	 * built-in device factory}</li>
+	 * </ol>
+	 * 
+	 * @return the native device factory instance to use for provisioning I/O
+	 *         devices.
+	 */
 	public static NativeDeviceFactoryInterface getNativeDeviceFactory() {
 		initialise();
-		
-		return nativeDeviceFactory;
-	}
 
-	public static void setNativeDeviceFactory(NativeDeviceFactoryInterface ndf) {
-		synchronized (DeviceFactoryHelper.class) {
-			if (nativeDeviceFactory != null) {
-				throw new IllegalStateException("Already initialised");
-			}
-			nativeDeviceFactory = ndf;
-		}
+		return nativeDeviceFactory;
 	}
 }
 
@@ -102,7 +117,7 @@ class ShutdownHandlerThread extends Thread {
 		setName("DIO-Zero Shutdown Handler");
 		setDaemon(false);
 	}
-	
+
 	@Override
 	public void run() {
 		if (!deviceFactory.isClosed()) {

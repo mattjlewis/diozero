@@ -31,7 +31,6 @@ package com.diozero.internal.spi;
  * #L%
  */
 
-
 import java.util.ServiceLoader;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -42,8 +41,9 @@ public interface NativeDeviceFactoryInterface extends GpioDeviceFactoryInterface
 		I2CDeviceFactoryInterface, PwmOutputDeviceFactoryInterface, AnalogInputDeviceFactoryInterface,
 		AnalogOutputDeviceFactoryInterface, SerialDeviceFactoryInterface {
 	void registerDeviceFactory(DeviceFactoryInterface deviceFactory);
+
 	BoardInfo getBoardInfo();
-	
+
 	static Stream<NativeDeviceFactoryInterface> loadInstances() {
 		return StreamSupport.stream(ServiceLoader.load(NativeDeviceFactoryInterface.class).spliterator(), false);
 	}

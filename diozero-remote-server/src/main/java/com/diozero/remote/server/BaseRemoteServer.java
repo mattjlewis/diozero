@@ -114,7 +114,7 @@ public abstract class BaseRemoteServer implements InputEventListener<DigitalInpu
 		List<GpioInfo> gpios = new ArrayList<>();
 
 		GetBoardInfoResponse response = new GetBoardInfoResponse(board_info.getMake(), board_info.getModel(),
-				board_info.getMemory(), gpios, request.getCorrelationId());
+				board_info.getMemoryKb(), gpios, request.getCorrelationId());
 
 		return response;
 	}
