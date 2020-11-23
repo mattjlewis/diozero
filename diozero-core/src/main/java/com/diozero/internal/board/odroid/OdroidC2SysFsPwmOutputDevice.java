@@ -40,10 +40,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import com.diozero.api.PwmPinInfo;
+import com.diozero.api.RuntimeIOException;
 import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.DeviceFactoryInterface;
 import com.diozero.internal.spi.PwmOutputDeviceInterface;
-import com.diozero.util.RuntimeIOException;
 
 /**
  * <p><a href="http://odroid.com/dokuwiki/doku.php?id=en:c2_hardware_pwm">Setting up</a>:

@@ -51,6 +51,7 @@ import java.util.function.Consumer;
 import org.tinylog.Logger;
 
 import com.diozero.api.DigitalInputEvent;
+import com.diozero.api.RuntimeIOException;
 import com.diozero.internal.provider.remote.devicefactory.RemoteDeviceFactory;
 import com.diozero.remote.message.GetBoardInfoRequest;
 import com.diozero.remote.message.GetBoardInfoResponse;
@@ -116,7 +117,6 @@ import com.diozero.remote.message.SpiWrite;
 import com.diozero.remote.message.SpiWriteAndRead;
 import com.diozero.util.PropertyUtil;
 import com.diozero.util.RangeUtil;
-import com.diozero.util.RuntimeIOException;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 

@@ -31,9 +31,6 @@ package com.diozero.api;
  * #L%
  */
 
-
-import com.diozero.util.RuntimeIOException;
-
 public interface DigitalInputDeviceInterface {
 	public boolean getValue() throws RuntimeIOException;
 	public void close() throws RuntimeIOException;

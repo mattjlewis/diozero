@@ -33,7 +33,6 @@ package com.diozero.devices;
 
 import com.diozero.api.*;
 import com.diozero.internal.spi.GpioDeviceFactoryInterface;
-import com.diozero.util.RuntimeIOException;
 
 /**
  * <p>Provides push button related utility methods.</p>

@@ -33,8 +33,8 @@ package com.diozero.sampleapps;
 
 import org.tinylog.Logger;
 
+import com.diozero.api.RuntimeIOException;
 import com.diozero.devices.TSL2561;
-import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 
 /**

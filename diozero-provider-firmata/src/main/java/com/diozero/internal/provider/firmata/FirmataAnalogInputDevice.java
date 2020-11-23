@@ -38,9 +38,9 @@ import org.firmata4j.Pin;
 import org.firmata4j.Pin.Mode;
 
 import com.diozero.api.AnalogInputEvent;
+import com.diozero.api.RuntimeIOException;
 import com.diozero.internal.spi.AbstractInputDevice;
 import com.diozero.internal.spi.AnalogInputDeviceInterface;
-import com.diozero.util.RuntimeIOException;
 
 public class FirmataAnalogInputDevice extends AbstractInputDevice<AnalogInputEvent> implements AnalogInputDeviceInterface {
 	private static final float RANGE = 1023;

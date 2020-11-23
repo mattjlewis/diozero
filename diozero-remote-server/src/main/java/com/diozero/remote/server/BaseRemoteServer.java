@@ -14,6 +14,7 @@ import com.diozero.api.I2CDeviceInterface;
 import com.diozero.api.I2CSMBusInterface;
 import com.diozero.api.InputEventListener;
 import com.diozero.api.PinInfo;
+import com.diozero.api.RuntimeIOException;
 import com.diozero.api.SerialDeviceInterface;
 import com.diozero.api.SpiDeviceInterface;
 import com.diozero.internal.spi.AnalogInputDeviceInterface;
@@ -88,7 +89,6 @@ import com.diozero.remote.message.SpiWrite;
 import com.diozero.remote.message.SpiWriteAndRead;
 import com.diozero.sbc.BoardInfo;
 import com.diozero.sbc.DeviceFactoryHelper;
-import com.diozero.util.RuntimeIOException;
 
 @SuppressWarnings("resource")
 public abstract class BaseRemoteServer implements InputEventListener<DigitalInputEvent>, RemoteProtocolInterface {

@@ -37,7 +37,7 @@ import com.diozero.api.DeviceBusyException;
 import com.diozero.api.I2CConstants;
 import com.diozero.api.I2CDevice;
 import com.diozero.api.I2CSMBusInterface;
-import com.diozero.util.RuntimeIOException;
+import com.diozero.api.RuntimeIOException;
 
 /**
  * <p>

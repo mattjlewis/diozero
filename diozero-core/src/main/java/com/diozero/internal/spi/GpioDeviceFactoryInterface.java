@@ -37,7 +37,7 @@ import com.diozero.api.GpioEventTrigger;
 import com.diozero.api.GpioPullUpDown;
 import com.diozero.api.InvalidModeException;
 import com.diozero.api.PinInfo;
-import com.diozero.util.RuntimeIOException;
+import com.diozero.api.RuntimeIOException;
 
 public interface GpioDeviceFactoryInterface extends DeviceFactoryInterface {
 	default GpioDigitalInputDeviceInterface provisionDigitalInputDevice(PinInfo pinInfo, GpioPullUpDown pud,

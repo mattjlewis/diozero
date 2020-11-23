@@ -31,7 +31,7 @@ package com.diozero.devices;
  * #L%
  */
 
-import com.diozero.util.RuntimeIOException;
+import com.diozero.api.RuntimeIOException;
 
 public interface LuminositySensorInterface extends SensorInterface {
 	float getLuminosity() throws RuntimeIOException;

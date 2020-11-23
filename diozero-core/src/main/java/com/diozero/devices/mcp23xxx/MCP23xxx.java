@@ -41,6 +41,7 @@ import com.diozero.api.GpioExpander;
 import com.diozero.api.GpioPullUpDown;
 import com.diozero.api.InputEventListener;
 import com.diozero.api.PinInfo;
+import com.diozero.api.RuntimeIOException;
 import com.diozero.internal.SoftwarePwmOutputDevice;
 import com.diozero.internal.spi.AbstractDeviceFactory;
 import com.diozero.internal.spi.GpioDeviceFactoryInterface;
@@ -51,7 +52,6 @@ import com.diozero.internal.spi.PwmOutputDeviceFactoryInterface;
 import com.diozero.internal.spi.PwmOutputDeviceInterface;
 import com.diozero.util.BitManipulation;
 import com.diozero.util.MutableByte;
-import com.diozero.util.RuntimeIOException;
 
 /**
  * Support for both MCP23008 and MCP23017 GPIO expansion boards.

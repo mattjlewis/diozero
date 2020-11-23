@@ -1,9 +1,9 @@
 package com.diozero.internal.provider.pigpioj;
 
+import com.diozero.api.RuntimeIOException;
 import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.DeviceFactoryInterface;
 import com.diozero.internal.spi.PwmOutputDeviceInterface;
-import com.diozero.util.RuntimeIOException;
 
 import uk.pigpioj.PigpioInterface;
 

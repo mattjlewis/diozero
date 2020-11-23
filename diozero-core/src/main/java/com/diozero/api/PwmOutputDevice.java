@@ -40,7 +40,6 @@ import com.diozero.internal.spi.PwmOutputDeviceFactoryInterface;
 import com.diozero.internal.spi.PwmOutputDeviceInterface;
 import com.diozero.sbc.DeviceFactoryHelper;
 import com.diozero.util.DiozeroScheduler;
-import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 
 /**

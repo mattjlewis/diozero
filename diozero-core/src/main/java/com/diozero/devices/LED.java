@@ -34,9 +34,9 @@ package com.diozero.devices;
 import com.diozero.api.Action;
 import com.diozero.api.DigitalOutputDevice;
 import com.diozero.api.PinInfo;
+import com.diozero.api.RuntimeIOException;
 import com.diozero.internal.spi.GpioDeviceFactoryInterface;
 import com.diozero.sbc.DeviceFactoryHelper;
-import com.diozero.util.RuntimeIOException;
 
 /**
  * <p>

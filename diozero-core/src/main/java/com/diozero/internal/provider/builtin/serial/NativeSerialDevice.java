@@ -39,9 +39,9 @@ import java.io.IOException;
 
 import org.tinylog.Logger;
 
+import com.diozero.api.RuntimeIOException;
 import com.diozero.api.SerialDevice;
 import com.diozero.util.LibraryLoader;
-import com.diozero.util.RuntimeIOException;
 
 public class NativeSerialDevice implements Closeable {
 	private static final int FD_NOT_INITIALISED = -1;

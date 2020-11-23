@@ -34,11 +34,11 @@ package com.diozero.internal.provider.remote.devicefactory;
 import java.util.UUID;
 
 import com.diozero.api.PinInfo;
+import com.diozero.api.RuntimeIOException;
 import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.PwmOutputDeviceInterface;
 import com.diozero.remote.message.ProvisionPwmOutputDevice;
 import com.diozero.remote.message.Response;
-import com.diozero.util.RuntimeIOException;
 
 public class RemotePwmOutputDevice extends AbstractDevice implements PwmOutputDeviceInterface {
 	private RemoteDeviceFactory deviceFactory;

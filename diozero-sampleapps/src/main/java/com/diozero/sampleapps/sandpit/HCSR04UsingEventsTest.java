@@ -33,8 +33,8 @@ package com.diozero.sampleapps.sandpit;
 
 import org.tinylog.Logger;
 
+import com.diozero.api.RuntimeIOException;
 import com.diozero.devices.sandpit.HCSR04UsingEvents;
-import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 
 /**

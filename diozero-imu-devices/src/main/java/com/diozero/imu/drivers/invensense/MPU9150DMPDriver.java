@@ -36,6 +36,7 @@ import java.util.Arrays;
 
 import org.tinylog.Logger;
 
+import com.diozero.api.RuntimeIOException;
 import com.diozero.devices.imu.OrientationEvent;
 import com.diozero.devices.imu.OrientationListener;
 import com.diozero.devices.imu.TapEvent;
@@ -43,7 +44,6 @@ import com.diozero.devices.imu.TapListener;
 import com.diozero.devices.imu.OrientationEvent.OrientationType;
 import com.diozero.devices.imu.TapEvent.TapType;
 import com.diozero.util.Hex;
-import com.diozero.util.RuntimeIOException;
 
 /**
  * Sensor Driver Layer

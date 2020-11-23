@@ -36,8 +36,8 @@ import java.util.Arrays;
 
 import org.tinylog.Logger;
 
+import com.diozero.api.RuntimeIOException;
 import com.diozero.devices.McpEeprom;
-import com.diozero.util.RuntimeIOException;
 
 public class EepromTest {
 	private static final String LOREM_IPSUM = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, "

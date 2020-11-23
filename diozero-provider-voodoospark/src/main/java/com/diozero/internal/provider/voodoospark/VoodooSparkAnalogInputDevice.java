@@ -33,9 +33,9 @@ package com.diozero.internal.provider.voodoospark;
 
 import com.diozero.api.AnalogInputEvent;
 import com.diozero.api.PinInfo;
+import com.diozero.api.RuntimeIOException;
 import com.diozero.internal.spi.AbstractInputDevice;
 import com.diozero.internal.spi.AnalogInputDeviceInterface;
-import com.diozero.util.RuntimeIOException;
 
 public class VoodooSparkAnalogInputDevice extends AbstractInputDevice<AnalogInputEvent> implements AnalogInputDeviceInterface {
 	private VoodooSparkDeviceFactory deviceFactory;

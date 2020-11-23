@@ -10,7 +10,6 @@ import java.util.List;
 import org.tinylog.Logger;
 
 import com.diozero.sbc.DeviceFactoryHelper;
-import com.diozero.util.RuntimeIOException;
 
 public class SerialDevice implements SerialConstants, SerialDeviceInterface {
 	public static class DeviceInfo {

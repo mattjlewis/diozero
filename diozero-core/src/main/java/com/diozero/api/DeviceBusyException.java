@@ -31,8 +31,6 @@ package com.diozero.api;
  * #L%
  */
 
-import com.diozero.util.RuntimeIOException;
-
 public class DeviceBusyException extends RuntimeIOException {
 	private static final long serialVersionUID = 5369887775011026981L;
 

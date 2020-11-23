@@ -35,6 +35,7 @@ import java.util.UUID;
 
 import org.tinylog.Logger;
 
+import com.diozero.api.RuntimeIOException;
 import com.diozero.api.SerialDevice;
 import com.diozero.api.SerialDeviceInterface;
 import com.diozero.internal.spi.AbstractDevice;
@@ -51,7 +52,6 @@ import com.diozero.remote.message.SerialReadBytesResponse;
 import com.diozero.remote.message.SerialReadResponse;
 import com.diozero.remote.message.SerialWriteByte;
 import com.diozero.remote.message.SerialWriteBytes;
-import com.diozero.util.RuntimeIOException;
 
 public class RemoteSerialDevice extends AbstractDevice implements SerialDeviceInterface {
 	private RemoteDeviceFactory deviceFactory;

@@ -34,9 +34,9 @@ package com.diozero.devices.motor;
 import org.tinylog.Logger;
 
 import com.diozero.api.PwmOutputDevice;
+import com.diozero.api.RuntimeIOException;
 import com.diozero.internal.spi.PwmOutputDeviceFactoryInterface;
 import com.diozero.sbc.DeviceFactoryHelper;
-import com.diozero.util.RuntimeIOException;
 
 /**
  * Generic bi-directional motor controlled by separate forward / backward PWM output GPIOs

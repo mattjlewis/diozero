@@ -41,11 +41,11 @@ import org.tinylog.Logger;
 import com.diozero.api.GpioDevice;
 import com.diozero.api.OutputDeviceCollection;
 import com.diozero.api.OutputDeviceInterface;
+import com.diozero.api.RuntimeIOException;
 import com.diozero.internal.spi.PwmOutputDeviceFactoryInterface;
 import com.diozero.internal.spi.PwmOutputDeviceInterface;
 import com.diozero.sbc.DeviceFactoryHelper;
 import com.diozero.util.RangeUtil;
-import com.diozero.util.RuntimeIOException;
 
 public class Servo extends GpioDevice implements OutputDeviceInterface {
 	private static final int DEFAULT_PWM_FREQUENCY = 50;

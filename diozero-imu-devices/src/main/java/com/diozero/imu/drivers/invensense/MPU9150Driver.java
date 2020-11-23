@@ -39,7 +39,7 @@ import org.tinylog.Logger;
 
 import com.diozero.api.I2CConstants;
 import com.diozero.api.I2CDevice;
-import com.diozero.util.RuntimeIOException;
+import com.diozero.api.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 
 @SuppressWarnings("unused")

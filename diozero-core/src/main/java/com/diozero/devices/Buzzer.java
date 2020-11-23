@@ -32,7 +32,7 @@ package com.diozero.devices;
  */
 
 import com.diozero.api.DigitalOutputDevice;
-import com.diozero.util.RuntimeIOException;
+import com.diozero.api.RuntimeIOException;
 
 /**
  * Represents a digital buzzer component.

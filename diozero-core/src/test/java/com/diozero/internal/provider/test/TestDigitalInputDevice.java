@@ -34,10 +34,10 @@ package com.diozero.internal.provider.test;
 import com.diozero.api.DigitalInputEvent;
 import com.diozero.api.GpioEventTrigger;
 import com.diozero.api.GpioPullUpDown;
+import com.diozero.api.RuntimeIOException;
 import com.diozero.internal.spi.AbstractInputDevice;
 import com.diozero.internal.spi.DeviceFactoryInterface;
 import com.diozero.internal.spi.GpioDigitalInputDeviceInterface;
-import com.diozero.util.RuntimeIOException;
 
 public class TestDigitalInputDevice extends AbstractInputDevice<DigitalInputEvent> implements GpioDigitalInputDeviceInterface {
 	private int gpio;

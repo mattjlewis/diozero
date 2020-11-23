@@ -36,9 +36,9 @@ import java.nio.ByteBuffer;
 
 import org.tinylog.Logger;
 
+import com.diozero.api.RuntimeIOException;
 import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.DeviceFactoryInterface;
-import com.diozero.util.RuntimeIOException;
 
 import uk.pigpioj.PigpioBitBangI2C;
 

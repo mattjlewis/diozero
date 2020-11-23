@@ -33,8 +33,8 @@ package com.diozero.devices;
 
 import com.diozero.api.I2CConstants;
 import com.diozero.api.I2CDevice;
+import com.diozero.api.RuntimeIOException;
 import com.diozero.devices.mcp23xxx.MCP23x08;
-import com.diozero.util.RuntimeIOException;
 
 public class MCP23008 extends MCP23x08 {
 	// Default I2C address

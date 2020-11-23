@@ -39,10 +39,10 @@ import org.tinylog.Logger;
 
 import com.diozero.api.DeviceMode;
 import com.diozero.api.PinInfo;
+import com.diozero.api.RuntimeIOException;
 import com.diozero.internal.provider.builtin.gpio.SysFsGpioUtil;
 import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.GpioDigitalOutputDeviceInterface;
-import com.diozero.util.RuntimeIOException;
 
 public class SysFsDigitalOutputDevice extends AbstractDevice implements GpioDigitalOutputDeviceInterface {
 	private static final String VALUE_FILE = "value";

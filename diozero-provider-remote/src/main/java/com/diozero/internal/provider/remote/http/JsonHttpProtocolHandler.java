@@ -43,6 +43,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 
+import com.diozero.api.RuntimeIOException;
 import com.diozero.internal.spi.NativeDeviceFactoryInterface;
 import com.diozero.remote.http.HttpProviderConstants;
 import com.diozero.remote.message.GetBoardInfoRequest;
@@ -107,7 +108,6 @@ import com.diozero.remote.message.SpiResponse;
 import com.diozero.remote.message.SpiWrite;
 import com.diozero.remote.message.SpiWriteAndRead;
 import com.diozero.util.PropertyUtil;
-import com.diozero.util.RuntimeIOException;
 import com.google.gson.Gson;
 
 public class JsonHttpProtocolHandler implements RemoteProtocolInterface {

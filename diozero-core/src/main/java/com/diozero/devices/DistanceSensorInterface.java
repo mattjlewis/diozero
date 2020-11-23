@@ -31,8 +31,7 @@ package com.diozero.devices;
  * #L%
  */
 
-
-import com.diozero.util.RuntimeIOException;
+import com.diozero.api.RuntimeIOException;
 
 public interface DistanceSensorInterface extends SensorInterface {
 	/**

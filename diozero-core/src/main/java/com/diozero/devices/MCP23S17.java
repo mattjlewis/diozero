@@ -33,10 +33,10 @@ package com.diozero.devices;
 
 
 import com.diozero.api.SpiConstants;
+import com.diozero.api.RuntimeIOException;
 import com.diozero.api.SpiClockMode;
 import com.diozero.api.SpiDevice;
 import com.diozero.devices.mcp23xxx.MCP23x17;
-import com.diozero.util.RuntimeIOException;
 
 public class MCP23S17 extends MCP23x17 {
 	// SPI Address Register  0b[0 1 0 0 A2 A1 A0 R/W]

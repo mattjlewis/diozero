@@ -38,7 +38,6 @@ import java.util.Map;
 import com.diozero.api.*;
 import com.diozero.sbc.BoardInfo;
 import com.diozero.sbc.DeviceFactoryHelper;
-import com.diozero.util.RuntimeIOException;
 
 import spark.*;
 import spark.template.freemarker.FreeMarkerEngine;

@@ -6,6 +6,7 @@ import org.tinylog.Logger;
 
 import com.diozero.api.I2CConstants;
 import com.diozero.api.I2CDeviceInterface;
+import com.diozero.api.RuntimeIOException;
 import com.diozero.api.I2CDevice.ProbeMode;
 import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.remote.message.I2CBlockProcessCall;
@@ -33,7 +34,6 @@ import com.diozero.remote.message.I2CWriteQuick;
 import com.diozero.remote.message.I2CWriteWordData;
 import com.diozero.remote.message.RemoteProtocolInterface;
 import com.diozero.remote.message.Response;
-import com.diozero.util.RuntimeIOException;
 
 public class RemoteI2CDevice extends AbstractDevice implements I2CDeviceInterface {
 	private RemoteProtocolInterface remoteProtocol;

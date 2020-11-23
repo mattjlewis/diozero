@@ -39,8 +39,8 @@ import org.tinylog.Logger;
 import com.diozero.api.DeviceBusyException;
 import com.diozero.api.I2CDevice;
 import com.diozero.api.I2CSMBusInterface;
+import com.diozero.api.RuntimeIOException;
 import com.diozero.util.FileUtil;
-import com.diozero.util.RuntimeIOException;
 
 /**
  * <p>

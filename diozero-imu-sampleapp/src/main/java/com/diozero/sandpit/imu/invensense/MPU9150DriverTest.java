@@ -40,6 +40,7 @@ import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.tinylog.Logger;
 
 import com.diozero.api.I2CConstants;
+import com.diozero.api.RuntimeIOException;
 import com.diozero.devices.imu.ImuData;
 import com.diozero.devices.imu.OrientationEvent;
 import com.diozero.devices.imu.TapEvent;
@@ -53,7 +54,6 @@ import com.diozero.imu.drivers.invensense.MPU9150DMPDriver;
 import com.diozero.imu.drivers.invensense.MPU9150DataFactory;
 import com.diozero.imu.drivers.invensense.MPU9150Driver;
 import com.diozero.imu.drivers.invensense.MPU9150FIFOData;
-import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 
 /**

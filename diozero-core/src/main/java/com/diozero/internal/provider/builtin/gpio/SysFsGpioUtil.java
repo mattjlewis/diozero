@@ -39,7 +39,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import com.diozero.api.DeviceMode;
-import com.diozero.util.RuntimeIOException;
+import com.diozero.api.RuntimeIOException;
 
 public class SysFsGpioUtil {
 	private static final String GPIO_ROOT_DIR = "/sys/class/gpio";

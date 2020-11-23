@@ -37,7 +37,7 @@ import java.io.IOException;
 
 import org.tinylog.Logger;
 
-import com.diozero.util.RuntimeIOException;
+import com.diozero.api.RuntimeIOException;
 
 /**
  * Generic dual bi-directional motor driver

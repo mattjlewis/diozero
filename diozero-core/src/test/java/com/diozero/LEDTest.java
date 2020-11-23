@@ -36,13 +36,13 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.tinylog.Logger;
 
+import com.diozero.api.RuntimeIOException;
 import com.diozero.devices.LED;
 import com.diozero.internal.provider.test.TestDeviceFactory;
 import com.diozero.internal.provider.test.TestDigitalInputDevice;
 import com.diozero.internal.provider.test.TestDigitalOutputDevice;
 import com.diozero.internal.spi.NativeDeviceFactoryInterface;
 import com.diozero.sbc.DeviceFactoryHelper;
-import com.diozero.util.RuntimeIOException;
 
 /**
  * LED test case using the test device factory

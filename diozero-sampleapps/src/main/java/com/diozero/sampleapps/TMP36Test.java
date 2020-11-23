@@ -33,9 +33,9 @@ package com.diozero.sampleapps;
 
 import org.tinylog.Logger;
 
+import com.diozero.api.RuntimeIOException;
 import com.diozero.devices.McpAdc;
 import com.diozero.devices.TMP36;
-import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 
 /**

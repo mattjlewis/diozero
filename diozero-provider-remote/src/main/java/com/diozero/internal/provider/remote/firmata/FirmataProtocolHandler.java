@@ -42,6 +42,7 @@ import com.diozero.api.AnalogInputEvent;
 import com.diozero.api.DeviceMode;
 import com.diozero.api.DigitalInputEvent;
 import com.diozero.api.GpioPullUpDown;
+import com.diozero.api.RuntimeIOException;
 import com.diozero.api.SerialConstants;
 import com.diozero.firmata.FirmataAdapter;
 import com.diozero.firmata.FirmataAdapter.I2CResponse;
@@ -115,7 +116,6 @@ import com.diozero.remote.message.SpiWrite;
 import com.diozero.remote.message.SpiWriteAndRead;
 import com.diozero.util.PropertyUtil;
 import com.diozero.util.RangeUtil;
-import com.diozero.util.RuntimeIOException;
 
 public class FirmataProtocolHandler implements RemoteProtocolInterface, FirmataEventListener {
 	private static final String TCP_HOST_PROP = "FIRMATA_TCP_HOST";

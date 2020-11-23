@@ -33,12 +33,12 @@ package com.diozero.internal.provider.builtin;
 
 import org.tinylog.Logger;
 
+import com.diozero.api.RuntimeIOException;
 import com.diozero.api.SpiClockMode;
 import com.diozero.api.SpiDeviceInterface;
 import com.diozero.internal.provider.builtin.spi.NativeSpiDevice;
 import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.DeviceFactoryInterface;
-import com.diozero.util.RuntimeIOException;
 
 public class DefaultNativeSpiDevice extends AbstractDevice implements SpiDeviceInterface {
 	private NativeSpiDevice device;

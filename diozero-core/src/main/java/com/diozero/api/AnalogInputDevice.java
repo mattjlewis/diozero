@@ -40,7 +40,6 @@ import com.diozero.internal.spi.AnalogInputDeviceFactoryInterface;
 import com.diozero.internal.spi.AnalogInputDeviceInterface;
 import com.diozero.sbc.DeviceFactoryHelper;
 import com.diozero.util.DiozeroScheduler;
-import com.diozero.util.RuntimeIOException;
 
 /**
  * <p>

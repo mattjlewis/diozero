@@ -37,7 +37,6 @@ import java.nio.ByteOrder;
 
 import com.diozero.api.*;
 import com.diozero.util.IOUtil;
-import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 
 /**

@@ -42,6 +42,7 @@ import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.tinylog.Logger;
 
 import com.diozero.api.DigitalInputEvent;
+import com.diozero.api.RuntimeIOException;
 import com.diozero.internal.provider.remote.ProtobufBaseAsyncProtocolHandler;
 import com.diozero.internal.spi.NativeDeviceFactoryInterface;
 import com.diozero.remote.message.DiozeroProtosConverter;
@@ -107,7 +108,6 @@ import com.diozero.remote.message.SpiWrite;
 import com.diozero.remote.message.SpiWriteAndRead;
 import com.diozero.remote.message.protobuf.DiozeroProtos;
 import com.diozero.remote.websocket.MessageWrapperTypes;
-import com.diozero.util.RuntimeIOException;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.GeneratedMessageV3;
 import com.google.protobuf.InvalidProtocolBufferException;

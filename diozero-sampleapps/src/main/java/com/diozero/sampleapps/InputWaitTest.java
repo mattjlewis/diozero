@@ -35,8 +35,8 @@ import org.tinylog.Logger;
 
 import com.diozero.api.GpioEventTrigger;
 import com.diozero.api.GpioPullUpDown;
+import com.diozero.api.RuntimeIOException;
 import com.diozero.api.WaitableDigitalInputDevice;
-import com.diozero.util.RuntimeIOException;
 
 /**
  * Input test application. To run:

@@ -33,8 +33,8 @@ package com.diozero.devices;
 
 import java.io.IOException;
 
+import com.diozero.api.RuntimeIOException;
 import com.diozero.devices.motor.MotorBase;
-import com.diozero.util.RuntimeIOException;
 
 public class PiconZeroMotor extends MotorBase {
 	private static final int MAX_FORWARD_SPEED = 127;

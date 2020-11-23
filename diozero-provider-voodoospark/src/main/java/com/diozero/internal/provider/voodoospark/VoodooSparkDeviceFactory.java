@@ -59,6 +59,7 @@ import com.diozero.api.GpioPullUpDown;
 import com.diozero.api.I2CConstants;
 import com.diozero.api.I2CDeviceInterface;
 import com.diozero.api.PinInfo;
+import com.diozero.api.RuntimeIOException;
 import com.diozero.api.SerialDevice;
 import com.diozero.api.SerialDeviceInterface;
 import com.diozero.api.SpiClockMode;
@@ -72,7 +73,6 @@ import com.diozero.internal.spi.GpioDigitalOutputDeviceInterface;
 import com.diozero.internal.spi.PwmOutputDeviceInterface;
 import com.diozero.sbc.BoardInfo;
 import com.diozero.util.PropertyUtil;
-import com.diozero.util.RuntimeIOException;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 

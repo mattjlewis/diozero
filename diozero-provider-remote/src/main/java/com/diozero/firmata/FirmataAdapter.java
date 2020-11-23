@@ -52,8 +52,8 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.tinylog.Logger;
 
+import com.diozero.api.RuntimeIOException;
 import com.diozero.util.DiozeroScheduler;
-import com.diozero.util.RuntimeIOException;
 
 public abstract class FirmataAdapter implements FirmataProtocol, Runnable, Closeable {
 	private static final int I2C_NO_REGISTER = 0;

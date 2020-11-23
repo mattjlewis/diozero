@@ -34,8 +34,8 @@ package com.diozero.devices;
 import org.tinylog.Logger;
 
 import com.diozero.api.I2CDevice;
+import com.diozero.api.RuntimeIOException;
 import com.diozero.util.BitManipulation;
-import com.diozero.util.RuntimeIOException;
 
 public class LM73 implements ThermometerInterface {
 	public static enum Configuration {

@@ -33,8 +33,6 @@ package com.diozero.api;
 
 import java.io.Closeable;
 
-import com.diozero.util.RuntimeIOException;
-
 /**
  * I2C device interface
  */

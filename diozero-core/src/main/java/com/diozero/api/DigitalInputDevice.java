@@ -36,7 +36,6 @@ import org.tinylog.Logger;
 import com.diozero.internal.spi.GpioDeviceFactoryInterface;
 import com.diozero.internal.spi.GpioDigitalInputDeviceInterface;
 import com.diozero.sbc.DeviceFactoryHelper;
-import com.diozero.util.RuntimeIOException;
 
 /**
  * Represents a generic digital input device.

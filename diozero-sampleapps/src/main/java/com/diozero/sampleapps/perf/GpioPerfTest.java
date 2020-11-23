@@ -34,7 +34,7 @@ package com.diozero.sampleapps.perf;
 import org.tinylog.Logger;
 
 import com.diozero.api.DigitalOutputDevice;
-import com.diozero.util.RuntimeIOException;
+import com.diozero.api.RuntimeIOException;
 
 /**
  * GPIO output performance test application. To run:

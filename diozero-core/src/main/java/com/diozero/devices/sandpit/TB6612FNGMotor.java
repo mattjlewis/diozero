@@ -35,8 +35,8 @@ import org.tinylog.Logger;
 
 import com.diozero.api.DigitalOutputDevice;
 import com.diozero.api.PwmOutputDevice;
+import com.diozero.api.RuntimeIOException;
 import com.diozero.devices.motor.MotorBase;
-import com.diozero.util.RuntimeIOException;
 
 /**
  * Bi-directional motor controlled by a single PWM pin and separate forward / backward GPIO pins

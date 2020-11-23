@@ -34,9 +34,9 @@ package com.diozero.internal.provider.bbbiolib;
 import org.tinylog.Logger;
 
 import com.diozero.api.PinInfo;
+import com.diozero.api.RuntimeIOException;
 import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.GpioDigitalOutputDeviceInterface;
-import com.diozero.util.RuntimeIOException;
 
 public class BbbIoLibDigitalOutputDevice extends AbstractDevice implements GpioDigitalOutputDeviceInterface {
 	private PinInfo pinInfo;

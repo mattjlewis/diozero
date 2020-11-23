@@ -36,7 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.diozero.api.Action;
-import com.diozero.util.RuntimeIOException;
+import com.diozero.api.RuntimeIOException;
 
 public abstract class MotorBase implements MotorInterface {
 	private Action forwardAction;

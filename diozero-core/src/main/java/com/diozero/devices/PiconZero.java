@@ -46,6 +46,7 @@ import com.diozero.api.I2CConstants;
 import com.diozero.api.I2CDevice;
 import com.diozero.api.InputEventListener;
 import com.diozero.api.PinInfo;
+import com.diozero.api.RuntimeIOException;
 import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.AbstractDeviceFactory;
 import com.diozero.internal.spi.AbstractInputDevice;
@@ -61,7 +62,6 @@ import com.diozero.internal.spi.PwmOutputDeviceFactoryInterface;
 import com.diozero.internal.spi.PwmOutputDeviceInterface;
 import com.diozero.sbc.BoardPinInfo;
 import com.diozero.util.RangeUtil;
-import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 
 public class PiconZero extends AbstractDeviceFactory implements GpioDeviceFactoryInterface,

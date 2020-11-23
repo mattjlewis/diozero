@@ -34,7 +34,7 @@ package com.diozero.devices.imu;
 
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 
-import com.diozero.util.RuntimeIOException;
+import com.diozero.api.RuntimeIOException;
 
 public interface ImuInterface {
 	

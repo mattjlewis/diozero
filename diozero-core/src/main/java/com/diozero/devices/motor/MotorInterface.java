@@ -35,7 +35,7 @@ package com.diozero.devices.motor;
 import java.io.Closeable;
 
 import com.diozero.api.Action;
-import com.diozero.util.RuntimeIOException;
+import com.diozero.api.RuntimeIOException;
 
 public interface MotorInterface extends Closeable {
 	void forward(float speed) throws RuntimeIOException;

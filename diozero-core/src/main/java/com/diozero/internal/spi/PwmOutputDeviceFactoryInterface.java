@@ -36,7 +36,7 @@ import com.diozero.api.DeviceAlreadyOpenedException;
 import com.diozero.api.DeviceMode;
 import com.diozero.api.InvalidModeException;
 import com.diozero.api.PinInfo;
-import com.diozero.util.RuntimeIOException;
+import com.diozero.api.RuntimeIOException;
 
 public interface PwmOutputDeviceFactoryInterface extends DeviceFactoryInterface {
 	default PwmOutputDeviceInterface provisionPwmOutputDevice(int pwmOrGpioNum, int pwmFrequency, float initialValue)

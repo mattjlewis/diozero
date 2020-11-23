@@ -35,10 +35,10 @@ import java.util.Random;
 
 import org.junit.jupiter.api.Assertions;
 
+import com.diozero.api.RuntimeIOException;
 import com.diozero.api.SpiClockMode;
 import com.diozero.devices.McpAdc;
 import com.diozero.internal.spi.DeviceFactoryInterface;
-import com.diozero.util.RuntimeIOException;
 
 public class TestMcpAdcSpiDevice extends TestSpiDevice {
 	private static final Random random = new Random();

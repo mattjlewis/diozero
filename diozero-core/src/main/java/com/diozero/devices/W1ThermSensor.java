@@ -42,7 +42,7 @@ import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import com.diozero.util.RuntimeIOException;
+import com.diozero.api.RuntimeIOException;
 
 /**
  * @see <a href="https://www.maximintegrated.com/en/products/analog/sensors-and-sensor-interface/DS18B20.html">DS18B20 Programmable Resolution 1-Wire Digital Thermometer</a>

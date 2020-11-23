@@ -37,6 +37,7 @@ import org.tinylog.Logger;
 
 import com.diozero.api.AnalogInputEvent;
 import com.diozero.api.PinInfo;
+import com.diozero.api.RuntimeIOException;
 import com.diozero.api.SpiConstants;
 import com.diozero.api.SpiClockMode;
 import com.diozero.api.SpiDevice;
@@ -45,7 +46,6 @@ import com.diozero.internal.spi.AbstractInputDevice;
 import com.diozero.internal.spi.AnalogInputDeviceFactoryInterface;
 import com.diozero.internal.spi.AnalogInputDeviceInterface;
 import com.diozero.sbc.BoardPinInfo;
-import com.diozero.util.RuntimeIOException;
 
 public class McpAdc extends AbstractDeviceFactory implements AnalogInputDeviceFactoryInterface {
 	/** @see <a href="http://ww1.microchip.com/downloads/en/DeviceDoc/21293C.pdf">MCP3001</a> */

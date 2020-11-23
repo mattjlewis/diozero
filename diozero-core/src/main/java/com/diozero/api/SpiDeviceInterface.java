@@ -31,8 +31,6 @@ package com.diozero.api;
  * #L%
  */
 
-import com.diozero.util.RuntimeIOException;
-
 /**
  * <a href="https://en.wikipedia.org/wiki/Serial_Peripheral_Interface">Serial Peripheral Interface (SPI)</a>
  */

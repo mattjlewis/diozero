@@ -42,11 +42,11 @@ import com.diozero.api.DeviceMode;
 import com.diozero.api.DigitalInputEvent;
 import com.diozero.api.GpioEventTrigger;
 import com.diozero.api.PinInfo;
+import com.diozero.api.RuntimeIOException;
 import com.diozero.internal.provider.builtin.gpio.SysFsGpioUtil;
 import com.diozero.internal.spi.AbstractInputDevice;
 import com.diozero.internal.spi.GpioDigitalInputDeviceInterface;
 import com.diozero.util.PollEventListener;
-import com.diozero.util.RuntimeIOException;
 
 /**
  * Pure Java implementation using

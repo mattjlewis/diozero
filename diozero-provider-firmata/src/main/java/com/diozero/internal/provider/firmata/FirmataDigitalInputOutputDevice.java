@@ -42,9 +42,9 @@ import org.tinylog.Logger;
 
 import com.diozero.api.DeviceMode;
 import com.diozero.api.DigitalInputEvent;
+import com.diozero.api.RuntimeIOException;
 import com.diozero.internal.spi.AbstractInputDevice;
 import com.diozero.internal.spi.GpioDigitalInputOutputDeviceInterface;
-import com.diozero.util.RuntimeIOException;
 
 public class FirmataDigitalInputOutputDevice extends AbstractInputDevice<DigitalInputEvent>
 implements GpioDigitalInputOutputDeviceInterface, PinEventListener {

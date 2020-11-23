@@ -48,10 +48,10 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.tinylog.Logger;
 
+import com.diozero.api.RuntimeIOException;
 import com.diozero.remote.message.protobuf.DiozeroProtos;
 import com.diozero.remote.mqtt.MqttProviderConstants;
 import com.diozero.remote.server.mqtt.MqttProtobufServer;
-import com.diozero.util.RuntimeIOException;
 import com.google.protobuf.GeneratedMessageV3;
 
 public class MqttTestClient implements Closeable, MqttCallback {

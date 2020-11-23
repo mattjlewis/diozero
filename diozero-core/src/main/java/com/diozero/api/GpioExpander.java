@@ -34,8 +34,6 @@ package com.diozero.api;
 
 import java.io.Closeable;
 
-import com.diozero.util.RuntimeIOException;
-
 public interface GpioExpander extends Closeable {
 	void setDirections(int port, byte directions);
 	void setValues(int port, byte values);

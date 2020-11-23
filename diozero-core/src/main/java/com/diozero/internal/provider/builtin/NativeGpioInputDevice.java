@@ -37,12 +37,12 @@ import com.diozero.api.DigitalInputEvent;
 import com.diozero.api.GpioEventTrigger;
 import com.diozero.api.GpioPullUpDown;
 import com.diozero.api.PinInfo;
+import com.diozero.api.RuntimeIOException;
 import com.diozero.internal.provider.builtin.gpio.GpioLine;
 import com.diozero.internal.provider.builtin.gpio.GpioLineEventListener;
 import com.diozero.internal.spi.AbstractInputDevice;
 import com.diozero.internal.spi.GpioDigitalInputDeviceInterface;
 import com.diozero.internal.provider.builtin.gpio.GpioChip;
-import com.diozero.util.RuntimeIOException;
 
 public class NativeGpioInputDevice extends AbstractInputDevice<DigitalInputEvent>
 		implements GpioDigitalInputDeviceInterface, GpioLineEventListener {

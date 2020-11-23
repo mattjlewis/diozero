@@ -33,10 +33,10 @@ package com.diozero.sampleapps.perf;
 
 import org.tinylog.Logger;
 
+import com.diozero.api.RuntimeIOException;
 import com.diozero.internal.spi.GpioDigitalOutputDeviceInterface;
 import com.diozero.internal.spi.NativeDeviceFactoryInterface;
 import com.diozero.sbc.DeviceFactoryHelper;
-import com.diozero.util.RuntimeIOException;
 
 public class SpiGpioPerfTest {
 	private static final int ITERATIONS = 1_000_000;

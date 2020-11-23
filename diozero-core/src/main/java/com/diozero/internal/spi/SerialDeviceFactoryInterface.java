@@ -32,9 +32,9 @@ package com.diozero.internal.spi;
  */
 
 import com.diozero.api.DeviceAlreadyOpenedException;
+import com.diozero.api.RuntimeIOException;
 import com.diozero.api.SerialDevice;
 import com.diozero.api.SerialDeviceInterface;
-import com.diozero.util.RuntimeIOException;
 
 public interface SerialDeviceFactoryInterface extends DeviceFactoryInterface {
 	static final String SERIAL_PREFIX = "-Serial-";

@@ -43,6 +43,7 @@ import com.diozero.api.GpioPullUpDown;
 import com.diozero.api.I2CConstants;
 import com.diozero.api.I2CDeviceInterface;
 import com.diozero.api.PinInfo;
+import com.diozero.api.RuntimeIOException;
 import com.diozero.api.SerialDevice;
 import com.diozero.api.SerialDeviceInterface;
 import com.diozero.api.SpiClockMode;
@@ -73,7 +74,6 @@ import com.diozero.remote.message.GpioPwmWrite;
 import com.diozero.remote.message.RemoteProtocolInterface;
 import com.diozero.remote.message.Response;
 import com.diozero.sbc.BoardInfo;
-import com.diozero.util.RuntimeIOException;
 
 public class RemoteDeviceFactory extends BaseNativeDeviceFactory {
 	public static final String DEVICE_NAME = "Remote";

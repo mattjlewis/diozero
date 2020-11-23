@@ -33,10 +33,10 @@ package com.diozero.internal.provider.pigpioj;
 
 import org.tinylog.Logger;
 
+import com.diozero.api.RuntimeIOException;
 import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.DeviceFactoryInterface;
 import com.diozero.internal.spi.GpioDigitalOutputDeviceInterface;
-import com.diozero.util.RuntimeIOException;
 
 import uk.pigpioj.PigpioConstants;
 import uk.pigpioj.PigpioInterface;

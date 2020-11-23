@@ -34,11 +34,11 @@ package com.diozero.internal.provider.remote.devicefactory;
 import java.util.UUID;
 
 import com.diozero.api.PinInfo;
+import com.diozero.api.RuntimeIOException;
 import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.GpioDigitalOutputDeviceInterface;
 import com.diozero.remote.message.ProvisionDigitalOutputDevice;
 import com.diozero.remote.message.Response;
-import com.diozero.util.RuntimeIOException;
 
 public class RemoteDigitalOutputDevice extends AbstractDevice implements GpioDigitalOutputDeviceInterface {
 	private RemoteDeviceFactory deviceFactory;

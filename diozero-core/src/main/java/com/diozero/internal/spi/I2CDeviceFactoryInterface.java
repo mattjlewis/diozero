@@ -34,7 +34,7 @@ package com.diozero.internal.spi;
 import com.diozero.api.DeviceAlreadyOpenedException;
 import com.diozero.api.I2CConstants;
 import com.diozero.api.I2CDeviceInterface;
-import com.diozero.util.RuntimeIOException;
+import com.diozero.api.RuntimeIOException;
 
 public interface I2CDeviceFactoryInterface extends DeviceFactoryInterface {
 	static final String I2C_PREFIX = "-I2C-";

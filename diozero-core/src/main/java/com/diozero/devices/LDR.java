@@ -33,9 +33,9 @@ package com.diozero.devices;
 
 
 import com.diozero.api.AnalogInputDevice;
+import com.diozero.api.RuntimeIOException;
 import com.diozero.internal.spi.AnalogInputDeviceFactoryInterface;
 import com.diozero.sbc.DeviceFactoryHelper;
-import com.diozero.util.RuntimeIOException;
 
 /**
  * <p>

@@ -36,6 +36,8 @@ import java.lang.reflect.Field;
 
 import org.tinylog.Logger;
 
+import com.diozero.api.RuntimeIOException;
+
 public class FileUtil {
 	private static boolean initialised;
 	private static Field fdField;

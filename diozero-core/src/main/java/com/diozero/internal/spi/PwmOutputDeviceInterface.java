@@ -33,7 +33,7 @@ package com.diozero.internal.spi;
 
 
 import com.diozero.api.DeviceMode;
-import com.diozero.util.RuntimeIOException;
+import com.diozero.api.RuntimeIOException;
 
 public interface PwmOutputDeviceInterface extends GpioDeviceInterface {
 	/**

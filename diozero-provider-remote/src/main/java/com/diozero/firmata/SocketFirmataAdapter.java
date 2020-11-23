@@ -36,7 +36,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 
-import com.diozero.util.RuntimeIOException;
+import com.diozero.api.RuntimeIOException;
 
 public class SocketFirmataAdapter extends FirmataAdapter {
 	private Socket socket;

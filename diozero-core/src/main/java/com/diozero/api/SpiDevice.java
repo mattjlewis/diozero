@@ -36,7 +36,6 @@ import org.tinylog.Logger;
 
 import com.diozero.internal.spi.NativeDeviceFactoryInterface;
 import com.diozero.sbc.DeviceFactoryHelper;
-import com.diozero.util.RuntimeIOException;
 
 /**
  * https://www.raspberrypi.org/documentation/hardware/raspberrypi/spi/README.md

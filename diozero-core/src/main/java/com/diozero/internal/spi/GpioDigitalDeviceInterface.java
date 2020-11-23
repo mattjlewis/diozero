@@ -31,7 +31,7 @@ package com.diozero.internal.spi;
  * #L%
  */
 
-import com.diozero.util.RuntimeIOException;
+import com.diozero.api.RuntimeIOException;
 
 public interface GpioDigitalDeviceInterface extends GpioDeviceInterface {
 	boolean getValue() throws RuntimeIOException;

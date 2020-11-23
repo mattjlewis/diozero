@@ -37,9 +37,9 @@ import java.io.Closeable;
 import org.tinylog.Logger;
 
 import com.diozero.api.SpiConstants;
+import com.diozero.api.RuntimeIOException;
 import com.diozero.api.SpiClockMode;
 import com.diozero.util.LibraryLoader;
-import com.diozero.util.RuntimeIOException;
 
 public class NativeSpiDevice implements Closeable {
 	static {

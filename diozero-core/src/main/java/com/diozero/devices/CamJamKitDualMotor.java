@@ -1,8 +1,8 @@
 package com.diozero.devices;
 
+import com.diozero.api.RuntimeIOException;
 import com.diozero.devices.motor.DualMotor;
 import com.diozero.devices.motor.PwmMotor;
-import com.diozero.util.RuntimeIOException;
 
 /**
  * CamJam EduKit 3 Robot. Generic robot controller with pre-configured GPIO connections.

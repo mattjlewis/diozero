@@ -41,8 +41,8 @@ import java.util.Properties;
 
 import org.tinylog.Logger;
 
+import com.diozero.api.RuntimeIOException;
 import com.diozero.internal.spi.BoardInfoProvider;
-import com.diozero.util.RuntimeIOException;
 
 /**
  * <p>

@@ -33,8 +33,8 @@ package com.diozero.devices;
 
 import com.diozero.api.I2CConstants;
 import com.diozero.api.I2CDevice;
+import com.diozero.api.RuntimeIOException;
 import com.diozero.devices.mcp23xxx.MCP23x17;
-import com.diozero.util.RuntimeIOException;
 
 /**
  * Datasheet: <a href="http://ww1.microchip.com/downloads/en/DeviceDoc/21952b.pdf">http://ww1.microchip.com/downloads/en/DeviceDoc/21952b.pdf</a>.

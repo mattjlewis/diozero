@@ -39,10 +39,10 @@ import java.util.List;
 
 import com.diozero.api.Action;
 import com.diozero.api.OutputDeviceInterface;
+import com.diozero.api.RuntimeIOException;
 import com.diozero.internal.spi.GpioDeviceFactoryInterface;
 import com.diozero.sbc.DeviceFactoryHelper;
 import com.diozero.util.RangeUtil;
-import com.diozero.util.RuntimeIOException;
 
 public class LedBarGraph implements OutputDeviceInterface, Closeable {
 	private List<LED> leds;

@@ -32,8 +32,8 @@ package com.diozero.devices.sandpit;
  */
 
 import com.diozero.api.GpioPullUpDown;
+import com.diozero.api.RuntimeIOException;
 import com.diozero.api.SmoothedInputDevice;
-import com.diozero.util.RuntimeIOException;
 
 /**
  * <p>A Passive Infra-Red (PIR) motion sensor.</p>

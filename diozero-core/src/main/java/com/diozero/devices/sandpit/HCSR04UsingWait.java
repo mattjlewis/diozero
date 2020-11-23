@@ -36,9 +36,9 @@ import org.tinylog.Logger;
 import com.diozero.api.DigitalOutputDevice;
 import com.diozero.api.GpioEventTrigger;
 import com.diozero.api.GpioPullUpDown;
+import com.diozero.api.RuntimeIOException;
 import com.diozero.api.WaitableDigitalInputDevice;
 import com.diozero.devices.DistanceSensorInterface;
-import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 
 /**

@@ -34,8 +34,8 @@ package com.diozero.sampleapps;
 import org.tinylog.Logger;
 
 import com.diozero.api.GpioPullUpDown;
+import com.diozero.api.RuntimeIOException;
 import com.diozero.devices.Button;
-import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 
 /**

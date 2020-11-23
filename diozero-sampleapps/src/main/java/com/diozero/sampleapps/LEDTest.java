@@ -34,9 +34,9 @@ package com.diozero.sampleapps;
 import org.tinylog.Logger;
 
 import com.diozero.api.PinInfo;
+import com.diozero.api.RuntimeIOException;
 import com.diozero.devices.LED;
 import com.diozero.sbc.DeviceFactoryHelper;
-import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 
 /**

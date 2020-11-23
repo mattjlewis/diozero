@@ -43,6 +43,7 @@ import com.diozero.api.I2CConstants;
 import com.diozero.api.I2CDeviceInterface;
 import com.diozero.api.PinInfo;
 import com.diozero.api.PwmPinInfo;
+import com.diozero.api.RuntimeIOException;
 import com.diozero.api.SerialConstants;
 import com.diozero.api.SerialDeviceInterface;
 import com.diozero.api.SpiClockMode;
@@ -62,7 +63,6 @@ import com.diozero.internal.spi.PwmOutputDeviceInterface;
 import com.diozero.sbc.BoardPinInfo;
 import com.diozero.util.EpollNative;
 import com.diozero.util.PropertyUtil;
-import com.diozero.util.RuntimeIOException;
 
 public class DefaultDeviceFactory extends BaseNativeDeviceFactory {
 	private static final String USE_GPIO_CHARDEV_PROP = "diozero.gpio.chardev";

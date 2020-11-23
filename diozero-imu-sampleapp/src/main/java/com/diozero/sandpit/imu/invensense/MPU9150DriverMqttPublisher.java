@@ -47,6 +47,7 @@ import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.tinylog.Logger;
 
 import com.diozero.api.I2CConstants;
+import com.diozero.api.RuntimeIOException;
 import com.diozero.devices.imu.ImuData;
 import com.diozero.devices.imu.MqttConstants;
 import com.diozero.devices.imu.OrientationEvent;
@@ -61,7 +62,6 @@ import com.diozero.imu.drivers.invensense.MPU9150DMPDriver;
 import com.diozero.imu.drivers.invensense.MPU9150DataFactory;
 import com.diozero.imu.drivers.invensense.MPU9150Driver;
 import com.diozero.imu.drivers.invensense.MPU9150FIFOData;
-import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 
 /**

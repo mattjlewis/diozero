@@ -32,8 +32,8 @@ package com.diozero.devices;
  */
 
 import com.diozero.api.AnalogInputDevice;
+import com.diozero.api.RuntimeIOException;
 import com.diozero.internal.spi.AnalogInputDeviceFactoryInterface;
-import com.diozero.util.RuntimeIOException;
 
 /**
  * Support for reading temperature values from a <a href=

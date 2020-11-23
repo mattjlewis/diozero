@@ -33,7 +33,7 @@ package com.diozero.internal.provider.builtin.gpio;
 
 import java.io.Closeable;
 
-import com.diozero.util.RuntimeIOException;
+import com.diozero.api.RuntimeIOException;
 
 // struct gpiod_line
 public class GpioLine implements Closeable {

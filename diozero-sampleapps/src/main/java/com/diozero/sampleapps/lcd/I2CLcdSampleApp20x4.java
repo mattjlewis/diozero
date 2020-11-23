@@ -34,9 +34,9 @@ package com.diozero.sampleapps.lcd;
 import org.tinylog.Logger;
 
 import com.diozero.api.I2CConstants;
+import com.diozero.api.RuntimeIOException;
 import com.diozero.devices.HD44780Lcd;
 import com.diozero.devices.HD44780Lcd.LcdConnection;
-import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 
 /**

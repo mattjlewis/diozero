@@ -37,7 +37,6 @@ import com.diozero.internal.spi.GpioDeviceFactoryInterface;
 import com.diozero.internal.spi.GpioDigitalOutputDeviceInterface;
 import com.diozero.sbc.DeviceFactoryHelper;
 import com.diozero.util.DiozeroScheduler;
-import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 
 /**

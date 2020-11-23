@@ -44,6 +44,7 @@ import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.tinylog.Logger;
 
 import com.diozero.api.DigitalInputEvent;
+import com.diozero.api.RuntimeIOException;
 import com.diozero.internal.provider.remote.BaseAsyncProtocolHandler;
 import com.diozero.internal.spi.NativeDeviceFactoryInterface;
 import com.diozero.remote.message.GetBoardInfoRequest;
@@ -108,7 +109,6 @@ import com.diozero.remote.message.SpiWrite;
 import com.diozero.remote.message.SpiWriteAndRead;
 import com.diozero.remote.websocket.MessageWrapper;
 import com.diozero.remote.websocket.MessageWrapperTypes;
-import com.diozero.util.RuntimeIOException;
 import com.google.gson.Gson;
 
 public class JsonWebSocketProtocolHandler extends BaseAsyncProtocolHandler implements WebSocketListener {

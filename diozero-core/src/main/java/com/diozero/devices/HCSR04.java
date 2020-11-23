@@ -40,7 +40,7 @@ import com.diozero.api.DigitalInputOutputDevice;
 import com.diozero.api.DigitalOutputDevice;
 import com.diozero.api.GpioEventTrigger;
 import com.diozero.api.GpioPullUpDown;
-import com.diozero.util.RuntimeIOException;
+import com.diozero.api.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 
 /**

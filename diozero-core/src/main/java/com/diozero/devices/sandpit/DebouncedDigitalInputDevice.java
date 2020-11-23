@@ -34,8 +34,8 @@ package com.diozero.devices.sandpit;
 
 import com.diozero.api.GpioEventTrigger;
 import com.diozero.api.GpioPullUpDown;
+import com.diozero.api.RuntimeIOException;
 import com.diozero.api.WaitableDigitalInputDevice;
-import com.diozero.util.RuntimeIOException;
 
 /**
  * Represents a generic input device with typical on/off behaviour.

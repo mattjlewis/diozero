@@ -43,6 +43,7 @@ import com.diozero.api.GpioPullUpDown;
 import com.diozero.api.I2CConstants;
 import com.diozero.api.I2CDevice;
 import com.diozero.api.PinInfo;
+import com.diozero.api.RuntimeIOException;
 import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.AbstractDeviceFactory;
 import com.diozero.internal.spi.AbstractInputDevice;
@@ -55,7 +56,6 @@ import com.diozero.sbc.BoardPinInfo;
 import com.diozero.sbc.DeviceFactoryHelper;
 import com.diozero.util.BitManipulation;
 import com.diozero.util.MutableByte;
-import com.diozero.util.RuntimeIOException;
 
 public class PCF8574 extends AbstractDeviceFactory implements GpioDeviceFactoryInterface, GpioExpander {
 	private static final String DEVICE_NAME = "PCF8574";

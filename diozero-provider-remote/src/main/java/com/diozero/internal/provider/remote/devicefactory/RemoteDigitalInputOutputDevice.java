@@ -36,11 +36,11 @@ import java.util.UUID;
 import com.diozero.api.DeviceMode;
 import com.diozero.api.DigitalInputEvent;
 import com.diozero.api.PinInfo;
+import com.diozero.api.RuntimeIOException;
 import com.diozero.internal.spi.AbstractInputDevice;
 import com.diozero.internal.spi.GpioDigitalInputOutputDeviceInterface;
 import com.diozero.remote.message.ProvisionDigitalInputOutputDevice;
 import com.diozero.remote.message.Response;
-import com.diozero.util.RuntimeIOException;
 
 public class RemoteDigitalInputOutputDevice extends AbstractInputDevice<DigitalInputEvent>
 		implements GpioDigitalInputOutputDeviceInterface {

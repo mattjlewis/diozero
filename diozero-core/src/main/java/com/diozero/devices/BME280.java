@@ -38,10 +38,10 @@ import org.tinylog.Logger;
 
 import com.diozero.api.I2CConstants;
 import com.diozero.api.I2CDevice;
+import com.diozero.api.RuntimeIOException;
 import com.diozero.api.SpiClockMode;
 import com.diozero.api.SpiConstants;
 import com.diozero.api.SpiDevice;
-import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 
 /*-

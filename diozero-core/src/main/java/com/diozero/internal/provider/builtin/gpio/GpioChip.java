@@ -52,9 +52,9 @@ import org.tinylog.Logger;
 
 import com.diozero.api.GpioEventTrigger;
 import com.diozero.api.GpioPullUpDown;
+import com.diozero.api.RuntimeIOException;
 import com.diozero.util.DiozeroScheduler;
 import com.diozero.util.LibraryLoader;
-import com.diozero.util.RuntimeIOException;
 
 public class GpioChip extends GpioChipInfo implements Closeable, GpioLineEventListener {
 	static {

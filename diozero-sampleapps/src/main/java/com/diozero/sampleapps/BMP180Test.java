@@ -33,9 +33,9 @@ package com.diozero.sampleapps;
 
 import org.tinylog.Logger;
 
+import com.diozero.api.RuntimeIOException;
 import com.diozero.devices.BMP180;
 import com.diozero.devices.BMP180.BMPMode;
-import com.diozero.util.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 
 /**

@@ -40,6 +40,7 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.tinylog.Logger;
 
+import com.diozero.api.RuntimeIOException;
 import com.diozero.internal.provider.remote.ProtobufBaseAsyncProtocolHandler;
 import com.diozero.internal.spi.NativeDeviceFactoryInterface;
 import com.diozero.remote.message.DiozeroProtosConverter;
@@ -106,7 +107,6 @@ import com.diozero.remote.message.SpiWriteAndRead;
 import com.diozero.remote.message.protobuf.DiozeroProtos;
 import com.diozero.remote.mqtt.MqttProviderConstants;
 import com.diozero.util.PropertyUtil;
-import com.diozero.util.RuntimeIOException;
 import com.google.protobuf.GeneratedMessageV3;
 import com.google.protobuf.InvalidProtocolBufferException;
 

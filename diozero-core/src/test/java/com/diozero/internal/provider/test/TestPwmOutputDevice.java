@@ -33,10 +33,10 @@ package com.diozero.internal.provider.test;
 
 import org.tinylog.Logger;
 
+import com.diozero.api.RuntimeIOException;
 import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.DeviceFactoryInterface;
 import com.diozero.internal.spi.PwmOutputDeviceInterface;
-import com.diozero.util.RuntimeIOException;
 
 public class TestPwmOutputDevice extends AbstractDevice implements PwmOutputDeviceInterface {
 	private int gpio;

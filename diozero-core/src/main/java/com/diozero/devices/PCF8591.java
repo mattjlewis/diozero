@@ -39,6 +39,7 @@ import com.diozero.api.AnalogInputEvent;
 import com.diozero.api.I2CConstants;
 import com.diozero.api.I2CDevice;
 import com.diozero.api.PinInfo;
+import com.diozero.api.RuntimeIOException;
 import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.AbstractDeviceFactory;
 import com.diozero.internal.spi.AbstractInputDevice;
@@ -47,7 +48,6 @@ import com.diozero.internal.spi.AnalogInputDeviceInterface;
 import com.diozero.internal.spi.AnalogOutputDeviceFactoryInterface;
 import com.diozero.internal.spi.AnalogOutputDeviceInterface;
 import com.diozero.sbc.BoardPinInfo;
-import com.diozero.util.RuntimeIOException;
 
 /**
  * <p>

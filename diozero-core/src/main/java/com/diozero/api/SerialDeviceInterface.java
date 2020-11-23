@@ -31,8 +31,6 @@ package com.diozero.api;
  * #L%
  */
 
-import com.diozero.util.RuntimeIOException;
-
 public interface SerialDeviceInterface extends DeviceInterface {
 	/**
 	 * Read a single byte returning error responses

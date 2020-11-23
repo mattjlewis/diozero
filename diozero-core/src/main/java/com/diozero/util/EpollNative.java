@@ -44,6 +44,8 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.tinylog.Logger;
 
+import com.diozero.api.RuntimeIOException;
+
 public class EpollNative implements EpollNativeCallback, Closeable {
 	static {
 		LibraryLoader.loadSystemUtils();

@@ -35,7 +35,6 @@ import com.diozero.api.*;
 import com.diozero.internal.provider.voodoospark.VoodooSparkDeviceFactory.PinMode;
 import com.diozero.internal.spi.AbstractInputDevice;
 import com.diozero.internal.spi.GpioDigitalInputDeviceInterface;
-import com.diozero.util.RuntimeIOException;
 
 public class VoodooSparkDigitalInputDevice extends AbstractInputDevice<DigitalInputEvent>
 implements GpioDigitalInputDeviceInterface {
