@@ -1,4 +1,4 @@
-package com.diozero.api;
+package com.diozero.devices;
 
 /*
  * #%L
@@ -31,12 +31,30 @@ package com.diozero.api;
  * #L%
  */
 
-
 import java.io.Closeable;
 
+import com.diozero.api.RuntimeIOException;
+
+/**
+ * Interface for GPIO expansion boards such as the MCP23xxx family of devices
+ */
 public interface GpioExpander extends Closeable {
+	/**
+	 * Set the directions for all pins on this port using the specified directions bit mask. 0 = output, 1 = input
+	 * 
+	 * @param port the bank of up to 8 GPIOs
+	 * @param directions bit mask specifying the directions for up to 8 GPIOs. 0 = output, 1 = input
+	 */
 	void setDirections(int port, byte directions);
+
+	/**
+	 * Set the output value for a pins on this port.
+	 * 
+	 * @param port the bank of up to 8 GPIOs
+	 * @param values bit mask specifying on/off values. 1 = on, 0 = off
+	 */
 	void setValues(int port, byte values);
+
 	@Override
 	void close() throws RuntimeIOException;
 }

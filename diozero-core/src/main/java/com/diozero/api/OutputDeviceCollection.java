@@ -31,25 +31,31 @@ package com.diozero.api;
  * #L%
  */
 
-
 import java.util.Arrays;
 import java.util.Collection;
 
+/**
+ * A collection of output devices to simplify setting the same output value for
+ * a number of devices at the same time
+ */
 public class OutputDeviceCollection implements OutputDeviceInterface {
 	private Collection<OutputDeviceInterface> devices;
-	
+
 	public OutputDeviceCollection(OutputDeviceInterface... devices) {
 		this(Arrays.asList(devices));
 	}
-	
+
 	public OutputDeviceCollection(Collection<OutputDeviceInterface> devices) {
 		this.devices = devices;
 	}
-	
+
 	public Collection<OutputDeviceInterface> getDevices() {
 		return devices;
 	}
 
+	/**
+	 * Set the same value to all output devices in this collection
+	 */
 	@Override
 	public void setValue(float value) {
 		devices.forEach(device -> device.setValue(value));

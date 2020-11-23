@@ -37,11 +37,11 @@ import com.diozero.api.DeviceMode;
 import com.diozero.api.DigitalInputDevice;
 import com.diozero.api.DigitalInputEvent;
 import com.diozero.api.GpioEventTrigger;
-import com.diozero.api.GpioExpander;
 import com.diozero.api.GpioPullUpDown;
 import com.diozero.api.InputEventListener;
 import com.diozero.api.PinInfo;
 import com.diozero.api.RuntimeIOException;
+import com.diozero.devices.GpioExpander;
 import com.diozero.internal.SoftwarePwmOutputDevice;
 import com.diozero.internal.spi.AbstractDeviceFactory;
 import com.diozero.internal.spi.GpioDeviceFactoryInterface;
@@ -372,7 +372,6 @@ public abstract class MCP23xxx extends AbstractDeviceFactory implements GpioDevi
 	}
 
 	@Override
-	@SuppressWarnings("resource")
 	public void valueChanged(DigitalInputEvent event) {
 		Logger.debug("valueChanged({})", event);
 		

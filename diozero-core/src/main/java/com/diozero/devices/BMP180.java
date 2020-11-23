@@ -35,8 +35,9 @@ import java.io.Closeable;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
-import com.diozero.api.*;
-import com.diozero.util.IOUtil;
+import com.diozero.api.I2CConstants;
+import com.diozero.api.I2CDevice;
+import com.diozero.api.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 
 /**
@@ -129,9 +130,9 @@ public class BMP180 implements ThermometerInterface, BarometerInterface, Closeab
 		calAC3 = calibData.getShort();
 
 		// Unsigned short values
-		calAC4 = IOUtil.getUShort(calibData);
-		calAC5 = IOUtil.getUShort(calibData);
-		calAC6 = IOUtil.getUShort(calibData);
+		calAC4 = calibData.getShort() & 0xffff;
+		calAC5 = calibData.getShort() & 0xffff;
+		calAC6 = calibData.getShort() & 0xffff;
 
 		// Signed sort values
 		calB1 = calibData.getShort();

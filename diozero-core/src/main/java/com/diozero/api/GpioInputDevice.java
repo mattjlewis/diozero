@@ -37,18 +37,15 @@ import java.util.Collection;
 /**
  * Common base class for digital and analog input devices.
  *
- * @param <T>
- *            Event class that extends DeviceEvent. See
+ * @param <T> Event class that extends DeviceEvent. See
  *            {@link com.diozero.api.DigitalInputEvent DigitalInputEvent} and
  *            {@link com.diozero.api.AnalogInputEvent AnalogInputEvent}.
  */
-public abstract class GpioInputDevice<T extends DeviceEvent> extends GpioDevice
-implements InputEventListener<T> {
+public abstract class GpioInputDevice<T extends DeviceEvent> extends GpioDevice implements InputEventListener<T> {
 	private Collection<InputEventListener<T>> listeners;
 
 	/**
-	 * @param gpio
-	 *            GPIO to which the device is connected.
+	 * @param gpio GPIO to which the device is connected.
 	 */
 	public GpioInputDevice(int gpio) {
 		super(gpio);
@@ -58,8 +55,7 @@ implements InputEventListener<T> {
 	/**
 	 * Add a new listener.
 	 * 
-	 * @param listener
-	 *            Callback instance.
+	 * @param listener Callback instance.
 	 */
 	public void addListener(InputEventListener<T> listener) {
 		if (listeners.isEmpty()) {
@@ -73,8 +69,7 @@ implements InputEventListener<T> {
 	/**
 	 * Remove a specific listener.
 	 * 
-	 * @param listener
-	 *            Callback instance to remove.
+	 * @param listener Callback instance to remove.
 	 */
 	public void removeListener(InputEventListener<T> listener) {
 		listeners.remove(listener);

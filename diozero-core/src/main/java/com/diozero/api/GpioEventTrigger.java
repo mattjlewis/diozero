@@ -31,7 +31,10 @@ package com.diozero.api;
  * #L%
  */
 
-
+/**
+ * Values for input event triggers - none (no events), rising edge (transition
+ * from off to on), falling (transition from on to off) and both
+ */
 public enum GpioEventTrigger {
 	NONE, RISING, FALLING, BOTH
 }

@@ -31,36 +31,43 @@ package com.diozero.api;
  * #L%
  */
 
-
 public class DigitalInputEvent extends DeviceEvent {
 	private boolean value;
 	private boolean activeHigh;
 
 	public DigitalInputEvent(int gpio, long epochTime, long nanoTime, boolean value) {
 		super(gpio, epochTime, nanoTime);
-		
+
 		this.value = value;
 	}
-	
+
 	void setActiveHigh(boolean activeHigh) {
 		this.activeHigh = activeHigh;
 	}
 
 	/**
-	 * Returns the underlying GPIO state. Note does not compensate for different pull up/down logic.
+	 * Returns the underlying GPIO state. Note does not compensate for different
+	 * pull up/down logic.
+	 * 
 	 * @return underlying digital pin state
 	 */
 	public boolean getValue() {
 		return value;
 	}
-	
+
+	/**
+	 * Determine if the event is active or not compensating for active low / high
+	 * wiring
+	 * 
+	 * @return if the event should be consider active or inactice
+	 */
 	public boolean isActive() {
 		return value == activeHigh;
 	}
 
 	@Override
 	public String toString() {
-		return "DigitalInputEvent [gpio=" + getGpio() + ", epochTime=" + getEpochTime() +
-				", nanoTime=" + getNanoTime() + ", value=" + value + "]";
+		return "DigitalInputEvent [gpio=" + getGpio() + ", epochTime=" + getEpochTime() + ", nanoTime=" + getNanoTime()
+				+ ", value=" + value + "]";
 	}
 }

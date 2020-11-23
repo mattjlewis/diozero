@@ -49,7 +49,7 @@ public class FileUtil {
 				fdField = FileDescriptor.class.getDeclaredField("fd");
 				fdField.setAccessible(true);
 
-				/*
+				/*-
 				fdConstructor = FileDescriptor.class.getDeclaredConstructor(int.class);
 				fdConstructor.setAccessible(true);
 				*/
@@ -74,7 +74,7 @@ public class FileUtil {
 		}
 	}
 
-	/*
+	/*-
 	public static FileDescriptor createFileDescriptor(int fd) {
 		initialise();
 

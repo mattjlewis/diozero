@@ -59,7 +59,8 @@ import com.diozero.util.DiozeroScheduler;
  * </p>
  * <img src="doc-files/MCP3008_TMP36.png" alt="MCP3008 TMP36">
  * <p>
- * Code taken from <a href="https://github.com/mattjlewis/diozero/blob/master/diozero-sampleapps/src/main/java/com/diozero/sampleapps/TMP36Test.java">TMP36Test</a>:
+ * Code taken from <a href=
+ * "https://github.com/mattjlewis/diozero/blob/master/diozero-sampleapps/src/main/java/com/diozero/sampleapps/TMP36Test.java">TMP36Test</a>:
  * </p>
  * 
  * <pre>
@@ -85,59 +86,46 @@ public class AnalogInputDevice extends GpioInputDevice<AnalogInputEvent> impleme
 	private float range;
 
 	/**
-	 * @param gpio
-	 *            GPIO to which the device is connected.
-	 * @throws RuntimeIOException
-	 *             If an I/O error occurred.
+	 * @param gpio GPIO to which the device is connected.
+	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
 	public AnalogInputDevice(int gpio) throws RuntimeIOException {
 		this(DeviceFactoryHelper.getNativeDeviceFactory(), gpio);
 	}
 
 	/**
-	 * @param gpio
-	 *            GPIO to which the device is connected.
-	 * @param range
-	 *            To be used for taking scaled readings for this device.
-	 * @throws RuntimeIOException
-	 *             If an I/O error occurred.
+	 * @param gpio  GPIO to which the device is connected.
+	 * @param range To be used for taking scaled readings for this device.
+	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
 	public AnalogInputDevice(int gpio, float range) throws RuntimeIOException {
 		this(DeviceFactoryHelper.getNativeDeviceFactory(), gpio, range);
 	}
 
 	/**
-	 * @param deviceFactory
-	 *            The device factory to use to provision this device.
-	 * @param gpio
-	 *            GPIO to which the device is connected.
-	 * @throws RuntimeIOException
-	 *             If an I/O error occurred.
+	 * @param deviceFactory The device factory to use to provision this device.
+	 * @param gpio          GPIO to which the device is connected.
+	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
-	public AnalogInputDevice(AnalogInputDeviceFactoryInterface deviceFactory, int gpio)
-			throws RuntimeIOException {
+	public AnalogInputDevice(AnalogInputDeviceFactoryInterface deviceFactory, int gpio) throws RuntimeIOException {
 		this(deviceFactory, gpio, deviceFactory.getVRef());
 	}
 
 	/**
-	 * @param deviceFactory
-	 *            The device factory to use to provision this device.
-	 * @param gpio
-	 *            GPIO to which the device is connected.
-	 * @param range
-	 *            To be used for taking scaled readings for this device.
-	 * @throws RuntimeIOException
-	 *             If an I/O error occurred.
+	 * @param deviceFactory The device factory to use to provision this device.
+	 * @param gpio          GPIO to which the device is connected.
+	 * @param range         To be used for taking scaled readings for this device.
+	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
 	public AnalogInputDevice(AnalogInputDeviceFactoryInterface deviceFactory, int gpio, float range)
 			throws RuntimeIOException {
 		super(gpio);
-		
+
 		this.range = range;
 		device = deviceFactory.provisionAnalogInputDevice(gpio);
 		stopScheduler = new AtomicBoolean(true);
 	}
-	
+
 	public float getRange() {
 		return range;
 	}
@@ -178,7 +166,7 @@ public class AnalogInputDevice extends GpioInputDevice<AnalogInputEvent> impleme
 			lastValue = Float.valueOf(unscaled);
 		}
 	}
-	
+
 	@Override
 	public void valueChanged(AnalogInputEvent event) {
 		event.setRange(range);
@@ -199,24 +187,22 @@ public class AnalogInputDevice extends GpioInputDevice<AnalogInputEvent> impleme
 	}
 
 	/**
-	 * Get the unscaled normalised value in the range 0..1 (if unsigned) or
-	 * -1..1 (if signed)
+	 * Get the unscaled normalised value in the range 0..1 (if unsigned) or -1..1
+	 * (if signed)
 	 * 
 	 * @return the unscaled value
-	 * @throws RuntimeIOException
-	 *             if there was an I/O error
+	 * @throws RuntimeIOException if there was an I/O error
 	 */
 	public float getUnscaledValue() throws RuntimeIOException {
 		return device.getValue();
 	}
 
 	/**
-	 * Get the scaled value in the range 0..range (if unsigned) or -range..range
-	 * (if signed)
+	 * Get the scaled value in the range 0..range (if unsigned) or -range..range (if
+	 * signed)
 	 * 
 	 * @return the scaled value
-	 * @throws RuntimeIOException
-	 *             if there was an I/O error
+	 * @throws RuntimeIOException if there was an I/O error
 	 */
 	public float getScaledValue() throws RuntimeIOException {
 		// The raw device must return unscaled values (-1..1)
@@ -226,10 +212,8 @@ public class AnalogInputDevice extends GpioInputDevice<AnalogInputEvent> impleme
 	/**
 	 * Register a listener for value changes, will check for changes every 50ms.
 	 * 
-	 * @param listener
-	 *            The listener callback.
-	 * @param percentChange
-	 *            Degree of change required to trigger an event.
+	 * @param listener      The listener callback.
+	 * @param percentChange Degree of change required to trigger an event.
 	 */
 	public void addListener(InputEventListener<AnalogInputEvent> listener, float percentChange) {
 		addListener(listener, percentChange, DEFAULT_POLL_INTERVAL);
@@ -238,12 +222,9 @@ public class AnalogInputDevice extends GpioInputDevice<AnalogInputEvent> impleme
 	/**
 	 * Register a listener for value changes, will check for changes every 50ms.
 	 * 
-	 * @param listener
-	 *            The listener callback.
-	 * @param percentChange
-	 *            Degree of change required to trigger an event.
-	 * @param pollInterval
-	 *            Time in milliseconds at which reading should be taken.
+	 * @param listener      The listener callback.
+	 * @param percentChange Degree of change required to trigger an event.
+	 * @param pollInterval  Time in milliseconds at which reading should be taken.
 	 */
 	public void addListener(InputEventListener<AnalogInputEvent> listener, float percentChange, int pollInterval) {
 		this.percentChange = percentChange;

@@ -86,8 +86,8 @@ public class DigitalOutputDevice extends GpioDevice implements OutputDeviceInter
 
 	/**
 	 * @param deviceFactory Device factory to use to construct the device.
-	 * @param pinInfo       Information about the GPIO pin to which the output device is
-	 *                      connected.
+	 * @param pinInfo       Information about the GPIO pin to which the output
+	 *                      device is connected.
 	 * @param activeHigh    If true then setting the value to true will turn on the
 	 *                      connected device.
 	 * @param initialValue  Initial output value.
@@ -207,6 +207,9 @@ public class DigitalOutputDevice extends GpioDevice implements OutputDeviceInter
 		device.setValue(value);
 	}
 
+	/**
+	 * Set the output value to true if value != 0
+	 */
 	@Override
 	public void setValue(float value) {
 		setValueUnsafe(value != 0);

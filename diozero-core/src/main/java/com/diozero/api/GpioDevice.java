@@ -31,7 +31,6 @@ package com.diozero.api;
  * #L%
  */
 
-
 import java.io.Closeable;
 
 /**
@@ -39,7 +38,7 @@ import java.io.Closeable;
  */
 public abstract class GpioDevice implements Closeable {
 	protected int gpio;
-	
+
 	/**
 	 * @param gpio GPIO to which the device is connected.
 	 */
@@ -49,6 +48,7 @@ public abstract class GpioDevice implements Closeable {
 
 	/**
 	 * Get the GPIO for this device.
+	 * 
 	 * @return GPIO for this device.
 	 */
 	public int getGpio() {

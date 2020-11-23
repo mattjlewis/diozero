@@ -31,36 +31,43 @@ package com.diozero.api;
  * #L%
  */
 
-
 public class AnalogInputEvent extends DeviceEvent {
 	private float unscaledValue;
 	private float range;
-	
+
 	public AnalogInputEvent(int gpio, long epochTime, long nanoTime, float unscaledValue) {
 		super(gpio, epochTime, nanoTime);
-		
+
 		this.unscaledValue = unscaledValue;
 		this.range = 1;
 	}
-	
+
+	/**
+	 * Get the maximum scaled value for the analog input device that generated this
+	 * event
+	 * 
+	 * @return the maximum scaled value
+	 */
 	public float getRange() {
 		return range;
 	}
-	
-	public void setRange(float range) {
+
+	void setRange(float range) {
 		this.range = range;
 	}
-	
+
 	/**
 	 * Value from -1..1
+	 * 
 	 * @return the unscaled value
 	 */
 	public float getUnscaledValue() {
 		return unscaledValue;
 	}
-	
+
 	/**
 	 * Value from -range..range
+	 * 
 	 * @return the scaled value
 	 */
 	public float getScaledValue() {
@@ -69,8 +76,7 @@ public class AnalogInputEvent extends DeviceEvent {
 
 	@Override
 	public String toString() {
-		return "AnalogPinEvent [pin=" + getGpio() + ", epochTime=" + getEpochTime() +
-				", nanoTime=" + getNanoTime() + ", unscaledValue=" + unscaledValue +
-				", range=" + range + "]";
+		return "AnalogPinEvent [pin=" + getGpio() + ", epochTime=" + getEpochTime() + ", nanoTime=" + getNanoTime()
+				+ ", unscaledValue=" + unscaledValue + ", range=" + range + "]";
 	}
 }
