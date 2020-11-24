@@ -52,9 +52,13 @@ public class GpioReadAll {
 		}
 		mmap_gpio.initialise();
 
-		Map<Integer, PinInfo> pins = board_info.getHeaders().get(PinInfo.DEFAULT_HEADER);
+		board_info.getHeaders().entrySet()
+				.forEach(header_entry -> printPins(mmap_gpio, header_entry.getKey(), header_entry.getValue()));
+	}
+
+	private static void printPins(MmapGpioInterface mmapGpio, String headerName, Map<Integer, PinInfo> pins) {
 		if (pins == null) {
-			Logger.error("Unable to resolve pins for header {}", PinInfo.DEFAULT_HEADER);
+			Logger.error("Unable to resolve pins for header {}", headerName);
 			return;
 		}
 
@@ -63,7 +67,7 @@ public class GpioReadAll {
 				pins.values().stream().mapToInt(pin_info -> pin_info.getName().length()).max().orElse(8));
 
 		String name_dash = String.join("", Collections.nCopies(max_name_length, "-"));
-		System.out.format("Pins for header %s:%n", PinInfo.DEFAULT_HEADER);
+		System.out.format("Pins for header %s:%n", headerName);
 		System.out.format("+-----+-%s-+------+---+--------+----------+--------+---+------+-%s-+-----+%n", name_dash,
 				name_dash);
 		System.out.format("+ GP# + %" + max_name_length + "s + Mode + V +  gpiod + Physical + gpiod  + V + Mode + %-"
@@ -77,16 +81,16 @@ public class GpioReadAll {
 			if (index++ % 2 == 0) {
 				System.out.format("| %3s | %" + max_name_length + "s | %4s | %1s | %6s | %2s |", getNotDefined(gpio), //
 						pin_info.getName(), //
-						getModeString(mmap_gpio, pin_info), //
-						gpioRead(mmap_gpio, pin_info), //
+						getModeString(mmapGpio, pin_info), //
+						gpioRead(mmapGpio, pin_info), //
 						getGpiodName(pin_info.getChip(), pin_info.getLineOffset()), //
 						getNotDefined(pin_info.getPhysicalPin()));
 			} else {
 				System.out.format("| %-2s | %-6s | %1s | %-4s | %-" + max_name_length + "s | %-3s |%n",
 						getNotDefined(pin_info.getPhysicalPin()), //
 						getGpiodName(pin_info.getChip(), pin_info.getLineOffset()), //
-						gpioRead(mmap_gpio, pin_info), //
-						getModeString(mmap_gpio, pin_info), //
+						gpioRead(mmapGpio, pin_info), //
+						getModeString(mmapGpio, pin_info), //
 						pin_info.getName(), //
 						getNotDefined(gpio));
 			}
