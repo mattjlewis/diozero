@@ -57,18 +57,17 @@ public class OdroidC2MmapGpio implements MmapGpioInterface {
 	
 	private static final int C2_GPIO_PIN_BASE = 136;
 	
-	// XXX Armbian Kernel 5.x has these starting at an offset of 242 (0xF2)
-	private static final int MY_OFFSET_HACK = 242;
-	//private static final int MY_OFFSET_HACK = 0;
+	// XXX Armbian Kernel 5.x has the sysfs GPIO numbers starting at an offset of 242 (0xF2) compared to Hardkernel 3.14
+	private static final int ARMBIAN_GPIO_OFFSET_HACK = 242;
 	
-	private static final int C2_GPIODV_PIN_START = C2_GPIO_PIN_BASE + 45 + MY_OFFSET_HACK;
-	private static final int C2_GPIODV_PIN_END = C2_GPIO_PIN_BASE + 74 + MY_OFFSET_HACK;
+	private static final int C2_GPIODV_PIN_START = C2_GPIO_PIN_BASE + ARMBIAN_GPIO_OFFSET_HACK + 45;
+	private static final int C2_GPIODV_PIN_END = C2_GPIO_PIN_BASE + ARMBIAN_GPIO_OFFSET_HACK + 74;
 	
-	private static final int C2_GPIOY_PIN_START = C2_GPIO_PIN_BASE + 75 + MY_OFFSET_HACK;
-	private static final int C2_GPIOY_PIN_END = C2_GPIO_PIN_BASE + 91 + MY_OFFSET_HACK;
+	private static final int C2_GPIOY_PIN_START = C2_GPIO_PIN_BASE + ARMBIAN_GPIO_OFFSET_HACK + 75;
+	private static final int C2_GPIOY_PIN_END = C2_GPIO_PIN_BASE + ARMBIAN_GPIO_OFFSET_HACK + 91;
 
-	private static final int C2_GPIOX_PIN_START = C2_GPIO_PIN_BASE + 92 + MY_OFFSET_HACK;
-	private static final int C2_GPIOX_PIN_END = C2_GPIO_PIN_BASE + 114 + MY_OFFSET_HACK;
+	private static final int C2_GPIOX_PIN_START = C2_GPIO_PIN_BASE + ARMBIAN_GPIO_OFFSET_HACK + 92;
+	private static final int C2_GPIOX_PIN_END = C2_GPIO_PIN_BASE + ARMBIAN_GPIO_OFFSET_HACK + 114;
 
 	private static final int C2_GPIODV_FSEL_REG_OFFSET = 0x10C;
 	private static final int C2_GPIODV_OUTP_REG_OFFSET = 0x10D;
@@ -351,7 +350,7 @@ public class OdroidC2MmapGpio implements MmapGpioInterface {
 	public void gpioWrite(int gpio, boolean value) {
 		// Note no boundary checks to maximise performance
 		
-		int reg = gpioToGPLEVReg(gpio);
+		int reg = gpioToGPSETReg(gpio);
 		int shift = gpioToShiftReg(gpio);
 		//int reg = gpio < C2_GPIOX_PIN_START ? C2_GPIOY_OUTP_REG_OFFSET : C2_GPIOX_OUTP_REG_OFFSET;
 		//int shift = C2_GP_TO_SHIFT_REG[gpio - C2_GPIOY_PIN_START];

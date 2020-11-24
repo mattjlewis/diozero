@@ -38,10 +38,10 @@ import org.tinylog.Logger;
 
 import com.diozero.api.RuntimeIOException;
 
-public class FileUtil {
+public class FileDescriptorUtil {
 	private static boolean initialised;
 	private static Field fdField;
-	//private static Constructor<FileDescriptor> fdConstructor;
+	// private static Constructor<FileDescriptor> fdConstructor;
 
 	private static synchronized void initialise() {
 		if (!initialised) {
@@ -77,7 +77,7 @@ public class FileUtil {
 	/*-
 	public static FileDescriptor createFileDescriptor(int fd) {
 		initialise();
-
+	
 		try {
 			return fdConstructor.newInstance(Integer.valueOf(fd));
 		} catch (IllegalArgumentException | IllegalAccessException | InstantiationException

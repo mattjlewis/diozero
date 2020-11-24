@@ -40,7 +40,7 @@ import com.diozero.api.DeviceBusyException;
 import com.diozero.api.I2CDevice;
 import com.diozero.api.I2CSMBusInterface;
 import com.diozero.api.RuntimeIOException;
-import com.diozero.util.FileUtil;
+import com.diozero.util.FileDescriptorUtil;
 
 /**
  * <p>
@@ -74,7 +74,7 @@ public class NativeI2CDeviceSysFs implements I2CSMBusInterface {
 
 		try {
 			deviceFile = new RandomAccessFile(device_file, "rwd");
-			int fd = FileUtil.getNativeFileDescriptor(deviceFile.getFD());
+			int fd = FileDescriptorUtil.getNativeFileDescriptor(deviceFile.getFD());
 			int rc = NativeI2C.selectSlave(fd, deviceAddress, force);
 			if (rc < 0) {
 				close();

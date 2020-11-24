@@ -59,6 +59,8 @@ public class MmapGpioPerfTest {
 	public static void test(int gpio, int iterations) {
 		try (MmapGpioInterface mmap_gpio = DeviceFactoryHelper.getNativeDeviceFactory().getBoardInfo()
 				.createMmapGpio()) {
+			mmap_gpio.initialise();
+			
 			mmap_gpio.setMode(gpio, DeviceMode.DIGITAL_OUTPUT);
 			for (int j = 0; j < 5; j++) {
 				long start_nano = System.nanoTime();
