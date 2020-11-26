@@ -31,7 +31,6 @@ package com.diozero.sampleapps;
  * #L%
  */
 
-
 import java.util.Arrays;
 import java.util.List;
 
@@ -50,29 +49,28 @@ public class LedBarGraphTest {
 			Logger.error("Usage: {} <LED GPIOs>", LedBarGraph.class.getName());
 			System.exit(1);
 		}
-		
+
 		String[] gpio_string = args[0].split(",");
 		int[] gpios = new int[gpio_string.length];
-		for (int i=0; i<gpio_string.length; i++) {
+		for (int i = 0; i < gpio_string.length; i++) {
 			gpios[i] = Integer.parseInt(gpio_string[i]);
 		}
-		
+
 		test(gpios);
 	}
-	
+
 	private static void test(int[] gpios) {
 		int delay = 10;
-		
+
 		int duration = 4000;
 		float[] cue_points = new float[] { 0, 0.5f, 1 };
-		List<KeyFrame[]> key_frames = KeyFrame.fromValues(new float[][] { {0}, {1f}, {0} });
-		try (MCP23008 expander = new MCP23008();
-				LedBarGraph led_bar_graph = new LedBarGraph(expander, gpios)) {
+		List<KeyFrame[]> key_frames = KeyFrame.fromValues(new float[][] { { 0 }, { 1f }, { 0 } });
+		try (MCP23008 expander = new MCP23008(); LedBarGraph led_bar_graph = new LedBarGraph(expander, gpios)) {
 			Animation anim = new Animation(Arrays.asList(led_bar_graph), 50, Sine::easeIn, 1f);
 			anim.setLoop(true);
 			anim.enqueue(duration, cue_points, key_frames);
 			anim.play();
-			
+
 			Logger.info("Sleeping for {} seconds", Integer.valueOf(delay));
 			SleepUtil.sleepSeconds(delay);
 		}
