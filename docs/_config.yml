@@ -31,7 +31,6 @@ baseurl: "" # the subpath of your site, e.g. /blog
 url: "http://www.diozero.com" # the base hostname & protocol for your site, e.g. http://example.com
 #twitter_username: jekyllrb
 github_username:  mattjlewis
-minimal_mistakes_skin: default
 search: true
 
 # Build settings
