@@ -38,9 +38,9 @@ search: true
 markdown: kramdown
 #theme: minima
 #theme: jekyll-theme-slate
-theme: "just-the-docs"
+#theme: "just-the-docs"
 #theme: minimal-mistakes-jekyll
-#remote_theme: pmarsceill/just-the-docs
+remote_theme: pmarsceill/just-the-docs
 #remote_theme: mmistakes/minimal-mistakes
 
 ga_tracking: UA-73764647-1
