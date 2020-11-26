@@ -1,0 +1,92 @@
+# Welcome to Jekyll!
+#
+# This config file is meant for settings that affect your whole blog, values
+# which you are expected to set up once and rarely edit after that. If you find
+# yourself editing this file very often, consider using Jekyll's data files
+# feature for the data you need to update frequently.
+#
+# For technical reasons, this file is *NOT* reloaded automatically when you use
+# 'bundle exec jekyll serve'. If you change this file, please restart the server process.
+#
+# If you need help with YAML syntax, here are some quick references for you: 
+# https://learn-the-web.algonquindesign.ca/topics/markdown-yaml-cheat-sheet/#yaml
+# https://learnxinyminutes.com/docs/yaml/
+#
+# Site settings
+# These are used to personalize your new site. If you look in the HTML files,
+# you will see them accessed via {{ site.title }}, {{ site.email }}, and so on.
+# You can create any custom variable you would like, and they will be accessible
+# in the templates via {{ site.myvariable }}.
+
+title: "diozero"
+email: deviceiozero@gmail.com
+tagline: "A platform independent device I/O library written in Java"
+description: >- # this means to ignore newlines until "baseurl:"
+  Java Device I/O library that is portable across Single Board Computers.
+  Tested with Raspberry Pi, Odroid C2, BeagleBone Black, Next Thing CHIP,
+  Asus Tinker Board, Udoo Quad and all Arduino devices that can run Firmata.
+  Supports GPIO (digital, PWM and analog), as well as devices conntected via
+  I2C, SPI and Serial buses.
+baseurl: "" # the subpath of your site, e.g. /blog
+url: "http://www.diozero.com" # the base hostname & protocol for your site, e.g. http://example.com
+#twitter_username: jekyllrb
+github_username:  mattjlewis
+minimal_mistakes_skin: default
+search: true
+
+# Build settings
+markdown: kramdown
+#theme: minima
+#theme: jekyll-theme-slate
+theme: "just-the-docs"
+#theme: minimal-mistakes-jekyll
+#remote_theme: pmarsceill/just-the-docs
+#remote_theme: mmistakes/minimal-mistakes
+
+ga_tracking: UA-73764647-1
+
+plugins:
+  - jekyll-include-cache
+  - jekyll-seo-tag
+  - jekyll-sitemap
+  - jekyll-github-metadata
+  - jekyll-readme-index
+  - jekyll-relative-links
+  - jekyll-titles-from-headings
+  - jemoji
+  - github-pages
+
+#color_scheme: "dark"
+search_enabled: true
+
+# Aux links for the upper right navigation
+aux_links:
+  "diozero on GitHub":
+    - "https://github.com/mattjlewis/diozero"
+
+# Makes Aux links open in a new tab. Default is false
+aux_links_new_tab: true
+
+# Heading anchor links appear on hover over h1-h6 tags in page content
+# allowing users to deep link to a particular heading on a page.
+#
+# Supports true (default) or false
+heading_anchors: true
+
+# Back to top link
+back_to_top: true
+back_to_top_text: "Back to top"
+
+# Footer content
+# appears at the bottom of every page's main content
+# Note: The footer_content option is deprecated and will be removed in a future major release.
+# Please use `_includes/footer_custom.html` for more robust markup / liquid-based content.
+footer_content: "Copyright &copy; 2016-2020 Matthew Lewis. Distributed by an <a href=\"https://github.com/mattjlewis/diozero/tree/master/LICENSE.txt\">MIT license.</a>"
+
+# Footer "Edit this page on GitHub" link text
+gh_edit_link: true # show or hide edit this page link
+gh_edit_link_text: "Edit this page on GitHub."
+gh_edit_repository: "https://github.com/mattjlewis/diozero" # the github URL for your repo
+gh_edit_branch: "master" # the branch that your docs is served from
+# gh_edit_source: docs # the source that your files originate from
+gh_edit_view_mode: "tree" # "tree" or "edit" if you want the user to jump into the editor immediately
