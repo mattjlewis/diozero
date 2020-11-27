@@ -15,7 +15,6 @@
 	<properties>
 		<apache-httpcomponents-httpcore.version>4.4.13</apache-httpcomponents-httpcore.version>
 		<apache-httpcomponents-httpclient.version>4.5.13</apache-httpcomponents-httpclient.version>
-		<netty.version>4.1.52.Final</netty.version>
 		<jetty-websocket-client.version>9.4.32.v20200930</jetty-websocket-client.version>
 	</properties>
 	
@@ -35,11 +34,6 @@
 				<groupId>org.apache.httpcomponents</groupId>
 				<artifactId>httpclient</artifactId>
 				<version>${apache-httpcomponents-httpclient.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.netty</groupId>
-				<artifactId>netty-all</artifactId>
-				<version>${netty.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.eclipse.jetty.websocket</groupId>

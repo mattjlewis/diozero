@@ -34,7 +34,7 @@ names, for example, LED (on / off), LDR (get luminosity), Button (pressed / rele
 automatically closed by the `try (Device d = new Device()) { d.doSomething(); }` statement. This 
 is best illustrated by some simple examples.
 
-> **Note: "Pin Numbering"**
+> ❗ **Pin Numbering**
 > 
 > All pin numbers are device native, i.e. Broadcom for the Raspberry Pi, ASUS for the Tinker Board. Pin layouts:
 > 
@@ -212,7 +212,7 @@ To run:
 sudo groovy -cp $CLASSPATH test.groovy
 ```
 
-> **Note: "Groovy JAVA_HOME config when running via sudo"**
+> **❗ Groovy JAVA_HOME config when running via sudo**
 >
 > I was getting the error:
 >
