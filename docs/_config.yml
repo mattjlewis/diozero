@@ -83,9 +83,9 @@ back_to_top_text: "Back to top"
 footer_content: "Copyright &copy; 2016-2020 Matthew Lewis. Distributed by an <a href=\"https://github.com/mattjlewis/diozero/tree/master/LICENSE.txt\">MIT license.</a>"
 
 # Footer "Edit this page on GitHub" link text
-gh_edit_link: true # show or hide edit this page link
+gh_edit_link: true                                          # show or hide edit this page link
 gh_edit_link_text: "Edit this page on GitHub."
 gh_edit_repository: "https://github.com/mattjlewis/diozero" # the github URL for your repo
-gh_edit_branch: "master" # the branch that your docs is served from
-# gh_edit_source: docs # the source that your files originate from
-gh_edit_view_mode: "tree" # "tree" or "edit" if you want the user to jump into the editor immediately
+gh_edit_branch: "master"                                    # the branch that your docs is served from
+gh_edit_source: docs                                        # the source that your files originate from
+gh_edit_view_mode: "tree"                                   # "tree" or "edit" if you want the user to jump into the editor immediately
