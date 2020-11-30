@@ -126,10 +126,6 @@ public class AnalogInputDevice extends GpioInputDevice<AnalogInputEvent> impleme
 		stopScheduler = new AtomicBoolean(true);
 	}
 
-	public float getRange() {
-		return range;
-	}
-
 	@Override
 	public void close() throws RuntimeIOException {
 		Logger.trace("close()");
@@ -187,6 +183,17 @@ public class AnalogInputDevice extends GpioInputDevice<AnalogInputEvent> impleme
 	}
 
 	/**
+	 * Get the analog range for this input device as used by
+	 * {@link AnalogInputDevice#getScaledValue} and
+	 * {@link AnalogInputDevice#convertToScaledValue}
+	 * 
+	 * @return the analog range for this input device
+	 */
+	public float getRange() {
+		return range;
+	}
+
+	/**
 	 * Get the unscaled normalised value in the range 0..1 (if unsigned) or -1..1
 	 * (if signed)
 	 * 
@@ -201,12 +208,24 @@ public class AnalogInputDevice extends GpioInputDevice<AnalogInputEvent> impleme
 	 * Get the scaled value in the range 0..range (if unsigned) or -range..range (if
 	 * signed)
 	 * 
-	 * @return the scaled value
+	 * @return the scaled value (-range..range)
 	 * @throws RuntimeIOException if there was an I/O error
 	 */
 	public float getScaledValue() throws RuntimeIOException {
 		// The raw device must return unscaled values (-1..1)
-		return device.getValue() * range;
+		return convertToScaledValue(device.getValue());
+	}
+
+	/**
+	 * Convert the specified unscaled value (-1..1) to a scaled one (-range..range).
+	 * 
+	 * @see AnalogInputDevice#getRange
+	 * 
+	 * @param unscaledValue the unscaled value in the range -1..1
+	 * @return the scaled value in -range..range
+	 */
+	public float convertToScaledValue(float unscaledValue) {
+		return unscaledValue * range;
 	}
 
 	/**

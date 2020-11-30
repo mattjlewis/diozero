@@ -146,10 +146,10 @@ public class DefaultDeviceFactory extends BaseNativeDeviceFactory {
 								pin_info.setLineOffset(gpio_line.getOffset());
 							}
 
-							if (!pin_info.getName().equals(line_name)) {
+							if (!line_name.isEmpty() && !pin_info.getName().equals(line_name)) {
 								Logger.warn("Configured pin name ({}) doesn't match that detected ({})",
 										pin_info.getName(), line_name);
-								// TODO What to do about it - update the board pin info?
+								// XXX What to do about it - update the board pin info? Just ignore for now.
 							}
 						}
 					}

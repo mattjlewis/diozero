@@ -31,56 +31,68 @@ package com.diozero.devices;
  * #L%
  */
 
-
 import com.diozero.api.SpiConstants;
 import com.diozero.api.RuntimeIOException;
 import com.diozero.api.SpiClockMode;
 import com.diozero.api.SpiDevice;
 import com.diozero.devices.mcp23xxx.MCP23x17;
 
+/*-
+ * Wiring:
+ * 
+ */
 public class MCP23S17 extends MCP23x17 {
-	// SPI Address Register  0b[0 1 0 0 A2 A1 A0 R/W]
+	// From P8 of the datasheet, 5MHz for 1.8V – 5.5V and 10MHz for 2.7V – 5.5V
+	public static final int MAX_CLOCK_SPEED = 10_000_000;
+	public static final int DEFAULT_CLOCK_SPEED = SpiConstants.DEFAULT_SPI_CLOCK_FREQUENCY;
+	
+	// SPI Address Register 0b[0 1 0 0 A2 A1 A0 R/W]
 	private static final byte ADDRESS_MASK = 0b01000000; // 0x40 [0100 0000] [A2 = 0 | A1 = 0 | A0 = 0]
-	//private static final byte DEFAULT_ADDRESS = 0b00; // [A2 = 0 | A1 = 0 | A0 = 0]
-	private static final byte WRITE_FLAG = 0b00000000;    // 0x00
-	private static final byte READ_FLAG  = 0b00000001;    // 0x01
+	// private static final byte DEFAULT_ADDRESS = 0b00; // [A2 = 0 | A1 = 0 | A0 =
+	// 0]
+	private static final byte WRITE_FLAG = 0b00000000; // 0x00
+	private static final byte READ_FLAG = 0b00000001; // 0x01
 	private static final String DEVICE_NAME = "MCP23S17";
 
 	private SpiDevice device;
 	private byte boardAddress;
 
-	public MCP23S17(int address) throws RuntimeIOException {
-		this(SpiConstants.DEFAULT_SPI_CONTROLLER, SpiConstants.CE0, address, INTERRUPT_GPIO_NOT_SET, INTERRUPT_GPIO_NOT_SET);
+	public MCP23S17(int boardAddress) throws RuntimeIOException {
+		this(SpiConstants.DEFAULT_SPI_CONTROLLER, SpiConstants.CE0, boardAddress,
+				DEFAULT_CLOCK_SPEED, INTERRUPT_GPIO_NOT_SET, INTERRUPT_GPIO_NOT_SET);
 	}
 
-	public MCP23S17(int address, int interruptGpio) throws RuntimeIOException {
-		this(SpiConstants.DEFAULT_SPI_CONTROLLER, SpiConstants.CE0, address, interruptGpio, interruptGpio);
+	public MCP23S17(int boardAddress, int interruptGpio) throws RuntimeIOException {
+		this(SpiConstants.DEFAULT_SPI_CONTROLLER, SpiConstants.CE0, boardAddress,
+				DEFAULT_CLOCK_SPEED, interruptGpio, interruptGpio);
 	}
 
-	public MCP23S17(int address, int interruptGpioA, int interruptGpioB) throws RuntimeIOException {
-		this(SpiConstants.DEFAULT_SPI_CONTROLLER, SpiConstants.CE0, address, interruptGpioA, interruptGpioB);
+	public MCP23S17(int boardAddress, int interruptGpioA, int interruptGpioB) throws RuntimeIOException {
+		this(SpiConstants.DEFAULT_SPI_CONTROLLER, SpiConstants.CE0, boardAddress,
+				DEFAULT_CLOCK_SPEED, interruptGpioA, interruptGpioB);
 	}
 
-	public MCP23S17(int controller, int chipSelect, int address, int interruptGpio) throws RuntimeIOException {
-		this(controller, chipSelect, address, interruptGpio, interruptGpio);
+	public MCP23S17(int controller, int chipSelect, int boardAddress, int interruptGpio) throws RuntimeIOException {
+		this(controller, chipSelect, boardAddress, DEFAULT_CLOCK_SPEED, interruptGpio,
+				interruptGpio);
 	}
 
-	public MCP23S17(int controller, int chipSelect, int address,
-			int interruptGpioA, int interruptGpioB) throws RuntimeIOException {
+	public MCP23S17(int controller, int chipSelect, int address, int frequency, int interruptGpioA, int interruptGpioB)
+			throws RuntimeIOException {
 		super(DEVICE_NAME + "-" + controller + "-" + chipSelect, interruptGpioA, interruptGpioB);
-		
-		device = new SpiDevice(controller, chipSelect, 1_000_000, SpiClockMode.MODE_0, false);
+
+		device = new SpiDevice(controller, chipSelect, frequency, SpiClockMode.MODE_0, false);
 		this.boardAddress = (byte) ((address & 0b111) << 1 | ADDRESS_MASK);
-		
+
 		initialise();
 	}
-	
+
 	@Override
 	public void close() throws RuntimeIOException {
 		super.close();
 		device.close();
 	}
-	
+
 	@Override
 	protected byte readByte(int register) {
 		byte[] tx = new byte[3];
@@ -92,7 +104,7 @@ public class MCP23S17 extends MCP23x17 {
 
 		return rx[2];
 	}
-	
+
 	@Override
 	protected void writeByte(int register, byte value) {
 		byte[] tx = new byte[3];

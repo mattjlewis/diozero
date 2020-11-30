@@ -39,12 +39,12 @@ import com.diozero.api.RuntimeIOException;
 /**
  * GPIO output performance test application. To run:
  * <ul>
- * <li>sysfs:<br>
- *  {@code java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar com.diozero.sampleapps.perf.GpioPerfTest 12 100000}</li>
- * <li>pigpgioJ:<br>
- *  {@code sudo java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar:diozero-provider-pigpio-$DIOZERO_VERSION.jar:pigpioj-java-2.4.jar com.diozero.sampleapps.perf.GpioPerfTest 12 5000000}</li>
+ * <li>built-in:<br>
+ * {@code java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar com.diozero.sampleapps.perf.GpioPerfTest 12 100000}</li>
+ * <li>pigpgioj:<br>
+ * {@code sudo java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar:diozero-provider-pigpio-$DIOZERO_VERSION.jar:pigpioj-java-2.4.jar com.diozero.sampleapps.perf.GpioPerfTest 12 5000000}</li>
  * <li>mmap:<br>
- *  {@code java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar:diozero-provider-mmap-$DIOZERO_VERSION.jar com.diozero.sampleapps.perf.GpioPerfTest 12 40000000}</li>
+ * {@code java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar:diozero-provider-mmap-$DIOZERO_VERSION.jar com.diozero.sampleapps.perf.GpioPerfTest 12 40000000}</li>
  * </ul>
  */
 public class GpioPerfTest {
@@ -55,29 +55,29 @@ public class GpioPerfTest {
 			Logger.error("Usage: {} <pin-number> [<iterations>]", GpioPerfTest.class.getName());
 			System.exit(1);
 		}
-		
+
 		int gpio_num = Integer.parseInt(args[0]);
-		
+
 		int iterations = ITERATIONS;
 		if (args.length > 1) {
 			iterations = Integer.parseInt(args[1]);
 		}
-		
+
 		test(gpio_num, iterations);
 	}
-	
+
 	public static void test(int gpioNum, int iterations) {
 		try (DigitalOutputDevice gpio = new DigitalOutputDevice(gpioNum)) {
-			for (int j=0; j<5; j++) {
+			for (int j = 0; j < 5; j++) {
 				long start_nano = System.nanoTime();
-				for (int i=0; i<iterations; i++) {
+				for (int i = 0; i < iterations; i++) {
 					gpio.setValueUnsafe(true);
 					gpio.setValueUnsafe(false);
 				}
 				long duration_ns = System.nanoTime() - start_nano;
-				
+
 				Logger.info("Duration for {} iterations: {}s", Integer.valueOf(iterations),
-						String.format("%.4f", Float.valueOf(((float)duration_ns) / 1000 / 1000 / 1000)));
+						String.format("%.4f", Float.valueOf(((float) duration_ns) / 1000 / 1000 / 1000)));
 			}
 		} catch (RuntimeIOException e) {
 			Logger.error(e, "Error: {}", e);

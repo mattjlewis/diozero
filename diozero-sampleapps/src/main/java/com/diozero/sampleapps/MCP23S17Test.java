@@ -36,13 +36,16 @@ import org.tinylog.Logger;
 import com.diozero.api.GpioPullUpDown;
 import com.diozero.api.SpiConstants;
 import com.diozero.devices.Button;
+import com.diozero.devices.LED;
 import com.diozero.devices.MCP23S17;
 import com.diozero.util.SleepUtil;
 
 public class MCP23S17Test {
 	public static void main(String[] args) {
-		int address = 0;
-		try (MCP23S17 mcp23s17 = new MCP23S17(SpiConstants.DEFAULT_SPI_CONTROLLER, SpiConstants.CE1, address, 25);
+		int board_address = 0;
+		int interrupt_a_gpio = 25;
+		try (MCP23S17 mcp23s17 = new MCP23S17(SpiConstants.DEFAULT_SPI_CONTROLLER, SpiConstants.CE1, board_address,
+				MCP23S17.MAX_CLOCK_SPEED, interrupt_a_gpio, interrupt_a_gpio);
 				Button button0 = new Button(mcp23s17, 0, GpioPullUpDown.PULL_UP);
 				Button button1 = new Button(mcp23s17, 1, GpioPullUpDown.PULL_UP);
 				Button button2 = new Button(mcp23s17, 2, GpioPullUpDown.PULL_UP);
@@ -50,8 +53,10 @@ public class MCP23S17Test {
 				Button button4 = new Button(mcp23s17, 4, GpioPullUpDown.PULL_UP);
 				Button button5 = new Button(mcp23s17, 5, GpioPullUpDown.PULL_UP);
 				Button button6 = new Button(mcp23s17, 6, GpioPullUpDown.PULL_UP);
-				Button button7 = new Button(mcp23s17, 7, GpioPullUpDown.PULL_UP)) {
+				Button button7 = new Button(mcp23s17, 7, GpioPullUpDown.PULL_UP);
+				LED led8 = new LED(mcp23s17, 8, true, false)) {
 			Logger.info("Using {}", mcp23s17.getName());
+
 			button0.whenPressed(() -> Logger.info("0 Pressed"));
 			button0.whenReleased(() -> Logger.info("0 Released"));
 			button1.whenPressed(() -> Logger.info("1 Pressed"));
@@ -68,9 +73,12 @@ public class MCP23S17Test {
 			button6.whenReleased(() -> Logger.info("6 Released"));
 			button7.whenPressed(() -> Logger.info("7 Pressed"));
 			button7.whenReleased(() -> Logger.info("7 Released"));
+
 			double delay = 0.5;
-			for (int i=0; i<40; i++) {
+			int iterations = 10;
+			for (int i = 0; i < iterations; i++) {
 				Logger.info("button0.getValue()={}", Boolean.valueOf(button0.getValue()));
+				Logger.info("button1.getValue()={}", Boolean.valueOf(button1.getValue()));
 				Logger.info("button1.getValue()={}", Boolean.valueOf(button1.getValue()));
 				Logger.info("button2.getValue()={}", Boolean.valueOf(button2.getValue()));
 				Logger.info("button3.getValue()={}", Boolean.valueOf(button3.getValue()));
@@ -79,10 +87,23 @@ public class MCP23S17Test {
 				Logger.info("button6.getValue()={}", Boolean.valueOf(button6.getValue()));
 				Logger.info("button7.getValue()={}", Boolean.valueOf(button7.getValue()));
 				Logger.info("mcp23s17.getValues(0)={}", Byte.valueOf(mcp23s17.getValues(0)));
+				led8.toggle();
+
 				Logger.info("Sleeping for {} sec", Double.valueOf(delay));
 				SleepUtil.sleepSeconds(delay);
 			}
-			//SleepUtil.sleepSeconds(10);
+			
+			iterations = 10_000;
+			long start = System.currentTimeMillis();
+			for (int i=0; i<iterations; i++) {
+				led8.setValueUnsafe(true);
+				//SleepUtil.sleepMillis(1);
+				led8.setValueUnsafe(false);
+				//SleepUtil.sleepMillis(1);
+			}
+			long duration = System.currentTimeMillis() - start;
+			System.out.println("Took " + duration + " ms for " + iterations + " iterations");
+			// SleepUtil.sleepSeconds(10);
 		} catch (Throwable t) {
 			Logger.error(t, "Error: " + t);
 		}

@@ -46,29 +46,29 @@ public class NativeSpiDevice implements Closeable {
 		LibraryLoader.loadSystemUtils();
 	}
 	
-	private static native int spiOpen(String filename, byte mode, int speedHz, byte bitsPerWord, boolean lsbFirst);
+	private static native int spiOpen(String filename, byte mode, int frequency, byte bitsPerWord, boolean lsbFirst);
 	private static native int spiConfig(int fileDescriptor, byte spiMode, int frequency, byte bitsPerWord, boolean lsbFirst);
 	private static native int spiClose(int fileDescriptor);
 	private static native int spiTransfer(int fileDescriptor, byte[] txBuffer, int txOffset,
-			byte[] rxBuffer, int length, int speedHz, int delayUSecs, byte bitsPerWord, boolean csChange);
+			byte[] rxBuffer, int length, int frequency, int delayUSecs, byte bitsPerWord, boolean csChange);
 	
 	private int controller;
 	private int chipSelect;
-	private int speedHz;
+	private int frequency;
 	private byte spiMode;
 	private byte bitsPerWord;
 	private int fd;
 
-	public NativeSpiDevice(int controller, int chipSelect, int speedHz, SpiClockMode mode, boolean lsbFirst) {
+	public NativeSpiDevice(int controller, int chipSelect, int frequency, SpiClockMode mode, boolean lsbFirst) {
 		this.controller = controller;
 		this.chipSelect = chipSelect;
-		this.speedHz = speedHz;
+		this.frequency = frequency;
 		this.spiMode = mode.getMode();
 		bitsPerWord = SpiConstants.DEFAULT_WORD_LENGTH;
 		String spidev = "/dev/spidev" + controller + "." + chipSelect;
 		
-		Logger.trace("Opening {}, frequency {} Hz, mode {}", spidev, Integer.valueOf(speedHz), mode);
-		fd = spiOpen(spidev, spiMode, speedHz, bitsPerWord, lsbFirst);
+		Logger.trace("Opening {}, frequency {} Hz, mode {}", spidev, Integer.valueOf(frequency), mode);
+		fd = spiOpen(spidev, spiMode, frequency, bitsPerWord, lsbFirst);
 	}
 	
 	@Override
@@ -81,7 +81,7 @@ public class NativeSpiDevice implements Closeable {
 	}
 	
 	public void write(byte[] txBuffer, int delayUSecs, boolean csChange) {
-		int rc = spiTransfer(fd, txBuffer, 0, null, txBuffer.length, speedHz, delayUSecs, bitsPerWord, csChange);
+		int rc = spiTransfer(fd, txBuffer, 0, null, txBuffer.length, frequency, delayUSecs, bitsPerWord, csChange);
 		if (rc < 0) {
 			throw new RuntimeIOException("Error in spiTransfer(), response: " + rc);
 		}
@@ -92,7 +92,7 @@ public class NativeSpiDevice implements Closeable {
 	}
 	
 	public void write(byte[] txBuffer, int txOffset, int length, int delayUSecs, boolean csChange) {
-		int rc = spiTransfer(fd, txBuffer, txOffset, null, length, speedHz, delayUSecs, bitsPerWord, csChange);
+		int rc = spiTransfer(fd, txBuffer, txOffset, null, length, frequency, delayUSecs, bitsPerWord, csChange);
 		if (rc < 0) {
 			throw new RuntimeIOException("Error in spiTransfer(), response: " + rc);
 		}
@@ -104,7 +104,7 @@ public class NativeSpiDevice implements Closeable {
 	
 	public byte[] writeAndRead(byte[] txBuffer, int delayUSecs, boolean csChange) {
 		byte[] rx = new byte[txBuffer.length];
-		int rc = spiTransfer(fd, txBuffer, 0, rx, txBuffer.length, speedHz, delayUSecs, bitsPerWord, csChange);
+		int rc = spiTransfer(fd, txBuffer, 0, rx, txBuffer.length, frequency, delayUSecs, bitsPerWord, csChange);
 		if (rc < 0) {
 			throw new RuntimeIOException("Error in spiTransfer(), response: " + rc);
 		}

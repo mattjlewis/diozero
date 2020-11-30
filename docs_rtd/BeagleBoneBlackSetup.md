@@ -1,4 +1,4 @@
-# Beaglebone Black Setup
+# BeagleBone Black Setup
 
 [Useful site](http://elinux.org/BeagleBoardDebian) for running Debian on BeagleBone boards. [Google Group](https://groups.google.com/forum/#!categories/beagleboard/beaglebone-black).
 

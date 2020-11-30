@@ -1,5 +1,36 @@
 package com.diozero.devices;
 
+/*-
+ * #%L
+ * Organisation: diozero
+ * Project:      Device I/O Zero - Core
+ * Filename:     Ads1x15.java  
+ * 
+ * This file is part of the diozero project. More information about this project
+ * can be found at http://www.diozero.com/
+ * %%
+ * Copyright (C) 2016 - 2020 diozero
+ * %%
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ * #L%
+ */
+
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.tinylog.Logger;
@@ -15,6 +46,7 @@ import com.diozero.internal.spi.AbstractInputDevice;
 import com.diozero.internal.spi.AnalogInputDeviceFactoryInterface;
 import com.diozero.internal.spi.AnalogInputDeviceInterface;
 import com.diozero.sbc.BoardPinInfo;
+import com.diozero.util.FloatConsumer;
 import com.diozero.util.RangeUtil;
 import com.diozero.util.SleepUtil;
 
@@ -30,9 +62,10 @@ import com.diozero.util.SleepUtil;
  * ADS1014 |     12     |      3300       |    1 (1)   |    I2C    | Comparator
  * ADS1118 |     16     |       860       |    2 (4)   |    SPI    | Temp. sensor
  * ADS1018 |     12     |      3300       |    2 (4)   |    SPI    | Temp. sensor
- * <pre>
+ * </pre>
  * 
  * Wiring:
+ * 
  * <pre>
  * A3 | A2 | A1 | A0 | ALERT | ADDR | SDA | SCL | G | V
  * </pre>
@@ -277,7 +310,7 @@ public class Ads1x15 extends AbstractDeviceFactory implements AnalogInputDeviceF
 	// For continuous mode
 	private AtomicBoolean gettingValues;
 	private DigitalInputDevice readyPin;
-	private short lastResult;
+	private float lastResult;
 
 	/**
 	 * 
@@ -346,6 +379,10 @@ public class Ads1x15 extends AbstractDeviceFactory implements AnalogInputDeviceF
 		super.close();
 		device.close();
 	}
+	
+	public Model getModel() {
+		return model;
+	}
 
 	public PgaConfig getPgaConfig() {
 		return pgaConfig;
@@ -371,15 +408,15 @@ public class Ads1x15 extends AbstractDeviceFactory implements AnalogInputDeviceF
 		setDataRate(ads1015DataRate.getDataRate(), ads1015DataRate.getMask());
 	}
 
-	public void setContinousMode(DigitalInputDevice readyPin, int adcNumber) {
+	public void setContinousMode(DigitalInputDevice readyPin, int adcNumber, FloatConsumer callback) {
 		gettingValues = new AtomicBoolean(false);
-		
+
 		mode = Mode.CONTINUOUS;
 		comparatorPolarity = ComparatorPolarity.ACTIVE_HIGH;
 		comparatorQueue = ComparatorQueue.ASSERT_ONE_CONV;
-		
+
 		setConfig(adcNumber);
-		
+
 		/*-
 		 * The ALERT/RDY pin can also be configured as a conversion ready pin.
 		 * Set the most-significant bit of the Hi_thresh register to 1 and the
@@ -392,32 +429,34 @@ public class Ads1x15 extends AbstractDeviceFactory implements AnalogInputDeviceF
 		 * as a conversion ready pin, ALERT/RDY continues to require a
 		 * pull-up resistor.
 		 */
-		//SleepUtil.sleepMillis(1);
+		// SleepUtil.sleepMillis(1);
 		device.writeI2CBlockData(ADDR_POINTER_HIGH_THRESH, (byte) 0x80, (byte) 0x00);
-		//SleepUtil.sleepMillis(1);
+		// SleepUtil.sleepMillis(1);
 		device.writeI2CBlockData(ADDR_POINTER_LO_THRESH, (byte) 0x00, (byte) 0x00);
 
 		this.readyPin = readyPin;
 		readyPin.whenActivated(() -> {
-			lastResult = readConversionData(adcNumber); });
+			lastResult = RangeUtil.map(readConversionData(adcNumber), 0, Short.MAX_VALUE, 0, 1f);
+			callback.accept(lastResult);
+		});
 		readyPin.whenDeactivated(() -> Logger.debug("Deactive!!!"));
 	}
-	
-	public short getLastResult() {
+
+	public float getLastResult() {
 		return lastResult;
 	}
-	
+
 	public void setSingleMode(int adcNumber) {
 		this.mode = Mode.SINGLE;
 		comparatorPolarity = ComparatorPolarity.ACTIVE_LOW;
 		comparatorQueue = ComparatorQueue.DISABLE;
-		
+
 		if (readyPin != null) {
 			readyPin.whenActivated(null);
 			readyPin.whenDeactivated(null);
 			readyPin = null;
 		}
-		
+
 		setConfig(adcNumber);
 	}
 
@@ -427,32 +466,32 @@ public class Ads1x15 extends AbstractDeviceFactory implements AnalogInputDeviceF
 		this.dataRateMask = dataRateMask;
 	}
 
-	public short getValue(int adcNumber) {
+	public float getValue(int adcNumber) {
 		Logger.debug("Reading channel {}, mode={}", Integer.valueOf(adcNumber), mode);
-		
+
 		// TODO Protect against concurrent reads
-		
+
 		if (mode == Mode.SINGLE) {
 			setConfig(adcNumber);
-			
+
 			SleepUtil.sleepMillis(dataRateSleepMillis);
 		} else if (readyPin != null) {
 			return lastResult;
 		}
-		
-		return readConversionData(adcNumber);
+
+		return RangeUtil.map(readConversionData(adcNumber), 0, Short.MAX_VALUE, 0, 1f);
 	}
-	
+
 	protected void setConfig(int adcNumber) {
 		byte config_msb = (byte) (CONFIG_MSB_OS_SINGLE | CONFIG_MSB_MUX_COMP_OFF
 				| (adcNumber << CONFIG_MSB_MUX_BIT_START) | pgaConfig.getMask() | mode.getMask());
 		byte config_lsb = (byte) (dataRateMask | comparatorMode.getMask() | comparatorPolarity.getMask()
 				| (latchingComparator ? CONFIG_LSB_COMP_LATCHING : 0) | comparatorQueue.getMask());
 		device.writeI2CBlockData(ADDR_POINTER_CONFIG, config_msb, config_lsb);
-		Logger.debug("msb: 0x{}, lsb: 0x{}", Integer.toHexString(config_msb & 0xff),
+		Logger.trace("msb: 0x{}, lsb: 0x{}", Integer.toHexString(config_msb & 0xff),
 				Integer.toHexString(config_lsb & 0xff));
 	}
-	
+
 	private short readConversionData(int adcNumber) {
 		byte[] data = device.readI2CBlockDataByteArray(ADDR_POINTER_CONV, 2);
 
@@ -496,7 +535,7 @@ public class Ads1x15 extends AbstractDeviceFactory implements AnalogInputDeviceF
 		 */
 		@Override
 		public float getValue() throws RuntimeIOException {
-			return RangeUtil.map(ads1x15.getValue(adcNumber), 0, Short.MAX_VALUE, 0, 1f);
+			return ads1x15.getValue(adcNumber);
 		}
 
 		/**
