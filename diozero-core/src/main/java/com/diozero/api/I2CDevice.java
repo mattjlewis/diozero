@@ -292,9 +292,9 @@ public class I2CDevice implements I2CConstants, I2CDeviceInterface {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public int readBlockData(int register, byte[] buffer) {
+	public byte[] readBlockData(int register) {
 		synchronized (delegate) {
-			return delegate.readBlockData(register, buffer);
+			return delegate.readBlockData(register);
 		}
 	}
 
@@ -322,9 +322,9 @@ public class I2CDevice implements I2CConstants, I2CDeviceInterface {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void readI2CBlockData(int register, byte[] buffer) {
+	public int readI2CBlockData(int register, byte[] buffer) {
 		synchronized (delegate) {
-			delegate.readI2CBlockData(register, buffer);
+			return delegate.readI2CBlockData(register, buffer);
 		}
 	}
 

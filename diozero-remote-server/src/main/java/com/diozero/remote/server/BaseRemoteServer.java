@@ -42,7 +42,6 @@ import com.diozero.api.DeviceMode;
 import com.diozero.api.DigitalInputEvent;
 import com.diozero.api.I2CConstants;
 import com.diozero.api.I2CDeviceInterface;
-import com.diozero.api.I2CSMBusInterface;
 import com.diozero.api.InputEventListener;
 import com.diozero.api.PinInfo;
 import com.diozero.api.RuntimeIOException;
@@ -867,10 +866,9 @@ public abstract class BaseRemoteServer implements InputEventListener<DigitalInpu
 
 		I2CReadBlockDataResponse response;
 		try {
-			byte[] buffer = new byte[I2CSMBusInterface.MAX_I2C_BLOCK_SIZE];
-			int bytes_read = device.readBlockData(request.getRegister(), buffer);
+			byte[] buffer = device.readBlockData(request.getRegister());
 
-			response = new I2CReadBlockDataResponse(bytes_read, buffer, request.getCorrelationId());
+			response = new I2CReadBlockDataResponse(buffer.length, buffer, request.getCorrelationId());
 		} catch (RuntimeIOException e) {
 			Logger.error(e, "Error: {}", e);
 			response = new I2CReadBlockDataResponse("Runtime Error: " + e, request.getCorrelationId());

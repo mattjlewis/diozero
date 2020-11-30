@@ -213,7 +213,7 @@ public class RemoteI2CDevice extends AbstractDevice implements I2CDeviceInterfac
 	}
 
 	@Override
-	public int readBlockData(int register, byte[] buffer) throws RuntimeIOException {
+	public byte[] readBlockData(int register) throws RuntimeIOException {
 		I2CReadBlockData request = new I2CReadBlockData(controller, address, register, UUID.randomUUID().toString());
 
 		I2CReadBlockDataResponse response = remoteProtocol.request(request);
@@ -221,9 +221,7 @@ public class RemoteI2CDevice extends AbstractDevice implements I2CDeviceInterfac
 			throw new RuntimeIOException("Error in I2C readBlockData: " + response.getDetail());
 		}
 
-		System.arraycopy(response.getData(), 0, buffer, 0, response.getBytesRead());
-
-		return response.getBytesRead();
+		return response.getData();
 	}
 
 	@Override
@@ -251,7 +249,7 @@ public class RemoteI2CDevice extends AbstractDevice implements I2CDeviceInterfac
 	}
 
 	@Override
-	public void readI2CBlockData(int register, byte[] buffer) throws RuntimeIOException {
+	public int readI2CBlockData(int register, byte[] buffer) throws RuntimeIOException {
 		I2CReadI2CBlockData request = new I2CReadI2CBlockData(controller, address, register, buffer.length,
 				UUID.randomUUID().toString());
 
@@ -261,6 +259,8 @@ public class RemoteI2CDevice extends AbstractDevice implements I2CDeviceInterfac
 		}
 
 		System.arraycopy(response.getData(), 0, buffer, 0, response.getData().length);
+		
+		return response.getData().length;
 	}
 
 	@Override

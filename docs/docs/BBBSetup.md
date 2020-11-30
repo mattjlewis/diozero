@@ -194,8 +194,8 @@ sudo systemctl disable nodered.service
 sudo systemctl disable nodered.socket
 sudo systemctl disable cloud9.service
 sudo systemctl disable cloud9.socket
-sudo apt remove c9-core-installer bonescript nodejs
-sudo apt purge c9-core-installer bonescript nodejs
+sudo apt remove c9-core-installer bonescript nodejs bb-node-red-installer
+sudo apt purge c9-core-installer bonescript nodejs bb-node-red-installer
 sudo apt autoremove && sudo apt autoclean
 ```
 
@@ -224,8 +224,16 @@ If need be, manually set the date / time: `sudo date -s "07:41 04/07/2017 BST" "
 ```
 cd /opt/scripts/tools/
 git pull
-sudo ./update_kernel.sh <OPTIONS>
+sudo ./update_kernel.sh [<OPTIONS>]
 ```
+
+With no options it updates the current kernel.
+
+To upgrade to 5.4:
+```
+sudo ./update_kernel.sh --lts-5_4
+```
+
 ## I2C Clock Frequency
 
 Check your current I2C bus frequencies:

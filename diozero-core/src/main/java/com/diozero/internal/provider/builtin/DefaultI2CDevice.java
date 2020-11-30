@@ -112,23 +112,13 @@ public class DefaultI2CDevice extends AbstractDevice implements I2CDeviceInterfa
 	}
 
 	@Override
-	public int readBytes(byte[] buffer) {
-		return i2cDevice.readBytes(buffer);
-	}
-
-	@Override
-	public void writeBytes(byte... data) {
-		i2cDevice.writeBytes(data);
-	}
-	
-	@Override
 	public short processCall(int register, short data) {
 		return i2cDevice.processCall(register, data);
 	}
 	
 	@Override
-	public int readBlockData(int register, byte[] buffer) {
-		return i2cDevice.readBlockData(register, buffer);
+	public byte[] readBlockData(int register) {
+		return i2cDevice.readBlockData(register);
 	}
 	
 	@Override
@@ -142,13 +132,23 @@ public class DefaultI2CDevice extends AbstractDevice implements I2CDeviceInterfa
 	}
 
 	@Override
-	public void readI2CBlockData(int register, byte[] buffer) {
-		i2cDevice.readI2CBlockData(register, buffer);
+	public int readI2CBlockData(int register, byte[] buffer) {
+		return i2cDevice.readI2CBlockData(register, buffer);
 	}
 
 	@Override
 	public void writeI2CBlockData(int register, byte... data) {
 		i2cDevice.writeI2CBlockData(register, data);
+	}
+
+	@Override
+	public int readBytes(byte[] buffer) {
+		return i2cDevice.readBytes(buffer);
+	}
+
+	@Override
+	public void writeBytes(byte... data) {
+		i2cDevice.writeBytes(data);
 	}
 
 	@Override

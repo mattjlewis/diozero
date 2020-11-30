@@ -34,7 +34,7 @@ package com.diozero.api;
 import java.io.Closeable;
 
 /**
- * I2C device interface
+ * I2C device interface <a href="https://www.kernel.org/doc/Documentation/i2c/smbus-protocol">Linux SMBus interface</a>
  */
 public interface I2CSMBusInterface extends Closeable {
 	static final int MAX_I2C_BLOCK_SIZE = 32;
@@ -241,12 +241,10 @@ public interface I2CSMBusInterface extends Closeable {
 	 * </pre>
 	 * 
 	 * @param register the register to read from
-	 * @param buffer   the buffer to store the data in, the length of the buffer
-	 *                 specifies the number of bytes to read (up to 32 bytes)
-	 * @return the number of bytes actually read (0..31)
+	 * @return the data read up to 32 bytes in length
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
-	int readBlockData(int register, byte[] buffer) throws RuntimeIOException;
+	byte[] readBlockData(int register) throws RuntimeIOException;
 
 	/**
 	 * <p>
@@ -318,9 +316,10 @@ public interface I2CSMBusInterface extends Closeable {
 	 * @param register the register to read from
 	 * @param buffer   the buffer to read the data into, the buffer length specifies
 	 *                 the number of bytes to read
+	 * @returns the number of bytes actually read
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
-	void readI2CBlockData(int register, byte[] buffer) throws RuntimeIOException;
+	int readI2CBlockData(int register, byte[] buffer) throws RuntimeIOException;
 
 	/**
 	 * <p>

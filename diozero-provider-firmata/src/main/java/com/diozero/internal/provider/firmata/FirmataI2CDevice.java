@@ -85,8 +85,11 @@ public class FirmataI2CDevice extends AbstractDevice implements I2CDeviceInterfa
 	}
 
 	// FIXME Change from ByteBuffer to byte array? 
-	private void waitForData(int register, ByteBuffer buffer) {
+	private byte[] waitForData(int register) {
 		Logger.info("Waiting for data for register 0x{}", Integer.toHexString(register));
+		
+		byte[] rx_data = null;
+		
 		lock.lock();
 		Integer reg = Integer.valueOf(register);
 		try {
@@ -94,34 +97,33 @@ public class FirmataI2CDevice extends AbstractDevice implements I2CDeviceInterfa
 			LinkedList<I2CEvent> event_queue_before = eventQueues.get(reg);
 			if (event_queue_before != null && event_queue_before.size() > 0) {
 				I2CEvent event = event_queue_before.remove();
-				buffer.put(event.getData());
-				// TODO Check that the length of data is what was requested
-				return;
-			}
-			
-			// Locate the condition for this register
-			Condition condition = conditions.get(reg);
-			if (condition == null) {
-				condition = lock.newCondition();
-				conditions.put(reg, condition);
-			}
-			Logger.info("calling await()");
-			condition.await();
-			Logger.info("returned from await()");
-			
-			LinkedList<I2CEvent> event_queue = eventQueues.get(reg);
-			if (event_queue == null || event_queue.isEmpty()) {
-				Logger.warn("No data available for register {}", reg);
+				rx_data = event.getData();
 			} else {
-				I2CEvent event = event_queue.remove();
-				buffer.put(event.getData());
-				// TODO Check that the length of data is what was requested
+				// Locate the condition for this register
+				Condition condition = conditions.get(reg);
+				if (condition == null) {
+					condition = lock.newCondition();
+					conditions.put(reg, condition);
+				}
+				Logger.info("calling await()");
+				condition.await();
+				Logger.info("returned from await()");
+				
+				LinkedList<I2CEvent> event_queue = eventQueues.get(reg);
+				if (event_queue == null || event_queue.isEmpty()) {
+					Logger.warn("No data available for register {}", reg);
+				} else {
+					I2CEvent event = event_queue.remove();
+					rx_data = event.getData();
+				}
 			}
 		} catch (InterruptedException e) {
 			Logger.warn(e, "Interrupted: {}", e);
 		} finally {
 			lock.unlock();
 		}
+		
+		return rx_data;
 	}
 	
 	@Override
@@ -139,10 +141,9 @@ public class FirmataI2CDevice extends AbstractDevice implements I2CDeviceInterfa
 		Logger.debug("read()");
 		byte data;
 		try {
-			ByteBuffer buffer = ByteBuffer.allocateDirect(1);
 			i2cDevice.ask(NO_REGISTER, (byte) 1, this);
-			waitForData(NO_REGISTER, buffer);
-			data = buffer.get(0);
+			byte[] buffer = waitForData(NO_REGISTER);
+			data = buffer[0];
 		} catch (IOException e) {
 			throw new RuntimeIOException(e);
 		}
@@ -163,10 +164,9 @@ public class FirmataI2CDevice extends AbstractDevice implements I2CDeviceInterfa
 	public byte readByteData(int register) {
 		byte data;
 		try {
-			ByteBuffer buffer = ByteBuffer.allocateDirect(1);
 			i2cDevice.ask(register, (byte) 1, this);
-			waitForData(register, buffer);
-			data = buffer.get(0);
+			byte[] buffer = waitForData(register);
+			data = buffer[0];
 		} catch (IOException e) {
 			throw new RuntimeIOException(e);
 		}
@@ -191,10 +191,9 @@ public class FirmataI2CDevice extends AbstractDevice implements I2CDeviceInterfa
 		short s;
 		try {
 			i2cDevice.ask(register, (byte) 2, this);
-			ByteBuffer bb = ByteBuffer.allocateDirect(2);
+			ByteBuffer bb = ByteBuffer.wrap(waitForData(register));
 			// SMBus assumes little endian
 			bb.order(ByteOrder.LITTLE_ENDIAN);
-			waitForData(register, bb);
 			s = bb.getShort();
 		} catch (IOException e) {
 			throw new RuntimeIOException(e);
@@ -217,37 +216,18 @@ public class FirmataI2CDevice extends AbstractDevice implements I2CDeviceInterfa
 	}
 
 	@Override
-	public int readBytes(byte[] buffer) throws RuntimeIOException {
-		try {
-			i2cDevice.ask((byte) buffer.length, this);
-			ByteBuffer bb = ByteBuffer.allocateDirect(buffer.length);
-			waitForData(NO_REGISTER, bb);
-			bb.get(buffer);
-			return buffer.length;
-		} catch (IOException e) {
-			throw new RuntimeIOException(e);
-		}
-	}
-
-	@Override
-	public void writeBytes(byte... data) throws RuntimeIOException {
-		try {
-			i2cDevice.tell(data);
-		} catch (IOException e) {
-			throw new RuntimeIOException(e);
-		}
-	}
-	
-	@Override
 	public short processCall(int register, short data) throws RuntimeIOException {
 		writeWordData(register, data);
 		return readWordData(register);
 	}
 
 	@Override
-	public int readBlockData(int register, byte[] buffer) throws RuntimeIOException {
-		readI2CBlockData(register, buffer);
-		return buffer.length;
+	public byte[] readBlockData(int register) throws RuntimeIOException {
+		byte[] buffer = new byte[MAX_I2C_BLOCK_SIZE];
+		int read = readI2CBlockData(register, buffer);
+		byte[] rx_data = new byte[read];
+		System.arraycopy(buffer, 0, rx_data, 0, read);
+		return rx_data;
 	}
 
 	@Override
@@ -264,15 +244,16 @@ public class FirmataI2CDevice extends AbstractDevice implements I2CDeviceInterfa
 	}
 
 	@Override
-	public void readI2CBlockData(int register, byte[] buffer) throws RuntimeIOException {
+	public int readI2CBlockData(int register, byte[] buffer) throws RuntimeIOException {
+		byte[] rx_data;
 		try {
 			i2cDevice.ask(register, (byte) buffer.length, this);
-			ByteBuffer bb = ByteBuffer.allocateDirect(buffer.length);
-			waitForData(register, bb);
-			bb.get(buffer);
+			rx_data = waitForData(register);
 		} catch (IOException e) {
 			throw new RuntimeIOException(e);
 		}
+		System.arraycopy(rx_data, 0, buffer, 0, rx_data.length);
+		return rx_data.length;
 	}
 
 	@Override
@@ -282,6 +263,30 @@ public class FirmataI2CDevice extends AbstractDevice implements I2CDeviceInterfa
 		System.arraycopy(data, 0, tx_data, 1, data.length);
 		try {
 			i2cDevice.tell(tx_data);
+		} catch (IOException e) {
+			throw new RuntimeIOException(e);
+		}
+	}
+
+	@Override
+	public int readBytes(byte[] buffer) throws RuntimeIOException {
+		byte[] rx_data;
+		
+		try {
+			i2cDevice.ask((byte) buffer.length, this);
+			rx_data = waitForData(NO_REGISTER);
+		} catch (IOException e) {
+			throw new RuntimeIOException(e);
+		}
+		
+		System.arraycopy(rx_data, 0, buffer, 0, rx_data.length);
+		return rx_data.length;
+	}
+
+	@Override
+	public void writeBytes(byte... data) throws RuntimeIOException {
+		try {
+			i2cDevice.tell(data);
 		} catch (IOException e) {
 			throw new RuntimeIOException(e);
 		}

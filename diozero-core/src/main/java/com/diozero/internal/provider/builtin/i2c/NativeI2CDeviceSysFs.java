@@ -141,28 +141,6 @@ public class NativeI2CDeviceSysFs implements I2CSMBusInterface {
 	}
 
 	@Override
-	public int readBytes(byte[] buffer) {
-		try {
-			return deviceFile.read(buffer);
-		} catch (IOException e) {
-			throw new RuntimeIOException(
-					"Error in I2C readBytes for device i2c-" + controller + "-0x" + Integer.toHexString(deviceAddress),
-					e);
-		}
-	}
-
-	@Override
-	public void writeBytes(byte... data) {
-		try {
-			deviceFile.write(data);
-		} catch (IOException e) {
-			throw new RuntimeIOException(
-					"Error in I2C readBytes for device i2c-" + controller + "-0x" + Integer.toHexString(deviceAddress),
-					e);
-		}
-	}
-
-	@Override
 	public byte readByteData(int register) {
 		try {
 			deviceFile.writeByte(register);
@@ -223,24 +201,30 @@ public class NativeI2CDeviceSysFs implements I2CSMBusInterface {
 	}
 
 	@Override
-	public int readBlockData(int register, byte[] buffer) {
-		if (buffer.length > MAX_I2C_BLOCK_SIZE) {
-			// TODO Error
-		}
-
-		int read;
+	public byte[] readBlockData(int register) {
+		byte[] rx_data;
+		
 		try {
-			byte[] rx_data = new byte[buffer.length + 1];
+			byte[] buffer = new byte[MAX_I2C_BLOCK_SIZE + 1];
 			deviceFile.write(register);
-			deviceFile.read(rx_data);
-			read = rx_data[0] & 0xff;
-			System.arraycopy(rx_data, 1, buffer, 0, read);
+			int read = deviceFile.read(buffer);
+			if (read == -1) {
+				throw new RuntimeIOException("Error in I2C readBlockData for device i2c-" + controller + "-0x"
+						+ Integer.toHexString(deviceAddress) + " - end of file reached");
+			}
+			int length = buffer[0] & 0xff;
+			if (read != length + 1) {
+				Logger.warn("Expected to read " + (length + 1) + " bytes, actually read " + read);
+			}
+			rx_data = new byte[length];
+
+			System.arraycopy(buffer, 1, rx_data, 0, length);
 		} catch (IOException e) {
 			throw new RuntimeIOException("Error in I2C readBlockData for device i2c-" + controller + "-0x"
 					+ Integer.toHexString(deviceAddress), e);
 		}
 
-		return read;
+		return rx_data;
 	}
 
 	@Override
@@ -272,14 +256,14 @@ public class NativeI2CDeviceSysFs implements I2CSMBusInterface {
 	}
 
 	@Override
-	public void readI2CBlockData(int register, byte[] buffer) {
+	public int readI2CBlockData(int register, byte[] buffer) {
 		if (buffer.length > MAX_I2C_BLOCK_SIZE) {
 			throw new RuntimeIOException("Invalid buffer length - max length is " + MAX_I2C_BLOCK_SIZE);
 		}
 
 		try {
 			deviceFile.write(register);
-			deviceFile.readFully(buffer);
+			return deviceFile.read(buffer);
 		} catch (IOException e) {
 			throw new RuntimeIOException("Error in I2C readI2CBlockData for device i2c-" + controller + "-0x"
 					+ Integer.toHexString(deviceAddress), e);
@@ -297,6 +281,28 @@ public class NativeI2CDeviceSysFs implements I2CSMBusInterface {
 		} catch (IOException e) {
 			throw new RuntimeIOException("Error in I2C writeI2CBlockData for device i2c-" + controller + "-0x"
 					+ Integer.toHexString(deviceAddress), e);
+		}
+	}
+
+	@Override
+	public int readBytes(byte[] buffer) {
+		try {
+			return deviceFile.read(buffer);
+		} catch (IOException e) {
+			throw new RuntimeIOException(
+					"Error in I2C readBytes for device i2c-" + controller + "-0x" + Integer.toHexString(deviceAddress),
+					e);
+		}
+	}
+
+	@Override
+	public void writeBytes(byte... data) {
+		try {
+			deviceFile.write(data);
+		} catch (IOException e) {
+			throw new RuntimeIOException(
+					"Error in I2C readBytes for device i2c-" + controller + "-0x" + Integer.toHexString(deviceAddress),
+					e);
 		}
 	}
 }

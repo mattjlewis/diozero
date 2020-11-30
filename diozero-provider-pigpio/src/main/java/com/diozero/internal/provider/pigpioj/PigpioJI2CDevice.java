@@ -207,44 +207,21 @@ public class PigpioJI2CDevice extends AbstractDevice implements I2CDeviceInterfa
 	}
 	
 	@Override
-	public int readBytes(byte[] buffer) throws RuntimeIOException {
+	public byte[] readBlockData(int register) {
 		if (!isOpen()) {
 			throw new IllegalStateException("I2C Device " + controller + "-" + address + " is closed");
-		}
-
-		int read = pigpioImpl.i2cReadDevice(handle, buffer, buffer.length);
-		if (read < 0) {
-			throw new RuntimeIOException("Didn't read correct number of bytes from i2cReadDevice(), read " + read
-					+ ", expected " + buffer.length);
 		}
 		
-		return read;
-	}
-
-	@Override
-	public void writeBytes(byte...data) throws RuntimeIOException {
-		if (!isOpen()) {
-			throw new IllegalStateException("I2C Device " + controller + "-" + address + " is closed");
-		}
-
-		int rc = pigpioImpl.i2cWriteDevice(handle, data, data.length);
-		if (rc < 0) {
-			throw new RuntimeIOException("Error calling pigpioImpl.i2cWriteDevice(), response: " + rc);
-		}
-	}
-
-	@Override
-	public int readBlockData(int register, byte[] buffer) {
-		if (!isOpen()) {
-			throw new IllegalStateException("I2C Device " + controller + "-" + address + " is closed");
-		}
-
+		byte[] buffer = new byte[MAX_I2C_BLOCK_SIZE];
 		int rc = pigpioImpl.i2cReadBlockData(handle, register, buffer);
 		if (rc < 0) {
 			throw new RuntimeIOException("Error calling pigpioImpl.i2cReadBlockData(), response: " + rc);
 		}
 		
-		return rc;
+		byte[] rx_data = new byte[rc];
+		System.arraycopy(buffer, 0, rx_data, 0, rc);
+		
+		return rx_data;
 	}
 	
 	@Override
@@ -277,7 +254,7 @@ public class PigpioJI2CDevice extends AbstractDevice implements I2CDeviceInterfa
 	}
 
 	@Override
-	public void readI2CBlockData(int register, byte[] buffer) throws RuntimeIOException {
+	public int readI2CBlockData(int register, byte[] buffer) throws RuntimeIOException {
 		if (!isOpen()) {
 			throw new IllegalStateException("I2C Device " + controller + "-" + address + " is closed");
 		}
@@ -287,6 +264,8 @@ public class PigpioJI2CDevice extends AbstractDevice implements I2CDeviceInterfa
 			throw new RuntimeIOException("Didn't read correct number of bytes from i2cReadI2CBlockData(), read " + read
 					+ ", expected " + buffer.length);
 		}
+		
+		return read;
 	}
 
 	@Override
@@ -298,6 +277,33 @@ public class PigpioJI2CDevice extends AbstractDevice implements I2CDeviceInterfa
 		int rc = pigpioImpl.i2cWriteI2CBlockData(handle, register, data, data.length);
 		if (rc < 0) {
 			throw new RuntimeIOException("Error calling pigpioImpl.i2cWriteI2CBlockData(), response: " + rc);
+		}
+	}
+
+	@Override
+	public int readBytes(byte[] buffer) throws RuntimeIOException {
+		if (!isOpen()) {
+			throw new IllegalStateException("I2C Device " + controller + "-" + address + " is closed");
+		}
+	
+		int read = pigpioImpl.i2cReadDevice(handle, buffer, buffer.length);
+		if (read < 0) {
+			throw new RuntimeIOException("Didn't read correct number of bytes from i2cReadDevice(), read " + read
+					+ ", expected " + buffer.length);
+		}
+		
+		return read;
+	}
+
+	@Override
+	public void writeBytes(byte...data) throws RuntimeIOException {
+		if (!isOpen()) {
+			throw new IllegalStateException("I2C Device " + controller + "-" + address + " is closed");
+		}
+	
+		int rc = pigpioImpl.i2cWriteDevice(handle, data, data.length);
+		if (rc < 0) {
+			throw new RuntimeIOException("Error calling pigpioImpl.i2cWriteDevice(), response: " + rc);
 		}
 	}
 }
