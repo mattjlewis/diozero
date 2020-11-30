@@ -316,7 +316,7 @@ public interface I2CSMBusInterface extends Closeable {
 	 * @param register the register to read from
 	 * @param buffer   the buffer to read the data into, the buffer length specifies
 	 *                 the number of bytes to read
-	 * @returns the number of bytes actually read
+	 * @return the number of bytes actually read
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	int readI2CBlockData(int register, byte[] buffer) throws RuntimeIOException;
