@@ -1,14 +1,22 @@
 ---
 nav_order: 7
 permalink: /bbbsetup.html
+has_toc: true
 ---
 
 # BeagleBone Green and Black Setup
+{: .no_toc }
 
 General instructions for getting up and running with a BeagleBone Green or Black.
 
 [Useful site](http://elinux.org/BeagleBoardDebian) for running Debian on BeagleBone boards.
 [Google Group](https://groups.google.com/forum/#!categories/beagleboard/beaglebone-black).
+
+## Sections
+{: .no_toc .text-delta }
+
+1. TOC
+{:toc}
 
 ## Install and Boot from SD Card
 
