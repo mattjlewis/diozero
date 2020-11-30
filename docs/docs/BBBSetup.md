@@ -21,8 +21,8 @@ Locate the BeagleBone on your network and ssh onto it using the username `debian
 
 ## Flash the Onboard eMMC
 
-To install these onto the onboard eMMC, edit the `/boot/uEnv.txt` file on the
-Linux partition on the microSD card and remove the '#' on this line:
+To copy the Debian image from the microSD card onto the onboard eMMC, edit the `/boot/uEnv.txt`
+file on the microSD card and remove the '#' on this line:
 ```
 cmdline=init=/opt/scripts/tools/eMMC/init-eMMC-flasher-v3.sh
 ```
