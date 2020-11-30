@@ -3,33 +3,60 @@ nav_order: 7
 permalink: /bbbsetup.html
 ---
 
-# BeagleBone Black Setup
+# BeagleBone Green and Black Setup
 
-[Useful site](http://elinux.org/BeagleBoardDebian) for running Debian on BeagleBone boards. [Google Group](https://groups.google.com/forum/#!categories/beagleboard/beaglebone-black).
+General instructions for getting up and running with a BeagleBone Green or Black.
 
-## Flash the onboard eMMC
+[Useful site](http://elinux.org/BeagleBoardDebian) for running Debian on BeagleBone boards.
+[Google Group](https://groups.google.com/forum/#!categories/beagleboard/beaglebone-black).
 
-Download the latest [Debian Jessie IoT image](https://beagleboard.org/latest-images).
-Burn to a microSD card using a tool like Win32 Disk Imager or [Etcher](http://etcher.io) and boot the BeagleBone Black from the microSD card.
-To turn these images into eMMC flasher images, edit the ```/boot/uEnv.txt``` file on the Linux partition on the microSD card and remove the '#' on the line with ```cmdline=init=/opt/scripts/tools/eMMC/init-eMMC-flasher-v3.sh```.
-Enabling this will cause booting the microSD card to flash the eMMC.
-Boot the BeagleBone with this config change and it should flash the eMMC; the LEDs will cycle for a few minutes (cylon sweep pattern).
-Login and power off the device, take the microSD card out and power-on the BeagleBone - it should now boot from eMMC. Format the microSD card.
+## Install and Boot from SD Card
 
-## Setup the debian user account
+Download the latest [Debian IoT SD image](https://beagleboard.org/latest-images) for BeagleBone.
+I would recommend using the `Buster IoT (without graphical desktop) for BeagleBone and PocketBeagle via microSD card` image.
+Burn to a microSD card using a tool like Win32 DiskImager or [Etcher](http://etcher.io)
+and boot the BeagleBone from the microSD card with a network cable attached.
 
-Edit ```/etc/sudoers.d/admin``` and change to:
+Locate the BeagleBone on your network and ssh onto it using the username `debian`.
+
+## Flash the Onboard eMMC
+
+To install these onto the onboard eMMC, edit the `/boot/uEnv.txt` file on the
+Linux partition on the microSD card and remove the '#' on this line:
+```
+cmdline=init=/opt/scripts/tools/eMMC/init-eMMC-flasher-v3.sh
+```
+
+Enabling this line will cause the BeagleBone to copy the microSD Debian installation onto the onboard eMMC every time it boots.
+
+Now reboot. Booting the BeagleBone with this configuration option enabled will initiate
+the eMMC flashing process. The LEDs will cycle for a few minutes (cylon sweep pattern) -
+this may take 5-6 minutes. When complete the 4 LEDS will all light up for a moment before turning off.
+Obviously do not interrupt this process as you may corrupt the eMMC.
+
+Once complete disconnect the power from the BeagleBone and remove the microSD card.
+Note that the flashing process will repeat if the microSD card is left in.
+
+With the microSD card removed, power-on the BeagleBone - it should now boot from eMMC.
+The microSD card should be reformatted as it is no longer needed and accidentally booting
+from it will reflash the eMMC thereby losing any changes that have subsequently been made.
+
+## Setup the debian User Account
+
+Install your ssh key: `ssh-copy-id debian@<bb-ip-address>`
+
+Change password from 'temppwd': `passwd debian`
+
+Edit `/etc/sudoers.d/admin` and change to:
 ```
 %admin ALL=(ALL:ALL) NOPASSWD: ALL
 ```
 
-Change password from 'temppwd': ```sudo passwd debian```
+Add the debian user to group `gpio` (if not already a member): `sudo usermod -a -G gpio debian`
 
-Add user to group gpio: ```sudo usermod -a -G gpio debian```
+Edit `~/.bashrc` and enable colour prompt: Remove the '#' from `force_color_prompt=yes`
 
-Edit ```~/.bashrc``` and enable colour prompt: Remove the '#' from ```force_color_prompt=yes```
-
-## Remove the additional login messages
+## Remove the Additional Login Messages
 
 Edit ```/etc/issue``` (note the blank line):
 ```
@@ -42,14 +69,14 @@ Edit ```/etc/issue.net``` (no blank line):
 Raspbian GNU/Linux 8
 ```
 
-## Setup static IP address
+## Setup Static IP Address
 
 In ```/etc/network/interfaces```:
 ```
 connmanctl config ethernet_a0f6fd4c0e73_cable --ipv4 manual 192.168.1.16 255.255.255.0 192.168.1.254 --nameservers 192.168.1.254
 ```
 
-### On other Pi-like Debian Jessie distributions
+### On other Pi-like Debian Jessie Distributions
 
 Edit ```/etc/network/interfaces```:
 ```
@@ -58,9 +85,10 @@ auto eth0
 iface eth0 inet manual
 ```
 
+Run:
 ```sudo apt install dhcpcd5```
 
-Edit ```/etc/dhcpcd.conf```:
+Edit `/etc/dhcpcd.conf`:
 ```
 interface eth0
   static ip_address=192.168.1.16/24
@@ -68,61 +96,109 @@ interface eth0
   static domain_name_servers=192.168.1.254
 ```
 
-Enable the service: ```sudo systemctl enable dhcpcd```
+Enable the service: `sudo systemctl enable dhcpcd`
 
-## Create the update / upgrade script
+## Create the System Update / Upgrade Script
 
-Create ```/usr/local/bin/update```:
+Create `/usr/local/bin/update`:
 ```
-#!/bin/bash
+#!/bin/sh
 
-apt update && apt -y upgrade && apt -y dist-upgrade
-apt-get -y autoremove && apt-get -y autoclean
-```
-
-Make it executable:
-```
-chmod +x /usr/local/bin/upgrade
+apt update && apt -y upgrade && apt -y --auto-remove full-upgrade
+apt -y autoclean && apt -y autoremove
 ```
 
-Run it:
+Make it executable: `chmod +x /usr/local/bin/upgrade`
+
+Run it: `sudo /usr/local/bin/upgrade`
+
+## Install Development Libraries
+
+Run: `sudo apt install i2c-tools libi2c-dev unzip zip vim gpiod libgpiod-dev libgpiod2`
+
+## Install Java
+
+OpenJDK 11 doesn't work for me, reverting to OpenJDK 8. Unfortunately OpenJDK 8 isn't available in Debian Buster by default.
 ```
-sudo /usr/local/bin/upgrade
+sudo apt -y install software-properties-common
+wget -qO - https://adoptopenjdk.jfrog.io/adoptopenjdk/api/gpg/key/public | sudo apt-key add -
+sudo add-apt-repository --yes https://adoptopenjdk.jfrog.io/adoptopenjdk/deb/
+sudo apt-get update && sudo apt -y install adoptopenjdk-8-hotspot
+sudo update-java-alternatives -s adoptopenjdk-8-hotspot-armhf
 ```
 
-## Development library for I2C (& install unzip while we're at it)
+Alternatively:
+```
+apt-add-repository 'deb http://security.debian.org/debian-security stretch/updates main'
+sudo apt-get update && sudo apt -y install openjdk-8-jdk
+```
 
-Run: ```sudo apt install libi2c-dev unzip```
+## Install ZSH and Oh My Zsh
 
-## Disable bonescript
+Run:
+```
+sudo apt install zsh
+chsh -s /usr/bin/zsh
+sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+```
+
+Make a minor tweak to the robbyrussell theme to show the hostname in the command prompt:
+```
+cd ~/.oh-my-zsh/themes
+cp robbyrussell.zsh-theme robbyrussell_tweak.zsh-theme
+```
+
+Edit `robbyrussell_tweak.zsh-theme` and change the `PROMPT` value to include this prefix `%{$fg_bold[white]%}%M%{$reset_color%} `:
+```
+PROMPT="%{$fg_bold[white]%}%M%{$reset_color%} %(?:%{$fg_bold[green]%}➜ :%{$fg_bold[red]%}➜ )"
+```
+
+Update the ZSH config `~/.zshrc`:
+```
+export PATH=$PATH:/usr/sbin:/usr/local/sbin
+export JAVA_HOME=/usr/lib/jvm/adoptopenjdk-8-hotspot-armhf
+
+ZSH_THEME="robbyrussell_tweak"
+```
+
+My own preference is to add this to the end of the `.zshrc` file:
+```
+# Allow multiple terminal sessions to all append to one zsh command history
+setopt APPEND_HISTORY
+# Do not enter command lines into the history list if they are duplicates of the previous event
+setopt HIST_IGNORE_DUPS
+# Remove command lines from the history list when the first character on the line is a space
+setopt HIST_IGNORE_SPACE
+# Remove the history (fc -l) command from the history list when invoked
+setopt HIST_NO_STORE
+```
+
+## Disable and Remove Bonescript / Cloud9 / Nodered
+
+I don't use this and disabling / removing can save quite a bit of disk space.
+
+(I need to doublecheck these commands).
 
 ```
 sudo systemctl disable bonescript.service
 sudo systemctl disable bonescript.socket
 sudo systemctl disable bonescript-autorun.service
+sudo systemctl disable nodered.service
+sudo systemctl disable nodered.socket
 sudo systemctl disable cloud9.service
-```
-
-## Install Oracle Java
-
-Note doesn't work as this repository is no longer active. 
-
-```
-sudo apt purge openjdk*
-sudo apt-get install software-properties-common
-sudo add-apt-repository "deb http://ppa.launchpad.net/webupd8team/java/ubuntu xenial main"
-sudo apt-get update && sudo apt-get install oracle-java8-installer oracle-java8-set-default
+sudo systemctl disable cloud9.socket
+sudo apt remove c9-core-installer bonescript
 ```
 
 ## Locale / Timezone
 
-Run: ```sudo dpkg-reconfigure locales```
+Run: `sudo dpkg-reconfigure locales`
 
-Select ```en_GB.UTF-8```
+Select `en_GB.UTF-8`
 
-Run: ```sudo dpkg-reconfigure tzdata```
+Run: `sudo dpkg-reconfigure tzdata`
 
-Select: ```Europe / London```
+Select: `Europe / London`
 
 Install and enable ntp:
 ```
@@ -130,19 +206,11 @@ sudo apt update && sudo apt install ntp ntpdate
 sudo systemctl enable ntp
 ```
 
-Check ntp: ```ntpq -p```
+Check ntp: `ntpq -p`
 
-If need be, manually set the date / time: ```sudo date -s "07:41 04/07/2017 BST" "+%H:%M %d/%m/%Y %Z"```
+If need be, manually set the date / time: `sudo date -s "07:41 04/07/2017 BST" "+%H:%M %d/%m/%Y %Z"`
 
-## Disable HDMI / Enable SPI
-
-Edit /boot/uEnv.txt, under ```##Example v4.1.x```:
-```
-cape_disable=bone_capemgr.disable_partno=BB-BONELT-HDMI,BB-BONELT-HDMIN
-cape_enable=bone_capemgr.enable_partno=BB-SPIDEV0,BB-SPIDEV1
-```
-
-## Latest kernel script
+## Latest Kernel Script
 
 ```
 cd /opt/scripts/tools/
@@ -184,7 +252,7 @@ Edit the .dts file, look for the aliases section and make a note of the I2C entr
 		i2c2 = "/ocp/i2c@4819c000";
 ```
 
-The i2c-0 bus is not accessible on the header pins while the i2c-1 bus is utilized for reading
+The i2c-0 bus is not accessible on the header pins while the i2c-1 bus is utilised for reading
 EEPROMS on cape add-on boards and may interfere with that function when used for other digital
 I/O operations.
 
