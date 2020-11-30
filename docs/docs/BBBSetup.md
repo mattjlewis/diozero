@@ -175,8 +175,7 @@ setopt HIST_NO_STORE
 
 ## Disable and Remove Bonescript / Cloud9 / Nodered
 
-I don't use this and disabling / removing can save quite a bit of disk space.
-
+I don't use these services and disabling / removing them can save quite a bit of disk space.
 (I need to doublecheck these commands).
 
 ```
@@ -187,7 +186,9 @@ sudo systemctl disable nodered.service
 sudo systemctl disable nodered.socket
 sudo systemctl disable cloud9.service
 sudo systemctl disable cloud9.socket
-sudo apt remove c9-core-installer bonescript
+sudo apt remove c9-core-installer bonescript nodejs
+sudo apt purge c9-core-installer bonescript nodejs
+sudo apt autoremove && sudo apt autoclean
 ```
 
 ## Locale / Timezone
