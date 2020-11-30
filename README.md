@@ -303,9 +303,9 @@ This project is hosted on [GitHub](https://github.com/mattjlewis/diozero/), plea
 * SPI support for Arduino devices
 * Introduce Servo as a device type
 * Try out ConfigurableFirmata - is there actually any difference to the StandardFirmata protocol?
-* Complete ADSL1x15
 * Create a Maven archetype
 * Check docs (.md and Javadoc) regarding constructors with device factories
+* DONE Complete ADS1x15
 * DONE I2C Javadoc - make it clear regarding SMBus 32 byte limits
 * DONE BME680
 * DONE Native support for all devices via mmap (/dev/gpiomem), in particular to improve performance and add support for GPIO pull up/down configuration.

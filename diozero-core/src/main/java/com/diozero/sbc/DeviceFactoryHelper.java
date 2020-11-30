@@ -83,6 +83,8 @@ public class DeviceFactoryHelper {
 				Runtime.getRuntime().addShutdownHook(new ShutdownHandlerThread(nativeDeviceFactory));
 
 				nativeDeviceFactory.start();
+			} else if (nativeDeviceFactory.isClosed()) {
+				nativeDeviceFactory.reopen();
 			}
 		}
 	}

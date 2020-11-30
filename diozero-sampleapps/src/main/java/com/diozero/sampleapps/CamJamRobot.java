@@ -37,32 +37,29 @@ import com.diozero.api.RuntimeIOException;
 import com.diozero.devices.CamJamKitDualMotor;
 
 /**
- * Robot test application with CamJam EduKit motor controller, 3 IR sensors, an HC-SR04 distance sensor and 4 LEDs. To run:
+ * Robot test application with CamJam EduKit motor controller, 3 IR sensors, an
+ * HC-SR04 distance sensor and 4 LEDs. To run:
  * <ul>
- * <li>sysfs:<br>
- *  {@code java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar com.diozero.sampleapps.CamJamRobot}</li>
- * <li>Pi4j:<br>
- *  {@code sudo java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar:diozero-provider-pi4j-$DIOZERO_VERSION.jar:pi4j-core-1.2.jar com.diozero.sampleapps.CamJamRobot}</li>
- * <li>wiringPi:<br>
- *  {@code sudo java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar:diozero-provider-wiringpi-$DIOZERO_VERSION.jar:pi4j-core-1.2.jar com.diozero.sampleapps.CamJamRobot}</li>
- * <li>pigpgioJ:<br>
- *  {@code sudo java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar:diozero-provider-pigpio-$DIOZERO_VERSION.jar:pigpioj-java-2.4.jar com.diozero.sampleapps.CamJamRobot}</li>
+ * <li>Built-in:<br>
+ * {@code java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar com.diozero.sampleapps.CamJamRobot}</li>
+ * <li>pigpgioj:<br>
+ * {@code sudo java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar:diozero-provider-pigpio-$DIOZERO_VERSION.jar:pigpioj-java-2.4.jar com.diozero.sampleapps.CamJamRobot}</li>
  * </ul>
  */
 public class CamJamRobot extends RobotTest {
 	public static void main(String[] args) {
 		float speed = 0.9f;
 		float DELAY = 0.65f;
-		
+
 		try (CamJamRobot robot = new CamJamRobot()) {
 			robot.testMovements(speed, DELAY);
-			
+
 			robot.go();
 		} catch (RuntimeIOException e) {
 			Logger.error(e, "Error: {}", e);
 		}
 	}
-	
+
 	public CamJamRobot() {
 		super(new CamJamKitDualMotor());
 	}

@@ -230,7 +230,7 @@ public class FirmataI2CDevice extends AbstractDevice implements I2CDeviceInterfa
 	}
 
 	@Override
-	public void writeBytes(byte[] data) throws RuntimeIOException {
+	public void writeBytes(byte... data) throws RuntimeIOException {
 		try {
 			i2cDevice.tell(data);
 		} catch (IOException e) {
@@ -251,12 +251,12 @@ public class FirmataI2CDevice extends AbstractDevice implements I2CDeviceInterfa
 	}
 
 	@Override
-	public void writeBlockData(int register, byte[] data) throws RuntimeIOException {
+	public void writeBlockData(int register, byte... data) throws RuntimeIOException {
 		writeI2CBlockData(register, data);
 	}
 
 	@Override
-	public byte[] blockProcessCall(int register, byte[] data) throws RuntimeIOException {
+	public byte[] blockProcessCall(int register, byte... data) throws RuntimeIOException {
 		writeI2CBlockData(register, data);
 		byte[] rx_data = new byte[data.length];
 		readI2CBlockData(register, rx_data);
@@ -276,7 +276,7 @@ public class FirmataI2CDevice extends AbstractDevice implements I2CDeviceInterfa
 	}
 
 	@Override
-	public void writeI2CBlockData(int register, byte[] data) throws RuntimeIOException {
+	public void writeI2CBlockData(int register, byte... data) throws RuntimeIOException {
 		byte[] tx_data = new byte[data.length+1];
 		tx_data[0] = (byte) register;
 		System.arraycopy(data, 0, tx_data, 1, data.length);

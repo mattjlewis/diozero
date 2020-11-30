@@ -38,21 +38,21 @@ import com.diozero.util.SleepUtil;
 
 public class KeypadTest {
 	public static void main(String[] args) {
-		/*
+		/*-
 		 * Wiring for my TinkerBoard:
 		 *  8   7   6   5   4   3   2   1
 		 * 162 163 171 223 187 188 185 224
 		 */
-		int[] row_gpios = {162, 163, 171, 223};
-		int[] col_gpios = {187, 188, 185, 224};
-		char[][] keys = {
-				{'1','2','3','A'},
-				{'4','5','6','B'},
-				{'7','8','9','C'},
-				{'*','0','#','D'}
+		int[] row_gpios = { 162, 163, 171, 223 };
+		int[] col_gpios = { 187, 188, 185, 224 };
+		char[][] keys = { //
+				{ '1', '2', '3', 'A' }, //
+				{ '4', '5', '6', 'B' }, //
+				{ '7', '8', '9', 'C' }, //
+				{ '*', '0', '#', 'D' } //
 		};
 		Keypad keypad = new Keypad(row_gpios, col_gpios, keys);
-		for (int i=0; i<10; i++) {
+		for (int i = 0; i < 10; i++) {
 			Logger.debug("Pressed: {}", keypad.getKeys());
 			SleepUtil.sleepSeconds(1);
 		}

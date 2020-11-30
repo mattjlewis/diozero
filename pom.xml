@@ -508,6 +508,91 @@
 		</profile>
 
 		<profile>
+			<id>snapshot</id>
+			<activation>
+				<property>
+					<name>snapshot-build</name>
+				</property>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-source-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>attach-sources</id>
+								<goals>
+									<!-- <goal>jar</goal> -->
+									<goal>jar-no-fork</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-javadoc-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>attach-javadocs</id>
+								<goals>
+									<goal>jar</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>sign-artifacts</id>
+								<!-- <phase>deploy</phase> -->
+								<phase>verify</phase>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>license-maven-plugin</artifactId>
+						<configuration>
+							<licenseName>mit</licenseName>
+							<verbose>false</verbose>
+							<descriptionTemplate>src/licence/descriptionTemplate.ftl</descriptionTemplate>
+							<canUpdateCopyright>true</canUpdateCopyright>
+							<canUpdateDescription>true</canUpdateDescription>
+							<canUpdateLicense>true</canUpdateLicense>
+							<emptyLineAfterHeader>true</emptyLineAfterHeader>
+							<roots>
+								<root>src/main/java</root>
+								<root>src/test/java</root>
+								<root>src/main/native</root>
+								<root>src/main/c</root>
+							</roots>
+							<excludes>
+								<exclude>**/*.h</exclude>
+								<exclude>**/*.sh</exclude>
+								<exclude>**/*.json</exclude>
+							</excludes>
+						</configuration>
+						<executions>
+							<execution>
+								<id>append-license-file-headers</id>
+								<goals>
+									<goal>update-file-header</goal>
+								</goals>
+								<phase>process-sources</phase>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+		<profile>
 			<id>release</id>
 			<activation>
 				<property>

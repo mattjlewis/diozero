@@ -41,44 +41,37 @@ import com.diozero.util.SleepUtil;
 /**
  * Sample application for reading LDR analog values. To run:
  * <ul>
- * <li>sysfs:<br>
- *  {@code java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar com.diozero.sampleapps.LDRTest MCP3304 0 2}</li>
- * <li>JDK Device I/O 1.0:<br>
- *  {@code sudo java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar:diozero-provider-jdkdio10-$DIOZERO_VERSION.jar:dio-1.0.1-dev-linux-armv6hf.jar -Djava.library.path=. com.diozero.sampleapps.LDRTest MCP3304 0 2}</li>
- * <li>JDK Device I/O 1.1:<br>
- *  {@code sudo java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar:diozero-provider-jdkdio11-$DIOZERO_VERSION.jar:dio-1.1-dev-linux-armv6hf.jar -Djava.library.path=. com.diozero.sampleapps.LDRTest MCP3304 0 2}</li>
- * <li>Pi4j:<br>
- *  {@code sudo java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar:diozero-provider-pi4j-$DIOZERO_VERSION.jar:pi4j-core-1.2.jar com.diozero.sampleapps.LDRTest MCP3304 0 2}</li>
- * <li>wiringPi:<br>
- *  {@code sudo java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar:diozero-provider-wiringpi-$DIOZERO_VERSION.jar:pi4j-core-1.2.jar com.diozero.sampleapps.LDRTest MCP3304 0 2}</li>
- * <li>pigpgioJ:<br>
- *  {@code sudo java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar:diozero-provider-pigpio-$DIOZERO_VERSION.jar:pigpioj-java-2.4.jar com.diozero.sampleapps.LDRTest MCP3304 0 2}</li>
+ * <li>Built-in:<br>
+ * {@code java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar com.diozero.sampleapps.LDRTest MCP3304 0 2}</li>
+ * <li>pigpgioj:<br>
+ * {@code sudo java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar:diozero-provider-pigpio-$DIOZERO_VERSION.jar:pigpioj-java-2.4.jar com.diozero.sampleapps.LDRTest MCP3304 0 2}</li>
  * </ul>
  */
-public class LDRTest {
+public class LdrTest {
 	private static final int ITERATIONS = 20;
 
 	public static void main(String[] args) {
 		if (args.length < 3) {
-			Logger.error("Usage: {} <mcp-name> <chip-select> <adc-pin>", LDRTest.class.getName());
+			Logger.error("Usage: {} <mcp-name> <chip-select> <adc-pin>", LdrTest.class.getName());
 			System.exit(2);
 		}
 		McpAdc.Type type = McpAdc.Type.valueOf(args[0]);
 		if (type == null) {
-			Logger.error("Invalid MCP ADC type '{}'. Usage: {} <mcp-name> <spi-chip-select> <adc_pin>", args[0], LDRTest.class.getName());
+			Logger.error("Invalid MCP ADC type '{}'. Usage: {} <mcp-name> <spi-chip-select> <adc_pin>", args[0],
+					LdrTest.class.getName());
 			System.exit(2);
 		}
-		
+
 		int chip_select = Integer.parseInt(args[1]);
 		int adc_pin = Integer.parseInt(args[2]);
 		float vref = 3.3f;
 		int r1 = 10_000;
 		test(type, chip_select, adc_pin, vref, r1);
 	}
-	
+
 	public static void test(McpAdc.Type type, int chipSelect, int pin, float vRef, int r1) {
 		try (McpAdc adc = new McpAdc(type, chipSelect, vRef); LDR ldr = new LDR(adc, pin, r1)) {
-			for (int i=0; i<ITERATIONS; i++) {
+			for (int i = 0; i < ITERATIONS; i++) {
 				double v_ldr = ldr.getScaledValue();
 				double r_ldr = ldr.getLdrResistance();
 				Logger.info(String.format("vLDR: %.2f, rLDR: %.2f", Double.valueOf(v_ldr), Double.valueOf(r_ldr)));

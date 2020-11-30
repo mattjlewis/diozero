@@ -37,21 +37,12 @@ import com.diozero.devices.PCF8591;
 import com.diozero.util.SleepUtil;
 
 /**
- * PCF8591 sample application.
- * To run:
+ * PCF8591 sample application. To run:
  * <ul>
- * <li>sysfs:<br>
- *  {@code java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar com.diozero.sampleapps.PCF8591App 3}</li>
- * <li>JDK Device I/O 1.0:<br>
- *  {@code sudo java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-jdkdio10-$DIOZERO_VERSION.jar:dio-1.0.1-dev-linux-armv6hf.jar -Djava.library.path=. com.diozero.sampleapps.PCF8591App 3}</li>
- * <li>JDK Device I/O 1.1:<br>
- *  {@code sudo java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-jdkdio11-$DIOZERO_VERSION.jar:dio-1.1-dev-linux-armv6hf.jar -Djava.library.path=. com.diozero.sampleapps.PCF8591App 3}</li>
- * <li>Pi4j:<br>
- *  {@code sudo java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-pi4j-$DIOZERO_VERSION.jar:pi4j-core-1.2.jar com.diozero.sampleapps.PCF8591App 3}</li>
- * <li>wiringPi:<br>
- *  {@code sudo java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-wiringpi-$DIOZERO_VERSION.jar:pi4j-core-1.2.jar com.diozero.sampleapps.PCF8591App 3}</li>
- * <li>pigpgioJ:<br>
- *  {@code sudo java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-pigpio-$DIOZERO_VERSION.jar:pigpioj-java-2.4.jar com.diozero.sampleapps.PCF8591App 3}</li>
+ * <li>Built-in:<br>
+ * {@code java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar com.diozero.sampleapps.PCF8591App 3}</li>
+ * <li>pigpgioj:<br>
+ * {@code sudo java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-pigpio-$DIOZERO_VERSION.jar:pigpioj-java-2.4.jar com.diozero.sampleapps.PCF8591App 3}</li>
  * </ul>
  */
 public class PCF8591App {
@@ -63,7 +54,7 @@ public class PCF8591App {
 		int adc_pin = Integer.parseInt(args[0]);
 		test(adc_pin);
 	}
-	
+
 	private static void test(int adcPin) {
 		try (PCF8591 adc = new PCF8591()) {
 			adc.setOutputEnabledFlag(true);
@@ -77,12 +68,12 @@ public class PCF8591App {
 					adc.setValue(0, 0);
 					high = true;
 				}
-				for (int i=0; i<v.length; i++) {
+				for (int i = 0; i < v.length; i++) {
 					v[i] = adc.getValue(i);
 				}
-				Logger.info(String.format("Pin 0: %.2f; Pin 1: %.2f; Pin 2: %.2f; Pin 3: %.2f",
-						Float.valueOf(v[0]), Float.valueOf(v[1]), Float.valueOf(v[2]), Float.valueOf(v[3])));
-				
+				Logger.info(String.format("Pin 0: %.2f; Pin 1: %.2f; Pin 2: %.2f; Pin 3: %.2f", Float.valueOf(v[0]),
+						Float.valueOf(v[1]), Float.valueOf(v[2]), Float.valueOf(v[3])));
+
 				SleepUtil.sleepSeconds(1);
 			}
 		}

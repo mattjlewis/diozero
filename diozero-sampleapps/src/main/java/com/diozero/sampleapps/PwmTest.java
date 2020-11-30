@@ -39,18 +39,20 @@ import com.diozero.sbc.DeviceFactoryHelper;
 import com.diozero.util.SleepUtil;
 
 /**
- * <p>PWM output sample application. Note doesn't work with the JDK Device I/O providers due to lack of PWM support.
- * Raspberry Pi BCM GPIO pins with hardware PWM support: 12 (phys 32, wPi 26), 13 (phys 33, wPi 23), 18 (phys 12, wPi 1), 19 (phys 35, wPi 24).</p>
- * <p>To run:</p>
+ * <p>
+ * PWM output sample application. Note doesn't work with the JDK Device I/O
+ * providers due to lack of PWM support. Raspberry Pi BCM GPIO pins with
+ * hardware PWM support: 12 (phys 32, wPi 26), 13 (phys 33, wPi 23), 18 (phys
+ * 12, wPi 1), 19 (phys 35, wPi 24).
+ * </p>
+ * <p>
+ * To run:
+ * </p>
  * <ul>
- * <li>sysfs:<br>
- *  {@code java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar com.diozero.sampleapps.PwmTest 12}</li>
- * <li>Pi4j:<br>
- *  {@code sudo java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar:diozero-provider-pi4j-$DIOZERO_VERSION.jar:pi4j-core-1.2.jar com.diozero.sampleapps.PwmTest 12}</li>
- * <li>wiringPi:<br>
- *  {@code sudo java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar:diozero-provider-wiringpi-$DIOZERO_VERSION.jar:pi4j-core-1.2.jar com.diozero.sampleapps.PwmTest 12}</li>
- * <li>pigpgioJ:<br>
- *  {@code sudo java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar:diozero-provider-pigpio-$DIOZERO_VERSION.jar:pigpioj-java-2.4.jar com.diozero.sampleapps.PwmTest 12}</li>
+ * <li>Built-in:<br>
+ * {@code java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar com.diozero.sampleapps.PwmTest 12}</li>
+ * <li>pigpgioj:<br>
+ * {@code sudo java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar:diozero-provider-pigpio-$DIOZERO_VERSION.jar:pigpioj-java-2.4.jar com.diozero.sampleapps.PwmTest 12}</li>
  * </ul>
  */
 public class PwmTest {
@@ -59,13 +61,13 @@ public class PwmTest {
 			Logger.error("Usage: {} <gpio>", PwmTest.class.getName());
 			System.exit(1);
 		}
-		
+
 		test(Integer.parseInt(args[0]));
 	}
-	
+
 	public static void test(int pin) {
 		try (PwmOutputDevice pwm = new PwmOutputDevice(pin)) {
-			for (float f=0; f<1; f+=0.05) {
+			for (float f = 0; f < 1; f += 0.05) {
 				Logger.info("Setting value to {}", Float.valueOf(f));
 				pwm.setValue(f);
 				SleepUtil.sleepSeconds(0.5);

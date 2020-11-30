@@ -6,12 +6,17 @@
 package com.diozero.internal.spi;
 
 /*
- * #%L Organisation: diozero Project: Device I/O Zero - Core Filename:
- * package-info.java
+ * #%L
+ * Organisation: diozero
+ * Project:      Device I/O Zero - Core
+ * Filename:     package-info.java  
  * 
  * This file is part of the diozero project. More information about this project
- * can be found at http://www.diozero.com/ %% Copyright (C) 2016 - 2020 diozero
- * %% Permission is hereby granted, free of charge, to any person obtaining a
+ * can be found at http://www.diozero.com/
+ * %%
+ * Copyright (C) 2016 - 2020 diozero
+ * %%
+ * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"), to
  * deal in the Software without restriction, including without limitation the
  * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
@@ -27,5 +32,6 @@ package com.diozero.internal.spi;
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE. #L%
+ * SOFTWARE.
+ * #L%
  */

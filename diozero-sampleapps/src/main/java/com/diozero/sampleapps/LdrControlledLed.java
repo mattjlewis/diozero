@@ -40,16 +40,13 @@ import com.diozero.devices.PwmLed;
 import com.diozero.util.SleepUtil;
 
 /**
- * Control the brightness of an LED by the luminosity detected of an LDR. To run:
+ * Control the brightness of an LED by the luminosity detected of an LDR. To
+ * run:
  * <ul>
- * <li>sysfs:<br>
- *  {@code java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar com.diozero.sampleapps.LdrControlledLed MCP3304 0 2 12}</li>
- * <li>Pi4j:<br>
- *  {@code sudo java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar:diozero-provider-pi4j-$DIOZERO_VERSION.jar:pi4j-core-1.2.jar com.diozero.sampleapps.LdrControlledLed MCP3304 0 2 12}</li>
- * <li>wiringPi:<br>
- *  {@code sudo java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar:diozero-provider-wiringpi-$DIOZERO_VERSION.jar:pi4j-core-1.2.jar com.diozero.sampleapps.LdrControlledLed MCP3304 0 2 12}</li>
- * <li>pigpgioJ:<br>
- *  {@code sudo java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar:diozero-provider-pigpio-$DIOZERO_VERSION.jar:pigpioj-java-2.4.jar com.diozero.sampleapps.LdrControlledLed MCP3304 0 2 12}</li>
+ * <li>Built-in:<br>
+ * {@code java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar com.diozero.sampleapps.LdrControlledLed MCP3304 0 2 12}</li>
+ * <li>pigpgioj:<br>
+ * {@code sudo java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar:diozero-provider-pigpio-$DIOZERO_VERSION.jar:pigpioj-java-2.4.jar com.diozero.sampleapps.LdrControlledLed MCP3304 0 2 12}</li>
  * </ul>
  */
 public class LdrControlledLed {
@@ -60,25 +57,28 @@ public class LdrControlledLed {
 		}
 		McpAdc.Type type = McpAdc.Type.valueOf(args[0]);
 		if (type == null) {
-			Logger.error("Invalid MCP ADC type '{}'. Usage: {} <mcp-name> <spi-chip-select> <adc_pin>", args[0], McpAdcTest.class.getName());
+			Logger.error("Invalid MCP ADC type '{}'. Usage: {} <mcp-name> <spi-chip-select> <adc_pin>", args[0],
+					McpAdcTest.class.getName());
 			System.exit(2);
 		}
-		
+
 		int chip_select = Integer.parseInt(args[1]);
 		int adc_pin = Integer.parseInt(args[2]);
 		int led_pin = Integer.parseInt(args[3]);
 		// TODO Add these to command line args
 		float vref = 3.3f;
 		int r1 = 10_000;
-		
+
 		test(type, chip_select, adc_pin, vref, r1, led_pin);
 	}
-	
+
 	public static void test(McpAdc.Type type, int chipSelect, int pin, float vRef, int r1, int ledPin) {
-		try (McpAdc adc = new McpAdc(type, chipSelect, vRef); LDR ldr = new LDR(adc, pin, r1); PwmLed led = new PwmLed(ledPin)) {
+		try (McpAdc adc = new McpAdc(type, chipSelect, vRef);
+				LDR ldr = new LDR(adc, pin, r1);
+				PwmLed led = new PwmLed(ledPin)) {
 			// Detect variations of 5%, poll every 20ms
-			ldr.addListener((event) -> led.setValue(1-event.getUnscaledValue()), .05f, 20);
-			
+			ldr.addListener((event) -> led.setValue(1 - event.getUnscaledValue()), .05f, 20);
+
 			Logger.debug("Sleeping for 20s");
 			SleepUtil.sleepSeconds(20);
 		} catch (RuntimeIOException ex) {

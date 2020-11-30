@@ -266,7 +266,7 @@ public interface I2CSMBusInterface extends Closeable {
 	 * @param data     the data to write (up to 32 bytes)
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
-	void writeBlockData(int register, byte[] data) throws RuntimeIOException;
+	void writeBlockData(int register, byte... data) throws RuntimeIOException;
 
 	/**
 	 * <p>
@@ -290,7 +290,7 @@ public interface I2CSMBusInterface extends Closeable {
 	 * @return the data read (up to 32 bytes)
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
-	byte[] blockProcessCall(int register, byte[] txData) throws RuntimeIOException;
+	byte[] blockProcessCall(int register, byte... txData) throws RuntimeIOException;
 
 	/*-
 	 * I2C Block Transactions
@@ -341,7 +341,7 @@ public interface I2CSMBusInterface extends Closeable {
 	 * @param data     values to write
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
-	void writeI2CBlockData(int register, byte[] data) throws RuntimeIOException;
+	void writeI2CBlockData(int register, byte... data) throws RuntimeIOException;
 
 	/**
 	 * SMBus extension to read the specified number of bytes from the device
@@ -359,5 +359,5 @@ public interface I2CSMBusInterface extends Closeable {
 	 * @param data the data to write
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
-	void writeBytes(byte[] data) throws RuntimeIOException;
+	void writeBytes(byte... data) throws RuntimeIOException;
 }

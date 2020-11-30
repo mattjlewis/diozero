@@ -54,23 +54,15 @@ import com.diozero.sbc.DeviceFactoryHelper;
 
 /**
  * <ul>
- * <li>sysfs:<br>
+ * <li>Built-in:<br>
  * {@code java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar com.diozero.sampleapps.SSD1331Test}</li>
- * <li>JDK Device I/O 1.0:<br>
- *  {@code sudo java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-jdkdio10-$DIOZERO_VERSION.jar:dio-1.0.1-dev-linux-armv6hf.jar -Djava.library.path=. com.diozero.sampleapps.SSD1331Test}</li>
- * <li>JDK Device I/O 1.1:<br>
- *  {@code sudo java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-jdkdio11-$DIOZERO_VERSION.jar:dio-1.1-dev-linux-armv6hf.jar -Djava.library.path=. com.diozero.sampleapps.SSD1331Test}</li>
- * <li>Pi4j:<br>
- *  {@code sudo java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-pi4j-$DIOZERO_VERSION.jar:pi4j-core-1.2.jar com.diozero.sampleapps.SSD1331Test}</li>
- * <li>wiringPi:<br>
- *  {@code sudo java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-wiringpi-$DIOZERO_VERSION.jar:pi4j-core-1.2.jar com.diozero.sampleapps.SSD1331Test}</li>
- * <li>pigpio:<br>
- *  {@code sudo java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-pigpio-$DIOZERO_VERSION.jar:pigpioj-java-2.4.jar com.diozero.sampleapps.SSD1331Test}</li>
+ * <li>pigpioj:<br>
+ * {@code sudo java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-pigpio-$DIOZERO_VERSION.jar:pigpioj-java-2.4.jar com.diozero.sampleapps.SSD1331Test}</li>
  * </ul>
  */
 public class SSD1331Test {
 	public static void main(String[] args) {
-		/*
+		/*-
 		try (LED led = new LED(16)) {
 			led.on();
 			Thread.sleep(500);
@@ -78,23 +70,23 @@ public class SSD1331Test {
 			Thread.sleep(500);
 		} catch (InterruptedException e) {
 		}
-		*/
-		//int dc_gpio = 185;
+		 */
+		// int dc_gpio = 185;
 		int dc_gpio = 22;
-		//int reset_gpio = 224;
+		// int reset_gpio = 224;
 		int reset_gpio = 27;
 		if (args.length > 1) {
 			dc_gpio = Integer.parseInt(args[0]);
 			reset_gpio = Integer.parseInt(args[1]);
 		}
-		//int spi_controller = 2;
+		// int spi_controller = 2;
 		int spi_controller = 0;
 		int chip_select = 0;
 		if (args.length > 2) {
 			spi_controller = Integer.parseInt(args[2]);
 			chip_select = Integer.parseInt(args[3]);
 		}
-		
+
 		try (DigitalOutputDevice dc_pin = new DigitalOutputDevice(dc_gpio);
 				DigitalOutputDevice reset_pin = new DigitalOutputDevice(reset_gpio);
 				ColourSsdOled oled = new SSD1351(spi_controller, chip_select, dc_pin, reset_pin)) {
@@ -103,7 +95,8 @@ public class SSD1331Test {
 			sierpinskiTriangle(oled, 250);
 			drawText(oled);
 			testJava2D(oled);
-			animateText(oled, "SSD1331 Organic LED Display demo scroller. Java implementation by diozero (diozero.com).");
+			animateText(oled,
+					"SSD1331 Organic LED Display demo scroller. Java implementation by diozero (diozero.com).");
 		} catch (RuntimeException e) {
 			Logger.error(e, "Error: {}", e);
 		} finally {
@@ -119,24 +112,24 @@ public class SSD1331Test {
 		BufferedImage image = new BufferedImage(width, height, oled.getNativeImageType());
 		Graphics2D g2d = image.createGraphics();
 		Random random = new Random();
-		
+
 		Color[] colours = { Color.WHITE, Color.BLUE, Color.CYAN, Color.DARK_GRAY, Color.GRAY, Color.LIGHT_GRAY,
 				Color.MAGENTA, Color.ORANGE, Color.PINK, Color.RED, Color.YELLOW };
 		g2d.setBackground(Color.BLACK);
-		
+
 		Font f = g2d.getFont();
 		Logger.info("Font name={}, family={}, size={}, style={}", f.getFontName(), f.getFamily(),
 				Integer.valueOf(f.getSize()), Integer.valueOf(f.getStyle()));
 		FontMetrics fm = g2d.getFontMetrics();
 		int maxwidth = fm.stringWidth(text);
-		
-		int amplitude = height/4;
-		int offset = height/2 - 4;
+
+		int amplitude = height / 4;
+		int offset = height / 2 - 4;
 		int velocity = -2;
 		int startpos = width;
 		int pos = startpos;
 		int x;
-		for (int i=0; i<200; i++) {
+		for (int i = 0; i < 200; i++) {
 			g2d.clearRect(0, 0, width, height);
 			x = pos;
 
@@ -144,40 +137,40 @@ public class SSD1331Test {
 				if (x > width) {
 					break;
 				}
-				
+
 				if (x < -10) {
 					x += fm.charWidth(c);
 					continue;
 				}
 				// Calculate offset from sine wave.
-		        int y = (int) (offset + Math.floor(amplitude * Math.sin(x / ((float)width) * 2.0 * Math.PI)));
-		        // Draw text.
+				int y = (int) (offset + Math.floor(amplitude * Math.sin(x / ((float) width) * 2.0 * Math.PI)));
+				// Draw text.
 				g2d.setColor(colours[random.nextInt(colours.length)]);
-		        g2d.drawString(String.valueOf(c), x, y);
-		        // Increment x position based on chacacter width.
-		        x += fm.charWidth(c);
+				g2d.drawString(String.valueOf(c), x, y);
+				// Increment x position based on chacacter width.
+				x += fm.charWidth(c);
 			}
-		    // Draw the image buffer.
-		    oled.display(image);
-		    // Move position for next frame.
-		    pos += velocity;
-		    // Start over if text has scrolled completely off left side of screen.
-		    if (pos < -maxwidth) {
-		        pos = startpos;
-		    }
-		    
-		    // Pause briefly before drawing next frame.
+			// Draw the image buffer.
+			oled.display(image);
+			// Move position for next frame.
+			pos += velocity;
+			// Start over if text has scrolled completely off left side of screen.
+			if (pos < -maxwidth) {
+				pos = startpos;
+			}
+
+			// Pause briefly before drawing next frame.
 			try {
 				Thread.sleep(50);
 			} catch (InterruptedException e) {
 			}
 		}
 	}
-	
+
 	public static void gameOfLife(ColourSsdOled oled, long duration) {
 		Logger.info("Game of Life");
 		oled.clear();
-		
+
 		GameOfLife gol = new GameOfLife(oled.getWidth(), oled.getHeight());
 		gol.randomise();
 		long start = System.currentTimeMillis();
@@ -192,10 +185,10 @@ public class SSD1331Test {
 		double fps = iterations / (duration / 1000.0);
 		Logger.info("FPS: {0.##}", Double.valueOf(fps));
 	}
-	
+
 	private static void render(ColourSsdOled oled, GameOfLife gol) {
-		for (int i=0; i<gol.getWidth(); i++) {
-			for (int j=0; j<gol.getHeight(); j++) {
+		for (int i = 0; i < gol.getWidth(); i++) {
+			for (int j = 0; j < gol.getHeight(); j++) {
 				if (gol.isAlive(i, j)) {
 					oled.setPixel(i, j, ColourSsdOled.MAX_RED, ColourSsdOled.MAX_GREEN, ColourSsdOled.MAX_BLUE, false);
 				} else {
@@ -205,11 +198,12 @@ public class SSD1331Test {
 		}
 		oled.display();
 	}
-	
+
 	public static void displayImages(SsdOled oled) {
 		Logger.info("Images");
-		String[] images = { "/images/balloon.png", "/images/pi_logo.png", "/images/pixelart1.png", "/images/pixelart2.png",
-				"/images/pixelart3.jpg", "/images/pixelart4.jpg", "/images/pixelart5.jpg", "/images/starwars.png", "not found" };
+		String[] images = { "/images/balloon.png", "/images/pi_logo.png", "/images/pixelart1.png",
+				"/images/pixelart2.png", "/images/pixelart3.jpg", "/images/pixelart4.jpg", "/images/pixelart5.jpg",
+				"/images/starwars.png", "not found" };
 		for (String image : images) {
 			try (InputStream is = SSD1331Test.class.getResourceAsStream(image)) {
 				if (is != null) {
@@ -227,38 +221,40 @@ public class SSD1331Test {
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {
 			}
-		}	
+		}
 	}
-	
+
 	public static void sierpinskiTriangle(ColourSsdOled oled, int iterations) {
 		Logger.info("Sierpinski triangle");
 		int width = oled.getWidth();
 		int height = oled.getHeight();
 		final Random random = new Random();
 		oled.clear();
-		
-		final Point[] corners = { new Point(width/2, 0), new Point(0, height-1), new Point(width-1, height-1) };
+
+		final Point[] corners = { new Point(width / 2, 0), new Point(0, height - 1), new Point(width - 1, height - 1) };
 		Point point = new Point(corners[random.nextInt(corners.length)]);
-		for (int i=0; i<iterations; i++) {
+		for (int i = 0; i < iterations; i++) {
 			final Point target_corner = corners[random.nextInt(corners.length)];
 			point.x += (target_corner.x - point.x) / 2;
 			point.y += (target_corner.y - point.y) / 2;
 			oled.setPixel(point.x, point.y, ColourSsdOled.MAX_RED, (byte) 0, (byte) 0, true);
-			/*
+			/*-
 			try {
 				Thread.sleep(5);
 			} catch (InterruptedException e) {
 			}
-			*/
+			 */
 		}
 	}
-	
+
 	private static final class Point {
 		int x, y;
+
 		Point(int x, int y) {
 			this.x = x;
 			this.y = y;
 		}
+
 		Point(Point p) {
 			this.x = p.x;
 			this.y = p.y;
@@ -274,63 +270,63 @@ public class SSD1331Test {
 
 		g2d.setBackground(Color.BLACK);
 		g2d.clearRect(0, 0, width, height);
-		
+
 		g2d.setColor(Color.RED);
 		g2d.drawString("Red", 10, 10);
 		g2d.setColor(Color.GREEN);
 		g2d.drawString("Green", 10, 20);
 		g2d.setColor(Color.BLUE);
 		g2d.drawString("Blue", 10, 30);
-		
+
 		oled.display(image);
-		
+
 		g2d.dispose();
 		try {
 			Thread.sleep(1000);
 		} catch (InterruptedException e) {
 		}
 	}
-	
+
 	public static void testJava2D(ColourSsdOled oled) {
 		Logger.info("Displaying custom image");
 		int width = oled.getWidth();
 		int height = oled.getHeight();
 		BufferedImage image = new BufferedImage(width, height, oled.getNativeImageType());
 		Graphics2D g2d = image.createGraphics();
-		
+
 		g2d.setBackground(Color.BLACK);
 		g2d.clearRect(0, 0, width, height);
-		
+
 		g2d.setColor(Color.WHITE);
 		g2d.drawLine(0, 0, width, height);
 		g2d.drawLine(width, 0, 0, height);
-		g2d.drawLine(width/2, 0, width/2, height);
-		g2d.drawLine(0, height/2, width, height/2);
-		
+		g2d.drawLine(width / 2, 0, width / 2, height);
+		g2d.drawLine(0, height / 2, width, height / 2);
+
 		g2d.setColor(Color.RED);
-		g2d.drawRect(0, 0, width/4, height/4);
-		
+		g2d.drawRect(0, 0, width / 4, height / 4);
+
 		g2d.setColor(Color.ORANGE);
-		g2d.draw3DRect(width/4, height/4, width/2, height/2, true);
-		
+		g2d.draw3DRect(width / 4, height / 4, width / 2, height / 2, true);
+
 		g2d.setColor(Color.BLUE);
-		g2d.drawOval(width/2, height/2, width/3, height/3);
-		
+		g2d.drawOval(width / 2, height / 2, width / 3, height / 3);
+
 		g2d.setColor(Color.GREEN);
-		g2d.fillRect(width/4, 0, width/4, height/4);
-		
+		g2d.fillRect(width / 4, 0, width / 4, height / 4);
+
 		g2d.setColor(Color.YELLOW);
-		g2d.fillOval(0, height/4, width/4, height/4);
-		
+		g2d.fillOval(0, height / 4, width / 4, height / 4);
+
 		oled.display(image);
 		g2d.dispose();
-		
+
 		Logger.debug("Sleeping for 2 seconds");
 		try {
 			Thread.sleep(2000);
 		} catch (InterruptedException e) {
 		}
-		
+
 		Logger.debug("Inverting");
 		oled.invertDisplay(true);
 		try {
@@ -343,8 +339,8 @@ public class SSD1331Test {
 			Thread.sleep(1000);
 		} catch (InterruptedException e) {
 		}
-		
-		for (int i=0; i<255; i++) {
+
+		for (int i = 0; i < 255; i++) {
 			oled.setContrast((byte) i);
 			try {
 				Thread.sleep(10);

@@ -3,7 +3,7 @@ package com.diozero.sampleapps.perf;
 /*-
  * #%L
  * Organisation: diozero
- * Project:      Device I/O Zero - High performance mmap GPIO control
+ * Project:      Device I/O Zero - Sample applications
  * Filename:     MmapGpioPerfTest.java  
  * 
  * This file is part of the diozero project. More information about this project

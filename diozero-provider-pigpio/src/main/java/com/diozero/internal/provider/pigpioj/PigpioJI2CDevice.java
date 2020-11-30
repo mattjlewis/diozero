@@ -222,7 +222,7 @@ public class PigpioJI2CDevice extends AbstractDevice implements I2CDeviceInterfa
 	}
 
 	@Override
-	public void writeBytes(byte[] data) throws RuntimeIOException {
+	public void writeBytes(byte...data) throws RuntimeIOException {
 		if (!isOpen()) {
 			throw new IllegalStateException("I2C Device " + controller + "-" + address + " is closed");
 		}
@@ -248,7 +248,7 @@ public class PigpioJI2CDevice extends AbstractDevice implements I2CDeviceInterfa
 	}
 	
 	@Override
-	public void writeBlockData(int register, byte[] data) {
+	public void writeBlockData(int register, byte... data) {
 		if (!isOpen()) {
 			throw new IllegalStateException("I2C Device " + controller + "-" + address + " is closed");
 		}
@@ -260,7 +260,7 @@ public class PigpioJI2CDevice extends AbstractDevice implements I2CDeviceInterfa
 	}
 
 	@Override
-	public byte[] blockProcessCall(int register, byte[] data) {
+	public byte[] blockProcessCall(int register, byte... data) {
 		byte[] txrx_data = new byte[data.length];
 		System.arraycopy(data, 0, txrx_data, 0, data.length);
 		
@@ -290,7 +290,7 @@ public class PigpioJI2CDevice extends AbstractDevice implements I2CDeviceInterfa
 	}
 
 	@Override
-	public void writeI2CBlockData(int register, byte[] data) throws RuntimeIOException {
+	public void writeI2CBlockData(int register, byte... data) throws RuntimeIOException {
 		if (!isOpen()) {
 			throw new IllegalStateException("I2C Device " + controller + "-" + address + " is closed");
 		}

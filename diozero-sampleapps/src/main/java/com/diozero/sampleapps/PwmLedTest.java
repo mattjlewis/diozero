@@ -39,18 +39,20 @@ import com.diozero.sbc.DeviceFactoryHelper;
 import com.diozero.util.SleepUtil;
 
 /**
- * <p>PWM LED sample application. Doesn't work with the JDK Device I/O providers due to lack of support for PWM.
- * Note Raspberry Pi BCM GPIO pins with hardware PWM support: 12 (phys 32, wPi 26), 13 (phys 33, wPi 23), 18 (phys 12, wPi 1), 19 (phys 35, wPi 24).</p>
- * <p>To run:</p>
+ * <p>
+ * PWM LED sample application. Doesn't work with the JDK Device I/O providers
+ * due to lack of support for PWM. Note Raspberry Pi BCM GPIO pins with hardware
+ * PWM support: 12 (phys 32, wPi 26), 13 (phys 33, wPi 23), 18 (phys 12, wPi 1),
+ * 19 (phys 35, wPi 24).
+ * </p>
+ * <p>
+ * To run:
+ * </p>
  * <ul>
- * <li>sysfs:<br>
- *  {@code java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar com.diozero.sampleapps.PwmLedTest 12}</li>
- * <li>Pi4j:<br>
- *  {@code sudo java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar:diozero-provider-pi4j-$DIOZERO_VERSION.jar:pi4j-core-1.2.jar com.diozero.sampleapps.PwmLedTest 12}</li>
- * <li>wiringPi:<br>
- *  {@code sudo java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar:diozero-provider-wiringpi-$DIOZERO_VERSION.jar:pi4j-core-1.2.jar com.diozero.sampleapps.PwmLedTest 12}</li>
- * <li>pigpgioJ:<br>
- *  {@code sudo java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar:diozero-provider-pigpio-$DIOZERO_VERSION.jar:pigpioj-java-2.4.jar com.diozero.sampleapps.PwmLedTest 12}</li>
+ * <li>Built-in:<br>
+ * {@code java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar com.diozero.sampleapps.PwmLedTest 12}</li>
+ * <li>pigpgioj:<br>
+ * {@code sudo java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar:diozero-provider-pigpio-$DIOZERO_VERSION.jar:pigpioj-java-2.4.jar com.diozero.sampleapps.PwmLedTest 12}</li>
  * </ul>
  */
 public class PwmLedTest {
@@ -59,59 +61,60 @@ public class PwmLedTest {
 			Logger.error("Usage: {} <gpio>", PwmLedTest.class.getName());
 			System.exit(1);
 		}
-		
+
 		test(Integer.parseInt(args[0]));
 	}
-	
+
 	public static void test(int pin) {
 		float delay = 0.5f;
-		
+
 		try (PwmLed led = new PwmLed(pin)) {
 			Logger.info("On");
 			led.on();
 			SleepUtil.sleepSeconds(delay);
-			
+
 			Logger.info("Off");
 			led.off();
 			SleepUtil.sleepSeconds(delay);
-			
+
 			Logger.info("Toggle");
 			led.toggle();
 			SleepUtil.sleepSeconds(delay);
-			
+
 			Logger.info("Toggle");
 			led.toggle();
 			SleepUtil.sleepSeconds(delay);
-			
+
 			Logger.info("25%");
 			led.setValue(.25f);
 			SleepUtil.sleepSeconds(delay);
-			
+
 			Logger.info("Toggle (now 75%)");
 			led.toggle();
 			SleepUtil.sleepSeconds(delay);
-			
+
 			Logger.info("50%");
 			led.setValue(.5f);
 			SleepUtil.sleepSeconds(delay);
-			
+
 			Logger.info("Blink 5 times");
 			led.blink(0.5f, 0.5f, 5, false);
-			
+
 			Logger.info("Blink 5 times in the background");
 			led.blink(0.5f, 0.5f, 5, true);
-			for (int i=0; i<7; i++) {
+			for (int i = 0; i < 7; i++) {
 				Logger.info("Sleeping for 1s");
 				SleepUtil.sleepSeconds(1);
 			}
-			
+
 			Logger.info("Fade in and out 5 times, on-off will take 1s; this will take 10s in total (2*1*5)");
 			led.pulse(1, 50, 5, false);
-			
+
 			// FIXME Tests for background threads still running when shutting down
-			Logger.info("Fade in and out 20 times in the background, on-off will take 0.5s; this will take 20s in total (2*0.5*20)");
+			Logger.info(
+					"Fade in and out 20 times in the background, on-off will take 0.5s; this will take 20s in total (2*0.5*20)");
 			led.pulse(0.5f, 50, 20, true);
-			for (int i=0; i<6; i++) {
+			for (int i = 0; i < 6; i++) {
 				Logger.info("Sleeping for 1s");
 				SleepUtil.sleepSeconds(1);
 			}
@@ -122,7 +125,7 @@ public class PwmLedTest {
 			// built-in clean-up routines from running
 			DeviceFactoryHelper.getNativeDeviceFactory().close();
 		}
-		
+
 		Logger.info("Done");
 	}
 }

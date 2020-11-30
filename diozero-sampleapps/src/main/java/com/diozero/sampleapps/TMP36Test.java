@@ -41,18 +41,10 @@ import com.diozero.util.SleepUtil;
 /**
  * TMP36 temperature sensor sample application. To run:
  * <ul>
- * <li>sysfs:<br>
- *  {@code java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar com.diozero.sampleapps.TMP36Test MCP3304 0 0}</li>
- * <li>JDK Device I/O 1.0:<br>
- *  {@code sudo java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar:diozero-provider-jdkdio10-$DIOZERO_VERSION.jar:dio-1.0.1-dev-linux-armv6hf.jar -Djava.library.path=. com.diozero.sampleapps.TMP36Test MCP3304 0 0}</li>
- * <li>JDK Device I/O 1.1:<br>
- *  {@code sudo java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar:diozero-provider-jdkdio11-$DIOZERO_VERSION.jar:dio-1.1-dev-linux-armv6hf.jar -Djava.library.path=. com.diozero.sampleapps.TMP36Test MCP3304 0 0}</li>
- * <li>Pi4j:<br>
- *  {@code sudo java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar:diozero-provider-pi4j-$DIOZERO_VERSION.jar:pi4j-core-1.2.jar com.diozero.sampleapps.TMP36Test MCP3304 0 0}</li>
- * <li>wiringPi:<br>
- *  {@code sudo java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar:diozero-provider-wiringpi-$DIOZERO_VERSION.jar:pi4j-core-1.2.jar com.diozero.sampleapps.TMP36Test MCP3304 0 0}</li>
- * <li>pigpgioJ:<br>
- *  {@code sudo java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar:diozero-provider-pigpio-$DIOZERO_VERSION.jar:pigpioj-java-2.4.jar com.diozero.sampleapps.TMP36Test MCP3304 0 0}</li>
+ * <li>Built-in:<br>
+ * {@code java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar com.diozero.sampleapps.TMP36Test MCP3304 0 0}</li>
+ * <li>pigpgioj:<br>
+ * {@code sudo java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar:diozero-provider-pigpio-$DIOZERO_VERSION.jar:pigpioj-java-2.4.jar com.diozero.sampleapps.TMP36Test MCP3304 0 0}</li>
  * </ul>
  */
 public class TMP36Test {
@@ -66,10 +58,11 @@ public class TMP36Test {
 		}
 		McpAdc.Type type = McpAdc.Type.valueOf(args[0]);
 		if (type == null) {
-			Logger.error("Invalid MCP ADC type '{}'. Usage: {} <mcp-name> <spi-chip-select> <adc_pin>", args[0], McpAdcTest.class.getName());
+			Logger.error("Invalid MCP ADC type '{}'. Usage: {} <mcp-name> <spi-chip-select> <adc_pin>", args[0],
+					McpAdcTest.class.getName());
 			System.exit(2);
 		}
-		
+
 		int chip_select = Integer.parseInt(args[1]);
 		int adc_pin = Integer.parseInt(args[2]);
 		float temp_offset = DEFAULT_TEMPERATURE_OFFSET;
@@ -79,11 +72,10 @@ public class TMP36Test {
 		float v_ref = 3.3f;
 		test(type, chip_select, adc_pin, temp_offset, v_ref);
 	}
-	
+
 	public static void test(McpAdc.Type type, int chipSelect, int pin, float tempOffset, float vRef) {
-		try (McpAdc adc = new McpAdc(type, chipSelect, vRef);
-				TMP36 tmp36 = new TMP36(adc, pin, tempOffset)) {
-			for (int i=0; i<ITERATIONS; i++) {
+		try (McpAdc adc = new McpAdc(type, chipSelect, vRef); TMP36 tmp36 = new TMP36(adc, pin, tempOffset)) {
+			for (int i = 0; i < ITERATIONS; i++) {
 				double tmp = tmp36.getTemperature();
 				Logger.info("Temperature: {}", String.format("%.2f", Double.valueOf(tmp)));
 				SleepUtil.sleepSeconds(.5);

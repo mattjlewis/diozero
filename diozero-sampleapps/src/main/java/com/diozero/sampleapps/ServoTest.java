@@ -39,14 +39,10 @@ import com.diozero.util.SleepUtil;
 /**
  * Servo test application. To run:
  * <ul>
- * <li>sysfs:<br>
- *  {@code java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar com.diozero.sampleapps.ServoTest 50 13}</li>
- * <li>Pi4j:<br>
- *  {@code sudo java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar:diozero-provider-pi4j-$DIOZERO_VERSION.jar:pi4j-core-1.2.jar com.diozero.sampleapps.ServoTest 50 13}</li>
- * <li>wiringPi:<br>
- *  {@code sudo java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar:diozero-provider-wiringpi-$DIOZERO_VERSION.jar:pi4j-core-1.2.jar com.diozero.sampleapps.ServoTest 50 13}</li>
- * <li>pigpgioJ:<br>
- *  {@code sudo java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar:diozero-provider-pigpio-$DIOZERO_VERSION.jar:pigpioj-java-2.4.jar com.diozero.sampleapps.ServoTest 50 13}</li>
+ * <li>Built-in:<br>
+ * {@code java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar com.diozero.sampleapps.ServoTest 50 13}</li>
+ * <li>pigpgioj:<br>
+ * {@code sudo java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar:diozero-provider-pigpio-$DIOZERO_VERSION.jar:pigpioj-java-2.4.jar com.diozero.sampleapps.ServoTest 50 13}</li>
  * </ul>
  */
 public class ServoTest {
@@ -55,10 +51,10 @@ public class ServoTest {
 			Logger.error("Usage: {} <PWM Frequency> <pin number>", ServoTest.class.getName());
 			System.exit(1);
 		}
-		
+
 		int pwm_freq = Integer.parseInt(args[0]);
 		int pin_number = Integer.parseInt(args[1]);
-		
+
 		test(pwm_freq, pin_number);
 	}
 
@@ -68,23 +64,23 @@ public class ServoTest {
 			Logger.info("Mid");
 			servo.setPulseWidthMs(trim.getMidPulseWidthMs());
 			SleepUtil.sleepMillis(1000);
-			
+
 			Logger.info("Min");
 			servo.setPulseWidthMs(trim.getMinPulseWidthMs());
 			SleepUtil.sleepMillis(1000);
-			
+
 			Logger.info("Mid");
 			servo.setPulseWidthMs(trim.getMidPulseWidthMs());
 			SleepUtil.sleepMillis(1000);
-			
+
 			Logger.info("Max");
 			servo.setPulseWidthMs(trim.getMaxPulseWidthMs());
 			SleepUtil.sleepMillis(1000);
-			
+
 			Logger.info("Mid");
 			servo.setPulseWidthMs(trim.getMidPulseWidthMs());
 			SleepUtil.sleepMillis(1000);
-			
+
 			for (float pulse_ms = trim.getMidPulseWidthMs(); pulse_ms < trim.getMaxPulseWidthMs(); pulse_ms += 0.005) {
 				servo.setPulseWidthMs(pulse_ms);
 				SleepUtil.sleepMillis(10);

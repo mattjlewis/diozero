@@ -31,9 +31,8 @@ package com.diozero.api;
  * #L%
  */
 
-
 public abstract class AbstractDigitalInputDevice extends GpioInputDevice<DigitalInputEvent>
-implements DigitalInputDeviceInterface {
+		implements DigitalInputDeviceInterface {
 	protected boolean activeHigh;
 	private Action activatedAction;
 	private Action deactivatedAction;
@@ -41,15 +40,15 @@ implements DigitalInputDeviceInterface {
 
 	public AbstractDigitalInputDevice(int gpio, boolean activeHigh) {
 		super(gpio);
-		
+
 		this.activeHigh = activeHigh;
 	}
 
 	/**
 	 * Get active high configuration.
 	 * 
-	 * @return Returns false if configured as pull-up, true for all other pull
-	 *         up / down options.
+	 * @return Returns false if configured as pull-up, true for all other pull up /
+	 *         down options.
 	 */
 	public boolean isActiveHigh() {
 		return activeHigh;
@@ -57,7 +56,7 @@ implements DigitalInputDeviceInterface {
 
 	@Override
 	protected void enableDeviceListener() {
-		if (! listenerEnabled) {
+		if (!listenerEnabled) {
 			setListener();
 			listenerEnabled = true;
 		}
@@ -88,12 +87,11 @@ implements DigitalInputDeviceInterface {
 	/**
 	 * Action to perform when the device state is active.
 	 * 
-	 * @param action
-	 *            Action callback object.
+	 * @param action Action callback object.
 	 */
 	public void whenActivated(Action action) {
 		activatedAction = action;
-		if (action == null) {
+		if (activatedAction == null && deactivatedAction == null) {
 			disableDeviceListener();
 		} else {
 			enableDeviceListener();
@@ -103,18 +101,18 @@ implements DigitalInputDeviceInterface {
 	/**
 	 * Action to perform when the device state is inactive.
 	 * 
-	 * @param action
-	 *            Action callback object.
+	 * @param action Action callback object.
 	 */
 	public void whenDeactivated(Action action) {
 		deactivatedAction = action;
-		if (action == null) {
+		if (activatedAction == null && deactivatedAction == null) {
 			disableDeviceListener();
 		} else {
 			enableDeviceListener();
 		}
 	}
-	
+
 	protected abstract void setListener();
+
 	protected abstract void removeListener();
 }

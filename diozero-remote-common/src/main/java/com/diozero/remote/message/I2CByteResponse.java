@@ -4,7 +4,7 @@ package com.diozero.remote.message;
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - Remote Common
- * Filename:     I2CReadByteResponse.java  
+ * Filename:     I2CByteResponse.java  
  * 
  * This file is part of the diozero project. More information about this project
  * can be found at http://www.diozero.com/

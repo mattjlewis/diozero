@@ -193,7 +193,7 @@ public class NativeI2CDeviceSMBus implements I2CSMBusInterface {
 	}
 
 	@Override
-	public void writeBytes(byte[] data) {
+	public void writeBytes(byte... data) {
 		if (data.length > MAX_I2C_BLOCK_SIZE) {
 			throw new RuntimeIOException("Invalid data length - max length is " + MAX_I2C_BLOCK_SIZE);
 		}
@@ -304,7 +304,7 @@ public class NativeI2CDeviceSMBus implements I2CSMBusInterface {
 	}
 
 	@Override
-	public void writeBlockData(int registerAddress, byte[] data) {
+	public void writeBlockData(int registerAddress, byte... data) {
 		if ((funcs & NativeI2C.I2C_FUNC_SMBUS_WRITE_BLOCK_DATA) == 0) {
 			Logger.warn("Function I2C_FUNC_SMBUS_WRITE_BLOCK_DATA isn't supported for device i2c-{}-0x{}",
 					Integer.valueOf(controller), Integer.toHexString(deviceAddress));
@@ -319,7 +319,7 @@ public class NativeI2CDeviceSMBus implements I2CSMBusInterface {
 	}
 
 	@Override
-	public byte[] blockProcessCall(int registerAddress, byte[] txData) {
+	public byte[] blockProcessCall(int registerAddress, byte... txData) {
 		if ((funcs & NativeI2C.I2C_FUNC_SMBUS_BLOCK_PROC_CALL) == 0) {
 			Logger.warn("Function I2C_FUNC_SMBUS_BLOCK_PROCESS_CALL isn't supported for device i2c-{}-0x{}",
 					Integer.valueOf(controller), Integer.toHexString(deviceAddress));
@@ -357,7 +357,7 @@ public class NativeI2CDeviceSMBus implements I2CSMBusInterface {
 	}
 
 	@Override
-	public void writeI2CBlockData(int registerAddress, byte[] data) {
+	public void writeI2CBlockData(int registerAddress, byte... data) {
 		if ((funcs & NativeI2C.I2C_FUNC_SMBUS_WRITE_I2C_BLOCK) == 0) {
 			Logger.warn("Function I2C_FUNC_SMBUS_WRITE_I2C_BLOCK isn't supported for device i2c-{}-0x{}",
 					Integer.valueOf(controller), Integer.toHexString(deviceAddress));

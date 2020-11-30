@@ -260,7 +260,7 @@ public class I2CDevice implements I2CConstants, I2CDeviceInterface {
 	@Override
 	public short readWordData(int register) throws RuntimeIOException {
 		synchronized (delegate) {
-			return readWordData(register);
+			return delegate.readWordData(register);
 		}
 	}
 
@@ -302,7 +302,7 @@ public class I2CDevice implements I2CConstants, I2CDeviceInterface {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void writeBlockData(int register, byte[] data) {
+	public void writeBlockData(int register, byte... data) {
 		synchronized (delegate) {
 			delegate.writeBlockData(register, data);
 		}
@@ -312,7 +312,7 @@ public class I2CDevice implements I2CConstants, I2CDeviceInterface {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public byte[] blockProcessCall(int register, byte[] txData) {
+	public byte[] blockProcessCall(int register, byte... txData) {
 		synchronized (delegate) {
 			return delegate.blockProcessCall(register, txData);
 		}
@@ -332,7 +332,7 @@ public class I2CDevice implements I2CConstants, I2CDeviceInterface {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void writeI2CBlockData(int register, byte[] data) throws RuntimeIOException {
+	public void writeI2CBlockData(int register, byte... data) throws RuntimeIOException {
 		synchronized (delegate) {
 			delegate.writeI2CBlockData(register, data);
 		}
@@ -352,7 +352,7 @@ public class I2CDevice implements I2CConstants, I2CDeviceInterface {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void writeBytes(byte[] data) throws RuntimeIOException {
+	public void writeBytes(byte... data) throws RuntimeIOException {
 		synchronized (delegate) {
 			delegate.writeBytes(data);
 		}

@@ -81,6 +81,12 @@ public abstract class AbstractDeviceFactory implements DeviceFactoryInterface {
 			closed = true;
 		}
 	}
+	
+	@Override
+	public void reopen() {
+		Logger.trace("reopen()");
+		closed = false;
+	}
 
 	@Override
 	public final boolean isClosed() {

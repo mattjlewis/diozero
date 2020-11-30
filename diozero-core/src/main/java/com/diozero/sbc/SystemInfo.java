@@ -132,6 +132,19 @@ public class SystemInfo implements SystemInfoConstants {
 	 * os.name: Linux
 	 * os.arch: arm
 	 * sun.arch.data.model: 32
+	 * 
+	 * Board: BeagleBone Green / Black
+	 * /etc/os-release PRETTY_NAME: ???
+	 * /proc//device-tree/compatible:   ti,am335x-bone-green^@ti,am335x-bone-black^@ti,am335x-bone^@ti,am33xx^@
+	 * /proc/device-tree/model:         TI AM335x BeagleBone Green^@
+	 * /proc/device-tree/serial-number:	??
+	 * /proc/cpuinfo:
+	 *   Hardware	: Generic AM33XX (Flattened Device Tree)
+	 *   Revision	: 0000
+	 *   Serial		: BBG217012434
+	 * os.name: Linux
+	 * os.arch: arm
+	 * sun.arch.data.model: 32
 	 */
 	private static synchronized void initialise() throws RuntimeIOException {
 		if (!initialised) {

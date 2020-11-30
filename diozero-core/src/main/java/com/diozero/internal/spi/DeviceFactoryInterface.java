@@ -55,6 +55,8 @@ public interface DeviceFactoryInterface extends Closeable {
 	String createSerialKey(String deviceFile);
 	@Override
 	void close() throws RuntimeIOException;
+	void reopen();
+	
 	boolean isClosed();
 	DeviceInterface getDevice(String key);
 	<T extends DeviceInterface> T getDevice(String key, Class<T> deviceClass);

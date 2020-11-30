@@ -152,7 +152,7 @@ public class NativeI2CDeviceSysFs implements I2CSMBusInterface {
 	}
 
 	@Override
-	public void writeBytes(byte[] data) {
+	public void writeBytes(byte... data) {
 		try {
 			deviceFile.write(data);
 		} catch (IOException e) {
@@ -244,7 +244,7 @@ public class NativeI2CDeviceSysFs implements I2CSMBusInterface {
 	}
 
 	@Override
-	public void writeBlockData(int register, byte[] data) {
+	public void writeBlockData(int register, byte... data) {
 		byte[] buffer = new byte[data.length + 2];
 		buffer[0] = (byte) register;
 		buffer[1] = (byte) data.length;
@@ -259,7 +259,7 @@ public class NativeI2CDeviceSysFs implements I2CSMBusInterface {
 	}
 
 	@Override
-	public byte[] blockProcessCall(int register, byte[] txData) {
+	public byte[] blockProcessCall(int register, byte... txData) {
 		writeBlockData(register, txData);
 		byte[] buffer = new byte[txData.length];
 		try {
@@ -287,7 +287,7 @@ public class NativeI2CDeviceSysFs implements I2CSMBusInterface {
 	}
 
 	@Override
-	public void writeI2CBlockData(int register, byte[] data) {
+	public void writeI2CBlockData(int register, byte... data) {
 		byte[] buffer = new byte[data.length + 1];
 		buffer[0] = (byte) register;
 		System.arraycopy(data, 0, buffer, 1, data.length);
