@@ -22,3 +22,25 @@ permalink: /test.html
 >
 > Blah blah blah
 {: .danger }
+
+{: .info }
+> Some info message with the style definition before
+>
+> Blah blah blah
+
+> My Note Title 
+>{: .admonition-title }
+> Some admonition note message
+>
+> blah blah blah
+{: .admonition .note }
+
+{: .admonition .note }
+> My Note Title 
+>{: .admonition-title }
+> Some admonition note message
+>
+> * List item 1
+> * List item 2
+>
+> blah blah blah
