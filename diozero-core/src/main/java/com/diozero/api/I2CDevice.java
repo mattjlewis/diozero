@@ -46,9 +46,111 @@ import com.diozero.util.BitManipulation;
  * @see <a href="https://i2c.info/i2c-bus-specification">I2C Bus
  *      Specification</a>
  */
-public class I2CDevice implements I2CConstants, I2CDeviceInterface {
+public class I2CDevice implements I2CDeviceInterface {
 	public static enum ProbeMode {
 		QUICK, READ, AUTO;
+	}
+
+	/**
+	 * I2C device builder. Default values:
+	 * <ul>
+	 * <li>controller: 0</li>
+	 * <li>addressSize: 7</li>
+	 * <li>byteOrder: Big Endian</li>
+	 * </ul>
+	 */
+	public static class Builder {
+		private I2CDeviceFactoryInterface factory;
+		private int controller = I2CConstants.BUS_0;
+		private int address;
+		private I2CConstants.AddressSize addressSize = I2CConstants.AddressSize.SIZE_7;
+		private ByteOrder byteOrder = I2CConstants.DEFAULT_BYTE_ORDER;
+
+		protected Builder(int address) {
+			this.address = address;
+		}
+
+		public I2CDeviceFactoryInterface getFactory() {
+			return factory;
+		}
+
+		/**
+		 * Set the I2C device factory to use for provisioning I2C device instances
+		 * 
+		 * @param factory the I2C device factory to use for provisioning I2C device
+		 *                instances
+		 * @return this builder instance
+		 */
+		public Builder setFactory(I2CDeviceFactoryInterface factory) {
+			this.factory = factory;
+			return this;
+		}
+
+		/**
+		 * Set the I2C bus controller
+		 * 
+		 * @param controller the I2C bus controller
+		 * @return this builder instance
+		 */
+		public Builder setController(int controller) {
+			this.controller = controller;
+			return this;
+		}
+
+		/**
+		 * Set the I2c device address
+		 * 
+		 * @param address the I2C device address
+		 * @return this builder instance
+		 */
+		public Builder setAddress(int address) {
+			this.address = address;
+			return this;
+		}
+
+		/**
+		 * Set the I2C device {@link I2CConstants.AddressSize address size}
+		 * 
+		 * @param addressSize the I2C device {@link I2CConstants.AddressSize address
+		 *                    size}
+		 * @return this builder instance
+		 */
+		public Builder setAddressSize(I2CConstants.AddressSize addressSize) {
+			this.addressSize = addressSize;
+			return this;
+		}
+
+		/**
+		 * Set the Default {@link java.nio.ByteOrder byte order} for this device
+		 * 
+		 * @param byteOrder Default {@link java.nio.ByteOrder byte order} for this
+		 *                  device
+		 * @return this builder instance
+		 */
+		public Builder setByteOrder(ByteOrder byteOrder) {
+			this.byteOrder = byteOrder;
+			return this;
+		}
+
+		/**
+		 * Construct a new I2CDevice instance
+		 * 
+		 * @return a new I2C device
+		 */
+		public I2CDevice build() {
+			return new I2CDevice(factory == null ? DeviceFactoryHelper.getNativeDeviceFactory() : factory, controller,
+					address, addressSize, byteOrder);
+		}
+	}
+
+	/**
+	 * Builder class for I2C devices
+	 * 
+	 * @param address the I2C device address
+	 * @return I2C device builder
+	 */
+	public static Builder builder(int address) {
+		return new Builder(address);
 	}
 
 	private I2CDeviceInterface delegate;
@@ -104,7 +206,8 @@ public class I2CDevice implements I2CConstants, I2CDeviceInterface {
 	 * @throws RuntimeIOException If an I/O error occurred
 	 */
 	public I2CDevice(int controller, int address, I2CConstants.AddressSize addressSize) throws RuntimeIOException {
-		this(DeviceFactoryHelper.getNativeDeviceFactory(), controller, address, addressSize, DEFAULT_BYTE_ORDER);
+		this(DeviceFactoryHelper.getNativeDeviceFactory(), controller, address, addressSize,
+				I2CConstants.DEFAULT_BYTE_ORDER);
 	}
 
 	/**

@@ -138,7 +138,7 @@ public class HTS221 implements ThermometerInterface, HygrometerInterface, Closea
 	}
 
 	public HTS221(int controller, int address) throws RuntimeIOException {
-		device = new I2CDevice(controller, address, I2CConstants.AddressSize.SIZE_7, ByteOrder.LITTLE_ENDIAN);
+		device = I2CDevice.builder(address).setController(controller).setByteOrder(ByteOrder.LITTLE_ENDIAN).build();
 
 		/*-
 		 * Select average configuration register

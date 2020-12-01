@@ -121,7 +121,7 @@ implements GpioDigitalInputDeviceInterface, Runnable {
 			}
 			echoStart = System.currentTimeMillis();
 			value.getAndSet(true);
-			valueChanged(new DigitalInputEvent(gpio, echoStart, System.nanoTime(), true));
+			accept(new DigitalInputEvent(gpio, echoStart, System.nanoTime(), true));
 			// Need to send echo low in a separate thread
 			lock.lock();
 			try {
@@ -152,7 +152,7 @@ implements GpioDigitalInputDeviceInterface, Runnable {
 					Thread.sleep(0, random.nextInt(999_999));
 				}
 				value.getAndSet(false);
-				valueChanged(new DigitalInputEvent(gpio, System.currentTimeMillis(), System.nanoTime(), false));
+				accept(new DigitalInputEvent(gpio, System.currentTimeMillis(), System.nanoTime(), false));
 				Logger.debug("Time to send echo high then low=" + (System.currentTimeMillis() - echoStart) + "ms");
 			}
 		} catch (InterruptedException e) {

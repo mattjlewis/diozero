@@ -36,14 +36,14 @@ import org.tinylog.Logger;
 import com.diozero.api.DigitalInputEvent;
 import com.diozero.api.GpioEventTrigger;
 import com.diozero.api.GpioPullUpDown;
-import com.diozero.api.InputEventListener;
 import com.diozero.api.PinInfo;
 import com.diozero.api.RuntimeIOException;
+import com.diozero.api.function.DeviceEventConsumer;
 import com.diozero.internal.spi.AbstractInputDevice;
 import com.diozero.internal.spi.GpioDigitalInputDeviceInterface;
 
 public class BbbIoLibDigitalInputDevice extends AbstractInputDevice<DigitalInputEvent>
-		implements GpioDigitalInputDeviceInterface, InputEventListener<DigitalInputEvent> {
+		implements GpioDigitalInputDeviceInterface, DeviceEventConsumer<DigitalInputEvent> {
 	private PinInfo pinInfo;
 	private GpioDigitalInputDeviceInterface defaultDigitialInput;
 

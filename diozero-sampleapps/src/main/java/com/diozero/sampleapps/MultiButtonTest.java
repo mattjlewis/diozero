@@ -62,15 +62,15 @@ public class MultiButtonTest {
 				Button button3 = new Button(inputPin3, GpioPullUpDown.PULL_UP)) {
 			button1.whenPressed(() -> Logger.info("1 Pressed"));
 			button1.whenReleased(() -> Logger.info("1 Released"));
-			button1.addListener(event -> Logger.info("1 valueChanged({})", event));
+			button1.addListener(event -> Logger.info("1 Event: {}", event));
 
 			button2.whenPressed(() -> Logger.info("2 Pressed"));
 			button2.whenReleased(() -> Logger.info("2 Released"));
-			button2.addListener(event -> Logger.info("2 valueChanged({})", event));
+			button2.addListener(event -> Logger.info("2 Event: {}", event));
 
 			button3.whenPressed(() -> Logger.info("3 Pressed"));
 			button3.whenReleased(() -> Logger.info("3 Released"));
-			button3.addListener(event -> Logger.info("3 valueChanged({})", event));
+			button3.addListener(event -> Logger.info("3 Event: {}", event));
 
 			Logger.debug("Waiting for 10s - *** Press the button connected to an input pin ***");
 			SleepUtil.sleepSeconds(10);

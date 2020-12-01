@@ -42,8 +42,8 @@ import org.tinylog.Logger;
 
 import com.diozero.animation.easing.EasingFunction;
 import com.diozero.animation.easing.Linear;
-import com.diozero.api.Action;
 import com.diozero.api.OutputDeviceInterface;
+import com.diozero.api.function.Action;
 import com.diozero.util.DiozeroScheduler;
 
 /**

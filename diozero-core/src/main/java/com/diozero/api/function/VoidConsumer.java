@@ -1,4 +1,4 @@
-package com.diozero.util;
+package com.diozero.api.function;
 
 /*-
  * #%L
@@ -45,7 +45,6 @@ import java.util.function.Consumer;
  * functional method is {@link #accept()}.
  *
  * @see Consumer
- * @since 1.8
  */
 @FunctionalInterface
 public interface VoidConsumer {

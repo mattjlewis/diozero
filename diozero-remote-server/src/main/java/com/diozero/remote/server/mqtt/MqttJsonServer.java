@@ -397,7 +397,7 @@ public class MqttJsonServer extends BaseRemoteServer implements MqttCallback {
 	}
 
 	@Override
-	public void valueChanged(DigitalInputEvent event) {
+	public void accept(DigitalInputEvent event) {
 		DiozeroProtos.Gpio.Notification notification = DiozeroProtosConverter.convert(event);
 
 		try {

@@ -36,6 +36,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.tinylog.Logger;
 
+import com.diozero.api.function.DeviceEventConsumer;
 import com.diozero.internal.spi.AnalogInputDeviceFactoryInterface;
 import com.diozero.internal.spi.AnalogInputDeviceInterface;
 import com.diozero.sbc.DeviceFactoryHelper;
@@ -158,15 +159,15 @@ public class AnalogInputDevice extends GpioInputDevice<AnalogInputEvent> impleme
 
 		float unscaled = getUnscaledValue();
 		if (changeDetected(unscaled)) {
-			valueChanged(new AnalogInputEvent(gpio, System.currentTimeMillis(), System.nanoTime(), unscaled));
+			accept(new AnalogInputEvent(gpio, System.currentTimeMillis(), System.nanoTime(), unscaled));
 			lastValue = Float.valueOf(unscaled);
 		}
 	}
 
 	@Override
-	public void valueChanged(AnalogInputEvent event) {
+	public void accept(AnalogInputEvent event) {
 		event.setRange(range);
-		super.valueChanged(event);
+		super.accept(event);
 	}
 
 	private boolean changeDetected(float value) {
@@ -234,7 +235,7 @@ public class AnalogInputDevice extends GpioInputDevice<AnalogInputEvent> impleme
 	 * @param listener      The listener callback.
 	 * @param percentChange Degree of change required to trigger an event.
 	 */
-	public void addListener(InputEventListener<AnalogInputEvent> listener, float percentChange) {
+	public void addListener(DeviceEventConsumer<AnalogInputEvent> listener, float percentChange) {
 		addListener(listener, percentChange, DEFAULT_POLL_INTERVAL);
 	}
 
@@ -245,7 +246,7 @@ public class AnalogInputDevice extends GpioInputDevice<AnalogInputEvent> impleme
 	 * @param percentChange Degree of change required to trigger an event.
 	 * @param pollInterval  Time in milliseconds at which reading should be taken.
 	 */
-	public void addListener(InputEventListener<AnalogInputEvent> listener, float percentChange, int pollInterval) {
+	public void addListener(DeviceEventConsumer<AnalogInputEvent> listener, float percentChange, int pollInterval) {
 		this.percentChange = percentChange;
 		this.pollInterval = pollInterval;
 		addListener(listener);

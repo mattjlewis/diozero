@@ -39,7 +39,6 @@ import com.diozero.api.AnalogInputEvent;
 import com.diozero.api.PinInfo;
 import com.diozero.api.RuntimeIOException;
 import com.diozero.api.SpiConstants;
-import com.diozero.api.SpiClockMode;
 import com.diozero.api.SpiDevice;
 import com.diozero.internal.spi.AbstractDeviceFactory;
 import com.diozero.internal.spi.AbstractInputDevice;
@@ -110,7 +109,7 @@ public class McpAdc extends AbstractDeviceFactory implements AnalogInputDeviceFa
 
 		boardPinInfo = new McpAdcBoardPinInfo(type);
 
-		spiDevice = new SpiDevice(controller, chipSelect, type.getMaxFreq2v7(), SpiClockMode.MODE_0, false);
+		spiDevice = SpiDevice.builder(chipSelect).setController(controller).setFrequency(type.getMaxFreq2v7()).build();
 	}
 
 	@Override

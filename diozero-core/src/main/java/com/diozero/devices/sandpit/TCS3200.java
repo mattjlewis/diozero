@@ -36,6 +36,7 @@ import java.io.Closeable;
 import java.io.IOException;
 
 import com.diozero.api.*;
+import com.diozero.api.function.DeviceEventConsumer;
 import com.diozero.util.RangeUtil;
 import com.diozero.util.SleepUtil;
 
@@ -59,7 +60,7 @@ import com.diozero.util.SleepUtil;
  * <p>To take a reading the colour filters are selected in turn for a
  * fraction of a second and the frequency is read and converted to Hz.</p>
  */
-public class TCS3200 implements InputEventListener<DigitalInputEvent>, Runnable, Closeable {
+public class TCS3200 implements DeviceEventConsumer<DigitalInputEvent>, Runnable, Closeable {
 	public static final int NOT_SET = -1;
 	
 	private DigitalInputDevice out;
@@ -301,7 +302,7 @@ public class TCS3200 implements InputEventListener<DigitalInputEvent>, Runnable,
 	}
 
 	@Override
-	public void valueChanged(DigitalInputEvent event) {
+	public void accept(DigitalInputEvent event) {
 		int g = event.getGpio();
 		long t = event.getEpochTime();
 		if (g == out.getGpio()) {

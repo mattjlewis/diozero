@@ -35,14 +35,15 @@ package com.diozero.devices.motor;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.diozero.api.Action;
 import com.diozero.api.RuntimeIOException;
+import com.diozero.api.function.Action;
+import com.diozero.api.function.FloatConsumer;
 
-public abstract class MotorBase implements MotorInterface {
+public abstract class MotorBase implements MotorInterface, FloatConsumer {
 	private Action forwardAction;
 	private Action backwardAction;
 	private Action stopAction;
-	private List<MotorListener> listeners;
+	private List<MotorEventListener> listeners;
 	
 	public MotorBase() {
 		listeners = new ArrayList<>();
@@ -93,18 +94,19 @@ public abstract class MotorBase implements MotorInterface {
 	}
 	
 	@Override
-	public void addListener(MotorListener listener) {
+	public void addListener(MotorEventListener listener) {
 		listeners.add(listener);
 	}
 	
 	@Override
-	public void removeListener(MotorListener listener) {
+	public void removeListener(MotorEventListener listener) {
 		listeners.remove(listener);
 	}
 	
-	protected void valueChanged(float value) {
+	@Override
+	public void accept(float value) {
 		MotorEvent event = new MotorEvent(System.currentTimeMillis(), System.nanoTime(), value);
-		listeners.forEach((listener) -> listener.valueChanged(event));
+		listeners.forEach((listener) -> listener.accept(event));
 		
 		if (value > 0) {
 			if (forwardAction != null) {

@@ -70,7 +70,7 @@ public class LdrListenerTestMcpAdc {
 
 	public static void test(McpAdc.Type type, int chipSelect, int pin, float vRef, int r1) {
 		try (McpAdc adc = new McpAdc(type, chipSelect, vRef); LDR ldr = new LDR(adc, pin, r1)) {
-			ldr.addListener((event) -> Logger.info("valueChanged({})", event));
+			ldr.addListener((event) -> Logger.info("Event: {}", event));
 			SleepUtil.sleepSeconds(10);
 		} catch (RuntimeIOException e) {
 			Logger.error(e, "Error: {}", e);

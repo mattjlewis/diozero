@@ -143,6 +143,6 @@ implements GpioDigitalInputOutputDeviceInterface, PigpioCallback {
 					Integer.valueOf(pin), Integer.valueOf(gpio));
 		}
 		
-		valueChanged(new DigitalInputEvent(pin, epochTime, nanoTime, value));
+		accept(new DigitalInputEvent(pin, epochTime, nanoTime, value));
 	}
 }

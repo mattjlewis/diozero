@@ -79,7 +79,7 @@ public class PwmMotor extends MotorBase {
 	public void forward(float speed) throws RuntimeIOException {
 		backward.off();
 		forward.setValue(speed);
-		valueChanged(speed);
+		accept(speed);
 	}
 
 	/**
@@ -99,14 +99,14 @@ public class PwmMotor extends MotorBase {
 	public void backward(float speed) throws RuntimeIOException {
 		forward.off();
 		backward.setValue(speed);
-		valueChanged(-speed);
+		accept(-speed);
 	}
 
 	@Override
 	public void stop() throws RuntimeIOException {
 		forward.off();
 		backward.off();
-		valueChanged(0);
+		accept(0);
 	}
 
 	/**

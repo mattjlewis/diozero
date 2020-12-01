@@ -61,12 +61,12 @@ public class ButtonTest {
 		try (Button button = new Button(1, GpioPullUpDown.PULL_UP)) {
 			button.whenPressed(() -> Logger.info("Pressed"));
 			button.whenReleased(() -> Logger.info("Released"));
-			button.addListener((event) -> Logger.info("valueChanged({})", event));
+			button.addListener((event) -> Logger.info("Event: {}", event));
 
 			ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
 			ScheduledFuture<?> future = executor
 					.scheduleAtFixedRate(
-							() -> button.valueChanged(new DigitalInputEvent(button.getGpio(),
+							() -> button.accept(new DigitalInputEvent(button.getGpio(),
 									System.currentTimeMillis(), System.nanoTime(), (i++ % 2) == 0)),
 							500, 500, TimeUnit.MILLISECONDS);
 

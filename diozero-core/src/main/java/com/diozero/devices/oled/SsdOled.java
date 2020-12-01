@@ -58,7 +58,7 @@ public abstract class SsdOled implements Closeable {
 	
 	public SsdOled(int controller, int chipSelect, DigitalOutputDevice dcPin, DigitalOutputDevice resetPin, int width,
 			int height, int imageType) {
-		spiDevice = new SpiDevice(controller, chipSelect, SPI_FREQUENCY, SpiClockMode.MODE_0, false);
+		spiDevice = SpiDevice.builder(chipSelect).setController(controller).setFrequency(SPI_FREQUENCY).build();
 		
 		this.dcPin = dcPin;
 		this.resetPin = resetPin;

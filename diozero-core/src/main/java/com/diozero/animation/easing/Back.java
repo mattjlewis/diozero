@@ -1,6 +1,6 @@
 package com.diozero.animation.easing;
 
-/*
+/*-
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - Core

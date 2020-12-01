@@ -121,6 +121,6 @@ implements GpioDigitalInputOutputDeviceInterface, PinEventListener {
 
 	@Override
 	public void onValueChange(IOEvent event) {
-		valueChanged(new DigitalInputEvent(pin.getIndex(), event.getTimestamp(), System.nanoTime(), event.getValue() != 0));
+		accept(new DigitalInputEvent(pin.getIndex(), event.getTimestamp(), System.nanoTime(), event.getValue() != 0));
 	}
 }

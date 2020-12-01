@@ -101,7 +101,7 @@ public class McpEeprom implements Closeable {
 	
 	public McpEeprom(int controller, int address, Type type) {
 		this.type = type;
-		device = new I2CDevice(controller, address);
+		device = I2CDevice.builder(address).setController(controller).build();
 		if (! device.probe()) {
 			throw new RuntimeIOException("No such device " + controller + "-0x" + Integer.toHexString(address));
 		}

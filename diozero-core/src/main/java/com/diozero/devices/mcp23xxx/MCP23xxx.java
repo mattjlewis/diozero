@@ -38,9 +38,9 @@ import com.diozero.api.DigitalInputDevice;
 import com.diozero.api.DigitalInputEvent;
 import com.diozero.api.GpioEventTrigger;
 import com.diozero.api.GpioPullUpDown;
-import com.diozero.api.InputEventListener;
 import com.diozero.api.PinInfo;
 import com.diozero.api.RuntimeIOException;
+import com.diozero.api.function.DeviceEventConsumer;
 import com.diozero.devices.GpioExpander;
 import com.diozero.internal.SoftwarePwmOutputDevice;
 import com.diozero.internal.spi.AbstractDeviceFactory;
@@ -57,7 +57,7 @@ import com.diozero.util.MutableByte;
  * Support for both MCP23008 and MCP23017 GPIO expansion boards.
  */
 public abstract class MCP23xxx extends AbstractDeviceFactory implements GpioDeviceFactoryInterface,
-		PwmOutputDeviceFactoryInterface, InputEventListener<DigitalInputEvent>, GpioExpander {
+		PwmOutputDeviceFactoryInterface, DeviceEventConsumer<DigitalInputEvent>, GpioExpander {
 	private static enum InterruptMode {
 		DISABLED, BANK_A_ONLY, BANK_B_ONLY, BANK_A_AND_B, MIRRORED;
 	}
@@ -372,11 +372,11 @@ public abstract class MCP23xxx extends AbstractDeviceFactory implements GpioDevi
 	}
 
 	@Override
-	public void valueChanged(DigitalInputEvent event) {
-		Logger.debug("valueChanged({})", event);
+	public void accept(DigitalInputEvent event) {
+		Logger.debug("accept({})", event);
 		
 		if (! event.getValue()) {
-			Logger.info("valueChanged(): value was false - ignoring");
+			Logger.info("value was false - ignoring");
 			return;
 		}
 		
@@ -420,7 +420,7 @@ public abstract class MCP23xxx extends AbstractDeviceFactory implements GpioDevi
 							// Notify the appropriate input device
 							MCP23xxxDigitalInputDevice in_device = getInputDevice((byte) gpio);
 							if (in_device != null) {
-								in_device.valueChanged(e);
+								in_device.accept(e);
 							}
 						}
 					}

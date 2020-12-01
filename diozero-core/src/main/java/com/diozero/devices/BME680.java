@@ -349,7 +349,7 @@ public class BME680 implements BarometerInterface, ThermometerInterface, Hygrome
 	 * @param address    I2C address of the sensor.
 	 */
 	public BME680(final int controller, final int address) {
-		this.device = new I2CDevice(controller, address);
+		this.device = I2CDevice.builder(address).setController(controller).build();
 		
 		initialise();
 	}

@@ -1,5 +1,7 @@
 package com.diozero.api;
 
+import com.diozero.api.function.Action;
+
 /*
  * #%L
  * Organisation: diozero
@@ -73,7 +75,7 @@ public abstract class AbstractDigitalInputDevice extends GpioInputDevice<Digital
 	}
 
 	@Override
-	public void valueChanged(DigitalInputEvent event) {
+	public void accept(DigitalInputEvent event) {
 		event.setActiveHigh(activeHigh);
 		if (activatedAction != null && event.isActive()) {
 			activatedAction.action();
@@ -81,7 +83,7 @@ public abstract class AbstractDigitalInputDevice extends GpioInputDevice<Digital
 		if (deactivatedAction != null && !event.isActive()) {
 			deactivatedAction.action();
 		}
-		super.valueChanged(event);
+		super.accept(event);
 	}
 
 	/**

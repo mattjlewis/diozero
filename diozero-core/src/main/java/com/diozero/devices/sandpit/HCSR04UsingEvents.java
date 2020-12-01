@@ -1,6 +1,6 @@
 package com.diozero.devices.sandpit;
 
-/*
+/*-
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - Core
@@ -31,7 +31,6 @@ package com.diozero.devices.sandpit;
  * #L%
  */
 
-
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -43,8 +42,8 @@ import com.diozero.api.DigitalInputEvent;
 import com.diozero.api.DigitalOutputDevice;
 import com.diozero.api.GpioEventTrigger;
 import com.diozero.api.GpioPullUpDown;
-import com.diozero.api.InputEventListener;
 import com.diozero.api.RuntimeIOException;
+import com.diozero.api.function.DeviceEventConsumer;
 import com.diozero.devices.DistanceSensorInterface;
 import com.diozero.util.SleepUtil;
 
@@ -52,29 +51,30 @@ import com.diozero.util.SleepUtil;
  * Note this version doesn't work as well as the polling-based HCSR04 version.
  * User's manual:
  * https://docs.google.com/document/d/1Y-yZnNhMYy7rwhAgyL_pfa39RsB-x2qR4vP8saG73rE/edit#
- * Product specification:
- * http://www.micropik.com/PDF/HCSR04.pdf
+ * Product specification: http://www.micropik.com/PDF/HCSR04.pdf
  * 
  * Provides 2cm - 400cm non-contact measurement function, the ranging accuracy
- * can reach to 3mm. You only need to supply a short 10uS pulse to trigger
- * input to start the ranging, and then the module will send out an 8 cycle
- * burst of ultrasound at 40 kHz and raise its echo. The Echo is a distance
- * object that is pulse width and the range in proportion. We suggest to use over
- * 60ms measurement cycle, in order to prevent trigger signal to the echo signal.
+ * can reach to 3mm. You only need to supply a short 10uS pulse to trigger input
+ * to start the ranging, and then the module will send out an 8 cycle burst of
+ * ultrasound at 40 kHz and raise its echo. The Echo is a distance object that
+ * is pulse width and the range in proportion. We suggest to use over 60ms
+ * measurement cycle, in order to prevent trigger signal to the echo signal.
  */
-public class HCSR04UsingEvents implements DistanceSensorInterface, InputEventListener<DigitalInputEvent> {
+public class HCSR04UsingEvents implements DistanceSensorInterface, DeviceEventConsumer<DigitalInputEvent> {
 	// Spec says #10us pulse (min) = 10,000 ns
-	private static final int PULSE_NS = 10_000; 
+	private static final int PULSE_NS = 10_000;
 	private static final double MAX_DISTANCE_CM = 400; // Max distance measurement
 	private static final double SPEED_OF_SOUND_CM_PER_S = 34029; // Approx Speed of Sound at sea level and 15 degC
 	// After trigger goes low the device sends 8 ultrasonic bursts @ 40kHz
-	//private static final long ULTRASONIC_BURST_TIME_NS = (SleepUtil.NS_IN_SEC / 40_000) * 8;
+	// private static final long ULTRASONIC_BURST_TIME_NS = (SleepUtil.NS_IN_SEC /
+	// 40_000) * 8;
 	private static final long MAX_DELAY_TO_ECHO_HIGH_NS = SleepUtil.NS_IN_SEC;
 	// Calculate the max time (in ns) that the echo pulse stays high
-	private static final long EXPECTED_MAX_ECHO_TIME_NS = Math.round(MAX_DISTANCE_CM * 2 * SleepUtil.NS_IN_SEC / SPEED_OF_SOUND_CM_PER_S);
+	private static final long EXPECTED_MAX_ECHO_TIME_NS = Math
+			.round(MAX_DISTANCE_CM * 2 * SleepUtil.NS_IN_SEC / SPEED_OF_SOUND_CM_PER_S);
 	private static final long MAX_ECHO_HIGH_TIME_NS = SleepUtil.NS_IN_SEC;
 	private static final long MAX_WAIT_NS = MAX_DELAY_TO_ECHO_HIGH_NS + MAX_ECHO_HIGH_TIME_NS;
-	
+
 	// States
 	private static enum State {
 		STARTING_UP, WAITING_FOR_ECHO_ON, WAITING_FOR_ECHO_OFF, ERROR, FINISHED;
@@ -92,13 +92,13 @@ public class HCSR04UsingEvents implements DistanceSensorInterface, InputEventLis
 	 * Initialise GPIO to echo and trigger pins
 	 *
 	 * @param triggerGpioNum GPIO connected to the HC-SR04 trigger pin
-	 * @param echoGpioNum GPIO connected to the HC-SR04 echo pin
+	 * @param echoGpioNum    GPIO connected to the HC-SR04 echo pin
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	public HCSR04UsingEvents(int triggerGpioNum, int echoGpioNum) throws RuntimeIOException {
 		lock = new ReentrantLock();
 		condition = lock.newCondition();
-		
+
 		// Define device for trigger pin at HCSR04
 		trigger = new DigitalOutputDevice(triggerGpioNum, true, false);
 		// Define device for echo pin at HCSR04
@@ -119,18 +119,22 @@ public class HCSR04UsingEvents implements DistanceSensorInterface, InputEventLis
 	public float getDistanceCm() throws RuntimeIOException {
 		// Send a pulse trigger of 10 us duration
 		state = State.WAITING_FOR_ECHO_ON;
+		
+		// Acquire the lock prior to the timing critical code
+		lock.lock();
+		
 		trigger.setValueUnsafe(true);
 		// trigger_on_time_ns is used for debugging only
-		//long trigger_on_time_ns = System.nanoTime();
+		// long trigger_on_time_ns = System.nanoTime();
 		// Wait for min 10 us (10,000ns)
 		SleepUtil.busySleep(PULSE_NS);
 		trigger.setValueUnsafe(false);
+		
 		// Timing critical code starts
 		// trigger_off_time_ns is used for debugging only
-		//long trigger_off_time_ns = System.nanoTime();
-		
+		// long trigger_off_time_ns = System.nanoTime();
+
 		// Wait for echo off or error
-		lock.lock();
 		try {
 			condition.awaitNanos(MAX_WAIT_NS);
 		} catch (InterruptedException e) {
@@ -138,30 +142,29 @@ public class HCSR04UsingEvents implements DistanceSensorInterface, InputEventLis
 		} finally {
 			lock.unlock();
 		}
-		
+
 		if (state != State.FINISHED) {
 			Logger.error("Illegal state {}, wait must have timed out or error occurred", state);
 			return -1;
 		}
-		
-		//Logger.info("Time from trigger on to trigger off = {}ns",
-		//		Long.valueOf(trigger_off_time_ns - trigger_on_time_ns));
-		//Logger.info("Time from trigger off to echo on = {}ns, ultrasonic burst time={}ns",
-		//		Long.valueOf(echoOnTimeNs - trigger_off_time_ns), Long.valueOf(ULTRASONIC_BURST_TIME_NS));
-		Logger.info("Time from echo on to echo off = {}ns, max expected time={}ns",
-				Long.valueOf(echoOffTimeNs - echoOnTimeNs),
-				Long.valueOf(EXPECTED_MAX_ECHO_TIME_NS));
 
+		/*-
+		 * Logger.info("Time from trigger on to trigger off = {}ns",
+		 *	Long.valueOf(trigger_off_time_ns - trigger_on_time_ns));
+		 * Logger.info("Time from trigger off to echo on = {}ns, ultrasonic burst time={}ns",
+		 *	Long.valueOf(echoOnTimeNs - trigger_off_time_ns), Long.valueOf(ULTRASONIC_BURST_TIME_NS));
+		 */
+		Logger.info("Time from echo on to echo off = {}ns, max expected time={}ns",
+				Long.valueOf(echoOffTimeNs - echoOnTimeNs), Long.valueOf(EXPECTED_MAX_ECHO_TIME_NS));
+
+		// XXX Might get better accuracy to keep with nanoseconds and convert to cm right at the end?
 		double ping_duration_s = (echoOffTimeNs - echoOnTimeNs) / (double) SleepUtil.NS_IN_SEC;
 
 		// Distance = velocity * time taken
 		// Half the ping duration as it is the time to the object and back
-		double distance = SPEED_OF_SOUND_CM_PER_S * (ping_duration_s / 2.0);
-		if (distance > MAX_DISTANCE_CM) {
-			distance = MAX_DISTANCE_CM;
-		}
+		double distance_cm = Math.min(SPEED_OF_SOUND_CM_PER_S * (ping_duration_s / 2.0), MAX_DISTANCE_CM);
 
-		return (float) distance;
+		return (float) distance_cm;
 	}
 
 	/**
@@ -170,13 +173,17 @@ public class HCSR04UsingEvents implements DistanceSensorInterface, InputEventLis
 	@Override
 	public void close() {
 		Logger.trace("close()");
-		if (trigger != null) { trigger.close(); }
-		if (echo != null) { echo.close(); }
+		if (trigger != null) {
+			trigger.close();
+		}
+		if (echo != null) {
+			echo.close();
+		}
 	}
-	
+
 	@Override
-	public void valueChanged(DigitalInputEvent event) {
-		if (state == State.STARTING_UP || state == State.FINISHED) {
+	public void accept(DigitalInputEvent event) {
+		if (state == State.STARTING_UP || state == State.FINISHED || state == State.ERROR) {
 			// Ignore
 			return;
 		}
@@ -184,7 +191,7 @@ public class HCSR04UsingEvents implements DistanceSensorInterface, InputEventLis
 		if (event.getValue() && state == State.WAITING_FOR_ECHO_ON) {
 			state = State.WAITING_FOR_ECHO_OFF;
 			echoOnTimeNs = event.getNanoTime();
-		} else if (! event.getValue() && state == State.WAITING_FOR_ECHO_OFF) {
+		} else if (!event.getValue() && state == State.WAITING_FOR_ECHO_OFF) {
 			state = State.FINISHED;
 			echoOffTimeNs = event.getNanoTime();
 			lock.lock();
@@ -195,7 +202,7 @@ public class HCSR04UsingEvents implements DistanceSensorInterface, InputEventLis
 			}
 		} else {
 			// Error unexpected event...
-			Logger.warn("valueChanged({}), unexpected event for state {}", event, state);
+			Logger.warn("Unexpected event ({}) when in state {}", event, state);
 			state = State.ERROR;
 			lock.lock();
 			try {

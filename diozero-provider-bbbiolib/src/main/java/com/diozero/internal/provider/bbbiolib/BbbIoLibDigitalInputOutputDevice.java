@@ -37,15 +37,15 @@ import com.diozero.api.DeviceMode;
 import com.diozero.api.DigitalInputEvent;
 import com.diozero.api.GpioEventTrigger;
 import com.diozero.api.GpioPullUpDown;
-import com.diozero.api.InputEventListener;
 import com.diozero.api.PinInfo;
 import com.diozero.api.RuntimeIOException;
+import com.diozero.api.function.DeviceEventConsumer;
 import com.diozero.internal.spi.AbstractInputDevice;
 import com.diozero.internal.spi.GpioDigitalInputDeviceInterface;
 import com.diozero.internal.spi.GpioDigitalInputOutputDeviceInterface;
 
 public class BbbIoLibDigitalInputOutputDevice extends AbstractInputDevice<DigitalInputEvent>
-		implements GpioDigitalInputOutputDeviceInterface, InputEventListener<DigitalInputEvent> {
+		implements GpioDigitalInputOutputDeviceInterface, DeviceEventConsumer<DigitalInputEvent> {
 	private PinInfo pinInfo;
 	private DeviceMode mode;
 	private GpioDigitalInputDeviceInterface defaultDigitialInput;

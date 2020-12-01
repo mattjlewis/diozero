@@ -34,6 +34,8 @@ package com.diozero.api;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import com.diozero.api.function.DeviceEventConsumer;
+
 /**
  * Common base class for digital and analog input devices.
  *
@@ -41,8 +43,8 @@ import java.util.Collection;
  *            {@link com.diozero.api.DigitalInputEvent DigitalInputEvent} and
  *            {@link com.diozero.api.AnalogInputEvent AnalogInputEvent}.
  */
-public abstract class GpioInputDevice<T extends DeviceEvent> extends GpioDevice implements InputEventListener<T> {
-	private Collection<InputEventListener<T>> listeners;
+public abstract class GpioInputDevice<T extends DeviceEvent> extends GpioDevice implements DeviceEventConsumer<T> {
+	private Collection<DeviceEventConsumer<T>> listeners;
 
 	/**
 	 * @param gpio GPIO to which the device is connected.
@@ -57,7 +59,7 @@ public abstract class GpioInputDevice<T extends DeviceEvent> extends GpioDevice 
 	 * 
 	 * @param listener Callback instance.
 	 */
-	public void addListener(InputEventListener<T> listener) {
+	public void addListener(DeviceEventConsumer<T> listener) {
 		if (listeners.isEmpty()) {
 			enableDeviceListener();
 		}
@@ -71,7 +73,7 @@ public abstract class GpioInputDevice<T extends DeviceEvent> extends GpioDevice 
 	 * 
 	 * @param listener Callback instance to remove.
 	 */
-	public void removeListener(InputEventListener<T> listener) {
+	public void removeListener(DeviceEventConsumer<T> listener) {
 		listeners.remove(listener);
 		if (listeners.isEmpty()) {
 			disableDeviceListener();
@@ -87,8 +89,8 @@ public abstract class GpioInputDevice<T extends DeviceEvent> extends GpioDevice 
 	}
 
 	@Override
-	public void valueChanged(T event) {
-		listeners.forEach(listener -> listener.valueChanged(event));
+	public void accept(T event) {
+		listeners.forEach(listener -> listener.accept(event));
 	}
 
 	protected abstract void enableDeviceListener();

@@ -1,4 +1,4 @@
-package com.diozero.devices.sandpit;
+package com.diozero.devices;
 
 /*-
  * #%L
@@ -148,7 +148,7 @@ public class SGP30 implements Closeable, Runnable {
 	private Consumer<SGP30Measurement> measurementListener;
 
 	public SGP30(int controller, int address) {
-		device = new I2CDevice(controller, address, ByteOrder.BIG_ENDIAN);
+		device = I2CDevice.builder(address).setController(controller).setByteOrder(ByteOrder.BIG_ENDIAN).build();
 	}
 
 	public void start(Consumer<SGP30Measurement> consumer) {

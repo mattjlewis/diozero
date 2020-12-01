@@ -41,10 +41,6 @@ public interface MPU9150Constants {
 	// From https://github.com/pocketmoon/MPU-6050-Arduino-Micro-Head-Tracker/blob/master/MPUReset/MPU6050Reset.ino
 	//private static final double QUATERNION_SCALE = 1.0 / 16384;
 
-	// Communication with all registers of the device is performed using I2C at 400 kHz
-	static final int I2C_CLOCK_FREQUENCY_FAST		= 400_000;
-	static final int I2C_CLOCK_FREQUENCY_STANDARD	= 100_000;
-	
 	static final byte BIT_I2C_MST_VDDIO			= (byte)0x80;
 	static final byte BIT_FIFO_EN				= 0x40;
 	static final byte BIT_DMP_EN				= (byte)0x80;

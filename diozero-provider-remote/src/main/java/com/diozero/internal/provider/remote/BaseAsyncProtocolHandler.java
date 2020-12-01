@@ -91,6 +91,6 @@ public abstract class BaseAsyncProtocolHandler implements RemoteProtocolInterfac
 			return;
 		}
 
-		input_device.valueChanged(event);
+		input_device.accept(event);
 	}
 }

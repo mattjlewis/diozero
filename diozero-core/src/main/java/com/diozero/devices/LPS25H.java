@@ -301,7 +301,7 @@ public class LPS25H implements ThermometerInterface, BarometerInterface, Closeab
 	}
 
 	public LPS25H(int controller, int address) {
-		device = new I2CDevice(controller, address, I2CConstants.AddressSize.SIZE_7, ByteOrder.LITTLE_ENDIAN);
+		device = I2CDevice.builder(address).setController(controller).setByteOrder(ByteOrder.LITTLE_ENDIAN).build();
 
 		// Power on, 25Hz output data rate, output registers not updated until both MSB & LSB read
 		device.writeByteData(CTRL_REG1, CR1_PD_CONTROL | CR1_ODR_25HZ | CR1_BDU);

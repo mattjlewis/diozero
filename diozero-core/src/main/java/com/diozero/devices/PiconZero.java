@@ -44,9 +44,9 @@ import com.diozero.api.GpioEventTrigger;
 import com.diozero.api.GpioPullUpDown;
 import com.diozero.api.I2CConstants;
 import com.diozero.api.I2CDevice;
-import com.diozero.api.InputEventListener;
 import com.diozero.api.PinInfo;
 import com.diozero.api.RuntimeIOException;
+import com.diozero.api.function.DeviceEventConsumer;
 import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.AbstractDeviceFactory;
 import com.diozero.internal.spi.AbstractInputDevice;
@@ -140,7 +140,7 @@ public class PiconZero extends AbstractDeviceFactory implements GpioDeviceFactor
 	public PiconZero(int controller, int address) {
 		super(DEVICE_NAME + "-" + controller + "-" + address);
 
-		device = new I2CDevice(controller, address, I2CConstants.AddressSize.SIZE_7, ByteOrder.LITTLE_ENDIAN);
+		device = I2CDevice.builder(address).setController(controller).setByteOrder(ByteOrder.LITTLE_ENDIAN).build();
 
 		reset();
 	}
@@ -609,7 +609,7 @@ public class PiconZero extends AbstractDeviceFactory implements GpioDeviceFactor
 		}
 
 		@Override
-		public void setListener(InputEventListener<DigitalInputEvent> listener) {
+		public void setListener(DeviceEventConsumer<DigitalInputEvent> listener) {
 			// TODO Need to implement a polling mechanism
 			throw new UnsupportedOperationException("Not yet implemented");
 		}

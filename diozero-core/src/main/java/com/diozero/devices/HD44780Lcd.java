@@ -35,11 +35,8 @@ import java.io.Closeable;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.diozero.api.I2CConstants;
 import com.diozero.api.RuntimeIOException;
 import com.diozero.devices.mcp23xxx.MCP23xxx;
-import com.diozero.internal.spi.I2CDeviceFactoryInterface;
-import com.diozero.sbc.DeviceFactoryHelper;
 import com.diozero.util.SleepUtil;
 
 /**
@@ -831,11 +828,7 @@ public class HD44780Lcd implements Closeable {
 		}
 
 		public PCF8574LcdConnection(int controller, int deviceAddress) {
-			this(DeviceFactoryHelper.getNativeDeviceFactory(), controller, deviceAddress);
-		}
-
-		public PCF8574LcdConnection(I2CDeviceFactoryInterface deviceFactory, int controller, int deviceAddress) {
-			pcf8574 = new PCF8574(deviceFactory, controller, deviceAddress, I2CConstants.AddressSize.SIZE_7);
+			pcf8574 = new PCF8574(controller, deviceAddress);
 		}
 
 		@Override

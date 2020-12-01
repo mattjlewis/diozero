@@ -79,12 +79,12 @@ public class WaitableDigitalInputDevice extends DigitalInputDevice {
 	}
 
 	@Override
-	public void valueChanged(DigitalInputEvent event) {
+	public void accept(DigitalInputEvent event) {
 		Event e = event.getValue() ? highEvent : lowEvent;
 		e.set();
 		
 		// Notify any listeners
-		super.valueChanged(event);
+		super.accept(event);
 	}
 
 	/**

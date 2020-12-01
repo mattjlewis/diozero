@@ -141,6 +141,6 @@ public class SysFsDigitalInputDevice extends AbstractInputDevice<DigitalInputEve
 
 	@Override
 	public void notify(long epochTime, long nanoTime, char value) {
-		valueChanged(new DigitalInputEvent(gpio, epochTime, nanoTime, value == HIGH_VALUE));
+		accept(new DigitalInputEvent(gpio, epochTime, nanoTime, value == HIGH_VALUE));
 	}
 }

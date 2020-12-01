@@ -41,12 +41,12 @@ import com.diozero.api.I2CConstants;
 import com.diozero.api.I2CDevice;
 import com.diozero.api.PinInfo;
 import com.diozero.api.RuntimeIOException;
+import com.diozero.api.function.FloatConsumer;
 import com.diozero.internal.spi.AbstractDeviceFactory;
 import com.diozero.internal.spi.AbstractInputDevice;
 import com.diozero.internal.spi.AnalogInputDeviceFactoryInterface;
 import com.diozero.internal.spi.AnalogInputDeviceInterface;
 import com.diozero.sbc.BoardPinInfo;
-import com.diozero.util.FloatConsumer;
 import com.diozero.util.RangeUtil;
 import com.diozero.util.SleepUtil;
 
@@ -349,7 +349,7 @@ public class Ads1x15 extends AbstractDeviceFactory implements AnalogInputDeviceF
 		comparatorQueue = ComparatorQueue.DISABLE;
 
 		boardPinInfo = new Ads11x5BoardPinInfo(model);
-		device = new I2CDevice(controller, address.getAddress());
+		device = I2CDevice.builder(address.getAddress()).setController(controller).build();
 	}
 
 	@Override

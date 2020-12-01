@@ -129,7 +129,6 @@ public class HCSR04UsingWait implements DistanceSensorInterface {
 				Logger.warn("Timed-out waiting for echo pin to go low, max={}ms", Long.valueOf(MAX_ECHO_TIME_MS));
 				return -1;
 			}
-			
 			long echo_off_time = System.nanoTime();
 
 			ping_duration_s = (echo_off_time - echo_on_time) / (double)SleepUtil.NS_IN_SEC;

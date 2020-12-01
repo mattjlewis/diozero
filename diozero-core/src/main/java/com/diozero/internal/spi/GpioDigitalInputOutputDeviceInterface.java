@@ -34,11 +34,11 @@ package com.diozero.internal.spi;
 
 import com.diozero.api.DeviceMode;
 import com.diozero.api.DigitalInputEvent;
-import com.diozero.api.InputEventListener;
+import com.diozero.api.function.DeviceEventConsumer;
 
 public interface GpioDigitalInputOutputDeviceInterface
 extends GpioDigitalOutputDeviceInterface {
 	public void setMode(DeviceMode mode);
-	void setListener(InputEventListener<DigitalInputEvent> listener);
+	void setListener(DeviceEventConsumer<DigitalInputEvent> listener);
 	void removeListener();
 }

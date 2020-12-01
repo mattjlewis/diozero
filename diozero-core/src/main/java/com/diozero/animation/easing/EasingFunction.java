@@ -1,6 +1,6 @@
 package com.diozero.animation.easing;
 
-/*
+/*-
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - Core
@@ -31,7 +31,6 @@ package com.diozero.animation.easing;
  * #L%
  */
 
-
 /**
  * <p>
  * See <a href="http://easings.net/">easings.net</a> for examples. See also
@@ -48,20 +47,14 @@ package com.diozero.animation.easing;
 @FunctionalInterface
 public interface EasingFunction {
 	/**
-	 * @param t
-	 *            (time) is the current time (or position) of the tween. This
-	 *            can be seconds or frames, steps, seconds, ms, whatever ? as
-	 *            long as the unit is the same as is used for the total time
-	 *            [3].
-	 * @param b
-	 *            (begin) is the beginning value of the property.
-	 * @param c
-	 *            (change) is the change between the beginning and destination
-	 *            value of the property.
-	 * @param d
-	 *            (duration) is the total time of the tween.
-	 * @return
-	 *            Next value
+	 * @param t (time) is the current time (or position) of the tween. This can be
+	 *          seconds or frames, steps, seconds, ms, whatever ? as long as the
+	 *          unit is the same as is used for the total time [3].
+	 * @param b (begin) is the beginning value of the property.
+	 * @param c (change) is the change between the beginning and destination value
+	 *          of the property.
+	 * @param d (duration) is the total time of the tween.
+	 * @return Next value
 	 */
 	public float ease(float t, float b, float c, float d);
 }

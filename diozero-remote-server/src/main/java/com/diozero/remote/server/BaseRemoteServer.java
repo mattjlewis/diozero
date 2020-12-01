@@ -42,11 +42,11 @@ import com.diozero.api.DeviceMode;
 import com.diozero.api.DigitalInputEvent;
 import com.diozero.api.I2CConstants;
 import com.diozero.api.I2CDeviceInterface;
-import com.diozero.api.InputEventListener;
 import com.diozero.api.PinInfo;
 import com.diozero.api.RuntimeIOException;
 import com.diozero.api.SerialDeviceInterface;
 import com.diozero.api.SpiDeviceInterface;
+import com.diozero.api.function.DeviceEventConsumer;
 import com.diozero.internal.spi.AnalogInputDeviceInterface;
 import com.diozero.internal.spi.AnalogOutputDeviceInterface;
 import com.diozero.internal.spi.GpioDigitalDeviceInterface;
@@ -121,7 +121,7 @@ import com.diozero.sbc.BoardInfo;
 import com.diozero.sbc.DeviceFactoryHelper;
 
 @SuppressWarnings("resource")
-public abstract class BaseRemoteServer implements InputEventListener<DigitalInputEvent>, RemoteProtocolInterface {
+public abstract class BaseRemoteServer implements DeviceEventConsumer<DigitalInputEvent>, RemoteProtocolInterface {
 	private NativeDeviceFactoryInterface deviceFactory;
 
 	public BaseRemoteServer() {

@@ -1,10 +1,10 @@
-package com.diozero.devices.motor;
+package com.diozero.api.function;
 
-/*
+/*-
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - Core
- * Filename:     MotorListener.java  
+ * Filename:     InputEventListener.java  
  * 
  * This file is part of the diozero project. More information about this project
  * can be found at http://www.diozero.com/
@@ -32,6 +32,11 @@ package com.diozero.devices.motor;
  */
 
 
-public interface MotorListener {
-	void valueChanged(MotorEvent event);
+import java.util.function.Consumer;
+
+import com.diozero.api.DeviceEvent;
+
+@FunctionalInterface
+public interface DeviceEventConsumer<T extends DeviceEvent> extends Consumer<T> {
+	//
 }

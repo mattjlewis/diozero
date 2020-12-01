@@ -260,13 +260,12 @@ public class MFRC522 implements Closeable {
 		this(SpiConstants.DEFAULT_SPI_CONTROLLER, chipSelect, resetGpio);
 	}
 	
-	@SuppressWarnings("resource")
 	public MFRC522(int controller, int chipSelect, int resetGpio) {
 		this(controller, chipSelect, new DigitalOutputDevice(resetGpio, true, false));
 	}
 	
 	public MFRC522(int controller, int chipSelect, DigitalOutputDevice resetPin) {
-		device = new SpiDevice(controller, chipSelect, SPI_CLOCK_FREQUENCY, SpiClockMode.MODE_0, false);
+		device = SpiDevice.builder(chipSelect).setController(controller).setFrequency(SPI_CLOCK_FREQUENCY).build();
 		this.resetPin = resetPin;
 		
 		init();

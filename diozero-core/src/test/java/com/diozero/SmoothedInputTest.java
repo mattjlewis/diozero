@@ -41,14 +41,14 @@ import org.tinylog.Logger;
 
 import com.diozero.api.DigitalInputEvent;
 import com.diozero.api.GpioPullUpDown;
-import com.diozero.api.InputEventListener;
 import com.diozero.api.SmoothedInputDevice;
+import com.diozero.api.function.DeviceEventConsumer;
 import com.diozero.internal.provider.test.TestDeviceFactory;
 import com.diozero.internal.provider.test.TestDigitalInputDevice;
 import com.diozero.internal.provider.test.TestDigitalOutputDevice;
 import com.diozero.util.SleepUtil;
 
-public class SmoothedInputTest implements InputEventListener<DigitalInputEvent> {
+public class SmoothedInputTest implements DeviceEventConsumer<DigitalInputEvent> {
 	@BeforeAll
 	public static void beforeAll() {
 		TestDeviceFactory.setDigitalInputDeviceClass(TestDigitalInputDevice.class);
@@ -67,7 +67,7 @@ public class SmoothedInputTest implements InputEventListener<DigitalInputEvent> 
 				public void run() {
 					long nano_time = System.nanoTime();
 					long now = System.currentTimeMillis();
-					device.valueChanged(new DigitalInputEvent(pin, now, nano_time, true));
+					device.accept(new DigitalInputEvent(pin, now, nano_time, true));
 				}
 			};
 			
@@ -95,7 +95,7 @@ public class SmoothedInputTest implements InputEventListener<DigitalInputEvent> 
 	}
 
 	@Override
-	public void valueChanged(DigitalInputEvent event) {
-		Logger.info("valueChanged({})", event);
+	public void accept(DigitalInputEvent event) {
+		Logger.info("accept({})", event);
 	}
 }

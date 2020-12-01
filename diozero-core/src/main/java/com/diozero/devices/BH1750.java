@@ -99,7 +99,7 @@ public class BH1750 implements LuminositySensorInterface, Closeable {
 	}
 	
 	public BH1750(int controller, int address, Mode mode) {
-		device = new I2CDevice(controller, address);
+		device = I2CDevice.builder(address).setController(controller).build();
 		setMode(mode);
 	}
 	

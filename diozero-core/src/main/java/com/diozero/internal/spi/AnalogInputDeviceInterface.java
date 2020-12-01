@@ -34,8 +34,8 @@ package com.diozero.internal.spi;
 import com.diozero.api.AnalogInputEvent;
 import com.diozero.api.DeviceInterface;
 import com.diozero.api.DeviceMode;
-import com.diozero.api.InputEventListener;
 import com.diozero.api.RuntimeIOException;
+import com.diozero.api.function.DeviceEventConsumer;
 
 public interface AnalogInputDeviceInterface extends DeviceInterface {
 	@Override
@@ -55,7 +55,7 @@ public interface AnalogInputDeviceInterface extends DeviceInterface {
 		return false;
 	}
 
-	void setListener(InputEventListener<AnalogInputEvent> listener);
+	void setListener(DeviceEventConsumer<AnalogInputEvent> listener);
 
 	void removeListener();
 

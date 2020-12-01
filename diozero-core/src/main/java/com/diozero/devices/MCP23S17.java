@@ -81,7 +81,7 @@ public class MCP23S17 extends MCP23x17 {
 			throws RuntimeIOException {
 		super(DEVICE_NAME + "-" + controller + "-" + chipSelect, interruptGpioA, interruptGpioB);
 
-		device = new SpiDevice(controller, chipSelect, frequency, SpiClockMode.MODE_0, false);
+		device = SpiDevice.builder(chipSelect).setController(controller).setFrequency(frequency).build();
 		this.boardAddress = (byte) ((address & 0b111) << 1 | ADDRESS_MASK);
 
 		initialise();

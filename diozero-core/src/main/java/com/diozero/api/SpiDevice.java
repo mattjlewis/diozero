@@ -31,40 +31,121 @@ package com.diozero.api;
  * #L%
  */
 
-
 import org.tinylog.Logger;
 
 import com.diozero.internal.spi.NativeDeviceFactoryInterface;
 import com.diozero.sbc.DeviceFactoryHelper;
 
 /**
- * https://www.raspberrypi.org/documentation/hardware/raspberrypi/spi/README.md
- * For modern Raspberry Pis: 2 SPI controllers, 0 (SPI-0) and 1 (SPI-1)
- * Controller 0 has 2 channels (CE-0 on physical pin 24, CE-1 on physical pin
- * 26) Controller 1 has 3 channels (CE-0 on physical pin 12, CE-1 on physical
- * pin 11, CE-2 on physical pin 36) SPI-1 is more limited that SPI-0 on the
- * Raspberry Pi
- * (https://www.raspberrypi.org/forums/viewtopic.php?t=81903&amp;p=579154) - The
- * SPI-1 clock is derived from the system clock therefore you have to be careful
- * when over/underclocking to set the right divisor - Limited IRQ support, no
- * thresholding on the FIFO except "TX empty" or "done". - No DMA support (no
- * peripheral DREQ)
- * 
- * On a RPi 3 you have to change the GPU core frequency to 250 MHz, otherwise
- * the SPI clock has the wrong frequency. Do this by adding the following line
- * to /boot/config.txt and reboot. core_freq=250
+ * Serial Peripheral Interface device
  */
-public class SpiDevice implements SpiDeviceInterface, SpiConstants {
+public class SpiDevice implements SpiDeviceInterface {
+	/**
+	 * I2C device builder. Default values:
+	 * <ul>
+	 * <li>controller: 0</li>
+	 * <li>frequency: 2MHz</li>
+	 * <li>clockMode: Mode 0</li>
+	 * <li>lsbFirst: false</li>
+	 * </ul>
+	 */
+	public static class Builder {
+		private int controller = SpiConstants.DEFAULT_SPI_CONTROLLER;
+		private int chipSelect;
+		private int frequency = SpiConstants.DEFAULT_SPI_CLOCK_FREQUENCY;
+		private SpiClockMode clockMode = SpiConstants.DEFAULT_SPI_CLOCK_MODE;
+		private boolean lsbFirst = SpiConstants.DEFAULT_LSB_FIRST;
+
+		protected Builder(int chipSelect) {
+			this.chipSelect = chipSelect;
+		}
+
+		/**
+		 * Set the SPI controller number
+		 * 
+		 * @param controller the SPI controller number
+		 * @return this builder instance
+		 */
+		public Builder setController(int controller) {
+			this.controller = controller;
+			return this;
+		}
+
+		/**
+		 * SPI chip select number
+		 * 
+		 * @param chipSelect the chip select number
+		 * @return this builder instance
+		 */
+		public Builder setChipSelect(int chipSelect) {
+			this.chipSelect = chipSelect;
+			return this;
+		}
+
+		/**
+		 * Set the SPI clock frequency
+		 * 
+		 * @param frequency the SPI clock frequency
+		 * @return this builder instance
+		 */
+		public Builder setFrequency(int frequency) {
+			this.frequency = frequency;
+			return this;
+		}
+
+		/**
+		 * Set the SPI {@link SpiClockMode clock mode}
+		 * 
+		 * @param clockMode
+		 * @return this builder instance
+		 */
+		public Builder setClockMode(SpiClockMode clockMode) {
+			this.clockMode = clockMode;
+			return this;
+		}
+
+		/**
+		 * Set the byte order
+		 * 
+		 * @param lsbFirst True for little endian
+		 * @return this builder instance
+		 */
+		public Builder setLsbFirst(boolean lsbFirst) {
+			this.lsbFirst = lsbFirst;
+			return this;
+		}
+
+		/**
+		 * Provision a new SPI device
+		 * 
+		 * @return a new SPI device instance
+		 */
+		public SpiDevice build() {
+			return new SpiDevice(controller, chipSelect, frequency, clockMode, lsbFirst);
+		}
+	}
+
+	/**
+	 * Construct a new SPI device builder instance using the specified chip select value
+	 * 
+	 * @param chipSelect SPI chip select
+	 * @return SPI device builder
+	 */
+	public static Builder builder(int chipSelect) {
+		return new Builder(chipSelect);
+	}
+
 	private SpiDeviceInterface delegate;
 	private int maxBufferSize;
 
 	public SpiDevice(int chipSelect) throws RuntimeIOException {
-		this(DEFAULT_SPI_CONTROLLER, chipSelect, DEFAULT_SPI_CLOCK_FREQUENCY, DEFAULT_SPI_CLOCK_MODE,
-				DEFAULT_LSB_FIRST);
+		this(SpiConstants.DEFAULT_SPI_CONTROLLER, chipSelect, SpiConstants.DEFAULT_SPI_CLOCK_FREQUENCY,
+				SpiConstants.DEFAULT_SPI_CLOCK_MODE, SpiConstants.DEFAULT_LSB_FIRST);
 	}
 
 	public SpiDevice(int controller, int chipSelect) throws RuntimeIOException {
-		this(controller, chipSelect, DEFAULT_SPI_CLOCK_FREQUENCY, DEFAULT_SPI_CLOCK_MODE, DEFAULT_LSB_FIRST);
+		this(controller, chipSelect, SpiConstants.DEFAULT_SPI_CLOCK_FREQUENCY, SpiConstants.DEFAULT_SPI_CLOCK_MODE,
+				SpiConstants.DEFAULT_LSB_FIRST);
 	}
 
 	public SpiDevice(int controller, int chipSelect, int frequency, SpiClockMode mode, boolean lsbFirst)

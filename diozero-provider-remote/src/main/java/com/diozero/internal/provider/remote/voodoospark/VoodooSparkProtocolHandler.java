@@ -138,7 +138,7 @@ import io.netty.handler.codec.MessageToByteEncoder;
 public class VoodooSparkProtocolHandler implements RemoteProtocolInterface {
 	private static final String DEVICE_ID_PROP = "PARTICLE_DEVICE_ID";
 	private static final String ACCESS_TOKEN_PROP = "PARTICLE_TOKEN";
-	
+
 	static final int ANALOG_MAX = (int) (Math.pow(2, 12) - 1);
 	static final int PWM_MAX = (int) (Math.pow(2, 8) - 1);
 	private static final int DEFAULT_FREQUENCY = 500;
@@ -154,20 +154,20 @@ public class VoodooSparkProtocolHandler implements RemoteProtocolInterface {
 	private static final byte INTERNAL_RGB = 0x07;
 	private static final byte PING_READ = 0x08;
 	/* NOTE GAP */
-	//private static final byte SERIAL_BEGIN = 0x10;
-	//private static final byte SERIAL_END = 0x11;
-	//private static final byte SERIAL_PEEK = 0x12;
-	//private static final byte SERIAL_AVAILABLE = 0x13;
-	//private static final byte SERIAL_WRITE = 0x14;
-	//private static final byte SERIAL_READ = 0x15;
-	//private static final byte SERIAL_FLUSH = 0x16;
+	// private static final byte SERIAL_BEGIN = 0x10;
+	// private static final byte SERIAL_END = 0x11;
+	// private static final byte SERIAL_PEEK = 0x12;
+	// private static final byte SERIAL_AVAILABLE = 0x13;
+	// private static final byte SERIAL_WRITE = 0x14;
+	// private static final byte SERIAL_READ = 0x15;
+	// private static final byte SERIAL_FLUSH = 0x16;
 	/* NOTE GAP */
-	//private static final byte SPI_BEGIN = 0x20;
-	//private static final byte SPI_END = 0x21;
-	//private static final byte SPI_SET_BIT_ORDER = 0x22;
-	//private static final byte SPI_SET_CLOCK = 0x23;
-	//private static final byte SPI_SET_DATA_MODE = 0x24;
-	//private static final byte SPI_TRANSFER = 0x25;
+	// private static final byte SPI_BEGIN = 0x20;
+	// private static final byte SPI_END = 0x21;
+	// private static final byte SPI_SET_BIT_ORDER = 0x22;
+	// private static final byte SPI_SET_CLOCK = 0x23;
+	// private static final byte SPI_SET_DATA_MODE = 0x24;
+	// private static final byte SPI_TRANSFER = 0x25;
 	// /* NOTE GAP */
 	private static final byte I2C_CONFIG = 0x30;
 	private static final byte I2C_WRITE = 0x31;
@@ -177,7 +177,7 @@ public class VoodooSparkProtocolHandler implements RemoteProtocolInterface {
 	/* NOTE GAP */
 	private static final byte SERVO_WRITE = 0x41;
 	private static final byte ACTION_RANGE = 0x46;
-	
+
 	private RemoteDeviceFactory deviceFactory;
 	private Queue<ResponseMessage> messageQueue;
 	private EventLoopGroup workerGroup;
@@ -191,15 +191,15 @@ public class VoodooSparkProtocolHandler implements RemoteProtocolInterface {
 
 	public VoodooSparkProtocolHandler(RemoteDeviceFactory deviceFactory) {
 		this.deviceFactory = deviceFactory;
-		
+
 		deviceId = PropertyUtil.getProperty(DEVICE_ID_PROP, null);
 		accessToken = PropertyUtil.getProperty(ACCESS_TOKEN_PROP, null);
 		if (deviceId == null || accessToken == null) {
 			Logger.error("Both {} and {} properties must be set", DEVICE_ID_PROP, ACCESS_TOKEN_PROP);
-			throw new IllegalArgumentException(String.format("Both %s and %s properties must be set",
-					DEVICE_ID_PROP, ACCESS_TOKEN_PROP));
+			throw new IllegalArgumentException(
+					String.format("Both %s and %s properties must be set", DEVICE_ID_PROP, ACCESS_TOKEN_PROP));
 		}
-		
+
 		timeoutMs = 2000;
 		messageQueue = new LinkedList<>();
 		lock = new ReentrantLock();
@@ -215,7 +215,7 @@ public class VoodooSparkProtocolHandler implements RemoteProtocolInterface {
 			Endpoint endpoint = new Gson().fromJson(new InputStreamReader(url.openStream()), Endpoint.class);
 			Logger.debug(endpoint);
 			String[] ip_port = endpoint.result.split(":");
-			
+
 			connect(ip_port[0], Integer.parseInt(ip_port[1]));
 		} catch (IOException | NumberFormatException | InterruptedException e) {
 			// 403 - device id not found
@@ -227,9 +227,9 @@ public class VoodooSparkProtocolHandler implements RemoteProtocolInterface {
 
 	private void connect(String host, int port) throws InterruptedException {
 		workerGroup = new NioEventLoopGroup();
-		
+
 		ResponseHandler rh = new ResponseHandler(this::messageReceived);
-		
+
 		Bootstrap b1 = new Bootstrap();
 		b1.group(workerGroup).channel(NioSocketChannel.class).handler(new ChannelInitializer<SocketChannel>() {
 			@Override
@@ -237,22 +237,22 @@ public class VoodooSparkProtocolHandler implements RemoteProtocolInterface {
 				ch.pipeline().addLast(new ResponseDecoder(), new MessageEncoder(), rh);
 			}
 		});
-		
+
 		// Connect
 		messageChannel = b1.connect(host, port).sync().channel();
 	}
 
 	@Override
 	public void close() {
-		if (messageChannel == null || ! messageChannel.isOpen()) {
+		if (messageChannel == null || !messageChannel.isOpen()) {
 			return;
 		}
-		
+
 		messageChannel.close();
-		
+
 		try {
 			messageChannel.closeFuture().sync();
-			
+
 			// Wait until all messages are flushed before closing the channel.
 			if (lastWriteFuture != null) {
 				lastWriteFuture.sync();
@@ -268,51 +268,52 @@ public class VoodooSparkProtocolHandler implements RemoteProtocolInterface {
 	@Override
 	public GetBoardInfoResponse request(GetBoardInfoRequest request) {
 		List<GpioInfo> gpios = new ArrayList<>();
-		
+
 		// TODO Implementation
-		
+
 		return new GetBoardInfoResponse("VoodooSpark", "Unknown", -1, gpios, request.getCorrelationId());
 	}
 
 	@Override
 	public Response request(ProvisionDigitalInputDevice request) {
 		sendMessage(new PinModeMessage(request.getGpio(), PinMode.DIGITAL_INPUT));
-		
+
 		return new Response(Response.Status.OK, null, request.getCorrelationId());
 	}
 
 	@Override
 	public Response request(ProvisionDigitalOutputDevice request) {
 		sendMessage(new PinModeMessage(request.getGpio(), PinMode.DIGITAL_OUTPUT));
-		
+
 		return new Response(Response.Status.OK, null, request.getCorrelationId());
 	}
 
 	@Override
 	public Response request(ProvisionDigitalInputOutputDevice request) {
-		sendMessage(new PinModeMessage(request.getGpio(), request.getOutput() ? PinMode.DIGITAL_OUTPUT : PinMode.DIGITAL_INPUT));
-		
+		sendMessage(new PinModeMessage(request.getGpio(),
+				request.getOutput() ? PinMode.DIGITAL_OUTPUT : PinMode.DIGITAL_INPUT));
+
 		return new Response(Response.Status.OK, null, request.getCorrelationId());
 	}
 
 	@Override
 	public Response request(ProvisionPwmOutputDevice request) {
 		sendMessage(new PinModeMessage(request.getGpio(), PinMode.ANALOG_OUTPUT));
-		
+
 		return new Response(Response.Status.OK, null, request.getCorrelationId());
 	}
 
 	@Override
 	public Response request(ProvisionAnalogInputDevice request) {
 		sendMessage(new PinModeMessage(request.getGpio(), PinMode.ANALOG_INPUT));
-		
+
 		return new Response(Response.Status.OK, null, request.getCorrelationId());
 	}
 
 	@Override
 	public Response request(ProvisionAnalogOutputDevice request) {
 		sendMessage(new PinModeMessage(request.getGpio(), PinMode.ANALOG_OUTPUT));
-		
+
 		return new Response(Response.Status.OK, null, request.getCorrelationId());
 	}
 
@@ -325,7 +326,7 @@ public class VoodooSparkProtocolHandler implements RemoteProtocolInterface {
 	@Override
 	public Response request(GpioDigitalWrite request) {
 		sendMessage(new DigitalWriteMessage(request.getGpio(), request.getValue()));
-		
+
 		return new Response(Response.Status.OK, null, request.getCorrelationId());
 	}
 
@@ -333,7 +334,7 @@ public class VoodooSparkProtocolHandler implements RemoteProtocolInterface {
 	public GpioPwmReadResponse request(GpioPwmRead request) {
 		ResponseMessage rm = sendMessage(new AnalogReadMessage(request.getGpio()));
 		float value = RangeUtil.map((rm.lsb & 0x7f) | ((rm.msb & 0x7f) << 7), 0, PWM_MAX, 0f, 1f, true);
-		
+
 		return new GpioPwmReadResponse(value, request.getCorrelationId());
 	}
 
@@ -341,7 +342,7 @@ public class VoodooSparkProtocolHandler implements RemoteProtocolInterface {
 	public Response request(GpioPwmWrite request) {
 		int value = RangeUtil.map(request.getValue(), 0f, 1f, 0, PWM_MAX, true);
 		sendMessage(new AnalogWriteMessage(request.getGpio(), value));
-		
+
 		return new Response(Response.Status.OK, null, request.getCorrelationId());
 	}
 
@@ -357,21 +358,21 @@ public class VoodooSparkProtocolHandler implements RemoteProtocolInterface {
 	public Response request(GpioAnalogWrite request) {
 		int value = RangeUtil.map(request.getValue(), 0f, 1f, 0, ANALOG_MAX, true);
 		sendMessage(new AnalogWriteMessage(request.getGpio(), value));
-		
+
 		return new Response(Response.Status.OK, null, request.getCorrelationId());
 	}
 
 	@Override
 	public Response request(GpioEvents request) {
 		sendMessage(new ReportingMessage(request.getGpio(), false));
-		
+
 		return new Response(Response.Status.OK, null, request.getCorrelationId());
 	}
 
 	@Override
 	public Response request(GpioClose request) {
 		sendMessage(new PinModeMessage(request.getGpio(), PinMode.DIGITAL_INPUT));
-		
+
 		return new Response(Response.Status.OK, null, request.getCorrelationId());
 	}
 
@@ -401,7 +402,7 @@ public class VoodooSparkProtocolHandler implements RemoteProtocolInterface {
 		// TODO Implementation
 		throw new UnsupportedOperationException();
 	}
-	
+
 	@Override
 	public I2CBytesResponse request(I2CReadBytes request) {
 		throw new UnsupportedOperationException();
@@ -424,7 +425,7 @@ public class VoodooSparkProtocolHandler implements RemoteProtocolInterface {
 		// TODO Implementation
 		throw new UnsupportedOperationException();
 	}
-	
+
 	@Override
 	public I2CWordResponse request(I2CReadWordData request) {
 		// TODO Auto-generated method stub
@@ -472,7 +473,7 @@ public class VoodooSparkProtocolHandler implements RemoteProtocolInterface {
 		// TODO Implementation
 		throw new UnsupportedOperationException();
 	}
-	
+
 	@Override
 	public Response request(I2CClose request) {
 		// TODO Implementation
@@ -502,7 +503,7 @@ public class VoodooSparkProtocolHandler implements RemoteProtocolInterface {
 		// TODO Implementation
 		throw new UnsupportedOperationException();
 	}
-	
+
 	@Override
 	public Response request(SerialOpen request) {
 		// TODO Implementation
@@ -553,16 +554,16 @@ public class VoodooSparkProtocolHandler implements RemoteProtocolInterface {
 
 	private synchronized ResponseMessage sendMessage(Message message) {
 		ResponseMessage rm = null;
-		
+
 		lock.lock();
 		try {
 			lastWriteFuture = messageChannel.writeAndFlush(message);
 			lastWriteFuture.get();
-			
-			if (message.responseExpected ) {
+
+			if (message.responseExpected) {
 				if (condition.await(timeoutMs, TimeUnit.MILLISECONDS)) {
 					rm = messageQueue.remove();
-					
+
 					if (rm.cmd != message.cmd) {
 						throw new RuntimeIOException(
 								"Unexpected response: " + rm.cmd + ", was expecting " + message.cmd + "; discarding");
@@ -578,27 +579,27 @@ public class VoodooSparkProtocolHandler implements RemoteProtocolInterface {
 		} finally {
 			lock.unlock();
 		}
-		
+
 		return rm;
 	}
-	
+
 	void messageReceived(ResponseMessage msg) {
 		if (msg.cmd == REPORTING) {
 			long nano_time = System.currentTimeMillis();
 			long epoch_time = System.currentTimeMillis();
-			
+
 			Logger.info("Reporting message: {}", msg);
-			
-			// Notify the listeners for each GPIO in this port for which reporting has been enabled
-			for (int i=0; i<8; i++) {
+
+			// Notify the listeners for each GPIO in this port for which reporting has been
+			// enabled
+			for (int i = 0; i < 8; i++) {
 				// Note can only get reports for GPIOs 0-7 and 10-17
 				int gpio = msg.pinOrPort * 10 + i;
-				
+
 				// TODO Need to check that reporting has been enabled for this GPIO!
 				// TODO What about analog events?
-				
-				deviceFactory
-						.valueChanged(new DigitalInputEvent(gpio, epoch_time, nano_time, (msg.lsb & (1 << i)) != 0));
+
+				deviceFactory.accept(new DigitalInputEvent(gpio, epoch_time, nano_time, (msg.lsb & (1 << i)) != 0));
 			}
 		} else {
 			lock.lock();
@@ -618,13 +619,13 @@ public class VoodooSparkProtocolHandler implements RemoteProtocolInterface {
 		String name;
 		String result;
 		CoreInfo coreInfo;
-		
+
 		@Override
 		public String toString() {
 			return "Endpoint [cmd=" + cmd + ", name=" + name + ", result=" + result + ", coreInfo=" + coreInfo + "]";
 		}
 	}
-	
+
 	private static final class CoreInfo {
 		@SerializedName("last_app")
 		String lastApp;
@@ -637,23 +638,24 @@ public class VoodooSparkProtocolHandler implements RemoteProtocolInterface {
 		String deviceId;
 		@SerializedName("product_id")
 		int productId;
-		
+
 		@Override
 		public String toString() {
 			return "CoreInfo [lastApp=" + lastApp + ", lastHeard=" + lastHeard + ", connected=" + connected
-					+ ", lastHandshakeAt=" + lastHandshakeAt + ", deviceId=" + deviceId + ", productId=" + productId + "]";
+					+ ", lastHandshakeAt=" + lastHandshakeAt + ", deviceId=" + deviceId + ", productId=" + productId
+					+ "]";
 		}
 	}
-	
+
 	// Classes to support Netty encode / decode
-	
+
 	static final class MessageEncoder extends MessageToByteEncoder<Message> {
 		@Override
 		protected void encode(ChannelHandlerContext ctx, Message msg, ByteBuf out) throws Exception {
 			out.writeBytes(msg.encode());
 		}
 	}
-	
+
 	static final class ResponseDecoder extends ByteToMessageDecoder {
 		@Override
 		protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
@@ -662,42 +664,40 @@ public class VoodooSparkProtocolHandler implements RemoteProtocolInterface {
 				in.resetReaderIndex();
 				return;
 			}
-			
+
 			out.add(new ResponseMessage(in.readByte(), in.readByte(), in.readByte(), in.readByte()));
 		}
 	}
-	
+
 	@Sharable
 	static class ResponseHandler extends SimpleChannelInboundHandler<ResponseMessage> {
 		private Consumer<ResponseMessage> listener;
-		
+
 		ResponseHandler(Consumer<ResponseMessage> listener) {
 			this.listener = listener;
 		}
-		
+
 		@Override
 		protected void channelRead0(ChannelHandlerContext context, ResponseMessage msg) {
 			listener.accept(msg);
 		}
-		
+
 		@Override
 		public void exceptionCaught(ChannelHandlerContext context, Throwable cause) {
 			Logger.error(cause, "exceptionCaught: {}", cause);
 			context.close();
 		}
 	}
-	
+
 	// Request and response classes
-	
+
 	static enum PinMode {
-		DIGITAL_INPUT(0),
-		DIGITAL_OUTPUT(1),
-		ANALOG_INPUT(2),
-		ANALOG_OUTPUT(3), // Note for PWM as well as true analog output
-		SERVO(4),
-		I2C(6);
-		
+		DIGITAL_INPUT(0), DIGITAL_OUTPUT(1), ANALOG_INPUT(2), ANALOG_OUTPUT(3), // Note for PWM as well as true analog
+																				// output
+		SERVO(4), I2C(6);
+
 		private byte mode;
+
 		private PinMode(int mode) {
 			this.mode = (byte) mode;
 		}
@@ -706,49 +706,49 @@ public class VoodooSparkProtocolHandler implements RemoteProtocolInterface {
 			return mode;
 		}
 	}
-	
+
 	static abstract class Message {
 		byte cmd;
 		boolean responseExpected;
-		
+
 		public Message(byte cmd) {
 			this(cmd, false);
 		}
-		
+
 		public Message(byte cmd, boolean responseExpected) {
 			this.cmd = cmd;
 			this.responseExpected = responseExpected;
 		}
-		
+
 		abstract byte[] encode();
 	}
-	
+
 	static class PinModeMessage extends Message {
 		byte gpio;
 		PinMode mode;
-		
+
 		PinModeMessage(int gpio, PinMode mode) {
 			super(VoodooSparkProtocolHandler.PIN_MODE);
 			this.gpio = (byte) gpio;
 			this.mode = mode;
 		}
-		
+
 		@Override
 		byte[] encode() {
 			return new byte[] { cmd, gpio, mode.getMode() };
 		}
 	}
-	
+
 	static class DigitalWriteMessage extends Message {
 		byte gpio;
 		boolean value;
-		
+
 		public DigitalWriteMessage(int gpio, boolean value) {
 			super(VoodooSparkProtocolHandler.DIGITAL_WRITE);
 			this.gpio = (byte) gpio;
 			this.value = value;
 		}
-		
+
 		@Override
 		byte[] encode() {
 			return new byte[] { cmd, gpio, value ? (byte) 1 : 0 };
@@ -759,17 +759,17 @@ public class VoodooSparkProtocolHandler implements RemoteProtocolInterface {
 			return "DigitalWriteMessage [gpio=" + gpio + ", value=" + value + "]";
 		}
 	}
-	
+
 	static class AnalogWriteMessage extends Message {
 		byte gpio;
 		int value;
-		
+
 		public AnalogWriteMessage(int gpio, int value) {
 			super(VoodooSparkProtocolHandler.ANALOG_WRITE);
 			this.gpio = (byte) gpio;
 			this.value = value;
 		}
-		
+
 		@Override
 		byte[] encode() {
 			return new byte[] { cmd, gpio, (byte) (value & 0x7f), (byte) ((value >> 7) & 0x7f) };
@@ -780,87 +780,87 @@ public class VoodooSparkProtocolHandler implements RemoteProtocolInterface {
 			return "AnalogWriteMessage [gpio=" + gpio + ", value=" + value + "]";
 		}
 	}
-	
+
 	static class DigitalReadMessage extends Message {
 		byte gpio;
-		
+
 		public DigitalReadMessage(int gpio) {
 			super(VoodooSparkProtocolHandler.DIGITAL_READ, true);
 			this.gpio = (byte) gpio;
 		}
-		
+
 		@Override
 		byte[] encode() {
 			return new byte[] { cmd, gpio };
 		}
 	}
-	
+
 	static class AnalogReadMessage extends Message {
 		byte gpio;
-		
+
 		public AnalogReadMessage(int gpio) {
 			super(ANALOG_READ, true);
 			this.gpio = (byte) gpio;
 		}
-		
+
 		@Override
 		byte[] encode() {
 			return new byte[] { cmd, gpio };
 		}
 	}
-	
+
 	static class ReportingMessage extends Message {
 		private static final byte DIGITAL = 1;
 		private static final byte ANALOG = 2;
-		
+
 		byte gpio;
 		boolean analog;
-		
+
 		public ReportingMessage(int gpio, boolean analog) {
 			super(REPORTING);
 			this.gpio = (byte) gpio;
 			this.analog = analog;
 		}
-		
+
 		@Override
 		public byte[] encode() {
 			return new byte[] { cmd, gpio, analog ? ANALOG : DIGITAL };
 		}
 	}
-	
+
 	static class SetSampleIntervalMessage extends Message {
 		int intervalMs;
-		
+
 		public SetSampleIntervalMessage(int intervalMs) {
 			super(SET_SAMPLE_INTERVAL);
 			this.intervalMs = intervalMs;
 		}
-		
+
 		@Override
 		public byte[] encode() {
 			return new byte[] { cmd, (byte) (intervalMs & 0x7f), (byte) ((intervalMs >> 7) & 0x7f) };
 		}
 	}
-	
+
 	static class InternalRgbMessage extends Message {
 		byte red, green, blue;
-		
+
 		public InternalRgbMessage(byte red, byte green, byte blue) {
 			super(VoodooSparkProtocolHandler.INTERNAL_RGB);
 			this.red = red;
 			this.green = green;
 			this.blue = blue;
 		}
-		
+
 		@Override
 		byte[] encode() {
 			return new byte[] { cmd, red, green, blue };
 		}
 	}
-	
+
 	static class ResponseMessage {
 		byte cmd, pinOrPort, lsb, msb;
-		
+
 		public ResponseMessage(byte cmd, byte pinOrPort, byte lsb, byte msb) {
 			this.cmd = cmd;
 			this.pinOrPort = pinOrPort;

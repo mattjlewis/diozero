@@ -488,11 +488,11 @@ public class FirmataProtocolHandler implements RemoteProtocolInterface, FirmataE
 	public void event(FirmataEventListener.EventType eventType, int gpio, int value, long epochTime, long nanoTime) {
 		switch (eventType) {
 		case DIGITAL:
-			deviceFactory.valueChanged(new DigitalInputEvent(gpio, epochTime, nanoTime, value != 0));
+			deviceFactory.accept(new DigitalInputEvent(gpio, epochTime, nanoTime, value != 0));
 			break;
 		case ANALOG:
 			float f = RangeUtil.map(value, 0, adapter.getMax(gpio, PinMode.ANALOG_INPUT), 0f, 1f, true);
-			deviceFactory.valueChanged(new AnalogInputEvent(gpio, epochTime, nanoTime, f));
+			deviceFactory.accept(new AnalogInputEvent(gpio, epochTime, nanoTime, f));
 			break;
 		default:
 		}

@@ -31,7 +31,6 @@ package com.diozero.internal.provider.firmata;
  * #L%
  */
 
-
 import java.io.IOException;
 
 import org.firmata4j.IOEvent;
@@ -48,13 +47,13 @@ import com.diozero.internal.spi.AbstractInputDevice;
 import com.diozero.internal.spi.GpioDigitalInputDeviceInterface;
 
 public class FirmataDigitalInputDevice extends AbstractInputDevice<DigitalInputEvent>
-implements GpioDigitalInputDeviceInterface, PinEventListener {
+		implements GpioDigitalInputDeviceInterface, PinEventListener {
 	private Pin pin;
 
 	public FirmataDigitalInputDevice(FirmataDeviceFactory deviceFactory, String key, int deviceNumber,
 			GpioPullUpDown pud, GpioEventTrigger trigger) {
 		super(key, deviceFactory);
-		
+
 		pin = deviceFactory.getIoDevice().getPin(deviceNumber);
 		try {
 			pin.setMode(Mode.INPUT);
@@ -81,10 +80,10 @@ implements GpioDigitalInputDeviceInterface, PinEventListener {
 	@Override
 	public void enableListener() {
 		disableListener();
-		
+
 		pin.addEventListener(this);
 	}
-	
+
 	@Override
 	public void disableListener() {
 		pin.removeEventListener(this);
@@ -103,6 +102,7 @@ implements GpioDigitalInputDeviceInterface, PinEventListener {
 
 	@Override
 	public void onValueChange(IOEvent event) {
-		valueChanged(new DigitalInputEvent(pin.getIndex(), event.getTimestamp(), System.nanoTime(), event.getValue() != 0));
+		accept(
+				new DigitalInputEvent(pin.getIndex(), event.getTimestamp(), System.nanoTime(), event.getValue() != 0));
 	}
 }

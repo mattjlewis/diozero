@@ -78,6 +78,7 @@ public class SleepUtil {
 		try {
 			Thread.sleep(millis);
 		} catch (InterruptedException ex) {
+			// Ignore
 		}
 	}
 
@@ -102,6 +103,7 @@ public class SleepUtil {
 	public static void busySleep(final long nanos) {
 		final long startTime = System.nanoTime();
 		do {
+			// nop
 		} while ((System.nanoTime() - startTime) < nanos);
 	}
 	

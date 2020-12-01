@@ -237,7 +237,7 @@ public class DiozeroController extends BaseRemoteServer {
 	}
 
 	@Override
-	public void valueChanged(DigitalInputEvent event) {
+	public void accept(DigitalInputEvent event) {
 		// TODO Auto-generated method stub
 	}
 }

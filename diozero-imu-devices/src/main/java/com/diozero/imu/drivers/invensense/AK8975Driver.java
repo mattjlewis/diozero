@@ -33,26 +33,26 @@ package com.diozero.imu.drivers.invensense;
 
 import java.io.Closeable;
 
-import com.diozero.api.I2CConstants;
 import com.diozero.api.I2CDevice;
 import com.diozero.api.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 
 /**
- * Output data resolution is 13 bit (0.3 uT per LSB), Full scale measurement range is +/-1200 uT
+ * Output data resolution is 13 bit (0.3 uT per LSB), Full scale measurement
+ * range is +/-1200 uT
  */
 public class AK8975Driver implements Closeable, AK8975Constants {
 	private short[] mag_sens_adj = new short[3];
 	private I2CDevice i2cDevice;
 
-	public AK8975Driver(int controllerNumber, I2CConstants.AddressSize addressSize) throws RuntimeIOException {
-		this(controllerNumber, addressSize, AK8975_MAG_ADDRESS);
+	public AK8975Driver(int controller) throws RuntimeIOException {
+		this(controller, AK8975_MAG_ADDRESS);
 	}
 
-	public AK8975Driver(int controllerNumber, I2CConstants.AddressSize addressSize, int address) throws RuntimeIOException {
-		i2cDevice = new I2CDevice(controllerNumber, address, addressSize);
+	public AK8975Driver(int controller, int address) throws RuntimeIOException {
+		i2cDevice = I2CDevice.builder(address).setController(controller).build();
 	}
-	
+
 	public void init() throws RuntimeIOException {
 		byte[] data = new byte[4];
 		data[0] = AKM_POWER_DOWN;
@@ -65,9 +65,9 @@ public class AK8975Driver implements Closeable, AK8975Constants {
 
 		/* Get sensitivity adjustment data from fuse ROM. */
 		data = i2cDevice.readI2CBlockDataByteArray(AKM_REG_ASAX, 3);
-		mag_sens_adj[0] = (short)(data[0] + 128);
-		mag_sens_adj[1] = (short)(data[1] + 128);
-		mag_sens_adj[2] = (short)(data[2] + 128);
+		mag_sens_adj[0] = (short) (data[0] + 128);
+		mag_sens_adj[1] = (short) (data[1] + 128);
+		mag_sens_adj[2] = (short) (data[2] + 128);
 
 		data[0] = AKM_POWER_DOWN;
 		i2cDevice.writeByteData(AKM_REG_CNTL, data[0]);
@@ -77,7 +77,7 @@ public class AK8975Driver implements Closeable, AK8975Constants {
 	public short[] get_mag_sens_adj() {
 		return mag_sens_adj;
 	}
-	
+
 	@Override
 	public void close() {
 		i2cDevice.close();

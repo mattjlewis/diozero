@@ -49,7 +49,7 @@ public class Apa102LedDriver implements LedDriverInterface {
 	private byte[] spiBuffer;
 	
 	public Apa102LedDriver(int controller, int chipSelect, int frequency, int numLeds, int brightness) {
-		device = new SpiDevice(controller, chipSelect, frequency, SpiClockMode.MODE_0, SpiConstants.DEFAULT_LSB_FIRST);
+		device = SpiDevice.builder(chipSelect).setController(controller).setFrequency(frequency).build();
 		
 		this.brightness = brightness & 0x1F;
 		

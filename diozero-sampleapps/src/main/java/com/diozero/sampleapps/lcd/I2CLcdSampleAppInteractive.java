@@ -34,9 +34,9 @@ package com.diozero.sampleapps.lcd;
 
 import java.io.*;
 
-import com.diozero.api.Action;
 import com.diozero.api.I2CConstants;
 import com.diozero.api.RuntimeIOException;
+import com.diozero.api.function.Action;
 import com.diozero.devices.HD44780Lcd;
 import com.diozero.devices.HD44780Lcd.LcdConnection;
 

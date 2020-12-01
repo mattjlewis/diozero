@@ -1,10 +1,12 @@
-package com.diozero.api;
+package com.diozero.devices.motor;
+
+import java.util.function.Consumer;
 
 /*
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - Core
- * Filename:     Action.java  
+ * Filename:     MotorListener.java  
  * 
  * This file is part of the diozero project. More information about this project
  * can be found at http://www.diozero.com/
@@ -31,7 +33,8 @@ package com.diozero.api;
  * #L%
  */
 
+
 @FunctionalInterface
-public interface Action {
-	void action();
+public interface MotorEventListener extends Consumer<MotorEvent> {
+	//
 }

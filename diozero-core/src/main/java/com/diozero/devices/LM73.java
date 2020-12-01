@@ -115,7 +115,7 @@ public class LM73 implements ThermometerInterface {
 		this.config = config;
 		resolution = DEFAULT_RESOLUTION;
 		
-		device = new I2CDevice(controller, config.getAddress());
+		device = I2CDevice.builder(config.getAddress()).setController(controller).build();
 		int id = device.readUShort(ID_REG);
 		if (id != LM73_ID) {
 			Logger.warn("Expected device id 0x{}, got 0x{}", Integer.toHexString(LM73_ID), Integer.toHexString(id));

@@ -165,12 +165,13 @@ public class TSL2561 implements Closeable, LuminositySensorInterface {
 	private I2CDevice i2cDevice;
 
 	public TSL2561(TSL2561Package tsl2561Package) throws RuntimeIOException {
-		this(I2CConstants.BUS_1, I2CConstants.AddressSize.SIZE_7, tsl2561Package);
+		this(I2CConstants.BUS_1, tsl2561Package);
 	}
 
-	public TSL2561(int controllerNumber, I2CConstants.AddressSize addressSize, TSL2561Package tsl2561Package)
+	public TSL2561(int controller, TSL2561Package tsl2561Package)
 			throws RuntimeIOException {
-		i2cDevice = new I2CDevice(controllerNumber, DEVICE_ADDRESS, addressSize, ByteOrder.LITTLE_ENDIAN);
+		i2cDevice = I2CDevice.builder(DEVICE_ADDRESS).setController(controller).setByteOrder(ByteOrder.LITTLE_ENDIAN).build();
+		
 		this.tsl2561Package = tsl2561Package;
 		initialised = false;
 		autoGain = false;

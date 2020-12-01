@@ -51,9 +51,9 @@ public class TestDigitalInputDevice extends AbstractInputDevice<DigitalInputEven
 	}
 	
 	@Override
-	public void valueChanged(DigitalInputEvent event) {
+	public void accept(DigitalInputEvent event) {
 		value = event.getValue();
-		super.valueChanged(event);
+		super.accept(event);
 	}
 
 	@Override

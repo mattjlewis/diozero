@@ -390,7 +390,7 @@ public class VoodooSparkDeviceFactory extends BaseNativeDeviceFactory {
 				if (device != null) {
 					// What about analog events?!
 					AbstractDigitalInputDevice input_device = (AbstractDigitalInputDevice) device;
-					input_device.valueChanged(new DigitalInputEvent(gpio, epoch_time, 0, (msg.lsb & (1 << i)) != 0));
+					input_device.accept(new DigitalInputEvent(gpio, epoch_time, 0, (msg.lsb & (1 << i)) != 0));
 				}
 			}
 		} else {

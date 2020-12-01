@@ -278,7 +278,7 @@ public class BME280 implements BarometerInterface, ThermometerInterface, Hygrome
 	public BME280(int bus, int address) throws RuntimeIOException {
 		useI2C = true;
 
-		deviceI = new I2CDevice(bus, address, I2CConstants.AddressSize.SIZE_7, ByteOrder.LITTLE_ENDIAN);
+		deviceI = I2CDevice.builder(address).setController(bus).setByteOrder(ByteOrder.LITTLE_ENDIAN).build();
 
 		setUp280();
 	}
@@ -292,7 +292,7 @@ public class BME280 implements BarometerInterface, ThermometerInterface, Hygrome
 	 */
 	public BME280(int chipSelect) throws RuntimeIOException {
 		this(SpiConstants.DEFAULT_SPI_CONTROLLER, chipSelect, SpiConstants.DEFAULT_SPI_CLOCK_FREQUENCY,
-				SpiConstants.DEFAULT_SPI_CLOCK_MODE, SpiConstants.DEFAULT_LSB_FIRST);
+				SpiConstants.DEFAULT_SPI_CLOCK_MODE);
 	}
 
 	/**
@@ -306,11 +306,11 @@ public class BME280 implements BarometerInterface, ThermometerInterface, Hygrome
 	 * @param lsbFirst   bit ordering used
 	 * @throws RuntimeIOException
 	 */
-	public BME280(int controller, int chipSelect, int frequency, SpiClockMode mode, boolean lsbFirst)
-			throws RuntimeIOException {
+	public BME280(int controller, int chipSelect, int frequency, SpiClockMode mode) throws RuntimeIOException {
 		useI2C = false;
 
-		deviceS = new SpiDevice(controller, chipSelect, frequency, mode, lsbFirst);
+		deviceS = SpiDevice.builder(chipSelect).setController(controller).setFrequency(frequency).setClockMode(mode)
+				.build();
 
 		setUp280();
 	}
@@ -318,7 +318,7 @@ public class BME280 implements BarometerInterface, ThermometerInterface, Hygrome
 	private void setUp280() {
 		readDeviceModel();
 		readCoefficients();
-		
+
 		setOperatingModes(TemperatureOversampling.OVERSAMPLING_1, PressureOversampling.OVERSAMPLING_1,
 				HumidityOversampling.OVERSAMPLING_1, OperatingMode.MODE_NORMAL);
 		setStandbyAndFilterModes(StandbyDuration.STANDBY_1_S, FilterCoefficient.FILTER_OFF);
@@ -548,11 +548,11 @@ public class BME280 implements BarometerInterface, ThermometerInterface, Hygrome
 		if (useI2C) {
 			return deviceI.readByteData(register);
 		}
-	
+
 		byte[] tx = { (byte) (register | 0x80), 0 };
-	
+
 		byte[] ret = deviceS.writeAndRead(tx);
-	
+
 		return ret[1];
 	}
 
@@ -570,23 +570,23 @@ public class BME280 implements BarometerInterface, ThermometerInterface, Hygrome
 
 	private ByteBuffer readByteBlock(int register, int length) {
 		byte[] data = new byte[length];
-	
+
 		if (useI2C) {
 			deviceI.readI2CBlockData(register, data);
 		} else {
 			byte[] tx = new byte[length + 1];
-	
+
 			tx[0] = (byte) (register | 0x80);
 			/* NOTE: rest of array initialized to 0 */
-	
+
 			byte[] ret = deviceS.writeAndRead(tx);
-	
+
 			System.arraycopy(ret, 1, data, 0, length);
 		}
-	
+
 		ByteBuffer buffer = ByteBuffer.wrap(data);
 		buffer.order(ByteOrder.LITTLE_ENDIAN);
-		
+
 		return buffer;
 	}
 

@@ -246,7 +246,7 @@ public class JsonWebSocket extends BaseRemoteServer {
 	}
 
 	@Override
-	public void valueChanged(DigitalInputEvent event) {
+	public void accept(DigitalInputEvent event) {
 		MessageWrapper message = new MessageWrapper(event.getClass().getSimpleName(), GSON.toJson(event));
 		sessions.forEach(session -> {
 			try {

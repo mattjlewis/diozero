@@ -1,4 +1,4 @@
-package com.diozero.devices.sandpit;
+package com.diozero.devices.motor;
 
 /*-
  * #%L
@@ -36,7 +36,6 @@ import org.tinylog.Logger;
 import com.diozero.api.DigitalOutputDevice;
 import com.diozero.api.PwmOutputDevice;
 import com.diozero.api.RuntimeIOException;
-import com.diozero.devices.motor.MotorBase;
 
 /**
  * Bi-directional motor controlled by a single PWM pin and separate forward / backward GPIO pins
@@ -75,7 +74,7 @@ public class TB6612FNGMotor extends MotorBase {
 		motorBackwardControlPin.off();
 		motorForwardControlPin.on();
 		motorPwmControl.setValue(speed);
-		valueChanged(speed);
+		accept(speed);
 	}
 	
 	/**
@@ -88,7 +87,7 @@ public class TB6612FNGMotor extends MotorBase {
 		motorForwardControlPin.off();
 		motorBackwardControlPin.on();
 		motorPwmControl.setValue(speed);
-		valueChanged(-speed);
+		accept(-speed);
 	}
 	
 	@Override
@@ -96,7 +95,7 @@ public class TB6612FNGMotor extends MotorBase {
 		motorForwardControlPin.off();
 		motorBackwardControlPin.off();
 		motorPwmControl.setValue(0);
-		valueChanged(0);
+		accept(0);
 	}
 	
 	/**

@@ -139,6 +139,6 @@ public class PigpioJDigitalInputDevice extends AbstractInputDevice<DigitalInputE
 					Integer.valueOf(pin), Integer.valueOf(gpio));
 		}
 		
-		valueChanged(new DigitalInputEvent(pin, epochTime, nanoTime, value));
+		accept(new DigitalInputEvent(pin, epochTime, nanoTime, value));
 	}
 }

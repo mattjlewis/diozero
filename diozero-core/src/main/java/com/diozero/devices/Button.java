@@ -32,6 +32,7 @@ package com.diozero.devices;
  */
 
 import com.diozero.api.*;
+import com.diozero.api.function.Action;
 import com.diozero.internal.spi.GpioDeviceFactoryInterface;
 
 /**
@@ -40,23 +41,23 @@ import com.diozero.internal.spi.GpioDeviceFactoryInterface;
  * <img src="doc-files/Button.png" alt="Button">
  * <pre>
  * {@code
- *try (Button button = new Button(inputPin, GpioPullUpDown.PULL_UP)) {
- *	button.addListener(event -> Logger.debug("valueChanged({})", event));
- *	Logger.debug("Waiting for 10s - *** Press the button connected to input pin " + inputPin + " ***");
- *	SleepUtil.sleepSeconds(10);
- *}
+ * try (Button button = new Button(inputPin, GpioPullUpDown.PULL_UP)) {
+ *   button.addListener(event -> Logger.debug("Event: {}", event));
+ *   Logger.debug("Waiting for 10s - *** Press the button connected to input pin " + inputPin + " ***");
+ *   SleepUtil.sleepSeconds(10);
+ * }
  * }
  * </pre>
  * <p>Controlling an LED with a button <a href="https://github.com/mattjlewis/diozero/blob/master/diozero-sampleapps/src/main/java/com/diozero/sampleapps/ButtonControlledLed.java">ButtonControlledLed</a>:</p>
  * <img src="doc-files/Button_LED.png" alt="Button controlled LED">
  * <pre>
  * {@code
- *try (Button button = new Button(buttonPin, GpioPullUpDown.PULL_UP); LED led = new LED(ledPin)) {
- *	button.whenPressed(led::on);
- *	button.whenReleased(led::off);
- *	Logger.info("Waiting for 10s - *** Press the button connected to pin {} ***", Integer.valueOf(buttonPin));
- *	SleepUtil.sleepSeconds(10);
- *}
+ * try (Button button = new Button(buttonPin, GpioPullUpDown.PULL_UP); LED led = new LED(ledPin)) {
+ *   button.whenPressed(led::on);
+ *   button.whenReleased(led::off);
+ *   Logger.info("Waiting for 10s - *** Press the button connected to pin {} ***", Integer.valueOf(buttonPin));
+ *   SleepUtil.sleepSeconds(10);
+ * }
  * }
  * </pre>
  */
