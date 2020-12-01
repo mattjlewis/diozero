@@ -303,7 +303,6 @@ public class BME280 implements BarometerInterface, ThermometerInterface, Hygrome
 	 * @param chipSelect the chip select line used
 	 * @param frequency  the frequency used
 	 * @param mode       the clock mode used
-	 * @param lsbFirst   bit ordering used
 	 * @throws RuntimeIOException
 	 */
 	public BME280(int controller, int chipSelect, int frequency, SpiClockMode mode) throws RuntimeIOException {

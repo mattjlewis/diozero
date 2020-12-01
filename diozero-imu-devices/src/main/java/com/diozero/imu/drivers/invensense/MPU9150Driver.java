@@ -103,7 +103,6 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 	 * 
 	 * @throws RuntimeIOException if an I/O error occurs
 	 * @param controller  I2C controller
-	 * @param addressSize Address size (7 or 10)
 	 */
 	public MPU9150Driver(int controller) throws RuntimeIOException {
 		this(controller, MPU9150_DEFAULT_ADDRESS);
@@ -113,7 +112,6 @@ public class MPU9150Driver implements Closeable, MPU9150Constants, AK8975Constan
 	 * Specific address constructor.
 	 * 
 	 * @param controller  I2C controller
-	 * @param addressSize Address size (7 or 10)
 	 * @param devAddress  address I2C address
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */

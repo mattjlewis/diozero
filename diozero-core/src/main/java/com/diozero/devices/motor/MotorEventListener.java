@@ -6,7 +6,7 @@ import java.util.function.Consumer;
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - Core
- * Filename:     MotorListener.java  
+ * Filename:     MotorEventListener.java  
  * 
  * This file is part of the diozero project. More information about this project
  * can be found at http://www.diozero.com/
