@@ -1,6 +1,6 @@
 ---
 nav_order: 8
-permalink: /bbbsetup.html
+permalink: /test.html
 ---
 
 # Test Page
