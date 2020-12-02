@@ -125,7 +125,7 @@ public class DigitalInputOutputDevice extends AbstractDigitalInputDevice {
 	}
 
 	/**
-	 * Set the output value (if mode.
+	 * Set the output value (if in output mode).
 	 * 
 	 * @param value The new value
 	 * @throws RuntimeIOException If an I/O error occurs

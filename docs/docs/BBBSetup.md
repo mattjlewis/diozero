@@ -131,14 +131,15 @@ OpenJDK 11 doesn't work for me, reverting to OpenJDK 8. Unfortunately OpenJDK 8 
 sudo apt -y install software-properties-common
 wget -qO - https://adoptopenjdk.jfrog.io/adoptopenjdk/api/gpg/key/public | sudo apt-key add -
 sudo add-apt-repository --yes https://adoptopenjdk.jfrog.io/adoptopenjdk/deb/
-sudo apt-get update && sudo apt -y install adoptopenjdk-8-hotspot
+sudo apt update && sudo apt -y install adoptopenjdk-8-hotspot
 sudo update-java-alternatives -s adoptopenjdk-8-hotspot-armhf
 ```
 
 Alternatively:
 ```
-apt-add-repository 'deb http://security.debian.org/debian-security stretch/updates main'
-sudo apt-get update && sudo apt -y install openjdk-8-jdk
+sudo apt -y install software-properties-common
+sudo apt-add-repository 'deb http://security.debian.org/debian-security stretch/updates main'
+sudo apt update && sudo apt -y install openjdk-8-jdk
 ```
 
 ## Install ZSH and Oh My Zsh
@@ -321,3 +322,35 @@ Reboot and check the I2C bus speeds:
 [    1.638674] input: tps65217_pwr_but as /devices/platform/ocp/44e0b000.i2c/i2c-0/0-0024/tps65217-pwrbutton/input/input0
 [    1.640742] omap_i2c 44e0b000.i2c: bus 0 rev0.11 at 400 kHz
 ```
+
+### I2CDetect
+
+Run `i2cdetect -y -r 2` as write quick isn't supported.
+
+## Pinout
+
+Taken from [beagleboard.org](https://beagleboard.org/Support/bone101).
+
+With the power / ethernnet connection at the top:
+
+```
+          P9
+       ?  1 2  GND
+       ?  3 4  3v3
+       ?  5 6  ?
+       ?  7 8  ?
+       ?  9 10 ?
+       ? 11 12 ?
+       ? 13 14 ?
+       ? 15 16 ?
+       ? 17 18 ?
+I2C2 SCL 19 20 I2C2 SDA
+       ? 21 22 ?
+```
+
+Some good info here: [https://vadl.github.io/beagleboneblack/2016/07/29/setting-up-bbb-gpio]
+
+![https://vadl.github.io/images/bbb/bbb_headers.png](Universal Cape Pinout)
+
+[https://github.com/derekmolloy/boneDeviceTree/raw/master/docs/BeagleboneBlackP9HeaderTable.pdf](P9 pins (PDF))
+[https://github.com/derekmolloy/boneDeviceTree/raw/master/docs/BeagleboneBlackP8HeaderTable.pdf](P8 pins (PDF))

@@ -71,7 +71,8 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_builtin_spi_NativeSpiD
 		return -1;
 	}
 
-	if (Java_com_diozero_internal_provider_builtin_spi_NativeSpiDevice_spiConfig(env, clz, fd, mode, speedHz, bitsPerWord, lsbFirst == JNI_TRUE ? 1 : 0) < 0) {
+	if (Java_com_diozero_internal_provider_builtin_spi_NativeSpiDevice_spiConfig(
+			env, clz, fd, mode, speedHz, bitsPerWord, lsbFirst) < 0) {
 		printf("open failed: %s", strerror(errno));
 		return -1;
 	}
@@ -128,7 +129,8 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_builtin_spi_NativeSpiD
 		printf("Warning SPI speed (%d) does not equal that set (%d)\n", actual_speed, speedHz);
 	}
 
-	uint8_t lsb = lsbFirst > 0 ? SPI_LSB_FIRST : 0;
+	//uint8_t lsb = lsbFirst == JNI_TRUE ? SPI_LSB_FIRST : 0;
+	uint8_t lsb = lsbFirst;
 	if (ioctl(fileDescriptor, SPI_IOC_WR_LSB_FIRST, &lsb) < 0) {
 		printf("Cannot set lsb first: %s", strerror(errno));
 		return -1;

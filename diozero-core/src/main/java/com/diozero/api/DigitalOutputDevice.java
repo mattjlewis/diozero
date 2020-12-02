@@ -210,6 +210,7 @@ public class DigitalOutputDevice extends GpioDevice implements OutputDeviceInter
 
 	/**
 	 * Set the output value to true if value != 0
+	 * @param value The new value
 	 */
 	@Override
 	public void setValue(float value) {

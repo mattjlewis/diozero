@@ -94,7 +94,7 @@ public class BME280 implements BarometerInterface, ThermometerInterface, Hygrome
 		}
 	}
 
-	private static final int DEFAULT_ADDRESS = 0x76;
+	public static final int DEFAULT_I2C_ADDRESS = 0x76;
 
 	private static final int CALIB_00_REG = 0x88;
 	private static final int ID_REG = 0xD0;
@@ -263,7 +263,7 @@ public class BME280 implements BarometerInterface, ThermometerInterface, Hygrome
 	 * @throws RuntimeIOException if instance cannot be created
 	 */
 	public BME280() throws RuntimeIOException {
-		this(I2CConstants.CONTROLLER_1, DEFAULT_ADDRESS);
+		this(I2CConstants.CONTROLLER_1, DEFAULT_I2C_ADDRESS);
 	}
 
 	/**

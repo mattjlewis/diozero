@@ -155,7 +155,7 @@ public class SSD1351 extends ColourSsdOled {
 		// A[7:6]=00/01, 65k Colour depth
 		// A[7:6]=10, 262k Colour depth
 		// A[7:6]=11, 262k Colour depth (16-bit format 2)
-		commandAndData(REMAP_AND_COLOUR_DEPTH, (byte) 0x30);   // 0b00110000
+		commandAndData(REMAP_AND_COLOUR_DEPTH, (byte) 0b00110100);   // 0b00110000
 		//commandAndData(REMAP_AND_COLOUR_DEPTH, (byte) 0x74); // 0b01110100
 		// A[6:0]: Start Address. [reset=0]
 		// B[6:0]: End Address. [reset=127]
