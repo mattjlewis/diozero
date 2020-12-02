@@ -44,10 +44,7 @@ import com.diozero.util.SleepUtil;
 /**
  * Provide generic
  * <a href="https://en.wikipedia.org/wiki/Pulse-width_modulation">Pulse Width
- * Modulation (PWM)</a> output control. Note the following Raspberry Pi BCM GPIO
- * pins provide hardware PWM support: 12 (phys 32, wPi 26), 13 (phys 33, wPi
- * 23), 18 (phys 12, wPi 1), 19 (phys 35, wPi 24). Any other pin will revert to
- * software controlled PWM.
+ * Modulation (PWM)</a> output control.
  */
 public class PwmOutputDevice extends GpioDevice implements OutputDeviceInterface {
 	private static final int DEFAULT_PWM_FREQUENCY = 50;

@@ -36,6 +36,7 @@ import org.tinylog.Logger;
 import com.diozero.api.PinInfo;
 import com.diozero.api.RuntimeIOException;
 import com.diozero.devices.LED;
+import com.diozero.internal.spi.NativeDeviceFactoryInterface;
 import com.diozero.sbc.DeviceFactoryHelper;
 import com.diozero.util.SleepUtil;
 
@@ -66,8 +67,8 @@ public class LEDTest {
 	}
 
 	private static void test(int chip, int line) {
-		PinInfo pin_info = new PinInfo("", "", PinInfo.NOT_DEFINED, PinInfo.NOT_DEFINED, "", PinInfo.DIGITAL_IN_OUT,
-				PinInfo.NOT_DEFINED, chip, line);
+		PinInfo pin_info = DeviceFactoryHelper.getNativeDeviceFactory().getBoardPinInfo().getByChipAndLineOffset(chip,
+				line);
 		try (LED led = new LED(pin_info, true, false)) {
 			test(led);
 		} catch (RuntimeIOException e) {
@@ -78,7 +79,7 @@ public class LEDTest {
 			DeviceFactoryHelper.getNativeDeviceFactory().close();
 		}
 	}
-	
+
 	private static void test(int pin) {
 		try (LED led = new LED(pin)) {
 			test(led);
