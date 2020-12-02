@@ -31,6 +31,8 @@ package com.diozero.devices;
  * #L%
  */
 
+import java.nio.ByteOrder;
+
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.tinylog.Logger;
@@ -349,7 +351,8 @@ public class Ads1x15 extends AbstractDeviceFactory implements AnalogInputDeviceF
 		comparatorQueue = ComparatorQueue.DISABLE;
 
 		boardPinInfo = new Ads11x5BoardPinInfo(model);
-		device = I2CDevice.builder(address.getAddress()).setController(controller).build();
+		device = I2CDevice.builder(address.getAddress()).setController(controller).setByteOrder(ByteOrder.BIG_ENDIAN)
+				.build();
 	}
 
 	@Override
@@ -379,7 +382,7 @@ public class Ads1x15 extends AbstractDeviceFactory implements AnalogInputDeviceF
 		super.close();
 		device.close();
 	}
-	
+
 	public Model getModel() {
 		return model;
 	}
@@ -494,8 +497,8 @@ public class Ads1x15 extends AbstractDeviceFactory implements AnalogInputDeviceF
 
 	private short readConversionData(int adcNumber) {
 		byte[] data = device.readI2CBlockDataByteArray(ADDR_POINTER_CONV, 2);
-
 		short value = (short) ((data[0] & 0xff) << 8 | (data[1] & 0xff));
+		//short value = device.readWordData(ADDR_POINTER_CONV);
 
 		if (model == Model.ADS1015) {
 			value >>= 4;

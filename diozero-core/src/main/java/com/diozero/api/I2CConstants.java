@@ -39,8 +39,6 @@ public interface I2CConstants {
 	static final int CONTROLLER_1 = 1;
 	static final int CONTROLLER_2 = 2;
 	
-	static final ByteOrder DEFAULT_BYTE_ORDER = ByteOrder.BIG_ENDIAN;
-	
 	public static enum AddressSize {
 		SIZE_7(7), SIZE_10(10);
 		

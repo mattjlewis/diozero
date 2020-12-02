@@ -168,7 +168,11 @@ public class NativeI2CDeviceSysFs implements I2CSMBusInterface {
 	public short readWordData(int register) {
 		try {
 			deviceFile.writeByte(register);
-			return deviceFile.readShort();
+			// This is Big Endian, however SMBus interface specifies Little Endian so need to swap...
+			//short val = deviceFile.readShort();
+			byte[] buffer = new byte[2];
+			deviceFile.read(buffer);
+			return (short) ((buffer[1] << 8) | (buffer[0] & 0xff));
 		} catch (IOException e) {
 			throw new RuntimeIOException("Error in I2C readWordData for device i2c-" + controller + "-0x"
 					+ Integer.toHexString(deviceAddress), e);
@@ -179,6 +183,7 @@ public class NativeI2CDeviceSysFs implements I2CSMBusInterface {
 	public void writeWordData(int register, short data) {
 		byte[] buffer = new byte[3];
 		buffer[0] = (byte) register;
+		// Little Endian
 		buffer[1] = (byte) (data & 0xff);
 		buffer[2] = (byte) ((data >> 8) & 0xff);
 		try {

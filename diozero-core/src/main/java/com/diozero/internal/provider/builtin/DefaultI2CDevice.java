@@ -102,13 +102,12 @@ public class DefaultI2CDevice extends AbstractDevice implements I2CDeviceInterfa
 	
 	@Override
 	public short readWordData(int register) {
-		// TODO Implementation	
-		return (short) 1;
+		return i2cDevice.readWordData(register);
 	}
 	
 	@Override
 	public void writeWordData(int register, short data) {
-		// TODO Implementation	
+		i2cDevice.writeWordData(register, data);
 	}
 
 	@Override

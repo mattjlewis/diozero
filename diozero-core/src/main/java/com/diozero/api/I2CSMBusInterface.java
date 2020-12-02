@@ -168,7 +168,7 @@ public interface I2CSMBusInterface extends Closeable {
 	 * This operation is very like Read Byte; again, data is read from a device,
 	 * from a designated register that is specified through the Comm byte. But this
 	 * time, the data is a complete word (16 bits) in
-	 * {@link java.nio.ByteOrder#LITTLE_ENDIAN Little Endian} format as per the
+	 * {@link java.nio.ByteOrder#LITTLE_ENDIAN Little Endian} order as per the
 	 * SMBus specification.
 	 * </p>
 	 * 
@@ -189,8 +189,8 @@ public interface I2CSMBusInterface extends Closeable {
 	 * <p>
 	 * This is the opposite of the Read Word operation. 16 bits of data is written
 	 * to a device, to the designated register that is specified through the Comm
-	 * byte. Note that the specified data is in
-	 * {@link java.nio.ByteOrder#LITTLE_ENDIAN Little Endian} format as per the
+	 * byte. Note that the data is written in
+	 * {@link java.nio.ByteOrder#LITTLE_ENDIAN Little Endian} order as per the
 	 * SMBus specification.
 	 * </p>
 	 * 
@@ -343,7 +343,7 @@ public interface I2CSMBusInterface extends Closeable {
 	void writeI2CBlockData(int register, byte... data) throws RuntimeIOException;
 
 	/**
-	 * SMBus extension to read the specified number of bytes from the device
+	 * Diozero SMBus extension to read the specified number of bytes from the device
 	 * 
 	 * @param buffer byte array to populate, the length of the byte array indicates
 	 *               the number of bytes to read
@@ -353,7 +353,7 @@ public interface I2CSMBusInterface extends Closeable {
 	int readBytes(byte[] buffer) throws RuntimeIOException;
 
 	/**
-	 * SMBus extension to write the specified byte array to the device
+	 * Diozero SMBus extension to write the specified byte array to the device
 	 * 
 	 * @param data the data to write
 	 * @throws RuntimeIOException if an I/O error occurs

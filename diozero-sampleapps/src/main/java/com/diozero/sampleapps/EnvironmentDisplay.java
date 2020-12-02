@@ -1,5 +1,36 @@
 package com.diozero.sampleapps;
 
+/*-
+ * #%L
+ * Organisation: diozero
+ * Project:      Device I/O Zero - Sample applications
+ * Filename:     EnvironmentDisplay.java  
+ * 
+ * This file is part of the diozero project. More information about this project
+ * can be found at http://www.diozero.com/
+ * %%
+ * Copyright (C) 2016 - 2020 diozero
+ * %%
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ * #L%
+ */
+
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -25,6 +56,8 @@ import com.diozero.util.SleepUtil;
 import com.diozero.util.TemperatureUtil;
 
 public class EnvironmentDisplay {
+	private static final Character DEGREES_CHARACTER = Character.valueOf('\u00B0');
+	
 	private static float reading;
 
 	public static void main(String[] args) {
@@ -57,10 +90,10 @@ public class EnvironmentDisplay {
 			final BufferedImage image = new BufferedImage(width, height, oled.getNativeImageType());
 			final Graphics2D g2d = image.createGraphics();
 			g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-			Font font = new Font("Serif", Font.PLAIN, 12);
+			Font font = new Font("Serif", Font.PLAIN, 11);
 			g2d.setFont(font);
 			FontMetrics fm = g2d.getFontMetrics(font);
-			float line_height = fm.getMaxAscent() + fm.getMaxDescent();
+			int line_height = fm.getMaxAscent() + fm.getMaxDescent();
 			g2d.setBackground(Color.BLACK);
 
 			adc.setContinousMode(adc_ready_pin, ain.getGpio(), new_reading -> EnvironmentDisplay.reading = new_reading);
@@ -74,8 +107,8 @@ public class EnvironmentDisplay {
 				bme280.waitDataAvailable(10, 5);
 				float[] tph = bme280.getValues();
 
-				String t_text = String.format("T: %.2f C (%.2f F)", Float.valueOf(tph[0]),
-						Float.valueOf(TemperatureUtil.toFahrenheit(tph[0])));
+				String t_text = String.format("T: %.2f%cC (%.2f%cF)", Float.valueOf(tph[0]), DEGREES_CHARACTER,
+						Float.valueOf(TemperatureUtil.toFahrenheit(tph[0])), DEGREES_CHARACTER);
 				g2d.setColor(Color.red);
 				g2d.drawString(t_text, 0, index++ * line_height);
 				String p_text = String.format("P: %.2f hPa", Float.valueOf(tph[1]));
@@ -85,24 +118,16 @@ public class EnvironmentDisplay {
 				g2d.setColor(Color.blue);
 				g2d.drawString(h_text, 0, index++ * line_height);
 
+				int radius = 40;
+				int baseline_y = height - line_height;
+
+				drawSpeedometer(g2d, (width - radius) / 2, baseline_y, radius, reading, Color.white, Color.blue,
+						Color.red);
+
 				String adc_text = String.format("Pot: %.2f%% (%.2fv)", Float.valueOf(reading),
 						Float.valueOf(ain.convertToScaledValue(reading)));
-				g2d.drawString(adc_text, 0, index++ * line_height);
-
-				int radius = 40;
-				int baseline_y = height - 5;
-				g2d.setColor(Color.white);
-				g2d.fillArc(0, baseline_y - radius / 2, radius, radius, 0, 180);
-				g2d.setColor(Color.blue);
-				g2d.drawArc(0, baseline_y - radius / 2, radius, radius, 0, 180);
-				g2d.drawLine(0, baseline_y, radius, baseline_y);
 				g2d.setColor(Color.lightGray);
-				double radians = Math.toRadians(reading * 180);
-				// soh cah toa
-				double sin_alpha = Math.sin(radians);
-				double cos_alpha = Math.cos(radians);
-				g2d.drawLine(radius / 2, baseline_y, radius / 2 + (int) (radius * sin_alpha),
-						baseline_y - (int) (radius * cos_alpha));
+				g2d.drawString(adc_text, 0, height);
 
 				Logger.debug("Updating image");
 
@@ -114,5 +139,21 @@ public class EnvironmentDisplay {
 				SleepUtil.sleepSeconds(1);
 			}
 		}
+	}
+
+	public static void drawSpeedometer(Graphics2D g2d, int x, int y, int radius, float value, Color background,
+			Color outline, Color indicator) {
+		g2d.setColor(background);
+		g2d.fillArc(x, y - radius / 2, radius, radius, 0, 180);
+		g2d.setColor(outline);
+		g2d.drawArc(x + 1, (y - radius / 2) - 1, radius - 1, radius - 1, 0, 180);
+		g2d.drawLine(x, y, x + radius, y);
+
+		double radians = Math.toRadians((value - 0.5) * 180);
+		double sin_alpha = Math.sin(radians);
+		double cos_alpha = Math.cos(radians);
+		g2d.setColor(indicator);
+		g2d.drawLine(x + radius / 2, y, x + radius / 2 + (int) (radius / 2 * sin_alpha),
+				y - (int) (radius / 2 * cos_alpha));
 	}
 }
