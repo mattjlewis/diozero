@@ -50,11 +50,16 @@ public class TSL2561Test {
 	private static final int ITERATIONS = 20;
 
 	public static void main(String[] args) {
-		test();
+		int controller = 1;
+		if (args.length > 0) {
+			controller = Integer.parseInt(args[0]);
+		}
+		
+		test(controller);
 	}
 
-	public static void test() {
-		try (TSL2561 tsl2561 = new TSL2561(TSL2561.TSL2561Package.T_FN_CL)) {
+	public static void test(int controller) {
+		try (TSL2561 tsl2561 = new TSL2561(controller, TSL2561.TSL2561Package.T_FN_CL)) {
 			tsl2561.setAutoGain(true);
 
 			for (int i = 0; i < ITERATIONS; i++) {

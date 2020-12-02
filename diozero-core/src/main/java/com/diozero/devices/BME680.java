@@ -64,7 +64,7 @@ public class BME680 implements BarometerInterface, ThermometerInterface, Hygrome
 	/**
 	 * Default I2C address for the sensor.
 	 */
-	private static final int DEVICE_ADDRESS = 0x76;
+	public static final int DEVICE_ADDRESS = 0x76;
 
 	/**
 	 * Alternative I2C address for the sensor.
@@ -330,7 +330,7 @@ public class BME680 implements BarometerInterface, ThermometerInterface, Hygrome
 	private int offsetTemperature;
 
 	public BME680() {
-		this(I2CConstants.BUS_1, DEVICE_ADDRESS);
+		this(I2CConstants.CONTROLLER_1, DEVICE_ADDRESS);
 	}
 
 	/**

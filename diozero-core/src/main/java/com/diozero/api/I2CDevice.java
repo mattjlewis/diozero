@@ -61,7 +61,7 @@ public class I2CDevice implements I2CDeviceInterface {
 	 */
 	public static class Builder {
 		private I2CDeviceFactoryInterface factory;
-		private int controller = I2CConstants.BUS_0;
+		private int controller = I2CConstants.CONTROLLER_1;
 		private int address;
 		private I2CConstants.AddressSize addressSize = I2CConstants.AddressSize.SIZE_7;
 		private ByteOrder byteOrder = I2CConstants.DEFAULT_BYTE_ORDER;

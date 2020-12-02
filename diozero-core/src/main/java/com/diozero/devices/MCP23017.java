@@ -60,15 +60,15 @@ public class MCP23017 extends MCP23x17 {
 	private I2CDevice device;
 
 	public MCP23017() throws RuntimeIOException {
-		this(I2CConstants.BUS_1, DEVICE_ADDRESS, INTERRUPT_GPIO_NOT_SET, INTERRUPT_GPIO_NOT_SET);
+		this(I2CConstants.CONTROLLER_1, DEVICE_ADDRESS, INTERRUPT_GPIO_NOT_SET, INTERRUPT_GPIO_NOT_SET);
 	}
 
 	public MCP23017(int interruptGpio) throws RuntimeIOException {
-		this(I2CConstants.BUS_1, DEVICE_ADDRESS, interruptGpio, interruptGpio);
+		this(I2CConstants.CONTROLLER_1, DEVICE_ADDRESS, interruptGpio, interruptGpio);
 	}
 
 	public MCP23017(int interruptGpioA, int interruptGpioB) throws RuntimeIOException {
-		this(I2CConstants.BUS_1, DEVICE_ADDRESS, interruptGpioA, interruptGpioB);
+		this(I2CConstants.CONTROLLER_1, DEVICE_ADDRESS, interruptGpioA, interruptGpioB);
 	}
 
 	public MCP23017(int controller, int address, int interruptGpio) throws RuntimeIOException {

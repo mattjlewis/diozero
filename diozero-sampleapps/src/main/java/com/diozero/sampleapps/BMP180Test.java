@@ -51,7 +51,12 @@ public class BMP180Test {
 	private static final int ITERATIONS = 20;
 
 	public static void main(String[] args) {
-		try (BMP180 bmp180 = new BMP180(BMPMode.STANDARD)) {
+		int controller = 1;
+		if (args.length > 0) {
+			controller = Integer.parseInt(args[0]);
+		}
+		
+		try (BMP180 bmp180 = new BMP180(controller, BMPMode.STANDARD)) {
 			bmp180.readCalibrationData();
 			Logger.debug("Opened device");
 

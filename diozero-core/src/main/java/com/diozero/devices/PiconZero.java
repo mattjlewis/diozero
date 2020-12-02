@@ -132,7 +132,7 @@ public class PiconZero extends AbstractDeviceFactory implements GpioDeviceFactor
 	private int boardPwmFrequency = PICON_ZERO_PWM_FREQUENCY;
 
 	public PiconZero() {
-		this(I2CConstants.BUS_1, DEFAULT_ADDRESS);
+		this(I2CConstants.CONTROLLER_1, DEFAULT_ADDRESS);
 
 		boardPinInfo = new PiconZeroBoardPinInfo();
 	}

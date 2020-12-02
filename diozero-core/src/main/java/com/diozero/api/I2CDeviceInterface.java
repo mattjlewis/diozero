@@ -31,5 +31,9 @@ package com.diozero.api;
  * #L%
  */
 
+/**
+ * <a href="https://en.wikipedia.org/wiki/I2C">Inter-Integrated Circuit (I2C) Interface</a>
+ */
 public interface I2CDeviceInterface extends DeviceInterface, I2CSMBusInterface {
+	//
 }

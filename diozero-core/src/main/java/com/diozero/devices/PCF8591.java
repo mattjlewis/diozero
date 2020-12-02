@@ -120,7 +120,7 @@ public class PCF8591 extends AbstractDeviceFactory
 	private float vRef;
 
 	public PCF8591() {
-		this(I2CConstants.BUS_1, DEFAULT_ADDRESS, InputMode.FOUR_SINGLE_ENDED_INPUTS, true, DEFAULT_VREF);
+		this(I2CConstants.CONTROLLER_1, DEFAULT_ADDRESS, InputMode.FOUR_SINGLE_ENDED_INPUTS, true, DEFAULT_VREF);
 	}
 
 	public PCF8591(int controller) {

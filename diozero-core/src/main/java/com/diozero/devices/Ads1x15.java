@@ -320,7 +320,7 @@ public class Ads1x15 extends AbstractDeviceFactory implements AnalogInputDeviceF
 	 * @param dataRate  Data read frequency (Hz)
 	 */
 	public Ads1x15(PgaConfig pgaConfig, Ads1115DataRate dataRate) {
-		this(I2CConstants.BUS_1, DEFAULT_ADDRESS, pgaConfig, dataRate);
+		this(I2CConstants.CONTROLLER_1, DEFAULT_ADDRESS, pgaConfig, dataRate);
 	}
 
 	public Ads1x15(int controller, Address address, PgaConfig pgaConfig, Ads1115DataRate adsDataRate) {
@@ -328,7 +328,7 @@ public class Ads1x15 extends AbstractDeviceFactory implements AnalogInputDeviceF
 	}
 
 	public Ads1x15(PgaConfig pgaConfig, Ads1015DataRate dataRate) {
-		this(I2CConstants.BUS_1, DEFAULT_ADDRESS, pgaConfig, dataRate);
+		this(I2CConstants.CONTROLLER_1, DEFAULT_ADDRESS, pgaConfig, dataRate);
 	}
 
 	public Ads1x15(int controller, Address address, PgaConfig pgaConfig, Ads1015DataRate ads1015DataRate) {

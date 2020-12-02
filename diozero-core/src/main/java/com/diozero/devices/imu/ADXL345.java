@@ -123,7 +123,7 @@ public class ADXL345 implements ImuInterface {
 	private I2CDevice device;
 
 	public ADXL345() {
-		device = I2CDevice.builder(ADXL345_ADDRESS).setController(I2CConstants.BUS_1).build();
+		device = I2CDevice.builder(ADXL345_ADDRESS).setController(I2CConstants.CONTROLLER_1).build();
 		setNormalMeasurementMode();
 	}
 

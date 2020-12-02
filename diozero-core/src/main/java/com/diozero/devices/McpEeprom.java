@@ -45,6 +45,7 @@ import com.diozero.util.SleepUtil;
  * <a href="http://ww1.microchip.com/downloads/en/DeviceDoc/21754M.pdf">Datasheet</a>.
  * Connections:
  * <pre>
+ *         Notch
  * GND  A0 1  8 Vcc 3v3
  * GND  A1 2  7 WP (Write Protect Input, Vss=write enabled, Vcc=write disabled)
  * GND  A2 3  6 SCL

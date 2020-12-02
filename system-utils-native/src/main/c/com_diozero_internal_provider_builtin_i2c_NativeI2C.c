@@ -61,7 +61,7 @@
 int selectSlave(int fd, int deviceAddress, uint8_t force) {
 	int rc = ioctl(fd, force ? I2C_SLAVE_FORCE : I2C_SLAVE, deviceAddress);
 	if (rc < 0) {
-		perror("EI2C rror in selectSlave");
+		perror("I2C Error in selectSlave");
 		return -errno;
 	}
 
@@ -116,7 +116,7 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_builtin_i2c_NativeI2C_
 		JNIEnv* env, jclass clz, jint fd, jbyte bit) {
 	int rc = i2c_smbus_write_quick(fd, bit);
 	if (rc < 0) {
-		perror("I2C Error in i2c_smbus_write_quick");
+		//perror("I2C Error in i2c_smbus_write_quick");
 		return -errno;
 	}
 	return rc;
@@ -126,7 +126,7 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_builtin_i2c_NativeI2C_
 		JNIEnv* env, jclass clz, jint fd) {
 	int rc = i2c_smbus_read_byte(fd);
 	if (rc < 0) {
-		perror("I2C Error in i2c_smbus_read_byte");
+		//perror("I2C Error in i2c_smbus_read_byte");
 		return -errno;
 	}
 	return rc;
@@ -136,7 +136,7 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_builtin_i2c_NativeI2C_
 		JNIEnv* env, jclass clz, jint fd, jbyte value) {
 	int rc = i2c_smbus_write_byte(fd, value);
 	if (rc < 0) {
-		perror("I2C Error in i2c_smbus_write_byte");
+		//perror("I2C Error in i2c_smbus_write_byte");
 		return -errno;
 	}
 	return rc;
@@ -153,7 +153,7 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_builtin_i2c_NativeI2C_
 	(*env)->ReleaseByteArrayElements(env, rxData, rx_buf, 0);
 
 	if (rc < 0) {
-		perror("I2C Error in readBytes");
+		//perror("I2C Error in readBytes");
 		return -errno;
 	}
 	return rc;
@@ -170,7 +170,7 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_builtin_i2c_NativeI2C_
 	(*env)->ReleaseByteArrayElements(env, txData, tx_buf, JNI_ABORT);
 
 	if (rc < 0) {
-		perror("I2C Error in writeBytes");
+		//perror("I2C Error in writeBytes");
 		return -errno;
 	}
 	return rc;
@@ -181,7 +181,7 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_builtin_i2c_NativeI2C_
 	int rc = i2c_smbus_read_byte_data(fd, registerAddress);
 
 	if (rc < 0) {
-		perror("I2C Error in i2c_smbus_read_byte_data");
+		//perror("I2C Error in i2c_smbus_read_byte_data");
 		return -errno;
 	}
 	return rc;
@@ -192,7 +192,7 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_builtin_i2c_NativeI2C_
 	int rc = i2c_smbus_write_byte_data(fd, registerAddress, value);
 
 	if (rc < 0) {
-		perror("I2C Error in i2c_smbus_write_byte_data");
+		//perror("I2C Error in i2c_smbus_write_byte_data");
 		return -errno;
 	}
 	return rc;
@@ -203,7 +203,7 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_builtin_i2c_NativeI2C_
 	int rc = i2c_smbus_read_word_data(fd, registerAddress);
 
 	if (rc < 0) {
-		perror("I2C Error in i2c_smbus_read_word_data");
+		//perror("I2C Error in i2c_smbus_read_word_data");
 		return -errno;
 	}
 	return rc;
@@ -214,7 +214,7 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_builtin_i2c_NativeI2C_
 	int rc = i2c_smbus_write_word_data(fd, registerAddress, value);
 
 	if (rc < 0) {
-		perror("I2C Error in i2c_smbus_write_word_data");
+		//perror("I2C Error in i2c_smbus_write_word_data");
 		return -errno;
 	}
 	return rc;
@@ -225,7 +225,7 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_builtin_i2c_NativeI2C_
 	int rc = i2c_smbus_process_call(fd, registerAddress, value);
 
 	if (rc < 0) {
-		perror("I2C Error in i2c_smbus_process_call");
+		//perror("I2C Error in i2c_smbus_process_call");
 		return -errno;
 	}
 	return rc;
@@ -241,7 +241,7 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_builtin_i2c_NativeI2C_
 	(*env)->ReleaseByteArrayElements(env, rxData, rx_buf, 0);
 
 	if (rc < 0) {
-		perror("I2C Error in i2c_smbus_read_block_data");
+		//perror("I2C Error in i2c_smbus_read_block_data");
 		return -errno;
 	}
 	return rc;
@@ -257,7 +257,7 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_builtin_i2c_NativeI2C_
 	(*env)->ReleaseByteArrayElements(env, txData, tx_buf, JNI_ABORT);
 
 	if (rc < 0) {
-		perror("I2C Error in i2c_smbus_write_block_data");
+		//perror("I2C Error in i2c_smbus_write_block_data");
 		return -errno;
 	}
 	return rc;
@@ -274,7 +274,7 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_builtin_i2c_NativeI2C_
 	(*env)->ReleaseByteArrayElements(env, txData, tx_buf, JNI_ABORT);
 
 	if (rc < 0) {
-		perror("I2C Error in i2c_smbus_block_process_call");
+		//perror("I2C Error in i2c_smbus_block_process_call");
 
 		(*env)->ReleaseByteArrayElements(env, rxData, rx_buf, JNI_ABORT);
 
@@ -298,7 +298,7 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_builtin_i2c_NativeI2C_
 	(*env)->ReleaseByteArrayElements(env, rxData, rx_buf, 0);
 
 	if (rc < 0) {
-		perror("I2C Error in i2c_smbus_read_i2c_block_data");
+		//perror("I2C Error in i2c_smbus_read_i2c_block_data");
 		return -errno;
 	}
 	return rc;
@@ -314,7 +314,7 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_builtin_i2c_NativeI2C_
 	(*env)->ReleaseByteArrayElements(env, txData, tx_buf, JNI_ABORT);
 
 	if (rc < 0) {
-		perror("I2C Error in i2c_smbus_write_i2c_block_data");
+		//perror("I2C Error in i2c_smbus_write_i2c_block_data");
 		return -errno;
 	}
 	return rc;

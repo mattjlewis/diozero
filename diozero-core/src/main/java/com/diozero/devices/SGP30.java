@@ -53,12 +53,12 @@ import com.diozero.util.SleepUtil;
  * Adafruit Arduino: https://github.com/adafruit/Adafruit_SGP30
  */
 public class SGP30 implements Closeable, Runnable {
-	private static final int PRODUCT_TYPE = 0;
+	public static final int PRODUCT_TYPE = 0;
 
 	private static final int CRC8_POLYNOMIAL = 0x31;
 	private static final int CRC8_INIT = 0xFF;
 
-	private static final int I2C_ADDRESS = 0x58;
+	public static final int I2C_ADDRESS = 0x58;
 
 	/* command and constants for reading the serial ID */
 	private static final short CMD_GET_SERIAL_ID = 0x3682;
@@ -112,40 +112,15 @@ public class SGP30 implements Closeable, Runnable {
 	private static final short CMD_SET_TVOC_BASELINE = 0x2077;
 	private static final int CMD_SET_TVOC_BASELINE_DELAY_MS = 10;
 
-	public static void main(String[] args) {
-		try (SGP30 sgp30 = new SGP30(1, I2C_ADDRESS)) {
-			// Product Type should be SGP30_PRODUCT_TYPE
-			// Product Feature Set should be 0x22
-			FeatureSetVersion fsv = sgp30.getFeatureSetVersion();
-			System.out.println(fsv);
-			if (fsv.getProductType() != PRODUCT_TYPE) {
-				Logger.error("Incorrect product type - got {}, expected {}", Integer.valueOf(fsv.getProductType()),
-						Integer.valueOf(PRODUCT_TYPE));
-			}
-			System.out.format("Serial Id: 0x%X%n", Long.valueOf(sgp30.getSerialId()));
-			System.out.println("Baseline: " + sgp30.getIaqBaseline());
-			System.out.println("Total VOC Inceptive Baseline: " + sgp30.getTvocInceptiveBaseline());
-			sgp30.measureTest();
-
-			System.out.println("Raw: " + sgp30.rawMeasurement());
-
-			sgp30.start(measurement -> System.out.println(measurement));
-
-			SleepUtil.sleepSeconds(17);
-
-			System.out.println("Raw: " + sgp30.rawMeasurement());
-
-			SleepUtil.sleepSeconds(5);
-		}
-
-		// System.exit(1);
-	}
-
 	private I2CDevice device;
 	private long startTimeMs;
 	private ScheduledFuture<?> future;
 	private SGP30Measurement lastMeasurement;
 	private Consumer<SGP30Measurement> measurementListener;
+
+	public SGP30(int controller) {
+		this(controller, I2C_ADDRESS);
+	}
 
 	public SGP30(int controller, int address) {
 		device = I2CDevice.builder(address).setController(controller).setByteOrder(ByteOrder.BIG_ENDIAN).build();
@@ -197,7 +172,7 @@ public class SGP30 implements Closeable, Runnable {
 		return (response[0] << 32) | (response[1] << 16) | response[2];
 	}
 
-	private void measureTest() {
+	public void measureTest() {
 		int[] response = command(CMD_MEASURE_TEST, CMD_MEASURE_TEST_WORDS, CMD_MEASURE_TEST_DELAY_MS);
 		if (response[0] == CMD_MEASURE_TEST_OK) {
 			Logger.info("measureTest success");

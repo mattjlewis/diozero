@@ -105,7 +105,7 @@ public class BMP180 implements ThermometerInterface, BarometerInterface, Closeab
 	 * @throws RuntimeIOException if an I/O error occurs
 	 **/
 	public BMP180(BMPMode mode) throws RuntimeIOException {
-		this(I2CConstants.BUS_1, mode);
+		this(I2CConstants.CONTROLLER_1, mode);
 	}
 
 	public BMP180(int controller, BMPMode mode) throws RuntimeIOException {
@@ -232,7 +232,7 @@ public class BMP180 implements ThermometerInterface, BarometerInterface, Closeab
 
 		pa += ((X1 + X2 + 3791) >> 4);
 
-		return pa;
+		return pa / 100f;
 	}
 
 	/**

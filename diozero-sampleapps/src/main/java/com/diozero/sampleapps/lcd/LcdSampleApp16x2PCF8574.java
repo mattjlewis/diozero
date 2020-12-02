@@ -64,7 +64,7 @@ public class LcdSampleApp16x2PCF8574 {
 		if (args.length > 0) {
 			device_address = Integer.decode(args[0]).intValue();
 		}
-		int controller = I2CConstants.BUS_0;
+		int controller = 0;
 		if (args.length > 1) {
 			controller = Integer.parseInt(args[1]);
 		}

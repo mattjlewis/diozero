@@ -99,7 +99,10 @@ public interface SerialConstants {
 	// 0 == no read timeout
 	static final int DEFAULT_READ_TIMEOUT_MILLIS = 0;
 	
-	// Convenience enum for read modes
+	/**
+	 * Specifies read mode: whether non-blocking, semi-blocking, blocking;
+	 * also whether blocks with or without timeout.
+	 */ 
 	public static enum ReadMode {
 		READ_SEMI_BLOCKING_WITH_TIMEOUT, READ_SEMI_BLOCKING_NO_TIMEOUT, READ_BLOCKING_WITH_TIMEOUT,
 		READ_BLOCKING_NO_TIMEOUT, NONBLOCKING;

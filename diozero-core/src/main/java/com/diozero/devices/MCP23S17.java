@@ -1,5 +1,7 @@
 package com.diozero.devices;
 
+import com.diozero.api.RuntimeIOException;
+
 /*
  * #%L
  * Organisation: diozero
@@ -32,14 +34,11 @@ package com.diozero.devices;
  */
 
 import com.diozero.api.SpiConstants;
-import com.diozero.api.RuntimeIOException;
-import com.diozero.api.SpiClockMode;
 import com.diozero.api.SpiDevice;
 import com.diozero.devices.mcp23xxx.MCP23x17;
 
-/*-
- * Wiring:
- * 
+/**
+ * @see MCP23x17
  */
 public class MCP23S17 extends MCP23x17 {
 	// From P8 of the datasheet, 5MHz for 1.8V – 5.5V and 10MHz for 2.7V – 5.5V

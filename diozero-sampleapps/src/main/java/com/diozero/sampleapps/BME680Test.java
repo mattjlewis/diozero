@@ -45,7 +45,12 @@ import com.diozero.util.SleepUtil;
  */
 public class BME680Test {
 	public static void main(String[] args) {
-		try (BME680 bme680 = new BME680()) {
+		int controller = 0;
+		if (args.length > 0) {
+			controller = Integer.parseInt(args[0]);
+		}
+		
+		try (BME680 bme680 = new BME680(controller)) {
 			bme680.setHumidityOversample(BME680.OversamplingMultiplier.X2);
 			bme680.setPressureOversample(BME680.OversamplingMultiplier.X4);
 			bme680.setTemperatureOversample(BME680.OversamplingMultiplier.X8);

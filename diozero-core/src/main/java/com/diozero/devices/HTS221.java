@@ -134,7 +134,7 @@ public class HTS221 implements ThermometerInterface, HygrometerInterface, Closea
 	private short t1Out;
 
 	public HTS221() {
-		this(I2CConstants.BUS_1, DEFAULT_DEVICE_ADDRESS);
+		this(I2CConstants.CONTROLLER_1, DEFAULT_DEVICE_ADDRESS);
 	}
 
 	public HTS221(int controller, int address) throws RuntimeIOException {

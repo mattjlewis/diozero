@@ -60,7 +60,7 @@ const uint8_t SPI_MODE_MASK = 0x3;
  * Signature: (Ljava/lang/String;BIBZ)I
  */
 JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_builtin_spi_NativeSpiDevice_spiOpen(
-		JNIEnv* env, jclass clz, jstring path, jbyte mode, jint speed, jbyte bitsPerWord, jboolean lsbFirst) {
+		JNIEnv* env, jclass clz, jstring path, jbyte mode, jint speedHz, jbyte bitsPerWord, jboolean lsbFirst) {
 	int len = (*env)->GetStringLength(env, path);
 	char filename[len];
 	(*env)->GetStringUTFRegion(env, path, 0, len, filename);
@@ -71,7 +71,7 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_builtin_spi_NativeSpiD
 		return -1;
 	}
 
-	if (Java_com_diozero_internal_provider_builtin_spi_NativeSpiDevice_spiConfig(env, clz, fd, mode, speed, bitsPerWord, lsbFirst == JNI_TRUE ? 1 : 0) < 0) {
+	if (Java_com_diozero_internal_provider_builtin_spi_NativeSpiDevice_spiConfig(env, clz, fd, mode, speedHz, bitsPerWord, lsbFirst == JNI_TRUE ? 1 : 0) < 0) {
 		printf("open failed: %s", strerror(errno));
 		return -1;
 	}
@@ -85,7 +85,7 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_builtin_spi_NativeSpiD
  * Signature: (IBIBZ)I
  */
 JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_builtin_spi_NativeSpiDevice_spiConfig(
-		JNIEnv* env, jclass clz, jint fileDescriptor, jbyte spiMode, jint speed, jbyte bitsPerWord, jboolean lsbFirst) {
+		JNIEnv* env, jclass clz, jint fileDescriptor, jbyte spiMode, jint speedHz, jbyte bitsPerWord, jboolean lsbFirst) {
 	// Note mode also includes SPI_CS_HIGH (0x04), SPI_LSB_FIRST (0x08), SPI_3WIRE (0x10),
 	// SPI_LOOP (0x20), SPI_NO_CS (0x40) and SPI_READY (0x80)
 	// Get the current mode value
@@ -115,7 +115,7 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_builtin_spi_NativeSpiD
 		printf("Warning SPI bits per word (%d) does not equal that set (%d)\n", actual_bits_per_word, bitsPerWord);
 	}
 
-	if (ioctl(fileDescriptor, SPI_IOC_WR_MAX_SPEED_HZ, &speed) < 0) {
+	if (ioctl(fileDescriptor, SPI_IOC_WR_MAX_SPEED_HZ, &speedHz) < 0) {
 		printf("Cannot set SPI speed: %s", strerror(errno));
 		return -1;
 	}
@@ -124,8 +124,8 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_builtin_spi_NativeSpiD
 		printf("Cannot get SPI speed: %s", strerror(errno));
 		return -1;
 	}
-	if (actual_speed != speed) {
-		printf("Warning SPI speed (%d) does not equal that set (%d)\n", actual_speed, speed);
+	if (actual_speed != speedHz) {
+		printf("Warning SPI speed (%d) does not equal that set (%d)\n", actual_speed, speedHz);
 	}
 
 	uint8_t lsb = lsbFirst > 0 ? SPI_LSB_FIRST : 0;

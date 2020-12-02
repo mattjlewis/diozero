@@ -35,9 +35,11 @@ import java.nio.ByteOrder;
 
 
 public interface I2CConstants {
-	public static final int BUS_0 = 0;
-	public static final int BUS_1 = 1;
-	public static final ByteOrder DEFAULT_BYTE_ORDER = ByteOrder.BIG_ENDIAN;
+	static final int CONTROLLER_0 = 0;
+	static final int CONTROLLER_1 = 1;
+	static final int CONTROLLER_2 = 2;
+	
+	static final ByteOrder DEFAULT_BYTE_ORDER = ByteOrder.BIG_ENDIAN;
 	
 	public static enum AddressSize {
 		SIZE_7(7), SIZE_10(10);

@@ -263,7 +263,7 @@ public class BME280 implements BarometerInterface, ThermometerInterface, Hygrome
 	 * @throws RuntimeIOException if instance cannot be created
 	 */
 	public BME280() throws RuntimeIOException {
-		this(I2CConstants.BUS_1, DEFAULT_ADDRESS);
+		this(I2CConstants.CONTROLLER_1, DEFAULT_ADDRESS);
 	}
 
 	/**
@@ -486,7 +486,7 @@ public class BME280 implements BarometerInterface, ThermometerInterface, Hygrome
 			humidity = ((long) v_x1_u32r) >> 12;
 		}
 
-		return new float[] { temp / 100.0f, pressure / 25600.0f, humidity / 1024.0f };
+		return new float[] { temp / 100f, pressure / 25600f, humidity / 1024f };
 	}
 
 	/**

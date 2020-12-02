@@ -39,19 +39,24 @@ import com.diozero.api.I2CDevice;
 public class I2CDetect {
 	public static void main(String[] args) {
 		if (args.length < 1) {
-			Logger.error("Usage: {} <i2c-controller> [first last]", I2CDetect.class.getName());
+			Logger.error("Usage: {} <i2c-controller> [QUICK|READ|AUTO] [first last]", I2CDetect.class.getName());
 			System.exit(1);
 		}
 		
 		int controller = Integer.parseInt(args[0]);
+		
 		I2CDevice.ProbeMode mode = I2CDevice.ProbeMode.AUTO;
+		if (args.length > 1) {
+			mode = I2CDevice.ProbeMode.valueOf(args[1]);
+		}
+		
 		int first = 0x03;
 		int last = 0x77;
-		if (args.length > 1) {
-			first = Math.max(Integer.parseInt(args[1]), 0);
-		}
 		if (args.length > 2) {
-			last = Math.min(Integer.parseInt(args[2]), 127);
+			first = Math.max(Integer.parseInt(args[2]), 0);
+		}
+		if (args.length > 3) {
+			last = Math.min(Integer.parseInt(args[3]), 127);
 		}
 		
 		scanI2CBus(controller, mode, first, last);

@@ -165,7 +165,7 @@ public class TSL2561 implements Closeable, LuminositySensorInterface {
 	private I2CDevice i2cDevice;
 
 	public TSL2561(TSL2561Package tsl2561Package) throws RuntimeIOException {
-		this(I2CConstants.BUS_1, tsl2561Package);
+		this(I2CConstants.CONTROLLER_1, tsl2561Package);
 	}
 
 	public TSL2561(int controller, TSL2561Package tsl2561Package)

@@ -133,7 +133,7 @@ public class MPU9150DriverTest {
 	}
 	
 	public void run() {
-		try (MPU9150Driver mpu = new MPU9150Driver(I2CConstants.BUS_1)) {
+		try (MPU9150Driver mpu = new MPU9150Driver(I2CConstants.CONTROLLER_1)) {
 			mpuInit(mpu);
 			System.err.println("Ready.");
 

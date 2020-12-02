@@ -52,7 +52,7 @@ public class MPU9150Device implements Closeable, ImuInterface {
 	private Collection<OrientationListener> orientationListeners;
 	
 	public MPU9150Device() throws RuntimeIOException {
-		this(I2CConstants.BUS_1, DEFAULT_FIFO_RATE);
+		this(I2CConstants.CONTROLLER_1, DEFAULT_FIFO_RATE);
 	}
 	
 	public MPU9150Device(int controller, int fifoRate) throws RuntimeIOException {

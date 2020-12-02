@@ -297,7 +297,7 @@ public class LPS25H implements ThermometerInterface, BarometerInterface, Closeab
 	private I2CDevice device;
 
 	public LPS25H() {
-		this(I2CConstants.BUS_1, DEFAULT_DEVICE_ADDRESS0);
+		this(I2CConstants.CONTROLLER_1, DEFAULT_DEVICE_ADDRESS0);
 	}
 
 	public LPS25H(int controller, int address) {

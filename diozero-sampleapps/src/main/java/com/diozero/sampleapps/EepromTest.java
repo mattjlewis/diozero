@@ -59,8 +59,8 @@ public class EepromTest {
 			device_address = Integer.parseInt(args[1]);
 		}
 		
-		test(controller, 0x04);
-		test(controller, 0x05);
+		//test(controller, 0x04);
+		//test(controller, 0x05);
 		test(controller, device_address);
 	}
 	

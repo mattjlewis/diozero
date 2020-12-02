@@ -61,7 +61,7 @@ public class LcdGame implements Closeable {
 		if (args.length > 0) {
 			device_address = Integer.decode(args[0]).intValue();
 		}
-		int controller = I2CConstants.BUS_1;
+		int controller = I2CConstants.CONTROLLER_1;
 		if (args.length > 1) {
 			controller = Integer.parseInt(args[1]);
 		}

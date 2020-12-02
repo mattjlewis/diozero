@@ -35,6 +35,27 @@ package com.diozero.devices.mcp23xxx;
 import com.diozero.api.PinInfo;
 import com.diozero.sbc.BoardPinInfo;
 
+/**
+ * <a href="Wiring">https://www.instructables.com/Arduino-NANO-Tests-2-MCP23S17-IO-Xpanders</a>
+ * 
+ * <pre>
+ * I2C |   SPI | Notch | SPI/I2C
+ *     |  GPB0 |  1 28 | GPA7
+ *     |  GPB1 |  2 27 | GPA6
+ *     |  GPB2 |  3 26 | GPA5
+ *     |  GPB3 |  4 25 | GPA4
+ *     |  GPB4 |  5 24 | GPA3
+ *     |  GPB5 |  6 23 | GPA2
+ *     |  GPB6 |  7 22 | GPA1
+ *     |  GPB7 |  8 21 | GPA0
+ *     |  3v3  |  9 20 | INT A
+ *     |  GND  | 10 19 | INT B
+ *  NC |   CS  | 11 18 | 3v3 (via 1KOhm resister)
+ * SCK |  SCK  | 12 17 | GND
+ * SDA | MOSI  | 13 16 | GND
+ *  NC | MISO  | 14 15 | GND
+ * </pre>
+ */
 public abstract class MCP23x17 extends MCP23xxx {
 	private static final int NUM_PORTS = 2;
 	
