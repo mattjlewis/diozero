@@ -76,5 +76,5 @@ public interface SpiDeviceInterface extends DeviceInterface {
 	 * @return the data read from the device, same length as the data written.
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
-	byte[] writeAndRead(byte[] data) throws RuntimeIOException;
+	byte[] writeAndRead(byte... data) throws RuntimeIOException;
 }

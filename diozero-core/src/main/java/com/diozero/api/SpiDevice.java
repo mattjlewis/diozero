@@ -221,7 +221,7 @@ public class SpiDevice implements SpiDeviceInterface {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public byte[] writeAndRead(byte[] out) throws RuntimeIOException {
+	public byte[] writeAndRead(byte... out) throws RuntimeIOException {
 		return delegate.writeAndRead(out);
 	}
 }

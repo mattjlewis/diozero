@@ -77,7 +77,7 @@ public class DefaultNativeSpiDevice extends AbstractDevice implements SpiDeviceI
 	}
 
 	@Override
-	public byte[] writeAndRead(byte[] txBuffer) throws RuntimeIOException {
+	public byte[] writeAndRead(byte... txBuffer) throws RuntimeIOException {
 		return device.writeAndRead(txBuffer, 0);
 	}
 }

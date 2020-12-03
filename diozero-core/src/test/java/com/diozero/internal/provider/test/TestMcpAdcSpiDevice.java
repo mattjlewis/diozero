@@ -69,7 +69,7 @@ public class TestMcpAdcSpiDevice extends TestSpiDevice {
 	}
 
 	@Override
-	public byte[] writeAndRead(byte[] txBuffer) throws RuntimeIOException {
+	public byte[] writeAndRead(byte... txBuffer) throws RuntimeIOException {
 		byte b = txBuffer[0];
 		//out.put((byte) (0x10 | (differentialRead ? 0 : 0x08 ) | adcPin));
 		//int pin = b & 0x07;

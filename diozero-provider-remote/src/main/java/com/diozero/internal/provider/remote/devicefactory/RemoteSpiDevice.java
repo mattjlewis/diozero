@@ -95,7 +95,7 @@ public class RemoteSpiDevice extends AbstractDevice implements SpiDeviceInterfac
 	}
 
 	@Override
-	public byte[] writeAndRead(byte[] txBuffer) throws RuntimeIOException {
+	public byte[] writeAndRead(byte... txBuffer) throws RuntimeIOException {
 		SpiWriteAndRead request = new SpiWriteAndRead(controller, chipSelect, txBuffer, UUID.randomUUID().toString());
 
 		SpiResponse response = deviceFactory.getProtocolHandler().request(request);

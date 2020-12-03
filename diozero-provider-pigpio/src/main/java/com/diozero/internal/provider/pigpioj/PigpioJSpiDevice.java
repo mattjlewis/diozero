@@ -95,7 +95,7 @@ public class PigpioJSpiDevice extends AbstractDevice implements SpiDeviceInterfa
 	}
 
 	@Override
-	public byte[] writeAndRead(byte[] txBuffer) throws RuntimeIOException {
+	public byte[] writeAndRead(byte... txBuffer) throws RuntimeIOException {
 		if (! isOpen()) {
 			throw new IllegalStateException("SPI Device " + controller + "-" + chipSelect + " is closed");
 		}

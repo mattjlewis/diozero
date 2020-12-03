@@ -42,6 +42,18 @@ import org.tinylog.Logger;
 
 import com.diozero.sbc.DeviceFactoryHelper;
 
+/**
+ * Serial device. The SerialDevice represents serial devices connected via USB
+ * or via the serial RX/TX pins on the GPIO header.
+ * <p>
+ * On the Raspberry Pi, to use the serial RX/TX pins on the GPIO header, the
+ * serial interface must be enabled and the login shell must be disabled. The
+ * device file name for the serial RX/TX pins is /dev/serial0. See
+ * <a href="https://www.raspberrypi.org/documentation/configuration/uart.md">
+ * Raspberry Pi UART configuration</a> for additional detail.
+ * </p>
+ * 
+ */
 public class SerialDevice implements SerialConstants, SerialDeviceInterface {
 	public static class DeviceInfo {
 		private String deviceName;
@@ -94,7 +106,7 @@ public class SerialDevice implements SerialConstants, SerialDeviceInterface {
 
 	/**
 	 * Attempt to discover the locally attached serial devices using Linux device
-	 * tree
+	 * tree.
 	 * 
 	 * @return A list of locally attached devices
 	 */
@@ -238,6 +250,82 @@ public class SerialDevice implements SerialConstants, SerialDeviceInterface {
 				usb_product_id);
 	}
 
+	/**
+	 * Serial device builder. Default values:
+	 * <ul>
+	 * <li>baud: {@link SerialConstants#DEFAULT_BAUD}</li>
+	 * <li>dataBits: {@link SerialConstants#DEFAULT_DATA_BITS}</li>
+	 * <li>stopBits: {@link SerialConstants#DEFAULT_STOP_BITS}</li>
+	 * <li>parity: {@link SerialConstants#DEFAULT_PARITY}</li>
+	 * <li>readBlocking: {@link SerialConstants#DEFAULT_READ_BLOCKING}</li>
+	 * <li>minReadChars: {@link SerialConstants#DEFAULT_MIN_READ_CHARS}</li>
+	 * <li>readTimeout: {@link SerialConstants#DEFAULT_READ_TIMEOUT_MILLIS}</li>
+	 * </ul>
+	 */
+	public static class Builder {
+		private String deviceFilename;
+		private int baud = DEFAULT_BAUD;
+		private DataBits dataBits = DEFAULT_DATA_BITS;
+		private StopBits stopBits = DEFAULT_STOP_BITS;
+		private Parity parity = DEFAULT_PARITY;
+		private boolean readBlocking = DEFAULT_READ_BLOCKING;
+		private int minReadChars = DEFAULT_MIN_READ_CHARS;
+		private int readTimeoutMillis = DEFAULT_READ_TIMEOUT_MILLIS;
+
+		protected Builder(String deviceFilename) {
+			this.deviceFilename = deviceFilename;
+		}
+
+		public Builder setDeviceFilename(String deviceFilename) {
+			this.deviceFilename = deviceFilename;
+			return this;
+		}
+
+		public Builder setBaud(int baud) {
+			this.baud = baud;
+			return this;
+		}
+
+		public Builder setDataBits(DataBits dataBits) {
+			this.dataBits = dataBits;
+			return this;
+		}
+
+		public Builder setStopBits(StopBits stopBits) {
+			this.stopBits = stopBits;
+			return this;
+		}
+
+		public Builder setParity(Parity parity) {
+			this.parity = parity;
+			return this;
+		}
+
+		public Builder setReadBlocking(boolean readBlocking) {
+			this.readBlocking = readBlocking;
+			return this;
+		}
+
+		public Builder setMinReadChars(int minReadChars) {
+			this.minReadChars = minReadChars;
+			return this;
+		}
+
+		public Builder setReadTimeoutMillis(int readTimeoutMillis) {
+			this.readTimeoutMillis = readTimeoutMillis;
+			return this;
+		}
+
+		public SerialDevice build() {
+			return new SerialDevice(deviceFilename, baud, dataBits, stopBits, parity, readBlocking, minReadChars,
+					readTimeoutMillis);
+		}
+	}
+
+	public static Builder builder(String deviceFilename) {
+		return new Builder(deviceFilename);
+	}
+
 	private SerialDeviceInterface delegate;
 	private String deviceFilename;
 
@@ -266,16 +354,12 @@ public class SerialDevice implements SerialConstants, SerialDeviceInterface {
 	 * {@link SerialConstants#DEFAULT_READ_TIMEOUT_MILLIS read timeout}
 	 *
 	 * @param deviceFilename The O/S file name for the device, e.g. /dev/ttyACM0
-	 * @param baud           Baud rate, see {@link com.diozero.api.SerialConstants
-	 *                       SerialConstants} for valid baud rate values
-	 * @param dataBits       Number of
-	 *                       {@link com.diozero.api.SerialConstants.DataBits data
-	 *                       bits}
-	 * @param stopBits       Number of
-	 *                       {@link com.diozero.api.SerialConstants.StopBits stop
-	 *                       bits}
-	 * @param parity         Device error detection
-	 *                       {@link com.diozero.api.SerialConstants.Parity parity}
+	 * @param baud           Baud rate, see {@link SerialConstants SerialConstants}
+	 *                       for valid baud rate values
+	 * @param dataBits       Number of {@link SerialConstants.DataBits data bits}
+	 * @param stopBits       Number of {@link SerialConstants.StopBits stop bits}
+	 * @param parity         Device error detection {@link SerialConstants.Parity
+	 *                       parity}
 	 * @throws RuntimeIOException If an I/O error occurs
 	 */
 	public SerialDevice(String deviceFilename, int baud, DataBits dataBits, StopBits stopBits, Parity parity)
@@ -288,17 +372,11 @@ public class SerialDevice implements SerialConstants, SerialDeviceInterface {
 	 * Create a new serial device
 	 *
 	 * @param deviceFilename    The O/S file name for the device, e.g. /dev/ttyACM0
-	 * @param baud              Baud rate, see
-	 *                          {@link com.diozero.api.SerialConstants
+	 * @param baud              Baud rate, see {@link SerialConstants
 	 *                          SerialConstants} for valid baud rate values
-	 * @param dataBits          Number of
-	 *                          {@link com.diozero.api.SerialConstants.DataBits data
-	 *                          bits}
-	 * @param stopBits          Number of
-	 *                          {@link com.diozero.api.SerialConstants.StopBits stop
-	 *                          bits}
-	 * @param parity            Device error detection
-	 *                          {@link com.diozero.api.SerialConstants.Parity
+	 * @param dataBits          Number of {@link SerialConstants.DataBits data bits}
+	 * @param stopBits          Number of {@link SerialConstants.StopBits stop bits}
+	 * @param parity            Device error detection {@link SerialConstants.Parity
 	 *                          parity}
 	 * @param readBlocking      Should all read operations block until data is
 	 *                          available?

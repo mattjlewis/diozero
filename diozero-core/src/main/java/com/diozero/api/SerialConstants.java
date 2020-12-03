@@ -65,6 +65,8 @@ public interface SerialConstants {
 	static final int BAUD_3000000 = 3000000;
 	static final int BAUD_3500000 = 3500000;
 	static final int BAUD_4000000 = 4000000;
+	
+	/** {@link BAUD_9600} */
 	static final int DEFAULT_BAUD = BAUD_9600;
 
 	/**
@@ -73,6 +75,7 @@ public interface SerialConstants {
 	static enum DataBits {
 		CS5, CS6, CS7, CS8;
 	}
+	/** {@link DataBits#CS8} */
 	static final DataBits DEFAULT_DATA_BITS = DataBits.CS8;
 
 	/**
@@ -81,6 +84,7 @@ public interface SerialConstants {
 	static enum StopBits {
 		ONE_STOP_BIT, TWO_STOP_BITS;
 	}
+	/** {@link StopBits#ONE_STOP_BIT} */
 	static final StopBits DEFAULT_STOP_BITS = StopBits.ONE_STOP_BIT;
 
 	/**
@@ -89,6 +93,7 @@ public interface SerialConstants {
 	static enum Parity {
 		NO_PARITY, EVEN_PARITY, ODD_PARITY, MARK_PARITY, SPACE_PARITY;
 	}
+	/** {@link Parity#NO_PARITY} */
 	static final Parity DEFAULT_PARITY = Parity.NO_PARITY;
 	
 	static final boolean DEFAULT_READ_BLOCKING = true;
