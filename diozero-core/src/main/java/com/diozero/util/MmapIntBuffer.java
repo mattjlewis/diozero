@@ -72,8 +72,4 @@ public class MmapIntBuffer implements Closeable {
 	public void put(int index, int i) {
 		intBuffer.put(index, i);
 	}
-	
-	public void update(int index, int mask) {
-		intBuffer.put(index, intBuffer.get(index) & mask);
-	}
 }

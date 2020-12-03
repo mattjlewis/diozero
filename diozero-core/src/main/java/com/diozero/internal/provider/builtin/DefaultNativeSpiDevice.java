@@ -67,7 +67,7 @@ public class DefaultNativeSpiDevice extends AbstractDevice implements SpiDeviceI
 	}
 
 	@Override
-	public void write(byte[] txBuffer) {
+	public void write(byte... txBuffer) {
 		device.write(txBuffer, 0);
 	}
 

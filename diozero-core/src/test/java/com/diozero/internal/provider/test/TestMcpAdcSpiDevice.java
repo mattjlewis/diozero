@@ -59,13 +59,13 @@ public class TestMcpAdcSpiDevice extends TestSpiDevice {
 	}
 	
 	@Override
-	public void write(byte[] txBuffer) throws RuntimeIOException {
-		
+	public void write(byte... txBuffer) throws RuntimeIOException {
+		//
 	}
 	
 	@Override
 	public void write(byte[] txBuffer, int index, int length) throws RuntimeIOException {
-		
+		//
 	}
 
 	@Override

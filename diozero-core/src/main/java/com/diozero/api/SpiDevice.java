@@ -200,7 +200,7 @@ public class SpiDevice implements SpiDeviceInterface {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void write(byte[] txBuffer) throws RuntimeIOException {
+	public void write(byte... txBuffer) throws RuntimeIOException {
 		int written = 0;
 		do {
 			int to_write = Math.min(txBuffer.length - written, maxBufferSize);

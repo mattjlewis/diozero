@@ -39,8 +39,6 @@ import com.diozero.internal.board.chip.CHIPBoardInfoProvider;
 import com.diozero.internal.board.odroid.OdroidBoardInfoProvider;
 import com.diozero.internal.board.raspberrypi.RaspberryPiBoardInfoProvider;
 import com.diozero.internal.board.tinkerboard.TinkerBoardBoardInfoProvider;
-import com.diozero.sbc.BoardInfo;
-import com.diozero.sbc.SystemInfo;
 
 @SuppressWarnings("static-method")
 public class SystemInfoTest {

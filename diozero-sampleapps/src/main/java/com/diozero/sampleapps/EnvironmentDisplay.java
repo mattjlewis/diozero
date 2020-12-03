@@ -37,8 +37,12 @@ import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import javax.imageio.ImageIO;
 
 import org.tinylog.Logger;
 
@@ -49,6 +53,7 @@ import com.diozero.api.GpioEventTrigger;
 import com.diozero.api.GpioPullUpDown;
 import com.diozero.devices.Ads1x15;
 import com.diozero.devices.BME280;
+import com.diozero.devices.PwmLed;
 import com.diozero.devices.oled.ColourSsdOled;
 import com.diozero.devices.oled.SSD1351;
 import com.diozero.util.DiozeroScheduler;
@@ -57,8 +62,9 @@ import com.diozero.util.TemperatureUtil;
 
 public class EnvironmentDisplay {
 	private static final Character DEGREES_CHARACTER = Character.valueOf('\u00B0');
-	
+
 	private static float reading;
+	private static BufferedImage backgroundImage;
 
 	public static void main(String[] args) {
 		// For the SSD1351 OLED
@@ -84,7 +90,9 @@ public class EnvironmentDisplay {
 						Ads1x15.Ads1115DataRate.DR_8HZ);
 				AnalogInputDevice ain = new AnalogInputDevice(adc, adc_read_channel);
 				DigitalInputDevice adc_ready_pin = new DigitalInputDevice(adc_ready_gpio, GpioPullUpDown.PULL_UP,
-						GpioEventTrigger.BOTH)) {
+						GpioEventTrigger.BOTH);
+
+				PwmLed pwm_led = new PwmLed(18)) {
 			int width = oled.getWidth();
 			int height = oled.getHeight();
 			final BufferedImage image = new BufferedImage(width, height, oled.getNativeImageType());
@@ -95,12 +103,32 @@ public class EnvironmentDisplay {
 			FontMetrics fm = g2d.getFontMetrics(font);
 			int line_height = fm.getMaxAscent() + fm.getMaxDescent();
 			g2d.setBackground(Color.BLACK);
+			
+			try (InputStream is = EnvironmentDisplay.class.getResourceAsStream("/images/Background.png")) {
+				if (is != null) {
+					// Must be 128x128
+					BufferedImage i = ImageIO.read(is);
+					// Convert to the OLED image type
+					backgroundImage = new BufferedImage(oled.getWidth(), oled.getHeight(), oled.getNativeImageType());
+					Graphics2D g = backgroundImage.createGraphics();
+					g.drawImage(i, 0, 0, oled.getWidth(), oled.getHeight(), null);
+					g.dispose();
+				}
+			} catch (IOException e) {
+				backgroundImage = null;
+			}
 
-			adc.setContinousMode(adc_ready_pin, ain.getGpio(), new_reading -> EnvironmentDisplay.reading = new_reading);
+			adc.setContinousMode(adc_ready_pin, ain.getGpio(), new_reading -> reading = new_reading);
 
-			int period_ms = 100;
+			int period_ms = 200;
 			DiozeroScheduler.getDaemonInstance().scheduleAtFixedRate(() -> {
-				g2d.clearRect(0, 0, width, height);
+				pwm_led.setValue(reading);
+				
+				if (backgroundImage == null) {
+					g2d.clearRect(0, 0, width, height);
+				} else {
+					g2d.drawImage(backgroundImage, 0, 0, null);
+				}
 
 				int index = 1;
 
@@ -118,16 +146,16 @@ public class EnvironmentDisplay {
 				g2d.setColor(Color.blue);
 				g2d.drawString(h_text, 0, index++ * line_height);
 
+				String adc_text = String.format("Pot: %.2f%% (%.2fv)", Float.valueOf(reading),
+						Float.valueOf(ain.convertToScaledValue(reading)));
+				g2d.setColor(Color.lightGray);
+				g2d.drawString(adc_text, 0, height);
+
 				int radius = 40;
 				int baseline_y = height - line_height;
 
 				drawSpeedometer(g2d, (width - radius) / 2, baseline_y, radius, reading, Color.white, Color.blue,
 						Color.red);
-
-				String adc_text = String.format("Pot: %.2f%% (%.2fv)", Float.valueOf(reading),
-						Float.valueOf(ain.convertToScaledValue(reading)));
-				g2d.setColor(Color.lightGray);
-				g2d.drawString(adc_text, 0, height);
 
 				Logger.debug("Updating image");
 

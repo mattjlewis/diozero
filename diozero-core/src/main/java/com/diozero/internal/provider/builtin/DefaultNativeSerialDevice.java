@@ -79,7 +79,7 @@ public class DefaultNativeSerialDevice extends AbstractDevice implements SerialD
 	}
 
 	@Override
-	public void write(byte[] data) {
+	public void write(byte... data) {
 		device.write(data);
 	}
 

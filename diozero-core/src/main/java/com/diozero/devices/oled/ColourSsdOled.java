@@ -47,22 +47,22 @@ public abstract class ColourSsdOled extends SsdOled {
 	public static final byte MAX_RED = (byte) (Math.pow(2, RED_BITS) - 1);
 	public static final byte MAX_GREEN = (byte) (Math.pow(2, GREEN_BITS) - 1);
 	public static final byte MAX_BLUE = (byte) (Math.pow(2, BLUE_BITS) - 1);
-	
+
 	public ColourSsdOled(int controller, int chipSelect, DigitalOutputDevice dcPin, DigitalOutputDevice resetPin,
 			int width, int height, int imageType) {
 		super(controller, chipSelect, dcPin, resetPin, width, height, imageType);
-		
+
 		// 16 bit colour hence 2x
 		buffer = new byte[2 * width * height];
-		
+
 		init();
 	}
-	
+
 	@Override
 	protected void home() {
 		goTo(0, 0);
 	}
-	
+
 	@Override
 	public void display(BufferedImage image) {
 		if (image.getWidth() != width || image.getHeight() != height) {
@@ -72,38 +72,39 @@ public abstract class ColourSsdOled extends SsdOled {
 
 		// Make sure the image is of the correct type
 		BufferedImage image_to_display = image;
-		if (image.getType() != imageType ) {
+		if (image.getType() != imageType) {
 			Logger.warn("Source image type ({}) doesn't match native image type ({}); converting",
 					Integer.valueOf(image.getType()), Integer.valueOf(imageType));
 			image_to_display = new BufferedImage(width, height, imageType);
 			Graphics2D g2d = image_to_display.createGraphics();
-			
+
 			g2d.drawImage(image, 0, 0, null);
 			g2d.dispose();
 		}
 
 		short[] image_data = ((DataBufferUShort) image_to_display.getRaster().getDataBuffer()).getData();
-		for (int i=0; i<image_data.length; i++) {
-			buffer[2*i] = (byte) ((image_data[i] >> 8) & 0xff);
-			buffer[2*i+1] = (byte) (image_data[i] & 0xff);
+		for (int i = 0; i < image_data.length; i++) {
+			buffer[2 * i] = (byte) ((image_data[i] >> 8) & 0xff);
+			buffer[2 * i + 1] = (byte) (image_data[i] & 0xff);
 		}
 
 		display();
 	}
-	
+
 	public void setPixel(int x, int y, byte red, byte green, byte blue, boolean display) {
-		int index = 2 * (x + y*width);
+		int index = 2 * (x + y * width);
 		short colour = ColourUtil.createColour565(red, green, blue);
 		// MSB is transmitted first
 		buffer[index] = (byte) ((colour >> 8) & 0xff);
-		buffer[index+1] = (byte) (colour & 0xff);
-		
+		buffer[index + 1] = (byte) (colour & 0xff);
+
 		if (display) {
 			goTo(x, y);
 			data(index, 2);
 		}
 	}
-	
+
 	public abstract void setContrast(byte level);
+
 	public abstract void setContrast(byte red, byte green, byte blue);
 }

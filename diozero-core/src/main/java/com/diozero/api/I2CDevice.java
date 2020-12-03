@@ -54,14 +54,14 @@ public class I2CDevice implements I2CDeviceInterface {
 	/**
 	 * I2C device builder. Default values:
 	 * <ul>
-	 * <li>controller: 0</li>
-	 * <li>addressSize: 7</li>
-	 * <li>byteOrder: Big Endian</li>
+	 * <li>controller: 1</li>
+	 * <li>addressSize: {@link I2CConstants.AddressSize#SIZE_7 7}</li>
+	 * <li>byteOrder: {@link ByteOrder#BIG_ENDIAN Big Endian}</li>
 	 * </ul>
 	 */
 	public static class Builder {
-		public static final ByteOrder DEFAULT_BYTE_ORDER = ByteOrder.LITTLE_ENDIAN;
-		
+		public static final ByteOrder DEFAULT_BYTE_ORDER = ByteOrder.BIG_ENDIAN;
+
 		private I2CDeviceFactoryInterface factory;
 		private int controller = I2CConstants.CONTROLLER_1;
 		private int address;
@@ -91,7 +91,8 @@ public class I2CDevice implements I2CDeviceInterface {
 		/**
 		 * Set the I2C bus controller
 		 * 
-		 * @param controller the I2C bus controller
+		 * @param controller the I2C bus controller number
+		 *                   (<code>/dev/i2c-&lt;controller&gt;</code>)
 		 * @return this builder instance
 		 */
 		public Builder setController(int controller) {
@@ -125,7 +126,8 @@ public class I2CDevice implements I2CDeviceInterface {
 		/**
 		 * Set the Default {@link ByteOrder byte order} for this device
 		 * 
-		 * @param byteOrder Default {@link ByteOrder byte order} for this device
+		 * @param byteOrder the {@link ByteOrder byte order} that is only used in the
+		 *                  additional non-SMBus I2C device utility methods
 		 * @return this builder instance
 		 */
 		public Builder setByteOrder(ByteOrder byteOrder) {
@@ -220,7 +222,7 @@ public class I2CDevice implements I2CDeviceInterface {
 	 * @param controller  I2C bus controller number
 	 * @param address     I2C device address
 	 * @param addressSize I2C device address size. Can be 7 or 10
-	 * @param byteOrder   The {@link ByteOrder byte order} that is only used in the
+	 * @param byteOrder   the {@link ByteOrder byte order} that is only used in the
 	 *                    additional non-SMBus I2C device utility methods
 	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
@@ -241,7 +243,8 @@ public class I2CDevice implements I2CDeviceInterface {
 	 * @param controller    I2C bus controller number
 	 * @param address       I2C device address
 	 * @param addressSize   I2C device address size. Can be 7 or 10
-	 * @param byteOrder     Default {@link ByteOrder byte order} for this device
+	 * @param byteOrder     the {@link ByteOrder byte order} that is only used in
+	 *                      the additional non-SMBus I2C device utility methods
 	 * @throws RuntimeIOException If an I/O error occurred
 	 */
 	public I2CDevice(I2CDeviceFactoryInterface deviceFactory, int controller, int address,
@@ -358,10 +361,9 @@ public class I2CDevice implements I2CDeviceInterface {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * <strong>Note</strong> that the byte order for the returned word data is in
-	 * {@link ByteOrder#LITTLE_ENDIAN Little Endian} order as per the SMBus
-	 * specification, regardless of the {@link ByteOrder byte order} specified in
-	 * the constructor
+	 * <strong>Note</strong> that the byte order for the returned word data is
+	 * {@link ByteOrder#LITTLE_ENDIAN Little Endian} as per the SMBus specification,
+	 * regardless of the {@link ByteOrder byte order} specified in the constructor
 	 */
 	@Override
 	public short readWordData(int register) throws RuntimeIOException {
@@ -382,6 +384,34 @@ public class I2CDevice implements I2CDeviceInterface {
 	public void writeWordData(int register, short value) throws RuntimeIOException {
 		synchronized (delegate) {
 			delegate.writeWordData(register, value);
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * <strong>Note</strong> that the byte order for the returned word data is
+	 * {@link ByteOrder#BIG_ENDIAN Big Endian}, regardless of the {@link ByteOrder
+	 * byte order} specified in the constructor
+	 */
+	@Override
+	public short readWordSwapped(int register) throws RuntimeIOException {
+		synchronized (delegate) {
+			return delegate.readWordSwapped(register);
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * <strong>Note</strong> that the {@link ByteOrder byte order} for the input
+	 * value is {@link ByteOrder#BIG_ENDIAN Big Endian}, regardless of the
+	 * {@link ByteOrder byte order} specified in the constructor
+	 */
+	@Override
+	public void writeWordSwapped(int register, short value) throws RuntimeIOException {
+		synchronized (delegate) {
+			delegate.writeWordSwapped(register, value);
 		}
 	}
 
@@ -505,8 +535,8 @@ public class I2CDevice implements I2CDeviceInterface {
 
 	/**
 	 * Utility method that wraps the response from {@link I2CDevice#readBytes(int)}
-	 * in a {@link ByteBuffer} using the {@link ByteOrder byte order} specified in
-	 * the constructor.
+	 * in a {@link ByteBuffer} that is configured to use the {@link ByteOrder byte
+	 * order} specified in the constructor.
 	 * 
 	 * @see I2CDevice#readBytes(int)
 	 * @see ByteBuffer#wrap(byte[])
@@ -580,19 +610,23 @@ public class I2CDevice implements I2CDeviceInterface {
 	}
 
 	/**
-	 * Utility method that wraps
-	 * {@link I2CDevice#readI2CBlockDataByteBuffer(int, int)} to read a signed short
-	 * value from the requested register using the {@link ByteOrder} byte order
-	 * specified in the constructor.
+	 * Utility method that invokes either {@link I2CDevice#readWordData(int)} or
+	 * {@link I2CDevice#readWordSwapped(int)} to read a signed short value from the
+	 * requested register in the {@link ByteOrder byte order} specified in the
+	 * constructor.
 	 * 
-	 * @see I2CDevice#readI2CBlockDataByteBuffer(int, int)
+	 * @see I2CDevice#readWordData(int)
+	 * @see I2CDevice#readWordSwapped(int)
 	 * 
 	 * @param register register to read from
 	 * @return the signed short value read
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	public short readShort(int register) throws RuntimeIOException {
-		return readI2CBlockDataByteBuffer(register, 2).getShort();
+		if (byteOrder == ByteOrder.LITTLE_ENDIAN) {
+			return readWordData(register);
+		}
+		return readWordSwapped(register);
 	}
 
 	/**
@@ -644,8 +678,8 @@ public class I2CDevice implements I2CDeviceInterface {
 	/**
 	 * Utility method that wraps
 	 * {@link I2CDevice#readI2CBlockDataByteArray(int, int)} to read an unsigned int
-	 * value on the specified length from the requested register using the {@link ByteOrder byte
-	 * order} specified in the constructor.
+	 * value on the specified length from the requested register using the
+	 * {@link ByteOrder byte order} specified in the constructor.
 	 * 
 	 * @see I2CDevice#readI2CBlockDataByteArray(int, int)
 	 * 

@@ -34,7 +34,6 @@ package com.diozero.firmata;
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;

@@ -74,7 +74,7 @@ public interface SerialDeviceInterface extends DeviceInterface {
 	 * @param data The data to write
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
-	void write(byte[] data) throws RuntimeIOException;
+	void write(byte... data) throws RuntimeIOException;
 
 	/**
 	 * Get the number of bytes that are available to be read

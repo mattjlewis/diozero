@@ -496,9 +496,9 @@ public class Ads1x15 extends AbstractDeviceFactory implements AnalogInputDeviceF
 	}
 
 	private short readConversionData(int adcNumber) {
-		byte[] data = device.readI2CBlockDataByteArray(ADDR_POINTER_CONV, 2);
-		short value = (short) ((data[0] & 0xff) << 8 | (data[1] & 0xff));
-		//short value = device.readWordData(ADDR_POINTER_CONV);
+		//byte[] data = device.readI2CBlockDataByteArray(ADDR_POINTER_CONV, 2);
+		//short value = (short) ((data[0] & 0xff) << 8 | (data[1] & 0xff));
+		short value = device.readShort(ADDR_POINTER_CONV);
 
 		if (model == Model.ADS1015) {
 			value >>= 4;

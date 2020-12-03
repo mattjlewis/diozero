@@ -132,7 +132,7 @@ public class PigpioJSerialDevice extends AbstractDevice implements SerialDeviceI
 	}
 
 	@Override
-	public void write(byte[] data) {
+	public void write(byte... data) {
 		if (!isOpen()) {
 			throw new IllegalStateException("Serial Device " + deviceFile + " is closed");
 		}

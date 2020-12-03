@@ -79,7 +79,7 @@ public class RemoteSpiDevice extends AbstractDevice implements SpiDeviceInterfac
 	}
 
 	@Override
-	public void write(byte[] txBuffer) {
+	public void write(byte... txBuffer) {
 		write(txBuffer, 0, txBuffer.length);
 	}
 

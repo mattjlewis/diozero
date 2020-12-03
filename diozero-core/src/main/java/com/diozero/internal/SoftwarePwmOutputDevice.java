@@ -51,25 +51,26 @@ public class SoftwarePwmOutputDevice extends AbstractDevice implements PwmOutput
 	private int periodMs;
 	private int dutyNs;
 	private AtomicBoolean fullyOn;
-	
+
 	public SoftwarePwmOutputDevice(String key, DeviceFactoryInterface deviceFactory,
 			GpioDigitalOutputDeviceInterface digitalOutputDevice, int frequency, float initialValue) {
 		super(key, deviceFactory);
-		
+
 		Logger.warn("Hardware PWM not available for device {}, reverting to software", key);
-		
+
 		this.digitalOutputDevice = digitalOutputDevice;
 		fullyOn = new AtomicBoolean();
-		
+
 		periodMs = 1_000 / frequency;
 		setValue(initialValue);
 		start();
 	}
-	
+
 	public void start() {
-		future = DiozeroScheduler.getNonDaemonInstance().scheduleAtFixedRate(this, periodMs, periodMs, TimeUnit.MILLISECONDS);
+		future = DiozeroScheduler.getNonDaemonInstance().scheduleAtFixedRate(this, periodMs, periodMs,
+				TimeUnit.MILLISECONDS);
 	}
-	
+
 	public void stop() {
 		if (future != null) {
 			future.cancel(true);
@@ -85,7 +86,7 @@ public class SoftwarePwmOutputDevice extends AbstractDevice implements PwmOutput
 			digitalOutputDevice.setValue(true);
 		} else {
 			digitalOutputDevice.setValue(true);
-			SleepUtil.sleepNanos(dutyNs);
+			SleepUtil.busySleep(dutyNs);
 			digitalOutputDevice.setValue(false);
 		}
 	}
@@ -99,12 +100,12 @@ public class SoftwarePwmOutputDevice extends AbstractDevice implements PwmOutput
 			digitalOutputDevice = null;
 		}
 	}
-	
+
 	@Override
 	public float getValue() {
 		return dutyNs / (float) TimeUnit.MILLISECONDS.toNanos(periodMs);
 	}
-	
+
 	@Override
 	public void setValue(float value) {
 		// Constrain to 0..1

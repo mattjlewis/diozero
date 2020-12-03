@@ -55,7 +55,7 @@ public interface SpiDeviceInterface extends DeviceInterface {
 	 * @param data the data to write
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
-	public void write(byte[] data) throws RuntimeIOException;
+	public void write(byte... data) throws RuntimeIOException;
 
 	/**
 	 * Write <code>length</code> bytes from <code>data</code> starting at

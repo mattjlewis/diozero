@@ -114,6 +114,22 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_builtin_i2c_NativeI2C_
 
 /*
  * Class:     com_diozero_internal_provider_builtin_i2c_NativeI2C
+ * Method:    readWordSwapped
+ * Signature: (II)I
+ */
+JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_builtin_i2c_NativeI2C_readWordSwapped
+  (JNIEnv *, jclass, jint, jint);
+
+/*
+ * Class:     com_diozero_internal_provider_builtin_i2c_NativeI2C
+ * Method:    writeWordSwapped
+ * Signature: (IIS)I
+ */
+JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_builtin_i2c_NativeI2C_writeWordSwapped
+  (JNIEnv *, jclass, jint, jint, jshort);
+
+/*
+ * Class:     com_diozero_internal_provider_builtin_i2c_NativeI2C
  * Method:    processCall
  * Signature: (IIS)I
  */

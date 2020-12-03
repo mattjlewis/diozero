@@ -36,8 +36,10 @@ import org.tinylog.Logger;
 import com.diozero.api.DeviceBusyException;
 import com.diozero.api.I2CConstants;
 import com.diozero.api.I2CDevice;
-import com.diozero.api.I2CSMBusInterface;
+import com.diozero.api.I2CDeviceInterface;
 import com.diozero.api.RuntimeIOException;
+import com.diozero.internal.spi.AbstractDevice;
+import com.diozero.internal.spi.DeviceFactoryInterface;
 
 /**
  * <p>
@@ -52,16 +54,11 @@ import com.diozero.api.RuntimeIOException;
  * </p>
  * <p>
  * See <a href=
- * "https://github.com/bivab/smbus-cffi/blob/master/include/linux/i2c-dev.h">i2c-dev</a>
+ * "https://github.com/torvalds/linux/blob/v5.4/include/linux/i2c.h">i2c-dev</a>
  * for defintion of the inline functions.
  * </p>
- * <p>
- * See <a href=
- * "https://github.com/bivab/smbus-cffi/blob/master/smbus/smbus.py">Python CFFI
- * implementation.</a>
- * </p>
  */
-public class NativeI2CDeviceSMBus implements I2CSMBusInterface {
+public class NativeI2CDeviceSMBus extends AbstractDevice implements I2CDeviceInterface {
 	private static final int CLOSED = -1;
 
 	private int controller;
@@ -69,10 +66,12 @@ public class NativeI2CDeviceSMBus implements I2CSMBusInterface {
 	private int fd = CLOSED;
 	private int funcs;
 
-	public NativeI2CDeviceSMBus(int controller, int deviceAddress, I2CConstants.AddressSize addressSize, boolean force)
-			throws RuntimeIOException {
+	public NativeI2CDeviceSMBus(DeviceFactoryInterface deviceFactory, String key, int controller, int address,
+			I2CConstants.AddressSize addressSize, boolean force) {
+		super(key, deviceFactory);
+
 		this.controller = controller;
-		this.deviceAddress = deviceAddress;
+		this.deviceAddress = address;
 		String device_file = "/dev/i2c-" + controller;
 
 		// TODO Support for 10-bit address sizing
@@ -98,7 +97,7 @@ public class NativeI2CDeviceSMBus implements I2CSMBusInterface {
 	}
 
 	@Override
-	public void close() {
+	public void closeDevice() {
 		NativeI2C.smbusClose(fd);
 		fd = CLOSED;
 	}
@@ -237,6 +236,38 @@ public class NativeI2CDeviceSMBus implements I2CSMBusInterface {
 		}
 	}
 
+	/*-
+	@Override
+	public short readWordSwapped(int registerAddress) {
+		if ((funcs & NativeI2C.I2C_FUNC_SMBUS_READ_WORD_DATA) == 0) {
+			Logger.warn("Function I2C_FUNC_SMBUS_READ_WORD_DATA isn't supported for device i2c-{}-0x{}",
+					Integer.valueOf(controller), Integer.toHexString(deviceAddress));
+			// TODO Throw an exception now or attempt anyway?
+		}
+		int rc = NativeI2C.readWordSwapped(fd, registerAddress);
+		if (rc < 0) {
+			throw new RuntimeIOException("Error in SMBus.readWordSwapped for device i2c-" + controller + "-0x"
+					+ Integer.toHexString(deviceAddress) + ": " + rc);
+		}
+
+		return (short) rc;
+	}
+
+	@Override
+	public void writeWordSwapped(int registerAddress, short data) {
+		if ((funcs & NativeI2C.I2C_FUNC_SMBUS_WRITE_WORD_DATA) == 0) {
+			Logger.warn("Function I2C_FUNC_SMBUS_WRITE_WORD_DATA isn't supported for device i2c-{}-0x{}",
+					Integer.valueOf(controller), Integer.toHexString(deviceAddress));
+			// TODO Throw an exception now or attempt anyway?
+		}
+		int rc = NativeI2C.writeWordSwapped(fd, registerAddress, data);
+		if (rc < 0) {
+			throw new RuntimeIOException("Error in SMBus.writeWordSwapped for device i2c-" + controller + "-0x"
+					+ Integer.toHexString(deviceAddress) + ": " + rc);
+		}
+	}
+	*/
+
 	@Override
 	public short processCall(int registerAddress, short data) {
 		if ((funcs & NativeI2C.I2C_FUNC_SMBUS_PROC_CALL) == 0) {
@@ -260,7 +291,7 @@ public class NativeI2CDeviceSMBus implements I2CSMBusInterface {
 					Integer.valueOf(controller), Integer.toHexString(deviceAddress));
 			// TODO Throw an exception now or attempt anyway?
 		}
-		
+
 		byte[] buffer = new byte[MAX_I2C_BLOCK_SIZE];
 
 		int rc = NativeI2C.readBlockData(fd, registerAddress, buffer);
@@ -268,7 +299,7 @@ public class NativeI2CDeviceSMBus implements I2CSMBusInterface {
 			throw new RuntimeIOException("Error in SMBus.readBlockData for device i2c-" + controller + "-0x"
 					+ Integer.toHexString(deviceAddress) + ": " + rc);
 		}
-		
+
 		byte[] rx_data = new byte[rc];
 		System.arraycopy(buffer, 0, rx_data, 0, rc);
 
@@ -332,7 +363,7 @@ public class NativeI2CDeviceSMBus implements I2CSMBusInterface {
 			throw new RuntimeIOException("Error in SMBus.readI2CBlockData for device i2c-" + controller + "-0x"
 					+ Integer.toHexString(deviceAddress) + ": " + rc);
 		}
-		
+
 		return rc;
 	}
 
@@ -358,7 +389,7 @@ public class NativeI2CDeviceSMBus implements I2CSMBusInterface {
 			throw new RuntimeIOException("Error in SMBus.readBytes for device i2c-" + controller + "-0x"
 					+ Integer.toHexString(deviceAddress) + ": " + rc);
 		}
-	
+
 		return rc;
 	}
 

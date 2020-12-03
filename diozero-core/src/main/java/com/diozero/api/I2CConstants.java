@@ -1,7 +1,5 @@
 package com.diozero.api;
 
-import java.nio.ByteOrder;
-
 /*
  * #%L
  * Organisation: diozero

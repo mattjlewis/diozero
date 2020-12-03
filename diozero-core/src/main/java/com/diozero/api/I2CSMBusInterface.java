@@ -34,7 +34,9 @@ package com.diozero.api;
 import java.io.Closeable;
 
 /**
- * I2C device interface <a href="https://www.kernel.org/doc/Documentation/i2c/smbus-protocol">Linux SMBus interface</a>
+ * I2C device interface
+ * <a href="https://www.kernel.org/doc/Documentation/i2c/smbus-protocol">Linux
+ * SMBus interface</a>
  */
 public interface I2CSMBusInterface extends Closeable {
 	static final int MAX_I2C_BLOCK_SIZE = 32;
@@ -167,9 +169,8 @@ public interface I2CSMBusInterface extends Closeable {
 	 * <p>
 	 * This operation is very like Read Byte; again, data is read from a device,
 	 * from a designated register that is specified through the Comm byte. But this
-	 * time, the data is a complete word (16 bits) in
-	 * {@link java.nio.ByteOrder#LITTLE_ENDIAN Little Endian} order as per the
-	 * SMBus specification.
+	 * time, the data is a complete word (16 bits) in {@link ByteOrder#LITTLE_ENDIAN
+	 * Little Endian} order as per the SMBus specification.
 	 * </p>
 	 * 
 	 * <pre>
@@ -177,7 +178,8 @@ public interface I2CSMBusInterface extends Closeable {
 	 * </pre>
 	 * 
 	 * @param register the register to read from
-	 * @return data read as unsigned short
+	 * @return data read as a signed short in {@link ByteOrder#LITTLE_ENDIAN Little
+	 *         Endian} byte order
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	short readWordData(int register) throws RuntimeIOException;
@@ -189,9 +191,8 @@ public interface I2CSMBusInterface extends Closeable {
 	 * <p>
 	 * This is the opposite of the Read Word operation. 16 bits of data is written
 	 * to a device, to the designated register that is specified through the Comm
-	 * byte. Note that the data is written in
-	 * {@link java.nio.ByteOrder#LITTLE_ENDIAN Little Endian} order as per the
-	 * SMBus specification.
+	 * byte. Note that the data is written in {@link ByteOrder#LITTLE_ENDIAN Little
+	 * Endian} byte order as per the SMBus specification.
 	 * </p>
 	 * 
 	 * <pre>
@@ -199,10 +200,62 @@ public interface I2CSMBusInterface extends Closeable {
 	 * </pre>
 	 * 
 	 * @param register the register to write to
-	 * @param data     value to write
+	 * @param data     value to write in {@link ByteOrder#LITTLE_ENDIAN Little
+	 *                 Endian} byte order
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	void writeWordData(int register, short data) throws RuntimeIOException;
+
+	/**
+	 * <p>
+	 * SMBus Read Word Swapped: <code>i2c_smbus_read_word_swapped()</code>
+	 * </p>
+	 * <p>
+	 * This operation is very like Read Byte; again, data is read from a device,
+	 * from a designated register that is specified through the Comm byte. But this
+	 * time, the data is a complete word (16 bits). Note this is the convenience
+	 * function for reads where the two data bytes are the other way around (not
+	 * SMBus compliant, but very popular.)
+	 * </p>
+	 * 
+	 * <pre>
+	 * S Addr Wr [A] Comm [A] S Addr Rd [A] [DataHigh] A [DataLow] NA P
+	 * </pre>
+	 * 
+	 * @param register the register to read from
+	 * @return data read as a signed short in {@link ByteOrder#BIG_ENDIAN Big
+	 *         Endian} byte order
+	 * @throws RuntimeIOException if an I/O error occurs
+	 */
+	default short readWordSwapped(int register) throws RuntimeIOException {
+		short value = readWordData(register);
+		return (short) (((value & 0x00ff) << 8) | ((value & 0xff00) >> 8));
+	}
+
+	/**
+	 * <p>
+	 * SMBus Write Word Swapped: <code>i2c_smbus_write_word_swapped()</code>
+	 * </p>
+	 * <p>
+	 * This is the opposite of the Read Word operation. 16 bits of data is written
+	 * to a device, to the designated register that is specified through the Comm
+	 * byte. Note that this is the convenience function for writes where the two
+	 * data bytes are the other way around (not SMBus compliant, but very popular.)
+	 * </p>
+	 * 
+	 * <pre>
+	 * S Addr Wr [A] Comm [A] DataHigh [A] DataLow [A] P
+	 * </pre>
+	 * 
+	 * @param register the register to write to
+	 * @param data     value to write in {@link ByteOrder#BIG_ENDIAN Big Endian}
+	 *                 byte order
+	 * @throws RuntimeIOException if an I/O error occurs
+	 */
+	default void writeWordSwapped(int register, short data) throws RuntimeIOException {
+		short swapped = (short) (((data & 0x00ff) << 8) | ((data & 0xff00) >> 8));
+		writeWordData(register, swapped);
+	}
 
 	/**
 	 * <p>

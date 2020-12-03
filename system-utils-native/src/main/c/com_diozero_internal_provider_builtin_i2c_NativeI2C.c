@@ -41,8 +41,10 @@
 #include <sys/ioctl.h>
 
 #if defined(__linux__)
+#include <linux/types.h>
 #include <linux/i2c-dev.h>
 #include <i2c/smbus.h>
+#include <linux/swab.h>		/* for swab16 */
 #else
 #define I2C_SLAVE 0
 #define I2C_SLAVE_FORCE 0
@@ -57,6 +59,19 @@
 #else
 #define long_t uint64_t
 #endif
+
+static inline __s32
+i2c_smbus_read_word_swapped(int file, __u8 command) {
+	__s32 value = i2c_smbus_read_word_data(file, command);
+
+	return (value < 0) ? value : __swab16(value);
+}
+
+static inline __s32
+i2c_smbus_write_word_swapped(int file, __u8 command, __u16 value) {
+	return i2c_smbus_write_word_data(file, command, __swab16(value));
+}
+
 
 int selectSlave(int fd, int deviceAddress, uint8_t force) {
 	int rc = ioctl(fd, force ? I2C_SLAVE_FORCE : I2C_SLAVE, deviceAddress);
@@ -215,6 +230,28 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_builtin_i2c_NativeI2C_
 
 	if (rc < 0) {
 		//perror("I2C Error in i2c_smbus_write_word_data");
+		return -errno;
+	}
+	return rc;
+}
+
+JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_builtin_i2c_NativeI2C_readWordSwapped(
+		JNIEnv* env, jclass clz, jint fd, jint registerAddress) {
+	int rc = i2c_smbus_read_word_swapped(fd, registerAddress);
+
+	if (rc < 0) {
+		//perror("I2C Error in i2c_smbus_read_word_swapped");
+		return -errno;
+	}
+	return rc;
+}
+
+JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_builtin_i2c_NativeI2C_writeWordSwapped(
+		JNIEnv* env, jclass clz, jint fd, jint registerAddress, jshort value) {
+	int rc = i2c_smbus_write_word_swapped(fd, registerAddress, value);
+
+	if (rc < 0) {
+		//perror("I2C Error in i2c_smbus_write_word_swapped");
 		return -errno;
 	}
 	return rc;

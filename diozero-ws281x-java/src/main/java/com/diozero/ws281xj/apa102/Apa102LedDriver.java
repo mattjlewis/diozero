@@ -33,8 +33,6 @@ package com.diozero.ws281xj.apa102;
 
 import java.util.Arrays;
 
-import com.diozero.api.SpiConstants;
-import com.diozero.api.SpiClockMode;
 import com.diozero.api.SpiDevice;
 import com.diozero.ws281xj.LedDriverInterface;
 

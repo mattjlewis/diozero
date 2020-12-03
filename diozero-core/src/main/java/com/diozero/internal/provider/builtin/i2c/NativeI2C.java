@@ -74,6 +74,8 @@ public class NativeI2C {
 	static native int writeByteData(int fd, int registerAddress, byte value);
 	static native int readWordData(int fd, int registerAddress);
 	static native int writeWordData(int fd, int registerAddress, short value);
+	static native int readWordSwapped(int fd, int registerAddress);
+	static native int writeWordSwapped(int fd, int registerAddress, short value);
 	static native int processCall(int fd, int registerAddress, short value);
 	static native int readBlockData(int fd, int registerAddress, byte[] rxData);
 	static native int writeBlockData(int fd, int registerAddress, int txLength, byte[] txData);

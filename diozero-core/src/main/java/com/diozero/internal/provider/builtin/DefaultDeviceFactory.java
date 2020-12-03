@@ -53,6 +53,8 @@ import com.diozero.internal.board.odroid.OdroidBoardInfoProvider;
 import com.diozero.internal.board.odroid.OdroidC2SysFsPwmOutputDevice;
 import com.diozero.internal.provider.builtin.gpio.GpioChip;
 import com.diozero.internal.provider.builtin.gpio.GpioLine;
+import com.diozero.internal.provider.builtin.i2c.NativeI2CDeviceSMBus;
+import com.diozero.internal.provider.builtin.i2c.NativeI2CDeviceJavaRaf;
 import com.diozero.internal.spi.AnalogInputDeviceInterface;
 import com.diozero.internal.spi.AnalogOutputDeviceInterface;
 import com.diozero.internal.spi.BaseNativeDeviceFactory;
@@ -65,18 +67,24 @@ import com.diozero.util.EpollNative;
 import com.diozero.util.PropertyUtil;
 
 public class DefaultDeviceFactory extends BaseNativeDeviceFactory {
-	private static final String USE_GPIO_CHARDEV_PROP = "diozero.gpio.chardev";
+	private static final String GPIO_LINE_NUMBER_PATTERN = "GPIO(\\d+)";
+
+	private static final String GPIO_USE_CHARDEV_PROP = "diozero.gpio.chardev";
+	private static final String I2C_USE_JAVA_RAF_PROP = "diozero.i2c.javaraf";
+	private static final String I2C_SLAVE_FORCE_PROP = "diozero.i2c.slaveforce";
 
 	private int boardPwmFrequency;
 	private EpollNative epoll;
 	private Map<Integer, GpioChip> chips;
-	private boolean useGpioCharDev = false;
+	private boolean useGpioCharDev = true;
+	private boolean i2cUseJavaRaf;
+	private boolean i2cSlaveForce;
 
 	public DefaultDeviceFactory() {
-		useGpioCharDev = PropertyUtil.getBooleanProperty(USE_GPIO_CHARDEV_PROP, useGpioCharDev);
+		useGpioCharDev = PropertyUtil.getBooleanProperty(GPIO_USE_CHARDEV_PROP, useGpioCharDev);
+		i2cUseJavaRaf = PropertyUtil.isPropertySet(I2C_USE_JAVA_RAF_PROP);
+		i2cSlaveForce = PropertyUtil.isPropertySet(I2C_SLAVE_FORCE_PROP);
 	}
-
-	private static final String GPIO_LINE_NUMBER_PATTERN = "GPIO(\\d+)";
 
 	@Override
 	public void start() {
@@ -259,8 +267,9 @@ public class DefaultDeviceFactory extends BaseNativeDeviceFactory {
 			return new SysFsPwmOutputDevice(key, this, getBoardInfo().getPwmChip(pwm_pin_info.getPwmNum()),
 					pwm_pin_info, pwmFrequency, initialValue);
 		}
-
-		return new SoftwarePwmOutputDevice(key, this, createDigitalOutputDevice(createPinKey(pinInfo), pinInfo, false),
+		
+		// Need to make sure the keys are different
+		return new SoftwarePwmOutputDevice(key, this, createDigitalOutputDevice("PWM-" + key, pinInfo, false),
 				pwmFrequency, initialValue);
 	}
 
@@ -287,7 +296,10 @@ public class DefaultDeviceFactory extends BaseNativeDeviceFactory {
 	@Override
 	public I2CDeviceInterface createI2CDevice(String key, int controller, int address,
 			I2CConstants.AddressSize addressSize) throws RuntimeIOException {
-		return new DefaultI2CDevice(this, key, controller, address, addressSize);
+		if (i2cUseJavaRaf) {
+			return new NativeI2CDeviceJavaRaf(this, key, controller, address, addressSize, i2cSlaveForce);
+		}
+		return new NativeI2CDeviceSMBus(this, key, controller, address, addressSize, i2cSlaveForce);
 	}
 
 	@Override

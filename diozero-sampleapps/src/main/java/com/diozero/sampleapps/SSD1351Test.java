@@ -4,7 +4,7 @@ package com.diozero.sampleapps;
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - Sample applications
- * Filename:     SSD1331Test.java  
+ * Filename:     SSD1351Test.java  
  * 
  * This file is part of the diozero project. More information about this project
  * can be found at http://www.diozero.com/
@@ -47,7 +47,7 @@ import org.tinylog.Logger;
 
 import com.diozero.api.DigitalOutputDevice;
 import com.diozero.devices.oled.ColourSsdOled;
-import com.diozero.devices.oled.SSD1331;
+import com.diozero.devices.oled.SSD1351;
 import com.diozero.devices.oled.SsdOled;
 import com.diozero.sampleapps.gol.GameOfLife;
 import com.diozero.sbc.DeviceFactoryHelper;
@@ -55,12 +55,12 @@ import com.diozero.sbc.DeviceFactoryHelper;
 /**
  * <ul>
  * <li>Built-in:<br>
- * {@code java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar com.diozero.sampleapps.SSD1331Test}</li>
+ * {@code java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar com.diozero.sampleapps.SSD1351Test}</li>
  * <li>pigpioj:<br>
- * {@code sudo java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-pigpio-$DIOZERO_VERSION.jar:pigpioj-java-2.4.jar com.diozero.sampleapps.SSD1331Test}</li>
+ * {@code sudo java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-pigpio-$DIOZERO_VERSION.jar:pigpioj-java-2.4.jar com.diozero.sampleapps.SSD1351Test}</li>
  * </ul>
  */
-public class SSD1331Test {
+public class SSD1351Test {
 	public static void main(String[] args) {
 		/*-
 		try (LED led = new LED(16)) {
@@ -89,14 +89,14 @@ public class SSD1331Test {
 
 		try (DigitalOutputDevice dc_pin = new DigitalOutputDevice(dc_gpio);
 				DigitalOutputDevice reset_pin = new DigitalOutputDevice(reset_gpio);
-				ColourSsdOled oled = new SSD1331(spi_controller, chip_select, dc_pin, reset_pin)) {
+				ColourSsdOled oled = new SSD1351(spi_controller, chip_select, dc_pin, reset_pin)) {
 			gameOfLife(oled, 10_000);
 			displayImages(oled);
 			sierpinskiTriangle(oled, 250);
 			drawText(oled);
 			testJava2D(oled);
 			animateText(oled,
-					"SSD1331 Organic LED Display demo scroller. Java implementation by diozero (diozero.com).");
+					"SSD1351 Organic LED Display demo scroller. Java implementation by diozero (diozero.com).");
 		} catch (RuntimeException e) {
 			Logger.error(e, "Error: {}", e);
 		} finally {
@@ -199,17 +199,20 @@ public class SSD1331Test {
 		oled.display();
 	}
 
+	@SuppressWarnings("boxing")
 	public static void displayImages(SsdOled oled) {
 		Logger.info("Images");
 		// https://github.com/rm-hull/luma.examples
-		String[] images = { "/images/balloon.png", "/images/pi_logo.png", "/images/pixelart1.png",
-				"/images/pixelart2.png", "/images/pixelart3.jpg", "/images/pixelart4.jpg", "/images/pixelart5.jpg",
-				"/images/starwars.png", "not found" };
+		String[] images = { "/images/Background.png", "/images/balloon.png", "/images/pi_logo.png",
+				"/images/pixelart1.png", "/images/pixelart2.png", "/images/pixelart3.jpg", "/images/pixelart4.jpg",
+				"/images/pixelart5.jpg", "/images/starwars.png", "not found" };
 		for (String image : images) {
-			try (InputStream is = SSD1331Test.class.getResourceAsStream(image)) {
+			try (InputStream is = SSD1351Test.class.getResourceAsStream(image)) {
 				if (is != null) {
 					BufferedImage br = ImageIO.read(is);
 					if (br.getWidth() != oled.getWidth() || br.getHeight() != oled.getHeight()) {
+						Logger.debug("Rescaling image {} from {}x{} to {}x{}", image, br.getWidth(), br.getHeight(),
+								oled.getWidth(), oled.getHeight());
 						br = Scalr.resize(br, Scalr.Method.AUTOMATIC, Scalr.Mode.FIT_EXACT, oled.getWidth(),
 								oled.getHeight(), Scalr.OP_ANTIALIAS);
 					}
@@ -219,7 +222,7 @@ public class SSD1331Test {
 				Logger.error(e, "Error: {}", e);
 			}
 			try {
-				Thread.sleep(1000);
+				Thread.sleep(2000);
 			} catch (InterruptedException e) {
 			}
 		}

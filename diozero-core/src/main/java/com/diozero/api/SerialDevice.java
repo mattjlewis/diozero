@@ -386,7 +386,7 @@ public class SerialDevice implements SerialConstants, SerialDeviceInterface {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void write(byte[] buffer) throws RuntimeIOException {
+	public void write(byte... buffer) throws RuntimeIOException {
 		delegate.write(buffer);
 	}
 

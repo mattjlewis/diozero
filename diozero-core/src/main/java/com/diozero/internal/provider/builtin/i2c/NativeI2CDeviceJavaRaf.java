@@ -37,15 +37,19 @@ import java.io.RandomAccessFile;
 import org.tinylog.Logger;
 
 import com.diozero.api.DeviceBusyException;
+import com.diozero.api.I2CConstants;
 import com.diozero.api.I2CDevice;
-import com.diozero.api.I2CSMBusInterface;
+import com.diozero.api.I2CDeviceInterface;
 import com.diozero.api.RuntimeIOException;
+import com.diozero.internal.spi.AbstractDevice;
+import com.diozero.internal.spi.DeviceFactoryInterface;
 import com.diozero.util.FileDescriptorUtil;
 
 /**
  * <p>
- * Native Java implementation of the I2C SMBus commands using sysfs and a single
- * native method to select the slave address.
+ * Native Java implementation of the I2C SMBus commands using a Java
+ * {@link RandomAccessFile} to read to and write from the device. Makes use of a
+ * single native method to select the slave address.
  * </p>
  *
  * <p>
@@ -60,16 +64,19 @@ import com.diozero.util.FileDescriptorUtil;
  * </p>
  */
 @Deprecated
-public class NativeI2CDeviceSysFs implements I2CSMBusInterface {
+public class NativeI2CDeviceJavaRaf extends AbstractDevice implements I2CDeviceInterface {
 	private static final int EBUSY = -16;
 
 	private RandomAccessFile deviceFile;
 	private int controller;
 	private int deviceAddress;
 
-	public NativeI2CDeviceSysFs(int controller, int deviceAddress, boolean force) {
+	public NativeI2CDeviceJavaRaf(DeviceFactoryInterface deviceFactory, String key, int controller, int address,
+			I2CConstants.AddressSize addressSize, boolean force) {
+		super(key, deviceFactory);
+
 		this.controller = controller;
-		this.deviceAddress = deviceAddress;
+		this.deviceAddress = address;
 		String device_file = "/dev/i2c-" + controller;
 
 		try {
@@ -93,7 +100,7 @@ public class NativeI2CDeviceSysFs implements I2CSMBusInterface {
 	}
 
 	@Override
-	public void close() {
+	public void closeDevice() {
 		if (deviceFile != null) {
 			try {
 				deviceFile.close();
@@ -168,8 +175,9 @@ public class NativeI2CDeviceSysFs implements I2CSMBusInterface {
 	public short readWordData(int register) {
 		try {
 			deviceFile.writeByte(register);
-			// This is Big Endian, however SMBus interface specifies Little Endian so need to swap...
-			//short val = deviceFile.readShort();
+			// This is Big Endian, however SMBus interface specifies Little Endian so need
+			// to swap...
+			// short val = deviceFile.readShort();
 			byte[] buffer = new byte[2];
 			deviceFile.read(buffer);
 			return (short) ((buffer[1] << 8) | (buffer[0] & 0xff));
@@ -195,6 +203,28 @@ public class NativeI2CDeviceSysFs implements I2CSMBusInterface {
 	}
 
 	@Override
+	public short readWordSwapped(int register) {
+		try {
+			deviceFile.writeByte(register);
+			// This is Big Endian
+			return deviceFile.readShort();
+		} catch (IOException e) {
+			throw new RuntimeIOException("Error in I2C readWordData for device i2c-" + controller + "-0x"
+					+ Integer.toHexString(deviceAddress), e);
+		}
+	}
+
+	@Override
+	public void writeWordSwapped(int register, short data) {
+		try {
+			deviceFile.writeShort(data);
+		} catch (IOException e) {
+			throw new RuntimeIOException("Error in I2C writeWordData for device i2c-" + controller + "-0x"
+					+ Integer.toHexString(deviceAddress), e);
+		}
+	}
+
+	@Override
 	public short processCall(int register, short data) {
 		writeWordData(register, data);
 		try {
@@ -208,7 +238,7 @@ public class NativeI2CDeviceSysFs implements I2CSMBusInterface {
 	@Override
 	public byte[] readBlockData(int register) {
 		byte[] rx_data;
-		
+
 		try {
 			byte[] buffer = new byte[MAX_I2C_BLOCK_SIZE + 1];
 			deviceFile.write(register);

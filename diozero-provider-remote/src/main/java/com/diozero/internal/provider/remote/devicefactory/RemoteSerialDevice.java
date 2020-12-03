@@ -124,7 +124,7 @@ public class RemoteSerialDevice extends AbstractDevice implements SerialDeviceIn
 	}
 
 	@Override
-	public void write(byte[] data) {
+	public void write(byte... data) {
 		SerialWriteBytes request = new SerialWriteBytes(deviceFile, data, UUID.randomUUID().toString());
 
 		Response response = deviceFactory.getProtocolHandler().request(request);

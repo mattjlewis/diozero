@@ -41,7 +41,6 @@ import org.tinylog.Logger;
 
 import com.diozero.api.DigitalOutputDevice;
 import com.diozero.api.SpiConstants;
-import com.diozero.api.SpiClockMode;
 import com.diozero.api.SpiDevice;
 import com.diozero.util.Hex;
 import com.diozero.util.SleepUtil;
