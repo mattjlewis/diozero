@@ -4,7 +4,7 @@ package com.diozero.internal.provider.builtin.i2c;
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - Core
- * Filename:     NativeI2CDeviceSysFs.java  
+ * Filename:     NativeI2CDeviceJavaRaf.java  
  * 
  * This file is part of the diozero project. More information about this project
  * can be found at http://www.diozero.com/

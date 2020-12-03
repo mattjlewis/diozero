@@ -169,7 +169,7 @@ public interface I2CSMBusInterface extends Closeable {
 	 * <p>
 	 * This operation is very like Read Byte; again, data is read from a device,
 	 * from a designated register that is specified through the Comm byte. But this
-	 * time, the data is a complete word (16 bits) in {@link ByteOrder#LITTLE_ENDIAN
+	 * time, the data is a complete word (16 bits) in {@link java.nio.ByteOrder#LITTLE_ENDIAN
 	 * Little Endian} order as per the SMBus specification.
 	 * </p>
 	 * 
@@ -178,7 +178,7 @@ public interface I2CSMBusInterface extends Closeable {
 	 * </pre>
 	 * 
 	 * @param register the register to read from
-	 * @return data read as a signed short in {@link ByteOrder#LITTLE_ENDIAN Little
+	 * @return data read as a signed short in {@link java.nio.ByteOrder#LITTLE_ENDIAN Little
 	 *         Endian} byte order
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
@@ -191,7 +191,7 @@ public interface I2CSMBusInterface extends Closeable {
 	 * <p>
 	 * This is the opposite of the Read Word operation. 16 bits of data is written
 	 * to a device, to the designated register that is specified through the Comm
-	 * byte. Note that the data is written in {@link ByteOrder#LITTLE_ENDIAN Little
+	 * byte. Note that the data is written in {@link java.nio.ByteOrder#LITTLE_ENDIAN Little
 	 * Endian} byte order as per the SMBus specification.
 	 * </p>
 	 * 
@@ -200,7 +200,7 @@ public interface I2CSMBusInterface extends Closeable {
 	 * </pre>
 	 * 
 	 * @param register the register to write to
-	 * @param data     value to write in {@link ByteOrder#LITTLE_ENDIAN Little
+	 * @param data     value to write in {@link java.nio.ByteOrder#LITTLE_ENDIAN Little
 	 *                 Endian} byte order
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
@@ -223,7 +223,7 @@ public interface I2CSMBusInterface extends Closeable {
 	 * </pre>
 	 * 
 	 * @param register the register to read from
-	 * @return data read as a signed short in {@link ByteOrder#BIG_ENDIAN Big
+	 * @return data read as a signed short in {@link java.nio.ByteOrder#BIG_ENDIAN Big
 	 *         Endian} byte order
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
@@ -248,7 +248,7 @@ public interface I2CSMBusInterface extends Closeable {
 	 * </pre>
 	 * 
 	 * @param register the register to write to
-	 * @param data     value to write in {@link ByteOrder#BIG_ENDIAN Big Endian}
+	 * @param data     value to write in {@link java.nio.ByteOrder#BIG_ENDIAN Big Endian}
 	 *                 byte order
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */

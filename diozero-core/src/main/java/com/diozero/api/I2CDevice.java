@@ -60,6 +60,7 @@ public class I2CDevice implements I2CDeviceInterface {
 	 * </ul>
 	 */
 	public static class Builder {
+		/** Default to {@link ByteOrder#BIG_ENDIAN} */
 		public static final ByteOrder DEFAULT_BYTE_ORDER = ByteOrder.BIG_ENDIAN;
 
 		private I2CDeviceFactoryInterface factory;
@@ -164,7 +165,7 @@ public class I2CDevice implements I2CDeviceInterface {
 
 	/**
 	 * Use the default {@link I2CConstants.AddressSize#SIZE_7 7-bit} address size
-	 * and {@link I2CConstants#DEFAULT_BYTE_ORDER default} {@link ByteOrder byte
+	 * and {@link Builder#DEFAULT_BYTE_ORDER default} {@link ByteOrder byte
 	 * order}
 	 * 
 	 * @see <a href="https://i2c.info/i2c-bus-specification">I2C Bus
@@ -197,7 +198,7 @@ public class I2CDevice implements I2CDeviceInterface {
 	}
 
 	/**
-	 * Use the {@link I2CConstants#DEFAULT_BYTE_ORDER default} {@link ByteOrder byte
+	 * Use the {@link Builder#DEFAULT_BYTE_ORDER default} {@link ByteOrder byte
 	 * order}
 	 * 
 	 * @see <a href="https://i2c.info/i2c-bus-specification">I2C Bus

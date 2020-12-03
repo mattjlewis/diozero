@@ -43,8 +43,8 @@ import com.diozero.api.SpiClockMode;
 import com.diozero.api.SpiDeviceInterface;
 import com.diozero.internal.board.beaglebone.BeagleBoneBoardInfoProvider.BeagleBoneBlackBoardInfo;
 import com.diozero.internal.provider.builtin.DefaultDeviceFactory;
-import com.diozero.internal.provider.builtin.DefaultI2CDevice;
 import com.diozero.internal.provider.builtin.DefaultNativeSpiDevice;
+import com.diozero.internal.provider.builtin.i2c.NativeI2CDeviceSMBus;
 import com.diozero.internal.spi.AnalogInputDeviceInterface;
 import com.diozero.internal.spi.AnalogOutputDeviceInterface;
 import com.diozero.internal.spi.BaseNativeDeviceFactory;
@@ -138,7 +138,7 @@ public class BbbIoLibDeviceFactory extends BaseNativeDeviceFactory {
 	@Override
 	public I2CDeviceInterface createI2CDevice(String key, int controller, int address,
 			I2CConstants.AddressSize addressSize) throws RuntimeIOException {
-		return new DefaultI2CDevice(this, key, controller, address, addressSize);
+		return new NativeI2CDeviceSMBus(this, key, controller, address, addressSize, false);
 	}
 
 	@Override
