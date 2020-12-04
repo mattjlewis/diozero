@@ -31,10 +31,22 @@ package com.diozero.api;
  * #L%
  */
 
+/**
+ * Represents an input event from a digital device.
+ */
 public class DigitalInputEvent extends DeviceEvent {
 	private boolean value;
 	private boolean activeHigh;
 
+	/**
+	 * Constructs an input event from a digital device. See (@link
+	 * com.diozero.api.DeviceEvent} for first 3 parameters.
+	 * 
+	 * @param gpio
+	 * @param epochTime
+	 * @param nanoTime
+	 * @param value     initial value
+	 */
 	public DigitalInputEvent(int gpio, long epochTime, long nanoTime, boolean value) {
 		super(gpio, epochTime, nanoTime);
 

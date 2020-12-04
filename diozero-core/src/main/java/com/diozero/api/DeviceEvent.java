@@ -31,12 +31,23 @@ package com.diozero.api;
  * #L%
  */
 
-
+/**
+ * Abstract class representing an event from a GPIO device.
+ */
 public abstract class DeviceEvent {
 	private int gpio;
 	private long epochTime;
 	private long nanoTime;
-	
+
+	/**
+	 * Constructor for a device event.
+	 * 
+	 * @param gpio      GPIO pin
+	 * @param epochTime Unix epoch time: seconds elapsed since January 1, 1970
+	 *                  (midnight UTC/GMT), not counting leap seconds
+	 * @param nanoTime  current value of the Java Virtual Machine's high-resolution
+	 *                  time source, in nanoseconds
+	 */
 	public DeviceEvent(int gpio, long epochTime, long nanoTime) {
 		this.gpio = gpio;
 		this.epochTime = epochTime;

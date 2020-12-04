@@ -33,6 +33,9 @@ package com.diozero.api;
 
 import java.io.Closeable;
 
+/**
+ * Fundamental interface for all low-level device types.
+ */
 public interface DeviceInterface extends Closeable {
 	/**
 	 * Get the unique device identifier for this device

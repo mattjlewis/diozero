@@ -106,14 +106,14 @@ public class Ads1x15 extends AbstractDeviceFactory implements AnalogInputDeviceF
 	public static enum Address {
 		GND(0b01001000), VDD(0b01001001), SDA(0b01001010), SCL(0b01001011);
 
-		private int address;
+		private int value;
 
-		private Address(int address) {
-			this.address = address;
+		private Address(int value) {
+			this.value = value;
 		}
 
-		public int getAddress() {
-			return address;
+		public int getValue() {
+			return value;
 		}
 	}
 
@@ -339,7 +339,7 @@ public class Ads1x15 extends AbstractDeviceFactory implements AnalogInputDeviceF
 
 	private Ads1x15(int controller, Model model, Address address, PgaConfig pgaConfig, int dataRate,
 			byte dataRateMask) {
-		super(Model.ADS1015.name() + "-" + controller + "-" + address.getAddress());
+		super(Model.ADS1015.name() + "-" + controller + "-" + address.getValue());
 
 		this.model = model;
 		this.pgaConfig = pgaConfig;
@@ -351,7 +351,7 @@ public class Ads1x15 extends AbstractDeviceFactory implements AnalogInputDeviceF
 		comparatorQueue = ComparatorQueue.DISABLE;
 
 		boardPinInfo = new Ads11x5BoardPinInfo(model);
-		device = I2CDevice.builder(address.getAddress()).setController(controller).setByteOrder(ByteOrder.BIG_ENDIAN)
+		device = I2CDevice.builder(address.getValue()).setController(controller).setByteOrder(ByteOrder.BIG_ENDIAN)
 				.build();
 	}
 

@@ -33,6 +33,9 @@ import com.diozero.api.function.Action;
  * #L%
  */
 
+/**
+ * Abstract base class for low-level GPIO digital input devices.
+ */
 public abstract class AbstractDigitalInputDevice extends GpioInputDevice<DigitalInputEvent>
 		implements DigitalInputDeviceInterface {
 	protected boolean activeHigh;

@@ -32,6 +32,11 @@ package com.diozero.api;
  */
 
 /**
+ * SPI clock mode determines the clock polarity and phase with respect to 
+ * data. See <a href="https://en.wikipedia.org/wiki/Serial_Peripheral_Interface_Bus#Clock_polarity_and_phase">
+ * SPI clock polarity and phase</a>. ARM-based MCU use the following
+ * mode numbers. Examine the device datasheet to understand the clock
+ * mode or modes supported.
  * <pre>
  * SPI  Clock Polarity Clock Phase Clock Edge
  * Mode (CPOL/CKP)     (CPHA)      (CKE/NCPHA)

@@ -41,6 +41,7 @@ import java.util.function.Consumer;
 import org.tinylog.Logger;
 
 import com.diozero.api.I2CDevice;
+import com.diozero.util.Crc;
 import com.diozero.util.DiozeroScheduler;
 import com.diozero.util.SleepUtil;
 
@@ -55,11 +56,11 @@ import com.diozero.util.SleepUtil;
 public class SGP30 implements Closeable, Runnable {
 	public static final int PRODUCT_TYPE = 0;
 
-	private static final int CRC8_POLYNOMIAL = 0x31;
-	private static final int CRC8_INIT = 0xFF;
-
 	public static final int I2C_ADDRESS = 0x58;
 
+	private static final int CRC8_POLYNOMIAL = 0x31;
+	private static final int CRC8_INIT = 0xFF;
+	
 	/* command and constants for reading the serial ID */
 	private static final short CMD_GET_SERIAL_ID = 0x3682;
 	private static final int CMD_GET_SERIAL_ID_WORDS = 3;
@@ -231,8 +232,9 @@ public class SGP30 implements Closeable, Runnable {
 		buffer.putShort(command);
 		if (dataWords.length > 0) {
 			for (int i = 0; i < dataWords.length; i++) {
-				buffer.putShort((short) dataWords[i]);
-				buffer.put((byte) generateCrc());
+				short data = (short) dataWords[i];
+				buffer.putShort(data);
+				buffer.put((byte) Crc.generateCrc8(CRC8_POLYNOMIAL, CRC8_INIT, data));
 			}
 		}
 		buffer.rewind();
@@ -247,7 +249,7 @@ public class SGP30 implements Closeable, Runnable {
 			for (int i = 0; i < responseLength; i++) {
 				int data = buffer.getShort() & 0xffff;
 				int crc = buffer.get() & 0xff;
-				int calc_crc = generateCrc((short) data);
+				int calc_crc = Crc.generateCrc8(CRC8_POLYNOMIAL, CRC8_INIT, (short) data);
 				if (calc_crc != crc) {
 					// TODO Throw a runtime I/O error?
 					Logger.error("CRC mismatch: got: {}, calculated: {}", Integer.valueOf(crc),
@@ -258,29 +260,6 @@ public class SGP30 implements Closeable, Runnable {
 		}
 
 		return response;
-	}
-
-	private static int generateCrc(short data) {
-		return generateCrc((byte) (data >> 8), (byte) (data & 0xff));
-	}
-
-	private static int generateCrc(byte... data) {
-		int crc = CRC8_INIT;
-
-		/* calculates 8-Bit checksum with given polynomial */
-		for (int i = 0; i < data.length; ++i) {
-			crc ^= ((data[i]) & 0xff);
-			for (int crc_bit = 8; crc_bit > 0; --crc_bit) {
-				if ((crc & 0x80) != 0) {
-					crc = (crc << 1) ^ CRC8_POLYNOMIAL;
-				} else {
-					// crc = (crc << 1);
-					crc <<= 1;
-				}
-			}
-		}
-
-		return crc & 0xff;
 	}
 
 	@Override

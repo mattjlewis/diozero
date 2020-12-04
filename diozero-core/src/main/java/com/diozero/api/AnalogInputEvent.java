@@ -31,10 +31,22 @@ package com.diozero.api;
  * #L%
  */
 
+/**
+ * Represents an input event from an analog device.
+ */
 public class AnalogInputEvent extends DeviceEvent {
 	private float unscaledValue;
 	private float range;
 
+	/**
+	 * Constructs an input event from an analog device. See (@link
+	 * com.diozero.api.DeviceEvent} for first 3 parameters.
+	 * 
+	 * @param gpio
+	 * @param epochTime
+	 * @param nanoTime
+	 * @param unscaledValue initial value (unscaled)
+	 */
 	public AnalogInputEvent(int gpio, long epochTime, long nanoTime, float unscaledValue) {
 		super(gpio, epochTime, nanoTime);
 

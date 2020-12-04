@@ -31,6 +31,9 @@ package com.diozero.api;
  * #L%
  */
 
+/**
+ * Base interface for devices with digital input.
+ */
 public interface DigitalInputDeviceInterface {
 	public boolean getValue() throws RuntimeIOException;
 	public void close() throws RuntimeIOException;
