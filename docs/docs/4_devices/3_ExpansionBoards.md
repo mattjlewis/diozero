@@ -1,6 +1,6 @@
 ---
 parent: Devices
-nav_order: 4
+nav_order: 3
 permalink: /devices/expansionboards.html
 ---
 

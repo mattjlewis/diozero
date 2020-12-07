@@ -32,6 +32,12 @@ package com.diozero.util;
  */
 
 public class TemperatureUtil {
+	/**
+	 * Convert from degrees Celsius to degrees Fahrenheit
+	 * 
+	 * @param celsius temperature in degrees celsius
+	 * @return the temperature in degrees Fahrenheit
+	 */
 	public static float toFahrenheit(float celsius) {
 		return celsius * (9f / 5f) + 32f;
 	}

@@ -5,26 +5,41 @@ permalink: /test.html
 
 # Test Page
 
+{: .note }
+> Some note message
+>
+> Blah blah blah
+
+{: .note }
+> Some note message with title
+>
+> Blah blah blah
+
+{: .info }
 > Some info message
 >
 > Blah blah blah
-{: .info }
 
+{: .info-title }
+> Some info message with title
+>
+> Blah blah blah
+
+{: .warn }
 > Some warning message
 >
 > Blah blah blah
-{: .warn }
 
+{: .danger }
 > Some danger message
 >
 > * List item 1
 > * List item 2
 >
 > Blah blah blah
-{: .danger }
 
 {: .info }
-> Some info message with the style definition before
+> Some info message with the style definition after
 >
 > Blah blah blah
 

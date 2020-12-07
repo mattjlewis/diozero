@@ -1,6 +1,7 @@
 ---
-nav_order: 7
-permalink: /bbbsetup.html
+parent: Internals
+nav_order: 3
+permalink: /internals/bbbsetup.html
 has_toc: true
 ---
 

@@ -58,8 +58,7 @@ public class SGP30 implements Closeable, Runnable {
 
 	public static final int I2C_ADDRESS = 0x58;
 
-	private static final int CRC8_POLYNOMIAL = 0x31;
-	private static final int CRC8_INIT = 0xFF;
+	private static final Crc.Params CRC8_PARAMS = new Crc.Params(0x31, 0xff, false, false, 0x00);
 	
 	/* command and constants for reading the serial ID */
 	private static final short CMD_GET_SERIAL_ID = 0x3682;
@@ -234,7 +233,7 @@ public class SGP30 implements Closeable, Runnable {
 			for (int i = 0; i < dataWords.length; i++) {
 				short data = (short) dataWords[i];
 				buffer.putShort(data);
-				buffer.put((byte) Crc.generateCrc8(CRC8_POLYNOMIAL, CRC8_INIT, data));
+				buffer.put((byte) Crc.crc8(CRC8_PARAMS, data));
 			}
 		}
 		buffer.rewind();
@@ -249,7 +248,7 @@ public class SGP30 implements Closeable, Runnable {
 			for (int i = 0; i < responseLength; i++) {
 				int data = buffer.getShort() & 0xffff;
 				int crc = buffer.get() & 0xff;
-				int calc_crc = Crc.generateCrc8(CRC8_POLYNOMIAL, CRC8_INIT, (short) data);
+				int calc_crc = Crc.crc8(CRC8_PARAMS, (short) data);
 				if (calc_crc != crc) {
 					// TODO Throw a runtime I/O error?
 					Logger.error("CRC mismatch: got: {}, calculated: {}", Integer.valueOf(crc),

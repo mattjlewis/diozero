@@ -66,4 +66,24 @@ public class BitManipulation {
 	public static boolean isBitSet(byte value, int bit) {
 		return (value & getBitMask(bit)) != 0;
 	}
+
+	public static byte reverseByte(byte value) {
+		short s = (short) (value & 0xff);
+		short y = 0;
+		for (int position = 8 - 1; position >= 0; position--) {
+			y += ((s & 1) << position);
+			s >>= 1;
+		}
+		return (byte) (y & 0xff);
+	}
+
+	public static short reverseShort(short value) {
+		int i = (short) (value & 0xffff);
+		int y = 0;
+		for (int position = 16 - 1; position >= 0; position--) {
+			y += ((i & 1) << position);
+			i >>= 1;
+		}
+		return (short) (y & 0xffff);
+	}
 }

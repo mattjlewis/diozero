@@ -1,6 +1,7 @@
 ---
-nav_order: 5
-permalink: /providers.html
+parent: Concepts
+nav_order: 1
+permalink: /concepts/providers.html
 ---
 
 # Device Factories and Providers

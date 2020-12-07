@@ -1,6 +1,6 @@
 ---
 parent: Devices
-nav_order: 5
+nav_order: 4
 permalink: /devices/motorcontrol.html
 ---
 

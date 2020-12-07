@@ -1,6 +1,7 @@
 ---
-nav_order: 6
-permalink: /releases.html
+parent: Internals
+nav_order: 2
+permalink: /internals/releases.html
 ---
 
 # Releases

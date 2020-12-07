@@ -347,8 +347,9 @@ public class Ads112C04 {
 	private static final byte COMMAND_READ_REG = (byte) 0b00100000;
 	private static final byte COMMAND_WRITE_REG = (byte) 0b01000000;
 
-	private static final int CRC_POLYNOMIAL = 0b10001000000100001;
-	private static final int CRC_INIT = 0xffff;
+	// The CRC is based on the CRC-16-CCITT polynomial: x16 + x12 + x5 + 1 with an
+	// initial value of FFFFh.
+	private static final Crc.Params CRC_PARAMS = new Crc.Params(0b10001000000100001, 0xffff, false, false, 0x0000);
 
 	public static class Builder {
 		private Address address;
@@ -588,9 +589,7 @@ public class Ads112C04 {
 			} else if (crcConfig == CrcConfig.CRC16) {
 				// In CRC mode, the checksum bytes are the 16-bit remainder of the bitwise
 				// exclusive-OR (XOR) of the data bytes with a CRC polynomial
-				// The CRC is based on the CRC-16-CCITT polynomial: x16 + x12 + x5 + 1 with an
-				// initial value of FFFFh.
-				short calc_crc_val = (short) Crc.crc16Ccitt(CRC_POLYNOMIAL, CRC_INIT, value);
+				short calc_crc_val = (short) Crc.crc16(CRC_PARAMS, value);
 				if (calc_crc_val != crc_val) {
 					Logger.warn("CRC error for value {}, calculated {}, got {}", Short.valueOf(value),
 							Short.valueOf((calc_crc_val)), Short.valueOf(crc_val));
