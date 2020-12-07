@@ -243,7 +243,7 @@ public class Ads112C04 {
 
 	public static enum IdacCurrent {
 		IDAC_OFF(0, 0b000), IDAC_10UA(10, 0b001), IDAC_50UA(50, 0b010), IDAC_100UA(100, 0b011), IDAC_250UA(250, 0b100),
-		IDAC_500UA(500, 0b101), IDAC1000UA(1000, 0b110), IDAC_1500UA(1500, 0b111);
+		IDAC_500UA(500, 0b101), IDAC_1000UA(1000, 0b110), IDAC_1500UA(1500, 0b111);
 
 		private int microAmps;
 		private byte mask;
@@ -359,12 +359,12 @@ public class Ads112C04 {
 		private OperatingMode operatingMode = OperatingMode.NORMAL;
 		private VRef vRef = VRef.INTERNAL;
 		private TemperatureSensorMode tsMode = TemperatureSensorMode.DISABLED;
-		private DataCounter dataCounter;
-		private CrcConfig crcConfig;
-		private BurnoutCurrentSources burnoutCurrentSources;
-		private IdacCurrent idacCurrent;
-		private Idac1RoutingConfig idac1RoutingConfig;
-		private Idac2RoutingConfig idac2RoutingConfig;
+		private DataCounter dataCounter = DataCounter.DISABLED;
+		private CrcConfig crcConfig = CrcConfig.DISABLED;
+		private BurnoutCurrentSources burnoutCurrentSources = BurnoutCurrentSources.DISABLED;
+		private IdacCurrent idacCurrent = IdacCurrent.IDAC_OFF;
+		private Idac1RoutingConfig idac1RoutingConfig = Idac1RoutingConfig.DISABLED;
+		private Idac2RoutingConfig idac2RoutingConfig = Idac2RoutingConfig.DISABLED;
 
 		protected Builder(Address address) {
 			this.address = address;
@@ -498,7 +498,7 @@ public class Ads112C04 {
 		this.idacCurrent = idacCurrent;
 		this.idac1RoutingConfig = idac1RoutingConfig;
 		this.idac2RoutingConfig = idac2RoutingConfig;
-		
+
 		mux = (byte) ((0b1000) << C0_MUX_BIT_START);
 
 		conversionMode = ConversionMode.SINGLE_SHOT;
@@ -506,7 +506,7 @@ public class Ads112C04 {
 		device = I2CDevice.builder(address.getValue()).setByteOrder(ByteOrder.BIG_ENDIAN).build();
 
 		reset();
-		
+
 		setConfig0();
 		setConfig1();
 		setConfig2();
@@ -515,6 +515,7 @@ public class Ads112C04 {
 
 	public void reset() {
 		device.writeByte(COMMAND_RESET);
+		SleepUtil.sleepMillis(500);
 	}
 
 	public void start() {
@@ -531,20 +532,24 @@ public class Ads112C04 {
 
 	private void setConfig0() {
 		writeConfigRegister(ConfigRegister.REG0, (byte) (mux | gainConfig.getMask() | pgaBypass.getMask()));
+		SleepUtil.sleepMillis(5);
 	}
 
 	private void setConfig1() {
 		writeConfigRegister(ConfigRegister.REG1, (byte) (dataRate.getMask() | operatingMode.getMask()
 				| conversionMode.getMask() | vRef.getMask() | tsMode.getMask()));
+		SleepUtil.sleepMillis(5);
 	}
 
 	private void setConfig2() {
 		writeConfigRegister(ConfigRegister.REG2, (byte) (dataCounter.getMask() | crcConfig.getMask()
 				| burnoutCurrentSources.getMask() | idacCurrent.getMask()));
+		SleepUtil.sleepMillis(5);
 	}
 
 	private void setConfig3() {
 		writeConfigRegister(ConfigRegister.REG3, (byte) (idac1RoutingConfig.getMask() | idac2RoutingConfig.getMask()));
+		SleepUtil.sleepMillis(5);
 	}
 
 	public short readDataWhenAvailable() {
@@ -610,7 +615,15 @@ public class Ads112C04 {
 		pgaBypass = PgaBypass.DISABLED;
 		mux = (byte) ((0b1000 + adcNumber) << C0_MUX_BIT_START);
 		setConfig0();
-		
+
 		return readDataWhenAvailable();
+	}
+
+	public static void main(String[] args) {
+		Ads112C04 ads = Ads112C04.builder(Address.GND_GND).build();
+		for (int i = 0; i < 10; i++) {
+			System.out.println(ads.getValueSingle(0));
+			SleepUtil.sleepSeconds(1);
+		}
 	}
 }
