@@ -61,6 +61,7 @@ import java.util.EnumSet;
  * 
  * <p>
  * A pin has the following attributes:
+ * </p>
  * <ul>
  * <li><strong>keyPrefix</strong>: internal only attribute used by
  * {@link com.diozero.internal.spi.AbstractDeviceFactory AbstractDeviceFactory}
@@ -82,7 +83,6 @@ import java.util.EnumSet;
  * <li><strong>modes</strong>: the set of valid {@link DeviceMode modes} for
  * this pin</li>
  * </ul>
- * </p>
  */
 public class PinInfo {
 	public static final EnumSet<DeviceMode> DIGITAL_IN = EnumSet.of(DeviceMode.DIGITAL_INPUT);
