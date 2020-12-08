@@ -47,17 +47,20 @@ import com.diozero.util.MmapIntBuffer;
 import com.diozero.util.SleepUtil;
 
 /**
- * See <a href="https://github.com/hardkernel/wiringPi/blob/master/wiringPi/wiringPi.c">Odroid wiringPi</a> fork.
- * Odroid C2 / S905 Datasheet: https://dn.odroid.com/S905/DataSheet/S905_Public_Datasheet_V1.1.4.pdf
+ * See <a href=
+ * "https://github.com/hardkernel/wiringPi/blob/master/wiringPi/wiringPi.c">Odroid
+ * wiringPi</a> fork. Odroid C2 / S905 Datasheet:
+ * https://dn.odroid.com/S905/DataSheet/S905_Public_Datasheet_V1.1.4.pdf
  */
 public class OdroidC2MmapGpio implements MmapGpioInterface {
 	private static final String MEM_DEVICE = "/dev/mem";
-	
+
 	private static final int J2_GPIO_BASE_ADDRESS = 0xC8834000;
 	private static final int J7_GPIO_BASE_ADDRESS = 0xC8100000;
-	private static final int BLOCK_SIZE = 4*1024;
-	
-	// XXX Armbian Kernel 5.x has the sysfs GPIO numbers starting at an offset of 242 (0xF2) compared to Hardkernel 3.14
+	private static final int BLOCK_SIZE = 4 * 1024;
+
+	// XXX Armbian Kernel 5.x has the sysfs GPIO numbers starting at an offset of
+	// 242 (0xF2) compared to Hardkernel 3.14
 	// > cat /sys/class/gpio/gpiochip378/base
 	// 378
 	private static final int ARMBIAN_J2_GPIO_OFFSET_HACK = 242;
@@ -66,10 +69,10 @@ public class OdroidC2MmapGpio implements MmapGpioInterface {
 	// 497
 	private static final int ARMBIAN_J7_GPIO_OFFSET_HACK = 375;
 	private static final int J7_GPIO_START = 122 + ARMBIAN_J7_GPIO_OFFSET_HACK;
-	
+
 	private static final int J2_GPIODV_GPIO_START = J2_GPIO_START + 45;
 	private static final int J2_GPIODV_PIN_END = J2_GPIO_START + 74;
-	
+
 	private static final int J2_GPIOY_PIN_START = J2_GPIO_START + 75;
 	private static final int J2_GPIOY_PIN_END = J2_GPIO_START + 91;
 
@@ -84,67 +87,69 @@ public class OdroidC2MmapGpio implements MmapGpioInterface {
 	private static final int J2_GPIODV_INP_REG_OFFSET = 0x10E;
 	private static final int J2_GPIODV_PUEN_REG_OFFSET = 0x148;
 	private static final int J2_GPIODV_PUPD_REG_OFFSET = 0x13A;
-	
+
 	private static final int J2_GPIOY_OEN_REG_OFFSET = 0x10F;
 	private static final int J2_GPIOY_OUT_REG_OFFSET = 0x110;
 	private static final int J2_GPIOY_INP_REG_OFFSET = 0x111;
 	private static final int J2_GPIOY_PUEN_REG_OFFSET = 0x149;
 	private static final int J2_GPIOY_PUPD_REG_OFFSET = 0x13B;
-	
+
 	private static final int J2_GPIOX_OEN_REG_OFFSET = 0x118;
 	private static final int J2_GPIOX_OUT_REG_OFFSET = 0x119;
 	private static final int J2_GPIOX_INP_REG_OFFSET = 0x11A;
 	private static final int J2_GPIOX_PUEN_REG_OFFSET = 0x14C;
 	private static final int J2_GPIOX_PUPD_REG_OFFSET = 0x13E;
-	
+
 	private static final int J7_GPIOA_OEN_REG_OFFSET = 0x09;
 	private static final int J7_GPIOA_OUT_REG_OFFSET = 0x09;
 	private static final int J7_GPIOA_INP_REG_OFFSET = 0x0A;
 	private static final int J7_GPIOA_PUEN_REG_OFFSET = 0x0b;
 	private static final int J7_GPIOA_PUPD_REG_OFFSET = 0x0b;
-	
+
 	/*
-	private static final int C2_MUX_REG_0_OFFSET = 0x2C;
-	private static final int C2_MUX_REG_1_OFFSET = 0x2D;
-	private static final int C2_MUX_REG_2_OFFSET = 0x2E;
-	private static final int C2_MUX_REG_3_OFFSET = 0x2F;
-	private static final int C2_MUX_REG_4_OFFSET = 0x30;
-	private static final int C2_MUX_REG_5_OFFSET = 0x31;
-	private static final int C2_MUX_REG_7_OFFSET = 0x33;
-	private static final int C2_MUX_REG_8_OFFSET = 0x34;
-	*/
-	
-	//private static final int[] C2_GP_TO_SHIFT_REG = new int[] { //
-	//		0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, //
-	//		0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22 };
-	
+	 * private static final int C2_MUX_REG_0_OFFSET = 0x2C; private static final int
+	 * C2_MUX_REG_1_OFFSET = 0x2D; private static final int C2_MUX_REG_2_OFFSET =
+	 * 0x2E; private static final int C2_MUX_REG_3_OFFSET = 0x2F; private static
+	 * final int C2_MUX_REG_4_OFFSET = 0x30; private static final int
+	 * C2_MUX_REG_5_OFFSET = 0x31; private static final int C2_MUX_REG_7_OFFSET =
+	 * 0x33; private static final int C2_MUX_REG_8_OFFSET = 0x34;
+	 */
+
+	// private static final int[] C2_GP_TO_SHIFT_REG = new int[] { //
+	// 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, //
+	// 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
+	// 22 };
+
 	private boolean initialised;
 	private MmapIntBuffer j2MmapIntBuffer;
 	private MmapIntBuffer j7MmapIntBuffer;
-	//private MmapByteBuffer mmap;
-	//private volatile IntBuffer gpioIntBuffer;
-	
+	// private MmapByteBuffer mmap;
+	// private volatile IntBuffer gpioIntBuffer;
+
 	@Override
 	public synchronized void initialise() {
-		if (! initialised) {
-			//mmap = MmapBufferNative.createMmapBuffer(MEM_DEVICE, C2_GPIO_BASE, BLOCK_SIZE);
-			//gpioIntBuffer = mmap.getBuffer().order(ByteOrder.LITTLE_ENDIAN).asIntBuffer();
+		if (!initialised) {
+			// mmap = MmapBufferNative.createMmapBuffer(MEM_DEVICE, C2_GPIO_BASE,
+			// BLOCK_SIZE);
+			// gpioIntBuffer =
+			// mmap.getBuffer().order(ByteOrder.LITTLE_ENDIAN).asIntBuffer();
 			j2MmapIntBuffer = new MmapIntBuffer(MEM_DEVICE, J2_GPIO_BASE_ADDRESS, BLOCK_SIZE, ByteOrder.LITTLE_ENDIAN);
 			j7MmapIntBuffer = new MmapIntBuffer(MEM_DEVICE, J7_GPIO_BASE_ADDRESS, BLOCK_SIZE, ByteOrder.LITTLE_ENDIAN);
-			
+
 			initialised = true;
 		}
 	}
-	
+
 	@Override
 	public synchronized void close() {
 		if (initialised) {
-			//MmapBufferNative.closeMmapBuffer(mmap.getFd(), mmap.getAddress(), mmap.getLength());
+			// MmapBufferNative.closeMmapBuffer(mmap.getFd(), mmap.getAddress(),
+			// mmap.getLength());
 			j2MmapIntBuffer.close();
 			j7MmapIntBuffer.close();
 		}
 	}
-	
+
 	/*
 	 * Offset to the GPIO Output Enable register
 	 */
@@ -218,7 +223,7 @@ public class OdroidC2MmapGpio implements MmapGpioInterface {
 		if (gpio >= J7_GPIOA_PIN_START && gpio <= J7_GPIOA_PIN_END) {
 			return J7_GPIOA_PUEN_REG_OFFSET;
 		}
-		return	-1;
+		return -1;
 	}
 
 	/*
@@ -271,16 +276,18 @@ public class OdroidC2MmapGpio implements MmapGpioInterface {
 	public DeviceMode getMode(int gpio) {
 		int fsel = gpioToOutputEnableRegOffset(gpio);
 		int shift = gpioToRegShiftBit(gpio);
-		//int fsel = gpio < C2_GPIOX_PIN_START ? C2_GPIOY_FSEL_REG_OFFSET : C2_GPIOX_FSEL_REG_OFFSET;
-		//int shift = C2_GP_TO_SHIFT_REG[gpio - C2_GPIOY_PIN_START];
-		
+		// int fsel = gpio < C2_GPIOX_PIN_START ? C2_GPIOY_FSEL_REG_OFFSET :
+		// C2_GPIOX_FSEL_REG_OFFSET;
+		// int shift = C2_GP_TO_SHIFT_REG[gpio - C2_GPIOY_PIN_START];
+
 		if (fsel == -1 || shift == -1) {
 			Logger.error("Invalid GPIO {}", Integer.valueOf(gpio));
 			return DeviceMode.UNKNOWN;
 		}
-		
-		//return (gpioReg.get(fsel) & (1 << shift)) == 0 ? DeviceMode.DIGITAL_OUTPUT : DeviceMode.DIGITAL_INPUT;
-		//switch (gpioIntBuffer.get(fsel) & (1 << shift)) {
+
+		// return (gpioReg.get(fsel) & (1 << shift)) == 0 ? DeviceMode.DIGITAL_OUTPUT :
+		// DeviceMode.DIGITAL_INPUT;
+		// switch (gpioIntBuffer.get(fsel) & (1 << shift)) {
 		MmapIntBuffer mmap_int_buffer = getMmapIntBuffer(gpio);
 		if (mmap_int_buffer.get(fsel, 1 << shift) == 0) {
 			return DeviceMode.DIGITAL_OUTPUT;
@@ -288,47 +295,48 @@ public class OdroidC2MmapGpio implements MmapGpioInterface {
 
 		return DeviceMode.DIGITAL_INPUT;
 	}
-	
+
 	@Override
 	public void setMode(int gpio, DeviceMode mode) {
 		int fsel = gpioToOutputEnableRegOffset(gpio);
 		int shift = gpioToRegShiftBit(gpio);
-		//int fsel = gpio < C2_GPIOX_PIN_START ? C2_GPIOY_FSEL_REG_OFFSET : C2_GPIOX_FSEL_REG_OFFSET;
-		//int shift = C2_GP_TO_SHIFT_REG[gpio - C2_GPIOY_PIN_START];
-		
+		// int fsel = gpio < C2_GPIOX_PIN_START ? C2_GPIOY_FSEL_REG_OFFSET :
+		// C2_GPIOX_FSEL_REG_OFFSET;
+		// int shift = C2_GP_TO_SHIFT_REG[gpio - C2_GPIOY_PIN_START];
+
 		if (fsel == -1 || shift == -1) {
 			Logger.error("Invalid GPIO {}", Integer.valueOf(gpio));
 			return;
 		}
-		
+
 		MmapIntBuffer mmap_int_buffer = getMmapIntBuffer(gpio);
 		switch (mode) {
 		case DIGITAL_INPUT:
-			//gpioIntBuffer.put(fsel, gpioIntBuffer.get(fsel) | (1 << shift));
-			//*(gpio + fsel) = (*(gpio + fsel) | (1 << shift));
+			// gpioIntBuffer.put(fsel, gpioIntBuffer.get(fsel) | (1 << shift));
+			// *(gpio + fsel) = (*(gpio + fsel) | (1 << shift));
 			mmap_int_buffer.put(fsel, mmap_int_buffer.get(fsel) | (1 << shift));
-			//_pullUpDnControl(origPin, PUD_OFF);
-			//_pullUpDnControl(origPin, PUD_ON);
+			// _pullUpDnControl(origPin, PUD_OFF);
+			// _pullUpDnControl(origPin, PUD_ON);
 			break;
 		case DIGITAL_OUTPUT:
-			//gpioIntBuffer.put(fsel, gpioIntBuffer.get(fsel) & ~(1 << shift));
-			//*(gpio + fsel) = (*(gpio + fsel) & ~(1 << shift));
+			// gpioIntBuffer.put(fsel, gpioIntBuffer.get(fsel) & ~(1 << shift));
+			// *(gpio + fsel) = (*(gpio + fsel) & ~(1 << shift));
 			mmap_int_buffer.put(fsel, mmap_int_buffer.get(fsel) & ~(1 << shift));
 			break;
 		default:
 			throw new InvalidModeException("Invalid GPIO mode " + mode + " for pin " + gpio);
 		}
 	}
-	
+
 	public int getPullUpDown(int gpio) {
 		int puen = gpioToPullUpDownEnableRegOffset(gpio);
 		int shift = gpioToRegShiftBit(gpio);
-		
+
 		if (puen == -1 || shift == -1) {
 			Logger.error("Invalid GPIO {}", Integer.valueOf(gpio));
 			return -1;
 		}
-		
+
 		MmapIntBuffer mmap_int_buffer = getMmapIntBuffer(gpio);
 		if ((mmap_int_buffer.get(puen) & (1 << shift)) != 0) {
 			int pupd = gpioToPullUpDownRegOffset(gpio);
@@ -339,62 +347,65 @@ public class OdroidC2MmapGpio implements MmapGpioInterface {
 		}
 		return 0;
 	}
-	
+
 	@Override
 	public void setPullUpDown(int gpio, GpioPullUpDown pud) {
 		int shift = gpioToRegShiftBit(gpio);
 		int puen = gpioToPullUpDownEnableRegOffset(gpio);
-		//int shift = C2_GP_TO_SHIFT_REG[gpio - C2_GPIOY_PIN_START];
-		//int puen = gpio < C2_GPIOX_PIN_START ? C2_GPIOY_PUEN_REG_OFFSET : C2_GPIOX_PUEN_REG_OFFSET;
-		
+		// int shift = C2_GP_TO_SHIFT_REG[gpio - C2_GPIOY_PIN_START];
+		// int puen = gpio < C2_GPIOX_PIN_START ? C2_GPIOY_PUEN_REG_OFFSET :
+		// C2_GPIOX_PUEN_REG_OFFSET;
+
 		if (puen == -1 || shift == -1) {
 			Logger.error("Invalid GPIO {}", Integer.valueOf(gpio));
 			return;
 		}
-		
+
 		MmapIntBuffer mmap_int_buffer = getMmapIntBuffer(gpio);
 		if (pud == GpioPullUpDown.NONE) {
 			// Disable Pull/Pull-down resister
-			//gpioIntBuffer.put(puen, gpioIntBuffer.get(puen) & ~(1 << shift));
-			//*(gpio + puen) = (*(gpio + puen) & ~(1 << shift));
+			// gpioIntBuffer.put(puen, gpioIntBuffer.get(puen) & ~(1 << shift));
+			// *(gpio + puen) = (*(gpio + puen) & ~(1 << shift));
 			mmap_int_buffer.put(puen, mmap_int_buffer.get(puen) & ~(1 << shift));
 		} else {
 			// Enable Pull/Pull-down resister
-			//gpioIntBuffer.put(puen, gpioIntBuffer.get(puen) | (1 << shift));
-			//*(gpio + puen) = (*(gpio + puen) | (1 << shift));
+			// gpioIntBuffer.put(puen, gpioIntBuffer.get(puen) | (1 << shift));
+			// *(gpio + puen) = (*(gpio + puen) | (1 << shift));
 			mmap_int_buffer.put(puen, mmap_int_buffer.get(puen) | (1 << shift));
-			
+
 			int pupd = gpioToPullUpDownRegOffset(gpio);
 			if (gpio >= J7_GPIOA_PIN_START) {
 				shift += 16;
 			}
-			//int pupd = gpio < C2_GPIOX_PIN_START ? C2_GPIOY_PUPD_REG_OFFSET : C2_GPIOX_PUPD_REG_OFFSET;
+			// int pupd = gpio < C2_GPIOX_PIN_START ? C2_GPIOY_PUPD_REG_OFFSET :
+			// C2_GPIOX_PUPD_REG_OFFSET;
 			if (pud == GpioPullUpDown.PULL_UP) {
-				//gpioIntBuffer.put(pupd, gpioIntBuffer.get(pupd) | (1 << shift));
-				//*(gpio + pupd) = (*(gpio + pupd) | (1 << shift));
+				// gpioIntBuffer.put(pupd, gpioIntBuffer.get(pupd) | (1 << shift));
+				// *(gpio + pupd) = (*(gpio + pupd) | (1 << shift));
 				mmap_int_buffer.put(pupd, mmap_int_buffer.get(pupd) | (1 << shift));
 			} else {
-				//gpioIntBuffer.put(pupd, gpioIntBuffer.get(pupd) & ~(1 << shift));
-				//*(gpio + pupd) = (*(gpio + pupd) & ~(1 << shift));
+				// gpioIntBuffer.put(pupd, gpioIntBuffer.get(pupd) & ~(1 << shift));
+				// *(gpio + pupd) = (*(gpio + pupd) & ~(1 << shift));
 				mmap_int_buffer.put(pupd, mmap_int_buffer.get(pupd) & ~(1 << shift));
 			}
 		}
 	}
-	
+
 	@Override
 	public boolean gpioRead(int gpio) {
 		int reg = gpioToInputRegOffset(gpio);
 		int shift = gpioToRegShiftBit(gpio);
-		//int reg = gpio < C2_GPIOX_PIN_START ? C2_GPIOY_INP_REG_OFFSET : C2_GPIOX_INP_REG_OFFSET;
-		//int shift = C2_GP_TO_SHIFT_REG[gpio - C2_GPIOY_PIN_START];
-		
+		// int reg = gpio < C2_GPIOX_PIN_START ? C2_GPIOY_INP_REG_OFFSET :
+		// C2_GPIOX_INP_REG_OFFSET;
+		// int shift = C2_GP_TO_SHIFT_REG[gpio - C2_GPIOY_PIN_START];
+
 		if (reg == -1 || shift == -1) {
 			Logger.error("Invalid GPIO {}", Integer.valueOf(gpio));
 			return false;
 		}
 
 		MmapIntBuffer mmap_int_buffer = getMmapIntBuffer(gpio);
-		//return (gpioIntBuffer.get(gp_lev_reg) & (1 << shift)) != 0;
+		// return (gpioIntBuffer.get(gp_lev_reg) & (1 << shift)) != 0;
 		/*-
 		if ((*(gpio + reg) & (1 << shift)) != 0)
 			return HIGH;
@@ -403,31 +414,32 @@ public class OdroidC2MmapGpio implements MmapGpioInterface {
 		 */
 		return (mmap_int_buffer.get(reg) & (1 << shift)) != 0;
 	}
-	
+
 	@Override
 	public void gpioWrite(int gpio, boolean value) {
 		// Note no boundary checks to maximise performance
-		
+
 		int reg = gpioToOutputRegOffset(gpio);
 		int shift = gpioToRegShiftBit(gpio);
 		if (gpio >= J7_GPIOA_PIN_START) {
 			shift += 16;
 		}
-		//int reg = gpio < C2_GPIOX_PIN_START ? C2_GPIOY_OUTP_REG_OFFSET : C2_GPIOX_OUTP_REG_OFFSET;
-		//int shift = C2_GP_TO_SHIFT_REG[gpio - C2_GPIOY_PIN_START];
-		
+		// int reg = gpio < C2_GPIOX_PIN_START ? C2_GPIOY_OUTP_REG_OFFSET :
+		// C2_GPIOX_OUTP_REG_OFFSET;
+		// int shift = C2_GP_TO_SHIFT_REG[gpio - C2_GPIOY_PIN_START];
+
 		MmapIntBuffer mmap_int_buffer = getMmapIntBuffer(gpio);
 		if (value) {
-			//gpioIntBuffer.put(reg, gpioIntBuffer.get(reg) | (1 << shift));
-			//*(gpio + reg) |= (1 << shift);
+			// gpioIntBuffer.put(reg, gpioIntBuffer.get(reg) | (1 << shift));
+			// *(gpio + reg) |= (1 << shift);
 			mmap_int_buffer.put(reg, mmap_int_buffer.get(reg) | (1 << shift));
 		} else {
-			//gpioIntBuffer.put(reg, gpioIntBuffer.get(reg) & ~(1 << shift));
-			//*(gpio + reg) &= ~(1 << shift);
+			// gpioIntBuffer.put(reg, gpioIntBuffer.get(reg) & ~(1 << shift));
+			// *(gpio + reg) &= ~(1 << shift);
 			mmap_int_buffer.put(reg, mmap_int_buffer.get(reg) & ~(1 << shift));
 		}
 	}
-	
+
 	public static void main(String[] args) {
 		System.out.println(ByteOrder.nativeOrder());
 		if (args.length != 2) {
@@ -436,50 +448,46 @@ public class OdroidC2MmapGpio implements MmapGpioInterface {
 		}
 		int gpio = Integer.parseInt(args[0]);
 		int iterations = Integer.parseInt(args[1]);
-		
+
 		int gp_set_reg = gpio < J2_GPIOX_PIN_START ? J2_GPIOY_OUT_REG_OFFSET : J2_GPIOX_OUT_REG_OFFSET;
 		int gp_set_reg2 = gpioToOutputRegOffset(gpio);
 		System.out.println("gp_set_reg=" + gp_set_reg + ", gp_set_reg2=" + gp_set_reg2);
-		//int shift = C2_GP_TO_SHIFT_REG[gpio - C2_GPIOY_PIN_START];
-		//int shift2 = gpioToShiftReg(gpio);
-		//System.out.println("shift=" + shift + ", shift2=" + shift2);
+		// int shift = C2_GP_TO_SHIFT_REG[gpio - C2_GPIOY_PIN_START];
+		// int shift2 = gpioToShiftReg(gpio);
+		// System.out.println("shift=" + shift + ", shift2=" + shift2);
 		int gp_lev_reg = gpio < J2_GPIOX_PIN_START ? J2_GPIOY_INP_REG_OFFSET : J2_GPIOX_INP_REG_OFFSET;
 		int gp_lev_reg2 = gpioToInputRegOffset(gpio);
 		System.out.println("gp_lev_reg=" + gp_lev_reg + ", gp_lev_reg2=" + gp_lev_reg2);
 		int gp_fsel_reg = gpio < J2_GPIOX_PIN_START ? J2_GPIOY_OEN_REG_OFFSET : J2_GPIOX_OEN_REG_OFFSET;
 		int gp_fsel_reg2 = gpioToOutputEnableRegOffset(gpio);
 		System.out.println("gp_fsel_reg=" + gp_fsel_reg + ", gp_fsel_reg2=" + gp_fsel_reg2);
-		
-		System.out.format("gpioToGPSETReg(%d)=0x%04x%n", Integer.valueOf(214), Integer.valueOf(gpioToOutputRegOffset(214)));
-		System.out.format("gpioToGPSETReg(%d)=0x%04x%n", Integer.valueOf(219), Integer.valueOf(gpioToOutputRegOffset(219)));
-		System.out.format("gpioToGPFSELReg(%d)=0x%04x%n", Integer.valueOf(214), Integer.valueOf(gpioToOutputEnableRegOffset(214)));
-		System.out.format("gpioToGPFSELReg(%d)=0x%04x%n", Integer.valueOf(219), Integer.valueOf(gpioToOutputEnableRegOffset(219)));
-		
+
+		System.out.format("gpioToGPSETReg(%d)=0x%04x%n", Integer.valueOf(214),
+				Integer.valueOf(gpioToOutputRegOffset(214)));
+		System.out.format("gpioToGPSETReg(%d)=0x%04x%n", Integer.valueOf(219),
+				Integer.valueOf(gpioToOutputRegOffset(219)));
+		System.out.format("gpioToGPFSELReg(%d)=0x%04x%n", Integer.valueOf(214),
+				Integer.valueOf(gpioToOutputEnableRegOffset(214)));
+		System.out.format("gpioToGPFSELReg(%d)=0x%04x%n", Integer.valueOf(219),
+				Integer.valueOf(gpioToOutputEnableRegOffset(219)));
+
 		try (OdroidC2MmapGpio mmap_gpio = new OdroidC2MmapGpio()) {
 			mmap_gpio.initialise();
-	
+
 			/*
-			BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-			try {
-				while (true) {
-					Hex.dumpIntBuffer(mmap_gpio.gpioIntBuffer, C2_GPIO_PIN_BASE, 200);
-					String line = reader.readLine();
-					if (line == null || line.equals("q")) {
-						break;
-					}
-				}
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			*/
-			
+			 * BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+			 * try { while (true) { Hex.dumpIntBuffer(mmap_gpio.gpioIntBuffer,
+			 * C2_GPIO_PIN_BASE, 200); String line = reader.readLine(); if (line == null ||
+			 * line.equals("q")) { break; } } } catch (IOException e) { // TODO
+			 * Auto-generated catch block e.printStackTrace(); }
+			 */
+
 			System.out.println("getMode(" + gpio + ")=" + mmap_gpio.getMode(gpio));
 			mmap_gpio.setMode(gpio, DeviceMode.DIGITAL_OUTPUT);
 			System.out.println("getMode(" + gpio + ")=" + mmap_gpio.getMode(gpio));
-	
+
 			System.out.println("Current val=" + mmap_gpio.gpioRead(gpio));
-			for (int i=0; i<5; i++) {
+			for (int i = 0; i < 5; i++) {
 				System.out.println("on");
 				mmap_gpio.gpioWrite(gpio, true);
 				System.out.println("Current val=" + mmap_gpio.gpioRead(gpio));
@@ -489,24 +497,24 @@ public class OdroidC2MmapGpio implements MmapGpioInterface {
 				System.out.println("Current val=" + mmap_gpio.gpioRead(gpio));
 				SleepUtil.sleepSeconds(1);
 			}
-			
+
 			boolean exit = false;
 			if (exit) {
 				System.exit(1);
 			}
-			
+
 			if (true) {
 				long start = System.currentTimeMillis();
-				for (int i=0; i<iterations; i++) {
+				for (int i = 0; i < iterations; i++) {
 					mmap_gpio.gpioWrite(gpio, true);
 					mmap_gpio.gpioWrite(gpio, false);
 				}
 				long duration = System.currentTimeMillis() - start;
-				System.out.format("Took %d ms for %d iterations, frequency=%.2fkHz%n",
-						Long.valueOf(duration), Integer.valueOf(iterations), Double.valueOf(iterations/(double) duration));
+				System.out.format("Took %d ms for %d iterations, frequency=%.2fkHz%n", Long.valueOf(duration),
+						Integer.valueOf(iterations), Double.valueOf(iterations / (double) duration));
 			}
-	
-			for (int i=0; i<5; i++) {
+
+			for (int i = 0; i < 5; i++) {
 				System.out.println("on");
 				mmap_gpio.gpioWrite(gpio, true);
 				SleepUtil.sleepSeconds(1);
@@ -516,11 +524,11 @@ public class OdroidC2MmapGpio implements MmapGpioInterface {
 			}
 		}
 	}
-	
+
 	public static void test() {
 		Random rand = new Random();
 		IntBuffer buffer = ByteBuffer.allocateDirect(500).asIntBuffer();
-		for (int i=0; i<buffer.capacity(); i++) {
+		for (int i = 0; i < buffer.capacity(); i++) {
 			buffer.put(rand.nextInt());
 		}
 		buffer.flip();

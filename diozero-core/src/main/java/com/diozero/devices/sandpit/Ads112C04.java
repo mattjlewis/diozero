@@ -522,109 +522,54 @@ public class Ads112C04 implements Closeable {
 	public void reset() {
 		Logger.debug("reset");
 		device.writeByte(COMMAND_RESET);
-		SleepUtil.busySleep(1_000);
+		// TODO Check delays
+		SleepUtil.sleepMillis(1);
 	}
 
 	public void start() {
-		// System.out.println("start");
+		Logger.debug("start");
 		device.writeByte(COMMAND_START);
-		// SleepUtil.sleepMillis(5);
+		// TODO Check delays
+		SleepUtil.sleepMillis(1);
 	}
 
 	public void powerDown() {
 		Logger.debug("powerDown");
 		device.writeByte(COMMAND_POWER_DOWN);
-		// SleepUtil.sleepMillis(5);
+		// TODO Check delays
+		SleepUtil.sleepMillis(1);
 	}
 
 	private byte readConfigRegister(ConfigRegister register) {
+		// TODO Also read CRC data if enabled!
 		return device.readByteData(COMMAND_READ_REG | register.getMask());
 	}
 
 	private void writeConfigRegister(ConfigRegister register, byte value) {
 		device.writeByteData(COMMAND_WRITE_REG | register.getMask(), value);
+		// TODO Check delays
 	}
 
 	private void setConfig0() {
-		// System.out.println("setConfig0");
+		// Logger.debug("setConfig0");
 		writeConfigRegister(ConfigRegister.REG0, (byte) (mux | gainConfig.getMask() | pgaBypass.getMask()));
-		// SleepUtil.sleepMillis(5);
 	}
 
 	private void setConfig1() {
-		// System.out.println("setConfig1");
+		// Logger.debug("setConfig1");
 		writeConfigRegister(ConfigRegister.REG1, (byte) (dataRate.getMask() | operatingMode.getMask()
 				| conversionMode.getMask() | vRef.getMask() | tsMode.getMask()));
-		// SleepUtil.sleepMillis(5);
 	}
 
 	private void setConfig2() {
-		// System.out.println("setConfig2");
+		// Logger.debug("setConfig2");
 		writeConfigRegister(ConfigRegister.REG2, (byte) (dataCounter.getMask() | crcConfig.getMask()
 				| burnoutCurrentSources.getMask() | idacCurrent.getMask()));
-		// SleepUtil.sleepMillis(5);
 	}
 
 	private void setConfig3() {
-		// System.out.println("setConfig3");
+		// Logger.debug("setConfig3");
 		writeConfigRegister(ConfigRegister.REG3, (byte) (idac1RoutingConfig.getMask() | idac2RoutingConfig.getMask()));
-		// SleepUtil.sleepMillis(5);
-	}
-
-	public short readDataWhenAvailable() {
-		// Logger.debug("Waiting for data to be available...");
-		while (true) {
-			if ((readConfigRegister(ConfigRegister.REG2) & (1 << C2_DATA_RDY_BIT_START)) != 0) {
-				break;
-			}
-			// 10 nS
-			SleepUtil.busySleep(10);
-		}
-		// Logger.debug("Data available");
-
-		// XXX Note that if the conversion counter is enabled 3 bytes need to be read,
-		// the first byte is the conversion counter
-		// XXX Note that if CRC checks are enabled, an additional 2 bytes need to be
-		// read after the data - CRC MSB & MSC LSB
-		int bytes_to_read = 2;
-		if (dataCounter.isEnabled()) {
-			bytes_to_read++;
-		}
-		if (!crcConfig.equals(CrcConfig.DISABLED)) {
-			bytes_to_read += 2;
-		}
-
-		ByteBuffer bb = device.readI2CBlockDataByteBuffer(COMMAND_RDATA, bytes_to_read);
-		// Logger.debug("BB Byte Order: " + bb.order());
-		if (dataCounter.isEnabled()) {
-			int counter = bb.get() & 0xff;
-			Logger.debug("Conversion counter: {}", Integer.valueOf(counter));
-		}
-		short value = bb.getShort();
-		if (!crcConfig.equals(CrcConfig.DISABLED)) {
-			short crc_val = bb.getShort();
-			Logger.debug("Got CRC {} for data {}; CRC mode: {}", Short.valueOf(crc_val), Short.valueOf(value),
-					crcConfig);
-			// Validate the CRC value
-			if (crcConfig == CrcConfig.INVERTED_DATA_OUTPUT) {
-				// A bitwise-inverted version of the data
-				short calc_crc_val = (short) (~value);
-				if (calc_crc_val != crc_val) {
-					Logger.warn("CRC error for value {}, calculated {}, got {}", Short.valueOf(value),
-							Short.valueOf((calc_crc_val)), Short.valueOf(crc_val));
-				}
-			} else if (crcConfig == CrcConfig.CRC16) {
-				// In CRC mode, the checksum bytes are the 16-bit remainder of the bitwise
-				// exclusive-OR (XOR) of the data bytes with a CRC polynomial
-				short calc_crc_val = (short) Crc.crc16(CRC_PARAMS, value);
-				if (calc_crc_val != crc_val) {
-					Logger.warn("CRC error for value {}, calculated {}, got {}", Short.valueOf(value),
-							Short.valueOf((calc_crc_val)), Short.valueOf(crc_val));
-				}
-			}
-		}
-
-		return value;
 	}
 
 	public short getValueSingle(int adcNumber) {
@@ -654,13 +599,107 @@ public class Ads112C04 implements Closeable {
 		start();
 	}
 
+	public short readDataWhenAvailable() {
+		// Logger.debug("Waiting for data to be available...");
+		while (true) {
+			if ((readConfigRegister(ConfigRegister.REG2) & (1 << C2_DATA_RDY_BIT_START)) != 0) {
+				break;
+			}
+			// 10 nS
+			SleepUtil.busySleep(10);
+		}
+		// Logger.debug("Data available");
+
+		// XXX Note that if the conversion counter is enabled 3 bytes need to be read,
+		// the first byte is the conversion counter
+		// XXX Note that if CRC checks are enabled, an additional 2 bytes need to be
+		// read after the data - CRC MSB & MSC LSB
+		/*-
+		 *  A CRC enabled read is 4 bytes total (2 data and 2 CRC). 
+		 *  Enabling counter and reversed data you would see 6 bytes (1 byte count, 2 bytes data
+		 *  followed by an inverted count byte and 2 inverted data bytes).
+		 *  And inverted data only would be a total of 4 bytes (2 data bytes followed by 2
+		 *  inverted data bytes).
+		 */
+		int bytes_to_read = 2;
+		if (dataCounter.isEnabled()) {
+			bytes_to_read++;
+		}
+		if (!crcConfig.equals(CrcConfig.DISABLED)) {
+			bytes_to_read += 2;
+			if (dataCounter.isEnabled()) {
+				bytes_to_read++;
+			}
+		}
+
+		ByteBuffer bb = device.readI2CBlockDataByteBuffer(COMMAND_RDATA, bytes_to_read);
+		// Logger.debug("BB Byte Order: " + bb.order());
+		int counter = -1;
+		if (dataCounter.isEnabled()) {
+			counter = bb.get() & 0xff;
+			Logger.debug("Conversion counter: {}", Integer.valueOf(counter));
+		}
+		short value = bb.getShort();
+		if (!crcConfig.equals(CrcConfig.DISABLED)) {
+			// Validate the CRC value
+			if (crcConfig == CrcConfig.INVERTED_DATA_OUTPUT) {
+				// A bitwise-inverted version of the data
+				if (dataCounter.isEnabled()) {
+					byte counter_inverted = bb.get();
+					byte calc_counter_inverted = (byte) ~counter;
+					if (calc_counter_inverted != counter_inverted) {
+						Logger.warn("CRC error for counter {}, calculated {}, got {}", Short.valueOf(value),
+								Short.valueOf((calc_counter_inverted)), Short.valueOf(counter_inverted));
+					}
+				}
+				short value_inverted = bb.getShort();
+				short calc_val_inverted = (short) (~value);
+				if (calc_val_inverted != value_inverted) {
+					Logger.warn("CRC error for data {}, calculated {}, got {}", Short.valueOf(value),
+							Short.valueOf((calc_val_inverted)), Short.valueOf(value_inverted));
+				}
+			} else if (crcConfig == CrcConfig.CRC16) {
+				short crc_val = bb.getShort();
+				// In CRC mode, the checksum bytes are the 16-bit remainder of the bitwise
+				// exclusive-OR (XOR) of the data bytes with a CRC polynomial
+				/*-
+				 * FIXME I think the CRC is "for the entire data being returned"
+				 * I.e. includes the data counter if present
+				 * https://e2e.ti.com/support/data-converters/f/73/t/758829
+				 * From the datasheet:
+				 * The optional data counter word that precedes conversion data is covered by both data
+				 * integrity options.
+				 */
+				short calc_crc_val;
+				if (dataCounter.isEnabled()) {
+					calc_crc_val = (short) Crc.crc16(CRC_PARAMS, (byte) counter, (byte) (value >> 8),
+							(byte) value);
+				} else {
+					calc_crc_val = (short) Crc.crc16(CRC_PARAMS, value);
+				}
+				if (calc_crc_val != crc_val) {
+					Logger.warn("CRC error for value {}, calculated {}, got {}", Short.valueOf(value),
+							Short.valueOf((calc_crc_val)), Short.valueOf(crc_val));
+				}
+			}
+		}
+
+		return value;
+	}
+
 	public short readNewData() {
-		// Data counter must be available for this to work
+		// Data counter must be available for this method to work
 		if (dataCounter == DataCounter.DISABLED) {
 			throw new IllegalArgumentException("Data counter must be enabled");
 		}
 
-		byte[] buffer = new byte[3];
+		byte[] buffer;
+		if (crcConfig == CrcConfig.DISABLED) {
+			buffer = new byte[3];
+		} else {
+			buffer = new byte[5];
+		}
+
 		short value;
 		while (true) {
 			device.readI2CBlockData(COMMAND_RDATA, buffer);
@@ -668,10 +707,12 @@ public class Ads112C04 implements Closeable {
 			if (new_dc != lastDataCounter) {
 				lastDataCounter = new_dc;
 				value = (short) ((buffer[1] << 8) | (buffer[2] & 0xff));
+				// TODO Validate the CRC
 				break;
 			}
 			SleepUtil.busySleep(100);
 		}
+
 		return value;
 	}
 
@@ -686,22 +727,21 @@ public class Ads112C04 implements Closeable {
 				.setCrcConfig(CrcConfig.DISABLED).setVRef(VRef.ANALOG_SUPPLY).build()) {
 			ads.setContinuousMode(0);
 
-			float avg = 0;
 			int readings = 10_000;
 			if (args.length > 0) {
 				readings = Integer.parseInt(args[0]);
 			}
-			Logger.info("Starting readings... data rate = {} SPS",
+			Logger.info("Starting readings with a data rate of {} SPS...",
 					Integer.valueOf(ads.dataRate.getDataRate() * ads.operatingMode.getMultiplier()));
+			float avg = 0;
 			long start_ms = System.currentTimeMillis();
 			for (int i = 1; i <= readings; i++) {
-				// avg += ((ads.readDataWhenAvailable() - avg) / i);
 				avg += ((ads.readNewData() - avg) / i);
 			}
 			long duration_ms = System.currentTimeMillis() - start_ms;
 			double frequency = readings / (duration_ms / 1000.0);
 
-			Logger.info("Average: {}, # readings: {}, duration: {} ms, frequency: {} Hz", Float.valueOf(avg),
+			Logger.info("Average: {#0.0}, # readings: {}, duration: {} ms, frequency: {#0.0} Hz", Float.valueOf(avg),
 					Integer.valueOf(readings), Long.valueOf(duration_ms), Double.valueOf(frequency));
 
 			// Switch back to single shot mode

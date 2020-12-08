@@ -89,7 +89,7 @@ public class DefaultDeviceFactory extends BaseNativeDeviceFactory {
 	@Override
 	public void start() {
 		if (useGpioCharDev) {
-			Logger.warn("Note using new NativeGpioChip char-dev GPIO implementation");
+			Logger.debug("Note using new NativeGpioChip char-dev GPIO implementation");
 
 			try {
 				// Open all gpiochips

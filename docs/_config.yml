@@ -21,7 +21,7 @@
 title: "diozero"
 email: deviceiozero@gmail.com
 tagline: "A platform independent device I/O library written in Java"
-description: >- # this means to ignore newlines until "baseurl:"
+description: >- # this means to ignore newlines until the next YAML element
   Java Device I/O library that is portable across Single Board Computers.
   Tested with Raspberry Pi, Odroid C2, BeagleBone Black, Next Thing CHIP,
   Asus Tinker Board, Udoo Quad and all Arduino devices that can run Firmata.

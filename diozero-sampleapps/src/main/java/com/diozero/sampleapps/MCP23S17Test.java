@@ -92,17 +92,19 @@ public class MCP23S17Test {
 				Logger.info("Sleeping for {} sec", Double.valueOf(delay));
 				SleepUtil.sleepSeconds(delay);
 			}
-			
+
 			iterations = 10_000;
 			long start = System.currentTimeMillis();
-			for (int i=0; i<iterations; i++) {
+			for (int i = 0; i < iterations; i++) {
 				led8.setValueUnsafe(true);
-				//SleepUtil.sleepMillis(1);
+				// SleepUtil.sleepMillis(1);
 				led8.setValueUnsafe(false);
-				//SleepUtil.sleepMillis(1);
+				// SleepUtil.sleepMillis(1);
 			}
 			long duration = System.currentTimeMillis() - start;
-			System.out.println("Took " + duration + " ms for " + iterations + " iterations");
+			double frequency = iterations / (duration / 1000.0);
+			System.out.println(
+					"Took " + duration + " ms for " + iterations + " iterations, frequency = " + frequency + " Hz");
 			// SleepUtil.sleepSeconds(10);
 		} catch (Throwable t) {
 			Logger.error(t, "Error: " + t);

@@ -106,6 +106,8 @@ public class GpioChipTest {
 			line.setValue(0);
 		}
 		long duration = System.currentTimeMillis() - start;
-		Logger.info("Took {}ms for {} toggle iterations", Long.valueOf(duration), Integer.valueOf(ITERATIONS));
+		double frequency = ITERATIONS / (duration / 1000.0);
+		Logger.info("Took {}ms for {} toggle iterations, frequency {#0.0} Hz", Long.valueOf(duration),
+				Integer.valueOf(ITERATIONS), Double.valueOf(frequency));
 	}
 }

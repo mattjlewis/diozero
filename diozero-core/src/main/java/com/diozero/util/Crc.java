@@ -213,7 +213,7 @@ public class Crc {
 	 * @return the calculated CRC-16 value
 	 */
 	public static int crc16(Params params, short data) {
-		return crc16(params, (byte) ((data & 0xff00) >> 8), (byte) (data & 0xff));
+		return crc16(params, (byte) (data >> 8), (byte) data);
 	}
 
 	public static int crc16(Params params, byte... data) {

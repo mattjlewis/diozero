@@ -31,7 +31,6 @@ package com.diozero.sampleapps.perf;
  * #L%
  */
 
-
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.MappedByteBuffer;
@@ -57,75 +56,78 @@ public class SysFsPerfTest {
 		if (args.length > 2) {
 			toggle_iterations = Integer.parseInt(args[1]);
 		}
-		
+
 		try {
-			for (int i=0; i<5; i++) {
+			for (int i = 0; i < 5; i++) {
 				testRafRead(gpio, read_iterations);
 			}
-			for (int i=0; i<5; i++) {
+			for (int i = 0; i < 5; i++) {
 				testRafToggle(gpio, toggle_iterations);
 			}
-			for (int i=0; i<5; i++) {
+			for (int i = 0; i < 5; i++) {
 				testMmapRead(gpio, read_iterations);
 			}
-			for (int i=0; i<5; i++) {
+			for (int i = 0; i < 5; i++) {
 				testMmapToggle(gpio, toggle_iterations);
 			}
 		} catch (IOException e) {
 			Logger.error(e, "Error: {}", e);
 		}
 	}
-	
+
 	private static void testRafRead(int gpio, int iterations) throws IOException {
 		try (RandomAccessFile raf = new RandomAccessFile("/sys/class/gpio/gpio" + gpio + "/value", "rw")) {
 			long start = System.currentTimeMillis();
-			for (int i=0; i<iterations; i++) {
+			for (int i = 0; i < iterations; i++) {
 				raf.seek(0);
 				raf.read();
 			}
 			long duration = System.currentTimeMillis() - start;
-			Logger.info("Random Access File read: {0.000} ms per iteration", Double.valueOf(duration*1000 / (double) iterations));
+			double frequency = iterations / (duration / 1000.0);
+			Logger.info("Random Access File read: {0.000} ms per iteration, frequency {#0.0}",
+					Double.valueOf(duration * 1000 / (double) iterations), Double.valueOf(frequency));
 		}
 	}
-	
+
 	private static void testRafToggle(int gpio, int iterations) throws IOException {
 		try (RandomAccessFile raf = new RandomAccessFile("/sys/class/gpio/gpio" + gpio + "/value", "rw")) {
 			long start = System.currentTimeMillis();
-			for (int i=0; i<iterations; i++) {
+			for (int i = 0; i < iterations; i++) {
 				raf.seek(0);
 				raf.write('1');
 				raf.seek(0);
 				raf.write('0');
 			}
 			long duration = System.currentTimeMillis() - start;
-			Logger.info("Random Access File toggle: {0.000} ms per iteration", Double.valueOf(duration*1000 / (double) iterations));
+			Logger.info("Random Access File toggle: {0.000} ms per iteration",
+					Double.valueOf(duration * 1000 / (double) iterations));
 		}
 	}
-	
+
 	private static void testMmapRead(int gpio, int iterations) throws IOException {
 		try (FileChannel fc = FileChannel.open(Paths.get("/sys/class/gpio/gpio" + gpio + "/value"),
 				StandardOpenOption.READ, StandardOpenOption.WRITE, StandardOpenOption.SYNC)) {
 			MappedByteBuffer mbb = fc.map(MapMode.READ_WRITE, 0, 1);
 			long start = System.currentTimeMillis();
-			for (int i=0; i<iterations; i++) {
+			for (int i = 0; i < iterations; i++) {
 				mbb.get(0);
 			}
 			long duration = System.currentTimeMillis() - start;
-			Logger.info("mmap read: {0.000} ms per iteration", Double.valueOf(duration*1000 / (double) iterations));
+			Logger.info("mmap read: {0.000} ms per iteration", Double.valueOf(duration * 1000 / (double) iterations));
 		}
 	}
-	
+
 	private static void testMmapToggle(int gpio, int iterations) throws IOException {
 		try (FileChannel fc = FileChannel.open(Paths.get("/sys/class/gpio/gpio" + gpio + "/value"),
 				StandardOpenOption.READ, StandardOpenOption.WRITE, StandardOpenOption.SYNC)) {
 			MappedByteBuffer mbb = fc.map(MapMode.READ_WRITE, 0, 1);
 			long start = System.currentTimeMillis();
-			for (int i=0; i<iterations; i++) {
+			for (int i = 0; i < iterations; i++) {
 				mbb.put(0, (byte) '1');
 				mbb.put(0, (byte) '0');
 			}
 			long duration = System.currentTimeMillis() - start;
-			Logger.info("mmap toggle: {0.000} ms per iteration", Double.valueOf(duration*1000 / (double) iterations));
+			Logger.info("mmap toggle: {0.000} ms per iteration", Double.valueOf(duration * 1000 / (double) iterations));
 		}
 	}
 }

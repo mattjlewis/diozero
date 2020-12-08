@@ -271,7 +271,8 @@ public class ChipMmapGpio implements MmapGpioInterface {
 				mmap_gpio.gpioWrite(perf_test_gpio, false);
 			}
 			long duration = System.currentTimeMillis() - start_ms;
-			System.out.println("Took " + duration + "ms for " + iterations);
+			double frequency = iterations / (duration / 1000.0);
+			System.out.println("Took " + duration + " ms for " + iterations + ", frequency " + frequency + " Hz");
 			mmap_gpio.setMode(perf_test_gpio, mode);
 			
 			while (true) {

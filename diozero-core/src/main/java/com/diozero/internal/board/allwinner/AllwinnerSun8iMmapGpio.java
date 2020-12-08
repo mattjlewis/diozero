@@ -326,7 +326,8 @@ public class AllwinnerSun8iMmapGpio implements MmapGpioInterface {
 					mmap_gpio.gpioWrite(gpio, false);
 				}
 				long duration = System.currentTimeMillis() - start;
-				System.out.println("Took " + duration + " ms for " + iterations);
+				double frequency = iterations / (duration / 1000.0);
+				System.out.println("Took " + duration + " ms for " + iterations + ", frequency " + frequency + " Hz");
 			}
 		}
 	}
