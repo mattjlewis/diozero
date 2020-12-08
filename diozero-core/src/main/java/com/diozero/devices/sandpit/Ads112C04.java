@@ -783,8 +783,8 @@ public class Ads112C04 implements Closeable {
 			ads.setContinuousMode(0);
 
 			int readings = 10_000;
-			if (args.length > 0) {
-				readings = Integer.parseInt(args[0]);
+			if (args.length > 1) {
+				readings = Integer.parseInt(args[1]);
 			}
 			Logger.info("Starting readings with a data rate of {} SPS...",
 					Integer.valueOf(ads.dataRate.getDataRate() * ads.operatingMode.getMultiplier()));
