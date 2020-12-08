@@ -1,8 +1,5 @@
 package com.diozero.devices.sandpit;
 
-import java.io.Closeable;
-import java.io.IOException;
-
 /*-
  * #%L
  * Organisation: diozero
@@ -34,6 +31,8 @@ import java.io.IOException;
  * #L%
  */
 
+import java.io.Closeable;
+
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
@@ -50,7 +49,7 @@ public class Ads112C04 implements Closeable {
 	 * This configuration allows up to 16 different ADS112C04 devices to be present
 	 * on the same I2C bus. Name format is A1_A0
 	 */
-	public static enum Address {
+	public enum Address {
 		GND_GND(0b01000000), GND_VDD(0b01000001), GND_SDA(0b01000010), GND_SCL(0b01000011), //
 		VDD_GND(0b01000100), VDD_VDD(0b01000101), VDD_SDA(0b01000110), VDD_SCL(0b01000111), //
 		SDA_GND(0b01001000), SDA_VDD(0b01001001), SDA_SDA(0b01001010), SDA_SCL(0b01001011), //
@@ -67,7 +66,7 @@ public class Ads112C04 implements Closeable {
 		}
 	}
 
-	public static enum GainConfig {
+	public enum GainConfig {
 		GAIN_1(1, 0b000), GAIN_2(2, 0b001), GAIN_4(4, 0b010);
 
 		private int gain;
@@ -87,7 +86,7 @@ public class Ads112C04 implements Closeable {
 		}
 	}
 
-	public static enum PgaBypass {
+	public enum PgaBypass {
 		ENABLED(0), DISABLED(1);
 
 		private byte mask;
@@ -101,14 +100,14 @@ public class Ads112C04 implements Closeable {
 		}
 	}
 
-	public static enum DataRate {
+	public enum DataRate {
 		DR_20HZ(20, 0b000), DR_45HZ(45, 0b001), DR_90HZ(90, 0b010), DR_175HZ(175, 0b011), DR_330HZ(330, 0b100),
 		DR_600HZ(600, 0b101), DR_1000HZ(1000, 0b110);
 
 		private int dateRate;
 		private byte mask;
 
-		private DataRate(int dateRate, int dataRate) {
+		private DataRate(int dateRate, int mask) {
 			this.dateRate = dateRate;
 			this.mask = (byte) (mask << C1_DATA_RATE_BIT_START);
 		}
@@ -122,7 +121,7 @@ public class Ads112C04 implements Closeable {
 		}
 	}
 
-	public static enum OperatingMode {
+	public enum OperatingMode {
 		NORMAL(1, 0b0), TURBO(2, 0b1);
 
 		private int multiplier;
@@ -142,7 +141,7 @@ public class Ads112C04 implements Closeable {
 		}
 	}
 
-	public static enum ConversionMode {
+	public enum ConversionMode {
 		SINGLE_SHOT(0b0), CONTINUOUS(0b1);
 
 		private byte mask;
@@ -156,7 +155,7 @@ public class Ads112C04 implements Closeable {
 		}
 	}
 
-	public static enum VRef {
+	public enum VRef {
 		INTERNAL(0b00), EXTERNAL(0b01), ANALOG_SUPPLY(0b10);
 
 		private byte mask;
@@ -170,7 +169,7 @@ public class Ads112C04 implements Closeable {
 		}
 	}
 
-	public static enum TemperatureSensorMode {
+	public enum TemperatureSensorMode {
 		ENABLED(true, 0b1), DISABLED(false, 0b0);
 
 		private boolean enabled;
@@ -190,7 +189,7 @@ public class Ads112C04 implements Closeable {
 		}
 	}
 
-	public static enum DataCounter {
+	public enum DataCounter {
 		ENABLED(true, 0b1), DISABLED(false, 0b0);
 
 		private boolean enabled;
@@ -210,7 +209,7 @@ public class Ads112C04 implements Closeable {
 		}
 	}
 
-	public static enum CrcConfig {
+	public enum CrcConfig {
 		DISABLED(0b00), INVERTED_DATA_OUTPUT(0b01), CRC16(0b10);
 
 		private byte mask;
@@ -224,7 +223,7 @@ public class Ads112C04 implements Closeable {
 		}
 	}
 
-	public static enum BurnoutCurrentSources {
+	public enum BurnoutCurrentSources {
 		ENABLED(true, 0b1), DISABLED(false, 0b0);
 
 		private boolean enabled;
@@ -244,7 +243,7 @@ public class Ads112C04 implements Closeable {
 		}
 	}
 
-	public static enum IdacCurrent {
+	public enum IdacCurrent {
 		IDAC_OFF(0, 0b000), IDAC_10UA(10, 0b001), IDAC_50UA(50, 0b010), IDAC_100UA(100, 0b011), IDAC_250UA(250, 0b100),
 		IDAC_500UA(500, 0b101), IDAC_1000UA(1000, 0b110), IDAC_1500UA(1500, 0b111);
 
@@ -265,7 +264,7 @@ public class Ads112C04 implements Closeable {
 		}
 	}
 
-	public static enum Idac1RoutingConfig {
+	public enum Idac1RoutingConfig {
 		DISABLED(0b000), AIN0(0b001), AIN1(0b010), AIN2(0b011), AIN3(0b100), REFP(0b101), REFN(0b110);
 
 		private byte mask;
@@ -279,7 +278,7 @@ public class Ads112C04 implements Closeable {
 		}
 	}
 
-	public static enum Idac2RoutingConfig {
+	public enum Idac2RoutingConfig {
 		DISABLED(0b000), AIN0(0b001), AIN1(0b010), AIN2(0b011), AIN3(0b100), REFP(0b101), REFN(0b110);
 
 		private byte mask;
@@ -299,7 +298,7 @@ public class Ads112C04 implements Closeable {
 	 * all registers are set to the default values (which are all 0). All register
 	 * values are retained during power-down mode.
 	 */
-	private static enum ConfigRegister {
+	private enum ConfigRegister {
 		REG0(0b00), REG1(0b01), REG2(0b10), REG3(0b11);
 
 		private byte mask;
@@ -484,6 +483,7 @@ public class Ads112C04 implements Closeable {
 	private Idac1RoutingConfig idac1RoutingConfig;
 	private Idac2RoutingConfig idac2RoutingConfig;
 	private byte mux;
+	private int lastDataCounter;
 
 	protected Ads112C04(Address address, GainConfig gainConfig, PgaBypass pgaBypass, DataRate dataRate,
 			OperatingMode operatingMode, VRef vRef, TemperatureSensorMode tsMode, DataCounter dataCounter,
@@ -505,6 +505,7 @@ public class Ads112C04 implements Closeable {
 		mux = (byte) ((0b1000) << C0_MUX_BIT_START);
 
 		conversionMode = ConversionMode.SINGLE_SHOT;
+		lastDataCounter = -1;
 
 		device = I2CDevice.builder(address.getValue()).setByteOrder(ByteOrder.BIG_ENDIAN).build();
 
@@ -515,25 +516,25 @@ public class Ads112C04 implements Closeable {
 		setConfig2();
 		setConfig3();
 
-		//start();
+		// start();
 	}
 
 	public void reset() {
-		System.out.println("reset");
+		Logger.debug("reset");
 		device.writeByte(COMMAND_RESET);
 		SleepUtil.busySleep(1_000);
 	}
 
 	public void start() {
-		//System.out.println("start");
+		// System.out.println("start");
 		device.writeByte(COMMAND_START);
-		//SleepUtil.sleepMillis(5);
+		// SleepUtil.sleepMillis(5);
 	}
 
 	public void powerDown() {
-		//System.out.println("powerDown");
+		Logger.debug("powerDown");
 		device.writeByte(COMMAND_POWER_DOWN);
-		//SleepUtil.sleepMillis(5);
+		// SleepUtil.sleepMillis(5);
 	}
 
 	private byte readConfigRegister(ConfigRegister register) {
@@ -545,33 +546,33 @@ public class Ads112C04 implements Closeable {
 	}
 
 	private void setConfig0() {
-		//System.out.println("setConfig0");
+		// System.out.println("setConfig0");
 		writeConfigRegister(ConfigRegister.REG0, (byte) (mux | gainConfig.getMask() | pgaBypass.getMask()));
-		//SleepUtil.sleepMillis(5);
+		// SleepUtil.sleepMillis(5);
 	}
 
 	private void setConfig1() {
-		//System.out.println("setConfig1");
+		// System.out.println("setConfig1");
 		writeConfigRegister(ConfigRegister.REG1, (byte) (dataRate.getMask() | operatingMode.getMask()
 				| conversionMode.getMask() | vRef.getMask() | tsMode.getMask()));
-		//SleepUtil.sleepMillis(5);
+		// SleepUtil.sleepMillis(5);
 	}
 
 	private void setConfig2() {
-		//System.out.println("setConfig2");
+		// System.out.println("setConfig2");
 		writeConfigRegister(ConfigRegister.REG2, (byte) (dataCounter.getMask() | crcConfig.getMask()
 				| burnoutCurrentSources.getMask() | idacCurrent.getMask()));
-		//SleepUtil.sleepMillis(5);
+		// SleepUtil.sleepMillis(5);
 	}
 
 	private void setConfig3() {
-		//System.out.println("setConfig3");
+		// System.out.println("setConfig3");
 		writeConfigRegister(ConfigRegister.REG3, (byte) (idac1RoutingConfig.getMask() | idac2RoutingConfig.getMask()));
-		//SleepUtil.sleepMillis(5);
+		// SleepUtil.sleepMillis(5);
 	}
 
 	public short readDataWhenAvailable() {
-		//Logger.debug("Waiting for data to be available...");
+		// Logger.debug("Waiting for data to be available...");
 		while (true) {
 			if ((readConfigRegister(ConfigRegister.REG2) & (1 << C2_DATA_RDY_BIT_START)) != 0) {
 				break;
@@ -579,7 +580,7 @@ public class Ads112C04 implements Closeable {
 			// 10 nS
 			SleepUtil.busySleep(10);
 		}
-		//Logger.debug("Data available");
+		// Logger.debug("Data available");
 
 		// XXX Note that if the conversion counter is enabled 3 bytes need to be read,
 		// the first byte is the conversion counter
@@ -594,7 +595,7 @@ public class Ads112C04 implements Closeable {
 		}
 
 		ByteBuffer bb = device.readI2CBlockDataByteBuffer(COMMAND_RDATA, bytes_to_read);
-		//Logger.debug("BB Byte Order: " + bb.order());
+		// Logger.debug("BB Byte Order: " + bb.order());
 		if (dataCounter.isEnabled()) {
 			int counter = bb.get() & 0xff;
 			Logger.debug("Conversion counter: {}", Integer.valueOf(counter));
@@ -627,7 +628,7 @@ public class Ads112C04 implements Closeable {
 	}
 
 	public short getValueSingle(int adcNumber) {
-		//System.out.println("getValueSingle");
+		// System.out.println("getValueSingle");
 		conversionMode = ConversionMode.SINGLE_SHOT;
 		setConfig1();
 		start();
@@ -641,7 +642,7 @@ public class Ads112C04 implements Closeable {
 
 		return readDataWhenAvailable();
 	}
-	
+
 	public void setContinuousMode(int adcNumber) {
 		mux = (byte) ((0b1000 + adcNumber) << C0_MUX_BIT_START);
 		gainConfig = GainConfig.GAIN_1;
@@ -649,8 +650,29 @@ public class Ads112C04 implements Closeable {
 		setConfig0();
 		conversionMode = ConversionMode.CONTINUOUS;
 		setConfig1();
-		
+
 		start();
+	}
+
+	public short readNewData() {
+		// Data counter must be available for this to work
+		if (dataCounter == DataCounter.DISABLED) {
+			throw new IllegalArgumentException("Data counter must be enabled");
+		}
+
+		byte[] buffer = new byte[3];
+		short value;
+		while (true) {
+			device.readI2CBlockData(COMMAND_RDATA, buffer);
+			int new_dc = buffer[0] & 0xff;
+			if (new_dc != lastDataCounter) {
+				lastDataCounter = new_dc;
+				value = (short) ((buffer[1] << 8) | (buffer[2] & 0xff));
+				break;
+			}
+			SleepUtil.busySleep(100);
+		}
+		return value;
 	}
 
 	@Override
@@ -659,27 +681,34 @@ public class Ads112C04 implements Closeable {
 	}
 
 	public static void main(String[] args) {
-		try (Ads112C04 ads = Ads112C04.builder(Address.GND_GND).setDataRate(DataRate.DR_1000HZ).setTurboModeEnabled(true)
-				.setDataCounterEnabled(false).setCrcConfig(CrcConfig.DISABLED).build()) {
-			System.out.println("build complete");
+		try (Ads112C04 ads = Ads112C04.builder(Address.GND_GND).setDataRate(DataRate.DR_1000HZ)
+				.setPgaBypassEnabled(false).setTurboModeEnabled(true).setDataCounterEnabled(true)
+				.setCrcConfig(CrcConfig.DISABLED).setVRef(VRef.ANALOG_SUPPLY).build()) {
 			ads.setContinuousMode(0);
+
 			float avg = 0;
 			int readings = 10_000;
 			if (args.length > 0) {
 				readings = Integer.parseInt(args[0]);
 			}
+			Logger.info("Starting readings... data rate = {} SPS",
+					Integer.valueOf(ads.dataRate.getDataRate() * ads.operatingMode.getMultiplier()));
 			long start_ms = System.currentTimeMillis();
 			for (int i = 1; i <= readings; i++) {
-				avg += ((ads.readDataWhenAvailable() - avg) / i);
+				// avg += ((ads.readDataWhenAvailable() - avg) / i);
+				avg += ((ads.readNewData() - avg) / i);
 			}
 			long duration_ms = System.currentTimeMillis() - start_ms;
-			
-			System.out.println("Average: " + avg + ", # readings: " + readings + ", duration: " + duration_ms + " ms");
-			
+			double frequency = readings / (duration_ms / 1000.0);
+
+			Logger.info("Average: {}, # readings: {}, duration: {} ms, frequency: {} Hz", Float.valueOf(avg),
+					Integer.valueOf(readings), Long.valueOf(duration_ms), Double.valueOf(frequency));
+
 			// Switch back to single shot mode
-			int reading = ads.getValueSingle(0);
-			System.out.println("Reading: " + reading);
-			
+			short reading = ads.getValueSingle(0);
+			Logger.info("Single-shot reading prior to power-down: {}", Short.valueOf(reading));
+
+			// Finally power-down the ADS
 			ads.powerDown();
 		}
 	}
