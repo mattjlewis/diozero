@@ -32,7 +32,7 @@ package com.diozero.util;
  */
 
 /**
- * CRC-8 and CRC-16 calculator
+ * CRC-8 and CRC-16 calculator.
  * 
  * See:
  * <ul>

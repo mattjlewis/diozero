@@ -1,5 +1,36 @@
 package com.diozero.util;
 
+/*-
+ * #%L
+ * Organisation: diozero
+ * Project:      Device I/O Zero - Core
+ * Filename:     CrcTest.java  
+ * 
+ * This file is part of the diozero project. More information about this project
+ * can be found at http://www.diozero.com/
+ * %%
+ * Copyright (C) 2016 - 2020 diozero
+ * %%
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ * #L%
+ */
+
 import java.nio.charset.StandardCharsets;
 
 import org.junit.jupiter.api.Assertions;
@@ -72,6 +103,10 @@ public class CrcTest {
 		// ADS112C04 CRC Test (CRC16 CCITT FALSE)
 		Crc.Params ads112c04_crc_params = new Crc.Params(0b10001000000100001, 0xffff, false, false, 0x0000);
 		Assertions.assertEquals(0x29B1, Crc.crc16(ads112c04_crc_params, data));
+		short val = 3659;
+		System.out.println((short) Crc.crc16(ads112c04_crc_params, val));
+		val = 21579;
+		System.out.println((short) Crc.crc16(ads112c04_crc_params, val));
 
 		// Misc. tests
 		Assertions.assertEquals(0xF353, Crc.crc16(Crc.CRC16_ARC, "Hello".getBytes(StandardCharsets.US_ASCII)));
