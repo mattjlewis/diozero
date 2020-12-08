@@ -1,5 +1,8 @@
 package com.diozero.devices.sandpit;
 
+import java.io.Closeable;
+import java.io.IOException;
+
 /*-
  * #%L
  * Organisation: diozero
@@ -40,7 +43,7 @@ import com.diozero.api.I2CDevice;
 import com.diozero.util.Crc;
 import com.diozero.util.SleepUtil;
 
-public class Ads112C04 {
+public class Ads112C04 implements Closeable {
 	/**
 	 * The ADS112C04 has two address pins: A0 and A1. Each address pin can be tied
 	 * to either DGND, DVDD, SDA, or SCL, providing 16 possible unique addresses.
@@ -511,15 +514,26 @@ public class Ads112C04 {
 		setConfig1();
 		setConfig2();
 		setConfig3();
+
+		//start();
 	}
 
 	public void reset() {
+		System.out.println("reset");
 		device.writeByte(COMMAND_RESET);
-		SleepUtil.sleepMillis(500);
+		SleepUtil.busySleep(1_000);
 	}
 
 	public void start() {
+		//System.out.println("start");
 		device.writeByte(COMMAND_START);
+		//SleepUtil.sleepMillis(5);
+	}
+
+	public void powerDown() {
+		//System.out.println("powerDown");
+		device.writeByte(COMMAND_POWER_DOWN);
+		//SleepUtil.sleepMillis(5);
 	}
 
 	private byte readConfigRegister(ConfigRegister register) {
@@ -531,35 +545,41 @@ public class Ads112C04 {
 	}
 
 	private void setConfig0() {
+		//System.out.println("setConfig0");
 		writeConfigRegister(ConfigRegister.REG0, (byte) (mux | gainConfig.getMask() | pgaBypass.getMask()));
-		SleepUtil.sleepMillis(5);
+		//SleepUtil.sleepMillis(5);
 	}
 
 	private void setConfig1() {
+		//System.out.println("setConfig1");
 		writeConfigRegister(ConfigRegister.REG1, (byte) (dataRate.getMask() | operatingMode.getMask()
 				| conversionMode.getMask() | vRef.getMask() | tsMode.getMask()));
-		SleepUtil.sleepMillis(5);
+		//SleepUtil.sleepMillis(5);
 	}
 
 	private void setConfig2() {
+		//System.out.println("setConfig2");
 		writeConfigRegister(ConfigRegister.REG2, (byte) (dataCounter.getMask() | crcConfig.getMask()
 				| burnoutCurrentSources.getMask() | idacCurrent.getMask()));
-		SleepUtil.sleepMillis(5);
+		//SleepUtil.sleepMillis(5);
 	}
 
 	private void setConfig3() {
+		//System.out.println("setConfig3");
 		writeConfigRegister(ConfigRegister.REG3, (byte) (idac1RoutingConfig.getMask() | idac2RoutingConfig.getMask()));
-		SleepUtil.sleepMillis(5);
+		//SleepUtil.sleepMillis(5);
 	}
 
 	public short readDataWhenAvailable() {
+		//Logger.debug("Waiting for data to be available...");
 		while (true) {
 			if ((readConfigRegister(ConfigRegister.REG2) & (1 << C2_DATA_RDY_BIT_START)) != 0) {
 				break;
 			}
-			// 10 uS
-			SleepUtil.busySleep(10_000);
+			// 10 nS
+			SleepUtil.busySleep(10);
 		}
+		//Logger.debug("Data available");
 
 		// XXX Note that if the conversion counter is enabled 3 bytes need to be read,
 		// the first byte is the conversion counter
@@ -574,6 +594,7 @@ public class Ads112C04 {
 		}
 
 		ByteBuffer bb = device.readI2CBlockDataByteBuffer(COMMAND_RDATA, bytes_to_read);
+		//Logger.debug("BB Byte Order: " + bb.order());
 		if (dataCounter.isEnabled()) {
 			int counter = bb.get() & 0xff;
 			Logger.debug("Conversion counter: {}", Integer.valueOf(counter));
@@ -583,7 +604,7 @@ public class Ads112C04 {
 			short crc_val = bb.getShort();
 			Logger.debug("Got CRC {} for data {}; CRC mode: {}", Short.valueOf(crc_val), Short.valueOf(value),
 					crcConfig);
-			// TODO Validate the CRC value
+			// Validate the CRC value
 			if (crcConfig == CrcConfig.INVERTED_DATA_OUTPUT) {
 				// A bitwise-inverted version of the data
 				short calc_crc_val = (short) (~value);
@@ -606,8 +627,10 @@ public class Ads112C04 {
 	}
 
 	public short getValueSingle(int adcNumber) {
+		//System.out.println("getValueSingle");
 		conversionMode = ConversionMode.SINGLE_SHOT;
 		setConfig1();
+		start();
 		// Compare against ground (AINn - AVSS)
 		// For settings where AINN = AVSS, the PGA must be disabled (PGA_BYPASS = 1) and
 		// only gains 1, 2, and 4 can be used.
@@ -618,12 +641,46 @@ public class Ads112C04 {
 
 		return readDataWhenAvailable();
 	}
+	
+	public void setContinuousMode(int adcNumber) {
+		mux = (byte) ((0b1000 + adcNumber) << C0_MUX_BIT_START);
+		gainConfig = GainConfig.GAIN_1;
+		pgaBypass = PgaBypass.DISABLED;
+		setConfig0();
+		conversionMode = ConversionMode.CONTINUOUS;
+		setConfig1();
+		
+		start();
+	}
+
+	@Override
+	public void close() {
+		device.close();
+	}
 
 	public static void main(String[] args) {
-		Ads112C04 ads = Ads112C04.builder(Address.GND_GND).build();
-		for (int i = 0; i < 10; i++) {
-			System.out.println(ads.getValueSingle(0));
-			SleepUtil.sleepSeconds(1);
+		try (Ads112C04 ads = Ads112C04.builder(Address.GND_GND).setDataRate(DataRate.DR_1000HZ).setTurboModeEnabled(true)
+				.setDataCounterEnabled(false).setCrcConfig(CrcConfig.DISABLED).build()) {
+			System.out.println("build complete");
+			ads.setContinuousMode(0);
+			float avg = 0;
+			int readings = 10_000;
+			if (args.length > 0) {
+				readings = Integer.parseInt(args[0]);
+			}
+			long start_ms = System.currentTimeMillis();
+			for (int i = 1; i <= readings; i++) {
+				avg += ((ads.readDataWhenAvailable() - avg) / i);
+			}
+			long duration_ms = System.currentTimeMillis() - start_ms;
+			
+			System.out.println("Average: " + avg + ", # readings: " + readings + ", duration: " + duration_ms + " ms");
+			
+			// Switch back to single shot mode
+			int reading = ads.getValueSingle(0);
+			System.out.println("Reading: " + reading);
+			
+			ads.powerDown();
 		}
 	}
 }
