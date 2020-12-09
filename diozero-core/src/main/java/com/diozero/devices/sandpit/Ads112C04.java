@@ -45,7 +45,7 @@ import com.diozero.util.SleepUtil;
 
 public class Ads112C04 implements Closeable {
 	private static final int NUM_ADC_CHANNELS = 4;
-	
+
 	/**
 	 * The ADS112C04 has two address pins: A0 and A1. Each address pin can be tied
 	 * to either DGND, DVDD, SDA, or SCL, providing 16 possible unique addresses.
@@ -70,7 +70,8 @@ public class Ads112C04 implements Closeable {
 	}
 
 	public enum GainConfig {
-		GAIN_1(1, 0b000), GAIN_2(2, 0b001), GAIN_4(4, 0b010);
+		GAIN_1(1, 0b000), GAIN_2(2, 0b001), GAIN_4(4, 0b010), GAIN_8(8, 0b011), GAIN_16(16, 0b100), GAIN_32(32, 0b101),
+		GAIN_64(64, 0b110), GAIN_128(128, 0b111);
 
 		private int gain;
 		private byte mask;
@@ -491,7 +492,7 @@ public class Ads112C04 implements Closeable {
 	private IdacCurrent idacCurrent;
 	private Idac1RoutingConfig idac1RoutingConfig;
 	private Idac2RoutingConfig idac2RoutingConfig;
-	private byte mux;
+	private byte inputMultiplexer;
 	private int lastDataCounter;
 
 	protected Ads112C04(int controller, Address address, GainConfig gainConfig, PgaBypass pgaBypass, DataRate dataRate,
@@ -511,7 +512,7 @@ public class Ads112C04 implements Closeable {
 		this.idac1RoutingConfig = idac1RoutingConfig;
 		this.idac2RoutingConfig = idac2RoutingConfig;
 
-		mux = (byte) ((0b1000) << C0_MUX_BIT_START);
+		inputMultiplexer = (byte) ((0b1000) << C0_MUX_BIT_START);
 
 		conversionMode = ConversionMode.SINGLE_SHOT;
 		lastDataCounter = -1;
@@ -565,7 +566,8 @@ public class Ads112C04 implements Closeable {
 
 	private void setConfig0() {
 		// Logger.debug("setConfig0");
-		writeConfigRegister(ConfigRegister.REG0, (byte) (mux | gainConfig.getMask() | pgaBypass.getMask()));
+		writeConfigRegister(ConfigRegister.REG0,
+				(byte) (inputMultiplexer | gainConfig.getMask() | pgaBypass.getMask()));
 	}
 
 	private void setConfig1() {
@@ -584,114 +586,154 @@ public class Ads112C04 implements Closeable {
 		// Logger.debug("setConfig3");
 		writeConfigRegister(ConfigRegister.REG3, (byte) (idac1RoutingConfig.getMask() | idac2RoutingConfig.getMask()));
 	}
-	
+
+	public int getInputMultiplexer() {
+		return inputMultiplexer;
+	}
+
+	/**
+	 * Set the input multiplexer configuration
+	 * 
+	 * For settings where AINN = AVSS, the PGA must be disabled (PGA_BYPASS = 1) and
+	 * only gains 1, 2, and 4 can be used.
+	 * 
+	 * <pre>
+	 * 0000 : AINP = AIN0, AINN = AIN1 (default)
+	 * 0001 : AINP = AIN0, AINN = AIN2
+	 * 0010 : AINP = AIN0, AINN = AIN3
+	 * 0011 : AINP = AIN1, AINN = AIN0
+	 * 0100 : AINP = AIN1, AINN = AIN2
+	 * 0101 : AINP = AIN1, AINN = AIN3
+	 * 0110 : AINP = AIN2, AINN = AIN3
+	 * 0111 : AINP = AIN3, AINN = AIN2
+	 * 1000 : AINP = AIN0, AINN = AVSS
+	 * 1001 : AINP = AIN1, AINN = AVSS
+	 * 1010 : AINP = AIN2, AINN = AVSS
+	 * 1011 : AINP = AIN3, AINN = AVSS
+	 * 1100 : (V(REFP) – V(REFN)) / 4 monitor (PGA bypassed)
+	 * 1101 : (AVDD – AVSS) / 4 monitor (PGA bypassed)
+	 * 1110 : AINP and AINN shorted to (AVDD + AVSS) / 2
+	 * </pre>
+	 * 
+	 * @param inputMultiplexer the input multiplexer
+	 */
+	public void setInputMultiplexer(int inputMultiplexer) {
+		if (inputMultiplexer < 0 || inputMultiplexer > 0b110) {
+			throw new IllegalArgumentException(
+					"Invalid input multiplexer value: " + inputMultiplexer + " must be 0..6");
+		}
+
+		this.inputMultiplexer = (byte) (inputMultiplexer & 0xf);
+		setConfig0();
+	}
+
 	public GainConfig getGainConfig() {
 		return gainConfig;
 	}
-	
+
 	public void setGainConfig(GainConfig gainConfig) {
 		this.gainConfig = gainConfig;
 		setConfig0();
 	}
-	
+
 	public PgaBypass getPgaBypass() {
 		return pgaBypass;
 	}
-	
+
 	public void setPgaBypass(PgaBypass pgaBypass) {
 		this.pgaBypass = pgaBypass;
 		setConfig0();
 	}
-	
+
 	public DataRate getDataRate() {
 		return dataRate;
 	}
-	
+
 	public void setDataRate(DataRate dataRate) {
 		this.dataRate = dataRate;
 		setConfig1();
 	}
-	
+
 	public boolean isTurboModeEnabled() {
 		return operatingMode == OperatingMode.TURBO;
 	}
-	
+
 	public void setTurboModeEnabled(boolean enabled) {
 		this.operatingMode = enabled ? OperatingMode.TURBO : OperatingMode.NORMAL;
 		setConfig1();
 	}
-	
+
 	public int getDataRateFrequency() {
 		return dataRate.getDataRate() * operatingMode.getMultiplier();
 	}
-	
+
 	public VRef getVRef() {
 		return vRef;
 	}
-	
+
 	public void setVRef(VRef vRef) {
 		this.vRef = vRef;
 		setConfig1();
 	}
-	
+
 	public boolean isTemperatureSensorModeEnabled() {
 		return tsMode.isEnabled();
 	}
-	
+
 	public void setTemperatureSensorModeEnabled(boolean enabled) {
 		this.tsMode = enabled ? TemperatureSensorMode.ENABLED : TemperatureSensorMode.DISABLED;
 		setConfig1();
 	}
-	
+
 	public boolean isDataCounterEnabled() {
 		return dataCounter.isEnabled();
 	}
-	
+
 	public void setDataCounterEnabled(boolean enabled) {
 		this.dataCounter = enabled ? DataCounter.ENABLED : DataCounter.DISABLED;
 		setConfig2();
 	}
-	
+
 	public CrcConfig getCrcConfig() {
 		return crcConfig;
 	}
-	
+
 	public void setCrcConfig(CrcConfig crcConfig) {
 		this.crcConfig = crcConfig;
 		setConfig2();
 	}
-	
+
 	public BurnoutCurrentSources getBurnoutCurrentSources() {
 		return burnoutCurrentSources;
 	}
-	
+
 	public void setBurnoutCurrentSources(BurnoutCurrentSources burnoutCurrentSources) {
 		this.burnoutCurrentSources = burnoutCurrentSources;
 		setConfig2();
 	}
-	
+
 	public IdacCurrent getIdacCurrent() {
 		return idacCurrent;
 	}
-	
+
 	public void setIdacCurrent(IdacCurrent idacCurrent) {
 		this.idacCurrent = idacCurrent;
 		setConfig2();
 	}
-	
+
 	public Idac1RoutingConfig getIdac1RoutingConfig() {
 		return idac1RoutingConfig;
 	}
-	
+
 	public void setIdac1RoutingConfig(Idac1RoutingConfig idac1RoutingConfig) {
 		this.idac1RoutingConfig = idac1RoutingConfig;
 		setConfig3();
 	}
-	
+
 	public Idac2RoutingConfig getIdac2RoutingConfig() {
 		return idac2RoutingConfig;
 	}
-	
+
 	public void setIdac2RoutingConfig(Idac2RoutingConfig idac2RoutingConfig) {
 		this.idac2RoutingConfig = idac2RoutingConfig;
 		setConfig3();
@@ -702,7 +744,7 @@ public class Ads112C04 implements Closeable {
 		conversionMode = ConversionMode.SINGLE_SHOT;
 		setConfig1();
 
-		// Start command must be issued each time the CM bit is changed 
+		// Start command must be issued each time the CM bit is changed
 		start();
 	}
 
@@ -710,18 +752,18 @@ public class Ads112C04 implements Closeable {
 		if (adcNumber < 0 || adcNumber >= NUM_ADC_CHANNELS) {
 			throw new IllegalArgumentException("Invalid input channel number - " + adcNumber);
 		}
-		
-		mux = (byte) ((0b1000 + adcNumber) << C0_MUX_BIT_START);
+
+		inputMultiplexer = (byte) ((0b1000 + adcNumber) << C0_MUX_BIT_START);
 		setConfig0();
-	
+
 		// Must issue a start command to trigger a new reading
 		start();
-	
+
 		return getReadingOnDataReadyBit();
 	}
 
 	public void setContinuousMode(int adcNumber) {
-		mux = (byte) ((0b1000 + adcNumber) << C0_MUX_BIT_START);
+		inputMultiplexer = (byte) ((0b1000 + adcNumber) << C0_MUX_BIT_START);
 		setConfig0();
 		conversionMode = ConversionMode.CONTINUOUS;
 		setConfig1();
@@ -960,8 +1002,9 @@ public class Ads112C04 implements Closeable {
 			long duration_ms = System.currentTimeMillis() - start_ms;
 			double frequency = readings / (duration_ms / 1000.0);
 
-			Logger.info("Average: {#0.0}, # readings: {}, duration: {} ms, frequency: {#0.0} Hz", Float.valueOf(avg),
-					Integer.valueOf(readings), Long.valueOf(duration_ms), Double.valueOf(frequency));
+			Logger.info("Average Value: {#,###.0}, # readings: {#,###}, duration: {#,###.#} ms, frequency: {#,###} Hz",
+					Float.valueOf(avg), Integer.valueOf(readings), Long.valueOf(duration_ms),
+					Double.valueOf(frequency));
 
 			// Switch back to single shot mode
 			short reading = ads.getSingleShotReading(0);
