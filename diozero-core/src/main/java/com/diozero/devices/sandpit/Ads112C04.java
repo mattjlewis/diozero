@@ -40,9 +40,12 @@ import org.tinylog.Logger;
 
 import com.diozero.api.I2CDevice;
 import com.diozero.util.Crc;
+import com.diozero.util.Hex;
 import com.diozero.util.SleepUtil;
 
 public class Ads112C04 implements Closeable {
+	private static final int NUM_ADC_CHANNELS = 4;
+	
 	/**
 	 * The ADS112C04 has two address pins: A0 and A1. Each address pin can be tied
 	 * to either DGND, DVDD, SDA, or SCL, providing 16 possible unique addresses.
@@ -517,13 +520,11 @@ public class Ads112C04 implements Closeable {
 				.build();
 
 		reset();
+	}
 
-		setConfig0();
-		setConfig1();
-		setConfig2();
-		setConfig3();
-
-		// start();
+	@Override
+	public void close() {
+		device.close();
 	}
 
 	public void reset() {
@@ -531,13 +532,18 @@ public class Ads112C04 implements Closeable {
 		device.writeByte(COMMAND_RESET);
 		// TODO Check delays
 		SleepUtil.sleepMillis(1);
+
+		setConfig0();
+		setConfig1();
+		setConfig2();
+		setConfig3();
 	}
 
 	public void start() {
 		Logger.debug("start");
 		device.writeByte(COMMAND_START);
 		// TODO Check delays
-		SleepUtil.sleepMillis(1);
+		SleepUtil.busySleep(10_000);
 	}
 
 	public void powerDown() {
@@ -578,28 +584,144 @@ public class Ads112C04 implements Closeable {
 		// Logger.debug("setConfig3");
 		writeConfigRegister(ConfigRegister.REG3, (byte) (idac1RoutingConfig.getMask() | idac2RoutingConfig.getMask()));
 	}
+	
+	public GainConfig getGainConfig() {
+		return gainConfig;
+	}
+	
+	public void setGainConfig(GainConfig gainConfig) {
+		this.gainConfig = gainConfig;
+		setConfig0();
+	}
+	
+	public PgaBypass getPgaBypass() {
+		return pgaBypass;
+	}
+	
+	public void setPgaBypass(PgaBypass pgaBypass) {
+		this.pgaBypass = pgaBypass;
+		setConfig0();
+	}
+	
+	public DataRate getDataRate() {
+		return dataRate;
+	}
+	
+	public void setDataRate(DataRate dataRate) {
+		this.dataRate = dataRate;
+		setConfig1();
+	}
+	
+	public boolean isTurboModeEnabled() {
+		return operatingMode == OperatingMode.TURBO;
+	}
+	
+	public void setTurboModeEnabled(boolean enabled) {
+		this.operatingMode = enabled ? OperatingMode.TURBO : OperatingMode.NORMAL;
+		setConfig1();
+	}
+	
+	public int getDataRateFrequency() {
+		return dataRate.getDataRate() * operatingMode.getMultiplier();
+	}
+	
+	public VRef getVRef() {
+		return vRef;
+	}
+	
+	public void setVRef(VRef vRef) {
+		this.vRef = vRef;
+		setConfig1();
+	}
+	
+	public boolean isTemperatureSensorModeEnabled() {
+		return tsMode.isEnabled();
+	}
+	
+	public void setTemperatureSensorModeEnabled(boolean enabled) {
+		this.tsMode = enabled ? TemperatureSensorMode.ENABLED : TemperatureSensorMode.DISABLED;
+		setConfig1();
+	}
+	
+	public boolean isDataCounterEnabled() {
+		return dataCounter.isEnabled();
+	}
+	
+	public void setDataCounterEnabled(boolean enabled) {
+		this.dataCounter = enabled ? DataCounter.ENABLED : DataCounter.DISABLED;
+		setConfig2();
+	}
+	
+	public CrcConfig getCrcConfig() {
+		return crcConfig;
+	}
+	
+	public void setCrcConfig(CrcConfig crcConfig) {
+		this.crcConfig = crcConfig;
+		setConfig2();
+	}
+	
+	public BurnoutCurrentSources getBurnoutCurrentSources() {
+		return burnoutCurrentSources;
+	}
+	
+	public void setBurnoutCurrentSources(BurnoutCurrentSources burnoutCurrentSources) {
+		this.burnoutCurrentSources = burnoutCurrentSources;
+		setConfig2();
+	}
+	
+	public IdacCurrent getIdacCurrent() {
+		return idacCurrent;
+	}
+	
+	public void setIdacCurrent(IdacCurrent idacCurrent) {
+		this.idacCurrent = idacCurrent;
+		setConfig2();
+	}
+	
+	public Idac1RoutingConfig getIdac1RoutingConfig() {
+		return idac1RoutingConfig;
+	}
+	
+	public void setIdac1RoutingConfig(Idac1RoutingConfig idac1RoutingConfig) {
+		this.idac1RoutingConfig = idac1RoutingConfig;
+		setConfig3();
+	}
+	
+	public Idac2RoutingConfig getIdac2RoutingConfig() {
+		return idac2RoutingConfig;
+	}
+	
+	public void setIdac2RoutingConfig(Idac2RoutingConfig idac2RoutingConfig) {
+		this.idac2RoutingConfig = idac2RoutingConfig;
+		setConfig3();
+	}
 
-	public short getValueSingle(int adcNumber) {
+	public void setSingleShotMode() {
 		// System.out.println("getValueSingle");
 		conversionMode = ConversionMode.SINGLE_SHOT;
 		setConfig1();
-		// XXX Not sure if you always need to call start()...
+
+		// Start command must be issued each time the CM bit is changed 
 		start();
-		// Compare against ground (AINn - AVSS)
-		// For settings where AINN = AVSS, the PGA must be disabled (PGA_BYPASS = 1) and
-		// only gains 1, 2, and 4 can be used.
-		gainConfig = GainConfig.GAIN_1;
-		pgaBypass = PgaBypass.DISABLED;
+	}
+
+	public short getSingleShotReading(int adcNumber) {
+		if (adcNumber < 0 || adcNumber >= NUM_ADC_CHANNELS) {
+			throw new IllegalArgumentException("Invalid input channel number - " + adcNumber);
+		}
+		
 		mux = (byte) ((0b1000 + adcNumber) << C0_MUX_BIT_START);
 		setConfig0();
-
-		return readDataWhenAvailable();
+	
+		// Must issue a start command to trigger a new reading
+		start();
+	
+		return getReadingOnDataReadyBit();
 	}
 
 	public void setContinuousMode(int adcNumber) {
 		mux = (byte) ((0b1000 + adcNumber) << C0_MUX_BIT_START);
-		gainConfig = GainConfig.GAIN_1;
-		pgaBypass = PgaBypass.DISABLED;
 		setConfig0();
 		conversionMode = ConversionMode.CONTINUOUS;
 		setConfig1();
@@ -607,8 +729,14 @@ public class Ads112C04 implements Closeable {
 		start();
 	}
 
-	public short readDataWhenAvailable() {
+	/**
+	 * Read data whenever the data read bit is set in Config Register #2
+	 * 
+	 * @return the raw analog data reading in signed short format
+	 */
+	public short getReadingOnDataReadyBit() {
 		// Logger.debug("Waiting for data to be available...");
+		// Wait for the Data Ready bit to be set in config register #2
 		while (true) {
 			if ((readConfigRegister(ConfigRegister.REG2) & (1 << C2_DATA_RDY_BIT_START)) != 0) {
 				break;
@@ -618,30 +746,29 @@ public class Ads112C04 implements Closeable {
 		}
 		// Logger.debug("Data available");
 
-		// XXX Note that if the conversion counter is enabled 3 bytes need to be read,
-		// the first byte is the conversion counter
-		// XXX Note that if CRC checks are enabled, an additional 2 bytes need to be
-		// read after the data - CRC MSB & MSC LSB
 		/*-
-		 *  A CRC enabled read is 4 bytes total (2 data and 2 CRC). 
-		 *  Enabling counter and reversed data you would see 6 bytes (1 byte count, 2 bytes data
-		 *  followed by an inverted count byte and 2 inverted data bytes).
-		 *  And inverted data only would be a total of 4 bytes (2 data bytes followed by 2
-		 *  inverted data bytes).
+		 * DC enabled and CRC disabled is 3 bytes (1 DC, 2 data)
+		 * DC enabled and CRC enabled is 5 bytes (1 DC, 2 data, 2 CRC). 
+		 * DC disabled and CRC enabled is 4 bytes (2 data, 2 CRC). 
+		 * DC enabled and CRC inverted is 6 bytes (1 DC, 2 data, 1 DC inv. and 2 data inv.).
+		 * DC disabled and CRC inverted is 4 bytes (2 data, 2 data inv.).
 		 */
 		int bytes_to_read = 2;
 		if (dataCounter.isEnabled()) {
 			bytes_to_read++;
 		}
-		if (!crcConfig.equals(CrcConfig.DISABLED)) {
+		if (crcConfig != CrcConfig.DISABLED) {
 			bytes_to_read += 2;
-			if (dataCounter.isEnabled()) {
+			if (dataCounter.isEnabled() && crcConfig == CrcConfig.INVERTED_DATA_OUTPUT) {
 				bytes_to_read++;
 			}
 		}
 
-		ByteBuffer bb = device.readI2CBlockDataByteBuffer(COMMAND_RDATA, bytes_to_read);
-		// Logger.debug("BB Byte Order: " + bb.order());
+		byte[] buffer = device.readI2CBlockDataByteArray(COMMAND_RDATA, bytes_to_read);
+		Logger.debug("Read {} bytes:", Integer.valueOf(buffer.length));
+		Hex.dumpByteArray(buffer);
+		ByteBuffer bb = ByteBuffer.wrap(buffer);
+		bb.order(ByteOrder.BIG_ENDIAN);
 		int counter = -1;
 		if (dataCounter.isEnabled()) {
 			counter = bb.get() & 0xff;
@@ -653,19 +780,19 @@ public class Ads112C04 implements Closeable {
 			if (crcConfig == CrcConfig.INVERTED_DATA_OUTPUT) {
 				// A bitwise-inverted version of the data
 				if (dataCounter.isEnabled()) {
-					byte counter_inverted = bb.get();
-					byte calc_counter_inverted = (byte) ~((byte) counter);
+					int counter_inverted = bb.get() & 0xff;
+					int calc_counter_inverted = ~counter & 0xff;
 					if (calc_counter_inverted != counter_inverted) {
 						Logger.warn("Inversion error for counter {}, calculated {}, got {}", Integer.valueOf(counter),
-								Byte.valueOf(calc_counter_inverted), Byte.valueOf(counter_inverted));
+								Integer.valueOf(calc_counter_inverted), Integer.valueOf(counter_inverted));
 					}
 				}
 				short value_inverted = bb.getShort();
 				short calc_val_inverted = (short) (~value);
 				if (calc_val_inverted != value_inverted) {
-					Logger.warn("Inversion error for data {}, calculated {}, got {}. DC Enabled: {}",
+					Logger.warn("Inversion error for data {}, calculated {}, got {}. DC Enabled: {}{}",
 							Short.valueOf(value), Short.valueOf(calc_val_inverted), Short.valueOf(value_inverted),
-							Boolean.valueOf(dataCounter.isEnabled()));
+							Boolean.valueOf(dataCounter.isEnabled()), dataCounter.isEnabled() ? " - " + counter : "");
 				}
 			} else if (crcConfig == CrcConfig.CRC16) {
 				int crc_val = bb.getShort() & 0xffff;
@@ -696,17 +823,23 @@ public class Ads112C04 implements Closeable {
 		return value;
 	}
 
-	public short readNewData() {
+	public short getReadingOnDataCounterChange() {
 		// Data counter must be available for this method to work
 		if (dataCounter == DataCounter.DISABLED) {
 			throw new IllegalArgumentException("Data counter must be enabled");
 		}
 
 		byte[] buffer;
-		if (crcConfig == CrcConfig.DISABLED) {
-			buffer = new byte[3];
-		} else {
+		switch (crcConfig) {
+		case CRC16:
 			buffer = new byte[5];
+			break;
+		case INVERTED_DATA_OUTPUT:
+			buffer = new byte[6];
+			break;
+		case DISABLED:
+		default:
+			buffer = new byte[3];
 		}
 
 		short value;
@@ -725,61 +858,92 @@ public class Ads112C04 implements Closeable {
 		return value;
 	}
 
-	@Override
-	public void close() {
-		device.close();
-	}
-
 	public static void main(String[] args) {
 		int controller = 1;
 		if (args.length > 0) {
 			controller = Integer.parseInt(args[0]);
 		}
 
-		try (Ads112C04 ads = Ads112C04.builder(Address.GND_GND).setController(controller)
-				.setDataRate(DataRate.DR_1000HZ).setPgaBypassEnabled(false).setTurboModeEnabled(true)
-				.setDataCounterEnabled(true).setCrcConfig(CrcConfig.DISABLED).setVRef(VRef.ANALOG_SUPPLY).build()) {
+		try (Ads112C04 ads = Ads112C04.builder(Address.GND_GND) //
+				.setController(controller) //
+				.setCrcConfig(CrcConfig.DISABLED) //
+				.setDataCounterEnabled(false) //
+				.setDataRate(DataRate.DR_20HZ) //
+				.setGainConfig(GainConfig.GAIN_1) //
+				.setPgaBypassEnabled(false) //
+				.setTurboModeEnabled(false) //
+				.setVRef(VRef.ANALOG_SUPPLY) //
+				.build()) {
 			// First do some single shot tests
+			ads.setSingleShotMode();
+
 			ads.crcConfig = CrcConfig.INVERTED_DATA_OUTPUT;
 			ads.dataCounter = DataCounter.ENABLED;
 			ads.setConfig2();
-			short reading = ads.getValueSingle(0);
-			Logger.info("Single-shot reading: {}. CRC Config: {}, DC: {}", Short.valueOf(reading), ads.crcConfig,
-					ads.dataCounter);
+			for (int i = 0; i < 5; i++) {
+				short reading = ads.getSingleShotReading(0);
+				Logger.info("Single-shot reading: {}. CRC Config: {}, DC: {}", Short.valueOf(reading), ads.crcConfig,
+						ads.dataCounter);
+			}
+			ads.reset();
 
 			ads.crcConfig = CrcConfig.INVERTED_DATA_OUTPUT;
 			ads.dataCounter = DataCounter.DISABLED;
 			ads.setConfig2();
-			reading = ads.getValueSingle(0);
-			Logger.info("Single-shot reading: {}. CRC Config: {}, DC: {}", Short.valueOf(reading), ads.crcConfig,
-					ads.dataCounter);
+			for (int i = 0; i < 5; i++) {
+				short reading = ads.getSingleShotReading(0);
+				Logger.info("Single-shot reading: {}. CRC Config: {}, DC: {}", Short.valueOf(reading), ads.crcConfig,
+						ads.dataCounter);
+			}
+			ads.reset();
 
 			ads.crcConfig = CrcConfig.CRC16;
 			ads.dataCounter = DataCounter.ENABLED;
 			ads.setConfig2();
-			reading = ads.getValueSingle(0);
-			Logger.info("Single-shot reading: {}. CRC Config: {}, DC: {}", Short.valueOf(reading), ads.crcConfig,
-					ads.dataCounter);
+			for (int i = 0; i < 5; i++) {
+				short reading = ads.getSingleShotReading(0);
+				Logger.info("Single-shot reading: {}. CRC Config: {}, DC: {}", Short.valueOf(reading), ads.crcConfig,
+						ads.dataCounter);
+			}
+			ads.reset();
 
 			ads.crcConfig = CrcConfig.CRC16;
 			ads.dataCounter = DataCounter.DISABLED;
 			ads.setConfig2();
-			reading = ads.getValueSingle(0);
-			Logger.info("Single-shot reading: {}. CRC Config: {}, DC: {}", Short.valueOf(reading), ads.crcConfig,
-					ads.dataCounter);
+			for (int i = 0; i < 5; i++) {
+				short reading = ads.getSingleShotReading(0);
+				Logger.info("Single-shot reading: {}. CRC Config: {}, DC: {}", Short.valueOf(reading), ads.crcConfig,
+						ads.dataCounter);
+			}
+			ads.reset();
+
+			ads.crcConfig = CrcConfig.DISABLED;
+			ads.dataCounter = DataCounter.ENABLED;
+			ads.setConfig2();
+			for (int i = 0; i < 5; i++) {
+				short reading = ads.getSingleShotReading(0);
+				Logger.info("Single-shot reading: {}. CRC Config: {}, DC: {}", Short.valueOf(reading), ads.crcConfig,
+						ads.dataCounter);
+			}
+			ads.reset();
 
 			ads.crcConfig = CrcConfig.DISABLED;
 			ads.dataCounter = DataCounter.DISABLED;
 			ads.setConfig2();
-			reading = ads.getValueSingle(0);
-			Logger.info("Single-shot reading: {}. CRC Config: {}, DC: {}", Short.valueOf(reading), ads.crcConfig,
-					ads.dataCounter);
+			for (int i = 0; i < 5; i++) {
+				short reading = ads.getSingleShotReading(0);
+				Logger.info("Single-shot reading: {}. CRC Config: {}, DC: {}", Short.valueOf(reading), ads.crcConfig,
+						ads.dataCounter);
+			}
+			ads.reset();
 
 			// Then do continuous mode tests, check if observed frequency correlates with
 			// that configured
 			ads.crcConfig = CrcConfig.DISABLED;
 			ads.dataCounter = DataCounter.ENABLED;
 			ads.setConfig2();
+			ads.dataRate = DataRate.DR_1000HZ;
+			ads.operatingMode = OperatingMode.TURBO;
 			ads.setContinuousMode(0);
 
 			int readings = 10_000;
@@ -791,7 +955,7 @@ public class Ads112C04 implements Closeable {
 			float avg = 0;
 			long start_ms = System.currentTimeMillis();
 			for (int i = 1; i <= readings; i++) {
-				avg += ((ads.readNewData() - avg) / i);
+				avg += ((ads.getReadingOnDataCounterChange() - avg) / i);
 			}
 			long duration_ms = System.currentTimeMillis() - start_ms;
 			double frequency = readings / (duration_ms / 1000.0);
@@ -800,7 +964,7 @@ public class Ads112C04 implements Closeable {
 					Integer.valueOf(readings), Long.valueOf(duration_ms), Double.valueOf(frequency));
 
 			// Switch back to single shot mode
-			reading = ads.getValueSingle(0);
+			short reading = ads.getSingleShotReading(0);
 			Logger.info("Single-shot reading prior to power-down: {}", Short.valueOf(reading));
 
 			// Finally power-down the ADS
