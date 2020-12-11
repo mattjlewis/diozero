@@ -137,7 +137,8 @@ public abstract class BoardInfo extends BoardPinInfo {
 	/**
 	 * Compare make and model
 	 * 
-	 * @param boardInfo the compare against
+	 * @param make the make to compare
+	 * @param model the model to compare
 	 * @return true if the make and model are the same
 	 */
 	public boolean compareMakeAndModel(String make, String model) {

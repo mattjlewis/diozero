@@ -4,7 +4,7 @@ package com.diozero.sbc;
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - Core
- * Filename:     SystemInfo.java  
+ * Filename:     LocalBoardInfoUtil.java  
  * 
  * This file is part of the diozero project. More information about this project
  * can be found at http://www.diozero.com/

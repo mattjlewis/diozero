@@ -4,7 +4,7 @@ package com.diozero.sbc;
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - Core
- * Filename:     SystemInfoConstants.java  
+ * Filename:     LocalSystemInfo.java  
  * 
  * This file is part of the diozero project. More information about this project
  * can be found at http://www.diozero.com/
@@ -167,6 +167,8 @@ public class LocalSystemInfo {
 
 	// For unit testing purposes only
 	LocalSystemInfo(String hardware, String revision, String model) {
+		this();
+		
 		this.hardware = hardware;
 		this.revision = revision;
 		this.model = model;
