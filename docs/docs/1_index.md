@@ -62,6 +62,20 @@ Created by [Matt Lewis](https://github.com/mattjlewis) (email [deviceiozero@gmai
 inspired by [GPIO Zero](https://gpiozero.readthedocs.org/) and [Johnny Five](http://johnny-five.io/). 
 If you have any issues, comments or suggestions please use the [GitHub issues page](https://github.com/mattjlewis/diozero/issues).
 
+## Supported Boards
+
+diozero has out of the box support for the following Single Board Computers and micro-controllers:
+
+* [Raspberry Pi](http://www.raspberyrpi.org/) (all versions).
+* [Odroid C2](https://wiki.odroid.com/odroid-c2/odroid-c2).
+* [BeagleBone Green / Black](https://beagleboard.org/black).
+* [Asus TinkerBoard](https://www.asus.com/uk/Single-board-Computer/TINKER-BOARD/).
+* [Allwinner H3](https://linux-sunxi.org/H3) boards, including [NanoPi Neo](https://www.friendlyarm.com/index.php?route=product/product&product_id=132) and [NanoPi Duo](https://www.friendlyarm.com/index.php?route=product/product&product_id=244).
+* [The Next Thing Co CHIP](https://getchip.com/pages/chip).
+* [Arduino compatible](https://www.arduino.cc) (any device that can run [Standard Firmata](https://github.com/firmata/arduino/blob/master/examples/StandardFirmata/StandardFirmata.ino)).
+* [ESP8266](https://www.espressif.com/en/products/socs/esp8266) / [ESP32](https://www.espressif.com/en/products/socs/esp32) (via [Standard Firmata WiFi](https://github.com/firmata/arduino/tree/master/examples/StandardFirmataWiFi)).
+* [Particle Spark](https://docs.particle.io/datasheets/discontinued/core-datasheet/) (using [Voodoo Spark](https://github.com/voodootikigod/voodoospark)).
+
 ## Development
 
 This project is hosted on [GitHub](https://github.com/mattjlewis/diozero/), please feel free to join in:

@@ -35,8 +35,8 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -78,7 +78,7 @@ public class GpioChip extends GpioChipInfo implements Closeable, GpioLineEventLi
 		return chips;
 	}
 
-	public static ArrayList<GpioChipInfo> getChips() {
+	public static List<GpioChipInfo> getChips() {
 		return NativeGpioDevice.getChips();
 	}
 

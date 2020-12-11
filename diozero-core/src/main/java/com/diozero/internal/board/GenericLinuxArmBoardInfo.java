@@ -35,85 +35,70 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumSet;
-import java.util.List;
 import java.util.stream.Collectors;
 
 import org.tinylog.Logger;
 
 import com.diozero.api.DeviceMode;
-import com.diozero.sbc.SystemInfoConstants;
-import com.diozero.sbc.UnknownBoardInfo;
+import com.diozero.sbc.BoardInfo;
+import com.diozero.sbc.LocalSystemInfo;
 
-public class GenericLinuxArmBoardInfo extends UnknownBoardInfo {
-	public GenericLinuxArmBoardInfo(String make, String model, Integer memoryKb) {
-		this(make, model, memoryKb, System.getProperty(SystemInfoConstants.OS_NAME_SYSTEM_PROPERTY),
-				System.getProperty(SystemInfoConstants.OS_ARCH_SYSTEM_PROPERTY));
+public class GenericLinuxArmBoardInfo extends BoardInfo {
+	public GenericLinuxArmBoardInfo(LocalSystemInfo systemInfo) {
+		this(systemInfo, BoardInfo.UNKNOWN);
 	}
 
-	public GenericLinuxArmBoardInfo(String make, String model, Integer memoryKb, String osName, String osArch) {
-		super(make, model, memoryKb, osName, osArch);
+	public GenericLinuxArmBoardInfo(LocalSystemInfo systemInfo, String make) {
+		this(make, systemInfo.getModel(), systemInfo.getMemoryKb() == null ? -1 : systemInfo.getMemoryKb().intValue(),
+				systemInfo.getDefaultLibraryPath(), BoardInfo.UNKNOWN_ADC_VREF);
 	}
 
-	public GenericLinuxArmBoardInfo(String make, String model, Integer memoryKb, String libraryPath) {
-		super(make, model, memoryKb, libraryPath);
+	public GenericLinuxArmBoardInfo(LocalSystemInfo systemInfo, String make, String model, int memoryKb) {
+		this(make, model, memoryKb, systemInfo.getDefaultLibraryPath(), BoardInfo.UNKNOWN_ADC_VREF);
+	}
+
+	public GenericLinuxArmBoardInfo(String make, String model, int memoryKb, String libraryPath) {
+		this(make, model, memoryKb, libraryPath + "-" + LocalSystemInfo.getInstance().getOsArch(),
+				BoardInfo.UNKNOWN_ADC_VREF);
+	}
+
+	public GenericLinuxArmBoardInfo(String make, String model, int memoryKb, String libraryPath, float adcVRef) {
+		super(make, model, memoryKb, libraryPath, adcVRef);
 	}
 
 	@Override
-	public void initialisePins() {
+	public void populateBoardPinInfo() {
 		// Try to load the board definition file from the classpath using the device
 		// tree compatibility values
-		try {
-			// This file has multiple strings separated by \0
-			byte[] bytes = Files.readAllBytes(Paths.get(SystemInfoConstants.LINUX_DEVICE_TREE_COMPATIBLE_FILE));
-			List<String> compatible = new ArrayList<>();
-			int string_start = 0;
-			for (int i = 0; i < bytes.length; i++) {
-				if (bytes[i] == 0 || i == bytes.length - 1) {
-					compatible.add(new String(bytes, string_start, i - string_start));
-					string_start = i + 1;
-				}
+		/*- Examples:
+		 * ["asus,rk3288-tinker", "rockchip,rk3288"]
+		 * ["raspberrypi,4-model-b", "brcm,bcm2711"]
+		 * ["raspberrypi,3-model-b", "brcm,bcm2837"]
+		 * ["hardkernel,odroid-c2", "amlogic,meson-gxbb"]
+		 */
+		for (String compatibility : LocalSystemInfo.getInstance().loadLinuxBoardCompatibility()) {
+			String[] values = compatibility.split(",");
+			// First look for classpath:/boarddefs/values[0]-values[1].txt
+			boolean loaded = loadBoardPinInfoDefinition(values);
+			if (!loaded) {
+				// If not found, look for classpath:/boarddefs/values[0].txt
+				loaded = loadBoardPinInfoDefinition(values[0]);
 			}
-
-			/*- Examples:
-			 * [asus,rk3288-tinker, rockchip,rk3288]
-			 * [raspberrypi,4-model-b,brcm,bcm2711]
-			 * [raspberrypi,3-model-b,brcm,bcm2837]
-			 * [hardkernel,odroid-c2, amlogic,meson-gxbb]
-			 */
-			for (String compatibility : compatible) {
-				String[] values = compatibility.split(",");
-				// First look for classpath:/boarddefs/values[0]-values[1].txt
-				boolean loaded = loadBoardPinInfoDefinition(values);
-				if (!loaded) {
-					// If not found, look for classpath:/boarddefs/values[0].txt
-					loaded = loadBoardPinInfoDefinition(values[0]);
-				}
-				if (loaded) {
-					break;
-				}
-			}
-		} catch (IOException e) {
-			if (System.getProperty(SystemInfoConstants.OS_NAME_SYSTEM_PROPERTY)
-					.equals(SystemInfoConstants.LINUX_OS_NAME)) {
-				// This file should exist on a Linux system
-				Logger.warn(e, "Unable to read file {}: {}", SystemInfoConstants.LINUX_DEVICE_TREE_COMPATIBLE_FILE,
-						e.getMessage());
+			if (loaded) {
+				break;
 			}
 		}
 
 		// Note that if this fails the GPIO character implementation in the device
-		// factory will auto-populate (if activated)
+		// factory will auto-populate (if enabled)
 	}
 
-	private boolean loadBoardPinInfoDefinition(String... paths) {
+	protected boolean loadBoardPinInfoDefinition(String... paths) {
 		boolean loaded = false;
-		String file = "/boarddefs/" + String.join("-", paths) + ".txt";
+		String file = "/boarddefs/" + String.join("_", paths) + ".txt";
 		try (InputStream is = getClass().getResourceAsStream(file)) {
 			if (is != null) {
 				try (BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
@@ -150,6 +135,8 @@ public class GenericLinuxArmBoardInfo extends UnknownBoardInfo {
 							case "ADC":
 								loadAdcPinInfo(parts);
 								break;
+							default:
+								// Ignore
 							}
 						} catch (IllegalArgumentException e) {
 							Logger.warn("Illegal argument: {} - line: ", e.getMessage(), line);

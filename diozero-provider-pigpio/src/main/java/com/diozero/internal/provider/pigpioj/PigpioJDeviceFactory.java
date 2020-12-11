@@ -82,17 +82,16 @@ public class PigpioJDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	protected BoardInfo initialiseBoardInfo() {
+	protected BoardInfo lookupBoardInfo() {
 		int hw_rev = pigpioImpl.getHardwareRevision();
 		String hw_rev_hex = String.format("%04x", Integer.valueOf(hw_rev));
 		Logger.debug("Hardware revision: {} (0x{})", Integer.valueOf(hw_rev), hw_rev_hex);
-		BoardInfo board_info = new RaspberryPiBoardInfoProvider().lookup("BCM2835", hw_rev_hex, null);
+		BoardInfo board_info = RaspberryPiBoardInfoProvider.lookupByRevision(hw_rev_hex);
 		if (board_info == null) {
 			Logger.error("Failed to load RPi board info for {} (0x{})");
 			throw new RuntimeException(
 					"Error initialising board info for hardware revision " + hw_rev + " (0x" + hw_rev_hex + ")");
 		}
-		board_info.initialisePins();
 
 		return board_info;
 	}

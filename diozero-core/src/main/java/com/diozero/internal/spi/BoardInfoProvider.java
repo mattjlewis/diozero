@@ -36,9 +36,10 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import com.diozero.sbc.BoardInfo;
+import com.diozero.sbc.LocalSystemInfo;
 
 public interface BoardInfoProvider {
-	BoardInfo lookup(String hardware, String revision, Integer memoryKb);
+	BoardInfo lookup(LocalSystemInfo sysInfo);
 
 	static Stream<BoardInfoProvider> loadInstances() {
 		return StreamSupport.stream(ServiceLoader.load(BoardInfoProvider.class).spliterator(), false);

@@ -212,7 +212,7 @@ public class Crc {
 	 * @param data   The data to generate the CRC for (big endian)
 	 * @return the calculated CRC-16 value
 	 */
-	public static int crc16(Params params, short data) {
+	public static int crc16Short(Params params, short data) {
 		return crc16(params, (byte) (data >> 8), (byte) data);
 	}
 

@@ -39,7 +39,7 @@ import org.tinylog.Logger;
 
 import com.diozero.sbc.BoardInfo;
 import com.diozero.sbc.BoardPinInfo;
-import com.diozero.sbc.SystemInfo;
+import com.diozero.sbc.LocalBoardInfoUtil;
 import com.diozero.util.DiozeroScheduler;
 
 /**
@@ -59,8 +59,8 @@ public abstract class BaseNativeDeviceFactory extends AbstractDeviceFactory impl
 	}
 
 	@SuppressWarnings("static-method")
-	protected BoardInfo initialiseBoardInfo() {
-		return SystemInfo.lookupLocalBoardInfo();
+	protected BoardInfo lookupBoardInfo() {
+		return LocalBoardInfoUtil.lookupLocalBoardInfo();
 	}
 	
 	@Override
@@ -68,7 +68,8 @@ public abstract class BaseNativeDeviceFactory extends AbstractDeviceFactory impl
 		if (boardInfo == null) {
 			// Note this has been separated from the constructor to allow derived classes to
 			// override default behaviour, in particular remote devices using e.g. Firmata protocol
-			boardInfo = initialiseBoardInfo();
+			boardInfo = lookupBoardInfo();
+			boardInfo.populateBoardPinInfo();
 		}
 		return boardInfo;
 	}

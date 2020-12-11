@@ -41,6 +41,7 @@ import com.diozero.internal.board.GenericLinuxArmBoardInfo;
 import com.diozero.internal.spi.BoardInfoProvider;
 import com.diozero.internal.spi.MmapGpioInterface;
 import com.diozero.sbc.BoardInfo;
+import com.diozero.sbc.LocalSystemInfo;
 
 /**
  * See
@@ -51,20 +52,19 @@ import com.diozero.sbc.BoardInfo;
 public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 	public static final String MAKE = "Raspberry Pi";
 	private static final String LIBRARY_PATH = "raspberrypi";
-	//private static final String LIBRARY_PATH = "linux-arm";
 	private static final String BCM_HARDWARE_PREFIX = "BCM";
 
 	public static final String MODEL_A = "A";
 	public static final String MODEL_B = "B";
 	public static final String MODEL_A_PLUS = "A+";
 	public static final String MODEL_B_PLUS = "B+";
-	public static final String MODEL_2B = "2 Model B";
+	public static final String MODEL_2B = "2B";
 	public static final String MODEL_ALPHA = "Alpha";
 	public static final String COMPUTE_MODULE = "CM";
-	public static final String MODEL_3B = "3 Model B";
-	public static final String MODEL_3B_PLUS = "3 Model B+";
-	public static final String MODEL_3A_PLUS = "3 Model A+";
-	public static final String MODEL_4B = "4 Model B";
+	public static final String MODEL_3B = "3B";
+	public static final String MODEL_3B_PLUS = "3B+";
+	public static final String MODEL_3A_PLUS = "3A+";
+	public static final String MODEL_4B = "4B";
 	public static final String MODEL_ZERO = "Zero";
 	public static final String COMPUTE_MODULE_3 = "CM3";
 	public static final String COMPUTE_MODULE_3_PLUS = "CM3+";
@@ -138,38 +138,21 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 		PROCESSORS.put(Integer.valueOf(3), BCM2711);
 	}
 
-	private static Map<String, BoardInfo> PI_BOARDS;
-	static {
-		PI_BOARDS = new HashMap<>();
-		PI_BOARDS.put("0002", new PiBRev1BoardInfo("0002", PCB_REV_1_0, 256, EGOMAN));
-		PI_BOARDS.put("0003", new PiBRev1BoardInfo("0003", PCB_REV_1_1, 256, EGOMAN));
-		PI_BOARDS.put("0004", new PiABRev2BoardInfo("0004", MODEL_B, 256, SONY));
-		PI_BOARDS.put("0005", new PiABRev2BoardInfo("0005", MODEL_B, 256, QISDA));
-		PI_BOARDS.put("0006", new PiABRev2BoardInfo("0006", MODEL_B, 256, EGOMAN));
-		PI_BOARDS.put("0007", new PiABRev2BoardInfo("0007", MODEL_A, 256, EGOMAN));
-		PI_BOARDS.put("0008", new PiABRev2BoardInfo("0008", MODEL_A, 256, SONY));
-		PI_BOARDS.put("0009", new PiABRev2BoardInfo("0009", MODEL_A, 256, QISDA));
-		PI_BOARDS.put("000d", new PiABRev2BoardInfo("000d", MODEL_B, 512, EGOMAN));
-		PI_BOARDS.put("000e", new PiABRev2BoardInfo("000e", MODEL_B, 512, SONY));
-		PI_BOARDS.put("000f", new PiABRev2BoardInfo("000f", MODEL_B, 512, QISDA));
-		PI_BOARDS.put("0010", new PiABPlusBoardInfo("0010", MODEL_B_PLUS, PCB_REV_1_2, 512, SONY, BCM2835));
-		PI_BOARDS.put("0011", new PiComputeModuleBoardInfo("0011", 512, SONY, BCM2835));
-		PI_BOARDS.put("0012", new PiABPlusBoardInfo("0012", MODEL_A_PLUS, PCB_REV_1_2, 256, SONY, BCM2835));
-		PI_BOARDS.put("0013", new PiABPlusBoardInfo("0013", MODEL_B_PLUS, PCB_REV_1_2, 512, EGOMAN, BCM2835));
-		PI_BOARDS.put("0014", new PiComputeModuleBoardInfo("0014", 512, EMBEST, BCM2835));
-		// Unknown as to whether this has 256MB or 512MB RAM
-		PI_BOARDS.put("0015", new PiABPlusBoardInfo("0015", MODEL_A_PLUS, PCB_REV_1_1, 256, EMBEST, BCM2835));
-	}
-
 	@Override
-	public BoardInfo lookup(String hardware, String revision, Integer memoryKb) {
-		if (hardware == null || revision == null) {
+	public BoardInfo lookup(LocalSystemInfo systemInfo) {
+		String hardware = systemInfo.getHardware();
+		String revision = systemInfo.getRevision();
+		if (systemInfo.getHardware() == null || revision == null) {
 			return null;
 		}
 		if (!hardware.startsWith(BCM_HARDWARE_PREFIX) || revision.length() < 4) {
 			return null;
 		}
 
+		return lookupByRevision(revision);
+	}
+
+	public static BoardInfo lookupByRevision(String revision) {
 		try {
 			int rev_int = Integer.parseInt(revision, 16);
 			// With the release of the Raspberry Pi 2, there is a new encoding of the
@@ -226,7 +209,48 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 			// Ignore
 		}
 
-		return PI_BOARDS.get(revision.substring(revision.length() - 4));
+		return legacyBoardLookup(revision.substring(revision.length() - 4));
+	}
+
+	private static BoardInfo legacyBoardLookup(String revision) {
+		switch (revision) {
+		case "0002":
+			return new PiBRev1BoardInfo(revision, PCB_REV_1_0, 256, EGOMAN);
+		case "0003":
+			return new PiBRev1BoardInfo(revision, PCB_REV_1_1, 256, EGOMAN);
+		case "0004":
+			return new PiABRev2BoardInfo(revision, MODEL_B, 256, SONY);
+		case "0005":
+			return new PiABRev2BoardInfo(revision, MODEL_B, 256, QISDA);
+		case "0006":
+			return new PiABRev2BoardInfo(revision, MODEL_B, 256, EGOMAN);
+		case "0007":
+			return new PiABRev2BoardInfo(revision, MODEL_A, 256, EGOMAN);
+		case "0008":
+			return new PiABRev2BoardInfo(revision, MODEL_A, 256, SONY);
+		case "0009":
+			return new PiABRev2BoardInfo(revision, MODEL_A, 256, QISDA);
+		case "000d":
+			return new PiABRev2BoardInfo(revision, MODEL_B, 512, EGOMAN);
+		case "000e":
+			return new PiABRev2BoardInfo(revision, MODEL_B, 512, SONY);
+		case "000f":
+			return new PiABRev2BoardInfo(revision, MODEL_B, 512, QISDA);
+		case "0010":
+			return new PiABPlusBoardInfo(revision, MODEL_B_PLUS, PCB_REV_1_2, 512, SONY, BCM2835);
+		case "0011":
+			return new PiComputeModuleBoardInfo(revision, 512, SONY, BCM2835);
+		case "0012":
+			return new PiABPlusBoardInfo(revision, MODEL_A_PLUS, PCB_REV_1_2, 256, SONY, BCM2835);
+		case "0013":
+			return new PiABPlusBoardInfo(revision, MODEL_B_PLUS, PCB_REV_1_2, 512, EGOMAN, BCM2835);
+		case "0014":
+			return new PiComputeModuleBoardInfo(revision, 512, EMBEST, BCM2835);
+		// Unknown as to whether this has 256MB or 512MB RAM
+		case "0015":
+			return new PiABPlusBoardInfo(revision, MODEL_A_PLUS, PCB_REV_1_1, 256, EMBEST, BCM2835);
+		}
+		return null;
 	}
 
 	/**
@@ -271,12 +295,16 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 
 		public PiBoardInfo(String code, String model, String pcbRevision, int memory, String manufacturer,
 				String processor) {
-			super(MAKE, model, Integer.valueOf(memory), LIBRARY_PATH);
+			super(MAKE, model, memory, LIBRARY_PATH);
 
 			this.code = code;
 			this.pcbRevision = pcbRevision;
 			this.manufacturer = manufacturer;
 			this.processor = processor;
+		}
+
+		public String getCode() {
+			return code;
 		}
 
 		public String getRevision() {
@@ -297,9 +325,18 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 		}
 
 		@Override
-		public String toString() {
-			return "PiBoardInfo [" + super.toString() + ", code=" + code + ", pcbRevision=" + pcbRevision
-					+ ", manufacturer=" + manufacturer + ", processor=" + processor + "]";
+		public void populateBoardPinInfo() {
+			String[] compatibility = new String[] { MAKE.replace(" ", "").toLowerCase(),
+					getModel().replace(" ", "").replace("+", "plus").toLowerCase() };
+			// Override for pigpioj remote use cases
+			if (!loadBoardPinInfoDefinition(compatibility[0], compatibility[1])) {
+				loadBoardPinInfoDefinition(compatibility[0]);
+			}
+		}
+
+		@Override
+		public String getLongName() {
+			return getMake() + " Model " + getModel() + " V" + pcbRevision;
 		}
 	}
 
@@ -309,7 +346,7 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 		}
 
 		@Override
-		public void initialisePins() {
+		public void populateBoardPinInfo() {
 			addGeneralPinInfo(1, PinInfo.VCC_3V3);
 			addGeneralPinInfo(2, PinInfo.VCC_5V);
 			addGpioPinInfo(0, 3, PinInfo.DIGITAL_IN_OUT); // I2C SDA
@@ -348,7 +385,7 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 		}
 
 		@Override
-		public void initialisePins() {
+		public void populateBoardPinInfo() {
 			int pin = 1;
 			addGeneralPinInfo(pin++, PinInfo.VCC_3V3);
 			addGeneralPinInfo(pin++, PinInfo.VCC_5V);
@@ -460,7 +497,7 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 		}
 
 		@Override
-		public void initialisePins() {
+		public void populateBoardPinInfo() {
 			// See
 			// https://www.raspberrypi.org/documentation/hardware/computemodule/RPI-CM-DATASHEET-V1_0.pdf
 			addGpioPinInfo(0, 3, PinInfo.DIGITAL_IN_OUT);

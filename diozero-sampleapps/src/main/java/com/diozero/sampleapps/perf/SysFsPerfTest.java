@@ -84,7 +84,7 @@ public class SysFsPerfTest {
 			}
 			long duration = System.currentTimeMillis() - start;
 			double frequency = iterations / (duration / 1000.0);
-			Logger.info("Random Access File read: {0.000} ms per iteration, frequency {#0.0}",
+			Logger.info("Random Access File read: {#,###.###} ms per iteration, frequency {#,###.#}",
 					Double.valueOf(duration * 1000 / (double) iterations), Double.valueOf(frequency));
 		}
 	}

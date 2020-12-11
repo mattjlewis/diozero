@@ -84,4 +84,6 @@ public class NativeI2C {
 	static native int writeI2CBlockData(int fd, int registerAddress, int txLength, byte[] txData);
 	static native int readBytes(int fd, int rxLength, byte[] rxData);
 	static native int writeBytes(int fd, int txLength, byte[] txData);
+	static native int readNoStop(int fd, int deviceAddress, byte registerAddress, int rxLength, byte[] rxData,
+			boolean repeatedStart);
 }

@@ -31,10 +31,10 @@ package com.diozero.internal.provider.builtin.gpio;
  * #L%
  */
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class NativeGpioDevice {
-	static native ArrayList<GpioChipInfo> getChips();
+	static native List<GpioChipInfo> getChips();
 
 	/**
 	 * Open the specified GPIO chip

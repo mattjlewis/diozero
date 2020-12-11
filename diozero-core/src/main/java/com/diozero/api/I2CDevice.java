@@ -499,6 +499,16 @@ public class I2CDevice implements I2CDeviceInterface {
 			delegate.writeBytes(data);
 		}
 	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public int readNoStop(byte registerAddress, int rxLength, byte[] rxData, boolean repeatedStart) {
+		synchronized (delegate) {
+			return delegate.readNoStop(registerAddress, rxLength, rxData, repeatedStart);
+		}
+	}
 
 	//
 	// I2CDevice utility methods
@@ -583,8 +593,14 @@ public class I2CDevice implements I2CDeviceInterface {
 	 */
 	public byte[] readI2CBlockDataByteArray(int register, int length) throws RuntimeIOException {
 		byte[] data = new byte[length];
-		readI2CBlockData(register, data);
-		return data;
+		int read = readI2CBlockData(register, data);
+		if (read == length) {
+			return data;
+		}
+
+		byte[] rx_data = new byte[read];
+		System.arraycopy(data, 0, rx_data, 0, read);
+		return rx_data;
 	}
 
 	/**

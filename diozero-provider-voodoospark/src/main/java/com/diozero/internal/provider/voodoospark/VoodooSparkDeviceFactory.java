@@ -219,11 +219,8 @@ public class VoodooSparkDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	protected BoardInfo initialiseBoardInfo() {
-		BoardInfo board_info = new ParticlePhotonBoardInfo();
-		board_info.initialisePins();
-
-		return board_info;
+	protected BoardInfo lookupBoardInfo() {
+		return new ParticlePhotonBoardInfo();
 	}
 
 	@Override
@@ -671,7 +668,7 @@ public class VoodooSparkDeviceFactory extends BaseNativeDeviceFactory {
 		}
 
 		@Override
-		public void initialisePins() {
+		public void populateBoardPinInfo() {
 			int pin = 1;
 			// This pin can be used as an input or output
 			// As an input, supply 3.6 to 5.5VDC to power the Photon

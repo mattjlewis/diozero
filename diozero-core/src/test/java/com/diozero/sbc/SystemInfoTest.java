@@ -35,7 +35,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import com.diozero.internal.board.beaglebone.BeagleBoneBoardInfoProvider;
-import com.diozero.internal.board.chip.CHIPBoardInfoProvider;
+import com.diozero.internal.board.chip.ChipBoardInfoProvider;
 import com.diozero.internal.board.odroid.OdroidBoardInfoProvider;
 import com.diozero.internal.board.raspberrypi.RaspberryPiBoardInfoProvider;
 import com.diozero.internal.board.tinkerboard.TinkerBoardBoardInfoProvider;
@@ -50,17 +50,23 @@ public class SystemInfoTest {
 		// getOperatingSystemVersionId());
 
 		// CHIP
-		validateBoard("Allwinner sun4i/sun5i Families", "0000", CHIPBoardInfoProvider.MAKE,
-				CHIPBoardInfoProvider.MODEL_CHIP, 512_000);
+		validateBoard("Allwinner sun4i/sun5i Families", "0000", ChipBoardInfoProvider.MAKE,
+				ChipBoardInfoProvider.MODEL_CHIP, 512_000);
+		// NanoPi Duo2
+		validateBoard("FriendlyElec NanoPi-Duo2", "Allwinner sun8i Family", "0000", "Allwinner sun8i",
+				"FriendlyElec NanoPi-Duo2", -1);
 		// BeagleBone Black
-		validateBoard("Generic AM33XX (Flattened Device Tree)", "0000", BeagleBoneBoardInfoProvider.MAKE,
-				BeagleBoneBoardInfoProvider.BeagleBoneBlackBoardInfo.MODEL, 512_000);
+		validateBoard("TI AM335x BeagleBone Black", "Generic AM33XX (Flattened Device Tree)", "0000",
+				BeagleBoneBoardInfoProvider.MAKE, "Black", 512_000);
+		// BeagleBone Green
+		validateBoard("TI AM335x BeagleBone Green", "Generic AM33XX (Flattened Device Tree)", "0000",
+				BeagleBoneBoardInfoProvider.MAKE, "Green", 512_000);
 		// Asus Tinker Board
-		validateBoard("Rockchip (Device Tree)", "0000", TinkerBoardBoardInfoProvider.MAKE,
-				TinkerBoardBoardInfoProvider.TinkerBoardBoardInfo.MODEL, 2_048_000);
+		validateBoard("Rockchip RK3288 Asus Tinker Board", "Rockchip (Device Tree)", "0000",
+				TinkerBoardBoardInfoProvider.MAKE, TinkerBoardBoardInfoProvider.TinkerBoardBoardInfo.MODEL, 2_048_000);
 		// Odroid C2
-		validateBoard("ODROID-C2", "020b", OdroidBoardInfoProvider.MAKE, OdroidBoardInfoProvider.Model.C2.toString(),
-				2_048_000);
+		validateBoard("Hardkernel ODROID-C2", "ODROID-C2", "020b", OdroidBoardInfoProvider.MAKE,
+				OdroidBoardInfoProvider.Model.C2.toString(), 2_048_000);
 
 		// Raspberry Pi
 		String hardware = "BCM2835";
@@ -170,10 +176,11 @@ public class SystemInfoTest {
 			int expectedMemory) {
 		validateBoard(BoardInfo.UNKNOWN, hardware, revision, expectedMake, expectedModel, expectedMemory);
 	}
-	
-	private static void validateBoard(String model, String hardware, String revision, String expectedMake, String expectedModel,
-			int expectedMemory) {
-		BoardInfo board_info = SystemInfo.lookupLocalBoardInfo(model, hardware, revision, null);
+
+	private static void validateBoard(String model, String hardware, String revision, String expectedMake,
+			String expectedModel, int expectedMemory) {
+		LocalSystemInfo sys_info = new LocalSystemInfo(hardware, revision, model);
+		BoardInfo board_info = LocalBoardInfoUtil.resolveLocalBoardInfo(sys_info);
 		System.out.println(hardware + "/" + revision + ": " + board_info);
 		Assertions.assertEquals(expectedMake, board_info.getMake());
 		Assertions.assertEquals(expectedModel, board_info.getModel());

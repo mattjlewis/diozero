@@ -37,41 +37,38 @@ import com.diozero.api.PinInfo;
 import com.diozero.internal.board.GenericLinuxArmBoardInfo;
 
 /**
- * Attempt to handle generic boards thatdon't have explicit support within
+ * Attempt to handle generic boards that don't have explicit support within
  * diozero
  */
 public class UnknownBoardInfo extends BoardInfo {
-	public static BoardInfo get(String model, String hardware, String revision, Integer memoryKb) {
-		String os_name = System.getProperty(SystemInfoConstants.OS_NAME_SYSTEM_PROPERTY);
-		String os_arch = System.getProperty(SystemInfoConstants.OS_ARCH_SYSTEM_PROPERTY);
-		Logger.warn("Failed to resolve board info for hardware '{}' and revision '{}'. Local O/S: {}-{}", hardware,
-				revision, os_name, os_arch);
+	public static BoardInfo get(LocalSystemInfo localSysInfo) {
+		String os_name = localSysInfo.getOsName();
+		String os_arch = localSysInfo.getOsArch();
+		Logger.warn("Failed to resolve board info for hardware '{}' and revision '{}'. Local O/S: {}-{}",
+				localSysInfo.getHardware(), localSysInfo.getRevision(), os_name, os_arch);
 
-		if (os_name.equals(SystemInfoConstants.LINUX_OS_NAME) && (os_arch.equals(SystemInfoConstants.ARM_32_OS_ARCH)
-				|| os_arch.equals(SystemInfoConstants.ARM_64_OS_ARCH))) {
-			return new GenericLinuxArmBoardInfo(UNKNOWN, model, memoryKb, os_name, os_arch);
+		if (localSysInfo.isLinux() && localSysInfo.isArm()) {
+			return new GenericLinuxArmBoardInfo(localSysInfo);
 		}
 
-		return new UnknownBoardInfo(model, memoryKb, os_name, os_arch);
+		return new UnknownBoardInfo(localSysInfo);
 	}
 
-	public UnknownBoardInfo(String model, Integer memoryKb, String osName, String osArch) {
-		this(UNKNOWN, model, memoryKb, osName, osArch);
+	public UnknownBoardInfo(LocalSystemInfo localSysInfo) {
+		super(UNKNOWN, localSysInfo.getModel(),
+				localSysInfo.getMemoryKb() == null ? -1 : localSysInfo.getMemoryKb().intValue(),
+				localSysInfo.getDefaultLibraryPath());
 	}
-
-	public UnknownBoardInfo(String make, String model, Integer memoryKb, String osName, String osArch) {
-		this(make, model, memoryKb, osName.replace(" ", "").toLowerCase() + "-" + osArch.toLowerCase());
-	}
-
-	public UnknownBoardInfo(String make, String model, Integer memoryKb, String libraryPath) {
-		super(make, model, memoryKb == null ? -1 : memoryKb.intValue(), libraryPath);
+	
+	public UnknownBoardInfo(String make, String model, int memoryKb, String libraryPath) {
+		super(make, model, memoryKb, libraryPath);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void initialisePins() {
+	public void populateBoardPinInfo() {
 		//
 	}
 

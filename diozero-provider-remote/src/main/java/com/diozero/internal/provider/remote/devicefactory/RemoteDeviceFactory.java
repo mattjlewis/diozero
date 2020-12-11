@@ -103,7 +103,7 @@ public class RemoteDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	protected BoardInfo initialiseBoardInfo() {
+	protected BoardInfo lookupBoardInfo() {
 		return new RemoteBoardInfo(protocolHandler.request(new GetBoardInfoRequest(UUID.randomUUID().toString())));
 	}
 
@@ -285,11 +285,11 @@ public class RemoteDeviceFactory extends BaseNativeDeviceFactory {
 
 			this.boardInfo = boardInfo;
 
-			initialisePins();
+			populateBoardPinInfo();
 		}
 
 		@Override
-		public void initialisePins() {
+		public void populateBoardPinInfo() {
 			for (GpioInfo gpio_info : boardInfo.getGpios()) {
 				if (gpio_info.getModes().contains(DeviceMode.DIGITAL_OUTPUT)
 						|| gpio_info.getModes().contains(DeviceMode.DIGITAL_INPUT)) {

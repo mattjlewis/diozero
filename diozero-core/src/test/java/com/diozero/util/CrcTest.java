@@ -101,12 +101,20 @@ public class CrcTest {
 		Assertions.assertEquals(0x31C3, Crc.crc16(Crc.CRC16_XMODEM, data));
 
 		// ADS112C04 CRC Test (CRC16 CCITT FALSE)
+		int counter = 175;
+		int calc_counter_inverted = ~counter & 0xff;
+		System.out.println(counter + ", " + calc_counter_inverted);
+
 		Crc.Params ads112c04_crc_params = new Crc.Params(0b10001000000100001, 0xffff, false, false, 0x0000);
 		Assertions.assertEquals(0x29B1, Crc.crc16(ads112c04_crc_params, data));
 		short val = 3659;
-		System.out.println((short) Crc.crc16(ads112c04_crc_params, val));
+		System.out.println((short) Crc.crc16Short(ads112c04_crc_params, val));
 		val = 21579;
-		System.out.println((short) Crc.crc16(ads112c04_crc_params, val));
+		System.out.println((short) Crc.crc16Short(ads112c04_crc_params, val));
+		System.out.println(Crc.crc16(ads112c04_crc_params, (byte) 0x0e, (byte) 0x4b));
+		System.out.println(Crc.crc16(ads112c04_crc_params, (byte) 0xc5, (byte) 0x4d));
+		System.out.println(Crc.crc16(ads112c04_crc_params, (byte) 0xc5, (byte) 0x4b));
+		System.out.println(Crc.crc16(ads112c04_crc_params, (byte) 0x54, (byte) 0x4a));
 
 		// Misc. tests
 		Assertions.assertEquals(0xF353, Crc.crc16(Crc.CRC16_ARC, "Hello".getBytes(StandardCharsets.US_ASCII)));

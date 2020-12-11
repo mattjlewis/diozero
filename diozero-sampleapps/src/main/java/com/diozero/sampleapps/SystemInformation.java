@@ -36,26 +36,33 @@ import java.util.Collections;
 import java.util.Map;
 
 import com.diozero.api.PinInfo;
+import com.diozero.internal.spi.NativeDeviceFactoryInterface;
 import com.diozero.sbc.BoardInfo;
 import com.diozero.sbc.DeviceFactoryHelper;
-import com.diozero.sbc.SystemInfo;
+import com.diozero.sbc.LocalSystemInfo;
 
 public class SystemInformation {
-	public static void main(String[] args) {
-		System.out.format("Local Operating System: %s %s %s%n", SystemInfo.getOperatingSystemId(),
-				SystemInfo.getOperatingSystemVersion(), SystemInfo.getOperatingSystemVersionId());
+	private static final int MIN_PIN_NAME_LENGTH = 8;
 
-		BoardInfo board_info = DeviceFactoryHelper.getNativeDeviceFactory().getBoardInfo();
-		
-		System.out.println("Board Info: " + board_info);
+	public static void main(String[] args) {
+		LocalSystemInfo sys_info = LocalSystemInfo.getInstance();
+		System.out.format("Local Operating System: %s %s %s%n", sys_info.getLinuxOperatingSystemId(),
+				sys_info.getLinuxOperatingSystemVersion(), sys_info.getLinuxOperatingSystemVersionId());
+		System.out.format("Local I2C buses: %s%n", LocalSystemInfo.getI2CBusNumbers());
+		System.out.format("Local CPU Temperature: %.2f%n", Float.valueOf(LocalSystemInfo.getCpuTemperature()));
 
 		System.out.println();
-		System.out.format("SBC Name: %s (RAM: %d bytes)%n", board_info.getName(),
+		NativeDeviceFactoryInterface ndf = DeviceFactoryHelper.getNativeDeviceFactory();
+		System.out.println("Using native device factory: " + ndf.getName());
+		BoardInfo board_info = ndf.getBoardInfo();
+		System.out.format("Automatically detected board: %s (RAM: %,d bytes)%n", board_info.getName(),
 				Integer.valueOf(board_info.getMemoryKb()));
+
+		System.out.println();
 		for (Map.Entry<String, Map<Integer, PinInfo>> header_pins_entry : board_info.getHeaders().entrySet()) {
 			// Get the maximum pin name length
-			int max_length = Math.max(8, header_pins_entry.getValue().values().stream()
-					.mapToInt(pin_info -> pin_info.getName().length()).max().orElse(8));
+			int max_length = Math.max(MIN_PIN_NAME_LENGTH, header_pins_entry.getValue().values().stream()
+					.mapToInt(pin_info -> pin_info.getName().length()).max().orElse(MIN_PIN_NAME_LENGTH));
 
 			String name_dash = String.join("", Collections.nCopies(max_length, "-"));
 			System.out.format("Pins for header %s:%n", header_pins_entry.getKey());
@@ -91,11 +98,8 @@ public class SystemInformation {
 				*/
 			}
 			System.out.format("+-----+-%s-+--------+----------+--------+-%s-+-----+%n", name_dash, name_dash);
+			System.out.println();
 		}
-		System.out.println();
-
-		System.out.format("I2C buses: %s%n", board_info.getI2CBuses());
-		System.out.format("CPU Temperature: %.2f%n", Float.valueOf(board_info.getCpuTemperature()));
 	}
 
 	public static String getNotDefined(int value) {

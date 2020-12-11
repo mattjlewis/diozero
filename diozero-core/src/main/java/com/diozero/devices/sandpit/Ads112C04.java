@@ -41,6 +41,7 @@ import org.tinylog.Logger;
 import com.diozero.api.I2CDevice;
 import com.diozero.util.Crc;
 import com.diozero.util.Hex;
+import com.diozero.util.PropertyUtil;
 import com.diozero.util.SleepUtil;
 
 public class Ads112C04 implements Closeable {
@@ -336,6 +337,7 @@ public class Ads112C04 implements Closeable {
 	 * Burn-out Current Sources 3 (R/W), IDAC Current Setting 0 (R/W)
 	 */
 	private static final int C2_DATA_RDY_BIT_START = 7;
+	private static final int C2_DATA_RDY_MASK = 1 << C2_DATA_RDY_BIT_START;
 	private static final int C2_DATA_CNT_EN_BIT_START = 6;
 	private static final int C2_CRC_EN_BIT_START = 4;
 	private static final int C2_BCS_BIT_START = 3;
@@ -494,6 +496,7 @@ public class Ads112C04 implements Closeable {
 	private Idac2RoutingConfig idac2RoutingConfig;
 	private byte inputMultiplexer;
 	private int lastDataCounter;
+	private boolean repeatedStart;
 
 	protected Ads112C04(int controller, Address address, GainConfig gainConfig, PgaBypass pgaBypass, DataRate dataRate,
 			OperatingMode operatingMode, VRef vRef, TemperatureSensorMode tsMode, DataCounter dataCounter,
@@ -516,11 +519,18 @@ public class Ads112C04 implements Closeable {
 
 		conversionMode = ConversionMode.SINGLE_SHOT;
 		lastDataCounter = -1;
+		repeatedStart = PropertyUtil.getBooleanProperty("diozero.i2c.repeatedStart", true);
+		Logger.debug("repeatedStart: {}", Boolean.valueOf(repeatedStart));
 
 		device = I2CDevice.builder(address.getValue()).setController(controller).setByteOrder(ByteOrder.BIG_ENDIAN)
 				.build();
 
 		reset();
+
+		setConfig0();
+		setConfig1();
+		setConfig2();
+		setConfig3();
 	}
 
 	@Override
@@ -533,11 +543,6 @@ public class Ads112C04 implements Closeable {
 		device.writeByte(COMMAND_RESET);
 		// TODO Check delays
 		SleepUtil.sleepMillis(1);
-
-		setConfig0();
-		setConfig1();
-		setConfig2();
-		setConfig3();
 	}
 
 	public void start() {
@@ -556,7 +561,31 @@ public class Ads112C04 implements Closeable {
 
 	private byte readConfigRegister(ConfigRegister register) {
 		// TODO Also read CRC data if enabled!
-		return device.readByteData(COMMAND_READ_REG | register.getMask());
+		if (crcConfig == CrcConfig.DISABLED) {
+			return device.readByteData(COMMAND_READ_REG | register.getMask());
+		}
+
+		byte[] buffer = new byte[crcConfig == CrcConfig.CRC16 ? 3 : 2];
+		device.readI2CBlockData(COMMAND_READ_REG, buffer);
+		if (Logger.isTraceEnabled()) {
+			Hex.dumpByteArray(buffer);
+		}
+		if (crcConfig == CrcConfig.CRC16) {
+			int calc_crc = Crc.crc16(CRC_PARAMS, buffer[0]);
+			int crc = (buffer[1] & 0xff) << 8 | (buffer[2] & 0xff);
+			if (crc != calc_crc) {
+				Logger.warn("CRC-16 error calculated {}, got {} for value {}", Integer.valueOf(calc_crc),
+						Integer.valueOf(crc), Byte.valueOf(buffer[0]));
+			}
+		} else {
+			byte calc_val_inverted = (byte) (~buffer[0]);
+			if (buffer[1] != calc_val_inverted) {
+				Logger.warn("Data Integrity error calculated {}, got {} for value {}",
+						Integer.valueOf(calc_val_inverted), Integer.valueOf(buffer[1]), Byte.valueOf(buffer[0]));
+			}
+		}
+
+		return buffer[0];
 	}
 
 	private void writeConfigRegister(ConfigRegister register, byte value) {
@@ -618,9 +647,9 @@ public class Ads112C04 implements Closeable {
 	 * @param inputMultiplexer the input multiplexer
 	 */
 	public void setInputMultiplexer(int inputMultiplexer) {
-		if (inputMultiplexer < 0 || inputMultiplexer > 0b110) {
+		if (inputMultiplexer < 0 || inputMultiplexer > 0b1110) {
 			throw new IllegalArgumentException(
-					"Invalid input multiplexer value: " + inputMultiplexer + " must be 0..6");
+					"Invalid input multiplexer value: " + inputMultiplexer + " must be 0..14");
 		}
 
 		this.inputMultiplexer = (byte) (inputMultiplexer & 0xf);
@@ -777,17 +806,6 @@ public class Ads112C04 implements Closeable {
 	 * @return the raw analog data reading in signed short format
 	 */
 	public short getReadingOnDataReadyBit() {
-		// Logger.debug("Waiting for data to be available...");
-		// Wait for the Data Ready bit to be set in config register #2
-		while (true) {
-			if ((readConfigRegister(ConfigRegister.REG2) & (1 << C2_DATA_RDY_BIT_START)) != 0) {
-				break;
-			}
-			// 10 nS
-			SleepUtil.busySleep(10);
-		}
-		// Logger.debug("Data available");
-
 		/*-
 		 * DC enabled and CRC disabled is 3 bytes (1 DC, 2 data)
 		 * DC enabled and CRC enabled is 5 bytes (1 DC, 2 data, 2 CRC). 
@@ -806,9 +824,29 @@ public class Ads112C04 implements Closeable {
 			}
 		}
 
+		// Logger.debug("Waiting for data to be available...");
+		// Wait for the Data Ready bit to be set in config register #2
+		while (true) {
+			if ((readConfigRegister(ConfigRegister.REG2) & C2_DATA_RDY_MASK) != 0) {
+				break;
+			}
+			// 100 nS
+			SleepUtil.busySleep(100);
+		}
+		// Logger.debug("Data available");
+
+		// SleepUtil.sleepMillis(2);
+
+		/*-
 		byte[] buffer = device.readI2CBlockDataByteArray(COMMAND_RDATA, bytes_to_read);
 		Logger.debug("Read {} bytes:", Integer.valueOf(buffer.length));
-		Hex.dumpByteArray(buffer);
+		*/
+		byte[] buffer = new byte[bytes_to_read];
+		device.readNoStop(COMMAND_RDATA, bytes_to_read, buffer, repeatedStart);
+		if (Logger.isTraceEnabled()) {
+			Hex.dumpByteArray(buffer);
+		}
+
 		ByteBuffer bb = ByteBuffer.wrap(buffer);
 		bb.order(ByteOrder.BIG_ENDIAN);
 		int counter = -1;
@@ -816,8 +854,9 @@ public class Ads112C04 implements Closeable {
 			counter = bb.get() & 0xff;
 			Logger.debug("Conversion counter: {}", Integer.valueOf(counter));
 		}
+
 		short value = bb.getShort();
-		if (!crcConfig.equals(CrcConfig.DISABLED)) {
+		if (crcConfig != CrcConfig.DISABLED) {
 			// Validate the CRC value
 			if (crcConfig == CrcConfig.INVERTED_DATA_OUTPUT) {
 				// A bitwise-inverted version of the data
@@ -841,8 +880,8 @@ public class Ads112C04 implements Closeable {
 				// In CRC mode, the checksum bytes are the 16-bit remainder of the bitwise
 				// exclusive-OR (XOR) of the data bytes with a CRC polynomial
 				/*-
-				 * FIXME I think the CRC is "for the entire data being returned"
-				 * I.e. includes the data counter if present
+				 * The CRC is "for the entire data being returned"
+				 * i.e. includes the data counter if present
 				 * https://e2e.ti.com/support/data-converters/f/73/t/758829
 				 * From the datasheet:
 				 * The optional data counter word that precedes conversion data is covered by both data
@@ -852,7 +891,7 @@ public class Ads112C04 implements Closeable {
 				if (dataCounter.isEnabled()) {
 					calc_crc_val = Crc.crc16(CRC_PARAMS, (byte) counter, (byte) (value >> 8), (byte) value);
 				} else {
-					calc_crc_val = Crc.crc16(CRC_PARAMS, value);
+					calc_crc_val = Crc.crc16Short(CRC_PARAMS, value);
 				}
 				if (calc_crc_val != crc_val) {
 					Logger.warn("CRC error for value {}, calculated {}, got {}. DC Enabled: {}{}", Short.valueOf(value),
@@ -927,7 +966,6 @@ public class Ads112C04 implements Closeable {
 				Logger.info("Single-shot reading: {}. CRC Config: {}, DC: {}", Short.valueOf(reading), ads.crcConfig,
 						ads.dataCounter);
 			}
-			ads.reset();
 
 			ads.crcConfig = CrcConfig.INVERTED_DATA_OUTPUT;
 			ads.dataCounter = DataCounter.DISABLED;
@@ -937,7 +975,6 @@ public class Ads112C04 implements Closeable {
 				Logger.info("Single-shot reading: {}. CRC Config: {}, DC: {}", Short.valueOf(reading), ads.crcConfig,
 						ads.dataCounter);
 			}
-			ads.reset();
 
 			ads.crcConfig = CrcConfig.CRC16;
 			ads.dataCounter = DataCounter.ENABLED;
@@ -947,7 +984,6 @@ public class Ads112C04 implements Closeable {
 				Logger.info("Single-shot reading: {}. CRC Config: {}, DC: {}", Short.valueOf(reading), ads.crcConfig,
 						ads.dataCounter);
 			}
-			ads.reset();
 
 			ads.crcConfig = CrcConfig.CRC16;
 			ads.dataCounter = DataCounter.DISABLED;
@@ -957,7 +993,6 @@ public class Ads112C04 implements Closeable {
 				Logger.info("Single-shot reading: {}. CRC Config: {}, DC: {}", Short.valueOf(reading), ads.crcConfig,
 						ads.dataCounter);
 			}
-			ads.reset();
 
 			ads.crcConfig = CrcConfig.DISABLED;
 			ads.dataCounter = DataCounter.ENABLED;
@@ -967,7 +1002,6 @@ public class Ads112C04 implements Closeable {
 				Logger.info("Single-shot reading: {}. CRC Config: {}, DC: {}", Short.valueOf(reading), ads.crcConfig,
 						ads.dataCounter);
 			}
-			ads.reset();
 
 			ads.crcConfig = CrcConfig.DISABLED;
 			ads.dataCounter = DataCounter.DISABLED;
@@ -977,7 +1011,6 @@ public class Ads112C04 implements Closeable {
 				Logger.info("Single-shot reading: {}. CRC Config: {}, DC: {}", Short.valueOf(reading), ads.crcConfig,
 						ads.dataCounter);
 			}
-			ads.reset();
 
 			// Then do continuous mode tests, check if observed frequency correlates with
 			// that configured

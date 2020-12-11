@@ -42,34 +42,39 @@ import org.tinylog.Logger;
 import com.diozero.api.PinInfo;
 import com.diozero.internal.spi.BoardInfoProvider;
 import com.diozero.sbc.BoardInfo;
+import com.diozero.sbc.LocalSystemInfo;
 
 public class BeagleBoneBoardInfoProvider implements BoardInfoProvider {
 	public static final String MAKE = "BeagleBone";
-	private static final String BBB_HARDWARE_ID = "Generic AM33XX";
-	public static final BoardInfo BBB_BOARD_INFO = new BeagleBoneBlackBoardInfo();
+	// private static final String BBB_HARDWARE_ID = "Generic AM33XX";
 
 	@Override
-	public BoardInfo lookup(String hardware, String revision, Integer memoryKb) {
-		if (hardware != null && hardware.startsWith(BBB_HARDWARE_ID)) {
-			return BBB_BOARD_INFO;
+	public BoardInfo lookup(LocalSystemInfo localSysInfo) {
+		String model = localSysInfo.getModel();
+		if (model != null && model.contains(MAKE)) {
+			model = model.substring(model.lastIndexOf(' ') + 1);
+			return new BeagleBoneBlackBoardInfo(localSysInfo, model);
 		}
 		return null;
 	}
-	
+
+	/**
+	 * Also works on the BeagleBone Green
+	 */
 	public static class BeagleBoneBlackBoardInfo extends BoardInfo {
 		public static final String P9_HEADER = "P9";
 		public static final String P8_HEADER = "P8";
-		
-		public static final String MODEL = "Black";
+
 		private static final int MEMORY = 512_000;
-		private static final String BBB_LIB_PATH = MAKE.toLowerCase() + "/" + MODEL.toLowerCase();
-		
-		public BeagleBoneBlackBoardInfo() {
-			super(MAKE, MODEL, MEMORY, BBB_LIB_PATH);
+		private static final String BBB_LIB_PATH = MAKE.toLowerCase();
+		private static final float ADC_VREF = 1.8f;
+
+		public BeagleBoneBlackBoardInfo(LocalSystemInfo localSysInfo, String model) {
+			super(MAKE, model, MEMORY, BBB_LIB_PATH, ADC_VREF);
 		}
-		
+
 		@Override
-		public void initialisePins() {
+		public void populateBoardPinInfo() {
 			// FIXME Externalise this to a file
 			addGpioPinInfo(P9_HEADER, 60, 12, PinInfo.DIGITAL_IN_OUT);
 			addGpioPinInfo(P9_HEADER, 48, 15, PinInfo.DIGITAL_IN_OUT);
@@ -91,8 +96,8 @@ public class BeagleBoneBoardInfoProvider implements BoardInfoProvider {
 			addGpioPinInfo(P8_HEADER, 27, 17, PinInfo.DIGITAL_IN_OUT);
 			addGpioPinInfo(P8_HEADER, 65, 18, PinInfo.DIGITAL_IN_OUT);
 			addGpioPinInfo(P8_HEADER, 61, 26, PinInfo.DIGITAL_IN_OUT);
-			
-			// To enable: sudo sh -c "echo 'BB-ADC' > /sys/devices/platform/bone_capemgr/slots"
+
+			/*- To enable: sudo sh -c "echo 'BB-ADC' > /sys/devices/platform/bone_capemgr/slots" */
 			addAdcPinInfo(P9_HEADER, 0, "AIN0", 39);
 			addAdcPinInfo(P9_HEADER, 1, "AIN1", 40);
 			addAdcPinInfo(P9_HEADER, 2, "AIN2", 37);
@@ -100,7 +105,7 @@ public class BeagleBoneBoardInfoProvider implements BoardInfoProvider {
 			addAdcPinInfo(P9_HEADER, 4, "AIN4", 33);
 			addAdcPinInfo(P9_HEADER, 5, "AIN5", 36);
 			addAdcPinInfo(P9_HEADER, 6, "AIN6", 35);
-			
+
 			// BB-PWM0,BB-PWM1,BB-PWM2
 			addPwmPinInfo(P9_HEADER, PinInfo.NOT_DEFINED, "EHRPWM1A", 14, 0, PinInfo.DIGITAL_IN_OUT_PWM);
 			addPwmPinInfo(P9_HEADER, PinInfo.NOT_DEFINED, "EHRPWM1B", 16, 1, PinInfo.DIGITAL_IN_OUT_PWM);
@@ -113,7 +118,7 @@ public class BeagleBoneBoardInfoProvider implements BoardInfoProvider {
 			// FIXME How to work this out? Temporarily hardcode to GPIO 50 (EHRPWM1A, P9_14)
 			String chip = "48302000";
 			String address = "48302200";
-			
+
 			Path chip_path = Paths.get("/sys/devices/platform/ocp/" + chip + ".epwmss/" + address + ".pwm/pwm");
 			int pwm_chip = -1;
 			// FIXME Treat as a stream
@@ -121,21 +126,20 @@ public class BeagleBoneBoardInfoProvider implements BoardInfoProvider {
 				for (Path p : dirs) {
 					String dir = p.getFileName().toString();
 					Logger.info("Got {}" + dir);
-					pwm_chip = Integer.parseInt(dir.substring(dir.length()-1));
+					pwm_chip = Integer.parseInt(dir.substring(dir.length() - 1));
 					Logger.info("Found pwmChip {}", Integer.valueOf(pwm_chip));
 				}
 			} catch (IOException e) {
 				Logger.error(e, "Error: " + e);
 			}
-			
+
 			return pwm_chip;
 		}
-		
-		/*
-		@Override
-		public MmapGpioInterface createMmapGpio() {
-			return new BeagleBoneBlackMmapGpio();
-		}
-		*/
+
+		/*-
+		 * @Override public MmapGpioInterface createMmapGpio() {
+		 * 	return new BeagleBoneBlackMmapGpio();
+		 * }
+		 */
 	}
 }

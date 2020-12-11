@@ -53,8 +53,8 @@ import com.diozero.internal.board.odroid.OdroidBoardInfoProvider;
 import com.diozero.internal.board.odroid.OdroidC2SysFsPwmOutputDevice;
 import com.diozero.internal.provider.builtin.gpio.GpioChip;
 import com.diozero.internal.provider.builtin.gpio.GpioLine;
-import com.diozero.internal.provider.builtin.i2c.NativeI2CDeviceSMBus;
 import com.diozero.internal.provider.builtin.i2c.NativeI2CDeviceJavaRaf;
+import com.diozero.internal.provider.builtin.i2c.NativeI2CDeviceSMBus;
 import com.diozero.internal.spi.AnalogInputDeviceInterface;
 import com.diozero.internal.spi.AnalogOutputDeviceInterface;
 import com.diozero.internal.spi.BaseNativeDeviceFactory;
@@ -104,7 +104,7 @@ public class DefaultDeviceFactory extends BaseNativeDeviceFactory {
 					for (GpioLine gpio_line : chip.getLines()) {
 						PinInfo pin_info = null;
 						String line_name = gpio_line.getName().trim();
-						// To to find this GPIO in the board pin info by the assume system name
+						// Try to find this GPIO in the board pin info by the assumed system name
 						if (!line_name.isEmpty()) {
 							pin_info = bpi.getByName(line_name);
 						}
@@ -127,7 +127,7 @@ public class DefaultDeviceFactory extends BaseNativeDeviceFactory {
 									.get(Integer.valueOf(line_name.replaceAll(GPIO_LINE_NUMBER_PATTERN, "$1")));
 						}
 
-						if (pin_info == null && !line_name.isEmpty()) {
+						if (pin_info == null && !line_name.isEmpty() && !line_name.equals("NC")) {
 							Logger.debug("Detected GPIO line ({} {}-{}) that isn't configured in BoardPinInfo",
 									line_name, Integer.valueOf(chip.getChipId()),
 									Integer.valueOf(gpio_line.getOffset()));
@@ -260,14 +260,15 @@ public class DefaultDeviceFactory extends BaseNativeDeviceFactory {
 		if (pinInfo instanceof PwmPinInfo) {
 			PwmPinInfo pwm_pin_info = (PwmPinInfo) pinInfo;
 			// Odroid C2 runs with an older 3.x kernel hence has a different sysfs interface
-			if (getBoardInfo().compareMakeAndModel(OdroidBoardInfoProvider.ODROID_C2)) {
+			if (getBoardInfo().compareMakeAndModel(OdroidBoardInfoProvider.MAKE,
+					OdroidBoardInfoProvider.C2_HARDWARE_ID)) {
 				return new OdroidC2SysFsPwmOutputDevice(key, this, pwm_pin_info, pwmFrequency, initialValue);
 			}
 
 			return new SysFsPwmOutputDevice(key, this, getBoardInfo().getPwmChip(pwm_pin_info.getPwmNum()),
 					pwm_pin_info, pwmFrequency, initialValue);
 		}
-		
+
 		// Need to make sure the keys are different
 		return new SoftwarePwmOutputDevice(key, this, createDigitalOutputDevice("PWM-" + key, pinInfo, false),
 				pwmFrequency, initialValue);

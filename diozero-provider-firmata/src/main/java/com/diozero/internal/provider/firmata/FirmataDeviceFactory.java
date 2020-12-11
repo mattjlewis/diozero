@@ -114,11 +114,8 @@ public class FirmataDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	protected BoardInfo initialiseBoardInfo() {
-		BoardInfo board_info = new FirmataBoardInfo(ioDevice);
-		board_info.initialisePins();
-
-		return board_info;
+	protected BoardInfo lookupBoardInfo() {
+		return new FirmataBoardInfo(ioDevice);
 	}
 
 	@Override
@@ -226,7 +223,7 @@ public class FirmataDeviceFactory extends BaseNativeDeviceFactory {
 		}
 
 		@Override
-		public void initialisePins() {
+		public void populateBoardPinInfo() {
 			for (Pin pin : ioDevice.getPins()) {
 				int pin_number = pin.getIndex();
 				addGpioPinInfo(pin_number, pin_number, convertModes(pin.getSupportedModes()));

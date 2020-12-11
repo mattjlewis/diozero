@@ -35,7 +35,7 @@ import com.diozero.util.LibraryLoader;
 
 public class BbbIoLibNative {
 	static {
-		LibraryLoader.loadLibrary(BbbIoLibNative.class, "diozero_bbbiolib", false);
+		LibraryLoader.loadLibrary(BbbIoLibNative.class, "diozero_bbbiolib", null);
 	}
 	
 	static final byte BBBIO_DIR_IN = 0;

@@ -401,4 +401,15 @@ public class NativeI2CDeviceSMBus extends AbstractDevice implements I2CDeviceInt
 					+ Integer.toHexString(deviceAddress) + ": " + rc);
 		}
 	}
+	
+	@Override
+	public int readNoStop(byte registerAddress, int rxLength, byte[] rxData, boolean repeatedStart) {
+		int rc = NativeI2C.readNoStop(fd, deviceAddress, registerAddress, rxLength, rxData, repeatedStart);
+		if (rc < 0) {
+			throw new RuntimeIOException("Error in I2C readNoStop for device i2c-" + controller + "-0x"
+					+ Integer.toHexString(deviceAddress) + ": " + rc);
+		}
+
+		return rc;
+	}
 }

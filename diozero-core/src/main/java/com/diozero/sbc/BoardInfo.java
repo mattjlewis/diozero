@@ -31,14 +31,7 @@ package com.diozero.sbc;
  * #L%
  */
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
-
-import org.tinylog.Logger;
 
 import com.diozero.internal.spi.MmapGpioInterface;
 
@@ -55,9 +48,7 @@ import com.diozero.internal.spi.MmapGpioInterface;
 @SuppressWarnings("static-method")
 public abstract class BoardInfo extends BoardPinInfo {
 	public static final String UNKNOWN = "unknown";
-
-	private static final float DEFAULT_ADC_VREF = 1.8f;
-	private static final String TEMP_FILE = "/sys/class/thermal/thermal_zone0/temp";
+	public static final float UNKNOWN_ADC_VREF = -1;
 
 	private String make;
 	private String model;
@@ -65,14 +56,14 @@ public abstract class BoardInfo extends BoardPinInfo {
 	private String libraryPath;
 	private float adcVRef;
 
-	public BoardInfo(String make, String model, int memory, String libraryPath) {
-		this(make, model, memory, libraryPath, DEFAULT_ADC_VREF);
+	public BoardInfo(String make, String model, int memoryKb, String libraryPath) {
+		this(make, model, memoryKb, libraryPath, UNKNOWN_ADC_VREF);
 	}
 
-	public BoardInfo(String make, String model, int memory, String libraryPath, float adcVRef) {
+	public BoardInfo(String make, String model, int memoryKb, String libraryPath, float adcVRef) {
 		this.make = make;
 		this.model = model;
-		this.memoryKb = memory;
+		this.memoryKb = memoryKb;
 		this.libraryPath = libraryPath;
 		this.adcVRef = adcVRef;
 	}
@@ -81,7 +72,7 @@ public abstract class BoardInfo extends BoardPinInfo {
 	 * Pin initialisation is done separately to the constructor since all known
 	 * BoardInfo instances get instantiated on startup by the Java ServiceLoader.
 	 */
-	public abstract void initialisePins();
+	public abstract void populateBoardPinInfo();
 
 	/**
 	 * The make of the connected board, e.g. "Raspberry Pi"
@@ -93,7 +84,7 @@ public abstract class BoardInfo extends BoardPinInfo {
 	}
 
 	/**
-	 * The model of the connected board, e.g. "3 Model B+"
+	 * The model of the connected board, e.g. "3B+"
 	 * 
 	 * @return the model of the connected board
 	 */
@@ -139,14 +130,18 @@ public abstract class BoardInfo extends BoardPinInfo {
 		return make + " " + model;
 	}
 
+	public String getLongName() {
+		return getName();
+	}
+
 	/**
 	 * Compare make and model
 	 * 
 	 * @param boardInfo the compare against
 	 * @return true if the make and model are the same
 	 */
-	public boolean compareMakeAndModel(BoardInfo boardInfo) {
-		return make.equals(boardInfo.getMake()) && model.equals(boardInfo.getModel());
+	public boolean compareMakeAndModel(String make, String model) {
+		return make.equals(make) && model.equals(model);
 	}
 
 	/**
@@ -174,34 +169,23 @@ public abstract class BoardInfo extends BoardPinInfo {
 	}
 
 	/**
+	 * Detect the I2C bus controller numbers that are available on this board.
+	 * 
+	 * @return collection of I2C bus controller numbers
+	 */
+	public Collection<Integer> getI2CBusNumbers() {
+		// Default to local board I2C info
+		return LocalSystemInfo.getI2CBusNumbers();
+	}
+
+	/**
 	 * Utility method to get the CPU temperate of the attached board
 	 * 
 	 * @return the CPU temperature
 	 */
 	public float getCpuTemperature() {
-		try {
-			return Integer.parseInt(Files.lines(Paths.get(TEMP_FILE)).findFirst().orElse("0")) / 1000f;
-		} catch (IOException e) {
-			Logger.warn(e, "Error reading {}: {}", TEMP_FILE, e);
-			return 0;
-		}
-	}
-
-	/**
-	 * Detect the I2C bus controller numbers that are available on this board.
-	 * 
-	 * @return collection of I2C bus controller numbers
-	 */
-	public Collection<Integer> getI2CBuses() {
-		try {
-			List<Integer> i2c_buses = new ArrayList<>();
-			Files.newDirectoryStream(Paths.get("/dev"), "i2c-*")
-					.forEach(path -> i2c_buses.add(Integer.valueOf(path.toString().split("-")[1])));
-			return i2c_buses;
-		} catch (IOException e) {
-			Logger.error(e, "Error: {}", e);
-			return null;
-		}
+		// Default to local board CPU temperature (assumes Linux)
+		return LocalSystemInfo.getCpuTemperature();
 	}
 
 	@Override

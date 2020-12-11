@@ -35,19 +35,20 @@ import com.diozero.internal.board.GenericLinuxArmBoardInfo;
 import com.diozero.internal.spi.BoardInfoProvider;
 import com.diozero.internal.spi.MmapGpioInterface;
 import com.diozero.sbc.BoardInfo;
+import com.diozero.sbc.LocalSystemInfo;
 
 public class AllwinnerSun8iBoardInfoProvider implements BoardInfoProvider {
 	@Override
-	public BoardInfo lookup(String hardware, String revision, Integer memoryKb) {
-		if (hardware != null && hardware.startsWith("Allwinner sun8i")) {
-			return new AllwinnerSun8iBoardInfo(memoryKb);
+	public BoardInfo lookup(LocalSystemInfo sysInfo) {
+		if (sysInfo.getHardware() != null && sysInfo.getHardware().startsWith("Allwinner sun8i")) {
+			return new AllwinnerSun8iBoardInfo(sysInfo);
 		}
 		return null;
 	}
 
 	public static class AllwinnerSun8iBoardInfo extends GenericLinuxArmBoardInfo {
-		public AllwinnerSun8iBoardInfo(Integer memoryKb) {
-			super("Allwinner", "sun8i", memoryKb);
+		public AllwinnerSun8iBoardInfo(LocalSystemInfo localSysInfo) {
+			super(localSysInfo, "Allwinner sun8i");
 		}
 
 		@Override

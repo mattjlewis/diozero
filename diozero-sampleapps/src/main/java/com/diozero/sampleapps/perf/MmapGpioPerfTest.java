@@ -60,18 +60,19 @@ public class MmapGpioPerfTest {
 		try (MmapGpioInterface mmap_gpio = DeviceFactoryHelper.getNativeDeviceFactory().getBoardInfo()
 				.createMmapGpio()) {
 			mmap_gpio.initialise();
-			
+
 			mmap_gpio.setMode(gpio, DeviceMode.DIGITAL_OUTPUT);
 			for (int j = 0; j < 5; j++) {
-				long start_nano = System.nanoTime();
+				long start_ms = System.currentTimeMillis();
 				for (int i = 0; i < iterations; i++) {
 					mmap_gpio.gpioWrite(gpio, true);
 					mmap_gpio.gpioWrite(gpio, false);
 				}
-				long duration_ns = System.nanoTime() - start_nano;
+				long duration_ms = System.currentTimeMillis() - start_ms;
+				double frequency = iterations / (duration_ms / 1000.0);
 
-				Logger.info("Duration for {} iterations: {}s", Integer.valueOf(iterations),
-						String.format("%.4f", Float.valueOf(((float) duration_ns) / 1000 / 1000 / 1000)));
+				Logger.info("Duration for {#,###} iterations: {#.###}s, frequency: {#,###}Hz",
+						Integer.valueOf(iterations), Float.valueOf(duration_ms / 1000f), Double.valueOf(frequency));
 			}
 		}
 	}

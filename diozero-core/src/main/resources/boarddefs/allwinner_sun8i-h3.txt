@@ -18,6 +18,7 @@ General, DEFAULT, 29, EPhyLinK
 General, DEFAULT, 30, MIC_P
 General, DEFAULT, 31, EPhySPD
 General, DEFAULT, 32, MIC_N
+
 # GPIOA=0-31, B=32-63, C=64-95, D=96-127, E=128-159, F=160-192, G=192-223, H=224-255,I=256-287, J=288-319, K=320-351, L=352-383
 # GPIO, Header,  GPIO#, Name,    Physical, Modes,                          Chip, Line
 GPIO,   DEFAULT, 4,     GPIOA4,  4,        DIGITAL_INPUT | DIGITAL_OUTPUT, 0,    4

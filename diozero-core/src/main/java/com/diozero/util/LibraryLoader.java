@@ -40,42 +40,48 @@ import java.util.Map;
 
 import org.tinylog.Logger;
 
-import com.diozero.sbc.SystemInfo;
-import com.diozero.sbc.SystemInfoConstants;
+import com.diozero.sbc.LocalBoardInfoUtil;
+import com.diozero.sbc.LocalSystemInfo;
 
 public class LibraryLoader {
 	private static final Map<String, Boolean> LOADED_LIBRARIES = new HashMap<>();
-	private static final String LIBRARY_EXTENSION = System.getProperty(SystemInfoConstants.OS_NAME_SYSTEM_PROPERTY)
-			.startsWith("Windows") ? ".dll" : ".so";
 
 	public static void loadSystemUtils() {
+		/*-
+		int hash_code = new Object().hashCode();
+		System.out.println("loadSystemUtils() - START - " + hash_code);
+		for (StackTraceElement ste : Thread.currentThread().getStackTrace()) {
+			System.out.println(ste.toString());
+		}
+		*/
+
 		// Possibly replace with this library?
 		// https://github.com/vsergeev/c-periphery
 		// Also look at this library: https://github.com/google/periph/tree/master/host
-		loadLibrary(LibraryLoader.class, "diozero-system-utils", true);
+		// XXX Note that SystemInto.lookupLocalBoardInfo also calls loadSystemUtils when
+		// intialising the pins...
+		loadLibrary(LibraryLoader.class, "diozero-system-utils",
+				LocalBoardInfoUtil.lookupLocalBoardInfo().getLibraryPath());
+		// System.out.println("loadSystemUtils() - END - " + hash_code);
 	}
 
-	public static void loadLibrary(Class<?> clz, String libName) throws UnsatisfiedLinkError {
-		loadLibrary(clz, libName, true);
-	}
-
-	public static void loadLibrary(Class<?> clz, String libName, boolean boardSpecific) throws UnsatisfiedLinkError {
+	public static void loadLibrary(Class<?> clz, String libName, String libraryPath) throws UnsatisfiedLinkError {
+		LocalSystemInfo sys_info = LocalSystemInfo.getInstance();
 		synchronized (LibraryLoader.class) {
 			if (LOADED_LIBRARIES.get(libName) == null) {
 				boolean loaded = false;
 
 				// First try load the library from within the JAR file
 				String lib_file;
-				if (boardSpecific) {
-					lib_file = String.format("/lib/%s/lib%s%s", SystemInfo.lookupLocalBoardInfo().getLibraryPath(),
-							libName, LIBRARY_EXTENSION);
+				if (libraryPath != null) {
+					lib_file = String.format("/lib/%s/lib%s%s", libraryPath, libName, sys_info.getLibFileExtension());
 				} else {
-					lib_file = String.format("/lib/lib%s%s", libName, LIBRARY_EXTENSION);
+					lib_file = String.format("/lib/lib%s%s", libName, sys_info.getLibFileExtension());
 				}
 				Logger.debug("Looking for lib '" + lib_file + "' on classpath");
 				try (InputStream is = clz.getResourceAsStream(lib_file)) {
 					if (is != null) {
-						Path path = Files.createTempFile("lib" + libName, LIBRARY_EXTENSION);
+						Path path = Files.createTempFile("lib" + libName, sys_info.getLibFileExtension());
 						Files.copy(is, path, StandardCopyOption.REPLACE_EXISTING);
 						Runtime.getRuntime().load(path.toString());
 						path.toFile().delete();

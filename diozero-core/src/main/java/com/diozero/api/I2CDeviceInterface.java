@@ -36,4 +36,7 @@ package com.diozero.api;
  */
 public interface I2CDeviceInterface extends DeviceInterface, I2CSMBusInterface {
 	//
+	default int readNoStop(byte registerAddress, int rxLength, byte[] rxData, boolean repeatedStart) {
+		throw new UnsupportedOperationException("Not supported");
+	}
 }

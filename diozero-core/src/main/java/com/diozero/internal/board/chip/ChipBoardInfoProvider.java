@@ -44,25 +44,23 @@ import com.diozero.api.PinInfo;
 import com.diozero.internal.spi.BoardInfoProvider;
 import com.diozero.internal.spi.MmapGpioInterface;
 import com.diozero.sbc.BoardInfo;
+import com.diozero.sbc.LocalSystemInfo;
 
-public class CHIPBoardInfoProvider implements BoardInfoProvider {
+public class ChipBoardInfoProvider implements BoardInfoProvider {
 	public static final String MAKE = "Next Thing Company";
 	public static final String MODEL_CHIP = "CHIP";
 	public static final String MODEL_CHIP_PRO = "CHIP Pro";
 	static final String CHIP_LIBRARY_PATH = MODEL_CHIP.toLowerCase();
 	
-	public static final CHIPBoardInfo CHIP_BOARD_INFO = new CHIPBoardInfo();
-	public static final CHIPProBoardInfo CHIP_PRO_BOARD_INFO = new CHIPProBoardInfo();
-	
 	private static final float ADC_VREF = 1.750f;
 
 	@Override
-	public BoardInfo lookup(String hardware, String revision, Integer memoryKb) {
-		if (hardware != null && hardware.startsWith("Allwinner sun4i/sun5i")) {
-			if (memoryKb != null && memoryKb.intValue() < 500_000) {
-				return CHIP_PRO_BOARD_INFO;
+	public BoardInfo lookup(LocalSystemInfo sysInfo) {
+		if (sysInfo.getHardware() != null && sysInfo.getHardware().startsWith("Allwinner sun4i/sun5i")) {
+			if (sysInfo.getMemoryKb() != null && sysInfo.getMemoryKb().intValue() < 500_000) {
+				return new CHIPProBoardInfo();
 			}
-			return CHIP_BOARD_INFO;
+			return new CHIPBoardInfo();
 		}
 		return null;
 	}
@@ -81,7 +79,7 @@ public class CHIPBoardInfoProvider implements BoardInfoProvider {
 		}
 		
 		@Override
-		public void initialisePins() {
+		public void populateBoardPinInfo() {
 			// FIXME Externalise this to a file
 			
 			// http://www.chip-community.org/index.php/GPIO_Info#Interrupts
@@ -271,7 +269,7 @@ public class CHIPBoardInfoProvider implements BoardInfoProvider {
 		}
 		
 		@Override
-		public void initialisePins() {
+		public void populateBoardPinInfo() {
 			// https://docs.getchip.com/chip_pro.html#pin-descriptions
 
 			// Look at the letter that follows the "P", in this case it's "E".

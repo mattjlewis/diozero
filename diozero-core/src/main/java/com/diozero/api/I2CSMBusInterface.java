@@ -42,9 +42,6 @@ public interface I2CSMBusInterface extends Closeable {
 	static final int MAX_I2C_BLOCK_SIZE = 32;
 
 	@Override
-	/**
-	 * @in
-	 */
 	void close();
 
 	/**

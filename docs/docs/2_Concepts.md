@@ -90,10 +90,12 @@ for provisioning via the host board itself. However, all components accept an op
 Device Factory parameter for provisioning the same set of components via an alternative 
 method. This is particularly useful for GPIO expansion boards and Analog-to-Digital converters.
 
-> ❗ **Device Factories**
+> Device Factories
+>{: .admonition-title }
 >
 > Unless you are implementing a new device you shouldn't need to use any of the Device 
 > Factory interfaces or helper classes (within the `com.diozero.internal` package).
+{: .admonition .note }
 
 Some boards like the Raspberry Pi provide no analog input pins; attempting to create an 
 AnalogInputDevice such as an LDR using the Raspberry Pi default native device factory 
@@ -134,20 +136,6 @@ try (McpAdc adc = new McpAdc(McpAdc.Type.MCP3008, chipSelect); LDR ldr = new LDR
 	SleepUtil.sleepSeconds(20);
 }
 ```
-
-## Supported Devices
-
-diozero has out of the box support for the following Single Board Computers:
-
-* [Raspberry Pi](http://www.raspberyrpi.org/) (all versions).
-* [Odroid C2](http://www.hardkernel.com/main/products/prdt_info.php).
-* [Beagle Bone Black](https://beagleboard.org/black).
-* [Asus Tinker Board](https://www.asus.com/uk/Single-board-Computer/TINKER-BOARD/).
-* [The Next Thing Co CHIP](https://getchip.com/pages/chip).
-
-The builtin sysfs provider is designed to be portable across different boards. 
-In addition, the [JDK Device I/O](https://wiki.openjdk.java.net/display/dio/Main) providers 
-add an alternative method of compatibility, for example on the Udoo Quad.
 
 ## Getting Started
 
@@ -224,7 +212,8 @@ To run:
 sudo groovy -cp $CLASSPATH test.groovy
 ```
 
-> ❗ **Groovy JAVA_HOME config when running via sudo**
+> Groovy JAVA_HOME config when running via sudo
+>{: .admonition-title }
 > I was getting the error:
 >
 > `groovy: JAVA_HOME is not defined correctly, can not execute: /usr/lib/jvm/default-java/bin/java`
@@ -235,42 +224,4 @@ sudo groovy -cp $CLASSPATH test.groovy
 > ```
 > ln -s /usr/lib/jvm/jdk-8-oracle-arm32-vfp-hflt /usr/lib/jvm/default-java
 > ```
-
-## Performance
-
-I've done some limited performance tests (turning a GPIO on then off, see
-[GpioPerfTest](https://github.com/mattjlewis/diozero/blob/master/diozero-sampleapps/src/main/java/com/diozero/sampleapps/GpioPerfTest.java))
-on a Raspberry Pi 2 and 3 using the various native device factory providers. I've also run tests using JNI APIs
-directly without going via my DIO-Zero wrapper to assess the overhead of using my library (see
-[WiringPiRawPerfTest](https://github.com/mattjlewis/diozero/blob/master/diozero-provider-wiringpi/src/main/java/com/diozero/internal/provider/wiringpi/WiringPiRawPerfTest.java) and
-[PigpioPerfTest](https://github.com/mattjlewis/pigpioj/blob/master/pigpioj-java/src/main/java/uk/pigpioj/test/PigpioPerfTest.java)) -
-the overhead of DIO-Zero is approximately 25% for both pigpio and wiringPi. Here are the results:
-
-| Provider | Device | Frequency (kHz) |
-| -------- |:------:| ---------------:|
-| Pi4j 1.0 | Pi2 | 0.91 |
-| JDK DIO 1.1 | Pi2 | 8.23 |
-| Pi4j 1.1 | Pi2 | 622 |
-| pigpio | Pi2 | 2,019 |
-| pigpio | Pi3 | 2,900 |
-| pigpio (JNI) | Pi2 | 2,509 |
-| pigpio (JNI) | Pi3 | 3,537 |
-| wiringPi | Pi2 | 2,640 |
-| wiringPi | Pi3 | 3,446 |
-| wiringPi (JNI) | Pi2 | 3,298 |
-| wiringPi (JNI) | Pi3 | 4,373 |
-| mmap | Pi3 |  7,686 |
-| mmap (JNI) | Pi3 |   11,007 |
-
-![Performance](/assets/images/Performance.png "Performance") 
-
-For a discussion on why Pi4j 1.0 was so slow, see this [issue](https://github.com/Pi4J/pi4j/issues/158).
-These results are in-line with those documented in the book
-["Raspberry Pi with Java: Programming the Internet of Things"](http://www.amazon.co.uk/Raspberry-Pi-Java-Programming-Internet/dp/0071842012).
-For reference, the author's results were:
-
-| Library | Frequency (kHz) |
-|:------- | ---------------:|
-|Pi4j 1.0 | 0.751 |
-|JDK DIO 1.0 | 3.048 |
-|wiringPi (direct) | 1,662 |
+{: .admonition .note }

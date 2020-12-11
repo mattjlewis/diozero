@@ -66,22 +66,6 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_builtin_i2c_NativeI2C_
 
 /*
  * Class:     com_diozero_internal_provider_builtin_i2c_NativeI2C
- * Method:    readBytes
- * Signature: (II[B)I
- */
-JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_builtin_i2c_NativeI2C_readBytes
-  (JNIEnv *, jclass, jint, jint, jbyteArray);
-
-/*
- * Class:     com_diozero_internal_provider_builtin_i2c_NativeI2C
- * Method:    writeBytes
- * Signature: (II[B)I
- */
-JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_builtin_i2c_NativeI2C_writeBytes
-  (JNIEnv *, jclass, jint, jint, jbyteArray);
-
-/*
- * Class:     com_diozero_internal_provider_builtin_i2c_NativeI2C
  * Method:    readByteData
  * Signature: (II)I
  */
@@ -175,6 +159,30 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_builtin_i2c_NativeI2C_
  */
 JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_builtin_i2c_NativeI2C_writeI2CBlockData
   (JNIEnv *, jclass, jint, jint, jint, jbyteArray);
+
+/*
+ * Class:     com_diozero_internal_provider_builtin_i2c_NativeI2C
+ * Method:    readBytes
+ * Signature: (II[B)I
+ */
+JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_builtin_i2c_NativeI2C_readBytes
+  (JNIEnv *, jclass, jint, jint, jbyteArray);
+
+/*
+ * Class:     com_diozero_internal_provider_builtin_i2c_NativeI2C
+ * Method:    writeBytes
+ * Signature: (II[B)I
+ */
+JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_builtin_i2c_NativeI2C_writeBytes
+  (JNIEnv *, jclass, jint, jint, jbyteArray);
+
+/*
+ * Class:     com_diozero_internal_provider_builtin_i2c_NativeI2C
+ * Method:    readNoStop
+ * Signature: (IIBI[BZ)I
+ */
+JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_builtin_i2c_NativeI2C_readNoStop
+  (JNIEnv *, jclass, jint, jint, jbyte, jint, jbyteArray, jboolean);
 
 #ifdef __cplusplus
 }

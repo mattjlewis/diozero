@@ -2,9 +2,11 @@ RM = rm -f
 CC = gcc
 
 # To check CFLAGS: arm-linux-gnueabihf-gcc -Q --help=target
+# Alternative for 64 bit: aarch64-linux-gnu-gcc
 CFLAGS = -Wall -fPIC -O3 -march=armv6+fp -mfpu=vfp -mfloat-abi=hard
 # BeagleBone Black:
 #CFLAGS = -Wall -fPIC -O3 -march=armv7-a+fp -mfpu=vfpv3-d16 -mfloat-abi=hard -mhard-float -mabi=aapcs-linux
+
 INCLUDES = -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/linux -I$(JAVA_HOME)/include/darwin
 LFLAGS = 
 SO_FILE_EXT = so

@@ -35,9 +35,14 @@ import java.util.List;
 
 import org.tinylog.Logger;
 
+import com.diozero.util.LibraryLoader;
 import com.diozero.util.SleepUtil;
 
 public class GpioChipTest {
+	static {
+		LibraryLoader.loadSystemUtils();
+	}
+	
 	private static final int ITERATIONS = 1_000_000;
 
 	public static void main(String[] args) {
@@ -54,7 +59,7 @@ public class GpioChipTest {
 		}
 
 		int chip_num = Integer.parseInt(args[0]);
-		GpioChip gpio_chip = GpioChip.openChip(chip_num);
+		GpioChip gpio_chip = GpioChip.openChip("/dev/gpiochip" + chip_num);
 		if (gpio_chip == null) {
 			Logger.error("Unable to open chip {}", Integer.valueOf(chip_num));
 			return;
@@ -107,7 +112,7 @@ public class GpioChipTest {
 		}
 		long duration = System.currentTimeMillis() - start;
 		double frequency = ITERATIONS / (duration / 1000.0);
-		Logger.info("Took {}ms for {} toggle iterations, frequency {#0.0} Hz", Long.valueOf(duration),
+		Logger.info("Took {#,###.#}ms for {#,###} toggle iterations, frequency {#,###} Hz", Long.valueOf(duration),
 				Integer.valueOf(ITERATIONS), Double.valueOf(frequency));
 	}
 }
