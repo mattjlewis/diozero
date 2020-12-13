@@ -33,6 +33,10 @@ package com.diozero.api;
 
 import java.util.Collection;
 
+/**
+ * Describe the various attributes of an individual General-Purpose Input/Output
+ * (GPIO) pin used for Pulse Width Modulation (PWM) output.
+ */
 public class PwmPinInfo extends PinInfo {
 	private int pwmNum;
 

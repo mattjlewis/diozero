@@ -250,7 +250,7 @@ public class RemoteDeviceFactory extends BaseNativeDeviceFactory {
 
 	public void accept(DigitalInputEvent event) {
 		PinInfo pin_info = getBoardPinInfo().getByGpioNumber(event.getGpio());
-		RemoteDigitalInputDevice device = getDevice(createPinKey(pin_info), RemoteDigitalInputDevice.class);
+		RemoteDigitalInputDevice device = getDevice(createPinKey(pin_info));
 		if (device != null) {
 			device.accept(event);
 		}
@@ -258,7 +258,7 @@ public class RemoteDeviceFactory extends BaseNativeDeviceFactory {
 
 	public void accept(AnalogInputEvent event) {
 		PinInfo pin_info = getBoardPinInfo().getByGpioNumber(event.getGpio());
-		RemoteAnalogInputDevice device = getDevice(createPinKey(pin_info), RemoteAnalogInputDevice.class);
+		RemoteAnalogInputDevice device = getDevice(createPinKey(pin_info));
 		if (device != null) {
 			device.accept(event);
 		}

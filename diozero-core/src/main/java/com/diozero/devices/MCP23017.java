@@ -54,7 +54,7 @@ import com.diozero.devices.mcp23xxx.MCP23x17;
  */
 public class MCP23017 extends MCP23x17 {
 	// Default I2C address
-	private static final int DEVICE_ADDRESS = 0x20;
+	public static final int DEVICE_ADDRESS = 0x20;
 	private static final String DEVICE_NAME = "MCP23017";
 
 	private I2CDevice device;

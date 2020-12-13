@@ -31,7 +31,9 @@ package com.diozero.api;
  * #L%
  */
 
-
+/**
+ * Valid GPIO modes
+ */
 public enum DeviceMode {
 	DIGITAL_INPUT, DIGITAL_OUTPUT, PWM_OUTPUT, ANALOG_INPUT, ANALOG_OUTPUT, SERVO, UNKNOWN;
 }

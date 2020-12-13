@@ -36,7 +36,7 @@ import java.util.EnumSet;
 
 /**
  * <p>
- * Describe the various attributes an individual General-Purpose Input/Output
+ * Describe the various attributes of an individual General-Purpose Input/Output
  * (GPIO) pin. GPIO pin functions include Digital Input / Output, PWM Output and
  * Analog Input / Output.
  * </p>
@@ -62,27 +62,27 @@ import java.util.EnumSet;
  * <p>
  * A pin has the following attributes:
  * </p>
- * <ul>
- * <li><strong>keyPrefix</strong>: internal only attribute used by
+ * <dl>
+ * <dt>keyPrefix</dt><dd>internal only attribute used by
  * {@link com.diozero.internal.spi.AbstractDeviceFactory AbstractDeviceFactory}
- * when provisioning GPIO devices</li>
- * <li><strong>header</strong>: the name of the board header to which this pin
- * is attached</li>
- * <li><strong>physicalPin</strong>: the physical header pin number</li>
- * <li><strong>deviceNumber</strong>: the logical device GPIO number</li>
- * <li><strong>sysFsNumber</strong>: typically the same as the GPIO / device
+ * when provisioning GPIO devices</dt>
+ * <dt>header</dt><dd>the name of the board header to which this pin
+ * is attached</dd>
+ * <dt>physicalPin</dt><dd>the physical header pin number</dd>
+ * <dt>deviceNumber</dt><dd>the logical device GPIO number</dd>
+ * <dt>sysFsNumber</dt><dd>typically the same as the GPIO / device
  * number; can be different for PWM pins that are controlled via Linux
- * sysfs</li>
- * <li><strong>chip</strong>: the Linux GPIO chip number for this GPIO as
+ * sysfs</dd>
+ * <dt>chip</dt><dd>the Linux GPIO chip number for this GPIO as
  * defined by the Linux GPIO character device; see /sys/gpiochip&lt;n&gt;, run
- * <code>gpiodetect</code> to list</li>
- * <li><strong>lineOffset</strong>: the line number offset for this GPIO on the
+ * <code>gpiodetect</code> to list</dd>
+ * <dt>lineOffset</dt><dd>the line number offset for this GPIO on the
  * GPIO chip - Linux GPIO character device; <code>run gpioinfo &lt;n&gt;</code>
- * to list</li>
- * <li><strong>name</strong>: the name of this pin</li>
- * <li><strong>modes</strong>: the set of valid {@link DeviceMode modes} for
- * this pin</li>
- * </ul>
+ * to list</dd>
+ * <dt>name</dt><dd>the name of this pin</dd>
+ * <dt>modes</dt><dd>the set of valid {@link DeviceMode modes} for
+ * this pin</dd>
+ * </dl>
  */
 public class PinInfo {
 	public static final EnumSet<DeviceMode> DIGITAL_IN = EnumSet.of(DeviceMode.DIGITAL_INPUT);

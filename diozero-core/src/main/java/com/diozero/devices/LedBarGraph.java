@@ -31,7 +31,6 @@ package com.diozero.devices;
  * #L%
  */
 
-
 import java.io.Closeable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -47,68 +46,72 @@ import com.diozero.util.RangeUtil;
 public class LedBarGraph implements OutputDeviceInterface, Closeable {
 	private List<LED> leds;
 	private float value;
-	
+
 	public LedBarGraph(int... gpios) {
 		this(DeviceFactoryHelper.getNativeDeviceFactory(), true, gpios);
 	}
-	
+
 	public LedBarGraph(GpioDeviceFactoryInterface deviceFactory, int... gpios) {
 		this(deviceFactory, true, gpios);
 	}
-	
+
 	public LedBarGraph(GpioDeviceFactoryInterface deviceFactory, boolean activeHigh, int... gpios) {
 		leds = new ArrayList<>();
 		for (int gpio : gpios) {
 			leds.add(new LED(deviceFactory, gpio, activeHigh, false));
 		}
 	}
-	
+
 	public LedBarGraph(LED... leds) {
 		this.leds = Arrays.asList(leds);
 	}
-	
+
 	public LedBarGraph(List<LED> leds) {
 		this.leds = leds;
 	}
-	
+
 	public void on() {
 		leds.forEach(LED::on);
 	}
-	
+
 	public void off() {
 		leds.forEach(LED::off);
 	}
-	
+
 	public void toggle() {
 		leds.forEach(LED::toggle);
 	}
-	
+
 	public void blink() {
 		leds.forEach(LED::blink);
 	}
-	
+
 	public void blink(float onTime, float offTime, int iterations, Action stopAction) {
 		leds.forEach(led -> led.blink(onTime, offTime, iterations, true, stopAction));
 	}
-	
+
 	/**
 	 * Get the proportion of LEDs currently lit.
-	 * @return Proportion of LEDs lit. 0..1 if lit from left to right, 0..-1 if lit from right to left.
+	 * 
+	 * @return Proportion of LEDs lit. 0..1 if lit from left to right, 0..-1 if lit
+	 *         from right to left.
 	 */
 	public float getValue() {
 		return value;
 	}
-	
+
 	/**
 	 * Light a proportion of the LEDs using value as a percentage.
-	 * @param newValue Proportion of LEDs to light. 0..1 lights from left to right, 0..-1 lights from right to left.
+	 * 
+	 * @param newValue Proportion of LEDs to light. 0..1 lights from left to right,
+	 *                 0..-1 lights from right to left.
 	 */
 	@Override
 	public void setValue(float newValue) {
 		value = RangeUtil.constrain(newValue, -1, 1);
 		int light_up_to = Math.round(value * leds.size());
-		for (int i=0; i<leds.size(); i++) {
-			leds.get(i).setOn(light_up_to >= 0 ? i <= light_up_to : i >= leds.size()+light_up_to);
+		for (int i = 0; i < leds.size(); i++) {
+			leds.get(i).setOn(light_up_to >= 0 ? i <= light_up_to : i >= leds.size() + light_up_to);
 		}
 	}
 

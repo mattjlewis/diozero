@@ -446,7 +446,7 @@ public abstract class BaseRemoteServer implements DeviceEventConsumer<DigitalInp
 
 		PinInfo pin_info = deviceFactory.getBoardPinInfo().getByGpioNumber(request.getGpio());
 		String key = deviceFactory.createPinKey(pin_info);
-		DeviceInterface device = deviceFactory.getDevice(key);
+		AnalogOutputDeviceInterface device = deviceFactory.getDevice(key);
 
 		GpioAnalogReadResponse response;
 		if (device == null) {
@@ -454,7 +454,7 @@ public abstract class BaseRemoteServer implements DeviceEventConsumer<DigitalInp
 		}
 
 		try {
-			response = new GpioAnalogReadResponse(((AnalogOutputDeviceInterface) device).getValue(),
+			response = new GpioAnalogReadResponse((device).getValue(),
 					request.getCorrelationId());
 		} catch (RuntimeIOException e) {
 			Logger.error(e, "Error: {}", e);
@@ -597,7 +597,7 @@ public abstract class BaseRemoteServer implements DeviceEventConsumer<DigitalInp
 		int address = request.getAddress();
 		String key = deviceFactory.createI2CKey(controller, address);
 
-		I2CDeviceInterface device = deviceFactory.getDevice(key, I2CDeviceInterface.class);
+		I2CDeviceInterface device = deviceFactory.getDevice(key);
 		if (device == null) {
 			return new I2CBooleanResponse("I2C device not provisioned", request.getCorrelationId());
 		}
@@ -623,7 +623,7 @@ public abstract class BaseRemoteServer implements DeviceEventConsumer<DigitalInp
 		int address = request.getAddress();
 		String key = deviceFactory.createI2CKey(controller, address);
 
-		I2CDeviceInterface device = deviceFactory.getDevice(key, I2CDeviceInterface.class);
+		I2CDeviceInterface device = deviceFactory.getDevice(key);
 		if (device == null) {
 			return new Response(Response.Status.ERROR, "I2C device not provisioned", request.getCorrelationId());
 		}
@@ -649,7 +649,7 @@ public abstract class BaseRemoteServer implements DeviceEventConsumer<DigitalInp
 		int address = request.getAddress();
 		String key = deviceFactory.createI2CKey(controller, address);
 
-		I2CDeviceInterface device = deviceFactory.getDevice(key, I2CDeviceInterface.class);
+		I2CDeviceInterface device = deviceFactory.getDevice(key);
 		if (device == null) {
 			return new I2CByteResponse("I2C device not provisioned", request.getCorrelationId());
 		}
@@ -675,7 +675,7 @@ public abstract class BaseRemoteServer implements DeviceEventConsumer<DigitalInp
 		int address = request.getAddress();
 		String key = deviceFactory.createI2CKey(controller, address);
 
-		I2CDeviceInterface device = deviceFactory.getDevice(key, I2CDeviceInterface.class);
+		I2CDeviceInterface device = deviceFactory.getDevice(key);
 		if (device == null) {
 			return new Response(Response.Status.ERROR, "I2C device not provisioned", request.getCorrelationId());
 		}
@@ -701,7 +701,7 @@ public abstract class BaseRemoteServer implements DeviceEventConsumer<DigitalInp
 		int address = request.getAddress();
 		String key = deviceFactory.createI2CKey(controller, address);
 
-		I2CDeviceInterface device = deviceFactory.getDevice(key, I2CDeviceInterface.class);
+		I2CDeviceInterface device = deviceFactory.getDevice(key);
 		if (device == null) {
 			return new I2CBytesResponse("I2C device not provisioned", request.getCorrelationId());
 		}
@@ -728,7 +728,7 @@ public abstract class BaseRemoteServer implements DeviceEventConsumer<DigitalInp
 		int address = request.getAddress();
 		String key = deviceFactory.createI2CKey(controller, address);
 
-		I2CDeviceInterface device = deviceFactory.getDevice(key, I2CDeviceInterface.class);
+		I2CDeviceInterface device = deviceFactory.getDevice(key);
 		if (device == null) {
 			return new Response(Response.Status.ERROR, "I2C device not provisioned", request.getCorrelationId());
 		}
@@ -755,7 +755,7 @@ public abstract class BaseRemoteServer implements DeviceEventConsumer<DigitalInp
 		int address = request.getAddress();
 		String key = deviceFactory.createI2CKey(controller, address);
 
-		I2CDeviceInterface device = deviceFactory.getDevice(key, I2CDeviceInterface.class);
+		I2CDeviceInterface device = deviceFactory.getDevice(key);
 		if (device == null) {
 			return new I2CByteResponse("I2C device not provisioned", request.getCorrelationId());
 		}
@@ -781,7 +781,7 @@ public abstract class BaseRemoteServer implements DeviceEventConsumer<DigitalInp
 		int address = request.getAddress();
 		String key = deviceFactory.createI2CKey(controller, address);
 
-		I2CDeviceInterface device = deviceFactory.getDevice(key, I2CDeviceInterface.class);
+		I2CDeviceInterface device = deviceFactory.getDevice(key);
 		if (device == null) {
 			return new Response(Response.Status.ERROR, "I2C device not provisioned", request.getCorrelationId());
 		}
@@ -807,7 +807,7 @@ public abstract class BaseRemoteServer implements DeviceEventConsumer<DigitalInp
 		int address = request.getAddress();
 		String key = deviceFactory.createI2CKey(controller, address);
 
-		I2CDeviceInterface device = deviceFactory.getDevice(key, I2CDeviceInterface.class);
+		I2CDeviceInterface device = deviceFactory.getDevice(key);
 		if (device == null) {
 			return new I2CWordResponse("I2C device not provisioned", request.getCorrelationId());
 		}
@@ -833,7 +833,7 @@ public abstract class BaseRemoteServer implements DeviceEventConsumer<DigitalInp
 		int address = request.getAddress();
 		String key = deviceFactory.createI2CKey(controller, address);
 
-		I2CDeviceInterface device = deviceFactory.getDevice(key, I2CDeviceInterface.class);
+		I2CDeviceInterface device = deviceFactory.getDevice(key);
 		if (device == null) {
 			return new Response(Response.Status.ERROR, "I2C device not provisioned", request.getCorrelationId());
 		}
@@ -859,7 +859,7 @@ public abstract class BaseRemoteServer implements DeviceEventConsumer<DigitalInp
 		int address = request.getAddress();
 		String key = deviceFactory.createI2CKey(controller, address);
 
-		I2CDeviceInterface device = deviceFactory.getDevice(key, I2CDeviceInterface.class);
+		I2CDeviceInterface device = deviceFactory.getDevice(key);
 		if (device == null) {
 			return new I2CReadBlockDataResponse("I2C device not provisioned", request.getCorrelationId());
 		}
@@ -885,7 +885,7 @@ public abstract class BaseRemoteServer implements DeviceEventConsumer<DigitalInp
 		int address = request.getAddress();
 		String key = deviceFactory.createI2CKey(controller, address);
 
-		I2CDeviceInterface device = deviceFactory.getDevice(key, I2CDeviceInterface.class);
+		I2CDeviceInterface device = deviceFactory.getDevice(key);
 		if (device == null) {
 			return new Response(Response.Status.ERROR, "I2C device not provisioned", request.getCorrelationId());
 		}
@@ -911,7 +911,7 @@ public abstract class BaseRemoteServer implements DeviceEventConsumer<DigitalInp
 		int address = request.getAddress();
 		String key = deviceFactory.createI2CKey(controller, address);
 
-		I2CDeviceInterface device = deviceFactory.getDevice(key, I2CDeviceInterface.class);
+		I2CDeviceInterface device = deviceFactory.getDevice(key);
 		if (device == null) {
 			return new I2CWordResponse("I2C device not provisioned", request.getCorrelationId());
 		}
@@ -937,7 +937,7 @@ public abstract class BaseRemoteServer implements DeviceEventConsumer<DigitalInp
 		int address = request.getAddress();
 		String key = deviceFactory.createI2CKey(controller, address);
 
-		I2CDeviceInterface device = deviceFactory.getDevice(key, I2CDeviceInterface.class);
+		I2CDeviceInterface device = deviceFactory.getDevice(key);
 		if (device == null) {
 			return new I2CBytesResponse("I2C device not provisioned", request.getCorrelationId());
 		}
@@ -963,7 +963,7 @@ public abstract class BaseRemoteServer implements DeviceEventConsumer<DigitalInp
 		int address = request.getAddress();
 		String key = deviceFactory.createI2CKey(controller, address);
 
-		I2CDeviceInterface device = deviceFactory.getDevice(key, I2CDeviceInterface.class);
+		I2CDeviceInterface device = deviceFactory.getDevice(key);
 		if (device == null) {
 			return new I2CBytesResponse("I2C device not provisioned", request.getCorrelationId());
 		}
@@ -990,7 +990,7 @@ public abstract class BaseRemoteServer implements DeviceEventConsumer<DigitalInp
 		int address = request.getAddress();
 		String key = deviceFactory.createI2CKey(controller, address);
 
-		I2CDeviceInterface device = deviceFactory.getDevice(key, I2CDeviceInterface.class);
+		I2CDeviceInterface device = deviceFactory.getDevice(key);
 		if (device == null) {
 			return new Response(Response.Status.ERROR, "I2C device not provisioned", request.getCorrelationId());
 		}
@@ -1016,7 +1016,7 @@ public abstract class BaseRemoteServer implements DeviceEventConsumer<DigitalInp
 		int address = request.getAddress();
 		String key = deviceFactory.createI2CKey(controller, address);
 
-		I2CDeviceInterface device = deviceFactory.getDevice(key, I2CDeviceInterface.class);
+		I2CDeviceInterface device = deviceFactory.getDevice(key);
 		if (device == null) {
 			return new SpiResponse("I2C device not provisioned", request.getCorrelationId());
 		}
@@ -1069,7 +1069,7 @@ public abstract class BaseRemoteServer implements DeviceEventConsumer<DigitalInp
 		int chip_select = request.getChipSelect();
 		String key = deviceFactory.createSpiKey(controller, chip_select);
 
-		SpiDeviceInterface device = deviceFactory.getDevice(key, SpiDeviceInterface.class);
+		SpiDeviceInterface device = deviceFactory.getDevice(key);
 		if (device == null) {
 			return new Response(Response.Status.ERROR, "SPI device not provisioned", request.getCorrelationId());
 		}
@@ -1100,7 +1100,7 @@ public abstract class BaseRemoteServer implements DeviceEventConsumer<DigitalInp
 		int chip_select = request.getChipSelect();
 		String key = deviceFactory.createSpiKey(controller, chip_select);
 
-		SpiDeviceInterface device = deviceFactory.getDevice(key, SpiDeviceInterface.class);
+		SpiDeviceInterface device = deviceFactory.getDevice(key);
 		if (device == null) {
 			return new SpiResponse("SPI device not provisioned", request.getCorrelationId());
 		}
@@ -1126,7 +1126,7 @@ public abstract class BaseRemoteServer implements DeviceEventConsumer<DigitalInp
 		int chip_select = request.getChipSelect();
 		String key = deviceFactory.createSpiKey(controller, chip_select);
 
-		SpiDeviceInterface device = deviceFactory.getDevice(key, SpiDeviceInterface.class);
+		SpiDeviceInterface device = deviceFactory.getDevice(key);
 		if (device == null) {
 			return new SpiResponse("SPI device not provisioned", request.getCorrelationId());
 		}
@@ -1178,7 +1178,7 @@ public abstract class BaseRemoteServer implements DeviceEventConsumer<DigitalInp
 		String device_file = request.getDeviceFile();
 		String key = deviceFactory.createSerialKey(device_file);
 
-		SerialDeviceInterface device = deviceFactory.getDevice(key, SerialDeviceInterface.class);
+		SerialDeviceInterface device = deviceFactory.getDevice(key);
 		if (device == null) {
 			return new SerialReadResponse("Serial device not provisioned", request.getCorrelationId());
 		}
@@ -1203,7 +1203,7 @@ public abstract class BaseRemoteServer implements DeviceEventConsumer<DigitalInp
 		String device_file = request.getDeviceFile();
 		String key = deviceFactory.createSerialKey(device_file);
 
-		SerialDeviceInterface device = deviceFactory.getDevice(key, SerialDeviceInterface.class);
+		SerialDeviceInterface device = deviceFactory.getDevice(key);
 		if (device == null) {
 			return new SerialReadByteResponse("Serial device not provisioned", request.getCorrelationId());
 		}
@@ -1228,7 +1228,7 @@ public abstract class BaseRemoteServer implements DeviceEventConsumer<DigitalInp
 		String device_file = request.getDeviceFile();
 		String key = deviceFactory.createSerialKey(device_file);
 
-		SerialDeviceInterface device = deviceFactory.getDevice(key, SerialDeviceInterface.class);
+		SerialDeviceInterface device = deviceFactory.getDevice(key);
 		if (device == null) {
 			return new Response(Response.Status.ERROR, "Serial device not provisioned", request.getCorrelationId());
 		}
@@ -1253,7 +1253,7 @@ public abstract class BaseRemoteServer implements DeviceEventConsumer<DigitalInp
 		String device_file = request.getDeviceFile();
 		String key = deviceFactory.createSerialKey(device_file);
 
-		SerialDeviceInterface device = deviceFactory.getDevice(key, SerialDeviceInterface.class);
+		SerialDeviceInterface device = deviceFactory.getDevice(key);
 		if (device == null) {
 			return new SerialReadBytesResponse("Serial device not provisioned", request.getCorrelationId());
 		}
@@ -1279,7 +1279,7 @@ public abstract class BaseRemoteServer implements DeviceEventConsumer<DigitalInp
 		String device_file = request.getDeviceFile();
 		String key = deviceFactory.createSerialKey(device_file);
 
-		SerialDeviceInterface device = deviceFactory.getDevice(key, SerialDeviceInterface.class);
+		SerialDeviceInterface device = deviceFactory.getDevice(key);
 		if (device == null) {
 			return new Response(Response.Status.ERROR, "Serial device not provisioned", request.getCorrelationId());
 		}
@@ -1304,7 +1304,7 @@ public abstract class BaseRemoteServer implements DeviceEventConsumer<DigitalInp
 		String device_file = request.getDeviceFile();
 		String key = deviceFactory.createSerialKey(device_file);
 
-		SerialDeviceInterface device = deviceFactory.getDevice(key, SerialDeviceInterface.class);
+		SerialDeviceInterface device = deviceFactory.getDevice(key);
 		if (device == null) {
 			return new SerialBytesAvailableResponse("Serial device not provisioned", request.getCorrelationId());
 		}
@@ -1329,7 +1329,7 @@ public abstract class BaseRemoteServer implements DeviceEventConsumer<DigitalInp
 		String device_file = request.getDeviceFile();
 		String key = deviceFactory.createSerialKey(device_file);
 
-		SerialDeviceInterface device = deviceFactory.getDevice(key, SerialDeviceInterface.class);
+		SerialDeviceInterface device = deviceFactory.getDevice(key);
 		if (device == null) {
 			return new SpiResponse("Serial device not provisioned", request.getCorrelationId());
 		}

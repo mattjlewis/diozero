@@ -37,13 +37,18 @@ import com.diozero.internal.spi.GpioDeviceFactoryInterface;
 import com.diozero.internal.spi.GpioDigitalInputOutputDeviceInterface;
 import com.diozero.sbc.DeviceFactoryHelper;
 
+/**
+ * A digital device whose {@link DeviceMode Mode} can be initialised to and
+ * changed to {@link DeviceMode DIGITAL_INPUT} and {@link DeviceMode
+ * DIGITAL_OUTPUT}.
+ */
 public class DigitalInputOutputDevice extends AbstractDigitalInputDevice {
 	private GpioDigitalInputOutputDeviceInterface device;
 	private DeviceMode mode;
 
 	/**
 	 * @param gpio GPIO to which the device is connected.
-	 * @param mode Input or output {@link com.diozero.api.DeviceMode Mode}
+	 * @param mode Input or output {@link DeviceMode Mode}
 	 * @throws RuntimeIOException If an I/O error occurs.
 	 */
 	public DigitalInputOutputDevice(int gpio, DeviceMode mode) throws RuntimeIOException {
@@ -54,7 +59,7 @@ public class DigitalInputOutputDevice extends AbstractDigitalInputDevice {
 	 * @param deviceFactory Device factory to use to provision this digital input
 	 *                      device.
 	 * @param gpio          GPIO to which the device is connected.
-	 * @param mode          Input or output {@link com.diozero.api.DeviceMode Mode}
+	 * @param mode          Input or output {@link DeviceMode Mode}
 	 * @throws RuntimeIOException If an I/O error occurs.
 	 */
 	public DigitalInputOutputDevice(GpioDeviceFactoryInterface deviceFactory, int gpio, DeviceMode mode)
@@ -67,7 +72,7 @@ public class DigitalInputOutputDevice extends AbstractDigitalInputDevice {
 	 *                      device.
 	 * @param pinInfo       Information about the GPIO pin to which the device is
 	 *                      connected.
-	 * @param mode          Input or output {@link com.diozero.api.DeviceMode Mode}
+	 * @param mode          Input or output {@link DeviceMode Mode}
 	 * @throws RuntimeIOException If an I/O error occurs.
 	 */
 	public DigitalInputOutputDevice(GpioDeviceFactoryInterface deviceFactory, PinInfo pinInfo, DeviceMode mode)
@@ -96,9 +101,8 @@ public class DigitalInputOutputDevice extends AbstractDigitalInputDevice {
 	/**
 	 * Set the input / output mode
 	 * 
-	 * @param mode new mode, valid values are {@link com.diozero.api.DeviceMode
-	 *             DIGITAL_INPUT} and {@link com.diozero.api.DeviceMode
-	 *             DIGITAL_OUTPUT}
+	 * @param mode new mode, valid values are {@link DeviceMode DIGITAL_INPUT} and
+	 *             {@link DeviceMode DIGITAL_OUTPUT}
 	 */
 	public void setMode(DeviceMode mode) {
 		if (mode == this.mode) {

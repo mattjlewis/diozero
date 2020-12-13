@@ -85,8 +85,7 @@ public abstract class BaseAsyncProtocolHandler implements RemoteProtocolInterfac
 		}
 
 		@SuppressWarnings("resource")
-		RemoteDigitalInputDevice input_device = deviceFactory.getDevice(deviceFactory.createPinKey(pin_info),
-				RemoteDigitalInputDevice.class);
+		RemoteDigitalInputDevice input_device = deviceFactory.getDevice(deviceFactory.createPinKey(pin_info));
 		if (input_device == null) {
 			Logger.error("Digital input device not found for GPIO " + event.getGpio());
 			return;

@@ -52,9 +52,44 @@ import com.diozero.sbc.DeviceFactoryHelper;
  * <a href="https://www.raspberrypi.org/documentation/configuration/uart.md">
  * Raspberry Pi UART configuration</a> for additional detail.
  * </p>
- * 
  */
 public class SerialDevice implements SerialConstants, SerialDeviceInterface {
+	/**
+	 * Provides descriptive information for a connected serial device. The
+	 * information can be provided by the manufacturer of the device or by the UART
+	 * used by the device.
+	 * <p>
+	 * Often the information can be used to identify specific devices connected to a
+	 * serial port. If two identical devices are connected to serial ports, they
+	 * cannot be differentiated using this information.
+	 * </p>
+	 * <p>
+	 * The following fields are supported:
+	 * </p>
+	 * <dl>
+	 * <dt>deviceFile</dt>
+	 * <dd>the file system name for a serial device, e.g., /dev/ttyACM0 /dev/ttyS0,
+	 * /dev/ttyAMA0</dd>
+	 * <dt>deviceName</dt>
+	 * <dd>generally a subset of deviceFile, e.g., ttyACM0</dd>
+	 * <dt>description</dt>
+	 * <dd>human readable, and theoretically unique, text that identifies the device
+	 * attached to a serial port, e.g., Pololu A-Star 32U4; can be generic, e.g.,
+	 * Physical Port</dd>
+	 * <dt>manufacturer</dt>
+	 * <dd>human readable text that identifies the manufacturer of the device
+	 * attached to a serial port, e.g., Pololu Corporation; can be null</dd>
+	 * <dt>driverName</dt>
+	 * <dd>the name of the device driver, e.g., usb:cdc_acm, bcm2835-aux-uart,
+	 * uart-pl011</dd>
+	 * <dt>usbVendorId</dt>
+	 * <dd>a theoretically unique number identifying the vendor, e.g., 1ffb; can be
+	 * null</dd>
+	 * <dt>usbProductId</dt>
+	 * <dd>theoretically unique number identifying the product, e.g., 2300; can be
+	 * null</dd>
+	 * </dl>
+	 */
 	public static class DeviceInfo {
 		private String deviceName;
 		private String deviceFile;

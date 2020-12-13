@@ -66,8 +66,9 @@ public class DeviceStates {
 		devices.values().forEach(DeviceInterface::close);
 	}
 
-	public DeviceInterface getDevice(String key) {
-		return devices.get(key);
+	@SuppressWarnings("unchecked")
+	public <T extends DeviceInterface> T getDevice(String key) {
+		return (T) devices.get(key);
 	}
 	
 	public int size() {

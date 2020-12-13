@@ -433,7 +433,7 @@ public abstract class MCP23xxx extends AbstractDeviceFactory implements GpioDevi
 	}
 
 	private MCP23xxxDigitalInputDevice getInputDevice(byte gpio) {
-		return getDevice(createPinKey(getBoardPinInfo().getByGpioNumber(gpio)), MCP23xxxDigitalInputDevice.class);
+		return getDevice(createPinKey(getBoardPinInfo().getByGpioNumber(gpio)));
 	}
 	
 	protected abstract int getIODirReg(int port);

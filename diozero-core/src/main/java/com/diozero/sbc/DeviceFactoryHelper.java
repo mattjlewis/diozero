@@ -116,7 +116,7 @@ class ShutdownHandlerThread extends Thread {
 
 	public ShutdownHandlerThread(NativeDeviceFactoryInterface deviceFactory) {
 		this.deviceFactory = deviceFactory;
-		setName("DIO-Zero Shutdown Handler");
+		setName("diozero Shutdown Handler");
 		setDaemon(false);
 	}
 

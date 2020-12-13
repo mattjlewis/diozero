@@ -31,8 +31,15 @@ package com.diozero.api;
  * #L%
  */
 
-
+/**
+ * Represents a device capable of output (digital or analog).
+ */
 @FunctionalInterface
 public interface OutputDeviceInterface {
+	/**
+	 * Sets the output value of the device.
+	 * 
+	 * @param value the value to output
+	 */
 	void setValue(float value);
 }

@@ -38,6 +38,12 @@ import com.diozero.api.PinInfo;
 import com.diozero.internal.DeviceStates;
 import com.diozero.sbc.DeviceFactoryHelper;
 
+/**
+ * Base class for all device factories, including custom board-specific provider
+ * implementations (e.g. <a href="http://abyz.me.uk/rpi/pigpio/">pigpio</a>) as
+ * well as expansion boards (e.g. the {@link com.diozero.devices.McpAdc MCP
+ * 3xxx} family of analog-to-digital converters).
+ */
 public abstract class AbstractDeviceFactory implements DeviceFactoryInterface {
 	private String deviceFactoryPrefix;
 	protected DeviceStates deviceStates;
@@ -81,7 +87,7 @@ public abstract class AbstractDeviceFactory implements DeviceFactoryInterface {
 			closed = true;
 		}
 	}
-	
+
 	@Override
 	public void reopen() {
 		Logger.trace("reopen()");
@@ -109,13 +115,7 @@ public abstract class AbstractDeviceFactory implements DeviceFactoryInterface {
 	}
 
 	@Override
-	public final DeviceInterface getDevice(String key) {
+	public final <T extends DeviceInterface> T getDevice(String key) {
 		return deviceStates.getDevice(key);
-	}
-
-	@Override
-	@SuppressWarnings("unchecked")
-	public final <T extends DeviceInterface> T getDevice(String key, Class<T> deviceClass) {
-		return (T) deviceStates.getDevice(key);
 	}
 }

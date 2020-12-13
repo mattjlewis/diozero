@@ -31,6 +31,9 @@ package com.diozero.api;
  * #L%
  */
 
+/**
+ * <a href="https://en.wikipedia.org/wiki/Serial_port">Serial Port Interface</a>
+ */
 public interface SerialDeviceInterface extends DeviceInterface {
 	/**
 	 * Read a single byte returning error responses
