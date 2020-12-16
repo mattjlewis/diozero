@@ -37,21 +37,25 @@ import com.diozero.api.GpioEventTrigger;
 import com.diozero.api.GpioPullUpDown;
 import com.diozero.api.PinInfo;
 import com.diozero.api.RuntimeIOException;
+import com.diozero.internal.provider.builtin.gpio.GpioChip;
 import com.diozero.internal.provider.builtin.gpio.GpioLine;
 import com.diozero.internal.provider.builtin.gpio.GpioLineEventListener;
 import com.diozero.internal.spi.AbstractInputDevice;
 import com.diozero.internal.spi.GpioDigitalInputOutputDeviceInterface;
-import com.diozero.internal.provider.builtin.gpio.GpioChip;
+import com.diozero.internal.spi.MmapGpioInterface;
 
 public class NativeGpioInputOutputDevice extends AbstractInputDevice<DigitalInputEvent>
 		implements GpioDigitalInputOutputDeviceInterface, GpioLineEventListener {
 	private GpioChip chip;
 	private int gpio;
 	private GpioLine line;
+	private MmapGpioInterface mmapGpio;
 
 	public NativeGpioInputOutputDevice(DefaultDeviceFactory deviceFactory, String key, GpioChip chip,
-			PinInfo pinInfo, DeviceMode mode) {
+			PinInfo pinInfo, DeviceMode mode, MmapGpioInterface mmapGpio) {
 		super(key, deviceFactory);
+		
+		this.mmapGpio = mmapGpio;
 
 		gpio = pinInfo.getDeviceNumber();
 		int offset = pinInfo.getLineOffset();
@@ -105,12 +109,18 @@ public class NativeGpioInputOutputDevice extends AbstractInputDevice<DigitalInpu
 
 	@Override
 	public boolean getValue() throws RuntimeIOException {
-		return line.getValue() == 0 ? false : true;
+		if (mmapGpio == null) {
+			return line.getValue() == 0 ? false : true;
+		}
+		return mmapGpio.gpioRead(gpio);
 	}
 
 	@Override
 	public void setValue(boolean value) throws RuntimeIOException {
-		line.setValue(value ? 1 : 0);
+		if (mmapGpio == null) {
+			line.setValue(value ? 1 : 0);
+		}
+		mmapGpio.gpioWrite(gpio, value);
 	}
 
 	@Override

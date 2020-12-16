@@ -37,6 +37,40 @@ package com.diozero.api;
 public interface I2CDeviceInterface extends DeviceInterface, I2CSMBusInterface {
 	//
 	default int readNoStop(byte registerAddress, int rxLength, byte[] rxData, boolean repeatedStart) {
-		throw new UnsupportedOperationException("Not supported");
+		throw new UnsupportedOperationException("I2C readNoStop not supported");
+	}
+	
+	default void readWrite(I2CMessage[] messages, byte[] buffer) {
+		throw new UnsupportedOperationException("I2C readWrite not supported");
+	}
+	
+	public static class I2CMessage {
+		// https://www.kernel.org/doc/Documentation/i2c/i2c-protocol
+		// Write data, from master to slave
+		public static final int I2C_M_WR = 0;
+		// Read data, from slave to master
+		public static final int I2C_M_RD = 0x0001;
+		// In a read message, master A/NA bit is skipped.
+		public static final int I2C_M_NO_RD_ACK = 0x0800;
+		/*- Normally message is interrupted immediately if there is [NA] from the
+		 * client. Setting this flag treats any [NA] as [A], and all of
+		 * message is sent. */
+		public static final int I2C_M_IGNORE_NAK = 0x1000;
+		/*- In a combined transaction, no 'S Addr Wr/Rd [A]' is generated at some
+		 * point. For example, setting I2C_M_NOSTART on the second partial message
+		 * generates something like:
+		 * S Addr Rd [A] [Data] NA Data [A] P
+		 * rather than:
+		 * S Addr Rd [A] [Data] NA S Addr Wr [A] Data [A] P
+		 */
+		public static final int I2C_M_NOSTART = 0x4000;
+		
+		public int flags;
+		public int len;
+		
+		public I2CMessage(int flags, int len) {
+			this.flags = flags;
+			this.len = len;
+		}
 	}
 }

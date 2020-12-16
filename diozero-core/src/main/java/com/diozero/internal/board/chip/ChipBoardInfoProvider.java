@@ -41,6 +41,7 @@ import java.nio.file.Paths;
 import org.tinylog.Logger;
 
 import com.diozero.api.PinInfo;
+import com.diozero.internal.board.GenericLinuxArmBoardInfo;
 import com.diozero.internal.spi.BoardInfoProvider;
 import com.diozero.internal.spi.MmapGpioInterface;
 import com.diozero.sbc.BoardInfo;
@@ -50,7 +51,6 @@ public class ChipBoardInfoProvider implements BoardInfoProvider {
 	public static final String MAKE = "Next Thing Company";
 	public static final String MODEL_CHIP = "CHIP";
 	public static final String MODEL_CHIP_PRO = "CHIP Pro";
-	static final String CHIP_LIBRARY_PATH = MODEL_CHIP.toLowerCase();
 	
 	private static final float ADC_VREF = 1.750f;
 
@@ -65,7 +65,7 @@ public class ChipBoardInfoProvider implements BoardInfoProvider {
 		return null;
 	}
 
-	public static final class CHIPBoardInfo extends BoardInfo {
+	public static final class CHIPBoardInfo extends GenericLinuxArmBoardInfo {
 		public static final String U13_HEADER = "U13";
 		public static final String U14_HEADER = "U14";
 		
@@ -75,7 +75,7 @@ public class ChipBoardInfoProvider implements BoardInfoProvider {
 		private boolean xioGpioOffsetLoaded;
 		
 		public CHIPBoardInfo() {
-			super(MAKE, MODEL_CHIP, MEMORY, CHIP_LIBRARY_PATH, ADC_VREF);
+			super(MAKE, MODEL_CHIP, MEMORY, ADC_VREF);
 		}
 		
 		@Override
@@ -261,11 +261,11 @@ public class ChipBoardInfoProvider implements BoardInfoProvider {
 		}
 	}
 
-	public static final class CHIPProBoardInfo extends BoardInfo {
+	public static final class CHIPProBoardInfo extends GenericLinuxArmBoardInfo {
 		private static final int MEMORY = 256;
 		
 		public CHIPProBoardInfo() {
-			super(MAKE, MODEL_CHIP_PRO, MEMORY, CHIP_LIBRARY_PATH, ADC_VREF);
+			super(MAKE, MODEL_CHIP_PRO, MEMORY, ADC_VREF);
 		}
 		
 		@Override

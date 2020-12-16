@@ -279,7 +279,7 @@ public class RemoteDeviceFactory extends BaseNativeDeviceFactory {
 		private GetBoardInfoResponse boardInfo;
 
 		public RemoteBoardInfo(GetBoardInfoResponse boardInfo) {
-			super(boardInfo.getMake(), boardInfo.getModel(), -1, "remote", 3.3f);
+			super(boardInfo.getMake(), boardInfo.getModel(), -1, 3.3f, "remote");
 
 			this.boardInfo = boardInfo;
 

@@ -33,18 +33,22 @@ package com.diozero.internal.provider.builtin;
 
 import com.diozero.api.PinInfo;
 import com.diozero.api.RuntimeIOException;
+import com.diozero.internal.provider.builtin.gpio.GpioChip;
 import com.diozero.internal.provider.builtin.gpio.GpioLine;
 import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.GpioDigitalOutputDeviceInterface;
-import com.diozero.internal.provider.builtin.gpio.GpioChip;
+import com.diozero.internal.spi.MmapGpioInterface;
 
 public class NativeGpioOutputDevice extends AbstractDevice implements GpioDigitalOutputDeviceInterface {
 	private int gpio;
 	private GpioLine line;
+	private MmapGpioInterface mmapGpio;
 
 	public NativeGpioOutputDevice(DefaultDeviceFactory deviceFactory, String key, GpioChip chip, PinInfo pinInfo,
-			boolean initialValue) {
+			boolean initialValue, MmapGpioInterface mmapGpio) {
 		super(key, deviceFactory);
+		
+		this.mmapGpio = mmapGpio;
 
 		gpio = pinInfo.getDeviceNumber();
 		int offset = pinInfo.getLineOffset();
@@ -62,12 +66,18 @@ public class NativeGpioOutputDevice extends AbstractDevice implements GpioDigita
 
 	@Override
 	public boolean getValue() throws RuntimeIOException {
-		return line.getValue() == 0 ? false : true;
+		if (mmapGpio == null) {
+			return line.getValue() == 0 ? false : true;
+		}
+		return mmapGpio.gpioRead(gpio);
 	}
 
 	@Override
 	public void setValue(boolean value) throws RuntimeIOException {
-		line.setValue(value ? 1 : 0);
+		if (mmapGpio == null) {
+			line.setValue(value ? 1 : 0);
+		}
+		mmapGpio.gpioWrite(gpio, value);
 	}
 
 	@Override

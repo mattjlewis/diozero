@@ -87,8 +87,7 @@ public class OdroidBoardInfoProvider implements BoardInfoProvider {
 		private static final float ADC_VREF = 1.8f;
 
 		OdroidC2BoardInfo() {
-			super(MAKE, Model.C2.toString(), MEMORY, MAKE.toLowerCase() + "-" + Model.C2.toString().toLowerCase(),
-					ADC_VREF);
+			super(MAKE, Model.C2.toString(), MEMORY, ADC_VREF);
 		}
 
 		@Override

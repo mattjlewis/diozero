@@ -412,4 +412,13 @@ public class NativeI2CDeviceSMBus extends AbstractDevice implements I2CDeviceInt
 
 		return rc;
 	}
+	
+	@Override
+	public void readWrite(I2CMessage[] messages, byte[] buffer) {
+		int rc = NativeI2C.readWrite(fd, deviceAddress, messages, buffer);
+		if (rc < 0) {
+			throw new RuntimeIOException("Error in I2C readWrite for device i2c-" + controller + "-0x"
+					+ Integer.toHexString(deviceAddress) + ": " + rc);
+		}
+	}
 }

@@ -38,11 +38,12 @@ import com.diozero.api.GpioEventTrigger;
 import com.diozero.api.GpioPullUpDown;
 import com.diozero.api.PinInfo;
 import com.diozero.api.RuntimeIOException;
+import com.diozero.internal.provider.builtin.gpio.GpioChip;
 import com.diozero.internal.provider.builtin.gpio.GpioLine;
 import com.diozero.internal.provider.builtin.gpio.GpioLineEventListener;
 import com.diozero.internal.spi.AbstractInputDevice;
 import com.diozero.internal.spi.GpioDigitalInputDeviceInterface;
-import com.diozero.internal.provider.builtin.gpio.GpioChip;
+import com.diozero.internal.spi.MmapGpioInterface;
 
 public class NativeGpioInputDevice extends AbstractInputDevice<DigitalInputEvent>
 		implements GpioDigitalInputDeviceInterface, GpioLineEventListener {
@@ -51,7 +52,7 @@ public class NativeGpioInputDevice extends AbstractInputDevice<DigitalInputEvent
 	private GpioLine line;
 
 	public NativeGpioInputDevice(DefaultDeviceFactory deviceFactory, String key, GpioChip chip, PinInfo pinInfo,
-			GpioPullUpDown pud, GpioEventTrigger trigger) {
+			GpioPullUpDown pud, GpioEventTrigger trigger, MmapGpioInterface mmapGpio) {
 		super(key, deviceFactory);
 
 		gpio = pinInfo.getDeviceNumber();
@@ -62,6 +63,10 @@ public class NativeGpioInputDevice extends AbstractInputDevice<DigitalInputEvent
 		this.chip = chip;
 
 		line = chip.provisionGpioInputDevice(offset, pud, trigger);
+		// XXX Remove this once kernel 5.5 is widely adopted - pull-up / pull-down control no in gpiod v1
+		if (mmapGpio != null) {
+			mmapGpio.setPullUpDown(offset, pud);
+		}
 	}
 
 	@Override

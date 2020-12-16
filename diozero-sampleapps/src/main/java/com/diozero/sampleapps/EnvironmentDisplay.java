@@ -39,6 +39,7 @@ import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -86,8 +87,8 @@ public class EnvironmentDisplay {
 
 				BME280 bme280 = new BME280(i2c_controller, BME280.DEFAULT_I2C_ADDRESS);
 
-				Ads1x15 adc = new Ads1x15(i2c_controller, Ads1x15.Address.GND, Ads1x15.PgaConfig.PGA_4096MV,
-						Ads1x15.Ads1115DataRate.DR_8HZ);
+				Ads1x15 adc = new Ads1x15(i2c_controller, Ads1x15.Address.GND, Ads1x15.PgaConfig._4096MV,
+						Ads1x15.Ads1115DataRate._8HZ);
 				AnalogInputDevice ain = new AnalogInputDevice(adc, adc_read_channel);
 				DigitalInputDevice adc_ready_pin = new DigitalInputDevice(adc_ready_gpio, GpioPullUpDown.PULL_UP,
 						GpioEventTrigger.BOTH);
@@ -103,10 +104,11 @@ public class EnvironmentDisplay {
 			FontMetrics fm = g2d.getFontMetrics(font);
 			int line_height = fm.getMaxAscent() + fm.getMaxDescent();
 			g2d.setBackground(Color.BLACK);
-			
-			try (InputStream is = EnvironmentDisplay.class.getResourceAsStream("/images/Background.png")) {
+
+			try (InputStream is = EnvironmentDisplay.class
+					.getResourceAsStream("/images/Background" + (new Random().nextInt(3) + 1) + ".png")) {
 				if (is != null) {
-					// Must be 128x128
+					// The background image must have the same dimensions as the display
 					BufferedImage i = ImageIO.read(is);
 					// Convert to the OLED image type
 					backgroundImage = new BufferedImage(oled.getWidth(), oled.getHeight(), oled.getNativeImageType());
@@ -123,7 +125,7 @@ public class EnvironmentDisplay {
 			int period_ms = 200;
 			DiozeroScheduler.getDaemonInstance().scheduleAtFixedRate(() -> {
 				pwm_led.setValue(reading);
-				
+
 				if (backgroundImage == null) {
 					g2d.clearRect(0, 0, width, height);
 				} else {

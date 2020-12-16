@@ -65,7 +65,7 @@ import java.util.EnumSet;
  * <dl>
  * <dt>keyPrefix</dt><dd>internal only attribute used by
  * {@link com.diozero.internal.spi.AbstractDeviceFactory AbstractDeviceFactory}
- * when provisioning GPIO devices</dt>
+ * when provisioning GPIO devices</dd>
  * <dt>header</dt><dd>the name of the board header to which this pin
  * is attached</dd>
  * <dt>physicalPin</dt><dd>the physical header pin number</dd>

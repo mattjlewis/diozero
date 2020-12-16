@@ -23,7 +23,7 @@
 		</dependency>
 		<dependency>
 			<groupId>com.diozero</groupId>
-			<artifactId>diozero-remote-server</artifactId>
+			<artifactId>diozero-imu-devices</artifactId>
 			<version>${diozero.version}</version>
 		</dependency>
 		<dependency>
@@ -43,7 +43,7 @@
 		</dependency>
 		<dependency>
 			<groupId>com.diozero</groupId>
-			<artifactId>diozero-provider-remote</artifactId>
+			<artifactId>diozero-provider-mqtt</artifactId>
 			<version>${diozero.version}</version>
 		</dependency>
 		<dependency>
@@ -58,34 +58,27 @@
 		</dependency>
 		<dependency>
 			<groupId>com.diozero</groupId>
+			<artifactId>diozero-remote-common</artifactId>
+			<version>${diozero.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.diozero</groupId>
+			<artifactId>diozero-remote-server</artifactId>
+			<version>${diozero.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.diozero</groupId>
+			<artifactId>diozero-provider-remote</artifactId>
+			<version>${diozero.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.diozero</groupId>
 			<artifactId>diozero-ws281x-java</artifactId>
 			<version>${diozero.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.diozero</groupId>
-			<artifactId>diozero-imu-devices</artifactId>
-			<version>${diozero.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.diozero</groupId>
-			<artifactId>diozero-imu-sampleapp</artifactId>
-			<version>${diozero.version}</version>
-		</dependency>
-		<!--
-		<dependency>
-			<groupId>com.diozero</groupId>
-			<artifactId>diozero-imu-visualiser</artifactId> 
-			<version>${diozero.version}</version>
-		</dependency>
-		-->
-		<dependency>
-			<groupId>com.diozero</groupId>
 			<artifactId>diozero-sampleapps</artifactId>
-			<version>${diozero.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.diozero</groupId>
-			<artifactId>diozero-webapp</artifactId>
 			<version>${diozero.version}</version>
 		</dependency>
 	</dependencies>

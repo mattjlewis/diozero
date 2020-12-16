@@ -38,6 +38,8 @@ import com.diozero.sbc.BoardInfo;
 import com.diozero.sbc.LocalSystemInfo;
 
 public class AllwinnerSun8iBoardInfoProvider implements BoardInfoProvider {
+	public static final String MAKE = "Allwinner sun8i";
+	
 	@Override
 	public BoardInfo lookup(LocalSystemInfo sysInfo) {
 		if (sysInfo.getHardware() != null && sysInfo.getHardware().startsWith("Allwinner sun8i")) {
@@ -48,7 +50,7 @@ public class AllwinnerSun8iBoardInfoProvider implements BoardInfoProvider {
 
 	public static class AllwinnerSun8iBoardInfo extends GenericLinuxArmBoardInfo {
 		public AllwinnerSun8iBoardInfo(LocalSystemInfo localSysInfo) {
-			super(localSysInfo, "Allwinner sun8i");
+			super(localSysInfo, MAKE);
 		}
 
 		@Override

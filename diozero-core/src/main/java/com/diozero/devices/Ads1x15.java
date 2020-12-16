@@ -121,8 +121,8 @@ public class Ads1x15 extends AbstractDeviceFactory implements AnalogInputDeviceF
 	 * Number of samples per second
 	 */
 	public static enum Ads1015DataRate {
-		DR_128HZ(128, 0b000), DR_250HZ(250, 0b001), DR_490HZ(490, 0b010), DR_920HZ(920, 0b011), DR_1600HZ(1600, 0b100),
-		DR_2400HZ(2400, 0b101), DR_3300HZ(3300, 0b110);
+		_128HZ(128, 0b000), _250HZ(250, 0b001), _490HZ(490, 0b010), _920HZ(920, 0b011), _1600HZ(1600, 0b100),
+		_2400HZ(2400, 0b101), _3300HZ(3300, 0b110);
 
 		private int dataRate;
 		private byte mask;
@@ -145,8 +145,8 @@ public class Ads1x15 extends AbstractDeviceFactory implements AnalogInputDeviceF
 	 * Number of samples per second
 	 */
 	public static enum Ads1115DataRate {
-		DR_8HZ(8, 0b000), DR_16HZ(16, 0b001), DR_32HZ(32, 0b010), DR_64HZ(64, 0b011), DR_128HZ(128, 0b100),
-		DR_250HZ(250, 0b101), DR_475HZ(475, 0b110), DR_860HZ(860, 0b111);
+		_8HZ(8, 0b000), _16HZ(16, 0b001), _32HZ(32, 0b010), _64HZ(64, 0b011), _128HZ(128, 0b100), _250HZ(250, 0b101),
+		_475HZ(475, 0b110), _860HZ(860, 0b111);
 
 		private int dataRate;
 		private byte mask;
@@ -170,8 +170,8 @@ public class Ads1x15 extends AbstractDeviceFactory implements AnalogInputDeviceF
 	 * not exceed this value
 	 */
 	public static enum PgaConfig {
-		PGA_6144MV(6.144f, 0b000), PGA_4096MV(4.096f, 0b001), PGA_2048MV(2.048f, 0b010), PGA_1024MV(1.024f, 0b011),
-		PGA_512MV(0.512f, 0b100), PGA_256MV(0.256f, 0b101);
+		_6144MV(6.144f, 0b000), _4096MV(4.096f, 0b001), _2048MV(2.048f, 0b010), _1024MV(1.024f, 0b011),
+		_512MV(0.512f, 0b100), _256MV(0.256f, 0b101);
 
 		private float voltage;
 		private byte mask;
@@ -496,8 +496,8 @@ public class Ads1x15 extends AbstractDeviceFactory implements AnalogInputDeviceF
 	}
 
 	private short readConversionData(int adcNumber) {
-		//byte[] data = device.readI2CBlockDataByteArray(ADDR_POINTER_CONV, 2);
-		//short value = (short) ((data[0] & 0xff) << 8 | (data[1] & 0xff));
+		// byte[] data = device.readI2CBlockDataByteArray(ADDR_POINTER_CONV, 2);
+		// short value = (short) ((data[0] & 0xff) << 8 | (data[1] & 0xff));
 		short value = device.readShort(ADDR_POINTER_CONV);
 
 		if (model == Model.ADS1015) {

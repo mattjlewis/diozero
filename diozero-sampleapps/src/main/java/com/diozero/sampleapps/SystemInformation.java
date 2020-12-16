@@ -35,6 +35,9 @@ import java.util.Collections;
 
 import java.util.Map;
 
+import org.fusesource.jansi.Ansi;
+import org.fusesource.jansi.AnsiConsole;
+
 import com.diozero.api.PinInfo;
 import com.diozero.internal.spi.NativeDeviceFactoryInterface;
 import com.diozero.sbc.BoardInfo;
@@ -45,6 +48,12 @@ public class SystemInformation {
 	private static final int MIN_PIN_NAME_LENGTH = 8;
 
 	public static void main(String[] args) {
+		AnsiConsole.systemInstall();
+		
+		System.out.println(Ansi.ansi().eraseScreen());
+		
+		//System.out.println(Ansi.ansi().eraseScreen().render("@|red Hello|@ @|green World|@") );
+		
 		LocalSystemInfo sys_info = LocalSystemInfo.getInstance();
 		System.out.format("Local Operating System: %s %s %s%n", sys_info.getLinuxOperatingSystemId(),
 				sys_info.getLinuxOperatingSystemVersion(), sys_info.getLinuxOperatingSystemVersionId());
@@ -100,6 +109,8 @@ public class SystemInformation {
 			System.out.format("+-----+-%s-+--------+----------+--------+-%s-+-----+%n", name_dash, name_dash);
 			System.out.println();
 		}
+		
+		AnsiConsole.systemUninstall();
 	}
 
 	public static String getNotDefined(int value) {

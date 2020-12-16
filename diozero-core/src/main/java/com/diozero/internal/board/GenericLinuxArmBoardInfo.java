@@ -53,20 +53,24 @@ public class GenericLinuxArmBoardInfo extends BoardInfo {
 
 	public GenericLinuxArmBoardInfo(LocalSystemInfo systemInfo, String make) {
 		this(make, systemInfo.getModel(), systemInfo.getMemoryKb() == null ? -1 : systemInfo.getMemoryKb().intValue(),
-				systemInfo.getDefaultLibraryPath(), BoardInfo.UNKNOWN_ADC_VREF);
+				BoardInfo.UNKNOWN_ADC_VREF, systemInfo.getDefaultLibraryPath());
 	}
 
-	public GenericLinuxArmBoardInfo(LocalSystemInfo systemInfo, String make, String model, int memoryKb) {
-		this(make, model, memoryKb, systemInfo.getDefaultLibraryPath(), BoardInfo.UNKNOWN_ADC_VREF);
+	public GenericLinuxArmBoardInfo(String make, String model, int memoryKb) {
+		this(make, model, memoryKb, BoardInfo.UNKNOWN_ADC_VREF, LocalSystemInfo.getInstance().getDefaultLibraryPath());
+	}
+
+	public GenericLinuxArmBoardInfo(String make, String model, int memoryKb, float adcVRef) {
+		this(make, model, memoryKb, adcVRef, LocalSystemInfo.getInstance().getDefaultLibraryPath());
 	}
 
 	public GenericLinuxArmBoardInfo(String make, String model, int memoryKb, String libraryPath) {
-		this(make, model, memoryKb, libraryPath + "-" + LocalSystemInfo.getInstance().getOsArch(),
-				BoardInfo.UNKNOWN_ADC_VREF);
+		this(make, model, memoryKb, BoardInfo.UNKNOWN_ADC_VREF,
+				libraryPath + "-" + LocalSystemInfo.getInstance().getOsArch());
 	}
 
-	public GenericLinuxArmBoardInfo(String make, String model, int memoryKb, String libraryPath, float adcVRef) {
-		super(make, model, memoryKb, libraryPath, adcVRef);
+	public GenericLinuxArmBoardInfo(String make, String model, int memoryKb, float adcVRef, String libraryPath) {
+		super(make, model, memoryKb, adcVRef, libraryPath);
 	}
 
 	@Override

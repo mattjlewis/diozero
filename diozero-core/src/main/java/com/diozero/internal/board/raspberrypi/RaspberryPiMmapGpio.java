@@ -41,6 +41,11 @@ import com.diozero.util.SleepUtil;
 
 @SuppressWarnings("unused")
 public class RaspberryPiMmapGpio implements MmapGpioInterface {
+	// #define GPIO_BASE  (pi_peri_phys + 0x00200000)
+	// #define PCM_BASE   (pi_peri_phys + 0x00203000)
+	// #define SPI_BASE   (pi_peri_phys + 0x00204000)
+	// #define PWM_BASE   (pi_peri_phys + 0x0020C000)
+	
 	private static final String GPIOMEM_DEVICE = "/dev/gpiomem";
 	// private static final int GPIOMEM_LEN = 0xB4;
 	private static final int GPIOMEM_LEN = 4096;

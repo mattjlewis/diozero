@@ -44,7 +44,7 @@ public class TinkerBoardBoardInfoProvider implements BoardInfoProvider {
 	@Override
 	public BoardInfo lookup(LocalSystemInfo localSysInfo) {
 		if (localSysInfo.getHardware() != null && localSysInfo.getHardware().equals(TINKER_BOARD_HARDWARE_ID)) {
-			return new TinkerBoardBoardInfo(localSysInfo);
+			return new TinkerBoardBoardInfo();
 		}
 		return null;
 	}
@@ -54,8 +54,8 @@ public class TinkerBoardBoardInfoProvider implements BoardInfoProvider {
 		private static final int MEMORY_KB = 2_048_000;
 		// private static final String LIBRARY_PATH = "tinkerboard";
 
-		TinkerBoardBoardInfo(LocalSystemInfo localSysInfo) {
-			super(localSysInfo, MAKE, MODEL, MEMORY_KB);
+		TinkerBoardBoardInfo() {
+			super(MAKE, MODEL, MEMORY_KB);
 		}
 
 		@Override

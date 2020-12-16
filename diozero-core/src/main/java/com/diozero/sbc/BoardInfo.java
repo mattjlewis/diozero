@@ -57,15 +57,15 @@ public abstract class BoardInfo extends BoardPinInfo {
 	private float adcVRef;
 
 	public BoardInfo(String make, String model, int memoryKb, String libraryPath) {
-		this(make, model, memoryKb, libraryPath, UNKNOWN_ADC_VREF);
+		this(make, model, memoryKb, UNKNOWN_ADC_VREF, libraryPath);
 	}
 
-	public BoardInfo(String make, String model, int memoryKb, String libraryPath, float adcVRef) {
+	public BoardInfo(String make, String model, int memoryKb, float adcVRef, String libraryPath) {
 		this.make = make;
 		this.model = model;
 		this.memoryKb = memoryKb;
-		this.libraryPath = libraryPath;
 		this.adcVRef = adcVRef;
+		this.libraryPath = libraryPath;
 	}
 
 	/**

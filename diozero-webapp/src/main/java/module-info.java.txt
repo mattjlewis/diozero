@@ -1,4 +1,0 @@
-module com.diozero.webapp {
-	requires transitive com.diozero.core;
-	requires transitive spark.core;
-}

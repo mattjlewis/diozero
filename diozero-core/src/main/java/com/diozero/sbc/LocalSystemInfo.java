@@ -290,7 +290,7 @@ public class LocalSystemInfo {
 	}
 
 	public String getDefaultLibraryPath() {
-		return osName.toLowerCase() + "-" + osArch.toLowerCase();
+		return osName.toLowerCase().replace(" ", "") + "-" + osArch.toLowerCase();
 	}
 
 	public List<String> loadLinuxBoardCompatibility() {
@@ -306,8 +306,8 @@ public class LocalSystemInfo {
 				}
 			}
 		} catch (IOException e) {
-			if (isLinux()) {
-				// This file should exist on a Linux system
+			if (isLinux() && isArm()) {
+				// This file should exist on a Linux ARM system
 				Logger.warn(e, "Unable to read file {}: {}", LINUX_DEVICE_TREE_COMPATIBLE_FILE, e.getMessage());
 			}
 		}
@@ -379,5 +379,10 @@ public class LocalSystemInfo {
 			Logger.warn("Error reading {}: {}", TEMPERATURE_FILE, e);
 			return -1;
 		}
+	}
+	
+	public static void main(String[] args) {
+		System.out.println("System properties:");
+		System.getProperties().forEach((key, value) -> System.out.println(key + ": " + value));
 	}
 }

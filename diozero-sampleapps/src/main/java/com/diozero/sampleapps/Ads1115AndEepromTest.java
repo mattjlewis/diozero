@@ -61,8 +61,8 @@ public class Ads1115AndEepromTest implements Runnable {
 		running = new AtomicBoolean(true);
 		Future<?> f = DiozeroScheduler.getNonDaemonInstance().submit(new Ads1115AndEepromTest());
 
-		try (Ads1x15 adc = new Ads1x15(controller, Ads1x15.Address.GND, Ads1x15.PgaConfig.PGA_4096MV,
-				Ads1x15.Ads1115DataRate.DR_860HZ);
+		try (Ads1x15 adc = new Ads1x15(controller, Ads1x15.Address.GND, Ads1x15.PgaConfig._4096MV,
+				Ads1x15.Ads1115DataRate._860HZ);
 				DigitalInputDevice ready_pin = new DigitalInputDevice(ready_gpio, GpioPullUpDown.PULL_UP,
 						GpioEventTrigger.BOTH);
 				AnalogInputDevice ain0 = new AnalogInputDevice(adc, 0);

@@ -52,8 +52,8 @@ public class Ads1115Test {
 			adc_ready_gpio = Integer.parseInt(args[1]);
 		}
 
-		try (Ads1x15 adc = new Ads1x15(controller, Ads1x15.Address.GND, Ads1x15.PgaConfig.PGA_4096MV,
-				Ads1x15.Ads1115DataRate.DR_860HZ);
+		try (Ads1x15 adc = new Ads1x15(controller, Ads1x15.Address.GND, Ads1x15.PgaConfig._4096MV,
+				Ads1x15.Ads1115DataRate._860HZ);
 				AnalogInputDevice ain0 = new AnalogInputDevice(adc, 0);
 				AnalogInputDevice ain1 = new AnalogInputDevice(adc, 1);
 				AnalogInputDevice ain2 = new AnalogInputDevice(adc, 2);
@@ -71,7 +71,7 @@ public class Ads1115Test {
 		}
 
 		int adc_read_channel = 3;
-		try (Ads1x15 adc = new Ads1x15(controller, Ads1x15.Address.GND, PgaConfig.PGA_4096MV, Ads1115DataRate.DR_8HZ);
+		try (Ads1x15 adc = new Ads1x15(controller, Ads1x15.Address.GND, PgaConfig._4096MV, Ads1115DataRate._8HZ);
 				AnalogInputDevice ain = new AnalogInputDevice(adc, adc_read_channel);
 				DigitalInputDevice adc_ready_pin = new DigitalInputDevice(adc_ready_gpio, GpioPullUpDown.PULL_UP,
 						GpioEventTrigger.BOTH)) {

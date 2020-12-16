@@ -1,9 +1,0 @@
-module com.diozero.imu_visualiser {
-	requires transitive javafx.graphics;
-	
-	requires transitive com.diozero.core;
-	requires tinylog;
-	requires commons.math3;
-	
-	//requires org.eclipse.paho.client.mqttv3;
-}

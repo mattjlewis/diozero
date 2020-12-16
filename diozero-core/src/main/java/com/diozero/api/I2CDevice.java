@@ -509,6 +509,13 @@ public class I2CDevice implements I2CDeviceInterface {
 			return delegate.readNoStop(registerAddress, rxLength, rxData, repeatedStart);
 		}
 	}
+	
+	public void readWrite(I2CMessage[] messages, byte[] buffer) {
+		// TODO Validate that buffer is big enough
+		synchronized (delegate) {
+			delegate.readWrite(messages, buffer);
+		}
+	}
 
 	//
 	// I2CDevice utility methods

@@ -31,6 +31,7 @@ package com.diozero.internal.provider.builtin;
  * #L%
  */
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
@@ -61,6 +62,7 @@ import com.diozero.internal.spi.BaseNativeDeviceFactory;
 import com.diozero.internal.spi.GpioDigitalInputDeviceInterface;
 import com.diozero.internal.spi.GpioDigitalInputOutputDeviceInterface;
 import com.diozero.internal.spi.GpioDigitalOutputDeviceInterface;
+import com.diozero.internal.spi.MmapGpioInterface;
 import com.diozero.internal.spi.PwmOutputDeviceInterface;
 import com.diozero.sbc.BoardPinInfo;
 import com.diozero.util.EpollNative;
@@ -73,24 +75,26 @@ public class DefaultDeviceFactory extends BaseNativeDeviceFactory {
 	private static final String I2C_USE_JAVA_RAF_PROP = "diozero.i2c.javaraf";
 	private static final String I2C_SLAVE_FORCE_PROP = "diozero.i2c.slaveforce";
 
+	private static final boolean GPIO_USE_CHARDEV_DEFAULT = true;
+
 	private int boardPwmFrequency;
 	private EpollNative epoll;
 	private Map<Integer, GpioChip> chips;
-	private boolean useGpioCharDev = true;
+	private boolean gpioUseCharDev;
 	private boolean i2cUseJavaRaf;
 	private boolean i2cSlaveForce;
+	private MmapGpioInterface mmapGpio;
 
 	public DefaultDeviceFactory() {
-		useGpioCharDev = PropertyUtil.getBooleanProperty(GPIO_USE_CHARDEV_PROP, useGpioCharDev);
+		gpioUseCharDev = PropertyUtil.getBooleanProperty(GPIO_USE_CHARDEV_PROP, GPIO_USE_CHARDEV_DEFAULT);
 		i2cUseJavaRaf = PropertyUtil.isPropertySet(I2C_USE_JAVA_RAF_PROP);
 		i2cSlaveForce = PropertyUtil.isPropertySet(I2C_SLAVE_FORCE_PROP);
 	}
 
 	@Override
 	public void start() {
-		if (useGpioCharDev) {
-			Logger.debug("Note using new NativeGpioChip char-dev GPIO implementation");
-
+		Logger.debug("Using {} GPIO implementation", gpioUseCharDev ? "chardev" : "sysfs");
+		if (gpioUseCharDev) {
 			try {
 				// Open all gpiochips
 				chips = GpioChip.openAllChips();
@@ -127,6 +131,8 @@ public class DefaultDeviceFactory extends BaseNativeDeviceFactory {
 									.get(Integer.valueOf(line_name.replaceAll(GPIO_LINE_NUMBER_PATTERN, "$1")));
 						}
 
+						// XXX This includes a bit of a hack to ignore pins with the name "NC" - the BBB
+						// does this for quite a few pins which triggers the warning message
 						if (pin_info == null && !line_name.isEmpty() && !line_name.equals("NC")) {
 							Logger.debug("Detected GPIO line ({} {}-{}) that isn't configured in BoardPinInfo",
 									line_name, Integer.valueOf(chip.getChipId()),
@@ -166,6 +172,23 @@ public class DefaultDeviceFactory extends BaseNativeDeviceFactory {
 				throw new RuntimeIOException("Error initialising GPIO chips: " + e.getMessage(), e);
 			}
 		}
+
+		// See if memory mapped GPIO control is implemented for this board and
+		// accessible for this user
+		if (new File("/dev/gpiomem").canWrite() || new File("/dev/mem").canWrite()) {
+			try {
+				mmapGpio = getBoardInfo().createMmapGpio();
+				mmapGpio.initialise();
+			} catch (Throwable t) {
+				// Ignore
+			}
+		}
+		
+		if (mmapGpio == null) {
+			Logger.warn("GPIO pull-up / pull-down control is not available for this board");
+		} else {
+			Logger.debug("Memory mapped GPIO is available for this board");
+		}
 	}
 
 	@Override
@@ -200,7 +223,7 @@ public class DefaultDeviceFactory extends BaseNativeDeviceFactory {
 	@Override
 	public GpioDigitalInputDeviceInterface createDigitalInputDevice(String key, PinInfo pinInfo, GpioPullUpDown pud,
 			GpioEventTrigger trigger) throws RuntimeIOException {
-		if (useGpioCharDev) {
+		if (gpioUseCharDev) {
 			if (pinInfo.getChip() == PinInfo.NOT_DEFINED) {
 				throw new IllegalArgumentException("Chip not defined for pin " + pinInfo);
 			}
@@ -210,7 +233,7 @@ public class DefaultDeviceFactory extends BaseNativeDeviceFactory {
 				throw new IllegalArgumentException("Can't find chip for id " + pinInfo.getChip());
 			}
 
-			return new NativeGpioInputDevice(this, key, chip, pinInfo, pud, trigger);
+			return new NativeGpioInputDevice(this, key, chip, pinInfo, pud, trigger, mmapGpio);
 		}
 
 		return new SysFsDigitalInputDevice(this, key, pinInfo, trigger);
@@ -219,7 +242,7 @@ public class DefaultDeviceFactory extends BaseNativeDeviceFactory {
 	@Override
 	public GpioDigitalOutputDeviceInterface createDigitalOutputDevice(String key, PinInfo pinInfo, boolean initialValue)
 			throws RuntimeIOException {
-		if (useGpioCharDev) {
+		if (gpioUseCharDev) {
 			if (pinInfo.getChip() == PinInfo.NOT_DEFINED) {
 				throw new IllegalArgumentException("Chip not defined for pin " + pinInfo);
 			}
@@ -229,7 +252,7 @@ public class DefaultDeviceFactory extends BaseNativeDeviceFactory {
 				throw new IllegalArgumentException("Can't find chip for id " + pinInfo.getChip());
 			}
 
-			return new NativeGpioOutputDevice(this, key, chip, pinInfo, initialValue);
+			return new NativeGpioOutputDevice(this, key, chip, pinInfo, initialValue, mmapGpio);
 		}
 
 		return new SysFsDigitalOutputDevice(this, key, pinInfo, initialValue);
@@ -238,7 +261,7 @@ public class DefaultDeviceFactory extends BaseNativeDeviceFactory {
 	@Override
 	public GpioDigitalInputOutputDeviceInterface createDigitalInputOutputDevice(String key, PinInfo pinInfo,
 			DeviceMode mode) throws RuntimeIOException {
-		if (useGpioCharDev) {
+		if (gpioUseCharDev) {
 			if (pinInfo.getChip() == PinInfo.NOT_DEFINED) {
 				throw new IllegalArgumentException("Chip not defined for pin " + pinInfo);
 			}
@@ -248,7 +271,7 @@ public class DefaultDeviceFactory extends BaseNativeDeviceFactory {
 				throw new IllegalArgumentException("Can't find chip for id " + pinInfo.getChip());
 			}
 
-			return new NativeGpioInputOutputDevice(this, key, chip, pinInfo, mode);
+			return new NativeGpioInputOutputDevice(this, key, chip, pinInfo, mode, mmapGpio);
 		}
 
 		return new SysFsDigitalInputOutputDevice(this, key, pinInfo, mode);

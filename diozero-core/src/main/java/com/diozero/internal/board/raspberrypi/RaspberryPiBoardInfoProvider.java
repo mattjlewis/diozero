@@ -51,7 +51,6 @@ import com.diozero.sbc.LocalSystemInfo;
  */
 public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 	public static final String MAKE = "Raspberry Pi";
-	private static final String LIBRARY_PATH = "raspberrypi";
 	private static final String BCM_HARDWARE_PREFIX = "BCM";
 
 	public static final String MODEL_A = "A";
@@ -295,7 +294,7 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 
 		public PiBoardInfo(String code, String model, String pcbRevision, int memory, String manufacturer,
 				String processor) {
-			super(MAKE, model, memory, LIBRARY_PATH);
+			super(MAKE, model, memory);
 
 			this.code = code;
 			this.pcbRevision = pcbRevision;

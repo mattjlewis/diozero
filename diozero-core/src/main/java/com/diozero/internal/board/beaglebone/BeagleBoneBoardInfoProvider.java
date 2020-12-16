@@ -40,6 +40,7 @@ import java.nio.file.Paths;
 import org.tinylog.Logger;
 
 import com.diozero.api.PinInfo;
+import com.diozero.internal.board.GenericLinuxArmBoardInfo;
 import com.diozero.internal.spi.BoardInfoProvider;
 import com.diozero.sbc.BoardInfo;
 import com.diozero.sbc.LocalSystemInfo;
@@ -61,16 +62,15 @@ public class BeagleBoneBoardInfoProvider implements BoardInfoProvider {
 	/**
 	 * Also works on the BeagleBone Green
 	 */
-	public static class BeagleBoneBlackBoardInfo extends BoardInfo {
+	public static class BeagleBoneBlackBoardInfo extends GenericLinuxArmBoardInfo {
 		public static final String P9_HEADER = "P9";
 		public static final String P8_HEADER = "P8";
 
 		private static final int MEMORY = 512_000;
-		private static final String BBB_LIB_PATH = MAKE.toLowerCase();
 		private static final float ADC_VREF = 1.8f;
 
 		public BeagleBoneBlackBoardInfo(LocalSystemInfo localSysInfo, String model) {
-			super(MAKE, model, MEMORY, BBB_LIB_PATH, ADC_VREF);
+			super(MAKE, model, MEMORY, ADC_VREF);
 		}
 
 		@Override
