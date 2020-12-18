@@ -1,5 +1,6 @@
 RM = rm -f
 CC = $(CROSS_COMPILE)gcc
+AR = $(CROSS_COMPILE)ar
 
 # To check CFLAGS: arm-linux-gnueabihf-gcc -Q --help=target
 # Alternative for 64 bit: aarch64-linux-gnu-gcc

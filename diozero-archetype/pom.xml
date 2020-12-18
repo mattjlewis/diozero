@@ -13,7 +13,7 @@
 
 	<groupId>com.diozero</groupId>
 	<artifactId>diozero-application</artifactId>
-	<name>diozero Quickstart Archetype</name>
+	<name>Device I/O Zero - Quickstart Archetype</name>
 	<description>diozero Quickstart Archetype</description>
 
 	<build>

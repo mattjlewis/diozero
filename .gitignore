@@ -1,5 +1,5 @@
 target/
-vargrant/
+vagrant/
 docker/
 /.pydevproject
 /.settings/

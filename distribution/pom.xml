@@ -19,6 +19,11 @@
 	<dependencies>
 		<dependency>
 			<groupId>com.diozero</groupId>
+			<artifactId>diozero-application</artifactId>
+			<version>${diozero.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.diozero</groupId>
 			<artifactId>diozero-core</artifactId>
 		</dependency>
 		<dependency>
