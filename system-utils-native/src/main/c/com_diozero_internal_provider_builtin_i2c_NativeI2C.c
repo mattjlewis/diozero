@@ -424,8 +424,6 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_builtin_i2c_NativeI2C_
 		rdwr_msg[i].len = (*env)->GetIntField(env, message, len_field_id);
 		rdwr_msg[i].buf = (unsigned char*) &data[offset];
 
-		printf("Processing message #%d 0x%0x 0x%0x %d\n", i, rdwr_msg[i].addr, rdwr_msg[i].flags, rdwr_msg[i].len);
-
 		offset += rdwr_msg[i].len;
 	}
 

@@ -170,10 +170,10 @@ voodoospark | None | diozero-provider-voodoospark | Arduino compatible boards
 \* MMAP is currently supported on the following SBCs:
 
 * Raspberry Pi
+* FriendlyArm H3 / Allwinner Sun8i CPU (as used in the NanoPi Duo2 / NanoPi Neo amongst others)
+* ASUS TinkerBoard
 * Odroid C2
-* TinkerBoard
-* FriendlyArm H3 CPUs (Allwinner Sun8i compatible)
-* Next Think Co CHIP
+* Next Think Co CHIP (Allwinner sun4i/sun5i)
 
 To get started I recommend first looking at the classes in 
 [com.diozero.sampleapps](https://github.com/mattjlewis/diozero/blob/master/diozero-sampleapps/src/main/java/com/diozero/sampleapps/). 

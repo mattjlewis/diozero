@@ -81,23 +81,10 @@ diozero has out of the box support for the following Single Board Computers and 
 This project is hosted on [GitHub](https://github.com/mattjlewis/diozero/), please feel free to join in:
 
 * Make suggestions for [fixes and enhancements](https://github.com/mattjlewis/diozero/issues)
-* Provide sample applications
+* Provide sample applications and device implementation classes
 * Contribute to development
 
-## To-Do
-
-* Thorough testing (various types of devices using each service provider)
-* A clean object-orientated API for IMUs
-* Remote API for board capabilities
-* SPI support for Arduino devices
-* Introduce Servo as a device type
-* Try out ConfigurableFirmata - is there actually any difference to the StandardFirmata protocol?
-* Complete ADSL1x15
-* BME680
-* DONE Native support for all devices via mmap (/dev/mem), in particular to improve performance and add support for GPIO pull up/down configuration.
-* DONE Wireless access to Firmata devices (network and Bluetooth). E.g. [ESP32](https://learn.sparkfun.com/tutorials/esp32-thing-hookup-guide?_ga=1.116824388.33505106.1471290985#installing-the-esp32-arduino-core) [Firmata GitHub issue #315](https://github.com/firmata/arduino/issues/315)
-
-[Release History](RELEASE.md)
+[Release History](2_Releases.md)
 
 ## License
 

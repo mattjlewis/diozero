@@ -1,15 +1,30 @@
-By default diozero uses the Linux GPIO Character Device implementation that was added in kernel 4.8.
+---
+parent: Internals
+nav_order: 5
+permalink: /internals/gpio.html
+---
+
+By default diozero uses the Linux GPIO Character Device implementation that was added in Linux kernel 4.8.
 This can be disabled by running with the property `diozero.gpio.chardev=false`, in which case
 diozero will revert to the legacy and deprecated [sysfs GPIO](https://www.kernel.org/doc/Documentation/gpio/sysfs.txt) interface.
-This property can be via either the command line or an environment property.
+This property can be set via either the command line (`java -Ddiozero.gpio.chardev=false`) or as an environment property (`export diozero.gpio.chardev=false`).
 
-This command ```sudo apt install gpiod``` installs the gpiod command line tools (gpiodetect, gpioinfo, gpioget, gpioset).
+On Debian based systems the gpiod command line tools can be installed using `sudo apt install gpiod` (gpiodetect, gpioinfo, gpioget, gpioset and gpiomon). These tools can be helpful when troubleshooting.
 
-Finally the Linux kernel has to be 4.8+ to support the gpiod system ioctl commands - this means that I can statically link the gpiod library and it works even if you don’t have the gpiod shared library installed.
+Note that the board's Linux kernel has to be at version 4.8 or later to support GPIO Character Device. This [page](https://embeddedbits.org/new-linux-kernel-gpio-user-space-interface/) provides a good description of the Linux Kernel user-space GPIO interfaces.
 
-The mmap provider has no impact on the PinInfo API / implementation. This is part of the magic - the mmap implementation is entirely based on GPIO numbers. When building in the gpiod support I saw where the GPIO numbers actually come from! Basically they relate to the cumulative gpio chip and line offset, so for the Pi, GPIO 18 is chip 0, line 18. The Pi is easy as it has one main gpiochip (0). The TinkerBoard, however, has 9 gpio chips - it was only when adding gpiod support that I worked out the GPIO numbering scheme.
+Unfortunately the version of gpiod available in Linux kernels prior to 5.5 [do not provide support for pull-up / pull-down resistors](https://microhobby.com.br/blog/2020/02/02/new-linux-kernel-5-5-new-interfaces-in-gpiolib/). The latest stable kernel version officially available in Debian Buster is 4.19, at the time of diozero 1.0.0 Raspbian and BeagleBone both provide stable 5.4 based Linux Kernels.
 
-All boards are slightly different, however, there is normally a fairly simply formula to map from GPIO number to the specific 32-bit register number and bits within that register for controlling GPIO direction, pull-up / down config and reading / writing values. E.g. on the Pi, the mode register / bit combo magic is:
-	int reg = gpio / 10;
-	int shift = (gpio % 10) * 3;
-	int mode = (mmapIntBuffer.get(reg) >> shift) & 0xf;
+To address this, diozero will its own internal memory mapped GPIO implementation on boards for which it has been implemented and where the current user has access to the corresponding memory file (`/dev/gpiomem` or `/dev/mem`).
+
+diozero has memory mapped GPIO support for following boards:
+
+* Raspberry Pi (all flavours)
+* FriendlyArm H3 / Allwinner Sun8i CPU (as used in the NanoPi Duo2 / NanoPi Neo amongst others)
+* Odroid C2
+* ASUS Tinkerboard
+* Next Think Co CHIP (Allwinner sun4i/sun5i)
+
+I will add memory mapped support for the BeagleBone Green / Black in the near future.
+
+Note that the pigpio provider does support configuring the pull-up / pull-down resistors on the Raspberry Pi.
