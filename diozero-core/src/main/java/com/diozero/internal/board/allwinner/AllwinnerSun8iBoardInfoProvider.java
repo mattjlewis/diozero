@@ -42,7 +42,7 @@ public class AllwinnerSun8iBoardInfoProvider implements BoardInfoProvider {
 	
 	@Override
 	public BoardInfo lookup(LocalSystemInfo sysInfo) {
-		if (sysInfo.getHardware() != null && sysInfo.getHardware().startsWith("Allwinner sun8i")) {
+		if (sysInfo.getHardware() != null && sysInfo.getHardware().startsWith(MAKE)) {
 			return new AllwinnerSun8iBoardInfo(sysInfo);
 		}
 		return null;

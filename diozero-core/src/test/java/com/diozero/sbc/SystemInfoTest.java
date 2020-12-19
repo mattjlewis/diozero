@@ -34,6 +34,7 @@ package com.diozero.sbc;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import com.diozero.internal.board.allwinner.AllwinnerSun8iBoardInfoProvider;
 import com.diozero.internal.board.beaglebone.BeagleBoneBoardInfoProvider;
 import com.diozero.internal.board.chip.ChipBoardInfoProvider;
 import com.diozero.internal.board.odroid.OdroidBoardInfoProvider;
@@ -53,8 +54,8 @@ public class SystemInfoTest {
 		validateBoard("Allwinner sun4i/sun5i Families", "0000", ChipBoardInfoProvider.MAKE,
 				ChipBoardInfoProvider.MODEL_CHIP, 512_000);
 		// NanoPi Duo2
-		validateBoard("FriendlyElec NanoPi-Duo2", "Allwinner sun8i Family", "0000", "Allwinner sun8i",
-				"FriendlyElec NanoPi-Duo2", -1);
+		validateBoard("FriendlyElec NanoPi-Duo2", "Allwinner sun8i Family", "0000",
+				AllwinnerSun8iBoardInfoProvider.MAKE, "FriendlyElec NanoPi-Duo2", -1);
 		// BeagleBone Black
 		validateBoard("TI AM335x BeagleBone Black", "Generic AM33XX (Flattened Device Tree)", "0000",
 				BeagleBoneBoardInfoProvider.MAKE, "Black", 512_000);
@@ -184,6 +185,8 @@ public class SystemInfoTest {
 		System.out.println(hardware + "/" + revision + ": " + board_info);
 		Assertions.assertEquals(expectedMake, board_info.getMake());
 		Assertions.assertEquals(expectedModel, board_info.getModel());
-		Assertions.assertEquals(expectedMemory, board_info.getMemoryKb());
+		if (expectedMemory != -1) {
+			Assertions.assertEquals(expectedMemory, board_info.getMemoryKb());
+		}
 	}
 }
