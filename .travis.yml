@@ -16,7 +16,7 @@ cache:
 
 install: true
 
-script: mvn --projects '!diozero-imu-visualiser' clean compile package install
+script: mvn clean compile package install
 #script: mvn ${MAVEN_OPTS} clean compile package install
 #script: mvn --projects='${PROJECTS_TO_BUILD}' clean compile package install
 
