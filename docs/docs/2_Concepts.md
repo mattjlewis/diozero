@@ -19,7 +19,7 @@ library having found that existing Java libraries didn't offer such a developer-
 1. TOC
 {:toc}
 
-devices (LEDs, buttons, sensors, motors, displays, etc) that can be connected to Single Board
+TODO - devices (LEDs, buttons, sensors, motors, displays, etc) that can be connected to Single Board
 Computers like the Raspberry Pi. Actual GPIO / I2C / SPI device communication is delegated 
 to pluggable service providers for maximum compatibility across different boards. This library is 
 known to work on the following boards: all models of the Raspberry Pi, Odroid C2, BeagleBone 
