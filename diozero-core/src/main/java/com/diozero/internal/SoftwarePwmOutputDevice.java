@@ -31,8 +31,6 @@ package com.diozero.internal;
  * #L%
  */
 
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.tinylog.Logger;
@@ -45,12 +43,16 @@ import com.diozero.util.DiozeroScheduler;
 import com.diozero.util.RangeUtil;
 import com.diozero.util.SleepUtil;
 
+/**
+ * Generate a very poor approximation of a PWM signal - use at your own risk!
+ * All timing is in milliseconds hence it is strongly recommend to use a
+ * frequency of 50Hz to minimise integer rounding errors.
+ */
 public class SoftwarePwmOutputDevice extends AbstractDevice implements PwmOutputDeviceInterface, Runnable {
 	private GpioDigitalOutputDeviceInterface digitalOutputDevice;
-	private ScheduledFuture<?> future;
+	private AtomicBoolean running;
 	private int periodMs;
-	private int dutyNs;
-	private AtomicBoolean fullyOn;
+	private int dutyMs;
 
 	public SoftwarePwmOutputDevice(String key, DeviceFactoryInterface deviceFactory,
 			GpioDigitalOutputDeviceInterface digitalOutputDevice, int frequency, float initialValue) {
@@ -59,7 +61,7 @@ public class SoftwarePwmOutputDevice extends AbstractDevice implements PwmOutput
 		Logger.warn("Hardware PWM not available for device {}, reverting to software", key);
 
 		this.digitalOutputDevice = digitalOutputDevice;
-		fullyOn = new AtomicBoolean();
+		running = new AtomicBoolean();
 
 		periodMs = 1_000 / frequency;
 		setValue(initialValue);
@@ -67,27 +69,29 @@ public class SoftwarePwmOutputDevice extends AbstractDevice implements PwmOutput
 	}
 
 	public void start() {
-		future = DiozeroScheduler.getNonDaemonInstance().scheduleAtFixedRate(this, periodMs, periodMs,
-				TimeUnit.MILLISECONDS);
+		if (!running.getAndSet(true)) {
+			DiozeroScheduler.getNonDaemonInstance().execute(this);
+		}
 	}
 
 	public void stop() {
-		if (future != null) {
-			future.cancel(true);
-		}
+		running.set(false);
 	}
 
 	@Override
 	public void run() {
-		if (dutyNs == 0) {
-			// Fully off
-			digitalOutputDevice.setValue(false);
-		} else if (fullyOn.get()) {
-			digitalOutputDevice.setValue(true);
-		} else {
-			digitalOutputDevice.setValue(true);
-			SleepUtil.busySleep(dutyNs);
-			digitalOutputDevice.setValue(false);
+		while (running.get()) {
+			if (dutyMs == 0) {
+				// Fully off
+				digitalOutputDevice.setValue(false);
+			} else if (dutyMs == periodMs) {
+				digitalOutputDevice.setValue(true);
+			} else {
+				digitalOutputDevice.setValue(true);
+				SleepUtil.sleepMillis(dutyMs);
+				digitalOutputDevice.setValue(false);
+			}
+			SleepUtil.sleepMillis(periodMs - dutyMs);
 		}
 	}
 
@@ -103,19 +107,13 @@ public class SoftwarePwmOutputDevice extends AbstractDevice implements PwmOutput
 
 	@Override
 	public float getValue() {
-		return dutyNs / (float) TimeUnit.MILLISECONDS.toNanos(periodMs);
+		return dutyMs / (float) periodMs;
 	}
 
 	@Override
 	public void setValue(float value) {
 		// Constrain to 0..1
-		value = RangeUtil.constrain(value, 0, 1);
-		dutyNs = Math.round(value * TimeUnit.MILLISECONDS.toNanos(periodMs));
-		if (value == 1) {
-			fullyOn.getAndSet(true);
-		} else {
-			fullyOn.getAndSet(false);
-		}
+		dutyMs = Math.round(RangeUtil.constrain(value, 0, 1) * periodMs);
 	}
 
 	@Override

@@ -1,9 +1,8 @@
 /**
- * Service Provider Interface package. Interfaces and base classes to support
- * the development of device factories. Typical users of diozero should not
- * normally need to reference this package.
+ * The built-in default provider supporting GPIO, I2C, SPI and Serial device
+ * communication.
  */
-package com.diozero.internal.spi;
+package com.diozero.internal.provider.builtin;
 
 /*-
  * #%L

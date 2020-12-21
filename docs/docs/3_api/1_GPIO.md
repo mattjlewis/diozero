@@ -1,4 +1,5 @@
 ---
+title: GPIO
 parent: API
 nav_order: 1
 permalink: /api/gpio.html
@@ -6,27 +7,10 @@ permalink: /api/gpio.html
 
 # General Purpose Input / Output (GPIO)
 
-* [API](API.md) for lower-level interactions
-    * [Input](API.md#input-devices), [Output](API.md#output-devices), [I2C](API.md#i2c-support), [SPI](API.md#spi-support)
-* [Input Devices](InputDevices.md)
-    * [Digital](InputDevices.md#digital-input-devices) and [Analog](InputDevices.md#analog-input-devices)
-* [Output Devices](OutputDevices.md)
-    * [Digital](OutputDevices.md#digital-led) and [PWM](OutputDevices.md#pwm-led)
+## Interfaces and Base Classes
 
-## Base classes
-
-### GpioDevice
-
-*class* **com.diozero.api.GpioDevice**{: .descname } (*gpio*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/GpioDevice.java){: .viewcode-link } [&para;](API.md#gpiodevice "Permalink to this definition"){: .headerlink }
-
-: Abstract base class for all GPIO related devices.
-    
-    * **gpio** (*int*) - GPIO to which the device is connected.
-    
-    *int* **getGpio** ()
-    
-    : Get the GPIO for this device.
-    
+[GpioDevice](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/GpioDevice.java)
+: Abstract base class for all GPIO related devices. [Javadoc](https://javadoc.io/doc/com.diozero/diozero-core/latest/com/diozero/api/GpioDevice.html)
 
 ## Input Devices
 

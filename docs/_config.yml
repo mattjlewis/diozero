@@ -51,6 +51,7 @@ plugins:
   - jekyll-github-metadata
   - jekyll-readme-index
   - jekyll-relative-links
+  - jekyll-external-links
   - jekyll-titles-from-headings
   - jemoji
   - github-pages

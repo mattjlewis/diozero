@@ -40,40 +40,16 @@
 	                 </compilerArgs>
 				</configuration>
 			</plugin>
+		</plugins>
+	</build>
+	
+	<reporting>
+		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<configuration>
-					<excludePackageNames>com.diozero.internal.provider</excludePackageNames>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
-
-	<reporting>
-		<plugins>
-			<plugin>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<configuration>
-					<groups>
-						<group>
-							<title>Devices</title>
-							<packages>com.diozero:com.diozero.sandpit</packages>
-						</group>
-						<group>
-							<title>Application Program Interface</title>
-							<packages>com.diozero.api*:com.diozero.util</packages>
-						</group>
-						<group>
-							<title>Service Provider Interface</title>
-							<packages>com.diozero.internal.provider</packages>
-						</group>
-						<group>
-							<title>Sample Applications</title>
-							<packages>com.diozero.sampleapps</packages>
-						</group>
-					</groups>
-					<excludePackageNames>com.diozero.internal.provider*</excludePackageNames>
+					<doctitle>${project.name} ${project.version}</doctitle>
 				</configuration>
 			</plugin>
 		</plugins>

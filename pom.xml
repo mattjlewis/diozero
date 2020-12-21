@@ -205,6 +205,12 @@
 				<groupId>org.tinylog</groupId>
 				<artifactId>tinylog-impl</artifactId>
 				<version>${tinylog.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>animal-sniffer-annotations</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>com.diozero</groupId>

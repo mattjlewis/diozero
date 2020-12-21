@@ -65,7 +65,7 @@ public class EnvironmentDisplay {
 	private static final Character DEGREES_CHARACTER = Character.valueOf('\u00B0');
 
 	private static float reading;
-	private static BufferedImage backgroundImage;
+	private static BufferedImage[] backgroundImages;
 
 	public static void main(String[] args) {
 		// For the SSD1351 OLED
@@ -105,31 +105,35 @@ public class EnvironmentDisplay {
 			int line_height = fm.getMaxAscent() + fm.getMaxDescent();
 			g2d.setBackground(Color.BLACK);
 
-			try (InputStream is = EnvironmentDisplay.class
-					.getResourceAsStream("/images/Background" + (new Random().nextInt(3) + 1) + ".png")) {
-				if (is != null) {
-					// The background image must have the same dimensions as the display
-					BufferedImage i = ImageIO.read(is);
-					// Convert to the OLED image type
-					backgroundImage = new BufferedImage(oled.getWidth(), oled.getHeight(), oled.getNativeImageType());
-					Graphics2D g = backgroundImage.createGraphics();
-					g.drawImage(i, 0, 0, oled.getWidth(), oled.getHeight(), null);
-					g.dispose();
+			backgroundImages = new BufferedImage[3];
+			for (int i = 0; i < backgroundImages.length; i++) {
+				try (InputStream is = EnvironmentDisplay.class.getResourceAsStream("/images/Background" + i + ".png")) {
+					if (is != null) {
+						// The background image must have the same dimensions as the display
+						BufferedImage bi = ImageIO.read(is);
+						// Convert to the OLED image type
+						backgroundImages[i] = new BufferedImage(oled.getWidth(), oled.getHeight(),
+								oled.getNativeImageType());
+						Graphics2D g = backgroundImages[i].createGraphics();
+						g.drawImage(bi, 0, 0, oled.getWidth(), oled.getHeight(), null);
+						g.dispose();
+					}
+				} catch (IOException e) {
+					backgroundImages[i] = null;
 				}
-			} catch (IOException e) {
-				backgroundImage = null;
 			}
 
 			adc.setContinousMode(adc_ready_pin, ain.getGpio(), new_reading -> reading = new_reading);
 
 			int period_ms = 200;
+			int bg_image_index = 1;
 			DiozeroScheduler.getDaemonInstance().scheduleAtFixedRate(() -> {
 				pwm_led.setValue(reading);
 
-				if (backgroundImage == null) {
+				if (backgroundImages[bg_image_index] == null) {
 					g2d.clearRect(0, 0, width, height);
 				} else {
-					g2d.drawImage(backgroundImage, 0, 0, null);
+					g2d.drawImage(backgroundImages[bg_image_index], 0, 0, null);
 				}
 
 				int index = 1;
@@ -160,7 +164,6 @@ public class EnvironmentDisplay {
 						Color.red);
 
 				Logger.debug("Updating image");
-
 				oled.display(image);
 			}, 0, period_ms, TimeUnit.MILLISECONDS);
 
@@ -176,7 +179,7 @@ public class EnvironmentDisplay {
 		g2d.setColor(background);
 		g2d.fillArc(x, y - radius / 2, radius, radius, 0, 180);
 		g2d.setColor(outline);
-		g2d.drawArc(x + 1, (y - radius / 2) - 1, radius - 1, radius - 1, 0, 180);
+		g2d.drawArc(x, y - radius / 2, radius, radius, 0, 180);
 		g2d.drawLine(x, y, x + radius, y);
 
 		double radians = Math.toRadians((value - 0.5) * 180);

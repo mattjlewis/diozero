@@ -1,10 +1,10 @@
 /**
  * Classes representing actual devices such as LEDs, Buttons as well as GPIO,
- * SPI and I2C connected devices.
+ * devices that are connected via I2C, SPI and Serial interfaces.
  */
-package com.diozero;
+package com.diozero.devices;
 
-/*
+/*-
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - Core

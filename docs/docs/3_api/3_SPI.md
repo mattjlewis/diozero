@@ -1,10 +1,11 @@
 ---
+title: SPI Devices
 parent: API
 nav_order: 3
 permalink: /api/spi.html
 ---
 
-# SPI Support
+# Serial Peripheral Interface (SPI) Devices
 
 *class* **com.diozero.api.SpiDevice**{: .descname } (*controller*, *chipSelect*, *frequency*, *mode*, *lsbFirst*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/SpiDevice.java){: .viewcode-link } [&para;](API.md#spi-support "Permalink to this definition"){: .headerlink }
 

@@ -1,9 +1,9 @@
 /**
- * Lower-level APIs for interfacing with devices.
+ * Core APIs for interfacing with devices.
  */
 package com.diozero.api;
 
-/*
+/*-
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - Core

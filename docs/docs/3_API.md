@@ -9,14 +9,14 @@ has_children: true
 
 The diozero user-facing API is provided by the following packages:
 
-* com.diozero.api - core APIs for interfacing with GPIOs, I2C, SPI and Serial devices.
-* com.diozero.devices - physical devices (LED, Button, Motors, ...) and sensor components (BME680, MCP3008, ...)
-* com.diozero.sbc - classes for accessing and describing the currently connected board
-* com.diozero.util - utilities such as CRC calculation, converting between two number ranges and calculating servo pulse durations
+com.diozero.api
+: core APIs for interfacing with GPIOs, I2C, SPI and Serial devices.
 
-The core API is categorised and described as:
+com.diozero.devices
+: physical devices (LED, Button, Motors, ...) and sensor components (BME680, MCP3008, ...)
 
-* [GPIO](/api/gpio.html)
-* [I2C](/api/i2c.html)
-* [SPI](/api/spi.html)
-* [Serial](/api/serial.html)
+com.diozero.sbc
+: classes for accessing and describing the currently connected board
+
+com.diozero.util
+: utilities such as CRC calculation, converting between two number ranges and calculating servo pulse durations

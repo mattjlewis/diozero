@@ -1,4 +1,5 @@
 ---
+title: Creating Your Own Application
 nav_order: 5
 permalink: /application.html
 ---
@@ -8,12 +9,13 @@ permalink: /application.html
 To create your own application that uses diozero I recommend that you use [Apache Maven](https://maven.apache.org/) to manage dependencies.
 [Gradle](https://gradle.org/) also provides similar functionality however I haven't had a chance to look into using it.
 
-There are 2 main approaches for incorporating diozero into your project using Maven
+There are 2 main approaches for incorporating diozero into your project using Maven:
 
 1. Reference diozero as the Maven parent. Use [diozero-example](https://github.com/mattjlewis/diozero/blob/master/diozero-example/pom.xml) as a reference.
 
-1. Add diozero as a dependency in your application's Maven pom.xml. See my [Java Lego Car](https://github.com/mattjlewis/JavaLegoCar/blob/master/pom.xml) project as an example.
+1. Add diozero as a dependency in your application's Maven `pom.xml`. Seethe diozero [Java Lego Car](https://github.com/mattjlewis/JavaLegoCar/blob/master/pom.xml) project as an example.
 Note make sure you enable Maven snapshot repositories if you want to use a diozero snapshot build.
+The following XML snippet can be added to your application's `pom.xml` file:
 
 ```xml
 <repositories>
@@ -29,7 +31,31 @@ Note make sure you enable Maven snapshot repositories if you want to use a dioze
 </repositories>
 ```
 
-If you want to manage the dependencies yourself, download and extract a diozero [distribution ZIP file](https://drive.google.com/open?id=0BxA10VX9SC74VDR6WTlLOEdpYzA) from Google Drive and add tinylog-2.1.2.jar and diozero-core-0.13.jar to your project's classpath.
+If you want to manage the dependencies yourself, download and extract a [diozero-distribution ZIP file](https://search.maven.org/remotecontent?filepath=com/diozero/diozero-distribution/0.14/diozero-distribution-0.14-bin.zip) from either [Maven Central](https://search.maven.org/) or [mvnrepository](https://mvnrepository.com/).
+
+As of diozero 1.0.0 you can also start a new diozero application using the Maven archetype:
+
+```
+mvn archetype:generate -DarchetypeGroupId=com.diozero -DarchetypeArtifactId=diozero-application -DarchetypeVersion=1.0.0-SNAPSHOT -DgroupId=com.mycompany -DartifactId=mydiozeroapp -Dversion=1.0-SNAPSHOT
+```
+
+To use a snapshot version of the archetype you will need to add this snippet to your Maven `settings.xml` file (in `$HOME/.m2`):
+```xml
+   <profiles>
+     <profile>
+       <id>snapshot-profile</id>
+       <activation>
+         <activeByDefault>true</activeByDefault>
+       </activation>
+       <repositories>
+         <repository>
+           <id>archetype</id>
+           <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+         </repository>
+       </repositories>
+     </profile>
+   </profiles>
+```
 
 ## Step-by-step Instructions
 
@@ -62,11 +88,11 @@ These instructions assume you are using Eclipse, Maven and are using diozero as 
 To package your application so you can copy it to your device again there are a number of options.
 
 1. Export your application as a JAR file and include all run-time dependencies via the classpath.
-Simply run ```mvn package``` to create the JAR file for your application.
-Note this will not generate a runnable JAR hence you will need to run your application as ```java -cp tinylog-2.1.2.jar:diozero-core-0.13.jar:yourapp.jar <<your-main-class>>```.
+Simply run `mvn package` to create the JAR file for your application.
+Note this will not generate a runnable JAR hence you will need to run your application as `java -cp tinylog-2.2.1.jar:diozero-core-0.14.jar:yourapp.jar <<your-main-class>>`.
 
 1. You can use Eclipse to create an runnable JAR file that includes all dependencies and sets.
-Note a runnable JAR file is one that can be run from the command line using ```java -jar yourapp.jar```.
+Note a runnable JAR file is one that can be run from the command line using `java -jar yourapp.jar`.
 First make sure you have created a run configuration so Eclipse knows the main class for your application;
 right click on you main class and choose Run As / Java Application.
 Then right click on your project in the Eclipse package Explorer side bar and choose Export / Java / Runnable JAR file.
@@ -74,4 +100,4 @@ Make sure you select the correct Launch configuration for your application.
 
     ![Export Runnable JAR](/assets/images/ExportAppJAR.png)
 
-1. Use the [Maven shade plugin](https://maven.apache.org/plugins/maven-shade-plugin/) to create a runnable JAR file that includes all dependencies. Run ```mvn package``` to create the runnable JAR file. See my [webapp project](https://github.com/mattjlewis/diozero/blob/master/diozero-webapp/pom.xml) for an example.
+1. Use the [Maven shade plugin](https://maven.apache.org/plugins/maven-shade-plugin/) to create a runnable JAR file that includes all dependencies. Run `mvn package` to create the runnable JAR file. See my [webapp project](https://github.com/mattjlewis/diozero/blob/master/diozero-webapp/pom.xml) for an example.

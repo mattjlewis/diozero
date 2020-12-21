@@ -112,17 +112,21 @@ public class Ads112C04 implements Closeable {
 		}
 	}
 
-	public enum PgaBypass {
+	public enum Pga {
 		ENABLED(0), DISABLED(1);
 
 		private byte mask;
 
-		private PgaBypass(int mask) {
+		private Pga(int mask) {
 			this.mask = (byte) (mask << C0_PGA_BYPASS_BIT_START);
 		}
 
 		byte getMask() {
 			return mask;
+		}
+
+		public boolean isEnabled() {
+			return this == ENABLED;
 		}
 	}
 
@@ -196,42 +200,38 @@ public class Ads112C04 implements Closeable {
 	}
 
 	public enum TemperatureSensorMode {
-		ENABLED(true, 0b1), DISABLED(false, 0b0);
+		ENABLED(1), DISABLED(0);
 
-		private boolean enabled;
 		private byte mask;
 
-		private TemperatureSensorMode(boolean enabled, int mask) {
-			this.enabled = enabled;
+		private TemperatureSensorMode(int mask) {
 			this.mask = (byte) (mask << C1_TEMP_SENSOR_BIT_START);
-		}
-
-		public boolean isEnabled() {
-			return enabled;
 		}
 
 		byte getMask() {
 			return mask;
+		}
+
+		public boolean isEnabled() {
+			return this == ENABLED;
 		}
 	}
 
 	public enum DataCounter {
-		ENABLED(true, 0b1), DISABLED(false, 0b0);
+		ENABLED(1), DISABLED(0);
 
-		private boolean enabled;
 		private byte mask;
 
-		private DataCounter(boolean enabled, int mask) {
-			this.enabled = enabled;
+		private DataCounter(int mask) {
 			this.mask = (byte) (mask << C2_DATA_CNT_EN_BIT_START);
-		}
-
-		public boolean isEnabled() {
-			return enabled;
 		}
 
 		byte getMask() {
 			return mask;
+		}
+
+		public boolean isEnabled() {
+			return this == ENABLED;
 		}
 	}
 
@@ -250,22 +250,20 @@ public class Ads112C04 implements Closeable {
 	}
 
 	public enum BurnoutCurrentSources {
-		ENABLED(true, 0b1), DISABLED(false, 0b0);
+		ENABLED(1), DISABLED(0);
 
-		private boolean enabled;
 		private byte mask;
 
-		private BurnoutCurrentSources(boolean enabled, int mask) {
-			this.enabled = enabled;
+		private BurnoutCurrentSources(int mask) {
 			this.mask = (byte) (mask << C2_BCS_BIT_START);
-		}
-
-		public boolean isEnabled() {
-			return enabled;
 		}
 
 		byte getMask() {
 			return mask;
+		}
+
+		public boolean isEnabled() {
+			return this == ENABLED;
 		}
 	}
 
@@ -384,7 +382,7 @@ public class Ads112C04 implements Closeable {
 		private int controller;
 		private Address address;
 		private GainConfig gainConfig = GainConfig._1;
-		private PgaBypass pgaBypass = PgaBypass.ENABLED;
+		private Pga pga = Pga.ENABLED;
 		private DataRate dataRate = DataRate._20HZ;
 		private OperatingMode operatingMode = OperatingMode.NORMAL;
 		private VRef vRef = VRef.INTERNAL;
@@ -410,13 +408,13 @@ public class Ads112C04 implements Closeable {
 			return this;
 		}
 
-		public Builder setPgaBypass(PgaBypass pgaBypass) {
-			this.pgaBypass = pgaBypass;
+		public Builder setPga(Pga pga) {
+			this.pga = pga;
 			return this;
 		}
 
-		public Builder setPgaBypassEnabled(boolean pgaBypassEnabled) {
-			this.pgaBypass = pgaBypassEnabled ? PgaBypass.ENABLED : PgaBypass.DISABLED;
+		public Builder setPgaEnabled(boolean pgaEnabled) {
+			this.pga = pgaEnabled ? Pga.ENABLED : Pga.DISABLED;
 			return this;
 		}
 
@@ -492,7 +490,22 @@ public class Ads112C04 implements Closeable {
 		}
 
 		public Ads112C04 build() {
-			return new Ads112C04(controller, address, gainConfig, pgaBypass, dataRate, operatingMode, vRef, tsMode,
+			// Validation
+			/*-
+			 * 1. Input Multiplexer
+			 * For settings where AINN = AVSS, the PGA must be disabled (PGA_BYPASS = 1) and only gains 1, 2, and 4 can be used.
+			 */
+			/*-
+			 * 2. Gain
+			 * The PGA can only be disabled for gains 1, 2, and 4.
+			 * The PGA is always enabled for gain settings 8 to 128, regardless of the PGA_BYPASS setting.
+			 */
+			if (!pga.isEnabled() && gainConfig.getGain() > GainConfig._4.getGain()) {
+				throw new IllegalArgumentException(
+						"The PGA can only be disabled for gains 1, 2, and 4 (requested gain: " + gainConfig + ")");
+			}
+
+			return new Ads112C04(controller, address, gainConfig, pga, dataRate, operatingMode, vRef, tsMode,
 					dataCounter, crcConfig, burnoutCurrentSources, idacCurrent, idac1RoutingConfig, idac2RoutingConfig);
 		}
 	}
@@ -503,7 +516,7 @@ public class Ads112C04 implements Closeable {
 
 	private I2CDevice device;
 	private GainConfig gainConfig;
-	private PgaBypass pgaBypass;
+	private Pga pga;
 	private DataRate dataRate;
 	private OperatingMode operatingMode;
 	private ConversionMode conversionMode;
@@ -522,12 +535,12 @@ public class Ads112C04 implements Closeable {
 	private boolean repeatedStart;
 	private boolean method1;
 
-	protected Ads112C04(int controller, Address address, GainConfig gainConfig, PgaBypass pgaBypass, DataRate dataRate,
+	protected Ads112C04(int controller, Address address, GainConfig gainConfig, Pga pga, DataRate dataRate,
 			OperatingMode operatingMode, VRef vRef, TemperatureSensorMode tsMode, DataCounter dataCounter,
 			CrcConfig crcConfig, BurnoutCurrentSources burnoutCurrentSources, IdacCurrent idacCurrent,
 			Idac1RoutingConfig idac1RoutingConfig, Idac2RoutingConfig idac2RoutingConfig) {
 		this.gainConfig = gainConfig;
-		this.pgaBypass = pgaBypass;
+		this.pga = pga;
 		this.dataRate = dataRate;
 		this.operatingMode = operatingMode;
 		this.vRef = vRef;
@@ -622,7 +635,7 @@ public class Ads112C04 implements Closeable {
 
 	private void setConfig0() {
 		// Logger.debug("setConfig0");
-		writeConfigRegister(ConfigRegister._0, (byte) (inputMultiplexer | gainConfig.getMask() | pgaBypass.getMask()));
+		writeConfigRegister(ConfigRegister._0, (byte) (inputMultiplexer | gainConfig.getMask() | pga.getMask()));
 	}
 
 	private void setConfig1() {
@@ -691,12 +704,12 @@ public class Ads112C04 implements Closeable {
 		setConfig0();
 	}
 
-	public PgaBypass getPgaBypass() {
-		return pgaBypass;
+	public Pga getPga() {
+		return pga;
 	}
 
-	public void setPgaBypass(PgaBypass pgaBypass) {
-		this.pgaBypass = pgaBypass;
+	public void setPga(Pga pga) {
+		this.pga = pga;
 		setConfig0();
 	}
 
@@ -1103,7 +1116,7 @@ public class Ads112C04 implements Closeable {
 				.setDataCounterEnabled(false) //
 				.setDataRate(DataRate._20HZ) //
 				.setGainConfig(GainConfig._1) //
-				.setPgaBypassEnabled(false) //
+				.setPgaEnabled(false) //
 				.setTurboModeEnabled(false) //
 				.setVRef(VRef.ANALOG_SUPPLY) //
 				.build()) {
