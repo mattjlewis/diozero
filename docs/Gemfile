@@ -24,7 +24,7 @@ group :jekyll_plugins do
 	gem "jekyll-github-metadata"
 	gem "jekyll-readme-index"
 	gem "jekyll-relative-links"
-	gem "jekyll-external-links"
+	gem "jekyll-target-blank"
 	gem "jekyll-titles-from-headings"
 	gem "jemoji"
 	gem "github-pages"

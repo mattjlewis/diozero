@@ -10,9 +10,11 @@ The builtin provider is designed to be portable across different boards.
 
 ## Device Factories
 
-The class [DeviceFactoryHelper](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/util/DeviceFactoryHelper.java) encapsulates the logic for accessing the configured service provider. Interfaces for implementing a new service provider are in the [com.diozero.internal.provider](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/internal/provider) package. Developing a new service provider is relatively straightforward given the provided APIs and base classes.
-
-In theory the OpenJDK Device I/O service provider should provide the best platform support, however, the JDK Device I/O library [doesn't support PWM](http://mail.openjdk.java.net/pipermail/dio-dev/2015-November/000650.html). Also it appears it is no longer maintained.
+The class [DeviceFactoryHelper](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/util/DeviceFactoryHelper.java)
+encapsulates the logic for accessing the configured service provider.
+Interfaces for implementing a new service provider are in the
+[com.diozero.internal.provider](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/internal/provider)
+package. Developing a new service provider is relatively straightforward given the provided APIs and base classes.
 
 The device native service provider library is defined in the following order:
 

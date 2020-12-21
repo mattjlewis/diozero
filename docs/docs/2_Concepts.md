@@ -13,18 +13,18 @@ complexities of low-level device interface code. An initial motivation to develo
 was to provide a Java equivalent to the excellent Python [gpiozero](https://gpiozero.readthedocs.io/)
 library having found that existing Java libraries didn't offer such a developer-friendly interface.
 
+## Sections
+{: .no_toc .text-delta }
+
+1. TOC
+{:toc}
+
 devices (LEDs, buttons, sensors, motors, displays, etc) that can be connected to Single Board
 Computers like the Raspberry Pi. Actual GPIO / I2C / SPI device communication is delegated 
 to pluggable service providers for maximum compatibility across different boards. This library is 
 known to work on the following boards: all models of the Raspberry Pi, Odroid C2, BeagleBone 
 Black, C.H.I.P and Asus Tinker Board. It should be portable to any Single Board computer that 
 runs Linux and Java 8.
-
-## Sections
-{: .no_toc .text-delta }
-
-1. TOC
-{:toc}
 
 The aim of this library is to encapsulate real-world devices as classes with meaningful operation 
 names, for example, LED (on / off), LDR (get luminosity), Button (pressed / released), Motor 
@@ -83,12 +83,14 @@ try (PwmLed led = new PwmLed(led_gpio)) {
 }
 ```
 
-All devices are actually provisioned by a 
-[Device Factory](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/internal/spi/DeviceFactoryInterface.java) 
-with a default [NativeDeviceFactory](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/internal/DeviceFactoryHelper.java) 
-for provisioning via the host board itself. However, all components accept an optional 
-Device Factory parameter for provisioning the same set of components via an alternative 
-method. This is particularly useful for GPIO expansion boards and Analog-to-Digital converters.
+Iternally, all devices are provisioned via a
+[Device Factory](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/internal/spi/DeviceFactoryInterface.java) -
+all of the classes in com.diozero.api and com.diozero.devices include an additional constructor
+parameter that allows a device factory to be specified. If a device factory isn't specified, the
+host board itself is used to provision the device using
+[DeviceFactoryHelper.getNativeDeviceFactory()](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/sbc/DeviceFactoryHelper.java).
+This is particularly useful for GPIO expansion boards and Analog-to-Digital converters.
+The [Providers](2_concepts/1_Providers.md) section provides further details on board device providers.
 
 > Device Factories
 >{: .admonition-title }
@@ -211,17 +213,3 @@ To run:
 ```sh
 sudo groovy -cp $CLASSPATH test.groovy
 ```
-
-> Groovy JAVA_HOME config when running via sudo
->{: .admonition-title }
-> I was getting the error:
->
-> `groovy: JAVA_HOME is not defined correctly, can not execute: /usr/lib/jvm/default-java/bin/java`
->
-> I tried setting JAVA_HOME in /etc/environment and /etc/profile.d/jdk.sh to no affect. Eventually the following fixed it for me.
-> Please let me know if there is a better way to fix this issue.
->
-> ```
-> ln -s /usr/lib/jvm/jdk-8-oracle-arm32-vfp-hflt /usr/lib/jvm/default-java
-> ```
-{: .admonition .note }
