@@ -1,6 +1,0 @@
-module com.diozero.core.test {
-	requires transitive com.diozero.core;
-	requires tinylog;
-	requires commons.math3;
-	requires java.logging;
-}

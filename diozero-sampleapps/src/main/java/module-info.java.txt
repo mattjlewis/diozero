@@ -1,7 +1,9 @@
 module com.diozero.sampleapps {
-	requires transitive com.diozero.core;
-	requires tinylog;
-	requires commons.math3;
+	requires com.diozero.core;
+
+	requires imgscalr.lib;
+	requires org.fusesource.jansi;
+	requires com.google.gson;
 	
 	requires java.desktop;
 }

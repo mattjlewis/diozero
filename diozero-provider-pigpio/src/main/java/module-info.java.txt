@@ -1,9 +1,8 @@
 module com.diozero.provider.pigpio {
-	requires transitive com.diozero.core;
-	requires tinylog;
+	requires com.diozero.core;
 	
-	requires pigpioj.java;
+	requires uk.pigpioj;
 	
-	provides com.diozero.internal.provider.NativeDeviceFactoryInterface
+	provides com.diozero.internal.spi.NativeDeviceFactoryInterface
 		with com.diozero.internal.provider.pigpioj.PigpioJDeviceFactory;
 }
