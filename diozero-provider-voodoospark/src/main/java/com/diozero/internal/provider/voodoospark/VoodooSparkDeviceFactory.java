@@ -736,7 +736,8 @@ public class VoodooSparkDeviceFactory extends BaseNativeDeviceFactory {
 			int pin = 7;
 			boolean value = false;
 			try (GpioDigitalOutputDeviceInterface output = df.createDigitalOutputDevice("GPIO-" + gpio,
-					new PinInfo("GPIO", "default", gpio, pin, "GPIO-" + gpio, PinInfo.DIGITAL_IN_OUT_PWM), value)) {
+					new PinInfo("GPIO", PinInfo.DEFAULT_HEADER, gpio, pin, "GPIO-" + gpio, PinInfo.DIGITAL_IN_OUT_PWM),
+					value)) {
 				for (int i = 0; i < 4; i++) {
 					value = output.getValue();
 					output.setValue(!value);

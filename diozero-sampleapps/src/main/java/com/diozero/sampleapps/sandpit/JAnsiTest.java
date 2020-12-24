@@ -42,6 +42,8 @@ public class JAnsiTest {
 		System.out.println(ansi().eraseScreen().fgRed().a("Hello").a(" ").fgGreen().a("World!").reset().a(" ")
 				.bgBrightRed().a("Matt").reset());
 		//AnsiConsole.out().println(AnsiRenderer.render("@|red Hello|@ @|green World|@"));
+		
+		System.out.println(ansi().bold().fgGreen().a("Hello").boldOff().fgDefault().a(" Matt"));
 
 		AnsiConsole.systemUninstall();
 	}

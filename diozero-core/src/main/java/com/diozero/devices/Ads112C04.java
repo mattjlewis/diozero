@@ -322,7 +322,7 @@ public class Ads112C04 implements Closeable {
 	 * all registers are set to the default values (which are all 0). All register
 	 * values are retained during power-down mode.
 	 */
-	private enum ConfigRegister {
+	public enum ConfigRegister {
 		_0(0b00), _1(0b01), _2(0b10), _3(0b11);
 
 		private byte mask;
@@ -599,7 +599,7 @@ public class Ads112C04 implements Closeable {
 		SleepUtil.sleepMillis(1);
 	}
 
-	private byte readConfigRegister(ConfigRegister register) {
+	public byte readConfigRegister(ConfigRegister register) {
 		// TODO Also read CRC data if enabled!
 		if (crcConfig == CrcConfig.DISABLED) {
 			return device.readByteData(COMMAND_READ_REG | register.getMask());
@@ -803,6 +803,35 @@ public class Ads112C04 implements Closeable {
 	}
 
 	public void setIdac2RoutingConfig(Idac2RoutingConfig idac2RoutingConfig) {
+		this.idac2RoutingConfig = idac2RoutingConfig;
+		setConfig3();
+	}
+
+	public void setConfig0(GainConfig gainConfig, Pga pga) {
+		this.gainConfig = gainConfig;
+		this.pga = pga;
+		setConfig0();
+	}
+
+	public void setConfig1(DataRate dataRate, boolean turboModeEnabled, VRef vRef, boolean temperatureSensorEnabled) {
+		this.dataRate = dataRate;
+		this.operatingMode = turboModeEnabled ? OperatingMode.TURBO : OperatingMode.NORMAL;
+		this.vRef = vRef;
+		this.tsMode = temperatureSensorEnabled ? TemperatureSensorMode.ENABLED : TemperatureSensorMode.DISABLED;
+		setConfig1();
+	}
+
+	public void setConfig2(boolean dataCounterEnabled, CrcConfig crcConfig, BurnoutCurrentSources burnoutCurrentSources,
+			IdacCurrent idacCurrent) {
+		this.dataCounter = dataCounterEnabled ? DataCounter.ENABLED : DataCounter.DISABLED;
+		this.crcConfig = crcConfig;
+		this.burnoutCurrentSources = burnoutCurrentSources;
+		this.idacCurrent = idacCurrent;
+		setConfig2();
+	}
+
+	public void setConfig3(Idac1RoutingConfig idac1RoutingConfig, Idac2RoutingConfig idac2RoutingConfig) {
+		this.idac1RoutingConfig = idac1RoutingConfig;
 		this.idac2RoutingConfig = idac2RoutingConfig;
 		setConfig3();
 	}
@@ -1093,9 +1122,14 @@ public class Ads112C04 implements Closeable {
 			device.readI2CBlockData(COMMAND_RDATA, buffer);
 			int new_dc = buffer[0] & 0xff;
 			if (new_dc != lastDataCounter) {
+				if (lastDataCounter != -1 && (new_dc != lastDataCounter + 1)) {
+					Logger.info("Missed a reading - last DC: {}, new DC: {}", Integer.valueOf(lastDataCounter),
+							Integer.valueOf(new_dc));
+				}
 				lastDataCounter = new_dc;
+				// TODO If DI is set to inverted, buffer[1] is the inversion of the DC
 				value = (short) ((buffer[1] << 8) | (buffer[2] & 0xff));
-				// TODO Validate the CRC
+				// TODO Data Integrity validation
 				break;
 			}
 			SleepUtil.busySleep(100);

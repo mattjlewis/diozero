@@ -65,47 +65,37 @@ Add the debian user to group `gpio` (if not already a member): `sudo usermod -a 
 
 Edit `~/.bashrc` and enable colour prompt: Remove the '#' from `force_color_prompt=yes`
 
-## Remove the Additional Login Messages
-
-Edit ```/etc/issue``` (note the blank line):
+Disable the graphical desktop since we are using the headless image:
 ```
-Raspbian GNU/Linux 8 \n \l
-
+sudo systemctl disable graphical.target
 ```
 
-Edit ```/etc/issue.net``` (no blank line):
-```
-Raspbian GNU/Linux 8
-```
+## Disable and Remove Bonescript / Cloud9 / Nodered
 
-## Setup Static IP Address
+I don't use these services and disabling / removing them can save quite a bit of disk space and memory as well as significantly speeding up updates.
+(I need to doublecheck these commands).
 
-In ```/etc/network/interfaces```:
 ```
-connmanctl config ethernet_a0f6fd4c0e73_cable --ipv4 manual 192.168.1.16 255.255.255.0 192.168.1.254 --nameservers 192.168.1.254
+sudo systemctl stop bonescript.socket
+sudo systemctl disable bonescript.socket
+sudo systemctl stop bonescript.service
+sudo systemctl disable bonescript.service
+sudo systemctl stop bonescript-autorun.service
+sudo systemctl disable bonescript-autorun.service
+sudo systemctl stop nodered.socket
+sudo systemctl disable nodered.socket
+sudo systemctl stop nodered.service
+sudo systemctl disable nodered.service
+sudo systemctl stop cloud9.socket
+sudo systemctl disable cloud9.socket
+sudo systemctl stop cloud9.service
+sudo systemctl disable cloud9.service
+sudo systemctl stop nginx.service
+sudo systemctl disable nginx.service
+sudo apt -y remove c9-core-installer bonescript nodejs bb-node-red-installer
+sudo apt -y purge c9-core-installer bonescript nodejs bb-node-red-installer
+sudo apt autoremove && sudo apt autoclean
 ```
-
-### On other Pi-like Debian Jessie Distributions
-
-Edit ```/etc/network/interfaces```:
-```
-# The primary network interface
-auto eth0
-iface eth0 inet manual
-```
-
-Run:
-```sudo apt install dhcpcd5```
-
-Edit `/etc/dhcpcd.conf`:
-```
-interface eth0
-  static ip_address=192.168.1.16/24
-  static routers=192.168.1.254
-  static domain_name_servers=192.168.1.254
-```
-
-Enable the service: `sudo systemctl enable dhcpcd`
 
 ## Create the System Update / Upgrade Script
 
@@ -117,17 +107,19 @@ apt update && apt -y upgrade && apt -y --auto-remove full-upgrade
 apt -y autoclean && apt -y autoremove
 ```
 
-Make it executable: `chmod +x /usr/local/bin/upgrade`
+Make it executable: `chmod +x /usr/local/bin/update`
 
-Run it: `sudo /usr/local/bin/upgrade`
+Run it (`sudo /usr/local/bin/update`) and reboot (`sudo reboot`).
 
-## Install Development Libraries
+## Install Essential Development Tools and Libraries
 
-Run: `sudo apt install i2c-tools libi2c-dev unzip zip vim gpiod libgpiod-dev libgpiod2`
+Run: `sudo apt update && sudo apt -y install git gcc make build-essential i2c-tools libi2c-dev unzip zip vim gpiod libgpiod-dev libgpiod2`
 
 ## Install Java
 
-OpenJDK 11 doesn't work for me, reverting to OpenJDK 8. Unfortunately OpenJDK 8 isn't available in Debian Buster by default.
+OpenJDK 11 no longer works for me on my BeagleBone Black so I am forced to revert to OpenJDK 8.
+It appears that the latest Debian OpenJDK 11 ARM build is compiled with CPU flags that are not compatible with the BeagleBone Black.
+Unfortunately OpenJDK 8 isn't available in Debian Buster by default, however, it is available in the AdoptOpenJDK repository:
 ```
 sudo apt -y install software-properties-common
 wget -qO - https://adoptopenjdk.jfrog.io/adoptopenjdk/api/gpg/key/public | sudo apt-key add -
@@ -136,69 +128,11 @@ sudo apt update && sudo apt -y install adoptopenjdk-8-hotspot
 sudo update-java-alternatives -s adoptopenjdk-8-hotspot-armhf
 ```
 
-Alternatively:
+Alternatively install OpenJDK 8 via the Debian Stretch security updates channel:
 ```
 sudo apt -y install software-properties-common
 sudo apt-add-repository 'deb http://security.debian.org/debian-security stretch/updates main'
 sudo apt update && sudo apt -y install openjdk-8-jdk
-```
-
-## Install ZSH and Oh My Zsh
-
-Run:
-```
-sudo apt install zsh
-chsh -s /usr/bin/zsh
-sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-```
-
-Make a minor tweak to the robbyrussell theme to show the hostname in the command prompt:
-```
-cd ~/.oh-my-zsh/themes
-cp robbyrussell.zsh-theme robbyrussell_tweak.zsh-theme
-```
-
-Edit `robbyrussell_tweak.zsh-theme` and change the `PROMPT` value to include this prefix `%{$fg_bold[white]%}%M%{$reset_color%} `:
-```
-PROMPT="%{$fg_bold[white]%}%M%{$reset_color%} %(?:%{$fg_bold[green]%}➜ :%{$fg_bold[red]%}➜ )"
-```
-
-Update the ZSH config `~/.zshrc`:
-```
-export PATH=$PATH:/usr/sbin:/usr/local/sbin
-export JAVA_HOME=/usr/lib/jvm/adoptopenjdk-8-hotspot-armhf
-
-ZSH_THEME="robbyrussell_tweak"
-```
-
-My own preference is to add this to the end of the `.zshrc` file:
-```
-# Allow multiple terminal sessions to all append to one zsh command history
-setopt APPEND_HISTORY
-# Do not enter command lines into the history list if they are duplicates of the previous event
-setopt HIST_IGNORE_DUPS
-# Remove command lines from the history list when the first character on the line is a space
-setopt HIST_IGNORE_SPACE
-# Remove the history (fc -l) command from the history list when invoked
-setopt HIST_NO_STORE
-```
-
-## Disable and Remove Bonescript / Cloud9 / Nodered
-
-I don't use these services and disabling / removing them can save quite a bit of disk space.
-(I need to doublecheck these commands).
-
-```
-sudo systemctl disable bonescript.service
-sudo systemctl disable bonescript.socket
-sudo systemctl disable bonescript-autorun.service
-sudo systemctl disable nodered.service
-sudo systemctl disable nodered.socket
-sudo systemctl disable cloud9.service
-sudo systemctl disable cloud9.socket
-sudo apt remove c9-core-installer bonescript nodejs bb-node-red-installer
-sudo apt purge c9-core-installer bonescript nodejs bb-node-red-installer
-sudo apt autoremove && sudo apt autoclean
 ```
 
 ## Locale / Timezone
@@ -221,11 +155,74 @@ Check ntp: `ntpq -p`
 
 If need be, manually set the date / time: `sudo date -s "07:41 04/07/2017 BST" "+%H:%M %d/%m/%Y %Z"`
 
-## Latest Kernel Script
+## Install ZSH and Oh My Zsh
+
+Run:
+```
+sudo apt -y install zsh
+chsh -s /usr/bin/zsh
+sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+```
+
+Make a minor tweak to the robbyrussell theme to show the hostname in the command prompt:
+```
+cd ~/.oh-my-zsh/themes
+cp robbyrussell.zsh-theme robbyrussell_tweak.zsh-theme
+```
+
+Edit `robbyrussell_tweak.zsh-theme` and change the `PROMPT` value to include this prefix `%{$fg_bold[white]%}%M%{$reset_color%} `:
+```
+PROMPT="%{$fg_bold[white]%}%M%{$reset_color%} %(?:%{$fg_bold[green]%}➜ :%{$fg_bold[red]%}➜ )"
+```
+
+Update the ZSH config `~/.zshrc`:
+```
+export PATH=$PATH:/sbin:/usr/sbin:/usr/local/sbin
+export JAVA_HOME=/usr/lib/jvm/adoptopenjdk-8-hotspot-armhf
+
+ZSH_THEME="robbyrussell_tweak"
+```
+
+My own preference is to add this to the end of the `.zshrc` file:
+```
+# Allow multiple terminal sessions to all append to one zsh command history
+setopt APPEND_HISTORY
+# Do not enter command lines into the history list if they are duplicates of the previous event
+setopt HIST_IGNORE_DUPS
+# Remove command lines from the history list when the first character on the line is a space
+setopt HIST_IGNORE_SPACE
+# Remove the history (fc -l) command from the history list when invoked
+setopt HIST_NO_STORE
+```
+
+## Disable Unused Capes (HDMI, Wireless)
+
+Edit `/boot/uEnv.txt` and remove the preceeding `#` from these lines so that it looks like this:
+```
+disable_uboot_overlay_video=1
+disable_uboot_overlay_audio=1
+disable_uboot_overlay_wireless=1
+```
+
+## Remove the Additional Login Messages
+
+Edit ```/etc/issue``` (note the blank line):
+```
+Debian GNU/Linux 10 \n \l
 
 ```
-cd /opt/scripts/tools/
+
+Edit ```/etc/issue.net``` (no blank line):
+```
+Debian GNU/Linux 10
+```
+
+## Kernel Update
+
+```
+cd /opt/scripts
 git pull
+cd tools
 sudo ./update_kernel.sh [<OPTIONS>]
 ```
 
@@ -328,30 +325,100 @@ Reboot and check the I2C bus speeds:
 
 Run `i2cdetect -y -r 2` as write quick isn't supported.
 
+## Networking Configuration
+
+Note work-in-progress.
+
+Whatever I do I cannot get connman to work with a USB WiFi adapter, it simply refuses to detect any WiFi networks.
+```
+connmanctl> tether wifi off
+Error disabling wifi tethering: Already disabled
+connmanctl> enable wifi
+Error wifi: Already enabled
+connmanctl> agent on
+Agent registered
+connmanctl> scan wifi
+Scan completed for wifi
+connmanctl> services
+*AO Wired                ethernet_a0f6fd4c0e73_cable
+connmanctl> exit
+```
+
+My workaround so far is to use Network Manager via the CLI instead.
+Run these commands with the ethernet cable connected and the USB WiFi adapter plugged in:
+```
+sudo apt -y install network-manager
+sudo systemctl enable network-manager
+sudo systemctl start network-manager
+nmcli d wifi
+sudo nmcli r wifi on
+nmcli d wifi list
+sudo nmcli d wifi connect <<SSID>> password <<password>>
+```
+
+Make sure that `/etc/network/interfaces` doesn't include config for eth0 / wlan0.
+Alternatively set `managed=true` in /etc/NetworkManager/NetworkManager.conf and add this to `/etc/network/interfaces`:
+```
+auto eth0
+iface eth0 inet dhcp
+```
+
+Verify that the board is now connected to the WiFi using `iwconfig wlan0` and make a note of the IP address.
+If it is connected (wlan0 has been allocated an IP address), stop connman to double-check that it can be disabled.
+Note that your current SSH connection might get terminated, if it does log back in using the wlan0 IP address.
+```
+sudo systemctl stop connman.service
+ip addr
+```
+
+If everything is ok, reboot and confirm that the network connections are all ok. Now stop and disable connman.service:
+```
+sudo systemctl stop connman.service
+sudo systemctl disable connman.service
+```
+
+### Setup Static IP Address
+
+In ```/etc/network/interfaces```:
+```
+connmanctl config ethernet_a0f6fd4c0e73_cable --ipv4 manual 192.168.1.16 255.255.255.0 192.168.1.254 --nameservers 192.168.1.254
+```
+
+### On other Pi-like Debian Jessie Distributions
+
+Edit ```/etc/network/interfaces```:
+```
+# The primary network interface
+auto eth0
+iface eth0 inet manual
+```
+
+Run:
+```sudo apt install dhcpcd5```
+
+Edit `/etc/dhcpcd.conf`:
+```
+interface eth0
+  static ip_address=192.168.1.16/24
+  static routers=192.168.1.254
+  static domain_name_servers=192.168.1.254
+```
+
+Enable the service: `sudo systemctl enable dhcpcd`
+
 ## Pinout
 
 Taken from [beagleboard.org](https://beagleboard.org/Support/bone101).
 
-With the power / ethernnet connection at the top:
+With the power / ethernet connection at the top:
 
 ```
-          P9
-       ?  1 2  GND
-       ?  3 4  3v3
-       ?  5 6  ?
-       ?  7 8  ?
-       ?  9 10 ?
-       ? 11 12 ?
-       ? 13 14 ?
-       ? 15 16 ?
-       ? 17 18 ?
-I2C2 SCL 19 20 I2C2 SDA
-       ? 21 22 ?
+TBD
 ```
 
-Some good info here: [https://vadl.github.io/beagleboneblack/2016/07/29/setting-up-bbb-gpio]
+Some good info [here](https://vadl.github.io/beagleboneblack/2016/07/29/setting-up-bbb-gpio)
 
-![https://vadl.github.io/images/bbb/bbb_headers.png](Universal Cape Pinout)
+![Universal Cape Pinout](https://vadl.github.io/images/bbb/bbb_headers.png)
 
-[https://github.com/derekmolloy/boneDeviceTree/raw/master/docs/BeagleboneBlackP9HeaderTable.pdf](P9 pins (PDF))
-[https://github.com/derekmolloy/boneDeviceTree/raw/master/docs/BeagleboneBlackP8HeaderTable.pdf](P8 pins (PDF))
+* [P8 pins (PDF)](https://github.com/derekmolloy/boneDeviceTree/raw/master/docs/BeagleboneBlackP8HeaderTable.pdf)
+* [P9 pins (PDF)](https://github.com/derekmolloy/boneDeviceTree/raw/master/docs/BeagleboneBlackP9HeaderTable.pdf)

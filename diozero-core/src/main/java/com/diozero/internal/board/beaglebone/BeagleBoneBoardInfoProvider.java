@@ -45,6 +45,10 @@ import com.diozero.internal.spi.BoardInfoProvider;
 import com.diozero.sbc.BoardInfo;
 import com.diozero.sbc.LocalSystemInfo;
 
+/*-
+ * https://github.com/derekmolloy/boneDeviceTree/raw/master/docs/BeagleboneBlackP8HeaderTable.pdf
+ * https://github.com/derekmolloy/boneDeviceTree/raw/master/docs/BeagleboneBlackP9HeaderTable.pdf
+ */
 public class BeagleBoneBoardInfoProvider implements BoardInfoProvider {
 	public static final String MAKE = "BeagleBone";
 	// private static final String BBB_HARDWARE_ID = "Generic AM33XX";
@@ -73,8 +77,7 @@ public class BeagleBoneBoardInfoProvider implements BoardInfoProvider {
 			super(MAKE, model, MEMORY, ADC_VREF);
 		}
 
-		@Override
-		public void populateBoardPinInfo() {
+		public void oldPopulateBoardPinInfo() {
 			// FIXME Externalise this to a file
 			addGpioPinInfo(P9_HEADER, 60, 12, PinInfo.DIGITAL_IN_OUT);
 			addGpioPinInfo(P9_HEADER, 48, 15, PinInfo.DIGITAL_IN_OUT);

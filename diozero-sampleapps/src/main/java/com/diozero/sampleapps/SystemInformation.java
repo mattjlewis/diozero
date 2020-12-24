@@ -35,7 +35,8 @@ import java.util.Collections;
 
 import java.util.Map;
 
-import org.fusesource.jansi.Ansi;
+import static org.fusesource.jansi.Ansi.ansi;
+import org.fusesource.jansi.Ansi.Color;
 import org.fusesource.jansi.AnsiConsole;
 
 import com.diozero.api.PinInfo;
@@ -49,23 +50,27 @@ public class SystemInformation {
 
 	public static void main(String[] args) {
 		AnsiConsole.systemInstall();
-		
-		System.out.println(Ansi.ansi().eraseScreen());
-		
-		//System.out.println(Ansi.ansi().eraseScreen().render("@|red Hello|@ @|green World|@") );
-		
+
+		System.out.println(ansi().eraseScreen());
+
+		// System.out.println(Ansi.ansi().eraseScreen().render("@|red Hello|@ @|green
+		// World|@") );
+
 		LocalSystemInfo sys_info = LocalSystemInfo.getInstance();
-		System.out.format("Local Operating System: %s %s %s%n", sys_info.getLinuxOperatingSystemId(),
-				sys_info.getLinuxOperatingSystemVersion(), sys_info.getLinuxOperatingSystemVersionId());
-		System.out.format("Local I2C buses: %s%n", LocalSystemInfo.getI2CBusNumbers());
-		System.out.format("Local CPU Temperature: %.2f%n", Float.valueOf(LocalSystemInfo.getCpuTemperature()));
+		System.out.println(ansi().bold().a("Local System Info").boldOff());
+		System.out.println(
+				ansi().bold().a("Operating System").boldOff().format(": %s %s %s", sys_info.getLinuxOperatingSystemId(),
+						sys_info.getLinuxOperatingSystemVersion(), sys_info.getLinuxOperatingSystemVersionId()));
+		System.out.println(ansi().bold().a("I2C buses").boldOff().format(": %s", LocalSystemInfo.getI2CBusNumbers()));
+		System.out.println(ansi().bold().a("CPU Temperature").boldOff().format(": %.2f",
+				Float.valueOf(LocalSystemInfo.getCpuTemperature())));
 
 		System.out.println();
 		NativeDeviceFactoryInterface ndf = DeviceFactoryHelper.getNativeDeviceFactory();
-		System.out.println("Using native device factory: " + ndf.getName());
+		System.out.println(ansi().bold().a("Native Device Factory").boldOff().a(": ").a(ndf.getName()));
 		BoardInfo board_info = ndf.getBoardInfo();
-		System.out.format("Automatically detected board: %s (RAM: %,d bytes)%n", board_info.getName(),
-				Integer.valueOf(board_info.getMemoryKb()));
+		System.out.println(ansi().bold().a("Board").boldOff().format(": %s (RAM: %,d bytes)", board_info.getName(),
+				Integer.valueOf(board_info.getMemoryKb())));
 
 		System.out.println();
 		for (Map.Entry<String, Map<Integer, PinInfo>> header_pins_entry : board_info.getHeaders().entrySet()) {
@@ -74,7 +79,7 @@ public class SystemInformation {
 					.mapToInt(pin_info -> pin_info.getName().length()).max().orElse(MIN_PIN_NAME_LENGTH));
 
 			String name_dash = String.join("", Collections.nCopies(max_length, "-"));
-			System.out.format("Pins for header %s:%n", header_pins_entry.getKey());
+			System.out.println(ansi().bold().a("Header").boldOff().a(": ").a(header_pins_entry.getKey()));
 			System.out.format("+-----+-%s-+--------+----------+--------+-%s-+-----+%n", name_dash, name_dash);
 			System.out.format(
 					"+ GP# + %" + max_length + "s +  gpiod + Physical + gpiod  + %-" + max_length + "s + GP# +%n",
@@ -85,15 +90,31 @@ public class SystemInformation {
 			int index = 0;
 			for (PinInfo pin_info : pins.values()) {
 				if (index++ % 2 == 0) {
+					System.out.print(ansi().a("| ").bold().fg(getColour(pin_info))
+							.format("%3s", getNotDefined(pin_info.getDeviceNumber())).fgDefault().boldOff().a(" | ")
+							.bold().fg(getColour(pin_info)).format("%" + max_length + "s", pin_info.getName())
+							.fgDefault().boldOff().a(" | ").bold().format("%2s", getNotDefined(pin_info.getChip()))
+							.boldOff().a(':').bold().format("%-3s", getNotDefined(pin_info.getLineOffset())).boldOff()
+							.a(" | ").bold().format("%2s", getNotDefined(pin_info.getPhysicalPin())).boldOff().a(" |"));
+					/*-
 					System.out.format("| %3s | %" + max_length + "s | %2s:%-3s | %2s |",
 							getNotDefined(pin_info.getDeviceNumber()), pin_info.getName(),
 							getNotDefined(pin_info.getChip()), getNotDefined(pin_info.getLineOffset()),
 							getNotDefined(pin_info.getPhysicalPin()));
+					*/
 				} else {
+					System.out.println(ansi().a("| ").bold().format("%-2s", getNotDefined(pin_info.getPhysicalPin()))
+							.boldOff().a(" | ").bold().format("%2s", getNotDefined(pin_info.getChip())).boldOff().a(":")
+							.bold().format("%-3s", getNotDefined(pin_info.getLineOffset())).boldOff().a(" | ").bold()
+							.fg(getColour(pin_info)).format("%-" + max_length + "s", pin_info.getName()).fgDefault()
+							.boldOff().a(" | ").bold().fg(getColour(pin_info))
+							.format("%-3s", getNotDefined(pin_info.getDeviceNumber())).fgDefault().boldOff().a(" |"));
+					/*-
 					System.out.format("| %-2s | %2s:%-3s | %-" + max_length + "s | %-3s |%n",
 							getNotDefined(pin_info.getPhysicalPin()), getNotDefined(pin_info.getChip()),
 							getNotDefined(pin_info.getLineOffset()), pin_info.getName(),
 							getNotDefined(pin_info.getDeviceNumber()));
+					*/
 				}
 				/*-
 				if (pin_info instanceof PwmPinInfo) {
@@ -109,8 +130,30 @@ public class SystemInformation {
 			System.out.format("+-----+-%s-+--------+----------+--------+-%s-+-----+%n", name_dash, name_dash);
 			System.out.println();
 		}
-		
+
 		AnsiConsole.systemUninstall();
+	}
+
+	private static Color getColour(PinInfo pinInfo) {
+		if (pinInfo.getDeviceNumber() != PinInfo.NOT_DEFINED) {
+			return Color.GREEN;
+		}
+
+		Color colour;
+		switch (pinInfo.getName()) {
+		case PinInfo.VCC_3V3:
+			colour = Color.MAGENTA;
+			break;
+		case PinInfo.VCC_5V:
+			colour = Color.RED;
+			break;
+		case PinInfo.GROUND:
+			colour = Color.BLUE;
+			break;
+		default:
+			colour = Color.DEFAULT;
+		}
+		return colour;
 	}
 
 	public static String getNotDefined(int value) {

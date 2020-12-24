@@ -103,8 +103,8 @@ public class PinInfo {
 	public static final String DEFAULT_HEADER = "DEFAULT";
 
 	public static final String GROUND = "GND";
-	public static final String VCC_5V = "5V";
-	public static final String VCC_3V3 = "3.3V";
+	public static final String VCC_5V = "5v";
+	public static final String VCC_3V3 = "3v3";
 
 	private String keyPrefix;
 	private String header;
