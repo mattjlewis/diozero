@@ -36,7 +36,7 @@ If you want to manage the dependencies yourself, download and extract a [diozero
 As of diozero 1.0.0 you can also start a new diozero application using the Maven archetype:
 
 ```
-mvn archetype:generate -DarchetypeGroupId=com.diozero -DarchetypeArtifactId=diozero-application -DarchetypeVersion=1.0.0-SNAPSHOT -DgroupId=com.mycompany -DartifactId=mydiozeroapp -Dversion=1.0-SNAPSHOT
+mvn archetype:generate -DarchetypeGroupId=com.diozero -DarchetypeArtifactId=diozero-application -DarchetypeVersion=1.0.0 -DgroupId=com.mycompany -DartifactId=mydiozeroapp -Dversion=1.0-SNAPSHOT
 ```
 
 To use a snapshot version of the archetype you will need to add this snippet to your Maven `settings.xml` file (in `$HOME/.m2`):
