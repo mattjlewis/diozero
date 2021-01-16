@@ -31,12 +31,12 @@ The following XML snippet can be added to your application's `pom.xml` file:
 </repositories>
 ```
 
-If you want to manage the dependencies yourself, download and extract a [diozero-distribution ZIP file](https://search.maven.org/remotecontent?filepath=com/diozero/diozero-distribution/0.14/diozero-distribution-0.14-bin.zip) from either [Maven Central](https://search.maven.org/) or [mvnrepository](https://mvnrepository.com/).
+If you want to manage the dependencies yourself, download and extract a [diozero-distribution ZIP file](https://search.maven.org/remotecontent?filepath=com/diozero/diozero-distribution/{{ site.version }}/diozero-distribution-{{ site.version }}-bin.zip) from either [Maven Central](https://search.maven.org/) or [mvnrepository](https://mvnrepository.com/).
 
-As of diozero 1.0.0 you can also start a new diozero application using the Maven archetype:
+As of diozero {{ site.version }} you can also start a new diozero application using the Maven archetype:
 
 ```
-mvn archetype:generate -DarchetypeGroupId=com.diozero -DarchetypeArtifactId=diozero-application -DarchetypeVersion=1.0.0 -DgroupId=com.mycompany -DartifactId=mydiozeroapp -Dversion=1.0-SNAPSHOT
+mvn archetype:generate -DarchetypeGroupId=com.diozero -DarchetypeArtifactId=diozero-application -DarchetypeVersion={{ site.version }} -DgroupId=com.mycompany -DartifactId=mydiozeroapp -Dversion=1.0-SNAPSHOT
 ```
 
 To use a snapshot version of the archetype you will need to add this snippet to your Maven `settings.xml` file (in `$HOME/.m2`):
@@ -89,7 +89,7 @@ To package your application so you can copy it to your device again there are a 
 
 1. Export your application as a JAR file and include all run-time dependencies via the classpath.
 Simply run `mvn package` to create the JAR file for your application.
-Note this will not generate a runnable JAR hence you will need to run your application as `java -cp tinylog-2.2.1.jar:diozero-core-0.14.jar:yourapp.jar <<your-main-class>>`.
+Note this will not generate a runnable JAR hence you will need to run your application as `java -cp tinylog-2.2.1.jar:diozero-core-{{ site.version }}.jar:yourapp.jar <<your-main-class>>`.
 
 1. You can use Eclipse to create an runnable JAR file that includes all dependencies and sets.
 Note a runnable JAR file is one that can be run from the command line using `java -jar yourapp.jar`.

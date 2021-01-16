@@ -9,7 +9,7 @@ package com.diozero.internal.board.raspberrypi;
  * This file is part of the diozero project. More information about this project
  * can be found at http://www.diozero.com/
  * %%
- * Copyright (C) 2016 - 2020 diozero
+ * Copyright (C) 2016 - 2021 diozero
  * %%
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -248,8 +248,9 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 		// Unknown as to whether this has 256MB or 512MB RAM
 		case "0015":
 			return new PiABPlusBoardInfo(revision, MODEL_A_PLUS, PCB_REV_1_1, 256, EMBEST, BCM2835);
+		default:
+			return null;
 		}
-		return null;
 	}
 
 	/**
@@ -346,35 +347,36 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 
 		@Override
 		public void populateBoardPinInfo() {
-			addGeneralPinInfo(1, PinInfo.VCC_3V3);
-			addGeneralPinInfo(2, PinInfo.VCC_5V);
-			addGpioPinInfo(0, 3, PinInfo.DIGITAL_IN_OUT); // I2C SDA
-			addGeneralPinInfo(4, PinInfo.VCC_5V);
-			addGpioPinInfo(1, 5, PinInfo.DIGITAL_IN_OUT); // I2C SCL
-			addGeneralPinInfo(6, PinInfo.GROUND);
-			addGpioPinInfo(4, 7, PinInfo.DIGITAL_IN_OUT);
-			addGpioPinInfo(14, 8, PinInfo.DIGITAL_IN_OUT); // UART TXD
-			addGeneralPinInfo(9, PinInfo.GROUND);
-			addGpioPinInfo(15, 10, PinInfo.DIGITAL_IN_OUT); // UART RXD
-			addGpioPinInfo(17, 11, PinInfo.DIGITAL_IN_OUT);
+			int pin = 1;
+			addGeneralPinInfo(pin++, PinInfo.VCC_3V3);
+			addGeneralPinInfo(pin++, PinInfo.VCC_5V);
+			addGpioPinInfo(0, "SDA1", pin++, PinInfo.DIGITAL_IN_OUT, 0, 0); // I2C SDA
+			addGeneralPinInfo(pin++, PinInfo.VCC_5V);
+			addGpioPinInfo(1, "SCL1", pin++, PinInfo.DIGITAL_IN_OUT, 0, 1); // I2C SCL
+			addGeneralPinInfo(pin++, PinInfo.GROUND);
+			addGpioPinInfo(4, "GPIO_GCLK", pin++, PinInfo.DIGITAL_IN_OUT, 0, 4);
+			addGpioPinInfo(14, "TXD1", pin++, PinInfo.DIGITAL_IN_OUT, 0, 14); // UART TXD
+			addGeneralPinInfo(pin++, PinInfo.GROUND);
+			addGpioPinInfo(15, "RXD1", pin++, PinInfo.DIGITAL_IN_OUT, 0, 15); // UART RXD
+			addGpioPinInfo(17, "GPIO17", pin++, PinInfo.DIGITAL_IN_OUT, 0, 17);
 			// TODO Try enabling sysfs PWM, see
 			// http://www.jumpnowtek.com/rpi/Using-the-Raspberry-Pi-Hardware-PWM-timers.html
-			// addPwmPinInfo(18, 12, 0, PinInfo.DIGITAL_IN_OUT_PWM);
-			addGpioPinInfo(18, 12, PinInfo.DIGITAL_IN_OUT);
-			addGpioPinInfo(21, 13, PinInfo.DIGITAL_IN_OUT);
-			addGeneralPinInfo(14, PinInfo.GROUND);
-			addGpioPinInfo(22, 15, PinInfo.DIGITAL_IN_OUT);
-			addGpioPinInfo(23, 16, PinInfo.DIGITAL_IN_OUT);
-			addGeneralPinInfo(17, PinInfo.VCC_3V3);
-			addGpioPinInfo(24, 18, PinInfo.DIGITAL_IN_OUT);
-			addGpioPinInfo(10, 19, PinInfo.DIGITAL_IN_OUT); // SPI MOSI
-			addGeneralPinInfo(20, PinInfo.GROUND);
-			addGpioPinInfo(9, 21, PinInfo.DIGITAL_IN_OUT); // SPI MISO
-			addGpioPinInfo(25, 22, PinInfo.DIGITAL_IN_OUT);
-			addGpioPinInfo(11, 23, PinInfo.DIGITAL_IN_OUT); // SPI CLK
-			addGpioPinInfo(8, 24, PinInfo.DIGITAL_IN_OUT); // SPI CE0
-			addGeneralPinInfo(25, PinInfo.GROUND);
-			addGpioPinInfo(7, 26, PinInfo.DIGITAL_IN_OUT); // SPI CE1
+			// addPwmPinInfo(18, pin++, 0, PinInfo.DIGITAL_IN_OUT_PWM);
+			addGpioPinInfo(18, "GPIO18", pin++, PinInfo.DIGITAL_IN_OUT, 0, 18);
+			addGpioPinInfo(21, "GPIO21", pin++, PinInfo.DIGITAL_IN_OUT, 0, 21);
+			addGeneralPinInfo(pin++, PinInfo.GROUND);
+			addGpioPinInfo(22, "GPIO22", pin++, PinInfo.DIGITAL_IN_OUT, 0, 22);
+			addGpioPinInfo(23, "GPIO23", pin++, PinInfo.DIGITAL_IN_OUT, 0, 23);
+			addGeneralPinInfo(pin++, PinInfo.VCC_3V3);
+			addGpioPinInfo(24, "GPIO24", pin++, PinInfo.DIGITAL_IN_OUT, 0, 24);
+			addGpioPinInfo(10, "SPI_MOSI", pin++, PinInfo.DIGITAL_IN_OUT, 0, 10); // SPI MOSI
+			addGeneralPinInfo(pin++, PinInfo.GROUND);
+			addGpioPinInfo(9, "SPI_MISO", pin++, PinInfo.DIGITAL_IN_OUT, 0, 9); // SPI MISO
+			addGpioPinInfo(25, "GPIO25", pin++, PinInfo.DIGITAL_IN_OUT, 0, 25);
+			addGpioPinInfo(11, "SPI_SCLK", pin++, PinInfo.DIGITAL_IN_OUT, 0, 11); // SPI CLK
+			addGpioPinInfo(8, "SPI_CE0_N", pin++, PinInfo.DIGITAL_IN_OUT, 0, 8); // SPI CE0
+			addGeneralPinInfo(pin++, PinInfo.GROUND);
+			addGpioPinInfo(7, "SPI_CE1_N", pin++, PinInfo.DIGITAL_IN_OUT, 0, 7); // SPI CE1
 		}
 	}
 
@@ -388,33 +390,33 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 			int pin = 1;
 			addGeneralPinInfo(pin++, PinInfo.VCC_3V3);
 			addGeneralPinInfo(pin++, PinInfo.VCC_5V);
-			addGpioPinInfo(2, pin++, PinInfo.DIGITAL_IN_OUT); // I2C SDA
+			addGpioPinInfo(2, "SDA1", pin++, PinInfo.DIGITAL_IN_OUT, 0, 2); // I2C SDA
 			addGeneralPinInfo(pin++, PinInfo.VCC_5V);
-			addGpioPinInfo(3, pin++, PinInfo.DIGITAL_IN_OUT); // I2C SCL
+			addGpioPinInfo(3, "SCL", pin++, PinInfo.DIGITAL_IN_OUT, 0, 3); // I2C SCL
 			addGeneralPinInfo(pin++, PinInfo.GROUND);
-			addGpioPinInfo(4, pin++, PinInfo.DIGITAL_IN_OUT);
-			addGpioPinInfo(14, pin++, PinInfo.DIGITAL_IN_OUT); // UART TXD
+			addGpioPinInfo(4, "GPIO_GCLK", pin++, PinInfo.DIGITAL_IN_OUT, 0, 4);
+			addGpioPinInfo(14, "TXD1", pin++, PinInfo.DIGITAL_IN_OUT, 0, 14); // UART TXD
 			addGeneralPinInfo(pin++, PinInfo.GROUND);
-			addGpioPinInfo(15, pin++, PinInfo.DIGITAL_IN_OUT); // UART RXD
-			addGpioPinInfo(17, pin++, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(15, "RXD1", pin++, PinInfo.DIGITAL_IN_OUT, 0, 15); // UART RXD
+			addGpioPinInfo(17, "GPIO17", pin++, PinInfo.DIGITAL_IN_OUT, 0, 17);
 			// TODO Try enabling sysfs PWM, see
 			// http://www.jumpnowtek.com/rpi/Using-the-Raspberry-Pi-Hardware-PWM-timers.html
 			// addPwmPinInfo(18, pin++, 0, PinInfo.DIGITAL_IN_OUT_PWM);
-			addGpioPinInfo(18, pin++, PinInfo.DIGITAL_IN_OUT);
-			addGpioPinInfo(27, pin++, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(18, "GPIO18", pin++, PinInfo.DIGITAL_IN_OUT, 0, 18);
+			addGpioPinInfo(27, "GPIO27", pin++, PinInfo.DIGITAL_IN_OUT, 0, 27);
 			addGeneralPinInfo(pin++, PinInfo.GROUND);
-			addGpioPinInfo(22, pin++, PinInfo.DIGITAL_IN_OUT);
-			addGpioPinInfo(23, pin++, PinInfo.DIGITAL_IN_OUT);
+			addGpioPinInfo(22, "GPIO22", pin++, PinInfo.DIGITAL_IN_OUT, 0, 22);
+			addGpioPinInfo(23, "GPIO23", pin++, PinInfo.DIGITAL_IN_OUT, 0, 23);
 			addGeneralPinInfo(pin++, PinInfo.VCC_3V3);
-			addGpioPinInfo(24, pin++, PinInfo.DIGITAL_IN_OUT);
-			addGpioPinInfo(10, pin++, PinInfo.DIGITAL_IN_OUT); // SPI MOSI
+			addGpioPinInfo(24, "GPIO24", pin++, PinInfo.DIGITAL_IN_OUT, 0, 24);
+			addGpioPinInfo(10, "SPI_MOSI", pin++, PinInfo.DIGITAL_IN_OUT, 0, 10); // SPI MOSI
 			addGeneralPinInfo(pin++, PinInfo.GROUND);
-			addGpioPinInfo(9, pin++, PinInfo.DIGITAL_IN_OUT); // SPI MISO
-			addGpioPinInfo(25, pin++, PinInfo.DIGITAL_IN_OUT);
-			addGpioPinInfo(11, pin++, PinInfo.DIGITAL_IN_OUT); // SPI CLK
-			addGpioPinInfo(8, pin++, PinInfo.DIGITAL_IN_OUT); // SPI CE0
+			addGpioPinInfo(9, "SPI_MISO", pin++, PinInfo.DIGITAL_IN_OUT, 0, 9); // SPI MISO
+			addGpioPinInfo(25, "GPIO25", pin++, PinInfo.DIGITAL_IN_OUT, 0, 25);
+			addGpioPinInfo(11, "SPI_SCLK", pin++, PinInfo.DIGITAL_IN_OUT, 0, 11); // SPI CLK
+			addGpioPinInfo(8, "SPI_CE0_N", pin++, PinInfo.DIGITAL_IN_OUT, 0, 8); // SPI CE0
 			addGeneralPinInfo(pin++, PinInfo.GROUND);
-			addGpioPinInfo(7, pin++, PinInfo.DIGITAL_IN_OUT); // SPI CE1
+			addGpioPinInfo(7, "SPI_CE1_N", pin++, PinInfo.DIGITAL_IN_OUT, 0, 7); // SPI CE1
 		}
 	}
 

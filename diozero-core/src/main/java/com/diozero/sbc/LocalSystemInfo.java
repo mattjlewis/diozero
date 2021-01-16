@@ -9,7 +9,7 @@ package com.diozero.sbc;
  * This file is part of the diozero project. More information about this project
  * can be found at http://www.diozero.com/
  * %%
- * Copyright (C) 2016 - 2020 diozero
+ * Copyright (C) 2016 - 2021 diozero
  * %%
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -54,6 +54,19 @@ import org.tinylog.Logger;
  *   Hardware : Rockchip (Device Tree)
  *   Revision : 0000
  *   Serial   : 0000000000000000
+ * os.name: Linux
+ * os.arch: arm
+ * sun.arch.data.model: 32
+ * 
+ * Board: Raspberry Pi Model B Rev 2
+ * /proc/device-tree/compatible:    raspberrypi,model-b^@brcm,bcm2835^
+ * /proc/device-tree/model:         ???
+ * /proc/device-tree/serial-number: ???
+ * /proc/cpuinfo:
+ *   Hardware   : BCM2835
+ *   Revision   : 000f
+ *   Serial     : ???
+ *   Model      : ???
  * os.name: Linux
  * os.arch: arm
  * sun.arch.data.model: 32

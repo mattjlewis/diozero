@@ -11,26 +11,18 @@ diozero is a multi-faceted “library” for interacting with low-level devices 
 sensors and GPIOs. It achieves this via object-oriented APIs that abstract developers from the
 complexities of low-level device interface code. An initial motivation to developing diozero
 was to provide a Java equivalent to the excellent Python [gpiozero](https://gpiozero.readthedocs.io/)
-library having found that existing Java libraries didn't offer such a developer-friendly interface.
-
-## Sections
-{: .no_toc .text-delta }
-
-1. TOC
-{:toc}
+library having found that existing Java libraries didn't offer such a developer-friendly experience.
 
 TODO - devices (LEDs, buttons, sensors, motors, displays, etc) that can be connected to Single Board
 Computers like the Raspberry Pi. Actual GPIO / I2C / SPI device communication is delegated 
 to pluggable service providers for maximum compatibility across different boards. This library is 
 known to work on the following boards: all models of the Raspberry Pi, Odroid C2, BeagleBone 
-Black, C.H.I.P and Asus Tinker Board. It should be portable to any Single Board computer that 
+(Green and Black), C.H.I.P and ASUS Tinker Board. It should be portable to any Single Board computer that 
 runs Linux and Java 8.
 
 The aim of this library is to encapsulate real-world devices as classes with meaningful operation 
 names, for example, LED (on / off), LDR (get luminosity), Button (pressed / released), Motor 
-(forward / backwards / left / right). All devices implement `Closeable` hence will get 
-automatically closed by the `try (Device d = new Device()) { d.doSomething(); }` statement. This 
-is best illustrated by some simple examples.
+(forward / backwards / left / right).
 
 > Pin Numbering 
 >{: .admonition-title }
@@ -41,32 +33,29 @@ is best illustrated by some simple examples.
 > * [CHIP pin numbering](http://www.chip-community.org/index.php/Hardware_Information).
 > * [Odroid C2 pin layout](http://www.hardkernel.com/main/products/prdt_info.php?tab_idx=2).
 > * [BeagleBone Black](http://beagleboard.org/support/bone101).
-> * [Asus Tinker Board](https://www.asus.com/uk/Single-board-Computer/TINKER-BOARD/).
+> * [ASUS Tinker Board](https://www.asus.com/uk/Single-board-Computer/TINKER-BOARD/).
 {: .admonition .note }
+
+The library makes use of [try-with-resources](https://docs.oracle.com/javase/tutorial/essential/exceptions/tryResourceClose.html) -
+all devices implement `Closeable` hence will get automatically closed by the
+`try (Device d = new Device()) { d.doSomething(); }` statement. This is best illustrated by some 
+simple examples.
 
 LED control:
 
 ```java
-int led_gpio = 18;
-try (LED led = new LED(led_gpio)) {
-	led.on();
-	SleepUtil.sleepSeconds(.5);
-	led.off();
-	SleepUtil.sleepSeconds(.5);
+try (LED led = new LED(18)) {
 	led.toggle();
 	SleepUtil.sleepSeconds(.5);
 	led.toggle();
 	SleepUtil.sleepSeconds(.5);
-	led.blink(0.5f, 0.5f, 10, false);
 }
 ```
 
 Turn on an LED when you press a button:
 
 ```java
-int button_gpio = 12;
-int led_gpio = 18;
-try (Button button = new Button(button_gpio); LED led = new LED(led_gpio)) {
+try (Button button = new Button(12); LED led = new LED(18)) {
 	button.whenPressed(led::on);
 	button.whenReleased(led::off);
 	SleepUtil.sleepSeconds(10);
@@ -77,72 +66,15 @@ Or a random LED flicker effect:
 
 ```java
 Random random = new Random();
-int led_gpio = 18;
-try (PwmLed led = new PwmLed(led_gpio)) {
+try (PwmLed led = new PwmLed(18)) {
 	DioZeroScheduler.getNonDaemonInstance().invokeAtFixedRate(RANDOM::nextFloat, led::setValue, 50, 50, TimeUnit.MILLISECONDS);
-}
-```
-
-Iternally, all devices are provisioned via a
-[Device Factory](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/internal/spi/DeviceFactoryInterface.java) -
-all of the classes in com.diozero.api and com.diozero.devices include an additional constructor
-parameter that allows a device factory to be specified. If a device factory isn't specified, the
-host board itself is used to provision the device using
-[DeviceFactoryHelper.getNativeDeviceFactory()](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/sbc/DeviceFactoryHelper.java).
-This is particularly useful for GPIO expansion boards and Analog-to-Digital converters.
-The [Providers](2_concepts/1_Providers.md) section provides further details on board device providers.
-
-> Device Factories
->{: .admonition-title }
->
-> Unless you are implementing a new device you shouldn't need to use any of the Device 
-> Factory interfaces or helper classes (within the `com.diozero.internal` package).
-{: .admonition .note }
-
-Some boards like the Raspberry Pi provide no analog input pins; attempting to create an 
-AnalogInputDevice such as an LDR using the Raspberry Pi default native device factory 
-would result in a runtime error (`UnsupportedOperationException`). However, support for 
-Analog to Digital Converter expansion devices such as the 
-[MCP3008](http://rtd.diozero.com/en/latest/ExpansionBoards/#mcp-adc) has been added 
-which are implemented as analog input device factories hence can be used in the 
-constructor of analog devices like LDRs:
-
-```java
-try (McpAdc adc = new McpAdc(McpAdc.Type.MCP3008, chipSelect); LDR ldr = new LDR(adc, pin, vRef, r1)) {
-	System.out.println(ldr.getUnscaledValue());
-}
-```
-
-Repeating the previous example of controlling an LED when you press a button but with 
-all devices connected via an 
-[MCP23017](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/MCP23017.java) 
-GPIO expansion board:
-
-```java
-try (MCP23017 mcp23017 = new MCP23017(intAPin, intBPin);
-		Button button = new Button(mcp23017, inputPin, GpioPullUpDown.PULL_UP);
-		LED led = new LED(mcp23017, outputPin)) {
-	button.whenPressed(led::on);
-	button.whenReleased(led::off);
-	SleepUtil.sleepSeconds(10);
-}
-```
-
-Analog input devices also provide an event notification mechanism. To control the 
-brightness of an LED based on ambient light levels:
-
-```java
-try (McpAdc adc = new McpAdc(McpAdc.Type.MCP3008, chipSelect); LDR ldr = new LDR(adc, pin, vRef, r1); PwmLed led = new PwmLed(ledPin)) {
-	// Detect variations of 10%, get values every 50ms (the default)
-	ldr.addListener((event) -> led.setValue(1-event.getUnscaledValue()), .1f);
-	SleepUtil.sleepSeconds(20);
 }
 ```
 
 ## Getting Started
 
 Snapshot builds of the library are available in the [Nexus Repository Manager](https://oss.sonatype.org/index.html#nexus-search;gav~com.diozero~~~~). 
-For convenience a ZIP of all diozero JARs (currently v0.13) will also be available on [Google Drive](https://drive.google.com/file/d/1WZH6zTwo_xlFDn7CVkx_ABkXbkYK6E2n/view?usp=sharing).
+For convenience a ZIP of all diozero JARs (currently v{{ site.version }}) will also be available on [Google Drive](https://drive.google.com/file/d/1WZH6zTwo_xlFDn7CVkx_ABkXbkYK6E2n/view?usp=sharing).
 
 Javadoc for the core library is also available via [javadoc.io](http://www.javadoc.io/doc/com.diozero/diozero-core/). 
 

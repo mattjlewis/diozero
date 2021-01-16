@@ -28,6 +28,7 @@ group :jekyll_plugins do
 	gem "jekyll-titles-from-headings"
 	gem "jemoji"
 	gem "github-pages"
+	gem "webrick"
 end
 
 # Windows and JRuby does not include zoneinfo files, so bundle the tzinfo-data gem

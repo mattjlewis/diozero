@@ -9,7 +9,7 @@ package com.diozero.internal.provider.builtin.serial;
  * This file is part of the diozero project. More information about this project
  * can be found at http://www.diozero.com/
  * %%
- * Copyright (C) 2016 - 2020 diozero
+ * Copyright (C) 2016 - 2021 diozero
  * %%
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -41,6 +41,7 @@ import org.tinylog.Logger;
 
 import com.diozero.api.RuntimeIOException;
 import com.diozero.api.SerialDevice;
+import com.diozero.util.IOUtil;
 import com.diozero.util.LibraryLoader;
 
 public class NativeSerialDevice implements Closeable {
@@ -148,7 +149,7 @@ public class NativeSerialDevice implements Closeable {
 
 	public int read(byte[] buffer) {
 		try {
-			return inputStream.read(buffer);
+			return IOUtil.read(inputStream, buffer);
 		} catch (IOException e) {
 			throw new RuntimeIOException("Error in serial device read for '" + deviceFile + "': " + e.getMessage(), e);
 		}

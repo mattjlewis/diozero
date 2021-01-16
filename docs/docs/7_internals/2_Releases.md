@@ -39,7 +39,7 @@ permalink: /internals/releases.html
 ## Release 0.9
 
 + Native support for I2C and SPI in the sysfs provider.
-+ Support for CHIP, BeagleBone Black and Asus Tinker Board.
++ Support for CHIP, BeagleBone Black and ASUS Tinker Board.
 + Moved sysfs provider into diozero-core, use as the default provider.
 + Preliminary support for devices that support the Firmata protocol (i.e. Arduino).
 
@@ -82,3 +82,8 @@ permalink: /internals/releases.html
 
 + Refactored package hierarchy to clearly distinguish between devices, API and SPI
 + Documentation update - moved from readthedocs to GitHub pages
+
+## Release 1.0.1
+
++ Minor bug fix to support Raspberry Pi 1 Model B
++ Introduce readFully method for serial devices to read specified number of bytes before returning

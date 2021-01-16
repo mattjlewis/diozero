@@ -61,7 +61,7 @@
 
 	<groupId>com.diozero</groupId>
 	<artifactId>diozero</artifactId>
-	<version>1.0.0</version>
+	<version>1.0.1</version>
 	<name>Device I/O Zero</name>
 	<description>Java Device I/O library with an API based on the Python GPIO Zero supporting portable across Single Board Computers (including Raspberry Pi, BeagleBone Black, Odroid C2, CHIP, Asus Tinker Board)</description>
 	<url>http://www.diozero.com/</url>
@@ -152,7 +152,7 @@
 
 		<maven.min-version>3.3.0</maven.min-version>
 
-		<diozero.version>1.0.0</diozero.version>
+		<diozero.version>1.0.1</diozero.version>
 
 		<!-- Java version -->
 		<maven.compiler.source>11</maven.compiler.source>
@@ -189,7 +189,7 @@
 		<google-gson.version>2.8.6</google-gson.version>
 		<google-protobuf-java.version>3.14.0</google-protobuf-java.version>
 		<netty.version>4.1.55.Final</netty.version>
-		<grpc.version>1.34.1</grpc.version>
+		<grpc.version>1.35.0</grpc.version>
 		<junit.version>5.7.0</junit.version>
 	</properties>
 

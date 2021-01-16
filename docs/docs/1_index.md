@@ -13,7 +13,6 @@ has_toc: true
 [![Maven Central status](https://img.shields.io/maven-central/v/com.diozero/diozero.svg)](https://search.maven.org/search?q=g:com.diozero)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Javadoc](https://www.javadoc.io/badge/com.diozero/diozero-core.svg)](https://www.javadoc.io/doc/com.diozero/diozero-core)
-[![Documentation Status](https://readthedocs.org/projects/diozero/badge/?version=latest)](http://diozero.readthedocs.io/en/latest/?badge=latest)
 
 A Device I/O library implemented in Java that is portable across Single Board Computers to
 provide an intuitive and frictionless way to get started with physical computing.
@@ -63,7 +62,7 @@ diozero has out of the box support for the following Single Board Computers and 
 * [Raspberry Pi](http://www.raspberyrpi.org/) (all versions).
 * [Odroid C2](https://wiki.odroid.com/odroid-c2/odroid-c2).
 * [BeagleBone Green / Black](https://beagleboard.org/black).
-* [Asus TinkerBoard](https://www.asus.com/uk/Single-board-Computer/TINKER-BOARD/).
+* [ASUS TinkerBoard](https://www.asus.com/uk/Single-board-Computer/TINKER-BOARD/).
 * [Allwinner H3](https://linux-sunxi.org/H3) boards, including [NanoPi Neo](https://www.friendlyarm.com/index.php?route=product/product&product_id=132) and [NanoPi Duo](https://www.friendlyarm.com/index.php?route=product/product&product_id=244).
 * [The Next Thing Co CHIP](https://getchip.com/pages/chip).
 * [Arduino compatible](https://www.arduino.cc) (any device that can run [Standard Firmata](https://github.com/firmata/arduino/blob/master/examples/StandardFirmata/StandardFirmata.ino)).
@@ -77,7 +76,7 @@ Maven dependency:
 <dependency>
     <groupId>com.diozero</groupId>
     <artifactId>diozero-core</artifactId>
-    <version>0.14</version>
+    <version>{{ site.version }}</version>
 </dependency>
 ```
 
@@ -88,8 +87,8 @@ mvn archetype:generate -DarchetypeGroupId=com.diozero -DarchetypeArtifactId=dioz
 
 A distribution ZIP file containing all JARs and their dependencies is also available via [Maven Central](https://search.maven.org/) -
 locate [com.diozero:diozero-distribution](https://search.maven.org/artifact/com.diozero/diozero-distribution),
-select a version and click the "[bin.zip](https://search.maven.org/remotecontent?filepath=com/diozero/diozero-distribution/0.14/diozero-distribution-0.14-bin.zip)" option in the Downloads link top right.
-It is also available in [mvnrepository](https://mvnrepository.com/) by locating [diozero-distribution](https://mvnrepository.com/artifact/com.diozero/diozero-distribution), selecting a version and clicking the Files [View All](https://repo1.maven.org/maven2/com/diozero/diozero-distribution/0.14) link.
+select a version and click the "[bin.zip](https://search.maven.org/remotecontent?filepath=com/diozero/diozero-distribution/{{ site.version }}/diozero-distribution-{{ site.version }}-bin.zip)" option in the Downloads link top right.
+It is also available in [mvnrepository](https://mvnrepository.com/) by locating [diozero-distribution](https://mvnrepository.com/artifact/com.diozero/diozero-distribution), selecting a version and clicking the Files [View All](https://repo1.maven.org/maven2/com/diozero/diozero-distribution/{{ site.version }}) link.
 
 ## Development
 

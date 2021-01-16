@@ -9,7 +9,7 @@ package com.diozero.api;
  * This file is part of the diozero project. More information about this project
  * can be found at http://www.diozero.com/
  * %%
- * Copyright (C) 2016 - 2020 diozero
+ * Copyright (C) 2016 - 2021 diozero
  * %%
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -294,8 +294,49 @@ public class SerialDevice implements SerialConstants, SerialDeviceInterface {
 	 * <li>parity: {@link SerialConstants#DEFAULT_PARITY}</li>
 	 * <li>readBlocking: {@link SerialConstants#DEFAULT_READ_BLOCKING}</li>
 	 * <li>minReadChars: {@link SerialConstants#DEFAULT_MIN_READ_CHARS}</li>
-	 * <li>readTimeout: {@link SerialConstants#DEFAULT_READ_TIMEOUT_MILLIS}</li>
+	 * <li>readTimeoutMillis: {@link SerialConstants#DEFAULT_READ_TIMEOUT_MILLIS}</li>
 	 * </ul>
+	 * 
+	 * The <a href="https://man7.org/linux/man-pages/man3/termios.3.html">termios man page</a> provide more
+	 * detail on these options.
+	 * Note that the serial device is opened in non-canonical mode so that "<em>input is available immediately
+	 * (without the user having to type a line-delimiter character)</em>".
+	 * 
+	 * Translating the information on the termios man page to diozero:
+	 * 
+	 * The settings of minReadChars and readTimeoutMillis determine the circumstances in which a read(2) completes;
+	 * there are four distinct cases:
+	 * <dl>
+	 * <dt>1) minReadChars == 0, readTimeoutMillis == 0 (polling read)</dt>
+	 *    <dd>If data is available, read(2) returns immediately, with the lesser of the number of bytes available,
+	 *    or the number of bytes requested.  If no data is available, read(2) returns 0.</dd>
+	 *
+	 * <dt>2) minReadChars > 0, readTimeoutMillis == 0 (blocking read)</dt>
+	 *    <dd>read(2) blocks until minReadChars bytes are available, and returns up to the number of bytes requested.</dd>
+	 * 
+	 * <dt>3) minReadChars == 0, readTimeoutMillis > 0 (read with timeout)</dt>
+	 *    <dd>TIME specifies the limit for a timer in millis (converted to tenths of a second).
+	 *    The timer is started when read(2) is called. read(2) returns either when at least one byte of data is
+	 *    available, or when the timer expires. If the timer expires without any input becoming available, read(2)
+	 *    returns 0. If data is already available at the time of the call to read(2), the call behaves as though
+	 *    the data was received immediately after the call.</dd>
+	 * 
+	 * <dt>4) minReadChars > 0, readTimeoutMillis > 0 (read with interbyte timeout)</dt>
+	 *    <dd>readTimeoutMillis specifies the limit for a timer in tenths of a second. Once an initial byte of input
+	 *    becomes available, the timer is restarted after each further byte is received.
+	 *    read(2) returns when any of the following conditions are met:
+	 *      <ul>
+	 *        <li>minReadChars bytes have been received.</li>
+	 *        <li>The interbyte timer expires.</li>
+	 *        <li>The number of bytes requested by read(2) has been received. (POSIX does not specify this termination
+	 *          condition, and on some other implementations read(2) does not return in this case.)</li>
+	 *      </ul>
+	 *    </dd>
+	 * </dl>
+	 * 
+	 * Because the timer is started only after the initial byte becomes available, at least one byte will be read.
+	 * If data is already available at the time of the call to read(2), the call behaves as though the data was
+	 * received immediately after the call.
 	 */
 	public static class Builder {
 		private String deviceFilename;

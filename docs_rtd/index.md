@@ -12,7 +12,7 @@ GPIO / I2C / SPI devices (LEDs, buttons, sensors, motors, displays, etc) connect
 Board Computers like the Raspberry Pi. Actual GPIO / I2C / SPI device communication is delegated 
 to pluggable service providers for maximum compatibility across different boards. This library is 
 known to work on the following boards: all models of the Raspberry Pi, Odroid C2, BeagleBone 
-Black, C.H.I.P and Asus Tinker Board. It should be portable to any Single Board computer that 
+Black, C.H.I.P and ASUS Tinker Board. It should be portable to any Single Board computer that 
 runs Linux and Java 8.
 
 This library makes use of modern Java features such as 
@@ -41,7 +41,7 @@ is best illustrated by some simple examples.
     * [CHIP pin numbering](http://www.chip-community.org/index.php/Hardware_Information).
     * [Odroid C2 pin layout](http://www.hardkernel.com/main/products/prdt_info.php?tab_idx=2).
     * [BeagleBone Black](http://beagleboard.org/support/bone101).
-    * [Asus Tinker Board](https://www.asus.com/uk/Single-board-Computer/TINKER-BOARD/).
+    * [ASUS Tinker Board](https://www.asus.com/uk/Single-board-Computer/TINKER-BOARD/).
 
 LED control:
 
@@ -136,7 +136,7 @@ diozero has out of the box support for the following Single Board Computers:
 * [Raspberry Pi](http://www.raspberyrpi.org/) (all versions).
 * [Odroid C2](http://www.hardkernel.com/main/products/prdt_info.php).
 * [Beagle Bone Black](https://beagleboard.org/black).
-* [Asus Tinker Board](https://www.asus.com/uk/Single-board-Computer/TINKER-BOARD/).
+* [ASUS Tinker Board](https://www.asus.com/uk/Single-board-Computer/TINKER-BOARD/).
 * [The Next Thing Co CHIP](https://getchip.com/pages/chip).
 
 The builtin sysfs provider is designed to be portable across different boards. 

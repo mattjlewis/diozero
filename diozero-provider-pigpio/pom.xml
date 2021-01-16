@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>com.diozero</groupId>
 		<artifactId>diozero</artifactId>
-		<version>1.0.0</version>
+		<version>1.0.1</version>
 	</parent>
 	
 	<name>Device I/O Zero - pigpioj provider</name>
@@ -12,7 +12,7 @@
 	<packaging>jar</packaging>
 	
 	<properties>
-		<pigpioj.version>2.5.3</pigpioj.version>
+		<pigpioj.version>2.5.4</pigpioj.version>
 	</properties>
 	
 	<dependencyManagement>

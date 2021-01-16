@@ -13,7 +13,7 @@ On Debian based systems the gpiod command line tools can be installed using `sud
 
 Note that the board's Linux kernel has to be at version 4.8 or later to support GPIO Character Device. This [page](https://embeddedbits.org/new-linux-kernel-gpio-user-space-interface/) provides a good description of the Linux Kernel user-space GPIO interfaces.
 
-Unfortunately the version of gpiod available in Linux kernels prior to 5.5 [do not provide support for pull-up / pull-down resistors](https://microhobby.com.br/blog/2020/02/02/new-linux-kernel-5-5-new-interfaces-in-gpiolib/). The latest stable kernel version officially available in Debian Buster is 4.19, at the time of diozero 1.0.0 Raspbian and BeagleBone both provide stable 5.4 based Linux Kernels.
+Unfortunately the version of gpiod available in Linux kernels prior to 5.5 [do not provide support for pull-up / pull-down resistors](https://microhobby.com.br/blog/2020/02/02/new-linux-kernel-5-5-new-interfaces-in-gpiolib/). The latest stable kernel version officially available in Debian Buster is 4.19, at the time of diozero 1.0.0, Raspbian and BeagleBone both provide stable 5.4 based Linux Kernels.
 
 To address this, diozero will its own internal memory mapped GPIO implementation on boards for which it has been implemented and where the current user has access to the corresponding memory file (`/dev/gpiomem` or `/dev/mem`).
 

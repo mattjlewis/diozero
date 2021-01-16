@@ -31,7 +31,7 @@
 # Release 0.9
 
 + Native support for I2C and SPI in the sysfs provider.
-+ Support for CHIP, BeagleBone Black and Asus Tinker Board.
++ Support for CHIP, BeagleBone Black and ASUS Tinker Board.
 + Moved sysfs provider into diozero-core, use as the default provider.
 + Preliminary support for devices that support the Firmata protocol (i.e. Arduino).
 

@@ -9,7 +9,7 @@ package com.diozero.api;
  * This file is part of the diozero project. More information about this project
  * can be found at http://www.diozero.com/
  * %%
- * Copyright (C) 2016 - 2020 diozero
+ * Copyright (C) 2016 - 2021 diozero
  * %%
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -61,8 +61,9 @@ public interface SerialDeviceInterface extends DeviceInterface {
 	void writeByte(byte bVal) throws RuntimeIOException;
 
 	/**
-	 * Attempt to read buffer.length bytes into the specified buffer, throw an
-	 * exception if unable to read any data
+	 * Attempt to read buffer.length bytes into the specified buffer, returning the
+	 * number of bytes actually read; throw a RuntimeIOException if an I/O error
+	 * occurs
 	 * 
 	 * @param buffer The buffer to read into, the length of this buffer specifies
 	 *               the number of bytes to read
