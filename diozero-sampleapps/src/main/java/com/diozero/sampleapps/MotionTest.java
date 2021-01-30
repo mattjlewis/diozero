@@ -71,8 +71,8 @@ public class MotionTest implements Closeable {
 				sensor = new DigitalInputDevice(pin, GpioPullUpDown.PULL_DOWN, GpioEventTrigger.BOTH);
 			}
 			Logger.info("Created sensor on pin " + pin + " pud=" + sensor.getPullUpDown() + ", trigger=" + sensor.getTrigger());
-			sensor.whenActivated(() ->System.out.println("Pin " + pin + " activated"));
-			sensor.whenDeactivated(() ->System.out.println("Pin " + pin + " deactivated"));
+			sensor.whenActivated(epochTime ->System.out.println("Pin " + pin + " activated"));
+			sensor.whenDeactivated(epochTime ->System.out.println("Pin " + pin + " deactivated"));
 			sensors.add(sensor);
 		}
 	}

@@ -59,9 +59,9 @@ public class ButtonTest {
 	@Test
 	public void test() {
 		try (Button button = new Button(1, GpioPullUpDown.PULL_UP)) {
-			button.whenPressed(() -> Logger.info("Pressed"));
-			button.whenReleased(() -> Logger.info("Released"));
-			button.addListener((event) -> Logger.info("Event: {}", event));
+			button.whenPressed(epochTime -> Logger.info("Pressed"));
+			button.whenReleased(epochTime -> Logger.info("Released"));
+			button.addListener(event -> Logger.info("Event: {}", event));
 
 			ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
 			ScheduledFuture<?> future = executor

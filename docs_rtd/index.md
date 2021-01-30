@@ -63,8 +63,8 @@ Turn on an LED when you press a button:
 
 ```java
 try (Button button = new Button(buttonPin, GpioPullUpDown.PULL_UP); LED led = new LED(ledPin)) {
-	button.whenPressed(led::on);
-	button.whenReleased(led::off);
+	button.whenPressed(epochTime -> led::on);
+	button.whenReleased(epochTime -> led::off);
 	SleepUtil.sleepSeconds(10);
 }
 ```
@@ -112,8 +112,8 @@ GPIO expansion board:
 try (MCP23017 mcp23017 = new MCP23017(intAPin, intBPin);
 		Button button = new Button(mcp23017, inputPin, GpioPullUpDown.PULL_UP);
 		LED led = new LED(mcp23017, outputPin)) {
-	button.whenPressed(led::on);
-	button.whenReleased(led::off);
+	button.whenPressed(epochTime -> led::on);
+	button.whenReleased(epochTime -> led::off);
 	SleepUtil.sleepSeconds(10);
 }
 ```
@@ -198,8 +198,8 @@ import com.diozero.util.SleepUtil
 led = new LED(12)
 button = new Button(25)
 
-button.whenPressed({ led.on() })
-button.whenReleased({ led.off() })
+button.whenPressed(epochTime -> { led.on(); })
+button.whenReleased(epochTime -> { led.off() })
 
 println("Waiting for button presses. Press CTRL-C to quit.")
 SleepUtil.pause()

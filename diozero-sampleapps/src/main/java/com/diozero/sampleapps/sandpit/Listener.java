@@ -42,11 +42,9 @@ public class Listener {
 		try (Button button = new Button(16); LED led = new LED(22)) {
 			// Toggle the LED every second
 			DiozeroScheduler.getNonDaemonInstance().scheduleAtFixedRate(() -> led.toggle(), 0, 1, TimeUnit.SECONDS);
-			
+
 			// Do something whenever the button is pressed
-			button.whenPressed(() -> {
-				System.out.println("Pressed");
-			});
+			button.whenPressed(epochTime -> System.out.println("Pressed"));
 		}
 	}
 }

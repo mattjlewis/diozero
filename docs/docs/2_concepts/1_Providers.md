@@ -46,8 +46,8 @@ GPIO expansion board:
 try (MCP23017 mcp23017 = new MCP23017(12);
 		Button button = new Button(mcp23017, 1, GpioPullUpDown.PULL_UP);
 		LED led = new LED(mcp23017, 2)) {
-	button.whenPressed(led::on);
-	button.whenReleased(led::off);
+	button.whenPressed(epochTime -> led::on);
+	button.whenReleased(epochTime -> led::off);
 	SleepUtil.sleepSeconds(10);
 }
 ```

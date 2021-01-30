@@ -377,6 +377,7 @@ public class SerialDevice implements SerialConstants, SerialDeviceInterface {
 			return this;
 		}
 
+		/*-
 		public Builder setReadBlocking(boolean readBlocking) {
 			this.readBlocking = readBlocking;
 			return this;
@@ -391,6 +392,7 @@ public class SerialDevice implements SerialConstants, SerialDeviceInterface {
 			this.readTimeoutMillis = readTimeoutMillis;
 			return this;
 		}
+		*/
 
 		public SerialDevice build() {
 			return new SerialDevice(deviceFilename, baud, dataBits, stopBits, parity, readBlocking, minReadChars,
@@ -462,7 +464,7 @@ public class SerialDevice implements SerialConstants, SerialDeviceInterface {
 	 *                          converted to tenths of a second as an unsigned char)
 	 * @throws RuntimeIOException If an I/O error occurs
 	 */
-	public SerialDevice(String deviceFilename, int baud, DataBits dataBits, StopBits stopBits, Parity parity,
+	SerialDevice(String deviceFilename, int baud, DataBits dataBits, StopBits stopBits, Parity parity,
 			boolean readBlocking, int minReadChars, int readTimeoutMillis) throws RuntimeIOException {
 		delegate = DeviceFactoryHelper.getNativeDeviceFactory().provisionSerialDevice(deviceFilename, baud, dataBits,
 				stopBits, parity, readBlocking, minReadChars, readTimeoutMillis);

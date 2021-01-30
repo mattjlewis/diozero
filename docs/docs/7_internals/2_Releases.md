@@ -87,3 +87,7 @@ permalink: /internals/releases.html
 
 + Minor bug fix to support Raspberry Pi 1 Model B
 + Introduce readFully method for serial devices to read specified number of bytes before returning
+
+## Release 1.1.0
+
++ Changed whenPressed / whenReleased to receive DigitalInputEvent; removed readBlock, minReadChars and readTimeout from SerialDevice constructors

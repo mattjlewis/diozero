@@ -57,22 +57,22 @@ public class MCP23S17Test {
 				LED led8 = new LED(mcp23s17, 8, true, false)) {
 			Logger.info("Using {}", mcp23s17.getName());
 
-			button0.whenPressed(() -> Logger.info("0 Pressed"));
-			button0.whenReleased(() -> Logger.info("0 Released"));
-			button1.whenPressed(() -> Logger.info("1 Pressed"));
-			button1.whenReleased(() -> Logger.info("1 Released"));
-			button2.whenPressed(() -> Logger.info("2 Pressed"));
-			button2.whenReleased(() -> Logger.info("2 Released"));
-			button3.whenPressed(() -> Logger.info("3 Pressed"));
-			button3.whenReleased(() -> Logger.info("3 Released"));
-			button4.whenPressed(() -> Logger.info("4 Pressed"));
-			button4.whenReleased(() -> Logger.info("4 Released"));
-			button5.whenPressed(() -> Logger.info("5 Pressed"));
-			button5.whenReleased(() -> Logger.info("5 Released"));
-			button6.whenPressed(() -> Logger.info("6 Pressed"));
-			button6.whenReleased(() -> Logger.info("6 Released"));
-			button7.whenPressed(() -> Logger.info("7 Pressed"));
-			button7.whenReleased(() -> Logger.info("7 Released"));
+			button0.whenPressed(epochTime -> Logger.info("0 Pressed"));
+			button0.whenReleased(epochTime -> Logger.info("0 Released"));
+			button1.whenPressed(epochTime -> Logger.info("1 Pressed"));
+			button1.whenReleased(epochTime -> Logger.info("1 Released"));
+			button2.whenPressed(epochTime -> Logger.info("2 Pressed"));
+			button2.whenReleased(epochTime -> Logger.info("2 Released"));
+			button3.whenPressed(epochTime -> Logger.info("3 Pressed"));
+			button3.whenReleased(epochTime -> Logger.info("3 Released"));
+			button4.whenPressed(epochTime -> Logger.info("4 Pressed"));
+			button4.whenReleased(epochTime -> Logger.info("4 Released"));
+			button5.whenPressed(epochTime -> Logger.info("5 Pressed"));
+			button5.whenReleased(epochTime -> Logger.info("5 Released"));
+			button6.whenPressed(epochTime -> Logger.info("6 Pressed"));
+			button6.whenReleased(epochTime -> Logger.info("6 Released"));
+			button7.whenPressed(epochTime -> Logger.info("7 Pressed"));
+			button7.whenReleased(epochTime -> Logger.info("7 Released"));
 
 			double delay = 0.5;
 			int iterations = 10;

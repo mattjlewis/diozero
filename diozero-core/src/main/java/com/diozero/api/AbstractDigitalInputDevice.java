@@ -1,7 +1,5 @@
 package com.diozero.api;
 
-import com.diozero.api.function.Action;
-
 /*
  * #%L
  * Organisation: diozero
@@ -33,14 +31,16 @@ import com.diozero.api.function.Action;
  * #L%
  */
 
+import java.util.function.LongConsumer;
+
 /**
  * Abstract base class for low-level GPIO digital input devices.
  */
 public abstract class AbstractDigitalInputDevice extends GpioInputDevice<DigitalInputEvent>
 		implements DigitalInputDeviceInterface {
 	protected boolean activeHigh;
-	private Action activatedAction;
-	private Action deactivatedAction;
+	private LongConsumer activatedConsumer;
+	private LongConsumer deactivatedConsumer;
 	private boolean listenerEnabled;
 
 	public AbstractDigitalInputDevice(int gpio, boolean activeHigh) {
@@ -69,7 +69,7 @@ public abstract class AbstractDigitalInputDevice extends GpioInputDevice<Digital
 
 	@Override
 	protected void disableDeviceListener() {
-		if (activatedAction == null && deactivatedAction == null) {
+		if (activatedConsumer == null && deactivatedConsumer == null) {
 			if (listenerEnabled) {
 				removeListener();
 				listenerEnabled = false;
@@ -80,11 +80,11 @@ public abstract class AbstractDigitalInputDevice extends GpioInputDevice<Digital
 	@Override
 	public void accept(DigitalInputEvent event) {
 		event.setActiveHigh(activeHigh);
-		if (activatedAction != null && event.isActive()) {
-			activatedAction.action();
+		if (activatedConsumer != null && event.isActive()) {
+			activatedConsumer.accept(event.getEpochTime());
 		}
-		if (deactivatedAction != null && !event.isActive()) {
-			deactivatedAction.action();
+		if (deactivatedConsumer != null && !event.isActive()) {
+			deactivatedConsumer.accept(event.getEpochTime());
 		}
 		super.accept(event);
 	}
@@ -92,11 +92,11 @@ public abstract class AbstractDigitalInputDevice extends GpioInputDevice<Digital
 	/**
 	 * Action to perform when the device state is active.
 	 * 
-	 * @param action Action callback object.
+	 * @param consumer Callback object to be invoked when activated (long parameter is epoch time).
 	 */
-	public void whenActivated(Action action) {
-		activatedAction = action;
-		if (activatedAction == null && deactivatedAction == null) {
+	public void whenActivated(LongConsumer consumer) {
+		activatedConsumer = consumer;
+		if (activatedConsumer == null && deactivatedConsumer == null) {
 			disableDeviceListener();
 		} else {
 			enableDeviceListener();
@@ -106,11 +106,11 @@ public abstract class AbstractDigitalInputDevice extends GpioInputDevice<Digital
 	/**
 	 * Action to perform when the device state is inactive.
 	 * 
-	 * @param action Action callback object.
+	 * @param consumer Callback object to be invoked when activated (long parameter is epoch time)
 	 */
-	public void whenDeactivated(Action action) {
-		deactivatedAction = action;
-		if (activatedAction == null && deactivatedAction == null) {
+	public void whenDeactivated(LongConsumer consumer) {
+		deactivatedConsumer = consumer;
+		if (activatedConsumer == null && deactivatedConsumer == null) {
 			disableDeviceListener();
 		} else {
 			enableDeviceListener();

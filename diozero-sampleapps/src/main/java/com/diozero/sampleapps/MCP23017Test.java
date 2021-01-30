@@ -79,8 +79,8 @@ public class MCP23017Test {
 			Logger.debug("Blink");
 			led.blink(0.5f, 0.5f, 10, false);
 
-			button.whenPressed(led::on);
-			button.whenReleased(led::off);
+			button.whenPressed(epochTime -> led::on);
+			button.whenReleased(epochTime -> led::off);
 
 			Logger.debug("Waiting for 10s - *** Press the button connected to MCP23017 pin {} ***",
 					Integer.valueOf(inputPin));

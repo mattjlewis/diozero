@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>com.diozero</groupId>
 		<artifactId>diozero</artifactId>
-		<version>1.0.1</version>
+		<version>1.1.0</version>
 	</parent>
 
 	<name>Device I/O Zero - Sample applications</name>
@@ -13,7 +13,7 @@
 	
 	<properties>
 		<imgscalr-lib.version>4.2</imgscalr-lib.version>
-		<jansi.version>2.1.1</jansi.version>
+		<jansi.version>2.2.0</jansi.version>
 	</properties>
 	
 	<dependencyManagement>

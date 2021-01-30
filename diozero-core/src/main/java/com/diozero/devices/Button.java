@@ -31,8 +31,12 @@ package com.diozero.devices;
  * #L%
  */
 
-import com.diozero.api.*;
-import com.diozero.api.function.Action;
+import java.util.function.LongConsumer;
+
+import com.diozero.api.DigitalInputDevice;
+import com.diozero.api.GpioEventTrigger;
+import com.diozero.api.GpioPullUpDown;
+import com.diozero.api.RuntimeIOException;
 import com.diozero.internal.spi.GpioDeviceFactoryInterface;
 
 /**
@@ -53,8 +57,8 @@ import com.diozero.internal.spi.GpioDeviceFactoryInterface;
  * <pre>
  * {@code
  * try (Button button = new Button(buttonPin, GpioPullUpDown.PULL_UP); LED led = new LED(ledPin)) {
- *   button.whenPressed(led::on);
- *   button.whenReleased(led::off);
+ *   button.whenPressed(epochTime -> led::on);
+ *   button.whenReleased(epochTime -> led::off);
  *   Logger.info("Waiting for 10s - *** Press the button connected to pin {} ***", Integer.valueOf(buttonPin));
  *   SleepUtil.sleepSeconds(10);
  * }
@@ -108,17 +112,17 @@ public class Button extends DigitalInputDevice {
 	
 	/**
 	 * Action to perform when the button is pressed.
-	 * @param action Action function to invoke.
+	 * @param consumer Calllback function to invoke when pressed (long parameter is epoch time).
 	 */
-	public void whenPressed(Action action) {
-		whenActivated(action);
+	public void whenPressed(LongConsumer consumer) {
+		whenActivated(consumer);
 	}
 	
 	/**
 	 * Action to perform when the button is released.
-	 * @param action Action function to invoke.
+	 * @param consumer Calllback function to invoke when pressed (long parameter is epoch time).
 	 */
-	public void whenReleased(Action action) {
-		whenDeactivated(action);
+	public void whenReleased(LongConsumer consumer) {
+		whenDeactivated(consumer);
 	}
 }
