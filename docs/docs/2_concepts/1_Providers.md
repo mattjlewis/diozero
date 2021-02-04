@@ -46,8 +46,8 @@ GPIO expansion board:
 try (MCP23017 mcp23017 = new MCP23017(12);
 		Button button = new Button(mcp23017, 1, GpioPullUpDown.PULL_UP);
 		LED led = new LED(mcp23017, 2)) {
-	button.whenPressed(epochTime -> led::on);
-	button.whenReleased(epochTime -> led::off);
+	button.whenPressed(epochTime -> led.on());
+	button.whenReleased(epochTime -> led.off());
 	SleepUtil.sleepSeconds(10);
 }
 ```
@@ -60,7 +60,7 @@ try (McpAdc adc = new McpAdc(McpAdc.Type.MCP3008, 1);
 		LDR ldr = new LDR(adc, 1, 3.3, 1000);
 		PwmLed led = new PwmLed(18)) {
 	// Detect variations of 10%, get values every 50ms (the default)
-	ldr.addListener((event) -> led.setValue(1-event.getUnscaledValue()), .1f);
+	ldr.addListener(event -> led.setValue(1-event.getUnscaledValue()), .1f);
 	SleepUtil.sleepSeconds(20);
 }
 ```

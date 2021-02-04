@@ -60,8 +60,8 @@ public class ButtonControlledLed {
 	
 	public static void test(int buttonPin, int ledPin) {
 		try (Button button = new Button(buttonPin, GpioPullUpDown.PULL_UP); LED led = new LED(ledPin)) {
-			button.whenPressed(epochTime -> led::on);
-			button.whenReleased(epochTime -> led::off);
+			button.whenPressed(epochTime -> led.on());
+			button.whenReleased(epochTime -> led.off());
 			
 			Logger.info("Waiting for 10s - *** Press the button connected to pin {} ***", Integer.valueOf(buttonPin));
 			SleepUtil.sleepSeconds(10);
