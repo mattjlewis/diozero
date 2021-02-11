@@ -100,8 +100,8 @@ public class NativeGpioInputDevice extends AbstractInputDevice<DigitalInputEvent
 	}
 
 	@Override
-	public void event(int lineFd, int eventDataId, long timestampNanos) {
-		accept(new DigitalInputEvent(gpio, timestampNanos / 1_000_000, timestampNanos,
+	public void event(int lineFd, int eventDataId, long epochTime, long timestampNanos) {
+		accept(new DigitalInputEvent(gpio, epochTime, timestampNanos,
 				eventDataId == GpioChip.GPIOEVENT_EVENT_RISING_EDGE));
 	}
 }

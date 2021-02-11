@@ -63,8 +63,8 @@ try (MCP23017 mcp23017 = new MCP23017(intAPin, intBPin);
 	led.off();
 	SleepUtil.sleepSeconds(1);
 	led.blink(0.5f, 0.5f, 10, false);
-	button.whenPressed(epochTime -> led.on());
-	button.whenReleased(epochTime -> led.off());
+	button.whenPressed(nanoTime -> led.on());
+	button.whenReleased(nanoTime -> led.off());
 	Logger.debug("Waiting for 10s - *** Press the button connected to MCP23017 pin {} ***",
 			Integer.valueOf(inputPin));
 	SleepUtil.sleepSeconds(10);

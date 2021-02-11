@@ -97,9 +97,9 @@ public class LcdGame implements Closeable {
 		lock = new ReentrantLock();
 		cond = lock.newCondition();
 		
-		leftButton.whenReleased(epochTime -> leftReleased());
-		rightButton.whenReleased(epochTime -> rightReleased());
-		okButton.whenReleased(epochTime -> okReleased());
+		leftButton.whenReleased(nanoTime -> leftReleased());
+		rightButton.whenReleased(nanoTime -> rightReleased());
+		okButton.whenReleased(nanoTime -> okReleased());
 	}
 	
 	private void movePlayer(int delta) {

@@ -44,7 +44,7 @@ public class Listener {
 			DiozeroScheduler.getNonDaemonInstance().scheduleAtFixedRate(() -> led.toggle(), 0, 1, TimeUnit.SECONDS);
 
 			// Do something whenever the button is pressed
-			button.whenPressed(epochTime -> System.out.println("Pressed"));
+			button.whenPressed(nanoTime -> System.out.println("Pressed"));
 		}
 	}
 }

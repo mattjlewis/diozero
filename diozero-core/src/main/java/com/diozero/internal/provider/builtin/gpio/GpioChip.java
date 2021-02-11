@@ -113,7 +113,7 @@ public class GpioChip extends GpioChipInfo implements Closeable, GpioLineEventLi
 	public static final int GPIOEVENT_EVENT_FALLING_EDGE = 0x02;
 
 	private final int chipId;
-	private final int fd;
+	private final int chipFd;
 	private int lineOffset;
 	private GpioLine[] lines;
 	private final Map<String, GpioLine> linesByName;
@@ -127,11 +127,11 @@ public class GpioChip extends GpioChipInfo implements Closeable, GpioLineEventLi
 	private Future<?> processEventsFuture;
 	private Future<?> eventLoopFuture;
 
-	private GpioChip(String name, String label, int fd, GpioLine... lines) {
+	private GpioChip(String name, String label, int chipFd, GpioLine... lines) {
 		super(name, label, lines.length);
 
 		chipId = Integer.parseInt(name.substring(GPIO_CHIP_FILENAME_PREFIX.length()));
-		this.fd = fd;
+		this.chipFd = chipFd;
 		this.lines = lines;
 		linesByName = new HashMap<>();
 		for (GpioLine line : lines) {
@@ -194,7 +194,7 @@ public class GpioChip extends GpioChipInfo implements Closeable, GpioLineEventLi
 		default:
 			event_flags = 0;
 		}
-		int line_fd = NativeGpioDevice.provisionGpioInputDevice(fd, offset, handle_flags, event_flags);
+		int line_fd = NativeGpioDevice.provisionGpioInputDevice(chipFd, offset, handle_flags, event_flags);
 		if (line_fd < 0) {
 			throw new RuntimeIOException("Error in provisionGpioInputDevice: " + line_fd);
 		}
@@ -207,7 +207,7 @@ public class GpioChip extends GpioChipInfo implements Closeable, GpioLineEventLi
 		if (offset < 0 || offset >= lines.length) {
 			throw new IllegalArgumentException("Invalid GPIO offset " + offset + " must 0.." + (lines.length - 1));
 		}
-		int line_fd = NativeGpioDevice.provisionGpioOutputDevice(fd, offset, initialValue);
+		int line_fd = NativeGpioDevice.provisionGpioOutputDevice(chipFd, offset, initialValue);
 		if (line_fd < 0) {
 			throw new RuntimeIOException("Error in provisionGpioInputDevice: " + line_fd);
 		}
@@ -246,7 +246,7 @@ public class GpioChip extends GpioChipInfo implements Closeable, GpioLineEventLi
 		linesByName.clear();
 
 		// Then close the chip
-		NativeGpioDevice.close(fd);
+		NativeGpioDevice.close(chipFd);
 	}
 
 	public void register(int fd, GpioLineEventListener listener) {
@@ -284,9 +284,9 @@ public class GpioChip extends GpioChipInfo implements Closeable, GpioLineEventLi
 	}
 
 	@Override
-	public void event(int fd, int eventDataId, long timestampNanos) {
+	public void event(int fd, int eventDataId, long epochTime, long timestampNanos) {
 		lock.lock();
-		eventQueue.add(new NativeGpioEvent(fd, eventDataId, timestampNanos));
+		eventQueue.add(new NativeGpioEvent(fd, eventDataId, epochTime, timestampNanos));
 		try {
 			condition.signal();
 		} finally {
@@ -328,7 +328,7 @@ public class GpioChip extends GpioChipInfo implements Closeable, GpioLineEventLi
 						Logger.warn("No listener for fd {}, event data: '{}'", event_fd,
 								Integer.valueOf(event.eventDataId));
 					} else {
-						listener.event(event.fd, event.eventDataId, event.timestampNanos);
+						listener.event(event.fd, event.eventDataId, event.epochTime, event.timestampNanos);
 					}
 				}
 			} while (!eventQueue.isEmpty());
@@ -340,11 +340,13 @@ public class GpioChip extends GpioChipInfo implements Closeable, GpioLineEventLi
 	private static class NativeGpioEvent {
 		int fd;
 		int eventDataId;
+		long epochTime;
 		long timestampNanos;
 
-		public NativeGpioEvent(int fd, int eventDataId, long timestampNanos) {
+		public NativeGpioEvent(int fd, int eventDataId, long epochTime, long timestampNanos) {
 			this.fd = fd;
 			this.eventDataId = eventDataId;
+			this.epochTime = epochTime;
 			this.timestampNanos = timestampNanos;
 		}
 	}

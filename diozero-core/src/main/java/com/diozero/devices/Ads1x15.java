@@ -438,11 +438,11 @@ public class Ads1x15 extends AbstractDeviceFactory implements AnalogInputDeviceF
 		device.writeI2CBlockData(ADDR_POINTER_LO_THRESH, (byte) 0x00, (byte) 0x00);
 
 		this.readyPin = readyPin;
-		readyPin.whenActivated(epochTime -> {
+		readyPin.whenActivated(nanoTime -> {
 			lastResult = RangeUtil.map(readConversionData(adcNumber), 0, Short.MAX_VALUE, 0, 1f);
 			callback.accept(lastResult);
 		});
-		readyPin.whenDeactivated(epochTime -> Logger.debug("Deactive!!!"));
+		readyPin.whenDeactivated(nanoTime -> Logger.debug("Deactive!!!"));
 	}
 
 	public float getLastResult() {

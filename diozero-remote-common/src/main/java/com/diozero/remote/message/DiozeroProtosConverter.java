@@ -563,12 +563,13 @@ public class DiozeroProtosConverter {
 	}
 
 	public static DigitalInputEvent convert(DiozeroProtos.Gpio.Notification notification) {
-		return new DigitalInputEvent(notification.getGpio(), notification.getEpochTime(), -1, notification.getValue());
+		return new DigitalInputEvent(notification.getGpio(), notification.getEpochTime(), notification.getNanoTime(),
+				notification.getValue());
 	}
 
 	public static DiozeroProtos.Gpio.Notification convert(DigitalInputEvent event) {
 		return DiozeroProtos.Gpio.Notification.newBuilder().setGpio(event.getGpio()).setEpochTime(event.getEpochTime())
-				.setValue(event.getValue()).build();
+				.setNanoTime(event.getNanoTime()).setValue(event.getValue()).build();
 	}
 
 	public static GpioPullUpDown convert(DiozeroProtos.Gpio.PullUpDown pud) {

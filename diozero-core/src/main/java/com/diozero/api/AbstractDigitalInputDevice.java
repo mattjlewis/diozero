@@ -81,10 +81,10 @@ public abstract class AbstractDigitalInputDevice extends GpioInputDevice<Digital
 	public void accept(DigitalInputEvent event) {
 		event.setActiveHigh(activeHigh);
 		if (activatedConsumer != null && event.isActive()) {
-			activatedConsumer.accept(event.getEpochTime());
+			activatedConsumer.accept(event.getNanoTime());
 		}
 		if (deactivatedConsumer != null && !event.isActive()) {
-			deactivatedConsumer.accept(event.getEpochTime());
+			deactivatedConsumer.accept(event.getNanoTime());
 		}
 		super.accept(event);
 	}
@@ -92,7 +92,7 @@ public abstract class AbstractDigitalInputDevice extends GpioInputDevice<Digital
 	/**
 	 * Action to perform when the device state is active.
 	 * 
-	 * @param consumer Callback object to be invoked when activated (long parameter is epoch time).
+	 * @param consumer Callback object to be invoked when activated (long parameter is nanoseconds time).
 	 */
 	public void whenActivated(LongConsumer consumer) {
 		activatedConsumer = consumer;
@@ -106,7 +106,7 @@ public abstract class AbstractDigitalInputDevice extends GpioInputDevice<Digital
 	/**
 	 * Action to perform when the device state is inactive.
 	 * 
-	 * @param consumer Callback object to be invoked when activated (long parameter is epoch time)
+	 * @param consumer Callback object to be invoked when activated (long parameter is nanoseconds time)
 	 */
 	public void whenDeactivated(LongConsumer consumer) {
 		deactivatedConsumer = consumer;

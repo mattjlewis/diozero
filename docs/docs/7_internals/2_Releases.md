@@ -90,4 +90,8 @@ permalink: /internals/releases.html
 
 ## Release 1.1.0
 
-+ Changed whenPressed / whenReleased to receive DigitalInputEvent; removed readBlock, minReadChars and readTimeout from SerialDevice constructors
++ Changed whenPressed / whenReleased to receive epoch time; removed readBlocked, minReadChars and readTimeout from SerialDevice constructors
+
+## Release 1.1.1
+
++ Changed whenPressed / whenReleased to receive nano time rather than epoch time

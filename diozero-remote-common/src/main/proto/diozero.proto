@@ -193,7 +193,8 @@ message Gpio {
 	message Notification {
 		int32 gpio = 1;
 		int64 epochTime = 2;
-		bool value = 3;
+		int64 nanoTime = 3;
+		bool value = 4;
 	}
 }
 

@@ -57,8 +57,8 @@ import com.diozero.internal.spi.GpioDeviceFactoryInterface;
  * <pre>
  * {@code
  * try (Button button = new Button(buttonPin, GpioPullUpDown.PULL_UP); LED led = new LED(ledPin)) {
- *   button.whenPressed(epochTime -> led::on);
- *   button.whenReleased(epochTime -> led::off);
+ *   button.whenPressed(nanoTime -> led::on);
+ *   button.whenReleased(nanoTime -> led::off);
  *   Logger.info("Waiting for 10s - *** Press the button connected to pin {} ***", Integer.valueOf(buttonPin));
  *   SleepUtil.sleepSeconds(10);
  * }
@@ -112,7 +112,7 @@ public class Button extends DigitalInputDevice {
 	
 	/**
 	 * Action to perform when the button is pressed.
-	 * @param consumer Calllback function to invoke when pressed (long parameter is epoch time).
+	 * @param consumer Calllback function to invoke when pressed (long parameter is nanoseconds time).
 	 */
 	public void whenPressed(LongConsumer consumer) {
 		whenActivated(consumer);
@@ -120,7 +120,7 @@ public class Button extends DigitalInputDevice {
 	
 	/**
 	 * Action to perform when the button is released.
-	 * @param consumer Calllback function to invoke when pressed (long parameter is epoch time).
+	 * @param consumer Calllback function to invoke when pressed (long parameter is nanoseconds time).
 	 */
 	public void whenReleased(LongConsumer consumer) {
 		whenDeactivated(consumer);

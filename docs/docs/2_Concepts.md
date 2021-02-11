@@ -56,8 +56,8 @@ Turn on an LED when you press a button:
 
 ```java
 try (Button button = new Button(12); LED led = new LED(18)) {
-	button.whenPressed(epochTime -> led.on());
-	button.whenReleased(epochTime -> led.off());
+	button.whenPressed(nanoTime -> led.on());
+	button.whenReleased(nanoTime -> led.off());
 	SleepUtil.sleepSeconds(10);
 }
 ```

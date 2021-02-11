@@ -58,8 +58,8 @@ public class ButtonTest {
 
 	public static void test(int inputPin) {
 		try (Button button = new Button(inputPin, GpioPullUpDown.PULL_UP)) {
-			button.whenPressed(epochTime -> Logger.info("Pressed"));
-			button.whenReleased(epochTime -> Logger.info("Released"));
+			button.whenPressed(nanoTime -> Logger.info("Pressed"));
+			button.whenReleased(nanoTime -> Logger.info("Released"));
 			button.addListener(event -> Logger.info("Event: {}", event));
 			Logger.debug("Waiting for 10s - *** Press the button connected to input pin " + inputPin + " ***");
 			SleepUtil.sleepSeconds(10);

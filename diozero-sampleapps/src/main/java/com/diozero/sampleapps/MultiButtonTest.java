@@ -60,16 +60,16 @@ public class MultiButtonTest {
 		try (Button button1 = new Button(inputPin1, GpioPullUpDown.PULL_UP);
 				Button button2 = new Button(inputPin2, GpioPullUpDown.PULL_UP);
 				Button button3 = new Button(inputPin3, GpioPullUpDown.PULL_UP)) {
-			button1.whenPressed(epochTime -> Logger.info("1 Pressed"));
-			button1.whenReleased(epochTime -> Logger.info("1 Released"));
+			button1.whenPressed(nanoTime -> Logger.info("1 Pressed"));
+			button1.whenReleased(nanoTime -> Logger.info("1 Released"));
 			button1.addListener(event -> Logger.info("1 Event: {}", event));
 
-			button2.whenPressed(epochTime -> Logger.info("2 Pressed"));
-			button2.whenReleased(epochTime -> Logger.info("2 Released"));
+			button2.whenPressed(nanoTime -> Logger.info("2 Pressed"));
+			button2.whenReleased(nanoTime -> Logger.info("2 Released"));
 			button2.addListener(event -> Logger.info("2 Event: {}", event));
 
-			button3.whenPressed(epochTime -> Logger.info("3 Pressed"));
-			button3.whenReleased(epochTime -> Logger.info("3 Released"));
+			button3.whenPressed(nanoTime -> Logger.info("3 Pressed"));
+			button3.whenReleased(nanoTime -> Logger.info("3 Released"));
 			button3.addListener(event -> Logger.info("3 Event: {}", event));
 
 			Logger.debug("Waiting for 10s - *** Press the button connected to an input pin ***");
