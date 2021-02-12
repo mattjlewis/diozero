@@ -40,6 +40,7 @@ import com.diozero.api.I2CDeviceInterface;
 import com.diozero.api.RuntimeIOException;
 import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.DeviceFactoryInterface;
+import com.diozero.util.PropertyUtil;
 
 /**
  * <p>
@@ -60,11 +61,16 @@ import com.diozero.internal.spi.DeviceFactoryInterface;
  */
 public class NativeI2CDeviceSMBus extends AbstractDevice implements I2CDeviceInterface {
 	private static final int CLOSED = -1;
+	
+	private static final int EAGAIN = -11;
+	private static final int ETIMEDOUT = -110;
+	private static final int EREMOTEIO = -121;
 
 	private int controller;
 	private int deviceAddress;
 	private int fd = CLOSED;
 	private int funcs;
+	private int numRetries;
 
 	public NativeI2CDeviceSMBus(DeviceFactoryInterface deviceFactory, String key, int controller, int address,
 			I2CConstants.AddressSize addressSize, boolean force) {
@@ -73,6 +79,8 @@ public class NativeI2CDeviceSMBus extends AbstractDevice implements I2CDeviceInt
 		this.controller = controller;
 		this.deviceAddress = address;
 		String device_file = "/dev/i2c-" + controller;
+
+		numRetries = PropertyUtil.getIntProperty("diozero.i2c.retryCount", 2);
 
 		// TODO Support for 10-bit address sizing
 		int rc = NativeI2C.smbusOpen(device_file, deviceAddress, force);
@@ -139,7 +147,12 @@ public class NativeI2CDeviceSMBus extends AbstractDevice implements I2CDeviceInt
 					Integer.valueOf(controller), Integer.toHexString(deviceAddress));
 			// TODO Throw an exception now or attempt anyway?
 		}
-		int rc = NativeI2C.writeQuick(fd, bit);
+		
+		int rc = 0;
+		for (int i = 0; i < numRetries && rc != EAGAIN && rc != ETIMEDOUT && rc != EREMOTEIO; i++) {
+			rc = NativeI2C.writeQuick(fd, bit);
+		}
+
 		if (rc < 0) {
 			throw new RuntimeIOException("Error in SMBus.writeQuick for device i2c-" + controller + "-0x"
 					+ Integer.toHexString(deviceAddress) + ": " + rc);
@@ -153,7 +166,12 @@ public class NativeI2CDeviceSMBus extends AbstractDevice implements I2CDeviceInt
 					Integer.valueOf(controller), Integer.toHexString(deviceAddress));
 			// TODO Throw an exception now or attempt anyway?
 		}
-		int rc = NativeI2C.readByte(fd);
+
+		int rc = 0;
+		for (int i = 0; i < numRetries && rc != EAGAIN && rc != ETIMEDOUT && rc != EREMOTEIO; i++) {
+			rc = NativeI2C.readByte(fd);
+		}
+		
 		if (rc < 0) {
 			throw new RuntimeIOException("Error in SMBus.readByte for device i2c-" + controller + "-0x"
 					+ Integer.toHexString(deviceAddress) + ": " + rc);
@@ -169,7 +187,12 @@ public class NativeI2CDeviceSMBus extends AbstractDevice implements I2CDeviceInt
 					Integer.valueOf(controller), Integer.toHexString(deviceAddress));
 			// TODO Throw an exception now or attempt anyway?
 		}
-		int rc = NativeI2C.writeByte(fd, data);
+
+		int rc = 0;
+		for (int i = 0; i < numRetries && rc != EAGAIN && rc != ETIMEDOUT && rc != EREMOTEIO; i++) {
+			rc = NativeI2C.writeByte(fd, data);
+		}
+		
 		if (rc < 0) {
 			throw new RuntimeIOException("Error in SMBus.writeByte for device i2c-" + controller + "-0x"
 					+ Integer.toHexString(deviceAddress) + ": " + rc);
@@ -183,7 +206,12 @@ public class NativeI2CDeviceSMBus extends AbstractDevice implements I2CDeviceInt
 					Integer.valueOf(controller), Integer.toHexString(deviceAddress));
 			// TODO Throw an exception now or attempt anyway?
 		}
-		int rc = NativeI2C.readByteData(fd, registerAddress);
+
+		int rc = 0;
+		for (int i = 0; i < numRetries && rc != EAGAIN && rc != ETIMEDOUT && rc != EREMOTEIO; i++) {
+			rc = NativeI2C.readByteData(fd, registerAddress);
+		}
+		
 		if (rc < 0) {
 			throw new RuntimeIOException("Error in SMBus.readByteData for device i2c-" + controller + "-0x"
 					+ Integer.toHexString(deviceAddress) + ": " + rc);
@@ -199,7 +227,12 @@ public class NativeI2CDeviceSMBus extends AbstractDevice implements I2CDeviceInt
 					Integer.valueOf(controller), Integer.toHexString(deviceAddress));
 			// TODO Throw an exception now or attempt anyway?
 		}
-		int rc = NativeI2C.writeByteData(fd, registerAddress, data);
+
+		int rc = 0;
+		for (int i = 0; i < numRetries && rc != EAGAIN && rc != ETIMEDOUT && rc != EREMOTEIO; i++) {
+			rc = NativeI2C.writeByteData(fd, registerAddress, data);
+		}
+		
 		if (rc < 0) {
 			throw new RuntimeIOException("Error in SMBus.writeByteData for device i2c-" + controller + "-0x"
 					+ Integer.toHexString(deviceAddress) + ": " + rc);
@@ -213,7 +246,12 @@ public class NativeI2CDeviceSMBus extends AbstractDevice implements I2CDeviceInt
 					Integer.valueOf(controller), Integer.toHexString(deviceAddress));
 			// TODO Throw an exception now or attempt anyway?
 		}
-		int rc = NativeI2C.readWordData(fd, registerAddress);
+
+		int rc = 0;
+		for (int i = 0; i < numRetries && rc != EAGAIN && rc != ETIMEDOUT && rc != EREMOTEIO; i++) {
+			rc = NativeI2C.readWordData(fd, registerAddress);
+		}
+		
 		if (rc < 0) {
 			throw new RuntimeIOException("Error in SMBus.readWordData for device i2c-" + controller + "-0x"
 					+ Integer.toHexString(deviceAddress) + ": " + rc);
@@ -229,7 +267,12 @@ public class NativeI2CDeviceSMBus extends AbstractDevice implements I2CDeviceInt
 					Integer.valueOf(controller), Integer.toHexString(deviceAddress));
 			// TODO Throw an exception now or attempt anyway?
 		}
-		int rc = NativeI2C.writeWordData(fd, registerAddress, data);
+
+		int rc = 0;
+		for (int i = 0; i < numRetries && rc != EAGAIN && rc != ETIMEDOUT && rc != EREMOTEIO; i++) {
+			rc = NativeI2C.writeWordData(fd, registerAddress, data);
+		}
+		
 		if (rc < 0) {
 			throw new RuntimeIOException("Error in SMBus.writeWordData for device i2c-" + controller + "-0x"
 					+ Integer.toHexString(deviceAddress) + ": " + rc);
@@ -244,15 +287,20 @@ public class NativeI2CDeviceSMBus extends AbstractDevice implements I2CDeviceInt
 					Integer.valueOf(controller), Integer.toHexString(deviceAddress));
 			// TODO Throw an exception now or attempt anyway?
 		}
-		int rc = NativeI2C.readWordSwapped(fd, registerAddress);
+		
+		int rc = 0;
+		for (int i = 0; i < numRetries && rc != EAGAIN && rc != ETIMEDOUT && rc != EREMOTEIO; i++) {
+			rc = NativeI2C.readWordSwapped(fd, registerAddress);
+		}
+		
 		if (rc < 0) {
 			throw new RuntimeIOException("Error in SMBus.readWordSwapped for device i2c-" + controller + "-0x"
 					+ Integer.toHexString(deviceAddress) + ": " + rc);
 		}
-
+	
 		return (short) rc;
 	}
-
+	
 	@Override
 	public void writeWordSwapped(int registerAddress, short data) {
 		if ((funcs & NativeI2C.I2C_FUNC_SMBUS_WRITE_WORD_DATA) == 0) {
@@ -260,7 +308,12 @@ public class NativeI2CDeviceSMBus extends AbstractDevice implements I2CDeviceInt
 					Integer.valueOf(controller), Integer.toHexString(deviceAddress));
 			// TODO Throw an exception now or attempt anyway?
 		}
-		int rc = NativeI2C.writeWordSwapped(fd, registerAddress, data);
+
+		int rc = 0;
+		for (int i = 0; i < numRetries && rc != EAGAIN && rc != ETIMEDOUT && rc != EREMOTEIO; i++) {
+			rc = NativeI2C.writeWordSwapped(fd, registerAddress, data);
+		}
+		
 		if (rc < 0) {
 			throw new RuntimeIOException("Error in SMBus.writeWordSwapped for device i2c-" + controller + "-0x"
 					+ Integer.toHexString(deviceAddress) + ": " + rc);
@@ -275,7 +328,12 @@ public class NativeI2CDeviceSMBus extends AbstractDevice implements I2CDeviceInt
 					Integer.valueOf(controller), Integer.toHexString(deviceAddress));
 			// TODO Throw an exception now or attempt anyway?
 		}
-		int rc = NativeI2C.processCall(fd, registerAddress, data);
+
+		int rc = 0;
+		for (int i = 0; i < numRetries && rc != EAGAIN && rc != ETIMEDOUT && rc != EREMOTEIO; i++) {
+			rc = NativeI2C.processCall(fd, registerAddress, data);
+		}
+		
 		if (rc < 0) {
 			throw new RuntimeIOException("Error in SMBus.processCall for device i2c-" + controller + "-0x"
 					+ Integer.toHexString(deviceAddress) + ": " + rc);
@@ -292,9 +350,13 @@ public class NativeI2CDeviceSMBus extends AbstractDevice implements I2CDeviceInt
 			// TODO Throw an exception now or attempt anyway?
 		}
 
+		int rc = 0;
+		
 		byte[] buffer = new byte[MAX_I2C_BLOCK_SIZE];
-
-		int rc = NativeI2C.readBlockData(fd, registerAddress, buffer);
+		for (int i = 0; i < numRetries && rc != EAGAIN && rc != ETIMEDOUT && rc != EREMOTEIO; i++) {
+			rc = NativeI2C.readBlockData(fd, registerAddress, buffer);
+		}
+		
 		if (rc < 0) {
 			throw new RuntimeIOException("Error in SMBus.readBlockData for device i2c-" + controller + "-0x"
 					+ Integer.toHexString(deviceAddress) + ": " + rc);
@@ -319,7 +381,11 @@ public class NativeI2CDeviceSMBus extends AbstractDevice implements I2CDeviceInt
 					+ Integer.toHexString(deviceAddress) + ": array length must be <= 32, is " + data.length);
 		}
 
-		int rc = NativeI2C.writeBlockData(fd, registerAddress, data.length, data);
+		int rc = 0;
+		for (int i = 0; i < numRetries && rc != EAGAIN && rc != ETIMEDOUT && rc != EREMOTEIO; i++) {
+			rc = NativeI2C.writeBlockData(fd, registerAddress, data.length, data);
+		}
+		
 		if (rc < 0) {
 			throw new RuntimeIOException("Error in SMBus.writeBlockData for device i2c-" + controller + "-0x"
 					+ Integer.toHexString(deviceAddress) + ": " + rc);
@@ -341,7 +407,11 @@ public class NativeI2CDeviceSMBus extends AbstractDevice implements I2CDeviceInt
 
 		byte[] rx_data = new byte[txData.length];
 
-		int rc = NativeI2C.blockProcessCall(fd, registerAddress, txData.length, txData, rx_data);
+		int rc = 0;
+		for (int i = 0; i < numRetries && rc != EAGAIN && rc != ETIMEDOUT && rc != EREMOTEIO; i++) {
+			rc = NativeI2C.blockProcessCall(fd, registerAddress, txData.length, txData, rx_data);
+		}
+		
 		if (rc < 0) {
 			throw new RuntimeIOException("Error in SMBus.blockProcessCall for device i2c-" + controller + "-0x"
 					+ Integer.toHexString(deviceAddress) + ": " + rc);
@@ -358,7 +428,11 @@ public class NativeI2CDeviceSMBus extends AbstractDevice implements I2CDeviceInt
 			// TODO Throw an exception now or attempt anyway?
 		}
 
-		int rc = NativeI2C.readI2CBlockData(fd, registerAddress, buffer.length, buffer);
+		int rc = 0;
+		for (int i = 0; i < numRetries && rc != EAGAIN && rc != ETIMEDOUT && rc != EREMOTEIO; i++) {
+			rc = NativeI2C.readI2CBlockData(fd, registerAddress, buffer.length, buffer);
+		}
+		
 		if (rc < 0) {
 			throw new RuntimeIOException("Error in SMBus.readI2CBlockData for device i2c-" + controller + "-0x"
 					+ Integer.toHexString(deviceAddress) + ": " + rc);
@@ -375,7 +449,11 @@ public class NativeI2CDeviceSMBus extends AbstractDevice implements I2CDeviceInt
 			// TODO Throw an exception now or attempt anyway?
 		}
 
-		int rc = NativeI2C.writeI2CBlockData(fd, registerAddress, data.length, data);
+		int rc = 0;
+		for (int i = 0; i < numRetries && rc != EAGAIN && rc != ETIMEDOUT && rc != EREMOTEIO; i++) {
+			rc = NativeI2C.writeI2CBlockData(fd, registerAddress, data.length, data);
+		}
+		
 		if (rc < 0) {
 			throw new RuntimeIOException("Error in SMBus.writeI2CBlockData for device i2c-" + controller + "-0x"
 					+ Integer.toHexString(deviceAddress) + ": " + rc);
@@ -384,7 +462,11 @@ public class NativeI2CDeviceSMBus extends AbstractDevice implements I2CDeviceInt
 
 	@Override
 	public int readBytes(byte[] buffer) {
-		int rc = NativeI2C.readBytes(fd, buffer.length, buffer);
+		int rc = 0;
+		for (int i = 0; i < numRetries && rc != EAGAIN && rc != ETIMEDOUT && rc != EREMOTEIO; i++) {
+			rc = NativeI2C.readBytes(fd, buffer.length, buffer);
+		}
+		
 		if (rc < 0) {
 			throw new RuntimeIOException("Error in SMBus.readBytes for device i2c-" + controller + "-0x"
 					+ Integer.toHexString(deviceAddress) + ": " + rc);
@@ -395,16 +477,24 @@ public class NativeI2CDeviceSMBus extends AbstractDevice implements I2CDeviceInt
 
 	@Override
 	public void writeBytes(byte... data) {
-		int rc = NativeI2C.writeBytes(fd, data.length, data);
+		int rc = 0;
+		for (int i = 0; i < numRetries && rc != EAGAIN && rc != ETIMEDOUT && rc != EREMOTEIO; i++) {
+			rc = NativeI2C.writeBytes(fd, data.length, data);
+		}
+		
 		if (rc < 0 || rc < data.length) {
 			throw new RuntimeIOException("Error in SMBus.writeBytes for device i2c-" + controller + "-0x"
 					+ Integer.toHexString(deviceAddress) + ": " + rc);
 		}
 	}
-	
+
 	@Override
 	public int readNoStop(byte registerAddress, int rxLength, byte[] rxData, boolean repeatedStart) {
-		int rc = NativeI2C.readNoStop(fd, deviceAddress, registerAddress, rxLength, rxData, repeatedStart);
+		int rc = 0;
+		for (int i = 0; i < numRetries && rc != EAGAIN && rc != ETIMEDOUT && rc != EREMOTEIO; i++) {
+			rc = NativeI2C.readNoStop(fd, deviceAddress, registerAddress, rxLength, rxData, repeatedStart);
+		}
+		
 		if (rc < 0) {
 			throw new RuntimeIOException("Error in I2C readNoStop for device i2c-" + controller + "-0x"
 					+ Integer.toHexString(deviceAddress) + ": " + rc);
@@ -412,10 +502,14 @@ public class NativeI2CDeviceSMBus extends AbstractDevice implements I2CDeviceInt
 
 		return rc;
 	}
-	
+
 	@Override
 	public void readWrite(I2CMessage[] messages, byte[] buffer) {
-		int rc = NativeI2C.readWrite(fd, deviceAddress, messages, buffer);
+		int rc = 0;
+		for (int i = 0; i < numRetries && rc != EAGAIN && rc != ETIMEDOUT && rc != EREMOTEIO; i++) {
+			rc = NativeI2C.readWrite(fd, deviceAddress, messages, buffer);
+		}
+		
 		if (rc < 0) {
 			throw new RuntimeIOException("Error in I2C readWrite for device i2c-" + controller + "-0x"
 					+ Integer.toHexString(deviceAddress) + ": " + rc);

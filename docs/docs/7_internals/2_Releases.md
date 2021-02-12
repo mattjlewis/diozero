@@ -95,3 +95,8 @@ permalink: /internals/releases.html
 ## Release 1.1.1
 
 + Changed whenPressed / whenReleased to receive nano time rather than epoch time
+
+## Release 1.1.2
+
++ Bugfix release - fixes to GPIO
++ I2C retries

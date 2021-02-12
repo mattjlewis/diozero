@@ -59,7 +59,7 @@ to development and improve code readability.
 
 diozero has out of the box support for the following Single Board Computers and micro-controllers:
 
-* [Raspberry Pi](http://www.raspberyrpi.org/) (all versions).
+* [Raspberry Pi](https://www.raspberrypi.org/) (all versions).
 * [Odroid C2](https://wiki.odroid.com/odroid-c2/odroid-c2).
 * [BeagleBone Green / Black](https://beagleboard.org/black).
 * [ASUS TinkerBoard](https://www.asus.com/uk/Single-board-Computer/TINKER-BOARD/).
