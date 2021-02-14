@@ -284,9 +284,9 @@ public class GpioChip extends GpioChipInfo implements Closeable, GpioLineEventLi
 	}
 
 	@Override
-	public void event(int fd, int eventDataId, long epochTime, long timestampNanos) {
+	public void event(int fd, int eventDataId, long timestampNanos) {
 		lock.lock();
-		eventQueue.add(new NativeGpioEvent(fd, eventDataId, epochTime, timestampNanos));
+		eventQueue.add(new NativeGpioEvent(fd, eventDataId, timestampNanos));
 		try {
 			condition.signal();
 		} finally {
@@ -328,7 +328,7 @@ public class GpioChip extends GpioChipInfo implements Closeable, GpioLineEventLi
 						Logger.warn("No listener for fd {}, event data: '{}'", event_fd,
 								Integer.valueOf(event.eventDataId));
 					} else {
-						listener.event(event.fd, event.eventDataId, event.epochTime, event.timestampNanos);
+						listener.event(event.fd, event.eventDataId, event.timestampNanos);
 					}
 				}
 			} while (!eventQueue.isEmpty());
@@ -340,13 +340,11 @@ public class GpioChip extends GpioChipInfo implements Closeable, GpioLineEventLi
 	private static class NativeGpioEvent {
 		int fd;
 		int eventDataId;
-		long epochTime;
 		long timestampNanos;
 
-		public NativeGpioEvent(int fd, int eventDataId, long epochTime, long timestampNanos) {
+		public NativeGpioEvent(int fd, int eventDataId, long timestampNanos) {
 			this.fd = fd;
 			this.eventDataId = eventDataId;
-			this.epochTime = epochTime;
 			this.timestampNanos = timestampNanos;
 		}
 	}

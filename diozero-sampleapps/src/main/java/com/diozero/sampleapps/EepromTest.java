@@ -31,7 +31,6 @@ package com.diozero.sampleapps;
  * #L%
  */
 
-
 import java.util.Arrays;
 
 import org.tinylog.Logger;
@@ -52,24 +51,26 @@ public class EepromTest {
 			Logger.error("Usage: {} <i2c-controller> [device-address]", EepromTest.class.getName());
 			System.exit(1);
 		}
-		
+
 		int controller = Integer.parseInt(args[0]);
 		int device_address = McpEeprom.DEFAULT_ADDRESS;
 		if (args.length > 1) {
 			device_address = Integer.parseInt(args[1]);
 		}
-		
-		//test(controller, 0x04);
-		//test(controller, 0x05);
+
+		// test(controller, 0x04);
+		// test(controller, 0x05);
 		test(controller, device_address);
 	}
-	
+
 	private static void test(int controller, int deviceAddress) {
 		try (McpEeprom eeprom = new McpEeprom(controller, deviceAddress, McpEeprom.Type.MCP_24xx512)) {
+			byte d = eeprom.readByte(0);
+			Logger.info("Read " + (d & 0xff) + " from address 0");
 			// Validate write byte and random read
-			for (int address = 0; address<2; address++) {
+			for (int address = 0; address < 2; address++) {
 				Logger.info("Testing write and read for memory address: 0x{}", Integer.valueOf(address));
-				for (int data=0; data<256; data++) {
+				for (int data = 0; data < 256; data++) {
 					eeprom.writeByte(address, data);
 					int data_read = eeprom.readByte(address) & 0xff;
 					if (data_read != data) {
@@ -78,7 +79,7 @@ public class EepromTest {
 					}
 				}
 			}
-			
+
 			// Validate write byte and current address read
 			String text_to_write = "Hello World";
 			int address = 0x10;
@@ -89,14 +90,15 @@ public class EepromTest {
 			address = 0x10;
 			byte b = eeprom.readByte(address);
 			Logger.debug("Read '" + ((char) b) + "'");
-			for (int i=1; i<text_to_write.length(); i++) {
+			for (int i = 1; i < text_to_write.length(); i++) {
 				b = eeprom.readCurrentAddress();
 				Logger.debug("Read '" + ((char) b) + "'");
 				if (((char) b) != text_to_write.charAt(i)) {
-					Logger.error("Error expected '{}', read '{}'", Character.valueOf(text_to_write.charAt(i)), Character.valueOf((char) b));
+					Logger.error("Error expected '{}', read '{}'", Character.valueOf(text_to_write.charAt(i)),
+							Character.valueOf((char) b));
 				}
 			}
-			
+
 			// Test writing more that a page size
 			address = 0x1000;
 			Logger.debug("Writing '" + LOREM_IPSUM + "'");
@@ -105,7 +107,7 @@ public class EepromTest {
 			Logger.debug("read " + data.length + " bytes");
 			String text = new String(data);
 			Logger.debug("Read '" + text + "'");
-			if (! Arrays.equals(LOREM_IPSUM.getBytes(), data)) {
+			if (!Arrays.equals(LOREM_IPSUM.getBytes(), data)) {
 				Logger.error("Expected to read Lorem Ipsum text");
 			}
 		} catch (RuntimeIOException e) {

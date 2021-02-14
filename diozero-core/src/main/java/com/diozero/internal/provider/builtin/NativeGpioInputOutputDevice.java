@@ -51,10 +51,10 @@ public class NativeGpioInputOutputDevice extends AbstractInputDevice<DigitalInpu
 	private GpioLine line;
 	private MmapGpioInterface mmapGpio;
 
-	public NativeGpioInputOutputDevice(DefaultDeviceFactory deviceFactory, String key, GpioChip chip,
-			PinInfo pinInfo, DeviceMode mode, MmapGpioInterface mmapGpio) {
+	public NativeGpioInputOutputDevice(DefaultDeviceFactory deviceFactory, String key, GpioChip chip, PinInfo pinInfo,
+			DeviceMode mode, MmapGpioInterface mmapGpio) {
 		super(key, deviceFactory);
-		
+
 		this.mmapGpio = mmapGpio;
 
 		gpio = pinInfo.getDeviceNumber();
@@ -139,8 +139,8 @@ public class NativeGpioInputOutputDevice extends AbstractInputDevice<DigitalInpu
 	}
 
 	@Override
-	public void event(int gpioOffset, int eventDataId, long epochTime, long timestampNanos) {
-		accept(new DigitalInputEvent(gpio, epochTime, timestampNanos,
+	public void event(int gpioOffset, int eventDataId, long timestampNanos) {
+		accept(new DigitalInputEvent(gpio, timestampNanos / 1_000_000, timestampNanos,
 				eventDataId == GpioChip.GPIOEVENT_EVENT_RISING_EDGE));
 	}
 }

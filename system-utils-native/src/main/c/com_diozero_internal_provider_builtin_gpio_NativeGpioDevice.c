@@ -38,8 +38,6 @@ extern jmethodID gpioLineConstructor;
 
 extern jmethodID gpioLineEventListenerMethod;
 
-#include "com_diozero_util_Util.h"
-
 static int dir_filter(const struct dirent *dir) {
 	return !strncmp(dir->d_name, "gpiochip", 8);
 }
@@ -257,9 +255,6 @@ JNIEXPORT void JNICALL Java_com_diozero_internal_provider_builtin_gpio_NativeGpi
 		// https://man7.org/linux/man-pages/man2/epoll_wait.2.html
 		num_fds = epoll_wait(epollFd, epoll_events, max_events, timeout);
 
-		// Get current epoch time as early as possible
-		jlong epoch_time = getEpochTime();
-
 		if (num_fds < 0) {
 			// On error, -1 is returned, and errno is set to indicate the cause of the error
 			perror("Error polling");
@@ -289,7 +284,7 @@ JNIEXPORT void JNICALL Java_com_diozero_internal_provider_builtin_gpio_NativeGpi
 				// evdata.id: either GPIOEVENT_EVENT_RISING_EDGE or GPIOEVENT_EVENT_FALLING_EDGE
 				// timestamp: best estimate of time of event occurrence, in nanoseconds
 				(*env)->CallVoidMethod(env, callback, gpioLineEventListenerMethod,
-						epoll_events[i].data.fd, evdata.id, epoch_time, evdata.timestamp);
+						epoll_events[i].data.fd, evdata.id, evdata.timestamp);
 			}
 		}
 	}

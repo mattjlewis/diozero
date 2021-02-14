@@ -100,3 +100,8 @@ permalink: /internals/releases.html
 
 + Bugfix release - fixes to GPIO
 + I2C retries
+
+## Release 1.1.3
+
++ Bugfix release - fix for I2C retry logic
++ GPIO event Epoch time is calculated from nano time

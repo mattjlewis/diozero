@@ -63,7 +63,8 @@ public class NativeGpioInputDevice extends AbstractInputDevice<DigitalInputEvent
 		this.chip = chip;
 
 		line = chip.provisionGpioInputDevice(offset, pud, trigger);
-		// XXX Remove this once kernel 5.5 is widely adopted - pull-up / pull-down control no in gpiod v1
+		// XXX Remove this once kernel 5.5 is widely adopted - pull-up / pull-down
+		// control no in gpiod v1
 		if (mmapGpio != null) {
 			mmapGpio.setPullUpDown(offset, pud);
 		}
@@ -100,8 +101,8 @@ public class NativeGpioInputDevice extends AbstractInputDevice<DigitalInputEvent
 	}
 
 	@Override
-	public void event(int lineFd, int eventDataId, long epochTime, long timestampNanos) {
-		accept(new DigitalInputEvent(gpio, epochTime, timestampNanos,
+	public void event(int lineFd, int eventDataId, long timestampNanos) {
+		accept(new DigitalInputEvent(gpio, timestampNanos / 1_000_000, timestampNanos,
 				eventDataId == GpioChip.GPIOEVENT_EVENT_RISING_EDGE));
 	}
 }

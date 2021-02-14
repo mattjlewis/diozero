@@ -56,7 +56,7 @@ import com.diozero.util.PropertyUtil;
  * <p>
  * See <a href=
  * "https://github.com/torvalds/linux/blob/v5.4/include/linux/i2c.h">i2c-dev</a>
- * for defintion of the inline functions.
+ * for a definition of the in-line functions.
  * </p>
  */
 public class NativeI2CDeviceSMBus extends AbstractDevice implements I2CDeviceInterface {
@@ -148,8 +148,8 @@ public class NativeI2CDeviceSMBus extends AbstractDevice implements I2CDeviceInt
 			// TODO Throw an exception now or attempt anyway?
 		}
 		
-		int rc = 0;
-		for (int i = 0; i < numRetries && rc != EAGAIN && rc != ETIMEDOUT && rc != EREMOTEIO; i++) {
+		int rc = EAGAIN;
+		for (int i = 0; i < numRetries && (rc == EAGAIN || rc == ETIMEDOUT || rc == EREMOTEIO); i++) {
 			rc = NativeI2C.writeQuick(fd, bit);
 		}
 
@@ -167,8 +167,8 @@ public class NativeI2CDeviceSMBus extends AbstractDevice implements I2CDeviceInt
 			// TODO Throw an exception now or attempt anyway?
 		}
 
-		int rc = 0;
-		for (int i = 0; i < numRetries && rc != EAGAIN && rc != ETIMEDOUT && rc != EREMOTEIO; i++) {
+		int rc = EAGAIN;
+		for (int i = 0; i < numRetries && (rc == EAGAIN || rc == ETIMEDOUT || rc == EREMOTEIO); i++) {
 			rc = NativeI2C.readByte(fd);
 		}
 		
@@ -188,8 +188,8 @@ public class NativeI2CDeviceSMBus extends AbstractDevice implements I2CDeviceInt
 			// TODO Throw an exception now or attempt anyway?
 		}
 
-		int rc = 0;
-		for (int i = 0; i < numRetries && rc != EAGAIN && rc != ETIMEDOUT && rc != EREMOTEIO; i++) {
+		int rc = EAGAIN;
+		for (int i = 0; i < numRetries && (rc == EAGAIN || rc == ETIMEDOUT || rc == EREMOTEIO); i++) {
 			rc = NativeI2C.writeByte(fd, data);
 		}
 		
@@ -207,8 +207,8 @@ public class NativeI2CDeviceSMBus extends AbstractDevice implements I2CDeviceInt
 			// TODO Throw an exception now or attempt anyway?
 		}
 
-		int rc = 0;
-		for (int i = 0; i < numRetries && rc != EAGAIN && rc != ETIMEDOUT && rc != EREMOTEIO; i++) {
+		int rc = EAGAIN;
+		for (int i = 0; i < numRetries && (rc == EAGAIN || rc == ETIMEDOUT || rc == EREMOTEIO); i++) {
 			rc = NativeI2C.readByteData(fd, registerAddress);
 		}
 		
@@ -228,8 +228,8 @@ public class NativeI2CDeviceSMBus extends AbstractDevice implements I2CDeviceInt
 			// TODO Throw an exception now or attempt anyway?
 		}
 
-		int rc = 0;
-		for (int i = 0; i < numRetries && rc != EAGAIN && rc != ETIMEDOUT && rc != EREMOTEIO; i++) {
+		int rc = EAGAIN;
+		for (int i = 0; i < numRetries && (rc == EAGAIN || rc == ETIMEDOUT || rc == EREMOTEIO); i++) {
 			rc = NativeI2C.writeByteData(fd, registerAddress, data);
 		}
 		
@@ -247,8 +247,8 @@ public class NativeI2CDeviceSMBus extends AbstractDevice implements I2CDeviceInt
 			// TODO Throw an exception now or attempt anyway?
 		}
 
-		int rc = 0;
-		for (int i = 0; i < numRetries && rc != EAGAIN && rc != ETIMEDOUT && rc != EREMOTEIO; i++) {
+		int rc = EAGAIN;
+		for (int i = 0; i < numRetries && (rc == EAGAIN || rc == ETIMEDOUT || rc == EREMOTEIO); i++) {
 			rc = NativeI2C.readWordData(fd, registerAddress);
 		}
 		
@@ -268,8 +268,8 @@ public class NativeI2CDeviceSMBus extends AbstractDevice implements I2CDeviceInt
 			// TODO Throw an exception now or attempt anyway?
 		}
 
-		int rc = 0;
-		for (int i = 0; i < numRetries && rc != EAGAIN && rc != ETIMEDOUT && rc != EREMOTEIO; i++) {
+		int rc = EAGAIN;
+		for (int i = 0; i < numRetries && (rc == EAGAIN || rc == ETIMEDOUT || rc == EREMOTEIO); i++) {
 			rc = NativeI2C.writeWordData(fd, registerAddress, data);
 		}
 		
@@ -288,8 +288,8 @@ public class NativeI2CDeviceSMBus extends AbstractDevice implements I2CDeviceInt
 			// TODO Throw an exception now or attempt anyway?
 		}
 		
-		int rc = 0;
-		for (int i = 0; i < numRetries && rc != EAGAIN && rc != ETIMEDOUT && rc != EREMOTEIO; i++) {
+		int rc = EAGAIN;
+		for (int i = 0; i < numRetries && (rc == EAGAIN || rc == ETIMEDOUT || rc == EREMOTEIO); i++) {
 			rc = NativeI2C.readWordSwapped(fd, registerAddress);
 		}
 		
@@ -309,8 +309,8 @@ public class NativeI2CDeviceSMBus extends AbstractDevice implements I2CDeviceInt
 			// TODO Throw an exception now or attempt anyway?
 		}
 
-		int rc = 0;
-		for (int i = 0; i < numRetries && rc != EAGAIN && rc != ETIMEDOUT && rc != EREMOTEIO; i++) {
+		int rc = EAGAIN;
+		for (int i = 0; i < numRetries && (rc == EAGAIN || rc == ETIMEDOUT || rc == EREMOTEIO); i++) {
 			rc = NativeI2C.writeWordSwapped(fd, registerAddress, data);
 		}
 		
@@ -329,8 +329,8 @@ public class NativeI2CDeviceSMBus extends AbstractDevice implements I2CDeviceInt
 			// TODO Throw an exception now or attempt anyway?
 		}
 
-		int rc = 0;
-		for (int i = 0; i < numRetries && rc != EAGAIN && rc != ETIMEDOUT && rc != EREMOTEIO; i++) {
+		int rc = EAGAIN;
+		for (int i = 0; i < numRetries && (rc == EAGAIN || rc == ETIMEDOUT || rc == EREMOTEIO); i++) {
 			rc = NativeI2C.processCall(fd, registerAddress, data);
 		}
 		
@@ -350,10 +350,10 @@ public class NativeI2CDeviceSMBus extends AbstractDevice implements I2CDeviceInt
 			// TODO Throw an exception now or attempt anyway?
 		}
 
-		int rc = 0;
-		
 		byte[] buffer = new byte[MAX_I2C_BLOCK_SIZE];
-		for (int i = 0; i < numRetries && rc != EAGAIN && rc != ETIMEDOUT && rc != EREMOTEIO; i++) {
+
+		int rc = EAGAIN;
+		for (int i = 0; i < numRetries && (rc == EAGAIN || rc == ETIMEDOUT || rc == EREMOTEIO); i++) {
 			rc = NativeI2C.readBlockData(fd, registerAddress, buffer);
 		}
 		
@@ -381,8 +381,8 @@ public class NativeI2CDeviceSMBus extends AbstractDevice implements I2CDeviceInt
 					+ Integer.toHexString(deviceAddress) + ": array length must be <= 32, is " + data.length);
 		}
 
-		int rc = 0;
-		for (int i = 0; i < numRetries && rc != EAGAIN && rc != ETIMEDOUT && rc != EREMOTEIO; i++) {
+		int rc = EAGAIN;
+		for (int i = 0; i < numRetries && (rc == EAGAIN || rc == ETIMEDOUT || rc == EREMOTEIO); i++) {
 			rc = NativeI2C.writeBlockData(fd, registerAddress, data.length, data);
 		}
 		
@@ -407,8 +407,8 @@ public class NativeI2CDeviceSMBus extends AbstractDevice implements I2CDeviceInt
 
 		byte[] rx_data = new byte[txData.length];
 
-		int rc = 0;
-		for (int i = 0; i < numRetries && rc != EAGAIN && rc != ETIMEDOUT && rc != EREMOTEIO; i++) {
+		int rc = EAGAIN;
+		for (int i = 0; i < numRetries && (rc == EAGAIN || rc == ETIMEDOUT || rc == EREMOTEIO); i++) {
 			rc = NativeI2C.blockProcessCall(fd, registerAddress, txData.length, txData, rx_data);
 		}
 		
@@ -428,8 +428,8 @@ public class NativeI2CDeviceSMBus extends AbstractDevice implements I2CDeviceInt
 			// TODO Throw an exception now or attempt anyway?
 		}
 
-		int rc = 0;
-		for (int i = 0; i < numRetries && rc != EAGAIN && rc != ETIMEDOUT && rc != EREMOTEIO; i++) {
+		int rc = EAGAIN;
+		for (int i = 0; i < numRetries && (rc == EAGAIN || rc == ETIMEDOUT || rc == EREMOTEIO); i++) {
 			rc = NativeI2C.readI2CBlockData(fd, registerAddress, buffer.length, buffer);
 		}
 		
@@ -449,8 +449,8 @@ public class NativeI2CDeviceSMBus extends AbstractDevice implements I2CDeviceInt
 			// TODO Throw an exception now or attempt anyway?
 		}
 
-		int rc = 0;
-		for (int i = 0; i < numRetries && rc != EAGAIN && rc != ETIMEDOUT && rc != EREMOTEIO; i++) {
+		int rc = EAGAIN;
+		for (int i = 0; i < numRetries && (rc == EAGAIN || rc == ETIMEDOUT || rc == EREMOTEIO); i++) {
 			rc = NativeI2C.writeI2CBlockData(fd, registerAddress, data.length, data);
 		}
 		
@@ -462,8 +462,8 @@ public class NativeI2CDeviceSMBus extends AbstractDevice implements I2CDeviceInt
 
 	@Override
 	public int readBytes(byte[] buffer) {
-		int rc = 0;
-		for (int i = 0; i < numRetries && rc != EAGAIN && rc != ETIMEDOUT && rc != EREMOTEIO; i++) {
+		int rc = EAGAIN;
+		for (int i = 0; i < numRetries && (rc == EAGAIN || rc == ETIMEDOUT || rc == EREMOTEIO); i++) {
 			rc = NativeI2C.readBytes(fd, buffer.length, buffer);
 		}
 		
@@ -477,8 +477,8 @@ public class NativeI2CDeviceSMBus extends AbstractDevice implements I2CDeviceInt
 
 	@Override
 	public void writeBytes(byte... data) {
-		int rc = 0;
-		for (int i = 0; i < numRetries && rc != EAGAIN && rc != ETIMEDOUT && rc != EREMOTEIO; i++) {
+		int rc = EAGAIN;
+		for (int i = 0; i < numRetries && (rc == EAGAIN || rc == ETIMEDOUT || rc == EREMOTEIO); i++) {
 			rc = NativeI2C.writeBytes(fd, data.length, data);
 		}
 		
@@ -490,8 +490,8 @@ public class NativeI2CDeviceSMBus extends AbstractDevice implements I2CDeviceInt
 
 	@Override
 	public int readNoStop(byte registerAddress, int rxLength, byte[] rxData, boolean repeatedStart) {
-		int rc = 0;
-		for (int i = 0; i < numRetries && rc != EAGAIN && rc != ETIMEDOUT && rc != EREMOTEIO; i++) {
+		int rc = EAGAIN;
+		for (int i = 0; i < numRetries && (rc == EAGAIN || rc == ETIMEDOUT || rc == EREMOTEIO); i++) {
 			rc = NativeI2C.readNoStop(fd, deviceAddress, registerAddress, rxLength, rxData, repeatedStart);
 		}
 		
@@ -505,8 +505,8 @@ public class NativeI2CDeviceSMBus extends AbstractDevice implements I2CDeviceInt
 
 	@Override
 	public void readWrite(I2CMessage[] messages, byte[] buffer) {
-		int rc = 0;
-		for (int i = 0; i < numRetries && rc != EAGAIN && rc != ETIMEDOUT && rc != EREMOTEIO; i++) {
+		int rc = EAGAIN;
+		for (int i = 0; i < numRetries && (rc == EAGAIN || rc == ETIMEDOUT || rc == EREMOTEIO); i++) {
 			rc = NativeI2C.readWrite(fd, deviceAddress, messages, buffer);
 		}
 		

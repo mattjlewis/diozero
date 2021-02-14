@@ -234,7 +234,7 @@ jint JNI_OnLoad(JavaVM* jvm, void* reserved) {
 		return JNI_ERR;
 	}
 	method_name = "event";
-	signature = "(IIJJ)V";
+	signature = "(IIJ)V";
 	gpioLineEventListenerMethod = (*env)->GetMethodID(env, gpio_line_event_listener_class, method_name, signature);
 	if ((*env)->ExceptionCheck(env) || gpioLineEventListenerMethod == NULL) {
 		fprintf(stderr, "Error looking up methodID for %s.%s%s\n", class_name, method_name, signature);

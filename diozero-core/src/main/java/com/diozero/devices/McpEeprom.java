@@ -108,6 +108,14 @@ public class McpEeprom implements Closeable {
 		}
 	}
 	
+	public Type getType() {
+		return type;
+	}
+	
+	public int getMemorySizeByte() {
+		return type.getMemorySizeBytes();
+	}
+	
 	private byte[] getAddressByteArray(int address) {
 		byte[] address_bytes = new byte[type.getAddressSizeBytes()];
 		

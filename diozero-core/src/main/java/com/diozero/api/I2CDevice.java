@@ -510,6 +510,10 @@ public class I2CDevice implements I2CDeviceInterface {
 		}
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public void readWrite(I2CMessage[] messages, byte[] buffer) {
 		// TODO Validate that buffer is big enough
 		synchronized (delegate) {

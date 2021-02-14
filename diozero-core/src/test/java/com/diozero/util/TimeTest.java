@@ -1,10 +1,10 @@
-package com.diozero.internal.provider.builtin.gpio;
+package com.diozero.util;
 
 /*-
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - Core
- * Filename:     GpioLineEventListener.java  
+ * Filename:     TimeTest.java  
  * 
  * This file is part of the diozero project. More information about this project
  * can be found at http://www.diozero.com/
@@ -31,6 +31,10 @@ package com.diozero.internal.provider.builtin.gpio;
  * #L%
  */
 
-public interface GpioLineEventListener {
-	void event(int lineFd, int eventDataId, long timestampNanos);
+public class TimeTest {
+	public static void main(String[] args) {
+		System.out.println("Short min / mix: " + Short.MIN_VALUE + ", " + Short.MAX_VALUE);
+		System.out.println("Integer min / mix: " + Integer.MIN_VALUE + ", " + Integer.MAX_VALUE);
+		System.out.println("Long min / mix: " + Long.MIN_VALUE + ", " + Long.MAX_VALUE);
+	}
 }
