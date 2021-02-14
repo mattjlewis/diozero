@@ -34,14 +34,12 @@ package com.diozero.sampleapps;
 import org.tinylog.Logger;
 
 import com.diozero.devices.Ads112C04;
-import com.diozero.devices.McpEeprom;
 import com.diozero.devices.Ads112C04.Address;
-import com.diozero.devices.Ads112C04.ConfigRegister;
 import com.diozero.devices.Ads112C04.CrcConfig;
 import com.diozero.devices.Ads112C04.DataRate;
 import com.diozero.devices.Ads112C04.GainConfig;
 import com.diozero.devices.Ads112C04.VRef;
-import com.diozero.util.SleepUtil;
+import com.diozero.devices.McpEeprom;
 
 public class Ads112C04AndEepromTest {
 	public static void main(String[] args) {
