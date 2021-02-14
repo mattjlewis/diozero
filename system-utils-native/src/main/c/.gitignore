@@ -1,1 +1,4 @@
 /*.o
+/aarch64/
+/armv6/
+/libdiozero-system-utils.so
