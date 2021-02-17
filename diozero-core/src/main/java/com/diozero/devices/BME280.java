@@ -379,13 +379,13 @@ public class BME280 implements BarometerInterface, ThermometerInterface, Hygrome
 	 */
 	public void setOperatingModes(TemperatureOversampling tempOversampling, PressureOversampling pressOversampling,
 			HumidityOversampling humOversampling, OperatingMode operatingMode) {
-		// Normal mode, temp and pressure oversampling rate = 1
-		writeByte(CTRL_MEAS_REG,
-				(byte) (tempOversampling.getMask() | pressOversampling.getMask() | operatingMode.getMask()));
 		if (model == Model.BME280) {
 			// Humidity over sampling rate = 1
 			writeByte(CTRL_HUM_REG, humOversampling.getMask());
 		}
+		// Normal mode, temp and pressure oversampling rate = 1
+		writeByte(CTRL_MEAS_REG,
+				(byte) (tempOversampling.getMask() | pressOversampling.getMask() | operatingMode.getMask()));
 	}
 
 	/**
