@@ -88,7 +88,7 @@ import java.util.Arrays;
  * </ul>
  */
 @SuppressWarnings("unused")
-public abstract class AbstractSSD1306 extends SsdOled implements MonochromePixelBuffer {
+public abstract class AbstractSSD1306 extends SsdOled implements MonochromeSsdOled {
     // Fundamental commands
     private static final byte SET_CONTRAST = (byte) 0x81;
     private static final byte RESUME_TO_RAM_CONTENT_DISPLAY = (byte) 0xA4;
@@ -179,7 +179,6 @@ public abstract class AbstractSSD1306 extends SsdOled implements MonochromePixel
         super(width, height, BufferedImage.TYPE_BYTE_BINARY);
         this.displayBuffer = new byte[width * height / 8];
         this.externalVcc = externalVcc;
-        init();
     }
 
     @Override
@@ -194,6 +193,7 @@ public abstract class AbstractSSD1306 extends SsdOled implements MonochromePixel
         display();
     }
 
+    @Override
     public byte[] getDisplayBuffer() {
         return displayBuffer;
     }

@@ -3,7 +3,7 @@ package com.diozero.devices.oled;
 import java.awt.image.BufferedImage;
 import java.awt.image.Raster;
 
-public interface MonochromePixelBuffer {
+public interface MonochromeSsdOled {
 
     default void draw(BufferedImage image) {
         draw(image, 1);
@@ -26,6 +26,8 @@ public interface MonochromePixelBuffer {
     int getHeight();
 
     int getWidth();
+
+    byte[] getDisplayBuffer();
 
     void setPixel(int x, int y, boolean on);
 }
