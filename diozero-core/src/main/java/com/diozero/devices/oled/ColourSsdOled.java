@@ -31,14 +31,15 @@ package com.diozero.devices.oled;
  * #L%
  */
 
-import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferUShort;
-
+import com.diozero.api.DigitalOutputDevice;
+import com.diozero.api.SpiDevice;
+import com.diozero.util.ColourUtil;
 import org.tinylog.Logger;
 
-import com.diozero.api.DigitalOutputDevice;
-import com.diozero.util.ColourUtil;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferUShort;
+import java.util.Arrays;
 
 public abstract class ColourSsdOled extends SsdOled {
 	private static final int RED_BITS = 5;
@@ -48,19 +49,30 @@ public abstract class ColourSsdOled extends SsdOled {
 	public static final byte MAX_GREEN = (byte) (Math.pow(2, GREEN_BITS) - 1);
 	public static final byte MAX_BLUE = (byte) (Math.pow(2, BLUE_BITS) - 1);
 
-	public ColourSsdOled(int controller, int chipSelect, DigitalOutputDevice dcPin, DigitalOutputDevice resetPin,
-			int width, int height, int imageType) {
-		super(controller, chipSelect, dcPin, resetPin, width, height, imageType);
+	private final SpiDevice spiDevice;
+	private final DigitalOutputDevice dcPin;
+	private final DigitalOutputDevice resetPin;
+
+	private final byte[] displayBuffer;
+
+	public ColourSsdOled(int controller, int chipSelect, DigitalOutputDevice dcPin, DigitalOutputDevice resetPin, int width, int height, int imageType) {
+		super(width, height, imageType);
+
+		this.spiDevice = SpiDevice.builder(chipSelect).setController(controller).setFrequency(SPI_FREQUENCY).build();
+
+		this.dcPin = dcPin;
+		this.resetPin = resetPin;
 
 		// 16 bit colour hence 2x
-		buffer = new byte[2 * width * height];
+		displayBuffer = new byte[2 * width * height];
 
 		init();
 	}
 
 	@Override
-	protected void home() {
-		goTo(0, 0);
+	public void clearDisplay() {
+		Arrays.fill(displayBuffer, (byte) 0);
+		display();
 	}
 
 	@Override
@@ -84,24 +96,71 @@ public abstract class ColourSsdOled extends SsdOled {
 
 		short[] image_data = ((DataBufferUShort) image_to_display.getRaster().getDataBuffer()).getData();
 		for (int i = 0; i < image_data.length; i++) {
-			buffer[2 * i] = (byte) ((image_data[i] >> 8) & 0xff);
-			buffer[2 * i + 1] = (byte) (image_data[i] & 0xff);
+			displayBuffer[2 * i] = (byte) ((image_data[i] >> 8) & 0xff);
+			displayBuffer[2 * i + 1] = (byte) (image_data[i] & 0xff);
 		}
 
 		display();
+	}
+
+	public byte[] getDisplayBuffer() {
+		return displayBuffer;
+	}
+
+	public DigitalOutputDevice getResetPin() {
+		return resetPin;
+	}
+
+	@Override
+	protected void home() {
+		goTo(0, 0);
 	}
 
 	public void setPixel(int x, int y, byte red, byte green, byte blue, boolean display) {
 		int index = 2 * (x + y * width);
 		short colour = ColourUtil.createColour565(red, green, blue);
 		// MSB is transmitted first
-		buffer[index] = (byte) ((colour >> 8) & 0xff);
-		buffer[index + 1] = (byte) (colour & 0xff);
+		displayBuffer[index] = (byte) ((colour >> 8) & 0xff);
+		displayBuffer[index + 1] = (byte) (colour & 0xff);
 
 		if (display) {
 			goTo(x, y);
-			data(index, 2);
+			transferDisplayBuffer(index, 2);
 		}
+	}
+
+	protected void transferDisplayBuffer(int offset, int length) {
+		dcPin.setOn(true);
+		spiDevice.write(getDisplayBuffer(), offset, length);
+	}
+
+	@Override
+	protected void transferDisplayBuffer() {
+		dcPin.setOn(true);
+		spiDevice.write(getDisplayBuffer());
+	}
+
+	protected void write(byte[] bytes) {
+		dcPin.setOn(true);
+		spiDevice.write(bytes);
+	}
+
+	protected void write(byte[] data, int offset, int length) {
+		dcPin.setOn(true);
+		spiDevice.write(data, offset, length);
+	}
+
+	@Override
+	protected void writeCommand(byte... commands) {
+		dcPin.setOn(false);
+		spiDevice.write(commands);
+	}
+
+	protected void writeCommandAndData(byte command, byte... data) {
+		// Single byte command (D/C# = 0)
+		// Multiple byte command (D/C# = 0 for first byte, D/C# = 1 for other bytes)
+		write(new byte[]{command});
+		write(data);
 	}
 
 	public abstract void setContrast(byte level);

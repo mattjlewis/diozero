@@ -31,37 +31,23 @@ package com.diozero.devices.oled;
  * #L%
  */
 
-import java.awt.image.BufferedImage;
-import java.io.Closeable;
-import java.util.Arrays;
-
 import com.diozero.api.DigitalOutputDevice;
-import com.diozero.api.SpiDevice;
 import com.diozero.util.SleepUtil;
 
+import java.awt.image.BufferedImage;
+import java.io.Closeable;
+
 public abstract class SsdOled implements Closeable {
-	private static final int SPI_FREQUENCY = 8_000_000;
+	protected static final int SPI_FREQUENCY = 8_000_000;
 
 	private static final byte DISPLAY_OFF = (byte) 0xAE;
 	private static final byte DISPLAY_ON = (byte) 0xAF;
 
-	// TODO I2C support
-	// private I2CDevice i2cDevice;
-	protected SpiDevice spiDevice;
-	protected DigitalOutputDevice dcPin;
-	protected DigitalOutputDevice resetPin;
-	protected int width;
-	protected int height;
-	protected byte[] buffer;
-	protected int imageType;
+	protected final int width;
+	protected final int height;
+	protected final int imageType;
 
-	public SsdOled(int controller, int chipSelect, DigitalOutputDevice dcPin, DigitalOutputDevice resetPin, int width,
-			int height, int imageType) {
-		spiDevice = SpiDevice.builder(chipSelect).setController(controller).setFrequency(SPI_FREQUENCY).build();
-
-		this.dcPin = dcPin;
-		this.resetPin = resetPin;
-
+	public SsdOled(int width, int height, int imageType) {
 		this.width = width;
 		this.height = height;
 		this.imageType = imageType;
@@ -69,45 +55,20 @@ public abstract class SsdOled implements Closeable {
 
 	protected abstract void init();
 
-	protected void reset() {
-		resetPin.setOn(true);
-		SleepUtil.sleepMillis(1);
-		resetPin.setOn(false);
-		SleepUtil.sleepMillis(10);
-		resetPin.setOn(true);
-	}
-
-	protected void command(byte... commands) {
-		dcPin.setOn(false);
-		spiDevice.write(commands);
-	}
-
-	protected void data() {
-		dcPin.setOn(true);
-		spiDevice.write(buffer);
-	}
-
-	protected void data(int offset, int length) {
-		dcPin.setOn(true);
-		spiDevice.write(buffer, offset, length);
-	}
-
 	protected abstract void goTo(int x, int y);
 
 	protected abstract void home();
 
-	public void display() {
-		home();
+	protected abstract void clearDisplay();
 
-		data();
+	@Override
+	public void close() {
+		clearDisplay();
+		setDisplayOn(false);
 	}
 
 	public abstract void display(BufferedImage image);
 
-	public void clear() {
-		Arrays.fill(buffer, (byte) 0);
-		display();
-	}
 
 	public int getWidth() {
 		return width;
@@ -117,20 +78,31 @@ public abstract class SsdOled implements Closeable {
 		return height;
 	}
 
-	public void setDisplayOn(boolean on) {
-		command(on ? DISPLAY_ON : DISPLAY_OFF);
+	public void display() {
+		home();
+		transferDisplayBuffer();
 	}
 
-	@Override
-	public void close() {
-		clear();
-		setDisplayOn(false);
-		spiDevice.close();
+	protected void reset(DigitalOutputDevice resetPin) {
+		resetPin.setOn(true);
+		SleepUtil.sleepMillis(1);
+		resetPin.setOn(false);
+		SleepUtil.sleepMillis(10);
+		resetPin.setOn(true);
 	}
+
+	public void setDisplayOn(boolean on) {
+		writeCommand(on ? DISPLAY_ON : DISPLAY_OFF);
+	}
+
+	protected abstract void transferDisplayBuffer();
 
 	public int getNativeImageType() {
 		return imageType;
 	}
 
 	public abstract void invertDisplay(boolean invert);
+
+	protected abstract void writeCommand(byte... data);
+
 }

@@ -31,10 +31,9 @@ package com.diozero.devices.oled;
  * #L%
  */
 
-import java.awt.image.BufferedImage;
-
-
 import com.diozero.api.DigitalOutputDevice;
+
+import java.awt.image.BufferedImage;
 
 /**
  * <p>Encapsulates the serial interface to the 16-bit (5-6-5 RGB) and 18-bit
@@ -100,47 +99,31 @@ public class SSD1351 extends ColourSsdOled {
 		// Limit to 5-6-5 image type for now (65k colours)
 		super(controller, chipSelect, dcPin, resetPin, WIDTH, HEIGHT, BufferedImage.TYPE_USHORT_565_RGB);
 	}
-	
-	private void commandAndData(byte command, byte... data) {
-		// Single byte command (D/C# = 0)
-		// Multiple byte command (D/C# = 0 for first byte, D/C# = 1 for other bytes) 
-		dcPin.setOn(false);
-		spiDevice.write(new byte[] { command });
-		dcPin.setOn(true);
-		spiDevice.write(data);
-	}
-	
+
 	@Override
-	protected void data() {
-		dcPin.setOn(true);
-		spiDevice.write(buffer);
-		command(WRITE_RAM_COMMAND);
+	protected void goTo(int x, int y) {
+		writeCommandAndData(SET_COLUMN_ADDRESS, (byte) x, (byte) (width - 1));
+		writeCommandAndData(SET_ROW_ADDRESS, (byte) y, (byte) (height - 1));
+		writeCommand(WRITE_RAM_COMMAND);
 	}
-	
-	@Override
-	protected void data(int offset, int length) {
-		dcPin.setOn(true);
-		spiDevice.write(buffer, offset, length);
-		command(WRITE_RAM_COMMAND);
-	}
-	
+
 	@Override
 	protected void init() {
-		reset();
-		
+		reset(getResetPin());
+
 		// A[7:0]: MCU protection status [reset = 12h]
 		// A[7:0] = 12b, Unlock OLED driver IC MCU interface from entering command [reset]
 		// A[7:0] = 16b, Lock OLED driver IC MCU interface from entering command
 		// A[7:0] = B0b, Command A2,B1,B3,BB,BE,C1 inaccessible in both lock and unlock state [reset]
 		// A[7:0] = B1b, Command A2,B1,B3,BB,BE,C1 accessible if in unlock state
-		commandAndData(COMMAND_LOCK, (byte) 0x12);
-		commandAndData(COMMAND_LOCK, (byte) 0xB1);
+		writeCommandAndData(COMMAND_LOCK, (byte) 0x12);
+		writeCommandAndData(COMMAND_LOCK, (byte) 0xB1);
 		// Display off
 		setDisplayOn(false);
 		// A[3:0] [reset=0001], Clock Div Ratio divide by DIVSET
 		// A[7:4] = Oscillator Frequency [reset=1101b]
-		commandAndData(DISPLAY_CLOCK_DIVIDER, (byte) 0xF1); // 11110001
-		commandAndData(MULTIPLEX_RATIO, (byte) 127); // 10 to 127 [reset = 127]
+		writeCommandAndData(DISPLAY_CLOCK_DIVIDER, (byte) 0xF1); // 11110001
+		writeCommandAndData(MULTIPLEX_RATIO, (byte) 127); // 10 to 127 [reset = 127]
 		// A[0]=0b, Horizontal address increment [reset]
 		// A[0]=1b, Vertical address increment
 		// A[1]=0b, Column address 0 is mapped to SEG0 [reset]
@@ -155,17 +138,17 @@ public class SSD1351 extends ColourSsdOled {
 		// A[7:6]=00/01, 65k Colour depth
 		// A[7:6]=10, 262k Colour depth
 		// A[7:6]=11, 262k Colour depth (16-bit format 2)
-		commandAndData(REMAP_AND_COLOUR_DEPTH, (byte) 0b00110100);   // 0b00110000
+		writeCommandAndData(REMAP_AND_COLOUR_DEPTH, (byte) 0b00110100);   // 0b00110000
 		//commandAndData(REMAP_AND_COLOUR_DEPTH, (byte) 0x74); // 0b01110100
 		// A[6:0]: Start Address. [reset=0]
 		// B[6:0]: End Address. [reset=127]
-		commandAndData(SET_COLUMN_ADDRESS, (byte) 0x00, (byte) (width-1));
+		writeCommandAndData(SET_COLUMN_ADDRESS, (byte) 0x00, (byte) (width-1));
 		// A[6:0]: Start Address. [reset=0]
 		// B[6:0]: End Address. [reset=127]
-		commandAndData(SET_ROW_ADDRESS, (byte) 0x00, (byte) (height-1));
+		writeCommandAndData(SET_ROW_ADDRESS, (byte) 0x00, (byte) (height-1));
 		// Set start line - this needs to be 0 for a 128x128 display and 96 for a 128x96 display
-		commandAndData(DISPLAY_START_LINE, (byte) 0x00);
-		commandAndData(DISPLAY_OFFSET, (byte) 0x00);
+		writeCommandAndData(DISPLAY_START_LINE, (byte) 0x00);
+		writeCommandAndData(DISPLAY_OFFSET, (byte) 0x00);
 		// A[1:0] GPIO0:
 		//  00 pin HiZ, Input disabled
 		//  01 pin HiZ, Input enabled
@@ -175,21 +158,21 @@ public class SSD1351 extends ColourSsdOled {
 		//  00 pin HiZ, Input disabled
 		//  01 pin HiZ, Input enabled
 		//  10 pin output LOW [reset]
-		//  11 pin output HIGH 
-		commandAndData(SET_GPIO, (byte) 0x00);
+		//  11 pin output HIGH
+		writeCommandAndData(SET_GPIO, (byte) 0x00);
 		// A[0]=0b, Disable internal VDD regulator (for power save during sleep mode only)
 		// A[0]=1b, Enable internal VDD regulator [reset]
 		// A[7:6]=00b, Select 8-bit parallel interface [reset]
 		// A[7:6]=01b, Select 16-bit parallel interface
-		// A[7:6]=11b, Select 18-bit parallel interface 
-		commandAndData(FUNCTION_SELECTION, (byte) 0x01);
+		// A[7:6]=11b, Select 18-bit parallel interface
+		writeCommandAndData(FUNCTION_SELECTION, (byte) 0x01);
 		// A[3:0] Phase 1 period in N DCLK. 1~15 DCLK allowed.
 		// A[7:4] Phase 2 period in N DCLK. 1~15 DCLK allowed.
 		// Default: 0x74 (0111 0100)
-		commandAndData(SET_RESET_PRECHARGE_PERIOD, (byte) 0x32); // 0011 0010
+		writeCommandAndData(SET_RESET_PRECHARGE_PERIOD, (byte) 0x32); // 0011 0010
 		// Set COM deselect voltage level [reset = 05h]
-		commandAndData(VCOMH_VOLTAGE, (byte) 0x05);
-		command(DISPLAY_MODE_NORMAL);
+		writeCommandAndData(VCOMH_VOLTAGE, (byte) 0x05);
+		writeCommand(DISPLAY_MODE_NORMAL);
 		// A[7:0] Contrast Value Color A [reset=10001010b = 0x8A]
 		// B[7:0] Contrast Value Color B [reset=01010001b = 0x51]
 		// C[7:0] Contrast Value Color C [reset=10001010b = 0x8A]
@@ -198,33 +181,38 @@ public class SSD1351 extends ColourSsdOled {
 		//  0000b reduce output currents for all colors to 1/16
 		//  0001b reduce output currents for all colors to 2/16
 		//  1110b reduce output currents for all colors to 15/16
-		//  1111b no change [reset] 
-		commandAndData(MASTER_CONTRAST_CURRENT_CONTROL, (byte) 0x0F);
+		//  1111b no change [reset]
+		writeCommandAndData(MASTER_CONTRAST_CURRENT_CONTROL, (byte) 0x0F);
 		// A[1:0]=00 External VSL [reset]
 		// A[1:0]=01,10,11 are invalid
-		commandAndData(SET_VSL, (byte) 0b10100000, (byte) 0b10110101, (byte) 0b01010101); // 0xA0, 0xB5, 0x55
+		writeCommandAndData(SET_VSL, (byte) 0b10100000, (byte) 0b10110101, (byte) 0b01010101); // 0xA0, 0xB5, 0x55
 		// A[3:0] Set Second Pre-charge Period
 		//  0000b invalid
 		//  0001b 1 DCLKS
 		//  0010b 2 DCLKS
 		//  1000b 8 DCLKS [reset]
-		//  1111b 15 DCLKS 
-		commandAndData(SET_SECOND_PRECHARGE_PERIOD, (byte) 0x01);
+		//  1111b 15 DCLKS
+		writeCommandAndData(SET_SECOND_PRECHARGE_PERIOD, (byte) 0x01);
 
-		clear();
+		clearDisplay();
 		setDisplayOn(true);
 	}
 
 	@Override
-	protected void goTo(int x, int y) {
-		commandAndData(SET_COLUMN_ADDRESS, (byte) x, (byte) (width - 1));
-		commandAndData(SET_ROW_ADDRESS, (byte) y, (byte) (height - 1));
-		command(WRITE_RAM_COMMAND);
+	public void invertDisplay(boolean invert) {
+		writeCommand(invert ? DISPLAY_MODE_INVERSE : DISPLAY_MODE_NORMAL);
 	}
 
 	@Override
-	public void invertDisplay(boolean invert) {
-		command(invert ? DISPLAY_MODE_INVERSE : DISPLAY_MODE_NORMAL);
+	protected void transferDisplayBuffer(int offset, int length) {
+		write(getDisplayBuffer(), offset, length);
+		writeCommand(WRITE_RAM_COMMAND);
+	}
+
+	@Override
+	protected void transferDisplayBuffer() {
+		write(getDisplayBuffer());
+		writeCommand(WRITE_RAM_COMMAND);
 	}
 
 	/**
@@ -234,11 +222,11 @@ public class SSD1351 extends ColourSsdOled {
 	 */
 	@Override
 	public void setContrast(byte level) {
-		commandAndData(CONTRAST_COLOUR, level, level, level);
+		writeCommandAndData(CONTRAST_COLOUR, level, level, level);
 	}
 	
 	@Override
 	public void setContrast(byte red, byte green, byte blue) {
-		commandAndData(CONTRAST_COLOUR, red, green, blue);
+		writeCommandAndData(CONTRAST_COLOUR, red, green, blue);
 	}
 }
