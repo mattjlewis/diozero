@@ -50,7 +50,6 @@ public class SSD1306i2c extends AbstractSSD1306 {
         this(controller, address, WIDTH, HEIGHT, false);
     }
 
-
     @Override
     public void close() {
         super.close();

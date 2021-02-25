@@ -4,8 +4,8 @@ package com.diozero.devices.oled;
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - Core
- * Filename:     SSD1306.java  
- * 
+ * Filename:     SSD1306.java
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at http://www.diozero.com/
  * %%
@@ -17,10 +17,10 @@ package com.diozero.devices.oled;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -56,7 +56,7 @@ import com.diozero.api.SpiDevice;
  * <p>Enlargement of GDDRAM for Page 2 (No row re-mapping and column-remapping):
  * Each + represents one bit of image data.</p>
  * <pre>
- *                       1 1 1 1 1 
+ *                       1 1 1 1 1
  *        &lt;- Segment -&gt;  2 2 2 2 2
  *     D 0 1 2 3 4 5 ... 3 4 5 6 7 COM
  * LSB 0 + + + + + + + + + + + + + 16
@@ -90,52 +90,52 @@ import com.diozero.api.SpiDevice;
 @SuppressWarnings("unused")
 public class SSD1306 extends AbstractSSD1306 {
 
-	private final SpiDevice spiDevice;
-	private final DigitalOutputDevice dcPin;
-	private final DigitalOutputDevice resetPin;
+    private final SpiDevice spiDevice;
+    private final DigitalOutputDevice dcPin;
+    private final DigitalOutputDevice resetPin;
 
-	public SSD1306(int controller, int chipSelect, DigitalOutputDevice dcPin, DigitalOutputDevice resetPin, int width, int height, boolean externalVcc) {
-		super(width, height, externalVcc);
+    public SSD1306(int controller, int chipSelect, DigitalOutputDevice dcPin, DigitalOutputDevice resetPin, int width, int height, boolean externalVcc) {
+        super(width, height, externalVcc);
 
-		this.spiDevice = SpiDevice.builder(chipSelect).setController(controller).setFrequency(SPI_FREQUENCY).build();
+        this.spiDevice = SpiDevice.builder(chipSelect).setController(controller).setFrequency(SPI_FREQUENCY).build();
 
-		this.dcPin = dcPin;
-		this.resetPin = resetPin;
+        this.dcPin = dcPin;
+        this.resetPin = resetPin;
 
-		init();
-	}
+        init();
+    }
 
-	public SSD1306(int controller, int chipSelect, DigitalOutputDevice dcPin, DigitalOutputDevice resetPin) {
-		this(controller, chipSelect, dcPin, resetPin, WIDTH, HEIGHT, false);
-	}
+    public SSD1306(int controller, int chipSelect, DigitalOutputDevice dcPin, DigitalOutputDevice resetPin) {
+        this(controller, chipSelect, dcPin, resetPin, WIDTH, HEIGHT, false);
+    }
 
-	@Override
-	public void close() {
-		super.close();
-		spiDevice.close();
-	}
+    @Override
+    public void close() {
+        super.close();
+        spiDevice.close();
+    }
 
-	@Override
-	protected void init() {
-		reset(resetPin);
-		super.init();
-	}
+    @Override
+    protected void init() {
+        reset(resetPin);
+        super.init();
+    }
 
 //	protected void transferDisplayBuffer(int offset, int length) {
 //		dcPin.setOn(true);
 //		spiDevice.write(getDisplayBuffer(), offset, length);
 //	}
 
-	@Override
-	protected void transferDisplayBuffer() {
-		dcPin.setOn(true);
-		spiDevice.write(getDisplayBuffer());
-	}
+    @Override
+    protected void transferDisplayBuffer() {
+        dcPin.setOn(true);
+        spiDevice.write(getDisplayBuffer());
+    }
 
-	@Override
-	protected void writeCommand(byte... commands) {
-		dcPin.setOn(false);
-		spiDevice.write(commands);
-	}
+    @Override
+    protected void writeCommand(byte... commands) {
+        dcPin.setOn(false);
+        spiDevice.write(commands);
+    }
 
 }
