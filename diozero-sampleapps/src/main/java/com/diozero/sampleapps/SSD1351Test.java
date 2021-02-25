@@ -169,7 +169,7 @@ public class SSD1351Test {
 
 	public static void gameOfLife(ColourSsdOled oled, long duration) {
 		Logger.info("Game of Life");
-		oled.clear();
+		oled.clearDisplay();
 
 		GameOfLife gol = new GameOfLife(oled.getWidth(), oled.getHeight());
 		gol.randomise();
@@ -233,7 +233,7 @@ public class SSD1351Test {
 		int width = oled.getWidth();
 		int height = oled.getHeight();
 		final Random random = new Random();
-		oled.clear();
+		oled.clearDisplay();
 
 		final Point[] corners = { new Point(width / 2, 0), new Point(0, height - 1), new Point(width - 1, height - 1) };
 		Point point = new Point(corners[random.nextInt(corners.length)]);

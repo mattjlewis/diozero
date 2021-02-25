@@ -101,7 +101,7 @@ public class SSD1331 extends ColourSsdOled {
 
 	@Override
 	protected void init() {
-		reset();
+		reset(getResetPin());
 		
 		// Display off
 		setDisplayOn(false);
@@ -113,41 +113,41 @@ public class SSD1331 extends ColourSsdOled {
 		//  1 -> Scan from COM [N-1] to COM0
 		//  1 -> Enable COM split odd-even
 		// 01 -> 65k colour
-		command(REMAP_AND_COLOUR_DEPTH, (byte) 0b01110010);
+		writeCommand(REMAP_AND_COLOUR_DEPTH, (byte) 0b01110010);
 		// Set Display start line
-		command(DISPLAY_START_LINE, (byte) 0x00);
+		writeCommand(DISPLAY_START_LINE, (byte) 0x00);
 		// Set display offset
-		command(DISPLAY_OFFSET, (byte) 0x00);
+		writeCommand(DISPLAY_OFFSET, (byte) 0x00);
 		// Normal display
-		command(DISPLAY_MODE_NORMAL);
+		writeCommand(DISPLAY_MODE_NORMAL);
 		// Set multiplex (0x3F is the default)
-		command(MULTIPLEX_RATIO, (byte) 0x3F);
+		writeCommand(MULTIPLEX_RATIO, (byte) 0x3F);
 		// Master configure (Bit A[0] must be set to 0b after RESET)
-		command(MASTER_CONFIG, (byte) 0b10001110);
+		writeCommand(MASTER_CONFIG, (byte) 0b10001110);
 		// Power save mode (0x1A = Enable, 0x0B = Disable)
-		command(POWER_SAVE_MODE, (byte) 0x0B);
+		writeCommand(POWER_SAVE_MODE, (byte) 0x0B);
 		// Phase12 period (phase 1 = 4, phase 2 = 7)
-		command(PHASE12_PERIOD, (byte) 0b0111_0100);
+		writeCommand(PHASE12_PERIOD, (byte) 0b0111_0100);
 		// Clock divider (divide ratio = 1, Fosc frequency = 13)
-		command(DISPLAY_CLOCK_DIVIDER, (byte) 0b1101_0000);
+		writeCommand(DISPLAY_CLOCK_DIVIDER, (byte) 0b1101_0000);
 		// Set precharge speeds
-		command(PRECHARGE_SPEED_COLOUR_A, (byte) 0x80, PRECHARGE_SPEED_COLOUR_B, (byte) 0x80, PRECHARGE_SPEED_COLOUR_C, (byte) 0x80);
+		writeCommand(PRECHARGE_SPEED_COLOUR_A, (byte) 0x80, PRECHARGE_SPEED_COLOUR_B, (byte) 0x80, PRECHARGE_SPEED_COLOUR_C, (byte) 0x80);
 		// Set pre-charge voltage (default is 0x3E 0b111110)
-		command(PRECHARGE_LEVEL, (byte) 0b00111110);
+		writeCommand(PRECHARGE_LEVEL, (byte) 0b00111110);
 		// Set voltage (default is 0x3E which is 0.83 * Vcc)
-		command(VOLTAGE, (byte) 0x3E);
+		writeCommand(VOLTAGE, (byte) 0x3E);
 		// Master current control (default is 0x0F)
-		command(MASTER_CURRENT_CONTROL, (byte) 0x0F);
+		writeCommand(MASTER_CURRENT_CONTROL, (byte) 0x0F);
 		
 		setContrast((byte) 0xFF);
-		clear();
+		clearDisplay();
 		setDisplayOn(true);
 	}
 
 	@Override
 	protected void goTo(int x, int y) {
-		command(SET_COLUMN_ADDRESS, (byte) x, (byte) (width - 1));
-		command(SET_ROW_ADDRESS, (byte) y, (byte) (height - 1));
+		writeCommand(SET_COLUMN_ADDRESS, (byte) x, (byte) (width - 1));
+		writeCommand(SET_ROW_ADDRESS, (byte) y, (byte) (height - 1));
 	}
 
 	/**
@@ -158,7 +158,7 @@ public class SSD1331 extends ColourSsdOled {
 	 */
 	@Override
 	public void invertDisplay(boolean invert) {
-		command(invert ? DISPLAY_MODE_INVERSE : DISPLAY_MODE_NORMAL);
+		writeCommand(invert ? DISPLAY_MODE_INVERSE : DISPLAY_MODE_NORMAL);
 	}
 	
 	/**
@@ -170,11 +170,11 @@ public class SSD1331 extends ColourSsdOled {
 	 */
 	@Override
 	public void setContrast(byte level) {
-		command(CONTRAST_COLOUR_A, level, CONTRAST_COLOUR_B, level, CONTRAST_COLOUR_C, level);
+		writeCommand(CONTRAST_COLOUR_A, level, CONTRAST_COLOUR_B, level, CONTRAST_COLOUR_C, level);
 	}
 	
 	@Override
 	public void setContrast(byte red, byte green, byte blue) {
-		command(CONTRAST_COLOUR_A, red, CONTRAST_COLOUR_B, green, CONTRAST_COLOUR_C, blue);
+		writeCommand(CONTRAST_COLOUR_A, red, CONTRAST_COLOUR_B, green, CONTRAST_COLOUR_C, blue);
 	}
 }
