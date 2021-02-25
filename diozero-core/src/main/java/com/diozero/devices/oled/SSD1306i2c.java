@@ -57,9 +57,8 @@ public class SSD1306i2c extends AbstractSSD1306 {
     }
 
     protected void transferDisplayBuffer() {
-        byte[] buf = new byte[16];
         for (int i = 0; i < ((getWidth() * getHeight() / 8) / 16); i++) {
-            // send a bunch of render in one xmission
+            byte[] buf = new byte[16];
             System.arraycopy(getDisplayBuffer(), 16 * i, buf, 0, buf.length);
             i2cDevice.writeI2CBlockData((byte) 0x40, buf);
         }
