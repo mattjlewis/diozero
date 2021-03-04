@@ -33,14 +33,14 @@ package com.diozero.api;
 
 import com.diozero.internal.spi.GpioDeviceFactoryInterface;
 import com.diozero.sbc.DeviceFactoryHelper;
-import com.diozero.util.Event;
+import com.diozero.util.EventLock;
 
 /**
  * Represents a digital input device with distinct waitable states (active / inactive).
  */
 public class WaitableDigitalInputDevice extends DigitalInputDevice {
-	private Event highEvent = new Event();
-	private Event lowEvent = new Event();
+	private EventLock highEvent = new EventLock();
+	private EventLock lowEvent = new EventLock();
 
 	/**
 	 * @param gpio GPIO to which the device is connected.
@@ -80,7 +80,7 @@ public class WaitableDigitalInputDevice extends DigitalInputDevice {
 
 	@Override
 	public void accept(DigitalInputEvent event) {
-		Event e = event.getValue() ? highEvent : lowEvent;
+		EventLock e = event.getValue() ? highEvent : lowEvent;
 		e.set();
 		
 		// Notify any listeners
@@ -133,7 +133,7 @@ public class WaitableDigitalInputDevice extends DigitalInputDevice {
 	 * @throws InterruptedException If interrupted while waiting.-
 	 */
 	public boolean waitForValue(boolean value, int timeout) throws InterruptedException {
-		Event e = value ? highEvent : lowEvent;
+		EventLock e = value ? highEvent : lowEvent;
 		if (timeout > 0) {
 			return e.doWait(timeout);
 		}

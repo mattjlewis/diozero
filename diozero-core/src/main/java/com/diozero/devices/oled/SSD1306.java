@@ -167,8 +167,8 @@ public class SSD1306 extends SsdOled {
 	private static final byte VCOMH_DESELECT_LEVEL_077 = 0b0010_0000; // 0.77 x VCC (RESET)
 	private static final byte VCOMH_DESELECT_LEVEL_083 = 0b0011_0000; // 0.83 x VCC
 	
-	private static final int WIDTH = 128;
-	private static final int HEIGHT = 64;
+	public static final int WIDTH = 128;
+	public static final int HEIGHT = 64;
 	private static final int PAGES = 8;
 	
 	private boolean externalVcc;

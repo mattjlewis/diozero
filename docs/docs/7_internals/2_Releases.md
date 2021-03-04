@@ -105,3 +105,10 @@ permalink: /internals/releases.html
 
 + Bugfix release - fix for I2C retry logic
 + GPIO event Epoch time is calculated from nano time
+
+## Release 1.1.4
+
++ Bugfix for BME280 humidity reads - config registers need to be written to in the correct order
++ Enhancements to ADS112C04 - support for input multiplexer configuration (differential reads)
++ Renamed util.Event to util.EventLock
++ Preview / sandpit introduction of a new generic FIFO event queue

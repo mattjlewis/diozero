@@ -64,8 +64,13 @@ public class GpioChip extends GpioChipInfo implements Closeable, GpioLineEventLi
 	public static Map<Integer, GpioChip> openAllChips() throws IOException {
 		Map<Integer, GpioChip> chips = Files.list(Paths.get("/dev"))
 				.filter(p -> p.getFileName().toString().startsWith("gpiochip"))
-				.map(p -> NativeGpioDevice.openChip(p.toString()))
+				.map(p -> NativeGpioDevice.openChip(p.toString())) //
+				.filter(p -> p != null) // openChip will return null if it is unable to open the chip
 				.collect(Collectors.toMap(GpioChip::getChipId, chip -> chip));
+		
+		if (chips.isEmpty()) {
+			Logger.error("Unable to open any gpiochip files in /dev");
+		}
 
 		// Calculate the line offset for the chips
 		// This allows GPIOs to be auto-detected as the GPIO number is chip offset +

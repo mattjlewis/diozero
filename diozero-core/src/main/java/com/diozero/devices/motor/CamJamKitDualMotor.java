@@ -1,10 +1,10 @@
-package com.diozero.devices;
+package com.diozero.devices.motor;
 
-/*
+/*-
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - Core
- * Filename:     PiconZeroMotor.java  
+ * Filename:     CamJamKitDualMotor.java  
  * 
  * This file is part of the diozero project. More information about this project
  * can be found at http://www.diozero.com/
@@ -31,53 +31,13 @@ package com.diozero.devices;
  * #L%
  */
 
-import java.io.IOException;
-
 import com.diozero.api.RuntimeIOException;
-import com.diozero.devices.motor.MotorBase;
 
-public class PiconZeroMotor extends MotorBase {
-	private static final int MAX_FORWARD_SPEED = 127;
-	private static final int MAX_BACKWARD_SPEED = -128;
-	private PiconZero piconZero;
-	private int motor;
-	
-	public PiconZeroMotor(PiconZero piconZero, int motor) {
-		this.piconZero = piconZero;
-		this.motor = motor;
-	}
-
-	@Override
-	public void forward(float speed) throws RuntimeIOException {
-		piconZero.setMotor(motor, Math.round(Math.abs(speed) * MAX_FORWARD_SPEED));
-	}
-
-	@Override
-	public void backward(float speed) throws RuntimeIOException {
-		piconZero.setMotor(motor, Math.round(Math.abs(speed) * MAX_BACKWARD_SPEED));
-	}
-
-	@Override
-	public void stop() throws RuntimeIOException {
-		piconZero.setMotor(motor, 0);
-	}
-
-	/**
-	 * Get the relative output value for the motor
-	 * @return -1 for full reverse, 1 for full forward, 0 for stop
-	 */
-	@Override
-	public float getValue() throws RuntimeIOException {
-		return piconZero.getMotor(motor) / Math.abs(MAX_BACKWARD_SPEED);
-	}
-
-	@Override
-	public boolean isActive() throws RuntimeIOException {
-		return piconZero.getMotor(motor) != 0;
-	}
-
-	@Override
-	public void close() throws IOException {
-		stop();
+/**
+ * CamJam EduKit 3 Robot. Generic robot controller with pre-configured GPIO connections.
+ */
+public class CamJamKitDualMotor extends DualMotor {
+	public CamJamKitDualMotor() throws RuntimeIOException {
+		super(new PwmMotor(9, 10), new PwmMotor(7, 8));
 	}
 }

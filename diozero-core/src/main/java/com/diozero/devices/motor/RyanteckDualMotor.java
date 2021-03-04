@@ -1,10 +1,10 @@
-package com.diozero.devices;
+package com.diozero.devices.motor;
 
 /*-
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - Core
- * Filename:     CamJamKitDualMotor.java  
+ * Filename:     RyanteckDualMotor.java  
  * 
  * This file is part of the diozero project. More information about this project
  * can be found at http://www.diozero.com/
@@ -32,14 +32,12 @@ package com.diozero.devices;
  */
 
 import com.diozero.api.RuntimeIOException;
-import com.diozero.devices.motor.DualMotor;
-import com.diozero.devices.motor.PwmMotor;
 
 /**
- * CamJam EduKit 3 Robot. Generic robot controller with pre-configured GPIO connections.
+ * RTK MCB Robot. Generic robot controller with pre-configured GPIO connections.
  */
-public class CamJamKitDualMotor extends DualMotor {
-	public CamJamKitDualMotor() throws RuntimeIOException {
-		super(new PwmMotor(9, 10), new PwmMotor(7, 8));
+public class RyanteckDualMotor extends DualMotor {
+	public RyanteckDualMotor() throws RuntimeIOException {
+		super(new PwmMotor(17, 18), new PwmMotor(22, 23));
 	}
 }

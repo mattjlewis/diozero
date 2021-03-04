@@ -70,7 +70,7 @@ public class SoftwarePwmOutputDevice extends AbstractDevice implements PwmOutput
 
 	public void start() {
 		if (!running.getAndSet(true)) {
-			DiozeroScheduler.getNonDaemonInstance().execute(this);
+			DiozeroScheduler.getDaemonInstance().execute(this);
 		}
 	}
 

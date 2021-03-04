@@ -34,10 +34,8 @@ package com.diozero.api;
 /**
  * Abstract class representing an event from a GPIO device.
  */
-public abstract class DeviceEvent {
+public abstract class DeviceEvent extends Event {
 	private int gpio;
-	private long epochTime;
-	private long nanoTime;
 
 	/**
 	 * Constructor for a device event.
@@ -49,20 +47,11 @@ public abstract class DeviceEvent {
 	 *                  time source, in nanoseconds
 	 */
 	public DeviceEvent(int gpio, long epochTime, long nanoTime) {
+		super(epochTime, nanoTime);
 		this.gpio = gpio;
-		this.epochTime = epochTime;
-		this.nanoTime = nanoTime;
 	}
 
 	public int getGpio() {
 		return gpio;
-	}
-
-	public long getEpochTime() {
-		return epochTime;
-	}
-
-	public long getNanoTime() {
-		return nanoTime;
 	}
 }

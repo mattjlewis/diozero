@@ -36,7 +36,6 @@ import java.io.Closeable;
 import java.util.Arrays;
 
 import com.diozero.api.DigitalOutputDevice;
-import com.diozero.api.SpiDevice;
 import com.diozero.util.SleepUtil;
 
 public abstract class SsdOled implements Closeable {
@@ -45,9 +44,7 @@ public abstract class SsdOled implements Closeable {
 	private static final byte DISPLAY_OFF = (byte) 0xAE;
 	private static final byte DISPLAY_ON = (byte) 0xAF;
 
-	// TODO I2C support
-	// private I2CDevice i2cDevice;
-	protected SpiDevice spiDevice;
+	protected SsdOledCommunicationChannel device;
 	protected DigitalOutputDevice dcPin;
 	protected DigitalOutputDevice resetPin;
 	protected int width;
@@ -57,7 +54,7 @@ public abstract class SsdOled implements Closeable {
 
 	public SsdOled(int controller, int chipSelect, DigitalOutputDevice dcPin, DigitalOutputDevice resetPin, int width,
 			int height, int imageType) {
-		spiDevice = SpiDevice.builder(chipSelect).setController(controller).setFrequency(SPI_FREQUENCY).build();
+		device = new SsdOledCommunicationChannel.SpiCommunicationChannel(chipSelect, controller, SPI_FREQUENCY);
 
 		this.dcPin = dcPin;
 		this.resetPin = resetPin;
@@ -79,17 +76,17 @@ public abstract class SsdOled implements Closeable {
 
 	protected void command(byte... commands) {
 		dcPin.setOn(false);
-		spiDevice.write(commands);
+		device.write(commands);
 	}
 
 	protected void data() {
 		dcPin.setOn(true);
-		spiDevice.write(buffer);
+		device.write(buffer);
 	}
 
 	protected void data(int offset, int length) {
 		dcPin.setOn(true);
-		spiDevice.write(buffer, offset, length);
+		device.write(buffer, offset, length);
 	}
 
 	protected abstract void goTo(int x, int y);
@@ -125,7 +122,7 @@ public abstract class SsdOled implements Closeable {
 	public void close() {
 		clear();
 		setDisplayOn(false);
-		spiDevice.close();
+		device.close();
 	}
 
 	public int getNativeImageType() {

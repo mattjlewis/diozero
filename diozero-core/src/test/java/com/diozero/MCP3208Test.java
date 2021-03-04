@@ -39,6 +39,6 @@ import com.diozero.devices.McpAdc;
  */
 public class MCP3208Test extends McpAdcTest {
 	public MCP3208Test() {
-		super(McpAdc.MCP3208);
+		super(McpAdc.Type.MCP3208);
 	}
 }

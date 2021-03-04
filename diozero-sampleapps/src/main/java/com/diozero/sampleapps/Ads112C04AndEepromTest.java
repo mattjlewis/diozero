@@ -31,6 +31,9 @@ package com.diozero.sampleapps;
  * #L%
  */
 
+import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import org.tinylog.Logger;
 
 import com.diozero.devices.Ads112C04;
@@ -40,13 +43,18 @@ import com.diozero.devices.Ads112C04.DataRate;
 import com.diozero.devices.Ads112C04.GainConfig;
 import com.diozero.devices.Ads112C04.VRef;
 import com.diozero.devices.McpEeprom;
+import com.diozero.util.DiozeroScheduler;
+import com.diozero.util.SleepUtil;
 
 public class Ads112C04AndEepromTest {
+	private static AtomicBoolean running;
+
 	public static void main(String[] args) {
-		int controller = 1;
+		int c = 1;
 		if (args.length > 0) {
-			controller = Integer.parseInt(args[0]);
+			c = Integer.parseInt(args[0]);
 		}
+		final int controller = c;
 		int readings = 1_000_000;
 		if (args.length > 1) {
 			readings = Integer.parseInt(args[1]);
@@ -55,11 +63,27 @@ public class Ads112C04AndEepromTest {
 		if (args.length > 2) {
 			adc_num = Integer.parseInt(args[2]);
 		}
-		
+
 		McpEeprom.Type eeprom_type = McpEeprom.Type.MCP_24xx512;
 
-		try (McpEeprom eeprom = new McpEeprom(2, eeprom_type); //
-				Ads112C04 ads = Ads112C04.builder(Address.GND_GND) //
+		Future<?> f = DiozeroScheduler.getNonDaemonInstance().submit(() -> {
+			String text_to_write = "Hello Matt";
+			Logger.info("Running MCP thread...");
+			int address = 0x1000;
+			try (McpEeprom eeprom = new McpEeprom(controller, eeprom_type)) {
+				while (running.get()) {
+					eeprom.writeBytes(address, text_to_write.getBytes());
+					String text_read = new String(eeprom.readBytes(address, text_to_write.length()));
+					if (!text_read.equals(text_to_write)) {
+						Logger.error("Error, read " + text_read + " didn't match that written " + text_to_write);
+					}
+					SleepUtil.sleepMillis(10);
+				}
+			}
+			Logger.info("Finished MCP thread...");
+		});
+
+		try (Ads112C04 ads = Ads112C04.builder(Address.GND_GND) //
 				.setController(controller) //
 				.setCrcConfig(CrcConfig.DISABLED) //
 				.setDataCounterEnabled(true) //
@@ -69,7 +93,7 @@ public class Ads112C04AndEepromTest {
 				.setTurboModeEnabled(true) //
 				.setVRef(VRef.ANALOG_SUPPLY) //
 				.build()) {
-			ads.setContinuousMode(adc_num);
+			ads.setContinuousModeNonDifferential(adc_num);
 
 			Logger.info("Starting readings with a target data rate of {} SPS...",
 					Integer.valueOf(ads.getDataRateFrequency()));
@@ -78,7 +102,6 @@ public class Ads112C04AndEepromTest {
 			for (int i = 1; i <= readings; i++) {
 				short reading = ads.getReadingOnDataCounterChange();
 				avg += ((reading - avg) / i);
-				eeprom.writeByte(i % eeprom_type.getMemorySizeBytes(), reading);
 			}
 			long duration_ms = System.currentTimeMillis() - start_ms;
 			double frequency = readings / (duration_ms / 1000.0);
@@ -88,11 +111,15 @@ public class Ads112C04AndEepromTest {
 					Double.valueOf(frequency));
 
 			// Switch back to single shot mode
-			short reading = ads.getSingleShotReading(adc_num);
+			short reading = ads.getSingleShotReadingNonDifferential(adc_num);
 			Logger.info("Single-shot reading prior to power-down: {}", Short.valueOf(reading));
 
 			// Finally power-down the ADS
 			ads.powerDown();
+		} finally {
+			Logger.info("Stopping thread");
+			running.set(false);
+			f.cancel(true);
 		}
 	}
 }

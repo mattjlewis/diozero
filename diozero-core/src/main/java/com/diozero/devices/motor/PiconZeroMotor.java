@@ -1,10 +1,10 @@
-package com.diozero.util;
+package com.diozero.devices.motor;
 
 /*
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - Core
- * Filename:     Event.java  
+ * Filename:     PiconZeroMotor.java  
  * 
  * This file is part of the diozero project. More information about this project
  * can be found at http://www.diozero.com/
@@ -31,67 +31,53 @@ package com.diozero.util;
  * #L%
  */
 
+import java.io.IOException;
 
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import com.diozero.api.RuntimeIOException;
+import com.diozero.devices.PiconZero;
 
-public class Event {
-	private Lock lock = new ReentrantLock();
-	private Condition cond = lock.newCondition();
-	private boolean wasSet;
+public class PiconZeroMotor extends MotorBase {
+	private static final int MAX_FORWARD_SPEED = 127;
+	private static final int MAX_BACKWARD_SPEED = -128;
+	private PiconZero piconZero;
+	private int motor;
+	
+	public PiconZeroMotor(PiconZero piconZero, int motor) {
+		this.piconZero = piconZero;
+		this.motor = motor;
+	}
 
-	/**
-	 * Wait indefinitely for set() to be called.
-	 * @return True if set() was called, false woken unexpectedly.
-	 * @throws InterruptedException If interrupted.
-	 */
-	public boolean doWait() throws InterruptedException {
-		lock.lock();
-		wasSet = false;
-		try {
-			cond.await();
-		} finally {
-			lock.unlock();
-		}
-		return wasSet;
+	@Override
+	public void forward(float speed) throws RuntimeIOException {
+		piconZero.setMotor(motor, Math.round(Math.abs(speed) * MAX_FORWARD_SPEED));
+	}
+
+	@Override
+	public void backward(float speed) throws RuntimeIOException {
+		piconZero.setMotor(motor, Math.round(Math.abs(speed) * MAX_BACKWARD_SPEED));
+	}
+
+	@Override
+	public void stop() throws RuntimeIOException {
+		piconZero.setMotor(motor, 0);
 	}
 
 	/**
-	 * Wait the specified time period for set() to be called.
-	 * @param timeout Timeout value in milliseconds.
-	 * @return True if set() was called, false if timed out waiting.
-	 * @throws InterruptedException If interrupted.
+	 * Get the relative output value for the motor
+	 * @return -1 for full reverse, 1 for full forward, 0 for stop
 	 */
-	public boolean doWait(int timeout) throws InterruptedException {
-		lock.lock();
-		wasSet = false;
-		try {
-			cond.await(timeout, TimeUnit.MILLISECONDS);
-		} finally {
-			lock.unlock();
-		}
-		return wasSet;
+	@Override
+	public float getValue() throws RuntimeIOException {
+		return piconZero.getMotor(motor) / Math.abs(MAX_BACKWARD_SPEED);
 	}
 
-	public void set() {
-		lock.lock();
-		wasSet = true;
-		try {
-			cond.signalAll();
-		} finally {
-			lock.unlock();
-		}
+	@Override
+	public boolean isActive() throws RuntimeIOException {
+		return piconZero.getMotor(motor) != 0;
 	}
 
-	public void clear() {
-		lock.lock();
-		wasSet = false;
-		try {
-			cond.signalAll();
-		} finally {
-			lock.unlock();
-		}
+	@Override
+	public void close() throws IOException {
+		stop();
 	}
 }

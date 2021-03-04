@@ -39,6 +39,6 @@ import com.diozero.devices.McpAdc;
  */
 public class MCP3304Test extends McpAdcTest {
 	public MCP3304Test() {
-		super(McpAdc.MCP3304);
+		super(McpAdc.Type.MCP3304);
 	}
 }

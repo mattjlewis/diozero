@@ -379,6 +379,8 @@ public class BME280 implements BarometerInterface, ThermometerInterface, Hygrome
 	 */
 	public void setOperatingModes(TemperatureOversampling tempOversampling, PressureOversampling pressOversampling,
 			HumidityOversampling humOversampling, OperatingMode operatingMode) {
+		// You must set CTRL_MEAS_REG after setting the CTRL_HUM_REG register, otherwise
+		// the values won't be applied (see DS 5.4.3)
 		if (model == Model.BME280) {
 			// Humidity over sampling rate = 1
 			writeByte(CTRL_HUM_REG, humOversampling.getMask());

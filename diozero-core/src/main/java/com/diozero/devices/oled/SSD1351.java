@@ -105,22 +105,22 @@ public class SSD1351 extends ColourSsdOled {
 		// Single byte command (D/C# = 0)
 		// Multiple byte command (D/C# = 0 for first byte, D/C# = 1 for other bytes) 
 		dcPin.setOn(false);
-		spiDevice.write(new byte[] { command });
+		device.write(new byte[] { command });
 		dcPin.setOn(true);
-		spiDevice.write(data);
+		device.write(data);
 	}
 	
 	@Override
 	protected void data() {
 		dcPin.setOn(true);
-		spiDevice.write(buffer);
+		device.write(buffer);
 		command(WRITE_RAM_COMMAND);
 	}
 	
 	@Override
 	protected void data(int offset, int length) {
 		dcPin.setOn(true);
-		spiDevice.write(buffer, offset, length);
+		device.write(buffer, offset, length);
 		command(WRITE_RAM_COMMAND);
 	}
 	

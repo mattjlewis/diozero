@@ -83,16 +83,20 @@ public class DiozeroScheduler {
 		scheduler = Executors.newScheduledThreadPool(50, threadFactory);
 	}
 	
-	public void execute(Runnable r) {
-		executor.execute(r);
+	public void execute(Runnable command) {
+		executor.execute(command);
 	}
 	
-	public Future<?> submit(Runnable r) {
-		return executor.submit(r);
+	public Future<?> submit(Runnable task) {
+		return executor.submit(task);
 	}
 	
-	public ScheduledFuture<?> scheduleAtFixedRate(Runnable r, long initialDelay, long period, TimeUnit unit) {
-		return scheduler.scheduleAtFixedRate(r, initialDelay, period, unit);
+	public <T> Future<T> submit(Runnable task, T result) {
+		return executor.submit(task, result);
+	}
+	
+	public ScheduledFuture<?> scheduleAtFixedRate(Runnable command, long initialDelay, long period, TimeUnit unit) {
+		return scheduler.scheduleAtFixedRate(command, initialDelay, period, unit);
 	}
 	
 	public ScheduledFuture<?> invokeAtFixedRate(Supplier<Float> source, Consumer<Float> sink,

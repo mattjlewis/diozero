@@ -47,51 +47,6 @@ import com.diozero.internal.spi.AnalogInputDeviceInterface;
 import com.diozero.sbc.BoardPinInfo;
 
 public class McpAdc extends AbstractDeviceFactory implements AnalogInputDeviceFactoryInterface {
-	/**
-	 * Datasheet: http://ww1.microchip.com/downloads/en/DeviceDoc/21293C.pdf
-	 */
-	public static final Type MCP3001 = Type.MCP3001;
-	/**
-	 * Datasheet: http://ww1.microchip.com/downloads/en/DeviceDoc/21294E.pdf
-	 */
-	public static final Type MCP3002 = Type.MCP3002;
-	/**
-	 * Datasheet: http://ww1.microchip.com/downloads/en/DeviceDoc/21295d.pdf
-	 */
-	public static final Type MCP3004 = Type.MCP3004;
-	/**
-	 * Datasheet: "http://ww1.microchip.com/downloads/en/DeviceDoc/21295d.pdf
-	 */
-	public static final Type MCP3008 = Type.MCP3008;
-	/**
-	 * Datasheet: http://ww1.microchip.com/downloads/en/DeviceDoc/21290F.pdf
-	 */
-	public static final Type MCP3201 = Type.MCP3201;
-	/**
-	 * Datasheet: http://ww1.microchip.com/downloads/en/DeviceDoc/21034F.pdf
-	 */
-	public static final Type MCP3202 = Type.MCP3202;
-	/**
-	 * Datasheet: http://ww1.microchip.com/downloads/en/DeviceDoc/21298e.pdf
-	 */
-	public static final Type MCP3204 = Type.MCP3204;
-	/**
-	 * Datasheet: http://ww1.microchip.com/downloads/en/DeviceDoc/21298e.pdf
-	 */
-	public static final Type MCP3208 = Type.MCP3208;
-	/**
-	 * Datasheet: http://ww1.microchip.com/downloads/en/DeviceDoc/21700E.pdf
-	 */
-	public static final Type MCP3301 = Type.MCP3301;
-	/**
-	 * Datasheet: http://ww1.microchip.com/downloads/en/DeviceDoc/21697F.pdf
-	 */
-	public static final Type MCP3302 = Type.MCP3302;
-	/**
-	 * Datasheet: http://ww1.microchip.com/downloads/en/DeviceDoc/21697F.pdf
-	 */
-	public static final Type MCP3304 = Type.MCP3304;
-
 	private Type type;
 	private SpiDevice spiDevice;
 	private BoardPinInfo boardPinInfo;
@@ -278,10 +233,49 @@ public class McpAdc extends AbstractDeviceFactory implements AnalogInputDeviceFa
 	 * input level goes above VREF level.
 	 */
 	public static enum Type {
-		MCP3001(1, 10, 1_050_000, 2_800_000), MCP3002(2, 10, 1_200_000, 3_200_000),
-		MCP3004(4, 10, 1_350_000, 3_600_000), MCP3008(8, 10, 1_350_000, 3_600_000), MCP3201(1, 12, 800_000, 1_600_000),
-		MCP3202(2, 12, 900_000, 1_800_000), MCP3204(4, 12, 1_000_000, 2_000_000), MCP3208(8, 12, 1_000_000, 2_000_000),
-		MCP3301(1, 13, 1_000_000, 1_700_000, true), MCP3302(4, 13, 1_350_000, 2_000_000, true),
+		/*-
+		 * Datasheet: http://ww1.microchip.com/downloads/en/DeviceDoc/21293C.pdf
+		 */
+		MCP3001(1, 10, 1_050_000, 2_800_000),
+		/**
+		 * Datasheet: http://ww1.microchip.com/downloads/en/DeviceDoc/21294E.pdf
+		 */
+		MCP3002(2, 10, 1_200_000, 3_200_000),
+		/**
+		 * Datasheet: http://ww1.microchip.com/downloads/en/DeviceDoc/21295d.pdf
+		 */
+		MCP3004(4, 10, 1_350_000, 3_600_000),
+		/**
+		 * Datasheet: "http://ww1.microchip.com/downloads/en/DeviceDoc/21295d.pdf
+		 */
+		MCP3008(8, 10, 1_350_000, 3_600_000),
+		/**
+		 * Datasheet: http://ww1.microchip.com/downloads/en/DeviceDoc/21290F.pdf
+		 */
+		MCP3201(1, 12, 800_000, 1_600_000),
+		/**
+		 * Datasheet: http://ww1.microchip.com/downloads/en/DeviceDoc/21034F.pdf
+		 */
+		MCP3202(2, 12, 900_000, 1_800_000),
+		/**
+		 * Datasheet: http://ww1.microchip.com/downloads/en/DeviceDoc/21298e.pdf
+		 */
+		MCP3204(4, 12, 1_000_000, 2_000_000),
+		/**
+		 * Datasheet: http://ww1.microchip.com/downloads/en/DeviceDoc/21298e.pdf
+		 */
+		MCP3208(8, 12, 1_000_000, 2_000_000),
+		/**
+		 * Datasheet: http://ww1.microchip.com/downloads/en/DeviceDoc/21700E.pdf
+		 */
+		MCP3301(1, 13, 1_000_000, 1_700_000, true),
+		/**
+		 * Datasheet: http://ww1.microchip.com/downloads/en/DeviceDoc/21697F.pdf
+		 */
+		MCP3302(4, 13, 1_350_000, 2_000_000, true),
+		/**
+		 * Datasheet: http://ww1.microchip.com/downloads/en/DeviceDoc/21697F.pdf
+		 */
 		MCP3304(8, 13, 1_350_000, 2_000_000, true);
 
 		private int numPins;

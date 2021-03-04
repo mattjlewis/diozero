@@ -34,7 +34,7 @@ package com.diozero.sampleapps;
 import org.tinylog.Logger;
 
 import com.diozero.api.RuntimeIOException;
-import com.diozero.devices.CamJamKitDualMotor;
+import com.diozero.devices.motor.CamJamKitDualMotor;
 
 /**
  * Robot test application with CamJam EduKit motor controller, 3 IR sensors, an
