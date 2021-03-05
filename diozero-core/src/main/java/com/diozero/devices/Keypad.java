@@ -34,6 +34,7 @@ package com.diozero.devices;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.diozero.api.DeviceInterface;
 import com.diozero.api.DigitalInputDevice;
 import com.diozero.api.DigitalOutputDevice;
 import com.diozero.api.GpioEventTrigger;
@@ -49,7 +50,7 @@ import com.diozero.api.GpioPullUpDown;
  * something that cannot be done with the sysfs provider unfortunately. You can of course wire it up
  * with your own pull-up resistors.</p>
  */
-public class Keypad {
+public class Keypad implements DeviceInterface {
 	public static final char NO_KEY = '\0';
 	
 	private DigitalInputDevice[] rows;
@@ -105,6 +106,16 @@ public class Keypad {
 			}
 			// Set pin to high impedance input. Effectively ends column pulse.
 			cols[c].off();
+		}
+	}
+
+	@Override
+	public void close() {
+		for (DigitalInputDevice row : rows) {
+			row.close();
+		}
+		for (DigitalOutputDevice col : cols) {
+			col.close();
 		}
 	}
 }

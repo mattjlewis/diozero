@@ -32,9 +32,8 @@ package com.diozero.devices;
  */
 
 
-import java.io.Closeable;
+import com.diozero.api.DeviceInterface;
 
-public interface SensorInterface extends Closeable {
-	@Override
-	void close();
+public interface SensorInterface extends DeviceInterface {
+	//
 }

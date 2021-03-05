@@ -31,18 +31,13 @@ package com.diozero.api;
  * #L%
  */
 
-import java.io.Closeable;
-
 /**
  * I2C device interface
  * <a href="https://www.kernel.org/doc/Documentation/i2c/smbus-protocol">Linux
  * SMBus interface</a>
  */
-public interface I2CSMBusInterface extends Closeable {
+public interface I2CSMBusInterface extends DeviceInterface {
 	static final int MAX_I2C_BLOCK_SIZE = 32;
-
-	@Override
-	void close();
 
 	/**
 	 * Probe this I2C device using {@link I2CDevice.ProbeMode#AUTO Auto} probe mode

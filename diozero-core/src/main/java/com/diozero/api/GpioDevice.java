@@ -31,12 +31,10 @@ package com.diozero.api;
  * #L%
  */
 
-import java.io.Closeable;
-
 /**
  * Abstract base class for all GPIO related devices.
  */
-public abstract class GpioDevice implements Closeable {
+public abstract class GpioDevice implements DeviceInterface {
 	protected int gpio;
 
 	/**

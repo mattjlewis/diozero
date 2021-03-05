@@ -48,7 +48,7 @@ import com.diozero.api.I2CDevice;
  * Eclipse Kura implementation: https://github.com/eclipse/kura/tree/develop/kura/examples/org.eclipse.kura.raspberrypi.sensehat/src/main/java/org/eclipse/kura
  */
 @SuppressWarnings("unused")
-public class LPS25H implements ThermometerInterface, BarometerInterface, Closeable {
+public class LPS25H implements ThermometerInterface, BarometerInterface {
 	private static final double PRESSURE_SCALE = 4096;
 	
 	//  LPS25H I2C Slave Addresses

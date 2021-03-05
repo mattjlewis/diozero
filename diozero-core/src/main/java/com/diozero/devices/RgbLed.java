@@ -32,10 +32,9 @@ package com.diozero.devices;
  */
 
 
-import java.io.Closeable;
-
 import org.tinylog.Logger;
 
+import com.diozero.api.DeviceInterface;
 import com.diozero.api.RuntimeIOException;
 import com.diozero.internal.spi.GpioDeviceFactoryInterface;
 import com.diozero.sbc.DeviceFactoryHelper;
@@ -48,7 +47,7 @@ import com.diozero.sbc.DeviceFactoryHelper;
  * 3 Green
  * 4 Blue
  */
-public class RgbLed implements Closeable {
+public class RgbLed implements DeviceInterface {
 	private LED redLED;
 	private LED greenLED;
 	private LED blueLED;

@@ -38,6 +38,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.tinylog.Logger;
 
 import com.diozero.api.AnalogInputEvent;
+import com.diozero.api.DeviceInterface;
 import com.diozero.api.DigitalInputDevice;
 import com.diozero.api.I2CConstants;
 import com.diozero.api.I2CDevice;
@@ -85,7 +86,7 @@ import com.diozero.util.SleepUtil;
  * SCL | 0b01001011 (0x4b)
  * </pre>
  */
-public class Ads1x15 extends AbstractDeviceFactory implements AnalogInputDeviceFactoryInterface {
+public class Ads1x15 extends AbstractDeviceFactory implements AnalogInputDeviceFactoryInterface, DeviceInterface {
 	public static enum Model {
 		ADS1015(4), ADS1115(4);
 
@@ -350,7 +351,7 @@ public class Ads1x15 extends AbstractDeviceFactory implements AnalogInputDeviceF
 		latchingComparator = false;
 		comparatorQueue = ComparatorQueue.DISABLE;
 
-		boardPinInfo = new Ads11x5BoardPinInfo(model);
+		boardPinInfo = new Ads1x15BoardPinInfo(model);
 		device = I2CDevice.builder(address.getValue()).setController(controller).setByteOrder(ByteOrder.BIG_ENDIAN)
 				.build();
 	}
@@ -507,8 +508,8 @@ public class Ads1x15 extends AbstractDeviceFactory implements AnalogInputDeviceF
 		return value;
 	}
 
-	private static class Ads11x5BoardPinInfo extends BoardPinInfo {
-		public Ads11x5BoardPinInfo(Model model) {
+	private static class Ads1x15BoardPinInfo extends BoardPinInfo {
+		public Ads1x15BoardPinInfo(Model model) {
 			for (int i = 0; i < model.getNumChannels(); i++) {
 				addAdcPinInfo(i, i);
 			}

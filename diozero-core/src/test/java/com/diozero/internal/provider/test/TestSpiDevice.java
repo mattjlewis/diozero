@@ -35,11 +35,11 @@ import org.tinylog.Logger;
 
 import com.diozero.api.RuntimeIOException;
 import com.diozero.api.SpiClockMode;
-import com.diozero.api.SpiDeviceInterface;
 import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.DeviceFactoryInterface;
+import com.diozero.internal.spi.InternalSpiDeviceInterface;
 
-public abstract class TestSpiDevice extends AbstractDevice implements SpiDeviceInterface {
+public abstract class TestSpiDevice extends AbstractDevice implements InternalSpiDeviceInterface {
 	private int controller;
 	private int chipSelect;
 

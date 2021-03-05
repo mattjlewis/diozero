@@ -37,8 +37,8 @@ import org.tinylog.Logger;
 
 import com.diozero.api.RuntimeIOException;
 import com.diozero.api.SpiClockMode;
-import com.diozero.api.SpiDeviceInterface;
 import com.diozero.internal.spi.AbstractDevice;
+import com.diozero.internal.spi.InternalSpiDeviceInterface;
 import com.diozero.remote.message.Response;
 import com.diozero.remote.message.SpiClose;
 import com.diozero.remote.message.SpiOpen;
@@ -46,7 +46,7 @@ import com.diozero.remote.message.SpiResponse;
 import com.diozero.remote.message.SpiWrite;
 import com.diozero.remote.message.SpiWriteAndRead;
 
-public class RemoteSpiDevice extends AbstractDevice implements SpiDeviceInterface {
+public class RemoteSpiDevice extends AbstractDevice implements InternalSpiDeviceInterface {
 	private RemoteDeviceFactory deviceFactory;
 	private int controller;
 	private int chipSelect;

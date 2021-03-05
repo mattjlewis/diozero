@@ -35,12 +35,12 @@ import org.tinylog.Logger;
 
 import com.diozero.api.RuntimeIOException;
 import com.diozero.api.SerialDevice;
-import com.diozero.api.SerialDeviceInterface;
 import com.diozero.internal.provider.builtin.serial.NativeSerialDevice;
 import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.DeviceFactoryInterface;
+import com.diozero.internal.spi.InternalSerialDeviceInterface;
 
-public class DefaultNativeSerialDevice extends AbstractDevice implements SerialDeviceInterface {
+public class DefaultNativeSerialDevice extends AbstractDevice implements InternalSerialDeviceInterface {
 	private NativeSerialDevice device;
 
 	public DefaultNativeSerialDevice(DeviceFactoryInterface deviceFactory, String key, String deviceFile, int baud,

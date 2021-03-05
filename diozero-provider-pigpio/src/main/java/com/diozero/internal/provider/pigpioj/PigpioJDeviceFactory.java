@@ -37,13 +37,10 @@ import com.diozero.api.DeviceMode;
 import com.diozero.api.GpioEventTrigger;
 import com.diozero.api.GpioPullUpDown;
 import com.diozero.api.I2CConstants;
-import com.diozero.api.I2CDeviceInterface;
 import com.diozero.api.PinInfo;
 import com.diozero.api.RuntimeIOException;
 import com.diozero.api.SerialDevice;
-import com.diozero.api.SerialDeviceInterface;
 import com.diozero.api.SpiClockMode;
-import com.diozero.api.SpiDeviceInterface;
 import com.diozero.internal.board.raspberrypi.RaspberryPiBoardInfoProvider;
 import com.diozero.internal.spi.AnalogInputDeviceInterface;
 import com.diozero.internal.spi.AnalogOutputDeviceInterface;
@@ -51,6 +48,9 @@ import com.diozero.internal.spi.BaseNativeDeviceFactory;
 import com.diozero.internal.spi.GpioDigitalInputDeviceInterface;
 import com.diozero.internal.spi.GpioDigitalInputOutputDeviceInterface;
 import com.diozero.internal.spi.GpioDigitalOutputDeviceInterface;
+import com.diozero.internal.spi.InternalI2CDeviceInterface;
+import com.diozero.internal.spi.InternalSerialDeviceInterface;
+import com.diozero.internal.spi.InternalSpiDeviceInterface;
 import com.diozero.internal.spi.PwmOutputDeviceInterface;
 import com.diozero.sbc.BoardInfo;
 
@@ -148,19 +148,19 @@ public class PigpioJDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	public SpiDeviceInterface createSpiDevice(String key, int controller, int chipSelect, int frequency,
+	public InternalSpiDeviceInterface createSpiDevice(String key, int controller, int chipSelect, int frequency,
 			SpiClockMode spiClockMode, boolean lsbFirst) throws RuntimeIOException {
 		return new PigpioJSpiDevice(key, this, pigpioImpl, controller, chipSelect, frequency, spiClockMode, lsbFirst);
 	}
 
 	@Override
-	public I2CDeviceInterface createI2CDevice(String key, int controller, int address,
+	public InternalI2CDeviceInterface createI2CDevice(String key, int controller, int address,
 			I2CConstants.AddressSize addressSize) throws RuntimeIOException {
 		return new PigpioJI2CDevice(key, this, pigpioImpl, controller, address, addressSize);
 	}
 
 	@Override
-	public SerialDeviceInterface createSerialDevice(String key, String deviceFile, int baud,
+	public InternalSerialDeviceInterface createSerialDevice(String key, String deviceFile, int baud,
 			SerialDevice.DataBits dataBits, SerialDevice.StopBits stopBits, SerialDevice.Parity parity,
 			boolean readBlocking, int minReadChars, int readTimeoutMillis) throws RuntimeIOException {
 		return new PigpioJSerialDevice(key, this, pigpioImpl, deviceFile, baud, dataBits, stopBits, parity,

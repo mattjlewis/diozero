@@ -32,18 +32,18 @@ package com.diozero.devices;
  */
 
 
-import java.io.Closeable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.diozero.api.DeviceInterface;
 import com.diozero.api.OutputDeviceInterface;
 import com.diozero.api.RuntimeIOException;
 import com.diozero.internal.spi.PwmOutputDeviceFactoryInterface;
 import com.diozero.sbc.DeviceFactoryHelper;
 import com.diozero.util.RangeUtil;
 
-public class PwmLedBarGraph implements OutputDeviceInterface, Closeable {
+public class PwmLedBarGraph implements OutputDeviceInterface, DeviceInterface {
 	private List<PwmLed> leds;
 	private float value;
 	

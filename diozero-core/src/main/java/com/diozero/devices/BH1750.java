@@ -44,7 +44,7 @@ import com.diozero.util.SleepUtil;
  * <a href="https://gist.github.com/oskar456/95c66d564c58361ecf9f">Python code</a>
  */
 @SuppressWarnings("unused")
-public class BH1750 implements LuminositySensorInterface, Closeable {
+public class BH1750 implements LuminositySensorInterface {
 	private static final int DEFAULT_ADDRESS = 0b010_0011;
 	
 	// No active state.

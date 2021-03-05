@@ -44,7 +44,7 @@ import com.diozero.util.SleepUtil;
  * Bosch BMP180 I2C temperature and pressure sensor
  */
 @SuppressWarnings("unused")
-public class BMP180 implements ThermometerInterface, BarometerInterface, Closeable {
+public class BMP180 implements ThermometerInterface, BarometerInterface {
 	/**
 	 * Device address BMP180 address is 0x77
 	 */

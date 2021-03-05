@@ -36,10 +36,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.tinylog.Logger;
 
-import com.diozero.api.DeviceInterface;
+import com.diozero.internal.spi.InternalDeviceInterface;
 
 public class DeviceStates {
-	private Map<String, DeviceInterface> devices;
+	private Map<String, InternalDeviceInterface> devices;
 	
 	public DeviceStates() {
 		devices = new ConcurrentHashMap<>();
@@ -49,11 +49,11 @@ public class DeviceStates {
 		return devices.containsKey(key);
 	}
 	
-	public void opened(DeviceInterface device) {
+	public void opened(InternalDeviceInterface device) {
 		devices.put(device.getKey(), device);
 	}
 	
-	public void closed(DeviceInterface device) {
+	public void closed(InternalDeviceInterface device) {
 		Logger.trace("closed({})", device.getKey());
 		if (devices.remove(device.getKey()) == null) {
 			Logger.warn("Request to close unknown device with key '{}'", device.getKey());
@@ -63,11 +63,11 @@ public class DeviceStates {
 	public void closeAll() {
 		Logger.trace("closeAll()");
 		// No need to remove from the Map as close() should always call closed()
-		devices.values().forEach(DeviceInterface::close);
+		devices.values().forEach(InternalDeviceInterface::close);
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T extends DeviceInterface> T getDevice(String key) {
+	public <T extends InternalDeviceInterface> T getDevice(String key) {
 		return (T) devices.get(key);
 	}
 	

@@ -32,12 +32,11 @@ package com.diozero.internal.spi;
  */
 
 import com.diozero.api.AnalogInputEvent;
-import com.diozero.api.DeviceInterface;
 import com.diozero.api.DeviceMode;
 import com.diozero.api.RuntimeIOException;
 import com.diozero.api.function.DeviceEventConsumer;
 
-public interface AnalogInputDeviceInterface extends DeviceInterface {
+public interface AnalogInputDeviceInterface extends InternalDeviceInterface {
 	@Override
 	void close();
 

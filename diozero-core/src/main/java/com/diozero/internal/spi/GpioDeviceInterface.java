@@ -1,7 +1,5 @@
 package com.diozero.internal.spi;
 
-import com.diozero.api.DeviceInterface;
-
 /*
  * #%L
  * Organisation: diozero
@@ -36,7 +34,7 @@ import com.diozero.api.DeviceInterface;
 
 import com.diozero.api.DeviceMode;
 
-public interface GpioDeviceInterface extends DeviceInterface {
+public interface GpioDeviceInterface extends InternalDeviceInterface {
 	int getGpio();
 	DeviceMode getMode();
 }

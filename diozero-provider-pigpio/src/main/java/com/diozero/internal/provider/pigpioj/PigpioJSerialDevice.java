@@ -36,14 +36,14 @@ import org.tinylog.Logger;
 import com.diozero.api.RuntimeIOException;
 import com.diozero.api.SerialConstants;
 import com.diozero.api.SerialDevice;
-import com.diozero.api.SerialDeviceInterface;
 import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.DeviceFactoryInterface;
+import com.diozero.internal.spi.InternalSerialDeviceInterface;
 import com.diozero.util.SleepUtil;
 
 import uk.pigpioj.PigpioInterface;
 
-public class PigpioJSerialDevice extends AbstractDevice implements SerialDeviceInterface {
+public class PigpioJSerialDevice extends AbstractDevice implements InternalSerialDeviceInterface {
 	private static final int PI_BAD_HANDLE = -25;
 	private static final int PI_SER_READ_FAILED = -86;
 	private static final int PI_SER_READ_NO_DATA = -87;

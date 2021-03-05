@@ -31,11 +31,11 @@ package com.diozero.devices;
  * #L%
  */
 
-import java.io.Closeable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.diozero.api.DeviceInterface;
 import com.diozero.api.OutputDeviceInterface;
 import com.diozero.api.RuntimeIOException;
 import com.diozero.api.function.Action;
@@ -43,7 +43,7 @@ import com.diozero.internal.spi.GpioDeviceFactoryInterface;
 import com.diozero.sbc.DeviceFactoryHelper;
 import com.diozero.util.RangeUtil;
 
-public class LedBarGraph implements OutputDeviceInterface, Closeable {
+public class LedBarGraph implements OutputDeviceInterface, DeviceInterface {
 	private List<LED> leds;
 	private float value;
 

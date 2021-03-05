@@ -34,7 +34,7 @@ package com.diozero.api;
 /**
  * <a href="https://en.wikipedia.org/wiki/I2C">Inter-Integrated Circuit (I2C) Interface</a>
  */
-public interface I2CDeviceInterface extends DeviceInterface, I2CSMBusInterface {
+public interface I2CDeviceInterface extends I2CSMBusInterface {
 	//
 	default int readNoStop(byte registerAddress, int rxLength, byte[] rxData, boolean repeatedStart) {
 		throw new UnsupportedOperationException("I2C readNoStop not supported");

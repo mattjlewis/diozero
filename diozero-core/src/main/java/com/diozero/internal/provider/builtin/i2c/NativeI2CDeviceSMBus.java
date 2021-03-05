@@ -36,10 +36,11 @@ import org.tinylog.Logger;
 import com.diozero.api.DeviceBusyException;
 import com.diozero.api.I2CConstants;
 import com.diozero.api.I2CDevice;
-import com.diozero.api.I2CDeviceInterface;
+import com.diozero.api.I2CDeviceInterface.I2CMessage;
 import com.diozero.api.RuntimeIOException;
 import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.DeviceFactoryInterface;
+import com.diozero.internal.spi.InternalI2CDeviceInterface;
 import com.diozero.util.PropertyUtil;
 
 /**
@@ -59,7 +60,7 @@ import com.diozero.util.PropertyUtil;
  * for a definition of the in-line functions.
  * </p>
  */
-public class NativeI2CDeviceSMBus extends AbstractDevice implements I2CDeviceInterface {
+public class NativeI2CDeviceSMBus extends AbstractDevice implements InternalI2CDeviceInterface {
 	private static final int CLOSED = -1;
 	
 	private static final int EAGAIN = -11;

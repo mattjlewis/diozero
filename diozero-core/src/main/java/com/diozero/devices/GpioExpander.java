@@ -31,14 +31,13 @@ package com.diozero.devices;
  * #L%
  */
 
-import java.io.Closeable;
-
+import com.diozero.api.DeviceInterface;
 import com.diozero.api.RuntimeIOException;
 
 /**
  * Interface for GPIO expansion boards such as the MCP23xxx family of devices
  */
-public interface GpioExpander extends Closeable {
+public interface GpioExpander extends DeviceInterface {
 	/**
 	 * Set the directions for all pins on this port using the specified directions bit mask. 0 = output, 1 = input
 	 * 

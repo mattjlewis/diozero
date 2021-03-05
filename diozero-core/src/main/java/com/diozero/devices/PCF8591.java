@@ -36,6 +36,7 @@ import java.nio.ByteOrder;
 import org.tinylog.Logger;
 
 import com.diozero.api.AnalogInputEvent;
+import com.diozero.api.DeviceInterface;
 import com.diozero.api.I2CConstants;
 import com.diozero.api.I2CDevice;
 import com.diozero.api.PinInfo;
@@ -93,7 +94,7 @@ import com.diozero.sbc.BoardPinInfo;
  */
 @SuppressWarnings("unused")
 public class PCF8591 extends AbstractDeviceFactory
-		implements AnalogInputDeviceFactoryInterface, AnalogOutputDeviceFactoryInterface {
+		implements AnalogInputDeviceFactoryInterface, AnalogOutputDeviceFactoryInterface, DeviceInterface {
 	private static final String DEVICE_NAME = "PCF8591";
 	private static final int RESOLUTION = 8;
 	private static final float RANGE = (float) Math.pow(2, RESOLUTION);

@@ -34,13 +34,10 @@ import com.diozero.api.DeviceMode;
 import com.diozero.api.GpioEventTrigger;
 import com.diozero.api.GpioPullUpDown;
 import com.diozero.api.I2CConstants;
-import com.diozero.api.I2CDeviceInterface;
 import com.diozero.api.PinInfo;
 import com.diozero.api.RuntimeIOException;
 import com.diozero.api.SerialDevice;
-import com.diozero.api.SerialDeviceInterface;
 import com.diozero.api.SpiClockMode;
-import com.diozero.api.SpiDeviceInterface;
 import com.diozero.internal.DeviceStates;
 import com.diozero.internal.spi.AnalogInputDeviceInterface;
 import com.diozero.internal.spi.AnalogOutputDeviceInterface;
@@ -49,6 +46,9 @@ import com.diozero.internal.spi.DeviceFactoryInterface;
 import com.diozero.internal.spi.GpioDigitalInputDeviceInterface;
 import com.diozero.internal.spi.GpioDigitalInputOutputDeviceInterface;
 import com.diozero.internal.spi.GpioDigitalOutputDeviceInterface;
+import com.diozero.internal.spi.InternalI2CDeviceInterface;
+import com.diozero.internal.spi.InternalSerialDeviceInterface;
+import com.diozero.internal.spi.InternalSpiDeviceInterface;
 import com.diozero.internal.spi.PwmOutputDeviceInterface;
 
 public class TestDeviceFactory extends BaseNativeDeviceFactory {
@@ -57,9 +57,9 @@ public class TestDeviceFactory extends BaseNativeDeviceFactory {
 	private static Class<? extends GpioDigitalInputDeviceInterface> digitalInputDeviceClass = TestDigitalInputDevice.class;
 	private static Class<? extends GpioDigitalOutputDeviceInterface> digitalOutputDeviceClass = TestDigitalOutputDevice.class;
 	private static Class<? extends PwmOutputDeviceInterface> pwmOutputDeviceClass;
-	private static Class<? extends SpiDeviceInterface> spiDeviceClass;
-	private static Class<? extends I2CDeviceInterface> i2cDeviceClass = TestI2CDevice.class;
-	private static Class<? extends SerialDeviceInterface> serialDeviceClass;
+	private static Class<? extends InternalSpiDeviceInterface> spiDeviceClass;
+	private static Class<? extends InternalI2CDeviceInterface> i2cDeviceClass = TestI2CDevice.class;
+	private static Class<? extends InternalSerialDeviceInterface> serialDeviceClass;
 
 	public TestDeviceFactory() {
 	}
@@ -84,15 +84,15 @@ public class TestDeviceFactory extends BaseNativeDeviceFactory {
 		pwmOutputDeviceClass = clz;
 	}
 
-	public static void setSpiDeviceClass(Class<? extends SpiDeviceInterface> clz) {
+	public static void setSpiDeviceClass(Class<? extends InternalSpiDeviceInterface> clz) {
 		spiDeviceClass = clz;
 	}
 
-	public static void setI2CDeviceClass(Class<? extends I2CDeviceInterface> clz) {
+	public static void setI2CDeviceClass(Class<? extends InternalI2CDeviceInterface> clz) {
 		i2cDeviceClass = clz;
 	}
 
-	public static void setSerialDeviceClass(Class<? extends SerialDeviceInterface> clz) {
+	public static void setSerialDeviceClass(Class<? extends InternalSerialDeviceInterface> clz) {
 		serialDeviceClass = clz;
 	}
 
@@ -199,7 +199,7 @@ public class TestDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	public SpiDeviceInterface createSpiDevice(String key, int controller, int chipSelect, int frequency,
+	public InternalSpiDeviceInterface createSpiDevice(String key, int controller, int chipSelect, int frequency,
 			SpiClockMode spiClockMode, boolean lsbFirst) throws RuntimeIOException {
 		if (spiDeviceClass == null) {
 			throw new IllegalArgumentException("SPI Device implementation class hasn't been set");
@@ -216,7 +216,7 @@ public class TestDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	public I2CDeviceInterface createI2CDevice(String key, int controller, int address,
+	public InternalI2CDeviceInterface createI2CDevice(String key, int controller, int address,
 			I2CConstants.AddressSize addressSize) throws RuntimeIOException {
 		if (i2cDeviceClass == null) {
 			throw new IllegalArgumentException("I2C Device implementation class hasn't been set");
@@ -233,7 +233,7 @@ public class TestDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	public SerialDeviceInterface createSerialDevice(String key, String deviceFile, int baud,
+	public InternalSerialDeviceInterface createSerialDevice(String key, String deviceFile, int baud,
 			SerialDevice.DataBits dataBits, SerialDevice.StopBits stopBits, SerialDevice.Parity parity,
 			boolean readBlocking, int minReadChars, int readTimeoutMillis) throws RuntimeIOException {
 		if (serialDeviceClass == null) {

@@ -135,7 +135,7 @@ public class Ads112C04Test {
 			// with that configured
 			Logger.info(
 					"Config register 1: 0x" + Integer.toHexString(ads.readConfigRegister(ConfigRegister._1) & 0xff));
-			ads.setConfig1(DataRate._1000HZ, true, ads.getVRef(), false);
+			ads.setConfig1(DataRate._1000HZ, true, ads.getVRefConfig(), false);
 			SleepUtil.sleepMillis(1);
 			Logger.info(
 					"Config register 1: 0x" + Integer.toHexString(ads.readConfigRegister(ConfigRegister._1) & 0xff));

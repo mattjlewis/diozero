@@ -32,10 +32,9 @@ package com.diozero.devices;
  */
 
 
-import java.io.Closeable;
-
 import org.tinylog.Logger;
 
+import com.diozero.api.DeviceInterface;
 import com.diozero.api.I2CDevice;
 import com.diozero.api.RuntimeIOException;
 import com.diozero.util.SleepUtil;
@@ -52,7 +51,7 @@ import com.diozero.util.SleepUtil;
  * GND Vss 4  5 SDA
  * </pre>
  */
-public class McpEeprom implements Closeable {
+public class McpEeprom implements DeviceInterface {
 	public static enum Type {
 		MCP_24xx256(2, 64, 5, 256), MCP_24xx512(2, 128, 5, 512);
 		

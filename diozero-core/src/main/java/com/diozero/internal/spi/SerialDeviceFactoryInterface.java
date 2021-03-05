@@ -34,7 +34,6 @@ package com.diozero.internal.spi;
 import com.diozero.api.DeviceAlreadyOpenedException;
 import com.diozero.api.RuntimeIOException;
 import com.diozero.api.SerialDevice;
-import com.diozero.api.SerialDeviceInterface;
 
 public interface SerialDeviceFactoryInterface extends DeviceFactoryInterface {
 	static final String SERIAL_PREFIX = "-Serial-";
@@ -52,7 +51,7 @@ public interface SerialDeviceFactoryInterface extends DeviceFactoryInterface {
 	 * @return Serial device instance
 	 * @throws RuntimeIOException
 	 */
-	default SerialDeviceInterface provisionSerialDevice(String deviceFile, int baud, SerialDevice.DataBits dataBits,
+	default InternalSerialDeviceInterface provisionSerialDevice(String deviceFile, int baud, SerialDevice.DataBits dataBits,
 			SerialDevice.StopBits stopBits, SerialDevice.Parity parity, boolean readBlocking, int minReadChars,
 			int readTimeoutMillis)
 			throws RuntimeIOException {
@@ -63,14 +62,14 @@ public interface SerialDeviceFactoryInterface extends DeviceFactoryInterface {
 			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
 		}
 
-		SerialDeviceInterface device = createSerialDevice(key, deviceFile, baud, dataBits, stopBits, parity, readBlocking,
+		InternalSerialDeviceInterface device = createSerialDevice(key, deviceFile, baud, dataBits, stopBits, parity, readBlocking,
 				minReadChars, readTimeoutMillis);
 		deviceOpened(device);
 
 		return device;
 	}
 
-	SerialDeviceInterface createSerialDevice(String key, String deviceFile, int baud, SerialDevice.DataBits dataBits,
+	InternalSerialDeviceInterface createSerialDevice(String key, String deviceFile, int baud, SerialDevice.DataBits dataBits,
 			SerialDevice.StopBits stopBits, SerialDevice.Parity parity, boolean readBlocking, int minReadChars,
 			int readTimeoutMillis)
 			throws RuntimeIOException;

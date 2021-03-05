@@ -33,6 +33,7 @@ package com.diozero.api;
 
 import org.tinylog.Logger;
 
+import com.diozero.internal.spi.InternalSpiDeviceInterface;
 import com.diozero.internal.spi.NativeDeviceFactoryInterface;
 import com.diozero.sbc.DeviceFactoryHelper;
 
@@ -135,7 +136,7 @@ public class SpiDevice implements SpiDeviceInterface {
 		return new Builder(chipSelect);
 	}
 
-	private SpiDeviceInterface delegate;
+	private InternalSpiDeviceInterface delegate;
 	private int maxBufferSize;
 
 	public SpiDevice(int chipSelect) throws RuntimeIOException {
@@ -153,22 +154,6 @@ public class SpiDevice implements SpiDeviceInterface {
 		NativeDeviceFactoryInterface ndf = DeviceFactoryHelper.getNativeDeviceFactory();
 		delegate = ndf.provisionSpiDevice(controller, chipSelect, frequency, mode, lsbFirst);
 		maxBufferSize = ndf.getSpiBufferSize();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String getKey() {
-		return delegate.getKey();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public boolean isOpen() {
-		return delegate.isOpen();
 	}
 
 	/**

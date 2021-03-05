@@ -36,6 +36,7 @@ import java.nio.ByteBuffer;
 import org.tinylog.Logger;
 
 import com.diozero.api.AnalogInputEvent;
+import com.diozero.api.DeviceInterface;
 import com.diozero.api.PinInfo;
 import com.diozero.api.RuntimeIOException;
 import com.diozero.api.SpiConstants;
@@ -46,7 +47,7 @@ import com.diozero.internal.spi.AnalogInputDeviceFactoryInterface;
 import com.diozero.internal.spi.AnalogInputDeviceInterface;
 import com.diozero.sbc.BoardPinInfo;
 
-public class McpAdc extends AbstractDeviceFactory implements AnalogInputDeviceFactoryInterface {
+public class McpAdc extends AbstractDeviceFactory implements AnalogInputDeviceFactoryInterface, DeviceInterface {
 	private Type type;
 	private SpiDevice spiDevice;
 	private BoardPinInfo boardPinInfo;

@@ -35,13 +35,13 @@ import org.tinylog.Logger;
 
 import com.diozero.api.RuntimeIOException;
 import com.diozero.api.SpiClockMode;
-import com.diozero.api.SpiDeviceInterface;
 import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.DeviceFactoryInterface;
+import com.diozero.internal.spi.InternalSpiDeviceInterface;
 
 import uk.pigpioj.PigpioInterface;
 
-public class PigpioJSpiDevice extends AbstractDevice implements SpiDeviceInterface {
+public class PigpioJSpiDevice extends AbstractDevice implements InternalSpiDeviceInterface {
 	private static final int CLOSED = -1;
 	
 	private PigpioInterface pigpioImpl;

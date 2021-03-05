@@ -41,7 +41,6 @@ import org.tinylog.Logger;
 import com.diozero.api.DeviceAlreadyOpenedException;
 import com.diozero.api.RuntimeIOException;
 import com.diozero.api.SpiClockMode;
-import com.diozero.api.SpiDeviceInterface;
 
 public interface SpiDeviceFactoryInterface extends DeviceFactoryInterface {
 	/**
@@ -51,7 +50,7 @@ public interface SpiDeviceFactoryInterface extends DeviceFactoryInterface {
 	static final int DEFAULT_SPI_BUFFER_SIZE = 4096;
 	static final String SPI_PREFIX = "-SPI-";
 	
-	default SpiDeviceInterface provisionSpiDevice(int controller, int chipSelect,
+	default InternalSpiDeviceInterface provisionSpiDevice(int controller, int chipSelect,
 			int frequency, SpiClockMode spiClockMode, boolean lsbFirst) throws RuntimeIOException {
 		String key = createSpiKey(controller, chipSelect);
 		
@@ -60,13 +59,13 @@ public interface SpiDeviceFactoryInterface extends DeviceFactoryInterface {
 			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
 		}
 		
-		SpiDeviceInterface device = createSpiDevice(key, controller, chipSelect, frequency, spiClockMode, lsbFirst);
+		InternalSpiDeviceInterface device = createSpiDevice(key, controller, chipSelect, frequency, spiClockMode, lsbFirst);
 		deviceOpened(device);
 		
 		return device;
 	}
 
-	SpiDeviceInterface createSpiDevice(String key, int controller, int chipSelect, int frequency,
+	InternalSpiDeviceInterface createSpiDevice(String key, int controller, int chipSelect, int frequency,
 			SpiClockMode spiClockMode, boolean lsbFirst) throws RuntimeIOException;
 
 	default int getSpiBufferSize() {

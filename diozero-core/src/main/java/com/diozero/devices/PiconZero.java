@@ -37,6 +37,7 @@ import java.nio.ByteOrder;
 import org.tinylog.Logger;
 
 import com.diozero.api.AnalogInputEvent;
+import com.diozero.api.DeviceInterface;
 import com.diozero.api.DeviceAlreadyOpenedException;
 import com.diozero.api.DeviceMode;
 import com.diozero.api.DigitalInputEvent;
@@ -65,7 +66,8 @@ import com.diozero.util.RangeUtil;
 import com.diozero.util.SleepUtil;
 
 public class PiconZero extends AbstractDeviceFactory implements GpioDeviceFactoryInterface,
-		PwmOutputDeviceFactoryInterface, AnalogInputDeviceFactoryInterface, AnalogOutputDeviceFactoryInterface {
+		PwmOutputDeviceFactoryInterface, AnalogInputDeviceFactoryInterface, AnalogOutputDeviceFactoryInterface,
+		DeviceInterface {
 	public static enum InputConfig {
 		DIGITAL(0), DIGITAL_PULL_UP(128), ANALOG(1), DS18B20(2);
 

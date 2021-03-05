@@ -33,10 +33,9 @@ package com.diozero.internal.spi;
 
 import org.tinylog.Logger;
 
-import com.diozero.api.DeviceInterface;
 import com.diozero.api.RuntimeIOException;
 
-public abstract class AbstractDevice implements DeviceInterface {
+public abstract class AbstractDevice implements InternalDeviceInterface {
 	private String key;
 	private DeviceFactoryInterface deviceFactory;
 	

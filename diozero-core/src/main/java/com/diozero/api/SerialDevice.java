@@ -40,6 +40,7 @@ import java.util.List;
 
 import org.tinylog.Logger;
 
+import com.diozero.internal.spi.InternalSerialDeviceInterface;
 import com.diozero.sbc.DeviceFactoryHelper;
 
 /**
@@ -366,7 +367,7 @@ public class SerialDevice implements SerialConstants, SerialDeviceInterface {
 		return new Builder(deviceFilename);
 	}
 
-	private SerialDeviceInterface delegate;
+	private InternalSerialDeviceInterface delegate;
 	private String deviceFilename;
 
 	/**
@@ -442,22 +443,6 @@ public class SerialDevice implements SerialConstants, SerialDeviceInterface {
 	 */
 	public String getDeviceFilename() {
 		return deviceFilename;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String getKey() {
-		return delegate.getKey();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public boolean isOpen() {
-		return delegate.isOpen();
 	}
 
 	/**

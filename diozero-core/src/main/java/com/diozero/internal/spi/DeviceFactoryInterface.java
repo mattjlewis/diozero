@@ -33,7 +33,6 @@ package com.diozero.internal.spi;
 
 import java.io.Closeable;
 
-import com.diozero.api.DeviceInterface;
 import com.diozero.api.PinInfo;
 import com.diozero.api.RuntimeIOException;
 import com.diozero.sbc.BoardPinInfo;
@@ -79,13 +78,13 @@ public interface DeviceFactoryInterface extends Closeable {
 	 * example closing a device factory closes all devices provisionined by that
 	 * device factory.
 	 */
-	void deviceOpened(DeviceInterface device);
+	void deviceOpened(InternalDeviceInterface device);
 
 	/**
 	 * diozero internal method to notify the {@link AbstractDeviceFactory} that a
 	 * device has been closed.
 	 */
-	void deviceClosed(DeviceInterface device);
+	void deviceClosed(InternalDeviceInterface device);
 
 	/**
 	 * Get the name of this device factory
@@ -145,5 +144,5 @@ public interface DeviceFactoryInterface extends Closeable {
 	 * @param key the unique device key
 	 * @return the device otherwise null if not found
 	 */
-	<T extends DeviceInterface> T getDevice(String key);
+	<T extends InternalDeviceInterface> T getDevice(String key);
 }

@@ -278,22 +278,6 @@ public class I2CDevice implements I2CDeviceInterface {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public String getKey() {
-		return delegate.getKey();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public final boolean isOpen() {
-		return delegate.isOpen();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
 	public void close() throws RuntimeIOException {
 		Logger.trace("close()");
 		delegate.close();

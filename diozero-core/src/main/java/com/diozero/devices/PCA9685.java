@@ -36,6 +36,7 @@ import java.nio.ByteOrder;
 
 import org.tinylog.Logger;
 
+import com.diozero.api.DeviceInterface;
 import com.diozero.api.I2CConstants;
 import com.diozero.api.I2CDevice;
 import com.diozero.api.PinInfo;
@@ -54,7 +55,7 @@ import com.diozero.util.SleepUtil;
  * Datasheet: http://www.nxp.com/documents/data_sheet/PCA9685.pdf
  */
 @SuppressWarnings("unused")
-public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFactoryInterface {
+public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFactoryInterface, DeviceInterface {
 	public static final int DEFAULT_ADDRESS = 0x40;
 	private static final String DEVICE_NAME = "PCA9685";
 	private static final int NUM_CHANNELS = 16;

@@ -1,7 +1,5 @@
 package com.diozero.internal.spi;
 
-import com.diozero.api.DeviceInterface;
-
 /*
  * #%L
  * Organisation: diozero
@@ -37,7 +35,7 @@ import com.diozero.api.DeviceInterface;
 import com.diozero.api.DeviceMode;
 import com.diozero.api.RuntimeIOException;
 
-public interface AnalogOutputDeviceInterface extends DeviceInterface {
+public interface AnalogOutputDeviceInterface extends InternalDeviceInterface {
 	@Override
 	void close();
 	float getValue() throws RuntimeIOException;

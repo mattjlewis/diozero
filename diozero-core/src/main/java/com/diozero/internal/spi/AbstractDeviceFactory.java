@@ -33,7 +33,6 @@ package com.diozero.internal.spi;
 
 import org.tinylog.Logger;
 
-import com.diozero.api.DeviceInterface;
 import com.diozero.api.PinInfo;
 import com.diozero.internal.DeviceStates;
 import com.diozero.sbc.DeviceFactoryHelper;
@@ -100,12 +99,12 @@ public abstract class AbstractDeviceFactory implements DeviceFactoryInterface {
 	}
 
 	@Override
-	public final void deviceOpened(DeviceInterface device) {
+	public final void deviceOpened(InternalDeviceInterface device) {
 		deviceStates.opened(device);
 	}
 
 	@Override
-	public final void deviceClosed(DeviceInterface device) {
+	public final void deviceClosed(InternalDeviceInterface device) {
 		deviceStates.closed(device);
 	}
 
@@ -115,7 +114,7 @@ public abstract class AbstractDeviceFactory implements DeviceFactoryInterface {
 	}
 
 	@Override
-	public final <T extends DeviceInterface> T getDevice(String key) {
+	public final <T extends InternalDeviceInterface> T getDevice(String key) {
 		return deviceStates.getDevice(key);
 	}
 }

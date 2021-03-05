@@ -35,6 +35,7 @@ import java.io.Closeable;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.diozero.api.DeviceInterface;
 import com.diozero.api.RuntimeIOException;
 import com.diozero.devices.mcp23xxx.MCP23xxx;
 import com.diozero.util.SleepUtil;
@@ -55,7 +56,7 @@ import com.diozero.util.SleepUtil;
  * <a href="https://www.sparkfun.com/datasheets/LCD/HD44780.pdf">HD44780 Datasheet</a>.
  * </p>
  */
-public class HD44780Lcd implements Closeable {
+public class HD44780Lcd implements DeviceInterface {
 	private static final boolean DEFAULT_BACKLIGHT_STATE = true;
 	
 	/*

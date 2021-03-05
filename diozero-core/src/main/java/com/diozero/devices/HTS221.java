@@ -46,7 +46,7 @@ import com.diozero.api.RuntimeIOException;
  * "http://www2.st.com/content/ccc/resource/technical/document/datasheet/4d/9a/9c/ad/25/07/42/34/DM00116291.pdf/files/DM00116291.pdf/jcr:content/translations/en.DM00116291.pdf">http://www2.st.com/content/ccc/resource/technical/document/datasheet/4d/9a/9c/ad/25/07/42/34/DM00116291.pdf/files/DM00116291.pdf/jcr:content/translations/en.DM00116291.pdf</a>
  */
 @SuppressWarnings("unused")
-public class HTS221 implements ThermometerInterface, HygrometerInterface, Closeable {
+public class HTS221 implements ThermometerInterface, HygrometerInterface {
 	private static final int DEFAULT_DEVICE_ADDRESS = 0x5f;
 	// Register map
 	private static final int WHO_AM_I = 0x0f;

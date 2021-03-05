@@ -48,9 +48,9 @@ import org.firmata4j.I2CListener;
 import org.tinylog.Logger;
 
 import com.diozero.api.I2CConstants;
-import com.diozero.api.I2CDeviceInterface;
 import com.diozero.api.RuntimeIOException;
 import com.diozero.internal.spi.AbstractDevice;
+import com.diozero.internal.spi.InternalI2CDeviceInterface;
 
 /**
  * <p>Work In Progress. I am unclear as to how the this Java Firmata I2C implementation is supposed to work.</p>
@@ -60,7 +60,7 @@ import com.diozero.internal.spi.AbstractDevice;
  * <li>SCL: A5</li>
  * </ul>
  */
-public class FirmataI2CDevice extends AbstractDevice implements I2CDeviceInterface, I2CListener {
+public class FirmataI2CDevice extends AbstractDevice implements InternalI2CDeviceInterface, I2CListener {
 	private static final int NO_REGISTER = 0;
 	
 	private I2CDevice i2cDevice;

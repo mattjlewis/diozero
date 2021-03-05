@@ -51,27 +51,38 @@ package com.diozero.devices;
  * for standard and fast modes, and 350 Ohm for fast-mode plus.
  * Most boards have built-in pull-up resistors for SCL and SDA.
  */
-import java.io.Closeable;
+
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.function.Consumer;
 
 import org.tinylog.Logger;
 
+import com.diozero.api.AnalogInputEvent;
+import com.diozero.api.DeviceInterface;
 import com.diozero.api.DigitalInputDevice;
 import com.diozero.api.Event;
 import com.diozero.api.I2CDevice;
 import com.diozero.api.I2CDeviceInterface;
 import com.diozero.api.I2CDeviceInterface.I2CMessage;
+import com.diozero.api.PinInfo;
+import com.diozero.api.RuntimeIOException;
 import com.diozero.api.sandpit.EventQueue;
+import com.diozero.internal.spi.AbstractDeviceFactory;
+import com.diozero.internal.spi.AbstractInputDevice;
+import com.diozero.internal.spi.AnalogInputDeviceFactoryInterface;
+import com.diozero.internal.spi.AnalogInputDeviceInterface;
+import com.diozero.sbc.BoardPinInfo;
 import com.diozero.util.Crc;
 import com.diozero.util.DiozeroScheduler;
 import com.diozero.util.Hex;
 import com.diozero.util.PropertyUtil;
 import com.diozero.util.SleepUtil;
 
-public class Ads112C04 implements Closeable {
-	private static final int NUM_ADC_CHANNELS = 4;
+public class Ads112C04 extends AbstractDeviceFactory implements AnalogInputDeviceFactoryInterface, DeviceInterface {
+	private static final String NAME = "ADS112C04";
+	
+	private static final int NUM_CHANNELS = 4;
 
 	/**
 	 * The ADS112C04 has two address pins: A0 and A1. Each address pin can be tied
@@ -571,6 +582,7 @@ public class Ads112C04 implements Closeable {
 		return new Builder(address);
 	}
 
+	private BoardPinInfo boardPinInfo;
 	private I2CDevice device;
 	private GainConfig gainConfig;
 	private Pga pga;
@@ -597,6 +609,8 @@ public class Ads112C04 implements Closeable {
 			CrcConfig crcConfig, BurnoutCurrentSources burnoutCurrentSources, IdacCurrent idacCurrent,
 			Idac1RoutingConfig idac1RoutingConfig, Idac2RoutingConfig idac2RoutingConfig,
 			InputMultiplexerConfig inputMultiplexerConfig) {
+		super(NAME + "-" + controller + "-" + address.getValue());
+		
 		this.gainConfig = gainConfig;
 		this.pga = pga;
 		this.dataRate = dataRate;
@@ -619,10 +633,11 @@ public class Ads112C04 implements Closeable {
 		method1 = PropertyUtil.getBooleanProperty("diozero.ads112c04.method1", true);
 		Logger.debug("method1: {}", Boolean.valueOf(method1));
 
+		boardPinInfo = new Ads112C04BoardPinInfo();
 		device = I2CDevice.builder(address.getValue()).setController(controller).setByteOrder(ByteOrder.BIG_ENDIAN)
 				.build();
 
-		reset();
+		sendResetCommand();
 
 		writeConfig0();
 		writeConfig1();
@@ -630,20 +645,15 @@ public class Ads112C04 implements Closeable {
 		writeConfig3();
 	}
 
-	@Override
-	public void close() {
-		device.close();
-	}
-
-	public void reset() {
-		Logger.debug("reset");
+	public void sendResetCommand() {
+		Logger.debug("sendResetCommand");
 		device.writeByte(COMMAND_RESET);
 		// TODO Check delays
 		SleepUtil.sleepMillis(1);
 	}
 
-	public void start() {
-		Logger.debug("start");
+	public void sendStartCommand() {
+		Logger.debug("sendStartCommand");
 		device.writeByte(COMMAND_START);
 		// TODO Check delays
 		SleepUtil.busySleep(10_000);
@@ -781,12 +791,12 @@ public class Ads112C04 implements Closeable {
 	public int getDataRateFrequency() {
 		return dataRate.getDataRate() * operatingMode.getMultiplier();
 	}
-
-	public VRef getVRef() {
+	
+	public VRef getVRefConfig() {
 		return vRef;
 	}
 
-	public void setVRef(VRef vRef) {
+	public void setVRefConfig(VRef vRef) {
 		this.vRef = vRef;
 		writeConfig1();
 	}
@@ -911,7 +921,7 @@ public class Ads112C04 implements Closeable {
 		writeConfig1();
 
 		// Start command must be issued each time the CM bit is changed
-		start();
+		sendStartCommand();
 	}
 
 	/**
@@ -947,7 +957,7 @@ public class Ads112C04 implements Closeable {
 		}
 
 		// Must issue a start command to trigger a new reading
-		start();
+		sendStartCommand();
 
 		return method1 ? getReadingOnDataReadyBit() : getReadingOnDataReadyBit2();
 	}
@@ -980,7 +990,7 @@ public class Ads112C04 implements Closeable {
 			writeConfig1();
 		}
 
-		start();
+		sendStartCommand();
 	}
 
 	public Object setContinuousModeNonDifferential(int adcNumber, DigitalInputDevice intr, Consumer<AdcEvent> listener) {
@@ -1281,6 +1291,35 @@ public class Ads112C04 implements Closeable {
 
 		return value;
 	}
+
+	@Override
+	public String getName() {
+		return NAME + "-" + device.getController() + "-" + device.getAddress();
+	}
+
+	@Override
+	public BoardPinInfo getBoardPinInfo() {
+		return boardPinInfo;
+	}
+
+	@Override
+	public AnalogInputDeviceInterface createAnalogInputDevice(String key, PinInfo pinInfo) {
+		return new Ads112C04AnalogInputDevice(this, key, pinInfo.getDeviceNumber());
+	}
+
+	@Override
+	public float getVRef() {
+		// FIXME Can this actually be determined?
+		return 3.3f;
+	}
+
+	@Override
+	public void close() {
+		Logger.trace("close()");
+		// Close all open pins before closing the I2C device itself
+		super.close();
+		device.close();
+	}
 	
 	public class AdcEvent extends Event {
 		private short reading;
@@ -1292,6 +1331,49 @@ public class Ads112C04 implements Closeable {
 
 		public short getReading() {
 			return reading;
+		}
+	}
+	
+	private static class Ads112C04BoardPinInfo extends BoardPinInfo {
+		public Ads112C04BoardPinInfo() {
+			for (int i = 0; i < NUM_CHANNELS; i++) {
+				addAdcPinInfo(i, i);
+			}
+		}
+	}
+
+	private static final class Ads112C04AnalogInputDevice extends AbstractInputDevice<AnalogInputEvent>
+			implements AnalogInputDeviceInterface {
+		private Ads112C04 ads112C04;
+		private int adcNumber;
+
+		public Ads112C04AnalogInputDevice(Ads112C04 ads112C04, String key, int adcNumber) {
+			super(key, ads112C04);
+
+			this.ads112C04 = ads112C04;
+			this.adcNumber = adcNumber;
+		}
+
+		@Override
+		protected void closeDevice() {
+			Logger.trace("closeDevice()");
+			// Nothing to do?
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public float getValue() throws RuntimeIOException {
+			return ads112C04.getSingleShotReadingNonDifferential(adcNumber);
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public int getAdcNumber() {
+			return adcNumber;
 		}
 	}
 }

@@ -32,13 +32,13 @@ package com.diozero.devices;
  */
 
 
-import java.io.Closeable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.tinylog.Logger;
 
+import com.diozero.api.DeviceInterface;
 import com.diozero.api.DigitalOutputDevice;
 import com.diozero.api.SpiConstants;
 import com.diozero.api.SpiDevice;
@@ -180,7 +180,7 @@ import com.diozero.util.SleepUtil;
  * <li>Call ISO_StopCrypto() when you have finished talking to a card which requires authentication.</li>
  * </ol>
  */
-public class MFRC522 implements Closeable {
+public class MFRC522 implements DeviceInterface {
 	public static final byte[] DEFAULT_KEY = { (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff };
 	
 	// Firmware data for self-test

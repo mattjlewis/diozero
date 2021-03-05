@@ -37,7 +37,6 @@ import java.util.List;
 
 import org.tinylog.Logger;
 
-import com.diozero.api.DeviceInterface;
 import com.diozero.api.DeviceMode;
 import com.diozero.api.DigitalInputEvent;
 import com.diozero.api.I2CConstants;
@@ -53,6 +52,7 @@ import com.diozero.internal.spi.GpioDigitalDeviceInterface;
 import com.diozero.internal.spi.GpioDigitalInputDeviceInterface;
 import com.diozero.internal.spi.GpioDigitalInputOutputDeviceInterface;
 import com.diozero.internal.spi.GpioDigitalOutputDeviceInterface;
+import com.diozero.internal.spi.InternalDeviceInterface;
 import com.diozero.internal.spi.NativeDeviceFactoryInterface;
 import com.diozero.internal.spi.PwmOutputDeviceInterface;
 import com.diozero.remote.message.GetBoardInfoRequest;
@@ -155,7 +155,7 @@ public abstract class BaseRemoteServer implements DeviceEventConsumer<DigitalInp
 
 		PinInfo pin_info = deviceFactory.getBoardPinInfo().getByGpioNumber(request.getGpio());
 		String key = deviceFactory.createPinKey(pin_info);
-		DeviceInterface device = deviceFactory.getDevice(key);
+		InternalDeviceInterface device = deviceFactory.getDevice(key);
 
 		Response response;
 		try {
@@ -187,7 +187,7 @@ public abstract class BaseRemoteServer implements DeviceEventConsumer<DigitalInp
 
 		PinInfo pin_info = deviceFactory.getBoardPinInfo().getByGpioNumber(request.getGpio());
 		String key = deviceFactory.createPinKey(pin_info);
-		DeviceInterface device = deviceFactory.getDevice(key);
+		InternalDeviceInterface device = deviceFactory.getDevice(key);
 
 		Response response;
 		try {
@@ -222,7 +222,7 @@ public abstract class BaseRemoteServer implements DeviceEventConsumer<DigitalInp
 
 		PinInfo pin_info = deviceFactory.getBoardPinInfo().getByGpioNumber(request.getGpio());
 		String key = deviceFactory.createPinKey(pin_info);
-		DeviceInterface device = deviceFactory.getDevice(key);
+		InternalDeviceInterface device = deviceFactory.getDevice(key);
 
 		Response response;
 		try {
@@ -253,7 +253,7 @@ public abstract class BaseRemoteServer implements DeviceEventConsumer<DigitalInp
 
 		PinInfo pin_info = deviceFactory.getBoardPinInfo().getByGpioNumber(request.getGpio());
 		String key = deviceFactory.createPinKey(pin_info);
-		DeviceInterface device = deviceFactory.getDevice(key);
+		InternalDeviceInterface device = deviceFactory.getDevice(key);
 
 		Response response;
 		try {
@@ -282,7 +282,7 @@ public abstract class BaseRemoteServer implements DeviceEventConsumer<DigitalInp
 
 		PinInfo pin_info = deviceFactory.getBoardPinInfo().getByGpioNumber(request.getGpio());
 		String key = deviceFactory.createPinKey(pin_info);
-		DeviceInterface device = deviceFactory.getDevice(key);
+		InternalDeviceInterface device = deviceFactory.getDevice(key);
 
 		Response response;
 		try {
@@ -308,7 +308,7 @@ public abstract class BaseRemoteServer implements DeviceEventConsumer<DigitalInp
 
 		PinInfo pin_info = deviceFactory.getBoardPinInfo().getByGpioNumber(request.getGpio());
 		String key = deviceFactory.createPinKey(pin_info);
-		DeviceInterface device = deviceFactory.getDevice(key);
+		InternalDeviceInterface device = deviceFactory.getDevice(key);
 
 		Response response;
 		try {
@@ -339,7 +339,7 @@ public abstract class BaseRemoteServer implements DeviceEventConsumer<DigitalInp
 
 		PinInfo pin_info = deviceFactory.getBoardPinInfo().getByGpioNumber(request.getGpio());
 		String key = deviceFactory.createPinKey(pin_info);
-		DeviceInterface device = deviceFactory.getDevice(key);
+		InternalDeviceInterface device = deviceFactory.getDevice(key);
 
 		GpioDigitalReadResponse response;
 		if (device == null) {
@@ -363,7 +363,7 @@ public abstract class BaseRemoteServer implements DeviceEventConsumer<DigitalInp
 
 		PinInfo pin_info = deviceFactory.getBoardPinInfo().getByGpioNumber(request.getGpio());
 		String key = deviceFactory.createPinKey(pin_info);
-		DeviceInterface device = deviceFactory.getDevice(key);
+		InternalDeviceInterface device = deviceFactory.getDevice(key);
 
 		if (device == null) {
 			return new Response(Response.Status.ERROR, "GPIO not provisioned", request.getCorrelationId());
@@ -393,7 +393,7 @@ public abstract class BaseRemoteServer implements DeviceEventConsumer<DigitalInp
 
 		PinInfo pin_info = deviceFactory.getBoardPinInfo().getByGpioNumber(request.getGpio());
 		String key = deviceFactory.createPinKey(pin_info);
-		DeviceInterface device = deviceFactory.getDevice(key);
+		InternalDeviceInterface device = deviceFactory.getDevice(key);
 
 		GpioPwmReadResponse response;
 		if (device == null) {
@@ -417,7 +417,7 @@ public abstract class BaseRemoteServer implements DeviceEventConsumer<DigitalInp
 
 		PinInfo pin_info = deviceFactory.getBoardPinInfo().getByGpioNumber(request.getGpio());
 		String key = deviceFactory.createPinKey(pin_info);
-		DeviceInterface device = deviceFactory.getDevice(key);
+		InternalDeviceInterface device = deviceFactory.getDevice(key);
 
 		if (device == null) {
 			return new Response(Response.Status.ERROR, "GPIO not provisioned", request.getCorrelationId());
@@ -470,7 +470,7 @@ public abstract class BaseRemoteServer implements DeviceEventConsumer<DigitalInp
 
 		PinInfo pin_info = deviceFactory.getBoardPinInfo().getByGpioNumber(request.getGpio());
 		String key = deviceFactory.createPinKey(pin_info);
-		DeviceInterface device = deviceFactory.getDevice(key);
+		InternalDeviceInterface device = deviceFactory.getDevice(key);
 
 		if (device == null) {
 			return new Response(Response.Status.ERROR, "GPIO not provisioned", request.getCorrelationId());
@@ -499,7 +499,7 @@ public abstract class BaseRemoteServer implements DeviceEventConsumer<DigitalInp
 
 		PinInfo pin_info = deviceFactory.getBoardPinInfo().getByGpioNumber(request.getGpio());
 		String key = deviceFactory.createPinKey(pin_info);
-		DeviceInterface device = deviceFactory.getDevice(key);
+		InternalDeviceInterface device = deviceFactory.getDevice(key);
 
 		if (device == null) {
 			return new Response(Response.Status.ERROR, "GPIO not provisioned", request.getCorrelationId());
@@ -543,7 +543,7 @@ public abstract class BaseRemoteServer implements DeviceEventConsumer<DigitalInp
 
 		PinInfo pin_info = deviceFactory.getBoardPinInfo().getByGpioNumber(request.getGpio());
 		String key = deviceFactory.createPinKey(pin_info);
-		DeviceInterface device = deviceFactory.getDevice(key);
+		InternalDeviceInterface device = deviceFactory.getDevice(key);
 
 		if (device == null) {
 			return new Response(Response.Status.ERROR, "GPIO not provisioned", request.getCorrelationId());
@@ -570,7 +570,7 @@ public abstract class BaseRemoteServer implements DeviceEventConsumer<DigitalInp
 		int address = request.getAddress();
 		String key = deviceFactory.createI2CKey(controller, address);
 
-		DeviceInterface device = deviceFactory.getDevice(key);
+		InternalDeviceInterface device = deviceFactory.getDevice(key);
 		if (device != null) {
 			return new Response(Response.Status.ERROR, "I2C device already provisioned", request.getCorrelationId());
 		}
@@ -1042,7 +1042,7 @@ public abstract class BaseRemoteServer implements DeviceEventConsumer<DigitalInp
 		int chip_select = request.getChipSelect();
 		String key = deviceFactory.createSpiKey(controller, chip_select);
 
-		DeviceInterface device = deviceFactory.getDevice(key);
+		InternalDeviceInterface device = deviceFactory.getDevice(key);
 		if (device != null) {
 			return new Response(Response.Status.ERROR, "SPI device already provisioned", request.getCorrelationId());
 		}
@@ -1151,7 +1151,7 @@ public abstract class BaseRemoteServer implements DeviceEventConsumer<DigitalInp
 		String device_file = request.getDeviceFile();
 		String key = deviceFactory.createSerialKey(device_file);
 
-		DeviceInterface device = deviceFactory.getDevice(key);
+		InternalDeviceInterface device = deviceFactory.getDevice(key);
 		if (device != null) {
 			return new Response(Response.Status.ERROR, "Serial device already provisioned", request.getCorrelationId());
 		}

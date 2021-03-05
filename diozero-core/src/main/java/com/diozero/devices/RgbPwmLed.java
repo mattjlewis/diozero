@@ -32,10 +32,9 @@ package com.diozero.devices;
  */
 
 
-import java.io.Closeable;
-
 import org.tinylog.Logger;
 
+import com.diozero.api.DeviceInterface;
 import com.diozero.api.RuntimeIOException;
 import com.diozero.internal.spi.PwmOutputDeviceFactoryInterface;
 import com.diozero.sbc.DeviceFactoryHelper;
@@ -43,7 +42,7 @@ import com.diozero.sbc.DeviceFactoryHelper;
 /**
  * Three pin controlled RGB LED.
  */
-public class RgbPwmLed implements Closeable {
+public class RgbPwmLed implements DeviceInterface {
 	private PwmLed redLED;
 	private PwmLed greenLED;
 	private PwmLed blueLED;
