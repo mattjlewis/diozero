@@ -31,10 +31,12 @@ package com.diozero.devices.sandpit;
  * #L%
  */
 
+import com.diozero.api.DeviceInterface;
+
 import com.diozero.api.I2CConstants;
 import com.diozero.api.I2CDevice;
 
-public class Max30102 {
+public class Max30102 implements DeviceInterface {
 	public static enum SampleAveraging {
 		_1(0b000), _2(0b001), _4(0b010), _8(0b011), _16(0b100), _32(0b101);
 
@@ -202,5 +204,10 @@ public class Max30102 {
 
 		int red_led = (data[0] << 16 | data[1] << 8 | data[2]) & 0x03FFFF;
 		int ir_led = (data[3] << 16 | data[4] << 8 | data[5]) & 0x03FFFF;
+	}
+
+	@Override
+	public void close() {
+		device.close();
 	}
 }

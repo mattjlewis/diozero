@@ -31,6 +31,10 @@ package com.diozero.devices.sandpit;
  * #L%
  */
 
-public class ST77xx {
+import com.diozero.api.DeviceInterface;
 
+public class ST77xx implements DeviceInterface {
+	@Override
+	public void close() {
+	}
 }

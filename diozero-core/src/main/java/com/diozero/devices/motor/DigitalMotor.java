@@ -31,17 +31,15 @@ package com.diozero.devices.motor;
  * #L%
  */
 
-
-import java.io.Closeable;
-
 import org.tinylog.Logger;
 
+import com.diozero.api.DeviceInterface;
 import com.diozero.api.DigitalOutputDevice;
 import com.diozero.api.RuntimeIOException;
 import com.diozero.internal.spi.GpioDeviceFactoryInterface;
 import com.diozero.sbc.DeviceFactoryHelper;
 
-public class DigitalMotor implements Closeable {
+public class DigitalMotor implements DeviceInterface {
 	private DigitalOutputDevice forward;
 	private DigitalOutputDevice backward;
 	

@@ -656,4 +656,9 @@ public class ADXL345 implements ImuInterface {
 			return bandwidth;
 		}
 	}
+
+	@Override
+	public void close() {
+		device.close();
+	}
 }

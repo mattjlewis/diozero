@@ -31,18 +31,15 @@ package com.diozero.devices.motor;
  * #L%
  */
 
-
-import java.io.Closeable;
-import java.io.IOException;
-
 import org.tinylog.Logger;
 
+import com.diozero.api.DeviceInterface;
 import com.diozero.api.RuntimeIOException;
 
 /**
  * Generic dual bi-directional motor driver
  */
-public class DualMotor implements Closeable {
+public class DualMotor implements DeviceInterface {
 	private MotorInterface leftMotor;
 	private MotorInterface rightMotor;
 	
@@ -54,8 +51,12 @@ public class DualMotor implements Closeable {
 	@Override
 	public void close() {
 		Logger.trace("close()");
-		if (leftMotor != null) { try { leftMotor.close(); } catch (IOException e) { } }
-		if (rightMotor != null) { try { rightMotor.close(); } catch (IOException e) { } }
+		if (leftMotor != null) {
+			leftMotor.close();
+		}
+		if (rightMotor != null) {
+			rightMotor.close();
+		}
 	}
 	
 	public float[] getValues() throws RuntimeIOException {

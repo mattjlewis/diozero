@@ -31,7 +31,6 @@ package com.diozero.devices;
  * #L%
  */
 
-import java.io.Closeable;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.concurrent.ScheduledFuture;
@@ -40,6 +39,7 @@ import java.util.function.Consumer;
 
 import org.tinylog.Logger;
 
+import com.diozero.api.DeviceInterface;
 import com.diozero.api.I2CDevice;
 import com.diozero.util.Crc;
 import com.diozero.util.DiozeroScheduler;
@@ -53,7 +53,7 @@ import com.diozero.util.SleepUtil;
  * Sparkfun Arduino: https://github.com/sparkfun/SparkFun_SGP30_Arduino_Library
  * Adafruit Arduino: https://github.com/adafruit/Adafruit_SGP30
  */
-public class SGP30 implements Closeable, Runnable {
+public class SGP30 implements DeviceInterface, Runnable {
 	public static final int PRODUCT_TYPE = 0;
 
 	public static final int I2C_ADDRESS = 0x58;

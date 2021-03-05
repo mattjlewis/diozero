@@ -31,11 +31,10 @@ package com.diozero.devices.sandpit;
  * #L%
  */
 
-
-import java.io.Closeable;
-import java.io.IOException;
-
-import com.diozero.api.*;
+import com.diozero.api.DeviceInterface;
+import com.diozero.api.DigitalInputDevice;
+import com.diozero.api.DigitalInputEvent;
+import com.diozero.api.DigitalOutputDevice;
 import com.diozero.api.function.DeviceEventConsumer;
 import com.diozero.util.RangeUtil;
 import com.diozero.util.SleepUtil;
@@ -60,7 +59,7 @@ import com.diozero.util.SleepUtil;
  * <p>To take a reading the colour filters are selected in turn for a
  * fraction of a second and the frequency is read and converted to Hz.</p>
  */
-public class TCS3200 implements DeviceEventConsumer<DigitalInputEvent>, Runnable, Closeable {
+public class TCS3200 implements DeviceEventConsumer<DigitalInputEvent>, Runnable, DeviceInterface {
 	public static final int NOT_SET = -1;
 	
 	private DigitalInputDevice out;
@@ -414,7 +413,7 @@ public class TCS3200 implements DeviceEventConsumer<DigitalInputEvent>, Runnable
 	}
 
 	@Override
-	public void close() throws IOException {
+	public void close() {
 		oe.setOn(false);
 		oe.close();
 		if (s0 != null) {

@@ -31,8 +31,6 @@ package com.diozero.devices.motor;
  * #L%
  */
 
-import java.io.IOException;
-
 import com.diozero.api.RuntimeIOException;
 import com.diozero.devices.PiconZero;
 
@@ -77,7 +75,7 @@ public class PiconZeroMotor extends MotorBase {
 	}
 
 	@Override
-	public void close() throws IOException {
+	public void close() {
 		stop();
 	}
 }

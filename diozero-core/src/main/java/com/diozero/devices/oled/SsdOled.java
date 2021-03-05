@@ -32,13 +32,13 @@ package com.diozero.devices.oled;
  */
 
 import java.awt.image.BufferedImage;
-import java.io.Closeable;
 import java.util.Arrays;
 
+import com.diozero.api.DeviceInterface;
 import com.diozero.api.DigitalOutputDevice;
 import com.diozero.util.SleepUtil;
 
-public abstract class SsdOled implements Closeable {
+public abstract class SsdOled implements DeviceInterface {
 	private static final int SPI_FREQUENCY = 8_000_000;
 
 	private static final byte DISPLAY_OFF = (byte) 0xAE;

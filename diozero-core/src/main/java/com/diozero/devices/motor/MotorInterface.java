@@ -31,13 +31,11 @@ package com.diozero.devices.motor;
  * #L%
  */
 
-
-import java.io.Closeable;
-
+import com.diozero.api.DeviceInterface;
 import com.diozero.api.RuntimeIOException;
 import com.diozero.api.function.Action;
 
-public interface MotorInterface extends Closeable {
+public interface MotorInterface extends DeviceInterface {
 	void forward(float speed) throws RuntimeIOException;
 	void backward(float speed) throws RuntimeIOException;
 	void stop() throws RuntimeIOException;
