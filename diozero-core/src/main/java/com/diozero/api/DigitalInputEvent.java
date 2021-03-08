@@ -58,20 +58,18 @@ public class DigitalInputEvent extends DeviceEvent {
 	}
 
 	/**
-	 * Returns the underlying GPIO state. Note does not compensate for different
-	 * pull up/down logic.
+	 * Returns the underlying GPIO state. Note does not compensate for active high / low.
 	 * 
-	 * @return underlying digital pin state
+	 * @return the physical digital pin state
 	 */
 	public boolean getValue() {
 		return value;
 	}
 
 	/**
-	 * Determine if the event is active or not compensating for active low / high
-	 * wiring
+	 * Determine if the event is active or not compensating for active high / low wiring
 	 * 
-	 * @return if the event should be consider active or inactice
+	 * @return if the event should be consider active or inactive
 	 */
 	public boolean isActive() {
 		return value == activeHigh;
@@ -80,6 +78,6 @@ public class DigitalInputEvent extends DeviceEvent {
 	@Override
 	public String toString() {
 		return "DigitalInputEvent [gpio=" + getGpio() + ", epochTime=" + getEpochTime() + ", nanoTime=" + getNanoTime()
-				+ ", value=" + value + "]";
+				+ ", value=" + value + ", active=" + isActive() + "]";
 	}
 }

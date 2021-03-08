@@ -72,7 +72,7 @@ public class Button extends DigitalInputDevice {
 	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
 	public Button(int gpio) throws RuntimeIOException {
-		super(gpio, GpioPullUpDown.NONE, GpioEventTrigger.BOTH);
+		this(gpio, GpioPullUpDown.NONE, GpioEventTrigger.BOTH);
 	}
 
 	/**
@@ -81,7 +81,16 @@ public class Button extends DigitalInputDevice {
 	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
 	public Button(int gpio, GpioPullUpDown pud) throws RuntimeIOException {
-		super(gpio, pud, GpioEventTrigger.BOTH);
+		this(gpio, pud, GpioEventTrigger.BOTH);
+	}
+
+	/**
+	 * @param gpio GPIO to which the button is connected.
+	 * @param pud Pull up / down configuration (NONE, PULL_UP, PULL_DOWN).
+	 * @throws RuntimeIOException If an I/O error occurred.
+	 */
+	public Button(int gpio, GpioPullUpDown pud, GpioEventTrigger trigger) throws RuntimeIOException {
+		super(gpio, pud, trigger);
 	}
 
 	/**

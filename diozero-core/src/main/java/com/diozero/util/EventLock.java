@@ -4,7 +4,7 @@ package com.diozero.util;
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - Core
- * Filename:     Event.java  
+ * Filename:     EventLock.java  
  * 
  * This file is part of the diozero project. More information about this project
  * can be found at http://www.diozero.com/

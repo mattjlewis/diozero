@@ -98,7 +98,7 @@ public class DigitalOutputDevice extends GpioDevice implements OutputDeviceInter
 			boolean initialValue) throws RuntimeIOException {
 		super(pinInfo.getDeviceNumber());
 
-		this.device = deviceFactory.provisionDigitalOutputDevice(pinInfo, activeHigh & initialValue);
+		this.device = deviceFactory.provisionDigitalOutputDevice(pinInfo, activeHigh == initialValue);
 		this.activeHigh = activeHigh;
 	}
 
@@ -209,7 +209,7 @@ public class DigitalOutputDevice extends GpioDevice implements OutputDeviceInter
 	}
 
 	/**
-	 * Set the output value to true if value != 0
+	 * Set the output value to true if value != 0, does not compensate for active low logic
 	 * @param value The new value
 	 */
 	@Override
