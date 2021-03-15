@@ -64,6 +64,7 @@ public class EventQueue<T extends Event> implements Consumer<T>, Runnable {
 		lock = new ReentrantLock();
 		condition = lock.newCondition();
 		running = new AtomicBoolean();
+		running.set(true);
 		future = DiozeroScheduler.getDaemonInstance().submit(this);
 	}
 	
@@ -88,19 +89,20 @@ public class EventQueue<T extends Event> implements Consumer<T>, Runnable {
 	}
 	
 	public void stop() {
-		running.set(false);
-		lock.lock();
-		try {
-			condition.signal();
-		} finally {
-			lock.unlock();
+		if (running.get()) {
+			running.set(false);
+			lock.lock();
+			try {
+				condition.signal();
+			} finally {
+				lock.unlock();
+			}
+			future.cancel(true);
 		}
-		future.cancel(true);
 	}
 	
 	@Override
 	public void run() {
-		running.set(true);
 		while (running.get()) {
 			lock.lock();
 			try {

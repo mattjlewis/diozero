@@ -81,6 +81,7 @@ public class GenericLinuxArmBoardInfo extends BoardInfo {
 		 * ["asus,rk3288-tinker", "rockchip,rk3288"]
 		 * ["raspberrypi,4-model-b", "brcm,bcm2711"]
 		 * ["raspberrypi,3-model-b", "brcm,bcm2837"]
+		 * ["raspberrypi,model-zero", "brcm,bcm2835"]
 		 * ["hardkernel,odroid-c2", "amlogic,meson-gxbb"]
 		 */
 		for (String compatibility : LocalSystemInfo.getInstance().loadLinuxBoardCompatibility()) {
@@ -103,6 +104,7 @@ public class GenericLinuxArmBoardInfo extends BoardInfo {
 	protected boolean loadBoardPinInfoDefinition(String... paths) {
 		boolean loaded = false;
 		String file = "/boarddefs/" + String.join("_", paths) + ".txt";
+		Logger.trace("Looking for board def file '{}'", file);
 		try (InputStream is = getClass().getResourceAsStream(file)) {
 			if (is != null) {
 				try (BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {

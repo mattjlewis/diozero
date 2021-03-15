@@ -1,4 +1,4 @@
-package com.diozero;
+package com.diozero.internal;
 
 /*
  * #%L
@@ -42,7 +42,6 @@ import com.diozero.api.RuntimeIOException;
 import com.diozero.api.SpiClockMode;
 import com.diozero.api.SpiDeviceInterface;
 import com.diozero.devices.McpAdc;
-import com.diozero.internal.DeviceStates;
 import com.diozero.internal.provider.test.TestDeviceFactory;
 import com.diozero.internal.provider.test.TestI2CDevice;
 import com.diozero.internal.provider.test.TestMcpAdcSpiDevice;

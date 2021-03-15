@@ -137,22 +137,21 @@ public class FirmataDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	public AnalogInputDeviceInterface provisionAnalogInputDevice(int gpio) {
+	public AnalogInputDeviceInterface provisionAnalogInputDevice(PinInfo pinInfo) {
 		// Special case - The Arduino can switch between digital and analog input hence
 		// use of gpio rather than adc
-		PinInfo pin_info = getBoardPinInfo().getByGpioNumber(gpio);
-		if (pin_info == null || !pin_info.isSupported(DeviceMode.ANALOG_INPUT)) {
-			throw new InvalidModeException("Invalid mode (analog input) for GPIO " + gpio);
+		if (!pinInfo.isSupported(DeviceMode.ANALOG_INPUT)) {
+			throw new InvalidModeException("Invalid mode (analog input) for pin " + pinInfo);
 		}
 
-		String key = createPinKey(pin_info);
+		String key = createPinKey(pinInfo);
 
 		// Check if this pin is already provisioned
 		if (isDeviceOpened(key)) {
 			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
 		}
 
-		AnalogInputDeviceInterface device = createAnalogInputDevice(key, pin_info);
+		AnalogInputDeviceInterface device = createAnalogInputDevice(key, pinInfo);
 		deviceOpened(device);
 
 		return device;
@@ -226,7 +225,14 @@ public class FirmataDeviceFactory extends BaseNativeDeviceFactory {
 		public void populateBoardPinInfo() {
 			for (Pin pin : ioDevice.getPins()) {
 				int pin_number = pin.getIndex();
-				addGpioPinInfo(pin_number, pin_number, convertModes(pin.getSupportedModes()));
+				Set<DeviceMode> supported_modes = convertModes(pin.getSupportedModes());
+				addGpioPinInfo(pin_number, pin_number, supported_modes);
+				if (supported_modes.contains(DeviceMode.ANALOG_INPUT)) {
+					addAdcPinInfo(pin_number, pin_number);
+				}
+				if (supported_modes.contains(DeviceMode.ANALOG_OUTPUT)) {
+					addDacPinInfo(pin_number, pin_number);
+				}
 			}
 		}
 

@@ -183,7 +183,7 @@ public class DefaultDeviceFactory extends BaseNativeDeviceFactory {
 				// Ignore
 			}
 		}
-		
+
 		if (mmapGpio == null) {
 			Logger.warn("GPIO pull-up / pull-down control is not available for this board");
 		} else {
@@ -293,8 +293,13 @@ public class DefaultDeviceFactory extends BaseNativeDeviceFactory {
 		}
 
 		// Need to make sure the keys are different
-		return new SoftwarePwmOutputDevice(key, this, createDigitalOutputDevice("PWM-" + key, pinInfo, false),
-				pwmFrequency, initialValue);
+		// Note this is replicating the functionality in provisionDigitalOutputDevice.
+		// That method can't be called as it will throw a device already opened exception.
+		// Also note that SoftwarePwmOutputDevice has special cleanup functionality.
+		GpioDigitalOutputDeviceInterface gpio_output_device = createDigitalOutputDevice("PWM-" + key, pinInfo, false);
+		deviceOpened(gpio_output_device);
+		
+		return new SoftwarePwmOutputDevice(key, this, gpio_output_device, pwmFrequency, initialValue);
 	}
 
 	@Override

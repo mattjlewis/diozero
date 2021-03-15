@@ -64,7 +64,7 @@ public class DigitalInputOutputDevice extends AbstractDigitalInputDevice {
 	 */
 	public DigitalInputOutputDevice(GpioDeviceFactoryInterface deviceFactory, int gpio, DeviceMode mode)
 			throws RuntimeIOException {
-		this(deviceFactory, deviceFactory.getBoardPinInfo().getByGpioNumber(gpio), mode);
+		this(deviceFactory, deviceFactory.getBoardPinInfo().getByGpioNumberOrThrow(gpio), mode);
 	}
 
 	/**
@@ -77,7 +77,7 @@ public class DigitalInputOutputDevice extends AbstractDigitalInputDevice {
 	 */
 	public DigitalInputOutputDevice(GpioDeviceFactoryInterface deviceFactory, PinInfo pinInfo, DeviceMode mode)
 			throws RuntimeIOException {
-		super(pinInfo.getDeviceNumber(), false);
+		super(pinInfo, false);
 
 		this.device = deviceFactory.provisionDigitalInputOutputDevice(pinInfo, mode);
 		this.mode = mode;

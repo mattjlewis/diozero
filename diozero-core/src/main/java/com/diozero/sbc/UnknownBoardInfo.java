@@ -1,5 +1,7 @@
 package com.diozero.sbc;
 
+import java.util.Optional;
+
 /*-
  * #%L
  * Organisation: diozero
@@ -76,35 +78,23 @@ public class UnknownBoardInfo extends BoardInfo {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public PinInfo getByGpioNumber(int gpio) {
-		PinInfo pin_info = super.getByGpioNumber(gpio);
-		if (pin_info == null) {
-			pin_info = addGpioPinInfo(gpio, gpio, PinInfo.DIGITAL_IN_OUT);
-		}
-		return pin_info;
+	public Optional<PinInfo> getByGpioNumber(int gpio) {
+		return Optional.of(super.getByGpioNumber(gpio).orElse(addGpioPinInfo(gpio, gpio, PinInfo.DIGITAL_IN_OUT)));
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public PinInfo getByAdcNumber(int adcNumber) {
-		PinInfo pin_info = super.getByAdcNumber(adcNumber);
-		if (pin_info == null) {
-			pin_info = addAdcPinInfo(adcNumber, adcNumber);
-		}
-		return pin_info;
+	public Optional<PinInfo> getByAdcNumber(int adcNumber) {
+		return Optional.of(super.getByAdcNumber(adcNumber).orElse(addAdcPinInfo(adcNumber, adcNumber)));
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public PinInfo getByDacNumber(int dacNumber) {
-		PinInfo pin_info = super.getByDacNumber(dacNumber);
-		if (pin_info == null) {
-			pin_info = addDacPinInfo(dacNumber, dacNumber);
-		}
-		return pin_info;
+	public Optional<PinInfo> getByDacNumber(int dacNumber) {
+		return Optional.of(super.getByDacNumber(dacNumber).orElse(addDacPinInfo(dacNumber, dacNumber)));
 	}
 }

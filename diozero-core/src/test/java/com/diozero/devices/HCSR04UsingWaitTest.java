@@ -1,10 +1,10 @@
-package com.diozero.internal.spi;
+package com.diozero.devices;
 
-/*
+/*-
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - Core
- * Filename:     GpioDigitalInputOutputDeviceInterface.java  
+ * Filename:     HCSR04UsingWaitTest.java  
  * 
  * This file is part of the diozero project. More information about this project
  * can be found at http://www.diozero.com/
@@ -31,12 +31,32 @@ package com.diozero.internal.spi;
  * #L%
  */
 
-import com.diozero.api.DeviceMode;
-import com.diozero.api.DigitalInputEvent;
-import com.diozero.api.function.DeviceEventConsumer;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.tinylog.Logger;
 
-public interface GpioDigitalInputOutputDeviceInterface extends GpioDigitalOutputDeviceInterface {
-	public void setMode(DeviceMode mode);
-	void setListener(DeviceEventConsumer<DigitalInputEvent> listener);
-	void removeListener();
+import com.diozero.devices.sandpit.HCSR04UsingWait;
+import com.diozero.internal.provider.test.HCSR04EchoPin;
+import com.diozero.internal.provider.test.HCSR04TriggerPin;
+import com.diozero.internal.provider.test.TestDeviceFactory;
+import com.diozero.util.SleepUtil;
+
+@SuppressWarnings("static-method")
+public class HCSR04UsingWaitTest {
+	@BeforeAll
+	public static void beforeAll() {
+		TestDeviceFactory.setDigitalInputDeviceClass(HCSR04EchoPin.class);
+		TestDeviceFactory.setDigitalOutputDeviceClass(HCSR04TriggerPin.class);
+	}
+	
+	@Test
+	public void test() {
+		try (HCSR04UsingWait hcsr04 = new HCSR04UsingWait(26, 4)) {
+			for (int i=0; i<6; i++) {
+				float distance = hcsr04.getDistanceCm();
+				Logger.info("Distance={}", Float.valueOf(distance));
+				SleepUtil.sleepSeconds(0.5);
+			}
+		}
+	}
 }

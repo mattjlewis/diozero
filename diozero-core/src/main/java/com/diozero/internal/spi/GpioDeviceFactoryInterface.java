@@ -36,13 +36,18 @@ import com.diozero.api.DeviceMode;
 import com.diozero.api.GpioEventTrigger;
 import com.diozero.api.GpioPullUpDown;
 import com.diozero.api.InvalidModeException;
+import com.diozero.api.NoSuchDeviceException;
 import com.diozero.api.PinInfo;
 import com.diozero.api.RuntimeIOException;
 
 public interface GpioDeviceFactoryInterface extends DeviceFactoryInterface {
 	default GpioDigitalInputDeviceInterface provisionDigitalInputDevice(PinInfo pinInfo, GpioPullUpDown pud,
 			GpioEventTrigger trigger) throws RuntimeIOException {
-		if (pinInfo == null || !pinInfo.isSupported(DeviceMode.DIGITAL_INPUT)) {
+		if (pinInfo == null) {
+			throw new NoSuchDeviceException("No such device - pinInfo was null");
+		}
+		
+		if (!pinInfo.isSupported(DeviceMode.DIGITAL_INPUT)) {
 			throw new InvalidModeException("Invalid mode (digital input) for pin " + pinInfo);
 		}
 
@@ -61,7 +66,11 @@ public interface GpioDeviceFactoryInterface extends DeviceFactoryInterface {
 
 	default GpioDigitalOutputDeviceInterface provisionDigitalOutputDevice(PinInfo pinInfo, boolean initialValue)
 			throws RuntimeIOException {
-		if (pinInfo == null || !pinInfo.isSupported(DeviceMode.DIGITAL_OUTPUT)) {
+		if (pinInfo == null) {
+			throw new NoSuchDeviceException("No such device - pinInfo was null");
+		}
+		
+		if (!pinInfo.isSupported(DeviceMode.DIGITAL_OUTPUT)) {
 			throw new InvalidModeException("Invalid mode (digital output) for pin " + pinInfo);
 		}
 
@@ -80,7 +89,11 @@ public interface GpioDeviceFactoryInterface extends DeviceFactoryInterface {
 
 	default GpioDigitalInputOutputDeviceInterface provisionDigitalInputOutputDevice(PinInfo pinInfo, DeviceMode mode)
 			throws RuntimeIOException {
-		if (pinInfo == null || !pinInfo.getModes().containsAll(PinInfo.DIGITAL_IN_OUT)) {
+		if (pinInfo == null) {
+			throw new NoSuchDeviceException("No such device - pinInfo was null");
+		}
+		
+		if (!pinInfo.getModes().containsAll(PinInfo.DIGITAL_IN_OUT)) {
 			throw new InvalidModeException("Invalid mode (digital input/output) for pin " + pinInfo);
 		}
 		if (mode != DeviceMode.DIGITAL_INPUT && mode != DeviceMode.DIGITAL_OUTPUT) {

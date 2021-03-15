@@ -1,5 +1,10 @@
 package com.diozero.internal;
 
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
 /*
  * #%L
  * Organisation: diozero
@@ -53,12 +58,13 @@ public class SoftwarePwmOutputDevice extends AbstractDevice implements PwmOutput
 	private AtomicBoolean running;
 	private int periodMs;
 	private int dutyMs;
+	private Future<?> future;
 
 	public SoftwarePwmOutputDevice(String key, DeviceFactoryInterface deviceFactory,
 			GpioDigitalOutputDeviceInterface digitalOutputDevice, int frequency, float initialValue) {
 		super(key, deviceFactory);
 
-		Logger.warn("Hardware PWM not available for device {}, reverting to software", key);
+		Logger.info("Hardware PWM not available for device {}, reverting to software", key);
 
 		this.digitalOutputDevice = digitalOutputDevice;
 		running = new AtomicBoolean();
@@ -70,12 +76,28 @@ public class SoftwarePwmOutputDevice extends AbstractDevice implements PwmOutput
 
 	public void start() {
 		if (!running.getAndSet(true)) {
-			DiozeroScheduler.getDaemonInstance().execute(this);
+			future = DiozeroScheduler.getDaemonInstance().submit(this);
 		}
 	}
 
 	public void stop() {
-		running.set(false);
+		if (running.get()) {
+			running.set(false);
+			
+			if (future == null) {
+				Logger.warn("Unexpected condition - future was null when stopping PWM output");
+			} else {
+				// Wait for the runnable to complete
+				try {
+					future.get(periodMs, TimeUnit.MILLISECONDS);
+				} catch (InterruptedException | ExecutionException | TimeoutException e) {
+					Logger.info(e, "Error waiting for future to complete: {}", e);
+					// Cancel the future if it doesn't complete normally by setting running to false
+					future.cancel(true);
+				}
+				future = null;
+			}
+		}
 	}
 
 	@Override
@@ -101,7 +123,6 @@ public class SoftwarePwmOutputDevice extends AbstractDevice implements PwmOutput
 		stop();
 		if (digitalOutputDevice != null) {
 			digitalOutputDevice.close();
-			digitalOutputDevice = null;
 		}
 	}
 

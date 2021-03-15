@@ -30,9 +30,9 @@ package com.diozero.sampleapps.lcd;
  * THE SOFTWARE.
  * #L%
  */
-
-
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
 import com.diozero.api.I2CConstants;
 import com.diozero.api.RuntimeIOException;
@@ -57,7 +57,7 @@ import com.diozero.devices.HD44780Lcd.LcdConnection;
  *  {@code sudo java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar:diozero-provider-pigpio-$DIOZERO_VERSION.jar:pigpioj-java-2.4.jar com.diozero.sandpit.I2CLcdSampleAppInteractive [i2c_address] [i2c_controller]}</li>
  * </ul>
  */
-public class I2CLcdSampleAppInteractive implements Closeable {
+public class I2CLcdSampleAppInteractive implements AutoCloseable {
 	public static void main(String[] args) {
 		int device_address = HD44780Lcd.PCF8574LcdConnection.DEFAULT_DEVICE_ADDRESS;
 		if (args.length > 0) {

@@ -43,8 +43,8 @@ public abstract class AbstractDigitalInputDevice extends GpioInputDevice<Digital
 	private LongConsumer deactivatedConsumer;
 	private boolean listenerEnabled;
 
-	public AbstractDigitalInputDevice(int gpio, boolean activeHigh) {
-		super(gpio);
+	public AbstractDigitalInputDevice(PinInfo pinInfo, boolean activeHigh) {
+		super(pinInfo);
 
 		this.activeHigh = activeHigh;
 	}

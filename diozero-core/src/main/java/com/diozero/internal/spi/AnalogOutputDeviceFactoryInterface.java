@@ -31,30 +31,34 @@ package com.diozero.internal.spi;
  * #L%
  */
 
-
 import com.diozero.api.DeviceAlreadyOpenedException;
 import com.diozero.api.DeviceMode;
 import com.diozero.api.InvalidModeException;
+import com.diozero.api.NoSuchDeviceException;
 import com.diozero.api.PinInfo;
 import com.diozero.api.RuntimeIOException;
 
 public interface AnalogOutputDeviceFactoryInterface extends DeviceFactoryInterface {
-	default AnalogOutputDeviceInterface provisionAnalogOutputDevice(int dacNumber, float initialValue) throws RuntimeIOException {
-		PinInfo pin_info = getBoardPinInfo().getByDacNumber(dacNumber);
-		if (pin_info == null || ! pin_info.isSupported(DeviceMode.ANALOG_OUTPUT)) {
-			throw new InvalidModeException("Invalid mode (analog output) for DAC " + dacNumber);
+	default AnalogOutputDeviceInterface provisionAnalogOutputDevice(PinInfo pinInfo, float initialValue)
+			throws RuntimeIOException {
+		if (pinInfo == null) {
+			throw new NoSuchDeviceException("No such device - pinInfo was null");
 		}
 		
-		String key = createPinKey(pin_info);
-		
+		if (!pinInfo.isSupported(DeviceMode.ANALOG_OUTPUT)) {
+			throw new InvalidModeException("Invalid mode (analog output) for pin " + pinInfo);
+		}
+
+		String key = createPinKey(pinInfo);
+
 		// Check if this pin is already provisioned
 		if (isDeviceOpened(key)) {
 			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
 		}
-		
-		AnalogOutputDeviceInterface device = createAnalogOutputDevice(key, pin_info, initialValue);
+
+		AnalogOutputDeviceInterface device = createAnalogOutputDevice(key, pinInfo, initialValue);
 		deviceOpened(device);
-		
+
 		return device;
 	}
 

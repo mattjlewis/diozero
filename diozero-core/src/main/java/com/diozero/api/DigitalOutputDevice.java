@@ -82,7 +82,7 @@ public class DigitalOutputDevice extends GpioDevice implements OutputDeviceInter
 	 */
 	public DigitalOutputDevice(GpioDeviceFactoryInterface deviceFactory, int gpio, boolean activeHigh,
 			boolean initialValue) throws RuntimeIOException {
-		this(deviceFactory, deviceFactory.getBoardPinInfo().getByGpioNumber(gpio), activeHigh, initialValue);
+		this(deviceFactory, deviceFactory.getBoardPinInfo().getByGpioNumberOrThrow(gpio), activeHigh, initialValue);
 	}
 
 	/**
@@ -96,7 +96,7 @@ public class DigitalOutputDevice extends GpioDevice implements OutputDeviceInter
 	 */
 	public DigitalOutputDevice(GpioDeviceFactoryInterface deviceFactory, PinInfo pinInfo, boolean activeHigh,
 			boolean initialValue) throws RuntimeIOException {
-		super(pinInfo.getDeviceNumber());
+		super(pinInfo);
 
 		this.device = deviceFactory.provisionDigitalOutputDevice(pinInfo, activeHigh == initialValue);
 		this.activeHigh = activeHigh;

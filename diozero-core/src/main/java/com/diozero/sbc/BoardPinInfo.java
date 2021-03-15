@@ -35,9 +35,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.TreeMap;
 
 import com.diozero.api.DeviceMode;
+import com.diozero.api.NoSuchDeviceException;
 import com.diozero.api.PinInfo;
 import com.diozero.api.PwmPinInfo;
 
@@ -224,8 +226,12 @@ public class BoardPinInfo {
 		}
 	}
 
-	public PinInfo getByGpioNumber(int gpio) {
-		return gpios.get(Integer.valueOf(gpio));
+	public Optional<PinInfo> getByGpioNumber(int gpio) {
+		return Optional.ofNullable(gpios.get(Integer.valueOf(gpio)));
+	}
+
+	public PinInfo getByGpioNumberOrThrow(int gpio) throws NoSuchDeviceException {
+		return getByGpioNumber(gpio).orElseThrow(() -> new NoSuchDeviceException("No such GPIO #" + gpio));
 	}
 
 	public PinInfo getByChipAndLineOffset(int chipId, int lineOffset) {
@@ -242,20 +248,47 @@ public class BoardPinInfo {
 		return null;
 	}
 
-	public PinInfo getByPwmNumber(int pwmNum) {
+	public Optional<PinInfo> getByPwmNumber(int pwmNum) {
 		Integer gpio = pwmNumToGpioMapping.get(Integer.valueOf(pwmNum));
 		if (gpio == null) {
-			return null;
+			return Optional.empty();
 		}
-		return gpios.get(gpio);
+		return Optional.ofNullable(gpios.get(gpio));
 	}
 
-	public PinInfo getByAdcNumber(int adcNumber) {
-		return adcs.get(Integer.valueOf(adcNumber));
+	public PinInfo getByPwmNumberOrThrow(int pwmNum) {
+		return getByPwmNumber(pwmNum).orElseThrow(() -> new NoSuchDeviceException("No such PWM #" + pwmNum));
 	}
 
-	public PinInfo getByDacNumber(int dacNumber) {
-		return dacs.get(Integer.valueOf(dacNumber));
+	public Optional<PinInfo> getByPwmOrGpioNumber(int pwmOrGpioNum) {
+		// Lookup by PWM number first, if not found or doesn't support
+		// PWM_OUTPUT, lookup by GPIO number
+		Optional<PinInfo> pin_info = getByPwmNumber(pwmOrGpioNum);
+		if (!pin_info.isPresent() || !pin_info.get().isSupported(DeviceMode.PWM_OUTPUT)) {
+			pin_info = getByGpioNumber(pwmOrGpioNum);
+		}
+		return pin_info;
+	}
+
+	public PinInfo getByPwmOrGpioNumberOrThrow(int pwmOrGpioNum) {
+		return getByPwmOrGpioNumber(pwmOrGpioNum)
+				.orElseThrow(() -> new NoSuchDeviceException("No such PWM #" + pwmOrGpioNum));
+	}
+
+	public Optional<PinInfo> getByAdcNumber(int adcNumber) {
+		return Optional.ofNullable(adcs.get(Integer.valueOf(adcNumber)));
+	}
+
+	public PinInfo getByAdcNumberOrThrow(int adcNumber) {
+		return getByAdcNumber(adcNumber).orElseThrow(() -> new NoSuchDeviceException("No such ADC #" + adcNumber));
+	}
+
+	public Optional<PinInfo> getByDacNumber(int dacNumber) {
+		return Optional.ofNullable(dacs.get(Integer.valueOf(dacNumber)));
+	}
+
+	public PinInfo getByDacNumberOrThrow(int dacNumber) {
+		return getByDacNumber(dacNumber).orElseThrow(() -> new NoSuchDeviceException("No such DAC #" + dacNumber));
 	}
 
 	public PinInfo getByName(String name) {

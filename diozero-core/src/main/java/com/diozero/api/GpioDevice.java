@@ -35,21 +35,21 @@ package com.diozero.api;
  * Abstract base class for all GPIO related devices.
  */
 public abstract class GpioDevice implements DeviceInterface {
-	protected int gpio;
+	protected PinInfo pinInfo;
 
 	/**
-	 * @param gpio GPIO to which the device is connected.
+	 * @param pinInfo GPIO to which the device is connected
 	 */
-	public GpioDevice(int gpio) {
-		this.gpio = gpio;
+	public GpioDevice(PinInfo pinInfo) {
+		this.pinInfo = pinInfo;
 	}
 
 	/**
-	 * Get the GPIO for this device.
+	 * Get the GPIO for this device
 	 * 
-	 * @return GPIO for this device.
+	 * @return GPIO for this device
 	 */
 	public int getGpio() {
-		return gpio;
+		return pinInfo.getDeviceNumber();
 	}
 }

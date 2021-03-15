@@ -37,9 +37,6 @@ import com.diozero.api.RuntimeIOException;
 import com.diozero.api.function.DeviceEventConsumer;
 
 public interface AnalogInputDeviceInterface extends InternalDeviceInterface {
-	@Override
-	void close();
-
 	/**
 	 * Read the analog value in the range 0..1 or -1..1 (if the ADC type is signed)
 	 * 

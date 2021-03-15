@@ -107,7 +107,8 @@ public class EnvironmentDisplay {
 
 			backgroundImages = new BufferedImage[3];
 			for (int i = 0; i < backgroundImages.length; i++) {
-				try (InputStream is = EnvironmentDisplay.class.getResourceAsStream("/images/Background" + i + ".png")) {
+				try (InputStream is = EnvironmentDisplay.class
+						.getResourceAsStream("/images/Background" + (i + 1) + ".jpg")) {
 					if (is != null) {
 						// The background image must have the same dimensions as the display
 						BufferedImage bi = ImageIO.read(is);

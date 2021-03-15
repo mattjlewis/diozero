@@ -34,6 +34,8 @@ package com.diozero.devices.oled;
 import java.awt.image.BufferedImage;
 import java.util.Arrays;
 
+import org.tinylog.Logger;
+
 import com.diozero.api.DeviceInterface;
 import com.diozero.api.DigitalOutputDevice;
 import com.diozero.util.SleepUtil;
@@ -120,6 +122,7 @@ public abstract class SsdOled implements DeviceInterface {
 
 	@Override
 	public void close() {
+		Logger.trace("close()");
 		clear();
 		setDisplayOn(false);
 		device.close();

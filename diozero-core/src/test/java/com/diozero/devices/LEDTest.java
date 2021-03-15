@@ -1,4 +1,4 @@
-package com.diozero;
+package com.diozero.devices;
 
 /*-
  * #%L
@@ -37,7 +37,6 @@ import org.junit.jupiter.api.Test;
 import org.tinylog.Logger;
 
 import com.diozero.api.RuntimeIOException;
-import com.diozero.devices.LED;
 import com.diozero.internal.provider.test.TestDeviceFactory;
 import com.diozero.internal.provider.test.TestDigitalInputDevice;
 import com.diozero.internal.provider.test.TestDigitalOutputDevice;

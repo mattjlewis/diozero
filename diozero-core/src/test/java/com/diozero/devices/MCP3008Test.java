@@ -1,10 +1,10 @@
-package com.diozero;
+package com.diozero.devices;
 
 /*
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - Core
- * Filename:     MCP3304Test.java  
+ * Filename:     MCP3008Test.java  
  * 
  * This file is part of the diozero project. More information about this project
  * can be found at http://www.diozero.com/
@@ -32,13 +32,11 @@ package com.diozero;
  */
 
 
-import com.diozero.devices.McpAdc;
-
 /**
- * MCP3304 test using the test device factory
+ * MCP3008 test using the test device factory
  */
-public class MCP3304Test extends McpAdcTest {
-	public MCP3304Test() {
-		super(McpAdc.Type.MCP3304);
+public class MCP3008Test extends McpAdcTest {
+	public MCP3008Test() {
+		super(McpAdc.Type.MCP3008);
 	}
 }

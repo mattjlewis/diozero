@@ -1,4 +1,4 @@
-package com.diozero;
+package com.diozero.devices;
 
 /*
  * #%L
@@ -41,9 +41,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.tinylog.Logger;
 
-import com.diozero.devices.W1ThermSensor;
-import com.diozero.devices.W1ThermSensor.Type;
-
 @SuppressWarnings("static-method")
 public class W1ThermSensorTest {
 	private static Map<String, W1ThermSensor.Type> expectedTypes;
@@ -69,8 +66,8 @@ public class W1ThermSensorTest {
 	
 	@Test
 	public void test() {
-		System.out.println(Type.valueOf(Type.DS1822.getId()));
-		System.out.println(Type.valueOf(Type.DS1822.name()));
+		System.out.println(W1ThermSensor.Type.valueOf(W1ThermSensor.Type.DS1822.getId()));
+		System.out.println(W1ThermSensor.Type.valueOf(W1ThermSensor.Type.DS1822.name()));
 		
 		List<W1ThermSensor> sensors = W1ThermSensor.getAvailableSensors("src/test/resources/devices");
 		Assertions.assertEquals(5, sensors.size());

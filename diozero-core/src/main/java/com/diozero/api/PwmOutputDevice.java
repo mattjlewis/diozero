@@ -94,16 +94,30 @@ public class PwmOutputDevice extends GpioDevice implements OutputDeviceInterface
 
 	/**
 	 * @param pwmDeviceFactory Device factory to use to provision this device.
-	 * @param gpio             GPIO to which the output device is connected.
+	 * @param pwmOrGpioNum     GPIO to which the output device is connected.
 	 * @param pwmFrequency     PWM frequency (Hz).
 	 * @param initialValue     Initial output value (0..1).
 	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
-	public PwmOutputDevice(PwmOutputDeviceFactoryInterface pwmDeviceFactory, int gpio, int pwmFrequency,
+	public PwmOutputDevice(PwmOutputDeviceFactoryInterface pwmDeviceFactory, int pwmOrGpioNum, int pwmFrequency,
 			float initialValue) throws RuntimeIOException {
-		super(gpio);
+		this(pwmDeviceFactory, pwmDeviceFactory.getBoardPinInfo().getByPwmOrGpioNumberOrThrow(pwmOrGpioNum),
+				pwmFrequency, initialValue);
+	}
+
+	/**
+	 * @param pwmDeviceFactory Device factory to use to provision this device.
+	 * @param pinInfo          GPIO to which the output device is connected.
+	 * @param pwmFrequency     PWM frequency (Hz).
+	 * @param initialValue     Initial output value (0..1).
+	 * @throws RuntimeIOException If an I/O error occurred.
+	 */
+	public PwmOutputDevice(PwmOutputDeviceFactoryInterface pwmDeviceFactory, PinInfo pinInfo, int pwmFrequency,
+			float initialValue) throws RuntimeIOException {
+		super(pinInfo);
+
 		running = new AtomicBoolean();
-		this.device = pwmDeviceFactory.provisionPwmOutputDevice(gpio, pwmFrequency, initialValue);
+		this.device = pwmDeviceFactory.provisionPwmOutputDevice(pinInfo, pwmFrequency, initialValue);
 	}
 
 	@Override

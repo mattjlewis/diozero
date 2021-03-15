@@ -60,7 +60,7 @@ public class SpiGpioPerfTest {
 	public static void test(int gpio, int iterations) {
 		try (NativeDeviceFactoryInterface df = DeviceFactoryHelper.getNativeDeviceFactory();
 				GpioDigitalOutputDeviceInterface gpio_device = df
-						.provisionDigitalOutputDevice(df.getBoardPinInfo().getByGpioNumber(gpio), false)) {
+						.provisionDigitalOutputDevice(df.getBoardPinInfo().getByGpioNumberOrThrow(gpio), false)) {
 			for (int j = 0; j < 5; j++) {
 				long start_nano = System.nanoTime();
 				for (int i = 0; i < iterations; i++) {

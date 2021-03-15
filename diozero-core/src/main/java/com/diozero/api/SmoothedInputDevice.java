@@ -148,14 +148,14 @@ public class SmoothedInputDevice extends WaitableDigitalInputDevice {
 				// Check if the number of events exceeds the threshold
 				if (queue.size() > threshold) {
 					if (! active) {
-						SmoothedInputDevice.super.accept(new DigitalInputEvent(gpio, now, nano_time, activeHigh));
+						SmoothedInputDevice.super.accept(new DigitalInputEvent(getGpio(), now, nano_time, activeHigh));
 						active = true;
 					}
 
 					// If an event is fired clear the queue of all events
 					queue.clear();
 				} else if (active) {
-					SmoothedInputDevice.super.accept(new DigitalInputEvent(gpio, now, nano_time, !activeHigh));
+					SmoothedInputDevice.super.accept(new DigitalInputEvent(getGpio(), now, nano_time, !activeHigh));
 					active = false;
 				}
 			}

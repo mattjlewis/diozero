@@ -1,4 +1,4 @@
-package com.diozero;
+package com.diozero.util;
 
 /*
  * #%L
@@ -40,7 +40,6 @@ import org.junit.jupiter.api.Test;
 import org.tinylog.Logger;
 
 import com.diozero.devices.McpAdc;
-import com.diozero.util.BitManipulation;
 
 @SuppressWarnings("static-method")
 public class BitSetTest {

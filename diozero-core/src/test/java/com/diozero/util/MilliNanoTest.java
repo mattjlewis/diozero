@@ -1,4 +1,4 @@
-package com.diozero;
+package com.diozero.util;
 
 /*-
  * #%L
@@ -33,8 +33,6 @@ package com.diozero;
 
 import org.junit.jupiter.api.Test;
 import org.tinylog.Logger;
-
-import com.diozero.util.SleepUtil;
 
 @SuppressWarnings("static-method")
 public class MilliNanoTest {

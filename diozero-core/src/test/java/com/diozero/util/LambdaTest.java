@@ -1,4 +1,4 @@
-package com.diozero;
+package com.diozero.util;
 
 /*
  * #%L
@@ -41,9 +41,6 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import org.tinylog.Logger;
-
-import com.diozero.util.DiozeroScheduler;
-import com.diozero.util.SleepUtil;
 
 public class LambdaTest {
 	private static final Random RANDOM = new Random(System.nanoTime());

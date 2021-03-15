@@ -1,4 +1,4 @@
-package com.diozero;
+package com.diozero.devices;
 
 /*-
  * #%L
@@ -38,7 +38,6 @@ import org.junit.jupiter.api.Test;
 import org.tinylog.Logger;
 
 import com.diozero.api.AnalogInputDevice;
-import com.diozero.devices.McpAdc;
 import com.diozero.internal.provider.test.TestDeviceFactory;
 import com.diozero.internal.provider.test.TestMcpAdcSpiDevice;
 import com.diozero.util.SleepUtil;

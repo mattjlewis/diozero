@@ -153,7 +153,7 @@ public abstract class BaseRemoteServer implements DeviceEventConsumer<DigitalInp
 	public Response request(ProvisionDigitalInputDevice request) {
 		Logger.debug("GPIO input request");
 
-		PinInfo pin_info = deviceFactory.getBoardPinInfo().getByGpioNumber(request.getGpio());
+		PinInfo pin_info = deviceFactory.getBoardPinInfo().getByGpioNumberOrThrow(request.getGpio());
 		String key = deviceFactory.createPinKey(pin_info);
 		InternalDeviceInterface device = deviceFactory.getDevice(key);
 
@@ -185,7 +185,7 @@ public abstract class BaseRemoteServer implements DeviceEventConsumer<DigitalInp
 	public Response request(ProvisionDigitalOutputDevice request) {
 		Logger.debug("GPIO output request");
 
-		PinInfo pin_info = deviceFactory.getBoardPinInfo().getByGpioNumber(request.getGpio());
+		PinInfo pin_info = deviceFactory.getBoardPinInfo().getByGpioNumberOrThrow(request.getGpio());
 		String key = deviceFactory.createPinKey(pin_info);
 		InternalDeviceInterface device = deviceFactory.getDevice(key);
 
@@ -220,7 +220,7 @@ public abstract class BaseRemoteServer implements DeviceEventConsumer<DigitalInp
 	public Response request(ProvisionDigitalInputOutputDevice request) {
 		Logger.debug("GPIO input/output request");
 
-		PinInfo pin_info = deviceFactory.getBoardPinInfo().getByGpioNumber(request.getGpio());
+		PinInfo pin_info = deviceFactory.getBoardPinInfo().getByGpioNumberOrThrow(request.getGpio());
 		String key = deviceFactory.createPinKey(pin_info);
 		InternalDeviceInterface device = deviceFactory.getDevice(key);
 
@@ -251,15 +251,14 @@ public abstract class BaseRemoteServer implements DeviceEventConsumer<DigitalInp
 	public Response request(ProvisionPwmOutputDevice request) {
 		Logger.debug("PWM output request");
 
-		PinInfo pin_info = deviceFactory.getBoardPinInfo().getByGpioNumber(request.getGpio());
+		PinInfo pin_info = deviceFactory.getBoardPinInfo().getByPwmOrGpioNumberOrThrow(request.getGpio());
 		String key = deviceFactory.createPinKey(pin_info);
 		InternalDeviceInterface device = deviceFactory.getDevice(key);
 
 		Response response;
 		try {
 			if (device == null) {
-				deviceFactory.provisionPwmOutputDevice(request.getGpio(), request.getFrequency(),
-						request.getInitialValue());
+				deviceFactory.provisionPwmOutputDevice(pin_info, request.getFrequency(), request.getInitialValue());
 
 				response = new Response(Response.Status.OK, null, request.getCorrelationId());
 			} else if (device instanceof PwmOutputDeviceInterface) {
@@ -280,14 +279,14 @@ public abstract class BaseRemoteServer implements DeviceEventConsumer<DigitalInp
 	public Response request(ProvisionAnalogInputDevice request) {
 		Logger.debug("Analog input request");
 
-		PinInfo pin_info = deviceFactory.getBoardPinInfo().getByGpioNumber(request.getGpio());
+		PinInfo pin_info = deviceFactory.getBoardPinInfo().getByGpioNumberOrThrow(request.getGpio());
 		String key = deviceFactory.createPinKey(pin_info);
 		InternalDeviceInterface device = deviceFactory.getDevice(key);
 
 		Response response;
 		try {
 			if (device == null) {
-				deviceFactory.provisionAnalogInputDevice(request.getGpio());
+				deviceFactory.provisionAnalogInputDevice(pin_info);
 				response = new Response(Response.Status.OK, null, request.getCorrelationId());
 			} else if (device instanceof AnalogInputDeviceInterface) {
 				response = new Response(Response.Status.OK, null, request.getCorrelationId());
@@ -306,14 +305,14 @@ public abstract class BaseRemoteServer implements DeviceEventConsumer<DigitalInp
 	public Response request(ProvisionAnalogOutputDevice request) {
 		Logger.debug("Analog output request");
 
-		PinInfo pin_info = deviceFactory.getBoardPinInfo().getByGpioNumber(request.getGpio());
+		PinInfo pin_info = deviceFactory.getBoardPinInfo().getByGpioNumberOrThrow(request.getGpio());
 		String key = deviceFactory.createPinKey(pin_info);
 		InternalDeviceInterface device = deviceFactory.getDevice(key);
 
 		Response response;
 		try {
 			if (device == null) {
-				AnalogOutputDeviceInterface output = deviceFactory.provisionAnalogOutputDevice(request.getGpio(),
+				AnalogOutputDeviceInterface output = deviceFactory.provisionAnalogOutputDevice(pin_info,
 						request.getInitialValue());
 				output.setValue(request.getInitialValue());
 
@@ -337,7 +336,7 @@ public abstract class BaseRemoteServer implements DeviceEventConsumer<DigitalInp
 	public GpioDigitalReadResponse request(GpioDigitalRead request) {
 		Logger.debug("GPIO digital read request");
 
-		PinInfo pin_info = deviceFactory.getBoardPinInfo().getByGpioNumber(request.getGpio());
+		PinInfo pin_info = deviceFactory.getBoardPinInfo().getByGpioNumberOrThrow(request.getGpio());
 		String key = deviceFactory.createPinKey(pin_info);
 		InternalDeviceInterface device = deviceFactory.getDevice(key);
 
@@ -361,7 +360,7 @@ public abstract class BaseRemoteServer implements DeviceEventConsumer<DigitalInp
 	public Response request(GpioDigitalWrite request) {
 		Logger.debug("GPIO digital write request");
 
-		PinInfo pin_info = deviceFactory.getBoardPinInfo().getByGpioNumber(request.getGpio());
+		PinInfo pin_info = deviceFactory.getBoardPinInfo().getByGpioNumberOrThrow(request.getGpio());
 		String key = deviceFactory.createPinKey(pin_info);
 		InternalDeviceInterface device = deviceFactory.getDevice(key);
 
@@ -391,7 +390,7 @@ public abstract class BaseRemoteServer implements DeviceEventConsumer<DigitalInp
 	public GpioPwmReadResponse request(GpioPwmRead request) {
 		Logger.debug("GPIO PWM read request");
 
-		PinInfo pin_info = deviceFactory.getBoardPinInfo().getByGpioNumber(request.getGpio());
+		PinInfo pin_info = deviceFactory.getBoardPinInfo().getByGpioNumberOrThrow(request.getGpio());
 		String key = deviceFactory.createPinKey(pin_info);
 		InternalDeviceInterface device = deviceFactory.getDevice(key);
 
@@ -415,7 +414,7 @@ public abstract class BaseRemoteServer implements DeviceEventConsumer<DigitalInp
 	public Response request(GpioPwmWrite request) {
 		Logger.debug("GPIO PWM write request");
 
-		PinInfo pin_info = deviceFactory.getBoardPinInfo().getByGpioNumber(request.getGpio());
+		PinInfo pin_info = deviceFactory.getBoardPinInfo().getByGpioNumberOrThrow(request.getGpio());
 		String key = deviceFactory.createPinKey(pin_info);
 		InternalDeviceInterface device = deviceFactory.getDevice(key);
 
@@ -444,7 +443,7 @@ public abstract class BaseRemoteServer implements DeviceEventConsumer<DigitalInp
 	public GpioAnalogReadResponse request(GpioAnalogRead request) {
 		Logger.debug("GPIO analog read request");
 
-		PinInfo pin_info = deviceFactory.getBoardPinInfo().getByGpioNumber(request.getGpio());
+		PinInfo pin_info = deviceFactory.getBoardPinInfo().getByGpioNumberOrThrow(request.getGpio());
 		String key = deviceFactory.createPinKey(pin_info);
 		AnalogOutputDeviceInterface device = deviceFactory.getDevice(key);
 
@@ -454,8 +453,7 @@ public abstract class BaseRemoteServer implements DeviceEventConsumer<DigitalInp
 		}
 
 		try {
-			response = new GpioAnalogReadResponse((device).getValue(),
-					request.getCorrelationId());
+			response = new GpioAnalogReadResponse((device).getValue(), request.getCorrelationId());
 		} catch (RuntimeIOException e) {
 			Logger.error(e, "Error: {}", e);
 			response = new GpioAnalogReadResponse("Runtime Error: " + e, request.getCorrelationId());
@@ -468,7 +466,7 @@ public abstract class BaseRemoteServer implements DeviceEventConsumer<DigitalInp
 	public Response request(GpioAnalogWrite request) {
 		Logger.debug("GPIO analog write request");
 
-		PinInfo pin_info = deviceFactory.getBoardPinInfo().getByGpioNumber(request.getGpio());
+		PinInfo pin_info = deviceFactory.getBoardPinInfo().getByGpioNumberOrThrow(request.getGpio());
 		String key = deviceFactory.createPinKey(pin_info);
 		InternalDeviceInterface device = deviceFactory.getDevice(key);
 
@@ -497,7 +495,7 @@ public abstract class BaseRemoteServer implements DeviceEventConsumer<DigitalInp
 	public Response request(GpioEvents request) {
 		Logger.debug("GPIO events request");
 
-		PinInfo pin_info = deviceFactory.getBoardPinInfo().getByGpioNumber(request.getGpio());
+		PinInfo pin_info = deviceFactory.getBoardPinInfo().getByGpioNumberOrThrow(request.getGpio());
 		String key = deviceFactory.createPinKey(pin_info);
 		InternalDeviceInterface device = deviceFactory.getDevice(key);
 
@@ -541,7 +539,7 @@ public abstract class BaseRemoteServer implements DeviceEventConsumer<DigitalInp
 	public Response request(GpioClose request) {
 		Logger.debug("GPIO close request");
 
-		PinInfo pin_info = deviceFactory.getBoardPinInfo().getByGpioNumber(request.getGpio());
+		PinInfo pin_info = deviceFactory.getBoardPinInfo().getByGpioNumberOrThrow(request.getGpio());
 		String key = deviceFactory.createPinKey(pin_info);
 		InternalDeviceInterface device = deviceFactory.getDevice(key);
 

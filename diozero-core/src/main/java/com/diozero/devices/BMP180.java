@@ -31,7 +31,6 @@ package com.diozero.devices;
  * #L%
  */
 
-import java.io.Closeable;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 

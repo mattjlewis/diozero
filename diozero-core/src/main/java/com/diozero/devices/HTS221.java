@@ -31,7 +31,6 @@ package com.diozero.devices;
  * #L%
  */
 
-import java.io.Closeable;
 import java.nio.ByteOrder;
 
 import org.tinylog.Logger;

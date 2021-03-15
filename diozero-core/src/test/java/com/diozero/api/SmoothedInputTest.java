@@ -1,10 +1,10 @@
-package com.diozero;
+package com.diozero.api;
 
 /*
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - Core
- * Filename:     ButtonTest.java  
+ * Filename:     SmoothedInputTest.java  
  * 
  * This file is part of the diozero project. More information about this project
  * can be found at http://www.diozero.com/
@@ -30,6 +30,7 @@ package com.diozero;
  * THE SOFTWARE.
  * #L%
  */
+
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -39,41 +40,60 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.tinylog.Logger;
 
-import com.diozero.api.DigitalInputEvent;
-import com.diozero.api.GpioPullUpDown;
-import com.diozero.devices.Button;
+import com.diozero.api.function.DeviceEventConsumer;
 import com.diozero.internal.provider.test.TestDeviceFactory;
 import com.diozero.internal.provider.test.TestDigitalInputDevice;
 import com.diozero.internal.provider.test.TestDigitalOutputDevice;
 import com.diozero.util.SleepUtil;
 
-public class ButtonTest {
-	private int i;
-
+public class SmoothedInputTest implements DeviceEventConsumer<DigitalInputEvent> {
 	@BeforeAll
 	public static void beforeAll() {
 		TestDeviceFactory.setDigitalInputDeviceClass(TestDigitalInputDevice.class);
 		TestDeviceFactory.setDigitalOutputDeviceClass(TestDigitalOutputDevice.class);
 	}
-
+	
 	@Test
 	public void test() {
-		try (Button button = new Button(1, GpioPullUpDown.PULL_UP)) {
-			button.whenPressed(nanoTime -> Logger.info("Pressed"));
-			button.whenReleased(nanoTime -> Logger.info("Released"));
-			button.addListener(event -> Logger.info("Event: {}", event));
-
-			ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
-			ScheduledFuture<?> future = executor
-					.scheduleAtFixedRate(
-							() -> button.accept(new DigitalInputEvent(button.getGpio(),
-									System.currentTimeMillis(), System.nanoTime(), (i++ % 2) == 0)),
-							500, 500, TimeUnit.MILLISECONDS);
-
-			SleepUtil.sleepSeconds(5);
-
+		int pin = 1;
+		float delay = 5;
+		// Require 10 events in 2 seconds to be considered on, check every 50ms
+		try (SmoothedInputDevice device = new SmoothedInputDevice(pin, GpioPullUpDown.NONE, 10, 2000, 50)) {
+			device.addListener(this);
+			Runnable event_generator = new Runnable() {
+				@Override
+				public void run() {
+					long nano_time = System.nanoTime();
+					long now = System.currentTimeMillis();
+					device.accept(new DigitalInputEvent(pin, now, nano_time, true));
+				}
+			};
+			
+			ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(10);
+			
+			// Generate 1 event every 100ms -> 10 events per second, therefore should get a smoothed event every 1s
+			ScheduledFuture<?> future = scheduler.scheduleAtFixedRate(event_generator, 100, 100, TimeUnit.MILLISECONDS);
+			Logger.info("Sleeping for {}s", Float.valueOf(delay));
+			SleepUtil.sleepSeconds(delay);
+			
+			Logger.info("Stopping event generation and sleeping for {}s", Float.valueOf(delay));
 			future.cancel(true);
-			executor.shutdownNow();
+			SleepUtil.sleepSeconds(delay);
+			
+			// Generate 1 event every 50ms -> 20 events per second
+			future = scheduler.scheduleAtFixedRate(event_generator, 100, 100, TimeUnit.MILLISECONDS);
+			Logger.info("Restarting event generation and sleeping for {}s", Float.valueOf(delay));
+			SleepUtil.sleepSeconds(delay);
+			future.cancel(true);
+			
+			scheduler.shutdownNow();
+		} catch (Throwable t) {
+			Logger.error(t, "Error: {}", t);
 		}
+	}
+
+	@Override
+	public void accept(DigitalInputEvent event) {
+		Logger.info("accept({})", event);
 	}
 }

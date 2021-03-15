@@ -33,7 +33,7 @@ package com.diozero.sampleapps;
 
 import org.tinylog.Logger;
 
-import com.diozero.devices.Servo;
+import com.diozero.api.Servo;
 import com.diozero.util.SleepUtil;
 
 /**

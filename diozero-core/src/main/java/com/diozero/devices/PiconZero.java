@@ -483,22 +483,21 @@ public class PiconZero extends AbstractDeviceFactory implements GpioDeviceFactor
 	}
 
 	@Override
-	public AnalogInputDeviceInterface provisionAnalogInputDevice(int gpio) throws RuntimeIOException {
+	public AnalogInputDeviceInterface provisionAnalogInputDevice(PinInfo pinInfo) throws RuntimeIOException {
 		// Special case - PiconZero can switch between digital and analog input hence
 		// use of gpio rather than adc
-		PinInfo pin_info = boardPinInfo.getByGpioNumber(gpio);
-		if (pin_info == null || !pin_info.isSupported(DeviceMode.ANALOG_INPUT)) {
-			throw new IllegalArgumentException("Invalid mode (analog input) for GPIO " + gpio);
+		if (!pinInfo.isSupported(DeviceMode.ANALOG_INPUT)) {
+			throw new IllegalArgumentException("Invalid mode (analog input) for pin " + pinInfo);
 		}
 
-		String key = createPinKey(pin_info);
+		String key = createPinKey(pinInfo);
 
 		// Check if this pin is already provisioned
 		if (isDeviceOpened(key)) {
 			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
 		}
 
-		AnalogInputDeviceInterface device = createAnalogInputDevice(key, pin_info);
+		AnalogInputDeviceInterface device = createAnalogInputDevice(key, pinInfo);
 		deviceOpened(device);
 
 		return device;

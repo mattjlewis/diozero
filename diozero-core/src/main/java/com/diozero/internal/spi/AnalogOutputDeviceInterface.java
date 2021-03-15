@@ -36,8 +36,6 @@ import com.diozero.api.DeviceMode;
 import com.diozero.api.RuntimeIOException;
 
 public interface AnalogOutputDeviceInterface extends InternalDeviceInterface {
-	@Override
-	void close();
 	float getValue() throws RuntimeIOException;
 	void setValue(float value) throws RuntimeIOException;
 	int getAdcNumber();

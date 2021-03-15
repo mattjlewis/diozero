@@ -41,6 +41,69 @@ import com.diozero.sbc.DeviceFactoryHelper;
  * Represents a generic digital input device.
  */
 public class DigitalInputDevice extends AbstractDigitalInputDevice {
+	public static class Builder {
+		private Integer gpio;
+		private PinInfo pinInfo;
+		private GpioPullUpDown pud = GpioPullUpDown.NONE;
+		private GpioEventTrigger trigger = GpioEventTrigger.BOTH;
+		private Boolean activeHigh;
+		private GpioDeviceFactoryInterface deviceFactory;
+
+		public Builder(int gpio) {
+			this.gpio = Integer.valueOf(gpio);
+		}
+
+		public Builder(PinInfo pinInfo) {
+			this.pinInfo = pinInfo;
+		}
+
+		public Builder setPullUpDown(GpioPullUpDown pud) {
+			this.pud = pud;
+			return this;
+		}
+
+		public Builder setTrigger(GpioEventTrigger trigger) {
+			this.trigger = trigger;
+			return this;
+		}
+
+		public Builder setActiveHigh(boolean activeHigh) {
+			this.activeHigh = Boolean.valueOf(activeHigh);
+			return this;
+		}
+
+		public Builder setGpioDeviceFactoryInterface(GpioDeviceFactoryInterface deviceFactory) {
+			this.deviceFactory = deviceFactory;
+			return this;
+		}
+
+		public DigitalInputDevice build() {
+			// Determine activeHigh from pud if not explicitly set
+			if (activeHigh == null) {
+				activeHigh = Boolean.valueOf(pud != GpioPullUpDown.PULL_UP);
+			}
+
+			// Default to the native device factory if not set
+			if (deviceFactory == null) {
+				deviceFactory = DeviceFactoryHelper.getNativeDeviceFactory();
+			}
+
+			if (pinInfo == null) {
+				pinInfo = deviceFactory.getBoardPinInfo().getByGpioNumberOrThrow(gpio.intValue());
+			}
+
+			return new DigitalInputDevice(deviceFactory, pinInfo, pud, trigger, activeHigh.booleanValue());
+		}
+	}
+
+	public static Builder builder(int gpio) {
+		return new Builder(gpio);
+	}
+
+	public static Builder builder(PinInfo pinInfo) {
+		return new Builder(pinInfo);
+	}
+
 	protected GpioDigitalInputDeviceInterface device;
 	private GpioPullUpDown pud;
 	private GpioEventTrigger trigger;
@@ -54,11 +117,11 @@ public class DigitalInputDevice extends AbstractDigitalInputDevice {
 	}
 
 	/**
-	 * @param gpio    GPIO to which the device is connected.
-	 * @param pud     Pull up/down configuration, values: NONE, PULL_UP, PULL_DOWN.
+	 * @param gpio    GPIO to which the device is connected
+	 * @param pud     Pull up/down configuration, values: NONE, PULL_UP, PULL_DOWN
 	 * @param trigger Event trigger configuration, values: NONE, RISING, FALLING,
-	 *                BOTH.
-	 * @throws RuntimeIOException If an I/O error occurs.
+	 *                BOTH
+	 * @throws RuntimeIOException If an I/O error occurs
 	 */
 	public DigitalInputDevice(int gpio, GpioPullUpDown pud, GpioEventTrigger trigger) throws RuntimeIOException {
 		this(DeviceFactoryHelper.getNativeDeviceFactory(), gpio, pud, trigger);
@@ -66,32 +129,35 @@ public class DigitalInputDevice extends AbstractDigitalInputDevice {
 
 	/**
 	 * @param deviceFactory Device factory to use to provision this digital input
-	 *                      device.
-	 * @param gpio          GPIO to which the device is connected.
+	 *                      device
+	 * @param gpio          GPIO to which the device is connected
 	 * @param pud           Pull up/down configuration, values: NONE, PULL_UP,
-	 *                      PULL_DOWN.
+	 *                      PULL_DOWN
 	 * @param trigger       Event trigger configuration, values: NONE, RISING,
-	 *                      FALLING, BOTH.
-	 * @throws RuntimeIOException If an I/O error occurs.
+	 *                      FALLING, BOTH
+	 * @throws RuntimeIOException If an I/O error occurs
 	 */
 	public DigitalInputDevice(GpioDeviceFactoryInterface deviceFactory, int gpio, GpioPullUpDown pud,
-			GpioEventTrigger trigger) throws RuntimeIOException {
-		this(deviceFactory, deviceFactory.getBoardPinInfo().getByGpioNumber(gpio), pud, trigger);
+			GpioEventTrigger trigger) throws RuntimeIOException, NoSuchDeviceException {
+		this(deviceFactory, deviceFactory.getBoardPinInfo().getByGpioNumberOrThrow(gpio), pud, trigger,
+				pud != GpioPullUpDown.PULL_UP);
 	}
 
 	/**
 	 * @param deviceFactory Device factory to use to provision this digital input
-	 *                      device.
-	 * @param pinInfo       Information about the GPIO pin to which the device is connected.
+	 *                      device
+	 * @param pinInfo       Information about the GPIO pin to which the device is
+	 *                      connected
 	 * @param pud           Pull up/down configuration, values: NONE, PULL_UP,
-	 *                      PULL_DOWN.
+	 *                      PULL_DOWN
 	 * @param trigger       Event trigger configuration, values: NONE, RISING,
-	 *                      FALLING, BOTH.
+	 *                      FALLING, BOTH
+	 * @param activeHigh    Set to true if digital 1 is to be treated as active
 	 * @throws RuntimeIOException If an I/O error occurs.
 	 */
 	public DigitalInputDevice(GpioDeviceFactoryInterface deviceFactory, PinInfo pinInfo, GpioPullUpDown pud,
-			GpioEventTrigger trigger) throws RuntimeIOException {
-		super(pinInfo.getDeviceNumber(), pud != GpioPullUpDown.PULL_UP);
+			GpioEventTrigger trigger, boolean activeHigh) throws RuntimeIOException {
+		super(pinInfo, activeHigh);
 
 		this.device = deviceFactory.provisionDigitalInputDevice(pinInfo, pud, trigger);
 		this.pud = pud;

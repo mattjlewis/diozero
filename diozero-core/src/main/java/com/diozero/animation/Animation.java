@@ -155,7 +155,7 @@ public class Animation implements Runnable {
 	/**
 	 * Immediately stop the animation and flush the segment queue.
 	 */
-	public void stop() {
+	public synchronized void stop() {
 		if (future != null) {
 			future.cancel(true);
 			future = null;

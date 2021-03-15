@@ -114,16 +114,27 @@ public class AnalogInputDevice extends GpioInputDevice<AnalogInputEvent> impleme
 
 	/**
 	 * @param deviceFactory The device factory to use to provision this device.
-	 * @param gpio          GPIO to which the device is connected.
+	 * @param adcNumber     GPIO to which the device is connected.
 	 * @param range         To be used for taking scaled readings for this device.
 	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
-	public AnalogInputDevice(AnalogInputDeviceFactoryInterface deviceFactory, int gpio, float range)
+	public AnalogInputDevice(AnalogInputDeviceFactoryInterface deviceFactory, int adcNumber, float range)
 			throws RuntimeIOException {
-		super(gpio);
+		this(deviceFactory, deviceFactory.getBoardPinInfo().getByAdcNumberOrThrow(adcNumber), range);
+	}
 
+	/**
+	 * @param deviceFactory The device factory to use to provision this device.
+	 * @param adcNumber     GPIO to which the device is connected.
+	 * @param range         To be used for taking scaled readings for this device.
+	 * @throws RuntimeIOException If an I/O error occurred.
+	 */
+	public AnalogInputDevice(AnalogInputDeviceFactoryInterface deviceFactory, PinInfo pinInfo, float range)
+			throws RuntimeIOException {
+		super(pinInfo);
+		
 		this.range = range;
-		device = deviceFactory.provisionAnalogInputDevice(gpio);
+		device = deviceFactory.provisionAnalogInputDevice(pinInfo);
 		stopScheduler = new AtomicBoolean(true);
 	}
 
@@ -159,7 +170,7 @@ public class AnalogInputDevice extends GpioInputDevice<AnalogInputEvent> impleme
 
 		float unscaled = getUnscaledValue();
 		if (changeDetected(unscaled)) {
-			accept(new AnalogInputEvent(gpio, System.currentTimeMillis(), System.nanoTime(), unscaled));
+			accept(new AnalogInputEvent(getGpio(), System.currentTimeMillis(), System.nanoTime(), unscaled));
 			lastValue = Float.valueOf(unscaled);
 		}
 	}

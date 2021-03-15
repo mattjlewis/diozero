@@ -47,17 +47,17 @@ public abstract class GpioInputDevice<T extends DeviceEvent> extends GpioDevice 
 	private Collection<DeviceEventConsumer<T>> listeners;
 
 	/**
-	 * @param gpio GPIO to which the device is connected.
+	 * @param pinInfo PinInfo object for the GPIO
 	 */
-	public GpioInputDevice(int gpio) {
-		super(gpio);
+	public GpioInputDevice(PinInfo pinInfo) {
+		super(pinInfo);
 		listeners = new ArrayList<>();
 	}
 
 	/**
-	 * Add a new listener.
+	 * Add a new listener
 	 * 
-	 * @param listener Callback instance.
+	 * @param listener Callback instance
 	 */
 	public void addListener(DeviceEventConsumer<T> listener) {
 		if (listeners.isEmpty()) {
@@ -69,9 +69,9 @@ public abstract class GpioInputDevice<T extends DeviceEvent> extends GpioDevice 
 	}
 
 	/**
-	 * Remove a specific listener.
+	 * Remove a specific listener
 	 * 
-	 * @param listener Callback instance to remove.
+	 * @param listener Callback instance to remove
 	 */
 	public void removeListener(DeviceEventConsumer<T> listener) {
 		listeners.remove(listener);
@@ -81,7 +81,7 @@ public abstract class GpioInputDevice<T extends DeviceEvent> extends GpioDevice 
 	}
 
 	/**
-	 * Remove all listeners.
+	 * Remove all listeners
 	 */
 	public void removeAllListeners() {
 		listeners.clear();

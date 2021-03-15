@@ -112,3 +112,10 @@ permalink: /internals/releases.html
 + Enhancements to ADS112C04 - support for input multiplexer configuration (differential reads)
 + Renamed util.Event to util.EventLock
 + Preview / sandpit introduction of a new generic FIFO event queue
+
+## Release 1.1.5
+
++ Refactored the way that GPIO devices are provisioned internally - all now use PinInfo rather than a GPIO number
++ DigitalInputDevices allow activeHigh to be overridden
++ Fix for Raspberry Pi Zero W - now loads the correct boarddefs file, rather than the generic Raspberry Pi one
++ Bugix for PwmOutputDevice cleanup

@@ -1,4 +1,4 @@
-package com.diozero;
+package com.diozero.util;
 
 /*
  * #%L
@@ -34,8 +34,6 @@ package com.diozero;
 
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import com.diozero.util.SleepUtil;
 
 public class SchedulerTest {
 	static int scheduler_instance = 0;

@@ -40,41 +40,41 @@ public interface SerialDeviceFactoryInterface extends DeviceFactoryInterface {
 
 	/**
 	 * Provision a serial device.
-	 * @param deviceFile The O/S name of the device, e.g. "/dev/ttyUSB0"
-	 * @param baud Baud rate
-	 * @param dataBits Number of data bits
-	 * @param stopBits Number of stop bits
-	 * @param parity Parity option
-	 * @param readBlocking Do read operations block?
-	 * @param minReadChars The minimum number of characters to read
-	 * @param readTimeoutMillis How long a read operation waits for data before timing out. 0 == no timeout
+	 * 
+	 * @param deviceFilename    The O/S name of the device, e.g. "/dev/ttyUSB0"
+	 * @param baud              Baud rate
+	 * @param dataBits          Number of data bits
+	 * @param stopBits          Number of stop bits
+	 * @param parity            Parity option
+	 * @param readBlocking      Do read operations block?
+	 * @param minReadChars      The minimum number of characters to read
+	 * @param readTimeoutMillis How long a read operation waits for data before
+	 *                          timing out. 0 == no timeout
 	 * @return Serial device instance
 	 * @throws RuntimeIOException
 	 */
-	default InternalSerialDeviceInterface provisionSerialDevice(String deviceFile, int baud, SerialDevice.DataBits dataBits,
-			SerialDevice.StopBits stopBits, SerialDevice.Parity parity, boolean readBlocking, int minReadChars,
-			int readTimeoutMillis)
-			throws RuntimeIOException {
-		String key = createSerialKey(deviceFile);
+	default InternalSerialDeviceInterface provisionSerialDevice(String deviceFilename, int baud,
+			SerialDevice.DataBits dataBits, SerialDevice.StopBits stopBits, SerialDevice.Parity parity,
+			boolean readBlocking, int minReadChars, int readTimeoutMillis) throws RuntimeIOException {
+		String key = createSerialKey(deviceFilename);
 
 		// Check if this pin is already provisioned
 		if (isDeviceOpened(key)) {
 			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
 		}
 
-		InternalSerialDeviceInterface device = createSerialDevice(key, deviceFile, baud, dataBits, stopBits, parity, readBlocking,
-				minReadChars, readTimeoutMillis);
+		InternalSerialDeviceInterface device = createSerialDevice(key, deviceFilename, baud, dataBits, stopBits, parity,
+				readBlocking, minReadChars, readTimeoutMillis);
 		deviceOpened(device);
 
 		return device;
 	}
 
-	InternalSerialDeviceInterface createSerialDevice(String key, String deviceFile, int baud, SerialDevice.DataBits dataBits,
-			SerialDevice.StopBits stopBits, SerialDevice.Parity parity, boolean readBlocking, int minReadChars,
-			int readTimeoutMillis)
-			throws RuntimeIOException;
+	InternalSerialDeviceInterface createSerialDevice(String key, String deviceFilename, int baud,
+			SerialDevice.DataBits dataBits, SerialDevice.StopBits stopBits, SerialDevice.Parity parity,
+			boolean readBlocking, int minReadChars, int readTimeoutMillis) throws RuntimeIOException;
 
-	static String createSerialKey(String keyPrefix, String deviceFile) {
-		return keyPrefix + SERIAL_PREFIX + deviceFile;
+	static String createSerialKey(String keyPrefix, String deviceFilename) {
+		return keyPrefix + SERIAL_PREFIX + deviceFilename;
 	}
 }

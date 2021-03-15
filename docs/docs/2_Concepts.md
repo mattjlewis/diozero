@@ -71,26 +71,30 @@ try (PwmLed led = new PwmLed(18)) {
 }
 ```
 
+## Package Heirarchy
+
+This following image illustrates the relationships between the core packages within diozero.
+
+![Package Hierarchy](/assets/images/Packages.png "Package Hierarchy") 
+
 ## Getting Started
 
-Snapshot builds of the library are available in the [Nexus Repository Manager](https://oss.sonatype.org/index.html#nexus-search;gav~com.diozero~~~~). 
-For convenience a ZIP of all diozero JARs (currently v{{ site.version }}) will also be available on [Google Drive](https://drive.google.com/file/d/1WZH6zTwo_xlFDn7CVkx_ABkXbkYK6E2n/view?usp=sharing).
+Snapshot builds of the library are available in the [Nexus Repository Manager](https://oss.sonatype.org/index.html#nexus-search;gav~com.diozero~~~~).
+A ZIP file of diozero and all dependencies can also be downloaded via the [diozero-distribution artifact on Nexus](https://oss.sonatype.org/index.html#nexus-search;gav~com.diozero~diozero-distribution~~~~kw,versionexpand).
 
 Javadoc for the core library is also available via [javadoc.io](http://www.javadoc.io/doc/com.diozero/diozero-core/). 
 
-Unfortunately Java doesn't provide a convenient deployment-time dependency manager 
+Java doesn't provide a convenient deployment-time dependency manager 
 such as Python's `pip` therefore you will need to manually download all dependencies 
 and setup your classpath correctly. You can do this either via setting the `CLASSPATH` 
 environment variable or as a command-line option (`java -cp <jar1>:<jar2>`). 
-The dependencies have been deliberately kept to as few libraries as possible, as 
-such this library is only dependent on [tinylog](http://www.tinylog.org) 
-[v2.1.2](https://github.com/pmwmedia/tinylog/releases/download/2.1.2/tinylog-2.1.2.zip).
+The dependencies have been deliberately kept to as few libraries as possible - diozero is only dependent on [tinylog v2](http://www.tinylog.org).
 
-To compile a diozero application you will need 3 JAR files - [tinylog](http://www.tinylog.org/) (API and Impl), and diozero-core. 
-To run a diozero application, you can also include one of the supported device provider 
-libraries and the corresponding diozero provider wrapper library. Note that the built-in sysfs
-device provider gives maximum portability but has some limitations such as not being able 
-to configure internal pull up/down resistors.
+To compile a diozero application you will need 3 JAR files - [tinylog](http://www.tinylog.org/) (both API and Impl), and diozero-core. 
+To run a diozero application, you can also optionally include one of the supported device provider 
+libraries and the corresponding diozero provider wrapper library. Note that the built-in default
+device provider gives maximum portability but has some limitations such as not supporting hardware
+PWM on the Raspberry Pi. If you need hardware PWM on a Raspberry Pi then you must use the pigpioj provider.
 
 Provider | Dependency | diozero Provider Library | SBC
 --- | -------- | ------------ | -----------------------

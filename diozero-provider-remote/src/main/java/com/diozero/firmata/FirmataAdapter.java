@@ -32,7 +32,6 @@ package com.diozero.firmata;
  */
 
 import java.io.ByteArrayOutputStream;
-import java.io.Closeable;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -54,7 +53,7 @@ import org.tinylog.Logger;
 import com.diozero.api.RuntimeIOException;
 import com.diozero.util.DiozeroScheduler;
 
-public abstract class FirmataAdapter implements FirmataProtocol, Runnable, Closeable {
+public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoCloseable {
 	private static final int I2C_NO_REGISTER = 0;
 	private static final int NOT_SET = -1;
 	private static final byte ANALOG_NOT_SUPPORTED = 127;

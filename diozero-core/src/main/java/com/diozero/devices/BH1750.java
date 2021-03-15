@@ -32,8 +32,6 @@ package com.diozero.devices;
  */
 
 
-import java.io.Closeable;
-
 import com.diozero.api.I2CDevice;
 import com.diozero.api.RuntimeIOException;
 import com.diozero.util.SleepUtil;

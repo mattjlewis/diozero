@@ -31,7 +31,6 @@ package com.diozero.devices;
  * #L%
  */
 
-import java.io.Closeable;
 import java.nio.ByteOrder;
 
 import com.diozero.api.I2CConstants;
@@ -43,7 +42,7 @@ import com.diozero.util.SleepUtil;
  * <a href="https://cdn-shop.adafruit.com/datasheets/TSL2561.pdf">Datasheet</a>
  */
 @SuppressWarnings("unused")
-public class TSL2561 implements Closeable, LuminositySensorInterface {
+public class TSL2561 implements LuminositySensorInterface {
 	private static final int TSL2561_VISIBLE = 2; // channel 0 - channel 1
 	private static final int TSL2561_INFRARED = 1; // channel 1
 	private static final int TSL2561_FULLSPECTRUM = 0; // channel 0

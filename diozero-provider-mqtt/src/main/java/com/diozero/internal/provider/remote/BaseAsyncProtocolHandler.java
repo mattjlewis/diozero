@@ -33,6 +33,7 @@ package com.diozero.internal.provider.remote;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -78,14 +79,14 @@ public abstract class BaseAsyncProtocolHandler implements RemoteProtocolInterfac
 
 	protected void processEvent(DigitalInputEvent event) {
 		// Locate the input device for this GPIO
-		PinInfo pin_info = deviceFactory.getBoardPinInfo().getByGpioNumber(event.getGpio());
-		if (pin_info == null) {
+		Optional<PinInfo> pin_info = deviceFactory.getBoardPinInfo().getByGpioNumber(event.getGpio());
+		if (!pin_info.isPresent()) {
 			Logger.error("PinInfo not found for GPIO " + event.getGpio());
 			return;
 		}
 
 		@SuppressWarnings("resource")
-		RemoteDigitalInputDevice input_device = deviceFactory.getDevice(deviceFactory.createPinKey(pin_info));
+		RemoteDigitalInputDevice input_device = deviceFactory.getDevice(deviceFactory.createPinKey(pin_info.get()));
 		if (input_device == null) {
 			Logger.error("Digital input device not found for GPIO " + event.getGpio());
 			return;

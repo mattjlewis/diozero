@@ -59,6 +59,46 @@ public abstract class AbstractDeviceFactory implements DeviceFactoryInterface {
 	}
 
 	@Override
+	public void close() {
+		if (!closed) {
+			Logger.trace("close()");
+			deviceStates.closeAll();
+			closed = true;
+		}
+	}
+
+	@Override
+	public final boolean isClosed() {
+		return closed;
+	}
+
+	@Override
+	public void reopen() {
+		Logger.trace("reopen()");
+		closed = false;
+	}
+
+	@Override
+	public final boolean isDeviceOpened(String key) {
+		return deviceStates.isOpened(key);
+	}
+
+	@Override
+	public final void deviceOpened(InternalDeviceInterface device) {
+		deviceStates.opened(device);
+	}
+
+	@Override
+	public final void deviceClosed(InternalDeviceInterface device) {
+		deviceStates.closed(device);
+	}
+
+	@Override
+	public final <T extends InternalDeviceInterface> T getDevice(String key) {
+		return deviceStates.getDevice(key);
+	}
+
+	@Override
 	public final String createPinKey(PinInfo pinInfo) {
 		return deviceFactoryPrefix + "-" + pinInfo.getKeyPrefix() + "-" + pinInfo.getDeviceNumber();
 	}
@@ -76,45 +116,5 @@ public abstract class AbstractDeviceFactory implements DeviceFactoryInterface {
 	@Override
 	public final String createSerialKey(String deviceFile) {
 		return SerialDeviceFactoryInterface.createSerialKey(deviceFactoryPrefix, deviceFile);
-	}
-
-	@Override
-	public void close() {
-		if (!closed) {
-			Logger.trace("close()");
-			deviceStates.closeAll();
-			closed = true;
-		}
-	}
-
-	@Override
-	public void reopen() {
-		Logger.trace("reopen()");
-		closed = false;
-	}
-
-	@Override
-	public final boolean isClosed() {
-		return closed;
-	}
-
-	@Override
-	public final void deviceOpened(InternalDeviceInterface device) {
-		deviceStates.opened(device);
-	}
-
-	@Override
-	public final void deviceClosed(InternalDeviceInterface device) {
-		deviceStates.closed(device);
-	}
-
-	@Override
-	public final boolean isDeviceOpened(String key) {
-		return deviceStates.isOpened(key);
-	}
-
-	@Override
-	public final <T extends InternalDeviceInterface> T getDevice(String key) {
-		return deviceStates.getDevice(key);
 	}
 }

@@ -20,3 +20,11 @@ com.diozero.sbc
 
 com.diozero.util
 : utilities such as CRC calculation, converting between two number ranges and calculating servo pulse durations
+
+## Package Relationships
+
+![Package Hierarchy](/assets/images/Packages.png "Package Hierarchy") 
+
+## Device Classes
+
+![Device Classes](/assets/images/Devices.png "Device Classes") 

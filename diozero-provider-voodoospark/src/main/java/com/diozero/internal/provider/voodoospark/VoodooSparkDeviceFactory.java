@@ -381,7 +381,7 @@ public class VoodooSparkDeviceFactory extends BaseNativeDeviceFactory {
 
 				// TODO Need to check that reporting has been enabled for this GPIO!
 
-				PinInfo pin_info = getBoardPinInfo().getByGpioNumber(gpio);
+				PinInfo pin_info = getBoardPinInfo().getByGpioNumberOrThrow(gpio);
 				AbstractDigitalInputDevice input_device = getDevice(createPinKey(pin_info));
 				if (input_device != null) {
 					// What about analog events?!
