@@ -125,14 +125,14 @@ public class AnalogInputDevice extends GpioInputDevice<AnalogInputEvent> impleme
 
 	/**
 	 * @param deviceFactory The device factory to use to provision this device.
-	 * @param adcNumber     GPIO to which the device is connected.
+	 * @param pinInfo       GPIO to which the device is connected.
 	 * @param range         To be used for taking scaled readings for this device.
 	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
 	public AnalogInputDevice(AnalogInputDeviceFactoryInterface deviceFactory, PinInfo pinInfo, float range)
 			throws RuntimeIOException {
 		super(pinInfo);
-		
+
 		this.range = range;
 		device = deviceFactory.provisionAnalogInputDevice(pinInfo);
 		stopScheduler = new AtomicBoolean(true);
