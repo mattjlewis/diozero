@@ -77,7 +77,7 @@ public class ButtonControlledLed {
 			Logger.info("Waiting for {}s - *** Press the button connected to pin {} ***", Integer.valueOf(delaySecs),
 					Integer.valueOf(buttonPin));
 			SleepUtil.sleepSeconds(delaySecs);
-		} catch (RuntimeIOException e) {
+		} catch (Exception e) {
 			Logger.error(e, "Error: {}", e);
 		}
 	}

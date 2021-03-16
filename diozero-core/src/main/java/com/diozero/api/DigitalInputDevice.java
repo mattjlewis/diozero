@@ -104,7 +104,7 @@ public class DigitalInputDevice extends AbstractDigitalInputDevice {
 		return new Builder(pinInfo);
 	}
 
-	protected GpioDigitalInputDeviceInterface device;
+	protected GpioDigitalInputDeviceInterface delegate;
 	private GpioPullUpDown pud;
 	private GpioEventTrigger trigger;
 
@@ -159,7 +159,7 @@ public class DigitalInputDevice extends AbstractDigitalInputDevice {
 			GpioEventTrigger trigger, boolean activeHigh) throws RuntimeIOException {
 		super(pinInfo, activeHigh);
 
-		this.device = deviceFactory.provisionDigitalInputDevice(pinInfo, pud, trigger);
+		this.delegate = deviceFactory.provisionDigitalInputDevice(pinInfo, pud, trigger);
 		this.pud = pud;
 		this.trigger = trigger;
 	}
@@ -167,7 +167,9 @@ public class DigitalInputDevice extends AbstractDigitalInputDevice {
 	@Override
 	public void close() {
 		Logger.trace("close()");
-		device.close();
+		if (delegate.isOpen()) {
+			delegate.close();
+		}
 	}
 
 	/**
@@ -197,7 +199,7 @@ public class DigitalInputDevice extends AbstractDigitalInputDevice {
 	 */
 	@Override
 	public boolean getValue() throws RuntimeIOException {
-		return device.getValue();
+		return delegate.getValue();
 	}
 
 	/**
@@ -209,16 +211,16 @@ public class DigitalInputDevice extends AbstractDigitalInputDevice {
 	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
 	public boolean isActive() throws RuntimeIOException {
-		return device.getValue() == activeHigh;
+		return delegate.getValue() == activeHigh;
 	}
 
 	@Override
 	protected void setListener() {
-		device.setListener(this);
+		delegate.setListener(this);
 	}
 
 	@Override
 	protected void removeListener() {
-		device.removeListener();
+		delegate.removeListener();
 	}
 }

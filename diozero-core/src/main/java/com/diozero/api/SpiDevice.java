@@ -162,7 +162,9 @@ public class SpiDevice implements SpiDeviceInterface {
 	@Override
 	public void close() throws RuntimeIOException {
 		Logger.trace("close()");
-		delegate.close();
+		if (delegate.isOpen()) {
+			delegate.close();
+		}
 	}
 
 	/**

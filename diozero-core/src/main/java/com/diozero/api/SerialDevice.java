@@ -451,7 +451,9 @@ public class SerialDevice implements SerialConstants, SerialDeviceInterface {
 	@Override
 	public void close() {
 		Logger.trace("close()");
-		delegate.close();
+		if (delegate.isOpen()) {
+			delegate.close();
+		}
 	}
 
 	/**

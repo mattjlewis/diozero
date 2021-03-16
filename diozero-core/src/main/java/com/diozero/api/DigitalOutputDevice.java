@@ -49,7 +49,7 @@ public class DigitalOutputDevice extends GpioDevice implements OutputDeviceInter
 
 	private boolean activeHigh;
 	private boolean running;
-	private GpioDigitalOutputDeviceInterface device;
+	private GpioDigitalOutputDeviceInterface delegate;
 
 	/**
 	 * Defaults to active high logic, initial value is off.
@@ -98,15 +98,17 @@ public class DigitalOutputDevice extends GpioDevice implements OutputDeviceInter
 			boolean initialValue) throws RuntimeIOException {
 		super(pinInfo);
 
-		this.device = deviceFactory.provisionDigitalOutputDevice(pinInfo, activeHigh == initialValue);
+		this.delegate = deviceFactory.provisionDigitalOutputDevice(pinInfo, activeHigh == initialValue);
 		this.activeHigh = activeHigh;
 	}
 
 	@Override
 	public void close() {
 		Logger.trace("close()");
-		setOn(false);
-		device.close();
+		if (delegate.isOpen()) {
+			setOn(false);
+			delegate.close();
+		}
 	}
 
 	private void onOffLoop(float onTime, float offTime, int n, Action stopAction) throws RuntimeIOException {
@@ -173,7 +175,7 @@ public class DigitalOutputDevice extends GpioDevice implements OutputDeviceInter
 	 */
 	public void toggle() throws RuntimeIOException {
 		stopOnOffLoop();
-		setValueUnsafe(!device.getValue());
+		setValueUnsafe(!delegate.getValue());
 	}
 
 	/**
@@ -183,7 +185,7 @@ public class DigitalOutputDevice extends GpioDevice implements OutputDeviceInter
 	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
 	public boolean isOn() throws RuntimeIOException {
-		return activeHigh == device.getValue();
+		return activeHigh == delegate.getValue();
 	}
 
 	/**
@@ -205,7 +207,7 @@ public class DigitalOutputDevice extends GpioDevice implements OutputDeviceInter
 	 * @throws RuntimeIOException If an I/O error occurs
 	 */
 	public void setValueUnsafe(boolean value) throws RuntimeIOException {
-		device.setValue(value);
+		delegate.setValue(value);
 	}
 
 	/**

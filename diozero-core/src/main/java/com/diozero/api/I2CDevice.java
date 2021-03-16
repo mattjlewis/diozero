@@ -37,6 +37,7 @@ import java.nio.ByteOrder;
 import org.tinylog.Logger;
 
 import com.diozero.internal.spi.I2CDeviceFactoryInterface;
+import com.diozero.internal.spi.InternalI2CDeviceInterface;
 import com.diozero.sbc.DeviceFactoryHelper;
 import com.diozero.util.BitManipulation;
 
@@ -157,7 +158,7 @@ public class I2CDevice implements I2CDeviceInterface {
 		return new Builder(address);
 	}
 
-	private I2CDeviceInterface delegate;
+	private InternalI2CDeviceInterface delegate;
 	private int controller;
 	private int address;
 	private I2CConstants.AddressSize addressSize;
@@ -280,7 +281,9 @@ public class I2CDevice implements I2CDeviceInterface {
 	@Override
 	public void close() throws RuntimeIOException {
 		Logger.trace("close()");
-		delegate.close();
+		if (delegate.isOpen()) {
+			delegate.close();
+		}
 	}
 
 	/**
