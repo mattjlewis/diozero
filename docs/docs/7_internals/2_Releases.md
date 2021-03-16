@@ -119,3 +119,8 @@ permalink: /internals/releases.html
 + DigitalInputDevices allow activeHigh to be overridden
 + Fix for Raspberry Pi Zero W - now loads the correct boarddefs file, rather than the generic Raspberry Pi one
 + Bugix for PwmOutputDevice cleanup
+
+
+## Release 1.1.6
+
++ Added operation to allow AutoCloseable interfaces to be automatically invoked on shutdown

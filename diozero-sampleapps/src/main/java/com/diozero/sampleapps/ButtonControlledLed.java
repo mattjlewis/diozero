@@ -37,34 +37,46 @@ import com.diozero.api.GpioPullUpDown;
 import com.diozero.api.RuntimeIOException;
 import com.diozero.devices.Button;
 import com.diozero.devices.LED;
+import com.diozero.sbc.DeviceFactoryHelper;
 import com.diozero.util.SleepUtil;
 
 /**
  * Control an LED with a button. To run:
  * <ul>
  * <li>Built-in:<br>
- *  {@code java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar com.diozero.sampleapps.ButtonControlledLed 25 12}</li>
+ * {@code java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar com.diozero.sampleapps.ButtonControlledLed 25 12}</li>
  * <li>pigpgioj:<br>
- *  {@code sudo java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar:diozero-provider-pigpio-$DIOZERO_VERSION.jar:pigpioj-java-2.4.jar com.diozero.sampleapps.ButtonControlledLed 25 12}
+ * {@code sudo java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar:diozero-provider-pigpio-$DIOZERO_VERSION.jar:pigpioj-java-2.4.jar com.diozero.sampleapps.ButtonControlledLed 25 12}
  * </ul>
- * <p>Note to self - currently using 228 (input) and 219 (output) on Odroid C2.</p>
+ * <p>
+ * Note to self - currently using 228 (input) and 219 (output) on Odroid C2.
+ * </p>
  */
 public class ButtonControlledLed {
 	public static void main(String[] args) {
 		if (args.length < 2) {
-			Logger.error("Usage: {} <button-pin> <led-pin>", ButtonControlledLed.class.getName());
+			Logger.error("Usage: {} <button-pin> <led-pin> [<delay-secs>]", ButtonControlledLed.class.getName());
 			System.exit(1);
 		}
-		test(Integer.parseInt(args[0]), Integer.parseInt(args[1]));
+		
+		int delay_secs = 10;
+		if (args.length > 2) {
+			delay_secs = Integer.parseInt(args[2]);
+		}
+		
+		test(Integer.parseInt(args[0]), Integer.parseInt(args[1]), delay_secs);
 	}
-	
-	public static void test(int buttonPin, int ledPin) {
-		try (Button button = new Button(buttonPin, GpioPullUpDown.PULL_UP); LED led = new LED(ledPin)) {
+
+	public static void test(int buttonPin, int ledPin, int delaySecs) {
+		try (LED led = new LED(ledPin); Button button = new Button(buttonPin, GpioPullUpDown.PULL_UP)) {
+			DeviceFactoryHelper.registerForShutdown(button, led);
+
 			button.whenPressed(nanoTime -> led.on());
 			button.whenReleased(nanoTime -> led.off());
-			
-			Logger.info("Waiting for 10s - *** Press the button connected to pin {} ***", Integer.valueOf(buttonPin));
-			SleepUtil.sleepSeconds(10);
+
+			Logger.info("Waiting for {}s - *** Press the button connected to pin {} ***", Integer.valueOf(delaySecs),
+					Integer.valueOf(buttonPin));
+			SleepUtil.sleepSeconds(delaySecs);
 		} catch (RuntimeIOException e) {
 			Logger.error(e, "Error: {}", e);
 		}

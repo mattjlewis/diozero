@@ -20,7 +20,7 @@
 
 title: "diozero"
 email: deviceiozero@gmail.com
-version: 1.1.5
+version: 1.1.6
 tagline: "A platform independent device I/O library written in Java"
 description: >- # this means to ignore newlines until the next YAML element
   Java Device I/O library that is portable across Single Board Computers.

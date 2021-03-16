@@ -31,6 +31,9 @@ package com.diozero.sbc;
  * #L%
  */
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.tinylog.Logger;
 
 import com.diozero.internal.provider.builtin.DefaultDeviceFactory;
@@ -56,6 +59,7 @@ public class DeviceFactoryHelper {
 	public static final String DEVICE_FACTORY_PROP = "diozero.devicefactory";
 
 	private static NativeDeviceFactoryInterface nativeDeviceFactory;
+	private static List<AutoCloseable> closeables;
 
 	private static void initialise() {
 		synchronized (DeviceFactoryHelper.class) {
@@ -86,6 +90,8 @@ public class DeviceFactoryHelper {
 			} else if (nativeDeviceFactory.isClosed()) {
 				nativeDeviceFactory.reopen();
 			}
+
+			closeables = new ArrayList<>();
 		}
 	}
 
@@ -93,8 +99,8 @@ public class DeviceFactoryHelper {
 	 * Auto-detect the native device factory class to be used for provisioning I/O
 	 * devices in this lookup order:
 	 * <ol>
-	 * <li>Command line {@link PropertyUtil#getProperty(String, String) property / environment} variable
-	 * <code>diozero.devicefactory</code></li>
+	 * <li>Command line {@link PropertyUtil#getProperty(String, String) property /
+	 * environment} variable <code>diozero.devicefactory</code></li>
 	 * <li>Java {@link java.util.ServiceLoader#load ServiceLoader} using the class
 	 * <code>com.diozero.internal.provider.NativeDeviceFactoryInterface</code></li>
 	 * <li>The {@link com.diozero.internal.provider.builtin.DefaultDeviceFactory
@@ -108,6 +114,31 @@ public class DeviceFactoryHelper {
 		initialise();
 
 		return nativeDeviceFactory;
+	}
+
+	/**
+	 * Register an object to be shutdown in the case of abnormal shutdown
+	 * @param closeables Array of closeable objects to close on shutdown
+	 */
+	public static void registerForShutdown(AutoCloseable... closeableArray) {
+		initialise();
+
+		for (AutoCloseable closeable : closeableArray) {
+			closeables.add(closeable);
+		}
+	}
+
+	public static void shutdown() {
+		if (closeables != null) {
+			closeables.forEach(closeable -> {
+				try {
+					closeable.close();
+				} catch (Exception e) {
+					// Ignore
+				}
+			});
+			closeables.clear();
+		}
 	}
 }
 
@@ -124,6 +155,11 @@ class ShutdownHandlerThread extends Thread {
 	public void run() {
 		if (!deviceFactory.isClosed()) {
 			Logger.debug("Shutdown handler running");
+			// First close all instances that have registered themselves with the
+			// DeviceFactoryHelper
+			DeviceFactoryHelper.shutdown();
+			// Then close all device factories which will close all InternalDeviceInterface
+			// instances that are still open
 			deviceFactory.close();
 			Logger.debug("Shutdown handler finished");
 		}
