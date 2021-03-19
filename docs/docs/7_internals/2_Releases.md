@@ -124,3 +124,9 @@ permalink: /internals/releases.html
 ## Release 1.1.6
 
 + Added operation to allow AutoCloseable interfaces to be automatically invoked on shutdown
+
+## Release 1.1.7
+
++ Fixed system-utils-native library for aarch64
++ Added PWM setFrequency operation
++ Detect RPi400 and CM4

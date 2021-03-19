@@ -84,4 +84,14 @@ public class RemotePwmOutputDevice extends AbstractDevice implements PwmOutputDe
 	protected void closeDevice() throws RuntimeIOException {
 		deviceFactory.closeGpio(gpio);
 	}
+
+	@Override
+	public int getPwmFrequency() {
+		return deviceFactory.getPwmFrequency(gpio);
+	}
+
+	@Override
+	public void setPwmFrequency(int frequencyHz) throws RuntimeIOException {
+		deviceFactory.setPwmFrequency(gpio, frequencyHz);
+	}
 }

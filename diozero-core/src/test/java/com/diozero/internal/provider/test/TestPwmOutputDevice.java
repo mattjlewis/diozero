@@ -42,6 +42,7 @@ public class TestPwmOutputDevice extends AbstractDevice implements PwmOutputDevi
 	private int gpio;
 	private int pwmNum;
 	private float value;
+	private int frequencyHz;
 
 	public TestPwmOutputDevice(String key, DeviceFactoryInterface deviceFactory, int gpio, float initialValue) {
 		super(key, deviceFactory);
@@ -74,5 +75,15 @@ public class TestPwmOutputDevice extends AbstractDevice implements PwmOutputDevi
 	@Override
 	public int getPwmNum() {
 		return pwmNum;
+	}
+
+	@Override
+	public int getPwmFrequency() {
+		return frequencyHz;
+	}
+
+	@Override
+	public void setPwmFrequency(int frequencyHz) throws RuntimeIOException {
+		this.frequencyHz = frequencyHz;
 	}
 }

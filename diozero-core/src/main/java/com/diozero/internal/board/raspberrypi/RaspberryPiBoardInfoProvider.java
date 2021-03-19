@@ -61,32 +61,36 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 	public static final String MODEL_ALPHA = "Alpha";
 	public static final String COMPUTE_MODULE = "CM";
 	public static final String MODEL_3B = "3B";
-	public static final String MODEL_3B_PLUS = "3B+";
-	public static final String MODEL_3A_PLUS = "3A+";
-	public static final String MODEL_4B = "4B";
 	public static final String MODEL_ZERO = "Zero";
 	public static final String COMPUTE_MODULE_3 = "CM3";
-	public static final String COMPUTE_MODULE_3_PLUS = "CM3+";
 	public static final String MODEL_ZERO_W = "ZeroW";
+	public static final String MODEL_3B_PLUS = "3B+";
+	public static final String MODEL_3A_PLUS = "3A+";
+	public static final String COMPUTE_MODULE_3_PLUS = "CM3+";
+	public static final String MODEL_4B = "4B";
+	public static final String MODEL_400 = "400";
+	public static final String COMPUTE_MODULE_4 = "CM4";
 
 	private static Map<Integer, String> MODELS;
 	static {
 		MODELS = new HashMap<>();
-		MODELS.put(Integer.valueOf(0), MODEL_A);
-		MODELS.put(Integer.valueOf(1), MODEL_B);
-		MODELS.put(Integer.valueOf(2), MODEL_A_PLUS);
-		MODELS.put(Integer.valueOf(3), MODEL_B_PLUS);
-		MODELS.put(Integer.valueOf(4), MODEL_2B);
-		MODELS.put(Integer.valueOf(5), MODEL_ALPHA);
-		MODELS.put(Integer.valueOf(6), COMPUTE_MODULE);
-		MODELS.put(Integer.valueOf(8), MODEL_3B);
-		MODELS.put(Integer.valueOf(9), MODEL_ZERO);
-		MODELS.put(Integer.valueOf(10), COMPUTE_MODULE_3);
-		MODELS.put(Integer.valueOf(12), MODEL_ZERO_W);
-		MODELS.put(Integer.valueOf(13), MODEL_3B_PLUS);
-		MODELS.put(Integer.valueOf(14), MODEL_3A_PLUS);
-		MODELS.put(Integer.valueOf(16), COMPUTE_MODULE_3_PLUS);
-		MODELS.put(Integer.valueOf(17), MODEL_4B);
+		MODELS.put(Integer.valueOf(0x0), MODEL_A);
+		MODELS.put(Integer.valueOf(0x1), MODEL_B);
+		MODELS.put(Integer.valueOf(0x2), MODEL_A_PLUS);
+		MODELS.put(Integer.valueOf(0x3), MODEL_B_PLUS);
+		MODELS.put(Integer.valueOf(0x4), MODEL_2B);
+		MODELS.put(Integer.valueOf(0x5), MODEL_ALPHA);
+		MODELS.put(Integer.valueOf(0x6), COMPUTE_MODULE);
+		MODELS.put(Integer.valueOf(0x8), MODEL_3B);
+		MODELS.put(Integer.valueOf(0x9), MODEL_ZERO);
+		MODELS.put(Integer.valueOf(0xa), COMPUTE_MODULE_3);
+		MODELS.put(Integer.valueOf(0xc), MODEL_ZERO_W);
+		MODELS.put(Integer.valueOf(0xd), MODEL_3B_PLUS);
+		MODELS.put(Integer.valueOf(0xe), MODEL_3A_PLUS);
+		MODELS.put(Integer.valueOf(0x10), COMPUTE_MODULE_3_PLUS);
+		MODELS.put(Integer.valueOf(0x11), MODEL_4B);
+		MODELS.put(Integer.valueOf(0x13), MODEL_400);
+		MODELS.put(Integer.valueOf(0x14), COMPUTE_MODULE_4);
 	}
 
 	private static final String PCB_REV_1_0 = "1.0";

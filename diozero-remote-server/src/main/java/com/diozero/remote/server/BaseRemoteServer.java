@@ -65,10 +65,13 @@ import com.diozero.remote.message.GpioDigitalRead;
 import com.diozero.remote.message.GpioDigitalReadResponse;
 import com.diozero.remote.message.GpioDigitalWrite;
 import com.diozero.remote.message.GpioEvents;
+import com.diozero.remote.message.GpioGetPwmFrequency;
+import com.diozero.remote.message.GpioGetPwmFrequencyResponse;
 import com.diozero.remote.message.GpioInfo;
 import com.diozero.remote.message.GpioPwmRead;
 import com.diozero.remote.message.GpioPwmReadResponse;
 import com.diozero.remote.message.GpioPwmWrite;
+import com.diozero.remote.message.GpioSetPwmFrequency;
 import com.diozero.remote.message.I2CBlockProcessCall;
 import com.diozero.remote.message.I2CBooleanResponse;
 import com.diozero.remote.message.I2CByteResponse;
@@ -426,6 +429,59 @@ public abstract class BaseRemoteServer implements DeviceEventConsumer<DigitalInp
 		if (device instanceof PwmOutputDeviceInterface) {
 			try {
 				((PwmOutputDeviceInterface) device).setValue(request.getValue());
+				response = new Response(Response.Status.OK, null, request.getCorrelationId());
+			} catch (RuntimeIOException e) {
+				Logger.error(e, "Error: {}", e);
+				response = new Response(Response.Status.ERROR, "Runtime Error: " + e, request.getCorrelationId());
+			}
+		} else {
+			response = new Response(Response.Status.ERROR, "Invalid mode, device class: " + device.getClass().getName(),
+					request.getCorrelationId());
+		}
+
+		return response;
+	}
+
+	@Override
+	public GpioGetPwmFrequencyResponse request(GpioGetPwmFrequency request) {
+		Logger.debug("GPIO get PWM frequency request");
+
+		PinInfo pin_info = deviceFactory.getBoardPinInfo().getByGpioNumberOrThrow(request.getGpio());
+		String key = deviceFactory.createPinKey(pin_info);
+		InternalDeviceInterface device = deviceFactory.getDevice(key);
+
+		GpioGetPwmFrequencyResponse response;
+		if (device == null) {
+			return new GpioGetPwmFrequencyResponse("GPIO not provisioned", request.getCorrelationId());
+		}
+
+		try {
+			response = new GpioGetPwmFrequencyResponse(((PwmOutputDeviceInterface) device).getPwmFrequency(),
+					request.getCorrelationId());
+		} catch (RuntimeIOException e) {
+			Logger.error(e, "Error: {}", e);
+			response = new GpioGetPwmFrequencyResponse("Runtime Error: " + e, request.getCorrelationId());
+		}
+
+		return response;
+	}
+
+	@Override
+	public Response request(GpioSetPwmFrequency request) {
+		Logger.debug("GPIO set PWM frequency request");
+
+		PinInfo pin_info = deviceFactory.getBoardPinInfo().getByGpioNumberOrThrow(request.getGpio());
+		String key = deviceFactory.createPinKey(pin_info);
+		InternalDeviceInterface device = deviceFactory.getDevice(key);
+
+		if (device == null) {
+			return new Response(Response.Status.ERROR, "GPIO not provisioned", request.getCorrelationId());
+		}
+
+		Response response;
+		if (device instanceof PwmOutputDeviceInterface) {
+			try {
+				((PwmOutputDeviceInterface) device).setPwmFrequency(request.getFrequency());
 				response = new Response(Response.Status.OK, null, request.getCorrelationId());
 			} catch (RuntimeIOException e) {
 				Logger.error(e, "Error: {}", e);

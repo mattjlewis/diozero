@@ -48,7 +48,10 @@ import com.diozero.api.RuntimeIOException;
 import com.diozero.remote.message.DiozeroProtosConverter;
 import com.diozero.remote.message.GpioAnalogReadResponse;
 import com.diozero.remote.message.GpioDigitalReadResponse;
+import com.diozero.remote.message.GpioGetPwmFrequency;
+import com.diozero.remote.message.GpioGetPwmFrequencyResponse;
 import com.diozero.remote.message.GpioPwmReadResponse;
+import com.diozero.remote.message.GpioSetPwmFrequency;
 import com.diozero.remote.message.I2CBooleanResponse;
 import com.diozero.remote.message.I2CByteResponse;
 import com.diozero.remote.message.I2CBytesResponse;
@@ -189,6 +192,16 @@ public class MqttProtobufServer extends BaseRemoteServer implements MqttCallback
 				DiozeroProtos.Gpio.PwmWriteRequest pwm_write = DiozeroProtos.Gpio.PwmWriteRequest
 						.parseFrom(message.getPayload());
 				publishResponse(request(DiozeroProtosConverter.convert(pwm_write)));
+				break;
+			case MqttProviderConstants.GPIO_GET_PWM_FREQUENCY_TOPIC:
+				DiozeroProtos.Gpio.GetPwmFrequencyRequest pwm_frequency = DiozeroProtos.Gpio.GetPwmFrequencyRequest
+						.parseFrom(message.getPayload());
+				publishResponse(request(DiozeroProtosConverter.convert(pwm_frequency)));
+				break;
+			case MqttProviderConstants.GPIO_SET_PWM_FREQUENCY_TOPIC:
+				DiozeroProtos.Gpio.SetPwmFrequencyRequest set_pwm_frequency = DiozeroProtos.Gpio.SetPwmFrequencyRequest
+						.parseFrom(message.getPayload());
+				publishResponse(request(DiozeroProtosConverter.convert(set_pwm_frequency)));
 				break;
 			case MqttProviderConstants.GPIO_ANALOG_READ_TOPIC:
 				DiozeroProtos.Gpio.AnalogReadRequest analog_read = DiozeroProtos.Gpio.AnalogReadRequest
@@ -354,6 +367,13 @@ public class MqttProtobufServer extends BaseRemoteServer implements MqttCallback
 		DiozeroProtos.Gpio.PwmReadResponse message = DiozeroProtosConverter.convert(response);
 
 		mqttClient.publish(MqttProviderConstants.GPIO_PWM_READ_RESPONSE_TOPIC, message.toByteArray(),
+				MqttProviderConstants.DEFAULT_QOS, MqttProviderConstants.DEFAULT_RETAINED);
+	}
+
+	private void publishResponse(GpioGetPwmFrequencyResponse response) throws MqttException {
+		DiozeroProtos.Gpio.GetPwmFrequencyResponse message = DiozeroProtosConverter.convert(response);
+
+		mqttClient.publish(MqttProviderConstants.GPIO_GET_PWM_FREQUENCY_RESPONSE_TOPIC, message.toByteArray(),
 				MqttProviderConstants.DEFAULT_QOS, MqttProviderConstants.DEFAULT_RETAINED);
 	}
 

@@ -25,6 +25,6 @@ com.diozero.util
 
 ![Package Hierarchy](/assets/images/Packages.png "Package Hierarchy") 
 
-## Device Classes
+## The API Package
 
-![Device Classes](/assets/images/Devices.png "Device Classes") 
+![Device Classes](/assets/images/ApiDevices.png "Device Classes") 

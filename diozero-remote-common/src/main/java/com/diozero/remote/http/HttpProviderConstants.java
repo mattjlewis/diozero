@@ -57,6 +57,8 @@ public interface HttpProviderConstants {
 	static final String GPIO_DIGITAL_WRITE_URL = GPIO_REQUEST_URL + "/digitalWrite";
 	static final String GPIO_PWM_READ_URL = GPIO_REQUEST_URL + "/pwmRead";
 	static final String GPIO_PWM_WRITE_URL = GPIO_REQUEST_URL + "/pwmWrite";
+	static final String GPIO_GET_PWM_FREQUENCY_URL = GPIO_REQUEST_URL + "/getPwmFrequency";
+	static final String GPIO_SET_PWM_FREQUENCY_URL = GPIO_REQUEST_URL + "/setPwmFrequency";
 	static final String GPIO_ANALOG_READ_URL = GPIO_REQUEST_URL + "/analogRead";
 	static final String GPIO_ANALOG_WRITE_URL = GPIO_REQUEST_URL + "/analogWrite";
 	static final String GPIO_EVENTS_URL = GPIO_REQUEST_URL + "/events";

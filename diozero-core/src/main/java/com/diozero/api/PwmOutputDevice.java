@@ -50,7 +50,7 @@ public class PwmOutputDevice extends GpioDevice implements OutputDeviceInterface
 	private static final int DEFAULT_PWM_FREQUENCY = 50;
 	public static final int INFINITE_ITERATIONS = -1;
 
-	private PwmOutputDeviceInterface device;
+	private PwmOutputDeviceInterface delegate;
 	private AtomicBoolean running;
 	private Thread backgroundThread;
 
@@ -117,7 +117,7 @@ public class PwmOutputDevice extends GpioDevice implements OutputDeviceInterface
 		super(pinInfo);
 
 		running = new AtomicBoolean();
-		this.device = pwmDeviceFactory.provisionPwmOutputDevice(pinInfo, pwmFrequency, initialValue);
+		this.delegate = pwmDeviceFactory.provisionPwmOutputDevice(pinInfo, pwmFrequency, initialValue);
 	}
 
 	@Override
@@ -130,10 +130,10 @@ public class PwmOutputDevice extends GpioDevice implements OutputDeviceInterface
 		}
 		Logger.trace("Setting value to 0");
 		try {
-			device.setValue(0);
+			delegate.setValue(0);
 		} catch (RuntimeIOException e) {
 		}
-		device.close();
+		delegate.close();
 		Logger.trace("device closed");
 	}
 
@@ -227,7 +227,7 @@ public class PwmOutputDevice extends GpioDevice implements OutputDeviceInterface
 		if (value < 0 || value > 1) {
 			throw new IllegalArgumentException("Value must be 0..1, you requested " + value);
 		}
-		device.setValue(value);
+		delegate.setValue(value);
 	}
 
 	// Exposed operations
@@ -239,7 +239,7 @@ public class PwmOutputDevice extends GpioDevice implements OutputDeviceInterface
 	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
 	public float getValue() throws RuntimeIOException {
-		return device.getValue();
+		return delegate.getValue();
 	}
 
 	/**
@@ -252,6 +252,14 @@ public class PwmOutputDevice extends GpioDevice implements OutputDeviceInterface
 	public void setValue(float value) throws RuntimeIOException {
 		stopLoops();
 		setValueInternal(value);
+	}
+
+	public int getPwmFrequency() {
+		return delegate.getPwmFrequency();
+	}
+
+	public void setPwmFrequency(int pwmFrequency) throws RuntimeIOException {
+		delegate.setPwmFrequency(pwmFrequency);
 	}
 
 	/**
@@ -281,7 +289,7 @@ public class PwmOutputDevice extends GpioDevice implements OutputDeviceInterface
 	 */
 	public void toggle() throws RuntimeIOException {
 		stopLoops();
-		setValueInternal(1 - device.getValue());
+		setValueInternal(1 - delegate.getValue());
 	}
 
 	/**
@@ -291,6 +299,6 @@ public class PwmOutputDevice extends GpioDevice implements OutputDeviceInterface
 	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
 	public boolean isOn() throws RuntimeIOException {
-		return device.getValue() > 0;
+		return delegate.getValue() > 0;
 	}
 }

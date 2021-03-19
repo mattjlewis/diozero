@@ -67,10 +67,13 @@ import com.diozero.remote.message.GpioDigitalRead;
 import com.diozero.remote.message.GpioDigitalReadResponse;
 import com.diozero.remote.message.GpioDigitalWrite;
 import com.diozero.remote.message.GpioEvents;
+import com.diozero.remote.message.GpioGetPwmFrequency;
+import com.diozero.remote.message.GpioGetPwmFrequencyResponse;
 import com.diozero.remote.message.GpioInfo;
 import com.diozero.remote.message.GpioPwmRead;
 import com.diozero.remote.message.GpioPwmReadResponse;
 import com.diozero.remote.message.GpioPwmWrite;
+import com.diozero.remote.message.GpioSetPwmFrequency;
 import com.diozero.remote.message.RemoteProtocolInterface;
 import com.diozero.remote.message.Response;
 import com.diozero.sbc.BoardInfo;
@@ -216,6 +219,26 @@ public class RemoteDeviceFactory extends BaseNativeDeviceFactory {
 		Response response = protocolHandler.request(request);
 		if (response.getStatus() != Response.Status.OK) {
 			throw new RuntimeIOException("Error in GPIO PWM write: " + response.getDetail());
+		}
+	}
+
+	int getPwmFrequency(int gpio) {
+		GpioGetPwmFrequency request = new GpioGetPwmFrequency(gpio, UUID.randomUUID().toString());
+
+		GpioGetPwmFrequencyResponse response = protocolHandler.request(request);
+		if (response.getStatus() != Response.Status.OK) {
+			throw new RuntimeIOException("Error in GPIO PWM read: " + response.getDetail());
+		}
+
+		return response.getFrequency();
+	}
+
+	void setPwmFrequency(int gpio, int frequency) {
+		GpioSetPwmFrequency request = new GpioSetPwmFrequency(gpio, frequency, UUID.randomUUID().toString());
+
+		Response response = protocolHandler.request(request);
+		if (response.getStatus() != Response.Status.OK) {
+			throw new RuntimeIOException("Error in GPIO set PWM frequency: " + response.getDetail());
 		}
 	}
 

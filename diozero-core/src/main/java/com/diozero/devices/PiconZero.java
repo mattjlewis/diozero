@@ -708,6 +708,16 @@ public class PiconZero extends AbstractDeviceFactory implements GpioDeviceFactor
 			Logger.trace("closeDevice()");
 			piconZero.closeChannel(channel);
 		}
+
+		@Override
+		public int getPwmFrequency() {
+			return piconZero.getBoardPwmFrequency();
+		}
+
+		@Override
+		public void setPwmFrequency(int frequencyHz) throws RuntimeIOException {
+			throw new UnsupportedOperationException("Cannot change the board PWM frequency for the Picon Zero");
+		}
 	}
 
 	public static class PiconZeroAnalogOutputDevice extends AbstractDevice implements AnalogOutputDeviceInterface {

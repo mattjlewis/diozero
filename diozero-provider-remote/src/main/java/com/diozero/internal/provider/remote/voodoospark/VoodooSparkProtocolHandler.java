@@ -63,10 +63,13 @@ import com.diozero.remote.message.GpioDigitalRead;
 import com.diozero.remote.message.GpioDigitalReadResponse;
 import com.diozero.remote.message.GpioDigitalWrite;
 import com.diozero.remote.message.GpioEvents;
+import com.diozero.remote.message.GpioGetPwmFrequency;
+import com.diozero.remote.message.GpioGetPwmFrequencyResponse;
 import com.diozero.remote.message.GpioInfo;
 import com.diozero.remote.message.GpioPwmRead;
 import com.diozero.remote.message.GpioPwmReadResponse;
 import com.diozero.remote.message.GpioPwmWrite;
+import com.diozero.remote.message.GpioSetPwmFrequency;
 import com.diozero.remote.message.I2CBlockProcessCall;
 import com.diozero.remote.message.I2CBooleanResponse;
 import com.diozero.remote.message.I2CByteResponse;
@@ -344,6 +347,16 @@ public class VoodooSparkProtocolHandler implements RemoteProtocolInterface {
 		sendMessage(new AnalogWriteMessage(request.getGpio(), value));
 
 		return new Response(Response.Status.OK, null, request.getCorrelationId());
+	}
+
+	@Override
+	public GpioGetPwmFrequencyResponse request(GpioGetPwmFrequency request) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public Response request(GpioSetPwmFrequency request) {
+		throw new UnsupportedOperationException();
 	}
 
 	@Override

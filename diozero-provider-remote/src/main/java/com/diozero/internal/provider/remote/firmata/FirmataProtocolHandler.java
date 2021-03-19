@@ -62,10 +62,13 @@ import com.diozero.remote.message.GpioDigitalRead;
 import com.diozero.remote.message.GpioDigitalReadResponse;
 import com.diozero.remote.message.GpioDigitalWrite;
 import com.diozero.remote.message.GpioEvents;
+import com.diozero.remote.message.GpioGetPwmFrequency;
+import com.diozero.remote.message.GpioGetPwmFrequencyResponse;
 import com.diozero.remote.message.GpioInfo;
 import com.diozero.remote.message.GpioPwmRead;
 import com.diozero.remote.message.GpioPwmReadResponse;
 import com.diozero.remote.message.GpioPwmWrite;
+import com.diozero.remote.message.GpioSetPwmFrequency;
 import com.diozero.remote.message.I2CBlockProcessCall;
 import com.diozero.remote.message.I2CBooleanResponse;
 import com.diozero.remote.message.I2CByteResponse;
@@ -263,6 +266,16 @@ public class FirmataProtocolHandler implements RemoteProtocolInterface, FirmataE
 		adapter.setValue(request.getGpio(),
 				RangeUtil.map(request.getValue(), 0f, 1f, 0, adapter.getMax(request.getGpio(), PinMode.PWM), true));
 		return new Response(Response.Status.OK, null, request.getCorrelationId());
+	}
+
+	@Override
+	public GpioGetPwmFrequencyResponse request(GpioGetPwmFrequency request) {
+		throw new UnsupportedOperationException("Get PWM Frequency not supported in Firmata");
+	}
+
+	@Override
+	public Response request(GpioSetPwmFrequency request) {
+		throw new UnsupportedOperationException("Set PWM Frequency not supported in Firmata");
 	}
 
 	@Override

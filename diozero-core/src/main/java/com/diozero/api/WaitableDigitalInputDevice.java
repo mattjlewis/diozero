@@ -36,7 +36,8 @@ import com.diozero.sbc.DeviceFactoryHelper;
 import com.diozero.util.EventLock;
 
 /**
- * Represents a digital input device with distinct waitable states (active / inactive).
+ * Represents a digital input device with distinct waitable states (active /
+ * inactive).
  */
 public class WaitableDigitalInputDevice extends DigitalInputDevice {
 	private EventLock highEvent = new EventLock();
@@ -51,28 +52,32 @@ public class WaitableDigitalInputDevice extends DigitalInputDevice {
 	}
 
 	/**
-	 * @param gpio GPIO to which the device is connected.
-	 * @param pud Pull up/down configuration, values: NONE, PULL_UP, PULL_DOWN.
-	 * @param trigger Event trigger configuration, values: NONE, RISING, FALLING, BOTH.
+	 * @param gpio    GPIO to which the device is connected.
+	 * @param pud     Pull up/down configuration, values: NONE, PULL_UP, PULL_DOWN.
+	 * @param trigger Event trigger configuration, values: NONE, RISING, FALLING,
+	 *                BOTH.
 	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
-	public WaitableDigitalInputDevice(int gpio, GpioPullUpDown pud, GpioEventTrigger trigger) throws RuntimeIOException {
+	public WaitableDigitalInputDevice(int gpio, GpioPullUpDown pud, GpioEventTrigger trigger)
+			throws RuntimeIOException {
 		this(DeviceFactoryHelper.getNativeDeviceFactory(), gpio, pud, trigger);
 	}
 
 	/**
 	 * @param deviceFactory Device factory to use to construct the device.
-	 * @param gpio GPIO to which the device is connected.
-	 * @param pud Pull up/down configuration, values: NONE, PULL_UP, PULL_DOWN.
-	 * @param trigger Event trigger configuration, values: NONE, RISING, FALLING, BOTH.
+	 * @param gpio          GPIO to which the device is connected.
+	 * @param pud           Pull up/down configuration, values: NONE, PULL_UP,
+	 *                      PULL_DOWN.
+	 * @param trigger       Event trigger configuration, values: NONE, RISING,
+	 *                      FALLING, BOTH.
 	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
-	public WaitableDigitalInputDevice(GpioDeviceFactoryInterface deviceFactory, int gpio,
-			GpioPullUpDown pud, GpioEventTrigger trigger) throws RuntimeIOException {
+	public WaitableDigitalInputDevice(GpioDeviceFactoryInterface deviceFactory, int gpio, GpioPullUpDown pud,
+			GpioEventTrigger trigger) throws RuntimeIOException {
 		super(deviceFactory, gpio, pud, trigger);
 		enableDeviceListener();
 	}
-	
+
 	@Override
 	protected void disableDeviceListener() {
 		// Never disable the device listener
@@ -82,15 +87,16 @@ public class WaitableDigitalInputDevice extends DigitalInputDevice {
 	public void accept(DigitalInputEvent event) {
 		EventLock e = event.getValue() ? highEvent : lowEvent;
 		e.set();
-		
+
 		// Notify any listeners
 		super.accept(event);
 	}
 
 	/**
 	 * Wait indefinitely for the device state to go active.
+	 * 
 	 * @return False if timed out waiting for the specified value, otherwise true.
-	 * @throws InterruptedException If interrupted while waiting.-
+	 * @throws InterruptedException If interrupted while waiting.
 	 */
 	public boolean waitForActive() throws InterruptedException {
 		return waitForActive(0);
@@ -98,9 +104,10 @@ public class WaitableDigitalInputDevice extends DigitalInputDevice {
 
 	/**
 	 * Wait the specified time period for the device state to go active.
+	 * 
 	 * @param timeout Timeout value if milliseconds, &lt;= 0 is indefinite.
 	 * @return False if timed out waiting for the specified value, otherwise true.
-	 * @throws InterruptedException If interrupted while waiting.-
+	 * @throws InterruptedException If interrupted while waiting.
 	 */
 	public boolean waitForActive(int timeout) throws InterruptedException {
 		return waitForValue(activeHigh, timeout);
@@ -108,8 +115,9 @@ public class WaitableDigitalInputDevice extends DigitalInputDevice {
 
 	/**
 	 * Wait indefinitely for the device state to go inactive.
+	 * 
 	 * @return False if timed out waiting for the specified value, otherwise true.
-	 * @throws InterruptedException If interrupted while waiting.-
+	 * @throws InterruptedException If interrupted while waiting.
 	 */
 	public boolean waitForInactive() throws InterruptedException {
 		return waitForInactive(0);
@@ -117,9 +125,10 @@ public class WaitableDigitalInputDevice extends DigitalInputDevice {
 
 	/**
 	 * Wait the specified time period for the device state to go inactive.
+	 * 
 	 * @param timeout Timeout value if milliseconds, &lt;= 0 is indefinite.
 	 * @return False if timed out waiting for the specified value, otherwise true.
-	 * @throws InterruptedException If interrupted while waiting.-
+	 * @throws InterruptedException If interrupted while waiting.
 	 */
 	public boolean waitForInactive(int timeout) throws InterruptedException {
 		return waitForValue(!activeHigh, timeout);
@@ -127,10 +136,11 @@ public class WaitableDigitalInputDevice extends DigitalInputDevice {
 
 	/**
 	 * Wait the specified time period for the device state to switch to value.
-	 * @param value The desired device state to wait for.
+	 * 
+	 * @param value   The desired device state to wait for.
 	 * @param timeout Timeout value if milliseconds, &lt;= 0 is indefinite.
 	 * @return False if timed out waiting for the specified value, otherwise true.
-	 * @throws InterruptedException If interrupted while waiting.-
+	 * @throws InterruptedException If interrupted while waiting.
 	 */
 	public boolean waitForValue(boolean value, int timeout) throws InterruptedException {
 		EventLock e = value ? highEvent : lowEvent;

@@ -196,6 +196,34 @@ public class DiozeroProtosConverter {
 				.setGpio(obj.getGpio()).setValue(obj.getValue()).build();
 	}
 
+	public static GpioGetPwmFrequency convert(DiozeroProtos.Gpio.GetPwmFrequencyRequest obj) {
+		return new GpioGetPwmFrequency(obj.getGpio(), obj.getCorrelationId());
+	}
+
+	public static DiozeroProtos.Gpio.GetPwmFrequencyRequest convert(GpioGetPwmFrequency obj) {
+		return DiozeroProtos.Gpio.GetPwmFrequencyRequest.newBuilder().setCorrelationId(obj.getCorrelationId())
+				.setGpio(obj.getGpio()).build();
+	}
+
+	public static GpioGetPwmFrequencyResponse convert(DiozeroProtos.Gpio.GetPwmFrequencyResponse obj) {
+		return new GpioGetPwmFrequencyResponse(convert(obj.getStatus()), obj.getDetail(), obj.getFrequency(),
+				obj.getCorrelationId());
+	}
+
+	public static DiozeroProtos.Gpio.GetPwmFrequencyResponse convert(GpioGetPwmFrequencyResponse obj) {
+		return DiozeroProtos.Gpio.GetPwmFrequencyResponse.newBuilder().setCorrelationId(obj.getCorrelationId())
+				.setStatus(convert(obj.getStatus())).setDetail(obj.getDetail()).setFrequency(obj.getFrequency()).build();
+	}
+
+	public static GpioSetPwmFrequency convert(DiozeroProtos.Gpio.SetPwmFrequencyRequest obj) {
+		return new GpioSetPwmFrequency(obj.getGpio(), obj.getFrequency(), obj.getCorrelationId());
+	}
+
+	public static DiozeroProtos.Gpio.SetPwmFrequencyRequest convert(GpioSetPwmFrequency obj) {
+		return DiozeroProtos.Gpio.SetPwmFrequencyRequest.newBuilder().setCorrelationId(obj.getCorrelationId())
+				.setGpio(obj.getGpio()).setFrequency(obj.getFrequency()).build();
+	}
+	
 	public static GpioAnalogRead convert(DiozeroProtos.Gpio.AnalogReadRequest obj) {
 		return new GpioAnalogRead(obj.getGpio(), obj.getCorrelationId());
 	}

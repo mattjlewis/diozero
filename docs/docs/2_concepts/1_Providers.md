@@ -9,37 +9,36 @@ title: Device Factories
 
 Iternally, all devices are provisioned via a
 [Device Factory](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/internal/spi/DeviceFactoryInterface.java) -
-all of the classes in com.diozero.api and com.diozero.devices include an additional constructor
-parameter that allows a device factory to be specified. If a device factory isn't specified, the
+all of the classes in `com.diozero.api` and `com.diozero.devices` include a constructor parameter
+that allows a device factory to be specified. If a device factory isn't specified, the
 host board itself is used to provision the device using
 [DeviceFactoryHelper.getNativeDeviceFactory()](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/sbc/DeviceFactoryHelper.java).
-This is particularly useful for GPIO expansion boards and Analog-to-Digital converters.
-The [Providers](2_concepts/1_Providers.md) section provides further details on board device providers.
-
-> Device Factories
->{: .admonition-title }
->
-> Unless you are implementing a new device you shouldn't need to use any of the Device 
-> Factory interfaces or helper classes (within the `com.diozero.internal` package).
-{: .admonition .note }
+This is particularly useful for GPIO expansion boards and Analog-to-Digital converters -
+the device factory that is specific to the expansion board can be used to provision the device
+instead of the host board.
 
 Some boards like the Raspberry Pi provide no analog input pins; attempting to create an 
 AnalogInputDevice such as an LDR using the Raspberry Pi default native device factory 
-would result in a runtime error (`UnsupportedOperationException`). However, support for 
-Analog to Digital Converter expansion devices such as the 
-[MCP3008](http://rtd.diozero.com/en/latest/ExpansionBoards/#mcp-adc) has been added 
-which are implemented as analog input device factories hence can be used in the 
-constructor of analog devices like LDRs:
+would result in a runtime error (`UnsupportedOperationException`). However, diozero includes
+support for Analog to Digital Converter expansion devices such as the 
+[MCP3008](https://www.microchip.com/wwwproducts/en/MCP3008); such devices have been
+implemented as analog input device factories hence can be used in the constructor of analog
+devices like LDRs:
 
 ```java
-try (McpAdc adc = new McpAdc(McpAdc.Type.MCP3008, chipSelect); LDR ldr = new LDR(adc, pin, vRef, r1)) {
+try (McpAdc ain_df = new McpAdc(McpAdc.Type.MCP3008, chipSelect); LDR ldr = new LDR(ain_df, pin, vRef, r1)) {
 	System.out.println(ldr.getUnscaledValue());
 }
 ```
 
+In this example, the `ain_df` [McpAdc](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/devices/McpAdc.java)
+object handles all of the logic for interfacing with the MCP3008 ADC chip as well as implementing
+[AnalogInputDeviceFactoryInterface](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/internal/spi/AnalogInputDeviceFactoryInterface.java)
+to enable it to provision AnalogInputDevice instances.
+
 Repeating the previous example of controlling an LED when you press a button but with 
 all devices connected via an 
-[MCP23017](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/MCP23017.java) 
+[MCP23017](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/devices/MCP23017.java) 
 GPIO expansion board:
 
 ```java
@@ -52,20 +51,20 @@ try (MCP23017 mcp23017 = new MCP23017(12);
 }
 ```
 
-Analog input devices also provide an event notification mechanism. To control the 
-brightness of an LED based on ambient light levels:
+## Providers
 
-```java
-try (McpAdc adc = new McpAdc(McpAdc.Type.MCP3008, 1);
-		LDR ldr = new LDR(adc, 1, 3.3, 1000);
-		PwmLed led = new PwmLed(18)) {
-	// Detect variations of 10%, get values every 50ms (the default)
-	ldr.addListener(event -> led.setValue(1-event.getUnscaledValue()), .1f);
-	SleepUtil.sleepSeconds(20);
-}
-```
+The Device Factory section introd
+To maximise the portability across the broad spectrum of boards and devices, diozero
+has the concept of providers that are  base native device factory 
 
 The builtin provider is designed to be portable across different boards. 
+
+> Providers
+>{: .admonition-title }
+>
+> Unless you are implementing a new provider or device factory you shouldn't need to use any
+> of the interfaces or helper classes (within the `com.diozero.internal` package).
+{: .admonition .note }
 
 ## Device Factory Lookup
 

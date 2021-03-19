@@ -254,6 +254,7 @@ public class VoodooSparkDeviceFactory extends BaseNativeDeviceFactory {
 	@Override
 	public PwmOutputDeviceInterface createPwmOutputDevice(String key, PinInfo pinInfo, int pwmFrequency,
 			float initialValue) {
+		Logger.warn("PWM frequency will be ignored - Firmata does not allow this to be specified");
 		return new VoodooSparkPwmOutputDevice(this, key, pinInfo, pwmFrequency, initialValue);
 	}
 

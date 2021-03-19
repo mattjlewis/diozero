@@ -40,6 +40,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.tinylog.Logger;
 
+import com.diozero.api.RuntimeIOException;
 import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.DeviceFactoryInterface;
 import com.diozero.internal.spi.GpioDigitalOutputDeviceInterface;
@@ -127,17 +128,6 @@ public class SoftwarePwmOutputDevice extends AbstractDevice implements PwmOutput
 	}
 
 	@Override
-	public float getValue() {
-		return dutyMs / (float) periodMs;
-	}
-
-	@Override
-	public void setValue(float value) {
-		// Constrain to 0..1
-		dutyMs = Math.round(RangeUtil.constrain(value, 0, 1) * periodMs);
-	}
-
-	@Override
 	public int getGpio() {
 		return digitalOutputDevice.getGpio();
 	}
@@ -145,5 +135,28 @@ public class SoftwarePwmOutputDevice extends AbstractDevice implements PwmOutput
 	@Override
 	public int getPwmNum() {
 		return digitalOutputDevice.getGpio();
+	}
+
+	@Override
+	public float getValue() {
+		return dutyMs / (float) periodMs;
+	}
+
+	@Override
+	public void setValue(float value) {
+		// Constrain the specified value to 0..1
+		dutyMs = Math.round(RangeUtil.constrain(value, 0, 1) * periodMs);
+	}
+
+	@Override
+	public int getPwmFrequency() {
+		return 1_000 / periodMs;
+	}
+
+	@Override
+	public void setPwmFrequency(int frequencyHz) throws RuntimeIOException {
+		float current_value = getValue();
+		periodMs = 1_000 / frequencyHz;
+		dutyMs = Math.round(current_value * periodMs);
 	}
 }

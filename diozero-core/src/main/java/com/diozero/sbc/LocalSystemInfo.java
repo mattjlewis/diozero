@@ -99,6 +99,20 @@ import org.tinylog.Logger;
  * os.arch: arm
  * sun.arch.data.model: 32
  * 
+ * Board: Raspberry Pi CM4
+ * /etc/os-release PRETTY_NAME:     Raspbian GNU/Linux 10 (buster)
+ * /proc/device-tree/compatible:    raspberrypi,4-compute-module^@brcm,bcm2711^@
+ * /proc/device-tree/model:         Raspberry Pi Compute Module 4 Rev 1.0^@
+ * /proc/device-tree/serial-number: 10000000b68ef68d^@
+ * /proc/cpuinfo:
+ *   Hardware   : BCM2835
+ *   Revision   : a03140
+ *   Serial     : 10000000b68ef68d
+ *   Model      : Raspberry Pi Compute Module 4 Rev 1.0
+ * os.name: Linux
+ * os.arch: arm
+ * sun.arch.data.model: 32
+ * 
  * Board: Odroid C2
  * /etc/os-release PRETTY_NAME:     Armbian 20.08.17 Buster
  * /proc/device-tree/compatible:    hardkernel,odroid-c2^@amlogic,meson-gxbb^@

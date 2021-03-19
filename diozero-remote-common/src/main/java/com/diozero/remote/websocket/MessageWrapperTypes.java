@@ -52,6 +52,7 @@ public interface MessageWrapperTypes {
 	// GPIO Responses
 	static final String GPIO_DIGITAL_READ_RESPONSE = "GpioDigitalReadResponse";
 	static final String GPIO_PWM_READ_RESPONSE = "GpioPwmReadResponse";
+	static final String GPIO_GET_PWM_FREQUENCY_RESPONSE = "GpioGetPwmFrequencyResponse";
 	static final String GPIO_ANALOG_READ_RESPONSE = "GpioAnalogReadResponse";
 	static final String DIGITAL_INPUT_EVENT = "DigitalInputEvent";
 	

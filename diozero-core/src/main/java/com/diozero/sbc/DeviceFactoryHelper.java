@@ -118,7 +118,8 @@ public class DeviceFactoryHelper {
 
 	/**
 	 * Register an object to be shutdown in the case of abnormal shutdown
-	 * @param closeables Array of closeable objects to close on shutdown
+	 * 
+	 * @param closeableArray Array of closeable objects to close on shutdown
 	 */
 	public static void registerForShutdown(AutoCloseable... closeableArray) {
 		initialise();

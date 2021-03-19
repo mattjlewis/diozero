@@ -57,9 +57,12 @@ import com.diozero.remote.message.GpioDigitalRead;
 import com.diozero.remote.message.GpioDigitalReadResponse;
 import com.diozero.remote.message.GpioDigitalWrite;
 import com.diozero.remote.message.GpioEvents;
+import com.diozero.remote.message.GpioGetPwmFrequency;
+import com.diozero.remote.message.GpioGetPwmFrequencyResponse;
 import com.diozero.remote.message.GpioPwmRead;
 import com.diozero.remote.message.GpioPwmReadResponse;
 import com.diozero.remote.message.GpioPwmWrite;
+import com.diozero.remote.message.GpioSetPwmFrequency;
 import com.diozero.remote.message.I2CBlockProcessCall;
 import com.diozero.remote.message.I2CBooleanResponse;
 import com.diozero.remote.message.I2CByteResponse;
@@ -226,6 +229,16 @@ public class JsonWebSocketProtocolHandler extends BaseAsyncProtocolHandler imple
 
 	@Override
 	public Response request(GpioPwmWrite request) {
+		return requestResponse(request);
+	}
+
+	@Override
+	public GpioGetPwmFrequencyResponse request(GpioGetPwmFrequency request) {
+		return (GpioGetPwmFrequencyResponse) requestResponse(request);
+	}
+
+	@Override
+	public Response request(GpioSetPwmFrequency request) {
 		return requestResponse(request);
 	}
 
@@ -433,6 +446,9 @@ public class JsonWebSocketProtocolHandler extends BaseAsyncProtocolHandler imple
 			break;
 		case MessageWrapperTypes.GPIO_PWM_READ_RESPONSE:
 			processResponse(deserialiser.fromString(message_wrapper.getMessage(), GpioPwmReadResponse.class));
+			break;
+		case MessageWrapperTypes.GPIO_GET_PWM_FREQUENCY_RESPONSE:
+			processResponse(deserialiser.fromString(message_wrapper.getMessage(), GpioGetPwmFrequencyResponse.class));
 			break;
 		case MessageWrapperTypes.GPIO_ANALOG_READ_RESPONSE:
 			processResponse(deserialiser.fromString(message_wrapper.getMessage(), GpioAnalogReadResponse.class));

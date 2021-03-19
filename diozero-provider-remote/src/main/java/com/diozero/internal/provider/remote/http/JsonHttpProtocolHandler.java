@@ -56,9 +56,12 @@ import com.diozero.remote.message.GpioDigitalRead;
 import com.diozero.remote.message.GpioDigitalReadResponse;
 import com.diozero.remote.message.GpioDigitalWrite;
 import com.diozero.remote.message.GpioEvents;
+import com.diozero.remote.message.GpioGetPwmFrequency;
+import com.diozero.remote.message.GpioGetPwmFrequencyResponse;
 import com.diozero.remote.message.GpioPwmRead;
 import com.diozero.remote.message.GpioPwmReadResponse;
 import com.diozero.remote.message.GpioPwmWrite;
+import com.diozero.remote.message.GpioSetPwmFrequency;
 import com.diozero.remote.message.I2CBlockProcessCall;
 import com.diozero.remote.message.I2CBooleanResponse;
 import com.diozero.remote.message.I2CByteResponse;
@@ -211,6 +214,18 @@ public class JsonHttpProtocolHandler implements RemoteProtocolInterface {
 	@Override
 	public Response request(GpioPwmWrite request) {
 		return requestResponse(HttpProviderConstants.GPIO_PWM_WRITE_URL, request, Response.class);
+	}
+
+	@Override
+	public GpioGetPwmFrequencyResponse request(GpioGetPwmFrequency request) {
+		return requestResponse(HttpProviderConstants.GPIO_GET_PWM_FREQUENCY_URL, request,
+				GpioGetPwmFrequencyResponse.class);
+	}
+
+	@Override
+	public Response request(GpioSetPwmFrequency request) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override

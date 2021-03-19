@@ -67,7 +67,7 @@ public class OdroidC2SysFsPwmOutputDevice extends AbstractDevice implements PwmO
 	private RandomAccessFile dutyFile;
 
 	public OdroidC2SysFsPwmOutputDevice(String key, DeviceFactoryInterface deviceFactory, PwmPinInfo pinInfo,
-			int frequency, float initialValue) {
+			int frequencyHz, float initialValue) {
 		super(key, deviceFactory);
 
 		this.range = 1023;
@@ -81,7 +81,7 @@ public class OdroidC2SysFsPwmOutputDevice extends AbstractDevice implements PwmO
 		}
 
 		setEnabled(pwmNum, true);
-		setFrequency(pwmNum, frequency * 1000);
+		setFrequency(pwmNum, frequencyHz);
 
 		setValue(initialValue);
 	}
@@ -131,6 +131,16 @@ public class OdroidC2SysFsPwmOutputDevice extends AbstractDevice implements PwmO
 			throw new RuntimeIOException("Error setting duty for PWM #" + pwmNum, e);
 		}
 	}
+	
+	@Override
+	public int getPwmFrequency() {
+		return getFrequency(pwmNum);
+	}
+	
+	@Override
+	public void setPwmFrequency(int frequencyHz) {
+		setFrequency(pwmNum, frequencyHz);
+	}
 
 	private static void setEnabled(int pwmNum, boolean enabled) {
 		File f = PWM_ROOT.resolve("enable" + pwmNum).toFile();
@@ -141,21 +151,21 @@ public class OdroidC2SysFsPwmOutputDevice extends AbstractDevice implements PwmO
 		}
 	}
 
-	static void setFrequency(int pwmNum, int frequency) {
-		File f = PWM_ROOT.resolve("freq" + pwmNum).toFile();
-		try (FileWriter writer = new FileWriter(f)) {
-			writer.write(Integer.toString(frequency));
-		} catch (IOException e) {
-			throw new RuntimeIOException("Error setting frequency (" + frequency + ") for PWM #" + pwmNum, e);
-		}
-	}
-
 	static int getFrequency(int pwmNum) {
 		File f = PWM_ROOT.resolve("freq" + pwmNum).toFile();
 		try (BufferedReader reader = new BufferedReader(new FileReader(f))) {
-			return Integer.parseInt(reader.readLine());
+			return Integer.parseInt(reader.readLine()) / 1000;
 		} catch (IOException | NumberFormatException e) {
 			throw new RuntimeIOException("Error getting frequency for PWM #" + pwmNum, e);
+		}
+	}
+
+	static void setFrequency(int pwmNum, int frequencyHz) throws RuntimeIOException {
+		File f = PWM_ROOT.resolve("freq" + pwmNum).toFile();
+		try (FileWriter writer = new FileWriter(f)) {
+			writer.write(Integer.toString(frequencyHz * 1000));
+		} catch (IOException e) {
+			throw new RuntimeIOException("Error setting frequency (" + frequencyHz + ") for PWM #" + pwmNum, e);
 		}
 	}
 }

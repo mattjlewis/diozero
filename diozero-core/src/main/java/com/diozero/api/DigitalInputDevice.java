@@ -41,6 +41,25 @@ import com.diozero.sbc.DeviceFactoryHelper;
  * Represents a generic digital input device.
  */
 public class DigitalInputDevice extends AbstractDigitalInputDevice {
+	/**
+	 * Digital input device builder. Default values:
+	 * <ul>
+	 * <li>pud: {@link GpioPullUpDown#NONE}</li>
+	 * <li>dataBits: {@link GpioEventTrigger#BOTH}</li>
+	 * <li>deviceFactory: {@link DeviceFactoryHelper#getNativeDeviceFactory}</li>
+	 * <li>activeHigh: set to false if pud == {@link GpioPullUpDown#PULL_UP},
+	 * otherwise true (assumes normally open wiring configuration)</li>
+	 * </ul>
+	 * 
+	 * Either a GPIO number or a {@link PinInfo} instance must be specified. Using a
+	 * PinInfo instance allows input devices to be identified by either physical
+	 * pin number or GPIO chip and line offset.
+	 * 
+	 * The optional activeHigh parameter defaults assume a normally open wiring
+	 * configuration, however, it can be overridden for normally closed
+	 * configurations as well as scenarios where pud is {@link GpioPullUpDown#NONE}
+	 * and an external pull up/down resistor is used.
+	 */
 	public static class Builder {
 		private Integer gpio;
 		private PinInfo pinInfo;

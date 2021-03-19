@@ -50,6 +50,8 @@ public interface RemoteProtocolInterface extends AutoCloseable {
 	Response request(GpioDigitalWrite request);
 	GpioPwmReadResponse request(GpioPwmRead request);
 	Response request(GpioPwmWrite request);
+	GpioGetPwmFrequencyResponse request(GpioGetPwmFrequency request);
+	Response request(GpioSetPwmFrequency request);
 	GpioAnalogReadResponse request(GpioAnalogRead request);
 	Response request(GpioAnalogWrite request);
 	Response request(GpioEvents request);

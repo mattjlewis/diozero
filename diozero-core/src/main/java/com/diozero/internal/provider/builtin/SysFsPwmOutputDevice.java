@@ -54,14 +54,12 @@ public class SysFsPwmOutputDevice extends AbstractDevice implements PwmOutputDev
 	private int periodNs;
 
 	public SysFsPwmOutputDevice(String key, DeviceFactoryInterface deviceFactory, int pwmChip, PwmPinInfo pinInfo,
-			int frequency, float initialValue) {
+			int frequencyHz, float initialValue) {
 		super(key, deviceFactory);
 
 		this.pwmChip = pwmChip;
 		gpio = pinInfo.getDeviceNumber();
 		pwmNum = pinInfo.getPwmNum();
-
-		periodNs = 1_000_000_000 / frequency;
 
 		Path pwm_chip_root = Paths.get("/sys/class/pwm/pwmchip" + pwmChip);
 		pwmRoot = pwm_chip_root.resolve("pwm" + pwmNum);
@@ -73,26 +71,31 @@ public class SysFsPwmOutputDevice extends AbstractDevice implements PwmOutputDev
 					writer.write(String.valueOf(pwmNum));
 				}
 			}
-			setPolarity(Polarity.NORMAL);
-			setEnabled(true);
-			setPeriod(periodNs);
 
 			dutyFile = new RandomAccessFile(pwmRoot.resolve("duty_cycle").toFile(), "rw");
 		} catch (IOException e) {
 			throw new RuntimeIOException("Error opening PWM #" + pwmNum, e);
 		}
-		setValue(0);
+
+		updatePolarity(Polarity.NORMAL);
+		setPwmFrequency(frequencyHz);
+
+		setValue(initialValue);
+
+		updateEnabled(true);
 	}
 
 	@Override
 	protected void closeDevice() {
 		try {
-			setEnabled(false);
+			updateEnabled(false);
 		} catch (Exception e) {
+			// Ignore
 		}
 		try {
 			dutyFile.close();
 		} catch (Exception e) {
+			// Ignore
 		}
 		Path pwm_chip_root = Paths.get("/sys/class/pwm/pwmchip" + pwmChip);
 		try (FileWriter writer = new FileWriter(pwm_chip_root.resolve("unexport").toFile())) {
@@ -114,14 +117,12 @@ public class SysFsPwmOutputDevice extends AbstractDevice implements PwmOutputDev
 
 	@Override
 	public float getValue() throws RuntimeIOException {
-		// FIXME Result is ignored
-		isOpen();
 		try {
 			dutyFile.seek(0);
 			return Integer.parseInt(dutyFile.readLine()) / (float) periodNs;
 		} catch (IOException e) {
 			close();
-			throw new RuntimeIOException("Error getting duty for PWM " + gpio, e);
+			throw new RuntimeIOException("Error getting PWM output value");
 		}
 	}
 
@@ -141,28 +142,50 @@ public class SysFsPwmOutputDevice extends AbstractDevice implements PwmOutputDev
 		}
 	}
 
-	private void setEnabled(boolean enabled) throws IOException {
-		Logger.info("setEnabled(" + enabled + ")");
+	@Override
+	public int getPwmFrequency() {
+		return 1_000_000_000 / periodNs;
+	}
+
+	@Override
+	public void setPwmFrequency(int frequencyHz) throws RuntimeIOException {
+		// The value is represented as duty nanoseconds hence needs to be adjusted if
+		// the frequency changes
+		float value = getValue();
+		setValue(0);
+		periodNs = 1_000_000_000 / frequencyHz;
+		updatePeriod(periodNs);
+		setValue(value);
+	}
+
+	private void updateEnabled(boolean enabled) throws RuntimeIOException {
+		Logger.debug("updateEnabled(" + enabled + ")");
 		try (FileWriter writer = new FileWriter(pwmRoot.resolve("enable").toFile())) {
 			writer.write(enabled ? "1" : "0");
+		} catch (IOException e) {
+			close();
+			throw new RuntimeIOException("Error writing to enabled file: " + e, e);
 		}
 	}
 
-	private void setPeriod(int periodNs) throws IOException {
-		Logger.info("setPeriod(" + periodNs + ")");
-		try (FileWriter period_file = new FileWriter(pwmRoot.resolve("period").toFile())) {
-			period_file.write(Integer.toString(periodNs));
+	private void updatePeriod(int periodNs) throws RuntimeIOException {
+		Logger.debug("updatePeriod(" + periodNs + ")");
+		try (FileWriter writer = new FileWriter(pwmRoot.resolve("period").toFile())) {
+			writer.write(Integer.toString(periodNs));
+		} catch (IOException e) {
+			close();
+			throw new RuntimeIOException("Error writing to period file: " + e, e);
 		}
-		this.periodNs = periodNs;
 	}
 
-	protected void setPolarity(Polarity polarity) {
-		Logger.info("setPolarity(" + polarity + ")");
+	private void updatePolarity(Polarity polarity) throws RuntimeIOException {
+		Logger.debug("updatePolarity(" + polarity + ")");
 		try (FileWriter writer = new FileWriter(pwmRoot.resolve("polarity").toFile())) {
 			writer.write(polarity.getValue());
 			writer.flush();
 		} catch (IOException e) {
-			Logger.error(e, "Error setting polarity to {}: {}", polarity.getValue(), e);
+			close();
+			throw new RuntimeIOException("Error writing to polarity file: " + e, e);
 		}
 	}
 

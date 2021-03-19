@@ -19,6 +19,8 @@ service GpioControl {
   rpc DigitalWrite (Gpio.DigitalWriteRequest) returns (Response) {}
   rpc PwmRead (Gpio.PwmReadRequest) returns (Gpio.PwmReadResponse) {}
   rpc PwmWrite (Gpio.PwmWriteRequest) returns (Response) {}
+  rpc GetPwmFrequency (Gpio.GetPwmFrequencyRequest) returns (Gpio.GetPwmFrequencyResponse) {}
+  rpc SetPwmFrequency (Gpio.SetPwmFrequencyRequest) returns (Response) {}
   rpc AnalogRead (Gpio.AnalogReadRequest) returns (Gpio.AnalogReadResponse) {}
   rpc AnalogWrite (Gpio.AnalogWriteRequest) returns (Response) {}
   rpc Events (Gpio.EventsRequest) returns (Response) {}
@@ -147,6 +149,17 @@ message Gpio {
 		float value = 3;
 	}
 	
+	message GetPwmFrequencyRequest {
+		string correlationId = 1;
+		int32 gpio = 2;
+	}
+	
+	message SetPwmFrequencyRequest {
+		string correlationId = 1;
+		int32 gpio = 2;
+		int32 frequency = 3;
+	}
+	
 	message AnalogReadRequest {
 		string correlationId = 1;
 		int32 gpio = 2;
@@ -181,6 +194,13 @@ message Gpio {
 		Status status = 2;
 		string detail = 3;
 		float value = 4;
+	}
+	
+	message GetPwmFrequencyResponse {
+		string correlationId = 1;
+		Status status = 2;
+		string detail = 3;
+		int32 frequency = 4;
 	}
 	
 	message AnalogReadResponse {

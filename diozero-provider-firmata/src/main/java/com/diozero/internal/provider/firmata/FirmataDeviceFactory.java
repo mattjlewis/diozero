@@ -178,6 +178,7 @@ public class FirmataDeviceFactory extends BaseNativeDeviceFactory {
 	@Override
 	public PwmOutputDeviceInterface createPwmOutputDevice(String key, PinInfo pinInfo, int pwmFrequency,
 			float initialValue) throws RuntimeIOException {
+		Logger.warn("PWM frequency will be ignored - Firmata does not allow this to be specified");
 		return new FirmataPwmOutputDevice(this, key, pinInfo.getDeviceNumber(), initialValue);
 	}
 

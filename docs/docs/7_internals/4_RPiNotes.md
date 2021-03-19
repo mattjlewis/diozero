@@ -8,9 +8,10 @@ permalink: /internals/rpinotes.html
 
 ## User Permissions
 
-`sudo usermod -a -G dialout ubuntu`
-
-`sudo usermod -a -G i2c ubuntu`
+```shell
+sudo usermod -a -G dialout pi
+sudo usermod -a -G i2c pi
+```
 
 ## I2C Clock Speed
 
@@ -24,18 +25,21 @@ printf "I2C Clock Rate: %d Hz\n" 0x$var
 
 ## Development Libraries and Tools
 
-`sudo apt install i2c-tools libi2c-dev gpiod libgpiod2 libgpiod-dev avahi-daemon gcc make unzip zip vim`
-
-`sudo apt install pigpio-tools libpigpiod-if-dev libpigpiod-if2-1`
+```shell
+sudo apt install i2c-tools libi2c-dev gpiod libgpiod2 libgpiod-dev avahi-daemon gcc make unzip zip vim`
+sudo apt install pigpio-tools libpigpiod-if-dev libpigpiod-if2-1
+```
 
 ## Java
 
-`sudo apt install openjdk-11-jdk`
+```shell
+sudo apt install openjdk-11-jdk
+```
 
 ## ZSH
 
-`sudo apt install zsh`
-
-`chsh -s /usr/bin/zsh`
-
-`sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"`
+```shell
+sudo apt install zsh
+chsh -s /usr/bin/zsh
+sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+```

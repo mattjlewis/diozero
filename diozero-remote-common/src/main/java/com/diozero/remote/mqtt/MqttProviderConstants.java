@@ -56,6 +56,8 @@ public interface MqttProviderConstants {
 	static final String GPIO_DIGITAL_WRITE_TOPIC = GPIO_REQUEST_TOPIC + "/write";
 	static final String GPIO_PWM_READ_TOPIC = GPIO_REQUEST_TOPIC + "/pwmRead";
 	static final String GPIO_PWM_WRITE_TOPIC = GPIO_REQUEST_TOPIC + "/pwmWrite";
+	static final String GPIO_GET_PWM_FREQUENCY_TOPIC = GPIO_REQUEST_TOPIC + "/getPwmFrequency";
+	static final String GPIO_SET_PWM_FREQUENCY_TOPIC = GPIO_REQUEST_TOPIC + "/setPwmFrequency";
 	static final String GPIO_ANALOG_READ_TOPIC = GPIO_REQUEST_TOPIC + "/analogRead";
 	static final String GPIO_ANALOG_WRITE_TOPIC = GPIO_REQUEST_TOPIC + "/analogWrite";
 	static final String GPIO_EVENTS_TOPIC = GPIO_REQUEST_TOPIC + "/events";
@@ -63,6 +65,7 @@ public interface MqttProviderConstants {
 	// GPIO Responses
 	static final String GPIO_DIGITAL_READ_RESPONSE_TOPIC = RESPONSE_TOPIC + "/gpioDigitalRead";
 	static final String GPIO_PWM_READ_RESPONSE_TOPIC = RESPONSE_TOPIC + "/gpioPwmRead";
+	static final String GPIO_GET_PWM_FREQUENCY_RESPONSE_TOPIC = RESPONSE_TOPIC + "/gpioGetPwmFrequency";
 	static final String GPIO_ANALOG_READ_RESPONSE_TOPIC = RESPONSE_TOPIC + "/gpioAnalogRead";
 	static final String GPIO_NOTIFICATION_TOPIC = NOTIFICATION_TOPIC + GPIO_SUB_TOPIC;
 

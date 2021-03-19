@@ -86,4 +86,21 @@ public class PigpioJPwmOutputDevice extends AbstractDevice implements PwmOutputD
 			throw new RuntimeIOException("Error calling pigpioImpl.setPWMDutyCycle(), response: " + rc);
 		}
 	}
+
+	@Override
+	public int getPwmFrequency() {
+		int frequency = pigpioImpl.getPWMFrequency(gpio);
+		if (frequency < 0) {
+			throw new RuntimeIOException("Error calling pigpioImpl.getPWMFrequency(), response: " + frequency);
+		}
+		return frequency;
+	}
+
+	@Override
+	public void setPwmFrequency(int frequencyHz) throws RuntimeIOException {
+		int rc = pigpioImpl.setPWMFrequency(gpio, frequencyHz);
+		if (rc < 0) {
+			throw new RuntimeIOException("Error calling pigpioImpl.setPWMFrequency(), response: " + rc);
+		}
+	}
 }

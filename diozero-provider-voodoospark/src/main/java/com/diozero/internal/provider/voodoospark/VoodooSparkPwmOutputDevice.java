@@ -76,4 +76,14 @@ public class VoodooSparkPwmOutputDevice extends AbstractDevice implements PwmOut
 	protected void closeDevice() throws RuntimeIOException {
 		setValue(0);
 	}
+
+	@Override
+	public int getPwmFrequency() {
+		throw new UnsupportedOperationException("Actual PWM frequency varies by board");
+	}
+
+	@Override
+	public void setPwmFrequency(int frequencyHz) throws RuntimeIOException {
+		throw new UnsupportedOperationException("Unable to change PWM frequency");
+	}
 }

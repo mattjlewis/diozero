@@ -31,29 +31,48 @@ package com.diozero.internal.spi;
  * #L%
  */
 
-
 import com.diozero.api.DeviceMode;
 import com.diozero.api.RuntimeIOException;
 
 public interface PwmOutputDeviceInterface extends GpioDeviceInterface {
 	/**
 	 * Get the device PWM output device number
+	 * 
 	 * @return Device native PWM output
 	 */
 	int getPwmNum();
+
 	/**
 	 * Get the current PWM output value (0..1)
+	 * 
 	 * @return Range is 0..1
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	float getValue() throws RuntimeIOException;
+
 	/**
 	 * Set the PWM output value (0..1)
+	 * 
 	 * @param value Relative value in the range 0..1
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	void setValue(float value) throws RuntimeIOException;
-	
+
+	/**
+	 * Get the PWM frequency in Hz
+	 * 
+	 * @return frequency in Hz
+	 */
+	int getPwmFrequency();
+
+	/**
+	 * Set the PWM output frequency
+	 * 
+	 * @param frequencyHz frequency in Hz
+	 * @throws RuntimeIOException if an I/O error occurs
+	 */
+	void setPwmFrequency(int frequencyHz) throws RuntimeIOException;
+
 	@Override
 	default DeviceMode getMode() {
 		return DeviceMode.PWM_OUTPUT;

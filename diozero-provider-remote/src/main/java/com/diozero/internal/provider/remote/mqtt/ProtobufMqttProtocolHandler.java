@@ -54,9 +54,12 @@ import com.diozero.remote.message.GpioDigitalRead;
 import com.diozero.remote.message.GpioDigitalReadResponse;
 import com.diozero.remote.message.GpioDigitalWrite;
 import com.diozero.remote.message.GpioEvents;
+import com.diozero.remote.message.GpioGetPwmFrequency;
+import com.diozero.remote.message.GpioGetPwmFrequencyResponse;
 import com.diozero.remote.message.GpioPwmRead;
 import com.diozero.remote.message.GpioPwmReadResponse;
 import com.diozero.remote.message.GpioPwmWrite;
+import com.diozero.remote.message.GpioSetPwmFrequency;
 import com.diozero.remote.message.I2CBlockProcessCall;
 import com.diozero.remote.message.I2CBooleanResponse;
 import com.diozero.remote.message.I2CByteResponse;
@@ -232,6 +235,18 @@ public class ProtobufMqttProtocolHandler extends ProtobufBaseAsyncProtocolHandle
 	public Response request(GpioPwmWrite request) {
 		return requestResponse(MqttProviderConstants.GPIO_PWM_WRITE_TOPIC, DiozeroProtosConverter.convert(request),
 				request.getCorrelationId());
+	}
+
+	@Override
+	public GpioGetPwmFrequencyResponse request(GpioGetPwmFrequency request) {
+		return (GpioGetPwmFrequencyResponse) requestResponse(MqttProviderConstants.GPIO_GET_PWM_FREQUENCY_TOPIC,
+				DiozeroProtosConverter.convert(request), request.getCorrelationId());
+	}
+
+	@Override
+	public Response request(GpioSetPwmFrequency request) {
+		return requestResponse(MqttProviderConstants.GPIO_SET_PWM_FREQUENCY_TOPIC,
+				DiozeroProtosConverter.convert(request), request.getCorrelationId());
 	}
 
 	@Override

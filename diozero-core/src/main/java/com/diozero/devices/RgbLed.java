@@ -31,7 +31,6 @@ package com.diozero.devices;
  * #L%
  */
 
-
 import org.tinylog.Logger;
 
 import com.diozero.api.DeviceInterface;
@@ -40,41 +39,37 @@ import com.diozero.internal.spi.GpioDeviceFactoryInterface;
 import com.diozero.sbc.DeviceFactoryHelper;
 
 /**
- * Three pin controlled RGB LED.
- * 4 3 2 1
- * 1 Red
- * 2 Ground
- * 3 Green
- * 4 Blue
+ * Three pin controlled RGB LED. 4 3 2 1 1 Red 2 Ground 3 Green 4 Blue
  */
 public class RgbLed implements DeviceInterface {
 	private LED redLED;
 	private LED greenLED;
 	private LED blueLED;
-	
+
 	/**
-	 * @param redPin GPIO for the red LED.
+	 * @param redPin   GPIO for the red LED.
 	 * @param greenPin GPIO for the green LED.
-	 * @param bluePin GPIO for the blue LED.
+	 * @param bluePin  GPIO for the blue LED.
 	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
 	public RgbLed(int redPin, int greenPin, int bluePin) throws RuntimeIOException {
 		this(DeviceFactoryHelper.getNativeDeviceFactory(), redPin, greenPin, bluePin);
 	}
-	
+
 	/**
 	 * @param deviceFactory Device factory to use to provision this device.
-	 * @param redPin GPIO for the red LED.
-	 * @param greenPin GPIO for the green LED.
-	 * @param bluePin GPIO for the blue LED.
+	 * @param redPin        GPIO for the red LED.
+	 * @param greenPin      GPIO for the green LED.
+	 * @param bluePin       GPIO for the blue LED.
 	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
-	public RgbLed(GpioDeviceFactoryInterface deviceFactory, int redPin, int greenPin, int bluePin) throws RuntimeIOException {
+	public RgbLed(GpioDeviceFactoryInterface deviceFactory, int redPin, int greenPin, int bluePin)
+			throws RuntimeIOException {
 		redLED = new LED(deviceFactory, redPin);
 		greenLED = new LED(deviceFactory, greenPin);
 		blueLED = new LED(deviceFactory, bluePin);
 	}
-	
+
 	@Override
 	public void close() {
 		Logger.trace("close()");
@@ -82,21 +77,23 @@ public class RgbLed implements DeviceInterface {
 		greenLED.close();
 		blueLED.close();
 	}
-	
+
 	/**
 	 * Get the state of all LEDs.
+	 * 
 	 * @return Boolean array (red, green, blue).
 	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
 	public boolean[] getValues() throws RuntimeIOException {
 		return new boolean[] { redLED.isOn(), greenLED.isOn(), blueLED.isOn() };
 	}
-	
+
 	/**
 	 * Set the state of all LEDs.
-	 * @param red Red LED state.
+	 * 
+	 * @param red   Red LED state.
 	 * @param green Green LED state.
-	 * @param blue Blue LED state.
+	 * @param blue  Blue LED state.
 	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
 	public void setValues(boolean red, boolean green, boolean blue) throws RuntimeIOException {
@@ -104,9 +101,10 @@ public class RgbLed implements DeviceInterface {
 		greenLED.setOn(green);
 		blueLED.setOn(blue);
 	}
-	
+
 	/**
 	 * Turn all LEDs on.
+	 * 
 	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
 	public void on() throws RuntimeIOException {
@@ -114,9 +112,10 @@ public class RgbLed implements DeviceInterface {
 		greenLED.on();
 		blueLED.on();
 	}
-	
+
 	/**
 	 * Turn all LEDs off.
+	 * 
 	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
 	public void off() throws RuntimeIOException {
@@ -124,9 +123,10 @@ public class RgbLed implements DeviceInterface {
 		greenLED.off();
 		blueLED.off();
 	}
-	
+
 	/**
 	 * Toggle the state of all LEDs.
+	 * 
 	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
 	public void toggle() throws RuntimeIOException {
