@@ -82,7 +82,13 @@ Maven dependency:
 
 Create your own application using the diozero-application Maven archetype:
 ```
-mvn archetype:generate -DarchetypeGroupId=com.diozero -DarchetypeArtifactId=diozero-application -DgroupId=com.mycompany -DartifactId=mydiozeroproject -Dversion=1.0-SNAPSHOT
+mvn archetype:generate -DinteractiveMode=false \
+  -DarchetypeGroupId=com.diozero \
+  -DarchetypeArtifactId=diozero-application \
+  -DarchetypeVersion={{ site.version }} \
+  -DgroupId=com.mycompany \
+  -DartifactId=mydiozeroproject \
+  -Dversion=1.0-SNAPSHOT
 ```
 
 A distribution ZIP file containing all JARs and their dependencies is also available via [Maven Central](https://search.maven.org/) -

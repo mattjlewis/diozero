@@ -15,17 +15,17 @@ permalink: /test.html
 >
 > Blah blah blah
 
-{: .info }
-> Some info message
+{: .attention }
+> Some attention message
 >
 > Blah blah blah
 
-{: .info-title }
-> Some info message with title
+{: .attention-title }
+> Some attention message with title
 >
 > Blah blah blah
 
-{: .warn }
+{: .warning }
 > Some warning message
 >
 > Blah blah blah
@@ -38,21 +38,19 @@ permalink: /test.html
 >
 > Blah blah blah
 
-{: .info }
-> Some info message with the style definition after
+{: .attention }
+> Some attention message with the style definition after
 >
 > Blah blah blah
 
-> My Note Title 
->{: .admonition-title }
+{: .note-title }
+> My Note Title
 > Some admonition note message
 >
-> blah blah blah
-{: .admonition .note }
+> Blah blah blah
 
-{: .admonition .note }
+{: .note-title }
 > My Note Title 
->{: .admonition-title }
 > Some admonition note message
 >
 > * List item 1

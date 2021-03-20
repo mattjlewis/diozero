@@ -1,6 +1,6 @@
 ---
 parent: Internals
-nav_order: 2
+nav_order: 98
 permalink: /internals/releases.html
 ---
 

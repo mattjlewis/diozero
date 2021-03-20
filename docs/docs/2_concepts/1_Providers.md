@@ -2,10 +2,12 @@
 parent: Concepts
 nav_order: 1
 permalink: /concepts/providers.html
-title: Device Factories
+title: Device Factories & Providers
 ---
 
-# Device Factories
+# Device Factories & Providers
+
+## Device Factories
 
 Iternally, all devices are provisioned via a
 [Device Factory](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/internal/spi/DeviceFactoryInterface.java) -
@@ -57,16 +59,24 @@ The Device Factory section introd
 To maximise the portability across the broad spectrum of boards and devices, diozero
 has the concept of providers that are  base native device factory 
 
-The builtin provider is designed to be portable across different boards. 
+Provider | Dependency | diozero Provider Library | SBC
+--- | -------- | ------------ | -----------------------
+built-in (default) | None | Built-in | All
+pigpio | pigpioj-java | diozero-provider-pigio | Raspberry Pi (all flavours)
+bbbiolib | bbbiolib | diozero-provider-bbiolib | BeagleBone Green / Black
+firmata | firmata4j | diozero-provider-firmata | Arduino compatible boards
+voodoospark | None | diozero-provider-voodoospark | Arduino compatible boards
+remote | None | diozero-provider-remote | All
 
+The built-in provider is designed to be portable across different boards. 
+
+{: .note-title }
 > Providers
->{: .admonition-title }
 >
 > Unless you are implementing a new provider or device factory you shouldn't need to use any
 > of the interfaces or helper classes (within the `com.diozero.internal` package).
-{: .admonition .note }
 
-## Device Factory Lookup
+## Provider Lookup
 
 The class [DeviceFactoryHelper](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/util/DeviceFactoryHelper.java)
 encapsulates the logic for accessing the configured service provider.
@@ -81,16 +91,6 @@ The device native service provider library is defined in the following order:
 
 See below for provider specific details.
 
-## Additional Device Factories
-
-In addition to the default builtin device factory, the following service providers are also available via additional JAR files:
-
-+ [BBBIOlib](https://github.com/VegetableAvenger/BBBIOlib)
-+ [Firmata4j](https://github.com/kurbatov/firmata4j)
-+ mmap
-+ [pigpio](http://abyz.co.uk/rpi/pigpio/index.html) via my [JNI wrapper library](https://github.com/mattjlewis/pigpioj)
-+ [VoodooSpark](https://github.com/voodootikigod/voodoospark)
-
 ### pigpio
 
 Uses the excellent pigpio C library to provide fully optimised GPIO / SPI and I2C support for all 
@@ -101,7 +101,3 @@ sudo apt update && sudo apt -y install pigpio
 ```
 
 The pigpioj library has two mechanisms for interfacing with pigpio - JNI and Sockets.
-
-### Creating a Device Factory
-
-TODO Describe steps for creating a new provider.

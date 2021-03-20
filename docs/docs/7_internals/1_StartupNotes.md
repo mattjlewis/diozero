@@ -1,8 +1,10 @@
 ---
 parent: Internals
 nav_order: 1
-permalink: /api/startup.html
+permalink: /internals/startup.html
 ---
+
+# Startup
 
 1. Locate the native device factory (command line / env property, ServiceLoader, default)
 1. Start the native device factory

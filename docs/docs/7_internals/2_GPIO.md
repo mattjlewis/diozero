@@ -1,8 +1,10 @@
 ---
 parent: Internals
-nav_order: 5
+nav_order: 2
 permalink: /internals/gpio.html
 ---
+
+# GPIO
 
 By default diozero uses the Linux GPIO Character Device implementation that was added in Linux kernel 4.8.
 This can be disabled by running with the property `diozero.gpio.chardev=false`, in which case
