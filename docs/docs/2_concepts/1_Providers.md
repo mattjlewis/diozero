@@ -76,6 +76,24 @@ The built-in provider is designed to be portable across different boards.
 > Unless you are implementing a new provider or device factory you shouldn't need to use any
 > of the interfaces or helper classes (within the `com.diozero.internal` package).
 
+### pigpio
+
+Uses the excellent [pigpio](http://abyz.me.uk/rpi/pigpio/) C library to provide fully optimised
+GPIO / SPI and I2C support for all Raspberry Pi models.
+Makes use of the [pigpioj](https://github.com/mattjlewis/pigpioj) library to access pigpio.
+
+Make sure that pigpio is installed:
+```
+sudo apt update && sudo apt -y install pigpio
+```
+
+The pigpioj library has two mechanisms for interfacing with pigpio:
+
+1. JNI - default mode of operation; requires root access; **the pigpiod daemon process must be stopped**
+1. Sockets - activate when the environment variable `PIGPIOD_HOST` is set; does not require root access
+
+The [pigpioj](https://github.com/mattjlewis/pigpioj) project provides additional details.
+
 ## Provider Lookup
 
 The class [DeviceFactoryHelper](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/util/DeviceFactoryHelper.java)
@@ -90,14 +108,3 @@ The device native service provider library is defined in the following order:
 2. Service definition file on the classpath, file: `/META-INF/services/com.diozero.internal.provider.NativeDeviceFactoryInterface`. For example [the one for pi4j](https://github.com/mattjlewis/diozero/blob/master/diozero-provider-pi4j/src/main/resources/META-INF/services/com.diozero.internal.provider.NativeDeviceFactoryInterface)
 
 See below for provider specific details.
-
-### pigpio
-
-Uses the excellent pigpio C library to provide fully optimised GPIO / SPI and I2C support for all 
-Raspberry Pi models. Unfortunately this library requires root access.
-Make sure that pigpio is installed:
-```
-sudo apt update && sudo apt -y install pigpio
-```
-
-The pigpioj library has two mechanisms for interfacing with pigpio - JNI and Sockets.
