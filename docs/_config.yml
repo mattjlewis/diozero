@@ -44,7 +44,7 @@ markdown: kramdown
 remote_theme: pdmosses/just-the-docs@callouts
 #remote_theme: mmistakes/minimal-mistakes
 
-ga_tracking: UA-73764647-1
+ga_tracking: G-EWZGST7QX0
 
 plugins:
   - jekyll-include-cache
@@ -58,7 +58,7 @@ plugins:
   - jemoji
   - github-pages
 
-#color_scheme: "dark"
+#color_scheme: dark
 search_enabled: true
 
 # Aux links for the upper right navigation
