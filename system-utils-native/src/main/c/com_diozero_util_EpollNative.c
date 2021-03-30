@@ -129,8 +129,8 @@ JNIEXPORT jobjectArray JNICALL Java_com_diozero_util_EpollNative_waitForEvents(
 	struct epoll_event epoll_events[max_events];
 	int num_fds = epoll_wait(epollFd, epoll_events, max_events, -1);
 	// Get the Java nano time and epoch time as early as possible
-	jlong nano_time = getJavaNanoTime();
-	unsigned long long epoch_time = getEpochTime();
+	jlong nano_time = getJavaTimeNanos();
+	jlong epoch_time = getEpochTimeMillis();
 	if (num_fds < 0) {
 		fprintf(stderr, "epoll_wait failed! %s\n", strerror(errno));
 		return NULL;
@@ -166,8 +166,8 @@ JNIEXPORT jint JNICALL Java_com_diozero_util_EpollNative_eventLoop(
 	while (running) {
 		int num_fds = epoll_wait(epollFd, epoll_events, max_events, -1);
 		// Get the Java nano time and epoch time as early as possible
-		jlong nano_time = getJavaNanoTime();
-		jlong epoch_time = getEpochTime();
+		jlong nano_time = getJavaTimeNanos();
+		jlong epoch_time = getEpochTimeMillis();
 		if (num_fds < 0) {
 			fprintf(stderr, "epoll_wait failed! %s\n", strerror(errno));
 			return -1;

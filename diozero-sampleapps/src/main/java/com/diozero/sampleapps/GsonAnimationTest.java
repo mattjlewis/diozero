@@ -66,7 +66,7 @@ public class GsonAnimationTest {
 		} finally {
 			// Required if there are non-daemon threads that will prevent the
 			// built-in clean-up routines from running
-			DeviceFactoryHelper.getNativeDeviceFactory().close();
+			DeviceFactoryHelper.shutdown();
 		}
 	}
 

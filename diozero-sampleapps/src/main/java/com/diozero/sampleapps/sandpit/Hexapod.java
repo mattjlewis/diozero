@@ -43,8 +43,8 @@ import com.diozero.animation.Animation;
 import com.diozero.animation.AnimationInstance;
 import com.diozero.animation.easing.Quad;
 import com.diozero.api.OutputDeviceCollection;
-import com.diozero.api.Servo;
 import com.diozero.devices.PCA9685;
+import com.diozero.devices.Servo;
 import com.diozero.util.SleepUtil;
 
 public class Hexapod implements AutoCloseable {

@@ -181,7 +181,7 @@ public class WS281xSpi implements LedDriverInterface {
 		if (lastRenderTime != 0) {
 			int diff = (int) (System.nanoTime() - lastRenderTime);
 			if (renderWaitTime > diff) {
-				SleepUtil.sleepNanos(renderWaitTime - diff);
+				SleepUtil.busySleep(renderWaitTime - diff);
 			}
 		}
 

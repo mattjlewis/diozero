@@ -23,6 +23,8 @@
 #include "com_diozero_internal_provider_builtin_gpio_NativeGpioDevice.h"
 #include <jni.h>
 
+#include "com_diozero_util_Util.h"
+
 extern jclass arrayListClassRef;
 extern jmethodID arrayListConstructor;
 extern jmethodID arrayListAddMethod;
@@ -254,6 +256,7 @@ JNIEXPORT void JNICALL Java_com_diozero_internal_provider_builtin_gpio_NativeGpi
 		// TODO Use epoll_pwait for signal?
 		// https://man7.org/linux/man-pages/man2/epoll_wait.2.html
 		num_fds = epoll_wait(epollFd, epoll_events, max_events, timeout);
+		jlong epoch_time_ms = getEpochTimeMillis();
 
 		if (num_fds < 0) {
 			// On error, -1 is returned, and errno is set to indicate the cause of the error
@@ -280,11 +283,19 @@ JNIEXPORT void JNICALL Java_com_diozero_internal_provider_builtin_gpio_NativeGpi
 					continue;
 				}
 
+				/*
+				struct timespec tp;
+				clock_gettime(CLOCK_REALTIME, &tp);
+				uint64_t nanotime = ((uint64_t) tp.tv_sec) * 1000*1000*1000 + tp.tv_nsec;
+				printf("Calling event method, delta: %lld\n", (nanotime - evdata.timestamp));
+				*/
+
 				// https://github.com/torvalds/linux/blob/v5.4/include/uapi/linux/gpio.h#L140
 				// evdata.id: either GPIOEVENT_EVENT_RISING_EDGE or GPIOEVENT_EVENT_FALLING_EDGE
 				// timestamp: best estimate of time of event occurrence, in nanoseconds
+				// Note uses CLOCK_MONOTONIC, not CLOCK_REALTIME
 				(*env)->CallVoidMethod(env, callback, gpioLineEventListenerMethod,
-						epoll_events[i].data.fd, evdata.id, evdata.timestamp);
+						epoll_events[i].data.fd, evdata.id, epoch_time_ms, evdata.timestamp);
 			}
 		}
 	}

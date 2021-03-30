@@ -106,8 +106,11 @@ public class PigpioJDigitalInputDevice extends AbstractInputDevice<DigitalInputE
 	}
 
 	@Override
-	public void setDebounceTimeMillis(int debounceTime) {
-		throw new UnsupportedOperationException("Debounce not supported in pigpioj");
+	public void setDebounceTimeMillis(int debounceTimeMs) {
+		int rc = pigpioImpl.glitchFilter(gpio, debounceTimeMs * 1_000);
+		if (rc < 0) {
+			throw new RuntimeIOException("Error calling pigpioImpl.glitchFilter(), response: " + rc);
+		}
 	}
 
 	@Override

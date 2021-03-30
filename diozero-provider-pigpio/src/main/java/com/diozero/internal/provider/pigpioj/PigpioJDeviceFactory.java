@@ -64,7 +64,12 @@ public class PigpioJDeviceFactory extends BaseNativeDeviceFactory {
 	private PigpioInterface pigpioImpl;
 
 	public PigpioJDeviceFactory() {
-		pigpioImpl = PigpioJ.getImplementation();
+		try {
+			pigpioImpl = PigpioJ.getImplementation();
+		} catch (RuntimeException e) {
+			Logger.error(e, "Error initialising pigpioj (if using JNI version you must run as root): {}", e);
+			throw new RuntimeIOException(e);
+		}
 	}
 
 	public PigpioInterface getPigpio() {

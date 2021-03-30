@@ -1,4 +1,4 @@
-package com.diozero.api;
+package com.diozero.devices;
 
 /*-
  * #%L
@@ -36,6 +36,11 @@ import java.util.Collection;
 
 import org.tinylog.Logger;
 
+import com.diozero.api.GpioDevice;
+import com.diozero.api.OutputDeviceCollection;
+import com.diozero.api.OutputDeviceInterface;
+import com.diozero.api.PinInfo;
+import com.diozero.api.RuntimeIOException;
 import com.diozero.internal.spi.PwmOutputDeviceFactoryInterface;
 import com.diozero.internal.spi.PwmOutputDeviceInterface;
 import com.diozero.sbc.DeviceFactoryHelper;

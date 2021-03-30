@@ -33,6 +33,8 @@ package com.diozero.api;
 
 import java.util.function.LongConsumer;
 
+import com.diozero.util.EventLock;
+
 /**
  * Abstract base class for low-level GPIO digital input devices.
  */
@@ -42,11 +44,15 @@ public abstract class AbstractDigitalInputDevice extends GpioInputDevice<Digital
 	private LongConsumer activatedConsumer;
 	private LongConsumer deactivatedConsumer;
 	private boolean listenerEnabled;
+	private EventLock highEvent;
+	private EventLock lowEvent;
 
 	public AbstractDigitalInputDevice(PinInfo pinInfo, boolean activeHigh) {
 		super(pinInfo);
 
 		this.activeHigh = activeHigh;
+		highEvent = new EventLock();
+		lowEvent = new EventLock();
 	}
 
 	/**
@@ -80,19 +86,26 @@ public abstract class AbstractDigitalInputDevice extends GpioInputDevice<Digital
 	@Override
 	public void accept(DigitalInputEvent event) {
 		event.setActiveHigh(activeHigh);
+
+		EventLock e = event.getValue() ? highEvent : lowEvent;
+		e.set();
+
 		if (activatedConsumer != null && event.isActive()) {
 			activatedConsumer.accept(event.getNanoTime());
 		}
+		
 		if (deactivatedConsumer != null && !event.isActive()) {
 			deactivatedConsumer.accept(event.getNanoTime());
 		}
+		
 		super.accept(event);
 	}
 
 	/**
 	 * Action to perform when the device state is active.
 	 * 
-	 * @param consumer Callback object to be invoked when activated (long parameter is nanoseconds time).
+	 * @param consumer Callback object to be invoked when activated (long parameter
+	 *                 is nanoseconds time).
 	 */
 	public void whenActivated(LongConsumer consumer) {
 		activatedConsumer = consumer;
@@ -106,7 +119,8 @@ public abstract class AbstractDigitalInputDevice extends GpioInputDevice<Digital
 	/**
 	 * Action to perform when the device state is inactive.
 	 * 
-	 * @param consumer Callback object to be invoked when activated (long parameter is nanoseconds time)
+	 * @param consumer Callback object to be invoked when activated (long parameter
+	 *                 is nanoseconds time)
 	 */
 	public void whenDeactivated(LongConsumer consumer) {
 		deactivatedConsumer = consumer;
@@ -115,6 +129,66 @@ public abstract class AbstractDigitalInputDevice extends GpioInputDevice<Digital
 		} else {
 			enableDeviceListener();
 		}
+	}
+
+	/**
+	 * Wait indefinitely for the device state to go active.
+	 * 
+	 * @return False if timed out waiting for the specified value, otherwise true.
+	 * @throws InterruptedException If interrupted while waiting.
+	 */
+	public boolean waitForActive() throws InterruptedException {
+		return waitForActive(0);
+	}
+
+	/**
+	 * Wait the specified time period for the device state to go active.
+	 * 
+	 * @param timeout Timeout value if milliseconds, &lt;= 0 is indefinite.
+	 * @return False if timed out waiting for the specified value, otherwise true.
+	 * @throws InterruptedException If interrupted while waiting.
+	 */
+	public boolean waitForActive(int timeout) throws InterruptedException {
+		return waitForValue(activeHigh, timeout);
+	}
+
+	/**
+	 * Wait indefinitely for the device state to go inactive.
+	 * 
+	 * @return False if timed out waiting for the specified value, otherwise true.
+	 * @throws InterruptedException If interrupted while waiting.
+	 */
+	public boolean waitForInactive() throws InterruptedException {
+		return waitForInactive(0);
+	}
+
+	/**
+	 * Wait the specified time period for the device state to go inactive.
+	 * 
+	 * @param timeout Timeout value if milliseconds, &lt;= 0 is indefinite.
+	 * @return False if timed out waiting for the specified value, otherwise true.
+	 * @throws InterruptedException If interrupted while waiting.
+	 */
+	public boolean waitForInactive(int timeout) throws InterruptedException {
+		return waitForValue(!activeHigh, timeout);
+	}
+
+	/**
+	 * Wait the specified time period for the device state to switch to the
+	 * specified value, not taking into account active high / low logic.
+	 * 
+	 * @param value   The desired device state to wait for.
+	 * @param timeout Timeout value if milliseconds, &lt;= 0 is indefinite.
+	 * @return False if timed out waiting for the specified value, otherwise true.
+	 * @throws InterruptedException If interrupted while waiting.
+	 */
+	public boolean waitForValue(boolean value, int timeout) throws InterruptedException {
+		EventLock e = value ? highEvent : lowEvent;
+		if (timeout > 0) {
+			return e.doWait(timeout);
+		}
+
+		return e.doWait();
 	}
 
 	protected abstract void setListener();

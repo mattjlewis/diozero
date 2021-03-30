@@ -38,8 +38,8 @@ import java.io.InputStreamReader;
 
 import org.tinylog.Logger;
 
-import com.diozero.api.Servo;
 import com.diozero.devices.PCA9685;
+import com.diozero.devices.Servo;
 import com.diozero.internal.spi.PwmOutputDeviceFactoryInterface;
 
 public class InteractiveServoControl {

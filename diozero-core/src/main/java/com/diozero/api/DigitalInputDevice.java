@@ -31,6 +31,7 @@ package com.diozero.api;
  * #L%
  */
 
+
 import org.tinylog.Logger;
 
 import com.diozero.internal.spi.GpioDeviceFactoryInterface;
@@ -45,22 +46,42 @@ public class DigitalInputDevice extends AbstractDigitalInputDevice {
 	 * Digital input device builder. Default values:
 	 * <ul>
 	 * <li>pud: {@link GpioPullUpDown#NONE}</li>
-	 * <li>dataBits: {@link GpioEventTrigger#BOTH}</li>
-	 * <li>deviceFactory: {@link DeviceFactoryHelper#getNativeDeviceFactory}</li>
+	 * <li>trigger: {@link GpioEventTrigger#BOTH}</li>
 	 * <li>activeHigh: set to false if pud == {@link GpioPullUpDown#PULL_UP},
 	 * otherwise true (assumes normally open wiring configuration)</li>
+	 * <li>deviceFactory: {@link DeviceFactoryHelper#getNativeDeviceFactory}</li>
 	 * </ul>
 	 * 
 	 * Either a GPIO number or a {@link PinInfo} instance must be specified. Using a
-	 * PinInfo instance allows input devices to be identified by either physical
-	 * pin number or GPIO chip and line offset.
+	 * PinInfo instance allows input devices to be identified by either physical pin
+	 * number or GPIO chip and line offset.
 	 * 
-	 * The optional activeHigh parameter defaults assume a normally open wiring
-	 * configuration, however, it can be overridden for normally closed
+	 * The optional activeHigh parameter default value assumes a normally open
+	 * wiring configuration, however, this can be overridden for normally closed
 	 * configurations as well as scenarios where pud is {@link GpioPullUpDown#NONE}
 	 * and an external pull up/down resistor is used.
 	 */
 	public static class Builder {
+		/**
+		 * Create a new DigitalInputDevice builder instance
+		 * 
+		 * @param gpio The GPIO to be used for the new DigitalInputDevice
+		 * @return A new DigitalInputDevice builder instance
+		 */
+		public static Builder builder(int gpio) {
+			return new Builder(gpio);
+		}
+
+		/**
+		 * Create a new DigitalInputDevice builder instance
+		 * 
+		 * @param pinInfo The pin to be used for the new DigitalInputDevice
+		 * @return A new DigitalInputDevice builder instance
+		 */
+		public static Builder builder(PinInfo pinInfo) {
+			return new Builder(pinInfo);
+		}
+
 		private Integer gpio;
 		private PinInfo pinInfo;
 		private GpioPullUpDown pud = GpioPullUpDown.NONE;
@@ -96,7 +117,7 @@ public class DigitalInputDevice extends AbstractDigitalInputDevice {
 			return this;
 		}
 
-		public DigitalInputDevice build() {
+		public DigitalInputDevice build() throws RuntimeIOException, NoSuchDeviceException {
 			// Determine activeHigh from pud if not explicitly set
 			if (activeHigh == null) {
 				activeHigh = Boolean.valueOf(pud != GpioPullUpDown.PULL_UP);
@@ -115,15 +136,25 @@ public class DigitalInputDevice extends AbstractDigitalInputDevice {
 		}
 	}
 
+	/**
+	 * @Deprecated Use {@link Builder#builder(int)} instead
+	 * @param gpio The GPIO to be used for the new DigitalInputDevice
+	 * @return A new DigitalInputDevice builder instance
+	 */
 	public static Builder builder(int gpio) {
-		return new Builder(gpio);
+		return Builder.builder(gpio);
 	}
 
+	/**
+	 * @Deprecated Use {@link Builder#builder(PinInfo)} instead
+	 * @param pinInfo The pin to be used for the new DigitalInputDevice
+	 * @return A new DigitalInputDevice builder instance
+	 */
 	public static Builder builder(PinInfo pinInfo) {
-		return new Builder(pinInfo);
+		return Builder.builder(pinInfo);
 	}
 
-	protected GpioDigitalInputDeviceInterface delegate;
+	private GpioDigitalInputDeviceInterface delegate;
 	private GpioPullUpDown pud;
 	private GpioEventTrigger trigger;
 
@@ -131,7 +162,7 @@ public class DigitalInputDevice extends AbstractDigitalInputDevice {
 	 * @param gpio GPIO to which the device is connected.
 	 * @throws RuntimeIOException If an I/O error occurs.
 	 */
-	public DigitalInputDevice(int gpio) throws RuntimeIOException {
+	public DigitalInputDevice(int gpio) throws RuntimeIOException, NoSuchDeviceException {
 		this(DeviceFactoryHelper.getNativeDeviceFactory(), gpio, GpioPullUpDown.NONE, GpioEventTrigger.BOTH);
 	}
 
@@ -142,7 +173,8 @@ public class DigitalInputDevice extends AbstractDigitalInputDevice {
 	 *                BOTH
 	 * @throws RuntimeIOException If an I/O error occurs
 	 */
-	public DigitalInputDevice(int gpio, GpioPullUpDown pud, GpioEventTrigger trigger) throws RuntimeIOException {
+	public DigitalInputDevice(int gpio, GpioPullUpDown pud, GpioEventTrigger trigger)
+			throws RuntimeIOException, NoSuchDeviceException {
 		this(DeviceFactoryHelper.getNativeDeviceFactory(), gpio, pud, trigger);
 	}
 
@@ -175,7 +207,7 @@ public class DigitalInputDevice extends AbstractDigitalInputDevice {
 	 * @throws RuntimeIOException If an I/O error occurs.
 	 */
 	public DigitalInputDevice(GpioDeviceFactoryInterface deviceFactory, PinInfo pinInfo, GpioPullUpDown pud,
-			GpioEventTrigger trigger, boolean activeHigh) throws RuntimeIOException {
+			GpioEventTrigger trigger, boolean activeHigh) throws RuntimeIOException, NoSuchDeviceException {
 		super(pinInfo, activeHigh);
 
 		this.delegate = deviceFactory.provisionDigitalInputDevice(pinInfo, pud, trigger);

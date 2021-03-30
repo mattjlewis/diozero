@@ -36,38 +36,79 @@ import org.tinylog.Logger;
 import com.diozero.util.SleepUtil;
 
 public class SleepTest {
-	public static void main(String[] args) {
-		int sleep_ns = 10_000;
-		
-		Logger.info("JNI sleep");
-		SleepUtil.sleepNanos(100_000);
-		for (int i=0; i<10; i++) {
+	public static void main(String[] args) throws InterruptedException {
+		testMillisecondSleep();
+		// testMicrosecondSleep();
+		testNanosecondSleep();
+	}
+
+	private static void testMillisecondSleep() throws InterruptedException {
+		Logger.info("Testing millisecond sleep accuracy...");
+
+		int sleep_ms = 10;
+
+		// First of all make sure the code is loaded into the JIT
+		for (int i = 0; i < 10; i++) {
+			SleepUtil.sleepMillis(sleep_ms);
+			Thread.sleep(sleep_ms);
+			SleepUtil.busySleep(sleep_ms * 1_000_000);
+		}
+
+		Logger.info("diozero sleep");
+		for (int i = 0; i < 10; i++) {
 			long start = System.nanoTime();
-			SleepUtil.sleepNanos(sleep_ns);
+			SleepUtil.sleepMillis(sleep_ms);
 			long duration = System.nanoTime() - start;
-			Logger.info("Slept for " + duration + " nanos, difference=" + (duration - sleep_ns));
+			Logger.info("Slept for " + (duration / 1_000_000f) + " ms, difference="
+					+ (duration - sleep_ms * 1_000_000) / 1_000_000f + " ms");
 		}
 
 		Logger.info("Java sleep");
-		try {
-			Thread.sleep(0, sleep_ns);
-			for (int i=0; i<10; i++) {
-				long start = System.nanoTime();
-				Thread.sleep(0, sleep_ns);
-				long duration = System.nanoTime() - start;
-				Logger.info("Slept for " + duration + " nanos, difference=" + (duration - sleep_ns));
-			}
-		} catch (InterruptedException e) {
-			Logger.error(e, "Error: ", e);
+		for (int i = 0; i < 10; i++) {
+			long start = System.nanoTime();
+			Thread.sleep(sleep_ms);
+			long duration = System.nanoTime() - start;
+			Logger.info("Slept for " + (duration / 1_000_000f) + " ms, difference="
+					+ (duration - sleep_ms * 1_000_000) / 1_000_000f + " ms");
 		}
-		
+	}
+
+	private static void testNanosecondSleep() throws InterruptedException {
+		Logger.info("Testing nanosecond sleep accuracy...");
+
+		int sleep_ns = 10_000;
+
+		// First of all make sure the code is loaded into the JIT
+		/*
+		for (int i = 0; i < 10; i++) {
+			SleepUtil.sleepNanos(sleep_ns);
+			Thread.sleep(0, sleep_ns);
+			SleepUtil.busySleep(sleep_ns);
+		}
+
+		Logger.info("JNI sleep");
+		for (int i = 0; i < 10; i++) {
+			long start = System.nanoTime();
+			SleepUtil.sleepNanos(sleep_ns);
+			long duration = System.nanoTime() - start;
+			Logger.info("Slept for " + duration + " ns, difference=" + (duration - sleep_ns) + " ns");
+		}
+		*/
+
+		Logger.info("Java sleep");
+		for (int i = 0; i < 10; i++) {
+			long start = System.nanoTime();
+			Thread.sleep(0, sleep_ns);
+			long duration = System.nanoTime() - start;
+			Logger.info("Slept for " + duration + " ns, difference=" + (duration - sleep_ns) + " ns");
+		}
+
 		Logger.info("Busy sleep");
-		SleepUtil.busySleep(sleep_ns);
-		for (int i=0; i<10; i++) {
+		for (int i = 0; i < 10; i++) {
 			long start = System.nanoTime();
 			SleepUtil.busySleep(sleep_ns);
 			long duration = System.nanoTime() - start;
-			Logger.info("Slept for " + duration + " nanos, difference=" + (duration - sleep_ns));
+			Logger.info("Slept for " + duration + " ns, difference=" + (duration - sleep_ns) + " ns");
 		}
 	}
 }

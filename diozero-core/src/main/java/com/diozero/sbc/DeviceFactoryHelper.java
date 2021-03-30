@@ -84,7 +84,7 @@ public class DeviceFactoryHelper {
 
 				Logger.debug("Using native device factory class {}", nativeDeviceFactory.getClass().getSimpleName());
 
-				Runtime.getRuntime().addShutdownHook(new ShutdownHandlerThread(nativeDeviceFactory));
+				Runtime.getRuntime().addShutdownHook(new ShutdownHandlerThread());
 
 				nativeDeviceFactory.start();
 			} else if (nativeDeviceFactory.isClosed()) {
@@ -130,6 +130,8 @@ public class DeviceFactoryHelper {
 	}
 
 	public static void shutdown() {
+		// First close all instances that have registered themselves with the
+		// DeviceFactoryHelper
 		if (closeables != null) {
 			closeables.forEach(closeable -> {
 				try {
@@ -140,29 +142,26 @@ public class DeviceFactoryHelper {
 			});
 			closeables.clear();
 		}
+
+		// Then close the base native device factory which will close all
+		// InternalDeviceInterface
+		// instances that are still open
+		if (nativeDeviceFactory != null && !nativeDeviceFactory.isClosed()) {
+			nativeDeviceFactory.close();
+		}
 	}
 }
 
 class ShutdownHandlerThread extends Thread {
-	private NativeDeviceFactoryInterface deviceFactory;
-
-	public ShutdownHandlerThread(NativeDeviceFactoryInterface deviceFactory) {
-		this.deviceFactory = deviceFactory;
+	public ShutdownHandlerThread() {
 		setName("diozero Shutdown Handler");
 		setDaemon(false);
 	}
 
 	@Override
 	public void run() {
-		if (!deviceFactory.isClosed()) {
-			Logger.debug("Shutdown handler running");
-			// First close all instances that have registered themselves with the
-			// DeviceFactoryHelper
-			DeviceFactoryHelper.shutdown();
-			// Then close all device factories which will close all InternalDeviceInterface
-			// instances that are still open
-			deviceFactory.close();
-			Logger.debug("Shutdown handler finished");
-		}
+		Logger.debug("Shutdown handler running");
+		DeviceFactoryHelper.shutdown();
+		Logger.debug("Shutdown handler finished");
 	}
 }

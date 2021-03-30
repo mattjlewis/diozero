@@ -76,8 +76,9 @@ public class NativeGpioOutputDevice extends AbstractDevice implements GpioDigita
 	public void setValue(boolean value) throws RuntimeIOException {
 		if (mmapGpio == null) {
 			line.setValue(value ? 1 : 0);
+		} else {
+			mmapGpio.gpioWrite(gpio, value);
 		}
-		mmapGpio.gpioWrite(gpio, value);
 	}
 
 	@Override

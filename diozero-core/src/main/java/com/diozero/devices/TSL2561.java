@@ -40,6 +40,15 @@ import com.diozero.util.SleepUtil;
 
 /**
  * <a href="https://cdn-shop.adafruit.com/datasheets/TSL2561.pdf">Datasheet</a>
+ * Pins:
+ * 
+ * <pre>
+ * +-----------------------------+
+ * |           TSL2561           |
+ * |-----+-----+-----+-----+-----|
+ * | INT | SDA | SCL | GND | VCC |
+ * +-----+-----+-----+-----+-----+
+ * </pre>
  */
 @SuppressWarnings("unused")
 public class TSL2561 implements LuminositySensorInterface {
@@ -167,10 +176,10 @@ public class TSL2561 implements LuminositySensorInterface {
 		this(I2CConstants.CONTROLLER_1, tsl2561Package);
 	}
 
-	public TSL2561(int controller, TSL2561Package tsl2561Package)
-			throws RuntimeIOException {
-		i2cDevice = I2CDevice.builder(DEVICE_ADDRESS).setController(controller).setByteOrder(ByteOrder.LITTLE_ENDIAN).build();
-		
+	public TSL2561(int controller, TSL2561Package tsl2561Package) throws RuntimeIOException {
+		i2cDevice = I2CDevice.builder(DEVICE_ADDRESS).setController(controller).setByteOrder(ByteOrder.LITTLE_ENDIAN)
+				.build();
+
 		this.tsl2561Package = tsl2561Package;
 		initialised = false;
 		autoGain = false;

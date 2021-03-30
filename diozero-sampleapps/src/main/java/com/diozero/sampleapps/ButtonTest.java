@@ -61,7 +61,7 @@ public class ButtonTest {
 			button.whenPressed(nanoTime -> Logger.info("Pressed"));
 			button.whenReleased(nanoTime -> Logger.info("Released"));
 			button.addListener(event -> Logger.info("Event: {}", event));
-			Logger.debug("Waiting for 10s - *** Press the button connected to input pin " + inputPin + " ***");
+			Logger.info("Waiting for 10s - *** Press the button connected to input pin " + inputPin + " ***");
 			SleepUtil.sleepSeconds(10);
 		} catch (RuntimeIOException ioe) {
 			Logger.error(ioe, "Error: {}", ioe);

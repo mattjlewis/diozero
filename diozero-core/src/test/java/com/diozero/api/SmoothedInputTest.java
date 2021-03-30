@@ -36,6 +36,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.tinylog.Logger;
@@ -52,48 +53,102 @@ public class SmoothedInputTest implements DeviceEventConsumer<DigitalInputEvent>
 		TestDeviceFactory.setDigitalInputDeviceClass(TestDigitalInputDevice.class);
 		TestDeviceFactory.setDigitalOutputDeviceClass(TestDigitalOutputDevice.class);
 	}
-	
+
+	private int eventCount;
+
 	@Test
-	public void test() {
+	public void testSmoothing() {
+		eventCount = 0;
 		int pin = 1;
-		float delay = 5;
-		// Require 10 events in 2 seconds to be considered on, check every 50ms
-		try (SmoothedInputDevice device = new SmoothedInputDevice(pin, GpioPullUpDown.NONE, 10, 2000, 50)) {
+		int delay_secs = 5;
+		// Require 10 events in any 2 second period to be considered 'active', check
+		// every 100ms
+		try (SmoothedInputDevice device = new SmoothedInputDevice(pin, GpioPullUpDown.NONE, 10, 2000, 100)) {
 			device.addListener(this);
 			Runnable event_generator = new Runnable() {
 				@Override
 				public void run() {
-					long nano_time = System.nanoTime();
-					long now = System.currentTimeMillis();
-					device.accept(new DigitalInputEvent(pin, now, nano_time, true));
+					device.accept(new DigitalInputEvent(pin, System.currentTimeMillis(), System.nanoTime(), true));
 				}
 			};
-			
+
 			ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(10);
-			
-			// Generate 1 event every 100ms -> 10 events per second, therefore should get a smoothed event every 1s
+
+			// Generate 1 event every 100ms -> 10 events per second, therefore should get a
+			// smoothed event every 1s
 			ScheduledFuture<?> future = scheduler.scheduleAtFixedRate(event_generator, 100, 100, TimeUnit.MILLISECONDS);
-			Logger.info("Sleeping for {}s", Float.valueOf(delay));
-			SleepUtil.sleepSeconds(delay);
-			
-			Logger.info("Stopping event generation and sleeping for {}s", Float.valueOf(delay));
+
+			Logger.info("Sleeping for {}s", Integer.valueOf(delay_secs));
+			SleepUtil.sleepSeconds(delay_secs);
+			Logger.info("eventCount: {}, should be: {}", Integer.valueOf(eventCount), Integer.valueOf(delay_secs));
+			Assertions.assertTrue(eventCount >= (delay_secs - 1) && eventCount <= (delay_secs + 1));
+
+			Logger.info("Stopping event generation and sleeping for {}s", Integer.valueOf(delay_secs));
 			future.cancel(true);
-			SleepUtil.sleepSeconds(delay);
-			
-			// Generate 1 event every 50ms -> 20 events per second
+			SleepUtil.sleepSeconds(delay_secs);
+			eventCount = 0;
+
+			// Generate 1 event every 100ms -> 10 events per second
 			future = scheduler.scheduleAtFixedRate(event_generator, 100, 100, TimeUnit.MILLISECONDS);
-			Logger.info("Restarting event generation and sleeping for {}s", Float.valueOf(delay));
-			SleepUtil.sleepSeconds(delay);
+			Logger.info("Restarting event generation and sleeping for {}s", Integer.valueOf(delay_secs));
+			SleepUtil.sleepSeconds(delay_secs);
+			Assertions.assertTrue(eventCount >= (delay_secs - 1) && eventCount <= (delay_secs + 1));
 			future.cancel(true);
-			
+
 			scheduler.shutdownNow();
-		} catch (Throwable t) {
-			Logger.error(t, "Error: {}", t);
 		}
+	}
+
+	@Test
+	public void testDebounce() {
+		Logger.info("testDebounce() - start");
+		
+		eventCount = 0;
+		int pin = 1;
+		int delay_secs = 5;
+		// Require 1 event in any 500ms period to be considered 'active', check every 500ms
+		try (SmoothedInputDevice device = SmoothedInputDevice.Builder.builder(pin).setThreshold(1).setEventAgeMs(500)
+				.setEventDetectPeriodMs(500).build()) {
+			device.addListener(this);
+			Runnable event_generator = new Runnable() {
+				@Override
+				public void run() {
+					device.accept(new DigitalInputEvent(pin, System.currentTimeMillis(), System.nanoTime(), true));
+				}
+			};
+
+			ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(10);
+
+			// Generate 1 event every 250ms -> 4 events per second, should get 1 debounced event every 500ms
+			ScheduledFuture<?> future = scheduler.scheduleAtFixedRate(event_generator, 250, 250, TimeUnit.MILLISECONDS);
+
+			Logger.info("Sleeping for {}s", Integer.valueOf(delay_secs));
+			SleepUtil.sleepSeconds(delay_secs);
+			Logger.info("eventCount: {}, should be: {}", Integer.valueOf(eventCount), Integer.valueOf(2*delay_secs));
+			//Assertions.assertTrue(eventCount >= (delay_secs - 1) && eventCount <= (delay_secs + 1));
+
+			Logger.info("Stopping event generation and sleeping for {}s", Integer.valueOf(delay_secs));
+			future.cancel(true);
+			SleepUtil.sleepSeconds(delay_secs);
+			eventCount = 0;
+
+			// Generate 1 event every 250ms -> 4 events per second
+			future = scheduler.scheduleAtFixedRate(event_generator, 250, 250, TimeUnit.MILLISECONDS);
+			Logger.info("Restarting event generation and sleeping for {}s", Integer.valueOf(delay_secs));
+			SleepUtil.sleepSeconds(delay_secs);
+			//Assertions.assertTrue(eventCount >= (delay_secs - 1) && eventCount <= (delay_secs + 1));
+			future.cancel(true);
+
+			scheduler.shutdownNow();
+		}
+		Logger.info("testDebounce() - end");
 	}
 
 	@Override
 	public void accept(DigitalInputEvent event) {
 		Logger.info("accept({})", event);
+		if (event.isActive()) {
+			eventCount++;
+		}
 	}
 }

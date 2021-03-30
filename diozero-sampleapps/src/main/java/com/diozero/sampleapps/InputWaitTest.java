@@ -36,7 +36,7 @@ import org.tinylog.Logger;
 import com.diozero.api.GpioEventTrigger;
 import com.diozero.api.GpioPullUpDown;
 import com.diozero.api.RuntimeIOException;
-import com.diozero.api.WaitableDigitalInputDevice;
+import com.diozero.api.DigitalInputDevice;
 
 /**
  * Input test application. To run:
@@ -57,7 +57,7 @@ public class InputWaitTest {
 	}
 
 	public static void test(int inputPin) {
-		try (WaitableDigitalInputDevice input = new WaitableDigitalInputDevice(inputPin, GpioPullUpDown.PULL_UP,
+		try (DigitalInputDevice input = new DigitalInputDevice(inputPin, GpioPullUpDown.PULL_UP,
 				GpioEventTrigger.BOTH)) {
 			while (true) {
 				Logger.info("Waiting for 2000ms for button press");

@@ -96,8 +96,8 @@ JNIEXPORT void JNICALL Java_com_diozero_util_PollNative_poll(
 		// TODO How to interrupt the blocking poll call?
 		retval = poll(&pfd, 1, timeout);
 		// Get the Java nano time as early as possible
-		nano_time = getJavaNanoTime();
-		epoch_time = getEpochTime();
+		nano_time = getJavaTimeNanos();
+		epoch_time = getEpochTimeMillis();
 
 		lseek(fd, 0, SEEK_SET); /* consume the interrupt */
 		memset(c, 0, BUF_LEN);

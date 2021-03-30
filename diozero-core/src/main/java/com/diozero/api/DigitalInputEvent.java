@@ -42,10 +42,13 @@ public class DigitalInputEvent extends DeviceEvent {
 	 * Constructs an input event from a digital device. See (@link
 	 * com.diozero.api.DeviceEvent} for first 3 parameters.
 	 * 
-	 * @param gpio
-	 * @param epochTime
-	 * @param nanoTime
-	 * @param value     initial value
+	 * @param gpio      GPIO number
+	 * @param epochTime Unix epoch time: milliseconds elapsed since January 1, 1970
+	 *                  (midnight UTC/GMT), not counting leap seconds
+	 * @param nanoTime  The Java Virtual Machine's high-resolution time source, in
+	 *                  nanoseconds (note this is unrelated to epochTime and uses
+	 *                  CLOCK_MONOTONIC in the C clock_gettime() function)
+	 * @param value     the event value
 	 */
 	public DigitalInputEvent(int gpio, long epochTime, long nanoTime, boolean value) {
 		super(gpio, epochTime, nanoTime);
@@ -58,7 +61,8 @@ public class DigitalInputEvent extends DeviceEvent {
 	}
 
 	/**
-	 * Returns the underlying GPIO state. Note does not compensate for active high / low.
+	 * Returns the underlying GPIO state. Note does not compensate for active high /
+	 * low.
 	 * 
 	 * @return the physical digital pin state
 	 */
@@ -67,7 +71,8 @@ public class DigitalInputEvent extends DeviceEvent {
 	}
 
 	/**
-	 * Determine if the event is active or not compensating for active high / low wiring
+	 * Determine if the event is active or not compensating for active high / low
+	 * wiring
 	 * 
 	 * @return if the event should be consider active or inactive
 	 */

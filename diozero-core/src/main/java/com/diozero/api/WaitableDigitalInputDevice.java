@@ -33,16 +33,14 @@ package com.diozero.api;
 
 import com.diozero.internal.spi.GpioDeviceFactoryInterface;
 import com.diozero.sbc.DeviceFactoryHelper;
-import com.diozero.util.EventLock;
 
 /**
  * Represents a digital input device with distinct waitable states (active /
  * inactive).
+ * @deprecated Functionality has moved up to AbstractDigitalInputDevice
  */
+@Deprecated
 public class WaitableDigitalInputDevice extends DigitalInputDevice {
-	private EventLock highEvent = new EventLock();
-	private EventLock lowEvent = new EventLock();
-
 	/**
 	 * @param gpio GPIO to which the device is connected.
 	 * @throws RuntimeIOException If an I/O error occurred.
@@ -81,73 +79,5 @@ public class WaitableDigitalInputDevice extends DigitalInputDevice {
 	@Override
 	protected void disableDeviceListener() {
 		// Never disable the device listener
-	}
-
-	@Override
-	public void accept(DigitalInputEvent event) {
-		EventLock e = event.getValue() ? highEvent : lowEvent;
-		e.set();
-
-		// Notify any listeners
-		super.accept(event);
-	}
-
-	/**
-	 * Wait indefinitely for the device state to go active.
-	 * 
-	 * @return False if timed out waiting for the specified value, otherwise true.
-	 * @throws InterruptedException If interrupted while waiting.
-	 */
-	public boolean waitForActive() throws InterruptedException {
-		return waitForActive(0);
-	}
-
-	/**
-	 * Wait the specified time period for the device state to go active.
-	 * 
-	 * @param timeout Timeout value if milliseconds, &lt;= 0 is indefinite.
-	 * @return False if timed out waiting for the specified value, otherwise true.
-	 * @throws InterruptedException If interrupted while waiting.
-	 */
-	public boolean waitForActive(int timeout) throws InterruptedException {
-		return waitForValue(activeHigh, timeout);
-	}
-
-	/**
-	 * Wait indefinitely for the device state to go inactive.
-	 * 
-	 * @return False if timed out waiting for the specified value, otherwise true.
-	 * @throws InterruptedException If interrupted while waiting.
-	 */
-	public boolean waitForInactive() throws InterruptedException {
-		return waitForInactive(0);
-	}
-
-	/**
-	 * Wait the specified time period for the device state to go inactive.
-	 * 
-	 * @param timeout Timeout value if milliseconds, &lt;= 0 is indefinite.
-	 * @return False if timed out waiting for the specified value, otherwise true.
-	 * @throws InterruptedException If interrupted while waiting.
-	 */
-	public boolean waitForInactive(int timeout) throws InterruptedException {
-		return waitForValue(!activeHigh, timeout);
-	}
-
-	/**
-	 * Wait the specified time period for the device state to switch to value.
-	 * 
-	 * @param value   The desired device state to wait for.
-	 * @param timeout Timeout value if milliseconds, &lt;= 0 is indefinite.
-	 * @return False if timed out waiting for the specified value, otherwise true.
-	 * @throws InterruptedException If interrupted while waiting.
-	 */
-	public boolean waitForValue(boolean value, int timeout) throws InterruptedException {
-		EventLock e = value ? highEvent : lowEvent;
-		if (timeout > 0) {
-			return e.doWait(timeout);
-		}
-
-		return e.doWait();
 	}
 }

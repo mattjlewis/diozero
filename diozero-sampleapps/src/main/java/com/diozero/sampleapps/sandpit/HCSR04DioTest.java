@@ -55,7 +55,7 @@ public class HCSR04DioTest {
 				dio.setMode(DeviceMode.DIGITAL_OUTPUT);
 				System.out.println("setValue(true)");
 				dio.setValue(true);
-				SleepUtil.sleepNanos(10);
+				SleepUtil.busySleep(10);
 				System.out.println("setValue(false)");
 				dio.setValue(false);
 				dio.setMode(DeviceMode.DIGITAL_INPUT);
@@ -75,7 +75,7 @@ public class HCSR04DioTest {
 		dio.setMode(DeviceMode.DIGITAL_OUTPUT);
 		System.out.println("setValue(true)");
 		dio.setValue(true);
-		SleepUtil.sleepNanos(10);
+		SleepUtil.busySleep(10);
 		dio.setValue(false);
 		dio.setMode(DeviceMode.DIGITAL_INPUT);
 		// Wait for the pin to go high

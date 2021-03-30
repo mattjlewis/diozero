@@ -254,7 +254,7 @@ public class GpioChip extends GpioChipInfo implements AutoCloseable, GpioLineEve
 	}
 
 	public void register(int fd, GpioLineEventListener listener) {
-		// FIXME Use SelectorProvider instead?
+		// TODO Investigate use of SelectorProvider instead
 		if (epollFd == EPOLL_FD_NOT_CREATED) {
 			int rc = NativeGpioDevice.epollCreate();
 			if (rc < 0) {
@@ -288,10 +288,13 @@ public class GpioChip extends GpioChipInfo implements AutoCloseable, GpioLineEve
 	}
 
 	@Override
-	public void event(int fd, int eventDataId, long timestampNanos) {
+	public void event(int fd, int eventDataId, long epochTimeMs, long timestampNanos) {
+		// Acquire the lock
 		lock.lock();
-		eventQueue.add(new NativeGpioEvent(fd, eventDataId, timestampNanos));
+		// Add the event to the tail of the queue
+		eventQueue.offer(new NativeGpioEvent(fd, eventDataId, epochTimeMs, timestampNanos));
 		try {
+			// Notify the event processor
 			condition.signal();
 		} finally {
 			lock.unlock();
@@ -304,13 +307,17 @@ public class GpioChip extends GpioChipInfo implements AutoCloseable, GpioLineEve
 	}
 
 	private void processEvents() {
-		Thread.currentThread().setName("diozero-NativeGpioChip-processEvents-" + hashCode());
+		Thread.currentThread().setName("diozero-GpioChip-processEvents-" + hashCode());
 
 		while (running.get()) {
-			// Wait for an event on the queue
+			// Acquire the lock
 			lock.lock();
 			try {
-				condition.await();
+				// Only wait if the queue is empty
+				if (eventQueue.isEmpty()) {
+					// Wait for an event on the queue
+					condition.await();
+				}
 			} catch (InterruptedException e) {
 				Logger.debug("Interrupted!");
 				break;
@@ -332,7 +339,57 @@ public class GpioChip extends GpioChipInfo implements AutoCloseable, GpioLineEve
 						Logger.warn("No listener for fd {}, event data: '{}'", event_fd,
 								Integer.valueOf(event.eventDataId));
 					} else {
-						listener.event(event.fd, event.eventDataId, event.timestampNanos);
+						listener.event(event.fd, event.eventDataId, event.epochTimeMs, event.timestampNanos);
+					}
+				}
+			} while (!eventQueue.isEmpty());
+		}
+
+		Logger.debug("Finished");
+	}
+
+	public void eventNotUsed(int fd, int eventDataId, long epochTimeMs, long timestampNanos) {
+		System.out.println("event, delta time: " + (System.nanoTime() - timestampNanos));
+		synchronized (eventQueue) {
+			// Add the event to the tail of the queue
+			eventQueue.offer(new NativeGpioEvent(fd, eventDataId, epochTimeMs, timestampNanos));
+			// Notify the event processor
+			eventQueue.notify();
+		}
+	}
+
+	private void processEventsNotUsed() {
+		Thread.currentThread().setName("diozero-GpioChip-processEvents-" + hashCode());
+
+		while (running.get()) {
+			synchronized (eventQueue) {
+				// Only wait if the queue is empty
+				if (eventQueue.isEmpty()) {
+					// Wait for an event on the queue
+					try {
+						eventQueue.wait();
+					} catch (InterruptedException e) {
+						Logger.debug("Interrupted!");
+						break;
+					}
+				}
+			}
+			
+			// Process all of the events on the queue
+			// Note the event queue is a concurrent linked queue hence thread safe
+			do {
+				NativeGpioEvent event = eventQueue.poll();
+
+				if (event == null) {
+					Logger.debug("No event returned");
+				} else {
+					Integer event_fd = Integer.valueOf(event.fd);
+					GpioLineEventListener listener = fdToListener.get(event_fd);
+					if (listener == null) {
+						Logger.warn("No listener for fd {}, event data: '{}'", event_fd,
+								Integer.valueOf(event.eventDataId));
+					} else {
+						listener.event(event.fd, event.eventDataId, event.epochTimeMs, event.timestampNanos);
 					}
 				}
 			} while (!eventQueue.isEmpty());
@@ -344,11 +401,13 @@ public class GpioChip extends GpioChipInfo implements AutoCloseable, GpioLineEve
 	private static class NativeGpioEvent {
 		int fd;
 		int eventDataId;
+		long epochTimeMs;
 		long timestampNanos;
 
-		public NativeGpioEvent(int fd, int eventDataId, long timestampNanos) {
+		public NativeGpioEvent(int fd, int eventDataId, long epochTimeMs, long timestampNanos) {
 			this.fd = fd;
 			this.eventDataId = eventDataId;
+			this.epochTimeMs = epochTimeMs;
 			this.timestampNanos = timestampNanos;
 		}
 	}

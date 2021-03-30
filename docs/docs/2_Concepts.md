@@ -34,15 +34,17 @@ Single Board Computer that can run Linux and Java 8.
 
 diozero implements a layered architecture so as to provide maximum portability.
 
+![diozero layers](/assets/images/Layers.png "diozero layers")
+
 Device API
-: Refers to classes in the package `com.diozero.devices` which represent physical devices and are
-to be used by diozero applications.
+: Refers to classes in the package `com.diozero.devices` that are designed to represent physical
+devices, such as an LED, and are to be used by diozero applications.
 All of the classes in `com.diozero.devices` rely exclusively on the `com.diozero.api` package for
-doing GPIO, I2C, SPI, and Serial communication.
+GPIO, I2C, SPI, and Serial communication.
 
 Base I/O API
 : Classes and interfaces in the package `com.diozero.api` for doing GPIO, I2C, SPI, and Serial
-communication. These classes make use of the Provider layer via the interfaces and abstract
+communication. These classes make use of the Provider SPI layer via the interfaces and abstract
 classes in `com.diozero.internal.spi` for actual device communication.
 
 Provider
@@ -51,9 +53,7 @@ for maximum compatibility across different boards.
 The Provider layer is split into two separate aspects (see the
 [Providers](2_concepts/1_Providers.md#providers) section for additional details):
 1. The Service Provider Interface (`com.diozero.internal.spi`), and
-1. Service provider implementations. 
-
-![diozero layers](/assets/images/Layers.png "diozero layers")
+1. Service provider implementations, e.g. the default built-in provider (`com.diozero.internal.provider.builtin`). 
 
 ## Clean-up
 

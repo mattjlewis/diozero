@@ -40,11 +40,12 @@ public abstract class DeviceEvent extends Event {
 	/**
 	 * Constructor for a device event.
 	 * 
-	 * @param gpio      GPIO pin
-	 * @param epochTime Unix epoch time: seconds elapsed since January 1, 1970
+	 * @param gpio      GPIO number
+	 * @param epochTime Unix epoch time: milliseconds elapsed since January 1, 1970
 	 *                  (midnight UTC/GMT), not counting leap seconds
-	 * @param nanoTime  current value of the Java Virtual Machine's high-resolution
-	 *                  time source, in nanoseconds
+	 * @param nanoTime  The Java Virtual Machine's high-resolution time source, in
+	 *                  nanoseconds (note this is unrelated to epochTime and uses
+	 *                  CLOCK_MONOTONIC in the C clock_gettime() function)
 	 */
 	public DeviceEvent(int gpio, long epochTime, long nanoTime) {
 		super(epochTime, nanoTime);

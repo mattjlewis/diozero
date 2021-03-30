@@ -89,7 +89,7 @@ public class FirmataProtocolHandlerTestApp {
 			}
 		} catch (InterruptedException e) {
 		} finally {
-			DeviceFactoryHelper.getNativeDeviceFactory().close();
+			DeviceFactoryHelper.shutdown();
 		}
 	}
 }

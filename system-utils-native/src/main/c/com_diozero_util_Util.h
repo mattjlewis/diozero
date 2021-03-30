@@ -6,9 +6,10 @@ extern "C" {
 
 #include <jni.h>
 
-jlong getEpochTime();
-jlong getEpochTime2();
-jlong getJavaNanoTime();
+jlong getEpochTimeMillis();
+jlong getEpochTimeMillis2();
+jlong getEpochTimeNanos();
+jlong getJavaTimeNanos();
 
 #ifdef __cplusplus
 }

@@ -203,6 +203,10 @@ public class DefaultDeviceFactory extends BaseNativeDeviceFactory {
 		if (epoll != null) {
 			epoll.close();
 		}
+
+		if (mmapGpio != null) {
+			mmapGpio.close();
+		}
 	}
 
 	@Override
@@ -255,7 +259,7 @@ public class DefaultDeviceFactory extends BaseNativeDeviceFactory {
 			return new NativeGpioOutputDevice(this, key, chip, pinInfo, initialValue, mmapGpio);
 		}
 
-		return new SysFsDigitalOutputDevice(this, key, pinInfo, initialValue);
+		return new SysFsDigitalOutputDevice(this, key, pinInfo, initialValue, mmapGpio);
 	}
 
 	@Override

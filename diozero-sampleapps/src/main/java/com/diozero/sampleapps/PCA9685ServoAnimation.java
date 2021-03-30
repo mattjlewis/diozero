@@ -42,8 +42,8 @@ import org.tinylog.Logger;
 import com.diozero.animation.Animation;
 import com.diozero.animation.AnimationInstance;
 import com.diozero.animation.easing.Sine;
-import com.diozero.api.Servo;
 import com.diozero.devices.PCA9685;
+import com.diozero.devices.Servo;
 
 /**
  * PCA9685 sample application. To run:

@@ -33,11 +33,11 @@ package com.diozero.devices.sandpit;
 
 import org.tinylog.Logger;
 
+import com.diozero.api.DigitalInputDevice;
 import com.diozero.api.DigitalOutputDevice;
 import com.diozero.api.GpioEventTrigger;
 import com.diozero.api.GpioPullUpDown;
 import com.diozero.api.RuntimeIOException;
-import com.diozero.api.WaitableDigitalInputDevice;
 import com.diozero.devices.DistanceSensorInterface;
 import com.diozero.util.SleepUtil;
 
@@ -81,7 +81,7 @@ public class HCSR04UsingWait implements DistanceSensorInterface {
 	private static final int MAX_ECHO_TIME_MS = (int) Math.floor(MAX_DISTANCE_CM * 2 * SleepUtil.MS_IN_SEC / SPEED_OF_SOUND_CM_PER_S) + 1;
 
 	private DigitalOutputDevice trigger;
-	private WaitableDigitalInputDevice echo;
+	private DigitalInputDevice echo;
 
 	/**
 	 * Initialise GPIO to echo and trigger pins
@@ -94,7 +94,7 @@ public class HCSR04UsingWait implements DistanceSensorInterface {
 		// Define device for trigger pin at HCSR04
 		trigger = new DigitalOutputDevice(triggerGpioNum, true, false);
 		// Define device for echo pin at HCSR04
-		echo = new WaitableDigitalInputDevice(echoGpioNum, GpioPullUpDown.PULL_DOWN, GpioEventTrigger.BOTH);
+		echo = new DigitalInputDevice(echoGpioNum, GpioPullUpDown.PULL_DOWN, GpioEventTrigger.BOTH);
 
 		// Sleep for 20 ms - let the device settle?
 		SleepUtil.sleepMillis(20);

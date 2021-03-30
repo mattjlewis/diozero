@@ -51,10 +51,11 @@ public class KeypadTest {
 				{ '7', '8', '9', 'C' }, //
 				{ '*', '0', '#', 'D' } //
 		};
-		Keypad keypad = new Keypad(row_gpios, col_gpios, keys);
-		for (int i = 0; i < 10; i++) {
-			Logger.debug("Pressed: {}", keypad.getKeys());
-			SleepUtil.sleepSeconds(1);
+		try (Keypad keypad = new Keypad(row_gpios, col_gpios, keys)) {
+			for (int i = 0; i < 10; i++) {
+				Logger.debug("Pressed: {}", keypad.getKeys());
+				SleepUtil.sleepSeconds(1);
+			}
 		}
 	}
 }
