@@ -137,19 +137,21 @@ public class DigitalInputDevice extends AbstractDigitalInputDevice {
 	}
 
 	/**
-	 * @Deprecated Use {@link Builder#builder(int)} instead
+	 * @deprecated Use {@link Builder#builder(int)} instead
 	 * @param gpio The GPIO to be used for the new DigitalInputDevice
 	 * @return A new DigitalInputDevice builder instance
 	 */
+	@Deprecated
 	public static Builder builder(int gpio) {
 		return Builder.builder(gpio);
 	}
 
 	/**
-	 * @Deprecated Use {@link Builder#builder(PinInfo)} instead
+	 * @deprecated Use {@link Builder#builder(PinInfo)} instead
 	 * @param pinInfo The pin to be used for the new DigitalInputDevice
 	 * @return A new DigitalInputDevice builder instance
 	 */
+	@Deprecated
 	public static Builder builder(PinInfo pinInfo) {
 		return Builder.builder(pinInfo);
 	}
