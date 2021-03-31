@@ -1,6 +1,6 @@
 package com.diozero.sampleapps;
 
-import java.util.Collections;
+import static org.fusesource.jansi.Ansi.ansi;
 
 /*
  * #%L
@@ -33,11 +33,10 @@ import java.util.Collections;
  * #L%
  */
 
+import java.util.Collections;
 import java.util.Map;
 
-import static org.fusesource.jansi.Ansi.ansi;
 import org.fusesource.jansi.Ansi.Color;
-import org.fusesource.jansi.AnsiConsole;
 
 import com.diozero.api.PinInfo;
 import com.diozero.internal.spi.NativeDeviceFactoryInterface;
@@ -49,10 +48,6 @@ public class SystemInformation {
 	private static final int MIN_PIN_NAME_LENGTH = 8;
 
 	public static void main(String[] args) {
-		AnsiConsole.systemInstall();
-
-		System.out.println(ansi().eraseScreen());
-
 		// System.out.println(Ansi.ansi().eraseScreen().render("@|red Hello|@ @|green
 		// World|@") );
 
@@ -130,8 +125,6 @@ public class SystemInformation {
 			System.out.format("+-----+-%s-+--------+----------+--------+-%s-+-----+%n", name_dash, name_dash);
 			System.out.println();
 		}
-
-		AnsiConsole.systemUninstall();
 	}
 
 	private static Color getColour(PinInfo pinInfo) {

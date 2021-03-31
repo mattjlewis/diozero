@@ -37,14 +37,9 @@ import org.fusesource.jansi.AnsiConsole;
 
 public class JAnsiTest {
 	public static void main(String[] args) {
-		AnsiConsole.systemInstall();
-
 		System.out.println(ansi().eraseScreen().fgRed().a("Hello").a(" ").fgGreen().a("World!").reset().a(" ")
 				.bgBrightRed().a("Matt").reset());
-		//AnsiConsole.out().println(AnsiRenderer.render("@|red Hello|@ @|green World|@"));
 		
 		System.out.println(ansi().bold().fgGreen().a("Hello").boldOff().fgDefault().a(" Matt"));
-
-		AnsiConsole.systemUninstall();
 	}
 }

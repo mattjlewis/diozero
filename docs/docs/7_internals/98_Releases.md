@@ -139,3 +139,9 @@ permalink: /internals/releases.html
 + Added Builder to Button
 + Use mmap (if available) when getting / setting GPIO values using built-in sysfs
 + Ensure all nano timestamp values use CLOCK_MONOTONIC rather than CLOCK_REALTIME
+
+## 1.1.9
+
++ Tweaks to native library cross compilation
++ #68 bug-fix for I2C on 64-bit systems
++ Fix to SystemInformation coloured output with Jansi on armv6

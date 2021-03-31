@@ -90,12 +90,12 @@ public class MCP23017 extends MCP23x17 {
 	}
 	
 	@Override
-	protected void writeByte(int register, byte value) {
-		device.writeByteData(register, value);
+	protected byte readByte(int register) {
+		return device.readByteData(register);
 	}
 	
 	@Override
-	protected byte readByte(int register) {
-		return device.readByteData(register);
+	protected void writeByte(int register, byte value) {
+		device.writeByteData(register, value);
 	}
 }

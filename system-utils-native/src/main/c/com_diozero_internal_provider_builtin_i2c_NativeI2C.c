@@ -85,7 +85,7 @@ int selectSlave(int fd, int deviceAddress, uint8_t force) {
 
 JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_builtin_i2c_NativeI2C_getFuncs(
 		JNIEnv* env, jclass clz, jint fd) {
-	uint32_t funcs;
+	long_t funcs;
 	int rc = ioctl(fd, I2C_FUNCS, &funcs);
 	if (rc < 0) {
 		perror("I2C Error in getFuncs");

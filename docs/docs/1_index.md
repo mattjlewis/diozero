@@ -59,11 +59,11 @@ to development and improve code readability.
 
 diozero has out of the box support for the following Single Board Computers and micro-controllers:
 
-* [Raspberry Pi](https://www.raspberrypi.org/) (all versions).
-* [Odroid C2](https://wiki.odroid.com/odroid-c2/odroid-c2).
+* [Raspberry Pi](https://www.raspberrypi.org/) (all versions + tested on Raspberry Pi OS 32-bit and 64-bit as well as Ubuntu Server 64-bit).
+* [Odroid C2](https://wiki.odroid.com/odroid-c2/odroid-c2) (Armbian 64-bit).
 * [BeagleBone Green / Black](https://beagleboard.org/black).
-* [ASUS TinkerBoard](https://www.asus.com/uk/Single-board-Computer/TINKER-BOARD/).
-* [Allwinner H3](https://linux-sunxi.org/H3) boards, including [NanoPi Neo](https://www.friendlyarm.com/index.php?route=product/product&product_id=132) and [NanoPi Duo](https://www.friendlyarm.com/index.php?route=product/product&product_id=244).
+* [ASUS TinkerBoard](https://www.asus.com/uk/Single-board-Computer/TINKER-BOARD/) (ASUS TinkerOS/Linaro as well as Armbian 64-bit).
+* [Allwinner H3](https://linux-sunxi.org/H3) boards, including [NanoPi Neo](https://www.friendlyarm.com/index.php?route=product/product&product_id=132) and [NanoPi Duo](https://www.friendlyarm.com/index.php?route=product/product&product_id=244) (Armbian 32-bit).
 * [The Next Thing Co CHIP](https://getchip.com/pages/chip).
 * [Arduino compatible](https://www.arduino.cc) (any device that can run [Standard Firmata](https://github.com/firmata/arduino/blob/master/examples/StandardFirmata/StandardFirmata.ino)).
 * [ESP8266](https://www.espressif.com/en/products/socs/esp8266) / [ESP32](https://www.espressif.com/en/products/socs/esp32) (via [Standard Firmata WiFi](https://github.com/firmata/arduino/tree/master/examples/StandardFirmataWiFi)).

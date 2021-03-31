@@ -1,19 +1,26 @@
 RM = rm -f
-CC = $(CROSS_COMPILE)gcc
-AR = $(CROSS_COMPILE)ar
+
+CC           = $(CROSS_PREFIX)gcc
+AR           = $(CROSS_PREFIX)ar
+SIZE         = $(CROSS_PREFIX)size
+STRIP        = $(CROSS_PREFIX)strip
+SHLIB        = $(CC) -shared
+STRIPLIB     = $(STRIP) --strip-unneeded
 
 # To check CFLAGS: arm-linux-gnueabihf-gcc -Q --help=target
 # Alternative for 64 bit: aarch64-linux-gnu-gcc
-#CFLAGS = -Wall -fPIC -O3 -march=armv6+fp -mfpu=vfp -mfloat-abi=hard
-CFLAGS = -Wall -fPIC -O3 -march=$(ARCH) $(CC_CFLAGS)
+#CFLAGS = -O3 -Wall -fPIC -march=armv6+fp -mfpu=vfp -mfloat-abi=hard
+CFLAGS = -O3 -Wall -fPIC -march=$(ARCH) $(CC_CFLAGS)
 # BeagleBone Black:
-#CFLAGS = -Wall -fPIC -O3 -march=armv7-a+fp -mfpu=vfpv3-d16 -mfloat-abi=hard -mhard-float -mabi=aapcs-linux
+#CFLAGS = -O3 -Wall -fPIC -march=armv7-a+fp -mfpu=vfpv3-d16 -mfloat-abi=hard -mhard-float -mabi=aapcs-linux
 
 INCLUDES = -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/linux -I$(JAVA_HOME)/include/darwin
-LFLAGS = -L/home/vagrant/libs/$(CROSS_COMPILE)lib
-SO_FILE_EXT = so
+
+LFLAGS = -L/home/vagrant/libs/$(CROSS_PREFIX)lib
 
 LIBS = -Wl,-Bstatic -li2c -Wl,-Bdynamic
+
+SO_FILE_EXT = so
 
 SRCS = com_diozero_internal_provider_builtin_gpio_NativeGpioDevice.c \
 	com_diozero_internal_provider_builtin_i2c_NativeI2C.c \
@@ -31,17 +38,12 @@ LIB_TARGET = libdiozero-system-utils.$(SO_FILE_EXT)
 
 all: $(LIB_TARGET)
 
-$(LIB_TARGET): $(OBJS)
-	@echo [LINK] $(LIB_TARGET)
-	@$(CC) -shared -o $(LIB_TARGET) $(OBJS) $(LFLAGS) $(LIBS)
-
-$(MAIN): $(OBJS)
-	@echo [LINK] $(MAIN)
-	$(CC) -o $(MAIN) $(OBJS) $(LFLAGS) $(LIBS)
-
 .c.o:
-	@echo [COMPILE] $(CFLAGS) $<
-	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+
+$(LIB_TARGET): $(OBJS)
+	$(SHLIB) -o $(LIB_TARGET) $(OBJS) $(LFLAGS) $(LIBS)
+	$(STRIPLIB) $(LIB_TARGET)
 
 clean:
 	$(RM) $(OBJS) $(LIB_TARGET) *~
