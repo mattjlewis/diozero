@@ -7,7 +7,7 @@ permalink: /api/gpio.html
 
 # General Purpose Input / Output (GPIO)
 
-TBD!
+[Javadoc](https://www.javadoc.io/doc/com.diozero/diozero-core).
 
 ## Digital
 

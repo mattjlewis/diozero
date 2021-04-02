@@ -42,22 +42,20 @@ import com.diozero.internal.spi.DeviceFactoryInterface;
 import com.diozero.internal.spi.GpioDigitalOutputDeviceInterface;
 import com.diozero.util.SleepUtil;
 
-public class HCSR04TriggerPin extends AbstractDevice
-implements GpioDigitalOutputDeviceInterface, Runnable {
+public class HCSR04TriggerPin extends AbstractDevice implements GpioDigitalOutputDeviceInterface, Runnable {
 	private int gpio;
 	private boolean value;
 	private long start;
 	private ExecutorService executor;
-	
-	public HCSR04TriggerPin(String key, DeviceFactoryInterface deviceFactory,
-			int gpio, boolean initialValue) {
+
+	public HCSR04TriggerPin(String key, DeviceFactoryInterface deviceFactory, int gpio, boolean initialValue) {
 		super(key, deviceFactory);
-		
+
 		this.gpio = gpio;
 		this.value = initialValue;
 		executor = Executors.newCachedThreadPool();
 	}
-	
+
 	@Override
 	public int getGpio() {
 		return gpio;
@@ -67,19 +65,19 @@ implements GpioDigitalOutputDeviceInterface, Runnable {
 	public boolean getValue() throws RuntimeIOException {
 		return value;
 	}
-	
+
 	@Override
 	public void setValue(boolean value) throws RuntimeIOException {
 		boolean old_value = this.value;
 		this.value = value;
 
 		// Start the signal echo process if the trigger pin goes high then low
-		if (old_value && ! value) {
+		if (old_value && !value) {
 			start = System.currentTimeMillis();
 			executor.execute(this);
 		}
 	}
-	
+
 	@Override
 	public void run() {
 		Logger.debug("run()");

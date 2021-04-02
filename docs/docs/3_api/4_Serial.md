@@ -7,4 +7,4 @@ permalink: /api/serial.html
 
 # Serial Devices
 
-TBD!
+[Javadoc](https://www.javadoc.io/doc/com.diozero/diozero-core).

@@ -1,6 +1,6 @@
 ---
-Title: Remove Control
-nav_order: 6
+Title: Remote Control
+nav_order: 7
 permalink: /remotecontrol.html
 ---
 

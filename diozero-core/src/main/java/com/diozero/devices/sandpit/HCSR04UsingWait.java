@@ -115,9 +115,9 @@ public class HCSR04UsingWait implements DistanceSensorInterface {
 			// wait 10 us (10,000ns)
 			Thread.sleep(0, PULSE_NS);
 			trigger.setValueUnsafe(false);
-		
-			// Wait up to 1 second for the echo pin to rise
-			if (! echo.waitForValue(true, 1000)) {
+			
+			// Wait for up to 1 second for the echo pin to rise
+			if (! echo.waitForValue(true, 1_000)) {
 				Logger.warn("Timed-out waiting for echo pin to go high, max={}ms", Integer.valueOf(1000));
 				return -1;
 			}

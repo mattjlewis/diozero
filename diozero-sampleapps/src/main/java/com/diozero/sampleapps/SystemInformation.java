@@ -1,7 +1,3 @@
-package com.diozero.sampleapps;
-
-import static org.fusesource.jansi.Ansi.ansi;
-
 /*
  * #%L
  * Organisation: diozero
@@ -33,10 +29,15 @@ import static org.fusesource.jansi.Ansi.ansi;
  * #L%
  */
 
+package com.diozero.sampleapps;
+
+import static com.diozero.sampleapps.util.ConsoleUtil.getGpiodName;
+import static com.diozero.sampleapps.util.ConsoleUtil.getNotDefined;
+import static com.diozero.sampleapps.util.ConsoleUtil.getPinColour;
+import static org.fusesource.jansi.Ansi.ansi;
+
 import java.util.Collections;
 import java.util.Map;
-
-import org.fusesource.jansi.Ansi.Color;
 
 import com.diozero.api.PinInfo;
 import com.diozero.internal.spi.NativeDeviceFactoryInterface;
@@ -85,12 +86,14 @@ public class SystemInformation {
 			int index = 0;
 			for (PinInfo pin_info : pins.values()) {
 				if (index++ % 2 == 0) {
-					System.out.print(ansi().a("| ").bold().fg(getColour(pin_info))
-							.format("%3s", getNotDefined(pin_info.getDeviceNumber())).fgDefault().boldOff().a(" | ")
-							.bold().fg(getColour(pin_info)).format("%" + max_length + "s", pin_info.getName())
-							.fgDefault().boldOff().a(" | ").bold().format("%2s", getNotDefined(pin_info.getChip()))
-							.boldOff().a(':').bold().format("%-3s", getNotDefined(pin_info.getLineOffset())).boldOff()
-							.a(" | ").bold().format("%2s", getNotDefined(pin_info.getPhysicalPin())).boldOff().a(" |"));
+					System.out.print(ansi().a("| ") //
+							.bold().fg(getPinColour(pin_info)).format("%3s", getNotDefined(pin_info.getDeviceNumber()))
+							.fgDefault().boldOff().a(" | ") //
+							.bold().fg(getPinColour(pin_info)).format("%" + max_length + "s", pin_info.getName())
+							.fgDefault().boldOff().a(" | ") //
+							.bold().format("%6s", getGpiodName(pin_info.getChip(), pin_info.getLineOffset())).boldOff()
+							.a(" | ") //
+							.bold().format("%2s", getNotDefined(pin_info.getPhysicalPin())).boldOff().a(" |"));
 					/*-
 					System.out.format("| %3s | %" + max_length + "s | %2s:%-3s | %2s |",
 							getNotDefined(pin_info.getDeviceNumber()), pin_info.getName(),
@@ -98,12 +101,14 @@ public class SystemInformation {
 							getNotDefined(pin_info.getPhysicalPin()));
 					*/
 				} else {
-					System.out.println(ansi().a("| ").bold().format("%-2s", getNotDefined(pin_info.getPhysicalPin()))
-							.boldOff().a(" | ").bold().format("%2s", getNotDefined(pin_info.getChip())).boldOff().a(":")
-							.bold().format("%-3s", getNotDefined(pin_info.getLineOffset())).boldOff().a(" | ").bold()
-							.fg(getColour(pin_info)).format("%-" + max_length + "s", pin_info.getName()).fgDefault()
-							.boldOff().a(" | ").bold().fg(getColour(pin_info))
-							.format("%-3s", getNotDefined(pin_info.getDeviceNumber())).fgDefault().boldOff().a(" |"));
+					System.out.println(ansi().a("| ") //
+							.bold().format("%-2s", getNotDefined(pin_info.getPhysicalPin())).boldOff().a(" | ") //
+							.bold().format("%-6s", getGpiodName(pin_info.getChip(), pin_info.getLineOffset())).boldOff()
+							.a(" | ") //
+							.bold().fg(getPinColour(pin_info)).format("%-" + max_length + "s", pin_info.getName())
+							.fgDefault().boldOff().a(" | ") //
+							.bold().fg(getPinColour(pin_info)).format("%-3s", getNotDefined(pin_info.getDeviceNumber()))
+							.fgDefault().boldOff().a(" |"));
 					/*-
 					System.out.format("| %-2s | %2s:%-3s | %-" + max_length + "s | %-3s |%n",
 							getNotDefined(pin_info.getPhysicalPin()), getNotDefined(pin_info.getChip()),
@@ -125,32 +130,6 @@ public class SystemInformation {
 			System.out.format("+-----+-%s-+--------+----------+--------+-%s-+-----+%n", name_dash, name_dash);
 			System.out.println();
 		}
-	}
-
-	private static Color getColour(PinInfo pinInfo) {
-		if (pinInfo.getDeviceNumber() != PinInfo.NOT_DEFINED) {
-			return Color.GREEN;
-		}
-
-		Color colour;
-		switch (pinInfo.getName()) {
-		case PinInfo.VCC_3V3:
-			colour = Color.MAGENTA;
-			break;
-		case PinInfo.VCC_5V:
-			colour = Color.RED;
-			break;
-		case PinInfo.GROUND:
-			colour = Color.BLUE;
-			break;
-		default:
-			colour = Color.DEFAULT;
-		}
-		return colour;
-	}
-
-	public static String getNotDefined(int value) {
-		return value == PinInfo.NOT_DEFINED ? "" : Integer.toString(value);
 	}
 }
 

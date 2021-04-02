@@ -183,6 +183,8 @@ public abstract class AbstractDigitalInputDevice extends GpioInputDevice<Digital
 	 * @throws InterruptedException If interrupted while waiting.
 	 */
 	public boolean waitForValue(boolean value, int timeout) throws InterruptedException {
+		enableDeviceListener();
+		
 		EventLock e = value ? highEvent : lowEvent;
 		if (timeout > 0) {
 			return e.doWait(timeout);

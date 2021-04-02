@@ -50,14 +50,14 @@ import com.diozero.internal.spi.DeviceFactoryInterface;
 import com.diozero.internal.spi.GpioDigitalInputDeviceInterface;
 
 public class HCSR04EchoPin extends AbstractInputDevice<DigitalInputEvent>
-implements GpioDigitalInputDeviceInterface, Runnable {
+		implements GpioDigitalInputDeviceInterface, Runnable {
 	private static final Random random = new Random();
 	private static HCSR04EchoPin instance;
-	
+
 	static HCSR04EchoPin getInstance() {
 		return instance;
 	}
-	
+
 	private int gpio;
 	private Lock lock;
 	private Condition cond;
@@ -65,25 +65,25 @@ implements GpioDigitalInputDeviceInterface, Runnable {
 	private long echoStart;
 	private AtomicBoolean running;
 	private ExecutorService executor;
-	
-	public HCSR04EchoPin(String key, DeviceFactoryInterface deviceFactory,
-			int gpio, GpioPullUpDown pud, GpioEventTrigger trigger) {
+
+	public HCSR04EchoPin(String key, DeviceFactoryInterface deviceFactory, int gpio, GpioPullUpDown pud,
+			GpioEventTrigger trigger) {
 		super(key, deviceFactory);
-		
+
 		this.gpio = gpio;
-		
+
 		instance = this;
-		
+
 		lock = new ReentrantLock();
 		cond = lock.newCondition();
 		value = new AtomicBoolean();
 		running = new AtomicBoolean();
-		
+
 		// Start the background process to send the echo low signal
 		executor = Executors.newFixedThreadPool(1);
 		executor.execute(this);
 	}
-	
+
 	@Override
 	public int getGpio() {
 		return gpio;
@@ -101,7 +101,7 @@ implements GpioDigitalInputDeviceInterface, Runnable {
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
 		Logger.trace("closeDevice()");
-		
+
 		running.getAndSet(false);
 		lock.lock();
 		try {
@@ -111,11 +111,11 @@ implements GpioDigitalInputDeviceInterface, Runnable {
 		}
 		executor.shutdownNow();
 	}
-	
+
 	void doEcho(long start) {
 		try {
 			Logger.debug("doEcho()");
-			
+
 			if (System.currentTimeMillis() - start < 50) {
 				Thread.sleep(random.nextInt(50));
 			}
