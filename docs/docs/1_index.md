@@ -53,7 +53,7 @@ This library makes use of modern Java features such as
 [automatic resource management](https://docs.oracle.com/javase/tutorial/essential/exceptions/tryResourceClose.html), 
 [Lambda Expressions](https://docs.oracle.com/javase/tutorial/java/javaOO/lambdaexpressions.html) and 
 [Method References](https://docs.oracle.com/javase/tutorial/java/javaOO/methodreferences.html) 
-to development and improve code readability.
+to simplify development and improve code readability.
 
 ## Supported Boards
 
@@ -109,6 +109,6 @@ This project is hosted on [GitHub](https://github.com/mattjlewis/diozero/), plea
 * Provide sample applications and device implementation classes
 * Contribute to development
 
-[Release History](7_internals/2_Releases.md)
+[Release History](7_internals/98_Releases.md)
 
 This work is provided under the [MIT License](https://github.com/mattjlewis/diozero/tree/master/LICENSE.txt).

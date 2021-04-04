@@ -33,6 +33,7 @@ package com.diozero.api;
 
 import org.tinylog.Logger;
 
+import com.diozero.api.DigitalInputDevice.Builder;
 import com.diozero.api.function.Action;
 import com.diozero.internal.spi.GpioDeviceFactoryInterface;
 import com.diozero.internal.spi.GpioDigitalOutputDeviceInterface;
@@ -45,6 +46,58 @@ import com.diozero.util.SleepUtil;
  * and low logic.
  */
 public class DigitalOutputDevice extends GpioDevice implements OutputDeviceInterface {
+	public static final class Builder {
+		public static Builder builder(int gpio) {
+			return new Builder(gpio);
+		}
+
+		public static Builder builder(PinInfo pinInfo) {
+			return new Builder(pinInfo);
+		}
+
+		private Integer gpio;
+		private PinInfo pinInfo;
+		private boolean activeHigh = true;
+		private boolean initialValue = false;
+		private GpioDeviceFactoryInterface deviceFactory;
+
+		public Builder(int gpio) {
+			this.gpio = Integer.valueOf(gpio);
+		}
+
+		public Builder(PinInfo pinInfo) {
+			this.pinInfo = pinInfo;
+		}
+		
+		public Builder setActiveHigh(boolean activeHigh) {
+			this.activeHigh = activeHigh;
+			return this;
+		}
+		
+		public Builder setInitialValue(boolean initialValue) {
+			this.initialValue = initialValue;
+			return this;
+		}
+
+		public Builder setGpioDeviceFactoryInterface(GpioDeviceFactoryInterface deviceFactory) {
+			this.deviceFactory = deviceFactory;
+			return this;
+		}
+		
+		public DigitalOutputDevice build() {
+			// Default to the native device factory if not set
+			if (deviceFactory == null) {
+				deviceFactory = DeviceFactoryHelper.getNativeDeviceFactory();
+			}
+
+			if (pinInfo == null) {
+				pinInfo = deviceFactory.getBoardPinInfo().getByGpioNumberOrThrow(gpio.intValue());
+			}
+
+			return new DigitalOutputDevice(deviceFactory, pinInfo, activeHigh, initialValue);
+		}
+	}
+	
 	public static final int INFINITE_ITERATIONS = -1;
 
 	private boolean activeHigh;

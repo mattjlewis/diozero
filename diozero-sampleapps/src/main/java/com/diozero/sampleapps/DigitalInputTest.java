@@ -43,27 +43,27 @@ import com.diozero.util.SleepUtil;
 public class DigitalInputTest {
 	public static void main(String[] args) {
 		int delay_sec = 10;
-		
+
 		LongConsumer activated = new LongConsumer() {
 			@Override
 			public void accept(long timestampNs) {
 				System.out.println("hit " + timestampNs + ", delta = " + (System.nanoTime() - timestampNs));
 			}
 		};
-		
+
 		LongConsumer deactivated = new LongConsumer() {
 			@Override
 			public void accept(long timestampNs) {
 				System.out.println("away " + timestampNs + ", delta = " + (System.nanoTime() - timestampNs));
 			}
 		};
-		
+
 		System.out.println("Falling only...");
 		try (DigitalInputDevice d = DigitalInputDevice.Builder.builder(5).setActiveHigh(false)
 				.setPullUpDown(GpioPullUpDown.NONE).setTrigger(GpioEventTrigger.FALLING).build()) {
 			d.whenActivated(activated);
 			d.whenDeactivated(deactivated);
-			
+
 			System.out.println("Sleeping for " + delay_sec + " seconds...");
 			SleepUtil.sleepSeconds(delay_sec);
 			System.out.println("Done.");
@@ -74,13 +74,13 @@ public class DigitalInputTest {
 		} catch (InterruptedException e) {
 			Logger.error(e, "Interrupted: {}", e);
 		}
-		
+
 		System.out.println("Falling and rising...");
 		try (DigitalInputDevice d = DigitalInputDevice.Builder.builder(5).setActiveHigh(false)
 				.setPullUpDown(GpioPullUpDown.NONE).setTrigger(GpioEventTrigger.BOTH).build()) {
 			d.whenActivated(activated);
 			d.whenDeactivated(deactivated);
-			
+
 			System.out.println("Sleeping for " + delay_sec + " seconds...");
 			SleepUtil.sleepSeconds(delay_sec);
 			System.out.println("Done.");
@@ -98,33 +98,35 @@ public class DigitalInputTest {
 	 */
 	public static void combinations() {
 		// NO switch with internal pull-up using GPIO #18
-		try (DigitalInputDevice did1 = DigitalInputDevice.builder(18).setPullUpDown(GpioPullUpDown.PULL_UP).build()) {
+		try (DigitalInputDevice did1 = DigitalInputDevice.Builder.builder(18).setPullUpDown(GpioPullUpDown.PULL_UP)
+				.build()) {
 			// Do stuff, noting that active-high will have been defaulted to
 			// false as diozero assumes the switch is wired NO
 		}
 
 		// NC switch with internal pull-up using GPIO #18
-		try (DigitalInputDevice did1 = DigitalInputDevice.builder(18).setPullUpDown(GpioPullUpDown.PULL_UP)
+		try (DigitalInputDevice did1 = DigitalInputDevice.Builder.builder(18).setPullUpDown(GpioPullUpDown.PULL_UP)
 				.setActiveHigh(true).build()) {
 			// Do stuff, noting that active-high has been overridden to true
 			// as the application developer knows that the switch is wired NC
 		}
 
 		// NO switch with internal pull-down using GPIO #18
-		try (DigitalInputDevice did1 = DigitalInputDevice.builder(18).setPullUpDown(GpioPullUpDown.PULL_DOWN).build()) {
+		try (DigitalInputDevice did1 = DigitalInputDevice.Builder.builder(18).setPullUpDown(GpioPullUpDown.PULL_DOWN)
+				.build()) {
 			// Do stuff, noting that active-high will have been defaulted to
 			// true as diozero assumes the switch is wired NO
 		}
 
 		// NC switch with internal pull-down using GPIO #18
-		try (DigitalInputDevice did1 = DigitalInputDevice.builder(18).setPullUpDown(GpioPullUpDown.PULL_DOWN)
+		try (DigitalInputDevice did1 = DigitalInputDevice.Builder.builder(18).setPullUpDown(GpioPullUpDown.PULL_DOWN)
 				.setActiveHigh(false).build()) {
 			// Do stuff, noting that active-high has been overridden to false
 			// as the application developer knows that the switch is wired NC
 		}
 
 		// NO switch with external pull-up using GPIO #18
-		try (DigitalInputDevice did1 = DigitalInputDevice.builder(18).setPullUpDown(GpioPullUpDown.NONE)
+		try (DigitalInputDevice did1 = DigitalInputDevice.Builder.builder(18).setPullUpDown(GpioPullUpDown.NONE)
 				.setActiveHigh(false).build()) {
 			// Do stuff, noting that active-high has been overridden to false as the
 			// application developer knows that the switch is wired NO with an external
@@ -132,7 +134,7 @@ public class DigitalInputTest {
 		}
 
 		// NC switch with external pull-up using GPIO #18
-		try (DigitalInputDevice did1 = DigitalInputDevice.builder(18).setPullUpDown(GpioPullUpDown.NONE)
+		try (DigitalInputDevice did1 = DigitalInputDevice.Builder.builder(18).setPullUpDown(GpioPullUpDown.NONE)
 				.setActiveHigh(true).build()) {
 			// Do stuff, noting that active-high has been overridden to true as the
 			// application developer knows that the switch is wired NC with an external

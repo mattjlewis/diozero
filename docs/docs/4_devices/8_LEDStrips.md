@@ -6,7 +6,8 @@ permalink: /devices/ledstrips.html
 
 # LED Strips
 
-## WS2811B / WS2812B / Adafruit NeoPixel {: #ws281x }
+## WS2811B / WS2812B / Adafruit NeoPixel
+{: #ws281x }
 
 TODO Insert wiring diagram.
 

@@ -36,7 +36,6 @@ import java.util.Collection;
 
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 
-import com.diozero.api.DeviceInterface;
 import com.diozero.api.I2CConstants;
 import com.diozero.api.RuntimeIOException;
 import com.diozero.devices.imu.ImuData;

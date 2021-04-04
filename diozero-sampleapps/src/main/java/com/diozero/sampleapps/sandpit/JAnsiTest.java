@@ -33,8 +33,6 @@ package com.diozero.sampleapps.sandpit;
 
 import static org.fusesource.jansi.Ansi.ansi;
 
-import org.fusesource.jansi.AnsiConsole;
-
 public class JAnsiTest {
 	public static void main(String[] args) {
 		System.out.println(ansi().eraseScreen().fgRed().a("Hello").a(" ").fgGreen().a("World!").reset().a(" ")

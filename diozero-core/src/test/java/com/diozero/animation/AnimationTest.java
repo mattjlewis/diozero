@@ -40,8 +40,6 @@ import java.util.concurrent.Future;
 
 import org.tinylog.Logger;
 
-import com.diozero.animation.Animation;
-import com.diozero.animation.AnimationInstance;
 import com.diozero.animation.easing.EasingFunctions;
 import com.diozero.animation.easing.Elastic;
 import com.diozero.api.OutputDeviceInterface;

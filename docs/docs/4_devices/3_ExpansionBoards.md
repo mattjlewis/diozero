@@ -8,9 +8,10 @@ permalink: /devices/expansionboards.html
 
 All of these devices act as Device Factories and should be accessed as such.
 
-## Microchip Analog to Digital Converters {: #mcp-adc }
+## Microchip Analog to Digital Converters
+{: #mcp-adc }
 
-: Provides support for the following Microchip analog-to-digital converter devices:
+Provides support for the following Microchip analog-to-digital converter devices:
 
 + MCP300x: [MCP3001](http://www.microchip.com/wwwproducts/en/MCP3001), [MCP3002](http://www.microchip.com/wwwproducts/en/MCP3002), [MCP3004](http://www.microchip.com/wwwproducts/en/MCP3004), [MCP3008](http://www.microchip.com/wwwproducts/en/MCP3008)
 + MCP320x: [MCP3201](http://www.microchip.com/wwwproducts/en/MCP3201), [MCP3202](http://www.microchip.com/wwwproducts/en/MCP3202), [MCP3204](http://www.microchip.com/wwwproducts/en/MCP3204), [MCP3208](http://www.microchip.com/wwwproducts/en/MCP3208)
@@ -31,24 +32,12 @@ try (McpAdc adc = new McpAdc(type, chipSelect); LDR ldr = new LDR(adc, pin, vRef
 }
 ```
 
-*class* **com.diozero.devices.McpAdc**{: .descname } (*type*, *chipSelect*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/devices/McpAdc.java){: .viewcode-link } [&para;](ExpansionBoards.md#mcpadc "Permalink to this definition"){: .headerlink }
+McpAdc [Javadoc](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/com/diozero/devices/McpAdc.html).
 
-: Implementation class for all supported MCP analog-to-digital converters.
+## Microchip MCP23xxx GPIO Expansion Board
+{: #mcp23xxx }
 
-    * **type** (*McpAdc.Type*) - The MCP type (MCP3001 - MCP3304).
-    
-    * **chipSelect** (*int*) - SPI Chip Select to which the ADC is connected.
-    
-    *float* **getValue** (*adcPin*)
-    
-    : Get the value for the specified ADC pin. Range 0..1 (if unsigned) or -1..1 (if signed).
-    
-    * **adcPin** (*int*) - The pin on the MCP ADC to take a reading from.
-    
-
-## Microchip MCP23xxx GPIO Expansion Board {: #mcp-gpio-expansion-board }
-
-An example circuit for controlling an LED with a button, all connected via an MCP23017:
+An example circuit for controlling an LED with a button, all connected via an [MCP23017](https://www.microchip.com/wwwproducts/en/mcp23017):
 
 ![MCP23017 Button controlled LED](/assets/images/MCP23017_LED_Button.png "MCP23017 Button controlled LED")
 
@@ -73,95 +62,48 @@ try (MCP23017 mcp23017 = new MCP23017(intAPin, intBPin);
 }
 ```
 
-*class* **com.diozero.devices.MCP23017**{: .descname } (*controller=1*, *address=0x20*, *interruptGpioA*, *interruptGpioB=interruptGpioA*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/devices/MCP23017.java){: .viewcode-link } [&para;](ExpansionBoards.md#mcp23017 "Permalink to this definition"){: .headerlink }
+Implementations:
 
-: Provides support for the Microchip [MCP23017](http://www.microchip.com/wwwproducts/Devices.aspx?product=MCP23017) 16-bit input/output port expander. Input device state change notifications will only work if at least one of the MCP23017 interrupt pins is connected to the Raspberry Pi.
+* MCP23008 [Javadoc](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/com/diozero/devices/MCP23008.html)
+* MCP23017 [Javadoc](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/com/diozero/devices/MCP23017.html)
+* MCP23S17 [Javadoc](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/com/diozero/devices/MCP23S17.html)
 
-    * **controller** (*int*) - I2C bus controller to which the MCP23017 is connected to. Defaults to bus 1.
-    
-    * **address** (*int*) - Device I2C address. Defaults to 0x20.
-    
-    * **interruptGpioA** (*int*) - The pin on the Raspberry Pi to be used for input interrupt notifications for bank A. If only interruptPinA is set or interruptPinB equals interuptPinB the device will be configured to mirrored interrupt mode whereby interrupts for either bank get mirrored on both of the MCP23017 interrupt outputs.
-    
-    * **interruptGpioB** (*int*) - The pin on the Raspberry Pi to be used for input interrupt notifications for bank B. Defaults to interruptGpioA.
-    
-    *boolean* **getValue** (*gpio*)
-    
-    : Get the value for the specified pin.
-    
-    * **gpio** (*int*) - GPIO.
-    
-    **setValue** (*gpio*, *value*)
-    
-    : Set the value for the specified pin.
-    
-    * **gpio** (*int*) - GPIO.
-    
-    * **value** (*boolean*) - Value to set.
+## PCF8574 GPIO Expansion Board
+{: #pcf8574 }
 
+Support for the [PCF8574](https://www.ti.com/lit/ds/symlink/pcf8574.pdf) 8-Bit I/O Expander.
 
-## PCF8591 ADC / DAC {: #pcf8591 }
+PCF8574 [Javadoc](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/com/diozero/devices/PCF8574.html).
 
-*class* **com.diozero.devices.PCF8591**{: .descname } (*controller*=1, *address=0x40*, *inputMode*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/devices/PCF8591.java){: .viewcode-link } [&para;](ExpansionBoards.md#pcf8591 "Permalink to this definition"){: .headerlink }
+## PCF8591 ADC / DAC
+{: #pcf8591 }
 
-: Supports the [NXP PCF8591](http://www.nxp.com/documents/data_sheet/PCF8591.pdf) ADC / DAC.
+Support for the [PCF8591](https://www.nxp.com/docs/en/data-sheet/PCF8591.pdf) 8-bit A/D and D/A converter.
 
-    * **controller** (*int*) - I2C controller.
-    
-    * **address** (*int*) - I2C device address.
-    
-    * **inputMode** (*InputMode*) - Device ADC input mode (4 single-ended, 3 differential, 2 single-ended + 1 differential, 2 differential).
-    
-    **getValue** (*adcPin*)
-    
-    : Get analogue value for the specified pin.
-    
-    * **adcPin** (*int*) - the analogue input pin.
-    
-    **setValue** (*dacPin*, *value*)
-    
-    : Set the analogue output value.
-    
-    * **dacPin** (*int*) - Digital output pin. Note there is only one DAC output pin.
-    
-    * **value** (*float*) - Output value (0..1).
+PCF8591 [Javadoc](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/com/diozero/devices/PCF8591.html).
 
+## PCA9685 PWM / Servo Driver
+{: #pca9685 }
 
-## PCA9685 PWM / Servo Driver {: #pwm-servo-driver }
+Provides support for the [PCA9685](http://www.nxp.com/products/power-management/lighting-driver-and-controller-ics/i2c-led-display-control/16-channel-12-bit-pwm-fm-plus-ic-bus-led-controller:PCA9685)
+12-bit 16-channel PWM driver as used by the [Adafruit PWM Servo Driver](https://www.adafruit.com/product/815).
+Implements [PwmOutputDeviceFactoryInterface](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/com/diozero/internal/spi/PwmOutputDeviceFactoryInterface.html)
+hence can be passed into the constructor of PWM output devices.
 
-*class* **com.diozero.devices.PCA9685**{: .descname } (*controller*=1, *address=0x40*, *pwmFrequency*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/devices/PCA9685.java){: .viewcode-link } [&para;](ExpansionBoards.md#pca9685 "Permalink to this definition"){: .headerlink }
+Usage example:
 
-: Provides support for the [PCA9685](http://www.nxp.com/products/power-management/lighting-driver-and-controller-ics/i2c-led-display-control/16-channel-12-bit-pwm-fm-plus-ic-bus-led-controller:PCA9685) 12-bit 16-channel PWM driver as used by the [Adafruit PWM Servo Driver](https://www.adafruit.com/product/815). Implements [PwmOutputDeviceFactoryInterface](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/internal/provider/PwmOutputDeviceFactoryInterface.java) hence can be passed into the constructor of PWM output devices.
-
-    Usage example:
-
-    ```java
-    float delay = 0.5f;
-    try (PwmOutputDeviceFactoryInterface df = new PCA9685(); PwmLed led = new PwmLed(df, pin)) {
-    	led.setValue(.25f);
-    	SleepUtil.sleepSeconds(delay);
-    	led.toggle();
-    	SleepUtil.sleepSeconds(delay);
-    	led.setValue(.5f);
-    	SleepUtil.sleepSeconds(delay);
-    	led.blink(0.5f, 0.5f, 5, false);
-    	led.pulse(1, 50, 5, false);
-    } catch (RuntimeIOException e) {
-    	Logger.error(e, "Error: {}", e);
-    }
-    ```
-    
-    * **controller** (*int*) - I2C controller bus. Defaults to 1.
-    
-    * **address** (*int*) - I2C address. Defaults to 0x40.
-    
-    * **pwmFrequency** (*int*) - PWM Frequency.
-
-    **setServoPulseWidthMs** (*channel*, *pulseWidthMs*)
-    
-    : Set the servo pulse for the specified channel.
-    
-    * **channel** (*int*) - Channel number.
-    
-    * **pulseWidthMs** (*int*) - Pulse width value (milliseconds).
-    
+```java
+float delay = 0.5f;
+try (PwmOutputDeviceFactoryInterface df = new PCA9685(); PwmLed led = new PwmLed(df, pin)) {
+	led.setValue(.25f);
+	SleepUtil.sleepSeconds(delay);
+	led.toggle();
+	SleepUtil.sleepSeconds(delay);
+	led.setValue(.5f);
+	SleepUtil.sleepSeconds(delay);
+	led.blink(0.5f, 0.5f, 5, false);
+	led.pulse(1, 50, 5, false);
+} catch (RuntimeIOException e) {
+	Logger.error(e, "Error: {}", e);
+}
+```

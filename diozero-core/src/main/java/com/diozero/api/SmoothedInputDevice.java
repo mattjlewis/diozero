@@ -36,8 +36,6 @@ import java.util.Queue;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 
-import org.tinylog.Logger;
-
 import com.diozero.internal.spi.GpioDeviceFactoryInterface;
 import com.diozero.sbc.DeviceFactoryHelper;
 import com.diozero.util.DiozeroScheduler;

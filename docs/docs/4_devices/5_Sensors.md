@@ -6,7 +6,8 @@ permalink: /devices/sensors.html
 
 # Sensors
 
-## HC-SR04 Ultrasonic Ranging Module {: #hc-sr04 }
+## HC-SR04 Ultrasonic Ranging Module
+{: #hc-sr04 }
 
 TODO Insert wiring diagram.
 
@@ -83,7 +84,8 @@ TODO Insert wiring diagram.
     : Read the humidity from the device.
 
 
-## TSL2561 Digital Luminosity / Lux / Light Sensor {: #tsl2561 }
+## TSL2561 Digital Luminosity / Lux / Light Sensor
+{: #tsl2561 }
 
 *class* **com.diozero.devices.TSL2561**{: .descname } (*tsl2561Package*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/devices/TSL2561.java){: .viewcode-link } [&para;](SensorComponents.md#tsl2561 "Permalink to this definition"){: .headerlink }
 
@@ -108,7 +110,8 @@ TODO Insert wiring diagram.
     : Get luminosity in Lux.
 
 
-## STMicroelectronics HTS221 Humidity and Temperature Sensor {: #hts221 }
+## STMicroelectronics HTS221 Humidity and Temperature Sensor
+{: #hts221 }
 
 *class* **com.diozero.devices.HTS221**{: .descname } [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/devices/HTS221.java){: .viewcode-link } [&para;](SensorComponents.md#hts221 "Permalink to this definition"){: .headerlink }
 
@@ -123,7 +126,8 @@ TODO Insert wiring diagram.
     : Read the temperature (in &deg;C) from the device.
 
 
-## STMicroelectronics LPS25H Pressure and Temperature Sensor {: #lps25h }
+## STMicroelectronics LPS25H Pressure and Temperature Sensor
+{: #lps25h }
 
 *class* **com.diozero.devices.LPS25H**{: .descname } [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/devices/LPS25H.java){: .viewcode-link } [&para;](SensorComponents.md#lps25h "Permalink to this definition"){: .headerlink }
 
@@ -163,7 +167,8 @@ TODO Insert wiring diagram.
     : Get the serial number for this 1-wire sensor instance.
 
 
-## Sharp GP2Y0A21YK {: #gp2y0a21yk }
+## Sharp GP2Y0A21YK
+{: #gp2y0a21yk }
 
 *class* **com.diozero.devices.GP2Y0A21YK**{: .descname } (*gpio*, *vRef*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/devices/GP2Y0A21YK.java){: .viewcode-link } [&para;](SensorComponents.md#gp2y0a21yk "Permalink to this definition"){: .headerlink }
 
@@ -178,7 +183,8 @@ TODO Insert wiring diagram.
     : Get the distance in cm.
 
 
-## Mifare RC522 (MFRC522) {: #mfrc522 }
+## Mifare RC522 (MFRC522)
+{: #mfrc522 }
 
 *class* **com.diozero.devices.MFRC522**{: .descname } (*controller*, *chipSelect*, *resetGpio*) [source](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/devices/devices/MFRC522.java){: .viewcode-link } [&para;](SensorComponents.md#mfrc522 "Permalink to this definition"){: .headerlink }
 

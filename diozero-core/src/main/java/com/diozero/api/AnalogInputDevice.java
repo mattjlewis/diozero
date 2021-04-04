@@ -78,7 +78,58 @@ import com.diozero.util.DiozeroScheduler;
  * </pre>
  */
 public class AnalogInputDevice extends GpioInputDevice<AnalogInputEvent> implements Runnable {
+	public static final class Builder {
+		public static Builder builder(int adcNumber) {
+			return new Builder(adcNumber);
+		}
+	
+		public static Builder builder(PinInfo pinInfo) {
+			return new Builder(pinInfo);
+		}
+	
+		private Integer adcNumber;
+		private PinInfo pinInfo;
+		private Float range;
+		private AnalogInputDeviceFactoryInterface deviceFactory;
+	
+		public Builder(int adcNumber) {
+			this.adcNumber = Integer.valueOf(adcNumber);
+		}
+	
+		public Builder(PinInfo pinInfo) {
+			this.pinInfo = pinInfo;
+		}
+	
+		public Builder setRange(float range) {
+			this.range = Float.valueOf(range);
+			return this;
+		}
+	
+		public Builder setGpioDeviceFactoryInterface(AnalogInputDeviceFactoryInterface deviceFactory) {
+			this.deviceFactory = deviceFactory;
+			return this;
+		}
+	
+		public AnalogInputDevice build() {
+			// Default to the native device factory if not set
+			if (deviceFactory == null) {
+				deviceFactory = DeviceFactoryHelper.getNativeDeviceFactory();
+			}
+	
+			if (pinInfo == null) {
+				pinInfo = deviceFactory.getBoardPinInfo().getByGpioNumberOrThrow(adcNumber.intValue());
+			}
+	
+			if (range == null) {
+				range = Float.valueOf(deviceFactory.getVRef());
+			}
+	
+			return new AnalogInputDevice(deviceFactory, pinInfo, range.floatValue());
+		}
+	}
+
 	private static final int DEFAULT_POLL_INTERVAL = 50;
+	
 	private AnalogInputDeviceInterface device;
 	private Float lastValue;
 	private int pollInterval = DEFAULT_POLL_INTERVAL;
@@ -87,29 +138,29 @@ public class AnalogInputDevice extends GpioInputDevice<AnalogInputEvent> impleme
 	private float range;
 
 	/**
-	 * @param gpio GPIO to which the device is connected.
+	 * @param adcNumber GPIO to which the device is connected.
 	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
-	public AnalogInputDevice(int gpio) throws RuntimeIOException {
-		this(DeviceFactoryHelper.getNativeDeviceFactory(), gpio);
+	public AnalogInputDevice(int adcNumber) throws RuntimeIOException {
+		this(DeviceFactoryHelper.getNativeDeviceFactory(), adcNumber);
 	}
 
 	/**
-	 * @param gpio  GPIO to which the device is connected.
-	 * @param range To be used for taking scaled readings for this device.
+	 * @param adcNumber GPIO to which the device is connected.
+	 * @param range     To be used for taking scaled readings for this device.
 	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
-	public AnalogInputDevice(int gpio, float range) throws RuntimeIOException {
-		this(DeviceFactoryHelper.getNativeDeviceFactory(), gpio, range);
+	public AnalogInputDevice(int adcNumber, float range) throws RuntimeIOException {
+		this(DeviceFactoryHelper.getNativeDeviceFactory(), adcNumber, range);
 	}
 
 	/**
 	 * @param deviceFactory The device factory to use to provision this device.
-	 * @param gpio          GPIO to which the device is connected.
+	 * @param adcNumber     GPIO to which the device is connected.
 	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
-	public AnalogInputDevice(AnalogInputDeviceFactoryInterface deviceFactory, int gpio) throws RuntimeIOException {
-		this(deviceFactory, gpio, deviceFactory.getVRef());
+	public AnalogInputDevice(AnalogInputDeviceFactoryInterface deviceFactory, int adcNumber) throws RuntimeIOException {
+		this(deviceFactory, adcNumber, deviceFactory.getVRef());
 	}
 
 	/**

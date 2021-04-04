@@ -7,20 +7,64 @@ permalink: /api/gpio.html
 
 # General Purpose Input / Output (GPIO)
 
-[Javadoc](https://www.javadoc.io/doc/com.diozero/diozero-core).
+[Javadoc](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/com/diozero/api/package-summary.html).
+
+Key concepts:
+
+* Use the provided Builder static classes rather than the constructors.
+* Can be provisioned either via the GPIO number or a
+ [PinInfo](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/com/diozero/api/PinInfo.html) object.
+ A [PinInfo](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/com/diozero/api/PinInfo.html)
+ object can be retrieved via [one of the lookup methods](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/com/diozero/sbc/BoardPinInfo.html#getByGpioNumberOrThrow(int))
+ in the [BoardPinInfo](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/com/diozero/sbc/BoardPinInfo.html)
+ instance that is returned from the
+ [device factory](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/com/diozero/internal/spi/DeviceFactoryInterface.html)
+ [getBoardPinInfo()](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/com/diozero/internal/spi/DeviceFactoryInterface.html#getBoardPinInfo()) method.
+* The [GPIO](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/com/diozero/internal/spi/GpioDeviceFactoryInterface.html)
+ or [Analog Input](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/com/diozero/internal/spi/AnalogInputDeviceFactoryInterface.html)
+ device factory can be specified when using GPIO expansion boards such as the MCP3008, otherwise it
+ defaults to the [automatically detected](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/com/diozero/sbc/DeviceFactoryHelper.html#getNativeDeviceFactory()) host board.
 
 ## Digital
+
+### Input
+
+Key concepts:
+
+* The `activeHigh` property is optional; it will default to `false` if `pud` is set to pull-up, otherwise `true`.
+
+DigitalInputDevice [Javadoc](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/com/diozero/api/DigitalInputDevice.html).
+
+SmoothedInputDevice [Javadoc](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/com/diozero/api/SmoothedInputDevice.html).
+
+### Input and Output
+
+A GPIO device that can be dynamically switched between input and output mode.
+
+DigitalInputOutputDevice [Javadoc](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/com/diozero/api/DigitalInputOutputDevice.html).
+
+### Output
+
+DigitalOutputDevice [Javadoc](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/com/diozero/api/DigitalOutputDevice.html).
+
+### PWM Output
+
+PwmOutputDevice [Javadoc](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/com/diozero/api/PwmOutputDevice.html).
 
 ## Analog
 
 ### Input
 
-The [AnalogInputDevice](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/AnalogInputDevice.java) base class encapsulates logic for interfacing with analog devices. This class provides access to unscaled (-1..1) and scaled (e.g. voltage, temperature, distance) readings. For scaled readings is important to pass the ADC voltage range in the device constructor - all raw analog readings are normalised (i.e. -1..1).
+The [AnalogInputDevice](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/com/diozero/api/AnalogInputDevice.html) class provides the mechanism for interfacing with analog devices.
+This class provides access to unscaled (-1..1) as well as scaled (e.g. voltage, temperature, distance) readings.
+For scaled readings is important to set the ADC voltage range in the device constructor -
+all raw analog readings are normalised (i.e. -1..1).
 
 {: .note-title }
 > Analog Device Support
 >
-> The Raspberry Pi does not natively support analog input devices, see [expansion boards](ExpansionBoards.md#mcp-adc) for connecting to analog-to-digital converters.
+> A lot of boards, including the Raspberry Pi, do not natively support analog input devices, see
+[expansion boards](../4_devices/3_ExpansionBoards.md) for connecting to analog-to-digital converters.
 
 Example: Temperature readings using an MCP3008 and TMP36:
 

@@ -36,7 +36,6 @@ import org.tinylog.Logger;
 import com.diozero.api.DeviceBusyException;
 import com.diozero.api.I2CConstants;
 import com.diozero.api.I2CDevice;
-import com.diozero.api.I2CDeviceInterface.I2CMessage;
 import com.diozero.api.RuntimeIOException;
 import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.DeviceFactoryInterface;
