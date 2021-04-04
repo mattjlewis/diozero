@@ -55,7 +55,8 @@ PwmOutputDevice [Javadoc](https://www.javadoc.io/doc/com.diozero/diozero-core/la
 
 ### Input
 
-The [AnalogInputDevice](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/com/diozero/api/AnalogInputDevice.html) class provides the mechanism for interfacing with analog devices.
+The [AnalogInputDevice](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/com/diozero/api/AnalogInputDevice.html)
+class provides the mechanism for interfacing with analog devices.
 This class provides access to unscaled (-1..1) as well as scaled (e.g. voltage, temperature, distance) readings.
 For scaled readings is important to set the ADC voltage range in the device constructor -
 all raw analog readings are normalised (i.e. -1..1).
@@ -92,5 +93,25 @@ try (McpAdc adc = new McpAdc(McpAdc.Type.MCP3008, 1);
 	// Detect variations of 10%, get values every 50ms (the default)
 	ldr.addListener(event -> led.setValue(1-event.getUnscaledValue()), .1f);
 	SleepUtil.sleepSeconds(20);
+}
+```
+
+### Output
+
+The [AnalogOutputDevice](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/com/diozero/api/AnalogOutputDevice.html)
+class provides support for analog output via an Digital to Analog Converter.
+
+Example:
+```java
+try (PCF8591 dac = new PCF8591();
+		AnalogOutputDevice aout = AnalogOutputDevice.Builder.builder(0).setDeviceFactory(dac).build()) {
+	for (float f = 0; f < 1; f += 0.1) {
+		aout.setValue(f);
+		SleepUtil.sleepMillis(100);
+	}
+	for (float f = 1; f >= 0; f -= 0.1) {
+		aout.setValue(f);
+		SleepUtil.sleepMillis(100);
+	}
 }
 ```

@@ -61,8 +61,7 @@ public class SleepUtil {
 	 * @throws RuntimeInterruptedException if interrupted
 	 */
 	public static void sleepSeconds(final double secs) throws RuntimeInterruptedException {
-		long millis = (long) (secs * MS_IN_SEC);
-		sleepMillis(millis);
+		sleepMillis((long) (secs * MS_IN_SEC));
 	}
 
 	/**

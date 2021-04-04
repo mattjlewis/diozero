@@ -1,5 +1,3 @@
-package com.diozero.api;
-
 /*-
  * #%L
  * Organisation: diozero
@@ -31,9 +29,10 @@ package com.diozero.api;
  * #L%
  */
 
+package com.diozero.api;
+
 import org.tinylog.Logger;
 
-import com.diozero.api.DigitalInputDevice.Builder;
 import com.diozero.api.function.Action;
 import com.diozero.internal.spi.GpioDeviceFactoryInterface;
 import com.diozero.internal.spi.GpioDigitalOutputDeviceInterface;
