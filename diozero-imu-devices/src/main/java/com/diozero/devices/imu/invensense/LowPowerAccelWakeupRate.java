@@ -1,10 +1,10 @@
-package com.diozero.imu.drivers.invensense;
+package com.diozero.devices.imu.invensense;
 
 /*
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - IMU device classes
- * Filename:     AccelFullScaleRange.java  
+ * Filename:     LowPowerAccelWakeupRate.java  
  * 
  * This file is part of the diozero project. More information about this project
  * can be found at http://www.diozero.com/
@@ -32,44 +32,26 @@ package com.diozero.imu.drivers.invensense;
  */
 
 
-/* Full scale ranges. */
-public enum AccelFullScaleRange {
-	INV_FSR_2G((byte)0, 2/*, 16_384*/),
-	INV_FSR_4G((byte)1, 4/*, 8_192*/),
-	INV_FSR_8G((byte)2, 8/*, 4_096*/),
-	INV_FSR_16G((byte)3, 16/*, 2_048*/);
+/* Low-power accel wakeup rates. */
+public enum LowPowerAccelWakeupRate {
+	INV_LPA_1_25HZ((byte)0, 1.25),
+	INV_LPA_5HZ((byte)1, 5),
+	INV_LPA_20HZ((byte)2, 20),
+	INV_LPA_40HZ((byte)3, 40);
 	
-	private byte bit;
-	private byte bitVal;
-	private int g;
-	private int sensitivityScaleFactor;
-	private double accelScale;
+	private byte value;
+	private double rate;
 	
-	private AccelFullScaleRange(byte bit, int g) {
-		this.bit = bit;
-		bitVal = (byte)(bit << 3);
-		this.g = g;
-		this.sensitivityScaleFactor = MPU9150Constants.HARDWARE_UNIT / g;
-		accelScale = 1.0 / sensitivityScaleFactor;
+	private LowPowerAccelWakeupRate(byte value, double rate) {
+		this.value = value;
+		this.rate = rate;
 	}
 	
-	public byte getBit() {
-		return bit;
+	public byte getValue() {
+		return value;
 	}
 	
-	public byte getBitVal() {
-		return bitVal;
-	}
-	
-	public int getG() {
-		return g;
-	}
-
-	public int getSensitivityScaleFactor() {
-		return sensitivityScaleFactor;
-	}
-
-	public double getScale() {
-		return accelScale;
+	public double getRate() {
+		return rate;
 	}
 }

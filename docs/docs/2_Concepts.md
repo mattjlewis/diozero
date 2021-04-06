@@ -105,7 +105,7 @@ try (PwmLed led = new PwmLed(18)) {
 
 To protect against unexpected shutdown scenarios, diozero implements a [Shutdown Hook](https://docs.oracle.com/javase/7/docs/api/java/lang/Runtime.html#addShutdownHook(java.lang.Thread))
 which will [close all device factories and internal devices](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/sbc/DeviceFactoryHelper.java#L132).
-Custom classes that implement AutoCloseable can also be registered by calling [DeviceFactoryHelper.registerForShutown()](https://www.javadoc.io/static/com.diozero/diozero-core/1.1.9/com/diozero/sbc/DeviceFactoryHelper.html#registerForShutdown(java.lang.AutoCloseable...))
+Custom classes that implement AutoCloseable can also be registered by calling [DeviceFactoryHelper.registerForShutown()](https://www.javadoc.io/docs/com.diozero/diozero-core/latest/com/diozero/sbc/DeviceFactoryHelper.html#registerForShutdown(java.lang.AutoCloseable...))
 and will be called for shutdown prior to closing the device factories and internal devices.
 
 ## Getting Started

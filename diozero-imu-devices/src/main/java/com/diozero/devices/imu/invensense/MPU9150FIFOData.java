@@ -1,10 +1,10 @@
-package com.diozero.imu.drivers.invensense;
+package com.diozero.devices.imu.invensense;
 
 /*
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - IMU device classes
- * Filename:     LowPowerAccelWakeupRate.java  
+ * Filename:     MPU9150FIFOData.java  
  * 
  * This file is part of the diozero project. More information about this project
  * can be found at http://www.diozero.com/
@@ -32,26 +32,58 @@ package com.diozero.imu.drivers.invensense;
  */
 
 
-/* Low-power accel wakeup rates. */
-public enum LowPowerAccelWakeupRate {
-	INV_LPA_1_25HZ((byte)0, 1.25),
-	INV_LPA_5HZ((byte)1, 5),
-	INV_LPA_20HZ((byte)2, 20),
-	INV_LPA_40HZ((byte)3, 40);
-	
-	private byte value;
-	private double rate;
-	
-	private LowPowerAccelWakeupRate(byte value, double rate) {
-		this.value = value;
-		this.rate = rate;
+import java.util.Arrays;
+
+public class MPU9150FIFOData {
+	// Gyro data in hardware units.
+	private short[] gyro;
+	// Accel data in hardware units.
+	private short[] accel;
+	// 3-axis quaternion data in hardware units.
+	private int[] quat;
+	// Timestamp in milliseconds.
+    private long timestamp;
+    // Mask of sensors read from FIFO.
+    private short sensors;
+    // Number of remaining packets.
+    private int more;
+    
+	public MPU9150FIFOData(short[] gyro, short[] accel, int[] quat, long timestamp, short sensors, int more) {
+		this.gyro = gyro;
+		this.accel = accel;
+		this.quat = quat;
+		this.timestamp = timestamp;
+		this.sensors = sensors;
+		this.more = more;
 	}
-	
-	public byte getValue() {
-		return value;
+
+	public short[] getGyro() {
+		return gyro;
 	}
-	
-	public double getRate() {
-		return rate;
+
+	public short[] getAccel() {
+		return accel;
+	}
+
+	public int[] getQuat() {
+		return quat;
+	}
+
+	public long getTimestamp() {
+		return timestamp;
+	}
+
+	public short getSensors() {
+		return sensors;
+	}
+
+	public int getMore() {
+		return more;
+	}
+
+	@Override
+	public String toString() {
+		return "FIFOData [gyro=" + Arrays.toString(gyro) + ", accel=" + Arrays.toString(accel) + ", quat="
+				+ Arrays.toString(quat) + ", timestamp=" + timestamp + ", sensors=" + sensors + ", more=" + more + "]";
 	}
 }

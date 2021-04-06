@@ -1,10 +1,10 @@
-package com.diozero.imu.drivers.invensense;
+package com.diozero.devices.imu.invensense;
 
 /*
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - IMU device classes
- * Filename:     MPU9150FIFOData.java  
+ * Filename:     AccelFullScaleRange.java  
  * 
  * This file is part of the diozero project. More information about this project
  * can be found at http://www.diozero.com/
@@ -32,58 +32,44 @@ package com.diozero.imu.drivers.invensense;
  */
 
 
-import java.util.Arrays;
-
-public class MPU9150FIFOData {
-	// Gyro data in hardware units.
-	private short[] gyro;
-	// Accel data in hardware units.
-	private short[] accel;
-	// 3-axis quaternion data in hardware units.
-	private int[] quat;
-	// Timestamp in milliseconds.
-    private long timestamp;
-    // Mask of sensors read from FIFO.
-    private short sensors;
-    // Number of remaining packets.
-    private int more;
-    
-	public MPU9150FIFOData(short[] gyro, short[] accel, int[] quat, long timestamp, short sensors, int more) {
-		this.gyro = gyro;
-		this.accel = accel;
-		this.quat = quat;
-		this.timestamp = timestamp;
-		this.sensors = sensors;
-		this.more = more;
+/* Full scale ranges. */
+public enum AccelFullScaleRange {
+	INV_FSR_2G((byte)0, 2/*, 16_384*/),
+	INV_FSR_4G((byte)1, 4/*, 8_192*/),
+	INV_FSR_8G((byte)2, 8/*, 4_096*/),
+	INV_FSR_16G((byte)3, 16/*, 2_048*/);
+	
+	private byte bit;
+	private byte bitVal;
+	private int g;
+	private int sensitivityScaleFactor;
+	private double accelScale;
+	
+	private AccelFullScaleRange(byte bit, int g) {
+		this.bit = bit;
+		bitVal = (byte)(bit << 3);
+		this.g = g;
+		this.sensitivityScaleFactor = MPU9150Constants.HARDWARE_UNIT / g;
+		accelScale = 1.0 / sensitivityScaleFactor;
+	}
+	
+	public byte getBit() {
+		return bit;
+	}
+	
+	public byte getBitVal() {
+		return bitVal;
+	}
+	
+	public int getG() {
+		return g;
 	}
 
-	public short[] getGyro() {
-		return gyro;
+	public int getSensitivityScaleFactor() {
+		return sensitivityScaleFactor;
 	}
 
-	public short[] getAccel() {
-		return accel;
-	}
-
-	public int[] getQuat() {
-		return quat;
-	}
-
-	public long getTimestamp() {
-		return timestamp;
-	}
-
-	public short getSensors() {
-		return sensors;
-	}
-
-	public int getMore() {
-		return more;
-	}
-
-	@Override
-	public String toString() {
-		return "FIFOData [gyro=" + Arrays.toString(gyro) + ", accel=" + Arrays.toString(accel) + ", quat="
-				+ Arrays.toString(quat) + ", timestamp=" + timestamp + ", sensors=" + sensors + ", more=" + more + "]";
+	public double getScale() {
+		return accelScale;
 	}
 }

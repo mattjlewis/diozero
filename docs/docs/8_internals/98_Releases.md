@@ -145,3 +145,9 @@ permalink: /internals/releases.html
 + Tweaks to native library cross compilation
 + #68 bug-fix for I2C on 64-bit systems
 + Fix to SystemInformation coloured output with Jansi on armv6
+
+## 1.2.0
+
++ Moved all IMU devices out of diozero-core to diozero-imu-devices to remove dependency on commons-math3
++ Removed deprecated methods in DigitalInputDevice and MmapIntBuffer and the deprecated class WaitableDigitalInputDevice
++ Added BoardPinInfo getByPhysicalPin()

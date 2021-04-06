@@ -50,11 +50,6 @@ public class MmapIntBuffer implements AutoCloseable {
 		mmapByteBuffer = null;
 		intBuffer = null;
 	}
-
-	@Deprecated()
-	public IntBuffer getIntBuffer() {
-		return intBuffer;
-	}
 	
 	public int get(int index) {
 		return intBuffer.get(index);

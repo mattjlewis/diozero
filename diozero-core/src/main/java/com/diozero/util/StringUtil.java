@@ -1,5 +1,7 @@
 package com.diozero.util;
 
+import java.util.Collections;
+
 /*
  * #%L
  * Organisation: diozero
@@ -35,5 +37,13 @@ package com.diozero.util;
 public class StringUtil {
 	public static String pad(String str, int length) {
 		return String.format("%1$-" + length + "s", str).substring(0, length);
+	}
+
+	public static String repeat(char ch, int n) {
+		return repeat(String.valueOf(ch), n);
+	}
+
+	public static String repeat(CharSequence string, int n) {
+		return String.join("", Collections.nCopies(n, string));
 	}
 }

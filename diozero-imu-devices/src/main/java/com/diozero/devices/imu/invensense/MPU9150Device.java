@@ -1,4 +1,4 @@
-package com.diozero.imu.drivers.invensense;
+package com.diozero.devices.imu.invensense;
 
 /*-
  * #%L

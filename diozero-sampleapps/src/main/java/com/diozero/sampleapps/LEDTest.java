@@ -66,8 +66,8 @@ public class LEDTest {
 	}
 
 	private static void test(int chip, int line) {
-		PinInfo pin_info = DeviceFactoryHelper.getNativeDeviceFactory().getBoardPinInfo().getByChipAndLineOffset(chip,
-				line);
+		PinInfo pin_info = DeviceFactoryHelper.getNativeDeviceFactory().getBoardPinInfo()
+				.getByChipAndLineOffsetOrThrow(chip, line);
 		try (LED led = new LED(pin_info, true, false)) {
 			test(led);
 		} catch (RuntimeIOException e) {

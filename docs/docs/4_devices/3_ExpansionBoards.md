@@ -8,6 +8,22 @@ permalink: /devices/expansionboards.html
 
 All of these devices act as Device Factories and should be accessed as such.
 
+## ADS112C04 ADC
+
+16-Bit, 4 Channel, 2,000 samples per second delta-sigma ADC.
+
+[Datasheet](https://www.ti.com/lit/ds/symlink/ads112c04.pdf),
+[Javadoc](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/com/diozero/devices/Ads112C04.html).
+
+## ADS1015 / ADS1115 ADC
+
+Ads1x15 [Javadoc](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/com/diozero/devices/Ads1x15.html).
+
+Datasheets:
+
+* ADS1015 - 3,300 samples per second, 12-Bit, 4 channel ADC [Datasheet](https://www.ti.com/lit/ds/symlink/ads1015.pdf)
+* ADS1115 - 860 samples per second, 16-Bit, 4 channel ADC [Datasheet](https://www.ti.com/lit/ds/symlink/ads1115.pdf)
+
 ## Microchip Analog to Digital Converters
 {: #mcp-adc }
 
@@ -36,6 +52,8 @@ McpAdc [Javadoc](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/com/
 
 ## Microchip MCP23xxx GPIO Expansion Board
 {: #mcp23xxx }
+
+Supports MCP23008, MCP23017 and MCP23S17.
 
 An example circuit for controlling an LED with a button, all connected via an [MCP23017](https://www.microchip.com/wwwproducts/en/mcp23017):
 
@@ -68,20 +86,6 @@ Implementations:
 * MCP23017 [Javadoc](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/com/diozero/devices/MCP23017.html)
 * MCP23S17 [Javadoc](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/com/diozero/devices/MCP23S17.html)
 
-## PCF8574 GPIO Expansion Board
-{: #pcf8574 }
-
-Support for the [PCF8574](https://www.ti.com/lit/ds/symlink/pcf8574.pdf) 8-Bit I/O Expander.
-
-PCF8574 [Javadoc](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/com/diozero/devices/PCF8574.html).
-
-## PCF8591 ADC / DAC
-{: #pcf8591 }
-
-Support for the [PCF8591](https://www.nxp.com/docs/en/data-sheet/PCF8591.pdf) 8-bit A/D and D/A converter.
-
-PCF8591 [Javadoc](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/com/diozero/devices/PCF8591.html).
-
 ## PCA9685 PWM / Servo Driver
 {: #pca9685 }
 
@@ -107,3 +111,23 @@ try (PwmOutputDeviceFactoryInterface df = new PCA9685(); PwmLed led = new PwmLed
 	Logger.error(e, "Error: {}", e);
 }
 ```
+
+## PCF8574 GPIO Expansion Board
+{: #pcf8574 }
+
+Support for the [PCF8574](https://www.ti.com/lit/ds/symlink/pcf8574.pdf) 8-Bit I/O Expander.
+
+PCF8574 [Javadoc](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/com/diozero/devices/PCF8574.html).
+
+## PCF8591 ADC / DAC
+{: #pcf8591 }
+
+Support for the [PCF8591](https://www.nxp.com/docs/en/data-sheet/PCF8591.pdf) 8-bit A/D and D/A converter.
+
+PCF8591 [Javadoc](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/com/diozero/devices/PCF8591.html).
+
+## Picon Zero Intelligent Robotics Controller
+
+[Picon Zero](https://shop.pimoroni.com/products/picon-zero-intelligent-robotics-controller-for-raspberry-pi).
+
+[Javadoc](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/com/diozero/devices/PiconZero.html).

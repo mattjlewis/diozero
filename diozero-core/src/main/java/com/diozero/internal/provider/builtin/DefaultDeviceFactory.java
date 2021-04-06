@@ -117,7 +117,7 @@ public class DefaultDeviceFactory extends BaseNativeDeviceFactory {
 						// by chip and line offset number
 						if (pin_info == null) {
 							// Note that getByChipAndLineOffset doesn't create missing entries
-							pin_info = bpi.getByChipAndLineOffset(chip.getChipId(), gpio_line.getOffset());
+							pin_info = bpi.getByChipAndLineOffset(chip.getChipId(), gpio_line.getOffset()).orElse(null);
 						}
 
 						// Finally, if still not found see if the name is in the format GPIOnn and

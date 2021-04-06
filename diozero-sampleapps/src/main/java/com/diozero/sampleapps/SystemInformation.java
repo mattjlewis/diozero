@@ -36,7 +36,6 @@ import static com.diozero.sampleapps.util.ConsoleUtil.getNotDefined;
 import static com.diozero.sampleapps.util.ConsoleUtil.getPinColour;
 import static org.fusesource.jansi.Ansi.ansi;
 
-import java.util.Collections;
 import java.util.Map;
 
 import com.diozero.api.PinInfo;
@@ -44,6 +43,7 @@ import com.diozero.internal.spi.NativeDeviceFactoryInterface;
 import com.diozero.sbc.BoardInfo;
 import com.diozero.sbc.DeviceFactoryHelper;
 import com.diozero.sbc.LocalSystemInfo;
+import com.diozero.util.StringUtil;
 
 public class SystemInformation {
 	private static final int MIN_PIN_NAME_LENGTH = 8;
@@ -74,7 +74,7 @@ public class SystemInformation {
 			int max_length = Math.max(MIN_PIN_NAME_LENGTH, header_pins_entry.getValue().values().stream()
 					.mapToInt(pin_info -> pin_info.getName().length()).max().orElse(MIN_PIN_NAME_LENGTH));
 
-			String name_dash = String.join("", Collections.nCopies(max_length, "-"));
+			String name_dash = StringUtil.repeat('-', max_length);
 			System.out.println(ansi().bold().a("Header").boldOff().a(": ").a(header_pins_entry.getKey()));
 			System.out.format("+-----+-%s-+--------+----------+--------+-%s-+-----+%n", name_dash, name_dash);
 			System.out.format(

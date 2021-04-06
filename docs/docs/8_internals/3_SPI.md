@@ -4,13 +4,13 @@ nav_order: 3
 permalink: /internals/spi.html
 ---
 
-# Device Factory SPI
+# Device Factory Service Provider Interface
 
-## Internal Device SPI
+## Internal Device Service Provider Interface
 
 ![Internal Device SPI](/assets/images/InternalDeviceInterfaces.png "Internal Device SPI")
 
-## Device Factory API
+## Device Factory Application Proramming Interface
 
 ![Device Factory SPI](/assets/images/DeviceFactories.png "Device Factory SPI")
 

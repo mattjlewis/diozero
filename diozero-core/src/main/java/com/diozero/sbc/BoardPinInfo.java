@@ -234,18 +234,37 @@ public class BoardPinInfo {
 		return getByGpioNumber(gpio).orElseThrow(() -> new NoSuchDeviceException("No such GPIO #" + gpio));
 	}
 
-	public PinInfo getByChipAndLineOffset(int chipId, int lineOffset) {
+	public Optional<PinInfo> getByPhysicalPin(String headerName, int physicalPin) {
+		Map<Integer, PinInfo> header = headers.get(headerName);
+		if (header == null) {
+			return Optional.empty();
+		}
+		
+		return Optional.ofNullable(header.get(Integer.valueOf(physicalPin)));
+	}
+
+	public PinInfo getByPhysicalPinOrThrow(String headerName, int physicalPin) throws NoSuchDeviceException {
+		return getByPhysicalPin(headerName, physicalPin)
+				.orElseThrow(() -> new NoSuchDeviceException("No such device #" + headerName + ":" + physicalPin));
+	}
+
+	public Optional<PinInfo> getByChipAndLineOffset(int chipId, int lineOffset) {
 		if (chipId == PinInfo.NOT_DEFINED || lineOffset == PinInfo.NOT_DEFINED) {
-			return null;
+			return Optional.empty();
 		}
 		for (Map<Integer, PinInfo> header : headers.values()) {
 			for (PinInfo pin : header.values()) {
 				if (pin.getChip() == chipId && pin.getLineOffset() == lineOffset) {
-					return pin;
+					return Optional.of(pin);
 				}
 			}
 		}
-		return null;
+		return Optional.empty();
+	}
+
+	public PinInfo getByChipAndLineOffsetOrThrow(int chipId, int lineOffset) throws NoSuchDeviceException {
+		return getByChipAndLineOffset(chipId, lineOffset)
+				.orElseThrow(() -> new NoSuchDeviceException("No such device #" + chipId + ":" + lineOffset));
 	}
 
 	public Optional<PinInfo> getByPwmNumber(int pwmNum) {
@@ -297,6 +316,10 @@ public class BoardPinInfo {
 
 	public Map<String, Map<Integer, PinInfo>> getHeaders() {
 		return headers;
+	}
+	
+	public Collection<String> getHeaderNames() {
+		return headers.keySet();
 	}
 
 	public Collection<Map<Integer, PinInfo>> getHeaderValues() {

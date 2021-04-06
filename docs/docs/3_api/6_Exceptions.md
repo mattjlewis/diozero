@@ -1,7 +1,7 @@
 ---
 title: Exceptions
 parent: API
-nav_order: 4
+nav_order: 5
 permalink: /api/exceptions.html
 ---
 
@@ -15,7 +15,7 @@ provides the following guidance:
 
 _"If a client can reasonably be expected to recover from an exception, make it a checked exception. If a client cannot do anything to recover from the exception, make it an unchecked exception.”_ 
 
-BVroadly, RuntimeIOException are thrown as a result of the following incomplete list of scenarios:
+Broadly, RuntimeIOException are thrown as a result of the following incomplete list of scenarios:
 
 * General - any file IOException gets rethrown as a wrapped RuntimeIOException
 * General - any errors returned from the native C library (status value < 0)

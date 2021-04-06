@@ -1,10 +1,10 @@
 ---
-Title: Utilities
+Title: Utility Applications
 nav_order: 6
-permalink: /utilities.html
+permalink: /utilityapps.html
 ---
 
-# Utilities
+# Utility Applications
 
 The diozero-sampleapps project includes some useful command-line utilities. Some of these are
 reimplementations of standard Linux command-line tools to illustrate the capabilities of diozero.
@@ -16,7 +16,7 @@ use, local host's name, memory and O/S, as well as pin information for all detec
 headers. Uses colourised console output.
 
 ```shell
-> java -cp diozero-sampleapps-1.1.9.jar com.diozero.sampleapps.SystemInformation
+> java -cp diozero-sampleapps-{{site.version}}.jar com.diozero.sampleapps.SystemInformation
 Local System Info
 Operating System: debian "10 (buster)" "10"
 I2C buses: [1]
@@ -72,7 +72,7 @@ all GPIO chips, print their labels and number of GPIO lines.
 gpiochip0 [pinctrl-bcm2711] (58 lines)
 gpiochip1 [raspberrypi-exp-gpio] (8 lines)
 
-> java -cp diozero-sampleapps-1.1.9.jar com.diozero.sampleapps.GpioDetect
+> java -cp diozero-sampleapps-{{site.version}}.jar com.diozero.sampleapps.GpioDetect
 gpiochip0 [pinctrl-bcm2711] (58 lines)
 gpiochip1 [raspberrypi-exp-gpio] (8 lines)
 ```
@@ -85,7 +85,7 @@ value, GPIO character device chip and line number as well as physical pin number
 Uses colourised console output.
 
 ```shell
-> java -cp diozero-sampleapps-1.1.9.jar com.diozero.sampleapps.GpioReadAll
+> java -cp diozero-sampleapps-{{site.version}}.jar com.diozero.sampleapps.GpioReadAll
 Header: J8
 +-----+-----------+------+---+--------+----------+--------+---+------+-----------+-----+
 + GP# +      Name + Mode + V +  gpiod + Physical + gpiod  + V + Mode + Name      + GP# +
@@ -138,7 +138,7 @@ Reimplementation of the `i2cdetect` application from the `i2c-tools` package.
 60: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 70: -- -- -- -- -- -- -- --
 
-> java -cp diozero-sampleapps-1.1.9.jar com.diozero.sampleapps.I2CDetect 1
+> java -cp diozero-sampleapps-{{site.version}}.jar com.diozero.sampleapps.I2CDetect 1
      0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f
 00:          -- -- -- -- -- -- -- -- -- -- -- -- --
 10: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --

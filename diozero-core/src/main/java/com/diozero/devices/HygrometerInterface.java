@@ -31,14 +31,10 @@ package com.diozero.devices;
  * #L%
  */
 
-
 public interface HygrometerInterface extends SensorInterface {
 	/**
 	 * Get the relative humidity in percent.
 	 * @return The relative humidity in percent.
 	 */
 	float getRelativeHumidity();
-	
-	@Override
-	void close();
 }

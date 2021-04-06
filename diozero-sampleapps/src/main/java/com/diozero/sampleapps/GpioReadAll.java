@@ -40,7 +40,6 @@ import static com.diozero.sampleapps.util.ConsoleUtil.getValueColour;
 import static com.diozero.sampleapps.util.ConsoleUtil.getValueString;
 import static com.diozero.sampleapps.util.ConsoleUtil.gpioRead;
 
-import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 
@@ -52,6 +51,7 @@ import com.diozero.api.PinInfo;
 import com.diozero.internal.spi.MmapGpioInterface;
 import com.diozero.sbc.BoardInfo;
 import com.diozero.sbc.DeviceFactoryHelper;
+import com.diozero.util.StringUtil;
 
 public class GpioReadAll {
 	public static void main(String[] args) {
@@ -85,7 +85,7 @@ public class GpioReadAll {
 		int max_name_length = Math.max(8,
 				pins.values().stream().mapToInt(pin_info -> pin_info.getName().length()).max().orElse(8));
 
-		String name_dash = String.join("", Collections.nCopies(max_name_length, "-"));
+		String name_dash = StringUtil.repeat('-', max_name_length);
 		System.out.println(Ansi.ansi().bold().a("Header").boldOff().a(": ").a(headerName));
 		System.out.format("+-----+-%s-+------+---+--------+----------+--------+---+------+-%s-+-----+%n", name_dash,
 				name_dash);
