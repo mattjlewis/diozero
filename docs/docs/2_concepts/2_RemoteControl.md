@@ -1,7 +1,8 @@
 ---
+parent: Concepts
+nav_order: 2
+permalink: /concepts/remotecontrol.html
 Title: Remote Control
-nav_order: 7
-permalink: /remotecontrol.html
 ---
 
 # Remote Control

@@ -1,7 +1,8 @@
 ---
-parent: Concepts
-nav_order: 2
-permalink: /concepts/performance.html
+Title: Performance
+nav_order: 7
+permalink: /performance.html
+has_children: true
 ---
 
 # Performance

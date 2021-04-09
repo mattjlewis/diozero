@@ -148,6 +148,7 @@ permalink: /internals/releases.html
 
 ## 1.2.0
 
-+ Moved all IMU devices out of diozero-core to diozero-imu-devices to remove dependency on commons-math3
++ Moved all IMU devices out of diozero-core to diozero-imu-devices to remove dependency on commons-math3 (Quaternion) from diozero-core
 + Removed deprecated methods in DigitalInputDevice and MmapIntBuffer and the deprecated class WaitableDigitalInputDevice
 + Added BoardPinInfo getByPhysicalPin()
++ Added AnalogOutputDevice
