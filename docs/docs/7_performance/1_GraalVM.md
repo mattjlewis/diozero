@@ -140,8 +140,10 @@ Native image and smaller number of iterations:
 11:00:37.597 [main] INFO com.diozero.sampleapps.perf.GpioPerfTest.test - Duration for 1,000,000 iterations: 0.116 s, frequency: 8,620,690 Hz
 ```
 
+## Conclusion
+
 The results are interesting but mainly as you would expect:
 
-* Using the JVM JIT provides the best performance eventually but takes its time to get "warmed up".
-* The new experimental GraalVM JVMCICompiler in JDK11 appears to bring significant performance benefits, but needs to be verified.
+* Using the JVM JIT provides good performance but takes time to get "warmed up".
+* The new experimental GraalVM JVMCICompiler in JDK11 appears to bring significant performance benefits, however, the results need to be verified.
 * GraalVM compiled native images provide slower overall performance but is much more consistent.

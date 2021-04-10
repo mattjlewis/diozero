@@ -152,3 +152,4 @@ permalink: /internals/releases.html
 + Removed deprecated methods in DigitalInputDevice and MmapIntBuffer and the deprecated class WaitableDigitalInputDevice
 + Added BoardPinInfo getByPhysicalPin()
 + Added AnalogOutputDevice
++ Switched to non-daemon threads

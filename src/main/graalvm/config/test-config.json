@@ -1,0 +1,226 @@
+[
+	{
+		"name": "java.util.ArrayList",
+		"methods": [
+			{
+				"name": "<init>",
+				"parameterTypes": []
+			},
+			{
+				"name": "add",
+				"parameterTypes": [
+					"java.lang.Object"
+				]
+			}
+		]
+	},
+	{
+		"name": "java.io.FileDescriptor",
+		"fields": [
+			{
+				"name": "fd",
+				"allowWrite": true
+			}
+		],
+		"methods": [
+			{
+				"name": "<init>",
+				"parameterTypes": []
+			}
+		]
+	},
+	{
+		"name": "com.diozero.util.EpollNativeCallback",
+		"methods": [
+			{
+				"name": "callback",
+				"parameterTypes": [
+					"int",
+					"int",
+					"long",
+					"long",
+					"byte"
+				]
+			}
+		]
+	},
+	{
+		"name": "com.diozero.util.EpollEvent",
+		"methods": [
+			{
+				"name": "<init>",
+				"parameterTypes": [
+					"int",
+					"int",
+					"long",
+					"long",
+					"byte"
+				]
+			}
+		]
+	},
+	{
+		"name": "com.diozero.util.PollEventListener",
+		"methods": [
+			{
+				"name": "notify",
+				"parameterTypes": [
+					"long",
+					"long",
+					"char"
+				]
+			}
+		]
+	},
+	{
+		"name": "com.diozero.util.MmapByteBuffer",
+		"methods": [
+			{
+				"name": "<init>",
+				"parameterTypes": [
+					"int",
+					"int",
+					"int",
+					"java.nio.ByteBuffer"
+				]
+			}
+		]
+	},
+	{
+		"name": "com.diozero.internal.provider.builtin.gpio.GpioChipInfo",
+		"methods": [
+			{
+				"name": "<init>",
+				"parameterTypes": [
+					"java.lang.String",
+					"java.lang.String",
+					"int"
+				]
+			}
+		]
+	},
+	{
+		"name": "com.diozero.internal.provider.builtin.gpio.GpioChip",
+		"methods": [
+			{
+				"name": "<init>",
+				"parameterTypes": [
+					"java.lang.String",
+					"java.lang.String",
+					"int",
+					"com.diozero.internal.provider.builtin.gpio.GpioLine[]"
+				]
+			}
+		]
+	},
+	{
+		"name": "com.diozero.internal.provider.builtin.gpio.GpioLine",
+		"methods": [
+			{
+				"name": "<init>",
+				"parameterTypes": [
+					"int",
+					"int",
+					"java.lang.String",
+					"java.lang.String"
+				]
+			}
+		]
+	},
+	{
+		"name": "com.diozero.internal.provider.builtin.gpio.GpioLineEventListener",
+		"methods": [
+			{
+				"name": "event",
+				"parameterTypes": [
+					"int",
+					"int",
+					"long",
+					"long"
+				]
+			}
+		]
+	},
+	{
+		"name": "java.lang.ProcessHandle",
+		"methods": [
+			{
+				"name": "current",
+				"parameterTypes": []
+			}
+		]
+	},
+	{
+		"name": "java.security.MessageDigestSpi"
+	},
+	{
+		"name": "java.security.SecureRandomParameters"
+	},
+	{
+		"name": "sun.security.provider.NativePRNG",
+		"methods": [
+			{
+				"name": "<init>",
+				"parameterTypes": []
+			}
+		]
+	},
+	{
+		"name": "sun.security.provider.SHA",
+		"methods": [
+			{
+				"name": "<init>",
+				"parameterTypes": []
+			}
+		]
+	},
+	{
+		"name": "org.tinylog.core.TinylogLoggingProvider",
+		"methods": [
+			{
+				"name": "<init>",
+				"parameterTypes": []
+			}
+		]
+	},
+	{
+		"name": "org.tinylog.writers.ConsoleWriter",
+		"methods": [
+			{
+				"name": "<init>",
+				"parameterTypes": [
+					"java.util.Map"
+				]
+			}
+		]
+	},
+	{
+		"name": "sun.management.VMManagementImpl",
+		"fields": [
+			{
+				"name": "compTimeMonitoringSupport"
+			},
+			{
+				"name": "currentThreadCpuTimeSupport"
+			},
+			{
+				"name": "objectMonitorUsageSupport"
+			},
+			{
+				"name": "otherThreadCpuTimeSupport"
+			},
+			{
+				"name": "remoteDiagnosticCommandsSupport"
+			},
+			{
+				"name": "synchronizerUsageSupport"
+			},
+			{
+				"name": "threadAllocatedMemorySupport"
+			},
+			{
+				"name": "threadContentionMonitoringSupport"
+			}
+		]
+	}
+]
