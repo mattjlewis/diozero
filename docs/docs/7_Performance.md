@@ -18,8 +18,25 @@ The [mmap-tests]() folder contains some basic applications for testing mmap and 
 
 Results (with diozero 1.2.0 and pigpioj 2.5.7):
 
+![Performance](/assets/images/Performance.png "Performance") 
+
+{: .note }
+> * All tests were performed with OpenJDK 11 ("11.0.9.1" 2020-11-04) using default settings.
+> * An LED was connected to the GPIO to verify that the GPIO was being toggled.
+> * The Pi 3B diozero (builtin) results have been verified with an oscilloscope.
+> * Operating System and libraries were all current as of April 2021 (RaspiOS 5.10.17-v7+).
+> * Operating Systems are 32-bit unless otherwise stated.
+
+## Conclusion
+
+* While pigpio itself is extremely fast, the JNI layer introduces significant overhead
+* The builtin memory mapped GPIO implementation is extremely fast
+* 64-bit O/S delivers additional performance for the memory mapped GPIO implementation
+
+## Raw Numbers
+
 | Library (Provider) | Device | Frequency (kHz) |
-| -------- |:------:| ---------------:|
+| -------- |:------:| :---|
 | pigpioj (JNI) | Pi Zero | 909 |
 | pigpioj (JNI) | Pi 2B | 1,667 |
 | pigpioj (JNI) | Pi 3B | 2,354 |
@@ -40,14 +57,3 @@ Results (with diozero 1.2.0 and pigpioj 2.5.7):
 | diozero (builtin) | CM 4 | 21,115 |
 | diozero (builtin) | Pi 4B (32-bit) | 21,110 |
 | diozero (builtin) | Pi 4B (64-bit) | 27,785 |
-
-![Performance](/assets/images/Performance.png "Performance") 
-
-{: .note }
-> * All tests were performed with OpenJDK 11 ("11.0.9.1" 2020-11-04) using default settings.
-> * An LED was connected to the GPIO to verify that the GPIO was being toggled.
-> * The Pi 3B diozero (builtin) results have been verified with an oscilloscope.
-> * Operating System and libraries were all current as of April 2021 (RaspiOS 5.10.17-v7+).
-> * Operating Systems are 32-bit unless otherwise stated.
-
-Conclusion the overhead of diozero is approximately 1% for pigpio.
