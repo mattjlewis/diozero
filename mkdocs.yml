@@ -6,11 +6,6 @@ site_author: Matt Lewis
 repo_url: https://github.com/mattjlewis/diozero
 docs_dir: rtd/docs
 
-plugins:
-  - redirects:
-    redirect_maps:
-      'index.md': 'http://github.diozero.com/'
-
 pages:
 - Home: 'index.md'
 - Create Your Own Application: 'Application.md'
