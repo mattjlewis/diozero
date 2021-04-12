@@ -1,6 +1,7 @@
 ---
 nav_order: 9
 permalink: /test.html
+nav_exclude: true
 ---
 
 # Test Page
