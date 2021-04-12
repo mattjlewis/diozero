@@ -52,7 +52,7 @@ Results (with diozero 1.2.0 and pigpioj 2.5.7):
 | diozero (pigpio) | Pi 4B (64-bit) | 2,598 |
 | diozero (builtin) | TinkerBoard | 515 |
 | diozero (builtin) | BeagleBone Black | 191 |
-| diozero (builtin) | BeagleBone Black (BBBioLib) | 1,453 |
+| diozero (BBBioLib) | BeagleBone Black | 1,453 |
 | diozero (builtin) | Odroid C2 | 1,668 |
 | diozero (builtin) | NanoPi Neo | 2,328 |
 | diozero (builtin) | NanoPi Duo 2 | 2,605 |
