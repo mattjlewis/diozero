@@ -24,8 +24,9 @@ Results (with diozero 1.2.0 and pigpioj 2.5.7):
 > * All tests were performed with OpenJDK 11 ("11.0.9.1" 2020-11-04) using default settings.
 > * An LED was connected to the GPIO to verify that the GPIO was being toggled.
 > * The Pi 3B diozero (builtin) results have been verified with an oscilloscope.
-> * Operating System and libraries were all current as of April 2021 (RaspiOS 5.10.17-v7+).
+> * Operating System and libraries were all current as of April 2021 (RaspiOS 5.10.17-v7+, Armbian 5.10.21).
 > * Operating Systems are 32-bit unless otherwise stated.
+> * mmap controlled GPIO is not currently available for the BeagleBone Black using the built-in provider - it is via the BBBioLib provider.
 
 ## Conclusion
 
@@ -50,7 +51,11 @@ Results (with diozero 1.2.0 and pigpioj 2.5.7):
 | diozero (pigpio) | Pi 4B (32-bit) | 2,858 |
 | diozero (pigpio) | Pi 4B (64-bit) | 2,598 |
 | diozero (builtin) | TinkerBoard | 515 |
-| diozero (builtin) | Odroid C2 | 1,693 |
+| diozero (builtin) | BeagleBone Black | 191 |
+| diozero (builtin) | BeagleBone Black (BBBioLib) | 1,453 |
+| diozero (builtin) | Odroid C2 | 1,668 |
+| diozero (builtin) | NanoPi Neo | 2,328 |
+| diozero (builtin) | NanoPi Duo 2 | 2,605 |
 | diozero (builtin) | Pi Zero | 2,644 |
 | diozero (builtin) | Pi 2B | 8,503 |
 | diozero (builtin) | Pi 3B | 13,028 |
