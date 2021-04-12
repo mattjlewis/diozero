@@ -86,7 +86,7 @@ public class DebouncedDigitalInputDeviceTest implements DeviceEventConsumer<Digi
 			SleepUtil.sleepMillis(debounce_time_ms / 4);
 
 			// Generate 1 event twice within the debounce time, toggling the value each time
-			ScheduledFuture<?> future = DiozeroScheduler.getDaemonInstance().scheduleAtFixedRate(event_generator, 0,
+			ScheduledFuture<?> future = DiozeroScheduler.getNonDaemonInstance().scheduleAtFixedRate(event_generator, 0,
 					debounce_time_ms / 2, TimeUnit.MILLISECONDS);
 
 			// Sleep for delay_secs
@@ -127,7 +127,7 @@ public class DebouncedDigitalInputDeviceTest implements DeviceEventConsumer<Digi
 			SleepUtil.sleepMillis(50);
 
 			// Generate events that are held for twice the debounce time
-			ScheduledFuture<?> future = DiozeroScheduler.getDaemonInstance().scheduleAtFixedRate(event_generator, 0,
+			ScheduledFuture<?> future = DiozeroScheduler.getNonDaemonInstance().scheduleAtFixedRate(event_generator, 0,
 					debounce_time_ms * 2, TimeUnit.MILLISECONDS);
 
 			// Sleep for 5s
@@ -169,7 +169,7 @@ public class DebouncedDigitalInputDeviceTest implements DeviceEventConsumer<Digi
 			SleepUtil.sleepMillis(debounce_time_ms / 2);
 
 			// Generate events that are held for just over the debounce time
-			ScheduledFuture<?> future = DiozeroScheduler.getDaemonInstance().scheduleAtFixedRate(event_generator, 0,
+			ScheduledFuture<?> future = DiozeroScheduler.getNonDaemonInstance().scheduleAtFixedRate(event_generator, 0,
 					event_hold_ms, TimeUnit.MILLISECONDS);
 
 			// Sleep for 5s
@@ -208,7 +208,7 @@ public class DebouncedDigitalInputDeviceTest implements DeviceEventConsumer<Digi
 			// Generate events that are held for just over the debounce time.
 			// Make sure that the debounce thread is out of alignment with the event
 			// generation thread.
-			ScheduledFuture<?> future = DiozeroScheduler.getDaemonInstance().scheduleAtFixedRate(event_generator,
+			ScheduledFuture<?> future = DiozeroScheduler.getNonDaemonInstance().scheduleAtFixedRate(event_generator,
 					debounce_time_ms / 2, event_hold_ms, TimeUnit.MILLISECONDS);
 
 			// Sleep for 5s
@@ -263,7 +263,7 @@ public class DebouncedDigitalInputDeviceTest implements DeviceEventConsumer<Digi
 							(debounce_time_ms + debounce_time_ms / 2) - (System.currentTimeMillis() - start_ms), 10));
 				}
 			};
-			Future<?> future = DiozeroScheduler.getDaemonInstance().submit(event_generator);
+			Future<?> future = DiozeroScheduler.getNonDaemonInstance().submit(event_generator);
 
 			// Sleep for sleep_secs
 			SleepUtil.sleepSeconds(sleep_secs);

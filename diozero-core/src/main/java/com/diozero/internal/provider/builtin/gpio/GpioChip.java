@@ -263,8 +263,8 @@ public class GpioChip extends GpioChipInfo implements AutoCloseable, GpioLineEve
 			epollFd = rc;
 
 			running.getAndSet(true);
-			processEventsFuture = DiozeroScheduler.getDaemonInstance().submit(this::processEvents);
-			eventLoopFuture = DiozeroScheduler.getDaemonInstance().submit(this::eventLoop);
+			processEventsFuture = DiozeroScheduler.getNonDaemonInstance().submit(this::processEvents);
+			eventLoopFuture = DiozeroScheduler.getNonDaemonInstance().submit(this::eventLoop);
 		}
 
 		int rc = NativeGpioDevice.epollAddFileDescriptor(epollFd, fd);

@@ -4,8 +4,8 @@ package com.diozero.sampleapps.perf;
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - Sample applications
- * Filename:     GpioPerfTest.java  
- * 
+ * Filename:     GpioPerfTest.java
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at http://www.diozero.com/
  * %%
@@ -17,10 +17,10 @@ package com.diozero.sampleapps.perf;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -34,7 +34,11 @@ package com.diozero.sampleapps.perf;
 import org.tinylog.Logger;
 
 import com.diozero.api.DigitalOutputDevice;
+import com.diozero.api.PinInfo;
 import com.diozero.api.RuntimeIOException;
+import com.diozero.internal.spi.NativeDeviceFactoryInterface;
+import com.diozero.sbc.DeviceFactoryHelper;
+import com.diozero.util.LibraryLoader;
 
 /**
  * GPIO output performance test application. To run:
@@ -46,6 +50,17 @@ import com.diozero.api.RuntimeIOException;
  * <li>mmap:<br>
  * {@code java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar:diozero-provider-mmap-$DIOZERO_VERSION.jar com.diozero.sampleapps.perf.GpioPerfTest 12 40000000}</li>
  * </ul>
+ *
+ * Useful commands:
+ *
+ * <pre>
+ * Generate a JFR recording:
+ * java -XX:StartFlightRecording=filename=recording.jfr,maxsize=1g,settings=profile,path-to-gc-roots=true -cp diozero-sampleapps-1.2.0.jar com.diozero.sampleapps.perf.GpioPerfTest 21 10000000
+ * Use the experimental GraalVM compiler (add -Dgraal.PrintCompilation=true to see info):
+ * java -XX:+UnlockExperimentalVMOptions -XX:+EnableJVMCI -XX:+UseJVMCICompiler -cp diozero-sampleapps-1.2.0.jar com.diozero.sampleapps.perf.GpioPerfTest 21 50000000
+ * Use the traditional compiler:
+ * java -XX:+UnlockExperimentalVMOptions -XX:+EnableJVMCI -XX:-UseJVMCICompiler -cp diozero-sampleapps-1.2.0.jar com.diozero.sampleapps.perf.GpioPerfTest 21 50000000
+ * </pre>
  */
 public class GpioPerfTest {
 	private static final int ITERATIONS = 100_000;
@@ -63,16 +78,26 @@ public class GpioPerfTest {
 			iterations = Integer.parseInt(args[1]);
 		}
 
-		test(gpio_num, iterations);
+		// Load the diozero system utils library
+		LibraryLoader.loadSystemUtils();
+		// Initialise diozero
+		NativeDeviceFactoryInterface ndfi = DeviceFactoryHelper.getNativeDeviceFactory();
+		// Get the PinInfo instance
+		PinInfo pin_info = ndfi.getBoardPinInfo().getByGpioNumberOrThrow(gpio_num);
+		// Initialise tinylog
+		Logger.info("Starting GPIO performance test on SBC {} using GPIO {} with {} iterations; provider: {}",
+				ndfi.getBoardInfo().getName(), Integer.valueOf(gpio_num), Integer.valueOf(iterations), ndfi.getName());
+
+		test(pin_info, iterations);
 	}
 
-	public static void test(int gpioNum, int iterations) {
-		try (DigitalOutputDevice gpio = new DigitalOutputDevice(gpioNum)) {
+	public static void test(PinInfo pinInfo, int iterations) {
+		try (DigitalOutputDevice gpio = DigitalOutputDevice.Builder.builder(pinInfo).build()) {
 			for (int j = 0; j < 5; j++) {
 				long start_ms = System.currentTimeMillis();
 				for (int i = 0; i < iterations; i++) {
-					gpio.setValueUnsafe(true);
-					gpio.setValueUnsafe(false);
+					gpio.on();
+					gpio.off();
 				}
 				long duration_ms = System.currentTimeMillis() - start_ms;
 				double frequency = iterations / (duration_ms / 1000.0);

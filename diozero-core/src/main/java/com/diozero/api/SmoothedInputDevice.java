@@ -239,7 +239,7 @@ public class SmoothedInputDevice extends DigitalInputDevice implements Runnable 
 
 		queue = new LinkedList<>();
 		removePredicate = time -> time.longValue() < (eventCheckTimeMs - eventAge);
-		DiozeroScheduler.getDaemonInstance().scheduleAtFixedRate(this, eventDetectPeriod, eventDetectPeriod,
+		DiozeroScheduler.getNonDaemonInstance().scheduleAtFixedRate(this, eventDetectPeriod, eventDetectPeriod,
 				TimeUnit.MILLISECONDS);
 	}
 

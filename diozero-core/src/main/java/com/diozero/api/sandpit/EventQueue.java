@@ -65,7 +65,7 @@ public class EventQueue<T extends Event> implements Consumer<T>, Runnable {
 		condition = lock.newCondition();
 		running = new AtomicBoolean();
 		running.set(true);
-		future = DiozeroScheduler.getDaemonInstance().submit(this);
+		future = DiozeroScheduler.getNonDaemonInstance().submit(this);
 	}
 	
 	public void addListener(Consumer<T> listener) {

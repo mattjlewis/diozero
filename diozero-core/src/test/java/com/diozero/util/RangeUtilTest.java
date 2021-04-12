@@ -123,4 +123,22 @@ public class RangeUtilTest {
 		Assertions.assertEquals(max, RangeUtil.constrain(max + 1, min, max));
 		Assertions.assertEquals(max / 2, RangeUtil.constrain(max / 2, min, max));
 	}
+	
+	@Test
+	public void testMax30102Map() {
+		float min_current = 0f;
+		float max_current = 51f;
+		int min_val = 0;
+		int max_val = 255;
+		
+		Assertions.assertEquals(0x00, RangeUtil.map(0.0f, min_current, max_current, min_val, max_val));
+		Assertions.assertEquals(0x01, RangeUtil.map(0.2f, min_current, max_current, min_val, max_val));
+		Assertions.assertEquals(0x02, RangeUtil.map(0.4f, min_current, max_current, min_val, max_val));
+		Assertions.assertEquals(0x0f, RangeUtil.map(3.0f, min_current, max_current, min_val, max_val));
+		Assertions.assertEquals(0x1f, RangeUtil.map(6.2f, min_current, max_current, min_val, max_val));
+		Assertions.assertEquals(0x24, RangeUtil.map(7.1f, min_current, max_current, min_val, max_val));
+		Assertions.assertEquals(0x3f, RangeUtil.map(12.6f, min_current, max_current, min_val, max_val));
+		Assertions.assertEquals(0x7f, RangeUtil.map(25.4f, min_current, max_current, min_val, max_val));
+		Assertions.assertEquals(0xff, RangeUtil.map(51f, min_current, max_current, min_val, max_val));
+	}
 }

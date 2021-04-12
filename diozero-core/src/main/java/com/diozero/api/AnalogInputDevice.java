@@ -202,7 +202,7 @@ public class AnalogInputDevice extends GpioInputDevice<AnalogInputEvent> impleme
 			device.setListener(this);
 		} else {
 			stopScheduler.set(false);
-			DiozeroScheduler.getDaemonInstance().scheduleAtFixedRate(this, pollInterval, pollInterval,
+			DiozeroScheduler.getNonDaemonInstance().scheduleAtFixedRate(this, pollInterval, pollInterval,
 					TimeUnit.MILLISECONDS);
 		}
 	}

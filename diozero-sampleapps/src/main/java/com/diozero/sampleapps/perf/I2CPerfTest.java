@@ -1,4 +1,4 @@
-package com.diozero.sampleapps;
+package com.diozero.sampleapps.perf;
 
 /*-
  * #%L
@@ -52,7 +52,7 @@ public class I2CPerfTest {
 				MCP23008 mcp23008 = new MCP23008();
 				LED led1 = new LED(13);
 				LED led2 = new LED(mcp23008, 1)) {
-			DiozeroScheduler scheduler = DiozeroScheduler.getDaemonInstance();
+			DiozeroScheduler scheduler = DiozeroScheduler.getNonDaemonInstance();
 
 			scheduler.scheduleAtFixedRate(() -> bmp180.getPressure(), 0, 100, TimeUnit.MICROSECONDS);
 			scheduler.scheduleAtFixedRate(() -> bme680.getSensorData(), 0, 100, TimeUnit.MICROSECONDS);

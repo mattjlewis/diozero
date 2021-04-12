@@ -995,7 +995,7 @@ public class Ads112C04 extends AbstractDeviceFactory implements AnalogInputDevic
 
 	public Object setContinuousModeNonDifferential(int adcNumber, DigitalInputDevice intr, Consumer<AdcEvent> listener) {
 		final Object lock = new Object();
-		DiozeroScheduler.getDaemonInstance().submit(() -> {
+		DiozeroScheduler.getNonDaemonInstance().submit(() -> {
 			final EventQueue<AdcEvent> event_queue = new EventQueue<>();
 			event_queue.addListener(listener);
 			intr.whenActivated(nano_time -> {

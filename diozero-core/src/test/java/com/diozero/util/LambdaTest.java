@@ -64,7 +64,7 @@ public class LambdaTest {
 		}
 		
 		Logger.info("Using DioZeroScheduler.invokeAtFixedRate()");
-		ScheduledFuture<?> future1 = DiozeroScheduler.getDaemonInstance().invokeAtFixedRate(t::getValue, t::setValue, 100, 1000, TimeUnit.MILLISECONDS);
+		ScheduledFuture<?> future1 = DiozeroScheduler.getNonDaemonInstance().invokeAtFixedRate(t::getValue, t::setValue, 100, 1000, TimeUnit.MILLISECONDS);
 		for (int i=0; i<10; i++) {
 			SleepUtil.sleepSeconds(1);
 		}

@@ -14,6 +14,7 @@
 	<properties>
 		<imgscalr-lib.version>4.2</imgscalr-lib.version>
 		<jansi.version>2.3.2</jansi.version>
+		<picocli.version>4.6.1</picocli.version>
 	</properties>
 	
 	<dependencyManagement>
@@ -27,6 +28,11 @@
 				<groupId>org.fusesource.jansi</groupId>
 				<artifactId>jansi</artifactId>
 				<version>${jansi.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>info.picocli</groupId>
+				<artifactId>picocli</artifactId>
+				<version>${picocli.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -47,6 +53,10 @@
 		<dependency>
 			<groupId>org.fusesource.jansi</groupId>
 			<artifactId>jansi</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>info.picocli</groupId>
+			<artifactId>picocli</artifactId>
 		</dependency>
 	</dependencies>
 

@@ -9,8 +9,8 @@ import java.util.concurrent.TimeoutException;
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - Core
- * Filename:     SoftwarePwmOutputDevice.java  
- * 
+ * Filename:     SoftwarePwmOutputDevice.java
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at http://www.diozero.com/
  * %%
@@ -22,10 +22,10 @@ import java.util.concurrent.TimeoutException;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -62,7 +62,7 @@ public class SoftwarePwmOutputDevice extends AbstractDevice implements PwmOutput
 	private Future<?> future;
 
 	public SoftwarePwmOutputDevice(String key, DeviceFactoryInterface deviceFactory,
-			GpioDigitalOutputDeviceInterface digitalOutputDevice, int frequency, float initialValue) {
+			GpioDigitalOutputDeviceInterface digitalOutputDevice, int frequencyHz, float initialValue) {
 		super(key, deviceFactory);
 
 		Logger.info("Hardware PWM not available for device {}, reverting to software", key);
@@ -70,21 +70,21 @@ public class SoftwarePwmOutputDevice extends AbstractDevice implements PwmOutput
 		this.digitalOutputDevice = digitalOutputDevice;
 		running = new AtomicBoolean();
 
-		periodMs = 1_000 / frequency;
+		periodMs = Math.round(1_000f / frequencyHz);
 		setValue(initialValue);
 		start();
 	}
 
 	public void start() {
 		if (!running.getAndSet(true)) {
-			future = DiozeroScheduler.getDaemonInstance().submit(this);
+			future = DiozeroScheduler.getNonDaemonInstance().submit(this);
 		}
 	}
 
 	public void stop() {
 		if (running.get()) {
 			running.set(false);
-			
+
 			if (future == null) {
 				Logger.warn("Unexpected condition - future was null when stopping PWM output");
 			} else {
@@ -156,7 +156,7 @@ public class SoftwarePwmOutputDevice extends AbstractDevice implements PwmOutput
 	@Override
 	public void setPwmFrequency(int frequencyHz) throws RuntimeIOException {
 		float current_value = getValue();
-		periodMs = 1_000 / frequencyHz;
+		periodMs = Math.round(1_000f / frequencyHz);
 		dutyMs = Math.round(current_value * periodMs);
 	}
 }

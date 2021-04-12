@@ -33,6 +33,7 @@ package com.diozero.sampleapps;
 
 import com.diozero.api.SpiConstants;
 import com.diozero.devices.BME280;
+import com.diozero.sbc.DeviceFactoryHelper;
 import com.diozero.util.SleepUtil;
 
 /**
@@ -56,6 +57,10 @@ public class BME280TestSpi {
 
 				SleepUtil.sleepSeconds(1);
 			}
+		} finally {
+			// Required if there are non-daemon threads that will prevent the
+			// built-in clean-up routines from running
+			DeviceFactoryHelper.shutdown();
 		}
 	}
 }

@@ -133,7 +133,7 @@ public class SGP30 implements DeviceInterface, Runnable {
 		// According to the datasheet there is a measurement immediately after init
 		measureIaq();
 		startTimeMs = System.currentTimeMillis();
-		future = DiozeroScheduler.getDaemonInstance().scheduleAtFixedRate(this, 1000, 1000, TimeUnit.MILLISECONDS);
+		future = DiozeroScheduler.getNonDaemonInstance().scheduleAtFixedRate(this, 1000, 1000, TimeUnit.MILLISECONDS);
 	}
 
 	public void stop() {

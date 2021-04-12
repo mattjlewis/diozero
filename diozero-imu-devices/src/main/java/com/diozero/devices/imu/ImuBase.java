@@ -40,7 +40,7 @@ public abstract class ImuBase implements ImuInterface {
 
 	@Override
 	public void startRead() {
-		DiozeroScheduler.getDaemonInstance().scheduleAtFixedRate(this::processData, 20, 20, TimeUnit.MILLISECONDS);
+		DiozeroScheduler.getNonDaemonInstance().scheduleAtFixedRate(this::processData, 20, 20, TimeUnit.MILLISECONDS);
 	}
 	
 	@Override

@@ -287,7 +287,7 @@ public class DigitalOutputDevice extends GpioDevice implements OutputDeviceInter
 			throws RuntimeIOException {
 		stopOnOffLoop();
 		if (background) {
-			DiozeroScheduler.getDaemonInstance().execute(() -> onOffLoop(onTime, offTime, n, stopAction));
+			DiozeroScheduler.getNonDaemonInstance().execute(() -> onOffLoop(onTime, offTime, n, stopAction));
 		} else {
 			onOffLoop(onTime, offTime, n, stopAction);
 		}

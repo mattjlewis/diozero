@@ -63,7 +63,7 @@ public class RandomLedFlicker {
 
 	private static void test(int pin) {
 		try (PwmLed led = new PwmLed(pin)) {
-			DiozeroScheduler.getDaemonInstance().invokeAtFixedRate(RANDOM::nextFloat, led::setValue, 50, 50,
+			DiozeroScheduler.getNonDaemonInstance().invokeAtFixedRate(RANDOM::nextFloat, led::setValue, 50, 50,
 					TimeUnit.MILLISECONDS);
 			SleepUtil.sleepSeconds(10);
 		}

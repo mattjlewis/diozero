@@ -140,7 +140,7 @@ public class PwmOutputDevice extends GpioDevice implements OutputDeviceInterface
 	protected void onOffLoop(float onTime, float offTime, int n, boolean background) throws RuntimeIOException {
 		stopLoops();
 		if (background) {
-			DiozeroScheduler.getDaemonInstance().execute(() -> {
+			DiozeroScheduler.getNonDaemonInstance().execute(() -> {
 				backgroundThread = Thread.currentThread();
 				onOffLoop(onTime, offTime, n);
 				Logger.debug("Background on-off loop finished");
@@ -169,7 +169,7 @@ public class PwmOutputDevice extends GpioDevice implements OutputDeviceInterface
 			throws RuntimeIOException {
 		stopLoops();
 		if (background) {
-			DiozeroScheduler.getDaemonInstance().execute(() -> {
+			DiozeroScheduler.getNonDaemonInstance().execute(() -> {
 				backgroundThread = Thread.currentThread();
 				fadeInOutLoop(fadeTime, steps, iterations);
 				Logger.debug("Background fade in-out loop finished");

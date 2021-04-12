@@ -87,7 +87,7 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 	abstract void write(byte[] data);
 
 	public final void start() {
-		future = DiozeroScheduler.getDaemonInstance().submit(this);
+		future = DiozeroScheduler.getNonDaemonInstance().submit(this);
 
 		initialiseBoard();
 	}
