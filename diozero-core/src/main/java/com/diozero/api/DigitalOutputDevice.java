@@ -2,8 +2,8 @@
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - Core
- * Filename:     DigitalOutputDevice.java  
- * 
+ * Filename:     DigitalOutputDevice.java
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at http://www.diozero.com/
  * %%
@@ -15,10 +15,10 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -30,6 +30,9 @@
  */
 
 package com.diozero.api;
+
+import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.tinylog.Logger;
 
@@ -67,12 +70,12 @@ public class DigitalOutputDevice extends GpioDevice implements OutputDeviceInter
 		public Builder(PinInfo pinInfo) {
 			this.pinInfo = pinInfo;
 		}
-		
+
 		public Builder setActiveHigh(boolean activeHigh) {
 			this.activeHigh = activeHigh;
 			return this;
 		}
-		
+
 		public Builder setInitialValue(boolean initialValue) {
 			this.initialValue = initialValue;
 			return this;
@@ -82,7 +85,7 @@ public class DigitalOutputDevice extends GpioDevice implements OutputDeviceInter
 			this.deviceFactory = deviceFactory;
 			return this;
 		}
-		
+
 		public DigitalOutputDevice build() {
 			// Default to the native device factory if not set
 			if (deviceFactory == null) {
@@ -96,16 +99,17 @@ public class DigitalOutputDevice extends GpioDevice implements OutputDeviceInter
 			return new DigitalOutputDevice(deviceFactory, pinInfo, activeHigh, initialValue);
 		}
 	}
-	
+
 	public static final int INFINITE_ITERATIONS = -1;
 
 	private boolean activeHigh;
-	private boolean running;
+	private AtomicBoolean running;
+	private Future<?> future;
 	private GpioDigitalOutputDeviceInterface delegate;
 
 	/**
 	 * Defaults to active high logic, initial value is off.
-	 * 
+	 *
 	 * @param gpio GPIO to which the output device is connected.
 	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
@@ -152,26 +156,29 @@ public class DigitalOutputDevice extends GpioDevice implements OutputDeviceInter
 
 		this.delegate = deviceFactory.provisionDigitalOutputDevice(pinInfo, activeHigh == initialValue);
 		this.activeHigh = activeHigh;
+		running = new AtomicBoolean();
 	}
 
 	@Override
 	public void close() {
 		Logger.trace("close()");
+		stopOnOffLoop();
 		if (delegate.isOpen()) {
 			setOn(false);
 			delegate.close();
 		}
 	}
 
-	private void onOffLoop(float onTime, float offTime, int n, Action stopAction) throws RuntimeIOException {
-		running = true;
+	private void onOffLoop(int onTimeMs, int offTimeMs, int n, Action stopAction) throws RuntimeIOException {
+		running.set(true);
 		if (n > 0) {
-			for (int i = 0; i < n && running; i++) {
-				onOff(onTime, offTime);
+			for (int i = 0; i < n && running.get(); i++) {
+				onOff(onTimeMs, offTimeMs);
 			}
+			running.set(false);
 		} else if (n == INFINITE_ITERATIONS) {
-			while (running) {
-				onOff(onTime, offTime);
+			while (running.get()) {
+				onOff(onTimeMs, offTimeMs);
 			}
 		}
 		if (stopAction != null) {
@@ -179,30 +186,43 @@ public class DigitalOutputDevice extends GpioDevice implements OutputDeviceInter
 		}
 	}
 
-	private void onOff(float onTime, float offTime) throws RuntimeIOException {
-		if (!running) {
-			return;
-		}
+	private void onOff(int onTimeMs, int offTimeMs) throws RuntimeIOException {
 		setValueUnsafe(activeHigh);
-		SleepUtil.sleepSeconds(onTime);
+		try {
+			Thread.sleep(onTimeMs);
+		} catch (InterruptedException e) {
+			running.set(false);
+		}
 
-		if (!running) {
+		if (!running.get()) {
 			return;
 		}
 		setValueUnsafe(!activeHigh);
-		SleepUtil.sleepSeconds(offTime);
+		try {
+			Thread.sleep(offTimeMs);
+		} catch (InterruptedException e) {
+			running.set(false);
+		}
 	}
 
 	private void stopOnOffLoop() {
-		// TODO Interrupt any background threads?
-		running = false;
+		running.set(false);
+		if (future != null) {
+			future.cancel(true);
+			try {
+				future.get();
+			} catch (Exception e) {
+				// Ignore
+			}
+			future = null;
+		}
 	}
 
 	// Exposed operations
 
 	/**
 	 * Turn on the device.
-	 * 
+	 *
 	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
 	public void on() throws RuntimeIOException {
@@ -212,7 +232,7 @@ public class DigitalOutputDevice extends GpioDevice implements OutputDeviceInter
 
 	/**
 	 * Turn off the device.
-	 * 
+	 *
 	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
 	public void off() throws RuntimeIOException {
@@ -222,7 +242,7 @@ public class DigitalOutputDevice extends GpioDevice implements OutputDeviceInter
 
 	/**
 	 * Toggle the state of the device.
-	 * 
+	 *
 	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
 	public void toggle() throws RuntimeIOException {
@@ -232,7 +252,7 @@ public class DigitalOutputDevice extends GpioDevice implements OutputDeviceInter
 
 	/**
 	 * Get the device on / off status.
-	 * 
+	 *
 	 * @return Returns true if the device is currently on.
 	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
@@ -242,7 +262,7 @@ public class DigitalOutputDevice extends GpioDevice implements OutputDeviceInter
 
 	/**
 	 * Turn the device on or off.
-	 * 
+	 *
 	 * @param on New on/off value.
 	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
@@ -254,7 +274,7 @@ public class DigitalOutputDevice extends GpioDevice implements OutputDeviceInter
 	/**
 	 * Unsafe operation that has no synchronisation checks and doesn't compensate
 	 * for active low logic. Included primarily for performance tests.
-	 * 
+	 *
 	 * @param value The new value
 	 * @throws RuntimeIOException If an I/O error occurs
 	 */
@@ -263,7 +283,9 @@ public class DigitalOutputDevice extends GpioDevice implements OutputDeviceInter
 	}
 
 	/**
-	 * Set the output value to true if value != 0, does not compensate for active low logic
+	 * Set the output value to true if value != 0, does not compensate for active
+	 * low logic
+	 *
 	 * @param value The new value
 	 */
 	@Override
@@ -273,7 +295,7 @@ public class DigitalOutputDevice extends GpioDevice implements OutputDeviceInter
 
 	/**
 	 * Toggle the device on-off.
-	 * 
+	 *
 	 * @param onTime     On time in seconds.
 	 * @param offTime    Off time in seconds.
 	 * @param n          Number of iterations. Set to &lt;0 to blink indefinitely.
@@ -286,10 +308,12 @@ public class DigitalOutputDevice extends GpioDevice implements OutputDeviceInter
 	public void onOffLoop(float onTime, float offTime, int n, boolean background, Action stopAction)
 			throws RuntimeIOException {
 		stopOnOffLoop();
+		int on_ms = (int) (onTime * SleepUtil.MS_IN_SEC);
+		int off_ms = (int) (offTime * SleepUtil.MS_IN_SEC);
 		if (background) {
-			DiozeroScheduler.getNonDaemonInstance().execute(() -> onOffLoop(onTime, offTime, n, stopAction));
+			future = DiozeroScheduler.getNonDaemonInstance().submit(() -> onOffLoop(on_ms, off_ms, n, stopAction));
 		} else {
-			onOffLoop(onTime, offTime, n, stopAction);
+			onOffLoop(on_ms, off_ms, n, stopAction);
 		}
 	}
 }

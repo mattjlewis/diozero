@@ -4,8 +4,8 @@ package com.diozero.api;
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - Core
- * Filename:     I2CDevice.java  
- * 
+ * Filename:     I2CDevice.java
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at http://www.diozero.com/
  * %%
@@ -17,10 +17,10 @@ package com.diozero.api;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -43,12 +43,12 @@ import com.diozero.util.BitManipulation;
 
 /**
  * Utility class for interfacing with to I2C devices.
- * 
+ *
  * @see <a href="https://i2c.info/i2c-bus-specification">I2C Bus
  *      Specification</a>
  */
 public class I2CDevice implements I2CDeviceInterface {
-	public static enum ProbeMode {
+	public enum ProbeMode {
 		QUICK, READ, AUTO;
 	}
 
@@ -80,7 +80,7 @@ public class I2CDevice implements I2CDeviceInterface {
 
 		/**
 		 * Set the I2C device factory to use for provisioning I2C device instances
-		 * 
+		 *
 		 * @param factory the I2C device factory to use for provisioning I2C device
 		 *                instances
 		 * @return this builder instance
@@ -92,7 +92,7 @@ public class I2CDevice implements I2CDeviceInterface {
 
 		/**
 		 * Set the I2C bus controller
-		 * 
+		 *
 		 * @param controller the I2C bus controller number
 		 *                   (<code>/dev/i2c-&lt;controller&gt;</code>)
 		 * @return this builder instance
@@ -104,7 +104,7 @@ public class I2CDevice implements I2CDeviceInterface {
 
 		/**
 		 * Set the I2c device address
-		 * 
+		 *
 		 * @param address the I2C device address
 		 * @return this builder instance
 		 */
@@ -115,7 +115,7 @@ public class I2CDevice implements I2CDeviceInterface {
 
 		/**
 		 * Set the I2C device {@link I2CConstants.AddressSize address size}
-		 * 
+		 *
 		 * @param addressSize the I2C device {@link I2CConstants.AddressSize address
 		 *                    size}
 		 * @return this builder instance
@@ -127,7 +127,7 @@ public class I2CDevice implements I2CDeviceInterface {
 
 		/**
 		 * Set the Default {@link ByteOrder byte order} for this device
-		 * 
+		 *
 		 * @param byteOrder the {@link ByteOrder byte order} that is only used in the
 		 *                  additional non-SMBus I2C device utility methods
 		 * @return this builder instance
@@ -139,7 +139,7 @@ public class I2CDevice implements I2CDeviceInterface {
 
 		/**
 		 * Construct a new I2CDevice instance
-		 * 
+		 *
 		 * @return a new I2C device
 		 */
 		public I2CDevice build() {
@@ -150,7 +150,7 @@ public class I2CDevice implements I2CDeviceInterface {
 
 	/**
 	 * Builder class for I2C devices
-	 * 
+	 *
 	 * @param address the I2C device address
 	 * @return I2C device builder
 	 */
@@ -166,12 +166,11 @@ public class I2CDevice implements I2CDeviceInterface {
 
 	/**
 	 * Use the default {@link I2CConstants.AddressSize#SIZE_7 7-bit} address size
-	 * and {@link Builder#DEFAULT_BYTE_ORDER default} {@link ByteOrder byte
-	 * order}
-	 * 
+	 * and {@link Builder#DEFAULT_BYTE_ORDER default} {@link ByteOrder byte order}
+	 *
 	 * @see <a href="https://i2c.info/i2c-bus-specification">I2C Bus
 	 *      Specification</a>
-	 * 
+	 *
 	 * @param controller I2C bus controller number
 	 * @param address    I2C device address
 	 * @throws RuntimeIOException If an I/O error occurred
@@ -183,10 +182,10 @@ public class I2CDevice implements I2CDeviceInterface {
 
 	/**
 	 * Use the default {@link I2CConstants.AddressSize#SIZE_7 7-bit} address size
-	 * 
+	 *
 	 * @see <a href="https://i2c.info/i2c-bus-specification">I2C Bus
 	 *      Specification</a>
-	 * 
+	 *
 	 * @param controller I2C bus controller number
 	 * @param address    I2C device address
 	 * @param byteOrder  The {@link ByteOrder byte order} that is only used in the
@@ -201,10 +200,10 @@ public class I2CDevice implements I2CDeviceInterface {
 	/**
 	 * Use the {@link Builder#DEFAULT_BYTE_ORDER default} {@link ByteOrder byte
 	 * order}
-	 * 
+	 *
 	 * @see <a href="https://i2c.info/i2c-bus-specification">I2C Bus
 	 *      Specification</a>
-	 * 
+	 *
 	 * @param controller  I2C bus controller number
 	 * @param address     I2C device address
 	 * @param addressSize I2C device address size. Can be 7 or 10
@@ -217,10 +216,10 @@ public class I2CDevice implements I2CDeviceInterface {
 
 	/**
 	 * Use the default native device factory
-	 * 
+	 *
 	 * @see <a href="https://i2c.info/i2c-bus-specification">I2C Bus
 	 *      Specification</a>
-	 * 
+	 *
 	 * @param controller  I2C bus controller number
 	 * @param address     I2C device address
 	 * @param addressSize I2C device address size. Can be 7 or 10
@@ -237,10 +236,10 @@ public class I2CDevice implements I2CDeviceInterface {
 	 * Construct an I2C device using the specified I2C bus / controller, device
 	 * address, address size and byte order. Note that the {@link ByteOrder byte
 	 * order} is only used in the utility methods.
-	 * 
+	 *
 	 * @see <a href="https://i2c.info/i2c-bus-specification">I2C Bus
 	 *      Specification</a>
-	 * 
+	 *
 	 * @param deviceFactory Device factory to use to provision this device
 	 * @param controller    I2C bus controller number
 	 * @param address       I2C device address
@@ -348,7 +347,7 @@ public class I2CDevice implements I2CDeviceInterface {
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * <strong>Note</strong> that the byte order for the returned word data is
 	 * {@link ByteOrder#LITTLE_ENDIAN Little Endian} as per the SMBus specification,
 	 * regardless of the {@link ByteOrder byte order} specified in the constructor
@@ -362,7 +361,7 @@ public class I2CDevice implements I2CDeviceInterface {
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * <strong>Note</strong> that the {@link ByteOrder byte order} for the input
 	 * value is {@link ByteOrder#LITTLE_ENDIAN Little Endian} as per the SMBus
 	 * specification, regardless of the {@link ByteOrder byte order} specified in
@@ -377,7 +376,7 @@ public class I2CDevice implements I2CDeviceInterface {
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * <strong>Note</strong> that the byte order for the returned word data is
 	 * {@link ByteOrder#BIG_ENDIAN Big Endian}, regardless of the {@link ByteOrder
 	 * byte order} specified in the constructor
@@ -391,7 +390,7 @@ public class I2CDevice implements I2CDeviceInterface {
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * <strong>Note</strong> that the {@link ByteOrder byte order} for the input
 	 * value is {@link ByteOrder#BIG_ENDIAN Big Endian}, regardless of the
 	 * {@link ByteOrder byte order} specified in the constructor
@@ -486,7 +485,7 @@ public class I2CDevice implements I2CDeviceInterface {
 			delegate.writeBytes(data);
 		}
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -496,7 +495,7 @@ public class I2CDevice implements I2CDeviceInterface {
 			return delegate.readNoStop(registerAddress, rxLength, rxData, repeatedStart);
 		}
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -515,9 +514,9 @@ public class I2CDevice implements I2CDeviceInterface {
 	/**
 	 * Utility method that simply casts the int data parameter to byte and calls
 	 * {@link I2CDevice#writeByteData(int, byte)}
-	 * 
+	 *
 	 * @see I2CDevice#writeByteData(int, byte)
-	 * 
+	 *
 	 * @param register the register to write to
 	 * @param data     value to write
 	 * @throws RuntimeIOException if an I/O error occurs
@@ -530,9 +529,9 @@ public class I2CDevice implements I2CDeviceInterface {
 	 * Utility method that simply converts the response from
 	 * {@link I2CDevice#readByteData(int)} to an unsigned byte. A short is returned
 	 * to ensure that the returned value is unsigned
-	 * 
+	 *
 	 * @see I2CDevice#readByteData(int)
-	 * 
+	 *
 	 * @param register the register to read from
 	 * @return byte data returned converted to unsigned byte (represented as a
 	 *         short)
@@ -546,10 +545,10 @@ public class I2CDevice implements I2CDeviceInterface {
 	 * Utility method that wraps the response from {@link I2CDevice#readBytes(int)}
 	 * in a {@link ByteBuffer} that is configured to use the {@link ByteOrder byte
 	 * order} specified in the constructor.
-	 * 
+	 *
 	 * @see I2CDevice#readBytes(int)
 	 * @see ByteBuffer#wrap(byte[])
-	 * 
+	 *
 	 * @param length number of bytes to read
 	 * @return A {@link ByteBuffer} containing the bytes read using the byte order
 	 *         specified in the constructor
@@ -565,10 +564,10 @@ public class I2CDevice implements I2CDeviceInterface {
 	 * Utility method that wraps {@link I2CDevice#writeBytes(byte[])} to write the
 	 * available bytes in the specified {@link ByteBuffer ByteBuffer}. The byte
 	 * order of data in the ByteBuffer is unchanged.
-	 * 
+	 *
 	 * @see I2CDevice#writeBytes(byte[])
 	 * @see ByteBuffer#put(byte[])
-	 * 
+	 *
 	 * @param buffer the {@link ByteBuffer} containing the data to write
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
@@ -581,9 +580,9 @@ public class I2CDevice implements I2CDeviceInterface {
 	/**
 	 * Utility method that wraps {@link I2CDevice#readI2CBlockData(int, byte[])} to
 	 * read the specified number of bytes and return as a new byte array.
-	 * 
+	 *
 	 * @see I2CDevice#readI2CBlockData(int, byte[])
-	 * 
+	 *
 	 * @param register the register to read from
 	 * @param length   the number of bytes to read
 	 * @return the data read
@@ -596,6 +595,7 @@ public class I2CDevice implements I2CDeviceInterface {
 			return data;
 		}
 
+		// Shrink the byte array to the size of data actually read
 		byte[] rx_data = new byte[read];
 		System.arraycopy(data, 0, rx_data, 0, read);
 		return rx_data;
@@ -605,10 +605,10 @@ public class I2CDevice implements I2CDeviceInterface {
 	 * Utility method that wraps {@link I2CDevice#readI2CBlockData(int, byte[])} to
 	 * read the specified number of bytes and return as a {@link ByteBuffer} using
 	 * the {@link ByteOrder byte order} specified in the device constructor.
-	 * 
+	 *
 	 * @see I2CDevice#readI2CBlockData(int, byte[])
 	 * @see ByteBuffer#wrap(byte[])
-	 * 
+	 *
 	 * @param register the register to read from
 	 * @param length   the number of bytes to read
 	 * @return the data read
@@ -629,10 +629,10 @@ public class I2CDevice implements I2CDeviceInterface {
 	 * {@link I2CDevice#readWordSwapped(int)} to read a signed short value from the
 	 * requested register in the {@link ByteOrder byte order} specified in the
 	 * constructor.
-	 * 
+	 *
 	 * @see I2CDevice#readWordData(int)
 	 * @see I2CDevice#readWordSwapped(int)
-	 * 
+	 *
 	 * @param register register to read from
 	 * @return the signed short value read
 	 * @throws RuntimeIOException if an I/O error occurs
@@ -648,9 +648,9 @@ public class I2CDevice implements I2CDeviceInterface {
 	 * Utility method that wraps {@link I2CDevice#readShort(int)} to read an
 	 * unsigned short value from the requested register using the {@link ByteOrder
 	 * byte order} specified in the constructor.
-	 * 
+	 *
 	 * @see I2CDevice#readShort(int)
-	 * 
+	 *
 	 * @param register register to read from
 	 * @return the unsigned short value read
 	 * @throws RuntimeIOException if an I/O error occurs
@@ -664,9 +664,9 @@ public class I2CDevice implements I2CDeviceInterface {
 	 * {@link I2CDevice#readI2CBlockDataByteBuffer(int, int)} to read a signed int
 	 * value from the requested register using the {@link ByteOrder byte order}
 	 * specified in the constructor.
-	 * 
+	 *
 	 * @see I2CDevice#readI2CBlockDataByteBuffer(int, int)
-	 * 
+	 *
 	 * @param register register to read from
 	 * @return the signed int value read
 	 * @throws RuntimeIOException if an I/O error occurs
@@ -679,9 +679,9 @@ public class I2CDevice implements I2CDeviceInterface {
 	 * Utility method that wraps {@link I2CDevice#readInt(int)} to read an unsigned
 	 * int value from the requested register using the {@link ByteOrder byte order}
 	 * specified in the constructor.
-	 * 
+	 *
 	 * @see I2CDevice#readInt(int)
-	 * 
+	 *
 	 * @param register register to read from
 	 * @return the unsigned int value read
 	 * @throws RuntimeIOException if an I/O error occurs
@@ -695,9 +695,9 @@ public class I2CDevice implements I2CDeviceInterface {
 	 * {@link I2CDevice#readI2CBlockDataByteArray(int, int)} to read an unsigned int
 	 * value on the specified length from the requested register using the
 	 * {@link ByteOrder byte order} specified in the constructor.
-	 * 
+	 *
 	 * @see I2CDevice#readI2CBlockDataByteArray(int, int)
-	 * 
+	 *
 	 * @param register register to read from
 	 * @param numBytes number of bytes to read (1..4)
 	 * @return the unsigned int value read
@@ -726,9 +726,9 @@ public class I2CDevice implements I2CDeviceInterface {
 	/**
 	 * Utility method that wraps {@link I2CDevice#readBytes(byte[])} to read the
 	 * specified number of bytes.
-	 * 
+	 *
 	 * @see I2CDevice#readBytes(byte[])
-	 * 
+	 *
 	 * @param length the number of bytes to read
 	 * @return the bytes read from the device
 	 * @throws RuntimeIOException if an I/O error occurs
@@ -742,10 +742,10 @@ public class I2CDevice implements I2CDeviceInterface {
 	/**
 	 * Utility method that wraps {@link I2CDevice#readByteData(int)} to check if the
 	 * specified bit number is set.
-	 * 
+	 *
 	 * @see BitManipulation#isBitSet(byte, int)
 	 * @see I2CDevice#readByteData(int)
-	 * 
+	 *
 	 * @param register the register to read
 	 * @param bit      the bit number to check
 	 * @return true if the specified bit number is set
@@ -758,10 +758,10 @@ public class I2CDevice implements I2CDeviceInterface {
 	/**
 	 * Utility method that wraps {@link I2CDevice#readByteData(int)} and
 	 * {@link I2CDevice#writeByteData(int, byte)} to update the specified bit number
-	 * 
+	 *
 	 * @see I2CDevice#readByteData(int)
 	 * @see BitManipulation#setBitValue(byte, boolean, int)
-	 * 
+	 *
 	 * @param register the register to update
 	 * @param bit      the bit number to set
 	 * @param value    the value to set the bit to

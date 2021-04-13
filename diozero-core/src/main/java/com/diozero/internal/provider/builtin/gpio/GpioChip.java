@@ -4,8 +4,8 @@ package com.diozero.internal.provider.builtin.gpio;
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - Core
- * Filename:     GpioChip.java  
- * 
+ * Filename:     GpioChip.java
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at http://www.diozero.com/
  * %%
@@ -17,10 +17,10 @@ package com.diozero.internal.provider.builtin.gpio;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -66,7 +66,7 @@ public class GpioChip extends GpioChipInfo implements AutoCloseable, GpioLineEve
 				.map(p -> NativeGpioDevice.openChip(p.toString())) //
 				.filter(p -> p != null) // openChip will return null if it is unable to open the chip
 				.collect(Collectors.toMap(GpioChip::getChipId, chip -> chip));
-		
+
 		if (chips.isEmpty()) {
 			Logger.error("Unable to open any gpiochip files in /dev");
 		}
@@ -243,10 +243,12 @@ public class GpioChip extends GpioChipInfo implements AutoCloseable, GpioLineEve
 		}
 
 		// Close all of the lines
-		for (GpioLine line : lines) {
-			line.close();
+		if (lines != null) {
+			for (GpioLine line : lines) {
+				line.close();
+			}
+			lines = null;
 		}
-		lines = null;
 		linesByName.clear();
 
 		// Finally close the GPIO chip itself
@@ -374,7 +376,7 @@ public class GpioChip extends GpioChipInfo implements AutoCloseable, GpioLineEve
 					}
 				}
 			}
-			
+
 			// Process all of the events on the queue
 			// Note the event queue is a concurrent linked queue hence thread safe
 			do {

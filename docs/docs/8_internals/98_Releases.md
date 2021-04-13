@@ -153,3 +153,5 @@ permalink: /internals/releases.html
 + Added BoardPinInfo getByPhysicalPin()
 + Added AnalogOutputDevice
 + Switched to non-daemon threads
+* Changed DiozeroScheduler to only create a single (scheduled) thread pool - the cached thread pool was blocking the JVM from terminating for 60 seconds
++ Improvements to DigitalOutputDevice on-off loops
