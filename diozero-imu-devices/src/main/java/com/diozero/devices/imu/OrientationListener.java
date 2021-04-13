@@ -3,7 +3,7 @@ package com.diozero.devices.imu;
 /*
  * #%L
  * Organisation: diozero
- * Project:      Device I/O Zero - Core
+ * Project:      Device I/O Zero - IMU device classes
  * Filename:     OrientationListener.java  
  * 
  * This file is part of the diozero project. More information about this project
