@@ -4,8 +4,8 @@ package com.diozero.sampleapps;
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - Sample applications
- * Filename:     ButtonTest.java  
- * 
+ * Filename:     ButtonTest.java
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at http://www.diozero.com/
  * %%
@@ -17,10 +17,10 @@ package com.diozero.sampleapps;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -57,12 +57,14 @@ public class ButtonTest {
 	}
 
 	public static void test(int inputPin) {
+		int delay_s = 5;
 		try (Button button = new Button(inputPin, GpioPullUpDown.PULL_UP)) {
 			button.whenPressed(nanoTime -> Logger.info("Pressed"));
 			button.whenReleased(nanoTime -> Logger.info("Released"));
 			button.addListener(event -> Logger.info("Event: {}", event));
-			Logger.info("Waiting for 10s - *** Press the button connected to input pin " + inputPin + " ***");
-			SleepUtil.sleepSeconds(10);
+			Logger.info("Waiting for {}s - *** Press the button connected to input pin {} ***",
+					Integer.valueOf(delay_s), Integer.valueOf(inputPin));
+			SleepUtil.sleepSeconds(delay_s);
 		} catch (RuntimeIOException ioe) {
 			Logger.error(ioe, "Error: {}", ioe);
 		}

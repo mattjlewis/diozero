@@ -4,8 +4,8 @@ package com.diozero.internal.provider.builtin.gpio;
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - Core
- * Filename:     GpioChip.java  
- * 
+ * Filename:     GpioChip.java
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at http://www.diozero.com/
  * %%
@@ -17,10 +17,10 @@ package com.diozero.internal.provider.builtin.gpio;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -222,25 +222,9 @@ public class GpioChip extends GpioChipInfo implements AutoCloseable, GpioLineEve
 
 	@Override
 	public synchronized void close() {
-		if (running.get()) {
-			running.set(false);
+		Logger.trace("close()");
 
-			lock.lock();
-			try {
-				// Attempt to interrupt the condition
-				condition.signal();
-			} finally {
-				lock.unlock();
-			}
-
-			// Stop the eventLoop and processEvents threads
-			if (eventLoopFuture != null) {
-				eventLoopFuture.cancel(true);
-			}
-			if (processEventsFuture != null) {
-				processEventsFuture.cancel(true);
-			}
-		}
+		stopEventProcessing();
 
 		// Close all of the lines
 		if (lines != null) {
@@ -284,6 +268,9 @@ public class GpioChip extends GpioChipInfo implements AutoCloseable, GpioLineEve
 
 		int rc = NativeGpioDevice.epollRemoveFileDescriptor(epollFd, fd);
 		fdToListener.remove(Integer.valueOf(fd));
+		if (fdToListener.isEmpty()) {
+			stopEventProcessing();
+		}
 		if (rc < 0) {
 			throw new RuntimeIOException("Error removing file descriptor '" + fd + "' from epoll");
 		}
@@ -304,8 +291,54 @@ public class GpioChip extends GpioChipInfo implements AutoCloseable, GpioLineEve
 	}
 
 	private void eventLoop() {
+		if (epollFd == EPOLL_FD_NOT_CREATED) {
+			Logger.error("Cannot start event loop as epoll not initialised");
+			return;
+		}
+
+		Logger.trace("Starting event loop for chip {}", Integer.valueOf(chipId));
 		NativeGpioDevice.eventLoop(epollFd, -1, this);
-		Logger.info("Poll loop finished");
+		Logger.info("Event loop finished");
+	}
+
+	private void stopEventProcessing() {
+		running.set(false);
+
+		// Stop the epoll event loop
+		if (epollFd != EPOLL_FD_NOT_CREATED) {
+			Logger.trace("Stopping the epoll_wait event loop");
+			NativeGpioDevice.stopEventLoop(epollFd);
+			epollFd = EPOLL_FD_NOT_CREATED;
+		}
+
+		if (eventLoopFuture != null) {
+			eventLoopFuture.cancel(true);
+			try {
+				eventLoopFuture.get();
+			} catch (Exception e) {
+				// Ignore
+			}
+			eventLoopFuture = null;
+		}
+
+		// Wake up the event processor
+		lock.lock();
+		try {
+			condition.signal();
+		} finally {
+			lock.unlock();
+		}
+
+		// Finally make sure that the event processing thread is stopped
+		if (processEventsFuture != null) {
+			processEventsFuture.cancel(true);
+			try {
+				processEventsFuture.get();
+			} catch (Exception e) {
+				// Ignore
+			}
+			processEventsFuture = null;
+		}
 	}
 
 	private void processEvents() {

@@ -155,3 +155,14 @@ permalink: /internals/releases.html
 + Switched to non-daemon threads
 * Changed DiozeroScheduler to only create a single (scheduled) thread pool - the cached thread pool was blocking the JVM from terminating for 60 seconds
 + Improvements to DigitalOutputDevice on-off loops
+
+## 1.2.1
+
++ Tweaked mmap for 64-bit systems - map pointer was an int, changed to long
++ mmap int buffer is volatile to ensure main memory is written
++ DigitalOutputDevice on-off loop enhancements courtesy of Greg Flurry
++ gpio chardev cleanup improvements
+
+## 1.2.2
+
++ I2C readWrite support with pigpio provider

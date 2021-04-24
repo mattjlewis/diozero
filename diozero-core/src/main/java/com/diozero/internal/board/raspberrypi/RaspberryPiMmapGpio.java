@@ -4,8 +4,8 @@ package com.diozero.internal.board.raspberrypi;
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - Core
- * Filename:     RaspberryPiMmapGpio.java  
- * 
+ * Filename:     RaspberryPiMmapGpio.java
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at http://www.diozero.com/
  * %%
@@ -17,10 +17,10 @@ package com.diozero.internal.board.raspberrypi;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -41,11 +41,11 @@ import com.diozero.util.SleepUtil;
 
 @SuppressWarnings("unused")
 public class RaspberryPiMmapGpio implements MmapGpioInterface {
-	// #define GPIO_BASE  (pi_peri_phys + 0x00200000)
-	// #define PCM_BASE   (pi_peri_phys + 0x00203000)
-	// #define SPI_BASE   (pi_peri_phys + 0x00204000)
-	// #define PWM_BASE   (pi_peri_phys + 0x0020C000)
-	
+	// #define GPIO_BASE (pi_peri_phys + 0x00200000)
+	// #define PCM_BASE (pi_peri_phys + 0x00203000)
+	// #define SPI_BASE (pi_peri_phys + 0x00204000)
+	// #define PWM_BASE (pi_peri_phys + 0x0020C000)
+
 	private static final String GPIOMEM_DEVICE = "/dev/gpiomem";
 	// private static final int GPIOMEM_LEN = 0xB4;
 	private static final int GPIOMEM_LEN = 4096;
@@ -128,7 +128,7 @@ public class RaspberryPiMmapGpio implements MmapGpioInterface {
 
 	/**
 	 * Returns the function of a GPIO: 0=input, 1=output, 4=alt0
-	 * 
+	 *
 	 * @param gpio GPIO number
 	 * @return GPIO mode (0 - INPUT, 1 - OUTPUT)
 	 */
@@ -196,7 +196,7 @@ public class RaspberryPiMmapGpio implements MmapGpioInterface {
 			}
 
 			/*-
-			 * 
+			 *
 			bits = *(gpioReg + GPPUPPDN0 + (gpio>>4));
 			bits &= ~(3 << shift);
 			bits |= (pull << shift);
@@ -270,7 +270,7 @@ public class RaspberryPiMmapGpio implements MmapGpioInterface {
 		try (RaspberryPiMmapGpio mmap = new RaspberryPiMmapGpio(false)) {
 			mmap.initialise();
 
-			int gpio = 12;
+			int gpio = 21;
 			for (int i = 0; i < 10; i++) {
 				mmap.setMode(gpio, DeviceMode.DIGITAL_INPUT);
 				System.out.format("Mode for GPIO# %d: %s, value: %b. (Mode should be %s)%n", gpio, mmap.getMode(gpio),

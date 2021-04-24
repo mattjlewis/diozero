@@ -15,6 +15,7 @@
 #include <fcntl.h>
 #include <sys/ioctl.h>
 #include <sys/epoll.h>
+#include <sys/eventfd.h>
 
 #include <linux/gpio.h>
 
@@ -43,6 +44,9 @@ extern jmethodID gpioLineEventListenerMethod;
 static int dir_filter(const struct dirent *dir) {
 	return !strncmp(dir->d_name, "gpiochip", 8);
 }
+
+int exitLoopFd = -1;
+volatile bool running = false;
 
 JNIEXPORT jobject JNICALL Java_com_diozero_internal_provider_builtin_gpio_NativeGpioDevice_getChips(
 		JNIEnv* env, jclass clz) {
@@ -252,7 +256,8 @@ JNIEXPORT void JNICALL Java_com_diozero_internal_provider_builtin_gpio_NativeGpi
 	memset(&evdata, 0, sizeof(evdata));
 
 	int num_fds;
-	while (true) {
+	running = true;
+	while (running) {
 		// TODO Use epoll_pwait for signal?
 		// https://man7.org/linux/man-pages/man2/epoll_wait.2.html
 		num_fds = epoll_wait(epollFd, epoll_events, max_events, timeout);
@@ -274,13 +279,21 @@ JNIEXPORT void JNICALL Java_com_diozero_internal_provider_builtin_gpio_NativeGpi
 			if (epoll_events[i].events & (EPOLLRDHUP | EPOLLERR | EPOLLHUP)) {
 				fprintf(stderr, "TODO: epoll events indicates that fd %d should be removed\n",
 						epoll_events[i].data.fd);
+				running = false;
 				continue;
 			}
+
+			if (epoll_events[i].data.fd == exitLoopFd) {
+				running = false;
+				break;
+			}
+
 			if (epoll_events[i].events & EPOLLIN) {
 				// Read the event data
 				if (read(epoll_events[i].data.fd, &evdata, sizeof(evdata)) < 0) {
 					perror("Error reading event data from line fd");
-					continue;
+					running = false;
+					break;
 				}
 
 				/*
@@ -299,6 +312,131 @@ JNIEXPORT void JNICALL Java_com_diozero_internal_provider_builtin_gpio_NativeGpi
 			}
 		}
 	}
+}
+
+int stopEventLoopPipe(int epollFd) {
+	int pipefds[2] = {};
+	int rc = pipe(pipefds);
+	if (rc < 0) {
+		perror("Error creating pipe");
+		return rc;
+	}
+	int read_pipe = pipefds[0];
+	exitLoopFd = read_pipe;
+	int write_pipe = pipefds[1];
+
+	/*
+	// Make the read-end non-blocking
+	int flags = fcntl(read_pipe, F_GETFL, 0);
+	rc = fcntl(read_pipe, F_SETFL, flags | O_NONBLOCK);
+	if (rc < 0) {
+		fprintf(stderr, "Error calling fcntl on read pipe: %s\n", strerror(errno));
+		close(read_pipe);
+		close(write_pipe);
+		return;
+	}
+	*/
+
+	// Add the read end to the epoll
+	struct epoll_event ev = {};
+	ev.events = EPOLLIN;
+	ev.data.fd = read_pipe;
+	rc = epoll_ctl(epollFd, EPOLL_CTL_ADD, read_pipe, &ev);
+	if (rc < 0) {
+		perror("epoll_ctl EPOLL_CTL_ADD error");
+		close(read_pipe);
+		close(write_pipe);
+		return rc;
+	}
+
+	uint8_t value = 1;
+	rc = write(write_pipe, &value, sizeof(uint8_t));
+	if (rc < 0) {
+		perror("write error");
+	}
+	// Wait for the epoll_wait thread to wake up
+	while (running) {
+		rc = usleep(10);
+	}
+
+	rc = epoll_ctl(epollFd, EPOLL_CTL_DEL, read_pipe, NULL);
+	if (rc < 0) {
+		perror("epoll_ctl EPOLL_CTL_DEL error");
+	}
+
+	rc = close(write_pipe);
+	if (rc < 0) {
+		perror("close error write_pipe");
+	}
+
+	rc = close(read_pipe);
+	if (rc < 0) {
+		perror("close error on read_pipe");
+	}
+
+	return 0;
+}
+
+int stopEventLoopEventFd(int epollFd) {
+	//exitLoopFd = eventfd(0, EFD_SEMAPHORE| EFD_NONBLOCK);
+	exitLoopFd = eventfd(0, 0);
+	if (exitLoopFd < 0) {
+		perror("Error creating eventfd");
+		return -1;
+	}
+
+	struct epoll_event ev;
+	ev.events = EPOLLIN | EPOLLPRI | EPOLLET;
+	ev.data.fd = exitLoopFd;
+
+	int rc = epoll_ctl(epollFd, EPOLL_CTL_ADD, exitLoopFd, &ev);
+	if (rc < 0) {
+		perror("Error in epoll_ctl EPOLL_CTL_ADD");
+		return -errno;
+	}
+
+	// value cannot be 0
+	eventfd_t value = 1;
+	rc = eventfd_write(exitLoopFd, value);
+	if (rc < 0) {
+		perror("Error in write to exitLoopFd");
+		return -errno;
+	}
+
+	// Wait for the epoll_wait thread to wake up
+	while (running) {
+		// Very small sleep
+		rc = usleep(10);
+	}
+
+	// Now cleanup the eventfd
+
+	rc = epoll_ctl(epollFd, EPOLL_CTL_DEL, exitLoopFd, NULL);
+	if (rc < 0) {
+		perror("Error in epoll_ctl EPOLL_CTL_DEL");
+		return -errno;
+	}
+
+	rc = close(exitLoopFd);
+	if (rc < 0) {
+		perror("Error in close");
+		return -errno;
+	}
+
+	return 0;
+}
+
+JNIEXPORT int JNICALL Java_com_diozero_internal_provider_builtin_gpio_NativeGpioDevice_stopEventLoop(
+		JNIEnv* env, jclass clz, jint epollFd) {
+	int rc = stopEventLoopEventFd(epollFd);
+	if (rc < 0) {
+		fprintf(stderr, "Failed to stop event loop: %d\n", rc);
+	}
+	rc = close(epollFd);
+	if (rc < 0) {
+		perror("Failed to stop close epollFd");
+	}
+	return rc;
 }
 
 JNIEXPORT void JNICALL Java_com_diozero_internal_provider_builtin_gpio_NativeGpioDevice_close(

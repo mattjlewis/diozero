@@ -1,11 +1,13 @@
 package com.diozero.api;
 
+import java.util.concurrent.Executors;
+
 /*-
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - Core
- * Filename:     DebouncedDigitalInputDeviceTest.java  
- * 
+ * Filename:     DebouncedDigitalInputDeviceTest.java
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at http://www.diozero.com/
  * %%
@@ -17,10 +19,10 @@ package com.diozero.api;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -32,9 +34,11 @@ package com.diozero.api;
  */
 
 import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -45,13 +49,20 @@ import com.diozero.api.function.DeviceEventConsumer;
 import com.diozero.api.sandpit.DebouncedDigitalInputDevice;
 import com.diozero.internal.provider.test.TestDeviceFactory;
 import com.diozero.internal.provider.test.TestDigitalInputDevice;
-import com.diozero.util.DiozeroScheduler;
 import com.diozero.util.SleepUtil;
 
 public class DebouncedDigitalInputDeviceTest implements DeviceEventConsumer<DigitalInputEvent> {
+	private static ScheduledExecutorService executor;
+
 	@BeforeAll
 	public static void beforeAll() {
 		TestDeviceFactory.setDigitalInputDeviceClass(TestDigitalInputDevice.class);
+		executor = Executors.newScheduledThreadPool(1);
+	}
+
+	@AfterAll
+	public static void afterAll() {
+		executor.shutdown();
 	}
 
 	private int eventCount;
@@ -86,8 +97,8 @@ public class DebouncedDigitalInputDeviceTest implements DeviceEventConsumer<Digi
 			SleepUtil.sleepMillis(debounce_time_ms / 4);
 
 			// Generate 1 event twice within the debounce time, toggling the value each time
-			ScheduledFuture<?> future = DiozeroScheduler.getNonDaemonInstance().scheduleAtFixedRate(event_generator, 0,
-					debounce_time_ms / 2, TimeUnit.MILLISECONDS);
+			ScheduledFuture<?> future = executor.scheduleAtFixedRate(event_generator, 0, debounce_time_ms / 2,
+					TimeUnit.MILLISECONDS);
 
 			// Sleep for delay_secs
 			SleepUtil.sleepSeconds(delay_secs);
@@ -127,8 +138,8 @@ public class DebouncedDigitalInputDeviceTest implements DeviceEventConsumer<Digi
 			SleepUtil.sleepMillis(50);
 
 			// Generate events that are held for twice the debounce time
-			ScheduledFuture<?> future = DiozeroScheduler.getNonDaemonInstance().scheduleAtFixedRate(event_generator, 0,
-					debounce_time_ms * 2, TimeUnit.MILLISECONDS);
+			ScheduledFuture<?> future = executor.scheduleAtFixedRate(event_generator, 0, debounce_time_ms * 2,
+					TimeUnit.MILLISECONDS);
 
 			// Sleep for 5s
 			SleepUtil.sleepSeconds(sleep_secs);
@@ -169,8 +180,8 @@ public class DebouncedDigitalInputDeviceTest implements DeviceEventConsumer<Digi
 			SleepUtil.sleepMillis(debounce_time_ms / 2);
 
 			// Generate events that are held for just over the debounce time
-			ScheduledFuture<?> future = DiozeroScheduler.getNonDaemonInstance().scheduleAtFixedRate(event_generator, 0,
-					event_hold_ms, TimeUnit.MILLISECONDS);
+			ScheduledFuture<?> future = executor.scheduleAtFixedRate(event_generator, 0, event_hold_ms,
+					TimeUnit.MILLISECONDS);
 
 			// Sleep for 5s
 			SleepUtil.sleepSeconds(sleep_secs);
@@ -208,14 +219,14 @@ public class DebouncedDigitalInputDeviceTest implements DeviceEventConsumer<Digi
 			// Generate events that are held for just over the debounce time.
 			// Make sure that the debounce thread is out of alignment with the event
 			// generation thread.
-			ScheduledFuture<?> future = DiozeroScheduler.getNonDaemonInstance().scheduleAtFixedRate(event_generator,
-					debounce_time_ms / 2, event_hold_ms, TimeUnit.MILLISECONDS);
+			ScheduledFuture<?> future = executor.scheduleAtFixedRate(event_generator, debounce_time_ms / 2,
+					event_hold_ms, TimeUnit.MILLISECONDS);
 
 			// Sleep for 5s
 			SleepUtil.sleepSeconds(sleep_secs);
 
 			future.cancel(true);
-			
+
 			System.out.println(eventCount);
 
 			// There should have been 2 events every second
@@ -263,7 +274,7 @@ public class DebouncedDigitalInputDeviceTest implements DeviceEventConsumer<Digi
 							(debounce_time_ms + debounce_time_ms / 2) - (System.currentTimeMillis() - start_ms), 10));
 				}
 			};
-			Future<?> future = DiozeroScheduler.getNonDaemonInstance().submit(event_generator);
+			Future<?> future = executor.submit(event_generator);
 
 			// Sleep for sleep_secs
 			SleepUtil.sleepSeconds(sleep_secs);
@@ -313,7 +324,7 @@ public class DebouncedDigitalInputDeviceTest implements DeviceEventConsumer<Digi
 			// generation thread
 			SleepUtil.sleepMillis(20);
 
-			Future<?> future = DiozeroScheduler.getNonDaemonInstance().submit(event_generator);
+			Future<?> future = executor.submit(event_generator);
 
 			// Sleep for sleep_secs
 			SleepUtil.sleepSeconds(sleep_secs);
@@ -321,7 +332,7 @@ public class DebouncedDigitalInputDeviceTest implements DeviceEventConsumer<Digi
 			future.cancel(true);
 
 			// Should be ~2 events every 125ms
-			//Assertions.assertEquals((sleep_secs / 0.125f) * 2 - 1, eventCount);
+			// Assertions.assertEquals((sleep_secs / 0.125f) * 2 - 1, eventCount);
 		}
 
 		Logger.debug("bouncySwitch1() - End");

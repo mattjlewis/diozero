@@ -81,7 +81,10 @@ JNIEXPORT void JNICALL Java_com_diozero_util_PollNative_poll(
 	memset(c, 0, BUF_LEN);
 
 	lseek(fd, 0, SEEK_SET); /* consume any prior interrupts */
-	read(fd, &c, BUF_LEN-1);
+	int rc = read(fd, &c, BUF_LEN-1);
+	if (rc < 0) {
+		perror("read error");
+	}
 
 	int retval;
 

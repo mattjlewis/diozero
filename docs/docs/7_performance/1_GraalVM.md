@@ -69,14 +69,14 @@ native-image -H:JNIConfigurationFiles=./config/jni-config.json -H:ReflectionConf
 
 Run with `-XX:+UnlockExperimentalVMOptions -XX:+EnableJVMCI -XX:-UseJVMCICompiler`, for example:
 ```shell
-java -XX:+UnlockExperimentalVMOptions -XX:+EnableJVMCI -XX:-UseJVMCICompiler -cp diozero-sampleapps-1.2.0.jar com.diozero.sampleapps.perf.GpioPerfTest 21 50000000
+java -XX:+UnlockExperimentalVMOptions -XX:+EnableJVMCI -XX:-UseJVMCICompiler -cp diozero-sampleapps-{{site.version}}.jar com.diozero.sampleapps.perf.GpioPerfTest 21 50000000
 ```
 
 ## Results
 
 Default behaviour:
 ```shell
-> java -cp diozero-sampleapps-1.2.0.jar com.diozero.sampleapps.perf.GpioPerfTest 21 50000000
+> java -cp diozero-sampleapps-{{site.version}}.jar com.diozero.sampleapps.perf.GpioPerfTest 21 50000000
 19:59:21.284 [main] INFO com.diozero.sampleapps.perf.GpioPerfTest.main - Starting GPIO performance test using GPIO 21 with 50000000 iterations
 19:59:23.387 [main] INFO com.diozero.sampleapps.perf.GpioPerfTest.test - Duration for 50,000,000 iterations: 1.847 s, frequency: 27,070,926 Hz
 19:59:25.224 [main] INFO com.diozero.sampleapps.perf.GpioPerfTest.test - Duration for 50,000,000 iterations: 1.828 s, frequency: 27,352,298 Hz
@@ -87,7 +87,7 @@ Default behaviour:
 
 With a smaller number of iterations you see the impact of the JVM JIT compiler in the early results:
 ```shell
-> java -cp diozero-sampleapps-1.2.0.jar com.diozero.sampleapps.perf.GpioPerfTest 21 500000
+> java -cp diozero-sampleapps-{{site.version}}.jar com.diozero.sampleapps.perf.GpioPerfTest 21 500000
 19:50:27.109 [main] INFO com.diozero.sampleapps.perf.GpioPerfTest.main - Starting GPIO performance test using GPIO 21 with 500000 iterations
 19:50:27.417 [main] INFO com.diozero.sampleapps.perf.GpioPerfTest.test - Duration for 500,000 iterations: 0.053 s, frequency: 9,433,962 Hz
 19:50:27.468 [main] INFO com.diozero.sampleapps.perf.GpioPerfTest.test - Duration for 500,000 iterations: 0.043 s, frequency: 11,627,907 Hz
@@ -98,7 +98,7 @@ With a smaller number of iterations you see the impact of the JVM JIT compiler i
 
 With the GraalVM JVMCICompiler the speed really ramps up (I haven't verified the frequency other than by using an LED):
 ```shell
-> java -XX:+UnlockExperimentalVMOptions -XX:+EnableJVMCI -XX:+UseJVMCICompiler -cp diozero-sampleapps-1.2.0.jar com.diozero.sampleapps.perf.GpioPerfTest 21 50000000
+> java -XX:+UnlockExperimentalVMOptions -XX:+EnableJVMCI -XX:+UseJVMCICompiler -cp diozero-sampleapps-{{site.version}}.jar com.diozero.sampleapps.perf.GpioPerfTest 21 50000000
 19:56:47.368 [main] INFO com.diozero.sampleapps.perf.GpioPerfTest.main - Starting GPIO performance test using GPIO 21 with 50000000 iterations
 19:56:51.144 [main] INFO com.diozero.sampleapps.perf.GpioPerfTest.test - Duration for 50,000,000 iterations: 3.488 s, frequency: 14,334,862 Hz
 19:56:54.627 [main] INFO com.diozero.sampleapps.perf.GpioPerfTest.test - Duration for 50,000,000 iterations: 3.469 s, frequency: 14,413,376 Hz
@@ -109,7 +109,7 @@ With the GraalVM JVMCICompiler the speed really ramps up (I haven't verified the
 
 With a smaller number of iterations you see that the GraalVM JVMCICompiler doesn't get going:
 ```shell
-> java -XX:+UnlockExperimentalVMOptions -XX:+EnableJVMCI -XX:+UseJVMCICompiler -cp diozero-sampleapps-1.2.0.jar com.diozero.sampleapps.perf.GpioPerfTest 21 500000
+> java -XX:+UnlockExperimentalVMOptions -XX:+EnableJVMCI -XX:+UseJVMCICompiler -cp diozero-sampleapps-{{site.version}}.jar com.diozero.sampleapps.perf.GpioPerfTest 21 500000
 10:57:14.146 [main] INFO com.diozero.sampleapps.perf.GpioPerfTest.main - Starting GPIO performance test using GPIO 21 with 500000 iterations
 10:57:14.858 [main] INFO com.diozero.sampleapps.perf.GpioPerfTest.test - Duration for 500,000 iterations: 0.112 s, frequency: 4,464,286 Hz
 10:57:14.979 [main] INFO com.diozero.sampleapps.perf.GpioPerfTest.test - Duration for 500,000 iterations: 0.101 s, frequency: 4,950,495 Hz

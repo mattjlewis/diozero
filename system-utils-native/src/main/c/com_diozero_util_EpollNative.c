@@ -84,7 +84,10 @@ JNIEXPORT jint JNICALL Java_com_diozero_util_EpollNative_addFile(
 	/* Consume any prior interrupts */
 	char buf;
 	lseek(fd, 0, SEEK_SET);
-	read(fd, &buf, 1);
+	int rc = read(fd, &buf, 1);
+	if (rc < 0) {
+		perror("read error");
+	}
 
 	struct epoll_event ev;
 	ev.events = EPOLLIN | EPOLLPRI | EPOLLET;
@@ -142,7 +145,10 @@ JNIEXPORT jobjectArray JNICALL Java_com_diozero_util_EpollNative_waitForEvents(
 	for (i=0; i<num_fds; i++) {
 		// Consume the interrupt
 		lseek(epoll_events[i].data.fd, 0, SEEK_SET);
-		read(epoll_events[i].data.fd, &val, 1);
+		int rc = read(epoll_events[i].data.fd, &val, 1);
+		if (rc < 0) {
+			perror("read error");
+		}
 
 		jobject poll_event = (*env)->NewObject(env, epollEventClassRef, epollEventConstructor,
 				epoll_events[i].data.fd, epoll_events[i].events, epoch_time, nano_time, val);
@@ -179,7 +185,10 @@ JNIEXPORT jint JNICALL Java_com_diozero_util_EpollNative_eventLoop(
 			// Consume the interrupt
 			lseek(epoll_events[i].data.fd, 0, SEEK_SET);
 			// Note this only reads one byte - not very generic, developed for sysfs GPIO events
-			read(epoll_events[i].data.fd, &val, 1);
+			int rc = read(epoll_events[i].data.fd, &val, 1);
+			if (rc < 0) {
+				perror("read error");
+			}
 
 			if (val == INTERRUPT) {
 				running = 0;
@@ -233,7 +242,10 @@ JNIEXPORT void JNICALL Java_com_diozero_util_EpollNative_stopWait(
 		return;
 	}
 
-	write(write_pipe, &INTERRUPT, 1);
+	rc = write(write_pipe, &INTERRUPT, 1);
+	if (rc < 0) {
+		perror("write error");
+	}
 
 	rc = epoll_ctl(epollFd, EPOLL_CTL_DEL, read_pipe, NULL);
 	rc = close(write_pipe);

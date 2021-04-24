@@ -48,14 +48,12 @@ jclass fileDescClassRef;
 jmethodID fileDescConstructor = NULL;
 jfieldID fileDescFdField = NULL;
 
-jclass epollNativeCallbackClassRef = NULL;
 jmethodID epollNativeCallbackMethod = NULL;
-
-jclass pollEventListenerClassRef = NULL;
-jmethodID pollEventListenerNotifyMethod = NULL;
 
 jclass epollEventClassRef = NULL;
 jmethodID epollEventConstructor = NULL;
+
+jmethodID pollEventListenerNotifyMethod = NULL;
 
 jclass mmapByteBufferClassRef = NULL;
 jmethodID mmapByteBufferConstructor = NULL;
@@ -70,6 +68,9 @@ jclass gpioLineClassRef = NULL;
 jmethodID gpioLineConstructor = NULL;
 
 jmethodID gpioLineEventListenerMethod = NULL;
+
+jfieldID i2cMessageFlagsField = NULL;
+jfieldID i2cMessageLenField = NULL;
 
 #define SEC_IN_NANOSECS  1000000000ULL
 
@@ -137,6 +138,7 @@ jint JNI_OnLoad(JavaVM* jvm, void* reserved) {
 		fprintf(stderr, "Error looking up methodID for %s.%s%s\n", class_name, method_name, signature);
 		return JNI_ERR;
 	}
+	(*env)->DeleteLocalRef(env, epoll_native_callback_class);
 
 	// Cache the EpollEvent class and constructor on startup
 	class_name = "com/diozero/util/EpollEvent";
@@ -167,6 +169,7 @@ jint JNI_OnLoad(JavaVM* jvm, void* reserved) {
 		fprintf(stderr, "Error looking up methodID for %s.%s%s\n", class_name, method_name, signature);
 		return JNI_ERR;
 	}
+	(*env)->DeleteLocalRef(env, poll_event_listener_class);
 
 	// Cache the MmapByteBuffer class and constructor on startup
 	class_name = "com/diozero/util/MmapByteBuffer";
@@ -176,7 +179,7 @@ jint JNI_OnLoad(JavaVM* jvm, void* reserved) {
 		return JNI_ERR;
 	}
 	method_name = "<init>";
-	signature = "(IIILjava/nio/ByteBuffer;)V";
+	signature = "(IJILjava/nio/ByteBuffer;)V";
 	mmapByteBufferConstructor = (*env)->GetMethodID(env, mmap_byte_buffer_class, method_name, signature);
 	if ((*env)->ExceptionCheck(env) || mmapByteBufferConstructor == NULL) {
 		fprintf(stderr, "Error looking up methodID for %s.%s%s\n", class_name, method_name, signature);
@@ -244,6 +247,21 @@ jint JNI_OnLoad(JavaVM* jvm, void* reserved) {
 	}
 	(*env)->DeleteLocalRef(env, gpio_line_event_listener_class);
 
+	// Cache the I2CMessage class and fields on startup
+	class_name = "com/diozero/api/I2CDeviceInterface$I2CMessage";
+	jclass i2c_message_class = (*env)->FindClass(env, class_name);
+	if ((*env)->ExceptionCheck(env) || i2c_message_class == NULL) {
+		fprintf(stderr, "Error, could not find class '%s'\n", class_name);
+		return JNI_ERR;
+	}
+	field_name = "flags";
+	signature = "I";
+	i2cMessageFlagsField = (*env)->GetFieldID(env, i2c_message_class, field_name, signature);
+	field_name = "len";
+	signature = "I";
+	i2cMessageLenField = (*env)->GetFieldID(env, i2c_message_class, field_name, signature);
+	(*env)->DeleteLocalRef(env, i2c_message_class);
+
 	//
 
 	/*
@@ -264,12 +282,8 @@ jint JNI_OnLoad(JavaVM* jvm, void* reserved) {
 	(*env)->DeleteLocalRef(env, array_list_class);
 	fileDescClassRef = (*env)->NewGlobalRef(env, fdesc_class);
 	(*env)->DeleteLocalRef(env, fdesc_class);
-	epollNativeCallbackClassRef = (*env)->NewGlobalRef(env, epoll_native_callback_class);
-	(*env)->DeleteLocalRef(env, epoll_native_callback_class);
 	epollEventClassRef = (*env)->NewGlobalRef(env, epoll_event_class);
 	(*env)->DeleteLocalRef(env, epoll_event_class);
-	pollEventListenerClassRef = (*env)->NewGlobalRef(env, poll_event_listener_class);
-	(*env)->DeleteLocalRef(env, poll_event_listener_class);
 	mmapByteBufferClassRef = (*env)->NewGlobalRef(env, mmap_byte_buffer_class);
 	(*env)->DeleteLocalRef(env, mmap_byte_buffer_class);
 	gpioChipInfoClassRef = (*env)->NewGlobalRef(env, gpio_chip_info_class);
@@ -297,18 +311,6 @@ void JNI_OnUnload(JavaVM *jvm, void *reserved) {
 	if (fileDescClassRef != NULL) {
 		(*env)->DeleteGlobalRef(env, fileDescClassRef);
 		fileDescClassRef = NULL;
-	}
-	if (epollEventClassRef != NULL) {
-		(*env)->DeleteGlobalRef(env, epollEventClassRef);
-		epollEventClassRef = NULL;
-	}
-	if (epollNativeCallbackClassRef != NULL) {
-		(*env)->DeleteGlobalRef(env, epollNativeCallbackClassRef);
-		epollNativeCallbackClassRef = NULL;
-	}
-	if (pollEventListenerClassRef != NULL) {
-		(*env)->DeleteGlobalRef(env, pollEventListenerClassRef);
-		pollEventListenerClassRef = NULL;
 	}
 	if (epollEventClassRef != NULL) {
 		(*env)->DeleteGlobalRef(env, epollEventClassRef);

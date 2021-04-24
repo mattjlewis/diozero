@@ -4,8 +4,8 @@ package com.diozero.internal.provider.builtin;
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - Core
- * Filename:     DefaultDeviceFactory.java  
- * 
+ * Filename:     DefaultDeviceFactory.java
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at http://www.diozero.com/
  * %%
@@ -17,10 +17,10 @@ package com.diozero.internal.provider.builtin;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -298,11 +298,12 @@ public class DefaultDeviceFactory extends BaseNativeDeviceFactory {
 
 		// Need to make sure the keys are different
 		// Note this is replicating the functionality in provisionDigitalOutputDevice.
-		// That method can't be called as it will throw a device already opened exception.
+		// That method can't be called as it will throw a device already opened
+		// exception.
 		// Also note that SoftwarePwmOutputDevice has special cleanup functionality.
 		GpioDigitalOutputDeviceInterface gpio_output_device = createDigitalOutputDevice("PWM-" + key, pinInfo, false);
 		deviceOpened(gpio_output_device);
-		
+
 		return new SoftwarePwmOutputDevice(key, this, gpio_output_device, pwmFrequency, initialValue);
 	}
 

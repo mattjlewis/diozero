@@ -2,8 +2,8 @@
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - Core
- * Filename:     DigitalOutputDevice.java  
- * 
+ * Filename:     DigitalOutputDevice.java
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at http://www.diozero.com/
  * %%
@@ -15,10 +15,10 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -106,6 +106,7 @@ public class DigitalOutputDevice extends GpioDevice implements OutputDeviceInter
 	private AtomicBoolean running;
 	private Future<?> future;
 	private GpioDigitalOutputDeviceInterface delegate;
+	private int cycleCount;
 
 	/**
 	 * Defaults to active high logic, initial value is off.
@@ -171,6 +172,7 @@ public class DigitalOutputDevice extends GpioDevice implements OutputDeviceInter
 
 	private void onOffLoop(int onTimeMs, int offTimeMs, int n, Action stopAction) throws RuntimeIOException {
 		running.set(true);
+		cycleCount = 0;
 		if (n > 0) {
 			for (int i = 0; i < n && running.get(); i++) {
 				onOff(onTimeMs, offTimeMs);
@@ -194,10 +196,13 @@ public class DigitalOutputDevice extends GpioDevice implements OutputDeviceInter
 			running.set(false);
 		}
 
+		setValueUnsafe(!activeHigh);
+		cycleCount++;
+
 		if (!running.get()) {
 			return;
 		}
-		setValueUnsafe(!activeHigh);
+
 		try {
 			Thread.sleep(offTimeMs);
 		} catch (InterruptedException e) {
@@ -315,5 +320,9 @@ public class DigitalOutputDevice extends GpioDevice implements OutputDeviceInter
 		} else {
 			onOffLoop(on_ms, off_ms, n, stopAction);
 		}
+	}
+
+	public int getCycleCount() {
+		return cycleCount;
 	}
 }

@@ -60,6 +60,9 @@
 #define long_t uint64_t
 #endif
 
+extern jfieldID i2cMessageFlagsField;
+extern jfieldID i2cMessageLenField;
+
 static inline __s32
 i2c_smbus_read_word_swapped(int file, __u8 command) {
 	__s32 value = i2c_smbus_read_word_data(file, command);
@@ -394,19 +397,6 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_builtin_i2c_NativeI2C_
 
 JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_builtin_i2c_NativeI2C_readWrite(
 		JNIEnv* env, jclass clz, jint fd, jint deviceAddress, jobjectArray messages, jbyteArray buffer) {
-	char* class_name = "com/diozero/api/I2CDeviceInterface$I2CMessage";
-	jclass i2c_message_class = (*env)->FindClass(env, class_name);
-	if ((*env)->ExceptionCheck(env) || i2c_message_class == NULL) {
-		fprintf(stderr, "Error, could not find class '%s'\n", class_name);
-		return -1;
-	}
-	char* field_name = "flags";
-	char* signature = "I";
-	jfieldID flags_field_id = (*env)->GetFieldID(env, i2c_message_class, field_name, signature);
-	field_name = "len";
-	signature = "I";
-	jfieldID len_field_id = (*env)->GetFieldID(env, i2c_message_class, field_name, signature);
-
 	jbyte* data = (*env)->GetByteArrayElements(env, buffer, NULL);
 
 	int num_messages = (*env)->GetArrayLength(env, messages);
@@ -420,8 +410,8 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_builtin_i2c_NativeI2C_
 		jobject message = (*env)->GetObjectArrayElement(env, messages, i);
 
 		rdwr_msg[i].addr = deviceAddress;
-		rdwr_msg[i].flags = (*env)->GetIntField(env, message, flags_field_id);
-		rdwr_msg[i].len = (*env)->GetIntField(env, message, len_field_id);
+		rdwr_msg[i].flags = (*env)->GetIntField(env, message, i2cMessageFlagsField);
+		rdwr_msg[i].len = (*env)->GetIntField(env, message, i2cMessageLenField);
 		rdwr_msg[i].buf = (unsigned char*) &data[offset];
 
 		offset += rdwr_msg[i].len;

@@ -1,5 +1,36 @@
 package com.diozero.sampleapps.sandpit;
 
+/*-
+ * #%L
+ * Organisation: diozero
+ * Project:      Device I/O Zero - Sample applications
+ * Filename:     Max30102Test.java
+ *
+ * This file is part of the diozero project. More information about this project
+ * can be found at http://www.diozero.com/
+ * %%
+ * Copyright (C) 2016 - 2021 diozero
+ * %%
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ * #L%
+ */
+
 import java.util.Queue;
 
 import com.diozero.devices.sandpit.Max30102;
@@ -15,7 +46,7 @@ import com.diozero.util.SleepUtil;
 public class Max30102Test {
 	public static void main(String[] args) {
 		// Run for 10s
-		int duration_ms = 10_000;
+		int duration_ms = 30_000;
 		SpO2SampleRate spo2_sample_rate = SpO2SampleRate._100;
 		long sleep_ms = 1_000 / spo2_sample_rate.getSampleRate();
 

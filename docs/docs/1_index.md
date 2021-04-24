@@ -59,7 +59,7 @@ to simplify development and improve code readability.
 
 diozero has out of the box support for the following Single Board Computers and micro-controllers:
 
-* [Raspberry Pi](https://www.raspberrypi.org/) (all versions + tested on Raspberry Pi OS 32-bit and 64-bit as well as Ubuntu Server 64-bit).
+* [Raspberry Pi](https://www.raspberrypi.org/) (_all_ versions + tested on Raspberry Pi OS 32-bit and 64-bit as well as Ubuntu Server 64-bit).
 * [Odroid C2](https://wiki.odroid.com/odroid-c2/odroid-c2) (Armbian 64-bit).
 * [BeagleBone Green / Black](https://beagleboard.org/black).
 * [ASUS TinkerBoard](https://www.asus.com/uk/Single-board-Computer/TINKER-BOARD/) (ASUS TinkerOS/Linaro as well as Armbian 64-bit).

@@ -47,14 +47,21 @@
 extern jclass mmapByteBufferClassRef;
 extern jmethodID mmapByteBufferConstructor;
 
+#if __WORDSIZE == 32
+#define long_t uint32_t
+#else
+#define long_t uint64_t
+#endif
+
 static void* initMapMem(int fd, uint32_t offset, uint32_t length) {
 	return mmap(0, length, PROT_READ|PROT_WRITE, MAP_SHARED, fd, offset);
 	//return mmap(0, length, PROT_READ|PROT_WRITE, MAP_SHARED|MAP_LOCKED, fd, offset);
 }
 
-jobject createMmapByteBuffer(JNIEnv* env, int fd, void* map_ptr, long mapCapacity) {
-	return (*env)->NewObject(env, mmapByteBufferClassRef, mmapByteBufferConstructor, fd, map_ptr, mapCapacity,
-			(*env)->NewDirectByteBuffer(env, map_ptr, mapCapacity));
+jobject createMmapByteBuffer(JNIEnv* env, int fd, void* mapPtr, jint mapCapacity) {
+	long_t map_ptr = (long_t) mapPtr;
+	return (*env)->NewObject(env, mmapByteBufferClassRef, mmapByteBufferConstructor, fd, (jlong) map_ptr, mapCapacity,
+			(*env)->NewDirectByteBuffer(env, mapPtr, (jlong) mapCapacity));
 }
 
 JNIEXPORT jobject JNICALL Java_com_diozero_util_MmapBufferNative_createMmapBuffer(
@@ -77,7 +84,8 @@ JNIEXPORT jobject JNICALL Java_com_diozero_util_MmapBufferNative_createMmapBuffe
 }
 
 JNIEXPORT void JNICALL Java_com_diozero_util_MmapBufferNative_closeMmapBuffer(
-		JNIEnv *env, jclass clz, jint fd, jint mapPtr, jint length) {
-	munmap((void*) mapPtr, length);
+		JNIEnv *env, jclass clz, jint fd, jlong mapPtr, jint length) {
+	long_t map_ptr = (long_t) mapPtr;
+	munmap((void*) map_ptr, length);
 	close((int) fd);
 }

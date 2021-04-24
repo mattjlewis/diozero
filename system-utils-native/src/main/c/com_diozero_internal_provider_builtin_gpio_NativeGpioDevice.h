@@ -90,6 +90,14 @@ JNIEXPORT void JNICALL Java_com_diozero_internal_provider_builtin_gpio_NativeGpi
 
 /*
  * Class:     com_diozero_internal_provider_builtin_gpio_NativeGpioDevice
+ * Method:    stopEventLoop
+ * Signature: (I)I
+ */
+JNIEXPORT int JNICALL Java_com_diozero_internal_provider_builtin_gpio_NativeGpioDevice_stopEventLoop(
+		JNIEnv *, jclass, jint);
+
+/*
+ * Class:     com_diozero_internal_provider_builtin_gpio_NativeGpioDevice
  * Method:    close
  * Signature: (I)V
  */
