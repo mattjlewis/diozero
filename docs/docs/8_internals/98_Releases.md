@@ -162,6 +162,7 @@ permalink: /internals/releases.html
 + mmap int buffer is volatile to ensure main memory is written
 + DigitalOutputDevice on-off loop enhancements courtesy of Greg Flurry
 + gpio chardev cleanup improvements
+* Fixing DiozeroScheduler - pool size of 0 to allow safe shutdown
 
 ## 1.2.2
 
