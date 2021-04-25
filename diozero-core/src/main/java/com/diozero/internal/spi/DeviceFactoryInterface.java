@@ -4,10 +4,10 @@ package com.diozero.internal.spi;
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - Core
- * Filename:     DeviceFactoryInterface.java  
+ * Filename:     DeviceFactoryInterface.java
  * 
  * This file is part of the diozero project. More information about this project
- * can be found at http://www.diozero.com/
+ * can be found at https://www.diozero.com/.
  * %%
  * Copyright (C) 2016 - 2021 diozero
  * %%
@@ -38,7 +38,7 @@ import com.diozero.sbc.BoardPinInfo;
 public interface DeviceFactoryInterface extends AutoCloseable {
 	/**
 	 * Get the name of this device factory
-	 * 
+	 *
 	 * @return the name of this device factory
 	 */
 	String getName();
@@ -59,7 +59,7 @@ public interface DeviceFactoryInterface extends AutoCloseable {
 
 	/**
 	 * Check if this device factory is closed.
-	 * 
+	 *
 	 * @return true if this device factory is closed
 	 */
 	boolean isClosed();
@@ -71,7 +71,7 @@ public interface DeviceFactoryInterface extends AutoCloseable {
 
 	/**
 	 * Check if the device with the given unique key is opened
-	 * 
+	 *
 	 * @param key the unique key of the device
 	 * @return true if the device is opened
 	 */
@@ -82,26 +82,30 @@ public interface DeviceFactoryInterface extends AutoCloseable {
 	 * device has been opened. Enables diozero to perform cleanup operations, for
 	 * example closing a device factory closes all devices provisionined by that
 	 * device factory.
+	 *
+	 * @param device the internal device
 	 */
 	void deviceOpened(InternalDeviceInterface device);
 
 	/**
 	 * diozero internal method to notify the {@link AbstractDeviceFactory} that a
 	 * device has been closed.
+	 *
+	 * @param device the internal device
 	 */
 	void deviceClosed(InternalDeviceInterface device);
 
 	/**
 	 * Get information about pins that can be provisioned by this device factory.
-	 * 
-	 * @return
+	 *
+	 * @return board pin info instance for this device factory
 	 */
 	BoardPinInfo getBoardPinInfo();
 
 	/**
 	 * diozero internal method to generate a unique key for the specified pin. Used
 	 * for maintaining the state of devices provisioned by this device factory.
-	 * 
+	 *
 	 * @param pinInfo the pin to create the key for
 	 * @return a key that is unique to this pin
 	 */
@@ -110,7 +114,7 @@ public interface DeviceFactoryInterface extends AutoCloseable {
 	/**
 	 * diozero internal method to generate a unique key for the I2C device at the
 	 * specified address attached to the specified I2C bus controller.
-	 * 
+	 *
 	 * @param controller the I2C bus controller number
 	 * @param address    the I2C device address
 	 * @return a unique I2C key
@@ -120,7 +124,7 @@ public interface DeviceFactoryInterface extends AutoCloseable {
 	/**
 	 * diozero internal method to generate a unique key for the SPI device attached
 	 * to the specified SPI controller and chip select.
-	 * 
+	 *
 	 * @param controller the SPI controller number
 	 * @param chipSelect the SPI chip select number
 	 * @return a unique SPI key
@@ -130,7 +134,7 @@ public interface DeviceFactoryInterface extends AutoCloseable {
 	/**
 	 * diozero internal method to generate a unique key for the specified serial
 	 * device.
-	 * 
+	 *
 	 * @param deviceFilename the serial device filename
 	 * @return a unique serial key
 	 */
@@ -138,8 +142,9 @@ public interface DeviceFactoryInterface extends AutoCloseable {
 
 	/**
 	 * Get the already provisioned device for the specified key
-	 * 
+	 *
 	 * @param key the unique device key
+	 * @param <T> derived device type to return
 	 * @return the device otherwise null if not found
 	 */
 	<T extends InternalDeviceInterface> T getDevice(String key);

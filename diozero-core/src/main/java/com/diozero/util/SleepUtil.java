@@ -5,9 +5,9 @@ package com.diozero.util;
  * Organisation: diozero
  * Project:      Device I/O Zero - Core
  * Filename:     SleepUtil.java
- *
+ * 
  * This file is part of the diozero project. More information about this project
- * can be found at http://www.diozero.com/
+ * can be found at https://www.diozero.com/.
  * %%
  * Copyright (C) 2016 - 2021 diozero
  * %%
@@ -17,10 +17,10 @@ package com.diozero.util;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- *
+ * 
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- *
+ * 
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -102,7 +102,9 @@ public class SleepUtil {
 	 * via {@link com.diozero.util.LibraryLoader#loadSystemUtils loadSystemUtils()}
 	 * prior to calling this method.
 	 *
-	 * @see https://man7.org/linux/man-pages/man2/nanosleep.2.html
+	 * See C <a href=
+	 * "https://man7.org/linux/man-pages/man2/nanosleep.2.html">nanosleep</a> man
+	 * pages.
 	 *
 	 * @param seconds seconds to sleep for
 	 * @param nanos   additional nanoseconds to sleep for; must be in the range 0 to

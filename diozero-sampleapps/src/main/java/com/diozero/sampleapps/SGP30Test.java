@@ -4,10 +4,10 @@ package com.diozero.sampleapps;
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - Sample applications
- * Filename:     SGP30Test.java  
+ * Filename:     SGP30Test.java
  * 
  * This file is part of the diozero project. More information about this project
- * can be found at http://www.diozero.com/
+ * can be found at https://www.diozero.com/.
  * %%
  * Copyright (C) 2016 - 2021 diozero
  * %%

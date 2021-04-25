@@ -2,10 +2,10 @@
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - Core
- * Filename:     Max30102.java  
+ * Filename:     Max30102.java
  * 
  * This file is part of the diozero project. More information about this project
- * can be found at http://www.diozero.com/
+ * can be found at https://www.diozero.com/.
  * %%
  * Copyright (C) 2016 - 2021 diozero
  * %%
@@ -415,6 +415,7 @@ public class Max30102 implements DeviceInterface {
 	 *                            is full), if set to 15, the interrupt is issued
 	 *                            when there are 15 data samples remaining in the
 	 *                            FIFO (17 unread)
+	 * @param mode                Operating mode
 	 * @param spo2AdcRange        SpO2 ADC range
 	 * @param spo2SampleRate      SpO2 sample rate
 	 * @param ledPulseWidth       LED pulse width (us)

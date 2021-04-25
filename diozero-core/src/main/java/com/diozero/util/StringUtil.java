@@ -6,10 +6,10 @@ import java.util.Collections;
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - Core
- * Filename:     StringUtil.java  
+ * Filename:     StringUtil.java
  * 
  * This file is part of the diozero project. More information about this project
- * can be found at http://www.diozero.com/
+ * can be found at https://www.diozero.com/.
  * %%
  * Copyright (C) 2016 - 2021 diozero
  * %%

@@ -4,10 +4,10 @@ package com.diozero.ws281xj;
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - WS281x Java Wrapper
- * Filename:     StripType.java  
+ * Filename:     StripType.java
  * 
  * This file is part of the diozero project. More information about this project
- * can be found at http://www.diozero.com/
+ * can be found at https://www.diozero.com/.
  * %%
  * Copyright (C) 2016 - 2021 diozero
  * %%

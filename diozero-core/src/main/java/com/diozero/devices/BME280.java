@@ -4,10 +4,10 @@ package com.diozero.devices;
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - Core
- * Filename:     BME280.java  
+ * Filename:     BME280.java
  * 
  * This file is part of the diozero project. More information about this project
- * can be found at http://www.diozero.com/
+ * can be found at https://www.diozero.com/.
  * %%
  * Copyright (C) 2016 - 2021 diozero
  * %%
@@ -47,15 +47,15 @@ import com.diozero.util.SleepUtil;
 /*-
  * Datasheet: https://cdn-shop.adafruit.com/datasheets/BST-BME280_DS001-10.pdf
  * Reference implementation: https://github.com/BoschSensortec/BME280_driver
- * 
+ *
  * Sample implementations:
  * Java: https://github.com/ControlEverythingCommunity/BME280/blob/master/Java/BME280.java
  * Adafruit / Python: https://github.com/adafruit/Adafruit_BME280_Library/blob/master/Adafruit_BME280.cpp
- * 
+ *
  * SPI Wiring:
  * SDO  | CSB | SDA/SDI | SCK / SCL | GND | VCC
  * MISO | CS  |  MOSI   |   SCLK    |
- * 
+ *
  * I2C Wiring:
  * SDO  | CSB | SDA/SDI | SCK / SCL | GND | VCC
  *      |     |   SDA   |    SCL    |
@@ -65,7 +65,7 @@ import com.diozero.util.SleepUtil;
  * Provides access to the Bosch BMx280 pressure and temperature sensor. The
  * BME280 includes an additional humidity sensor. Different constructors support
  * access via I2C or SPI.
- * 
+ *
  * All constructors configure the device as follows:
  * <ul>
  * <li>Temperature oversampling: x1</li>
@@ -75,17 +75,17 @@ import com.diozero.util.SleepUtil;
  * <li>Standby inactive duration: 1 second</li>
  * <li>IIR filter coefficient: Off</li>
  * </ul>
- * 
+ *
  * @author gregflurry
  * @author mattjlewis
  */
 public class BME280 implements BarometerInterface, ThermometerInterface, HygrometerInterface {
-	public static enum Model {
+	public enum Model {
 		BMP280(0x58), BME280(0x60);
 
 		private int deviceId;
 
-		private Model(int deviceId) {
+		Model(int deviceId) {
 			this.deviceId = deviceId;
 		}
 
@@ -117,13 +117,13 @@ public class BME280 implements BarometerInterface, ThermometerInterface, Hygrome
 	 * Humidity oversampling multiplier; value can be OVERSAMPLING_1, _2, _4, _8,
 	 * _16.
 	 */
-	public static enum HumidityOversampling {
+	public enum HumidityOversampling {
 		OVERSAMPLING_1(OVERSAMPLING_1_MASK), OVERSAMPLING_2(OVERSAMPLING_2_MASK), OVERSAMPLING_4(OVERSAMPLING_4_MASK),
 		OVERSAMPLING_8(OVERSAMPLING_8_MASK), OVERSAMPLING_16(OVERSAMPLING_16_MASK);
 
 		private byte mask;
 
-		private HumidityOversampling(byte mask) {
+		HumidityOversampling(byte mask) {
 			this.mask = mask;
 		}
 
@@ -136,13 +136,13 @@ public class BME280 implements BarometerInterface, ThermometerInterface, Hygrome
 	 * Temperature oversampling multiplier; value can be OVERSAMPLING_1, _2, _4, _8,
 	 * _16.
 	 */
-	public static enum TemperatureOversampling {
+	public enum TemperatureOversampling {
 		OVERSAMPLING_1(OVERSAMPLING_1_MASK), OVERSAMPLING_2(OVERSAMPLING_2_MASK), OVERSAMPLING_4(OVERSAMPLING_4_MASK),
 		OVERSAMPLING_8(OVERSAMPLING_8_MASK), OVERSAMPLING_16(OVERSAMPLING_16_MASK);
 
 		private byte mask;
 
-		private TemperatureOversampling(byte mask) {
+		TemperatureOversampling(byte mask) {
 			this.mask = (byte) (mask << 5);
 		}
 
@@ -155,13 +155,13 @@ public class BME280 implements BarometerInterface, ThermometerInterface, Hygrome
 	 * Pressure oversampling multiplier; value can be OVERSAMPLING_1, _2, _4, _8,
 	 * _16.
 	 */
-	public static enum PressureOversampling {
+	public enum PressureOversampling {
 		OVERSAMPLING_1(OVERSAMPLING_1_MASK), OVERSAMPLING_2(OVERSAMPLING_2_MASK), OVERSAMPLING_4(OVERSAMPLING_4_MASK),
 		OVERSAMPLING_8(OVERSAMPLING_8_MASK), OVERSAMPLING_16(OVERSAMPLING_16_MASK);
 
 		private byte mask;
 
-		private PressureOversampling(byte mask) {
+		PressureOversampling(byte mask) {
 			this.mask = (byte) (mask << 2);
 		}
 
@@ -173,12 +173,12 @@ public class BME280 implements BarometerInterface, ThermometerInterface, Hygrome
 	/**
 	 * Operating mode; value can be MODE_SLEEP, _FORCED, or _NORMAL.
 	 */
-	public static enum OperatingMode {
+	public enum OperatingMode {
 		MODE_SLEEP(0b00), MODE_FORCED(0b01), MODE_NORMAL(0b11);
 
 		private byte mask;
 
-		private OperatingMode(int mask) {
+		OperatingMode(int mask) {
 			this.mask = (byte) mask;
 		}
 
@@ -200,13 +200,13 @@ public class BME280 implements BarometerInterface, ThermometerInterface, Hygrome
 	 * <li>20_MS (20 ms)</li>
 	 * </ul>
 	 */
-	public static enum StandbyDuration {
+	public enum StandbyDuration {
 		STANDBY_500_US(0b000), STANDBY_62_5_MS(0b001), STANDBY_125_MS(0b010), STANDBY_250_MS(0b011),
 		STANDBY_500_MS(0b100), STANDBY_1_S(0b101), STANDBY_10_MS(0b110), STANDBY_20_MS(0b111);
 
 		private byte mask;
 
-		private StandbyDuration(int mask) {
+		StandbyDuration(int mask) {
 			this.mask = (byte) (mask << 5);
 		}
 
@@ -218,12 +218,12 @@ public class BME280 implements BarometerInterface, ThermometerInterface, Hygrome
 	/**
 	 * IIR Filter coefficient; can be FILTER_OFF, _2, _4, _8, _16.
 	 */
-	public static enum FilterCoefficient {
+	public enum FilterCoefficient {
 		FILTER_OFF(0b000), FILTER_2(0b001), FILTER_4(0b010), FILTER_8(0b011), FILTER_16(0b100);
 
 		private byte mask;
 
-		private FilterCoefficient(int mask) {
+		FilterCoefficient(int mask) {
 			this.mask = (byte) (mask << 2);
 		}
 
@@ -259,7 +259,7 @@ public class BME280 implements BarometerInterface, ThermometerInterface, Hygrome
 	 * Creates an instance that uses I2C. Assumes I2C bus 1 and the default I2C
 	 * address (0x76); all other I2C instantiation parameters are set to the
 	 * default.
-	 * 
+	 *
 	 * @throws RuntimeIOException if instance cannot be created
 	 */
 	public BME280() throws RuntimeIOException {
@@ -270,7 +270,7 @@ public class BME280 implements BarometerInterface, ThermometerInterface, Hygrome
 	 * Creates an instance that uses I2C. The caller must provide the I2C bus number
 	 * and the I2C address; all other I2C instantiation parameters are set to the
 	 * default.
-	 * 
+	 *
 	 * @param bus     I2C bus number
 	 * @param address device address
 	 * @throws RuntimeIOException if instance cannot be created
@@ -286,7 +286,7 @@ public class BME280 implements BarometerInterface, ThermometerInterface, Hygrome
 	/**
 	 * Creates an instance that uses SPI. The caller must provide the chip select
 	 * line; all other SPI instantiation parameters are set to the default.
-	 * 
+	 *
 	 * @param chipSelect the chip select line used
 	 * @throws RuntimeIOException if instance cannot be created
 	 */
@@ -298,12 +298,12 @@ public class BME280 implements BarometerInterface, ThermometerInterface, Hygrome
 	/**
 	 * Creates an instance that uses SPI. The caller must provide all SPI
 	 * instantiation parameters.
-	 * 
+	 *
 	 * @param controller the SPI controller used
 	 * @param chipSelect the chip select line used
 	 * @param frequency  the frequency used
 	 * @param mode       the clock mode used
-	 * @throws RuntimeIOException
+	 * @throws RuntimeIOException if an error occurs
 	 */
 	public BME280(int controller, int chipSelect, int frequency, SpiClockMode mode) throws RuntimeIOException {
 		useI2C = false;
@@ -371,7 +371,7 @@ public class BME280 implements BarometerInterface, ThermometerInterface, Hygrome
 
 	/**
 	 * Sets the oversampling multipliers and operating mode.
-	 * 
+	 *
 	 * @param tempOversampling  oversampling multiplier for temperature
 	 * @param pressOversampling oversampling multiplier for pressure
 	 * @param humOversampling   oversampling multiplier for humidity
@@ -392,7 +392,7 @@ public class BME280 implements BarometerInterface, ThermometerInterface, Hygrome
 
 	/**
 	 * Sets the standby duration for normal mode and the IIR filter coefficient.
-	 * 
+	 *
 	 * @param standbyDuration   standby duration
 	 * @param filterCoefficient IIR filter coefficient
 	 */
@@ -403,7 +403,7 @@ public class BME280 implements BarometerInterface, ThermometerInterface, Hygrome
 
 	/**
 	 * Waits for data to become available.
-	 * 
+	 *
 	 * @param interval     sleep interval
 	 * @param maxIntervals maximum number of intervals to wait
 	 * @return true if data available, false if not
@@ -422,7 +422,7 @@ public class BME280 implements BarometerInterface, ThermometerInterface, Hygrome
 
 	/**
 	 * Indicates if data is available.
-	 * 
+	 *
 	 * @return rue if data available, false if not
 	 */
 	public boolean isDataAvailable() {
@@ -432,7 +432,7 @@ public class BME280 implements BarometerInterface, ThermometerInterface, Hygrome
 	/**
 	 * Reads the temperature, pressure, and humidity registers; compensates the raw
 	 * values to provide meaningful results.
-	 * 
+	 *
 	 * @return array in order of: temperature, pressure, humidity
 	 */
 	public float[] getValues() {
@@ -494,7 +494,7 @@ public class BME280 implements BarometerInterface, ThermometerInterface, Hygrome
 	/**
 	 * Reads the temperature, pressure, and humidity registers; compensates the raw
 	 * values to provide meaningful results.
-	 * 
+	 *
 	 * @return temperature
 	 */
 	@Override
@@ -505,7 +505,7 @@ public class BME280 implements BarometerInterface, ThermometerInterface, Hygrome
 	/**
 	 * Reads the temperature, pressure, and humidity registers; compensates the raw
 	 * values to provide meaningful results.
-	 * 
+	 *
 	 * @return pressure in hectoPascals (hPa)
 	 */
 	@Override
@@ -516,7 +516,7 @@ public class BME280 implements BarometerInterface, ThermometerInterface, Hygrome
 	/**
 	 * Reads the temperature, pressure, and humidity registers; compensates the raw
 	 * values to provide meaningful results.
-	 * 
+	 *
 	 * @return humidity
 	 */
 	@Override
@@ -526,7 +526,7 @@ public class BME280 implements BarometerInterface, ThermometerInterface, Hygrome
 
 	/**
 	 * Closes the device
-	 * 
+	 *
 	 * @throws RuntimeIOException if close fails
 	 */
 	@Override

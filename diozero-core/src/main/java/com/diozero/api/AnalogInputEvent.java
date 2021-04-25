@@ -4,10 +4,10 @@ package com.diozero.api;
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - Core
- * Filename:     AnalogInputEvent.java  
+ * Filename:     AnalogInputEvent.java
  * 
  * This file is part of the diozero project. More information about this project
- * can be found at http://www.diozero.com/
+ * can be found at https://www.diozero.com/.
  * %%
  * Copyright (C) 2016 - 2021 diozero
  * %%
@@ -41,10 +41,10 @@ public class AnalogInputEvent extends DeviceEvent {
 	/**
 	 * Constructs an input event from an analog device. See (@link
 	 * com.diozero.api.DeviceEvent} for first 3 parameters.
-	 * 
-	 * @param gpio
-	 * @param epochTime
-	 * @param nanoTime
+	 *
+	 * @param gpio          the gpio number that this event is related to
+	 * @param epochTime     time in milliseconds since Jan 1st 1970
+	 * @param nanoTime      monotonic time in nanoseconds
 	 * @param unscaledValue initial value (unscaled)
 	 */
 	public AnalogInputEvent(int gpio, long epochTime, long nanoTime, float unscaledValue) {
@@ -57,7 +57,7 @@ public class AnalogInputEvent extends DeviceEvent {
 	/**
 	 * Get the maximum scaled value for the analog input device that generated this
 	 * event
-	 * 
+	 *
 	 * @return the maximum scaled value
 	 */
 	public float getRange() {
@@ -70,7 +70,7 @@ public class AnalogInputEvent extends DeviceEvent {
 
 	/**
 	 * Value from -1..1
-	 * 
+	 *
 	 * @return the unscaled value
 	 */
 	public float getUnscaledValue() {
@@ -79,7 +79,7 @@ public class AnalogInputEvent extends DeviceEvent {
 
 	/**
 	 * Value from -range..range
-	 * 
+	 *
 	 * @return the scaled value
 	 */
 	public float getScaledValue() {

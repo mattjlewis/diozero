@@ -4,10 +4,10 @@ package com.diozero.api;
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - Core
- * Filename:     SpiDevice.java  
+ * Filename:     SpiDevice.java
  * 
  * This file is part of the diozero project. More information about this project
- * can be found at http://www.diozero.com/
+ * can be found at https://www.diozero.com/.
  * %%
  * Copyright (C) 2016 - 2021 diozero
  * %%
@@ -63,7 +63,7 @@ public class SpiDevice implements SpiDeviceInterface {
 
 		/**
 		 * Set the SPI controller number
-		 * 
+		 *
 		 * @param controller the SPI controller number
 		 * @return this builder instance
 		 */
@@ -74,7 +74,7 @@ public class SpiDevice implements SpiDeviceInterface {
 
 		/**
 		 * SPI chip select number
-		 * 
+		 *
 		 * @param chipSelect the chip select number
 		 * @return this builder instance
 		 */
@@ -85,7 +85,7 @@ public class SpiDevice implements SpiDeviceInterface {
 
 		/**
 		 * Set the SPI clock frequency
-		 * 
+		 *
 		 * @param frequency the SPI clock frequency
 		 * @return this builder instance
 		 */
@@ -96,8 +96,8 @@ public class SpiDevice implements SpiDeviceInterface {
 
 		/**
 		 * Set the SPI {@link SpiClockMode clock mode}
-		 * 
-		 * @param clockMode
+		 *
+		 * @param clockMode the SPI clock mode to use
 		 * @return this builder instance
 		 */
 		public Builder setClockMode(SpiClockMode clockMode) {
@@ -107,7 +107,7 @@ public class SpiDevice implements SpiDeviceInterface {
 
 		/**
 		 * Set the byte order
-		 * 
+		 *
 		 * @param lsbFirst True for little endian
 		 * @return this builder instance
 		 */
@@ -118,7 +118,7 @@ public class SpiDevice implements SpiDeviceInterface {
 
 		/**
 		 * Provision a new SPI device
-		 * 
+		 *
 		 * @return a new SPI device instance
 		 */
 		public SpiDevice build() {
@@ -127,8 +127,9 @@ public class SpiDevice implements SpiDeviceInterface {
 	}
 
 	/**
-	 * Construct a new SPI device builder instance using the specified chip select value
-	 * 
+	 * Construct a new SPI device builder instance using the specified chip select
+	 * value
+	 *
 	 * @param chipSelect SPI chip select
 	 * @return SPI device builder
 	 */

@@ -4,10 +4,10 @@ package com.diozero.internal.spi;
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - Core
- * Filename:     SerialDeviceFactoryInterface.java  
+ * Filename:     SerialDeviceFactoryInterface.java
  * 
  * This file is part of the diozero project. More information about this project
- * can be found at http://www.diozero.com/
+ * can be found at https://www.diozero.com/.
  * %%
  * Copyright (C) 2016 - 2021 diozero
  * %%
@@ -36,11 +36,11 @@ import com.diozero.api.RuntimeIOException;
 import com.diozero.api.SerialDevice;
 
 public interface SerialDeviceFactoryInterface extends DeviceFactoryInterface {
-	static final String SERIAL_PREFIX = "-Serial-";
+	String SERIAL_PREFIX = "-Serial-";
 
 	/**
 	 * Provision a serial device.
-	 * 
+	 *
 	 * @param deviceFilename    The O/S name of the device, e.g. "/dev/ttyUSB0"
 	 * @param baud              Baud rate
 	 * @param dataBits          Number of data bits
@@ -51,7 +51,7 @@ public interface SerialDeviceFactoryInterface extends DeviceFactoryInterface {
 	 * @param readTimeoutMillis How long a read operation waits for data before
 	 *                          timing out. 0 == no timeout
 	 * @return Serial device instance
-	 * @throws RuntimeIOException
+	 * @throws RuntimeIOException if an error occurs
 	 */
 	default InternalSerialDeviceInterface provisionSerialDevice(String deviceFilename, int baud,
 			SerialDevice.DataBits dataBits, SerialDevice.StopBits stopBits, SerialDevice.Parity parity,
