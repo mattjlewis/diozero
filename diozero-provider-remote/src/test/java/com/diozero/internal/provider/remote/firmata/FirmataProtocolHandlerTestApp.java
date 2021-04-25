@@ -5,7 +5,7 @@ package com.diozero.internal.provider.remote.firmata;
  * Organisation: diozero
  * Project:      Device I/O Zero - Remote Provider
  * Filename:     FirmataProtocolHandlerTestApp.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.internal.provider.remote.firmata;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -44,10 +44,11 @@ public class FirmataProtocolHandlerTestApp {
 		System.setProperty("FIRMATA_TCP_HOST", "192.168.1.215");
 		System.setProperty(DeviceFactoryHelper.DEVICE_FACTORY_PROP,
 				"com.diozero.internal.provider.remote.devicefactory.RemoteDeviceFactory");
-		
-		BoardInfo board_info =  DeviceFactoryHelper.getNativeDeviceFactory().getBoardInfo();
+
+		BoardInfo board_info = DeviceFactoryHelper.getNativeDeviceFactory().getBoardInfo();
 		Logger.debug("Board info:");
-		Logger.debug("Name: {}, Make: {}, Model: {}", board_info.getName(), board_info.getMake(), board_info.getModel());
+		Logger.debug("Name: {}, Make: {}, Model: {}", board_info.getName(), board_info.getMake(),
+				board_info.getModel());
 		Logger.debug("GPIOs: {}", board_info.getGpioPins());
 		Logger.debug("ADCs: {}", board_info.getAdcPins());
 		Logger.debug("DACs: {}", board_info.getDacPins());
@@ -60,15 +61,15 @@ public class FirmataProtocolHandlerTestApp {
 					Logger.debug("On");
 					led.on();
 					Thread.sleep(delay);
-					
+
 					Logger.debug("Off");
 					led.off();
 					Thread.sleep(delay);
-					
+
 					Logger.debug("Toggle");
 					led.toggle();
 					Thread.sleep(delay);
-					
+
 					Logger.debug("Toggle");
 					led.toggle();
 					Thread.sleep(delay);
@@ -78,10 +79,10 @@ public class FirmataProtocolHandlerTestApp {
 			try (PwmLed pwm_led = new PwmLed(16, 0)) {
 				pwm_led.pulse(2, 50, 2, false);
 			}
-			
+
 			delay = 50;
 			try (AnalogInputDevice ai = new AnalogInputDevice(17, 3.3f); PwmLed pwm_led = new PwmLed(16, 1)) {
-				for (int i=0; i<200; i++) {
+				for (int i = 0; i < 200; i++) {
 					float unscaled = ai.getUnscaledValue();
 					pwm_led.setValue(1 - unscaled);
 					Thread.sleep(delay);
