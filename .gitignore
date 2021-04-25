@@ -11,6 +11,7 @@ docker/
 **/.cproject
 **/.gradle/
 **/build.gradle
+**/*.jfr
 
 # IntelliJ Idea
 .idea/

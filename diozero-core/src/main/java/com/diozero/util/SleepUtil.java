@@ -4,8 +4,8 @@ package com.diozero.util;
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - Core
- * Filename:     SleepUtil.java  
- * 
+ * Filename:     SleepUtil.java
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at http://www.diozero.com/
  * %%
@@ -17,10 +17,10 @@ package com.diozero.util;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -42,11 +42,9 @@ public class SleepUtil {
 	public static final int US_IN_MS = 1000;
 	public static final long NS_IN_MS = NS_IN_US * US_IN_MS;
 
-	private static final long BUSY_SLEEP_FUDGE_FACTOR_NS = 1_500;
-
 	/**
 	 * Sleep for the specific number of seconds
-	 * 
+	 *
 	 * @param secs Number of seconds to sleep for
 	 * @throws RuntimeInterruptedException if interrupted
 	 */
@@ -56,7 +54,7 @@ public class SleepUtil {
 
 	/**
 	 * Sleep for the specific number of seconds
-	 * 
+	 *
 	 * @param secs Number of seconds to sleep for
 	 * @throws RuntimeInterruptedException if interrupted
 	 */
@@ -66,7 +64,7 @@ public class SleepUtil {
 
 	/**
 	 * Sleep for the specific number of milliseconds
-	 * 
+	 *
 	 * @param millis Number of milliseconds to sleep for
 	 * @throws RuntimeInterruptedException if interrupted
 	 */
@@ -78,12 +76,38 @@ public class SleepUtil {
 		}
 	}
 
+	/**
+	 * Busy sleep for the specified number of nanoseconds. It is the caller's
+	 * responsibility to factor in any delays associated with calling this method -
+	 * this could be as much as 1.5 microseconds on a Raspberry Pi 4.
+	 *
+	 * Warning - this will consume 100% of one core, use with caution and only with
+	 * small delays.
+	 *
+	 * @param nanos The period to delay for
+	 */
 	public static void busySleep(final long nanos) {
 		final long start_time = System.nanoTime();
 		do {
 			// nop
-		} while ((System.nanoTime() - start_time) < (nanos - BUSY_SLEEP_FUDGE_FACTOR_NS));
+			// In Java 9+ use Thread.onSpinWait()?
+		} while ((System.nanoTime() - start_time) < nanos);
 	}
 
-	private static native long sleepNanos(final int seconds, final long nanos);
+	/**
+	 * Invoke the C nanosleep function via JNI. Note that the accuracy of the sleep
+	 * is not guaranteed - the delta could be as much as 30 microseconds.
+	 *
+	 * Note - you must ensure that the diozero-system-utils library has been loaded
+	 * via {@link com.diozero.util.LibraryLoader#loadSystemUtils loadSystemUtils()}
+	 * prior to calling this method.
+	 *
+	 * @see https://man7.org/linux/man-pages/man2/nanosleep.2.html
+	 *
+	 * @param seconds seconds to sleep for
+	 * @param nanos   additional nanoseconds to sleep for; must be in the range 0 to
+	 *                999999999
+	 * @return the remaining nanoseconds if interrupted
+	 */
+	public static native long sleepNanos(final int seconds, final long nanos);
 }

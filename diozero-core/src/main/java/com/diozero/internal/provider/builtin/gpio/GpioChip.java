@@ -240,18 +240,7 @@ public class GpioChip extends GpioChipInfo implements AutoCloseable, GpioLineEve
 	}
 
 	public void register(int fd, GpioLineEventListener listener) {
-		// TODO Investigate use of SelectorProvider instead
-		if (epollFd == EPOLL_FD_NOT_CREATED) {
-			int rc = NativeGpioDevice.epollCreate();
-			if (rc < 0) {
-				throw new RuntimeIOException("Error in epollCreate: " + rc);
-			}
-			epollFd = rc;
-
-			running.getAndSet(true);
-			processEventsFuture = DiozeroScheduler.getNonDaemonInstance().submit(this::processEvents);
-			eventLoopFuture = DiozeroScheduler.getNonDaemonInstance().submit(this::eventLoop);
-		}
+		startEventProcessing();
 
 		int rc = NativeGpioDevice.epollAddFileDescriptor(epollFd, fd);
 		if (rc < 0) {
@@ -299,6 +288,21 @@ public class GpioChip extends GpioChipInfo implements AutoCloseable, GpioLineEve
 		Logger.trace("Starting event loop for chip {}", Integer.valueOf(chipId));
 		NativeGpioDevice.eventLoop(epollFd, -1, this);
 		Logger.info("Event loop finished");
+	}
+
+	private void startEventProcessing() {
+		// TODO Investigate use of SelectorProvider instead
+		if (epollFd == EPOLL_FD_NOT_CREATED) {
+			int rc = NativeGpioDevice.epollCreate();
+			if (rc < 0) {
+				throw new RuntimeIOException("Error in epollCreate: " + rc);
+			}
+			epollFd = rc;
+
+			running.getAndSet(true);
+			processEventsFuture = DiozeroScheduler.getNonDaemonInstance().submit(this::processEvents);
+			eventLoopFuture = DiozeroScheduler.getNonDaemonInstance().submit(this::eventLoop);
+		}
 	}
 
 	private void stopEventProcessing() {

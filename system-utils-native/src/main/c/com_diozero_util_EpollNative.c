@@ -32,6 +32,7 @@
 #include "com_diozero_util_EpollNative.h"
 
 #include <stdio.h>
+#include <stdbool.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <unistd.h>
@@ -52,6 +53,8 @@ extern jclass epollEventClassRef;
 extern jmethodID epollEventConstructor;
 
 const char INTERRUPT = 'I';
+
+volatile bool epoll_loop_running = false;
 
 /*
  * Class:     com_diozero_util_EpollNative
@@ -168,8 +171,8 @@ JNIEXPORT jint JNICALL Java_com_diozero_util_EpollNative_eventLoop(
 	int max_events = 40;
 	struct epoll_event epoll_events[max_events];
 
-	int running = 1;
-	while (running) {
+	epoll_loop_running = true;
+	while (epoll_loop_running) {
 		int num_fds = epoll_wait(epollFd, epoll_events, max_events, -1);
 		// Get the Java nano time and epoch time as early as possible
 		jlong nano_time = getJavaTimeNanos();
@@ -191,7 +194,7 @@ JNIEXPORT jint JNICALL Java_com_diozero_util_EpollNative_eventLoop(
 			}
 
 			if (val == INTERRUPT) {
-				running = 0;
+				epoll_loop_running = false;
 			} else {
 				(*env)->CallVoidMethod(env, callback, epollNativeCallbackMethod,
 						epoll_events[i].data.fd, epoll_events[i].events, epoch_time, nano_time, val);
@@ -247,8 +250,13 @@ JNIEXPORT void JNICALL Java_com_diozero_util_EpollNative_stopWait(
 		perror("write error");
 	}
 
+	while (epoll_loop_running) {
+		usleep(10);
+	}
+
 	rc = epoll_ctl(epollFd, EPOLL_CTL_DEL, read_pipe, NULL);
 	rc = close(write_pipe);
+	rc = close(read_pipe);
 }
 
 /*

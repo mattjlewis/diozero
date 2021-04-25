@@ -4,8 +4,8 @@ package com.diozero.api;
  * #%L
  * Organisation: diozero
  * Project:      Device I/O Zero - Core
- * Filename:     AbstractDigitalInputDevice.java  
- * 
+ * Filename:     AbstractDigitalInputDevice.java
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at http://www.diozero.com/
  * %%
@@ -17,10 +17,10 @@ package com.diozero.api;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -57,7 +57,7 @@ public abstract class AbstractDigitalInputDevice extends GpioInputDevice<Digital
 
 	/**
 	 * Get active high configuration.
-	 * 
+	 *
 	 * @return Returns false if configured as pull-up, true for all other pull up /
 	 *         down options.
 	 */
@@ -75,7 +75,8 @@ public abstract class AbstractDigitalInputDevice extends GpioInputDevice<Digital
 
 	@Override
 	protected void disableDeviceListener() {
-		if (activatedConsumer == null && deactivatedConsumer == null) {
+		// Ignore if there is an activated / deactivated consumer or listeners
+		if (activatedConsumer == null && deactivatedConsumer == null && !hasListeners()) {
 			if (listenerEnabled) {
 				removeListener();
 				listenerEnabled = false;
@@ -93,23 +94,23 @@ public abstract class AbstractDigitalInputDevice extends GpioInputDevice<Digital
 		if (activatedConsumer != null && event.isActive()) {
 			activatedConsumer.accept(event.getNanoTime());
 		}
-		
+
 		if (deactivatedConsumer != null && !event.isActive()) {
 			deactivatedConsumer.accept(event.getNanoTime());
 		}
-		
+
 		super.accept(event);
 	}
 
 	/**
 	 * Action to perform when the device state is active.
-	 * 
+	 *
 	 * @param consumer Callback object to be invoked when activated (long parameter
 	 *                 is nanoseconds time).
 	 */
 	public void whenActivated(LongConsumer consumer) {
 		activatedConsumer = consumer;
-		if (activatedConsumer == null && deactivatedConsumer == null) {
+		if (consumer == null) {
 			disableDeviceListener();
 		} else {
 			enableDeviceListener();
@@ -118,13 +119,13 @@ public abstract class AbstractDigitalInputDevice extends GpioInputDevice<Digital
 
 	/**
 	 * Action to perform when the device state is inactive.
-	 * 
+	 *
 	 * @param consumer Callback object to be invoked when activated (long parameter
 	 *                 is nanoseconds time)
 	 */
 	public void whenDeactivated(LongConsumer consumer) {
 		deactivatedConsumer = consumer;
-		if (activatedConsumer == null && deactivatedConsumer == null) {
+		if (consumer != null) {
 			disableDeviceListener();
 		} else {
 			enableDeviceListener();
@@ -133,7 +134,7 @@ public abstract class AbstractDigitalInputDevice extends GpioInputDevice<Digital
 
 	/**
 	 * Wait indefinitely for the device state to go active.
-	 * 
+	 *
 	 * @return False if timed out waiting for the specified value, otherwise true.
 	 * @throws InterruptedException If interrupted while waiting.
 	 */
@@ -143,7 +144,7 @@ public abstract class AbstractDigitalInputDevice extends GpioInputDevice<Digital
 
 	/**
 	 * Wait the specified time period for the device state to go active.
-	 * 
+	 *
 	 * @param timeout Timeout value if milliseconds, &lt;= 0 is indefinite.
 	 * @return False if timed out waiting for the specified value, otherwise true.
 	 * @throws InterruptedException If interrupted while waiting.
@@ -154,7 +155,7 @@ public abstract class AbstractDigitalInputDevice extends GpioInputDevice<Digital
 
 	/**
 	 * Wait indefinitely for the device state to go inactive.
-	 * 
+	 *
 	 * @return False if timed out waiting for the specified value, otherwise true.
 	 * @throws InterruptedException If interrupted while waiting.
 	 */
@@ -164,7 +165,7 @@ public abstract class AbstractDigitalInputDevice extends GpioInputDevice<Digital
 
 	/**
 	 * Wait the specified time period for the device state to go inactive.
-	 * 
+	 *
 	 * @param timeout Timeout value if milliseconds, &lt;= 0 is indefinite.
 	 * @return False if timed out waiting for the specified value, otherwise true.
 	 * @throws InterruptedException If interrupted while waiting.
@@ -176,7 +177,7 @@ public abstract class AbstractDigitalInputDevice extends GpioInputDevice<Digital
 	/**
 	 * Wait the specified time period for the device state to switch to the
 	 * specified value, not taking into account active high / low logic.
-	 * 
+	 *
 	 * @param value   The desired device state to wait for.
 	 * @param timeout Timeout value if milliseconds, &lt;= 0 is indefinite.
 	 * @return False if timed out waiting for the specified value, otherwise true.
@@ -184,7 +185,7 @@ public abstract class AbstractDigitalInputDevice extends GpioInputDevice<Digital
 	 */
 	public boolean waitForValue(boolean value, int timeout) throws InterruptedException {
 		enableDeviceListener();
-		
+
 		EventLock e = value ? highEvent : lowEvent;
 		if (timeout > 0) {
 			return e.doWait(timeout);

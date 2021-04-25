@@ -19,6 +19,7 @@ extern "C" {
 #define com_diozero_util_SleepUtil_US_IN_MS 1000L
 #undef com_diozero_util_SleepUtil_NS_IN_MS
 #define com_diozero_util_SleepUtil_NS_IN_MS 1000000LL
+
 /*
  * Class:     com_diozero_util_SleepUtil
  * Method:    sleepNanos

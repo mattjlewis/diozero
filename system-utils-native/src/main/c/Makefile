@@ -14,7 +14,7 @@ CFLAGS = -O3 -Wall -fPIC -march=$(ARCH) $(CC_CFLAGS)
 # BeagleBone Black:
 #CFLAGS = -O3 -Wall -fPIC -march=armv7-a+fp -mfpu=vfpv3-d16 -mfloat-abi=hard -mhard-float -mabi=aapcs-linux
 
-INCLUDES = -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/linux -I$(JAVA_HOME)/include/darwin
+INCLUDES = -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/linux
 
 LFLAGS = -L/home/vagrant/libs/$(CROSS_PREFIX)lib
 

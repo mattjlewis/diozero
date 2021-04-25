@@ -32,11 +32,14 @@ package com.diozero.util;
  */
 
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
@@ -47,9 +50,6 @@ import org.tinylog.Logger;
 public class DiozeroScheduler {
 	private static DiozeroScheduler daemonInstance;
 	private static DiozeroScheduler nonDaemonInstance;
-
-	private ScheduledExecutorService scheduler;
-	private DaemonThreadFactory threadFactory;
 
 	public static synchronized DiozeroScheduler getDaemonInstance() {
 		if (daemonInstance == null || daemonInstance.isShutdown()) {
@@ -74,21 +74,26 @@ public class DiozeroScheduler {
 		}
 	}
 
+	private ScheduledExecutorService scheduler;
+	private ExecutorService executor;
+	private DaemonThreadFactory threadFactory;
+
 	private DiozeroScheduler(boolean daemon) {
 		threadFactory = new DaemonThreadFactory(daemon);
 		scheduler = Executors.newScheduledThreadPool(0, threadFactory);
+		executor = new ThreadPoolExecutor(0, Integer.MAX_VALUE, 0, TimeUnit.SECONDS, new SynchronousQueue<Runnable>());
 	}
 
 	public void execute(Runnable command) {
-		scheduler.execute(command);
+		executor.execute(command);
 	}
 
 	public Future<?> submit(Runnable task) {
-		return scheduler.submit(task);
+		return executor.submit(task);
 	}
 
 	public <T> Future<T> submit(Runnable task, T result) {
-		return scheduler.submit(task, result);
+		return executor.submit(task, result);
 	}
 
 	public ScheduledFuture<?> scheduleAtFixedRate(Runnable command, long initialDelay, long period, TimeUnit unit) {
@@ -102,11 +107,12 @@ public class DiozeroScheduler {
 
 	private void shutdown() {
 		scheduler.shutdownNow();
+		executor.shutdownNow();
 		Logger.trace("Shutdown - done");
 	}
 
 	public boolean isShutdown() {
-		return scheduler.isShutdown();
+		return scheduler.isShutdown() && executor.isShutdown();
 	}
 
 	static class DaemonThreadFactory implements ThreadFactory {
