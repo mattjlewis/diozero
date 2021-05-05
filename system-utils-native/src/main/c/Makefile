@@ -16,7 +16,7 @@ CFLAGS = -O3 -Wall -fPIC -march=$(ARCH) $(CC_CFLAGS)
 
 INCLUDES = -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/linux
 
-LFLAGS = -L/home/vagrant/libs/$(CROSS_PREFIX)lib
+LFLAGS = $(CC_LFLAGS)
 
 LIBS = -Wl,-Bstatic -li2c -Wl,-Bdynamic
 
