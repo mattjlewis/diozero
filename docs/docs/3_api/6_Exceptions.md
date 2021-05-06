@@ -15,7 +15,7 @@ provides the following guidance:
 
 _"If a client can reasonably be expected to recover from an exception, make it a checked exception. If a client cannot do anything to recover from the exception, make it an unchecked exception.”_ 
 
-Broadly, RuntimeIOException are thrown as a result of the following incomplete list of scenarios:
+Broadly, RuntimeIOException is thrown as a result of the following incomplete list of scenarios:
 
 * General - any file IOException gets rethrown as a wrapped RuntimeIOException
 * General - any errors returned from the native C library (status value < 0)
@@ -26,10 +26,23 @@ Broadly, RuntimeIOException are thrown as a result of the following incomplete l
 
 The following exceptions are also thrown:
 
-* Java IllegalArgumentException - if the input parameter combination doesn’t make sense, the value is out of range (e.g. greater than one for PWM), or you requested a GPIO / ADC number on an expansion board that doesn’t exist
-* diozero InvalidModeException - if the GPIO device doesn’t support the request mode
-* Java IllegalStateException - DigitalInputOutputDevice if you attempt to set the value when currently in input mode
-* Java UnsupportedOperationException - when a feature isn’t supported by a provider
-* diozero DeviceAlreadyOpenedException - an attempt to open a device that is already provisioned and open
-* diozero DeviceBusyException - I2C specific error (-16 EBUSY)
-* diozero NoSuchDeviceException - if the requested device isn't found
+Java IllegalArgumentException
+: If the input parameter combination doesn’t make sense, the value is out of range (e.g. greater than one for PWM), or you requested a GPIO / ADC number on an expansion board that doesn’t exist
+
+diozero InvalidModeException
+: If the GPIO device doesn’t support the request mode
+
+Java IllegalStateException
+: DigitalInputOutputDevice if you attempt to set the value when currently in input mode
+
+Java UnsupportedOperationException
+: When a feature isn’t supported by a provider
+
+diozero DeviceAlreadyOpenedException
+: An attempt to open a device that is already provisioned and open
+
+diozero DeviceBusyException
+: I2C specific error (-16 EBUSY)
+
+diozero NoSuchDeviceException:
+: If the requested device isn't found

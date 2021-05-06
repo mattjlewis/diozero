@@ -28,9 +28,7 @@
 		"methods": [
 			{
 				"name": "<init>",
-				"parameterTypes": [
-					"java.util.Map"
-				]
+				"parameterTypes": [ "java.util.Map" ]
 			}
 		]
 	},

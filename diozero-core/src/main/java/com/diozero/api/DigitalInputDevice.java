@@ -5,7 +5,7 @@ package com.diozero.api;
  * Organisation: diozero
  * Project:      Device I/O Zero - Core
  * Filename:     DigitalInputDevice.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.api;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -30,7 +30,6 @@ package com.diozero.api;
  * THE SOFTWARE.
  * #L%
  */
-
 
 import org.tinylog.Logger;
 
@@ -51,11 +50,11 @@ public class DigitalInputDevice extends AbstractDigitalInputDevice {
 	 * otherwise true (assumes normally open wiring configuration)</li>
 	 * <li>deviceFactory: {@link DeviceFactoryHelper#getNativeDeviceFactory}</li>
 	 * </ul>
-	 * 
+	 *
 	 * Either a GPIO number or a {@link PinInfo} instance must be specified. Using a
 	 * PinInfo instance allows input devices to be identified by either physical pin
 	 * number or GPIO chip and line offset.
-	 * 
+	 *
 	 * The optional activeHigh parameter default value assumes a normally open
 	 * wiring configuration, however, this can be overridden for normally closed
 	 * configurations as well as scenarios where pud is {@link GpioPullUpDown#NONE}
@@ -64,7 +63,7 @@ public class DigitalInputDevice extends AbstractDigitalInputDevice {
 	public static class Builder {
 		/**
 		 * Create a new DigitalInputDevice builder instance
-		 * 
+		 *
 		 * @param gpio The GPIO to be used for the new DigitalInputDevice
 		 * @return A new DigitalInputDevice builder instance
 		 */
@@ -74,7 +73,7 @@ public class DigitalInputDevice extends AbstractDigitalInputDevice {
 
 		/**
 		 * Create a new DigitalInputDevice builder instance
-		 * 
+		 *
 		 * @param pinInfo The pin to be used for the new DigitalInputDevice
 		 * @return A new DigitalInputDevice builder instance
 		 */
@@ -207,7 +206,7 @@ public class DigitalInputDevice extends AbstractDigitalInputDevice {
 
 	/**
 	 * Get pull up / down configuration.
-	 * 
+	 *
 	 * @return Pull up / down configuration.
 	 */
 	public GpioPullUpDown getPullUpDown() {
@@ -216,7 +215,7 @@ public class DigitalInputDevice extends AbstractDigitalInputDevice {
 
 	/**
 	 * Get event trigger configuration.
-	 * 
+	 *
 	 * @return Event trigger configuration.
 	 */
 	public GpioEventTrigger getTrigger() {
@@ -226,7 +225,7 @@ public class DigitalInputDevice extends AbstractDigitalInputDevice {
 	/**
 	 * Read the current underlying state of the input pin. Does not factor in active
 	 * high logic.
-	 * 
+	 *
 	 * @return Device state.
 	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
@@ -239,7 +238,7 @@ public class DigitalInputDevice extends AbstractDigitalInputDevice {
 	 * Read the current on/off state for this device taking into account the pull up
 	 * / down configuration. If the input is pulled up {@code isActive()} will
 	 * return {@code true} when when the value is {@code false}.
-	 * 
+	 *
 	 * @return Device active state.
 	 * @throws RuntimeIOException If an I/O error occurred.
 	 */

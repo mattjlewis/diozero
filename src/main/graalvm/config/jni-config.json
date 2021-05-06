@@ -34,13 +34,7 @@
 		"methods": [
 			{
 				"name": "callback",
-				"parameterTypes": [
-					"int",
-					"int",
-					"long",
-					"long",
-					"byte"
-				]
+				"parameterTypes": [ "int", "int", "long", "long", "byte" ]
 			}
 		]
 	},
@@ -49,13 +43,7 @@
 		"methods": [
 			{
 				"name": "<init>",
-				"parameterTypes": [
-					"int",
-					"int",
-					"long",
-					"long",
-					"byte"
-				]
+				"parameterTypes": [ "int", "int", "long", "long", "byte" ]
 			}
 		]
 	},
@@ -64,11 +52,7 @@
 		"methods": [
 			{
 				"name": "notify",
-				"parameterTypes": [
-					"long",
-					"long",
-					"char"
-				]
+				"parameterTypes": [ "long", "long", "char" ]
 			}
 		]
 	},
@@ -77,12 +61,7 @@
 		"methods": [
 			{
 				"name": "<init>",
-				"parameterTypes": [
-					"int",
-					"int",
-					"int",
-					"java.nio.ByteBuffer"
-				]
+				"parameterTypes": [ "int", "int", "int", "java.nio.ByteBuffer" ]
 			}
 		]
 	},
@@ -91,11 +70,7 @@
 		"methods": [
 			{
 				"name": "<init>",
-				"parameterTypes": [
-					"java.lang.String",
-					"java.lang.String",
-					"int"
-				]
+				"parameterTypes": [ "java.lang.String", "java.lang.String", "int" ]
 			}
 		]
 	},
@@ -104,12 +79,7 @@
 		"methods": [
 			{
 				"name": "<init>",
-				"parameterTypes": [
-					"java.lang.String",
-					"java.lang.String",
-					"int",
-					"com.diozero.internal.provider.builtin.gpio.GpioLine[]"
-				]
+				"parameterTypes": [ "java.lang.String", "java.lang.String", "int", "com.diozero.internal.provider.builtin.gpio.GpioLine[]" ]
 			}
 		]
 	},
@@ -118,12 +88,7 @@
 		"methods": [
 			{
 				"name": "<init>",
-				"parameterTypes": [
-					"int",
-					"int",
-					"java.lang.String",
-					"java.lang.String"
-				]
+				"parameterTypes": [ "int", "int", "java.lang.String", "java.lang.String" ]
 			}
 		]
 	},
@@ -132,12 +97,7 @@
 		"methods": [
 			{
 				"name": "event",
-				"parameterTypes": [
-					"int",
-					"int",
-					"long",
-					"long"
-				]
+				"parameterTypes": [ "int", "int", "long", "long" ]
 			}
 		]
 	},
@@ -156,30 +116,14 @@
 	{
 		"name": "sun.management.VMManagementImpl",
 		"fields": [
-			{
-				"name": "compTimeMonitoringSupport"
-			},
-			{
-				"name": "currentThreadCpuTimeSupport"
-			},
-			{
-				"name": "objectMonitorUsageSupport"
-			},
-			{
-				"name": "otherThreadCpuTimeSupport"
-			},
-			{
-				"name": "remoteDiagnosticCommandsSupport"
-			},
-			{
-				"name": "synchronizerUsageSupport"
-			},
-			{
-				"name": "threadAllocatedMemorySupport"
-			},
-			{
-				"name": "threadContentionMonitoringSupport"
-			}
+			{ "name": "compTimeMonitoringSupport" },
+			{ "name": "currentThreadCpuTimeSupport" },
+			{ "name": "objectMonitorUsageSupport" },
+			{ "name": "otherThreadCpuTimeSupport" },
+			{ "name": "remoteDiagnosticCommandsSupport" },
+			{ "name": "synchronizerUsageSupport" },
+			{ "name": "threadAllocatedMemorySupport" },
+			{ "name": "threadContentionMonitoringSupport" }
 		]
 	}
 ]

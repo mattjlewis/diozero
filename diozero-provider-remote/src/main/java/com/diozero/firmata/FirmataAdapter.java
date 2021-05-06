@@ -5,7 +5,7 @@ package com.diozero.firmata;
  * Organisation: diozero
  * Project:      Device I/O Zero - Remote Provider
  * Filename:     FirmataAdapter.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.firmata;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -96,7 +96,8 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 	public void close() {
 		Logger.trace("closing...");
 
-		// Wake anything up that is waiting on the lock (i.e. sendMessage that calls condition.await())
+		// Wake anything up that is waiting on the lock (i.e. sendMessage that calls
+		// condition.await())
 		lock.lock();
 		try {
 			condition.signal();
@@ -708,7 +709,7 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 	 * the state is any value that has been previously written to the pin. For input
 	 * modes, typically the state is zero. However, for digital inputs, the state is
 	 * the status of the pull-up resistor which is 1 if enabled, 0 if disabled.
-	 * 
+	 *
 	 * The pin state query can also be used as a verification after sending pin
 	 * modes or data messages.
 	 */
@@ -881,7 +882,7 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 		}
 	}
 
-	static enum I2CMode {
+	enum I2CMode {
 		WRITE, READ_ONCE, READ_CONTINUOUSLY, STOP_READING;
 	}
 

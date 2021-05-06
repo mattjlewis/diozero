@@ -5,7 +5,7 @@ package com.diozero.util;
  * Organisation: diozero
  * Project:      Device I/O Zero - Core
  * Filename:     Crc.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.util;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -33,15 +33,20 @@ package com.diozero.util;
 
 /**
  * CRC-8 and CRC-16 calculator.
- * 
- * See:
+ *
+ * References:
  * <ul>
- * <li>https://en.wikipedia.org/wiki/Cyclic_redundancy_check</li>
- * <li>https://crccalc.com</li>
- * <li>http://www.zlib.net/crc_v3.txt</li>
- * <li>https://github.com/sigurn/crc8/blob/master/crc8.go</li>
- * <li>https://github.com/sigurn/crc16/blob/master/crc16.go</li>
- * <li>https://www.lammertbies.nl/comm/info/crc-calculation</li>
+ * <li><a href=
+ * "https://en.wikipedia.org/wiki/Cyclic_redundancy_check">Wikipedia</a></li>
+ * <li><a href="https://crccalc.com">Online CRC Calculator</a></li>
+ * <li><a href="http://www.zlib.net/crc_v3.txt">A painless guide to CRC error
+ * detection algorithms</a></li>
+ * <li><a href="https://github.com/sigurn/crc8/blob/master/crc8.go">CRC-8
+ * calculator</a> written in Go</li>
+ * <li><a href="https://github.com/sigurn/crc16/blob/master/crc16.go">CRC-16
+ * calculator</a> written in Go</li>
+ * <li><a href="https://www.lammertbies.nl/comm/info/crc-calculation">On-line
+ * CRC Calculator</a> by Lammert Bies</a></li>
  * </ul>
  */
 public class Crc {
@@ -118,7 +123,7 @@ public class Crc {
 
 	/**
 	 * Calculate CRC-8 checksum using the default {@link Crc#CRC8 CRC8} parameters
-	 * 
+	 *
 	 * @param data data to checksum (big endian)
 	 * @return CRC-8 checksum
 	 */
@@ -129,7 +134,7 @@ public class Crc {
 
 	/**
 	 * Calculate CRC-8 checksum using the specified {@link Params parameters}
-	 * 
+	 *
 	 * @param params CRC {@link Params parameters}
 	 * @param data   data to checksum (big endian)
 	 * @return CRC-8 checksum
@@ -141,7 +146,7 @@ public class Crc {
 
 	/**
 	 * Calculate CRC-8 checksum using the default {@link Crc#CRC8 CRC8} parameters
-	 * 
+	 *
 	 * @param data data to checksum
 	 * @return CRC-8 checksum
 	 */
@@ -151,7 +156,7 @@ public class Crc {
 
 	/**
 	 * Calculate CRC-8 checksum using the specified {@link Params parameters}
-	 * 
+	 *
 	 * @param params CRC {@link Params parameters}
 	 * @param data   data to checksum
 	 * @return CRC-8 checksum
@@ -207,7 +212,7 @@ public class Crc {
 
 	/**
 	 * Calculate CRC-16 using the specified {@link Params parameters}
-	 * 
+	 *
 	 * @param params CRC {@link Params parameters}
 	 * @param data   The data to generate the CRC for (big endian)
 	 * @return the calculated CRC-16 value

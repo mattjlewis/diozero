@@ -5,7 +5,7 @@ package com.diozero.sbc;
  * Organisation: diozero
  * Project:      Device I/O Zero - Core
  * Filename:     LocalSystemInfo.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.sbc;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -43,6 +43,8 @@ import java.util.Properties;
 
 import org.tinylog.Logger;
 
+import com.diozero.util.StringUtil;
+
 /*-
  * Notes...
  * Board: TinkerBoard
@@ -57,7 +59,7 @@ import org.tinylog.Logger;
  * os.name: Linux
  * os.arch: arm
  * sun.arch.data.model: 32
- * 
+ *
  * Board: Raspberry Pi Model B Rev 2
  * /proc/device-tree/compatible:    raspberrypi,model-b^@brcm,bcm2835^
  * /proc/device-tree/model:         ???
@@ -77,6 +79,7 @@ import org.tinylog.Logger;
  * /proc/device-tree/model:         Raspberry Pi 4 Model B Rev 1.1^@
  * /proc/device-tree/serial-number: 100000002914db7e^@
  * /proc/cpuinfo:
+ *   model name : ARMv7 Processor rev 3 (v7l)
  *   Hardware   : BCM2711
  *   Revision   : b03111
  *   Serial     : 100000002914db7e
@@ -84,7 +87,7 @@ import org.tinylog.Logger;
  * os.name: Linux
  * os.arch: arm
  * sun.arch.data.model: 32
- * 
+ *
  * Board: Raspberry Pi 3 Model B
  * /etc/os-release PRETTY_NAME:     Raspbian GNU/Linux 10 (buster)
  * /proc/device-tree/compatible:    raspberrypi,3-model-b^@brcm,bcm2837^@
@@ -98,7 +101,7 @@ import org.tinylog.Logger;
  * os.name: Linux
  * os.arch: arm
  * sun.arch.data.model: 32
- * 
+ *
  * Board: Raspberry Pi CM4
  * /etc/os-release PRETTY_NAME:     Raspbian GNU/Linux 10 (buster)
  * /proc/device-tree/compatible:    raspberrypi,4-compute-module^@brcm,bcm2711^@
@@ -112,7 +115,7 @@ import org.tinylog.Logger;
  * os.name: Linux
  * os.arch: arm
  * sun.arch.data.model: 32
- * 
+ *
  * Board: Odroid C2
  * /etc/os-release PRETTY_NAME:     Armbian 20.08.17 Buster
  * /proc/device-tree/compatible:    hardkernel,odroid-c2^@amlogic,meson-gxbb^@
@@ -125,7 +128,7 @@ import org.tinylog.Logger;
  * os.name: Linux
  * os.arch: aarch64
  * sun.arch.data.model: 64
- * 
+ *
  * Board: NanoPi Duo2
  * /etc/os-release PRETTY_NAME:     Armbian 20.08.17 Buster
  * /proc/device-tree/compatible:    friendlyarm,nanopi-duo2^@allwinner,sun8i-h3^@
@@ -138,7 +141,7 @@ import org.tinylog.Logger;
  * os.name: Linux
  * os.arch: arm
  * sun.arch.data.model: 32
- * 
+ *
  * Board: BeagleBone Green / Black
  * /etc/os-release PRETTY_NAME: ???
  * /proc//device-tree/compatible:   ti,am335x-bone-green^@ti,am335x-bone-black^@ti,am335x-bone^@ti,am33xx^@
@@ -162,6 +165,8 @@ public class LocalSystemInfo {
 	private static final String OS_ARCH_SYSTEM_PROPERTY = "os.arch";
 	private static final String ARM_32_OS_ARCH = "arm";
 	private static final String ARM_64_OS_ARCH = "aarch64";
+	private static final String ARMV6_CPU_MODEL_NAME = "armv6";
+	private static final String ARMV7_CPU_MODEL_NAME = "armv7";
 	private static final String LINUX_OS_NAME = "Linux";
 	private static final String WINDOWS_OS_NAME_PREFIX = "Windows";
 
@@ -183,6 +188,7 @@ public class LocalSystemInfo {
 	private String hardware;
 	private String revision;
 	private String model;
+	private String cpuModelName;
 	private Integer memoryKb;
 
 	public synchronized static LocalSystemInfo getInstance() {
@@ -195,7 +201,7 @@ public class LocalSystemInfo {
 	// For unit testing purposes only
 	LocalSystemInfo(String hardware, String revision, String model) {
 		this();
-		
+
 		this.hardware = hardware;
 		this.revision = revision;
 		this.model = model;
@@ -222,6 +228,14 @@ public class LocalSystemInfo {
 						revision = line.split(":")[1].trim();
 					} else if (line.startsWith("Model")) {
 						model = line.split(":")[1].trim();
+					} else if (line.startsWith("model name")) {
+						// FIXME Ugly and possibly unsafe code!
+						try {
+							// model name : ARMv7 Processor rev 3 (v7l)
+							cpuModelName = line.split(":")[1].trim().split(" ")[0].trim().toLowerCase();
+						} catch (Exception e) {
+							Logger.debug(e, "Error processing model name line '{}': {}", line, e);
+						}
 					}
 				});
 			} catch (IOException | NullPointerException | IndexOutOfBoundsException e) {
@@ -292,6 +306,14 @@ public class LocalSystemInfo {
 		return osArch.equals(ARM_64_OS_ARCH);
 	}
 
+	public boolean isArmv6() {
+		return cpuModelName != null && cpuModelName.equals(ARMV6_CPU_MODEL_NAME);
+	}
+
+	public boolean isArmv7() {
+		return cpuModelName != null && cpuModelName.equals(ARMV7_CPU_MODEL_NAME);
+	}
+
 	public boolean isArm() {
 		return isArm32() || isArm64();
 	}
@@ -312,12 +334,22 @@ public class LocalSystemInfo {
 		return model;
 	}
 
+	public String getCpuModelName() {
+		return cpuModelName;
+	}
+
 	public Integer getMemoryKb() {
 		return memoryKb;
 	}
 
 	public String getDefaultLibraryPath() {
-		return osName.toLowerCase().replace(" ", "") + "-" + osArch.toLowerCase();
+		String lib_path;
+		if (isArm32() && !StringUtil.isNullOrBlank(cpuModelName)) {
+			lib_path = osName.toLowerCase().replace(" ", "") + "-" + cpuModelName.toLowerCase();
+		} else {
+			lib_path = osName.toLowerCase().replace(" ", "") + "-" + osArch.toLowerCase();
+		}
+		return lib_path;
 	}
 
 	public List<String> loadLinuxBoardCompatibility() {
@@ -344,7 +376,7 @@ public class LocalSystemInfo {
 	/**
 	 * Get a property from the operating system release file
 	 * <code>/etc/os-release</code>
-	 * 
+	 *
 	 * @param property the property to get
 	 * @return property value
 	 */
@@ -355,7 +387,7 @@ public class LocalSystemInfo {
 	/**
 	 * Get the local operating system id as defined by the ID property in
 	 * <code>/etc/os-release</code>
-	 * 
+	 *
 	 * @return value of the ID property
 	 */
 	public String getLinuxOperatingSystemId() {
@@ -365,7 +397,7 @@ public class LocalSystemInfo {
 	/**
 	 * Get the local operating system version as defined by the VERSION property in
 	 * <code>/etc/os-release</code>
-	 * 
+	 *
 	 * @return value of the VERSION property
 	 */
 	public String getLinuxOperatingSystemVersion() {
@@ -375,7 +407,7 @@ public class LocalSystemInfo {
 	/**
 	 * Get the local operating system version id as defined by the VERSION_ID
 	 * property in <code>/etc/os-release</code>
-	 * 
+	 *
 	 * @return value of the VERSION_ID property
 	 */
 	public String getLinuxOperatingSystemVersionId() {
@@ -396,7 +428,7 @@ public class LocalSystemInfo {
 
 	/**
 	 * Utility method to get the CPU temperate of the attached board
-	 * 
+	 *
 	 * @return the CPU temperature
 	 */
 	public static float getCpuTemperature() {
@@ -407,7 +439,7 @@ public class LocalSystemInfo {
 			return -1;
 		}
 	}
-	
+
 	public static void main(String[] args) {
 		System.out.println("System properties:");
 		System.getProperties().forEach((key, value) -> System.out.println(key + ": " + value));

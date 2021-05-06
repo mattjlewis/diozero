@@ -8,7 +8,7 @@ permalink: /internals/qemuaarch64.html
 
 Base on this article on [https://blahcat.github.io/2018/01/07/building-a-debian-stretch-qemu-image-for-aarch64/](building a Debian Stretch QEMU image for AARCH64).
 
-Get base files:
+Get base files (Debian Buster network installer image):
 ```
 wget http://ftp.debian.org/debian/dists/buster/main/installer-arm64/current/images/netboot/debian-installer/arm64/initrd.gz
 wget http://ftp.debian.org/debian/dists/buster/main/installer-arm64/current/images/netboot/debian-installer/arm64/linux
@@ -22,8 +22,8 @@ qemu-img create -f qcow2 disk.qcow2 20G
 Install Debian:
 ```
 qemu-system-aarch64 -smp 2 -M virt -cpu cortex-a57 -m 1G \
-    -initrd initrd.gz \
-    -kernel linux -append "root=/dev/ram console=ttyAMA0" \
+    -initrd initrd.gz -kernel linux \
+    -append "root=/dev/ram console=ttyAMA0" \
     -global virtio-blk-device.scsi=off \
     -device virtio-scsi-device,id=scsi \
     -drive file=disk.qcow2,id=rootimg,cache=unsafe,if=none \
@@ -34,7 +34,8 @@ qemu-system-aarch64 -smp 2 -M virt -cpu cortex-a57 -m 1G \
 ```
 
 You need to extract the initrd.img and vmlinuz files from the qcow2 disk file.
-The easiest way to do this is to use nbd in a Linux environment, e.g. a Virtual Machine:
+The easiest way to do this is to use nbd in a Linux environment,
+e.g. a Virtual Machine that has access to the qcow2 disk file:
 
 ```shell
 sudo apt install nbd-client qemu qemu-utils
@@ -77,7 +78,6 @@ qemu-system-aarch64 -smp 2 -M virt -cpu cortex-a57 -m 1G \
   -net user \
   -nographic
 ```
-
 
 Login and setup sudo:
 
@@ -140,7 +140,7 @@ setopt HIST_NO_STORE
 
 ## Kernel Version
 
-Install a [newer kernel version](https://jensd.be/968/linux/install-a-newer-kernel-in-debian-10-buster-stable).
+Install a [newer kernel version](https://jensd.be/968/linux/install-a-newer-kernel-in-debian-10-buster-stable) in Debian Buster.
 
 ## Links
 

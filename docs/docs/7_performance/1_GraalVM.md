@@ -16,7 +16,8 @@ image builder (out of memory) - `Error: Image build request failed with exit sta
 Switching to a Pi4 with 8GB RAM and the native image command completed successfully for the
 `GpioPerfTest` sample application.
 
-I haven't attempted to cross-compile via a qemu image running on a desktop / laptop.
+See [QEMU aarch64](../8_internals/7_qemuaarch64.md) for instructions on cross-compiling using a
+QEMU image running on a desktop / laptop.
 
 ## Install GraalVM into /usr/lib/jvm
 
@@ -32,7 +33,7 @@ export GRAALVM_HOME=/usr/lib/jvm/graalvm-ce-java11-21.0.0.2
 export PATH=${PATH}:${GRAALVM_HOME}/bin
 ```
 
-Install native-image:
+Install native-image builder:
 ```shell
 gu install native-image
 ```
@@ -56,20 +57,36 @@ native-image HelloWorld
 ## Extract Config Files for an Application
 
 ```shell
-$GRAALVM_HOME/bin/java -agentlib:native-image-agent=config-output-dir=config -cp diozero-sampleapps-{{site.version}}.jar:diozero-core-|{{site.version}}.jar:tinylog-api-2.2.1.jar:tinylog-impl-2.2.1.jar com.diozero.sampleapps.perf.GpioPerfTest
+$GRAALVM_HOME/bin/java -agentlib:native-image-agent=config-output-dir=config \
+  -cp diozero-sampleapps-{{site.version}}.jar:diozero-core-{{site.version}}.jar:tinylog-api-2.2.1.jar:tinylog-impl-2.2.1.jar \
+  com.diozero.sampleapps.perf.GpioPerfTest
 ```
 
-## Example - GpioPerfTest
+Example config files:
+
+* [jni-config.json](https://github.com/mattjlewis/diozero/blob/master/src/main/graalvm/config/jni-config.json)
+* [reflect-config.json](https://github.com/mattjlewis/diozero/blob/master/src/main/graalvm/config/reflect-config.json)
+* [resource-config.json](https://github.com/mattjlewis/diozero/blob/master/src/main/graalvm/config/resource-config.json)
+
+## Generate a Native Application - GpioPerfTest Example
 
 ```shell
-native-image -H:JNIConfigurationFiles=./config/jni-config.json -H:ReflectionConfigurationFiles=./config/reflect-config.json -H:ResourceConfigurationFiles=./config/resource-config.json --allow-incomplete-classpath --no-fallback -H:+TraceServiceLoaderFeature -H:+ReportExceptionStackTraces -cp diozero-sampleapps-{{site.version}}.jar:diozero-core-{{site.version}}.jar:tinylog-api-2.2.1.jar:tinylog-impl-2.2.1.jar com.diozero.sampleapps.perf.GpioPerfTest
+native-image -H:JNIConfigurationFiles=./config/jni-config.json \
+  -H:ReflectionConfigurationFiles=./config/reflect-config.json \
+  -H:ResourceConfigurationFiles=./config/resource-config.json \
+  -H:+TraceServiceLoaderFeature -H:+ReportExceptionStackTraces \
+  --allow-incomplete-classpath --no-fallback \
+  -cp diozero-sampleapps-{{site.version}}.jar:diozero-core-{{site.version}}.jar:tinylog-api-2.2.1.jar:tinylog-impl-2.2.1.jar \
+  com.diozero.sampleapps.perf.GpioPerfTest
 ```
 
 ## Enabling the GraalVM JVMCICompiler
 
 Run with `-XX:+UnlockExperimentalVMOptions -XX:+EnableJVMCI -XX:-UseJVMCICompiler`, for example:
 ```shell
-java -XX:+UnlockExperimentalVMOptions -XX:+EnableJVMCI -XX:-UseJVMCICompiler -cp diozero-sampleapps-{{site.version}}.jar com.diozero.sampleapps.perf.GpioPerfTest 21 50000000
+java -XX:+UnlockExperimentalVMOptions -XX:+EnableJVMCI -XX:-UseJVMCICompiler \
+  -cp diozero-sampleapps-{{site.version}}.jar \
+  com.diozero.sampleapps.perf.GpioPerfTest 21 50000000
 ```
 
 ## Results

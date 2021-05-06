@@ -5,7 +5,7 @@ package com.diozero.devices;
  * Organisation: diozero
  * Project:      Device I/O Zero - Core
  * Filename:     Button.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.devices;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -52,7 +52,7 @@ import com.diozero.sbc.DeviceFactoryHelper;
  * example:
  * </p>
  * <img src="doc-files/Button.png" alt="Button">
- * 
+ *
  * <pre>
  * {@code
  * try (Button button = new Button(inputPin, GpioPullUpDown.PULL_UP)) {
@@ -67,7 +67,7 @@ import com.diozero.sbc.DeviceFactoryHelper;
  * "https://github.com/mattjlewis/diozero/blob/master/diozero-sampleapps/src/main/java/com/diozero/sampleapps/ButtonControlledLed.java">ButtonControlledLed</a>:
  * </p>
  * <img src="doc-files/Button_LED.png" alt="Button controlled LED">
- * 
+ *
  * <pre>
  * {@code
  * try (Button button = new Button(buttonPin, GpioPullUpDown.PULL_UP); LED led = new LED(ledPin)) {
@@ -89,11 +89,11 @@ public class Button extends DigitalInputDevice {
 	 * otherwise true (assumes normally open wiring configuration)</li>
 	 * <li>deviceFactory: {@link DeviceFactoryHelper#getNativeDeviceFactory}</li>
 	 * </ul>
-	 * 
+	 *
 	 * Either a GPIO number or a {@link PinInfo} instance must be specified. Using a
 	 * PinInfo instance allows input devices to be identified by either physical pin
 	 * number or GPIO chip and line offset.
-	 * 
+	 *
 	 * The optional activeHigh parameter default value assumes a normally open
 	 * wiring configuration, however, this can be overridden for normally closed
 	 * configurations as well as scenarios where pud is {@link GpioPullUpDown#NONE}
@@ -102,7 +102,7 @@ public class Button extends DigitalInputDevice {
 	public static class Builder {
 		/**
 		 * Create a new Button builder instance
-		 * 
+		 *
 		 * @param gpio The GPIO to be used for the new DigitalInputDevice
 		 * @return A new Button builder instance
 		 */
@@ -112,7 +112,7 @@ public class Button extends DigitalInputDevice {
 
 		/**
 		 * Create a new DigitalInputDevice builder instance
-		 * 
+		 *
 		 * @param pinInfo The pin to be used for the new DigitalInputDevice
 		 * @return A new DigitalInputDevice builder instance
 		 */
@@ -241,7 +241,7 @@ public class Button extends DigitalInputDevice {
 
 	/**
 	 * Get the current state.
-	 * 
+	 *
 	 * @return Return true if the button is currently pressed.
 	 */
 	public boolean isPressed() {
@@ -250,7 +250,7 @@ public class Button extends DigitalInputDevice {
 
 	/**
 	 * Get the current state.
-	 * 
+	 *
 	 * @return Return true if the button is currently released.
 	 */
 	public boolean isReleased() {
@@ -259,7 +259,7 @@ public class Button extends DigitalInputDevice {
 
 	/**
 	 * Action to perform when the button is pressed.
-	 * 
+	 *
 	 * @param consumer Callback function to invoke when pressed (long parameter is
 	 *                 nanoseconds time).
 	 */
@@ -269,7 +269,7 @@ public class Button extends DigitalInputDevice {
 
 	/**
 	 * Action to perform when the button is released.
-	 * 
+	 *
 	 * @param consumer Callback function to invoke when pressed (long parameter is
 	 *                 nanoseconds time).
 	 */

@@ -5,7 +5,7 @@ package com.diozero.internal.board.odroid;
  * Organisation: diozero
  * Project:      Device I/O Zero - Core
  * Filename:     OdroidBoardInfoProvider.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.internal.board.odroid;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -42,7 +42,7 @@ public class OdroidBoardInfoProvider implements BoardInfoProvider {
 	public static final String C1_HARDWARE_ID = "ODROID-C1";
 	public static final String C2_HARDWARE_ID = "ODROID-C2";
 
-	public static enum Model {
+	public enum Model {
 		C0, U2_U3, C1, XU_3_4, C2;
 	}
 
@@ -62,9 +62,10 @@ public class OdroidBoardInfoProvider implements BoardInfoProvider {
 
 	public static class OdroidC1BoardInfo extends GenericLinuxArmBoardInfo {
 		private static final int MEMORY = 1_024_000;
+		private static final float ADC_VREF = 1.8f;
 
 		public OdroidC1BoardInfo() {
-			super(MAKE, Model.C1.toString(), MEMORY, MAKE.toLowerCase() + "-" + Model.C1.toString().toLowerCase());
+			super(MAKE, Model.C2.toString(), MEMORY, ADC_VREF);
 		}
 
 		@Override

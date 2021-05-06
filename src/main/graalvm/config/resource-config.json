@@ -1,45 +1,12 @@
 {
 	"resources": {
 		"includes": [
-			{
-				"pattern": "\\QMETA-INF/services/com.diozero.internal.spi.BoardInfoProvider\\E"
-			},
-			{
-				"pattern": "\\QMETA-INF/services/org.tinylog.provider.LoggingProvider\\E"
-			},
-			{
-				"pattern": "\\QMETA-INF/services/org.tinylog.writers.Writer\\E"
-			},
-			{
-				"pattern": "\\Qboarddefs/allwinner_sun8i-h3.txt\\E"
-			},
-			{
-				"pattern": "\\Qboarddefs/amlogic_meson-gxbb.txt\\E"
-			},
-			{
-				"pattern": "\\Qboarddefs/raspberrypi_model-b.txt\\E"
-			},
-			{
-				"pattern": "\\Qboarddefs/raspberrypi_zero.txt\\E"
-			},
-			{
-				"pattern": "\\Qboarddefs/raspberrypi_zerow.txt\\E"
-			},
-			{
-				"pattern": "\\Qboarddefs/raspberrypi.txt\\E"
-			},
-			{
-				"pattern": "\\Qboarddefs/rockchip_rk3288.txt\\E"
-			},
-			{
-				"pattern": "\\Qboarddefs/ti_am335x-bone.txt\\E"
-			},
-			{
-				"pattern": "\\Qlib/linux-aarch64/libdiozero-system-utils.so\\E"
-			},
-			{
-				"pattern": "\\Qtinylog.properties\\E"
-			}
+			{ "pattern": "\\QMETA-INF/services/com.diozero.internal.spi.BoardInfoProvider\\E" },
+			{ "pattern": "\\Qboarddefs/.*.txt\\E" },
+			{ "pattern": "\\Qlib/linux-aarch64/libdiozero-system-utils.so\\E" },
+			{ "pattern": "\\QMETA-INF/services/org.tinylog.provider.LoggingProvider\\E" },
+			{ "pattern": "\\QMETA-INF/services/org.tinylog.writers.Writer\\E" },
+			{ "pattern": "\\Qtinylog.properties\\E" }
 		]
 	},
 	"bundles": []

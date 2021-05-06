@@ -57,7 +57,7 @@ try (LED led = new LED(pin_info, true, false)) {
 ## com.diozero.util
 
 The [com.diozero.util](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/com/diozero/util/package-summary.html)
-package contain general utility classes, including:
+package contains general utility classes, including:
 
 [BitManipulation](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/com/diozero/util/BitManipulation.html)
 : Interacting with individual bits within a byte.
@@ -66,10 +66,10 @@ package contain general utility classes, including:
 : Currently contains one method for generating a colour value using the 5-6-5 colourspace from individual RGB values.
 
 [Crc](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/com/diozero/util/Crc.html)
-: CRC-8 and CRC-16 calculator - supports all common configurations.
+: CRC-8 and CRC-16 calculator - supports all [common configurations](https://crccalc.com).
 
 [DiozeroScheduler](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/com/diozero/util/DiozeroScheduler.html)
-: Wrapper around the Java ExecutorService and ScheduledExecutorService; provided to enable graceful shutdown on non-daemon threads.
+: Wrapper around the Java ExecutorService and ScheduledExecutorService; provided to enable graceful shutdown when using non-daemon threads.
 
 [Hex](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/com/diozero/util/Hex.html)
 : Utility methods for encoding and decoding hex strings.
@@ -79,7 +79,7 @@ package contain general utility classes, including:
 
 [MmapIntBuffer](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/com/diozero/util/MmapIntBuffer.html)
 : Wrap an system file into a memory mapped java.nio.IntBuffer object for high performance direct
-memory mapped control. Used for interacting with GPIO registers in `/dev/gpiomem`.
+memory mapped access. Used for interacting with GPIO registers in `/dev/gpiomem`.
 
 [MutableByte](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/com/diozero/util/MutableByte.html)
 : A mutable byte object with operations for getting / setting individual bit values.
@@ -102,7 +102,7 @@ Also contains a busySleep method for finer grained delays.
 : Helper methods for padding a string and repeating a character.
 
 [TemperatureUtil](https://www.javadoc.io/docs/com.diozero/diozero-core/latest/com/diozero/util/TemperatureUtil.html)
-: Convert from Celsius to Fahrenheit.
+: Convert from Celsius to Fahrenheit and vice-versa.
 
 [UsbInfo](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/com/diozero/util/UsbInfo.html)
-: Lookup USB vendor and product name from corresponding id values using `/var/lib/usbutils/usb.ids`.
+: Lookup USB vendor and product names from corresponding id values using `/var/lib/usbutils/usb.ids`.

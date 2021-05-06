@@ -5,7 +5,7 @@ package com.diozero.devices;
  * Organisation: diozero
  * Project:      Device I/O Zero - Core
  * Filename:     ButtonTest.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.devices;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -64,11 +64,10 @@ public class ButtonTest {
 			button.addListener(event -> Logger.info("Event: {}", event));
 
 			ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
-			ScheduledFuture<?> future = executor
-					.scheduleAtFixedRate(
-							() -> button.accept(new DigitalInputEvent(button.getGpio(),
-									System.currentTimeMillis(), System.nanoTime(), (i++ % 2) == 0)),
-							500, 500, TimeUnit.MILLISECONDS);
+			ScheduledFuture<?> future = executor.scheduleAtFixedRate(
+					() -> button.accept(new DigitalInputEvent(button.getGpio(), System.currentTimeMillis(),
+							System.nanoTime(), (i++ % 2) == 0)),
+					500, 500, TimeUnit.MILLISECONDS);
 
 			SleepUtil.sleepSeconds(5);
 
