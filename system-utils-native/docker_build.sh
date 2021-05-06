@@ -1,6 +1,6 @@
 #!/bin/sh
 
-docker run -rm -w /system-utils-native \
+docker run --rm -w /system-utils-native \
   -v "$(pwd):/system-utils-native" diozero-cc sh -c ./cc_build.sh
 
 if [ $? -eq 0 ]; then
