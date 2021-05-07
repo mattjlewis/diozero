@@ -232,7 +232,8 @@ public class LocalSystemInfo {
 						// FIXME Ugly and possibly unsafe code!
 						try {
 							// model name : ARMv7 Processor rev 3 (v7l)
-							cpuModelName = line.split(":")[1].trim().split(" ")[0].trim().toLowerCase();
+							// model name : ARMv6-compatible processor rev 7 (v6l)
+							cpuModelName = line.split(":")[1].trim().split("[- ]")[0].trim().toLowerCase();
 						} catch (Exception e) {
 							Logger.debug(e, "Error processing model name line '{}': {}", line, e);
 						}

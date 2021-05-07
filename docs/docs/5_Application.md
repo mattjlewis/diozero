@@ -33,13 +33,14 @@ The following XML snippet can be added to your application's `pom.xml` file:
 
 If you want to manage the dependencies yourself, download and extract a [diozero-distribution ZIP file](https://search.maven.org/remotecontent?filepath=com/diozero/diozero-distribution/{{ site.version }}/diozero-distribution-{{ site.version }}-bin.zip) from either [Maven Central](https://search.maven.org/) or [mvnrepository](https://mvnrepository.com/).
 
-As of diozero {{ site.version }} you can also start a new diozero application using the Maven archetype:
+As of diozero 1.0.0 you can also start a new diozero application using the Maven archetype:
 
 ```
 mvn archetype:generate -DarchetypeGroupId=com.diozero -DarchetypeArtifactId=diozero-application -DarchetypeVersion={{ site.version }} -DgroupId=com.mycompany -DartifactId=mydiozeroapp -Dversion=1.0-SNAPSHOT
 ```
 
 To use a snapshot version of the archetype you will need to add this snippet to your Maven `settings.xml` file (in `$HOME/.m2`):
+
 ```xml
    <profiles>
      <profile>
@@ -56,32 +57,6 @@ To use a snapshot version of the archetype you will need to add this snippet to 
      </profile>
    </profiles>
 ```
-
-## Step-by-step Instructions
-
-These instructions assume you are using Eclipse, Maven and are using diozero as the parent project.
-
-1. Create a new Java Project
-
-    ![New Java Project](/assets/images/NewJavaProject.png)
-
-1. Copy the example [pom.xml](https://github.com/mattjlewis/diozero/blob/master/diozero-example/pom.xml) into your project
-
-1. Change the groupId, artifactId and name attributes in your pom.xml
-
-    ![Example pom.xml](/assets/images/example_pom.png)
-
-1. Right click on your Java project and chose Configure / Convert to Maven Project
-
-1. Check that the Maven dependencies have been correctly imported by exanding Maven Dependencies in the Package Explorer side bar
-
-    ![Maven Dependencies](/assets/images/MavenDependencies.png)
-
-1. Develop your application
-
-1. Compile, package and distribute your application
-
-    ![Compile and Package](/assets/images/CompileAndPackage.png)
 
 ## Deploy Your Application to Your Device
 

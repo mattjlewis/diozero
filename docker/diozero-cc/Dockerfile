@@ -13,6 +13,8 @@ ARG GLIBC_VERSION=glibc-2.28
 ARG BINUTILS_VERSION=binutils-2.31.1
 # Working directory for building GCC
 ARG BUILD_WORKING_DIR=${HOME_DIR}/build
+# Number of jobs value to pass the make -j command
+ARG MAKE_JOBS=8
 
 # Use GCC 8 as the default compiler otherwise there will be compilation errors
 RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 999 && \
@@ -65,7 +67,7 @@ RUN ../${BINUTILS_VERSION}/configure \
     --prefix=${PI_GCC_TARGET_DIR} --target=arm-linux-gnueabihf \
     --with-arch=armv6 --with-fpu=vfp --with-float=hard \
     --disable-multi-lib
-RUN make -j8
+RUN make -j${MAKE_JOBS}
 RUN sudo make install
 
 # Build the first part of GCC
@@ -76,7 +78,7 @@ RUN ../${GCC_VERSION}/configure \
     --enable-languages=c,c++ \
     --with-arch=armv6 --with-fpu=vfp --with-float=hard \
     --disable-multilib
-RUN make -j8 all-gcc
+RUN make -j${MAKE_JOBS} all-gcc
 RUN sudo make install-gcc
 
 # Build GLIBC
@@ -90,7 +92,7 @@ RUN ../${GLIBC_VERSION}/configure \
 RUN sudo make install-bootstrap-headers=yes install-headers
 # Bit of a cludge - fix file permissions from the above command
 RUN sudo chown -R ${RUN_AS_USER}:users .
-RUN make -j8 csu/subdir_lib
+RUN make -j${MAKE_JOBS} csu/subdir_lib
 RUN sudo install csu/crt1.o csu/crti.o csu/crtn.o ${PI_GCC_TARGET_DIR}/arm-linux-gnueabihf/lib
 RUN sudo arm-linux-gnueabihf-gcc -nostdlib -nostartfiles -shared -x c /dev/null \
     -o ${PI_GCC_TARGET_DIR}/arm-linux-gnueabihf/lib/libc.so
@@ -98,17 +100,17 @@ RUN sudo touch ${PI_GCC_TARGET_DIR}/arm-linux-gnueabihf/include/gnu/stubs.h
 
 # Continue building GCC
 WORKDIR ${BUILD_WORKING_DIR}/build-gcc
-RUN make -j8 all-target-libgcc
+RUN make -j${MAKE_JOBS} all-target-libgcc
 RUN sudo make install-target-libgcc
 
 # Finish building GLIBC
 WORKDIR ${BUILD_WORKING_DIR}/build-glibc
-RUN make -j8
+RUN make -j${MAKE_JOBS}
 RUN sudo make install
 
 # Finish building GCC
 WORKDIR ${BUILD_WORKING_DIR}/build-gcc
-RUN make -j8
+RUN make -j${MAKE_JOBS}
 RUN sudo make install
 
 # Restore the old path value
