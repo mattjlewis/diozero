@@ -46,7 +46,7 @@ package com.diozero.util;
  * <li><a href="https://github.com/sigurn/crc16/blob/master/crc16.go">CRC-16
  * calculator</a> written in Go</li>
  * <li><a href="https://www.lammertbies.nl/comm/info/crc-calculation">On-line
- * CRC Calculator</a> by Lammert Bies</a></li>
+ * CRC Calculator</a> by Lammert Bies</li>
  * </ul>
  */
 public class Crc {

@@ -97,7 +97,6 @@ public abstract class AbstractDeviceFactory implements DeviceFactoryInterface {
 	 * Convenience method to get a device of the specified type and key. Consumers
 	 * must ensure that the return type is correct to prevent class cast exceptions.
 	 *
-	 * @param T   device type
 	 * @param key device key
 	 * @return the device or null if not found
 	 */
