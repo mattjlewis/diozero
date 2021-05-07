@@ -18,10 +18,10 @@ JNIEXPORT jobject JNICALL Java_com_diozero_util_MmapBufferNative_createMmapBuffe
 /*
  * Class:     com_diozero_util_MmapBufferNative
  * Method:    closeMmapBuffer
- * Signature: (IJI)V
+ * Signature: (JI)V
  */
 JNIEXPORT void JNICALL Java_com_diozero_util_MmapBufferNative_closeMmapBuffer
-  (JNIEnv *, jclass, jint, jlong, jint);
+  (JNIEnv *, jclass, jlong, jint);
 
 #ifdef __cplusplus
 }

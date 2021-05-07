@@ -61,7 +61,7 @@
 		"methods": [
 			{
 				"name": "<init>",
-				"parameterTypes": [ "int", "int", "int", "java.nio.ByteBuffer" ]
+				"parameterTypes": [ "long", "int", "java.nio.ByteBuffer" ]
 			}
 		]
 	},
@@ -98,6 +98,19 @@
 			{
 				"name": "event",
 				"parameterTypes": [ "int", "int", "long", "long" ]
+			}
+		]
+	},
+	{
+		"name": "com.diozero.api.I2CDeviceInterface$I2CMessage",
+		"fields": [
+			{
+				"name": "flags",
+				"allowWrite": true
+			},
+			{
+				"name": "len",
+				"allowWrite": true
 			}
 		]
 	},

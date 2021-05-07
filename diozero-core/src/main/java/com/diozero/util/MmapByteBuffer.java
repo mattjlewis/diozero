@@ -5,7 +5,7 @@ package com.diozero.util;
  * Organisation: diozero
  * Project:      Device I/O Zero - Core
  * Filename:     MmapByteBuffer.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.util;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -33,21 +33,23 @@ package com.diozero.util;
 
 import java.nio.ByteBuffer;
 
-public class MmapByteBuffer {
-	private int fd;
+public class MmapByteBuffer implements AutoCloseable {
 	private long address;
 	private int length;
 	private ByteBuffer buffer;
 
-	public MmapByteBuffer(int fd, long address, int length, ByteBuffer buffer) {
-		this.fd = fd;
+	public MmapByteBuffer(long address, int length, ByteBuffer buffer) {
 		this.address = address;
 		this.length = length;
 		this.buffer = buffer;
 	}
 
-	public int getFd() {
-		return fd;
+	@Override
+	public void close() {
+		if (buffer != null) {
+			MmapBufferNative.closeMmapBuffer(address, length);
+			buffer = null;
+		}
 	}
 
 	public long getAddress() {

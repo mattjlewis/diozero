@@ -28,14 +28,22 @@ sudo mv graalvm-ce-java11-21.0.0.2 /usr/lib/jvm/.
 ```
 
 Edit `.zshrc`:
+
 ```shell
 export GRAALVM_HOME=/usr/lib/jvm/graalvm-ce-java11-21.0.0.2
 export PATH=${PATH}:${GRAALVM_HOME}/bin
 ```
 
 Install native-image builder:
+
 ```shell
 gu install native-image
+```
+
+Install dependencies:
+
+```shell
+sudo apt -y install build-essential libz-dev zlib1g-dev zlibc
 ```
 
 ## Test
@@ -83,6 +91,7 @@ native-image -H:JNIConfigurationFiles=./config/jni-config.json \
 ## Enabling the GraalVM JVMCICompiler
 
 Run with `-XX:+UnlockExperimentalVMOptions -XX:+EnableJVMCI -XX:-UseJVMCICompiler`, for example:
+
 ```shell
 java -XX:+UnlockExperimentalVMOptions -XX:+EnableJVMCI -XX:-UseJVMCICompiler \
   -cp diozero-sampleapps-{{site.version}}.jar \
@@ -92,6 +101,7 @@ java -XX:+UnlockExperimentalVMOptions -XX:+EnableJVMCI -XX:-UseJVMCICompiler \
 ## Results
 
 Default behaviour:
+
 ```shell
 > java -cp diozero-sampleapps-{{site.version}}.jar com.diozero.sampleapps.perf.GpioPerfTest 21 50000000
 19:59:21.284 [main] INFO com.diozero.sampleapps.perf.GpioPerfTest.main - Starting GPIO performance test using GPIO 21 with 50000000 iterations
@@ -103,6 +113,7 @@ Default behaviour:
 ```
 
 With a smaller number of iterations you see the impact of the JVM JIT compiler in the early results:
+
 ```shell
 > java -cp diozero-sampleapps-{{site.version}}.jar com.diozero.sampleapps.perf.GpioPerfTest 21 500000
 19:50:27.109 [main] INFO com.diozero.sampleapps.perf.GpioPerfTest.main - Starting GPIO performance test using GPIO 21 with 500000 iterations
@@ -114,6 +125,7 @@ With a smaller number of iterations you see the impact of the JVM JIT compiler i
 ```
 
 With the GraalVM JVMCICompiler the speed really ramps up (I haven't verified the frequency other than by using an LED):
+
 ```shell
 > java -XX:+UnlockExperimentalVMOptions -XX:+EnableJVMCI -XX:+UseJVMCICompiler -cp diozero-sampleapps-{{site.version}}.jar com.diozero.sampleapps.perf.GpioPerfTest 21 50000000
 19:56:47.368 [main] INFO com.diozero.sampleapps.perf.GpioPerfTest.main - Starting GPIO performance test using GPIO 21 with 50000000 iterations
@@ -125,6 +137,7 @@ With the GraalVM JVMCICompiler the speed really ramps up (I haven't verified the
 ```
 
 With a smaller number of iterations you see that the GraalVM JVMCICompiler doesn't get going:
+
 ```shell
 > java -XX:+UnlockExperimentalVMOptions -XX:+EnableJVMCI -XX:+UseJVMCICompiler -cp diozero-sampleapps-{{site.version}}.jar com.diozero.sampleapps.perf.GpioPerfTest 21 500000
 10:57:14.146 [main] INFO com.diozero.sampleapps.perf.GpioPerfTest.main - Starting GPIO performance test using GPIO 21 with 500000 iterations
@@ -136,6 +149,7 @@ With a smaller number of iterations you see that the GraalVM JVMCICompiler doesn
 ```
 
 With the GraalVM native image:
+
 ```shell
 > ./com.diozero.sampleapps.perf.gpioperftest 21 10000000
 10:45:57.735 [main] INFO com.diozero.sampleapps.perf.GpioPerfTest.main - Starting GPIO performance test using GPIO 21 with 10000000 iterations
@@ -147,6 +161,7 @@ With the GraalVM native image:
 ```
 
 Native image and smaller number of iterations:
+
 ```shell
 > ./com.diozero.sampleapps.perf.gpioperftest 21 1000000
 11:00:36.962 [main] INFO com.diozero.sampleapps.perf.GpioPerfTest.main - Starting GPIO performance test using GPIO 21 with 1000000 iterations

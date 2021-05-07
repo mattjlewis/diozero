@@ -6,21 +6,24 @@ permalink: /internals/qemuaarch64.html
 
 # Building a Debian Buster QEMU image for AARCH64
 
-Base on this article on [https://blahcat.github.io/2018/01/07/building-a-debian-stretch-qemu-image-for-aarch64/](building a Debian Stretch QEMU image for AARCH64).
+Based on this article on [https://blahcat.github.io/2018/01/07/building-a-debian-stretch-qemu-image-for-aarch64/](building a Debian Stretch QEMU image for AARCH64).
 
 Get base files (Debian Buster network installer image):
-```
+
+```shell
 wget http://ftp.debian.org/debian/dists/buster/main/installer-arm64/current/images/netboot/debian-installer/arm64/initrd.gz
 wget http://ftp.debian.org/debian/dists/buster/main/installer-arm64/current/images/netboot/debian-installer/arm64/linux
 ```
 
 Create a disk:
-```
+
+```shell
 qemu-img create -f qcow2 disk.qcow2 20G
 ```
 
 Install Debian:
-```
+
+```shell
 qemu-system-aarch64 -smp 2 -M virt -cpu cortex-a57 -m 1G \
     -initrd initrd.gz -kernel linux \
     -append "root=/dev/ram console=ttyAMA0" \
@@ -34,7 +37,7 @@ qemu-system-aarch64 -smp 2 -M virt -cpu cortex-a57 -m 1G \
 ```
 
 You need to extract the initrd.img and vmlinuz files from the qcow2 disk file.
-The easiest way to do this is to use nbd in a Linux environment,
+The easiest way to do this is to use `nbd` in a Linux environment,
 e.g. a Virtual Machine that has access to the qcow2 disk file:
 
 ```shell
@@ -49,7 +52,8 @@ sudo nbd-client -d /dev/nbd0
 ```
 
 Then:
-```
+
+```shell
 qemu-system-aarch64 -smp 2 -M virt -cpu cortex-a57 -m 1G \
   -initrd initrd.img-4.19.0-16-arm64 \
   -kernel vmlinuz-4.19.0-16-arm64 \
@@ -64,9 +68,10 @@ qemu-system-aarch64 -smp 2 -M virt -cpu cortex-a57 -m 1G \
   -nographic
 ```
 
-With networking:
-```
-qemu-system-aarch64 -smp 2 -M virt -cpu cortex-a57 -m 1G \
+With networking (plus 8 cores and 4GB RAM):
+
+```shell
+qemu-system-aarch64 -smp 8 -M virt -cpu cortex-a57 -m 4G \
   -initrd initrd.img-4.19.0-16-arm64 \
   -kernel vmlinuz-4.19.0-16-arm64 \
   -append "root=/dev/sda2 console=ttyAMA0" \
@@ -81,16 +86,17 @@ qemu-system-aarch64 -smp 2 -M virt -cpu cortex-a57 -m 1G \
 
 Login and setup sudo:
 
-```
+```shell
 apt update
 apt upgrade
 apt install sudo
 usermod -aG sudo matt
 ```
 
-Install utilities:
-```
-sudo apt -y install curl gcc make unzip zip vim git
+Install some basic utilities:
+
+```shell
+sudo apt -y install curl gcc make unzip zip vim git zlibc build-essential libz-dev zlib1g-dev
 ```
 
 ## Java
@@ -108,17 +114,20 @@ sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.
 ```
 
 Make a minor tweak to the robbyrussell theme to show the hostname in the command prompt:
-```
+
+```shell
 cd ~/.oh-my-zsh/themes
 cp robbyrussell.zsh-theme robbyrussell_tweak.zsh-theme
 ```
 
 Edit `robbyrussell_tweak.zsh-theme` and change the `PROMPT` value to include this prefix `%{$fg_bold[white]%}%M%{$reset_color%} `:
+
 ```
 PROMPT="%{$fg_bold[white]%}%M%{$reset_color%} %(?:%{$fg_bold[green]%}➜ :%{$fg_bold[red]%}➜ )"
 ```
 
 Update the ZSH config `~/.zshrc`:
+
 ```
 export PATH=$PATH:/sbin:/usr/sbin:/usr/local/sbin
 export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-armhf
@@ -127,6 +136,7 @@ ZSH_THEME="robbyrussell_tweak"
 ```
 
 My own preference is to add this to the end of the `.zshrc` file:
+
 ```
 # Allow multiple terminal sessions to all append to one zsh command history
 setopt APPEND_HISTORY

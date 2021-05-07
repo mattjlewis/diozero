@@ -53,15 +53,10 @@ extern jmethodID mmapByteBufferConstructor;
 #define long_t uint64_t
 #endif
 
-static void* initMapMem(int fd, uint32_t offset, uint32_t length) {
-	return mmap(0, length, PROT_READ|PROT_WRITE, MAP_SHARED, fd, offset);
-	//return mmap(0, length, PROT_READ|PROT_WRITE, MAP_SHARED|MAP_LOCKED, fd, offset);
-}
-
-jobject createMmapByteBuffer(JNIEnv* env, int fd, void* mapPtr, jint mapCapacity) {
+jobject createMmapByteBuffer(JNIEnv* env, void* mapPtr, jint length) {
 	long_t map_ptr = (long_t) mapPtr;
-	return (*env)->NewObject(env, mmapByteBufferClassRef, mmapByteBufferConstructor, fd, (jlong) map_ptr, mapCapacity,
-			(*env)->NewDirectByteBuffer(env, mapPtr, (jlong) mapCapacity));
+	return (*env)->NewObject(env, mmapByteBufferClassRef, mmapByteBufferConstructor, (jlong) map_ptr, length,
+			(*env)->NewDirectByteBuffer(env, mapPtr, (jlong) length));
 }
 
 JNIEXPORT jobject JNICALL Java_com_diozero_util_MmapBufferNative_createMmapBuffer(
@@ -74,18 +69,26 @@ JNIEXPORT jobject JNICALL Java_com_diozero_util_MmapBufferNative_createMmapBuffe
 		// TODO Raise error
 		return NULL;
 	}
-	void* map_ptr = initMapMem(fd, offset, length);
+
+	void* map_ptr = mmap(0, length, PROT_READ|PROT_WRITE, MAP_SHARED, fd, offset);
+	//void* map_ptr = mmap(0, length, PROT_READ|PROT_WRITE, MAP_SHARED|MAP_LOCKED, fd, offset);
+	/*
+	 * From: https://man7.org/linux/man-pages/man2/mmap.2.html
+	 * After the mmap() call has returned, the file descriptor, fd, can
+     * be closed immediately without invalidating the mapping.
+	 */
+	close((int) fd);
+
 	if (map_ptr == MAP_FAILED) {
 		// TODO Raise error
 		return NULL;
 	}
 
-	return createMmapByteBuffer(env, fd, map_ptr, length);
+	return createMmapByteBuffer(env, map_ptr, length);
 }
 
 JNIEXPORT void JNICALL Java_com_diozero_util_MmapBufferNative_closeMmapBuffer(
-		JNIEnv *env, jclass clz, jint fd, jlong mapPtr, jint length) {
+		JNIEnv *env, jclass clz, jlong mapPtr, jint length) {
 	long_t map_ptr = (long_t) mapPtr;
 	munmap((void*) map_ptr, length);
-	close((int) fd);
 }
