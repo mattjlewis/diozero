@@ -29,7 +29,7 @@ description: >- # this means to ignore newlines until the next YAML element
   Supports GPIO (digital, PWM and analog), as well as devices conntected via
   I2C, SPI and Serial buses.
 baseurl: "" # the subpath of your site, e.g. /blog
-url: "https://github.diozero.com" # the base hostname & protocol for your site, e.g. http://example.com
+url: "https://www.diozero.com" # the base hostname & protocol for your site, e.g. http://example.com
 #twitter_username: jekyllrb
 github_username:  mattjlewis
 search: true
