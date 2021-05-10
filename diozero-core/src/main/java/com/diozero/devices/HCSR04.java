@@ -101,9 +101,9 @@ public class HCSR04 implements DistanceSensorInterface {
 		long start = System.nanoTime();
 		if (triggerAndEcho == null) {
 			// Send a pulse trigger of 10 us duration
-			trigger.setValueUnsafe(true);
+			trigger.setValue(true);
 			SleepUtil.busySleep(PULSE_NS);// wait 10 us (10,000ns)
-			trigger.setValueUnsafe(false);
+			trigger.setValue(false);
 		} else {
 			triggerAndEcho.setMode(DeviceMode.DIGITAL_OUTPUT);
 			// Send a pulse trigger of 10 us duration

@@ -71,8 +71,8 @@ public class MCP23017PerfTest {
 			for (int j = 0; j < 5; j++) {
 				long start_nano = System.nanoTime();
 				for (int i = 0; i < iterations; i++) {
-					gpio.setValueUnsafe(true);
-					gpio.setValueUnsafe(false);
+					gpio.setValue(true);
+					gpio.setValue(false);
 				}
 				long duration_ns = System.nanoTime() - start_nano;
 

@@ -111,10 +111,10 @@ public class HCSR04UsingWait implements DistanceSensorInterface {
 		double ping_duration_s;
 		try {
 			// Send a pulse trigger of 10 us duration
-			trigger.setValueUnsafe(true);
+			trigger.setValue(true);
 			// wait 10 us (10,000ns)
 			Thread.sleep(0, PULSE_NS);
-			trigger.setValueUnsafe(false);
+			trigger.setValue(false);
 			
 			// Wait for up to 1 second for the echo pin to rise
 			if (! echo.waitForValue(true, 1_000)) {

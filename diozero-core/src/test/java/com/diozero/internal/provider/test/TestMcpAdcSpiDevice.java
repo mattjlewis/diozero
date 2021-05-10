@@ -1,5 +1,3 @@
-package com.diozero.internal.provider.test;
-
 /*
  * #%L
  * Organisation: diozero
@@ -31,7 +29,9 @@ package com.diozero.internal.provider.test;
  * #L%
  */
 
-import java.util.Random;
+package com.diozero.internal.provider.test;
+
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.junit.jupiter.api.Assertions;
 
@@ -41,28 +41,26 @@ import com.diozero.devices.McpAdc;
 import com.diozero.internal.spi.DeviceFactoryInterface;
 
 public class TestMcpAdcSpiDevice extends TestSpiDevice {
-	private static final Random random = new Random();
-	
 	private static McpAdc.Type type;
 	static {
 		// Default to MCP3208
 		setType(McpAdc.Type.MCP3208);
 	}
-	
+
 	public static void setType(McpAdc.Type type) {
 		TestMcpAdcSpiDevice.type = type;
 	}
 
-	public TestMcpAdcSpiDevice(String key, DeviceFactoryInterface deviceFactory, int controller,
-			int chipSelect, int frequency, SpiClockMode spiClockMode, boolean lsbFirst) {
+	public TestMcpAdcSpiDevice(String key, DeviceFactoryInterface deviceFactory, int controller, int chipSelect,
+			int frequency, SpiClockMode spiClockMode, boolean lsbFirst) {
 		super(key, deviceFactory, controller, chipSelect, frequency, spiClockMode, lsbFirst);
 	}
-	
+
 	@Override
 	public void write(byte... txBuffer) throws RuntimeIOException {
 		//
 	}
-	
+
 	@Override
 	public void write(byte[] txBuffer, int index, int length) throws RuntimeIOException {
 		//
@@ -70,15 +68,17 @@ public class TestMcpAdcSpiDevice extends TestSpiDevice {
 
 	@Override
 	public byte[] writeAndRead(byte... txBuffer) throws RuntimeIOException {
+		final ThreadLocalRandom random = ThreadLocalRandom.current();
+
 		byte b = txBuffer[0];
-		//out.put((byte) (0x10 | (differentialRead ? 0 : 0x08 ) | adcPin));
-		//int pin = b & 0x07;
-		//Logger.debug("Received read request for pin {}", Integer.valueOf(pin));
+		// out.put((byte) (0x10 | (differentialRead ? 0 : 0x08 ) | adcPin));
+		// int pin = b & 0x07;
+		// Logger.debug("Received read request for pin {}", Integer.valueOf(pin));
 		b = txBuffer[1];
 		Assertions.assertEquals(0, b);
 		b = txBuffer[2];
 		Assertions.assertEquals(0, b);
-		
+
 		int temp = random.nextInt(type.getRange());
 		// FIXME Support MCP3301
 		byte[] dst = new byte[3];
@@ -102,7 +102,7 @@ public class TestMcpAdcSpiDevice extends TestSpiDevice {
 			dst[2] = (byte) ((temp << 1) & 0xfe);
 			break;
 		}
-		
+
 		return dst;
 	}
 }

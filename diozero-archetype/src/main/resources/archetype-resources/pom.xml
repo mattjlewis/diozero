@@ -21,7 +21,7 @@
 		<version.plugin.maven-compiler>3.8.1</version.plugin.maven-compiler>
 		
 		<!-- Library versions -->
-		<version.lib.diozero>1.2.1</version.lib.diozero>		
+		<version.lib.diozero>1.2.2</version.lib.diozero>		
 		<version.lib.junit>5.7.1</version.lib.junit>
 	</properties>
 	

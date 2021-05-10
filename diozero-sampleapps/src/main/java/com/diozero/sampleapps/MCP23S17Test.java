@@ -96,9 +96,9 @@ public class MCP23S17Test {
 			iterations = 10_000;
 			long start = System.currentTimeMillis();
 			for (int i = 0; i < iterations; i++) {
-				led8.setValueUnsafe(true);
+				led8.setValue(true);
 				// SleepUtil.sleepMillis(1);
-				led8.setValueUnsafe(false);
+				led8.setValue(false);
 				// SleepUtil.sleepMillis(1);
 			}
 			long duration = System.currentTimeMillis() - start;

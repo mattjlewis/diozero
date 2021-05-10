@@ -26,4 +26,4 @@ inspired by [GPIO Zero](https://gpiozero.readthedocs.org/) and [Johnny Five](htt
 If you have any issues please use the [GitHub issues page](https://github.com/mattjlewis/diozero/issues). 
 For any other comments or suggestions, please use the [diozero Google Group](https://groups.google.com/forum/#!forum/diozero).
 
-Please refer to the [GitHub Pages site](https://github.diozero.com/) for further documentation.
+Please refer to the [GitHub Pages site](https://www.diozero.com/) for further documentation.

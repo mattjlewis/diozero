@@ -5,7 +5,7 @@ package com.diozero.util;
  * Organisation: diozero
  * Project:      Device I/O Zero - Core
  * Filename:     MmapIntBuffer.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.util;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -37,8 +37,9 @@ import java.nio.IntBuffer;
 public class MmapIntBuffer implements AutoCloseable {
 	private long address;
 	private int length;
-	// private IntBuffer intBuffer;
-	private volatile IntBuffer intBuffer;
+	private IntBuffer intBuffer;
+	// Not yet sure if volatile is required for the direct byte buffer (which uses sun.misc.Unsafe)
+	// private volatile IntBuffer volatileIntBuffer;
 
 	public MmapIntBuffer(String file, int offset, int pageSize, ByteOrder byteOrder) {
 		MmapByteBuffer mmap_bb = MmapBufferNative.createMmapBuffer(file, offset, pageSize);

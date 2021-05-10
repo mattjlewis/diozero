@@ -4,7 +4,7 @@ FROM diozero-cc-base
 
 # Environment variables
 ENV PI_GCC_TARGET_DIR=/opt/cross-pi-gcc
-ENV RUN_AS_USER=ccompile
+ENV RUN_AS_USER=develop
 ARG HOME_DIR=/home/${RUN_AS_USER}
 
 # These must match the versions on the Raspberry Pi
@@ -26,18 +26,18 @@ RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 999 && \
 RUN mkdir -p ${PI_GCC_TARGET_DIR}
 
 # Add a user so that we don't have to run as root
-RUN useradd -ms /bin/bash ${RUN_AS_USER}
+RUN useradd -m ${RUN_AS_USER} && echo "${RUN_AS_USER}:${RUN_AS_USER}" | chpasswd && adduser ${RUN_AS_USER} sudo
 RUN echo "${RUN_AS_USER} ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/01_${RUN_AS_USER}-nopasswd
 
 # Switch to the run as user
 USER ${RUN_AS_USER}
 
+# Working directory
+WORKDIR ${BUILD_WORKING_DIR}
+
 # Save the current PATH variable value, ensure that the cross compiler is first in the PATH
 ARG OLD_PATH=${PATH}
 ENV PATH=${PI_GCC_TARGET_DIR}/bin:$PATH
-
-# Working directory
-WORKDIR ${BUILD_WORKING_DIR}
 
 # Download and extract GCC
 RUN wget https://ftp.gnu.org/gnu/gcc/${GCC_VERSION}/${GCC_VERSION}.tar.gz && \
@@ -77,7 +77,10 @@ RUN ../${GCC_VERSION}/configure \
     --target=arm-linux-gnueabihf \
     --enable-languages=c,c++ \
     --with-arch=armv6 --with-fpu=vfp --with-float=hard \
-    --disable-multilib
+    --disable-multilib \
+    --program-prefix=arm-linux-gnueabihf- \
+    --includedir=${PI_GCC_TARGET_DIR}/arm-linux-gnueabihf/include \
+    --libdir=${PI_GCC_TARGET_DIR}/arm-linux-gnueabihf/lib
 RUN make -j${MAKE_JOBS} all-gcc
 RUN sudo make install-gcc
 
@@ -132,7 +135,7 @@ RUN make clean && make CC=arm-linux-gnueabihf-gcc AR=arm-linux-gnueabihf-ar STRI
 RUN sudo cp lib/libi2c.a /usr/lib/arm-linux-gnueabihf/.
 # armv6 - building this last out of paranoia to ensure PATH isn't modified
 RUN PATH=${PI_GCC_TARGET_DIR}/bin:${PATH} && make clean && make CC=arm-linux-gnueabihf-gcc AR=arm-linux-gnueabihf-ar STRIP=arm-linux-gnueabihf-strip ARCH=armv6 CFLAGS="-mfpu=vfp -mfloat-abi=hard" PREFIX=${PI_GCC_TARGET_DIR}
-RUN PATH=${PI_GCC_TARGET_DIR}/bin:${PATH} && sudo make install PREFIX=${PI_GCC_TARGET_DIR}
+RUN PATH=${PI_GCC_TARGET_DIR}/bin:${PATH} && sudo make install PREFIX=${PI_GCC_TARGET_DIR}/arm-linux-gnueabihf
 
 # Cleanup
 WORKDIR ${HOME_DIR}

@@ -5,7 +5,7 @@ package com.diozero.sampleapps;
  * Organisation: diozero
  * Project:      Device I/O Zero - Sample applications
  * Filename:     SSD1306Test.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.sampleapps;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -35,7 +35,7 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.tinylog.Logger;
 
@@ -54,7 +54,7 @@ import com.diozero.util.SleepUtil;
 public class SSD1306Test {
 	public static void main(String[] args) {
 		Graphics2D g2d = null;
-		Random random = new Random();
+		ThreadLocalRandom random = ThreadLocalRandom.current();
 		try (DigitalOutputDevice dc_pin = new DigitalOutputDevice(22);
 				DigitalOutputDevice reset_pin = new DigitalOutputDevice(27);
 				SSD1306 oled = new SSD1306(0, 0, dc_pin, reset_pin)) {

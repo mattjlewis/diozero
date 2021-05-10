@@ -67,10 +67,11 @@ JNIEXPORT jobject JNICALL Java_com_diozero_util_MmapBufferNative_createMmapBuffe
 	int fd = open(filename, O_RDWR | O_SYNC);
 	if (fd < 0) {
 		// TODO Raise error
+		perror("Couldn't open file");
 		return NULL;
 	}
 
-	void* map_ptr = mmap(0, length, PROT_READ|PROT_WRITE, MAP_SHARED, fd, offset);
+	void* map_ptr = mmap(0, (uint32_t) length, PROT_READ|PROT_WRITE, MAP_SHARED, fd, (uint32_t) offset);
 	//void* map_ptr = mmap(0, length, PROT_READ|PROT_WRITE, MAP_SHARED|MAP_LOCKED, fd, offset);
 	/*
 	 * From: https://man7.org/linux/man-pages/man2/mmap.2.html
@@ -81,6 +82,7 @@ JNIEXPORT jobject JNICALL Java_com_diozero_util_MmapBufferNative_createMmapBuffe
 
 	if (map_ptr == MAP_FAILED) {
 		// TODO Raise error
+		perror("Error in mmap");
 		return NULL;
 	}
 

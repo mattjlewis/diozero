@@ -166,4 +166,14 @@ permalink: /internals/releases.html
 
 ## 1.2.2
 
++ Docker based build system for system-utils-native
++ Separate libraries for armv6 and armv7
++ DigitalOutputDevice:
+    + Renamed setValueUnsafe to just setValue - the unsafe was a legacy from when the class had synchronisation
+    + setOn/off no longer call stopOnOffLoop - it is now the caller's responsibility to do this
++ MmapIntBuffer.intBuffer is no longer volatile, need to validate with an oscilloscope
++ Use of ThreadLocalRandom rather than Random where possible
+
+## Future
+
 + I2C readWrite support with pigpio provider

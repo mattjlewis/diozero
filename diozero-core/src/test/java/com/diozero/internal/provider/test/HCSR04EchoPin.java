@@ -1,5 +1,3 @@
-package com.diozero.internal.provider.test;
-
 /*
  * #%L
  * Organisation: diozero
@@ -30,6 +28,8 @@ package com.diozero.internal.provider.test;
  * THE SOFTWARE.
  * #L%
  */
+
+package com.diozero.internal.provider.test;
 
 import java.util.Random;
 import java.util.concurrent.ExecutorService;

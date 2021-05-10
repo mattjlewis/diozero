@@ -90,13 +90,20 @@ native-image -H:JNIConfigurationFiles=./config/jni-config.json \
 
 ## Enabling the GraalVM JVMCICompiler
 
-Run with `-XX:+UnlockExperimentalVMOptions -XX:+EnableJVMCI -XX:-UseJVMCICompiler`, for example:
+This [article](https://www.baeldung.com/graal-java-jit-compiler) gives a good introduction to the
+new Graal Java JIT compiler options.
+
+Run with `-XX:+UnlockExperimentalVMOptions -XX:+EnableJVMCI -XX:+UseJVMCICompiler`, for example:
 
 ```shell
-java -XX:+UnlockExperimentalVMOptions -XX:+EnableJVMCI -XX:-UseJVMCICompiler \
+java -XX:+UnlockExperimentalVMOptions -XX:+EnableJVMCI -XX:+UseJVMCICompiler \
+  -Dgraal.ShowConfiguration=info -XX:+EagerJVMCI \
   -cp diozero-sampleapps-{{site.version}}.jar \
   com.diozero.sampleapps.perf.GpioPerfTest 21 50000000
 ```
+
+Note that `-Dgraal.ShowConfiguration=info` simply prints out the enabled options at runtime,
+`-XX:+EagerJVMCI` forces eager JVMCI initialisation.
 
 ## Results
 

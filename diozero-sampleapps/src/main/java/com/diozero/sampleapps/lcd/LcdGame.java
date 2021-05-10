@@ -1,37 +1,6 @@
 package com.diozero.sampleapps.lcd;
 
-/*-
- * #%L
- * Organisation: diozero
- * Project:      Device I/O Zero - Sample applications
- * Filename:     LcdGame.java
- * 
- * This file is part of the diozero project. More information about this project
- * can be found at https://www.diozero.com/.
- * %%
- * Copyright (C) 2016 - 2021 diozero
- * %%
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- * 
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- * 
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- * #L%
- */
-
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -98,12 +67,10 @@ public class LcdGame implements AutoCloseable, Runnable {
 	private Lock lock;
 	private Condition cond;
 	private State state = State.NONE;
-	private Random random;
 	private int playerPosY;
 	private int[] cursorPos;
 
 	public LcdGame() {
-		random = new Random();
 		lcdConnection = new PCF8574LcdConnection(i2cController, i2cDeviceAddress);
 		lcd = new HD44780Lcd(lcdConnection, COLUMNS, ROWS);
 		leftButton = new Button(leftGpio);
@@ -223,6 +190,7 @@ public class LcdGame implements AutoCloseable, Runnable {
 	}
 
 	private int play() {
+		ThreadLocalRandom random = ThreadLocalRandom.current();
 		// Turn off cursor
 		lcd.displayControl(true, false, false);
 

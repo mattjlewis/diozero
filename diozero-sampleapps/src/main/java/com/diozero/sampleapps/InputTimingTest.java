@@ -5,7 +5,7 @@ package com.diozero.sampleapps;
  * Organisation: diozero
  * Project:      Device I/O Zero - Sample applications
  * Filename:     InputTimingTest.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.sampleapps;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -58,7 +58,7 @@ public class InputTimingTest {
 			int input_gpio = Integer.parseInt(args[arg_index++]);
 			consumer(output_gpio, input_gpio);
 		} else if (mode.equals(PRODUCER)) {
-			String init_method = "";
+			String init_method = "0";
 			if (arg_index < args.length) {
 				init_method = args[arg_index++];
 			}
@@ -90,23 +90,23 @@ public class InputTimingTest {
 	}
 
 	public static void producer(int outputGpio, String initMethod) throws InterruptedException {
-		try (DigitalOutputDevice dod = new DigitalOutputDevice(outputGpio, false, false)) {
-			switch (initMethod) {
-			case "1":
+		try (DigitalOutputDevice dod = new DigitalOutputDevice(outputGpio, true, false)) {
+			switch (initMethod.charAt(0)) {
+			case '1':
 				System.out.println("DOD is on? " + dod.isOn());
 				break;
-			case "2":
+			case '2':
 				System.out.print("[scanner] Enter when ready to pulse > ");
 				Scanner s1 = new Scanner(System.in);
 				s1.nextLine();
 				break;
-			case "3":
+			case '3':
 				System.out.print("[twr scanner] Enter when ready to pulse > ");
 				try (Scanner s2 = new Scanner(System.in)) {
 					s2.nextLine();
 				}
 				break;
-			case "4":
+			case '4':
 				System.out.print("[twr br] Enter when ready to pulse > ");
 				try (BufferedReader br = new BufferedReader(new InputStreamReader(System.in))) {
 					br.readLine();
@@ -119,42 +119,69 @@ public class InputTimingTest {
 			default:
 			}
 
-			int num = 500;
-			int delay_ms = 5;
+			int iterations = 5_000;
+			int delay_ms = 1;
 
 			// Pulse start time (ns)
-			long[] tpb = new long[num];
+			long[] tpb = new long[iterations];
 			// Pulse end time (ns)
-			long[] tpe = new long[num];
+			long[] tpe = new long[iterations];
 
-			for (int i = 0; i < num; i++) {
-				tpb[i] = System.nanoTime();
-				dod.on();
-				dod.off();
-				tpe[i] = System.nanoTime();
+			if (initMethod.contains("x")) {
+				for (int i = 0; i < iterations; i++) {
+					tpb[i] = System.nanoTime();
+					dod.setValue(true);
+					dod.setValue(false);
+					tpe[i] = System.nanoTime();
 
-				Thread.sleep(delay_ms);
+					Thread.sleep(delay_ms);
+				}
+			} else if (initMethod.contains("y")) {
+				iterations *= 1_000;
+				tpb = new long[iterations];
+				// Pulse end time (ns)
+				tpe = new long[iterations];
+				for (int i = 0; i < iterations; i++) {
+					tpb[i] = System.nanoTime();
+					dod.setValue(true);
+					dod.setValue(false);
+					tpe[i] = System.nanoTime();
+				}
+			} else {
+				for (int i = 0; i < iterations; i++) {
+					tpb[i] = System.nanoTime();
+					dod.on();
+					dod.off();
+					tpe[i] = System.nanoTime();
+
+					Thread.sleep(delay_ms);
+				}
 			}
 
-			float avg = 0;
+			System.out.println("Pulse widths (nanoseconds):");
+			float avg_us = 0;
 			for (int i = 0; i < tpe.length; i++) {
-				long pw_us = (tpe[i] - tpb[i]) / 1_000;
-				if (i < 20) {
-					System.out.println("Pulse " + (1 + i) + " width (microseconds) = " + pw_us);
+				long pw_us = tpe[i] - tpb[i];
+				if (i < 100) {
+					System.out.println(pw_us);
 				}
-				avg += (pw_us - avg) / (i + 1);
+				avg_us += (pw_us - avg_us) / (i + 1);
+				if ((i + 1) % 500 == 0) {
+					System.out.format("%.2f%n", Float.valueOf(avg_us));
+				}
 			}
-			System.out.format("Average pulse width: %.2f microseconds%n", Float.valueOf(avg));
+			System.out.format("Average pulse width: %,.2f nanoseconds%n", Float.valueOf(avg_us));
 
-			avg = 0;
+			System.out.println("Delay between pulses (microseconds):");
+			avg_us = 0;
 			for (int i = 0; i < tpb.length - 1; i++) {
-				long between_ms = (tpb[i + 1] - tpb[i]) / 1_000_000;
+				long between_us = (tpb[i + 1] - tpb[i]) / 1_000;
 				if (i < 20) {
-					System.out.println("Between pulses " + i + " and " + (i + 1) + " (milliseconds) = " + between_ms);
+					System.out.println(between_us);
 				}
-				avg += (between_ms - avg) / (i + 1);
+				avg_us += (between_us - avg_us) / (i + 1);
 			}
-			System.out.format("Average between pulses: %.2f milliseconds%n", Float.valueOf(avg));
+			System.out.format("Average between pulses: %,.2f microseconds%n", Float.valueOf(avg_us));
 		}
 	}
 }

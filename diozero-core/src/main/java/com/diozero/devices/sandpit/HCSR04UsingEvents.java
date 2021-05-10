@@ -123,12 +123,12 @@ public class HCSR04UsingEvents implements DistanceSensorInterface, DeviceEventCo
 		// Acquire the lock prior to the timing critical code
 		lock.lock();
 		
-		trigger.setValueUnsafe(true);
+		trigger.setValue(true);
 		// trigger_on_time_ns is used for debugging only
 		// long trigger_on_time_ns = System.nanoTime();
 		// Wait for min 10 us (10,000ns)
 		SleepUtil.busySleep(PULSE_NS);
-		trigger.setValueUnsafe(false);
+		trigger.setValue(false);
 		
 		// Timing critical code starts
 		// trigger_off_time_ns is used for debugging only

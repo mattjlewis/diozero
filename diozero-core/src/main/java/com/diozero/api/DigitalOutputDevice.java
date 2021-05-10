@@ -3,7 +3,7 @@
  * Organisation: diozero
  * Project:      Device I/O Zero - Core
  * Filename:     DigitalOutputDevice.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -15,10 +15,10 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -189,14 +189,14 @@ public class DigitalOutputDevice extends GpioDevice implements OutputDeviceInter
 	}
 
 	private void onOff(int onTimeMs, int offTimeMs) throws RuntimeIOException {
-		setValueUnsafe(activeHigh);
+		setValue(activeHigh);
 		try {
 			Thread.sleep(onTimeMs);
 		} catch (InterruptedException e) {
 			running.set(false);
 		}
 
-		setValueUnsafe(!activeHigh);
+		setValue(!activeHigh);
 		cycleCount++;
 
 		if (!running.get()) {
@@ -210,7 +210,7 @@ public class DigitalOutputDevice extends GpioDevice implements OutputDeviceInter
 		}
 	}
 
-	private void stopOnOffLoop() {
+	public void stopOnOffLoop() {
 		running.set(false);
 		if (future != null) {
 			future.cancel(true);
@@ -226,23 +226,23 @@ public class DigitalOutputDevice extends GpioDevice implements OutputDeviceInter
 	// Exposed operations
 
 	/**
-	 * Turn on the device.
+	 * Turn on the device compensating for active low/high logic levels. Note that
+	 * this method does not check if the on-off loop is running.
 	 *
 	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
 	public void on() throws RuntimeIOException {
-		stopOnOffLoop();
-		setValueUnsafe(activeHigh);
+		setValue(activeHigh);
 	}
 
 	/**
-	 * Turn off the device.
+	 * Turn off the device compensating for active low/high logic levels. Note that
+	 * this method does not check if the on-off loop is running.
 	 *
 	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
 	public void off() throws RuntimeIOException {
-		stopOnOffLoop();
-		setValueUnsafe(!activeHigh);
+		setValue(!activeHigh);
 	}
 
 	/**
@@ -251,8 +251,7 @@ public class DigitalOutputDevice extends GpioDevice implements OutputDeviceInter
 	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
 	public void toggle() throws RuntimeIOException {
-		stopOnOffLoop();
-		setValueUnsafe(!delegate.getValue());
+		setValue(!delegate.getValue());
 	}
 
 	/**
@@ -272,18 +271,17 @@ public class DigitalOutputDevice extends GpioDevice implements OutputDeviceInter
 	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
 	public void setOn(boolean on) throws RuntimeIOException {
-		stopOnOffLoop();
-		setValueUnsafe(activeHigh & on);
+		setValue(activeHigh & on);
 	}
 
 	/**
-	 * Unsafe operation that has no synchronisation checks and doesn't compensate
-	 * for active low logic. Included primarily for performance tests.
+	 * Set the device output value without compensating for active low/high logic
+	 * levels. Note that this method does not check if the on-off loop is running.
 	 *
 	 * @param value The new value
 	 * @throws RuntimeIOException If an I/O error occurs
 	 */
-	public void setValueUnsafe(boolean value) throws RuntimeIOException {
+	public void setValue(boolean value) throws RuntimeIOException {
 		delegate.setValue(value);
 	}
 
@@ -295,7 +293,7 @@ public class DigitalOutputDevice extends GpioDevice implements OutputDeviceInter
 	 */
 	@Override
 	public void setValue(float value) {
-		setValueUnsafe(value != 0);
+		setValue(value != 0);
 	}
 
 	/**
@@ -320,6 +318,10 @@ public class DigitalOutputDevice extends GpioDevice implements OutputDeviceInter
 		} else {
 			onOffLoop(on_ms, off_ms, n, stopAction);
 		}
+	}
+
+	public boolean isActiveHigh() {
+		return activeHigh;
 	}
 
 	public int getCycleCount() {

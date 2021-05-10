@@ -5,7 +5,7 @@ package com.diozero.sampleapps;
  * Organisation: diozero
  * Project:      Device I/O Zero - Sample applications
  * Filename:     SSD1331Test.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.sampleapps;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -38,7 +38,7 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import javax.imageio.ImageIO;
 
@@ -111,7 +111,7 @@ public class SSD1331Test {
 		int height = oled.getHeight();
 		BufferedImage image = new BufferedImage(width, height, oled.getNativeImageType());
 		Graphics2D g2d = image.createGraphics();
-		Random random = new Random();
+		final ThreadLocalRandom random = ThreadLocalRandom.current();
 
 		Color[] colours = { Color.WHITE, Color.BLUE, Color.CYAN, Color.DARK_GRAY, Color.GRAY, Color.LIGHT_GRAY,
 				Color.MAGENTA, Color.ORANGE, Color.PINK, Color.RED, Color.YELLOW };
@@ -229,7 +229,7 @@ public class SSD1331Test {
 		Logger.info("Sierpinski triangle");
 		int width = oled.getWidth();
 		int height = oled.getHeight();
-		final Random random = new Random();
+		final ThreadLocalRandom random = ThreadLocalRandom.current();
 		oled.clear();
 
 		final Point[] corners = { new Point(width / 2, 0), new Point(0, height - 1), new Point(width - 1, height - 1) };
