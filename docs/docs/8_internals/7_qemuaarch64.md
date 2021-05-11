@@ -6,7 +6,7 @@ permalink: /internals/qemuaarch64.html
 
 # Building a Debian Buster QEMU image for AARCH64
 
-Based on this article on [https://blahcat.github.io/2018/01/07/building-a-debian-stretch-qemu-image-for-aarch64/](building a Debian Stretch QEMU image for AARCH64).
+Based on this article on [building a Debian Stretch QEMU image for AARCH64](https://blahcat.github.io/2018/01/07/building-a-debian-stretch-qemu-image-for-aarch64/).
 
 Get base files (Debian Buster network installer image):
 
@@ -58,12 +58,10 @@ qemu-system-aarch64 -smp 2 -M virt -cpu cortex-a57 -m 1G \
   -initrd initrd.img-4.19.0-16-arm64 \
   -kernel vmlinuz-4.19.0-16-arm64 \
   -append "root=/dev/sda2 console=ttyAMA0" \
-  -global virtio-blk-device.scsi=off \
   -device virtio-scsi-device,id=scsi \
   -drive file=disk.qcow2,id=rootimg,cache=unsafe,if=none \
   -device scsi-hd,drive=rootimg \
   -device e1000,netdev=net0 \
-  -net nic \
   -netdev user,hostfwd=tcp:127.0.0.1:2222-:22,id=net0 \
   -nographic
 ```
@@ -75,10 +73,9 @@ qemu-system-aarch64 -smp 8 -M virt -cpu cortex-a57 -m 4G \
   -initrd initrd.img-4.19.0-16-arm64 \
   -kernel vmlinuz-4.19.0-16-arm64 \
   -append "root=/dev/sda2 console=ttyAMA0" \
-  -global virtio-blk-device.scsi=off \
-  -device virtio-scsi-device,id=scsi \
-  -drive file=disk.qcow2,id=rootimg,cache=unsafe,if=none \
-  -device scsi-hd,drive=rootimg \
+  -device virtio-scsi-device \
+  -blockdev qcow2,node-name=hd0,file.driver=file,file.filename=disk.qcow2 \
+  -device scsi-hd,drive=hd0 \
   -netdev user,id=unet -device virtio-net-device,netdev=unet \
   -nographic
 ```
@@ -86,16 +83,17 @@ qemu-system-aarch64 -smp 8 -M virt -cpu cortex-a57 -m 4G \
 Login and setup sudo:
 
 ```shell
-apt update
-apt upgrade
-apt install sudo
-usermod -aG sudo matt
+sudo apt update && sudo apt -y upgrade
+sudo apt -y install sudo
+sudo echo "%sudo ALL=(ALL:ALL) NOPASSWD: ALL" > /etc/sudoers.d/01_sudo-nopassword
+sudo usermod -aG sudo matt
 ```
 
-Install some basic utilities:
+Install some basic utilities and disable the graphical desktop:
 
 ```shell
 sudo apt -y install curl gcc make unzip zip vim git zlibc build-essential libz-dev zlib1g-dev
+sudo systemctl set-default multi-user.target  
 ```
 
 ## Java
