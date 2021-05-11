@@ -77,10 +77,9 @@ qemu-system-aarch64 -smp 8 -M virt -cpu cortex-a57 -m 4G \
   -append "root=/dev/sda2 console=ttyAMA0" \
   -global virtio-blk-device.scsi=off \
   -device virtio-scsi-device,id=scsi \
-  -drive file=disk2.qcow2,id=rootimg,cache=unsafe,if=none \
+  -drive file=disk.qcow2,id=rootimg,cache=unsafe,if=none \
   -device scsi-hd,drive=rootimg \
   -netdev user,id=unet -device virtio-net-device,netdev=unet \
-  -net user \
   -nographic
 ```
 
