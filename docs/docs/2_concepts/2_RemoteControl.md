@@ -27,6 +27,7 @@ Arduino is connected. This can be set either via the command line (e.g. `-DFIRMA
 or as an environment variable (command line takes precedence).
 
 Example command line:
+
 ```shell
 java -cp diozero-sampleapps-{{site.version}}.jar:diozero-provider-firmata4j-{{site.version}}.jar com.diozero.sampleapps.LEDTest -DFIRMATA_PORT=COM5 12
 ```
@@ -42,6 +43,7 @@ Make sure you set the properties `PARTICLE_DEVICE_ID` and `PARTICLE_TOKEN` corre
 command line or as environment variables).
 
 Example command line:
+
 ```shell
 java -cp diozero-sampleapps-{{site.version}}.jar:diozero-provider-voodoospark-{{site.version}}.jar -DPARTICLE_DEVICE_ID=abc -DPARTICLE_TOKEN=xyz com.diozero.sampleapps.LEDTest 12
 ```
@@ -57,24 +59,28 @@ Before doing this you must be aware of the security implications, only consider 
 network that has no inbound connectivity from the Internet.
 
 On Raspbian Jessie and later you can enable the pigpiod daemon to run as a system service:
+
 ```shell
 sudo systemctl enable pigpiod.service
 ```
 
 This will start pigpiod every time the Pi boots. To remove the `-l` option which is included by
-default, edit `/lib/systemd/system/pigpiod.service` and change the `ExecStart` property, i.e.
+default, edit `/etc/systemd/system/pigpiod.service.d/public.conf` and change the `ExecStart` property, i.e.
+
 ```
 ExecStart=/usr/bin/pigpiod
 ```
 
-Alternatively, run the `raspi-config` application and choose "3 Interface Options", "P8 Remote GPIO"
-and select "Yes".
+If the file doesn't exist, run the `raspi-config` application and choose "3 Interface Options",
+"P8 Remote GPIO" and select "Yes". This will make the appropriate changes and create that file if
+it didn't already exist.
 
 Make sure you set the property `PIGPIOD_HOST` to the hostname of your Raspberry Pi.
 You can also override the default pigpiod port value (8888) via the property `PIGPIOD_PORT`.
 Again these properties can be set either via command line or as environment variables.
 
 Example command line:
+
 ```shell
 java -cp diozero-sampleapps-{{site.version}}.jar:diozero-provider-pigpio-{{site.version}}.jar -DPIGPIOD_HOST=raspberrypi com.diozero.sampleapps.LEDTest 12
 ```
