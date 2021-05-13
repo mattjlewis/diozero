@@ -5,7 +5,7 @@ package com.diozero.internal.board.allwinner;
  * Organisation: diozero
  * Project:      Device I/O Zero - Core
  * Filename:     AllwinnerSun8iBoardInfoProvider.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.internal.board.allwinner;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -38,8 +38,9 @@ import com.diozero.sbc.BoardInfo;
 import com.diozero.sbc.LocalSystemInfo;
 
 public class AllwinnerSun8iBoardInfoProvider implements BoardInfoProvider {
+	// E.g. CONFIG_ORANGEPI_H3, CONFIG_ORANGEPI_ZEROPLUS2_H3
 	public static final String MAKE = "Allwinner sun8i";
-	
+
 	@Override
 	public BoardInfo lookup(LocalSystemInfo sysInfo) {
 		if (sysInfo.getHardware() != null && sysInfo.getHardware().startsWith(MAKE)) {
