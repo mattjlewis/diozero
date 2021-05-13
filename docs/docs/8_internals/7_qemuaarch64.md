@@ -27,12 +27,10 @@ Install Debian:
 qemu-system-aarch64 -smp 2 -M virt -cpu cortex-a57 -m 1G \
     -initrd initrd.gz -kernel linux \
     -append "root=/dev/ram console=ttyAMA0" \
-    -global virtio-blk-device.scsi=off \
-    -device virtio-scsi-device,id=scsi \
-    -drive file=disk.qcow2,id=rootimg,cache=unsafe,if=none \
-    -device scsi-hd,drive=rootimg \
+    -device virtio-scsi-device \
+    -blockdev qcow2,node-name=hd0,file.driver=file,file.filename=disk.qcow2 \
+    -device scsi-hd,drive=hd0 \
     -netdev user,id=unet -device virtio-net-device,netdev=unet \
-    -net user \
     -nographic
 ```
 
@@ -58,15 +56,14 @@ qemu-system-aarch64 -smp 2 -M virt -cpu cortex-a57 -m 1G \
   -initrd initrd.img-4.19.0-16-arm64 \
   -kernel vmlinuz-4.19.0-16-arm64 \
   -append "root=/dev/sda2 console=ttyAMA0" \
-  -device virtio-scsi-device,id=scsi \
-  -drive file=disk.qcow2,id=rootimg,cache=unsafe,if=none \
-  -device scsi-hd,drive=rootimg \
-  -device e1000,netdev=net0 \
-  -netdev user,hostfwd=tcp:127.0.0.1:2222-:22,id=net0 \
+  -device virtio-scsi-device \
+  -blockdev qcow2,node-name=hd0,file.driver=file,file.filename=disk.qcow2 \
+  -device scsi-hd,drive=hd0 \
+  -netdev user,id=unet -device virtio-net-device,netdev=unet \
   -nographic
 ```
 
-With networking (plus 8 cores and 4GB RAM):
+With additional resources allocated (8 cores and 4GB RAM):
 
 ```shell
 qemu-system-aarch64 -smp 8 -M virt -cpu cortex-a57 -m 4G \
