@@ -2,9 +2,9 @@ name: Maven CI Build
 
 on:
   push:
-    branches: [ $default-branch ]
+    branches: [ main ]
   pull_request:
-    branches: [ $default-branch ]
+    branches: [ main ]
   workflow_dispatch:
 
 jobs:
@@ -19,4 +19,4 @@ jobs:
         java-version: '11'
         distribution: 'adopt'
     - name: Build with Maven
-      run: mvn -B -U clean compile package verify install
+      run: mvn -B clean compile package verify install
