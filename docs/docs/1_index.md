@@ -3,6 +3,9 @@ title: diozero
 nav_order: 1
 permalink: /
 has_toc: true
+redirect_from:
+  - /en/latest/index.html
+  - /en/stable/index.html
 ---
 
 # diozero

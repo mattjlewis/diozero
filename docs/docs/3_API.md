@@ -3,6 +3,9 @@ title: API
 nav_order: 3
 permalink: /api.html
 has_children: true
+redirect_from:
+  - /en/latest/API/index.html
+  - /en/stable/API/index.html
 ---
 
 # API

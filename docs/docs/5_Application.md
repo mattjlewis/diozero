@@ -2,6 +2,9 @@
 title: Creating Your Own Application
 nav_order: 5
 permalink: /application.html
+redirect_from:
+  - /en/latest/Application/index.html
+  - /en/stable/Application/index.html
 ---
 
 # Creating Your Own Application
