@@ -2,6 +2,9 @@
 parent: Devices
 nav_order: 5
 permalink: /devices/sensors.html
+redirect_from:
+  - /en/latest/SensorComponents/index.html
+  - /en/stable/SensorComponents/index.html
 ---
 
 # Sensors

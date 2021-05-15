@@ -3,6 +3,9 @@ parent: Internals
 nav_order: 5
 permalink: /internals/bbbsetup.html
 has_toc: true
+redirect_from:
+  - /en/latest/BeagleBoneBlackSetup/index.html
+  - /en/stable/BeagleBoneBlackSetup/index.html
 ---
 
 # BeagleBone Green and Black Setup

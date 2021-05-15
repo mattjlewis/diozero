@@ -3,6 +3,11 @@ title: GPIO
 parent: API
 nav_order: 1
 permalink: /api/gpio.html
+redirect_from:
+  - /en/latest/InputDevices/index.html
+  - /en/stable/InputDevices/index.html
+  - /en/latest/OutputDevices/index.html
+  - /en/stable/OutputDevices/index.html
 ---
 
 # General Purpose Input / Output (GPIO)

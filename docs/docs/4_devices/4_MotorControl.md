@@ -2,6 +2,9 @@
 parent: Devices
 nav_order: 4
 permalink: /devices/motorcontrol.html
+redirect_from:
+  - /en/latest/MotorControl/index.html
+  - /en/stable/MotorControl/index.html
 ---
 
 # Motor Control

@@ -3,6 +3,9 @@ parent: Concepts
 nav_order: 1
 permalink: /concepts/providers.html
 title: Device Factories & Providers
+redirect_from:
+  - /en/latest/Providers/index.html
+  - /en/stable/Providers/index.html
 ---
 
 # Device Factories & Providers

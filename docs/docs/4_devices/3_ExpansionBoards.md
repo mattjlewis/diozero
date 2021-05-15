@@ -2,6 +2,9 @@
 parent: Devices
 nav_order: 3
 permalink: /devices/expansionboards.html
+redirect_from:
+  - /en/latest/ExpansionBoards/index.html
+  - /en/stable/ExpansionBoards/index.html
 ---
 
 # Expansion Boards

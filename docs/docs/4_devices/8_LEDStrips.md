@@ -2,6 +2,9 @@
 parent: Devices
 nav_order: 8
 permalink: /devices/ledstrips.html
+redirect_from:
+  - /en/latest/LEDStrips/index.html
+  - /en/stable/LEDStrips/index.html
 ---
 
 # LED Strips

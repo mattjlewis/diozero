@@ -2,6 +2,9 @@
 parent: Devices
 nav_order: 6
 permalink: /devices/lcds.html
+redirect_from:
+  - /en/latest/LCDDisplays/index.html
+  - /en/stable/LCDDisplays/index.html
 ---
 
 # LCDs

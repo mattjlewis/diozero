@@ -2,6 +2,9 @@
 parent: Devices
 nav_order: 9
 permalink: /devices/imudevices.html
+redirect_from:
+  - /en/latest/IMUDevices/index.html
+  - /en/stable/IMUDevices/index.html
 ---
 
 # IMU Devices

@@ -3,6 +3,9 @@ parent: Concepts
 nav_order: 2
 permalink: /concepts/remotecontrol.html
 Title: Remote Control
+redirect_from:
+  - /en/latest/RemoteControl/index.html
+  - /en/stable/RemoteControl/index.html
 ---
 
 # Remote Control
