@@ -1,5 +1,5 @@
 ---
-permalink: /en/stable/BeagleBoneBlackSetup.html
+permalink: /en/latest/BeagleBoneBlackSetup/index.html
 nav_exclude: true
 ---
 <!DOCTYPE html>

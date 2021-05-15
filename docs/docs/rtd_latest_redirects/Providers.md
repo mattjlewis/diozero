@@ -1,5 +1,5 @@
 ---
-permalink: /en/latest/Providers.html
+permalink: /en/latest/Providers/index.html
 nav_exclude: true
 ---
 <!DOCTYPE html>

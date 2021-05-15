@@ -1,5 +1,5 @@
 ---
-permalink: /en/latest/Application.html
+permalink: /en/latest/Application/index.html
 nav_exclude: true
 ---
 <!DOCTYPE html>

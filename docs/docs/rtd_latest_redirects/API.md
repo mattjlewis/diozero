@@ -1,5 +1,5 @@
 ---
-permalink: /en/stable/API.html
+permalink: /en/latest/API/index.html
 nav_exclude: true
 ---
 <!DOCTYPE html>
