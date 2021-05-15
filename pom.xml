@@ -1,66 +1,73 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<!--
-	Useful Maven commands:
-	To exclude specific submodules (in particular those with unresolvable dependencies such as JDK Device I/O) use the -pl '!submodule-a' option, e.g.:
-		mvn -pl '!diozero-provider-jdkdio10,!diozero-provider-jdkdio11,!diozero-imu-visualiser' package
-	Skip tests:
-		-Dmaven.test.skip=true
-		-DskipTests
-	General lifecycle:
-		mvn package
-		mvn install
-		mvn deploy
-	Show updates to versions:
-		mvn versions:display-plugin-updates
-		mvn versions:display-property-updates
-		mvn versions:display-dependency-updates
-	Updates properties to latest versions:
-		mvn versions:update-properties
-	Dependency analysis:
-		mvn dependency:analyze
-		mvn dependency:tree
-	Set new project version:
-		mvn versions:set -DnewVersion=0.5-SNAPSHOT
-		mvn versions:commit
-	Licence stuff:
-		mvn license:update-project-license
-		mvn license:update-file-header
-	Push to repository:
-		mvn deploy
-		mvn deploy -P release
-		(go to https://oss.sonatype.org/#nexus-search;gav~com.diozero~diozero-core~~~~kw,versionexpand
-		then Staging Repositories close and release)
-	Release (can't get this to work correctly, messes up version numbers by deploying with the old snapshot version):
-		mvn release:prepare -DignoreSnapshots=true
-		mvn release:rollback & mvn release:clean 
-		mvn release:perform
-	Current release process (see http://central.sonatype.org/pages/apache-maven.html):
-		Update version:
-			mvn versions:set -DnewVersion=xxx
-			mvn versions:commit
-		Check-in pom.xml files modified by mvn versions.
-		Build and push:
-			mvn deploy -P release
-		Add tag:
-			mvn scm:tag diozero-xxx
-		Alternatively:
-			git tag -a diozero-xxx
-			git push origin - -tags
-		To delete a local and remote tag:
-			git tag -d <tag>
-			git push origin :refs/tags/<tag>
-		Update version to next SNAPSHOT version:
-			mvn versions:set -DnewVersion=yyy-SNAPSHOT
-			mvn versions:commit
-	-->
+	 | Useful Maven commands:
+	 | To exclude specific submodules (in particular those with unresolvable dependencies such as JDK Device I/O) use the -pl '!submodule-a' option, e.g.:
+	 |   mvn -pl '!diozero-provider-jdkdio10,!diozero-provider-jdkdio11,!diozero-imu-visualiser' package
+	 | Skip tests:
+	 |   -Dmaven.test.skip=true
+	 |   -DskipTests
+	 | General lifecycle:
+	 |   mvn package
+	 |   mvn install
+	 |   mvn deploy
+	 | Show updates to versions:
+	 |   mvn versions:display-plugin-updates
+	 |   mvn versions:display-property-updates
+	 |   mvn versions:display-dependency-updates
+	 | Updates properties to latest versions:
+	 |   mvn versions:update-properties
+	 | Dependency analysis:
+	 |   mvn dependency:analyze
+	 |   mvn dependency:tree
+	 | Set new project version:
+	 |   mvn versions:set -DnewVersion=0.5-SNAPSHOT
+	 |   mvn versions:commit
+	 | Licence stuff:
+	 |   mvn license:update-project-license
+	 |   mvn license:update-file-header
+	 | Push to repository:
+	 |   mvn deploy
+	 |   mvn deploy -P release
+	 |  (go to https://oss.sonatype.org/#nexus-search;gav~com.diozero~diozero-core~~~~kw,versionexpand
+	 |  then Staging Repositories close and release)
+	 | Release (can't get this to work correctly, messes up version numbers by deploying with the old snapshot version):
+	 |   mvn release:prepare -DignoreSnapshots=true
+	 |   mvn release:rollback & mvn release:clean 
+	 |   mvn release:perform
+	 | Current release process (see http://central.sonatype.org/pages/apache-maven.html):
+	 |   Update version:
+	 |     mvn versions:set -DnewVersion=xxx
+	 |     mvn versions:commit
+	 |   Check-in pom.xml files modified by mvn versions.
+	 |   Build and push:
+	 |     mvn deploy -P release
+	 |   Add tag:
+	 |     mvn scm:tag diozero-xxx
+	 |   Alternatively:
+	 |     git tag -a diozero-xxx
+	 |     git push origin - -tags
+	 |   To delete a local and remote tag:
+	 |     git tag -d <tag>
+	 |     git push origin :refs/tags/<tag>
+	 |   Update version to next SNAPSHOT version:
+	 |     mvn versions:set -DnewVersion=yyy-SNAPSHOT
+	 |     mvn versions:commit
+	 |-->
 
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.diozero</groupId>
+	<parent>
+		<groupId>com.diozero</groupId>
+		<artifactId>diozero-bom</artifactId>
+		<version>1.2.2</version>
+		<relativePath>diozero-bom/pom.xml</relativePath>
+	</parent>
+
 	<artifactId>diozero</artifactId>
-	<version>1.2.2</version>
 	<name>Device I/O Zero</name>
 	<description>Java Device I/O library with an API based on the Python GPIO Zero supporting portable across Single Board Computers (including Raspberry Pi, BeagleBone Black, Odroid C2, CHIP, Asus Tinker Board)</description>
 	<url>http://www.diozero.com/</url>
@@ -140,133 +147,12 @@
 		<module>diozero-ws281x-java</module>
 		<module>diozero-sampleapps</module>
 		<module>distribution</module>
-  </modules>
+	</modules>
 
 	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-
 		<project.scm.id>github</project.scm.id>
 		<github.global.server>github</github.global.server>
-
-		<maven.min-version>3.3.0</maven.min-version>
-
-		<diozero.version>1.2.2</diozero.version>
-
-		<!-- Java version -->
-		<maven.compiler.source>11</maven.compiler.source>
-		<maven.compiler.release>8</maven.compiler.release>
-
-		<!-- Maven plugins -->
-		<maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
-		<maven-checkstyle-plugin.version>3.1.2</maven-checkstyle-plugin.version>
-		<maven-assembly-plugin.version>3.3.0</maven-assembly-plugin.version>
-		<maven-javadoc-plugin.version>3.2.0</maven-javadoc-plugin.version>
-		<maven-jar-plugin.version>3.2.0</maven-jar-plugin.version>
-		<maven-shade-plugin.version>3.2.4</maven-shade-plugin.version>
-		<maven-source-plugin.version>3.2.1</maven-source-plugin.version>
-		<maven-install-plugin.version>2.5.2</maven-install-plugin.version>
-		<maven-deploy-plugin.version>2.8.2</maven-deploy-plugin.version>
-		<maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
-		<maven-release-plugin.version>2.5.3</maven-release-plugin.version>
-		<maven-site-plugin.version>3.9.1</maven-site-plugin.version>
-		<maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
-
-		<!-- Other plugins -->
-		<nexus-staging-maven-plugin.version>1.6.8</nexus-staging-maven-plugin.version>
-		<build-helper-maven-plugin.version>3.2.0</build-helper-maven-plugin.version>
-		<license-maven-plugin.version>2.0.0</license-maven-plugin.version>
-		<native-maven-plugin.version>1.0-alpha-11</native-maven-plugin.version>
-		<versions-maven-plugin.version>2.8.1</versions-maven-plugin.version>
-		<findbugs-maven-plugin.version>3.0.5</findbugs-maven-plugin.version>
-		<eclipse.m2e.lifecycle-mapping.version>1.0.0</eclipse.m2e.lifecycle-mapping.version>
-
-		<!-- Libraries -->
-		<tinylog.version>2.3.1</tinylog.version>
-		<commons-math3.version>3.6.1</commons-math3.version>
-		<eclipse-paho-client-mqttv3.version>1.2.5</eclipse-paho-client-mqttv3.version>
-		<google-gson.version>2.8.6</google-gson.version>
-		<google-protobuf-java.version>3.16.0</google-protobuf-java.version>
-		<netty.version>4.1.63.Final</netty.version>
-		<grpc.version>1.37.0</grpc.version>
-		<junit.version>5.7.1</junit.version>
 	</properties>
-
-	<dependencyManagement>
-		<dependencies>
-			<!-- Libraries -->
-			<dependency>
-				<groupId>org.tinylog</groupId>
-				<artifactId>tinylog-api</artifactId>
-				<version>${tinylog.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.tinylog</groupId>
-				<artifactId>tinylog-impl</artifactId>
-				<version>${tinylog.version}</version>
-				<exclusions>
-					<exclusion>
-						<groupId>org.codehaus.mojo</groupId>
-						<artifactId>animal-sniffer-annotations</artifactId>
-					</exclusion>
-				</exclusions>
-			</dependency>
-			<dependency>
-				<groupId>com.diozero</groupId>
-				<artifactId>diozero-core</artifactId>
-				<version>${diozero.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.commons</groupId>
-				<artifactId>commons-math3</artifactId>
-				<version>${commons-math3.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.eclipse.paho</groupId>
-				<artifactId>org.eclipse.paho.client.mqttv3</artifactId>
-				<version>${eclipse-paho-client-mqttv3.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.google.code.gson</groupId>
-				<artifactId>gson</artifactId>
-				<version>${google-gson.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.google.protobuf</groupId>
-				<artifactId>protobuf-java</artifactId>
-				<version>${google-protobuf-java.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.netty</groupId>
-				<artifactId>netty-all</artifactId>
-				<version>${netty.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.junit</groupId>
-				<artifactId>junit-bom</artifactId>
-				<version>${junit.version}</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
-
-	<!-- Core dependencies common to all projects -->
-	<dependencies>
-		<dependency>
-			<groupId>org.tinylog</groupId>
-			<artifactId>tinylog-api</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.tinylog</groupId>
-			<artifactId>tinylog-impl</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.junit.jupiter</groupId>
-			<artifactId>junit-jupiter</artifactId>
-			<scope>test</scope>
-		</dependency>
-	</dependencies>
 
 	<build>
 		<pluginManagement>
@@ -275,15 +161,6 @@
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
 					<version>${maven-compiler-plugin.version}</version>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-checkstyle-plugin</artifactId>
-					<version>${maven-checkstyle-plugin.version}</version>
-					<configuration>
-						<consoleOutput>true</consoleOutput>
-						<configLocation>${project.parent.basedir}/configuration/checkstyle.xml</configLocation>
-					</configuration>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -317,11 +194,6 @@
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-site-plugin</artifactId>
-					<version>${maven-site-plugin.version}</version>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-gpg-plugin</artifactId>
 					<version>${maven-gpg-plugin.version}</version>
 				</plugin>
@@ -349,31 +221,13 @@
 				</plugin>
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
-					<artifactId>build-helper-maven-plugin</artifactId>
-					<version>${build-helper-maven-plugin.version}</version>
-				</plugin>
-				<plugin>
-					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>license-maven-plugin</artifactId>
 					<version>${license-maven-plugin.version}</version>
 				</plugin>
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
-					<artifactId>native-maven-plugin</artifactId>
-					<version>${native-maven-plugin.version}</version>
-				</plugin>
-				<plugin>
-					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>versions-maven-plugin</artifactId>
 					<version>${versions-maven-plugin.version}</version>
-				</plugin>
-				<plugin>
-					<groupId>org.codehaus.mojo</groupId>
-					<artifactId>findbugs-maven-plugin</artifactId>
-					<version>${findbugs-maven-plugin.version}</version>
-					<configuration>
-						<excludeFilterFile>${project.parent.basedir}/configuration/findbugs.xml</excludeFilterFile>
-					</configuration>
 				</plugin>
 			</plugins>
 		</pluginManagement>
@@ -405,39 +259,12 @@
 				</configuration>
 			</plugin>
 			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>build-helper-maven-plugin</artifactId>
-				<executions>
-					<execution>
-						<goals>
-							<goal>parse-version</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<configuration>
 					<descriptors>
 						<descriptor>${project.basedir}/src/assembly/bin.xml</descriptor>
 					</descriptors>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-site-plugin</artifactId>
-				<dependencies>
-					<dependency>
-						<groupId>org.apache.maven.doxia</groupId>
-						<artifactId>doxia-module-markdown</artifactId>
-						<version>1.9.1</version>
-					</dependency>
-				</dependencies>
-				<configuration>
-					<generateProjectInfo>true</generateProjectInfo>
-					<generateReports>true</generateReports>
-					<generateSitemap>true</generateSitemap>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -466,8 +293,8 @@
 	<profiles>
 		<profile>
 			<id>m2e</id>
-			<!-- This profile is only active when the property "m2e.version"
-			is set, which is the case when building in Eclipse with m2e. -->
+			<!-- This profile is only active when the property "m2e.version" is set, 
+				which is the case when building in Eclipse with m2e. -->
 			<activation>
 				<property>
 					<name>m2e.version</name>
@@ -476,7 +303,8 @@
 			<build>
 				<pluginManagement>
 					<plugins>
-						<!-- Fix for the Eclipse "execution not covered by lifecycle configuration" warning -->
+						<!-- Fix for the Eclipse "execution not covered by lifecycle configuration" 
+							warning -->
 						<plugin>
 							<groupId>org.eclipse.m2e</groupId>
 							<artifactId>lifecycle-mapping</artifactId>
@@ -496,7 +324,7 @@
 												</goals>
 											</pluginExecutionFilter>
 											<action>
-												<ignore/>
+												<ignore />
 											</action>
 										</pluginExecution>
 									</pluginExecutions>

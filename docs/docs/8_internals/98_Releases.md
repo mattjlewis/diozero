@@ -176,6 +176,8 @@ redirect_from:
     + setOn/off no longer call stopOnOffLoop - it is now the caller's responsibility to do this
 + MmapIntBuffer.intBuffer is no longer volatile, need to validate with an oscilloscope
 + Use of ThreadLocalRandom rather than Random where possible
++ Added a call to start() when reopening a device factory
++ Added diozero-bom
 
 ## Future
 

@@ -5,7 +5,7 @@ package com.diozero.internal.provider.builtin.gpio;
  * Organisation: diozero
  * Project:      Device I/O Zero - Core
  * Filename:     GpioChip.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.internal.provider.builtin.gpio;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -252,7 +252,8 @@ public class GpioChip extends GpioChipInfo implements AutoCloseable, GpioLineEve
 
 	public void deregister(int fd) {
 		if (epollFd == EPOLL_FD_NOT_CREATED) {
-			throw new IllegalStateException("Attempt to register an epoll fd without epoll being initiated");
+			Logger.debug("Attempt to register an epoll fd without epoll being initiated");
+			return;
 		}
 
 		if (fdToListener.containsKey(Integer.valueOf(fd))) {

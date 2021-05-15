@@ -5,7 +5,7 @@ package com.diozero.internal;
  * Organisation: diozero
  * Project:      Device I/O Zero - Core
  * Filename:     CleanupTest.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.internal;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -41,6 +41,7 @@ import com.diozero.api.I2CDeviceInterface;
 import com.diozero.api.RuntimeIOException;
 import com.diozero.api.SpiClockMode;
 import com.diozero.api.SpiDeviceInterface;
+import com.diozero.devices.LED;
 import com.diozero.devices.McpAdc;
 import com.diozero.internal.provider.test.TestDeviceFactory;
 import com.diozero.internal.provider.test.TestI2CDevice;
@@ -58,7 +59,8 @@ public class CleanupTest {
 
 	@Test
 	public void test() {
-		try (TestDeviceFactory tdf = (TestDeviceFactory) DeviceFactoryHelper.getNativeDeviceFactory()) {
+		TestDeviceFactory tdf = (TestDeviceFactory) DeviceFactoryHelper.getNativeDeviceFactory();
+		try {
 			DeviceStates ds = tdf.getDeviceStates();
 			Assertions.assertTrue(ds.size() == 0);
 
@@ -87,6 +89,20 @@ public class CleanupTest {
 			}
 
 			Assertions.assertTrue(ds.size() == 0);
+		} finally {
+			DeviceFactoryHelper.shutdown();
+			Assertions.assertTrue(tdf.isShutdown());
+			Assertions.assertTrue(tdf.isClosed());
+			tdf.close();
+		}
+
+		try (LED led = new LED(10)) {
+			Assertions.assertTrue(tdf.isStarted());
+			Assertions.assertFalse(tdf.isShutdown());
+			Assertions.assertFalse(tdf.isClosed());
+
+			led.on();
+			Assertions.assertTrue(led.isOn());
 		}
 	}
 }

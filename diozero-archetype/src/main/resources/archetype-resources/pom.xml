@@ -3,28 +3,18 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
+	<parent>
+		<groupId>com.diozero</groupId>
+		<artifactId>diozero-bom</artifactId>
+		<version>1.2.2</version>
+	</parent>
+
 	<groupId>${groupId}</groupId>
 	<artifactId>${artifactId}</artifactId>
 	<version>${version}</version>
 	<name>${artifactId}</name>
 	<packaging>jar</packaging>
 
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		
-		<!-- Java version -->
-		<maven.compiler.source>8</maven.compiler.source>
-		<maven.compiler.release>8</maven.compiler.release>
-		
-		<!-- Plugin versions -->
-		<version.plugin.maven-compiler>3.8.1</version.plugin.maven-compiler>
-		
-		<!-- Library versions -->
-		<version.lib.diozero>1.2.2</version.lib.diozero>		
-		<version.lib.junit>5.7.1</version.lib.junit>
-	</properties>
-	
 	<repositories>
 		<repository>
 			<id>oss-snapshots-repo</id>
@@ -36,57 +26,10 @@
 		</repository>
 	</repositories>
 
-	<build>
-		<pluginManagement>
-			<plugins>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-compiler-plugin</artifactId>
-					<version>${version.plugin.maven-compiler}</version>
-				</plugin>
-			</plugins>
-		</pluginManagement>
-
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<debug>false</debug>
-					<optimize>true</optimize>
-					<showDeprecation>true</showDeprecation>
-					<showWarnings>true</showWarnings>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
-	
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>com.diozero</groupId>
-				<artifactId>diozero-core</artifactId>
-				<version>${version.lib.diozero}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.junit</groupId>
-				<artifactId>junit-bom</artifactId>
-				<version>${version.lib.junit}</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
-
 	<dependencies>
 		<dependency>
 			<groupId>com.diozero</groupId>
 			<artifactId>diozero-core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.junit.jupiter</groupId>
-			<artifactId>junit-jupiter</artifactId>
-			<scope>test</scope>
 		</dependency>
 	</dependencies>
 

@@ -75,6 +75,7 @@ public abstract class AbstractDeviceFactory implements DeviceFactoryInterface {
 	@Override
 	public void reopen() {
 		Logger.trace("reopen()");
+		start();
 		closed = false;
 	}
 
@@ -85,11 +86,13 @@ public abstract class AbstractDeviceFactory implements DeviceFactoryInterface {
 
 	@Override
 	public final void deviceOpened(InternalDeviceInterface device) {
+		Logger.trace("Device opened, key = {}", device.getKey());
 		deviceStates.opened(device);
 	}
 
 	@Override
 	public final void deviceClosed(InternalDeviceInterface device) {
+		Logger.trace("Device closed, key = {}", device.getKey());
 		deviceStates.closed(device);
 	}
 

@@ -5,7 +5,7 @@ package com.diozero.internal.provider.test;
  * Organisation: diozero
  * Project:      Device I/O Zero - Core
  * Filename:     TestDeviceFactory.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.internal.provider.test;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -60,6 +60,9 @@ public class TestDeviceFactory extends BaseNativeDeviceFactory {
 	private static Class<? extends InternalSpiDeviceInterface> spiDeviceClass;
 	private static Class<? extends InternalI2CDeviceInterface> i2cDeviceClass = TestI2CDevice.class;
 	private static Class<? extends InternalSerialDeviceInterface> serialDeviceClass;
+
+	private boolean started = false;
+	private boolean shutdown = false;
 
 	public TestDeviceFactory() {
 	}
@@ -110,8 +113,23 @@ public class TestDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
+	public void start() {
+		started = true;
+		shutdown = false;
+	}
+
+	public boolean isStarted() {
+		return started;
+	}
+
+	@Override
 	public void shutdown() {
-		// Ignore
+		shutdown = true;
+		started = false;
+	}
+
+	public boolean isShutdown() {
+		return shutdown;
 	}
 
 	@Override

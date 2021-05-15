@@ -1,4 +1,6 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
@@ -6,7 +8,7 @@
 		<artifactId>diozero</artifactId>
 		<version>1.2.2</version>
 	</parent>
-	
+
 	<name>Device I/O Zero - Core</name>
 	<artifactId>diozero-core</artifactId>
 	<packaging>jar</packaging>
@@ -28,21 +30,9 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
 					<compilerArgs>
-	                    <arg>-h</arg>
-	                    <arg>target/headers</arg>
-	                 </compilerArgs>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>native-maven-plugin</artifactId>
-				<extensions>true</extensions>
-				<configuration>
-					<javahClassNames>
-						<javahClassName>com.diozero.internal.provider.bbbiolib.BbbIoLibNative</javahClassName>
-					</javahClassNames>
-					<javahSearchJNIFromDependencies>false</javahSearchJNIFromDependencies>
-					<javahOutputDirectory>src/main/c</javahOutputDirectory>
+						<arg>-h</arg>
+						<arg>target/headers</arg>
+					</compilerArgs>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -58,7 +48,7 @@
 			</plugin>
 		</plugins>
 	</build>
-	
+
 	<reporting>
 		<plugins>
 			<plugin>
