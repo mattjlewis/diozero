@@ -2,6 +2,9 @@
 parent: Internals
 nav_order: 98
 permalink: /internals/releases.html
+redirect_from:
+  - /en/latest/RELEASE/index.html
+  - /en/stable/RELEASE/index.html
 ---
 
 # Releases

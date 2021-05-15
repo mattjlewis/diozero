@@ -29,6 +29,7 @@ group :jekyll_plugins do
 	gem "jekyll-relative-links"
 	gem "jekyll-target-blank"
 	gem "jekyll-titles-from-headings"
+	gem "jekyll-redirect-from"
 	gem "jemoji"
 	gem "github-pages"
 	gem "webrick"

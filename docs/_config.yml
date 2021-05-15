@@ -55,6 +55,7 @@ plugins:
   - jekyll-relative-links
   - jekyll-target-blank
   - jekyll-titles-from-headings
+  - jekyll-redirect-from
   - jemoji
   - github-pages
 
