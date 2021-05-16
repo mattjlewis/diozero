@@ -132,6 +132,7 @@
 	</distributionManagement>
 
 	<modules>
+		<module>diozero-bom</module>
 		<module>diozero-archetype</module>
 		<module>diozero-core</module>
 		<module>diozero-imu-devices</module>

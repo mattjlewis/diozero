@@ -19,8 +19,15 @@
 	<dependencies>
 		<dependency>
 			<groupId>com.diozero</groupId>
+			<artifactId>diozero-bom</artifactId>
+			<version>${diozero.version}</version>
+			<type>pom</type>
+		</dependency>
+		<dependency>
+			<groupId>com.diozero</groupId>
 			<artifactId>diozero-application</artifactId>
 			<version>${diozero.version}</version>
+			<type>maven-archetype</type>
 		</dependency>
 		<dependency>
 			<groupId>com.diozero</groupId>
