@@ -5,7 +5,7 @@ package com.diozero.internal.board.tinkerboard;
  * Organisation: diozero
  * Project:      Device I/O Zero - Core
  * Filename:     TinkerBoardMmapGpio.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.internal.board.tinkerboard;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -74,17 +74,42 @@ public class TinkerBoardMmapGpio implements MmapGpioInterface {
 	private static final int GRF_GPIO8A_IOMUX_INT_OFFSET = 0x0080 / 4;
 	private static final int GRF_GPIO8B_IOMUX_INT_OFFSET = 0x0084 / 4;
 
+	// Pull up/down offsets
 	private static final int PMU_GPIO0C_P_INT_OFFSET = 0x006c / 4;
+	private static final int GRF_GPIO1D_P_INT_OFFSET = 0x014c / 4;
+	private static final int GRF_GPIO2A_P_INT_OFFSET = 0x0150 / 4;
+	private static final int GRF_GPIO2B_P_INT_OFFSET = 0x0154 / 4;
+	private static final int GRF_GPIO2C_P_INT_OFFSET = 0x0158 / 4;
+	private static final int GRF_GPIO3A_P_INT_OFFSET = 0x0160 / 4;
+	private static final int GRF_GPIO3B_P_INT_OFFSET = 0x0164 / 4;
+	private static final int GRF_GPIO3C_P_INT_OFFSET = 0x0168 / 4;
+	private static final int GRF_GPIO3D_P_INT_OFFSET = 0x016c / 4;
+	private static final int GRF_GPIO4A_P_INT_OFFSET = 0x0170 / 4;
+	private static final int GRF_GPIO4B_P_INT_OFFSET = 0x0174 / 4;
+	private static final int GRF_GPIO4C_P_INT_OFFSET = 0x0178 / 4;
+	private static final int GRF_GPIO4D_P_INT_OFFSET = 0x017c / 4;
 	private static final int GRF_GPIO5B_P_INT_OFFSET = 0x0184 / 4;
 	private static final int GRF_GPIO5C_P_INT_OFFSET = 0x0188 / 4;
 	private static final int GRF_GPIO6A_P_INT_OFFSET = 0x0190 / 4;
-	// private static final int GRF_GPIO6B_P_INT_OFFSET = 0x0194 / 4;
-	// private static final int GRF_GPIO6C_P_INT_OFFSET = 0x0198 / 4;
+	private static final int GRF_GPIO6B_P_INT_OFFSET = 0x0194 / 4;
+	private static final int GRF_GPIO6C_P_INT_OFFSET = 0x0198 / 4;
 	private static final int GRF_GPIO7A_P_INT_OFFSET = 0x01a0 / 4;
 	private static final int GRF_GPIO7B_P_INT_OFFSET = 0x01a4 / 4;
 	private static final int GRF_GPIO7C_P_INT_OFFSET = 0x01a8 / 4;
 	private static final int GRF_GPIO8A_P_INT_OFFSET = 0x01b0 / 4;
 	private static final int GRF_GPIO8B_P_INT_OFFSET = 0x01b4 / 4;
+
+	private static final int[][] PULL_TABLE = { //
+			{ UNKNOWN, UNKNOWN, PMU_GPIO0C_P_INT_OFFSET, UNKNOWN }, //
+			{ UNKNOWN, UNKNOWN, UNKNOWN, GRF_GPIO1D_P_INT_OFFSET }, //
+			{ GRF_GPIO2A_P_INT_OFFSET, GRF_GPIO2B_P_INT_OFFSET, GRF_GPIO2C_P_INT_OFFSET, UNKNOWN }, //
+			{ GRF_GPIO3A_P_INT_OFFSET, GRF_GPIO3B_P_INT_OFFSET, GRF_GPIO3C_P_INT_OFFSET, GRF_GPIO3D_P_INT_OFFSET }, //
+			{ GRF_GPIO4A_P_INT_OFFSET, GRF_GPIO4B_P_INT_OFFSET, GRF_GPIO4C_P_INT_OFFSET, GRF_GPIO4D_P_INT_OFFSET }, //
+			{ UNKNOWN, GRF_GPIO5B_P_INT_OFFSET, GRF_GPIO5C_P_INT_OFFSET, UNKNOWN }, //
+			{ GRF_GPIO6A_P_INT_OFFSET, GRF_GPIO6B_P_INT_OFFSET, GRF_GPIO6C_P_INT_OFFSET, UNKNOWN }, //
+			{ GRF_GPIO7A_P_INT_OFFSET, GRF_GPIO7B_P_INT_OFFSET, GRF_GPIO7C_P_INT_OFFSET, UNKNOWN }, //
+			{ GRF_GPIO8A_P_INT_OFFSET, GRF_GPIO8B_P_INT_OFFSET, UNKNOWN, UNKNOWN } //
+	};
 
 	private static final int GPIO_SWPORTA_DR_INT_OFFSET = 0x0000 / 4;
 	private static final int GPIO_SWPORTA_DDR_INT_OFFSET = 0x0004 / 4;
@@ -165,14 +190,10 @@ public class TinkerBoardMmapGpio implements MmapGpioInterface {
 			int bank;
 			int shift;
 			if (gpio < 24) {
-				// bank = gpio / 32;
 				bank = 0;
-				// shift = gpio % 32;
 				shift = gpio;
 			} else {
-				// ((gpio - 24) / 32) + 1
 				bank = (gpio + 8) / 32;
-				// (gpio - 24) % 32
 				shift = (gpio + 8) % 32;
 			}
 			if ((gpioBanks[bank].get(GPIO_SWPORTA_DDR_INT_OFFSET) & 1 << shift) != 0) {
@@ -251,7 +272,7 @@ public class TinkerBoardMmapGpio implements MmapGpioInterface {
 			Logger.warn("Invalid mode ({}) for GPIO #{}", mode, Integer.valueOf(gpio));
 			return;
 		}
-		
+
 		// Seem to need a small delay...
 		SleepUtil.sleepMillis(1);
 	}
@@ -259,6 +280,22 @@ public class TinkerBoardMmapGpio implements MmapGpioInterface {
 	@Override
 	public void setPullUpDown(int gpio, GpioPullUpDown pud) {
 		Logger.debug("setPullUpDown({}, {})", Integer.valueOf(gpio), pud);
+
+		int bank, shift;
+		if (gpio < 24) {
+			bank = 0;
+			shift = gpio;
+		} else {
+			bank = (gpio + 8) / 32;
+			shift = (gpio + 8) % 32;
+		}
+
+		int pud_offset = PULL_TABLE[bank][shift / 8];
+		if (pud_offset == UNKNOWN) {
+			Logger.error("Wrong offset for GPIO #{}", Integer.valueOf(gpio));
+			return;
+		}
+
 		int bit0, bit1;
 		switch (pud) {
 		case PULL_UP:
@@ -275,8 +312,8 @@ public class TinkerBoardMmapGpio implements MmapGpioInterface {
 			bit1 = 0;
 			break;
 		}
+
 		MmapIntBuffer int_buffer = (gpio < 24) ? pmuMmapIntBuffer : grfMmapIntBuffer;
-		int pud_offset = getPudOffsetForGpio(gpio);
 		int_buffer.put(pud_offset,
 				(int_buffer.get(pud_offset) | (0x03 << ((gpio % 8) * 2 + 16))) & (~(0x03 << ((gpio % 8) * 2)))
 						| (bit1 << ((gpio % 8) * 2 + 1)) | (bit0 << ((gpio % 8) * 2)));
@@ -289,12 +326,13 @@ public class TinkerBoardMmapGpio implements MmapGpioInterface {
 		int bank;
 		int shift;
 		if (gpio < 24) {
-			bank = gpio / 32;
-			shift = gpio % 32;
+			bank = 0;
+			shift = gpio;
 		} else {
 			bank = (gpio + 8) / 32;
 			shift = (gpio + 8) % 32;
 		}
+		// (((*(gpio0[bank]+GPIO_EXT_PORTA_OFFSET/4)) & (1 << bank_pin)) >> bank_pin)
 		return (gpioBanks[bank].get(GPIO_EXT_PORTA_INT_OFFSET) & (1 << shift)) != 0;
 	}
 
@@ -303,16 +341,18 @@ public class TinkerBoardMmapGpio implements MmapGpioInterface {
 		int bank;
 		int shift;
 		if (gpio < 24) {
-			bank = gpio / 32;
-			shift = gpio % 32;
+			bank = 0;
+			shift = gpio;
 		} else {
 			bank = (gpio + 8) / 32;
 			shift = (gpio + 8) % 32;
 		}
 		int reg_val = gpioBanks[bank].get(GPIO_SWPORTA_DR_INT_OFFSET);
 		if (value) {
+			// *(gpio0[bank]+GPIO_SWPORTA_DR_OFFSET/4) |= (1<<bank_pin);
 			reg_val |= (1 << shift);
 		} else {
+			// *(gpio0[bank]+GPIO_SWPORTA_DR_OFFSET/4) &= ~(1<<bank_pin);
 			reg_val &= ~(1 << shift);
 		}
 		gpioBanks[bank].put(GPIO_SWPORTA_DR_INT_OFFSET, reg_val);
@@ -434,72 +474,16 @@ public class TinkerBoardMmapGpio implements MmapGpioInterface {
 		}
 	}
 
-	private static int getPudOffsetForGpio(int gpio) {
-		switch (gpio) {
-		// GPIO0
-		case 17:
-			return PMU_GPIO0C_P_INT_OFFSET;
-		// GPIO5B
-		case 160:
-		case 161:
-		case 162:
-		case 163:
-		case 164:
-		case 165:
-		case 166:
-		case 167:
-			return GRF_GPIO5B_P_INT_OFFSET;
-		// GPIO5C
-		case 168:
-		case 169:
-		case 170:
-		case 171:
-			return GRF_GPIO5C_P_INT_OFFSET;
-		// GPIO6A
-		case 184:
-		case 185:
-		case 187:
-		case 188:
-			return GRF_GPIO6A_P_INT_OFFSET;
-		// GPIO7A
-		case 223:
-			return GRF_GPIO7A_P_INT_OFFSET;
-		// GPIO7B
-		case 224:
-		case 225:
-		case 226:
-			return GRF_GPIO7B_P_INT_OFFSET;
-		case 233:
-		case 234:
-		case 238:
-		case 239:
-			return GRF_GPIO7C_P_INT_OFFSET;
-		// GPIO8A
-		case 251:
-		case 252:
-		case 253:
-		case 254:
-		case 255:
-			return GRF_GPIO8A_P_INT_OFFSET;
-		// GPIO8B
-		case 256:
-		case 257:
-			return GRF_GPIO8B_P_INT_OFFSET;
-		default:
-			return UNKNOWN;
-		}
-	}
-
 	public static void main(String[] args) {
 		LibraryLoader.loadSystemUtils();
-		
+
 		int gpio;
 		if (args.length > 0) {
 			gpio = Integer.parseInt(args[0]);
 		} else {
 			gpio = 171;
 		}
-		
+
 		try (TinkerBoardMmapGpio mmap_gpio = new TinkerBoardMmapGpio()) {
 			mmap_gpio.initialise();
 
@@ -537,7 +521,16 @@ public class TinkerBoardMmapGpio implements MmapGpioInterface {
 
 				SleepUtil.sleepMillis(300);
 			}
-			
+
+			mmap_gpio.setMode(gpio, DeviceMode.DIGITAL_INPUT);
+			mmap_gpio.setPullUpDown(gpio, GpioPullUpDown.PULL_UP);
+			Logger.debug("Pull up, read: " + mmap_gpio.gpioRead(gpio));
+			mmap_gpio.setPullUpDown(gpio, GpioPullUpDown.PULL_DOWN);
+			Logger.debug("Pull down, read: " + mmap_gpio.gpioRead(gpio));
+			mmap_gpio.setPullUpDown(gpio, GpioPullUpDown.NONE);
+			Logger.debug("Pull none, read: " + mmap_gpio.gpioRead(gpio));
+			mmap_gpio.setMode(gpio, DeviceMode.DIGITAL_OUTPUT);
+
 			int iterations = 1_000_000;
 			for (int j = 0; j < 5; j++) {
 				long start_nano = System.nanoTime();

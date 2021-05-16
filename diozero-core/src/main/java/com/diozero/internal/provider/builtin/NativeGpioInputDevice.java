@@ -66,7 +66,7 @@ public class NativeGpioInputDevice extends AbstractInputDevice<DigitalInputEvent
 		// XXX Remove this once kernel 5.5 is widely adopted - pull-up / pull-down
 		// control no in gpiod v1
 		if (mmapGpio != null) {
-			mmapGpio.setPullUpDown(offset, pud);
+			mmapGpio.setPullUpDown(gpio, pud);
 		}
 	}
 
