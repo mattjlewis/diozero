@@ -3,7 +3,7 @@ package com.diozero.devices.imu;
 /*
  * #%L
  * Organisation: diozero
- * Project:      Device I/O Zero - IMU device classes
+ * Project:      diozero - IMU device classes
  * Filename:     ImuBase.java
  * 
  * This file is part of the diozero project. More information about this project

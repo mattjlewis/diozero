@@ -3,7 +3,7 @@ package com.diozero.remote.mqtt;
 /*-
  * #%L
  * Organisation: diozero
- * Project:      Device I/O Zero - Remote Common
+ * Project:      diozero - Remote Common
  * Filename:     MqttProviderConstants.java
  * 
  * This file is part of the diozero project. More information about this project

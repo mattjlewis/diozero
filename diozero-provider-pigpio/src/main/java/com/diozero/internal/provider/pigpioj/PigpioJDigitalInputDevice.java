@@ -3,7 +3,7 @@ package com.diozero.internal.provider.pigpioj;
 /*-
  * #%L
  * Organisation: diozero
- * Project:      Device I/O Zero - pigpioj provider
+ * Project:      diozero - pigpioj provider
  * Filename:     PigpioJDigitalInputDevice.java
  * 
  * This file is part of the diozero project. More information about this project

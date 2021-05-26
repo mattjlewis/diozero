@@ -3,7 +3,7 @@ package com.diozero.devices.sandpit;
 /*-
  * #%L
  * Organisation: diozero
- * Project:      Device I/O Zero - Core
+ * Project:      diozero - Core
  * Filename:     HCSR04UsingWait.java
  * 
  * This file is part of the diozero project. More information about this project

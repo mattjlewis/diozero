@@ -176,9 +176,19 @@ redirect_from:
     + setOn/off no longer call stopOnOffLoop - it is now the caller's responsibility to do this
 + MmapIntBuffer.intBuffer is no longer volatile, need to validate with an oscilloscope
 + Use of ThreadLocalRandom rather than Random where possible
-+ Added a call to start() when reopening a device factory
++ Added a call to start() when reopening a device factory (#70)
++ Bug-fix to NativeGpioInputDevice when setting pud value - line offset was being used rather than gpio (#70)
 + Added diozero-bom
+
+## 1.2.3
+
++ Use of BlockingQueue within GpioChip
++ Support for Orange Pi Zero Plus and Orange Pi One Plus
+* MFRC522 bug fix (#71) - allow antenna gain to be set prior to turning on the antenna
 
 ## Future
 
-+ I2C readWrite support with pigpio provider
++ I2C readWrite support with pigpio provider (JNI and sockets)
++ Complete MAX30102
++ Tidy up ADS112C04
++ Replace all of my diozero-remote variants with just gRPC

@@ -3,7 +3,7 @@ package com.diozero.internal.provider.mmap;
 /*
  * #%L
  * Organisation: diozero
- * Project:      Device I/O Zero - High performance mmap GPIO control
+ * Project:      diozero - High performance mmap GPIO control
  * Filename:     MmapDigitalInputDevice.java
  * 
  * This file is part of the diozero project. More information about this project

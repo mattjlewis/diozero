@@ -3,7 +3,7 @@ package com.diozero.animation.easing;
 /*-
  * #%L
  * Organisation: diozero
- * Project:      Device I/O Zero - Core
+ * Project:      diozero - Core
  * Filename:     Back.java
  * 
  * This file is part of the diozero project. More information about this project

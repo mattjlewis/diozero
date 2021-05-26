@@ -3,7 +3,7 @@ package com.diozero.devices.imu.invensense;
 /*
  * #%L
  * Organisation: diozero
- * Project:      Device I/O Zero - IMU device classes
+ * Project:      diozero - IMU device classes
  * Filename:     AK8975Constants.java
  * 
  * This file is part of the diozero project. More information about this project

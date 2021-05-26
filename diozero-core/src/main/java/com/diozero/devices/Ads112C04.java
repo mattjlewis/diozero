@@ -3,7 +3,7 @@ package com.diozero.devices;
 /*-
  * #%L
  * Organisation: diozero
- * Project:      Device I/O Zero - Core
+ * Project:      diozero - Core
  * Filename:     Ads112C04.java
  * 
  * This file is part of the diozero project. More information about this project
@@ -81,7 +81,7 @@ import com.diozero.util.SleepUtil;
 
 public class Ads112C04 extends AbstractDeviceFactory implements AnalogInputDeviceFactoryInterface, DeviceInterface {
 	private static final String NAME = "ADS112C04";
-	
+
 	private static final int NUM_CHANNELS = 4;
 
 	/**
@@ -98,7 +98,7 @@ public class Ads112C04 extends AbstractDeviceFactory implements AnalogInputDevic
 
 		private int value;
 
-		private Address(int value) {
+		Address(int value) {
 			this.value = value;
 		}
 
@@ -114,7 +114,7 @@ public class Ads112C04 extends AbstractDeviceFactory implements AnalogInputDevic
 		private int gain;
 		private byte mask;
 
-		private GainConfig(int gain, int mask) {
+		GainConfig(int gain, int mask) {
 			this.gain = gain;
 			this.mask = (byte) (mask << C0_GAIN_BIT_START);
 		}
@@ -133,7 +133,7 @@ public class Ads112C04 extends AbstractDeviceFactory implements AnalogInputDevic
 
 		private byte mask;
 
-		private Pga(int mask) {
+		Pga(int mask) {
 			this.mask = (byte) (mask << C0_PGA_BIT_START);
 		}
 
@@ -153,7 +153,7 @@ public class Ads112C04 extends AbstractDeviceFactory implements AnalogInputDevic
 		private int dateRate;
 		private byte mask;
 
-		private DataRate(int dateRate, int mask) {
+		DataRate(int dateRate, int mask) {
 			this.dateRate = dateRate;
 			this.mask = (byte) (mask << C1_DATA_RATE_BIT_START);
 		}
@@ -173,7 +173,7 @@ public class Ads112C04 extends AbstractDeviceFactory implements AnalogInputDevic
 		private int multiplier;
 		private byte mask;
 
-		private OperatingMode(int multiplier, int mask) {
+		OperatingMode(int multiplier, int mask) {
 			this.multiplier = multiplier;
 			this.mask = (byte) (mask << C1_OP_MODE_BIT_START);
 		}
@@ -192,7 +192,7 @@ public class Ads112C04 extends AbstractDeviceFactory implements AnalogInputDevic
 
 		private byte mask;
 
-		private ConversionMode(int mask) {
+		ConversionMode(int mask) {
 			this.mask = (byte) (mask << C1_CONV_MODE_BIT_START);
 		}
 
@@ -206,7 +206,7 @@ public class Ads112C04 extends AbstractDeviceFactory implements AnalogInputDevic
 
 		private byte mask;
 
-		private VRef(int mask) {
+		VRef(int mask) {
 			this.mask = (byte) (mask << C1_VREF_BIT_START);
 		}
 
@@ -220,7 +220,7 @@ public class Ads112C04 extends AbstractDeviceFactory implements AnalogInputDevic
 
 		private byte mask;
 
-		private TemperatureSensorMode(int mask) {
+		TemperatureSensorMode(int mask) {
 			this.mask = (byte) (mask << C1_TEMP_SENSOR_BIT_START);
 		}
 
@@ -238,7 +238,7 @@ public class Ads112C04 extends AbstractDeviceFactory implements AnalogInputDevic
 
 		private byte mask;
 
-		private DataCounter(int mask) {
+		DataCounter(int mask) {
 			this.mask = (byte) (mask << C2_DATA_CNT_EN_BIT_START);
 		}
 
@@ -256,7 +256,7 @@ public class Ads112C04 extends AbstractDeviceFactory implements AnalogInputDevic
 
 		private byte mask;
 
-		private CrcConfig(int mask) {
+		CrcConfig(int mask) {
 			this.mask = (byte) (mask << C2_CRC_EN_BIT_START);
 		}
 
@@ -270,7 +270,7 @@ public class Ads112C04 extends AbstractDeviceFactory implements AnalogInputDevic
 
 		private byte mask;
 
-		private BurnoutCurrentSources(int mask) {
+		BurnoutCurrentSources(int mask) {
 			this.mask = (byte) (mask << C2_BCS_BIT_START);
 		}
 
@@ -290,7 +290,7 @@ public class Ads112C04 extends AbstractDeviceFactory implements AnalogInputDevic
 		private int microAmps;
 		private byte mask;
 
-		private IdacCurrent(int microAmps, int mask) {
+		IdacCurrent(int microAmps, int mask) {
 			this.microAmps = microAmps;
 			this.mask = (byte) (mask << C2_IDAC_CRNT_BIT_START);
 		}
@@ -309,7 +309,7 @@ public class Ads112C04 extends AbstractDeviceFactory implements AnalogInputDevic
 
 		private byte mask;
 
-		private Idac1RoutingConfig(int mask) {
+		Idac1RoutingConfig(int mask) {
 			this.mask = (byte) (mask << C3_I1MUX_BIT_START);
 		}
 
@@ -323,7 +323,7 @@ public class Ads112C04 extends AbstractDeviceFactory implements AnalogInputDevic
 
 		private byte mask;
 
-		private Idac2RoutingConfig(int mask) {
+		Idac2RoutingConfig(int mask) {
 			this.mask = (byte) (mask << C3_I2MUX_BIT_START);
 		}
 
@@ -342,19 +342,19 @@ public class Ads112C04 extends AbstractDeviceFactory implements AnalogInputDevic
 		AIN0_AIN2(0b0001), //
 		/** AINP = AIN0, AINN = AIN3 */
 		AIN0_AIN3(0b0010), //
-		
+
 		/** AINP = AIN1, AINN = AIN0 */
 		AIN1_AIN0(0b0011), //
 		/** AINP = AIN1, AINN = AIN2 */
 		AIN1_AIN2(0b0100), //
 		/** AINP = AIN3, AINN = AIN2 */
 		AIN1_AIN3(0b0101), //
-		
+
 		/** AINP = AIN2, AINN = AIN3 */
 		AIN2_AIN3(0b0110), //
 		/** AINP = AIN1, AINN = AIN3 */
 		AIN3_AIN2(0b0111), //
-		
+
 		/** AINP = AIN0, AINN = AVSS */
 		AIN0_AVSS(0b1000, true), //
 		/** AINP = AIN1, AINN = AVSS */
@@ -363,30 +363,30 @@ public class Ads112C04 extends AbstractDeviceFactory implements AnalogInputDevic
 		AIN2_AVSS(0b1010), //
 		/** AINP = AIN3, AINN = AVSS */
 		AIN3_AVSS(0b1011), //
-		
+
 		/** (V(REFP) – V(REFN)) / 4 monitor (PGA bypassed) */
 		VREFP_VREFN_DIV_4(0b1100), //
 		/** (AVDD – AVSS) / 4 monitor (PGA bypassed) */
 		AVDD_AVSS_DIV_4(0b1101), //
 		/** AINP and AINN shorted to (AVDD + AVSS) / 2 */
 		AVDD_PLUS_AVSS_DIV_2(0b1110);
-		
+
 		private byte mask;
 		private boolean compareToAvss;
-		
-		private InputMultiplexerConfig(int value) {
+
+		InputMultiplexerConfig(int value) {
 			this(value, false);
 		}
-		
-		private InputMultiplexerConfig(int value, boolean compareToAvss) {
+
+		InputMultiplexerConfig(int value, boolean compareToAvss) {
 			this.mask = (byte) (value << C0_MUX_BIT_START);
 			this.compareToAvss = compareToAvss;
 		}
-		
+
 		byte getMask() {
 			return mask;
 		}
-		
+
 		public boolean isCompareToAvss() {
 			return compareToAvss;
 		}
@@ -403,7 +403,7 @@ public class Ads112C04 extends AbstractDeviceFactory implements AnalogInputDevic
 
 		private byte mask;
 
-		private ConfigRegister(int mask) {
+		ConfigRegister(int mask) {
 			this.mask = (byte) (mask << 2);
 		}
 
@@ -565,7 +565,7 @@ public class Ads112C04 extends AbstractDeviceFactory implements AnalogInputDevic
 			this.idac2RoutingConfig = idac2RoutingConfig;
 			return this;
 		}
-		
+
 		public Builder setInputMultiplexerConfig(InputMultiplexerConfig inputMultiplexerConfig) {
 			this.inputMultiplexerConfig = inputMultiplexerConfig;
 			return this;
@@ -610,7 +610,7 @@ public class Ads112C04 extends AbstractDeviceFactory implements AnalogInputDevic
 			Idac1RoutingConfig idac1RoutingConfig, Idac2RoutingConfig idac2RoutingConfig,
 			InputMultiplexerConfig inputMultiplexerConfig) {
 		super(NAME + "-" + controller + "-" + address.getValue());
-		
+
 		this.gainConfig = gainConfig;
 		this.pga = pga;
 		this.dataRate = dataRate;
@@ -791,7 +791,7 @@ public class Ads112C04 extends AbstractDeviceFactory implements AnalogInputDevic
 	public int getDataRateFrequency() {
 		return dataRate.getDataRate() * operatingMode.getMultiplier();
 	}
-	
+
 	public VRef getVRefConfig() {
 		return vRef;
 	}
@@ -927,7 +927,7 @@ public class Ads112C04 extends AbstractDeviceFactory implements AnalogInputDevic
 	/**
 	 * Disable continuous readings and take a single-shot reading on the specified
 	 * ADC number (non-differential reads).
-	 * 
+	 *
 	 * @param adcNumber The ADC number to read from
 	 * @return The current raw Analog reading
 	 */
@@ -938,10 +938,10 @@ public class Ads112C04 extends AbstractDeviceFactory implements AnalogInputDevic
 	/**
 	 * Disable continuous readings and take a single-shot reading on the specified
 	 * ADC number.
-	 * 
+	 *
 	 * For settings where AINN = AVSS, the PGA must be disabled (PGA_BYPASS = 1) and
 	 * only gains 1, 2, and 4 can be used.
-	 * 
+	 *
 	 * @param inputMultiplexerConfig the input multiplexer configuration
 	 * @return The current raw Analog reading
 	 */
@@ -950,7 +950,7 @@ public class Ads112C04 extends AbstractDeviceFactory implements AnalogInputDevic
 			this.inputMultiplexerConfig = inputMultiplexerConfig;
 			writeConfig0();
 		}
-		
+
 		if (conversionMode != ConversionMode.SINGLE_SHOT) {
 			conversionMode = ConversionMode.SINGLE_SHOT;
 			writeConfig1();
@@ -964,19 +964,20 @@ public class Ads112C04 extends AbstractDeviceFactory implements AnalogInputDevic
 
 	/**
 	 * Enable continuous read mode for the specified ADC number (AINp =
-	 * AIN{adcNumber}, AINn = AVSS).
-	 * Note the PGA must be disabled and only gains 1, 2, and 4 can be used.
-	 * 
+	 * AIN{adcNumber}, AINn = AVSS). Note the PGA must be disabled and only gains 1,
+	 * 2, and 4 can be used.
+	 *
 	 * @param adcNumber The ADC to continuously read from (non-differential mode)
 	 */
 	public void setContinuousModeNonDifferential(int adcNumber) {
 		setContinuousMode(getInputMultiplexerConfig(adcNumber));
 	}
-	
+
 	/**
-	 * Enable continuous read mode for the specified input multiplexer value.
-	 * For settings where AINN = AVSS, the PGA must be disabled and only gains 1, 2, and 4 can be used.
-	 * 
+	 * Enable continuous read mode for the specified input multiplexer value. For
+	 * settings where AINN = AVSS, the PGA must be disabled and only gains 1, 2, and
+	 * 4 can be used.
+	 *
 	 * @param inputMultiplexerConfig The input multiplexer configuration
 	 */
 	public void setContinuousMode(InputMultiplexerConfig inputMultiplexerConfig) {
@@ -984,7 +985,7 @@ public class Ads112C04 extends AbstractDeviceFactory implements AnalogInputDevic
 			this.inputMultiplexerConfig = inputMultiplexerConfig;
 			writeConfig0();
 		}
-		
+
 		if (conversionMode != ConversionMode.CONTINUOUS) {
 			conversionMode = ConversionMode.CONTINUOUS;
 			writeConfig1();
@@ -993,41 +994,41 @@ public class Ads112C04 extends AbstractDeviceFactory implements AnalogInputDevic
 		sendStartCommand();
 	}
 
-	public Object setContinuousModeNonDifferential(int adcNumber, DigitalInputDevice intr, Consumer<AdcEvent> listener) {
+	public Object setContinuousModeNonDifferential(int adcNumber, DigitalInputDevice intr,
+			Consumer<AdcEvent> listener) {
 		final Object lock = new Object();
 		DiozeroScheduler.getNonDaemonInstance().submit(() -> {
-			final EventQueue<AdcEvent> event_queue = new EventQueue<>();
-			event_queue.addListener(listener);
-			intr.whenActivated(nano_time -> {
-				short reading = readData(2);
-				event_queue.accept(new AdcEvent(nano_time / 1_000_000, nano_time, reading));
-			});
-			setContinuousModeNonDifferential(adcNumber);
-			
-			try {
-				// Wait forever until interrupted
-				lock.wait();
-			} catch (InterruptedException e) {
-				Logger.info("Interrupted");
+			try (final EventQueue<AdcEvent> event_queue = new EventQueue<>()) {
+				event_queue.addListener(listener);
+				intr.whenActivated(nano_time -> {
+					short reading = readData(2);
+					event_queue.accept(new AdcEvent(nano_time / 1_000_000, nano_time, reading));
+				});
+				setContinuousModeNonDifferential(adcNumber);
+
+				try {
+					// Wait forever until interrupted
+					lock.wait();
+				} catch (InterruptedException e) {
+					Logger.info("Interrupted");
+				}
+				intr.whenActivated(null);
 			}
-			intr.whenActivated(null);
-			
-			event_queue.stop();
 		});
-		
+
 		return lock;
 	}
 
 	/**
 	 * Read data whenever the data read bit is set in Config Register #2
-	 * 
+	 *
 	 * @return the raw analog data reading in signed short format
 	 */
 	public short getReadingOnDataReadyBit() {
 		/*-
 		 * DC enabled and CRC disabled is 3 bytes (1 DC, 2 data)
-		 * DC enabled and CRC enabled is 5 bytes (1 DC, 2 data, 2 CRC). 
-		 * DC disabled and CRC enabled is 4 bytes (2 data, 2 CRC). 
+		 * DC enabled and CRC enabled is 5 bytes (1 DC, 2 data, 2 CRC).
+		 * DC disabled and CRC enabled is 4 bytes (2 data, 2 CRC).
 		 * DC enabled and CRC inverted is 6 bytes (1 DC, 2 data, 1 DC inv. and 2 data inv.).
 		 * DC disabled and CRC inverted is 4 bytes (2 data, 2 data inv.).
 		 */
@@ -1134,15 +1135,15 @@ public class Ads112C04 extends AbstractDeviceFactory implements AnalogInputDevic
 
 	/**
 	 * Read data whenever the data read bit is set in Config Register #2
-	 * 
+	 *
 	 * @return the raw analog data reading in signed short format
 	 */
 	public short getReadingOnDataReadyBit2() {
 		/*-
 		 * DC disabled and CRC disabled is 2 bytes (2 data)
 		 * DC enabled and CRC disabled is 3 bytes (1 DC, 2 data)
-		 * DC enabled and CRC enabled is 5 bytes (1 DC, 2 data, 2 CRC). 
-		 * DC disabled and CRC enabled is 4 bytes (2 data, 2 CRC). 
+		 * DC enabled and CRC enabled is 5 bytes (1 DC, 2 data, 2 CRC).
+		 * DC disabled and CRC enabled is 4 bytes (2 data, 2 CRC).
 		 * DC enabled and CRC inverted is 6 bytes (1 DC, 2 data, 1 DC inv. and 2 data inv.).
 		 * DC disabled and CRC inverted is 4 bytes (2 data, 2 data inv.).
 		 */
@@ -1320,7 +1321,7 @@ public class Ads112C04 extends AbstractDeviceFactory implements AnalogInputDevic
 		super.close();
 		device.close();
 	}
-	
+
 	public class AdcEvent extends Event {
 		private short reading;
 
@@ -1333,7 +1334,7 @@ public class Ads112C04 extends AbstractDeviceFactory implements AnalogInputDevic
 			return reading;
 		}
 	}
-	
+
 	private static class Ads112C04BoardPinInfo extends BoardPinInfo {
 		public Ads112C04BoardPinInfo() {
 			for (int i = 0; i < NUM_CHANNELS; i++) {

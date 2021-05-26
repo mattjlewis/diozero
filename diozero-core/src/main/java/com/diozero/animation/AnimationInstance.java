@@ -3,7 +3,7 @@ package com.diozero.animation;
 /*
  * #%L
  * Organisation: diozero
- * Project:      Device I/O Zero - Core
+ * Project:      diozero - Core
  * Filename:     AnimationInstance.java
  * 
  * This file is part of the diozero project. More information about this project

@@ -3,7 +3,7 @@ package com.diozero.devices.mcp23xxx;
 /*
  * #%L
  * Organisation: diozero
- * Project:      Device I/O Zero - Core
+ * Project:      diozero - Core
  * Filename:     MCP23x17.java
  * 
  * This file is part of the diozero project. More information about this project

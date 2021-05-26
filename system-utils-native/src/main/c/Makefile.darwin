@@ -10,7 +10,7 @@ LFLAGS =
 
 LIBS = 
 
-SO_FILE_EXT = so
+SO_FILE_EXT = dylib
 
 SRCS = com_diozero_internal_provider_builtin_serial_NativeSerialDevice.c \
 	com_diozero_util_MmapBufferNative.c \

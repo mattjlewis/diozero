@@ -6,12 +6,12 @@
 	<parent>
 		<groupId>com.diozero</groupId>
 		<artifactId>diozero</artifactId>
-		<version>1.2.2</version>
+		<version>1.2.3</version>
 	</parent>
 
-	<name>Device I/O Zero - Remote Common</name>
 	<artifactId>diozero-remote-common</artifactId>
 	<packaging>jar</packaging>
+	<name>diozero - Remote Common</name>
 
 	<properties>
 		<protobuf-maven-plugin.version>0.6.1</protobuf-maven-plugin.version>

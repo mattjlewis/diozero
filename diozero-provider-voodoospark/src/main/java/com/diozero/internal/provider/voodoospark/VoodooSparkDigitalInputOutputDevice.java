@@ -3,7 +3,7 @@ package com.diozero.internal.provider.voodoospark;
 /*-
  * #%L
  * Organisation: diozero
- * Project:      Device I/O Zero - Voodoo Spark provider for Particle Photon
+ * Project:      diozero - Voodoo Spark provider for Particle Photon
  * Filename:     VoodooSparkDigitalInputOutputDevice.java
  * 
  * This file is part of the diozero project. More information about this project

@@ -3,9 +3,9 @@ package com.diozero.internal.provider.builtin.gpio;
 /*-
  * #%L
  * Organisation: diozero
- * Project:      Device I/O Zero - Core
+ * Project:      diozero - Core
  * Filename:     GpioChip.java
- *
+ * 
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.internal.provider.builtin.gpio;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- *
+ * 
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- *
+ * 
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -37,14 +37,15 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 import org.tinylog.Logger;
@@ -124,9 +125,7 @@ public class GpioChip extends GpioChipInfo implements AutoCloseable, GpioLineEve
 	private int epollFd;
 	private final Map<Integer, GpioLineEventListener> fdToListener;
 	private final AtomicBoolean running;
-	private final Queue<NativeGpioEvent> eventQueue;
-	private final Lock lock;
-	private final Condition condition;
+	private final BlockingQueue<NativeGpioEvent> eventQueue;
 
 	private Future<?> processEventsFuture;
 	private Future<?> eventLoopFuture;
@@ -147,9 +146,7 @@ public class GpioChip extends GpioChipInfo implements AutoCloseable, GpioLineEve
 		fdToListener = new HashMap<>();
 
 		running = new AtomicBoolean(false);
-		eventQueue = new ConcurrentLinkedQueue<>();
-		lock = new ReentrantLock();
-		condition = lock.newCondition();
+		eventQueue = new LinkedBlockingQueue<>();
 	}
 
 	public int getChipId() {
@@ -270,16 +267,8 @@ public class GpioChip extends GpioChipInfo implements AutoCloseable, GpioLineEve
 
 	@Override
 	public void event(int fd, int eventDataId, long epochTimeMs, long timestampNanos) {
-		// Acquire the lock
-		lock.lock();
 		// Add the event to the tail of the queue
 		eventQueue.offer(new NativeGpioEvent(fd, eventDataId, epochTimeMs, timestampNanos));
-		try {
-			// Notify the event processor
-			condition.signal();
-		} finally {
-			lock.unlock();
-		}
 	}
 
 	private void eventLoop() {
@@ -309,7 +298,15 @@ public class GpioChip extends GpioChipInfo implements AutoCloseable, GpioLineEve
 	}
 
 	private void stopEventProcessing() {
+		// First stop the event processing thread
 		running.set(false);
+		if (processEventsFuture != null) {
+			// An alternative approach would be to send a "poison" message to indicate that
+			// the thread should be stopped and then call processEventsFuture.get() and only
+			// call cancel if the call to get times out or is interrupted
+			processEventsFuture.cancel(true);
+			processEventsFuture = null;
+		}
 
 		// Stop the epoll event loop
 		if (epollFd != EPOLL_FD_NOT_CREATED) {
@@ -318,123 +315,45 @@ public class GpioChip extends GpioChipInfo implements AutoCloseable, GpioLineEve
 			epollFd = EPOLL_FD_NOT_CREATED;
 		}
 
-		if (eventLoopFuture != null) {
-			eventLoopFuture.cancel(true);
+		// Stop the Java thread that initiated the epoll event loop (note shouldn't be
+		// necessary)
+		if (eventLoopFuture != null && !eventLoopFuture.isDone()) {
+			// Call get with a short timeout instead and only call cancel if it times out
 			try {
-				eventLoopFuture.get();
-			} catch (Exception e) {
+				Logger.trace("Waiting for event loop to complete...");
+				eventLoopFuture.get(10, TimeUnit.MILLISECONDS);
+			} catch (InterruptedException | ExecutionException | TimeoutException e) {
+				Logger.debug("Event loop didn't exit, cancelling: {}", e);
+				eventLoopFuture.cancel(true);
+			} catch (CancellationException e) {
 				// Ignore
 			}
 			eventLoopFuture = null;
-		}
-
-		// Wake up the event processor
-		lock.lock();
-		try {
-			condition.signal();
-		} finally {
-			lock.unlock();
-		}
-
-		// Finally make sure that the event processing thread is stopped
-		if (processEventsFuture != null) {
-			processEventsFuture.cancel(true);
-			try {
-				processEventsFuture.get();
-			} catch (Exception e) {
-				// Ignore
-			}
-			processEventsFuture = null;
 		}
 	}
 
 	private void processEvents() {
 		Thread.currentThread().setName("diozero-GpioChip-processEvents-" + hashCode());
 
-		while (running.get()) {
-			// Acquire the lock
-			lock.lock();
-			try {
-				// Only wait if the queue is empty
-				if (eventQueue.isEmpty()) {
-					// Wait for an event on the queue
-					condition.await();
-				}
-			} catch (InterruptedException e) {
-				Logger.debug("Interrupted!");
-				break;
-			} finally {
-				lock.unlock();
-			}
-
-			// Process all of the events on the queue
-			// Note the event queue is a concurrent linked queue hence thread safe
-			do {
-				NativeGpioEvent event = eventQueue.poll();
-
-				if (event == null) {
-					Logger.debug("No event returned");
+		try {
+			while (running.get()) {
+				// Blocking queue - take the event at the head of the queue, waiting if
+				// necessary until an event becomes available.
+				NativeGpioEvent event = eventQueue.take();
+				Integer event_fd = Integer.valueOf(event.fd);
+				GpioLineEventListener listener = fdToListener.get(event_fd);
+				if (listener == null) {
+					Logger.warn("No listener for fd {}, event data: '{}'", event_fd,
+							Integer.valueOf(event.eventDataId));
 				} else {
-					Integer event_fd = Integer.valueOf(event.fd);
-					GpioLineEventListener listener = fdToListener.get(event_fd);
-					if (listener == null) {
-						Logger.warn("No listener for fd {}, event data: '{}'", event_fd,
-								Integer.valueOf(event.eventDataId));
-					} else {
-						listener.event(event.fd, event.eventDataId, event.epochTimeMs, event.timestampNanos);
-					}
-				}
-			} while (!eventQueue.isEmpty());
-		}
-
-		Logger.debug("Finished");
-	}
-
-	public void eventNotUsed(int fd, int eventDataId, long epochTimeMs, long timestampNanos) {
-		System.out.println("event, delta time: " + (System.nanoTime() - timestampNanos));
-		synchronized (eventQueue) {
-			// Add the event to the tail of the queue
-			eventQueue.offer(new NativeGpioEvent(fd, eventDataId, epochTimeMs, timestampNanos));
-			// Notify the event processor
-			eventQueue.notify();
-		}
-	}
-
-	private void processEventsNotUsed() {
-		Thread.currentThread().setName("diozero-GpioChip-processEvents-" + hashCode());
-
-		while (running.get()) {
-			synchronized (eventQueue) {
-				// Only wait if the queue is empty
-				if (eventQueue.isEmpty()) {
-					// Wait for an event on the queue
-					try {
-						eventQueue.wait();
-					} catch (InterruptedException e) {
-						Logger.debug("Interrupted!");
-						break;
-					}
+					listener.event(event.fd, event.eventDataId, event.epochTimeMs, event.timestampNanos);
 				}
 			}
-
-			// Process all of the events on the queue
-			// Note the event queue is a concurrent linked queue hence thread safe
-			do {
-				NativeGpioEvent event = eventQueue.poll();
-
-				if (event == null) {
-					Logger.debug("No event returned");
-				} else {
-					Integer event_fd = Integer.valueOf(event.fd);
-					GpioLineEventListener listener = fdToListener.get(event_fd);
-					if (listener == null) {
-						Logger.warn("No listener for fd {}, event data: '{}'", event_fd,
-								Integer.valueOf(event.eventDataId));
-					} else {
-						listener.event(event.fd, event.eventDataId, event.epochTimeMs, event.timestampNanos);
-					}
-				}
-			} while (!eventQueue.isEmpty());
+		} catch (InterruptedException e) {
+			// Result of the processEventsFuture.cancel(true) call within the
+			// stopEventProcessing() method
+			Thread.currentThread().interrupt();
+			running.set(false);
 		}
 
 		Logger.debug("Finished");

@@ -3,9 +3,9 @@ package com.diozero.internal.provider.builtin.gpio;
 /*-
  * #%L
  * Organisation: diozero
- * Project:      Device I/O Zero - Core
+ * Project:      diozero - Core
  * Filename:     GpioChipTest.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.internal.provider.builtin.gpio;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -42,7 +42,7 @@ public class GpioChipTest {
 	static {
 		LibraryLoader.loadSystemUtils();
 	}
-	
+
 	private static final int ITERATIONS = 1_000_000;
 
 	public static void main(String[] args) {
@@ -105,14 +105,14 @@ public class GpioChipTest {
 		SleepUtil.sleepSeconds(1);
 
 		Logger.info("Toggling Line {} {} times", Integer.valueOf(line_num), Integer.valueOf(ITERATIONS));
-		long start = System.currentTimeMillis();
+		long start_ms = System.currentTimeMillis();
 		for (int i = 0; i < ITERATIONS; i++) {
 			line.setValue(1);
 			line.setValue(0);
 		}
-		long duration = System.currentTimeMillis() - start;
-		double frequency = ITERATIONS / (duration / 1000.0);
-		Logger.info("Took {#,###.#}ms for {#,###} toggle iterations, frequency {#,###} Hz", Long.valueOf(duration),
+		long duration_ms = System.currentTimeMillis() - start_ms;
+		double frequency = ITERATIONS / (duration_ms / 1000.0);
+		Logger.info("Duration for {#,###} iterations: {#,###.#} ms, frequency {#,###} Hz", Long.valueOf(duration_ms),
 				Integer.valueOf(ITERATIONS), Double.valueOf(frequency));
 	}
 }

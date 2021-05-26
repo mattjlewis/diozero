@@ -3,7 +3,7 @@ package com.diozero.devices;
 /*
  * #%L
  * Organisation: diozero
- * Project:      Device I/O Zero - Core
+ * Project:      diozero - Core
  * Filename:     GP2Y0A21YK.java
  * 
  * This file is part of the diozero project. More information about this project

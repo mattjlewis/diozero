@@ -3,7 +3,7 @@ package com.diozero.sampleapps.lcd;
 /*-
  * #%L
  * Organisation: diozero
- * Project:      Device I/O Zero - Sample applications
+ * Project:      diozero - Sample applications
  * Filename:     LcdSampleApp16x2PiFaceCad.java
  * 
  * This file is part of the diozero project. More information about this project

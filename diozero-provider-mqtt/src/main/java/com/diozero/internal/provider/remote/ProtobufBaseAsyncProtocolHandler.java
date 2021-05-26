@@ -3,7 +3,7 @@ package com.diozero.internal.provider.remote;
 /*-
  * #%L
  * Organisation: diozero
- * Project:      Device I/O Zero - MQTT Provider
+ * Project:      diozero - MQTT Provider
  * Filename:     ProtobufBaseAsyncProtocolHandler.java
  * 
  * This file is part of the diozero project. More information about this project

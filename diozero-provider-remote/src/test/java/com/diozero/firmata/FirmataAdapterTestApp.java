@@ -3,7 +3,7 @@ package com.diozero.firmata;
 /*-
  * #%L
  * Organisation: diozero
- * Project:      Device I/O Zero - Remote Provider
+ * Project:      diozero - Remote Provider
  * Filename:     FirmataAdapterTestApp.java
  * 
  * This file is part of the diozero project. More information about this project

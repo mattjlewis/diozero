@@ -3,7 +3,7 @@ package com.diozero.remote.server.http;
 /*-
  * #%L
  * Organisation: diozero
- * Project:      Device I/O Zero - Remote Server
+ * Project:      diozero - Remote Server
  * Filename:     DiozeroApp.java
  * 
  * This file is part of the diozero project. More information about this project

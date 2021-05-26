@@ -5,7 +5,7 @@ import java.io.File;
 /*
  * #%L
  * Organisation: diozero
- * Project:      Device I/O Zero - Core
+ * Project:      diozero - Core
  * Filename:     SysFsAnalogInputDevice.java
  * 
  * This file is part of the diozero project. More information about this project

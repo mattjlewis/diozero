@@ -5,12 +5,12 @@
 	<parent>
 		<groupId>com.diozero</groupId>
 		<artifactId>diozero</artifactId>
-		<version>1.2.2</version>
+		<version>1.2.3</version>
 	</parent>
 	
-	<name>Device I/O Zero - Voodoo Spark provider for Particle Photon</name>
 	<artifactId>diozero-provider-voodoospark</artifactId>
 	<packaging>jar</packaging>
+	<name>diozero - Voodoo Spark provider for Particle Photon</name>
 	
 	<dependencies>
 		<dependency>

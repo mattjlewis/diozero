@@ -3,7 +3,7 @@ package com.diozero.util;
 /*-
  * #%L
  * Organisation: diozero
- * Project:      Device I/O Zero - Core
+ * Project:      diozero - Core
  * Filename:     SleepUtil.java
  * 
  * This file is part of the diozero project. More information about this project
@@ -72,6 +72,7 @@ public class SleepUtil {
 		try {
 			Thread.sleep(millis);
 		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
 			throw new RuntimeInterruptedException(e);
 		}
 	}

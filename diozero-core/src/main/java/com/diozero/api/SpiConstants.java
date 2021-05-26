@@ -3,7 +3,7 @@ package com.diozero.api;
 /*
  * #%L
  * Organisation: diozero
- * Project:      Device I/O Zero - Core
+ * Project:      diozero - Core
  * Filename:     SpiConstants.java
  * 
  * This file is part of the diozero project. More information about this project

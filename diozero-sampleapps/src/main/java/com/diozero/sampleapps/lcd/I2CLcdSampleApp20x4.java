@@ -3,7 +3,7 @@ package com.diozero.sampleapps.lcd;
 /*-
  * #%L
  * Organisation: diozero
- * Project:      Device I/O Zero - Sample applications
+ * Project:      diozero - Sample applications
  * Filename:     I2CLcdSampleApp20x4.java
  * 
  * This file is part of the diozero project. More information about this project

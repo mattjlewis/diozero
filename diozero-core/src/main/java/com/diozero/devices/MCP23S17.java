@@ -5,7 +5,7 @@ import com.diozero.api.RuntimeIOException;
 /*
  * #%L
  * Organisation: diozero
- * Project:      Device I/O Zero - Core
+ * Project:      diozero - Core
  * Filename:     MCP23S17.java
  * 
  * This file is part of the diozero project. More information about this project

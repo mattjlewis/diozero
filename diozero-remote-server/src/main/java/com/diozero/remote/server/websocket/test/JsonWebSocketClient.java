@@ -3,7 +3,7 @@ package com.diozero.remote.server.websocket.test;
 /*-
  * #%L
  * Organisation: diozero
- * Project:      Device I/O Zero - Remote Server
+ * Project:      diozero - Remote Server
  * Filename:     JsonWebSocketClient.java
  * 
  * This file is part of the diozero project. More information about this project

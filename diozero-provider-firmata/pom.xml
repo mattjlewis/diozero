@@ -4,12 +4,12 @@
 	<parent>
 		<groupId>com.diozero</groupId>
 		<artifactId>diozero</artifactId>
-		<version>1.2.2</version>
+		<version>1.2.3</version>
 	</parent>
 
-	<name>Device I/O Zero - Firmata</name>
 	<artifactId>diozero-provider-firmata</artifactId>
 	<packaging>jar</packaging>
+	<name>diozero - Firmata</name>
 	
 	<properties>
 		<firmata4j.version>2.3.8</firmata4j.version>

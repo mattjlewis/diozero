@@ -3,7 +3,7 @@ package com.diozero.sampleapps.perf;
 /*-
  * #%L
  * Organisation: diozero
- * Project:      Device I/O Zero - Sample applications
+ * Project:      diozero - Sample applications
  * Filename:     I2CPerfTest.java
  * 
  * This file is part of the diozero project. More information about this project

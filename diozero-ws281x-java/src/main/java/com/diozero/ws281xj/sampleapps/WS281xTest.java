@@ -3,7 +3,7 @@ package com.diozero.ws281xj.sampleapps;
 /*-
  * #%L
  * Organisation: diozero
- * Project:      Device I/O Zero - WS281x Java Wrapper
+ * Project:      diozero - WS281x Java Wrapper
  * Filename:     WS281xTest.java
  * 
  * This file is part of the diozero project. More information about this project

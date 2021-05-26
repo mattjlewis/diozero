@@ -3,7 +3,7 @@ package com.diozero.remote.websocket;
 /*-
  * #%L
  * Organisation: diozero
- * Project:      Device I/O Zero - Remote Common
+ * Project:      diozero - Remote Common
  * Filename:     MessageWrapperTypes.java
  * 
  * This file is part of the diozero project. More information about this project

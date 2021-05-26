@@ -3,7 +3,7 @@ package com.diozero.devices.sandpit;
 /*-
  * #%L
  * Organisation: diozero
- * Project:      Device I/O Zero - Core
+ * Project:      diozero - Core
  * Filename:     ST7735.java
  * 
  * This file is part of the diozero project. More information about this project

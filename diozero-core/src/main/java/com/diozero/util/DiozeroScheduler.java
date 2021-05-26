@@ -3,7 +3,7 @@ package com.diozero.util;
 /*
  * #%L
  * Organisation: diozero
- * Project:      Device I/O Zero - Core
+ * Project:      diozero - Core
  * Filename:     DiozeroScheduler.java
  * 
  * This file is part of the diozero project. More information about this project
@@ -51,18 +51,37 @@ public class DiozeroScheduler {
 	private static DiozeroScheduler daemonInstance;
 	private static DiozeroScheduler nonDaemonInstance;
 
-	public static synchronized DiozeroScheduler getDaemonInstance() {
-		if (daemonInstance == null || daemonInstance.isShutdown()) {
-			daemonInstance = new DiozeroScheduler(true);
-		}
-		return daemonInstance;
-	}
-
+	/**
+	 * Get the diozero scheduler instance that exclusively uses non-daemon threads
+	 * (aka user threads).
+	 *
+	 * Non-daemon / user threads are high-priority threads (in the context of the
+	 * JVM). The JVM will wait for any user thread to complete its task before
+	 * terminating.
+	 *
+	 * @return the diozero scheduler instance that uses daemon threads
+	 */
 	public static synchronized DiozeroScheduler getNonDaemonInstance() {
 		if (nonDaemonInstance == null || nonDaemonInstance.isShutdown()) {
 			nonDaemonInstance = new DiozeroScheduler(false);
 		}
 		return nonDaemonInstance;
+	}
+
+	/**
+	 * Get the diozero scheduler instance that exclusively uses daemon threads.
+	 *
+	 * A daemon thread is a low priority thread (in context of the JVM) whose only
+	 * role is to provide services to user threads. A daemon thread does not prevent
+	 * the JVM from exiting (even if the daemon thread itself is running).
+	 *
+	 * @return the diozero scheduler instance that uses daemon threads
+	 */
+	public static synchronized DiozeroScheduler getDaemonInstance() {
+		if (daemonInstance == null || daemonInstance.isShutdown()) {
+			daemonInstance = new DiozeroScheduler(true);
+		}
+		return daemonInstance;
 	}
 
 	public static void shutdownAll() {

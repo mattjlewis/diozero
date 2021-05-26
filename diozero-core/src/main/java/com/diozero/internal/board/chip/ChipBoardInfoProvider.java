@@ -3,7 +3,7 @@ package com.diozero.internal.board.chip;
 /*
  * #%L
  * Organisation: diozero
- * Project:      Device I/O Zero - Core
+ * Project:      diozero - Core
  * Filename:     ChipBoardInfoProvider.java
  * 
  * This file is part of the diozero project. More information about this project

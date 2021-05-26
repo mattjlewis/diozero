@@ -3,7 +3,7 @@ package com.diozero.devices.oled;
 /*-
  * #%L
  * Organisation: diozero
- * Project:      Device I/O Zero - Core
+ * Project:      diozero - Core
  * Filename:     SsdOled.java
  * 
  * This file is part of the diozero project. More information about this project

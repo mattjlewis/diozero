@@ -3,7 +3,7 @@ package com.diozero.internal.provider.builtin.gpio;
 /*-
  * #%L
  * Organisation: diozero
- * Project:      Device I/O Zero - Core
+ * Project:      diozero - Core
  * Filename:     GpioChipInfo.java
  * 
  * This file is part of the diozero project. More information about this project

@@ -5,7 +5,7 @@ import java.util.Collections;
 /*
  * #%L
  * Organisation: diozero
- * Project:      Device I/O Zero - Core
+ * Project:      diozero - Core
  * Filename:     StringUtil.java
  * 
  * This file is part of the diozero project. More information about this project

@@ -3,9 +3,9 @@ package com.diozero.internal.board.allwinner;
 /*-
  * #%L
  * Organisation: diozero
- * Project:      Device I/O Zero - Core
+ * Project:      diozero - Core
  * Filename:     AllwinnerSun8iMmapGpio.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.internal.board.allwinner;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -46,18 +46,23 @@ import com.diozero.util.SleepUtil;
  */
 public class AllwinnerSun8iMmapGpio implements MmapGpioInterface {
 	private static final String GPIOMEM_DEVICE = "/dev/mem";
-	private static final int PAGE_SIZE = 4 * 1024;
-	private static final int BLOCK_SIZE = 6 * 1024;
-	private static final int GPIO_BASE_BP = 0x01C20000;
-	private static final int SUNXI_GPIO_INT_OFFSET = 0x800 / 4;
+
+	private static final int MEM_INFO = 1024;
+	private static final int PAGE_SIZE = 4 * MEM_INFO;
+	private static final int BLOCK_SIZE = 6 * MEM_INFO;
+
+	private static final int GPIOA_BASE = 0x01C20000;
+	private static final int GPIOA_OFFSET = 0x800;
+	private static final int GPIOA_INT_OFFSET = GPIOA_OFFSET / 4;
+	private static final int MAP_SIZE_A = BLOCK_SIZE * 10;
 
 	private boolean initialised;
-	private MmapIntBuffer mmapIntBuffer;
+	private MmapIntBuffer gpioAMmapIntBuffer;
 
 	@Override
 	public synchronized void initialise() {
 		if (!initialised) {
-			mmapIntBuffer = new MmapIntBuffer(GPIOMEM_DEVICE, GPIO_BASE_BP, BLOCK_SIZE * 10, ByteOrder.LITTLE_ENDIAN);
+			gpioAMmapIntBuffer = new MmapIntBuffer(GPIOMEM_DEVICE, GPIOA_BASE, MAP_SIZE_A, ByteOrder.LITTLE_ENDIAN);
 
 			initialised = true;
 		}
@@ -66,51 +71,55 @@ public class AllwinnerSun8iMmapGpio implements MmapGpioInterface {
 	@Override
 	public synchronized void close() {
 		if (initialised) {
-			mmapIntBuffer.close();
-			mmapIntBuffer = null;
+			gpioAMmapIntBuffer.close();
+			gpioAMmapIntBuffer = null;
 		}
 	}
 
 	@Override
 	public DeviceMode getMode(int gpio) {
 		/*-
-		 * int bank = gpio >> 5;
-		 * int index = gpio - (bank << 5);
-		 * int int_offset = ((bank * 36) + ((index >> 3) << 2)) / 4;
-		 * int shift = ((index - ((index >> 3) << 3)) << 2);
+		int bank = gpio >> 5;
+		int index = gpio - (bank << 5);
+		int int_offset = ((bank * 36) + ((index >> 3) << 2)) / 4;
+		int shift = ((index - ((index >> 3) << 3)) << 2);
 		 */
-		int int_offset = (gpio / 8) + 5 * (gpio / 32);
+		int int_offset = (gpio >> 3) + 5 * (gpio >> 5);
 		int shift = (gpio % 8) * 4;
 
 		// phyaddr = SUNXI_GPIO_BASE + (bank * 36) + ((index >> 3) << 2);
-		int phyaddr = SUNXI_GPIO_INT_OFFSET + int_offset;
 
-		int mode_val = ((mmapIntBuffer.get(phyaddr) >> shift) & 7);
+		int mode_val = (gpioAMmapIntBuffer.get(GPIOA_INT_OFFSET + int_offset) >> shift) & 0b111;
+		DeviceMode mode;
 		switch (mode_val) {
 		case 0:
-			return DeviceMode.DIGITAL_INPUT;
+			mode = DeviceMode.DIGITAL_INPUT;
+			break;
 		case 1:
-			return DeviceMode.DIGITAL_OUTPUT;
+			mode = DeviceMode.DIGITAL_OUTPUT;
+			break;
 		default:
-			return DeviceMode.UNKNOWN;
+			mode = DeviceMode.UNKNOWN;
 		}
+
+		return mode;
 	}
 
 	@Override
 	public void setMode(int gpio, DeviceMode mode) {
 		/*-
-		 * int bank = gpio >> 5;
-		 * int index = gpio - (bank << 5);
-		 * int int_offset = ((bank * 36) + ((index >> 3) << 2)) / 4;
-		 * int shift = ((index - ((index >> 3) << 3)) << 2);
+		int bank = gpio >> 5;
+		int index = gpio - (bank << 5);
+		int int_offset = ((bank * 36) + ((index >> 3) << 2)) / 4;
+		int shift = ((index - ((index >> 3) << 3)) << 2);
 		 */
-		int int_offset = (gpio / 8) + 5 * (gpio / 32);
+		int int_offset = (gpio >> 3) + 5 * (gpio >> 5);
 		int shift = (gpio % 8) * 4;
 
 		// phyaddr = SUNXI_GPIO_BASE + (bank * 36) + ((index >> 3) << 2);
-		int phyaddr = SUNXI_GPIO_INT_OFFSET + int_offset;
+		int phyaddr = GPIOA_INT_OFFSET + int_offset;
 
-		int reg_val = mmapIntBuffer.get(phyaddr);
+		int reg_val = gpioAMmapIntBuffer.get(phyaddr);
 
 		switch (mode) {
 		case DIGITAL_INPUT:
@@ -128,7 +137,7 @@ public class AllwinnerSun8iMmapGpio implements MmapGpioInterface {
 			return;
 		}
 
-		mmapIntBuffer.put(phyaddr, reg_val);
+		gpioAMmapIntBuffer.put(phyaddr, reg_val);
 	}
 
 	@Override
@@ -147,7 +156,7 @@ public class AllwinnerSun8iMmapGpio implements MmapGpioInterface {
 
 		// phyaddr = SUNXI_GPIO_BASE + (bank * 36) + 0x1c + sub * 4; // +0x10 ->
 		// pullUpDn reg
-		int phyaddr = SUNXI_GPIO_INT_OFFSET + int_offset;
+		int phyaddr = GPIOA_INT_OFFSET + int_offset;
 
 		// #define PUD_OFF 0
 		// #define PUD_DOWN 1
@@ -166,10 +175,10 @@ public class AllwinnerSun8iMmapGpio implements MmapGpioInterface {
 			pud_val = 7;
 		}
 
-		int reg_val = mmapIntBuffer.get(phyaddr);
+		int reg_val = gpioAMmapIntBuffer.get(phyaddr);
 		reg_val &= ~(3 << (shift << 1));
 		reg_val |= (pud_val << (shift << 1));
-		mmapIntBuffer.put(phyaddr, reg_val);
+		gpioAMmapIntBuffer.put(phyaddr, reg_val);
 
 		SleepUtil.sleepMillis(1);
 	}
@@ -177,33 +186,32 @@ public class AllwinnerSun8iMmapGpio implements MmapGpioInterface {
 	@Override
 	public boolean gpioRead(int gpio) {
 		/*-
-		 * int bank = gpio >> 5;
-		 * int int_offset = ((bank * 36) + 0x10) / 4;
-		 * int shift = gpio - (bank << 5);
+		int bank = gpio >> 5;
+		int int_offset = ((bank * 36) + 0x10) / 4;
+		int shift = gpio - (bank << 5);
 		 */
-		int int_offset = (gpio / 32) * 9 + 4;
+		int int_offset = (gpio >> 5) * 9 + 4;
 		int shift = gpio % 32;
 
 		// int phyaddr = SUNXI_GPIO_BASE + (bank * 36) + 0x10; // +0x10 -> data reg
-		int phyaddr = SUNXI_GPIO_INT_OFFSET + int_offset;
 
-		return ((mmapIntBuffer.get(phyaddr) >> shift) & 1) == 1;
+		return ((gpioAMmapIntBuffer.get(GPIOA_INT_OFFSET + int_offset) >> shift) & 1) == 1;
 	}
 
 	@Override
 	public void gpioWrite(int gpio, boolean value) {
 		/*-
-		 * int bank = gpio >> 5;
-		 * int int_offset = ((bank * 36) + 0x10) / 4;
-		 * int shift = gpio - (bank << 5);
+		int bank = gpio >> 5;
+		int int_offset = ((bank * 36) + 0x10) / 4;
+		int shift = gpio - (bank << 5);
 		 */
-		int int_offset = (gpio / 32) * 9 + 4;
+		int int_offset = (gpio >> 5) * 9 + 4;
 		int shift = gpio % 32;
 
 		// int phyaddr = SUNXI_GPIO_BASE + (bank * 36) + 0x10; // +0x10 -> data reg
-		int addr_int_offset = SUNXI_GPIO_INT_OFFSET + int_offset;
+		int addr_int_offset = GPIOA_INT_OFFSET + int_offset;
 
-		int reg_val = mmapIntBuffer.get(addr_int_offset);
+		int reg_val = gpioAMmapIntBuffer.get(addr_int_offset);
 
 		if (value) {
 			reg_val |= (1 << shift);
@@ -211,7 +219,7 @@ public class AllwinnerSun8iMmapGpio implements MmapGpioInterface {
 			reg_val &= ~(1 << shift);
 		}
 
-		mmapIntBuffer.put(addr_int_offset, reg_val);
+		gpioAMmapIntBuffer.put(addr_int_offset, reg_val);
 	}
 
 	@SuppressWarnings("boxing")
@@ -313,21 +321,26 @@ public class AllwinnerSun8iMmapGpio implements MmapGpioInterface {
 				System.out.println("Sleeping");
 				SleepUtil.sleepSeconds(0.5);
 			}
-			
+
 			int iterations = 1_000_000;
 			if (args.length > 1) {
 				iterations = Integer.parseInt(args[1]);
 			}
 
 			for (int i = 0; i < 3; i++) {
-				long start = System.currentTimeMillis();
+				long start_ms = System.currentTimeMillis();
+
 				for (int j = 0; j < iterations; j++) {
 					mmap_gpio.gpioWrite(gpio, true);
 					mmap_gpio.gpioWrite(gpio, false);
 				}
-				long duration = System.currentTimeMillis() - start;
-				double frequency = iterations / (duration / 1000.0);
-				System.out.println("Took " + duration + " ms for " + iterations + ", frequency " + frequency + " Hz");
+
+				long duration_ms = System.currentTimeMillis() - start_ms;
+				double frequency = iterations / (duration_ms / 1000.0);
+
+				System.out.format("Duration for %,d iterations: %,.3f s, frequency: %,.0f Hz%n",
+						Integer.valueOf(iterations), Float.valueOf(((float) duration_ms) / 1000),
+						Double.valueOf(frequency));
 			}
 		}
 	}

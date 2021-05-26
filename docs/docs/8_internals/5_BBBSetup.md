@@ -106,8 +106,8 @@ Create `/usr/local/bin/update`:
 ```
 #!/bin/sh
 
-apt update && apt -y upgrade && apt -y --auto-remove full-upgrade
-apt -y autoclean && apt -y autoremove
+apt update && apt -y --auto-remove full-upgrade
+apt -y autoclean
 ```
 
 Make it executable: `chmod +x /usr/local/bin/update`

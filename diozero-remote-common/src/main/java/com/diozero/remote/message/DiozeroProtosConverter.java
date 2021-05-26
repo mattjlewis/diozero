@@ -3,7 +3,7 @@ package com.diozero.remote.message;
 /*-
  * #%L
  * Organisation: diozero
- * Project:      Device I/O Zero - Remote Common
+ * Project:      diozero - Remote Common
  * Filename:     DiozeroProtosConverter.java
  * 
  * This file is part of the diozero project. More information about this project

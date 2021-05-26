@@ -1,7 +1,7 @@
 /*-
  * #%L
  * Organisation: diozero
- * Project:      Device I/O Zero - Remote Server
+ * Project:      diozero - Remote Server
  * Filename:     diozero.pb.c
  * 
  * This file is part of the diozero project. More information about this project

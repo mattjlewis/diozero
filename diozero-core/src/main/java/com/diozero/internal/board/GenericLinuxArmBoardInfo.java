@@ -3,7 +3,7 @@ package com.diozero.internal.board;
 /*-
  * #%L
  * Organisation: diozero
- * Project:      Device I/O Zero - Core
+ * Project:      diozero - Core
  * Filename:     GenericLinuxArmBoardInfo.java
  * 
  * This file is part of the diozero project. More information about this project

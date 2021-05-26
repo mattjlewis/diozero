@@ -3,7 +3,7 @@ package com.diozero.api.sandpit;
 /*-
  * #%L
  * Organisation: diozero
- * Project:      Device I/O Zero - Core
+ * Project:      diozero - Core
  * Filename:     EventQueue.java
  * 
  * This file is part of the diozero project. More information about this project
@@ -33,43 +33,41 @@ package com.diozero.api.sandpit;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 
 import com.diozero.api.Event;
 import com.diozero.util.DiozeroScheduler;
 
 /**
- * Decouple event producers from consumers so that event production isn't affected by event consumption
+ * Decouple event producers from consumers so that event production isn't
+ * affected by event consumption
  *
  * @param <T> the class containing the data fields for individual events
  */
-public class EventQueue<T extends Event> implements Consumer<T>, Runnable {
-	private Queue<T> queue;
-	private List<Consumer<T>> listeners;
-	private Lock lock;
-	private Condition condition;
-	private AtomicBoolean running;
+public class EventQueue<T extends Event> implements Consumer<T>, Runnable, AutoCloseable {
+	private final BlockingQueue<T> queue;
+	private final List<Consumer<T>> listeners;
+	private final AtomicBoolean running;
 	private Future<?> future;
 
 	public EventQueue() {
-		queue = new ConcurrentLinkedQueue<>();
+		queue = new LinkedBlockingQueue<>();
 		listeners = new ArrayList<>();
-		lock = new ReentrantLock();
-		condition = lock.newCondition();
 		running = new AtomicBoolean();
-		running.set(true);
-		future = DiozeroScheduler.getNonDaemonInstance().submit(this);
+
+		start();
 	}
-	
+
 	public void addListener(Consumer<T> listener) {
 		listeners.add(listener);
+	}
+
+	public void removeListener(Consumer<T> listener) {
+		listeners.remove(listener);
 	}
 
 	/**
@@ -77,49 +75,43 @@ public class EventQueue<T extends Event> implements Consumer<T>, Runnable {
 	 */
 	@Override
 	public void accept(T t) {
-		queue.add(t);
-		
-		// Notify any listeners
-		lock.lock();
-		try {
-			condition.signal();
-		} finally {
-			lock.unlock();
-		}
+		queue.offer(t);
 	}
-	
-	public void stop() {
-		if (running.get()) {
-			running.set(false);
-			lock.lock();
-			try {
-				condition.signal();
-			} finally {
-				lock.unlock();
-			}
-			future.cancel(true);
-		}
+
+	public void start() {
+		running.set(true);
+		future = DiozeroScheduler.getNonDaemonInstance().submit(this);
 	}
-	
+
 	@Override
 	public void run() {
 		while (running.get()) {
-			lock.lock();
 			try {
-				condition.await();
-				
-				while (true) {
-					T event = queue.poll();
-					if (event == null) {
-						break;
-					}
-					listeners.forEach(listener -> listener.accept(event));
-				}
+				T event = queue.take();
+				listeners.forEach(listener -> listener.accept(event));
 			} catch (InterruptedException e) {
-				// Ignore
-			} finally {
-				lock.unlock();
+				running.set(false);
+				// Set interrupted flag
+				Thread.currentThread().interrupt();
 			}
+			/*-
+			// Drain the remaining elements on the queue and process them.
+			final Collection<T> remaining_events = new ArrayList<>();
+			queue.drainTo(remaining_events);
+			remaining_events.forEach(event -> listeners.forEach(listener -> listener.accept(event)));
+			*/
 		}
+	}
+
+	public void stop() {
+		running.set(false);
+		if (future != null) {
+			future.cancel(true);
+		}
+	}
+
+	@Override
+	public void close() {
+		stop();
 	}
 }

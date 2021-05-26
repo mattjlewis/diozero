@@ -8,7 +8,7 @@ package com.diozero.internal.spi;
 /*-
  * #%L
  * Organisation: diozero
- * Project:      Device I/O Zero - Core
+ * Project:      diozero - Core
  * Filename:     package-info.java
  * 
  * This file is part of the diozero project. More information about this project

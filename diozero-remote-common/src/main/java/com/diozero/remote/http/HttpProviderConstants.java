@@ -3,7 +3,7 @@ package com.diozero.remote.http;
 /*-
  * #%L
  * Organisation: diozero
- * Project:      Device I/O Zero - Remote Common
+ * Project:      diozero - Remote Common
  * Filename:     HttpProviderConstants.java
  * 
  * This file is part of the diozero project. More information about this project

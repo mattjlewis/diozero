@@ -3,7 +3,7 @@ package com.diozero.internal.provider.bbbiolib;
 /*-
  * #%L
  * Organisation: diozero
- * Project:      Device I/O Zero - BBBioLib
+ * Project:      diozero - BBBioLib
  * Filename:     BbbIoLibDigitalInputDevice.java
  * 
  * This file is part of the diozero project. More information about this project

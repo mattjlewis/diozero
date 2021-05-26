@@ -3,7 +3,7 @@ package com.diozero.internal.provider.remote.voodoospark;
 /*-
  * #%L
  * Organisation: diozero
- * Project:      Device I/O Zero - Remote Provider
+ * Project:      diozero - Remote Provider
  * Filename:     VoodooSparkProtocolHandler.java
  * 
  * This file is part of the diozero project. More information about this project

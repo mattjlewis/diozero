@@ -3,7 +3,7 @@ package com.diozero.internal.board.odroid;
 /*
  * #%L
  * Organisation: diozero
- * Project:      Device I/O Zero - Core
+ * Project:      diozero - Core
  * Filename:     OdroidBoardInfoProvider.java
  * 
  * This file is part of the diozero project. More information about this project

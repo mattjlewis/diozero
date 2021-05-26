@@ -3,9 +3,9 @@ package com.diozero.api.sandpit;
 /*
  * #%L
  * Organisation: diozero
- * Project:      Device I/O Zero - Core
+ * Project:      diozero - Core
  * Filename:     DebouncedDigitalInputDevice.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.api.sandpit;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -48,7 +48,10 @@ import com.diozero.util.DiozeroScheduler;
 import com.diozero.util.SleepUtil;
 
 /**
- * Digital input device with debounce logic
+ * Digital input device with debounce logic. The goal of this debounce
+ * implementation is to only detect level changes that are held for the
+ * specified debounce time. All other level changes that are shorter than that
+ * duration will be ignored.
  */
 public class DebouncedDigitalInputDevice extends DigitalInputDevice {
 	private int debounceTimeMs;
@@ -126,12 +129,12 @@ public class DebouncedDigitalInputDevice extends DigitalInputDevice {
 		super.close();
 	}
 
-	/*
+	/*-
 	 *               +--------------+              +--------------+              +--------------+              +------
-	 *               |              |              |              |              |              |              |      
-	 * --------------+              +--------------+              +--------------+              +--------------+      
+	 *               |              |              |              |              |              |              |
+	 * --------------+              +--------------+              +--------------+              +--------------+
 	 * |---------|---------|---------|---------|---------|---------|---------|---------|---------|---------|---------|
-	 * t=0       t=10      t=20      t=30      t=40      t=50      t=60      t=70      t=80      t=90      t=100      
+	 * t=0       t=10      t=20      t=30      t=40      t=50      t=60      t=70      t=80      t=90      t=100
 	 * eT=0      eT=0      eT=14     eT=29
 	 * eV=0      eV=       eV=1      eV=0
 	 * nV=0      nV=0      nV=1      nV=1

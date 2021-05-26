@@ -3,7 +3,7 @@ package com.diozero.ws281xj.apa102;
 /*-
  * #%L
  * Organisation: diozero
- * Project:      Device I/O Zero - WS281x Java Wrapper
+ * Project:      diozero - WS281x Java Wrapper
  * Filename:     Apa102LedDriver.java
  * 
  * This file is part of the diozero project. More information about this project

@@ -3,7 +3,7 @@ package com.diozero.internal.provider.firmata;
 /*
  * #%L
  * Organisation: diozero
- * Project:      Device I/O Zero - Firmata
+ * Project:      diozero - Firmata
  * Filename:     FirmataDeviceFactory.java
  * 
  * This file is part of the diozero project. More information about this project

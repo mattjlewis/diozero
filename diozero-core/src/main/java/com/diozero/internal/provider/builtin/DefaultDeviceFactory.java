@@ -3,7 +3,7 @@ package com.diozero.internal.provider.builtin;
 /*-
  * #%L
  * Organisation: diozero
- * Project:      Device I/O Zero - Core
+ * Project:      diozero - Core
  * Filename:     DefaultDeviceFactory.java
  * 
  * This file is part of the diozero project. More information about this project
@@ -240,6 +240,7 @@ public class DefaultDeviceFactory extends BaseNativeDeviceFactory {
 			return new NativeGpioInputDevice(this, key, chip, pinInfo, pud, trigger, mmapGpio);
 		}
 
+		// Note not possible to set pud value using sysfs
 		return new SysFsDigitalInputDevice(this, key, pinInfo, trigger);
 	}
 

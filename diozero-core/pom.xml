@@ -6,12 +6,12 @@
 	<parent>
 		<groupId>com.diozero</groupId>
 		<artifactId>diozero</artifactId>
-		<version>1.2.2</version>
+		<version>1.2.3</version>
 	</parent>
 
-	<name>Device I/O Zero - Core</name>
 	<artifactId>diozero-core</artifactId>
 	<packaging>jar</packaging>
+	<name>diozero - Core</name>
 
 	<build>
 		<plugins>

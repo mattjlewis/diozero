@@ -3,9 +3,9 @@ package com.diozero.internal.provider.builtin;
 /*-
  * #%L
  * Organisation: diozero
- * Project:      Device I/O Zero - Core
+ * Project:      diozero - Core
  * Filename:     NativeGpioInputDevice.java
- *
+ * 
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.internal.provider.builtin;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- *
+ * 
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- *
+ * 
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -64,7 +64,7 @@ public class NativeGpioInputDevice extends AbstractInputDevice<DigitalInputEvent
 
 		line = chip.provisionGpioInputDevice(offset, pud, trigger);
 		// XXX Remove this once kernel 5.5 is widely adopted - pull-up / pull-down
-		// control no in gpiod v1
+		// control is not possible with gpiod v1
 		if (mmapGpio != null) {
 			mmapGpio.setPullUpDown(gpio, pud);
 		}

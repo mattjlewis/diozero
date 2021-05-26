@@ -6,14 +6,13 @@
 	<parent>
 		<groupId>com.diozero</groupId>
 		<artifactId>diozero</artifactId>
-		<version>1.2.2</version>
+		<version>1.2.3</version>
 	</parent>
-
-	<packaging>maven-archetype</packaging>
 
 	<groupId>com.diozero</groupId>
 	<artifactId>diozero-application</artifactId>
-	<name>Device I/O Zero - Application Archetype</name>
+	<packaging>maven-archetype</packaging>
+	<name>diozero - Application Archetype</name>
 	<description>diozero Quickstart Archetype</description>
 	
 	<properties>

@@ -3,7 +3,7 @@ package com.diozero.internal.provider.remote.devicefactory;
 /*-
  * #%L
  * Organisation: diozero
- * Project:      Device I/O Zero - MQTT Provider
+ * Project:      diozero - MQTT Provider
  * Filename:     RemoteAnalogOutputDevice.java
  * 
  * This file is part of the diozero project. More information about this project

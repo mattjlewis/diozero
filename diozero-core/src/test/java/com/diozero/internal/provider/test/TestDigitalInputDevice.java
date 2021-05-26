@@ -3,7 +3,7 @@ package com.diozero.internal.provider.test;
 /*
  * #%L
  * Organisation: diozero
- * Project:      Device I/O Zero - Core
+ * Project:      diozero - Core
  * Filename:     TestDigitalInputDevice.java
  * 
  * This file is part of the diozero project. More information about this project

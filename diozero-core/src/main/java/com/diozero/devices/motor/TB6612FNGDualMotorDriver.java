@@ -3,7 +3,7 @@ package com.diozero.devices.motor;
 /*
  * #%L
  * Organisation: diozero
- * Project:      Device I/O Zero - Core
+ * Project:      diozero - Core
  * Filename:     TB6612FNGDualMotorDriver.java
  * 
  * This file is part of the diozero project. More information about this project

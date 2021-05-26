@@ -3,7 +3,7 @@ package com.diozero.remote.server.mqtt;
 /*-
  * #%L
  * Organisation: diozero
- * Project:      Device I/O Zero - Remote Server
+ * Project:      diozero - Remote Server
  * Filename:     MqttJsonServer.java
  * 
  * This file is part of the diozero project. More information about this project

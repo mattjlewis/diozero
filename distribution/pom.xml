@@ -6,12 +6,12 @@
 	<parent>
 		<groupId>com.diozero</groupId>
 		<artifactId>diozero</artifactId>
-		<version>1.2.2</version>
+		<version>1.2.3</version>
 	</parent>
 
-	<name>Device I/O Zero - Distribution</name>
 	<artifactId>diozero-distribution</artifactId>
 	<packaging>pom</packaging>
+	<name>diozero - Distribution</name>
 
 	<!-- NOTE: These dependency declarations are only required to sort this 
 		project to the end of the line in the multi-module build. We need to ensure 

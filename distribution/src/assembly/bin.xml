@@ -16,12 +16,19 @@
 			<!-- Enable access to all projects in the current multi-module build -->
 			<useAllReactorProjects>true</useAllReactorProjects>
 			<!-- A bit of a hack - get a warning that it is being ignored but can't get it to work without it -->
+			<!-- Possibly the same bug: https://issues.apache.org/jira/browse/MASSEMBLY-938 -->
+			<!-- Ticket created: https://issues.apache.org/jira/browse/MASSEMBLY-953 -->
 			<includeSubModules>false</includeSubModules>
 
 			<!-- Now, select which projects to include in this module-set. -->
 			<includes>
-				<include>com.diozero:diozero-*:jar:</include>
+				<include>com.diozero:diozero-*:*</include>
 			</includes>
+			<!-- 
+			<excludes>
+				<exclude>*:*:pom:*</exclude>
+			</excludes>
+			-->
 			<binaries>
 				<!-- <outputDirectory>.</outputDirectory> -->
 				<unpack>false</unpack>

@@ -6,14 +6,14 @@
 	<parent>
 		<groupId>com.diozero</groupId>
 		<artifactId>diozero-bom</artifactId>
-		<version>1.2.2</version>
+		<version>1.2.3</version>
 	</parent>
 
 	<groupId>diozero.example</groupId>
 	<artifactId>diozero-example-project</artifactId>
-	<name>A Device I/O Zero starter example application</name>
-	<version>0.1</version>
 	<packaging>jar</packaging>
+	<version>0.1</version>
+	<name>A Device I/O Zero starter example application</name>
 
 	<dependencies>
 		<dependency>

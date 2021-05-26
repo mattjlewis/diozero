@@ -4,12 +4,12 @@
 	<parent>
 		<groupId>com.diozero</groupId>
 		<artifactId>diozero</artifactId>
-		<version>1.2.2</version>
+		<version>1.2.3</version>
 	</parent>
 	
-	<name>Device I/O Zero - High performance mmap GPIO control</name>
 	<artifactId>diozero-provider-mmap</artifactId>
 	<packaging>jar</packaging>
+	<name>diozero - High performance mmap GPIO control</name>
 	
 	<dependencies>
 		<dependency>

@@ -3,7 +3,7 @@ package com.diozero.internal.board.odroid;
 /*
  * #%L
  * Organisation: diozero
- * Project:      Device I/O Zero - Core
+ * Project:      diozero - Core
  * Filename:     OdroidC2MmapGpio.java
  *
  * This file is part of the diozero project. More information about this project
@@ -504,14 +504,19 @@ public class OdroidC2MmapGpio implements MmapGpioInterface {
 			}
 
 			if (true) {
-				long start = System.currentTimeMillis();
+				long start_ms = System.currentTimeMillis();
+
 				for (int i = 0; i < iterations; i++) {
 					mmap_gpio.gpioWrite(gpio, true);
 					mmap_gpio.gpioWrite(gpio, false);
 				}
-				long duration = System.currentTimeMillis() - start;
-				System.out.format("Took %d ms for %d iterations, frequency=%.2fkHz%n", Long.valueOf(duration),
-						Integer.valueOf(iterations), Double.valueOf(iterations / (double) duration));
+
+				long duration_ms = System.currentTimeMillis() - start_ms;
+				double frequency = iterations / (duration_ms / 1000.0);
+
+				System.out.format("Duration for %,d iterations: %,.3f s, frequency: %,.0f Hz%n",
+						Integer.valueOf(iterations), Float.valueOf(((float) duration_ms) / 1000),
+						Double.valueOf(frequency));
 			}
 
 			for (int i = 0; i < 5; i++) {

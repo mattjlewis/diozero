@@ -3,9 +3,9 @@ package com.diozero.sbc;
 /*-
  * #%L
  * Organisation: diozero
- * Project:      Device I/O Zero - Core
+ * Project:      diozero - Core
  * Filename:     LocalSystemInfo.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.sbc;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -144,7 +144,7 @@ import com.diozero.util.StringUtil;
  *
  * Board: BeagleBone Green / Black
  * /etc/os-release PRETTY_NAME: ???
- * /proc//device-tree/compatible:   ti,am335x-bone-green^@ti,am335x-bone-black^@ti,am335x-bone^@ti,am33xx^@
+ * /proc/device-tree/compatible:    ti,am335x-bone-green^@ti,am335x-bone-black^@ti,am335x-bone^@ti,am33xx^@
  * /proc/device-tree/model:         TI AM335x BeagleBone Green^@
  * /proc/device-tree/model:         TI AM335x BeagleBone Black^@
  * /proc/device-tree/serial-number: ??
@@ -155,6 +155,32 @@ import com.diozero.util.StringUtil;
  * os.name: Linux
  * os.arch: arm
  * sun.arch.data.model: 32
+ *
+ * Board: Orange Pi Zero Plus (Allwinner H5)
+ * /etc/os-release PRETTY_NAME: Armbian 21.05.1 Buster
+ * /proc/device-tree/compatible:    xunlong,orangepi-zero-plus^@allwinner,sun50i-h5^@
+ * /proc/device-tree/model:         Xunlong Orange Pi Zero Plus^@
+ * /proc/device-tree/serial-number: 82c000011f994b9b^@
+ * /proc/cpuinfo:
+ *   Hardware   : sun50iw1p1
+ *   Revision   : <<Not present>>
+ *   Serial     : <<Not present>>
+ * os.name: Linux
+ * os.arch: aarch64
+ * sun.arch.data.model: 64
+ *
+ * Board: Orange Pi One Plus (Allwinner H6)
+ * /etc/os-release PRETTY_NAME: Armbian 21.05.2 Buster
+ * /proc/device-tree/compatible:    xunlong,orangepi-one-plus^@allwinner,sun50i-h6^@%
+ * /proc/device-tree/model:         OrangePi One Plus^@%
+ * /proc/device-tree/serial-number: 82c000072714fa87^@%
+ * /proc/cpuinfo:
+ *   Hardware   : sun50iw1p1
+ *   Revision   : <<Not present>>
+ *   Serial     : <<Not present>>
+ * os.name: Linux
+ * os.arch: aarch64
+ * sun.arch.data.model: 64
  */
 /**
  * Utility class for accessing information about the local system. The majority
@@ -226,8 +252,6 @@ public class LocalSystemInfo {
 						hardware = line.split(":")[1].trim();
 					} else if (line.startsWith("Revision")) {
 						revision = line.split(":")[1].trim();
-					} else if (line.startsWith("Model")) {
-						model = line.split(":")[1].trim();
 					} else if (line.startsWith("model name")) {
 						// FIXME Ugly and possibly unsafe code!
 						try {
@@ -237,6 +261,8 @@ public class LocalSystemInfo {
 						} catch (Exception e) {
 							Logger.debug(e, "Error processing model name line '{}': {}", line, e);
 						}
+					} else if (line.startsWith("Model")) {
+						model = line.split(":")[1].trim();
 					}
 				});
 			} catch (IOException | NullPointerException | IndexOutOfBoundsException e) {
@@ -439,6 +465,13 @@ public class LocalSystemInfo {
 			Logger.warn("Error reading {}: {}", TEMPERATURE_FILE, e);
 			return -1;
 		}
+	}
+
+	@Override
+	public String toString() {
+		return "LocalSystemInfo [osName=" + osName + ", osArch=" + osArch + ", libFileExtension=" + libFileExtension
+				+ ", hardware=" + hardware + ", revision=" + revision + ", model=" + model + ", cpuModelName="
+				+ cpuModelName + ", memoryKb=" + memoryKb + "]";
 	}
 
 	public static void main(String[] args) {

@@ -87,14 +87,20 @@ public class GpioMMapTest {
 			write(gpio, false);
 			on = read(gpio);
 			System.out.println("on=" + on);
-			long start = System.currentTimeMillis();
+
+			long start_ms = System.currentTimeMillis();
 			for (int i = 0; i < iterations; i++) {
 				write(gpio, true);
 				write(gpio, false);
 			}
-			double duration = System.currentTimeMillis() - start;
-			System.out.println("Took " + duration + "ms for " + iterations + " iterations, frequency="
-					+ (iterations / duration) + "kHz");
+
+			double duration_ms = System.currentTimeMillis() - start_ms;
+			double frequency = iterations / (duration_ms / 1000.0);
+
+			System.out.format("Duration for %,d iterations: %,.3f s, frequency: %,.0f Hz%n",
+					Integer.valueOf(iterations), Float.valueOf(((float) duration_ms) / 1000),
+					Double.valueOf(frequency));
+
 			closeMmapBuffer(mmap.getFd(), mmap.getAddress(), mmap.getLength());
 		}
 	}

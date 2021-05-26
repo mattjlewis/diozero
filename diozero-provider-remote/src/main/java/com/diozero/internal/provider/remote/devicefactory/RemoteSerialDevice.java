@@ -3,7 +3,7 @@ package com.diozero.internal.provider.remote.devicefactory;
 /*-
  * #%L
  * Organisation: diozero
- * Project:      Device I/O Zero - Remote Provider
+ * Project:      diozero - Remote Provider
  * Filename:     RemoteSerialDevice.java
  * 
  * This file is part of the diozero project. More information about this project
