@@ -5,7 +5,7 @@ package com.diozero.ws281xj.spi;
  * Organisation: diozero
  * Project:      diozero - WS281x Java Wrapper
  * Filename:     WS281xSpi.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.ws281xj.spi;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -203,9 +203,9 @@ public class WS281xSpi implements LedDriverInterface {
 		return (((LED_BIT_COUNT(numLeds, frequency) >> 3) & ~0x7) + 4) + 4;
 	}
 
-	public static enum Protocol {
+	public enum Protocol {
 		/**
-		 * 
+		 *
 		 * 800kHz bit encodings: '0': ----________ '1': --------____ The period is
 		 * 1.25us, giving a basic frequency of 800kHz. Getting the mark-space ratio
 		 * right is trickier, though. There are a number of different timings, and the
@@ -238,7 +238,7 @@ public class WS281xSpi implements LedDriverInterface {
 
 		int frequency;
 
-		private Protocol(int frequency) {
+		Protocol(int frequency) {
 			this.frequency = frequency;
 		}
 

@@ -5,7 +5,7 @@ package com.diozero.internal.provider.remote.voodoospark;
  * Organisation: diozero
  * Project:      diozero - Remote Provider
  * Filename:     VoodooSparkProtocolHandler.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.internal.provider.remote.voodoospark;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -704,14 +704,14 @@ public class VoodooSparkProtocolHandler implements RemoteProtocolInterface {
 
 	// Request and response classes
 
-	static enum PinMode {
+	enum PinMode {
 		DIGITAL_INPUT(0), DIGITAL_OUTPUT(1), ANALOG_INPUT(2), ANALOG_OUTPUT(3), // Note for PWM as well as true analog
 																				// output
 		SERVO(4), I2C(6);
 
 		private byte mode;
 
-		private PinMode(int mode) {
+		PinMode(int mode) {
 			this.mode = (byte) mode;
 		}
 

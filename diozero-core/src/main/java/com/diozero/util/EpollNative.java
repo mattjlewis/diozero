@@ -5,7 +5,7 @@ package com.diozero.util;
  * Organisation: diozero
  * Project:      diozero - Core
  * Filename:     EpollNative.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.util;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -50,11 +50,17 @@ public class EpollNative implements EpollNativeCallback, AutoCloseable {
 	}
 
 	private static native int epollCreate();
+
 	private static native int addFile(int epollFd, String filename);
+
 	private static native int removeFile(int epollFd, int fileFd);
+
 	private static native EpollEvent[] waitForEvents(int epollFd);
+
 	private static native int eventLoop(int epollFd, EpollNativeCallback callback);
+
 	private static native void stopWait(int epollFd);
+
 	private static native void shutdown(int epollFd);
 
 	private int epollFd;
@@ -83,12 +89,12 @@ public class EpollNative implements EpollNativeCallback, AutoCloseable {
 
 	private void waitForEvents() {
 		Thread.currentThread().setName("diozero-EpollNative-waitForEvents-" + hashCode());
-		
+
 		if (eventLoop(epollFd, this) < 0) {
 			throw new RuntimeIOException("Error starting native epoll event loop");
 		}
 
-		/*
+		/*-
 		while (running.get()) {
 			EpollEvent[] events = waitForEvents(epollFd);
 			if (events == null) {
@@ -111,7 +117,7 @@ public class EpollNative implements EpollNativeCallback, AutoCloseable {
 		
 		Logger.trace("Finished");
 	}
-	
+
 	@Override
 	public void callback(int fd, int eventMask, long epochTime, long nanoTime, byte value) {
 		// Notify the process events thread that there are new events on the queue
@@ -133,6 +139,8 @@ public class EpollNative implements EpollNativeCallback, AutoCloseable {
 			try {
 				condition.await();
 			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
+				running.set(false);
 				Logger.debug("Interrupted!");
 				break;
 			} finally {
@@ -156,9 +164,9 @@ public class EpollNative implements EpollNativeCallback, AutoCloseable {
 						listener.notify(event.getEpochTime(), event.getNanoTime(), event.getValue());
 					}
 				}
-			} while (! eventQueue.isEmpty());
+			} while (!eventQueue.isEmpty());
 		}
-		
+
 		Logger.debug("Finished");
 	}
 

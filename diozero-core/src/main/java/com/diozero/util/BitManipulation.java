@@ -5,7 +5,7 @@ package com.diozero.util;
  * Organisation: diozero
  * Project:      diozero - Core
  * Filename:     BitManipulation.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.util;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -31,9 +31,8 @@ package com.diozero.util;
  * #L%
  */
 
-
 public class BitManipulation {
-	public static byte setBitValue(byte value, boolean on, int bit) {
+	public static byte setBitValue(final byte value, final boolean on, final int bit) {
 		byte mask = getBitMask(bit);
 		byte new_value = value;
 		if (on) {
@@ -41,33 +40,47 @@ public class BitManipulation {
 		} else {
 			new_value &= ~mask;
 		}
-		
+
 		return new_value;
 	}
-	
-	public static byte getBitMask(int ... bits) {
+
+	public static byte getBitMask(final int... bits) {
 		byte mask = 0;
-		
+
 		for (int bit : bits) {
 			mask |= getBitMask(bit);
 		}
-		
+
 		return mask;
 	}
-	
-	public static byte getBitMask(int bit) {
+
+	public static byte getBitMask(final int bit) {
 		if (bit > 7) {
 			throw new IllegalArgumentException("Bit (" + bit + ") out of range for byte");
 		}
-		
-		return (byte)(1 << bit);
+
+		return (byte) (1 << bit);
 	}
 
-	public static boolean isBitSet(byte value, int bit) {
+	public static boolean isBitSet(final byte value, final int bit) {
 		return (value & getBitMask(bit)) != 0;
 	}
 
-	public static byte reverseByte(byte value) {
+	public static byte setBits(final byte value, final short mask, final byte position, final byte data) {
+		if (position == 0) {
+			return (byte) ((value & ~mask) | (data & mask));
+		}
+		return (byte) ((value & ~mask) | ((data << position) & mask));
+	}
+
+	public static int bytesToWord(final int msb, final int lsb, final boolean isSigned) {
+		if (isSigned) {
+			return (msb << 8) | (lsb & 0xff); // keep the sign of msb but not of lsb
+		}
+		return ((msb & 0xff) << 8) | (lsb & 0xff);
+	}
+
+	public static byte reverseByte(final byte value) {
 		short s = (short) (value & 0xff);
 		short y = 0;
 		for (int position = 8 - 1; position >= 0; position--) {
@@ -77,7 +90,7 @@ public class BitManipulation {
 		return (byte) (y & 0xff);
 	}
 
-	public static short reverseShort(short value) {
+	public static short reverseShort(final short value) {
 		int i = (short) (value & 0xffff);
 		int y = 0;
 		for (int position = 16 - 1; position >= 0; position--) {

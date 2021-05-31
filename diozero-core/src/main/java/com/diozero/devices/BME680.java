@@ -1,11 +1,9 @@
-package com.diozero.devices;
-
 /*-
  * #%L
  * Organisation: diozero
  * Project:      diozero - Core
  * Filename:     BME680.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +15,10 @@ package com.diozero.devices;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -30,6 +28,10 @@ package com.diozero.devices;
  * THE SOFTWARE.
  * #L%
  */
+
+package com.diozero.devices;
+
+import java.util.concurrent.BlockingQueue;
 
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -47,7 +49,7 @@ import com.diozero.util.SleepUtil;
  * Humidity: 10-95 %r.H.
  * IAQ: 0-500
  * https://cdn-shop.adafruit.com/product-files/3660/BME680.pdf
- * https://github.com/BoschSensortec/BME680_driver/blob/master/bme680.c
+ * https://github.com/BoschSensortec/BME68x-Sensor-API
  * https://github.com/pimoroni/bme680-python/blob/master/library/bme680/__init__.py
  */
 public class BME680 implements BarometerInterface, ThermometerInterface, HygrometerInterface {
@@ -152,7 +154,7 @@ public class BME680 implements BarometerInterface, ThermometerInterface, Hygrome
 
 		private int cycles;
 
-		private OversamplingMultiplier(int cycles) {
+		OversamplingMultiplier(int cycles) {
 			this.cycles = cycles;
 		}
 
@@ -326,7 +328,7 @@ public class BME680 implements BarometerInterface, ThermometerInterface, Hygrome
 	/* ! Sensor power modes */
 	private PowerMode powerMode;
 	private Data data;
-	private LinkedBlockingQueue<Long> gasResistanceData = new LinkedBlockingQueue<>(DATA_GAS_BURN_IN);
+	private BlockingQueue<Long> gasResistanceData = new LinkedBlockingQueue<>(DATA_GAS_BURN_IN);
 	private int offsetTemperature;
 
 	public BME680() {
@@ -350,7 +352,7 @@ public class BME680 implements BarometerInterface, ThermometerInterface, Hygrome
 	 */
 	public BME680(final int controller, final int address) {
 		this.device = I2CDevice.builder(address).setController(controller).build();
-		
+
 		initialise();
 	}
 
@@ -359,34 +361,34 @@ public class BME680 implements BarometerInterface, ThermometerInterface, Hygrome
 		sensorSettings = new SensorSettings();
 		gasSettings = new GasSettings();
 		data = new Data();
-	
+
 		for (int i = 0; i < DATA_GAS_BURN_IN; i++) {
-			gasResistanceData.add(Long.valueOf(0));
+			gasResistanceData.offer(Long.valueOf(0));
 		}
-	
+
 		chipId = device.readByteData(CHIP_ID_ADDRESS);
 		if (chipId != CHIP_ID_BME680) {
 			throw new IllegalStateException(String.format("%s %s not found.", CHIP_VENDOR, CHIP_NAME));
 		}
-	
+
 		softReset();
 		setPowerMode(PowerMode.SLEEP);
-	
+
 		getCalibrationData();
-	
+
 		// It is highly recommended to set first osrs_h<2:0> followed by osrs_t<2:0> and
 		// osrs_p<2:0> in one write command (see Section 3.3).
 		setHumidityOversample(OversamplingMultiplier.X2); // 0x72
 		setTemperatureOversample(OversamplingMultiplier.X4); // 0x74
 		setPressureOversample(OversamplingMultiplier.X8); // 0x74
-	
+
 		setFilter(FilterSize.SIZE_3);
-	
+
 		// setHeaterEnabled(true);
 		setGasMeasurementEnabled(true);
-	
+
 		setTemperatureOffset(0);
-	
+
 		getSensorData();
 	}
 
@@ -621,7 +623,7 @@ public class BME680 implements BarometerInterface, ThermometerInterface, Hygrome
 	/**
 	 * Set temperature offset in celsius. If set, the temperature t_fine will be
 	 * increased by given value in celsius.
-	 * 
+	 *
 	 * @param value temperature offset in Celsius, eg. 4, -8, 1.25
 	 */
 	public void setTemperatureOffset(final int value) {
@@ -966,7 +968,7 @@ public class BME680 implements BarometerInterface, ThermometerInterface, Hygrome
 		return ((msb & 0xff) << 8) | (lsb & 0xff);
 	}
 
-	private static long sumQueueValues(final LinkedBlockingQueue<Long> queue) {
+	private static long sumQueueValues(final BlockingQueue<Long> queue) {
 		long sum = 0;
 
 		for (int i = 0; i < queue.size(); i++) {

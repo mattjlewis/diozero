@@ -5,7 +5,7 @@ package com.diozero.internal.provider.firmata;
  * Organisation: diozero
  * Project:      diozero - Firmata
  * Filename:     FirmataI2CDevice.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.internal.provider.firmata;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -30,7 +30,6 @@ package com.diozero.internal.provider.firmata;
  * THE SOFTWARE.
  * #L%
  */
-
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -53,8 +52,13 @@ import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.InternalI2CDeviceInterface;
 
 /**
- * <p>Work In Progress. I am unclear as to how the this Java Firmata I2C implementation is supposed to work.</p>
- * <p>Wiring:</p>
+ * <p>
+ * Work In Progress. I am unclear as to how the this Java Firmata I2C
+ * implementation is supposed to work.
+ * </p>
+ * <p>
+ * Wiring:
+ * </p>
  * <ul>
  * <li>SDA: A4</li>
  * <li>SCL: A5</li>
@@ -62,7 +66,7 @@ import com.diozero.internal.spi.InternalI2CDeviceInterface;
  */
 public class FirmataI2CDevice extends AbstractDevice implements InternalI2CDeviceInterface, I2CListener {
 	private static final int NO_REGISTER = 0;
-	
+
 	private I2CDevice i2cDevice;
 	private Lock lock;
 	private Map<Integer, Condition> conditions;
@@ -71,11 +75,11 @@ public class FirmataI2CDevice extends AbstractDevice implements InternalI2CDevic
 	public FirmataI2CDevice(FirmataDeviceFactory deviceFactory, String key, int controller, int address,
 			I2CConstants.AddressSize addressSize) {
 		super(key, deviceFactory);
-		
+
 		lock = new ReentrantLock();
 		conditions = new HashMap<>();
 		eventQueues = new HashMap<>();
-		
+
 		Logger.trace("Creating new Firmata I2CDevice for address 0x{}", Integer.toHexString(address));
 		try {
 			i2cDevice = deviceFactory.getIoDevice().getI2CDevice((byte) address);
@@ -84,12 +88,12 @@ public class FirmataI2CDevice extends AbstractDevice implements InternalI2CDevic
 		}
 	}
 
-	// FIXME Change from ByteBuffer to byte array? 
+	// FIXME Change from ByteBuffer to byte array?
 	private byte[] waitForData(int register) {
 		Logger.info("Waiting for data for register 0x{}", Integer.toHexString(register));
-		
+
 		byte[] rx_data = null;
-		
+
 		lock.lock();
 		Integer reg = Integer.valueOf(register);
 		try {
@@ -105,10 +109,10 @@ public class FirmataI2CDevice extends AbstractDevice implements InternalI2CDevic
 					condition = lock.newCondition();
 					conditions.put(reg, condition);
 				}
-				Logger.info("calling await()");
+				Logger.debug("calling await()");
 				condition.await();
-				Logger.info("returned from await()");
-				
+				Logger.debug("returned from await()");
+
 				LinkedList<I2CEvent> event_queue = eventQueues.get(reg);
 				if (event_queue == null || event_queue.isEmpty()) {
 					Logger.warn("No data available for register {}", reg);
@@ -122,15 +126,15 @@ public class FirmataI2CDevice extends AbstractDevice implements InternalI2CDevic
 		} finally {
 			lock.unlock();
 		}
-		
+
 		return rx_data;
 	}
-	
+
 	@Override
 	public boolean probe(com.diozero.api.I2CDevice.ProbeMode mode) {
 		return readByte() >= 0;
 	}
-	
+
 	@Override
 	public void writeQuick(byte bit) {
 		throw new UnsupportedOperationException("writeQuick operation is unsupported");
@@ -147,7 +151,7 @@ public class FirmataI2CDevice extends AbstractDevice implements InternalI2CDevic
 		} catch (IOException e) {
 			throw new RuntimeIOException(e);
 		}
-		
+
 		return data;
 	}
 
@@ -170,7 +174,7 @@ public class FirmataI2CDevice extends AbstractDevice implements InternalI2CDevic
 		} catch (IOException e) {
 			throw new RuntimeIOException(e);
 		}
-		
+
 		return data;
 	}
 
@@ -258,7 +262,7 @@ public class FirmataI2CDevice extends AbstractDevice implements InternalI2CDevic
 
 	@Override
 	public void writeI2CBlockData(int register, byte... data) throws RuntimeIOException {
-		byte[] tx_data = new byte[data.length+1];
+		byte[] tx_data = new byte[data.length + 1];
 		tx_data[0] = (byte) register;
 		System.arraycopy(data, 0, tx_data, 1, data.length);
 		try {
@@ -271,14 +275,14 @@ public class FirmataI2CDevice extends AbstractDevice implements InternalI2CDevic
 	@Override
 	public int readBytes(byte[] buffer) throws RuntimeIOException {
 		byte[] rx_data;
-		
+
 		try {
 			i2cDevice.ask((byte) buffer.length, this);
 			rx_data = waitForData(NO_REGISTER);
 		} catch (IOException e) {
 			throw new RuntimeIOException(e);
 		}
-		
+
 		System.arraycopy(rx_data, 0, buffer, 0, rx_data.length);
 		return rx_data.length;
 	}
@@ -294,7 +298,10 @@ public class FirmataI2CDevice extends AbstractDevice implements InternalI2CDevic
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
-		try { i2cDevice.stopReceivingUpdates(); } catch (IOException e) { }
+		try {
+			i2cDevice.stopReceivingUpdates();
+		} catch (IOException e) {
+		}
 		i2cDevice.unsubscribe(this);
 	}
 

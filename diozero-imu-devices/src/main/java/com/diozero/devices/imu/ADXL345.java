@@ -5,7 +5,7 @@ package com.diozero.devices.imu;
  * Organisation: diozero
  * Project:      diozero - IMU device classes
  * Filename:     ADXL345.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.devices.imu;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -129,7 +129,7 @@ public class ADXL345 implements ImuInterface {
 
 	/**
 	 * Get the tap threshold in g
-	 * 
+	 *
 	 * @return Tap threshold (g)
 	 */
 	public float getTapThreshold() {
@@ -138,7 +138,7 @@ public class ADXL345 implements ImuInterface {
 
 	/**
 	 * Set the tap threshold in g
-	 * 
+	 *
 	 * @param tapThreshold The threshold value in g for tap interrupts
 	 */
 	public void setTapThreshold(float tapThreshold) {
@@ -167,7 +167,7 @@ public class ADXL345 implements ImuInterface {
 
 	/**
 	 * Set the X-axis offset in g
-	 * 
+	 *
 	 * @param offset Offset value (g)
 	 */
 	public void setOffsetX(float offset) {
@@ -180,7 +180,7 @@ public class ADXL345 implements ImuInterface {
 
 	/**
 	 * Set the Y-axis offset in g
-	 * 
+	 *
 	 * @param offset Offset value (g)
 	 */
 	public void setOffsetY(float offset) {
@@ -193,7 +193,7 @@ public class ADXL345 implements ImuInterface {
 
 	/**
 	 * Set the Z-axis offset in g
-	 * 
+	 *
 	 * @param offset Offset value (g)
 	 */
 	public void setOffsetZ(float offset) {
@@ -212,7 +212,7 @@ public class ADXL345 implements ImuInterface {
 
 	/**
 	 * Get the tap duration in milliseconds
-	 * 
+	 *
 	 * @return Tap duration (milliseconds)
 	 */
 	public float getTapDuration() {
@@ -221,7 +221,7 @@ public class ADXL345 implements ImuInterface {
 
 	/**
 	 * Set the tap duration in mS
-	 * 
+	 *
 	 * @param tapDuration The maximum time in ms that an event must be above to
 	 *                    qualify as a tap event
 	 */
@@ -235,7 +235,7 @@ public class ADXL345 implements ImuInterface {
 
 	/**
 	 * Get the tap latency in milliseconds
-	 * 
+	 *
 	 * @return The tap latency (milliseconds)
 	 */
 	public float getTapLatency() {
@@ -244,7 +244,7 @@ public class ADXL345 implements ImuInterface {
 
 	/**
 	 * Set the tap latency in mS
-	 * 
+	 *
 	 * @param tapLatency The wait time in mS from the detection of a tap event to
 	 *                   the start of the time window during which a possible second
 	 *                   tap event can be detected
@@ -259,7 +259,7 @@ public class ADXL345 implements ImuInterface {
 
 	/**
 	 * Get the tap window in milliseconds
-	 * 
+	 *
 	 * @return Tap window (milliseconds)
 	 */
 	public float getTapWindow() {
@@ -268,7 +268,7 @@ public class ADXL345 implements ImuInterface {
 
 	/**
 	 * Set the tap window in mS
-	 * 
+	 *
 	 * @param tapWindow The amount of time in milliseconds after the expiration of
 	 *                  the latency time during which a second valid tap can begin
 	 */
@@ -286,7 +286,7 @@ public class ADXL345 implements ImuInterface {
 
 	/**
 	 * Set the activity threshold value in g
-	 * 
+	 *
 	 * @param activityThreshold The threshold value for detecting activity
 	 */
 	public void setActivityThreshold(float activityThreshold) {
@@ -303,7 +303,7 @@ public class ADXL345 implements ImuInterface {
 
 	/**
 	 * Set the inactivity threshold value in g
-	 * 
+	 *
 	 * @param inactivityThreshold The threshold value for detecting inactivity
 	 */
 	public void setInactivityThreshold(float inactivityThreshold) {
@@ -320,7 +320,7 @@ public class ADXL345 implements ImuInterface {
 
 	/**
 	 * Set the inactivity time value in mS
-	 * 
+	 *
 	 * @param inactivityTime Value representing the amount of time that acceleration
 	 *                       must be less than the value in the THRESH_INACT
 	 *                       register for inactivity to be declared
@@ -337,7 +337,7 @@ public class ADXL345 implements ImuInterface {
 	 * D7 - Activity ac/dc D6 - ACT_X enable D5 - ACT_Y enable D4 - ACT_Z enable D3
 	 * - Inactivity ac/dc D2 - INACT_X enable D1 - INACT_Y enable D0 - INACT_Z
 	 * enable
-	 * 
+	 *
 	 * A setting of 0 selects dc-coupled operation, and a setting of 1 enables
 	 * ac-coupled operation. In dc-coupled operation, the current acceleration
 	 * magnitude is compared directly with THRESH_ACT and THRESH_INACT to determine
@@ -353,7 +353,7 @@ public class ADXL345 implements ImuInterface {
 	 * acceleration with THRESH_INACT. If the difference is less than the value in
 	 * THRESH_INACT for the time in TIME_INACT, the device is considered inactive
 	 * and the inactivity interrupt is triggered.
-	 * 
+	 *
 	 * @return Activity / inativity control flags
 	 */
 	public byte getActivityInactivityControlFlags() {
@@ -370,7 +370,7 @@ public class ADXL345 implements ImuInterface {
 
 	/**
 	 * Set the freefall threshold value in g
-	 * 
+	 *
 	 * @param freefallThreshold The threshold value for detecting inactivity
 	 */
 	public void setFreefallThreshold(float freefallThreshold) {
@@ -387,7 +387,7 @@ public class ADXL345 implements ImuInterface {
 
 	/**
 	 * Set the freefall time value in mS
-	 * 
+	 *
 	 * @param freefallTime Value representing minimum time that the value of all
 	 *                     axes must be less than THRESH_FF to generate a freefall
 	 *                     interrupt
@@ -472,7 +472,8 @@ public class ADXL345 implements ImuInterface {
 	public void setFullResolutionMode(boolean fullResolution) {
 		byte old_val = device.readByteData(DATA_FORMAT);
 		if (fullResolution != ((old_val & FULL_RESOLUTION_MODE) != 0)) {
-			device.writeByteData(DATA_FORMAT, fullResolution ? old_val | FULL_RESOLUTION_MODE : old_val & ~SELF_TEST_MODE);
+			device.writeByteData(DATA_FORMAT,
+					fullResolution ? old_val | FULL_RESOLUTION_MODE : old_val & ~SELF_TEST_MODE);
 		}
 	}
 
@@ -522,7 +523,7 @@ public class ADXL345 implements ImuInterface {
 	 * watermark interrupt. Stream | Specifies how many FIFO entries are needed to
 	 * trigger a watermark interrupt. Trigger | Specifies how many FIFO samples are
 	 * retained in the FIFO buffer before a trigger event.
-	 * 
+	 *
 	 * @return FIFO Control flags
 	 */
 	public byte getFifoControlFlags() {
@@ -543,7 +544,7 @@ public class ADXL345 implements ImuInterface {
 	 * (single-or multiple-byte) of FIFO. FIFO stores a maximum of 32 entries, which
 	 * equates to a maximum of 33 entries available at any given time because an
 	 * additional entry is available at the output filter of the device.
-	 * 
+	 *
 	 * @return FIFO status
 	 */
 	public byte getFifoStatus() {

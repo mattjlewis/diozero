@@ -5,7 +5,7 @@ package com.diozero.sampleapps;
  * Organisation: diozero
  * Project:      diozero - Sample applications
  * Filename:     BME680Test.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.sampleapps;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -45,27 +45,28 @@ import com.diozero.util.SleepUtil;
  */
 public class BME680Test {
 	public static void main(String[] args) {
-		int controller = 0;
+		int controller = 1;
 		if (args.length > 0) {
 			controller = Integer.parseInt(args[0]);
 		}
-		
+
 		try (BME680 bme680 = new BME680(controller)) {
 			bme680.setHumidityOversample(BME680.OversamplingMultiplier.X2);
 			bme680.setPressureOversample(BME680.OversamplingMultiplier.X4);
 			bme680.setTemperatureOversample(BME680.OversamplingMultiplier.X8);
 			bme680.setFilter(BME680.FilterSize.SIZE_3);
 			bme680.setGasMeasurementEnabled(true);
-			
+
 			bme680.setGasConfig(BME680.HeaterProfile.PROFILE_0, 320, 150);
-			
+
 			for (int i = 0; i < 20; i++) {
 				BME680.Data data = bme680.getSensorData();
 				System.out.format(
-						"Temperature: %.2f C. Pressure: %.2f hPa. Relative Humidity: %.2f %%rH. Gas Resistance: %.2f Ohms (stable: %b). Air Quality: %.2f ??.%n",
+						"Temperature: %.2f C. Pressure: %.2f hPa. Relative Humidity: %.2f %%rH. Gas Resistance: %.2f Ohms (stable: %b, valid: %b). Air Quality: %.2f ??.%n",
 						Float.valueOf(data.getTemperature()), Float.valueOf(data.getPressure()),
 						Float.valueOf(data.getHumidity()), Float.valueOf(data.getGasResistance()),
-						Boolean.valueOf(data.isHeaterTempStable()), Float.valueOf(data.getAirQualityScore()));
+						Boolean.valueOf(data.isHeaterTempStable()), Boolean.valueOf(data.isHeaterTempStable()),
+						Float.valueOf(data.getAirQualityScore()));
 
 				SleepUtil.sleepSeconds(1);
 			}

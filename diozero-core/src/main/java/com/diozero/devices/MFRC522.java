@@ -647,21 +647,28 @@ public class MFRC522 implements DeviceInterface {
 	 * @return Value of the RxGain, scrubbed to the 3 bits used.
 	 */
 	public AntennaGain getAntennaGain() {
-		return AntennaGain.forValue((byte) (readRegister(PcdRegister.RF_CONFIG_REG) & (0x07 << 4)));
+		return AntennaGain.forValue(readRegister(PcdRegister.RF_CONFIG_REG));
 	}
 
 	/**
 	 * Set the MFRC522 Receiver Gain (RxGain) to value specified by given mask. See
-	 * 9.3.3.6 / table 98 in http://www.nxp.com/documents/data_sheet/MFRC522.pdf
+	 * 9.3.3.6 / table 98 in https://www.nxp.com/docs/en/data-sheet/MFRC522.pdf
 	 * NOTE: Given mask is scrubbed with (0x07&lt;&lt;4)=01110000b as RCFfgReg may
 	 * use reserved bits.
 	 *
 	 * @param gain New antenna gain value
 	 */
 	public void setAntennaGain(AntennaGain gain) {
-		if (getAntennaGain() != gain) { // only bother if there is a change
-			clearBitMask(PcdRegister.RF_CONFIG_REG, (byte) (0x07 << 4)); // clear needed to allow 000 pattern
-			setBitMask(PcdRegister.RF_CONFIG_REG, gain.getValue()); // only set RxGain[2:0] bits
+		byte reg_val = readRegister(PcdRegister.RF_CONFIG_REG);
+		// Only bother if there is a change
+		if (AntennaGain.forValue(reg_val) != gain) {
+			// Clear needed to allow 000 pattern
+			// clearBitMask(PcdRegister.RF_CONFIG_REG, (byte) (0x07 << 4));
+			reg_val &= ~AntennaGain.BIT_MASK;
+
+			// Only set RxGain[2:0] bits (RFCfgReg[6:4]) - all other bits are reserved
+			// setBitMask(PcdRegister.RF_CONFIG_REG, gain.getValue());
+			writeRegister(PcdRegister.RF_CONFIG_REG, (byte) (reg_val | gain.getValue()));
 		}
 	}
 
@@ -1677,32 +1684,32 @@ public class MFRC522 implements DeviceInterface {
 
 		StatusCode result;
 		byte				cmdBuffer[18]; // We need room for 16 bytes data and 2 bytes CRC_A.
-	
+
 		cmdBuffer[0] = 0x1B; //Comando de autentificacion
-	
+
 		for (byte i = 0; i<4; i++)
 			cmdBuffer[i+1] = passWord[i];
-	
+
 		result = PCD_CalculateCRC(cmdBuffer, 5, &cmdBuffer[5]);
-	
+
 		if (result!=STATUS_OK) {
 			return result;
 		}
-	
+
 		// Transceive the data, store the reply in cmdBuffer[]
 		byte waitIRq		= 0x30;	// RxIRq and IdleIRq
-	//		byte cmdBufferSize	= sizeof(cmdBuffer);
+		//byte cmdBufferSize	= sizeof(cmdBuffer);
 		byte validBits		= 0;
 		byte rxlength		= 5;
 		result = PCD_CommunicateWithPICC(PCD_Transceive, waitIRq, cmdBuffer, 7, cmdBuffer, &rxlength, &validBits);
-	
+
 		pACK[0] = cmdBuffer[0];
 		pACK[1] = cmdBuffer[1];
-	
+
 		if (result!=STATUS_OK) {
 			return result;
 		}
-	
+
 		return STATUS_OK;
 	} // End PCD_NTAG216_AUTH()
 	 */
@@ -2638,15 +2645,17 @@ public class MFRC522 implements DeviceInterface {
 	}
 
 	public enum AntennaGain {
-		DB_18A((byte) (0b000 << 4), 18), DB_23A((byte) (0b001 << 4), 23), DB_18B((byte) (0b010 << 4), 18),
-		DB_23B((byte) (0b011 << 4), 23), DB_33((byte) (0b100 << 4), 33), DB_38((byte) (0b101 << 4), 38),
-		DB_43((byte) (0b110 << 4), 43), DB_48((byte) (0b111 << 4), 48);
+		DB_18A(0b000, 18), DB_23A(0b001, 23), DB_18B(0b010, 18), DB_23B(0b011, 23), DB_33(0b100, 33), DB_38(0b101, 38),
+		DB_43(0b110, 43), DB_48(0b111, 48);
+
+		static final int SHIFT = 4;
+		static final int BIT_MASK = 0x07 << SHIFT;
 
 		private final byte value;
 		private final int gainDb;
 
-		AntennaGain(byte value, int gainDb) {
-			this.value = value;
+		AntennaGain(int value, int gainDb) {
+			this.value = (byte) (value << SHIFT);
 			this.gainDb = gainDb;
 		}
 
@@ -2658,23 +2667,23 @@ public class MFRC522 implements DeviceInterface {
 			return gainDb;
 		}
 
-		public static AntennaGain forValue(byte value) {
-			switch (value) {
-			case 0b000 << 4:
+		public static AntennaGain forValue(byte regValue) {
+			switch (regValue & BIT_MASK) {
+			case 0b000 << SHIFT:
 				return DB_18A;
-			case 0b001 << 4:
+			case 0b001 << SHIFT:
 				return DB_23A;
-			case 0b010 << 4:
+			case 0b010 << SHIFT:
 				return DB_18B;
-			case 0b011 << 4:
+			case 0b011 << SHIFT:
 				return DB_23B;
-			case 0b100 << 4:
+			case 0b100 << SHIFT:
 				return DB_33;
-			case 0b101 << 4:
+			case 0b101 << SHIFT:
 				return DB_38;
-			case 0b110 << 4:
+			case 0b110 << SHIFT:
 				return DB_43;
-			case 0b111 << 4:
+			case 0b111 << SHIFT:
 				return DB_48;
 			default:
 				return null;

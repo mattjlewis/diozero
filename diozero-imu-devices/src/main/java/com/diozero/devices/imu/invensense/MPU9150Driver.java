@@ -5,7 +5,7 @@ package com.diozero.devices.imu.invensense;
  * Organisation: diozero
  * Project:      diozero - IMU device classes
  * Filename:     MPU9150Driver.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.devices.imu.invensense;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -100,9 +100,9 @@ public class MPU9150Driver implements DeviceInterface, MPU9150Constants, AK8975C
 
 	/**
 	 * Default constructor, uses default I2C address.
-	 * 
+	 *
 	 * @throws RuntimeIOException if an I/O error occurs
-	 * @param controller  I2C controller
+	 * @param controller I2C controller
 	 */
 	public MPU9150Driver(int controller) throws RuntimeIOException {
 		this(controller, MPU9150_DEFAULT_ADDRESS);
@@ -110,9 +110,9 @@ public class MPU9150Driver implements DeviceInterface, MPU9150Constants, AK8975C
 
 	/**
 	 * Specific address constructor.
-	 * 
-	 * @param controller  I2C controller
-	 * @param devAddress  address I2C address
+	 *
+	 * @param controller I2C controller
+	 * @param devAddress address I2C address
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	public MPU9150Driver(int controller, int devAddress) throws RuntimeIOException {
@@ -131,7 +131,7 @@ public class MPU9150Driver implements DeviceInterface, MPU9150Constants, AK8975C
 	/**
 	 * Enable/disable data ready interrupt. If the DMP is on, the DMP interrupt is
 	 * enabled. Otherwise, the data ready interrupt is used.
-	 * 
+	 *
 	 * @param enable 1 to enable interrupt.
 	 * @return success status
 	 * @throws RuntimeIOException if an I/O error occurs
@@ -171,7 +171,7 @@ public class MPU9150Driver implements DeviceInterface, MPU9150Constants, AK8975C
 	 * Initialize hardware. Initial configuration: Gyro FSR: +/- 2000DPS Accel FSR
 	 * +/- 2G DLPF: 42Hz FIFO rate: 50Hz Clock source: Gyro PLL FIFO: Disabled. Data
 	 * ready interrupt: Disabled, active low, unlatched.
-	 * 
+	 *
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	public void mpu_init() throws RuntimeIOException {
@@ -229,7 +229,7 @@ public class MPU9150Driver implements DeviceInterface, MPU9150Constants, AK8975C
 	 * listed above, the device will be set to the next highest rate. Requesting a
 	 * rate above the maximum supported frequency will result in an error. To select
 	 * a fractional wake-up frequency, round down the value passed to rate.
-	 * 
+	 *
 	 * @param rate Minimum sampling rate, or zero to disable LP accel mode.
 	 * @return true if successful.
 	 * @throws RuntimeIOException if an I/O error occurs
@@ -285,7 +285,7 @@ public class MPU9150Driver implements DeviceInterface, MPU9150Constants, AK8975C
 
 	/**
 	 * Read raw gyro data directly from the registers.
-	 * 
+	 *
 	 * @return Raw data in hardware units.
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
@@ -315,7 +315,7 @@ public class MPU9150Driver implements DeviceInterface, MPU9150Constants, AK8975C
 	 * per LSB in ACCEL_xOUT is shown in the table below. AFS_SEL Full Scale Range
 	 * LSB Sensitivity 0 +/-2g 16384 LSB/mg 1 +/-4g 8192 LSB/mg 2 +/-8g 4096 LSB/mg
 	 * 3 +/-16g 2048 LSB/mg
-	 * 
+	 *
 	 * @return Raw data in hardware units.
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
@@ -346,7 +346,7 @@ public class MPU9150Driver implements DeviceInterface, MPU9150Constants, AK8975C
 	 * degrees C for a given register value may be computed as: Temperature in
 	 * degrees C = (TEMP_OUT Register Value as a signed quantity)/340 + 35 Please
 	 * note that the math in the above equation is in decimal.
-	 * 
+	 *
 	 * @return Temperature
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
@@ -367,7 +367,7 @@ public class MPU9150Driver implements DeviceInterface, MPU9150Constants, AK8975C
 	 * Read biases to the accel bias 6050 registers. This function reads from the
 	 * MPU6050 accel offset cancellations registers. The format are G in +-8G
 	 * format. The register is initialised with OTP factory trim values.
-	 * 
+	 *
 	 * @return accel_bias returned structure with the accel bias
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
@@ -394,7 +394,7 @@ public class MPU9150Driver implements DeviceInterface, MPU9150Constants, AK8975C
 	 * Push biases to the gyro bias 6500/6050 registers. This function expects
 	 * biases relative to the current sensor output, and these biases will be added
 	 * to the factory-supplied values. Bias inputs are LSB in +-1000dps format.
-	 * 
+	 *
 	 * @param gyro_bias New biases.
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
@@ -418,7 +418,7 @@ public class MPU9150Driver implements DeviceInterface, MPU9150Constants, AK8975C
 	 * Push biases to the accel bias 6050 registers. This function expects biases
 	 * relative to the current sensor output, and these biases will be added to the
 	 * factory-supplied values. Bias inputs are LSB in +-16G format.
-	 * 
+	 *
 	 * @param accel_bias New biases.
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
@@ -444,7 +444,7 @@ public class MPU9150Driver implements DeviceInterface, MPU9150Constants, AK8975C
 
 	/**
 	 * Reset FIFO read/write pointers.
-	 * 
+	 *
 	 * @throws RuntimeIOException if an I/O error occurs
 	 * @return status
 	 */
@@ -511,7 +511,7 @@ public class MPU9150Driver implements DeviceInterface, MPU9150Constants, AK8975C
 
 	/**
 	 * Get the gyro full-scale range.
-	 * 
+	 *
 	 * @return fsr Current full-scale range.
 	 */
 	public GyroFullScaleRange mpu_get_gyro_fsr() {
@@ -520,7 +520,7 @@ public class MPU9150Driver implements DeviceInterface, MPU9150Constants, AK8975C
 
 	/**
 	 * Set the gyro full-scale range.
-	 * 
+	 *
 	 * @param fsr Desired full-scale range.
 	 * @return status
 	 * @throws RuntimeIOException if an I/O error occurs
@@ -553,7 +553,7 @@ public class MPU9150Driver implements DeviceInterface, MPU9150Constants, AK8975C
 
 	/**
 	 * Set the accel full-scale range.
-	 * 
+	 *
 	 * @param fsr Desired full-scale range.
 	 * @throws RuntimeIOException if an I/O error occurs
 	 * @return status
@@ -582,7 +582,7 @@ public class MPU9150Driver implements DeviceInterface, MPU9150Constants, AK8975C
 	/**
 	 * Set digital low pass filter. The following LPF settings are supported: 188,
 	 * 98, 42, 20, 10, 5.
-	 * 
+	 *
 	 * @param frequency Desired LPF setting.
 	 * @throws RuntimeIOException if an I/O error occurs
 	 * @return status
@@ -594,7 +594,7 @@ public class MPU9150Driver implements DeviceInterface, MPU9150Constants, AK8975C
 	/**
 	 * Set digital low pass filter. The following LPF settings are supported: 188,
 	 * 98, 42, 20, 10, 5.
-	 * 
+	 *
 	 * @param lpf Desired LPF setting.
 	 * @throws RuntimeIOException if an I/O error occurs
 	 * @return status
@@ -624,7 +624,7 @@ public class MPU9150Driver implements DeviceInterface, MPU9150Constants, AK8975C
 
 	/**
 	 * Set sampling rate. Sampling rate must be between 4Hz and 1kHz.
-	 * 
+	 *
 	 * @param rate Desired sampling rate (Hz).
 	 * @throws RuntimeIOException if an I/O error occurs
 	 * @return status
@@ -689,7 +689,7 @@ public class MPU9150Driver implements DeviceInterface, MPU9150Constants, AK8975C
 	 *
 	 * WARNING: The new rate may be different than what was requested. Call
 	 * mpu_get_compass_sample_rate to check the actual setting.
-	 * 
+	 *
 	 * @param rate Desired compass sampling rate (Hz).
 	 * @throws RuntimeIOException if an I/O error occurs
 	 * @return status
@@ -710,7 +710,7 @@ public class MPU9150Driver implements DeviceInterface, MPU9150Constants, AK8975C
 
 	/**
 	 * Get gyro sensitivity scale factor.
-	 * 
+	 *
 	 * @return Sensitivy, conversion from hardware units to dps.
 	 */
 	public double mpu_get_gyro_sens() {
@@ -718,7 +718,7 @@ public class MPU9150Driver implements DeviceInterface, MPU9150Constants, AK8975C
 		 * float sens; switch (gyro_fsr) { case INV_FSR_250DPS: sens = 131.0f; break;
 		 * case INV_FSR_500DPS: sens = 65.5f; break; case INV_FSR_1000DPS: sens = 32.8f;
 		 * break; case INV_FSR_2000DPS: sens = 16.4f; break; default: sens = -1f; }
-		 * 
+		 *
 		 * return sens;
 		 */
 
@@ -727,7 +727,7 @@ public class MPU9150Driver implements DeviceInterface, MPU9150Constants, AK8975C
 
 	/**
 	 * Get accel sensitivity scale factor.
-	 * 
+	 *
 	 * @return Sensitivity. Conversion from hardware units to g's.
 	 */
 	public int mpu_get_accel_sens() {
@@ -749,7 +749,7 @@ public class MPU9150Driver implements DeviceInterface, MPU9150Constants, AK8975C
 	 * Get current FIFO configuration. sensors can contain a combination of the
 	 * following flags: INV_X_GYRO, INV_Y_GYRO, INV_Z_GYRO INV_XYZ_GYRO
 	 * INV_XYZ_ACCEL
-	 * 
+	 *
 	 * @return sensors Mask of sensors in FIFO.
 	 */
 	public byte mpu_get_fifo_config() {
@@ -760,7 +760,7 @@ public class MPU9150Driver implements DeviceInterface, MPU9150Constants, AK8975C
 	 * Select which sensors are pushed to FIFO. sensors can contain a combination of
 	 * the following flags: INV_X_GYRO, INV_Y_GYRO, INV_Z_GYRO INV_XYZ_GYRO
 	 * INV_XYZ_ACCEL
-	 * 
+	 *
 	 * @param newSensors Mask of sensors to push to FIFO.
 	 * @throws RuntimeIOException if an I/O error occurs
 	 * @return status
@@ -807,7 +807,7 @@ public class MPU9150Driver implements DeviceInterface, MPU9150Constants, AK8975C
 
 	/**
 	 * Get current power state.
-	 * 
+	 *
 	 * @return power_on 1 if turned on, 0 if suspended.
 	 */
 	public boolean mpu_get_power_state() {
@@ -821,7 +821,7 @@ public class MPU9150Driver implements DeviceInterface, MPU9150Constants, AK8975C
 	 * Turn specific sensors on/off. sensors can contain a combination of the
 	 * following flags: INV_X_GYRO, INV_Y_GYRO, INV_Z_GYRO INV_XYZ_GYRO
 	 * INV_XYZ_ACCEL INV_XYZ_COMPASS
-	 * 
+	 *
 	 * @param newSensors Mask of sensors to wake.
 	 * @return true if successful.
 	 * @throws RuntimeIOException if an I/O error occurs
@@ -907,7 +907,7 @@ public class MPU9150Driver implements DeviceInterface, MPU9150Constants, AK8975C
 
 	/**
 	 * Read the MPU interrupt status registers.
-	 * 
+	 *
 	 * @return status Mask of interrupt bits.
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
@@ -927,7 +927,7 @@ public class MPU9150Driver implements DeviceInterface, MPU9150Constants, AK8975C
 	 * INV_XYZ_GYRO INV_XYZ_ACCEL If the FIFO has no new data, sensors will be zero.
 	 * If the FIFO is disabled, sensors will be zero and this function will return a
 	 * non-zero error code.
-	 * 
+	 *
 	 * @return FIFOData: gyro Gyro data in hardware units. accel Accel data in
 	 *         hardware units. timestamp Timestamp in milliseconds. sensors Mask of
 	 *         sensors read from FIFO. more Number of remaining packets.
@@ -963,7 +963,7 @@ public class MPU9150Driver implements DeviceInterface, MPU9150Constants, AK8975C
 			packet_size += 6;
 		}
 
-		byte[] data = new byte[MAX_PACKET_LENGTH];
+		byte[] data;
 		// fifo_count_h == 0x72 == MPU9150_RA_FIFO_COUNTH
 		// fifo_count = readUShort(MPU9150_RA_FIFO_COUNTH);
 		data = i2cDevice.readI2CBlockDataByteArray(MPU9150_RA_FIFO_COUNTH, 2);
@@ -1026,7 +1026,7 @@ public class MPU9150Driver implements DeviceInterface, MPU9150Constants, AK8975C
 	/**
 	 * Get one unparsed packet from the FIFO. This function should be used if the
 	 * packet is to be parsed elsewhere.
-	 * 
+	 *
 	 * @param length Length of one FIFO packet.
 	 * @return more Number of remaining packets.
 	 * @throws RuntimeIOException if an I/O error occurs
@@ -1075,7 +1075,7 @@ public class MPU9150Driver implements DeviceInterface, MPU9150Constants, AK8975C
 
 	/**
 	 * Set device to bypass mode.
-	 * 
+	 *
 	 * @param bypass_on 1 to enable bypass mode.
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
@@ -1140,7 +1140,7 @@ public class MPU9150Driver implements DeviceInterface, MPU9150Constants, AK8975C
 
 	/**
 	 * Set interrupt level.
-	 * 
+	 *
 	 * @param active_low 1 for active low, 0 for active high.
 	 */
 	public void mpu_set_int_level(boolean active_low) {
@@ -1149,7 +1149,7 @@ public class MPU9150Driver implements DeviceInterface, MPU9150Constants, AK8975C
 
 	/**
 	 * Enable latched interrupts. Any MPU register will clear the interrupt.
-	 * 
+	 *
 	 * @param enable 1 to enable, 0 to disable.
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
@@ -1211,7 +1211,7 @@ public class MPU9150Driver implements DeviceInterface, MPU9150Constants, AK8975C
 	/**
 	 * Write to the DMP memory. This function prevents I2C writes past the bank
 	 * boundaries. The DMP memory is only accessible when the chip is awake.
-	 * 
+	 *
 	 * @param mem_addr Memory location (bank &lt;&lt; 8 | start address)
 	 * @param data     Bytes to write to memory.
 	 * @throws RuntimeIOException if an I/O error occurs
@@ -1246,7 +1246,7 @@ public class MPU9150Driver implements DeviceInterface, MPU9150Constants, AK8975C
 	/**
 	 * Read from the DMP memory. This function prevents I2C reads past the bank
 	 * boundaries. The DMP memory is only accessible when the chip is awake.
-	 * 
+	 *
 	 * @param mem_addr Memory location (bank &lt;&lt; 8 | start address)
 	 * @param length   Number of bytes to read.
 	 * @return data Bytes read from memory.
@@ -1280,7 +1280,7 @@ public class MPU9150Driver implements DeviceInterface, MPU9150Constants, AK8975C
 
 	/**
 	 * Load and verify DMP image.
-	 * 
+	 *
 	 * @param length      Length of DMP image.
 	 * @param firmware    DMP code.
 	 * @param start_addr  Starting address of DMP code memory.
@@ -1332,7 +1332,7 @@ public class MPU9150Driver implements DeviceInterface, MPU9150Constants, AK8975C
 
 	/**
 	 * Enable/disable DMP support.
-	 * 
+	 *
 	 * @param enable 1 to turn on the DMP.
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
@@ -1373,7 +1373,7 @@ public class MPU9150Driver implements DeviceInterface, MPU9150Constants, AK8975C
 
 	/**
 	 * Get DMP state.
-	 * 
+	 *
 	 * @return enabled true if enabled.
 	 */
 	public boolean mpu_get_dmp_state() {
@@ -1482,7 +1482,7 @@ public class MPU9150Driver implements DeviceInterface, MPU9150Constants, AK8975C
 
 	/**
 	 * Read raw compass data.
-	 * 
+	 *
 	 * @return data Raw data in hardware units.
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
@@ -1521,7 +1521,7 @@ public class MPU9150Driver implements DeviceInterface, MPU9150Constants, AK8975C
 
 	/**
 	 * Get the compass full-scale range.
-	 * 
+	 *
 	 * @return fsr Current full-scale range.
 	 */
 	public int mpu_get_compass_fsr() {
