@@ -36,7 +36,7 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 	public static int MAX_PRESSURE_HPA = 1100;
 	public static int MIN_HUMIDITY_PERCENT = 20;
 	public static int MAX_HUMIDITY_PERCENT = 80;
-	public static final int GAS_WAIT_SHARED = 140;
+	public static final int GAS_WAIT_SHARED_MS = 140;
 
 	// Default I2C address for the sensor.
 	public static final int DEVICE_ADDRESS = 0x76;
@@ -1448,11 +1448,6 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 			device.writeByteData(REG_RES_HEAT0, calculateHeaterResistanceFpu(heaterConfig.getHeaterTemp(0)));
 			device.writeByteData(REG_GAS_WAIT0, calculateGasWait(heaterConfig.getHeaterDuration(0)));
 			break;
-		case PARALLEL:
-			int shared_dur = calculateHeaterDurationShared(heaterConfig.getSharedHeaterDuration());
-			device.writeByteData(REG_SHD_HEATR_DUR, shared_dur);
-			// Note deliberate case statement fall-through
-			// $FALL-THROUGH$
 		case SEQUENTIAL:
 			// In sequential and parallel modes nb_conv is the number of steps in the heater
 			// profile (1..10)
@@ -1463,6 +1458,23 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 			for (int i = 0; i < nb_conv; i++) {
 				rh_reg_data[i] = (byte) calculateHeaterResistanceFpu(heaterConfig.getHeaterTemp(i));
 				gw_reg_data[i] = (byte) calculateGasWait(heaterConfig.getHeaterDuration(i));
+			}
+			writeBlockData(REG_RES_HEAT0, rh_reg_data);
+			writeBlockData(REG_GAS_WAIT0, gw_reg_data);
+			break;
+		case PARALLEL:
+			int shared_dur = calculateHeaterDurationShared(heaterConfig.getSharedHeaterDuration());
+			device.writeByteData(REG_SHD_HEATR_DUR, shared_dur);
+			// In sequential and parallel modes nb_conv is the number of steps in the heater
+			// profile (1..10)
+			nb_conv = (byte) heaterConfig.getProfileLength();
+
+			rh_reg_data = new byte[nb_conv];
+			gw_reg_data = new byte[nb_conv];
+			for (int i = 0; i < nb_conv; i++) {
+				rh_reg_data[i] = (byte) calculateHeaterResistanceFpu(heaterConfig.getHeaterTemp(i));
+				// Note that there isn't a call to calculateGasWait here
+				gw_reg_data[i] = (byte) heaterConfig.getHeaterDuration(i);
 			}
 			writeBlockData(REG_RES_HEAT0, rh_reg_data);
 			writeBlockData(REG_GAS_WAIT0, gw_reg_data);

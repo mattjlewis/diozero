@@ -33,7 +33,7 @@ public class BME68xTest {
 			bme68x.setOperatingMode(OperatingMode.SLEEP);
 			System.out.println(bme68x.getOperatingMode());
 
-			bme68x.lowGasSelfTestCheck();
+			// bme68x.lowGasSelfTestCheck();
 
 			bme68x.softReset();
 
@@ -99,21 +99,25 @@ public class BME68xTest {
 
 		OperatingMode target_operating_mode = OperatingMode.PARALLEL;
 
-		int shared_heatr_dur = BME68x.GAS_WAIT_SHARED
+		int shared_heatr_dur_ms = BME68x.GAS_WAIT_SHARED_MS
 				- (bme68x.getRemainingMeasureDuration(target_operating_mode) / 1000);
-		System.out.println("shared_heatr_dur: " + shared_heatr_dur);
+		System.out.println("shared_heatr_dur_ms: " + shared_heatr_dur_ms);
 
-		bme68x.setHeaterConfiguration(target_operating_mode,
-				new HeaterConfig(true, new int[] { 320, 100, 100, 100, 200, 200, 200, 320, 320, 320 },
-						new int[] { 5, 2, 10, 30, 5, 5, 5, 5, 5, 5 }, shared_heatr_dur));
+		bme68x.setHeaterConfiguration(target_operating_mode, new HeaterConfig(true, //
+				// Heater temperature in degree Celsius
+				new int[] { 320, 100, 100, 100, 200, 200, 200, 320, 320, 320 },
+				// Multiplier to the shared heater duration
+				new int[] { 5, 2, 10, 30, 5, 5, 5, 5, 5, 5 }, //
+				// new int[] { 5, 2, 10, 30, 5, 5, 5, 5, 5, 5 },
+				shared_heatr_dur_ms));
 
 		// Calculate delay period in microseconds
-		int remaining_duration_us = bme68x.getRemainingMeasureDuration(target_operating_mode);
-		// System.out.println("remaining_duration_us: " + remaining_duration_us + "
-		// microseconds");
+		int remaining_duration_ms = bme68x.getRemainingMeasureDuration(target_operating_mode) / 1000;
+		// System.out.println("remaining_duration_ms: " + remaining_duration_ms + "
+		// milliseconds");
 
 		for (int i = 0; i < 10; i++) {
-			SleepUtil.sleepMillis(remaining_duration_us / 1_000 + 1);
+			SleepUtil.sleepMillis(remaining_duration_ms + shared_heatr_dur_ms);
 
 			int reading = 0;
 			for (Data data : bme68x.getSensorData(target_operating_mode)) {

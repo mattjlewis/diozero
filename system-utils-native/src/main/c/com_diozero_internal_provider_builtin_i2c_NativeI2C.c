@@ -181,6 +181,7 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_builtin_i2c_NativeI2C_
 		JNIEnv* env, jclass clz, jint fd, jint txLength, jbyteArray txData) {
 	jboolean is_copy;
 	jbyte* tx_buf = (*env)->GetByteArrayElements(env, txData, &is_copy);
+	//(*env)->GetArrayLength(env, txData);
 
 	int rc = write(fd, tx_buf, txLength);
 
