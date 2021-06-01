@@ -5,7 +5,7 @@ package com.diozero.devices;
  * Organisation: diozero
  * Project:      diozero - Core
  * Filename:     SGP30.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.devices;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -35,12 +35,14 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 import org.tinylog.Logger;
 
 import com.diozero.api.DeviceInterface;
 import com.diozero.api.I2CDevice;
+import com.diozero.api.I2CDeviceInterface.I2CMessage;
 import com.diozero.util.Crc;
 import com.diozero.util.DiozeroScheduler;
 import com.diozero.util.SleepUtil;
@@ -58,8 +60,10 @@ public class SGP30 implements DeviceInterface, Runnable {
 
 	public static final int I2C_ADDRESS = 0x58;
 
+	public static final int IGNORE_READINGS = 15;
+
 	private static final Crc.Params CRC8_PARAMS = new Crc.Params(0x31, 0xff, false, false, 0x00);
-	
+
 	/* command and constants for reading the serial ID */
 	private static final short CMD_GET_SERIAL_ID = 0x3682;
 	private static final int CMD_GET_SERIAL_ID_WORDS = 3;
@@ -115,8 +119,8 @@ public class SGP30 implements DeviceInterface, Runnable {
 	private I2CDevice device;
 	private long startTimeMs;
 	private ScheduledFuture<?> future;
-	private SGP30Measurement lastMeasurement;
 	private Consumer<SGP30Measurement> measurementListener;
+	private AtomicInteger reading;
 
 	public SGP30(int controller) {
 		this(controller, I2C_ADDRESS);
@@ -127,21 +131,29 @@ public class SGP30 implements DeviceInterface, Runnable {
 	}
 
 	public void start(Consumer<SGP30Measurement> consumer) {
-		this.measurementListener = consumer;
 		Logger.debug("start");
+		measurementListener = consumer;
+
 		iaqInit();
+		reading = new AtomicInteger();
+
 		// According to the datasheet there is a measurement immediately after init
-		measureIaq();
+		if (measurementListener != null) {
+			measurementListener.accept(measureIaq());
+		}
+
 		startTimeMs = System.currentTimeMillis();
-		future = DiozeroScheduler.getNonDaemonInstance().scheduleAtFixedRate(this, 1000, 1000, TimeUnit.MILLISECONDS);
+		// Get a reading every second
+		future = DiozeroScheduler.getNonDaemonInstance().scheduleAtFixedRate(this, 1, 1, TimeUnit.SECONDS);
 	}
 
 	public void stop() {
 		if (future != null) {
 			future.cancel(true);
+			future = null;
 		}
-		future = null;
 		startTimeMs = 0;
+		measurementListener = null;
 	}
 
 	@Override
@@ -150,15 +162,11 @@ public class SGP30 implements DeviceInterface, Runnable {
 		Logger.debug("Getting measurement @{}s{}", Integer.valueOf(seconds_since_start),
 				(seconds_since_start <= 15) ? " (initialising)" : "");
 
-		lastMeasurement = measureIaq();
-		Logger.debug("Measurement: {}", lastMeasurement);
+		SGP30Measurement measurement = measureIaq();
+		Logger.debug("Measurement: {}", measurement);
 		if (measurementListener != null) {
-			measurementListener.accept(lastMeasurement);
+			measurementListener.accept(measurement);
 		}
-	}
-
-	public SGP30Measurement getLastMeasurement() {
-		return lastMeasurement;
 	}
 
 	public FeatureSetVersion getFeatureSetVersion() {
@@ -172,14 +180,16 @@ public class SGP30 implements DeviceInterface, Runnable {
 		return (response[0] << 32) | (response[1] << 16) | response[2];
 	}
 
-	public void measureTest() {
+	public boolean measureTest() {
 		int[] response = command(CMD_MEASURE_TEST, CMD_MEASURE_TEST_WORDS, CMD_MEASURE_TEST_DELAY_MS);
 		if (response[0] == CMD_MEASURE_TEST_OK) {
 			Logger.info("measureTest success");
-		} else {
-			Logger.error("measureTest error, expected {}, got {}", Integer.valueOf(CMD_MEASURE_TEST_OK),
-					Integer.valueOf(response[0]));
+			return true;
 		}
+
+		Logger.error("measureTest error, expected {}, got {}", Integer.valueOf(CMD_MEASURE_TEST_OK),
+				Integer.valueOf(response[0]));
+		return false;
 	}
 
 	private void iaqInit() {
@@ -187,7 +197,8 @@ public class SGP30 implements DeviceInterface, Runnable {
 	}
 
 	private SGP30Measurement measureIaq() {
-		return new SGP30Measurement(command(CMD_IAQ_MEASURE, CMD_IAQ_MEASURE_WORDS, CMD_IAQ_MEASURE_DELAY_MS));
+		return new SGP30Measurement(reading.incrementAndGet(),
+				command(CMD_IAQ_MEASURE, CMD_IAQ_MEASURE_WORDS, CMD_IAQ_MEASURE_DELAY_MS));
 	}
 
 	public RawMeasurement rawMeasurement() {
@@ -200,7 +211,7 @@ public class SGP30 implements DeviceInterface, Runnable {
 	}
 
 	public SGP30Measurement getIaqBaseline() {
-		return new SGP30Measurement(
+		return new SGP30Measurement(-1,
 				command(CMD_GET_IAQ_BASELINE, CMD_GET_IAQ_BASELINE_WORDS, CMD_GET_IAQ_BASELINE_DELAY_MS));
 	}
 
@@ -236,8 +247,17 @@ public class SGP30 implements DeviceInterface, Runnable {
 				buffer.put((byte) Crc.crc8(CRC8_PARAMS, data));
 			}
 		}
-		buffer.rewind();
-		device.writeBytes(buffer);
+
+		// This generates a 121 (remote I/O) I2C error
+		// buffer.rewind();
+		// device.writeBytes(buffer);
+
+		// So use I2C read/write instead
+		buffer.flip();
+		byte[] bytes = new byte[buffer.limit()];
+		buffer.get(bytes);
+		I2CMessage[] messages = new I2CMessage[] { new I2CMessage(I2CMessage.I2C_M_WR, bytes.length) };
+		device.readWrite(messages, bytes);
 
 		SleepUtil.sleepMillis(delayMs);
 
@@ -264,6 +284,7 @@ public class SGP30 implements DeviceInterface, Runnable {
 	@Override
 	public void close() {
 		try {
+			stop();
 			device.close();
 		} catch (Exception e) {
 			// Ignore
@@ -299,13 +320,19 @@ public class SGP30 implements DeviceInterface, Runnable {
 	}
 
 	public static final class SGP30Measurement {
-		int co2Equivalent;
+		private int reading;
+		private int co2Equivalent;
 		// Total Volatile Organic Compounds
-		int totalVOC;
+		private int totalVOC;
 
-		public SGP30Measurement(int[] raw) {
+		public SGP30Measurement(int reading, int[] raw) {
+			this.reading = reading;
 			co2Equivalent = raw[0];
 			totalVOC = raw[1];
+		}
+
+		public int getReading() {
+			return reading;
 		}
 
 		public int getCO2Equivalent() {
@@ -318,7 +345,7 @@ public class SGP30 implements DeviceInterface, Runnable {
 
 		@Override
 		public String toString() {
-			return "SGP30Measurement [CO2 Equivalent=" + co2Equivalent + ", Total VOC=" + totalVOC + "]";
+			return "SGP30Measurement [" + reading + "]: CO2 Equivalent=" + co2Equivalent + ", Total VOC=" + totalVOC;
 		}
 	}
 

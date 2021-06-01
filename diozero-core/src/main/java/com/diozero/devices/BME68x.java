@@ -4,9 +4,6 @@ import org.tinylog.Logger;
 
 import com.diozero.api.I2CConstants;
 import com.diozero.api.I2CDevice;
-import com.diozero.devices.BarometerInterface;
-import com.diozero.devices.HygrometerInterface;
-import com.diozero.devices.ThermometerInterface;
 import com.diozero.util.BitManipulation;
 import com.diozero.util.SleepUtil;
 
@@ -1086,6 +1083,8 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 	 * bme68x_low_gas_selftest_check
 	 */
 	public void lowGasSelfTestCheck() {
+		Logger.info("Performing low gas self test...");
+
 		final int HEATR_DUR1 = 1000;
 		final int HEATR_DUR2 = 2000;
 		final int LOW_TEMP = 150;
@@ -1101,17 +1100,14 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 		OversamplingMultiplier os_temp = OversamplingMultiplier.X2;
 
 		HeaterConfig heatr_conf = new HeaterConfig(true, HEATR_DUR1, HIGH_TEMP);
-
 		setHeaterConfiguration(OperatingMode.FORCED, heatr_conf);
-
 		setConfiguration(os_hum, os_temp, os_press, IirFilterCoefficient.NONE, ODR._0_59_MS);
-
 		setOperatingMode(OperatingMode.FORCED);
 
+		Logger.info("Sleeping for {} ms", Integer.valueOf(HEATR_DUR1_DELAY_MS));
 		SleepUtil.sleepMillis(HEATR_DUR1_DELAY_MS);
 
 		Data[] data = new Data[N_MEAS];
-
 		data[0] = getSensorData(OperatingMode.FORCED)[0];
 
 		if ((data[0].idac != 0x00) && (data[0].idac != 0xFF) && data[0].gasMeasurementValid) {
@@ -1130,9 +1126,12 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 			} else {
 				heatr_conf.heaterTempProfile[0] = LOW_TEMP;
 			}
+
 			setHeaterConfiguration(OperatingMode.FORCED, heatr_conf);
 			setConfiguration(os_hum, os_temp, os_press, IirFilterCoefficient.NONE, ODR._0_59_MS);
 			setOperatingMode(OperatingMode.FORCED);
+
+			Logger.info("Sleeping for {} ms", Integer.valueOf(HEATR_DUR2_DELAY_MS));
 			SleepUtil.sleepMillis(HEATR_DUR2_DELAY_MS);
 
 			data[i] = getSensorData(OperatingMode.FORCED)[0];
@@ -1167,7 +1166,7 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 		}
 
 		if (cent_res < 6) {
-			Logger.error("cent_res {} should be >= 6", Float.valueOf(cent_res));
+			Logger.error("cent_res {} should be >= 6 (??)", Float.valueOf(cent_res));
 		}
 	}
 
