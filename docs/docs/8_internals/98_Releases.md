@@ -185,6 +185,8 @@ redirect_from:
 + Use of BlockingQueue within GpioChip
 + Support for Orange Pi Zero Plus and Orange Pi One Plus
 * MFRC522 bug fix (#71) - allow antenna gain to be set prior to turning on the antenna
++ Support for BME688
++ Improvements to SGP30
 
 ## Future
 
