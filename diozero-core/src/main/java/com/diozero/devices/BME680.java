@@ -32,7 +32,6 @@
 package com.diozero.devices;
 
 import java.util.concurrent.BlockingQueue;
-
 import java.util.concurrent.LinkedBlockingQueue;
 
 import org.tinylog.Logger;
@@ -41,17 +40,20 @@ import com.diozero.api.I2CConstants;
 import com.diozero.api.I2CDevice;
 import com.diozero.util.SleepUtil;
 
-/*-
- * Indoor air quality (IAQ) output. In principle, this output is in an index that can have values between 0 and 500 with
- * a resolution of 1 to indicate or quantify the quality of the air available in the surrounding.
- * Operational Range:
- * Temperature: -40C-85C
- * Humidity: 10-95 %r.H.
- * IAQ: 0-500
+/**
+ * Indoor air quality (IAQ) output. In principle, this output is in an index
+ * that can have values between 0 and 500 with a resolution of 1 to indicate or
+ * quantify the quality of the air available in the surrounding.
+ *
+ * Operational Range: Temperature: -40C-85C Humidity: 10-95 %r.H. IAQ: 0-500
+ *
  * https://cdn-shop.adafruit.com/product-files/3660/BME680.pdf
  * https://github.com/BoschSensortec/BME68x-Sensor-API
  * https://github.com/pimoroni/bme680-python/blob/master/library/bme680/__init__.py
+ *
+ * @deprecated Use {@link BME68x} instead
  */
+@Deprecated
 public class BME680 implements BarometerInterface, ThermometerInterface, HygrometerInterface {
 	/**
 	 * Chip vendor for the BME680

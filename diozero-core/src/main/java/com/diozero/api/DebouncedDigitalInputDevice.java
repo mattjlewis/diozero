@@ -1,4 +1,4 @@
-package com.diozero.api.sandpit;
+package com.diozero.api;
 
 /*
  * #%L
