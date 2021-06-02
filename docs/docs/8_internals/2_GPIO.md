@@ -32,7 +32,8 @@ it has been implemented and where the current user has access to the correspondi
 diozero has memory mapped GPIO support for following boards:
 
 * Raspberry Pi (all flavours)
-* FriendlyArm H3 / Allwinner Sun8i CPU (as used in the NanoPi Duo2 / NanoPi Neo amongst others)
+* FriendlyArm H3 / Allwinner H3 CPU (as used in the NanoPi Duo2 / NanoPi Neo amongst others)
+* OrangePi Zero+ (Allwinner H5) / One+ (Allwinner H6)
 * Odroid C2
 * ASUS Tinkerboard
 * Next Think Co CHIP (Allwinner sun4i/sun5i)

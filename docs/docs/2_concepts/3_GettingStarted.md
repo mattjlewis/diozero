@@ -37,7 +37,8 @@ PWM on the Raspberry Pi. If you need hardware PWM on a Raspberry Pi then you mus
 > mmap is currently supported on the following SBCs:
 >
 > * Raspberry Pi (all variants)
-> * FriendlyArm H3 / Allwinner Sun8i CPU (as used in the NanoPi Duo2 / NanoPi Neo amongst others)
+> * FriendlyArm / Allwinner H3 Sun8i CPU (as used in the NanoPi Duo2 / NanoPi Neo amongst others)
+> * OrangePi Zero+ (Allwinner H5) / One+ (Allwinner H6)
 > * ASUS TinkerBoard
 > * Odroid C2
 > * Next Think Co CHIP (Allwinner sun4i/sun5i)

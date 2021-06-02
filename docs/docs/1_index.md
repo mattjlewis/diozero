@@ -66,6 +66,7 @@ diozero has out of the box support for the following Single Board Computers and 
 * [BeagleBone Green / Black](https://beagleboard.org/black).
 * [ASUS TinkerBoard](https://www.asus.com/uk/Single-board-Computer/TINKER-BOARD/) (ASUS TinkerOS/Linaro as well as Armbian 64-bit).
 * [Allwinner H3](https://linux-sunxi.org/H3) boards, including [NanoPi Neo](https://www.friendlyarm.com/index.php?route=product/product&product_id=132) and [NanoPi Duo](https://www.friendlyarm.com/index.php?route=product/product&product_id=244) (Armbian 32-bit).
+* OrangePi [Zero+](http://www.orangepi.org/OrangePiZeroPlus/) ([Allwinner H5](https://linux-sunxi.org/H5)) / [One+](http://www.orangepi.org/OrangePiOneplus/) ([Allwinner H6](https://linux-sunxi.org/H6))
 * [The Next Thing Co CHIP](https://getchip.com/pages/chip).
 * [Arduino compatible](https://www.arduino.cc) (any device that can run [Standard Firmata](https://github.com/firmata/arduino/blob/master/examples/StandardFirmata/StandardFirmata.ino)).
 * [ESP8266](https://www.espressif.com/en/products/socs/esp8266) / [ESP32](https://www.espressif.com/en/products/socs/esp32) (via [Standard Firmata WiFi](https://github.com/firmata/arduino/tree/master/examples/StandardFirmataWiFi)).

@@ -5,7 +5,7 @@ package com.diozero.sampleapps;
  * Organisation: diozero
  * Project:      diozero - Sample applications
  * Filename:     BME68xTest.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.sampleapps;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -97,18 +97,19 @@ public class BME68xTest {
 		bme68x.setHeaterConfiguration(target_operating_mode, new HeaterConfig(true, 320, 150));
 
 		// Calculate delay period in microseconds
-		long remaining_duration_us = bme68x.getRemainingMeasureDuration(target_operating_mode);
-		// System.out.println("remaining_duration_us: " + remaining_duration_us + "
-		// microseconds");
-		SleepUtil.sleepMillis(remaining_duration_us / 1_000 + 1);
+		long measure_duration_ms = bme68x.calculateMeasureDuration(target_operating_mode) / 1000;
+		// System.out.println("measure_duration_ms: " + measure_duration_ms + "
+		// milliseconds");
+		SleepUtil.sleepMillis(measure_duration_ms);
 
 		for (int i = 0; i < 5; i++) {
 			int reading = 0;
 			for (Data data : bme68x.getSensorData(target_operating_mode)) {
 				System.out.format(
-						"Reading [%d]: Temperature: %.2f C. Pressure: %.2f hPa. Relative Humidity: %.2f %%rH. Gas Resistance: %.2f Ohms (heater stable: %b, gas valid: %b).%n",
-						Integer.valueOf(reading), Float.valueOf(data.getTemperature()),
-						Float.valueOf(data.getPressure()), Float.valueOf(data.getHumidity()),
+						"Reading [%d]: Idx: %,d. Temperature: %,.2f C. Pressure: %,.2f hPa. Relative Humidity: %,.2f %%rH. Gas Idx: %,d. Gas Resistance: %,.2f Ohms (heater stable: %b, gas valid: %b).%n",
+						Integer.valueOf(reading), Integer.valueOf(data.getMeasureIndex()),
+						Float.valueOf(data.getTemperature()), Float.valueOf(data.getPressure()),
+						Float.valueOf(data.getHumidity()), Integer.valueOf(data.getGasMeasurementIndex()),
 						Float.valueOf(data.getGasResistance()), Boolean.valueOf(data.isHeaterTempStable()),
 						Boolean.valueOf(data.isGasMeasurementValid()));
 				reading++;
@@ -122,42 +123,66 @@ public class BME68xTest {
 		System.out.format("hum os: %s, temp os: %s, press os: %s, IIR Filter: %s, ODR: %s%n",
 				bme68x.getHumidityOversample(), bme68x.getTemperatureOversample(), bme68x.getPressureOversample(),
 				bme68x.getIirFilterConfig(), bme68x.getOdr());
-		bme68x.setConfiguration(OversamplingMultiplier.X1, OversamplingMultiplier.X2, OversamplingMultiplier.X16,
-				IirFilterCoefficient.NONE, ODR._0_59_MS);
+		bme68x.setConfiguration(OversamplingMultiplier.X2, OversamplingMultiplier.X2, OversamplingMultiplier.X2,
+				IirFilterCoefficient.NONE, ODR.NONE);
 		System.out.format("hum os: %s, temp os: %s, press os: %s, IIR Filter: %s, ODR: %s%n",
 				bme68x.getHumidityOversample(), bme68x.getTemperatureOversample(), bme68x.getPressureOversample(),
 				bme68x.getIirFilterConfig(), bme68x.getOdr());
 
 		OperatingMode target_operating_mode = OperatingMode.PARALLEL;
 
-		int shared_heatr_dur_ms = BME68x.GAS_WAIT_SHARED_MS
-				- (bme68x.getRemainingMeasureDuration(target_operating_mode) / 1000);
-		System.out.println("shared_heatr_dur_ms: " + shared_heatr_dur_ms);
+		// Calculate TPHG measure duration and convert to milliseconds
+		int measure_duration_ms = bme68x.calculateMeasureDuration(target_operating_mode) / 1000;
+		System.out.println("measure_duration_ms: " + measure_duration_ms + " milliseconds");
+
+		// Assume that 150ms is the required heater duration.
+		// https://github.com/BoschSensortec/BME68x-Sensor-API/blob/master/examples/parallel_mode/parallel_mode.c#L78
+		// p39: Measurement duration = gas_wait_X * (gas_wait_shared + TTPHG_duration)
+		int heater_duration = 150;
+		int gas_wait_shared_ms = heater_duration - measure_duration_ms;
+		System.out.println("gas_wait_shared_ms: " + gas_wait_shared_ms);
 
 		bme68x.setHeaterConfiguration(target_operating_mode, new HeaterConfig(true, //
 				// Heater temperature in degree Celsius
 				new int[] { 320, 100, 100, 100, 200, 200, 200, 320, 320, 320 },
 				// Multiplier to the shared heater duration
-				new int[] { 5, 2, 10, 30, 5, 5, 5, 5, 5, 5 }, //
+				new int[] { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 }, //
 				// new int[] { 5, 2, 10, 30, 5, 5, 5, 5, 5, 5 },
-				shared_heatr_dur_ms));
+				gas_wait_shared_ms));
 
-		// Calculate delay period in microseconds
-		int remaining_duration_ms = bme68x.getRemainingMeasureDuration(target_operating_mode) / 1000;
-		// System.out.println("remaining_duration_ms: " + remaining_duration_ms + "
-		// milliseconds");
+		// FIXME Dumb maths - equates to heater_duration
+		int delay_period = gas_wait_shared_ms + measure_duration_ms;
+		System.out.println("delay_period: " + delay_period + " ms, heater_duration: " + heater_duration);
 
-		for (int i = 0; i < 10; i++) {
-			SleepUtil.sleepMillis(remaining_duration_ms + shared_heatr_dur_ms);
+		int last_gas_meas_idx = -1;
+		long last_gas_meas_ms = System.currentTimeMillis();
+		for (int i = 0; i < 100; i++) {
+			SleepUtil.sleepMillis(delay_period);
 
 			int reading = 0;
 			for (Data data : bme68x.getSensorData(target_operating_mode)) {
-				System.out.format(
-						"Reading [%d]: Temperature: %.2f C. Pressure: %.2f hPa. Relative Humidity: %.2f %%rH. Gas Resistance: %.2f Ohms (heater stable: %b, gas valid: %b).%n",
-						Integer.valueOf(reading), Float.valueOf(data.getTemperature()),
-						Float.valueOf(data.getPressure()), Float.valueOf(data.getHumidity()),
-						Float.valueOf(data.getGasResistance()), Boolean.valueOf(data.isHeaterTempStable()),
-						Boolean.valueOf(data.isGasMeasurementValid()));
+				if (data.isNewData()) {
+					if (data.isGasMeasurementValid()) {
+						System.out.format(
+								"Reading [%d]: Idx: %,d. Temperature: %,.2f C. Pressure: %,.2f hPa. Relative Humidity: %,.2f %%rH. Gas Idx: %,d. Gas Resistance: %,.2f Ohms (heater stable: %b, gas valid: %b).%n",
+								Integer.valueOf(reading), Integer.valueOf(data.getMeasureIndex() & 0xff),
+								Float.valueOf(data.getTemperature()), Float.valueOf(data.getPressure()),
+								Float.valueOf(data.getHumidity()), Integer.valueOf(data.getGasMeasurementIndex()),
+								Float.valueOf(data.getGasResistance()), Boolean.valueOf(data.isHeaterTempStable()),
+								Boolean.valueOf(data.isGasMeasurementValid()));
+						if (data.getGasMeasurementIndex() != last_gas_meas_idx) {
+							System.out.println("delta: " + (System.currentTimeMillis() - last_gas_meas_ms));
+							last_gas_meas_ms = System.currentTimeMillis();
+							last_gas_meas_idx = data.getGasMeasurementIndex();
+						}
+					} else {
+						System.out.format(
+								"Reading [%d]: Idx: %,d. Temperature: %,.2f C. Pressure: %,.2f hPa. Relative Humidity: %,.2f %%rH.%n",
+								Integer.valueOf(reading), Integer.valueOf(data.getMeasureIndex() & 0xff),
+								Float.valueOf(data.getTemperature()), Float.valueOf(data.getPressure()),
+								Float.valueOf(data.getHumidity()));
+					}
+				}
 				reading++;
 			}
 		}
@@ -183,19 +208,19 @@ public class BME68xTest {
 		bme68x.setHeaterConfiguration(target_operating_mode, new HeaterConfig(true, 320, 150));
 
 		// Calculate delay period in microseconds
-		long remaining_duration_us = bme68x.getRemainingMeasureDuration(target_operating_mode);
-		// System.out.println("remaining_duration_us: " + remaining_duration_us + "
-		// microseconds");
-		SleepUtil.sleepMillis(remaining_duration_us / 1_000 + 1);
+		long measure_duration_ms = bme68x.calculateMeasureDuration(target_operating_mode) / 1000;
+		// System.out.println("measure_duration_ms: " + measure_duration_ms + "
+		// milliseconds");
+		SleepUtil.sleepMillis(measure_duration_ms);
 
 		// start_time and curr_time ensure that the
 		// burn_in_time (in seconds) is kept track of
 		long start_time_ms = System.currentTimeMillis();
-		int burn_in_time_sec = 300;
+		int burn_in_time_sec = 30;
 
 		// Collect gas resistance burn-in values, then use the average of the last 50
 		// values to set the upper limit for calculating gas_baseline
-		System.out.format("Collecting gas resistance burn-in data for %,d seconds%n",
+		System.out.format("Collecting gas resistance burn-in data for %,d seconds...%n",
 				Integer.valueOf(burn_in_time_sec));
 		List<Float> gas_res_burn_in_data = new ArrayList<>();
 		List<Float> hum_burn_in_data = new ArrayList<>();
@@ -206,7 +231,7 @@ public class BME68xTest {
 				hum_burn_in_data.add(Float.valueOf(data[0].getHumidity()));
 			}
 			SleepUtil.sleepSeconds(1);
-			System.out.format("Gas: %,.2f Ohms. Remaining burn-in time: %,d%n",
+			System.out.format("Gas: %,.2f Ohms. Remaining burn-in time: %,d secs%n",
 					Float.valueOf(data[0].getGasResistance()),
 					Long.valueOf(burn_in_time_sec - (System.currentTimeMillis() - start_time_ms) / 1000));
 		}

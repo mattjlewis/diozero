@@ -7,6 +7,8 @@ has_toc: true
 
 # ASUS TinkerBoard Setup
 
+Armbian setup notes.
+
 ## I/O File Permissions
 
 File `/etc/udev/rules.d/70-gpio.rules`:

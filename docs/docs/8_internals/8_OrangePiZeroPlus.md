@@ -1,3 +1,14 @@
+---
+parent: Internals
+nav_order: 8
+permalink: /internals/opisetup.html
+has_toc: true
+---
+
+# OrangePi Setup
+
+Armbian setup notes.
+
 Use `visudo` and add `NOPASSWD:` for group `sudo` so that the line looks like this:
 
 ```
@@ -58,4 +69,5 @@ Use `raspbi-config`.
 
 ```
 dtc -I dtb -O dts -o sun50i-h5-orangepi-zero-plus.dts /boot/dtb/allwinner/sun50i-h5-orangepi-zero-plus.dtb
+dtc -I dtb -O dts -o sun50i-h5-orangepi-one-plus.dts /boot/dtb/allwinner/sun50i-h5-orangepi-one-plus.dtb
 ```

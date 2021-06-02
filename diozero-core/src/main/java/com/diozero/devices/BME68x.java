@@ -5,7 +5,7 @@ package com.diozero.devices;
  * Organisation: diozero
  * Project:      diozero - Core
  * Filename:     BME68x.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.devices;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -67,7 +67,6 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 	public static int MAX_PRESSURE_HPA = 1100;
 	public static int MIN_HUMIDITY_PERCENT = 20;
 	public static int MAX_HUMIDITY_PERCENT = 80;
-	public static final int GAS_WAIT_SHARED_MS = 140;
 
 	// Default I2C address for the sensor.
 	public static final int DEVICE_ADDRESS = 0x76;
@@ -295,9 +294,9 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 	private static final int REG_RES_HEAT0 = 0x5a;
 	// 0th Gas wait address. 0x64..0x6d (len: 10)
 	private static final int REG_GAS_WAIT0 = 0x64;
-	// Shared heating duration address
-	private static final int REG_SHD_HEATR_DUR = 0x6e;
-	private static final int NUM_HEATER_PROFILES = 10;
+	// Shared heating duration address (REG_SHD_HEATR_DUR)
+	private static final int REG_GAS_WAIT_SHARED = 0x6e;
+	private static final int MAX_NUM_HEATER_PROFILES = 10;
 
 	// Sensor configuration registers
 	// [3] heat_off
@@ -410,23 +409,23 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 	 * i.e Comparing value, BME680_MAX_OVERFLOW_VAL = INT32_C(1 << 30)
 	 * Other code has this at (1 << 31)
 	 */
-	private static final int MAX_OVERFLOW_VAL = 0x40000000;
+	static final int MAX_OVERFLOW_VAL = 0x40000000;
 
 	private static final int HUMIDITY_REGISTER_SHIFT_VALUE = 4;
 	private static final int RESET_PERIOD_MILLISECONDS = 10;
 	private static final int POLL_PERIOD_MILLISECONDS = 10;
 
 	// Look up tables for the possible gas range values
-	private static final long GAS_RANGE_LOOKUP_TABLE_1_INT[] = { 2147483647L, 2147483647L, 2147483647L, 2147483647L,
+	static final long GAS_RANGE_LOOKUP_TABLE_1_INT[] = { 2147483647L, 2147483647L, 2147483647L, 2147483647L,
 			2147483647L, 2126008810L, 2147483647L, 2130303777L, 2147483647L, 2147483647L, 2143188679L, 2136746228L,
 			2147483647L, 2126008810L, 2147483647L, 2147483647L };
-	private static final long GAS_RANGE_LOOKUP_TABLE_2_INT[] = { 4096000000L, 2048000000L, 1024000000L, 512000000L,
-			255744255L, 127110228L, 64000000L, 32258064L, 16016016L, 8000000L, 4000000L, 2000000L, 1000000L, 500000L,
-			250000L, 125000L };
-	private static final float[] GAS_RANGE_LOOKUP_TABLE_1_FPU = { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f, -0.8f,
-			0.0f, 0.0f, -0.2f, -0.5f, 0.0f, -1.0f, 0.0f, 0.0f };
-	private static final float[] GAS_RANGE_LOOKUP_TABLE_2_FPU = { 0.0f, 0.0f, 0.0f, 0.0f, 0.1f, 0.7f, 0.0f, -0.8f,
-			-0.1f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
+	static final long GAS_RANGE_LOOKUP_TABLE_2_INT[] = { 4096000000L, 2048000000L, 1024000000L, 512000000L, 255744255L,
+			127110228L, 64000000L, 32258064L, 16016016L, 8000000L, 4000000L, 2000000L, 1000000L, 500000L, 250000L,
+			125000L };
+	static final float[] GAS_RANGE_LOOKUP_TABLE_1_FPU = { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f, -0.8f, 0.0f, 0.0f,
+			-0.2f, -0.5f, 0.0f, -1.0f, 0.0f, 0.0f };
+	static final float[] GAS_RANGE_LOOKUP_TABLE_2_FPU = { 0.0f, 0.0f, 0.0f, 0.0f, 0.1f, 0.7f, 0.0f, -0.8f, -0.1f, 0.0f,
+			0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
 
 	private I2CDevice device;
 	private byte chipId;
@@ -672,23 +671,42 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 	}
 
 	/**
-	 * Get the remaining duration in microseconds that can be used for heating using
+	 * Calculate the duration in microseconds to take to take TPHG readings using
 	 * the currently configured humidity, temperature and pressure oversampling
-	 * modes.
+	 * modes. Can be used to get the remaining duration that can be used for
+	 * heating.
 	 *
 	 * bme68x_get_meas_dur
 	 *
+	 * @param targetOperatingMode Operating mode
 	 * @return remaining duration in microseconds
 	 */
-	public int getRemainingMeasureDuration(OperatingMode targetOperatingMode) {
-		OversamplingMultiplier os_hum = getHumidityOversample();
-		OversamplingMultiplier temp_hum = getTemperatureOversample();
-		OversamplingMultiplier press_hum = getPressureOversample();
+	public int calculateMeasureDuration(OperatingMode targetOperatingMode) {
+		return calculateMeasureDuration(getHumidityOversample(), getTemperatureOversample(), getPressureOversample(),
+				targetOperatingMode);
+	}
 
-		int meas_cycles = os_hum.getCycles() + temp_hum.getCycles() + press_hum.getCycles();
+	/**
+	 * Calculate the duration in microseconds to take to take TPHG readings using
+	 * the specified humidity, temperature and pressure oversampling modes. Can be
+	 * used to get the remaining duration that can be used for heating.
+	 *
+	 * bme68x_get_meas_dur
+	 *
+	 * @param humidityOversampling    Humidity oversampling mode
+	 * @param temperatureOversampling Temperature oversampling mode
+	 * @param pressureOversampling    Pressure oversampling mode
+	 * @param targetOperatingMode     Operating mode
+	 * @return remaining duration in microseconds
+	 */
+	public static int calculateMeasureDuration(OversamplingMultiplier humidityOversampling,
+			OversamplingMultiplier temperatureOversampling, OversamplingMultiplier pressureOversampling,
+			OperatingMode targetOperatingMode) {
+		int meas_cycles = humidityOversampling.getCycles() + temperatureOversampling.getCycles()
+				+ pressureOversampling.getCycles();
 		int meas_dur = meas_cycles * 1963;
-		meas_dur += 477 * 4; // TPH switching duration
-		meas_dur += 477 * 5; // Gas measurement duration
+		meas_dur += (477 * 4); // TPH switching duration
+		meas_dur += (477 * 5); // Gas measurement duration
 
 		if (targetOperatingMode != OperatingMode.PARALLEL) {
 			meas_dur += 1000; // Wake up duration of 1ms
@@ -765,7 +783,7 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 			data.newData = (buffer[0] & NEW_DATA_MASK) == 0 ? true : false;
 
 			data.gasMeasurementIndex = buffer[0] & GAS_INDEX_MASK;
-			data.measureIndex = buffer[1];
+			data.measureIndex = buffer[1] & 0xff;
 
 			if (VARIANT_GAS_HIGH == variantId) {
 				data.gasMeasurementValid = (buffer[16] & GASM_VALID_MASK) != 0;
@@ -782,6 +800,8 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 				final int adc_hum = ((buffer[8] & 0xff) << 8) | (buffer[9] & 0xff);
 				final int adc_gas_res_low = ((buffer[13] & 0xff) << 2) | ((buffer[14] & 0xff) >> 6);
 				final int adc_gas_res_high = ((buffer[15] & 0xff) << 2) | ((buffer[16] & 0xff) >> 6);
+				// System.out.println("adc_gas_res_low: " + adc_gas_res_low);
+				// System.out.println("adc_gas_res_high: " + adc_gas_res_high);
 
 				// data.temperature = calculateTemperatureInt(adc_temp) / 100.0f;
 				data.temperature = calculateTemperatureFpu(adc_temp);
@@ -794,6 +814,7 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 
 				if (VARIANT_GAS_HIGH == variantId) {
 					final int gas_range_h = buffer[16] & GAS_RANGE_MASK;
+					// System.out.println("gas_range_h: " + gas_range_h);
 					/*-
 					data.gasResistance = calculateGasResistanceHighInt(adc_gas_res_high,
 							gas_range_h);
@@ -849,7 +870,7 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 			data[i].newData = (buffer[i][0] & NEW_DATA_MASK) == 0 ? true : false;
 
 			data[i].gasMeasurementIndex = buffer[i][0] & GAS_INDEX_MASK;
-			data[i].measureIndex = buffer[i][1];
+			data[i].measureIndex = buffer[i][1] & 0xff;
 
 			if (VARIANT_GAS_HIGH == variantId) {
 				data[i].gasMeasurementValid = (buffer[i][16] & GASM_VALID_MASK) != 0;
@@ -1068,9 +1089,9 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 		}
 
 		// TODO Do reverse calculation of calculateHeaterDurationShared
-		byte shared_dur = device.readByteData(REG_SHD_HEATR_DUR);
+		byte gas_wait_shared = device.readByteData(REG_GAS_WAIT_SHARED);
 
-		return new HeaterConfig(heater_enabled, temp_profile, dur_profile, shared_dur);
+		return new HeaterConfig(heater_enabled, temp_profile, dur_profile, gas_wait_shared);
 	}
 
 	/**
@@ -1204,7 +1225,7 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 	/*
 	 * calc_temperature (using integer math)
 	 */
-	private int calculateTemperatureInt(final int temperatureAdc) {
+	int calculateTemperatureInt(Calibration calibration, final int temperatureAdc) {
 		// Convert the raw temperature to degrees C using calibration_data.
 		int var1 = (temperatureAdc >> 3) - (calibration.temperature[0] << 1);
 		int var2 = (var1 * calibration.temperature[1]) >> 11;
@@ -1220,7 +1241,7 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 	/*
 	 * calc_temperature (using FPU math)
 	 */
-	private float calculateTemperatureFpu(final int temperatureAdc) {
+	float calculateTemperatureFpu(final int temperatureAdc) {
 		/* calculate var1 data */
 		float var1 = (((temperatureAdc / 16384.0f) - (calibration.temperature[0] / 1024.0f))
 				* calibration.temperature[1]);
@@ -1246,7 +1267,7 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 	 *
 	 * @return Pressure in pascals (100 Pa = 1 hPa)
 	 */
-	private long calculatePressureInt(final int pressureAdc) {
+	long calculatePressureInt(final int pressureAdc) {
 		// Convert the raw pressure using calibration data.
 		int var1 = (temperatureFineInt >> 1) - 64000;
 		int var2 = ((((var1 >> 2) * (var1 >> 2)) >> 11) * calibration.pressure[5]) >> 2;
@@ -1286,7 +1307,7 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 	 *
 	 * @return Pressure in hPA
 	 */
-	private float calculatePressureFpu(int pressureAdc) {
+	float calculatePressureFpu(int pressureAdc) {
 		float var1 = (temperatureFineFloat / 2.0f) - 64000.0f;
 		float var2 = var1 * var1 * (calibration.pressure[5] / (131072.0f));
 		var2 = var2 + (var1 * calibration.pressure[4] * 2.0f);
@@ -1312,7 +1333,7 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 	/*
 	 * calc_humidity (using Int math)
 	 */
-	private int calculateHumidityInt(final int humidityAdc) {
+	int calculateHumidityInt(final int humidityAdc) {
 		int temp_scaled = ((temperatureFineInt * 5) + 128) >> 8;
 		int var1 = humidityAdc - (calibration.humidity[0] * 16)
 				- (((temp_scaled * calibration.humidity[2]) / 100) >> 1);
@@ -1332,7 +1353,7 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 	/*
 	 * calc_humidity (using FPU math)
 	 */
-	private float calculateHumidityFpu(final int humidityAdc) {
+	float calculateHumidityFpu(final int humidityAdc) {
 		/* compensated temperature data */
 		float temp_comp = (temperatureFineFloat / 5120.0f);
 		float var1 = humidityAdc - ((calibration.humidity[0] * 16.0f) + ((calibration.humidity[2] / 2.0f) * temp_comp));
@@ -1350,7 +1371,7 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 	/*
 	 * calc_gas_resistance_low (using Int math)
 	 */
-	private static long calculateGasResistanceLowInt(final int gasResistanceAdc, final int gasRange,
+	static long calculateGasResistanceLowInt(final int gasResistanceAdc, final int gasRange,
 			final int rangeSwitchingError) {
 		final long var1 = (1340 + (5L * rangeSwitchingError)) * GAS_RANGE_LOOKUP_TABLE_1_INT[gasRange] >> 16;
 		final long var2 = (((((long) gasResistanceAdc) << 15) - 16777216L) + var1);
@@ -1363,7 +1384,7 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 	/*
 	 * calc_gas_resistance_low (using FPU math)
 	 */
-	private static float calculateGasResistanceLowFpu(final int gasResistanceAdc, final int gasRange,
+	static float calculateGasResistanceLowFpu(final int gasResistanceAdc, final int gasRange,
 			final int rangeSwitchingError) {
 		float gas_range_f = (1 << gasRange);
 
@@ -1376,7 +1397,7 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 	/*
 	 * calc_gas_resistance_high (using Int math)
 	 */
-	private static long calculateGasResistanceHighInt(final int gasResistanceAdc, final int gasRange) {
+	static long calculateGasResistanceHighInt(final int gasResistanceAdc, final int gasRange) {
 		long var1 = 262144L >> gasRange;
 		int var2 = gasResistanceAdc - 512;
 		var2 *= 3;
@@ -1392,7 +1413,7 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 	/*
 	 * calc_gas_resistance_high (using FPU math)
 	 */
-	private static float calculateGasResistanceHighFpu(final int gasResistanceAdc, final int gasRange) {
+	static float calculateGasResistanceHighFpu(final int gasResistanceAdc, final int gasRange) {
 		long var1 = 262144L >> gasRange;
 		int var2 = gasResistanceAdc - 512;
 
@@ -1407,11 +1428,12 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 	 *
 	 * calc_res_heat (using Int math)
 	 */
-	private int calculateHeaterResistanceInt(final int targetHeaterTemperature) {
+	static int calculateHeaterResistanceInt(final Calibration calibration, final int ambientTemperature,
+			final int targetHeaterTemperature) {
 		/* Cap temperature */
 		final int normalised_temperature = Math.min(targetHeaterTemperature, 400);
 
-		final int var1 = ((((int) ambientTemperature) * calibration.gasHeater[2]) / 1000) * 256;
+		final int var1 = ((ambientTemperature * calibration.gasHeater[2]) / 1000) * 256;
 		final int var2 = (calibration.gasHeater[0] + 784)
 				* (((((calibration.gasHeater[1] + 154009) * normalised_temperature * 5) / 100) + 3276800) / 10);
 		final int var3 = var1 + (var2 / 2);
@@ -1423,7 +1445,8 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 		return ((heater_res_x100 + 50) / 100) & 0xff;
 	}
 
-	private int calculateHeaterResistanceFpu(final int targetHeaterTemperature) {
+	static int calculateHeaterResistanceFpu(final Calibration calibration, final float ambientTemperature,
+			final int targetHeaterTemperature) {
 		/* Cap temperature */
 		final int normalised_temperature = Math.min(targetHeaterTemperature, 400);
 
@@ -1437,17 +1460,31 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 				* (1 / (1 + (calibration.resistanceHeaterValue * 0.002f)))) - 25));
 	}
 
-	/*
+	/**
 	 * Internal API used to calculate the gas wait
+	 *
+	 * 64 timer values with 1ms step sizes.
+	 *
+	 * <pre>
+	 * Bits[7:6] : multiplication factor (0b00: x1, 0b01: x4, 0b10: x16, 0b11: x64)
+	 * Bits[5:0] : number of 1ms step sizes
+	 * 0b00000000 = 0ms
+	 * 0b00000001 = 1ms
+	 * 0b00111111 = 63 * 1ms = 63ms
+	 * 0b00000100 = 4 * 1ms = 4ms (Note the 4ms can also be 0b01000001 = 4 * 1ms)
+	 * 0b01010000 = 4 * 16ms = 64ms (Note that 64ms can also be 0b11000001 = 64 * 1ms)
+	 * 0b11111111 = 64 * 63 * 1ms = 4032ms (0xFC0 = 4032)
+	 * </pre>
 	 *
 	 * calc_gas_wait
 	 */
-	private static int calculateGasWait(final int duration) {
+	static int calculateGasWaitRegVal(final int durationMs) {
 		int factor = 0;
 		int durval;
 
-		int dur = duration;
+		int dur = durationMs;
 
+		// 0xfc0 = 4032ms (max duration)
 		if (dur >= 0xfc0) {
 			durval = 0xff; /* Max duration */
 		} else {
@@ -1463,11 +1500,54 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 	}
 
 	/**
+	 * Internal API used to calculate the register value for shared heater duration.
+	 * Called from setHeaterConfigInternal when in parallel mode
+	 *
+	 * <pre>
+	 * Bits[7:6] : multiplication factor (0b00: x1, 0b01: x4, 0b10: x16, 0b11: x64)
+	 * Bits[5:0] : number of 0.477ms step sizes
+	 * Examples:
+	 * 0b00000000 = 0b00000001 = 0.477ms
+	 * 0b00111111 = 63 * 0.477ms = 30.051ms
+	 * 0b01000001 = 4 * 0.477ms = 1.908ms
+	 * 0b11000001 = 64 * 0.477ms = 30.528ms
+	 * 0b11111111 = 64 * 63 * 0.477ms = 1,923.264ms (0x783 = 1923)
+	 * </pre>
+	 *
+	 * calc_heatr_dur_shared
+	 *
+	 * @param durationMs Shared duration in microseconds
+	 * @return Value to write to the gas_wait_shared register.
+	 */
+	static int calculateGasWaitSharedRegVal(final int durationMs) {
+		int factor = 0;
+		int gas_wait_shared;
+
+		int dur = durationMs;
+
+		if (dur >= 0x783) {
+			gas_wait_shared = 0xff; /* Max duration */
+		} else {
+			/* Step size of 0.477ms */
+			dur = (dur * 1000) / 477;
+			while (dur > 0x3F) {
+				dur = dur >> 2;
+				factor += 1;
+			}
+
+			gas_wait_shared = dur + (factor * 64);
+		}
+
+		// uint8_t
+		return gas_wait_shared & 0xff;
+	}
+
+	/**
 	 * Internal API used to set heater configurations.
 	 *
 	 * set_conf
 	 */
-	private byte setHeaterConfigInternal(HeaterConfig heaterConfig, OperatingMode targetOpMode) {
+	private byte setHeaterConfigInternal(final HeaterConfig heaterConfig, final OperatingMode targetOpMode) {
 		byte nb_conv = 0;
 
 		switch (targetOpMode) {
@@ -1476,34 +1556,42 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 			// Always use heater profile 0 in forced mode (nb_conv = 0)
 			nb_conv = 0;
 
-			device.writeByteData(REG_RES_HEAT0, calculateHeaterResistanceFpu(heaterConfig.getHeaterTemp(0)));
-			device.writeByteData(REG_GAS_WAIT0, calculateGasWait(heaterConfig.getHeaterDuration(0)));
+			device.writeByteData(REG_RES_HEAT0,
+					calculateHeaterResistanceFpu(calibration, ambientTemperature, heaterConfig.getHeaterTemp(0)));
+			device.writeByteData(REG_GAS_WAIT0, calculateGasWaitRegVal(heaterConfig.getHeaterDuration(0)));
 			break;
 		case SEQUENTIAL:
 			// In sequential and parallel modes nb_conv is the number of steps in the heater
 			// profile (1..10)
 			nb_conv = (byte) heaterConfig.getProfileLength();
 
+			setRegByte(REG_CTRL_GAS_1, (byte) NBCONV_MASK, NBCONV_POSITION, nb_conv);
+
 			byte[] rh_reg_data = new byte[nb_conv];
 			byte[] gw_reg_data = new byte[nb_conv];
 			for (int i = 0; i < nb_conv; i++) {
-				rh_reg_data[i] = (byte) calculateHeaterResistanceFpu(heaterConfig.getHeaterTemp(i));
-				gw_reg_data[i] = (byte) calculateGasWait(heaterConfig.getHeaterDuration(i));
+				rh_reg_data[i] = (byte) calculateHeaterResistanceFpu(calibration, ambientTemperature,
+						heaterConfig.getHeaterTemp(i));
+				gw_reg_data[i] = (byte) calculateGasWaitRegVal(heaterConfig.getHeaterDuration(i));
 			}
 			writeBlockData(REG_RES_HEAT0, rh_reg_data);
 			writeBlockData(REG_GAS_WAIT0, gw_reg_data);
 			break;
 		case PARALLEL:
-			int shared_dur = calculateHeaterDurationShared(heaterConfig.getSharedHeaterDuration());
-			device.writeByteData(REG_SHD_HEATR_DUR, shared_dur);
 			// In sequential and parallel modes nb_conv is the number of steps in the heater
 			// profile (1..10)
 			nb_conv = (byte) heaterConfig.getProfileLength();
 
+			setRegByte(REG_CTRL_GAS_1, (byte) NBCONV_MASK, NBCONV_POSITION, nb_conv);
+
+			int gas_wait_shared = calculateGasWaitSharedRegVal(heaterConfig.getSharedHeaterDuration());
+			device.writeByteData(REG_GAS_WAIT_SHARED, gas_wait_shared);
+
 			rh_reg_data = new byte[nb_conv];
 			gw_reg_data = new byte[nb_conv];
 			for (int i = 0; i < nb_conv; i++) {
-				rh_reg_data[i] = (byte) calculateHeaterResistanceFpu(heaterConfig.getHeaterTemp(i));
+				rh_reg_data[i] = (byte) calculateHeaterResistanceFpu(calibration, ambientTemperature,
+						heaterConfig.getHeaterTemp(i));
 				// Note that there isn't a call to calculateGasWait here
 				gw_reg_data[i] = (byte) heaterConfig.getHeaterDuration(i);
 			}
@@ -1515,35 +1603,6 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 		}
 
 		return nb_conv;
-	}
-
-	/*
-	 * Internal API used to calculate the register value for shared heater duration.
-	 * Called from setHeaterConfigInternal when in parallel mode
-	 *
-	 * calc_heatr_dur_shared
-	 */
-	private static int calculateHeaterDurationShared(final int duration) {
-		int factor = 0;
-		int heatdurval;
-
-		int dur = duration;
-
-		if (dur >= 0x783) {
-			heatdurval = 0xff; /* Max duration */
-		} else {
-			/* Step size of 0.477ms */
-			dur = (dur * 1000) / 477;
-			while (dur > 0x3F) {
-				dur = dur >> 2;
-				factor += 1;
-			}
-
-			heatdurval = dur + (factor * 64);
-		}
-
-		// uint8_t
-		return heatdurval & 0xff;
 	}
 
 	// Read calibration array
@@ -1618,6 +1677,14 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 		calibration.resistanceHeaterRange = ((calibration_data[IDX_RES_HEAT_RANGE] & RESISTANCE_HEAT_RANGE_MASK) / 16);
 		calibration.resistanceHeaterValue = calibration_data[IDX_RES_HEAT_VAL];
 		calibration.rangeSwitchingError = ((calibration_data[IDX_RANGE_SW_ERR] & RANGE_SWITCHING_ERROR_MASK)) / 16;
+
+		/*-
+		System.out.println("calib.res_heat_range: " + calibration.resistanceHeaterRange);
+		System.out.println("calib.res_heat_val: " + calibration.resistanceHeaterValue);
+		System.out.println("calib.range_sw_err: " + calibration.rangeSwitchingError);
+		System.out.println("calib.par_gh2: " + calibration.gasHeater[1]);
+		System.out.println("calib.par_gh3: " + calibration.gasHeater[2]);
+		*/
 	}
 
 	/**
@@ -1720,7 +1787,7 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 		// The index of the heater profile used
 		int gasMeasurementIndex = -1;
 		// Measurement index to track order
-		byte measureIndex = -1;
+		int measureIndex = -1;
 		// Temperature in degree celsius
 		float temperature;
 		// Pressure in hectopascals (hPa)
@@ -1752,7 +1819,7 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 			return gasMeasurementIndex;
 		}
 
-		public byte getMeasureIndex() {
+		public int getMeasureIndex() {
 			return measureIndex;
 		}
 
