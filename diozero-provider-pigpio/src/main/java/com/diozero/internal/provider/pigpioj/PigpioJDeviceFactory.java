@@ -5,7 +5,7 @@ package com.diozero.internal.provider.pigpioj;
  * Organisation: diozero
  * Project:      diozero - pigpioj provider
  * Filename:     PigpioJDeviceFactory.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.internal.provider.pigpioj;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -114,6 +114,23 @@ public class PigpioJDeviceFactory extends BaseNativeDeviceFactory {
 	@Override
 	public int getSpiBufferSize() {
 		return PIGPIO_SPI_BUFFER_SIZE;
+	}
+
+	@Override
+	public DeviceMode getGpioMode(int gpio) {
+		switch (pigpioImpl.getMode(gpio)) {
+		case PigpioConstants.MODE_PI_INPUT:
+			return DeviceMode.DIGITAL_INPUT;
+		case PigpioConstants.MODE_PI_OUTPUT:
+			return DeviceMode.DIGITAL_OUTPUT;
+		default:
+			return DeviceMode.UNKNOWN;
+		}
+	}
+
+	@Override
+	public int getGpioValue(int gpio) {
+		return pigpioImpl.read(gpio);
 	}
 
 	@Override

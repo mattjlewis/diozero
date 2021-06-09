@@ -1,1 +1,1 @@
-com.diozero.internal.provider.remote.devicefactory.RemoteDeviceFactory
+com.diozero.internal.provider.remote.grpc.GrpcClientDeviceFactory

@@ -50,7 +50,12 @@ public class BME680Test {
 			controller = Integer.parseInt(args[0]);
 		}
 
-		try (BME680 bme680 = new BME680(controller)) {
+		int address = BME680.DEVICE_ADDRESS;
+		if (args.length > 1) {
+			address = Integer.parseInt(args[1]);
+		}
+
+		try (BME680 bme680 = new BME680(controller, address)) {
 			bme680.setHumidityOversample(BME680.OversamplingMultiplier.X2);
 			bme680.setPressureOversample(BME680.OversamplingMultiplier.X4);
 			bme680.setTemperatureOversample(BME680.OversamplingMultiplier.X8);

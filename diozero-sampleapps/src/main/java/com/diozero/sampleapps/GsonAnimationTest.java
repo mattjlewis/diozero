@@ -5,7 +5,7 @@ package com.diozero.sampleapps;
  * Organisation: diozero
  * Project:      diozero - Sample applications
  * Filename:     GsonAnimationTest.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.sampleapps;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -48,14 +48,14 @@ import com.diozero.animation.easing.Cubic;
 import com.diozero.animation.easing.EasingFunction;
 import com.diozero.animation.easing.Elastic;
 import com.diozero.api.OutputDeviceInterface;
-import com.diozero.sbc.DeviceFactoryHelper;
+import com.diozero.util.Diozero;
 import com.google.gson.Gson;
 
 public class GsonAnimationTest {
 	public static void main(String[] args) {
 		Collection<OutputDeviceInterface> one_target = Arrays.asList(value -> System.out.println(value));
-		Collection<OutputDeviceInterface> two_targets = Arrays.asList(
-				value -> System.out.println("1: " + value), value -> System.out.println("2: " + value));
+		Collection<OutputDeviceInterface> two_targets = Arrays.asList(value -> System.out.println("1: " + value),
+				value -> System.out.println("2: " + value));
 
 		try {
 			animate(one_target, 10, Elastic::easeOut, 1, "/animation1.json", "/animation3.json");
@@ -66,7 +66,7 @@ public class GsonAnimationTest {
 		} finally {
 			// Required if there are non-daemon threads that will prevent the
 			// built-in clean-up routines from running
-			DeviceFactoryHelper.shutdown();
+			Diozero.shutdown();
 		}
 	}
 
@@ -78,11 +78,11 @@ public class GsonAnimationTest {
 		for (String file : files) {
 			try (Reader reader = new InputStreamReader(GsonAnimationTest.class.getResourceAsStream(file))) {
 				AnimationInstance anim_obj = gson.fromJson(reader, AnimationInstance.class);
-	
+
 				anim.enqueue(anim_obj);
 			}
 		}
-		
+
 		Logger.info("Starting animation...");
 		Future<?> future = anim.play();
 		try {

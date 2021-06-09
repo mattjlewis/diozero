@@ -33,20 +33,9 @@ package com.diozero.internal.spi;
 
 import com.diozero.api.AnalogInputEvent;
 import com.diozero.api.DeviceMode;
-import com.diozero.api.RuntimeIOException;
 import com.diozero.api.function.DeviceEventConsumer;
 
-public interface AnalogInputDeviceInterface extends InternalDeviceInterface {
-	/**
-	 * Read the analog value in the range 0..1 or -1..1 (if the ADC type is signed)
-	 * 
-	 * @return the unscaled value (-1..1)
-	 * @throws RuntimeIOException if an I/O error occurs
-	 */
-	float getValue() throws RuntimeIOException;
-
-	int getAdcNumber();
-
+public interface AnalogInputDeviceInterface extends AnalogDeviceInterface {
 	default boolean generatesEvents() {
 		return false;
 	}
@@ -55,6 +44,7 @@ public interface AnalogInputDeviceInterface extends InternalDeviceInterface {
 
 	void removeListener();
 
+	@Override
 	default DeviceMode getMode() {
 		return DeviceMode.ANALOG_INPUT;
 	}

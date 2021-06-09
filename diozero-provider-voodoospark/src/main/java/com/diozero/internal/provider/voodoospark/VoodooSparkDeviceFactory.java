@@ -5,7 +5,7 @@ package com.diozero.internal.provider.voodoospark;
  * Organisation: diozero
  * Project:      diozero - Voodoo Spark provider for Particle Photon
  * Filename:     VoodooSparkDeviceFactory.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.internal.provider.voodoospark;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -231,6 +231,11 @@ public class VoodooSparkDeviceFactory extends BaseNativeDeviceFactory {
 	public void setBoardPwmFrequency(int pwmFrequency) {
 		// Ignore
 		Logger.warn("Not implemented");
+	}
+
+	@Override
+	public int getGpioValue(int gpio) {
+		return getValue(gpio) ? 1 : 0;
 	}
 
 	@Override
@@ -475,14 +480,14 @@ public class VoodooSparkDeviceFactory extends BaseNativeDeviceFactory {
 		}
 	}
 
-	static enum PinMode {
+	enum PinMode {
 		DIGITAL_INPUT(0), DIGITAL_OUTPUT(1), ANALOG_INPUT(2), ANALOG_OUTPUT(3), // Note for PWM as well as true analog
 																				// output
 		SERVO(4), I2C(6);
 
 		private byte mode;
 
-		private PinMode(int mode) {
+		PinMode(int mode) {
 			this.mode = (byte) mode;
 		}
 
@@ -760,10 +765,10 @@ public class VoodooSparkDeviceFactory extends BaseNativeDeviceFactory {
 			/*
 			 * for (int red=0; red<255; red++) { df.setInternalRgb((byte) red, (byte) 0,
 			 * (byte) 0); Thread.sleep(50); }
-			 * 
+			 *
 			 * for (int green=0; green<255; green++) { df.setInternalRgb((byte) 0, (byte)
 			 * green, (byte) 0); Thread.sleep(50); }
-			 * 
+			 *
 			 * for (int blue=0; blue<255; blue++) { df.setInternalRgb((byte) 0, (byte) 0,
 			 * (byte) blue); Thread.sleep(50); }
 			 */

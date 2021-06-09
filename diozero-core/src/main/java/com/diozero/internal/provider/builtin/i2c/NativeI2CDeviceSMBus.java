@@ -5,7 +5,7 @@ package com.diozero.internal.provider.builtin.i2c;
  * Organisation: diozero
  * Project:      diozero - Core
  * Filename:     NativeI2CDeviceSMBus.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.internal.provider.builtin.i2c;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -82,12 +82,13 @@ public class NativeI2CDeviceSMBus extends AbstractDevice implements InternalI2CD
 
 		numRetries = PropertyUtil.getIntProperty("diozero.i2c.retryCount", 2);
 
+		Logger.debug("opening device {}", key);
+
 		// TODO Support for 10-bit address sizing
 		int rc = NativeI2C.smbusOpen(device_file, deviceAddress, force);
 		if (rc < 0) {
 			if (rc == -16) {
-				throw new DeviceBusyException(
-						"Error, I2C device " + controller + "-0x" + Integer.toHexString(deviceAddress) + " is busy");
+				throw new DeviceBusyException("Error, I2C device " + getKey() + " is busy");
 			}
 			throw new RuntimeIOException(rc);
 		}
@@ -96,16 +97,24 @@ public class NativeI2CDeviceSMBus extends AbstractDevice implements InternalI2CD
 		rc = NativeI2C.getFuncs(fd);
 		if (rc < 0) {
 			close();
-			throw new RuntimeIOException("Error reading I2C_FUNCS for device i2c-" + controller + "-0x"
-					+ Integer.toHexString(deviceAddress) + ": " + rc);
+			throw new RuntimeIOException("Error reading I2C_FUNCS for device " + getKey() + ": " + rc);
 		}
 
 		funcs = rc;
 		Logger.debug("I2C_FUNCS for controller {}: 0x{}", Integer.toString(controller), Integer.toHexString(funcs));
 	}
 
+	public int getController() {
+		return controller;
+	}
+
+	public int getDeviceAddress() {
+		return deviceAddress;
+	}
+
 	@Override
 	public void closeDevice() {
+		Logger.trace("closeDevice {}", getKey());
 		NativeI2C.smbusClose(fd);
 		fd = CLOSED;
 	}
@@ -143,8 +152,7 @@ public class NativeI2CDeviceSMBus extends AbstractDevice implements InternalI2CD
 	@Override
 	public void writeQuick(byte bit) {
 		if ((funcs & NativeI2C.I2C_FUNC_SMBUS_QUICK) == 0) {
-			Logger.warn("Function I2C_FUNC_SMBUS_QUICK isn't supported for device i2c-{}-0x{}",
-					Integer.valueOf(controller), Integer.toHexString(deviceAddress));
+			Logger.warn("Function I2C_FUNC_SMBUS_QUICK isn't supported for device {}", getKey());
 			// TODO Throw an exception now or attempt anyway?
 		}
 
@@ -154,16 +162,14 @@ public class NativeI2CDeviceSMBus extends AbstractDevice implements InternalI2CD
 		}
 
 		if (rc < 0) {
-			throw new RuntimeIOException("Error in SMBus.writeQuick for device i2c-" + controller + "-0x"
-					+ Integer.toHexString(deviceAddress) + ": " + rc);
+			throw new RuntimeIOException("Error in SMBus.writeQuick for device " + getKey() + ": " + rc);
 		}
 	}
 
 	@Override
 	public byte readByte() {
 		if ((funcs & NativeI2C.I2C_FUNC_SMBUS_READ_BYTE) == 0) {
-			Logger.warn("Function I2C_FUNC_SMBUS_READ_BYTE isn't supported for device i2c-{}-0x{}",
-					Integer.valueOf(controller), Integer.toHexString(deviceAddress));
+			Logger.warn("Function I2C_FUNC_SMBUS_READ_BYTE isn't supported for device {}", getKey());
 			// TODO Throw an exception now or attempt anyway?
 		}
 
@@ -173,8 +179,7 @@ public class NativeI2CDeviceSMBus extends AbstractDevice implements InternalI2CD
 		}
 
 		if (rc < 0) {
-			throw new RuntimeIOException("Error in SMBus.readByte for device i2c-" + controller + "-0x"
-					+ Integer.toHexString(deviceAddress) + ": " + rc);
+			throw new RuntimeIOException("Error in SMBus.readByte for device " + getKey() + ": " + rc);
 		}
 
 		return (byte) rc;
@@ -183,8 +188,7 @@ public class NativeI2CDeviceSMBus extends AbstractDevice implements InternalI2CD
 	@Override
 	public void writeByte(byte data) {
 		if ((funcs & NativeI2C.I2C_FUNC_SMBUS_WRITE_BYTE) == 0) {
-			Logger.warn("Function I2C_FUNC_SMBUS_WRITE_BYTE isn't supported for device i2c-{}-0x{}",
-					Integer.valueOf(controller), Integer.toHexString(deviceAddress));
+			Logger.warn("Function I2C_FUNC_SMBUS_WRITE_BYTE isn't supported for device {}", getKey());
 			// TODO Throw an exception now or attempt anyway?
 		}
 
@@ -194,16 +198,14 @@ public class NativeI2CDeviceSMBus extends AbstractDevice implements InternalI2CD
 		}
 
 		if (rc < 0) {
-			throw new RuntimeIOException("Error in SMBus.writeByte for device i2c-" + controller + "-0x"
-					+ Integer.toHexString(deviceAddress) + ": " + rc);
+			throw new RuntimeIOException("Error in SMBus.writeByte for device " + getKey() + ": " + rc);
 		}
 	}
 
 	@Override
 	public byte readByteData(int registerAddress) {
 		if ((funcs & NativeI2C.I2C_FUNC_SMBUS_READ_BYTE_DATA) == 0) {
-			Logger.warn("Function I2C_FUNC_SMBUS_READ_BYTE_DATA isn't supported for device i2c-{}-0x{}",
-					Integer.valueOf(controller), Integer.toHexString(deviceAddress));
+			Logger.warn("Function I2C_FUNC_SMBUS_READ_BYTE_DATA isn't supported for device {}", getKey());
 			// TODO Throw an exception now or attempt anyway?
 		}
 
@@ -213,8 +215,7 @@ public class NativeI2CDeviceSMBus extends AbstractDevice implements InternalI2CD
 		}
 
 		if (rc < 0) {
-			throw new RuntimeIOException("Error in SMBus.readByteData for device i2c-" + controller + "-0x"
-					+ Integer.toHexString(deviceAddress) + ": " + rc);
+			throw new RuntimeIOException("Error in SMBus.readByteData for device " + getKey() + ": " + rc);
 		}
 
 		return (byte) rc;
@@ -223,8 +224,7 @@ public class NativeI2CDeviceSMBus extends AbstractDevice implements InternalI2CD
 	@Override
 	public void writeByteData(int registerAddress, byte data) {
 		if ((funcs & NativeI2C.I2C_FUNC_SMBUS_WRITE_BYTE_DATA) == 0) {
-			Logger.warn("Function I2C_FUNC_SMBUS_WRITE_BYTE_DATA isn't supported for device i2c-{}-0x{}",
-					Integer.valueOf(controller), Integer.toHexString(deviceAddress));
+			Logger.warn("Function I2C_FUNC_SMBUS_WRITE_BYTE_DATA isn't supported for device {}", getKey());
 			// TODO Throw an exception now or attempt anyway?
 		}
 
@@ -234,16 +234,14 @@ public class NativeI2CDeviceSMBus extends AbstractDevice implements InternalI2CD
 		}
 
 		if (rc < 0) {
-			throw new RuntimeIOException("Error in SMBus.writeByteData for device i2c-" + controller + "-0x"
-					+ Integer.toHexString(deviceAddress) + ": " + rc);
+			throw new RuntimeIOException("Error in SMBus.writeByteData for device " + getKey() + ": " + rc);
 		}
 	}
 
 	@Override
 	public short readWordData(int registerAddress) {
 		if ((funcs & NativeI2C.I2C_FUNC_SMBUS_READ_WORD_DATA) == 0) {
-			Logger.warn("Function I2C_FUNC_SMBUS_READ_WORD_DATA isn't supported for device i2c-{}-0x{}",
-					Integer.valueOf(controller), Integer.toHexString(deviceAddress));
+			Logger.warn("Function I2C_FUNC_SMBUS_READ_WORD_DATA isn't supported for device {}", getKey());
 			// TODO Throw an exception now or attempt anyway?
 		}
 
@@ -253,8 +251,7 @@ public class NativeI2CDeviceSMBus extends AbstractDevice implements InternalI2CD
 		}
 
 		if (rc < 0) {
-			throw new RuntimeIOException("Error in SMBus.readWordData for device i2c-" + controller + "-0x"
-					+ Integer.toHexString(deviceAddress) + ": " + rc);
+			throw new RuntimeIOException("Error in SMBus.readWordData for device " + getKey() + ": " + rc);
 		}
 
 		return (short) rc;
@@ -263,8 +260,7 @@ public class NativeI2CDeviceSMBus extends AbstractDevice implements InternalI2CD
 	@Override
 	public void writeWordData(int registerAddress, short data) {
 		if ((funcs & NativeI2C.I2C_FUNC_SMBUS_WRITE_WORD_DATA) == 0) {
-			Logger.warn("Function I2C_FUNC_SMBUS_WRITE_WORD_DATA isn't supported for device i2c-{}-0x{}",
-					Integer.valueOf(controller), Integer.toHexString(deviceAddress));
+			Logger.warn("Function I2C_FUNC_SMBUS_WRITE_WORD_DATA isn't supported for device {}", getKey());
 			// TODO Throw an exception now or attempt anyway?
 		}
 
@@ -274,8 +270,7 @@ public class NativeI2CDeviceSMBus extends AbstractDevice implements InternalI2CD
 		}
 
 		if (rc < 0) {
-			throw new RuntimeIOException("Error in SMBus.writeWordData for device i2c-" + controller + "-0x"
-					+ Integer.toHexString(deviceAddress) + ": " + rc);
+			throw new RuntimeIOException("Error in SMBus.writeWordData for device " + getKey() + ": " + rc);
 		}
 	}
 
@@ -283,40 +278,40 @@ public class NativeI2CDeviceSMBus extends AbstractDevice implements InternalI2CD
 	@Override
 	public short readWordSwapped(int registerAddress) {
 		if ((funcs & NativeI2C.I2C_FUNC_SMBUS_READ_WORD_DATA) == 0) {
-			Logger.warn("Function I2C_FUNC_SMBUS_READ_WORD_DATA isn't supported for device i2c-{}-0x{}",
-					Integer.valueOf(controller), Integer.toHexString(deviceAddress));
-			// TODO Throw an exception now or attempt anyway?
-		}
-	
-		int rc = EAGAIN;
-		for (int i = 0; i < numRetries && (rc == EAGAIN || rc == ETIMEDOUT || rc == EREMOTEIO); i++) {
-			rc = NativeI2C.readWordSwapped(fd, registerAddress);
-		}
-	
-		if (rc < 0) {
-			throw new RuntimeIOException("Error in SMBus.readWordSwapped for device i2c-" + controller + "-0x"
-					+ Integer.toHexString(deviceAddress) + ": " + rc);
-		}
-	
-		return (short) rc;
-	}
-	
-	@Override
-	public void writeWordSwapped(int registerAddress, short data) {
-		if ((funcs & NativeI2C.I2C_FUNC_SMBUS_WRITE_WORD_DATA) == 0) {
-			Logger.warn("Function I2C_FUNC_SMBUS_WRITE_WORD_DATA isn't supported for device i2c-{}-0x{}",
-					Integer.valueOf(controller), Integer.toHexString(deviceAddress));
+			Logger.warn("Function I2C_FUNC_SMBUS_READ_WORD_DATA isn't supported for device {}",
+					getKey());
 			// TODO Throw an exception now or attempt anyway?
 		}
 
 		int rc = EAGAIN;
 		for (int i = 0; i < numRetries && (rc == EAGAIN || rc == ETIMEDOUT || rc == EREMOTEIO); i++) {
-			rc = NativeI2C.writeWordSwapped(fd, registerAddress, data);
+			rc = NativeI2C.readWordSwapped(fd, registerAddress);
+		}
+
+		if (rc < 0) {
+			throw new RuntimeIOException("Error in SMBus.readWordSwapped for device "
+					+ getKey() + ": " + rc);
+		}
+
+		return (short) rc;
+	}
+
+	@Override
+	public void writeWordSwapped(int registerAddress, short data) {
+		if ((funcs & NativeI2C.I2C_FUNC_SMBUS_WRITE_WORD_DATA) == 0) {
+			Logger.warn("Function I2C_FUNC_SMBUS_WRITE_WORD_DATA isn't supported for device {}",
+					getKey());
+			// TODO Throw an exception now or attempt anyway?
 		}
 	
+		int rc = EAGAIN;
+		for (int i = 0; i < numRetries && (rc == EAGAIN || rc == ETIMEDOUT || rc == EREMOTEIO); i++) {
+			rc = NativeI2C.writeWordSwapped(fd, registerAddress, data);
+		}
+
 		if (rc < 0) {
-			throw new RuntimeIOException("Error in SMBus.writeWordSwapped for device i2c-" + controller + "-0x"
-					+ Integer.toHexString(deviceAddress) + ": " + rc);
+			throw new RuntimeIOException("Error in SMBus.writeWordSwapped for device "
+					+ getKey() + ": " + rc);
 		}
 	}
 	*/
@@ -324,8 +319,7 @@ public class NativeI2CDeviceSMBus extends AbstractDevice implements InternalI2CD
 	@Override
 	public short processCall(int registerAddress, short data) {
 		if ((funcs & NativeI2C.I2C_FUNC_SMBUS_PROC_CALL) == 0) {
-			Logger.warn("Function I2C_FUNC_SMBUS_PROC_CALL isn't supported for device i2c-{}-0x{}",
-					Integer.valueOf(controller), Integer.toHexString(deviceAddress));
+			Logger.warn("Function I2C_FUNC_SMBUS_PROC_CALL isn't supported for device {}", getKey());
 			// TODO Throw an exception now or attempt anyway?
 		}
 
@@ -335,8 +329,7 @@ public class NativeI2CDeviceSMBus extends AbstractDevice implements InternalI2CD
 		}
 
 		if (rc < 0) {
-			throw new RuntimeIOException("Error in SMBus.processCall for device i2c-" + controller + "-0x"
-					+ Integer.toHexString(deviceAddress) + ": " + rc);
+			throw new RuntimeIOException("Error in SMBus.processCall for device " + getKey() + ": " + rc);
 		}
 
 		return (short) rc;
@@ -345,8 +338,7 @@ public class NativeI2CDeviceSMBus extends AbstractDevice implements InternalI2CD
 	@Override
 	public byte[] readBlockData(int registerAddress) {
 		if ((funcs & NativeI2C.I2C_FUNC_SMBUS_READ_BLOCK_DATA) == 0) {
-			Logger.warn("Function I2C_FUNC_SMBUS_READ_BLOCK_DATA isn't supported for device i2c-{}-0x{}",
-					Integer.valueOf(controller), Integer.toHexString(deviceAddress));
+			Logger.warn("Function I2C_FUNC_SMBUS_READ_BLOCK_DATA isn't supported for device {}", getKey());
 			// TODO Throw an exception now or attempt anyway?
 		}
 
@@ -358,8 +350,7 @@ public class NativeI2CDeviceSMBus extends AbstractDevice implements InternalI2CD
 		}
 
 		if (rc < 0) {
-			throw new RuntimeIOException("Error in SMBus.readBlockData for device i2c-" + controller + "-0x"
-					+ Integer.toHexString(deviceAddress) + ": " + rc);
+			throw new RuntimeIOException("Error in SMBus.readBlockData for device " + getKey() + ": " + rc);
 		}
 
 		byte[] rx_data = new byte[rc];
@@ -371,14 +362,13 @@ public class NativeI2CDeviceSMBus extends AbstractDevice implements InternalI2CD
 	@Override
 	public void writeBlockData(int registerAddress, byte... data) {
 		if ((funcs & NativeI2C.I2C_FUNC_SMBUS_WRITE_BLOCK_DATA) == 0) {
-			Logger.warn("Function I2C_FUNC_SMBUS_WRITE_BLOCK_DATA isn't supported for device i2c-{}-0x{}",
-					Integer.valueOf(controller), Integer.toHexString(deviceAddress));
+			Logger.warn("Function I2C_FUNC_SMBUS_WRITE_BLOCK_DATA isn't supported for device {}", getKey());
 			// TODO Throw an exception now or attempt anyway?
 		}
 
 		if (data.length > MAX_I2C_BLOCK_SIZE) {
-			throw new RuntimeIOException("Error in SMBus.writeBlockData for device i2c-" + controller + "-0x"
-					+ Integer.toHexString(deviceAddress) + ": array length must be <= 32, is " + data.length);
+			throw new RuntimeIOException("Error in SMBus.writeBlockData for device " + getKey()
+					+ ": array length must be <= 32, is " + data.length);
 		}
 
 		int rc = EAGAIN;
@@ -387,22 +377,20 @@ public class NativeI2CDeviceSMBus extends AbstractDevice implements InternalI2CD
 		}
 
 		if (rc < 0) {
-			throw new RuntimeIOException("Error in SMBus.writeBlockData for device i2c-" + controller + "-0x"
-					+ Integer.toHexString(deviceAddress) + ": " + rc);
+			throw new RuntimeIOException("Error in SMBus.writeBlockData for device " + getKey() + ": " + rc);
 		}
 	}
 
 	@Override
 	public byte[] blockProcessCall(int registerAddress, byte... txData) {
 		if ((funcs & NativeI2C.I2C_FUNC_SMBUS_BLOCK_PROC_CALL) == 0) {
-			Logger.warn("Function I2C_FUNC_SMBUS_BLOCK_PROCESS_CALL isn't supported for device i2c-{}-0x{}",
-					Integer.valueOf(controller), Integer.toHexString(deviceAddress));
+			Logger.warn("Function I2C_FUNC_SMBUS_BLOCK_PROCESS_CALL isn't supported for device {}", getKey());
 			// TODO Throw an exception now or attempt anyway?
 		}
 
 		if (txData.length > MAX_I2C_BLOCK_SIZE) {
-			throw new RuntimeIOException("Error in SMBus.blockProcessCall for device i2c-" + controller + "-0x"
-					+ Integer.toHexString(deviceAddress) + ": array length must be <= 32, is " + txData.length);
+			throw new RuntimeIOException("Error in SMBus.blockProcessCall for device " + getKey()
+					+ ": array length must be <= 32, is " + txData.length);
 		}
 
 		byte[] rx_data = new byte[txData.length];
@@ -413,8 +401,7 @@ public class NativeI2CDeviceSMBus extends AbstractDevice implements InternalI2CD
 		}
 
 		if (rc < 0) {
-			throw new RuntimeIOException("Error in SMBus.blockProcessCall for device i2c-" + controller + "-0x"
-					+ Integer.toHexString(deviceAddress) + ": " + rc);
+			throw new RuntimeIOException("Error in SMBus.blockProcessCall for device " + getKey() + ": " + rc);
 		}
 
 		return rx_data;
@@ -423,8 +410,7 @@ public class NativeI2CDeviceSMBus extends AbstractDevice implements InternalI2CD
 	@Override
 	public int readI2CBlockData(int registerAddress, byte[] buffer) {
 		if ((funcs & NativeI2C.I2C_FUNC_SMBUS_READ_I2C_BLOCK) == 0) {
-			Logger.warn("Function I2C_FUNC_SMBUS_READ_I2C_BLOCK isn't supported for device i2c-{}-0x{}",
-					Integer.valueOf(controller), Integer.toHexString(deviceAddress));
+			Logger.warn("Function I2C_FUNC_SMBUS_READ_I2C_BLOCK isn't supported for device {}", getKey());
 			// TODO Throw an exception now or attempt anyway?
 		}
 
@@ -434,8 +420,7 @@ public class NativeI2CDeviceSMBus extends AbstractDevice implements InternalI2CD
 		}
 
 		if (rc < 0) {
-			throw new RuntimeIOException("Error in SMBus.readI2CBlockData for device i2c-" + controller + "-0x"
-					+ Integer.toHexString(deviceAddress) + ": " + rc);
+			throw new RuntimeIOException("Error in SMBus.readI2CBlockData for device " + getKey() + ": " + rc);
 		}
 
 		return rc;
@@ -444,8 +429,7 @@ public class NativeI2CDeviceSMBus extends AbstractDevice implements InternalI2CD
 	@Override
 	public void writeI2CBlockData(int registerAddress, byte... data) {
 		if ((funcs & NativeI2C.I2C_FUNC_SMBUS_WRITE_I2C_BLOCK) == 0) {
-			Logger.warn("Function I2C_FUNC_SMBUS_WRITE_I2C_BLOCK isn't supported for device i2c-{}-0x{}",
-					Integer.valueOf(controller), Integer.toHexString(deviceAddress));
+			Logger.warn("Function I2C_FUNC_SMBUS_WRITE_I2C_BLOCK isn't supported for device {}", getKey());
 			// TODO Throw an exception now or attempt anyway?
 		}
 
@@ -455,8 +439,7 @@ public class NativeI2CDeviceSMBus extends AbstractDevice implements InternalI2CD
 		}
 
 		if (rc < 0) {
-			throw new RuntimeIOException("Error in SMBus.writeI2CBlockData for device i2c-" + controller + "-0x"
-					+ Integer.toHexString(deviceAddress) + ": " + rc);
+			throw new RuntimeIOException("Error in SMBus.writeI2CBlockData for device " + getKey() + ": " + rc);
 		}
 	}
 
@@ -468,8 +451,7 @@ public class NativeI2CDeviceSMBus extends AbstractDevice implements InternalI2CD
 		}
 
 		if (rc < 0) {
-			throw new RuntimeIOException("Error in SMBus.readBytes for device i2c-" + controller + "-0x"
-					+ Integer.toHexString(deviceAddress) + ": " + rc);
+			throw new RuntimeIOException("Error in SMBus.readBytes for device " + getKey() + ": " + rc);
 		}
 
 		return rc;
@@ -483,8 +465,7 @@ public class NativeI2CDeviceSMBus extends AbstractDevice implements InternalI2CD
 		}
 
 		if (rc < 0 || rc < data.length) {
-			throw new RuntimeIOException("Error in SMBus.writeBytes for device i2c-" + controller + "-0x"
-					+ Integer.toHexString(deviceAddress) + ": " + rc);
+			throw new RuntimeIOException("Error in SMBus.writeBytes for device " + getKey() + ": " + rc);
 		}
 	}
 
@@ -496,8 +477,7 @@ public class NativeI2CDeviceSMBus extends AbstractDevice implements InternalI2CD
 		}
 
 		if (rc < 0) {
-			throw new RuntimeIOException("Error in I2C readNoStop for device i2c-" + controller + "-0x"
-					+ Integer.toHexString(deviceAddress) + ": " + rc);
+			throw new RuntimeIOException("Error in I2C readNoStop for device " + getKey() + ": " + rc);
 		}
 
 		return rc;
@@ -511,8 +491,7 @@ public class NativeI2CDeviceSMBus extends AbstractDevice implements InternalI2CD
 		}
 
 		if (rc < 0) {
-			throw new RuntimeIOException("Error in I2C readWrite for device i2c-" + controller + "-0x"
-					+ Integer.toHexString(deviceAddress) + ": " + rc);
+			throw new RuntimeIOException("Error in I2C readWrite for device " + getKey() + ": " + rc);
 		}
 	}
 }

@@ -5,7 +5,7 @@ package com.diozero.internal.provider.builtin.i2c;
  * Organisation: diozero
  * Project:      diozero - Core
  * Filename:     NativeI2CDeviceJavaRaf.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.internal.provider.builtin.i2c;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -217,6 +217,7 @@ public class NativeI2CDeviceJavaRaf extends AbstractDevice implements InternalI2
 	@Override
 	public void writeWordSwapped(int register, short data) {
 		try {
+			// This is Big Endian
 			deviceFile.writeShort(data);
 		} catch (IOException e) {
 			throw new RuntimeIOException("Error in I2C writeWordData for device i2c-" + controller + "-0x"
@@ -226,13 +227,17 @@ public class NativeI2CDeviceJavaRaf extends AbstractDevice implements InternalI2
 
 	@Override
 	public short processCall(int register, short data) {
+		// An approximation of SMBus Process Call
 		writeWordData(register, data);
+		return readWordData(register);
+		/*-
 		try {
 			return deviceFile.readShort();
 		} catch (IOException e) {
 			throw new RuntimeIOException("Error in I2C processCall for device i2c-" + controller + "-0x"
 					+ Integer.toHexString(deviceAddress), e);
 		}
+		*/
 	}
 
 	@Override
@@ -279,7 +284,10 @@ public class NativeI2CDeviceJavaRaf extends AbstractDevice implements InternalI2
 
 	@Override
 	public byte[] blockProcessCall(int register, byte... txData) {
+		// An approximation of SMBus Block Process Call
 		writeBlockData(register, txData);
+		byte[] buffer = readBlockData(register);
+		/*-
 		byte[] buffer = new byte[txData.length];
 		try {
 			deviceFile.read(buffer);
@@ -287,6 +295,7 @@ public class NativeI2CDeviceJavaRaf extends AbstractDevice implements InternalI2
 			throw new RuntimeIOException("Error in I2C blockProcessCall for device i2c-" + controller + "-0x"
 					+ Integer.toHexString(deviceAddress), e);
 		}
+		*/
 		return buffer;
 	}
 
@@ -339,5 +348,11 @@ public class NativeI2CDeviceJavaRaf extends AbstractDevice implements InternalI2
 					"Error in I2C readBytes for device i2c-" + controller + "-0x" + Integer.toHexString(deviceAddress),
 					e);
 		}
+	}
+
+	@Override
+	public void readWrite(I2CMessage[] messages, byte[] buffer) {
+		// TODO Simulate read-write?!
+		throw new UnsupportedOperationException("I2C readWrite not supported");
 	}
 }

@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>com.diozero</groupId>
 		<artifactId>diozero</artifactId>
-		<version>1.2.4</version>
+		<version>1.3.0</version>
 	</parent>
 	
 	<artifactId>diozero-provider-remote</artifactId>
@@ -15,7 +15,7 @@
 	<properties>
 		<apache-httpcomponents-httpcore.version>4.4.14</apache-httpcomponents-httpcore.version>
 		<apache-httpcomponents-httpclient.version>4.5.13</apache-httpcomponents-httpclient.version>
-		<jetty-websocket-client.version>9.4.39.v20210325</jetty-websocket-client.version>
+		<jetty-websocket-client.version>9.4.41.v20210516</jetty-websocket-client.version>
 	</properties>
 	
 	<dependencyManagement>
@@ -24,21 +24,6 @@
 				<groupId>com.diozero</groupId>
 				<artifactId>diozero-remote-common</artifactId>
 				<version>${diozero.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.httpcomponents</groupId>
-				<artifactId>httpcore</artifactId>
-				<version>${apache-httpcomponents-httpcore.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.httpcomponents</groupId>
-				<artifactId>httpclient</artifactId>
-				<version>${apache-httpcomponents-httpclient.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.eclipse.jetty.websocket</groupId>
-				<artifactId>websocket-client</artifactId>
-				<version>${jetty-websocket-client.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -51,34 +36,6 @@
 		<dependency>
 			<groupId>com.diozero</groupId>
 			<artifactId>diozero-remote-common</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.paho</groupId>
-			<artifactId>org.eclipse.paho.client.mqttv3</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.google.protobuf</groupId>
-			<artifactId>protobuf-java</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpcore</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpclient</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>io.netty</groupId>
-			<artifactId>netty-all</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.google.code.gson</groupId>
-			<artifactId>gson</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.jetty.websocket</groupId>
-			<artifactId>websocket-client</artifactId>
 		</dependency>
 	</dependencies>
 </project>

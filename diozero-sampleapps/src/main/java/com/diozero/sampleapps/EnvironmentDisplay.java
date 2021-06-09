@@ -5,7 +5,7 @@ package com.diozero.sampleapps;
  * Organisation: diozero
  * Project:      diozero - Sample applications
  * Filename:     EnvironmentDisplay.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.sampleapps;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -59,7 +59,7 @@ import com.diozero.devices.BME280;
 import com.diozero.devices.PwmLed;
 import com.diozero.devices.oled.ColourSsdOled;
 import com.diozero.devices.oled.SSD1351;
-import com.diozero.sbc.DeviceFactoryHelper;
+import com.diozero.util.Diozero;
 import com.diozero.util.DiozeroScheduler;
 import com.diozero.util.TemperatureUtil;
 
@@ -99,10 +99,10 @@ public class EnvironmentDisplay implements AutoCloseable {
 		try (EnvironmentDisplay display = new EnvironmentDisplay(spi_controller, spi_chip_select, dc_gpio, reset_gpio,
 				i2c_controller, adc_read_channel, adc_ready_gpio)) {
 			// Explicitly register this application for clean-up in case of
-			DeviceFactoryHelper.registerForShutdown(display);
-			
+			Diozero.registerForShutdown(display);
+
 			display.start();
-			
+
 			display.waitToComplete();
 		} catch (Exception e) {
 			Logger.debug(e);
@@ -179,9 +179,9 @@ public class EnvironmentDisplay implements AutoCloseable {
 	@Override
 	public synchronized void close() {
 		Logger.trace("Closing...");
-		
+
 		stop();
-		
+
 		// Close all device interfaces
 		for (DeviceInterface device : Arrays.asList(oled, oledDcPin, oledResetPin, bme280, ain, adcDataReadyPin, adc,
 				pwmLed)) {
@@ -212,7 +212,7 @@ public class EnvironmentDisplay implements AutoCloseable {
 		}
 		image = null;
 		backgroundImages = null;
-		
+
 		Logger.trace("Closed.");
 	}
 

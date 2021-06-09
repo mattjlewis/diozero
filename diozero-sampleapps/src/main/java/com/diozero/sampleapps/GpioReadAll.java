@@ -3,7 +3,7 @@
  * Organisation: diozero
  * Project:      diozero - Sample applications
  * Filename:     GpioReadAll.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -15,10 +15,10 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -48,21 +48,12 @@ import org.fusesource.jansi.AnsiConsole;
 import org.tinylog.Logger;
 
 import com.diozero.api.PinInfo;
-import com.diozero.internal.spi.MmapGpioInterface;
-import com.diozero.sbc.BoardInfo;
+import com.diozero.internal.spi.NativeDeviceFactoryInterface;
 import com.diozero.sbc.DeviceFactoryHelper;
 import com.diozero.util.StringUtil;
 
 public class GpioReadAll {
 	public static void main(String[] args) {
-		BoardInfo board_info = DeviceFactoryHelper.getNativeDeviceFactory().getBoardInfo();
-		MmapGpioInterface mmap_gpio = board_info.createMmapGpio();
-		if (mmap_gpio == null) {
-			Logger.error("Unable to load MMAP GPIO interface");
-			return;
-		}
-		mmap_gpio.initialise();
-
 		// Attempt to initialise Jansi
 		try {
 			AnsiConsole.systemInstall();
@@ -71,11 +62,14 @@ public class GpioReadAll {
 			Logger.trace(t, "Jansi native library not available on this platform: {}", t);
 		}
 
-		board_info.getHeaders().entrySet()
-				.forEach(header_entry -> printPins(mmap_gpio, header_entry.getKey(), header_entry.getValue()));
+		NativeDeviceFactoryInterface device_factory = DeviceFactoryHelper.getNativeDeviceFactory();
+
+		device_factory.getBoardInfo().getHeaders().entrySet()
+				.forEach(header_entry -> printPins(device_factory, header_entry.getKey(), header_entry.getValue()));
 	}
 
-	private static void printPins(MmapGpioInterface mmapGpio, String headerName, Map<Integer, PinInfo> pins) {
+	private static void printPins(NativeDeviceFactoryInterface deviceFactory, String headerName,
+			Map<Integer, PinInfo> pins) {
 		if (pins == null) {
 			Logger.error("Unable to resolve pins for header {}", headerName);
 			return;
@@ -97,15 +91,15 @@ public class GpioReadAll {
 		int index = 0;
 		for (PinInfo pin_info : pins.values()) {
 			int gpio = pin_info.getDeviceNumber();
-			Optional<Boolean> value = gpioRead(mmapGpio, pin_info);
+			Optional<Boolean> value = gpioRead(deviceFactory, pin_info);
 			if (index++ % 2 == 0) {
 				System.out.print(Ansi.ansi().a("| ") //
 						.bold().fg(getPinColour(pin_info)).format("%3s", getNotDefined(gpio)).fgDefault().boldOff()
 						.a(" | ") //
 						.bold().fg(getPinColour(pin_info)).format("%" + max_name_length + "s", pin_info.getName())
 						.fgDefault().boldOff().a(" | ") //
-						.bold().fg(getModeColour(mmapGpio, pin_info)).format("%4s", getModeString(mmapGpio, pin_info))
-						.fgDefault().boldOff().a(" | ") //
+						.bold().fg(getModeColour(deviceFactory, pin_info))
+						.format("%4s", getModeString(deviceFactory, pin_info)).fgDefault().boldOff().a(" | ") //
 						.bold().fg(getValueColour(value)).format("%1s", getValueString(value)).fgDefault().boldOff()
 						.a(" | ") //
 						.bold().format("%6s", getGpiodName(pin_info.getChip(), pin_info.getLineOffset())).boldOff()
@@ -126,8 +120,8 @@ public class GpioReadAll {
 						.a(" | ") //
 						.bold().fg(getValueColour(value)).format("%1s", getValueString(value)).fgDefault().boldOff()
 						.a(" | ") //
-						.bold().fg(getModeColour(mmapGpio, pin_info)).format("%-4s", getModeString(mmapGpio, pin_info))
-						.fgDefault().boldOff().a(" | ") //
+						.bold().fg(getModeColour(deviceFactory, pin_info))
+						.format("%-4s", getModeString(deviceFactory, pin_info)).fgDefault().boldOff().a(" | ") //
 						.bold().fg(getPinColour(pin_info)).format("%-" + max_name_length + "s", pin_info.getName())
 						.fgDefault().boldOff().a(" | ") //
 						.bold().fg(getPinColour(pin_info)).format("%-3s", getNotDefined(gpio)).fgDefault().boldOff()

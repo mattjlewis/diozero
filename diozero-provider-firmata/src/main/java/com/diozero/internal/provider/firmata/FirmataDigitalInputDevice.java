@@ -5,7 +5,7 @@ package com.diozero.internal.provider.firmata;
  * Organisation: diozero
  * Project:      diozero - Firmata
  * Filename:     FirmataDigitalInputDevice.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.internal.provider.firmata;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -43,33 +43,48 @@ import com.diozero.api.DigitalInputEvent;
 import com.diozero.api.GpioEventTrigger;
 import com.diozero.api.GpioPullUpDown;
 import com.diozero.api.RuntimeIOException;
+import com.diozero.internal.provider.firmata.adapter.FirmataAdapter;
+import com.diozero.internal.provider.firmata.adapter.FirmataProtocol.PinMode;
 import com.diozero.internal.spi.AbstractInputDevice;
 import com.diozero.internal.spi.GpioDigitalInputDeviceInterface;
 
 public class FirmataDigitalInputDevice extends AbstractInputDevice<DigitalInputEvent>
 		implements GpioDigitalInputDeviceInterface, PinEventListener {
+	private FirmataAdapter adapter;
+	private int gpio;
 	private Pin pin;
 
-	public FirmataDigitalInputDevice(FirmataDeviceFactory deviceFactory, String key, int deviceNumber,
-			GpioPullUpDown pud, GpioEventTrigger trigger) {
+	public FirmataDigitalInputDevice(FirmataDeviceFactory deviceFactory, String key, int gpio, GpioPullUpDown pud,
+			GpioEventTrigger trigger) {
 		super(key, deviceFactory);
 
-		pin = deviceFactory.getIoDevice().getPin(deviceNumber);
-		try {
-			pin.setMode(Mode.INPUT);
-		} catch (IOException e) {
-			throw new RuntimeIOException("Error setting pin mode to input for pin " + deviceNumber);
+		this.gpio = gpio;
+
+		adapter = deviceFactory.getFirmataAdapter();
+		if (adapter != null) {
+			adapter.setPinMode(gpio, pud == GpioPullUpDown.PULL_UP ? PinMode.INPUT_PULLUP : PinMode.DIGITAL_INPUT);
+		} else {
+			pin = deviceFactory.getIoDevice().getPin(gpio);
+			try {
+				pin.setMode(pud == GpioPullUpDown.PULL_UP ? Mode.INPUT : Mode.PULLUP);
+			} catch (IOException e) {
+				throw new RuntimeIOException("Error setting pin mode to input for pin " + gpio);
+			}
 		}
 	}
 
 	@Override
 	public boolean getValue() throws RuntimeIOException {
+		if (adapter != null) {
+			return adapter.getDigitalValue(gpio);
+		}
+
 		return pin.getValue() != 0;
 	}
 
 	@Override
 	public int getGpio() {
-		return pin.getIndex();
+		return gpio;
 	}
 
 	@Override
@@ -81,12 +96,20 @@ public class FirmataDigitalInputDevice extends AbstractInputDevice<DigitalInputE
 	public void enableListener() {
 		disableListener();
 
-		pin.addEventListener(this);
+		if (adapter != null) {
+			adapter.enableDigitalReporting(gpio, true);
+		} else {
+			pin.addEventListener(this);
+		}
 	}
 
 	@Override
 	public void disableListener() {
-		pin.removeEventListener(this);
+		if (adapter != null) {
+			adapter.enableDigitalReporting(gpio, false);
+		} else {
+			pin.removeEventListener(this);
+		}
 	}
 
 	@Override
@@ -96,13 +119,14 @@ public class FirmataDigitalInputDevice extends AbstractInputDevice<DigitalInputE
 	}
 
 	@Override
+	// Specific to Firmata4j
 	public void onModeChange(IOEvent event) {
 		Logger.warn("Mode changed from digital input to {}", event.getPin().getMode());
 	}
 
 	@Override
+	// Specific to Firmata4j
 	public void onValueChange(IOEvent event) {
-		accept(
-				new DigitalInputEvent(pin.getIndex(), event.getTimestamp(), System.nanoTime(), event.getValue() != 0));
+		accept(new DigitalInputEvent(pin.getIndex(), event.getTimestamp(), System.nanoTime(), event.getValue() != 0));
 	}
 }

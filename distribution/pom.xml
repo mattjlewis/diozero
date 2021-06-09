@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>com.diozero</groupId>
 		<artifactId>diozero</artifactId>
-		<version>1.2.4</version>
+		<version>1.3.0</version>
 	</parent>
 
 	<artifactId>diozero-distribution</artifactId>
@@ -17,18 +17,6 @@
 		project to the end of the line in the multi-module build. We need to ensure 
 		this distribution project builds AFTER all diozero modules -->
 	<dependencies>
-		<dependency>
-			<groupId>com.diozero</groupId>
-			<artifactId>diozero-bom</artifactId>
-			<version>${diozero.version}</version>
-			<type>pom</type>
-		</dependency>
-		<dependency>
-			<groupId>com.diozero</groupId>
-			<artifactId>diozero-application</artifactId>
-			<version>${diozero.version}</version>
-			<type>maven-archetype</type>
-		</dependency>
 		<dependency>
 			<groupId>com.diozero</groupId>
 			<artifactId>diozero-core</artifactId>
@@ -46,16 +34,6 @@
 		<dependency>
 			<groupId>com.diozero</groupId>
 			<artifactId>diozero-provider-firmata</artifactId>
-			<version>${diozero.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.diozero</groupId>
-			<artifactId>diozero-provider-mmap</artifactId>
-			<version>${diozero.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.diozero</groupId>
-			<artifactId>diozero-provider-mqtt</artifactId>
 			<version>${diozero.version}</version>
 		</dependency>
 		<dependency>

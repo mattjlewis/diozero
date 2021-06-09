@@ -5,7 +5,7 @@ package com.diozero.util;
  * Organisation: diozero
  * Project:      diozero - Core
  * Filename:     ByteTest.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.util;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -50,10 +50,11 @@ public class ByteTest {
 		byte b2 = (byte) i;
 		int i2 = b2 & 0xff;
 
-		// sun.misc.HexDumpEncoder enc = new sun.misc.HexDumpEncoder();
-		// String s = enc.encode(new byte[] { b, b2, new_value, (byte) (b >> 1), (byte)
-		// (b >>> 1), (byte) (b >> 2),
-		// (byte) (b >> 3), (byte) (b >> 4), (byte) (b >> 5), (byte) (b >>> 5) });
+		/*-
+		sun.misc.HexDumpEncoder enc = new sun.misc.HexDumpEncoder();
+		String s = enc.encode(new byte[] { b, b2, new_value, (byte) (b >> 1), (byte) (b >>> 1), (byte) (b >> 2),
+			(byte) (b >> 3), (byte) (b >> 4), (byte) (b >> 5), (byte) (b >>> 5) });
+		 */
 
 		System.out.format("b=%d, i=%d, b2=%d, i2=%d, new_value=%d%n", b, i, b2, i2, new_value);
 		Hex.dumpByteArray(new byte[] { b, b2, new_value, (byte) (b >> 1), (byte) (b >>> 1), (byte) (b >> 2),
@@ -70,6 +71,16 @@ public class ByteTest {
 		ThreadLocalRandom.current().nextBytes(bytes);
 		// enc.encode(bytes, System.out);
 		Hex.dumpByteArray(bytes);
+
+		i = 208;
+		b = (byte) i;
+		b2 = (byte) (i & 0xff);
+		Assertions.assertEquals(b, b2);
+		System.out.println(b);
+		i2 = i - 256;
+		b2 = (byte) i2;
+		Assertions.assertEquals(b, b2);
+		System.out.println(b2);
 	}
 
 	@Test

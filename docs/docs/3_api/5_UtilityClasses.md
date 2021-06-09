@@ -14,7 +14,8 @@ package contains classes for interfacing with Single Board Board Computers, most
 [DeviceFactoryHelper](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/com/diozero/sbc/DeviceFactoryHelper.html)
 class which provides utility methods for accessing the automatically detected device factory for the
 local SBC on which your application is running.
-It also contains utility methods for graceful shutdown.
+
+The [Diozero](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/com/diozero/util/Diozero.html) class contains utility methods for graceful shutdown.
 
 The other key class in this package is
 [BoardPinInfo](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/com/diozero/sbc/BoardPinInfo.html)
@@ -67,6 +68,9 @@ package contains general utility classes, including:
 
 [Crc](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/com/diozero/util/Crc.html)
 : CRC-8 and CRC-16 calculator - supports all [common configurations](https://crccalc.com).
+
+[Diozero](https://www.javadoc.io/docs/com.diozero/diozero-core/latest/com/diozero/util/Diozero.html)
+: Utility methods for initialisation and graceful shutdown.
 
 [DiozeroScheduler](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/com/diozero/util/DiozeroScheduler.html)
 : Wrapper around the Java ExecutorService and ScheduledExecutorService; provided to enable graceful shutdown when using non-daemon threads.

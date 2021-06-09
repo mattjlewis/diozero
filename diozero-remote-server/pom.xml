@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>com.diozero</groupId>
 		<artifactId>diozero</artifactId>
-		<version>1.2.4</version>
+		<version>1.3.0</version>
 	</parent>
 
 	<artifactId>diozero-remote-server</artifactId>
@@ -14,8 +14,25 @@
 	<name>diozero - Remote Server</name>
 
 	<properties>
-		<sparkjava-core.version>2.9.3</sparkjava-core.version>
+		<mainClass>com.diozero.remote.server.grpc.GrpcServer</mainClass>
 	</properties>
+	
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<archive>
+						<manifest>
+							<addClasspath>true</addClasspath>
+							<mainClass>${mainClass}</mainClass>
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 
 	<dependencyManagement>
 		<dependencies>
@@ -25,16 +42,16 @@
 				<version>${diozero.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.sparkjava</groupId>
-				<artifactId>spark-core</artifactId>
-				<version>${sparkjava-core.version}</version>
-			</dependency>
-			<dependency>
 				<groupId>io.grpc</groupId>
 				<artifactId>grpc-bom</artifactId>
 				<version>${grpc.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.tinylog</groupId>
+				<artifactId>slf4j-tinylog</artifactId>
+				<version>${tinylog.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -48,18 +65,7 @@
 			<groupId>com.diozero</groupId>
 			<artifactId>diozero-remote-common</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>org.eclipse.paho</groupId>
-			<artifactId>org.eclipse.paho.client.mqttv3</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.sparkjava</groupId>
-			<artifactId>spark-core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.google.code.gson</groupId>
-			<artifactId>gson</artifactId>
-		</dependency>
+		
 		<dependency>
 			<groupId>io.grpc</groupId>
 			<artifactId>grpc-protobuf</artifactId>
@@ -83,6 +89,12 @@
 			<artifactId>grpc-netty-shaded</artifactId>
 			<scope>runtime</scope>
 		</dependency>
+		<!-- gRPC uses slf4j -->
+		<dependency>
+			<groupId>org.tinylog</groupId>
+			<artifactId>slf4j-tinylog</artifactId>
+		</dependency>
+		
 		<dependency>
 			<groupId>io.grpc</groupId>
 			<artifactId>grpc-testing</artifactId>

@@ -3,7 +3,7 @@
  * Organisation: diozero
  * Project:      diozero - Core
  * Filename:     Max30102.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -15,10 +15,10 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -39,7 +39,7 @@ import org.tinylog.Logger;
 import com.diozero.api.DeviceInterface;
 import com.diozero.api.I2CConstants;
 import com.diozero.api.I2CDevice;
-import com.diozero.api.I2CDeviceInterface.I2CMessage;
+import com.diozero.api.I2CDeviceInterface;
 import com.diozero.api.RuntimeIOException;
 import com.diozero.util.Hex;
 import com.diozero.util.RangeUtil;
@@ -652,6 +652,8 @@ public class Max30102 implements DeviceInterface {
 					Integer.valueOf(bytes_to_read));
 			*/
 
+			/*-
+			// "raw" I2C
 			I2CMessage[] messages = { //
 					new I2CMessage(I2CMessage.I2C_M_WR, 1), // Write the REG_FIFO_DATA register address
 					new I2CMessage(I2CMessage.I2C_M_RD, bytes_to_read) // Read FIFO data
@@ -662,6 +664,10 @@ public class Max30102 implements DeviceInterface {
 			// FIXME Note this code will not work on Arduino
 			device.readWrite(messages, buffer);
 			System.arraycopy(buffer, 1, data, 0, bytes_to_read);
+			*/
+
+			// Note this will not perform as well as readWrite(I2CMessage[], byte[])
+			device.readWrite(new I2CDeviceInterface.ReadCommand(REG_FIFO_DATA, data));
 
 			if (Logger.isTraceEnabled()) {
 				Hex.dumpByteArray(data);

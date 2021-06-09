@@ -164,8 +164,9 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_builtin_i2c_NativeI2C_
 		JNIEnv* env, jclass clz, jint fd, jint rxLength, jbyteArray rxData) {
 	jboolean is_copy;
 	jbyte* rx_buf = (*env)->GetByteArrayElements(env, rxData, &is_copy);
+	//size_t rx_length = (*env)->GetArrayLength(env, rxData);
 
-	int rc = read(fd, (uint8_t*) rx_buf, rxLength);
+	int rc = read(fd, rx_buf, rxLength);
 
 	// mode = 0 : copy back the content and free the elems buffer
 	(*env)->ReleaseByteArrayElements(env, rxData, rx_buf, 0);
@@ -181,7 +182,7 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_builtin_i2c_NativeI2C_
 		JNIEnv* env, jclass clz, jint fd, jint txLength, jbyteArray txData) {
 	jboolean is_copy;
 	jbyte* tx_buf = (*env)->GetByteArrayElements(env, txData, &is_copy);
-	//(*env)->GetArrayLength(env, txData);
+	//size_t tx_length = (*env)->GetArrayLength(env, txData);
 
 	int rc = write(fd, tx_buf, txLength);
 

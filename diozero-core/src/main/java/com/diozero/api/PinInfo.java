@@ -40,7 +40,7 @@ import java.util.EnumSet;
  * (GPIO) pin. GPIO pin functions include Digital Input / Output, PWM Output and
  * Analog Input / Output.
  * </p>
- * 
+ *
  * <p>
  * <strong>Always access instances of this class via the
  * {@link com.diozero.sbc.BoardPinInfo BoardPinInfo} accessor methods rather
@@ -50,7 +50,7 @@ import java.util.EnumSet;
  * {@link com.diozero.sbc.BoardPinInfo#getByChipAndLineOffset(int, int)
  * BoardPinInfo.getByChipAndLineOffset(chip, lineOffset)}.
  * </p>
- * 
+ *
  * <p>
  * A board has a number of headers, each header has a number of physical pins
  * connected to it. For example, the Raspberry Pi model B has the main 40-pin J8
@@ -58,30 +58,35 @@ import java.util.EnumSet;
  * by default). Non-GPIO pins such as Vcc and GND are also included for
  * information purposes only.
  * </p>
- * 
+ *
  * <p>
  * A pin has the following attributes:
  * </p>
  * <dl>
- * <dt>keyPrefix</dt><dd>internal only attribute used by
+ * <dt>keyPrefix</dt>
+ * <dd>internal only attribute used by
  * {@link com.diozero.internal.spi.AbstractDeviceFactory AbstractDeviceFactory}
  * when provisioning GPIO devices</dd>
- * <dt>header</dt><dd>the name of the board header to which this pin
- * is attached</dd>
- * <dt>physicalPin</dt><dd>the physical header pin number</dd>
- * <dt>deviceNumber</dt><dd>the logical device GPIO number</dd>
- * <dt>sysFsNumber</dt><dd>typically the same as the GPIO / device
- * number; can be different for PWM pins that are controlled via Linux
- * sysfs</dd>
- * <dt>chip</dt><dd>the Linux GPIO chip number for this GPIO as
- * defined by the Linux GPIO character device; see /sys/gpiochip&lt;n&gt;, run
- * <code>gpiodetect</code> to list</dd>
- * <dt>lineOffset</dt><dd>the line number offset for this GPIO on the
- * GPIO chip - Linux GPIO character device; <code>run gpioinfo &lt;n&gt;</code>
- * to list</dd>
- * <dt>name</dt><dd>the name of this pin</dd>
- * <dt>modes</dt><dd>the set of valid {@link DeviceMode modes} for
- * this pin</dd>
+ * <dt>header</dt>
+ * <dd>the name of the board header to which this pin is attached</dd>
+ * <dt>physicalPin</dt>
+ * <dd>the physical header pin number</dd>
+ * <dt>deviceNumber</dt>
+ * <dd>the logical device GPIO number</dd>
+ * <dt>sysFsNumber</dt>
+ * <dd>typically the same as the GPIO / device number; can be different for PWM
+ * pins that are controlled via Linux sysfs</dd>
+ * <dt>chip</dt>
+ * <dd>the Linux GPIO chip number for this GPIO as defined by the Linux GPIO
+ * character device; see /sys/gpiochip&lt;n&gt;, run <code>gpiodetect</code> to
+ * list</dd>
+ * <dt>lineOffset</dt>
+ * <dd>the line number offset for this GPIO on the GPIO chip - Linux GPIO
+ * character device; <code>run gpioinfo &lt;n&gt;</code> to list</dd>
+ * <dt>name</dt>
+ * <dd>the name of this pin</dd>
+ * <dt>modes</dt>
+ * <dd>the set of valid {@link DeviceMode modes} for this pin</dd>
  * </dl>
  */
 public class PinInfo {
@@ -109,6 +114,7 @@ public class PinInfo {
 	private String keyPrefix;
 	private String header;
 	private int physicalPin;
+	/** gpioNumber */
 	private int deviceNumber;
 	private int sysFsNumber;
 	private int chip;
@@ -138,7 +144,7 @@ public class PinInfo {
 	 * Internal only attribute used by
 	 * {@link com.diozero.internal.spi.AbstractDeviceFactory AbstractDeviceFactory}
 	 * when provisioning GPIO devices
-	 * 
+	 *
 	 * @return the key prefix for this pin
 	 */
 	public String getKeyPrefix() {
@@ -147,7 +153,7 @@ public class PinInfo {
 
 	/**
 	 * Get the name of the board header to which this pin is attached
-	 * 
+	 *
 	 * @return the header name to which this pin is attached
 	 */
 	public String getHeader() {
@@ -156,7 +162,7 @@ public class PinInfo {
 
 	/**
 	 * Get the physical header pin number
-	 * 
+	 *
 	 * @return the physical header pin number
 	 */
 	public int getPhysicalPin() {
@@ -165,7 +171,7 @@ public class PinInfo {
 
 	/**
 	 * Get the logical device GPIO number
-	 * 
+	 *
 	 * @return the logical device GPIO number
 	 */
 	public int getDeviceNumber() {
@@ -176,7 +182,7 @@ public class PinInfo {
 	 * Get sysfs number for this pin. This is typically the same as the GPIO /
 	 * device number; can be different for PWM pins that are controlled via Linux
 	 * sysfs
-	 * 
+	 *
 	 * @return the sysfs number for this pin
 	 */
 	public int getSysFsNumber() {
@@ -187,7 +193,7 @@ public class PinInfo {
 	 * the Linux GPIO chip number for this GPIO as defined by the Linux GPIO
 	 * character device; see /sys/gpiochip&lt;n&gt;, run <code>gpiodetect</code> to
 	 * list
-	 * 
+	 *
 	 * @return the GPIO chip number for this pin
 	 */
 	public int getChip() {
@@ -196,7 +202,7 @@ public class PinInfo {
 
 	/**
 	 * <strong>Internal method - do not call</strong>
-	 * 
+	 *
 	 * @param chip the GPIO chip number for this pin
 	 */
 	public void setChip(int chip) {
@@ -206,7 +212,7 @@ public class PinInfo {
 	/**
 	 * Get the line number offset for this GPIO on the GPIO chip - Linux GPIO
 	 * character device; <code>run gpioinfo &lt;n&gt;</code> to list
-	 * 
+	 *
 	 * @return the GPIO line offset
 	 */
 	public int getLineOffset() {
@@ -215,7 +221,7 @@ public class PinInfo {
 
 	/**
 	 * <strong>Internal method - do not call</strong>
-	 * 
+	 *
 	 * @param lineOffset the GPIO chip line offset number for this pin
 	 */
 	public void setLineOffset(int lineOffset) {
@@ -224,7 +230,7 @@ public class PinInfo {
 
 	/**
 	 * Get the name of this pin
-	 * 
+	 *
 	 * @return the name of this pin
 	 */
 	public String getName() {
@@ -233,7 +239,7 @@ public class PinInfo {
 
 	/**
 	 * Get the set of valid {@link DeviceMode modes} for this pin
-	 * 
+	 *
 	 * @return the set of valid {@link DeviceMode modes} for this pin
 	 */
 	public Collection<DeviceMode> getModes() {
@@ -242,7 +248,7 @@ public class PinInfo {
 
 	/**
 	 * Check if the specified {@link DeviceMode mode} is supported by this pin
-	 * 
+	 *
 	 * @param mode the {@link DeviceMode device mode} to check
 	 * @return true if the device mode is supported
 	 */

@@ -5,7 +5,7 @@ package com.diozero.sampleapps;
  * Organisation: diozero
  * Project:      diozero - Sample applications
  * Filename:     ButtonControlledLed.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.sampleapps;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -36,7 +36,7 @@ import org.tinylog.Logger;
 import com.diozero.api.GpioPullUpDown;
 import com.diozero.devices.Button;
 import com.diozero.devices.LED;
-import com.diozero.sbc.DeviceFactoryHelper;
+import com.diozero.util.Diozero;
 import com.diozero.util.SleepUtil;
 
 /**
@@ -57,18 +57,18 @@ public class ButtonControlledLed {
 			Logger.error("Usage: {} <button-pin> <led-pin> [<delay-secs>]", ButtonControlledLed.class.getName());
 			System.exit(1);
 		}
-		
+
 		int delay_secs = 10;
 		if (args.length > 2) {
 			delay_secs = Integer.parseInt(args[2]);
 		}
-		
+
 		test(Integer.parseInt(args[0]), Integer.parseInt(args[1]), delay_secs);
 	}
 
 	public static void test(int buttonPin, int ledPin, int delaySecs) {
 		try (LED led = new LED(ledPin); Button button = new Button(buttonPin, GpioPullUpDown.PULL_UP)) {
-			DeviceFactoryHelper.registerForShutdown(button, led);
+			Diozero.registerForShutdown(button, led);
 
 			button.whenPressed(nanoTime -> led.on());
 			button.whenReleased(nanoTime -> led.off());

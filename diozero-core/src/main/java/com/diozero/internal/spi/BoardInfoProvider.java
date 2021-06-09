@@ -1,6 +1,6 @@
 package com.diozero.internal.spi;
 
-/*
+/*-
  * #%L
  * Organisation: diozero
  * Project:      diozero - Core
@@ -31,17 +31,19 @@ package com.diozero.internal.spi;
  * #L%
  */
 
-import java.util.ServiceLoader;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 import com.diozero.sbc.BoardInfo;
 import com.diozero.sbc.LocalSystemInfo;
+import com.diozero.util.ServiceLoaderUtil;
 
 public interface BoardInfoProvider {
 	BoardInfo lookup(LocalSystemInfo sysInfo);
 
 	static Stream<BoardInfoProvider> loadInstances() {
-		return StreamSupport.stream(ServiceLoader.load(BoardInfoProvider.class).spliterator(), false);
+		/*-
+		 return StreamSupport.stream(ServiceLoader.load(BoardInfoProvider.class).spliterator(), false);
+		 */
+		return ServiceLoaderUtil.stream(BoardInfoProvider.class);
 	}
 }

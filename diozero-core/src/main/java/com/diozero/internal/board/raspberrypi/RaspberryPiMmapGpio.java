@@ -5,7 +5,7 @@ package com.diozero.internal.board.raspberrypi;
  * Organisation: diozero
  * Project:      diozero - Core
  * Filename:     RaspberryPiMmapGpio.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.internal.board.raspberrypi;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -33,6 +33,8 @@ package com.diozero.internal.board.raspberrypi;
 
 import java.nio.ByteOrder;
 
+import org.tinylog.Logger;
+
 import com.diozero.api.DeviceMode;
 import com.diozero.api.GpioPullUpDown;
 import com.diozero.internal.spi.MmapGpioInterface;
@@ -41,6 +43,30 @@ import com.diozero.util.SleepUtil;
 
 @SuppressWarnings("unused")
 public class RaspberryPiMmapGpio implements MmapGpioInterface {
+	/*-
+	 * The BCM2835 has 54 GPIO pins.
+	 * BCM2835 data sheet, Page 90 onwards.
+	 * There are 6 control registers, each control the functions of a block
+	 * of 10 pins.
+	 * Each control register has 10 sets of 3 bits per GPIO pin - the ALT values
+	 * 000 = GPIO Pin X is an input
+	 * 001 = GPIO Pin X is an output
+	 * 100 = GPIO Pin X takes alternate function 0
+	 * 101 = GPIO Pin X takes alternate function 1
+	 * 110 = GPIO Pin X takes alternate function 2
+	 * 111 = GPIO Pin X takes alternate function 3
+	 * 011 = GPIO Pin X takes alternate function 4
+	 * 010 = GPIO Pin X takes alternate function 5
+	 */
+	private static final int FSEL_INPT = 0b000;
+	private static final int FSEL_OUTP = 0b001;
+	private static final int FSEL_ALT0 = 0b100;
+	private static final int FSEL_ALT1 = 0b101;
+	private static final int FSEL_ALT2 = 0b110;
+	private static final int FSEL_ALT3 = 0b111;
+	private static final int FSEL_ALT4 = 0b011;
+	private static final int FSEL_ALT5 = 0b010;
+
 	// #define GPIO_BASE (pi_peri_phys + 0x00200000)
 	// #define PCM_BASE (pi_peri_phys + 0x00203000)
 	// #define SPI_BASE (pi_peri_phys + 0x00204000)
@@ -137,11 +163,29 @@ public class RaspberryPiMmapGpio implements MmapGpioInterface {
 		int reg = gpio / 10;
 		int shift = (gpio % 10) * 3;
 
-		switch (mmapIntBuffer.getShiftRight(reg, shift, 7)) {
-		case 0:
+		/*-
+		 * PWM0 can be on GPIOs 12, 18, 40
+		 * PWM1 can on on GPIOs 13, 19, 41, 45
+		 * FSEL_ALT0 (0b100) designates PWM output for pins 12, 13, 40, 41 and 45
+		 * FSEL_ALT5 (0b010) designates PWM output for pins 18 and 19
+		 */
+		int mode = mmapIntBuffer.getShiftRight(reg, shift, 7);
+		Logger.debug("mode for {}: {}", Integer.valueOf(gpio), Integer.valueOf(mode));
+		switch (mode) {
+		case FSEL_INPT:
 			return DeviceMode.DIGITAL_INPUT;
-		case 1:
+		case FSEL_OUTP:
 			return DeviceMode.DIGITAL_OUTPUT;
+		case FSEL_ALT0:
+			if (gpio == 12 || gpio == 13 || gpio == 40 || gpio == 41 || gpio == 45) {
+				return DeviceMode.PWM_OUTPUT;
+			}
+			return DeviceMode.UNKNOWN;
+		case FSEL_ALT5:
+			if (gpio == 18 || gpio == 19) {
+				return DeviceMode.PWM_OUTPUT;
+			}
+			return DeviceMode.UNKNOWN;
 		default:
 			return DeviceMode.UNKNOWN;
 		}

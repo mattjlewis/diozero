@@ -73,7 +73,7 @@ public class BME680 implements BarometerInterface, ThermometerInterface, Hygrome
 	/**
 	 * Alternative I2C address for the sensor.
 	 */
-	private static final int ALT_DEVICE_ADDRESS = 0x77;
+	public static final int ALT_DEVICE_ADDRESS = 0x77;
 
 	/**
 	 * Chip ID for the BME680

@@ -5,7 +5,7 @@ package com.diozero.internal.provider.firmata;
  * Organisation: diozero
  * Project:      diozero - Firmata
  * Filename:     FirmataDigitalOutputDevice.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.internal.provider.firmata;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -31,53 +31,74 @@ package com.diozero.internal.provider.firmata;
  * #L%
  */
 
-
 import java.io.IOException;
 
 import org.firmata4j.Pin;
 import org.firmata4j.Pin.Mode;
 
 import com.diozero.api.RuntimeIOException;
+import com.diozero.internal.provider.firmata.adapter.FirmataAdapter;
+import com.diozero.internal.provider.firmata.adapter.FirmataProtocol.PinMode;
 import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.GpioDigitalOutputDeviceInterface;
 
 public class FirmataDigitalOutputDevice extends AbstractDevice implements GpioDigitalOutputDeviceInterface {
+	private FirmataAdapter adapter;
+	private int gpio;
 	private Pin pin;
 
-	public FirmataDigitalOutputDevice(FirmataDeviceFactory deviceFactory, String key, int deviceNumber,
-			boolean initialValue) {
+	public FirmataDigitalOutputDevice(FirmataDeviceFactory deviceFactory, String key, int gpio, boolean initialValue) {
 		super(key, deviceFactory);
-		
-		pin = deviceFactory.getIoDevice().getPin(deviceNumber);
-		try {
-			pin.setMode(Mode.OUTPUT);
-		} catch (IOException e) {
-			throw new RuntimeIOException("Error setting pin mode to output for pin " + deviceNumber);
+
+		this.gpio = gpio;
+
+		adapter = deviceFactory.getFirmataAdapter();
+		if (adapter != null) {
+			adapter.setPinMode(gpio, PinMode.DIGITAL_OUTPUT);
+		} else {
+			pin = deviceFactory.getIoDevice().getPin(gpio);
+			try {
+				pin.setMode(Mode.OUTPUT);
+			} catch (IOException e) {
+				throw new RuntimeIOException("Error setting pin mode to output for pin " + gpio);
+			}
 		}
 		setValue(initialValue);
 	}
 
 	@Override
 	public boolean getValue() throws RuntimeIOException {
+		if (adapter != null) {
+			return adapter.getDigitalValue(gpio);
+		}
 		return pin.getValue() != 0;
 	}
 
 	@Override
 	public int getGpio() {
-		return pin.getIndex();
+		return gpio;
 	}
 
 	@Override
 	public void setValue(boolean value) throws RuntimeIOException {
-		try {
-			pin.setValue(value ? 1 : 0);
-		} catch (IOException e) {
-			throw new RuntimeIOException("Error setting output value for pin " + pin.getIndex());
+		if (adapter != null) {
+			adapter.setDigitalValue(gpio, value);
+		} else {
+			try {
+				pin.setValue(value ? 1 : 0);
+			} catch (IOException e) {
+				throw new RuntimeIOException("Error setting output value for pin " + pin.getIndex());
+			}
 		}
 	}
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
-		setValue(false);
+		// TODO Reset to prior mode and value?
+		if (adapter != null) {
+			adapter.setDigitalValue(gpio, false);
+		} else {
+			setValue(false);
+		}
 	}
 }

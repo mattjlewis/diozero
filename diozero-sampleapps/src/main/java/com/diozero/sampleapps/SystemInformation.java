@@ -3,7 +3,7 @@
  * Organisation: diozero
  * Project:      diozero - Sample applications
  * Filename:     SystemInformation.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -15,10 +15,10 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -38,6 +38,9 @@ import static org.fusesource.jansi.Ansi.ansi;
 
 import java.util.Map;
 
+import org.fusesource.jansi.AnsiConsole;
+import org.tinylog.Logger;
+
 import com.diozero.api.PinInfo;
 import com.diozero.internal.spi.NativeDeviceFactoryInterface;
 import com.diozero.sbc.BoardInfo;
@@ -49,6 +52,14 @@ public class SystemInformation {
 	private static final int MIN_PIN_NAME_LENGTH = 8;
 
 	public static void main(String[] args) {
+		// Attempt to initialise Jansi
+		try {
+			AnsiConsole.systemInstall();
+		} catch (Throwable t) {
+			// Ignore
+			Logger.trace(t, "Jansi native library not available on this platform: {}", t);
+		}
+
 		// System.out.println(Ansi.ansi().eraseScreen().render("@|red Hello|@ @|green
 		// World|@") );
 

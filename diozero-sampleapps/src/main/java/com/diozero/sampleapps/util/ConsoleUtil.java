@@ -5,7 +5,7 @@ package com.diozero.sampleapps.util;
  * Organisation: diozero
  * Project:      diozero - Sample applications
  * Filename:     ConsoleUtil.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.sampleapps.util;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -37,7 +37,7 @@ import org.fusesource.jansi.Ansi.Color;
 
 import com.diozero.api.DeviceMode;
 import com.diozero.api.PinInfo;
-import com.diozero.internal.spi.MmapGpioInterface;
+import com.diozero.internal.spi.NativeDeviceFactoryInterface;
 
 public class ConsoleUtil {
 	public static Color getPinColour(PinInfo pinInfo) {
@@ -62,7 +62,7 @@ public class ConsoleUtil {
 		return colour;
 	}
 
-	public static Optional<Boolean> gpioRead(MmapGpioInterface mmapGpio, PinInfo pinInfo) {
+	public static Optional<Boolean> gpioRead(NativeDeviceFactoryInterface deviceFactory, PinInfo pinInfo) {
 		int gpio = pinInfo.getDeviceNumber();
 		if (gpio == PinInfo.NOT_DEFINED) {
 			return Optional.empty();
@@ -70,7 +70,7 @@ public class ConsoleUtil {
 
 		if (pinInfo.getModes().contains(DeviceMode.DIGITAL_INPUT)
 				|| pinInfo.getModes().contains(DeviceMode.DIGITAL_OUTPUT)) {
-			return Optional.of(Boolean.valueOf(mmapGpio.gpioRead(gpio)));
+			return Optional.of(Boolean.valueOf(deviceFactory.getGpioValue(gpio) == 1));
 		}
 
 		return Optional.empty();
@@ -79,7 +79,7 @@ public class ConsoleUtil {
 	public static String getValueString(Optional<Boolean> value) {
 		return value.map(v -> v.booleanValue() ? "1" : "0").orElse(" ");
 	}
-	
+
 	public static Color getValueColour(Optional<Boolean> value) {
 		return value.map(v -> v.booleanValue() ? Color.MAGENTA : Color.BLUE).orElse(Color.DEFAULT);
 	}
@@ -91,31 +91,40 @@ public class ConsoleUtil {
 		return String.format("%2s:%-3s", Integer.valueOf(chip), Integer.valueOf(lineOffset));
 	}
 
-	public static String getModeString(MmapGpioInterface mmapGpio, PinInfo pinInfo) {
+	public static String getModeString(NativeDeviceFactoryInterface deviceFactory, PinInfo pinInfo) {
 		int gpio = pinInfo.getDeviceNumber();
 		if (gpio == PinInfo.NOT_DEFINED) {
 			return "";
 		}
 
-		switch (mmapGpio.getMode(gpio)) {
+		switch (deviceFactory.getGpioMode(gpio)) {
 		case DIGITAL_OUTPUT:
 			return "Out";
 		case DIGITAL_INPUT:
 			return "In";
+		case PWM_OUTPUT:
+			return "PWM";
+		case ANALOG_INPUT:
+			return "AIN";
+		case ANALOG_OUTPUT:
+			return "AOUT";
 		default:
 			return "Unkn";
 		}
 	}
 
-	public static Color getModeColour(MmapGpioInterface mmapGpio, PinInfo pinInfo) {
+	public static Color getModeColour(NativeDeviceFactoryInterface deviceFactory, PinInfo pinInfo) {
 		int gpio = pinInfo.getDeviceNumber();
 
 		if (gpio != PinInfo.NOT_DEFINED && pinInfo.getModes().contains(DeviceMode.DIGITAL_INPUT)
 				|| pinInfo.getModes().contains(DeviceMode.DIGITAL_OUTPUT)) {
-			switch (mmapGpio.getMode(gpio)) {
+			switch (deviceFactory.getGpioMode(gpio)) {
 			case DIGITAL_OUTPUT:
+			case ANALOG_OUTPUT:
+			case PWM_OUTPUT:
 				return Color.YELLOW;
 			case DIGITAL_INPUT:
+			case ANALOG_INPUT:
 				return Color.CYAN;
 			default:
 			}

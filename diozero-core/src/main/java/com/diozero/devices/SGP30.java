@@ -5,7 +5,7 @@ package com.diozero.devices;
  * Organisation: diozero
  * Project:      diozero - Core
  * Filename:     SGP30.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.devices;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -149,7 +149,7 @@ public class SGP30 implements DeviceInterface, Runnable {
 
 	public void stop() {
 		if (future != null) {
-			future.cancel(true);
+			future.cancel(false);
 			future = null;
 		}
 		startTimeMs = 0;
@@ -247,13 +247,12 @@ public class SGP30 implements DeviceInterface, Runnable {
 				buffer.put((byte) Crc.crc8(CRC8_PARAMS, data));
 			}
 		}
+		buffer.flip();
 
-		// This generates a 121 (remote I/O) I2C error
-		// buffer.rewind();
+		// This generates a 121 (remote I/O) I2C error for some reason
 		// device.writeBytes(buffer);
 
-		// So use I2C read/write instead
-		buffer.flip();
+		// So use I2C read/write instead which seems to work just fine
 		byte[] bytes = new byte[buffer.limit()];
 		buffer.get(bytes);
 		I2CMessage[] messages = new I2CMessage[] { new I2CMessage(I2CMessage.I2C_M_WR, bytes.length) };

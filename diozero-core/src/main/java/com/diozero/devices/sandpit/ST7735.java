@@ -31,8 +31,12 @@ package com.diozero.devices.sandpit;
  * #L%
  */
 
-/*
+/*-
+ * 128x160 SPI Colour TFT
+ *
  * https://github.com/adafruit/Adafruit-ST7735-Library
+ * https://github.com/pimoroni/st7735-python
+ * https://github.com/pimoroni/st7789-python
  */
 public class ST7735 extends ST77xx {
 

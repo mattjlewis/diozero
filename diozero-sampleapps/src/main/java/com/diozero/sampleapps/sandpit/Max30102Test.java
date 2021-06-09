@@ -5,7 +5,7 @@ package com.diozero.sampleapps.sandpit;
  * Organisation: diozero
  * Project:      diozero - Sample applications
  * Filename:     Max30102Test.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.sampleapps.sandpit;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -40,7 +40,7 @@ import com.diozero.devices.sandpit.Max30102.Sample;
 import com.diozero.devices.sandpit.Max30102.SampleAveraging;
 import com.diozero.devices.sandpit.Max30102.SpO2AdcRange;
 import com.diozero.devices.sandpit.Max30102.SpO2SampleRate;
-import com.diozero.sbc.DeviceFactoryHelper;
+import com.diozero.util.Diozero;
 import com.diozero.util.SleepUtil;
 
 public class Max30102Test {
@@ -51,7 +51,7 @@ public class Max30102Test {
 		long sleep_ms = 1_000 / spo2_sample_rate.getSampleRate();
 
 		try (Max30102 max = new Max30102(1)) {
-			DeviceFactoryHelper.registerForShutdown(max);
+			Diozero.registerForShutdown(max);
 
 			Queue<Sample> sample_queue = max.getSampleQueue();
 
@@ -67,7 +67,7 @@ public class Max30102Test {
 
 			sample_queue.stream().forEach(Max30102Test::printSample);
 		} finally {
-			DeviceFactoryHelper.shutdown();
+			Diozero.shutdown();
 		}
 	}
 

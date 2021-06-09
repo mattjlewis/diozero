@@ -5,7 +5,7 @@ package com.diozero.sampleapps;
  * Organisation: diozero
  * Project:      diozero - Sample applications
  * Filename:     ShutdownRestartTest.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.sampleapps;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -35,7 +35,7 @@ import org.tinylog.Logger;
 
 import com.diozero.devices.Button;
 import com.diozero.devices.LED;
-import com.diozero.sbc.DeviceFactoryHelper;
+import com.diozero.util.Diozero;
 import com.diozero.util.SleepUtil;
 
 public class ShutdownRestartTest {
@@ -71,7 +71,7 @@ public class ShutdownRestartTest {
 					SleepUtil.sleepMillis(500);
 				}
 			} finally {
-				DeviceFactoryHelper.shutdown();
+				Diozero.shutdown();
 			}
 
 			SleepUtil.sleepMillis(500);

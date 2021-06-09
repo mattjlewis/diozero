@@ -7,7 +7,7 @@ import com.diozero.api.RuntimeIOException;
 import com.diozero.devices.HD44780Lcd;
 import com.diozero.devices.HD44780Lcd.LcdConnection;
 import com.diozero.devices.HD44780Lcd.PCF8574LcdConnection;
-import com.diozero.sbc.DeviceFactoryHelper;
+import com.diozero.util.Diozero;
 import com.diozero.util.SleepUtil;
 
 /**
@@ -38,20 +38,20 @@ public class LcdApp {
 		} finally {
 			// Required if there are non-daemon threads that will prevent the
 			// built-in clean-up routines from running
-			DeviceFactoryHelper.shutdown();
+			Diozero.shutdown();
 		}
 	}
 
 	@SuppressWarnings("resource")
 	public static void test(HD44780Lcd lcd) {
 		lcd.setBacklightEnabled(true);
-		
+
 		/*-
 		Logger.info("Calling setText");
 		lcd.setText(0, "Hello World!");
 		SleepUtil.sleepSeconds(2);
 		*/
-		
+
 		// 0, 14, 21, 31, 10, 4, 10, 17
 		byte[] space_invader = HD44780Lcd.Characters.get("space_invader");
 		byte[] smilie = HD44780Lcd.Characters.get("smilie");

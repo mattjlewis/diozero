@@ -5,7 +5,7 @@ package com.diozero.devices;
  * Organisation: diozero
  * Project:      diozero - Core
  * Filename:     BME68x.java
- *
+ * 
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.devices;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- *
+ * 
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- *
+ * 
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -54,12 +54,9 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 	// Chip ID for the BME680
 	private static final int CHIP_ID_BME680 = 0x61;
 	// Variant ID for BME680
-	private static final int VARIANT_ID_BM680 = 0x00;
+	public static final int VARIANT_ID_BM680 = 0x00;
 	// Variant ID for BME688
-	private static final int VARIANT_ID_BM688 = 0x01;
-	// High / Low Gas variants
-	private static final byte VARIANT_GAS_LOW = VARIANT_ID_BM680;
-	private static final byte VARIANT_GAS_HIGH = VARIANT_ID_BM688;
+	public static final int VARIANT_ID_BM688 = 0x01;
 
 	public static int MIN_TEMPERATURE_CELSIUS = 0;
 	public static int MAX_TEMPERATURE_CELSIUS = 60;
@@ -281,7 +278,7 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 
 	// 0th field address. 0x1d..0x2b (len: 15)
 	private static final int REG_FIELD0 = 0x1d;
-	private static final int NUM_FIELDS = 3;
+	public static final int NUM_FIELDS = 3;
 	// The number of bytes to read when getting data for a single field
 	private static final int LEN_FIELD = 17;
 	// Length between two fields
@@ -311,10 +308,10 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 	private static final int REG_CONFIG = 0x75;
 
 	// Status register ([4] spi_mem_page)
-	private static final int REG_STATUS = 0x73;
+	// private static final int REG_STATUS = 0x73;
 
 	// Memory page
-	private static final int MEM_PAGE_REG = 0xf3;
+	// private static final int MEM_PAGE_REG = 0xf3;
 	//
 	// Registers - END
 	//
@@ -337,9 +334,9 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 	private static final short GAS_RANGE_MASK = 0b00001111;
 	private static final short GASM_VALID_MASK = 0b00100000;
 	private static final short HEAT_STABLE_MASK = 0b00010000;
-	private static final short MEM_PAGE_MASK = 0b00010000;
-	private static final short SPI_RD_MASK = 0b10000000;
-	private static final short SPI_WR_MASK = 0b01111111;
+	// private static final short MEM_PAGE_MASK = 0b00010000;
+	// private static final short SPI_RD_MASK = 0b10000000;
+	// private static final short SPI_WR_MASK = 0b01111111;
 	private static final short BIT_H1_DATA_MASK = 0b00001111;
 
 	// Bit position definitions for sensor settings
@@ -565,6 +562,8 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 			return;
 		}
 
+		validateOperatingMode(mode);
+
 		setRegByte(REG_CTRL_MEAS, (byte) OPERATING_MODE_MASK, OPERATING_MODE_POSITION, mode.getValue());
 
 		// Wait for the power mode to switch to the requested value
@@ -616,7 +615,7 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 		data_array[4] = BitManipulation.setBits(data_array[4], ODR20_MASK, ODR20_POSITION, odr20);
 		data_array[0] = BitManipulation.setBits(data_array[0], ODR3_MASK, ODR3_POSITION, odr3);
 
-		writeBlockData(REG_CTRL_GAS_1, data_array);
+		writeDataWithIncrementingRegisterAddress(REG_CTRL_GAS_1, data_array);
 
 		// Restore the previous operating mode
 		if (current_op_mode != OperatingMode.SLEEP) {
@@ -739,6 +738,8 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 	 * @return Sensor data
 	 */
 	public Data[] getSensorData(OperatingMode operatingMode) {
+		validateOperatingMode(operatingMode);
+
 		Data[] data;
 
 		setOperatingMode(operatingMode);
@@ -748,7 +749,7 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 			break;
 		case SEQUENTIAL:
 		case PARALLEL:
-			// Read the 3 fields and count the number of new data fields
+			// Read all 3 fields
 			data = readAllFieldData();
 
 			// Sort the sensor data in parallel & sequential modes
@@ -760,6 +761,225 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 			break;
 		default:
 			data = null;
+		}
+
+		return data;
+	}
+
+	@Override
+	public float getTemperature() {
+		return getSensorData()[0].getTemperature();
+	}
+
+	@Override
+	public float getPressure() {
+		return getSensorData()[0].getPressure();
+	}
+
+	@Override
+	public float getRelativeHumidity() {
+		return getSensorData()[0].getHumidity();
+	}
+
+	public float getGasResistance() {
+		return getSensorData()[0].getGasResistance();
+	}
+
+	/**
+	 * Get the gas configuration of the sensor.
+	 *
+	 * Note not working hence package-private.
+	 *
+	 * bme68x_get_heatr_conf
+	 */
+	public HeaterConfig getHeaterConfiguration() {
+		// Turn off current injected to heater by setting bit to 1
+		boolean heater_enabled = (device.readByteData(REG_CTRL_GAS_0) & HEATER_CONTROL_MASK) == 0;
+
+		int nb_conv = (device.readByteData(REG_CTRL_GAS_1) & NBCONV_MASK) >> NBCONV_POSITION;
+
+		byte[] data_array = new byte[nb_conv];
+
+		device.readI2CBlockData(REG_RES_HEAT0, data_array);
+		int[] temp_profiles = new int[nb_conv];
+		for (int i = 0; i < data_array.length; i++) {
+			// TODO Do reverse calculation of calculateHeaterResistanceRegValFpu
+			temp_profiles[i] = data_array[i] & 0xff;
+		}
+
+		device.readI2CBlockData(REG_GAS_WAIT0, data_array);
+		int[] dur_profiles = new int[nb_conv];
+		for (int i = 0; i < data_array.length; i++) {
+			dur_profiles[i] = gasWaitRegValToDuration(data_array[i]);
+		}
+
+		// Opposite calculation of calculateGasWaitSharedRegVal
+		byte gas_wait_shared_reg_val = device.readByteData(REG_GAS_WAIT_SHARED);
+		int mult_factor = (int) Math.pow(4, (gas_wait_shared_reg_val & 0b11000000) >> 6);
+		int gas_wait_shared = (int) ((gas_wait_shared_reg_val & 0b00111111) * mult_factor * 0.477f);
+
+		return new HeaterConfig(heater_enabled, temp_profiles, dur_profiles, gas_wait_shared);
+	}
+
+	/**
+	 * Set the gas configuration of the sensor.
+	 *
+	 * bme68x_set_heatr_conf
+	 */
+	public void setHeaterConfiguration(OperatingMode targetOperatingMode, HeaterConfig heaterConfig) {
+		validateOperatingMode(targetOperatingMode);
+
+		// Configure only in sleep mode
+		setOperatingMode(OperatingMode.SLEEP);
+
+		byte nb_conv = setHeaterConfigInternal(heaterConfig, targetOperatingMode);
+
+		byte[] ctrl_gas_data = new byte[2];
+		device.readI2CBlockData(REG_CTRL_GAS_0, ctrl_gas_data);
+
+		byte hctrl, run_gas;
+		if (heaterConfig.isEnabled()) {
+			hctrl = ENABLE_HEATER;
+			// Note that this isn't covered in the datasheet, looks like the datasheet
+			// hasn't been updated
+			// run_gas bit position is 5 for BME688 and 4 for BME680
+			if (VARIANT_ID_BM688 == variantId) {
+				run_gas = ENABLE_GAS_MEAS_H;
+			} else {
+				run_gas = ENABLE_GAS_MEAS_L;
+			}
+		} else {
+			hctrl = DISABLE_HEATER;
+			run_gas = DISABLE_GAS_MEAS;
+		}
+
+		ctrl_gas_data[0] = BitManipulation.setBits(ctrl_gas_data[0], HEATER_CONTROL_MASK, HEATER_CONTROL_POSITION,
+				hctrl);
+		ctrl_gas_data[1] = BitManipulation.setBits(ctrl_gas_data[1], NBCONV_MASK, NBCONV_POSITION, nb_conv);
+		ctrl_gas_data[1] = BitManipulation.setBits(ctrl_gas_data[1], RUN_GAS_MASK, RUN_GAS_POSITION, run_gas);
+
+		writeDataWithIncrementingRegisterAddress(REG_CTRL_GAS_0, ctrl_gas_data);
+	}
+
+	/**
+	 * Self-test of low gas variant of BME68X (i.e. the BME680)
+	 *
+	 * bme68x_low_gas_selftest_check
+	 */
+	public void lowGasSelfTestCheck() {
+		Logger.info("Performing low gas self test...");
+
+		final int HEATR_DUR1 = 1000;
+		final int HEATR_DUR2 = 2000;
+		final int LOW_TEMP = 150;
+		final int HIGH_TEMP = 350;
+		final int HEATR_DUR1_DELAY_MS = 1_000_000 / 1_000;
+		final int HEATR_DUR2_DELAY_MS = 2_000_000 / 1_000;
+		final int N_MEAS = 6;
+
+		ambientTemperature = 25;
+
+		OversamplingMultiplier os_hum = OversamplingMultiplier.X1;
+		OversamplingMultiplier os_press = OversamplingMultiplier.X16;
+		OversamplingMultiplier os_temp = OversamplingMultiplier.X2;
+
+		HeaterConfig heatr_conf = new HeaterConfig(true, HEATR_DUR1, HIGH_TEMP);
+		setHeaterConfiguration(OperatingMode.FORCED, heatr_conf);
+		setConfiguration(os_hum, os_temp, os_press, IirFilterCoefficient.NONE, ODR._0_59_MS);
+		setOperatingMode(OperatingMode.FORCED);
+
+		Logger.info("Sleeping for {} ms", Integer.valueOf(HEATR_DUR1_DELAY_MS));
+		SleepUtil.sleepMillis(HEATR_DUR1_DELAY_MS);
+
+		Data[] data = new Data[N_MEAS];
+		data[0] = getSensorData(OperatingMode.FORCED)[0];
+
+		if ((data[0].idacHeatRegVal != 0x00) && (data[0].idacHeatRegVal != 0xFF) && data[0].gasMeasurementValid) {
+			// Ok
+		} else {
+			// Error
+			Logger.error("Error with idac {} or gasMeasurementValid {}", Short.valueOf(data[0].idacHeatRegVal),
+					Boolean.valueOf(data[0].gasMeasurementValid));
+		}
+
+		heatr_conf.heaterDurationProfiles[0] = HEATR_DUR2;
+		int i = 0;
+		while (i < N_MEAS) {
+			if ((i % 2) == 0) {
+				heatr_conf.heaterTempProfiles[0] = HIGH_TEMP;
+			} else {
+				heatr_conf.heaterTempProfiles[0] = LOW_TEMP;
+			}
+
+			setHeaterConfiguration(OperatingMode.FORCED, heatr_conf);
+			setConfiguration(os_hum, os_temp, os_press, IirFilterCoefficient.NONE, ODR._0_59_MS);
+			setOperatingMode(OperatingMode.FORCED);
+
+			Logger.info("Sleeping for {} ms", Integer.valueOf(HEATR_DUR2_DELAY_MS));
+			SleepUtil.sleepMillis(HEATR_DUR2_DELAY_MS);
+
+			data[i] = getSensorData(OperatingMode.FORCED)[0];
+
+			i++;
+		}
+
+		analyseSensorData(data);
+	}
+
+	private Data extractTphgReading(byte[] buffer) {
+		Data data = new Data();
+
+		// Set to 1 during measurements, goes to 0 when measurements are completed
+		data.newData = (buffer[0] & NEW_DATA_MASK) == 0 ? true : false;
+
+		data.gasMeasurementIndex = buffer[0] & GAS_INDEX_MASK;
+		data.measureIndex = buffer[1] & 0xff;
+
+		if (VARIANT_ID_BM688 == variantId) {
+			data.gasMeasurementValid = (buffer[16] & GASM_VALID_MASK) != 0;
+			data.heaterTempStable = (buffer[16] & HEAT_STABLE_MASK) != 0;
+		} else {
+			data.gasMeasurementValid = (buffer[14] & GASM_VALID_MASK) != 0;
+			data.heaterTempStable = (buffer[14] & HEAT_STABLE_MASK) != 0;
+		}
+
+		if (data.newData) {
+			// Extract the raw ADC data from the sensor reading
+			final int adc_pres = ((buffer[2] & 0xff) << 12) | ((buffer[3] & 0xff) << 4) | ((buffer[4] & 0xff) >> 4);
+			final int adc_temp = ((buffer[5] & 0xff) << 12) | ((buffer[6] & 0xff) << 4) | ((buffer[7] & 0xff) >> 4);
+			final int adc_hum = ((buffer[8] & 0xff) << 8) | (buffer[9] & 0xff);
+
+			// data.temperature = calculateTemperatureInt(adc_temp) / 100.0f;
+			data.temperature = calculateTemperatureFpu(adc_temp);
+			// Update the ambient temperature for subsequent heater calculations
+			ambientTemperature = data.temperature;
+			// data.pressure = calculatePressureInt(adc_pres) / 100.0f;
+			data.pressureHPa = calculatePressureFpu(adc_pres);
+			// data.humidity = calculateHumidityInt(adc_hum) / 1000.0f;
+			data.humidity = calculateHumidityFpu(adc_hum);
+
+			if (data.gasMeasurementValid) {
+				if (VARIANT_ID_BM688 == variantId) {
+					final int adc_gas_res_high = ((buffer[15] & 0xff) << 2) | ((buffer[16] & 0xff) >> 6);
+					// System.out.println("adc_gas_res_high: " + adc_gas_res_high);
+					final int gas_range_h = buffer[16] & GAS_RANGE_MASK;
+					// System.out.println("gas_range_h: " + gas_range_h);
+					/*-
+					data.gasResistance = calculateGasResistanceHighInt(adc_gas_res_high, gas_range_h);
+					 */
+					data.gasResistance = calculateGasResistanceHighFpu(adc_gas_res_high, gas_range_h);
+				} else {
+					final int adc_gas_res_low = ((buffer[13] & 0xff) << 2) | ((buffer[14] & 0xff) >> 6);
+					// System.out.println("adc_gas_res_low: " + adc_gas_res_low);
+					final int gas_range_l = buffer[14] & GAS_RANGE_MASK;
+					/*-
+					data.gasResistance = calculateGasResistanceLowInt(adc_gas_res_low, gas_range_l,
+							calibration.rangeSwitchingError);
+					*/
+					data.gasResistance = calculateGasResistanceLowFpu(adc_gas_res_low, gas_range_l,
+							calibration.rangeSwitchingError);
+				}
+			}
 		}
 
 		return data;
@@ -777,62 +997,15 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 			// Read data from the sensor
 			device.readI2CBlockData(REG_FIELD0 + index * LEN_FIELD_OFFSET, buffer);
 
-			data = new Data();
-
-			// Set to 1 during measurements, goes to 0 when measurements are completed
-			data.newData = (buffer[0] & NEW_DATA_MASK) == 0 ? true : false;
-
-			data.gasMeasurementIndex = buffer[0] & GAS_INDEX_MASK;
-			data.measureIndex = buffer[1] & 0xff;
-
-			if (VARIANT_GAS_HIGH == variantId) {
-				data.gasMeasurementValid = (buffer[16] & GASM_VALID_MASK) != 0;
-				data.heaterTempStable = (buffer[16] & HEAT_STABLE_MASK) != 0;
-			} else {
-				data.gasMeasurementValid = (buffer[14] & GASM_VALID_MASK) != 0;
-				data.heaterTempStable = (buffer[14] & HEAT_STABLE_MASK) != 0;
-			}
+			data = extractTphgReading(buffer);
 
 			if (data.newData) {
-				// Extract the raw ADC data from the sensor reading
-				final int adc_pres = ((buffer[2] & 0xff) << 12) | ((buffer[3] & 0xff) << 4) | ((buffer[4] & 0xff) >> 4);
-				final int adc_temp = ((buffer[5] & 0xff) << 12) | ((buffer[6] & 0xff) << 4) | ((buffer[7] & 0xff) >> 4);
-				final int adc_hum = ((buffer[8] & 0xff) << 8) | (buffer[9] & 0xff);
-				final int adc_gas_res_low = ((buffer[13] & 0xff) << 2) | ((buffer[14] & 0xff) >> 6);
-				final int adc_gas_res_high = ((buffer[15] & 0xff) << 2) | ((buffer[16] & 0xff) >> 6);
-				// System.out.println("adc_gas_res_low: " + adc_gas_res_low);
-				// System.out.println("adc_gas_res_high: " + adc_gas_res_high);
-
-				// data.temperature = calculateTemperatureInt(adc_temp) / 100.0f;
-				data.temperature = calculateTemperatureFpu(adc_temp);
-				// Update the ambient temperature for subsequent heater calculations
-				ambientTemperature = data.temperature;
-				// data.pressure = calculatePressureInt(adc_pres) / 100.0f;
-				data.pressureHPa = calculatePressureFpu(adc_pres);
-				// data.humidity = calculateHumidityInt(adc_hum) / 1000.0f;
-				data.humidity = calculateHumidityFpu(adc_hum);
-
-				if (VARIANT_GAS_HIGH == variantId) {
-					final int gas_range_h = buffer[16] & GAS_RANGE_MASK;
-					// System.out.println("gas_range_h: " + gas_range_h);
-					/*-
-					data.gasResistance = calculateGasResistanceHighInt(adc_gas_res_high,
-							gas_range_h);
-					 */
-					data.gasResistance = calculateGasResistanceHighFpu(adc_gas_res_high, gas_range_h);
-				} else {
-					final int gas_range_l = buffer[14] & GAS_RANGE_MASK;
-					/*-
-					data.gasResistance = calculateGasResistanceLowInt(adc_gas_res_low, gas_range_l,
-							calibration.rangeSwitchingError);
-					*/
-					data.gasResistance = calculateGasResistanceLowFpu(adc_gas_res_low, gas_range_l,
-							calibration.rangeSwitchingError);
-				}
-
-				data.idac = device.readByteData(REG_IDAC_HEAT0 + data.gasMeasurementIndex);
-				data.heaterResistance = device.readByteData(REG_RES_HEAT0 + data.gasMeasurementIndex);
-				data.gasWait = device.readByteData(REG_GAS_WAIT0 + data.gasMeasurementIndex);
+				data.idacHeatRegVal = (short) (device.readByteData(REG_IDAC_HEAT0 + data.gasMeasurementIndex) & 0xff);
+				// Note that these fields aren't really required - they aren't changed
+				// TODO Do reverse calculation of calculateHeaterResistanceRegValFpu
+				data.heaterResistance = (short) (device.readByteData(REG_RES_HEAT0 + data.gasMeasurementIndex) & 0xff);
+				data.gasWaitMs = (short) gasWaitRegValToDuration(
+						device.readByteData(REG_GAS_WAIT0 + data.gasMeasurementIndex));
 
 				break;
 			}
@@ -845,6 +1018,8 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 	}
 
 	/*
+	 * Not applicable to BME680.
+	 *
 	 * read_all_field_data
 	 */
 	private Data[] readAllFieldData() {
@@ -852,7 +1027,7 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 
 		byte[][] buffer = new byte[NUM_FIELDS][LEN_FIELD];
 		for (int i = 0; i < NUM_FIELDS; i++) {
-			// Get around the 32 byte limit when using SMBus commands
+			// Get around the 32 byte limit when using SMBus commands - 51 bytes to read
 			// TODO Switch to I2C readWrite when supported in pigpio
 			int read = device.readI2CBlockData(REG_FIELD0 + i * LEN_FIELD_OFFSET, buffer[i]);
 			if (read != LEN_FIELD) {
@@ -861,51 +1036,18 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 		}
 
 		// idac, res_heat, gas_wait
-		byte[] set_val = new byte[30];
+		byte[] set_val = new byte[NUM_FIELDS * MAX_NUM_HEATER_PROFILES];
 		device.readI2CBlockData(REG_IDAC_HEAT0, set_val);
 
 		for (int i = 0; i < NUM_FIELDS; i++) {
-			data[i] = new Data();
-
-			data[i].newData = (buffer[i][0] & NEW_DATA_MASK) == 0 ? true : false;
-
-			data[i].gasMeasurementIndex = buffer[i][0] & GAS_INDEX_MASK;
-			data[i].measureIndex = buffer[i][1] & 0xff;
-
-			if (VARIANT_GAS_HIGH == variantId) {
-				data[i].gasMeasurementValid = (buffer[i][16] & GASM_VALID_MASK) != 0;
-				data[i].heaterTempStable = (buffer[i][16] & HEAT_STABLE_MASK) != 0;
-			} else {
-				data[i].gasMeasurementValid = (buffer[i][14] & GASM_VALID_MASK) != 0;
-				data[i].heaterTempStable = (buffer[i][14] & HEAT_STABLE_MASK) != 0;
-			}
+			data[i] = extractTphgReading(buffer[i]);
 
 			if (data[i].newData) {
-				// Extract the raw ADC data from the sensor reading
-				final int adc_pres = ((buffer[i][2] & 0xff) << 12) | ((buffer[i][3] & 0xff) << 4)
-						| ((buffer[i][4] & 0xff) >> 4);
-				final int adc_temp = ((buffer[i][5] & 0xff) << 12) | ((buffer[i][6] & 0xff) << 4)
-						| ((buffer[i][7] & 0xff) >> 4);
-				final int adc_hum = ((buffer[i][8] & 0xff) << 8) | (buffer[i][9] & 0xff);
-				final int adc_gas_res_low = ((buffer[i][13] & 0xff) << 2) | ((buffer[i][14] & 0xff) >> 6);
-				final int adc_gas_res_high = ((buffer[i][15] & 0xff) << 2) | ((buffer[i][16] & 0xff) >> 6);
-
-				data[i].temperature = calculateTemperatureFpu(adc_temp);
-				data[i].pressureHPa = calculatePressureFpu(adc_pres);
-				data[i].humidity = calculateHumidityFpu(adc_hum);
-
-				if (variantId == VARIANT_GAS_HIGH) {
-					final int gas_range_h = buffer[i][16] & GAS_RANGE_MASK;
-					data[i].gasResistance = calculateGasResistanceHighFpu(adc_gas_res_high, gas_range_h);
-				} else {
-					final int gas_range_l = buffer[i][14] & GAS_RANGE_MASK;
-					data[i].gasResistance = calculateGasResistanceLowFpu(adc_gas_res_low, gas_range_l,
-							calibration.rangeSwitchingError);
-				}
-
-				data[i].idac = set_val[data[i].gasMeasurementIndex];
-				data[i].heaterResistance = set_val[10 + data[i].gasMeasurementIndex];
-				data[i].gasWait = set_val[20 + data[i].gasMeasurementIndex];
+				data[i].idacHeatRegVal = (short) (set_val[data[i].gasMeasurementIndex] & 0xff);
+				// Note that these fields aren't really required - they aren't changed
+				// TODO Do reverse calculation of calculateHeaterResistanceRegValFpu
+				data[i].heaterResistance = (short) (set_val[10 + data[i].gasMeasurementIndex] & 0xff);
+				data[i].gasWaitMs = (short) gasWaitRegValToDuration(set_val[20 + data[i].gasMeasurementIndex]);
 			}
 		}
 
@@ -1038,162 +1180,6 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 		dataArray[index2] = temp;
 	}
 
-	@Override
-	public float getTemperature() {
-		return getSensorData()[0].getTemperature();
-	}
-
-	@Override
-	public float getPressure() {
-		return getSensorData()[0].getPressure();
-	}
-
-	@Override
-	public float getRelativeHumidity() {
-		return getSensorData()[0].getHumidity();
-	}
-
-	public float getGasResistance() {
-		return getSensorData()[0].getGasResistance();
-	}
-
-	/**
-	 * Get the gas configuration of the sensor.
-	 *
-	 * Note not working hence package-private.
-	 *
-	 * bme68x_get_heatr_conf
-	 */
-	HeaterConfig getHeaterConfiguration() {
-		// TODO Add conversion to deg C and ms
-
-		// Turn off current injected to heater by setting bit to 1
-		boolean heater_enabled = (device.readByteData(REG_CTRL_GAS_0) & HEATER_CONTROL_MASK) == 0;
-
-		int nb_conv = (device.readByteData(REG_CTRL_GAS_1) & NBCONV_MASK) >> NBCONV_POSITION;
-
-		byte[] data_array = new byte[nb_conv];
-
-		device.readI2CBlockData(REG_RES_HEAT0, data_array);
-		int[] temp_profile = new int[nb_conv];
-		for (int i = 0; i < data_array.length; i++) {
-			// TODO Do reverse calculation of calculateHeaterResistanceFpu
-			temp_profile[i] = data_array[i] & 0xff;
-		}
-
-		device.readI2CBlockData(REG_GAS_WAIT0, data_array);
-		int[] dur_profile = new int[nb_conv];
-		for (int i = 0; i < data_array.length; i++) {
-			// TODO Do reverse calculation of calculateGasWait
-			dur_profile[i] = data_array[i] & 0xff;
-		}
-
-		// TODO Do reverse calculation of calculateHeaterDurationShared
-		byte gas_wait_shared = device.readByteData(REG_GAS_WAIT_SHARED);
-
-		return new HeaterConfig(heater_enabled, temp_profile, dur_profile, gas_wait_shared);
-	}
-
-	/**
-	 * Set the gas configuration of the sensor.
-	 *
-	 * bme68x_set_heatr_conf
-	 */
-	public void setHeaterConfiguration(OperatingMode targetOpMode, HeaterConfig heaterConfig) {
-		// Configure only in sleep mode
-		setOperatingMode(OperatingMode.SLEEP);
-
-		byte nb_conv = setHeaterConfigInternal(heaterConfig, targetOpMode);
-
-		byte[] ctrl_gas_data = new byte[2];
-		device.readI2CBlockData(REG_CTRL_GAS_0, ctrl_gas_data);
-
-		byte hctrl, run_gas;
-		if (heaterConfig.isEnabled()) {
-			hctrl = ENABLE_HEATER;
-			if (VARIANT_GAS_HIGH == variantId) {
-				run_gas = ENABLE_GAS_MEAS_H;
-			} else {
-				run_gas = ENABLE_GAS_MEAS_L;
-			}
-		} else {
-			hctrl = DISABLE_HEATER;
-			run_gas = DISABLE_GAS_MEAS;
-		}
-
-		ctrl_gas_data[0] = BitManipulation.setBits(ctrl_gas_data[0], HEATER_CONTROL_MASK, HEATER_CONTROL_POSITION,
-				hctrl);
-		ctrl_gas_data[1] = BitManipulation.setBits(ctrl_gas_data[1], NBCONV_MASK, NBCONV_POSITION, nb_conv);
-		ctrl_gas_data[1] = BitManipulation.setBits(ctrl_gas_data[1], RUN_GAS_MASK, RUN_GAS_POSITION, run_gas);
-
-		writeBlockData(REG_CTRL_GAS_0, ctrl_gas_data);
-	}
-
-	/**
-	 * Self-test of low gas variant of BME68X (i.e. the BME680)
-	 *
-	 * bme68x_low_gas_selftest_check
-	 */
-	public void lowGasSelfTestCheck() {
-		Logger.info("Performing low gas self test...");
-
-		final int HEATR_DUR1 = 1000;
-		final int HEATR_DUR2 = 2000;
-		final int LOW_TEMP = 150;
-		final int HIGH_TEMP = 350;
-		final int HEATR_DUR1_DELAY_MS = 1_000_000 / 1_000;
-		final int HEATR_DUR2_DELAY_MS = 2_000_000 / 1_000;
-		final int N_MEAS = 6;
-
-		ambientTemperature = 25;
-
-		OversamplingMultiplier os_hum = OversamplingMultiplier.X1;
-		OversamplingMultiplier os_press = OversamplingMultiplier.X16;
-		OversamplingMultiplier os_temp = OversamplingMultiplier.X2;
-
-		HeaterConfig heatr_conf = new HeaterConfig(true, HEATR_DUR1, HIGH_TEMP);
-		setHeaterConfiguration(OperatingMode.FORCED, heatr_conf);
-		setConfiguration(os_hum, os_temp, os_press, IirFilterCoefficient.NONE, ODR._0_59_MS);
-		setOperatingMode(OperatingMode.FORCED);
-
-		Logger.info("Sleeping for {} ms", Integer.valueOf(HEATR_DUR1_DELAY_MS));
-		SleepUtil.sleepMillis(HEATR_DUR1_DELAY_MS);
-
-		Data[] data = new Data[N_MEAS];
-		data[0] = getSensorData(OperatingMode.FORCED)[0];
-
-		if ((data[0].idac != 0x00) && (data[0].idac != 0xFF) && data[0].gasMeasurementValid) {
-			// Ok
-		} else {
-			// Error
-			Logger.error("Error with idac {} or gasMeasurementValid {}", Short.valueOf(data[0].idac),
-					Boolean.valueOf(data[0].gasMeasurementValid));
-		}
-
-		heatr_conf.heaterDurationProfile[0] = HEATR_DUR2;
-		int i = 0;
-		while (i < N_MEAS) {
-			if ((i % 2) == 0) {
-				heatr_conf.heaterTempProfile[0] = HIGH_TEMP;
-			} else {
-				heatr_conf.heaterTempProfile[0] = LOW_TEMP;
-			}
-
-			setHeaterConfiguration(OperatingMode.FORCED, heatr_conf);
-			setConfiguration(os_hum, os_temp, os_press, IirFilterCoefficient.NONE, ODR._0_59_MS);
-			setOperatingMode(OperatingMode.FORCED);
-
-			Logger.info("Sleeping for {} ms", Integer.valueOf(HEATR_DUR2_DELAY_MS));
-			SleepUtil.sleepMillis(HEATR_DUR2_DELAY_MS);
-
-			data[i] = getSensorData(OperatingMode.FORCED)[0];
-
-			i++;
-		}
-
-		analyseSensorData(data);
-	}
-
 	private static void analyseSensorData(Data[] data) {
 		if ((data[0].temperature < MIN_TEMPERATURE_CELSIUS) || (data[0].temperature > MAX_TEMPERATURE_CELSIUS)) {
 			Logger.error("Temperature {} out of range", Float.valueOf(data[0].temperature));
@@ -1222,10 +1208,16 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 		}
 	}
 
+	private void validateOperatingMode(OperatingMode mode) {
+		if (variantId == VARIANT_ID_BM680 && (mode == OperatingMode.PARALLEL || mode == OperatingMode.SEQUENTIAL)) {
+			throw new IllegalArgumentException("Invalid operating mode (" + mode + ") for BME680");
+		}
+	}
+
 	/*
 	 * calc_temperature (using integer math)
 	 */
-	int calculateTemperatureInt(Calibration calibration, final int temperatureAdc) {
+	int calculateTemperatureInt(final int temperatureAdc) {
 		// Convert the raw temperature to degrees C using calibration_data.
 		int var1 = (temperatureAdc >> 3) - (calibration.temperature[0] << 1);
 		int var2 = (var1 * calibration.temperature[1]) >> 11;
@@ -1428,7 +1420,7 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 	 *
 	 * calc_res_heat (using Int math)
 	 */
-	static int calculateHeaterResistanceInt(final Calibration calibration, final int ambientTemperature,
+	static int calculateHeaterResistanceRegValInt(final Calibration calibration, final int ambientTemperature,
 			final int targetHeaterTemperature) {
 		/* Cap temperature */
 		final int normalised_temperature = Math.min(targetHeaterTemperature, 400);
@@ -1445,7 +1437,7 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 		return ((heater_res_x100 + 50) / 100) & 0xff;
 	}
 
-	static int calculateHeaterResistanceFpu(final Calibration calibration, final float ambientTemperature,
+	static int calculateHeaterResistanceRegValFpu(final Calibration calibration, final float ambientTemperature,
 			final int targetHeaterTemperature) {
 		/* Cap temperature */
 		final int normalised_temperature = Math.min(targetHeaterTemperature, 400);
@@ -1456,8 +1448,8 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 		float var4 = var1 * (1.0f + (var2 * normalised_temperature));
 		float var5 = var4 + (var3 * ambientTemperature);
 
-		return (int) (3.4f * ((var5 * (4 / (4f + calibration.resistanceHeaterRange))
-				* (1 / (1 + (calibration.resistanceHeaterValue * 0.002f)))) - 25));
+		return (int) (3.4f * ((var5 * (4f / (4f + calibration.resistanceHeaterRange))
+				* (1f / (1f + (calibration.resistanceHeaterValue * 0.002f)))) - 25f));
 	}
 
 	/**
@@ -1497,6 +1489,14 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 
 		// uint8_t
 		return durval & 0xff;
+	}
+
+	/*
+	 * Opposite calculation of calculateGasWaitRegVal
+	 */
+	static int gasWaitRegValToDuration(byte gasWaitRegVal) {
+		int mult_factor = (int) Math.pow(4, (gasWaitRegVal & 0b11000000) >> 6);
+		return (gasWaitRegVal & 0b00111111) * mult_factor;
 	}
 
 	/**
@@ -1547,17 +1547,17 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 	 *
 	 * set_conf
 	 */
-	private byte setHeaterConfigInternal(final HeaterConfig heaterConfig, final OperatingMode targetOpMode) {
+	private byte setHeaterConfigInternal(final HeaterConfig heaterConfig, final OperatingMode targetOperatingMode) {
 		byte nb_conv = 0;
 
-		switch (targetOpMode) {
+		switch (targetOperatingMode) {
 		case FORCED:
 			// In forced mode nb_conv is the index of the heater step (0..9)
 			// Always use heater profile 0 in forced mode (nb_conv = 0)
 			nb_conv = 0;
 
 			device.writeByteData(REG_RES_HEAT0,
-					calculateHeaterResistanceFpu(calibration, ambientTemperature, heaterConfig.getHeaterTemp(0)));
+					calculateHeaterResistanceRegValFpu(calibration, ambientTemperature, heaterConfig.getHeaterTemp(0)));
 			device.writeByteData(REG_GAS_WAIT0, calculateGasWaitRegVal(heaterConfig.getHeaterDuration(0)));
 			break;
 		case SEQUENTIAL:
@@ -1570,12 +1570,12 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 			byte[] rh_reg_data = new byte[nb_conv];
 			byte[] gw_reg_data = new byte[nb_conv];
 			for (int i = 0; i < nb_conv; i++) {
-				rh_reg_data[i] = (byte) calculateHeaterResistanceFpu(calibration, ambientTemperature,
+				rh_reg_data[i] = (byte) calculateHeaterResistanceRegValFpu(calibration, ambientTemperature,
 						heaterConfig.getHeaterTemp(i));
 				gw_reg_data[i] = (byte) calculateGasWaitRegVal(heaterConfig.getHeaterDuration(i));
 			}
-			writeBlockData(REG_RES_HEAT0, rh_reg_data);
-			writeBlockData(REG_GAS_WAIT0, gw_reg_data);
+			writeDataWithIncrementingRegisterAddress(REG_RES_HEAT0, rh_reg_data);
+			writeDataWithIncrementingRegisterAddress(REG_GAS_WAIT0, gw_reg_data);
 			break;
 		case PARALLEL:
 			// In sequential and parallel modes nb_conv is the number of steps in the heater
@@ -1584,19 +1584,19 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 
 			setRegByte(REG_CTRL_GAS_1, (byte) NBCONV_MASK, NBCONV_POSITION, nb_conv);
 
-			int gas_wait_shared = calculateGasWaitSharedRegVal(heaterConfig.getSharedHeaterDuration());
+			int gas_wait_shared = calculateGasWaitSharedRegVal(heaterConfig.getSharedHeaterDurationMs());
 			device.writeByteData(REG_GAS_WAIT_SHARED, gas_wait_shared);
 
 			rh_reg_data = new byte[nb_conv];
 			gw_reg_data = new byte[nb_conv];
 			for (int i = 0; i < nb_conv; i++) {
-				rh_reg_data[i] = (byte) calculateHeaterResistanceFpu(calibration, ambientTemperature,
+				rh_reg_data[i] = (byte) calculateHeaterResistanceRegValFpu(calibration, ambientTemperature,
 						heaterConfig.getHeaterTemp(i));
 				// Note that there isn't a call to calculateGasWait here
 				gw_reg_data[i] = (byte) heaterConfig.getHeaterDuration(i);
 			}
-			writeBlockData(REG_RES_HEAT0, rh_reg_data);
-			writeBlockData(REG_GAS_WAIT0, gw_reg_data);
+			writeDataWithIncrementingRegisterAddress(REG_RES_HEAT0, rh_reg_data);
+			writeDataWithIncrementingRegisterAddress(REG_GAS_WAIT0, gw_reg_data);
 			break;
 		case SLEEP:
 		default:
@@ -1697,7 +1697,7 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 	 * @param registerStart The register address
 	 * @param data          The data to write
 	 */
-	private void writeBlockData(int registerStart, byte[] data) {
+	private void writeDataWithIncrementingRegisterAddress(int registerStart, byte[] data) {
 		// Cannot do writeI2CBlockData as the register address does _not_ auto-increment
 		// device.writeI2CBlockData(registerStart, data_array);
 		byte[] buffer = new byte[data.length * 2];
@@ -1735,27 +1735,40 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 		// Enable gas measurement. Refer en_dis
 		boolean enabled;
 		// Store the heater temperature profile in degree Celsius
-		int[] heaterTempProfile;
+		int[] heaterTempProfiles;
 		// Store the heating duration profile in milliseconds
-		int[] heaterDurationProfile;
+		int[] heaterDurationProfiles;
 		// Store heating duration for parallel mode in milliseconds
-		int sharedHeaterDuration;
+		int sharedHeaterDurationMs;
 
 		public HeaterConfig(boolean enabled, int heaterTemp, int heaterDuration) {
 			this(enabled, new int[] { heaterTemp }, new int[] { heaterDuration });
 		}
 
-		public HeaterConfig(boolean enabled, int[] heaterTempProfile, int[] heaterDurationProfile) {
+		public HeaterConfig(boolean enabled, int[] heaterTempProfiles, int[] heaterDurationProfiles) {
+			if (heaterTempProfiles.length == 0 || heaterTempProfiles.length > MAX_NUM_HEATER_PROFILES) {
+				throw new IllegalArgumentException(
+						"Invalid number of heater temperature profiles: " + heaterTempProfiles.length);
+			}
+			if (heaterDurationProfiles.length == 0 || heaterDurationProfiles.length > MAX_NUM_HEATER_PROFILES) {
+				throw new IllegalArgumentException(
+						"Invalid number of heater duration profiles: " + heaterDurationProfiles.length);
+			}
+			if (heaterTempProfiles.length != heaterDurationProfiles.length) {
+				throw new IllegalArgumentException("Number of heater temperature profiles (" + heaterTempProfiles.length
+						+ ") != number of duration profiles (" + heaterDurationProfiles.length + ")");
+			}
+
 			this.enabled = enabled;
-			this.heaterTempProfile = heaterTempProfile;
-			this.heaterDurationProfile = heaterDurationProfile;
+			this.heaterTempProfiles = heaterTempProfiles;
+			this.heaterDurationProfiles = heaterDurationProfiles;
 		}
 
-		public HeaterConfig(boolean enabled, int[] heaterTempProfile, int[] heaterDurationProfile,
-				int sharedHeaterDuration) {
-			this(enabled, heaterTempProfile, heaterDurationProfile);
+		public HeaterConfig(boolean enabled, int[] heaterTempProfiles, int[] heaterDurationProfiles,
+				int sharedHeaterDurationMs) {
+			this(enabled, heaterTempProfiles, heaterDurationProfiles);
 
-			this.sharedHeaterDuration = sharedHeaterDuration;
+			this.sharedHeaterDurationMs = sharedHeaterDurationMs;
 		}
 
 		public boolean isEnabled() {
@@ -1763,19 +1776,19 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 		}
 
 		public int getProfileLength() {
-			return heaterTempProfile.length;
+			return heaterTempProfiles.length;
 		}
 
 		public int getHeaterTemp(int profile) {
-			return heaterTempProfile[profile];
+			return heaterTempProfiles[profile];
 		}
 
 		public int getHeaterDuration(int profile) {
-			return heaterDurationProfile[profile];
+			return heaterDurationProfiles[profile];
 		}
 
-		public int getSharedHeaterDuration() {
-			return sharedHeaterDuration;
+		public int getSharedHeaterDurationMs() {
+			return sharedHeaterDurationMs;
 		}
 	}
 
@@ -1785,9 +1798,9 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 		boolean heaterTempStable;
 		boolean gasMeasurementValid;
 		// The index of the heater profile used
-		int gasMeasurementIndex = -1;
+		int gasMeasurementIndex;
 		// Measurement index to track order
-		int measureIndex = -1;
+		int measureIndex;
 		// Temperature in degree celsius
 		float temperature;
 		// Pressure in hectopascals (hPa)
@@ -1795,13 +1808,13 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 		// Humidity in % relative humidity
 		float humidity;
 		// Gas resistance in Ohms
-		float gasResistance = 0;
+		float gasResistance;
+		// Heater Current (needs conversion to mA) using idacHeatRegVal[7:1] + 1) / 8
+		short idacHeatRegVal;
 		// Heater resistance
 		short heaterResistance;
-		// Current DAC
-		short idac;
-		// Gas wait period
-		short gasWait;
+		// Gas wait period (ms)
+		short gasWaitMs;
 
 		public boolean isNewData() {
 			return newData;
@@ -1839,8 +1852,21 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 			return gasResistance;
 		}
 
+		public short getIdacHeatRegVal() {
+			return idacHeatRegVal;
+		}
+
+		public float getIdacHeatMA() {
+			// Calculate IDAC value in mA - (idac_heat[7:1] + 1) / 8
+			return ((idacHeatRegVal >> 1) + 1) / 8f;
+		}
+
 		public short getHeaterResistance() {
 			return heaterResistance;
+		}
+
+		public short getGasWait() {
+			return gasWaitMs;
 		}
 
 		@Override
@@ -1848,8 +1874,8 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 			return "Data [newData=" + newData + ", heaterTempStable=" + heaterTempStable + ", gasMeasurementValid="
 					+ gasMeasurementValid + ", gasMeasurementIndex=" + gasMeasurementIndex + ", measureIndex="
 					+ measureIndex + ", temperature=" + temperature + ", pressureHPa=" + pressureHPa + ", humidity="
-					+ humidity + ", gasResistance=" + gasResistance + ", heaterResistance=" + heaterResistance
-					+ ", idac=" + idac + ", gasWait=" + gasWait + "]";
+					+ humidity + ", gasResistance=" + gasResistance + ", idacHeatRegVal=" + idacHeatRegVal
+					+ ", heaterResistance=" + heaterResistance + ", gasWaitMs=" + gasWaitMs + "]";
 		}
 	}
 }

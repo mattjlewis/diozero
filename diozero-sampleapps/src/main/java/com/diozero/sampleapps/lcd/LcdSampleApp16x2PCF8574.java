@@ -5,7 +5,7 @@ package com.diozero.sampleapps.lcd;
  * Organisation: diozero
  * Project:      diozero - Sample applications
  * Filename:     LcdSampleApp16x2PCF8574.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.sampleapps.lcd;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -37,15 +37,15 @@ import com.diozero.api.RuntimeIOException;
 import com.diozero.devices.HD44780Lcd;
 import com.diozero.devices.HD44780Lcd.LcdConnection;
 import com.diozero.devices.HD44780Lcd.PCF8574LcdConnection;
-import com.diozero.sbc.DeviceFactoryHelper;
+import com.diozero.util.Diozero;
 
 /**
  * I2C LCD sample application. To run:
  * <ul>
  * <li>Built-in:<br>
- *  {@code java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar com.diozero.sampleapps.LcdSampleApp16x2PCF8574 [i2c_address] [i2c_controller]}</li>
+ * {@code java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar com.diozero.sampleapps.LcdSampleApp16x2PCF8574 [i2c_address] [i2c_controller]}</li>
  * <li>pigpgioj:<br>
- *  {@code sudo java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar:diozero-provider-pigpio-$DIOZERO_VERSION.jar:pigpioj-java-2.4.jar com.diozero.sampleapps.LcdSampleApp16x2PCF8574 [i2c_address] [i2c_controller]}</li>
+ * {@code sudo java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar:diozero-provider-pigpio-$DIOZERO_VERSION.jar:pigpioj-java-2.4.jar com.diozero.sampleapps.LcdSampleApp16x2PCF8574 [i2c_address] [i2c_controller]}</li>
  * </ul>
  */
 public class LcdSampleApp16x2PCF8574 {
@@ -59,10 +59,10 @@ public class LcdSampleApp16x2PCF8574 {
 		if (args.length > 1) {
 			controller = Integer.parseInt(args[1]);
 		}
-		
+
 		int columns = 16;
 		int rows = 2;
-		
+
 		// Initialise display
 		try (LcdConnection lcd_connection = new PCF8574LcdConnection(controller, device_address);
 				HD44780Lcd lcd = new HD44780Lcd(lcd_connection, columns, rows)) {
@@ -72,7 +72,7 @@ public class LcdSampleApp16x2PCF8574 {
 		} finally {
 			// Required if there are non-daemon threads that will prevent the
 			// built-in clean-up routines from running
-			DeviceFactoryHelper.shutdown();
+			Diozero.shutdown();
 		}
 	}
 }

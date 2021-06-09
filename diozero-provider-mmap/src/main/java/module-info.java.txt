@@ -1,7 +1,0 @@
-module com.diozero.provider.mmap {
-	requires transitive com.diozero.core;
-	requires tinylog;
-	
-	provides com.diozero.internal.provider.NativeDeviceFactoryInterface
-		with com.diozero.internal.provider.mmap.MmapDeviceFactory;
-}

@@ -5,7 +5,7 @@ package com.diozero.sampleapps;
  * Organisation: diozero
  * Project:      diozero - Sample applications
  * Filename:     BME68xTest.java
- *
+ * 
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.sampleapps;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- *
+ * 
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- *
+ * 
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -53,14 +53,21 @@ public class BME68xTest {
 			controller = Integer.parseInt(args[0]);
 		}
 
-		try (BME68x bme68x = new BME68x(controller)) {
+		int address = BME68x.DEVICE_ADDRESS;
+		if (args.length > 1) {
+			address = Integer.parseInt(args[1]);
+		}
+
+		try (BME68x bme68x = new BME68x(controller, address)) {
 			System.out.format("chipId: 0x%x, variantId: 0x%x, uniqueId: 0x%x%n", Integer.valueOf(bme68x.getChipId()),
 					Integer.valueOf(bme68x.getVariantId()), Integer.valueOf(bme68x.getUniqueId()));
 
-			bme68x.setOperatingMode(OperatingMode.PARALLEL);
-			System.out.println(bme68x.getOperatingMode());
-			bme68x.setOperatingMode(OperatingMode.SEQUENTIAL);
-			System.out.println(bme68x.getOperatingMode());
+			if (bme68x.getVariantId() == BME68x.VARIANT_ID_BM688) {
+				bme68x.setOperatingMode(OperatingMode.PARALLEL);
+				System.out.println(bme68x.getOperatingMode());
+				bme68x.setOperatingMode(OperatingMode.SEQUENTIAL);
+				System.out.println(bme68x.getOperatingMode());
+			}
 			bme68x.setOperatingMode(OperatingMode.SLEEP);
 			System.out.println(bme68x.getOperatingMode());
 
@@ -74,7 +81,9 @@ public class BME68xTest {
 				bme68x.softReset();
 			}
 
-			parallelModeTest(bme68x);
+			if (bme68x.getVariantId() == BME68x.VARIANT_ID_BM688) {
+				parallelModeTest(bme68x);
+			}
 
 			bme68x.softReset();
 
@@ -106,11 +115,12 @@ public class BME68xTest {
 			int reading = 0;
 			for (Data data : bme68x.getSensorData(target_operating_mode)) {
 				System.out.format(
-						"Reading [%d]: Idx: %,d. Temperature: %,.2f C. Pressure: %,.2f hPa. Relative Humidity: %,.2f %%rH. Gas Idx: %,d. Gas Resistance: %,.2f Ohms (heater stable: %b, gas valid: %b).%n",
+						"Reading [%d]: Idx: %,d. Temperature: %,.2f C. Pressure: %,.2f hPa. Relative Humidity: %,.2f %%rH. Gas Idx: %,d. Gas Resistance: %,.2f Ohms. IDAC: %,.2f mA. Gas Wait: %,d (ms or multiplier). (heater stable: %b, gas valid: %b).%n",
 						Integer.valueOf(reading), Integer.valueOf(data.getMeasureIndex()),
 						Float.valueOf(data.getTemperature()), Float.valueOf(data.getPressure()),
 						Float.valueOf(data.getHumidity()), Integer.valueOf(data.getGasMeasurementIndex()),
-						Float.valueOf(data.getGasResistance()), Boolean.valueOf(data.isHeaterTempStable()),
+						Float.valueOf(data.getGasResistance()), Float.valueOf(data.getIdacHeatMA()),
+						Short.valueOf(data.getGasWait()), Boolean.valueOf(data.isHeaterTempStable()),
 						Boolean.valueOf(data.isGasMeasurementValid()));
 				reading++;
 			}
@@ -138,8 +148,8 @@ public class BME68xTest {
 		// Assume that 150ms is the required heater duration.
 		// https://github.com/BoschSensortec/BME68x-Sensor-API/blob/master/examples/parallel_mode/parallel_mode.c#L78
 		// p39: Measurement duration = gas_wait_X * (gas_wait_shared + TTPHG_duration)
-		int heater_duration = 150;
-		int gas_wait_shared_ms = heater_duration - measure_duration_ms;
+		int heater_duration_ms = 150;
+		int gas_wait_shared_ms = heater_duration_ms - measure_duration_ms;
 		System.out.println("gas_wait_shared_ms: " + gas_wait_shared_ms);
 
 		bme68x.setHeaterConfiguration(target_operating_mode, new HeaterConfig(true, //
@@ -150,25 +160,25 @@ public class BME68xTest {
 				// new int[] { 5, 2, 10, 30, 5, 5, 5, 5, 5, 5 },
 				gas_wait_shared_ms));
 
-		// FIXME Dumb maths - equates to heater_duration
-		int delay_period = gas_wait_shared_ms + measure_duration_ms;
-		System.out.println("delay_period: " + delay_period + " ms, heater_duration: " + heater_duration);
+		System.out.println("heater_duration_ms: " + heater_duration_ms);
 
 		int last_gas_meas_idx = -1;
 		long last_gas_meas_ms = System.currentTimeMillis();
 		for (int i = 0; i < 100; i++) {
-			SleepUtil.sleepMillis(delay_period);
+			// Note that longer sleep durations result in no data...
+			SleepUtil.sleepMillis(heater_duration_ms);
 
 			int reading = 0;
 			for (Data data : bme68x.getSensorData(target_operating_mode)) {
 				if (data.isNewData()) {
 					if (data.isGasMeasurementValid()) {
 						System.out.format(
-								"Reading [%d]: Idx: %,d. Temperature: %,.2f C. Pressure: %,.2f hPa. Relative Humidity: %,.2f %%rH. Gas Idx: %,d. Gas Resistance: %,.2f Ohms (heater stable: %b, gas valid: %b).%n",
+								"Reading [%d]: Idx: %,d. Temperature: %,.2f C. Pressure: %,.2f hPa. Relative Humidity: %,.2f %%rH. Gas Idx: %,d. Gas Resistance: %,.2f Ohms. IDAC: %,.2f mA. Gas Wait: %,d (ms or multiplier). (heater stable: %b, gas valid: %b).%n",
 								Integer.valueOf(reading), Integer.valueOf(data.getMeasureIndex() & 0xff),
 								Float.valueOf(data.getTemperature()), Float.valueOf(data.getPressure()),
 								Float.valueOf(data.getHumidity()), Integer.valueOf(data.getGasMeasurementIndex()),
-								Float.valueOf(data.getGasResistance()), Boolean.valueOf(data.isHeaterTempStable()),
+								Float.valueOf(data.getGasResistance()), Float.valueOf(data.getIdacHeatMA()),
+								Short.valueOf(data.getGasWait()), Boolean.valueOf(data.isHeaterTempStable()),
 								Boolean.valueOf(data.isGasMeasurementValid()));
 						if (data.getGasMeasurementIndex() != last_gas_meas_idx) {
 							System.out.println("delta: " + (System.currentTimeMillis() - last_gas_meas_ms));
@@ -236,18 +246,20 @@ public class BME68xTest {
 					Long.valueOf(burn_in_time_sec - (System.currentTimeMillis() - start_time_ms) / 1000));
 		}
 
-		// Get the average of the last 50 values
-		float gas_baseline = gas_res_burn_in_data.subList(gas_res_burn_in_data.size() - 50, gas_res_burn_in_data.size())
-				.stream().reduce(Float.valueOf(0f), Float::sum).floatValue() / 50;
+		// Get the average of the last 50% of values
+		int num_gas_samples = gas_res_burn_in_data.size();
+		float gas_baseline = gas_res_burn_in_data.subList(num_gas_samples / 2, num_gas_samples).stream()
+				.reduce(Float.valueOf(0f), Float::sum).floatValue() / num_gas_samples / 2;
 
 		// Set the humidity baseline to 40%, an optimal indoor humidity.
 		// float hum_baseline = 40f;
-		float hum_baseline = hum_burn_in_data.subList(hum_burn_in_data.size() - 50, hum_burn_in_data.size()).stream()
-				.reduce(Float.valueOf(0f), Float::sum).floatValue() / 50;
+		int num_hum_samples = hum_burn_in_data.size();
+		float hum_baseline = hum_burn_in_data.subList(num_hum_samples / 2, num_hum_samples).stream()
+				.reduce(Float.valueOf(0f), Float::sum).floatValue() / num_hum_samples / 2;
 
 		// This sets the balance between humidity and gas reading in the calculation of
-		// air_quality_score (25:75, humidity:gas)
-		float hum_weighting = 0.25f;
+		// air_quality_score (20:80, humidity:gas)
+		float hum_weighting = 0.2f;
 
 		System.out.format("Gas baseline: %,.2f Ohms, humidity baseline: %,.2f %%RH%n", Float.valueOf(gas_baseline),
 				Float.valueOf(hum_baseline));

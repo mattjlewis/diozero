@@ -79,6 +79,7 @@ import com.diozero.sbc.DeviceFactoryHelper;
  * }
  * </pre>
  */
+// FIXME Use composition instead of inheritance...
 public class Button extends DigitalInputDevice {
 	/**
 	 * Button builder. Default values:

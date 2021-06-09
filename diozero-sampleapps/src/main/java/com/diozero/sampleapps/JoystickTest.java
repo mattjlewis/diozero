@@ -5,7 +5,7 @@ package com.diozero.sampleapps;
  * Organisation: diozero
  * Project:      diozero - Sample applications
  * Filename:     JoystickTest.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.sampleapps;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -36,7 +36,7 @@ import org.tinylog.Logger;
 import com.diozero.api.AnalogInputDevice;
 import com.diozero.devices.PCF8591;
 import com.diozero.devices.PwmLed;
-import com.diozero.sbc.DeviceFactoryHelper;
+import com.diozero.util.Diozero;
 import com.diozero.util.SleepUtil;
 
 public class JoystickTest {
@@ -45,15 +45,15 @@ public class JoystickTest {
 			Logger.error("Usage: {} <adc1> <adc2> <pwm1> <pwm2>", JoystickTest.class);
 			System.exit(1);
 		}
-		
+
 		int adc_num1 = Integer.parseInt(args[0]);
 		int adc_num2 = Integer.parseInt(args[1]);
 		int pwm1 = Integer.parseInt(args[2]);
 		int pwm2 = Integer.parseInt(args[3]);
-		
+
 		test(adc_num1, adc_num2, pwm1, pwm2);
 	}
-	
+
 	private static void test(int adcNum1, int adcNum2, int pwm1, int pwm2) {
 		try (PCF8591 adc = new PCF8591(1);
 				AnalogInputDevice axis_1 = new AnalogInputDevice(adc, adcNum1);
@@ -62,15 +62,16 @@ public class JoystickTest {
 				PwmLed led2 = new PwmLed(pwm2)) {
 			axis_1.addListener(event -> led1.setValue(event.getUnscaledValue()));
 			axis_2.addListener(event -> led2.setValue(event.getUnscaledValue()));
-			for (int i=0; i<20; i++) {
-				Logger.info("axis 1: {}, axis 2: {}", Float.valueOf(axis_1.getScaledValue()), Float.valueOf(axis_2.getScaledValue()));
-				
+			for (int i = 0; i < 20; i++) {
+				Logger.info("axis 1: {}, axis 2: {}", Float.valueOf(axis_1.getScaledValue()),
+						Float.valueOf(axis_2.getScaledValue()));
+
 				SleepUtil.sleepSeconds(1);
 			}
 		} finally {
 			// Required if there are non-daemon threads that will prevent the
 			// built-in clean-up routines from running
-			DeviceFactoryHelper.shutdown();
+			Diozero.shutdown();
 		}
 	}
 }

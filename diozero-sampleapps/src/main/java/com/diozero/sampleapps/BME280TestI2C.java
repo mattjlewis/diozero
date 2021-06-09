@@ -5,7 +5,7 @@ package com.diozero.sampleapps;
  * Organisation: diozero
  * Project:      diozero - Sample applications
  * Filename:     BME280TestI2C.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.sampleapps;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -32,12 +32,12 @@ package com.diozero.sampleapps;
  */
 
 import com.diozero.devices.BME280;
-import com.diozero.sbc.DeviceFactoryHelper;
+import com.diozero.util.Diozero;
 import com.diozero.util.SleepUtil;
 
 /**
  * Tests BME280 using I2C
- * 
+ *
  * @author gregflurry
  */
 public class BME280TestI2C {
@@ -51,15 +51,15 @@ public class BME280TestI2C {
 				bme280.waitDataAvailable(10, 5);
 				float[] tph = bme280.getValues();
 				float tF = tph[0] * (9f / 5f) + 32f;
-				System.out.format("T=%.2f C (%.2f F) P=%.2f hPa H=%.2f%% RH%n", Float.valueOf(tph[0]), Float.valueOf(tF),
-						Float.valueOf(tph[1]), Float.valueOf(tph[2]));
+				System.out.format("T=%.2f C (%.2f F) P=%.2f hPa H=%.2f%% RH%n", Float.valueOf(tph[0]),
+						Float.valueOf(tF), Float.valueOf(tph[1]), Float.valueOf(tph[2]));
 
 				SleepUtil.sleepSeconds(1);
 			}
 		} finally {
 			// Required if there are non-daemon threads that will prevent the
 			// built-in clean-up routines from running
-			DeviceFactoryHelper.shutdown();
+			Diozero.shutdown();
 		}
 	}
 }

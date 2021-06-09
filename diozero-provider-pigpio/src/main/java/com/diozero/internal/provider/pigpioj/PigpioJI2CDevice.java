@@ -316,7 +316,7 @@ public class PigpioJI2CDevice extends AbstractDevice implements InternalI2CDevic
 
 		PiI2CMessage[] segs = new PiI2CMessage[messages.length];
 		for (int i = 0; i < messages.length; i++) {
-			segs[i] = new PiI2CMessage(address, messages[i].flags, messages[i].len);
+			segs[i] = new PiI2CMessage(address, messages[i].getFlags(), messages[i].getLength());
 		}
 
 		int rc = pigpioImpl.i2cSegments(handle, segs, buffer);
