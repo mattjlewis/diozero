@@ -123,6 +123,16 @@ public class PigpioJDeviceFactory extends BaseNativeDeviceFactory {
 			return DeviceMode.DIGITAL_INPUT;
 		case PigpioConstants.MODE_PI_OUTPUT:
 			return DeviceMode.DIGITAL_OUTPUT;
+		case PigpioConstants.MODE_PI_ALT0:
+			if (gpio == 12 || gpio == 13 || gpio == 40 || gpio == 41 || gpio == 45) {
+				return DeviceMode.PWM_OUTPUT;
+			}
+			return DeviceMode.UNKNOWN;
+		case PigpioConstants.MODE_PI_ALT5:
+			if (gpio == 18 || gpio == 19) {
+				return DeviceMode.PWM_OUTPUT;
+			}
+			return DeviceMode.UNKNOWN;
 		default:
 			return DeviceMode.UNKNOWN;
 		}
