@@ -50,6 +50,7 @@ import com.diozero.internal.spi.InternalI2CDeviceInterface;
 import com.diozero.internal.spi.InternalSerialDeviceInterface;
 import com.diozero.internal.spi.InternalSpiDeviceInterface;
 import com.diozero.internal.spi.PwmOutputDeviceInterface;
+import com.diozero.util.Diozero;
 
 public class TestDeviceFactory extends BaseNativeDeviceFactory {
 	private static Class<? extends AnalogInputDeviceInterface> analogInputDeviceClass;
@@ -277,5 +278,15 @@ public class TestDeviceFactory extends BaseNativeDeviceFactory {
 	@Override
 	public void setBoardPwmFrequency(int pwmFrequency) {
 		this.boardPwmFrequency = pwmFrequency;
+	}
+
+	@Override
+	public int getGpioValue(int gpio) {
+		return Diozero.UNKNOWN_VALUE;
+	}
+
+	@Override
+	public DeviceMode getGpioMode(int gpio) {
+		return DeviceMode.UNKNOWN;
 	}
 }

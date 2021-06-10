@@ -39,7 +39,8 @@ import com.diozero.api.RuntimeIOException;
 import com.diozero.internal.spi.AbstractInputDevice;
 import com.diozero.internal.spi.GpioDigitalInputDeviceInterface;
 
-public class MCP23xxxDigitalInputDevice extends AbstractInputDevice<DigitalInputEvent> implements GpioDigitalInputDeviceInterface {
+public class MCP23xxxDigitalInputDevice extends AbstractInputDevice<DigitalInputEvent>
+		implements GpioDigitalInputDeviceInterface {
 	private MCP23xxx mcp23xxx;
 	private int gpio;
 
@@ -54,7 +55,7 @@ public class MCP23xxxDigitalInputDevice extends AbstractInputDevice<DigitalInput
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
 		Logger.trace("closeDevice()");
-		removeListener();
+		super.closeDevice();
 		mcp23xxx.closeGpio(gpio);
 	}
 

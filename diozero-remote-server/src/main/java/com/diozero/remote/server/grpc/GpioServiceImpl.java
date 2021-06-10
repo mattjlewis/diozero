@@ -54,8 +54,11 @@ import com.diozero.internal.spi.InternalDeviceInterface;
 import com.diozero.internal.spi.NativeDeviceFactoryInterface;
 import com.diozero.internal.spi.PwmOutputDeviceInterface;
 import com.diozero.remote.DiozeroProtosConverter;
+import com.diozero.remote.message.protobuf.BooleanResponse;
+import com.diozero.remote.message.protobuf.FloatResponse;
 import com.diozero.remote.message.protobuf.Gpio;
 import com.diozero.remote.message.protobuf.GpioServiceGrpc;
+import com.diozero.remote.message.protobuf.IntegerResponse;
 import com.diozero.remote.message.protobuf.Response;
 import com.diozero.remote.message.protobuf.Status;
 import com.diozero.sbc.DeviceFactoryHelper;
@@ -291,11 +294,10 @@ public class GpioServiceImpl extends GpioServiceGrpc.GpioServiceImplBase {
 	}
 
 	@Override
-	public void digitalRead(Gpio.DigitalReadRequest request,
-			StreamObserver<Gpio.DigitalReadResponse> responseObserver) {
+	public void digitalRead(Gpio.Identifier request, StreamObserver<BooleanResponse> responseObserver) {
 		Logger.debug("GPIO digital read request");
 
-		Gpio.DigitalReadResponse.Builder response_builder = Gpio.DigitalReadResponse.newBuilder();
+		BooleanResponse.Builder response_builder = BooleanResponse.newBuilder();
 
 		PinInfo pin_info = deviceFactory.getBoardPinInfo().getByGpioNumberOrThrow(request.getGpio());
 		String key = deviceFactory.createPinKey(pin_info);
@@ -307,7 +309,7 @@ public class GpioServiceImpl extends GpioServiceGrpc.GpioServiceImplBase {
 		} else {
 			if (device instanceof GpioDigitalDeviceInterface) {
 				try {
-					response_builder.setValue(((GpioDigitalDeviceInterface) device).getValue());
+					response_builder.setData(((GpioDigitalDeviceInterface) device).getValue());
 					response_builder.setStatus(Status.OK);
 				} catch (RuntimeIOException e) {
 					Logger.error(e, "Error: {}", e);
@@ -325,7 +327,7 @@ public class GpioServiceImpl extends GpioServiceGrpc.GpioServiceImplBase {
 	}
 
 	@Override
-	public void digitalWrite(Gpio.DigitalWriteRequest request, StreamObserver<Response> responseObserver) {
+	public void digitalWrite(Gpio.BooleanMessage request, StreamObserver<Response> responseObserver) {
 		Logger.debug("GPIO digital write request");
 
 		Response.Builder response_builder = Response.newBuilder();
@@ -358,10 +360,10 @@ public class GpioServiceImpl extends GpioServiceGrpc.GpioServiceImplBase {
 	}
 
 	@Override
-	public void pwmRead(Gpio.PwmReadRequest request, StreamObserver<Gpio.PwmReadResponse> responseObserver) {
+	public void pwmRead(Gpio.Identifier request, StreamObserver<FloatResponse> responseObserver) {
 		Logger.debug("GPIO PWM read request");
 
-		Gpio.PwmReadResponse.Builder response_builder = Gpio.PwmReadResponse.newBuilder();
+		FloatResponse.Builder response_builder = FloatResponse.newBuilder();
 
 		PinInfo pin_info = deviceFactory.getBoardPinInfo().getByGpioNumberOrThrow(request.getGpio());
 		String key = deviceFactory.createPinKey(pin_info);
@@ -373,7 +375,7 @@ public class GpioServiceImpl extends GpioServiceGrpc.GpioServiceImplBase {
 		} else {
 			if (device instanceof PwmOutputDeviceInterface) {
 				try {
-					response_builder.setValue(((PwmOutputDeviceInterface) device).getValue());
+					response_builder.setData(((PwmOutputDeviceInterface) device).getValue());
 					response_builder.setStatus(Status.OK);
 				} catch (RuntimeIOException e) {
 					Logger.error(e, "Error: {}", e);
@@ -391,7 +393,7 @@ public class GpioServiceImpl extends GpioServiceGrpc.GpioServiceImplBase {
 	}
 
 	@Override
-	public void pwmWrite(Gpio.PwmWriteRequest request, StreamObserver<Response> responseObserver) {
+	public void pwmWrite(Gpio.FloatMessage request, StreamObserver<Response> responseObserver) {
 		Logger.debug("GPIO PWM write request");
 
 		Response.Builder response_builder = Response.newBuilder();
@@ -424,11 +426,10 @@ public class GpioServiceImpl extends GpioServiceGrpc.GpioServiceImplBase {
 	}
 
 	@Override
-	public void getPwmFrequency(Gpio.GetPwmFrequencyRequest request,
-			StreamObserver<Gpio.GetPwmFrequencyResponse> responseObserver) {
+	public void getPwmFrequency(Gpio.Identifier request, StreamObserver<IntegerResponse> responseObserver) {
 		Logger.debug("GPIO get PWM frequency request");
 
-		Gpio.GetPwmFrequencyResponse.Builder response_builder = Gpio.GetPwmFrequencyResponse.newBuilder();
+		IntegerResponse.Builder response_builder = IntegerResponse.newBuilder();
 
 		PinInfo pin_info = deviceFactory.getBoardPinInfo().getByGpioNumberOrThrow(request.getGpio());
 		String key = deviceFactory.createPinKey(pin_info);
@@ -440,7 +441,7 @@ public class GpioServiceImpl extends GpioServiceGrpc.GpioServiceImplBase {
 		} else {
 			if (device instanceof PwmOutputDeviceInterface) {
 				try {
-					response_builder.setFrequency(((PwmOutputDeviceInterface) device).getPwmFrequency());
+					response_builder.setData(((PwmOutputDeviceInterface) device).getPwmFrequency());
 					response_builder.setStatus(Status.OK);
 				} catch (RuntimeIOException e) {
 					Logger.error(e, "Error: {}", e);
@@ -458,7 +459,7 @@ public class GpioServiceImpl extends GpioServiceGrpc.GpioServiceImplBase {
 	}
 
 	@Override
-	public void setPwmFrequency(Gpio.SetPwmFrequencyRequest request, StreamObserver<Response> responseObserver) {
+	public void setPwmFrequency(Gpio.IntegerMessage request, StreamObserver<Response> responseObserver) {
 		Logger.debug("GPIO set PWM frequency request");
 
 		Response.Builder response_builder = Response.newBuilder();
@@ -491,10 +492,10 @@ public class GpioServiceImpl extends GpioServiceGrpc.GpioServiceImplBase {
 	}
 
 	@Override
-	public void analogRead(Gpio.AnalogReadRequest request, StreamObserver<Gpio.AnalogReadResponse> responseObserver) {
+	public void analogRead(Gpio.Identifier request, StreamObserver<FloatResponse> responseObserver) {
 		Logger.debug("GPIO analog read request");
 
-		Gpio.AnalogReadResponse.Builder response_builder = Gpio.AnalogReadResponse.newBuilder();
+		FloatResponse.Builder response_builder = FloatResponse.newBuilder();
 
 		PinInfo pin_info = deviceFactory.getBoardPinInfo().getByGpioNumberOrThrow(request.getGpio());
 		String key = deviceFactory.createPinKey(pin_info);
@@ -506,7 +507,7 @@ public class GpioServiceImpl extends GpioServiceGrpc.GpioServiceImplBase {
 		} else {
 			if (device instanceof AnalogDeviceInterface) {
 				try {
-					response_builder.setValue(((AnalogDeviceInterface) device).getValue());
+					response_builder.setData(((AnalogDeviceInterface) device).getValue());
 					response_builder.setStatus(Status.OK);
 				} catch (RuntimeIOException e) {
 					Logger.error(e, "Error: {}", e);
@@ -524,7 +525,7 @@ public class GpioServiceImpl extends GpioServiceGrpc.GpioServiceImplBase {
 	}
 
 	@Override
-	public void analogWrite(Gpio.AnalogWriteRequest request, StreamObserver<Response> responseObserver) {
+	public void analogWrite(Gpio.FloatMessage request, StreamObserver<Response> responseObserver) {
 		Logger.debug("GPIO analog write request");
 
 		Response.Builder response_builder = Response.newBuilder();
@@ -557,7 +558,7 @@ public class GpioServiceImpl extends GpioServiceGrpc.GpioServiceImplBase {
 	}
 
 	@Override
-	public void setOutput(Gpio.SetOutputRequest request, StreamObserver<Response> responseObserver) {
+	public void setOutput(Gpio.BooleanMessage request, StreamObserver<Response> responseObserver) {
 		Logger.debug("GPIO set output request");
 
 		Response.Builder response_builder = Response.newBuilder();
@@ -573,7 +574,7 @@ public class GpioServiceImpl extends GpioServiceGrpc.GpioServiceImplBase {
 			if (device instanceof GpioDigitalInputOutputDeviceInterface) {
 				try {
 					((GpioDigitalInputOutputDeviceInterface) device)
-							.setMode(request.getOutput() ? DeviceMode.DIGITAL_OUTPUT : DeviceMode.DIGITAL_INPUT);
+							.setMode(request.getValue() ? DeviceMode.DIGITAL_OUTPUT : DeviceMode.DIGITAL_INPUT);
 					response_builder.setStatus(Status.OK);
 				} catch (RuntimeIOException e) {
 					Logger.error(e, "Error: {}", e);
@@ -591,15 +592,15 @@ public class GpioServiceImpl extends GpioServiceGrpc.GpioServiceImplBase {
 	}
 
 	@Override
-	public void subscribe(Gpio.SubscribeRequest request, StreamObserver<Gpio.Notification> responseObserver) {
-		Logger.debug("GPIO subscribe request");
+	public void subscribe(Gpio.Identifier request, StreamObserver<Gpio.Event> responseObserver) {
+		Logger.debug("GPIO subscribe request {}", Integer.valueOf(request.getGpio()));
 
 		PinInfo pin_info = deviceFactory.getBoardPinInfo().getByGpioNumberOrThrow(request.getGpio());
 		String key = deviceFactory.createPinKey(pin_info);
 		InternalDeviceInterface device = deviceFactory.getDevice(key);
 
 		if (device == null) {
-			Gpio.Notification.Builder response_builder = Gpio.Notification.newBuilder().setGpio(request.getGpio());
+			Gpio.Event.Builder response_builder = Gpio.Event.newBuilder().setGpio(request.getGpio());
 
 			response_builder.setStatus(Status.ERROR);
 			response_builder.setDetail("GPIO not provisioned");
@@ -613,7 +614,9 @@ public class GpioServiceImpl extends GpioServiceGrpc.GpioServiceImplBase {
 		BlockingQueue<DigitalInputEvent> queue = subscriberQueues.get(Integer.valueOf(request.getGpio()));
 		// Is there already a subscriber?
 		if (queue != null) {
-			Gpio.Notification.Builder response_builder = Gpio.Notification.newBuilder().setGpio(request.getGpio());
+			Logger.warn("Already a subscriber for gpio {}", Integer.valueOf(request.getGpio()));
+
+			Gpio.Event.Builder response_builder = Gpio.Event.newBuilder().setGpio(request.getGpio());
 
 			response_builder.setStatus(Status.ERROR);
 			response_builder.setDetail("Subscriber already present");
@@ -637,8 +640,8 @@ public class GpioServiceImpl extends GpioServiceGrpc.GpioServiceImplBase {
 						break;
 					}
 
-					responseObserver.onNext(
-							Gpio.Notification.newBuilder().setGpio(event.getGpio()).setEpochTime(event.getEpochTime())
+					responseObserver
+							.onNext(Gpio.Event.newBuilder().setGpio(event.getGpio()).setEpochTime(event.getEpochTime())
 									.setNanoTime(event.getNanoTime()).setValue(event.getValue()).build());
 				}
 			} else if (device instanceof GpioDigitalInputDeviceInterface) {
@@ -653,12 +656,15 @@ public class GpioServiceImpl extends GpioServiceGrpc.GpioServiceImplBase {
 						break;
 					}
 
-					responseObserver.onNext(
-							Gpio.Notification.newBuilder().setGpio(event.getGpio()).setEpochTime(event.getEpochTime())
+					responseObserver
+							.onNext(Gpio.Event.newBuilder().setGpio(event.getGpio()).setEpochTime(event.getEpochTime())
 									.setNanoTime(event.getNanoTime()).setValue(event.getValue()).build());
 				}
 			} else {
-				Gpio.Notification.Builder response_builder = Gpio.Notification.newBuilder().setGpio(request.getGpio());
+				Logger.warn("Device class {} for GPIO {} does not support event listeners", device.getClass().getName(),
+						Integer.valueOf(request.getGpio()));
+
+				Gpio.Event.Builder response_builder = Gpio.Event.newBuilder().setGpio(request.getGpio());
 
 				response_builder.setStatus(Status.ERROR);
 				response_builder.setDetail("GPIO does not support listeners");
@@ -668,7 +674,7 @@ public class GpioServiceImpl extends GpioServiceGrpc.GpioServiceImplBase {
 		} catch (RuntimeIOException e) {
 			Logger.error(e, "Error: {}", e);
 
-			Gpio.Notification.Builder response_builder = Gpio.Notification.newBuilder().setGpio(request.getGpio());
+			Gpio.Event.Builder response_builder = Gpio.Event.newBuilder().setGpio(request.getGpio());
 
 			response_builder.setStatus(Status.ERROR);
 			response_builder.setDetail("Runtime Error: " + e);
@@ -677,7 +683,7 @@ public class GpioServiceImpl extends GpioServiceGrpc.GpioServiceImplBase {
 		} catch (InterruptedException e) {
 			Logger.error(e, "Error: {}", e);
 
-			Gpio.Notification.Builder response_builder = Gpio.Notification.newBuilder().setGpio(request.getGpio());
+			Gpio.Event.Builder response_builder = Gpio.Event.newBuilder().setGpio(request.getGpio());
 
 			response_builder.setStatus(Status.ERROR);
 			response_builder.setDetail("Interrupted: " + e);
@@ -700,20 +706,26 @@ public class GpioServiceImpl extends GpioServiceGrpc.GpioServiceImplBase {
 	}
 
 	@Override
-	public void unsubscribe(Gpio.SubscribeRequest request, StreamObserver<Response> responseObserver) {
-		Logger.debug("GPIO unsubscribe request");
+	public void unsubscribe(Gpio.Identifier request, StreamObserver<Response> responseObserver) {
+		Logger.debug("GPIO unsubscribe request {}", Integer.valueOf(request.getGpio()));
 
+		responseObserver.onNext(unsubscribe(request.getGpio()));
+		responseObserver.onCompleted();
+	}
+
+	private Response unsubscribe(int gpio) {
 		Response.Builder response_builder = Response.newBuilder();
 
-		PinInfo pin_info = deviceFactory.getBoardPinInfo().getByGpioNumberOrThrow(request.getGpio());
+		PinInfo pin_info = deviceFactory.getBoardPinInfo().getByGpioNumberOrThrow(gpio);
 		String key = deviceFactory.createPinKey(pin_info);
 		InternalDeviceInterface device = deviceFactory.getDevice(key);
 
 		if (device == null) {
+			Logger.warn("No subscriber for GPIO {}", Integer.valueOf(gpio));
 			response_builder.setStatus(Status.ERROR);
 			response_builder.setDetail("GPIO not provisioned");
 		} else {
-			BlockingQueue<DigitalInputEvent> queue = subscriberQueues.get(Integer.valueOf(request.getGpio()));
+			BlockingQueue<DigitalInputEvent> queue = subscriberQueues.get(Integer.valueOf(gpio));
 			if (queue == null) {
 				response_builder.setStatus(Status.ERROR);
 				response_builder.setDetail("No GPIO subscription found");
@@ -724,12 +736,11 @@ public class GpioServiceImpl extends GpioServiceGrpc.GpioServiceImplBase {
 			}
 		}
 
-		responseObserver.onNext(response_builder.build());
-		responseObserver.onCompleted();
+		return response_builder.build();
 	}
 
 	@Override
-	public void close(Gpio.CloseRequest request, StreamObserver<Response> responseObserver) {
+	public void close(Gpio.Identifier request, StreamObserver<Response> responseObserver) {
 		Logger.debug("GPIO close request");
 
 		Response.Builder response_builder = Response.newBuilder();
@@ -744,7 +755,7 @@ public class GpioServiceImpl extends GpioServiceGrpc.GpioServiceImplBase {
 		} else {
 			if (device instanceof GpioDeviceInterface) {
 				try {
-					// TODO Locate the event queue for this device and notify it to stop events
+					unsubscribe(request.getGpio());
 
 					device.close();
 

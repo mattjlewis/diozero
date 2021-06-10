@@ -200,6 +200,7 @@ public class DigitalInputDevice extends AbstractDigitalInputDevice {
 	public void close() {
 		Logger.trace("close()");
 		if (delegate.isOpen()) {
+			removeAllListeners();
 			delegate.close();
 		}
 	}

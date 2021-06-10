@@ -45,7 +45,7 @@ import uk.pigpioj.PigpioConstants;
 import uk.pigpioj.PigpioInterface;
 
 public class PigpioJDigitalInputOutputDevice extends AbstractInputDevice<DigitalInputEvent>
-implements GpioDigitalInputOutputDeviceInterface, PigpioCallback {
+		implements GpioDigitalInputOutputDeviceInterface, PigpioCallback {
 	private PigpioInterface pigpioImpl;
 	private DeviceMode mode;
 	private int gpio;
@@ -53,10 +53,10 @@ implements GpioDigitalInputOutputDeviceInterface, PigpioCallback {
 	public PigpioJDigitalInputOutputDevice(String key, PigpioJDeviceFactory deviceFactory, PigpioInterface pigpioImpl,
 			int gpio, DeviceMode mode) {
 		super(key, deviceFactory);
-		
+
 		this.pigpioImpl = pigpioImpl;
 		this.gpio = gpio;
-		
+
 		setMode(mode);
 	}
 
@@ -116,7 +116,7 @@ implements GpioDigitalInputOutputDeviceInterface, PigpioCallback {
 		Logger.trace("closeDevice()");
 		// FIXME No piogpio close method?
 		// TODO Revert to default input mode?
-		removeListener();
+		super.closeDevice();
 	}
 
 	@Override
@@ -139,10 +139,10 @@ implements GpioDigitalInputOutputDeviceInterface, PigpioCallback {
 	@Override
 	public void callback(int pin, boolean value, long epochTime, long nanoTime) {
 		if (pin != gpio) {
-			Logger.error("Error, got a callback for the wrong pin ({}), was expecting {}",
-					Integer.valueOf(pin), Integer.valueOf(gpio));
+			Logger.error("Error, got a callback for the wrong pin ({}), was expecting {}", Integer.valueOf(pin),
+					Integer.valueOf(gpio));
 		}
-		
+
 		accept(new DigitalInputEvent(pin, epochTime, nanoTime, value));
 	}
 }

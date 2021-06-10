@@ -9,6 +9,9 @@ import com.diozero.api.SerialConstants.StopBits;
 import com.diozero.internal.spi.InternalDeviceInterface;
 import com.diozero.internal.spi.InternalSerialDeviceInterface;
 import com.diozero.internal.spi.NativeDeviceFactoryInterface;
+import com.diozero.remote.message.protobuf.ByteResponse;
+import com.diozero.remote.message.protobuf.BytesResponse;
+import com.diozero.remote.message.protobuf.IntegerResponse;
 import com.diozero.remote.message.protobuf.Response;
 import com.diozero.remote.message.protobuf.Serial;
 import com.diozero.remote.message.protobuf.SerialServiceGrpc;
@@ -30,7 +33,7 @@ public class SerialServiceImpl extends SerialServiceGrpc.SerialServiceImplBase {
 	}
 
 	@Override
-	public void open(Serial.OpenRequest request, StreamObserver<Response> responseObserver) {
+	public void open(Serial.Open request, StreamObserver<Response> responseObserver) {
 		Logger.debug("Serial open request");
 
 		String device_filename = request.getDeviceFile();
@@ -62,13 +65,13 @@ public class SerialServiceImpl extends SerialServiceGrpc.SerialServiceImplBase {
 	}
 
 	@Override
-	public void read(Serial.ReadRequest request, StreamObserver<Serial.ReadResponse> responseObserver) {
+	public void read(Serial.Identifier request, StreamObserver<IntegerResponse> responseObserver) {
 		Logger.debug("Serial read request");
 
 		String device_filename = request.getDeviceFile();
 		String key = deviceFactory.createSerialKey(device_filename);
 
-		Serial.ReadResponse.Builder response_builder = Serial.ReadResponse.newBuilder();
+		IntegerResponse.Builder response_builder = IntegerResponse.newBuilder();
 
 		InternalSerialDeviceInterface device = deviceFactory.getDevice(key);
 		if (device == null) {
@@ -90,13 +93,13 @@ public class SerialServiceImpl extends SerialServiceGrpc.SerialServiceImplBase {
 	}
 
 	@Override
-	public void readByte(Serial.ReadByteRequest request, StreamObserver<Serial.ReadByteResponse> responseObserver) {
+	public void readByte(Serial.Identifier request, StreamObserver<ByteResponse> responseObserver) {
 		Logger.debug("Serial read byte request");
 
 		String device_filename = request.getDeviceFile();
 		String key = deviceFactory.createSerialKey(device_filename);
 
-		Serial.ReadByteResponse.Builder response_builder = Serial.ReadByteResponse.newBuilder();
+		ByteResponse.Builder response_builder = ByteResponse.newBuilder();
 
 		InternalSerialDeviceInterface device = deviceFactory.getDevice(key);
 		if (device == null) {
@@ -118,7 +121,7 @@ public class SerialServiceImpl extends SerialServiceGrpc.SerialServiceImplBase {
 	}
 
 	@Override
-	public void writeByte(Serial.WriteByteRequest request, StreamObserver<Response> responseObserver) {
+	public void writeByte(Serial.ByteMessage request, StreamObserver<Response> responseObserver) {
 		Logger.debug("Serial write byte request");
 
 		String device_filename = request.getDeviceFile();
@@ -132,7 +135,7 @@ public class SerialServiceImpl extends SerialServiceGrpc.SerialServiceImplBase {
 			response_builder.setDetail("Serial device not provisioned");
 		} else {
 			try {
-				device.writeByte((byte) request.getData());
+				device.writeByte((byte) request.getValue());
 
 				response_builder.setStatus(Status.OK);
 			} catch (RuntimeIOException e) {
@@ -147,13 +150,13 @@ public class SerialServiceImpl extends SerialServiceGrpc.SerialServiceImplBase {
 	}
 
 	@Override
-	public void readBytes(Serial.ReadBytesRequest request, StreamObserver<Serial.ReadBytesResponse> responseObserver) {
+	public void readBytes(Serial.NumBytes request, StreamObserver<BytesResponse> responseObserver) {
 		Logger.debug("Serial read bytes request");
 
 		String device_filename = request.getDeviceFile();
 		String key = deviceFactory.createSerialKey(device_filename);
 
-		Serial.ReadBytesResponse.Builder response_builder = Serial.ReadBytesResponse.newBuilder();
+		BytesResponse.Builder response_builder = BytesResponse.newBuilder();
 
 		InternalSerialDeviceInterface device = deviceFactory.getDevice(key);
 		if (device == null) {
@@ -179,7 +182,7 @@ public class SerialServiceImpl extends SerialServiceGrpc.SerialServiceImplBase {
 	}
 
 	@Override
-	public void writeBytes(Serial.WriteBytesRequest request, StreamObserver<Response> responseObserver) {
+	public void writeBytes(Serial.ByteArray request, StreamObserver<Response> responseObserver) {
 		Logger.debug("Serial write bytes request");
 
 		String device_filename = request.getDeviceFile();
@@ -208,14 +211,13 @@ public class SerialServiceImpl extends SerialServiceGrpc.SerialServiceImplBase {
 	}
 
 	@Override
-	public void bytesAvailable(Serial.BytesAvailableRequest request,
-			StreamObserver<Serial.BytesAvailableResponse> responseObserver) {
+	public void bytesAvailable(Serial.Identifier request, StreamObserver<IntegerResponse> responseObserver) {
 		Logger.debug("Serial bytes available request");
 
 		String device_filename = request.getDeviceFile();
 		String key = deviceFactory.createSerialKey(device_filename);
 
-		Serial.BytesAvailableResponse.Builder response_builder = Serial.BytesAvailableResponse.newBuilder();
+		IntegerResponse.Builder response_builder = IntegerResponse.newBuilder();
 
 		InternalSerialDeviceInterface device = deviceFactory.getDevice(key);
 		if (device == null) {
@@ -223,7 +225,7 @@ public class SerialServiceImpl extends SerialServiceGrpc.SerialServiceImplBase {
 			response_builder.setDetail("Serial device not provisioned");
 		} else {
 			try {
-				response_builder.setBytesAvailable(device.bytesAvailable());
+				response_builder.setData(device.bytesAvailable());
 				response_builder.setStatus(Status.OK);
 			} catch (RuntimeIOException e) {
 				Logger.error(e, "Error: {}", e);
@@ -237,7 +239,7 @@ public class SerialServiceImpl extends SerialServiceGrpc.SerialServiceImplBase {
 	}
 
 	@Override
-	public void close(Serial.CloseRequest request, StreamObserver<Response> responseObserver) {
+	public void close(Serial.Identifier request, StreamObserver<Response> responseObserver) {
 		Logger.debug("Serial close request");
 
 		String device_filename = request.getDeviceFile();

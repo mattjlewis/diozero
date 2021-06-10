@@ -43,7 +43,7 @@ import com.diozero.sbc.DeviceFactoryHelper;
  * DIGITAL_OUTPUT}.
  */
 public class DigitalInputOutputDevice extends AbstractDigitalInputDevice {
-	private GpioDigitalInputOutputDeviceInterface device;
+	private GpioDigitalInputOutputDeviceInterface delegate;
 	private DeviceMode mode;
 
 	/**
@@ -79,19 +79,22 @@ public class DigitalInputOutputDevice extends AbstractDigitalInputDevice {
 			throws RuntimeIOException {
 		super(pinInfo, false);
 
-		this.device = deviceFactory.provisionDigitalInputOutputDevice(pinInfo, mode);
+		this.delegate = deviceFactory.provisionDigitalInputOutputDevice(pinInfo, mode);
 		this.mode = mode;
 	}
 
 	@Override
 	public void close() throws RuntimeIOException {
 		Logger.trace("close()");
-		device.close();
+		if (delegate.isOpen()) {
+			removeAllListeners();
+			delegate.close();
+		}
 	}
 
 	/**
 	 * Get the input / output mode
-	 * 
+	 *
 	 * @return current mode
 	 */
 	public DeviceMode getMode() {
@@ -100,7 +103,7 @@ public class DigitalInputOutputDevice extends AbstractDigitalInputDevice {
 
 	/**
 	 * Set the input / output mode
-	 * 
+	 *
 	 * @param mode new mode, valid values are {@link DeviceMode DIGITAL_INPUT} and
 	 *             {@link DeviceMode DIGITAL_OUTPUT}
 	 */
@@ -112,25 +115,25 @@ public class DigitalInputOutputDevice extends AbstractDigitalInputDevice {
 			throw new InvalidModeException("Invalid mode value, must be DIGITAL_INPUT or DIGITAL_OUTPUT");
 		}
 
-		device.setMode(mode);
+		delegate.setMode(mode);
 		this.mode = mode;
 	}
 
 	/**
 	 * Read the current underlying state of the input pin. Does not factor in active
 	 * high logic.
-	 * 
+	 *
 	 * @return Device state.
 	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
 	@Override
 	public boolean getValue() throws RuntimeIOException {
-		return device.getValue();
+		return delegate.getValue();
 	}
 
 	/**
 	 * Set the output value (if in output mode).
-	 * 
+	 *
 	 * @param value The new value
 	 * @throws RuntimeIOException If an I/O error occurs
 	 */
@@ -138,16 +141,16 @@ public class DigitalInputOutputDevice extends AbstractDigitalInputDevice {
 		if (mode != DeviceMode.DIGITAL_OUTPUT) {
 			throw new IllegalStateException("Can only set output value for digital output pins");
 		}
-		device.setValue(value);
+		delegate.setValue(value);
 	}
 
 	@Override
 	protected void setListener() {
-		device.setListener(this);
+		delegate.setListener(this);
 	}
 
 	@Override
 	protected void removeListener() {
-		device.removeListener();
+		delegate.removeListener();
 	}
 }

@@ -70,7 +70,8 @@ public class GenericLinuxArmBoardInfo extends BoardInfo {
 	}
 
 	public GenericLinuxArmBoardInfo(String make, String model, int memoryKb, float adcVRef, String libraryPath) {
-		super(make, model, memoryKb, adcVRef, libraryPath);
+		super(make, model, memoryKb, adcVRef, libraryPath, LocalSystemInfo.getInstance().getOperatingSystemId(),
+				LocalSystemInfo.getInstance().getOperatingSystemVersion());
 	}
 
 	@Override

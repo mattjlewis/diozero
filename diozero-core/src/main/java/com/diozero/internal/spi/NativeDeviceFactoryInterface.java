@@ -35,7 +35,6 @@ import java.util.stream.Stream;
 
 import com.diozero.api.DeviceMode;
 import com.diozero.sbc.BoardInfo;
-import com.diozero.util.Diozero;
 import com.diozero.util.ServiceLoaderUtil;
 
 public interface NativeDeviceFactoryInterface extends GpioDeviceFactoryInterface, SpiDeviceFactoryInterface,
@@ -45,13 +44,11 @@ public interface NativeDeviceFactoryInterface extends GpioDeviceFactoryInterface
 
 	BoardInfo getBoardInfo();
 
-	default int getGpioValue(int gpio) {
-		return Diozero.UNKNOWN_VALUE;
-	}
+	int getGpioValue(int gpio);
 
-	default DeviceMode getGpioMode(int gpio) {
-		return DeviceMode.UNKNOWN;
-	}
+	DeviceMode getGpioMode(int gpio);
+
+	float getCpuTemperature();
 
 	static Stream<NativeDeviceFactoryInterface> loadInstances() {
 		/*-

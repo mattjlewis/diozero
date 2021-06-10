@@ -56,9 +56,8 @@ public class DiozeroProtosConverter {
 	//
 
 	// FIXME Not used
-	public static DigitalInputEvent convert(Gpio.Notification notification) {
-		return new DigitalInputEvent(notification.getGpio(), notification.getEpochTime(), notification.getNanoTime(),
-				notification.getValue());
+	public static DigitalInputEvent convert(Gpio.Event event) {
+		return new DigitalInputEvent(event.getGpio(), event.getEpochTime(), event.getNanoTime(), event.getValue());
 	}
 
 	public static GpioPullUpDown convert(Gpio.PullUpDown pud) {

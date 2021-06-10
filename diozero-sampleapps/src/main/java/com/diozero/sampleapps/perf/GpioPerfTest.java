@@ -38,6 +38,7 @@ import com.diozero.api.PinInfo;
 import com.diozero.api.RuntimeIOException;
 import com.diozero.internal.spi.NativeDeviceFactoryInterface;
 import com.diozero.sbc.DeviceFactoryHelper;
+import com.diozero.util.Diozero;
 import com.diozero.util.LibraryLoader;
 
 /**
@@ -80,15 +81,20 @@ public class GpioPerfTest {
 
 		// Load the diozero system utils library
 		LibraryLoader.loadSystemUtils();
-		// Initialise diozero
-		NativeDeviceFactoryInterface ndfi = DeviceFactoryHelper.getNativeDeviceFactory();
-		// Get the PinInfo instance
-		PinInfo pin_info = ndfi.getBoardPinInfo().getByGpioNumberOrThrow(gpio_num);
-		// Initialise tinylog
-		Logger.info("Starting GPIO performance test on SBC {} using GPIO {} with {} iterations; provider: {}",
-				ndfi.getBoardInfo().getName(), Integer.valueOf(gpio_num), Integer.valueOf(iterations), ndfi.getName());
 
-		test(pin_info, iterations);
+		// Initialise diozero
+		try (NativeDeviceFactoryInterface ndfi = DeviceFactoryHelper.getNativeDeviceFactory()) {
+			// Get the PinInfo instance
+			PinInfo pin_info = ndfi.getBoardPinInfo().getByGpioNumberOrThrow(gpio_num);
+			// Initialise tinylog
+			Logger.info("Starting GPIO performance test on SBC {} using GPIO {} with {} iterations; provider: {}",
+					ndfi.getBoardInfo().getName(), Integer.valueOf(gpio_num), Integer.valueOf(iterations),
+					ndfi.getName());
+
+			test(pin_info, iterations);
+		} finally {
+			Diozero.shutdown();
+		}
 	}
 
 	public static void test(PinInfo pinInfo, int iterations) {

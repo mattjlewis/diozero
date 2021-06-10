@@ -11,10 +11,15 @@ import com.diozero.internal.spi.NativeDeviceFactoryInterface;
 import com.diozero.remote.DiozeroProtosConverter;
 import com.diozero.remote.message.protobuf.Board;
 import com.diozero.remote.message.protobuf.BoardServiceGrpc;
+import com.diozero.remote.message.protobuf.FloatResponse;
+import com.diozero.remote.message.protobuf.Gpio;
+import com.diozero.remote.message.protobuf.IntegerMessage;
+import com.diozero.remote.message.protobuf.IntegerResponse;
 import com.diozero.remote.message.protobuf.Response;
 import com.diozero.remote.message.protobuf.Status;
 import com.diozero.sbc.BoardInfo;
 import com.diozero.sbc.DeviceFactoryHelper;
+import com.google.protobuf.Empty;
 
 import io.grpc.stub.StreamObserver;
 
@@ -30,12 +35,10 @@ public class BoardServiceImpl extends BoardServiceGrpc.BoardServiceImplBase {
 	}
 
 	@Override
-	public void getBoardInfo(Board.GetBoardInfoRequest request,
-			StreamObserver<Board.GetBoardInfoResponse> responseObserver) {
+	public void getBoardInfo(Empty request, StreamObserver<Board.BoardInfoResponse> responseObserver) {
 		Logger.debug("getBoardInfo request");
 
-		Board.GetBoardInfoResponse.Builder response_builder = Board.GetBoardInfoResponse.newBuilder()
-				.setStatus(Status.OK);
+		Board.BoardInfoResponse.Builder response_builder = Board.BoardInfoResponse.newBuilder().setStatus(Status.OK);
 
 		BoardInfo board_info = deviceFactory.getBoardInfo();
 
@@ -52,17 +55,18 @@ public class BoardServiceImpl extends BoardServiceGrpc.BoardServiceImplBase {
 		response_builder.setAdcVref(board_info.getAdcVRef());
 		response_builder.setBoardPwmFrequency(deviceFactory.getBoardPwmFrequency());
 		response_builder.setSpiBufferSize(deviceFactory.getSpiBufferSize());
+		response_builder.setOsId(board_info.getOperatingSystemId());
+		response_builder.setOsVersion(board_info.getOperatingSystemVersion());
 
 		responseObserver.onNext(response_builder.build());
 		responseObserver.onCompleted();
 	}
 
 	@Override
-	public void setBoardPwmFrequency(Board.SetBoardPwmFrequencyRequest request,
-			StreamObserver<Response> responseObserver) {
+	public void setBoardPwmFrequency(IntegerMessage request, StreamObserver<Response> responseObserver) {
 		Logger.debug("setBoardPwmFrequency request");
 
-		deviceFactory.setBoardPwmFrequency(request.getFrequency());
+		deviceFactory.setBoardPwmFrequency(request.getValue());
 
 		Response.Builder response_builder = Response.newBuilder().setStatus(Status.OK);
 
@@ -71,12 +75,12 @@ public class BoardServiceImpl extends BoardServiceGrpc.BoardServiceImplBase {
 	}
 
 	@Override
-	public void getGpioMode(Board.GpioNumber request, StreamObserver<Board.GetGpioModeResponse> responseObserver) {
+	public void getGpioMode(Gpio.Identifier request, StreamObserver<Board.GpioModeResponse> responseObserver) {
 		Logger.debug("getGpioMode request");
 
 		DeviceMode mode = deviceFactory.getGpioMode(request.getGpio());
 
-		Board.GetGpioModeResponse.Builder response_builder = Board.GetGpioModeResponse.newBuilder().setStatus(Status.OK)
+		Board.GpioModeResponse.Builder response_builder = Board.GpioModeResponse.newBuilder().setStatus(Status.OK)
 				.setMode(DiozeroProtosConverter.convert(mode));
 
 		responseObserver.onNext(response_builder.build());
@@ -84,11 +88,22 @@ public class BoardServiceImpl extends BoardServiceGrpc.BoardServiceImplBase {
 	}
 
 	@Override
-	public void getGpioValue(Board.GpioNumber request, StreamObserver<Board.GetGpioValueResponse> responseObserver) {
+	public void getGpioValue(Gpio.Identifier request, StreamObserver<IntegerResponse> responseObserver) {
 		Logger.debug("getGpioValue request");
 
-		Board.GetGpioValueResponse.Builder response_builder = Board.GetGpioValueResponse.newBuilder()
-				.setStatus(Status.OK).setValue(deviceFactory.getGpioValue(request.getGpio()));
+		IntegerResponse.Builder response_builder = IntegerResponse.newBuilder().setStatus(Status.OK)
+				.setData(deviceFactory.getGpioValue(request.getGpio()));
+
+		responseObserver.onNext(response_builder.build());
+		responseObserver.onCompleted();
+	}
+
+	@Override
+	public void getCpuTemperature(Empty request, StreamObserver<FloatResponse> responseObserver) {
+		Logger.debug("getCpuTemperature request");
+
+		FloatResponse.Builder response_builder = FloatResponse.newBuilder().setStatus(Status.OK)
+				.setData(deviceFactory.getCpuTemperature());
 
 		responseObserver.onNext(response_builder.build());
 		responseObserver.onCompleted();

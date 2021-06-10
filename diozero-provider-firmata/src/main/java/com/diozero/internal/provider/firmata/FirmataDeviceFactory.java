@@ -349,7 +349,10 @@ public class FirmataDeviceFactory extends BaseNativeDeviceFactory implements Fir
 		private IODevice ioDevice;
 
 		public Firmata4jBoardInfo(IODevice ioDevice) {
-			super("Firmata", "Unknown", -1, "firmata");
+			// TODO Check ADC vRef
+			super("Firmata4j", ioDevice.getProtocol(), -1, 3.3f, "firmata",
+					LocalSystemInfo.getInstance().getOperatingSystemId(),
+					LocalSystemInfo.getInstance().getOperatingSystemVersion());
 			this.ioDevice = ioDevice;
 		}
 
@@ -403,7 +406,9 @@ public class FirmataDeviceFactory extends BaseNativeDeviceFactory implements Fir
 		public FirmataAdapterBoardInfo(FirmataAdapter adapter) {
 			super(adapter.getFirmware().getName(),
 					adapter.getFirmware().getVersionString() + "(" + adapter.getProtocolVersion() + ")", -1, ADC_VREF,
-					LocalSystemInfo.getInstance().getDefaultLibraryPath());
+					LocalSystemInfo.getInstance().getDefaultLibraryPath(),
+					LocalSystemInfo.getInstance().getOperatingSystemId(),
+					LocalSystemInfo.getInstance().getOperatingSystemVersion());
 			this.adapter = adapter;
 		}
 

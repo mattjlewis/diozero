@@ -36,6 +36,7 @@ import org.tinylog.Logger;
 import com.diozero.api.GpioPullUpDown;
 import com.diozero.api.RuntimeIOException;
 import com.diozero.devices.Button;
+import com.diozero.util.Diozero;
 import com.diozero.util.SleepUtil;
 
 /**
@@ -67,6 +68,8 @@ public class ButtonTest {
 			SleepUtil.sleepSeconds(delay_s);
 		} catch (RuntimeIOException ioe) {
 			Logger.error(ioe, "Error: {}", ioe);
+		} finally {
+			Diozero.shutdown();
 		}
 	}
 }

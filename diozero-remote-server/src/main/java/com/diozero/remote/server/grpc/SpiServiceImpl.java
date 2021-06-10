@@ -7,6 +7,7 @@ import com.diozero.internal.spi.InternalDeviceInterface;
 import com.diozero.internal.spi.InternalSpiDeviceInterface;
 import com.diozero.internal.spi.NativeDeviceFactoryInterface;
 import com.diozero.remote.DiozeroProtosConverter;
+import com.diozero.remote.message.protobuf.BytesResponse;
 import com.diozero.remote.message.protobuf.Response;
 import com.diozero.remote.message.protobuf.SPI;
 import com.diozero.remote.message.protobuf.SPIServiceGrpc;
@@ -28,7 +29,7 @@ public class SpiServiceImpl extends SPIServiceGrpc.SPIServiceImplBase {
 	}
 
 	@Override
-	public void open(SPI.OpenRequest request, StreamObserver<Response> responseObserver) {
+	public void open(SPI.Open request, StreamObserver<Response> responseObserver) {
 		Logger.debug("SPI open request");
 
 		int controller = request.getController();
@@ -59,7 +60,7 @@ public class SpiServiceImpl extends SPIServiceGrpc.SPIServiceImplBase {
 	}
 
 	@Override
-	public void write(SPI.WriteRequest request, StreamObserver<Response> responseObserver) {
+	public void write(SPI.ByteArray request, StreamObserver<Response> responseObserver) {
 		Logger.debug("SPI write request");
 
 		int controller = request.getController();
@@ -90,14 +91,14 @@ public class SpiServiceImpl extends SPIServiceGrpc.SPIServiceImplBase {
 	}
 
 	@Override
-	public void writeAndRead(SPI.WriteAndReadRequest request, StreamObserver<SPI.SpiResponse> responseObserver) {
+	public void writeAndRead(SPI.ByteArray request, StreamObserver<BytesResponse> responseObserver) {
 		Logger.debug("SPI write and read request");
 
 		int controller = request.getController();
 		int chip_select = request.getChipSelect();
 		String key = deviceFactory.createSpiKey(controller, chip_select);
 
-		SPI.SpiResponse.Builder response_builder = SPI.SpiResponse.newBuilder();
+		BytesResponse.Builder response_builder = BytesResponse.newBuilder();
 
 		InternalSpiDeviceInterface device = deviceFactory.getDevice(key);
 		if (device == null) {
@@ -108,7 +109,7 @@ public class SpiServiceImpl extends SPIServiceGrpc.SPIServiceImplBase {
 				byte[] data = request.getTxData().toByteArray();
 				device.writeAndRead(data);
 
-				response_builder.setRxData(ByteString.copyFrom(data));
+				response_builder.setData(ByteString.copyFrom(data));
 				response_builder.setStatus(Status.OK);
 			} catch (RuntimeIOException e) {
 				Logger.error(e, "Error: {}", e);

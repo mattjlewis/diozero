@@ -42,10 +42,14 @@ import com.diozero.api.RuntimeIOException;
 import com.diozero.internal.spi.InternalDeviceInterface;
 import com.diozero.internal.spi.NativeDeviceFactoryInterface;
 import com.diozero.remote.DiozeroProtosConverter;
+import com.diozero.remote.message.protobuf.BooleanResponse;
+import com.diozero.remote.message.protobuf.ByteResponse;
+import com.diozero.remote.message.protobuf.BytesResponse;
 import com.diozero.remote.message.protobuf.I2C;
 import com.diozero.remote.message.protobuf.I2CServiceGrpc;
 import com.diozero.remote.message.protobuf.Response;
 import com.diozero.remote.message.protobuf.Status;
+import com.diozero.remote.message.protobuf.WordResponse;
 import com.diozero.sbc.DeviceFactoryHelper;
 import com.google.protobuf.ByteString;
 
@@ -63,7 +67,7 @@ public class I2CServiceImpl extends I2CServiceGrpc.I2CServiceImplBase {
 	}
 
 	@Override
-	public void open(I2C.OpenRequest request, StreamObserver<Response> responseObserver) {
+	public void open(I2C.Open request, StreamObserver<Response> responseObserver) {
 		Logger.debug("I2C open request {}-{} {}", Integer.valueOf(request.getController()),
 				Integer.valueOf(request.getAddress()), Integer.valueOf(request.getAddressSize()));
 
@@ -95,7 +99,7 @@ public class I2CServiceImpl extends I2CServiceGrpc.I2CServiceImplBase {
 	}
 
 	@Override
-	public void probe(I2C.ProbeRequest request, StreamObserver<I2C.BooleanResponse> responseObserver) {
+	public void probe(I2C.Probe request, StreamObserver<BooleanResponse> responseObserver) {
 		Logger.debug("I2C probe request {}-{} {}", Integer.valueOf(request.getController()),
 				Integer.valueOf(request.getAddress()), request.getProbeMode());
 
@@ -103,7 +107,7 @@ public class I2CServiceImpl extends I2CServiceGrpc.I2CServiceImplBase {
 		int address = request.getAddress();
 		String key = deviceFactory.createI2CKey(controller, address);
 
-		I2C.BooleanResponse.Builder response_builder = I2C.BooleanResponse.newBuilder();
+		BooleanResponse.Builder response_builder = BooleanResponse.newBuilder();
 
 		I2CDeviceInterface device = deviceFactory.getDevice(key);
 		if (device == null) {
@@ -112,7 +116,7 @@ public class I2CServiceImpl extends I2CServiceGrpc.I2CServiceImplBase {
 					.setDetail("I2C device " + controller + "-0x" + Integer.toHexString(address) + " not provisioned");
 		} else {
 			try {
-				response_builder.setResult(device.probe(DiozeroProtosConverter.convert(request.getProbeMode())));
+				response_builder.setData(device.probe(DiozeroProtosConverter.convert(request.getProbeMode())));
 				response_builder.setStatus(Status.OK);
 			} catch (RuntimeIOException e) {
 				Logger.error(e, "Error: {}", e);
@@ -126,7 +130,7 @@ public class I2CServiceImpl extends I2CServiceGrpc.I2CServiceImplBase {
 	}
 
 	@Override
-	public void writeQuick(I2C.WriteQuickRequest request, StreamObserver<Response> responseObserver) {
+	public void writeQuick(I2C.Bit request, StreamObserver<Response> responseObserver) {
 		Logger.debug("I2C writeQuick request {}-{} {}", Integer.valueOf(request.getController()),
 				Integer.valueOf(request.getAddress()), Integer.valueOf(request.getBit()));
 
@@ -157,7 +161,7 @@ public class I2CServiceImpl extends I2CServiceGrpc.I2CServiceImplBase {
 	}
 
 	@Override
-	public void readByte(I2C.ReadByteRequest request, StreamObserver<I2C.ByteResponse> responseObserver) {
+	public void readByte(I2C.Identifier request, StreamObserver<ByteResponse> responseObserver) {
 		Logger.debug("I2C readByte request {}-{}", Integer.valueOf(request.getController()),
 				Integer.valueOf(request.getAddress()));
 
@@ -165,7 +169,7 @@ public class I2CServiceImpl extends I2CServiceGrpc.I2CServiceImplBase {
 		int address = request.getAddress();
 		String key = deviceFactory.createI2CKey(controller, address);
 
-		I2C.ByteResponse.Builder response_builder = I2C.ByteResponse.newBuilder();
+		ByteResponse.Builder response_builder = ByteResponse.newBuilder();
 
 		I2CDeviceInterface device = deviceFactory.getDevice(key);
 		if (device == null) {
@@ -187,7 +191,7 @@ public class I2CServiceImpl extends I2CServiceGrpc.I2CServiceImplBase {
 	}
 
 	@Override
-	public void writeByte(I2C.WriteByteRequest request, StreamObserver<Response> responseObserver) {
+	public void writeByte(I2C.ByteMessage request, StreamObserver<Response> responseObserver) {
 		Logger.debug("I2C writeByte request {}-{} {}", Integer.valueOf(request.getController()),
 				Integer.valueOf(request.getAddress()), Integer.valueOf(request.getData()));
 
@@ -217,72 +221,7 @@ public class I2CServiceImpl extends I2CServiceGrpc.I2CServiceImplBase {
 	}
 
 	@Override
-	public void readBytes(I2C.ReadBytesRequest request, StreamObserver<I2C.BytesResponse> responseObserver) {
-		Logger.debug("I2C readBytes request {}-{} {} bytes", Integer.valueOf(request.getController()),
-				Integer.valueOf(request.getAddress()), Integer.valueOf(request.getLength()));
-
-		int controller = request.getController();
-		int address = request.getAddress();
-		String key = deviceFactory.createI2CKey(controller, address);
-
-		I2C.BytesResponse.Builder response_builder = I2C.BytesResponse.newBuilder();
-
-		I2CDeviceInterface device = deviceFactory.getDevice(key);
-		if (device == null) {
-			response_builder.setStatus(Status.ERROR);
-			response_builder.setDetail("I2C device not provisioned");
-		} else {
-			try {
-				byte[] buffer = new byte[request.getLength()];
-				device.readBytes(buffer);
-
-				response_builder.setData(ByteString.copyFrom(buffer));
-				response_builder.setStatus(Status.OK);
-			} catch (RuntimeIOException e) {
-				Logger.error(e, "Error: {}", e);
-				response_builder.setStatus(Status.ERROR);
-				response_builder.setDetail("Runtime Error: " + e);
-			}
-		}
-
-		responseObserver.onNext(response_builder.build());
-		responseObserver.onCompleted();
-	}
-
-	@Override
-	public void writeBytes(I2C.WriteBytesRequest request, StreamObserver<Response> responseObserver) {
-		Logger.debug("I2C writeBytes request {}-{} {} bytes", Integer.valueOf(request.getController()),
-				Integer.valueOf(request.getAddress()), Integer.valueOf(request.getData().size()));
-
-		int controller = request.getController();
-		int address = request.getAddress();
-		String key = deviceFactory.createI2CKey(controller, address);
-
-		Response.Builder response_builder = Response.newBuilder();
-
-		I2CDeviceInterface device = deviceFactory.getDevice(key);
-		if (device == null) {
-			response_builder.setStatus(Status.ERROR);
-			response_builder.setDetail("I2C device not provisioned");
-		} else {
-			try {
-				byte[] data = request.getData().toByteArray();
-				device.writeBytes(data);
-
-				response_builder.setStatus(Status.OK);
-			} catch (RuntimeIOException e) {
-				Logger.error(e, "Error: {}", e);
-				response_builder.setStatus(Status.ERROR);
-				response_builder.setDetail("Runtime Error: " + e);
-			}
-		}
-
-		responseObserver.onNext(response_builder.build());
-		responseObserver.onCompleted();
-	}
-
-	@Override
-	public void readByteData(I2C.ReadByteDataRequest request, StreamObserver<I2C.ByteResponse> responseObserver) {
+	public void readByteData(I2C.Register request, StreamObserver<ByteResponse> responseObserver) {
 		Logger.debug("I2C readByteData request {}-{} {}", Integer.valueOf(request.getController()),
 				Integer.valueOf(request.getAddress()), Integer.valueOf(request.getRegister()));
 
@@ -290,7 +229,7 @@ public class I2CServiceImpl extends I2CServiceGrpc.I2CServiceImplBase {
 		int address = request.getAddress();
 		String key = deviceFactory.createI2CKey(controller, address);
 
-		I2C.ByteResponse.Builder response_builder = I2C.ByteResponse.newBuilder();
+		ByteResponse.Builder response_builder = ByteResponse.newBuilder();
 
 		I2CDeviceInterface device = deviceFactory.getDevice(key);
 		if (device == null) {
@@ -312,7 +251,7 @@ public class I2CServiceImpl extends I2CServiceGrpc.I2CServiceImplBase {
 	}
 
 	@Override
-	public void writeByteData(I2C.WriteByteDataRequest request, StreamObserver<Response> responseObserver) {
+	public void writeByteData(I2C.RegisterAndByte request, StreamObserver<Response> responseObserver) {
 		Logger.debug("I2C writeByteData request {}-{} {}: {}", Integer.valueOf(request.getController()),
 				Integer.valueOf(request.getAddress()), Integer.valueOf(request.getRegister()),
 				Integer.valueOf(request.getData()));
@@ -344,7 +283,7 @@ public class I2CServiceImpl extends I2CServiceGrpc.I2CServiceImplBase {
 	}
 
 	@Override
-	public void readWordData(I2C.ReadWordDataRequest request, StreamObserver<I2C.WordResponse> responseObserver) {
+	public void readWordData(I2C.Register request, StreamObserver<WordResponse> responseObserver) {
 		Logger.debug("I2C readWordData request {}-{} {}", Integer.valueOf(request.getController()),
 				Integer.valueOf(request.getAddress()), Integer.valueOf(request.getRegister()));
 
@@ -352,7 +291,7 @@ public class I2CServiceImpl extends I2CServiceGrpc.I2CServiceImplBase {
 		int address = request.getAddress();
 		String key = deviceFactory.createI2CKey(controller, address);
 
-		I2C.WordResponse.Builder response_builder = I2C.WordResponse.newBuilder();
+		WordResponse.Builder response_builder = WordResponse.newBuilder();
 
 		I2CDeviceInterface device = deviceFactory.getDevice(key);
 		if (device == null) {
@@ -374,7 +313,7 @@ public class I2CServiceImpl extends I2CServiceGrpc.I2CServiceImplBase {
 	}
 
 	@Override
-	public void writeWordData(I2C.WriteWordDataRequest request, StreamObserver<Response> responseObserver) {
+	public void writeWordData(I2C.RegisterAndWordData request, StreamObserver<Response> responseObserver) {
 		Logger.debug("I2C writeWordData request {}-{} {}: {}", Integer.valueOf(request.getController()),
 				Integer.valueOf(request.getAddress()), Integer.valueOf(request.getRegister()),
 				Integer.valueOf(request.getData()));
@@ -406,8 +345,7 @@ public class I2CServiceImpl extends I2CServiceGrpc.I2CServiceImplBase {
 	}
 
 	@Override
-	public void readBlockData(I2C.ReadBlockDataRequest request,
-			StreamObserver<I2C.ReadBlockDataResponse> responseObserver) {
+	public void readBlockData(I2C.Register request, StreamObserver<I2C.ByteArrayWithLengthResponse> responseObserver) {
 		Logger.debug("I2C readBlockData request {}-{} {}", Integer.valueOf(request.getController()),
 				Integer.valueOf(request.getAddress()), Integer.valueOf(request.getRegister()));
 
@@ -415,7 +353,7 @@ public class I2CServiceImpl extends I2CServiceGrpc.I2CServiceImplBase {
 		int address = request.getAddress();
 		String key = deviceFactory.createI2CKey(controller, address);
 
-		I2C.ReadBlockDataResponse.Builder response_builder = I2C.ReadBlockDataResponse.newBuilder();
+		I2C.ByteArrayWithLengthResponse.Builder response_builder = I2C.ByteArrayWithLengthResponse.newBuilder();
 
 		I2CDeviceInterface device = deviceFactory.getDevice(key);
 		if (device == null) {
@@ -440,7 +378,7 @@ public class I2CServiceImpl extends I2CServiceGrpc.I2CServiceImplBase {
 	}
 
 	@Override
-	public void writeBlockData(I2C.WriteBlockDataRequest request, StreamObserver<Response> responseObserver) {
+	public void writeBlockData(I2C.RegisterAndByteArray request, StreamObserver<Response> responseObserver) {
 		Logger.debug("I2C writeBlockData request {}-{} {} {} bytes", Integer.valueOf(request.getController()),
 				Integer.valueOf(request.getAddress()), Integer.valueOf(request.getRegister()),
 				Integer.valueOf(request.getData().size()));
@@ -472,7 +410,7 @@ public class I2CServiceImpl extends I2CServiceGrpc.I2CServiceImplBase {
 	}
 
 	@Override
-	public void processCall(I2C.ProcessCallRequest request, StreamObserver<I2C.WordResponse> responseObserver) {
+	public void processCall(I2C.RegisterAndWordData request, StreamObserver<WordResponse> responseObserver) {
 		Logger.debug("I2C processCall request {}-{} {}: {}", Integer.valueOf(request.getController()),
 				Integer.valueOf(request.getAddress()), Integer.valueOf(request.getRegister()),
 				Integer.valueOf(request.getData()));
@@ -481,7 +419,7 @@ public class I2CServiceImpl extends I2CServiceGrpc.I2CServiceImplBase {
 		int address = request.getAddress();
 		String key = deviceFactory.createI2CKey(controller, address);
 
-		I2C.WordResponse.Builder response_builder = I2C.WordResponse.newBuilder();
+		WordResponse.Builder response_builder = WordResponse.newBuilder();
 
 		I2CDeviceInterface device = deviceFactory.getDevice(key);
 		if (device == null) {
@@ -505,8 +443,7 @@ public class I2CServiceImpl extends I2CServiceGrpc.I2CServiceImplBase {
 	}
 
 	@Override
-	public void readI2CBlockData(I2C.ReadI2CBlockDataRequest request,
-			StreamObserver<I2C.BytesResponse> responseObserver) {
+	public void readI2CBlockData(I2C.RegisterAndNumBytes request, StreamObserver<BytesResponse> responseObserver) {
 		Logger.debug("I2C readI2CBlockData request {}-{} {} {} bytes", Integer.valueOf(request.getController()),
 				Integer.valueOf(request.getAddress()), Integer.valueOf(request.getRegister()),
 				Integer.valueOf(request.getLength()));
@@ -515,7 +452,7 @@ public class I2CServiceImpl extends I2CServiceGrpc.I2CServiceImplBase {
 		int address = request.getAddress();
 		String key = deviceFactory.createI2CKey(controller, address);
 
-		I2C.BytesResponse.Builder response_builder = I2C.BytesResponse.newBuilder();
+		BytesResponse.Builder response_builder = BytesResponse.newBuilder();
 
 		I2CDeviceInterface device = deviceFactory.getDevice(key);
 		if (device == null) {
@@ -540,7 +477,7 @@ public class I2CServiceImpl extends I2CServiceGrpc.I2CServiceImplBase {
 	}
 
 	@Override
-	public void writeI2CBlockData(I2C.WriteI2CBlockDataRequest request, StreamObserver<Response> responseObserver) {
+	public void writeI2CBlockData(I2C.RegisterAndByteArray request, StreamObserver<Response> responseObserver) {
 		Logger.debug("I2C writeI2CBlockData request {}-{} {} {} bytes", Integer.valueOf(request.getController()),
 				Integer.valueOf(request.getAddress()), Integer.valueOf(request.getRegister()),
 				Integer.valueOf(request.getData().size()));
@@ -572,8 +509,7 @@ public class I2CServiceImpl extends I2CServiceGrpc.I2CServiceImplBase {
 	}
 
 	@Override
-	public void blockProcessCall(I2C.BlockProcessCallRequest request,
-			StreamObserver<I2C.BytesResponse> responseObserver) {
+	public void blockProcessCall(I2C.RegisterAndByteArray request, StreamObserver<BytesResponse> responseObserver) {
 		Logger.debug("I2C blockProcessCall request {}-{} {} {} bytes", Integer.valueOf(request.getController()),
 				Integer.valueOf(request.getAddress()), Integer.valueOf(request.getRegister()),
 				Integer.valueOf(request.getData().size()));
@@ -582,7 +518,7 @@ public class I2CServiceImpl extends I2CServiceGrpc.I2CServiceImplBase {
 		int address = request.getAddress();
 		String key = deviceFactory.createI2CKey(controller, address);
 
-		I2C.BytesResponse.Builder response_builder = I2C.BytesResponse.newBuilder();
+		BytesResponse.Builder response_builder = BytesResponse.newBuilder();
 
 		I2CDeviceInterface device = deviceFactory.getDevice(key);
 		if (device == null) {
@@ -606,7 +542,72 @@ public class I2CServiceImpl extends I2CServiceGrpc.I2CServiceImplBase {
 	}
 
 	@Override
-	public void readWrite(I2C.ReadWriteRequest request, StreamObserver<I2C.ReadWriteResponse> responseObserver) {
+	public void readBytes(I2C.NumBytes request, StreamObserver<BytesResponse> responseObserver) {
+		Logger.debug("I2C readBytes request {}-{} {} bytes", Integer.valueOf(request.getController()),
+				Integer.valueOf(request.getAddress()), Integer.valueOf(request.getLength()));
+
+		int controller = request.getController();
+		int address = request.getAddress();
+		String key = deviceFactory.createI2CKey(controller, address);
+
+		BytesResponse.Builder response_builder = BytesResponse.newBuilder();
+
+		I2CDeviceInterface device = deviceFactory.getDevice(key);
+		if (device == null) {
+			response_builder.setStatus(Status.ERROR);
+			response_builder.setDetail("I2C device not provisioned");
+		} else {
+			try {
+				byte[] buffer = new byte[request.getLength()];
+				device.readBytes(buffer);
+
+				response_builder.setData(ByteString.copyFrom(buffer));
+				response_builder.setStatus(Status.OK);
+			} catch (RuntimeIOException e) {
+				Logger.error(e, "Error: {}", e);
+				response_builder.setStatus(Status.ERROR);
+				response_builder.setDetail("Runtime Error: " + e);
+			}
+		}
+
+		responseObserver.onNext(response_builder.build());
+		responseObserver.onCompleted();
+	}
+
+	@Override
+	public void writeBytes(I2C.ByteArray request, StreamObserver<Response> responseObserver) {
+		Logger.debug("I2C writeBytes request {}-{} {} bytes", Integer.valueOf(request.getController()),
+				Integer.valueOf(request.getAddress()), Integer.valueOf(request.getData().size()));
+
+		int controller = request.getController();
+		int address = request.getAddress();
+		String key = deviceFactory.createI2CKey(controller, address);
+
+		Response.Builder response_builder = Response.newBuilder();
+
+		I2CDeviceInterface device = deviceFactory.getDevice(key);
+		if (device == null) {
+			response_builder.setStatus(Status.ERROR);
+			response_builder.setDetail("I2C device not provisioned");
+		} else {
+			try {
+				byte[] data = request.getData().toByteArray();
+				device.writeBytes(data);
+
+				response_builder.setStatus(Status.OK);
+			} catch (RuntimeIOException e) {
+				Logger.error(e, "Error: {}", e);
+				response_builder.setStatus(Status.ERROR);
+				response_builder.setDetail("Runtime Error: " + e);
+			}
+		}
+
+		responseObserver.onNext(response_builder.build());
+		responseObserver.onCompleted();
+	}
+
+	@Override
+	public void readWrite(I2C.ReadWrite request, StreamObserver<BytesResponse> responseObserver) {
 		Logger.debug("I2C readWrite request {}-{} {} messages {} bytes", Integer.valueOf(request.getController()),
 				Integer.valueOf(request.getAddress()), Integer.valueOf(request.getMessageList().size()),
 				Integer.valueOf(request.getData().size()));
@@ -615,7 +616,7 @@ public class I2CServiceImpl extends I2CServiceGrpc.I2CServiceImplBase {
 		int address = request.getAddress();
 		String key = deviceFactory.createI2CKey(controller, address);
 
-		I2C.ReadWriteResponse.Builder response_builder = I2C.ReadWriteResponse.newBuilder();
+		BytesResponse.Builder response_builder = BytesResponse.newBuilder();
 
 		I2CDeviceInterface device = deviceFactory.getDevice(key);
 		if (device == null) {
@@ -684,7 +685,7 @@ public class I2CServiceImpl extends I2CServiceGrpc.I2CServiceImplBase {
 
 	@Override
 	@SuppressWarnings("resource")
-	public void close(I2C.CloseRequest request, StreamObserver<Response> responseObserver) {
+	public void close(I2C.Identifier request, StreamObserver<Response> responseObserver) {
 		Logger.debug("I2C close request {}-{}", Integer.valueOf(request.getController()),
 				Integer.valueOf(request.getAddress()));
 

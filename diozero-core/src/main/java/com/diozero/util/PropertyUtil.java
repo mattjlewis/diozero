@@ -31,40 +31,127 @@ package com.diozero.util;
  * #L%
  */
 
+import java.util.Optional;
 
+import org.tinylog.Logger;
+
+/**
+ * Access properties that are set either via command line "-D" parameters or as
+ * environment variables. Command line parameters take precedence over
+ * environment variables.
+ */
 public class PropertyUtil {
 	public static boolean isPropertySet(String key) {
-		return getProperty(key, null) != null;
+		return getProperty(key).isPresent();
 	}
-	
-	public static int getIntProperty(String key, int defaultValue) {
-		int result = defaultValue;
-		
+
+	public static long getLongProperty(String key, long defaultValue) {
+		return getLongProperty(key).orElse(Long.valueOf(defaultValue)).longValue();
+	}
+
+	public static Optional<Long> getLongProperty(String key) {
+		Optional<Long> result = Optional.empty();
+
 		String val = getProperty(key, null);
 		if (val != null) {
 			try {
-				result = Integer.parseInt(val);
+				result = Optional.of(Long.valueOf(val));
 			} catch (NumberFormatException e) {
-				// Ignore
+				// Ignore and leave as empty
+				Logger.warn(e, "Error parsing '" + val + "' as Long", e);
 			}
 		}
-		
+
 		return result;
 	}
-	
-	public static boolean getBooleanProperty(String key, boolean defaultValue) {
-		boolean result = defaultValue;
-		
+
+	public static int getIntProperty(String key, int defaultValue) {
+		return getIntProperty(key).orElse(Integer.valueOf(defaultValue)).intValue();
+	}
+
+	public static Optional<Integer> getIntProperty(String key) {
+		Optional<Integer> result = Optional.empty();
+
 		String val = getProperty(key, null);
 		if (val != null) {
-			result = Boolean.parseBoolean(val);
+			try {
+				result = Optional.of(Integer.valueOf(val));
+			} catch (NumberFormatException e) {
+				// Ignore and leave as empty
+				Logger.warn(e, "Error parsing '" + val + "' as Integer", e);
+			}
 		}
-		
+
 		return result;
 	}
-	
-	public static String getProperty(String key, String defaultValue) {
+
+	public static Optional<Boolean> getBooleanProperty(String key) {
+		Optional<Boolean> result = Optional.empty();
+
+		String val = getProperty(key, null);
+		if (val != null) {
+			result = Optional.of(Boolean.valueOf(val));
+		}
+
+		return result;
+	}
+
+	public static float getFloatProperty(String key, float defaultValue) {
+		return getFloatProperty(key).orElse(Float.valueOf(defaultValue)).floatValue();
+	}
+
+	public static Optional<Float> getFloatProperty(String key) {
+		Optional<Float> result = Optional.empty();
+
+		String val = getProperty(key, null);
+		if (val != null) {
+			try {
+				result = Optional.of(Float.valueOf(val));
+			} catch (NumberFormatException e) {
+				// Ignore and leave as empty
+				Logger.warn(e, "Error parsing '" + val + "' as Float", e);
+			}
+		}
+
+		return result;
+	}
+
+	public static double getDoubleProperty(String key, double defaultValue) {
+		return getDoubleProperty(key).orElse(Double.valueOf(defaultValue)).doubleValue();
+	}
+
+	public static Optional<Double> getDoubleProperty(String key) {
+		Optional<Double> result = Optional.empty();
+
+		String val = getProperty(key, null);
+		if (val != null) {
+			try {
+				result = Optional.of(Double.valueOf(val));
+			} catch (NumberFormatException e) {
+				// Ignore and leave as empty
+				Logger.warn(e, "Error parsing '" + val + "' as Double", e);
+			}
+		}
+
+		return result;
+	}
+
+	public static boolean getBooleanProperty(String key, boolean defaultValue) {
+		return getBooleanProperty(key).orElse(Boolean.valueOf(defaultValue)).booleanValue();
+	}
+
+	public static Optional<String> getProperty(String key) {
 		// System properties (-D) take priority over environment variables
-		return System.getProperties().getProperty(key, System.getenv().getOrDefault(key, defaultValue));
+		// Java 9 has Optional.or():
+		/*-
+		return Optional.ofNullable(System.getProperties().getProperty(key, System.getenv().get(key)))
+				.or(Optional::empty);
+		*/
+		String value = System.getProperties().getProperty(key, System.getenv().get(key));
+		return value == null ? Optional.empty() : Optional.of(value);
+	}
+
+	public static String getProperty(String key, String defaultValue) {
+		return getProperty(key).orElse(defaultValue);
 	}
 }

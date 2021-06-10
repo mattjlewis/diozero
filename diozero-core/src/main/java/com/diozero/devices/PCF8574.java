@@ -199,7 +199,7 @@ public class PCF8574 extends AbstractDeviceFactory implements GpioDeviceFactoryI
 		@Override
 		protected void closeDevice() throws RuntimeIOException {
 			Logger.trace("closeDevice()");
-			removeListener();
+			super.closeDevice();
 			pcf8574.closePin(gpio);
 		}
 
@@ -253,7 +253,7 @@ public class PCF8574 extends AbstractDeviceFactory implements GpioDeviceFactoryI
 		@Override
 		protected void closeDevice() throws RuntimeIOException {
 			Logger.trace("closeDevice()");
-			removeListener();
+			super.closeDevice();
 			pcf8574.closePin(gpio);
 		}
 

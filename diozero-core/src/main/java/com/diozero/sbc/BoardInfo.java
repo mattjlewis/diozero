@@ -31,8 +31,6 @@ package com.diozero.sbc;
  * #L%
  */
 
-import java.util.Collection;
-
 import com.diozero.internal.spi.MmapGpioInterface;
 
 /**
@@ -55,17 +53,18 @@ public abstract class BoardInfo extends BoardPinInfo {
 	private int memoryKb;
 	private String libraryPath;
 	private float adcVRef;
+	private String osId;
+	private String osVersion;
 
-	public BoardInfo(String make, String model, int memoryKb, String libraryPath) {
-		this(make, model, memoryKb, UNKNOWN_ADC_VREF, libraryPath);
-	}
-
-	public BoardInfo(String make, String model, int memoryKb, float adcVRef, String libraryPath) {
+	public BoardInfo(String make, String model, int memoryKb, float adcVRef, String libraryPath, String osId,
+			String osVersion) {
 		this.make = make;
 		this.model = model;
 		this.memoryKb = memoryKb;
 		this.adcVRef = adcVRef;
 		this.libraryPath = libraryPath;
+		this.osId = osId;
+		this.osVersion = osVersion;
 	}
 
 	/**
@@ -76,7 +75,7 @@ public abstract class BoardInfo extends BoardPinInfo {
 
 	/**
 	 * The make of the connected board, e.g. "Raspberry Pi"
-	 * 
+	 *
 	 * @return the make of the connected board
 	 */
 	public String getMake() {
@@ -85,7 +84,7 @@ public abstract class BoardInfo extends BoardPinInfo {
 
 	/**
 	 * The model of the connected board, e.g. "3B+"
-	 * 
+	 *
 	 * @return the model of the connected board
 	 */
 	public String getModel() {
@@ -94,7 +93,7 @@ public abstract class BoardInfo extends BoardPinInfo {
 
 	/**
 	 * Get the memory (in KB) of the connected board
-	 * 
+	 *
 	 * @return memory in KB
 	 */
 	public int getMemoryKb() {
@@ -104,7 +103,7 @@ public abstract class BoardInfo extends BoardPinInfo {
 	/**
 	 * Internal diozero method to get the library path prefix to be used when
 	 * loading native libraries for this device.
-	 * 
+	 *
 	 * @return the library path prefix
 	 */
 	public String getLibraryPath() {
@@ -114,16 +113,24 @@ public abstract class BoardInfo extends BoardPinInfo {
 	/**
 	 * Get the Analog to Digital converter reference voltage to be used when taking
 	 * ADC readings
-	 * 
+	 *
 	 * @return the reference voltage for this board
 	 */
 	public float getAdcVRef() {
 		return adcVRef;
 	}
 
+	public String getOperatingSystemId() {
+		return osId;
+	}
+
+	public String getOperatingSystemVersion() {
+		return osVersion;
+	}
+
 	/**
 	 * Get the name of this board - usual a concatenation of make and model
-	 * 
+	 *
 	 * @return the name of this board
 	 */
 	public String getName() {
@@ -136,8 +143,8 @@ public abstract class BoardInfo extends BoardPinInfo {
 
 	/**
 	 * Compare make and model
-	 * 
-	 * @param make the make to compare
+	 *
+	 * @param make  the make to compare
 	 * @param model the model to compare
 	 * @return true if the make and model are the same
 	 */
@@ -148,7 +155,7 @@ public abstract class BoardInfo extends BoardPinInfo {
 	/**
 	 * Get the PWM chip for the specified PWM number. Only actually relevant for
 	 * sysfs PWM control on the BeagleBone Black.
-	 * 
+	 *
 	 * @param pwmNum The sysfs PWM channel number
 	 * @return The PWM chip number for the requested PWM channel number, -1 if not
 	 *         found / not relevant
@@ -161,32 +168,12 @@ public abstract class BoardInfo extends BoardPinInfo {
 	 * Instantiate the memory mapped GPIO interface for this board. Not that the
 	 * caller needs to call {@link MmapGpioInterface#initialise initialise} prior to
 	 * use.
-	 * 
+	 *
 	 * @return the MMAP GPIO interface implementation for this board, null if there
 	 *         isn't one
 	 */
 	public MmapGpioInterface createMmapGpio() {
 		return null;
-	}
-
-	/**
-	 * Detect the I2C bus controller numbers that are available on this board.
-	 * 
-	 * @return collection of I2C bus controller numbers
-	 */
-	public Collection<Integer> getI2CBusNumbers() {
-		// Default to local board I2C info
-		return LocalSystemInfo.getI2CBusNumbers();
-	}
-
-	/**
-	 * Utility method to get the CPU temperate of the attached board
-	 * 
-	 * @return the CPU temperature
-	 */
-	public float getCpuTemperature() {
-		// Default to local board CPU temperature (assumes Linux)
-		return LocalSystemInfo.getCpuTemperature();
 	}
 
 	@Override

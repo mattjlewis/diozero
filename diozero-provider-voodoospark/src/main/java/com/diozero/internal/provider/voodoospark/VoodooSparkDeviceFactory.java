@@ -71,6 +71,7 @@ import com.diozero.internal.spi.InternalSerialDeviceInterface;
 import com.diozero.internal.spi.InternalSpiDeviceInterface;
 import com.diozero.internal.spi.PwmOutputDeviceInterface;
 import com.diozero.sbc.BoardInfo;
+import com.diozero.sbc.LocalSystemInfo;
 import com.diozero.util.PropertyUtil;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
@@ -231,6 +232,11 @@ public class VoodooSparkDeviceFactory extends BaseNativeDeviceFactory {
 	public void setBoardPwmFrequency(int pwmFrequency) {
 		// Ignore
 		Logger.warn("Not implemented");
+	}
+
+	@Override
+	public DeviceMode getGpioMode(int gpio) {
+		return DeviceMode.UNKNOWN;
 	}
 
 	@Override
@@ -668,7 +674,9 @@ public class VoodooSparkDeviceFactory extends BaseNativeDeviceFactory {
 		public static final String MODEL = "Photon";
 
 		public ParticlePhotonBoardInfo() {
-			super(MAKE, MODEL, -1, MAKE.toLowerCase());
+			super(MAKE, MODEL, -1, BoardInfo.UNKNOWN_ADC_VREF, LocalSystemInfo.getInstance().getDefaultLibraryPath(),
+					LocalSystemInfo.getInstance().getOperatingSystemId(),
+					LocalSystemInfo.getInstance().getOperatingSystemVersion());
 		}
 
 		@Override

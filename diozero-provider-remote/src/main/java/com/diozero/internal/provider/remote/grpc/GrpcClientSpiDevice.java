@@ -5,6 +5,7 @@ import com.diozero.api.SpiClockMode;
 import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.InternalSpiDeviceInterface;
 import com.diozero.remote.DiozeroProtosConverter;
+import com.diozero.remote.message.protobuf.BytesResponse;
 import com.diozero.remote.message.protobuf.Response;
 import com.diozero.remote.message.protobuf.SPI;
 import com.diozero.remote.message.protobuf.SPIServiceGrpc.SPIServiceBlockingStub;
@@ -28,9 +29,9 @@ public class GrpcClientSpiDevice extends AbstractDevice implements InternalSpiDe
 		this.chipSelect = chipSelect;
 
 		try {
-			Response response = spiBlockingStub.open(SPI.OpenRequest.newBuilder().setController(controller)
-					.setChipSelect(chipSelect).setFrequency(frequency)
-					.setClockMode(DiozeroProtosConverter.convert(spiClockMode)).setLsbFirst(lsbFirst).build());
+			Response response = spiBlockingStub.open(
+					SPI.Open.newBuilder().setController(controller).setChipSelect(chipSelect).setFrequency(frequency)
+							.setClockMode(DiozeroProtosConverter.convert(spiClockMode)).setLsbFirst(lsbFirst).build());
 			if (response.getStatus() != Status.OK) {
 				throw new RuntimeIOException("Error in SPI open: " + response.getDetail());
 			}
@@ -59,7 +60,7 @@ public class GrpcClientSpiDevice extends AbstractDevice implements InternalSpiDe
 		try {
 			byte[] data = new byte[length];
 			System.arraycopy(txBuffer, txOffset, data, 0, length);
-			Response response = spiBlockingStub.write(SPI.WriteRequest.newBuilder().setController(controller)
+			Response response = spiBlockingStub.write(SPI.ByteArray.newBuilder().setController(controller)
 					.setChipSelect(chipSelect).setTxData(ByteString.copyFrom(data)).build());
 			if (response.getStatus() != Status.OK) {
 				throw new RuntimeIOException("Error in SPI write: " + response.getDetail());
@@ -72,14 +73,13 @@ public class GrpcClientSpiDevice extends AbstractDevice implements InternalSpiDe
 	@Override
 	public byte[] writeAndRead(byte... txBuffer) throws RuntimeIOException {
 		try {
-			SPI.SpiResponse response = spiBlockingStub
-					.writeAndRead(SPI.WriteAndReadRequest.newBuilder().setController(controller)
-							.setChipSelect(chipSelect).setTxData(ByteString.copyFrom(txBuffer)).build());
+			BytesResponse response = spiBlockingStub.writeAndRead(SPI.ByteArray.newBuilder().setController(controller)
+					.setChipSelect(chipSelect).setTxData(ByteString.copyFrom(txBuffer)).build());
 			if (response.getStatus() != Status.OK) {
 				throw new RuntimeIOException("Error in SPI write and read: " + response.getDetail());
 			}
 
-			return response.getRxData().toByteArray();
+			return response.getData().toByteArray();
 		} catch (StatusRuntimeException e) {
 			throw new RuntimeIOException("Error in SPI write and read: " + e, e);
 		}
@@ -89,7 +89,7 @@ public class GrpcClientSpiDevice extends AbstractDevice implements InternalSpiDe
 	protected void closeDevice() throws RuntimeIOException {
 		try {
 			Response response = spiBlockingStub
-					.close(SPI.CloseRequest.newBuilder().setController(controller).setChipSelect(chipSelect).build());
+					.close(SPI.Identifier.newBuilder().setController(controller).setChipSelect(chipSelect).build());
 			if (response.getStatus() != Status.OK) {
 				throw new RuntimeIOException("Error in SPI close: " + response.getDetail());
 			}

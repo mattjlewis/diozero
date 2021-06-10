@@ -88,29 +88,13 @@ Example command line:
 java -cp diozero-sampleapps-{{site.version}}.jar:diozero-provider-pigpio-{{site.version}}.jar -DPIGPIOD_HOST=raspberrypi com.diozero.sampleapps.LEDTest 12
 ```
 
-## Generic Remote Access Library (experimental)
+## gRPC
 
-I am in the process of adding generic remote device access protocols to diozero, please see the [diozero-remote-server](https://github.com/mattjlewis/diozero/tree/master/diozero-remote-server) and [diozero-provider-remote](https://github.com/mattjlewis/diozero/tree/master/diozero-provider-remote) projects.
-The idea is that support for these protocols can be developed for any device, including those that don't run Java in particular the extremely cheap Wi-Fi connected [ESP8266](https://en.wikipedia.org/wiki/ESP8266) and  [ESP32](https://en.wikipedia.org/wiki/ESP32).
+diozero provides its own remote protocol implementation that is based on [gRPC](https://grpc.io) via
+the diozero-remote-common, diozero-provider-remote and diozero-remote-server modules.
 
-The code has been designed to be generic so as to support any communication channel and protocol. To switch between the different client implementations you currently need to modify the [RemoteDeviceFactory](https://github.com/mattjlewis/diozero/blob/master/diozero-provider-remote/src/main/java/com/diozero/internal/provider/remote/devicefactory/RemoteDeviceFactory.java) class.
+Simply run the diozero-remote-server application on the target device and connect to it by adding a
+dependency to diozero-provider-remote and setting `diozero.remote.hostname` either command a command
+line "-D" property or as an environment variable.
 
-So far I have developed support for the following remote protocols:
-
-| Channel | Protocol(s) | Implementation | Notes |
-| ------- | ----------- | -------------- | ----- |
-| HTTP | JSON | [Server](https://github.com/mattjlewis/diozero/blob/master/diozero-remote-server/src/main/java/com/diozero/remote/server/http/DiozeroController.java), [Client](https://github.com/mattjlewis/diozero/blob/master/diozero-provider-remote/src/main/java/com/diozero/internal/provider/remote/http/JsonHttpProtocolHandler.java) | GPIO (read and write), SPI. I2C support not yet implemented. Something like [Server-sent Events](https://en.wikipedia.org/wiki/Server-sent_events) would be required to support GPIO events. |
-| [WebSockets](https://en.wikipedia.org/wiki/WebSocket) | JSON, [Google Protobuf](https://developers.google.com/protocol-buffers/) | [JSON Server](https://github.com/mattjlewis/diozero/blob/master/diozero-remote-server/src/main/java/com/diozero/remote/server/websocket/JsonWebSocket.java), [JSON Client](https://github.com/mattjlewis/diozero/blob/master/diozero-provider-remote/src/main/java/com/diozero/internal/provider/remote/websocket/JsonWebSocketProtocolHandler.java), [Protobuf Client](https://github.com/mattjlewis/diozero/blob/master/diozero-provider-remote/src/main/java/com/diozero/internal/provider/remote/websocket/ProtobufWebSocketProtocolHandler.java) | GPIO (read, write and events), SPI. I2C support not yet implemented. Java Protobuf server not yet implemented. |
-| [MQTT](https://en.wikipedia.org/wiki/MQTT) | JSON, [Google Protobuf](https://developers.google.com/protocol-buffers/) | [JSON Server](https://github.com/mattjlewis/diozero/blob/master/diozero-remote-server/src/main/java/com/diozero/remote/server/mqtt/MqttJsonServer.java), [Protobuf Server](https://github.com/mattjlewis/diozero/blob/master/diozero-remote-server/src/main/java/com/diozero/remote/server/mqtt/MqttProtobufServer.java), [Protobuf Client](https://github.com/mattjlewis/diozero/blob/master/diozero-provider-remote/src/main/java/com/diozero/internal/provider/remote/mqtt/ProtobufMqttProtocolHandler.java) | GPIO (read, write and events), SPI. I2C support not yet implemented. |
-| Socket | [VoodooSpark](https://github.com/voodootikigod/voodoospark) | [Server](https://github.com/voodootikigod/voodoospark), [Client](https://github.com/mattjlewis/diozero/blob/master/diozero-provider-remote/src/main/java/com/diozero/internal/provider/remote/voodoospark/VoodooSparkProtocolHandler.java) | GPIO (read, write and events). I2C support not yet implemented. SPI not currently supported by VoodooSpark. |
-| Socket | [pigpiod](http://abyz.me.uk/rpi/pigpio/pigpiod.html) | [Server](http://abyz.me.uk/rpi/pigpio/pigpiod.html) | Client not yet ported to diozero-provider-remote. |
-| USB | [firmata](https://github.com/firmata/protocol) | [Arduino Server](https://github.com/firmata/arduino), [Particle Spark Server](https://github.com/firmata/spark) | Client not yet ported to diozero-provider-remote. |
-
-Performance is surprisingly good, I've been using the
-[SSD1331Test](https://github.com/mattjlewis/diozero/blob/master/diozero-sampleapps/src/main/java/com/diozero/sampleapps/SSD1331Test.java)
-application to check frames per second when rendering Game of Life iterations to an SSD1331 colour
-OLED display via SPI; I've not seen much difference between the various protocols. Performance
-is approximately half of that when run on the device itself.
-
-The HTTP / WebSockets / MQTT channels with JSON / Protobuf protocols are planned to be simplified
-and replaced with a [gRPC](https://grpc.io) / Protobuf based solution in the future.
+The protocol is defined in [diozero-remote-common/src/main/proto/diozero.proto](https://github.com/mattjlewis/diozero/blob/main/diozero-remote-common/src/main/proto/diozero.proto).

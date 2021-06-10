@@ -33,6 +33,7 @@ package com.diozero.sbc;
 
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -194,6 +195,7 @@ public class LocalSystemInfo {
 	private static final String ARMV6_CPU_MODEL_NAME = "armv6";
 	private static final String ARMV7_CPU_MODEL_NAME = "armv7";
 	private static final String LINUX_OS_NAME = "Linux";
+	private static final String MAC_OS_NAME = "Mac OS X";
 	private static final String WINDOWS_OS_NAME_PREFIX = "Windows";
 
 	// Linux system files used for discovery
@@ -210,7 +212,8 @@ public class LocalSystemInfo {
 	private String osName;
 	private String osArch;
 	private String libFileExtension;
-	private Properties linuxOsReleaseProperties;
+	private String osId;
+	private String osVersion;
 	private String hardware;
 	private String revision;
 	private String model;
@@ -238,10 +241,12 @@ public class LocalSystemInfo {
 		osArch = System.getProperty(OS_ARCH_SYSTEM_PROPERTY);
 		libFileExtension = isWindows() ? ".dll" : ".so";
 
-		linuxOsReleaseProperties = new Properties();
 		if (isLinux()) {
 			try (Reader reader = new FileReader(LINUX_OS_RELEASE_FILE)) {
-				linuxOsReleaseProperties.load(reader);
+				Properties props = new Properties();
+				props.load(reader);
+				osId = props.getProperty("ID");
+				osVersion = props.getProperty("VERSION").replace("\"", "");
 			} catch (IOException e) {
 				Logger.warn("Error loading properties file '{}': {}", LINUX_OS_RELEASE_FILE, e);
 			}
@@ -306,6 +311,16 @@ public class LocalSystemInfo {
 			} catch (IOException | NullPointerException | IndexOutOfBoundsException e) {
 				Logger.warn("Error reading '{}': {}", LINUX_MEMINFO_FILE, e.getMessage());
 			}
+		} else if (isMacOS()) {
+			try (InputStream is = Runtime.getRuntime().exec("sw_vers").getInputStream()) {
+				Properties props = new Properties();
+				props.load(Runtime.getRuntime().exec("sw_vers").getInputStream());
+				osId = props.getProperty("ProductName");
+				osVersion = props.getProperty("ProductVersion") + "-" + props.getProperty("BuildVersion");
+			} catch (IOException e) {
+				// Ignore
+				Logger.warn(e, "Error getting versions: {}", e);
+			}
 		}
 	}
 
@@ -315,6 +330,10 @@ public class LocalSystemInfo {
 
 	public boolean isLinux() {
 		return osName.equals(LINUX_OS_NAME);
+	}
+
+	public boolean isMacOS() {
+		return osName.equals(MAC_OS_NAME);
 	}
 
 	public boolean isWindows() {
@@ -401,24 +420,14 @@ public class LocalSystemInfo {
 	}
 
 	/**
-	 * Get a property from the operating system release file
-	 * <code>/etc/os-release</code>
-	 *
-	 * @param property the property to get
-	 * @return property value
-	 */
-	public String getLinuxOsReleaseProperty(String property) {
-		return linuxOsReleaseProperties.getProperty(property);
-	}
-
-	/**
-	 * Get the local operating system id as defined by the ID property in
-	 * <code>/etc/os-release</code>
+	 * Get the local operating system id. For Linux this is as defined by the ID
+	 * property in <code>/etc/os-release</code>. For macOS it is the "ProductName"
+	 * as returned by sw_vers.
 	 *
 	 * @return value of the ID property
 	 */
-	public String getLinuxOperatingSystemId() {
-		return linuxOsReleaseProperties.getProperty("ID");
+	public String getOperatingSystemId() {
+		return osId;
 	}
 
 	/**
@@ -427,18 +436,8 @@ public class LocalSystemInfo {
 	 *
 	 * @return value of the VERSION property
 	 */
-	public String getLinuxOperatingSystemVersion() {
-		return linuxOsReleaseProperties.getProperty("VERSION");
-	}
-
-	/**
-	 * Get the local operating system version id as defined by the VERSION_ID
-	 * property in <code>/etc/os-release</code>
-	 *
-	 * @return value of the VERSION_ID property
-	 */
-	public String getLinuxOperatingSystemVersionId() {
-		return linuxOsReleaseProperties.getProperty("VERSION_ID");
+	public String getOperatingSystemVersion() {
+		return osVersion;
 	}
 
 	public static Collection<Integer> getI2CBusNumbers() {
@@ -462,7 +461,7 @@ public class LocalSystemInfo {
 		try {
 			return Integer.parseInt(Files.lines(Paths.get(TEMPERATURE_FILE)).findFirst().orElse("0")) / 1000f;
 		} catch (IOException e) {
-			Logger.warn("Error reading {}: {}", TEMPERATURE_FILE, e);
+			Logger.debug("Error reading {}: {}", TEMPERATURE_FILE, e);
 			return -1;
 		}
 	}
@@ -477,5 +476,9 @@ public class LocalSystemInfo {
 	public static void main(String[] args) {
 		System.out.println("System properties:");
 		System.getProperties().forEach((key, value) -> System.out.println(key + ": " + value));
+
+		LocalSystemInfo lsi = new LocalSystemInfo();
+		System.out.println("macOS? " + lsi.isMacOS() + ", Linux? " + lsi.isLinux() + ", Windows? " + lsi.isWindows());
+		System.out.println(lsi.getOperatingSystemId() + " version " + lsi.getOperatingSystemVersion());
 	}
 }

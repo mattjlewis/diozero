@@ -4,6 +4,9 @@ import com.diozero.api.RuntimeIOException;
 import com.diozero.api.SerialDevice;
 import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.InternalSerialDeviceInterface;
+import com.diozero.remote.message.protobuf.ByteResponse;
+import com.diozero.remote.message.protobuf.BytesResponse;
+import com.diozero.remote.message.protobuf.IntegerResponse;
 import com.diozero.remote.message.protobuf.Response;
 import com.diozero.remote.message.protobuf.Serial;
 import com.diozero.remote.message.protobuf.SerialServiceGrpc.SerialServiceBlockingStub;
@@ -25,10 +28,10 @@ public class GrpcClientSerialDevice extends AbstractDevice implements InternalSe
 		this.deviceFile = deviceFile;
 
 		try {
-			Response response = serialBlockingStub.open(Serial.OpenRequest.newBuilder().setDeviceFile(deviceFile)
-					.setBaud(baud).setDataBits(dataBits.ordinal()).setStopBits(stopBits.ordinal())
-					.setParity(parity.ordinal()).setReadBlocking(readBlocking).setMinReadChars(minReadChars)
-					.setReadTimeoutMillis(readTimeoutMillis).build());
+			Response response = serialBlockingStub.open(
+					Serial.Open.newBuilder().setDeviceFile(deviceFile).setBaud(baud).setDataBits(dataBits.ordinal())
+							.setStopBits(stopBits.ordinal()).setParity(parity.ordinal()).setReadBlocking(readBlocking)
+							.setMinReadChars(minReadChars).setReadTimeoutMillis(readTimeoutMillis).build());
 			if (response.getStatus() != Status.OK) {
 				throw new RuntimeIOException("Error in Serial open: " + response.getDetail());
 			}
@@ -40,8 +43,8 @@ public class GrpcClientSerialDevice extends AbstractDevice implements InternalSe
 	@Override
 	public int read() {
 		try {
-			Serial.ReadResponse response = serialBlockingStub
-					.read(Serial.ReadRequest.newBuilder().setDeviceFile(deviceFile).build());
+			IntegerResponse response = serialBlockingStub
+					.read(Serial.Identifier.newBuilder().setDeviceFile(deviceFile).build());
 			if (response.getStatus() != Status.OK) {
 				throw new RuntimeIOException("Error in Serial read: " + response.getDetail());
 			}
@@ -55,8 +58,8 @@ public class GrpcClientSerialDevice extends AbstractDevice implements InternalSe
 	@Override
 	public byte readByte() throws RuntimeIOException {
 		try {
-			Serial.ReadByteResponse response = serialBlockingStub
-					.readByte(Serial.ReadByteRequest.newBuilder().setDeviceFile(deviceFile).build());
+			ByteResponse response = serialBlockingStub
+					.readByte(Serial.Identifier.newBuilder().setDeviceFile(deviceFile).build());
 			if (response.getStatus() != Status.OK) {
 				throw new RuntimeIOException("Error in Serial read byte: " + response.getDetail());
 			}
@@ -71,7 +74,7 @@ public class GrpcClientSerialDevice extends AbstractDevice implements InternalSe
 	public void writeByte(byte bVal) {
 		try {
 			Response response = serialBlockingStub
-					.writeByte(Serial.WriteByteRequest.newBuilder().setDeviceFile(deviceFile).setData(bVal).build());
+					.writeByte(Serial.ByteMessage.newBuilder().setDeviceFile(deviceFile).setValue(bVal).build());
 			if (response.getStatus() != Status.OK) {
 				throw new RuntimeIOException("Error in Serial write byte: " + response.getDetail());
 			}
@@ -83,8 +86,8 @@ public class GrpcClientSerialDevice extends AbstractDevice implements InternalSe
 	@Override
 	public int read(byte[] buffer) {
 		try {
-			Serial.ReadBytesResponse response = serialBlockingStub.readBytes(
-					Serial.ReadBytesRequest.newBuilder().setDeviceFile(deviceFile).setLength(buffer.length).build());
+			BytesResponse response = serialBlockingStub
+					.readBytes(Serial.NumBytes.newBuilder().setDeviceFile(deviceFile).setLength(buffer.length).build());
 			if (response.getStatus() != Status.OK) {
 				throw new RuntimeIOException("Error in Serial read bytes: " + response.getDetail());
 			}
@@ -101,8 +104,8 @@ public class GrpcClientSerialDevice extends AbstractDevice implements InternalSe
 	@Override
 	public void write(byte... data) {
 		try {
-			Response response = serialBlockingStub.writeBytes(Serial.WriteBytesRequest.newBuilder()
-					.setDeviceFile(deviceFile).setData(ByteString.copyFrom(data)).build());
+			Response response = serialBlockingStub.writeBytes(
+					Serial.ByteArray.newBuilder().setDeviceFile(deviceFile).setData(ByteString.copyFrom(data)).build());
 			if (response.getStatus() != Status.OK) {
 				throw new RuntimeIOException("Error in Serial write bytes: " + response.getDetail());
 			}
@@ -114,13 +117,13 @@ public class GrpcClientSerialDevice extends AbstractDevice implements InternalSe
 	@Override
 	public int bytesAvailable() {
 		try {
-			Serial.BytesAvailableResponse response = serialBlockingStub
-					.bytesAvailable(Serial.BytesAvailableRequest.newBuilder().setDeviceFile(deviceFile).build());
+			IntegerResponse response = serialBlockingStub
+					.bytesAvailable(Serial.Identifier.newBuilder().setDeviceFile(deviceFile).build());
 			if (response.getStatus() != Status.OK) {
 				throw new RuntimeIOException("Error in Serial bytes available: " + response.getDetail());
 			}
 
-			return response.getBytesAvailable();
+			return response.getData();
 		} catch (StatusRuntimeException e) {
 			throw new RuntimeIOException("Error in Serial bytes available: " + e, e);
 		}
@@ -130,7 +133,7 @@ public class GrpcClientSerialDevice extends AbstractDevice implements InternalSe
 	protected void closeDevice() throws RuntimeIOException {
 		try {
 			Response response = serialBlockingStub
-					.close(Serial.CloseRequest.newBuilder().setDeviceFile(deviceFile).build());
+					.close(Serial.Identifier.newBuilder().setDeviceFile(deviceFile).build());
 			if (response.getStatus() != Status.OK) {
 				throw new RuntimeIOException("Error in Serial close: " + response.getDetail());
 			}

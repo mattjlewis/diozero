@@ -32,11 +32,16 @@ import com.diozero.remote.grpc.GrpcConstants;
 import com.diozero.remote.message.protobuf.Board;
 import com.diozero.remote.message.protobuf.BoardServiceGrpc;
 import com.diozero.remote.message.protobuf.BoardServiceGrpc.BoardServiceBlockingStub;
+import com.diozero.remote.message.protobuf.BooleanResponse;
+import com.diozero.remote.message.protobuf.FloatResponse;
 import com.diozero.remote.message.protobuf.Gpio;
+import com.diozero.remote.message.protobuf.Gpio.FloatMessage;
 import com.diozero.remote.message.protobuf.GpioServiceGrpc;
 import com.diozero.remote.message.protobuf.GpioServiceGrpc.GpioServiceBlockingStub;
 import com.diozero.remote.message.protobuf.I2CServiceGrpc;
 import com.diozero.remote.message.protobuf.I2CServiceGrpc.I2CServiceBlockingStub;
+import com.diozero.remote.message.protobuf.IntegerMessage;
+import com.diozero.remote.message.protobuf.IntegerResponse;
 import com.diozero.remote.message.protobuf.Response;
 import com.diozero.remote.message.protobuf.SPIServiceGrpc;
 import com.diozero.remote.message.protobuf.SPIServiceGrpc.SPIServiceBlockingStub;
@@ -44,22 +49,22 @@ import com.diozero.remote.message.protobuf.SerialServiceGrpc;
 import com.diozero.remote.message.protobuf.SerialServiceGrpc.SerialServiceBlockingStub;
 import com.diozero.remote.message.protobuf.Status;
 import com.diozero.sbc.BoardInfo;
+import com.diozero.sbc.LocalSystemInfo;
 import com.diozero.util.DiozeroScheduler;
 import com.diozero.util.PropertyUtil;
+import com.google.protobuf.Empty;
 
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.StatusRuntimeException;
 
 public class GrpcClientDeviceFactory extends BaseNativeDeviceFactory {
-	private static final String DEFAULT_HOSTNAME = "localhost";
-	private static final int DEFAULT_PORT = 9090;
-
 	public static final String NAME = "gRPC-Remote";
 
 	private ManagedChannel channel;
 	private BoardServiceBlockingStub boardBlockingStub;
 	private GpioServiceBlockingStub gpioBlockingStub;
+	// private GpioServiceStub gpioAsyncStub;
 	private I2CServiceBlockingStub i2cBlockingStub;
 	private SPIServiceBlockingStub spiBlockingStub;
 	private SerialServiceBlockingStub serialBlockingStub;
@@ -68,13 +73,17 @@ public class GrpcClientDeviceFactory extends BaseNativeDeviceFactory {
 	private Map<Integer, Future<?>> subscriptions;
 
 	public GrpcClientDeviceFactory() {
+		String server_hostname = PropertyUtil.getProperty(GrpcConstants.HOST_PROPERTY_NAME).orElseThrow(
+				() -> new IllegalArgumentException("Error, " + GrpcConstants.HOST_PROPERTY_NAME + " not set"));
+
 		channel = ManagedChannelBuilder
-				.forAddress(PropertyUtil.getProperty(GrpcConstants.HOST_PROPERTY_NAME, DEFAULT_HOSTNAME),
-						PropertyUtil.getIntProperty(GrpcConstants.PORT_PROPERTY_NAME, DEFAULT_PORT))
+				.forAddress(server_hostname,
+						PropertyUtil.getIntProperty(GrpcConstants.PORT_PROPERTY_NAME, GrpcConstants.DEFAULT_PORT))
 				.usePlaintext().build();
 
 		boardBlockingStub = BoardServiceGrpc.newBlockingStub(channel);
 		gpioBlockingStub = GpioServiceGrpc.newBlockingStub(channel);
+		// gpioAsyncStub = GpioServiceGrpc.newStub(channel);
 		i2cBlockingStub = I2CServiceGrpc.newBlockingStub(channel);
 		spiBlockingStub = SPIServiceGrpc.newBlockingStub(channel);
 		serialBlockingStub = SerialServiceGrpc.newBlockingStub(channel);
@@ -108,8 +117,7 @@ public class GrpcClientDeviceFactory extends BaseNativeDeviceFactory {
 	@Override
 	protected BoardInfo lookupBoardInfo() {
 		try {
-			Board.GetBoardInfoResponse response = boardBlockingStub
-					.getBoardInfo(Board.GetBoardInfoRequest.newBuilder().build());
+			Board.BoardInfoResponse response = boardBlockingStub.getBoardInfo(Empty.newBuilder().build());
 			if (response.getStatus() == Status.ERROR) {
 				throw new RuntimeIOException("Error in remote gRPC invocation: " + response.getDetail());
 			}
@@ -131,8 +139,8 @@ public class GrpcClientDeviceFactory extends BaseNativeDeviceFactory {
 	@Override
 	public void setBoardPwmFrequency(int frequency) {
 		try {
-			Response response = boardBlockingStub.setBoardPwmFrequency(
-					Board.SetBoardPwmFrequencyRequest.newBuilder().setFrequency(frequency).build());
+			Response response = boardBlockingStub
+					.setBoardPwmFrequency(IntegerMessage.newBuilder().setValue(frequency).build());
 			if (response.getStatus() == Status.ERROR) {
 				throw new RuntimeIOException("Error in remote gRPC invocation: " + response.getDetail());
 			}
@@ -149,8 +157,8 @@ public class GrpcClientDeviceFactory extends BaseNativeDeviceFactory {
 	@Override
 	public DeviceMode getGpioMode(int gpio) {
 		try {
-			Board.GetGpioModeResponse response = boardBlockingStub
-					.getGpioMode(Board.GpioNumber.newBuilder().setGpio(gpio).build());
+			Board.GpioModeResponse response = boardBlockingStub
+					.getGpioMode(Gpio.Identifier.newBuilder().setGpio(gpio).build());
 
 			if (response.getStatus() != Status.OK) {
 				throw new RuntimeIOException("Error in Board getGpioMode: " + response.getDetail());
@@ -165,16 +173,31 @@ public class GrpcClientDeviceFactory extends BaseNativeDeviceFactory {
 	@Override
 	public int getGpioValue(int gpio) {
 		try {
-			Board.GetGpioValueResponse response = boardBlockingStub
-					.getGpioValue(Board.GpioNumber.newBuilder().setGpio(gpio).build());
+			IntegerResponse response = boardBlockingStub
+					.getGpioValue(Gpio.Identifier.newBuilder().setGpio(gpio).build());
 
 			if (response.getStatus() != Status.OK) {
 				throw new RuntimeIOException("Error in Board getGpioValue: " + response.getDetail());
 			}
 
-			return response.getValue();
+			return response.getData();
 		} catch (StatusRuntimeException e) {
 			throw new RuntimeIOException("Error in Board getGpioValue: " + e);
+		}
+	}
+
+	@Override
+	public float getCpuTemperature() {
+		try {
+			FloatResponse response = boardBlockingStub.getCpuTemperature(Empty.newBuilder().build());
+
+			if (response.getStatus() != Status.OK) {
+				throw new RuntimeIOException("Error in Board getCpuTemperature: " + response.getDetail());
+			}
+
+			return response.getData();
+		} catch (StatusRuntimeException e) {
+			throw new RuntimeIOException("Error in Board getCpuTemperature: " + e);
 		}
 	}
 
@@ -311,13 +334,12 @@ public class GrpcClientDeviceFactory extends BaseNativeDeviceFactory {
 
 	boolean digitalRead(int gpio) {
 		try {
-			Gpio.DigitalReadResponse response = gpioBlockingStub
-					.digitalRead(Gpio.DigitalReadRequest.newBuilder().setGpio(gpio).build());
+			BooleanResponse response = gpioBlockingStub.digitalRead(Gpio.Identifier.newBuilder().setGpio(gpio).build());
 			if (response.getStatus() != Status.OK) {
 				throw new RuntimeIOException("Error in GPIO digital read: " + response.getDetail());
 			}
 
-			return response.getValue();
+			return response.getData();
 		} catch (StatusRuntimeException e) {
 			throw new RuntimeIOException("Error in GPIO digital read: " + e);
 		}
@@ -326,7 +348,7 @@ public class GrpcClientDeviceFactory extends BaseNativeDeviceFactory {
 	void digitalWrite(int gpio, boolean value) {
 		try {
 			Response response = gpioBlockingStub
-					.digitalWrite(Gpio.DigitalWriteRequest.newBuilder().setGpio(gpio).setValue(value).build());
+					.digitalWrite(Gpio.BooleanMessage.newBuilder().setGpio(gpio).setValue(value).build());
 			if (response.getStatus() != Status.OK) {
 				throw new RuntimeIOException("Error in GPIO digital write: " + response.getDetail());
 			}
@@ -337,13 +359,12 @@ public class GrpcClientDeviceFactory extends BaseNativeDeviceFactory {
 
 	float pwmRead(int gpio) {
 		try {
-			Gpio.PwmReadResponse response = gpioBlockingStub
-					.pwmRead(Gpio.PwmReadRequest.newBuilder().setGpio(gpio).build());
+			FloatResponse response = gpioBlockingStub.pwmRead(Gpio.Identifier.newBuilder().setGpio(gpio).build());
 			if (response.getStatus() != Status.OK) {
 				throw new RuntimeIOException("Error in GPIO PWM read: " + response.getDetail());
 			}
 
-			return response.getValue();
+			return response.getData();
 		} catch (StatusRuntimeException e) {
 			throw new RuntimeIOException("Error in GPIO PWM read: " + e);
 		}
@@ -352,7 +373,7 @@ public class GrpcClientDeviceFactory extends BaseNativeDeviceFactory {
 	void pwmWrite(int gpio, float value) {
 		try {
 			Response response = gpioBlockingStub
-					.pwmWrite(Gpio.PwmWriteRequest.newBuilder().setGpio(gpio).setValue(value).build());
+					.pwmWrite(FloatMessage.newBuilder().setGpio(gpio).setValue(value).build());
 			if (response.getStatus() != Status.OK) {
 				throw new RuntimeIOException("Error in GPIO PWM write: " + response.getDetail());
 			}
@@ -363,13 +384,13 @@ public class GrpcClientDeviceFactory extends BaseNativeDeviceFactory {
 
 	int getPwmFrequency(int gpio) {
 		try {
-			Gpio.GetPwmFrequencyResponse response = gpioBlockingStub
-					.getPwmFrequency(Gpio.GetPwmFrequencyRequest.newBuilder().setGpio(gpio).build());
+			IntegerResponse response = gpioBlockingStub
+					.getPwmFrequency(Gpio.Identifier.newBuilder().setGpio(gpio).build());
 			if (response.getStatus() != Status.OK) {
 				throw new RuntimeIOException("Error in GPIO get PWM frequency: " + response.getDetail());
 			}
 
-			return response.getFrequency();
+			return response.getData();
 		} catch (StatusRuntimeException e) {
 			throw new RuntimeIOException("Error in GPIO get PWM frequency: " + e);
 		}
@@ -377,8 +398,8 @@ public class GrpcClientDeviceFactory extends BaseNativeDeviceFactory {
 
 	void setPwmFrequency(int gpio, int frequency) {
 		try {
-			Response response = gpioBlockingStub.setPwmFrequency(
-					Gpio.SetPwmFrequencyRequest.newBuilder().setGpio(gpio).setFrequency(frequency).build());
+			Response response = gpioBlockingStub
+					.setPwmFrequency(Gpio.IntegerMessage.newBuilder().setGpio(gpio).setFrequency(frequency).build());
 			if (response.getStatus() != Status.OK) {
 				throw new RuntimeIOException("Error in GPIO set PWM frequency: " + response.getDetail());
 			}
@@ -389,13 +410,12 @@ public class GrpcClientDeviceFactory extends BaseNativeDeviceFactory {
 
 	float analogRead(int gpio) {
 		try {
-			Gpio.AnalogReadResponse response = gpioBlockingStub
-					.analogRead(Gpio.AnalogReadRequest.newBuilder().setGpio(gpio).build());
+			FloatResponse response = gpioBlockingStub.analogRead(Gpio.Identifier.newBuilder().setGpio(gpio).build());
 			if (response.getStatus() != Status.OK) {
 				throw new RuntimeIOException("Error in GPIO analog read: " + response.getDetail());
 			}
 
-			return response.getValue();
+			return response.getData();
 		} catch (StatusRuntimeException e) {
 			throw new RuntimeIOException("Error in GPIO analog read: " + e);
 		}
@@ -404,7 +424,7 @@ public class GrpcClientDeviceFactory extends BaseNativeDeviceFactory {
 	void analogWrite(int gpio, float value) {
 		try {
 			Response response = gpioBlockingStub
-					.analogWrite(Gpio.AnalogWriteRequest.newBuilder().setGpio(gpio).setValue(value).build());
+					.analogWrite(Gpio.FloatMessage.newBuilder().setGpio(gpio).setValue(value).build());
 			if (response.getStatus() != Status.OK) {
 				throw new RuntimeIOException("Error in GPIO analog write: " + response.getDetail());
 			}
@@ -416,7 +436,7 @@ public class GrpcClientDeviceFactory extends BaseNativeDeviceFactory {
 	void setOutput(int gpio, boolean output) {
 		try {
 			Response response = gpioBlockingStub
-					.setOutput(Gpio.SetOutputRequest.newBuilder().setGpio(gpio).setOutput(output).build());
+					.setOutput(Gpio.BooleanMessage.newBuilder().setGpio(gpio).setValue(output).build());
 			if (response.getStatus() != Status.OK) {
 				throw new RuntimeIOException("Error in GPIO set outpute: " + response.getDetail());
 			}
@@ -426,6 +446,8 @@ public class GrpcClientDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	void subscribe(int gpio) {
+		Logger.trace("subscribe({})", Integer.valueOf(gpio));
+
 		if (subscriptions.containsKey(Integer.valueOf(gpio))) {
 			Logger.warn("Already subscribed to GPIO {}", Integer.valueOf(gpio));
 			return;
@@ -433,16 +455,16 @@ public class GrpcClientDeviceFactory extends BaseNativeDeviceFactory {
 
 		Future<?> future = DiozeroScheduler.getNonDaemonInstance().submit(() -> {
 			try {
-				Iterator<Gpio.Notification> it = gpioBlockingStub
-						.subscribe(Gpio.SubscribeRequest.newBuilder().setGpio(gpio).build());
+				Iterator<Gpio.Event> it = gpioBlockingStub
+						.subscribe(Gpio.Identifier.newBuilder().setGpio(gpio).build());
 				do {
-					Gpio.Notification notification = it.next();
-					if (notification.getGpio() == -1) {
+					Gpio.Event event = it.next();
+					if (event.getGpio() == -1) {
 						Logger.debug("Exiting subscription loop");
 						break;
 					}
-					accept(new DigitalInputEvent(notification.getGpio(), notification.getEpochTime(),
-							notification.getNanoTime(), notification.getValue()));
+					accept(new DigitalInputEvent(event.getGpio(), event.getEpochTime(), event.getNanoTime(),
+							event.getValue()));
 				} while (it.hasNext());
 			} catch (StatusRuntimeException e) {
 				Logger.error(e, "Subscribe request failed: {}", e);
@@ -454,12 +476,14 @@ public class GrpcClientDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	void unsubscribe(int gpio) {
+		Logger.trace("unsubscribe({})", Integer.valueOf(gpio));
+
 		Future<?> future = subscriptions.get(Integer.valueOf(gpio));
 		if (future != null) {
 			if (!future.isCancelled() && !future.isDone()) {
 				try {
 					Response response = gpioBlockingStub
-							.unsubscribe(Gpio.SubscribeRequest.newBuilder().setGpio(gpio).build());
+							.unsubscribe(Gpio.Identifier.newBuilder().setGpio(gpio).build());
 					if (response.getStatus() != Status.OK) {
 						Logger.warn("Unsubscribe request failed: {}", response.getDetail());
 					}
@@ -473,7 +497,7 @@ public class GrpcClientDeviceFactory extends BaseNativeDeviceFactory {
 
 	void closeGpio(int gpio) {
 		try {
-			Response response = gpioBlockingStub.close(Gpio.CloseRequest.newBuilder().setGpio(gpio).build());
+			Response response = gpioBlockingStub.close(Gpio.Identifier.newBuilder().setGpio(gpio).build());
 			if (response.getStatus() != Status.OK) {
 				throw new RuntimeIOException("Error in GPIO close: " + response.getDetail());
 			}
@@ -499,11 +523,12 @@ public class GrpcClientDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	static class RemoteBoardInfo extends BoardInfo {
-		private Board.GetBoardInfoResponse boardInfoResponse;
+		private Board.BoardInfoResponse boardInfoResponse;
 
-		public RemoteBoardInfo(Board.GetBoardInfoResponse boardInfoResponse) {
+		public RemoteBoardInfo(Board.BoardInfoResponse boardInfoResponse) {
 			super(boardInfoResponse.getMake(), boardInfoResponse.getModel(), boardInfoResponse.getMemory(),
-					boardInfoResponse.getAdcVref(), "remote");
+					boardInfoResponse.getAdcVref(), LocalSystemInfo.getInstance().getDefaultLibraryPath(),
+					boardInfoResponse.getOsId(), boardInfoResponse.getOsVersion());
 
 			this.boardInfoResponse = boardInfoResponse;
 

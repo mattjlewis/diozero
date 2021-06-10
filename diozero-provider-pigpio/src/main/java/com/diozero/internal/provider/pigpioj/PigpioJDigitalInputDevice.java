@@ -54,10 +54,10 @@ public class PigpioJDigitalInputDevice extends AbstractInputDevice<DigitalInputE
 	public PigpioJDigitalInputDevice(String key, DeviceFactoryInterface deviceFactory, PigpioInterface pigpioImpl,
 			int gpio, GpioPullUpDown pud, GpioEventTrigger trigger) throws RuntimeIOException {
 		super(key, deviceFactory);
-		
+
 		this.pigpioImpl = pigpioImpl;
 		this.gpio = gpio;
-		
+
 		switch (trigger) {
 		case RISING:
 			edge = PigpioConstants.RISING_EDGE;
@@ -73,7 +73,7 @@ public class PigpioJDigitalInputDevice extends AbstractInputDevice<DigitalInputE
 			edge = PigpioConstants.NO_EDGE;
 		}
 		int pigpio_pud = PigpioJDeviceFactory.getPigpioJPullUpDown(pud);
-		
+
 		int rc = pigpioImpl.setMode(gpio, PigpioConstants.MODE_PI_INPUT);
 		if (rc < 0) {
 			throw new RuntimeIOException("Error calling pigpioImpl.setMode(), response: " + rc);
@@ -93,7 +93,7 @@ public class PigpioJDigitalInputDevice extends AbstractInputDevice<DigitalInputE
 	protected void closeDevice() throws RuntimeIOException {
 		Logger.trace("closeDevice()");
 		// No GPIO close method in pigpio
-		removeListener();
+		super.closeDevice();
 	}
 
 	@Override
@@ -120,7 +120,7 @@ public class PigpioJDigitalInputDevice extends AbstractInputDevice<DigitalInputE
 			Logger.warn("Edge was configured to be NO_EDGE, no point adding a listener");
 			return;
 		}
-		
+
 		int rc = pigpioImpl.enableListener(gpio, edge, this);
 		if (rc < 0) {
 			throw new RuntimeIOException("Error calling pigpioImpl.setISRFunc(), response: " + rc);
@@ -138,10 +138,10 @@ public class PigpioJDigitalInputDevice extends AbstractInputDevice<DigitalInputE
 	@Override
 	public void callback(int pin, boolean value, long epochTime, long nanoTime) {
 		if (pin != gpio) {
-			Logger.error("Error, got a callback for the wrong pin ({}), was expecting {}",
-					Integer.valueOf(pin), Integer.valueOf(gpio));
+			Logger.error("Error, got a callback for the wrong pin ({}), was expecting {}", Integer.valueOf(pin),
+					Integer.valueOf(gpio));
 		}
-		
+
 		accept(new DigitalInputEvent(pin, epochTime, nanoTime, value));
 	}
 }

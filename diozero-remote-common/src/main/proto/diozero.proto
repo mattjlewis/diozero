@@ -2,76 +2,79 @@ syntax = "proto3";
 
 package diozero;
 
+import "google/protobuf/empty.proto";
+
 option java_package = "com.diozero.remote.message.protobuf";
 option java_multiple_files = true;
 //option java_outer_classname = "DiozeroProtos";
 
 service BoardService {
-  rpc GetBoardInfo (Board.GetBoardInfoRequest) returns (Board.GetBoardInfoResponse) {}
-  rpc SetBoardPwmFrequency (Board.SetBoardPwmFrequencyRequest) returns (Response) {}
-  rpc GetGpioMode (Board.GpioNumber) returns (Board.GetGpioModeResponse) {}
-  rpc GetGpioValue (Board.GpioNumber) returns (Board.GetGpioValueResponse) {}
+	rpc GetBoardInfo (google.protobuf.Empty) returns (Board.BoardInfoResponse) {}
+	rpc SetBoardPwmFrequency (IntegerMessage) returns (Response) {}
+	rpc GetGpioMode (Gpio.Identifier) returns (Board.GpioModeResponse) {}
+	rpc GetGpioValue (Gpio.Identifier) returns (IntegerResponse) {}
+	rpc GetCpuTemperature (google.protobuf.Empty) returns (FloatResponse) {}
 }
 
 service GpioService {
-  rpc ProvisionDigitalInputDevice (Gpio.ProvisionDigitalInputDeviceRequest) returns (Response) {}
-  rpc ProvisionDigitalOutputDevice (Gpio.ProvisionDigitalOutputDeviceRequest) returns (Response) {}
-  rpc ProvisionDigitalInputOutputDevice (Gpio.ProvisionDigitalInputOutputDeviceRequest) returns (Response) {}
-  rpc ProvisionDigitalPwmDevice (Gpio.ProvisionPwmOutputDeviceRequest) returns (Response) {}
-  rpc ProvisionAnalogInputDevice (Gpio.ProvisionAnalogInputDeviceRequest) returns (Response) {}
-  rpc ProvisionAnalogOutputDevice (Gpio.ProvisionAnalogOutputDeviceRequest) returns (Response) {}
-  rpc DigitalRead (Gpio.DigitalReadRequest) returns (Gpio.DigitalReadResponse) {}
-  rpc DigitalWrite (Gpio.DigitalWriteRequest) returns (Response) {}
-  rpc PwmRead (Gpio.PwmReadRequest) returns (Gpio.PwmReadResponse) {}
-  rpc PwmWrite (Gpio.PwmWriteRequest) returns (Response) {}
-  rpc GetPwmFrequency (Gpio.GetPwmFrequencyRequest) returns (Gpio.GetPwmFrequencyResponse) {}
-  rpc SetPwmFrequency (Gpio.SetPwmFrequencyRequest) returns (Response) {}
-  rpc AnalogRead (Gpio.AnalogReadRequest) returns (Gpio.AnalogReadResponse) {}
-  rpc AnalogWrite (Gpio.AnalogWriteRequest) returns (Response) {}
-  rpc SetOutput (Gpio.SetOutputRequest) returns (Response) {}
-	rpc Subscribe (Gpio.SubscribeRequest) returns (stream Gpio.Notification) {}
-	rpc Unsubscribe (Gpio.SubscribeRequest) returns (Response) {}
-  rpc Close (Gpio.CloseRequest) returns (Response) {}
+	rpc ProvisionDigitalInputDevice (Gpio.ProvisionDigitalInputDeviceRequest) returns (Response) {}
+	rpc ProvisionDigitalOutputDevice (Gpio.ProvisionDigitalOutputDeviceRequest) returns (Response) {}
+	rpc ProvisionDigitalInputOutputDevice (Gpio.ProvisionDigitalInputOutputDeviceRequest) returns (Response) {}
+	rpc ProvisionDigitalPwmDevice (Gpio.ProvisionPwmOutputDeviceRequest) returns (Response) {}
+	rpc ProvisionAnalogInputDevice (Gpio.ProvisionAnalogInputDeviceRequest) returns (Response) {}
+	rpc ProvisionAnalogOutputDevice (Gpio.ProvisionAnalogOutputDeviceRequest) returns (Response) {}
+	rpc DigitalRead (Gpio.Identifier) returns (BooleanResponse) {}
+	rpc DigitalWrite (Gpio.BooleanMessage) returns (Response) {}
+	rpc PwmRead (Gpio.Identifier) returns (FloatResponse) {}
+	rpc PwmWrite (Gpio.FloatMessage) returns (Response) {}
+	rpc GetPwmFrequency (Gpio.Identifier) returns (IntegerResponse) {}
+	rpc SetPwmFrequency (Gpio.IntegerMessage) returns (Response) {}
+	rpc AnalogRead (Gpio.Identifier) returns (FloatResponse) {}
+	rpc AnalogWrite (Gpio.FloatMessage) returns (Response) {}
+	rpc SetOutput (Gpio.BooleanMessage) returns (Response) {}
+	rpc Subscribe (Gpio.Identifier) returns (stream Gpio.Event) {}
+	rpc Unsubscribe (Gpio.Identifier) returns (Response) {}
+	rpc Close (Gpio.Identifier) returns (Response) {}
 }
 
 service I2CService {
-	rpc Open (I2C.OpenRequest) returns (Response) {}
-	rpc Probe (I2C.ProbeRequest) returns (I2C.BooleanResponse) {}
-	rpc WriteQuick (I2C.WriteQuickRequest) returns (Response) {}
-	rpc ReadByte (I2C.ReadByteRequest) returns (I2C.ByteResponse) {}
-	rpc WriteByte (I2C.WriteByteRequest) returns (Response) {}
-	rpc ReadByteData (I2C.ReadByteDataRequest) returns (I2C.ByteResponse) {}
-	rpc WriteByteData (I2C.WriteByteDataRequest) returns (Response) {}
-	rpc ReadWordData (I2C.ReadWordDataRequest) returns (I2C.WordResponse) {}
-	rpc WriteWordData (I2C.WriteWordDataRequest) returns (Response) {}
-	rpc ProcessCall (I2C.ProcessCallRequest) returns (I2C.WordResponse) {}
-	rpc ReadBlockData (I2C.ReadBlockDataRequest) returns (I2C.ReadBlockDataResponse) {}
-	rpc WriteBlockData (I2C.WriteBlockDataRequest) returns (Response) {}
-	rpc BlockProcessCall (I2C.BlockProcessCallRequest) returns (I2C.BytesResponse) {}
-	rpc ReadI2CBlockData (I2C.ReadI2CBlockDataRequest) returns (I2C.BytesResponse) {}
-	rpc WriteI2CBlockData (I2C.WriteI2CBlockDataRequest) returns (Response) {}
-	rpc ReadBytes (I2C.ReadBytesRequest) returns (I2C.BytesResponse) {}
-	rpc WriteBytes (I2C.WriteBytesRequest) returns (Response) {}
-	rpc ReadWrite (I2C.ReadWriteRequest) returns (I2C.ReadWriteResponse) {}
-	rpc Close (I2C.CloseRequest) returns (Response) {}
+	rpc Open (I2C.Open) returns (Response) {}
+	rpc Probe (I2C.Probe) returns (BooleanResponse) {}
+	rpc WriteQuick (I2C.Bit) returns (Response) {}
+	rpc ReadByte (I2C.Identifier) returns (ByteResponse) {}
+	rpc WriteByte (I2C.ByteMessage) returns (Response) {}
+	rpc ReadByteData (I2C.Register) returns (ByteResponse) {}
+	rpc WriteByteData (I2C.RegisterAndByte) returns (Response) {}
+	rpc ReadWordData (I2C.Register) returns (WordResponse) {}
+	rpc WriteWordData (I2C.RegisterAndWordData) returns (Response) {}
+	rpc ProcessCall (I2C.RegisterAndWordData) returns (WordResponse) {}
+	rpc ReadBlockData (I2C.Register) returns (I2C.ByteArrayWithLengthResponse) {}
+	rpc WriteBlockData (I2C.RegisterAndByteArray) returns (Response) {}
+	rpc BlockProcessCall (I2C.RegisterAndByteArray) returns (BytesResponse) {}
+	rpc ReadI2CBlockData (I2C.RegisterAndNumBytes) returns (BytesResponse) {}
+	rpc WriteI2CBlockData (I2C.RegisterAndByteArray) returns (Response) {}
+	rpc ReadBytes (I2C.NumBytes) returns (BytesResponse) {}
+	rpc WriteBytes (I2C.ByteArray) returns (Response) {}
+	rpc ReadWrite (I2C.ReadWrite) returns (BytesResponse) {}
+	rpc Close (I2C.Identifier) returns (Response) {}
 }
 
 service SPIService {
-	rpc Open (SPI.OpenRequest) returns (Response) {}
-	rpc Write (SPI.WriteRequest) returns (Response) {}
-	rpc WriteAndRead (SPI.WriteAndReadRequest) returns (SPI.SpiResponse) {}
-	rpc Close (SPI.CloseRequest) returns (Response) {}
+	rpc Open (SPI.Open) returns (Response) {}
+	rpc Write (SPI.ByteArray) returns (Response) {}
+	rpc WriteAndRead (SPI.ByteArray) returns (BytesResponse) {}
+	rpc Close (SPI.Identifier) returns (Response) {}
 }
 
 service SerialService {
-	rpc Open (Serial.OpenRequest) returns (Response) {}
-	rpc Read (Serial.ReadRequest) returns (Serial.ReadResponse) {}
-	rpc ReadByte (Serial.ReadByteRequest) returns (Serial.ReadByteResponse) {}
-	rpc WriteByte (Serial.WriteByteRequest) returns (Response) {}
-	rpc ReadBytes (Serial.ReadBytesRequest) returns (Serial.ReadBytesResponse) {}
-	rpc WriteBytes (Serial.WriteBytesRequest) returns (Response) {}
-	rpc BytesAvailable (Serial.BytesAvailableRequest) returns (Serial.BytesAvailableResponse) {}
-	rpc Close (Serial.CloseRequest) returns (Response) {}
+	rpc Open (Serial.Open) returns (Response) {}
+	rpc Read (Serial.Identifier) returns (IntegerResponse) {}
+	rpc ReadByte (Serial.Identifier) returns (ByteResponse) {}
+	rpc WriteByte (Serial.ByteMessage) returns (Response) {}
+	rpc ReadBytes (Serial.NumBytes) returns (BytesResponse) {}
+	rpc WriteBytes (Serial.ByteArray) returns (Response) {}
+	rpc BytesAvailable (Serial.Identifier) returns (IntegerResponse) {}
+	rpc Close (Serial.Identifier) returns (Response) {}
 }
 
 enum Status {
@@ -79,9 +82,53 @@ enum Status {
 	ERROR = 1;
 }
 
+message IntegerMessage {
+	int32 value = 1;
+}
+
+// Response messages
+
 message Response {
 	Status status = 1;
 	string detail = 2;
+}
+
+message BooleanResponse {
+	Status status = 1;
+	string detail = 2;
+	bool data = 3;
+}
+
+// Note protobuf doesn't have a byte data type, used to track when a value should be a byte
+message ByteResponse {
+	Status status = 1;
+	string detail = 2;
+	int32 data = 3;
+}
+
+// Note protobuf doesn't have a short/word data type, used to track when a value should be a short/word
+message WordResponse {
+	Status status = 1;
+	string detail = 2;
+	int32 data = 3;
+}
+
+message IntegerResponse {
+	Status status = 1;
+	string detail = 2;
+	int32 data = 3;
+}
+
+message FloatResponse {
+	Status status = 1;
+	string detail = 2;
+	float data = 3;
+}
+
+message BytesResponse {
+	Status status = 1;
+	string detail = 2;
+	bytes data = 3;
 }
 
 message Board {
@@ -95,7 +142,7 @@ message Board {
 	}
 
 	message GpioInfo {
-	  string header = 1;
+		string header = 1;
 		int32 physicalPin = 2;
 		int32 gpioNumber = 3;
 		int32 sysFsNumber = 4;
@@ -106,15 +153,12 @@ message Board {
 		optional int32 pwmNum = 9;
 	}
 
-	message GetBoardInfoRequest {
-	}
-	
 	message HeaderInfo {
 		string name = 1;
 		repeated GpioInfo gpio = 2;
 	}
 
-	message GetBoardInfoResponse {
+	message BoardInfoResponse {
 		Status status = 1;
 		string detail = 2;
 		string make = 3;
@@ -124,26 +168,14 @@ message Board {
 		float adcVref = 7;
 		int32 boardPwmFrequency = 8;
 		int32 spiBufferSize = 9;
+		string osId = 10;
+		string osVersion = 11;
 	}
-	
-	message SetBoardPwmFrequencyRequest {
-		int32 frequency = 1;
-	}
-	
-	message GpioNumber {
-		int32 gpio = 1;
-	}
-	
-	message GetGpioModeResponse {
+
+	message GpioModeResponse {
 		Status status = 1;
 		string detail = 2;
 		GpioMode mode = 3;
-	}
-	
-	message GetGpioValueResponse {
-		Status status = 1;
-		string detail = 2;
-		int32 value = 3;
 	}
 }
 
@@ -153,120 +185,65 @@ message Gpio {
 		PUD_PULL_UP = 1;
 		PUD_PULL_DOWN = 2;
 	}
-	
+
 	enum Trigger {
 		TRIGGER_NONE = 0;
 		TRIGGER_RISING = 1;
 		TRIGGER_FALLING = 2;
 		TRIGGER_BOTH = 3;
 	}
-	
+
+	message Identifier {
+		int32 gpio = 1;
+	}
+
 	message ProvisionDigitalInputDeviceRequest {
 		int32 gpio = 1;
 		PullUpDown pud = 2;
 		Trigger trigger = 3;
 	}
-	
+
 	message ProvisionDigitalOutputDeviceRequest {
 		int32 gpio = 1;
 		bool initialValue = 2;
 	}
-	
+
 	message ProvisionDigitalInputOutputDeviceRequest {
 		int32 gpio = 1;
 		bool output = 2;
 	}
-	
+
 	message ProvisionPwmOutputDeviceRequest {
 		int32 gpio = 1;
 		int32 frequency = 2;
 		float initialValue = 3;
 	}
-	
+
 	message ProvisionAnalogInputDeviceRequest {
 		int32 gpio = 1;
 	}
-	
+
 	message ProvisionAnalogOutputDeviceRequest {
 		int32 gpio = 1;
 		float initialValue = 2;
 	}
-	
-	message DigitalReadRequest {
-		int32 gpio = 1;
-	}
-	
-	message DigitalReadResponse {
-		Status status = 1;
-		string detail = 2;
-		bool value = 3;
-	}
-	
-	message DigitalWriteRequest {
+
+	message BooleanMessage {
 		int32 gpio = 1;
 		bool value = 2;
 	}
-	
-	message PwmReadRequest {
-		int32 gpio = 1;
-	}
-	
-	message PwmReadResponse {
-		Status status = 1;
-		string detail = 2;
-		float value = 3;
-	}
-	
-	message PwmWriteRequest {
+
+	message FloatMessage {
 		int32 gpio = 1;
 		float value = 2;
 	}
-	
-	message GetPwmFrequencyRequest {
-		int32 gpio = 1;
-	}
-	
-	message GetPwmFrequencyResponse {
-		Status status = 1;
-		string detail = 2;
-		int32 frequency = 3;
-	}
-	
-	message SetPwmFrequencyRequest {
+
+	message IntegerMessage {
 		int32 gpio = 1;
 		int32 frequency = 2;
 	}
-	
-	message AnalogReadRequest {
-		int32 gpio = 1;
-	}
-	
-	message AnalogReadResponse {
-		Status status = 1;
-		string detail = 2;
-		float value = 3;
-	}
-	
-	message AnalogWriteRequest {
-		int32 gpio = 1;
-		float value = 2;
-	}
-	
-	message SetOutputRequest {
-		int32 gpio = 1;
-		bool output = 2;
-	}
-	
-	message EventsRequest {
-		int32 gpio = 1;
-		bool enabled = 2;
-	}
-	
-	message SubscribeRequest {
-		int32 gpio = 1;
-	}
-	
-	message Notification {
+
+	message Event {
 		int32 gpio = 1;
 		optional int64 epochTime = 2;
 		optional int64 nanoTime = 3;
@@ -274,122 +251,85 @@ message Gpio {
 		optional Status status = 5;
 		optional string detail = 6;
 	}
-	
-	message CloseRequest {
-		int32 gpio = 1;
-	}
 }
 
 message I2C {
-  enum ProbeMode {
-  	QUICK = 0;
-  	READ = 1;
-  	AUTO = 2;
-  }
-  
-	message OpenRequest {
+	enum ProbeMode {
+		QUICK = 0;
+		READ = 1;
+		AUTO = 2;
+	}
+
+	message Identifier {
+		int32 controller = 1;
+		int32 address = 2;
+	}
+
+	message Open {
 		int32 controller = 1;
 		int32 address = 2;
 		int32 addressSize = 3;
 	}
-	
-	message ProbeRequest {
+
+	message Probe {
 		int32 controller = 1;
 		int32 address = 2;
 		ProbeMode probeMode = 3;
 	}
-	
-	message WriteQuickRequest {
+
+	message Bit {
 		int32 controller = 1;
 		int32 address = 2;
 		int32 bit = 3;
 	}
-	
-	message ReadByteRequest {
-		int32 controller = 1;
-		int32 address = 2;
-	}
-	
-	message WriteByteRequest {
+
+	message ByteMessage {
 		int32 controller = 1;
 		int32 address = 2;
 		int32 data = 3;
 	}
-	
-	message ReadByteDataRequest {
+
+	message Register {
 		int32 controller = 1;
 		int32 address = 2;
 		int32 register = 3;
 	}
-	
-	message WriteByteDataRequest {
-		int32 controller = 1;
-		int32 address = 2;
-		int32 register = 3;
-		int32 data = 4;
-	}
-	
-	message ReadWordDataRequest {
-		int32 controller = 1;
-		int32 address = 2;
-		int32 register = 3;
-	}
-	
-	message WriteWordDataRequest {
+
+	message RegisterAndByte {
 		int32 controller = 1;
 		int32 address = 2;
 		int32 register = 3;
 		int32 data = 4;
 	}
-	
-	message ProcessCallRequest {
+
+	message RegisterAndWordData {
 		int32 controller = 1;
 		int32 address = 2;
 		int32 register = 3;
 		int32 data = 4;
 	}
-	
-	message ReadBlockDataRequest {
-		int32 controller = 1;
-		int32 address = 2;
-		int32 register = 3;
-	}
-	
-	message WriteBlockDataRequest {
+
+	message RegisterAndByteArray {
 		int32 controller = 1;
 		int32 address = 2;
 		int32 register = 3;
 		bytes data = 4;
 	}
-	
-	message BlockProcessCallRequest {
-		int32 controller = 1;
-		int32 address = 2;
-		int32 register = 3;
-		bytes data = 4;
-	}
-	
-	message ReadI2CBlockDataRequest {
+
+	message RegisterAndNumBytes {
 		int32 controller = 1;
 		int32 address = 2;
 		int32 register = 3;
 		int32 length = 4;
 	}
-	
-	message WriteI2CBlockDataRequest {
-		int32 controller = 1;
-		int32 address = 2;
-		int32 register = 3;
-		bytes data = 4;
-	}
-	
-	message ReadBytesRequest {
+
+	message NumBytes {
 		int32 controller = 1;
 		int32 address = 2;
 		int32 length = 3;
 	}
-	
-	message WriteBytesRequest {
+
+	message ByteArray {
 		int32 controller = 1;
 		int32 address = 2;
 		bytes data = 3;
@@ -399,56 +339,21 @@ message I2C {
 		int32 flags = 1;
 		int32 len = 2;
 	}
-	
-	message ReadWriteRequest {
+
+	message ReadWrite {
 		int32 controller = 1;
 		int32 address = 2;
 		repeated I2CMessage message = 3;
 		bytes data = 4;
 	}
-	
-	message CloseRequest {
-		int32 controller = 1;
-		int32 address = 2;
-	}
-	
+
 	// I2C Responses
-	
-	message BooleanResponse {
-		Status status = 1;
-		string detail = 2;
-		bool result = 3;
-	}
-	
-	message ByteResponse {
-		Status status = 1;
-		string detail = 2;
-		int32 data = 3;
-	}
-	
-	message WordResponse {
-		Status status = 1;
-		string detail = 2;
-		int32 data = 3;
-	}
-	
-	message BytesResponse {
-		Status status = 1;
-		string detail = 2;
-		bytes data = 3;
-	}
-	
-	message ReadBlockDataResponse {
+
+	message ByteArrayWithLengthResponse {
 		Status status = 1;
 		string detail = 2;
 		int32 bytesRead = 3;
 		bytes data = 4;
-	}
-	
-	message ReadWriteResponse {
-		Status status = 1;
-		string detail = 2;
-		bytes data = 3;
 	}
 }
 
@@ -459,41 +364,33 @@ message SPI {
 		MODE_2 = 2;
 		MODE_3 = 3;
 	}
-	
-	message OpenRequest {
+
+	message Identifier {
+		int32 controller = 1;
+		int32 chipSelect = 2;
+	}
+
+	message Open {
 		int32 controller = 1;
 		int32 chipSelect = 2;
 		int32 frequency = 3;
 		ClockMode clockMode = 5;
 		bool lsbFirst = 6;
 	}
-	
-	message WriteRequest {
+
+	message ByteArray {
 		int32 controller = 1;
 		int32 chipSelect = 2;
 		bytes txData = 3;
-	}
-	
-	message WriteAndReadRequest {
-		int32 controller = 1;
-		int32 chipSelect = 2;
-		bytes txData = 3;
-	}
-	
-	message CloseRequest {
-		int32 controller = 1;
-		int32 chipSelect = 2;
-	}
-	
-	message SpiResponse {
-		Status status = 1;
-		string detail = 2;
-		bytes rxData = 3;
 	}
 }
 
 message Serial {
-	message OpenRequest {
+	message Identifier {
+		string deviceFile = 1;
+	}
+
+	message Open {
 		string deviceFile = 1;
 		int32 baud = 2;
 		int32 dataBits = 3;
@@ -503,59 +400,19 @@ message Serial {
 		int32 minReadChars = 7;
 		int32 readTimeoutMillis = 8;
 	}
-	
-	message ReadRequest {
+
+	message ByteMessage {
 		string deviceFile = 1;
+		int32 value = 2;
 	}
-	
-	message ReadByteRequest {
-		string deviceFile = 1;
-	}
-	
-	message WriteByteRequest {
-		string deviceFile = 1;
-		int32 data = 2;
-	}
-	
-	message ReadBytesRequest {
-		string deviceFile = 1;
-		int32 length = 2;
-	}
-	
-	message WriteBytesRequest {
+
+	message ByteArray {
 		string deviceFile = 1;
 		bytes data = 2;
 	}
-	
-	message BytesAvailableRequest {
-		string deviceFile = 1;
-	}
 
-	message CloseRequest {
+	message NumBytes {
 		string deviceFile = 1;
-	}
-	
-	message ReadResponse {
-		Status status = 1;
-		string detail = 2;
-		int32 data = 3;
-	}
-	
-	message ReadByteResponse {
-		Status status = 1;
-		string detail = 2;
-		int32 data = 3;
-	}
-	
-	message ReadBytesResponse {
-		Status status = 1;
-		string detail = 2;
-		bytes data = 3;
-	}
-	
-	message BytesAvailableResponse {
-		Status status = 1;
-		string detail = 2;
-		int32 bytesAvailable = 3;
+		int32 length = 2;
 	}
 }

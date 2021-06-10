@@ -47,11 +47,13 @@ public class GrpcClientDigitalInputDevice extends AbstractInputDevice<DigitalInp
 
 	@Override
 	protected void enableListener() {
+		Logger.trace("Enabling listener");
 		deviceFactory.subscribe(gpio);
 	}
 
 	@Override
 	protected void disableListener() {
+		Logger.trace("Disabling listener");
 		deviceFactory.unsubscribe(gpio);
 	}
 }

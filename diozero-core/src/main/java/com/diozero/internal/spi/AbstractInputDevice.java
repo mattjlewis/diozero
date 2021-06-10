@@ -31,7 +31,6 @@ package com.diozero.internal.spi;
  * #L%
  */
 
-
 import com.diozero.api.DeviceEvent;
 import com.diozero.api.function.DeviceEventConsumer;
 
@@ -41,13 +40,13 @@ public abstract class AbstractInputDevice<T extends DeviceEvent> extends Abstrac
 	public AbstractInputDevice(String key, DeviceFactoryInterface deviceFactory) {
 		super(key, deviceFactory);
 	}
-	
+
 	public void accept(T event) {
 		if (listener != null) {
 			listener.accept(event);
 		}
 	}
-	
+
 	@SuppressWarnings("static-method")
 	public boolean generatesEvents() {
 		return false;
@@ -62,12 +61,17 @@ public abstract class AbstractInputDevice<T extends DeviceEvent> extends Abstrac
 		disableListener();
 		listener = null;
 	}
-	
+
 	protected void enableListener() {
-		//
+		// Inherit and override
 	}
-	
+
 	protected void disableListener() {
-		//
+		// Inherit and override
+	}
+
+	@Override
+	protected void closeDevice() {
+		removeListener();
 	}
 }

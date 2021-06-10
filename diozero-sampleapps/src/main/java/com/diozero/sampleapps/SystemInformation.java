@@ -65,9 +65,8 @@ public class SystemInformation {
 
 		LocalSystemInfo sys_info = LocalSystemInfo.getInstance();
 		System.out.println(ansi().bold().a("Local System Info").boldOff());
-		System.out.println(
-				ansi().bold().a("Operating System").boldOff().format(": %s %s %s", sys_info.getLinuxOperatingSystemId(),
-						sys_info.getLinuxOperatingSystemVersion(), sys_info.getLinuxOperatingSystemVersionId()));
+		System.out.println(ansi().bold().a("Operating System").boldOff().format(": %s %s",
+				sys_info.getOperatingSystemId(), sys_info.getOperatingSystemVersion()));
 		System.out.println(ansi().bold().a("I2C buses").boldOff().format(": %s", LocalSystemInfo.getI2CBusNumbers()));
 		System.out.println(ansi().bold().a("CPU Temperature").boldOff().format(": %.2f",
 				Float.valueOf(LocalSystemInfo.getCpuTemperature())));
@@ -76,8 +75,9 @@ public class SystemInformation {
 		NativeDeviceFactoryInterface ndf = DeviceFactoryHelper.getNativeDeviceFactory();
 		System.out.println(ansi().bold().a("Native Device Factory").boldOff().a(": ").a(ndf.getName()));
 		BoardInfo board_info = ndf.getBoardInfo();
-		System.out.println(ansi().bold().a("Board").boldOff().format(": %s (RAM: %,d bytes)", board_info.getName(),
-				Integer.valueOf(board_info.getMemoryKb())));
+		System.out.println(ansi().bold().a("Board").boldOff().format(": %s (RAM: %,d bytes, O/S: %s %s)",
+				board_info.getName(), Integer.valueOf(board_info.getMemoryKb()), board_info.getOperatingSystemId(),
+				board_info.getOperatingSystemVersion()));
 
 		System.out.println();
 		for (Map.Entry<String, Map<Integer, PinInfo>> header_pins_entry : board_info.getHeaders().entrySet()) {
