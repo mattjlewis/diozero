@@ -604,7 +604,8 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 				pressureOversampling.getValue(), OVERSAMPLING_PRESSURE_POSITION);
 		data_array[3] = BitManipulation.updateWithMaskedData(data_array[3], (byte) OVERSAMPLING_TEMPERATURE_MASK,
 				temperatureOversampling.getValue(), OVERSAMPLING_TEMPERATURE_POSITION);
-		data_array[4] = BitManipulation.updateWithMaskedData(data_array[4], (byte) FILTER_MASK, filter.getValue(), FILTER_POSITION);
+		data_array[4] = BitManipulation.updateWithMaskedData(data_array[4], (byte) FILTER_MASK, filter.getValue(),
+				FILTER_POSITION);
 
 		byte odr20 = 0;
 		byte odr3 = 1;
@@ -788,9 +789,11 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 	/**
 	 * Get the gas configuration of the sensor.
 	 *
-	 * Note not working hence package-private.
+	 * Note not fully working hence package-private.
 	 *
 	 * bme68x_get_heatr_conf
+	 *
+	 * @return the heater configuration
 	 */
 	public HeaterConfig getHeaterConfiguration() {
 		// Turn off current injected to heater by setting bit to 1
@@ -821,7 +824,7 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 		return new HeaterConfig(heater_enabled, temp_profiles, dur_profiles, gas_wait_shared);
 	}
 
-	/**
+	/*
 	 * Set the gas configuration of the sensor.
 	 *
 	 * bme68x_set_heatr_conf
@@ -855,8 +858,10 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 
 		ctrl_gas_data[0] = BitManipulation.updateWithMaskedData(ctrl_gas_data[0], HEATER_CONTROL_MASK, hctrl,
 				HEATER_CONTROL_POSITION);
-		ctrl_gas_data[1] = BitManipulation.updateWithMaskedData(ctrl_gas_data[1], NBCONV_MASK, nb_conv, NBCONV_POSITION);
-		ctrl_gas_data[1] = BitManipulation.updateWithMaskedData(ctrl_gas_data[1], RUN_GAS_MASK, run_gas, RUN_GAS_POSITION);
+		ctrl_gas_data[1] = BitManipulation.updateWithMaskedData(ctrl_gas_data[1], NBCONV_MASK, nb_conv,
+				NBCONV_POSITION);
+		ctrl_gas_data[1] = BitManipulation.updateWithMaskedData(ctrl_gas_data[1], RUN_GAS_MASK, run_gas,
+				RUN_GAS_POSITION);
 
 		writeDataWithIncrementingRegisterAddress(REG_CTRL_GAS_0, ctrl_gas_data);
 	}
@@ -1715,7 +1720,8 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 	}
 
 	private void setRegByte(final int address, final byte mask, final byte position, final byte value) {
-		device.writeByteData(address, BitManipulation.updateWithMaskedData(device.readByteData(address), mask, value, position));
+		device.writeByteData(address,
+				BitManipulation.updateWithMaskedData(device.readByteData(address), mask, value, position));
 	}
 
 	static class Calibration {

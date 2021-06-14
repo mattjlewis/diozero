@@ -80,9 +80,9 @@ public class BitManipulation {
 	 *
 	 * Note: mask is a short to ensure unsigned behaviour.
 	 *
-	 * @param the  value to update
-	 * @param mask a bit mask with 1s specifying the bits to update
-	 * @param data the new bits to apply to the value
+	 * @param value the value to update
+	 * @param mask  a bit mask with 1s specifying the bits to update
+	 * @param data  the new bits to apply to the value
 	 * @return the updated value
 	 */
 	public static byte updateValueWithMaskedData(final byte value, final short mask, final byte data) {

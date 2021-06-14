@@ -75,6 +75,7 @@ public class MutableByte {
 	 *
 	 * @param mask a bit mask with 1s specifying the bits to update
 	 * @param data the new bits to apply to the value
+	 * @return this object
 	 */
 	public MutableByte updateWithMaskedData(final short mask, final byte data) {
 		value = BitManipulation.updateValueWithMaskedData(value, mask, data);

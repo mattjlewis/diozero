@@ -4,7 +4,7 @@ package com.diozero.sampleapps;
  * #%L
  * Organisation: diozero
  * Project:      diozero - Sample applications
- * Filename:     SoftwarePwmOutputTest.java
+ * Filename:     DOD.java
  * 
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
@@ -31,36 +31,37 @@ package com.diozero.sampleapps;
  * #L%
  */
 
-import com.diozero.devices.MCP23008;
-import com.diozero.devices.PwmLed;
-import com.diozero.internal.spi.PwmOutputDeviceFactoryInterface;
-import com.diozero.util.Diozero;
-import com.diozero.util.SleepUtil;
+import com.diozero.api.DigitalOutputDevice;
 
-public class SoftwarePwmOutputTest {
-	public static void main(String[] args) {
-		try (PwmOutputDeviceFactoryInterface device_factory = new MCP23008();
-				PwmLed led0 = new PwmLed(device_factory, 0);
-				PwmLed led1 = new PwmLed(device_factory, 1)) {
-			led0.on();
-			led1.on();
-			SleepUtil.sleepSeconds(2);
+public class DOD {
 
-			led0.off();
-			led1.off();
-			SleepUtil.sleepSeconds(2);
+	public static void main(String[] args) throws InterruptedException {
 
-			led0.setValue(0.5f);
-			led1.setValue(0.5f);
-			SleepUtil.sleepSeconds(5);
+		float halfPeriod1 = 0.009433962f;
+		float halfPeriod2 = 0.01923077f;
 
-			led0.pulse();
-			led1.pulse();
-			SleepUtil.sleepSeconds(10);
-		} finally {
-			// Required if there are non-daemon threads that will prevent the
-			// built-in clean-up routines from running
-			Diozero.shutdown();
+		try (DigitalOutputDevice step = new DigitalOutputDevice(21, true, false)) {
+
+			System.out.println("Run");
+			step.onOffLoop(halfPeriod1, halfPeriod1, DigitalOutputDevice.INFINITE_ITERATIONS, true, null);
+
+			Thread.sleep(4000);
+
+			step.off();
+
+			Thread.sleep(250);
+
+			System.out.println("Run again");
+
+			step.onOffLoop(halfPeriod2, halfPeriod2, DigitalOutputDevice.INFINITE_ITERATIONS, true, null);
+
+			Thread.sleep(4000);
+
+			System.out.println("Stopping");
+
+			step.off();
+
+			System.out.println("All done");
 		}
 	}
 }

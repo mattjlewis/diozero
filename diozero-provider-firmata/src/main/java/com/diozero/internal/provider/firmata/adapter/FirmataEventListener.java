@@ -3,7 +3,7 @@ package com.diozero.internal.provider.firmata.adapter;
 /*-
  * #%L
  * Organisation: diozero
- * Project:      diozero - Remote Provider
+ * Project:      diozero - Firmata
  * Filename:     FirmataEventListener.java
  * 
  * This file is part of the diozero project. More information about this project

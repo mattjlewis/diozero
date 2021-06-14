@@ -516,6 +516,8 @@ public class MFRC522 implements DeviceInterface {
 
 	/**
 	 * Initialises the MFRC522 chip.
+	 *
+	 * @param antennaGain new antenna gain value
 	 */
 	public void init(AntennaGain antennaGain) {
 		if (!resetPin.isOn()) {
@@ -557,11 +559,11 @@ public class MFRC522 implements DeviceInterface {
 		/*-
 		writeRegister(T_MODE_REG, (byte) 0x8D); // Tauto=1; f(Timer) = 6.78MHz/TPreScaler
 		writeRegister(T_PRESCALER_REG, (byte) 0x3E); // TModeReg[3..0] + TPrescalerReg
-
+		
 		// 30
 		writeRegister(T_RELOAD_REG_MSB, (byte) 0);
 		writeRegister(T_RELOAD_REG_LSB, (byte) 0x1E);
-
+		
 		writeRegister(TX_ASK_REG, (byte) 0x40); // 100%ASK
 		writeRegister(MODE_REG, (byte) 0x3D); // CRC Initial value 0x6363 ???
 		*/
@@ -1681,35 +1683,35 @@ public class MFRC522 implements DeviceInterface {
 	{
 		// TODO: Fix cmdBuffer length and rxlength. They really should match.
 		//       (Better still, rxlength should not even be necessary.)
-
+	
 		StatusCode result;
 		byte				cmdBuffer[18]; // We need room for 16 bytes data and 2 bytes CRC_A.
-
+	
 		cmdBuffer[0] = 0x1B; //Comando de autentificacion
-
+	
 		for (byte i = 0; i<4; i++)
 			cmdBuffer[i+1] = passWord[i];
-
+	
 		result = PCD_CalculateCRC(cmdBuffer, 5, &cmdBuffer[5]);
-
+	
 		if (result!=STATUS_OK) {
 			return result;
 		}
-
+	
 		// Transceive the data, store the reply in cmdBuffer[]
 		byte waitIRq		= 0x30;	// RxIRq and IdleIRq
 		//byte cmdBufferSize	= sizeof(cmdBuffer);
 		byte validBits		= 0;
 		byte rxlength		= 5;
 		result = PCD_CommunicateWithPICC(PCD_Transceive, waitIRq, cmdBuffer, 7, cmdBuffer, &rxlength, &validBits);
-
+	
 		pACK[0] = cmdBuffer[0];
 		pACK[1] = cmdBuffer[1];
-
+	
 		if (result!=STATUS_OK) {
 			return result;
 		}
-
+	
 		return STATUS_OK;
 	} // End PCD_NTAG216_AUTH()
 	 */
@@ -1806,7 +1808,7 @@ public class MFRC522 implements DeviceInterface {
 		byte c1 = ((g3 & 4) << 1) | ((g2 & 4) << 0) | ((g1 & 4) >> 1) | ((g0 & 4) >> 2);
 		byte c2 = ((g3 & 2) << 2) | ((g2 & 2) << 1) | ((g1 & 2) << 0) | ((g0 & 2) >> 1);
 		byte c3 = ((g3 & 1) << 3) | ((g2 & 1) << 2) | ((g1 & 1) << 1) | ((g0 & 1) << 0);
-	
+
 		accessBitBuffer[0] = (~c2 & 0xF) << 4 | (~c1 & 0xF);
 		accessBitBuffer[1] =          c1 << 4 | (~c3 & 0xF);
 		accessBitBuffer[2] =          c3 << 4 | c2;
