@@ -31,9 +31,11 @@ package com.diozero.sbc;
  * #L%
  */
 
+import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -314,7 +316,7 @@ public class LocalSystemInfo {
 		} else if (isMacOS()) {
 			try (InputStream is = Runtime.getRuntime().exec("sw_vers").getInputStream()) {
 				Properties props = new Properties();
-				props.load(Runtime.getRuntime().exec("sw_vers").getInputStream());
+				props.load(is);
 				osId = props.getProperty("ProductName");
 				osVersion = props.getProperty("ProductVersion") + "-" + props.getProperty("BuildVersion");
 			} catch (IOException e) {
@@ -457,13 +459,27 @@ public class LocalSystemInfo {
 	 *
 	 * @return the CPU temperature
 	 */
-	public static float getCpuTemperature() {
-		try {
-			return Integer.parseInt(Files.lines(Paths.get(TEMPERATURE_FILE)).findFirst().orElse("0")) / 1000f;
-		} catch (IOException e) {
-			Logger.debug("Error reading {}: {}", TEMPERATURE_FILE, e);
-			return -1;
+	public float getCpuTemperature() {
+		if (isLinux()) {
+			try {
+				return Integer.parseInt(Files.lines(Paths.get(TEMPERATURE_FILE)).findFirst().orElse("0")) / 1000f;
+			} catch (IOException e) {
+				Logger.debug("Error reading {}: {}", TEMPERATURE_FILE, e);
+				return -1;
+			}
+		} else if (isMacOS()) {
+			// Assumes osx-cpu-temp has been installed (brew install osx-cpu-temp)
+			try (BufferedReader br = new BufferedReader(
+					new InputStreamReader(Runtime.getRuntime().exec("/usr/local/bin/osx-cpu-temp").getInputStream()))) {
+				// Note that the output includes the non-ASCII degree symbol
+				// Remove any non-numeric / decimal point characters
+				return Float.parseFloat(br.readLine().replaceAll("[^0-9\\.]", ""));
+			} catch (Exception e) {
+				// Ignore
+				Logger.debug(e, "Error getting macOS CPU temp: {}", e);
+			}
 		}
+		return -1;
 	}
 
 	@Override
@@ -480,5 +496,6 @@ public class LocalSystemInfo {
 		LocalSystemInfo lsi = new LocalSystemInfo();
 		System.out.println("macOS? " + lsi.isMacOS() + ", Linux? " + lsi.isLinux() + ", Windows? " + lsi.isWindows());
 		System.out.println(lsi.getOperatingSystemId() + " version " + lsi.getOperatingSystemVersion());
+		System.out.println("CPU Temperature: " + lsi.getCpuTemperature());
 	}
 }

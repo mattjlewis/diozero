@@ -31,7 +31,6 @@ package com.diozero.animation;
  * #L%
  */
 
-
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -58,20 +57,20 @@ public class Animation implements Runnable {
 
 	private Collection<OutputDeviceInterface> targets;
 	/**
-	 * An easing function from ease-component to apply to the playback head on
-	 * the timeline. See {@link com.diozero.api.easing.Easing Easing} docs for a
-	 * list of available easing functions (default: "linear")
+	 * An easing function from ease-component to apply to the playback head on the
+	 * timeline. See {@link com.diozero.api.easing.Easing Easing} docs for a list of
+	 * available easing functions (default: "linear")
 	 */
 	private EasingFunction easing;
 	/**
-	 * When true, segment will loop until animation.next() or animation.stop()
-	 * is called (default: false)
+	 * When true, segment will loop until animation.next() or animation.stop() is
+	 * called (default: false)
 	 */
 	private boolean loop;
 	/**
-	 * Controls the speed of the playback head and scales the calculated
-	 * duration of this and all subsequent segments until it is changed by
-	 * another segment or a call to the speed() method (default: 1.0)
+	 * Controls the speed of the playback head and scales the calculated duration of
+	 * this and all subsequent segments until it is changed by another segment or a
+	 * call to the speed() method (default: 1.0)
 	 */
 	private float speed;
 	/**
@@ -138,7 +137,7 @@ public class Animation implements Runnable {
 	 * Play the animation. Animation's are set to play by default and this only
 	 * needs to be called if the animation has been paused or a segment's speed
 	 * property was set to 0.
-	 * 
+	 *
 	 * @return Future instance for the background animation thread
 	 */
 	public Future<?> play() {
@@ -168,35 +167,32 @@ public class Animation implements Runnable {
 
 	/**
 	 * Get the current speed
-	 * 
+	 *
 	 * @return current speed factor
 	 */
 	public float getSpeed() {
 		return speed;
 	}
-	
+
 	public int getPeriodMs() {
 		return periodMs;
 	}
-	
+
 	public EasingFunction getEasingFunction() {
 		return easing;
 	}
-	
+
 	public Collection<OutputDeviceInterface> getTargets() {
 		return targets;
 	}
-	
+
 	/**
 	 * Add a segment to the animation's queue.
-	 * 
-	 * @param durationMillis
-	 *            Time in milliseconds for the entire animation
-	 * @param cuePoints
-	 *            List of relative time points at which to change to the next
-	 *            segment
-	 * @param keyFrames
-	 *            List of segment values for target
+	 *
+	 * @param durationMillis Time in milliseconds for the entire animation
+	 * @param cuePoints      List of relative time points at which to change to the
+	 *                       next segment
+	 * @param keyFrames      List of segment values for target
 	 */
 	public void enqueue(int durationMillis, float[] cuePoints, List<AnimationInstance.KeyFrame[]> keyFrames) {
 		enqueue(new AnimationInstance(durationMillis, cuePoints, keyFrames));
@@ -204,7 +200,7 @@ public class Animation implements Runnable {
 
 	public void enqueue(AnimationInstance animationInstance) {
 		animationInstance.prepare(this);
-		
+
 		animationInstances.add(animationInstance);
 	}
 

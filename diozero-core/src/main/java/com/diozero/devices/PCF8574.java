@@ -130,7 +130,7 @@ public class PCF8574 extends AbstractDeviceFactory implements GpioDeviceFactoryI
 		}
 
 		byte old_val = getValues(0);
-		byte new_val = BitManipulation.setBitValue(old_val, value, gpio);
+		byte new_val = BitManipulation.setBitValue(old_val, gpio, value);
 
 		setValues(0, new_val);
 	}

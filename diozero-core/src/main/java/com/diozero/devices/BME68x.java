@@ -598,13 +598,13 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 		final int LEN_CONFIG = 5;
 		byte[] data_array = new byte[LEN_CONFIG];
 		device.readI2CBlockData(REG_CTRL_GAS_1, data_array);
-		data_array[1] = BitManipulation.setBits(data_array[1], OVERSAMPLING_HUMIDITY_MASK,
-				OVERSAMPLING_HUMIDITY_POSITION, humidityOversampling.getValue());
-		data_array[3] = BitManipulation.setBits(data_array[3], OVERSAMPLING_PRESSURE_MASK,
-				OVERSAMPLING_PRESSURE_POSITION, pressureOversampling.getValue());
-		data_array[3] = BitManipulation.setBits(data_array[3], OVERSAMPLING_TEMPERATURE_MASK,
-				OVERSAMPLING_TEMPERATURE_POSITION, temperatureOversampling.getValue());
-		data_array[4] = BitManipulation.setBits(data_array[4], FILTER_MASK, FILTER_POSITION, filter.getValue());
+		data_array[1] = BitManipulation.updateWithMaskedData(data_array[1], (byte) OVERSAMPLING_HUMIDITY_MASK,
+				humidityOversampling.getValue(), OVERSAMPLING_HUMIDITY_POSITION);
+		data_array[3] = BitManipulation.updateWithMaskedData(data_array[3], (byte) OVERSAMPLING_PRESSURE_MASK,
+				pressureOversampling.getValue(), OVERSAMPLING_PRESSURE_POSITION);
+		data_array[3] = BitManipulation.updateWithMaskedData(data_array[3], (byte) OVERSAMPLING_TEMPERATURE_MASK,
+				temperatureOversampling.getValue(), OVERSAMPLING_TEMPERATURE_POSITION);
+		data_array[4] = BitManipulation.updateWithMaskedData(data_array[4], (byte) FILTER_MASK, filter.getValue(), FILTER_POSITION);
 
 		byte odr20 = 0;
 		byte odr3 = 1;
@@ -612,8 +612,8 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 			odr20 = odr.getValue();
 			odr3 = 0;
 		}
-		data_array[4] = BitManipulation.setBits(data_array[4], ODR20_MASK, ODR20_POSITION, odr20);
-		data_array[0] = BitManipulation.setBits(data_array[0], ODR3_MASK, ODR3_POSITION, odr3);
+		data_array[4] = BitManipulation.updateWithMaskedData(data_array[4], (byte) ODR20_MASK, odr20, ODR20_POSITION);
+		data_array[0] = BitManipulation.updateWithMaskedData(data_array[0], (byte) ODR3_MASK, odr3, ODR3_POSITION);
 
 		writeDataWithIncrementingRegisterAddress(REG_CTRL_GAS_1, data_array);
 
@@ -853,10 +853,10 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 			run_gas = DISABLE_GAS_MEAS;
 		}
 
-		ctrl_gas_data[0] = BitManipulation.setBits(ctrl_gas_data[0], HEATER_CONTROL_MASK, HEATER_CONTROL_POSITION,
-				hctrl);
-		ctrl_gas_data[1] = BitManipulation.setBits(ctrl_gas_data[1], NBCONV_MASK, NBCONV_POSITION, nb_conv);
-		ctrl_gas_data[1] = BitManipulation.setBits(ctrl_gas_data[1], RUN_GAS_MASK, RUN_GAS_POSITION, run_gas);
+		ctrl_gas_data[0] = BitManipulation.updateWithMaskedData(ctrl_gas_data[0], HEATER_CONTROL_MASK, hctrl,
+				HEATER_CONTROL_POSITION);
+		ctrl_gas_data[1] = BitManipulation.updateWithMaskedData(ctrl_gas_data[1], NBCONV_MASK, nb_conv, NBCONV_POSITION);
+		ctrl_gas_data[1] = BitManipulation.updateWithMaskedData(ctrl_gas_data[1], RUN_GAS_MASK, run_gas, RUN_GAS_POSITION);
 
 		writeDataWithIncrementingRegisterAddress(REG_CTRL_GAS_0, ctrl_gas_data);
 	}
@@ -1715,7 +1715,7 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 	}
 
 	private void setRegByte(final int address, final byte mask, final byte position, final byte value) {
-		device.writeByteData(address, BitManipulation.setBits(device.readByteData(address), mask, position, value));
+		device.writeByteData(address, BitManipulation.updateWithMaskedData(device.readByteData(address), mask, value, position));
 	}
 
 	static class Calibration {

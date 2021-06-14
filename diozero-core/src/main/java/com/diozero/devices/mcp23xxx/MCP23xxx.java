@@ -58,7 +58,7 @@ import com.diozero.util.MutableByte;
  */
 public abstract class MCP23xxx extends AbstractDeviceFactory implements GpioDeviceFactoryInterface,
 		PwmOutputDeviceFactoryInterface, DeviceEventConsumer<DigitalInputEvent>, GpioExpander {
-	private static enum InterruptMode {
+	private enum InterruptMode {
 		DISABLED, BANK_A_ONLY, BANK_B_ONLY, BANK_A_AND_B, MIRRORED;
 	}
 
@@ -336,7 +336,7 @@ public abstract class MCP23xxx extends AbstractDeviceFactory implements GpioDevi
 		}
 		// Read the current state of this bank of GPIOs
 		byte old_val = readByte(getGPIOReg(port));
-		byte new_val = BitManipulation.setBitValue(old_val, value, bit);
+		byte new_val = BitManipulation.setBitValue(old_val, bit, value);
 		writeByte(getOLatReg(port), new_val);
 	}
 

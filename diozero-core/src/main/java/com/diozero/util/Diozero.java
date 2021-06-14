@@ -78,9 +78,15 @@ public class Diozero {
 	 * Shutdown diozero.
 	 */
 	public static synchronized void shutdown() {
+		Logger.trace("shutdown - START");
+
 		if (shutdown.getAndSet(true)) {
+			Logger.trace("Already shutdown");
 			return;
 		}
+
+		// Stop all scheduled jobs
+		DiozeroScheduler.shutdownAll();
 
 		// First close all instances that have registered themselves with the
 		// DeviceFactoryHelper
@@ -101,6 +107,8 @@ public class Diozero {
 
 		// Notify any threads waiting on diozero to shutdown
 		doneSignal.countDown();
+
+		Logger.trace("shutdown - END");
 	}
 
 	public static void waitForShutdown() {

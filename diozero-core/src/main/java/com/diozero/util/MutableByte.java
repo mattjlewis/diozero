@@ -31,39 +31,57 @@ package com.diozero.util;
  * #L%
  */
 
-
 public class MutableByte {
 	private byte value;
-	
+
 	public MutableByte() {
-		this((byte)0);
+		this((byte) 0);
 	}
-	
-	public MutableByte(byte value) {
+
+	public MutableByte(final byte value) {
 		this.value = value;
 	}
-	
-	public void setBitValue(byte bit, boolean on) {
-		value = BitManipulation.setBitValue(value, on, bit);
-	}
-	
-	public void setBit(byte bit) {
-		value = BitManipulation.setBitValue(value, true, bit);
-	}
-	
-	public void unsetBit(byte bit) {
-		value = BitManipulation.setBitValue(value, false, bit);
-	}
-	
+
 	public byte getValue() {
 		return value;
 	}
-	
-	public boolean equals(byte b) {
-		return value == b;
+
+	public boolean isBitSet(final byte bit) {
+		return BitManipulation.isBitSet(value, bit);
 	}
 
-	public boolean isBitSet(byte bit) {
-		return BitManipulation.isBitSet(value, bit);
+	public MutableByte setValue(final byte value) {
+		this.value = value;
+		return this;
+	}
+
+	public MutableByte setBit(final byte bit) {
+		value = BitManipulation.setBitValue(value, bit, true);
+		return this;
+	}
+
+	public MutableByte unsetBit(final byte bit) {
+		value = BitManipulation.setBitValue(value, bit, false);
+		return this;
+	}
+
+	public MutableByte setBitValue(final int bit, final boolean on) {
+		value = BitManipulation.setBitValue(value, bit, on);
+		return this;
+	}
+
+	/**
+	 * Update only the bits as specified by mask with the specified bits
+	 *
+	 * @param mask a bit mask with 1s specifying the bits to update
+	 * @param data the new bits to apply to the value
+	 */
+	public MutableByte updateWithMaskedData(final short mask, final byte data) {
+		value = BitManipulation.updateValueWithMaskedData(value, mask, data);
+		return this;
+	}
+
+	public boolean equals(final byte b) {
+		return value == b;
 	}
 }

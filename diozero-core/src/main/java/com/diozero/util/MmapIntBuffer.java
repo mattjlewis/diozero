@@ -38,8 +38,6 @@ public class MmapIntBuffer implements AutoCloseable {
 	private long address;
 	private int length;
 	private IntBuffer intBuffer;
-	// Not yet sure if volatile is required for the direct byte buffer (which uses sun.misc.Unsafe)
-	// private volatile IntBuffer volatileIntBuffer;
 
 	public MmapIntBuffer(String file, int offset, int pageSize, ByteOrder byteOrder) {
 		MmapByteBuffer mmap_bb = MmapBufferNative.createMmapBuffer(file, offset, pageSize);
@@ -47,6 +45,12 @@ public class MmapIntBuffer implements AutoCloseable {
 		this.length = mmap_bb.getLength();
 		// Creates a view of the original direct byte buffer as an int buffer
 		intBuffer = mmap_bb.getBuffer().order(byteOrder).asIntBuffer();
+	}
+
+	public MmapIntBuffer(IntBuffer intBuffer, long address, int length) {
+		this.intBuffer = intBuffer;
+		this.address = address;
+		this.length = length;
 	}
 
 	@Override

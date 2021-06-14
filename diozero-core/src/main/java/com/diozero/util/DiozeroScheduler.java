@@ -52,6 +52,15 @@ public class DiozeroScheduler {
 	private static DiozeroScheduler nonDaemonInstance;
 
 	/**
+	 * Get the default scheduler instance (non-daemon).
+	 *
+	 * @return the default scheduler
+	 */
+	public static DiozeroScheduler getDefaultInstance() {
+		return getNonDaemonInstance();
+	}
+
+	/**
 	 * Get the diozero scheduler instance that exclusively uses non-daemon threads
 	 * (aka user threads).
 	 *

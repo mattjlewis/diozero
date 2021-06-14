@@ -98,14 +98,16 @@ public class EnvironmentDisplay implements AutoCloseable {
 
 		try (EnvironmentDisplay display = new EnvironmentDisplay(spi_controller, spi_chip_select, dc_gpio, reset_gpio,
 				i2c_controller, adc_read_channel, adc_ready_gpio)) {
-			// Explicitly register this application for clean-up in case of
+			// Explicitly register this application for clean-up (CTRL-C)
 			Diozero.registerForShutdown(display);
 
 			display.start();
 
 			display.waitToComplete();
-		} catch (Exception e) {
-			Logger.debug(e);
+		} catch (Throwable t) {
+			Logger.debug(t);
+		} finally {
+			Diozero.shutdown();
 		}
 	}
 
@@ -168,11 +170,7 @@ public class EnvironmentDisplay implements AutoCloseable {
 	public void stop() {
 		if (future != null) {
 			future.cancel(true);
-			try {
-				future.get();
-			} catch (Exception e) {
-				// Ignore
-			}
+			future = null;
 		}
 	}
 

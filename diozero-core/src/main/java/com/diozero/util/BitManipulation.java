@@ -32,8 +32,8 @@ package com.diozero.util;
  */
 
 public class BitManipulation {
-	public static byte setBitValue(final byte value, final boolean on, final int bit) {
-		byte mask = getBitMask(bit);
+	public static byte setBitValue(final byte value, final int bitNumber, final boolean on) {
+		byte mask = getBitMask(bitNumber);
 		byte new_value = value;
 		if (on) {
 			new_value |= mask;
@@ -44,33 +44,49 @@ public class BitManipulation {
 		return new_value;
 	}
 
-	public static byte getBitMask(final int... bits) {
+	public static byte getBitMask(final int bitNumber) {
+		if (bitNumber > 7) {
+			throw new IllegalArgumentException("Bit (" + bitNumber + ") out of range for byte");
+		}
+
+		return (byte) (1 << bitNumber);
+	}
+
+	public static byte getBitMask(final int... bitNumbers) {
 		byte mask = 0;
 
-		for (int bit : bits) {
-			mask |= getBitMask(bit);
+		for (int bit_number : bitNumbers) {
+			mask |= getBitMask(bit_number);
 		}
 
 		return mask;
 	}
 
-	public static byte getBitMask(final int bit) {
-		if (bit > 7) {
-			throw new IllegalArgumentException("Bit (" + bit + ") out of range for byte");
-		}
-
-		return (byte) (1 << bit);
+	public static boolean isBitSet(final byte value, final int bitNumber) {
+		return (value & getBitMask(bitNumber)) != 0;
 	}
 
-	public static boolean isBitSet(final byte value, final int bit) {
-		return (value & getBitMask(bit)) != 0;
-	}
-
-	public static byte setBits(final byte value, final short mask, final byte position, final byte data) {
-		if (position == 0) {
+	// Note: mask is a short to ensure unsigned behaviour
+	public static byte updateWithMaskedData(final byte value, final short mask, final byte data, final int dataShift) {
+		if (dataShift == 0) {
 			return (byte) ((value & ~mask) | (data & mask));
 		}
-		return (byte) ((value & ~mask) | ((data << position) & mask));
+		return (byte) ((value & ~mask) | ((data << dataShift) & mask));
+	}
+
+	/**
+	 * Update only the bits as specified by mask with the specified bits; the value
+	 * of all other bits are preserved.
+	 *
+	 * Note: mask is a short to ensure unsigned behaviour.
+	 *
+	 * @param the  value to update
+	 * @param mask a bit mask with 1s specifying the bits to update
+	 * @param data the new bits to apply to the value
+	 * @return the updated value
+	 */
+	public static byte updateValueWithMaskedData(final byte value, final short mask, final byte data) {
+		return updateWithMaskedData(value, mask, data, 0);
 	}
 
 	public static int bytesToWord(final int msb, final int lsb, final boolean isSigned) {

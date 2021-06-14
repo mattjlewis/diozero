@@ -32,11 +32,13 @@ package com.diozero.api;
  */
 
 /**
- * SPI clock mode determines the clock polarity and phase with respect to 
- * data. See <a href="https://en.wikipedia.org/wiki/Serial_Peripheral_Interface_Bus#Clock_polarity_and_phase">
- * SPI clock polarity and phase</a>. ARM-based MCU use the following
- * mode numbers. Examine the device datasheet to understand the clock
- * mode or modes supported.
+ * SPI clock mode determines the clock polarity and phase with respect to data.
+ * See <a href=
+ * "https://en.wikipedia.org/wiki/Serial_Peripheral_Interface_Bus#Clock_polarity_and_phase">
+ * SPI clock polarity and phase</a>. ARM-based MCU use the following mode
+ * numbers. Examine the device datasheet to understand the clock mode or modes
+ * supported.
+ *
  * <pre>
  * SPI  Clock Polarity Clock Phase Clock Edge
  * Mode (CPOL/CKP)     (CPHA)      (CKE/NCPHA)
@@ -45,21 +47,23 @@ package com.diozero.api;
  * 2    1              0           1
  * 3    1              1           0
  * </pre>
+ *
+ * Useful: https://elinux.org/images/1/1e/I2C-SPI-ELC-2020.pdf
  */
 public enum SpiClockMode {
 	// https://en.wikipedia.org/wiki/Serial_Peripheral_Interface_Bus#Mode_numbers
-	MODE_0((byte) 0), MODE_1((byte) 1), MODE_2((byte) 2), MODE_3((byte) 3);
-	
+	MODE_0(0), MODE_1(1), MODE_2(2), MODE_3(3);
+
 	private byte mode;
-	
-	private SpiClockMode(byte mode) {
-		this.mode = mode;
+
+	SpiClockMode(int mode) {
+		this.mode = (byte) mode;
 	}
-	
+
 	public byte getMode() {
 		return mode;
 	}
-	
+
 	public static SpiClockMode getByMode(int mode) {
 		switch (mode) {
 		case 0:

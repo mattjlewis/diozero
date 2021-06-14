@@ -40,7 +40,6 @@ import com.diozero.sbc.BoardInfo;
 import com.diozero.sbc.BoardPinInfo;
 import com.diozero.sbc.LocalBoardInfoUtil;
 import com.diozero.sbc.LocalSystemInfo;
-import com.diozero.util.DiozeroScheduler;
 
 /**
  * Helper class for instantiating different devices via the configured provider.
@@ -89,7 +88,7 @@ public abstract class BaseNativeDeviceFactory extends AbstractDeviceFactory impl
 
 	@Override
 	public float getCpuTemperature() {
-		return LocalSystemInfo.getCpuTemperature();
+		return LocalSystemInfo.getInstance().getCpuTemperature();
 	}
 
 	@Override
@@ -100,9 +99,6 @@ public abstract class BaseNativeDeviceFactory extends AbstractDeviceFactory impl
 	@Override
 	public final void close() {
 		Logger.trace("close()");
-
-		// Stop all scheduled jobs
-		DiozeroScheduler.shutdownAll();
 
 		// Shutdown all of the other non-native device factories
 		for (DeviceFactoryInterface df : deviceFactories) {

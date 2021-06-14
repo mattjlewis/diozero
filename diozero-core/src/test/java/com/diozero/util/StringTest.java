@@ -31,11 +31,33 @@ package com.diozero.util;
  * #L%
  */
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
+import org.tinylog.Logger;
+
+import com.diozero.sbc.LocalSystemInfo;
+
 public class StringTest {
 	public static void main(String[] args) {
 		String s = "ARMv6-compatible processor rev 7 (v6l)";
+		// Split on '-' and ' '
 		String[] parts = s.split("[- ]");
 		System.out.println(parts.length);
 		System.out.println(parts[0]);
+
+		if (LocalSystemInfo.getInstance().isMacOS()) {
+			// Assumes osx-cpu-temp has been installed (brew install osx-cpu-temp)
+			try (BufferedReader br = new BufferedReader(
+					new InputStreamReader(Runtime.getRuntime().exec("/usr/local/bin/osx-cpu-temp").getInputStream()))) {
+				// Note that the output includes the non-ASCII degree symbol, e.g. 58.2<deg>C
+				float temp = Float.parseFloat(br.readLine().replaceAll("[^0-9\\.]", ""));
+				System.out.println(temp);
+			} catch (IOException e) {
+				// Ignore
+				Logger.warn(e);
+			}
+		}
 	}
 }

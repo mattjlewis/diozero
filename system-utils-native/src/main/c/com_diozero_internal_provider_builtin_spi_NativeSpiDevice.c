@@ -74,6 +74,7 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_builtin_spi_NativeSpiD
 	if (Java_com_diozero_internal_provider_builtin_spi_NativeSpiDevice_spiConfig(
 			env, clz, fd, mode, speedHz, bitsPerWord, lsbFirst) < 0) {
 		printf("open failed: %s", strerror(errno));
+		close(fd);
 		return -1;
 	}
 

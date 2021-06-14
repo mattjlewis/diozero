@@ -69,7 +69,7 @@ public class SystemInformation {
 				sys_info.getOperatingSystemId(), sys_info.getOperatingSystemVersion()));
 		System.out.println(ansi().bold().a("I2C buses").boldOff().format(": %s", LocalSystemInfo.getI2CBusNumbers()));
 		System.out.println(ansi().bold().a("CPU Temperature").boldOff().format(": %.2f",
-				Float.valueOf(LocalSystemInfo.getCpuTemperature())));
+				Float.valueOf(sys_info.getCpuTemperature())));
 
 		System.out.println();
 		NativeDeviceFactoryInterface ndf = DeviceFactoryHelper.getNativeDeviceFactory();

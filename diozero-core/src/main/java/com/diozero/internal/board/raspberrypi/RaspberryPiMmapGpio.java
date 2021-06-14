@@ -133,12 +133,19 @@ public class RaspberryPiMmapGpio implements MmapGpioInterface {
 		this.piIs2711 = piIs2711;
 	}
 
+	public RaspberryPiMmapGpio(boolean piIs2711, MmapIntBuffer mmapIntBuffer) {
+		this.piIs2711 = piIs2711;
+		this.mmapIntBuffer = mmapIntBuffer;
+	}
+
 	@Override
 	public synchronized void initialise() {
 		if (!initialised) {
 			// Note /dev/gpiomem device ignores any offset and always grants access to the
 			// GPIO register area
-			mmapIntBuffer = new MmapIntBuffer(GPIOMEM_DEVICE, 0, GPIOMEM_LEN, ByteOrder.LITTLE_ENDIAN);
+			if (mmapIntBuffer == null) {
+				mmapIntBuffer = new MmapIntBuffer(GPIOMEM_DEVICE, 0, GPIOMEM_LEN, ByteOrder.LITTLE_ENDIAN);
+			}
 
 			initialised = true;
 		}

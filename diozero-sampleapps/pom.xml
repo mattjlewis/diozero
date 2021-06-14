@@ -19,13 +19,11 @@
 	
 	<dependencyManagement>
 		<dependencies>
-			<!--
 			<dependency>
 				<groupId>com.diozero</groupId>
 				<artifactId>diozero-provider-pigpio</artifactId>
 				<version>${diozero.version}</version>
 			</dependency>
-			-->
 			<dependency>
 				<groupId>com.diozero</groupId>
 				<artifactId>diozero-provider-remote</artifactId>
@@ -55,16 +53,18 @@
 			<groupId>com.diozero</groupId>
 			<artifactId>diozero-core</artifactId>
 		</dependency>
+		
+		<!-- Switch between providers that support remote communication -->
 		<!--
 		<dependency>
 			<groupId>com.diozero</groupId>
 			<artifactId>diozero-provider-pigpio</artifactId>
 		</dependency>
-		-->
 		<dependency>
 			<groupId>com.diozero</groupId>
 			<artifactId>diozero-provider-remote</artifactId>
 		</dependency>
+		-->
 
 		<dependency>
 			<groupId>com.google.code.gson</groupId>

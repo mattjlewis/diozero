@@ -760,7 +760,7 @@ public class I2CDevice implements I2CDeviceInterface {
 	 * {@link I2CDevice#writeByteData(int, byte)} to update the specified bit number
 	 *
 	 * @see I2CDevice#readByteData(int)
-	 * @see BitManipulation#setBitValue(byte, boolean, int)
+	 * @see BitManipulation#setBitValue(byte, int, boolean)
 	 *
 	 * @param register the register to update
 	 * @param bit      the bit number to set
@@ -769,6 +769,6 @@ public class I2CDevice implements I2CDeviceInterface {
 	 */
 	public void writeBit(int register, int bit, boolean value) throws RuntimeIOException {
 		byte cur_val = readByteData(register);
-		writeByteData(register, BitManipulation.setBitValue(cur_val, value, bit));
+		writeByteData(register, BitManipulation.setBitValue(cur_val, bit, value));
 	}
 }
