@@ -22,10 +22,12 @@ redirect_from:
 ## 1.3.0
 
 + I2C read-write support with the pigpio provider (JNI and sockets) - pigpioj v2.5.9
++ I2C read-write utility method
 + Introduced diozero.util.Diozero as a more logical place for initialisation and shutdown utilities
 + Replace all of the diozero-remote protocol variants with just gRPC
-+ Switch from Firmata4j to the Diozero Firmata protocol implementation
-+ Add getMode(gpio): DeviceMode and getValue(gpio): int to device factory interface so that GpioReadAll works without mmap
++ Switch from Firmata4j to the Diozero Firmata implementation (to use the builtin serial library rather than java-native/JSSC)
++ Add getGpioMode(gpio) and getGpioValue(gpio) to NativeDeviceFactoryInterface so that GpioReadAll works without mmap
++ Add remote CPU temperature to NativeDeviceFactoryInterface and gRPC protocol
 
 ## 1.2.3
 
