@@ -69,7 +69,7 @@ package contains general utility classes, including:
 [Crc](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/com/diozero/util/Crc.html)
 : CRC-8 and CRC-16 calculator - supports all [common configurations](https://crccalc.com).
 
-[Diozero](https://www.javadoc.io/docs/com.diozero/diozero-core/latest/com/diozero/util/Diozero.html)
+[Diozero](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/com/diozero/util/Diozero.html)
 : Utility methods for initialisation and graceful shutdown.
 
 [DiozeroScheduler](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/com/diozero/util/DiozeroScheduler.html)
@@ -105,7 +105,7 @@ Also contains a busySleep method for finer grained delays.
 [StringUtil](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/com/diozero/util/StringUtil.html)
 : Helper methods for padding a string and repeating a character.
 
-[TemperatureUtil](https://www.javadoc.io/docs/com.diozero/diozero-core/latest/com/diozero/util/TemperatureUtil.html)
+[TemperatureUtil](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/com/diozero/util/TemperatureUtil.html)
 : Convert from Celsius to Fahrenheit and vice-versa.
 
 [UsbInfo](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/com/diozero/util/UsbInfo.html)
