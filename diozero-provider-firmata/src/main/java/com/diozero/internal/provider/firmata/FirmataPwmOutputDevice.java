@@ -1,6 +1,6 @@
 package com.diozero.internal.provider.firmata;
 
-/*
+/*-
  * #%L
  * Organisation: diozero
  * Project:      diozero - Firmata
@@ -31,56 +31,47 @@ package com.diozero.internal.provider.firmata;
  * #L%
  */
 
-
-import java.io.IOException;
-
-import org.firmata4j.Pin;
-import org.firmata4j.Pin.Mode;
-
 import com.diozero.api.RuntimeIOException;
+import com.diozero.internal.provider.firmata.adapter.FirmataAdapter;
+import com.diozero.internal.provider.firmata.adapter.FirmataProtocol.PinMode;
 import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.PwmOutputDeviceInterface;
 
 public class FirmataPwmOutputDevice extends AbstractDevice implements PwmOutputDeviceInterface {
-	private static final float PWM_MAX = 255;
-	
-	private Pin pin;
-	
-	public FirmataPwmOutputDevice(FirmataDeviceFactory deviceFactory, String key, int deviceNumber,
-			float initialValue) {
+	private FirmataAdapter adapter;
+	private int gpio;
+	private float pwmMax;
+
+	public FirmataPwmOutputDevice(FirmataDeviceFactory deviceFactory, String key, int gpio, float initialValue) {
 		super(key, deviceFactory);
-		
-		pin = deviceFactory.getIoDevice().getPin(deviceNumber);
-		try {
-			pin.setMode(Mode.PWM);
-		} catch (IOException e) {
-			throw new RuntimeIOException("Error setting pin mode to PWM for pin " + deviceNumber);
-		}
+
+		this.gpio = gpio;
+
+		adapter = deviceFactory.getFirmataAdapter();
+		adapter.setPinMode(gpio, PinMode.PWM);
+		pwmMax = adapter.getMax(gpio, PinMode.PWM);
+
 		setValue(initialValue);
 	}
 
 	@Override
 	public int getGpio() {
-		return pin.getIndex();
+		return gpio;
 	}
 
 	@Override
 	public int getPwmNum() {
-		return pin.getIndex();
+		return gpio;
 	}
 
 	@Override
 	public float getValue() throws RuntimeIOException {
-		return pin.getValue() / PWM_MAX;
+		return adapter.getValue(gpio) / pwmMax;
 	}
 
 	@Override
 	public void setValue(float value) throws RuntimeIOException {
-		try {
-			pin.setValue(Math.round(value * PWM_MAX));
-		} catch (IOException e) {
-			throw new RuntimeIOException("Error setting PWM value to " + value + " for pin " + pin.getIndex());
-		}
+		adapter.setValue(gpio, Math.round(value * pwmMax));
 	}
 
 	@Override

@@ -1,6 +1,6 @@
 package com.diozero.internal.provider.firmata;
 
-/*
+/*-
  * #%L
  * Organisation: diozero
  * Project:      diozero - Firmata
@@ -31,11 +31,6 @@ package com.diozero.internal.provider.firmata;
  * #L%
  */
 
-import java.io.IOException;
-
-import org.firmata4j.Pin;
-import org.firmata4j.Pin.Mode;
-
 import com.diozero.api.RuntimeIOException;
 import com.diozero.internal.provider.firmata.adapter.FirmataAdapter;
 import com.diozero.internal.provider.firmata.adapter.FirmataProtocol.PinMode;
@@ -45,7 +40,6 @@ import com.diozero.internal.spi.GpioDigitalOutputDeviceInterface;
 public class FirmataDigitalOutputDevice extends AbstractDevice implements GpioDigitalOutputDeviceInterface {
 	private FirmataAdapter adapter;
 	private int gpio;
-	private Pin pin;
 
 	public FirmataDigitalOutputDevice(FirmataDeviceFactory deviceFactory, String key, int gpio, boolean initialValue) {
 		super(key, deviceFactory);
@@ -53,25 +47,13 @@ public class FirmataDigitalOutputDevice extends AbstractDevice implements GpioDi
 		this.gpio = gpio;
 
 		adapter = deviceFactory.getFirmataAdapter();
-		if (adapter != null) {
-			adapter.setPinMode(gpio, PinMode.DIGITAL_OUTPUT);
-		} else {
-			pin = deviceFactory.getIoDevice().getPin(gpio);
-			try {
-				pin.setMode(Mode.OUTPUT);
-			} catch (IOException e) {
-				throw new RuntimeIOException("Error setting pin mode to output for pin " + gpio);
-			}
-		}
+		adapter.setPinMode(gpio, PinMode.DIGITAL_OUTPUT);
 		setValue(initialValue);
 	}
 
 	@Override
 	public boolean getValue() throws RuntimeIOException {
-		if (adapter != null) {
-			return adapter.getDigitalValue(gpio);
-		}
-		return pin.getValue() != 0;
+		return adapter.getDigitalValue(gpio);
 	}
 
 	@Override
@@ -81,24 +63,12 @@ public class FirmataDigitalOutputDevice extends AbstractDevice implements GpioDi
 
 	@Override
 	public void setValue(boolean value) throws RuntimeIOException {
-		if (adapter != null) {
-			adapter.setDigitalValue(gpio, value);
-		} else {
-			try {
-				pin.setValue(value ? 1 : 0);
-			} catch (IOException e) {
-				throw new RuntimeIOException("Error setting output value for pin " + pin.getIndex());
-			}
-		}
+		adapter.setDigitalValue(gpio, value);
 	}
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
 		// TODO Reset to prior mode and value?
-		if (adapter != null) {
-			adapter.setDigitalValue(gpio, false);
-		} else {
-			setValue(false);
-		}
+		adapter.setDigitalValue(gpio, false);
 	}
 }

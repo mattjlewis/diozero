@@ -51,15 +51,19 @@ import com.diozero.util.SleepUtil;
 public class ButtonTest {
 	public static void main(String[] args) {
 		if (args.length < 1) {
-			Logger.error("Usage: {} <input-pin>", ButtonTest.class.getName());
+			Logger.error("Usage: {} <input-pin> [pud]", ButtonTest.class.getName());
 			System.exit(1);
 		}
-		test(Integer.parseInt(args[0]));
+		GpioPullUpDown pud = GpioPullUpDown.PULL_UP;
+		if (args.length > 1) {
+			pud = GpioPullUpDown.valueOf(args[1]);
+		}
+		test(Integer.parseInt(args[0]), pud);
 	}
 
-	public static void test(int inputPin) {
-		int delay_s = 5;
-		try (Button button = new Button(inputPin, GpioPullUpDown.PULL_UP)) {
+	public static void test(final int inputPin, final GpioPullUpDown pud) {
+		final int delay_s = 5;
+		try (final Button button = new Button(inputPin, pud)) {
 			button.whenPressed(nanoTime -> Logger.info("Pressed"));
 			button.whenReleased(nanoTime -> Logger.info("Released"));
 			button.addListener(event -> Logger.info("Event: {}", event));

@@ -32,6 +32,7 @@ package com.diozero.internal.provider.remote.grpc;
  */
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
@@ -71,6 +72,7 @@ import com.diozero.remote.message.protobuf.GpioServiceGrpc;
 import com.diozero.remote.message.protobuf.GpioServiceGrpc.GpioServiceBlockingStub;
 import com.diozero.remote.message.protobuf.I2CServiceGrpc;
 import com.diozero.remote.message.protobuf.I2CServiceGrpc.I2CServiceBlockingStub;
+import com.diozero.remote.message.protobuf.IntegerArrayResponse;
 import com.diozero.remote.message.protobuf.IntegerMessage;
 import com.diozero.remote.message.protobuf.IntegerResponse;
 import com.diozero.remote.message.protobuf.Response;
@@ -229,6 +231,37 @@ public class GrpcClientDeviceFactory extends BaseNativeDeviceFactory {
 			return response.getData();
 		} catch (StatusRuntimeException e) {
 			throw new RuntimeIOException("Error in Board getCpuTemperature: " + e);
+		}
+	}
+
+	@Override
+	public List<Integer> getI2CBusNumbers() {
+		try {
+			IntegerArrayResponse response = boardBlockingStub.getI2CBusNumbers(Empty.newBuilder().build());
+
+			if (response.getStatus() != Status.OK) {
+				throw new RuntimeIOException("Error in Board getI2CBusNumbers: " + response.getDetail());
+			}
+
+			return response.getDataList();
+		} catch (StatusRuntimeException e) {
+			throw new RuntimeIOException("Error in Board getI2CBusNumbers: " + e);
+		}
+	}
+
+	@Override
+	public int getI2CFunctionalities(int controller) {
+		try {
+			IntegerResponse response = boardBlockingStub
+					.getI2CFunctionalities(IntegerMessage.newBuilder().setValue(controller).build());
+
+			if (response.getStatus() != Status.OK) {
+				throw new RuntimeIOException("Error in Board getI2CFunctionalities: " + response.getDetail());
+			}
+
+			return response.getData();
+		} catch (StatusRuntimeException e) {
+			throw new RuntimeIOException("Error in Board getI2CFunctionalities: " + e);
 		}
 	}
 
@@ -572,7 +605,7 @@ public class GrpcClientDeviceFactory extends BaseNativeDeviceFactory {
 				for (Board.GpioInfo gpio_info : header.getGpioList()) {
 					if (gpio_info.getModeList().contains(Board.GpioMode.PWM_OUTPUT)) {
 						addPwmPinInfo(gpio_info.getHeader(), gpio_info.getGpioNumber(), gpio_info.getName(),
-								gpio_info.getPhysicalPin(), gpio_info.getPwmNum(),
+								gpio_info.getPhysicalPin(), gpio_info.getPwmChip(), gpio_info.getPwmNum(),
 								DiozeroProtosConverter.convert(gpio_info.getModeList()), gpio_info.getChip(),
 								gpio_info.getLineOffset());
 					} else if (gpio_info.getModeList().contains(Board.GpioMode.DIGITAL_INPUT)

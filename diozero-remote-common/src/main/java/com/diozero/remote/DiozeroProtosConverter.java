@@ -43,7 +43,6 @@ import com.diozero.api.GpioEventTrigger;
 import com.diozero.api.GpioPullUpDown;
 import com.diozero.api.I2CDevice.ProbeMode;
 import com.diozero.api.PinInfo;
-import com.diozero.api.PwmPinInfo;
 import com.diozero.api.SpiClockMode;
 import com.diozero.remote.message.protobuf.Board;
 import com.diozero.remote.message.protobuf.Gpio;
@@ -163,12 +162,11 @@ public class DiozeroProtosConverter {
 		gpio_info_builder.setSysFsNumber(pinInfo.getSysFsNumber());
 		gpio_info_builder.setChip(pinInfo.getChip());
 		gpio_info_builder.setLineOffset(pinInfo.getLineOffset());
+		gpio_info_builder.setPwmChip(pinInfo.getPwmChip());
+		gpio_info_builder.setPwmNum(pinInfo.getPwmNum());
 		gpio_info_builder.setName(pinInfo.getName());
 		for (DeviceMode mode : pinInfo.getModes()) {
 			gpio_info_builder.addMode(DiozeroProtosConverter.convert(mode));
-		}
-		if (pinInfo instanceof PwmPinInfo) {
-			gpio_info_builder.setPwmNum(((PwmPinInfo) pinInfo).getPwmNum());
 		}
 
 		return gpio_info_builder.build();

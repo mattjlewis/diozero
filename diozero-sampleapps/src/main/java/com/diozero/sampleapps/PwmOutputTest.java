@@ -32,11 +32,19 @@ package com.diozero.sampleapps;
  */
 
 import com.diozero.api.PwmOutputDevice;
+import com.diozero.util.Diozero;
 import com.diozero.util.SleepUtil;
 
 public class PwmOutputTest {
 	public static void main(String[] args) {
-		try (PwmOutputDevice pwm = new PwmOutputDevice(21)) {
+		if (args.length < 1) {
+			System.out.format("Usage: %s <gpio>%n", PwmOutputTest.class);
+			System.exit(1);
+		}
+
+		int gpio = Integer.parseInt(args[0]);
+
+		try (PwmOutputDevice pwm = new PwmOutputDevice(gpio)) {
 			for (int i = 0; i < 5; i++) {
 				System.out.println("50Hz");
 				pwm.setPwmFrequency(50);
@@ -62,6 +70,8 @@ public class PwmOutputTest {
 					SleepUtil.sleepMillis(100);
 				}
 			}
+		} finally {
+			Diozero.shutdown();
 		}
 	}
 }

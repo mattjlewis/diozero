@@ -14,6 +14,8 @@ service BoardService {
 	rpc GetGpioMode (Gpio.Identifier) returns (Board.GpioModeResponse) {}
 	rpc GetGpioValue (Gpio.Identifier) returns (IntegerResponse) {}
 	rpc GetCpuTemperature (google.protobuf.Empty) returns (FloatResponse) {}
+	rpc GetI2CBusNumbers (google.protobuf.Empty) returns (IntegerArrayResponse) {}
+	rpc GetI2CFunctionalities (IntegerMessage) returns (IntegerResponse) {}
 }
 
 service GpioService {
@@ -119,6 +121,12 @@ message IntegerResponse {
 	int32 data = 3;
 }
 
+message IntegerArrayResponse {
+	Status status = 1;
+	string detail = 2;
+	repeated int32 data = 3;
+}
+
 message FloatResponse {
 	Status status = 1;
 	string detail = 2;
@@ -150,7 +158,8 @@ message Board {
 		int32 lineOffset = 6;
 		string name = 7;
 		repeated GpioMode mode = 8;
-		optional int32 pwmNum = 9;
+		optional int32 pwmChip = 9;
+		optional int32 pwmNum = 10;
 	}
 
 	message HeaderInfo {

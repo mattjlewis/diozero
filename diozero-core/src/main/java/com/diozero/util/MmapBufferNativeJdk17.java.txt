@@ -1,0 +1,107 @@
+package com.diozero.util;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodType;
+
+import com.diozero.api.RuntimeIOException;
+import com.diozero.util.MmapByteBuffer;
+
+import jdk.incubator.foreign.CLinker;
+import jdk.incubator.foreign.FunctionDescriptor;
+import jdk.incubator.foreign.LibraryLookup;
+import jdk.incubator.foreign.MemoryAddress;
+import jdk.incubator.foreign.ResourceScope;
+
+public class MmapBufferNativeJdk17 {
+	public static final int O_RDWR = 0x0002;
+	public static final int O_SYNC = 0x0080;
+
+	public static final int PROT_READ = 0x01;
+	public static final int PROT_WRITE = 0x02;
+
+	public static final int MAP_SHARED = 0x0001;
+
+	private static final CLinker clinker = CLinker.getInstance();
+	private static final LibraryLookup libLookup = LibraryLookup.ofDefault();
+	private static ResourceScope resScope = ResourceScope.globalScope();
+
+	public static MmapByteBuffer createMmapBuffer(String filename, long offset, long length) throws RuntimeIOException {
+		int fd = open(filename, O_RDWR | O_SYNC);
+		if (fd < 0) {
+			throw new RuntimeIOException("Failed to open file '" + filename + "'");
+		}
+
+		long mmap_ptr = mmap64(0, length, PROT_READ | PROT_WRITE, MAP_SHARED, fd, offset);
+		int rc = close(fd);
+		if (mmap_ptr < 0) {
+			throw new RuntimeIOException("Failed to mmap file '" + filename + "'");
+		}
+
+		MemoryAddress ma = MemoryAddress.ofLong(mmap_ptr);
+		return new MmapByteBuffer(ma.toRawLongValue(), (int) length, ma.asSegment(length, resScope).asByteBuffer());
+	}
+
+	public static long mmap64(long addr, long length, int prot, int flags, int fd, long offset)
+			throws RuntimeIOException {
+		// void *mmap(void *addr, size_t length, int prot, int flags, int fd, off_t
+		// offset);
+		String method_name = "mmap";
+		MethodHandle mh = clinker.downcallHandle(libLookup.lookup(method_name).get(),
+				MethodType.methodType(long.class, long.class, long.class, int.class, int.class, int.class, long.class),
+				FunctionDescriptor.of(CLinker.C_LONG, CLinker.C_LONG, CLinker.C_LONG, CLinker.C_INT, CLinker.C_INT,
+						CLinker.C_INT, CLinker.C_LONG));
+
+		System.out.format("Invoking %s(%d, %d, %d, %d, %d, %d)...%n", method_name, Long.valueOf(addr),
+				Long.valueOf(length), Integer.valueOf(prot), Integer.valueOf(flags), Integer.valueOf(fd),
+				Long.valueOf(offset));
+		try {
+			return ((Long) mh.invoke(Long.valueOf(addr), Long.valueOf(length), Integer.valueOf(prot),
+					Integer.valueOf(flags), Integer.valueOf(fd), Long.valueOf(offset))).longValue();
+		} catch (Throwable t) {
+			throw new RuntimeIOException(t);
+		}
+	}
+
+	public static int munmap64(long addr, int length) {
+		// int munmap(void *addr, size_t length);
+		String method_name = "munmap";
+		MethodHandle mh = clinker.downcallHandle(libLookup.lookup(method_name).get(),
+				MethodType.methodType(int.class, long.class, int.class),
+				FunctionDescriptor.of(CLinker.C_INT, CLinker.C_LONG, CLinker.C_INT));
+
+		System.out.format("Invoking %s(%d, %d)...%n", method_name, Long.valueOf(addr), Integer.valueOf(length));
+		try {
+			return ((Integer) mh.invoke(Long.valueOf(addr), Integer.valueOf(length))).intValue();
+		} catch (Throwable t) {
+			throw new RuntimeIOException(t);
+		}
+	}
+
+	public static int open(String filename, int flags) {
+		// int open(const char *, int);
+		String method_name = "open";
+		MethodHandle mh = clinker.downcallHandle(libLookup.lookup(method_name).get(),
+				MethodType.methodType(int.class, MemoryAddress.class, int.class),
+				FunctionDescriptor.of(CLinker.C_INT, CLinker.C_POINTER, CLinker.C_INT));
+
+		System.out.format("Invoking %s(%s, %d)...%n", method_name, filename, Integer.valueOf(flags));
+		try {
+			return ((Integer) mh.invoke(CLinker.toCString(filename, resScope).address(), Integer.valueOf(flags)))
+					.intValue();
+		} catch (Throwable t) {
+			throw new RuntimeIOException(t);
+		}
+	}
+
+	public static int close(int fd) {
+		// int close(int);
+		String method_name = "close";
+		MethodHandle mh = clinker.downcallHandle(libLookup.lookup(method_name).get(),
+				MethodType.methodType(int.class, int.class), FunctionDescriptor.of(CLinker.C_INT, CLinker.C_INT));
+		try {
+			System.out.format("Invoking %s(%d)...%n", method_name, Integer.valueOf(fd));
+			return ((Integer) mh.invoke(Integer.valueOf(fd))).intValue();
+		} catch (Throwable t) {
+			throw new RuntimeIOException(t);
+		}
+	}
+}

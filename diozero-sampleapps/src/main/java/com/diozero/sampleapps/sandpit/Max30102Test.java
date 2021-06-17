@@ -31,7 +31,9 @@ package com.diozero.sampleapps.sandpit;
  * #L%
  */
 
-import java.util.Queue;
+import java.util.concurrent.BlockingQueue;
+
+import org.tinylog.Logger;
 
 import com.diozero.devices.sandpit.Max30102;
 import com.diozero.devices.sandpit.Max30102.LedPulseWidth;
@@ -41,31 +43,30 @@ import com.diozero.devices.sandpit.Max30102.SampleAveraging;
 import com.diozero.devices.sandpit.Max30102.SpO2AdcRange;
 import com.diozero.devices.sandpit.Max30102.SpO2SampleRate;
 import com.diozero.util.Diozero;
-import com.diozero.util.SleepUtil;
 
 public class Max30102Test {
 	public static void main(String[] args) {
 		// Run for 10s
 		int duration_ms = 30_000;
 		SpO2SampleRate spo2_sample_rate = SpO2SampleRate._100;
-		long sleep_ms = 1_000 / spo2_sample_rate.getSampleRate();
 
 		try (Max30102 max = new Max30102(1)) {
 			Diozero.registerForShutdown(max);
 
-			Queue<Sample> sample_queue = max.getSampleQueue();
-
 			max.setup(SampleAveraging._4, false, 15, Mode.SPO2, SpO2AdcRange._4096, spo2_sample_rate,
 					LedPulseWidth._411, 7.1f, 7.1f);
 
-			long start_ms = System.currentTimeMillis();
-			while ((System.currentTimeMillis() - start_ms) < duration_ms) {
-				max.pollForData();
+			BlockingQueue<Sample> sample_queue = max.getSampleQueue();
 
-				SleepUtil.sleepMillis(sleep_ms);
-			}
+			Logger.info("Collecting samples for {#,###} ms", Integer.valueOf(duration_ms));
+			max.start();
+			Thread.sleep(duration_ms);
+			max.stop();
 
-			sample_queue.stream().forEach(Max30102Test::printSample);
+			Logger.info("Samples:");
+			sample_queue.forEach(Max30102Test::printSample);
+		} catch (InterruptedException e) {
+			Logger.error(e, "Error: {}", e);
 		} finally {
 			Diozero.shutdown();
 		}

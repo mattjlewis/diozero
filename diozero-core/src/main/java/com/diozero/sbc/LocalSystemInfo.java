@@ -40,12 +40,16 @@ import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import org.tinylog.Logger;
 
+import com.diozero.internal.provider.builtin.i2c.NativeI2C;
+import com.diozero.util.FileNative;
 import com.diozero.util.StringUtil;
 
 /*-
@@ -241,7 +245,7 @@ public class LocalSystemInfo {
 	private LocalSystemInfo() {
 		osName = System.getProperty(OS_NAME_SYSTEM_PROPERTY);
 		osArch = System.getProperty(OS_ARCH_SYSTEM_PROPERTY);
-		libFileExtension = isWindows() ? ".dll" : ".so";
+		libFileExtension = isWindows() ? "dll" : isMacOS() ? "dylib" : "so";
 
 		if (isLinux()) {
 			try (Reader reader = new FileReader(LINUX_OS_RELEASE_FILE)) {
@@ -442,16 +446,26 @@ public class LocalSystemInfo {
 		return osVersion;
 	}
 
-	public static Collection<Integer> getI2CBusNumbers() {
+	public static List<Integer> getI2CBusNumbers() {
 		try {
-			List<Integer> i2c_buses = new ArrayList<>();
-			Files.newDirectoryStream(Paths.get("/dev"), "i2c-*")
-					.forEach(path -> i2c_buses.add(Integer.valueOf(path.toString().split("-")[1])));
-			return i2c_buses;
+			return StreamSupport.stream(Files.newDirectoryStream(Paths.get("/dev"), "i2c-*").spliterator(), false)
+					.map(path -> Integer.valueOf(path.toString().split("-")[1])).sorted().collect(Collectors.toList());
 		} catch (IOException e) {
-			Logger.error(e, "Error: {}", e);
-			return null;
+			Logger.info(e, "Error enumerating local I2C buses: {}", e);
+			return Collections.emptyList();
 		}
+	}
+
+	public static int getI2CFunctionalities(int controller) {
+		int fd = FileNative.open("/dev/i2c-" + controller, FileNative.O_RDWR);
+		if (fd < 0) {
+			return -1;
+		}
+
+		int funcs = NativeI2C.getFuncs(fd);
+		FileNative.close(fd);
+
+		return funcs;
 	}
 
 	/**

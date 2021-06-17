@@ -27,6 +27,7 @@ SRCS = com_diozero_internal_provider_builtin_gpio_NativeGpioDevice.c \
 	com_diozero_internal_provider_builtin_serial_NativeSerialDevice.c \
 	com_diozero_internal_provider_builtin_spi_NativeSpiDevice.c \
 	com_diozero_util_EpollNative.c \
+	com_diozero_util_FileNative.c \
 	com_diozero_util_MmapBufferNative.c \
 	com_diozero_util_PollNative.c \
 	com_diozero_util_SleepUtil.c \

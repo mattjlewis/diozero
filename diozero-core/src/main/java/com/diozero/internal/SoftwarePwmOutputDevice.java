@@ -37,6 +37,7 @@ import java.util.concurrent.TimeoutException;
  */
 
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.tinylog.Logger;
 
@@ -57,8 +58,8 @@ import com.diozero.util.SleepUtil;
 public class SoftwarePwmOutputDevice extends AbstractDevice implements PwmOutputDeviceInterface, Runnable {
 	private GpioDigitalOutputDeviceInterface digitalOutputDevice;
 	private AtomicBoolean running;
-	private int periodMs;
-	private int dutyMs;
+	private AtomicInteger periodMs;
+	private AtomicInteger dutyMs;
 	private Future<?> future;
 
 	public SoftwarePwmOutputDevice(String key, DeviceFactoryInterface deviceFactory,
@@ -70,7 +71,8 @@ public class SoftwarePwmOutputDevice extends AbstractDevice implements PwmOutput
 		this.digitalOutputDevice = digitalOutputDevice;
 		running = new AtomicBoolean();
 
-		periodMs = Math.round(1_000f / frequencyHz);
+		periodMs = new AtomicInteger(Math.round(1_000f / frequencyHz));
+		dutyMs = new AtomicInteger();
 		setValue(initialValue);
 		start();
 	}
@@ -90,7 +92,7 @@ public class SoftwarePwmOutputDevice extends AbstractDevice implements PwmOutput
 			} else {
 				// Wait for the runnable to complete
 				try {
-					future.get(periodMs, TimeUnit.MILLISECONDS);
+					future.get(periodMs.get(), TimeUnit.MILLISECONDS);
 				} catch (InterruptedException | ExecutionException | TimeoutException e) {
 					Logger.info(e, "Error waiting for future to complete: {}", e);
 					// Cancel the future if it doesn't complete normally by setting running to false
@@ -104,17 +106,17 @@ public class SoftwarePwmOutputDevice extends AbstractDevice implements PwmOutput
 	@Override
 	public void run() {
 		while (running.get()) {
-			if (dutyMs == 0) {
+			if (dutyMs.get() == 0) {
 				// Fully off
 				digitalOutputDevice.setValue(false);
 			} else if (dutyMs == periodMs) {
 				digitalOutputDevice.setValue(true);
 			} else {
 				digitalOutputDevice.setValue(true);
-				SleepUtil.sleepMillis(dutyMs);
+				SleepUtil.sleepMillis(dutyMs.get());
 				digitalOutputDevice.setValue(false);
 			}
-			SleepUtil.sleepMillis(periodMs - dutyMs);
+			SleepUtil.sleepMillis(periodMs.get() - dutyMs.get());
 		}
 	}
 
@@ -122,7 +124,8 @@ public class SoftwarePwmOutputDevice extends AbstractDevice implements PwmOutput
 	protected void closeDevice() {
 		Logger.trace("closeDevice() {}", getKey());
 		stop();
-		if (digitalOutputDevice != null) {
+		// The diozero shutdown handler closes devices in an arbitrary order
+		if (digitalOutputDevice != null && digitalOutputDevice.isOpen()) {
 			digitalOutputDevice.close();
 		}
 	}
@@ -139,24 +142,24 @@ public class SoftwarePwmOutputDevice extends AbstractDevice implements PwmOutput
 
 	@Override
 	public float getValue() {
-		return dutyMs / (float) periodMs;
+		return dutyMs.get() / (float) periodMs.get();
 	}
 
 	@Override
 	public void setValue(float value) {
 		// Constrain the specified value to 0..1
-		dutyMs = Math.round(RangeUtil.constrain(value, 0, 1) * periodMs);
+		dutyMs.set(Math.round(RangeUtil.constrain(value, 0, 1) * periodMs.get()));
 	}
 
 	@Override
 	public int getPwmFrequency() {
-		return 1_000 / periodMs;
+		return 1_000 / periodMs.get();
 	}
 
 	@Override
 	public void setPwmFrequency(int frequencyHz) throws RuntimeIOException {
 		float current_value = getValue();
-		periodMs = Math.round(1_000f / frequencyHz);
-		dutyMs = Math.round(current_value * periodMs);
+		periodMs.set(Math.round(1_000f / frequencyHz));
+		dutyMs.set(Math.round(current_value * periodMs.get()));
 	}
 }

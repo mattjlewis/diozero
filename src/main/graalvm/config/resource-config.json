@@ -4,6 +4,7 @@
 			{ "pattern": "\\QMETA-INF/services/com.diozero.internal.spi.BoardInfoProvider\\E" },
 			{ "pattern": "boarddefs/.*\\.txt$" },
 			{ "pattern": "\\Qlib/linux-aarch64/libdiozero-system-utils.so\\E" },
+			{ "pattern": "\\QMETA-INF/services/org.tinylog.configuration.ConfigurationLoader\\E" },
 			{ "pattern": "\\QMETA-INF/services/org.tinylog.provider.LoggingProvider\\E" },
 			{ "pattern": "\\QMETA-INF/services/org.tinylog.writers.Writer\\E" },
 			{ "pattern": "\\Qtinylog.properties\\E" }

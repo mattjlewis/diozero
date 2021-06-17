@@ -77,7 +77,7 @@ public class FileDescriptorUtil {
 	/*-
 	public static FileDescriptor createFileDescriptor(int fd) {
 		initialise();
-	
+
 		try {
 			return fdConstructor.newInstance(Integer.valueOf(fd));
 		} catch (IllegalArgumentException | IllegalAccessException | InstantiationException

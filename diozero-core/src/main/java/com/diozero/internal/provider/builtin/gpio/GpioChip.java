@@ -247,28 +247,28 @@ public class GpioChip extends GpioChipInfo implements AutoCloseable, GpioLineEve
 		fdToListener.put(Integer.valueOf(fd), listener);
 	}
 
-	public void deregister(int fd) {
+	public void deregister(int lineFd) {
 		if (epollFd == EPOLL_FD_NOT_CREATED) {
 			Logger.debug("Attempt to register an epoll fd without epoll being initiated");
 			return;
 		}
 
-		if (fdToListener.containsKey(Integer.valueOf(fd))) {
-			int rc = NativeGpioDevice.epollRemoveFileDescriptor(epollFd, fd);
-			fdToListener.remove(Integer.valueOf(fd));
+		if (fdToListener.containsKey(Integer.valueOf(lineFd))) {
+			int rc = NativeGpioDevice.epollRemoveFileDescriptor(epollFd, lineFd);
+			fdToListener.remove(Integer.valueOf(lineFd));
 			if (fdToListener.isEmpty()) {
 				stopEventProcessing();
 			}
 			if (rc < 0) {
-				throw new RuntimeIOException("Error removing file descriptor '" + fd + "' from epoll");
+				throw new RuntimeIOException("Error removing file descriptor '" + lineFd + "' from epoll");
 			}
 		}
 	}
 
 	@Override
-	public void event(int fd, int eventDataId, long epochTimeMs, long timestampNanos) {
+	public void event(int lineFd, int eventDataId, long epochTimeMs, long timestampNanos) {
 		// Add the event to the tail of the queue
-		eventQueue.offer(new NativeGpioEvent(fd, eventDataId, epochTimeMs, timestampNanos));
+		eventQueue.offer(new NativeGpioEvent(lineFd, eventDataId, epochTimeMs, timestampNanos));
 	}
 
 	private void eventLoop() {
@@ -340,13 +340,14 @@ public class GpioChip extends GpioChipInfo implements AutoCloseable, GpioLineEve
 				// Blocking queue - take the event at the head of the queue, waiting if
 				// necessary until an event becomes available.
 				NativeGpioEvent event = eventQueue.take();
-				Integer event_fd = Integer.valueOf(event.fd);
-				GpioLineEventListener listener = fdToListener.get(event_fd);
+				Integer line_fd = Integer.valueOf(event.lineFd);
+				GpioLineEventListener listener = fdToListener.get(line_fd);
 				if (listener == null) {
-					Logger.warn("No listener for fd {}, event data: '{}'", event_fd,
+					// There may still be pending events on the queue after removing a listener
+					Logger.debug("No listener for line fd {}, event data: '{}'", line_fd,
 							Integer.valueOf(event.eventDataId));
 				} else {
-					listener.event(event.fd, event.eventDataId, event.epochTimeMs, event.timestampNanos);
+					listener.event(event.lineFd, event.eventDataId, event.epochTimeMs, event.timestampNanos);
 				}
 			}
 		} catch (InterruptedException e) {
@@ -360,13 +361,13 @@ public class GpioChip extends GpioChipInfo implements AutoCloseable, GpioLineEve
 	}
 
 	private static class NativeGpioEvent {
-		int fd;
+		int lineFd;
 		int eventDataId;
 		long epochTimeMs;
 		long timestampNanos;
 
-		public NativeGpioEvent(int fd, int eventDataId, long epochTimeMs, long timestampNanos) {
-			this.fd = fd;
+		public NativeGpioEvent(int lineFd, int eventDataId, long epochTimeMs, long timestampNanos) {
+			this.lineFd = lineFd;
 			this.eventDataId = eventDataId;
 			this.epochTimeMs = epochTimeMs;
 			this.timestampNanos = timestampNanos;

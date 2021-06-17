@@ -39,11 +39,15 @@ import java.nio.file.Paths;
 
 import org.tinylog.Logger;
 
-import com.diozero.api.PwmPinInfo;
+import com.diozero.api.DeviceMode;
+import com.diozero.api.PinInfo;
 import com.diozero.api.RuntimeIOException;
 import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.DeviceFactoryInterface;
+import com.diozero.internal.spi.MmapGpioInterface;
+import com.diozero.internal.spi.NativeDeviceFactoryInterface;
 import com.diozero.internal.spi.PwmOutputDeviceInterface;
+import com.diozero.util.SleepUtil;
 
 public class SysFsPwmOutputDevice extends AbstractDevice implements PwmOutputDeviceInterface {
 	private int gpio;
@@ -53,15 +57,21 @@ public class SysFsPwmOutputDevice extends AbstractDevice implements PwmOutputDev
 	private RandomAccessFile dutyFile;
 	private int periodNs;
 
-	public SysFsPwmOutputDevice(String key, DeviceFactoryInterface deviceFactory, int pwmChip, PwmPinInfo pinInfo,
-			int frequencyHz, float initialValue) {
+	public SysFsPwmOutputDevice(String key, DeviceFactoryInterface deviceFactory, PinInfo pinInfo, int frequencyHz,
+			float initialValue, MmapGpioInterface mmapGpio) {
 		super(key, deviceFactory);
 
-		this.pwmChip = pwmChip;
 		gpio = pinInfo.getDeviceNumber();
+		pwmChip = deviceFactory.getBoardPinInfo().getPwmChipNumberOverride(pinInfo);
 		pwmNum = pinInfo.getPwmNum();
 
 		Path pwm_chip_root = Paths.get("/sys/class/pwm/pwmchip" + pwmChip);
+		File pwm_chip_root_file = pwm_chip_root.toFile();
+		if (!pwm_chip_root_file.exists() || !pwm_chip_root_file.canWrite()) {
+			throw new RuntimeIOException(
+					"PWM chip sysfs folder '" + pwm_chip_root.toAbsolutePath() + "' doesn't exist or is unwritable");
+		}
+
 		pwmRoot = pwm_chip_root.resolve("pwm" + pwmNum);
 
 		try {
@@ -71,17 +81,22 @@ public class SysFsPwmOutputDevice extends AbstractDevice implements PwmOutputDev
 					writer.write(String.valueOf(pwmNum));
 				}
 			}
+			// Need to wait for the sysfs file to be setup correctly
+			SleepUtil.sleepMillis(50);
 
 			dutyFile = new RandomAccessFile(pwmRoot.resolve("duty_cycle").toFile(), "rw");
 		} catch (IOException e) {
 			throw new RuntimeIOException("Error opening PWM #" + pwmNum, e);
 		}
 
-		updatePolarity(Polarity.NORMAL);
+		if (mmapGpio != null && mmapGpio.getMode(gpio) != DeviceMode.PWM_OUTPUT) {
+			mmapGpio.setMode(gpio, DeviceMode.PWM_OUTPUT);
+		}
+
+		// The order is important, cannot set the polarity or value if the period is 0
 		setPwmFrequency(frequencyHz);
-
 		setValue(initialValue);
-
+		updatePolarity(Polarity.NORMAL);
 		updateEnabled(true);
 	}
 
@@ -115,11 +130,10 @@ public class SysFsPwmOutputDevice extends AbstractDevice implements PwmOutputDev
 		return pwmNum;
 	}
 
-	@Override
-	public float getValue() throws RuntimeIOException {
+	private int getValueRaw() throws RuntimeIOException {
 		try {
 			dutyFile.seek(0);
-			return Integer.parseInt(dutyFile.readLine()) / (float) periodNs;
+			return Integer.parseInt(dutyFile.readLine());
 		} catch (IOException e) {
 			close();
 			throw new RuntimeIOException("Error getting PWM output value");
@@ -127,9 +141,14 @@ public class SysFsPwmOutputDevice extends AbstractDevice implements PwmOutputDev
 	}
 
 	@Override
+	public float getValue() throws RuntimeIOException {
+		return getValueRaw() / (float) periodNs;
+	}
+
+	@Override
 	public void setValue(float value) throws RuntimeIOException {
 		if (value < 0 || value > 1) {
-			throw new IllegalArgumentException("Invalid value, must be 0..1");
+			throw new IllegalArgumentException("Invalid value (" + value + "), must be 0..1");
 		}
 
 		try {
@@ -150,12 +169,21 @@ public class SysFsPwmOutputDevice extends AbstractDevice implements PwmOutputDev
 	@Override
 	public void setPwmFrequency(int frequencyHz) throws RuntimeIOException {
 		// The value is represented as duty nanoseconds hence needs to be adjusted if
-		// the frequency changes
-		float value = getValue();
-		setValue(0);
+		// the frequency changes.
+		// Get the current raw value
+		int current_raw_value = getValueRaw();
+		if (current_raw_value != 0) {
+			// Temporarily set to 0 while we change the PWM period
+			setValue(0);
+		}
+		float current_value = current_raw_value / (float) periodNs;
+
+		// Recalculate and update the period
 		periodNs = 1_000_000_000 / frequencyHz;
 		updatePeriod(periodNs);
-		setValue(value);
+
+		// Restore the old value
+		setValue(current_value);
 	}
 
 	private void updateEnabled(boolean enabled) throws RuntimeIOException {
@@ -189,17 +217,29 @@ public class SysFsPwmOutputDevice extends AbstractDevice implements PwmOutputDev
 		}
 	}
 
-	public static enum Polarity {
+	public enum Polarity {
 		NORMAL("normal"), INVERSED("inversed");
 
 		private String value;
 
-		private Polarity(String value) {
+		Polarity(String value) {
 			this.value = value;
 		}
 
 		public String getValue() {
 			return value;
 		}
+	}
+
+	public static boolean isSupported(NativeDeviceFactoryInterface deviceFactory, PinInfo pinInfo) {
+		int pwm_chip = deviceFactory.getBoardInfo().getPwmChipNumberOverride(pinInfo);
+
+		if (pwm_chip == PinInfo.NOT_DEFINED || pinInfo.getPwmNum() == PinInfo.NOT_DEFINED) {
+			return false;
+		}
+
+		// Check the directory exists and is readable
+		File f = Paths.get("/sys/class/pwm/pwmchip" + pwm_chip).toFile();
+		return f.exists() && f.isDirectory() && f.canRead();
 	}
 }

@@ -1064,8 +1064,14 @@ public class Ads112C04 extends AbstractDeviceFactory implements AnalogInputDevic
 		byte[] buffer = device.readI2CBlockDataByteArray(COMMAND_RDATA, bytes_to_read);
 		Logger.debug("Read {} bytes:", Integer.valueOf(buffer.length));
 		*/
+
+		/*-
+		byte[] buffer = new byte[bytes_to_read];
+		device.readNoStop(COMMAND_RDATA, buffer, repeatedStart);
+		ByteBuffer bb = ByteBuffer.wrap(buffer, 1, bytes_to_read);
+		 */
+
 		byte[] buffer = new byte[1 + bytes_to_read];
-		// device.readNoStop(COMMAND_RDATA, bytes_to_read, buffer, repeatedStart);
 		buffer[0] = COMMAND_RDATA;
 		I2CMessage messages[] = new I2CMessage[2];
 		messages[0] = new I2CMessage(I2CMessage.I2C_M_WR, 1);

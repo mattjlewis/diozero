@@ -1,15 +1,13 @@
-package com.diozero.api;
-
 /*
  * #%L
  * Organisation: diozero
- * Project:      diozero - Core
- * Filename:     PwmPinInfo.java
- * 
+ * Project:      Device I/O Zero - Native System Utilities
+ * Filename:     com_diozero_util_FileNative.c
+ *
  * This file is part of the diozero project. More information about this project
- * can be found at https://www.diozero.com/.
+ * can be found at http://www.diozero.com/
  * %%
- * Copyright (C) 2016 - 2021 diozero
+ * Copyright (C) 2016 - 2020 diozero
  * %%
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -17,10 +15,10 @@ package com.diozero.api;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -31,23 +29,34 @@ package com.diozero.api;
  * #L%
  */
 
-import java.util.Collection;
+#include "com_diozero_util_FileNative.h"
 
-/**
- * Describe the various attributes of an individual General-Purpose Input/Output
- * (GPIO) pin used for Pulse Width Modulation (PWM) output.
+#include <unistd.h>
+#include <fcntl.h>
+
+#include <jni.h>
+
+/*
+ * Class:     com_diozero_util_FileNative
+ * Method:    open
+ * Signature: (Ljava/lang/String;I)I
  */
-public class PwmPinInfo extends PinInfo {
-	private int pwmNum;
+JNIEXPORT jint JNICALL Java_com_diozero_util_FileNative_open(
+		JNIEnv * env, jclass clz, jstring filename, jint flags) {
+	jboolean is_copy;
+	const char* buf = (*env)->GetStringUTFChars(env, filename, &is_copy);
 
-	public PwmPinInfo(String keyPrefix, String header, int gpioNumber, int pinNumber, int pwmNum, String name,
-			Collection<DeviceMode> modes, int sysFsNumber, int chip, int line) {
-		super(keyPrefix, header, gpioNumber, pinNumber, name, modes, sysFsNumber, chip, line);
+	int fd = open(buf, flags);
+	(*env)->ReleaseStringUTFChars(env, filename, buf);
+	return fd;
+}
 
-		this.pwmNum = pwmNum;
-	}
-
-	public int getPwmNum() {
-		return pwmNum;
-	}
+/*
+ * Class:     com_diozero_util_FileNative
+ * Method:    close
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_com_diozero_util_FileNative_close(
+		JNIEnv * env, jclass clz, jint fd) {
+	return close(fd);
 }

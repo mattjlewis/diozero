@@ -221,6 +221,17 @@ public class RaspberryPiMmapGpio implements MmapGpioInterface {
 		case DIGITAL_OUTPUT:
 			mmapIntBuffer.put(reg, mmapIntBuffer.get(reg) & ~(7 << shift) | (1 << shift));
 			break;
+		case PWM_OUTPUT:
+			int m_val;
+			if (gpio == 12 || gpio == 13 || gpio == 40 || gpio == 41 || gpio == 45) {
+				m_val = FSEL_ALT0;
+			} else if (gpio == 18 || gpio == 19) {
+				m_val = FSEL_ALT5;
+			} else {
+				throw new IllegalArgumentException("Invalid GPIO mode " + mode + " for pin " + gpio);
+			}
+			mmapIntBuffer.put(reg, mmapIntBuffer.get(reg) & ~(7 << shift) | (m_val << shift));
+			break;
 		default:
 			throw new IllegalArgumentException("Invalid GPIO mode " + mode + " for pin " + gpio);
 		}

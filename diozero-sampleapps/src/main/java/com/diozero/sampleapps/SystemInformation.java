@@ -46,6 +46,7 @@ import com.diozero.internal.spi.NativeDeviceFactoryInterface;
 import com.diozero.sbc.BoardInfo;
 import com.diozero.sbc.DeviceFactoryHelper;
 import com.diozero.sbc.LocalSystemInfo;
+import com.diozero.util.Diozero;
 import com.diozero.util.StringUtil;
 
 public class SystemInformation {
@@ -67,79 +68,83 @@ public class SystemInformation {
 		System.out.println(ansi().bold().a("Local System Info").boldOff());
 		System.out.println(ansi().bold().a("Operating System").boldOff().format(": %s %s",
 				sys_info.getOperatingSystemId(), sys_info.getOperatingSystemVersion()));
-		System.out.println(ansi().bold().a("I2C buses").boldOff().format(": %s", LocalSystemInfo.getI2CBusNumbers()));
 		System.out.println(ansi().bold().a("CPU Temperature").boldOff().format(": %.2f",
 				Float.valueOf(sys_info.getCpuTemperature())));
 
 		System.out.println();
-		NativeDeviceFactoryInterface ndf = DeviceFactoryHelper.getNativeDeviceFactory();
-		System.out.println(ansi().bold().a("Native Device Factory").boldOff().a(": ").a(ndf.getName()));
-		BoardInfo board_info = ndf.getBoardInfo();
-		System.out.println(ansi().bold().a("Board").boldOff().format(": %s (RAM: %,d bytes, O/S: %s %s)",
-				board_info.getName(), Integer.valueOf(board_info.getMemoryKb()), board_info.getOperatingSystemId(),
-				board_info.getOperatingSystemVersion()));
+		try (NativeDeviceFactoryInterface ndf = DeviceFactoryHelper.getNativeDeviceFactory()) {
+			System.out.println(ansi().bold().a("Native Device Factory").boldOff().a(": ").a(ndf.getName()));
+			BoardInfo board_info = ndf.getBoardInfo();
+			System.out.println(ansi().bold().a("Board").boldOff().format(": %s (RAM: %,d bytes, O/S: %s %s)",
+					board_info.getName(), Integer.valueOf(board_info.getMemoryKb()), board_info.getOperatingSystemId(),
+					board_info.getOperatingSystemVersion()));
+			System.out.println(ansi().bold().a("I2C Bus Numbers").boldOff().format(": %s", ndf.getI2CBusNumbers()));
 
-		System.out.println();
-		for (Map.Entry<String, Map<Integer, PinInfo>> header_pins_entry : board_info.getHeaders().entrySet()) {
-			// Get the maximum pin name length
-			int max_length = Math.max(MIN_PIN_NAME_LENGTH, header_pins_entry.getValue().values().stream()
-					.mapToInt(pin_info -> pin_info.getName().length()).max().orElse(MIN_PIN_NAME_LENGTH));
-
-			String name_dash = StringUtil.repeat('-', max_length);
-			System.out.println(ansi().bold().a("Header").boldOff().a(": ").a(header_pins_entry.getKey()));
-			System.out.format("+-----+-%s-+--------+----------+--------+-%s-+-----+%n", name_dash, name_dash);
-			System.out.format(
-					"+ GP# + %" + max_length + "s +  gpiod + Physical + gpiod  + %-" + max_length + "s + GP# +%n",
-					"Name", "Name");
-			System.out.format("+-----+-%s-+--------+----------+--------+-%s-+-----+%n", name_dash, name_dash);
-
-			Map<Integer, PinInfo> pins = header_pins_entry.getValue();
-			int index = 0;
-			for (PinInfo pin_info : pins.values()) {
-				if (index++ % 2 == 0) {
-					System.out.print(ansi().a("| ") //
-							.bold().fg(getPinColour(pin_info)).format("%3s", getNotDefined(pin_info.getDeviceNumber()))
-							.fgDefault().boldOff().a(" | ") //
-							.bold().fg(getPinColour(pin_info)).format("%" + max_length + "s", pin_info.getName())
-							.fgDefault().boldOff().a(" | ") //
-							.bold().format("%6s", getGpiodName(pin_info.getChip(), pin_info.getLineOffset())).boldOff()
-							.a(" | ") //
-							.bold().format("%2s", getNotDefined(pin_info.getPhysicalPin())).boldOff().a(" |"));
-					/*-
-					System.out.format("| %3s | %" + max_length + "s | %2s:%-3s | %2s |",
-							getNotDefined(pin_info.getDeviceNumber()), pin_info.getName(),
-							getNotDefined(pin_info.getChip()), getNotDefined(pin_info.getLineOffset()),
-							getNotDefined(pin_info.getPhysicalPin()));
-					*/
-				} else {
-					System.out.println(ansi().a("| ") //
-							.bold().format("%-2s", getNotDefined(pin_info.getPhysicalPin())).boldOff().a(" | ") //
-							.bold().format("%-6s", getGpiodName(pin_info.getChip(), pin_info.getLineOffset())).boldOff()
-							.a(" | ") //
-							.bold().fg(getPinColour(pin_info)).format("%-" + max_length + "s", pin_info.getName())
-							.fgDefault().boldOff().a(" | ") //
-							.bold().fg(getPinColour(pin_info)).format("%-3s", getNotDefined(pin_info.getDeviceNumber()))
-							.fgDefault().boldOff().a(" |"));
-					/*-
-					System.out.format("| %-2s | %2s:%-3s | %-" + max_length + "s | %-3s |%n",
-							getNotDefined(pin_info.getPhysicalPin()), getNotDefined(pin_info.getChip()),
-							getNotDefined(pin_info.getLineOffset()), pin_info.getName(),
-							getNotDefined(pin_info.getDeviceNumber()));
-					*/
-				}
-				/*-
-				if (pin_info instanceof PwmPinInfo) {
-					System.out.format("Pin [%d]: %s %d (PWM%d) %s%n", pin_info.getPhysicalPin(),
-							pin_info.getName(), pin_info.getDeviceNumber(), ((PwmPinInfo) pin_info).getPwmNum(),
-							pin_info.getModes().toString());
-				} else {
-					System.out.format("Pin [%d]: %s %d %s%n", pin_info.getPhysicalPin(),
-							pin_info.getName(), pin_info.getDeviceNumber(), pin_info.getModes().toString());
-				}
-				*/
-			}
-			System.out.format("+-----+-%s-+--------+----------+--------+-%s-+-----+%n", name_dash, name_dash);
 			System.out.println();
+			for (Map.Entry<String, Map<Integer, PinInfo>> header_pins_entry : board_info.getHeaders().entrySet()) {
+				// Get the maximum pin name length
+				int max_length = Math.max(MIN_PIN_NAME_LENGTH, header_pins_entry.getValue().values().stream()
+						.mapToInt(pin_info -> pin_info.getName().length()).max().orElse(MIN_PIN_NAME_LENGTH));
+
+				String name_dash = StringUtil.repeat('-', max_length);
+				System.out.println(ansi().bold().a("Header").boldOff().a(": ").a(header_pins_entry.getKey()));
+				System.out.format("+-----+-%s-+--------+----------+--------+-%s-+-----+%n", name_dash, name_dash);
+				System.out.format(
+						"+ GP# + %" + max_length + "s +  gpiod + Physical + gpiod  + %-" + max_length + "s + GP# +%n",
+						"Name", "Name");
+				System.out.format("+-----+-%s-+--------+----------+--------+-%s-+-----+%n", name_dash, name_dash);
+
+				Map<Integer, PinInfo> pins = header_pins_entry.getValue();
+				int index = 0;
+				for (PinInfo pin_info : pins.values()) {
+					if (index++ % 2 == 0) {
+						System.out.print(ansi().a("| ") //
+								.bold().fg(getPinColour(pin_info))
+								.format("%3s", getNotDefined(pin_info.getDeviceNumber())).fgDefault().boldOff().a(" | ") //
+								.bold().fg(getPinColour(pin_info)).format("%" + max_length + "s", pin_info.getName())
+								.fgDefault().boldOff().a(" | ") //
+								.bold().format("%6s", getGpiodName(pin_info.getChip(), pin_info.getLineOffset()))
+								.boldOff().a(" | ") //
+								.bold().format("%2s", getNotDefined(pin_info.getPhysicalPin())).boldOff().a(" |"));
+						/*-
+						System.out.format("| %3s | %" + max_length + "s | %2s:%-3s | %2s |",
+								getNotDefined(pin_info.getDeviceNumber()), pin_info.getName(),
+								getNotDefined(pin_info.getChip()), getNotDefined(pin_info.getLineOffset()),
+								getNotDefined(pin_info.getPhysicalPin()));
+						*/
+					} else {
+						System.out.println(ansi().a("| ") //
+								.bold().format("%-2s", getNotDefined(pin_info.getPhysicalPin())).boldOff().a(" | ") //
+								.bold().format("%-6s", getGpiodName(pin_info.getChip(), pin_info.getLineOffset()))
+								.boldOff().a(" | ") //
+								.bold().fg(getPinColour(pin_info)).format("%-" + max_length + "s", pin_info.getName())
+								.fgDefault().boldOff().a(" | ") //
+								.bold().fg(getPinColour(pin_info))
+								.format("%-3s", getNotDefined(pin_info.getDeviceNumber())).fgDefault().boldOff()
+								.a(" |"));
+						/*-
+						System.out.format("| %-2s | %2s:%-3s | %-" + max_length + "s | %-3s |%n",
+								getNotDefined(pin_info.getPhysicalPin()), getNotDefined(pin_info.getChip()),
+								getNotDefined(pin_info.getLineOffset()), pin_info.getName(),
+								getNotDefined(pin_info.getDeviceNumber()));
+						*/
+					}
+					/*-
+					if (pin_info instanceof PwmPinInfo) {
+						System.out.format("Pin [%d]: %s %d (PWM%d) %s%n", pin_info.getPhysicalPin(),
+								pin_info.getName(), pin_info.getDeviceNumber(), ((PwmPinInfo) pin_info).getPwmNum(),
+								pin_info.getModes().toString());
+					} else {
+						System.out.format("Pin [%d]: %s %d %s%n", pin_info.getPhysicalPin(),
+								pin_info.getName(), pin_info.getDeviceNumber(), pin_info.getModes().toString());
+					}
+					*/
+				}
+				System.out.format("+-----+-%s-+--------+----------+--------+-%s-+-----+%n", name_dash, name_dash);
+				System.out.println();
+			}
+		} finally {
+			Diozero.shutdown();
 		}
 	}
 }

@@ -1,6 +1,6 @@
 package com.diozero.internal.provider.firmata;
 
-/*
+/*-
  * #%L
  * Organisation: diozero
  * Project:      diozero - Firmata
@@ -31,19 +31,6 @@ package com.diozero.internal.provider.firmata;
  * #L%
  */
 
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-
-import org.firmata4j.I2CDevice;
-import org.firmata4j.I2CEvent;
-import org.firmata4j.I2CListener;
 import org.tinylog.Logger;
 
 import com.diozero.api.I2CConstants;
@@ -66,19 +53,11 @@ import com.diozero.internal.spi.InternalI2CDeviceInterface;
  * <li>SCL: A5</li>
  * </ul>
  */
-public class FirmataI2CDevice extends AbstractDevice implements InternalI2CDeviceInterface, I2CListener {
-	private static final int NO_REGISTER = 0;
-
+public class FirmataI2CDevice extends AbstractDevice implements InternalI2CDeviceInterface {
 	private FirmataAdapter adapter;
 	private int address;
 	private boolean autoRestart = false;
 	private boolean addressSize10Bit;
-
-	// Firmata4j specific
-	private I2CDevice i2cDevice;
-	private Lock lock;
-	private Map<Integer, Condition> conditions;
-	private Map<Integer, LinkedList<I2CEvent>> eventQueues;
 
 	public FirmataI2CDevice(FirmataDeviceFactory deviceFactory, String key, int controller, int address,
 			I2CConstants.AddressSize addressSize) {
@@ -87,19 +66,6 @@ public class FirmataI2CDevice extends AbstractDevice implements InternalI2CDevic
 		adapter = deviceFactory.getFirmataAdapter();
 		this.address = address;
 		addressSize10Bit = addressSize == I2CConstants.AddressSize.SIZE_10;
-
-		Logger.trace("Creating new Firmata I2CDevice for address 0x{}", Integer.toHexString(address));
-		if (adapter == null) {
-			lock = new ReentrantLock();
-			conditions = new HashMap<>();
-			eventQueues = new HashMap<>();
-
-			try {
-				i2cDevice = deviceFactory.getIoDevice().getI2CDevice((byte) address);
-			} catch (IOException e) {
-				throw new RuntimeIOException(e);
-			}
-		}
 	}
 
 	@Override
@@ -116,112 +82,40 @@ public class FirmataI2CDevice extends AbstractDevice implements InternalI2CDevic
 	public byte readByte() {
 		Logger.debug("read()");
 
-		byte data;
-		if (adapter != null) {
-			I2CResponse response = adapter.i2cRead(address, autoRestart, addressSize10Bit, 1);
-			data = response.getData()[0];
-		} else {
-			try {
-				i2cDevice.ask(NO_REGISTER, (byte) 1, this);
-				byte[] buffer = waitForData(NO_REGISTER);
-				data = buffer[0];
-			} catch (IOException e) {
-				throw new RuntimeIOException(e);
-			}
-		}
-
-		return data;
+		I2CResponse response = adapter.i2cRead(address, autoRestart, addressSize10Bit, 1);
+		return response.getData()[0];
 	}
 
 	@Override
 	public void writeByte(byte b) throws RuntimeIOException {
-		if (adapter != null) {
-			adapter.i2cWrite(address, autoRestart, addressSize10Bit, new byte[] { b });
-		} else {
-			try {
-				i2cDevice.tell(b);
-			} catch (IOException e) {
-				throw new RuntimeIOException(e);
-			}
-		}
+		adapter.i2cWrite(address, autoRestart, addressSize10Bit, new byte[] { b });
 	}
 
 	@Override
 	public byte readByteData(int register) {
-		byte data;
-		if (adapter != null) {
-			I2CResponse response = adapter.i2cReadData(address, autoRestart, addressSize10Bit, register, 1);
-			data = response.getData()[0];
-		} else {
-			try {
-				i2cDevice.ask(register, (byte) 1, this);
-				byte[] buffer = waitForData(register);
-				data = buffer[0];
-			} catch (IOException e) {
-				throw new RuntimeIOException(e);
-			}
-		}
-
-		return data;
+		I2CResponse response = adapter.i2cReadData(address, autoRestart, addressSize10Bit, register, 1);
+		return response.getData()[0];
 	}
 
 	@Override
 	public void writeByteData(int register, byte b) throws RuntimeIOException {
-		if (adapter != null) {
-			adapter.i2cWriteData(address, autoRestart, addressSize10Bit, register, new byte[] { b });
-		} else {
-			byte[] data = new byte[2];
-			data[0] = (byte) register;
-			data[1] = b;
-			try {
-				i2cDevice.tell(data);
-			} catch (IOException e) {
-				throw new RuntimeIOException(e);
-			}
-		}
+		adapter.i2cWriteData(address, autoRestart, addressSize10Bit, register, new byte[] { b });
 	}
 
 	@Override
 	public short readWordData(int register) throws RuntimeIOException {
-		short s;
-		if (adapter != null) {
-			I2CResponse response = adapter.i2cReadData(address, autoRestart, addressSize10Bit, register, 2);
-			// SMBus assumes little endian
-			s = (short) (response.getData()[0] & 0xff | (response.getData()[1] << 8));
-		} else {
-			try {
-				i2cDevice.ask(register, (byte) 2, this);
-				ByteBuffer bb = ByteBuffer.wrap(waitForData(register));
-				// SMBus assumes little endian
-				bb.order(ByteOrder.LITTLE_ENDIAN);
-				s = bb.getShort();
-			} catch (IOException e) {
-				throw new RuntimeIOException(e);
-			}
-		}
-		return s;
+		I2CResponse response = adapter.i2cReadData(address, autoRestart, addressSize10Bit, register, 2);
+		// SMBus assumes little endian
+		return (short) (response.getData()[0] & 0xff | (response.getData()[1] << 8));
 	}
 
 	@Override
 	public void writeWordData(int register, short data) throws RuntimeIOException {
-		if (adapter != null) {
-			byte[] tx_data = new byte[3];
-			// Note SMBus assumes little endian (LSB first)
-			tx_data[0] = (byte) (data & 0xff);
-			tx_data[1] = (byte) ((data >> 8) & 0xff);
-			adapter.i2cWriteData(address, autoRestart, addressSize10Bit, register, tx_data);
-		} else {
-			byte[] tx_data = new byte[3];
-			tx_data[0] = (byte) register;
-			// Note SMBus assumes little endian (LSB first)
-			tx_data[1] = (byte) (data & 0xff);
-			tx_data[2] = (byte) ((data >> 8) & 0xff);
-			try {
-				i2cDevice.tell(tx_data);
-			} catch (IOException e) {
-				throw new RuntimeIOException(e);
-			}
-		}
+		byte[] tx_data = new byte[3];
+		// Note SMBus assumes little endian (LSB first)
+		tx_data[0] = (byte) (data & 0xff);
+		tx_data[1] = (byte) ((data >> 8) & 0xff);
+		adapter.i2cWriteData(address, autoRestart, addressSize10Bit, register, tx_data);
 	}
 
 	@Override
@@ -275,53 +169,21 @@ public class FirmataI2CDevice extends AbstractDevice implements InternalI2CDevic
 
 	@Override
 	public int readI2CBlockData(int register, byte[] buffer) throws RuntimeIOException {
-		byte[] rx_data;
-		if (adapter != null) {
-			I2CResponse response = adapter.i2cReadData(address, autoRestart, addressSize10Bit, register, buffer.length);
-			rx_data = response.getData();
-		} else {
-			try {
-				i2cDevice.ask(register, (byte) buffer.length, this);
-				rx_data = waitForData(register);
-			} catch (IOException e) {
-				throw new RuntimeIOException(e);
-			}
-		}
+		I2CResponse response = adapter.i2cReadData(address, autoRestart, addressSize10Bit, register, buffer.length);
+		byte[] rx_data = response.getData();
 		System.arraycopy(rx_data, 0, buffer, 0, rx_data.length);
 		return rx_data.length;
 	}
 
 	@Override
 	public void writeI2CBlockData(int register, byte... data) throws RuntimeIOException {
-		if (adapter != null) {
-			adapter.i2cWriteData(address, autoRestart, addressSize10Bit, register, data);
-		} else {
-			byte[] tx_data = new byte[data.length + 1];
-			tx_data[0] = (byte) register;
-			System.arraycopy(data, 0, tx_data, 1, data.length);
-			try {
-				i2cDevice.tell(tx_data);
-			} catch (IOException e) {
-				throw new RuntimeIOException(e);
-			}
-		}
+		adapter.i2cWriteData(address, autoRestart, addressSize10Bit, register, data);
 	}
 
 	@Override
 	public int readBytes(byte[] buffer) throws RuntimeIOException {
-		byte[] rx_data;
-
-		if (adapter != null) {
-			I2CResponse response = adapter.i2cRead(address, autoRestart, addressSize10Bit, buffer.length);
-			rx_data = response.getData();
-		} else {
-			try {
-				i2cDevice.ask((byte) buffer.length, this);
-				rx_data = waitForData(NO_REGISTER);
-			} catch (IOException e) {
-				throw new RuntimeIOException(e);
-			}
-		}
+		I2CResponse response = adapter.i2cRead(address, autoRestart, addressSize10Bit, buffer.length);
+		byte[] rx_data = response.getData();
 
 		System.arraycopy(rx_data, 0, buffer, 0, rx_data.length);
 		return rx_data.length;
@@ -329,15 +191,7 @@ public class FirmataI2CDevice extends AbstractDevice implements InternalI2CDevic
 
 	@Override
 	public void writeBytes(byte... data) throws RuntimeIOException {
-		if (adapter != null) {
-			adapter.i2cWrite(address, autoRestart, addressSize10Bit, data);
-		} else {
-			try {
-				i2cDevice.tell(data);
-			} catch (IOException e) {
-				throw new RuntimeIOException(e);
-			}
-		}
+		adapter.i2cWrite(address, autoRestart, addressSize10Bit, data);
 	}
 
 	@Override
@@ -347,80 +201,5 @@ public class FirmataI2CDevice extends AbstractDevice implements InternalI2CDevic
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
-		if (adapter == null) {
-			try {
-				i2cDevice.stopReceivingUpdates();
-			} catch (IOException e) {
-			}
-			i2cDevice.unsubscribe(this);
-		}
-	}
-
-	@Override
-	// Firmata4j specific
-	public void onReceive(I2CEvent event) {
-		Logger.debug(event);
-		Integer register = Integer.valueOf(event.getRegister());
-		lock.lock();
-		try {
-			Condition condition = conditions.get(register);
-			if (condition == null) {
-				Logger.warn("Got an I2C event for a register ({}) not being monitored", register);
-			} else {
-				LinkedList<I2CEvent> event_queue = eventQueues.get(register);
-				if (event_queue == null) {
-					event_queue = new LinkedList<>();
-					eventQueues.put(register, event_queue);
-				}
-				event_queue.addLast(event);
-				condition.signalAll();
-			}
-		} finally {
-			lock.unlock();
-		}
-		event.getRegister();
-	}
-
-	// FIXME Change from ByteBuffer to byte array?
-	// Firmata4j specific
-	private byte[] waitForData(int register) {
-		Logger.info("Waiting for data for register 0x{}", Integer.toHexString(register));
-
-		byte[] rx_data = null;
-
-		lock.lock();
-		Integer reg = Integer.valueOf(register);
-		try {
-			// Has the data already arrived?
-			LinkedList<I2CEvent> event_queue_before = eventQueues.get(reg);
-			if (event_queue_before != null && event_queue_before.size() > 0) {
-				I2CEvent event = event_queue_before.remove();
-				rx_data = event.getData();
-			} else {
-				// Locate the condition for this register
-				Condition condition = conditions.get(reg);
-				if (condition == null) {
-					condition = lock.newCondition();
-					conditions.put(reg, condition);
-				}
-				Logger.debug("calling await()");
-				condition.await();
-				Logger.debug("returned from await()");
-
-				LinkedList<I2CEvent> event_queue = eventQueues.get(reg);
-				if (event_queue == null || event_queue.isEmpty()) {
-					Logger.warn("No data available for register {}", reg);
-				} else {
-					I2CEvent event = event_queue.remove();
-					rx_data = event.getData();
-				}
-			}
-		} catch (InterruptedException e) {
-			Logger.warn(e, "Interrupted: {}", e);
-		} finally {
-			lock.unlock();
-		}
-
-		return rx_data;
 	}
 }

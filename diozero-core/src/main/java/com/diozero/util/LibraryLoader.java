@@ -77,9 +77,9 @@ public class LibraryLoader {
 				// First try load the library from within the JAR file
 				String lib_file;
 				if (libraryPath != null) {
-					lib_file = String.format("/lib/%s/lib%s%s", libraryPath, libName, sys_info.getLibFileExtension());
+					lib_file = String.format("/lib/%s/lib%s.%s", libraryPath, libName, sys_info.getLibFileExtension());
 				} else {
-					lib_file = String.format("/lib/lib%s%s", libName, sys_info.getLibFileExtension());
+					lib_file = String.format("/lib/lib%s.%s", libName, sys_info.getLibFileExtension());
 				}
 				Logger.debug("Looking for lib '" + lib_file + "' on classpath");
 				try (InputStream is = clz.getResourceAsStream(lib_file)) {

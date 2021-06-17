@@ -31,15 +31,20 @@ package com.diozero.internal.spi;
  * #L%
  */
 
+import java.util.Collections;
+import java.util.List;
+
+import org.tinylog.Logger;
+
 import com.diozero.api.DeviceAlreadyOpenedException;
 import com.diozero.api.I2CConstants;
 import com.diozero.api.RuntimeIOException;
 
 public interface I2CDeviceFactoryInterface extends DeviceFactoryInterface {
-	static final String I2C_PREFIX = "-I2C-";
+	String I2C_PREFIX = "-I2C-";
 
-	default InternalI2CDeviceInterface provisionI2CDevice(int controller, int address, I2CConstants.AddressSize addressSize)
-			throws RuntimeIOException {
+	default InternalI2CDeviceInterface provisionI2CDevice(int controller, int address,
+			I2CConstants.AddressSize addressSize) throws RuntimeIOException {
 		String key = createI2CKey(controller, address);
 
 		// Check if this pin is already provisioned
@@ -53,8 +58,18 @@ public interface I2CDeviceFactoryInterface extends DeviceFactoryInterface {
 		return device;
 	}
 
-	InternalI2CDeviceInterface createI2CDevice(String key, int controller, int address, I2CConstants.AddressSize addressSize)
-			throws RuntimeIOException;
+	InternalI2CDeviceInterface createI2CDevice(String key, int controller, int address,
+			I2CConstants.AddressSize addressSize) throws RuntimeIOException;
+
+	default List<Integer> getI2CBusNumbers() {
+		Logger.error("getI2CBusNumbers not supported by this provider");
+		return Collections.emptyList();
+	}
+
+	default int getI2CFunctionalities(int controller) {
+		Logger.error("getI2CFunctionalities not supported by this provider");
+		return 0;
+	}
 
 	static String createI2CKey(String keyPrefix, int controller, int address) {
 		return keyPrefix + I2C_PREFIX + controller + "-0x" + Integer.toHexString(address);

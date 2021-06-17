@@ -56,6 +56,7 @@ public class NativeSerialDevice implements AutoCloseable {
 
 	private static native int serialConfigPort(int fd, int baud, int dataBits, int stopBits, int parity,
 			boolean readBlocking, int minReadChars, int readTimeoutMillis);
+
 	// private static native int serialReadByte(int fd);
 	// private static native int serialWriteByte(int fd, int bVal);
 	// private static native int serialRead(int fd, byte[] buffer);
@@ -70,8 +71,9 @@ public class NativeSerialDevice implements AutoCloseable {
 
 	/**
 	 * Open a new serial device
-	 * 
-	 * @param deviceFile        Serial device filename including path, e.g. /dev/ttyACM0
+	 *
+	 * @param deviceFile        Serial device filename including path, e.g.
+	 *                          /dev/ttyACM0
 	 * @param baud              Default is 9600.
 	 * @param dataBits          The number of data bits to use per word; default is
 	 *                          8, values from 5 to 8 are acceptable.
@@ -122,12 +124,14 @@ public class NativeSerialDevice implements AutoCloseable {
 					e);
 		}
 
-		// int rc = serialReadByte(fd);
-		// if (rc < 0) {
-		// throw new RuntimeIOException("Error in serial device readByte for '" +
-		// deviceFile + "': " + rc);
-		// }
-		// return (byte) (rc & 0xff);
+		/*-
+		int rc = serialReadByte(fd);
+		if (rc < 0) {
+			throw new RuntimeIOException("Error in serial device readByte for '" +
+					deviceFile + "': " + rc);
+		}
+		return (byte) (rc & 0xff);
+		*/
 	}
 
 	public void writeByte(byte value) {
@@ -139,11 +143,13 @@ public class NativeSerialDevice implements AutoCloseable {
 					e);
 		}
 
-		// int rc = serialWriteByte(fd, value & 0xff);
-		// if (rc == -1) {
-		// throw new RuntimeIOException("Error in serial device writeByte for '" +
-		// deviceFile + "': " + rc);
-		// }
+		/*-
+		int rc = serialWriteByte(fd, value & 0xff);
+		if (rc == -1) {
+			throw new RuntimeIOException("Error in serial device writeByte for '" +
+					deviceFile + "': " + rc);
+		}
+		*/
 	}
 
 	public int read(byte[] buffer) {
@@ -153,11 +159,13 @@ public class NativeSerialDevice implements AutoCloseable {
 			throw new RuntimeIOException("Error in serial device read for '" + deviceFile + "': " + e.getMessage(), e);
 		}
 
-		// int rc = serialRead(fd, buffer);
-		// if (rc < 0) {
-		// throw new RuntimeIOException("Error in serial device read for '" + deviceFile
-		// + "': " + rc);
-		// }
+		/*-
+		int rc = serialRead(fd, buffer);
+		if (rc < 0) {
+			throw new RuntimeIOException("Error in serial device read for '" + deviceFile
+					+ "': " + rc);
+		}
+		*/
 	}
 
 	public void write(byte[] data) {
@@ -167,11 +175,13 @@ public class NativeSerialDevice implements AutoCloseable {
 			throw new RuntimeIOException("Error in serial device write for '" + deviceFile + "': " + e.getMessage(), e);
 		}
 
-		// int rc = serialWrite(fd, data);
-		// if (rc < 0) {
-		// throw new RuntimeIOException("Error in serial device write for '" +
-		// deviceFile + "': " + rc);
-		// }
+		/*-
+		int rc = serialWrite(fd, data);
+		if (rc < 0) {
+			throw new RuntimeIOException("Error in serial device write for '" +
+					deviceFile + "': " + rc);
+		}
+		*/
 	}
 
 	public int bytesAvailable() {
@@ -181,12 +191,14 @@ public class NativeSerialDevice implements AutoCloseable {
 			throw new RuntimeIOException("Error in serial device bytesAvailable for '" + deviceFile + "'");
 		}
 
-		// int rc = serialBytesAvailable(fd);
-		// if (rc < 0) {
-		// throw new RuntimeIOException("Error in serial device bytesAvailable for '" +
-		// deviceFile + "': " + rc);
-		// }
-		// return rc;
+		/*-
+		int rc = serialBytesAvailable(fd);
+		if (rc < 0) {
+			throw new RuntimeIOException("Error in serial device bytesAvailable for '" +
+					deviceFile + "': " + rc);
+		}
+		return rc;
+		*/
 	}
 
 	@Override
@@ -198,12 +210,11 @@ public class NativeSerialDevice implements AutoCloseable {
 			return;
 		}
 
-		serialClose(fileDescriptor);
-
 		if (inputStream != null) {
 			try {
 				inputStream.close();
 			} catch (IOException e) {
+				Logger.trace(e, "Error closing input stream: {}", e);
 			}
 			inputStream = null;
 		}
@@ -212,10 +223,12 @@ public class NativeSerialDevice implements AutoCloseable {
 			try {
 				outputStream.close();
 			} catch (IOException e) {
+				Logger.trace(e, "Error closing output stream: {}", e);
 			}
 			outputStream = null;
 		}
 
+		serialClose(fileDescriptor);
 		fileDescriptor = null;
 
 		Logger.trace("closed");

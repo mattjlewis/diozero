@@ -179,13 +179,13 @@ public class GenericLinuxArmBoardInfo extends BoardInfo {
 	}
 
 	private void loadPwmPinInfo(String[] parts) {
-		if (parts.length != 9) {
+		if (parts.length != 10) {
 			Logger.warn("Invalid PWM def line '{}'", String.join(",", parts));
 			return;
 		}
 		addPwmPinInfo(parts[1].trim().toUpperCase(), Integer.parseInt(parts[2].trim()), parts[3].trim(),
-				Integer.parseInt(parts[4].trim()), Integer.parseInt(parts[5].trim()), parseModes(parts[6].trim()),
-				Integer.parseInt(parts[7].trim()), Integer.parseInt(parts[8].trim()));
+				Integer.parseInt(parts[4].trim()), Integer.parseInt(parts[5].trim()), Integer.parseInt(parts[6].trim()),
+				parseModes(parts[7].trim()), Integer.parseInt(parts[8].trim()), Integer.parseInt(parts[9].trim()));
 	}
 
 	private void loadAdcPinInfo(String[] parts) {

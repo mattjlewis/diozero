@@ -78,7 +78,7 @@ public class BeagleBoneBoardInfoProvider implements BoardInfoProvider {
 		}
 
 		public void oldPopulateBoardPinInfo() {
-			// FIXME Externalise this to a file
+			// Kept for info only - now externalised to a file
 			addGpioPinInfo(P9_HEADER, 60, 12, PinInfo.DIGITAL_IN_OUT);
 			addGpioPinInfo(P9_HEADER, 48, 15, PinInfo.DIGITAL_IN_OUT);
 			addGpioPinInfo(P9_HEADER, 49, 23, PinInfo.DIGITAL_IN_OUT);
@@ -110,14 +110,16 @@ public class BeagleBoneBoardInfoProvider implements BoardInfoProvider {
 			addAdcPinInfo(P9_HEADER, 6, "AIN6", 35);
 
 			// BB-PWM0,BB-PWM1,BB-PWM2
-			addPwmPinInfo(P9_HEADER, PinInfo.NOT_DEFINED, "EHRPWM1A", 14, 0, PinInfo.DIGITAL_IN_OUT_PWM);
-			addPwmPinInfo(P9_HEADER, PinInfo.NOT_DEFINED, "EHRPWM1B", 16, 1, PinInfo.DIGITAL_IN_OUT_PWM);
-			addPwmPinInfo(P8_HEADER, PinInfo.NOT_DEFINED, "EHRPWM2A", 13, 3, PinInfo.DIGITAL_IN_OUT_PWM);
-			addPwmPinInfo(P8_HEADER, PinInfo.NOT_DEFINED, "EHRPWM2B", 19, 4, PinInfo.DIGITAL_IN_OUT_PWM);
+			addPwmPinInfo(P9_HEADER, PinInfo.NOT_DEFINED, "EHRPWM1A", 14, 0, 0, PinInfo.DIGITAL_IN_OUT_PWM);
+			addPwmPinInfo(P9_HEADER, PinInfo.NOT_DEFINED, "EHRPWM1B", 16, 0, 1, PinInfo.DIGITAL_IN_OUT_PWM);
+			addPwmPinInfo(P8_HEADER, PinInfo.NOT_DEFINED, "EHRPWM2A", 13, 0, 3, PinInfo.DIGITAL_IN_OUT_PWM);
+			addPwmPinInfo(P8_HEADER, PinInfo.NOT_DEFINED, "EHRPWM2B", 19, 0, 4, PinInfo.DIGITAL_IN_OUT_PWM);
 		}
 
 		@Override
-		public int getPwmChip(int pwmNum) {
+		public int getPwmChipNumberOverride(PinInfo pinInfo) {
+			// Apparently the PWM chip number for a GPIO can change between boots
+
 			// FIXME How to work this out? Temporarily hardcode to GPIO 50 (EHRPWM1A, P9_14)
 			String chip = "48302000";
 			String address = "48302200";
@@ -128,7 +130,7 @@ public class BeagleBoneBoardInfoProvider implements BoardInfoProvider {
 			try (DirectoryStream<Path> dirs = Files.newDirectoryStream(chip_path, "pwm*")) {
 				for (Path p : dirs) {
 					String dir = p.getFileName().toString();
-					Logger.info("Got {}" + dir);
+					Logger.info("Got {}", dir);
 					pwm_chip = Integer.parseInt(dir.substring(dir.length() - 1));
 					Logger.info("Found pwmChip {}", Integer.valueOf(pwm_chip));
 				}

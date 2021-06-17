@@ -37,6 +37,7 @@ import java.io.InputStreamReader;
 
 import org.tinylog.Logger;
 
+import com.diozero.internal.board.raspberrypi.RaspberryPiBoardInfoProvider;
 import com.diozero.sbc.LocalSystemInfo;
 
 public class StringTest {
@@ -59,5 +60,18 @@ public class StringTest {
 				Logger.warn(e);
 			}
 		}
+
+		// Normal formats
+		System.out.println(RaspberryPiBoardInfoProvider.extractPwmGpioNumbers("dtoverlay=pwm,pin=12,func=4"));
+		System.out.println(RaspberryPiBoardInfoProvider
+				.extractPwmGpioNumbers("dtoverlay=pwm-2chan,pin=12,func=4,pin2=13,func2=4"));
+
+		// Could be that pin and pin2 are in a different order
+		System.out.println(RaspberryPiBoardInfoProvider
+				.extractPwmGpioNumbers("dtoverlay=pwm-2chan,pin2=13,func2=4,pin=12,func=4"));
+		// Could be that pin and func are in a different order
+		System.out.println(RaspberryPiBoardInfoProvider.extractPwmGpioNumbers("dtoverlay=pwm,func=4,pin=12"));
+		System.out.println(RaspberryPiBoardInfoProvider
+				.extractPwmGpioNumbers("dtoverlay=pwm-2chan,func2=4,pin2=13,pin=12,func=4"));
 	}
 }

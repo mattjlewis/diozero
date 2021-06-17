@@ -31,8 +31,10 @@
 
 package com.diozero.devices.sandpit;
 
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.tinylog.Logger;
 
@@ -41,6 +43,7 @@ import com.diozero.api.I2CConstants;
 import com.diozero.api.I2CDevice;
 import com.diozero.api.I2CDeviceInterface;
 import com.diozero.api.RuntimeIOException;
+import com.diozero.util.DiozeroScheduler;
 import com.diozero.util.Hex;
 import com.diozero.util.RangeUtil;
 import com.diozero.util.SleepUtil;
@@ -167,6 +170,16 @@ public class Max30102 implements DeviceInterface {
 
 	// FIFO Config (0x08)
 
+	// Mode Configuration (0x09)
+	
+	private static final int MODE_CONFIG_SHUTDOWN_BIT = 7;
+	private static final int MODE_CONFIG_SHUTDOWN_MASK = 1 << MODE_CONFIG_SHUTDOWN_BIT;
+	private static final int MODE_CONFIG_RESET_BIT = 6;
+	private static final byte MODE_CONFIG_RESET_MASK = 1 << MODE_CONFIG_RESET_BIT;
+	// Die Temperate Config (0x21)
+	private static final int DIE_TEMP_EN_BIT = 0;
+	private static final int DIE_TEMP_EN_MASK = 1 << DIE_TEMP_EN_BIT;
+
 	public enum SampleAveraging {
 		_1(0b000), _2(0b001), _4(0b010), _8(0b011), _16(0b100), _32(0b101);
 
@@ -213,11 +226,6 @@ public class Max30102 implements DeviceInterface {
 	}
 
 	// Mode Configuration (0x09)
-
-	private static final int MODE_CONFIG_SHUTDOWN_BIT = 7;
-	private static final int MODE_CONFIG_SHUTDOWN_MASK = 1 << MODE_CONFIG_SHUTDOWN_BIT;
-	private static final int MODE_CONFIG_RESET_BIT = 6;
-	private static final byte MODE_CONFIG_RESET_MASK = 1 << MODE_CONFIG_RESET_BIT;
 
 	public enum Mode {
 		HEART_RATE(0b010), SPO2(0b011), MULTI_LED(0b111);
@@ -316,10 +324,6 @@ public class Max30102 implements DeviceInterface {
 		}
 	}
 
-	// Die Temperate Config (0x21)
-	private static final int DIE_TEMP_EN_BIT = 0;
-	private static final int DIE_TEMP_EN_MASK = 1 << DIE_TEMP_EN_BIT;
-
 	private I2CDevice device;
 	private int revisionId;
 	private Mode mode;
@@ -328,7 +332,9 @@ public class Max30102 implements DeviceInterface {
 	private SpO2SampleRate spo2SampleRate;
 	private LedPulseWidth ledPulseWidth;
 
-	private Queue<Sample> sampleQueue;
+	private BlockingQueue<Sample> sampleQueue;
+	private AtomicBoolean running;
+	private Future<?> future;
 
 	public Max30102() {
 		this(I2CConstants.CONTROLLER_1);
@@ -337,7 +343,8 @@ public class Max30102 implements DeviceInterface {
 	public Max30102(int controller) {
 		device = I2CDevice.builder(DEVICE_ADDRESS).setController(controller).build();
 
-		sampleQueue = new ConcurrentLinkedQueue<>();
+		sampleQueue = new LinkedBlockingQueue<>();
+		running = new AtomicBoolean();
 
 		// Validate the part id
 		byte part_id = getPartId();
@@ -356,6 +363,9 @@ public class Max30102 implements DeviceInterface {
 
 	@Override
 	public void close() {
+		if (running.get()) {
+			stop();
+		}
 		shutdown();
 		device.close();
 	}
@@ -653,15 +663,14 @@ public class Max30102 implements DeviceInterface {
 			*/
 
 			/*-
-			// "raw" I2C
+			// Use raw I2C readWrite and not the SMBus interface to avoid the 32-byte limit
+			// FIXME Note this code will not work on Arduino
 			I2CMessage[] messages = { //
 					new I2CMessage(I2CMessage.I2C_M_WR, 1), // Write the REG_FIFO_DATA register address
 					new I2CMessage(I2CMessage.I2C_M_RD, bytes_to_read) // Read FIFO data
 			};
 			byte[] buffer = new byte[1 + bytes_to_read];
 			buffer[0] = REG_FIFO_DATA;
-			// Use raw I2C readWrite and not the SMBus interface to avoid the 32-byte limit
-			// FIXME Note this code will not work on Arduino
 			device.readWrite(messages, buffer);
 			System.arraycopy(buffer, 1, data, 0, bytes_to_read);
 			*/
@@ -688,14 +697,14 @@ public class Max30102 implements DeviceInterface {
 					s.setSpo2(value);
 				}
 
-				sampleQueue.add(s);
+				sampleQueue.offer(s);
 			}
 		}
 
 		return num_available_samples;
 	}
 
-	public Queue<Sample> getSampleQueue() {
+	public BlockingQueue<Sample> getSampleQueue() {
 		return sampleQueue;
 	}
 
@@ -718,6 +727,38 @@ public class Max30102 implements DeviceInterface {
 
 	public LedPulseWidth getLedPulseWidth() {
 		return ledPulseWidth;
+	}
+
+	public void start() {
+		if (running.get()) {
+			Logger.error("Already running");
+			return;
+		}
+
+		running.set(true);
+		future = DiozeroScheduler.getDefaultInstance().submit(() -> {
+			final AtomicBoolean local_running = running;
+			int sleep_ms = 1_000 / spo2SampleRate.getSampleRate();
+			while (local_running.get()) {
+				pollForData();
+				try {
+					Thread.sleep(sleep_ms);
+				} catch (InterruptedException e) {
+					local_running.set(false);
+					Logger.info(e, "Interrupted: {}", e);
+				}
+			}
+		});
+	}
+
+	public void stop() {
+		if (future == null || !running.get()) {
+			Logger.info("Not running");
+			return;
+		}
+
+		running.set(false);
+		future.cancel(true);
 	}
 
 	public static final class Sample {

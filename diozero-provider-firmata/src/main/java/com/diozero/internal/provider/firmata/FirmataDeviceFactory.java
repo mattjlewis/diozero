@@ -1,11 +1,11 @@
 package com.diozero.internal.provider.firmata;
 
-/*
+/*-
  * #%L
  * Organisation: diozero
  * Project:      diozero - Firmata
  * Filename:     FirmataDeviceFactory.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.internal.provider.firmata;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -31,15 +31,10 @@ package com.diozero.internal.provider.firmata;
  * #L%
  */
 
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.firmata4j.IODevice;
-import org.firmata4j.Pin;
-import org.firmata4j.Pin.Mode;
-import org.firmata4j.firmata.FirmataDevice;
 import org.tinylog.Logger;
 
 import com.diozero.api.AnalogInputEvent;
@@ -76,85 +71,57 @@ import com.diozero.sbc.LocalSystemInfo;
 import com.diozero.util.PropertyUtil;
 import com.diozero.util.RangeUtil;
 
+/*
+ * Try out ConfigurableFirmata - is there actually any difference to the StandardFirmata protocol?
+ * Wireless access to Firmata devices (network and Bluetooth).
+ * E.g. ESP32 - https://learn.sparkfun.com/tutorials/esp32-thing-hookup-guide?_ga=1.116824388.33505106.1471290985#installing-the-esp32-arduino-core
+ * Firmata GitHub issue #315 - https://github.com/firmata/arduino/issues/315
+ */
 public class FirmataDeviceFactory extends BaseNativeDeviceFactory implements FirmataEventListener {
 	public static final String DEVICE_NAME = "Firmata";
 
-	private static final String USE_FIRMATA4J_ADAPTER_PROP = "diozero.firmata.useFirmata4jAdapter";
 	private static final String SERIAL_PORT_PROP = "diozero.firmata.serialPort";
 	private static final String TCP_HOST_PROP = "diozero.firmata.tcpHostname";
 	private static final String TCP_PORT_PROP = "diozero.firmata.tcpPort";
 	private static final int DEFAULT_TCP_PORT = 3030;
 
-	private boolean useFirmata4jAdapter;
 	private String serialPortName;
-	private IODevice ioDevice;
 	private FirmataAdapter adapter;
 
 	public FirmataDeviceFactory() {
 		Logger.warn("*** Do NOT use this device factory for servo control; not yet implemented!");
 
-		// FIXME Switch entirely to the diozero Firmata adapter
-		useFirmata4jAdapter = PropertyUtil.getBooleanProperty(USE_FIRMATA4J_ADAPTER_PROP, true);
-		if (useFirmata4jAdapter) {
-			serialPortName = PropertyUtil.getProperty(SERIAL_PORT_PROP, null);
-			if (serialPortName == null) {
-				throw new IllegalArgumentException("Error, " + SERIAL_PORT_PROP + " not set");
+		serialPortName = PropertyUtil.getProperty(SERIAL_PORT_PROP, null);
+		if (serialPortName == null) {
+			String hostname = PropertyUtil.getProperty(TCP_HOST_PROP, null);
+			if (hostname == null) {
+				throw new IllegalArgumentException(
+						"Error, either " + SERIAL_PORT_PROP + " or " + TCP_HOST_PROP + " must be set");
 			}
-
-			ioDevice = new FirmataDevice(serialPortName);
+			int port = PropertyUtil.getIntProperty(TCP_PORT_PROP, DEFAULT_TCP_PORT);
+			adapter = new SocketFirmataAdapter(this, hostname, port);
 		} else {
-			serialPortName = PropertyUtil.getProperty(SERIAL_PORT_PROP, null);
-			if (serialPortName == null) {
-				String hostname = PropertyUtil.getProperty(TCP_HOST_PROP, null);
-				if (hostname == null) {
-					throw new IllegalArgumentException(
-							"Error, either " + SERIAL_PORT_PROP + " or " + TCP_HOST_PROP + " must be set");
-				}
-				int port = PropertyUtil.getIntProperty(TCP_PORT_PROP, DEFAULT_TCP_PORT);
-				adapter = new SocketFirmataAdapter(this, hostname, port);
-			} else {
-				adapter = new SerialFirmataAdapter(this, serialPortName, SerialConstants.BAUD_57600,
-						SerialConstants.DataBits.CS8, SerialConstants.StopBits.ONE_STOP_BIT,
-						SerialConstants.Parity.NO_PARITY, true, 1, 0);
-			}
+			adapter = new SerialFirmataAdapter(this, serialPortName, SerialConstants.BAUD_57600,
+					SerialConstants.DEFAULT_DATA_BITS, SerialConstants.DEFAULT_STOP_BITS,
+					SerialConstants.DEFAULT_PARITY, SerialConstants.DEFAULT_READ_BLOCKING,
+					SerialConstants.DEFAULT_MIN_READ_CHARS, SerialConstants.DEFAULT_READ_TIMEOUT_MILLIS);
 		}
 	}
 
 	@Override
 	public void start() {
-		if (useFirmata4jAdapter) {
-			try {
-				ioDevice.start();
-				Logger.info("Waiting for Firmata device '" + serialPortName + "' to initialise");
-				ioDevice.ensureInitializationIsDone();
-				Logger.info("Firmata device '" + serialPortName + "' successfully initialised");
-			} catch (IOException | InterruptedException e) {
-				throw new RuntimeIOException(e);
-			}
-		} else {
-			adapter.start();
-			// TODO Configure the Firmata device's I2C delay?
-			// adapter.i2cConfig(max_delay_ms);
-		}
+		adapter.start();
+		// TODO Configure the Firmata device's I2C delay?
+		// adapter.i2cConfig(max_delay_ms);
 	}
 
 	@Override
 	public void shutdown() {
 		Logger.trace("shutdown()");
 
-		if (ioDevice != null) {
-			try {
-				ioDevice.stop();
-			} catch (Exception e) {
-			}
-		}
 		if (adapter != null) {
 			adapter.close();
 		}
-	}
-
-	IODevice getIoDevice() {
-		return ioDevice;
 	}
 
 	FirmataAdapter getFirmataAdapter() {
@@ -168,9 +135,6 @@ public class FirmataDeviceFactory extends BaseNativeDeviceFactory implements Fir
 
 	@Override
 	protected BoardInfo lookupBoardInfo() {
-		if (useFirmata4jAdapter) {
-			return new Firmata4jBoardInfo(ioDevice);
-		}
 		return new FirmataAdapterBoardInfo(adapter);
 	}
 
@@ -195,48 +159,25 @@ public class FirmataDeviceFactory extends BaseNativeDeviceFactory implements Fir
 	@Override
 	public DeviceMode getGpioMode(int gpio) {
 		DeviceMode mode = DeviceMode.UNKNOWN;
-		if (adapter != null) {
-			switch (adapter.getPinMode(gpio)) {
-			case DIGITAL_INPUT:
-			case INPUT_PULLUP:
-				mode = DeviceMode.DIGITAL_INPUT;
-				break;
-			case DIGITAL_OUTPUT:
-				mode = DeviceMode.DIGITAL_OUTPUT;
-				break;
-			case ANALOG_INPUT:
-				mode = DeviceMode.ANALOG_INPUT;
-				break;
-			case PWM:
-				mode = DeviceMode.PWM_OUTPUT;
-				break;
-			case SERVO:
-				mode = DeviceMode.SERVO;
-				break;
-			default:
-				mode = DeviceMode.UNKNOWN;
-			}
-		} else {
-			switch (ioDevice.getPin(gpio).getMode()) {
-			case INPUT:
-			case PULLUP:
-				mode = DeviceMode.DIGITAL_INPUT;
-				break;
-			case OUTPUT:
-				mode = DeviceMode.DIGITAL_OUTPUT;
-				break;
-			case ANALOG:
-				mode = DeviceMode.ANALOG_INPUT;
-				break;
-			case PWM:
-				mode = DeviceMode.PWM_OUTPUT;
-				break;
-			case SERVO:
-				mode = DeviceMode.SERVO;
-				break;
-			default:
-				mode = DeviceMode.UNKNOWN;
-			}
+		switch (adapter.getPinMode(gpio)) {
+		case DIGITAL_INPUT:
+		case INPUT_PULLUP:
+			mode = DeviceMode.DIGITAL_INPUT;
+			break;
+		case DIGITAL_OUTPUT:
+			mode = DeviceMode.DIGITAL_OUTPUT;
+			break;
+		case ANALOG_INPUT:
+			mode = DeviceMode.ANALOG_INPUT;
+			break;
+		case PWM:
+			mode = DeviceMode.PWM_OUTPUT;
+			break;
+		case SERVO:
+			mode = DeviceMode.SERVO;
+			break;
+		default:
+			mode = DeviceMode.UNKNOWN;
 		}
 
 		return mode;
@@ -244,10 +185,7 @@ public class FirmataDeviceFactory extends BaseNativeDeviceFactory implements Fir
 
 	@Override
 	public int getGpioValue(int gpio) {
-		if (adapter != null) {
-			return adapter.getValue(gpio);
-		}
-		return (int) ioDevice.getPin(gpio).getValue();
+		return adapter.getValue(gpio);
 	}
 
 	@Override
@@ -345,67 +283,14 @@ public class FirmataDeviceFactory extends BaseNativeDeviceFactory implements Fir
 		}
 	}
 
-	public static class Firmata4jBoardInfo extends BoardInfo {
-		private IODevice ioDevice;
-
-		public Firmata4jBoardInfo(IODevice ioDevice) {
-			// TODO Check ADC vRef
-			super("Firmata4j", ioDevice.getProtocol(), -1, 3.3f, "firmata",
-					LocalSystemInfo.getInstance().getOperatingSystemId(),
-					LocalSystemInfo.getInstance().getOperatingSystemVersion());
-			this.ioDevice = ioDevice;
-		}
-
-		@Override
-		public void populateBoardPinInfo() {
-			for (Pin pin : ioDevice.getPins()) {
-				int pin_number = pin.getIndex();
-				Set<DeviceMode> supported_modes = convertModes(pin.getSupportedModes());
-				addGpioPinInfo(pin_number, pin_number, supported_modes);
-				if (supported_modes.contains(DeviceMode.ANALOG_INPUT)) {
-					addAdcPinInfo(pin_number, pin_number);
-				}
-				if (supported_modes.contains(DeviceMode.ANALOG_OUTPUT)) {
-					addDacPinInfo(pin_number, pin_number);
-				}
-			}
-		}
-
-		private static Set<DeviceMode> convertModes(Set<Mode> firmataModes) {
-			Set<DeviceMode> modes = new HashSet<>();
-
-			for (Mode firmata_mode : firmataModes) {
-				switch (firmata_mode) {
-				case INPUT:
-					modes.add(DeviceMode.DIGITAL_INPUT);
-					break;
-				case OUTPUT:
-					modes.add(DeviceMode.DIGITAL_OUTPUT);
-					break;
-				case ANALOG:
-					modes.add(DeviceMode.ANALOG_INPUT);
-					break;
-				case PWM:
-					modes.add(DeviceMode.PWM_OUTPUT);
-					break;
-				default:
-					// Ignore
-				}
-			}
-
-			return modes;
-		}
-	}
-
 	public static class FirmataAdapterBoardInfo extends BoardInfo {
 		// TODO Check this value
-		private static final float ADC_VREF = 3.3f;
+		private static final float ADC_VREF = 5f;
 
 		private FirmataAdapter adapter;
 
 		public FirmataAdapterBoardInfo(FirmataAdapter adapter) {
-			super(adapter.getFirmware().getName(),
-					adapter.getFirmware().getVersionString() + "(" + adapter.getProtocolVersion() + ")", -1, ADC_VREF,
+			super(adapter.getFirmware().getName(), adapter.getFirmware().getVersionString(), -1, ADC_VREF,
 					LocalSystemInfo.getInstance().getDefaultLibraryPath(),
 					LocalSystemInfo.getInstance().getOperatingSystemId(),
 					LocalSystemInfo.getInstance().getOperatingSystemVersion());
@@ -414,32 +299,38 @@ public class FirmataDeviceFactory extends BaseNativeDeviceFactory implements Fir
 
 		@Override
 		public void populateBoardPinInfo() {
-			List<List<PinCapability>> board_capabilities = adapter.getBoardCapabilities();
+			List<Set<PinCapability>> board_capabilities = adapter.getBoardCapabilities();
 
-			int gpio = 0;
-			for (List<PinCapability> pin_capabilities : board_capabilities) {
+			int gpio_num = 0;
+			int adc_num = 0;
+			int physical_pin = 0;
+			for (Set<PinCapability> pin_capabilities : board_capabilities) {
+				System.out.println("pin: " + pin_capabilities);
 				Set<DeviceMode> modes = convert(pin_capabilities);
-				if (modes.contains(DeviceMode.DIGITAL_INPUT) || modes.contains(DeviceMode.DIGITAL_OUTPUT)
-						|| modes.contains(DeviceMode.PWM_OUTPUT)) {
-					addGpioPinInfo(gpio, gpio, modes);
-				}
 				if (modes.contains(DeviceMode.ANALOG_INPUT)) {
-					addAdcPinInfo(gpio, gpio);
-				}
-				if (modes.contains(DeviceMode.ANALOG_OUTPUT)) {
-					addDacPinInfo(gpio, gpio);
+					System.out.println("ADC pin modes: " + modes);
+					addAdcPinInfo(physical_pin, "A" + adc_num, physical_pin);
+
+					adc_num++;
+				} else if (modes.contains(DeviceMode.DIGITAL_INPUT) || modes.contains(DeviceMode.DIGITAL_OUTPUT)
+						|| modes.contains(DeviceMode.PWM_OUTPUT)) {
+					addGpioPinInfo(physical_pin, "D" + gpio_num, physical_pin, modes);
+				} else {
+					System.out.println("skipping pin " + physical_pin + ", modes: " + modes);
 				}
 
-				gpio++;
+				gpio_num++;
+				physical_pin++;
 			}
 		}
 
-		private static Set<DeviceMode> convert(List<PinCapability> pinCapabilities) {
+		private static Set<DeviceMode> convert(Set<PinCapability> pinCapabilities) {
 			Set<DeviceMode> modes = new HashSet<>();
 
 			for (PinCapability capability : pinCapabilities) {
 				switch (capability.getMode()) {
 				case DIGITAL_INPUT:
+				case INPUT_PULLUP:
 					modes.add(DeviceMode.DIGITAL_INPUT);
 					break;
 				case DIGITAL_OUTPUT:

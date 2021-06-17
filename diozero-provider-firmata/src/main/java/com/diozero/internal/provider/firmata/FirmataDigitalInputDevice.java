@@ -1,6 +1,6 @@
 package com.diozero.internal.provider.firmata;
 
-/*
+/*-
  * #%L
  * Organisation: diozero
  * Project:      diozero - Firmata
@@ -31,12 +31,6 @@ package com.diozero.internal.provider.firmata;
  * #L%
  */
 
-import java.io.IOException;
-
-import org.firmata4j.IOEvent;
-import org.firmata4j.Pin;
-import org.firmata4j.Pin.Mode;
-import org.firmata4j.PinEventListener;
 import org.tinylog.Logger;
 
 import com.diozero.api.DigitalInputEvent;
@@ -49,10 +43,9 @@ import com.diozero.internal.spi.AbstractInputDevice;
 import com.diozero.internal.spi.GpioDigitalInputDeviceInterface;
 
 public class FirmataDigitalInputDevice extends AbstractInputDevice<DigitalInputEvent>
-		implements GpioDigitalInputDeviceInterface, PinEventListener {
+		implements GpioDigitalInputDeviceInterface {
 	private FirmataAdapter adapter;
 	private int gpio;
-	private Pin pin;
 
 	public FirmataDigitalInputDevice(FirmataDeviceFactory deviceFactory, String key, int gpio, GpioPullUpDown pud,
 			GpioEventTrigger trigger) {
@@ -61,25 +54,12 @@ public class FirmataDigitalInputDevice extends AbstractInputDevice<DigitalInputE
 		this.gpio = gpio;
 
 		adapter = deviceFactory.getFirmataAdapter();
-		if (adapter != null) {
-			adapter.setPinMode(gpio, pud == GpioPullUpDown.PULL_UP ? PinMode.INPUT_PULLUP : PinMode.DIGITAL_INPUT);
-		} else {
-			pin = deviceFactory.getIoDevice().getPin(gpio);
-			try {
-				pin.setMode(pud == GpioPullUpDown.PULL_UP ? Mode.INPUT : Mode.PULLUP);
-			} catch (IOException e) {
-				throw new RuntimeIOException("Error setting pin mode to input for pin " + gpio);
-			}
-		}
+		adapter.setPinMode(gpio, pud == GpioPullUpDown.PULL_UP ? PinMode.INPUT_PULLUP : PinMode.DIGITAL_INPUT);
 	}
 
 	@Override
 	public boolean getValue() throws RuntimeIOException {
-		if (adapter != null) {
-			return adapter.getDigitalValue(gpio);
-		}
-
-		return pin.getValue() != 0;
+		return adapter.getDigitalValue(gpio);
 	}
 
 	@Override
@@ -96,37 +76,17 @@ public class FirmataDigitalInputDevice extends AbstractInputDevice<DigitalInputE
 	public void enableListener() {
 		disableListener();
 
-		if (adapter != null) {
-			adapter.enableDigitalReporting(gpio, true);
-		} else {
-			pin.addEventListener(this);
-		}
+		adapter.enableDigitalReporting(gpio, true);
 	}
 
 	@Override
 	public void disableListener() {
-		if (adapter != null) {
-			adapter.enableDigitalReporting(gpio, false);
-		} else {
-			pin.removeEventListener(this);
-		}
+		adapter.enableDigitalReporting(gpio, false);
 	}
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
 		Logger.trace("closeDevice()");
 		disableListener();
-	}
-
-	@Override
-	// Specific to Firmata4j
-	public void onModeChange(IOEvent event) {
-		Logger.warn("Mode changed from digital input to {}", event.getPin().getMode());
-	}
-
-	@Override
-	// Specific to Firmata4j
-	public void onValueChange(IOEvent event) {
-		accept(new DigitalInputEvent(pin.getIndex(), event.getTimestamp(), System.nanoTime(), event.getValue() != 0));
 	}
 }

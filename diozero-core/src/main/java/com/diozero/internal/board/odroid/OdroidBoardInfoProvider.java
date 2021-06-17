@@ -67,11 +67,6 @@ public class OdroidBoardInfoProvider implements BoardInfoProvider {
 		public OdroidC1BoardInfo() {
 			super(MAKE, Model.C2.toString(), MEMORY, ADC_VREF);
 		}
-
-		@Override
-		public int getPwmChip(int pwmNum) {
-			return 0;
-		}
 	}
 
 	/*-
@@ -89,11 +84,6 @@ public class OdroidBoardInfoProvider implements BoardInfoProvider {
 
 		OdroidC2BoardInfo() {
 			super(MAKE, Model.C2.toString(), MEMORY, ADC_VREF);
-		}
-
-		@Override
-		public int getPwmChip(int pwmNum) {
-			return 0;
 		}
 
 		@Override

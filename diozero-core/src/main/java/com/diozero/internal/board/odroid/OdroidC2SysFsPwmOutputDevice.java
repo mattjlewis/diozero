@@ -39,34 +39,44 @@ import java.io.RandomAccessFile;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import com.diozero.api.PwmPinInfo;
+import com.diozero.api.PinInfo;
 import com.diozero.api.RuntimeIOException;
 import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.DeviceFactoryInterface;
 import com.diozero.internal.spi.PwmOutputDeviceInterface;
 
 /**
- * <p><a href="http://odroid.com/dokuwiki/doku.php?id=en:c2_hardware_pwm">Setting up</a>:
- * 1 PWM Channel (GPIO 234; Pin 33):</p>
- * <pre>{@code
+ * <p>
+ * <a href="http://odroid.com/dokuwiki/doku.php?id=en:c2_hardware_pwm">Setting
+ * up</a>: 1 PWM Channel (GPIO 234; Pin 33):
+ * </p>
+ *
+ * <pre>
+ * {@code
  *sudo modprobe pwm-meson
  *sudo modprobe pwm-ctrl
- *}</pre>
- * <p>2 PWM Channels (GPIO 234 &amp; 235; Pins 33 / 19):</p>
- * <pre>{@code
+ *}
+ * </pre>
+ * <p>
+ * 2 PWM Channels (GPIO 234 &amp; 235; Pins 33 / 19):
+ * </p>
+ *
+ * <pre>
+ * {@code
  *sudo modprobe pwm-meson npwm=2
  *sudo modprobe pwm-ctrl
- *}</pre>
+ *}
+ * </pre>
  */
 public class OdroidC2SysFsPwmOutputDevice extends AbstractDevice implements PwmOutputDeviceInterface {
 	private static Path PWM_ROOT = Paths.get("/sys/devices/platform/pwm-ctrl");
-	
+
 	private int range;
 	private int gpio;
 	private int pwmNum;
 	private RandomAccessFile dutyFile;
 
-	public OdroidC2SysFsPwmOutputDevice(String key, DeviceFactoryInterface deviceFactory, PwmPinInfo pinInfo,
+	public OdroidC2SysFsPwmOutputDevice(String key, DeviceFactoryInterface deviceFactory, PinInfo pinInfo,
 			int frequencyHz, float initialValue) {
 		super(key, deviceFactory);
 
@@ -105,7 +115,7 @@ public class OdroidC2SysFsPwmOutputDevice extends AbstractDevice implements PwmO
 	public int getPwmNum() {
 		return pwmNum;
 	}
-	
+
 	@Override
 	public float getValue() throws RuntimeIOException {
 		try {
@@ -116,13 +126,13 @@ public class OdroidC2SysFsPwmOutputDevice extends AbstractDevice implements PwmO
 			throw new RuntimeIOException("Error setting duty for PWM #" + pwmNum, e);
 		}
 	}
-	
+
 	@Override
 	public void setValue(float value) throws RuntimeIOException {
 		if (value < 0 || value > 1) {
 			throw new IllegalArgumentException("Invalid value, must be 0..1");
 		}
-		
+
 		try {
 			dutyFile.seek(0);
 			dutyFile.writeBytes(Integer.toString((Math.round(value * range))));
@@ -131,12 +141,12 @@ public class OdroidC2SysFsPwmOutputDevice extends AbstractDevice implements PwmO
 			throw new RuntimeIOException("Error setting duty for PWM #" + pwmNum, e);
 		}
 	}
-	
+
 	@Override
 	public int getPwmFrequency() {
 		return getFrequency(pwmNum);
 	}
-	
+
 	@Override
 	public void setPwmFrequency(int frequencyHz) {
 		setFrequency(pwmNum, frequencyHz);

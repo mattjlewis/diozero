@@ -362,41 +362,6 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_builtin_i2c_NativeI2C_
 	return rc;
 }
 
-JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_builtin_i2c_NativeI2C_readNoStop(
-		JNIEnv* env, jclass clz, jint fd, jint deviceAddress, jbyte registerAddress, jint rxLength, jbyteArray rxData, jboolean repeatedStart) {
-	jboolean is_copy;
-	jbyte* rx_buf = (*env)->GetByteArrayElements(env, rxData, &is_copy);
-	uint8_t reg_addr = (uint8_t) registerAddress;
-
-	struct i2c_msg rdwr_msg[2] = {
-			{
-					.addr = deviceAddress,
-					.flags = 0, // write
-					.len = 1,
-					.buf = &reg_addr,
-			}, {
-					.addr = deviceAddress,
-					.flags = I2C_M_RD | I2C_M_NO_RD_ACK | (repeatedStart ? 0 : I2C_M_NOSTART), // read
-					.len = rxLength,
-					.buf = (uint8_t*) rx_buf
-			}
-	};
-	struct i2c_rdwr_ioctl_data rdwr_data = {
-			.msgs = rdwr_msg,
-			.nmsgs = 2
-	};
-
-	int rc = ioctl(fd, I2C_RDWR, &rdwr_data);
-
-	(*env)->ReleaseByteArrayElements(env, rxData, rx_buf, 0);
-
-	if (rc < 0) {
-		perror("I2C Error in I2C rdwr");
-		return -errno;
-	}
-	return rc;
-}
-
 JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_builtin_i2c_NativeI2C_readWrite(
 		JNIEnv* env, jclass clz, jint fd, jint deviceAddress, jobjectArray messages, jbyteArray buffer) {
 	jbyte* data = (*env)->GetByteArrayElements(env, buffer, NULL);

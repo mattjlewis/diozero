@@ -1,6 +1,6 @@
 package com.diozero.internal.provider.firmata;
 
-/*
+/*-
  * #%L
  * Organisation: diozero
  * Project:      diozero - Firmata
@@ -31,11 +31,6 @@ package com.diozero.internal.provider.firmata;
  * #L%
  */
 
-import java.io.IOException;
-
-import org.firmata4j.Pin;
-import org.firmata4j.Pin.Mode;
-
 import com.diozero.api.AnalogInputEvent;
 import com.diozero.api.RuntimeIOException;
 import com.diozero.internal.provider.firmata.adapter.FirmataAdapter;
@@ -45,11 +40,9 @@ import com.diozero.internal.spi.AnalogInputDeviceInterface;
 
 public class FirmataAnalogInputDevice extends AbstractInputDevice<AnalogInputEvent>
 		implements AnalogInputDeviceInterface {
-	private static final float RANGE = 1023;
-
 	private FirmataAdapter adapter;
 	private int gpio;
-	private Pin pin;
+	private float range;
 
 	public FirmataAnalogInputDevice(FirmataDeviceFactory deviceFactory, String key, int gpio) {
 		super(key, deviceFactory);
@@ -57,16 +50,8 @@ public class FirmataAnalogInputDevice extends AbstractInputDevice<AnalogInputEve
 		this.gpio = gpio;
 
 		adapter = deviceFactory.getFirmataAdapter();
-		if (adapter != null) {
-			adapter.setPinMode(gpio, PinMode.ANALOG_INPUT);
-		} else {
-			pin = deviceFactory.getIoDevice().getPin(gpio);
-			try {
-				pin.setMode(Mode.ANALOG);
-			} catch (IOException e) {
-				throw new RuntimeIOException("Error setting pin mode to analog input for pin " + gpio);
-			}
-		}
+		adapter.setPinMode(gpio, PinMode.ANALOG_INPUT);
+		range = adapter.getMax(gpio, PinMode.ANALOG_INPUT);
 	}
 
 	@Override
@@ -76,10 +61,7 @@ public class FirmataAnalogInputDevice extends AbstractInputDevice<AnalogInputEve
 
 	@Override
 	public float getValue() throws RuntimeIOException {
-		if (adapter != null) {
-			return adapter.getValue(gpio) / RANGE;
-		}
-		return pin.getValue() / RANGE;
+		return adapter.getValue(gpio) / range;
 	}
 
 	@Override

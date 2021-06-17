@@ -31,7 +31,6 @@ package com.diozero.internal.board.chip;
  * #L%
  */
 
-
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
@@ -51,7 +50,7 @@ public class ChipBoardInfoProvider implements BoardInfoProvider {
 	public static final String MAKE = "Next Thing Company";
 	public static final String MODEL_CHIP = "CHIP";
 	public static final String MODEL_CHIP_PRO = "CHIP Pro";
-	
+
 	private static final float ADC_VREF = 1.750f;
 
 	@Override
@@ -68,20 +67,20 @@ public class ChipBoardInfoProvider implements BoardInfoProvider {
 	public static final class CHIPBoardInfo extends GenericLinuxArmBoardInfo {
 		public static final String U13_HEADER = "U13";
 		public static final String U14_HEADER = "U14";
-		
+
 		private static final int MEMORY = 512_000;
-		
+
 		private int xioGpioOffset = 0;
 		private boolean xioGpioOffsetLoaded;
-		
+
 		public CHIPBoardInfo() {
 			super(MAKE, MODEL_CHIP, MEMORY, ADC_VREF);
 		}
-		
+
 		@Override
 		public void populateBoardPinInfo() {
 			// FIXME Externalise this to a file
-			
+
 			// http://www.chip-community.org/index.php/GPIO_Info#Interrupts
 			// Not all gpio pins support interrupts. Whether a pin supports
 			// interrupts can be seen by the presence of an "edge" file (e.g.
@@ -97,22 +96,23 @@ public class ChipBoardInfoProvider implements BoardInfoProvider {
 			// instead delivers a signal on every change, meaning that setting
 			// the edge detection to "rising" or "falling" acts as if it were
 			// set to "both".
-			
+
 			// Map the XIO pins. Note these are connected via a PCF8574 GPIO
 			// expansion board that does not handle interrupts reliably.
 			int gpio = 0;
 			int pin = 13;
-			for (gpio=0; gpio<8; gpio++) {
+			for (gpio = 0; gpio < 8; gpio++) {
 				addGpioPinInfo(U14_HEADER, gpio, pin++, PinInfo.DIGITAL_IN_OUT);
 			}
-			
-			// PWM0
-			// To enable:
-			//sudo fdtput -t s /boot/sun5i-r8-chip.dtb "/soc@01c00000/pwm@01c20e00" "status" "okay"
-			//sudo fdtput -t s /boot/sun5i-r8-chip.dtb "/soc@01c00000/pwm@01c20e00" "pinctrl-names" "default"
-			//sudo fdtput -t x /boot/sun5i-r8-chip.dtb "/soc@01c00000/pwm@01c20e00" "pinctrl-0" "0x67" # 0x63 for older v4.4
-			addPwmPinInfo(U13_HEADER, 34, "PWM0", 18, 0, PinInfo.DIGITAL_IN_OUT_PWM);
-			
+
+			/*-
+			 * To enable:
+			 * sudo fdtput -t s /boot/sun5i-r8-chip.dtb "/soc@01c00000/pwm@01c20e00" "status" "okay"
+			 * sudo fdtput -t s /boot/sun5i-r8-chip.dtb "/soc@01c00000/pwm@01c20e00" "pinctrl-names" "default"
+			 * sudo fdtput -t x /boot/sun5i-r8-chip.dtb "/soc@01c00000/pwm@01c20e00" "pinctrl-0" "0x67" # 0x63 for older v4.4
+			 */
+			addPwmPinInfo(U13_HEADER, 34, "PWM0", 18, 0, 0, PinInfo.DIGITAL_IN_OUT_PWM);
+
 			// LCD-D2-D7
 			gpio = 98;
 			addGpioPinInfo(U13_HEADER, gpio++, "LCD-D2", 17, PinInfo.DIGITAL_IN_OUT);
@@ -121,7 +121,7 @@ public class ChipBoardInfoProvider implements BoardInfoProvider {
 			addGpioPinInfo(U13_HEADER, gpio++, "LCD-D5", 22, PinInfo.DIGITAL_IN_OUT);
 			addGpioPinInfo(U13_HEADER, gpio++, "LCD-D6", 21, PinInfo.DIGITAL_IN_OUT);
 			addGpioPinInfo(U13_HEADER, gpio++, "LCD-D7", 24, PinInfo.DIGITAL_IN_OUT);
-			
+
 			// LCD-D10-D15
 			gpio = 106;
 			addGpioPinInfo(U13_HEADER, gpio++, "LCD-D10", 23, PinInfo.DIGITAL_IN_OUT);
@@ -130,7 +130,7 @@ public class ChipBoardInfoProvider implements BoardInfoProvider {
 			addGpioPinInfo(U13_HEADER, gpio++, "LCD-D13", 28, PinInfo.DIGITAL_IN_OUT);
 			addGpioPinInfo(U13_HEADER, gpio++, "LCD-D14", 27, PinInfo.DIGITAL_IN_OUT);
 			addGpioPinInfo(U13_HEADER, gpio++, "LCD-D15", 30, PinInfo.DIGITAL_IN_OUT);
-			
+
 			// LCD-D18-D23
 			gpio = 114;
 			addGpioPinInfo(U13_HEADER, gpio++, "LCD-D18", 29, PinInfo.DIGITAL_IN_OUT);
@@ -139,40 +139,40 @@ public class ChipBoardInfoProvider implements BoardInfoProvider {
 			addGpioPinInfo(U13_HEADER, gpio++, "LCD-D21", 34, PinInfo.DIGITAL_IN_OUT);
 			addGpioPinInfo(U13_HEADER, gpio++, "LCD-D22", 33, PinInfo.DIGITAL_IN_OUT);
 			addGpioPinInfo(U13_HEADER, gpio++, "LCD-D23", 36, PinInfo.DIGITAL_IN_OUT);
-			
+
 			// LCD-CLK, LCD-VSYNC, LCD-HSYNC
 			pin = 36;
 			addGpioPinInfo(U13_HEADER, 120, "LCD-CLK", pin++, PinInfo.DIGITAL_IN_OUT);
 			addGpioPinInfo(U13_HEADER, 122, "LCD-VSYNC", pin++, PinInfo.DIGITAL_IN_OUT);
 			addGpioPinInfo(U13_HEADER, 123, "LCD-HSYNC", pin++, PinInfo.DIGITAL_IN_OUT);
-			
+
 			// UART1
 			addGpioPinInfo(U14_HEADER, 195, "UART1-TX", 3, PinInfo.DIGITAL_IN_OUT);
 			addGpioPinInfo(U14_HEADER, 196, "UART1-RX", 5, PinInfo.DIGITAL_IN_OUT);
-			
+
 			// AP-EINT
 			pin = 23;
 			addGpioPinInfo(U14_HEADER, 193, "AP-EINT1", pin++, PinInfo.DIGITAL_IN_OUT);
 			addGpioPinInfo(U14_HEADER, 35, "AP-EINT3", pin++, PinInfo.DIGITAL_IN_OUT);
-			
+
 			// I2C / SPI
 			pin = 25;
-			addGpioPinInfo(U14_HEADER, 50, "TWI2-SDA", pin++, PinInfo.DIGITAL_IN_OUT);	// I2C2-SDA
-			addGpioPinInfo(U14_HEADER, 49, "TWI2-SCK", pin++, PinInfo.DIGITAL_IN_OUT);	// I2C2-SCL
-			addGpioPinInfo(U14_HEADER, 128, "CSIPCK", pin++, PinInfo.DIGITAL_IN_OUT);	// SPI-CS0
-			addGpioPinInfo(U14_HEADER, 129, "CSICK", pin++, PinInfo.DIGITAL_IN_OUT);	// SPI-CLK
-			addGpioPinInfo(U14_HEADER, 130, "CSIHSYNC", pin++, PinInfo.DIGITAL_IN_OUT);	// SPI-MOSI
-			addGpioPinInfo(U14_HEADER, 131, "CSIVSYNC", pin++, PinInfo.DIGITAL_IN_OUT);	// SPI-MISO
-			
+			addGpioPinInfo(U14_HEADER, 50, "TWI2-SDA", pin++, PinInfo.DIGITAL_IN_OUT); // I2C2-SDA
+			addGpioPinInfo(U14_HEADER, 49, "TWI2-SCK", pin++, PinInfo.DIGITAL_IN_OUT); // I2C2-SCL
+			addGpioPinInfo(U14_HEADER, 128, "CSIPCK", pin++, PinInfo.DIGITAL_IN_OUT); // SPI-CS0
+			addGpioPinInfo(U14_HEADER, 129, "CSICK", pin++, PinInfo.DIGITAL_IN_OUT); // SPI-CLK
+			addGpioPinInfo(U14_HEADER, 130, "CSIHSYNC", pin++, PinInfo.DIGITAL_IN_OUT); // SPI-MOSI
+			addGpioPinInfo(U14_HEADER, 131, "CSIVSYNC", pin++, PinInfo.DIGITAL_IN_OUT); // SPI-MISO
+
 			// CSID0-7
 			gpio = 132;
-			for (int csid=0; csid<8; csid++) {
-				addGpioPinInfo(U14_HEADER, gpio+csid, "CSID"+csid, 31+csid, PinInfo.DIGITAL_IN_OUT);
+			for (int csid = 0; csid < 8; csid++) {
+				addGpioPinInfo(U14_HEADER, gpio + csid, "CSID" + csid, 31 + csid, PinInfo.DIGITAL_IN_OUT);
 			}
-			
+
 			// LRADC
 			addAdcPinInfo(U14_HEADER, 0, "LRADC", 11);
-			
+
 			// Add other pins
 			pin = 1;
 			addGeneralPinInfo(U13_HEADER, pin++, PinInfo.GROUND);
@@ -212,7 +212,7 @@ public class ChipBoardInfoProvider implements BoardInfoProvider {
 			addGeneralPinInfo(U14_HEADER, pin++, PinInfo.GROUND);
 			addGeneralPinInfo(U14_HEADER, pin++, PinInfo.GROUND);
 		}
-		
+
 		@Override
 		public int mapToSysFsGpioNumber(int gpio) {
 			loadXioGpioOffset();
@@ -220,17 +220,12 @@ public class ChipBoardInfoProvider implements BoardInfoProvider {
 		}
 
 		@Override
-		public int getPwmChip(int pwmNum) {
-			return 0;
-		}
-		
-		@Override
 		public MmapGpioInterface createMmapGpio() {
 			return new ChipMmapGpio();
 		}
-		
+
 		private synchronized void loadXioGpioOffset() {
-			if (! xioGpioOffsetLoaded) {
+			if (!xioGpioOffsetLoaded) {
 				// Determine the XIO GPIO base
 				Path gpio_sysfs_dir = Paths.get("/sys/class/gpio");
 				// FIXME Treat as a stream
@@ -241,7 +236,7 @@ public class ChipBoardInfoProvider implements BoardInfoProvider {
 							xioGpioOffset = Integer.parseInt(dir_name.replace("gpiochip", ""));
 							break;
 						}
-						/*
+						/*-
 						try (BufferedReader reader = new BufferedReader(new FileReader(p.resolve("label").toFile()))) {
 							if (reader.readLine().equals("pcf8574a")) {
 								String dir_name = p.getFileName().toString();
@@ -255,7 +250,7 @@ public class ChipBoardInfoProvider implements BoardInfoProvider {
 				} catch (IOException e) {
 					Logger.warn(e, "Unable to determine XIO GPIO offset: {}", e);
 				}
-				
+
 				xioGpioOffsetLoaded = true;
 			}
 		}
@@ -263,11 +258,11 @@ public class ChipBoardInfoProvider implements BoardInfoProvider {
 
 	public static final class CHIPProBoardInfo extends GenericLinuxArmBoardInfo {
 		private static final int MEMORY = 256;
-		
+
 		public CHIPProBoardInfo() {
 			super(MAKE, MODEL_CHIP_PRO, MEMORY, ADC_VREF);
 		}
-		
+
 		@Override
 		public void populateBoardPinInfo() {
 			// https://docs.getchip.com/chip_pro.html#pin-descriptions
@@ -282,49 +277,49 @@ public class ChipBoardInfoProvider implements BoardInfoProvider {
 
 			// PWM 0 & 1
 			int pin = 9;
-			addPwmPinInfo(34, "PWM0", pin++, 0, PinInfo.DIGITAL_IN_OUT_PWM);	// PB2
-			addPwmPinInfo(205, "PWM1", pin++, 1, PinInfo.DIGITAL_IN_OUT_PWM);	// PG13
-			
+			addPwmPinInfo(34, "PWM0", pin++, 0, 0, PinInfo.DIGITAL_IN_OUT_PWM); // PB2
+			addPwmPinInfo(205, "PWM1", pin++, 0, 1, PinInfo.DIGITAL_IN_OUT_PWM); // PG13
+
 			// TWI1, UART2
 			int gpio = 47;
-			addGpioPinInfo(gpio++, "TWI1-SCK", pin++, PinInfo.DIGITAL_IN_OUT);	// PB15
-			addGpioPinInfo(gpio++, "TWI1-SDA", pin++, PinInfo.DIGITAL_IN_OUT);	// PB16
+			addGpioPinInfo(gpio++, "TWI1-SCK", pin++, PinInfo.DIGITAL_IN_OUT); // PB15
+			addGpioPinInfo(gpio++, "TWI1-SDA", pin++, PinInfo.DIGITAL_IN_OUT); // PB16
 			gpio = 98;
-			addGpioPinInfo(gpio++, "UART2-TX", pin++, PinInfo.DIGITAL_IN_OUT);	// PD2
-			addGpioPinInfo(gpio++, "UART2-RX", pin++, PinInfo.DIGITAL_IN_OUT);	// PD3
-			addGpioPinInfo(gpio++, "UART2-CTS", pin++, PinInfo.DIGITAL_IN_OUT);	// PD4
-			addGpioPinInfo(gpio++, "UART2-RTS", pin++, PinInfo.DIGITAL_IN_OUT);	// PD5
-			
+			addGpioPinInfo(gpio++, "UART2-TX", pin++, PinInfo.DIGITAL_IN_OUT); // PD2
+			addGpioPinInfo(gpio++, "UART2-RX", pin++, PinInfo.DIGITAL_IN_OUT); // PD3
+			addGpioPinInfo(gpio++, "UART2-CTS", pin++, PinInfo.DIGITAL_IN_OUT); // PD4
+			addGpioPinInfo(gpio++, "UART2-RTS", pin++, PinInfo.DIGITAL_IN_OUT); // PD5
+
 			// I2S
 			gpio = 37;
 			pin = 21;
-			addGpioPinInfo(gpio++, "I2S-MCLK", pin++, PinInfo.DIGITAL_IN_OUT);	// PB5
-			addGpioPinInfo(gpio++, "I2S-BCLK", pin++, PinInfo.DIGITAL_IN_OUT);	// PB6
-			addGpioPinInfo(gpio++, "I2S-LCLK", pin++, PinInfo.DIGITAL_IN_OUT);	// PB7
-			addGpioPinInfo(gpio++, "I2S-DO", pin++, PinInfo.DIGITAL_IN_OUT);	// PB8
-			addGpioPinInfo(gpio++, "I2S-DI", pin++, PinInfo.DIGITAL_IN_OUT);	// PB9
-			
+			addGpioPinInfo(gpio++, "I2S-MCLK", pin++, PinInfo.DIGITAL_IN_OUT); // PB5
+			addGpioPinInfo(gpio++, "I2S-BCLK", pin++, PinInfo.DIGITAL_IN_OUT); // PB6
+			addGpioPinInfo(gpio++, "I2S-LCLK", pin++, PinInfo.DIGITAL_IN_OUT); // PB7
+			addGpioPinInfo(gpio++, "I2S-DO", pin++, PinInfo.DIGITAL_IN_OUT); // PB8
+			addGpioPinInfo(gpio++, "I2S-DI", pin++, PinInfo.DIGITAL_IN_OUT); // PB9
+
 			// UART1
 			gpio = 195;
 			pin = 44;
-			addGpioPinInfo(gpio++, "UART1-TX", pin--, PinInfo.DIGITAL_IN_OUT);	// PG3
-			addGpioPinInfo(gpio++, "UART1-RX", pin--, PinInfo.DIGITAL_IN_OUT);	// PG4
-			
+			addGpioPinInfo(gpio++, "UART1-TX", pin--, PinInfo.DIGITAL_IN_OUT); // PG3
+			addGpioPinInfo(gpio++, "UART1-RX", pin--, PinInfo.DIGITAL_IN_OUT); // PG4
+
 			// LRADC
 			addAdcPinInfo(0, "LRADC0", pin--);
-			
+
 			// SPI2
 			gpio = 128;
 			// PE0/PE1/PE2 are for input only
-			addGpioPinInfo(gpio++, "CSIPCK", pin--, PinInfo.DIGITAL_IN);		// PE0
-			addGpioPinInfo(gpio++, "CSIMCLK", pin--, PinInfo.DIGITAL_IN);		// PE1
-			addGpioPinInfo(gpio++, "CSIHSYNC", pin--, PinInfo.DIGITAL_IN);		// PE2
-			addGpioPinInfo(gpio++, "CSIVSYNC", pin--, PinInfo.DIGITAL_IN_OUT);	// PE3
-			
+			addGpioPinInfo(gpio++, "CSIPCK", pin--, PinInfo.DIGITAL_IN); // PE0
+			addGpioPinInfo(gpio++, "CSIMCLK", pin--, PinInfo.DIGITAL_IN); // PE1
+			addGpioPinInfo(gpio++, "CSIHSYNC", pin--, PinInfo.DIGITAL_IN); // PE2
+			addGpioPinInfo(gpio++, "CSIVSYNC", pin--, PinInfo.DIGITAL_IN_OUT); // PE3
+
 			// CSID0-7
 			gpio = 132;
-			for (int i=0; i<8; i++) {
-				addGpioPinInfo(gpio+i, "CSID" + i, pin--, PinInfo.DIGITAL_IN_OUT);	// PE4-11
+			for (int i = 0; i < 8; i++) {
+				addGpioPinInfo(gpio + i, "CSID" + i, pin--, PinInfo.DIGITAL_IN_OUT); // PE4-11
 			}
 		}
 	}

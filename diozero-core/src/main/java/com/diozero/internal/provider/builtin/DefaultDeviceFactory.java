@@ -33,6 +33,7 @@ package com.diozero.internal.provider.builtin;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 import org.tinylog.Logger;
@@ -42,7 +43,6 @@ import com.diozero.api.GpioEventTrigger;
 import com.diozero.api.GpioPullUpDown;
 import com.diozero.api.I2CConstants;
 import com.diozero.api.PinInfo;
-import com.diozero.api.PwmPinInfo;
 import com.diozero.api.RuntimeIOException;
 import com.diozero.api.SerialConstants;
 import com.diozero.api.SpiClockMode;
@@ -65,6 +65,7 @@ import com.diozero.internal.spi.InternalSpiDeviceInterface;
 import com.diozero.internal.spi.MmapGpioInterface;
 import com.diozero.internal.spi.PwmOutputDeviceInterface;
 import com.diozero.sbc.BoardPinInfo;
+import com.diozero.sbc.LocalSystemInfo;
 import com.diozero.util.Diozero;
 import com.diozero.util.EpollNative;
 import com.diozero.util.PropertyUtil;
@@ -242,6 +243,16 @@ public class DefaultDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
+	public List<Integer> getI2CBusNumbers() {
+		return LocalSystemInfo.getI2CBusNumbers();
+	}
+
+	@Override
+	public int getI2CFunctionalities(int controller) {
+		return LocalSystemInfo.getI2CFunctionalities(controller);
+	}
+
+	@Override
 	public GpioDigitalInputDeviceInterface createDigitalInputDevice(String key, PinInfo pinInfo, GpioPullUpDown pud,
 			GpioEventTrigger trigger) throws RuntimeIOException {
 		if (gpioUseCharDev) {
@@ -302,16 +313,14 @@ public class DefaultDeviceFactory extends BaseNativeDeviceFactory {
 	@Override
 	public PwmOutputDeviceInterface createPwmOutputDevice(String key, PinInfo pinInfo, int pwmFrequency,
 			float initialValue) throws RuntimeIOException {
-		if (pinInfo instanceof PwmPinInfo) {
-			PwmPinInfo pwm_pin_info = (PwmPinInfo) pinInfo;
+		if (SysFsPwmOutputDevice.isSupported(this, pinInfo)) {
 			// Odroid C2 runs with an older 3.x kernel hence has a different sysfs interface
 			if (getBoardInfo().compareMakeAndModel(OdroidBoardInfoProvider.MAKE,
 					OdroidBoardInfoProvider.C2_HARDWARE_ID)) {
-				return new OdroidC2SysFsPwmOutputDevice(key, this, pwm_pin_info, pwmFrequency, initialValue);
+				return new OdroidC2SysFsPwmOutputDevice(key, this, pinInfo, pwmFrequency, initialValue);
 			}
 
-			return new SysFsPwmOutputDevice(key, this, getBoardInfo().getPwmChip(pwm_pin_info.getPwmNum()),
-					pwm_pin_info, pwmFrequency, initialValue);
+			return new SysFsPwmOutputDevice(key, this, pinInfo, pwmFrequency, initialValue, mmapGpio);
 		}
 
 		// Need to make sure the keys are different

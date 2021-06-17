@@ -1,6 +1,6 @@
 package com.diozero.internal.board.raspberrypi;
 
-/*
+/*-
  * #%L
  * Organisation: diozero
  * Project:      diozero - Core
@@ -31,11 +31,17 @@ package com.diozero.internal.board.raspberrypi;
  * #L%
  */
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.tinylog.Logger;
 
+import com.diozero.api.DeviceMode;
 import com.diozero.api.PinInfo;
 import com.diozero.internal.board.GenericLinuxArmBoardInfo;
 import com.diozero.internal.spi.BoardInfoProvider;
@@ -155,6 +161,37 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 		return lookupByRevision(revision);
 	}
 
+	public static Map<Integer, Integer> extractPwmGpioNumbers(String line) {
+		Map<String, Integer> pwm_config = new HashMap<>();
+		// One PWM channel: dtoverlay=pwm,pin=12,func=4
+		// Two PWM channels: dtoverlay=pwm-2chan,pin=12,func=4,pin2=13,func2=4
+		String[] line_parts = line.split(",");
+		int index = 1;
+		try {
+			do {
+				String[] name_and_value = line_parts[index++].split("=");
+				// FIXME Could map "pin" to "0" and "pin2" to "1", "pin<n>" to "n-1", etc
+				pwm_config.put(name_and_value[0], Integer.valueOf(name_and_value[1]));
+				name_and_value = line_parts[index++].split("=");
+				pwm_config.put(name_and_value[0], Integer.valueOf(name_and_value[1]));
+			} while (index < line_parts.length);
+		} catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
+			Logger.warn(e, "Error parsing dtoverlay line '" + line + "': {}", e);
+		}
+
+		Map<Integer, Integer> pwm_gpio_numbers = new HashMap<>();
+		Integer pwm_0_gpio = pwm_config.get("pin");
+		if (pwm_0_gpio != null) {
+			pwm_gpio_numbers.put(pwm_0_gpio, Integer.valueOf(0));
+			Integer pwm_1_gpio = pwm_config.get("pin2");
+			if (pwm_1_gpio != null) {
+				pwm_gpio_numbers.put(pwm_1_gpio, Integer.valueOf(1));
+			}
+		}
+
+		return pwm_gpio_numbers;
+	}
+
 	public static BoardInfo lookupByRevision(String revision) {
 		try {
 			int rev_int = Integer.parseInt(revision, 16);
@@ -261,7 +298,7 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 	 * <p>
 	 * See <a href="https://pinout.xyz/">https://pinout.xyz/</a>
 	 * </p>
-	 * 
+	 *
 	 * <pre>
 	 *  +-----+-----+---------+------+---+---Pi 2---+---+------+---------+-----+-----+
 	 *  | BCM | wPi |   Name  | Mode | V | Physical | V | Mode | Name    | wPi | BCM |
@@ -296,6 +333,8 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 		private String pcbRevision;
 		private String manufacturer;
 		private String processor;
+		// Map from GPIO number to PWM number
+		private Map<Integer, Integer> gpioToPwmNumberMapping;
 
 		public PiBoardInfo(String code, String model, String pcbRevision, int memory, String manufacturer,
 				String processor) {
@@ -305,6 +344,16 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 			this.pcbRevision = pcbRevision;
 			this.manufacturer = manufacturer;
 			this.processor = processor;
+
+			// Read /boot/config.txt to see if the PWM device tree overlay is loaded
+			// Can be max one of "dtoverlay=pwm," or "dtoverlay=pwm-2chan,"
+			try {
+				gpioToPwmNumberMapping = Files.lines(Paths.get("/boot/config.txt"))
+						.filter(line -> line.startsWith("dtoverlay=pwm")).findFirst()
+						.map(RaspberryPiBoardInfoProvider::extractPwmGpioNumbers).orElse(Collections.emptyMap());
+			} catch (IOException e) {
+				// Ignore
+			}
 		}
 
 		public String getCode() {
@@ -336,6 +385,21 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 			if (!loadBoardPinInfoDefinition(compatibility[0], compatibility[1])) {
 				loadBoardPinInfoDefinition(compatibility[0]);
 			}
+		}
+
+		@Override
+		public PinInfo addPwmPinInfo(String header, int gpioNumber, String name, int physicalPin, int pwmChip,
+				int pwmNum, Collection<DeviceMode> modes, int chip, int line) {
+			if (pwmChip != PinInfo.NOT_DEFINED) {
+				// Validate that this GPIO is actually configured for PWM
+				Integer pwm_num = gpioToPwmNumberMapping.get(Integer.valueOf(gpioNumber));
+				if (pwm_num != null) {
+					return super.addPwmPinInfo(header, gpioNumber, name, physicalPin, pwmChip, pwm_num.intValue(),
+							modes, chip, line);
+				}
+			}
+
+			return super.addGpioPinInfo(header, gpioNumber, name, physicalPin, modes, chip, line);
 		}
 
 		@Override
@@ -517,8 +581,8 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 			addGpioPinInfo(9, 29, PinInfo.DIGITAL_IN_OUT); // SPI0-MISO
 			addGpioPinInfo(10, 33, PinInfo.DIGITAL_IN_OUT); // SPI0-MOSI
 			addGpioPinInfo(11, 35, PinInfo.DIGITAL_IN_OUT); // SPI0-SCLK
-			addPwmPinInfo(12, 45, 0, PinInfo.DIGITAL_IN_OUT_PWM); // PWM0
-			addPwmPinInfo(13, 47, 1, PinInfo.DIGITAL_IN_OUT_PWM); // PWM1
+			addPwmPinInfo(12, 45, 0, 0, PinInfo.DIGITAL_IN_OUT_PWM); // PWM0
+			addPwmPinInfo(13, 47, 0, 1, PinInfo.DIGITAL_IN_OUT_PWM); // PWM1
 			// TODO Complete this (up to GPIO45)
 		}
 	}

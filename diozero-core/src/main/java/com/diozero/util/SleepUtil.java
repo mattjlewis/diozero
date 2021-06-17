@@ -97,7 +97,8 @@ public class SleepUtil {
 
 	/**
 	 * Invoke the C nanosleep function via JNI. Note that the accuracy of the sleep
-	 * is not guaranteed - the delta could be as much as 30 microseconds.
+	 * is not guaranteed - the delta could be as much as 30 microseconds given the
+	 * additional JNI overhead.
 	 *
 	 * Note - you must ensure that the diozero-system-utils library has been loaded
 	 * via {@link com.diozero.util.LibraryLoader#loadSystemUtils loadSystemUtils()}

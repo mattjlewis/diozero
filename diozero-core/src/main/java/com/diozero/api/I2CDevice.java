@@ -490,16 +490,6 @@ public class I2CDevice implements I2CDeviceInterface {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public int readNoStop(byte registerAddress, int rxLength, byte[] rxData, boolean repeatedStart) {
-		synchronized (delegate) {
-			return delegate.readNoStop(registerAddress, rxLength, rxData, repeatedStart);
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
 	public void readWrite(I2CMessage[] messages, byte[] buffer) {
 		// TODO Validate that buffer is big enough
 		synchronized (delegate) {

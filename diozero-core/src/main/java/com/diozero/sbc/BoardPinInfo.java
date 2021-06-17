@@ -41,7 +41,6 @@ import java.util.TreeMap;
 import com.diozero.api.DeviceMode;
 import com.diozero.api.NoSuchDeviceException;
 import com.diozero.api.PinInfo;
-import com.diozero.api.PwmPinInfo;
 
 /*-
  * cat /sys/kernel/debug/gpio
@@ -148,29 +147,30 @@ public class BoardPinInfo {
 		}
 	}
 
-	public PinInfo addPwmPinInfo(int gpioNum, int physicalPin, int pwmNum, Collection<DeviceMode> modes) {
-		return addPwmPinInfo(PinInfo.DEFAULT_HEADER, gpioNum, DEFAULT_GPIO_NAME_PREFIX + gpioNum, physicalPin, pwmNum,
-				modes);
+	public PinInfo addPwmPinInfo(int gpioNum, int physicalPin, int pwmChip, int pwmNum, Collection<DeviceMode> modes) {
+		return addPwmPinInfo(PinInfo.DEFAULT_HEADER, gpioNum, DEFAULT_GPIO_NAME_PREFIX + gpioNum, physicalPin, pwmChip,
+				pwmNum, modes);
 	}
 
-	public PinInfo addPwmPinInfo(int gpioNum, String name, int physicalPin, int pwmNum, Collection<DeviceMode> modes) {
-		return addPwmPinInfo(PinInfo.DEFAULT_HEADER, gpioNum, name, physicalPin, pwmNum, modes);
-	}
-
-	public PinInfo addPwmPinInfo(int gpioNum, String name, int physicalPin, int pwmNum, Collection<DeviceMode> modes,
-			int chip, int line) {
-		return addPwmPinInfo(PinInfo.DEFAULT_HEADER, gpioNum, name, physicalPin, pwmNum, modes, chip, line);
-	}
-
-	public PinInfo addPwmPinInfo(String header, int gpioNumber, String name, int physicalPin, int pwmNum,
+	public PinInfo addPwmPinInfo(int gpioNum, String name, int physicalPin, int pwmChip, int pwmNum,
 			Collection<DeviceMode> modes) {
-		return addPwmPinInfo(header, gpioNumber, name, physicalPin, pwmNum, modes, PinInfo.NOT_DEFINED,
+		return addPwmPinInfo(PinInfo.DEFAULT_HEADER, gpioNum, name, physicalPin, pwmChip, pwmNum, modes);
+	}
+
+	public PinInfo addPwmPinInfo(int gpioNum, String name, int physicalPin, int pwmChip, int pwmNum,
+			Collection<DeviceMode> modes, int chip, int line) {
+		return addPwmPinInfo(PinInfo.DEFAULT_HEADER, gpioNum, name, physicalPin, pwmChip, pwmNum, modes, chip, line);
+	}
+
+	public PinInfo addPwmPinInfo(String header, int gpioNumber, String name, int physicalPin, int pwmChip, int pwmNum,
+			Collection<DeviceMode> modes) {
+		return addPwmPinInfo(header, gpioNumber, name, physicalPin, pwmChip, pwmNum, modes, PinInfo.NOT_DEFINED,
 				PinInfo.NOT_DEFINED);
 	}
 
-	public PinInfo addPwmPinInfo(String header, int gpioNumber, String name, int physicalPin, int pwmNum,
+	public PinInfo addPwmPinInfo(String header, int gpioNumber, String name, int physicalPin, int pwmChip, int pwmNum,
 			Collection<DeviceMode> modes, int chip, int line) {
-		PinInfo pin_info = new PwmPinInfo(GPIO_KEY_PREFIX, header, gpioNumber, physicalPin, pwmNum, name, modes,
+		PinInfo pin_info = new PinInfo(GPIO_KEY_PREFIX, header, gpioNumber, physicalPin, pwmChip, pwmNum, name, modes,
 				mapToSysFsGpioNumber(gpioNumber), chip, line);
 		addGpioPinInfo(pin_info);
 		pwmNumToGpioMapping.put(Integer.valueOf(pwmNum), Integer.valueOf(gpioNumber));
@@ -239,7 +239,7 @@ public class BoardPinInfo {
 		if (header == null) {
 			return Optional.empty();
 		}
-		
+
 		return Optional.ofNullable(header.get(Integer.valueOf(physicalPin)));
 	}
 
@@ -317,7 +317,7 @@ public class BoardPinInfo {
 	public Map<String, Map<Integer, PinInfo>> getHeaders() {
 		return headers;
 	}
-	
+
 	public Collection<String> getHeaderNames() {
 		return headers.keySet();
 	}
@@ -345,5 +345,19 @@ public class BoardPinInfo {
 	@SuppressWarnings("static-method")
 	public int mapToSysFsGpioNumber(int gpio) {
 		return gpio;
+	}
+
+	/**
+	 * Get the PWM chip for the specified pin. Only relevant for sysfs hardware PWM
+	 * control, in particular on the BeagleBone Black where the PWM chip number can
+	 * change between reboots.
+	 *
+	 * @param pinInfo object describing this pin
+	 * @return The PWM chip number for the requested PWM channel number, return -1
+	 *         if not supported
+	 */
+	@SuppressWarnings("static-method")
+	public int getPwmChipNumberOverride(PinInfo pinInfo) {
+		return pinInfo.getPwmChip();
 	}
 }

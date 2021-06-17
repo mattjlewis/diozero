@@ -31,6 +31,8 @@ package com.diozero.internal.provider.pigpioj;
  * #L%
  */
 
+import java.util.List;
+
 import org.tinylog.Logger;
 
 import com.diozero.api.DeviceMode;
@@ -53,10 +55,12 @@ import com.diozero.internal.spi.InternalSerialDeviceInterface;
 import com.diozero.internal.spi.InternalSpiDeviceInterface;
 import com.diozero.internal.spi.PwmOutputDeviceInterface;
 import com.diozero.sbc.BoardInfo;
+import com.diozero.sbc.LocalSystemInfo;
 
 import uk.pigpioj.PigpioConstants;
 import uk.pigpioj.PigpioInterface;
 import uk.pigpioj.PigpioJ;
+import uk.pigpioj.PigpioSocket;
 
 public class PigpioJDeviceFactory extends BaseNativeDeviceFactory {
 	private static final int PIGPIO_SPI_BUFFER_SIZE = (int) (Math.pow(2, 16) - 1);
@@ -141,6 +145,26 @@ public class PigpioJDeviceFactory extends BaseNativeDeviceFactory {
 	@Override
 	public int getGpioValue(int gpio) {
 		return pigpioImpl.read(gpio);
+	}
+
+	@SuppressWarnings("resource")
+	@Override
+	public List<Integer> getI2CBusNumbers() {
+		// pigpio does not expose this API, test if using JNI or sockets implementation
+		if (PigpioJ.getImplementation() instanceof PigpioSocket) {
+			throw new UnsupportedOperationException("pigpio does not provide this interface");
+		}
+		return LocalSystemInfo.getI2CBusNumbers();
+	}
+
+	@SuppressWarnings("resource")
+	@Override
+	public int getI2CFunctionalities(int controller) {
+		// pigpio does not expose this API, test if using JNI or sockets implementation
+		if (PigpioJ.getImplementation() instanceof PigpioSocket) {
+			throw new UnsupportedOperationException("pigpio does not provide this interface");
+		}
+		return LocalSystemInfo.getI2CFunctionalities(controller);
 	}
 
 	@Override

@@ -7,17 +7,25 @@ redirect_from:
   - /en/stable/RELEASE/index.html
 ---
 
-# Future
+# Release History
+
+## TODO Items
 
 + Complete MAX30102
 + Tidy up ADS112C04
++ Tidy up IMU devices
 + ST7735 / ST7789
 + Stepper motors
 + Tidy up sampleapps with sub-packages as per diozero core (api, devices, motor, util, sbc, ...)
-+ Pi PWM - support use of PWM kernel module
 + Servo - add as a first-class device type (as supported by PiconZero and Arduino)
+* SPI support for Arduino devices over Firmata
 
-# Releases
+## 1.3.1 (in progress)
+
++ Fully removed dependency on Firmata4j + plus fixes to the built-in implementation
++ Fix for SerialDevice shutdown
++ Waveshare 7.5" e-ink display
++ Pi PWM - support use of PWM kernel module
 
 ## 1.3.0
 

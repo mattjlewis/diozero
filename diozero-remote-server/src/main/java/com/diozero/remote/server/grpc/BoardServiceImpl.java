@@ -44,6 +44,7 @@ import com.diozero.remote.message.protobuf.Board;
 import com.diozero.remote.message.protobuf.BoardServiceGrpc;
 import com.diozero.remote.message.protobuf.FloatResponse;
 import com.diozero.remote.message.protobuf.Gpio;
+import com.diozero.remote.message.protobuf.IntegerArrayResponse;
 import com.diozero.remote.message.protobuf.IntegerMessage;
 import com.diozero.remote.message.protobuf.IntegerResponse;
 import com.diozero.remote.message.protobuf.Response;
@@ -135,6 +136,28 @@ public class BoardServiceImpl extends BoardServiceGrpc.BoardServiceImplBase {
 
 		FloatResponse.Builder response_builder = FloatResponse.newBuilder().setStatus(Status.OK)
 				.setData(deviceFactory.getCpuTemperature());
+
+		responseObserver.onNext(response_builder.build());
+		responseObserver.onCompleted();
+	}
+
+	@Override
+	public void getI2CBusNumbers(Empty request, StreamObserver<IntegerArrayResponse> responseObserver) {
+		Logger.debug("getI2CBusNumbers request");
+
+		IntegerArrayResponse.Builder response_builder = IntegerArrayResponse.newBuilder().setStatus(Status.OK)
+				.addAllData(deviceFactory.getI2CBusNumbers());
+
+		responseObserver.onNext(response_builder.build());
+		responseObserver.onCompleted();
+	}
+
+	@Override
+	public void getI2CFunctionalities(IntegerMessage request, StreamObserver<IntegerResponse> responseObserver) {
+		Logger.debug("getI2CFunctionalities request");
+
+		IntegerResponse.Builder response_builder = IntegerResponse.newBuilder().setStatus(Status.OK)
+				.setData(deviceFactory.getI2CFunctionalities(request.getValue()));
 
 		responseObserver.onNext(response_builder.build());
 		responseObserver.onCompleted();

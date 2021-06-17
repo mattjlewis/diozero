@@ -59,11 +59,6 @@ public class TinkerBoardBoardInfoProvider implements BoardInfoProvider {
 		}
 
 		@Override
-		public int getPwmChip(int pwmNum) {
-			return 0;
-		}
-
-		@Override
 		public MmapGpioInterface createMmapGpio() {
 			return new TinkerBoardMmapGpio();
 		}

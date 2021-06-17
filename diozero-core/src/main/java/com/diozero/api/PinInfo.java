@@ -114,25 +114,36 @@ public class PinInfo {
 	private String keyPrefix;
 	private String header;
 	private int physicalPin;
-	/** gpioNumber */
+	/** e.g. gpioNumber */
 	private int deviceNumber;
 	private int sysFsNumber;
 	private int chip;
 	private int lineOffset;
 	private String name;
 	private Collection<DeviceMode> modes;
+	private int pwmChip;
+	private int pwmNum;
 
 	public PinInfo(String keyPrefix, String header, int deviceNumber, int physicalPin, String name,
 			Collection<DeviceMode> modes) {
-		this(keyPrefix, header, deviceNumber, physicalPin, name, modes, deviceNumber, NOT_DEFINED, NOT_DEFINED);
+		this(keyPrefix, header, deviceNumber, physicalPin, NOT_DEFINED, NOT_DEFINED, name, modes, deviceNumber,
+				NOT_DEFINED, NOT_DEFINED);
 	}
 
 	public PinInfo(String keyPrefix, String header, int deviceNumber, int physicalPin, String name,
 			Collection<DeviceMode> modes, int sysFsNumber, int chip, int line) {
+		this(keyPrefix, header, deviceNumber, physicalPin, NOT_DEFINED, NOT_DEFINED, name, modes, sysFsNumber, chip,
+				line);
+	}
+
+	public PinInfo(String keyPrefix, String header, int deviceNumber, int physicalPin, int pwmChip, int pwmNum,
+			String name, Collection<DeviceMode> modes, int sysFsNumber, int chip, int line) {
 		this.keyPrefix = keyPrefix;
 		this.header = header;
 		this.physicalPin = physicalPin;
 		this.deviceNumber = deviceNumber;
+		this.pwmChip = pwmChip;
+		this.pwmNum = pwmNum;
 		this.name = name;
 		this.modes = modes;
 		this.sysFsNumber = sysFsNumber;
@@ -274,6 +285,14 @@ public class PinInfo {
 
 	public boolean isAnalogOutputSupported() {
 		return modes.contains(DeviceMode.ANALOG_OUTPUT);
+	}
+
+	public int getPwmChip() {
+		return pwmChip;
+	}
+
+	public int getPwmNum() {
+		return pwmNum;
 	}
 
 	@Override

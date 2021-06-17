@@ -62,7 +62,7 @@ public class LocalBoardInfoUtil {
 			localBoardInfo = resolveLocalBoardInfo(LocalSystemInfo.getInstance());
 			// Only initialise the pins for the resolved board
 			// Don't initialise the pins! That is done within the base native device factory
-			//localBoardInfo.populateBoardPinInfo();
+			// localBoardInfo.populateBoardPinInfo();
 
 			initialised = true;
 		}
@@ -79,7 +79,7 @@ public class LocalBoardInfoUtil {
 	 * a remote connection - if you want information for the device you are
 	 * controlling please use:<br>
 	 * {@code DeviceFactoryHelper.getNativeDeviceFactory().getBoardInfo()}
-	 * 
+	 *
 	 * @return BoardInfo instance describing the local device.
 	 */
 	public static BoardInfo lookupLocalBoardInfo() {

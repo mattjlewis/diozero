@@ -53,15 +53,16 @@ public class LEDTest {
 		TestDeviceFactory.setDigitalInputDeviceClass(TestDigitalInputDevice.class);
 		TestDeviceFactory.setDigitalOutputDeviceClass(TestDigitalOutputDevice.class);
 	}
-	
+
 	@Test
 	public void test() {
 		try (NativeDeviceFactoryInterface df = DeviceFactoryHelper.getNativeDeviceFactory()) {
 			int pin = 1;
 			try (LED led = new LED(pin)) {
-				// TODO Clean-up required, it is a bit ugly to have to know the DeviceStates key structure...
+				// TODO Clean-up required, it is a bit ugly to have to know the DeviceStates key
+				// structure...
 				Assertions.assertTrue(df.isDeviceOpened("Native-GPIO-" + pin), "Pin (" + pin + ") is opened");
-				
+
 				led.on();
 				Assertions.assertTrue(led.isOn(), "Pin (" + pin + ") is on");
 				led.off();
@@ -75,8 +76,9 @@ public class LEDTest {
 			} catch (RuntimeIOException e) {
 				Logger.error(e, "Error: {}", e);
 			}
-			
-			// TODO Clean-up required, it is a bit ugly to have to know the DeviceStates key structure...
+
+			// TODO Clean-up required, it is a bit ugly to have to know the DeviceStates key
+			// structure...
 			Assertions.assertFalse(df.isDeviceOpened("Native-GPIO-" + pin), "Pin (" + pin + ") is closed");
 		}
 	}

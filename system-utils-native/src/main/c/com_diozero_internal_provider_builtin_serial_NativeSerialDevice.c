@@ -40,6 +40,7 @@
 #include <fcntl.h>
 #include <sys/file.h>
 #include <sys/ioctl.h>
+#include <signal.h>
 
 #include <termios.h>
 #if defined(__linux__)
@@ -159,20 +160,13 @@ JNIEXPORT jobject JNICALL Java_com_diozero_internal_provider_builtin_serial_Nati
   (JNIEnv* env, jclass clz, jstring deviceFile, jint baud, jint dataBits, jint stopBits,
 		  jint parity, jboolean readBlocking, jint minReadChars, jint readTimeoutMillis) {
 	const char* filename = (*env)->GetStringUTFChars(env, deviceFile, NULL);
+	// With O_NDELAY: The open will return without waiting for the device to be ready or available
 	int fd = open(filename, O_RDWR | O_NOCTTY | O_NDELAY | (readBlocking ? 0 : O_NONBLOCK));
 	(*env)->ReleaseStringUTFChars(env, deviceFile, filename);
 
 	if (fd < 0) {
 		return NULL;
 	}
-
-	// Clear any serial port flags and set up raw, non-canonical port parameters
-	fcntl(fd, F_SETFL, 0);
-	struct termios options = {0};
-	tcgetattr(fd, &options);
-	cfmakeraw(&options);
-	options.c_iflag |= BRKINT;
-	tcsetattr(fd, TCSANOW, &options);
 
 	//tcflush(fd, TCIFLUSH);
 
@@ -201,21 +195,20 @@ JNIEXPORT jobject JNICALL Java_com_diozero_internal_provider_builtin_serial_Nati
 JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_builtin_serial_NativeSerialDevice_serialConfigPort
   (JNIEnv* env, jclass clz, jint fd, jint baud, jint dataBits, jint stopBits, jint parity,
 		  jboolean blockingRead, jint minReadChars, jint readTimeoutMillis) {
+	// Clear any serial port flags and set up raw, non-canonical port parameters
+	// On Linux, this command can change only the O_APPEND, O_ASYNC, O_DIRECT, O_NOATIME, and O_NONBLOCK flags
+	int flags = 0;
+	if (!blockingRead) {
+		flags |= O_NONBLOCK;
+	}
+	fcntl(fd, F_SETFL, flags);
+
 	struct termios options = {0};
 	tcgetattr(fd, &options);
 
-	// Get the file status flags
-	int flags = fcntl(fd, F_GETFL);
-	if (blockingRead) {
-		flags &= ~O_NONBLOCK;
-	} else {
-		flags |= O_NONBLOCK;
-	}
-	int rc = fcntl(fd, F_SETFL, flags);
-	if (rc < 0) {
-		fprintf(stderr, "Error: Unable to set the file status flags: %d\n", rc);
-		return rc;
-	}
+	// Sets the terminal to something like the "raw" mode of the old Version 7 terminal driver
+	cfmakeraw(&options);
+	options.c_iflag |= BRKINT;
 
 	// c_cc: Control characters
 	// [VMIN]: Minimum number of characters to read - unsigned char
@@ -224,30 +217,30 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_builtin_serial_NativeS
 	options.c_cc[VTIME] = (unsigned char) ((readTimeoutMillis / 100) & 0xff);
 	/*
 	if (blockingRead) {
-	// Read Semi-blocking with timeout
-	//flags &= ~O_NONBLOCK;
-	//options.c_cc[VMIN] = 0;
+		// Read Semi-blocking with timeout
+		//flags &= ~O_NONBLOCK;
+		//options.c_cc[VMIN] = 0;
 		//options.c_cc[VTIME] = readTimeoutMillis / 100;
 
-	// Read Semi-blocking without timeout
-	flags &= ~O_NONBLOCK;
-	options.c_cc[VMIN] = 1;
-	options.c_cc[VTIME] = 0;
+		// Read Semi-blocking without timeout
+		flags &= ~O_NONBLOCK;
+		options.c_cc[VMIN] = 1;
+		options.c_cc[VTIME] = 0;
 
-	// Read Blocking with timeout
-	//flags &= ~O_NONBLOCK;
-	//options.c_cc[VMIN] = 0;
+		// Read Blocking with timeout
+		//flags &= ~O_NONBLOCK;
+		//options.c_cc[VMIN] = 0;
 		//options.c_cc[VTIME] = readTimeoutMillis / 100
 
-	// Read Blocking without timeout
-	//flags &= ~O_NONBLOCK;
-	//options.c_cc[VMIN] = 1;
-	//options.c_cc[VTIME] = 0;
+		// Read Blocking without timeout
+		//flags &= ~O_NONBLOCK;
+		//options.c_cc[VMIN] = 1;
+		//options.c_cc[VTIME] = 0;
 	} else {
-	// Non-blocking
-	//flags |= O_NONBLOCK;
-	//options.c_cc[VMIN]  = 0;
-	//options.c_cc[VTIME] = 0;
+		// Non-blocking
+		//flags |= O_NONBLOCK;
+		//options.c_cc[VMIN]  = 0;
+		//options.c_cc[VTIME] = 0;
 	}
 	*/
 
@@ -383,6 +376,9 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_builtin_serial_NativeS
   (JNIEnv* env, jclass clz, jobject fileDesc) {
 	// Get the private fd attribute
 	int fd = (*env)->GetIntField(env, fileDesc, fileDescFdField);
+
+	// A hack? Interrupt anything doing a blocking read using this fd
+	raise(SIGINT);
 
 	return close(fd);
 }

@@ -178,14 +178,6 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_builtin_i2c_NativeI2C_
 
 /*
  * Class:     com_diozero_internal_provider_builtin_i2c_NativeI2C
- * Method:    readNoStop
- * Signature: (IIBI[BZ)I
- */
-JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_builtin_i2c_NativeI2C_readNoStop
-  (JNIEnv *, jclass, jint, jint, jbyte, jint, jbyteArray, jboolean);
-
-/*
- * Class:     com_diozero_internal_provider_builtin_i2c_NativeI2C
  * Method:    readWrite
  * Signature: (II[Lcom/diozero/api/I2CDeviceInterface/I2CMessage;[B)I
  */

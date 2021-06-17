@@ -1,6 +1,6 @@
 package com.diozero.internal.provider.firmata;
 
-/*
+/*-
  * #%L
  * Organisation: diozero
  * Project:      diozero - Firmata
@@ -31,14 +31,6 @@ package com.diozero.internal.provider.firmata;
  * #L%
  */
 
-import java.io.IOException;
-
-import org.firmata4j.IOEvent;
-import org.firmata4j.Pin;
-import org.firmata4j.Pin.Mode;
-import org.firmata4j.PinEventListener;
-import org.tinylog.Logger;
-
 import com.diozero.api.DeviceMode;
 import com.diozero.api.DigitalInputEvent;
 import com.diozero.api.RuntimeIOException;
@@ -48,11 +40,10 @@ import com.diozero.internal.spi.AbstractInputDevice;
 import com.diozero.internal.spi.GpioDigitalInputOutputDeviceInterface;
 
 public class FirmataDigitalInputOutputDevice extends AbstractInputDevice<DigitalInputEvent>
-		implements GpioDigitalInputOutputDeviceInterface, PinEventListener {
+		implements GpioDigitalInputOutputDeviceInterface {
 	private FirmataAdapter adapter;
 	private int gpio;
 	private DeviceMode mode;
-	private Pin pin;
 
 	public FirmataDigitalInputOutputDevice(FirmataDeviceFactory deviceFactory, String key, int gpio, DeviceMode mode) {
 		super(key, deviceFactory);
@@ -60,32 +51,18 @@ public class FirmataDigitalInputOutputDevice extends AbstractInputDevice<Digital
 		this.gpio = gpio;
 
 		adapter = deviceFactory.getFirmataAdapter();
-		if (adapter == null) {
-			pin = deviceFactory.getIoDevice().getPin(gpio);
-		}
 
 		setMode(mode);
 	}
 
 	@Override
 	public void setValue(boolean value) throws RuntimeIOException {
-		if (adapter != null) {
-			adapter.setDigitalValue(gpio, value);
-		} else {
-			try {
-				pin.setValue(value ? 1 : 0);
-			} catch (IOException e) {
-				throw new RuntimeIOException("Error setting output value for pin " + pin.getIndex());
-			}
-		}
+		adapter.setDigitalValue(gpio, value);
 	}
 
 	@Override
 	public boolean getValue() throws RuntimeIOException {
-		if (adapter != null) {
-			return adapter.getDigitalValue(gpio);
-		}
-		return pin.getValue() != 0;
+		return adapter.getDigitalValue(gpio);
 	}
 
 	@Override
@@ -100,36 +77,19 @@ public class FirmataDigitalInputOutputDevice extends AbstractInputDevice<Digital
 
 	@Override
 	public void setMode(DeviceMode mode) {
-		if (adapter != null) {
-			adapter.setPinMode(gpio, mode == DeviceMode.DIGITAL_INPUT ? PinMode.DIGITAL_INPUT : PinMode.DIGITAL_OUTPUT);
-		} else {
-			try {
-				pin.setMode(mode == DeviceMode.DIGITAL_INPUT ? Mode.INPUT : Mode.OUTPUT);
-				this.mode = mode;
-			} catch (IllegalArgumentException | IOException e) {
-				throw new RuntimeIOException("Error setting mode to " + mode + " for pin " + pin.getIndex());
-			}
-		}
+		adapter.setPinMode(gpio, mode == DeviceMode.DIGITAL_INPUT ? PinMode.DIGITAL_INPUT : PinMode.DIGITAL_OUTPUT);
 	}
 
 	@Override
 	public void enableListener() {
 		disableListener();
 
-		if (adapter != null) {
-			adapter.enableDigitalReporting(gpio, true);
-		} else {
-			pin.addEventListener(this);
-		}
+		adapter.enableDigitalReporting(gpio, true);
 	}
 
 	@Override
 	public void disableListener() {
-		if (adapter != null) {
-			adapter.enableDigitalReporting(gpio, true);
-		} else {
-			pin.removeEventListener(this);
-		}
+		adapter.enableDigitalReporting(gpio, true);
 	}
 
 	@Override
@@ -138,17 +98,5 @@ public class FirmataDigitalInputOutputDevice extends AbstractInputDevice<Digital
 			setValue(false);
 		}
 		// TODO Nothing else to do?
-	}
-
-	@Override
-	// Firmata4j only
-	public void onModeChange(IOEvent event) {
-		Logger.warn("Mode changed from digital input to {}", event.getPin().getMode());
-	}
-
-	@Override
-	// Firmata4j only
-	public void onValueChange(IOEvent event) {
-		accept(new DigitalInputEvent(pin.getIndex(), event.getTimestamp(), System.nanoTime(), event.getValue() != 0));
 	}
 }

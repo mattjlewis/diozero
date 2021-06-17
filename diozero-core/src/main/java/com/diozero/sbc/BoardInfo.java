@@ -144,24 +144,12 @@ public abstract class BoardInfo extends BoardPinInfo {
 	/**
 	 * Compare make and model
 	 *
-	 * @param make  the make to compare
-	 * @param model the model to compare
+	 * @param make2  the make to compare
+	 * @param model2 the model to compare
 	 * @return true if the make and model are the same
 	 */
-	public boolean compareMakeAndModel(String make, String model) {
-		return make.equals(make) && model.equals(model);
-	}
-
-	/**
-	 * Get the PWM chip for the specified PWM number. Only actually relevant for
-	 * sysfs PWM control on the BeagleBone Black.
-	 *
-	 * @param pwmNum The sysfs PWM channel number
-	 * @return The PWM chip number for the requested PWM channel number, -1 if not
-	 *         found / not relevant
-	 */
-	public int getPwmChip(int pwmNum) {
-		return -1;
+	public boolean compareMakeAndModel(String make2, String model2) {
+		return this.make.equals(make2) && this.model.equals(model2);
 	}
 
 	/**

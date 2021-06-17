@@ -37,16 +37,16 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
+import java.util.Set;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.stream.Collectors;
 
 import org.tinylog.Logger;
 
@@ -60,24 +60,20 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 
 	private FirmataEventListener eventListener;
 	private AtomicBoolean running;
-	private Queue<ResponseMessage> responseQueue;
-	private Lock lock;
-	private Condition condition;
+	private BlockingQueue<ResponseMessage> responseQueue;
 	private Future<?> future;
 	private FirmwareDetails firmware;
 	private Map<Integer, Pin> pins;
-	private List<List<PinCapability>> boardCapabilities;
-	private Map<Integer, Integer> adcToGpioMapping;
+	private List<Set<PinCapability>> boardCapabilities;
+	private Map<Integer, Integer> adcToPinNumberMapping;
 
 	public FirmataAdapter(FirmataEventListener eventListener) {
 		this.eventListener = eventListener;
 
 		running = new AtomicBoolean(false);
-		responseQueue = new ConcurrentLinkedQueue<>();
-		lock = new ReentrantLock();
-		condition = lock.newCondition();
+		responseQueue = new LinkedBlockingQueue<>();
 		pins = new ConcurrentHashMap<>();
-		adcToGpioMapping = new ConcurrentHashMap<>();
+		adcToPinNumberMapping = new ConcurrentHashMap<>();
 	}
 
 	abstract int read();
@@ -98,12 +94,7 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 
 		// Wake anything up that is waiting on the lock (i.e. sendMessage that calls
 		// condition.await())
-		lock.lock();
-		try {
-			condition.signal();
-		} finally {
-			lock.unlock();
-		}
+		// TODO Put a poison message on the queue?
 
 		// Stop the thread that is reading responses (in particular the inputStream.read
 		// call when used with blocking I/O)
@@ -114,6 +105,8 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 			if (!future.cancel(true)) {
 				Logger.warn("Task could not be cancelled");
 			}
+			Logger.trace("future.isCancelled: {}, future.isDone: {}", Boolean.valueOf(future.isCancelled()),
+					Boolean.valueOf(future.isDone()));
 		}
 
 		Logger.trace("closed.");
@@ -130,10 +123,10 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 	public void initialiseBoard() {
 		Logger.debug("initialiseBoard()");
 
-		/*
-		 * System.out.println("initialiseBoard::Getting protocol version ...");
-		 * ProtocolVersion p_version = getProtocolVersion();
-		 * System.out.println("initialiseBoard::Got protocol version " + p_version);
+		/*-
+		System.out.println("initialiseBoard::Getting protocol version ...");
+		ProtocolVersion p_version = getProtocolVersion();
+		System.out.println("initialiseBoard::Got protocol version " + p_version);
 		 */
 
 		firmware = getFirmwareInternal();
@@ -143,22 +136,22 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 				CapabilityResponse.class);
 
 		// Cache the pin capabilities
-		int gpio = 0;
-		for (List<PinCapability> pin_capabilities : board_capabilities.getCapabilities()) {
-			Pin pin = new Pin(gpio, pin_capabilities);
-			pins.put(Integer.valueOf(gpio), pin);
-			gpio++;
+		boardCapabilities = board_capabilities.getCapabilities();
+		int pin_num = 0;
+		for (Set<PinCapability> pin_capabilities : boardCapabilities) {
+			Pin pin = new Pin(pin_num, pin_capabilities);
+			pins.put(Integer.valueOf(pin_num), pin);
+			pin_num++;
 		}
 
-		boardCapabilities = board_capabilities.getCapabilities();
-
 		AnalogMappingResponse mapping = getAnalogMapping();
-		gpio = 0;
+		pin_num = 0;
 		for (byte channel : mapping.getChannels()) {
 			if (channel != ANALOG_NOT_SUPPORTED) {
-				adcToGpioMapping.put(Integer.valueOf(channel), Integer.valueOf(gpio));
+				System.out.format("ADC mapping channel %d maps to pin %d%n", channel, pin_num);
+				adcToPinNumberMapping.put(Integer.valueOf(channel), Integer.valueOf(pin_num));
 			}
-			gpio++;
+			pin_num++;
 		}
 	}
 
@@ -175,7 +168,7 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 		return sendMessage(new byte[] { START_SYSEX, REPORT_FIRMWARE, END_SYSEX }, FirmwareDetails.class);
 	}
 
-	public List<List<PinCapability>> getBoardCapabilities() {
+	public List<Set<PinCapability>> getBoardCapabilities() {
 		return boardCapabilities;
 	}
 
@@ -402,28 +395,19 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 			throws RuntimeIOException {
 		ResponseMessage response = null;
 
-		// Acquire the lock before sending the message
-		lock.lock();
 		try {
 			write(request);
 
 			if (responseClass != null) {
+				// Lock is now re-acquired, process the messages on the queue (should only be
+				// one!)
 				do {
-					// Wait for a response message by waiting for a signal on the lock condition
-					condition.await();
-					// Lock is now re-acquired, process the messages on the queue (should only be
-					// one!)
-					do {
-						response = responseQueue.remove();
-					} while (!response.getClass().isAssignableFrom(responseClass));
+					response = responseQueue.take();
 				} while (!response.getClass().isAssignableFrom(responseClass));
 			}
 		} catch (InterruptedException e) {
 			// Ignore
 			Logger.trace("Interrupted");
-		} finally {
-			// Release the lock
-			lock.unlock();
 		}
 
 		return (T) response;
@@ -438,11 +422,12 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 
 		try {
 			while (running.get()) {
-				/*
+				/*-
 				 * When attempting to read a file (other than a pipe or FIFO) that supports
-				 * non-blocking reads and has no data currently available: If O_NONBLOCK is set,
-				 * read() shall return -1 and set errno to [EAGAIN]. If O_NONBLOCK is clear,
-				 * read() shall block the calling thread until some data becomes available.
+				 * non-blocking reads and has no data currently available:
+				 * If O_NONBLOCK is set, read() shall return -1 and set errno to [EAGAIN].
+				 * If O_NONBLOCK is clear, read() shall block the calling thread until
+				 * some data becomes available.
 				 */
 				int i = read();
 				if (i == -1) {
@@ -456,21 +441,9 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 
 				byte b = (byte) (i & 0xff);
 				if (b == START_SYSEX) {
-					lock.lock();
-					try {
-						responseQueue.add(readSysEx());
-						condition.signal();
-					} finally {
-						lock.unlock();
-					}
+					responseQueue.offer(readSysEx());
 				} else if (b == PROTOCOL_VERSION) {
-					lock.lock();
-					try {
-						responseQueue.add(readVersionResponse());
-						condition.signal();
-					} finally {
-						lock.unlock();
-					}
+					responseQueue.offer(readVersionResponse());
 				} else if (b >= DIGITAL_IO_START && b <= DIGITAL_IO_END) {
 					processDigitalResponse(readDataResponse(b - DIGITAL_IO_START), epoch_time, nano_time);
 				} else if (b >= ANALOG_IO_START && b <= ANALOG_IO_END) {
@@ -506,12 +479,12 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 	private void processAnalogResponse(DataResponse response, long eventTime, long nanoTime) {
 		// Update the cached value
 		int adc = response.getPort();
-		Integer gpio = adcToGpioMapping.get(Integer.valueOf(adc));
-		if (gpio != null) {
-			Pin pin = pins.get(Integer.valueOf(gpio.intValue()));
+		Integer pin_num = adcToPinNumberMapping.get(Integer.valueOf(adc));
+		if (pin_num != null) {
+			Pin pin = pins.get(Integer.valueOf(pin_num.intValue()));
 			if (pin != null) {
 				pin.setValue(response.getValue());
-				eventListener.event(FirmataEventListener.EventType.ANALOG, gpio.intValue(), response.getValue(),
+				eventListener.event(FirmataEventListener.EventType.ANALOG, pin_num.intValue(), response.getValue(),
 						eventTime, nanoTime);
 			}
 		}
@@ -551,8 +524,8 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 			response = new FirmwareDetails(major, minor, name);
 			break;
 		case CAPABILITY_RESPONSE:
-			List<List<PinCapability>> capabilities = new ArrayList<>();
-			List<PinCapability> pin_capabilities = new ArrayList<>();
+			List<Set<PinCapability>> capabilities = new ArrayList<>();
+			Set<PinCapability> pin_capabilities = new HashSet<>();
 			while (buffer.remaining() > 0) {
 				while (true) {
 					byte b = buffer.get();
@@ -564,8 +537,8 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 					pin_capabilities.add(new PinCapability(mode, resolution));
 				}
 
-				capabilities.add(Collections.unmodifiableList(pin_capabilities));
-				pin_capabilities = new ArrayList<>();
+				capabilities.add(Collections.unmodifiableSet(pin_capabilities));
+				pin_capabilities = new HashSet<>();
 			}
 			response = new CapabilityResponse(capabilities);
 			break;
@@ -722,13 +695,13 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 	}
 
 	static class CapabilityResponse extends SysExResponse {
-		private List<List<PinCapability>> capabilities;
+		private List<Set<PinCapability>> capabilities;
 
-		CapabilityResponse(List<List<PinCapability>> capabilities) {
+		CapabilityResponse(List<Set<PinCapability>> capabilities) {
 			this.capabilities = capabilities;
 		}
 
-		public List<List<PinCapability>> getCapabilities() {
+		public List<Set<PinCapability>> getCapabilities() {
 			return capabilities;
 		}
 
@@ -847,24 +820,23 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 
 	static class Pin {
 		private int gpio;
-		// List of pin mode and resolution pairs
-		private List<PinCapability> capabilities;
+		// Set of pin mode and resolution pairs
+		private Set<PinCapability> capabilities;
 		private PinMode mode = PinMode.UNKNOWN;
 		private int value;
-		private List<PinMode> modes;
+		private Set<PinMode> modes;
 
-		public Pin(int gpio, List<PinCapability> capabilities) {
+		public Pin(int gpio, Set<PinCapability> capabilities) {
 			this.gpio = gpio;
 			this.capabilities = capabilities;
-			modes = new ArrayList<>();
-			capabilities.forEach(pc -> modes.add(pc.getMode()));
+			modes = capabilities.stream().map(PinCapability::getMode).collect(Collectors.toSet());
 		}
 
 		public int getGpio() {
 			return gpio;
 		}
 
-		public List<PinCapability> getCapabilities() {
+		public Set<PinCapability> getCapabilities() {
 			return capabilities;
 		}
 
