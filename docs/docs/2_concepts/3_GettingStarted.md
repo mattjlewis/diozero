@@ -24,7 +24,8 @@ To compile a diozero application you will need 3 JAR files - [tinylog](http://ww
 To run a diozero application, you can also optionally include one of the supported device provider 
 libraries and the corresponding diozero provider wrapper library. Note that the built-in default
 device provider gives maximum portability but has some limitations such as not supporting hardware
-PWM on the Raspberry Pi. If you need hardware PWM on a Raspberry Pi then you must use the pigpio provider.
+PWM on the Raspberry Pi without using the sysfs PWM kernel module.
+If you need hardware PWM on a Raspberry Pi then you must use the pigpio provider.
 
 {: .note-title }
 > Memory Mapped GPIO Control (mmap)

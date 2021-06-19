@@ -1,5 +1,5 @@
 ---
-nav_order: 9
+nav_order: 99
 permalink: /test.html
 nav_exclude: true
 ---
@@ -26,10 +26,14 @@ nav_exclude: true
 >
 > Blah blah blah
 
+A warning message:
+
 {: .warning }
 > Some warning message
 >
 > Blah blah blah
+
+A danger message:
 
 {: .danger }
 > Some danger message

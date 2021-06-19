@@ -1,10 +1,10 @@
 ---
-parent: Internals
-nav_order: 98
-permalink: /internals/releases.html
+nav_order: 9
+permalink: /releases.html
 redirect_from:
   - /en/latest/RELEASE/index.html
   - /en/stable/RELEASE/index.html
+  - /internals/releases.html
 ---
 
 # Release History
