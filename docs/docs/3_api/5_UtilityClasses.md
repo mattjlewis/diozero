@@ -90,6 +90,7 @@ memory mapped access. Used for interacting with GPIO registers in `/dev/gpiomem`
 
 [PropertyUtil](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/com/diozero/util/PropertyUtil.html)
 : Utility class for accessing system properties that are set either as environment variables or as `-D` command line flags.
+Options set via command line flags take precedence over environment variables.
 
 [RangeUtil](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/com/diozero/util/RangeUtil.html)
 : Map and contrain values between different ranges. Useful when converting percentage values in the
