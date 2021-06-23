@@ -41,14 +41,14 @@ import org.tinylog.Logger;
 
 import com.diozero.animation.easing.EasingFunctions;
 import com.diozero.animation.easing.Elastic;
-import com.diozero.api.OutputDeviceInterface;
+import com.diozero.api.function.FloatConsumer;
 import com.diozero.util.Diozero;
 
 public class AnimationTest {
 	public static void main(String[] args) {
-		OutputDeviceInterface con1 = (f) -> System.out.println(f);
+		FloatConsumer con1 = (f) -> System.out.println(f);
 		// AnimationTest test = new AnimationTest();
-		List<OutputDeviceInterface> targets = Arrays.asList(con1,
+		List<FloatConsumer> targets = Arrays.asList(con1,
 				AnimationTest::setMyValue/* , (f) -> Logger.info("con2 {}", Float.valueOf(f)) */);
 
 		Animation anim = new Animation(targets, 100, EasingFunctions.forName(Elastic.OUT), 1);

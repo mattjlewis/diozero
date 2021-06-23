@@ -31,9 +31,8 @@ package com.diozero.devices.imu;
  * #L%
  */
 
-
-import org.apache.commons.math3.complex.Quaternion;
-import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
+import org.hipparchus.complex.Quaternion;
+import org.hipparchus.geometry.euclidean.threed.Vector3D;
 
 public class ImuData {
 	private Vector3D gyro;
@@ -42,8 +41,9 @@ public class ImuData {
 	private Vector3D compass;
 	private float temperature;
 	private long timestamp;
-	
-	public ImuData(Vector3D gyro, Vector3D accel, Quaternion quaternion, Vector3D compass, float temperature, long timestamp) {
+
+	public ImuData(Vector3D gyro, Vector3D accel, Quaternion quaternion, Vector3D compass, float temperature,
+			long timestamp) {
 		this.gyro = gyro;
 		this.accel = accel;
 		this.accel = accel;

@@ -37,8 +37,8 @@ import java.nio.ByteOrder;
 import org.tinylog.Logger;
 
 import com.diozero.api.AnalogInputEvent;
-import com.diozero.api.DeviceInterface;
 import com.diozero.api.DeviceAlreadyOpenedException;
+import com.diozero.api.DeviceInterface;
 import com.diozero.api.DeviceMode;
 import com.diozero.api.DigitalInputEvent;
 import com.diozero.api.GpioEventTrigger;
@@ -59,21 +59,23 @@ import com.diozero.internal.spi.GpioDeviceFactoryInterface;
 import com.diozero.internal.spi.GpioDigitalInputDeviceInterface;
 import com.diozero.internal.spi.GpioDigitalInputOutputDeviceInterface;
 import com.diozero.internal.spi.GpioDigitalOutputDeviceInterface;
+import com.diozero.internal.spi.InternalPwmOutputDeviceInterface;
+import com.diozero.internal.spi.InternalServoDeviceInterface;
 import com.diozero.internal.spi.PwmOutputDeviceFactoryInterface;
-import com.diozero.internal.spi.PwmOutputDeviceInterface;
+import com.diozero.internal.spi.ServoDeviceFactoryInterface;
 import com.diozero.sbc.BoardPinInfo;
 import com.diozero.util.RangeUtil;
 import com.diozero.util.SleepUtil;
 
-public class PiconZero extends AbstractDeviceFactory implements GpioDeviceFactoryInterface,
-		PwmOutputDeviceFactoryInterface, AnalogInputDeviceFactoryInterface, AnalogOutputDeviceFactoryInterface,
-		DeviceInterface {
-	public static enum InputConfig {
+public class PiconZero extends AbstractDeviceFactory
+		implements GpioDeviceFactoryInterface, PwmOutputDeviceFactoryInterface, ServoDeviceFactoryInterface,
+		AnalogInputDeviceFactoryInterface, AnalogOutputDeviceFactoryInterface, DeviceInterface {
+	public enum InputConfig {
 		DIGITAL(0), DIGITAL_PULL_UP(128), ANALOG(1), DS18B20(2);
 
 		private int value;
 
-		private InputConfig(int value) {
+		InputConfig(int value) {
 			this.value = value;
 		}
 
@@ -82,12 +84,12 @@ public class PiconZero extends AbstractDeviceFactory implements GpioDeviceFactor
 		}
 	}
 
-	public static enum OutputConfig {
+	public enum OutputConfig {
 		DIGITAL(0), PWM(1), SERVO(2), WS2812B(3);
 
 		private int value;
 
-		private OutputConfig(int value) {
+		OutputConfig(int value) {
 			this.value = value;
 		}
 
@@ -99,7 +101,6 @@ public class PiconZero extends AbstractDeviceFactory implements GpioDeviceFactor
 	private static final int PICON_ZERO_PWM_FREQUENCY = 50;
 
 	private static final int DEFAULT_ADDRESS = 0x22;
-	private static final int MAX_I2C_RETRIES = 5;
 
 	private static final int REVISION_REG = 0x00;
 	private static final int WS2812B_SET_PIXEL_NOUPDATE_REG = 0x00;
@@ -184,15 +185,8 @@ public class PiconZero extends AbstractDeviceFactory implements GpioDeviceFactor
 	}
 
 	private void writeByte(int register, int value) throws RuntimeIOException {
-		for (int i = 0; i < MAX_I2C_RETRIES; i++) {
-			try {
-				device.writeByteData(register, value);
-				SleepUtil.sleepMillis(1);
-				return;
-			} catch (RuntimeIOException e) {
-				Logger.warn(e, "Retrying I2C call, attempt # {}, error: {}", Integer.valueOf(i + 1), e);
-			}
-		}
+		device.writeByteData(register, value);
+		SleepUtil.sleepMillis(1);
 	}
 
 	private void writeBytes(int register, byte[] data) throws RuntimeIOException {
@@ -204,12 +198,13 @@ public class PiconZero extends AbstractDeviceFactory implements GpioDeviceFactor
 	 * Reset the board.
 	 */
 	public void reset() {
+		Logger.debug("reset()");
 		writeByte(RESET_REG, 0);
 	}
 
 	/**
 	 * Get the board revision details
-	 * 
+	 *
 	 * @return revision[0]: Board type (2 == PiconZero); revision[1]: Firmware
 	 *         version
 	 */
@@ -222,7 +217,7 @@ public class PiconZero extends AbstractDeviceFactory implements GpioDeviceFactor
 
 	/**
 	 * Set configuration of selected input channel
-	 * 
+	 *
 	 * @param channel Input channel (0..3)
 	 * @param config  Input configuration (0: Digital, 1: Analog, 2: DS18B20)
 	 */
@@ -235,12 +230,13 @@ public class PiconZero extends AbstractDeviceFactory implements GpioDeviceFactor
 
 	/**
 	 * Set configuration of selected output
-	 * 
+	 *
 	 * @param channel Output channel (0..5)
 	 * @param config  Output configuration (0: Digital, 1: PWM, 2: Servo, 3:
 	 *                Neopixel WS2812B)
 	 */
 	public void setOutputConfig(int channel, OutputConfig config) {
+		Logger.debug("setOutputConfig({}, {})", Integer.valueOf(channel), config);
 		validateChannelMode(channel, config);
 
 		writeByte(OUTPUT0_CONFIG_REG + channel, config.getValue());
@@ -249,7 +245,7 @@ public class PiconZero extends AbstractDeviceFactory implements GpioDeviceFactor
 
 	/**
 	 * Set motor output value (normalised to range -1..1)
-	 * 
+	 *
 	 * @param motor Motor number (0 or 1)
 	 * @param speed Must be in range -1..1
 	 */
@@ -259,7 +255,7 @@ public class PiconZero extends AbstractDeviceFactory implements GpioDeviceFactor
 
 	/**
 	 * Get motor output value (normalised to range -1..1)
-	 * 
+	 *
 	 * @param motor Motor number (0 or 1)
 	 * @return Current motor speed in range -1..1
 	 */
@@ -269,11 +265,12 @@ public class PiconZero extends AbstractDeviceFactory implements GpioDeviceFactor
 
 	/**
 	 * Set motor output value (PiconZero range -128..127)
-	 * 
+	 *
 	 * @param motor Motor number (0 or 1)
 	 * @param speed Must be in range -128..127
 	 */
 	public void setMotorValue(int motor, int speed) {
+		Logger.debug("setMotorValue({}, {})", Integer.valueOf(motor), Integer.valueOf(speed));
 		validateMotor(motor);
 		writeByte(MOTOR0_REG + motor, speed);
 		motorValues[motor] = speed;
@@ -281,7 +278,7 @@ public class PiconZero extends AbstractDeviceFactory implements GpioDeviceFactor
 
 	/**
 	 * Get the current motor speed (PiconZero range -128..127)
-	 * 
+	 *
 	 * @param motor Motor number (0 or 1)
 	 * @return Motor speed in range -128..127
 	 */
@@ -291,61 +288,8 @@ public class PiconZero extends AbstractDeviceFactory implements GpioDeviceFactor
 	}
 
 	/**
-	 * Read input value in normalised range (0..1)
-	 * 
-	 * @param channel Input to read
-	 * @return Normalised value (0..1)
-	 */
-	public float getValue(int channel) {
-		int input = getInputValue(channel);
-
-		switch (inputConfigs[channel]) {
-		case ANALOG:
-			return RangeUtil.map(input, 0, MAX_ANALOG_INPUT_VALUE, 0f, 1f);
-		case DIGITAL:
-		case DIGITAL_PULL_UP:
-		case DS18B20:
-		default:
-			return input;
-		}
-	}
-
-	/**
-	 * <p>
-	 * Set output value for the specified channel (normalised).
-	 * </p>
-	 * <p>
-	 * <em>* Don't use this method if the output mode is WS2812B.</em>
-	 * </p>
-	 * 
-	 * @param channel 0..5
-	 * @param value   Normalised output value:
-	 * 
-	 *                <pre>
-	 * Mode  Name    Type    Values
-	 * 0     On/Off  Byte    0 is OFF, 1 is ON
-	 * 1     PWM     Byte    0 to 1 percentage of ON time
-	 * 2     Servo   Byte    -1 to + 1 Position in degrees (0 is centre)
-	 * 3*    WS2812B 4 Bytes 0:Pixel ID, 1:Red, 2:Green, 3:Blue
-	 *                </pre>
-	 */
-	public void setValue(int channel, float value) {
-		int pz_value;
-		if (outputConfigs[channel] == OutputConfig.SERVO) {
-			pz_value = RangeUtil.map(value, -1, 1, 0, 180);
-		} else {
-			pz_value = RangeUtil.map(value, 0, 1, 0, MAX_OUTPUT_VALUE);
-		}
-		setOutputValue(channel, pz_value);
-	}
-
-	public void setValue(int channel, boolean value) {
-		setOutputValue(channel, value ? 1 : 0);
-	}
-
-	/**
 	 * Read input value in PiconZero range
-	 * 
+	 *
 	 * @param channel Input to read
 	 * @return Value in PiconZero range
 	 */
@@ -357,21 +301,22 @@ public class PiconZero extends AbstractDeviceFactory implements GpioDeviceFactor
 
 	/**
 	 * Set output data for selected output channel in PiconZero range.
-	 * 
+	 *
 	 * @param channel 0..5
 	 * @param value   output value:
-	 * 
+	 *
 	 *                <pre>
 	 * Mode  Name    Type    Values
 	 * 0     On/Off  Byte    0 is OFF, 1 is ON
 	 * 1     PWM     Byte    0 to 100 percentage of ON time
-	 * 2     Servo   Byte    Position in degrees with 90 as the mid point
+	 * 2     Servo   Byte    0..180 position in degrees with 90 as the mid point
 	 * 3*    WS2812B 4 Bytes 0:Pixel ID, 1:Red, 2:Green, 3:Blue
 	 *                </pre>
-	 * 
+	 *
 	 *                * Don't use this method if the output mode is WS2812B.
 	 */
 	public void setOutputValue(int channel, int value) {
+		Logger.debug("setOutputValue({}, {})", Integer.valueOf(channel), Integer.valueOf(value));
 		validateOutputChannel(channel);
 		// Should really validate value based on the output config however we
 		// don't actually need to - the PiconZero handles it for us
@@ -379,9 +324,13 @@ public class PiconZero extends AbstractDeviceFactory implements GpioDeviceFactor
 		writeByte(OUTPUT0_REG + channel, value);
 	}
 
+	public void setOutputValue(int channel, boolean value) {
+		setOutputValue(channel, value ? 1 : 0);
+	}
+
 	/**
 	 * Set the colour of an individual pixel (always output channel 5)
-	 * 
+	 *
 	 * @param pixel  0..63
 	 * @param red    0..255
 	 * @param green  0..255
@@ -398,7 +347,7 @@ public class PiconZero extends AbstractDeviceFactory implements GpioDeviceFactor
 	/**
 	 * Sets all pixels with the selected red, green and blue values (0 to 255)
 	 * [Available from firmware revision 07]
-	 * 
+	 *
 	 * @param red    0..255
 	 * @param green  0..255
 	 * @param blue   0..255
@@ -431,7 +380,18 @@ public class PiconZero extends AbstractDeviceFactory implements GpioDeviceFactor
 	@Override
 	public void setBoardPwmFrequency(int pwmFrequency) {
 		// Not supported
-		Logger.warn("Cannot change PWM frequency for the Piconzero");
+		Logger.warn("Cannot change PWM frequency for the Picon Zero");
+	}
+
+	@Override
+	public int getBoardServoFrequency() {
+		return boardPwmFrequency;
+	}
+
+	@Override
+	public void setBoardServoFrequency(int boardFrequency) {
+		// Not supported
+		Logger.warn("Cannot change servo frequency for the Picon Zero");
 	}
 
 	@Override
@@ -462,10 +422,20 @@ public class PiconZero extends AbstractDeviceFactory implements GpioDeviceFactor
 	}
 
 	@Override
-	public PwmOutputDeviceInterface createPwmOutputDevice(String key, PinInfo pinInfo, int pwmFrequency,
+	public InternalPwmOutputDeviceInterface createPwmOutputDevice(String key, PinInfo pinInfo, int pwmFrequency,
 			float initialValue) throws RuntimeIOException {
 		setOutputConfig(pinInfo.getPhysicalPin(), OutputConfig.PWM);
-		return new PiconZeroPwmOutputDevice(this, key, pinInfo.getDeviceNumber(), pinInfo.getPhysicalPin(), initialValue);
+		return new PiconZeroPwmOutputDevice(this, key, pinInfo.getDeviceNumber(), pinInfo.getPhysicalPin(),
+				initialValue);
+	}
+
+	@Override
+	public InternalServoDeviceInterface createServoDevice(String key, PinInfo pinInfo, int frequency,
+			int minPulseWidthUs, int maxPulseWidthUs, int initialPulseWidthUs) {
+		// Note the PiconZero Servo output frequency is fixed at 50Hz
+		setOutputConfig(pinInfo.getPhysicalPin(), OutputConfig.SERVO);
+		return new PiconZeroServoDevice(this, key, pinInfo.getDeviceNumber(), pinInfo.getPhysicalPin(), minPulseWidthUs,
+				maxPulseWidthUs, initialPulseWidthUs);
 	}
 
 	@Override
@@ -497,10 +467,10 @@ public class PiconZero extends AbstractDeviceFactory implements GpioDeviceFactor
 			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
 		}
 
-		AnalogInputDeviceInterface device = createAnalogInputDevice(key, pinInfo);
-		deviceOpened(device);
+		AnalogInputDeviceInterface ain = createAnalogInputDevice(key, pinInfo);
+		deviceOpened(ain);
 
-		return device;
+		return ain;
 	}
 
 	public void closeChannel(int channel) {
@@ -510,10 +480,20 @@ public class PiconZero extends AbstractDeviceFactory implements GpioDeviceFactor
 
 	@Override
 	public void close() throws RuntimeIOException {
-		Logger.trace("close({})");
+		Logger.trace("close()");
+		if (isClosed()) {
+			Logger.trace("Already closed");
+			return;
+		}
+
+		// Close all provisioned pins before closing the I2C device itself
+		super.close();
+
 		setMotor(0, 0);
 		setMotor(1, 0);
 		reset();
+
+		// Finally close the I2C device itself
 		device.close();
 	}
 
@@ -560,7 +540,7 @@ public class PiconZero extends AbstractDeviceFactory implements GpioDeviceFactor
 
 		@Override
 		public float getValue() throws RuntimeIOException {
-			return piconZero.getValue(getChannel());
+			return piconZero.getInputValue(getChannel());
 		}
 
 		@Override
@@ -659,12 +639,12 @@ public class PiconZero extends AbstractDeviceFactory implements GpioDeviceFactor
 
 		@Override
 		public void setValue(boolean value) {
-			piconZero.setValue(channel, value);
+			piconZero.setOutputValue(channel, value);
 			this.value = value;
 		}
 	}
 
-	public static class PiconZeroPwmOutputDevice extends AbstractDevice implements PwmOutputDeviceInterface {
+	public static class PiconZeroPwmOutputDevice extends AbstractDevice implements InternalPwmOutputDeviceInterface {
 		private PiconZero piconZero;
 		private int gpio;
 		private int channel;
@@ -676,6 +656,8 @@ public class PiconZero extends AbstractDeviceFactory implements GpioDeviceFactor
 			this.piconZero = piconZero;
 			this.gpio = gpio;
 			this.channel = channel;
+
+			setValue(initialValue);
 		}
 
 		@Override
@@ -699,7 +681,9 @@ public class PiconZero extends AbstractDeviceFactory implements GpioDeviceFactor
 
 		@Override
 		public void setValue(float value) throws RuntimeIOException {
-			piconZero.setValue(channel, value);
+			// Convert to % "on" value in the range 0..100
+			int on = Math.round(value * MAX_OUTPUT_VALUE);
+			piconZero.setOutputValue(channel, on);
 			this.value = value;
 		}
 
@@ -715,8 +699,72 @@ public class PiconZero extends AbstractDeviceFactory implements GpioDeviceFactor
 		}
 
 		@Override
-		public void setPwmFrequency(int frequencyHz) throws RuntimeIOException {
-			throw new UnsupportedOperationException("Cannot change the board PWM frequency for the Picon Zero");
+		public void setPwmFrequency(int frequency) throws RuntimeIOException {
+			throw new UnsupportedOperationException("Cannot change the PWM frequency for the Picon Zero");
+		}
+	}
+
+	public static class PiconZeroServoDevice extends AbstractDevice implements InternalServoDeviceInterface {
+		private PiconZero piconZero;
+		private int gpio;
+		private int channel;
+		private int minPulseWidthUs;
+		private int maxPulseWidthUs;
+
+		public PiconZeroServoDevice(PiconZero piconZero, String key, int gpio, int channel, int minPulseWidthUs,
+				int maxPulseWidthUs, int initialPulseWidthUs) {
+			super(key, piconZero);
+
+			this.piconZero = piconZero;
+			this.gpio = gpio;
+			this.channel = channel;
+
+			this.minPulseWidthUs = minPulseWidthUs;
+			this.maxPulseWidthUs = maxPulseWidthUs;
+
+			setPulseWidthUs(initialPulseWidthUs);
+		}
+
+		@Override
+		public int getGpio() {
+			return gpio;
+		}
+
+		public int getChannel() {
+			return channel;
+		}
+
+		@Override
+		public int getServoNum() {
+			return channel;
+		}
+
+		@Override
+		public int getPulseWidthUs() throws RuntimeIOException {
+			return RangeUtil.map(piconZero.getInputValue(channel), 0, 180, minPulseWidthUs, maxPulseWidthUs, true);
+		}
+
+		@Override
+		public void setPulseWidthUs(int pulseWidthUs) throws RuntimeIOException {
+			// Convert the pulse width value to approximate angle in degrees
+			piconZero.setOutputValue(channel,
+					RangeUtil.map(pulseWidthUs, minPulseWidthUs, maxPulseWidthUs, 0, 180, true));
+		}
+
+		@Override
+		protected void closeDevice() throws RuntimeIOException {
+			Logger.trace("closeDevice()");
+			piconZero.closeChannel(channel);
+		}
+
+		@Override
+		public int getServoFrequency() {
+			return piconZero.getBoardPwmFrequency();
+		}
+
+		@Override
+		public void setServoFrequency(int frequencyHz) throws RuntimeIOException {
+			throw new UnsupportedOperationException("Cannot change the servo frequency for the Picon Zero");
 		}
 	}
 

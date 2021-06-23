@@ -65,6 +65,7 @@ public class SystemInformation {
 		// World|@") );
 
 		LocalSystemInfo sys_info = LocalSystemInfo.getInstance();
+		System.out.println(ansi().a("diozero version: ").bold().a(Diozero.getVersion()).boldOff());
 		System.out.println(ansi().bold().a("Local System Info").boldOff());
 		System.out.println(ansi().bold().a("Operating System").boldOff().format(": %s %s",
 				sys_info.getOperatingSystemId(), sys_info.getOperatingSystemVersion()));

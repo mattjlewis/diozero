@@ -36,18 +36,20 @@ import org.tinylog.Logger;
 import com.diozero.api.RuntimeIOException;
 import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.DeviceFactoryInterface;
-import com.diozero.internal.spi.PwmOutputDeviceInterface;
+import com.diozero.internal.spi.InternalPwmOutputDeviceInterface;
 
-public class TestPwmOutputDevice extends AbstractDevice implements PwmOutputDeviceInterface {
+public class TestPwmOutputDevice extends AbstractDevice implements InternalPwmOutputDeviceInterface {
 	private int gpio;
 	private int pwmNum;
 	private float value;
-	private int frequencyHz;
+	private int frequency;
 
-	public TestPwmOutputDevice(String key, DeviceFactoryInterface deviceFactory, int gpio, float initialValue) {
+	public TestPwmOutputDevice(String key, DeviceFactoryInterface deviceFactory, int gpio, int frequency,
+			float initialValue) {
 		super(key, deviceFactory);
-		
+
 		this.gpio = gpio;
+		this.frequency = frequency;
 		this.value = initialValue;
 	}
 
@@ -79,11 +81,11 @@ public class TestPwmOutputDevice extends AbstractDevice implements PwmOutputDevi
 
 	@Override
 	public int getPwmFrequency() {
-		return frequencyHz;
+		return frequency;
 	}
 
 	@Override
-	public void setPwmFrequency(int frequencyHz) throws RuntimeIOException {
-		this.frequencyHz = frequencyHz;
+	public void setPwmFrequency(int frequency) throws RuntimeIOException {
+		this.frequency = frequency;
 	}
 }

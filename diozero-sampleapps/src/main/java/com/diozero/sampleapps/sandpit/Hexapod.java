@@ -32,6 +32,7 @@ package com.diozero.sampleapps.sandpit;
  */
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
@@ -42,16 +43,18 @@ import org.tinylog.Logger;
 import com.diozero.animation.Animation;
 import com.diozero.animation.AnimationInstance;
 import com.diozero.animation.easing.Quad;
-import com.diozero.api.OutputDeviceCollection;
+import com.diozero.api.DeviceInterface;
+import com.diozero.api.ServoDevice;
+import com.diozero.api.ServoTrim;
+import com.diozero.api.function.FloatConsumerCollection;
 import com.diozero.devices.PCA9685;
-import com.diozero.devices.Servo;
 import com.diozero.util.SleepUtil;
 
 public class Hexapod implements AutoCloseable {
 	private PCA9685 pca9685Left;
 	private PCA9685 pca9685Right;
 
-	private Servo.Trim trim;
+	private ServoTrim trim;
 
 	private String easeIn = Quad.IN;
 	private String easeOut = Quad.OUT;
@@ -63,121 +66,121 @@ public class Hexapod implements AutoCloseable {
 	// and rear position for the three steps in walking
 	private Positions home = new Positions( //
 			new LegPosition( //
-					new float[] { 56, 70, 91 }, //
-					new float[] { 116, 120, 119 }, //
-					new float[] { 97, 110, 116 }), //
+					new int[] { 56, 70, 91 }, //
+					new int[] { 116, 120, 119 }, //
+					new int[] { 97, 110, 116 }), //
 			new LegPosition( //
-					new float[] { 70, 88, 109 }, //
-					new float[] { 116, 117, 119 }, //
-					new float[] { 102, 106, 104 }), //
+					new int[] { 70, 88, 109 }, //
+					new int[] { 116, 117, 119 }, //
+					new int[] { 102, 106, 104 }), //
 			new LegPosition( //
-					new float[] { 56, 70, 91 }, //
-					new float[] { 116, 120, 119 }, //
-					new float[] { 97, 110, 116 }) //
+					new int[] { 56, 70, 91 }, //
+					new int[] { 116, 120, 119 }, //
+					new int[] { 97, 110, 116 }) //
 	);
 	// This object contains our end effector positions for the three steps in turns
 	private Positions turns = new Positions( //
 			new LegPosition( //
-					new float[] { 56, 70, 85 }, //
-					new float[] { 121, 120, 119 }, //
-					new float[] { 117, 110, 105 }), //
+					new int[] { 56, 70, 85 }, //
+					new int[] { 121, 120, 119 }, //
+					new int[] { 117, 110, 105 }), //
 			new LegPosition( //
-					new float[] { 73, 88, 105 }, //
-					new float[] { 118, 117, 118 }, //
-					new float[] { 107, 106, 107 }), //
+					new int[] { 73, 88, 105 }, //
+					new int[] { 118, 117, 118 }, //
+					new int[] { 107, 106, 107 }), //
 			new LegPosition( //
-					new float[] { 56, 70, 85 }, //
-					new float[] { 121, 120, 119 }, //
-					new float[] { 117, 110, 105 }) //
+					new int[] { 56, 70, 85 }, //
+					new int[] { 121, 120, 119 }, //
+					new int[] { 117, 110, 105 }) //
 	);
 	// This object contains the home positions of each servo for the seven steps
 	// in walk and crawl
 	private Positions steps = new Positions( //
 			new LegPosition( //
-					new float[] { 56, 59, 65, 70, 76, 82, 91 }, //
-					new float[] { 116, 117, 119, 120, 120, 119, 119 }, //
-					new float[] { 97, 101, 106, 110, 112, 114, 116 }), //
+					new int[] { 56, 59, 65, 70, 76, 82, 91 }, //
+					new int[] { 116, 117, 119, 120, 120, 119, 119 }, //
+					new int[] { 97, 101, 106, 110, 112, 114, 116 }), //
 			new LegPosition( //
-					new float[] { 70, 76, 82, 88, 94, 100, 109 }, //
-					new float[] { 116, 119, 118, 117, 118, 117, 116 }, //
-					new float[] { 102, 105, 106, 106, 108, 106, 104 }), //
+					new int[] { 70, 76, 82, 88, 94, 100, 109 }, //
+					new int[] { 116, 119, 118, 117, 118, 117, 116 }, //
+					new int[] { 102, 105, 106, 106, 108, 106, 104 }), //
 			new LegPosition( //
-					new float[] { 91, 82, 76, 70, 65, 59, 56 }, //
-					new float[] { 119, 119, 120, 120, 119, 117, 116 }, //
-					new float[] { 116, 114, 112, 110, 106, 101, 97 }) //
+					new int[] { 91, 82, 76, 70, 65, 59, 56 }, //
+					new int[] { 119, 119, 120, 120, 119, 117, 116 }, //
+					new int[] { 116, 114, 112, 110, 106, 101, 97 }) //
 	);
 	// This object contains the sleep positions for our joints
-	private LegPosition sleep = new LegPosition(new float[] { 90 }, new float[] { 165 }, new float[] { 150 });
+	private LegPosition sleep = new LegPosition(new int[] { 90 }, new int[] { 165 }, new int[] { 150 });
 
 	// Each leg has 3 servos; coxa (hip fowards / backwards), femur (hip up / down),
 	// tibia (knee up / down)
 
 	// Left front leg
-	private Servo l1c;
-	private Servo l1f;
-	private Servo l1t;
-	private OutputDeviceCollection l1;
+	private ServoDevice l1c;
+	private ServoDevice l1f;
+	private ServoDevice l1t;
+	private FloatConsumerCollection l1;
 
 	// Right front leg
-	private Servo r1c;
-	private Servo r1f;
-	private Servo r1t;
-	private OutputDeviceCollection r1;
+	private ServoDevice r1c;
+	private ServoDevice r1f;
+	private ServoDevice r1t;
+	private FloatConsumerCollection r1;
 
 	// Left middle leg
-	private Servo l2c;
-	private Servo l2f;
-	private Servo l2t;
-	private OutputDeviceCollection l2;
+	private ServoDevice l2c;
+	private ServoDevice l2f;
+	private ServoDevice l2t;
+	private FloatConsumerCollection l2;
 
 	// Right middle leg
-	private Servo r2c;
-	private Servo r2f;
-	private Servo r2t;
-	private OutputDeviceCollection r2;
+	private ServoDevice r2c;
+	private ServoDevice r2f;
+	private ServoDevice r2t;
+	private FloatConsumerCollection r2;
 
 	// Left back leg
-	private Servo l3c;
-	private Servo l3f;
-	private Servo l3t;
-	private OutputDeviceCollection l3;
+	private ServoDevice l3c;
+	private ServoDevice l3f;
+	private ServoDevice l3t;
+	private FloatConsumerCollection l3;
 
 	// Right back leg
-	private Servo r3c;
-	private Servo r3f;
-	private Servo r3t;
-	private OutputDeviceCollection r3;
+	private ServoDevice r3c;
+	private ServoDevice r3f;
+	private ServoDevice r3t;
+	private FloatConsumerCollection r3;
 
-	private OutputDeviceCollection coxae;
-	private OutputDeviceCollection femura;
-	private OutputDeviceCollection tibiae;
+	private FloatConsumerCollection coxae;
+	private FloatConsumerCollection femura;
+	private FloatConsumerCollection tibiae;
 
-	private OutputDeviceCollection innerCoxae;
-	private OutputDeviceCollection outerCoxae;
+	private FloatConsumerCollection innerCoxae;
+	private FloatConsumerCollection outerCoxae;
 
-	private OutputDeviceCollection frontCoxae;
-	private OutputDeviceCollection frontFemura;
-	private OutputDeviceCollection frontTibiae;
-	private OutputDeviceCollection midCoxae;
-	private OutputDeviceCollection midFemura;
-	private OutputDeviceCollection midTibiae;
-	private OutputDeviceCollection rearCoxae;
-	private OutputDeviceCollection rearFemura;
-	private OutputDeviceCollection rearTibiae;
+	private FloatConsumerCollection frontCoxae;
+	private FloatConsumerCollection frontFemura;
+	private FloatConsumerCollection frontTibiae;
+	private FloatConsumerCollection midCoxae;
+	private FloatConsumerCollection midFemura;
+	private FloatConsumerCollection midTibiae;
+	private FloatConsumerCollection rearCoxae;
+	private FloatConsumerCollection rearFemura;
+	private FloatConsumerCollection rearTibiae;
 
-	private OutputDeviceCollection leftOuterCoxae;
-	private OutputDeviceCollection rightOuterCoxae;
-	private OutputDeviceCollection leftOuterFemura;
-	private OutputDeviceCollection rightOuterFemura;
-	private OutputDeviceCollection leftOuterTibiae;
-	private OutputDeviceCollection rightOuterTibiae;
+	private FloatConsumerCollection leftOuterCoxae;
+	private FloatConsumerCollection rightOuterCoxae;
+	private FloatConsumerCollection leftOuterFemura;
+	private FloatConsumerCollection rightOuterFemura;
+	private FloatConsumerCollection leftOuterTibiae;
+	private FloatConsumerCollection rightOuterTibiae;
 
-	private OutputDeviceCollection jointPairs;
-	private OutputDeviceCollection joints;
-	private OutputDeviceCollection altJoints;
-	private OutputDeviceCollection triJoints;
+	private FloatConsumerCollection jointPairs;
+	private FloatConsumerCollection joints;
+	private FloatConsumerCollection altJoints;
+	private FloatConsumerCollection triJoints;
 
-	private Servo.Array legs;
+	private Collection<? extends DeviceInterface> legs;
 
 	public static void main(String[] args) {
 		int i2c_controller = 1;
@@ -194,88 +197,74 @@ public class Hexapod implements AutoCloseable {
 
 		// trim = Servo.Trim.MG996R;
 		// Constrain to reduced range
-		trim = new Servo.Trim(Servo.Trim.DEFAULT_MID, Servo.Trim.DEFAULT_90_DELTA,
-				Servo.Trim.DEFAULT_90_DELTA * (2 / 3f));
+		trim = new ServoTrim(ServoTrim.DEFAULT_MID_US, ServoTrim.DEFAULT_90_DELTA_US,
+				(int) (ServoTrim.DEFAULT_90_DELTA_US * (2 / 3f)));
 
-		l1c = new Servo(pca9685Left, 0, trim.getMidPulseWidthMs(), pwmFrequency, trim);
-		l1c.setOutputDeviceUnit(Servo.OutputDeviceUnit.DEGREES);
-		l1f = new Servo(pca9685Left, 1, trim.getMidPulseWidthMs(), pwmFrequency, trim);
-		l1f.setOutputDeviceUnit(Servo.OutputDeviceUnit.DEGREES).setInverted(true);
-		l1t = new Servo(pca9685Left, 2, trim.getMidPulseWidthMs(), pwmFrequency, trim);
-		l1t.setOutputDeviceUnit(Servo.OutputDeviceUnit.DEGREES).setInverted(true);
-		l1 = new OutputDeviceCollection(l1c, l1f, l1t);
+		l1c = ServoDevice.newBuilder(0).setDeviceFactory(pca9685Left).setTrim(trim).build();
+		l1f = ServoDevice.newBuilder(1).setDeviceFactory(pca9685Left).setTrim(trim).setInverted(true).build();
+		l1t = ServoDevice.newBuilder(2).setDeviceFactory(pca9685Left).setTrim(trim).setInverted(true).build();
+		l1 = new FloatConsumerCollection(Arrays.asList(l1c::setAngle, l1f::setAngle, l1t::setAngle));
 
-		r1c = new Servo(pca9685Right, 14, trim.getMidPulseWidthMs(), pwmFrequency, trim);
-		r1c.setOutputDeviceUnit(Servo.OutputDeviceUnit.DEGREES).setInverted(true);
-		r1f = new Servo(pca9685Right, 15, trim.getMidPulseWidthMs(), pwmFrequency, trim);
-		r1f.setOutputDeviceUnit(Servo.OutputDeviceUnit.DEGREES);
-		r1t = new Servo(pca9685Right, 13, trim.getMidPulseWidthMs(), pwmFrequency, trim);
-		r1t.setOutputDeviceUnit(Servo.OutputDeviceUnit.DEGREES);
-		r1 = new OutputDeviceCollection(r1c, r1f, r1t);
+		r1c = ServoDevice.newBuilder(14).setDeviceFactory(pca9685Left).setTrim(trim).setInverted(true).build();
+		r1f = ServoDevice.newBuilder(15).setDeviceFactory(pca9685Left).setTrim(trim).build();
+		r1t = ServoDevice.newBuilder(13).setDeviceFactory(pca9685Left).setTrim(trim).build();
+		r1 = new FloatConsumerCollection(Arrays.asList(r1c::setAngle, r1f::setAngle, r1t::setAngle));
 
-		l2c = new Servo(pca9685Left, 8, trim.getMidPulseWidthMs(), pwmFrequency, trim);
-		l2c.setOutputDeviceUnit(Servo.OutputDeviceUnit.DEGREES);
-		l2f = new Servo(pca9685Left, 9, trim.getMidPulseWidthMs(), pwmFrequency, trim);
-		l2f.setOutputDeviceUnit(Servo.OutputDeviceUnit.DEGREES).setInverted(true);
-		l2t = new Servo(pca9685Left, 10, trim.getMidPulseWidthMs(), pwmFrequency, trim);
-		l2t.setOutputDeviceUnit(Servo.OutputDeviceUnit.DEGREES).setInverted(true);
-		l2 = new OutputDeviceCollection(l2c, l2f, l2t);
+		l2c = ServoDevice.newBuilder(8).setDeviceFactory(pca9685Left).setTrim(trim).build();
+		l2f = ServoDevice.newBuilder(9).setDeviceFactory(pca9685Left).setTrim(trim).setInverted(true).build();
+		l2t = ServoDevice.newBuilder(10).setDeviceFactory(pca9685Left).setTrim(trim).setInverted(true).build();
+		l2 = new FloatConsumerCollection(Arrays.asList(l2c::setAngle, l2f::setAngle, l2t::setAngle));
 
-		r2c = new Servo(pca9685Right, 6, trim.getMidPulseWidthMs(), pwmFrequency, trim);
-		r2c.setOutputDeviceUnit(Servo.OutputDeviceUnit.DEGREES).setInverted(true);
-		r2f = new Servo(pca9685Right, 7, trim.getMidPulseWidthMs(), pwmFrequency, trim);
-		r2f.setOutputDeviceUnit(Servo.OutputDeviceUnit.DEGREES);
-		r2t = new Servo(pca9685Right, 5, trim.getMidPulseWidthMs(), pwmFrequency, trim);
-		r2t.setOutputDeviceUnit(Servo.OutputDeviceUnit.DEGREES);
-		r2 = new OutputDeviceCollection(r2c, r2f, r2t);
+		r2c = ServoDevice.newBuilder(6).setDeviceFactory(pca9685Left).setTrim(trim).setInverted(true).build();
+		r2f = ServoDevice.newBuilder(7).setDeviceFactory(pca9685Left).setTrim(trim).build();
+		r2t = ServoDevice.newBuilder(5).setDeviceFactory(pca9685Left).setTrim(trim).build();
+		r2 = new FloatConsumerCollection(Arrays.asList(r2c::setAngle, r2f::setAngle, r2t::setAngle));
 
-		l3c = new Servo(pca9685Left, 12, trim.getMidPulseWidthMs(), pwmFrequency, trim);
-		l3c.setOutputDeviceUnit(Servo.OutputDeviceUnit.DEGREES).setInverted(true);
-		l3f = new Servo(pca9685Left, 13, trim.getMidPulseWidthMs(), pwmFrequency, trim);
-		l3f.setOutputDeviceUnit(Servo.OutputDeviceUnit.DEGREES).setInverted(true);
-		l3t = new Servo(pca9685Left, 14, trim.getMidPulseWidthMs(), pwmFrequency, trim);
-		l3t.setOutputDeviceUnit(Servo.OutputDeviceUnit.DEGREES).setInverted(true);
-		l3 = new OutputDeviceCollection(l3c, l3f, l3t);
+		l3c = ServoDevice.newBuilder(12).setDeviceFactory(pca9685Left).setTrim(trim).setInverted(true).build();
+		l3f = ServoDevice.newBuilder(13).setDeviceFactory(pca9685Left).setTrim(trim).setInverted(true).build();
+		l3t = ServoDevice.newBuilder(14).setDeviceFactory(pca9685Left).setTrim(trim).setInverted(true).build();
+		l3 = new FloatConsumerCollection(Arrays.asList(l3c::setAngle, l3f::setAngle, l3t::setAngle));
 
-		r3c = new Servo(pca9685Right, 2, trim.getMidPulseWidthMs(), pwmFrequency, trim);
-		r3c.setOutputDeviceUnit(Servo.OutputDeviceUnit.DEGREES);
-		r3f = new Servo(pca9685Right, 3, trim.getMidPulseWidthMs(), pwmFrequency, trim);
-		r3f.setOutputDeviceUnit(Servo.OutputDeviceUnit.DEGREES);
-		r3t = new Servo(pca9685Right, 1, trim.getMidPulseWidthMs(), pwmFrequency, trim);
-		r3t.setOutputDeviceUnit(Servo.OutputDeviceUnit.DEGREES);
-		r3 = new OutputDeviceCollection(r3c, r3f, r3t);
+		r3c = ServoDevice.newBuilder(2).setDeviceFactory(pca9685Left).setTrim(trim).build();
+		r3f = ServoDevice.newBuilder(3).setDeviceFactory(pca9685Left).setTrim(trim).build();
+		r3t = ServoDevice.newBuilder(1).setDeviceFactory(pca9685Left).setTrim(trim).build();
+		r3 = new FloatConsumerCollection(Arrays.asList(r3c::setAngle, r3f::setAngle, r3t::setAngle));
 
-		coxae = new OutputDeviceCollection(l1c, r1c, l2c, r2c, l3c, r3c);
-		femura = new OutputDeviceCollection(l1f, r1f, l2f, r2f, l3f, r3f);
-		tibiae = new OutputDeviceCollection(l1t, r1t, l2t, r2t, l3t, r3t);
-		innerCoxae = new OutputDeviceCollection(l2c, r2c);
-		outerCoxae = new OutputDeviceCollection(l1c, r1c, l3c, r3c);
-		frontCoxae = new OutputDeviceCollection(l1c, r1c);
-		frontFemura = new OutputDeviceCollection(l1f, r1f);
-		frontTibiae = new OutputDeviceCollection(l1t, r1t);
-		midCoxae = new OutputDeviceCollection(l2c, r2c);
-		midFemura = new OutputDeviceCollection(l2f, r2f);
-		midTibiae = new OutputDeviceCollection(l2t, r2t);
-		rearCoxae = new OutputDeviceCollection(l3c, r3c);
-		rearFemura = new OutputDeviceCollection(l3f, r3f);
-		rearTibiae = new OutputDeviceCollection(l3t, r3t);
-		leftOuterCoxae = new OutputDeviceCollection(l1c, l3c);
-		rightOuterCoxae = new OutputDeviceCollection(r1c, r3c);
-		leftOuterFemura = new OutputDeviceCollection(l1f, l3f);
-		rightOuterFemura = new OutputDeviceCollection(r1f, r3f);
-		leftOuterTibiae = new OutputDeviceCollection(l1t, l3t);
-		rightOuterTibiae = new OutputDeviceCollection(r1t, r3t);
+		coxae = new FloatConsumerCollection(Arrays.asList(l1c::setAngle, r1c::setAngle, l2c::setAngle, r2c::setAngle,
+				l3c::setAngle, r3c::setAngle));
+		femura = new FloatConsumerCollection(Arrays.asList(l1f::setAngle, r1f::setAngle, l2f::setAngle, r2f::setAngle,
+				l3f::setAngle, r3f::setAngle));
+		tibiae = new FloatConsumerCollection(Arrays.asList(l1t::setAngle, r1t::setAngle, l2t::setAngle, r2t::setAngle,
+				l3t::setAngle, r3t::setAngle));
+		innerCoxae = new FloatConsumerCollection(Arrays.asList(l2c::setAngle, r2c::setAngle));
+		outerCoxae = new FloatConsumerCollection(
+				Arrays.asList(l1c::setAngle, r1c::setAngle, l3c::setAngle, r3c::setAngle));
+		frontCoxae = new FloatConsumerCollection(Arrays.asList(l1c::setAngle, r1c::setAngle));
+		frontFemura = new FloatConsumerCollection(Arrays.asList(l1f::setAngle, r1f::setAngle));
+		frontTibiae = new FloatConsumerCollection(Arrays.asList(l1t::setAngle, r1t::setAngle));
+		midCoxae = new FloatConsumerCollection(Arrays.asList(l2c::setAngle, r2c::setAngle));
+		midFemura = new FloatConsumerCollection(Arrays.asList(l2f::setAngle, r2f::setAngle));
+		midTibiae = new FloatConsumerCollection(Arrays.asList(l2t::setAngle, r2t::setAngle));
+		rearCoxae = new FloatConsumerCollection(Arrays.asList(l3c::setAngle, r3c::setAngle));
+		rearFemura = new FloatConsumerCollection(Arrays.asList(l3f::setAngle, r3f::setAngle));
+		rearTibiae = new FloatConsumerCollection(Arrays.asList(l3t::setAngle, r3t::setAngle));
+		leftOuterCoxae = new FloatConsumerCollection(Arrays.asList(l1c::setAngle, l3c::setAngle));
+		rightOuterCoxae = new FloatConsumerCollection(Arrays.asList(r1c::setAngle, r3c::setAngle));
+		leftOuterFemura = new FloatConsumerCollection(Arrays.asList(l1f::setAngle, l3f::setAngle));
+		rightOuterFemura = new FloatConsumerCollection(Arrays.asList(r1f::setAngle, r3f::setAngle));
+		leftOuterTibiae = new FloatConsumerCollection(Arrays.asList(l1t::setAngle, l3t::setAngle));
+		rightOuterTibiae = new FloatConsumerCollection(Arrays.asList(r1t::setAngle, r3t::setAngle));
 
-		jointPairs = new OutputDeviceCollection(frontCoxae, frontFemura, frontTibiae, midCoxae, midFemura, midTibiae,
-				rearCoxae, rearFemura, rearTibiae);
+		jointPairs = new FloatConsumerCollection(Arrays.asList(frontCoxae, frontFemura, frontTibiae, midCoxae,
+				midFemura, midTibiae, rearCoxae, rearFemura, rearTibiae));
 
-		joints = new OutputDeviceCollection(coxae, femura, tibiae);
-		altJoints = new OutputDeviceCollection(innerCoxae, outerCoxae, femura, tibiae);
-		triJoints = new OutputDeviceCollection(leftOuterCoxae, r2c, leftOuterFemura, r2f, leftOuterTibiae, r2t,
-				rightOuterCoxae, l2c, rightOuterFemura, l2f, rightOuterTibiae, l2t);
+		joints = new FloatConsumerCollection(Arrays.asList(coxae, femura, tibiae));
+		altJoints = new FloatConsumerCollection(Arrays.asList(innerCoxae, outerCoxae, femura, tibiae));
+		triJoints = new FloatConsumerCollection(Arrays.asList(leftOuterCoxae, r2c::setAngle, leftOuterFemura,
+				r2f::setAngle, leftOuterTibiae, r2t::setAngle, rightOuterCoxae, l2c::setAngle, rightOuterFemura,
+				l2f::setAngle, rightOuterTibiae, l2t::setAngle));
 
-		legs = new Servo.Array(l1c, l1f, l1t, r1c, r1f, r1t, l2c, l2f, l2t, r2c, r2f, r2t, l3c, l3f, l3t, r3c, r3f,
-				r3t);
+		legs = Arrays.asList(l1c, l1f, l1t, r1c, r1f, r1t, l2c, l2f, l2t, r2c, r2f, r2t, l3c, l3f, l3t, r3c, r3f, r3t);
 	}
 
 	public void run() {
@@ -296,32 +285,32 @@ public class Hexapod implements AutoCloseable {
 
 	private void setTo(Positions position, int forwardMidRear) {
 		Logger.info("Setting positions to " + forwardMidRear);
-		frontCoxae.setValue(position.front.coxae[forwardMidRear]);
-		frontFemura.setValue(position.front.femura[forwardMidRear]);
-		frontTibiae.setValue(position.front.tibiae[forwardMidRear]);
-		midCoxae.setValue(position.mid.coxae[forwardMidRear]);
-		midFemura.setValue(position.mid.femura[forwardMidRear]);
-		midTibiae.setValue(position.mid.tibiae[forwardMidRear]);
-		rearCoxae.setValue(position.rear.coxae[forwardMidRear]);
-		rearFemura.setValue(position.rear.femura[forwardMidRear]);
-		rearTibiae.setValue(position.rear.tibiae[forwardMidRear]);
+		frontCoxae.accept(position.front.coxae[forwardMidRear]);
+		frontFemura.accept(position.front.femura[forwardMidRear]);
+		frontTibiae.accept(position.front.tibiae[forwardMidRear]);
+		midCoxae.accept(position.mid.coxae[forwardMidRear]);
+		midFemura.accept(position.mid.femura[forwardMidRear]);
+		midTibiae.accept(position.mid.tibiae[forwardMidRear]);
+		rearCoxae.accept(position.rear.coxae[forwardMidRear]);
+		rearFemura.accept(position.rear.femura[forwardMidRear]);
+		rearTibiae.accept(position.rear.tibiae[forwardMidRear]);
 	}
 
 	private void testRange() {
 		Logger.info("Testing servo ranges for all servos");
 		int delay = 10;
 		float delta = 5;
-		for (OutputDeviceCollection servos : Arrays.asList(l2, r2, l3, coxae, femura, tibiae, legs)) {
+		for (FloatConsumerCollection servos : Arrays.asList(l2, r2, l3, coxae, femura, tibiae)) {
 			for (float angle = trim.getMidAngle(); angle < trim.getMaxAngle(); angle += delta) {
-				servos.setValue(angle);
+				servos.accept(angle);
 				SleepUtil.sleepMillis(delay);
 			}
 			for (float angle = trim.getMaxAngle(); angle > trim.getMinAngle(); angle -= delta) {
-				servos.setValue(angle);
+				servos.accept(angle);
 				SleepUtil.sleepMillis(delay);
 			}
 			for (float angle = trim.getMinAngle(); angle < trim.getMidAngle(); angle += delta) {
-				servos.setValue(angle);
+				servos.accept(angle);
 				SleepUtil.sleepMillis(delay);
 			}
 		}
@@ -414,7 +403,7 @@ public class Hexapod implements AutoCloseable {
 
 	@Override
 	public void close() {
-		legs.close();
+		legs.forEach(DeviceInterface::close);
 		pca9685Left.close();
 		pca9685Right.close();
 	}
@@ -434,11 +423,11 @@ public class Hexapod implements AutoCloseable {
 		public static final int MID = 1;
 		public static final int REAR = 2;
 
-		public float[] coxae;
-		public float[] femura;
-		public float[] tibiae;
+		public int[] coxae;
+		public int[] femura;
+		public int[] tibiae;
 
-		public LegPosition(float[] coxae, float[] femura, float[] tibiae) {
+		public LegPosition(int[] coxae, int[] femura, int[] tibiae) {
 			this.coxae = coxae;
 			this.femura = femura;
 			this.tibiae = tibiae;

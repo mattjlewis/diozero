@@ -38,7 +38,7 @@ import com.diozero.sbc.DeviceFactoryHelper;
 /**
  * Analog output device. The output value is scaled in the range 0..1.
  */
-public class AnalogOutputDevice extends GpioDevice implements OutputDeviceInterface {
+public class AnalogOutputDevice extends GpioDevice {
 	public static final class Builder {
 		public static Builder builder(int gpio) {
 			return new Builder(gpio);
@@ -47,7 +47,7 @@ public class AnalogOutputDevice extends GpioDevice implements OutputDeviceInterf
 		public static Builder builder(PinInfo pinInfo) {
 			return new Builder(pinInfo);
 		}
-		
+
 		private Integer gpio;
 		private PinInfo pinInfo;
 		private float initialValue = 0;
@@ -60,9 +60,10 @@ public class AnalogOutputDevice extends GpioDevice implements OutputDeviceInterf
 		public Builder(PinInfo pinInfo) {
 			this.pinInfo = pinInfo;
 		}
-		
+
 		/**
 		 * Set the analog output value to be set when provisioning the device
+		 *
 		 * @param initialValue initial analog output value, must be 0..1
 		 * @return the build instance
 		 * @throws IllegalArgumentException if the initialValue is out of bounds
@@ -71,7 +72,7 @@ public class AnalogOutputDevice extends GpioDevice implements OutputDeviceInterf
 			if (initialValue < 0 || initialValue > 1) {
 				throw new IllegalArgumentException("Analog output value must be 0..1");
 			}
-			
+
 			this.initialValue = initialValue;
 			return this;
 		}
@@ -80,7 +81,7 @@ public class AnalogOutputDevice extends GpioDevice implements OutputDeviceInterf
 			this.deviceFactory = deviceFactory;
 			return this;
 		}
-		
+
 		public AnalogOutputDevice build() {
 			// Default to the native device factory if not set
 			if (deviceFactory == null) {
@@ -94,32 +95,32 @@ public class AnalogOutputDevice extends GpioDevice implements OutputDeviceInterf
 			return new AnalogOutputDevice(deviceFactory, pinInfo, initialValue);
 		}
 	}
-	
+
 	private AnalogOutputDeviceInterface delegate;
 
 	public AnalogOutputDevice(AnalogOutputDeviceFactoryInterface deviceFactory, PinInfo pinInfo, float initialValue) {
 		super(pinInfo);
-		
+
 		delegate = deviceFactory.provisionAnalogOutputDevice(pinInfo, initialValue);
 	}
-	
+
 	public float getValue() {
 		return delegate.getValue();
 	}
-	
+
 	/**
 	 * Set the analog output value
+	 *
 	 * @param value new analog output value in the range 0..1
 	 * @throws IllegalArgumentException if value is out of bounds
 	 */
-	@Override
 	public void setValue(float value) throws IllegalArgumentException {
 		if (value < 0 || value > 1) {
 			throw new IllegalArgumentException("Analog output value must be 0..1");
 		}
 		delegate.setValue(value);
 	}
-	
+
 	@Override
 	public void close() {
 		delegate.close();

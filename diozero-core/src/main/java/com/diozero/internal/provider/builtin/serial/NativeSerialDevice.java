@@ -46,10 +46,6 @@ import com.diozero.util.LibraryLoader;
 public class NativeSerialDevice implements AutoCloseable {
 	private static final int FD_NOT_INITIALISED = -1;
 
-	static {
-		LibraryLoader.loadSystemUtils();
-	}
-
 	// See https://www.cmrr.umn.edu/~strupp/serial.html
 	private static native FileDescriptor serialOpen(String device, int baud, int dataBits, int stopBits, int parity,
 			boolean readBlocking, int minReadChars, int readTimeoutMillis);
@@ -90,6 +86,8 @@ public class NativeSerialDevice implements AutoCloseable {
 	public NativeSerialDevice(String deviceFile, int baud, SerialDevice.DataBits dataBits,
 			SerialDevice.StopBits stopBits, SerialDevice.Parity parity, boolean readBlocking, int minReadChars,
 			int readTimeoutMillis) {
+		LibraryLoader.loadSystemUtils();
+
 		this.deviceFile = deviceFile;
 
 		fileDescriptor = serialOpen(deviceFile, baud, dataBits.ordinal(), stopBits.ordinal(), parity.ordinal(),

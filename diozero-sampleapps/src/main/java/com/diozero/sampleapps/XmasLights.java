@@ -55,24 +55,24 @@ public class XmasLights {
 					led_bar_graph.toggle();
 					SleepUtil.sleepMillis(500);
 				}
-				
+
 				Logger.debug("blinking for 3s");
 				led_bar_graph.blink(0.25f, 0.25f, 6, null);
 				SleepUtil.sleepSeconds(3);
 				led_bar_graph.off();
-	
+
 				Logger.debug("gradual on");
 				for (float f = 0; f <= 1; f += 0.02) {
 					led_bar_graph.setValue(f);
 					SleepUtil.sleepMillis(10);
 				}
-	
+
 				Logger.debug("gradual off");
 				for (float f = 1; f >= 0; f -= 0.02) {
 					led_bar_graph.setValue(f);
 					SleepUtil.sleepMillis(10);
 				}
-				
+
 				led_bar_graph.off();
 			}
 		}

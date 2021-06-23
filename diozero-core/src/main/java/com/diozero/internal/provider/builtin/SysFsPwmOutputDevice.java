@@ -44,12 +44,12 @@ import com.diozero.api.PinInfo;
 import com.diozero.api.RuntimeIOException;
 import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.DeviceFactoryInterface;
+import com.diozero.internal.spi.InternalPwmOutputDeviceInterface;
 import com.diozero.internal.spi.MmapGpioInterface;
 import com.diozero.internal.spi.NativeDeviceFactoryInterface;
-import com.diozero.internal.spi.PwmOutputDeviceInterface;
 import com.diozero.util.SleepUtil;
 
-public class SysFsPwmOutputDevice extends AbstractDevice implements PwmOutputDeviceInterface {
+public class SysFsPwmOutputDevice extends AbstractDevice implements InternalPwmOutputDeviceInterface {
 	private int gpio;
 	private int pwmChip;
 	private int pwmNum;
@@ -96,14 +96,46 @@ public class SysFsPwmOutputDevice extends AbstractDevice implements PwmOutputDev
 		// The order is important, cannot set the polarity or value if the period is 0
 		setPwmFrequency(frequencyHz);
 		setValue(initialValue);
-		updatePolarity(Polarity.NORMAL);
-		updateEnabled(true);
+		writePolarity(pwmRoot, Polarity.NORMAL);
+		writeEnabled(pwmRoot, true);
+	}
+
+	@Override
+	public int getGpio() {
+		return gpio;
+	}
+
+	@Override
+	public int getPwmNum() {
+		return pwmNum;
+	}
+
+	@Override
+	public float getValue() {
+		return getDutyNs() / (float) periodNs;
+	}
+
+	@Override
+	public void setValue(float value) {
+		// TODO Bounds checking
+		setDutyNs((int) (value * periodNs));
+	}
+
+	@Override
+	public int getPwmFrequency() throws RuntimeIOException {
+		return 1_000_000_000 / periodNs;
+	}
+
+	@Override
+	public void setPwmFrequency(int frequencyHz) throws RuntimeIOException {
+		setPeriodNs(1_000_000_000 / frequencyHz);
 	}
 
 	@Override
 	protected void closeDevice() {
+		setDutyNs(0);
 		try {
-			updateEnabled(false);
+			writeEnabled(pwmRoot, false);
 		} catch (Exception e) {
 			// Ignore
 		}
@@ -120,17 +152,33 @@ public class SysFsPwmOutputDevice extends AbstractDevice implements PwmOutputDev
 		}
 	}
 
-	@Override
-	public int getGpio() {
-		return gpio;
+	private void setPeriodNs(int periodNs) {
+		Logger.debug("setPeriodNs(" + periodNs + ")");
+
+		// The duty value is represented as duty nanoseconds hence needs to be adjusted
+		// if the frequency changes.
+		// Get the current duty value
+		int current_duty_ns = getDutyNs();
+		if (current_duty_ns != 0) {
+			// Temporarily set to 0 while we change the PWM period
+			setDutyNs(0);
+		}
+
+		// Calculate the ratio between old and new frequency
+		float ratio = (periodNs - this.periodNs) / (float) this.periodNs;
+
+		// Write the new period
+		writePeriodNs(pwmRoot, periodNs);
+		this.periodNs = periodNs;
+
+		// Recalculate the equivalent duty value
+		int new_duty_ns = Math.round(current_duty_ns + current_duty_ns * ratio);
+
+		// Update with the equivalent duty value
+		setDutyNs(new_duty_ns);
 	}
 
-	@Override
-	public int getPwmNum() {
-		return pwmNum;
-	}
-
-	private int getValueRaw() throws RuntimeIOException {
+	private int getDutyNs() throws RuntimeIOException {
 		try {
 			dutyFile.seek(0);
 			return Integer.parseInt(dutyFile.readLine());
@@ -140,20 +188,12 @@ public class SysFsPwmOutputDevice extends AbstractDevice implements PwmOutputDev
 		}
 	}
 
-	@Override
-	public float getValue() throws RuntimeIOException {
-		return getValueRaw() / (float) periodNs;
-	}
-
-	@Override
-	public void setValue(float value) throws RuntimeIOException {
-		if (value < 0 || value > 1) {
-			throw new IllegalArgumentException("Invalid value (" + value + "), must be 0..1");
-		}
+	private void setDutyNs(int dutyNs) {
+		Logger.debug("setDutyNs(" + dutyNs + ")");
 
 		try {
 			// dutyFile.seek(0);
-			dutyFile.writeBytes(Integer.toString(Math.round(value * periodNs)));
+			dutyFile.writeBytes(Integer.toString(dutyNs));
 			// dutyFile.flush();
 		} catch (IOException e) {
 			close();
@@ -161,59 +201,32 @@ public class SysFsPwmOutputDevice extends AbstractDevice implements PwmOutputDev
 		}
 	}
 
-	@Override
-	public int getPwmFrequency() {
-		return 1_000_000_000 / periodNs;
-	}
-
-	@Override
-	public void setPwmFrequency(int frequencyHz) throws RuntimeIOException {
-		// The value is represented as duty nanoseconds hence needs to be adjusted if
-		// the frequency changes.
-		// Get the current raw value
-		int current_raw_value = getValueRaw();
-		if (current_raw_value != 0) {
-			// Temporarily set to 0 while we change the PWM period
-			setValue(0);
-		}
-		float current_value = current_raw_value / (float) periodNs;
-
-		// Recalculate and update the period
-		periodNs = 1_000_000_000 / frequencyHz;
-		updatePeriod(periodNs);
-
-		// Restore the old value
-		setValue(current_value);
-	}
-
-	private void updateEnabled(boolean enabled) throws RuntimeIOException {
-		Logger.debug("updateEnabled(" + enabled + ")");
-		try (FileWriter writer = new FileWriter(pwmRoot.resolve("enable").toFile())) {
-			writer.write(enabled ? "1" : "0");
-		} catch (IOException e) {
-			close();
-			throw new RuntimeIOException("Error writing to enabled file: " + e, e);
-		}
-	}
-
-	private void updatePeriod(int periodNs) throws RuntimeIOException {
-		Logger.debug("updatePeriod(" + periodNs + ")");
+	private static void writePeriodNs(Path pwmRoot, int periodNs) throws RuntimeIOException {
 		try (FileWriter writer = new FileWriter(pwmRoot.resolve("period").toFile())) {
 			writer.write(Integer.toString(periodNs));
 		} catch (IOException e) {
-			close();
 			throw new RuntimeIOException("Error writing to period file: " + e, e);
 		}
 	}
 
-	private void updatePolarity(Polarity polarity) throws RuntimeIOException {
-		Logger.debug("updatePolarity(" + polarity + ")");
+	private static void writePolarity(Path pwmRoot, Polarity polarity) throws RuntimeIOException {
+		Logger.debug("writePolarity(" + polarity + ")");
+
 		try (FileWriter writer = new FileWriter(pwmRoot.resolve("polarity").toFile())) {
 			writer.write(polarity.getValue());
 			writer.flush();
 		} catch (IOException e) {
-			close();
 			throw new RuntimeIOException("Error writing to polarity file: " + e, e);
+		}
+	}
+
+	private static void writeEnabled(Path pwmRoot, boolean enabled) throws RuntimeIOException {
+		Logger.debug("writeEnabled(" + enabled + ")");
+
+		try (FileWriter writer = new FileWriter(pwmRoot.resolve("enable").toFile())) {
+			writer.write(enabled ? "1" : "0");
+		} catch (IOException e) {
+			throw new RuntimeIOException("Error writing to enabled file: " + e, e);
 		}
 	}
 

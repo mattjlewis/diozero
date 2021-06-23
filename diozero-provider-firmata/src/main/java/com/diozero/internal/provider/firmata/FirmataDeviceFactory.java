@@ -63,9 +63,10 @@ import com.diozero.internal.spi.GpioDigitalInputDeviceInterface;
 import com.diozero.internal.spi.GpioDigitalInputOutputDeviceInterface;
 import com.diozero.internal.spi.GpioDigitalOutputDeviceInterface;
 import com.diozero.internal.spi.InternalI2CDeviceInterface;
+import com.diozero.internal.spi.InternalPwmOutputDeviceInterface;
 import com.diozero.internal.spi.InternalSerialDeviceInterface;
+import com.diozero.internal.spi.InternalServoDeviceInterface;
 import com.diozero.internal.spi.InternalSpiDeviceInterface;
-import com.diozero.internal.spi.PwmOutputDeviceInterface;
 import com.diozero.sbc.BoardInfo;
 import com.diozero.sbc.LocalSystemInfo;
 import com.diozero.util.PropertyUtil;
@@ -89,8 +90,6 @@ public class FirmataDeviceFactory extends BaseNativeDeviceFactory implements Fir
 	private FirmataAdapter adapter;
 
 	public FirmataDeviceFactory() {
-		Logger.warn("*** Do NOT use this device factory for servo control; not yet implemented!");
-
 		serialPortName = PropertyUtil.getProperty(SERIAL_PORT_PROP, null);
 		if (serialPortName == null) {
 			String hostname = PropertyUtil.getProperty(TCP_HOST_PROP, null);
@@ -157,8 +156,21 @@ public class FirmataDeviceFactory extends BaseNativeDeviceFactory implements Fir
 	}
 
 	@Override
+	public int getBoardServoFrequency() {
+		return 50;
+	}
+
+	@Override
+	public void setBoardServoFrequency(int frequency) {
+		// Ignore
+		Logger.warn("Not implemented");
+	}
+
+	@Override
 	public DeviceMode getGpioMode(int gpio) {
-		DeviceMode mode = DeviceMode.UNKNOWN;
+		adapter.refreshPinState(gpio);
+
+		DeviceMode mode;
 		switch (adapter.getPinMode(gpio)) {
 		case DIGITAL_INPUT:
 		case INPUT_PULLUP:
@@ -185,6 +197,8 @@ public class FirmataDeviceFactory extends BaseNativeDeviceFactory implements Fir
 
 	@Override
 	public int getGpioValue(int gpio) {
+		adapter.refreshPinState(gpio);
+
 		return adapter.getValue(gpio);
 	}
 
@@ -228,10 +242,21 @@ public class FirmataDeviceFactory extends BaseNativeDeviceFactory implements Fir
 	}
 
 	@Override
-	public PwmOutputDeviceInterface createPwmOutputDevice(String key, PinInfo pinInfo, int pwmFrequency,
+	public InternalPwmOutputDeviceInterface createPwmOutputDevice(String key, PinInfo pinInfo, int pwmFrequency,
 			float initialValue) throws RuntimeIOException {
+		if (!pinInfo.getModes().contains(DeviceMode.PWM_OUTPUT)) {
+			throw new InvalidModeException("Invalid mode (PWM) for GPIO " + pinInfo);
+		}
+
 		Logger.warn("PWM frequency will be ignored - Firmata does not allow this to be specified");
 		return new FirmataPwmOutputDevice(this, key, pinInfo.getDeviceNumber(), initialValue);
+	}
+
+	@Override
+	public InternalServoDeviceInterface createServoDevice(String key, PinInfo pinInfo, int frequency,
+			int minPulseWidthUs, int maxPulseWidthUs, int initialPulseWidthUs) {
+		return new FirmataServoDevice(this, key, pinInfo.getDeviceNumber(), minPulseWidthUs, maxPulseWidthUs,
+				initialPulseWidthUs);
 	}
 
 	@Override
@@ -305,10 +330,8 @@ public class FirmataDeviceFactory extends BaseNativeDeviceFactory implements Fir
 			int adc_num = 0;
 			int physical_pin = 0;
 			for (Set<PinCapability> pin_capabilities : board_capabilities) {
-				System.out.println("pin: " + pin_capabilities);
 				Set<DeviceMode> modes = convert(pin_capabilities);
 				if (modes.contains(DeviceMode.ANALOG_INPUT)) {
-					System.out.println("ADC pin modes: " + modes);
 					addAdcPinInfo(physical_pin, "A" + adc_num, physical_pin);
 
 					adc_num++;
@@ -316,7 +339,7 @@ public class FirmataDeviceFactory extends BaseNativeDeviceFactory implements Fir
 						|| modes.contains(DeviceMode.PWM_OUTPUT)) {
 					addGpioPinInfo(physical_pin, "D" + gpio_num, physical_pin, modes);
 				} else {
-					System.out.println("skipping pin " + physical_pin + ", modes: " + modes);
+					Logger.debug("Skipping pin " + physical_pin + ", modes: " + modes);
 				}
 
 				gpio_num++;
@@ -341,6 +364,9 @@ public class FirmataDeviceFactory extends BaseNativeDeviceFactory implements Fir
 					break;
 				case PWM:
 					modes.add(DeviceMode.PWM_OUTPUT);
+					break;
+				case SERVO:
+					modes.add(DeviceMode.SERVO);
 					break;
 				default:
 					// Ignore

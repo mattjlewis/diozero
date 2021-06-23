@@ -39,7 +39,7 @@ import org.tinylog.Logger;
 
 import com.diozero.animation.easing.EasingFunction;
 import com.diozero.animation.easing.EasingFunctions;
-import com.diozero.api.OutputDeviceInterface;
+import com.diozero.api.function.FloatConsumer;
 
 public class AnimationInstance {
 	private int durationMillis;
@@ -55,10 +55,10 @@ public class AnimationInstance {
 	 */
 	private List<AnimationInstance.KeyFrame[]> keyFrames;
 	private List<List<float[]>> segmentValues;
-	
+
 	public AnimationInstance() {
 	}
-	
+
 	public AnimationInstance(int durationMillis, float[] cuePoints, List<KeyFrame[]> keyFrames) {
 		this.durationMillis = durationMillis;
 		this.cuePoints = cuePoints;
@@ -70,7 +70,7 @@ public class AnimationInstance {
 		KeyFrame[] prev_kf_array = null;
 		for (KeyFrame[] key_frame_array : keyFrames) {
 			if (prev_kf_array != null) {
-				for (int tgt=0; tgt<key_frame_array.length; tgt++) {
+				for (int tgt = 0; tgt < key_frame_array.length; tgt++) {
 					Float delta = key_frame_array[tgt].getDelta();
 					if (delta != null) {
 						key_frame_array[tgt].setValue(prev_kf_array[tgt].getValue() + delta.floatValue());
@@ -79,14 +79,15 @@ public class AnimationInstance {
 			}
 			prev_kf_array = key_frame_array;
 		}
-		
+
 		// Find our timeline endpoints and refresh rate
 		float scaled_duration = durationMillis / Math.abs(animation.getSpeed());
 
 		if (cuePoints.length == 0 || cuePoints.length != keyFrames.size()) {
-			throw new IllegalArgumentException("cuePoints length (" + cuePoints.length + ") must equal keyFrames length (" + keyFrames.size() + ")");
+			throw new IllegalArgumentException("cuePoints length (" + cuePoints.length
+					+ ") must equal keyFrames length (" + keyFrames.size() + ")");
 		}
-		Collection<OutputDeviceInterface> targets = animation.getTargets();
+		Collection<FloatConsumer> targets = animation.getTargets();
 		if (keyFrames.size() == 0 || keyFrames.get(0).length != targets.size()) {
 			throw new IllegalArgumentException("keyFrames length (" + keyFrames.get(0).length
 					+ ") must equal number of targets (" + targets.size() + ")");
@@ -122,9 +123,9 @@ public class AnimationInstance {
 				tgt_values = new float[targets.size()];
 				step_values.add(tgt_values);
 				for (int tgt = 0; tgt < targets.size(); tgt++) {
-					EasingFunction kf_ef = keyFrames.get(segment-1)[tgt].getEasingFunction();
+					EasingFunction kf_ef = keyFrames.get(segment - 1)[tgt].getEasingFunction();
 					EasingFunction easing_func = kf_ef == null ? animation.getEasingFunction() : kf_ef;
-					
+
 					AnimationInstance.KeyFrame begin = keyFrames.get(segment - 1)[tgt];
 					float delta = keyFrames.get(segment)[tgt].getValue() - begin.getValue();
 					tgt_values[tgt] = easing_func.ease(time, begin.getValue(), delta, seg_duration);
@@ -146,15 +147,15 @@ public class AnimationInstance {
 			}
 		}
 	}
-	
+
 	public int getDurationMillis() {
 		return durationMillis;
 	}
-	
+
 	public float[] getCuePoints() {
 		return cuePoints;
 	}
-	
+
 	public List<KeyFrame[]> getKeyFrames() {
 		return keyFrames;
 	}
@@ -165,8 +166,8 @@ public class AnimationInstance {
 
 	@Override
 	public String toString() {
-		return "AnimationInstance [duration=" + durationMillis + ", cuePoints=" + Arrays.toString(cuePoints) + ", keyFrames="
-				+ keyFrames + "]";
+		return "AnimationInstance [duration=" + durationMillis + ", cuePoints=" + Arrays.toString(cuePoints)
+				+ ", keyFrames=" + keyFrames + "]";
 	}
 
 	public static class KeyFrame {
@@ -174,24 +175,24 @@ public class AnimationInstance {
 		private Float delta;
 		private boolean change;
 		private String easing;
-		
+
 		public KeyFrame() {
 		}
-		
+
 		public KeyFrame(float value) {
 			setValue(value);
 		}
-		
+
 		public KeyFrame(boolean change) {
 			setChange(change);
 		}
-		
+
 		public float getValue() {
 			return value;
 		}
-		
+
 		public float getValue(float previousValue) {
-			if (! change) {
+			if (!change) {
 				return previousValue;
 			}
 			if (delta == null) {
@@ -199,45 +200,45 @@ public class AnimationInstance {
 			}
 			return value + delta.floatValue();
 		}
-		
+
 		public KeyFrame setValue(float value) {
 			change = true;
 			this.value = value;
-			
+
 			return this;
 		}
-		
+
 		public Float getDelta() {
 			return delta;
 		}
-		
+
 		public KeyFrame setDelta(float delta) {
 			change = true;
 			this.delta = Float.valueOf(delta);
-			
+
 			return this;
 		}
-		
+
 		public boolean isChange() {
 			return change;
 		}
-		
+
 		public KeyFrame setChange(boolean change) {
 			this.change = change;
-			
+
 			return this;
 		}
-		
+
 		public String getEasing() {
 			return easing;
 		}
-		
+
 		public KeyFrame setEasing(String easing) {
 			this.easing = easing;
-			
+
 			return this;
 		}
-		
+
 		public EasingFunction getEasingFunction() {
 			return EasingFunctions.forName(easing);
 		}
@@ -246,12 +247,12 @@ public class AnimationInstance {
 		public String toString() {
 			return "KeyFrame [value=" + value + ", delta=" + delta + ", change=" + change + ", easing=" + easing + "]";
 		}
-		
+
 		public static List<KeyFrame[]> fromValues(float[][] values) {
 			List<KeyFrame[]> key_frames = new ArrayList<>();
 			for (float[] kf_values : values) {
 				KeyFrame[] kf_array = new KeyFrame[kf_values.length];
-				for (int i=0; i<kf_values.length; i++) {
+				for (int i = 0; i < kf_values.length; i++) {
 					kf_array[i] = new KeyFrame();
 					kf_array[i].setValue(kf_values[i]);
 				}

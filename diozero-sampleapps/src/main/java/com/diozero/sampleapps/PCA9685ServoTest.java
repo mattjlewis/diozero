@@ -33,8 +33,9 @@ package com.diozero.sampleapps;
 
 import org.tinylog.Logger;
 
+import com.diozero.api.ServoDevice;
+import com.diozero.api.ServoTrim;
 import com.diozero.devices.PCA9685;
-import com.diozero.devices.Servo;
 import com.diozero.util.SleepUtil;
 
 /**
@@ -61,36 +62,36 @@ public class PCA9685ServoTest {
 	}
 
 	public static void test(int pwmFrequency, int gpio) {
-		Servo.Trim trim = Servo.Trim.MG996R;
+		ServoTrim trim = ServoTrim.MG996R;
 		try (PCA9685 pca9685 = new PCA9685(pwmFrequency);
-				Servo servo = new Servo(pca9685, gpio, trim.getMidPulseWidthMs(), pwmFrequency, trim)) {
+				ServoDevice servo = ServoDevice.newBuilder(gpio).setDeviceFactory(pca9685).setTrim(trim).build()) {
 			Logger.info("Mid");
-			pca9685.setServoPulseWidthMs(gpio, trim.getMidPulseWidthMs());
+			pca9685.setDutyUs(gpio, trim.getMidPulseWidthUs());
 			SleepUtil.sleepMillis(LARGE_DELAY);
 			Logger.info("Max");
-			pca9685.setServoPulseWidthMs(gpio, trim.getMaxPulseWidthMs());
+			pca9685.setDutyUs(gpio, trim.getMaxPulseWidthUs());
 			SleepUtil.sleepMillis(LARGE_DELAY);
 			Logger.info("Mid");
-			pca9685.setServoPulseWidthMs(gpio, trim.getMidPulseWidthMs());
+			pca9685.setDutyUs(gpio, trim.getMidPulseWidthUs());
 			SleepUtil.sleepMillis(LARGE_DELAY);
 			Logger.info("Min");
-			pca9685.setServoPulseWidthMs(gpio, trim.getMinPulseWidthMs());
+			pca9685.setDutyUs(gpio, trim.getMinPulseWidthUs());
 			SleepUtil.sleepMillis(LARGE_DELAY);
 			Logger.info("Mid");
-			pca9685.setServoPulseWidthMs(gpio, trim.getMidPulseWidthMs());
+			pca9685.setDutyUs(gpio, trim.getMidPulseWidthUs());
 			SleepUtil.sleepMillis(LARGE_DELAY);
 
 			Logger.info("Max");
 			servo.max();
 			SleepUtil.sleepMillis(LARGE_DELAY);
-			Logger.info("Centre");
-			servo.centre();
+			Logger.info("Mid");
+			servo.mid();
 			SleepUtil.sleepMillis(LARGE_DELAY);
 			Logger.info("Min");
 			servo.min();
 			SleepUtil.sleepMillis(LARGE_DELAY);
-			Logger.info("Centre");
-			servo.centre();
+			Logger.info("Mid");
+			servo.mid();
 			SleepUtil.sleepMillis(LARGE_DELAY);
 
 			Logger.info("0");
@@ -106,16 +107,16 @@ public class PCA9685ServoTest {
 			servo.setAngle(90);
 			SleepUtil.sleepMillis(LARGE_DELAY);
 
-			for (float pulse_ms = trim.getMidPulseWidthMs(); pulse_ms < trim.getMaxPulseWidthMs(); pulse_ms += 0.01) {
-				servo.setPulseWidthMs(pulse_ms);
+			for (int pulse_us = trim.getMidPulseWidthUs(); pulse_us < trim.getMaxPulseWidthUs(); pulse_us += 10) {
+				servo.setPulseWidthUs(pulse_us);
 				SleepUtil.sleepMillis(SHORT_DELAY);
 			}
-			for (float pulse_ms = trim.getMaxPulseWidthMs(); pulse_ms > trim.getMinPulseWidthMs(); pulse_ms -= 0.01) {
-				servo.setPulseWidthMs(pulse_ms);
+			for (int pulse_us = trim.getMaxPulseWidthUs(); pulse_us > trim.getMinPulseWidthUs(); pulse_us += 10) {
+				servo.setPulseWidthUs(pulse_us);
 				SleepUtil.sleepMillis(SHORT_DELAY);
 			}
-			for (float pulse_ms = trim.getMinPulseWidthMs(); pulse_ms < trim.getMidPulseWidthMs(); pulse_ms += 0.01) {
-				servo.setPulseWidthMs(pulse_ms);
+			for (int pulse_us = trim.getMinPulseWidthUs(); pulse_us < trim.getMidPulseWidthUs(); pulse_us += 10) {
+				servo.setPulseWidthUs(pulse_us);
 				SleepUtil.sleepMillis(SHORT_DELAY);
 			}
 		}

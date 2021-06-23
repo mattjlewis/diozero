@@ -67,9 +67,10 @@ import com.diozero.internal.spi.GpioDigitalInputDeviceInterface;
 import com.diozero.internal.spi.GpioDigitalInputOutputDeviceInterface;
 import com.diozero.internal.spi.GpioDigitalOutputDeviceInterface;
 import com.diozero.internal.spi.InternalI2CDeviceInterface;
+import com.diozero.internal.spi.InternalPwmOutputDeviceInterface;
 import com.diozero.internal.spi.InternalSerialDeviceInterface;
+import com.diozero.internal.spi.InternalServoDeviceInterface;
 import com.diozero.internal.spi.InternalSpiDeviceInterface;
-import com.diozero.internal.spi.PwmOutputDeviceInterface;
 import com.diozero.sbc.BoardInfo;
 import com.diozero.sbc.LocalSystemInfo;
 import com.diozero.util.PropertyUtil;
@@ -229,7 +230,18 @@ public class VoodooSparkDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	public void setBoardPwmFrequency(int pwmFrequency) {
+	public void setBoardPwmFrequency(int frequency) {
+		// Ignore
+		Logger.warn("Not implemented");
+	}
+
+	@Override
+	public int getBoardServoFrequency() {
+		return 50;
+	}
+
+	@Override
+	public void setBoardServoFrequency(int frequency) {
 		// Ignore
 		Logger.warn("Not implemented");
 	}
@@ -263,10 +275,16 @@ public class VoodooSparkDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	public PwmOutputDeviceInterface createPwmOutputDevice(String key, PinInfo pinInfo, int pwmFrequency,
+	public InternalPwmOutputDeviceInterface createPwmOutputDevice(String key, PinInfo pinInfo, int pwmFrequency,
 			float initialValue) {
 		Logger.warn("PWM frequency will be ignored - Firmata does not allow this to be specified");
 		return new VoodooSparkPwmOutputDevice(this, key, pinInfo, pwmFrequency, initialValue);
+	}
+
+	@Override
+	public InternalServoDeviceInterface createServoDevice(String key, PinInfo pinInfo, int frequency,
+			int minPulseWidthUs, int maxPulseWidthUs, int initialPulseWidthUs) {
+		throw new UnsupportedOperationException("Not currently implemented");
 	}
 
 	@Override

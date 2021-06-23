@@ -32,13 +32,8 @@ package com.diozero.internal.provider.builtin.i2c;
  */
 
 import com.diozero.api.I2CDeviceInterface.I2CMessage;
-import com.diozero.util.LibraryLoader;
 
 public class NativeI2C {
-	static {
-		LibraryLoader.loadSystemUtils();
-	}
-
 	/* smbus_access read or write markers */
 	public static final byte I2C_SMBUS_READ = 1;
 	public static final byte I2C_SMBUS_WRITE = 0;

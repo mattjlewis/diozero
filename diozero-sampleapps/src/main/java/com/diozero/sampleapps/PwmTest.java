@@ -70,6 +70,8 @@ public class PwmTest {
 			for (float f = 0; f < 1; f += 0.05) {
 				Logger.info("Setting value to {}", Float.valueOf(f));
 				pwm.setValue(f);
+				float val = pwm.getValue();
+				Logger.info("Read value: {}", Float.valueOf(val));
 				SleepUtil.sleepSeconds(0.5);
 			}
 			Logger.info("Done");

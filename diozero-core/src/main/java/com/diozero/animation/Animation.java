@@ -31,18 +31,19 @@ package com.diozero.animation;
  * #L%
  */
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.tinylog.Logger;
 
 import com.diozero.animation.easing.EasingFunction;
 import com.diozero.animation.easing.Linear;
-import com.diozero.api.OutputDeviceInterface;
 import com.diozero.api.function.Action;
+import com.diozero.api.function.FloatConsumer;
 import com.diozero.util.DiozeroScheduler;
 
 /**
@@ -55,7 +56,7 @@ import com.diozero.util.DiozeroScheduler;
 public class Animation implements Runnable {
 	private static final int DEFAULT_FPS = 60;
 
-	private Collection<OutputDeviceInterface> targets;
+	private Collection<FloatConsumer> targets;
 	/**
 	 * An easing function from ease-component to apply to the playback head on the
 	 * timeline. See {@link com.diozero.api.easing.Easing Easing} docs for a list of
@@ -95,14 +96,26 @@ public class Animation implements Runnable {
 	 */
 	private Action onLoop;
 
-	private Future<?> future;
+	private ScheduledFuture<?> future;
 	private int runSegment;
 	private int runStep;
 	private LinkedList<AnimationInstance> animationInstances;
 
 	private AnimationInstance currentAnimationInstance;
 
-	public Animation(Collection<OutputDeviceInterface> targets, int fps, EasingFunction easing, float speed) {
+	public Animation(FloatConsumer target, int fps, EasingFunction easing, float speed) {
+		this(Arrays.asList(target), fps, easing, speed, false);
+	}
+
+	public Animation(FloatConsumer target, int fps, EasingFunction easing, float speed, boolean loop) {
+		this(Arrays.asList(target), fps, easing, speed, loop);
+	}
+
+	public Animation(Collection<FloatConsumer> targets, int fps, EasingFunction easing, float speed) {
+		this(targets, fps, easing, speed, false);
+	}
+
+	public Animation(Collection<FloatConsumer> targets, int fps, EasingFunction easing, float speed, boolean loop) {
 		animationInstances = new LinkedList<>();
 		this.targets = targets;
 		if (fps <= 0) {
@@ -119,6 +132,7 @@ public class Animation implements Runnable {
 		this.easing = easing;
 
 		this.speed = speed;
+		this.loop = loop;
 	}
 
 	public int getFps() {
@@ -140,7 +154,7 @@ public class Animation implements Runnable {
 	 *
 	 * @return Future instance for the background animation thread
 	 */
-	public Future<?> play() {
+	public ScheduledFuture<?> play() {
 		currentAnimationInstance = animationInstances.removeFirst();
 		runSegment = 0;
 		runStep = 0;
@@ -182,7 +196,7 @@ public class Animation implements Runnable {
 		return easing;
 	}
 
-	public Collection<OutputDeviceInterface> getTargets() {
+	public Collection<FloatConsumer> getTargets() {
 		return targets;
 	}
 
@@ -209,8 +223,8 @@ public class Animation implements Runnable {
 		List<List<float[]>> segment_values = currentAnimationInstance.getSegmentValues();
 		float[] tgt_values = segment_values.get(runSegment).get(runStep);
 		int index = 0;
-		for (OutputDeviceInterface target : targets) {
-			target.setValue(tgt_values[index++]);
+		for (FloatConsumer target : targets) {
+			target.accept(tgt_values[index++]);
 		}
 		runStep++;
 		if (runStep == segment_values.get(runSegment).size()) {

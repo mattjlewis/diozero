@@ -42,10 +42,11 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 import org.tinylog.Logger;
+
+import com.diozero.api.function.FloatConsumer;
+import com.diozero.api.function.FloatSupplier;
 
 public class DiozeroScheduler {
 	private static DiozeroScheduler daemonInstance;
@@ -128,9 +129,9 @@ public class DiozeroScheduler {
 		return scheduler.scheduleAtFixedRate(command, initialDelay, period, unit);
 	}
 
-	public ScheduledFuture<?> invokeAtFixedRate(Supplier<Float> source, Consumer<Float> sink, long initialDelay,
+	public ScheduledFuture<?> invokeAtFixedRate(FloatSupplier source, FloatConsumer sink, long initialDelay,
 			long period, TimeUnit unit) {
-		return scheduler.scheduleAtFixedRate(() -> sink.accept(source.get()), initialDelay, period, unit);
+		return scheduler.scheduleAtFixedRate(() -> sink.accept(source.getAsFloat()), initialDelay, period, unit);
 	}
 
 	private void shutdown() {

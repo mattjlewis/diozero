@@ -48,8 +48,8 @@ import com.diozero.internal.spi.GpioDeviceFactoryInterface;
 import com.diozero.internal.spi.GpioDigitalInputDeviceInterface;
 import com.diozero.internal.spi.GpioDigitalInputOutputDeviceInterface;
 import com.diozero.internal.spi.GpioDigitalOutputDeviceInterface;
+import com.diozero.internal.spi.InternalPwmOutputDeviceInterface;
 import com.diozero.internal.spi.PwmOutputDeviceFactoryInterface;
-import com.diozero.internal.spi.PwmOutputDeviceInterface;
 import com.diozero.util.BitManipulation;
 import com.diozero.util.MutableByte;
 
@@ -240,12 +240,19 @@ public abstract class MCP23xxx extends AbstractDeviceFactory implements GpioDevi
 	}
 
 	@Override
-	public PwmOutputDeviceInterface createPwmOutputDevice(String key, PinInfo pinInfo, int pwmFrequency,
+	public InternalPwmOutputDeviceInterface createPwmOutputDevice(String key, PinInfo pinInfo, int pwmFrequency,
 			float initialValue) {
 		Logger.warn("Using software PWM on gpio {}", Integer.valueOf(pinInfo.getDeviceNumber()));
-		SoftwarePwmOutputDevice pwm = new SoftwarePwmOutputDevice(key, this,
-				createDigitalOutputDevice(createPinKey(pinInfo), pinInfo, false), pwmFrequency, initialValue);
-		return pwm;
+
+		// Need to make sure the keys are different
+		// Note this is replicating the functionality in provisionDigitalOutputDevice.
+		// That method can't be called as it will throw a device already opened
+		// exception.
+		// Also note that SoftwarePwmOutputDevice has special cleanup functionality.
+		GpioDigitalOutputDeviceInterface gpio_output_device = createDigitalOutputDevice("PWM-" + key, pinInfo, false);
+		deviceOpened(gpio_output_device);
+
+		return new SoftwarePwmOutputDevice(key, this, gpio_output_device, pwmFrequency, initialValue);
 	}
 
 	@Override

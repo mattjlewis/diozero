@@ -45,10 +45,6 @@ import org.tinylog.Logger;
 import com.diozero.api.RuntimeIOException;
 
 public class EpollNative implements EpollNativeCallback, AutoCloseable {
-	static {
-		LibraryLoader.loadSystemUtils();
-	}
-
 	private static native int epollCreate();
 
 	private static native int addFile(int epollFd, String filename);
@@ -72,6 +68,8 @@ public class EpollNative implements EpollNativeCallback, AutoCloseable {
 	private Condition condition;
 
 	public EpollNative() {
+		LibraryLoader.loadSystemUtils();
+
 		fdToListener = new HashMap<>();
 		filenameToFd = new HashMap<>();
 		running = new AtomicBoolean(false);
@@ -114,7 +112,7 @@ public class EpollNative implements EpollNativeCallback, AutoCloseable {
 			}
 		}
 		*/
-		
+
 		Logger.trace("Finished");
 	}
 

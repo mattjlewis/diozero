@@ -31,30 +31,31 @@ package com.diozero.sampleapps;
  * #L%
  */
 
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
 import org.tinylog.Logger;
 
+import com.diozero.api.ServoDevice;
+import com.diozero.api.ServoTrim;
 import com.diozero.devices.PCA9685;
-import com.diozero.devices.Servo;
-import com.diozero.internal.spi.PwmOutputDeviceFactoryInterface;
+import com.diozero.internal.spi.ServoDeviceFactoryInterface;
 
 public class InteractiveServoControl {
 	public static void main(String[] args) {
 		if (args.length < 1) {
-			Logger.error("Usage: {} <i2c-controller> [device-address-as-hex,default=40]", InteractiveServoControl.class.getName());
+			Logger.error("Usage: {} <i2c-controller> [device-address-as-hex,default=40]",
+					InteractiveServoControl.class.getName());
 			System.exit(1);
 		}
-		
+
 		int i2c_controller = Integer.parseInt(args[0]);
 		int device_address = PCA9685.DEFAULT_ADDRESS;
 		if (args.length > 1) {
 			device_address = Integer.parseInt(args[1], 16);
 		}
-		Servo.Trim trim = Servo.Trim.MG996R;
+		ServoTrim trim = ServoTrim.MG996R;
 		try (BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 				PCA9685 pca9685 = new PCA9685(i2c_controller, device_address, 50)) {
 			while (true) {
@@ -79,9 +80,10 @@ public class InteractiveServoControl {
 			Logger.error(e, "Error: {}", e);
 		}
 	}
-	
-	private static void run(BufferedReader br, PwmOutputDeviceFactoryInterface deviceFactory, int gpio, Servo.Trim trim) throws IOException {
-		try (Servo servo = new Servo(deviceFactory, gpio, 1.5f, 50, trim)) {
+
+	private static void run(BufferedReader br, ServoDeviceFactoryInterface deviceFactory, int gpio, ServoTrim trim)
+			throws IOException {
+		try (ServoDevice servo = ServoDevice.newBuilder(gpio).setDeviceFactory(deviceFactory).setTrim(trim).build()) {
 			while (true) {
 				System.out.print("[" + gpio + "] Angle ('q' to quit): ");
 				System.out.flush();
@@ -95,10 +97,11 @@ public class InteractiveServoControl {
 				}
 				try {
 					float angle = Float.parseFloat(line);
-					servo.setAngle(angle);
-					float pulse_width_ms = servo.getPulseWidthMs();
+					servo.setAngle((int) angle);
+					int pulse_width_us = servo.getPulseWidthUs();
 					float new_angle = servo.getAngle();
-					Logger.debug("[" + gpio + "] pulse_width_ms: {}, new_angle: {}", Float.valueOf(pulse_width_ms), Float.valueOf(new_angle));
+					Logger.debug("[" + gpio + "] pulse_width_ms: {}, new_angle: {}", Integer.valueOf(pulse_width_us),
+							Float.valueOf(new_angle));
 				} catch (NumberFormatException e) {
 					System.out.println("Invalid float '" + line + "'");
 				}

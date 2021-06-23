@@ -49,9 +49,10 @@ import com.diozero.internal.spi.GpioDigitalInputDeviceInterface;
 import com.diozero.internal.spi.GpioDigitalInputOutputDeviceInterface;
 import com.diozero.internal.spi.GpioDigitalOutputDeviceInterface;
 import com.diozero.internal.spi.InternalI2CDeviceInterface;
+import com.diozero.internal.spi.InternalPwmOutputDeviceInterface;
 import com.diozero.internal.spi.InternalSerialDeviceInterface;
+import com.diozero.internal.spi.InternalServoDeviceInterface;
 import com.diozero.internal.spi.InternalSpiDeviceInterface;
-import com.diozero.internal.spi.PwmOutputDeviceInterface;
 import com.diozero.util.Diozero;
 
 public class BbbIoLibDeviceFactory extends BaseNativeDeviceFactory {
@@ -96,6 +97,16 @@ public class BbbIoLibDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
+	public int getBoardServoFrequency() {
+		return boardPwmFrequency;
+	}
+
+	@Override
+	public void setBoardServoFrequency(int pwmFrequency) {
+		boardPwmFrequency = pwmFrequency;
+	}
+
+	@Override
 	public int getGpioValue(int gpio) {
 		return Diozero.UNKNOWN_VALUE;
 	}
@@ -124,9 +135,16 @@ public class BbbIoLibDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	public PwmOutputDeviceInterface createPwmOutputDevice(String key, PinInfo pinInfo, int pwmFrequency,
+	public InternalPwmOutputDeviceInterface createPwmOutputDevice(String key, PinInfo pinInfo, int pwmFrequency,
 			float initialValue) {
 		throw new UnsupportedOperationException("PWM output support not yet implemented");
+		// return new BbbIoLibPwmOutputDevice(this, key, pinInfo, initialValue);
+	}
+
+	@Override
+	public InternalServoDeviceInterface createServoDevice(String key, PinInfo pinInfo, int pwmFrequency,
+			int minPulseWidthUs, int maxPulseWidthUs, int initialPulseWidthUs) {
+		throw new UnsupportedOperationException("Servo output support not yet implemented");
 		// return new BbbIoLibPwmOutputDevice(this, key, pinInfo, initialValue);
 	}
 

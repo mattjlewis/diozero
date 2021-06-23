@@ -34,11 +34,11 @@ package com.diozero.internal.provider.pigpioj;
 import com.diozero.api.RuntimeIOException;
 import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.DeviceFactoryInterface;
-import com.diozero.internal.spi.PwmOutputDeviceInterface;
+import com.diozero.internal.spi.InternalPwmOutputDeviceInterface;
 
 import uk.pigpioj.PigpioInterface;
 
-public class PigpioJPwmOutputDevice extends AbstractDevice implements PwmOutputDeviceInterface {
+public class PigpioJPwmOutputDevice extends AbstractDevice implements InternalPwmOutputDeviceInterface {
 	private PigpioInterface pigpioImpl;
 	private int gpio;
 	private int range;

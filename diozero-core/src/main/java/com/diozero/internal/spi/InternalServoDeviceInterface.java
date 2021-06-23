@@ -4,7 +4,7 @@ package com.diozero.internal.spi;
  * #%L
  * Organisation: diozero
  * Project:      diozero - Core
- * Filename:     PwmOutputDeviceInterface.java
+ * Filename:     InternalServoDeviceInterface.java
  * 
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
@@ -34,47 +34,48 @@ package com.diozero.internal.spi;
 import com.diozero.api.DeviceMode;
 import com.diozero.api.RuntimeIOException;
 
-public interface PwmOutputDeviceInterface extends GpioDeviceInterface {
+public interface InternalServoDeviceInterface extends GpioDeviceInterface {
 	/**
-	 * Get the device PWM output device number
-	 * 
-	 * @return Device native PWM output
+	 * Get the device Servo device number
+	 *
+	 * @return Device native Servo device number
 	 */
-	int getPwmNum();
+	int getServoNum();
 
 	/**
-	 * Get the current PWM output value (0..1)
-	 * 
-	 * @return Range is 0..1
+	 * Get the current Servo pulse width in microseconds.
+	 *
+	 * @return Servo pulse width value in microseconds
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
-	float getValue() throws RuntimeIOException;
+	int getPulseWidthUs() throws RuntimeIOException;
 
 	/**
-	 * Set the PWM output value (0..1)
-	 * 
-	 * @param value Relative value in the range 0..1
+	 * Set the Servo output pulse width in microseconds.
+	 *
+	 * @param angle New pulse width value in microseconds, range minPulseWidth to
+	 *              maxPulseWidth
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
-	void setValue(float value) throws RuntimeIOException;
+	void setPulseWidthUs(int pulseWidthUs) throws RuntimeIOException;
 
 	/**
-	 * Get the PWM frequency in Hz
-	 * 
+	 * Get the Servo frequency in Hz
+	 *
 	 * @return frequency in Hz
 	 */
-	int getPwmFrequency();
+	int getServoFrequency();
 
 	/**
-	 * Set the PWM output frequency
-	 * 
+	 * Set the Servo frequency, most servos operate at 50Hz.
+	 *
 	 * @param frequencyHz frequency in Hz
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
-	void setPwmFrequency(int frequencyHz) throws RuntimeIOException;
+	void setServoFrequency(int frequencyHz) throws RuntimeIOException;
 
 	@Override
 	default DeviceMode getMode() {
-		return DeviceMode.PWM_OUTPUT;
+		return DeviceMode.SERVO;
 	}
 }

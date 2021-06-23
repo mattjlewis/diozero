@@ -31,14 +31,18 @@ package com.diozero.api;
  * #L%
  */
 
+import java.util.EnumSet;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.tinylog.Logger;
 
-import com.diozero.devices.Servo;
 import com.diozero.internal.provider.test.TestDeviceFactory;
 import com.diozero.internal.provider.test.TestPwmOutputDevice;
+import com.diozero.internal.provider.test.TestServoDevice;
+import com.diozero.sbc.BoardPinInfo;
+import com.diozero.sbc.DeviceFactoryHelper;
 import com.diozero.util.ServoUtil;
 
 @SuppressWarnings("static-method")
@@ -47,11 +51,15 @@ public class ServoTest {
 	private static final double TOWERPRO_SG5010_MAX_MS = 2;
 	private static final double TOWERPRO_SG90_MIN_MS = 0.6;
 	private static final double TOWERPRO_SG90_MAX_MS = 2.5;
-	private static final float DELTA = 0.001f;
+	private static final int DELTA = 1;
 
 	@BeforeAll
 	public static void beforeAll() {
 		TestDeviceFactory.setPwmOutputDeviceClass(TestPwmOutputDevice.class);
+		TestDeviceFactory.setServoDeviceClass(TestServoDevice.class);
+
+		BoardPinInfo pin_info = DeviceFactoryHelper.getNativeDeviceFactory().getBoardPinInfo();
+		pin_info.addGpioPinInfo(0, 0, EnumSet.of(DeviceMode.SERVO));
 	}
 
 	@Test
@@ -114,28 +122,28 @@ public class ServoTest {
 
 	@Test
 	public void servoTest() {
-		Servo.Trim trim = Servo.Trim.MG996R;
-		Logger.debug("Min Pulse Width: {}, Min Angle: {}", Float.valueOf(trim.getMinPulseWidthMs()),
+		ServoTrim trim = ServoTrim.MG996R;
+		Logger.debug("Min Pulse Width: {#,###} us, Min Angle: {} degrees", Float.valueOf(trim.getMinPulseWidthUs()),
 				Float.valueOf(trim.getMinAngle()));
-		Logger.debug("Mid Pulse Width: {}, Mid Angle: {}", Float.valueOf(trim.getMidPulseWidthMs()),
+		Logger.debug("Mid Pulse Width: {#,###} us, Mid Angle: {} degrees", Float.valueOf(trim.getMidPulseWidthUs()),
 				Float.valueOf(trim.getMidAngle()));
-		Logger.debug("Max Pulse Width: {}, Max Angle: {}", Float.valueOf(trim.getMaxPulseWidthMs()),
+		Logger.debug("Max Pulse Width: {#,###} us, Max Angle: {} degrees", Integer.valueOf(trim.getMaxPulseWidthUs()),
 				Float.valueOf(trim.getMaxAngle()));
-		try (Servo servo = new Servo(0, trim.getMidPulseWidthMs(), trim)) {
+		try (ServoDevice servo = ServoDevice.newBuilder(0).setTrim(trim).build()) {
 			servo.setAngle(0);
-			Logger.debug("Value: {}, Pulse Width: {}, Angle: {}", Float.valueOf(servo.getValue()),
-					Float.valueOf(servo.getPulseWidthMs()), Float.valueOf(servo.getAngle()));
-			Assertions.assertEquals(trim.getMidPulseWidthMs() - trim.getNinetyDegPulseWidthMs(),
-					servo.getPulseWidthMs(), DELTA);
+			Logger.debug("Pulse Width: {#,###} us, Angle: {}", Integer.valueOf(servo.getPulseWidthUs()),
+					Float.valueOf(servo.getAngle()));
+			Assertions.assertEquals(trim.getMidPulseWidthUs() - trim.getNinetyDegPulseWidthUs(),
+					servo.getPulseWidthUs(), DELTA);
 			servo.setAngle(90);
-			Logger.debug("Value: {}, Pulse Width: {}, Angle: {}", Float.valueOf(servo.getValue()),
-					Float.valueOf(servo.getPulseWidthMs()), Float.valueOf(servo.getAngle()));
-			Assertions.assertEquals(trim.getMidPulseWidthMs(), servo.getPulseWidthMs(), DELTA);
+			Logger.debug("Pulse Width: {#,###} us, Angle: {} degrees", Integer.valueOf(servo.getPulseWidthUs()),
+					Float.valueOf(servo.getAngle()));
+			Assertions.assertEquals(trim.getMidPulseWidthUs(), servo.getPulseWidthUs(), DELTA);
 			servo.setAngle(180);
-			Logger.debug("Value: {}, Pulse Width: {}, Angle: {}", Float.valueOf(servo.getValue()),
-					Float.valueOf(servo.getPulseWidthMs()), Float.valueOf(servo.getAngle()));
-			Assertions.assertEquals(trim.getMidPulseWidthMs() + trim.getNinetyDegPulseWidthMs(),
-					servo.getPulseWidthMs(), DELTA);
+			Logger.debug("Pulse Width: {#,###} us, Angle: {} degrees", Integer.valueOf(servo.getPulseWidthUs()),
+					Float.valueOf(servo.getAngle()));
+			Assertions.assertEquals(trim.getMidPulseWidthUs() + trim.getNinetyDegPulseWidthUs(),
+					servo.getPulseWidthUs(), DELTA);
 		}
 	}
 }

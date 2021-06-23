@@ -51,9 +51,10 @@ import com.diozero.internal.spi.GpioDigitalInputDeviceInterface;
 import com.diozero.internal.spi.GpioDigitalInputOutputDeviceInterface;
 import com.diozero.internal.spi.GpioDigitalOutputDeviceInterface;
 import com.diozero.internal.spi.InternalI2CDeviceInterface;
+import com.diozero.internal.spi.InternalPwmOutputDeviceInterface;
 import com.diozero.internal.spi.InternalSerialDeviceInterface;
+import com.diozero.internal.spi.InternalServoDeviceInterface;
 import com.diozero.internal.spi.InternalSpiDeviceInterface;
-import com.diozero.internal.spi.PwmOutputDeviceInterface;
 import com.diozero.sbc.BoardInfo;
 import com.diozero.sbc.LocalSystemInfo;
 
@@ -65,6 +66,7 @@ import uk.pigpioj.PigpioSocket;
 public class PigpioJDeviceFactory extends BaseNativeDeviceFactory {
 	private static final int PIGPIO_SPI_BUFFER_SIZE = (int) (Math.pow(2, 16) - 1);
 	private int boardPwmFrequency;
+	private int boardServoFrequency = 50;
 	private PigpioInterface pigpioImpl;
 
 	public PigpioJDeviceFactory() {
@@ -113,6 +115,16 @@ public class PigpioJDeviceFactory extends BaseNativeDeviceFactory {
 	@Override
 	public void setBoardPwmFrequency(int pwmFrequency) {
 		boardPwmFrequency = pwmFrequency;
+	}
+
+	@Override
+	public int getBoardServoFrequency() {
+		return boardServoFrequency;
+	}
+
+	@Override
+	public void setBoardServoFrequency(int servoFrequency) {
+		boardServoFrequency = servoFrequency;
 	}
 
 	@Override
@@ -186,10 +198,17 @@ public class PigpioJDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	public PwmOutputDeviceInterface createPwmOutputDevice(String key, PinInfo pinInfo, int pwmFrequency,
+	public InternalPwmOutputDeviceInterface createPwmOutputDevice(String key, PinInfo pinInfo, int pwmFrequency,
 			float initialValue) throws RuntimeIOException {
 		return new PigpioJPwmOutputDevice(key, this, pigpioImpl, pinInfo.getDeviceNumber(), initialValue,
 				setPwmFrequency(pinInfo.getDeviceNumber(), pwmFrequency));
+	}
+
+	@Override
+	public InternalServoDeviceInterface createServoDevice(String key, PinInfo pinInfo, int frequency,
+			int minPulseWidthUs, int maxPulseWidthUs, int initialPulseWidthUs) {
+		return new PigpioJServoDevice(key, this, pigpioImpl, pinInfo.getDeviceNumber(), minPulseWidthUs,
+				maxPulseWidthUs, initialPulseWidthUs);
 	}
 
 	@Override

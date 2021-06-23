@@ -31,7 +31,6 @@ package com.diozero.devices;
  * #L%
  */
 
-
 import org.tinylog.Logger;
 
 import com.diozero.api.DeviceInterface;
@@ -46,30 +45,31 @@ public class RgbPwmLed implements DeviceInterface {
 	private PwmLed redLED;
 	private PwmLed greenLED;
 	private PwmLed blueLED;
-	
+
 	/**
-	 * @param redPin GPIO for the red LED.
+	 * @param redPin   GPIO for the red LED.
 	 * @param greenPin GPIO for the green LED.
-	 * @param bluePin GPIO for the blue LED.
+	 * @param bluePin  GPIO for the blue LED.
 	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
 	public RgbPwmLed(int redPin, int greenPin, int bluePin) throws RuntimeIOException {
 		this(DeviceFactoryHelper.getNativeDeviceFactory(), redPin, greenPin, bluePin);
 	}
-	
+
 	/**
 	 * @param deviceFactory Device factory to use to provision this device.
-	 * @param redPin GPIO for the red LED.
-	 * @param greenPin GPIO for the green LED.
-	 * @param bluePin GPIO for the blue LED.
+	 * @param redPin        GPIO for the red LED.
+	 * @param greenPin      GPIO for the green LED.
+	 * @param bluePin       GPIO for the blue LED.
 	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
-	public RgbPwmLed(PwmOutputDeviceFactoryInterface deviceFactory, int redPin, int greenPin, int bluePin) throws RuntimeIOException {
+	public RgbPwmLed(PwmOutputDeviceFactoryInterface deviceFactory, int redPin, int greenPin, int bluePin)
+			throws RuntimeIOException {
 		redLED = new PwmLed(deviceFactory, redPin);
 		greenLED = new PwmLed(deviceFactory, greenPin);
 		blueLED = new PwmLed(deviceFactory, bluePin);
 	}
-	
+
 	@Override
 	public void close() {
 		Logger.trace("close()");
@@ -77,21 +77,23 @@ public class RgbPwmLed implements DeviceInterface {
 		greenLED.close();
 		blueLED.close();
 	}
-	
+
 	/**
 	 * Get the value of all LEDs.
+	 *
 	 * @return Boolean array (red, green, blue).
 	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
 	public float[] getValues() throws RuntimeIOException {
 		return new float[] { redLED.getValue(), greenLED.getValue(), blueLED.getValue() };
 	}
-	
+
 	/**
 	 * Set the value of all LEDs.
-	 * @param red Red LED value (0..1).
+	 *
+	 * @param red   Red LED value (0..1).
 	 * @param green Green LED value (0..1).
-	 * @param blue Blue LED value (0..1).
+	 * @param blue  Blue LED value (0..1).
 	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
 	public void setValues(float red, float green, float blue) throws RuntimeIOException {
@@ -99,9 +101,10 @@ public class RgbPwmLed implements DeviceInterface {
 		greenLED.setValue(green);
 		blueLED.setValue(blue);
 	}
-	
+
 	/**
 	 * Turn all LEDs on.
+	 *
 	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
 	public void on() throws RuntimeIOException {
@@ -109,9 +112,10 @@ public class RgbPwmLed implements DeviceInterface {
 		greenLED.on();
 		blueLED.on();
 	}
-	
+
 	/**
 	 * Turn all LEDs off.
+	 *
 	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
 	public void off() throws RuntimeIOException {
@@ -119,9 +123,10 @@ public class RgbPwmLed implements DeviceInterface {
 		greenLED.off();
 		blueLED.off();
 	}
-	
+
 	/**
 	 * Toggle the state of all LEDs.
+	 *
 	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
 	public void toggle() throws RuntimeIOException {

@@ -36,14 +36,13 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.diozero.api.DeviceInterface;
-import com.diozero.api.OutputDeviceInterface;
 import com.diozero.api.RuntimeIOException;
 import com.diozero.api.function.Action;
 import com.diozero.internal.spi.GpioDeviceFactoryInterface;
 import com.diozero.sbc.DeviceFactoryHelper;
 import com.diozero.util.RangeUtil;
 
-public class LedBarGraph implements OutputDeviceInterface, DeviceInterface {
+public class LedBarGraph implements DeviceInterface {
 	private List<LED> leds;
 	private float value;
 
@@ -92,7 +91,7 @@ public class LedBarGraph implements OutputDeviceInterface, DeviceInterface {
 
 	/**
 	 * Get the proportion of LEDs currently lit.
-	 * 
+	 *
 	 * @return Proportion of LEDs lit. 0..1 if lit from left to right, 0..-1 if lit
 	 *         from right to left.
 	 */
@@ -102,11 +101,10 @@ public class LedBarGraph implements OutputDeviceInterface, DeviceInterface {
 
 	/**
 	 * Light a proportion of the LEDs using value as a percentage.
-	 * 
+	 *
 	 * @param newValue Proportion of LEDs to light. 0..1 lights from left to right,
 	 *                 0..-1 lights from right to left.
 	 */
-	@Override
 	public void setValue(float newValue) {
 		value = RangeUtil.constrain(newValue, -1, 1);
 		int light_up_to = Math.round(value * leds.size());

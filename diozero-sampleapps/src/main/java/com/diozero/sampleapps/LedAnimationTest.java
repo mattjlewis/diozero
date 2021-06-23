@@ -43,7 +43,7 @@ import com.diozero.animation.Animation;
 import com.diozero.animation.AnimationInstance;
 import com.diozero.animation.easing.EasingFunction;
 import com.diozero.animation.easing.EasingFunctions;
-import com.diozero.api.OutputDeviceInterface;
+import com.diozero.api.function.FloatConsumer;
 import com.diozero.util.Diozero;
 
 public class LedAnimationTest {
@@ -57,7 +57,7 @@ public class LedAnimationTest {
 
 		int arg = 0;
 
-		List<OutputDeviceInterface> leds = new ArrayList<>();
+		List<FloatConsumer> leds = new ArrayList<>();
 		for (String led : args[arg++].split(",")) {
 			Logger.debug("led=" + led);
 			// leds.add(new PwmLed(Integer.parseInt(led)));

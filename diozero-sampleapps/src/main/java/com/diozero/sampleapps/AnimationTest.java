@@ -43,7 +43,7 @@ import org.tinylog.Logger;
 import com.diozero.animation.Animation;
 import com.diozero.animation.AnimationInstance;
 import com.diozero.animation.easing.Quad;
-import com.diozero.api.OutputDeviceInterface;
+import com.diozero.api.function.FloatConsumer;
 import com.diozero.devices.PwmLed;
 import com.diozero.util.Diozero;
 
@@ -58,10 +58,9 @@ public class AnimationTest {
 
 	public static void test(int pin1, int pin2) {
 		try (PwmLed led1 = new PwmLed(pin1); PwmLed led2 = new PwmLed(pin2)) {
-			Collection<OutputDeviceInterface> targets = Arrays.asList(led1, led2);
+			Collection<FloatConsumer> targets = Arrays.asList(led1::setValue, led2::setValue);
 
-			Animation anim = new Animation(targets, 100, Quad::easeIn, 1);
-			anim.setLoop(true);
+			Animation anim = new Animation(targets, 100, Quad::easeIn, 1, true);
 
 			// How long the animation is
 			int duration = 5000;

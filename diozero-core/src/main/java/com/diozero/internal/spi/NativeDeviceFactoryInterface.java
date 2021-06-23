@@ -38,8 +38,8 @@ import com.diozero.sbc.BoardInfo;
 import com.diozero.util.ServiceLoaderUtil;
 
 public interface NativeDeviceFactoryInterface extends GpioDeviceFactoryInterface, SpiDeviceFactoryInterface,
-		I2CDeviceFactoryInterface, PwmOutputDeviceFactoryInterface, AnalogInputDeviceFactoryInterface,
-		AnalogOutputDeviceFactoryInterface, SerialDeviceFactoryInterface {
+		I2CDeviceFactoryInterface, PwmOutputDeviceFactoryInterface, ServoDeviceFactoryInterface,
+		AnalogInputDeviceFactoryInterface, AnalogOutputDeviceFactoryInterface, SerialDeviceFactoryInterface {
 	void registerDeviceFactory(DeviceFactoryInterface deviceFactory);
 
 	BoardInfo getBoardInfo();

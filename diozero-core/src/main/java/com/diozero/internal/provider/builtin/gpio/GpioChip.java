@@ -57,11 +57,9 @@ import com.diozero.util.DiozeroScheduler;
 import com.diozero.util.LibraryLoader;
 
 public class GpioChip extends GpioChipInfo implements AutoCloseable, GpioLineEventListener {
-	static {
-		LibraryLoader.loadSystemUtils();
-	}
-
 	public static Map<Integer, GpioChip> openAllChips() throws IOException {
+		LibraryLoader.loadSystemUtils();
+
 		Map<Integer, GpioChip> chips = Files.list(Paths.get("/dev"))
 				.filter(p -> p.getFileName().toString().startsWith("gpiochip"))
 				.map(p -> NativeGpioDevice.openChip(p.toString())) //
@@ -84,14 +82,20 @@ public class GpioChip extends GpioChipInfo implements AutoCloseable, GpioLineEve
 	}
 
 	public static List<GpioChipInfo> getChips() {
+		LibraryLoader.loadSystemUtils();
+
 		return NativeGpioDevice.getChips();
 	}
 
 	public static GpioChip openChip(int chipNum) {
+		LibraryLoader.loadSystemUtils();
+
 		return openChip("/dev/" + GPIO_CHIP_FILENAME_PREFIX + "/" + chipNum);
 	}
 
 	public static GpioChip openChip(String chipDeviceFile) {
+		LibraryLoader.loadSystemUtils();
+
 		return NativeGpioDevice.openChip(chipDeviceFile);
 	}
 
@@ -132,6 +136,8 @@ public class GpioChip extends GpioChipInfo implements AutoCloseable, GpioLineEve
 
 	private GpioChip(String name, String label, int chipFd, GpioLine... lines) {
 		super(name, label, lines.length);
+
+		LibraryLoader.loadSystemUtils();
 
 		chipId = Integer.parseInt(name.substring(GPIO_CHIP_FILENAME_PREFIX.length()));
 		this.chipFd = chipFd;

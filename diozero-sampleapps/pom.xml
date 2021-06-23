@@ -29,6 +29,11 @@
 				<artifactId>diozero-provider-remote</artifactId>
 				<version>${diozero.version}</version>
 			</dependency>
+			<dependency>
+				<groupId>com.diozero</groupId>
+				<artifactId>diozero-provider-firmata</artifactId>
+				<version>${diozero.version}</version>
+			</dependency>
 
 			<dependency>
 				<groupId>org.imgscalr</groupId>
@@ -60,11 +65,15 @@
 			<groupId>com.diozero</groupId>
 			<artifactId>diozero-provider-pigpio</artifactId>
 		</dependency>
-		-->
 		<dependency>
 			<groupId>com.diozero</groupId>
 			<artifactId>diozero-provider-remote</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>com.diozero</groupId>
+			<artifactId>diozero-provider-firmata</artifactId>
+		</dependency>
+		-->
 
 		<dependency>
 			<groupId>com.google.code.gson</groupId>

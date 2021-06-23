@@ -47,9 +47,10 @@ import com.diozero.internal.spi.GpioDigitalInputDeviceInterface;
 import com.diozero.internal.spi.GpioDigitalInputOutputDeviceInterface;
 import com.diozero.internal.spi.GpioDigitalOutputDeviceInterface;
 import com.diozero.internal.spi.InternalI2CDeviceInterface;
+import com.diozero.internal.spi.InternalPwmOutputDeviceInterface;
 import com.diozero.internal.spi.InternalSerialDeviceInterface;
+import com.diozero.internal.spi.InternalServoDeviceInterface;
 import com.diozero.internal.spi.InternalSpiDeviceInterface;
-import com.diozero.internal.spi.PwmOutputDeviceInterface;
 import com.diozero.util.Diozero;
 
 public class TestDeviceFactory extends BaseNativeDeviceFactory {
@@ -57,7 +58,8 @@ public class TestDeviceFactory extends BaseNativeDeviceFactory {
 	private static Class<? extends AnalogOutputDeviceInterface> analogOutputDeviceClass;
 	private static Class<? extends GpioDigitalInputDeviceInterface> digitalInputDeviceClass = TestDigitalInputDevice.class;
 	private static Class<? extends GpioDigitalOutputDeviceInterface> digitalOutputDeviceClass = TestDigitalOutputDevice.class;
-	private static Class<? extends PwmOutputDeviceInterface> pwmOutputDeviceClass;
+	private static Class<? extends InternalPwmOutputDeviceInterface> pwmOutputDeviceClass;
+	private static Class<? extends InternalServoDeviceInterface> servoDeviceClass;
 	private static Class<? extends InternalSpiDeviceInterface> spiDeviceClass;
 	private static Class<? extends InternalI2CDeviceInterface> i2cDeviceClass = TestI2CDevice.class;
 	private static Class<? extends InternalSerialDeviceInterface> serialDeviceClass;
@@ -84,8 +86,12 @@ public class TestDeviceFactory extends BaseNativeDeviceFactory {
 		digitalOutputDeviceClass = clz;
 	}
 
-	public static void setPwmOutputDeviceClass(Class<? extends PwmOutputDeviceInterface> clz) {
+	public static void setPwmOutputDeviceClass(Class<? extends InternalPwmOutputDeviceInterface> clz) {
 		pwmOutputDeviceClass = clz;
+	}
+
+	public static void setServoDeviceClass(Class<? extends InternalServoDeviceInterface> clz) {
+		servoDeviceClass = clz;
 	}
 
 	public static void setSpiDeviceClass(Class<? extends InternalSpiDeviceInterface> clz) {
@@ -102,6 +108,7 @@ public class TestDeviceFactory extends BaseNativeDeviceFactory {
 
 	private static final int DEFAULT_PWM_FREQUENCY = 100;
 	private int boardPwmFrequency = DEFAULT_PWM_FREQUENCY;
+	private int boardServoFrequency = DEFAULT_PWM_FREQUENCY;
 
 	// Added for testing purposes only
 	public DeviceStates getDeviceStates() {
@@ -173,7 +180,7 @@ public class TestDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	public PwmOutputDeviceInterface createPwmOutputDevice(String key, PinInfo pinInfo, int pwmFrequency,
+	public InternalPwmOutputDeviceInterface createPwmOutputDevice(String key, PinInfo pinInfo, int pwmFrequency,
 			float initialValue) throws RuntimeIOException {
 		if (pwmOutputDeviceClass == null) {
 			throw new IllegalArgumentException("PWM output implementation class hasn't been set");
@@ -181,8 +188,26 @@ public class TestDeviceFactory extends BaseNativeDeviceFactory {
 
 		try {
 			return pwmOutputDeviceClass
-					.getConstructor(String.class, DeviceFactoryInterface.class, int.class, float.class)
-					.newInstance(key, this, Integer.valueOf(pinInfo.getDeviceNumber()), Float.valueOf(initialValue));
+					.getConstructor(String.class, DeviceFactoryInterface.class, int.class, int.class, float.class)
+					.newInstance(key, this, Integer.valueOf(pinInfo.getDeviceNumber()), Integer.valueOf(pwmFrequency),
+							Float.valueOf(initialValue));
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public InternalServoDeviceInterface createServoDevice(String key, PinInfo pinInfo, int frequency,
+			int minPulseWidthUs, int maxPulseWidthUs, int initialPulseWidthUs) throws RuntimeIOException {
+		if (pwmOutputDeviceClass == null) {
+			throw new IllegalArgumentException("Servo implementation class hasn't been set");
+		}
+
+		try {
+			return servoDeviceClass.getConstructor(String.class, DeviceFactoryInterface.class, int.class, int.class,
+					int.class, int.class, int.class).newInstance(key, this, Integer.valueOf(pinInfo.getDeviceNumber()),
+							Integer.valueOf(frequency), Integer.valueOf(minPulseWidthUs),
+							Integer.valueOf(maxPulseWidthUs), Integer.valueOf(initialPulseWidthUs));
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -278,6 +303,16 @@ public class TestDeviceFactory extends BaseNativeDeviceFactory {
 	@Override
 	public void setBoardPwmFrequency(int pwmFrequency) {
 		this.boardPwmFrequency = pwmFrequency;
+	}
+
+	@Override
+	public int getBoardServoFrequency() {
+		return boardServoFrequency;
+	}
+
+	@Override
+	public void setBoardServoFrequency(int ServoFrequency) {
+		this.boardServoFrequency = ServoFrequency;
 	}
 
 	@Override

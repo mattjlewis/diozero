@@ -74,10 +74,6 @@ public class I2CDevice implements I2CDeviceInterface {
 			this.address = address;
 		}
 
-		public I2CDeviceFactoryInterface getFactory() {
-			return factory;
-		}
-
 		/**
 		 * Set the I2C device factory to use for provisioning I2C device instances
 		 *
@@ -85,7 +81,7 @@ public class I2CDevice implements I2CDeviceInterface {
 		 *                instances
 		 * @return this builder instance
 		 */
-		public Builder setFactory(I2CDeviceFactoryInterface factory) {
+		public Builder setDeviceFactory(I2CDeviceFactoryInterface factory) {
 			this.factory = factory;
 			return this;
 		}

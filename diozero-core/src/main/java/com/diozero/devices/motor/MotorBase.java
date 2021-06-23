@@ -31,7 +31,6 @@ package com.diozero.devices.motor;
  * #L%
  */
 
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,24 +43,27 @@ public abstract class MotorBase implements MotorInterface, FloatConsumer {
 	private Action backwardAction;
 	private Action stopAction;
 	private List<MotorEventListener> listeners;
-	
+
 	public MotorBase() {
 		listeners = new ArrayList<>();
 	}
 
 	/**
 	 * Reverse direction of the motors
+	 *
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	@Override
 	public void reverse() throws RuntimeIOException {
 		setValue(-getValue());
 	}
-	
+
 	/**
-	 * Set the speed of the motor as a floating point value between -1 (full
-	 * speed backward) and 1 (full speed forward)
-	 * @param value Range -1 .. 1. Positive numbers for forward, Negative numbers for backward
+	 * Set the speed of the motor as a floating point value between -1 (full speed
+	 * backward) and 1 (full speed forward)
+	 *
+	 * @param value Range -1 .. 1. Positive numbers for forward, Negative numbers
+	 *              for backward
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	@Override
@@ -79,35 +81,10 @@ public abstract class MotorBase implements MotorInterface, FloatConsumer {
 	}
 
 	@Override
-	public void whenForward(Action action) {
-		forwardAction = action;
-	}
-
-	@Override
-	public void whenBackward(Action action) {
-		backwardAction = action;
-	}
-
-	@Override
-	public void whenStop(Action action) {
-		stopAction = action;
-	}
-	
-	@Override
-	public void addListener(MotorEventListener listener) {
-		listeners.add(listener);
-	}
-	
-	@Override
-	public void removeListener(MotorEventListener listener) {
-		listeners.remove(listener);
-	}
-	
-	@Override
 	public void accept(float value) {
 		MotorEvent event = new MotorEvent(System.currentTimeMillis(), System.nanoTime(), value);
-		listeners.forEach((listener) -> listener.accept(event));
-		
+		listeners.forEach(listener -> listener.accept(event));
+
 		if (value > 0) {
 			if (forwardAction != null) {
 				forwardAction.action();
@@ -121,5 +98,30 @@ public abstract class MotorBase implements MotorInterface, FloatConsumer {
 				stopAction.action();
 			}
 		}
+	}
+
+	@Override
+	public void whenForward(Action action) {
+		forwardAction = action;
+	}
+
+	@Override
+	public void whenBackward(Action action) {
+		backwardAction = action;
+	}
+
+	@Override
+	public void whenStop(Action action) {
+		stopAction = action;
+	}
+
+	@Override
+	public void addListener(MotorEventListener listener) {
+		listeners.add(listener);
+	}
+
+	@Override
+	public void removeListener(MotorEventListener listener) {
+		listeners.remove(listener);
 	}
 }

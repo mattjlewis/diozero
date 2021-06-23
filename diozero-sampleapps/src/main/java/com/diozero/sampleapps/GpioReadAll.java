@@ -62,10 +62,10 @@ public class GpioReadAll {
 			Logger.trace(t, "Jansi native library not available on this platform: {}", t);
 		}
 
-		NativeDeviceFactoryInterface device_factory = DeviceFactoryHelper.getNativeDeviceFactory();
-
-		device_factory.getBoardInfo().getHeaders().entrySet()
-				.forEach(header_entry -> printPins(device_factory, header_entry.getKey(), header_entry.getValue()));
+		try (NativeDeviceFactoryInterface device_factory = DeviceFactoryHelper.getNativeDeviceFactory()) {
+			device_factory.getBoardInfo().getHeaders().entrySet()
+					.forEach(header_entry -> printPins(device_factory, header_entry.getKey(), header_entry.getValue()));
+		}
 	}
 
 	private static void printPins(NativeDeviceFactoryInterface deviceFactory, String headerName,

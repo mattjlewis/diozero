@@ -73,7 +73,7 @@ public class PCF8574 extends AbstractDeviceFactory implements GpioDeviceFactoryI
 
 		boardPinInfo = new PCF8574BoardPinInfo();
 
-		device = I2CDevice.builder(address).setFactory(deviceFactory).setController(controller)
+		device = I2CDevice.builder(address).setDeviceFactory(deviceFactory).setController(controller)
 				.setByteOrder(ByteOrder.LITTLE_ENDIAN).build();
 		directions = new MutableByte();
 	}

@@ -1,7 +1,5 @@
 package com.diozero.sbc;
 
-import java.util.Optional;
-
 /*-
  * #%L
  * Organisation: diozero
@@ -32,6 +30,8 @@ import java.util.Optional;
  * THE SOFTWARE.
  * #L%
  */
+
+import java.util.Optional;
 
 import org.tinylog.Logger;
 

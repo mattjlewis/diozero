@@ -41,7 +41,6 @@ import com.diozero.internal.spi.MmapGpioInterface;
 import com.diozero.util.MmapIntBuffer;
 import com.diozero.util.SleepUtil;
 
-@SuppressWarnings("unused")
 public class RaspberryPiMmapGpio implements MmapGpioInterface {
 	/*-
 	 * The BCM2835 has 54 GPIO pins.
@@ -76,21 +75,6 @@ public class RaspberryPiMmapGpio implements MmapGpioInterface {
 	// private static final int GPIOMEM_LEN = 0xB4;
 	private static final int GPIOMEM_LEN = 4096;
 
-	// From BCM2835 data-sheet, p.91
-	private static final byte GPFSEL_OFFSET = 0x00 >> 2;
-	private static final byte GPSET_OFFSET = 0x1c >> 2;
-	private static final byte GPCLR_OFFSET = 0x28 >> 2;
-	private static final byte GPLEV_OFFSET = 0x34 >> 2;
-	private static final byte GPEDS_OFFSET = 0x40 >> 2;
-	private static final byte GPREN_OFFSET = 0x4c >> 2;
-	private static final byte GPFEN_OFFSET = 0x58 >> 2;
-	private static final byte GPHEN_OFFSET = 0x64 >> 2;
-	private static final byte GPLEN_OFFSET = 0x70 >> 2;
-	private static final byte GPAREN_OFFSET = 0x7c >> 2;
-	private static final byte GPAFEN_OFFSET = 0x88 >> 2;
-	private static final byte GPPUD_OFFSET = 0x94 >> 2;
-	private static final byte GPPUDCLK_OFFSET = 0x98 >> 2;
-
 	// Offset to the GPIO Set registers for each GPIO pin
 	private static final byte[] GPIO_TO_GPSET = { 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
 			7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
@@ -106,9 +90,11 @@ public class RaspberryPiMmapGpio implements MmapGpioInterface {
 
 	/* BCM2711 has different pulls */
 	private static final int GPPUPPDN0 = 57;
+	/*-
 	private static final int GPPUPPDN1 = 58;
 	private static final int GPPUPPDN2 = 59;
 	private static final int GPPUPPDN3 = 60;
+	*/
 
 	// GPIO Pin pull up/down register
 	private static final byte GPPUD = 37;
@@ -171,10 +157,11 @@ public class RaspberryPiMmapGpio implements MmapGpioInterface {
 		int shift = (gpio % 10) * 3;
 
 		/*-
-		 * PWM0 can be on GPIOs 12, 18, 40
-		 * PWM1 can on on GPIOs 13, 19, 41, 45
-		 * FSEL_ALT0 (0b100) designates PWM output for pins 12, 13, 40, 41 and 45
-		 * FSEL_ALT5 (0b010) designates PWM output for pins 18 and 19
+		 * PWM0 can be on GPIOs 12, 18, 40, 52
+		 * PWM1 can on on GPIOs 13, 19, 41, 45, 53
+		 * FSEL_ALT0 (func=4=0b100) for PWM output for pins 12, 13, 40, 41 and 45
+		 * FSEL_ALT1 (func=5=0b101) for PWM output for pins 52 and 53
+		 * FSEL_ALT5 (func=2=0b010) for PWM output for pins 18 and 19
 		 */
 		int mode = mmapIntBuffer.getShiftRight(reg, shift, 7);
 		Logger.debug("mode for {}: {}", Integer.valueOf(gpio), Integer.valueOf(mode));
@@ -185,6 +172,11 @@ public class RaspberryPiMmapGpio implements MmapGpioInterface {
 			return DeviceMode.DIGITAL_OUTPUT;
 		case FSEL_ALT0:
 			if (gpio == 12 || gpio == 13 || gpio == 40 || gpio == 41 || gpio == 45) {
+				return DeviceMode.PWM_OUTPUT;
+			}
+			return DeviceMode.UNKNOWN;
+		case FSEL_ALT1:
+			if (gpio == 52 || gpio == 53) {
 				return DeviceMode.PWM_OUTPUT;
 			}
 			return DeviceMode.UNKNOWN;
@@ -203,17 +195,6 @@ public class RaspberryPiMmapGpio implements MmapGpioInterface {
 		int reg = gpio / 10;
 		int shift = (gpio % 10) * 3;
 
-		/*-
-		 * Pi modes:
-		 * #define PI_INPUT  0
-		 * #define PI_OUTPUT 1
-		 * #define PI_ALT0   4
-		 * #define PI_ALT1   5
-		 * #define PI_ALT2   6
-		 * #define PI_ALT3   7
-		 * #define PI_ALT4   3
-		 * #define PI_ALT5   2
-		 */
 		switch (mode) {
 		case DIGITAL_INPUT:
 			mmapIntBuffer.put(reg, mmapIntBuffer.get(reg) & ~(7 << shift));
@@ -225,6 +206,8 @@ public class RaspberryPiMmapGpio implements MmapGpioInterface {
 			int m_val;
 			if (gpio == 12 || gpio == 13 || gpio == 40 || gpio == 41 || gpio == 45) {
 				m_val = FSEL_ALT0;
+			} else if (gpio == 52 || gpio == 53) {
+				m_val = FSEL_ALT1;
 			} else if (gpio == 18 || gpio == 19) {
 				m_val = FSEL_ALT5;
 			} else {

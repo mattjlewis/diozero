@@ -39,15 +39,26 @@ import com.diozero.api.DeviceInterface;
 public interface InternalDeviceInterface extends DeviceInterface {
 	/**
 	 * Get the unique device identifier for this device
-	 * 
+	 *
 	 * @return unique device identifier
 	 */
 	String getKey();
 
 	/**
 	 * Check if this device is open or closed
-	 * 
+	 *
 	 * @return true if this device is open
 	 */
 	boolean isOpen();
+
+	/**
+	 * Check if this is a child / wrapped device. Child devices are assumed to be
+	 * closed by the parent device. Key example is a software PWM output device that
+	 * uses a digital output device.
+	 *
+	 * @return true if this a child / wrapped device
+	 */
+	boolean isChild();
+
+	void setChild(boolean child);
 }

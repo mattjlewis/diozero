@@ -31,79 +31,80 @@ package com.diozero.devices;
  * #L%
  */
 
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import com.diozero.api.DeviceInterface;
-import com.diozero.api.OutputDeviceInterface;
 import com.diozero.api.RuntimeIOException;
 import com.diozero.internal.spi.PwmOutputDeviceFactoryInterface;
 import com.diozero.sbc.DeviceFactoryHelper;
 import com.diozero.util.RangeUtil;
 
-public class PwmLedBarGraph implements OutputDeviceInterface, DeviceInterface {
+public class PwmLedBarGraph implements DeviceInterface {
 	private List<PwmLed> leds;
 	private float value;
-	
+
 	public PwmLedBarGraph(int... gpios) {
 		this(DeviceFactoryHelper.getNativeDeviceFactory(), gpios);
 	}
-	
+
 	public PwmLedBarGraph(PwmOutputDeviceFactoryInterface deviceFactory, int... gpios) {
 		leds = new ArrayList<>();
 		for (int gpio : gpios) {
 			leds.add(new PwmLed(deviceFactory, gpio, 0));
 		}
 	}
-	
+
 	public PwmLedBarGraph(PwmLed... leds) {
 		this.leds = Arrays.asList(leds);
 	}
-	
+
 	public PwmLedBarGraph(List<PwmLed> leds) {
 		this.leds = leds;
 	}
-	
+
 	public void on() {
 		leds.forEach(PwmLed::on);
 	}
-	
+
 	public void off() {
 		leds.forEach(PwmLed::off);
 	}
-	
+
 	public void toggle() {
 		leds.forEach(PwmLed::toggle);
 	}
-	
+
 	public void blink() {
 		leds.forEach(PwmLed::blink);
 	}
-	
+
 	public void pulse(float fadeTime, int steps, int iterations) {
 		leds.forEach(led -> led.pulse(fadeTime, steps, iterations, true));
 	}
-	
+
 	/**
 	 * Get the proportion of LEDs currently lit.
-	 * @return Proportion of LEDs lit. 0..1 if lit from left to right, 0..-1 if lit from right to left.
+	 *
+	 * @return Proportion of LEDs lit. 0..1 if lit from left to right, 0..-1 if lit
+	 *         from right to left.
 	 */
 	public float getValue() {
 		return value;
 	}
-	
+
 	/**
 	 * Light a proportion of the LEDs using value as a percentage.
-	 * @param newValue Proportion of LEDs to light. 0..1 lights from left to right, 0..-1 lights from right to left.
+	 *
+	 * @param newValue Proportion of LEDs to light. 0..1 lights from left to right,
+	 *                 0..-1 lights from right to left.
 	 */
-	@Override
 	public void setValue(float newValue) {
 		value = RangeUtil.constrain(newValue, -1, 1);
-		for (int i=0; i<leds.size(); i++) {
-			leds.get(value < 0 ? leds.size()-i-1 : i).setValue(
-					RangeUtil.constrain(leds.size() * Math.abs(value) - i, 0, 1));
+		for (int i = 0; i < leds.size(); i++) {
+			leds.get(value < 0 ? leds.size() - i - 1 : i)
+					.setValue(RangeUtil.constrain(leds.size() * Math.abs(value) - i, 0, 1));
 		}
 	}
 

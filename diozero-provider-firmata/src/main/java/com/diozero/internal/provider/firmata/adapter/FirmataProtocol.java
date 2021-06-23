@@ -35,36 +35,47 @@ package com.diozero.internal.provider.firmata.adapter;
  * https://github.com/firmata/protocol/blob/master/protocol.md
  */
 public interface FirmataProtocol {
-	// Message types
-	byte I2C_REQUEST = (byte) 0x76;
-	byte I2C_REPLY = (byte) 0x77;
-	byte I2C_CONFIG = (byte) 0x78;
-	byte DIGITAL_IO_START = (byte) 0x90;
-	byte DIGITAL_IO_END = (byte) 0x9F;
-	byte ANALOG_IO_START = (byte) 0xE0;
-	byte ANALOG_IO_END = (byte) 0xEF;
-	byte REPORT_ANALOG_PIN = (byte) 0xC0;
-	byte REPORT_DIGITAL_PORT = (byte) 0xD0;
-	byte START_SYSEX = (byte) 0xF0;
-	byte SET_PIN_MODE = (byte) 0xF4;
-	byte SET_DIGITAL_PIN_VALUE = (byte) 0xF5;
-	byte END_SYSEX = (byte) 0xF7;
-	byte PROTOCOL_VERSION = (byte) 0xF9;
-	byte SYSTEM_RESET = (byte) 0xFF;
+	// Message command bytes (128-255/0x80-0xFF)
+	byte DIGITAL_IO_START = (byte) 0x90; // send data for a digital port (collection of 8 pins)
+	byte DIGITAL_IO_END = (byte) 0x9F; // Max 15 ports
+	byte ANALOG_IO_START = (byte) 0xE0; // send data for an analog pin (or PWM)
+	byte ANALOG_IO_END = (byte) 0xEF; // The range of pins is limited to [0..15]
+	byte REPORT_ANALOG_PIN = (byte) 0xC0; // enable analog input by pin #
+	byte REPORT_DIGITAL_PORT = (byte) 0xD0; // enable digital input by port pair
 
-	// SysEx commands
+	byte SET_PIN_MODE = (byte) 0xF4; // set a pin to INPUT/OUTPUT/PWM/etc
+	byte SET_DIGITAL_PIN_VALUE = (byte) 0xF5; // set value of an individual digital pin
+
+	byte PROTOCOL_VERSION = (byte) 0xF9; // report protocol version
+	byte SYSTEM_RESET = (byte) 0xFF; // reset from MIDI
+
+	byte START_SYSEX = (byte) 0xF0; // start a MIDI Sysex message
+	byte END_SYSEX = (byte) 0xF7; // end a MIDI Sysex message
+
+	// Extended command set using sysex (0-127/0x00-0x7F)
 	byte EXTENDED_ID = 0x00; // A value of 0x00 indicates the next 2 bytes define the extended ID
-	// IDs 0x01 - 0x0F are reserved for user defined commands
-	byte ANALOG_MAPPING_QUERY = 0x69; // ask for mapping of analog to pin numbers
-	byte ANALOG_MAPPING_RESPONSE = 0x6A; // reply with mapping info
-	byte CAPABILITY_QUERY = 0x6B; // ask for supported modes and resolution of all pins
-	byte CAPABILITY_RESPONSE = 0x6C; // reply with supported modes and resolution
+	// IDs 0x00 - 0x0F are reserved for user defined commands
+	byte SERIAL_DATA = 0x60; // communicate with serial devices, including other boards
+	byte ENCODER_DATA = 0x61; // reply with encoders current positions
+	byte SERVO_CONFIG = 0x70; // set max angle, minPulse, maxPulse, freq
+	byte STRING_DATA = 0x71; // a string message with 14-bits per char
+	byte STEPPER_DATA = 0x72; // control a stepper motor
+	byte ONEWIRE_DATA = 0x73; // send an OneWire read/write/reset/select/skip/search request
+	byte SHIFT_DATA = 0x75; // a bitstream to/from a shift register
+	byte I2C_REQUEST = (byte) 0x76; // send an I2C read/write request
+	byte I2C_REPLY = (byte) 0x77; // a reply to an I2C read request
+	byte I2C_CONFIG = (byte) 0x78; // config I2C settings such as delay times and power pins
+	byte REPORT_FIRMWARE = 0x79; // report name and version of the firmware
+	byte EXTENDED_ANALOG = 0x6F; // analog write (PWM, Servo, etc) to any pin
 	byte PIN_STATE_QUERY = 0x6D; // ask for a pin's current mode and state (different than value)
 	byte PIN_STATE_RESPONSE = 0x6E; // reply with a pin's current mode and state (different than value)
-	byte EXTENDED_ANALOG = 0x6F; // analog write (PWM, Servo, etc) to any pin
-	byte STRING_DATA = 0x71; // a string message with 14-bits per char
-	byte REPORT_FIRMWARE = 0x79; // report name and version of the firmware
+	byte CAPABILITY_QUERY = 0x6B; // ask for supported modes and resolution of all pins
+	byte CAPABILITY_RESPONSE = 0x6C; // reply with supported modes and resolution
+	byte ANALOG_MAPPING_QUERY = 0x69; // ask for mapping of analog to pin numbers
+	byte ANALOG_MAPPING_RESPONSE = 0x6A; // reply with mapping info
 	byte SAMPLING_INTERVAL = 0x7A; // the interval at which analog input is sampled (default = 19ms)
+	byte SCHEDULER_DATA = 0x7B; // send a createtask/deletetask/addtotask/schedule/querytasks/querytask request
+								// to the scheduler
 	byte SYSEX_NON_REALTIME = 0x7E; // MIDI Reserved for non-realtime messages
 	byte SYSEX_REALTIME = 0X7F; // MIDI Reserved for realtime messages
 
@@ -95,6 +106,10 @@ public interface FirmataProtocol {
 
 		public boolean isOutput() {
 			return this == DIGITAL_OUTPUT || this == PWM || this == SERVO;
+		}
+
+		public boolean isDigitalInput() {
+			return this == DIGITAL_INPUT || this == INPUT_PULLUP;
 		}
 	}
 

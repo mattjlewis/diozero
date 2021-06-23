@@ -115,6 +115,16 @@ public abstract class AbstractDeviceFactory implements DeviceFactoryInterface {
 	}
 
 	@Override
+	public final String createPwmPinKey(PinInfo pinInfo) {
+		return deviceFactoryPrefix + "-" + pinInfo.getKeyPrefix() + "-" + pinInfo.getDeviceNumber();
+	}
+
+	@Override
+	public final String createServoPinKey(PinInfo pinInfo) {
+		return deviceFactoryPrefix + "-" + pinInfo.getKeyPrefix() + "-" + pinInfo.getDeviceNumber();
+	}
+
+	@Override
 	public final String createI2CKey(int controller, int address) {
 		return I2CDeviceFactoryInterface.createI2CKey(deviceFactoryPrefix, controller, address);
 	}

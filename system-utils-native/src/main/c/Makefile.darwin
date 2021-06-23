@@ -10,7 +10,7 @@ LFLAGS =
 
 LIBS = 
 
-SO_FILE_EXT = dylib
+LIB_EXT = dylib
 
 SRCS = com_diozero_internal_provider_builtin_serial_NativeSerialDevice.c \
 	com_diozero_util_FileNative.c \
@@ -21,7 +21,7 @@ SRCS = com_diozero_internal_provider_builtin_serial_NativeSerialDevice.c \
 
 OBJS = $(SRCS:.c=.o)
 
-LIB_TARGET = libdiozero-system-utils.$(SO_FILE_EXT)
+LIB_TARGET = libdiozero-system-utils.$(LIB_EXT)
 
 all: $(LIB_TARGET)
 

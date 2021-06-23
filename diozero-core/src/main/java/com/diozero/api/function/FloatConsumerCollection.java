@@ -1,10 +1,10 @@
-package com.diozero.api;
+package com.diozero.api.function;
 
 /*
  * #%L
  * Organisation: diozero
  * Project:      diozero - Core
- * Filename:     OutputDeviceInterface.java
+ * Filename:     FloatConsumerCollection.java
  * 
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
@@ -31,15 +31,28 @@ package com.diozero.api;
  * #L%
  */
 
+import java.util.Collection;
+
 /**
- * Represents a device capable of output (digital or analog).
+ * A collection of output devices to simplify setting the same output value for
+ * a number of devices at the same time
  */
-@FunctionalInterface
-public interface OutputDeviceInterface {
+public class FloatConsumerCollection implements FloatConsumer {
+	private Collection<FloatConsumer> devices;
+
+	public FloatConsumerCollection(Collection<FloatConsumer> devices) {
+		this.devices = devices;
+	}
+
+	public Collection<FloatConsumer> getDevices() {
+		return devices;
+	}
+
 	/**
-	 * Sets the output value of the device.
-	 * 
-	 * @param value the value to output
+	 * Set the same value to all output devices in this collection
 	 */
-	void setValue(float value);
+	@Override
+	public void accept(float value) {
+		devices.forEach(device -> device.accept(value));
+	}
 }

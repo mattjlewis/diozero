@@ -43,7 +43,7 @@ import com.diozero.api.PinInfo;
 import com.diozero.api.RuntimeIOException;
 import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.DeviceFactoryInterface;
-import com.diozero.internal.spi.PwmOutputDeviceInterface;
+import com.diozero.internal.spi.InternalPwmOutputDeviceInterface;
 
 /**
  * <p>
@@ -68,7 +68,7 @@ import com.diozero.internal.spi.PwmOutputDeviceInterface;
  *}
  * </pre>
  */
-public class OdroidC2SysFsPwmOutputDevice extends AbstractDevice implements PwmOutputDeviceInterface {
+public class OdroidC2SysFsPwmOutputDevice extends AbstractDevice implements InternalPwmOutputDeviceInterface {
 	private static Path PWM_ROOT = Paths.get("/sys/devices/platform/pwm-ctrl");
 
 	private int range;
@@ -91,7 +91,7 @@ public class OdroidC2SysFsPwmOutputDevice extends AbstractDevice implements PwmO
 		}
 
 		setEnabled(pwmNum, true);
-		setFrequency(pwmNum, frequencyHz);
+		setPwmFrequency(frequencyHz);
 
 		setValue(initialValue);
 	}
@@ -120,7 +120,9 @@ public class OdroidC2SysFsPwmOutputDevice extends AbstractDevice implements PwmO
 	public float getValue() throws RuntimeIOException {
 		try {
 			dutyFile.seek(0);
-			return Integer.parseInt(dutyFile.readLine()) / range;
+			int raw_value = Integer.parseInt(dutyFile.readLine());
+
+			return raw_value / (float) range;
 		} catch (IOException e) {
 			closeDevice();
 			throw new RuntimeIOException("Error setting duty for PWM #" + pwmNum, e);
@@ -135,7 +137,7 @@ public class OdroidC2SysFsPwmOutputDevice extends AbstractDevice implements PwmO
 
 		try {
 			dutyFile.seek(0);
-			dutyFile.writeBytes(Integer.toString((Math.round(value * range))));
+			dutyFile.writeBytes(Integer.toString((int) Math.floor(value * range)));
 		} catch (IOException e) {
 			closeDevice();
 			throw new RuntimeIOException("Error setting duty for PWM #" + pwmNum, e);
@@ -144,12 +146,16 @@ public class OdroidC2SysFsPwmOutputDevice extends AbstractDevice implements PwmO
 
 	@Override
 	public int getPwmFrequency() {
-		return getFrequency(pwmNum);
+		// freq value is in milli-Hz
+		return readFreq(pwmNum) / 1_000;
 	}
 
 	@Override
 	public void setPwmFrequency(int frequencyHz) {
-		setFrequency(pwmNum, frequencyHz);
+		// TODO Preserve the relative value of the duty
+
+		// freq value is in milli-Hz
+		writeFreq(pwmNum, frequencyHz * 1_000);
 	}
 
 	private static void setEnabled(int pwmNum, boolean enabled) {
@@ -161,21 +167,21 @@ public class OdroidC2SysFsPwmOutputDevice extends AbstractDevice implements PwmO
 		}
 	}
 
-	static int getFrequency(int pwmNum) {
+	static int readFreq(int pwmNum) {
 		File f = PWM_ROOT.resolve("freq" + pwmNum).toFile();
 		try (BufferedReader reader = new BufferedReader(new FileReader(f))) {
-			return Integer.parseInt(reader.readLine()) / 1000;
+			return Integer.parseInt(reader.readLine());
 		} catch (IOException | NumberFormatException e) {
 			throw new RuntimeIOException("Error getting frequency for PWM #" + pwmNum, e);
 		}
 	}
 
-	static void setFrequency(int pwmNum, int frequencyHz) throws RuntimeIOException {
+	static void writeFreq(int pwmNum, int value) throws RuntimeIOException {
 		File f = PWM_ROOT.resolve("freq" + pwmNum).toFile();
 		try (FileWriter writer = new FileWriter(f)) {
-			writer.write(Integer.toString(frequencyHz * 1000));
+			writer.write(Integer.toString(value));
 		} catch (IOException e) {
-			throw new RuntimeIOException("Error setting frequency (" + frequencyHz + ") for PWM #" + pwmNum, e);
+			throw new RuntimeIOException("Error setting frequency (" + value + ") for PWM #" + pwmNum, e);
 		}
 	}
 }

@@ -9,7 +9,7 @@ redirect_from:
 
 # Release History
 
-## TODO Items
+## Future
 
 + Complete MAX30102
 + Tidy up ADS112C04
@@ -17,7 +17,6 @@ redirect_from:
 + ST7735 / ST7789 displays
 + Stepper motors
 + Tidy up sampleapps with sub-packages as per diozero core (api, devices, motor, util, sbc, ...)
-+ Servo - add as a first-class device type (as supported by PiconZero and Arduino)
 * SPI support for Arduino devices over Firmata
 
 ## 1.3.1 (in progress)
@@ -27,6 +26,8 @@ redirect_from:
 + Waveshare 7.5" e-ink display
 + Pi PWM - support use of PWM kernel module
 + Switch from Apache Commons Math to [Hipparchus](https://hipparchus.org/index.html) (ref [Hipparchus vs Apache Commons Math](https://www.orekit.org/mailing-list-archives/orekit-users/msg00031.html))
++ Servo - add as a first-class device type (as supported by PiconZero and Arduino)
++ Added Diozero.getVersion
 
 ## 1.3.0
 

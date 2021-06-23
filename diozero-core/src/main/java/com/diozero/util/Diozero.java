@@ -31,8 +31,11 @@ package com.diozero.util;
  * #L%
  */
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -47,6 +50,33 @@ public class Diozero {
 	private static AtomicBoolean shutdown = new AtomicBoolean(false);
 	private static List<AutoCloseable> closeables = new ArrayList<>();
 	private static CountDownLatch doneSignal = new CountDownLatch(1);
+
+	private static String version;
+
+	public synchronized static String getVersion() {
+		if (version != null) {
+			return version;
+		}
+
+		// Load from the JAR file's META-INF/MANIFEST.MF Implementation-Version property
+		version = Diozero.class.getPackage().getImplementationVersion();
+		if (version != null) {
+			return version;
+		}
+
+		// Additional hack to get when running within an IDE and the MANIFEST.MF file
+		// isn't available
+		try (InputStream is = Diozero.class
+				.getResourceAsStream("/META-INF/maven/com.diozero/diozero-core/pom.properties")) {
+			Properties props = new Properties();
+			props.load(is);
+			version = props.getProperty("version");
+		} catch (IOException e) {
+			// Ignore
+			Logger.debug(e, "Failed to load pom.properties: {}", e);
+		}
+		return version;
+	}
 
 	/**
 	 * Initialise the diozero shutdown handler if not already initialised. Called

@@ -61,7 +61,7 @@ public class LedBarGraphTest {
 		if (args.length > 1) {
 			controller = Integer.parseInt(args[1]);
 		}
-		
+
 		test(controller, gpios);
 	}
 
@@ -73,8 +73,7 @@ public class LedBarGraphTest {
 		List<KeyFrame[]> key_frames = KeyFrame.fromValues(new float[][] { { 0 }, { 1f }, { 0 } });
 		try (MCP23008 expander = new MCP23008(controller, MCP23008.DEVICE_ADDRESS, MCP23xxx.INTERRUPT_GPIO_NOT_SET);
 				LedBarGraph led_bar_graph = new LedBarGraph(expander, gpios)) {
-			Animation anim = new Animation(Arrays.asList(led_bar_graph), 50, Sine::easeIn, 1f);
-			anim.setLoop(true);
+			Animation anim = new Animation(Arrays.asList(led_bar_graph::setValue), 50, Sine::easeIn, 1f, true);
 			anim.enqueue(duration, cue_points, key_frames);
 			anim.play();
 

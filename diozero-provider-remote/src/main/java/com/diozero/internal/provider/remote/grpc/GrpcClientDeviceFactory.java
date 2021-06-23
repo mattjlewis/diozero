@@ -56,9 +56,10 @@ import com.diozero.internal.spi.GpioDigitalInputDeviceInterface;
 import com.diozero.internal.spi.GpioDigitalInputOutputDeviceInterface;
 import com.diozero.internal.spi.GpioDigitalOutputDeviceInterface;
 import com.diozero.internal.spi.InternalI2CDeviceInterface;
+import com.diozero.internal.spi.InternalPwmOutputDeviceInterface;
 import com.diozero.internal.spi.InternalSerialDeviceInterface;
+import com.diozero.internal.spi.InternalServoDeviceInterface;
 import com.diozero.internal.spi.InternalSpiDeviceInterface;
-import com.diozero.internal.spi.PwmOutputDeviceInterface;
 import com.diozero.remote.DiozeroProtosConverter;
 import com.diozero.remote.grpc.GrpcConstants;
 import com.diozero.remote.message.protobuf.Board;
@@ -67,7 +68,6 @@ import com.diozero.remote.message.protobuf.BoardServiceGrpc.BoardServiceBlocking
 import com.diozero.remote.message.protobuf.BooleanResponse;
 import com.diozero.remote.message.protobuf.FloatResponse;
 import com.diozero.remote.message.protobuf.Gpio;
-import com.diozero.remote.message.protobuf.Gpio.FloatMessage;
 import com.diozero.remote.message.protobuf.GpioServiceGrpc;
 import com.diozero.remote.message.protobuf.GpioServiceGrpc.GpioServiceBlockingStub;
 import com.diozero.remote.message.protobuf.I2CServiceGrpc;
@@ -102,6 +102,7 @@ public class GrpcClientDeviceFactory extends BaseNativeDeviceFactory {
 	private SPIServiceBlockingStub spiBlockingStub;
 	private SerialServiceBlockingStub serialBlockingStub;
 	private int boardPwmFrequency;
+	private int boardServoFrequency;
 	private int spiBufferSize;
 	private Map<Integer, Future<?>> subscriptions;
 
@@ -174,6 +175,24 @@ public class GrpcClientDeviceFactory extends BaseNativeDeviceFactory {
 		try {
 			Response response = boardBlockingStub
 					.setBoardPwmFrequency(IntegerMessage.newBuilder().setValue(frequency).build());
+			if (response.getStatus() == Status.ERROR) {
+				throw new RuntimeIOException("Error in remote gRPC invocation: " + response.getDetail());
+			}
+		} catch (StatusRuntimeException e) {
+			throw new RuntimeIOException("Error in set board PWM frequency: " + e);
+		}
+	}
+
+	@Override
+	public int getBoardServoFrequency() {
+		return boardServoFrequency;
+	}
+
+	@Override
+	public void setBoardServoFrequency(int frequency) {
+		try {
+			Response response = boardBlockingStub
+					.setBoardServoFrequency(IntegerMessage.newBuilder().setValue(frequency).build());
 			if (response.getStatus() == Status.ERROR) {
 				throw new RuntimeIOException("Error in remote gRPC invocation: " + response.getDetail());
 			}
@@ -284,9 +303,16 @@ public class GrpcClientDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	public PwmOutputDeviceInterface createPwmOutputDevice(String key, PinInfo pinInfo, int pwmFrequency,
+	public InternalPwmOutputDeviceInterface createPwmOutputDevice(String key, PinInfo pinInfo, int pwmFrequency,
 			float initialValue) {
 		return new GrpcClientPwmOutputDevice(this, key, pinInfo, pwmFrequency, initialValue);
+	}
+
+	@Override
+	public InternalServoDeviceInterface createServoDevice(String key, PinInfo pinInfo, int pwmFrequency,
+			int minPulseWidthUs, int maxPulseWidthUs, int initialPulseWidthUs) {
+		return new GrpcClientServoDevice(this, key, pinInfo, pwmFrequency, minPulseWidthUs, maxPulseWidthUs,
+				initialPulseWidthUs);
 	}
 
 	@Override
@@ -353,7 +379,7 @@ public class GrpcClientDeviceFactory extends BaseNativeDeviceFactory {
 					Gpio.ProvisionDigitalInputOutputDeviceRequest.newBuilder().setGpio(gpio).setOutput(output).build());
 			if (response.getStatus() != Status.OK) {
 				throw new RuntimeIOException(
-						"Error in provision GPIO digital input output device: " + response.getDetail());
+						"Error in GPIO provision digital input output device: " + response.getDetail());
 			}
 		} catch (StatusRuntimeException e) {
 			throw new RuntimeIOException("Error in GPIO provision digital input output device: " + e);
@@ -362,13 +388,27 @@ public class GrpcClientDeviceFactory extends BaseNativeDeviceFactory {
 
 	void provisionPwmOutputDevice(int gpio, int frequency, float initialValue) {
 		try {
-			Response response = gpioBlockingStub.provisionDigitalPwmDevice(Gpio.ProvisionPwmOutputDeviceRequest
+			Response response = gpioBlockingStub.provisionPwmOutputDevice(Gpio.ProvisionPwmOutputDeviceRequest
 					.newBuilder().setGpio(gpio).setFrequency(frequency).setInitialValue(initialValue).build());
 			if (response.getStatus() != Status.OK) {
-				throw new RuntimeIOException("Error in provision GPIO digital PWM device: " + response.getDetail());
+				throw new RuntimeIOException("Error in GPIO provision digital PWM device: " + response.getDetail());
 			}
 		} catch (StatusRuntimeException e) {
 			throw new RuntimeIOException("Error in GPIO provision digital PWM device: " + e);
+		}
+	}
+
+	void provisionServoDevice(int gpio, int frequency, int minPulseWidthUs, int maxPulseWidthUs,
+			int initialPulseWidthUs) {
+		try {
+			Response response = gpioBlockingStub.provisionServoDevice(Gpio.ProvisionServoDeviceRequest.newBuilder()
+					.setGpio(gpio).setFrequency(frequency).setMinPulseWidthUs(minPulseWidthUs)
+					.setMaxPulseWidthUs(maxPulseWidthUs).setInitialPulseWidthUs(initialPulseWidthUs).build());
+			if (response.getStatus() != Status.OK) {
+				throw new RuntimeIOException("Error in GPIO provision servo device: " + response.getDetail());
+			}
+		} catch (StatusRuntimeException e) {
+			throw new RuntimeIOException("Error in GPIO provision servo device: " + e);
 		}
 	}
 
@@ -437,12 +477,37 @@ public class GrpcClientDeviceFactory extends BaseNativeDeviceFactory {
 	void pwmWrite(int gpio, float value) {
 		try {
 			Response response = gpioBlockingStub
-					.pwmWrite(FloatMessage.newBuilder().setGpio(gpio).setValue(value).build());
+					.pwmWrite(Gpio.FloatMessage.newBuilder().setGpio(gpio).setValue(value).build());
 			if (response.getStatus() != Status.OK) {
 				throw new RuntimeIOException("Error in GPIO PWM write: " + response.getDetail());
 			}
 		} catch (StatusRuntimeException e) {
 			throw new RuntimeIOException("Error in GPIO PWM write: " + e);
+		}
+	}
+
+	int servoRead(int gpio) {
+		try {
+			IntegerResponse response = gpioBlockingStub.servoRead(Gpio.Identifier.newBuilder().setGpio(gpio).build());
+			if (response.getStatus() != Status.OK) {
+				throw new RuntimeIOException("Error in GPIO Servo read: " + response.getDetail());
+			}
+
+			return response.getData();
+		} catch (StatusRuntimeException e) {
+			throw new RuntimeIOException("Error in GPIO Servo read: " + e);
+		}
+	}
+
+	void servoWrite(int gpio, int value) {
+		try {
+			Response response = gpioBlockingStub
+					.servoWrite(Gpio.IntegerMessage.newBuilder().setGpio(gpio).setValue(value).build());
+			if (response.getStatus() != Status.OK) {
+				throw new RuntimeIOException("Error in GPIO Servo write: " + response.getDetail());
+			}
+		} catch (StatusRuntimeException e) {
+			throw new RuntimeIOException("Error in GPIO Servo write: " + e);
 		}
 	}
 
@@ -463,12 +528,38 @@ public class GrpcClientDeviceFactory extends BaseNativeDeviceFactory {
 	void setPwmFrequency(int gpio, int frequency) {
 		try {
 			Response response = gpioBlockingStub
-					.setPwmFrequency(Gpio.IntegerMessage.newBuilder().setGpio(gpio).setFrequency(frequency).build());
+					.setPwmFrequency(Gpio.IntegerMessage.newBuilder().setGpio(gpio).setValue(frequency).build());
 			if (response.getStatus() != Status.OK) {
 				throw new RuntimeIOException("Error in GPIO set PWM frequency: " + response.getDetail());
 			}
 		} catch (StatusRuntimeException e) {
 			throw new RuntimeIOException("Error in GPIO set PWM frequency: " + e);
+		}
+	}
+
+	int getServoFrequency(int gpio) {
+		try {
+			IntegerResponse response = gpioBlockingStub
+					.getServoFrequency(Gpio.Identifier.newBuilder().setGpio(gpio).build());
+			if (response.getStatus() != Status.OK) {
+				throw new RuntimeIOException("Error in GPIO get Servo frequency: " + response.getDetail());
+			}
+
+			return response.getData();
+		} catch (StatusRuntimeException e) {
+			throw new RuntimeIOException("Error in GPIO get Servo frequency: " + e);
+		}
+	}
+
+	void setServoFrequency(int gpio, int frequency) {
+		try {
+			Response response = gpioBlockingStub
+					.setServoFrequency(Gpio.IntegerMessage.newBuilder().setGpio(gpio).setValue(frequency).build());
+			if (response.getStatus() != Status.OK) {
+				throw new RuntimeIOException("Error in GPIO set Servo frequency: " + response.getDetail());
+			}
+		} catch (StatusRuntimeException e) {
+			throw new RuntimeIOException("Error in GPIO set Servo frequency: " + e);
 		}
 	}
 

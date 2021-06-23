@@ -111,7 +111,7 @@ public class DigitalInputDevice extends AbstractDigitalInputDevice {
 			return this;
 		}
 
-		public Builder setGpioDeviceFactoryInterface(GpioDeviceFactoryInterface deviceFactory) {
+		public Builder setDeviceFactory(GpioDeviceFactoryInterface deviceFactory) {
 			this.deviceFactory = deviceFactory;
 			return this;
 		}

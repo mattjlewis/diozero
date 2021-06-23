@@ -47,7 +47,7 @@ import com.diozero.util.SleepUtil;
  * Provides generic digital (on/off) output control with support for active high
  * and low logic.
  */
-public class DigitalOutputDevice extends GpioDevice implements OutputDeviceInterface {
+public class DigitalOutputDevice extends GpioDevice {
 	public static final class Builder {
 		public static Builder builder(int gpio) {
 			return new Builder(gpio);
@@ -81,7 +81,7 @@ public class DigitalOutputDevice extends GpioDevice implements OutputDeviceInter
 			return this;
 		}
 
-		public Builder setGpioDeviceFactoryInterface(GpioDeviceFactoryInterface deviceFactory) {
+		public Builder setDeviceFactory(GpioDeviceFactoryInterface deviceFactory) {
 			this.deviceFactory = deviceFactory;
 			return this;
 		}
@@ -283,17 +283,6 @@ public class DigitalOutputDevice extends GpioDevice implements OutputDeviceInter
 	 */
 	public void setValue(boolean value) throws RuntimeIOException {
 		delegate.setValue(value);
-	}
-
-	/**
-	 * Set the output value to true if value != 0, does not compensate for active
-	 * low logic
-	 *
-	 * @param value The new value
-	 */
-	@Override
-	public void setValue(float value) {
-		setValue(value != 0);
 	}
 
 	/**

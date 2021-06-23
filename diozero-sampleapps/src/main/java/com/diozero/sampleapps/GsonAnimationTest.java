@@ -47,14 +47,14 @@ import com.diozero.animation.AnimationInstance;
 import com.diozero.animation.easing.Cubic;
 import com.diozero.animation.easing.EasingFunction;
 import com.diozero.animation.easing.Elastic;
-import com.diozero.api.OutputDeviceInterface;
+import com.diozero.api.function.FloatConsumer;
 import com.diozero.util.Diozero;
 import com.google.gson.Gson;
 
 public class GsonAnimationTest {
 	public static void main(String[] args) {
-		Collection<OutputDeviceInterface> one_target = Arrays.asList(value -> System.out.println(value));
-		Collection<OutputDeviceInterface> two_targets = Arrays.asList(value -> System.out.println("1: " + value),
+		Collection<FloatConsumer> one_target = Arrays.asList(value -> System.out.println(value));
+		Collection<FloatConsumer> two_targets = Arrays.asList(value -> System.out.println("1: " + value),
 				value -> System.out.println("2: " + value));
 
 		try {
@@ -70,7 +70,7 @@ public class GsonAnimationTest {
 		}
 	}
 
-	private static void animate(Collection<OutputDeviceInterface> targets, int fps, EasingFunction easing, float speed,
+	private static void animate(Collection<FloatConsumer> targets, int fps, EasingFunction easing, float speed,
 			String... files) throws IOException {
 		Animation anim = new Animation(targets, fps, easing, speed);
 

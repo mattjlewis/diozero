@@ -69,8 +69,7 @@ public class PwmLedBarGraphTest {
 		float[] cue_points = new float[] { 0, 0.5f, 1 };
 		List<KeyFrame[]> key_frames = KeyFrame.fromValues(new float[][] { { 0 }, { 1f }, { 0 } });
 		try (MCP23008 expander = new MCP23008(); PwmLedBarGraph led_bar_graph = new PwmLedBarGraph(expander, gpios)) {
-			Animation anim = new Animation(Arrays.asList(led_bar_graph), 50, Sine::easeIn, 1f);
-			anim.setLoop(true);
+			Animation anim = new Animation(Arrays.asList(led_bar_graph::setValue), 50, Sine::easeIn, 1f, true);
 			anim.enqueue(duration, cue_points, key_frames);
 			Future<?> future = anim.play();
 

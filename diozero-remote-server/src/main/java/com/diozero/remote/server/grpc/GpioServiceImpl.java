@@ -51,8 +51,9 @@ import com.diozero.internal.spi.GpioDigitalInputDeviceInterface;
 import com.diozero.internal.spi.GpioDigitalInputOutputDeviceInterface;
 import com.diozero.internal.spi.GpioDigitalOutputDeviceInterface;
 import com.diozero.internal.spi.InternalDeviceInterface;
+import com.diozero.internal.spi.InternalPwmOutputDeviceInterface;
+import com.diozero.internal.spi.InternalServoDeviceInterface;
 import com.diozero.internal.spi.NativeDeviceFactoryInterface;
-import com.diozero.internal.spi.PwmOutputDeviceInterface;
 import com.diozero.remote.DiozeroProtosConverter;
 import com.diozero.remote.message.protobuf.BooleanResponse;
 import com.diozero.remote.message.protobuf.FloatResponse;
@@ -194,7 +195,7 @@ public class GpioServiceImpl extends GpioServiceGrpc.GpioServiceImplBase {
 	}
 
 	@Override
-	public void provisionDigitalPwmDevice(Gpio.ProvisionPwmOutputDeviceRequest request,
+	public void provisionPwmOutputDevice(Gpio.ProvisionPwmOutputDeviceRequest request,
 			StreamObserver<Response> responseObserver) {
 		Logger.debug("Provision PWM output request");
 
@@ -209,8 +210,43 @@ public class GpioServiceImpl extends GpioServiceGrpc.GpioServiceImplBase {
 				deviceFactory.provisionPwmOutputDevice(pin_info, request.getFrequency(), request.getInitialValue());
 
 				response_builder.setStatus(Status.OK);
-			} else if (device instanceof PwmOutputDeviceInterface) {
-				((PwmOutputDeviceInterface) device).setValue(request.getInitialValue());
+			} else if (device instanceof InternalPwmOutputDeviceInterface) {
+				((InternalPwmOutputDeviceInterface) device).setValue(request.getInitialValue());
+
+				response_builder.setStatus(Status.OK);
+			} else {
+				response_builder.setStatus(Status.ERROR);
+				response_builder.setDetail("GPIO already provisioned");
+			}
+		} catch (RuntimeIOException e) {
+			Logger.error(e, "Error: {}", e);
+			response_builder.setStatus(Status.ERROR);
+			response_builder.setDetail("Runtime Error: " + e);
+		}
+
+		responseObserver.onNext(response_builder.build());
+		responseObserver.onCompleted();
+	}
+
+	@Override
+	public void provisionServoDevice(Gpio.ProvisionServoDeviceRequest request,
+			StreamObserver<Response> responseObserver) {
+		Logger.debug("Provision Servo output request");
+
+		Response.Builder response_builder = Response.newBuilder();
+
+		PinInfo pin_info = deviceFactory.getBoardPinInfo().getByGpioNumberOrThrow(request.getGpio());
+		String key = deviceFactory.createPinKey(pin_info);
+		InternalDeviceInterface device = deviceFactory.getDevice(key);
+
+		try {
+			if (device == null) {
+				deviceFactory.provisionServoDevice(pin_info, request.getFrequency(), request.getMinPulseWidthUs(),
+						request.getMaxPulseWidthUs(), request.getInitialPulseWidthUs());
+
+				response_builder.setStatus(Status.OK);
+			} else if (device instanceof InternalServoDeviceInterface) {
+				((InternalServoDeviceInterface) device).setPulseWidthUs(request.getInitialPulseWidthUs());
 
 				response_builder.setStatus(Status.OK);
 			} else {
@@ -373,9 +409,9 @@ public class GpioServiceImpl extends GpioServiceGrpc.GpioServiceImplBase {
 			response_builder.setStatus(Status.ERROR);
 			response_builder.setDetail("GPIO not provisioned");
 		} else {
-			if (device instanceof PwmOutputDeviceInterface) {
+			if (device instanceof InternalPwmOutputDeviceInterface) {
 				try {
-					response_builder.setData(((PwmOutputDeviceInterface) device).getValue());
+					response_builder.setData(((InternalPwmOutputDeviceInterface) device).getValue());
 					response_builder.setStatus(Status.OK);
 				} catch (RuntimeIOException e) {
 					Logger.error(e, "Error: {}", e);
@@ -406,9 +442,75 @@ public class GpioServiceImpl extends GpioServiceGrpc.GpioServiceImplBase {
 			response_builder.setStatus(Status.ERROR);
 			response_builder.setDetail("GPIO not provisioned");
 		} else {
-			if (device instanceof PwmOutputDeviceInterface) {
+			if (device instanceof InternalPwmOutputDeviceInterface) {
 				try {
-					((PwmOutputDeviceInterface) device).setValue(request.getValue());
+					((InternalPwmOutputDeviceInterface) device).setValue(request.getValue());
+					response_builder.setStatus(Status.OK);
+				} catch (RuntimeIOException e) {
+					Logger.error(e, "Error: {}", e);
+					response_builder.setStatus(Status.ERROR);
+					response_builder.setDetail("Runtime Error: " + e);
+				}
+			} else {
+				response_builder.setStatus(Status.ERROR);
+				response_builder.setDetail("Invalid mode, device class: " + device.getClass().getName());
+			}
+		}
+
+		responseObserver.onNext(response_builder.build());
+		responseObserver.onCompleted();
+	}
+
+	@Override
+	public void servoRead(Gpio.Identifier request, StreamObserver<IntegerResponse> responseObserver) {
+		Logger.debug("GPIO Servo read request");
+
+		IntegerResponse.Builder response_builder = IntegerResponse.newBuilder();
+
+		PinInfo pin_info = deviceFactory.getBoardPinInfo().getByGpioNumberOrThrow(request.getGpio());
+		String key = deviceFactory.createPinKey(pin_info);
+		InternalDeviceInterface device = deviceFactory.getDevice(key);
+
+		if (device == null) {
+			response_builder.setStatus(Status.ERROR);
+			response_builder.setDetail("GPIO not provisioned");
+		} else {
+			if (device instanceof InternalServoDeviceInterface) {
+				try {
+					response_builder.setData(((InternalServoDeviceInterface) device).getPulseWidthUs());
+					response_builder.setStatus(Status.OK);
+				} catch (RuntimeIOException e) {
+					Logger.error(e, "Error: {}", e);
+					response_builder.setStatus(Status.ERROR);
+					response_builder.setDetail("Runtime Error: " + e);
+				}
+			} else {
+				response_builder.setStatus(Status.ERROR);
+				response_builder.setDetail("Invalid mode, device class: " + device.getClass().getName());
+			}
+		}
+
+		responseObserver.onNext(response_builder.build());
+		responseObserver.onCompleted();
+	}
+
+	@Override
+	public void servoWrite(Gpio.IntegerMessage request, StreamObserver<Response> responseObserver) {
+		Logger.debug("GPIO Servo write request");
+
+		Response.Builder response_builder = Response.newBuilder();
+
+		PinInfo pin_info = deviceFactory.getBoardPinInfo().getByGpioNumberOrThrow(request.getGpio());
+		String key = deviceFactory.createPinKey(pin_info);
+		InternalDeviceInterface device = deviceFactory.getDevice(key);
+
+		if (device == null) {
+			response_builder.setStatus(Status.ERROR);
+			response_builder.setDetail("GPIO not provisioned");
+		} else {
+			if (device instanceof InternalServoDeviceInterface) {
+				try {
+					((InternalServoDeviceInterface) device).setPulseWidthUs(request.getValue());
 					response_builder.setStatus(Status.OK);
 				} catch (RuntimeIOException e) {
 					Logger.error(e, "Error: {}", e);
@@ -439,9 +541,9 @@ public class GpioServiceImpl extends GpioServiceGrpc.GpioServiceImplBase {
 			response_builder.setStatus(Status.ERROR);
 			response_builder.setDetail("GPIO not provisioned");
 		} else {
-			if (device instanceof PwmOutputDeviceInterface) {
+			if (device instanceof InternalPwmOutputDeviceInterface) {
 				try {
-					response_builder.setData(((PwmOutputDeviceInterface) device).getPwmFrequency());
+					response_builder.setData(((InternalPwmOutputDeviceInterface) device).getPwmFrequency());
 					response_builder.setStatus(Status.OK);
 				} catch (RuntimeIOException e) {
 					Logger.error(e, "Error: {}", e);
@@ -472,9 +574,75 @@ public class GpioServiceImpl extends GpioServiceGrpc.GpioServiceImplBase {
 			response_builder.setStatus(Status.ERROR);
 			response_builder.setDetail("GPIO not provisioned");
 		} else {
-			if (device instanceof PwmOutputDeviceInterface) {
+			if (device instanceof InternalPwmOutputDeviceInterface) {
 				try {
-					((PwmOutputDeviceInterface) device).setPwmFrequency(request.getFrequency());
+					((InternalPwmOutputDeviceInterface) device).setPwmFrequency(request.getValue());
+					response_builder.setStatus(Status.OK);
+				} catch (RuntimeIOException e) {
+					Logger.error(e, "Error: {}", e);
+					response_builder.setStatus(Status.ERROR);
+					response_builder.setDetail("Runtime Error: " + e);
+				}
+			} else {
+				response_builder.setStatus(Status.ERROR);
+				response_builder.setDetail("Invalid mode, device class: " + device.getClass().getName());
+			}
+		}
+
+		responseObserver.onNext(response_builder.build());
+		responseObserver.onCompleted();
+	}
+
+	@Override
+	public void getServoFrequency(Gpio.Identifier request, StreamObserver<IntegerResponse> responseObserver) {
+		Logger.debug("GPIO get Servo frequency request");
+
+		IntegerResponse.Builder response_builder = IntegerResponse.newBuilder();
+
+		PinInfo pin_info = deviceFactory.getBoardPinInfo().getByGpioNumberOrThrow(request.getGpio());
+		String key = deviceFactory.createPinKey(pin_info);
+		InternalDeviceInterface device = deviceFactory.getDevice(key);
+
+		if (device == null) {
+			response_builder.setStatus(Status.ERROR);
+			response_builder.setDetail("GPIO not provisioned");
+		} else {
+			if (device instanceof InternalServoDeviceInterface) {
+				try {
+					response_builder.setData(((InternalServoDeviceInterface) device).getServoFrequency());
+					response_builder.setStatus(Status.OK);
+				} catch (RuntimeIOException e) {
+					Logger.error(e, "Error: {}", e);
+					response_builder.setStatus(Status.ERROR);
+					response_builder.setDetail("Runtime Error: " + e);
+				}
+			} else {
+				response_builder.setStatus(Status.ERROR);
+				response_builder.setDetail("Invalid mode, device class: " + device.getClass().getName());
+			}
+		}
+
+		responseObserver.onNext(response_builder.build());
+		responseObserver.onCompleted();
+	}
+
+	@Override
+	public void setServoFrequency(Gpio.IntegerMessage request, StreamObserver<Response> responseObserver) {
+		Logger.debug("GPIO set Servo frequency request");
+
+		Response.Builder response_builder = Response.newBuilder();
+
+		PinInfo pin_info = deviceFactory.getBoardPinInfo().getByGpioNumberOrThrow(request.getGpio());
+		String key = deviceFactory.createPinKey(pin_info);
+		InternalDeviceInterface device = deviceFactory.getDevice(key);
+
+		if (device == null) {
+			response_builder.setStatus(Status.ERROR);
+			response_builder.setDetail("GPIO not provisioned");
+		} else {
+			if (device instanceof InternalServoDeviceInterface) {
+				try {
+					((InternalServoDeviceInterface) device).setServoFrequency(request.getValue());
 					response_builder.setStatus(Status.OK);
 				} catch (RuntimeIOException e) {
 					Logger.error(e, "Error: {}", e);

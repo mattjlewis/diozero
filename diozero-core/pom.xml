@@ -43,6 +43,9 @@
 						<manifestEntries>
 							<Automatic-Module-Name>com.diozero.core</Automatic-Module-Name>
 						</manifestEntries>
+						<manifest>
+							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+						</manifest>
 					</archive>
 				</configuration>
 			</plugin>

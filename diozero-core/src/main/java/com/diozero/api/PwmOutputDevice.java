@@ -35,8 +35,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.tinylog.Logger;
 
+import com.diozero.internal.spi.InternalPwmOutputDeviceInterface;
 import com.diozero.internal.spi.PwmOutputDeviceFactoryInterface;
-import com.diozero.internal.spi.PwmOutputDeviceInterface;
 import com.diozero.sbc.DeviceFactoryHelper;
 import com.diozero.util.DiozeroScheduler;
 import com.diozero.util.SleepUtil;
@@ -46,11 +46,11 @@ import com.diozero.util.SleepUtil;
  * <a href="https://en.wikipedia.org/wiki/Pulse-width_modulation">Pulse Width
  * Modulation (PWM)</a> output control.
  */
-public class PwmOutputDevice extends GpioDevice implements OutputDeviceInterface {
+public class PwmOutputDevice extends GpioDevice {
 	private static final int DEFAULT_PWM_FREQUENCY = 50;
 	public static final int INFINITE_ITERATIONS = -1;
 
-	private PwmOutputDeviceInterface delegate;
+	private InternalPwmOutputDeviceInterface delegate;
 	private AtomicBoolean running;
 	private Thread backgroundThread;
 
@@ -82,42 +82,42 @@ public class PwmOutputDevice extends GpioDevice implements OutputDeviceInterface
 	}
 
 	/**
-	 * @param pwmDeviceFactory Device factory to use to provision this device.
-	 * @param gpio             GPIO to which the output device is connected.
-	 * @param initialValue     Initial output value (0..1).
+	 * @param deviceFactory Device factory to use to provision this device.
+	 * @param gpio          GPIO to which the output device is connected.
+	 * @param initialValue  Initial output value (0..1).
 	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
-	public PwmOutputDevice(PwmOutputDeviceFactoryInterface pwmDeviceFactory, int gpio, float initialValue)
+	public PwmOutputDevice(PwmOutputDeviceFactoryInterface deviceFactory, int gpio, float initialValue)
 			throws RuntimeIOException {
-		this(pwmDeviceFactory, gpio, DEFAULT_PWM_FREQUENCY, initialValue);
+		this(deviceFactory, gpio, DEFAULT_PWM_FREQUENCY, initialValue);
 	}
 
 	/**
-	 * @param pwmDeviceFactory Device factory to use to provision this device.
-	 * @param pwmOrGpioNum     GPIO to which the output device is connected.
-	 * @param pwmFrequency     PWM frequency (Hz).
-	 * @param initialValue     Initial output value (0..1).
+	 * @param deviceFactory Device factory to use to provision this device.
+	 * @param pwmOrGpioNum  GPIO to which the output device is connected.
+	 * @param pwmFrequency  PWM frequency (Hz).
+	 * @param initialValue  Initial output value (0..1).
 	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
-	public PwmOutputDevice(PwmOutputDeviceFactoryInterface pwmDeviceFactory, int pwmOrGpioNum, int pwmFrequency,
+	public PwmOutputDevice(PwmOutputDeviceFactoryInterface deviceFactory, int pwmOrGpioNum, int pwmFrequency,
 			float initialValue) throws RuntimeIOException {
-		this(pwmDeviceFactory, pwmDeviceFactory.getBoardPinInfo().getByPwmOrGpioNumberOrThrow(pwmOrGpioNum),
-				pwmFrequency, initialValue);
+		this(deviceFactory, deviceFactory.getBoardPinInfo().getByPwmOrGpioNumberOrThrow(pwmOrGpioNum), pwmFrequency,
+				initialValue);
 	}
 
 	/**
-	 * @param pwmDeviceFactory Device factory to use to provision this device.
-	 * @param pinInfo          GPIO to which the output device is connected.
-	 * @param pwmFrequency     PWM frequency (Hz).
-	 * @param initialValue     Initial output value (0..1).
+	 * @param deviceFactory Device factory to use to provision this device.
+	 * @param pinInfo       GPIO to which the output device is connected.
+	 * @param pwmFrequency  PWM frequency (Hz).
+	 * @param initialValue  Initial output value (0..1).
 	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
-	public PwmOutputDevice(PwmOutputDeviceFactoryInterface pwmDeviceFactory, PinInfo pinInfo, int pwmFrequency,
+	public PwmOutputDevice(PwmOutputDeviceFactoryInterface deviceFactory, PinInfo pinInfo, int pwmFrequency,
 			float initialValue) throws RuntimeIOException {
 		super(pinInfo);
 
 		running = new AtomicBoolean();
-		this.delegate = pwmDeviceFactory.provisionPwmOutputDevice(pinInfo, pwmFrequency, initialValue);
+		this.delegate = deviceFactory.provisionPwmOutputDevice(pinInfo, pwmFrequency, initialValue);
 	}
 
 	@Override
@@ -132,6 +132,7 @@ public class PwmOutputDevice extends GpioDevice implements OutputDeviceInterface
 		try {
 			delegate.setValue(0);
 		} catch (RuntimeIOException e) {
+			// Ignore
 		}
 		delegate.close();
 		Logger.trace("device closed");
@@ -234,7 +235,7 @@ public class PwmOutputDevice extends GpioDevice implements OutputDeviceInterface
 
 	/**
 	 * Get the current PWM output value (0..1).
-	 * 
+	 *
 	 * @return Current PWM output value.
 	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
@@ -244,11 +245,10 @@ public class PwmOutputDevice extends GpioDevice implements OutputDeviceInterface
 
 	/**
 	 * Set the PWM output value (0..1).
-	 * 
+	 *
 	 * @param value New PWM output value.
 	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
-	@Override
 	public void setValue(float value) throws RuntimeIOException {
 		stopLoops();
 		setValueInternal(value);
@@ -264,7 +264,7 @@ public class PwmOutputDevice extends GpioDevice implements OutputDeviceInterface
 
 	/**
 	 * Turn on the device (same as {@code setValue(1)}).
-	 * 
+	 *
 	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
 	public void on() throws RuntimeIOException {
@@ -274,7 +274,7 @@ public class PwmOutputDevice extends GpioDevice implements OutputDeviceInterface
 
 	/**
 	 * Turn off the device (same as {@code setValue(0)}).
-	 * 
+	 *
 	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
 	public void off() throws RuntimeIOException {
@@ -284,17 +284,17 @@ public class PwmOutputDevice extends GpioDevice implements OutputDeviceInterface
 
 	/**
 	 * Toggle the state of the device (same as {@code setValue(1 - getvalue())} ).
-	 * 
+	 *
 	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
 	public void toggle() throws RuntimeIOException {
 		stopLoops();
-		setValueInternal(1 - delegate.getValue());
+		setValueInternal(1 - getValue());
 	}
 
 	/**
 	 * Get the device on / off status.
-	 * 
+	 *
 	 * @return Returns true if the device currently has a value &gt; 0.
 	 * @throws RuntimeIOException If an I/O error occurred.
 	 */

@@ -41,13 +41,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.tinylog.Logger;
 
-import com.diozero.api.RuntimeIOException;
 import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.DeviceFactoryInterface;
 import com.diozero.internal.spi.GpioDigitalOutputDeviceInterface;
-import com.diozero.internal.spi.PwmOutputDeviceInterface;
+import com.diozero.internal.spi.InternalPwmOutputDeviceInterface;
 import com.diozero.util.DiozeroScheduler;
-import com.diozero.util.RangeUtil;
 import com.diozero.util.SleepUtil;
 
 /**
@@ -55,7 +53,7 @@ import com.diozero.util.SleepUtil;
  * All timing is in milliseconds hence it is strongly recommend to use a
  * frequency of 50Hz to minimise integer rounding errors.
  */
-public class SoftwarePwmOutputDevice extends AbstractDevice implements PwmOutputDeviceInterface, Runnable {
+public class SoftwarePwmOutputDevice extends AbstractDevice implements InternalPwmOutputDeviceInterface, Runnable {
 	private GpioDigitalOutputDeviceInterface digitalOutputDevice;
 	private AtomicBoolean running;
 	private AtomicInteger periodMs;
@@ -69,6 +67,7 @@ public class SoftwarePwmOutputDevice extends AbstractDevice implements PwmOutput
 		Logger.info("Hardware PWM not available for device {}, reverting to software", key);
 
 		this.digitalOutputDevice = digitalOutputDevice;
+		digitalOutputDevice.setChild(true);
 		running = new AtomicBoolean();
 
 		periodMs = new AtomicInteger(Math.round(1_000f / frequencyHz));
@@ -92,9 +91,9 @@ public class SoftwarePwmOutputDevice extends AbstractDevice implements PwmOutput
 			} else {
 				// Wait for the runnable to complete
 				try {
-					future.get(periodMs.get(), TimeUnit.MILLISECONDS);
+					future.get(periodMs.get() + 10, TimeUnit.MILLISECONDS);
 				} catch (InterruptedException | ExecutionException | TimeoutException e) {
-					Logger.info(e, "Error waiting for future to complete: {}", e);
+					Logger.debug(e, "Error waiting for future to complete: {}", e);
 					// Cancel the future if it doesn't complete normally by setting running to false
 					future.cancel(true);
 				}
@@ -105,7 +104,9 @@ public class SoftwarePwmOutputDevice extends AbstractDevice implements PwmOutput
 
 	@Override
 	public void run() {
+		long start;
 		while (running.get()) {
+			start = System.currentTimeMillis();
 			if (dutyMs.get() == 0) {
 				// Fully off
 				digitalOutputDevice.setValue(false);
@@ -116,7 +117,7 @@ public class SoftwarePwmOutputDevice extends AbstractDevice implements PwmOutput
 				SleepUtil.sleepMillis(dutyMs.get());
 				digitalOutputDevice.setValue(false);
 			}
-			SleepUtil.sleepMillis(periodMs.get() - dutyMs.get());
+			SleepUtil.sleepMillis(Math.max(1, periodMs.get() - (System.currentTimeMillis() - start)));
 		}
 	}
 
@@ -147,8 +148,7 @@ public class SoftwarePwmOutputDevice extends AbstractDevice implements PwmOutput
 
 	@Override
 	public void setValue(float value) {
-		// Constrain the specified value to 0..1
-		dutyMs.set(Math.round(RangeUtil.constrain(value, 0, 1) * periodMs.get()));
+		dutyMs.set((int) Math.floor(value * periodMs.get()));
 	}
 
 	@Override
@@ -157,9 +157,11 @@ public class SoftwarePwmOutputDevice extends AbstractDevice implements PwmOutput
 	}
 
 	@Override
-	public void setPwmFrequency(int frequencyHz) throws RuntimeIOException {
+	public void setPwmFrequency(int frequencyHz) {
+		// Save the current value
 		float current_value = getValue();
 		periodMs.set(Math.round(1_000f / frequencyHz));
+		// Restore the equivalent value
 		dutyMs.set(Math.round(current_value * periodMs.get()));
 	}
 }

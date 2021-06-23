@@ -63,7 +63,7 @@ public class DeviceStates {
 	public void closeAll() {
 		Logger.trace("closeAll()");
 		// No need to remove from the Map as close() should always call closed()
-		devices.values().forEach(InternalDeviceInterface::close);
+		devices.values().stream().filter(device -> !device.isChild()).forEach(InternalDeviceInterface::close);
 	}
 
 	public InternalDeviceInterface getDevice(String key) {

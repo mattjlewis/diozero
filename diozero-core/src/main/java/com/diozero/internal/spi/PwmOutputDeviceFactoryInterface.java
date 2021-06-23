@@ -31,7 +31,6 @@ package com.diozero.internal.spi;
  * #L%
  */
 
-
 import com.diozero.api.DeviceAlreadyOpenedException;
 import com.diozero.api.DeviceMode;
 import com.diozero.api.InvalidModeException;
@@ -40,13 +39,17 @@ import com.diozero.api.PinInfo;
 import com.diozero.api.RuntimeIOException;
 
 public interface PwmOutputDeviceFactoryInterface extends DeviceFactoryInterface {
-	default PwmOutputDeviceInterface provisionPwmOutputDevice(PinInfo pinInfo, int pwmFrequency, float initialValue)
-			throws RuntimeIOException {
+	int getBoardPwmFrequency();
+
+	void setBoardPwmFrequency(int pwmFrequency);
+
+	default InternalPwmOutputDeviceInterface provisionPwmOutputDevice(PinInfo pinInfo, int pwmFrequency,
+			float initialValue) throws RuntimeIOException {
 		if (pinInfo == null) {
 			throw new NoSuchDeviceException("No such device - pinInfo was null");
 		}
-		
-		if (! pinInfo.isSupported(DeviceMode.PWM_OUTPUT) && ! pinInfo.isSupported(DeviceMode.DIGITAL_OUTPUT)) {
+
+		if (!pinInfo.isSupported(DeviceMode.PWM_OUTPUT) && !pinInfo.isSupported(DeviceMode.DIGITAL_OUTPUT)) {
 			throw new InvalidModeException("Invalid mode (PWM output) for GPIO " + pinInfo);
 		}
 
@@ -57,13 +60,12 @@ public interface PwmOutputDeviceFactoryInterface extends DeviceFactoryInterface 
 			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
 		}
 
-		PwmOutputDeviceInterface device = createPwmOutputDevice(key, pinInfo, pwmFrequency, initialValue);
+		InternalPwmOutputDeviceInterface device = createPwmOutputDevice(key, pinInfo, pwmFrequency, initialValue);
 		deviceOpened(device);
 
 		return device;
 	}
 
-	int getBoardPwmFrequency();
-	void setBoardPwmFrequency(int pwmFrequency);
-	PwmOutputDeviceInterface createPwmOutputDevice(String key, PinInfo pinInfo, int pwmFrequency, float initialValue);
+	InternalPwmOutputDeviceInterface createPwmOutputDevice(String key, PinInfo pinInfo, int pwmFrequency,
+			float initialValue);
 }

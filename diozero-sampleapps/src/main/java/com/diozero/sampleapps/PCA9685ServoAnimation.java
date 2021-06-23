@@ -42,8 +42,9 @@ import org.tinylog.Logger;
 import com.diozero.animation.Animation;
 import com.diozero.animation.AnimationInstance;
 import com.diozero.animation.easing.Sine;
+import com.diozero.api.ServoDevice;
+import com.diozero.api.ServoTrim;
 import com.diozero.devices.PCA9685;
-import com.diozero.devices.Servo;
 
 /**
  * PCA9685 sample application. To run:
@@ -61,27 +62,26 @@ public class PCA9685ServoAnimation {
 	}
 
 	public static void test(int pwmFrequency, int gpio1, int gpio2, int gpio3, int gpio4, int gpio5, int gpio6) {
-		Servo.Trim trim = Servo.Trim.TOWERPRO_SG90;
+		ServoTrim trim = ServoTrim.TOWERPRO_SG90;
 		try (PCA9685 pca9685 = new PCA9685(pwmFrequency);
-				Servo servo1 = new Servo(pca9685, gpio1, trim.getMidPulseWidthMs(), pwmFrequency, trim);
-				Servo servo2 = new Servo(pca9685, gpio2, trim.getMidPulseWidthMs(), pwmFrequency, trim);
-				Servo servo3 = new Servo(pca9685, gpio3, trim.getMidPulseWidthMs(), pwmFrequency, trim);
-				Servo servo4 = new Servo(pca9685, gpio4, trim.getMidPulseWidthMs(), pwmFrequency, trim);
-				Servo servo5 = new Servo(pca9685, gpio5, trim.getMidPulseWidthMs(), pwmFrequency, trim);
-				Servo servo6 = new Servo(pca9685, gpio6, trim.getMidPulseWidthMs(), pwmFrequency, trim)) {
-			Animation animation = new Animation(Arrays.asList(servo1::setAngle, servo2, servo3, servo4, servo5, servo6),
-					100, Sine::easeIn, 1f);
-			animation.setLoop(true);
+				ServoDevice servo1 = ServoDevice.newBuilder(gpio1).setDeviceFactory(pca9685).setTrim(trim).build();
+				ServoDevice servo2 = ServoDevice.newBuilder(gpio2).setDeviceFactory(pca9685).setTrim(trim).build();
+				ServoDevice servo3 = ServoDevice.newBuilder(gpio3).setDeviceFactory(pca9685).setTrim(trim).build();
+				ServoDevice servo4 = ServoDevice.newBuilder(gpio4).setDeviceFactory(pca9685).setTrim(trim).build();
+				ServoDevice servo5 = ServoDevice.newBuilder(gpio5).setDeviceFactory(pca9685).setTrim(trim).build();
+				ServoDevice servo6 = ServoDevice.newBuilder(gpio6).setDeviceFactory(pca9685).setTrim(trim).build()) {
+			Animation animation = new Animation(Arrays.asList(servo1::setAngle, servo2::setAngle, servo3::setAngle,
+					servo4::setAngle, servo5::setAngle, servo6::setAngle), 100, Sine::easeIn, 1f, true);
 			float[] cue_points = { 0, 0.2f, 0.5f, 1 };
 			List<AnimationInstance.KeyFrame[]> key_frames = AnimationInstance.KeyFrame.fromValues(new float[][] {
-					{ trim.getMinAngle(), trim.getMinPulseWidthMs(), trim.getMinPulseWidthMs(),
-							trim.getMinPulseWidthMs(), trim.getMinPulseWidthMs(), trim.getMinPulseWidthMs() },
-					{ trim.getMidAngle(), trim.getMidPulseWidthMs(), trim.getMidPulseWidthMs(),
-							trim.getMidPulseWidthMs(), trim.getMidPulseWidthMs(), trim.getMidPulseWidthMs() },
-					{ trim.getMaxAngle(), trim.getMaxPulseWidthMs(), trim.getMaxPulseWidthMs(),
-							trim.getMaxPulseWidthMs(), trim.getMaxPulseWidthMs(), trim.getMaxPulseWidthMs() },
-					{ trim.getMinAngle(), trim.getMinPulseWidthMs(), trim.getMinPulseWidthMs(),
-							trim.getMinPulseWidthMs(), trim.getMinPulseWidthMs(), trim.getMinPulseWidthMs() } });
+					{ trim.getMinAngle(), trim.getMinAngle(), trim.getMinAngle(), trim.getMinAngle(),
+							trim.getMinAngle(), trim.getMinAngle() },
+					{ trim.getMidAngle(), trim.getMidAngle(), trim.getMidAngle(), trim.getMidAngle(),
+							trim.getMidAngle(), trim.getMidAngle() },
+					{ trim.getMaxAngle(), trim.getMaxAngle(), trim.getMaxAngle(), trim.getMaxAngle(),
+							trim.getMaxAngle(), trim.getMaxAngle() },
+					{ trim.getMinAngle(), trim.getMinAngle(), trim.getMinAngle(), trim.getMinAngle(),
+							trim.getMinAngle(), trim.getMinAngle() } });
 			AnimationInstance ai = new AnimationInstance(5000, cue_points, key_frames);
 			animation.enqueue(ai);
 			Future<?> future = animation.play();

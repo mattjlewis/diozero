@@ -1,10 +1,10 @@
-package com.diozero.api;
+package com.diozero.internal.spi;
 
 /*
  * #%L
  * Organisation: diozero
  * Project:      diozero - Core
- * Filename:     OutputDeviceCollection.java
+ * Filename:     PwmOutputDeviceInterface.java
  * 
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
@@ -31,33 +31,51 @@ package com.diozero.api;
  * #L%
  */
 
-import java.util.Arrays;
-import java.util.Collection;
+import com.diozero.api.DeviceMode;
+import com.diozero.api.RuntimeIOException;
 
-/**
- * A collection of output devices to simplify setting the same output value for
- * a number of devices at the same time
- */
-public class OutputDeviceCollection implements OutputDeviceInterface {
-	private Collection<OutputDeviceInterface> devices;
-
-	public OutputDeviceCollection(OutputDeviceInterface... devices) {
-		this(Arrays.asList(devices));
-	}
-
-	public OutputDeviceCollection(Collection<OutputDeviceInterface> devices) {
-		this.devices = devices;
-	}
-
-	public Collection<OutputDeviceInterface> getDevices() {
-		return devices;
-	}
+public interface InternalPwmOutputDeviceInterface extends GpioDeviceInterface {
+	/**
+	 * Get the device PWM output device number
+	 *
+	 * @return Device native PWM output
+	 */
+	int getPwmNum();
 
 	/**
-	 * Set the same value to all output devices in this collection
+	 * Get the percentage that the device is "on", range 0..1
+	 *
+	 * @return the percentage "on" time, range 0..1
+	 * @throws RuntimeIOException if an I/O error occurs
 	 */
+	float getValue() throws RuntimeIOException;
+
+	/**
+	 * Set the percentage relative "on" time, range 0..1
+	 *
+	 * @param value new "on" time, range 0..1
+	 * @throws RuntimeIOException if an I/O error occurs
+	 */
+	void setValue(float value) throws RuntimeIOException;
+
+	/**
+	 * Get the PWM frequency in Hz
+	 *
+	 * @return frequency in Hz
+	 * @throws RuntimeIOException if an I/O error occurs
+	 */
+	int getPwmFrequency() throws RuntimeIOException;
+
+	/**
+	 * Set the PWM output frequency
+	 *
+	 * @param frequencyHz frequency in Hz
+	 * @throws RuntimeIOException if an I/O error occurs
+	 */
+	void setPwmFrequency(int frequencyHz) throws RuntimeIOException;
+
 	@Override
-	public void setValue(float value) {
-		devices.forEach(device -> device.setValue(value));
+	default DeviceMode getMode() {
+		return DeviceMode.PWM_OUTPUT;
 	}
 }

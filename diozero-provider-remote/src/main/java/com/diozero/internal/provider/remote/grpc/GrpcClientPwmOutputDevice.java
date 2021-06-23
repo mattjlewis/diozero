@@ -34,9 +34,9 @@ package com.diozero.internal.provider.remote.grpc;
 import com.diozero.api.PinInfo;
 import com.diozero.api.RuntimeIOException;
 import com.diozero.internal.spi.AbstractDevice;
-import com.diozero.internal.spi.PwmOutputDeviceInterface;
+import com.diozero.internal.spi.InternalPwmOutputDeviceInterface;
 
-public class GrpcClientPwmOutputDevice extends AbstractDevice implements PwmOutputDeviceInterface {
+public class GrpcClientPwmOutputDevice extends AbstractDevice implements InternalPwmOutputDeviceInterface {
 	private GrpcClientDeviceFactory deviceFactory;
 	private int gpio;
 

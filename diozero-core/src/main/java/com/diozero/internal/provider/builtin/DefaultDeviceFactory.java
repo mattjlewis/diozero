@@ -38,6 +38,7 @@ import java.util.Map;
 
 import org.tinylog.Logger;
 
+import com.diozero.api.DeviceAlreadyOpenedException;
 import com.diozero.api.DeviceMode;
 import com.diozero.api.GpioEventTrigger;
 import com.diozero.api.GpioPullUpDown;
@@ -46,6 +47,7 @@ import com.diozero.api.PinInfo;
 import com.diozero.api.RuntimeIOException;
 import com.diozero.api.SerialConstants;
 import com.diozero.api.SpiClockMode;
+import com.diozero.internal.PwmServoDevice;
 import com.diozero.internal.SoftwarePwmOutputDevice;
 import com.diozero.internal.board.odroid.OdroidBoardInfoProvider;
 import com.diozero.internal.board.odroid.OdroidC2SysFsPwmOutputDevice;
@@ -60,14 +62,16 @@ import com.diozero.internal.spi.GpioDigitalInputDeviceInterface;
 import com.diozero.internal.spi.GpioDigitalInputOutputDeviceInterface;
 import com.diozero.internal.spi.GpioDigitalOutputDeviceInterface;
 import com.diozero.internal.spi.InternalI2CDeviceInterface;
+import com.diozero.internal.spi.InternalPwmOutputDeviceInterface;
 import com.diozero.internal.spi.InternalSerialDeviceInterface;
+import com.diozero.internal.spi.InternalServoDeviceInterface;
 import com.diozero.internal.spi.InternalSpiDeviceInterface;
 import com.diozero.internal.spi.MmapGpioInterface;
-import com.diozero.internal.spi.PwmOutputDeviceInterface;
 import com.diozero.sbc.BoardPinInfo;
 import com.diozero.sbc.LocalSystemInfo;
 import com.diozero.util.Diozero;
 import com.diozero.util.EpollNative;
+import com.diozero.util.LibraryLoader;
 import com.diozero.util.PropertyUtil;
 
 public class DefaultDeviceFactory extends BaseNativeDeviceFactory {
@@ -80,6 +84,7 @@ public class DefaultDeviceFactory extends BaseNativeDeviceFactory {
 	private static final boolean GPIO_USE_CHARDEV_DEFAULT = true;
 
 	private int boardPwmFrequency;
+	private int boardServoFrequency;
 	private EpollNative epoll;
 	private Map<Integer, GpioChip> chips;
 	private boolean gpioUseCharDev;
@@ -96,6 +101,9 @@ public class DefaultDeviceFactory extends BaseNativeDeviceFactory {
 	@Override
 	public void start() {
 		Logger.debug("Using {} GPIO implementation", gpioUseCharDev ? "chardev" : "sysfs");
+
+		LibraryLoader.loadSystemUtils();
+
 		if (gpioUseCharDev) {
 			try {
 				// Open all gpiochips
@@ -227,6 +235,16 @@ public class DefaultDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
+	public int getBoardServoFrequency() {
+		return boardServoFrequency;
+	}
+
+	@Override
+	public void setBoardServoFrequency(int servoFrequency) {
+		boardServoFrequency = servoFrequency;
+	}
+
+	@Override
 	public DeviceMode getGpioMode(int gpio) {
 		if (mmapGpio != null) {
 			return mmapGpio.getMode(gpio);
@@ -250,6 +268,26 @@ public class DefaultDeviceFactory extends BaseNativeDeviceFactory {
 	@Override
 	public int getI2CFunctionalities(int controller) {
 		return LocalSystemInfo.getI2CFunctionalities(controller);
+	}
+
+	@Override
+	public InternalServoDeviceInterface provisionServoDevice(PinInfo pinInfo, int frequencyHz, int minPulseWidthUs,
+			int maxPulseWidthUs, int initialPulseWidthUs) throws RuntimeIOException {
+		// Special case - override to use PWM output device for servo control allowing
+		// for hardware and software PWM output to control servos on all GPIOs
+
+		String key = createPinKey(pinInfo);
+
+		// Check if this pin is already provisioned
+		if (isDeviceOpened(key)) {
+			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
+		}
+
+		InternalServoDeviceInterface device = createServoDevice(key, pinInfo, frequencyHz, minPulseWidthUs,
+				maxPulseWidthUs, initialPulseWidthUs);
+		deviceOpened(device);
+
+		return device;
 	}
 
 	@Override
@@ -311,16 +349,20 @@ public class DefaultDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	public PwmOutputDeviceInterface createPwmOutputDevice(String key, PinInfo pinInfo, int pwmFrequency,
+	public InternalPwmOutputDeviceInterface createPwmOutputDevice(String key, PinInfo pinInfo, int pwmFrequency,
 			float initialValue) throws RuntimeIOException {
-		if (SysFsPwmOutputDevice.isSupported(this, pinInfo)) {
-			// Odroid C2 runs with an older 3.x kernel hence has a different sysfs interface
-			if (getBoardInfo().compareMakeAndModel(OdroidBoardInfoProvider.MAKE,
-					OdroidBoardInfoProvider.C2_HARDWARE_ID)) {
-				return new OdroidC2SysFsPwmOutputDevice(key, this, pinInfo, pwmFrequency, initialValue);
-			}
+		try {
+			if (SysFsPwmOutputDevice.isSupported(this, pinInfo)) {
+				// Odroid C2 runs with an older 3.x kernel hence has a different sysfs interface
+				if (getBoardInfo().compareMakeAndModel(OdroidBoardInfoProvider.MAKE,
+						OdroidBoardInfoProvider.C2_HARDWARE_ID)) {
+					return new OdroidC2SysFsPwmOutputDevice(key, this, pinInfo, pwmFrequency, initialValue);
+				}
 
-			return new SysFsPwmOutputDevice(key, this, pinInfo, pwmFrequency, initialValue, mmapGpio);
+				return new SysFsPwmOutputDevice(key, this, pinInfo, pwmFrequency, initialValue, mmapGpio);
+			}
+		} catch (RuntimeIOException e) {
+			Logger.warn(e, "Error creating sysfs PWM output device: {}", e);
 		}
 
 		// Need to make sure the keys are different
@@ -332,6 +374,21 @@ public class DefaultDeviceFactory extends BaseNativeDeviceFactory {
 		deviceOpened(gpio_output_device);
 
 		return new SoftwarePwmOutputDevice(key, this, gpio_output_device, pwmFrequency, initialValue);
+	}
+
+	@Override
+	public InternalServoDeviceInterface createServoDevice(String key, PinInfo pinInfo, int frequencyHz,
+			int minPulseWidthUs, int maxPulseWidthUs, int initialPulseWidthUs) {
+		// Need to make sure the keys are different
+		// Note this is replicating the functionality in provisionDigitalOutputDevice.
+		// That method can't be called as it will throw a device already opened
+		// exception.
+		// Also note that PwmServoDevice has special cleanup functionality.
+		InternalPwmOutputDeviceInterface pwm_output_device = createPwmOutputDevice("Servo-" + key, pinInfo, frequencyHz,
+				initialPulseWidthUs);
+		deviceOpened(pwm_output_device);
+
+		return new PwmServoDevice(key, this, pwm_output_device, minPulseWidthUs, maxPulseWidthUs);
 	}
 
 	@Override

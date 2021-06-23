@@ -112,6 +112,24 @@ public interface DeviceFactoryInterface extends AutoCloseable {
 	String createPinKey(PinInfo pinInfo);
 
 	/**
+	 * diozero internal method to generate a unique key for the specified pin. Used
+	 * for maintaining the state of devices provisioned by this device factory.
+	 *
+	 * @param pinInfo the pin to create the key for
+	 * @return a key that is unique to this pin
+	 */
+	String createPwmPinKey(PinInfo pinInfo);
+
+	/**
+	 * diozero internal method to generate a unique key for the specified pin. Used
+	 * for maintaining the state of devices provisioned by this device factory.
+	 *
+	 * @param pinInfo the pin to create the key for
+	 * @return a key that is unique to this pin
+	 */
+	String createServoPinKey(PinInfo pinInfo);
+
+	/**
 	 * diozero internal method to generate a unique key for the I2C device at the
 	 * specified address attached to the specified I2C bus controller.
 	 *

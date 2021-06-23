@@ -38,6 +38,7 @@ import com.diozero.api.RuntimeIOException;
 public abstract class AbstractDevice implements InternalDeviceInterface {
 	private String key;
 	private DeviceFactoryInterface deviceFactory;
+	private boolean child;
 
 	public AbstractDevice(String key, DeviceFactoryInterface deviceFactory) {
 		this.key = key;
@@ -52,6 +53,16 @@ public abstract class AbstractDevice implements InternalDeviceInterface {
 	@Override
 	public boolean isOpen() {
 		return deviceFactory.isDeviceOpened(key);
+	}
+
+	@Override
+	public boolean isChild() {
+		return child;
+	}
+
+	@Override
+	public void setChild(boolean child) {
+		this.child = child;
 	}
 
 	@Override

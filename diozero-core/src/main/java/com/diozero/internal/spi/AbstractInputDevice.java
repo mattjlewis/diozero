@@ -70,6 +70,10 @@ public abstract class AbstractInputDevice<T extends DeviceEvent> extends Abstrac
 		// Inherit and override
 	}
 
+	protected boolean isListenerEnabled() {
+		return listener != null;
+	}
+
 	@Override
 	protected void closeDevice() {
 		removeListener();

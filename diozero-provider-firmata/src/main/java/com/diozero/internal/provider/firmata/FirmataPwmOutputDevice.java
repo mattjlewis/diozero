@@ -35,12 +35,14 @@ import com.diozero.api.RuntimeIOException;
 import com.diozero.internal.provider.firmata.adapter.FirmataAdapter;
 import com.diozero.internal.provider.firmata.adapter.FirmataProtocol.PinMode;
 import com.diozero.internal.spi.AbstractDevice;
-import com.diozero.internal.spi.PwmOutputDeviceInterface;
+import com.diozero.internal.spi.InternalPwmOutputDeviceInterface;
 
-public class FirmataPwmOutputDevice extends AbstractDevice implements PwmOutputDeviceInterface {
+import org.tinylog.Logger;
+
+public class FirmataPwmOutputDevice extends AbstractDevice implements InternalPwmOutputDeviceInterface {
 	private FirmataAdapter adapter;
 	private int gpio;
-	private float pwmMax;
+	private int pwmMax;
 
 	public FirmataPwmOutputDevice(FirmataDeviceFactory deviceFactory, String key, int gpio, float initialValue) {
 		super(key, deviceFactory);
@@ -48,8 +50,10 @@ public class FirmataPwmOutputDevice extends AbstractDevice implements PwmOutputD
 		this.gpio = gpio;
 
 		adapter = deviceFactory.getFirmataAdapter();
+
 		adapter.setPinMode(gpio, PinMode.PWM);
 		pwmMax = adapter.getMax(gpio, PinMode.PWM);
+		Logger.info("Got pwmMax: {}", Integer.valueOf(pwmMax));
 
 		setValue(initialValue);
 	}
@@ -66,17 +70,20 @@ public class FirmataPwmOutputDevice extends AbstractDevice implements PwmOutputD
 
 	@Override
 	public float getValue() throws RuntimeIOException {
-		return adapter.getValue(gpio) / pwmMax;
+		return adapter.getValue(gpio) / (float) pwmMax;
 	}
 
 	@Override
 	public void setValue(float value) throws RuntimeIOException {
 		adapter.setValue(gpio, Math.round(value * pwmMax));
+		adapter.refreshPinState(gpio);
+		int set_val = adapter.getValue(gpio);
+		System.out.println("device value: " + set_val);
 	}
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
-		setValue(0);
+		adapter.setValue(gpio, 0);
 		// TODO Anything else to do?
 	}
 
@@ -87,6 +94,6 @@ public class FirmataPwmOutputDevice extends AbstractDevice implements PwmOutputD
 
 	@Override
 	public void setPwmFrequency(int frequencyHz) throws RuntimeIOException {
-		throw new UnsupportedOperationException("Unable to change PWM frequency");
+		Logger.warn("Unable to change the PWM output frequency for Firmata devices");
 	}
 }

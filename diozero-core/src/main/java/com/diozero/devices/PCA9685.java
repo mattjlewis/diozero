@@ -36,17 +36,19 @@ import java.nio.ByteOrder;
 import org.tinylog.Logger;
 
 import com.diozero.api.DeviceInterface;
+import com.diozero.api.DeviceMode;
 import com.diozero.api.I2CConstants;
 import com.diozero.api.I2CDevice;
 import com.diozero.api.PinInfo;
 import com.diozero.api.RuntimeIOException;
 import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.AbstractDeviceFactory;
+import com.diozero.internal.spi.InternalPwmOutputDeviceInterface;
+import com.diozero.internal.spi.InternalServoDeviceInterface;
 import com.diozero.internal.spi.PwmOutputDeviceFactoryInterface;
-import com.diozero.internal.spi.PwmOutputDeviceInterface;
+import com.diozero.internal.spi.ServoDeviceFactoryInterface;
 import com.diozero.sbc.BoardPinInfo;
 import com.diozero.util.BitManipulation;
-import com.diozero.util.ServoUtil;
 import com.diozero.util.SleepUtil;
 
 /**
@@ -55,7 +57,8 @@ import com.diozero.util.SleepUtil;
  * http://www.nxp.com/documents/data_sheet/PCA9685.pdf
  */
 @SuppressWarnings("unused")
-public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFactoryInterface, DeviceInterface {
+public class PCA9685 extends AbstractDeviceFactory
+		implements PwmOutputDeviceFactoryInterface, ServoDeviceFactoryInterface, DeviceInterface {
 	public static final int DEFAULT_ADDRESS = 0x40;
 	private static final String DEVICE_NAME = "PCA9685";
 	private static final int NUM_CHANNELS = 16;
@@ -111,7 +114,7 @@ public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFac
 	private I2CDevice i2cDevice;
 	private String keyPrefix;
 	private int boardPwmFrequency = DEFAULT_PWM_FREQUENCY;
-	private double pulseMsPerBit = ServoUtil.calcPulseMsPerBit(boardPwmFrequency, RANGE);
+	private int periodUs = 1_000_000 / DEFAULT_PWM_FREQUENCY;
 	private BoardPinInfo boardPinInfo;
 
 	public PCA9685(int pwmFrequency) throws RuntimeIOException {
@@ -140,7 +143,7 @@ public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFac
 
 	/**
 	 * Sets the PWM frequency
-	 * 
+	 *
 	 * @param pwmFrequency desired frequency. 40Hz to 1000Hz using internal 25MHz
 	 *                     oscillator
 	 * @throws RuntimeIOException if an I/O error occurs
@@ -153,7 +156,7 @@ public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFac
 
 		float prescale_flt = (((float) CLOCK_FREQ) / RANGE / pwmFrequency) - 1;
 		int prescale_int = Math.round(prescale_flt);
-		Logger.debug("Setting PWM frequency to {} Hz, double pre-scale: {}, int prescale {}",
+		Logger.debug("Setting PWM frequency to {} Hz, float pre-scale: {}, int prescale {}",
 				Integer.valueOf(pwmFrequency), String.format("%.2f", Float.valueOf(prescale_flt)),
 				Integer.valueOf(prescale_int));
 
@@ -161,8 +164,8 @@ public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFac
 		i2cDevice.writeByteData(MODE1, (byte) ((oldmode & 0x7F) | SLEEP_MASK)); // Enter low power mode (set the sleep
 																				// bit)
 		i2cDevice.writeByteData(PRESCALE, (byte) (prescale_int));
-		this.boardPwmFrequency = pwmFrequency;
-		pulseMsPerBit = ServoUtil.calcPulseMsPerBit(pwmFrequency, RANGE);
+		boardPwmFrequency = pwmFrequency;
+		periodUs = 1_000_000 / pwmFrequency;
 		i2cDevice.writeByteData(MODE1, oldmode); // Restore the previous mode1 value
 		SleepUtil.sleepMillis(1); // Wait min 500us for the oscillator to stabilise
 		i2cDevice.writeByteData(MODE1, (byte) (oldmode | RESTART_MASK)); // Set restart enabled
@@ -191,7 +194,7 @@ public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFac
 	 * 409.6 ~ 410 counts Since the counter starts at 0 and ends at 4095, we will
 	 * subtract 1, so delay time = 409 counts LED on time = 20 % = 819.2 ~ 819
 	 * counts LED off time = (decimal 409 + 819 = 1228)
-	 * 
+	 *
 	 * @param channel PWM channel
 	 * @param on      on time
 	 * @param off     off time
@@ -242,7 +245,7 @@ public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFac
 
 	/**
 	 * Sets a all PWM channels
-	 * 
+	 *
 	 * @param on  on time
 	 * @param off off time
 	 * @throws RuntimeIOException if an I/O error occurs
@@ -258,23 +261,6 @@ public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFac
 		i2cDevice.writeByteData(ALL_LED_OFF_H, off >> 8);
 	}
 
-	/**
-	 * Set the pulse duration (micro-seconds) E.g. For TowerPro SG90 servo pulse
-	 * width range = 500-2400 us TowerPro SG5010 servo pulse width range = 1ms-2ms
-	 * 
-	 * @param channel      PWM channel
-	 * @param pulseWidthMs The desired pulse width in milli-seconds
-	 * @throws RuntimeIOException if an I/O error occurs
-	 */
-	public void setServoPulseWidthMs(int channel, double pulseWidthMs) throws RuntimeIOException {
-		int pulse = ServoUtil.calcServoPulseBits(pulseWidthMs, pulseMsPerBit);
-		Logger.debug("Requested pulse width: {}, Scale: {} ms per bit, Pulse: {}",
-				String.format("%.2f", Double.valueOf(pulseWidthMs)),
-				String.format("%.4f", Double.valueOf(pulseMsPerBit)), Integer.valueOf(pulse));
-
-		setPwm(channel, 0, pulse);
-	}
-
 	@Override
 	public String getName() {
 		return DEVICE_NAME;
@@ -283,6 +269,10 @@ public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFac
 	@Override
 	public void close() throws RuntimeIOException {
 		Logger.trace("close()");
+		if (isClosed()) {
+			return;
+		}
+
 		// Close all open pins before closing the I2C device itself
 		super.close();
 		i2cDevice.close();
@@ -294,7 +284,7 @@ public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFac
 	}
 
 	@Override
-	public PwmOutputDeviceInterface createPwmOutputDevice(String key, PinInfo pinInfo, int pwmFrequency,
+	public InternalPwmOutputDeviceInterface createPwmOutputDevice(String key, PinInfo pinInfo, int pwmFrequency,
 			float initialValue) throws RuntimeIOException {
 		// Note pwmFrequency is ignored; make sure you setup the board's PWM frequency
 		// first
@@ -304,17 +294,40 @@ public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFac
 							+ "; this device has a common PWM frequency for all outputs",
 					Integer.valueOf(pwmFrequency), Integer.valueOf(boardPwmFrequency));
 		}
-		return new PCA9685PwmOutputDevice(this, key, pinInfo.getDeviceNumber());
+		return new PCA9685ServoOrPwmOutputDevice(this, key, DeviceMode.PWM_OUTPUT, pinInfo.getDeviceNumber(),
+				initialValue);
 	}
 
+	@Override
+	public InternalServoDeviceInterface createServoDevice(String key, PinInfo pinInfo, int frequency,
+			int minPulseWidthUs, int maxPulseWidthUs, int initialPulseWidthUs) throws RuntimeIOException {
+		// Note pwmFrequency is ignored; make sure you setup the board's PWM frequency
+		// first
+		if (frequency != boardPwmFrequency) {
+			Logger.warn(
+					"Specified Servo frequency ({}) is different to that configured for the board ({})"
+							+ "; this device has a common PWM frequency for all outputs",
+					Integer.valueOf(frequency), Integer.valueOf(boardPwmFrequency));
+		}
+		return new PCA9685ServoOrPwmOutputDevice(this, key, DeviceMode.SERVO, pinInfo.getDeviceNumber(),
+				initialPulseWidthUs / (float) periodUs);
+	}
+
+	/**
+	 * Get the PWM output percentage for the specified channel, range 0..1
+	 *
+	 * @param channel PWM channel
+	 * @return output PWM "on" percentage, range 0..1
+	 * @throws RuntimeIOException if an I/O error occurs
+	 */
 	public float getValue(int channel) throws RuntimeIOException {
 		int[] on_off = getPwm(channel);
 		return (on_off[1] - on_off[0]) / (float) RANGE;
 	}
 
 	/**
-	 * Set PWM output on a specific channel, value must be 0..1
-	 * 
+	 * Set PWM output percentage for the specified channel, value must be 0..1
+	 *
 	 * @param channel PWM channel
 	 * @param value   Must be 0..1
 	 * @throws RuntimeIOException if an I/O error occurs
@@ -327,6 +340,31 @@ public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFac
 		setPwm(channel, 0, off);
 	}
 
+	public int getDutyUs(int channel) {
+		return (int) (getValue(channel) * periodUs);
+	}
+
+	/**
+	 * Set PWM duty cycle output in microseconds for the specified channel. A
+	 * standard servo has a minimum range of 1-2 milliseconds. The actual range
+	 * varies between devices. E.g. My TowerPro SG90 has a pulse width range of
+	 * 500-2,400 us.
+	 *
+	 * @param channel PWM channel
+	 * @param dutyUs  New duty value in microseconds
+	 * @throws RuntimeIOException if an I/O error occurs
+	 */
+	public void setDutyUs(int channel, int dutyUs) throws RuntimeIOException {
+		// TODO Bounds checking
+
+		int off = (int) Math.floor(dutyUs / periodUs / (double) RANGE);
+		Logger.debug("Requested duty value: {}, Scale: {} microseconds per bit, Off: {}",
+				String.format("%.2f", Double.valueOf(dutyUs)),
+				String.format("%.4f", Double.valueOf(periodUs / (double) RANGE)), Integer.valueOf(off));
+
+		setPwm(channel, 0, off);
+	}
+
 	@Override
 	public int getBoardPwmFrequency() {
 		return boardPwmFrequency;
@@ -334,6 +372,16 @@ public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFac
 
 	@Override
 	public void setBoardPwmFrequency(int pwmFrequency) {
+		setPwmFreq(pwmFrequency);
+	}
+
+	@Override
+	public int getBoardServoFrequency() {
+		return boardPwmFrequency;
+	}
+
+	@Override
+	public void setBoardServoFrequency(int pwmFrequency) {
 		setPwmFreq(pwmFrequency);
 	}
 
@@ -353,15 +401,26 @@ public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFac
 		}
 	}
 
-	private static class PCA9685PwmOutputDevice extends AbstractDevice implements PwmOutputDeviceInterface {
+	private static class PCA9685ServoOrPwmOutputDevice extends AbstractDevice
+			implements InternalPwmOutputDeviceInterface, InternalServoDeviceInterface {
 		private PCA9685 pca9685;
+		private DeviceMode mode;
 		private int channel;
 
-		public PCA9685PwmOutputDevice(PCA9685 pca9685, String key, int channel) {
+		public PCA9685ServoOrPwmOutputDevice(PCA9685 pca9685, String key, DeviceMode mode, int channel,
+				float initialValue) {
 			super(key, pca9685);
 
 			this.pca9685 = pca9685;
+			this.mode = mode;
 			this.channel = channel;
+
+			setValue(initialValue);
+		}
+
+		@Override
+		public DeviceMode getMode() {
+			return mode;
 		}
 
 		@Override
@@ -371,6 +430,11 @@ public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFac
 
 		@Override
 		public int getPwmNum() {
+			return channel;
+		}
+
+		@Override
+		public int getServoNum() {
 			return channel;
 		}
 
@@ -385,6 +449,16 @@ public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFac
 		}
 
 		@Override
+		public int getPulseWidthUs() throws RuntimeIOException {
+			return pca9685.getDutyUs(channel);
+		}
+
+		@Override
+		public void setPulseWidthUs(int pulseWidthUs) throws RuntimeIOException {
+			pca9685.setDutyUs(channel, pulseWidthUs);
+		}
+
+		@Override
 		protected void closeDevice() throws RuntimeIOException {
 			Logger.trace("closeDevice()");
 			pca9685.closeChannel(channel);
@@ -396,7 +470,19 @@ public class PCA9685 extends AbstractDeviceFactory implements PwmOutputDeviceFac
 		}
 
 		@Override
-		public void setPwmFrequency(int frequencyHz) throws RuntimeIOException {
+		public void setPwmFrequency(int frequency) throws RuntimeIOException {
+			throw new UnsupportedOperationException(
+					"The PCA9685 has a PWM output frequency that is shared across all channels hence "
+							+ "cannot be changed for individual channels");
+		}
+
+		@Override
+		public int getServoFrequency() {
+			return pca9685.getBoardServoFrequency();
+		}
+
+		@Override
+		public void setServoFrequency(int frequency) throws RuntimeIOException {
 			throw new UnsupportedOperationException(
 					"The PCA9685 has a PWM output frequency that is shared across all channels hence "
 							+ "cannot be changed for individual channels");

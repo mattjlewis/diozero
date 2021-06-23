@@ -92,14 +92,16 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 	public void close() {
 		Logger.trace("closing...");
 
-		// Wake anything up that is waiting on the lock (i.e. sendMessage that calls
-		// condition.await())
-		// TODO Put a poison message on the queue?
+		// First try to safely interrupt the serial device read by sending a controlled
+		// message with an invalid pin mode and wait for the expected "Unknown pin mode"
+		// STRING_DATA response
+		StringDataResponse response = sendMessage(new byte[] { SET_PIN_MODE, 0, (byte) 99 }, StringDataResponse.class);
+		Logger.debug("Unknown pin mode response: '{}'", response);
 
 		// Stop the thread that is reading responses (in particular the inputStream.read
 		// call when used with blocking I/O)
 		running.compareAndSet(true, false);
-		if (future != null) {
+		if (future != null && !future.isCancelled() && !future.isDone()) {
 			Logger.debug("future.isCancelled: {}, future.isDone: {}", Boolean.valueOf(future.isCancelled()),
 					Boolean.valueOf(future.isDone()));
 			if (!future.cancel(true)) {
@@ -131,7 +133,6 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 
 		firmware = getFirmwareInternal();
 
-		Logger.debug("Getting board capabilities...");
 		CapabilityResponse board_capabilities = sendMessage(new byte[] { START_SYSEX, CAPABILITY_QUERY, END_SYSEX },
 				CapabilityResponse.class);
 
@@ -148,7 +149,6 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 		pin_num = 0;
 		for (byte channel : mapping.getChannels()) {
 			if (channel != ANALOG_NOT_SUPPORTED) {
-				System.out.format("ADC mapping channel %d maps to pin %d%n", channel, pin_num);
 				adcToPinNumberMapping.put(Integer.valueOf(channel), Integer.valueOf(pin_num));
 			}
 			pin_num++;
@@ -164,7 +164,6 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 	}
 
 	private FirmwareDetails getFirmwareInternal() {
-		Logger.debug("Getting firmware...");
 		return sendMessage(new byte[] { START_SYSEX, REPORT_FIRMWARE, END_SYSEX }, FirmwareDetails.class);
 	}
 
@@ -172,7 +171,7 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 		return boardCapabilities;
 	}
 
-	public PinState getPinState(int gpio) {
+	public void refreshPinState(int gpio) {
 		PinState pin_state = sendMessage(new byte[] { START_SYSEX, PIN_STATE_QUERY, (byte) gpio, END_SYSEX },
 				PinState.class);
 
@@ -188,8 +187,6 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 				pin.setValue(pin_state.getState());
 			}
 		}
-
-		return pin_state;
 	}
 
 	public void setSamplingInterval(int intervalMs) {
@@ -200,7 +197,6 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 
 	// Note enables / disables reporting for all GPIOs in this bank of GPIOs
 	public void enableDigitalReporting(int gpio, boolean enabled) {
-		Logger.debug("Enable digital reporting: " + enabled);
 		sendMessage(new byte[] { (byte) (REPORT_DIGITAL_PORT | (gpio >> 3)), (byte) gpio, (byte) (enabled ? 1 : 0) });
 	}
 
@@ -213,7 +209,6 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 	}
 
 	public void setPinMode(int gpio, PinMode pinMode) {
-		Logger.debug("setPinMode(" + gpio + ", " + pinMode + ")");
 		sendMessage(new byte[] { SET_PIN_MODE, (byte) gpio, (byte) pinMode.ordinal() });
 
 		// Update the cached pin mode
@@ -224,7 +219,6 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 	}
 
 	public void setDigitalValues(int port, byte values) {
-		Logger.debug("setValues({}, {})", Integer.valueOf(port), Integer.valueOf(values));
 		byte[] lsb_msb = convertToLsbMsb(values);
 		sendMessage(new byte[] { (byte) (DIGITAL_IO_START | (port & 0x0f)), lsb_msb[0], lsb_msb[1] });
 
@@ -267,6 +261,12 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 	}
 
 	public void setValue(int gpio, int value) {
+		Pin pin = pins.get(Integer.valueOf(gpio));
+		if (pin == null) {
+			Logger.warn("No such GPIO #{}", Integer.valueOf(gpio));
+			return;
+		}
+
 		// Non-extended analog accommodates 16 ports (E0-Ef), with a max value of 16384
 		// (2^14)
 		if (gpio < 16 && value < 16384) {
@@ -282,10 +282,27 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 			data[data.length - 1] = END_SYSEX;
 			sendMessage(data);
 		}
+
+		// Update the cached value
+		pin.setValue(value);
 	}
 
 	private AnalogMappingResponse getAnalogMapping() throws RuntimeIOException {
 		return sendMessage(new byte[] { START_SYSEX, ANALOG_MAPPING_QUERY, END_SYSEX }, AnalogMappingResponse.class);
+	}
+
+	/**
+	 * minPulse and maxPulse are both 14-bit unsigned integers.
+	 *
+	 * @param gpio     the gpio to configure
+	 * @param minPulse new minimum pulse width
+	 * @param maxPulse new maximum pulse width
+	 */
+	public void servoConfig(int gpio, int minPulse, int maxPulse) {
+		byte[] min_pulse_lsb_msb = convertToLsbMsb(minPulse);
+		byte[] max_pulse_lsb_msb = convertToLsbMsb(maxPulse);
+		sendMessage(new byte[] { START_SYSEX, SERVO_CONFIG, (byte) gpio, min_pulse_lsb_msb[0], min_pulse_lsb_msb[1],
+				max_pulse_lsb_msb[0], max_pulse_lsb_msb[1], END_SYSEX });
 	}
 
 	/**
@@ -399,10 +416,11 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 			write(request);
 
 			if (responseClass != null) {
-				// Lock is now re-acquired, process the messages on the queue (should only be
-				// one!)
 				do {
 					response = responseQueue.take();
+					if (response.isPoison()) {
+						return null;
+					}
 				} while (!response.getClass().isAssignableFrom(responseClass));
 			}
 		} catch (InterruptedException e) {
@@ -441,9 +459,11 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 
 				byte b = (byte) (i & 0xff);
 				if (b == START_SYSEX) {
-					responseQueue.offer(readSysEx());
+					responseQueue.offer(readSysEx(null));
 				} else if (b == PROTOCOL_VERSION) {
 					responseQueue.offer(readVersionResponse());
+				} else if (b == REPORT_FIRMWARE) {
+					responseQueue.add(readSysEx(Byte.valueOf(b)));
 				} else if (b >= DIGITAL_IO_START && b <= DIGITAL_IO_END) {
 					processDigitalResponse(readDataResponse(b - DIGITAL_IO_START), epoch_time, nano_time);
 				} else if (b >= ANALOG_IO_START && b <= ANALOG_IO_END) {
@@ -461,7 +481,6 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 	}
 
 	private void processDigitalResponse(DataResponse response, long epochTime, long nanoTime) {
-		Logger.debug(response);
 		int port = response.getPort();
 		int value = response.getValue();
 		// Update the cached values
@@ -490,8 +509,13 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 		}
 	}
 
-	private SysExResponse readSysEx() {
-		byte sysex_cmd = readByte();
+	private SysExResponse readSysEx(Byte sysExCommand) {
+		byte sysex_cmd;
+		if (sysExCommand == null) {
+			sysex_cmd = readByte();
+		} else {
+			sysex_cmd = sysExCommand.byteValue();
+		}
 		// long start = System.currentTimeMillis();
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		while (true) {
@@ -512,6 +536,10 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 			buffer.get(string_data_buffer);
 			String string_data = new String(string_data_buffer, StandardCharsets.UTF_16LE);
 			response = new StringDataResponse(string_data);
+			if (string_data.equals("Unknown pin mode")) {
+				Logger.info("Unknown pin mode triggered, exiting serial read loop!");
+				running.set(false);
+			}
 			break;
 		case REPORT_FIRMWARE:
 			byte major = buffer.get();
@@ -639,6 +667,21 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 	}
 
 	static class ResponseMessage {
+		static ResponseMessage POISON_MESSAGE = new ResponseMessage(true);
+
+		private boolean poison;
+
+		ResponseMessage() {
+			this(false);
+		}
+
+		private ResponseMessage(boolean poison) {
+			this.poison = poison;
+		}
+
+		public boolean isPoison() {
+			return poison;
+		}
 	}
 
 	static class SysExResponse extends ResponseMessage {

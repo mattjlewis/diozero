@@ -31,33 +31,41 @@ package com.diozero.devices.imu;
  * #L%
  */
 
-
-import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
+import org.hipparchus.geometry.euclidean.threed.Vector3D;
 
 import com.diozero.api.DeviceInterface;
 import com.diozero.api.RuntimeIOException;
 
 public interface ImuInterface extends DeviceInterface {
-	
+
 	String getImuName();
+
 	/**
 	 * Get the recommended poll interval in milliseconds
+	 *
 	 * @return The poll interval
 	 */
 	int getPollInterval();
-	
+
 	boolean hasGyro();
+
 	boolean hasAccelerometer();
+
 	boolean hasCompass();
-	
+
 	void startRead();
+
 	void stopRead();
-	
+
 	ImuData getImuData() throws RuntimeIOException;
+
 	Vector3D getGyroData() throws RuntimeIOException;
+
 	Vector3D getAccelerometerData() throws RuntimeIOException;
+
 	Vector3D getCompassData() throws RuntimeIOException;
-	
+
 	void addTapListener(TapListener listener);
+
 	void addOrientationListener(OrientationListener listener);
 }

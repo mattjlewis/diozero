@@ -39,7 +39,8 @@ import com.diozero.internal.spi.PwmOutputDeviceFactoryInterface;
 import com.diozero.sbc.DeviceFactoryHelper;
 
 /**
- * Generic bi-directional motor controlled by separate forward / backward PWM output GPIOs
+ * Generic bi-directional motor controlled by separate forward / backward PWM
+ * output GPIOs
  */
 public class PwmMotor extends MotorBase {
 	private PwmOutputDevice forward;
@@ -49,8 +50,8 @@ public class PwmMotor extends MotorBase {
 		this(DeviceFactoryHelper.getNativeDeviceFactory(), forwardPwmGpio, backwardPwmGpio);
 	}
 
-	public PwmMotor(PwmOutputDeviceFactoryInterface deviceFactory,
-			int forwardPwmGpio, int backwardPwmGpio) throws RuntimeIOException {
+	public PwmMotor(PwmOutputDeviceFactoryInterface deviceFactory, int forwardPwmGpio, int backwardPwmGpio)
+			throws RuntimeIOException {
 		forward = new PwmOutputDevice(deviceFactory, forwardPwmGpio, 0);
 		backward = new PwmOutputDevice(deviceFactory, backwardPwmGpio, 0);
 	}
@@ -64,6 +65,7 @@ public class PwmMotor extends MotorBase {
 
 	/**
 	 * Forward at full speed
+	 *
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	public void forward() throws RuntimeIOException {
@@ -71,19 +73,19 @@ public class PwmMotor extends MotorBase {
 	}
 
 	/**
-	 * @param speed
-	 *            Range 0..1
+	 * @param speed Range 0..1
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	@Override
 	public void forward(float speed) throws RuntimeIOException {
 		backward.off();
 		forward.setValue(speed);
-		accept(speed);
+		setValue(speed);
 	}
 
 	/**
 	 * Backward at full speed
+	 *
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	public void backward() throws RuntimeIOException {
@@ -91,27 +93,27 @@ public class PwmMotor extends MotorBase {
 	}
 
 	/**
-	 * @param speed
-	 *            Range 0..1
+	 * @param speed Range 0..1
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	@Override
 	public void backward(float speed) throws RuntimeIOException {
 		forward.off();
 		backward.setValue(speed);
-		accept(-speed);
+		setValue(-speed);
 	}
 
 	@Override
 	public void stop() throws RuntimeIOException {
 		forward.off();
 		backward.off();
-		accept(0);
+		setValue(0);
 	}
 
 	/**
-	 * Represents the speed of the motor as a floating point value between -1
-	 * (full speed backward) and 1 (full speed forward).
+	 * Represents the speed of the motor as a floating point value between -1 (full
+	 * speed backward) and 1 (full speed forward).
+	 *
 	 * @return current relative motor speed
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
