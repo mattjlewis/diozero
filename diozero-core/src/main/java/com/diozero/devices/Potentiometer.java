@@ -31,14 +31,15 @@ package com.diozero.devices;
  * #L%
  */
 
-
 import com.diozero.api.AnalogInputDevice;
 import com.diozero.internal.spi.AnalogInputDeviceFactoryInterface;
 import com.diozero.sbc.DeviceFactoryHelper;
 
 /**
- * Supports taking readings from a <a href="https://en.wikipedia.org/wiki/Potentiometer">potentiometer</a>.
+ * Supports taking readings from a
+ * <a href="https://en.wikipedia.org/wiki/Potentiometer">potentiometer</a>.
  */
+// FIXME Switch to composition
 public class Potentiometer extends AnalogInputDevice {
 	/**
 	 * @param gpio GPIO which the potentiometer is connected.
@@ -46,11 +47,11 @@ public class Potentiometer extends AnalogInputDevice {
 	public Potentiometer(int gpio) {
 		this(DeviceFactoryHelper.getNativeDeviceFactory(), gpio);
 	}
-	
+
 	public Potentiometer(AnalogInputDeviceFactoryInterface deviceFactory, int gpio) {
 		super(deviceFactory, gpio);
 	}
-	
+
 	public float getVoltage() {
 		return getScaledValue();
 	}

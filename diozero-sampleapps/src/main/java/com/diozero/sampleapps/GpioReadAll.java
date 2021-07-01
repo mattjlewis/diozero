@@ -39,11 +39,11 @@ import static com.diozero.sampleapps.util.ConsoleUtil.getPinColour;
 import static com.diozero.sampleapps.util.ConsoleUtil.getValueColour;
 import static com.diozero.sampleapps.util.ConsoleUtil.getValueString;
 import static com.diozero.sampleapps.util.ConsoleUtil.gpioRead;
+import static org.fusesource.jansi.Ansi.ansi;
 
 import java.util.Map;
 import java.util.Optional;
 
-import org.fusesource.jansi.Ansi;
 import org.fusesource.jansi.AnsiConsole;
 import org.tinylog.Logger;
 
@@ -80,11 +80,14 @@ public class GpioReadAll {
 				pins.values().stream().mapToInt(pin_info -> pin_info.getName().length()).max().orElse(8));
 
 		String name_dash = StringUtil.repeat('-', max_name_length);
-		System.out.println(Ansi.ansi().bold().a("Header").boldOff().a(": ").a(headerName));
+		System.out.format(ansi().render("@|bold Header|@: %s%n").toString(), headerName);
 		System.out.format("+-----+-%s-+------+---+--------+----------+--------+---+------+-%s-+-----+%n", name_dash,
 				name_dash);
-		System.out.format("+ GP# + %" + max_name_length + "s + Mode + V +  gpiod + Physical + gpiod  + V + Mode + %-"
-				+ max_name_length + "s + GP# +%n", "Name", "Name");
+		System.out.format(ansi()
+				.render("+ @|bold GP#|@ + @|bold %" + max_name_length
+						+ "s|@ + @|bold Mode|@ + @|bold V|@ +  @|bold gpiod|@ + @|bold Physical|@ + @|bold gpiod|@  "
+						+ "+ @|bold V|@ + @|bold Mode|@ + @|bold %-" + max_name_length + "s|@ + @|bold GP#|@ +%n")
+				.toString(), "Name", "Name");
 		System.out.format("+-----+-%s-+------+---+--------+----------+--------+---+------+-%s-+-----+%n", name_dash,
 				name_dash);
 
@@ -93,39 +96,23 @@ public class GpioReadAll {
 			int gpio = pin_info.getDeviceNumber();
 			Optional<Boolean> value = gpioRead(deviceFactory, pin_info);
 			if (index++ % 2 == 0) {
-				System.out.print(Ansi.ansi().a("| ") //
-						.bold().fg(getPinColour(pin_info)).format("%3s", getNotDefined(gpio)).fgDefault().boldOff()
-						.a(" | ") //
-						.bold().fg(getPinColour(pin_info)).format("%" + max_name_length + "s", pin_info.getName())
-						.fgDefault().boldOff().a(" | ") //
-						.bold().fg(getModeColour(deviceFactory, pin_info))
-						.format("%4s", getModeString(deviceFactory, pin_info)).fgDefault().boldOff().a(" | ") //
-						.bold().fg(getValueColour(value)).format("%1s", getValueString(value)).fgDefault().boldOff()
-						.a(" | ") //
-						.bold().format("%6s", getGpiodName(pin_info.getChip(), pin_info.getLineOffset())).boldOff()
-						.a(" | ") //
-						.bold().format("%2s", getNotDefined(pin_info.getPhysicalPin())).boldOff().a(" |"));
-				/*-
-				System.out.format("| %3s | %" + max_name_length + "s | %4s | %1s | %6s | %2s |", getNotDefined(gpio), //
-						pin_info.getName(), //
-						getModeString(mmapGpio, pin_info), //
-						gpioRead(mmapGpio, pin_info), //
-						getGpiodName(pin_info.getChip(), pin_info.getLineOffset()), //
+				System.out.format(
+						ansi().render("| @|bold," + getPinColour(pin_info) + " %3s|@ | @|bold," + getPinColour(pin_info)
+								+ " %" + max_name_length + "s|@ | @|bold," + getModeColour(deviceFactory, pin_info)
+								+ " %4s|@ | @|bold," + getValueColour(value) + " %1s|@ | @|bold %6s|@ | @|bold %2s|@ |")
+								.toString(),
+						getNotDefined(gpio), pin_info.getName(), getModeString(deviceFactory, pin_info),
+						getValueString(value), getGpiodName(pin_info.getChip(), pin_info.getLineOffset()),
 						getNotDefined(pin_info.getPhysicalPin()));
-				*/
 			} else {
-				System.out.println(Ansi.ansi().a("| ") //
-						.bold().format("%-2s", getNotDefined(pin_info.getPhysicalPin())).boldOff().a(" | ") //
-						.bold().format("%-6s", getGpiodName(pin_info.getChip(), pin_info.getLineOffset())).boldOff()
-						.a(" | ") //
-						.bold().fg(getValueColour(value)).format("%1s", getValueString(value)).fgDefault().boldOff()
-						.a(" | ") //
-						.bold().fg(getModeColour(deviceFactory, pin_info))
-						.format("%-4s", getModeString(deviceFactory, pin_info)).fgDefault().boldOff().a(" | ") //
-						.bold().fg(getPinColour(pin_info)).format("%-" + max_name_length + "s", pin_info.getName())
-						.fgDefault().boldOff().a(" | ") //
-						.bold().fg(getPinColour(pin_info)).format("%-3s", getNotDefined(gpio)).fgDefault().boldOff()
-						.a(" |"));
+				System.out.format(
+						ansi().render("| @|bold %-2s|@ | @|bold %-6s|@ | @|bold,FG_" + getValueColour(value)
+								+ " %1s|@ | @|bold,FG_" + getModeColour(deviceFactory, pin_info)
+								+ " %-4s|@ | @|bold,FG_" + getPinColour(pin_info) + " %-" + max_name_length
+								+ "s|@ | @|bold,FG_" + getPinColour(pin_info) + " %-3s|@ |%n").toString(),
+						getNotDefined(pin_info.getPhysicalPin()),
+						getGpiodName(pin_info.getChip(), pin_info.getLineOffset()), getValueString(value),
+						getModeString(deviceFactory, pin_info), pin_info.getName(), getNotDefined(gpio));
 			}
 		}
 		System.out.format("+-----+-%s-+------+---+--------+----------+--------+---+------+-%s-+-----+%n", name_dash,

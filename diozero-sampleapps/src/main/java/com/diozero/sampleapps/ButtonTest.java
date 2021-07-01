@@ -62,7 +62,7 @@ public class ButtonTest {
 	}
 
 	public static void test(final int inputPin, final GpioPullUpDown pud) {
-		final int delay_s = 5;
+		final int delay_s = 10;
 		try (final Button button = new Button(inputPin, pud)) {
 			button.whenPressed(nanoTime -> Logger.info("Pressed"));
 			button.whenReleased(nanoTime -> Logger.info("Released"));

@@ -37,106 +37,110 @@ import com.diozero.api.DeviceInterface;
 import com.diozero.api.RuntimeIOException;
 
 /**
- * Generic dual bi-directional motor driver
+ * Generic dual bi-directional motor driver. Assumes that the motors are
+ * arranged in a left / right orientation.
  */
 public class DualMotor implements DeviceInterface {
-	private MotorInterface leftMotor;
-	private MotorInterface rightMotor;
-	
-	public DualMotor(MotorInterface leftMotor, MotorInterface rightMotor) {
-		this.leftMotor = leftMotor;
-		this.rightMotor = rightMotor;
+	private MotorInterface motorA;
+	private MotorInterface motorB;
+
+	public DualMotor(MotorInterface motorA, MotorInterface motorB) {
+		this.motorA = motorA;
+		this.motorB = motorB;
 	}
 
 	@Override
 	public void close() {
 		Logger.trace("close()");
-		if (leftMotor != null) {
-			leftMotor.close();
+		if (motorA != null) {
+			motorA.close();
 		}
-		if (rightMotor != null) {
-			rightMotor.close();
+		if (motorB != null) {
+			motorB.close();
 		}
 	}
-	
+
 	public float[] getValues() throws RuntimeIOException {
-		return new float[] { leftMotor.getValue(), rightMotor.getValue() };
+		return new float[] { motorA.getValue(), motorB.getValue() };
 	}
-	
+
 	/**
 	 * Set the speed and direction for both motors (clockwise / counter-clockwise)
-	 * @param leftValue Range -1 .. 1. Positive numbers for clockwise, Negative numbers for counter clockwise
-	 * @param rightValue Range -1 .. 1. Positive numbers for clockwise, Negative numbers for counter clockwise
+	 *
+	 * @param leftValue  Range -1 .. 1. Positive numbers for clockwise, Negative
+	 *                   numbers for counter clockwise
+	 * @param rightValue Range -1 .. 1. Positive numbers for clockwise, Negative
+	 *                   numbers for counter clockwise
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	public void setValues(float leftValue, float rightValue) throws RuntimeIOException {
-		leftMotor.setValue(leftValue);
-		rightMotor.setValue(rightValue);
+		motorA.setValue(leftValue);
+		motorB.setValue(rightValue);
 	}
-	
+
 	public void forward(float speed) throws RuntimeIOException {
-		leftMotor.forward(speed);
-		rightMotor.forward(speed);
+		motorA.forward(speed);
+		motorB.forward(speed);
 	}
-	
+
 	public void backward(float speed) throws RuntimeIOException {
-		leftMotor.backward(speed);
-		rightMotor.backward(speed);
+		motorA.backward(speed);
+		motorB.backward(speed);
 	}
-	
+
 	public void rotateLeft(float speed) throws RuntimeIOException {
-		leftMotor.backward(speed);
-		rightMotor.forward(speed);
+		motorA.backward(speed);
+		motorB.forward(speed);
 	}
-	
+
 	public void rotateRight(float speed) throws RuntimeIOException {
-		leftMotor.forward(speed);
-		rightMotor.backward(speed);
+		motorA.forward(speed);
+		motorB.backward(speed);
 	}
-	
+
 	public void forwardLeft(float speed) throws RuntimeIOException {
-		leftMotor.stop();
-		rightMotor.forward(speed);
+		motorA.stop();
+		motorB.forward(speed);
 	}
-	
+
 	public void forwardRight(float speed) throws RuntimeIOException {
-		leftMotor.forward(speed);
-		rightMotor.stop();
+		motorA.forward(speed);
+		motorB.stop();
 	}
-	
+
 	public void backwardLeft(float speed) throws RuntimeIOException {
-		leftMotor.stop();
-		rightMotor.backward(speed);
+		motorA.stop();
+		motorB.backward(speed);
 	}
-	
+
 	public void backwardRight(float speed) throws RuntimeIOException {
-		leftMotor.backward(speed);
-		rightMotor.stop();
+		motorA.backward(speed);
+		motorB.stop();
 	}
-	
+
 	public void reverse() throws RuntimeIOException {
-		leftMotor.reverse();
-		rightMotor.reverse();
+		motorA.reverse();
+		motorB.reverse();
 	}
-	
+
 	public void circleLeft(float speed, float turnRate) {
-		setValues(speed, speed-turnRate);
+		setValues(speed, speed - turnRate);
 	}
-	
+
 	public void circleRight(float speed, float turnRate) {
-		setValues(speed-turnRate, speed);
+		setValues(speed - turnRate, speed);
 	}
-	
+
 	public void stop() throws RuntimeIOException {
-		leftMotor.stop();
-		rightMotor.stop();
+		motorA.stop();
+		motorB.stop();
 	}
-	
+
 	public MotorInterface getLeftMotor() {
-		return leftMotor;
+		return motorA;
 	}
-	
+
 	public MotorInterface getRightMotor() {
-		return leftMotor;
+		return motorA;
 	}
 }

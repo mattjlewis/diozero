@@ -38,13 +38,7 @@ import com.diozero.devices.motor.CamJamKitDualMotor;
 
 /**
  * Robot test application with CamJam EduKit motor controller, 3 IR sensors, an
- * HC-SR04 distance sensor and 4 LEDs. To run:
- * <ul>
- * <li>Built-in:<br>
- * {@code java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar com.diozero.sampleapps.CamJamRobot}</li>
- * <li>pigpgioj:<br>
- * {@code sudo java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar:diozero-provider-pigpio-$DIOZERO_VERSION.jar:pigpioj-java-2.4.jar com.diozero.sampleapps.CamJamRobot}</li>
- * </ul>
+ * HC-SR04 distance sensor and 4 LEDs.
  */
 public class CamJamRobot extends RobotTest {
 	public static void main(String[] args) {

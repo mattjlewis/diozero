@@ -62,6 +62,11 @@ public class SerialFirmataAdapter extends FirmataAdapter {
 	}
 
 	@Override
+	int bytesAvailable() {
+		return device.bytesAvailable();
+	}
+
+	@Override
 	int read() {
 		return device.read();
 	}

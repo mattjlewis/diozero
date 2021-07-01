@@ -41,17 +41,7 @@ import com.diozero.util.Diozero;
 import com.diozero.util.SleepUtil;
 
 /**
- * LED sample application. To run:
- * <ul>
- * <li>Built-in:<br>
- * {@code java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar com.diozero.sampleapps.LEDTest 12}</li>
- * <li>pigpgioj:<br>
- * {@code sudo java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar:diozero-provider-pigpio-$DIOZERO_VERSION.jar:pigpioj-java-2.4.jar com.diozero.sampleapps.LEDTest 12}</li>
- * <li>mmap:<br>
- * {@code java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar:diozero-provider-mmap-$DIOZERO_VERSION.jar com.diozero.sampleapps.LEDTest 12}</li>
- * <li>Firmata4j:<br>
- * {@code java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar:diozero-provider-firmata4j-$DIOZERO_VERSION.jar:firmata4j-2.3.8.jar:jssc-2.8.0.jar com.diozero.sampleapps.LEDTest 12}</li>
- * </ul>
+ * LED blink sample application.
  */
 public class LEDTest {
 	public static void main(String[] args) {

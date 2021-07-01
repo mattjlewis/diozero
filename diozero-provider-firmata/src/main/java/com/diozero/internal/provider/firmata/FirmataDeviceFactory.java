@@ -33,6 +33,7 @@ package com.diozero.internal.provider.firmata;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import org.tinylog.Logger;
@@ -293,16 +294,24 @@ public class FirmataDeviceFactory extends BaseNativeDeviceFactory implements Fir
 
 	@Override
 	public void event(EventType eventType, int gpio, int value, long epochTime, long nanoTime) {
-		PinInfo pin_info = getBoardPinInfo().getByGpioNumberOrThrow(gpio);
+		Optional<PinInfo> pin_info_opt = getBoardPinInfo().getByGpioNumber(gpio);
+		if (!pin_info_opt.isPresent()) {
+			return;
+		}
+		PinInfo pin_info = pin_info_opt.get();
 		switch (eventType) {
 		case DIGITAL:
 			FirmataDigitalInputDevice did = getDevice(createPinKey(pin_info));
-			did.accept(new DigitalInputEvent(gpio, epochTime, nanoTime, value != 0));
+			if (did != null) {
+				did.accept(new DigitalInputEvent(gpio, epochTime, nanoTime, value != 0));
+			}
 			break;
 		case ANALOG:
 			FirmataAnalogInputDevice aid = getDevice(createPinKey(pin_info));
-			float f = RangeUtil.map(value, 0, adapter.getMax(gpio, PinMode.ANALOG_INPUT), 0f, 1f, true);
-			aid.accept(new AnalogInputEvent(gpio, epochTime, nanoTime, f));
+			if (aid != null) {
+				float f = RangeUtil.map(value, 0, adapter.getMax(gpio, PinMode.ANALOG_INPUT), 0f, 1f, true);
+				aid.accept(new AnalogInputEvent(gpio, epochTime, nanoTime, f));
+			}
 			break;
 		default:
 		}
@@ -367,6 +376,9 @@ public class FirmataDeviceFactory extends BaseNativeDeviceFactory implements Fir
 					break;
 				case SERVO:
 					modes.add(DeviceMode.SERVO);
+					break;
+				case I2C:
+					modes.add(DeviceMode.I2C);
 					break;
 				default:
 					// Ignore

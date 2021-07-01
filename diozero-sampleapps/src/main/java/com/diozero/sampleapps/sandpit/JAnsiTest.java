@@ -32,12 +32,17 @@ package com.diozero.sampleapps.sandpit;
  */
 
 import static org.fusesource.jansi.Ansi.ansi;
+import static org.fusesource.jansi.AnsiRenderer.render;
+
+import org.fusesource.jansi.AnsiConsole;
 
 public class JAnsiTest {
 	public static void main(String[] args) {
+		AnsiConsole.out().format(render("@|bold Hello %s|@%n"), "diozero");
+
 		System.out.println(ansi().eraseScreen().fgRed().a("Hello").a(" ").fgGreen().a("World!").reset().a(" ")
 				.bgBrightRed().a("Matt").reset());
-		
-		System.out.println(ansi().bold().fgGreen().a("Hello").boldOff().fgDefault().a(" Matt"));
+
+		System.out.println(ansi().bold().fgGreen().a("Hello").boldOff().fgDefault().a(" diozero"));
 	}
 }

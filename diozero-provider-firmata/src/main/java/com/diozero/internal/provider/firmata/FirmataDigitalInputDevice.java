@@ -74,8 +74,6 @@ public class FirmataDigitalInputDevice extends AbstractInputDevice<DigitalInputE
 
 	@Override
 	public void enableListener() {
-		disableListener();
-
 		adapter.enableDigitalReporting(gpio, true);
 	}
 

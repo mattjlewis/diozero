@@ -32,6 +32,7 @@ package com.diozero.sampleapps;
  */
 
 import com.diozero.devices.BME680;
+import com.diozero.util.Diozero;
 import com.diozero.util.SleepUtil;
 
 /**
@@ -75,6 +76,8 @@ public class BME680Test {
 
 				SleepUtil.sleepSeconds(1);
 			}
+		} finally {
+			Diozero.shutdown();
 		}
 	}
 }

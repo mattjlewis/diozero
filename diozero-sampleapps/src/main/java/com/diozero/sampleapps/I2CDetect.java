@@ -39,6 +39,7 @@ import com.diozero.api.DeviceBusyException;
 import com.diozero.api.I2CDevice;
 import com.diozero.api.I2CDeviceInterface;
 import com.diozero.sbc.DeviceFactoryHelper;
+import com.diozero.util.Diozero;
 
 import picocli.CommandLine;
 import picocli.CommandLine.ArgGroup;
@@ -180,7 +181,11 @@ public class I2CDetect implements Runnable {
 		}
 
 		if (run) {
-			scanI2CBus(i2cbus, mode, firstAddress, lastAddress);
+			try {
+				scanI2CBus(i2cbus, mode, firstAddress, lastAddress);
+			} finally {
+				Diozero.shutdown();
+			}
 		} else {
 			System.out.println("Aborting on user request.");
 		}

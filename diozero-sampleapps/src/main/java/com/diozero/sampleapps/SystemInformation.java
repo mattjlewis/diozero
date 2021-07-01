@@ -37,6 +37,7 @@ import static com.diozero.sampleapps.util.ConsoleUtil.getPinColour;
 import static org.fusesource.jansi.Ansi.ansi;
 
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.fusesource.jansi.AnsiConsole;
 import org.tinylog.Logger;
@@ -65,21 +66,27 @@ public class SystemInformation {
 		// World|@") );
 
 		LocalSystemInfo sys_info = LocalSystemInfo.getInstance();
-		System.out.println(ansi().a("diozero version: ").bold().a(Diozero.getVersion()).boldOff());
-		System.out.println(ansi().bold().a("Local System Info").boldOff());
-		System.out.println(ansi().bold().a("Operating System").boldOff().format(": %s %s",
-				sys_info.getOperatingSystemId(), sys_info.getOperatingSystemVersion()));
-		System.out.println(ansi().bold().a("CPU Temperature").boldOff().format(": %.2f",
-				Float.valueOf(sys_info.getCpuTemperature())));
-
+		System.out.println(ansi().render("@|bold,underline Local System Info|@"));
+		/*-
+		// Can't do this until JAnsi supports ARMv6:
+		AnsiConsole.out().format(render("@|bold diozero version|@: %s%n"), Diozero.getVersion());
+		*/
+		System.out.format(ansi().render("@|bold diozero version|@: %s%n").toString(), Diozero.getVersion());
+		System.out.format(ansi().render("@|bold Operating System|@: %s %s%n").toString(),
+				sys_info.getOperatingSystemId(), sys_info.getOperatingSystemVersion());
+		System.out.format(ansi().render("@|bold CPU Temperature|@: %.2f%n").toString(),
+				Float.valueOf(sys_info.getCpuTemperature()));
 		System.out.println();
+
 		try (NativeDeviceFactoryInterface ndf = DeviceFactoryHelper.getNativeDeviceFactory()) {
-			System.out.println(ansi().bold().a("Native Device Factory").boldOff().a(": ").a(ndf.getName()));
 			BoardInfo board_info = ndf.getBoardInfo();
-			System.out.println(ansi().bold().a("Board").boldOff().format(": %s (RAM: %,d bytes, O/S: %s %s)",
+			System.out.println(ansi().render("@|bold,underline Detected Board Info|@"));
+			System.out.format(ansi().render("@|bold Device Factory|@: %s%n").toString(), ndf.getName());
+			System.out.format(ansi().render("@|bold Board|@: %s (RAM: %,d bytes, O/S: %s %s)%n").toString(),
 					board_info.getName(), Integer.valueOf(board_info.getMemoryKb()), board_info.getOperatingSystemId(),
-					board_info.getOperatingSystemVersion()));
-			System.out.println(ansi().bold().a("I2C Bus Numbers").boldOff().format(": %s", ndf.getI2CBusNumbers()));
+					board_info.getOperatingSystemVersion());
+			System.out.format(ansi().render("@|bold I2C Bus Numbers|@: %s%n").toString(),
+					ndf.getI2CBusNumbers().stream().map(Object::toString).collect(Collectors.joining(", ")));
 
 			System.out.println();
 			for (Map.Entry<String, Map<Integer, PinInfo>> header_pins_entry : board_info.getHeaders().entrySet()) {
@@ -88,58 +95,32 @@ public class SystemInformation {
 						.mapToInt(pin_info -> pin_info.getName().length()).max().orElse(MIN_PIN_NAME_LENGTH));
 
 				String name_dash = StringUtil.repeat('-', max_length);
-				System.out.println(ansi().bold().a("Header").boldOff().a(": ").a(header_pins_entry.getKey()));
+				System.out.format(ansi().render("@|bold Header|@: %s%n").toString(), header_pins_entry.getKey());
 				System.out.format("+-----+-%s-+--------+----------+--------+-%s-+-----+%n", name_dash, name_dash);
-				System.out.format(
-						"+ GP# + %" + max_length + "s +  gpiod + Physical + gpiod  + %-" + max_length + "s + GP# +%n",
-						"Name", "Name");
+				System.out.format(ansi().render("+ @|bold GP#|@ + @|bold %" + max_length
+						+ "s|@ +  @|bold gpiod|@ + @|bold Physical|@ + @|bold gpiod|@  + @|bold %-" + max_length
+						+ "s|@ + @|bold GP#|@ +%n").toString(), "Name", "Name");
 				System.out.format("+-----+-%s-+--------+----------+--------+-%s-+-----+%n", name_dash, name_dash);
 
 				Map<Integer, PinInfo> pins = header_pins_entry.getValue();
 				int index = 0;
 				for (PinInfo pin_info : pins.values()) {
 					if (index++ % 2 == 0) {
-						System.out.print(ansi().a("| ") //
-								.bold().fg(getPinColour(pin_info))
-								.format("%3s", getNotDefined(pin_info.getDeviceNumber())).fgDefault().boldOff().a(" | ") //
-								.bold().fg(getPinColour(pin_info)).format("%" + max_length + "s", pin_info.getName())
-								.fgDefault().boldOff().a(" | ") //
-								.bold().format("%6s", getGpiodName(pin_info.getChip(), pin_info.getLineOffset()))
-								.boldOff().a(" | ") //
-								.bold().format("%2s", getNotDefined(pin_info.getPhysicalPin())).boldOff().a(" |"));
-						/*-
-						System.out.format("| %3s | %" + max_length + "s | %2s:%-3s | %2s |",
+						System.out.format(
+								ansi().render("| @|bold,FG_" + getPinColour(pin_info) + " %3s|@ | @|bold,FG_"
+										+ getPinColour(pin_info) + " %" + max_length
+										+ "s|@ | @|bold %6s|@ | @|bold %2s|@ |").toString(),
 								getNotDefined(pin_info.getDeviceNumber()), pin_info.getName(),
-								getNotDefined(pin_info.getChip()), getNotDefined(pin_info.getLineOffset()),
+								getGpiodName(pin_info.getChip(), pin_info.getLineOffset()),
 								getNotDefined(pin_info.getPhysicalPin()));
-						*/
 					} else {
-						System.out.println(ansi().a("| ") //
-								.bold().format("%-2s", getNotDefined(pin_info.getPhysicalPin())).boldOff().a(" | ") //
-								.bold().format("%-6s", getGpiodName(pin_info.getChip(), pin_info.getLineOffset()))
-								.boldOff().a(" | ") //
-								.bold().fg(getPinColour(pin_info)).format("%-" + max_length + "s", pin_info.getName())
-								.fgDefault().boldOff().a(" | ") //
-								.bold().fg(getPinColour(pin_info))
-								.format("%-3s", getNotDefined(pin_info.getDeviceNumber())).fgDefault().boldOff()
-								.a(" |"));
-						/*-
-						System.out.format("| %-2s | %2s:%-3s | %-" + max_length + "s | %-3s |%n",
-								getNotDefined(pin_info.getPhysicalPin()), getNotDefined(pin_info.getChip()),
-								getNotDefined(pin_info.getLineOffset()), pin_info.getName(),
+						System.out.format(ansi()
+								.render("| @|bold %-2s|@ | @|bold %-6s|@ | @|bold,FG_" + getPinColour(pin_info) + " %-"
+										+ max_length + "s|@ | @|bold,FG_" + getPinColour(pin_info) + " %-3s|@ |%n")
+								.toString(), getNotDefined(pin_info.getPhysicalPin()),
+								getGpiodName(pin_info.getChip(), pin_info.getLineOffset()), pin_info.getName(),
 								getNotDefined(pin_info.getDeviceNumber()));
-						*/
 					}
-					/*-
-					if (pin_info instanceof PwmPinInfo) {
-						System.out.format("Pin [%d]: %s %d (PWM%d) %s%n", pin_info.getPhysicalPin(),
-								pin_info.getName(), pin_info.getDeviceNumber(), ((PwmPinInfo) pin_info).getPwmNum(),
-								pin_info.getModes().toString());
-					} else {
-						System.out.format("Pin [%d]: %s %d %s%n", pin_info.getPhysicalPin(),
-								pin_info.getName(), pin_info.getDeviceNumber(), pin_info.getModes().toString());
-					}
-					*/
 				}
 				System.out.format("+-----+-%s-+--------+----------+--------+-%s-+-----+%n", name_dash, name_dash);
 				System.out.println();

@@ -41,6 +41,7 @@ import com.diozero.devices.BME68x.IirFilterCoefficient;
 import com.diozero.devices.BME68x.ODR;
 import com.diozero.devices.BME68x.OperatingMode;
 import com.diozero.devices.BME68x.OversamplingMultiplier;
+import com.diozero.util.Diozero;
 import com.diozero.util.SleepUtil;
 
 /**
@@ -88,6 +89,8 @@ public class BME68xTest {
 			bme68x.softReset();
 
 			iaqTest(bme68x);
+		} finally {
+			Diozero.shutdown();
 		}
 	}
 

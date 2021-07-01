@@ -40,13 +40,15 @@ import com.diozero.internal.spi.AnalogInputDeviceFactoryInterface;
  * "http://www.analog.com/en/products/analog-to-digital-converters/integrated-special-purpose-converters/integrated-temperature-sensors/tmp36.html">
  * TMP36 Temperature Sensor by Analog Devices</a>
  */
+//FIXME Switch to composition
 public class TMP36 extends AnalogInputDevice implements ThermometerInterface {
 	private float tempOffset;
 
 	/**
 	 * @param deviceFactory Device factory to use to construct the device.
-	 * @param gpio GPIO on the ADC device.
-	 * @param tempOffset Compensate for potential temperature reading variations between different TMP36 devices.
+	 * @param gpio          GPIO on the ADC device.
+	 * @param tempOffset    Compensate for potential temperature reading variations
+	 *                      between different TMP36 devices.
 	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
 	public TMP36(AnalogInputDeviceFactoryInterface deviceFactory, int gpio, float tempOffset)
@@ -62,6 +64,7 @@ public class TMP36 extends AnalogInputDevice implements ThermometerInterface {
 
 	/**
 	 * Get the current temperature in &deg;C.
+	 *
 	 * @return Temperature in &deg;C.
 	 * @throws RuntimeIOException If an I/O error occurred.
 	 */

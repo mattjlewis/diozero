@@ -199,17 +199,21 @@ public class PwmOutputDevice extends GpioDevice {
 	}
 
 	private void fadeInOut(float sleepTime, float delta) throws RuntimeIOException {
-		float value = 0;
-		while (value <= 1 && running.get()) {
-			setValueInternal(value);
-			SleepUtil.sleepSeconds(sleepTime);
-			value += delta;
-		}
-		value = 1;
-		while (value >= 0 && running.get()) {
-			setValueInternal(value);
-			SleepUtil.sleepSeconds(sleepTime);
-			value -= delta;
+		try {
+			float value = 0;
+			while (value <= 1 && running.get()) {
+				setValueInternal(value);
+				SleepUtil.sleepSeconds(sleepTime);
+				value += delta;
+			}
+			value = 1;
+			while (value >= 0 && running.get()) {
+				setValueInternal(value);
+				SleepUtil.sleepSeconds(sleepTime);
+				value -= delta;
+			}
+		} catch (RuntimeInterruptedException e) {
+			running.set(false);
 		}
 	}
 
@@ -218,10 +222,14 @@ public class PwmOutputDevice extends GpioDevice {
 	}
 
 	private void onOff(float onTime, float offTime) throws RuntimeIOException {
-		setValueInternal(1);
-		SleepUtil.sleepSeconds(onTime);
-		setValueInternal(0);
-		SleepUtil.sleepSeconds(offTime);
+		try {
+			setValueInternal(1);
+			SleepUtil.sleepSeconds(onTime);
+			setValueInternal(0);
+			SleepUtil.sleepSeconds(offTime);
+		} catch (RuntimeInterruptedException e) {
+			running.set(false);
+		}
 	}
 
 	protected void setValueInternal(float value) throws RuntimeIOException {

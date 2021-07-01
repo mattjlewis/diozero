@@ -42,6 +42,7 @@ import com.diozero.animation.easing.Sine;
 import com.diozero.devices.LedBarGraph;
 import com.diozero.devices.MCP23008;
 import com.diozero.devices.mcp23xxx.MCP23xxx;
+import com.diozero.util.Diozero;
 import com.diozero.util.SleepUtil;
 
 public class LedBarGraphTest {
@@ -79,6 +80,8 @@ public class LedBarGraphTest {
 
 			Logger.info("Sleeping for {} seconds", Integer.valueOf(delay));
 			SleepUtil.sleepSeconds(delay);
+		} finally {
+			Diozero.shutdown();
 		}
 	}
 }

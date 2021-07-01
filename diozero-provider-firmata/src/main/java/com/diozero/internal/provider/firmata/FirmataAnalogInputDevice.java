@@ -31,6 +31,8 @@ package com.diozero.internal.provider.firmata;
  * #L%
  */
 
+import org.tinylog.Logger;
+
 import com.diozero.api.AnalogInputEvent;
 import com.diozero.api.RuntimeIOException;
 import com.diozero.internal.provider.firmata.adapter.FirmataAdapter;
@@ -41,17 +43,17 @@ import com.diozero.internal.spi.AnalogInputDeviceInterface;
 public class FirmataAnalogInputDevice extends AbstractInputDevice<AnalogInputEvent>
 		implements AnalogInputDeviceInterface {
 	private FirmataAdapter adapter;
-	private int gpio;
+	private int adcNum;
 	private float range;
 
-	public FirmataAnalogInputDevice(FirmataDeviceFactory deviceFactory, String key, int gpio) {
+	public FirmataAnalogInputDevice(FirmataDeviceFactory deviceFactory, String key, int adcNum) {
 		super(key, deviceFactory);
 
-		this.gpio = gpio;
+		this.adcNum = adcNum;
 
 		adapter = deviceFactory.getFirmataAdapter();
-		adapter.setPinMode(gpio, PinMode.ANALOG_INPUT);
-		range = adapter.getMax(gpio, PinMode.ANALOG_INPUT);
+		adapter.setPinMode(adcNum, PinMode.ANALOG_INPUT);
+		range = adapter.getMax(adcNum, PinMode.ANALOG_INPUT);
 	}
 
 	@Override
@@ -61,16 +63,27 @@ public class FirmataAnalogInputDevice extends AbstractInputDevice<AnalogInputEve
 
 	@Override
 	public float getValue() throws RuntimeIOException {
-		return adapter.getValue(gpio) / range;
+		return adapter.getValue(adcNum) / range;
 	}
 
 	@Override
 	public int getAdcNumber() {
-		return gpio;
+		return adcNum;
+	}
+
+	@Override
+	protected void enableListener() {
+		adapter.enableAnalogReporting(adcNum, true);
+	}
+
+	@Override
+	protected void disableListener() {
+		adapter.enableAnalogReporting(adcNum, false);
 	}
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
-		// TODO Anything to do?
+		Logger.trace("closeDevice()");
+		disableListener();
 	}
 }

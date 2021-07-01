@@ -216,7 +216,7 @@ public class GpioChip extends GpioChipInfo implements AutoCloseable, GpioLineEve
 		}
 		int line_fd = NativeGpioDevice.provisionGpioOutputDevice(chipFd, offset, initialValue);
 		if (line_fd < 0) {
-			throw new RuntimeIOException("Error in provisionGpioInputDevice: " + line_fd);
+			throw new RuntimeIOException("Error in provisionGpioOutputDevice: " + line_fd);
 		}
 		lines[offset].setFd(line_fd);
 

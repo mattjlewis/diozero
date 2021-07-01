@@ -37,44 +37,38 @@ import com.diozero.api.RuntimeIOException;
 import com.diozero.internal.spi.PwmOutputDeviceFactoryInterface;
 
 /**
- * Dual bi-directional motor controlled by a single PWM pin and separate forward / backward GPIO pins
- * Toshiba TB6612FNG Dual Motor Driver such as this one from Pololu: https://www.pololu.com/product/713
+ * Toshiba TB6612FNG Dual Motor Driver. Dual bi-directional motor controlled by
+ * a single PWM pin and separate forward / backward GPIO control pins.
+ *
+ * Such as <a href="https://www.pololu.com/product/713"> this one from
+ * Pololu</a>.
  */
 public class TB6612FNGDualMotorDriver extends DualMotor {
-	public TB6612FNGDualMotorDriver(int leftMotorClockwiseControlGpio, int leftMotorCounterClockwiseControlGpio,
-			int leftMotorPwmGpio,
-			int rightMotorClockwiseControlGpio,int rightMotorCounterClockwiseControlGpio,
+	public TB6612FNGDualMotorDriver(int motorAClockwiseControlGpio, int motorACounterClockwiseControlGpio,
+			int motorAPwmGpio, int motorBClockwiseControlGpio, int motorBCounterClockwiseControlGpio,
 			int rightMotorPwmGpio) throws RuntimeIOException {
-		this(new DigitalOutputDevice(leftMotorClockwiseControlGpio),
-				new DigitalOutputDevice(leftMotorCounterClockwiseControlGpio),
-				new PwmOutputDevice(leftMotorPwmGpio),
-				new DigitalOutputDevice(rightMotorClockwiseControlGpio),
-				new DigitalOutputDevice(rightMotorCounterClockwiseControlGpio),
-				new PwmOutputDevice(rightMotorPwmGpio));
+		this(new DigitalOutputDevice(motorAClockwiseControlGpio),
+				new DigitalOutputDevice(motorACounterClockwiseControlGpio), new PwmOutputDevice(motorAPwmGpio),
+				new DigitalOutputDevice(motorBClockwiseControlGpio),
+				new DigitalOutputDevice(motorBCounterClockwiseControlGpio), new PwmOutputDevice(rightMotorPwmGpio));
 	}
-	
-	public TB6612FNGDualMotorDriver(PwmOutputDeviceFactoryInterface pwmDeviceFactory,
-			int leftMotorClockwiseControlGpio, int leftMotorCounterClockwiseControlGpio,
-			int leftMotorPwmGpio,
-			int rightMotorClockwiseControlGpio,int rightMotorCounterClockwiseControlGpio,
-			int rightMotorPwmGpio) throws RuntimeIOException {
-		this(new DigitalOutputDevice(leftMotorClockwiseControlGpio),
-				new DigitalOutputDevice(leftMotorCounterClockwiseControlGpio),
-				new PwmOutputDevice(pwmDeviceFactory, leftMotorPwmGpio, 0),
-				new DigitalOutputDevice(rightMotorClockwiseControlGpio),
-				new DigitalOutputDevice(rightMotorCounterClockwiseControlGpio),
-				new PwmOutputDevice(pwmDeviceFactory, rightMotorPwmGpio, 0));
+
+	public TB6612FNGDualMotorDriver(PwmOutputDeviceFactoryInterface pwmDeviceFactory, int motorAClockwiseControlGpio,
+			int motorACounterClockwiseControlGpio, int motorAPwmGpio, int motorBClockwiseControlGpio,
+			int motorBCounterClockwiseControlGpio, int motorBPwmGpio) throws RuntimeIOException {
+		this(new DigitalOutputDevice(motorAClockwiseControlGpio),
+				new DigitalOutputDevice(motorACounterClockwiseControlGpio),
+				new PwmOutputDevice(pwmDeviceFactory, motorAPwmGpio, 0),
+				new DigitalOutputDevice(motorBClockwiseControlGpio),
+				new DigitalOutputDevice(motorBCounterClockwiseControlGpio),
+				new PwmOutputDevice(pwmDeviceFactory, motorBPwmGpio, 0));
 	}
-	
-	public TB6612FNGDualMotorDriver(
-			DigitalOutputDevice leftMotorClockwiseControlPin, DigitalOutputDevice leftMotorCounterClockwiseControlPin,
-			PwmOutputDevice leftMotorPwmControl,
-			DigitalOutputDevice rightMotorClockwiseControlPin, DigitalOutputDevice rightMotorCounterClockwiseControlPin,
-			PwmOutputDevice rightMotorPwmControl) {
-		super(
-			new TB6612FNGMotor(leftMotorClockwiseControlPin,
-				leftMotorCounterClockwiseControlPin, leftMotorPwmControl),
-			new TB6612FNGMotor(rightMotorClockwiseControlPin,
-				rightMotorCounterClockwiseControlPin, rightMotorPwmControl));
+
+	public TB6612FNGDualMotorDriver(DigitalOutputDevice motorAClockwiseControlPin,
+			DigitalOutputDevice motorACounterClockwiseControlPin, PwmOutputDevice motorAPwmControl,
+			DigitalOutputDevice motorBClockwiseControlPin, DigitalOutputDevice motorBCounterClockwiseControlPin,
+			PwmOutputDevice motorBPwmControl) {
+		super(new TB6612FNGMotor(motorAClockwiseControlPin, motorACounterClockwiseControlPin, motorAPwmControl),
+				new TB6612FNGMotor(motorBClockwiseControlPin, motorBCounterClockwiseControlPin, motorBPwmControl));
 	}
 }

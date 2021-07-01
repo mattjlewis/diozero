@@ -57,7 +57,8 @@ public class ConsoleUtil {
 			colour = Color.BLUE;
 			break;
 		default:
-			colour = Color.DEFAULT;
+			// FIXME Switch back to Color.DEFAULT when AnsiRenderer supports FG_DEFAULT
+			colour = Color.WHITE;
 		}
 		return colour;
 	}
@@ -81,7 +82,8 @@ public class ConsoleUtil {
 	}
 
 	public static Color getValueColour(Optional<Boolean> value) {
-		return value.map(v -> v.booleanValue() ? Color.MAGENTA : Color.BLUE).orElse(Color.DEFAULT);
+		// FIXME Switch back to Color.DEFAULT when AnsiRenderer supports FG_DEFAULT
+		return value.map(v -> v.booleanValue() ? Color.MAGENTA : Color.BLUE).orElse(Color.WHITE);
 	}
 
 	public static String getGpiodName(int chip, int lineOffset) {
@@ -130,6 +132,7 @@ public class ConsoleUtil {
 			}
 		}
 
+		// FIXME Switch back to Color.DEFAULT when AnsiRenderer supports FG_DEFAULT
 		return Color.WHITE;
 	}
 

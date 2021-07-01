@@ -56,6 +56,15 @@ public class SocketFirmataAdapter extends FirmataAdapter {
 	}
 
 	@Override
+	int bytesAvailable() {
+		try {
+			return is.available();
+		} catch (IOException e) {
+			throw new RuntimeIOException(e);
+		}
+	}
+
+	@Override
 	int read() throws RuntimeIOException {
 		try {
 			return is.read();

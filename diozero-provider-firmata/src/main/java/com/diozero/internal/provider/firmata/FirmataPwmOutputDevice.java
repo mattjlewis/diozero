@@ -31,13 +31,13 @@ package com.diozero.internal.provider.firmata;
  * #L%
  */
 
+import org.tinylog.Logger;
+
 import com.diozero.api.RuntimeIOException;
 import com.diozero.internal.provider.firmata.adapter.FirmataAdapter;
 import com.diozero.internal.provider.firmata.adapter.FirmataProtocol.PinMode;
 import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.InternalPwmOutputDeviceInterface;
-
-import org.tinylog.Logger;
 
 public class FirmataPwmOutputDevice extends AbstractDevice implements InternalPwmOutputDeviceInterface {
 	private FirmataAdapter adapter;
@@ -77,8 +77,6 @@ public class FirmataPwmOutputDevice extends AbstractDevice implements InternalPw
 	public void setValue(float value) throws RuntimeIOException {
 		adapter.setValue(gpio, Math.round(value * pwmMax));
 		adapter.refreshPinState(gpio);
-		int set_val = adapter.getValue(gpio);
-		System.out.println("device value: " + set_val);
 	}
 
 	@Override

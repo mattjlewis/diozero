@@ -35,6 +35,7 @@ import org.tinylog.Logger;
 
 import com.diozero.api.RuntimeIOException;
 import com.diozero.devices.TSL2561;
+import com.diozero.util.Diozero;
 import com.diozero.util.SleepUtil;
 
 /**
@@ -54,7 +55,7 @@ public class TSL2561Test {
 		if (args.length > 0) {
 			controller = Integer.parseInt(args[0]);
 		}
-		
+
 		test(controller);
 	}
 
@@ -70,6 +71,8 @@ public class TSL2561Test {
 			}
 		} catch (RuntimeIOException ioe) {
 			Logger.error(ioe, "Error: {}", ioe);
+		} finally {
+			Diozero.shutdown();
 		}
 	}
 }

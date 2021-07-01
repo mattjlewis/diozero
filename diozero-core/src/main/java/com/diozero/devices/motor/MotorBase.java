@@ -36,9 +36,8 @@ import java.util.List;
 
 import com.diozero.api.RuntimeIOException;
 import com.diozero.api.function.Action;
-import com.diozero.api.function.FloatConsumer;
 
-public abstract class MotorBase implements MotorInterface, FloatConsumer {
+public abstract class MotorBase implements MotorInterface {
 	private Action forwardAction;
 	private Action backwardAction;
 	private Action stopAction;
@@ -80,8 +79,7 @@ public abstract class MotorBase implements MotorInterface, FloatConsumer {
 		}
 	}
 
-	@Override
-	public void accept(float value) {
+	protected void valueChanged(float value) {
 		MotorEvent event = new MotorEvent(System.currentTimeMillis(), System.nanoTime(), value);
 		listeners.forEach(listener -> listener.accept(event));
 

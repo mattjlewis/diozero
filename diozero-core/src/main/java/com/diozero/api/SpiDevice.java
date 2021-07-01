@@ -34,7 +34,7 @@ package com.diozero.api;
 import org.tinylog.Logger;
 
 import com.diozero.internal.spi.InternalSpiDeviceInterface;
-import com.diozero.internal.spi.NativeDeviceFactoryInterface;
+import com.diozero.internal.spi.SpiDeviceFactoryInterface;
 import com.diozero.sbc.DeviceFactoryHelper;
 
 /**
@@ -141,20 +141,26 @@ public class SpiDevice implements SpiDeviceInterface {
 	private int maxBufferSize;
 
 	public SpiDevice(int chipSelect) throws RuntimeIOException {
-		this(SpiConstants.DEFAULT_SPI_CONTROLLER, chipSelect, SpiConstants.DEFAULT_SPI_CLOCK_FREQUENCY,
-				SpiConstants.DEFAULT_SPI_CLOCK_MODE, SpiConstants.DEFAULT_LSB_FIRST);
+		this(DeviceFactoryHelper.getNativeDeviceFactory(), SpiConstants.DEFAULT_SPI_CONTROLLER, chipSelect,
+				SpiConstants.DEFAULT_SPI_CLOCK_FREQUENCY, SpiConstants.DEFAULT_SPI_CLOCK_MODE,
+				SpiConstants.DEFAULT_LSB_FIRST);
 	}
 
 	public SpiDevice(int controller, int chipSelect) throws RuntimeIOException {
-		this(controller, chipSelect, SpiConstants.DEFAULT_SPI_CLOCK_FREQUENCY, SpiConstants.DEFAULT_SPI_CLOCK_MODE,
+		this(DeviceFactoryHelper.getNativeDeviceFactory(), controller, chipSelect,
+				SpiConstants.DEFAULT_SPI_CLOCK_FREQUENCY, SpiConstants.DEFAULT_SPI_CLOCK_MODE,
 				SpiConstants.DEFAULT_LSB_FIRST);
 	}
 
 	public SpiDevice(int controller, int chipSelect, int frequency, SpiClockMode mode, boolean lsbFirst)
 			throws RuntimeIOException {
-		NativeDeviceFactoryInterface ndf = DeviceFactoryHelper.getNativeDeviceFactory();
-		delegate = ndf.provisionSpiDevice(controller, chipSelect, frequency, mode, lsbFirst);
-		maxBufferSize = ndf.getSpiBufferSize();
+		this(DeviceFactoryHelper.getNativeDeviceFactory(), controller, chipSelect, frequency, mode, lsbFirst);
+	}
+
+	public SpiDevice(SpiDeviceFactoryInterface deviceFactory, int controller, int chipSelect, int frequency,
+			SpiClockMode mode, boolean lsbFirst) throws RuntimeIOException {
+		delegate = deviceFactory.provisionSpiDevice(controller, chipSelect, frequency, mode, lsbFirst);
+		maxBufferSize = deviceFactory.getSpiBufferSize();
 	}
 
 	/**

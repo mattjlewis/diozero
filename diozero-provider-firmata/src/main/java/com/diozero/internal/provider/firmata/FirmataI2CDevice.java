@@ -37,6 +37,7 @@ import com.diozero.api.I2CConstants;
 import com.diozero.api.RuntimeIOException;
 import com.diozero.internal.provider.firmata.adapter.FirmataAdapter;
 import com.diozero.internal.provider.firmata.adapter.FirmataAdapter.I2CResponse;
+import com.diozero.internal.provider.firmata.adapter.FirmataProtocol;
 import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.InternalI2CDeviceInterface;
 
@@ -66,6 +67,10 @@ public class FirmataI2CDevice extends AbstractDevice implements InternalI2CDevic
 		adapter = deviceFactory.getFirmataAdapter();
 		this.address = address;
 		addressSize10Bit = addressSize == I2CConstants.AddressSize.SIZE_10;
+
+		// FIXME Figure out a way to configure the I2C pins...
+		adapter.setPinMode(4, FirmataProtocol.PinMode.I2C);
+		adapter.setPinMode(5, FirmataProtocol.PinMode.I2C);
 	}
 
 	@Override
