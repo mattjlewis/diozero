@@ -68,13 +68,20 @@ public class Diozero {
 		// isn't available
 		try (InputStream is = Diozero.class
 				.getResourceAsStream("/META-INF/maven/com.diozero/diozero-core/pom.properties")) {
-			Properties props = new Properties();
-			props.load(is);
-			version = props.getProperty("version");
+			if (is != null) {
+				Properties props = new Properties();
+				props.load(is);
+				version = props.getProperty("version");
+			}
 		} catch (IOException e) {
 			// Ignore
 			Logger.debug(e, "Failed to load pom.properties: {}", e);
 		}
+
+		if (version == null) {
+			version = "Unknown";
+		}
+
 		return version;
 	}
 

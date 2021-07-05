@@ -87,6 +87,11 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 	abstract void write(byte[] data);
 
 	public final void start() {
+		// Throw away any pending data available to read
+		while (bytesAvailable() > 0) {
+			readByte();
+		}
+
 		future = DiozeroScheduler.getNonDaemonInstance().submit(this);
 
 		initialiseBoard();
@@ -140,11 +145,6 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 		System.out.println("initialiseBoard::Got protocol version " + p_version);
 		 */
 
-		// Throw away any pending data available to read
-		while (bytesAvailable() > 0) {
-			readByte();
-		}
-
 		firmware = getFirmwareInternal();
 
 		CapabilityResponse board_capabilities = sendMessage(new byte[] { START_SYSEX, CAPABILITY_QUERY, END_SYSEX },
@@ -173,8 +173,8 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 		return firmware;
 	}
 
-	public ProtocolVersion getProtocolVersion() {
-		return sendMessage(new byte[] { PROTOCOL_VERSION }, ProtocolVersion.class);
+	public ProtocolVersionResponse getProtocolVersion() {
+		return sendMessage(new byte[] { PROTOCOL_VERSION }, ProtocolVersionResponse.class);
 	}
 
 	private FirmwareDetails getFirmwareInternal() {
@@ -186,8 +186,8 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 	}
 
 	public void refreshPinState(int gpio) {
-		PinState pin_state = sendMessage(new byte[] { START_SYSEX, PIN_STATE_QUERY, (byte) gpio, END_SYSEX },
-				PinState.class);
+		PinStateResponse pin_state = sendMessage(new byte[] { START_SYSEX, PIN_STATE_QUERY, (byte) gpio, END_SYSEX },
+				PinStateResponse.class);
 
 		// Update the cached pin mode and value
 		Pin pin = pins.get(Integer.valueOf(gpio));
@@ -209,6 +209,7 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 	}
 
 	public void enableAnalogReporting(int adcNum, boolean enabled) {
+		Logger.debug("enableAnalogReporting({}, {})", Integer.valueOf(adcNum), Boolean.valueOf(enabled));
 		sendMessage(new byte[] { (byte) (REPORT_ANALOG_PIN | adcNum), (byte) (enabled ? 1 : 0) });
 	}
 
@@ -307,7 +308,12 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 	}
 
 	private AnalogMappingResponse getAnalogMapping() throws RuntimeIOException {
-		return sendMessage(new byte[] { START_SYSEX, ANALOG_MAPPING_QUERY, END_SYSEX }, AnalogMappingResponse.class);
+		try {
+			return sendMessage(new byte[] { START_SYSEX, ANALOG_MAPPING_QUERY, END_SYSEX },
+					AnalogMappingResponse.class);
+		} catch (FirmataErrorMessage e) {
+			return new AnalogMappingResponse(new byte[] {});
+		}
 	}
 
 	/**
@@ -332,6 +338,7 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 	 *                read from that register (optional)
 	 */
 	public void i2cConfig(int delayMs) {
+		Logger.debug("i2cConfig({})", Integer.valueOf(delayMs));
 		if (delayMs < 0) {
 			throw new IllegalArgumentException("Delay must be >= 0 microseconds");
 		}
@@ -377,11 +384,15 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 
 	public void i2cWrite(int slaveAddress, boolean autoRestart, boolean addressSize10Bit, byte[] data)
 			throws RuntimeIOException {
+		Logger.debug("i2cWrite({}, {}, {}, {} bytes)", Integer.valueOf(slaveAddress), Boolean.valueOf(autoRestart),
+				Boolean.valueOf(addressSize10Bit), Integer.valueOf(data.length));
 		i2cWriteData(slaveAddress, autoRestart, addressSize10Bit, I2C_NO_REGISTER, data);
 	}
 
 	public I2CResponse i2cReadData(int slaveAddress, boolean autoRestart, boolean addressSize10Bit, int register,
 			int length) {
+		Logger.trace("i2cReadData({}, {}, {}, {}, {})", Integer.valueOf(slaveAddress), Boolean.valueOf(autoRestart),
+				Boolean.valueOf(addressSize10Bit), Integer.valueOf(register), Integer.valueOf(length));
 		byte[] data = new byte[9];
 		int index = 0;
 		data[index++] = START_SYSEX;
@@ -403,6 +414,9 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 
 	public void i2cWriteData(int slaveAddress, boolean autoRestart, boolean addressSize10Bit, int register, byte[] data)
 			throws RuntimeIOException {
+		Logger.debug("i2cWriteData({}, {}, {}, {}, {} bytes)", Integer.valueOf(slaveAddress),
+				Boolean.valueOf(autoRestart), Boolean.valueOf(addressSize10Bit), Integer.valueOf(register),
+				Integer.valueOf(data.length));
 		byte[] buffer = new byte[7 + 2 * data.length];
 		int index = 0;
 		buffer[index++] = START_SYSEX;
@@ -425,33 +439,34 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 	}
 
 	private void sendMessage(byte[] request) throws RuntimeIOException {
-		sendMessage(request, null);
+		write(request);
 	}
 
 	@SuppressWarnings("unchecked")
 	private <T extends ResponseMessage> T sendMessage(byte[] request, Class<T> responseClass)
-			throws RuntimeIOException {
+			throws RuntimeIOException, FirmataErrorMessage {
 		ResponseMessage response = null;
 
 		try {
 			write(request);
 
-			if (responseClass != null) {
-				do {
-					Logger.trace("Waiting for a response ...");
-					response = responseQueue.take();
-					Logger.trace("Got response {}", response);
-					if (response.isPoison()) {
-						return null;
+			do {
+				Logger.trace("Waiting for a response ...");
+				response = responseQueue.take();
+				Logger.trace("Got response {}", response);
+				if (response.isPoison()) {
+					return null;
+				}
+				if (!response.getClass().isAssignableFrom(responseClass)
+						&& response.getClass().isAssignableFrom(StringDataResponse.class)) {
+					// Most likely a StringData error response
+					StringDataResponse sdr = (StringDataResponse) response;
+					Logger.debug("Got a string data error response: '{}', ignoring for now...", sdr.getValue());
+					if (sdr.getValue().equals("Unhandled sysex command")) {
+						throw new FirmataErrorMessage(sdr.getValue());
 					}
-					if (!response.getClass().isAssignableFrom(responseClass)
-							&& response.getClass().isAssignableFrom(StringDataResponse.class)) {
-						// Most likely a StringData error response
-						// System.out.println("Got a string data error response: " + response + ",
-						// ignoring for now...");
-					}
-				} while (!response.getClass().isAssignableFrom(responseClass));
-			}
+				}
+			} while (!response.getClass().isAssignableFrom(responseClass));
 		} catch (InterruptedException e) {
 			// Ignore
 			Logger.trace("Interrupted");
@@ -488,14 +503,22 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 
 				byte b = (byte) (i & 0xff);
 				if (b == START_SYSEX) {
+					Logger.trace("Processing sysex message...");
 					responseQueue.offer(readSysEx(null));
+					Logger.trace("Added sysex message to queue");
 				} else if (b == PROTOCOL_VERSION) {
+					Logger.trace("Processing protocol version message...");
 					responseQueue.offer(readVersionResponse());
+					Logger.trace("Added protocol version message to queue");
 				} else if (b == REPORT_FIRMWARE) {
+					Logger.trace("Processing firmware version message...");
 					responseQueue.add(readSysEx(Byte.valueOf(b)));
+					Logger.trace("Added firmware version message to queue");
 				} else if (b >= DIGITAL_IO_START && b <= DIGITAL_IO_END) {
+					Logger.trace("Processing digital read response message...");
 					processDigitalResponse(readDataResponse(b - DIGITAL_IO_START), epoch_time, nano_time);
 				} else if (b >= ANALOG_IO_START && b <= ANALOG_IO_END) {
+					Logger.trace("Processing analog read response message...");
 					processAnalogResponse(readDataResponse(b - ANALOG_IO_START), epoch_time, nano_time);
 				} else {
 					Logger.warn("Unrecognised response: 0x{}", Integer.toHexString(b & 0xff));
@@ -608,7 +631,7 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 			PinMode pin_mode = PinMode.valueOf(buffer.get());
 			byte[] pin_state = new byte[buffer.remaining()];
 			buffer.get(pin_state);
-			response = new PinState(pin, pin_mode, convertToValue(pin_state));
+			response = new PinStateResponse(pin, pin_mode, convertToValue(pin_state));
 			break;
 		case ANALOG_MAPPING_RESPONSE:
 			byte[] channels = new byte[buffer.remaining()];
@@ -633,8 +656,8 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 		return response;
 	}
 
-	private ProtocolVersion readVersionResponse() {
-		return new ProtocolVersion(readByte(), readByte());
+	private ProtocolVersionResponse readVersionResponse() {
+		return new ProtocolVersionResponse(readByte(), readByte());
 	}
 
 	private DataResponse readDataResponse(int port) {
@@ -802,12 +825,12 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 	 * The pin state query can also be used as a verification after sending pin
 	 * modes or data messages.
 	 */
-	static class PinState extends SysExResponse {
+	static class PinStateResponse extends SysExResponse {
 		private byte pin;
 		private PinMode mode;
 		private int state;
 
-		public PinState(byte pin, PinMode mode, int state) {
+		public PinStateResponse(byte pin, PinMode mode, int state) {
 			this.pin = pin;
 			this.mode = mode;
 			this.state = state;
@@ -831,11 +854,11 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 		}
 	}
 
-	static class ProtocolVersion extends ResponseMessage {
+	static class ProtocolVersionResponse extends ResponseMessage {
 		private byte major;
 		private byte minor;
 
-		ProtocolVersion(byte major, byte minor) {
+		ProtocolVersionResponse(byte major, byte minor) {
 			this.major = major;
 			this.minor = minor;
 		}
@@ -896,6 +919,36 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 		@Override
 		public String toString() {
 			return "AnalogMappingResponse [channels=" + Arrays.toString(channels) + "]";
+		}
+	}
+
+	public static class I2CResponse extends SysExResponse {
+		private int slaveAddress;
+		private int register;
+		private byte[] data;
+
+		public I2CResponse(int slaveAddress, int register, byte[] data) {
+			this.slaveAddress = slaveAddress;
+			this.register = register;
+			this.data = data;
+		}
+
+		public int getSlaveAddress() {
+			return slaveAddress;
+		}
+
+		public int getRegister() {
+			return register;
+		}
+
+		public byte[] getData() {
+			return data;
+		}
+
+		@Override
+		public String toString() {
+			return "I2CResponse[slaveAddress=" + slaveAddress + ", register=" + register + ", data.length="
+					+ data.length + "]";
 		}
 	}
 
@@ -974,33 +1027,11 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 		WRITE, READ_ONCE, READ_CONTINUOUSLY, STOP_READING;
 	}
 
-	public static class I2CResponse extends SysExResponse {
-		private int slaveAddress;
-		private int register;
-		private byte[] data;
+	private static class FirmataErrorMessage extends RuntimeIOException {
+		private static final long serialVersionUID = 2994268944182249234L;
 
-		public I2CResponse(int slaveAddress, int register, byte[] data) {
-			this.slaveAddress = slaveAddress;
-			this.register = register;
-			this.data = data;
-		}
-
-		public int getSlaveAddress() {
-			return slaveAddress;
-		}
-
-		public int getRegister() {
-			return register;
-		}
-
-		public byte[] getData() {
-			return data;
-		}
-
-		@Override
-		public String toString() {
-			return "I2CResponse[slaveAddress=" + slaveAddress + ", register=" + register + ", data.length="
-					+ data.length + "]";
+		public FirmataErrorMessage(String message) {
+			super(message);
 		}
 	}
 }

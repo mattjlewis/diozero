@@ -39,6 +39,7 @@ import com.diozero.api.DeviceMode;
 import com.diozero.api.GpioPullUpDown;
 import com.diozero.internal.spi.MmapGpioInterface;
 import com.diozero.util.MmapIntBuffer;
+import com.diozero.util.SleepUtil;
 
 /**
  * https://github.com/friendlyarm/WiringNP/blob/master/wiringPi/wiringPi.c#L536
@@ -103,7 +104,7 @@ public class AllwinnerH5MmapGpio implements MmapGpioInterface {
 		int shift = ((index - ((index >> 3) << 3)) << 2);
 		 */
 		int int_offset = (gpio >> 3) + 5 * (gpio >> 5);
-		int shift = (gpio % 8) * 4;
+		int shift = (gpio % 8) << 2;
 
 		int mode_val = (gpioAMmapIntBuffer.get(GPIOA_INT_OFFSET + int_offset) >> shift) & 0b111;
 		DeviceMode mode;
@@ -130,19 +131,19 @@ public class AllwinnerH5MmapGpio implements MmapGpioInterface {
 		int shift = ((index - ((index >> 3) << 3)) << 2);
 		 */
 		int int_offset = (gpio >> 3) + 5 * (gpio >> 5);
-		int shift = (gpio % 8) * 4;
+		int shift = (gpio % 8) << 2;
 
 		int phyaddr = GPIOA_INT_OFFSET + int_offset;
 
 		int reg_val = gpioAMmapIntBuffer.get(phyaddr);
+		int mode_val;
 
 		switch (mode) {
 		case DIGITAL_INPUT:
-			reg_val &= ~(7 << shift);
+			mode_val = 0b000;
 			break;
 		case DIGITAL_OUTPUT:
-			reg_val &= ~(7 << shift);
-			reg_val |= (1 << shift);
+			mode_val = 0b001;
 			break;
 		case PWM_OUTPUT:
 			Logger.warn("Mode {} not yet implemented for GPIO #{}", mode, Integer.valueOf(gpio));
@@ -151,6 +152,9 @@ public class AllwinnerH5MmapGpio implements MmapGpioInterface {
 			Logger.warn("Invalid mode ({}) for GPIO #{}", mode, Integer.valueOf(gpio));
 			return;
 		}
+
+		reg_val &= ~(0b111 << shift);
+		reg_val |= (mode_val << shift);
 
 		gpioAMmapIntBuffer.put(phyaddr, reg_val);
 	}
@@ -164,6 +168,52 @@ public class AllwinnerH5MmapGpio implements MmapGpioInterface {
 		 * int sub_index = index - 16 * sub;
 		 * int int_offset = ((bank * 36) + 0x1c + sub * 4) / 4;
 		 */
+
+		/*-
+		 * Pull Registers
+		 * 00: Disable, 01: Pull-up, 10: Pull-down
+		 *
+		 * Bank   Offset R0    Offset R1    GPIOs
+		 * PA (0) 0x1c (0-15), 0x2d (16-31) 0..31
+		 * PB (1)                           32..63
+		 * PC (2) 0x64 (0-15), 0x68 (16-31) 64..95
+		 * PD (3) 0x88 (0-15), 0x8c (16-31) 96..127
+		 * PE (4) 0xac (0-15), 0xb0 (16-31) 128..159
+		 * PF (5) 0xd0 (0-15), 0xd4 (16-31) 160..191
+		 * PG (6) 0xf4 (0-15), 0xf8 (16-31) 192..223
+		 * PH (7)                           224..255
+		 * PI (8)                           256..287
+		 * PJ (9)                           288..319
+		 * PK (a)                           320..351
+		 * PL (b) 0x1c (0-15), 0x20 (16-31) 352..383
+		 */
+		int bank = gpio >> 5; // equivalent to / 32
+		int reg = (gpio >> 4) % 2; // Register 0 or 1
+		int shift = (gpio % 16) << 1; // Shift 0..30
+		int int_offset = (0x1c + bank * 0x24) / 4 + reg;
+
+		int phyaddr = GPIOA_INT_OFFSET + int_offset;
+
+		int pud_val;
+		switch (pud) {
+		case PULL_UP:
+			pud_val = 0b10;
+			break;
+		case PULL_DOWN:
+			pud_val = 0b01;
+			break;
+		case NONE:
+		default:
+			pud_val = 0b00;
+		}
+
+		int reg_val = gpioAMmapIntBuffer.get(phyaddr);
+		reg_val &= ~(0b11 << shift);
+		reg_val |= (pud_val << shift);
+
+		gpioAMmapIntBuffer.put(phyaddr, reg_val);
+
+		SleepUtil.sleepMillis(1);
 	}
 
 	@Override

@@ -32,6 +32,8 @@ package com.diozero.util;
  */
 
 import java.util.Optional;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.tinylog.Logger;
 
@@ -41,6 +43,18 @@ import org.tinylog.Logger;
  * environment variables.
  */
 public class PropertyUtil {
+	private static final Map<String, String> envProps;
+	static {
+		envProps = new HashMap<>();
+		System.getenv().entrySet().forEach(entry -> {
+			envProps.put(entry.getKey(), entry.getValue());
+			// Additionally convert '_' to '.' as the shell export command doesn't allow '.'
+			if (entry.getKey().contains("_")) {
+				envProps.put(entry.getKey().replace('_', '.'), entry.getValue());
+			}
+		});
+	}
+
 	public static boolean isPropertySet(String key) {
 		return getProperty(key).isPresent();
 	}
@@ -144,10 +158,10 @@ public class PropertyUtil {
 		// System properties (-D) take priority over environment variables
 		// Java 9 has Optional.or():
 		/*-
-		return Optional.ofNullable(System.getProperties().getProperty(key, System.getenv().get(key)))
+		return Optional.ofNullable(System.getProperties().getProperty(key, envProps.get(key)))
 				.or(Optional::empty);
 		*/
-		String value = System.getProperties().getProperty(key, System.getenv().get(key));
+		String value = System.getProperties().getProperty(key, envProps.get(key));
 		return value == null ? Optional.empty() : Optional.of(value);
 	}
 

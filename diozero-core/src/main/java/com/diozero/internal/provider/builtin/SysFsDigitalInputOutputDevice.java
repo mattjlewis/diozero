@@ -53,10 +53,10 @@ public class SysFsDigitalInputOutputDevice extends AbstractInputDevice<DigitalIn
 	private static final byte HIGH_VALUE = '1';
 
 	private DefaultDeviceFactory deviceFactory;
-	protected int gpio;
+	private int gpio;
 	private Path valuePath;
 	private RandomAccessFile valueFile;
-	protected DeviceMode mode;
+	private DeviceMode mode;
 
 	public SysFsDigitalInputOutputDevice(DefaultDeviceFactory deviceFactory, String key, PinInfo pinInfo,
 			DeviceMode mode) {

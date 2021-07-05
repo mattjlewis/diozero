@@ -42,7 +42,14 @@ import com.diozero.util.MmapIntBuffer;
 import com.diozero.util.SleepUtil;
 
 /**
+ * https://wiki.friendlyarm.com/wiki/images/4/4b/Allwinner_H3_Datasheet_V1.2.pdf
  * See https://github.com/friendlyarm/WiringNP/blob/master/wiringPi/wiringPi.c
+ *
+ *
+ * Banks of GPIOs A-L:
+ *
+ * A=0-31, B=32-63, C=64-95, D=96-127, E=128-159, F=160-192, G=192-223,
+ * H=224-255, I=256-287, J=288-319, K=320-351, L=352-383
  */
 public class AllwinnerSun8iMmapGpio implements MmapGpioInterface {
 	private static final String GPIOMEM_DEVICE = "/dev/mem";
@@ -85,9 +92,7 @@ public class AllwinnerSun8iMmapGpio implements MmapGpioInterface {
 		int shift = ((index - ((index >> 3) << 3)) << 2);
 		 */
 		int int_offset = (gpio >> 3) + 5 * (gpio >> 5);
-		int shift = (gpio % 8) * 4;
-
-		// phyaddr = SUNXI_GPIO_BASE + (bank * 36) + ((index >> 3) << 2);
+		int shift = (gpio % 8) << 2;
 
 		int mode_val = (gpioAMmapIntBuffer.get(GPIOA_INT_OFFSET + int_offset) >> shift) & 0b111;
 		DeviceMode mode;
@@ -98,7 +103,30 @@ public class AllwinnerSun8iMmapGpio implements MmapGpioInterface {
 		case 1:
 			mode = DeviceMode.DIGITAL_OUTPUT;
 			break;
+		case 2:
+			if (gpio == 11 || gpio == 12) {
+				mode = DeviceMode.I2C;
+			} else if (gpio >= 0 && gpio < 6 || gpio >= 198 && gpio < 202) {
+				mode = DeviceMode.SERIAL;
+			} else {
+				mode = DeviceMode.UNKNOWN;
+			}
+			break;
+		case 3:
+			if (gpio == 5) {
+				mode = DeviceMode.PWM_OUTPUT;
+			} else if (gpio >= 64 && gpio < 68) {
+				mode = DeviceMode.SPI;
+			} else {
+				mode = DeviceMode.UNKNOWN;
+			}
+			break;
+		case 7:
+			// I/O Disable
+			mode = DeviceMode.UNKNOWN;
+			break;
 		default:
+			Logger.warn("Unknown mode for gpio {}: {}", Integer.valueOf(gpio), Integer.valueOf(mode_val));
 			mode = DeviceMode.UNKNOWN;
 		}
 
@@ -114,28 +142,35 @@ public class AllwinnerSun8iMmapGpio implements MmapGpioInterface {
 		int shift = ((index - ((index >> 3) << 3)) << 2);
 		 */
 		int int_offset = (gpio >> 3) + 5 * (gpio >> 5);
-		int shift = (gpio % 8) * 4;
+		int shift = (gpio % 8) << 2;
 
-		// phyaddr = SUNXI_GPIO_BASE + (bank * 36) + ((index >> 3) << 2);
 		int phyaddr = GPIOA_INT_OFFSET + int_offset;
 
 		int reg_val = gpioAMmapIntBuffer.get(phyaddr);
+		int mode_val;
 
 		switch (mode) {
 		case DIGITAL_INPUT:
-			reg_val &= ~(7 << shift);
+			mode_val = 0b000;
 			break;
 		case DIGITAL_OUTPUT:
-			reg_val &= ~(7 << shift);
-			reg_val |= (1 << shift);
+			mode_val = 0b001;
 			break;
 		case PWM_OUTPUT:
-			Logger.warn("Mode {} not yet implemented for GPIO #{}", mode, Integer.valueOf(gpio));
-			return;
+			if (gpio == 5) {
+				mode_val = 0b011;
+			} else {
+				Logger.warn("Invalid mode ({}) for GPIO #{}", mode, Integer.valueOf(gpio));
+				return;
+			}
+			break;
 		default:
 			Logger.warn("Invalid mode ({}) for GPIO #{}", mode, Integer.valueOf(gpio));
 			return;
 		}
+
+		reg_val &= ~(0b111 << shift);
+		reg_val |= (mode_val << shift);
 
 		gpioAMmapIntBuffer.put(phyaddr, reg_val);
 	}
@@ -150,34 +185,48 @@ public class AllwinnerSun8iMmapGpio implements MmapGpioInterface {
 		 * int int_offset = ((bank * 36) + 0x1c + sub * 4) / 4;
 		 */
 
-		// FIXME There must be a simpler formula...
-		int int_offset = (((gpio / 32) * 36) + 0x1c + ((gpio / 16) % 2) * 4) / 4;
-		int shift = gpio % 16;
+		/*-
+		 * Pull Registers
+		 * 00: Disable, 01: Pull-up, 10: Pull-down
+		 *
+		 * Bank   Offset R0    Offset R1    GPIOs
+		 * PA (0) 0x1c (0-15), 0x2d (16-31) 0..31
+		 * PB (1)                           32..63
+		 * PC (2) 0x64 (0-15), 0x68 (16-31) 64..95
+		 * PD (3) 0x88 (0-15), 0x8c (16-31) 96..127
+		 * PE (4) 0xac (0-15), 0xb0 (16-31) 128..159
+		 * PF (5) 0xd0 (0-15), 0xd4 (16-31) 160..191
+		 * PG (6) 0xf4 (0-15), 0xf8 (16-31) 192..223
+		 * PH (7)                           224..255
+		 * PI (8)                           256..287
+		 * PJ (9)                           288..319
+		 * PK (a)                           320..351
+		 * PL (b) 0x1c (0-15), 0x20 (16-31) 352..383
+		 */
+		int bank = gpio >> 5; // equivalent to / 32
+		int reg = (gpio >> 4) % 2; // Register 0 or 1
+		int shift = (gpio % 16) << 1; // Shift 0..30
+		int int_offset = (0x1c + bank * 0x24) / 4 + reg;
 
-		// phyaddr = SUNXI_GPIO_BASE + (bank * 36) + 0x1c + sub * 4; // +0x10 ->
-		// pullUpDn reg
 		int phyaddr = GPIOA_INT_OFFSET + int_offset;
 
-		// #define PUD_OFF 0
-		// #define PUD_DOWN 1
-		// #define PUD_UP 2
-		// upDnConvert[3] = {7, 7, 5};
 		int pud_val;
 		switch (pud) {
 		case PULL_UP:
-			pud_val = 5;
+			pud_val = 0b01;
 			break;
 		case PULL_DOWN:
-			pud_val = 7;
+			pud_val = 0b10;
 			break;
 		case NONE:
 		default:
-			pud_val = 7;
+			pud_val = 0b00;
 		}
 
 		int reg_val = gpioAMmapIntBuffer.get(phyaddr);
-		reg_val &= ~(3 << (shift << 1));
-		reg_val |= (pud_val << (shift << 1));
+		reg_val &= ~(0b11 << shift);
+		reg_val |= (pud_val << shift);
+
 		gpioAMmapIntBuffer.put(phyaddr, reg_val);
 
 		SleepUtil.sleepMillis(1);
@@ -193,8 +242,6 @@ public class AllwinnerSun8iMmapGpio implements MmapGpioInterface {
 		int int_offset = (gpio >> 5) * 9 + 4;
 		int shift = gpio % 32;
 
-		// int phyaddr = SUNXI_GPIO_BASE + (bank * 36) + 0x10; // +0x10 -> data reg
-
 		return ((gpioAMmapIntBuffer.get(GPIOA_INT_OFFSET + int_offset) >> shift) & 1) == 1;
 	}
 
@@ -208,7 +255,6 @@ public class AllwinnerSun8iMmapGpio implements MmapGpioInterface {
 		int int_offset = (gpio >> 5) * 9 + 4;
 		int shift = gpio % 32;
 
-		// int phyaddr = SUNXI_GPIO_BASE + (bank * 36) + 0x10; // +0x10 -> data reg
 		int addr_int_offset = GPIOA_INT_OFFSET + int_offset;
 
 		int reg_val = gpioAMmapIntBuffer.get(addr_int_offset);
@@ -231,17 +277,19 @@ public class AllwinnerSun8iMmapGpio implements MmapGpioInterface {
 			int offset = ((bank * 36) + ((index >> 3) << 2)) / 4;
 			int shift = ((index - ((index >> 3) << 3)) << 2);
 
-			int my_bank = gpio / 32;
+			int my_bank = gpio >> 5;
 			int my_index = gpio % 32;
-			int my_offset = (gpio / 8) + 5 * (gpio / 32);
-			int my_shift = (gpio % 8) * 4;
+			int my_offset = (gpio >> 3) + 5 * (gpio >> 5);
+			int my_shift = (gpio % 8) << 2;
 
 			if (bank != my_bank || index != my_index || offset != my_offset || shift != my_shift) {
-				System.out.format("Xx Mode for GPIO %d - bank: %d, index:%d, offset: %d, shift: %d%n", gpio, bank,
+				System.out.format("Xx Mode for GPIO %d - bank: %d, index:%d, offset: 0x%02x, shift: %d%n", gpio, bank,
 						index, offset, shift);
-				System.out.format("My Mode for GPIO %d - bank: %d, index:%d, offset: %d, shift: %d%n", gpio, my_bank,
-						my_index, my_offset, my_shift);
+				System.out.format("My Mode for GPIO %d - bank: %d, index:%d, offset: 0x%02x, shift: %d%n", gpio,
+						my_bank, my_index, my_offset, my_shift);
 			}
+			System.out.format("My Mode for GPIO %d - bank: %d, index:%d, offset: 0x%02x, shift: %d%n", gpio, my_bank,
+					my_index, my_offset, my_shift);
 		}
 
 		// Computed values for GPIO value register
@@ -255,10 +303,10 @@ public class AllwinnerSun8iMmapGpio implements MmapGpioInterface {
 			int my_shift = gpio % 32;
 
 			if (bank != my_bank || gpio_int_offset != my_offset || shift != my_shift) {
-				System.out.format("Xx Value for GPIO %d - bank: %d, offset: %d, shift: %d%n", gpio, bank,
+				System.out.format("Xx Value for GPIO %d - bank: %d, offset: 0x%02x, shift: %d%n", gpio, bank,
 						gpio_int_offset, shift);
-				System.out.format("My Value for GPIO %d - bank: %d, offset: %d, shift: %d%n", gpio, my_bank, my_offset,
-						my_shift);
+				System.out.format("My Value for GPIO %d - bank: %d, offset: 0x%02x, shift: %d%n", gpio, my_bank,
+						my_offset, my_shift);
 			}
 		}
 
@@ -270,31 +318,53 @@ public class AllwinnerSun8iMmapGpio implements MmapGpioInterface {
 			int sub_index = index - 16 * sub;
 			int int_offset = ((bank * 36) + 0x1c + sub * 4) / 4;
 
-			int my_bank = gpio / 32;
+			int my_bank = gpio >> 5;
 			int my_index = gpio % 32;
-			int my_sub = (gpio / 16) % 2;
+			int my_sub = (gpio >> 4) % 2;
 			int my_sub_index = gpio % 16;
-			int my_int_offset = (((gpio / 32) * 36) + 0x1c + ((gpio / 16) % 2) * 4) / 4;
+			int my_int_offset = (0x1c + my_bank * 0x24 + my_sub * 4) / 4;
 
-			// System.out.format("Xx Value for GPIO PUD %d - bank: %d, index: %d, sub: %d,
-			// sub_index: %d, int_offset=%d%n",
-			// gpio, bank, index, sub, sub_index, int_offset);
 			if (bank != my_bank || index != my_index || sub != my_sub || sub_index != my_sub_index
 					|| int_offset != my_int_offset) {
 				System.out.format(
-						"Xx Value for GPIO PUD %d - bank: %d, index: %d, sub: %d, sub_index: %d, int_offset=%d%n", gpio,
+						"Xx PUD for GPIO %d - bank: %d, index: %d, sub: %d, sub_index: %d, int_offset=0x%02x%n", gpio,
 						bank, index, sub, sub_index, int_offset);
 				System.out.format(
-						"My Value for GPIO PUD %d - bank: %d, index: %d, sub: %d, sub_index: %d, int_offset=%d%n", gpio,
+						"My PUD for GPIO %d - bank: %d, index: %d, sub: %d, sub_index: %d, int_offset=0x%02x%n", gpio,
 						my_bank, my_index, my_sub, my_sub_index, my_int_offset);
 			}
 		}
 
+		for (int gpio = 0; gpio < 224; gpio++) {
+			int bank = gpio >> 5; // equivalent to / 32
+			int reg = (gpio >> 4) % 2;
+			int shift = (gpio % 16) << 1;
+			int offset = 0x1c + bank * 0x24 + reg * 4;
+			int int_offset = offset / 4;
+			System.out.format("My PUD for GPIO %d - bank: %d, reg: %d, shift: %d, offset: 0x%02x, int_offset: 0x%02x%n",
+					gpio, bank, reg, shift, offset, int_offset);
+		}
+
+		if (args.length < 1) {
+			System.out.println("Usage: " + AllwinnerSun8iMmapGpio.class.getName() + " <gpio>");
+			return;
+		}
 		int gpio = Integer.parseInt(args[0]);
 
 		try (AllwinnerSun8iMmapGpio mmap_gpio = new AllwinnerSun8iMmapGpio()) {
 			mmap_gpio.initialise();
+
 			System.out.println("Mode: " + mmap_gpio.getMode(gpio));
+
+			for (int i = 0; i < 20; i++) {
+				System.out.println("Mode for GPIO #" + gpio + ": " + mmap_gpio.getMode(gpio));
+				SleepUtil.sleepSeconds(1);
+			}
+
+			if (true) {
+				return;
+			}
+
 			for (int i = 0; i < 5; i++) {
 				System.out.println("GPIO#" + gpio);
 				mmap_gpio.setMode(gpio, DeviceMode.DIGITAL_OUTPUT);

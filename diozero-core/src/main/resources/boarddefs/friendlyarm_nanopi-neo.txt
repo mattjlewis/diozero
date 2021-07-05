@@ -1,0 +1,51 @@
+General, RHS, 1, 3v3
+General, RHS, 2, 5v
+General, RHS, 4, 5v
+General, RHS, 6, GND
+General, RHS, 9, GND
+General, RHS, 14, GND
+General, RHS, 17, 3v3
+General, RHS, 20, GND
+
+# GPIOA=0-31, B=32-63, C=64-95, D=96-127, E=128-159, F=160-192, G=192-223, H=224-255, I=256-287, J=288-319, K=320-351, L=352-383
+# GPIO, Header,  GPIO#, Name,    Physical, Modes,                          Chip, Line
+GPIO,   RHS,     12,    SDA.0,   3,        DIGITAL_INPUT | DIGITAL_OUTPUT, 0,    12  # I2C0 SDA
+GPIO,   RHS,     11,    SCL.0,   5,        DIGITAL_INPUT | DIGITAL_OUTPUT, 0,    11  # I2C0 SCL
+GPIO,   RHS,     203,   GPIOG11, 7,        DIGITAL_INPUT | DIGITAL_OUTPUT, 0,    203
+GPIO,   RHS,     198,   TX.1,    8,        DIGITAL_INPUT | DIGITAL_OUTPUT, 0,    198 # UART1 TX
+GPIO,   RHS,     199,   RX.1,    10,       DIGITAL_INPUT | DIGITAL_OUTPUT, 0,    199 # UART1 RX
+GPIO,   RHS,     0,     TX.2,    11,       DIGITAL_INPUT | DIGITAL_OUTPUT, 0,    0   # UART2 TX
+GPIO,   RHS,     6,     GPIOA6,  12,       DIGITAL_INPUT | DIGITAL_OUTPUT, 0,    6
+GPIO,   RHS,     2,     GPIOA2,  13,       DIGITAL_INPUT | DIGITAL_OUTPUT, 0,    2   # UART2 RTS
+GPIO,   RHS,     3,     GPIOA3,  15,       DIGITAL_INPUT | DIGITAL_OUTPUT, 0,    3   # UART2 CTS
+GPIO,   RHS,     200,   GPIOG8,  16,       DIGITAL_INPUT | DIGITAL_OUTPUT, 0,    200 # UART1 RTS
+GPIO,   RHS,     201,   GPIOG9,  18,       DIGITAL_INPUT | DIGITAL_OUTPUT, 0,    201 # UART1 CTS
+GPIO,   RHS,     64,    MOSI,    19,       DIGITAL_INPUT | DIGITAL_OUTPUT, 0,    64  # SPI0 MOSI
+GPIO,   RHS,     65,    MISO,    21,       DIGITAL_INPUT | DIGITAL_OUTPUT, 0,    65  # SPI0 MISO
+GPIO,   RHS,     1,     RX.2,    22,       DIGITAL_INPUT | DIGITAL_OUTPUT, 0,    1   # UART2 RX
+GPIO,   RHS,     66,    SCLK,    23,       DIGITAL_INPUT | DIGITAL_OUTPUT, 0,    66  # SPI0 CLK
+GPIO,   RHS,     67,    CE0,     24,       DIGITAL_INPUT | DIGITAL_OUTPUT, 0,    67  # SPI0 CS
+
+General, LHS, 1,  5v
+General, LHS, 2,  USB-DP1
+General, LHS, 3,  USB-DM1
+General, LHS, 4,  USB-DP2
+General, LHS, 5,  USB-DM2
+General, LHS, 6,  LINEIN-MP
+General, LHS, 7,  IR-RX
+General, LHS, 8,  LINEIN-MN
+General, LHS, 9,  SPDIF
+General, LHS, 10, LINEOUT-LR
+General, LHS, 11, I2S0-LRCK
+General, LHS, 12, LINEOUT-LL
+General, LHS, 13, I2S0-BCK
+# sysfs PWM is on UART0 RX / PA5 ALT Function 3
+PWM,     LHS, 5,  RX.0, 14, 0, 0, DIGITAL_INPUT | DIGITAL_OUTPUT | PWM_OUTPUT, 0, 5 # UART0 RX
+General, LHS, 15, I2S0-DOUT
+GPIO,    LHS, 4,  TX.0, 16,       DIGITAL_INPUT | DIGITAL_OUTPUT, 0, 4              # UART0 TX
+General, LHS, 17, I2S0-DIN
+General, LHS, 18, 5v
+General, LHS, 19, GND
+General, LHS, 20, GND
+General, LHS, 21, CVBS
+General, LHS, 22, GND

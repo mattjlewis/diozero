@@ -110,6 +110,12 @@ public class ConsoleUtil {
 			return "AIN";
 		case ANALOG_OUTPUT:
 			return "AOUT";
+		case SERVO:
+			return "Srvo";
+		case I2C:
+			return "I2C";
+		case SPI:
+			return "SPI";
 		default:
 			return "Unkn";
 		}

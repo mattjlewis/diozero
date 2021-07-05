@@ -186,7 +186,7 @@ public class GpioChip extends GpioChipInfo implements AutoCloseable, GpioLineEve
 		// GPIO_V2_LINE_FLAG_BIAS_*
 		// https://microhobby.com.br/blog/2020/02/02/new-linux-kernel-5-5-new-interfaces-in-gpiolib/
 		// As on 19/10/2020 Raspberry is on Kernel 5.4.51
-		int handle_flags = 0;
+		int handle_flags = GPIOHANDLE_REQUEST_INPUT;
 		int event_flags;
 		switch (trigger) {
 		case RISING:

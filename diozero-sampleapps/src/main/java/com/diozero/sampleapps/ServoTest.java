@@ -106,19 +106,19 @@ public class ServoTest {
 
 				Logger.info("From mid angle {} to max angle {}", Integer.valueOf(trim.getMidAngle()),
 						Integer.valueOf(trim.getMaxAngle()));
-				for (int angle = trim.getMidAngle(); angle < trim.getMaxAngle(); angle++) {
+				for (int angle = trim.getMidAngle(); angle < trim.getMaxAngle(); angle += 2) {
 					servo.setAngle(angle);
 					SleepUtil.sleepMillis(10);
 				}
 				Logger.info("From max angle {} to min angle {}", Integer.valueOf(trim.getMaxAngle()),
 						Integer.valueOf(trim.getMinAngle()));
-				for (int angle = trim.getMaxAngle(); angle > trim.getMinAngle(); angle--) {
+				for (int angle = trim.getMaxAngle(); angle > trim.getMinAngle(); angle -= 2) {
 					servo.setAngle(angle);
 					SleepUtil.sleepMillis(10);
 				}
 				Logger.info("From min angle {} to mid angle {}", Integer.valueOf(trim.getMinAngle()),
 						Integer.valueOf(trim.getMidAngle()));
-				for (int angle = trim.getMinAngle(); angle < trim.getMidAngle(); angle++) {
+				for (int angle = trim.getMinAngle(); angle < trim.getMidAngle(); angle += 2) {
 					servo.setAngle(angle);
 					SleepUtil.sleepMillis(10);
 				}
@@ -135,7 +135,7 @@ public class ServoTest {
 						.fromValues(new float[][] { { trim.getMidAngle() }, { trim.getMaxAngle() },
 								{ trim.getMinAngle() }, { trim.getMidAngle() } });
 
-				AnimationInstance ai = new AnimationInstance(10_000, cue_points, key_frames);
+				AnimationInstance ai = new AnimationInstance(5_000, cue_points, key_frames);
 				animation.enqueue(ai);
 
 				Logger.info("Playing animation...");

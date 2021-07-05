@@ -122,6 +122,10 @@ public class SystemInformation {
 								getNotDefined(pin_info.getDeviceNumber()));
 					}
 				}
+				if (index % 2 == 1) {
+					System.out.format("|    |        | %-" + max_length + "s |     |%n", "");
+				}
+
 				System.out.format("+-----+-%s-+--------+----------+--------+-%s-+-----+%n", name_dash, name_dash);
 				System.out.println();
 			}

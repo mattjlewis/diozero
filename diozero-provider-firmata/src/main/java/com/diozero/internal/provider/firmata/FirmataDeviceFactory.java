@@ -112,7 +112,7 @@ public class FirmataDeviceFactory extends BaseNativeDeviceFactory implements Fir
 	public void start() {
 		adapter.start();
 		// TODO Configure the Firmata device's I2C delay?
-		// adapter.i2cConfig(max_delay_ms);
+		//adapter.i2cConfig(5);
 	}
 
 	@Override
@@ -172,7 +172,8 @@ public class FirmataDeviceFactory extends BaseNativeDeviceFactory implements Fir
 		adapter.refreshPinState(gpio);
 
 		DeviceMode mode;
-		switch (adapter.getPinMode(gpio)) {
+		PinMode pin_mode = adapter.getPinMode(gpio);
+		switch (pin_mode) {
 		case DIGITAL_INPUT:
 		case INPUT_PULLUP:
 			mode = DeviceMode.DIGITAL_INPUT;
@@ -189,7 +190,14 @@ public class FirmataDeviceFactory extends BaseNativeDeviceFactory implements Fir
 		case SERVO:
 			mode = DeviceMode.SERVO;
 			break;
+		case I2C:
+			mode = DeviceMode.I2C;
+			break;
+		case SERIAL:
+			mode = DeviceMode.SERIAL;
+			break;
 		default:
+			Logger.debug("Unhandled Firmata pin mode for pin {}: {}", Integer.valueOf(gpio), pin_mode);
 			mode = DeviceMode.UNKNOWN;
 		}
 
@@ -379,6 +387,9 @@ public class FirmataDeviceFactory extends BaseNativeDeviceFactory implements Fir
 					break;
 				case I2C:
 					modes.add(DeviceMode.I2C);
+					break;
+				case SERIAL:
+					modes.add(DeviceMode.SERIAL);
 					break;
 				default:
 					// Ignore

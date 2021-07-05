@@ -115,6 +115,11 @@ public class GpioReadAll {
 						getModeString(deviceFactory, pin_info), pin_info.getName(), getNotDefined(gpio));
 			}
 		}
+
+		if (index % 2 == 1) {
+			System.out.format("|    |        |   |      | %-" + max_name_length + "s |     |%n", "");
+		}
+
 		System.out.format("+-----+-%s-+------+---+--------+----------+--------+---+------+-%s-+-----+%n", name_dash,
 				name_dash);
 	}

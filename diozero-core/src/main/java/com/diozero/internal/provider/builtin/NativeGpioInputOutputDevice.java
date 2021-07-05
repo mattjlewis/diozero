@@ -86,14 +86,19 @@ public class NativeGpioInputOutputDevice extends AbstractInputDevice<DigitalInpu
 		// Detect a direction change
 		switch (mode) {
 		case DIGITAL_INPUT:
-			// TODO Re-enable listener?!
 			if (line.getDirection() != GpioLine.Direction.INPUT) {
 				line.close();
 				line = chip.provisionGpioInputDevice(gpio, GpioPullUpDown.NONE, GpioEventTrigger.BOTH);
+				if (isListenerEnabled()) {
+					enableListener();
+				}
 			}
 			break;
 		case DIGITAL_OUTPUT:
 			if (line.getDirection() != GpioLine.Direction.OUTPUT) {
+				if (isListenerEnabled()) {
+					disableListener();
+				}
 				line.close();
 				line = chip.provisionGpioOutputDevice(gpio, 0);
 			}
@@ -136,6 +141,7 @@ public class NativeGpioInputOutputDevice extends AbstractInputDevice<DigitalInpu
 
 	@Override
 	public void closeDevice() {
+		super.closeDevice();
 		line.close();
 	}
 

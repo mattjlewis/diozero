@@ -45,7 +45,7 @@ static int dir_filter(const struct dirent *dir) {
 	return !strncmp(dir->d_name, "gpiochip", 8);
 }
 
-int exitLoopFd = -1;
+volatile int exitLoopFd = -1;
 volatile bool running = false;
 
 JNIEXPORT jobject JNICALL Java_com_diozero_internal_provider_builtin_gpio_NativeGpioDevice_getChips(
@@ -222,7 +222,7 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_builtin_gpio_NativeGpi
 JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_builtin_gpio_NativeGpioDevice_epollAddFileDescriptor(
 		JNIEnv* env, jclass clz, jint epollFd, jint lineFd) {
 	struct epoll_event ev;
-	ev.events = EPOLLIN | EPOLLPRI | EPOLLET;
+	ev.events = EPOLLIN | EPOLLPRI;
 	ev.data.fd = lineFd;
 
 	int rc = epoll_ctl(epollFd, EPOLL_CTL_ADD, lineFd, &ev);
@@ -238,7 +238,7 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_builtin_gpio_NativeGpi
 		JNIEnv* env, jclass clz, jint epollFd, jint lineFd) {
 	int rc = epoll_ctl(epollFd, EPOLL_CTL_DEL, lineFd, NULL);
 	if (rc < 0) {
-		perror("Error in epoll_ctl EPOLL_CTL_DEL");
+		perror("Error in epoll_ctl EPOLL_CTL_DEL in epollRemoveFileDescriptor");
 		return -errno;
 	}
 
@@ -260,7 +260,7 @@ JNIEXPORT void JNICALL Java_com_diozero_internal_provider_builtin_gpio_NativeGpi
 	while (running) {
 		// TODO Use epoll_pwait for signal?
 		// https://man7.org/linux/man-pages/man2/epoll_wait.2.html
-		num_fds = epoll_wait(epollFd, epoll_events, max_events, timeout);
+		num_fds = epoll_pwait(epollFd, epoll_events, max_events, timeout, NULL);
 		jlong epoch_time_ms = getEpochTimeMillis();
 
 		if (num_fds < 0) {
@@ -413,7 +413,7 @@ int stopEventLoopEventFd(int epollFd) {
 
 	rc = epoll_ctl(epollFd, EPOLL_CTL_DEL, exitLoopFd, NULL);
 	if (rc < 0) {
-		perror("Error in epoll_ctl EPOLL_CTL_DEL");
+		perror("Error in epoll_ctl EPOLL_CTL_DEL in stopEventLoopEventFd");
 		return -errno;
 	}
 

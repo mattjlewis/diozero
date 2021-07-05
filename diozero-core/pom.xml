@@ -40,8 +40,9 @@
 				<artifactId>maven-jar-plugin</artifactId>
 				<configuration>
 					<archive>
+						<addMavenDescriptor>true</addMavenDescriptor>
 						<manifestEntries>
-							<Automatic-Module-Name>com.diozero.core</Automatic-Module-Name>
+							<Automatic-Module-Name>diozero.core</Automatic-Module-Name>
 						</manifestEntries>
 						<manifest>
 							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
