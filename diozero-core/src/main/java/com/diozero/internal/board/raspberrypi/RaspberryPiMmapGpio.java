@@ -170,57 +170,61 @@ public class RaspberryPiMmapGpio implements MmapGpioInterface {
 		 */
 		int mode = mmapIntBuffer.getShiftRight(reg, shift, 7);
 		Logger.debug("mode for {}: {}", Integer.valueOf(gpio), Integer.valueOf(mode));
-		// TODO Support for SERIAL, SPI, I2C mode detection
+		DeviceMode device_mode = DeviceMode.UNKNOWN;
 		switch (mode) {
 		case FSEL_INPT:
-			return DeviceMode.DIGITAL_INPUT;
+			device_mode = DeviceMode.DIGITAL_INPUT;
+			break;
 		case FSEL_OUTP:
-			return DeviceMode.DIGITAL_OUTPUT;
+			device_mode = DeviceMode.DIGITAL_OUTPUT;
+			break;
 		case FSEL_ALT0:
 			if (gpio == 12 || gpio == 13 || gpio == 40 || gpio == 41 || gpio == 45) {
-				return DeviceMode.PWM_OUTPUT;
+				device_mode = DeviceMode.PWM_OUTPUT;
 			} else if (gpio >= 0 && gpio < 4 || gpio >= 28 && gpio < 30) {
-				return DeviceMode.I2C;
+				device_mode = DeviceMode.I2C;
 			} else if (gpio >= 7 && gpio < 12) {
-				return DeviceMode.SPI;
+				device_mode = DeviceMode.SPI;
 			} else if (gpio >= 14 && gpio < 16) {
-				return DeviceMode.SERIAL;
+				device_mode = DeviceMode.SERIAL;
 			}
-			return DeviceMode.UNKNOWN;
+			break;
 		case FSEL_ALT1:
 			if (gpio == 52 || gpio == 53) {
-				return DeviceMode.PWM_OUTPUT;
+				device_mode = DeviceMode.PWM_OUTPUT;
 			} else if (gpio == 44 || gpio == 45) {
-				return DeviceMode.I2C;
+				device_mode = DeviceMode.I2C;
 			}
-			return DeviceMode.UNKNOWN;
+			break;
 		case FSEL_ALT2:
 			if (gpio >= 36 && gpio < 40) {
-				return DeviceMode.SERIAL;
+				device_mode = DeviceMode.SERIAL;
 			} else if (gpio == 44 || gpio == 45) {
-				return DeviceMode.I2C;
+				device_mode = DeviceMode.I2C;
 			}
-			return DeviceMode.UNKNOWN;
+			break;
 		case FSEL_ALT3:
 			if (gpio >= 16 && gpio < 18 || gpio >= 30 && gpio < 34) {
-				return DeviceMode.SERIAL;
+				device_mode = DeviceMode.SERIAL;
 			}
-			return DeviceMode.UNKNOWN;
+			break;
 		case FSEL_ALT4:
 			if (gpio >= 16 && gpio < 22 || gpio >= 40 && gpio < 46) {
-				return DeviceMode.SPI;
+				device_mode = DeviceMode.SPI;
 			}
-			return DeviceMode.UNKNOWN;
+			break;
 		case FSEL_ALT5:
 			if (gpio >= 14 && gpio < 18 || gpio >= 30 && gpio < 34 || gpio >= 40 && gpio < 44) {
-				return DeviceMode.SERIAL;
+				device_mode = DeviceMode.SERIAL;
 			} else if (gpio == 18 || gpio == 19) {
-				return DeviceMode.PWM_OUTPUT;
+				device_mode = DeviceMode.PWM_OUTPUT;
 			}
-			return DeviceMode.UNKNOWN;
+			break;
 		default:
-			return DeviceMode.UNKNOWN;
+			// Ignore
 		}
+
+		return device_mode;
 	}
 
 	@Override

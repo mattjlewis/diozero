@@ -57,6 +57,7 @@ import com.diozero.internal.provider.firmata.adapter.FirmataProtocol.PinCapabili
 import com.diozero.internal.provider.firmata.adapter.FirmataProtocol.PinMode;
 import com.diozero.internal.provider.firmata.adapter.SerialFirmataAdapter;
 import com.diozero.internal.provider.firmata.adapter.SocketFirmataAdapter;
+import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.AnalogInputDeviceInterface;
 import com.diozero.internal.spi.AnalogOutputDeviceInterface;
 import com.diozero.internal.spi.BaseNativeDeviceFactory;
@@ -112,7 +113,7 @@ public class FirmataDeviceFactory extends BaseNativeDeviceFactory implements Fir
 	public void start() {
 		adapter.start();
 		// TODO Configure the Firmata device's I2C delay?
-		//adapter.i2cConfig(5);
+		// adapter.i2cConfig(5);
 	}
 
 	@Override
@@ -302,6 +303,7 @@ public class FirmataDeviceFactory extends BaseNativeDeviceFactory implements Fir
 
 	@Override
 	public void event(EventType eventType, int gpio, int value, long epochTime, long nanoTime) {
+		System.out.println("event(" + eventType + ", " + gpio + ", " + value + ")");
 		Optional<PinInfo> pin_info_opt = getBoardPinInfo().getByGpioNumber(gpio);
 		if (!pin_info_opt.isPresent()) {
 			return;
@@ -309,9 +311,13 @@ public class FirmataDeviceFactory extends BaseNativeDeviceFactory implements Fir
 		PinInfo pin_info = pin_info_opt.get();
 		switch (eventType) {
 		case DIGITAL:
-			FirmataDigitalInputDevice did = getDevice(createPinKey(pin_info));
-			if (did != null) {
-				did.accept(new DigitalInputEvent(gpio, epochTime, nanoTime, value != 0));
+			// Need to do this as Firmata reports for banks of 8 GPIOs
+			AbstractDevice device = getDevice(createPinKey(pin_info));
+			if (device instanceof FirmataDigitalInputDevice) {
+				FirmataDigitalInputDevice did = (FirmataDigitalInputDevice) device;
+				if (did != null) {
+					did.accept(new DigitalInputEvent(gpio, epochTime, nanoTime, value != 0));
+				}
 			}
 			break;
 		case ANALOG:

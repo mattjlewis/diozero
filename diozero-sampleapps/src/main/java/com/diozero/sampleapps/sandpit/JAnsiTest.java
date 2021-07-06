@@ -32,17 +32,24 @@ package com.diozero.sampleapps.sandpit;
  */
 
 import static org.fusesource.jansi.Ansi.ansi;
-import static org.fusesource.jansi.AnsiRenderer.render;
 
 import org.fusesource.jansi.AnsiConsole;
+import org.tinylog.Logger;
 
 public class JAnsiTest {
 	public static void main(String[] args) {
-		AnsiConsole.out().format(render("@|bold Hello %s|@%n"), "diozero");
+		// Attempt to initialise Jansi
+		try {
+			AnsiConsole.systemInstall();
+		} catch (Throwable t) {
+			// Ignore
+			Logger.error(t, "Jansi native library not available on this platform: {}", t);
+		}
 
-		System.out.println(ansi().eraseScreen().fgRed().a("Hello").a(" ").fgGreen().a("World!").reset().a(" ")
-				.bgBrightRed().a("Matt").reset());
-
+		System.out.println(
+				ansi().fgRed().a("Hello").a(" ").fgGreen().a("World!").reset().a(" ").bgBrightRed().a("Matt").reset());
+		// AnsiConsole.out().format(render("@|bold Hello %s|@%n"), "diozero");
+		System.out.format(ansi().render("@|bold Hello %s|@%n").toString(), "diozero");
 		System.out.println(ansi().bold().fgGreen().a("Hello").boldOff().fgDefault().a(" diozero"));
 	}
 }
