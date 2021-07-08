@@ -95,7 +95,7 @@ public class Diozero {
 			return;
 		}
 
-		Runtime.getRuntime().addShutdownHook(new ShutdownHandlerThread());
+		Runtime.getRuntime().addShutdownHook(new Thread(Diozero::shutdown, "diozero Shutdown Handler"));
 
 		initialised.set(true);
 	}
@@ -154,20 +154,6 @@ public class Diozero {
 		} catch (InterruptedException e) {
 			// Ignore
 			Logger.debug(e, "Interrupted: {}", e);
-		}
-	}
-
-	private static class ShutdownHandlerThread extends Thread {
-		public ShutdownHandlerThread() {
-			setName("diozero Shutdown Handler");
-			setDaemon(false);
-		}
-
-		@Override
-		public void run() {
-			Logger.debug("Shutdown handler running");
-			shutdown();
-			Logger.debug("Shutdown handler finished");
 		}
 	}
 }

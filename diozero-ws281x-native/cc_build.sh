@@ -1,17 +1,8 @@
 #!/bin/sh
 
-cd src/main/c
+cd src/main/native
 LIB_DIR=../../../lib
-LIB_NAME=libdiozero-system-utils.so
-
-# x86_64
-echo "Compiling for x86-64"
-make clean && make CFLAGS="-march=x86-64"
-if [ $? -eq 0 ]; then
-  TARGET=${LIB_DIR}/linux-x86_64 && mkdir -p ${TARGET} && mv ${LIB_NAME} ${TARGET}/.
-  make clean
-fi
-echo
+LIB_NAME=libws281xj.so
 
 # aarch64
 echo "Compiling for AArch64"

@@ -11,7 +11,7 @@ LIB_NAME     := ws281xj
 SRCS = com_diozero_ws281xj_rpiws281x_WS281x.c
 
 LDLIBS := -lws2811
-RPI_WS281X_DIR := /home/pi/rpi_ws281x
+RPI_WS281X_DIR := $(HOME)/rpi_ws281x
 
 ifeq ($(OS),Windows_NT)
     uname_S := Windows

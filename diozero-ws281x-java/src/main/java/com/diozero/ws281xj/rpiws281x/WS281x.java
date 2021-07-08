@@ -31,12 +31,8 @@ package com.diozero.ws281xj.rpiws281x;
  * #L%
  */
 
-import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.diozero.ws281xj.LedDriverInterface;
@@ -102,28 +98,11 @@ public class WS281x implements LedDriverInterface {
 	private static void init() {
 		synchronized (loaded) {
 			if (!loaded.get()) {
-				String lib_name = LIB_NAME + "-" + System.getProperty("os.arch");
-				try (InputStream is = WS281x.class.getResourceAsStream("/lib/lib" + lib_name + ".so")) {
-					if (is != null) {
-						Path path = Files.createTempFile("lib" + lib_name, ".so");
-						path.toFile().deleteOnExit();
-						Files.copy(is, path, StandardCopyOption.REPLACE_EXISTING);
-						Runtime.getRuntime().load(path.toString());
-						loaded.set(true);
-					}
-				} catch (Throwable t) {
-					System.out.println("Error loading library from classpath, trying from system library path");
+				if (!LibraryUtil.loadLibrary(LIB_NAME, WS281x.class)) {
+					throw new RuntimeException("Error loading native library '" + LIB_NAME + "'");
 				}
 
-				if (!loaded.get()) {
-					// Try load the usual way...
-					try {
-						System.loadLibrary(LIB_NAME);
-						loaded.set(true);
-					} catch (Throwable t2) {
-						System.err.println("Error loading library '" + LIB_NAME + "'");
-					}
-				}
+				loaded.set(true);
 
 				Runtime.getRuntime().addShutdownHook(new Thread(WS281xNative::terminate, "WS281x Shutdown Handler"));
 			}

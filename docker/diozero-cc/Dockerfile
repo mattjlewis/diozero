@@ -1,4 +1,7 @@
-FROM diozero-cc-base
+FROM diozero/diozero-cc-base
+
+# Upgrade packages
+RUN apt-get update && apt-get -y upgrade && apt-get -y clean autoclean autoremove
 
 # Original instructions: https://solarianprogrammer.com/2018/05/06/building-gcc-cross-compiler-raspberry-pi/
 
@@ -64,22 +67,33 @@ RUN sudo make ARCH=arm INSTALL_HDR_PATH=${PI_GCC_TARGET_DIR}/arm-linux-gnueabihf
 # Build BinUtils
 WORKDIR ${BUILD_WORKING_DIR}/build-binutils
 RUN ../${BINUTILS_VERSION}/configure \
-    --prefix=${PI_GCC_TARGET_DIR} --target=arm-linux-gnueabihf \
+    --prefix=${PI_GCC_TARGET_DIR} \
     --with-arch=armv6 --with-fpu=vfp --with-float=hard \
-    --disable-multi-lib
+    --target=arm-linux-gnueabihf \
+    --disable-multilib
 RUN make -j${MAKE_JOBS}
 RUN sudo make install
 
+RUN sudo apt-get -y install zlib1g-dev
+
 # Build the first part of GCC
 WORKDIR ${BUILD_WORKING_DIR}/build-gcc
+# Removed: --enable-bootstrap
 RUN ../${GCC_VERSION}/configure \
     --prefix=${PI_GCC_TARGET_DIR} \
-    --target=arm-linux-gnueabihf \
+    --build=x86_64-linux-gnu --host=x86_64-linux-gnu --target=arm-linux-gnueabihf \
     --enable-languages=c,c++ \
     --with-arch=armv6 --with-fpu=vfp --with-float=hard \
     --disable-multilib \
     --program-prefix=arm-linux-gnueabihf- \
-    --includedir=${PI_GCC_TARGET_DIR}/arm-linux-gnueabihf/include \
+    --with-gcc-major-version-only \
+    --enable-shared --enable-linker-build-id \
+    --without-included-gettext --enable-threads=posix \
+    --enable-nls --enable-clocale=gnu --enable-libstdcxx-debug \
+    --enable-libstdcxx-time=yes --with-default-libstdcxx-abi=new --enable-gnu-unique-object \
+    --enable-plugin --enable-default-pie --with-system-zlib --with-target-system-zlib \
+    --disable-libitm --disable-libquadmath --disable-libquadmath-support --disable-sjlj-exceptions \
+    --disable-werror --enable-checking=release \
     --libdir=${PI_GCC_TARGET_DIR}/arm-linux-gnueabihf/lib
 RUN make -j${MAKE_JOBS} all-gcc
 RUN sudo make install-gcc
@@ -88,7 +102,7 @@ RUN sudo make install-gcc
 WORKDIR ${BUILD_WORKING_DIR}/build-glibc
 RUN ../${GLIBC_VERSION}/configure \
     --prefix=${PI_GCC_TARGET_DIR}/arm-linux-gnueabihf \
-    --build=$MACHTYPE --host=arm-linux-gnueabihf --target=arm-linux-gnueabihf \
+    --build=x86_64-linux-gnu --host=arm-linux-gnueabihf --target=arm-linux-gnueabihf \
     --with-arch=armv6 --with-fpu=vfp --with-float=hard \
     --with-headers=${PI_GCC_TARGET_DIR}/arm-linux-gnueabihf/include \
     --disable-multilib libc_cv_forced_unwind=yes
@@ -142,3 +156,33 @@ WORKDIR ${HOME_DIR}
 RUN sudo rm -rf ${BUILD_WORKING_DIR}
 
 WORKDIR ${HOME}
+
+# Finally add some other convenience packages
+RUN sudo apt update && sudo apt-get -y install libsdl2-dev
+
+ARG DEBIAN_MIRROR=http://ftp.uk.debian.org/debian
+ARG RASPBIAN_MIRROR=http://raspbian.raspberrypi.org/raspbian
+ARG LIB_SDL2=libsdl2-dev_2.0.9+dfsg1-1
+ARG LIB_SDL2_PATH=pool/main/libs/libsdl2
+
+# AArch64
+ARG LIB_SDL2_ARM64_FILE=${LIB_SDL2}_arm64.deb
+ARG LIB_SDL2_ARM64_URL=${DEBIAN_MIRROR}/${LIB_SDL2_PATH}/${LIB_SDL2_ARM64_FILE}
+RUN wget ${LIB_SDL2_ARM64_URL}
+RUN ar -p ${LIB_SDL2_ARM64_FILE} data.tar.xz | sudo tar Jxf - --strip-components=2 -C /usr/aarch64-linux-gnu
+RUN rm ${LIB_SDL2_ARM64_FILE}
+
+# ARMv7
+ARG LIB_SDL2_ARMV7_FILE=${LIB_SDL2}_armhf.deb
+ARG LIB_SDL2_ARMV7_URL=${DEBIAN_MIRROR}/${LIB_SDL2_PATH}/${LIB_SDL2_ARMV7_FILE}
+RUN wget ${LIB_SDL2_ARMV7_URL}
+RUN ar -p ${LIB_SDL2_ARMV7_FILE} data.tar.xz | sudo tar Jxf - --strip-components=2 -C /usr/arm-linux-gnueabihf
+RUN rm ${LIB_SDL2_ARMV7_FILE}
+
+# Raspbian ARMv6
+ARG LIB_SDL2_ARMV6_FILE=${LIB_SDL2}_armhf.deb
+ARG LIB_SDL2_ARMV6_URL=${RASPBIAN_MIRROR}/${LIB_SDL2_PATH}/${LIB_SDL2_ARMV6_FILE}
+RUN wget ${LIB_SDL2_ARMV6_URL}
+RUN ar -p ${LIB_SDL2_ARMV6_FILE} data.tar.xz | sudo tar Jxf - --strip-components=2 -C ${PI_GCC_TARGET_DIR}/arm-linux-gnueabihf
+RUN sudo mv ${PI_GCC_TARGET_DIR}/arm-linux-gnueabihf/lib/arm-linux-gnueabihf/* ${PI_GCC_TARGET_DIR}/arm-linux-gnueabihf/lib
+RUN rm ${LIB_SDL2_ARMV6_FILE}

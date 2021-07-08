@@ -85,6 +85,7 @@ public class LibraryLoader {
 				try (InputStream is = clz.getResourceAsStream(lib_file)) {
 					if (is != null) {
 						Path path = Files.createTempFile("lib" + libName, sys_info.getLibFileExtension());
+						path.toFile().deleteOnExit();
 						Files.copy(is, path, StandardCopyOption.REPLACE_EXISTING);
 						Runtime.getRuntime().load(path.toString());
 						path.toFile().delete();

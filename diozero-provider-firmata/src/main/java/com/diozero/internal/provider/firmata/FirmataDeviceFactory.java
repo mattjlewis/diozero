@@ -303,7 +303,6 @@ public class FirmataDeviceFactory extends BaseNativeDeviceFactory implements Fir
 
 	@Override
 	public void event(EventType eventType, int gpio, int value, long epochTime, long nanoTime) {
-		System.out.println("event(" + eventType + ", " + gpio + ", " + value + ")");
 		Optional<PinInfo> pin_info_opt = getBoardPinInfo().getByGpioNumber(gpio);
 		if (!pin_info_opt.isPresent()) {
 			return;
