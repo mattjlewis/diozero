@@ -158,31 +158,62 @@ RUN sudo rm -rf ${BUILD_WORKING_DIR}
 WORKDIR ${HOME}
 
 # Finally add some other convenience packages
-RUN sudo apt update && sudo apt-get -y install libsdl2-dev
+RUN sudo apt-get update && sudo apt-get -y install libsdl2-2.0-0 libsdl2-dev
 
 ARG DEBIAN_MIRROR=http://ftp.uk.debian.org/debian
 ARG RASPBIAN_MIRROR=http://raspbian.raspberrypi.org/raspbian
-ARG LIB_SDL2=libsdl2-dev_2.0.9+dfsg1-1
+ARG SDL2_VERSION=2.0.9+dfsg1-1
+ARG LIB_SDL2=libsdl2-2.0-0_${SDL2_VERSION}
 ARG LIB_SDL2_PATH=pool/main/libs/libsdl2
+ARG LIB_SDL2_DEV=libsdl2-dev_${SDL2_VERSION}
 
 # AArch64
-ARG LIB_SDL2_ARM64_FILE=${LIB_SDL2}_arm64.deb
-ARG LIB_SDL2_ARM64_URL=${DEBIAN_MIRROR}/${LIB_SDL2_PATH}/${LIB_SDL2_ARM64_FILE}
-RUN wget ${LIB_SDL2_ARM64_URL}
-RUN ar -p ${LIB_SDL2_ARM64_FILE} data.tar.xz | sudo tar Jxf - --strip-components=2 -C /usr/aarch64-linux-gnu
-RUN rm ${LIB_SDL2_ARM64_FILE}
+WORKDIR ${HOME}/libsdl2/aarch64
+# libsdl2
+ARG DEB_FILE=${LIB_SDL2}_arm64.deb
+RUN wget ${DEBIAN_MIRROR}/${LIB_SDL2_PATH}/${DEB_FILE}
+RUN ar -p ${DEB_FILE} data.tar.xz | sudo tar Jxf - -C /usr/aarch64-linux-gnu/lib --strip-components=4 ./usr/lib/aarch64-linux-gnu
+RUN rm ${DEB_FILE}
+# libsdl2-dev
+ARG DEB_FILE=${LIB_SDL2_DEV}_arm64.deb
+RUN wget ${DEBIAN_MIRROR}/${LIB_SDL2_PATH}/${DEB_FILE}
+RUN ar -x ${DEB_FILE} data.tar.xz
+RUN rm ${DEB_FILE}
+RUN sudo tar Jxf data.tar.xz -C /usr/aarch64-linux-gnu/lib --strip-components=4 ./usr/lib/aarch64-linux-gnu
+RUN sudo tar Jxf data.tar.xz -C /usr/aarch64-linux-gnu/include --strip-components=3 ./usr/include
+RUN rm data.tar.xz
 
 # ARMv7
-ARG LIB_SDL2_ARMV7_FILE=${LIB_SDL2}_armhf.deb
-ARG LIB_SDL2_ARMV7_URL=${DEBIAN_MIRROR}/${LIB_SDL2_PATH}/${LIB_SDL2_ARMV7_FILE}
-RUN wget ${LIB_SDL2_ARMV7_URL}
-RUN ar -p ${LIB_SDL2_ARMV7_FILE} data.tar.xz | sudo tar Jxf - --strip-components=2 -C /usr/arm-linux-gnueabihf
-RUN rm ${LIB_SDL2_ARMV7_FILE}
+WORKDIR ${HOME}/libsdl2/armv7
+# libsdl2
+ARG DEB_FILE=${LIB_SDL2}_armhf.deb
+RUN wget ${DEBIAN_MIRROR}/${LIB_SDL2_PATH}/${DEB_FILE}
+RUN ar -p ${DEB_FILE} data.tar.xz | sudo tar Jxf - -C /usr/arm-linux-gnueabihf/lib --strip-components=4 ./usr/lib/arm-linux-gnueabihf
+RUN rm ${DEB_FILE}
+# libsdl2-dev
+ARG DEB_FILE=${LIB_SDL2_DEV}_armhf.deb
+RUN wget ${DEBIAN_MIRROR}/${LIB_SDL2_PATH}/${DEB_FILE}
+RUN ar -x ${DEB_FILE} data.tar.xz
+RUN rm ${DEB_FILE}
+RUN sudo tar Jxf data.tar.xz -C /usr/arm-linux-gnueabihf/lib --strip-components=4 ./usr/lib/arm-linux-gnueabihf
+RUN sudo tar Jxf data.tar.xz -C /usr/arm-linux-gnueabihf/include --strip-components=3 ./usr/include
+RUN rm data.tar.xz
 
 # Raspbian ARMv6
-ARG LIB_SDL2_ARMV6_FILE=${LIB_SDL2}_armhf.deb
-ARG LIB_SDL2_ARMV6_URL=${RASPBIAN_MIRROR}/${LIB_SDL2_PATH}/${LIB_SDL2_ARMV6_FILE}
-RUN wget ${LIB_SDL2_ARMV6_URL}
-RUN ar -p ${LIB_SDL2_ARMV6_FILE} data.tar.xz | sudo tar Jxf - --strip-components=2 -C ${PI_GCC_TARGET_DIR}/arm-linux-gnueabihf
-RUN sudo mv ${PI_GCC_TARGET_DIR}/arm-linux-gnueabihf/lib/arm-linux-gnueabihf/* ${PI_GCC_TARGET_DIR}/arm-linux-gnueabihf/lib
-RUN rm ${LIB_SDL2_ARMV6_FILE}
+WORKDIR ${HOME}/libsdl2/armv6
+# libsdl2
+ARG DEB_FILE=${LIB_SDL2}_armhf.deb
+RUN wget ${RASPBIAN_MIRROR}/${LIB_SDL2_PATH}/${DEB_FILE}
+RUN ar -p ${DEB_FILE} data.tar.xz | sudo tar Jxf - -C ${PI_GCC_TARGET_DIR}/arm-linux-gnueabihf/lib --strip-components=4 ./usr/lib/arm-linux-gnueabihf
+RUN rm ${DEB_FILE}
+# libsdl2-dev
+ARG DEB_FILE=${LIB_SDL2_DEV}_armhf.deb
+RUN wget ${RASPBIAN_MIRROR}/${LIB_SDL2_PATH}/${DEB_FILE}
+RUN ar -x ${DEB_FILE} data.tar.xz
+RUN rm ${DEB_FILE}
+RUN sudo tar Jxf data.tar.xz -C ${PI_GCC_TARGET_DIR}/arm-linux-gnueabihf/lib --strip-components=4 ./usr/lib/arm-linux-gnueabihf
+RUN sudo tar Jxf data.tar.xz -C ${PI_GCC_TARGET_DIR}/arm-linux-gnueabihf/include --strip-components=3 ./usr/include
+RUN rm data.tar.xz
+
+WORKDIR ${HOME}
+RUN rm -rf libsdl2

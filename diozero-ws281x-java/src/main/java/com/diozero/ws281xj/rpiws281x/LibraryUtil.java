@@ -52,28 +52,30 @@ public class LibraryUtil {
 	public static boolean loadLibrary(String libName, Class<?> clz) {
 		boolean loaded = false;
 
-		String lib_ext = getLibExt();
-		String lib_resource_name = String.format("/lib/%s-%s/lib%s.%s", OS_NAME, getCpuArch(), libName, lib_ext);
-		try (InputStream is = clz.getResourceAsStream(lib_resource_name)) {
-			if (is != null) {
-				Path path = Files.createTempFile("lib" + libName, lib_ext);
-				path.toFile().deleteOnExit();
-				Files.copy(is, path, StandardCopyOption.REPLACE_EXISTING);
-				Runtime.getRuntime().load(path.toString());
-				loaded = true;
-				path.toFile().delete();
-			}
+		// First try loading from the Java system library path (-Djava.library.path) to
+		// allow the bundled libraries to be overridden
+		try {
+			System.loadLibrary(libName);
+			loaded = true;
 		} catch (Throwable t) {
-			System.err.println("Error loading library from classpath '" + libName + "': " + t);
+			// Ignore
 		}
 
+		// If not found, load the library that is appropriate for this CPU architecture
 		if (!loaded) {
-			// Try load from the Java system library path (-Djava.library.path)
-			try {
-				System.loadLibrary(libName);
-				loaded = true;
+			String lib_ext = getLibExt();
+			String lib_resource_name = String.format("/lib/%s-%s/lib%s.%s", OS_NAME, getCpuArch(), libName, lib_ext);
+			try (InputStream is = clz.getResourceAsStream(lib_resource_name)) {
+				if (is != null) {
+					Path path = Files.createTempFile("lib" + libName, lib_ext);
+					path.toFile().deleteOnExit();
+					Files.copy(is, path, StandardCopyOption.REPLACE_EXISTING);
+					Runtime.getRuntime().load(path.toString());
+					loaded = true;
+					path.toFile().delete();
+				}
 			} catch (Throwable t) {
-				System.err.println("Error loading library from system library path '" + libName + "': " + t);
+				System.err.println("Error loading library from classpath '" + lib_resource_name + "': " + t);
 			}
 		}
 
