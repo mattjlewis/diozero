@@ -3,6 +3,7 @@ package com.diozero.sampleapps.sandpit;
 import org.tinylog.Logger;
 
 import com.diozero.devices.LED;
+import com.diozero.devices.PwmLed;
 import com.diozero.devices.sandpit.OutputShiftRegisterDeviceFactory;
 import com.diozero.util.Diozero;
 import com.diozero.util.SleepUtil;
@@ -27,21 +28,21 @@ public class ShiftRegisterTest {
 					osr.set(pin, true);
 				}
 				osr.flush();
-				SleepUtil.sleepMillis(500);
+				SleepUtil.sleepMillis(250);
 
 				Logger.info("Alternate");
 				for (int pin = 0; pin < 8; pin++) {
 					osr.set(pin, (pin % 2) == 0);
 				}
 				osr.flush();
-				SleepUtil.sleepMillis(500);
+				SleepUtil.sleepMillis(250);
 
 				Logger.info("Alternate opposite");
 				for (int pin = 0; pin < 8; pin++) {
 					osr.set(pin, (pin % 2) == 1);
 				}
 				osr.flush();
-				SleepUtil.sleepMillis(500);
+				SleepUtil.sleepMillis(250);
 
 				Logger.info("One by one");
 				for (int pin = 0; pin < 8; pin++) {
@@ -50,7 +51,7 @@ public class ShiftRegisterTest {
 						osr.set(x, pin == x);
 					}
 					osr.flush();
-					SleepUtil.sleepMillis(1000);
+					SleepUtil.sleepMillis(100);
 				}
 
 				Logger.info("All off");
@@ -58,21 +59,32 @@ public class ShiftRegisterTest {
 					osr.set(pin, false);
 				}
 				osr.flush();
-				SleepUtil.sleepMillis(500);
+				SleepUtil.sleepMillis(250);
 			}
 
-			for (int i = 1; i < 5; i++) {
+			for (int i = 1; i < 4; i++) {
 				try (LED led = new LED(osr, i)) {
 					Logger.info("LED {} on", Integer.valueOf(i));
 					led.on();
-					SleepUtil.sleepMillis(500);
+					SleepUtil.sleepMillis(250);
 
 					Logger.info("LED {} off", Integer.valueOf(i));
 					led.off();
-					SleepUtil.sleepMillis(500);
+					SleepUtil.sleepMillis(250);
 
 					Logger.info("LED {} blink", Integer.valueOf(i));
-					led.blink(0.5f, 0.5f, 5, false);
+					led.blink(0.25f, 0.25f, 4, false);
+				}
+			}
+
+			try (PwmLed pwm_led = new PwmLed(osr, 1)) {
+				for (float f = 0; f < 1; f += 0.05f) {
+					pwm_led.setValue(f);
+					SleepUtil.sleepMillis(200);
+				}
+				for (float f = 1; f >= 0; f -= 0.05f) {
+					pwm_led.setValue(f);
+					SleepUtil.sleepMillis(200);
 				}
 			}
 		} finally {

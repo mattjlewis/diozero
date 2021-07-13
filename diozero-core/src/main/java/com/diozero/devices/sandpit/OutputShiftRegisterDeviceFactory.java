@@ -2,22 +2,29 @@ package com.diozero.devices.sandpit;
 
 import java.util.EnumSet;
 
+import org.tinylog.Logger;
+
 import com.diozero.api.DeviceMode;
 import com.diozero.api.DigitalOutputDevice;
 import com.diozero.api.GpioEventTrigger;
 import com.diozero.api.GpioPullUpDown;
 import com.diozero.api.PinInfo;
 import com.diozero.api.RuntimeIOException;
+import com.diozero.internal.SoftwarePwmOutputDevice;
 import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.AbstractDeviceFactory;
 import com.diozero.internal.spi.GpioDeviceFactoryInterface;
 import com.diozero.internal.spi.GpioDigitalInputDeviceInterface;
 import com.diozero.internal.spi.GpioDigitalInputOutputDeviceInterface;
 import com.diozero.internal.spi.GpioDigitalOutputDeviceInterface;
+import com.diozero.internal.spi.InternalPwmOutputDeviceInterface;
+import com.diozero.internal.spi.PwmOutputDeviceFactoryInterface;
 import com.diozero.sbc.BoardPinInfo;
 
-public class OutputShiftRegisterDeviceFactory extends AbstractDeviceFactory implements GpioDeviceFactoryInterface {
+public class OutputShiftRegisterDeviceFactory extends AbstractDeviceFactory
+		implements GpioDeviceFactoryInterface, PwmOutputDeviceFactoryInterface {
 	private static final String DEVICE_NAME = "OutputShiftRegister";
+	private static final int DEFAULT_PWM_FREQUENCY = 50;
 
 	/** DS: Serial Data Input [SER Pin 14] */
 	private final DigitalOutputDevice dataPin;
@@ -155,5 +162,31 @@ public class OutputShiftRegisterDeviceFactory extends AbstractDeviceFactory impl
 			// Nothing to do?
 			setValue(false);
 		}
+	}
+
+	@Override
+	public int getBoardPwmFrequency() {
+		return DEFAULT_PWM_FREQUENCY;
+	}
+
+	@Override
+	public void setBoardPwmFrequency(int pwmFrequency) {
+		Logger.warn("PWM frequency is fixed");
+	}
+
+	@Override
+	public InternalPwmOutputDeviceInterface createPwmOutputDevice(String key, PinInfo pinInfo, int pwmFrequency,
+			float initialValue) {
+		Logger.warn("Using software PWM on gpio {}", Integer.valueOf(pinInfo.getDeviceNumber()));
+
+		// Need to make sure the keys are different
+		// Note this is replicating the functionality in provisionDigitalOutputDevice.
+		// That method can't be called as it will throw a device already opened
+		// exception.
+		// Also note that SoftwarePwmOutputDevice has special cleanup functionality.
+		GpioDigitalOutputDeviceInterface gpio_output_device = createDigitalOutputDevice("PWM-" + key, pinInfo, false);
+		deviceOpened(gpio_output_device);
+
+		return new SoftwarePwmOutputDevice(key, this, gpio_output_device, pwmFrequency, initialValue);
 	}
 }
