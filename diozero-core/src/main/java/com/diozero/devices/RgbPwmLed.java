@@ -38,6 +38,8 @@ import com.diozero.api.RuntimeIOException;
 import com.diozero.internal.spi.PwmOutputDeviceFactoryInterface;
 import com.diozero.sbc.DeviceFactoryHelper;
 
+import java.awt.Color;
+
 /**
  * Three pin controlled RGB LED.
  */
@@ -100,6 +102,16 @@ public class RgbPwmLed implements DeviceInterface {
 		redLED.setValue(red);
 		greenLED.setValue(green);
 		blueLED.setValue(blue);
+	}
+
+	/**
+	 * Sets the {@link Color} of all the LEDs.
+	 *
+	 * @param color The color to set
+	 * @throws RuntimeIOException If an I/O error occurred.
+	 */
+	public void setColor(Color color) throws RuntimeIOException {
+		setValues(color.getRed() / 255F, color.getGreen() / 255F, color.getBlue() / 255F);
 	}
 
 	/**
