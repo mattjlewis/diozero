@@ -7,7 +7,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
 public class LibraryUtil {
-	private static final String OS_NAME = System.getProperty("os.name").toLowerCase();
+	private static final String OS_NAME = System.getProperty("os.name").replace(" ", "").toLowerCase();
 	private static String OS_ARCH = System.getProperty("os.arch").toLowerCase();
 	private static final String LINUX_CPUINFO_FILE = "/proc/cpuinfo";
 	private static final String ARMV6_CPU_MODEL_NAME = "armv6";
@@ -61,12 +61,14 @@ public class LibraryUtil {
 			// Ignore
 		}
 
-		// If not found, load the library that is appropriate for this CPU architecture
+		// If not found, load the appropriate library for this CPU architecture
 		if (!loaded) {
 			String lib_ext = getLibExt();
 			String lib_resource_name = String.format("/lib/%s-%s/lib%s.%s", OS_NAME, getCpuArch(), libName, lib_ext);
 			try (InputStream is = clz.getResourceAsStream(lib_resource_name)) {
-				if (is != null) {
+				if (is == null) {
+					System.err.println("Error: unable to find '" + lib_resource_name + "' in the JAR file");
+				} else {
 					Path path = Files.createTempFile("lib" + libName, lib_ext);
 					path.toFile().deleteOnExit();
 					Files.copy(is, path, StandardCopyOption.REPLACE_EXISTING);

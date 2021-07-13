@@ -2,14 +2,12 @@
 title: diozero
 nav_order: 1
 permalink: /
-has_toc: true
 redirect_from:
   - /en/latest/index.html
   - /en/stable/index.html
 ---
 
 # diozero
-{: .no_toc }
 
 [![Maven CI Build](https://github.com/mattjlewis/diozero/actions/workflows/build.yml/badge.svg)](https://github.com/mattjlewis/diozero/actions/workflows/build.yml)
 [![Maven Central Status](https://img.shields.io/maven-central/v/com.diozero/diozero.svg)](https://search.maven.org/search?q=g:com.diozero)
@@ -68,8 +66,9 @@ diozero has out of the box support for the following Single Board Computers and 
 * [Allwinner H3](https://linux-sunxi.org/H3) boards, including [NanoPi Neo](https://www.friendlyarm.com/index.php?route=product/product&product_id=132) and [NanoPi Duo](https://www.friendlyarm.com/index.php?route=product/product&product_id=244) (Armbian 32-bit).
 * OrangePi [Zero+](http://www.orangepi.org/OrangePiZeroPlus/) ([Allwinner H5](https://linux-sunxi.org/H5)) / [One+](http://www.orangepi.org/OrangePiOneplus/) ([Allwinner H6](https://linux-sunxi.org/H6))
 * [The Next Thing Co CHIP](https://getchip.com/pages/chip).
-* [Arduino compatible](https://www.arduino.cc) (any device that can run [Standard Firmata](https://github.com/firmata/arduino/blob/master/examples/StandardFirmata/StandardFirmata.ino)).
-* [ESP8266](https://www.espressif.com/en/products/socs/esp8266) / [ESP32](https://www.espressif.com/en/products/socs/esp32) (via [Standard Firmata WiFi](https://github.com/firmata/arduino/tree/master/examples/StandardFirmataWiFi)).
+* [Arduino compatible](https://www.arduino.cc) (any device that can run [Firmata](https://github.com/firmata/arduino/blob/master/examples/StandardFirmata/StandardFirmata.ino)).
+* Raspberry Pi Pico via Firmata over serial.
+* [ESP8266](https://www.espressif.com/en/products/socs/esp8266) (via [Firmata over WiFi](https://github.com/firmata/arduino/tree/master/examples/StandardFirmataWiFi) / [ConfigurableFirmata](http://firmatabuilder.com)).
 * [Particle Spark](https://docs.particle.io/datasheets/discontinued/core-datasheet/) (using [Voodoo Spark](https://github.com/voodootikigod/voodoospark)).
 
 ## Maven Dependency / Download Link

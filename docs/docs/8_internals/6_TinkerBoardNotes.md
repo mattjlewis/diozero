@@ -2,12 +2,11 @@
 parent: Internals
 nav_order: 6
 permalink: /internals/tbsetup.html
-has_toc: true
 ---
 
 # ASUS TinkerBoard Setup
 
-Armbian setup notes.
+Setup notes for Armbian.
 
 ## I/O File Permissions
 

@@ -2,7 +2,6 @@
 parent: Internals
 nav_order: 8
 permalink: /internals/opisetup.html
-has_toc: true
 ---
 
 # OrangePi Setup

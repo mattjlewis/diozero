@@ -163,6 +163,7 @@ RUN sudo apt-get update && sudo apt-get -y install libsdl2-2.0-0 libsdl2-dev
 ARG DEBIAN_MIRROR=http://ftp.uk.debian.org/debian
 ARG RASPBIAN_MIRROR=http://raspbian.raspberrypi.org/raspbian
 ARG SDL2_VERSION=2.0.9+dfsg1-1
+#ARG SDL2_VERSION=2.0.14+dfsg2-3
 ARG LIB_SDL2=libsdl2-2.0-0_${SDL2_VERSION}
 ARG LIB_SDL2_PATH=pool/main/libs/libsdl2
 ARG LIB_SDL2_DEV=libsdl2-dev_${SDL2_VERSION}
@@ -179,6 +180,7 @@ ARG DEB_FILE=${LIB_SDL2_DEV}_arm64.deb
 RUN wget ${DEBIAN_MIRROR}/${LIB_SDL2_PATH}/${DEB_FILE}
 RUN ar -x ${DEB_FILE} data.tar.xz
 RUN rm ${DEB_FILE}
+RUN sudo tar Jxf data.tar.xz -C /usr/aarch64-linux-gnu/bin --strip-components=3 ./usr/bin
 RUN sudo tar Jxf data.tar.xz -C /usr/aarch64-linux-gnu/lib --strip-components=4 ./usr/lib/aarch64-linux-gnu
 RUN sudo tar Jxf data.tar.xz -C /usr/aarch64-linux-gnu/include --strip-components=3 ./usr/include
 RUN rm data.tar.xz
@@ -195,6 +197,7 @@ ARG DEB_FILE=${LIB_SDL2_DEV}_armhf.deb
 RUN wget ${DEBIAN_MIRROR}/${LIB_SDL2_PATH}/${DEB_FILE}
 RUN ar -x ${DEB_FILE} data.tar.xz
 RUN rm ${DEB_FILE}
+RUN sudo tar Jxf data.tar.xz -C /usr/arm-linux-gnueabihf/bin --strip-components=3 ./usr/bin
 RUN sudo tar Jxf data.tar.xz -C /usr/arm-linux-gnueabihf/lib --strip-components=4 ./usr/lib/arm-linux-gnueabihf
 RUN sudo tar Jxf data.tar.xz -C /usr/arm-linux-gnueabihf/include --strip-components=3 ./usr/include
 RUN rm data.tar.xz
@@ -211,6 +214,7 @@ ARG DEB_FILE=${LIB_SDL2_DEV}_armhf.deb
 RUN wget ${RASPBIAN_MIRROR}/${LIB_SDL2_PATH}/${DEB_FILE}
 RUN ar -x ${DEB_FILE} data.tar.xz
 RUN rm ${DEB_FILE}
+RUN sudo tar Jxf data.tar.xz -C ${PI_GCC_TARGET_DIR}/arm-linux-gnueabihf/bin --strip-components=3 ./usr/bin
 RUN sudo tar Jxf data.tar.xz -C ${PI_GCC_TARGET_DIR}/arm-linux-gnueabihf/lib --strip-components=4 ./usr/lib/arm-linux-gnueabihf
 RUN sudo tar Jxf data.tar.xz -C ${PI_GCC_TARGET_DIR}/arm-linux-gnueabihf/include --strip-components=3 ./usr/include
 RUN rm data.tar.xz

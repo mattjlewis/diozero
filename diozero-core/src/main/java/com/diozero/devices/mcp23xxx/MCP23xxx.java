@@ -218,25 +218,25 @@ public abstract class MCP23xxx extends AbstractDeviceFactory implements GpioDevi
 	}
 
 	@Override
-	public GpioDigitalInputDeviceInterface createDigitalInputDevice(String key, PinInfo pin_info, GpioPullUpDown pud,
+	public GpioDigitalInputDeviceInterface createDigitalInputDevice(String key, PinInfo pinInfo, GpioPullUpDown pud,
 			GpioEventTrigger trigger) {
-		setInputMode(pin_info.getDeviceNumber(), pud, trigger);
+		setInputMode(pinInfo.getDeviceNumber(), pud, trigger);
 
-		return new MCP23xxxDigitalInputDevice(this, key, pin_info.getDeviceNumber(), trigger);
+		return new MCP23xxxDigitalInputDevice(this, key, pinInfo.getDeviceNumber(), trigger);
 	}
 
 	@Override
-	public GpioDigitalOutputDeviceInterface createDigitalOutputDevice(String key, PinInfo pin_info,
+	public GpioDigitalOutputDeviceInterface createDigitalOutputDevice(String key, PinInfo pinInfo,
 			boolean initialValue) {
-		setOutputMode(pin_info.getDeviceNumber());
+		setOutputMode(pinInfo.getDeviceNumber());
 
-		return new MCP23xxxDigitalOutputDevice(this, key, pin_info.getDeviceNumber(), initialValue);
+		return new MCP23xxxDigitalOutputDevice(this, key, pinInfo.getDeviceNumber(), initialValue);
 	}
 
 	@Override
-	public GpioDigitalInputOutputDeviceInterface createDigitalInputOutputDevice(String key, PinInfo pin_info,
+	public GpioDigitalInputOutputDeviceInterface createDigitalInputOutputDevice(String key, PinInfo pinInfo,
 			DeviceMode mode) {
-		return new MCP23xxxDigitalInputOutputDevice(this, key, pin_info.getDeviceNumber(), mode);
+		return new MCP23xxxDigitalInputOutputDevice(this, key, pinInfo.getDeviceNumber(), mode);
 	}
 
 	@Override

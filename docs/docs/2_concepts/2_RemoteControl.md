@@ -9,6 +9,7 @@ redirect_from:
 ---
 
 # Remote Control
+{: .no_toc }
 
 It is possible to remotely control your devices from another computer, enabling you to develop and
 test your application directly from your development environment.
@@ -19,36 +20,88 @@ test your application directly from your development environment.
 > All of the command line examples provided assume that all dependent JARs are also contained within
 the current directory or on the CLASSPATH.
 
-## Arduino
+## Implementations
+{: .no_toc .text-delta }
 
-For Arduino compatible devices communication is via USB using the excellent [firmata4j](https://github.com/kurbatov/firmata4j)
-and [jssc](https://github.com/scream3r/java-simple-serial-connector) libraries that are accessed when using the
-[diozero-provider-firmata](https://github.com/mattjlewis/diozero/tree/master/diozero-provider-firmata) wrapper.
+1. TOC
+{:toc}
 
-Make sure you set the property `FIRMATA_PORT` to the serial port (COM on Windows) to which your
-Arduino is connected. This can be set either via the command line (e.g. `-DFIRMATA_PORT=COM5`)
-or as an environment variable (command line takes precedence).
+## gRPC
+
+diozero provides its own remote protocol implementation that is based on [gRPC](https://grpc.io) via
+the diozero-remote-common, diozero-provider-remote and diozero-remote-server modules.
+
+Simply run the diozero-remote-server application on the target device and connect to it by adding a
+dependency to diozero-provider-remote and setting `diozero.remote.hostname` either command a command
+line "-D" property or as an environment variable.
+
+The protocol is defined in [diozero-remote-common/src/main/proto/diozero.proto](https://github.com/mattjlewis/diozero/blob/main/diozero-remote-common/src/main/proto/diozero.proto).
+
+## Firmata
+
+Firmata compatible devices are supported via the
+[diozero-provider-firmata](https://github.com/mattjlewis/diozero/tree/master/diozero-provider-firmata)
+device factory provider. This provider includes a [Firmata protocol](https://github.com/firmata/protocol)
+implementation that can operate via either serial or sockets interfaces. The serial implementation
+uses the diozero NativeSerialDevice. I recommend using [Firmata Builder](http://firmatabuilder.com)
+to construct a [Configurable Firmata](https://github.com/firmata/ConfigurableFirmata) implementation
+that matches your device.
+
+The Firmata implementation should work with _any_ Arduino compatible device. It has been tested with
+the following devices:
+
+* Arduino Uno (Serial)
+* Pololu A-Star 32U4 (Serial)
+* Raspberry Pi Pico (\*required some minor tweaks) (Serial)
+* ESP8266 (WiFi)
+
+While [ESP32](https://www.espressif.com/en/products/socs/esp32) devices are Arduino compatible,
+they are not currenly supported by Firmata.
+
+The Firmata adapter first looks for the `diozero.firmata.serialPort` property - if this set (either via
+command line or environment variable) the serial communication protocol is used. Otherwise, the
+adapter will look for the `diozero.firmata.tcpHostname` property and if set use sockets communication.
+The sockets port defaults to 3030 but can be override via the `diozero.firmata.tcpPort` property.
 
 Example command line:
 
 ```shell
-java -cp diozero-sampleapps-{{site.version}}.jar:diozero-provider-firmata4j-{{site.version}}.jar com.diozero.sampleapps.LEDTest -DFIRMATA_PORT=COM5 12
+java -cp diozero-sampleapps-{{site.version}}.jar:diozero-provider-firmata-{{site.version}}.jar com.diozero.sampleapps.LEDTest -DFIRMATA_PORT=COM5 12
 ```
 
-## Particle Wi-Fi Connected Microcontrollers
+\* Fixes for Raspberry Pi Pico:
 
-The [Particle Photon](https://www.particle.io/products/hardware/photon-wifi-dev-kit) is a tiny Wi-Fi
-connected microcontroller.
-You can upload the [VoodooSpark](https://github.com/voodootikigod/voodoospark) firmware to the board
-to enable remote control over Wi-Fi.
+`/Applications/Arduino.app/Contents/Java/libraries/Firmata/Boards.h` or `~/Documents/Arduino/libraries/ConfigurableFirmata/src/utility/Boards.h`:
 
-Make sure you set the properties `PARTICLE_DEVICE_ID` and `PARTICLE_TOKEN` correctly (either via
-command line or as environment variables).
+```
+ // Raspberry Pi Pico
+ // https://datasheets.raspberrypi.org/pico/Pico-R3-A4-Pinout.pdf
+ #elif defined(TARGET_RP2040) || defined(TARGET_RASPBERRY_PI_PICO)
+ #define TOTAL_ANALOG_PINS       4
+ #define TOTAL_PINS              30
+ #define VERSION_BLINK_PIN       LED_BUILTIN
+ #define IS_PIN_DIGITAL(p)       (((p) >= 0 && (p) < 23) || (p) == LED_BUILTIN)
+ #define IS_PIN_ANALOG(p)        ((p) >= 26 && (p) < 26 + TOTAL_ANALOG_PINS)
+ #define IS_PIN_PWM(p)           digitalPinHasPWM(p)
+ #define IS_PIN_SERVO(p)         (IS_PIN_DIGITAL(p) && (p) != LED_BUILTIN)
+ // I2C-0 defaults to GP 4 (SDA) & 5 (SCL) (physical pins 6 & 7)
+ //#define PIN_WIRE_SDA            (6u)
+ //#define PIN_WIRE_SCL            (7u)
+ #define IS_PIN_I2C(p)           ((p) == PIN_WIRE_SDA || (p) == PIN_WIRE0_SCL)
+ // SPI-0 defaults to GP 16 (RX / MISO), 17 (CSn), 18 (SCK) & 19 (TX / MOSI) (physical pins 21, 22, 24, 25)
+ #define IS_PIN_SPI(p)           ((p) == PIN_SPI_SCK || (p) == PIN_SPI_MOSI || (p) == PIN_SPI_MISO || (p) == PIN_SPI_SS)
+ // UART-0 defaults to GP 0 (TX) & 1 (RX)
+ #define IS_PIN_SERIAL(p)        ((p) == 0 || (p) == 1 || (p) == 4 || (p) == 5 || (p) == 8 || (p) == 9 || (p) == 12 || (p) == 13 || (p) == 16 || (p) == 17)
+ #define PIN_TO_DIGITAL(p)       (p)
+ #define PIN_TO_ANALOG(p)        ((p) - 26)
+ #define PIN_TO_PWM(p)           (p)
+ #define PIN_TO_SERVO(p)         (p)
+```
 
-Example command line:
+`~/Documents/Arduino/libraries/ConfigurableFirmata/src/ConfigurableFirmata.h`:
 
-```shell
-java -cp diozero-sampleapps-{{site.version}}.jar:diozero-provider-voodoospark-{{site.version}}.jar -DPARTICLE_DEVICE_ID=abc -DPARTICLE_TOKEN=xyz com.diozero.sampleapps.LEDTest 12
+```
+//#define I2C                     0x06 // same as PIN_MODE_I2C
 ```
 
 ## pigpio
@@ -88,13 +141,18 @@ Example command line:
 java -cp diozero-sampleapps-{{site.version}}.jar:diozero-provider-pigpio-{{site.version}}.jar -DPIGPIOD_HOST=raspberrypi com.diozero.sampleapps.LEDTest 12
 ```
 
-## gRPC
+## Particle Wi-Fi Connected Microcontrollers
 
-diozero provides its own remote protocol implementation that is based on [gRPC](https://grpc.io) via
-the diozero-remote-common, diozero-provider-remote and diozero-remote-server modules.
+The [Particle Photon](https://www.particle.io/products/hardware/photon-wifi-dev-kit) is a tiny Wi-Fi
+connected microcontroller.
+You can upload the [VoodooSpark](https://github.com/voodootikigod/voodoospark) firmware to the board
+to enable remote control over Wi-Fi.
 
-Simply run the diozero-remote-server application on the target device and connect to it by adding a
-dependency to diozero-provider-remote and setting `diozero.remote.hostname` either command a command
-line "-D" property or as an environment variable.
+Make sure you set the properties `PARTICLE_DEVICE_ID` and `PARTICLE_TOKEN` correctly (either via
+command line or as environment variables).
 
-The protocol is defined in [diozero-remote-common/src/main/proto/diozero.proto](https://github.com/mattjlewis/diozero/blob/main/diozero-remote-common/src/main/proto/diozero.proto).
+Example command line:
+
+```shell
+java -cp diozero-sampleapps-{{site.version}}.jar:diozero-provider-voodoospark-{{site.version}}.jar -DPARTICLE_DEVICE_ID=abc -DPARTICLE_TOKEN=xyz com.diozero.sampleapps.LEDTest 12
+```
