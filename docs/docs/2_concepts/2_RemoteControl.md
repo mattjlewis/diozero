@@ -28,14 +28,18 @@ the current directory or on the CLASSPATH.
 
 ## gRPC
 
-diozero provides its own remote protocol implementation that is based on [gRPC](https://grpc.io) via
-the diozero-remote-common, diozero-provider-remote and diozero-remote-server modules.
+diozero provides its own [remote protocol](https://github.com/mattjlewis/diozero/blob/main/diozero-remote-common/src/main/proto/diozero.proto)
+implementation that is based on [gRPC](https://grpc.io) via the diozero-remote-common,
+diozero-provider-remote and diozero-remote-server modules.
 
-Simply run the diozero-remote-server application on the target device and connect to it by adding a
-dependency to diozero-provider-remote and setting `diozero.remote.hostname` either command a command
-line "-D" property or as an environment variable.
+Simply run the diozero-remote-server application on the target device then connect to it from a
+diozero application by adding diozero-provider-remote-{{ site.version }}.jar to the classpath and
+setting `diozero.remote.hostname` either via the command line or as an environment variable.
 
-The protocol is defined in [diozero-remote-common/src/main/proto/diozero.proto](https://github.com/mattjlewis/diozero/blob/main/diozero-remote-common/src/main/proto/diozero.proto).
+The diozero-remote-server application will also make use of diozero providers. For example, you
+could run it with diozero-provider-pigpio-{{ site.version }}.jar on the classpath and it would use
+pigpio for the underlying device communication. You could even chain to another
+diozero-remove-server instance by using diozero-provider-remote-{{ site.version }}.jar.
 
 ## Firmata
 

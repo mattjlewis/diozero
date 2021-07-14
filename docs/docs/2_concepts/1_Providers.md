@@ -67,8 +67,8 @@ Provider | Dependency | diozero Provider Library | SBC
 built-in (default) | None | Built-in | All
 pigpio | pigpioj-java | diozero-provider-pigio | Raspberry Pi (all flavours)
 bbbiolib | bbbiolib | diozero-provider-bbiolib | BeagleBone Green / Black
-firmata | firmata4j | diozero-provider-firmata | Arduino compatible boards
-voodoospark | None | diozero-provider-voodoospark | Arduino compatible boards
+firmata | None | diozero-provider-firmata | Firmata compatible boards (Arduino, Pico)
+voodoospark | None | diozero-provider-voodoospark | Voodoo Spark compatible boards
 remote | None | diozero-provider-remote | All
 
 The built-in provider is designed to be portable across different boards. 

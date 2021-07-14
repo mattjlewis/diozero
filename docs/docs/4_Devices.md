@@ -7,4 +7,5 @@ has_children: true
 
 # Devices
 
-This library provides support for a number of GPIO / I2C / SPI / Serial connected components and devices.
+This library provides support for a number of GPIO / I2C / SPI / Serial connected components and
+devices.

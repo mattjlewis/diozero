@@ -134,3 +134,8 @@ PCF8591 [Javadoc](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/com
 [Picon Zero](https://shop.pimoroni.com/products/picon-zero-intelligent-robotics-controller-for-raspberry-pi).
 
 [Javadoc](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/com/diozero/devices/PiconZero.html).
+
+## Output Shift Registers
+{: #osr }
+
+E.g. SN74HC595. See OutputShiftRegisterDeviceFactory.
