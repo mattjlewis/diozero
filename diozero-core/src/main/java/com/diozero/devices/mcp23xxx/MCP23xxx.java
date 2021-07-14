@@ -103,7 +103,6 @@ public abstract class MCP23xxx extends AbstractDeviceFactory implements GpioDevi
 	 */
 	private static final byte IOCON_INTPOL_BIT = 1;
 
-	private static final int GPIOS_PER_PORT = 8;
 	public static final int INTERRUPT_GPIO_NOT_SET = -1;
 	private static final int DEFAULT_PWM_FREQUENCY = 50;
 

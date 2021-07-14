@@ -46,7 +46,7 @@ public class MutableByte {
 		return value;
 	}
 
-	public boolean isBitSet(final byte bit) {
+	public boolean isBitSet(final int bit) {
 		return BitManipulation.isBitSet(value, bit);
 	}
 
