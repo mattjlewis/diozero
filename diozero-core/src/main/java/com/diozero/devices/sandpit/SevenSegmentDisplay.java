@@ -6,9 +6,20 @@ import com.diozero.api.DeviceInterface;
 import com.diozero.api.DigitalOutputDevice;
 import com.diozero.internal.spi.GpioDeviceFactoryInterface;
 import com.diozero.sbc.DeviceFactoryHelper;
-import com.diozero.util.SleepUtil;
 
 /**
+ * <p>
+ * Multi-digit 7-segment display. Tested with this <a href=
+ * "https://cdn-shop.adafruit.com/datasheets/865datasheet.pdf">Luckylight
+ * model</a> from <a href=
+ * "https://shop.pimoroni.com/products/7-segment-clock-display-0-56-digit-height?variant=31551016894547">Pimoroni</a>.
+ * </p>
+ *
+ * <p>
+ * Segments are assumed to be connected in the following order. Note decimal
+ * point (DP) and colon (Col) not yet implemented.
+ * </p>
+ *
  * <pre>
  *     A
  *   F   B    Col
@@ -65,11 +76,19 @@ public class SevenSegmentDisplay implements DeviceInterface {
 		Arrays.asList(segments).forEach(DeviceInterface::close);
 	}
 
-	public void displayNumbers(int value, boolean[] display) {
-		// TODO A thread to allow separate numbers on each digit
-		for (int i = 0; i < digitControl.length; i++) {
-			digitControl[i].setOn(display[i]);
+	public void displayNumbers(int value, boolean[] onDigits) {
+		if (onDigits.length > digitControl.length) {
+			throw new IllegalArgumentException("Too many digits specified (" + onDigits.length
+					+ "), array length must be 1.." + digitControl.length);
 		}
+		if (value > NUMBERS.length - 1) {
+			throw new IllegalArgumentException("Invalid value " + value + " - only numbers 0..9 are supported");
+		}
+
+		for (int i = 0; i < digitControl.length; i++) {
+			digitControl[i].setOn(onDigits[i]);
+		}
+
 		boolean[] values = NUMBERS[value];
 		for (int i = 0; i < segments.length; i++) {
 			segments[i].setOn(values[i]);
@@ -83,64 +102,24 @@ public class SevenSegmentDisplay implements DeviceInterface {
 	}
 
 	public void displayNumber(int value) {
+		if (value > NUMBERS.length - 1) {
+			throw new IllegalArgumentException("Invalid value " + value + " - only numbers 0..9 are supported");
+		}
+
 		boolean[] values = NUMBERS[value];
 		for (int i = 0; i < segments.length; i++) {
 			segments[i].setOn(values[i]);
 		}
 	}
 
-	public static void main(String[] args) {
-		try (SevenSegmentDisplay disp = new SevenSegmentDisplay(25, 23, 5, 6, 16, 24, 11,
-				new int[] { 20, 21, 19, 26 })) {
-			System.out.println("First only");
-			boolean[] digits = new boolean[] { true, false, false, false };
-			int delay_ms = 200;
-			for (int i = 0; i < 10; i++) {
-				disp.displayNumbers(i, digits);
-				SleepUtil.sleepMillis(delay_ms);
-			}
+	public void display(boolean[] values) {
+		if (values.length != segments.length) {
+			throw new IllegalArgumentException(
+					"Invalid values array length (" + values.length + ") - must be " + segments.length);
+		}
 
-			System.out.println("All");
-			digits = new boolean[] { true, true, true, true };
-			for (int i = 0; i < 10; i++) {
-				disp.displayNumbers(i, digits);
-				SleepUtil.sleepMillis(delay_ms);
-			}
-
-			System.out.println("None");
-			digits = new boolean[] { false, false, false, false };
-			for (int i = 0; i < 10; i++) {
-				disp.displayNumbers(i, digits);
-				SleepUtil.sleepMillis(delay_ms);
-			}
-
-			System.out.println("Alternate");
-			digits = new boolean[] { true, false, true, false };
-			for (int i = 0; i < 10; i++) {
-				disp.displayNumbers(i, digits);
-				SleepUtil.sleepMillis(delay_ms);
-			}
-
-			System.out.println("Countdown");
-			// Countdown from 9999
-			int number = 9999;
-			int decrement_delta_ms = 50;
-			long last_change = System.currentTimeMillis();
-			while (true) {
-				for (int i = 0; i < 4; i++) {
-					int digit = (number / (int) (Math.pow(10, 3 - i))) % 10;
-					disp.enableDigit(i);
-					disp.displayNumber(digit);
-					SleepUtil.sleepMillis(5);
-				}
-				if (System.currentTimeMillis() - last_change > decrement_delta_ms) {
-					number--;
-					if (number < 0) {
-						number = 9999;
-					}
-					last_change = System.currentTimeMillis();
-				}
-			}
+		for (int i = 0; i < segments.length; i++) {
+			segments[i].setOn(values[i]);
 		}
 	}
 }

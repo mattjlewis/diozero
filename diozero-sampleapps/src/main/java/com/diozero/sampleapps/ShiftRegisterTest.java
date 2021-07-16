@@ -1,10 +1,10 @@
-package com.diozero.sampleapps.sandpit;
+package com.diozero.sampleapps;
 
 import org.tinylog.Logger;
 
 import com.diozero.devices.LED;
+import com.diozero.devices.OutputShiftRegister;
 import com.diozero.devices.PwmLed;
-import com.diozero.devices.sandpit.OutputShiftRegisterDeviceFactory;
 import com.diozero.util.Diozero;
 import com.diozero.util.SleepUtil;
 
@@ -22,7 +22,7 @@ public class ShiftRegisterTest {
 
 		int delay_ms = 500;
 
-		try (OutputShiftRegisterDeviceFactory osr = new OutputShiftRegisterDeviceFactory(data_gpio, clock_gpio,
+		try (OutputShiftRegister osr = new OutputShiftRegister(data_gpio, clock_gpio,
 				latch_gpio, 8)) {
 			for (int i = 0; i < 3; i++) {
 				Logger.info("All on");

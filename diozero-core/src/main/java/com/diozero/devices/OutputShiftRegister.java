@@ -1,4 +1,4 @@
-package com.diozero.devices.sandpit;
+package com.diozero.devices;
 
 import java.util.EnumSet;
 
@@ -10,7 +10,6 @@ import com.diozero.api.GpioEventTrigger;
 import com.diozero.api.GpioPullUpDown;
 import com.diozero.api.PinInfo;
 import com.diozero.api.RuntimeIOException;
-import com.diozero.devices.GpioExpander;
 import com.diozero.internal.SoftwarePwmOutputDevice;
 import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.AbstractDeviceFactory;
@@ -65,7 +64,7 @@ import com.diozero.util.SleepUtil;
  *
  * Credit: Seggan
  */
-public class OutputShiftRegisterDeviceFactory extends AbstractDeviceFactory
+public class OutputShiftRegister extends AbstractDeviceFactory
 		implements GpioDeviceFactoryInterface, PwmOutputDeviceFactoryInterface, GpioExpander {
 	private static final String DEVICE_NAME = "OutputShiftRegister";
 	private static final int DEFAULT_PWM_FREQUENCY = 50;
@@ -82,19 +81,19 @@ public class OutputShiftRegisterDeviceFactory extends AbstractDeviceFactory
 
 	private BoardPinInfo boardPinInfo;
 
-	public OutputShiftRegisterDeviceFactory(int dataGpio, int clockGpio, int latchGpio, int numOutputs) {
+	public OutputShiftRegister(int dataGpio, int clockGpio, int latchGpio, int numOutputs) {
 		this(new DigitalOutputDevice(dataGpio), new DigitalOutputDevice(clockGpio), new DigitalOutputDevice(latchGpio),
 				numOutputs);
 	}
 
-	public OutputShiftRegisterDeviceFactory(GpioDeviceFactoryInterface deviceFactory, int dataGpio, int clockGpio,
+	public OutputShiftRegister(GpioDeviceFactoryInterface deviceFactory, int dataGpio, int clockGpio,
 			int latchGpio, int numOutputs) {
 		this(DigitalOutputDevice.Builder.builder(dataGpio).setDeviceFactory(deviceFactory).build(),
 				DigitalOutputDevice.Builder.builder(clockGpio).setDeviceFactory(deviceFactory).build(),
 				DigitalOutputDevice.Builder.builder(latchGpio).setDeviceFactory(deviceFactory).build(), numOutputs);
 	}
 
-	public OutputShiftRegisterDeviceFactory(DigitalOutputDevice dataPin, DigitalOutputDevice clockPin,
+	public OutputShiftRegister(DigitalOutputDevice dataPin, DigitalOutputDevice clockPin,
 			DigitalOutputDevice latchPin, int numOutputs) {
 		super(DEVICE_NAME);
 
@@ -249,10 +248,10 @@ public class OutputShiftRegisterDeviceFactory extends AbstractDeviceFactory
 	}
 
 	static final class OsrDigitalOutputDevice extends AbstractDevice implements GpioDigitalOutputDeviceInterface {
-		private OutputShiftRegisterDeviceFactory osrDeviceFactory;
+		private OutputShiftRegister osrDeviceFactory;
 		private int gpio;
 
-		public OsrDigitalOutputDevice(OutputShiftRegisterDeviceFactory osrDeviceFactory, String key, PinInfo pinInfo,
+		public OsrDigitalOutputDevice(OutputShiftRegister osrDeviceFactory, String key, PinInfo pinInfo,
 				boolean initialValue) {
 			super(key, osrDeviceFactory);
 

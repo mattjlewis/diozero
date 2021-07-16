@@ -84,6 +84,10 @@ public class FirmataDeviceFactory extends BaseNativeDeviceFactory implements Fir
 	public static final String DEVICE_NAME = "Firmata";
 
 	private static final String SERIAL_PORT_PROP = "diozero.firmata.serialPort";
+	private static final String SERIAL_BAUD_PROP = "diozero.firmata.serialBaud";
+	private static final String SERIAL_DATA_BITS_PROP = "diozero.firmata.serialDataBits";
+	private static final String SERIAL_STOP_BITS_PROP = "diozero.firmata.serialStopBits";
+	private static final String SERIAL_PARITY_PROP = "diozero.firmata.serialParity";
 	private static final String TCP_HOST_PROP = "diozero.firmata.tcpHostname";
 	private static final String TCP_PORT_PROP = "diozero.firmata.tcpPort";
 	private static final int DEFAULT_TCP_PORT = 3030;
@@ -102,10 +106,28 @@ public class FirmataDeviceFactory extends BaseNativeDeviceFactory implements Fir
 			int port = PropertyUtil.getIntProperty(TCP_PORT_PROP, DEFAULT_TCP_PORT);
 			adapter = new SocketFirmataAdapter(this, hostname, port);
 		} else {
-			adapter = new SerialFirmataAdapter(this, serialPortName, SerialConstants.BAUD_57600,
-					SerialConstants.DEFAULT_DATA_BITS, SerialConstants.DEFAULT_STOP_BITS,
-					SerialConstants.DEFAULT_PARITY, SerialConstants.DEFAULT_READ_BLOCKING,
-					SerialConstants.DEFAULT_MIN_READ_CHARS, SerialConstants.DEFAULT_READ_TIMEOUT_MILLIS);
+			SerialDevice.DataBits data_bits = SerialConstants.DEFAULT_DATA_BITS;
+			String val = PropertyUtil.getProperty(SERIAL_DATA_BITS_PROP, null);
+			if (val != null) {
+				data_bits = SerialDevice.DataBits.valueOf(val.trim());
+			}
+
+			SerialDevice.StopBits stop_bits = SerialConstants.DEFAULT_STOP_BITS;
+			val = PropertyUtil.getProperty(SERIAL_STOP_BITS_PROP, null);
+			if (val != null) {
+				stop_bits = SerialDevice.StopBits.valueOf(val.trim());
+			}
+
+			SerialDevice.Parity parity = SerialConstants.DEFAULT_PARITY;
+			val = PropertyUtil.getProperty(SERIAL_PARITY_PROP, null);
+			if (val != null) {
+				parity = SerialDevice.Parity.valueOf(val.trim());
+			}
+
+			adapter = new SerialFirmataAdapter(this, serialPortName,
+					PropertyUtil.getIntProperty(SERIAL_BAUD_PROP, SerialConstants.BAUD_57600), data_bits, stop_bits,
+					parity, SerialConstants.DEFAULT_READ_BLOCKING, SerialConstants.DEFAULT_MIN_READ_CHARS,
+					SerialConstants.DEFAULT_READ_TIMEOUT_MILLIS);
 		}
 	}
 
