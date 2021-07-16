@@ -22,7 +22,7 @@ redirect_from:
 + Optimise GpioExpander when used for PWM output on multiple pins, 7-segment displays, shift
 registers, etc. - allow multiple GPIOs to be set in one invocation rather than individually
 
-## 1.3.1 (in progress)
+## 1.3.1
 
 + Fully removed dependency on Firmata4j + plus fixes to the built-in implementation
 + Fix for SerialDevice shutdown
