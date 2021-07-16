@@ -31,7 +31,7 @@ import com.diozero.util.SleepUtil;
  * 74HC595 8-bit Serial-In, Parallel-Out Shift Register.
  * </p>
  *
- * <h2>Wiring</h2>
+ * <h2>Wiring for 74HC595</h2>
  *
  * <pre>
  *  Q1 1 16 Vcc
@@ -83,11 +83,24 @@ public class OutputShiftRegisterDeviceFactory extends AbstractDeviceFactory
 	private BoardPinInfo boardPinInfo;
 
 	public OutputShiftRegisterDeviceFactory(int dataGpio, int clockGpio, int latchGpio, int numOutputs) {
+		this(new DigitalOutputDevice(dataGpio), new DigitalOutputDevice(clockGpio), new DigitalOutputDevice(latchGpio),
+				numOutputs);
+	}
+
+	public OutputShiftRegisterDeviceFactory(GpioDeviceFactoryInterface deviceFactory, int dataGpio, int clockGpio,
+			int latchGpio, int numOutputs) {
+		this(DigitalOutputDevice.Builder.builder(dataGpio).setDeviceFactory(deviceFactory).build(),
+				DigitalOutputDevice.Builder.builder(clockGpio).setDeviceFactory(deviceFactory).build(),
+				DigitalOutputDevice.Builder.builder(latchGpio).setDeviceFactory(deviceFactory).build(), numOutputs);
+	}
+
+	public OutputShiftRegisterDeviceFactory(DigitalOutputDevice dataPin, DigitalOutputDevice clockPin,
+			DigitalOutputDevice latchPin, int numOutputs) {
 		super(DEVICE_NAME);
 
-		dataPin = new DigitalOutputDevice(dataGpio);
-		clockPin = new DigitalOutputDevice(clockGpio);
-		latchPin = new DigitalOutputDevice(latchGpio);
+		this.dataPin = dataPin;
+		this.clockPin = clockPin;
+		this.latchPin = latchPin;
 
 		buf = new boolean[numOutputs];
 		values = new boolean[numOutputs];
@@ -107,30 +120,43 @@ public class OutputShiftRegisterDeviceFactory extends AbstractDeviceFactory
 	}
 
 	@Override
-	public void setValues(int port, byte values) {
-		// TODO Bounds checking
+	public void setValues(int port, byte newValues) {
+		if (port < 0 || port >= values.length / 8) {
+			throw new IllegalArgumentException("Invalid port " + port + " must be 0.." + (values.length / 8));
+		}
+
 		for (int i = 0; i < 8; i++) {
-			buf[i + port * 8] = BitManipulation.isBitSet(values, i);
+			buf[i + port * 8] = BitManipulation.isBitSet(newValues, i);
 		}
 		flush();
 	}
 
 	public boolean getValue(int outputPin) {
-		// TODO Bounds checking
+		if (outputPin < 0 || outputPin >= values.length) {
+			throw new IllegalArgumentException("Invalid outputPin " + outputPin + " must be 0.." + (values.length - 1));
+		}
+
 		return values[outputPin];
 	}
 
 	public byte getValues(int port) {
-		// TODO Bounds checking
+		if (port < 0 || port >= values.length / 8) {
+			throw new IllegalArgumentException("Invalid port " + port + " must be 0.." + (values.length / 8));
+		}
+
 		MutableByte mb = new MutableByte();
 		for (int i = 0; i < 8; i++) {
 			mb.setBitValue(i, values[i + port * 8]);
 		}
+
 		return mb.getValue();
 	}
 
 	public void setBufferedValue(int outputPin, boolean value) {
-		// TODO Bounds checking
+		if (outputPin < 0 || outputPin >= values.length) {
+			throw new IllegalArgumentException("Invalid outputPin " + outputPin + " must be 0.." + (values.length - 1));
+		}
+
 		buf[outputPin] = value;
 	}
 
@@ -152,7 +178,7 @@ public class OutputShiftRegisterDeviceFactory extends AbstractDeviceFactory
 		/*- Arduino code:
 		void shiftOut(uint8_t dataPin, uint8_t clockPin, uint8_t bitOrder, uint8_t val) {
 		  uint8_t i;
-		
+
 		  for (i = 0; i < 8; i++) {
 		    if (bitOrder == LSBFIRST) {
 		      digitalWrite(dataPin, !!(val & (1 << i)));

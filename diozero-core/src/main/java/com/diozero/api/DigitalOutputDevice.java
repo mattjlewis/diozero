@@ -271,7 +271,7 @@ public class DigitalOutputDevice extends GpioDevice {
 	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
 	public void setOn(boolean on) throws RuntimeIOException {
-		setValue(activeHigh & on);
+		setValue(activeHigh == on);
 	}
 
 	/**
