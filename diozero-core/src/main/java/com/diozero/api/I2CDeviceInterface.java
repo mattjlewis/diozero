@@ -171,7 +171,6 @@ public interface I2CDeviceInterface extends I2CSMBusInterface {
 	 * Utility I2C read method that allows control over the NO-START flag.
 	 *
 	 * @param registerAddress the register address to read from
-	 * @param rxLength        the number of bytes to read
 	 * @param rxData          buffer to hold the data read
 	 * @param repeatedStart   whether or not to use repeated starts
 	 * @return the number of bytes read

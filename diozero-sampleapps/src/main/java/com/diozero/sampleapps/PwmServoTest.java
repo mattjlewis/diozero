@@ -4,7 +4,7 @@ package com.diozero.sampleapps;
  * #%L
  * Organisation: diozero
  * Project:      diozero - Sample applications
- * Filename:     ServoTest.java
+ * Filename:     PwmServoTest.java
  * 
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.

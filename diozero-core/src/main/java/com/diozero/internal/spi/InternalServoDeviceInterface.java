@@ -53,8 +53,8 @@ public interface InternalServoDeviceInterface extends GpioDeviceInterface {
 	/**
 	 * Set the Servo output pulse width in microseconds.
 	 *
-	 * @param angle New pulse width value in microseconds, range minPulseWidth to
-	 *              maxPulseWidth
+	 * @param pulseWidthUs New pulse width value in microseconds, range
+	 *                     minPulseWidth to maxPulseWidth
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	void setPulseWidthUs(int pulseWidthUs) throws RuntimeIOException;

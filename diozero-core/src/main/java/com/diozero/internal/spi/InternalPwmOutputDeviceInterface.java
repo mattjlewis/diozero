@@ -4,7 +4,7 @@ package com.diozero.internal.spi;
  * #%L
  * Organisation: diozero
  * Project:      diozero - Core
- * Filename:     PwmOutputDeviceInterface.java
+ * Filename:     InternalPwmOutputDeviceInterface.java
  * 
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
