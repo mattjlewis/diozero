@@ -36,6 +36,9 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.tinylog.Logger;
 
@@ -51,7 +54,68 @@ import com.diozero.sbc.LocalSystemInfo;
  */
 public class BeagleBoneBoardInfoProvider implements BoardInfoProvider {
 	public static final String MAKE = "BeagleBone";
+
+	static final class PwmModule {
+		final int subsystem;
+		final int address;
+		final String suffix;
+
+		PwmModule(int subsystem, int address, String suffix) {
+			this.subsystem = subsystem;
+			this.address = address;
+			this.suffix = suffix;
+		}
+	}
+
 	// private static final String BBB_HARDWARE_ID = "Generic AM33XX";
+	static final Map<String, PwmModule> PWM_MODULES;
+	static {
+		// See https://github.com/julianduque/beaglebone-io/blob/master/lib/bbb-pins.js
+		// and
+		// https://github.com/julianduque/beaglebone-io/blob/master/lib/pwm-output.js
+		/*-
+		var pwmSubSystems = {
+		subSystem0: { addr: 0x48300000 },
+		subSystem1: { addr: 0x48302000 },
+		subSystem2: { addr: 0x48304000 }
+		};
+		
+		var pwmModules = {
+		ecap0: { subSystem: pwmSubSystems.subSystem0, addr: 0x48300100, suffix: 'ecap' },
+		ehrpwm0: { subSystem: pwmSubSystems.subSystem0, addr: 0x48300200, suffix: 'pwm' },
+		ehrpwm1: { subSystem: pwmSubSystems.subSystem1, addr: 0x48302200, suffix: 'pwm' },
+		ehrpwm2: { subSystem: pwmSubSystems.subSystem2, addr: 0x48304200, suffix: 'pwm' }
+		};
+		
+		var pwmPins = {
+		p8_13: { module: pwmModules.ehrpwm2, channel: 1 },
+		p8_19: { module: pwmModules.ehrpwm2, channel: 0 },
+		p9_14: { module: pwmModules.ehrpwm1, channel: 0 },
+		p9_16: { module: pwmModules.ehrpwm1, channel: 1 },
+		p9_21: { module: pwmModules.ehrpwm0, channel: 1 },
+		p9_22: { module: pwmModules.ehrpwm0, channel: 0 },
+		p9_42: { module: pwmModules.ecap0,   channel: 0 }
+		};
+		 */
+		// Map "<header>_<pin_no>" to PWM Subsystem
+		Map<String, PwmModule> map = new HashMap<>();
+		int subsystem0 = 0x48300000;
+		int subsystem1 = 0x48302000;
+		int subsystem2 = 0x48304000;
+		PwmModule ecap0 = new PwmModule(subsystem0, 0x48300100, "ecap");
+		PwmModule ehrpwm0 = new PwmModule(subsystem0, 0x48300200, "pwm");
+		PwmModule ehrpwm1 = new PwmModule(subsystem1, 0x48302200, "pwm");
+		PwmModule ehrpwm2 = new PwmModule(subsystem2, 0x48304200, "pwm");
+		map.put("P9_42", ecap0); // ECAP0PWMA
+		map.put("P9_22", ehrpwm0); // EHRPWM0A
+		map.put("P9_21", ehrpwm0); // EHRPWM0B
+		map.put("P9_14", ehrpwm1); // EHRPWM1A
+		map.put("P9_16", ehrpwm1); // EHRPWM1B
+		map.put("P8_19", ehrpwm2); // EHRPWM21
+		map.put("P8_13", ehrpwm2); // EHRPWM2B
+
+		PWM_MODULES = Collections.unmodifiableMap(map);
+	}
 
 	@Override
 	public BoardInfo lookup(LocalSystemInfo localSysInfo) {
@@ -116,17 +180,35 @@ public class BeagleBoneBoardInfoProvider implements BoardInfoProvider {
 			addPwmPinInfo(P8_HEADER, PinInfo.NOT_DEFINED, "EHRPWM2B", 19, 0, 4, PinInfo.DIGITAL_IN_OUT_PWM);
 		}
 
+		/*-
+		 * Alternatively override addPwmPinInfo:
+		@Override
+		public PinInfo addPwmPinInfo(String header, int gpioNumber, String name, int physicalPin, int pwmChip,
+				int pwmNum, Collection<DeviceMode> modes, int chip, int line) {
+		}
+		*/
+
 		@Override
 		public int getPwmChipNumberOverride(PinInfo pinInfo) {
-			// Apparently the PWM chip number for a GPIO can change between boots
+			// PWM chip number for a GPIO can change between boots
 
-			// FIXME How to work this out? Temporarily hardcode to GPIO 50 (EHRPWM1A, P9_14)
-			String chip = "48302000";
-			String address = "48302200";
+			/*-
+			ecap0:   /sys/devices/platform/ocp/0x48300000.epwmss/0x48300100.ecap/pwm
+			ehrpwm0: /sys/devices/platform/ocp/0x48300000.epwmss/0x48300200.pwm/pwm
+			ehrpwm1: /sys/devices/platform/ocp/0x48302000.epwmss/0x48302200.pwm/pwm
+			ehrpwm2: /sys/devices/platform/ocp/0x48304000.epwmss/0x48304200.pwm/pwm
+			*/
+			String lookup = pinInfo.getHeader() + "_" + pinInfo.getPhysicalPin();
+			PwmModule pwm_module = PWM_MODULES.get(lookup);
+			if (pwm_module == null) {
+				Logger.warn("PWM module not found for '" + lookup + "'");
+				return -1;
+			}
 
-			Path chip_path = Paths.get("/sys/devices/platform/ocp/" + chip + ".epwmss/" + address + ".pwm/pwm");
+			Path chip_path = Paths.get(String.format("/sys/devices/platform/ocp/%d.epwmss/%d.%s/pwm",
+					Integer.valueOf(pwm_module.subsystem), Integer.valueOf(pwm_module.address), pwm_module.suffix));
 			int pwm_chip = -1;
-			// FIXME Treat as a stream
+			// FIXME Treat as a stream?
 			try (DirectoryStream<Path> dirs = Files.newDirectoryStream(chip_path, "pwm*")) {
 				for (Path p : dirs) {
 					String dir = p.getFileName().toString();
@@ -142,9 +224,10 @@ public class BeagleBoneBoardInfoProvider implements BoardInfoProvider {
 		}
 
 		/*-
-		 * @Override public MmapGpioInterface createMmapGpio() {
-		 * 	return new BeagleBoneBlackMmapGpio();
-		 * }
-		 */
+		@Override
+		public MmapGpioInterface createMmapGpio() {
+			return new BeagleBoneBlackMmapGpio();
+		}
+		*/
 	}
 }

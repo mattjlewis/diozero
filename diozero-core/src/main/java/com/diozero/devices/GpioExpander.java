@@ -39,6 +39,8 @@ import com.diozero.api.RuntimeIOException;
  */
 public interface GpioExpander extends DeviceInterface {
 	int GPIOS_PER_PORT = 8;
+	byte ALL_OUTPUT = 0;
+	byte ALL_INPUT = (byte) 0xff;
 
 	/**
 	 * Set the directions for all pins on this port using the specified directions

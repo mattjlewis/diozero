@@ -98,6 +98,12 @@ locate [com.diozero:diozero-distribution](https://search.maven.org/artifact/com.
 select a version and click the "[bin.zip](https://search.maven.org/remotecontent?filepath=com/diozero/diozero-distribution/{{ site.version }}/diozero-distribution-{{ site.version }}-bin.zip)" option in the Downloads link top right.
 It is also available in [mvnrepository](https://mvnrepository.com/) by locating [diozero-distribution](https://mvnrepository.com/artifact/com.diozero/diozero-distribution), selecting a version and clicking the Files [View All](https://repo1.maven.org/maven2/com/diozero/diozero-distribution/{{ site.version }}) link.
 
+## Articles
+
+* [Building Portable Binaries for Single Board Computers with diozero and GraalVM](https://deviceiozero.medium.com/building-portable-binaries-for-single-board-computers-with-diozero-and-graalvm-b659f79d5c71)
+* [Achieving Portability Across Single Board Computers and Micro-controllers](https://deviceiozero.medium.com/tbc)
+* [Lego Car Controlled by Raspberry Pi and PS3 Controller](http://mattandshirl.blogspot.com/2013/06/lego-car-controlled-by-raspberry-pi-and.html) - now ported to Java
+
 ## Development
 
 Created by [Matt Lewis](https://github.com/mattjlewis) (email [deviceiozero@gmail.com](mailto:deviceiozero@gmail.com))
@@ -114,3 +120,11 @@ This project is hosted on [GitHub](https://github.com/mattjlewis/diozero/), plea
 [Release History](7_internals/98_Releases.md)
 
 This work is provided under the [MIT License](https://github.com/mattjlewis/diozero/tree/master/LICENSE.txt).
+
+## Credits
+
+* pigpio
+* gpoizero
+* Johnny Five
+* rpi_ws281x
+* Many more...

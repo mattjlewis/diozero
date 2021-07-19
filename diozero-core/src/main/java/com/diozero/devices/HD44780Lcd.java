@@ -723,71 +723,86 @@ public class HD44780Lcd implements DeviceInterface {
 		}
 	}
 
+	/**
+	 * Interface for connecting to LCD displays using 4-bit data mode (D4-D7).
+	 *
+	 * Data is packed into single 1-byte payload - 4-bits contain data, the other 4
+	 * bits control backlight, enable, read/write, and register select flags.
+	 */
 	public interface LcdConnection extends AutoCloseable {
-		void write(byte values);
+		void write(byte value);
 
+		/**
+		 * Control whether the data bits in the first or last 4-bits
+		 *
+		 * @return true if the data bits are in the high nibble (bits 4:7)
+		 */
 		boolean isDataInHighNibble();
 
+		/**
+		 * Identify the bit in the byte payload that refers to the backlight control
+		 * flag 1=on, 0=off.
+		 *
+		 * @return the backlight control bit number
+		 */
 		int getBacklightBit();
 
+		/**
+		 * Identify the bit in the byte payload that refers to the enable flag to start
+		 * read/write.
+		 *
+		 * Falling edge triggered
+		 *
+		 * @return the enable flag bit number
+		 */
 		int getEnableBit();
 
+		/**
+		 * Identify the bit in the byte payload that refers to the read/write flag. Not
+		 * implemented.
+		 *
+		 * R/W=0: Write, R/W=1: Read
+		 *
+		 * @return the read/write flag bit number
+		 */
 		int getDataReadWriteBit();
 
+		/**
+		 * Identify the bit in the byte payload that refers to the register select flag.
+		 *
+		 * RS=0: Command, RS=1: Data
+		 *
+		 * @return the register select flag bit number
+		 */
 		int getRegisterSelectBit();
 
 		@Override
 		void close() throws RuntimeIOException;
 	}
 
-	public static class PiFaceCadLcdConnection implements LcdConnection {
-		private static final int CHIP_SELECT = 1;
-		private static final int ADDRESS = 0;
-		private static final int PORT = 1;
+	/**
+	 * For connections via a GPIO expansion board.
+	 */
+	public static abstract class GpioExpansionLcdConnection implements LcdConnection {
+		private GpioExpander gpioExpander;
+		private int port;
+		private boolean dataInHighNibble;
+		private int registerSelectBit;
+		private int dataReadWriteBit;
+		private int enableBit;
+		private int backlightBit;
 
-		/*-
-		 * MCP23S17 GPIOB to HD44780 pin map
-		 * PH_PIN_D4 = 0
-		 * PH_PIN_D5 = 1
-		 * PH_PIN_D6 = 2
-		 * PH_PIN_D7 = 3
-		 * PH_PIN_ENABLE = 4
-		 * PH_PIN_RW = 5
-		 * PH_PIN_RS = 6
-		 * PH_PIN_LED_EN = 7
-		 */
-		// Register select (0: instruction, 1:data)
-		private static final byte REGISTER_SELECT_BIT = 6;
-		// Select read or write (0: Write, 1: Read).
-		private static final byte DATA_READ_WRITE_BIT = 5;
-		// Enable bit, starts read/write.
-		private static final byte ENABLE_BIT = 4;
-		// Backlight control bit (1=on, 0=off)
-		private static final int BACKLIGHT_BIT = 7;
+		public GpioExpansionLcdConnection(GpioExpander gpioExpander, int port, boolean dataInHighNibble,
+				int registerSelectBit, int dataReadWriteBit, int enableBit, int backlightBit) {
+			this.gpioExpander = gpioExpander;
+			this.port = port;
 
-		private MCP23S17 mcp23s17;
-		private boolean dataInHighNibble = false;
-		private int registerSelectBit = REGISTER_SELECT_BIT;
-		private int dataReadWriteBit = DATA_READ_WRITE_BIT;
-		private int enableBit = ENABLE_BIT;
-		private int backlightBit = BACKLIGHT_BIT;
-
-		public PiFaceCadLcdConnection(int controller) {
-			mcp23s17 = new MCP23S17(controller, CHIP_SELECT, ADDRESS, MCP23xxx.INTERRUPT_GPIO_NOT_SET);
-			// All output
-			mcp23s17.setDirections(PORT, (byte) 0);
+			gpioExpander.setDirections(port, GpioExpander.ALL_OUTPUT);
 		}
 
 		@Override
 		public void write(byte values) {
-			// byte new_values = (byte) ((values >> 4) & 0x0f);
-			// new_values |= values << 4;
-			mcp23s17.setValues(PORT, values);
-		}
-
-		@Override
-		public void close() throws RuntimeIOException {
-			mcp23s17.close();
+			gpioExpander.setValues(port, values);
 		}
 
 		@Override
@@ -814,84 +829,125 @@ public class HD44780Lcd implements DeviceInterface {
 		public int getBacklightBit() {
 			return backlightBit;
 		}
+
+		@Override
+		public void close() throws RuntimeIOException {
+			gpioExpander.close();
+		}
 	}
 
-	public static class PCF8574LcdConnection implements LcdConnection {
+	/**
+	 * Connect via an Output Shift Register.
+	 */
+	public static class OutputShiftRegisterLcdConnection extends GpioExpansionLcdConnection {
+		/**
+		 * Constructor.
+		 *
+		 * @param osr               the output shift register instance
+		 * @param port              the port containing the 8 outputs that are connected
+		 *                          to the LCD
+		 * @param dataInHighNibble  set to true if the d4:d7 of the LCD are connected to
+		 *                          GPIOs 4-7 in the specified port
+		 * @param registerSelectBit the output number in the specified port that is
+		 *                          connected to the RS pin of the LCD
+		 * @param dataReadWriteBit  the output number in the specified port that is
+		 *                          connected to the RW pin of the LCD
+		 * @param enableBit         the output number in the specified port that is
+		 *                          connected to the E pin of the LCD
+		 * @param backlightBit      the output number in the specified port that is
+		 *                          connected to the A pin of the LCD
+		 */
+		public OutputShiftRegisterLcdConnection(OutputShiftRegister osr, int port, boolean dataInHighNibble,
+				int registerSelectBit, int dataReadWriteBit, int enableBit, int backlightBit) {
+			super(osr, port, dataInHighNibble, registerSelectBit, dataReadWriteBit, enableBit, backlightBit);
+		}
+	}
+
+	/**
+	 * MCP23S17 GPIOB to HD44780.
+	 *
+	 * Wiring:
+	 *
+	 * <pre>
+	 * PH_PIN_D4 = 0
+	 * PH_PIN_D5 = 1
+	 * PH_PIN_D6 = 2
+	 * PH_PIN_D7 = 3
+	 * PH_PIN_ENABLE = 4
+	 * PH_PIN_RW = 5
+	 * PH_PIN_RS = 6
+	 * PH_PIN_LED_EN = 7
+	 * </pre>
+	 */
+	public static class PiFaceCadLcdConnection extends GpioExpansionLcdConnection {
+		private static final int CHIP_SELECT = 1;
+		private static final int ADDRESS = 0;
+		private static final int PORT = 1;
+
+		private static final byte REGISTER_SELECT_BIT = 6;
+		private static final byte DATA_READ_WRITE_BIT = 5;
+		private static final byte ENABLE_BIT = 4;
+		private static final int BACKLIGHT_BIT = 7;
+
+		public PiFaceCadLcdConnection(int controller) {
+			super(new MCP23S17(controller, CHIP_SELECT, ADDRESS, MCP23xxx.INTERRUPT_GPIO_NOT_SET), PORT, false,
+					REGISTER_SELECT_BIT, DATA_READ_WRITE_BIT, ENABLE_BIT, BACKLIGHT_BIT);
+		}
+	}
+
+	/**
+	 * Connected via the PCF8574 I2C GPIO expansion backpack Default PCF8574 GPIO to
+	 * HD44780 pin map:
+	 *
+	 * <pre>
+	 * PH_PIN_RS = 0
+	 * PH_PIN_RW = 1
+	 * PH_PIN_ENABLE = 2
+	 * PH_PIN_LED_EN = 3
+	 * PH_PIN_D4 = 4
+	 * PH_PIN_D5 = 5
+	 * PH_PIN_D6 = 6
+	 * PH_PIN_D7 = 7
+	 * </pre>
+	 */
+	public static class PCF8574LcdConnection extends GpioExpansionLcdConnection {
 		// Default I2C device address for the PCF8574
 		public static final int DEFAULT_DEVICE_ADDRESS = 0x27;
 		private static final int PORT = 0;
 
-		/*-
-		 * Default PCF8574 GPIO to HD44780 pin map
-		 * PH_PIN_RS = 0
-		 * PH_PIN_RW = 1
-		 * PH_PIN_ENABLE = 2
-		 * PH_PIN_LED_EN = 3
-		 * PH_PIN_D4 = 4
-		 * PH_PIN_D5 = 5
-		 * PH_PIN_D6 = 6
-		 * PH_PIN_D7 = 7
-		 */
-		// Register select (0: instruction, 1:data)
 		private static final byte REGISTER_SELECT_BIT = 0;
-		// Select read or write (0: Write, 1: Read).
 		private static final byte DATA_READ_WRITE_BIT = 1;
-		// Enable bit, starts read/write.
 		private static final byte ENABLE_BIT = 2;
-		// Backlight control bit (1=on, 0=off)
 		private static final int BACKLIGHT_BIT = 3;
-
-		private PCF8574 pcf8574;
-		private boolean dataInHighNibble = true;
-		private int registerSelectBit = REGISTER_SELECT_BIT;
-		private int dataReadWriteBit = DATA_READ_WRITE_BIT;
-		private int enableBit = ENABLE_BIT;
-		private int backlightBit = BACKLIGHT_BIT;
 
 		public PCF8574LcdConnection(int controller) {
 			this(controller, DEFAULT_DEVICE_ADDRESS);
 		}
 
 		public PCF8574LcdConnection(int controller, int deviceAddress) {
-			pcf8574 = new PCF8574(controller, deviceAddress);
-		}
-
-		@Override
-		public void write(byte values) {
-			pcf8574.setValues(PORT, values);
-		}
-
-		@Override
-		public boolean isDataInHighNibble() {
-			return dataInHighNibble;
-		}
-
-		@Override
-		public int getRegisterSelectBit() {
-			return registerSelectBit;
-		}
-
-		@Override
-		public int getDataReadWriteBit() {
-			return dataReadWriteBit;
-		}
-
-		@Override
-		public int getEnableBit() {
-			return enableBit;
-		}
-
-		@Override
-		public int getBacklightBit() {
-			return backlightBit;
-		}
-
-		@Override
-		public void close() throws RuntimeIOException {
-			pcf8574.close();
+			super(new PCF8574(controller, deviceAddress), PORT, true, REGISTER_SELECT_BIT, DATA_READ_WRITE_BIT,
+					ENABLE_BIT, BACKLIGHT_BIT);
 		}
 	}
 
+	/**
+	 * Connect via individual GPIO pins, uses 4-bit mode (data pins D4-D7).
+	 *
+	 * Wiring (from left-to-right):
+	 *
+	 * <pre>
+	 * Vss: GND
+	 * Vdd: 5v
+	 * V0: Contrast adjustment (connect to Vdd for full brightness)
+	 * RS: Register Select - GPIO
+	 * RW: Data read/write (not implemented - connect to GND)
+	 * E: Enable - GPIO
+	 * D0-D3: Don't connect (currently only 4-bit mode is supported)
+	 * D4-D7: Data pins - GPIO
+	 * A: Backlight LED Cathode (+) - GPIO (need to check 3v3/5v) or Vdd (always on)
+	 * K: Backlight LED Anode (-) - GND
+	 * </pre>
+	 */
 	public static class GpioLcdConnection implements LcdConnection {
 		private static final int BACKLIGHT_BIT = 4;
 		private static final int ENABLE_BIT = 5;
@@ -904,34 +960,75 @@ public class HD44780Lcd implements DeviceInterface {
 		private DigitalOutputDevice dataRwPin;
 		private DigitalOutputDevice registerSelectPin;
 
-		public GpioLcdConnection(int d0, int d1, int d2, int d3, int backlightGpio, int enableGpio, int dataRwGpio,
+		/**
+		 * Use the default device factory and specify GPIO numbers.
+		 *
+		 * @param d4                 GPIO number for d4 pin
+		 * @param d5                 GPIO number for d5 pin
+		 * @param d6                 GPIO number for d6 pin
+		 * @param d7                 GPIO number for d7 pin
+		 * @param backlightGpio      backlight control GPIO number
+		 * @param enableGpio         enable GPIO number
+		 * @param dataRwGpio         data read/write GPIO number (not used - connect to
+		 *                           GND)
+		 * @param registerSelectGpio register select GPIO number
+		 */
+		public GpioLcdConnection(int d4, int d5, int d6, int d7, int backlightGpio, int enableGpio, int dataRwGpio,
 				int registerSelectGpio) {
-			this(new DigitalOutputDevice(d0), new DigitalOutputDevice(d1), new DigitalOutputDevice(d2),
-					new DigitalOutputDevice(d3), new DigitalOutputDevice(backlightGpio),
+			this(new DigitalOutputDevice(d4), new DigitalOutputDevice(d5), new DigitalOutputDevice(d6),
+					new DigitalOutputDevice(d7), new DigitalOutputDevice(backlightGpio),
 					new DigitalOutputDevice(enableGpio), new DigitalOutputDevice(dataRwGpio),
 					new DigitalOutputDevice(registerSelectGpio));
 		}
 
-		public GpioLcdConnection(GpioDeviceFactoryInterface deviceFactory, int d0, int d1, int d2, int d3,
+		/**
+		 * Use the specified device factory and specify GPIO numbers.
+		 *
+		 * @param deviceFactory      the device factory to use for provisioning the
+		 *                           GPIOs
+		 * @param d4                 GPIO number for d4 pin
+		 * @param d5                 GPIO number for d5 pin
+		 * @param d6                 GPIO number for d6 pin
+		 * @param d7                 GPIO number for d7 pin
+		 * @param backlightGpio      backlight control GPIO number
+		 * @param enableGpio         enable GPIO number
+		 * @param dataRwGpio         data read/write GPIO number (not used - connect to
+		 *                           GND)
+		 * @param registerSelectGpio register select GPIO number
+		 */
+		public GpioLcdConnection(GpioDeviceFactoryInterface deviceFactory, int d4, int d5, int d6, int d7,
 				int backlightGpio, int enableGpio, int dataRwGpio, int registerSelectGpio) {
-			this(DigitalOutputDevice.Builder.builder(d0).setDeviceFactory(deviceFactory).build(),
-					DigitalOutputDevice.Builder.builder(d1).setDeviceFactory(deviceFactory).build(),
-					DigitalOutputDevice.Builder.builder(d2).setDeviceFactory(deviceFactory).build(),
-					DigitalOutputDevice.Builder.builder(d3).setDeviceFactory(deviceFactory).build(),
+			this(DigitalOutputDevice.Builder.builder(d4).setDeviceFactory(deviceFactory).build(),
+					DigitalOutputDevice.Builder.builder(d5).setDeviceFactory(deviceFactory).build(),
+					DigitalOutputDevice.Builder.builder(d6).setDeviceFactory(deviceFactory).build(),
+					DigitalOutputDevice.Builder.builder(d7).setDeviceFactory(deviceFactory).build(),
 					DigitalOutputDevice.Builder.builder(backlightGpio).setDeviceFactory(deviceFactory).build(),
 					DigitalOutputDevice.Builder.builder(enableGpio).setDeviceFactory(deviceFactory).build(),
 					DigitalOutputDevice.Builder.builder(dataRwGpio).setDeviceFactory(deviceFactory).build(),
 					DigitalOutputDevice.Builder.builder(registerSelectGpio).setDeviceFactory(deviceFactory).build());
 		}
 
-		public GpioLcdConnection(DigitalOutputDevice dataPin0, DigitalOutputDevice dataPin1,
-				DigitalOutputDevice dataPin2, DigitalOutputDevice dataPin3, DigitalOutputDevice backlightPin,
-				DigitalOutputDevice enablePin, DigitalOutputDevice dataRwPin, DigitalOutputDevice registerSelectPin) {
+		/**
+		 * Use the specified digital output devices.
+		 *
+		 * @param d4                 Digital output device for d4 pin
+		 * @param d5                 Digital output device for d5 pin
+		 * @param d6                 Digital output device for d6 pin
+		 * @param d7                 Digital output device for d7 pin
+		 * @param backlightGpio      backlight control digital output device
+		 * @param enableGpio         enable digital output device
+		 * @param dataRwGpio         data read/write digital output device (not used -
+		 *                           connect to GND)
+		 * @param registerSelectGpio register select digital output device
+		 */
+		public GpioLcdConnection(DigitalOutputDevice d4, DigitalOutputDevice d5, DigitalOutputDevice d6,
+				DigitalOutputDevice d7, DigitalOutputDevice backlightPin, DigitalOutputDevice enablePin,
+				DigitalOutputDevice dataRwPin, DigitalOutputDevice registerSelectPin) {
 			dataPins = new DigitalOutputDevice[4];
-			dataPins[0] = dataPin0;
-			dataPins[1] = dataPin1;
-			dataPins[2] = dataPin2;
-			dataPins[3] = dataPin3;
+			dataPins[0] = d4;
+			dataPins[1] = d5;
+			dataPins[2] = d6;
+			dataPins[3] = d7;
 
 			this.backlightPin = backlightPin;
 			this.enablePin = enablePin;
