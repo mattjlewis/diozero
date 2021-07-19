@@ -20,7 +20,12 @@ redirect_from:
 * SPI support for Arduino devices over Firmata
 + Waveshare 7.5" e-ink display
 + Optimise GpioExpander when used for PWM output on multiple pins, 7-segment displays, shift
-registers, etc. - allow multiple GPIOs to be set in one invocation rather than individually
+registers, etc. - set multiple GPIOs one invocation rather than individually
+
+## 1.3.2 (In progress)
+
+* HD44780 cleanup - optimising use of GpioExpander interface plus added option to connect via GPIOs.
+* BBB - fix PWM module lookup for all PWM numbers.
 
 ## 1.3.1
 
