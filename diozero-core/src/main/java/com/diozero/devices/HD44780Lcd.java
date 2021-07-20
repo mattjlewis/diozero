@@ -5,7 +5,7 @@ package com.diozero.devices;
  * Organisation: diozero
  * Project:      diozero - Core
  * Filename:     HD44780Lcd.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.devices;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -266,12 +266,12 @@ public class HD44780Lcd implements DeviceInterface {
 		// Function set (Interface is 8 bits long).
 		write4Bits(true, (byte) (INST_FUNCTION_SET | FS_DATA_LENGTH_8BIT));
 		// Wait for more than 4.1 ms
-		SleepUtil.sleepMillis(4);
+		SleepUtil.sleepMillis(5);
 		// Function set (Interface is 8 bits long).
 		write4Bits(true, (byte) (INST_FUNCTION_SET | FS_DATA_LENGTH_8BIT));
 		// Wait for more than 100us
 		// SleepUtil.sleepMicros(100);
-		SleepUtil.busySleep(100_000);
+		SleepUtil.busySleep(110_000);
 		// Function set (Interface is 8 bits long).
 		write4Bits(true, (byte) (INST_FUNCTION_SET | FS_DATA_LENGTH_8BIT));
 		// Now set it to 4-bit mode
@@ -1015,11 +1015,11 @@ public class HD44780Lcd implements DeviceInterface {
 		 * @param d5                 Digital output device for d5 pin
 		 * @param d6                 Digital output device for d6 pin
 		 * @param d7                 Digital output device for d7 pin
-		 * @param backlightGpio      backlight control digital output device
-		 * @param enableGpio         enable digital output device
-		 * @param dataRwGpio         data read/write digital output device (not used -
+		 * @param backlightPin       backlight control digital output device
+		 * @param enablePin          enable digital output device
+		 * @param dataRwPin          data read/write digital output device (not used -
 		 *                           connect to GND)
-		 * @param registerSelectGpio register select digital output device
+		 * @param registerSelectPin register select digital output device
 		 */
 		public GpioLcdConnection(DigitalOutputDevice d4, DigitalOutputDevice d5, DigitalOutputDevice d6,
 				DigitalOutputDevice d7, DigitalOutputDevice backlightPin, DigitalOutputDevice enablePin,
