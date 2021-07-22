@@ -40,11 +40,13 @@ public class LcdSampleApp16x2Base {
 	// Main program block
 	public static void test(HD44780Lcd lcd) {
 		lcd.setBacklightEnabled(true);
-		
-		/*Logger.info("Calling setText");
+
+		/*-
+		Logger.info("Calling setText");
 		lcd.setText(0, "Hello World!");
-		SleepUtil.sleepSeconds(2);*/
-		
+		SleepUtil.sleepSeconds(2);
+		*/
+
 		// 0, 14, 21, 31, 10, 4, 10, 17
 		byte[] space_invader = HD44780Lcd.Characters.get("space_invader");
 		byte[] smilie = HD44780Lcd.Characters.get("smilie");
@@ -54,7 +56,7 @@ public class LcdSampleApp16x2Base {
 		lcd.createChar(2, frownie);
 		lcd.clear();
 
-		Logger.info("Adding text");
+		Logger.info("Hello World");
 		lcd.setCursorPosition(0, 0);
 		lcd.addText('H');
 		lcd.addText('e');
@@ -79,12 +81,13 @@ public class LcdSampleApp16x2Base {
 		lcd.addText(2);
 		SleepUtil.sleepSeconds(2);
 		lcd.clear();
-		
+
+		Logger.info("Running");
 		lcd.createChar(3, HD44780Lcd.Characters.get("runninga"));
 		lcd.createChar(4, HD44780Lcd.Characters.get("runningb"));
 		lcd.clear();
 		lcd.displayControl(true, false, false);
-		for (int i=0; i<40; i++) {
+		for (int i = 0; i < 40; i++) {
 			lcd.setCursorPosition(0, 0);
 			lcd.addText(3);
 			SleepUtil.sleepMillis(100);
@@ -95,13 +98,13 @@ public class LcdSampleApp16x2Base {
 		SleepUtil.sleepSeconds(1);
 		lcd.displayControl(true, true, true);
 		lcd.clear();
-		
-		for (int i=0; i<4; i++) {
+
+		for (int i = 0; i < 4; i++) {
 			// Send some text
 			lcd.setText(0, "Hello -         ");
 			lcd.setText(1, "World! " + i);
 			SleepUtil.sleepSeconds(0.5);
-			
+
 			lcd.clear();
 
 			// Send some more text
@@ -109,20 +112,21 @@ public class LcdSampleApp16x2Base {
 			lcd.setText(1, ">    HD44780 LCD");
 			SleepUtil.sleepSeconds(0.5);
 		}
-		
-		SleepUtil.sleepSeconds(1);
-		lcd.clear();
-		
-		for (byte b : "Hello Matt!".getBytes()) {
-			lcd.addText(b);
-			SleepUtil.sleepSeconds(.2);
-		}
-		
+
 		SleepUtil.sleepSeconds(1);
 		lcd.clear();
 
-		int x=0;
-		for (int i=0; i<3; i++) {
+		for (byte b : "Hello diozero!".getBytes()) {
+			lcd.addText(b);
+			SleepUtil.sleepSeconds(.2);
+		}
+
+		SleepUtil.sleepSeconds(1);
+		lcd.clear();
+
+		Logger.info("Scroll");
+		int x = 0;
+		for (int i = 0; i < 3; i++) {
 			for (byte b : "Hello World! ".getBytes()) {
 				if (x++ == lcd.getColumnCount()) {
 					lcd.entryModeControl(true, true);
@@ -134,7 +138,7 @@ public class LcdSampleApp16x2Base {
 		SleepUtil.sleepSeconds(1);
 		lcd.clear();
 		lcd.entryModeControl(true, false);
-		
+
 		lcd.setCursorPosition(0, 0);
 		lcd.addText('H');
 		lcd.addText('e');
@@ -157,10 +161,10 @@ public class LcdSampleApp16x2Base {
 		lcd.addText(0);
 		lcd.addText(1);
 		lcd.addText(2);
-		
+
 		Logger.info("Sleeping for 4 seconds...");
 		SleepUtil.sleepSeconds(4);
-		
+
 		lcd.clear();
 	}
 }

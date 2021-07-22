@@ -32,7 +32,6 @@ package com.diozero.devices;
  */
 
 import com.diozero.api.DeviceInterface;
-import com.diozero.api.RuntimeIOException;
 
 /**
  * Interface for GPIO expansion boards such as the MCP23xxx family of devices
@@ -59,7 +58,4 @@ public interface GpioExpander extends DeviceInterface {
 	 * @param values bit mask specifying on/off values. 1 = on, 0 = off
 	 */
 	void setValues(int port, byte values);
-
-	@Override
-	void close() throws RuntimeIOException;
 }

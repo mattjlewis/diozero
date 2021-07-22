@@ -48,8 +48,12 @@ import com.diozero.sbc.DeviceFactoryHelper;
  *
  * <p>
  * Segments are assumed to be connected in the following order. Note decimal
- * point (DP) and colon (Col) not yet implemented.
+ * point (DP) and colon (Col) not yet implemented. Connect each segment via a
+ * current limiting resistor, e.g. 220 or 330 Ohms.
  * </p>
+ *
+ * Link:
+ * https://www.electronics-tutorials.ws/blog/7-segment-display-tutorial.html
  *
  * <pre>
  *     A
@@ -73,7 +77,11 @@ public class SevenSegmentDisplay implements DeviceInterface {
 			{ true, true, true, true, false, true, true }, // 9
 	};
 
+	// Length 7 - one for each segment
 	private DigitalOutputDevice[] segments;
+	private DigitalOutputDevice decimalPoint;
+	private DigitalOutputDevice semicolon;
+	// Control which digit is displayed, arbitrary length
 	private DigitalOutputDevice[] digitControl;
 
 	public SevenSegmentDisplay(int aGpio, int bGpio, int cGpio, int dGpio, int eGpio, int fGpio, int gGpio,

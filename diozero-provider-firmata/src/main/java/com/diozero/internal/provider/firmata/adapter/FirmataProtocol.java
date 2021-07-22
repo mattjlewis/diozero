@@ -31,6 +31,10 @@ package com.diozero.internal.provider.firmata.adapter;
  * #L%
  */
 
+import java.io.ByteArrayOutputStream;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
+
 /**
  * https://github.com/firmata/protocol/blob/master/protocol.md
  */
@@ -59,29 +63,258 @@ public interface FirmataProtocol {
 	byte SERIAL_DATA = 0x60; // ** communicate with serial devices, including other boards
 	byte ENCODER_DATA = 0x61; // ** reply with encoder's current positions
 	byte ACCELSTEPPER_DATA = 0x62; // ** control a stepper motor
+	byte REPORT_DIGITAL_PIN = 0x63; // (reserved)
+	byte EXTENDED_REPORT_ANALOG = 0x64; // (reserved)
+	byte REPORT_FEATURES = 0x65; // ** Report the features supported by the device (proposed API)
+	byte REPORT_FEATURES_RESPONSE = 0x66; // FIXME proposed API - not yet specified
+	byte SPI_DATA = 0x68; // SPI Commands start with this byte
+	byte ANALOG_MAPPING_QUERY = 0x69; // ask for mapping of analog to pin numbers
+	byte ANALOG_MAPPING_RESPONSE = 0x6A; // reply with mapping info
+	byte CAPABILITY_QUERY = 0x6B; // ask for supported modes and resolution of all pins
+	byte CAPABILITY_RESPONSE = 0x6C; // reply with supported modes and resolution
+	byte PIN_STATE_QUERY = 0x6D; // ask for a pin's current mode and state (different than value)
+	byte PIN_STATE_RESPONSE = 0x6E; // reply with a pin's current mode and state (different than value)
+	byte EXTENDED_ANALOG = 0x6F; // analog write (PWM, Servo, etc) to any pin
 	byte SERVO_CONFIG = 0x70; // set max angle, minPulse, maxPulse, freq
 	byte STRING_DATA = 0x71; // a string message with 14-bits per char
 	byte STEPPER_DATA = 0x72; // ** control a stepper motor
 	byte ONEWIRE_DATA = 0x73; // ** send an OneWire read/write/reset/select/skip/search request
+	byte DHTSENSOR_DATA = 0x74; // Used by DhtFirmata
 	byte SHIFT_DATA = 0x75; // ** a bitstream to/from a shift register
 	byte I2C_REQUEST = (byte) 0x76; // send an I2C read/write request
 	byte I2C_REPLY = (byte) 0x77; // a reply to an I2C read request
 	byte I2C_CONFIG = (byte) 0x78; // config I2C settings such as delay times and power pins
-	byte EXTENDED_ANALOG = 0x6F; // analog write (PWM, Servo, etc) to any pin
-	byte PIN_STATE_QUERY = 0x6D; // ask for a pin's current mode and state (different than value)
-	byte PIN_STATE_RESPONSE = 0x6E; // reply with a pin's current mode and state (different than value)
-	byte CAPABILITY_QUERY = 0x6B; // ask for supported modes and resolution of all pins
-	byte CAPABILITY_RESPONSE = 0x6C; // reply with supported modes and resolution
-	byte ANALOG_MAPPING_QUERY = 0x69; // ask for mapping of analog to pin numbers
-	byte ANALOG_MAPPING_RESPONSE = 0x6A; // reply with mapping info
 	byte REPORT_FIRMWARE = 0x79; // report name and version of the firmware
 	byte SAMPLING_INTERVAL = 0x7A; // the interval at which analog input is sampled (default = 19ms)
 	byte SCHEDULER_DATA = 0x7B; // ** send a createtask/deletetask/addtotask/schedule/querytasks/querytask
 								// request to the scheduler
+	byte ANALOG_CONFIG = 0x7C; // (reserved)
+	byte FREQUENCY_COMMAND = 0x7D; // Command for the Frequency module
 	byte SYSEX_NON_REALTIME = 0x7E; // MIDI Reserved for non-realtime messages
 	byte SYSEX_REALTIME = 0X7F; // MIDI Reserved for realtime messages
 
-	byte REPORT_FEATURES = 0x65; // ** Report the features supported by the device (proposed API)
+	// Scheduler
+	byte MAX_TASK_ID = 0x7f;
+	// Scheduler instructions
+	byte CREATE_FIRMATA_TASK = 0;
+	byte DELETE_FIRMATA_TASK = 1;
+	byte ADD_TO_FIRMATA_TASK = 2;
+	byte DELAY_FIRMATA_TASK = 3;
+	byte SCHEDULE_FIRMATA_TASK = 4;
+	byte QUERY_ALL_FIRMATA_TASKS = 5;
+	byte QUERY_FIRMATA_TASK = 6;
+	byte RESET_FIRMATA_TASKS = 7;
+	// Scheduler replies
+	byte ERROR_TASK_REPLY = 8;
+	byte QUERY_ALL_TASKS_REPLY = 9;
+	byte QUERY_TASK_REPLY = 10;
+
+	static String readString(ByteBuffer buffer) {
+		// Each char is actually sent as 2 7-bit bytes (LSB first)
+		byte[] chars = new byte[buffer.remaining() / 2];
+		for (int i = 0; i < chars.length; i++) {
+			chars[i] = (byte) ((buffer.get() & 0x7f) | ((buffer.get() & 0x01) << 7));
+		}
+		return new String(chars, StandardCharsets.UTF_8);
+	}
+
+	static byte[] convertToLsbMsb(int value) {
+		return new byte[] { (byte) (value & 0x7f), (byte) ((value >> 7) & 0x7f) };
+	}
+
+	static byte[] createSetSamplingIntervalMessage(int intervalMs) {
+		byte[] lsb_msb = convertToLsbMsb(intervalMs);
+		return new byte[] { START_SYSEX, SAMPLING_INTERVAL, lsb_msb[0], lsb_msb[1], END_SYSEX };
+	}
+
+	static byte[] createEnableAnalogReportingMessage(int adcNum, boolean enabled) {
+		return new byte[] { (byte) (REPORT_ANALOG_PIN | adcNum), (byte) (enabled ? 1 : 0) };
+	}
+
+	static byte[] createEnableDigitalReportingMessage(int gpio, boolean enabled) {
+		return new byte[] { (byte) (REPORT_DIGITAL_PORT | (gpio >> 3)), (byte) (enabled ? 1 : 0) };
+	}
+
+	static byte[] createSetPinModeMessage(int gpio, PinMode pinMode) {
+		return new byte[] { SET_PIN_MODE, (byte) gpio, (byte) pinMode.ordinal() };
+	}
+
+	static byte[] createSetDigitalValuesMessage(int port, byte values) {
+		byte[] lsb_msb = convertToLsbMsb(values);
+		return new byte[] { (byte) (DIGITAL_IO_START | (port & 0x0f)), lsb_msb[0], lsb_msb[1] };
+	}
+
+	static byte[] createSetDigitalValueMessage(int gpio, boolean value) {
+		return new byte[] { SET_DIGITAL_PIN_VALUE, (byte) gpio, (byte) (value ? 1 : 0) };
+	}
+
+	static byte[] createSetValueMessage(int gpio, int value) {
+		// Non-extended analog accommodates 16 ports (E0-Ef), with a max value of 16384
+		// (2^14)
+		if (gpio < 16 && value < 16384) {
+			byte[] lsb_msb = convertToLsbMsb(value);
+			return new byte[] { (byte) (ANALOG_IO_START | gpio), lsb_msb[0], lsb_msb[1] };
+		}
+
+		byte[] bytes = encodeValue(value);
+		byte[] data = new byte[4 + bytes.length];
+		data[0] = START_SYSEX;
+		data[1] = EXTENDED_ANALOG;
+		data[2] = (byte) gpio;
+		System.arraycopy(bytes, 0, data, 3, bytes.length);
+		data[data.length - 1] = END_SYSEX;
+		return data;
+	}
+
+	static byte[] createServoConfigMessage(int gpio, int minPulse, int maxPulse) {
+		byte[] min_pulse_lsb_msb = convertToLsbMsb(minPulse);
+		byte[] max_pulse_lsb_msb = convertToLsbMsb(maxPulse);
+		return new byte[] { START_SYSEX, SERVO_CONFIG, (byte) gpio, min_pulse_lsb_msb[0], min_pulse_lsb_msb[1],
+				max_pulse_lsb_msb[0], max_pulse_lsb_msb[1], END_SYSEX };
+	}
+
+	static byte[] createCreateTaskMessage(int taskId, int length) {
+		byte[] length_lsb_msb = convertToLsbMsb(length);
+		return new byte[] { START_SYSEX, SCHEDULER_DATA, CREATE_FIRMATA_TASK, (byte) taskId, length_lsb_msb[0],
+				length_lsb_msb[1], END_SYSEX };
+	}
+
+	static byte[] createAddToTaskMessage(int taskId, byte[] taskData) {
+		byte[] taskdata_encoded = to7BitArray(taskData);
+
+		byte[] data = new byte[4 + taskdata_encoded.length + 1];
+		int index = 0;
+		data[index++] = START_SYSEX;
+		data[index++] = SCHEDULER_DATA;
+		data[index++] = ADD_TO_FIRMATA_TASK;
+		data[index++] = (byte) taskId;
+		System.arraycopy(taskdata_encoded, 0, data, index, taskdata_encoded.length);
+		index += taskdata_encoded.length;
+		data[index++] = END_SYSEX;
+
+		return data;
+	}
+
+	static byte[] createScheduleTaskMessage(int taskId, int delayMs) {
+		byte[] time_data = new byte[4];
+		time_data[0] = (byte) (delayMs & 0xff);
+		time_data[1] = (byte) ((delayMs >> 8) & 0xff);
+		time_data[2] = (byte) ((delayMs >> 16) & 0xff);
+		time_data[3] = (byte) ((delayMs >> 24) & 0xff);
+		byte[] enc = to7BitArray(time_data);
+
+		byte[] data = new byte[4 + enc.length + 1];
+		int index = 0;
+		data[index++] = START_SYSEX;
+		data[index++] = SCHEDULER_DATA;
+		data[index++] = SCHEDULE_FIRMATA_TASK;
+		data[index++] = (byte) taskId;
+		System.arraycopy(enc, 0, data, index, enc.length);
+		index += enc.length;
+		data[index++] = END_SYSEX;
+
+		return data;
+	}
+
+	static byte[] createSchedulerDelayMessage(int delayMs) {
+		int index = 0;
+
+		byte[] delay_bytes = new byte[4];
+		delay_bytes[index++] = (byte) (delayMs & 0xff);
+		delay_bytes[index++] = (byte) ((delayMs >> 8) & 0xff);
+		delay_bytes[index++] = (byte) ((delayMs >> 16) & 0xff);
+		delay_bytes[index++] = (byte) ((delayMs >> 24) & 0xff);
+		byte[] delay_bytes_enc = to7BitArray(delay_bytes);
+
+		byte[] delay_command_bytes = new byte[3 + delay_bytes_enc.length + 1];
+		index = 0;
+		delay_command_bytes[index++] = START_SYSEX;
+		delay_command_bytes[index++] = SCHEDULER_DATA;
+		delay_command_bytes[index++] = DELAY_FIRMATA_TASK;
+		System.arraycopy(delay_bytes_enc, 0, delay_command_bytes, index, delay_bytes_enc.length);
+		index += delay_bytes_enc.length;
+		delay_command_bytes[index++] = END_SYSEX;
+
+		return delay_command_bytes;
+	}
+
+	static byte[] createDeleteTaskMessage(int taskId) {
+		return new byte[] { START_SYSEX, SCHEDULER_DATA, DELETE_FIRMATA_TASK, (byte) taskId, END_SYSEX };
+	}
+
+	static byte[] createSchedulerResetMessage() {
+		return new byte[] { START_SYSEX, SCHEDULER_DATA, RESET_FIRMATA_TASKS, END_SYSEX };
+	}
+
+	static byte[] to7BitArray(byte[] data) {
+		int shift = 0;
+		int previous = 0;
+		ByteArrayOutputStream output = new ByteArrayOutputStream();
+
+		for (byte b : data) {
+			int i = b & 0xff;
+			if (shift == 0) {
+				output.write(i & 0x7f);
+				shift++;
+				previous = i >> 7;
+			} else {
+				output.write(((i << shift) & 0x7f) | previous);
+				if (shift == 6) {
+					output.write(i >> 1);
+					shift = 0;
+				} else {
+					shift++;
+					previous = i >> (8 - shift);
+				}
+			}
+		}
+
+		if (shift > 0) {
+			output.write(previous);
+		}
+
+		return output.toByteArray();
+	}
+
+	static byte[] from7BitArray(byte[] encoded) {
+		final int expectedBytes = encoded.length * 7 >> 3;
+		final byte[] decoded = new byte[expectedBytes];
+
+		for (int i = 0; i < expectedBytes; i++) {
+			final int j = i << 3;
+			final int pos = (j / 7) >>> 0;
+			final int shift = j % 7;
+			decoded[i] = (byte) ((encoded[pos] >> shift) | ((encoded[pos + 1] << (7 - shift)) & 0xFF));
+		}
+
+		return decoded;
+	}
+
+	static byte[] encodeValue(int value) {
+		int num_bytes;
+		if (value < 128 || value >= 268435456) { // 2^7 or greater than max val (2^28)
+			num_bytes = 1;
+		} else if (value < 16384) { // 2^14
+			num_bytes = 2;
+		} else if (value < 2097152) { // 2^21
+			num_bytes = 3;
+		} else {
+			num_bytes = 4;
+		}
+		byte[] bytes = new byte[num_bytes];
+		for (int i = 0; i < num_bytes; i++) {
+			bytes[i] = (byte) ((value >> (i * 7)) & 0x7f);
+		}
+		return bytes;
+	}
+
+	static int decodeValue(byte... values) {
+		int value = 0;
+		for (int i = 0; i < values.length; i++) {
+			value |= ((values[i] & 0x7f) << (i * 7));
+		}
+		return value;
+	}
 
 	public enum PinMode {
 		DIGITAL_INPUT, // 0x00
@@ -96,7 +329,15 @@ public interface FirmataProtocol {
 		ENCODER, // 0x09
 		SERIAL, // 0x0A
 		INPUT_PULLUP, // 0x0B
+		// Extensions under development
+		SPI, // 0x0C
+		SONAR, // 0x0D - HC-SR04
+		TONE, // 0x0E
+		DHT, // 0x0F
+		FREQUENCY, // 0x10 - frequency measurement
 		UNKNOWN;
+		// IGNORE 0x7F - pin configured to be ignored by digitalWrite and
+		// capabilityResponse
 
 		private static PinMode[] MODES = values();
 

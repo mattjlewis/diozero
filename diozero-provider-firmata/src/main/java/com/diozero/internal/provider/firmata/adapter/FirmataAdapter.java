@@ -33,7 +33,6 @@ package com.diozero.internal.provider.firmata.adapter;
 
 import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -67,6 +66,7 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 	private Map<Integer, Pin> pins;
 	private List<Set<PinCapability>> boardCapabilities;
 	private Map<Integer, Integer> adcToPinNumberMapping;
+	private Map<Byte, Boolean> taskIds;
 
 	public FirmataAdapter(FirmataEventListener eventListener) {
 		this.eventListener = eventListener;
@@ -76,6 +76,7 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 		responseQueue = new LinkedBlockingQueue<>();
 		pins = new ConcurrentHashMap<>();
 		adcToPinNumberMapping = new ConcurrentHashMap<>();
+		taskIds = new ConcurrentHashMap<>();
 	}
 
 	abstract int bytesAvailable();
@@ -106,9 +107,10 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 		// First try to safely interrupt the serial device read by sending a controlled
 		// message with an invalid pin mode and wait for the expected "Unknown pin mode"
 		// STRING_DATA response
-		Logger.trace("Sending invalid pin mode message...");
-		StringDataResponse response = sendMessage(new byte[] { SET_PIN_MODE, 0, (byte) 99 }, StringDataResponse.class);
-		Logger.debug("Unknown pin mode response: '{}'", response.getValue());
+		Logger.trace("Sending invalid sysex command...");
+		StringDataResponse response = sendMessage(new byte[] { START_SYSEX, (byte) 0x59, END_SYSEX },
+				StringDataResponse.class);
+		Logger.debug("Invalid sysex command response: '{}'", response.getValue());
 
 		// Stop the thread that is reading responses (in particular the inputStream.read
 		// call when used with blocking I/O)
@@ -126,6 +128,11 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 		inShutdown.set(false);
 
 		Logger.trace("closed.");
+	}
+
+	public void systemReset() {
+		Logger.debug("systemReset");
+		sendMessage(new byte[] { SYSTEM_RESET });
 	}
 
 	public int getMax(int gpio, PinMode mode) {
@@ -146,6 +153,14 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 		 */
 
 		firmware = getFirmwareInternal();
+
+		try {
+			ReportFeaturesResponse features = sendMessage(new byte[] { START_SYSEX, REPORT_FEATURES, END_SYSEX },
+					ReportFeaturesResponse.class);
+			Logger.debug("features: {}", features);
+		} catch (FirmataErrorMessage e) {
+			Logger.info("Report Features not supported: {}", e);
+		}
 
 		CapabilityResponse board_capabilities = sendMessage(new byte[] { START_SYSEX, CAPABILITY_QUERY, END_SYSEX },
 				CapabilityResponse.class);
@@ -204,19 +219,18 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 	}
 
 	public void setSamplingInterval(int intervalMs) {
-		byte[] lsb_msb = convertToLsbMsb(intervalMs);
-		sendMessage(new byte[] { START_SYSEX, SAMPLING_INTERVAL, lsb_msb[0], lsb_msb[1], END_SYSEX });
+		sendMessage(FirmataProtocol.createSetSamplingIntervalMessage(intervalMs));
 	}
 
 	public void enableAnalogReporting(int adcNum, boolean enabled) {
 		Logger.debug("enableAnalogReporting({}, {})", Integer.valueOf(adcNum), Boolean.valueOf(enabled));
-		sendMessage(new byte[] { (byte) (REPORT_ANALOG_PIN | adcNum), (byte) (enabled ? 1 : 0) });
+		sendMessage(FirmataProtocol.createEnableAnalogReportingMessage(adcNum, enabled));
 	}
 
 	// Note enables / disables reporting for all GPIOs in this bank of GPIOs
 	public void enableDigitalReporting(int gpio, boolean enabled) {
 		Logger.debug("enableDigitalReporting({}, {})", Integer.valueOf(gpio), Boolean.valueOf(enabled));
-		sendMessage(new byte[] { (byte) (REPORT_DIGITAL_PORT | (gpio >> 3)), (byte) (enabled ? 1 : 0) });
+		sendMessage(FirmataProtocol.createEnableDigitalReportingMessage(gpio, enabled));
 	}
 
 	public PinMode getPinMode(int gpio) {
@@ -229,7 +243,7 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 
 	public void setPinMode(int gpio, PinMode pinMode) {
 		Logger.trace("setPinMode({}, {})", Integer.valueOf(gpio), pinMode);
-		sendMessage(new byte[] { SET_PIN_MODE, (byte) gpio, (byte) pinMode.ordinal() });
+		sendMessage(FirmataProtocol.createSetPinModeMessage((byte) gpio, pinMode));
 
 		// Update the cached pin mode
 		Pin pin = pins.get(Integer.valueOf(gpio));
@@ -239,8 +253,7 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 	}
 
 	public void setDigitalValues(int port, byte values) {
-		byte[] lsb_msb = convertToLsbMsb(values);
-		sendMessage(new byte[] { (byte) (DIGITAL_IO_START | (port & 0x0f)), lsb_msb[0], lsb_msb[1] });
+		sendMessage(FirmataProtocol.createSetDigitalValuesMessage(port, values));
 
 		// Update the cached values
 		for (int i = 0; i < 8; i++) {
@@ -262,7 +275,7 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 	}
 
 	public void setDigitalValue(int gpio, boolean value) {
-		sendMessage(new byte[] { SET_DIGITAL_PIN_VALUE, (byte) gpio, (byte) (value ? 1 : 0) });
+		sendMessage(FirmataProtocol.createSetDigitalValueMessage(gpio, value));
 
 		// Update the cached value
 		Pin pin = pins.get(Integer.valueOf(gpio));
@@ -287,27 +300,13 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 			return;
 		}
 
-		// Non-extended analog accommodates 16 ports (E0-Ef), with a max value of 16384
-		// (2^14)
-		if (gpio < 16 && value < 16384) {
-			byte[] lsb_msb = convertToLsbMsb(value);
-			sendMessage(new byte[] { (byte) (ANALOG_IO_START | gpio), lsb_msb[0], lsb_msb[1] });
-		} else {
-			byte[] bytes = convertToBytes(value);
-			byte[] data = new byte[4 + bytes.length];
-			data[0] = START_SYSEX;
-			data[1] = EXTENDED_ANALOG;
-			data[2] = (byte) gpio;
-			System.arraycopy(bytes, 0, data, 3, bytes.length);
-			data[data.length - 1] = END_SYSEX;
-			sendMessage(data);
-		}
+		sendMessage(FirmataProtocol.createSetValueMessage(gpio, value));
 
 		// Update the cached value
 		pin.setValue(value);
 	}
 
-	private AnalogMappingResponse getAnalogMapping() throws RuntimeIOException {
+	public AnalogMappingResponse getAnalogMapping() throws RuntimeIOException {
 		try {
 			return sendMessage(new byte[] { START_SYSEX, ANALOG_MAPPING_QUERY, END_SYSEX },
 					AnalogMappingResponse.class);
@@ -324,10 +323,7 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 	 * @param maxPulse new maximum pulse width
 	 */
 	public void servoConfig(int gpio, int minPulse, int maxPulse) {
-		byte[] min_pulse_lsb_msb = convertToLsbMsb(minPulse);
-		byte[] max_pulse_lsb_msb = convertToLsbMsb(maxPulse);
-		sendMessage(new byte[] { START_SYSEX, SERVO_CONFIG, (byte) gpio, min_pulse_lsb_msb[0], min_pulse_lsb_msb[1],
-				max_pulse_lsb_msb[0], max_pulse_lsb_msb[1], END_SYSEX });
+		sendMessage(FirmataProtocol.createServoConfigMessage(gpio, minPulse, maxPulse));
 	}
 
 	/**
@@ -374,7 +370,7 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 				I2CMode.READ_ONCE);
 		data[index++] = address_lsb_msb[0];
 		data[index++] = address_lsb_msb[1];
-		byte[] length_lsb_msb = convertToLsbMsb(length);
+		byte[] length_lsb_msb = FirmataProtocol.convertToLsbMsb(length);
 		data[index++] = length_lsb_msb[0];
 		data[index++] = length_lsb_msb[1];
 		data[index++] = END_SYSEX;
@@ -401,10 +397,10 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 				I2CMode.READ_ONCE);
 		data[index++] = address_lsb_msb[0];
 		data[index++] = address_lsb_msb[1];
-		byte[] register_lsb_msb = convertToLsbMsb(register);
+		byte[] register_lsb_msb = FirmataProtocol.convertToLsbMsb(register);
 		data[index++] = register_lsb_msb[0];
 		data[index++] = register_lsb_msb[1];
-		byte[] length_lsb_msb = convertToLsbMsb(length);
+		byte[] length_lsb_msb = FirmataProtocol.convertToLsbMsb(length);
 		data[index++] = length_lsb_msb[0];
 		data[index++] = length_lsb_msb[1];
 		data[index++] = END_SYSEX;
@@ -425,17 +421,87 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 				I2CMode.WRITE);
 		buffer[index++] = address_lsb_msb[0];
 		buffer[index++] = address_lsb_msb[1];
-		byte[] register_lsb_msb = convertToLsbMsb(register);
+		byte[] register_lsb_msb = FirmataProtocol.convertToLsbMsb(register);
 		buffer[index++] = register_lsb_msb[0];
 		buffer[index++] = register_lsb_msb[1];
 		for (int i = 0; i < data.length; i++) {
-			byte[] data_lsb_msb = convertToLsbMsb(data[i]);
+			byte[] data_lsb_msb = FirmataProtocol.convertToLsbMsb(data[i]);
 			buffer[index++] = data_lsb_msb[0];
 			buffer[index++] = data_lsb_msb[1];
 		}
 		buffer[index++] = END_SYSEX;
 
 		sendMessage(buffer);
+	}
+
+	public void createTask(int taskId, int length) {
+		if (taskId < 0 || taskId > 0x7f) {
+			throw new IllegalArgumentException("Invalid taskId (" + taskId + ") must be 0.." + 0x7f);
+		}
+		sendMessage(FirmataProtocol.createCreateTaskMessage(taskId, length));
+	}
+
+	public void addToTask(int taskId, byte[] taskData) {
+		if (taskId < 0 || taskId > 0x7f) {
+			throw new IllegalArgumentException("Invalid taskId (" + taskId + ") must be 0.." + 0x7f);
+		}
+
+		sendMessage(FirmataProtocol.createAddToTaskMessage(taskId, taskData));
+	}
+
+	public int createTask(byte[]... tasks) {
+		// Refresh the list of tasks - this updates the internal cache of used task ids
+		queryAllTasks();
+
+		// Get the next task id
+		byte task_id = 0;
+		for (; task_id < MAX_TASK_ID && taskIds.get(Byte.valueOf(task_id)) != null; task_id++) {
+		}
+		if (task_id == MAX_TASK_ID) {
+			throw new IllegalStateException("No free task ids");
+		}
+
+		int length = 0;
+		for (int i = 0; i < tasks.length; i++) {
+			length += tasks[i].length;
+		}
+
+		createTask(task_id, length);
+		taskIds.put(Byte.valueOf(task_id), Boolean.TRUE);
+		for (int i = 0; i < tasks.length; i++) {
+			addToTask(task_id, tasks[i]);
+		}
+
+		return task_id;
+	}
+
+	public byte[] queryAllTasks() {
+		return sendMessage(new byte[] { START_SYSEX, SCHEDULER_DATA, QUERY_ALL_FIRMATA_TASKS, END_SYSEX },
+				SchedulerDataQueryAllTasksResponse.class).getTaskIds();
+	}
+
+	public SchedulerDataQueryTaskResponse queryTask(int taskId) {
+		return sendMessage(new byte[] { START_SYSEX, SCHEDULER_DATA, QUERY_FIRMATA_TASK, (byte) taskId, END_SYSEX },
+				SchedulerDataQueryTaskResponse.class);
+	}
+
+	public void scheduleTask(int taskId, int delayMs) {
+		if (taskId < 0 || taskId > 0x7f) {
+			throw new IllegalArgumentException("Invalid taskId (" + taskId + ") must be 0.." + 0x7f);
+		}
+
+		sendMessage(FirmataProtocol.createScheduleTaskMessage(taskId, delayMs));
+	}
+
+	public void deleteTask(int taskId) {
+		sendMessage(FirmataProtocol.createDeleteTaskMessage(taskId));
+		taskIds.remove(Byte.valueOf((byte) taskId));
+
+	}
+
+	public void schedulerReset() {
+		sendMessage(FirmataProtocol.createSchedulerResetMessage());
+		taskIds.clear();
 	}
 
 	private void sendMessage(byte[] request) throws RuntimeIOException {
@@ -451,7 +517,7 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 			write(request);
 
 			do {
-				Logger.trace("Waiting for a response ...");
+				Logger.trace("Waiting for a response of type {} ...", responseClass.getName());
 				response = responseQueue.take();
 				Logger.trace("Got response {}", response);
 				if (response.isPoison()) {
@@ -461,10 +527,11 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 						&& response.getClass().isAssignableFrom(StringDataResponse.class)) {
 					// Most likely a StringData error response
 					StringDataResponse sdr = (StringDataResponse) response;
-					Logger.debug("Got a string data error response: '{}', ignoring for now...", sdr.getValue());
 					if (sdr.getValue().equals("Unhandled sysex command")) {
 						throw new FirmataErrorMessage(sdr.getValue());
 					}
+					// Otherwise log and ignore
+					Logger.info("Got a string data response: '{}'", sdr.getValue());
 				}
 			} while (!response.getClass().isAssignableFrom(responseClass));
 		} catch (InterruptedException e) {
@@ -580,20 +647,20 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 			}
 			baos.write(b);
 		}
-		ByteBuffer buffer = ByteBuffer.wrap(baos.toByteArray());
+		byte[] response_data = baos.toByteArray();
+		ByteBuffer buffer = ByteBuffer.wrap(response_data);
 		// long duration = System.currentTimeMillis() - start;
 		// Logger.debug("Took " + duration + "ms to read the SysEx message");
 
 		SysExResponse response = null;
 		switch (sysex_cmd) {
 		case STRING_DATA:
-			byte[] string_data_buffer = new byte[buffer.remaining()];
-			buffer.get(string_data_buffer);
-			String string_data = new String(string_data_buffer, StandardCharsets.UTF_16LE);
+			String string_data = FirmataProtocol.readString(buffer);
+			// String string_data = new String(response_data, StandardCharsets.UTF_16LE);
 			Logger.debug("Got string data response '{}'", string_data);
 			response = new StringDataResponse(string_data);
-			if (string_data.equals("Unknown pin mode") && inShutdown.get()) {
-				Logger.info("Unknown pin mode triggered, exiting serial read loop!");
+			if (string_data.equals("Unhandled sysex command") && inShutdown.get()) {
+				Logger.info("Shutdown triggered, exiting serial read loop!");
 				running.set(false);
 			}
 			break;
@@ -601,11 +668,16 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 			byte major = buffer.get();
 			byte minor = buffer.get();
 
-			byte[] name_buffer = new byte[buffer.remaining()];
-			buffer.get(name_buffer);
-			String name = new String(name_buffer, StandardCharsets.UTF_16LE);
+			// Each char is actually sent as 2 7-bit bytes (LSB first)
+			/*-
+			byte[] chars = new byte[buffer.remaining() / 2];
+			for (int i = 0; i < chars.length; i++) {
+				chars[i] = (byte) ((buffer.get() & 0x7f) | ((buffer.get() & 0x01) << 7));
+			}
+			String name = new String(chars, StandardCharsets.UTF_8);
+			*/
 
-			response = new FirmwareDetails(major, minor, name);
+			response = new FirmwareDetails(major, minor, FirmataProtocol.readString(buffer));
 			break;
 		case CAPABILITY_RESPONSE:
 			List<Set<PinCapability>> capabilities = new ArrayList<>();
@@ -626,12 +698,73 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 			}
 			response = new CapabilityResponse(capabilities);
 			break;
+		case REPORT_FEATURES_RESPONSE:
+			// TODO Implementation
+			response = new ReportFeaturesResponse();
+			break;
+		case SCHEDULER_DATA:
+			byte scheduler_reply_type = buffer.get();
+			switch (scheduler_reply_type) {
+			case QUERY_ALL_TASKS_REPLY:
+				byte[] task_ids = new byte[response_data.length - 1];
+				for (int i = 0; i < response_data.length - 1; i++) {
+					task_ids[i] = (byte) (response_data[i + 1] & 0x7f);
+				}
+				response = new SchedulerDataQueryAllTasksResponse(task_ids);
+				taskIds.clear();
+				// Cache the task ids in use
+				for (byte task_id : task_ids) {
+					System.out.println("Adding task " + task_id);
+					taskIds.put(Byte.valueOf(task_id), Boolean.TRUE);
+				}
+				break;
+			case QUERY_TASK_REPLY:
+			case ERROR_TASK_REPLY:
+				// TODO Note same payload as the QUERY_TASK_REPLY...
+				byte task_id = (byte) (buffer.get() & 0x7f);
+
+				int time_ms = -1;
+				int length = -1;
+				int position = -1;
+				byte[] taskdata = null;
+				if (buffer.remaining() > 0) {
+					byte[] enc = new byte[buffer.remaining()];
+					buffer.get(enc);
+					byte[] data = FirmataProtocol.from7BitArray(enc);
+					int index = 0;
+
+					time_ms = data[index++] & 0xff;
+					time_ms |= ((data[index++] & 0xff) << 8);
+					time_ms |= ((data[index++] & 0xff) << 16);
+					time_ms |= ((data[index++] & 0xff) << 24);
+
+					length = data[index++] & 0xff;
+					length |= ((data[index++] & 0xff) << 8);
+
+					position = data[index++] & 0xff;
+					position |= ((data[index++] & 0xff) << 8);
+
+					taskdata = new byte[data.length - index];
+					System.arraycopy(data, index, taskdata, 0, data.length - index);
+				}
+
+				if (sysex_cmd == ERROR_TASK_REPLY) {
+					Logger.warn("*** !!! ERROR_TASK_REPLY !!! ***");
+					throw new SchedulerDataError(task_id, time_ms, length, position, taskdata);
+				}
+
+				response = new SchedulerDataQueryTaskResponse(task_id, time_ms, length, position, taskdata);
+				break;
+			default:
+				Logger.warn("Unhandled scheduler reply type: {}", Byte.valueOf(scheduler_reply_type));
+			}
+			break;
 		case PIN_STATE_RESPONSE:
 			byte pin = buffer.get();
 			PinMode pin_mode = PinMode.valueOf(buffer.get());
 			byte[] pin_state = new byte[buffer.remaining()];
 			buffer.get(pin_state);
-			response = new PinStateResponse(pin, pin_mode, convertToValue(pin_state));
+			response = new PinStateResponse(pin, pin_mode, FirmataProtocol.decodeValue(pin_state));
 			break;
 		case ANALOG_MAPPING_RESPONSE:
 			byte[] channels = new byte[buffer.remaining()];
@@ -639,15 +772,15 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 			response = new AnalogMappingResponse(channels);
 			break;
 		case I2C_REPLY:
-			int slave_address = convertToValue(buffer.get(), buffer.get());
-			int register = convertToValue(buffer.get(), buffer.get());
-			byte[] data = new byte[buffer.remaining() / 2];
-			if (data.length > 0) {
-				for (int i = 0; i < data.length; i++) {
-					data[i] = (byte) convertToValue(buffer.get(), buffer.get());
+			int slave_address = FirmataProtocol.decodeValue(buffer.get(), buffer.get());
+			int register = FirmataProtocol.decodeValue(buffer.get(), buffer.get());
+			byte[] rx_data = new byte[buffer.remaining() / 2];
+			if (rx_data.length > 0) {
+				for (int i = 0; i < rx_data.length; i++) {
+					rx_data[i] = (byte) FirmataProtocol.decodeValue(buffer.get(), buffer.get());
 				}
 			}
-			response = new I2CResponse(slave_address, register, data);
+			response = new I2CResponse(slave_address, register, rx_data);
 			break;
 		default:
 			Logger.warn("Unhandled sysex command: 0x{}", Integer.toHexString(sysex_cmd));
@@ -666,38 +799,8 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 
 	private int readShort() {
 		// LSB (bits 0-6), MSB(bits 7-13)
-		return convertToValue(readByte(), readByte());
+		return FirmataProtocol.decodeValue(readByte(), readByte());
 		// return ((msb & 0x7f) << 7) | (lsb & 0x7f);
-	}
-
-	static byte[] convertToLsbMsb(int value) {
-		return new byte[] { (byte) (value & 0x7f), (byte) ((value >> 7) & 0x7f) };
-	}
-
-	static byte[] convertToBytes(int value) {
-		int num_bytes;
-		if (value < 128 || value >= 268435456) { // 2^7 or greater than max val (2^28)
-			num_bytes = 1;
-		} else if (value < 16384) { // 2^14
-			num_bytes = 2;
-		} else if (value < 2097152) { // 2^21
-			num_bytes = 3;
-		} else {
-			num_bytes = 4;
-		}
-		byte[] bytes = new byte[num_bytes];
-		for (int i = 0; i < num_bytes; i++) {
-			bytes[i] = (byte) ((value >> (i * 7)) & 0x7f);
-		}
-		return bytes;
-	}
-
-	static int convertToValue(byte... values) {
-		int value = 0;
-		for (int i = 0; i < values.length; i++) {
-			value |= ((values[i] & 0x7f) << (i * 7));
-		}
-		return value;
 	}
 
 	/*
@@ -709,7 +812,7 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 	 */
 	static byte[] convertToI2CSlaveAddressLsbMsb(int slaveAddress, boolean autoRestart, boolean addressSize10Bit,
 			I2CMode mode) {
-		byte[] lsb_msb = convertToLsbMsb(slaveAddress);
+		byte[] lsb_msb = FirmataProtocol.convertToLsbMsb(slaveAddress);
 
 		lsb_msb[1] &= 0x7;
 		// Bit 6: auto restart transmission, 0 = stop (default), 1 = restart
@@ -795,6 +898,34 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 		@Override
 		public String toString() {
 			return "FirmwareDetails [major=" + major + ", minor=" + minor + ", name=" + name + "]";
+		}
+	}
+
+	/*-
+	0  START_SYSEX                (0xF0)
+	1  REPORT_FEATURES            (0x65)
+	2  REPORT_FEATURES_RESPONSE   (0x01)
+	3  1st FEATURE_ID             (1-127, eg: Serial = 0x60, Stepper = 0x62)
+	4  1st FEATURE_MAJOR_VERSION  (0-127)
+	5  1st FEATURE_MINOR_VERSION  (0-127)
+	6  2nd FEATURE_ID             (1-127, eg: Serial = 0x60, Stepper = 0x62)
+	7  2nd FEATURE_MAJOR_VERSION  (0-127)
+	8  2nd FEATURE_MINOR_VERSION  (0-127)
+	9  3rd FEATURE_ID             (0x00, Extended ID)
+	10 3rd FEATURE_ID             (lsb)
+	11 3rd FEATURE_ID             (msb)
+	12 3rd FEATURE_MAJOR_VERSION  (0-127)
+	13 3rd FEATURE_MINOR_VERSION  (0-127)
+	...for all supported features
+	n  END_SYSEX                  (0xF7)
+	 */
+	static class ReportFeaturesResponse extends SysExResponse {
+		ReportFeaturesResponse() {
+		}
+
+		@Override
+		public String toString() {
+			return "ReportFeaturesResponse";
 		}
 	}
 
@@ -952,6 +1083,66 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 		}
 	}
 
+	static abstract class SchedulerDataResponse extends SysExResponse {
+	}
+
+	static class SchedulerDataErrorResponse extends SchedulerDataResponse {
+	}
+
+	static class SchedulerDataQueryAllTasksResponse extends SchedulerDataResponse {
+		private byte[] taskIds;
+
+		SchedulerDataQueryAllTasksResponse(byte[] taskIds) {
+			this.taskIds = taskIds;
+		}
+
+		public byte[] getTaskIds() {
+			return taskIds;
+		}
+	}
+
+	static class SchedulerDataQueryTaskResponse extends SchedulerDataResponse {
+		private byte taskId;
+		private int timeMs;
+		private int length;
+		private int pos;
+		private byte[] taskdata;
+
+		SchedulerDataQueryTaskResponse(byte taskId, int timeMs, int length, int pos, byte[] taskdata) {
+			this.taskId = taskId;
+			this.timeMs = timeMs;
+			this.length = length;
+			this.pos = pos;
+			this.taskdata = taskdata;
+		}
+
+		public byte getTaskId() {
+			return taskId;
+		}
+
+		public int getTimeMs() {
+			return timeMs;
+		}
+
+		public int getLength() {
+			return length;
+		}
+
+		public int getPos() {
+			return pos;
+		}
+
+		public byte[] getTaskdata() {
+			return taskdata;
+		}
+
+		@Override
+		public String toString() {
+			return "SchedulerDataQueryTaskResponse [taskId=" + taskId + ", timeMs=" + timeMs + ", length=" + length
+					+ ", pos=" + pos + ", taskdata=" + Arrays.toString(taskdata) + "]";
+		}
+	}
+
 	static class Pin {
 		private int gpio;
 		// Set of pin mode and resolution pairs
@@ -1027,11 +1218,51 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 		WRITE, READ_ONCE, READ_CONTINUOUSLY, STOP_READING;
 	}
 
-	private static class FirmataErrorMessage extends RuntimeIOException {
+	public static class FirmataErrorMessage extends RuntimeIOException {
 		private static final long serialVersionUID = 2994268944182249234L;
 
 		public FirmataErrorMessage(String message) {
 			super(message);
+		}
+	}
+
+	public static class SchedulerDataError extends RuntimeIOException {
+		private static final long serialVersionUID = 2156402847568399280L;
+
+		private byte taskId;
+		private int timeMs;
+		private int length;
+		private int position;
+		private byte[] taskdata;
+
+		public SchedulerDataError(byte taskId, int timeMs, int length, int position, byte[] taskdata) {
+			super("Scheduler data error for task " + taskId);
+
+			this.taskId = taskId;
+			this.timeMs = timeMs;
+			this.length = length;
+			this.position = position;
+			this.taskdata = taskdata;
+		}
+
+		public byte getTaskId() {
+			return taskId;
+		}
+
+		public int getTimeMs() {
+			return timeMs;
+		}
+
+		public int getLength() {
+			return length;
+		}
+
+		public int getPosition() {
+			return position;
+		}
+
+		public byte[] getTaskdata() {
+			return taskdata;
 		}
 	}
 }

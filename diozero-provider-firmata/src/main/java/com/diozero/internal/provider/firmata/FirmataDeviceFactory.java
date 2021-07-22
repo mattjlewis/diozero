@@ -83,14 +83,14 @@ import com.diozero.util.RangeUtil;
 public class FirmataDeviceFactory extends BaseNativeDeviceFactory implements FirmataEventListener {
 	public static final String DEVICE_NAME = "Firmata";
 
-	private static final String SERIAL_PORT_PROP = "diozero.firmata.serialPort";
-	private static final String SERIAL_BAUD_PROP = "diozero.firmata.serialBaud";
-	private static final String SERIAL_DATA_BITS_PROP = "diozero.firmata.serialDataBits";
-	private static final String SERIAL_STOP_BITS_PROP = "diozero.firmata.serialStopBits";
-	private static final String SERIAL_PARITY_PROP = "diozero.firmata.serialParity";
-	private static final String TCP_HOST_PROP = "diozero.firmata.tcpHostname";
-	private static final String TCP_PORT_PROP = "diozero.firmata.tcpPort";
-	private static final int DEFAULT_TCP_PORT = 3030;
+	static final String SERIAL_PORT_PROP = "diozero.firmata.serialPort";
+	static final String SERIAL_BAUD_PROP = "diozero.firmata.serialBaud";
+	static final String SERIAL_DATA_BITS_PROP = "diozero.firmata.serialDataBits";
+	static final String SERIAL_STOP_BITS_PROP = "diozero.firmata.serialStopBits";
+	static final String SERIAL_PARITY_PROP = "diozero.firmata.serialParity";
+	static final String TCP_HOST_PROP = "diozero.firmata.tcpHostname";
+	static final String TCP_PORT_PROP = "diozero.firmata.tcpPort";
+	static final int DEFAULT_TCP_PORT = 3030;
 
 	private String serialPortName;
 	private FirmataAdapter adapter;
