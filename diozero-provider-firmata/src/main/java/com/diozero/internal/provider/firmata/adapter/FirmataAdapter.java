@@ -748,12 +748,8 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 					System.arraycopy(data, index, taskdata, 0, data.length - index);
 				}
 
-				if (sysex_cmd == ERROR_TASK_REPLY) {
-					Logger.warn("*** !!! ERROR_TASK_REPLY !!! ***");
-					throw new SchedulerDataError(task_id, time_ms, length, position, taskdata);
-				}
-
-				response = new SchedulerDataQueryTaskResponse(task_id, time_ms, length, position, taskdata);
+				response = new SchedulerDataQueryTaskResponse(task_id, time_ms, length, position, taskdata,
+						sysex_cmd == ERROR_TASK_REPLY);
 				break;
 			default:
 				Logger.warn("Unhandled scheduler reply type: {}", Byte.valueOf(scheduler_reply_type));
@@ -1107,13 +1103,15 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 		private int length;
 		private int pos;
 		private byte[] taskdata;
+		private boolean error;
 
-		SchedulerDataQueryTaskResponse(byte taskId, int timeMs, int length, int pos, byte[] taskdata) {
+		SchedulerDataQueryTaskResponse(byte taskId, int timeMs, int length, int pos, byte[] taskdata, boolean error) {
 			this.taskId = taskId;
 			this.timeMs = timeMs;
 			this.length = length;
 			this.pos = pos;
 			this.taskdata = taskdata;
+			this.error = error;
 		}
 
 		public byte getTaskId() {
@@ -1136,10 +1134,14 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 			return taskdata;
 		}
 
+		public boolean isError() {
+			return error;
+		}
+
 		@Override
 		public String toString() {
 			return "SchedulerDataQueryTaskResponse [taskId=" + taskId + ", timeMs=" + timeMs + ", length=" + length
-					+ ", pos=" + pos + ", taskdata=" + Arrays.toString(taskdata) + "]";
+					+ ", pos=" + pos + ", taskdata=" + Arrays.toString(taskdata) + ", error=" + error + "]";
 		}
 	}
 
