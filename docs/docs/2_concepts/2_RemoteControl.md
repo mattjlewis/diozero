@@ -57,10 +57,8 @@ the following devices:
 * Arduino Uno (Serial)
 * Pololu A-Star 32U4 (Serial)
 * Raspberry Pi Pico (\*required some minor tweaks) (Serial)
-* ESP8266 (WiFi)
-
-While [ESP32](https://www.espressif.com/en/products/socs/esp32) devices are Arduino compatible,
-they are not currenly supported by Firmata.
+* ESP8266 (Serial, BLE & WiFi)
+* [ESP32](https://www.espressif.com/en/products/socs/esp32) (Serial, BLE & WiFi) - requires latest ConfigurableFirmata
 
 The Firmata adapter first looks for the `diozero.firmata.serialPort` property - if this set (either via
 command line or environment variable) the serial communication protocol is used. Otherwise, the

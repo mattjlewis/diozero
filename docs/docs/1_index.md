@@ -68,7 +68,8 @@ diozero has out of the box support for the following Single Board Computers and 
 * [The Next Thing Co CHIP](https://getchip.com/pages/chip).
 * [Arduino compatible](https://www.arduino.cc) (any device that can run [Firmata](https://github.com/firmata/arduino/blob/master/examples/StandardFirmata/StandardFirmata.ino)).
 * Raspberry Pi Pico via Firmata over serial.
-* [ESP8266](https://www.espressif.com/en/products/socs/esp8266) (via [Firmata over WiFi](https://github.com/firmata/arduino/tree/master/examples/StandardFirmataWiFi) / [ConfigurableFirmata](http://firmatabuilder.com)).
+* [ESP8266](https://www.espressif.com/en/products/socs/esp8266) (via Firmata over Serial, BLE or WiFi).
+* [ESP32](https://www.espressif.com/en/products/socs/esp32) (Firmata).
 * [Particle Spark](https://docs.particle.io/datasheets/discontinued/core-datasheet/) (using [Voodoo Spark](https://github.com/voodootikigod/voodoospark)).
 
 ## Maven Dependency / Download Link
