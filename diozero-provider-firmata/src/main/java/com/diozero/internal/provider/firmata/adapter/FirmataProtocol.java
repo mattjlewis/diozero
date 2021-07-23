@@ -66,7 +66,6 @@ public interface FirmataProtocol {
 	byte REPORT_DIGITAL_PIN = 0x63; // (reserved)
 	byte EXTENDED_REPORT_ANALOG = 0x64; // (reserved)
 	byte REPORT_FEATURES = 0x65; // ** Report the features supported by the device (proposed API)
-	byte REPORT_FEATURES_RESPONSE = 0x66; // FIXME proposed API - not yet specified
 	byte SPI_DATA = 0x68; // SPI Commands start with this byte
 	byte ANALOG_MAPPING_QUERY = 0x69; // ask for mapping of analog to pin numbers
 	byte ANALOG_MAPPING_RESPONSE = 0x6A; // reply with mapping info
@@ -108,6 +107,10 @@ public interface FirmataProtocol {
 	byte ERROR_TASK_REPLY = 8;
 	byte QUERY_ALL_TASKS_REPLY = 9;
 	byte QUERY_TASK_REPLY = 10;
+
+	// Report features (proposed)
+	byte REPORT_FEATURES_QUERY = 0;
+	byte REPORT_FEATURES_RESPONSE = 1;
 
 	static String readString(ByteBuffer buffer) {
 		// Each char is actually sent as 2 7-bit bytes (LSB first)

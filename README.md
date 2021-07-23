@@ -1,4 +1,4 @@
-# DIOZero - a Java Device I/O wrapper for GPIO / I2C / SPI control
+# diozero - a Java Device I/O wrapper for GPIO / I2C / SPI control
 
 [![Maven CI Build](https://github.com/mattjlewis/diozero/actions/workflows/build.yml/badge.svg)](https://github.com/mattjlewis/diozero/actions/workflows/build.yml)
 [![Maven Central Status](https://img.shields.io/maven-central/v/com.diozero/diozero.svg)](https://search.maven.org/search?q=g:com.diozero)
