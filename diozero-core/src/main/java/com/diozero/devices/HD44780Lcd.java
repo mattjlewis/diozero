@@ -940,7 +940,7 @@ public class HD44780Lcd implements DeviceInterface {
 	 * Vdd: 5v
 	 * V0: Contrast adjustment (connect to Vdd for full brightness)
 	 * RS: Register Select - GPIO
-	 * RW: Data read/write (not implemented - connect to GND)
+	 * RW: Data read/write (not required, read mode not used - can connect to GND)
 	 * E: Enable - GPIO
 	 * D0-D3: Don't connect (currently only 4-bit mode is supported)
 	 * D4-D7: Data pins - GPIO
@@ -961,23 +961,61 @@ public class HD44780Lcd implements DeviceInterface {
 		private DigitalOutputDevice registerSelectPin;
 
 		/**
+		 * Use the default device factory and specify GPIO numbers. Assumes the RW pin
+		 * is pulled low and the backlight pin pulled high.
+		 *
+		 * @param d4                 GPIO number for d4 pin
+		 * @param d5                 GPIO number for d5 pin
+		 * @param d6                 GPIO number for d6 pin
+		 * @param d7                 GPIO number for d7 pin
+		 * @param enableGpio         enable GPIO number
+		 * @param registerSelectGpio register select GPIO number
+		 */
+		public GpioLcdConnection(int d4, int d5, int d6, int d7, int enableGpio, int registerSelectGpio) {
+			this(new DigitalOutputDevice(d4), new DigitalOutputDevice(d5), new DigitalOutputDevice(d6),
+					new DigitalOutputDevice(d7), null, new DigitalOutputDevice(enableGpio), null,
+					new DigitalOutputDevice(registerSelectGpio));
+		}
+
+		/**
+		 * Use the default device factory and specify GPIO numbers. Assumes the RW pin
+		 * is pulled low.
+		 *
+		 * @param d4                 GPIO number for d4 pin
+		 * @param d5                 GPIO number for d5 pin
+		 * @param d6                 GPIO number for d6 pin
+		 * @param d7                 GPIO number for d7 pin
+		 * @param backlightGpio      backlight control GPIO number (set to -1 if not
+		 *                           connected)
+		 * @param enableGpio         enable GPIO number
+		 * @param registerSelectGpio register select GPIO number
+		 */
+		public GpioLcdConnection(int d4, int d5, int d6, int d7, int backlightGpio, int enableGpio,
+				int registerSelectGpio) {
+			this(new DigitalOutputDevice(d4), new DigitalOutputDevice(d5), new DigitalOutputDevice(d6),
+					new DigitalOutputDevice(d7), backlightGpio == -1 ? null : new DigitalOutputDevice(backlightGpio),
+					new DigitalOutputDevice(enableGpio), null, new DigitalOutputDevice(registerSelectGpio));
+		}
+
+		/**
 		 * Use the default device factory and specify GPIO numbers.
 		 *
 		 * @param d4                 GPIO number for d4 pin
 		 * @param d5                 GPIO number for d5 pin
 		 * @param d6                 GPIO number for d6 pin
 		 * @param d7                 GPIO number for d7 pin
-		 * @param backlightGpio      backlight control GPIO number
+		 * @param backlightGpio      backlight control GPIO number (set to -1 if not
+		 *                           connected)
 		 * @param enableGpio         enable GPIO number
 		 * @param dataRwGpio         data read/write GPIO number (not used - connect to
-		 *                           GND)
+		 *                           GND, set to -1 if not connected)
 		 * @param registerSelectGpio register select GPIO number
 		 */
 		public GpioLcdConnection(int d4, int d5, int d6, int d7, int backlightGpio, int enableGpio, int dataRwGpio,
 				int registerSelectGpio) {
 			this(new DigitalOutputDevice(d4), new DigitalOutputDevice(d5), new DigitalOutputDevice(d6),
-					new DigitalOutputDevice(d7), new DigitalOutputDevice(backlightGpio),
-					new DigitalOutputDevice(enableGpio), new DigitalOutputDevice(dataRwGpio),
+					new DigitalOutputDevice(d7), backlightGpio == -1 ? null : new DigitalOutputDevice(backlightGpio),
+					new DigitalOutputDevice(enableGpio), dataRwGpio == -1 ? null : new DigitalOutputDevice(dataRwGpio),
 					new DigitalOutputDevice(registerSelectGpio));
 		}
 
@@ -990,10 +1028,11 @@ public class HD44780Lcd implements DeviceInterface {
 		 * @param d5                 GPIO number for d5 pin
 		 * @param d6                 GPIO number for d6 pin
 		 * @param d7                 GPIO number for d7 pin
-		 * @param backlightGpio      backlight control GPIO number
+		 * @param backlightGpio      backlight control GPIO number (set to -1 if not
+		 *                           connected)
 		 * @param enableGpio         enable GPIO number
 		 * @param dataRwGpio         data read/write GPIO number (not used - connect to
-		 *                           GND)
+		 *                           GND, set to -1 if not connected)
 		 * @param registerSelectGpio register select GPIO number
 		 */
 		public GpioLcdConnection(GpioDeviceFactoryInterface deviceFactory, int d4, int d5, int d6, int d7,
@@ -1002,23 +1041,27 @@ public class HD44780Lcd implements DeviceInterface {
 					DigitalOutputDevice.Builder.builder(d5).setDeviceFactory(deviceFactory).build(),
 					DigitalOutputDevice.Builder.builder(d6).setDeviceFactory(deviceFactory).build(),
 					DigitalOutputDevice.Builder.builder(d7).setDeviceFactory(deviceFactory).build(),
-					DigitalOutputDevice.Builder.builder(backlightGpio).setDeviceFactory(deviceFactory).build(),
+					backlightGpio == -1 ? null
+							: DigitalOutputDevice.Builder.builder(backlightGpio).setDeviceFactory(deviceFactory)
+									.build(),
 					DigitalOutputDevice.Builder.builder(enableGpio).setDeviceFactory(deviceFactory).build(),
-					DigitalOutputDevice.Builder.builder(dataRwGpio).setDeviceFactory(deviceFactory).build(),
+					dataRwGpio == -1 ? null
+							: DigitalOutputDevice.Builder.builder(dataRwGpio).setDeviceFactory(deviceFactory).build(),
 					DigitalOutputDevice.Builder.builder(registerSelectGpio).setDeviceFactory(deviceFactory).build());
 		}
 
 		/**
 		 * Use the specified digital output devices.
 		 *
-		 * @param d4                 Digital output device for d4 pin
-		 * @param d5                 Digital output device for d5 pin
-		 * @param d6                 Digital output device for d6 pin
-		 * @param d7                 Digital output device for d7 pin
-		 * @param backlightPin       backlight control digital output device
-		 * @param enablePin          enable digital output device
-		 * @param dataRwPin          data read/write digital output device (not used -
-		 *                           connect to GND)
+		 * @param d4                Digital output device for d4 pin
+		 * @param d5                Digital output device for d5 pin
+		 * @param d6                Digital output device for d6 pin
+		 * @param d7                Digital output device for d7 pin
+		 * @param backlightPin      backlight control digital output device (set to null
+		 *                          if not connected)
+		 * @param enablePin         enable digital output device
+		 * @param dataRwPin         data read/write digital output device (not used -
+		 *                          connect to GND, set to null if not connected)
 		 * @param registerSelectPin register select digital output device
 		 */
 		public GpioLcdConnection(DigitalOutputDevice d4, DigitalOutputDevice d5, DigitalOutputDevice d6,
@@ -1038,9 +1081,13 @@ public class HD44780Lcd implements DeviceInterface {
 
 		@Override
 		public void write(byte values) {
-			backlightPin.setValue(BitManipulation.isBitSet(values, BACKLIGHT_BIT));
+			if (backlightPin != null) {
+				backlightPin.setValue(BitManipulation.isBitSet(values, BACKLIGHT_BIT));
+			}
 			enablePin.setValue(BitManipulation.isBitSet(values, ENABLE_BIT));
-			dataRwPin.setValue(BitManipulation.isBitSet(values, DATA_RW_BIT));
+			if (dataRwPin != null) {
+				dataRwPin.setValue(BitManipulation.isBitSet(values, DATA_RW_BIT));
+			}
 			registerSelectPin.setValue(BitManipulation.isBitSet(values, REGISTER_SELECT_BIT));
 
 			for (int i = 0; i < dataPins.length; i++) {
@@ -1076,9 +1123,13 @@ public class HD44780Lcd implements DeviceInterface {
 		@Override
 		public void close() throws RuntimeIOException {
 			Arrays.asList(dataPins).forEach(DeviceInterface::close);
-			backlightPin.close();
+			if (backlightPin != null) {
+				backlightPin.close();
+			}
 			enablePin.close();
-			dataRwPin.close();
+			if (dataRwPin != null) {
+				dataRwPin.close();
+			}
 			registerSelectPin.close();
 		}
 	}
