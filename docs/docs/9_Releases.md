@@ -26,6 +26,7 @@ registers, etc. - set multiple GPIOs one invocation rather than individually
 
 * HD44780 cleanup - optimising use of GpioExpander interface plus added option to connect via GPIOs.
 * BBB - fix PWM module lookup for all PWM numbers.
+* Firmata scheduler support.
 
 ## 1.3.1
 
