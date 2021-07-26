@@ -155,7 +155,10 @@ RUN PATH=${PI_GCC_TARGET_DIR}/bin:${PATH} && sudo make install PREFIX=${PI_GCC_T
 WORKDIR ${HOME_DIR}
 RUN sudo rm -rf ${BUILD_WORKING_DIR}
 
-WORKDIR ${HOME}
+WORKDIR ${HOME_DIR}
+
+# FIXME Fix the limits.h header file. Why is the cross-compiler one missing some info?
+RUN sudo cp /usr/lib/gcc-cross/arm-linux-gnueabihf/8/include-fixed/limits.h ${PI_GCC_TARGET_DIR}/arm-linux-gnueabihf/lib/gcc/arm-linux-gnueabihf/8/include-fixed/limits.h
 
 # Finally add some other convenience packages
 RUN sudo apt-get update && sudo apt-get -y install libsdl2-2.0-0 libsdl2-dev
@@ -169,7 +172,7 @@ ARG LIB_SDL2_PATH=pool/main/libs/libsdl2
 ARG LIB_SDL2_DEV=libsdl2-dev_${SDL2_VERSION}
 
 # AArch64
-WORKDIR ${HOME}/libsdl2/aarch64
+WORKDIR ${HOME_DIR}/libsdl2/aarch64
 # libsdl2
 ARG DEB_FILE=${LIB_SDL2}_arm64.deb
 RUN wget ${DEBIAN_MIRROR}/${LIB_SDL2_PATH}/${DEB_FILE}
@@ -186,7 +189,7 @@ RUN sudo tar Jxf data.tar.xz -C /usr/aarch64-linux-gnu/include --strip-component
 RUN rm data.tar.xz
 
 # ARMv7
-WORKDIR ${HOME}/libsdl2/armv7
+WORKDIR ${HOME_DIR}/libsdl2/armv7
 # libsdl2
 ARG DEB_FILE=${LIB_SDL2}_armhf.deb
 RUN wget ${DEBIAN_MIRROR}/${LIB_SDL2_PATH}/${DEB_FILE}
@@ -203,7 +206,7 @@ RUN sudo tar Jxf data.tar.xz -C /usr/arm-linux-gnueabihf/include --strip-compone
 RUN rm data.tar.xz
 
 # Raspbian ARMv6
-WORKDIR ${HOME}/libsdl2/armv6
+WORKDIR ${HOME_DIR}/libsdl2/armv6
 # libsdl2
 ARG DEB_FILE=${LIB_SDL2}_armhf.deb
 RUN wget ${RASPBIAN_MIRROR}/${LIB_SDL2_PATH}/${DEB_FILE}
@@ -219,5 +222,5 @@ RUN sudo tar Jxf data.tar.xz -C ${PI_GCC_TARGET_DIR}/arm-linux-gnueabihf/lib --s
 RUN sudo tar Jxf data.tar.xz -C ${PI_GCC_TARGET_DIR}/arm-linux-gnueabihf/include --strip-components=3 ./usr/include
 RUN rm data.tar.xz
 
-WORKDIR ${HOME}
+WORKDIR ${HOME_DIR}
 RUN rm -rf libsdl2
