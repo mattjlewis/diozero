@@ -279,36 +279,42 @@ public interface FirmataProtocol {
 		return output.toByteArray();
 	}
 
-	static byte[] from7BitArray(byte[] encoded) {
-		final int expectedBytes = encoded.length * 7 >> 3;
-		final byte[] decoded = new byte[expectedBytes];
-
-		for (int i = 0; i < expectedBytes; i++) {
-			final int j = i << 3;
-			final int pos = (j / 7) >>> 0;
-			final int shift = j % 7;
-			decoded[i] = (byte) ((encoded[pos] >> shift) | ((encoded[pos + 1] << (7 - shift)) & 0xFF));
-		}
-
-		return decoded;
-	}
-
 	static byte[] encodeValue(int value) {
 		int num_bytes;
-		if (value < 128 || value >= 268435456) { // 2^7 or greater than max val (2^28)
+		if (value >= 0 && value < 128) { // 2^7
 			num_bytes = 1;
-		} else if (value < 16384) { // 2^14
+		} else if (value >= 0 && value < 16384) { // 2^14
 			num_bytes = 2;
-		} else if (value < 2097152) { // 2^21
+		} else if (value >= 0 && value < 2097152) { // 2^21
 			num_bytes = 3;
-		} else {
+		} else if (value >= 0 && value < 268435456) { // 2^28
 			num_bytes = 4;
+		} else {
+			// Error?
+			num_bytes = 5;
 		}
 		byte[] bytes = new byte[num_bytes];
 		for (int i = 0; i < num_bytes; i++) {
 			bytes[i] = (byte) ((value >> (i * 7)) & 0x7f);
 		}
 		return bytes;
+	}
+
+	static byte[] from7BitArray(byte[] encoded) {
+		final int expected_bytes = encoded.length * 7 >> 3;
+		final byte[] decoded = new byte[expected_bytes];
+
+		for (int i = 0; i < expected_bytes; i++) {
+			final int j = i << 3;
+			final int pos = (j / 7) >>> 0;
+			final int shift = j % 7;
+			if (pos + 1 >= encoded.length) {
+				break;
+			}
+			decoded[i] = (byte) ((encoded[pos] >> shift) | ((encoded[pos + 1] << (7 - shift)) & 0xFF));
+		}
+
+		return decoded;
 	}
 
 	static int decodeValue(byte... values) {

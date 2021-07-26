@@ -55,8 +55,8 @@ import com.diozero.internal.provider.firmata.adapter.FirmataAdapter;
 import com.diozero.internal.provider.firmata.adapter.FirmataEventListener;
 import com.diozero.internal.provider.firmata.adapter.FirmataProtocol.PinCapability;
 import com.diozero.internal.provider.firmata.adapter.FirmataProtocol.PinMode;
-import com.diozero.internal.provider.firmata.adapter.SerialFirmataAdapter;
-import com.diozero.internal.provider.firmata.adapter.SocketFirmataAdapter;
+import com.diozero.internal.provider.firmata.adapter.SerialFirmataTransport;
+import com.diozero.internal.provider.firmata.adapter.SocketFirmataTransport;
 import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.AnalogInputDeviceInterface;
 import com.diozero.internal.spi.AnalogOutputDeviceInterface;
@@ -95,6 +95,7 @@ public class FirmataDeviceFactory extends BaseNativeDeviceFactory implements Fir
 	private String serialPortName;
 	private FirmataAdapter adapter;
 
+	@SuppressWarnings("resource")
 	public FirmataDeviceFactory() {
 		serialPortName = PropertyUtil.getProperty(SERIAL_PORT_PROP, null);
 		if (serialPortName == null) {
@@ -104,7 +105,7 @@ public class FirmataDeviceFactory extends BaseNativeDeviceFactory implements Fir
 						"Error, either " + SERIAL_PORT_PROP + " or " + TCP_HOST_PROP + " must be set");
 			}
 			int port = PropertyUtil.getIntProperty(TCP_PORT_PROP, DEFAULT_TCP_PORT);
-			adapter = new SocketFirmataAdapter(this, hostname, port);
+			adapter = new FirmataAdapter(new SocketFirmataTransport(hostname, port), this);
 		} else {
 			SerialDevice.DataBits data_bits = SerialConstants.DEFAULT_DATA_BITS;
 			String val = PropertyUtil.getProperty(SERIAL_DATA_BITS_PROP, null);
@@ -124,18 +125,16 @@ public class FirmataDeviceFactory extends BaseNativeDeviceFactory implements Fir
 				parity = SerialDevice.Parity.valueOf(val.trim());
 			}
 
-			adapter = new SerialFirmataAdapter(this, serialPortName,
+			adapter = new FirmataAdapter(new SerialFirmataTransport(serialPortName,
 					PropertyUtil.getIntProperty(SERIAL_BAUD_PROP, SerialConstants.BAUD_57600), data_bits, stop_bits,
 					parity, SerialConstants.DEFAULT_READ_BLOCKING, SerialConstants.DEFAULT_MIN_READ_CHARS,
-					SerialConstants.DEFAULT_READ_TIMEOUT_MILLIS);
+					SerialConstants.DEFAULT_READ_TIMEOUT_MILLIS), this);
 		}
 	}
 
 	@Override
 	public void start() {
 		adapter.start();
-		// TODO Configure the Firmata device's I2C delay?
-		// adapter.i2cConfig(5);
 	}
 
 	@Override
@@ -147,7 +146,7 @@ public class FirmataDeviceFactory extends BaseNativeDeviceFactory implements Fir
 		}
 	}
 
-	FirmataAdapter getFirmataAdapter() {
+	public FirmataAdapter getFirmataAdapter() {
 		return adapter;
 	}
 

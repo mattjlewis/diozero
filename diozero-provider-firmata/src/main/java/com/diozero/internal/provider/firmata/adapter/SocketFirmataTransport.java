@@ -5,7 +5,7 @@ package com.diozero.internal.provider.firmata.adapter;
  * Organisation: diozero
  * Project:      diozero - Firmata
  * Filename:     SocketFirmataAdapter.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.internal.provider.firmata.adapter;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -38,14 +38,12 @@ import java.net.Socket;
 
 import com.diozero.api.RuntimeIOException;
 
-public class SocketFirmataAdapter extends FirmataAdapter {
+public class SocketFirmataTransport implements FirmataTransport {
 	private Socket socket;
 	private InputStream is;
 	private OutputStream os;
 
-	public SocketFirmataAdapter(FirmataEventListener eventListener, String hostname, int port) {
-		super(eventListener);
-
+	public SocketFirmataTransport(String hostname, int port) {
 		try {
 			socket = new Socket(hostname, port);
 			this.is = socket.getInputStream();
@@ -56,7 +54,7 @@ public class SocketFirmataAdapter extends FirmataAdapter {
 	}
 
 	@Override
-	int bytesAvailable() {
+	public int bytesAvailable() {
 		try {
 			return is.available();
 		} catch (IOException e) {
@@ -65,7 +63,7 @@ public class SocketFirmataAdapter extends FirmataAdapter {
 	}
 
 	@Override
-	int read() throws RuntimeIOException {
+	public int read() throws RuntimeIOException {
 		try {
 			return is.read();
 		} catch (IOException e) {
@@ -74,7 +72,7 @@ public class SocketFirmataAdapter extends FirmataAdapter {
 	}
 
 	@Override
-	byte readByte() throws RuntimeIOException {
+	public byte readByte() throws RuntimeIOException {
 		try {
 			int i = is.read();
 			if (i == -1) {
@@ -87,7 +85,7 @@ public class SocketFirmataAdapter extends FirmataAdapter {
 	}
 
 	@Override
-	void write(byte[] data) throws RuntimeIOException {
+	public void write(byte[] data) throws RuntimeIOException {
 		try {
 			os.write(data);
 		} catch (IOException e) {
@@ -97,8 +95,6 @@ public class SocketFirmataAdapter extends FirmataAdapter {
 
 	@Override
 	public void close() {
-		super.close();
-
 		try {
 			is.close();
 		} catch (IOException e) {

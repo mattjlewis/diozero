@@ -5,7 +5,7 @@ package com.diozero.internal.provider.firmata.adapter;
  * Organisation: diozero
  * Project:      diozero - Firmata
  * Filename:     SerialFirmataAdapter.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.internal.provider.firmata.adapter;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -36,14 +36,12 @@ import org.tinylog.Logger;
 import com.diozero.api.SerialDevice;
 import com.diozero.internal.provider.builtin.serial.NativeSerialDevice;
 
-public class SerialFirmataAdapter extends FirmataAdapter {
+public class SerialFirmataTransport implements FirmataTransport {
 	private NativeSerialDevice device;
 
-	public SerialFirmataAdapter(FirmataEventListener eventListener, String deviceFile, int baud,
-			SerialDevice.DataBits dataBits, SerialDevice.StopBits stopBits, SerialDevice.Parity parity,
-			boolean readBlocking, int minReadChars, int readTimeoutMillis) {
-		super(eventListener);
-
+	public SerialFirmataTransport(String deviceFile, int baud, SerialDevice.DataBits dataBits,
+			SerialDevice.StopBits stopBits, SerialDevice.Parity parity, boolean readBlocking, int minReadChars,
+			int readTimeoutMillis) {
 		device = new NativeSerialDevice(deviceFile, baud, dataBits, stopBits, parity, readBlocking, minReadChars,
 				readTimeoutMillis);
 	}
@@ -51,7 +49,6 @@ public class SerialFirmataAdapter extends FirmataAdapter {
 	@Override
 	public void close() {
 		Logger.trace("closing...");
-		super.close();
 
 		try {
 			device.close();
@@ -62,22 +59,22 @@ public class SerialFirmataAdapter extends FirmataAdapter {
 	}
 
 	@Override
-	int bytesAvailable() {
+	public int bytesAvailable() {
 		return device.bytesAvailable();
 	}
 
 	@Override
-	int read() {
+	public int read() {
 		return device.read();
 	}
 
 	@Override
-	byte readByte() {
+	public byte readByte() {
 		return device.readByte();
 	}
 
 	@Override
-	void write(byte[] data) {
+	public void write(byte[] data) {
 		device.write(data);
 	}
 }

@@ -31,6 +31,8 @@ package com.diozero.internal.provider.firmata;
  * #L%
  */
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import org.tinylog.Logger;
 
 import com.diozero.api.I2CConstants;
@@ -39,6 +41,7 @@ import com.diozero.internal.provider.firmata.adapter.FirmataAdapter;
 import com.diozero.internal.provider.firmata.adapter.FirmataAdapter.I2CResponse;
 import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.InternalI2CDeviceInterface;
+import com.diozero.util.PropertyUtil;
 
 /**
  * <p>
@@ -54,6 +57,11 @@ import com.diozero.internal.spi.InternalI2CDeviceInterface;
  * </ul>
  */
 public class FirmataI2CDevice extends AbstractDevice implements InternalI2CDeviceInterface {
+	// i2cConfig must be invoked at least once
+	private static AtomicBoolean I2C_CONFIGURED = new AtomicBoolean();
+	private static final int DEFAULT_I2C_DELAY = 0;
+	private static final String I2C_DELAY_PROP = "diozero.firmata.i2cDelay";
+
 	private FirmataAdapter adapter;
 	private int address;
 	private boolean autoRestart = false;
@@ -64,6 +72,11 @@ public class FirmataI2CDevice extends AbstractDevice implements InternalI2CDevic
 		super(key, deviceFactory);
 
 		adapter = deviceFactory.getFirmataAdapter();
+		synchronized (I2C_CONFIGURED) {
+			if (!I2C_CONFIGURED.getAndSet(true)) {
+				adapter.i2cConfig(PropertyUtil.getIntProperty(I2C_DELAY_PROP, DEFAULT_I2C_DELAY));
+			}
+		}
 		this.address = address;
 		addressSize10Bit = addressSize == I2CConstants.AddressSize.SIZE_10;
 	}

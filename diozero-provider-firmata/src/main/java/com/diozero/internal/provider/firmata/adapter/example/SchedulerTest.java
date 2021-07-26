@@ -1,9 +1,12 @@
-package com.diozero.internal.provider.firmata.adapter;
+package com.diozero.internal.provider.firmata.adapter.example;
 
 import com.diozero.api.SerialConstants;
 import com.diozero.api.SerialDevice;
+import com.diozero.internal.provider.firmata.adapter.FirmataAdapter;
 import com.diozero.internal.provider.firmata.adapter.FirmataAdapter.SchedulerDataQueryTaskResponse;
 import com.diozero.internal.provider.firmata.adapter.FirmataEventListener.EventType;
+import com.diozero.internal.provider.firmata.adapter.FirmataProtocol;
+import com.diozero.internal.provider.firmata.adapter.SerialFirmataTransport;
 import com.diozero.util.Hex;
 import com.diozero.util.PropertyUtil;
 import com.diozero.util.SleepUtil;
@@ -58,10 +61,10 @@ public class SchedulerTest implements FirmataProtocol {
 			parity = SerialDevice.Parity.valueOf(val.trim());
 		}
 
-		try (FirmataAdapter adapter = new SerialFirmataAdapter(SchedulerTest::event, serial_port_name,
+		try (FirmataAdapter adapter = new FirmataAdapter(new SerialFirmataTransport(serial_port_name,
 				PropertyUtil.getIntProperty(SERIAL_BAUD_PROP, SerialConstants.BAUD_57600), data_bits, stop_bits, parity,
 				SerialConstants.DEFAULT_READ_BLOCKING, SerialConstants.DEFAULT_MIN_READ_CHARS,
-				SerialConstants.DEFAULT_READ_TIMEOUT_MILLIS)) {
+				SerialConstants.DEFAULT_READ_TIMEOUT_MILLIS), SchedulerTest::event)) {
 			adapter.start();
 			adapter.systemReset();
 

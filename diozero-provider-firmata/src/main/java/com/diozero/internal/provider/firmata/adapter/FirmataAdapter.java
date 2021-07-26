@@ -52,11 +52,12 @@ import org.tinylog.Logger;
 import com.diozero.api.RuntimeIOException;
 import com.diozero.util.DiozeroScheduler;
 
-public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoCloseable {
+public class FirmataAdapter implements FirmataProtocol, Runnable, AutoCloseable {
 	private static final int I2C_NO_REGISTER = 0;
 	private static final int NOT_SET = -1;
 	private static final byte ANALOG_NOT_SUPPORTED = 127;
 
+	private FirmataTransport transport;
 	private FirmataEventListener eventListener;
 	private AtomicBoolean running;
 	private AtomicBoolean inShutdown;
@@ -68,7 +69,8 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 	private Map<Integer, Integer> adcToPinNumberMapping;
 	private Map<Byte, Boolean> taskIds;
 
-	public FirmataAdapter(FirmataEventListener eventListener) {
+	public FirmataAdapter(FirmataTransport transport, FirmataEventListener eventListener) {
+		this.transport = transport;
 		this.eventListener = eventListener;
 
 		running = new AtomicBoolean(false);
@@ -79,18 +81,10 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 		taskIds = new ConcurrentHashMap<>();
 	}
 
-	abstract int bytesAvailable();
-
-	abstract int read();
-
-	abstract byte readByte();
-
-	abstract void write(byte[] data);
-
 	public final void start() {
 		// Throw away any pending data available to read
-		while (bytesAvailable() > 0) {
-			readByte();
+		while (transport.bytesAvailable() > 0) {
+			transport.readByte();
 		}
 
 		future = DiozeroScheduler.getNonDaemonInstance().submit(this);
@@ -126,6 +120,8 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 		}
 
 		inShutdown.set(false);
+
+		transport.close();
 
 		Logger.trace("closed.");
 	}
@@ -505,7 +501,7 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 	}
 
 	private void sendMessage(byte[] request) throws RuntimeIOException {
-		write(request);
+		transport.write(request);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -514,7 +510,7 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 		ResponseMessage response = null;
 
 		try {
-			write(request);
+			transport.write(request);
 
 			do {
 				Logger.trace("Waiting for a response of type {} ...", responseClass.getName());
@@ -558,7 +554,7 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 				 * If O_NONBLOCK is clear, read() shall block the calling thread until
 				 * some data becomes available.
 				 */
-				int i = read();
+				int i = transport.read();
 				if (i == -1) {
 					Logger.warn("Read -1 from device, exiting read responses loop...");
 					running.compareAndSet(true, false);
@@ -634,14 +630,14 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 	private SysExResponse readSysEx(Byte sysExCommand) {
 		byte sysex_cmd;
 		if (sysExCommand == null) {
-			sysex_cmd = readByte();
+			sysex_cmd = transport.readByte();
 		} else {
 			sysex_cmd = sysExCommand.byteValue();
 		}
 		// long start = System.currentTimeMillis();
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		while (true) {
-			byte b = readByte();
+			byte b = transport.readByte();
 			if (b == END_SYSEX) {
 				break;
 			}
@@ -786,7 +782,7 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 	}
 
 	private ProtocolVersionResponse readVersionResponse() {
-		return new ProtocolVersionResponse(readByte(), readByte());
+		return new ProtocolVersionResponse(transport.readByte(), transport.readByte());
 	}
 
 	private DataResponse readDataResponse(int port) {
@@ -795,7 +791,7 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 
 	private int readShort() {
 		// LSB (bits 0-6), MSB(bits 7-13)
-		return FirmataProtocol.decodeValue(readByte(), readByte());
+		return FirmataProtocol.decodeValue(transport.readByte(), transport.readByte());
 		// return ((msb & 0x7f) << 7) | (lsb & 0x7f);
 	}
 
@@ -1097,7 +1093,7 @@ public abstract class FirmataAdapter implements FirmataProtocol, Runnable, AutoC
 		}
 	}
 
-	static class SchedulerDataQueryTaskResponse extends SchedulerDataResponse {
+	public static class SchedulerDataQueryTaskResponse extends SchedulerDataResponse {
 		private byte taskId;
 		private int timeMs;
 		private int length;
