@@ -1,3 +1,3 @@
 #!/bin/sh
 
-docker build -t diozero/diozero-cc .
+docker build --rm -t diozero/diozero-cc .

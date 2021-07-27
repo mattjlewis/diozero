@@ -16,6 +16,7 @@ ARG GLIBC_VERSION=glibc-2.28
 ARG BINUTILS_VERSION=binutils-2.31.1
 # Working directory for building GCC
 ARG BUILD_WORKING_DIR=${HOME_DIR}/build
+ARG TARGET=arm-linux-gnueabihf
 # Number of jobs value to pass the make -j command
 ARG MAKE_JOBS=8
 
@@ -62,14 +63,14 @@ WORKDIR ${BUILD_WORKING_DIR}
 RUN git clone --depth=1 https://github.com/raspberrypi/linux
 WORKDIR ${BUILD_WORKING_DIR}/linux
 ENV KERNEL=kernel7
-RUN sudo make ARCH=arm INSTALL_HDR_PATH=${PI_GCC_TARGET_DIR}/arm-linux-gnueabihf headers_install
+RUN sudo make ARCH=arm INSTALL_HDR_PATH=${PI_GCC_TARGET_DIR}/${TARGET} headers_install
 
 # Build BinUtils
 WORKDIR ${BUILD_WORKING_DIR}/build-binutils
 RUN ../${BINUTILS_VERSION}/configure \
     --prefix=${PI_GCC_TARGET_DIR} \
     --with-arch=armv6 --with-fpu=vfp --with-float=hard \
-    --target=arm-linux-gnueabihf \
+    --target=${TARGET} \
     --disable-multilib
 RUN make -j${MAKE_JOBS}
 RUN sudo make install
@@ -81,11 +82,11 @@ WORKDIR ${BUILD_WORKING_DIR}/build-gcc
 # Removed: --enable-bootstrap
 RUN ../${GCC_VERSION}/configure \
     --prefix=${PI_GCC_TARGET_DIR} \
-    --build=x86_64-linux-gnu --host=x86_64-linux-gnu --target=arm-linux-gnueabihf \
+    --build=x86_64-linux-gnu --host=x86_64-linux-gnu --target=${TARGET} \
     --enable-languages=c,c++ \
     --with-arch=armv6 --with-fpu=vfp --with-float=hard \
     --disable-multilib \
-    --program-prefix=arm-linux-gnueabihf- \
+    --program-prefix=${TARGET}- \
     --with-gcc-major-version-only \
     --enable-shared --enable-linker-build-id \
     --without-included-gettext --enable-threads=posix \
@@ -94,26 +95,28 @@ RUN ../${GCC_VERSION}/configure \
     --enable-plugin --enable-default-pie --with-system-zlib --with-target-system-zlib \
     --disable-libitm --disable-libquadmath --disable-libquadmath-support --disable-sjlj-exceptions \
     --disable-werror --enable-checking=release \
-    --libdir=${PI_GCC_TARGET_DIR}/arm-linux-gnueabihf/lib
+    --libdir=${PI_GCC_TARGET_DIR}/${TARGET}/lib
 RUN make -j${MAKE_JOBS} all-gcc
 RUN sudo make install-gcc
+# https://stackoverflow.com/questions/44419593/gcc-4-9-4-cross-compiler-build-limits-h-issue
+RUN sudo rm --recursive --force ${PI_GCC_TARGET_DIR}/${TARGET}/sys-include
 
 # Build GLIBC
 WORKDIR ${BUILD_WORKING_DIR}/build-glibc
 RUN ../${GLIBC_VERSION}/configure \
-    --prefix=${PI_GCC_TARGET_DIR}/arm-linux-gnueabihf \
-    --build=x86_64-linux-gnu --host=arm-linux-gnueabihf --target=arm-linux-gnueabihf \
+    --prefix=${PI_GCC_TARGET_DIR}/${TARGET} \
+    --build=x86_64-linux-gnu --host=${TARGET} --target=${TARGET} \
     --with-arch=armv6 --with-fpu=vfp --with-float=hard \
-    --with-headers=${PI_GCC_TARGET_DIR}/arm-linux-gnueabihf/include \
+    --with-headers=${PI_GCC_TARGET_DIR}/${TARGET}/include \
     --disable-multilib libc_cv_forced_unwind=yes
 RUN sudo make install-bootstrap-headers=yes install-headers
 # Bit of a cludge - fix file permissions from the above command
 RUN sudo chown -R ${RUN_AS_USER}:users .
 RUN make -j${MAKE_JOBS} csu/subdir_lib
-RUN sudo install csu/crt1.o csu/crti.o csu/crtn.o ${PI_GCC_TARGET_DIR}/arm-linux-gnueabihf/lib
-RUN sudo arm-linux-gnueabihf-gcc -nostdlib -nostartfiles -shared -x c /dev/null \
-    -o ${PI_GCC_TARGET_DIR}/arm-linux-gnueabihf/lib/libc.so
-RUN sudo touch ${PI_GCC_TARGET_DIR}/arm-linux-gnueabihf/include/gnu/stubs.h
+RUN sudo install csu/crt1.o csu/crti.o csu/crtn.o ${PI_GCC_TARGET_DIR}/${TARGET}/lib
+RUN sudo ${TARGET}-gcc -nostdlib -nostartfiles -shared -x c /dev/null \
+    -o ${PI_GCC_TARGET_DIR}/${TARGET}/lib/libc.so
+RUN sudo touch ${PI_GCC_TARGET_DIR}/${TARGET}/include/gnu/stubs.h
 
 # Continue building GCC
 WORKDIR ${BUILD_WORKING_DIR}/build-gcc
@@ -160,68 +163,3 @@ WORKDIR ${HOME_DIR}
 # FIXME Fix the limits.h header file. Why is the cross-compiler one missing some info?
 # https://stackoverflow.com/questions/44419593/gcc-4-9-4-cross-compiler-build-limits-h-issue
 RUN sudo cp /usr/lib/gcc-cross/arm-linux-gnueabihf/8/include-fixed/limits.h ${PI_GCC_TARGET_DIR}/arm-linux-gnueabihf/lib/gcc/arm-linux-gnueabihf/8/include-fixed/limits.h
-
-# Finally add some other convenience packages
-RUN sudo apt-get update && sudo apt-get -y install libsdl2-2.0-0 libsdl2-dev
-
-ARG DEBIAN_MIRROR=http://ftp.uk.debian.org/debian
-ARG RASPBIAN_MIRROR=http://raspbian.raspberrypi.org/raspbian
-ARG SDL2_VERSION=2.0.9+dfsg1-1
-#ARG SDL2_VERSION=2.0.14+dfsg2-3
-ARG LIB_SDL2=libsdl2-2.0-0_${SDL2_VERSION}
-ARG LIB_SDL2_PATH=pool/main/libs/libsdl2
-ARG LIB_SDL2_DEV=libsdl2-dev_${SDL2_VERSION}
-
-# AArch64
-WORKDIR ${HOME_DIR}/libsdl2/aarch64
-# libsdl2
-ARG DEB_FILE=${LIB_SDL2}_arm64.deb
-RUN wget ${DEBIAN_MIRROR}/${LIB_SDL2_PATH}/${DEB_FILE}
-RUN ar -p ${DEB_FILE} data.tar.xz | sudo tar Jxf - -C /usr/aarch64-linux-gnu/lib --strip-components=4 ./usr/lib/aarch64-linux-gnu
-RUN rm ${DEB_FILE}
-# libsdl2-dev
-ARG DEB_FILE=${LIB_SDL2_DEV}_arm64.deb
-RUN wget ${DEBIAN_MIRROR}/${LIB_SDL2_PATH}/${DEB_FILE}
-RUN ar -x ${DEB_FILE} data.tar.xz
-RUN rm ${DEB_FILE}
-RUN sudo tar Jxf data.tar.xz -C /usr/aarch64-linux-gnu/bin --strip-components=3 ./usr/bin
-RUN sudo tar Jxf data.tar.xz -C /usr/aarch64-linux-gnu/lib --strip-components=4 ./usr/lib/aarch64-linux-gnu
-RUN sudo tar Jxf data.tar.xz -C /usr/aarch64-linux-gnu/include --strip-components=3 ./usr/include
-RUN rm data.tar.xz
-
-# ARMv7
-WORKDIR ${HOME_DIR}/libsdl2/armv7
-# libsdl2
-ARG DEB_FILE=${LIB_SDL2}_armhf.deb
-RUN wget ${DEBIAN_MIRROR}/${LIB_SDL2_PATH}/${DEB_FILE}
-RUN ar -p ${DEB_FILE} data.tar.xz | sudo tar Jxf - -C /usr/arm-linux-gnueabihf/lib --strip-components=4 ./usr/lib/arm-linux-gnueabihf
-RUN rm ${DEB_FILE}
-# libsdl2-dev
-ARG DEB_FILE=${LIB_SDL2_DEV}_armhf.deb
-RUN wget ${DEBIAN_MIRROR}/${LIB_SDL2_PATH}/${DEB_FILE}
-RUN ar -x ${DEB_FILE} data.tar.xz
-RUN rm ${DEB_FILE}
-RUN sudo tar Jxf data.tar.xz -C /usr/arm-linux-gnueabihf/bin --strip-components=3 ./usr/bin
-RUN sudo tar Jxf data.tar.xz -C /usr/arm-linux-gnueabihf/lib --strip-components=4 ./usr/lib/arm-linux-gnueabihf
-RUN sudo tar Jxf data.tar.xz -C /usr/arm-linux-gnueabihf/include --strip-components=3 ./usr/include
-RUN rm data.tar.xz
-
-# Raspbian ARMv6
-WORKDIR ${HOME_DIR}/libsdl2/armv6
-# libsdl2
-ARG DEB_FILE=${LIB_SDL2}_armhf.deb
-RUN wget ${RASPBIAN_MIRROR}/${LIB_SDL2_PATH}/${DEB_FILE}
-RUN ar -p ${DEB_FILE} data.tar.xz | sudo tar Jxf - -C ${PI_GCC_TARGET_DIR}/arm-linux-gnueabihf/lib --strip-components=4 ./usr/lib/arm-linux-gnueabihf
-RUN rm ${DEB_FILE}
-# libsdl2-dev
-ARG DEB_FILE=${LIB_SDL2_DEV}_armhf.deb
-RUN wget ${RASPBIAN_MIRROR}/${LIB_SDL2_PATH}/${DEB_FILE}
-RUN ar -x ${DEB_FILE} data.tar.xz
-RUN rm ${DEB_FILE}
-RUN sudo tar Jxf data.tar.xz -C ${PI_GCC_TARGET_DIR}/arm-linux-gnueabihf/bin --strip-components=3 ./usr/bin
-RUN sudo tar Jxf data.tar.xz -C ${PI_GCC_TARGET_DIR}/arm-linux-gnueabihf/lib --strip-components=4 ./usr/lib/arm-linux-gnueabihf
-RUN sudo tar Jxf data.tar.xz -C ${PI_GCC_TARGET_DIR}/arm-linux-gnueabihf/include --strip-components=3 ./usr/include
-RUN rm data.tar.xz
-
-WORKDIR ${HOME_DIR}
-RUN rm -rf libsdl2
