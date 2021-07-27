@@ -40,21 +40,21 @@ import com.diozero.sbc.DeviceFactoryHelper;
  */
 public class AnalogOutputDevice extends GpioDevice {
 	public static final class Builder {
-		public static Builder builder(int gpio) {
-			return new Builder(gpio);
+		public static Builder builder(int dacNum) {
+			return new Builder(dacNum);
 		}
 
 		public static Builder builder(PinInfo pinInfo) {
 			return new Builder(pinInfo);
 		}
 
-		private Integer gpio;
+		private Integer dacNum;
 		private PinInfo pinInfo;
 		private float initialValue = 0;
 		private AnalogOutputDeviceFactoryInterface deviceFactory;
 
-		public Builder(int gpio) {
-			this.gpio = Integer.valueOf(gpio);
+		public Builder(int dacNum) {
+			this.dacNum = Integer.valueOf(dacNum);
 		}
 
 		public Builder(PinInfo pinInfo) {
@@ -89,7 +89,7 @@ public class AnalogOutputDevice extends GpioDevice {
 			}
 
 			if (pinInfo == null) {
-				pinInfo = deviceFactory.getBoardPinInfo().getByGpioNumberOrThrow(gpio.intValue());
+				pinInfo = deviceFactory.getBoardPinInfo().getByDacNumberOrThrow(dacNum.intValue());
 			}
 
 			return new AnalogOutputDevice(deviceFactory, pinInfo, initialValue);
@@ -111,12 +111,12 @@ public class AnalogOutputDevice extends GpioDevice {
 	/**
 	 * Set the analog output value
 	 *
-	 * @param value new analog output value in the range 0..1
+	 * @param value new analog output value in the range -1..1
 	 * @throws IllegalArgumentException if value is out of bounds
 	 */
 	public void setValue(float value) throws IllegalArgumentException {
-		if (value < 0 || value > 1) {
-			throw new IllegalArgumentException("Analog output value must be 0..1");
+		if (value < -1 || value > 1) {
+			throw new IllegalArgumentException("Analog output value must be -1..1");
 		}
 		delegate.setValue(value);
 	}

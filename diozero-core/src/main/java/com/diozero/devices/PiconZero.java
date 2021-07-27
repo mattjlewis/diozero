@@ -33,6 +33,7 @@ package com.diozero.devices;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.EnumSet;
 
 import org.tinylog.Logger;
 
@@ -475,7 +476,7 @@ public class PiconZero extends AbstractDeviceFactory
 
 	public void closeChannel(int channel) {
 		Logger.trace("closeChannel({})", Integer.valueOf(channel));
-		setInputConfig(channel, InputConfig.DIGITAL);
+		// setInputConfig(channel, InputConfig.DIGITAL);
 	}
 
 	@Override
@@ -498,24 +499,25 @@ public class PiconZero extends AbstractDeviceFactory
 	}
 
 	public static class PiconZeroBoardPinInfo extends BoardPinInfo {
-		public static final String OUTPUTS_HEADER = "OUTPUTS";
-		public static final String INPUTS_HEADER = "INPUTS";
-		public static final String MOTORS_HEADER = "MOTORS";
+		private static final EnumSet<DeviceMode> DIGITAL_OUTPUT_PWM_SERVO = EnumSet.of(DeviceMode.DIGITAL_OUTPUT,
+				DeviceMode.PWM_OUTPUT, DeviceMode.SERVO);
+		public static final int MOTOR1_GPIO = 10;
+		public static final int MOTOR2_GPIO = 11;
 
 		public PiconZeroBoardPinInfo() {
 			// GPIO0-5 - Output
-			// Note doesn't include built-in servo and WS2812B capabilities
+			// Note doesn't include built-in WS2812B capabilities
 			for (int i = 0; i < NUM_OUTPUT_CHANNELS; i++) {
-				addGpioPinInfo(OUTPUTS_HEADER, i, i, PinInfo.DIGITAL_PWM_OUTPUT);
+				addGpioPinInfo(i, i, DIGITAL_OUTPUT_PWM_SERVO);
 			}
 			// GPIO6-9 - Input
 			// Note doesn't include built-in DS18B20 capability
 			for (int i = 0; i < NUM_INPUT_CHANNELS; i++) {
-				addGpioPinInfo(INPUTS_HEADER, NUM_OUTPUT_CHANNELS + i, i, PinInfo.DIGITAL_ANALOG_INPUT);
+				addGpioPinInfo(NUM_OUTPUT_CHANNELS + i, i, PinInfo.DIGITAL_ANALOG_INPUT);
 			}
 			// GPIO10-11 - Motors
 			for (int i = 0; i < NUM_MOTORS; i++) {
-				addDacPinInfo(MOTORS_HEADER, i, i);
+				addDacPinInfo(NUM_OUTPUT_CHANNELS + NUM_INPUT_CHANNELS + i, i);
 			}
 		}
 	}

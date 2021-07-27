@@ -158,6 +158,7 @@ RUN sudo rm -rf ${BUILD_WORKING_DIR}
 WORKDIR ${HOME_DIR}
 
 # FIXME Fix the limits.h header file. Why is the cross-compiler one missing some info?
+# https://stackoverflow.com/questions/44419593/gcc-4-9-4-cross-compiler-build-limits-h-issue
 RUN sudo cp /usr/lib/gcc-cross/arm-linux-gnueabihf/8/include-fixed/limits.h ${PI_GCC_TARGET_DIR}/arm-linux-gnueabihf/lib/gcc/arm-linux-gnueabihf/8/include-fixed/limits.h
 
 # Finally add some other convenience packages
