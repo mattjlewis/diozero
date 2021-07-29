@@ -34,7 +34,6 @@ package com.diozero.devices.motor;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.diozero.api.RuntimeIOException;
 import com.diozero.api.function.Action;
 
 public abstract class MotorBase implements MotorInterface {
@@ -48,35 +47,43 @@ public abstract class MotorBase implements MotorInterface {
 	}
 
 	/**
-	 * Reverse direction of the motors
-	 *
-	 * @throws RuntimeIOException if an I/O error occurs
+	 * {@inheritDoc}
 	 */
 	@Override
-	public void reverse() throws RuntimeIOException {
-		setValue(-getValue());
+	public void whenForward(Action action) {
+		forwardAction = action;
 	}
 
 	/**
-	 * Set the speed of the motor as a floating point value between -1 (full speed
-	 * backward) and 1 (full speed forward)
-	 *
-	 * @param value Range -1 .. 1. Positive numbers for forward, Negative numbers
-	 *              for backward
-	 * @throws RuntimeIOException if an I/O error occurs
+	 * {@inheritDoc}
 	 */
 	@Override
-	public void setValue(float value) throws RuntimeIOException {
-		if (value < -1 || value > 1) {
-			throw new IllegalArgumentException("Motor value must be between -1 and 1");
-		}
-		if (value > 0) {
-			forward(value);
-		} else if (value < 0) {
-			backward(-value);
-		} else {
-			stop();
-		}
+	public void whenBackward(Action action) {
+		backwardAction = action;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void whenStop(Action action) {
+		stopAction = action;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void addListener(MotorEventListener listener) {
+		listeners.add(listener);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void removeListener(MotorEventListener listener) {
+		listeners.remove(listener);
 	}
 
 	protected void valueChanged(float value) {
@@ -96,30 +103,5 @@ public abstract class MotorBase implements MotorInterface {
 				stopAction.action();
 			}
 		}
-	}
-
-	@Override
-	public void whenForward(Action action) {
-		forwardAction = action;
-	}
-
-	@Override
-	public void whenBackward(Action action) {
-		backwardAction = action;
-	}
-
-	@Override
-	public void whenStop(Action action) {
-		stopAction = action;
-	}
-
-	@Override
-	public void addListener(MotorEventListener listener) {
-		listeners.add(listener);
-	}
-
-	@Override
-	public void removeListener(MotorEventListener listener) {
-		listeners.remove(listener);
 	}
 }

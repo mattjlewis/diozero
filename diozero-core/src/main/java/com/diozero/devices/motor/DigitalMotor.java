@@ -42,12 +42,13 @@ import com.diozero.sbc.DeviceFactoryHelper;
 public class DigitalMotor implements DeviceInterface {
 	private DigitalOutputDevice forward;
 	private DigitalOutputDevice backward;
-	
+
 	public DigitalMotor(int forwardGpio, int backwardGpio) throws RuntimeIOException {
 		this(DeviceFactoryHelper.getNativeDeviceFactory(), forwardGpio, backwardGpio);
 	}
-	
-	public DigitalMotor(GpioDeviceFactoryInterface deviceFactory, int forwardGpio, int backwardGpio) throws RuntimeIOException {
+
+	public DigitalMotor(GpioDeviceFactoryInterface deviceFactory, int forwardGpio, int backwardGpio)
+			throws RuntimeIOException {
 		forward = new DigitalOutputDevice(deviceFactory, forwardGpio, true, false);
 		backward = new DigitalOutputDevice(deviceFactory, backwardGpio, true, false);
 	}
@@ -58,23 +59,23 @@ public class DigitalMotor implements DeviceInterface {
 		forward.close();
 		backward.close();
 	}
-	
+
 	// Exposed operations
 	public void forward() throws RuntimeIOException {
 		forward.on();
 		backward.off();
 	}
-	
+
 	public void backward() throws RuntimeIOException {
 		forward.off();
 		backward.on();
 	}
-	
+
 	public void stop() throws RuntimeIOException {
 		forward.off();
 		backward.off();
 	}
-	
+
 	public void reverse() throws RuntimeIOException {
 		if (!isActive()) {
 			return;
@@ -82,16 +83,18 @@ public class DigitalMotor implements DeviceInterface {
 		forward.toggle();
 		backward.toggle();
 	}
-	
+
 	public boolean isActive() throws RuntimeIOException {
 		return forward.isOn() || backward.isOn();
 	}
-	
+
 	/**
-	 * Represents the speed of the motor as a floating point value between -1
-	 *   (full speed backward) and 1 (full speed forward)
+	 * Represents the speed of the motor as a floating point value between -1 (full
+	 * speed backward) and 1 (full speed forward)
+	 *
 	 * @throws RuntimeIOException if an I/O error occurs
-	 * @return current value for this motor in the range -1 (backwards) to 1 (forwards)
+	 * @return current value for this motor in the range -1 (backwards) to 1
+	 *         (forwards)
 	 */
 	public float getValue() throws RuntimeIOException {
 		if (forward.isOn()) {
@@ -99,7 +102,7 @@ public class DigitalMotor implements DeviceInterface {
 		} else if (backward.isOn()) {
 			return -1;
 		}
-		
+
 		return 0;
 	}
 }

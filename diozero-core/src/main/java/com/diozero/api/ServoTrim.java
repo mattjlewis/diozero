@@ -130,14 +130,29 @@ public class ServoTrim {
 		return maxPulseWidthUs / 1_000f;
 	}
 
+	/**
+	 * Get the servo minimum angle in degrees where 90 degrees is the middle angle
+	 *
+	 * @return the servo minimum angle (90 degrees is central)
+	 */
 	public int getMinAngle() {
 		return minAngle;
 	}
 
+	/**
+	 * Get the servo maximum angle in degrees where 90 degrees is the middle angle
+	 *
+	 * @return the servo maximum angle (90 degrees is central)
+	 */
 	public int getMaxAngle() {
 		return maxAngle;
 	}
 
+	/**
+	 * Get the servo middle angle in degrees (constant - 90 degrees)
+	 *
+	 * @return the servo middle angle (a constant of 90 degrees)
+	 */
 	@SuppressWarnings("static-method")
 	public int getMidAngle() {
 		return MID_ANGLE;
@@ -157,5 +172,13 @@ public class ServoTrim {
 
 	public float convertAngleToPulseWidthMs(int angle) {
 		return convertAngleToPulseWidthUs(angle) / 1_000f;
+	}
+
+	public int convertValueToPulseWidthUs(float value) {
+		return RangeUtil.map(value, -1f, 1f, minPulseWidthUs, maxPulseWidthUs);
+	}
+
+	public float convertPulseWidthUsToValue(int pulseWidthUs) {
+		return RangeUtil.map(pulseWidthUs, minPulseWidthUs, maxPulseWidthUs, -1f, 1f);
 	}
 }

@@ -118,9 +118,9 @@ public class DualMotor implements DeviceInterface {
 		motorB.stop();
 	}
 
-	public void reverse() throws RuntimeIOException {
-		motorA.reverse();
-		motorB.reverse();
+	public void reverseDirection() throws RuntimeIOException {
+		motorA.reverseDirection();
+		motorB.reverseDirection();
 	}
 
 	public void circleLeft(float speed, float turnRate) {

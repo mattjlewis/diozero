@@ -64,17 +64,7 @@ public class PwmMotor extends MotorBase {
 	}
 
 	/**
-	 * Forward at full speed
-	 *
-	 * @throws RuntimeIOException if an I/O error occurs
-	 */
-	public void forward() throws RuntimeIOException {
-		forward(1);
-	}
-
-	/**
-	 * @param speed Range 0..1
-	 * @throws RuntimeIOException if an I/O error occurs
+	 * {@inheritDoc}
 	 */
 	@Override
 	public void forward(float speed) throws RuntimeIOException {
@@ -84,17 +74,7 @@ public class PwmMotor extends MotorBase {
 	}
 
 	/**
-	 * Backward at full speed
-	 *
-	 * @throws RuntimeIOException if an I/O error occurs
-	 */
-	public void backward() throws RuntimeIOException {
-		backward(1);
-	}
-
-	/**
-	 * @param speed Range 0..1
-	 * @throws RuntimeIOException if an I/O error occurs
+	 * {@inheritDoc}
 	 */
 	@Override
 	public void backward(float speed) throws RuntimeIOException {
@@ -103,6 +83,9 @@ public class PwmMotor extends MotorBase {
 		valueChanged(-speed);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void stop() throws RuntimeIOException {
 		forward.off();
@@ -111,17 +94,16 @@ public class PwmMotor extends MotorBase {
 	}
 
 	/**
-	 * Represents the speed of the motor as a floating point value between -1 (full
-	 * speed backward) and 1 (full speed forward).
-	 *
-	 * @return current relative motor speed
-	 * @throws RuntimeIOException if an I/O error occurs
+	 * {@inheritDoc}
 	 */
 	@Override
 	public float getValue() throws RuntimeIOException {
 		return forward.getValue() - backward.getValue();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean isActive() throws RuntimeIOException {
 		return forward.isOn() || backward.isOn();

@@ -209,6 +209,16 @@ public class ServoDevice extends GpioDevice {
 		setPulseWidthUs(trim.convertAngleToPulseWidthUs(Math.round(angle)));
 	}
 
+	/**
+	 * Set the servo relative value where -1 is the minimum angle and 1 is the
+	 * maximum angle.
+	 *
+	 * @param value relative value -1..1 that maps to min..max
+	 */
+	public void setValue(float value) {
+		setPulseWidthUs(trim.convertValueToPulseWidthUs(value));
+	}
+
 	public void min() {
 		setPulseWidthUs(trim.getMinPulseWidthUs());
 	}

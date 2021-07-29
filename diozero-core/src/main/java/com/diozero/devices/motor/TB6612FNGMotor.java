@@ -66,48 +66,44 @@ public class TB6612FNGMotor extends MotorBase {
 	@Override
 	public void close() {
 		Logger.trace("close()");
+		stop();
 		if (motorForwardControlPin != null) {
 			try {
 				motorForwardControlPin.close();
 			} catch (Exception e) {
+				// Ignore
 			}
 		}
 		if (motorBackwardControlPin != null) {
 			try {
 				motorBackwardControlPin.close();
 			} catch (Exception e) {
+				// Ignore
 			}
 		}
 		if (motorPwmControl != null) {
 			try {
 				motorPwmControl.close();
 			} catch (Exception e) {
+				// Ignore
 			}
 		}
 	}
 
-	/**
-	 * @param speed Range 0..1
-	 * @throws RuntimeIOException if an I/O error occurs
-	 */
 	@Override
 	public void forward(float speed) throws RuntimeIOException {
 		motorBackwardControlPin.off();
 		motorForwardControlPin.on();
 		motorPwmControl.setValue(speed);
-		setValue(speed);
+		valueChanged(speed);
 	}
 
-	/**
-	 * @param speed Range 0..1
-	 * @throws RuntimeIOException if an I/O error occurs
-	 */
 	@Override
 	public void backward(float speed) throws RuntimeIOException {
 		motorForwardControlPin.off();
 		motorBackwardControlPin.on();
 		motorPwmControl.setValue(speed);
-		setValue(-speed);
+		valueChanged(-speed);
 	}
 
 	@Override
@@ -115,15 +111,9 @@ public class TB6612FNGMotor extends MotorBase {
 		motorForwardControlPin.off();
 		motorBackwardControlPin.off();
 		motorPwmControl.setValue(0);
-		setValue(0);
+		valueChanged(0);
 	}
 
-	/**
-	 * Represents the speed of the motor as a floating point value between -1 (full
-	 * speed backward) and 1 (full speed forward)
-	 *
-	 * @throws RuntimeIOException if an I/O error occurs
-	 */
 	@Override
 	public float getValue() throws RuntimeIOException {
 		float speed = motorPwmControl.getValue();

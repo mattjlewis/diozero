@@ -5,7 +5,7 @@ package com.diozero.devices.motor;
  * Organisation: diozero
  * Project:      diozero - Core
  * Filename:     PiconZeroMotor.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.devices.motor;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -31,16 +31,14 @@ package com.diozero.devices.motor;
  * #L%
  */
 
+import com.diozero.api.AnalogOutputDevice;
 import com.diozero.api.RuntimeIOException;
-import com.diozero.devices.PiconZero;
 
-public class PiconZeroMotor extends MotorBase {
-	private PiconZero piconZero;
-	private int motor;
+public class AnalogOutputMotor extends MotorBase {
+	private AnalogOutputDevice aout;
 
-	public PiconZeroMotor(PiconZero piconZero, int motor) {
-		this.piconZero = piconZero;
-		this.motor = motor;
+	public AnalogOutputMotor(AnalogOutputDevice aout) {
+		this.aout = aout;
 	}
 
 	/**
@@ -48,7 +46,7 @@ public class PiconZeroMotor extends MotorBase {
 	 */
 	@Override
 	public void forward(float speed) throws RuntimeIOException {
-		piconZero.setMotor(motor, Math.abs(speed));
+		aout.setValue(Math.abs(speed));
 		valueChanged(speed);
 	}
 
@@ -57,7 +55,7 @@ public class PiconZeroMotor extends MotorBase {
 	 */
 	@Override
 	public void backward(float speed) throws RuntimeIOException {
-		piconZero.setMotor(motor, Math.abs(speed) * -1);
+		aout.setValue(Math.abs(speed) * -1);
 		valueChanged(Math.abs(speed) * -1);
 	}
 
@@ -66,7 +64,7 @@ public class PiconZeroMotor extends MotorBase {
 	 */
 	@Override
 	public void stop() throws RuntimeIOException {
-		piconZero.setMotor(motor, 0);
+		aout.setValue(0);
 		valueChanged(0);
 	}
 
@@ -75,7 +73,7 @@ public class PiconZeroMotor extends MotorBase {
 	 */
 	@Override
 	public float getValue() throws RuntimeIOException {
-		return piconZero.getMotor(motor);
+		return aout.getValue();
 	}
 
 	/**
@@ -83,7 +81,7 @@ public class PiconZeroMotor extends MotorBase {
 	 */
 	@Override
 	public boolean isActive() throws RuntimeIOException {
-		return piconZero.getMotorValue(motor) != 0;
+		return aout.getValue() != 0;
 	}
 
 	/**

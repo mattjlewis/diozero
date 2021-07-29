@@ -154,6 +154,11 @@ public class PiconZero extends AbstractDeviceFactory
 		return VREF;
 	}
 
+	@Override
+	public String getName() {
+		return DEVICE_NAME + "-" + device.getController() + "-" + device.getAddress();
+	}
+
 	private static void validateMotor(int motor) {
 		if (motor < 0 || motor >= NUM_MOTORS) {
 			throw new IllegalArgumentException("Invalid motor number (" + motor + ") must be 0.." + (NUM_MOTORS - 1));
@@ -193,14 +198,6 @@ public class PiconZero extends AbstractDeviceFactory
 	private void writeBytes(int register, byte[] data) throws RuntimeIOException {
 		device.writeI2CBlockData(register, data);
 		SleepUtil.sleepMillis(1);
-	}
-
-	/**
-	 * Reset the board.
-	 */
-	public void reset() {
-		Logger.debug("reset()");
-		writeByte(RESET_REG, 0);
 	}
 
 	/**
@@ -245,6 +242,16 @@ public class PiconZero extends AbstractDeviceFactory
 	}
 
 	/**
+	 * Get motor output value (normalised to range -1..1)
+	 *
+	 * @param motor Motor number (0 or 1)
+	 * @return Current motor speed in range -1..1
+	 */
+	public float getMotor(int motor) {
+		return RangeUtil.map(getMotorValue(motor), MIN_MOTOR_VALUE, MAX_MOTOR_VALUE, -1f, 1f);
+	}
+
+	/**
 	 * Set motor output value (normalised to range -1..1)
 	 *
 	 * @param motor Motor number (0 or 1)
@@ -255,13 +262,14 @@ public class PiconZero extends AbstractDeviceFactory
 	}
 
 	/**
-	 * Get motor output value (normalised to range -1..1)
+	 * Get the current motor speed (PiconZero range -128..127)
 	 *
 	 * @param motor Motor number (0 or 1)
-	 * @return Current motor speed in range -1..1
+	 * @return Motor speed in range -128..127
 	 */
-	public float getMotor(int motor) {
-		return RangeUtil.map(getMotorValue(motor), MIN_MOTOR_VALUE, MAX_MOTOR_VALUE, -1f, 1f);
+	public int getMotorValue(int motor) {
+		validateMotor(motor);
+		return motorValues[motor];
 	}
 
 	/**
@@ -275,17 +283,6 @@ public class PiconZero extends AbstractDeviceFactory
 		validateMotor(motor);
 		writeByte(MOTOR0_REG + motor, speed);
 		motorValues[motor] = speed;
-	}
-
-	/**
-	 * Get the current motor speed (PiconZero range -128..127)
-	 *
-	 * @param motor Motor number (0 or 1)
-	 * @return Motor speed in range -128..127
-	 */
-	public int getMotorValue(int motor) {
-		validateMotor(motor);
-		return motorValues[motor];
 	}
 
 	/**
@@ -366,11 +363,6 @@ public class PiconZero extends AbstractDeviceFactory
 
 	public void setBrightness(int brightness) {
 		writeByte(SET_BRIGHTNESS_REG, brightness);
-	}
-
-	@Override
-	public String getName() {
-		return DEVICE_NAME + "-" + device.getController() + "-" + device.getAddress();
 	}
 
 	@Override
@@ -474,6 +466,14 @@ public class PiconZero extends AbstractDeviceFactory
 		return ain;
 	}
 
+	/**
+	 * Reset the board.
+	 */
+	public void reset() {
+		Logger.debug("reset()");
+		writeByte(RESET_REG, 0);
+	}
+
 	public void closeChannel(int channel) {
 		Logger.trace("closeChannel({})", Integer.valueOf(channel));
 		// setInputConfig(channel, InputConfig.DIGITAL);
@@ -499,10 +499,14 @@ public class PiconZero extends AbstractDeviceFactory
 	}
 
 	public static class PiconZeroBoardPinInfo extends BoardPinInfo {
-		private static final EnumSet<DeviceMode> DIGITAL_OUTPUT_PWM_SERVO = EnumSet.of(DeviceMode.DIGITAL_OUTPUT,
-				DeviceMode.PWM_OUTPUT, DeviceMode.SERVO);
+		public static final int MOTOR1 = 0;
+		public static final int MOTOR2 = 1;
+
 		public static final int MOTOR1_GPIO = 10;
 		public static final int MOTOR2_GPIO = 11;
+
+		private static final EnumSet<DeviceMode> DIGITAL_OUTPUT_PWM_SERVO = EnumSet.of(DeviceMode.DIGITAL_OUTPUT,
+				DeviceMode.PWM_OUTPUT, DeviceMode.SERVO);
 
 		public PiconZeroBoardPinInfo() {
 			// GPIO0-5 - Output
