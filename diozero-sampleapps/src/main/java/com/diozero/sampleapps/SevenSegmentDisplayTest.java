@@ -33,7 +33,7 @@ package com.diozero.sampleapps;
 
 import org.tinylog.Logger;
 
-import com.diozero.devices.sandpit.SevenSegmentDisplay;
+import com.diozero.devices.SevenSegmentDisplay;
 import com.diozero.util.SleepUtil;
 
 public class SevenSegmentDisplayTest {

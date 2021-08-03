@@ -17,16 +17,16 @@ redirect_from:
 + ST7735 / ST7789 displays
 + Stepper motors
 + Tidy up sampleapps with sub-packages as per diozero core (api, devices, motor, util, sbc, ...)
-* SPI support for Arduino devices over Firmata
++ SPI support for Arduino devices over Firmata
 + Waveshare 7.5" e-ink display
-+ Optimise GpioExpander when used for PWM output on multiple pins, 7-segment displays, shift
-registers, etc. - set multiple GPIOs one invocation rather than individually
++ Optimise GpioExpander when used for PWM output on multiple pins
 
 ## 1.3.2 (In progress)
 
-* HD44780 cleanup - optimising use of GpioExpander interface plus added option to connect via GPIOs.
-* BBB - fix PWM module lookup for all PWM numbers.
-* Firmata scheduler support.
++ HD44780 cleanup - optimising use of GpioExpander interface plus added option to connect via GPIOs
++ BBB - fix PWM module lookup for all PWM numbers
++ Firmata scheduler support
++ Garmin LIDAR Lite v4
 
 ## 1.3.1
 
@@ -57,7 +57,7 @@ registers, etc. - set multiple GPIOs one invocation rather than individually
 
 + Use of BlockingQueue within GpioChip
 + Support for Orange Pi Zero Plus and Orange Pi One Plus
-* MFRC522 bug fix (#71) - allow antenna gain to be set prior to turning on the antenna
++ MFRC522 bug fix (#71) - allow antenna gain to be set prior to turning on the antenna
 + Support for BME688
 + Improvements to SGP30
 + Moved DebouncedDigitalInputDevice out of sandpit
@@ -81,7 +81,7 @@ registers, etc. - set multiple GPIOs one invocation rather than individually
 + mmap int buffer is volatile to ensure main memory is written
 + DigitalOutputDevice on-off loop enhancements courtesy of Greg Flurry
 + gpio chardev cleanup improvements
-* Fixing DiozeroScheduler - pool size of 0 to allow safe shutdown
++ Fixing DiozeroScheduler - pool size of 0 to allow safe shutdown
 
 ## 1.2.0
 
@@ -90,7 +90,7 @@ registers, etc. - set multiple GPIOs one invocation rather than individually
 + Added BoardPinInfo getByPhysicalPin()
 + Added AnalogOutputDevice
 + Switched to non-daemon threads
-* Changed DiozeroScheduler to only create a single (scheduled) thread pool - the cached thread pool was blocking the JVM from terminating for 60 seconds
++ Changed DiozeroScheduler to only create a single (scheduled) thread pool - the cached thread pool was blocking the JVM from terminating for 60 seconds
 + Improvements to DigitalOutputDevice on-off loops
 
 ## 1.1.9

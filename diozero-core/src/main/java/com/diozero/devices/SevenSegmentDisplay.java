@@ -1,4 +1,4 @@
-package com.diozero.devices.sandpit;
+package com.diozero.devices;
 
 /*-
  * #%L

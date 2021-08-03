@@ -1,10 +1,10 @@
-package com.diozero.internal.provider.firmata.adapter;
+package com.diozero.devices.motor;
 
 /*-
  * #%L
  * Organisation: diozero
- * Project:      diozero - Firmata
- * Filename:     FirmataTransport.java
+ * Project:      diozero - Core
+ * Filename:     L298NMotorDriver.java
  * 
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
@@ -31,15 +31,9 @@ package com.diozero.internal.provider.firmata.adapter;
  * #L%
  */
 
-public interface FirmataTransport extends AutoCloseable {
-	int bytesAvailable();
-
-	int read();
-
-	byte readByte();
-
-	void write(byte[] data);
-
-	@Override
-	void close();
+/**
+ * See https://lastminuteengineers.com/l298n-dc-stepper-driver-arduino-tutorial/
+ */
+public class L298NMotorDriver {
+	// TBD
 }

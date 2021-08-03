@@ -37,6 +37,13 @@ import com.diozero.devices.DistanceSensorInterface;
 
 /**
  * Datasheet: https://www.st.com/resource/en/datasheet/vl6180.pdf
+ *
+ * SparkFun implementation:
+ * https://github.com/sparkfun/SparkFun_ToF_Range_Finder-VL6180_Arduino_Library/blob/master/src/SparkFun_VL6180X.cpp
+ *
+ * Pololu: https://github.com/pololu/vl6180x-arduino/blob/master/VL6180X.cpp
+ *
+ * Python: https://github.com/adafruit/Adafruit_CircuitPython_VL6180X
  */
 public class VL6180 implements DistanceSensorInterface {
 	private I2CDevice device;
