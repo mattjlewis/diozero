@@ -1,8 +1,0 @@
-com.diozero.internal.board.allwinner.AllwinnerH5BoardInfoProvider
-com.diozero.internal.board.allwinner.AllwinnerH6BoardInfoProvider
-com.diozero.internal.board.allwinner.AllwinnerSun8iBoardInfoProvider
-com.diozero.internal.board.beaglebone.BeagleBoneBoardInfoProvider
-com.diozero.internal.board.chip.ChipBoardInfoProvider
-com.diozero.internal.board.odroid.OdroidBoardInfoProvider
-com.diozero.internal.board.raspberrypi.RaspberryPiBoardInfoProvider
-com.diozero.internal.board.tinkerboard.TinkerBoardBoardInfoProvider

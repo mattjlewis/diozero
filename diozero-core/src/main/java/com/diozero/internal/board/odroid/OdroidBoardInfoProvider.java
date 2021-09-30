@@ -37,6 +37,8 @@ import com.diozero.internal.spi.MmapGpioInterface;
 import com.diozero.sbc.BoardInfo;
 import com.diozero.sbc.LocalSystemInfo;
 
+import aQute.bnd.annotation.spi.ServiceProvider;
+@ServiceProvider(value = BoardInfoProvider.class)
 public class OdroidBoardInfoProvider implements BoardInfoProvider {
 	public static final String MAKE = "Odroid";
 	public static final String C1_HARDWARE_ID = "ODROID-C1";

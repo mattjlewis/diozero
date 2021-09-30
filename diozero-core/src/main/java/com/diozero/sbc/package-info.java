@@ -1,6 +1,7 @@
 /**
  * APIs for interfacing with the host board.
  */
+@org.osgi.annotation.bundle.Export
 package com.diozero.sbc;
 
 /*-

@@ -2,6 +2,7 @@
  * The built-in default provider supporting GPIO, I2C, SPI and Serial device
  * communication.
  */
+@aQute.bnd.annotation.jpms.ExportTo({"com.diozero.provider.bbbiolib", "com.diozero.provider.mmap", "com.diozero.provider.remote"})
 package com.diozero.internal.provider.builtin;
 
 /*-

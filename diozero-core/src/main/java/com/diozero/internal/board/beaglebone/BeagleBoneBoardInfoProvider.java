@@ -48,10 +48,13 @@ import com.diozero.internal.spi.BoardInfoProvider;
 import com.diozero.sbc.BoardInfo;
 import com.diozero.sbc.LocalSystemInfo;
 
+import aQute.bnd.annotation.spi.ServiceProvider;
+
 /*-
  * https://github.com/derekmolloy/boneDeviceTree/raw/master/docs/BeagleboneBlackP8HeaderTable.pdf
  * https://github.com/derekmolloy/boneDeviceTree/raw/master/docs/BeagleboneBlackP9HeaderTable.pdf
  */
+@ServiceProvider(value = BoardInfoProvider.class)
 public class BeagleBoneBoardInfoProvider implements BoardInfoProvider {
 	public static final String MAKE = "BeagleBone";
 

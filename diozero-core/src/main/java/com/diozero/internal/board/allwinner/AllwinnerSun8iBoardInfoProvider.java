@@ -30,13 +30,14 @@ package com.diozero.internal.board.allwinner;
  * THE SOFTWARE.
  * #L%
  */
-
 import com.diozero.internal.board.GenericLinuxArmBoardInfo;
 import com.diozero.internal.spi.BoardInfoProvider;
 import com.diozero.internal.spi.MmapGpioInterface;
 import com.diozero.sbc.BoardInfo;
 import com.diozero.sbc.LocalSystemInfo;
 
+import aQute.bnd.annotation.spi.ServiceProvider;
+@ServiceProvider(value = BoardInfoProvider.class)
 public class AllwinnerSun8iBoardInfoProvider implements BoardInfoProvider {
 	// E.g. CONFIG_ORANGEPI_H3, CONFIG_ORANGEPI_ZEROPLUS2_H3
 	public static final String MAKE = "Allwinner sun8i";

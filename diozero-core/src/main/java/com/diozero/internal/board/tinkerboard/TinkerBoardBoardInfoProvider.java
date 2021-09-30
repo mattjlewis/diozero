@@ -37,6 +37,9 @@ import com.diozero.internal.spi.MmapGpioInterface;
 import com.diozero.sbc.BoardInfo;
 import com.diozero.sbc.LocalSystemInfo;
 
+import aQute.bnd.annotation.spi.ServiceProvider;
+
+@ServiceProvider(value = BoardInfoProvider.class)
 public class TinkerBoardBoardInfoProvider implements BoardInfoProvider {
 	public static final String MAKE = "Asus";
 	private static final String TINKER_BOARD_HARDWARE_ID = "Rockchip (Device Tree)";

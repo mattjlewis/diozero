@@ -37,10 +37,13 @@ import com.diozero.internal.spi.MmapGpioInterface;
 import com.diozero.sbc.BoardInfo;
 import com.diozero.sbc.LocalSystemInfo;
 
+import aQute.bnd.annotation.spi.ServiceProvider;
+
 /**
  * https://linux-sunxi.org/Xunlong_Orange_Pi_One_Plus
  * https://linux-sunxi.org/GPIO
  */
+@ServiceProvider(value = BoardInfoProvider.class)
 public class AllwinnerH6BoardInfoProvider implements BoardInfoProvider {
 	// Not reliable
 	// public static final String ORANGEPI_ONEPLUS_HARDWARE = "sun50iw1p1";
