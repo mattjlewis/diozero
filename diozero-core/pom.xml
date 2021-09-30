@@ -49,7 +49,7 @@
                                lib/linux-armv6/libdiozero-system-utils.so; osname=Linux; processor=armv6,\
                                lib/linux-armv7/libdiozero-system-utils.so; osname=Linux; processor=armv7,\
                                lib/linux-x86_64/libdiozero-system-utils.so; osname=Linux; processor=x86_64,\
-                               lib/macosx-x86_64/libdiozero-system-utils.so; osname=MacOSX; processor=x86_64
+                               lib/macosx-x86_64/libdiozero-system-utils.dylib; osname=MacOSX; processor=x86_64
             -jpms-module-info:
             
         ]]></bnd></configuration>
