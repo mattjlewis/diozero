@@ -136,11 +136,11 @@ public class DualMotor implements DeviceInterface {
 		motorB.stop();
 	}
 
-	public MotorInterface getLeftMotor() {
+	public MotorInterface getMotorA() {
 		return motorA;
 	}
 
-	public MotorInterface getRightMotor() {
+	public MotorInterface getMotorB() {
 		return motorA;
 	}
 }

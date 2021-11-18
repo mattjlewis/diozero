@@ -37,20 +37,21 @@ import com.diozero.api.RuntimeIOException;
 import com.diozero.internal.spi.PwmOutputDeviceFactoryInterface;
 
 /**
- * Toshiba TB6612FNG Dual Motor Driver. Dual bi-directional motor controlled by
- * a single PWM pin and separate forward / backward GPIO control pins.
+ * Toshiba TB6612FNG Dual Motor Driver. Dual bi-directional motors, each
+ * controlled by a PWM pin to control relative speed and forward / backward
+ * control pins to control motor direction (both on or both off == motor off).
  *
- * Such as <a href="https://www.pololu.com/product/713"> this one from
+ * Such as <a href="https://www.pololu.com/product/713">this one from
  * Pololu</a>.
  */
 public class TB6612FNGDualMotorDriver extends DualMotor {
 	public TB6612FNGDualMotorDriver(int motorAClockwiseControlGpio, int motorACounterClockwiseControlGpio,
-			int motorAPwmGpio, int motorBClockwiseControlGpio, int motorBCounterClockwiseControlGpio,
-			int rightMotorPwmGpio) throws RuntimeIOException {
+			int motorAPwmGpio, int motorBClockwiseControlGpio, int motorBCounterClockwiseControlGpio, int motorBPwmGpio)
+			throws RuntimeIOException {
 		this(new DigitalOutputDevice(motorAClockwiseControlGpio),
 				new DigitalOutputDevice(motorACounterClockwiseControlGpio), new PwmOutputDevice(motorAPwmGpio),
 				new DigitalOutputDevice(motorBClockwiseControlGpio),
-				new DigitalOutputDevice(motorBCounterClockwiseControlGpio), new PwmOutputDevice(rightMotorPwmGpio));
+				new DigitalOutputDevice(motorBCounterClockwiseControlGpio), new PwmOutputDevice(motorBPwmGpio));
 	}
 
 	public TB6612FNGDualMotorDriver(PwmOutputDeviceFactoryInterface pwmDeviceFactory, int motorAClockwiseControlGpio,

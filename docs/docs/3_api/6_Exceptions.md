@@ -19,8 +19,8 @@ Broadly, RuntimeIOException is thrown as a result of the following incomplete li
 
 * General - any file IOException gets rethrown as a wrapped RuntimeIOException
 * General - any errors returned from the native C library (status value < 0)
-* BME280 - if the I2C device at the specified address does not report the correct device id when reading the ID register
-* McpEeprom - if an I2C probe doesn’t detect the device at the specified address
+* BME280 - if the I<sup>2</sup>C device at the specified address does not report the correct device id when reading the ID register
+* McpEeprom - if an I<sup>2</sup>C probe doesn’t detect the device at the specified address
 * W1ThermSensor - if the contents of the kernel file do not match what is expected
 * SysFsAnalogInputDevice - if there is a NumberFormatException reading the kernel file (that is already a runtime unchecked exception so I could just let that one propagate)
 
@@ -42,7 +42,7 @@ diozero DeviceAlreadyOpenedException
 : An attempt to open a device that is already provisioned and open
 
 diozero DeviceBusyException
-: I2C specific error (-16 EBUSY)
+: I<sup>2</sup>C specific error (-16 EBUSY)
 
 diozero NoSuchDeviceException:
 : If the requested device isn't found

@@ -49,10 +49,10 @@ public abstract class RobotTest implements AutoCloseable {
 	private static final int IR_SENSOR_LEFT_PIN = 24;
 	private static final int IR_SENSOR_CENTRE_PIN = 23;
 	private static final int IR_SENSOR_RIGHT_PIN = 25;
-	
+
 	private static final int HCSR04_TRIGGER_PIN = 26;
 	private static final int HCSR04_ECHO_PIN = 4;
-	
+
 	private LED frontLeftLed;
 	private LED frontRightLed;
 	private LED rearLeftLed;
@@ -68,43 +68,49 @@ public abstract class RobotTest implements AutoCloseable {
 		frontRightLed = new LED(LED_FRONT_RIGHT_PIN, true);
 		rearLeftLed = new LED(LED_REAR_LEFT_PIN, true);
 		rearRightLed = new LED(LED_REAR_RIGHT_PIN, true);
-	
+
 		leftIrSensor = new DigitalInputDevice(IR_SENSOR_LEFT_PIN);
 		centreIrSensor = new DigitalInputDevice(IR_SENSOR_CENTRE_PIN);
 		rightIrSensor = new DigitalInputDevice(IR_SENSOR_RIGHT_PIN);
-		
+
 		hcsr04 = new HCSR04(HCSR04_TRIGGER_PIN, HCSR04_ECHO_PIN);
-			
+
 		this.dualMotor = dualMotor;
-		dualMotor.getLeftMotor().addListener((event) -> {
+		dualMotor.getMotorA().addListener((event) -> {
 			float value = event.getValue();
 			if (value > 0) {
-				frontLeftLed.on(); rearLeftLed.off();
+				frontLeftLed.on();
+				rearLeftLed.off();
 			} else if (value < 0) {
-				frontLeftLed.off(); rearLeftLed.on();
+				frontLeftLed.off();
+				rearLeftLed.on();
 			} else {
-				frontLeftLed.off(); rearLeftLed.off();
+				frontLeftLed.off();
+				rearLeftLed.off();
 			}
 		});
-		dualMotor.getRightMotor().addListener((event) -> {
+		dualMotor.getMotorB().addListener((event) -> {
 			float value = event.getValue();
 			if (value > 0) {
-				frontRightLed.on(); rearRightLed.off();
+				frontRightLed.on();
+				rearRightLed.off();
 			} else if (value < 0) {
-				frontRightLed.off(); rearRightLed.on();
+				frontRightLed.off();
+				rearRightLed.on();
 			} else {
-				frontRightLed.off(); rearRightLed.off();
+				frontRightLed.off();
+				rearRightLed.off();
 			}
 		});
-		
+
 		frontLeftLed.blink(0.25f, 0.25f, 1, false);
 		frontRightLed.blink(0.25f, 0.25f, 1, false);
 		rearRightLed.blink(0.25f, 0.25f, 1, false);
 		rearLeftLed.blink(0.25f, 0.25f, 1, false);
-		
+
 		Logger.info("Ready");
 	}
-	
+
 	public void testMovements(float speed, float delay) {
 		dualMotor.forwardRight(speed);
 		SleepUtil.sleepSeconds(delay);
@@ -135,7 +141,7 @@ public abstract class RobotTest implements AutoCloseable {
 		dualMotor.stop();
 		SleepUtil.sleepSeconds(delay);
 	}
-	
+
 	public void go() {
 	}
 

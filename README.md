@@ -1,4 +1,4 @@
-# diozero - a Java Device I/O wrapper for GPIO / I2C / SPI control
+# diozero - a Java Device I/O wrapper for GPIO / I<sup>2</sup>C / SPI control
 
 [![Maven CI Build](https://github.com/mattjlewis/diozero/actions/workflows/build.yml/badge.svg)](https://github.com/mattjlewis/diozero/actions/workflows/build.yml)
 [![Maven Central Status](https://img.shields.io/maven-central/v/com.diozero/diozero.svg)](https://search.maven.org/search?q=g:com.diozero)
@@ -6,8 +6,8 @@
 [![Javadoc](https://www.javadoc.io/badge/com.diozero/diozero-core.svg)](https://www.javadoc.io/doc/com.diozero/diozero-core)
 
 A Device I/O library written in Java that provides an object-orientated interface for a range of 
-GPIO / I2C / SPI devices (LEDs, buttons, sensors, motors, displays, etc) connected to Single 
-Board Computers like the Raspberry Pi. Actual GPIO / I2C / SPI device communication is delegated 
+GPIO / I<sup>2</sup>C / SPI devices (LEDs, buttons, sensors, motors, displays, etc) connected to Single 
+Board Computers like the Raspberry Pi. Actual GPIO / I<sup>2</sup>C / SPI device communication is delegated 
 to pluggable service providers for maximum compatibility across different boards. This library is 
 known to work on the following boards: all models of the Raspberry Pi, Odroid C2, BeagleBone 
 (Green and Black), C.H.I.P and ASUS Tinker Board. It should be portable to any Single Board computer that 

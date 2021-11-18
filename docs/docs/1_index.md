@@ -14,10 +14,12 @@ redirect_from:
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Javadoc](https://www.javadoc.io/badge/com.diozero/diozero-core.svg)](https://www.javadoc.io/doc/com.diozero/diozero-core)
 
-A Device I/O library implemented in Java that is portable across Single Board Computers to
-provide an intuitive and frictionless way to get started with physical computing.
+A device I/O library implemented in Java that is portable across Single Board Computers and
+micro-controllers to provide an intuitive and frictionless way to get started with physical
+computing.
 
 Example:
+
 ```java
 try (LED led = new LED(18)) {
   led.on();
@@ -29,6 +31,7 @@ try (LED led = new LED(18)) {
 ```
 
 Components can easily be connected together, e.g.:
+
 ```java
 try (Button button = new Button(12); LED led = new LED(18)) {
   button.whenPressed(nanoTime -> led.on();
@@ -37,9 +40,9 @@ try (Button button = new Button(12); LED led = new LED(18)) {
 }
 ```
 
-As well as providing interfaces for interacing directly with physical hardware (i.e.
+As well as providing APIs for interfacing directly with physical hardware (i.e.
 [GPIO](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/DigitalOutputDevice.java),
-[I2C](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/I2CDevice.java),
+[I<sup>2</sup>C](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/I2CDevice.java),
 [SPI](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/SpiDevice.java) and
 [Serial](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/api/SerialDevice.java)),
 diozero also provides support for simple devices including [LDRs](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/devices/LDR.java),
@@ -57,7 +60,9 @@ to simplify development and improve code readability.
 
 ## Supported Boards
 
-diozero has out of the box support for the following Single Board Computers and micro-controllers:
+diozero has built-in support for the following Single Board Computers and micro-controllers. Its
+adoption of common userspace APIs means that it _should_ work on all SBCs that can run Linux and all
+micro-controllers that can support the [Firmata protocol](https://github.com/firmata/protocol).
 
 * [Raspberry Pi](https://www.raspberrypi.org/) (_all_ versions + tested on Raspberry Pi OS 32-bit and 64-bit as well as Ubuntu Server 64-bit).
 * [Odroid C2](https://wiki.odroid.com/odroid-c2/odroid-c2) (Armbian 64-bit).
@@ -66,15 +71,20 @@ diozero has out of the box support for the following Single Board Computers and 
 * [Allwinner H3](https://linux-sunxi.org/H3) boards, including [NanoPi Neo](https://www.friendlyarm.com/index.php?route=product/product&product_id=132) and [NanoPi Duo](https://www.friendlyarm.com/index.php?route=product/product&product_id=244) (Armbian 32-bit).
 * OrangePi [Zero+](http://www.orangepi.org/OrangePiZeroPlus/) ([Allwinner H5](https://linux-sunxi.org/H5)) / [One+](http://www.orangepi.org/OrangePiOneplus/) ([Allwinner H6](https://linux-sunxi.org/H6))
 * [The Next Thing Co CHIP](https://getchip.com/pages/chip).
-* [Arduino compatible](https://www.arduino.cc) (any device that can run [Firmata](https://github.com/firmata/arduino/blob/master/examples/StandardFirmata/StandardFirmata.ino)).
-* Raspberry Pi Pico via Firmata over serial.
-* [ESP8266](https://www.espressif.com/en/products/socs/esp8266) (via Firmata over Serial, BLE or WiFi).
+* [Arduino compatible](https://www.arduino.cc) (any device that can run [Firmata](http://firmatabuilder.com)).
+* [Raspberry Pi Pico](https://www.raspberrypi.com/products/raspberry-pi-pico/) (Firmata over serial).
+* [ESP8266](https://www.espressif.com/en/products/socs/esp8266) (via Firmata over Serial, Bluetooth or WiFi).
 * [ESP32](https://www.espressif.com/en/products/socs/esp32) (Firmata).
 * [Particle Spark](https://docs.particle.io/datasheets/discontinued/core-datasheet/) (using [Voodoo Spark](https://github.com/voodootikigod/voodoospark)).
 
-## Maven Dependency / Download Link
+## Usage
 
-Maven dependency:
+diozero requires Java 8 or later - it has been tested on all JDKs from Java 8 through to 17. Most
+use cases will only require the diozero-core JAR file which has just one other dependency -
+[tinylog](https://tinylog.org/v2/).
+
+The best way to use diozero is via a Maven dependency:
+
 ```xml
 <dependency>
     <groupId>com.diozero</groupId>
@@ -83,7 +93,9 @@ Maven dependency:
 </dependency>
 ```
 
-Create your own application using the diozero-application Maven archetype:
+You can initialise your own application using the `diozero-application`
+[Maven archetype](https://maven.apache.org/guides/introduction/introduction-to-archetypes.html):
+
 ```
 mvn archetype:generate -DinteractiveMode=false \
   -DarchetypeGroupId=com.diozero \
@@ -94,8 +106,9 @@ mvn archetype:generate -DinteractiveMode=false \
   -Dversion=1.0-SNAPSHOT
 ```
 
-A distribution ZIP file containing all JARs and their dependencies is also available via [Maven Central](https://search.maven.org/) -
-locate [com.diozero:diozero-distribution](https://search.maven.org/artifact/com.diozero/diozero-distribution),
+A full distribution ZIP file containing all JARs and associated dependencies is also available from
+[Maven Central](https://search.maven.org/) - locate
+[com.diozero:diozero-distribution](https://search.maven.org/artifact/com.diozero/diozero-distribution),
 select a version and click the "[bin.zip](https://search.maven.org/remotecontent?filepath=com/diozero/diozero-distribution/{{ site.version }}/diozero-distribution-{{ site.version }}-bin.zip)" option in the Downloads link top right.
 It is also available in [mvnrepository](https://mvnrepository.com/) by locating [diozero-distribution](https://mvnrepository.com/artifact/com.diozero/diozero-distribution), selecting a version and clicking the Files [View All](https://repo1.maven.org/maven2/com/diozero/diozero-distribution/{{ site.version }}) link.
 
@@ -108,8 +121,8 @@ It is also available in [mvnrepository](https://mvnrepository.com/) by locating 
 ## Development
 
 Created by [Matt Lewis](https://github.com/mattjlewis) (email [deviceiozero@gmail.com](mailto:deviceiozero@gmail.com))
-([blog](https://diozero.blogspot.co.uk/)), 
-inspired by [GPIO Zero](https://gpiozero.readthedocs.org/) and [Johnny Five](http://johnny-five.io/). 
+([blog](https://diozero.blogspot.co.uk/)), inspired by [GPIO Zero](https://gpiozero.readthedocs.org/)
+and [Johnny Five](http://johnny-five.io/). 
 If you have any issues, comments or suggestions please use the [GitHub issues page](https://github.com/mattjlewis/diozero/issues).
 
 This project is hosted on [GitHub](https://github.com/mattjlewis/diozero/), please feel free to join in:
@@ -124,8 +137,8 @@ This work is provided under the [MIT License](https://github.com/mattjlewis/dioz
 
 ## Credits
 
-* pigpio
-* gpoizero
-* Johnny Five
-* rpi_ws281x
+* [pigpio](https://abyz.me.uk/rpi/pigpio/)
+* [gpiozero](https://gpiozero.readthedocs.io/en/stable/)
+* [Johnny Five](http://johnny-five.io)
+* [rpi_ws281x](https://github.com/jgarff/rpi_ws281x)
 * Many more...

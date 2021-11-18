@@ -110,6 +110,7 @@ public class DiozeroScheduler {
 	private DiozeroScheduler(boolean daemon) {
 		threadFactory = new DaemonThreadFactory(daemon);
 		scheduler = Executors.newScheduledThreadPool(0, threadFactory);
+		// Note pool size is 0 and keepAliveTime is 0 to prevent shutdown delays
 		executor = new ThreadPoolExecutor(0, Integer.MAX_VALUE, 0, TimeUnit.SECONDS, new SynchronousQueue<Runnable>());
 	}
 

@@ -56,7 +56,7 @@ the following devices:
 
 * Arduino Uno (Serial)
 * Pololu A-Star 32U4 (Serial)
-* Raspberry Pi Pico (\*required some minor tweaks) (Serial)
+* Raspberry Pi Pico (\* some minor tweaks required) (Serial)
 * ESP8266 (Serial, BLE & WiFi)
 * [ESP32](https://www.espressif.com/en/products/socs/esp32) (Serial, BLE & WiFi) - requires latest ConfigurableFirmata
 

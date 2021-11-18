@@ -7,7 +7,7 @@ has_children: true
 
 # Concepts
 
-diozero is a multi-faceted “library” for interacting with low-level devices such as environmental
+diozero is a multi-faceted library for interacting with low-level devices such as environmental
 sensors and GPIOs. It achieves this via object-oriented APIs that abstract developers from the
 complexities of low-level device interface code. An initial motivation to developing diozero
 was to provide a Java equivalent to the excellent Python [gpiozero](https://gpiozero.readthedocs.io/)
@@ -18,21 +18,22 @@ displays, etc) as classes with meaningful operation names, for example, LED (on 
 (get luminosity), Button (pressed / released), Motor (forward / backwards / left / right).
 
 This library is known to work on the following boards: all models of the Raspberry Pi, Odroid C2,
-BeagleBone (Green and Black), Next Thing C.H.I.P and ASUS Tinker Board and is portable to any
-Single Board Computer that can run Linux and Java 8.
+BeagleBone (Green and Black), AllWinner H3 / H5 and H6 CPUs, Next Thing C.H.I.P and ASUS Tinker Board.
+It is portable to any Single Board Computer that can run Linux and Java 8 as well as any
+micro-controller with Firmata protocol support.
 
 {: .note-title }
 > Pin Numbering 
 >
 > All pin numbers are device native, i.e. Broadcom for the Raspberry Pi, ASUS for the Tinker Board. Pin layouts:
 > 
-> * [Raspberry pi](https://pinout.xyz/).
-> * [CHIP pin numbering](http://www.chip-community.org/index.php/Hardware_Information).
-> * [Odroid C2 pin layout](https://wiki.odroid.com/odroid-c2/hardware/expansion_connectors).
-> * [BeagleBone Black](http://beagleboard.org/support/bone101#headers).
-> * [ASUS Tinker Board](https://www.asus.com/uk/motherboards-components/single-board-computer/all-series/tinker-board/#tinker-board-Hardware).
+> * [Raspberry pi](https://pinout.xyz/)
+> * [C.H.I.P.](http://www.chip-community.org/index.php/Hardware_Information)
+> * [Odroid C2](https://wiki.odroid.com/odroid-c2/hardware/expansion_connectors)
+> * [BeagleBone Black](http://beagleboard.org/support/bone101#headers)
+> * [ASUS Tinker Board](https://www.asus.com/uk/motherboards-components/single-board-computer/all-series/tinker-board/#tinker-board-Hardware)
 
-diozero implements a layered architecture so as to provide maximum portability:
+diozero implements a layered architecture to provide maximum portability:
 
 ![diozero layers](/assets/images/Layers.png "diozero layers")
 
@@ -42,19 +43,19 @@ package that are designed to represent physical devices, such as an LED, and are
 diozero applications.
 All of the classes in [com.diozero.devices](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/com/diozero/devices/package-summary.html)
 rely exclusively on the [com.diozero.api](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/com/diozero/api/package-summary.html)
-package for GPIO, I2C, SPI, and Serial communication.
+package for GPIO, I<sup>2</sup>C, SPI, and Serial communication.
 
 [Base I/O API](3_API.md)
 : Classes and interfaces in the [com.diozero.api](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/com/diozero/api/package-summary.html)
-package for doing GPIO, I2C, SPI, and Serial communication. These classes make use of the Provider
+package for doing GPIO, I<sup>2</sup>C, SPI, and Serial communication. These classes make use of the 
 Service Provider Interface layer in the [com.diozero.internal.spi](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/com/diozero/internal/spi/package-summary.html)
 package for actual device communication.
 
 [Provider](2_concepts/1_Providers.md)
-: All GPIO, I2C, SPI, and Serial device communication is delegated to pluggable device providers
+: All GPIO, I<sup>2</sup>C, SPI, and Serial device communication is delegated to pluggable device providers
 for maximum compatibility across different boards.
 The Provider layer is split into two separate aspects (see the
-[Providers](2_concepts/1_Providers.md#providers) section for additional details):
+[Providers](2_concepts/1_Providers.md#providers) section for further details):
 1. The Service Provider Interface ([com.diozero.internal.spi](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/com/diozero/internal/spi/package-summary.html)), and
 1. Service provider implementations, e.g. the default built-in provider ([com.diozero.internal.provider.builtin](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/com/diozero/internal/provider/builtin/package-summary.html)). 
 

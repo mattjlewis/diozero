@@ -68,11 +68,11 @@ public class SerialDevice implements SerialConstants, SerialDeviceInterface {
 	 * The following fields are supported:
 	 * </p>
 	 * <dl>
+	 * <dt>deviceName</dt>
+	 * <dd>generally a subset of deviceFile, e.g., ttyACM0</dd>
 	 * <dt>deviceFile</dt>
 	 * <dd>the file system name for a serial device, e.g., /dev/ttyACM0 /dev/ttyS0,
 	 * /dev/ttyAMA0</dd>
-	 * <dt>deviceName</dt>
-	 * <dd>generally a subset of deviceFile, e.g., ttyACM0</dd>
 	 * <dt>description</dt>
 	 * <dd>human readable, and theoretically unique, text that identifies the device
 	 * attached to a serial port, e.g., Pololu A-Star 32U4; can be generic, e.g.,
@@ -143,7 +143,7 @@ public class SerialDevice implements SerialConstants, SerialDeviceInterface {
 	/**
 	 * Attempt to discover the locally attached serial devices using Linux device
 	 * tree.
-	 * 
+	 *
 	 * @return A list of locally attached devices
 	 */
 	public static List<DeviceInfo> getLocalSerialDevices() {
@@ -159,16 +159,16 @@ public class SerialDevice implements SerialConstants, SerialDeviceInterface {
 		 * ./virtual/tty
 		 * ./virtual/tty/tty58
 		 * ...
-		 * 
+		 *
 		 * > ls -l /sys/devices/platform/soc/fe201000.serial/driver
 		 * /sys/devices/platform/soc/fe201000.serial/driver -> ../../../../bus/amba/drivers/uart-pl011
-		 * 
+		 *
 		 * > find . -name product
 		 * ./platform/scb/fd500000.pcie/pci0000:00/0000:00:00.0/0000:01:00.0/usb1/product
 		 * ./platform/scb/fd500000.pcie/pci0000:00/0000:00:00.0/0000:01:00.0/usb1/1-1/product
 		 * ./platform/scb/fd500000.pcie/pci0000:00/0000:00:00.0/0000:01:00.0/usb1/1-1/1-1.2/product
 		 * ./platform/scb/fd500000.pcie/pci0000:00/0000:00:00.0/0000:01:00.0/usb2/product
-		 * 
+		 *
 		 * For USB connected devices, the main files are under /sys/devices/platform/scb/<xxx.pcie>/.../usbx
 		 * Search for a directory that starts with "tty" and is more than 3 characters in length
 		 * Standard is 7 characters I think - ttyYYYN where YYY is something like USB|ACM|AMA and N is the instance number
@@ -178,11 +178,11 @@ public class SerialDevice implements SerialConstants, SerialDeviceInterface {
 		 * product (e.g. "USB2.0-Serial")
 		 * idVendor (e.g. "1a86")
 		 * idProduct (e.g. "7523")
-		 * 
+		 *
 		 * Look up idVendor and idProduct in the USB id database /var/lib/usbutils/usb.ids
 		 * vendorId "1a86" == "QinHeng Electronics"
 		 * For this vendorId, productId "7523" == "CH340 serial converter"
-		 * 
+		 *
 		 * Also:
 		 *  /dev/ttyACM0 (Abstract Control Module), e.g.:
 		 *   Pololu_A-Star_32U4 : Pololu_Corporation : Pololu_Corporation_Pololu_A-Star_32U4
@@ -294,7 +294,7 @@ public class SerialDevice implements SerialConstants, SerialDeviceInterface {
 	 * <li>stopBits: {@link SerialConstants#DEFAULT_STOP_BITS}</li>
 	 * <li>parity: {@link SerialConstants#DEFAULT_PARITY}</li>
 	 * </ul>
-	 * 
+	 *
 	 * The <a href="https://man7.org/linux/man-pages/man3/termios.3.html">termios
 	 * man page</a> provide more detail on these options. Note that the serial
 	 * device is opened in non-canonical mode so that "<em>input is available
@@ -313,11 +313,6 @@ public class SerialDevice implements SerialConstants, SerialDeviceInterface {
 
 		protected Builder(String deviceFilename) {
 			this.deviceFilename = deviceFilename;
-		}
-
-		public Builder setDeviceFilename(String deviceFilename) {
-			this.deviceFilename = deviceFilename;
-			return this;
 		}
 
 		public Builder setBaud(int baud) {
@@ -438,7 +433,7 @@ public class SerialDevice implements SerialConstants, SerialDeviceInterface {
 
 	/**
 	 * Get the device filename
-	 * 
+	 *
 	 * @return the device filename, e.g. /dev/ttyUSB0
 	 */
 	public String getDeviceFilename() {
@@ -505,13 +500,13 @@ public class SerialDevice implements SerialConstants, SerialDeviceInterface {
 	}
 }
 /*-
- * Parked text 
+ * Parked text
  * <li>readBlocking: {@link SerialConstants#DEFAULT_READ_BLOCKING}</li>
  * <li>minReadChars: {@link SerialConstants#DEFAULT_MIN_READ_CHARS}</li>
  * <li>readTimeoutMillis: {@link SerialConstants#DEFAULT_READ_TIMEOUT_MILLIS}</li>
- * 
+ *
  * Translating the information on the termios man page to diozero:
- * 
+ *
  * The settings of minReadChars and readTimeoutMillis determine the circumstances in which a read(2) completes;
  * there are four distinct cases:
  * <dl>
@@ -521,14 +516,14 @@ public class SerialDevice implements SerialConstants, SerialDeviceInterface {
  *
  * <dt>2) minReadChars > 0, readTimeoutMillis == 0 (blocking read)</dt>
  *    <dd>read(2) blocks until minReadChars bytes are available, and returns up to the number of bytes requested.</dd>
- * 
+ *
  * <dt>3) minReadChars == 0, readTimeoutMillis > 0 (read with timeout)</dt>
  *    <dd>TIME specifies the limit for a timer in millis (converted to tenths of a second).
  *    The timer is started when read(2) is called. read(2) returns either when at least one byte of data is
  *    available, or when the timer expires. If the timer expires without any input becoming available, read(2)
  *    returns 0. If data is already available at the time of the call to read(2), the call behaves as though
  *    the data was received immediately after the call.</dd>
- * 
+ *
  * <dt>4) minReadChars > 0, readTimeoutMillis > 0 (read with interbyte timeout)</dt>
  *    <dd>readTimeoutMillis specifies the limit for a timer in tenths of a second. Once an initial byte of input
  *    becomes available, the timer is restarted after each further byte is received.
@@ -541,7 +536,7 @@ public class SerialDevice implements SerialConstants, SerialDeviceInterface {
  *      </ul>
  *    </dd>
  * </dl>
- * 
+ *
  * Because the timer is started only after the initial byte becomes available, at least one byte will be read.
  * If data is already available at the time of the call to read(2), the call behaves as though the data was
  * received immediately after the call.

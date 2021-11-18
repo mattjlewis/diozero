@@ -17,5 +17,5 @@ Supported features:
 * Digital & analog events with [configurable sampling interval](https://github.com/firmata/protocol/blob/master/protocol.md#sampling-interval)
 * PWM output
 * [Servo](https://github.com/firmata/protocol/blob/master/servos.md)
-* [I2C](https://github.com/firmata/protocol/blob/master/i2c.md)
+* [I<sup>2</sup>C](https://github.com/firmata/protocol/blob/master/i2c.md)
 * [Scheduler](https://github.com/firmata/protocol/blob/master/scheduler.md)

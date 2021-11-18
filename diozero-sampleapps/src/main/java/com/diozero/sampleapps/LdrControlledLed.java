@@ -37,6 +37,7 @@ import com.diozero.api.RuntimeIOException;
 import com.diozero.devices.LDR;
 import com.diozero.devices.McpAdc;
 import com.diozero.devices.PwmLed;
+import com.diozero.internal.spi.AnalogInputDeviceFactoryInterface;
 import com.diozero.util.SleepUtil;
 
 /**
@@ -73,7 +74,7 @@ public class LdrControlledLed {
 	}
 
 	public static void test(McpAdc.Type type, int chipSelect, int pin, float vRef, int r1, int ledPin) {
-		try (McpAdc adc = new McpAdc(type, chipSelect, vRef);
+		try (AnalogInputDeviceFactoryInterface adc = new McpAdc(type, chipSelect, vRef);
 				LDR ldr = new LDR(adc, pin, r1);
 				PwmLed led = new PwmLed(ledPin)) {
 			// Detect variations of 5%, poll every 20ms

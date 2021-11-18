@@ -70,6 +70,7 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 	public static final String MODEL_ZERO = "Zero";
 	public static final String COMPUTE_MODULE_3 = "CM3";
 	public static final String MODEL_ZERO_W = "ZeroW";
+	public static final String MODEL_ZERO_W_2 = "ZeroW2";
 	public static final String MODEL_3B_PLUS = "3B+";
 	public static final String MODEL_3A_PLUS = "3A+";
 	public static final String COMPUTE_MODULE_3_PLUS = "CM3+";
@@ -95,6 +96,7 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 		MODELS.put(Integer.valueOf(0xe), MODEL_3A_PLUS);
 		MODELS.put(Integer.valueOf(0x10), COMPUTE_MODULE_3_PLUS);
 		MODELS.put(Integer.valueOf(0x11), MODEL_4B);
+		MODELS.put(Integer.valueOf(0x12), MODEL_ZERO_W_2);
 		MODELS.put(Integer.valueOf(0x13), MODEL_400);
 		MODELS.put(Integer.valueOf(0x14), COMPUTE_MODULE_4);
 	}

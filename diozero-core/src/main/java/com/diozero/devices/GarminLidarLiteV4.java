@@ -35,15 +35,17 @@ import java.nio.ByteOrder;
 
 import org.tinylog.Logger;
 
-import com.diozero.api.DeviceInterface;
 import com.diozero.api.I2CDevice;
 import com.diozero.api.RuntimeIOException;
+import com.diozero.api.RuntimeInterruptedException;
 import com.diozero.util.BitManipulation;
 
 /**
  * Full credit: https://github.com/garmin/LIDARLite_Arduino_Library
  */
-public class GarminLidarLiteV4 implements DeviceInterface {
+public class GarminLidarLiteV4 implements DistanceSensorInterface {
+	private static final int DEFAULT_ADDRESS = 0x62;
+
 	public static final int HARDWARE_REV_A = 0x10;
 	public static final int HARDWARE_REV_B = 0x08;
 
@@ -60,7 +62,7 @@ public class GarminLidarLiteV4 implements DeviceInterface {
 			return value;
 		}
 
-		public static HardwareRevision valueOf(int value) {
+		public static HardwareRevision of(int value) {
 			HardwareRevision rev;
 			switch (value) {
 			case HARDWARE_REV_A:
@@ -131,8 +133,18 @@ public class GarminLidarLiteV4 implements DeviceInterface {
 	}
 
 	public enum Preset {
-		MAXIMUM_RANGE(255, false), BALANCED(128, false), SHORT_RANGE_HIGH_SPEED(24, true),
-		MID_RANGE_HIGH_SPEED(128, true), MAX_RANGE_HIGH_SPEED(255, true), VERY_SHORT_RANGE_HIGH_SPEED(4, true);
+		/** Max acquisition count: 255; quick termination disabled */
+		MAXIMUM_RANGE(255, false),
+		/** Max acquisition count: 128; quick termination disabled */
+		BALANCED(128, false),
+		/** Max acquisition count: 24; quick termination enabled */
+		SHORT_RANGE_HIGH_SPEED(24, true),
+		/** Max acquisition count: 128; quick termination enabled */
+		MID_RANGE_HIGH_SPEED(128, true),
+		/** Max acquisition count: 255; quick termination enabled */
+		MAX_RANGE_HIGH_SPEED(255, true),
+		/** Max acquisition count: 4; quick termination enabled */
+		VERY_SHORT_RANGE_HIGH_SPEED(4, true);
 
 		private int maxAcquisitionCount;
 		private boolean quickTerminationEnabled;
@@ -150,8 +162,6 @@ public class GarminLidarLiteV4 implements DeviceInterface {
 			return quickTerminationEnabled;
 		}
 	}
-
-	private static final int DEFAULT_ADDRESS = 0x62;
 
 	// Register address
 	/** Device command (W) */
@@ -704,7 +714,7 @@ public class GarminLidarLiteV4 implements DeviceInterface {
 	 * "https://github.com/garmin/LIDARLite_Arduino_Library/blob/master/src/LIDARLite_v4LED.cpp#L55">configure</a>
 	 * function.
 	 *
-	 * @param preset
+	 * @param preset preset max acquisition count and quick termination values
 	 */
 	public void configure(Preset preset) {
 		setMaximumAcquisitionCount(preset.getMaxAcquisitionCount());
@@ -726,19 +736,28 @@ public class GarminLidarLiteV4 implements DeviceInterface {
 	 * @return distance in centimetres
 	 * @throws InterruptedException if interrupted while taking the reading
 	 */
-	public int getSingleReading() throws InterruptedException {
+	public int getSingleReading() throws RuntimeInterruptedException {
 		device.writeByteData(ACQ_COMMANDS, RECEIVER_BIAS_CORRECTION_ENABLED);
-		long start_ms = System.currentTimeMillis();
-		while (true) {
-			if (!isDeviceBusy()) {
-				break;
+		try {
+			long start_ms = System.currentTimeMillis();
+			while (true) {
+				if (!isDeviceBusy()) {
+					break;
+				}
+				Thread.sleep(1);
 			}
-			Thread.sleep(5);
-		}
-		int duration_ms = (int) (System.currentTimeMillis() - start_ms);
-		Logger.debug("Took {} ms for reading to become available", Integer.valueOf(duration_ms));
+			int duration_ms = (int) (System.currentTimeMillis() - start_ms);
+			Logger.debug("Took {} ms for reading to become available", Integer.valueOf(duration_ms));
 
-		return getDistanceMeasurement();
+			return getDistanceMeasurement();
+		} catch (InterruptedException e) {
+			return -1;
+		}
+	}
+
+	@Override
+	public float getDistanceCm() throws RuntimeIOException {
+		return getSingleReading();
 	}
 
 	@Override

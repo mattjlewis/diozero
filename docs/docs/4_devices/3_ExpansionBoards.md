@@ -43,7 +43,7 @@ Usage example: An LDR controlled LED (using a 10k&#8486; resistor for the LDR an
 Code for the above circuit is implemented in [LdrControlledLed](https://github.com/mattjlewis/diozero/blob/master/diozero-sampleapps/src/main/java/com/diozero/sampleapps/LdrControlledLed.java), the important bit:
 
 ```java
-try (McpAdc adc = new McpAdc(type, chipSelect); LDR ldr = new LDR(adc, pin, vRef, r1); PwmLed led = new PwmLed(ledPin)) {
+try (McpAdc adc = new McpAdc(type, chipSelect); LDR ldr = new LDR(adc, pin, r1); PwmLed led = new PwmLed(ledPin)) {
 	// Detect variations of 5%, taking a reading every 20ms
 	ldr.addListener((event) -> led.setValue(1-event.getUnscaledValue()), .05f, 20);
 	Logger.debug("Sleeping for 20s");

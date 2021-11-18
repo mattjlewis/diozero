@@ -55,6 +55,7 @@ import com.diozero.internal.provider.firmata.adapter.FirmataAdapter;
 import com.diozero.internal.provider.firmata.adapter.FirmataEventListener;
 import com.diozero.internal.provider.firmata.adapter.FirmataProtocol.PinCapability;
 import com.diozero.internal.provider.firmata.adapter.FirmataProtocol.PinMode;
+import com.diozero.internal.provider.firmata.adapter.FirmataTransport;
 import com.diozero.internal.provider.firmata.adapter.SerialFirmataTransport;
 import com.diozero.internal.provider.firmata.adapter.SocketFirmataTransport;
 import com.diozero.internal.spi.AbstractDevice;
@@ -96,6 +97,41 @@ public class FirmataDeviceFactory extends BaseNativeDeviceFactory implements Fir
 	private FirmataAdapter adapter;
 
 	@SuppressWarnings("resource")
+	public static FirmataDeviceFactory newSerialInstance(String serialPortName) {
+		SerialDevice.DataBits data_bits = SerialConstants.DEFAULT_DATA_BITS;
+		String val = PropertyUtil.getProperty(SERIAL_DATA_BITS_PROP, null);
+		if (val != null) {
+			data_bits = SerialDevice.DataBits.valueOf(val.trim());
+		}
+
+		SerialDevice.StopBits stop_bits = SerialConstants.DEFAULT_STOP_BITS;
+		val = PropertyUtil.getProperty(SERIAL_STOP_BITS_PROP, null);
+		if (val != null) {
+			stop_bits = SerialDevice.StopBits.valueOf(val.trim());
+		}
+
+		SerialDevice.Parity parity = SerialConstants.DEFAULT_PARITY;
+		val = PropertyUtil.getProperty(SERIAL_PARITY_PROP, null);
+		if (val != null) {
+			parity = SerialDevice.Parity.valueOf(val.trim());
+		}
+
+		return new FirmataDeviceFactory(new SerialFirmataTransport(serialPortName,
+				PropertyUtil.getIntProperty(SERIAL_BAUD_PROP, SerialConstants.BAUD_57600), data_bits, stop_bits, parity,
+				SerialConstants.DEFAULT_READ_BLOCKING, SerialConstants.DEFAULT_MIN_READ_CHARS,
+				SerialConstants.DEFAULT_READ_TIMEOUT_MILLIS));
+	}
+
+	public static FirmataDeviceFactory newSocketInstance(String hostname) {
+		return newSocketInstance(hostname, PropertyUtil.getIntProperty(TCP_PORT_PROP, DEFAULT_TCP_PORT));
+	}
+
+	@SuppressWarnings("resource")
+	public static FirmataDeviceFactory newSocketInstance(String hostname, int port) {
+		return new FirmataDeviceFactory(new SocketFirmataTransport(hostname, port));
+	}
+
+	@SuppressWarnings("resource")
 	public FirmataDeviceFactory() {
 		serialPortName = PropertyUtil.getProperty(SERIAL_PORT_PROP, null);
 		if (serialPortName == null) {
@@ -130,6 +166,10 @@ public class FirmataDeviceFactory extends BaseNativeDeviceFactory implements Fir
 					parity, SerialConstants.DEFAULT_READ_BLOCKING, SerialConstants.DEFAULT_MIN_READ_CHARS,
 					SerialConstants.DEFAULT_READ_TIMEOUT_MILLIS), this);
 		}
+	}
+
+	public FirmataDeviceFactory(FirmataTransport transport) {
+		this.adapter = new FirmataAdapter(transport, this);
 	}
 
 	@Override

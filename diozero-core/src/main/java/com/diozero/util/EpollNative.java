@@ -131,6 +131,7 @@ public class EpollNative implements EpollNativeCallback, AutoCloseable {
 	private void processEvents() {
 		Thread.currentThread().setName("diozero-EpollNative-processEvents-" + hashCode());
 
+		// TODO Can this be switched to a BlockingQueue?
 		while (running.get()) {
 			// Wait for an event on the queue
 			lock.lock();

@@ -2,7 +2,7 @@ FROM diozero/diozero-cc
 
 ARG HOME_DIR=/home/${RUN_AS_USER}
 
-RUN sudo apt update && sudo apt-get -y install scons
+RUN sudo apt-get update && sudo apt-get -y install scons
 
 #RUN sudo apt-get -y install python3-distutils
 RUN git clone https://github.com/jgarff/rpi_ws281x.git --depth 1

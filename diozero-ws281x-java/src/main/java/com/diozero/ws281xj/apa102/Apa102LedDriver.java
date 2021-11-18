@@ -42,6 +42,10 @@ import com.diozero.ws281xj.LedDriverInterface;
  * https://github.com/androidthings/contrib-drivers/blob/master/apa102/src/main/java/com/google/android/things/contrib/driver/apa102/Apa102.java
  */
 public class Apa102LedDriver implements LedDriverInterface {
+	private static final byte APA_START_DATA_BYTE = 0x00;
+	private static final byte APA_RESET_DATA_BYTE = 0x00;
+	private static final byte APA_END_DATA_BYTE = 0x00;
+
 	private SpiDevice device;
 	private int brightness;
 	private int[] leds;
@@ -83,6 +87,7 @@ public class Apa102LedDriver implements LedDriverInterface {
 	public void allOff() {
 		Arrays.fill(leds, 0);
 		Arrays.fill(spiBuffer, (byte) 0);
+		render();
 	}
 
 	@Override

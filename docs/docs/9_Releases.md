@@ -27,6 +27,10 @@ redirect_from:
 + BBB - fix PWM module lookup for all PWM numbers
 + Firmata scheduler support
 + Garmin LIDAR Lite v4
++ VL6180 time of flight sensor
++ Support multiple instances of remote device factories (pigpioJ, Firmata, gRPC)
++ I<sup>2</sup>C exceptions - throw an UnsupportedOperationException if the returned I2CFuncs
+indicate that the function isn't support; remote I/O response aren't retried
 
 ## 1.3.1
 
@@ -45,8 +49,8 @@ redirect_from:
 
 ## 1.3.0
 
-+ I2C read-write support with the pigpio provider (JNI and sockets) - pigpioj v2.5.9
-+ I2C read-write utility method
++ I<sup>2</sup>C read-write support with the pigpio provider (JNI and sockets) - pigpioj v2.5.9
++ I<sup>2</sup>C read-write utility method
 + Introduced diozero.util.Diozero as a more logical place for initialisation and shutdown utilities
 + Replace all of the diozero-remote protocol variants with just gRPC
 + Switch from Firmata4j to the Diozero Firmata implementation (to use the builtin serial library rather than java-native/JSSC)
@@ -96,7 +100,7 @@ redirect_from:
 ## 1.1.9
 
 + Tweaks to native library cross compilation
-+ #68 bug-fix for I2C on 64-bit systems
++ #68 bug-fix for I<sup>2</sup>C on 64-bit systems
 + Fix to SystemInformation coloured output with Jansi on armv6
 
 ## 1.1.8
@@ -134,13 +138,13 @@ redirect_from:
 
 ## 1.1.3
 
-+ Bugfix release - fix for I2C retry logic
++ Bugfix release - fix for I<sup>2</sup>C retry logic
 + GPIO event Epoch time is calculated from nano time
 
 ## 1.1.2
 
 + Bugfix release - fixes to GPIO
-+ I2C retries
++ I<sup>2</sup>C retries
 
 ## 1.1.1
 
@@ -184,20 +188,20 @@ redirect_from:
 + Optimised GPIO input interrupt handling.
 + Updated rpi_ws281x library.
 + Experimental support for 433MHz receivers.
-+ I2C detect capability.
++ I<sup>2</sup>C detect capability.
 
 ## 0.10
 
-+ Firmata I2C.
++ Firmata I<sup>2</sup>C.
 + Improvements to MFRC522.
 + SDL Joystick JNI wrapper library.
 + MFRC522 fully supported (finally).
 + Added support for MCP EEPROMs.
-+ I2C SMBus implementation in the internal sysfs provider.
++ I<sup>2</sup>C SMBus implementation in the internal sysfs provider.
 
 ## 0.9
 
-+ Native support for I2C and SPI in the sysfs provider.
++ Native support for I<sup>2</sup>C and SPI in the sysfs provider.
 + Support for CHIP, BeagleBone Black and ASUS Tinker Board.
 + Moved sysfs provider into diozero-core, use as the default provider.
 + Preliminary support for devices that support the Firmata protocol (i.e. Arduino).
@@ -210,7 +214,7 @@ redirect_from:
 
 ## 0.7
 
-+ Support for non-register based I2C device read / write.
++ Support for non-register based I<sup>2</sup>C device read / write.
 
 ## 0.6
 

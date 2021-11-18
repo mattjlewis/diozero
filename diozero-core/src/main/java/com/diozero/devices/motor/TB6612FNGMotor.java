@@ -46,9 +46,11 @@ import com.diozero.api.RuntimeIOException;
  *
  * <dl>
  * <dt>Turn forward</dt>
- * <dd>set pin 1 to HIGH, pin 2 to LOW, and PWM to &gt;0.</dd>
+ * <dd>Set motor forward control pin (AIN1) to HIGH, motor backward control pin
+ * (AIN2) to LOW, and PWMA to &gt;0.</dd>
  * <dt>Turn backward</dt>
- * <dd>set pin 1 to LOW, pin 2 to HIGH, PWM to &gt;0.</dd>
+ * <dd>Set motor forward control pin (AIN1) to LOW, motor backward control pin
+ * (AIN2) to HIGH, PWMA to &gt;0.</dd>
  * </dl>
  */
 public class TB6612FNGMotor extends MotorBase {

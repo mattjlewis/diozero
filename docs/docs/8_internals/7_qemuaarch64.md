@@ -146,8 +146,8 @@ setopt HIST_NO_STORE
 
 Install a [newer kernel version](https://jensd.be/968/linux/install-a-newer-kernel-in-debian-10-buster-stable) in Debian Buster.
 
-## Links
+## Links and References
 
-* https://blahcat.github.io/2018/01/07/building-a-debian-stretch-qemu-image-for-aarch64/
-* https://florianmuller.com/raspberry-development-environment-on-macosx-with-qemu
-* https://gist.github.com/humbertodias/6237f80df9a4bccf98be298057a82cf2
+* [Building a Debian Stretch QEMU Image for AArch64](https://blahcat.github.io/2018/01/07/building-a-debian-stretch-qemu-image-for-aarch64/)
+* [Raspberry Development Environment on MacOSX with QEMU](https://florianmuller.com/raspberry-development-environment-on-macosx-with-qemu)
+* [QEMU with ARM on Mac OSX](https://gist.github.com/humbertodias/6237f80df9a4bccf98be298057a82cf2)

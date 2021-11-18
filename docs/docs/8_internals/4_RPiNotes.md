@@ -69,7 +69,7 @@ setopt HIST_IGNORE_SPACE
 setopt HIST_NO_STORE
 ```
 
-## Check I2C Clock Speed
+## Check I<sup>2</sup>C Clock Speed
 
 ```shell
 #!/bin/sh

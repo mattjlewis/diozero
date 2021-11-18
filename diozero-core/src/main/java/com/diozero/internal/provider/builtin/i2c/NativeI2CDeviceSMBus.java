@@ -37,7 +37,7 @@ import com.diozero.api.DeviceBusyException;
 import com.diozero.api.I2CConstants;
 import com.diozero.api.I2CDevice;
 import com.diozero.api.I2CDeviceInterface;
-import com.diozero.api.RuntimeIOException;
+import com.diozero.api.I2CException;
 import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.DeviceFactoryInterface;
 import com.diozero.internal.spi.InternalI2CDeviceInterface;
@@ -91,14 +91,14 @@ public class NativeI2CDeviceSMBus extends AbstractDevice implements InternalI2CD
 			if (rc == -16) {
 				throw new DeviceBusyException("Error, I2C device " + getKey() + " is busy");
 			}
-			throw new RuntimeIOException(rc);
+			throw new I2CException("Error opening I2C device: " + rc, rc);
 		}
 		fd = rc;
 
 		rc = NativeI2C.getFuncs(fd);
 		if (rc < 0) {
 			close();
-			throw new RuntimeIOException("Error reading I2C_FUNCS for device " + getKey() + ": " + rc);
+			throw new I2CException("Error reading I2C_FUNCS for device " + getKey() + ": " + rc, rc);
 		}
 
 		funcs = rc;
@@ -151,207 +151,218 @@ public class NativeI2CDeviceSMBus extends AbstractDevice implements InternalI2CD
 	}
 
 	@Override
-	public void writeQuick(byte bit) {
+	public void writeQuick(byte bit) throws I2CException, UnsupportedOperationException {
 		if ((funcs & I2CDeviceInterface.I2C_FUNC_SMBUS_QUICK) == 0) {
 			Logger.warn("Function I2C_FUNC_SMBUS_QUICK isn't supported for device {}", getKey());
-			// TODO Throw an exception now or attempt anyway?
+			throw new UnsupportedOperationException(
+					"Function I2C_FUNC_SMBUS_QUICK isn't supported for device " + getKey());
 		}
 
 		int rc = EAGAIN;
-		for (int i = 0; i < numRetries && (rc == EAGAIN || rc == ETIMEDOUT || rc == EREMOTEIO); i++) {
+		for (int i = 0; i < numRetries && (rc == EAGAIN || rc == ETIMEDOUT); i++) {
 			rc = NativeI2C.writeQuick(fd, bit);
 		}
 
 		if (rc < 0) {
-			throw new RuntimeIOException("Error in SMBus.writeQuick for device " + getKey() + ": " + rc);
+			throw new I2CException("Error in SMBus.writeQuick for device " + getKey() + ": " + rc, rc);
 		}
 	}
 
 	@Override
-	public byte readByte() {
+	public byte readByte() throws I2CException, UnsupportedOperationException {
 		if ((funcs & I2CDeviceInterface.I2C_FUNC_SMBUS_READ_BYTE) == 0) {
 			Logger.warn("Function I2C_FUNC_SMBUS_READ_BYTE isn't supported for device {}", getKey());
-			// TODO Throw an exception now or attempt anyway?
+			throw new UnsupportedOperationException(
+					"Function I2C_FUNC_SMBUS_READ_BYTE isn't supported for device " + getKey());
 		}
 
 		int rc = EAGAIN;
-		for (int i = 0; i < numRetries && (rc == EAGAIN || rc == ETIMEDOUT || rc == EREMOTEIO); i++) {
+		for (int i = 0; i < numRetries && (rc == EAGAIN || rc == ETIMEDOUT); i++) {
 			rc = NativeI2C.readByte(fd);
 		}
 
 		if (rc < 0) {
-			throw new RuntimeIOException("Error in SMBus.readByte for device " + getKey() + ": " + rc);
+			throw new I2CException("Error in SMBus.readByte for device " + getKey() + ": " + rc, rc);
 		}
 
 		return (byte) rc;
 	}
 
 	@Override
-	public void writeByte(byte data) {
+	public void writeByte(byte data) throws I2CException, UnsupportedOperationException {
 		if ((funcs & I2CDeviceInterface.I2C_FUNC_SMBUS_WRITE_BYTE) == 0) {
 			Logger.warn("Function I2C_FUNC_SMBUS_WRITE_BYTE isn't supported for device {}", getKey());
-			// TODO Throw an exception now or attempt anyway?
+			throw new UnsupportedOperationException(
+					"Function I2C_FUNC_SMBUS_WRITE_BYTE isn't supported for device " + getKey());
 		}
 
 		int rc = EAGAIN;
-		for (int i = 0; i < numRetries && (rc == EAGAIN || rc == ETIMEDOUT || rc == EREMOTEIO); i++) {
+		for (int i = 0; i < numRetries && (rc == EAGAIN || rc == ETIMEDOUT); i++) {
 			rc = NativeI2C.writeByte(fd, data);
 		}
 
 		if (rc < 0) {
-			throw new RuntimeIOException("Error in SMBus.writeByte for device " + getKey() + ": " + rc);
+			throw new I2CException("Error in SMBus.writeByte for device " + getKey() + ": " + rc, rc);
 		}
 	}
 
 	@Override
-	public byte readByteData(int registerAddress) {
+	public byte readByteData(int registerAddress) throws I2CException, UnsupportedOperationException {
 		if ((funcs & I2CDeviceInterface.I2C_FUNC_SMBUS_READ_BYTE_DATA) == 0) {
 			Logger.warn("Function I2C_FUNC_SMBUS_READ_BYTE_DATA isn't supported for device {}", getKey());
-			// TODO Throw an exception now or attempt anyway?
+			throw new UnsupportedOperationException(
+					"Function I2C_FUNC_SMBUS_READ_BYTE_DATA isn't supported for device " + getKey());
 		}
 
 		int rc = EAGAIN;
-		for (int i = 0; i < numRetries && (rc == EAGAIN || rc == ETIMEDOUT || rc == EREMOTEIO); i++) {
+		for (int i = 0; i < numRetries && (rc == EAGAIN || rc == ETIMEDOUT); i++) {
 			rc = NativeI2C.readByteData(fd, registerAddress);
 		}
 
 		if (rc < 0) {
-			throw new RuntimeIOException("Error in SMBus.readByteData for device " + getKey() + ": " + rc);
+			throw new I2CException("Error in SMBus.readByteData for device " + getKey() + ": " + rc, rc);
 		}
 
 		return (byte) rc;
 	}
 
 	@Override
-	public void writeByteData(int registerAddress, byte data) {
+	public void writeByteData(int registerAddress, byte data) throws I2CException, UnsupportedOperationException {
 		if ((funcs & I2CDeviceInterface.I2C_FUNC_SMBUS_WRITE_BYTE_DATA) == 0) {
 			Logger.warn("Function I2C_FUNC_SMBUS_WRITE_BYTE_DATA isn't supported for device {}", getKey());
-			// TODO Throw an exception now or attempt anyway?
+			throw new UnsupportedOperationException(
+					"Function I2C_FUNC_SMBUS_WRITE_BYTE_DATA isn't supported for device " + getKey());
 		}
 
 		int rc = EAGAIN;
-		for (int i = 0; i < numRetries && (rc == EAGAIN || rc == ETIMEDOUT || rc == EREMOTEIO); i++) {
+		for (int i = 0; i < numRetries && (rc == EAGAIN || rc == ETIMEDOUT); i++) {
 			rc = NativeI2C.writeByteData(fd, registerAddress, data);
 		}
 
 		if (rc < 0) {
-			throw new RuntimeIOException("Error in SMBus.writeByteData for device " + getKey() + ": " + rc);
+			throw new I2CException("Error in SMBus.writeByteData for device " + getKey() + ": " + rc, rc);
 		}
 	}
 
 	@Override
-	public short readWordData(int registerAddress) {
+	public short readWordData(int registerAddress) throws I2CException, UnsupportedOperationException {
 		if ((funcs & I2CDeviceInterface.I2C_FUNC_SMBUS_READ_WORD_DATA) == 0) {
 			Logger.warn("Function I2C_FUNC_SMBUS_READ_WORD_DATA isn't supported for device {}", getKey());
-			// TODO Throw an exception now or attempt anyway?
+			throw new UnsupportedOperationException(
+					"Function I2C_FUNC_SMBUS_READ_WORD_DATA isn't supported for device " + getKey());
 		}
 
 		int rc = EAGAIN;
-		for (int i = 0; i < numRetries && (rc == EAGAIN || rc == ETIMEDOUT || rc == EREMOTEIO); i++) {
+		for (int i = 0; i < numRetries && (rc == EAGAIN || rc == ETIMEDOUT); i++) {
 			rc = NativeI2C.readWordData(fd, registerAddress);
 		}
 
 		if (rc < 0) {
-			throw new RuntimeIOException("Error in SMBus.readWordData for device " + getKey() + ": " + rc);
+			throw new I2CException("Error in SMBus.readWordData for device " + getKey() + ": " + rc, rc);
 		}
 
 		return (short) rc;
 	}
 
 	@Override
-	public void writeWordData(int registerAddress, short data) {
+	public void writeWordData(int registerAddress, short data) throws I2CException, UnsupportedOperationException {
 		if ((funcs & I2CDeviceInterface.I2C_FUNC_SMBUS_WRITE_WORD_DATA) == 0) {
 			Logger.warn("Function I2C_FUNC_SMBUS_WRITE_WORD_DATA isn't supported for device {}", getKey());
-			// TODO Throw an exception now or attempt anyway?
+			throw new UnsupportedOperationException(
+					"Function I2C_FUNC_SMBUS_WRITE_WORD_DATA isn't supported for device " + getKey());
 		}
 
 		int rc = EAGAIN;
-		for (int i = 0; i < numRetries && (rc == EAGAIN || rc == ETIMEDOUT || rc == EREMOTEIO); i++) {
+		for (int i = 0; i < numRetries && (rc == EAGAIN || rc == ETIMEDOUT); i++) {
 			rc = NativeI2C.writeWordData(fd, registerAddress, data);
 		}
 
 		if (rc < 0) {
-			throw new RuntimeIOException("Error in SMBus.writeWordData for device " + getKey() + ": " + rc);
+			throw new I2CException("Error in SMBus.writeWordData for device " + getKey() + ": " + rc, rc);
 		}
 	}
 
 	/*-
 	@Override
-	public short readWordSwapped(int registerAddress) {
+	public short readWordSwapped(int registerAddress) throws I2CException, UnsupportedOperationException {
 		if ((funcs & I2CDeviceInterface.I2C_FUNC_SMBUS_READ_WORD_DATA) == 0) {
 			Logger.warn("Function I2C_FUNC_SMBUS_READ_WORD_DATA isn't supported for device {}",
 					getKey());
-			// TODO Throw an exception now or attempt anyway?
+			throw new UnsupportedOperationException(
+				"Function I2C_FUNC_SMBUS_READ_WORD_DATA isn't supported for device " + getKey());
 		}
 	
 		int rc = EAGAIN;
-		for (int i = 0; i < numRetries && (rc == EAGAIN || rc == ETIMEDOUT || rc == EREMOTEIO); i++) {
+		for (int i = 0; i < numRetries && (rc == EAGAIN || rc == ETIMEDOUT); i++) {
 			rc = NativeI2C.readWordSwapped(fd, registerAddress);
 		}
 	
 		if (rc < 0) {
-			throw new RuntimeIOException("Error in SMBus.readWordSwapped for device "
-					+ getKey() + ": " + rc);
+			throw new I2CException("Error in SMBus.readWordSwapped for device "
+					+ getKey() + ": " + rc, rc);
 		}
 	
 		return (short) rc;
 	}
 	
 	@Override
-	public void writeWordSwapped(int registerAddress, short data) {
+	public void writeWordSwapped(int registerAddress, short data) throws I2CException, UnsupportedOperationException {
 		if ((funcs & I2CDeviceInterface.I2C_FUNC_SMBUS_WRITE_WORD_DATA) == 0) {
 			Logger.warn("Function I2C_FUNC_SMBUS_WRITE_WORD_DATA isn't supported for device {}",
 					getKey());
-			// TODO Throw an exception now or attempt anyway?
+			throw new UnsupportedOperationException(
+				"Function I2C_FUNC_SMBUS_WRITE_WORD_DATA isn't supported for device " + getKey());
 		}
 
 		int rc = EAGAIN;
-		for (int i = 0; i < numRetries && (rc == EAGAIN || rc == ETIMEDOUT || rc == EREMOTEIO); i++) {
+		for (int i = 0; i < numRetries && (rc == EAGAIN || rc == ETIMEDOUT); i++) {
 			rc = NativeI2C.writeWordSwapped(fd, registerAddress, data);
 		}
 	
 		if (rc < 0) {
-			throw new RuntimeIOException("Error in SMBus.writeWordSwapped for device "
-					+ getKey() + ": " + rc);
+			throw new I2CException("Error in SMBus.writeWordSwapped for device "
+					+ getKey() + ": " + rc, rc);
 		}
 	}
 	*/
 
 	@Override
-	public short processCall(int registerAddress, short data) {
+	public short processCall(int registerAddress, short data) throws I2CException, UnsupportedOperationException {
 		if ((funcs & I2CDeviceInterface.I2C_FUNC_SMBUS_PROC_CALL) == 0) {
 			Logger.warn("Function I2C_FUNC_SMBUS_PROC_CALL isn't supported for device {}", getKey());
-			// TODO Throw an exception now or attempt anyway?
+			throw new UnsupportedOperationException(
+					"Function I2C_FUNC_SMBUS_PROC_CALL isn't supported for device " + getKey());
 		}
 
 		int rc = EAGAIN;
-		for (int i = 0; i < numRetries && (rc == EAGAIN || rc == ETIMEDOUT || rc == EREMOTEIO); i++) {
+		for (int i = 0; i < numRetries && (rc == EAGAIN || rc == ETIMEDOUT); i++) {
 			rc = NativeI2C.processCall(fd, registerAddress, data);
 		}
 
 		if (rc < 0) {
-			throw new RuntimeIOException("Error in SMBus.processCall for device " + getKey() + ": " + rc);
+			throw new I2CException("Error in SMBus.processCall for device " + getKey() + ": " + rc, rc);
 		}
 
 		return (short) rc;
 	}
 
 	@Override
-	public byte[] readBlockData(int registerAddress) {
+	public byte[] readBlockData(int registerAddress) throws I2CException, UnsupportedOperationException {
 		if ((funcs & I2CDeviceInterface.I2C_FUNC_SMBUS_READ_BLOCK_DATA) == 0) {
 			Logger.warn("Function I2C_FUNC_SMBUS_READ_BLOCK_DATA isn't supported for device {}", getKey());
-			// TODO Throw an exception now or attempt anyway?
+			throw new UnsupportedOperationException(
+					"Function I2C_FUNC_SMBUS_READ_BLOCK_DATA isn't supported for device " + getKey());
 		}
 
 		byte[] buffer = new byte[MAX_I2C_BLOCK_SIZE];
 
 		int rc = EAGAIN;
-		for (int i = 0; i < numRetries && (rc == EAGAIN || rc == ETIMEDOUT || rc == EREMOTEIO); i++) {
+		for (int i = 0; i < numRetries && (rc == EAGAIN || rc == ETIMEDOUT); i++) {
 			rc = NativeI2C.readBlockData(fd, registerAddress, buffer);
 		}
 
 		if (rc < 0) {
-			throw new RuntimeIOException("Error in SMBus.readBlockData for device " + getKey() + ": " + rc);
+			throw new I2CException("Error in SMBus.readBlockData for device " + getKey() + ": " + rc, rc);
 		}
 
 		byte[] rx_data = new byte[rc];
@@ -361,124 +372,131 @@ public class NativeI2CDeviceSMBus extends AbstractDevice implements InternalI2CD
 	}
 
 	@Override
-	public void writeBlockData(int registerAddress, byte... data) {
+	public void writeBlockData(int registerAddress, byte... data)
+			throws I2CException, UnsupportedOperationException, IllegalArgumentException {
 		if ((funcs & I2CDeviceInterface.I2C_FUNC_SMBUS_WRITE_BLOCK_DATA) == 0) {
 			Logger.warn("Function I2C_FUNC_SMBUS_WRITE_BLOCK_DATA isn't supported for device {}", getKey());
-			// TODO Throw an exception now or attempt anyway?
+			throw new UnsupportedOperationException(
+					"Function I2C_FUNC_SMBUS_WRITE_BLOCK_DATA isn't supported for device " + getKey());
 		}
 
 		if (data.length > MAX_I2C_BLOCK_SIZE) {
-			throw new RuntimeIOException("Error in SMBus.writeBlockData for device " + getKey()
+			throw new IllegalArgumentException("Error in SMBus.writeBlockData for device " + getKey()
 					+ ": array length must be <= 32, is " + data.length);
 		}
 
 		int rc = EAGAIN;
-		for (int i = 0; i < numRetries && (rc == EAGAIN || rc == ETIMEDOUT || rc == EREMOTEIO); i++) {
+		for (int i = 0; i < numRetries && (rc == EAGAIN || rc == ETIMEDOUT); i++) {
 			rc = NativeI2C.writeBlockData(fd, registerAddress, data.length, data);
 		}
 
 		if (rc < 0) {
-			throw new RuntimeIOException("Error in SMBus.writeBlockData for device " + getKey() + ": " + rc);
+			throw new I2CException("Error in SMBus.writeBlockData for device " + getKey() + ": " + rc, rc);
 		}
 	}
 
 	@Override
-	public byte[] blockProcessCall(int registerAddress, byte... txData) {
+	public byte[] blockProcessCall(int registerAddress, byte... txData)
+			throws I2CException, UnsupportedOperationException, IllegalArgumentException {
 		if ((funcs & I2CDeviceInterface.I2C_FUNC_SMBUS_BLOCK_PROC_CALL) == 0) {
 			Logger.warn("Function I2C_FUNC_SMBUS_BLOCK_PROC_CALL isn't supported for device {}", getKey());
-			// TODO Throw an exception now or attempt anyway?
+			throw new UnsupportedOperationException(
+					"Function I2C_FUNC_SMBUS_BLOCK_PROC_CALL isn't supported for device " + getKey());
 		}
 
 		if (txData.length > MAX_I2C_BLOCK_SIZE) {
-			throw new RuntimeIOException("Error in SMBus.blockProcessCall for device " + getKey()
+			throw new IllegalArgumentException("Error in SMBus.blockProcessCall for device " + getKey()
 					+ ": array length must be <= 32, is " + txData.length);
 		}
 
 		byte[] rx_data = new byte[txData.length];
 
 		int rc = EAGAIN;
-		for (int i = 0; i < numRetries && (rc == EAGAIN || rc == ETIMEDOUT || rc == EREMOTEIO); i++) {
+		for (int i = 0; i < numRetries && (rc == EAGAIN || rc == ETIMEDOUT); i++) {
 			rc = NativeI2C.blockProcessCall(fd, registerAddress, txData.length, txData, rx_data);
 		}
 
 		if (rc < 0) {
-			throw new RuntimeIOException("Error in SMBus.blockProcessCall for device " + getKey() + ": " + rc);
+			throw new I2CException("Error in SMBus.blockProcessCall for device " + getKey() + ": " + rc, rc);
 		}
 
 		return rx_data;
 	}
 
 	@Override
-	public int readI2CBlockData(int registerAddress, byte[] buffer) {
+	public int readI2CBlockData(int registerAddress, byte[] buffer) throws I2CException, UnsupportedOperationException {
 		if ((funcs & I2CDeviceInterface.I2C_FUNC_SMBUS_READ_I2C_BLOCK) == 0) {
 			Logger.warn("Function I2C_FUNC_SMBUS_READ_I2C_BLOCK isn't supported for device {}", getKey());
-			// TODO Throw an exception now or attempt anyway?
+			throw new UnsupportedOperationException(
+					"Function I2C_FUNC_SMBUS_READ_I2C_BLOCK isn't supported for device " + getKey());
 		}
 
 		int rc = EAGAIN;
-		for (int i = 0; i < numRetries && (rc == EAGAIN || rc == ETIMEDOUT || rc == EREMOTEIO); i++) {
+		for (int i = 0; i < numRetries && (rc == EAGAIN || rc == ETIMEDOUT); i++) {
 			rc = NativeI2C.readI2CBlockData(fd, registerAddress, buffer.length, buffer);
 		}
 
 		if (rc < 0) {
-			throw new RuntimeIOException("Error in SMBus.readI2CBlockData for device " + getKey() + ": " + rc);
+			throw new I2CException("Error in SMBus.readI2CBlockData for device " + getKey() + ": " + rc, rc);
 		}
 
 		return rc;
 	}
 
 	@Override
-	public void writeI2CBlockData(int registerAddress, byte... data) {
+	public void writeI2CBlockData(int registerAddress, byte... data)
+			throws I2CException, UnsupportedOperationException {
 		if ((funcs & I2CDeviceInterface.I2C_FUNC_SMBUS_WRITE_I2C_BLOCK) == 0) {
 			Logger.warn("Function I2C_FUNC_SMBUS_WRITE_I2C_BLOCK isn't supported for device {}", getKey());
-			// TODO Throw an exception now or attempt anyway?
+			throw new UnsupportedOperationException(
+					"Function I2C_FUNC_SMBUS_WRITE_I2C_BLOCK isn't supported for device " + getKey());
 		}
 
 		int rc = EAGAIN;
-		for (int i = 0; i < numRetries && (rc == EAGAIN || rc == ETIMEDOUT || rc == EREMOTEIO); i++) {
+		for (int i = 0; i < numRetries && (rc == EAGAIN || rc == ETIMEDOUT); i++) {
 			rc = NativeI2C.writeI2CBlockData(fd, registerAddress, data.length, data);
 		}
 
 		if (rc < 0) {
-			throw new RuntimeIOException("Error in SMBus.writeI2CBlockData for device " + getKey() + ": " + rc);
+			throw new I2CException("Error in SMBus.writeI2CBlockData for device " + getKey() + ": " + rc, rc);
 		}
 	}
 
 	@Override
-	public int readBytes(byte[] buffer) {
+	public int readBytes(byte[] buffer) throws I2CException {
 		int rc = EAGAIN;
-		for (int i = 0; i < numRetries && (rc == EAGAIN || rc == ETIMEDOUT || rc == EREMOTEIO); i++) {
+		for (int i = 0; i < numRetries && (rc == EAGAIN || rc == ETIMEDOUT); i++) {
 			rc = NativeI2C.readBytes(fd, buffer.length, buffer);
 		}
 
 		if (rc < 0) {
-			throw new RuntimeIOException("Error in SMBus.readBytes for device " + getKey() + ": " + rc);
+			throw new I2CException("Error in SMBus.readBytes for device " + getKey() + ": " + rc, rc);
 		}
 
 		return rc;
 	}
 
 	@Override
-	public void writeBytes(byte... data) {
+	public void writeBytes(byte... data) throws I2CException {
 		int rc = EAGAIN;
-		for (int i = 0; i < numRetries && (rc == EAGAIN || rc == ETIMEDOUT || rc == EREMOTEIO); i++) {
+		for (int i = 0; i < numRetries && (rc == EAGAIN || rc == ETIMEDOUT); i++) {
 			rc = NativeI2C.writeBytes(fd, data.length, data);
 		}
 
 		if (rc < 0 || rc < data.length) {
-			throw new RuntimeIOException("Error in SMBus.writeBytes for device " + getKey() + ": " + rc);
+			throw new I2CException("Error in SMBus.writeBytes for device " + getKey() + ": " + rc, rc);
 		}
 	}
 
 	@Override
-	public void readWrite(I2CMessage[] messages, byte[] buffer) {
+	public void readWrite(I2CMessage[] messages, byte[] buffer) throws I2CException {
 		int rc = EAGAIN;
-		for (int i = 0; i < numRetries && (rc == EAGAIN || rc == ETIMEDOUT || rc == EREMOTEIO); i++) {
+		for (int i = 0; i < numRetries && (rc == EAGAIN || rc == ETIMEDOUT); i++) {
 			rc = NativeI2C.readWrite(fd, deviceAddress, messages, buffer);
 		}
 
 		if (rc < 0) {
-			throw new RuntimeIOException("Error in I2C readWrite for device " + getKey() + ": " + rc);
+			throw new I2CException("Error in I2C readWrite for device " + getKey() + ": " + rc, rc);
 		}
 	}
 }

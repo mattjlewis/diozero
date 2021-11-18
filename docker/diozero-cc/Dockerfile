@@ -18,7 +18,7 @@ ARG BINUTILS_VERSION=binutils-2.31.1
 ARG BUILD_WORKING_DIR=${HOME_DIR}/build
 ARG TARGET=arm-linux-gnueabihf
 # Number of jobs value to pass the make -j command
-ARG MAKE_JOBS=8
+ARG MAKE_JOBS=4
 
 # Use GCC 8 as the default compiler otherwise there will be compilation errors
 RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 999 && \
@@ -37,6 +37,7 @@ RUN echo "${RUN_AS_USER} ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/01_${RUN_AS_U
 USER ${RUN_AS_USER}
 
 # Working directory
+RUN mkdir -p ${BUILD_WORKING_DIR}
 WORKDIR ${BUILD_WORKING_DIR}
 
 # Save the current PATH variable value, ensure that the cross compiler is first in the PATH
@@ -44,15 +45,15 @@ ARG OLD_PATH=${PATH}
 ENV PATH=${PI_GCC_TARGET_DIR}/bin:$PATH
 
 # Download and extract GCC
-RUN wget https://ftp.gnu.org/gnu/gcc/${GCC_VERSION}/${GCC_VERSION}.tar.gz && \
+RUN wget -q https://ftp.gnu.org/gnu/gcc/${GCC_VERSION}/${GCC_VERSION}.tar.gz && \
     tar xf ${GCC_VERSION}.tar.gz && \
     rm ${GCC_VERSION}.tar.gz
 # Download and extract LibC
-RUN wget https://ftp.gnu.org/gnu/libc/${GLIBC_VERSION}.tar.bz2 && \
+RUN wget -q https://ftp.gnu.org/gnu/libc/${GLIBC_VERSION}.tar.bz2 && \
     tar xjf ${GLIBC_VERSION}.tar.bz2 && \
     rm ${GLIBC_VERSION}.tar.bz2
 # Download and extract BinUtils
-RUN wget https://ftp.gnu.org/gnu/binutils/${BINUTILS_VERSION}.tar.bz2 && \
+RUN wget -q https://ftp.gnu.org/gnu/binutils/${BINUTILS_VERSION}.tar.bz2 && \
     tar xjf ${BINUTILS_VERSION}.tar.bz2 && \
     rm ${BINUTILS_VERSION}.tar.bz2
 # Download the GCC prerequisites
@@ -66,6 +67,7 @@ ENV KERNEL=kernel7
 RUN sudo make ARCH=arm INSTALL_HDR_PATH=${PI_GCC_TARGET_DIR}/${TARGET} headers_install
 
 # Build BinUtils
+RUN mkdir ${BUILD_WORKING_DIR}/build-binutils
 WORKDIR ${BUILD_WORKING_DIR}/build-binutils
 RUN ../${BINUTILS_VERSION}/configure \
     --prefix=${PI_GCC_TARGET_DIR} \
@@ -78,7 +80,12 @@ RUN sudo make install
 RUN sudo apt-get -y install zlib1g-dev
 
 # Build the first part of GCC
+RUN mkdir -p ${BUILD_WORKING_DIR}/build-gcc
 WORKDIR ${BUILD_WORKING_DIR}/build-gcc
+# Fixing limits.h: https://stackoverflow.com/questions/58199020/locally-built-gcc-cross-compiler-reports-mb-len-max-wrong-with-d-fortify-source
+#WORKDIR ${GCC_VERSION}
+#RUN cat gcc/limitx.h gcc/glimits.h gcc/limity.h > \
+#    `dirname $(${TARGET}-gcc -print-libgcc-file-name)`/include-fixed/limits.h
 # Removed: --enable-bootstrap
 RUN ../${GCC_VERSION}/configure \
     --prefix=${PI_GCC_TARGET_DIR} \
@@ -86,6 +93,7 @@ RUN ../${GCC_VERSION}/configure \
     --enable-languages=c,c++ \
     --with-arch=armv6 --with-fpu=vfp --with-float=hard \
     --disable-multilib \
+    --with-headers=${PI_GCC_TARGET_DIR}/${TARGET}/include/linux \
     --program-prefix=${TARGET}- \
     --with-gcc-major-version-only \
     --enable-shared --enable-linker-build-id \
@@ -102,6 +110,7 @@ RUN sudo make install-gcc
 RUN sudo rm --recursive --force ${PI_GCC_TARGET_DIR}/${TARGET}/sys-include
 
 # Build GLIBC
+RUN mkdir -p ${BUILD_WORKING_DIR}/build-glibc
 WORKDIR ${BUILD_WORKING_DIR}/build-glibc
 RUN ../${GLIBC_VERSION}/configure \
     --prefix=${PI_GCC_TARGET_DIR}/${TARGET} \
@@ -139,7 +148,7 @@ ENV PATH=${OLD_PATH}
 # Compile libi2c for various CPU architectures - diozero statically links against this library
 ARG I2C_VERSION=4.1
 WORKDIR ${BUILD_WORKING_DIR}
-RUN wget http://deb.debian.org/debian/pool/main/i/i2c-tools/i2c-tools_${I2C_VERSION}.orig.tar.xz
+RUN wget -q http://deb.debian.org/debian/pool/main/i/i2c-tools/i2c-tools_${I2C_VERSION}.orig.tar.xz
 RUN tar Jxf i2c-tools_${I2C_VERSION}.orig.tar.xz
 RUN rm i2c-tools_${I2C_VERSION}.orig.tar.xz
 WORKDIR ${BUILD_WORKING_DIR}/i2c-tools-${I2C_VERSION}
@@ -157,8 +166,6 @@ RUN PATH=${PI_GCC_TARGET_DIR}/bin:${PATH} && sudo make install PREFIX=${PI_GCC_T
 # Cleanup
 WORKDIR ${HOME_DIR}
 RUN sudo rm -rf ${BUILD_WORKING_DIR}
-
-WORKDIR ${HOME_DIR}
 
 # FIXME Fix the limits.h header file. Why is the cross-compiler one missing some info?
 # https://stackoverflow.com/questions/44419593/gcc-4-9-4-cross-compiler-build-limits-h-issue

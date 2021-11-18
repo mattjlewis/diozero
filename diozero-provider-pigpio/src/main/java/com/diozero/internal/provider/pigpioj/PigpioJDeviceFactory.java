@@ -69,13 +69,23 @@ public class PigpioJDeviceFactory extends BaseNativeDeviceFactory {
 	private int boardServoFrequency = 50;
 	private PigpioInterface pigpioImpl;
 
+	@SuppressWarnings("resource")
+	public static PigpioJDeviceFactory newSocketInstance(String hostname) {
+		return new PigpioJDeviceFactory(PigpioJ.newSocketImplementation(hostname));
+	}
+
+	@SuppressWarnings("resource")
+	public static PigpioJDeviceFactory newSocketInstance(String hostname, int port) {
+		return new PigpioJDeviceFactory(PigpioJ.newSocketImplementation(hostname, port));
+	}
+
+	@SuppressWarnings("resource")
 	public PigpioJDeviceFactory() {
-		try {
-			pigpioImpl = PigpioJ.getImplementation();
-		} catch (RuntimeException e) {
-			Logger.error(e, "Error initialising pigpioj (if using JNI version you must run as root): {}", e);
-			throw new RuntimeIOException(e);
-		}
+		this(PigpioJ.autoDetectedImplementation());
+	}
+
+	public PigpioJDeviceFactory(PigpioInterface pigpioImpl) {
+		this.pigpioImpl = pigpioImpl;
 	}
 
 	public PigpioInterface getPigpio() {
@@ -159,22 +169,20 @@ public class PigpioJDeviceFactory extends BaseNativeDeviceFactory {
 		return pigpioImpl.read(gpio);
 	}
 
-	@SuppressWarnings("resource")
 	@Override
 	public List<Integer> getI2CBusNumbers() {
-		// pigpio does not expose this API, test if using JNI or sockets implementation
-		if (PigpioJ.getImplementation() instanceof PigpioSocket) {
-			throw new UnsupportedOperationException("pigpio does not provide this interface");
+		// pigpiod does not expose this API, test if using JNI or sockets implementation
+		if (pigpioImpl instanceof PigpioSocket) {
+			throw new UnsupportedOperationException("pigpiod does not provide this interface");
 		}
 		return LocalSystemInfo.getI2CBusNumbers();
 	}
 
-	@SuppressWarnings("resource")
 	@Override
 	public int getI2CFunctionalities(int controller) {
-		// pigpio does not expose this API, test if using JNI or sockets implementation
-		if (PigpioJ.getImplementation() instanceof PigpioSocket) {
-			throw new UnsupportedOperationException("pigpio does not provide this interface");
+		// pigpiod does not expose this API, test if using JNI or sockets implementation
+		if (pigpioImpl instanceof PigpioSocket) {
+			throw new UnsupportedOperationException("pigpiod does not provide this interface");
 		}
 		return LocalSystemInfo.getI2CFunctionalities(controller);
 	}

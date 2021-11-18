@@ -138,7 +138,7 @@ JNIEXPORT jobject JNICALL Java_com_diozero_internal_provider_builtin_gpio_Native
 
 JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_builtin_gpio_NativeGpioDevice_provisionGpioInputDevice(
 		JNIEnv* env, jclass clz, jint chipFd, jint gpioOffset, jint handleFlags, jint eventFlags) {
-	/*
+	/*-
 	struct gpiohandle_request handle_req;
 
 	strcpy(handle_req.consumer_label, CONSUMER);
@@ -296,7 +296,7 @@ JNIEXPORT void JNICALL Java_com_diozero_internal_provider_builtin_gpio_NativeGpi
 					break;
 				}
 
-				/*
+				/*-
 				struct timespec tp;
 				clock_gettime(CLOCK_REALTIME, &tp);
 				uint64_t nanotime = ((uint64_t) tp.tv_sec) * 1000*1000*1000 + tp.tv_nsec;
@@ -325,7 +325,7 @@ int stopEventLoopPipe(int epollFd) {
 	exitLoopFd = read_pipe;
 	int write_pipe = pipefds[1];
 
-	/*
+	/*-
 	// Make the read-end non-blocking
 	int flags = fcntl(read_pipe, F_GETFL, 0);
 	rc = fcntl(read_pipe, F_SETFL, flags | O_NONBLOCK);

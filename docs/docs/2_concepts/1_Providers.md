@@ -15,23 +15,22 @@ redirect_from:
 Iternally, all devices are provisioned via a
 [Device Factory](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/internal/spi/DeviceFactoryInterface.java) -
 all of the classes in `com.diozero.api` and `com.diozero.devices` include a constructor parameter
-that allows a device factory to be specified. If a device factory isn't specified, the
-host board itself is used to provision the device using
+that allows a device factory to be specified. If a device factory isn't specified it will be
+[auto-detected](1_Providers.md#provider-lookup) using
 [DeviceFactoryHelper.getNativeDeviceFactory()](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/sbc/DeviceFactoryHelper.java).
-This is particularly useful for GPIO expansion boards and Analog-to-Digital converters -
-the device factory that is specific to the expansion board can be used to provision the device
-instead of the host board.
 
-Some boards like the Raspberry Pi provide no analog input pins; attempting to create an 
-AnalogInputDevice such as an LDR using the Raspberry Pi default native device factory 
-would result in a runtime error (`UnsupportedOperationException`). However, diozero includes
-support for Analog to Digital Converter expansion devices such as the 
-[MCP3008](https://www.microchip.com/wwwproducts/en/MCP3008); such devices have been
-implemented as analog input device factories hence can be used in the constructor of analog
-devices like LDRs:
+The device factory concept is particularly useful for GPIO expansion boards and Analog-to-Digital
+converters - the expansion board's device factory instance can be used to provision the device
+instead of the host board. For example, some boards like the Raspberry Pi provide no analog input
+pins; attempting to create an `AnalogInputDevice` such as an LDR using the Raspberry Pi default
+native device factory would result in a runtime error (`UnsupportedOperationException`). The diozero
+implementation of Analog to Digital Converter expansion devices such as the 
+[MCP3008](https://www.microchip.com/wwwproducts/en/MCP3008) have been implemented as analog input
+device factories hence can be used in the constructor of analog input devices like LDRs:
 
 ```java
-try (McpAdc ain_df = new McpAdc(McpAdc.Type.MCP3008, chipSelect); LDR ldr = new LDR(ain_df, pin, vRef, r1)) {
+try (AnalogInputDeviceFactoryInterface ain_df = new McpAdc(McpAdc.Type.MCP3008, chipSelect);
+		LDR ldr = new LDR(ain_df, pin, r1)) {
 	System.out.println(ldr.getUnscaledValue());
 }
 ```
@@ -82,7 +81,7 @@ The built-in provider is designed to be portable across different boards.
 ### pigpio
 
 Uses the excellent [pigpio](http://abyz.me.uk/rpi/pigpio/) C library to provide fully optimised
-GPIO / SPI and I2C support for all Raspberry Pi models.
+GPIO / SPI and I<sup>2</sup>C support for all Raspberry Pi models.
 Makes use of the [pigpioj](https://github.com/mattjlewis/pigpioj) library to access pigpio.
 
 Make sure that pigpio is installed:
@@ -105,9 +104,8 @@ Interfaces for implementing a new service provider are in the
 [com.diozero.internal.provider](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/internal/provider)
 package. Developing a new service provider is relatively straightforward given the provided APIs and base classes.
 
-The device native service provider library is defined in the following order:
+The device native service provider library is resolved in the following order:
 
-1. System property com.diozero.devicefactory, e.g. `-Dcom.diozero.devicefactory=com.diozero.internal.provider.pi4j.Pi4jDeviceFactory`
-2. Service definition file on the classpath, file: `/META-INF/services/com.diozero.internal.provider.NativeDeviceFactoryInterface`. For example [the one for pi4j](https://github.com/mattjlewis/diozero/blob/master/diozero-provider-pi4j/src/main/resources/META-INF/services/com.diozero.internal.provider.NativeDeviceFactoryInterface)
-
-See below for provider specific details.
+1. System property `diozero.devicefactory`, e.g. `-Ddiozero.devicefactory=com.diozero.internal.provider.pigpio.PigpioJDeviceFactory`
+1. Service definition file on the classpath, file: `/META-INF/services/com.diozero.internal.spi.NativeDeviceFactoryInterface`. For example [the one for Firmata provider](https://github.com/mattjlewis/diozero/blob/master/diozero-provider-firmata/src/main/resources/META-INF/services/com.diozero.internal.spi.NativeDeviceFactoryInterface)
+1. The built-in default device factory

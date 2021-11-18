@@ -16,8 +16,8 @@ Java doesn't provide a convenient deployment-time dependency manager
 such as Python's `pip` therefore you will need to manually download all dependencies 
 and setup your classpath correctly. You can do this either via setting the `CLASSPATH` 
 environment variable or as a command-line option (`java -cp <jar1>:<jar2>`). 
-The dependencies have been deliberately kept to as few libraries as possible -
-diozero is only dependent on [tinylog v2](http://www.tinylog.org).
+The dependencies have been deliberately kept to as few libraries as possible;
+diozero core has only one dependency - [tinylog v2](http://www.tinylog.org).
 
 To compile a diozero application you will need 3 JAR files - [tinylog](http://www.tinylog.org/)
 (both API and Impl), and diozero-core. 

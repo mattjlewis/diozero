@@ -251,9 +251,9 @@ To upgrade to 5.4:
 sudo ./update_kernel.sh --lts-5_4
 ```
 
-## I2C Clock Frequency
+## I<sup>2</sup>C Clock Frequency
 
-Check your current I2C bus frequencies:
+Check your current I<sup>2</sup>C bus frequencies:
 
 ```
 > dmesg | grep i2c
@@ -296,7 +296,7 @@ EEPROMS on cape add-on boards and may interfere with that function when used for
 I/O operations.
 
 Then locate the i2c@xxx sections in the file to view the status ("disabled" or "okay") and clock
-frequency (a hex number). Valid I2C clock frequencies (depending on the device):
+frequency (a hex number). Valid I<sup>2</sup>C clock frequencies (depending on the device):
 
 * 100 kHz (100,000) : 0x186A0
 * 400 kHz (400,000) : 0x61A80
@@ -304,7 +304,7 @@ frequency (a hex number). Valid I2C clock frequencies (depending on the device):
 * 3,400 kHz (3,400,000) : 0x33E140
 * 5,000 kHz (5,000,000) : 0x4C4B40
 
-Note the O/S only enumerates the I2C buses that are enabled (status = "okay").
+Note the O/S only enumerates the I<sup>2</sup>C buses that are enabled (status = "okay").
 
 My DTS file:
 
@@ -337,7 +337,7 @@ dtc -I dts -O dtb -o am335x-boneblack-uboot-univ.dtb am335x-boneblack-uboot-univ
 sudo cp am335x-boneblack-uboot-univ.dtb /boot/dtbs/4.19.94-ti-r42/.
 ```
 
-Reboot and check the I2C bus speeds:
+Reboot and check the I<sup>2</sup>C bus speeds:
 
 ```
 > dmesg | grep i2c

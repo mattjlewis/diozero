@@ -93,7 +93,7 @@ brightness of an LED based on ambient light levels:
 
 ```java
 try (McpAdc adc = new McpAdc(McpAdc.Type.MCP3008, 1);
-		LDR ldr = new LDR(adc, 1, 3.3, 1000);
+		LDR ldr = new LDR(adc, 1, 1000);
 		PwmLed led = new PwmLed(18)) {
 	// Detect variations of 10%, get values every 50ms (the default)
 	ldr.addListener(event -> led.setValue(1-event.getUnscaledValue()), .1f);

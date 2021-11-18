@@ -60,7 +60,7 @@ Run: `sudo dpkg-reconfigure tzdata`
 
 Select: `Europe / London`
 
-## WiFi / I2C / SPI
+## WiFi / I<sup>2</sup>C / SPI
 
 Use `raspbi-config`.
 

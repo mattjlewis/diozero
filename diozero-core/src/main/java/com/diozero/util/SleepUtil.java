@@ -102,7 +102,9 @@ public class SleepUtil {
 	 *
 	 * Note - you must ensure that the diozero-system-utils library has been loaded
 	 * via {@link com.diozero.util.LibraryLoader#loadSystemUtils loadSystemUtils()}
-	 * prior to calling this method.
+	 * prior to calling this method. The diozero APIs will do this on behalf of the
+	 * application - this note is present for situations where such APIs have not
+	 * yet been invoked.
 	 *
 	 * See C <a href=
 	 * "https://man7.org/linux/man-pages/man2/nanosleep.2.html">nanosleep</a> man

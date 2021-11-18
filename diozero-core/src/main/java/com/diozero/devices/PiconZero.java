@@ -474,11 +474,6 @@ public class PiconZero extends AbstractDeviceFactory
 		writeByte(RESET_REG, 0);
 	}
 
-	public void closeChannel(int channel) {
-		Logger.trace("closeChannel({})", Integer.valueOf(channel));
-		// setInputConfig(channel, InputConfig.DIGITAL);
-	}
-
 	@Override
 	public void close() throws RuntimeIOException {
 		Logger.trace("close()");
@@ -541,7 +536,7 @@ public class PiconZero extends AbstractDeviceFactory
 		@Override
 		protected void closeDevice() {
 			Logger.trace("closeDevice()");
-			piconZero.closeChannel(getChannel());
+			// Nothing to do
 		}
 
 		@Override
@@ -573,7 +568,7 @@ public class PiconZero extends AbstractDeviceFactory
 
 		@Override
 		protected void closeDevice() {
-			piconZero.closeChannel(getChannel());
+			// Nothing to do
 		}
 
 		@Override
@@ -626,7 +621,7 @@ public class PiconZero extends AbstractDeviceFactory
 
 		@Override
 		protected void closeDevice() {
-			piconZero.closeChannel(channel);
+			// Nothing to do
 		}
 
 		@Override
@@ -696,7 +691,8 @@ public class PiconZero extends AbstractDeviceFactory
 		@Override
 		protected void closeDevice() throws RuntimeIOException {
 			Logger.trace("closeDevice()");
-			piconZero.closeChannel(channel);
+			piconZero.setOutputConfig(channel, OutputConfig.DIGITAL);
+			piconZero.setOutputValue(channel, false);
 		}
 
 		@Override
@@ -760,7 +756,8 @@ public class PiconZero extends AbstractDeviceFactory
 		@Override
 		protected void closeDevice() throws RuntimeIOException {
 			Logger.trace("closeDevice()");
-			piconZero.closeChannel(channel);
+			piconZero.setOutputConfig(channel, OutputConfig.DIGITAL);
+			piconZero.setOutputValue(channel, false);
 		}
 
 		@Override

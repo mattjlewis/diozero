@@ -1,11 +1,11 @@
 package com.diozero.api;
 
-/*
+/*-
  * #%L
  * Organisation: diozero
  * Project:      diozero - Core
- * Filename:     RuntimeIOException.java
- * 
+ * Filename:     I2CException.java
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.api;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -31,36 +31,14 @@ package com.diozero.api;
  * #L%
  */
 
-public class RuntimeIOException extends RuntimeException {
-	private static final long serialVersionUID = -1676518784067421079L;
+public class I2CException extends RuntimeIOException {
+	private static final long serialVersionUID = 8294720563961386296L;
 
-	private int error;
-
-	public RuntimeIOException(Throwable cause) {
-		super(cause);
+	public I2CException(int code) {
+		this("I2C Error: " + code, code);
 	}
 
-	public RuntimeIOException(String message) {
-		super(message);
-	}
-
-	public RuntimeIOException(String message, Throwable t) {
-		super(message, t);
-	}
-
-	public RuntimeIOException(String message, int error) {
-		super(message);
-
-		this.error = error;
-	}
-
-	public RuntimeIOException(int error) {
-		super(Integer.toString(error));
-
-		this.error = error;
-	}
-
-	public int getError() {
-		return error;
+	public I2CException(String message, int code) {
+		super(message, code);
 	}
 }

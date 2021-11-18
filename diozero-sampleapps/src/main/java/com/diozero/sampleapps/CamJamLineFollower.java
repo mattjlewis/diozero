@@ -100,7 +100,7 @@ public class CamJamLineFollower implements AutoCloseable {
 		hcsr04 = new HCSR04(HCSR04_TRIGGER_PIN, HCSR04_ECHO_PIN);
 
 		dualMotor = new CamJamKitDualMotor();
-		dualMotor.getLeftMotor().addListener((event) -> {
+		dualMotor.getMotorA().addListener((event) -> {
 			float value = event.getValue();
 			if (value > 0) {
 				frontLeftLed.on();
@@ -113,7 +113,7 @@ public class CamJamLineFollower implements AutoCloseable {
 				rearLeftLed.off();
 			}
 		});
-		dualMotor.getRightMotor().addListener((event) -> {
+		dualMotor.getMotorB().addListener((event) -> {
 			float value = event.getValue();
 			if (value > 0) {
 				frontRightLed.on();

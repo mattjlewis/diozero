@@ -94,6 +94,7 @@ import io.grpc.StatusRuntimeException;
 public class GrpcClientDeviceFactory extends BaseNativeDeviceFactory {
 	public static final String NAME = "gRPC-Remote";
 
+	private String serverHostname;
 	private ManagedChannel channel;
 	private BoardServiceBlockingStub boardBlockingStub;
 	private GpioServiceBlockingStub gpioBlockingStub;
@@ -107,13 +108,18 @@ public class GrpcClientDeviceFactory extends BaseNativeDeviceFactory {
 	private Map<Integer, Future<?>> subscriptions;
 
 	public GrpcClientDeviceFactory() {
-		String server_hostname = PropertyUtil.getProperty(GrpcConstants.HOST_PROPERTY_NAME).orElseThrow(
-				() -> new IllegalArgumentException("Error, " + GrpcConstants.HOST_PROPERTY_NAME + " not set"));
+		this(PropertyUtil.getProperty(GrpcConstants.HOST_PROPERTY_NAME).orElseThrow(
+				() -> new IllegalArgumentException("Error, " + GrpcConstants.HOST_PROPERTY_NAME + " not set")));
+	}
 
-		channel = ManagedChannelBuilder
-				.forAddress(server_hostname,
-						PropertyUtil.getIntProperty(GrpcConstants.PORT_PROPERTY_NAME, GrpcConstants.DEFAULT_PORT))
-				.usePlaintext().build();
+	public GrpcClientDeviceFactory(String hostname) {
+		this(hostname, PropertyUtil.getIntProperty(GrpcConstants.PORT_PROPERTY_NAME, GrpcConstants.DEFAULT_PORT));
+	}
+
+	public GrpcClientDeviceFactory(String hostname, int port) {
+		this.serverHostname = hostname;
+
+		channel = ManagedChannelBuilder.forAddress(serverHostname, port).usePlaintext().build();
 
 		boardBlockingStub = BoardServiceGrpc.newBlockingStub(channel);
 		gpioBlockingStub = GpioServiceGrpc.newBlockingStub(channel);
@@ -123,6 +129,10 @@ public class GrpcClientDeviceFactory extends BaseNativeDeviceFactory {
 		serialBlockingStub = SerialServiceGrpc.newBlockingStub(channel);
 
 		subscriptions = new ConcurrentHashMap<>();
+	}
+
+	public String getServerHostname() {
+		return serverHostname;
 	}
 
 	@Override

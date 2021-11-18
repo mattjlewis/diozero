@@ -13,7 +13,7 @@ redirect_from:
 The diozero user-facing API is provided by the following packages:
 
 [com.diozero.api](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/com/diozero/api/package-summary.html)
-: core APIs for interfacing with GPIOs, I2C, SPI and Serial devices.
+: core APIs for interfacing with GPIOs, I<sup>2</sup>C, SPI and Serial devices.
 
 [com.diozero.devices](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/com/diozero/devices/package-summary.html)
 : physical devices (LED, Button, Motors, ...) and sensor components (BME680, MCP3008, ...)
