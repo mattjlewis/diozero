@@ -12,7 +12,7 @@
 	<name>diozero - pigpioj provider</name>
 	
 	<properties>
-		<pigpioj.version>2.6.0</pigpioj.version>
+		<pigpioj.version>2.6.1</pigpioj.version>
 	</properties>
 	
 	<dependencyManagement>

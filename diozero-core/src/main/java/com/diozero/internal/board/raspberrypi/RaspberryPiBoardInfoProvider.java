@@ -354,6 +354,7 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 						.filter(line -> line.startsWith("dtoverlay=pwm")).findFirst()
 						.map(RaspberryPiBoardInfoProvider::extractPwmGpioNumbers).orElse(Collections.emptyMap());
 			} catch (IOException e) {
+				gpioToPwmNumberMapping = new HashMap<>();
 				// Ignore
 			}
 		}
