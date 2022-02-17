@@ -39,6 +39,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.tinylog.Logger;
 
+import com.diozero.internal.spi.GpioDeviceFactoryInterface;
+import com.diozero.sbc.DeviceFactoryHelper;
 import com.diozero.util.DiozeroScheduler;
 import com.diozero.util.SleepUtil;
 
@@ -49,6 +51,75 @@ import com.diozero.util.SleepUtil;
  * duration will be ignored.
  */
 public class DebouncedDigitalInputDevice extends DigitalInputDevice {
+	public static class Builder {
+		/**
+		 * Create a new DebouncedDigitalInputDevice builder instance
+		 *
+		 * @param gpio           The GPIO to be used for the new
+		 *                       DebouncedDigitalInputDevice
+		 * @param debounceTimeMs Specifies the length of time (in seconds) that the
+		 *                       component will ignore changes in state after an initial
+		 *                       change.
+		 * @return A new DebouncedDigitalInputDevice builder instance
+		 */
+		public static Builder builder(int gpio, int debounceTimeMs) {
+			return new Builder(gpio, debounceTimeMs);
+		}
+
+		/**
+		 * Create a new DebouncedDigitalInputDevice builder instance
+		 *
+		 * @param pinInfo        The pin to be used for the new
+		 *                       DebouncedDigitalInputDevice
+		 * @param debounceTimeMs Specifies the length of time (in seconds) that the
+		 *                       component will ignore changes in state after an initial
+		 *                       change.
+		 * @return A new DebouncedDigitalInputDevice builder instance
+		 */
+		public static Builder builder(PinInfo pinInfo, int debounceTimeMs) {
+			return new Builder(pinInfo, debounceTimeMs);
+		}
+
+		private Integer gpio;
+		private PinInfo pinInfo;
+		private GpioPullUpDown pud = GpioPullUpDown.NONE;
+		private int debounceTimeMs;
+		private GpioDeviceFactoryInterface deviceFactory;
+
+		public Builder(int gpio, int debounceTimeMs) {
+			this.gpio = Integer.valueOf(gpio);
+			this.debounceTimeMs = debounceTimeMs;
+		}
+
+		public Builder(PinInfo pinInfo, int debounceTimeMs) {
+			this.pinInfo = pinInfo;
+			this.debounceTimeMs = debounceTimeMs;
+		}
+
+		public Builder setPullUpDown(GpioPullUpDown pud) {
+			this.pud = pud;
+			return this;
+		}
+
+		public Builder setDeviceFactory(GpioDeviceFactoryInterface deviceFactory) {
+			this.deviceFactory = deviceFactory;
+			return this;
+		}
+
+		public DebouncedDigitalInputDevice build() throws RuntimeIOException, NoSuchDeviceException {
+			// Default to the native device factory if not set
+			if (deviceFactory == null) {
+				deviceFactory = DeviceFactoryHelper.getNativeDeviceFactory();
+			}
+
+			if (pinInfo == null) {
+				pinInfo = deviceFactory.getBoardPinInfo().getByGpioNumberOrThrow(gpio.intValue());
+			}
+
+			return new DebouncedDigitalInputDevice(deviceFactory, pinInfo, pud, debounceTimeMs);
+		}
+	}
+
 	private int debounceTimeMs;
 	private Queue<DigitalInputEvent> eventQueue;
 	private Future<?> changeDetectionFuture;
@@ -68,7 +139,7 @@ public class DebouncedDigitalInputDevice extends DigitalInputDevice {
 	 */
 	public DebouncedDigitalInputDevice(int gpio, int debounceTimeMs)
 			throws RuntimeIOException, IllegalArgumentException {
-		this(gpio, GpioPullUpDown.NONE, GpioEventTrigger.BOTH, debounceTimeMs);
+		this(DeviceFactoryHelper.getNativeDeviceFactory(), gpio, GpioPullUpDown.NONE, debounceTimeMs);
 	}
 
 	/**
@@ -82,12 +153,40 @@ public class DebouncedDigitalInputDevice extends DigitalInputDevice {
 	 */
 	public DebouncedDigitalInputDevice(int gpio, GpioPullUpDown pud, int debounceTimeMs)
 			throws RuntimeIOException, IllegalArgumentException {
-		this(gpio, pud, GpioEventTrigger.BOTH, debounceTimeMs);
+		this(DeviceFactoryHelper.getNativeDeviceFactory(), gpio, pud, debounceTimeMs);
 	}
 
-	private DebouncedDigitalInputDevice(int gpio, GpioPullUpDown pud, GpioEventTrigger trigger, int debounceTimeMs)
-			throws RuntimeIOException, IllegalArgumentException {
-		super(gpio, pud, trigger);
+	/**
+	 * @param deviceFactory  Device factory to use to provision this debounced
+	 *                       digital input device
+	 * @param gpio           GPIO
+	 * @param pud            Pull-up/down configuration
+	 * @param debounceTimeMs Specifies the length of time (in seconds) that the
+	 *                       component will ignore changes in state after an initial
+	 *                       change.
+	 * @throws RuntimeIOException       if an I/O error occurs
+	 * @throws IllegalArgumentException if the debounce time is less than 0
+	 */
+	public DebouncedDigitalInputDevice(GpioDeviceFactoryInterface deviceFactory, int gpio, GpioPullUpDown pud,
+			int debounceTimeMs) throws RuntimeIOException, IllegalArgumentException {
+		this(deviceFactory, deviceFactory.getBoardPinInfo().getByGpioNumberOrThrow(gpio), pud, debounceTimeMs);
+	}
+
+	/**
+	 * @param deviceFactory  Device factory to use to provision this debounced
+	 *                       digital input device
+	 * @param pinInfo        Information about the GPIO pin to which the device is
+	 *                       connected
+	 * @param pud            Pull-up/down configuration
+	 * @param debounceTimeMs Specifies the length of time (in seconds) that the
+	 *                       component will ignore changes in state after an initial
+	 *                       change.
+	 * @throws RuntimeIOException       if an I/O error occurs
+	 * @throws IllegalArgumentException if the debounce time is less than 0
+	 */
+	public DebouncedDigitalInputDevice(GpioDeviceFactoryInterface deviceFactory, PinInfo pinInfo, GpioPullUpDown pud,
+			int debounceTimeMs) throws RuntimeIOException, IllegalArgumentException {
+		super(deviceFactory, pinInfo, pud, GpioEventTrigger.BOTH, pud != GpioPullUpDown.PULL_UP);
 
 		if (debounceTimeMs <= 0) {
 			throw new IllegalArgumentException("Debounce time must be > 0");
