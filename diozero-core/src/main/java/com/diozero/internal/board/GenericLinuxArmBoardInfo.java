@@ -87,6 +87,11 @@ public class GenericLinuxArmBoardInfo extends BoardInfo {
 		 */
 		for (String compatibility : LocalSystemInfo.getInstance().loadLinuxBoardCompatibility()) {
 			String[] values = compatibility.split(",");
+
+			for(int i = 0; i < values.length; i++) {
+				values[i] = values[i].trim();
+			}
+
 			// First look for classpath:/boarddefs/values[0]-values[1].txt
 			boolean loaded = loadBoardPinInfoDefinition(values);
 			if (!loaded) {
