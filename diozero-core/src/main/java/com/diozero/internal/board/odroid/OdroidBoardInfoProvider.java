@@ -41,9 +41,10 @@ public class OdroidBoardInfoProvider implements BoardInfoProvider {
 	public static final String MAKE = "Odroid";
 	public static final String C1_HARDWARE_ID = "ODROID-C1";
 	public static final String C2_HARDWARE_ID = "ODROID-C2";
+	public static final String N2_PLUS_HARDWARE_ID = "ODROID-N2Plus";
 
 	public enum Model {
-		C0, U2_U3, C1, XU_3_4, C2;
+		C0, U2_U3, C1, XU_3_4, C2, N2_Plus
 	}
 
 	@Override
@@ -55,6 +56,9 @@ public class OdroidBoardInfoProvider implements BoardInfoProvider {
 			}
 			if (hardware.equals(C2_HARDWARE_ID) || hardware.endsWith(C2_HARDWARE_ID)) {
 				return new OdroidC2BoardInfo();
+			}
+			if(hardware.endsWith(N2_PLUS_HARDWARE_ID)) {
+				return new OdroidN2PlusBoardInfo(localSysInfo.getMemoryKb());
 			}
 		}
 		return null;
@@ -89,6 +93,21 @@ public class OdroidBoardInfoProvider implements BoardInfoProvider {
 		@Override
 		public MmapGpioInterface createMmapGpio() {
 			return new OdroidC2MmapGpio();
+		}
+	}
+
+	public static class OdroidN2PlusBoardInfo extends GenericLinuxArmBoardInfo {
+		private static final int MEMORY_2G = 2_048_000;
+		private static final int MEMORY_4G = 4_096_000;
+		private static final float ADC_VREF = 1.8F;
+
+		OdroidN2PlusBoardInfo(int memory) {
+			super(MAKE, Model.N2_Plus.toString(), memory > MEMORY_2G ? MEMORY_4G : MEMORY_2G, ADC_VREF);
+		}
+
+		@Override
+		public MmapGpioInterface createMmapGpio() {
+			return new OdroidN2PlusMmapGpio();
 		}
 	}
 }
