@@ -104,5 +104,10 @@ public class OdroidBoardInfoProvider implements BoardInfoProvider {
 		OdroidN2PlusBoardInfo(int memory) {
 			super(MAKE, Model.N2_Plus.toString(), memory > MEMORY_2G ? MEMORY_4G : MEMORY_2G, ADC_VREF);
 		}
+
+		@Override
+		public MmapGpioInterface createMmapGpio() {
+			return new OdroidN2PlusMmapGpio();
+		}
 	}
 }
