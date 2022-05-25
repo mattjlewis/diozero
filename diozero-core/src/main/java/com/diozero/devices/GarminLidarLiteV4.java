@@ -9,7 +9,7 @@ package com.diozero.devices;
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
- * Copyright (C) 2016 - 2021 diozero
+ * Copyright (C) 2016 - 2022 diozero
  * %%
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -496,8 +496,8 @@ public class GarminLidarLiteV4 implements DistanceSensorInterface {
 
 	/**
 	 * Get the high accuracy mode. While high accuracy mode is disabled, you can
-	 * adjust the {@link PowerMode} to {@link PowerMode.ASYNCHRONOUS Asynchronous}
-	 * or {@link PowerMode.SYNCHRONOUS Synchronous} if required.
+	 * adjust the {@link PowerMode} to {@link PowerMode#ASYNCHRONOUS Asynchronous}
+	 * or {@link PowerMode#SYNCHRONOUS Synchronous} if required.
 	 *
 	 * <dl>
 	 * <dt>0x00</dt>
@@ -526,8 +526,8 @@ public class GarminLidarLiteV4 implements DistanceSensorInterface {
 
 	/**
 	 * Set the high accuracy mode. While high accuracy mode is disabled, you can
-	 * adjust the {@link PowerMode} to {@link PowerMode.ASYNCHRONOUS Asynchronous}
-	 * or {@link PowerMode.SYNCHRONOUS Synchronous} if required.
+	 * adjust the {@link PowerMode} to {@link PowerMode#ASYNCHRONOUS Asynchronous}
+	 * or {@link PowerMode#SYNCHRONOUS Synchronous} if required.
 	 *
 	 * <dl>
 	 * <dt>0x00</dt>
@@ -538,7 +538,7 @@ public class GarminLidarLiteV4 implements DistanceSensorInterface {
 	 * user.</dd>
 	 * </dl>
 	 *
-	 * Note you must set the {@link PowerMode} to {@link PowerMode.ALWAYS_ON Always
+	 * Note you must set the {@link PowerMode} to {@link PowerMode#ALWAYS_ON Always
 	 * On} before you adjust to a non-zero value.
 	 *
 	 * @param accuracyMode the number of distance measurements to accumulate and
@@ -607,7 +607,7 @@ public class GarminLidarLiteV4 implements DistanceSensorInterface {
 	 * Values 0x20 to 0x60 generally perform well.
 	 * </p>
 	 *
-	 * @param detectionSensitivity detection sensitivity value (0..255)
+	 * @return detectionSensitivity detection sensitivity value (0..255)
 	 */
 	public int getDetectionSensitivity() {
 		return device.readByteData(DETECTION_SENSITIVITY) & 0xff;
@@ -734,7 +734,7 @@ public class GarminLidarLiteV4 implements DistanceSensorInterface {
 	 * Take a single distance measurement reading in centimetres.
 	 *
 	 * @return distance in centimetres
-	 * @throws InterruptedException if interrupted while taking the reading
+	 * @throws RuntimeInterruptedException if interrupted while taking the reading
 	 */
 	public int getSingleReading() throws RuntimeInterruptedException {
 		device.writeByteData(ACQ_COMMANDS, RECEIVER_BIAS_CORRECTION_ENABLED);

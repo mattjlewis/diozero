@@ -14,7 +14,7 @@ import java.util.concurrent.ScheduledFuture;
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
- * Copyright (C) 2016 - 2021 diozero
+ * Copyright (C) 2016 - 2022 diozero
  * %%
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal

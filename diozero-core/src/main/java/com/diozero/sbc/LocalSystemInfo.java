@@ -5,11 +5,11 @@ package com.diozero.sbc;
  * Organisation: diozero
  * Project:      diozero - Core
  * Filename:     LocalSystemInfo.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
- * Copyright (C) 2016 - 2021 diozero
+ * Copyright (C) 2016 - 2022 diozero
  * %%
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -17,10 +17,10 @@ package com.diozero.sbc;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -135,6 +135,19 @@ import com.diozero.util.StringUtil;
  * os.name: Linux
  * os.arch: aarch64
  * sun.arch.data.model: 64
+ *
+ * Board: Odroid N2+
+ * /etc/os-release PRETTY_NAME:     Ubuntu 20.04.4 LTS
+ * /proc/device-tree/compatible:    amlogic, g12b^@
+ * /proc/device-tree/model:         Hardkernel ODROID-N2Plus^@
+ * /proc/device-tree/serial-number: ??
+ * /proc/cpuinfo:
+ *   Hardware : Hardkernel ODROID-N2Plus
+ *   Revision : 0400
+ *   Serial   : 3bfa5067-da47-40c8-a303-001e06430dc1
+ * os.name: ??
+ * os.arch: ??
+ * sun.arch.data.model: ??
  *
  * Board: NanoPi Duo2
  * /etc/os-release PRETTY_NAME:     Armbian 20.08.17 Buster

@@ -21,7 +21,11 @@ redirect_from:
 + Waveshare 7.5" e-ink display
 + Optimise GpioExpander when used for PWM output on multiple pins
 
-## 1.3.2 (In progress)
+## 1.3.3
+
++ Ordoid N2+ (thanks to btajuddin)
+
+## 1.3.2
 
 + HD44780 cleanup - optimising use of GpioExpander interface plus added option to connect via GPIOs
 + BBB - fix PWM module lookup for all PWM numbers
@@ -31,6 +35,7 @@ redirect_from:
 + Support multiple instances of remote device factories (pigpioJ, Firmata, gRPC)
 + I<sup>2</sup>C exceptions - throw an UnsupportedOperationException if the returned I2CFuncs
 indicate that the function isn't support; remote I/O response aren't retried
++ DebouncedDigitalInputDevice allows a device factory to be specified.
 
 ## 1.3.1
 

@@ -5,11 +5,11 @@ package com.diozero.internal.board;
  * Organisation: diozero
  * Project:      diozero - Core
  * Filename:     GenericLinuxArmBoardInfo.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
- * Copyright (C) 2016 - 2021 diozero
+ * Copyright (C) 2016 - 2022 diozero
  * %%
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -17,10 +17,10 @@ package com.diozero.internal.board;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -88,7 +88,7 @@ public class GenericLinuxArmBoardInfo extends BoardInfo {
 		for (String compatibility : LocalSystemInfo.getInstance().loadLinuxBoardCompatibility()) {
 			String[] values = compatibility.split(",");
 
-			for(int i = 0; i < values.length; i++) {
+			for (int i = 0; i < values.length; i++) {
 				values[i] = values[i].trim();
 			}
 
