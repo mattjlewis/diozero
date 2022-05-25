@@ -9,7 +9,6 @@
 		<version>1.3.3</version>
 	</parent>
 
-	<groupId>com.diozero</groupId>
 	<artifactId>diozero-application</artifactId>
 	<packaging>maven-archetype</packaging>
 	<name>diozero - Application Archetype</name>

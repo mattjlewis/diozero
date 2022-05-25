@@ -96,6 +96,18 @@
 
 	<properties>
 	</properties>
+	
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>versions-maven-plugin</artifactId>
+				<configuration>
+					<rulesUri>file:///${maven.multiModuleProjectDirectory}/maven-version-rules.xml</rulesUri>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 
 	<profiles>
 		<profile>
