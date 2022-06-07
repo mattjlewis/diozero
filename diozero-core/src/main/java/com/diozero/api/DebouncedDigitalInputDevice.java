@@ -83,6 +83,7 @@ public class DebouncedDigitalInputDevice extends DigitalInputDevice {
 		private Integer gpio;
 		private PinInfo pinInfo;
 		private GpioPullUpDown pud = GpioPullUpDown.NONE;
+		private Boolean activeHigh;
 		private int debounceTimeMs;
 		private GpioDeviceFactoryInterface deviceFactory;
 
@@ -101,12 +102,22 @@ public class DebouncedDigitalInputDevice extends DigitalInputDevice {
 			return this;
 		}
 
+		public Builder setActiveHigh(boolean activeHigh) {
+			this.activeHigh = Boolean.valueOf(activeHigh);
+			return this;
+		}
+
 		public Builder setDeviceFactory(GpioDeviceFactoryInterface deviceFactory) {
 			this.deviceFactory = deviceFactory;
 			return this;
 		}
 
 		public DebouncedDigitalInputDevice build() throws RuntimeIOException, NoSuchDeviceException {
+			// Determine activeHigh from pud if not explicitly set
+			if (activeHigh == null) {
+				activeHigh = Boolean.valueOf(pud != GpioPullUpDown.PULL_UP);
+			}
+
 			// Default to the native device factory if not set
 			if (deviceFactory == null) {
 				deviceFactory = DeviceFactoryHelper.getNativeDeviceFactory();
@@ -116,7 +127,8 @@ public class DebouncedDigitalInputDevice extends DigitalInputDevice {
 				pinInfo = deviceFactory.getBoardPinInfo().getByGpioNumberOrThrow(gpio.intValue());
 			}
 
-			return new DebouncedDigitalInputDevice(deviceFactory, pinInfo, pud, debounceTimeMs);
+			return new DebouncedDigitalInputDevice(deviceFactory, pinInfo, pud, activeHigh.booleanValue(),
+					debounceTimeMs);
 		}
 	}
 
@@ -169,7 +181,26 @@ public class DebouncedDigitalInputDevice extends DigitalInputDevice {
 	 */
 	public DebouncedDigitalInputDevice(GpioDeviceFactoryInterface deviceFactory, int gpio, GpioPullUpDown pud,
 			int debounceTimeMs) throws RuntimeIOException, IllegalArgumentException {
-		this(deviceFactory, deviceFactory.getBoardPinInfo().getByGpioNumberOrThrow(gpio), pud, debounceTimeMs);
+		this(deviceFactory, deviceFactory.getBoardPinInfo().getByGpioNumberOrThrow(gpio), pud,
+				pud != GpioPullUpDown.PULL_UP, debounceTimeMs);
+	}
+
+	/**
+	 * @param deviceFactory  Device factory to use to provision this debounced
+	 *                       digital input device
+	 * @param gpio           GPIO
+	 * @param pud            Pull-up/down configuration
+	 * @param activeHigh     Set to true if digital 1 is to be treated as active
+	 * @param debounceTimeMs Specifies the length of time (in seconds) that the
+	 *                       component will ignore changes in state after an initial
+	 *                       change.
+	 * @throws RuntimeIOException       if an I/O error occurs
+	 * @throws IllegalArgumentException if the debounce time is less than 0
+	 */
+	public DebouncedDigitalInputDevice(GpioDeviceFactoryInterface deviceFactory, int gpio, GpioPullUpDown pud,
+			boolean activeHigh, int debounceTimeMs) throws RuntimeIOException, IllegalArgumentException {
+		this(deviceFactory, deviceFactory.getBoardPinInfo().getByGpioNumberOrThrow(gpio), pud, activeHigh,
+				debounceTimeMs);
 	}
 
 	/**
@@ -178,6 +209,7 @@ public class DebouncedDigitalInputDevice extends DigitalInputDevice {
 	 * @param pinInfo        Information about the GPIO pin to which the device is
 	 *                       connected
 	 * @param pud            Pull-up/down configuration
+	 * @param activeHigh     Set to true if digital 1 is to be treated as active
 	 * @param debounceTimeMs Specifies the length of time (in seconds) that the
 	 *                       component will ignore changes in state after an initial
 	 *                       change.
@@ -185,8 +217,8 @@ public class DebouncedDigitalInputDevice extends DigitalInputDevice {
 	 * @throws IllegalArgumentException if the debounce time is less than 0
 	 */
 	public DebouncedDigitalInputDevice(GpioDeviceFactoryInterface deviceFactory, PinInfo pinInfo, GpioPullUpDown pud,
-			int debounceTimeMs) throws RuntimeIOException, IllegalArgumentException {
-		super(deviceFactory, pinInfo, pud, GpioEventTrigger.BOTH, pud != GpioPullUpDown.PULL_UP);
+			boolean activeHigh, int debounceTimeMs) throws RuntimeIOException, IllegalArgumentException {
+		super(deviceFactory, pinInfo, pud, GpioEventTrigger.BOTH, activeHigh);
 
 		if (debounceTimeMs <= 0) {
 			throw new IllegalArgumentException("Debounce time must be > 0");
