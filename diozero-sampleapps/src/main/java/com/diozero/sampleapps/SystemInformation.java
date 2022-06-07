@@ -72,8 +72,8 @@ public class SystemInformation {
 		AnsiConsole.out().format(render("@|bold diozero version|@: %s%n"), Diozero.getVersion());
 		*/
 		System.out.format(ansi().render("@|bold diozero version|@: %s%n").toString(), Diozero.getVersion());
-		System.out.format(ansi().render("@|bold Operating System|@: %s %s%n").toString(),
-				sys_info.getOperatingSystemId(), sys_info.getOperatingSystemVersion());
+		System.out.format(ansi().render("@|bold Operating System|@: %s %s - %s%n").toString(),
+				sys_info.getOperatingSystemId(), sys_info.getOperatingSystemVersion(), sys_info.getOsArch());
 		System.out.format(ansi().render("@|bold CPU Temperature|@: %.2f%n").toString(),
 				Float.valueOf(sys_info.getCpuTemperature()));
 		System.out.println();

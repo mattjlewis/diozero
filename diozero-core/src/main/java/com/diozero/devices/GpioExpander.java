@@ -52,10 +52,11 @@ public interface GpioExpander extends DeviceInterface {
 	void setDirections(int port, byte directions);
 
 	/**
-	 * Set the output value for a pins on this port.
+	 * Set the output value for all pins on this port.
 	 *
 	 * @param port   the bank of up to 8 GPIOs
-	 * @param values bit mask specifying on/off values. 1 = on, 0 = off
+	 * @param values bit mask specifying on/off values for individual GPIOs. 1 = on,
+	 *               0 = off
 	 */
 	void setValues(int port, byte values);
 }

@@ -19,7 +19,15 @@ redirect_from:
 + Tidy up sampleapps with sub-packages as per diozero core (api, devices, motor, util, sbc, ...)
 + SPI support for Arduino devices over Firmata
 + Waveshare 7.5" e-ink display
-+ Optimise GpioExpander when used for PWM output on multiple pins
++ Optimise GpioExpander when used for Software PWM output on multiple pins. Currently
+`GpioExpander.setValues()` will be invoked multiple times, once per pin, whereas a single call for
+multiple pins should be used instead.
+
+## 1.3.4
+
++ Active high flag in DebouncedDigitalInputDevice (#93)
++ Interface for setting arbitrary GPIO alt functions (#90)
++ Corrected board definition file for Pi ZeroW2
 
 ## 1.3.3
 

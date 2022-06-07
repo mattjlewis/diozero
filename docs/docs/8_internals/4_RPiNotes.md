@@ -27,13 +27,13 @@ sudo apt -y install pigpio-tools libpigpiod-if-dev libpigpiod-if2-1
 ## Java
 
 ```shell
-sudo apt -y install openjdk-11-jdk
+sudo apt -y install openjdk-11-jdk-headless openjdk-17-jdk-headless
 ```
 
 ## ZSH
 
 ```shell
-sudo apt install zsh
+sudo apt -y install zsh
 chsh -s /usr/bin/zsh
 sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 ```
@@ -44,7 +44,8 @@ cd ~/.oh-my-zsh/themes
 cp robbyrussell.zsh-theme robbyrussell_tweak.zsh-theme
 ```
 
-Edit `robbyrussell_tweak.zsh-theme` and change the `PROMPT` value to include this prefix `%{$fg_bold[white]%}%M%{$reset_color%} `:
+Edit `robbyrussell_tweak.zsh-theme` and change the `PROMPT` value to include this prefix `%{$fg_bold[white]%}%M%{$reset_color%} `.
+The PROMPT line should look like this:
 ```
 PROMPT="%{$fg_bold[white]%}%M%{$reset_color%} %(?:%{$fg_bold[green]%}➜ :%{$fg_bold[red]%}➜ )"
 ```
