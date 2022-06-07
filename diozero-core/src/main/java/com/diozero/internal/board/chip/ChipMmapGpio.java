@@ -116,6 +116,29 @@ public class ChipMmapGpio implements MmapGpioInterface {
 
 	@Override
 	public void setMode(int gpio, DeviceMode mode) {
+		switch (mode) {
+		case DIGITAL_INPUT:
+			// mmapIntBuffer.put(config_reg, current_reg_val);
+			setModeUnchecked(gpio, 0b000);
+			break;
+		case DIGITAL_OUTPUT:
+			// mmapIntBuffer.put(config_reg, current_reg_val | (0b001 << shift));
+			setModeUnchecked(gpio, 0b001);
+			break;
+		case PWM_OUTPUT:
+			if (gpio != 34 && gpio != 205) {
+				throw new InvalidModeException("Invalid GPIO mode " + mode + " for pin " + gpio);
+			}
+			// mmapIntBuffer.put(config_reg, current_reg_val | (0b010 << shift));
+			setModeUnchecked(gpio, 0b010);
+			break;
+		default:
+			throw new InvalidModeException("Invalid GPIO mode " + mode + " for pin " + gpio);
+		}
+	}
+
+	@Override
+	public void setModeUnchecked(int gpio, int mode) {
 		int port = getPort(gpio);
 		int pin = getPin(gpio);
 		// int config_reg = PIO_START_INT_OFFSET + port*PORT_INT_OFFSET +
@@ -125,22 +148,8 @@ public class ChipMmapGpio implements MmapGpioInterface {
 		// Blank out the old bits so we can overwrite them
 		int shift = (pin % 8) * 4;
 		current_reg_val &= ~(0b111 << shift);
-		switch (mode) {
-		case DIGITAL_INPUT:
-			mmapIntBuffer.put(config_reg, current_reg_val);
-			break;
-		case DIGITAL_OUTPUT:
-			mmapIntBuffer.put(config_reg, current_reg_val | (0b001 << shift));
-			break;
-		case PWM_OUTPUT:
-			if (gpio != 34 && gpio != 205) {
-				throw new InvalidModeException("Invalid GPIO mode " + mode + " for pin " + gpio);
-			}
-			mmapIntBuffer.put(config_reg, current_reg_val | (0b010 << shift));
-			break;
-		default:
-			throw new InvalidModeException("Invalid GPIO mode " + mode + " for pin " + gpio);
-		}
+
+		mmapIntBuffer.put(config_reg, current_reg_val | (mode << shift));
 	}
 
 	public GpioPullUpDown getPullUpDown(int gpio) {

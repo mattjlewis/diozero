@@ -116,20 +116,8 @@ public class AllwinnerH6MmapGpio implements MmapGpioInterface {
 
 	@Override
 	public void setMode(int gpio, DeviceMode mode) {
-		/*-
-		int bank = gpio >> 5;
-		int index = gpio - (bank << 5);
-		int int_offset = ((bank * 36) + ((index >> 3) << 2)) / 4;
-		int shift = ((index - ((index >> 3) << 3)) << 2);
-		 */
-		int int_offset = (gpio >> 3) + 5 * (gpio >> 5);
-		int shift = (gpio % 8) << 2;
-
-		int phyaddr = GPIOA_INT_OFFSET + int_offset;
-
-		int reg_val = gpioAMmapIntBuffer.get(phyaddr);
 		int mode_val;
-		
+
 		switch (mode) {
 		case DIGITAL_INPUT:
 			mode_val = 0b000;
@@ -145,10 +133,28 @@ public class AllwinnerH6MmapGpio implements MmapGpioInterface {
 			return;
 		}
 
-		reg_val &= ~(0b111 << shift);
-		reg_val |= (mode_val << shift);
+		setModeUnchecked(gpio, mode_val);
+	}
 
-		gpioAMmapIntBuffer.put(phyaddr, reg_val);
+	@Override
+	public void setModeUnchecked(int gpio, int mode) {
+		/*-
+		int bank = gpio >> 5;
+		int index = gpio - (bank << 5);
+		int int_offset = ((bank * 36) + ((index >> 3) << 2)) / 4;
+		int shift = ((index - ((index >> 3) << 3)) << 2);
+		 */
+		int int_offset = (gpio >> 3) + 5 * (gpio >> 5);
+		int shift = (gpio % 8) << 2;
+
+		int addr = GPIOA_INT_OFFSET + int_offset;
+
+		int reg_val = gpioAMmapIntBuffer.get(addr);
+
+		reg_val &= ~(0b111 << shift);
+		reg_val |= (mode << shift);
+
+		gpioAMmapIntBuffer.put(addr, reg_val);
 	}
 
 	@Override

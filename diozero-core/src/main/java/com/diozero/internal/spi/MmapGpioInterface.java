@@ -36,12 +36,37 @@ import com.diozero.api.GpioPullUpDown;
 
 public interface MmapGpioInterface extends AutoCloseable {
 	void initialise();
+
 	@Override
-	public void close();
-	
+	void close();
+
 	DeviceMode getMode(int gpio);
+
+	/**
+	 * Set the new mode for this GPIO. Note typically only supports
+	 * {@link com.diozero.api.DeviceMode#DIGITAL_INPUT DIGITAL_INPUT},
+	 * {@link com.diozero.api.DeviceMode.DeviceMode#DIGITAL_OUTPUT DIGITAL_OUTPUT}
+	 * and possibly {@link com.diozero.api.DeviceMode.DeviceMode#PWM_OUTPUT
+	 * PWM_OUTPUT}.
+	 *
+	 * @param gpio The GPIO to configure
+	 * @param mode The new mode
+	 */
 	void setMode(int gpio, DeviceMode mode);
+
+	/**
+	 * Set the new mode for this GPIO without any checks on either the GPIO number
+	 * or new mode. <strong>Health warning</strong>: make sure you know what you are
+	 * doing when invoking this method.
+	 *
+	 * @param gpio The GPIO to configure
+	 * @param mode The new mode
+	 */
+	void setModeUnchecked(int gpio, int mode);
+
 	void setPullUpDown(int gpio, GpioPullUpDown pud);
+
 	boolean gpioRead(int gpio);
+
 	void gpioWrite(int gpio, boolean value);
 }

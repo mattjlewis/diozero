@@ -298,6 +298,28 @@ public class OdroidC2MmapGpio implements MmapGpioInterface {
 
 	@Override
 	public void setMode(int gpio, DeviceMode mode) {
+		switch (mode) {
+		case DIGITAL_INPUT:
+			// gpioIntBuffer.put(fsel, gpioIntBuffer.get(fsel) | (1 << shift));
+			// *(gpio + fsel) = (*(gpio + fsel) | (1 << shift));
+			// mmap_int_buffer.put(fsel, mmap_int_buffer.get(fsel) | (1 << shift));
+			setModeUnchecked(gpio, 1);
+			// _pullUpDnControl(origPin, PUD_OFF);
+			// _pullUpDnControl(origPin, PUD_ON);
+			break;
+		case DIGITAL_OUTPUT:
+			// gpioIntBuffer.put(fsel, gpioIntBuffer.get(fsel) & ~(1 << shift));
+			// *(gpio + fsel) = (*(gpio + fsel) & ~(1 << shift));
+			// mmap_int_buffer.put(fsel, mmap_int_buffer.get(fsel) & ~(1 << shift));
+			setModeUnchecked(gpio, 0);
+			break;
+		default:
+			throw new InvalidModeException("Invalid GPIO mode " + mode + " for pin " + gpio);
+		}
+	}
+
+	@Override
+	public void setModeUnchecked(int gpio, int mode) {
 		int fsel = gpioToOutputEnableRegOffset(gpio);
 		int shift = gpioToRegShiftBit(gpio);
 		// int fsel = gpio < C2_GPIOX_PIN_START ? C2_GPIOY_FSEL_REG_OFFSET :
@@ -306,25 +328,14 @@ public class OdroidC2MmapGpio implements MmapGpioInterface {
 
 		if (fsel == -1 || shift == -1) {
 			Logger.error("Invalid GPIO {}", Integer.valueOf(gpio));
-			return;
 		}
 
 		MmapIntBuffer mmap_int_buffer = getMmapIntBuffer(gpio);
-		switch (mode) {
-		case DIGITAL_INPUT:
-			// gpioIntBuffer.put(fsel, gpioIntBuffer.get(fsel) | (1 << shift));
-			// *(gpio + fsel) = (*(gpio + fsel) | (1 << shift));
-			mmap_int_buffer.put(fsel, mmap_int_buffer.get(fsel) | (1 << shift));
-			// _pullUpDnControl(origPin, PUD_OFF);
-			// _pullUpDnControl(origPin, PUD_ON);
-			break;
-		case DIGITAL_OUTPUT:
-			// gpioIntBuffer.put(fsel, gpioIntBuffer.get(fsel) & ~(1 << shift));
-			// *(gpio + fsel) = (*(gpio + fsel) & ~(1 << shift));
+		// Mode can only be 0 or 1
+		if (mode == 0) {
 			mmap_int_buffer.put(fsel, mmap_int_buffer.get(fsel) & ~(1 << shift));
-			break;
-		default:
-			throw new InvalidModeException("Invalid GPIO mode " + mode + " for pin " + gpio);
+		} else {
+			mmap_int_buffer.put(fsel, mmap_int_buffer.get(fsel) | (1 << shift));
 		}
 	}
 

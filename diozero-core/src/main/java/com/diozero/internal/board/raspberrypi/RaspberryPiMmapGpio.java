@@ -229,15 +229,15 @@ public class RaspberryPiMmapGpio implements MmapGpioInterface {
 
 	@Override
 	public void setMode(int gpio, DeviceMode mode) {
-		int reg = gpio / 10;
-		int shift = (gpio % 10) * 3;
-
 		switch (mode) {
 		case DIGITAL_INPUT:
-			mmapIntBuffer.put(reg, mmapIntBuffer.get(reg) & ~(7 << shift));
+			// mmapIntBuffer.put(reg, mmapIntBuffer.get(reg) & ~(0b111 << shift));
+			setModeUnchecked(gpio, 0);
 			break;
 		case DIGITAL_OUTPUT:
-			mmapIntBuffer.put(reg, mmapIntBuffer.get(reg) & ~(7 << shift) | (1 << shift));
+			// mmapIntBuffer.put(reg, mmapIntBuffer.get(reg) & ~(0b111 << shift) | (1 <<
+			// shift));
+			setModeUnchecked(gpio, 1);
 			break;
 		case PWM_OUTPUT:
 			int m_val;
@@ -250,11 +250,21 @@ public class RaspberryPiMmapGpio implements MmapGpioInterface {
 			} else {
 				throw new IllegalArgumentException("Invalid GPIO mode " + mode + " for pin " + gpio);
 			}
-			mmapIntBuffer.put(reg, mmapIntBuffer.get(reg) & ~(7 << shift) | (m_val << shift));
+			// mmapIntBuffer.put(reg, mmapIntBuffer.get(reg) & ~(7 << shift) | (m_val <<
+			// shift));
+			setModeUnchecked(gpio, m_val);
 			break;
 		default:
 			throw new IllegalArgumentException("Invalid GPIO mode " + mode + " for pin " + gpio);
 		}
+	}
+
+	@Override
+	public void setModeUnchecked(int gpio, int mode) {
+		int reg = gpio / 10;
+		int shift = (gpio % 10) * 3;
+
+		mmapIntBuffer.put(reg, mmapIntBuffer.get(reg) & ~(0b111 << shift) | (mode << shift));
 	}
 
 	@Override

@@ -278,6 +278,11 @@ public class TinkerBoardMmapGpio implements MmapGpioInterface {
 	}
 
 	@Override
+	public void setModeUnchecked(int gpio, int mode) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
 	public void setPullUpDown(int gpio, GpioPullUpDown pud) {
 		Logger.debug("setPullUpDown({}, {})", Integer.valueOf(gpio), pud);
 
