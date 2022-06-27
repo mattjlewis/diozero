@@ -68,7 +68,7 @@ The sockets port defaults to 3030 but can be override via the `diozero.firmata.t
 Example command line:
 
 ```shell
-java -cp diozero-sampleapps-{{site.version}}.jar:diozero-provider-firmata-{{site.version}}.jar com.diozero.sampleapps.LEDTest -DFIRMATA_PORT=COM5 12
+java -cp diozero-sampleapps-{{site.version}}.jar:diozero-provider-firmata-{{site.version}}.jar com.diozero.sampleapps.LEDTest -Ddiozero.firmata.serialPort=COM5 12
 ```
 
 \* Fixes for Raspberry Pi Pico:
