@@ -63,7 +63,7 @@ the following devices:
 The Firmata adapter first looks for the `diozero.firmata.serialPort` property - if this set (either via
 command line or environment variable) the serial communication protocol is used. Otherwise, the
 adapter will look for the `diozero.firmata.tcpHostname` property and if set use sockets communication.
-The sockets port defaults to 3030 but can be override via the `diozero.firmata.tcpPort` property.
+The sockets port defaults to 3030 but can be overridden via the `diozero.firmata.tcpPort` property.
 
 Example command line:
 
