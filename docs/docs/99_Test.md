@@ -6,59 +6,91 @@ nav_exclude: true
 
 # Test Page
 
-{: .note }
-> Some note message
->
-> Blah blah blah
+A note message without a title:
 
 {: .note }
-> Some note message with title
+> A note message without a title.
 >
-> Blah blah blah
+> Blah blah blah.
+
+A note message with a title:
+
+{: .note-title }
+> A Note Title
+>
+> A note message with a title.
+>
+> Blah blah blah.
+
+A note with a title and a list:
+
+{: .note-title }
+> A Note Title
+>
+> A note with a title and a list.
+>
+> * List item 1
+> * List item 2
+>
+> blah blah blah.
+
+An attention message without a title:
 
 {: .attention }
-> Some attention message
+> An attention message without a title.
 >
-> Blah blah blah
+> Blah blah blah.
+
+An attention message with a title:
 
 {: .attention-title }
-> Some attention message with title
+> Attention Message Title
 >
-> Blah blah blah
+> An attention message with a title.
+>
+> Blah blah blah.
 
-A warning message:
+A warning message without a title:
 
 {: .warning }
-> Some warning message
+> A warning message without a title.
 >
-> Blah blah blah
+> Blah blah blah.
 
-A danger message:
+A warning message with a title:
+
+{: .warning-title }
+> A Warning Title
+>
+> A warning message with a title.
+>
+> Blah blah blah.
+
+A danger message without a title and with a list:
 
 {: .danger }
-> Some danger message
+> A danger message without a title and with a list.
 >
 > * List item 1
 > * List item 2
 >
-> Blah blah blah
+> Blah blah blah.
 
+A danger message with a title and with a list:
+
+{: .danger }
+> A Danger Title
+>
+> A danger message with a title and with a list.
+>
+> * List item 1
+> * List item 2
+>
+> Blah blah blah.
+
+An attention message with the style definition after:
+
+> An attention message with the style definition after.
+>
+> Blah blah blah.
 {: .attention }
-> Some attention message with the style definition after
->
-> Blah blah blah
-
-{: .note-title }
-> My Note Title
-> Some admonition note message
->
-> Blah blah blah
-
-{: .note-title }
-> My Note Title 
-> Some admonition note message
->
-> * List item 1
-> * List item 2
->
-> blah blah blah
