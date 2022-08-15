@@ -82,6 +82,7 @@
 		<module>diozero-archetype</module>
 		<module>diozero-core</module>
 		<module>diozero-imu-devices</module>
+		<module>diozero-provider-mock</module>
 		<module>diozero-provider-bbbiolib</module>
 		<module>diozero-provider-firmata</module>
 		<module>diozero-provider-pigpio</module>

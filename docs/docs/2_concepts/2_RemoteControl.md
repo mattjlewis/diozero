@@ -2,17 +2,17 @@
 parent: Concepts
 nav_order: 2
 permalink: /concepts/remotecontrol.html
-Title: Remote Control
+Title: Remote Control & Microcontrollers
 redirect_from:
   - /en/latest/RemoteControl/index.html
   - /en/stable/RemoteControl/index.html
 ---
 
-# Remote Control
+# Remote Control & Microcontrollers
 {: .no_toc }
 
-It is possible to remotely control your devices from another computer, enabling you to develop and
-test your application directly from your development environment.
+It is possible to remotely control your devices, including microcontrollers, from another computer,
+enabling you to develop and test your application directly from your development environment.
 
 {: .note-title }
 > Command Line Examples
@@ -37,11 +37,11 @@ diozero application by adding diozero-provider-remote-{{ site.version }}.jar to 
 setting `diozero.remote.hostname` either via the command line or as an environment variable.
 
 The diozero-remote-server application will also make use of diozero providers. For example, you
-could run it with diozero-provider-pigpio-{{ site.version }}.jar on the classpath and it would use
+could run it with `diozero-provider-pigpio-{{ site.version }}.jar` on the classpath and it would use
 pigpio for the underlying device communication. You could even chain to another
-diozero-remove-server instance by using diozero-provider-remote-{{ site.version }}.jar.
+diozero-remove-server instance by using `diozero-provider-remote-{{ site.version }}.jar`.
 
-## Firmata
+## Firmata for Microcontrollers
 
 Firmata compatible devices are supported via the
 [diozero-provider-firmata](https://github.com/mattjlewis/diozero/tree/master/diozero-provider-firmata)
@@ -86,8 +86,10 @@ java -cp diozero-sampleapps-{{site.version}}.jar:diozero-provider-firmata-{{site
 #define IS_PIN_ANALOG(p)        ((p) >= 26 && (p) < 26 + TOTAL_ANALOG_PINS)
 #define IS_PIN_PWM(p)           digitalPinHasPWM(p)
 #define IS_PIN_SERVO(p)         (IS_PIN_DIGITAL(p) && (p) != LED_BUILTIN)
-// From the data sheet I2C-0 defaults to GP 4 (SDA) & 5 (SCL) (physical pins 6 & 7)
-// However, v2.3.1 of mbed_rp2040 defines WIRE_HOWMANY to 1 and uses the non-default GPs 6 & 7:
+// From the data sheet I2C-0 defaults to GP 4 (SDA) & 5 (SCL) (physical pins 6 & 7). Note:
+// v2.3.1 of mbed_rp2040 defines WIRE_HOWMANY to 1 and uses the non-default GPs 6 & 7.
+// v3.1.1 of mbed_rp2040 defines WIRE_HOWMANY to 1 and uses the default GPs 4 & 5.
+// See: variants/RASPBERRY_PI_PICO/pins_arduino.h
 //#define WIRE_HOWMANY	(1)
 //#define PIN_WIRE_SDA            (6u)
 //#define PIN_WIRE_SCL            (7u)

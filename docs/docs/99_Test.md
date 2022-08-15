@@ -78,7 +78,7 @@ A danger message without a title and with a list:
 
 A danger message with a title and with a list:
 
-{: .danger }
+{: .danger-title }
 > A Danger Title
 >
 > A danger message with a title and with a list.
@@ -94,3 +94,12 @@ An attention message with the style definition after:
 >
 > Blah blah blah.
 {: .attention }
+
+An attention message with a title and the style definition after:
+
+> An Attention Title
+>
+> An attention message with the style definition after.
+>
+> Blah blah blah.
+{: .attention-title }

@@ -200,20 +200,20 @@ public class BoardPinInfo {
 		}
 	}
 
-	public PinInfo addDacPinInfo(int dacNumber, int pin) {
-		return addDacPinInfo(PinInfo.DEFAULT_HEADER, dacNumber, DEFAULT_DAC_NAME_PREFIX + dacNumber, pin);
+	public PinInfo addDacPinInfo(int dacNumber, int physicalPin) {
+		return addDacPinInfo(PinInfo.DEFAULT_HEADER, dacNumber, DEFAULT_DAC_NAME_PREFIX + dacNumber, physicalPin);
 	}
 
-	public PinInfo addDacPinInfo(int dacNumber, String name, int pin) {
-		return addDacPinInfo(PinInfo.DEFAULT_HEADER, dacNumber, name, pin);
+	public PinInfo addDacPinInfo(int dacNumber, String name, int physicalPin) {
+		return addDacPinInfo(PinInfo.DEFAULT_HEADER, dacNumber, name, physicalPin);
 	}
 
-	public PinInfo addDacPinInfo(String header, int dacNumber, int pin) {
-		return addDacPinInfo(PinInfo.DEFAULT_HEADER, dacNumber, DEFAULT_DAC_NAME_PREFIX + dacNumber, pin);
+	public PinInfo addDacPinInfo(String header, int dacNumber, int physicalPin) {
+		return addDacPinInfo(PinInfo.DEFAULT_HEADER, dacNumber, DEFAULT_DAC_NAME_PREFIX + dacNumber, physicalPin);
 	}
 
-	public PinInfo addDacPinInfo(String header, int dacNumber, String name, int pin) {
-		PinInfo pin_info = new PinInfo(DAC_KEY_PREFIX, header, dacNumber, pin, name, PinInfo.ANALOG_OUTPUT);
+	public PinInfo addDacPinInfo(String header, int dacNumber, String name, int physicalPin) {
+		PinInfo pin_info = new PinInfo(DAC_KEY_PREFIX, header, dacNumber, physicalPin, name, PinInfo.ANALOG_OUTPUT);
 		addDacPinInfo(pin_info);
 		return pin_info;
 	}

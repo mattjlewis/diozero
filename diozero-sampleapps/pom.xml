@@ -21,6 +21,11 @@
 		<dependencies>
 			<dependency>
 				<groupId>com.diozero</groupId>
+				<artifactId>diozero-provider-mock</artifactId>
+				<version>${diozero.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.diozero</groupId>
 				<artifactId>diozero-provider-pigpio</artifactId>
 				<version>${diozero.version}</version>
 			</dependency>
@@ -61,6 +66,10 @@
 		
 		<!-- Switch between providers that support remote communication -->
 		<!--
+		<dependency>
+			<groupId>com.diozero</groupId>
+			<artifactId>diozero-provider-mock</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>com.diozero</groupId>
 			<artifactId>diozero-provider-pigpio</artifactId>

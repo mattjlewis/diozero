@@ -1,7 +1,5 @@
 package com.diozero.util;
 
-import java.util.Collections;
-
 /*
  * #%L
  * Organisation: diozero
@@ -33,7 +31,24 @@ import java.util.Collections;
  * #L%
  */
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
 public class StringUtil {
+	public static void main(String[] args) {
+		final String compatibility = "a,b,c,d";
+		final String[] parts = compatibility.split(",");
+
+		for (int i = 0; i < parts.length; i++) {
+			System.out.println(join("_", parts.length - i, parts));
+			System.out.println(join("_", "/boarddefs/", ".txt", parts.length - i, parts));
+		}
+
+		IntStream.range(0, parts.length).mapToObj(i -> join("_", parts.length - i, parts)).forEach(System.out::println);
+	}
+
 	public static boolean isNullOrBlank(String s) {
 		return s == null || s.trim().isEmpty();
 	}
@@ -48,5 +63,13 @@ public class StringUtil {
 
 	public static String repeat(CharSequence string, int n) {
 		return String.join("", Collections.nCopies(n, string));
+	}
+
+	public static String join(String delimiter, int limit, String[] elements) {
+		return join(delimiter, "", "", limit, elements);
+	}
+
+	public static String join(String delimiter, String prefix, String suffix, int limit, String[] elements) {
+		return Arrays.stream(elements).limit(limit).collect(Collectors.joining(delimiter, prefix, suffix));
 	}
 }

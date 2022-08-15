@@ -111,7 +111,7 @@ public class PCA9685ServoTest {
 				servo.setPulseWidthUs(pulse_us);
 				SleepUtil.sleepMillis(SHORT_DELAY);
 			}
-			for (int pulse_us = trim.getMaxPulseWidthUs(); pulse_us > trim.getMinPulseWidthUs(); pulse_us += 10) {
+			for (int pulse_us = trim.getMaxPulseWidthUs(); pulse_us > trim.getMinPulseWidthUs(); pulse_us -= 10) {
 				servo.setPulseWidthUs(pulse_us);
 				SleepUtil.sleepMillis(SHORT_DELAY);
 			}

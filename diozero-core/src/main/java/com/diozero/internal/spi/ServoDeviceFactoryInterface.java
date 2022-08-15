@@ -41,7 +41,7 @@ import com.diozero.api.RuntimeIOException;
 public interface ServoDeviceFactoryInterface extends DeviceFactoryInterface {
 	int getBoardServoFrequency();
 
-	void setBoardServoFrequency(int pwmFrequency);
+	void setBoardServoFrequency(int servoFrequency);
 
 	default InternalServoDeviceInterface provisionServoDevice(PinInfo pinInfo, int frequencyHz, int minPulseWidthUs,
 			int maxPulseWidthUs, int initialPulseWidthUs) throws RuntimeIOException {

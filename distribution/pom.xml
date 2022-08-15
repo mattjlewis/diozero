@@ -28,6 +28,11 @@
 		</dependency>
 		<dependency>
 			<groupId>com.diozero</groupId>
+			<artifactId>diozero-provider-mock</artifactId>
+			<version>${diozero.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.diozero</groupId>
 			<artifactId>diozero-provider-bbbiolib</artifactId>
 			<version>${diozero.version}</version>
 		</dependency>

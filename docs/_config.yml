@@ -20,7 +20,7 @@
 
 title: "diozero"
 email: deviceiozero@gmail.com
-version: 1.3.3
+version: 1.3.4
 tagline: "A platform independent device I/O library written in Java"
 description: >- # this means to ignore newlines until the next YAML element
   Java Device I/O library that is portable across Single Board Computers.
@@ -84,7 +84,7 @@ back_to_top_text: "Back to top"
 # appears at the bottom of every page's main content
 # Note: The footer_content option is deprecated and will be removed in a future major release.
 # Please use `_includes/footer_custom.html` for more robust markup / liquid-based content.
-footer_content: "Copyright &copy; 2016-2020 Matthew Lewis. Distributed by an <a href=\"https://github.com/mattjlewis/diozero/tree/master/LICENSE.txt\">MIT license.</a>"
+footer_content: "Copyright &copy; 2016-2022 Matthew Lewis. Distributed by an <a href=\"https://github.com/mattjlewis/diozero/tree/master/LICENSE.txt\">MIT license.</a>"
 
 # Footer "Edit this page on GitHub" link text
 gh_edit_link: true                                          # show or hide edit this page link
@@ -106,4 +106,4 @@ callouts:
     color: blue
   attention:
     title: Note
-    color: grey-lt
+    color: grey-dk

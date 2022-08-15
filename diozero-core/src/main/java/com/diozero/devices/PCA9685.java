@@ -32,6 +32,7 @@ package com.diozero.devices;
  */
 
 import java.nio.ByteOrder;
+import java.util.EnumSet;
 
 import org.tinylog.Logger;
 
@@ -94,14 +95,16 @@ public class PCA9685 extends AbstractDeviceFactory
 
 	// MODE2 bits
 	/**
-	 * 0: Output logic state not inverted. Value to use when external driver used 1:
-	 * Output logic state inverted. Value to use when no external driver used
+	 * 0: Output logic state not inverted. Value to use when external driver used
+	 *
+	 * 1: Output logic state inverted. Value to use when no external driver used
 	 */
 	private static final byte INVRT_BIT = 4;
 	private static final byte INVRT_MASK = BitManipulation.getBitMask(INVRT_BIT);
 	/**
-	 * 0: The 16 LED outputs are configured with an open-drain structure 1: The 16
-	 * LED outputs are configured with a totem pole structure
+	 * 0: The 16 LED outputs are configured with an open-drain structure
+	 *
+	 * 1: The 16 LED outputs are configured with a totem pole structure
 	 */
 	private static final byte OUTDRV_BIT = 2;
 	private static final byte OUTDRV_MASK = BitManipulation.getBitMask(OUTDRV_BIT);
@@ -188,12 +191,25 @@ public class PCA9685 extends AbstractDeviceFactory
 	}
 
 	/**
-	 * Sets a single PWM channel Example 1: (assumes that the LED0 output is used
-	 * and (delay time) + (PWM duty cycle) &lt;= 100 %) Delay time = 10 %; PWM duty
-	 * cycle = 20 % (LED on time = 20 %; LED off time = 80 %). Delay time = 10 % =
-	 * 409.6 ~ 410 counts Since the counter starts at 0 and ends at 4095, we will
-	 * subtract 1, so delay time = 409 counts LED on time = 20 % = 819.2 ~ 819
+	 * Sets a single PWM channel
+	 *
+	 * Example 1: (assumes that the LED0 output is used and (delay time) + (PWM duty
+	 * cycle) &lt;= 100 %)
+	 *
+	 * <pre>
+	 * Delay time = 10 %;
+	 * PWM duty cycle = 20 % (LED on time = 20 %;
+	 * LED off time = 80 %).
+	 * Delay time = 10 % = 409.6 ~ 410 counts
+	 * </pre>
+	 *
+	 * Since the counter starts at 0 and ends at 4095, we will subtract 1, so:
+	 *
+	 * <pre>
+	 * delay time = 409
+	 * counts LED on time = 20 % = 819.2 ~ 819
 	 * counts LED off time = (decimal 409 + 819 = 1228)
+	 * </pre>
 	 *
 	 * @param channel PWM channel
 	 * @param on      on time
@@ -208,9 +224,9 @@ public class PCA9685 extends AbstractDeviceFactory
 		// Integer.valueOf(on),
 		// Integer.valueOf(off));
 
-		// TODO Replace with writeShort()?
-		// writeShort(LED0_ON_L+4*channel, (short) on);
-		// writeShort(LED0_OFF_L+4*channel, (short) off);
+		// TODO Replace with writeWordData()?
+		// i2cDevice.writeWordData(LED0_ON_L + 4 * channel, (short) on);
+		// i2cDevice.writeWordData(LED0_OFF_L + 4 * channel, (short) off);
 		i2cDevice.writeByteData(LED0_ON_L + 4 * channel, on & 0xFF);
 		i2cDevice.writeByteData(LED0_ON_H + 4 * channel, on >> 8);
 		i2cDevice.writeByteData(LED0_OFF_L + 4 * channel, off & 0xFF);
@@ -357,7 +373,7 @@ public class PCA9685 extends AbstractDeviceFactory
 	public void setDutyUs(int channel, int dutyUs) throws RuntimeIOException {
 		// TODO Bounds checking
 
-		int off = (int) Math.floor(dutyUs / periodUs / (double) RANGE);
+		int off = (int) Math.floor(((double) dutyUs / (double) periodUs) * RANGE);
 		Logger.debug("Requested duty value: {}, Scale: {} microseconds per bit, Off: {}",
 				String.format("%.2f", Double.valueOf(dutyUs)),
 				String.format("%.4f", Double.valueOf(periodUs / (double) RANGE)), Integer.valueOf(off));
@@ -393,10 +409,10 @@ public class PCA9685 extends AbstractDeviceFactory
 	public static class PCA9685BoardPinInfo extends BoardPinInfo {
 		public PCA9685BoardPinInfo() {
 			for (int i = 0; i < 8; i++) {
-				addGpioPinInfo(i, 6 + i, PinInfo.PWM_OUTPUT);
+				addGpioPinInfo(i, 6 + i, EnumSet.of(DeviceMode.PWM_OUTPUT, DeviceMode.SERVO));
 			}
 			for (int i = 8; i < 16; i++) {
-				addGpioPinInfo(i, 7 + i, PinInfo.PWM_OUTPUT);
+				addGpioPinInfo(i, 7 + i, EnumSet.of(DeviceMode.PWM_OUTPUT, DeviceMode.SERVO));
 			}
 		}
 	}

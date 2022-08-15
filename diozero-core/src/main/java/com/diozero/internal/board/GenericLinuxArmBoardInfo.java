@@ -38,6 +38,7 @@ import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import org.tinylog.Logger;
@@ -45,6 +46,7 @@ import org.tinylog.Logger;
 import com.diozero.api.DeviceMode;
 import com.diozero.sbc.BoardInfo;
 import com.diozero.sbc.LocalSystemInfo;
+import com.diozero.util.StringUtil;
 
 public class GenericLinuxArmBoardInfo extends BoardInfo {
 	public GenericLinuxArmBoardInfo(LocalSystemInfo systemInfo) {
@@ -85,19 +87,9 @@ public class GenericLinuxArmBoardInfo extends BoardInfo {
 		 * ["raspberrypi,model-zero", "brcm,bcm2835"]
 		 * ["hardkernel,odroid-c2", "amlogic,meson-gxbb"]
 		 */
-		for (String compatibility : LocalSystemInfo.getInstance().loadLinuxBoardCompatibility()) {
-			String[] values = compatibility.split(",");
+		for (String compatibility : getBoardCompatibility()) {
+			boolean loaded = loadBoardPinInfoDefinition(compatibility.split(","));
 
-			for (int i = 0; i < values.length; i++) {
-				values[i] = values[i].trim();
-			}
-
-			// First look for classpath:/boarddefs/values[0]-values[1].txt
-			boolean loaded = loadBoardPinInfoDefinition(values);
-			if (!loaded) {
-				// If not found, look for classpath:/boarddefs/values[0].txt
-				loaded = loadBoardPinInfoDefinition(values[0]);
-			}
 			if (loaded) {
 				break;
 			}
@@ -107,14 +99,32 @@ public class GenericLinuxArmBoardInfo extends BoardInfo {
 		// factory will auto-populate (if enabled)
 	}
 
-	protected boolean loadBoardPinInfoDefinition(String... paths) {
+	@SuppressWarnings("static-method")
+	protected List<String> getBoardCompatibility() {
+		return LocalSystemInfo.getInstance().loadLinuxBoardCompatibility();
+	}
+
+	protected boolean loadBoardPinInfoDefinition(String... compatibilityParts) {
+		for (int i = 0; i < compatibilityParts.length; i++) {
+			compatibilityParts[i] = compatibilityParts[i].trim();
+		}
+
 		boolean loaded = false;
-		String file = "/boarddefs/" + String.join("_", paths) + ".txt";
-		Logger.trace("Looking for board def file '{}'", file);
-		try (InputStream is = getClass().getResourceAsStream(file)) {
+		for (int i = 0; i < compatibilityParts.length && !loaded; i++) {
+			loaded = loadBoardPinInfoDefinition(
+					StringUtil.join("_", "/boarddefs/", ".txt", compatibilityParts.length - i, compatibilityParts));
+		}
+
+		return loaded;
+	}
+
+	protected boolean loadBoardPinInfoDefinition(String boardDefFile) {
+		boolean loaded = false;
+		Logger.trace("Looking for board def file '{}'", boardDefFile);
+		try (InputStream is = getClass().getResourceAsStream(boardDefFile)) {
 			if (is != null) {
 				try (BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
-					Logger.debug("Reading board defs file {}", file);
+					Logger.debug("Reading board defs file {}", boardDefFile);
 					while (true) {
 						String line = reader.readLine();
 						if (line == null) {
@@ -147,6 +157,9 @@ public class GenericLinuxArmBoardInfo extends BoardInfo {
 							case "ADC":
 								loadAdcPinInfo(parts);
 								break;
+							case "DAC":
+								loadDacPinInfo(parts);
+								break;
 							default:
 								// Ignore
 							}
@@ -178,7 +191,7 @@ public class GenericLinuxArmBoardInfo extends BoardInfo {
 			Logger.warn("Invalid GPIO def line '{}'", String.join(",", parts));
 			return;
 		}
-		addGpioPinInfo(parts[1].trim().toUpperCase(), Integer.parseInt(parts[2].trim()), parts[3].trim(),
+		addGpioPinInfo(parts[1].trim(), Integer.parseInt(parts[2].trim()), parts[3].trim(),
 				Integer.parseInt(parts[4].trim()), parseModes(parts[5].trim()), Integer.parseInt(parts[6].trim()),
 				Integer.parseInt(parts[7].trim()));
 	}
@@ -188,7 +201,7 @@ public class GenericLinuxArmBoardInfo extends BoardInfo {
 			Logger.warn("Invalid PWM def line '{}'", String.join(",", parts));
 			return;
 		}
-		addPwmPinInfo(parts[1].trim().toUpperCase(), Integer.parseInt(parts[2].trim()), parts[3].trim(),
+		addPwmPinInfo(parts[1].trim(), Integer.parseInt(parts[2].trim()), parts[3].trim(),
 				Integer.parseInt(parts[4].trim()), Integer.parseInt(parts[5].trim()), Integer.parseInt(parts[6].trim()),
 				parseModes(parts[7].trim()), Integer.parseInt(parts[8].trim()), Integer.parseInt(parts[9].trim()));
 	}
@@ -198,7 +211,16 @@ public class GenericLinuxArmBoardInfo extends BoardInfo {
 			Logger.warn("Invalid ADC def line '{}'", String.join(",", parts));
 			return;
 		}
-		addAdcPinInfo(parts[1].trim().toUpperCase(), Integer.parseInt(parts[2].trim()), parts[3].trim(),
+		addAdcPinInfo(parts[1].trim(), Integer.parseInt(parts[2].trim()), parts[3].trim(),
+				Integer.parseInt(parts[4].trim()));
+	}
+
+	private void loadDacPinInfo(String[] parts) {
+		if (parts.length != 5) {
+			Logger.warn("Invalid DAC def line '{}'", String.join(",", parts));
+			return;
+		}
+		addDacPinInfo(parts[1].trim(), Integer.parseInt(parts[2].trim()), parts[3].trim(),
 				Integer.parseInt(parts[4].trim()));
 	}
 

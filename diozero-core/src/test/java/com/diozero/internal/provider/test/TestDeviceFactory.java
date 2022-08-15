@@ -117,7 +117,7 @@ public class TestDeviceFactory extends BaseNativeDeviceFactory {
 
 	@Override
 	public String getName() {
-		return getClass().getName();
+		return getClass().getSimpleName();
 	}
 
 	@Override

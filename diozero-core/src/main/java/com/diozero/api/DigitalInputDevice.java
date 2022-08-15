@@ -205,6 +205,10 @@ public class DigitalInputDevice extends AbstractDigitalInputDevice {
 		}
 	}
 
+	public String getName() {
+		return delegate.getKey();
+	}
+
 	/**
 	 * Get pull up / down configuration.
 	 *

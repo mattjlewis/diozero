@@ -77,7 +77,7 @@ public abstract class BaseNativeDeviceFactory extends AbstractDeviceFactory impl
 	}
 
 	@Override
-	public BoardPinInfo getBoardPinInfo() {
+	public final BoardPinInfo getBoardPinInfo() {
 		return getBoardInfo();
 	}
 

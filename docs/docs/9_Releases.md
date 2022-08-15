@@ -21,13 +21,23 @@ redirect_from:
 + Waveshare 7.5" e-ink display
 + Optimise GpioExpander when used for Software PWM output on multiple pins. Currently
 `GpioExpander.setValues()` will be invoked multiple times, once per pin, whereas a single call for
-multiple pins should be used instead.
+multiple pins should be used instead. MultiplexedSoftwarePwmOutput?
++ Introduce PrimitiveDevice and Device interfaces / classes (".api" and ".device" packages respectively)
++ Ensure that all devices (".devices" package) use composition rather then inheritance of
+PrimitiveDevice (".api" package), i.e. LED, LDR, etc.
++ A device registry to provide info on all available PrimitiveDevices. Use the existing DeviceStates
+class for info on provisioned state
++ Additional interfaces representing generic physical behaviour, e.g. movement, acceleration,
+similar to existing MotorInterface, BarometerInterface, etc.
 
 ## 1.3.4
 
 + Active high flag in DebouncedDigitalInputDevice (#93)
 + Interface for setting arbitrary GPIO alt functions (#90)
 + Corrected board definition file for Pi ZeroW2
++ Mock device factory provider
++ Refactor GenericLinuxArmBoardInfo to improve processing of the compatibility file and load DAC info
++ Bug fix to PCA9685.setDutyUs (#97)
 
 ## 1.3.3
 
