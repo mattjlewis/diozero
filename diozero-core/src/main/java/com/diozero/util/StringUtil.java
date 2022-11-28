@@ -72,4 +72,14 @@ public class StringUtil {
 	public static String join(String delimiter, String prefix, String suffix, int limit, String[] elements) {
 		return Arrays.stream(elements).limit(limit).collect(Collectors.joining(delimiter, prefix, suffix));
 	}
+
+	public static String unquote(String value) {
+		if (value == null) {
+			return null;
+		}
+		if (value.startsWith("\"") && value.endsWith("\"")) {
+			return value.substring(1, value.length() - 1);
+		}
+		return value;
+	}
 }
