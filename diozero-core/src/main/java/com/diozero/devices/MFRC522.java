@@ -1506,9 +1506,9 @@ public class MFRC522 implements DeviceInterface {
 	 */
 	public StatusCode mifareUltralightWrite(byte page, byte[] buffer) {
 		// Sanity check
-		if (buffer == null || buffer.length != 4) {
-			return StatusCode.INVALID;
-		}
+		//if (buffer == null || buffer.length != 4) {
+		//	return StatusCode.INVALID;
+		//}
 
 		// Build commmand buffer
 		byte[] cmdBuffer = new byte[6];
@@ -1734,9 +1734,9 @@ public class MFRC522 implements DeviceInterface {
 	 */
 	public StatusCode mifareTransceive(byte[] sendData, boolean acceptTimeout) {
 		// Sanity check
-		if (sendData == null || sendData.length != 16) {
-			return StatusCode.INVALID;
-		}
+		//if (sendData == null || sendData.length != 16) {
+		//	return StatusCode.INVALID;
+		//}
 
 		/*- C++ Code:
 		byte cmdBuffer[18]; // We need room for 16 bytes data and 2 bytes CRC_A.
