@@ -68,47 +68,46 @@ public class LibraryLoader {
 		// System.out.println("loadSystemUtils() - END - " + hash_code);
 	}
 
-	public static void loadLibrary(Class<?> clz, String libName, String libraryPath) throws UnsatisfiedLinkError {
+	public static synchronized void loadLibrary(Class<?> clz, String libName, String libraryPath)
+			throws UnsatisfiedLinkError {
 		LocalSystemInfo sys_info = LocalSystemInfo.getInstance();
-		synchronized (LibraryLoader.class) {
-			if (LOADED_LIBRARIES.get(libName) == null) {
-				boolean loaded = false;
+		if (LOADED_LIBRARIES.get(libName) == null) {
+			boolean loaded = false;
 
-				// First try load the library from within the JAR file
-				String lib_file;
-				if (libraryPath != null) {
-					lib_file = String.format("/lib/%s/lib%s.%s", libraryPath, libName, sys_info.getLibFileExtension());
-				} else {
-					lib_file = String.format("/lib/lib%s.%s", libName, sys_info.getLibFileExtension());
-				}
-				Logger.debug("Looking for lib '" + lib_file + "' on classpath");
-				try (InputStream is = clz.getResourceAsStream(lib_file)) {
-					if (is != null) {
-						Path path = Files.createTempFile("lib" + libName, sys_info.getLibFileExtension());
-						path.toFile().deleteOnExit();
-						Files.copy(is, path, StandardCopyOption.REPLACE_EXISTING);
-						Runtime.getRuntime().load(path.toString());
-						path.toFile().delete();
-						loaded = true;
-						Logger.debug("Loaded library '{}' from classpath", libName);
-					}
-				} catch (Throwable t) {
-					Logger.warn("Error loading library '{}' from classpath, trying System.loadLibrary: {}", libName,
-							t.getMessage());
-				}
-				if (!loaded) {
-					// Try load from the Java system library path (-Djava.library.path)
-					Logger.debug("Looking for lib '" + libName + "' on library path");
-					try {
-						System.loadLibrary(libName);
-						loaded = true;
-						Logger.info("Loaded library '{}' from system library path", libName);
-					} catch (Throwable t) {
-						Logger.error("Error loading library '{}' from system library path: {}", libName, t);
-					}
-				}
-				LOADED_LIBRARIES.put(libName, Boolean.valueOf(loaded));
+			// First try load the library from within the JAR file
+			String lib_file;
+			if (libraryPath != null) {
+				lib_file = String.format("/lib/%s/lib%s.%s", libraryPath, libName, sys_info.getLibFileExtension());
+			} else {
+				lib_file = String.format("/lib/lib%s.%s", libName, sys_info.getLibFileExtension());
 			}
+			Logger.debug("Looking for lib '{}' on classpath", lib_file);
+			try (InputStream is = clz.getResourceAsStream(lib_file)) {
+				if (is != null) {
+					Path path = Files.createTempFile("lib" + libName, sys_info.getLibFileExtension());
+					path.toFile().deleteOnExit();
+					Files.copy(is, path, StandardCopyOption.REPLACE_EXISTING);
+					Runtime.getRuntime().load(path.toString());
+					path.toFile().delete();
+					loaded = true;
+					Logger.debug("Loaded library '{}' from classpath", libName);
+				}
+			} catch (Throwable t) {
+				Logger.warn("Error loading library '{}' from classpath, trying System.loadLibrary: {}", libName,
+						t.getMessage());
+			}
+			if (!loaded) {
+				// Try load from the Java system library path (-Djava.library.path)
+				Logger.debug("Looking for lib '" + libName + "' on library path");
+				try {
+					System.loadLibrary(libName);
+					loaded = true;
+					Logger.info("Loaded library '{}' from system library path", libName);
+				} catch (Throwable t) {
+					Logger.error("Error loading library '{}' from system library path: {}", libName, t);
+				}
+			}
+			LOADED_LIBRARIES.put(libName, Boolean.valueOf(loaded));
 		}
 	}
 }

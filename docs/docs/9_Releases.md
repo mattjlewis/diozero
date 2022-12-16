@@ -29,11 +29,17 @@ PrimitiveDevice (".api" package), i.e. LED, LDR, etc.
 class for info on provisioned state
 + Additional interfaces representing generic physical behaviour, e.g. movement, acceleration,
 similar to existing MotorInterface, BarometerInterface, etc.
++ Revamp docker builds
+
+## 1.3.5 (in progress)
+
++ Tweaked cross compilation toolchain - switched to podman
++ Orange Pi 3 LTS - preliminary
 
 ## 1.3.4
 
 + Active high flag in DebouncedDigitalInputDevice (#93)
-+ Interface for setting arbitrary GPIO alt functions (#90)
++ Interface for setting arbitrary GPIO alt functions (#90) - MmapGpioInterface.setModeUnchecked
 + Corrected board definition file for Pi ZeroW2
 + Mock device factory provider
 + Refactor GenericLinuxArmBoardInfo to improve processing of the compatibility file and load DAC info

@@ -191,6 +191,8 @@ public class DefaultDeviceFactory extends BaseNativeDeviceFactory {
 				mmapGpio.initialise();
 			} catch (Throwable t) {
 				// Ignore
+				Logger.debug(t, "Failed to instantiate mmap gpio: {}", t);
+				mmapGpio = null;
 			}
 		}
 

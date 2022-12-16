@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>com.diozero</groupId>
 		<artifactId>diozero</artifactId>
-		<version>1.3.4</version>
+		<version>1.3.5</version>
 	</parent>
 
 	<artifactId>diozero-sampleapps</artifactId>
@@ -14,7 +14,7 @@
 	<properties>
 		<imgscalr-lib.version>4.2</imgscalr-lib.version>
 		<jansi.version>2.4.0</jansi.version>
-		<picocli.version>4.6.3</picocli.version>
+		<picocli.version>4.7.0</picocli.version>
 	</properties>
 	
 	<dependencyManagement>

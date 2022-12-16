@@ -11,8 +11,11 @@ ENV RUN_AS_USER=develop
 ARG HOME_DIR=/home/${RUN_AS_USER}
 
 # These must match the versions on the Raspberry Pi
+# Now 10.2.1 on Pi Bullseye image as of Aug 2022
 ARG GCC_VERSION=gcc-8.3.0
+# Now 2.31 on Pi Bullseye image as of Aug 2022
 ARG GLIBC_VERSION=glibc-2.28
+# Now 2.35.2 on Pi Bullseye image as of Aug 2022
 ARG BINUTILS_VERSION=binutils-2.31.1
 # Working directory for building GCC
 ARG BUILD_WORKING_DIR=${HOME_DIR}/build

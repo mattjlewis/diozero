@@ -225,6 +225,7 @@ public class LocalSystemInfo {
 	private static final String LINUX_DEVICE_TREE_MODEL_FILE = "/proc/device-tree/model";
 	private static final String LINUX_DEVICE_TREE_SERIAL_NUMBER_FILE = "/proc/device-tree/serial-number";
 	private static final String TEMPERATURE_FILE = "/sys/class/thermal/thermal_zone0/temp";
+	private static final String UNKNOWN = "UNKNOWN";
 
 	private static LocalSystemInfo instance;
 
@@ -265,7 +266,15 @@ public class LocalSystemInfo {
 				Properties props = new Properties();
 				props.load(reader);
 				osId = props.getProperty("ID");
-				osVersion = props.getProperty("VERSION").replace("\"", "");
+				osVersion = props.getProperty("VERSION");
+				if (osVersion == null || osVersion.trim().isEmpty()) {
+					osVersion = props.getProperty("VERSION_ID");
+					if (osVersion == null || osVersion.trim().isEmpty()) {
+						osVersion = UNKNOWN;
+					}
+				} else {
+					osVersion = osVersion.replace("\"", "");
+				}
 			} catch (IOException e) {
 				Logger.warn("Error loading properties file '{}': {}", LINUX_OS_RELEASE_FILE, e);
 			}

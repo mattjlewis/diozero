@@ -45,9 +45,8 @@ public interface MmapGpioInterface extends AutoCloseable {
 	/**
 	 * Set the new mode for this GPIO. Note typically only supports
 	 * {@link com.diozero.api.DeviceMode#DIGITAL_INPUT DIGITAL_INPUT},
-	 * {@link com.diozero.api.DeviceMode.DeviceMode#DIGITAL_OUTPUT DIGITAL_OUTPUT}
-	 * and possibly {@link com.diozero.api.DeviceMode.DeviceMode#PWM_OUTPUT
-	 * PWM_OUTPUT}.
+	 * {@link com.diozero.api.DeviceMode#DIGITAL_OUTPUT DIGITAL_OUTPUT} and possibly
+	 * {@link com.diozero.api.DeviceMode#PWM_OUTPUT PWM_OUTPUT}.
 	 *
 	 * @param gpio The GPIO to configure
 	 * @param mode The new mode

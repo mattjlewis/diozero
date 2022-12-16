@@ -111,14 +111,17 @@ public class PCA9685 extends AbstractDeviceFactory
 
 	private static final int MIN_PWM_FREQUENCY = 40;
 	private static final int MAX_PWM_FREQUENCY = 1000;
-	// TODO Qualify this value
-	private static final int DEFAULT_PWM_FREQUENCY = 50;
+	public static final int DEFAULT_PWM_FREQUENCY = 50;
 
 	private I2CDevice i2cDevice;
 	private String keyPrefix;
 	private int boardPwmFrequency = DEFAULT_PWM_FREQUENCY;
 	private int periodUs = 1_000_000 / DEFAULT_PWM_FREQUENCY;
 	private BoardPinInfo boardPinInfo;
+
+	public PCA9685() throws RuntimeIOException {
+		this(I2CConstants.CONTROLLER_1, DEFAULT_ADDRESS, DEFAULT_PWM_FREQUENCY);
+	}
 
 	public PCA9685(int pwmFrequency) throws RuntimeIOException {
 		this(I2CConstants.CONTROLLER_1, DEFAULT_ADDRESS, pwmFrequency);
@@ -156,6 +159,8 @@ public class PCA9685 extends AbstractDeviceFactory
 			throw new IllegalArgumentException("Invalid PWM Frequency value (" + pwmFrequency + ") must be "
 					+ MIN_PWM_FREQUENCY + ".." + MAX_PWM_FREQUENCY);
 		}
+
+		// TODO Check if there are any devices currently provisioned
 
 		float prescale_flt = (((float) CLOCK_FREQ) / RANGE / pwmFrequency) - 1;
 		int prescale_int = Math.round(prescale_flt);
@@ -307,7 +312,8 @@ public class PCA9685 extends AbstractDeviceFactory
 		if (pwmFrequency != boardPwmFrequency) {
 			Logger.warn(
 					"Specified PWM frequency ({}) is different to that configured for the board ({})"
-							+ "; this device has a common PWM frequency for all outputs",
+							+ "; this device has a common PWM frequency that is used for all outputs"
+							+ " - the requested frequency will be ignored",
 					Integer.valueOf(pwmFrequency), Integer.valueOf(boardPwmFrequency));
 		}
 		return new PCA9685ServoOrPwmOutputDevice(this, key, DeviceMode.PWM_OUTPUT, pinInfo.getDeviceNumber(),
@@ -317,12 +323,13 @@ public class PCA9685 extends AbstractDeviceFactory
 	@Override
 	public InternalServoDeviceInterface createServoDevice(String key, PinInfo pinInfo, int frequency,
 			int minPulseWidthUs, int maxPulseWidthUs, int initialPulseWidthUs) throws RuntimeIOException {
-		// Note pwmFrequency is ignored; make sure you setup the board's PWM frequency
+		// Note frequency is ignored; make sure you setup the board's PWM frequency
 		// first
 		if (frequency != boardPwmFrequency) {
 			Logger.warn(
 					"Specified Servo frequency ({}) is different to that configured for the board ({})"
-							+ "; this device has a common PWM frequency for all outputs",
+							+ "; this device has a common PWM frequency that is used for all outputs"
+							+ " - the requested frequency will be ignored",
 					Integer.valueOf(frequency), Integer.valueOf(boardPwmFrequency));
 		}
 		return new PCA9685ServoOrPwmOutputDevice(this, key, DeviceMode.SERVO, pinInfo.getDeviceNumber(),
