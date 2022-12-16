@@ -266,15 +266,7 @@ public class LocalSystemInfo {
 				Properties props = new Properties();
 				props.load(reader);
 				osId = props.getProperty("ID");
-				osVersion = props.getProperty("VERSION");
-				if (osVersion == null || osVersion.trim().isEmpty()) {
-					osVersion = props.getProperty("VERSION_ID");
-					if (osVersion == null || osVersion.trim().isEmpty()) {
-						osVersion = UNKNOWN;
-					}
-				} else {
-					osVersion = osVersion.replace("\"", "");
-				}
+				osVersion = StringUtil.unquote(props.getProperty("VERSION"));
 			} catch (IOException e) {
 				Logger.warn("Error loading properties file '{}': {}", LINUX_OS_RELEASE_FILE, e);
 			}
