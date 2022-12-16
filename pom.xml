@@ -63,7 +63,7 @@
 	<parent>
 		<groupId>com.diozero</groupId>
 		<artifactId>diozero-bom</artifactId>
-		<version>1.3.4</version>
+		<version>1.3.5</version>
 		<relativePath>diozero-bom/pom.xml</relativePath>
 	</parent>
 

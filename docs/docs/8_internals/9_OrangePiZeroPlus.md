@@ -1,6 +1,6 @@
 ---
 parent: Internals
-nav_order: 8
+nav_order: 9
 permalink: /internals/opisetup.html
 ---
 
@@ -47,7 +47,7 @@ sudo apt -y install i2c-tools libi2c-dev gpiod libgpiod2 libgpiod-dev avahi-daem
 ## Java
 
 ```shell
-sudo apt -y install openjdk-11-jdk
+sudo apt -y install openjdk-11-jdk-headless
 ```
 
 ## Locale / Timezone

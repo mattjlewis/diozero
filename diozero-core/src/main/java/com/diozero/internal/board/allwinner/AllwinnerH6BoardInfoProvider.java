@@ -48,12 +48,14 @@ public class AllwinnerH6BoardInfoProvider implements BoardInfoProvider {
 	// E.g. CONFIG_ORANGEPI_LITE2, CONFIG_ORANGEPI_3
 	public static final String ORANGEPI_H6_HARDWARE = "sun50iw6";
 	public static final String ORANGEPI_ONEPLUS_MODEL = "OrangePi One Plus";
+	public static final String ORANGEPI3_MODEL = "OrangePi 3 LTS";
 	public static final String MAKE = "Allwinner H6";
 
 	@Override
 	public BoardInfo lookup(LocalSystemInfo sysInfo) {
 		if ((sysInfo.getHardware() != null && sysInfo.getHardware().equals(ORANGEPI_H6_HARDWARE))
-				|| (sysInfo.getModel() != null && sysInfo.getModel().equals(ORANGEPI_ONEPLUS_MODEL))) {
+				|| (sysInfo.getModel() != null && (sysInfo.getModel().equals(ORANGEPI_ONEPLUS_MODEL)
+						|| sysInfo.getModel().equals(ORANGEPI3_MODEL)))) {
 			return new AllwinnerH6BoardInfo(sysInfo);
 		}
 		return null;

@@ -36,7 +36,7 @@ public class MmapBufferNative {
 		LibraryLoader.loadSystemUtils();
 	}
 
-	public static native MmapByteBuffer createMmapBuffer(String path, int offset, int length);
+	public static native MmapByteBuffer createMmapBuffer(String path, long offset, long length);
 
-	public static native void closeMmapBuffer(long mapPtr, int length);
+	public static native void closeMmapBuffer(long mapPtr, long length);
 }

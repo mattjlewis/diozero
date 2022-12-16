@@ -210,6 +210,7 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 			if ((rev_int & (1 << 23)) != 0) {
 				String pcb_revision;
 				int pcb_rev = rev_int & 0x0F;
+				/*-
 				switch (pcb_rev) {
 				case 0:
 					pcb_revision = PCB_REV_1_0;
@@ -222,7 +223,8 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 					break;
 				default:
 					pcb_revision = "1." + pcb_rev;
-				}
+				}*/
+				pcb_revision = "1." + pcb_rev;
 				int model = (rev_int & (0xFF << 4)) >> 4;
 				int proc = (rev_int & (0x0F << 12)) >> 12;
 				int mfr = (rev_int & (0x0F << 16)) >> 16;
@@ -431,12 +433,12 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 	/*-
 	public static class PiABPlusBoardInfo extends PiBoardInfo {
 		public static final String P5_HEADER = "P5";
-	
+
 		public PiABPlusBoardInfo(String code, String model, String pcbRevision, int memory, String manufacturer,
 				String processor) {
 			super(code, model, pcbRevision, memory, manufacturer, processor);
 		}
-	
+
 		public void initialisePinsOld() {
 			int chip = 0;
 			addGeneralPinInfo(1, PinInfo.VCC_3V3);
@@ -492,7 +494,7 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 			addGpioPinInfo(20, "GPIO20", 38, PinInfo.DIGITAL_IN_OUT, chip, 20); // Alt4 = SPI1-MOSI
 			addGeneralPinInfo(39, PinInfo.GROUND);
 			addGpioPinInfo(21, "GPIO21", 40, PinInfo.DIGITAL_IN_OUT, chip, 21); // Alt4 = SPI1-SCLK
-
+	
 			// P5 Header
 			addGpioPinInfo(P5_HEADER, 28, 1, PinInfo.DIGITAL_IN_OUT);
 			addGpioPinInfo(P5_HEADER, 29, 2, PinInfo.DIGITAL_IN_OUT);
@@ -507,7 +509,7 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 		public PiABRev2BoardInfo(String revision, String model, int memory, String manufacturer) {
 			super(revision, model, PCB_REV_2_0, memory, manufacturer, BCM2835);
 		}
-
+	
 		@Override
 		public void populateBoardPinInfo() {
 			int pin = 1;

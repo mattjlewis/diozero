@@ -27,3 +27,5 @@ RUN PATH=${PI_GCC_TARGET_DIR}/bin:${PATH} && scons V=yes TOOLCHAIN=arm-linux-gnu
 #			CFLAGS="-march=armv6 -mfpu=vfp -mfloat-abi=hard" PREFIX=${PI_GCC_TARGET_DIR} \
 #		&& sudo make install DESTDIR=${PI_GCC_TARGET_DIR}/arm-linux-gnueabihf
 RUN sudo mv libws2811.a ${PI_GCC_TARGET_DIR}/arm-linux-gnueabihf/lib/.
+
+WORKDIR ${HOME_DIR}

@@ -35,10 +35,10 @@ import java.nio.ByteBuffer;
 
 public class MmapByteBuffer implements AutoCloseable {
 	private long address;
-	private int length;
+	private long length;
 	private ByteBuffer buffer;
 
-	public MmapByteBuffer(long address, int length, ByteBuffer buffer) {
+	public MmapByteBuffer(long address, long length, ByteBuffer buffer) {
 		this.address = address;
 		this.length = length;
 		this.buffer = buffer;
@@ -56,7 +56,7 @@ public class MmapByteBuffer implements AutoCloseable {
 		return address;
 	}
 
-	public int getLength() {
+	public long getLength() {
 		return length;
 	}
 

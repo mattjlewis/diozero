@@ -35,6 +35,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import com.diozero.api.PinInfo;
+import com.diozero.internal.board.allwinner.AllwinnerH6BoardInfoProvider;
 import com.diozero.internal.board.allwinner.AllwinnerSun8iBoardInfoProvider;
 import com.diozero.internal.board.beaglebone.BeagleBoneBoardInfoProvider;
 import com.diozero.internal.board.chip.ChipBoardInfoProvider;
@@ -65,6 +66,14 @@ public class SystemInfoTest {
 		// Odroid C2
 		validateBoard("Hardkernel ODROID-C2", "ODROID-C2", "020b", OdroidBoardInfoProvider.MAKE,
 				OdroidBoardInfoProvider.Model.C2.toString(), 2_048_000);
+		// Orange Pi3
+		validateBoard("OrangePi 3 LTS", "OrangePi 3 LTS", null, AllwinnerH6BoardInfoProvider.MAKE,
+				AllwinnerH6BoardInfoProvider.ORANGEPI3_MODEL, -1);
+		// Orange Pi 1+
+		validateBoard("OrangePi One Plus", "OrangePi One Plus", null, AllwinnerH6BoardInfoProvider.MAKE,
+				AllwinnerH6BoardInfoProvider.ORANGEPI_ONEPLUS_MODEL, -1);
+		// Generic Orange Pi with H6 CPU
+		validateBoard(null, "sun50iw6", null, AllwinnerH6BoardInfoProvider.MAKE, null, -1);
 	}
 
 	@Test
@@ -137,6 +146,18 @@ public class SystemInfoTest {
 				RaspberryPiBoardInfoProvider.COMPUTE_MODULE, 512);
 		board_info = validatePiBoard(RaspberryPiBoardInfoProvider.BCM2835, "0015",
 				RaspberryPiBoardInfoProvider.MODEL_A_PLUS, 256);
+
+		// PiA+, BCM2835, Sony, 512
+		board_info = validatePiBoard(RaspberryPiBoardInfoProvider.BCM2835, "900021",
+				RaspberryPiBoardInfoProvider.MODEL_A_PLUS, 512_000);
+
+		// PiB+, BCM2835, Sony, 512
+		board_info = validatePiBoard(RaspberryPiBoardInfoProvider.BCM2835, "900032",
+				RaspberryPiBoardInfoProvider.MODEL_B_PLUS, 512_000);
+
+		// Pi2B
+		board_info = validatePiBoard(RaspberryPiBoardInfoProvider.BCM2837, "a02042",
+				RaspberryPiBoardInfoProvider.MODEL_2B, 1_024_000);
 		// Pi2B, BCM2836, Sony, 1024MB
 		board_info = validatePiBoard(RaspberryPiBoardInfoProvider.BCM2836, "a01040",
 				RaspberryPiBoardInfoProvider.MODEL_2B, 1_024_000);
@@ -149,43 +170,16 @@ public class SystemInfoTest {
 		// Pi2B, BCM2837, Embest, 1024MB
 		board_info = validatePiBoard(RaspberryPiBoardInfoProvider.BCM2837, "a22042",
 				RaspberryPiBoardInfoProvider.MODEL_2B, 1_024_000);
-		// PiA+, BCM2835, Sony, 512
-		board_info = validatePiBoard(RaspberryPiBoardInfoProvider.BCM2835, "900021",
-				RaspberryPiBoardInfoProvider.MODEL_A_PLUS, 512_000);
-		// PiB+, BCM2835, Sony, 512
-		board_info = validatePiBoard(RaspberryPiBoardInfoProvider.BCM2835, "900032",
-				RaspberryPiBoardInfoProvider.MODEL_B_PLUS, 512_000);
-		// matt, shirley - Pi Zero, BCM2835, Sony, 512MB
-		board_info = validatePiBoard(RaspberryPiBoardInfoProvider.BCM2835, "900092",
-				RaspberryPiBoardInfoProvider.MODEL_ZERO, 512_000);
-		// Pi Zero with DSI camera connector?
-		board_info = validatePiBoard(RaspberryPiBoardInfoProvider.BCM2835, "900093",
-				RaspberryPiBoardInfoProvider.MODEL_ZERO, 512_000);
-		// obi - Pi Zero W
-		board_info = validatePiBoard(RaspberryPiBoardInfoProvider.BCM2835, "9000c1",
-				RaspberryPiBoardInfoProvider.MODEL_ZERO_W, 512_000);
+
+		// Pi3A+
 		board_info = validatePiBoard(RaspberryPiBoardInfoProvider.BCM2837, "9020e0",
 				RaspberryPiBoardInfoProvider.MODEL_3A_PLUS, 512_000);
-		board_info = validatePiBoard(RaspberryPiBoardInfoProvider.BCM2835, "920092",
-				RaspberryPiBoardInfoProvider.MODEL_ZERO, 512_000);
-		board_info = validatePiBoard(RaspberryPiBoardInfoProvider.BCM2835, "920093",
-				RaspberryPiBoardInfoProvider.MODEL_ZERO, 512_000);
-		board_info = validatePiBoard(RaspberryPiBoardInfoProvider.BCM2835, "900061",
-				RaspberryPiBoardInfoProvider.COMPUTE_MODULE, 512_000);
-		board_info = validatePiBoard(RaspberryPiBoardInfoProvider.BCM2837, "a020a0",
-				RaspberryPiBoardInfoProvider.COMPUTE_MODULE_3, 1_024_000);
-		board_info = validatePiBoard(RaspberryPiBoardInfoProvider.BCM2837, "a02042",
-				RaspberryPiBoardInfoProvider.MODEL_2B, 1_024_000);
-		board_info = validatePiBoard(RaspberryPiBoardInfoProvider.BCM2837, "a220a0",
-				RaspberryPiBoardInfoProvider.COMPUTE_MODULE_3, 1_024_000);
+
 		// stuart - Pi3B, BCM2837, Sony, 1024MB
 		board_info = validatePiBoard(RaspberryPiBoardInfoProvider.BCM2837,
 				"Revision        : a02082\n".split(":")[1].trim(), RaspberryPiBoardInfoProvider.MODEL_3B, 1_024_000);
 		board_info = validatePiBoard(RaspberryPiBoardInfoProvider.BCM2837, "a02082",
 				RaspberryPiBoardInfoProvider.MODEL_3B, 1_024_000);
-		// PiCM3, BCM2837, Sony, 1024MB
-		board_info = validatePiBoard(RaspberryPiBoardInfoProvider.BCM2837, "a020a2",
-				RaspberryPiBoardInfoProvider.COMPUTE_MODULE_3, 1_024_000);
 		// Pi3B, BCM2837, Embest, 1024MB
 		board_info = validatePiBoard(RaspberryPiBoardInfoProvider.BCM2837, "a22082",
 				RaspberryPiBoardInfoProvider.MODEL_3B, 1_024_000);
@@ -196,14 +190,23 @@ public class SystemInfoTest {
 				RaspberryPiBoardInfoProvider.MODEL_3B, 1_024_000);
 		board_info = validatePiBoard(RaspberryPiBoardInfoProvider.BCM2837, "a22083",
 				RaspberryPiBoardInfoProvider.MODEL_3B, 1_024_000);
+		// Pi3B+
+		board_info = validatePiBoard(RaspberryPiBoardInfoProvider.BCM2837, "a020d3",
+				RaspberryPiBoardInfoProvider.MODEL_3B_PLUS, 1_024_000);
 
+		// PiCM3, BCM2837, Sony, 1024MB
+		board_info = validatePiBoard(RaspberryPiBoardInfoProvider.BCM2837, "a020a2",
+				RaspberryPiBoardInfoProvider.COMPUTE_MODULE_3, 1_024_000);
+		board_info = validatePiBoard(RaspberryPiBoardInfoProvider.BCM2835, "900061",
+				RaspberryPiBoardInfoProvider.COMPUTE_MODULE, 512_000);
+		board_info = validatePiBoard(RaspberryPiBoardInfoProvider.BCM2837, "a020a0",
+				RaspberryPiBoardInfoProvider.COMPUTE_MODULE_3, 1_024_000);
+		board_info = validatePiBoard(RaspberryPiBoardInfoProvider.BCM2837, "a220a0",
+				RaspberryPiBoardInfoProvider.COMPUTE_MODULE_3, 1_024_000);
 		// CM3+
 		board_info = validatePiBoard(RaspberryPiBoardInfoProvider.BCM2837, "a02100",
 				RaspberryPiBoardInfoProvider.COMPUTE_MODULE_3_PLUS, 1_024_000);
 
-		// Pi3B+
-		board_info = validatePiBoard(RaspberryPiBoardInfoProvider.BCM2837, "a020d3",
-				RaspberryPiBoardInfoProvider.MODEL_3B_PLUS, 1_024_000);
 		// Pi4B
 		board_info = validatePiBoard(RaspberryPiBoardInfoProvider.BCM2711, "a03111",
 				RaspberryPiBoardInfoProvider.MODEL_4B, 1_024_000);
@@ -211,16 +214,51 @@ public class SystemInfoTest {
 				RaspberryPiBoardInfoProvider.MODEL_4B, 2_048_000);
 		board_info = validatePiBoard(RaspberryPiBoardInfoProvider.BCM2711, "c03111",
 				RaspberryPiBoardInfoProvider.MODEL_4B, 4_096_000);
+		board_info = validatePiBoard(RaspberryPiBoardInfoProvider.BCM2711, "b03115",
+				RaspberryPiBoardInfoProvider.MODEL_4B, 2_048_000);
+		Assertions.assertEquals("1.5", board_info.getPcbRevision());
+
+		// Zero
+		board_info = validatePiBoard(RaspberryPiBoardInfoProvider.BCM2835, "920092",
+				RaspberryPiBoardInfoProvider.MODEL_ZERO, 512_000);
+		board_info = validatePiBoard(RaspberryPiBoardInfoProvider.BCM2835, "920093",
+				RaspberryPiBoardInfoProvider.MODEL_ZERO, 512_000);
+
+		// matt, shirley - Pi Zero, BCM2835, Sony, 512MB
+		board_info = validatePiBoard(RaspberryPiBoardInfoProvider.BCM2835, "900092",
+				RaspberryPiBoardInfoProvider.MODEL_ZERO, 512_000);
+		// Pi Zero with DSI camera connector?
+		board_info = validatePiBoard(RaspberryPiBoardInfoProvider.BCM2835, "900093",
+				RaspberryPiBoardInfoProvider.MODEL_ZERO, 512_000);
+		// obi - Pi Zero W
+		board_info = validatePiBoard(RaspberryPiBoardInfoProvider.BCM2835, "9000c1",
+				RaspberryPiBoardInfoProvider.MODEL_ZERO_W, 512_000);
+		// ??
+		board_info = validatePiBoard(RaspberryPiBoardInfoProvider.BCM2835, "9200c1",
+				RaspberryPiBoardInfoProvider.MODEL_ZERO_W, 512_000);
 
 		// Zero2W
-		board_info = validatePiBoard(RaspberryPiBoardInfoProvider.BCM2711, "903121",
+		// Pi Zero 2 W v1.0
+		board_info = validatePiBoard(RaspberryPiBoardInfoProvider.BCM2837, "902120",
 				RaspberryPiBoardInfoProvider.MODEL_ZERO_2_W, 512_000);
+
 		// 400
 		board_info = validatePiBoard(RaspberryPiBoardInfoProvider.BCM2711, "c03131",
 				RaspberryPiBoardInfoProvider.MODEL_400, 4_096_000);
+
 		// CM4
+		// Compute Module 4 v1.0 eMMC 1GB
+		board_info = validatePiBoard(RaspberryPiBoardInfoProvider.BCM2711, "a03140",
+				RaspberryPiBoardInfoProvider.COMPUTE_MODULE_4, 1_024_000);
+		// Compute Module 4 v1.0 Lite 2GB
+		board_info = validatePiBoard(RaspberryPiBoardInfoProvider.BCM2711, "b03140",
+				RaspberryPiBoardInfoProvider.COMPUTE_MODULE_4, 2_048_000);
+		// Compute Module 4 v1.1 WiFi 4GB
 		board_info = validatePiBoard(RaspberryPiBoardInfoProvider.BCM2711, "c03141",
 				RaspberryPiBoardInfoProvider.COMPUTE_MODULE_4, 4_096_000);
+		// Compute Module 4 v1.0 WiFi 8GB
+		board_info = validatePiBoard(RaspberryPiBoardInfoProvider.BCM2711, "d03140",
+				RaspberryPiBoardInfoProvider.COMPUTE_MODULE_4, 8_192_000);
 	}
 
 	private static PiBoardInfo validatePiBoard(String processor, String revision, String expectedModel,

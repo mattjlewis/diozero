@@ -36,18 +36,18 @@ import java.nio.IntBuffer;
 
 public class MmapIntBuffer implements AutoCloseable {
 	private long address;
-	private int length;
+	private long length;
 	private IntBuffer intBuffer;
 
-	public MmapIntBuffer(String file, int offset, int pageSize, ByteOrder byteOrder) {
-		MmapByteBuffer mmap_bb = MmapBufferNative.createMmapBuffer(file, offset, pageSize);
+	public MmapIntBuffer(String file, long offset, long length, ByteOrder byteOrder) {
+		MmapByteBuffer mmap_bb = MmapBufferNative.createMmapBuffer(file, offset, length);
 		this.address = mmap_bb.getAddress();
 		this.length = mmap_bb.getLength();
 		// Creates a view of the original direct byte buffer as an int buffer
 		intBuffer = mmap_bb.getBuffer().order(byteOrder).asIntBuffer();
 	}
 
-	public MmapIntBuffer(IntBuffer intBuffer, long address, int length) {
+	public MmapIntBuffer(IntBuffer intBuffer, long address, long length) {
 		this.intBuffer = intBuffer;
 		this.address = address;
 		this.length = length;

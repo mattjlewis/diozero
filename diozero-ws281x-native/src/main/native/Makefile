@@ -11,7 +11,7 @@ LIB_NAME     := ws281xj
 SRCS = com_diozero_ws281xj_rpiws281x_WS281x.c
 
 LDLIBS := -lws2811
-RPI_WS281X_DIR := $(HOME)/rpi_ws281x
+RPI_WS281X_DIR ?= $(HOME)/rpi_ws281x
 
 ifeq ($(OS),Windows_NT)
     uname_S := Windows
@@ -41,7 +41,7 @@ INCLUDES := -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/$(OS_JAVA_INC) -I$(RPI
 LIB_PREFIX ?= lib
 LIB_TARGET := $(LIB_PREFIX)$(LIB_NAME).$(LIB_EXT)
 OBJS       := $(SRCS:.c=.o)
-LDFLAGS    := -L$(RPI_WS281X_DIR)
+#LDFLAGS    := -L$(RPI_WS281X_DIR)
 
 all: $(LIB_TARGET)
 

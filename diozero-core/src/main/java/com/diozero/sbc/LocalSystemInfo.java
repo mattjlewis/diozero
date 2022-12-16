@@ -225,6 +225,7 @@ public class LocalSystemInfo {
 	private static final String LINUX_DEVICE_TREE_MODEL_FILE = "/proc/device-tree/model";
 	private static final String LINUX_DEVICE_TREE_SERIAL_NUMBER_FILE = "/proc/device-tree/serial-number";
 	private static final String TEMPERATURE_FILE = "/sys/class/thermal/thermal_zone0/temp";
+	private static final String UNKNOWN = "UNKNOWN";
 
 	private static LocalSystemInfo instance;
 

@@ -32,6 +32,7 @@ package com.diozero.sbc;
  */
 
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.diozero.api.RuntimeIOException;
 import com.diozero.internal.spi.BoardInfoProvider;
@@ -54,17 +55,15 @@ import com.diozero.internal.spi.BoardInfoProvider;
  * </p>
  */
 public class LocalBoardInfoUtil {
-	private static boolean initialised;
+	private static AtomicBoolean initialised = new AtomicBoolean();
 	private static BoardInfo localBoardInfo;
 
 	private static synchronized void initialiseLocalBoardInfo() throws RuntimeIOException {
-		if (!initialised) {
+		if (!initialised.getAndSet(true)) {
 			localBoardInfo = resolveLocalBoardInfo(LocalSystemInfo.getInstance());
 			// Only initialise the pins for the resolved board
 			// Don't initialise the pins! That is done within the base native device factory
 			// localBoardInfo.populateBoardPinInfo();
-
-			initialised = true;
 		}
 	}
 

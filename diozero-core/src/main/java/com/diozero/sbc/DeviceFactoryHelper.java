@@ -59,37 +59,35 @@ public class DeviceFactoryHelper {
 
 	private static NativeDeviceFactoryInterface nativeDeviceFactory;
 
-	private static void initialise() {
-		synchronized (DeviceFactoryHelper.class) {
-			LibraryLoader.loadSystemUtils();
+	private static synchronized void initialise() {
+		LibraryLoader.loadSystemUtils();
 
-			if (nativeDeviceFactory == null) {
-				// First try load one defined as a system property
-				String property = PropertyUtil.getProperty(DEVICE_FACTORY_PROP, null);
-				if (property != null && property.length() > 0) {
-					try {
-						nativeDeviceFactory = (NativeDeviceFactoryInterface) Class.forName(property)
-								.getDeclaredConstructor().newInstance();
-					} catch (ReflectiveOperationException e) {
-						Logger.error(e, "Cannot instantiate device factory class '{}'", property);
-					}
+		if (nativeDeviceFactory == null) {
+			// First try load one defined as a system property
+			String property = PropertyUtil.getProperty(DEVICE_FACTORY_PROP, null);
+			if (property != null && property.length() > 0) {
+				try {
+					nativeDeviceFactory = (NativeDeviceFactoryInterface) Class.forName(property)
+							.getDeclaredConstructor().newInstance();
+				} catch (ReflectiveOperationException e) {
+					Logger.error(e, "Cannot instantiate device factory class '{}'", property);
 				}
-
-				// Otherwise use the ServiceLoader
-				// If none found use the default built-in device factory
-				if (nativeDeviceFactory == null) {
-					nativeDeviceFactory = NativeDeviceFactoryInterface.loadInstances().findFirst()
-							.orElse(new DefaultDeviceFactory());
-				}
-
-				Logger.debug("Using native device factory class {}", nativeDeviceFactory.getClass().getSimpleName());
-
-				Diozero.initialiseShutdownHook();
-
-				nativeDeviceFactory.start();
-			} else if (nativeDeviceFactory.isClosed()) {
-				nativeDeviceFactory.reopen();
 			}
+
+			// Otherwise use the ServiceLoader
+			// If none found use the default built-in device factory
+			if (nativeDeviceFactory == null) {
+				nativeDeviceFactory = NativeDeviceFactoryInterface.loadInstances().findFirst()
+						.orElse(new DefaultDeviceFactory());
+			}
+
+			Logger.debug("Using native device factory class {}", nativeDeviceFactory.getClass().getSimpleName());
+
+			Diozero.initialiseShutdownHook();
+
+			nativeDeviceFactory.start();
+		} else if (nativeDeviceFactory.isClosed()) {
+			nativeDeviceFactory.reopen();
 		}
 	}
 

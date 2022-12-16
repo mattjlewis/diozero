@@ -45,9 +45,6 @@
 
 #include "com_diozero_util_Util.h"
 
-extern jclass systemClassRef;
-extern jmethodID nanoTimeMethodId;
-
 extern jmethodID pollEventListenerNotifyMethod;
 
 JNIEXPORT void JNICALL Java_com_diozero_util_PollNative_poll(
