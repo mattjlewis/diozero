@@ -11,7 +11,7 @@ Board Computers like the Raspberry Pi. Actual GPIO / I<sup>2</sup>C / SPI device
 to pluggable service providers for maximum compatibility across different boards. This library is 
 known to work on the following boards: all models of the Raspberry Pi, Odroid C2, BeagleBone 
 (Green and Black), C.H.I.P and ASUS Tinker Board. It should be portable to any Single Board computer that 
-runs Linux and Java 8.
+runs Linux and Java 11+.
 
 This library makes use of modern Java features such as 
 [automatic resource management](https://docs.oracle.com/javase/tutorial/essential/exceptions/tryResourceClose.html), 

@@ -5,7 +5,7 @@ package com.diozero.util;
  * Organisation: diozero
  * Project:      diozero - Core
  * Filename:     SleepUtil.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.util;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -81,8 +81,8 @@ public class SleepUtil {
 	 * Busy sleep for the specified number of nanoseconds. It is the caller's
 	 * responsibility to factor in any delays associated with calling this method -
 	 * this could be as much as 1.5 microseconds on a Raspberry Pi 4.
-	 *
-	 * Warning - this will consume 100% of one core, use with caution and only with
+	 * <p>
+	 * Warning - this <b>MAY</b> consume 100% of one core: use with caution and only with
 	 * small delays.
 	 *
 	 * @param nanos The period to delay for
@@ -90,8 +90,7 @@ public class SleepUtil {
 	public static void busySleep(final long nanos) {
 		final long start_time = System.nanoTime();
 		do {
-			// nop
-			// In Java 9+ use Thread.onSpinWait()?
+			Thread.onSpinWait();
 		} while ((System.nanoTime() - start_time) < nanos);
 	}
 
