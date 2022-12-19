@@ -53,14 +53,13 @@ extern jmethodID mmapByteBufferConstructor;
 #define long_t uint64_t
 #endif
 
-jobject createMmapByteBuffer(JNIEnv* env, void* mapPtr, jint length) {
-	long_t map_ptr = (long_t) mapPtr;
-	return (*env)->NewObject(env, mmapByteBufferClassRef, mmapByteBufferConstructor, (jlong) map_ptr, length,
-			(*env)->NewDirectByteBuffer(env, mapPtr, (jlong) length));
+jobject createMmapByteBuffer(JNIEnv* env, void* mapPtr, jlong length) {
+	return (*env)->NewObject(env, mmapByteBufferClassRef, mmapByteBufferConstructor, mapPtr, length,
+			(*env)->NewDirectByteBuffer(env, mapPtr, length));
 }
 
 JNIEXPORT jobject JNICALL Java_com_diozero_util_MmapBufferNative_createMmapBuffer(
-		JNIEnv* env, jclass clz, jstring path, jint offset, jint length) {
+		JNIEnv* env, jclass clz, jstring path, jlong offset, jlong length) {
 	int str_len = (*env)->GetStringLength(env, path);
 	char filename[str_len];
 	(*env)->GetStringUTFRegion(env, path, 0, str_len, filename);
@@ -71,14 +70,14 @@ JNIEXPORT jobject JNICALL Java_com_diozero_util_MmapBufferNative_createMmapBuffe
 		return NULL;
 	}
 
-	void* map_ptr = mmap(0, (uint32_t) length, PROT_READ|PROT_WRITE, MAP_SHARED, fd, (uint32_t) offset);
+	void* map_ptr = mmap(0, (size_t) length, PROT_READ|PROT_WRITE, MAP_SHARED, fd, (off_t) offset);
 	//void* map_ptr = mmap(0, length, PROT_READ|PROT_WRITE, MAP_SHARED|MAP_LOCKED, fd, offset);
 	/*
 	 * From: https://man7.org/linux/man-pages/man2/mmap.2.html
 	 * After the mmap() call has returned, the file descriptor, fd, can
      * be closed immediately without invalidating the mapping.
 	 */
-	close((int) fd);
+	close(fd);
 
 	if (map_ptr == MAP_FAILED) {
 		// TODO Raise error
@@ -90,7 +89,7 @@ JNIEXPORT jobject JNICALL Java_com_diozero_util_MmapBufferNative_createMmapBuffe
 }
 
 JNIEXPORT void JNICALL Java_com_diozero_util_MmapBufferNative_closeMmapBuffer(
-		JNIEnv *env, jclass clz, jlong mapPtr, jint length) {
+		JNIEnv *env, jclass clz, jlong mapPtr, jlong length) {
 	long_t map_ptr = (long_t) mapPtr;
 	munmap((void*) map_ptr, length);
 }

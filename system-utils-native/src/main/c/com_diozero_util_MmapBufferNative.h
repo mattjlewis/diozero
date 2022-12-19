@@ -10,18 +10,18 @@ extern "C" {
 /*
  * Class:     com_diozero_util_MmapBufferNative
  * Method:    createMmapBuffer
- * Signature: (Ljava/lang/String;II)Lcom/diozero/util/MmapByteBuffer;
+ * Signature: (Ljava/lang/String;JJ)Lcom/diozero/util/MmapByteBuffer;
  */
 JNIEXPORT jobject JNICALL Java_com_diozero_util_MmapBufferNative_createMmapBuffer
-  (JNIEnv *, jclass, jstring, jint, jint);
+  (JNIEnv *, jclass, jstring, jlong, jlong);
 
 /*
  * Class:     com_diozero_util_MmapBufferNative
  * Method:    closeMmapBuffer
- * Signature: (JI)V
+ * Signature: (JJ)V
  */
 JNIEXPORT void JNICALL Java_com_diozero_util_MmapBufferNative_closeMmapBuffer
-  (JNIEnv *, jclass, jlong, jint);
+  (JNIEnv *, jclass, jlong, jlong);
 
 #ifdef __cplusplus
 }

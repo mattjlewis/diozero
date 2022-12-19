@@ -64,12 +64,13 @@ public class PCA9685ServoAnimation {
 	public static void test(int pwmFrequency, int gpio1, int gpio2, int gpio3, int gpio4, int gpio5, int gpio6) {
 		ServoTrim trim = ServoTrim.TOWERPRO_SG90;
 		try (PCA9685 pca9685 = new PCA9685(pwmFrequency);
-				ServoDevice servo1 = ServoDevice.newBuilder(gpio1).setDeviceFactory(pca9685).setTrim(trim).build();
-				ServoDevice servo2 = ServoDevice.newBuilder(gpio2).setDeviceFactory(pca9685).setTrim(trim).build();
-				ServoDevice servo3 = ServoDevice.newBuilder(gpio3).setDeviceFactory(pca9685).setTrim(trim).build();
-				ServoDevice servo4 = ServoDevice.newBuilder(gpio4).setDeviceFactory(pca9685).setTrim(trim).build();
-				ServoDevice servo5 = ServoDevice.newBuilder(gpio5).setDeviceFactory(pca9685).setTrim(trim).build();
-				ServoDevice servo6 = ServoDevice.newBuilder(gpio6).setDeviceFactory(pca9685).setTrim(trim).build()) {
+				ServoDevice servo1 = ServoDevice.Builder.builder(gpio1).setDeviceFactory(pca9685).setTrim(trim).build();
+				ServoDevice servo2 = ServoDevice.Builder.builder(gpio2).setDeviceFactory(pca9685).setTrim(trim).build();
+				ServoDevice servo3 = ServoDevice.Builder.builder(gpio3).setDeviceFactory(pca9685).setTrim(trim).build();
+				ServoDevice servo4 = ServoDevice.Builder.builder(gpio4).setDeviceFactory(pca9685).setTrim(trim).build();
+				ServoDevice servo5 = ServoDevice.Builder.builder(gpio5).setDeviceFactory(pca9685).setTrim(trim).build();
+				ServoDevice servo6 = ServoDevice.Builder.builder(gpio6).setDeviceFactory(pca9685).setTrim(trim)
+						.build()) {
 			Animation animation = new Animation(Arrays.asList(servo1::setAngle, servo2::setAngle, servo3::setAngle,
 					servo4::setAngle, servo5::setAngle, servo6::setAngle), 100, Sine::easeIn, 1f, true);
 			float[] cue_points = { 0, 0.2f, 0.5f, 1 };

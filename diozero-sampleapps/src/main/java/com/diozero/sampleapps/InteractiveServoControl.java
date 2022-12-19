@@ -83,7 +83,8 @@ public class InteractiveServoControl {
 
 	private static void run(BufferedReader br, ServoDeviceFactoryInterface deviceFactory, int gpio, ServoTrim trim)
 			throws IOException {
-		try (ServoDevice servo = ServoDevice.newBuilder(gpio).setDeviceFactory(deviceFactory).setTrim(trim).build()) {
+		try (ServoDevice servo = ServoDevice.Builder.builder(gpio).setDeviceFactory(deviceFactory).setTrim(trim)
+				.build()) {
 			while (true) {
 				System.out.print("[" + gpio + "] Angle ('q' to quit): ");
 				System.out.flush();

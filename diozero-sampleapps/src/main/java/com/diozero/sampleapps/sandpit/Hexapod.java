@@ -200,34 +200,34 @@ public class Hexapod implements AutoCloseable {
 		trim = new ServoTrim(ServoTrim.DEFAULT_MID_US, ServoTrim.DEFAULT_90_DELTA_US,
 				(int) (ServoTrim.DEFAULT_90_DELTA_US * (2 / 3f)));
 
-		l1c = ServoDevice.newBuilder(0).setDeviceFactory(pca9685Left).setTrim(trim).build();
-		l1f = ServoDevice.newBuilder(1).setDeviceFactory(pca9685Left).setTrim(trim).setInverted(true).build();
-		l1t = ServoDevice.newBuilder(2).setDeviceFactory(pca9685Left).setTrim(trim).setInverted(true).build();
+		l1c = ServoDevice.Builder.builder(0).setDeviceFactory(pca9685Left).setTrim(trim).build();
+		l1f = ServoDevice.Builder.builder(1).setDeviceFactory(pca9685Left).setTrim(trim).setInverted(true).build();
+		l1t = ServoDevice.Builder.builder(2).setDeviceFactory(pca9685Left).setTrim(trim).setInverted(true).build();
 		l1 = new FloatConsumerCollection(Arrays.asList(l1c::setAngle, l1f::setAngle, l1t::setAngle));
 
-		r1c = ServoDevice.newBuilder(14).setDeviceFactory(pca9685Left).setTrim(trim).setInverted(true).build();
-		r1f = ServoDevice.newBuilder(15).setDeviceFactory(pca9685Left).setTrim(trim).build();
-		r1t = ServoDevice.newBuilder(13).setDeviceFactory(pca9685Left).setTrim(trim).build();
+		r1c = ServoDevice.Builder.builder(14).setDeviceFactory(pca9685Left).setTrim(trim).setInverted(true).build();
+		r1f = ServoDevice.Builder.builder(15).setDeviceFactory(pca9685Left).setTrim(trim).build();
+		r1t = ServoDevice.Builder.builder(13).setDeviceFactory(pca9685Left).setTrim(trim).build();
 		r1 = new FloatConsumerCollection(Arrays.asList(r1c::setAngle, r1f::setAngle, r1t::setAngle));
 
-		l2c = ServoDevice.newBuilder(8).setDeviceFactory(pca9685Left).setTrim(trim).build();
-		l2f = ServoDevice.newBuilder(9).setDeviceFactory(pca9685Left).setTrim(trim).setInverted(true).build();
-		l2t = ServoDevice.newBuilder(10).setDeviceFactory(pca9685Left).setTrim(trim).setInverted(true).build();
+		l2c = ServoDevice.Builder.builder(8).setDeviceFactory(pca9685Left).setTrim(trim).build();
+		l2f = ServoDevice.Builder.builder(9).setDeviceFactory(pca9685Left).setTrim(trim).setInverted(true).build();
+		l2t = ServoDevice.Builder.builder(10).setDeviceFactory(pca9685Left).setTrim(trim).setInverted(true).build();
 		l2 = new FloatConsumerCollection(Arrays.asList(l2c::setAngle, l2f::setAngle, l2t::setAngle));
 
-		r2c = ServoDevice.newBuilder(6).setDeviceFactory(pca9685Left).setTrim(trim).setInverted(true).build();
-		r2f = ServoDevice.newBuilder(7).setDeviceFactory(pca9685Left).setTrim(trim).build();
-		r2t = ServoDevice.newBuilder(5).setDeviceFactory(pca9685Left).setTrim(trim).build();
+		r2c = ServoDevice.Builder.builder(6).setDeviceFactory(pca9685Left).setTrim(trim).setInverted(true).build();
+		r2f = ServoDevice.Builder.builder(7).setDeviceFactory(pca9685Left).setTrim(trim).build();
+		r2t = ServoDevice.Builder.builder(5).setDeviceFactory(pca9685Left).setTrim(trim).build();
 		r2 = new FloatConsumerCollection(Arrays.asList(r2c::setAngle, r2f::setAngle, r2t::setAngle));
 
-		l3c = ServoDevice.newBuilder(12).setDeviceFactory(pca9685Left).setTrim(trim).setInverted(true).build();
-		l3f = ServoDevice.newBuilder(13).setDeviceFactory(pca9685Left).setTrim(trim).setInverted(true).build();
-		l3t = ServoDevice.newBuilder(14).setDeviceFactory(pca9685Left).setTrim(trim).setInverted(true).build();
+		l3c = ServoDevice.Builder.builder(12).setDeviceFactory(pca9685Left).setTrim(trim).setInverted(true).build();
+		l3f = ServoDevice.Builder.builder(13).setDeviceFactory(pca9685Left).setTrim(trim).setInverted(true).build();
+		l3t = ServoDevice.Builder.builder(14).setDeviceFactory(pca9685Left).setTrim(trim).setInverted(true).build();
 		l3 = new FloatConsumerCollection(Arrays.asList(l3c::setAngle, l3f::setAngle, l3t::setAngle));
 
-		r3c = ServoDevice.newBuilder(2).setDeviceFactory(pca9685Left).setTrim(trim).build();
-		r3f = ServoDevice.newBuilder(3).setDeviceFactory(pca9685Left).setTrim(trim).build();
-		r3t = ServoDevice.newBuilder(1).setDeviceFactory(pca9685Left).setTrim(trim).build();
+		r3c = ServoDevice.Builder.builder(2).setDeviceFactory(pca9685Left).setTrim(trim).build();
+		r3f = ServoDevice.Builder.builder(3).setDeviceFactory(pca9685Left).setTrim(trim).build();
+		r3t = ServoDevice.Builder.builder(1).setDeviceFactory(pca9685Left).setTrim(trim).build();
 		r3 = new FloatConsumerCollection(Arrays.asList(r3c::setAngle, r3f::setAngle, r3t::setAngle));
 
 		coxae = new FloatConsumerCollection(Arrays.asList(l1c::setAngle, r1c::setAngle, l2c::setAngle, r2c::setAngle,

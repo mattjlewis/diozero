@@ -179,7 +179,7 @@ jint JNI_OnLoad(JavaVM* jvm, void* reserved) {
 		return JNI_ERR;
 	}
 	method_name = "<init>";
-	signature = "(JILjava/nio/ByteBuffer;)V";
+	signature = "(JJLjava/nio/ByteBuffer;)V";
 	mmapByteBufferConstructor = (*env)->GetMethodID(env, mmap_byte_buffer_class, method_name, signature);
 	if ((*env)->ExceptionCheck(env) || mmapByteBufferConstructor == NULL) {
 		fprintf(stderr, "Error looking up methodID for %s.%s%s\n", class_name, method_name, signature);

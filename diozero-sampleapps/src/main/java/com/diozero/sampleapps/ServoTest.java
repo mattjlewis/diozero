@@ -63,7 +63,7 @@ public class ServoTest {
 
 	public static void test(int gpio) {
 		ServoTrim trim = ServoTrim.TOWERPRO_SG90;
-		try (ServoDevice servo = ServoDevice.newBuilder(gpio).setTrim(trim).build()) {
+		try (ServoDevice servo = ServoDevice.Builder.builder(gpio).setTrim(trim).build()) {
 			for (int i = 0; i < 2; i++) {
 				Logger.info("Mid: {#,###} us", Integer.valueOf(trim.getMidPulseWidthUs()));
 				servo.setPulseWidthUs(trim.getMidPulseWidthUs());

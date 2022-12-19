@@ -64,7 +64,7 @@ public class PCA9685ServoTest {
 	public static void test(int pwmFrequency, int gpio) {
 		ServoTrim trim = ServoTrim.MG996R;
 		try (PCA9685 pca9685 = new PCA9685(pwmFrequency);
-				ServoDevice servo = ServoDevice.newBuilder(gpio).setDeviceFactory(pca9685).setTrim(trim).build()) {
+				ServoDevice servo = ServoDevice.Builder.builder(gpio).setDeviceFactory(pca9685).setTrim(trim).build()) {
 			Logger.info("Mid");
 			pca9685.setDutyUs(gpio, trim.getMidPulseWidthUs());
 			SleepUtil.sleepMillis(LARGE_DELAY);

@@ -47,7 +47,7 @@ public class RoomScan {
 		System.out.println(trim.getMinAngle() + ", " + trim.getMidAngle() + ", " + trim.getMaxAngle());
 
 		try (PiconZero pz = new PiconZero();
-				ServoDevice servo = ServoDevice.newBuilder(1).setDeviceFactory(pz).setTrim(trim).build();
+				ServoDevice servo = ServoDevice.Builder.builder(1).setDeviceFactory(pz).setTrim(trim).build();
 				GarminLidarLiteV4 lidar = new GarminLidarLiteV4()) {
 			lidar.configure(GarminLidarLiteV4.Preset.BALANCED);
 			lidar.setPowerMode(GarminLidarLiteV4.PowerMode.ALWAYS_ON);
