@@ -47,7 +47,7 @@ import com.diozero.internal.provider.test.TestDigitalInputDevice;
 import com.diozero.internal.provider.test.TestDigitalOutputDevice;
 import com.diozero.util.SleepUtil;
 
-public class SmoothedInputTest implements DeviceEventConsumer<DigitalInputEvent> {
+public class SmoothedInputDeviceTest implements DeviceEventConsumer<DigitalInputEvent> {
 	@BeforeAll
 	public static void beforeAll() {
 		TestDeviceFactory.setDigitalInputDeviceClass(TestDigitalInputDevice.class);
@@ -102,11 +102,12 @@ public class SmoothedInputTest implements DeviceEventConsumer<DigitalInputEvent>
 	@Test
 	public void testDebounce() {
 		Logger.info("testDebounce() - start");
-		
+
 		eventCount = 0;
 		int pin = 1;
 		int delay_secs = 5;
-		// Require 1 event in any 500ms period to be considered 'active', check every 500ms
+		// Require 1 event in any 500ms period to be considered 'active', check every
+		// 500ms
 		try (SmoothedInputDevice device = SmoothedInputDevice.Builder.builder(pin).setThreshold(1).setEventAgeMs(500)
 				.setEventDetectPeriodMs(500).build()) {
 			device.addListener(this);
@@ -119,13 +120,15 @@ public class SmoothedInputTest implements DeviceEventConsumer<DigitalInputEvent>
 
 			ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(10);
 
-			// Generate 1 event every 250ms -> 4 events per second, should get 1 debounced event every 500ms
+			// Generate 1 event every 250ms -> 4 events per second, should get 1 debounced
+			// event every 500ms
 			ScheduledFuture<?> future = scheduler.scheduleAtFixedRate(event_generator, 250, 250, TimeUnit.MILLISECONDS);
 
 			Logger.info("Sleeping for {}s", Integer.valueOf(delay_secs));
 			SleepUtil.sleepSeconds(delay_secs);
-			Logger.info("eventCount: {}, should be: {}", Integer.valueOf(eventCount), Integer.valueOf(2*delay_secs));
-			//Assertions.assertTrue(eventCount >= (delay_secs - 1) && eventCount <= (delay_secs + 1));
+			Logger.info("eventCount: {}, should be: {}", Integer.valueOf(eventCount), Integer.valueOf(2 * delay_secs));
+			// Assertions.assertTrue(eventCount >= (delay_secs - 1) && eventCount <=
+			// (delay_secs + 1));
 
 			Logger.info("Stopping event generation and sleeping for {}s", Integer.valueOf(delay_secs));
 			future.cancel(true);
@@ -136,7 +139,8 @@ public class SmoothedInputTest implements DeviceEventConsumer<DigitalInputEvent>
 			future = scheduler.scheduleAtFixedRate(event_generator, 250, 250, TimeUnit.MILLISECONDS);
 			Logger.info("Restarting event generation and sleeping for {}s", Integer.valueOf(delay_secs));
 			SleepUtil.sleepSeconds(delay_secs);
-			//Assertions.assertTrue(eventCount >= (delay_secs - 1) && eventCount <= (delay_secs + 1));
+			// Assertions.assertTrue(eventCount >= (delay_secs - 1) && eventCount <=
+			// (delay_secs + 1));
 			future.cancel(true);
 
 			scheduler.shutdownNow();

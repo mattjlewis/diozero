@@ -38,7 +38,6 @@ import java.util.Map;
 
 import org.tinylog.Logger;
 
-import com.diozero.api.DeviceAlreadyOpenedException;
 import com.diozero.api.DeviceMode;
 import com.diozero.api.GpioEventTrigger;
 import com.diozero.api.GpioPullUpDown;
@@ -47,7 +46,6 @@ import com.diozero.api.PinInfo;
 import com.diozero.api.RuntimeIOException;
 import com.diozero.api.SerialConstants;
 import com.diozero.api.SpiClockMode;
-import com.diozero.internal.PwmServoDevice;
 import com.diozero.internal.SoftwarePwmOutputDevice;
 import com.diozero.internal.board.odroid.OdroidBoardInfoProvider;
 import com.diozero.internal.board.odroid.OdroidC2SysFsPwmOutputDevice;
@@ -273,26 +271,6 @@ public class DefaultDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	@Override
-	public InternalServoDeviceInterface provisionServoDevice(PinInfo pinInfo, int frequencyHz, int minPulseWidthUs,
-			int maxPulseWidthUs, int initialPulseWidthUs) throws RuntimeIOException {
-		// Special case - override to use PWM output device for servo control allowing
-		// for hardware and software PWM output to control servos on all GPIOs
-
-		String key = createPinKey(pinInfo);
-
-		// Check if this pin is already provisioned
-		if (isDeviceOpened(key)) {
-			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
-		}
-
-		InternalServoDeviceInterface device = createServoDevice(key, pinInfo, frequencyHz, minPulseWidthUs,
-				maxPulseWidthUs, initialPulseWidthUs);
-		deviceOpened(device);
-
-		return device;
-	}
-
-	@Override
 	public GpioDigitalInputDeviceInterface createDigitalInputDevice(String key, PinInfo pinInfo, GpioPullUpDown pud,
 			GpioEventTrigger trigger) throws RuntimeIOException {
 		if (gpioUseCharDev) {
@@ -381,16 +359,11 @@ public class DefaultDeviceFactory extends BaseNativeDeviceFactory {
 	@Override
 	public InternalServoDeviceInterface createServoDevice(String key, PinInfo pinInfo, int frequencyHz,
 			int minPulseWidthUs, int maxPulseWidthUs, int initialPulseWidthUs) {
-		// Need to make sure the keys are different
-		// Note this is replicating the functionality in provisionDigitalOutputDevice.
-		// That method can't be called as it will throw a device already opened
-		// exception.
-		// Also note that PwmServoDevice has special cleanup functionality.
-		InternalPwmOutputDeviceInterface pwm_output_device = createPwmOutputDevice("Servo-" + key, pinInfo, frequencyHz,
-				initialPulseWidthUs);
-		deviceOpened(pwm_output_device);
+		// Note that by default there is no native support for servo devices in the
+		// default device factory - only via PWM control. Firmata devices do have native
+		// support for servo control
 
-		return new PwmServoDevice(key, this, pwm_output_device, minPulseWidthUs, maxPulseWidthUs);
+		throw new UnsupportedOperationException("Native servo devices are not supported - use PWM instead");
 	}
 
 	@Override

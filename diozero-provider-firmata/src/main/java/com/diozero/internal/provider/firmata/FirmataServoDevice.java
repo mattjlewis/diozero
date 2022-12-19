@@ -31,6 +31,8 @@ package com.diozero.internal.provider.firmata;
  * #L%
  */
 
+import org.tinylog.Logger;
+
 import com.diozero.api.RuntimeIOException;
 import com.diozero.internal.provider.firmata.adapter.FirmataAdapter;
 import com.diozero.internal.provider.firmata.adapter.FirmataProtocol.PinMode;
@@ -106,6 +108,7 @@ public class FirmataServoDevice extends AbstractDevice implements InternalServoD
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
+		Logger.trace("closeDevice() {}", getKey());
 		// Cannot do setPulseWidth(0) as that is interpreted as 0 degrees
 		// So... revert to the default (digital output, value off)
 		adapter.setPinMode(gpio, PinMode.DIGITAL_OUTPUT);

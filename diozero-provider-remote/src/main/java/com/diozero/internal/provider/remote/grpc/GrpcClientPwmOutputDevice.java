@@ -31,6 +31,8 @@ package com.diozero.internal.provider.remote.grpc;
  * #L%
  */
 
+import org.tinylog.Logger;
+
 import com.diozero.api.PinInfo;
 import com.diozero.api.RuntimeIOException;
 import com.diozero.internal.spi.AbstractDevice;
@@ -82,6 +84,7 @@ public class GrpcClientPwmOutputDevice extends AbstractDevice implements Interna
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
+		Logger.trace("closeDevice() {}", getKey());
 		deviceFactory.closeGpio(gpio);
 	}
 }

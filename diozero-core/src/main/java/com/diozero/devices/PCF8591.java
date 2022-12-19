@@ -248,7 +248,7 @@ public class PCF8591 extends AbstractDeviceFactory
 
 		@Override
 		protected void closeDevice() {
-			Logger.trace("closeDevice()");
+			Logger.trace("closeDevice() {}", getKey());
 			// TODO Nothing to do?
 		}
 
@@ -272,13 +272,13 @@ public class PCF8591 extends AbstractDeviceFactory
 
 			this.pcf8591 = pcf8591;
 			this.adcNumber = adcNumber;
-			
+
 			setValue(initialValue);
 		}
 
 		@Override
 		protected void closeDevice() throws RuntimeIOException {
-			Logger.trace("closeDevice()");
+			Logger.trace("closeDevice() {}", getKey());
 			// TODO Nothing to do?
 		}
 

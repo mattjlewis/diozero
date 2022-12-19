@@ -84,7 +84,7 @@ public class FirmataDigitalInputDevice extends AbstractInputDevice<DigitalInputE
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
-		Logger.trace("closeDevice()");
+		Logger.trace("closeDevice() {}", getKey());
 		disableListener();
 	}
 }

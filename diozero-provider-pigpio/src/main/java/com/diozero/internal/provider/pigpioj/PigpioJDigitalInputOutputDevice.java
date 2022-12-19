@@ -113,7 +113,7 @@ public class PigpioJDigitalInputOutputDevice extends AbstractInputDevice<Digital
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
-		Logger.trace("closeDevice()");
+		Logger.trace("closeDevice() {}", getKey());
 		// FIXME No piogpio close method?
 		// TODO Revert to default input mode?
 		super.closeDevice();

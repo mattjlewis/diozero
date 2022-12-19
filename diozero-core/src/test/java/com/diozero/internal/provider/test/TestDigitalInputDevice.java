@@ -31,6 +31,8 @@ package com.diozero.internal.provider.test;
  * #L%
  */
 
+import org.tinylog.Logger;
+
 import com.diozero.api.DigitalInputEvent;
 import com.diozero.api.GpioEventTrigger;
 import com.diozero.api.GpioPullUpDown;
@@ -39,17 +41,18 @@ import com.diozero.internal.spi.AbstractInputDevice;
 import com.diozero.internal.spi.DeviceFactoryInterface;
 import com.diozero.internal.spi.GpioDigitalInputDeviceInterface;
 
-public class TestDigitalInputDevice extends AbstractInputDevice<DigitalInputEvent> implements GpioDigitalInputDeviceInterface {
+public class TestDigitalInputDevice extends AbstractInputDevice<DigitalInputEvent>
+		implements GpioDigitalInputDeviceInterface {
 	private int gpio;
 	private boolean value;
 
-	public TestDigitalInputDevice(String key, DeviceFactoryInterface deviceFactory,
-			int gpio, GpioPullUpDown pud, GpioEventTrigger trigger) {
+	public TestDigitalInputDevice(String key, DeviceFactoryInterface deviceFactory, int gpio, GpioPullUpDown pud,
+			GpioEventTrigger trigger) {
 		super(key, deviceFactory);
-		
+
 		this.gpio = gpio;
 	}
-	
+
 	@Override
 	public void accept(DigitalInputEvent event) {
 		value = event.getValue();
@@ -73,5 +76,6 @@ public class TestDigitalInputDevice extends AbstractInputDevice<DigitalInputEven
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
+		Logger.trace("closeDevice() {}", getKey());
 	}
 }

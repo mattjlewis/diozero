@@ -44,14 +44,14 @@ public class TestDigitalOutputDevice extends AbstractDevice implements GpioDigit
 
 	public TestDigitalOutputDevice(String key, DeviceFactoryInterface deviceFactory, int gpio, boolean initialValue) {
 		super(key, deviceFactory);
-		
+
 		this.gpio = gpio;
 		this.value = initialValue;
 	}
 
 	@Override
 	protected void closeDevice() {
-		Logger.trace("closeDevice()");
+		Logger.trace("closeDevice() {}", getKey());
 	}
 
 	@Override

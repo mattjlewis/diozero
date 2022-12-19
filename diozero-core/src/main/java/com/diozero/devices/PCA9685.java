@@ -483,7 +483,7 @@ public class PCA9685 extends AbstractDeviceFactory
 
 		@Override
 		protected void closeDevice() throws RuntimeIOException {
-			Logger.trace("closeDevice()");
+			Logger.trace("closeDevice() {}", getKey());
 			pca9685.closeChannel(channel);
 		}
 

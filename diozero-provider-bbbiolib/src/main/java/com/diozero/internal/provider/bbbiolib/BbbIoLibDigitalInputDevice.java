@@ -97,7 +97,7 @@ public class BbbIoLibDigitalInputDevice extends AbstractInputDevice<DigitalInput
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
-		Logger.trace("closeDevice()");
+		Logger.trace("closeDevice() {}", getKey());
 		disableListener();
 		if (defaultDigitialInput != null) {
 			defaultDigitialInput.close();

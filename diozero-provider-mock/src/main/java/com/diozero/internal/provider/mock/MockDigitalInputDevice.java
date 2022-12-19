@@ -56,7 +56,7 @@ public class MockDigitalInputDevice extends AbstractInputDevice<DigitalInputEven
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
-		Logger.trace("closeDevice()");
+		Logger.trace("closeDevice() {}", getKey());
 		deviceFactory.deprovisionGpio(mock);
 	}
 

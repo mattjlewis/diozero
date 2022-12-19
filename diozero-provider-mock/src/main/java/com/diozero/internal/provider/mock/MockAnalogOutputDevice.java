@@ -53,7 +53,7 @@ public class MockAnalogOutputDevice extends AbstractDevice implements AnalogOutp
 
 	@Override
 	protected void closeDevice() {
-		Logger.trace("closeDevice()");
+		Logger.trace("closeDevice() {}", getKey());
 		deviceFactory.deprovisionGpio(mock);
 	}
 

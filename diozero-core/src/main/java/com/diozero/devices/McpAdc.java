@@ -338,7 +338,7 @@ public class McpAdc extends AbstractDeviceFactory implements AnalogInputDeviceFa
 
 		@Override
 		protected void closeDevice() {
-			Logger.trace("closeDevice()");
+			Logger.trace("closeDevice() {}", getKey());
 			// TODO Nothing to do?
 		}
 

@@ -32,14 +32,10 @@ package com.diozero.devices;
  */
 
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.tinylog.Logger;
 
 import com.diozero.api.RuntimeIOException;
-import com.diozero.internal.provider.test.TestDeviceFactory;
-import com.diozero.internal.provider.test.TestDigitalInputDevice;
-import com.diozero.internal.provider.test.TestDigitalOutputDevice;
 import com.diozero.internal.spi.NativeDeviceFactoryInterface;
 import com.diozero.sbc.DeviceFactoryHelper;
 
@@ -48,12 +44,6 @@ import com.diozero.sbc.DeviceFactoryHelper;
  */
 @SuppressWarnings("static-method")
 public class LEDTest {
-	@BeforeAll
-	public static void beforeAll() {
-		TestDeviceFactory.setDigitalInputDeviceClass(TestDigitalInputDevice.class);
-		TestDeviceFactory.setDigitalOutputDeviceClass(TestDigitalOutputDevice.class);
-	}
-
 	@Test
 	public void test() {
 		try (NativeDeviceFactoryInterface df = DeviceFactoryHelper.getNativeDeviceFactory()) {

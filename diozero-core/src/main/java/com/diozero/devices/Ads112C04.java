@@ -916,7 +916,6 @@ public class Ads112C04 extends AbstractDeviceFactory implements AnalogInputDevic
 	}
 
 	public void setSingleShotMode() {
-		// System.out.println("getValueSingle");
 		conversionMode = ConversionMode.SINGLE_SHOT;
 		writeConfig1();
 
@@ -1363,7 +1362,7 @@ public class Ads112C04 extends AbstractDeviceFactory implements AnalogInputDevic
 
 		@Override
 		protected void closeDevice() {
-			Logger.trace("closeDevice()");
+			Logger.trace("closeDevice() {}", getKey());
 			// Nothing to do?
 		}
 

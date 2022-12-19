@@ -31,6 +31,8 @@ package com.diozero.internal.provider.voodoospark;
  * #L%
  */
 
+import org.tinylog.Logger;
+
 import com.diozero.api.PinInfo;
 import com.diozero.api.RuntimeIOException;
 import com.diozero.internal.spi.AbstractDevice;
@@ -46,7 +48,7 @@ public class VoodooSparkAnalogOutputDevice extends AbstractDevice implements Ana
 
 		this.deviceFactory = deviceFactory;
 		this.gpio = pinInfo.getDeviceNumber();
-		
+
 		setValue(initialValue);
 	}
 
@@ -67,5 +69,6 @@ public class VoodooSparkAnalogOutputDevice extends AbstractDevice implements Ana
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
+		Logger.trace("closeDevice() {}", getKey());
 	}
 }

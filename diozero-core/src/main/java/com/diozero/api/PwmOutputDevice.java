@@ -47,6 +47,58 @@ import com.diozero.util.SleepUtil;
  * Modulation (PWM)</a> output control.
  */
 public class PwmOutputDevice extends GpioDevice {
+	public static final class Builder {
+		public static Builder builder(int gpio) {
+			return new Builder(gpio);
+		}
+
+		public static Builder builder(PinInfo pinInfo) {
+			return new Builder(pinInfo);
+		}
+
+		private Integer gpio;
+		private PinInfo pinInfo;
+		private int pwmFrequency = DEFAULT_PWM_FREQUENCY;
+		private float initialValue = 0;
+		private PwmOutputDeviceFactoryInterface deviceFactory;
+
+		public Builder(int gpio) {
+			this.gpio = Integer.valueOf(gpio);
+		}
+
+		public Builder(PinInfo pinInfo) {
+			this.pinInfo = pinInfo;
+		}
+
+		public Builder setPwmFrequency(int pwmFrequency) {
+			this.pwmFrequency = pwmFrequency;
+			return this;
+		}
+
+		public Builder setInitialValue(float initialValue) {
+			this.initialValue = initialValue;
+			return this;
+		}
+
+		public Builder setDeviceFactory(PwmOutputDeviceFactoryInterface deviceFactory) {
+			this.deviceFactory = deviceFactory;
+			return this;
+		}
+
+		public PwmOutputDevice build() {
+			// Default to the native device factory if not set
+			if (deviceFactory == null) {
+				deviceFactory = DeviceFactoryHelper.getNativeDeviceFactory();
+			}
+
+			if (pinInfo == null) {
+				pinInfo = deviceFactory.getBoardPinInfo().getByGpioNumberOrThrow(gpio.intValue());
+			}
+
+			return new PwmOutputDevice(deviceFactory, pinInfo, pwmFrequency, initialValue);
+		}
+	}
+
 	private static final int DEFAULT_PWM_FREQUENCY = 50;
 	public static final int INFINITE_ITERATIONS = -1;
 

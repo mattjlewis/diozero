@@ -39,6 +39,8 @@ import java.io.RandomAccessFile;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import org.tinylog.Logger;
+
 import com.diozero.api.PinInfo;
 import com.diozero.api.RuntimeIOException;
 import com.diozero.internal.spi.AbstractDevice;
@@ -98,6 +100,7 @@ public class OdroidC2SysFsPwmOutputDevice extends AbstractDevice implements Inte
 
 	@Override
 	protected void closeDevice() {
+		Logger.trace("closeDevice() {}", getKey());
 		try {
 			dutyFile.close();
 		} catch (IOException e) {

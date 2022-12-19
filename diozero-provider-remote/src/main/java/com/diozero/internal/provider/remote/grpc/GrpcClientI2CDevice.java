@@ -34,6 +34,8 @@ package com.diozero.internal.provider.remote.grpc;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+import org.tinylog.Logger;
+
 import com.diozero.api.I2CConstants;
 import com.diozero.api.I2CDevice.ProbeMode;
 import com.diozero.api.I2CDeviceInterface;
@@ -361,6 +363,7 @@ public class GrpcClientI2CDevice extends AbstractDevice implements InternalI2CDe
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
+		Logger.trace("closeDevice() {}", getKey());
 		try {
 			Response response = i2cBlockingStub
 					.close(I2C.Identifier.newBuilder().setController(controller).setAddress(address).build());

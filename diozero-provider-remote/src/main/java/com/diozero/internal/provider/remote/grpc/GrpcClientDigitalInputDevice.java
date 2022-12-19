@@ -73,6 +73,7 @@ public class GrpcClientDigitalInputDevice extends AbstractInputDevice<DigitalInp
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
+		Logger.trace("closeDevice() {}", getKey());
 		deviceFactory.closeGpio(gpio);
 	}
 

@@ -100,7 +100,7 @@ public class HCSR04EchoPin extends AbstractInputDevice<DigitalInputEvent>
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
-		Logger.trace("closeDevice()");
+		Logger.trace("closeDevice() {}", getKey());
 
 		running.getAndSet(false);
 		lock.lock();

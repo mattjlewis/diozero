@@ -42,17 +42,17 @@ import com.diozero.internal.spi.InternalSpiDeviceInterface;
 
 public class DefaultNativeSpiDevice extends AbstractDevice implements InternalSpiDeviceInterface {
 	private NativeSpiDevice device;
-	
-	public DefaultNativeSpiDevice(DeviceFactoryInterface deviceFactory, String key, int controller,
-			int chipSelect, int frequency, SpiClockMode spiClockMode, boolean lsbFirst) {
+
+	public DefaultNativeSpiDevice(DeviceFactoryInterface deviceFactory, String key, int controller, int chipSelect,
+			int frequency, SpiClockMode spiClockMode, boolean lsbFirst) {
 		super(key, deviceFactory);
-		
+
 		device = new NativeSpiDevice(controller, chipSelect, frequency, spiClockMode, lsbFirst);
 	}
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
-		Logger.trace("closeDevice()");
+		Logger.trace("closeDevice() {}", getKey());
 		device.close();
 	}
 

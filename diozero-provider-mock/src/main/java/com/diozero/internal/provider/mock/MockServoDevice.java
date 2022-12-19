@@ -62,7 +62,7 @@ public class MockServoDevice extends AbstractDevice implements InternalServoDevi
 
 	@Override
 	protected void closeDevice() {
-		Logger.trace("closeDevice()");
+		Logger.trace("closeDevice() {}", getKey());
 		deviceFactory.deprovisionGpio(mock);
 	}
 

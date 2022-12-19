@@ -31,6 +31,8 @@ package com.diozero.internal.provider.pigpioj;
  * #L%
  */
 
+import org.tinylog.Logger;
+
 import com.diozero.api.RuntimeIOException;
 import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.DeviceFactoryInterface;
@@ -54,6 +56,7 @@ public class PigpioJServoDevice extends AbstractDevice implements InternalServoD
 
 	@Override
 	protected void closeDevice() {
+		Logger.trace("closeDevice() {}", getKey());
 		// TODO Nothing to do?
 	}
 

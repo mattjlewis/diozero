@@ -75,7 +75,7 @@ public class BbbIoLibDigitalOutputDevice extends AbstractDevice implements GpioD
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
-		Logger.trace("closeDevice()");
+		Logger.trace("closeDevice() {}", getKey());
 		// Revert to input mode?
 		BbbIoLibNative.setDir(BbbIoLibDeviceFactory.getPort(pinInfo), (byte) pinInfo.getPhysicalPin(),
 				BbbIoLibNative.BBBIO_DIR_IN);

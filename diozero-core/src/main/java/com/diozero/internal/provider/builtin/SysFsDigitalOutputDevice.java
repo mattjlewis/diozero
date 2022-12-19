@@ -57,7 +57,7 @@ public class SysFsDigitalOutputDevice extends AbstractDevice implements GpioDigi
 	public SysFsDigitalOutputDevice(DefaultDeviceFactory deviceFactory, String key, PinInfo pinInfo,
 			boolean initialValue, MmapGpioInterface mmapGpio) {
 		super(key, deviceFactory);
-		
+
 		this.mmapGpio = mmapGpio;
 		this.gpio = pinInfo.getSysFsNumber();
 
@@ -86,7 +86,7 @@ public class SysFsDigitalOutputDevice extends AbstractDevice implements GpioDigi
 		if (mmapGpio != null) {
 			return mmapGpio.gpioRead(gpio);
 		}
-		
+
 		try {
 			// Note seek(0) is required
 			valueFile.seek(0);
@@ -112,7 +112,7 @@ public class SysFsDigitalOutputDevice extends AbstractDevice implements GpioDigi
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
-		Logger.trace("closeDevice()");
+		Logger.trace("closeDevice() {}", getKey());
 		try {
 			valueFile.close();
 		} catch (IOException e) {

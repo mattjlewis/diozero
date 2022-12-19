@@ -31,23 +31,30 @@ package com.diozero.internal.provider.voodoospark;
  * #L%
  */
 
-import com.diozero.api.*;
+
+import org.tinylog.Logger;
+
+import com.diozero.api.DigitalInputEvent;
+import com.diozero.api.GpioEventTrigger;
+import com.diozero.api.GpioPullUpDown;
+import com.diozero.api.PinInfo;
+import com.diozero.api.RuntimeIOException;
 import com.diozero.internal.provider.voodoospark.VoodooSparkDeviceFactory.PinMode;
 import com.diozero.internal.spi.AbstractInputDevice;
 import com.diozero.internal.spi.GpioDigitalInputDeviceInterface;
 
 public class VoodooSparkDigitalInputDevice extends AbstractInputDevice<DigitalInputEvent>
-implements GpioDigitalInputDeviceInterface {
+		implements GpioDigitalInputDeviceInterface {
 	private VoodooSparkDeviceFactory deviceFactory;
 	private int gpio;
 
-	VoodooSparkDigitalInputDevice(VoodooSparkDeviceFactory deviceFactory, String key,
-			PinInfo pinInfo, GpioPullUpDown pud, GpioEventTrigger trigger) {
+	VoodooSparkDigitalInputDevice(VoodooSparkDeviceFactory deviceFactory, String key, PinInfo pinInfo,
+			GpioPullUpDown pud, GpioEventTrigger trigger) {
 		super(key, deviceFactory);
-		
+
 		this.deviceFactory = deviceFactory;
 		gpio = pinInfo.getDeviceNumber();
-		
+
 		deviceFactory.setPinMode(gpio, PinMode.DIGITAL_INPUT);
 	}
 
@@ -55,7 +62,7 @@ implements GpioDigitalInputDeviceInterface {
 	public int getGpio() {
 		return gpio;
 	}
-	
+
 	@Override
 	public boolean getValue() throws RuntimeIOException {
 		return deviceFactory.getValue(gpio);
@@ -64,11 +71,12 @@ implements GpioDigitalInputDeviceInterface {
 	@Override
 	public void setDebounceTimeMillis(int debounceTime) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
+		Logger.trace("closeDevice() {}", getKey());
 		// Nothing to do
 	}
 }

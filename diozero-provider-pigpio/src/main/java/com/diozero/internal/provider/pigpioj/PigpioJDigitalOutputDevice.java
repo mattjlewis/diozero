@@ -45,13 +45,13 @@ public class PigpioJDigitalOutputDevice extends AbstractDevice implements GpioDi
 	private PigpioInterface pigpioImpl;
 	private int gpio;
 
-	public PigpioJDigitalOutputDevice(String key, DeviceFactoryInterface deviceFactory,
-			PigpioInterface pigpioImpl, int gpio, boolean initialValue) throws RuntimeIOException {
+	public PigpioJDigitalOutputDevice(String key, DeviceFactoryInterface deviceFactory, PigpioInterface pigpioImpl,
+			int gpio, boolean initialValue) throws RuntimeIOException {
 		super(key, deviceFactory);
-		
+
 		this.pigpioImpl = pigpioImpl;
 		this.gpio = gpio;
-		
+
 		int rc = pigpioImpl.setMode(gpio, PigpioConstants.MODE_PI_OUTPUT);
 		if (rc < 0) {
 			throw new RuntimeIOException("Error calling pigpioImpl.setMode(), response: " + rc);
@@ -83,7 +83,7 @@ public class PigpioJDigitalOutputDevice extends AbstractDevice implements GpioDi
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
-		Logger.trace("closeDevice()");
+		Logger.trace("closeDevice() {}", getKey());
 		// No GPIO close method in pigpio
 		// TODO Revert to default input mode?
 	}

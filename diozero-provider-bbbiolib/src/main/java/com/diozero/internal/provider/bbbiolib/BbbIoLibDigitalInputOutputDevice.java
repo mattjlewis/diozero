@@ -109,7 +109,7 @@ public class BbbIoLibDigitalInputOutputDevice extends AbstractInputDevice<Digita
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
-		Logger.trace("closeDevice()");
+		Logger.trace("closeDevice() {}", getKey());
 		disableListener();
 		// FIXME No BBBioLib close method?
 		setMode(DeviceMode.DIGITAL_INPUT);

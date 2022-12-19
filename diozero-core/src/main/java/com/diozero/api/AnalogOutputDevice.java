@@ -31,6 +31,8 @@
 
 package com.diozero.api;
 
+import org.tinylog.Logger;
+
 import com.diozero.internal.spi.AnalogOutputDeviceFactoryInterface;
 import com.diozero.internal.spi.AnalogOutputDeviceInterface;
 import com.diozero.sbc.DeviceFactoryHelper;
@@ -123,6 +125,7 @@ public class AnalogOutputDevice extends GpioDevice {
 
 	@Override
 	public void close() {
+		Logger.trace("close() {}", delegate.getKey());
 		delegate.close();
 	}
 }

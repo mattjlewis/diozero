@@ -38,6 +38,7 @@ import java.util.concurrent.TimeoutException;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.LockSupport;
 
 import org.tinylog.Logger;
 
@@ -46,7 +47,6 @@ import com.diozero.internal.spi.DeviceFactoryInterface;
 import com.diozero.internal.spi.GpioDigitalOutputDeviceInterface;
 import com.diozero.internal.spi.InternalPwmOutputDeviceInterface;
 import com.diozero.util.DiozeroScheduler;
-import com.diozero.util.SleepUtil;
 
 /**
  * Generate a very poor approximation of a PWM signal - use at your own risk!
@@ -56,8 +56,8 @@ import com.diozero.util.SleepUtil;
 public class SoftwarePwmOutputDevice extends AbstractDevice implements InternalPwmOutputDeviceInterface, Runnable {
 	private GpioDigitalOutputDeviceInterface digitalOutputDevice;
 	private AtomicBoolean running;
-	private AtomicInteger periodMs;
-	private AtomicInteger dutyMs;
+	private AtomicInteger periodNs;
+	private AtomicInteger dutyNs;
 	private Future<?> future;
 
 	public SoftwarePwmOutputDevice(String key, DeviceFactoryInterface deviceFactory,
@@ -70,8 +70,8 @@ public class SoftwarePwmOutputDevice extends AbstractDevice implements InternalP
 		digitalOutputDevice.setChild(true);
 		running = new AtomicBoolean();
 
-		periodMs = new AtomicInteger(Math.round(1_000f / frequencyHz));
-		dutyMs = new AtomicInteger();
+		periodNs = new AtomicInteger(Math.round(1_000_000_000f / frequencyHz));
+		dutyNs = new AtomicInteger();
 		setValue(initialValue);
 		start();
 	}
@@ -83,15 +83,14 @@ public class SoftwarePwmOutputDevice extends AbstractDevice implements InternalP
 	}
 
 	public void stop() {
-		if (running.get()) {
-			running.set(false);
-
+		if (running.getAndSet(false)) {
 			if (future == null) {
 				Logger.warn("Unexpected condition - future was null when stopping PWM output");
 			} else {
 				// Wait for the runnable to complete
 				try {
-					future.get(periodMs.get() + 10, TimeUnit.MILLISECONDS);
+					// Give it the period plus an additional 10ms grace to stop
+					future.get(periodNs.get() + 10_000_000, TimeUnit.NANOSECONDS);
 				} catch (InterruptedException | ExecutionException | TimeoutException e) {
 					Logger.debug(e, "Error waiting for future to complete: {}", e);
 					// Cancel the future if it doesn't complete normally by setting running to false
@@ -104,20 +103,24 @@ public class SoftwarePwmOutputDevice extends AbstractDevice implements InternalP
 
 	@Override
 	public void run() {
-		long start;
+		long start_ns;
 		while (running.get()) {
-			start = System.currentTimeMillis();
-			if (dutyMs.get() == 0) {
+			start_ns = System.nanoTime();
+			if (dutyNs.get() == 0) {
 				// Fully off
 				digitalOutputDevice.setValue(false);
-			} else if (dutyMs == periodMs) {
+			} else if (dutyNs == periodNs) {
 				digitalOutputDevice.setValue(true);
 			} else {
 				digitalOutputDevice.setValue(true);
-				SleepUtil.sleepMillis(dutyMs.get());
+				// SleepUtil.sleepMillis(dutyMs.get());
+				LockSupport.parkNanos(dutyNs.get());
 				digitalOutputDevice.setValue(false);
 			}
-			SleepUtil.sleepMillis(Math.max(1, periodMs.get() - (System.currentTimeMillis() - start)));
+			// SleepUtil.sleepMillis(Math.max(1, periodMs.get() -
+			// (System.currentTimeMillis() - start)));
+			// Minimum sleep time is 0.1ms
+			LockSupport.parkNanos(Math.max(100_000, periodNs.get() - (System.nanoTime() - start_ns)));
 		}
 	}
 
@@ -126,7 +129,7 @@ public class SoftwarePwmOutputDevice extends AbstractDevice implements InternalP
 		Logger.trace("closeDevice() {}", getKey());
 		stop();
 		// The diozero shutdown handler closes devices in an arbitrary order
-		if (digitalOutputDevice != null && digitalOutputDevice.isOpen()) {
+		if (digitalOutputDevice.isOpen()) {
 			digitalOutputDevice.close();
 		}
 	}
@@ -143,25 +146,25 @@ public class SoftwarePwmOutputDevice extends AbstractDevice implements InternalP
 
 	@Override
 	public float getValue() {
-		return dutyMs.get() / (float) periodMs.get();
+		return dutyNs.get() / (float) periodNs.get();
 	}
 
 	@Override
 	public void setValue(float value) {
-		dutyMs.set((int) Math.floor(value * periodMs.get()));
+		dutyNs.set((int) Math.floor(value * periodNs.get()));
 	}
 
 	@Override
 	public int getPwmFrequency() {
-		return 1_000 / periodMs.get();
+		return 1_000_000_000 / periodNs.get();
 	}
 
 	@Override
 	public void setPwmFrequency(int frequencyHz) {
 		// Save the current value
 		float current_value = getValue();
-		periodMs.set(Math.round(1_000f / frequencyHz));
+		periodNs.set(Math.round(1_000_000_000f / frequencyHz));
 		// Restore the equivalent value
-		dutyMs.set(Math.round(current_value * periodMs.get()));
+		dutyNs.set(Math.round(current_value * periodNs.get()));
 	}
 }

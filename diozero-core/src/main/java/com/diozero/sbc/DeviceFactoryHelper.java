@@ -78,7 +78,7 @@ public class DeviceFactoryHelper {
 			// If none found use the default built-in device factory
 			if (nativeDeviceFactory == null) {
 				nativeDeviceFactory = NativeDeviceFactoryInterface.loadInstances().findFirst()
-						.orElse(new DefaultDeviceFactory());
+						.orElseGet(() -> new DefaultDeviceFactory());
 			}
 
 			Logger.debug("Using native device factory class {}", nativeDeviceFactory.getClass().getSimpleName());

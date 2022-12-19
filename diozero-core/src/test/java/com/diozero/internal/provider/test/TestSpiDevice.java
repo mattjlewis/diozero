@@ -43,17 +43,17 @@ public abstract class TestSpiDevice extends AbstractDevice implements InternalSp
 	private int controller;
 	private int chipSelect;
 
-	public TestSpiDevice(String key, DeviceFactoryInterface deviceFactory, int controller, int chipSelect, int frequency,
-			SpiClockMode spiClockMode, boolean lsbFirst) {
+	public TestSpiDevice(String key, DeviceFactoryInterface deviceFactory, int controller, int chipSelect,
+			int frequency, SpiClockMode spiClockMode, boolean lsbFirst) {
 		super(key, deviceFactory);
-		
+
 		this.controller = controller;
 		this.chipSelect = chipSelect;
 	}
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
-		Logger.trace("closeDevice()");
+		Logger.trace("closeDevice() {}", getKey());
 	}
 
 	@Override

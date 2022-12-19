@@ -43,7 +43,7 @@ import uk.pigpioj.PigpioInterface;
 
 public class PigpioJSpiDevice extends AbstractDevice implements InternalSpiDeviceInterface {
 	private static final int CLOSED = -1;
-	
+
 	private PigpioInterface pigpioImpl;
 	private int handle = CLOSED;
 	private int controller;
@@ -53,41 +53,42 @@ public class PigpioJSpiDevice extends AbstractDevice implements InternalSpiDevic
 			int controller, int chipSelect, int frequency, SpiClockMode spiClockMode, boolean lsbFirst)
 			throws RuntimeIOException {
 		super(key, deviceFactory);
-		
+
 		this.pigpioImpl = pigpioImpl;
 		this.controller = controller;
 		this.chipSelect = chipSelect;
-		
+
 		int flags = createSpiFlags(spiClockMode, controller, lsbFirst);
 		int rc = pigpioImpl.spiOpen(chipSelect, frequency, flags);
 		if (rc < 0) {
 			handle = CLOSED;
-			throw new RuntimeIOException(String.format("Error opening SPI device on controller %d, chip-select %d, response: %d",
-					Integer.valueOf(controller), Integer.valueOf(chipSelect), Integer.valueOf(rc)));
+			throw new RuntimeIOException(
+					String.format("Error opening SPI device on controller %d, chip-select %d, response: %d",
+							Integer.valueOf(controller), Integer.valueOf(chipSelect), Integer.valueOf(rc)));
 		}
 		handle = rc;
-		Logger.trace("SPI device ({}-{}) opened, handle={}", Integer.valueOf(controller),
-				Integer.valueOf(chipSelect), Integer.valueOf(handle));
+		Logger.trace("SPI device ({}-{}) opened, handle={}", Integer.valueOf(controller), Integer.valueOf(chipSelect),
+				Integer.valueOf(handle));
 	}
-	
+
 	@Override
 	public void write(byte... txBuffer) {
-		if (! isOpen()) {
+		if (!isOpen()) {
 			throw new IllegalStateException("SPI Device " + controller + "-" + chipSelect + " is closed");
 		}
-				
+
 		int rc = pigpioImpl.spiWrite(handle, txBuffer, 0, txBuffer.length);
 		if (rc < 0) {
 			throw new RuntimeIOException("Error calling pigpioImpl.spiWrite(), response: " + rc);
 		}
 	}
-	
+
 	@Override
 	public void write(byte[] txBuffer, int offset, int length) {
-		if (! isOpen()) {
+		if (!isOpen()) {
 			throw new IllegalStateException("SPI Device " + controller + "-" + chipSelect + " is closed");
 		}
-		
+
 		int rc = pigpioImpl.spiWrite(handle, txBuffer, offset, length);
 		if (rc < 0) {
 			throw new RuntimeIOException("Error calling pigpioImpl.spiWrite(), response: " + rc);
@@ -96,16 +97,16 @@ public class PigpioJSpiDevice extends AbstractDevice implements InternalSpiDevic
 
 	@Override
 	public byte[] writeAndRead(byte... txBuffer) throws RuntimeIOException {
-		if (! isOpen()) {
+		if (!isOpen()) {
 			throw new IllegalStateException("SPI Device " + controller + "-" + chipSelect + " is closed");
 		}
-		
+
 		byte[] rx = new byte[txBuffer.length];
 		int rc = pigpioImpl.spiXfer(handle, txBuffer, rx, txBuffer.length);
 		if (rc < 0) {
 			throw new RuntimeIOException("Error calling pigpioImpl.spiXfer(), response: " + rc);
 		}
-		
+
 		return rx;
 	}
 
@@ -126,14 +127,15 @@ public class PigpioJSpiDevice extends AbstractDevice implements InternalSpiDevic
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
+		Logger.trace("closeDevice() {}", getKey());
 		int rc = pigpioImpl.spiClose(handle);
 		handle = CLOSED;
 		if (rc < 0) {
 			throw new RuntimeIOException("Error calling pigpioImpl.spiClose(), response: " + rc);
 		}
 	}
-	
-	/**
+
+	/*-
 	 * 21 20 19 18 17 16 15 14 13 12 11 10  9  8  7  6  5  4  3  2  1  0
 	 *  b  b  b  b  b  b  R  T  n  n  n  n  W  A u2 u1 u0 p2 p1 p0  m  m
 	 * mm defines the SPI mode.
@@ -160,7 +162,7 @@ public class PigpioJSpiDevice extends AbstractDevice implements InternalSpiDevic
 	 */
 	private static int createSpiFlags(SpiClockMode clockMode, int controller, boolean lsbFirst) {
 		int flags = clockMode.getMode();
-		
+
 		// CE0 is the standard SPI device, CE1 is auxiliary
 		if (controller == 1) {
 			flags |= 0x100;
@@ -168,7 +170,7 @@ public class PigpioJSpiDevice extends AbstractDevice implements InternalSpiDevic
 		if (lsbFirst) {
 			flags |= 0x8000;
 		}
-		
+
 		return flags;
 	}
 }

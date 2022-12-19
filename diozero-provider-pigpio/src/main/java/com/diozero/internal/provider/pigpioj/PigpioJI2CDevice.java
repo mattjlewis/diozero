@@ -78,7 +78,7 @@ public class PigpioJI2CDevice extends AbstractDevice implements InternalI2CDevic
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
-		Logger.trace("closeDevice()");
+		Logger.trace("closeDevice() {}", getKey());
 		int rc = pigpioImpl.i2cClose(handle);
 		handle = CLOSED;
 		if (rc < 0) {

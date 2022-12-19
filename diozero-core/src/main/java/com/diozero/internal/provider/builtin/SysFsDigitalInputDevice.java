@@ -129,7 +129,7 @@ public class SysFsDigitalInputDevice extends AbstractInputDevice<DigitalInputEve
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
-		Logger.trace("closeDevice()");
+		Logger.trace("closeDevice() {}", getKey());
 		disableListener();
 		try {
 			valueFile.close();

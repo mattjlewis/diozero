@@ -36,25 +36,15 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.tinylog.Logger;
 
 import com.diozero.api.DigitalInputEvent;
 import com.diozero.api.GpioPullUpDown;
-import com.diozero.internal.provider.test.TestDeviceFactory;
-import com.diozero.internal.provider.test.TestDigitalInputDevice;
-import com.diozero.internal.provider.test.TestDigitalOutputDevice;
 import com.diozero.util.SleepUtil;
 
 public class ButtonTest {
 	private int i;
-
-	@BeforeAll
-	public static void beforeAll() {
-		TestDeviceFactory.setDigitalInputDeviceClass(TestDigitalInputDevice.class);
-		TestDeviceFactory.setDigitalOutputDeviceClass(TestDigitalOutputDevice.class);
-	}
 
 	@Test
 	public void test() {

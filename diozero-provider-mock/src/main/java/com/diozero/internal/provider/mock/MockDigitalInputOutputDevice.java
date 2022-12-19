@@ -53,7 +53,7 @@ public class MockDigitalInputOutputDevice extends AbstractInputDevice<DigitalInp
 
 	@Override
 	protected void closeDevice() {
-		Logger.trace("closeDevice()");
+		Logger.trace("closeDevice() {}", getKey());
 		deviceFactory.deprovisionGpio(mock);
 	}
 

@@ -56,7 +56,7 @@ public class UnknownBoardInfo extends BoardInfo {
 		return new UnknownBoardInfo(localSysInfo);
 	}
 
-	public UnknownBoardInfo(LocalSystemInfo localSysInfo) {
+	private UnknownBoardInfo(LocalSystemInfo localSysInfo) {
 		super(UNKNOWN, localSysInfo.getModel(),
 				localSysInfo.getMemoryKb() == null ? -1 : localSysInfo.getMemoryKb().intValue(),
 				BoardInfo.UNKNOWN_ADC_VREF, localSysInfo.getDefaultLibraryPath(), localSysInfo.getOperatingSystemId(),
@@ -76,7 +76,8 @@ public class UnknownBoardInfo extends BoardInfo {
 	 */
 	@Override
 	public Optional<PinInfo> getByGpioNumber(int gpio) {
-		return Optional.of(super.getByGpioNumber(gpio).orElse(addGpioPinInfo(gpio, gpio, PinInfo.DIGITAL_IN_OUT)));
+		return Optional
+				.of(super.getByGpioNumber(gpio).orElseGet(() -> addGpioPinInfo(gpio, gpio, PinInfo.DIGITAL_IN_OUT)));
 	}
 
 	/**
@@ -84,7 +85,7 @@ public class UnknownBoardInfo extends BoardInfo {
 	 */
 	@Override
 	public Optional<PinInfo> getByAdcNumber(int adcNumber) {
-		return Optional.of(super.getByAdcNumber(adcNumber).orElse(addAdcPinInfo(adcNumber, adcNumber)));
+		return Optional.of(super.getByAdcNumber(adcNumber).orElseGet(() -> addAdcPinInfo(adcNumber, adcNumber)));
 	}
 
 	/**
@@ -92,6 +93,6 @@ public class UnknownBoardInfo extends BoardInfo {
 	 */
 	@Override
 	public Optional<PinInfo> getByDacNumber(int dacNumber) {
-		return Optional.of(super.getByDacNumber(dacNumber).orElse(addDacPinInfo(dacNumber, dacNumber)));
+		return Optional.of(super.getByDacNumber(dacNumber).orElseGet(() -> addDacPinInfo(dacNumber, dacNumber)));
 	}
 }

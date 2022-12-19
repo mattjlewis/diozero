@@ -36,6 +36,15 @@ public class ServoUtil {
 		return (1000.0 / pwmFrequency) / range;
 	}
 
+	/**
+	 * Calculate the number of bits required for the specified pulse width
+	 * (milliseconds)
+	 * 
+	 * @param pulseWidthMs  The required pulse width value
+	 * @param pulseMsPerBit Number of milliseconds per bit
+	 * @return Relative servo driver duty cycle value required to set the requested
+	 *         pulse width
+	 */
 	public static int calcServoPulseBits(double pulseWidthMs, double pulseMsPerBit) {
 		return (int) Math.floor(pulseWidthMs / pulseMsPerBit);
 	}

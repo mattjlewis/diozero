@@ -31,7 +31,6 @@ package com.diozero.internal.provider.pigpioj;
  * #L%
  */
 
-
 import java.nio.ByteBuffer;
 
 import org.tinylog.Logger;
@@ -45,12 +44,12 @@ import uk.pigpioj.PigpioBitBangI2C;
 public class PigpioJBitBangI2CDevice extends AbstractDevice {
 	private int sda;
 	private boolean open;
-	
+
 	public PigpioJBitBangI2CDevice(String key, DeviceFactoryInterface deviceFactory, int sda, int scl, int baud) {
 		super(key, deviceFactory);
-		
+
 		this.sda = sda;
-		
+
 		int rc = PigpioBitBangI2C.bbI2COpen(sda, scl, baud);
 		if (rc < 0) {
 			throw new RuntimeIOException("Error in bbI2COpen(" + sda + ", " + scl + ", " + baud + "): " + rc);
@@ -65,19 +64,19 @@ public class PigpioJBitBangI2CDevice extends AbstractDevice {
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
-		Logger.trace("closeDevice()");
+		Logger.trace("closeDevice() {}", getKey());
 		int rc = PigpioBitBangI2C.bbI2CClose(sda);
 		open = false;
 		if (rc < 0) {
 			throw new RuntimeIOException("Error calling PigpioBitBangI2C.bbI2CClose(" + sda + "), response: " + rc);
 		}
 	}
-	
+
 	public ByteBuffer bbI2CZip(ByteBuffer src, int readLen) throws RuntimeIOException {
-		if (! isOpen()) {
+		if (!isOpen()) {
 			throw new IllegalStateException("BitBang I2C Device " + getKey() + " is closed");
 		}
-		
+
 		int tx_count = src.remaining();
 		byte[] tx = new byte[tx_count];
 		src.get(tx);
@@ -86,7 +85,7 @@ public class PigpioJBitBangI2CDevice extends AbstractDevice {
 		if (rc < 0) {
 			throw new RuntimeIOException("Error calling bbI2CZip: " + rc);
 		}
-		
+
 		return ByteBuffer.wrap(rx);
 	}
 }

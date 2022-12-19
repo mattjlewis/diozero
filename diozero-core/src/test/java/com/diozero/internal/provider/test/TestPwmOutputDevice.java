@@ -55,7 +55,7 @@ public class TestPwmOutputDevice extends AbstractDevice implements InternalPwmOu
 
 	@Override
 	protected void closeDevice() {
-		Logger.trace("closeDevice()");
+		Logger.trace("closeDevice() {}", getKey());
 	}
 
 	@Override

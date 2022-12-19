@@ -109,7 +109,7 @@ public class SysFsAnalogInputDevice extends AbstractInputDevice<AnalogInputEvent
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
-		Logger.trace("closeDevice()");
+		Logger.trace("closeDevice() {}", getKey());
 		try {
 			if (voltageScale != null) {
 				voltageScale.close();

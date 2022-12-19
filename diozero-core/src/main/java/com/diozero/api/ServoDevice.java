@@ -43,15 +43,15 @@ import com.diozero.sbc.DeviceFactoryHelper;
 public class ServoDevice extends GpioDevice {
 	public static final int DEFAULT_FREQUENCY = 50;
 
-	public static Builder newBuilder(int pwmOrGpio) {
-		return new Builder(pwmOrGpio);
-	}
-
-	public static Builder newBuilder(PinInfo pinInfo) {
-		return new Builder(pinInfo);
-	}
-
 	public static class Builder {
+		public static Builder builder(int pwmOrGpio) {
+			return new Builder(pwmOrGpio);
+		}
+
+		public static Builder builder(PinInfo pinInfo) {
+			return new Builder(pinInfo);
+		}
+
 		private int pwmOrGpio;
 		private PinInfo pinInfo;
 		private int frequency = DEFAULT_FREQUENCY;
@@ -136,7 +136,7 @@ public class ServoDevice extends GpioDevice {
 
 	@Override
 	public void close() {
-		Logger.trace("close()");
+		Logger.trace("close() {}", delegate.getKey());
 		Logger.trace("Setting value to 0");
 		try {
 			delegate.setPulseWidthUs(0);
@@ -210,6 +210,16 @@ public class ServoDevice extends GpioDevice {
 	}
 
 	/**
+	 * Get the servo relative value where -1 is the minimum angle and 1 is the
+	 * maximum angle.
+	 *
+	 * @return relative value -1..1 that maps to min..max
+	 */
+	public float getValue() {
+		return trim.convertPulseWidthUsToValue(getPulseWidthUs());
+	}
+
+	/**
 	 * Set the servo relative value where -1 is the minimum angle and 1 is the
 	 * maximum angle.
 	 *
@@ -217,6 +227,10 @@ public class ServoDevice extends GpioDevice {
 	 */
 	public void setValue(float value) {
 		setPulseWidthUs(trim.convertValueToPulseWidthUs(value));
+	}
+
+	public ServoTrim getTrim() {
+		return trim;
 	}
 
 	public void min() {

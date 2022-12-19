@@ -56,7 +56,7 @@ public class MockPwmOutputDevice extends AbstractDevice implements InternalPwmOu
 
 	@Override
 	protected void closeDevice() {
-		Logger.trace("closeDevice()");
+		Logger.trace("closeDevice() {}", getKey());
 		deviceFactory.deprovisionGpio(mock);
 	}
 

@@ -31,6 +31,8 @@ package com.diozero.internal.provider.voodoospark;
  * #L%
  */
 
+import org.tinylog.Logger;
+
 import com.diozero.api.PinInfo;
 import com.diozero.api.RuntimeIOException;
 import com.diozero.internal.provider.voodoospark.VoodooSparkDeviceFactory.PinMode;
@@ -44,10 +46,10 @@ public class VoodooSparkPwmOutputDevice extends AbstractDevice implements Intern
 	public VoodooSparkPwmOutputDevice(VoodooSparkDeviceFactory deviceFactory, String key, PinInfo pinInfo,
 			int pwmFrequency, float initialValue) {
 		super(key, deviceFactory);
-		
+
 		this.deviceFactory = deviceFactory;
 		gpio = pinInfo.getDeviceNumber();
-		
+
 		deviceFactory.setPinMode(gpio, PinMode.ANALOG_OUTPUT);
 		setValue(initialValue);
 	}
@@ -74,6 +76,7 @@ public class VoodooSparkPwmOutputDevice extends AbstractDevice implements Intern
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
+		Logger.trace("closeDevice() {}", getKey());
 		setValue(0);
 	}
 

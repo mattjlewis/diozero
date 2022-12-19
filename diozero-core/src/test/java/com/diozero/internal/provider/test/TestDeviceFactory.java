@@ -39,6 +39,7 @@ import com.diozero.api.RuntimeIOException;
 import com.diozero.api.SerialDevice;
 import com.diozero.api.SpiClockMode;
 import com.diozero.internal.DeviceStates;
+import com.diozero.internal.SoftwarePwmOutputDevice;
 import com.diozero.internal.spi.AnalogInputDeviceInterface;
 import com.diozero.internal.spi.AnalogOutputDeviceInterface;
 import com.diozero.internal.spi.BaseNativeDeviceFactory;
@@ -58,8 +59,8 @@ public class TestDeviceFactory extends BaseNativeDeviceFactory {
 	private static Class<? extends AnalogOutputDeviceInterface> analogOutputDeviceClass;
 	private static Class<? extends GpioDigitalInputDeviceInterface> digitalInputDeviceClass = TestDigitalInputDevice.class;
 	private static Class<? extends GpioDigitalOutputDeviceInterface> digitalOutputDeviceClass = TestDigitalOutputDevice.class;
-	private static Class<? extends InternalPwmOutputDeviceInterface> pwmOutputDeviceClass;
-	private static Class<? extends InternalServoDeviceInterface> servoDeviceClass;
+	private static Class<? extends InternalPwmOutputDeviceInterface> pwmOutputDeviceClass = TestPwmOutputDevice.class;
+	private static Class<? extends InternalServoDeviceInterface> servoDeviceClass = TestServoDevice.class;
 	private static Class<? extends InternalSpiDeviceInterface> spiDeviceClass;
 	private static Class<? extends InternalI2CDeviceInterface> i2cDeviceClass = TestI2CDevice.class;
 	private static Class<? extends InternalSerialDeviceInterface> serialDeviceClass;
@@ -186,6 +187,19 @@ public class TestDeviceFactory extends BaseNativeDeviceFactory {
 			throw new IllegalArgumentException("PWM output implementation class hasn't been set");
 		}
 
+		if (!pinInfo.isPwmOutputSupported()) {
+			// Need to make sure the keys are different
+			// Note this is replicating the functionality in provisionDigitalOutputDevice.
+			// That method can't be called as it will throw a device already opened
+			// exception.
+			// Also note that SoftwarePwmOutputDevice has special cleanup functionality.
+			GpioDigitalOutputDeviceInterface gpio_output_device = createDigitalOutputDevice("PWM-" + key, pinInfo,
+					false);
+			deviceOpened(gpio_output_device);
+
+			return new SoftwarePwmOutputDevice(key, this, gpio_output_device, pwmFrequency, initialValue);
+		}
+
 		try {
 			return pwmOutputDeviceClass
 					.getConstructor(String.class, DeviceFactoryInterface.class, int.class, int.class, float.class)
@@ -199,7 +213,7 @@ public class TestDeviceFactory extends BaseNativeDeviceFactory {
 	@Override
 	public InternalServoDeviceInterface createServoDevice(String key, PinInfo pinInfo, int frequency,
 			int minPulseWidthUs, int maxPulseWidthUs, int initialPulseWidthUs) throws RuntimeIOException {
-		if (pwmOutputDeviceClass == null) {
+		if (servoDeviceClass == null) {
 			throw new IllegalArgumentException("Servo implementation class hasn't been set");
 		}
 

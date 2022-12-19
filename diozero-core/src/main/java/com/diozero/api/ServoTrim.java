@@ -49,13 +49,12 @@ public class ServoTrim {
 	/** Default to 180 degree range, from 0.6ms to 2.4ms with 1.5ms centre */
 	public static final ServoTrim DEFAULT = new ServoTrim(DEFAULT_MID_US, DEFAULT_90_DELTA_US);
 
-	// From my testing TowerPro SG90 has a range slightly greater than 180 degree
-	// (0.5-2.4)
+	// A TowerPro SG90 can have a range slightly greater than 180 degrees (0.5-2.4)
 	private static final int TOWERPRO_SG90_RANGE_US = 1_800;
 	public static final ServoTrim TOWERPRO_SG90 = new ServoTrim(DEFAULT_MID_US, DEFAULT_90_DELTA_US,
 			TOWERPRO_SG90_RANGE_US);
 
-	// From my testing TowerPro SG5010 has a range slightly greater than 180 degree
+	// A TowerPro SG5010 can have a range slightly greater than 180 degrees
 	private static final int TOWERPRO_SG5010_RANGE_US = 2_000;
 	public static final ServoTrim TOWERPRO_SG5010 = new ServoTrim(DEFAULT_MID_US, DEFAULT_90_DELTA_US,
 			TOWERPRO_SG5010_RANGE_US);

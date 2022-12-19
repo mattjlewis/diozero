@@ -54,7 +54,7 @@ public class MCP23xxxDigitalInputDevice extends AbstractInputDevice<DigitalInput
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
-		Logger.trace("closeDevice()");
+		Logger.trace("closeDevice() {}", getKey());
 		super.closeDevice();
 		mcp23xxx.closeGpio(gpio);
 	}

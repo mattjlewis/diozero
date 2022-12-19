@@ -31,6 +31,8 @@ package com.diozero.internal;
  * #L%
  */
 
+import org.tinylog.Logger;
+
 import com.diozero.api.RuntimeIOException;
 import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.DeviceFactoryInterface;
@@ -42,12 +44,15 @@ public class PwmServoDevice extends AbstractDevice implements InternalServoDevic
 	private int periodUs;
 
 	public PwmServoDevice(String key, DeviceFactoryInterface deviceFactory,
-			InternalPwmOutputDeviceInterface pwmOutputDevice, int minPulseWidthUs, int maxPulseWidthUs) {
+			InternalPwmOutputDeviceInterface pwmOutputDevice, int minPulseWidthUs, int maxPulseWidthUs,
+			int initialPulseWidthUs) {
 		super(key, deviceFactory);
 
 		this.pwmOutputDevice = pwmOutputDevice;
 		pwmOutputDevice.setChild(true);
 		periodUs = 1_000_000 / pwmOutputDevice.getPwmFrequency();
+
+		setPulseWidthUs(initialPulseWidthUs);
 	}
 
 	@Override
@@ -82,6 +87,7 @@ public class PwmServoDevice extends AbstractDevice implements InternalServoDevic
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
+		Logger.trace("closeDevice() {}", getKey());
 		pwmOutputDevice.close();
 	}
 }

@@ -31,6 +31,8 @@ package com.diozero.internal.provider.firmata;
  * #L%
  */
 
+import org.tinylog.Logger;
+
 import com.diozero.api.RuntimeIOException;
 import com.diozero.internal.provider.firmata.adapter.FirmataAdapter;
 import com.diozero.internal.provider.firmata.adapter.FirmataProtocol.PinMode;
@@ -68,6 +70,7 @@ public class FirmataDigitalOutputDevice extends AbstractDevice implements GpioDi
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
+		Logger.trace("closeDevice() {}", getKey());
 		// TODO Reset to prior mode and value?
 		adapter.setDigitalValue(gpio, false);
 	}

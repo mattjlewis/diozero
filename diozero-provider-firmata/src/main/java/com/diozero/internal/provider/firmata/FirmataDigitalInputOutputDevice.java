@@ -31,6 +31,8 @@ package com.diozero.internal.provider.firmata;
  * #L%
  */
 
+import org.tinylog.Logger;
+
 import com.diozero.api.DeviceMode;
 import com.diozero.api.DigitalInputEvent;
 import com.diozero.api.RuntimeIOException;
@@ -94,6 +96,7 @@ public class FirmataDigitalInputOutputDevice extends AbstractInputDevice<Digital
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
+		Logger.trace("closeDevice() {}", getKey());
 		if (mode == DeviceMode.DIGITAL_OUTPUT) {
 			setValue(false);
 		}

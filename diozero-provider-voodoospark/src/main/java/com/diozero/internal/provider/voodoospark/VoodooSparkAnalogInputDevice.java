@@ -31,20 +31,22 @@ package com.diozero.internal.provider.voodoospark;
  * #L%
  */
 
+import org.tinylog.Logger;
+
 import com.diozero.api.AnalogInputEvent;
 import com.diozero.api.PinInfo;
 import com.diozero.api.RuntimeIOException;
 import com.diozero.internal.spi.AbstractInputDevice;
 import com.diozero.internal.spi.AnalogInputDeviceInterface;
 
-public class VoodooSparkAnalogInputDevice extends AbstractInputDevice<AnalogInputEvent> implements AnalogInputDeviceInterface {
+public class VoodooSparkAnalogInputDevice extends AbstractInputDevice<AnalogInputEvent>
+		implements AnalogInputDeviceInterface {
 	private VoodooSparkDeviceFactory deviceFactory;
 	private int gpio;
 
-	public VoodooSparkAnalogInputDevice(VoodooSparkDeviceFactory deviceFactory, String key,
-			PinInfo pinInfo) {
+	public VoodooSparkAnalogInputDevice(VoodooSparkDeviceFactory deviceFactory, String key, PinInfo pinInfo) {
 		super(key, deviceFactory);
-		
+
 		this.deviceFactory = deviceFactory;
 		this.gpio = pinInfo.getDeviceNumber();
 	}
@@ -61,5 +63,6 @@ public class VoodooSparkAnalogInputDevice extends AbstractInputDevice<AnalogInpu
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
+		Logger.trace("closeDevice() {}", getKey());
 	}
 }

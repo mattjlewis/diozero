@@ -31,6 +31,8 @@ package com.diozero.internal.provider.voodoospark;
  * #L%
  */
 
+import org.tinylog.Logger;
+
 import com.diozero.api.DeviceMode;
 import com.diozero.api.DigitalInputEvent;
 import com.diozero.api.PinInfo;
@@ -40,7 +42,7 @@ import com.diozero.internal.spi.AbstractInputDevice;
 import com.diozero.internal.spi.GpioDigitalInputOutputDeviceInterface;
 
 public class VoodooSparkDigitalInputOutputDevice extends AbstractInputDevice<DigitalInputEvent>
-implements GpioDigitalInputOutputDeviceInterface {
+		implements GpioDigitalInputOutputDeviceInterface {
 	private int gpio;
 	private DeviceMode mode;
 	private VoodooSparkDeviceFactory deviceFactory;
@@ -48,10 +50,10 @@ implements GpioDigitalInputOutputDeviceInterface {
 	public VoodooSparkDigitalInputOutputDevice(VoodooSparkDeviceFactory deviceFactory, String key, PinInfo pinInfo,
 			DeviceMode mode) {
 		super(key, deviceFactory);
-		
+
 		this.deviceFactory = deviceFactory;
 		gpio = pinInfo.getDeviceNumber();
-		
+
 		setMode(mode);
 	}
 
@@ -77,12 +79,14 @@ implements GpioDigitalInputOutputDeviceInterface {
 
 	@Override
 	public void setMode(DeviceMode mode) {
-		deviceFactory.setPinMode(gpio, mode == DeviceMode.DIGITAL_INPUT ? PinMode.DIGITAL_INPUT : PinMode.DIGITAL_OUTPUT);
+		deviceFactory.setPinMode(gpio,
+				mode == DeviceMode.DIGITAL_INPUT ? PinMode.DIGITAL_INPUT : PinMode.DIGITAL_OUTPUT);
 		this.mode = mode;
 	}
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
+		Logger.trace("closeDevice() {}", getKey());
 		// Nothing to do
 	}
 }

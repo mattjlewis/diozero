@@ -43,10 +43,10 @@ public class MCP23xxxDigitalOutputDevice extends AbstractDevice implements GpioD
 
 	public MCP23xxxDigitalOutputDevice(MCP23xxx mcp23xxx, String key, int gpio, boolean initialValue) {
 		super(key, mcp23xxx);
-		
+
 		this.mcp23xxx = mcp23xxx;
 		this.gpio = gpio;
-		
+
 		setValue(initialValue);
 	}
 
@@ -67,7 +67,7 @@ public class MCP23xxxDigitalOutputDevice extends AbstractDevice implements GpioD
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
-		Logger.trace("closeDevice()");
+		Logger.trace("closeDevice() {}", getKey());
 		mcp23xxx.closeGpio(gpio);
 	}
 }

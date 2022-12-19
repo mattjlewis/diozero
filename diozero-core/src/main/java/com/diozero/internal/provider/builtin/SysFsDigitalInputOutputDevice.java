@@ -126,7 +126,7 @@ public class SysFsDigitalInputOutputDevice extends AbstractInputDevice<DigitalIn
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
-		Logger.trace("closeDevice()");
+		Logger.trace("closeDevice() {}", getKey());
 		disableListener();
 		try {
 			valueFile.close();

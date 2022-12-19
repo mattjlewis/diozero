@@ -117,15 +117,15 @@ public class OutputShiftRegister extends AbstractDeviceFactory
 				numOutputs);
 	}
 
-	public OutputShiftRegister(GpioDeviceFactoryInterface deviceFactory, int dataGpio, int clockGpio,
-			int latchGpio, int numOutputs) {
+	public OutputShiftRegister(GpioDeviceFactoryInterface deviceFactory, int dataGpio, int clockGpio, int latchGpio,
+			int numOutputs) {
 		this(DigitalOutputDevice.Builder.builder(dataGpio).setDeviceFactory(deviceFactory).build(),
 				DigitalOutputDevice.Builder.builder(clockGpio).setDeviceFactory(deviceFactory).build(),
 				DigitalOutputDevice.Builder.builder(latchGpio).setDeviceFactory(deviceFactory).build(), numOutputs);
 	}
 
-	public OutputShiftRegister(DigitalOutputDevice dataPin, DigitalOutputDevice clockPin,
-			DigitalOutputDevice latchPin, int numOutputs) {
+	public OutputShiftRegister(DigitalOutputDevice dataPin, DigitalOutputDevice clockPin, DigitalOutputDevice latchPin,
+			int numOutputs) {
 		super(DEVICE_NAME);
 
 		this.dataPin = dataPin;
@@ -208,7 +208,7 @@ public class OutputShiftRegister extends AbstractDeviceFactory
 		/*- Arduino code:
 		void shiftOut(uint8_t dataPin, uint8_t clockPin, uint8_t bitOrder, uint8_t val) {
 		  uint8_t i;
-
+		
 		  for (i = 0; i < 8; i++) {
 		    if (bitOrder == LSBFIRST) {
 		      digitalWrite(dataPin, !!(val & (1 << i)));
@@ -310,6 +310,7 @@ public class OutputShiftRegister extends AbstractDeviceFactory
 
 		@Override
 		protected void closeDevice() throws RuntimeIOException {
+			Logger.trace("closeDevice() {}", getKey());
 			// Nothing to do?
 			setValue(false);
 		}

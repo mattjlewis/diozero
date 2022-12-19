@@ -31,6 +31,8 @@ package com.diozero.internal.spi;
  * #L%
  */
 
+import org.tinylog.Logger;
+
 import com.diozero.api.DeviceEvent;
 import com.diozero.api.function.DeviceEventConsumer;
 
@@ -76,6 +78,7 @@ public abstract class AbstractInputDevice<T extends DeviceEvent> extends Abstrac
 
 	@Override
 	protected void closeDevice() {
+		Logger.trace("closeDevice() {}", getKey());
 		removeListener();
 	}
 }

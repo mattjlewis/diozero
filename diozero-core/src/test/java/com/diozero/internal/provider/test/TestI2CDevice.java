@@ -48,7 +48,7 @@ public class TestI2CDevice extends AbstractDevice implements InternalI2CDeviceIn
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
-		Logger.trace("closeDevice()");
+		Logger.trace("closeDevice() {}", getKey());
 	}
 
 	@Override

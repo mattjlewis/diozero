@@ -99,7 +99,7 @@ public class NativeGpioInputDevice extends AbstractInputDevice<DigitalInputEvent
 
 	@Override
 	public void closeDevice() {
-		Logger.trace("closeDevice(), {}", Integer.valueOf(gpio));
+		Logger.trace("closeDevice() {}", getKey());
 		disableListener();
 		line.close();
 	}

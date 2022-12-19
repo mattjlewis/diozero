@@ -54,7 +54,7 @@ public class DefaultNativeSerialDevice extends AbstractDevice implements Interna
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
-		Logger.trace("closeDevice()");
+		Logger.trace("closeDevice() {}", getKey());
 		device.close();
 	}
 

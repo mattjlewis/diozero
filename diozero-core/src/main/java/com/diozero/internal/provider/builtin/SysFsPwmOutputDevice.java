@@ -133,6 +133,7 @@ public class SysFsPwmOutputDevice extends AbstractDevice implements InternalPwmO
 
 	@Override
 	protected void closeDevice() {
+		Logger.trace("closeDevice() {}", getKey());
 		setDutyNs(0);
 		try {
 			writeEnabled(pwmRoot, false);
@@ -245,14 +246,14 @@ public class SysFsPwmOutputDevice extends AbstractDevice implements InternalPwmO
 	}
 
 	public static boolean isSupported(NativeDeviceFactoryInterface deviceFactory, PinInfo pinInfo) {
-		int pwm_chip = deviceFactory.getBoardInfo().getPwmChipNumberOverride(pinInfo);
+		final int pwm_chip = deviceFactory.getBoardInfo().getPwmChipNumberOverride(pinInfo);
 
 		if (pwm_chip == PinInfo.NOT_DEFINED || pinInfo.getPwmNum() == PinInfo.NOT_DEFINED) {
 			return false;
 		}
 
 		// Check the directory exists and is readable
-		File f = Paths.get("/sys/class/pwm/pwmchip" + pwm_chip).toFile();
+		final File f = Paths.get("/sys/class/pwm/pwmchip" + pwm_chip).toFile();
 		return f.exists() && f.isDirectory() && f.canRead();
 	}
 }

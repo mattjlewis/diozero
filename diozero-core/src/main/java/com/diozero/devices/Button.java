@@ -56,9 +56,9 @@ import com.diozero.sbc.DeviceFactoryHelper;
  * <pre>
  * {@code
  * try (Button button = new Button(inputPin, GpioPullUpDown.PULL_UP)) {
- *   button.addListener(event -> Logger.debug("Event: {}", event));
- *   Logger.debug("Waiting for 10s - *** Press the button connected to input pin " + inputPin + " ***");
- *   SleepUtil.sleepSeconds(10);
+ * 	button.addListener(event -> Logger.debug("Event: {}", event));
+ * 	Logger.debug("Waiting for 10s - *** Press the button connected to input pin " + inputPin + " ***");
+ * 	SleepUtil.sleepSeconds(10);
  * }
  * }
  * </pre>
@@ -71,10 +71,10 @@ import com.diozero.sbc.DeviceFactoryHelper;
  * <pre>
  * {@code
  * try (Button button = new Button(buttonPin, GpioPullUpDown.PULL_UP); LED led = new LED(ledPin)) {
- *   button.whenPressed(nanoTime -> led::on);
- *   button.whenReleased(nanoTime -> led::off);
- *   Logger.info("Waiting for 10s - *** Press the button connected to pin {} ***", Integer.valueOf(buttonPin));
- *   SleepUtil.sleepSeconds(10);
+ * 	button.whenPressed(nanoTime -> led::on);
+ * 	button.whenReleased(nanoTime -> led::off);
+ * 	Logger.info("Waiting for 10s - *** Press the button connected to pin {} ***", Integer.valueOf(buttonPin));
+ * 	SleepUtil.sleepSeconds(10);
  * }
  * }
  * </pre>

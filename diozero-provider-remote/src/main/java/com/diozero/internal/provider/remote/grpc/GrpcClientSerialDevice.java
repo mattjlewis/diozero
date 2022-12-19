@@ -31,6 +31,8 @@ package com.diozero.internal.provider.remote.grpc;
  * #L%
  */
 
+import org.tinylog.Logger;
+
 import com.diozero.api.RuntimeIOException;
 import com.diozero.api.SerialDevice;
 import com.diozero.internal.spi.AbstractDevice;
@@ -162,6 +164,7 @@ public class GrpcClientSerialDevice extends AbstractDevice implements InternalSe
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
+		Logger.trace("closeDevice() {}", getKey());
 		try {
 			Response response = serialBlockingStub
 					.close(Serial.Identifier.newBuilder().setDeviceFile(deviceFile).build());

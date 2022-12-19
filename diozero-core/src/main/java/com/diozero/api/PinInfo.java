@@ -279,6 +279,10 @@ public class PinInfo {
 		return modes.contains(DeviceMode.PWM_OUTPUT);
 	}
 
+	public boolean isServoSupported() {
+		return modes.contains(DeviceMode.SERVO);
+	}
+
 	public boolean isAnalogInputSupported() {
 		return modes.contains(DeviceMode.ANALOG_INPUT);
 	}

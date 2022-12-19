@@ -214,5 +214,6 @@ public class FirmataI2CDevice extends AbstractDevice implements InternalI2CDevic
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
+		Logger.trace("closeDevice() {}", getKey());
 	}
 }

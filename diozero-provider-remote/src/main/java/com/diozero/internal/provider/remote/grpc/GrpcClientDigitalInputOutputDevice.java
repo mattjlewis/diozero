@@ -31,6 +31,8 @@ package com.diozero.internal.provider.remote.grpc;
  * #L%
  */
 
+import org.tinylog.Logger;
+
 import com.diozero.api.DeviceMode;
 import com.diozero.api.DigitalInputEvent;
 import com.diozero.api.PinInfo;
@@ -81,6 +83,7 @@ public class GrpcClientDigitalInputOutputDevice extends AbstractInputDevice<Digi
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
+		Logger.trace("closeDevice() {}", getKey());
 		deviceFactory.closeGpio(gpio);
 	}
 

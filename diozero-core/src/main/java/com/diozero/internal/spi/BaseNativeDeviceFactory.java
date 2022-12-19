@@ -36,6 +36,12 @@ import java.util.List;
 
 import org.tinylog.Logger;
 
+import com.diozero.api.DeviceAlreadyOpenedException;
+import com.diozero.api.InvalidModeException;
+import com.diozero.api.NoSuchDeviceException;
+import com.diozero.api.PinInfo;
+import com.diozero.api.RuntimeIOException;
+import com.diozero.internal.PwmServoDevice;
 import com.diozero.sbc.BoardInfo;
 import com.diozero.sbc.BoardPinInfo;
 import com.diozero.sbc.LocalBoardInfoUtil;
@@ -115,4 +121,58 @@ public abstract class BaseNativeDeviceFactory extends AbstractDeviceFactory impl
 	}
 
 	public abstract void shutdown();
+
+	/**
+	 * Special case - use PwmServoDevice for servo control which supports both
+	 * hardware and software PWM output to control servos on all GPIOs. Most device
+	 * factories do not provide native support for servo control - the Firmata
+	 * device factory does. Need to override purely to prevent the check for
+	 * DeviceMode.SERVO failing in ServoDeviceFactoryInterface.provisionServoDevice.
+	 * 
+	 * @param pinInfo             The pin to provision
+	 * @param frequencyHz         Servo / PWM frequency
+	 * @param minPulseWidthUs     Minimum pulse width (microseconds)
+	 * @param maxPulseWidthUs     Maximum pulse width (microseconds)
+	 * @param initialPulseWidthUs Starting pulse width (microseconds)
+	 * @returns the internal service device instance
+	 * @throws RuntimeIOException if an I/O error occurs
+	 */
+	@Override
+	public InternalServoDeviceInterface provisionServoDevice(PinInfo pinInfo, int frequencyHz, int minPulseWidthUs,
+			int maxPulseWidthUs, int initialPulseWidthUs) throws RuntimeIOException {
+		if (pinInfo == null) {
+			throw new NoSuchDeviceException("No such device - pinInfo was null");
+		}
+
+		if (!pinInfo.isServoSupported() && !pinInfo.isPwmOutputSupported() && !pinInfo.isDigitalOutputSupported()) {
+			throw new InvalidModeException("Invalid mode (Servo) for GPIO " + pinInfo);
+		}
+
+		String key = createPinKey(pinInfo);
+
+		// Check if this pin is already provisioned
+		if (isDeviceOpened(key)) {
+			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
+		}
+
+		if (pinInfo.isServoSupported()) {
+			InternalServoDeviceInterface device = createServoDevice(key, pinInfo, frequencyHz, minPulseWidthUs,
+					maxPulseWidthUs, initialPulseWidthUs);
+			deviceOpened(device);
+
+			return device;
+		}
+
+		// Need to make sure the keys are different
+		InternalPwmOutputDeviceInterface pwm_output_device = createPwmOutputDevice("Servo-" + key, pinInfo, frequencyHz,
+				initialPulseWidthUs / ((float) 1_000_000 / frequencyHz));
+		deviceOpened(pwm_output_device);
+
+		// Note that PwmServoDevice has special cleanup functionality.
+		InternalServoDeviceInterface device = new PwmServoDevice(key, this, pwm_output_device, minPulseWidthUs,
+				maxPulseWidthUs, initialPulseWidthUs);
+		deviceOpened(device);
+
+		return device;
+	}
 }

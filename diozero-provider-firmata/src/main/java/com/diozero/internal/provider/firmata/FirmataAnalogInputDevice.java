@@ -83,7 +83,7 @@ public class FirmataAnalogInputDevice extends AbstractInputDevice<AnalogInputEve
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
-		Logger.trace("closeDevice()");
+		Logger.trace("closeDevice() {}", getKey());
 		disableListener();
 	}
 }

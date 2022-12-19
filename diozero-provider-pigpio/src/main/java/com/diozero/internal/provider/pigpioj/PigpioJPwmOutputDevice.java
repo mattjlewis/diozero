@@ -31,6 +31,8 @@ package com.diozero.internal.provider.pigpioj;
  * #L%
  */
 
+import org.tinylog.Logger;
+
 import com.diozero.api.RuntimeIOException;
 import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.DeviceFactoryInterface;
@@ -50,12 +52,13 @@ public class PigpioJPwmOutputDevice extends AbstractDevice implements InternalPw
 		this.pigpioImpl = pigpioImpl;
 		this.gpio = gpio;
 		this.range = range;
-		
+
 		setValue(initialValue);
 	}
 
 	@Override
 	protected void closeDevice() {
+		Logger.trace("closeDevice() {}", getKey());
 		// TODO Nothing to do?
 	}
 
@@ -63,7 +66,7 @@ public class PigpioJPwmOutputDevice extends AbstractDevice implements InternalPw
 	public int getGpio() {
 		return gpio;
 	}
-	
+
 	@Override
 	public int getPwmNum() {
 		return gpio;
@@ -75,7 +78,7 @@ public class PigpioJPwmOutputDevice extends AbstractDevice implements InternalPw
 		if (dc < 0) {
 			throw new RuntimeIOException("Error calling pigpioImpl.getPWMDutyCycle(), response: " + dc);
 		}
-		
+
 		return dc / (float) range;
 	}
 

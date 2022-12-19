@@ -59,7 +59,7 @@ public class TestServoDevice extends AbstractDevice implements InternalServoDevi
 
 	@Override
 	protected void closeDevice() {
-		Logger.trace("closeDevice()");
+		Logger.trace("closeDevice() {}", getKey());
 	}
 
 	@Override
@@ -69,7 +69,7 @@ public class TestServoDevice extends AbstractDevice implements InternalServoDevi
 
 	@Override
 	public void setPulseWidthUs(int pulseWidthUs) throws RuntimeIOException {
-		Logger.debug("setAngle({})", Integer.valueOf(pulseWidthUs));
+		Logger.debug("setPulseWidthUs({})", Integer.valueOf(pulseWidthUs));
 		this.pulseWidthUs = pulseWidthUs;
 	}
 

@@ -32,7 +32,6 @@ package com.diozero.devices;
  */
 
 import java.nio.ByteOrder;
-
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.tinylog.Logger;
@@ -530,7 +529,7 @@ public class Ads1x15 extends AbstractDeviceFactory implements AnalogInputDeviceF
 
 		@Override
 		protected void closeDevice() {
-			Logger.trace("closeDevice()");
+			Logger.trace("closeDevice() {}", getKey());
 			ads1x15.setConfig(adcNumber);
 		}
 

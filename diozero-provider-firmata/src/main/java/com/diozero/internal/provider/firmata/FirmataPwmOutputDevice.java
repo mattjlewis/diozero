@@ -81,6 +81,7 @@ public class FirmataPwmOutputDevice extends AbstractDevice implements InternalPw
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
+		Logger.trace("closeDevice() {}", getKey());
 		adapter.setValue(gpio, 0);
 		// TODO Anything else to do?
 	}

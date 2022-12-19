@@ -31,6 +31,8 @@ package com.diozero.internal.provider.remote.grpc;
  * #L%
  */
 
+import org.tinylog.Logger;
+
 import com.diozero.api.RuntimeIOException;
 import com.diozero.api.SpiClockMode;
 import com.diozero.internal.spi.AbstractDevice;
@@ -118,6 +120,7 @@ public class GrpcClientSpiDevice extends AbstractDevice implements InternalSpiDe
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
+		Logger.trace("closeDevice() {}", getKey());
 		try {
 			Response response = spiBlockingStub
 					.close(SPI.Identifier.newBuilder().setController(controller).setChipSelect(chipSelect).build());

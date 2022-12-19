@@ -87,7 +87,7 @@ public class HCSR04TriggerPin extends AbstractDevice implements GpioDigitalOutpu
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
-		Logger.trace("closeDevice()");
+		Logger.trace("closeDevice() {}", getKey());
 		executor.shutdownNow();
 	}
 }

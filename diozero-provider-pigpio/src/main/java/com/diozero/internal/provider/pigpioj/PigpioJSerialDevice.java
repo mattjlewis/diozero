@@ -108,18 +108,18 @@ public class PigpioJSerialDevice extends AbstractDevice implements InternalSeria
 			if (read == PI_SER_READ_FAILED || read == PI_BAD_HANDLE) {
 				throw new RuntimeIOException("Error in pigpioImpl.serReadByte - read failed");
 			}
-			
+
 			if (read >= 0) {
 				break;
 			}
-			
+
 			if (!readBlocking) {
 				read = SerialConstants.READ_TIMEOUT;
 				break;
 			}
-			
+
 			// FIXME Read timeouts
-			
+
 			SleepUtil.sleepMillis(READ_DELAY);
 		}
 
@@ -163,18 +163,18 @@ public class PigpioJSerialDevice extends AbstractDevice implements InternalSeria
 			if (rc > 0) {
 				System.arraycopy(read_buffer, 0, buffer, read, rc);
 				read += rc;
-				
+
 				if (read == buffer.length) {
 					break;
 				}
 			}
-			
+
 			if (!readBlocking) {
 				break;
 			}
 
 			// TODO Read timeouts and min read chars
-			
+
 			SleepUtil.sleepMillis(READ_DELAY);
 		}
 
@@ -197,6 +197,7 @@ public class PigpioJSerialDevice extends AbstractDevice implements InternalSeria
 
 	@Override
 	protected void closeDevice() throws RuntimeIOException {
+		Logger.trace("closeDevice() {}", getKey());
 		if (!isOpen()) {
 			throw new IllegalStateException("Serial Device " + deviceFile + " is closed");
 		}

@@ -224,7 +224,6 @@ public class VL6180 implements DistanceSensorInterface {
 
 		writeByte(SYSTEM_FRESH_OUT_OF_RESET, 0);
 		SleepUtil.sleepMillis(10);
-		System.out.println(readByte(SYSTEM_FRESH_OUT_OF_RESET));
 
 		// Recommended : Public registers - See data sheet for more detail
 		// Enables polling for 'New Sample ready' when measurement completes
