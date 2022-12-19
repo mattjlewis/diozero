@@ -59,7 +59,7 @@
 
 		<!-- Java version -->
 		<maven.compiler.source>11</maven.compiler.source>
-		<maven.compiler.release>8</maven.compiler.release>
+		<maven.compiler.release>11</maven.compiler.release>
 
 		<!-- Maven plugins -->
 		<maven-compiler-plugin.version>3.10.1</maven-compiler-plugin.version>
@@ -320,7 +320,7 @@
 			</plugin>
 		</plugins>
 	</build>
-	
+
 	<profiles>
 
 		<profile>
