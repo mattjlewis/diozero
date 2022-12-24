@@ -5,7 +5,7 @@ package com.diozero.sampleapps.lcd;
  * Organisation: diozero
  * Project:      diozero - Sample applications
  * Filename:     I2CLcdSampleAppInteractive.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.sampleapps.lcd;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -30,16 +30,18 @@ package com.diozero.sampleapps.lcd;
  * THE SOFTWARE.
  * #L%
  */
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.diozero.api.I2CConstants;
 import com.diozero.api.RuntimeIOException;
 import com.diozero.api.function.Action;
 import com.diozero.devices.HD44780Lcd;
-import com.diozero.devices.HD44780Lcd.LcdConnection;
+import com.diozero.devices.LcdConnection;
+import com.diozero.devices.LcdConnection.PCF8574LcdConnection;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * I2C LCD sample interactive application. To run:
@@ -60,7 +62,7 @@ import com.diozero.devices.HD44780Lcd.LcdConnection;
  */
 public class I2CLcdSampleAppInteractive implements AutoCloseable {
 	public static void main(String[] args) {
-		int device_address = HD44780Lcd.PCF8574LcdConnection.DEFAULT_DEVICE_ADDRESS;
+		int device_address = PCF8574LcdConnection.DEFAULT_DEVICE_ADDRESS;
 		if (args.length > 0) {
 			device_address = Integer.decode(args[0]).intValue();
 		}
@@ -132,7 +134,7 @@ public class I2CLcdSampleAppInteractive implements AutoCloseable {
 
 		int columns = Integer.parseInt(resolution[0]);
 		int rows = Integer.parseInt(resolution[1]);
-		try (LcdConnection lcd_connection = new HD44780Lcd.PCF8574LcdConnection(controller, deviceAddress)) {
+		try (LcdConnection lcd_connection = new PCF8574LcdConnection(controller, deviceAddress)) {
 			lcd = new HD44780Lcd(lcd_connection, columns, rows);
 
 			running.set(true);

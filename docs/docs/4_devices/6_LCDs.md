@@ -9,14 +9,33 @@ redirect_from:
 
 # LCDs
 
+The basic interface is abstracted to the [LcdInterface](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/com/diozero/devices/LcdInterface.html).
+
+Connectivity is abstracted to the [LcdConnection](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/com/diozero/devices/LcdConnection.html)
+interface; diozero provides support for connectivity via the following GPIO expansion boards:
+
++ [PCF8574](3_ExpansionBoards.md#pcf8574) (a very common configuration for I<sup>2</sup>C)
++ [MCP23S17](3_ExpansionBoards.md#mcp23xxx) (as per the [PiFace Control and Display](http://www.piface.org.uk/products/piface_control_and_display/))
+
 ## HD44780 LCDs
 
 Support for Hitachi HD44780 controlled LCDs.
 
 HD44780Lcd [Javadoc](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/com/diozero/devices/HD44780Lcd.html).
 
-Connectivity is abstracted to the [HD44780.LcdConnection](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/com/diozero/devices/HD44780Lcd.LcdConnection.html)
-interface; diozero provides support for connectivity via the following GPIO expansion boards:
+## GH1602
 
-+ [PCF8574](3_ExpansionBoards.md#pcf8574) (a very common configuration)
-+ [MCP23S17](3_ExpansionBoards.md#mcp23xxx) (as per the [PiFace Control and Display](http://www.piface.org.uk/products/piface_control_and_display/))
+A very generic 2-line, 16-character display, included in many "experimenter" electronics and programming kits.
+
+There appear to be several markings for this type of device:
+
+* GH1602
+* GH1602-2502
+* GJD1602A-IIC
+
+Examples of these boards:
+- https://www.alibaba.com/product-detail/16-2-lines-LCD-display-Module_1600367555249.html
+- https://www.alibaba.com/product-detail/3-3-V-blue-character-2x16_60469270721.html
+- https://www.alibaba.com/product-detail/LCD1602-Blue-Green-screen-IIC-I2C_1600482300945.html
+
+GH1602 [Javadoc](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/com/diozero/devices/GH1602Lcd.html).

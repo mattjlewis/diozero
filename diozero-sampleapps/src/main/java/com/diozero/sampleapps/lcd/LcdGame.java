@@ -5,7 +5,7 @@ package com.diozero.sampleapps.lcd;
  * Organisation: diozero
  * Project:      diozero - Sample applications
  * Filename:     LcdGame.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.sampleapps.lcd;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -31,23 +31,22 @@ package com.diozero.sampleapps.lcd;
  * #L%
  */
 
+import com.diozero.api.I2CConstants;
+import com.diozero.devices.Button;
+import com.diozero.devices.HD44780Lcd;
+import com.diozero.devices.LcdConnection;
+import com.diozero.devices.LcdConnection.PCF8574LcdConnection;
+import com.diozero.util.RangeUtil;
+import com.diozero.util.SleepUtil;
+import org.tinylog.Logger;
+import picocli.CommandLine;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
+
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-
-import org.tinylog.Logger;
-
-import com.diozero.api.I2CConstants;
-import com.diozero.devices.Button;
-import com.diozero.devices.HD44780Lcd;
-import com.diozero.devices.HD44780Lcd.PCF8574LcdConnection;
-import com.diozero.util.RangeUtil;
-import com.diozero.util.SleepUtil;
-
-import picocli.CommandLine;
-import picocli.CommandLine.Command;
-import picocli.CommandLine.Option;
 
 /**
  * A simple dodge the blocks game for 20x4 LCDs - note assumes that the LCD is
@@ -80,7 +79,7 @@ public class LcdGame implements AutoCloseable, Runnable {
 	private int i2cController;
 	@Option(names = { "-a",
 			"--i2c-device-address" }, required = false, description = "I2C device address", defaultValue = ""
-					+ HD44780Lcd.PCF8574LcdConnection.DEFAULT_DEVICE_ADDRESS)
+					+ LcdConnection.PCF8574LcdConnection.DEFAULT_DEVICE_ADDRESS)
 	private int i2cDeviceAddress;
 	@Option(names = { "-l", "--left-gpio" }, required = true, description = "GPIO for the move left button")
 	private int leftGpio;
@@ -89,7 +88,7 @@ public class LcdGame implements AutoCloseable, Runnable {
 	@Option(names = { "-o", "--ok-gpio" }, required = true, description = "GPIO for the ok button")
 	private int okGpio;
 
-	private HD44780Lcd.LcdConnection lcdConnection;
+	private LcdConnection lcdConnection;
 	private HD44780Lcd lcd;
 	private Button leftButton;
 	private Button rightButton;

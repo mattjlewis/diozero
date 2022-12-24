@@ -5,7 +5,7 @@ package com.diozero.sampleapps.lcd;
  * Organisation: diozero
  * Project:      diozero - Sample applications
  * Filename:     I2CLcdSampleApp20x4.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.sampleapps.lcd;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -31,13 +31,13 @@ package com.diozero.sampleapps.lcd;
  * #L%
  */
 
-import org.tinylog.Logger;
-
 import com.diozero.api.I2CConstants;
 import com.diozero.api.RuntimeIOException;
 import com.diozero.devices.HD44780Lcd;
-import com.diozero.devices.HD44780Lcd.LcdConnection;
+import com.diozero.devices.LcdConnection;
+import com.diozero.devices.LcdConnection.PCF8574LcdConnection;
 import com.diozero.util.SleepUtil;
+import org.tinylog.Logger;
 
 /**
  * HD44780 controlled LCD sample application. To run:
@@ -59,7 +59,7 @@ import com.diozero.util.SleepUtil;
 public class I2CLcdSampleApp20x4 {
 	// Main program block
 	public static void main(String[] args) {
-		int device_address = HD44780Lcd.PCF8574LcdConnection.DEFAULT_DEVICE_ADDRESS;
+		int device_address = PCF8574LcdConnection.DEFAULT_DEVICE_ADDRESS;
 		if (args.length > 0) {
 			device_address = Integer.decode(args[0]).intValue();
 		}
@@ -67,10 +67,10 @@ public class I2CLcdSampleApp20x4 {
 		if (args.length > 1) {
 			controller = Integer.parseInt(args[1]);
 		}
-		
+
 		// Initialise display
-		try (LcdConnection lcd_connection = new HD44780Lcd.PCF8574LcdConnection(controller, device_address);
-				HD44780Lcd lcd = new HD44780Lcd(lcd_connection, 20, 4)) {
+		try (LcdConnection lcd_connection = new PCF8574LcdConnection(controller, device_address);
+			HD44780Lcd lcd = new HD44780Lcd(lcd_connection, 20, 4)) {
 			byte[] space_invader = new byte[] { 0x00, 0x0e, 0x15, 0x1f, 0x0a, 0x04, 0x0a, 0x11 };
 			byte[] smilie = new byte[] { 0x00, 0x00, 0x0a, 0x00, 0x00, 0x11, 0x0e, 0x00 };
 			byte[] frownie = new byte[] { 0x00, 0x00, 0x0a, 0x00, 0x00, 0x00, 0x0e, 0x11 };
@@ -78,7 +78,7 @@ public class I2CLcdSampleApp20x4 {
 			lcd.createChar(1, smilie);
 			lcd.createChar(2, frownie);
 			lcd.clear();
-			
+
 			for (int i=0; i<2; i++) {
 				lcd.setCursorPosition(0, i*2);
 				lcd.addText('H');
@@ -105,7 +105,7 @@ public class I2CLcdSampleApp20x4 {
 			}
 			SleepUtil.sleepSeconds(5);
 			lcd.clear();
-			
+
 			for (int i=0; i<2; i++) {
 				// Send some text
 				lcd.setText(0, "Hello -");
@@ -113,10 +113,10 @@ public class I2CLcdSampleApp20x4 {
 				lcd.setText(2, "Hello -");
 				lcd.setText(3, "World! " + i);
 				SleepUtil.sleepSeconds(1);
-				
+
 				lcd.clear();
 				SleepUtil.sleepSeconds(1);
-			  
+
 				// Send some more text
 				lcd.setText(0, ">            diozero");
 				lcd.setText(1, ">            I2C LCD");
@@ -124,15 +124,15 @@ public class I2CLcdSampleApp20x4 {
 				lcd.setText(3, ">            I2C LCD");
 				SleepUtil.sleepSeconds(1);
 			}
-			
+
 			SleepUtil.sleepSeconds(1);
 			lcd.clear();
-			
+
 			for (byte b : "Hello Matt!".getBytes()) {
 				lcd.addText(b);
 				SleepUtil.sleepSeconds(.2);
 			}
-			
+
 			SleepUtil.sleepSeconds(1);
 			lcd.clear();
 
@@ -176,7 +176,7 @@ public class I2CLcdSampleApp20x4 {
 			}
 			Logger.info("Sleeping for 10 seconds...");
 			SleepUtil.sleepSeconds(10);
-			
+
 			lcd.clear();
 		} catch (RuntimeIOException e) {
 			Logger.error(e, "Error: {}", e);
