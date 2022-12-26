@@ -38,4 +38,8 @@ Examples of these boards:
 - https://www.alibaba.com/product-detail/3-3-V-blue-character-2x16_60469270721.html
 - https://www.alibaba.com/product-detail/LCD1602-Blue-Green-screen-IIC-I2C_1600482300945.html
 
+This implementation is directly inspired by the [Pi4J sample components](https://github.com/Pi4J/pi4j-example-components), released
+under the [Apache v2 License](https://github.com/Pi4J/pi4j-example-components/blob/main/LICENSE).
+
+
 GH1602 [Javadoc](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/com/diozero/devices/GH1602Lcd.html).
