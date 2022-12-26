@@ -346,41 +346,6 @@ public class HD44780Lcd implements LcdInterface {
 	}
 
 	@Override
-	public LcdInterface setCharacter(int column, int row, char character) {
-		setCursorPosition(column, row);
-		writeData((byte) character);
-
-		return this;
-	}
-
-	@Override
-	public LcdInterface setText(int row, String text) {
-		rowCheck(row);
-
-		// Trim the string to the length of the column
-		if (text.length() >= columns)
-			text = text.substring(0, columns);
-
-		// Set the cursor position to the start of the specified row
-		setCursorPosition(0, row);
-
-		for (byte b : text.getBytes()) {
-			writeData(b);
-		}
-
-		return this;
-	}
-
-	@Override
-	public LcdInterface addText(String text) {
-		for (byte b : text.getBytes()) {
-			writeData(b);
-		}
-
-		return this;
-	}
-
-	@Override
 	public LcdInterface addText(char character) {
 		writeData((byte) character);
 

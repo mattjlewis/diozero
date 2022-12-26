@@ -31,6 +31,7 @@ public interface LcdInterface extends DeviceInterface {
 
     /**
      * Checks to see if the requested column is out of range.
+     *
      * @param column the column
      */
     default void columnCheck(int column) {
@@ -38,26 +39,17 @@ public interface LcdInterface extends DeviceInterface {
             throw new IllegalArgumentException("Invalid column (" + column + "), must be 0.." + (getColumnCount() - 1));
         }
     }
+
     int getRowCount();
 
     /**
      * Checks to see if the requested row is out of bounds.
+     *
      * @param row the row
      */
     default void rowCheck(int row) {
         if (row < 0 || row >= getRowCount()) {
             throw new IllegalArgumentException("Invalid row (" + row + "), must be 0.." + (getRowCount() - 1));
-        }
-    }
-
-    /**
-     * Checks to see if the text will fit in the display.
-     * @param text the text to check
-     */
-    default void textLengthCheck(String text) {
-        int len = text.length();
-        if (len > getColumnCount()) {
-            throw new IllegalArgumentException("Invalid text length (" + len + "), must be 0.." + getColumnCount());
         }
     }
 
@@ -67,34 +59,98 @@ public interface LcdInterface extends DeviceInterface {
 
     LcdInterface setCursorPosition(int column, int row);
 
-    LcdInterface setCharacter(int column, int row, char character);
+    /**
+     * Sets a character on the display at a specific location.
+     * @param column the column
+     * @param row the row
+     * @param character the character
+     * @return this
+     */
+    default LcdInterface setCharacter(int column, int row, char character) {
+        setCursorPosition(column, row);
+        return addText(character);
+    }
+
+    /**
+     * Writes the text to the display, starting at the home position. Newlines ({@code '\n'})
+     * will wrap text to the next line. Excessive characters and lines are <b>trimmed</b>.
+     *
+     * @param text Text to display
+     * @return this
+     */
+    default LcdInterface displayText(String text) {
+        String[] splitText = text.split("\n");
+        int minRows = Math.min(getRowCount(), splitText.length);
+        for (int i = 0; i < minRows; i++) {
+            setText(i, splitText[i]);
+        }
+        return this;
+    }
 
     /**
      * Send string to display
      *
      * @param row  Row number (starts at 0)
      * @param text Text to display
-     * @return This object instance
+     * @return this
      */
-    LcdInterface setText(int row, String text);
+    default LcdInterface setText(int row, String text) {
+        rowCheck(row);
 
-    LcdInterface addText(String text);
+        int columns = getColumnCount();
+        int l = text.length();
 
+        // Trim the string to the length of the column or pad to fill the rest
+        String textToSend = l > columns ? text.substring(0, columns) : text + " ".repeat(getColumnCount() - l);
+
+        // Set the cursor position to the start of the specified row
+        setCursorPosition(0, row);
+        return addText(textToSend);
+    }
+
+    /**
+     * Add the string to the display at the current position.
+     *
+     * @param text the text
+     * @return this
+     */
+    default LcdInterface addText(String text) {
+        for (byte character : text.getBytes()) {
+            addText((char)character);
+        }
+        return this;
+    }
+
+    /**
+     * Add a <b>character</b> (e.g. alphanumeric) to the display at the current position.
+     * Typically, this advances the cursor position by 1 in the set direction.
+     *
+     * @param character the text character
+     * @return this
+     */
     LcdInterface addText(char character);
 
+    /**
+     * Add a <b>special character</b> to the display at the current position.
+     * Typically, this advances the cursor position by 1 in the set direction.
+     *
+     * @param code the character code
+     * @return this
+     * @see #createChar(int, byte[])
+     */
     LcdInterface addText(int code);
 
     /**
      * Clear the display
      *
-     * @return This object instance
+     * @return this
      */
     LcdInterface clear();
 
     /**
      * Return the cursor to the home position
      *
-     * @return This object instance
+     * @return this
      */
     LcdInterface returnHome();
 
@@ -132,6 +188,15 @@ public interface LcdInterface extends DeviceInterface {
 
     LcdInterface moveCursorLeft();
 
+    /**
+     * Upload a bit-map of a "special character" to the specified location.
+     *
+     * @param location the location/code for this character
+     * @param charMap  the bit-map for the character (one byte per "lines" in the dot matrix)
+     * @return this
+     * @see Characters
+     * @see #addText(int)
+     */
     LcdInterface createChar(int location, byte[] charMap);
 
     @Override
@@ -260,6 +325,7 @@ public interface LcdInterface extends DeviceInterface {
 
         /**
          * Get the specs for the specified character
+         *
          * @param name the name of the character
          * @return the uploadable byte-spec
          */

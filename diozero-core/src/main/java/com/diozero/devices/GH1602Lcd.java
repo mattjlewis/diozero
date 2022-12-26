@@ -137,36 +137,6 @@ public class GH1602Lcd implements LcdInterface {
     }
 
     @Override
-    public LcdInterface setCharacter(int column, int row, char character) {
-        setCursorPosition(column, row);
-        addText(character);
-        return this;
-    }
-
-    @Override
-    public LcdInterface setText(int row, String text) {
-        rowCheck(row);
-        textLengthCheck(text);
-
-        // pad to end of line to effectively clear it
-        String textToSend = text;
-        int l = textToSend.length();
-        textToSend += " ".repeat(getColumnCount() - l);
-
-        setCursorPosition(0, row);
-        addText(textToSend);
-        return this;
-    }
-
-    @Override
-    public LcdInterface addText(String text) {
-        for (byte character : text.getBytes()) {
-            addText(character);
-        }
-        return this;
-    }
-
-    @Override
     public LcdInterface addText(char character) {
         writeSplitCommand(character, REGISTER_SELECT);
         return this;
