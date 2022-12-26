@@ -31,7 +31,7 @@ public interface LcdInterface extends DeviceInterface {
 
     /**
      * Checks to see if the requested column is out of range.
-     * @param column
+     * @param column the column
      */
     default void columnCheck(int column) {
         if (column < 0 || column >= getColumnCount()) {
@@ -47,6 +47,17 @@ public interface LcdInterface extends DeviceInterface {
     default void rowCheck(int row) {
         if (row < 0 || row >= getRowCount()) {
             throw new IllegalArgumentException("Invalid row (" + row + "), must be 0.." + (getRowCount() - 1));
+        }
+    }
+
+    /**
+     * Checks to see if the text will fit in the display.
+     * @param text the text to check
+     */
+    default void textLengthCheck(String text) {
+        int len = text.length();
+        if (len > getColumnCount()) {
+            throw new IllegalArgumentException("Invalid text length (" + len + "), must be 0.." + getColumnCount());
         }
     }
 
