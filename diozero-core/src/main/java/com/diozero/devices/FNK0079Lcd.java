@@ -5,20 +5,16 @@ import com.diozero.api.RuntimeIOException;
 import static com.diozero.util.SleepUtil.sleepNanos;
 
 /**
- * Simplified LDC 2-row, 16-column display with integrated I2C controller: best guess for the hardware
- * identifier is "GH1602-2502". This is <i>similar</i> to the Hitachi module, but there's subtle differences
- * in the bytes sent, when, and how often.
- * <p>
- * This is <b>NOT</b> to be confused with similar components that <i>also</i> allow for a 4-line display or
- * a character size other than 5x8 dots.
+ * Simplified LCD with integrated I2C controller:
+ * <a href="https://github.com/Freenove/Freenove_LCD_Module">Freenove LCD Module 1602</a></li>
  * <p>
  * Reference material:
  * <ul>
- *     <li><a href="https://www.rhydolabz.com/documents/29/LCD-1602a-yellow.pdf">LCD Module 1602A-1</a></li>
+ *     <li><a href="https://github.com/Freenove/Freenove_LCD_Module">Freenove LCD Module 1602</a></li>
  *     <li><a href="https://github.com/Pi4J/pi4j-example-components">Pi4J/pi4j-example-components</a>", Apache v2 License.</li>
  * </ul>
  */
-public class GH1602Lcd implements LcdInterface {
+public class FNK0079Lcd implements LcdInterface {
     // display commands
     private static final int CLEAR_DISPLAY = 0x01;
     private static final int RETURN_HOME = 0x02;
@@ -80,7 +76,7 @@ public class GH1602Lcd implements LcdInterface {
     /**
      * Default constructor for PCF8574-backpack on controller bus 1 (Raspberry Pi).
      */
-    public GH1602Lcd() {
+    public FNK0079Lcd() {
         this(1);
     }
 
@@ -89,11 +85,11 @@ public class GH1602Lcd implements LcdInterface {
      *
      * @param controller the I2C bus controller number
      */
-    public GH1602Lcd(int controller) {
+    public FNK0079Lcd(int controller) {
         this(new LcdConnection.PCF8574LcdConnection(controller));
     }
 
-    public GH1602Lcd(LcdConnection lcdConnection) {
+    public FNK0079Lcd(LcdConnection lcdConnection) {
         this.lcdConnection = lcdConnection;
 
         // this serves as a "reset" in case the display is wonky
