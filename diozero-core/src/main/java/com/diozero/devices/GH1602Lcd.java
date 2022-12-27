@@ -6,7 +6,8 @@ import static com.diozero.util.SleepUtil.sleepNanos;
 
 /**
  * Simplified LDC 2-row, 16-column display with integrated I2C controller: best guess for the hardware
- * identifier is "GH1602-2502".
+ * identifier is "GH1602-2502". This is <i>similar</i> to the Hitachi module, but there's subtle differences
+ * in the bytes sent, when, and how often.
  * <p>
  * This is <b>NOT</b> to be confused with similar components that <i>also</i> allow for a 4-line display.
  * <p>
@@ -268,8 +269,19 @@ public class GH1602Lcd implements LcdInterface {
 
     @Override
     public LcdInterface createChar(int location, byte[] charMap) {
-        throw new UnsupportedOperationException("Not implemented yet");
-//        return this;
+        if (location < 0 || location > 7) {
+            throw new IllegalArgumentException("Invalid location (" + location + ") , must be 0..7");
+        }
+        if (charMap.length != 8) {
+            throw new IllegalArgumentException("Invalid charMap length (" + charMap.length + ") , must be 8");
+        }
+
+        writeCommand(SELECT_CGRAM_ADDR | location << 3);
+
+        for (int i = 0; i < 8; i++) {
+            writeSplitCommand(charMap[i], REGISTER_SELECT);
+        }
+        return this;
     }
 
     @Override
