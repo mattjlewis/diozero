@@ -9,7 +9,8 @@ import static com.diozero.util.SleepUtil.sleepNanos;
  * identifier is "GH1602-2502". This is <i>similar</i> to the Hitachi module, but there's subtle differences
  * in the bytes sent, when, and how often.
  * <p>
- * This is <b>NOT</b> to be confused with similar components that <i>also</i> allow for a 4-line display.
+ * This is <b>NOT</b> to be confused with similar components that <i>also</i> allow for a 4-line display or
+ * a character size other than 5x8 dots.
  * <p>
  * Reference material:
  * <ul>
@@ -30,10 +31,11 @@ public class GH1602Lcd implements LcdInterface {
 
     // display entry mode
     private static final int ENTRY_MODE_SET = 0x04;    // control bit
-    private static final int ENTRY_RIGHT = 0x00;
-    private static final int ENTRY_LEFT = 0x02;
-    private static final int ENTRY_SHIFT_INCREMENT = 0x01;
-    private static final int ENTRY_SHIFT_DECREMENT = 0x00;
+    private static final int ENTRY_LEFT = 0x00;
+    private static final int ENTRY_RIGHT = 0x02; // moves cursor to the right after write (increase RAM address by 1)
+    // TODO what does this really do?
+    private static final int ENTRY_ENABLE_SHIFT = 0x01;
+    private static final int ENTRY_DISABLE_SHIFT = 0x00;
 
     // display on/off controls
     private static final int DISPLAY_CONTROL = 0x08;    // control bit
@@ -53,6 +55,7 @@ public class GH1602Lcd implements LcdInterface {
     private static final int LCD_8BIT_MODE = 0x10;
     private static final int LCD_4BIT_MODE = 0x00;
     private static final int LCD_2LINE = 0x08;
+    // N.B. these are not a thing for this
     private static final int LCD_1LINE = 0x00;
     private static final int LCD_5x10DOTS = 0x04;
     private static final int LCD_5x8DOTS = 0x00;
@@ -93,14 +96,19 @@ public class GH1602Lcd implements LcdInterface {
     public GH1602Lcd(LcdConnection lcdConnection) {
         this.lcdConnection = lcdConnection;
 
+        // this serves as a "reset" in case the display is wonky
+        writeCommand(RETURN_HOME | CLEAR_DISPLAY);
+        writeCommand(RETURN_HOME | CLEAR_DISPLAY);
+        writeCommand(RETURN_HOME | CLEAR_DISPLAY);
+        writeCommand(RETURN_HOME);
+
         // init the interface (2 lines, 5x8, 4-bit mode
-        writeCommand((byte) (LCD_FUNCTION_SET | LCD_2LINE | LCD_5x8DOTS | LCD_4BIT_MODE));
-        // TODO does 1-line 5x11 work?
+        writeCommand(LCD_FUNCTION_SET | LCD_2LINE | LCD_5x8DOTS | LCD_4BIT_MODE);
 
         // initialize display settings - display on, cursor off, blink off
         displayControl(true, false, false);
         // by default, set up for Indo-European left-to-right
-        writeCommand((byte) (ENTRY_MODE_SET | ENTRY_LEFT | ENTRY_SHIFT_DECREMENT));
+        writeCommand(ENTRY_MODE_SET | ENTRY_RIGHT | ENTRY_DISABLE_SHIFT);
 
         // turn it on
         clear();
