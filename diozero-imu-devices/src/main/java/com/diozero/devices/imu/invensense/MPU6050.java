@@ -2,7 +2,7 @@
  * #%L
  * Organisation: diozero
  * Project:      diozero - IMU device classes
- * Filename:     DMPMap.java
+ * Filename:     MPU6050.java
  *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
