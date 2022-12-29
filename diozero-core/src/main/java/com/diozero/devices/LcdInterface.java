@@ -4,7 +4,7 @@ package com.diozero.devices;
  * #%L
  * Organisation: diozero
  * Project:      diozero - Core
- * Filename:     HD44780Lcd.java
+ * Filename:     LcdInterface.java
  *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
