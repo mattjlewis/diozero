@@ -280,14 +280,14 @@ public class FNK0079Lcd implements LcdInterface {
 
     @Override
     public LcdInterface shiftDisplayRight() {
-        throw new UnsupportedOperationException("Currently not implemented - impacts display unpredictably.");
-//        return this;
+        writeCommand(MOVE_CONTROL | DISPLAY_MOVE | MOVE_RIGHT);
+        return this;
     }
 
     @Override
     public LcdInterface shiftDisplayLeft() {
-        throw new UnsupportedOperationException("Currently not implemented - impacts display unpredictably.");
-//        return this;
+        writeCommand(MOVE_CONTROL | DISPLAY_MOVE | MOVE_LEFT);
+        return this;
     }
 
     @Override
