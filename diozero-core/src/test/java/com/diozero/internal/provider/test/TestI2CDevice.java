@@ -39,6 +39,7 @@ import com.diozero.api.RuntimeIOException;
 import com.diozero.internal.spi.AbstractDevice;
 import com.diozero.internal.spi.DeviceFactoryInterface;
 import com.diozero.internal.spi.InternalI2CDeviceInterface;
+import com.diozero.util.Hex;
 
 public class TestI2CDevice extends AbstractDevice implements InternalI2CDeviceInterface {
 	public TestI2CDevice(String key, DeviceFactoryInterface deviceFactory, int controller, int address,
@@ -70,8 +71,7 @@ public class TestI2CDevice extends AbstractDevice implements InternalI2CDeviceIn
 
 	@Override
 	public void writeByte(byte b) throws RuntimeIOException {
-		// TODO Auto-generated method stub
-
+		Logger.info("0x{}", Hex.encode(b));
 	}
 
 	@Override
@@ -82,7 +82,7 @@ public class TestI2CDevice extends AbstractDevice implements InternalI2CDeviceIn
 
 	@Override
 	public void writeByteData(int register, byte b) throws RuntimeIOException {
-		// TODO Auto-generated method stub
+		Logger.info("{}, 0x{}", Integer.valueOf(register), Hex.encode(b));
 	}
 
 	@Override
@@ -93,8 +93,7 @@ public class TestI2CDevice extends AbstractDevice implements InternalI2CDeviceIn
 
 	@Override
 	public void writeWordData(int register, short data) throws RuntimeIOException {
-		// TODO Auto-generated method stub
-
+		Logger.info("{}, 0x{}", Integer.valueOf(register), Hex.encode(data));
 	}
 
 	@Override
@@ -111,8 +110,7 @@ public class TestI2CDevice extends AbstractDevice implements InternalI2CDeviceIn
 
 	@Override
 	public void writeBlockData(int register, byte... data) throws RuntimeIOException {
-		// TODO Auto-generated method stub
-
+		Logger.info("{}, 0x{}", Integer.valueOf(register), Hex.encodeHexString(data));
 	}
 
 	@Override
@@ -129,8 +127,7 @@ public class TestI2CDevice extends AbstractDevice implements InternalI2CDeviceIn
 
 	@Override
 	public void writeI2CBlockData(int register, byte... data) throws RuntimeIOException {
-		// TODO Auto-generated method stub
-
+		Logger.info("{}, 0x{}", Integer.valueOf(register), Hex.encodeHexString(data));
 	}
 
 	@Override
@@ -141,7 +138,7 @@ public class TestI2CDevice extends AbstractDevice implements InternalI2CDeviceIn
 
 	@Override
 	public void writeBytes(byte... data) throws RuntimeIOException {
-		// TODO Auto-generated method stub
+		Logger.info("{}, 0x{}", Hex.encodeHexString(data));
 	}
 
 	@Override

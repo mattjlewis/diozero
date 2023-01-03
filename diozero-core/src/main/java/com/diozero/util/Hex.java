@@ -43,6 +43,18 @@ public class Hex {
 		return encodeHexString(bytes, 0);
 	}
 
+	public static String encode(byte b) {
+		return String.format("%02x", Byte.valueOf(b));
+	}
+
+	public static String encode(short s) {
+		return String.format("%04x", Short.valueOf(s));
+	}
+
+	public static String encode(int i) {
+		return String.format("%08x", Integer.valueOf(i));
+	}
+
 	public static String encodeHexString(byte[] bytes, int bundleSize) {
 		char[] hexChars = new char[(bytes.length * 2) + (bundleSize > 0 ? (bytes.length / bundleSize) : 0)];
 		for (int j = 0, k = 1; j < bytes.length; j++, k++) {
@@ -182,6 +194,27 @@ public class Hex {
 		bytes = new byte[num_bytes];
 		rand.nextBytes(bytes);
 		dumpByteArray(bytes);
+		System.out.println();
+
+		System.out.println(encode((byte) 0x01));
+		System.out.println(encode((byte) 0x10));
+		System.out.println(encode((byte) 0x0f));
+		System.out.println(encode((byte) 0xf0));
+		System.out.println(encode((byte) 0xff));
+		System.out.println();
+
+		System.out.println(encode((short) 0x0001));
+		System.out.println(encode((short) 0x1000));
+		System.out.println(encode((short) 0x000f));
+		System.out.println(encode((short) 0xf000));
+		System.out.println(encode((short) 0xffff));
+		System.out.println();
+
+		System.out.println(encode(0x00000001));
+		System.out.println(encode(0x10000000));
+		System.out.println(encode(0x0000000f));
+		System.out.println(encode(0xf0000000));
+		System.out.println(encode(0xffffffff));
 		System.out.println();
 	}
 }

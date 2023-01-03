@@ -64,6 +64,15 @@ import com.diozero.util.SleepUtil;
 public class HD44780Lcd implements DeviceInterface {
 	private static final boolean DEFAULT_BACKLIGHT_STATE = true;
 
+	private static final byte DB0 = (byte) (1 << 0);
+	private static final byte DB1 = (byte) (1 << 1);
+	private static final byte DB2 = (byte) (1 << 2);
+	private static final byte DB3 = (byte) (1 << 3);
+	private static final byte DB4 = (byte) (1 << 4);
+	private static final byte DB5 = (byte) (1 << 5);
+	private static final byte DB6 = (byte) (1 << 6);
+	private static final byte DB7 = (byte) (1 << 7);
+
 	/*-
 	 * Instructions:
 	 * Instruction | RS | RW | DB7 | DB6 | DB5 | DB4 | DB3 | DB2 | DB1 | DB0 | Description                  | Exec Time
@@ -106,12 +115,17 @@ public class HD44780Lcd implements DeviceInterface {
 	 * address     |    |    |     |     |     |     |     |     |     |     | DDRAM data is sent and       |
 	 *             |    |    |     |     |     |     |     |     |     |     | received after this setting. |
 	 * ------------+----+----+-----+-----+-----+-----+-----+-----+-----+-----+------------------------------+----------
+	 * Read Busy   | 0  | 1  |  BF |  a  |  a  |  a  |  a  |  a  |  a  |  a  | Reads busy flag (BF)         | 0us
+	 * Flag and    |    |    |     |     |     |     |     |     |     |     | indicating internal operation|
+	 * Address     |    |    |     |     |     |     |     |     |     |     | is being performed and reads |
+	 *             |    |    |     |     |     |     |     |     |     |     | address counter contents.    |
+	 * ------------+----+----+-----+-----+-----+-----+-----+-----+-----+-----+------------------------------+----------
 	 * Write data  | 1  | 0  |  d  |  d  |  d  |  d  |  d  |  d  |  d  |  d  | Writes data into DDRAM or    | 37us
-	 * to CG or    |    |    |     |     |     |     |     |     |     |     | CGRAM.                       |
+	 * to CG or    |    |    |     |     |     |     |     |     |     |     | CGRAM.                       | tADD=4us
 	 * DDRAM       |    |    |     |     |     |     |     |     |     |     |                              |
 	 * ------------+----+----+-----+-----+-----+-----+-----+-----+-----+-----+------------------------------+----------
 	 * Read data   | 1  | 1  |  d  |  d  |  d  |  d  |  d  |  d  |  d  |  d  | Reads data from DDRAM or     | 37us
-	 * from CG or  |    |    |     |     |     |     |     |     |     |     | CGRAM.                       |
+	 * from CG or  |    |    |     |     |     |     |     |     |     |     | CGRAM.                       | tADD=4us
 	 * DDRAM       |    |    |     |     |     |     |     |     |     |     |                              |
 	 * ------------+----+----+-----+-----+-----+-----+-----+-----+-----+-----+------------------------------+----------
 	 * DDRAM = Display Data RAM.
@@ -154,7 +168,7 @@ public class HD44780Lcd implements DeviceInterface {
 	 * blinking moves to the right when incremented by 1 and to the left when
 	 * decremented by 1.
 	 */
-	private static final byte EMS_CURSOR_INCREMENT = 0x02;
+	private static final byte EMS_CURSOR_INCREMENT = DB1;
 	private static final byte EMS_CURSOR_DECREMENT = 0x00;
 	/**
 	 * Display shift control, 1=on, 0=off. Shifts the entire display either to the
@@ -162,26 +176,26 @@ public class HD44780Lcd implements DeviceInterface {
 	 * as if the cursor does not move but the display does. The display does not
 	 * shift if S is 0.
 	 */
-	private static final byte EMS_DISPLAY_SHIFT_ON = 0x01;
+	private static final byte EMS_DISPLAY_SHIFT_ON = DB0;
 	private static final byte EMS_DISPLAY_SHIFT_OFF = 0x00;
 
 	// Flags for INST_DISPLAY_CONTROL
 	/** Display on/off, 1=on, 0=off. */
-	private static final byte DC_DISPLAY_ON = 0x04;
+	private static final byte DC_DISPLAY_ON = DB2;
 	private static final byte DC_DISPLAY_OFF = 0x00;
 	/** Cursor on/off, 1=on, 0=off. */
-	private static final byte DC_CURSOR_ON = 0x02;
+	private static final byte DC_CURSOR_ON = DB1;
 	private static final byte DC_CURSOR_OFF = 0x00;
 	/** Cursor blink control, 1=blink, 0=no blink. */
-	private static final byte DC_BLINK_ON = 0x01;
+	private static final byte DC_BLINK_ON = DB0;
 	private static final byte DC_BLINK_OFF = 0x00;
 
 	// Flags for INST_CURSOR_DISPLAY_SHIFT
-	/** Shift the displayed text, 1=right, 0=left. */
-	private static final byte CDS_DISPLAY_SHIFT = 0x08;
+	/** Shift either the display or the cursor, 1=display, 0=cursor. */
+	private static final byte CDS_DISPLAY_SHIFT = DB3;
 	private static final byte CDS_CURSOR_MOVE = 0x00;
 	/** Shift the cursor, 1=right, 0=left. */
-	private static final byte CDS_SHIFT_RIGHT = 0x04;
+	private static final byte CDS_SHIFT_RIGHT = DB2;
 	private static final byte CDS_SHIFT_LEFT = 0x00;
 
 	// Flags for INST_FUNCTION_SET
@@ -189,30 +203,32 @@ public class HD44780Lcd implements DeviceInterface {
 	 * Data is sent or received in 8-bit lengths (DB7 to DB0) when DL is 1, and in
 	 * 4-bit lengths (DB7 to DB4) when DL is 0.
 	 */
-	private static final byte FS_DATA_LENGTH_8BIT = 0x10;
+	private static final byte FS_DATA_LENGTH_8BIT = DB4;
 	private static final byte FS_DATA_LENGTH_4BIT = 0x00;
 	/** Sets the number of display lines. 1=2 lines, 0=1 line. */
-	private static final byte FS_DISPLAY_2LINES = 0x08;
+	private static final byte FS_DISPLAY_2LINES = DB3;
 	private static final byte FS_DISPLAY_1LINE = 0x00;
 	/**
 	 * Sets the character font. 1=5x10 dots (32 character fonts), 0=5x8 dots (208
 	 * character fonts). For some 1 line displays you can select a 10 pixel high
-	 * font.
+	 * font. Cannot select 2 lines with a 5x10 font.
 	 */
-	private static final byte FS_CHAR_FONT_5X10DOTS = 0x04;
+	private static final byte FS_CHAR_FONT_5X10DOTS = DB2;
 	private static final byte FS_CHAR_FONT_5X8DOTS = 0x00;
+
+	private static final byte BUSY_FLAG = DB7;
 
 	// For 2-row LCDs
 	private static final byte[] ROW_OFFSETS_2ROWS = { 0x00, 0x40 };
 	// For 20x4 LCDs
 	private static final byte[] ROW_OFFSETS_20x4 = { 0x00, 0x40, 20, 0x40 + 20 };
 	// For 16x4 LCDs - special memory map layout
-	private static final byte[] ROW_OFFSETS_16x4 = { 0, 0x40, 16, 0x40 + 16 };
+	private static final byte[] ROW_OFFSETS_16x4 = { 0x00, 0x40, 16, 0x40 + 16 };
 
 	private LcdConnection lcdConnection;
 	private boolean dataInHighNibble;
 	private int registerSelectDataMask;
-	// private int dataReadMask;
+	private int dataReadMask;
 	private int enableMask;
 	private int backlightOnMask;
 	private boolean backlightEnabled;
@@ -240,11 +256,6 @@ public class HD44780Lcd implements DeviceInterface {
 			throw new IllegalArgumentException(columns + "x" + rows + " LCDs not supported");
 		}
 
-		if (rows < 1 || rows > rowOffsets.length) {
-			throw new IllegalArgumentException(
-					"Invalid number of rows (" + rows + "), must be 1.." + rowOffsets.length);
-		}
-
 		this.columns = columns;
 		this.rows = rows;
 		backlightEnabled = DEFAULT_BACKLIGHT_STATE;
@@ -253,7 +264,7 @@ public class HD44780Lcd implements DeviceInterface {
 		this.lcdConnection = lcdConnection;
 		dataInHighNibble = lcdConnection.isDataInHighNibble();
 		registerSelectDataMask = 1 << lcdConnection.getRegisterSelectBit();
-		// dataReadMask = 1 << lcdConnection.getDataReadWriteBit();
+		dataReadMask = 1 << lcdConnection.getDataReadWriteBit();
 		enableMask = 1 << lcdConnection.getEnableBit();
 		backlightOnMask = 1 << lcdConnection.getBacklightBit();
 
@@ -263,6 +274,17 @@ public class HD44780Lcd implements DeviceInterface {
 		// circuit are not met, initialisation by instructions becomes necessary.
 		// Need to do this 3 times for the 4-bit interface (p46)
 
+		/*
+		 * From p39 (4-bit operation, 8-digit × 1-line display with internal reset):
+		 * 
+		 * The program must set all functions prior to the 4-bit operation (Table 12).
+		 * When the power is turned on, 8-bit operation is automatically selected and
+		 * the first write is performed as an 8-bit operation. Since DB0 to DB3 are not
+		 * connected, a rewrite is then required. However, since one operation is
+		 * completed in two accesses for 4-bit operation, a rewrite is needed to set the
+		 * functions (see Table 12). Thus, DB4 to DB7 of the function set instruction is
+		 * written twice.
+		 */
 		// Function set (Interface is 8 bits long).
 		write4Bits(true, (byte) (INST_FUNCTION_SET | FS_DATA_LENGTH_8BIT));
 		// Wait for more than 4.1 ms
@@ -298,24 +320,26 @@ public class HD44780Lcd implements DeviceInterface {
 	}
 
 	private void writeByte(boolean instruction, byte data) {
-		// High bits first
+		// High nibble first
 		write4Bits(instruction, (byte) (data & 0xF0));
-		// Low bits last
+		// Then the low nibble
 		write4Bits(instruction, (byte) (data << 4));
 	}
 
 	private void write4Bits(boolean instruction, byte value) {
-		if (!dataInHighNibble) {
-			value = (byte) ((value >> 4) & 0x0F);
+		byte data;
+		if (dataInHighNibble) {
+			data = (byte) (value & 0xF0);
+		} else {
+			data = (byte) ((value >> 4) & 0x0F);
 		}
-		byte data = (byte) (value | (instruction ? 0 : registerSelectDataMask)
-				| (backlightEnabled ? backlightOnMask : 0));
+		data |= (byte) (instruction ? 0 : registerSelectDataMask) | (backlightEnabled ? backlightOnMask : 0);
 
 		lcdConnection.write((byte) (data | enableMask));
 		// 50us delay enough?
 		// SleepUtil.sleepMicros(50);
 		SleepUtil.busySleep(50_000);
-		lcdConnection.write((byte) (data & ~enableMask));
+		lcdConnection.write(data);
 		// 50us delay enough?
 		// SleepUtil.sleepMicros(50);
 		SleepUtil.busySleep(50_000);
@@ -733,7 +757,7 @@ public class HD44780Lcd implements DeviceInterface {
 		void write(byte value);
 
 		/**
-		 * Control whether the data bits in the first or last 4-bits
+		 * Control whether the data bits are in the first or last 4-bits
 		 *
 		 * @return true if the data bits are in the high nibble (bits 4:7)
 		 */
@@ -784,18 +808,45 @@ public class HD44780Lcd implements DeviceInterface {
 	 * For connections via a GPIO expansion board.
 	 */
 	public static abstract class GpioExpansionLcdConnection implements LcdConnection {
-		private GpioExpander gpioExpander;
-		private int port;
-		private boolean dataInHighNibble;
-		private int registerSelectBit;
-		private int dataReadWriteBit;
-		private int enableBit;
-		private int backlightBit;
+		private final GpioExpander gpioExpander;
+		private final int port;
+		private final boolean dataInHighNibble;
+		private final int registerSelectBit;
+		private final int dataReadWriteBit;
+		private final int enableBit;
+		private final int backlightBit;
 
 		public GpioExpansionLcdConnection(GpioExpander gpioExpander, int port, boolean dataInHighNibble,
 				int registerSelectBit, int dataReadWriteBit, int enableBit, int backlightBit) {
+			// All must be unique, register select and enable must be set
+			if (registerSelectBit == dataReadWriteBit || registerSelectBit == enableBit
+					|| registerSelectBit == backlightBit) {
+				throw new IllegalArgumentException("registerSelectBit (" + registerSelectBit + ") must be unique");
+			}
+			if (dataReadWriteBit == enableBit || dataReadWriteBit == backlightBit) {
+				throw new IllegalArgumentException("dataReadWriteBit (" + dataReadWriteBit + ") must be unique");
+			}
+			if (enableBit == backlightBit) {
+				throw new IllegalArgumentException("enableBit (" + enableBit + ") must be unique");
+			}
+			// The control bits must not clash with the data bits
+			if (dataInHighNibble) {
+				if (registerSelectBit > 3 || dataReadWriteBit > 3 || enableBit > 3 || backlightBit > 3) {
+					throw new IllegalArgumentException("Data bits clash with control bits");
+				}
+			} else {
+				if (registerSelectBit < 4 || dataReadWriteBit < 4 || enableBit < 4 || backlightBit < 4) {
+					throw new IllegalArgumentException("Data bits clash with control bits");
+				}
+			}
+
 			this.gpioExpander = gpioExpander;
 			this.port = port;
+			this.dataInHighNibble = dataInHighNibble;
+			this.registerSelectBit = registerSelectBit;
+			this.dataReadWriteBit = dataReadWriteBit;
+			this.enableBit = enableBit;
+			this.backlightBit = backlightBit;
 
 			gpioExpander.setDirections(port, GpioExpander.ALL_OUTPUT);
 		}
@@ -896,8 +947,9 @@ public class HD44780Lcd implements DeviceInterface {
 	}
 
 	/**
-	 * Connected via the PCF8574 I2C GPIO expansion backpack Default PCF8574 GPIO to
-	 * HD44780 pin map:
+	 * Connected via the PCF8574 I2C GPIO expansion backpack.
+	 * 
+	 * Default PCF8574 GPIO to HD44780 pin map:
 	 *
 	 * <pre>
 	 * PH_PIN_RS = 0
@@ -913,20 +965,29 @@ public class HD44780Lcd implements DeviceInterface {
 	public static class PCF8574LcdConnection extends GpioExpansionLcdConnection {
 		// Default I2C device address for the PCF8574
 		public static final int DEFAULT_DEVICE_ADDRESS = 0x27;
+		// Only one port
 		private static final int PORT = 0;
 
-		private static final byte REGISTER_SELECT_BIT = 0;
-		private static final byte DATA_READ_WRITE_BIT = 1;
-		private static final byte ENABLE_BIT = 2;
-		private static final int BACKLIGHT_BIT = 3;
+		private static final boolean DEFAULT_DATA_IN_HIGH_NIBBLE = true;
+		private static final int DEFAULT_REGISTER_SELECT_BIT = 0;
+		private static final int DEFAULT_DATA_READ_WRITE_BIT = 1;
+		private static final int DEFAULT_ENABLE_BIT = 2;
+		private static final int DEFAULT_BACKLIGHT_BIT = 3;
 
 		public PCF8574LcdConnection(int controller) {
-			this(controller, DEFAULT_DEVICE_ADDRESS);
+			this(controller, DEFAULT_DEVICE_ADDRESS, DEFAULT_DATA_IN_HIGH_NIBBLE, DEFAULT_REGISTER_SELECT_BIT,
+					DEFAULT_DATA_READ_WRITE_BIT, DEFAULT_ENABLE_BIT, DEFAULT_BACKLIGHT_BIT);
 		}
 
 		public PCF8574LcdConnection(int controller, int deviceAddress) {
-			super(new PCF8574(controller, deviceAddress), PORT, true, REGISTER_SELECT_BIT, DATA_READ_WRITE_BIT,
-					ENABLE_BIT, BACKLIGHT_BIT);
+			this(controller, deviceAddress, DEFAULT_DATA_IN_HIGH_NIBBLE, DEFAULT_REGISTER_SELECT_BIT,
+					DEFAULT_DATA_READ_WRITE_BIT, DEFAULT_ENABLE_BIT, DEFAULT_BACKLIGHT_BIT);
+		}
+
+		public PCF8574LcdConnection(int controller, int deviceAddress, boolean dataInHighNibble, int registerSelectBit,
+				int dataReadWriteBit, int enableBit, int backlightBit) {
+			super(new PCF8574(controller, deviceAddress), PORT, dataInHighNibble, registerSelectBit, dataReadWriteBit,
+					enableBit, backlightBit);
 		}
 	}
 
@@ -949,16 +1010,16 @@ public class HD44780Lcd implements DeviceInterface {
 	 * </pre>
 	 */
 	public static class GpioLcdConnection implements LcdConnection {
-		private static final int BACKLIGHT_BIT = 4;
-		private static final int ENABLE_BIT = 5;
-		private static final int DATA_RW_BIT = 6;
-		private static final int REGISTER_SELECT_BIT = 7;
+		private static final int DATA_RW_BIT = 4;
+		private static final int REGISTER_SELECT_BIT = 5;
+		private static final int ENABLE_BIT = 6;
+		private static final int BACKLIGHT_BIT = 7;
 
-		private DigitalOutputDevice[] dataPins;
-		private DigitalOutputDevice backlightPin;
-		private DigitalOutputDevice enablePin;
-		private DigitalOutputDevice dataRwPin;
-		private DigitalOutputDevice registerSelectPin;
+		private final DigitalOutputDevice[] dataPins;
+		private final DigitalOutputDevice registerSelectPin;
+		private final DigitalOutputDevice dataRwPin;
+		private final DigitalOutputDevice enablePin;
+		private final DigitalOutputDevice backlightPin;
 
 		/**
 		 * Use the default device factory and specify GPIO numbers. Assumes the RW pin
@@ -1101,13 +1162,8 @@ public class HD44780Lcd implements DeviceInterface {
 		}
 
 		@Override
-		public int getBacklightBit() {
-			return BACKLIGHT_BIT;
-		}
-
-		@Override
-		public int getEnableBit() {
-			return ENABLE_BIT;
+		public int getRegisterSelectBit() {
+			return REGISTER_SELECT_BIT;
 		}
 
 		@Override
@@ -1116,8 +1172,13 @@ public class HD44780Lcd implements DeviceInterface {
 		}
 
 		@Override
-		public int getRegisterSelectBit() {
-			return REGISTER_SELECT_BIT;
+		public int getEnableBit() {
+			return ENABLE_BIT;
+		}
+
+		@Override
+		public int getBacklightBit() {
+			return BACKLIGHT_BIT;
 		}
 
 		@Override

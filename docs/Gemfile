@@ -13,7 +13,7 @@ source "https://rubygems.org"
 
 gem "jekyll-remote-theme"
 #gem "just-the-docs"
-gem "just-the-docs", github: "pdmosses/just-the-docs", branch: "callouts"
+gem "just-the-docs", github: "pdmosses/just-the-docs", branch: "combination-rec-nav"
 
 # If you want to use GitHub Pages, remove the "gem "jekyll"" above and
 # uncomment the line below. To upgrade, run `bundle update github-pages`.
@@ -23,16 +23,16 @@ gem "just-the-docs", github: "pdmosses/just-the-docs", branch: "callouts"
 group :jekyll_plugins do
   gem "jekyll-include-cache"
   gem "jekyll-seo-tag"
-	gem "jekyll-sitemap"
-	gem "jekyll-github-metadata"
-	gem "jekyll-readme-index"
-	gem "jekyll-relative-links"
-	gem "jekyll-target-blank"
-	gem "jekyll-titles-from-headings"
-	gem "jekyll-redirect-from"
-	gem "jemoji"
-	gem "github-pages"
-	gem "webrick"
+#  gem "jekyll-sitemap"
+  gem "jekyll-github-metadata"
+  gem "jekyll-readme-index"
+  gem "jekyll-relative-links"
+  gem "jekyll-target-blank"
+  gem "jekyll-titles-from-headings"
+  gem "jekyll-redirect-from"
+  gem "jemoji"
+  gem "github-pages"
+  gem "webrick"
 end
 
 # Windows and JRuby does not include zoneinfo files, so bundle the tzinfo-data gem

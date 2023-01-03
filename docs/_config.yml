@@ -41,7 +41,7 @@ markdown: kramdown
 #theme: "just-the-docs"
 #theme: minimal-mistakes-jekyll
 #remote_theme: pmarsceill/just-the-docs
-remote_theme: pdmosses/just-the-docs@callouts
+remote_theme: pdmosses/just-the-docs@combination-rec-nav
 #remote_theme: mmistakes/minimal-mistakes
 
 ga_tracking: G-EWZGST7QX0

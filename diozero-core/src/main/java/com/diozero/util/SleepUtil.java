@@ -31,6 +31,8 @@ package com.diozero.util;
  * #L%
  */
 
+import java.util.concurrent.locks.LockSupport;
+
 import com.diozero.api.RuntimeInterruptedException;
 
 public class SleepUtil {
@@ -82,8 +84,8 @@ public class SleepUtil {
 	 * responsibility to factor in any delays associated with calling this method -
 	 * this could be as much as 1.5 microseconds on a Raspberry Pi 4.
 	 * <p>
-	 * Warning - this <b>MAY</b> consume 100% of one core: use with caution and only with
-	 * small delays.
+	 * Warning - this <b>MAY</b> consume 100% of one core: use with caution and only
+	 * with small delays.
 	 *
 	 * @param nanos The period to delay for
 	 */
@@ -92,6 +94,10 @@ public class SleepUtil {
 		do {
 			Thread.onSpinWait();
 		} while ((System.nanoTime() - start_time) < nanos);
+	}
+
+	public static void parkNanos(final long nanos) {
+		LockSupport.parkNanos(nanos);
 	}
 
 	/**
