@@ -10,7 +10,7 @@ import java.util.concurrent.TimeoutException;
  * Organisation: diozero
  * Project:      diozero - Core
  * Filename:     SoftwarePwmOutputDevice.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -22,10 +22,10 @@ import java.util.concurrent.TimeoutException;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -42,10 +42,7 @@ import java.util.concurrent.locks.LockSupport;
 
 import org.tinylog.Logger;
 
-import com.diozero.internal.spi.AbstractDevice;
-import com.diozero.internal.spi.DeviceFactoryInterface;
-import com.diozero.internal.spi.GpioDigitalOutputDeviceInterface;
-import com.diozero.internal.spi.InternalPwmOutputDeviceInterface;
+import com.diozero.internal.spi.*;
 import com.diozero.util.DiozeroScheduler;
 
 /**
@@ -53,11 +50,12 @@ import com.diozero.util.DiozeroScheduler;
  * All timing is in milliseconds hence it is strongly recommend to use a
  * frequency of 50Hz to minimise integer rounding errors.
  */
-public class SoftwarePwmOutputDevice extends AbstractDevice implements InternalPwmOutputDeviceInterface, Runnable {
-	private GpioDigitalOutputDeviceInterface digitalOutputDevice;
-	private AtomicBoolean running;
-	private AtomicInteger periodNs;
-	private AtomicInteger dutyNs;
+public class SoftwarePwmOutputDevice extends AbstractDevice implements InternalPwmOutputDeviceInterface {
+	private final GpioDigitalOutputDeviceInterface digitalOutputDevice;
+	private final AtomicBoolean running = new AtomicBoolean(false);
+
+	private final AtomicInteger periodNs = new AtomicInteger();
+	private final AtomicInteger dutyNs = new AtomicInteger();
 	private Future<?> future;
 
 	public SoftwarePwmOutputDevice(String key, DeviceFactoryInterface deviceFactory,
@@ -68,17 +66,15 @@ public class SoftwarePwmOutputDevice extends AbstractDevice implements InternalP
 
 		this.digitalOutputDevice = digitalOutputDevice;
 		digitalOutputDevice.setChild(true);
-		running = new AtomicBoolean();
 
-		periodNs = new AtomicInteger(Math.round(1_000_000_000f / frequencyHz));
-		dutyNs = new AtomicInteger();
+		periodNs.set(Math.round(1_000_000_000f / frequencyHz));
 		setValue(initialValue);
 		start();
 	}
 
 	public void start() {
 		if (!running.getAndSet(true)) {
-			future = DiozeroScheduler.getNonDaemonInstance().submit(this);
+			future = DiozeroScheduler.getNonDaemonInstance().submit(this::dutyLoop);
 		}
 	}
 
@@ -101,26 +97,41 @@ public class SoftwarePwmOutputDevice extends AbstractDevice implements InternalP
 		}
 	}
 
-	@Override
-	public void run() {
+	private void dutyLoop() {
 		long start_ns;
+		int lastDuty = Integer.MAX_VALUE;
+		int lastPeriod = Integer.MAX_VALUE;
+
 		while (running.get()) {
 			start_ns = System.nanoTime();
-			if (dutyNs.get() == 0) {
-				// Fully off
-				digitalOutputDevice.setValue(false);
-			} else if (dutyNs == periodNs) {
-				digitalOutputDevice.setValue(true);
-			} else {
-				digitalOutputDevice.setValue(true);
-				// SleepUtil.sleepMillis(dutyMs.get());
-				LockSupport.parkNanos(dutyNs.get());
-				digitalOutputDevice.setValue(false);
+
+			// so the value doesn't change mid-iteration
+			int dutyDuty = dutyNs.get();
+			int periodPeriod = periodNs.get();
+
+			// if there's no change since the last iteration, don't do anything
+			if (dutyDuty != lastDuty || lastPeriod != periodPeriod) {
+				lastPeriod = periodPeriod;
+				lastDuty = dutyDuty;
+
+				if (dutyDuty == 0) {
+					// Fully off
+					digitalOutputDevice.setValue(false);
+				}
+				else if (dutyDuty == periodPeriod) {
+					digitalOutputDevice.setValue(true);
+				}
+				else {
+					digitalOutputDevice.setValue(true);
+					// SleepUtil.sleepMillis(dutyMs.get());
+					LockSupport.parkNanos(dutyDuty);
+					digitalOutputDevice.setValue(false);
+				}
 			}
 			// SleepUtil.sleepMillis(Math.max(1, periodMs.get() -
 			// (System.currentTimeMillis() - start)));
 			// Minimum sleep time is 0.1ms
-			LockSupport.parkNanos(Math.max(100_000, periodNs.get() - (System.nanoTime() - start_ns)));
+			LockSupport.parkNanos(Math.max(100_000, periodPeriod - (System.nanoTime() - start_ns)));
 		}
 	}
 
