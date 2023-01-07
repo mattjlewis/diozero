@@ -5,7 +5,7 @@ package com.diozero.sampleapps.lcd;
  * Organisation: diozero
  * Project:      diozero - Sample applications
  * Filename:     LcdSampleApp16x2Base.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.sampleapps.lcd;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -34,6 +34,7 @@ package com.diozero.sampleapps.lcd;
 import org.tinylog.Logger;
 
 import com.diozero.devices.HD44780Lcd;
+import com.diozero.devices.LcdInterface;
 import com.diozero.util.SleepUtil;
 
 public class LcdSampleApp16x2Base {
@@ -48,9 +49,9 @@ public class LcdSampleApp16x2Base {
 		*/
 
 		// 0, 14, 21, 31, 10, 4, 10, 17
-		byte[] space_invader = HD44780Lcd.Characters.get("space_invader");
-		byte[] smilie = HD44780Lcd.Characters.get("smilie");
-		byte[] frownie = HD44780Lcd.Characters.get("frownie");
+		byte[] space_invader = LcdInterface.Characters.get("space_invader");
+		byte[] smilie = LcdInterface.Characters.get("smilie");
+		byte[] frownie = LcdInterface.Characters.get("frownie");
 		lcd.createChar(0, space_invader);
 		lcd.createChar(1, smilie);
 		lcd.createChar(2, frownie);
@@ -83,8 +84,8 @@ public class LcdSampleApp16x2Base {
 		lcd.clear();
 
 		Logger.info("Running");
-		lcd.createChar(3, HD44780Lcd.Characters.get("runninga"));
-		lcd.createChar(4, HD44780Lcd.Characters.get("runningb"));
+		lcd.createChar(3, LcdInterface.Characters.get("runninga"));
+		lcd.createChar(4, LcdInterface.Characters.get("runningb"));
 		lcd.clear();
 		lcd.displayControl(true, false, false);
 		for (int i = 0; i < 40; i++) {
