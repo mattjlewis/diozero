@@ -1,10 +1,5 @@
 package com.diozero.internal;
 
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-
 /*
  * #%L
  * Organisation: diozero
@@ -36,14 +31,21 @@ import java.util.concurrent.TimeoutException;
  * #L%
  */
 
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.locks.LockSupport;
 
 import org.tinylog.Logger;
 
-import com.diozero.internal.spi.*;
+import com.diozero.internal.spi.AbstractDevice;
+import com.diozero.internal.spi.DeviceFactoryInterface;
+import com.diozero.internal.spi.GpioDigitalOutputDeviceInterface;
+import com.diozero.internal.spi.InternalPwmOutputDeviceInterface;
 import com.diozero.util.DiozeroScheduler;
+import com.diozero.util.SleepUtil;
 
 /**
  * Generate a very poor approximation of a PWM signal - use at your own risk!
@@ -62,7 +64,7 @@ public class SoftwarePwmOutputDevice extends AbstractDevice implements InternalP
 			GpioDigitalOutputDeviceInterface digitalOutputDevice, int frequencyHz, float initialValue) {
 		super(key, deviceFactory);
 
-		Logger.info("Hardware PWM not available for device {}, reverting to software", key);
+		Logger.warn("Hardware PWM not available for device {}, reverting to software", key);
 
 		this.digitalOutputDevice = digitalOutputDevice;
 		digitalOutputDevice.setChild(true);
@@ -99,39 +101,30 @@ public class SoftwarePwmOutputDevice extends AbstractDevice implements InternalP
 
 	private void dutyLoop() {
 		long start_ns;
-		int lastDuty = Integer.MAX_VALUE;
-		int lastPeriod = Integer.MAX_VALUE;
 
 		while (running.get()) {
 			start_ns = System.nanoTime();
 
-			// so the value doesn't change mid-iteration
-			int dutyDuty = dutyNs.get();
-			int periodPeriod = periodNs.get();
+			// So the value doesn't change mid-iteration
+			int dutyCycle = dutyNs.get();
+			int perdiodCycle = periodNs.get();
 
-			// if there's no change since the last iteration, don't do anything
-			if (dutyDuty != lastDuty || lastPeriod != periodPeriod) {
-				lastPeriod = periodPeriod;
-				lastDuty = dutyDuty;
-
-				if (dutyDuty == 0) {
-					// Fully off
-					digitalOutputDevice.setValue(false);
-				}
-				else if (dutyDuty == periodPeriod) {
-					digitalOutputDevice.setValue(true);
-				}
-				else {
-					digitalOutputDevice.setValue(true);
-					// SleepUtil.sleepMillis(dutyMs.get());
-					LockSupport.parkNanos(dutyDuty);
-					digitalOutputDevice.setValue(false);
-				}
+			if (dutyCycle == 0) {
+				// Fully off
+				digitalOutputDevice.setValue(false);
 			}
-			// SleepUtil.sleepMillis(Math.max(1, periodMs.get() -
-			// (System.currentTimeMillis() - start)));
+			else if (dutyCycle == perdiodCycle) {
+				// Fully on
+				digitalOutputDevice.setValue(true);
+			}
+			else {
+				digitalOutputDevice.setValue(true);
+				 SleepUtil.busySleep(dutyCycle);
+				digitalOutputDevice.setValue(false);
+			}
+
 			// Minimum sleep time is 0.1ms
-			LockSupport.parkNanos(Math.max(100_000, periodPeriod - (System.nanoTime() - start_ns)));
+			SleepUtil.busySleep(Math.max(100_000, perdiodCycle - (System.nanoTime() - start_ns)));
 		}
 	}
 
