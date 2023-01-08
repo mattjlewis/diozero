@@ -51,12 +51,15 @@ import com.diozero.internal.spi.MmapGpioInterface;
 import com.diozero.sbc.BoardInfo;
 import com.diozero.sbc.LocalSystemInfo;
 
+import aQute.bnd.annotation.spi.ServiceProvider;
+
 /**
  * See
  * <a href="https://github.com/AndrewFromMelbourne/raspberry_pi_revision">this c
  * library</a>. See also <a href="http://elinux.org/RPi_HardwareHistory">this
  * table of revisions</a>.
  */
+@ServiceProvider(value = BoardInfoProvider.class)
 public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 	public static final String MAKE = "Raspberry Pi";
 	private static final String BCM_HARDWARE_PREFIX = "BCM";

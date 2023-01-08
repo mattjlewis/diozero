@@ -37,6 +37,10 @@ import com.diozero.sbc.BoardInfo;
 import com.diozero.sbc.LocalSystemInfo;
 import com.diozero.util.ServiceLoaderUtil;
 
+import aQute.bnd.annotation.Resolution;
+import aQute.bnd.annotation.spi.ServiceConsumer;
+
+@ServiceConsumer(value = BoardInfoProvider.class,resolution = Resolution.OPTIONAL)
 public interface BoardInfoProvider {
 	BoardInfo lookup(LocalSystemInfo sysInfo);
 

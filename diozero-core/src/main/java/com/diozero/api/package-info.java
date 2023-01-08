@@ -1,6 +1,9 @@
 /**
  * Core APIs for interfacing with devices.
  */
+@org.osgi.annotation.bundle.Export
+@aQute.bnd.annotation.licenses.MIT
+@org.osgi.annotation.bundle.Header(name = "Automatic-Module-Name",value = "diozero.core")
 package com.diozero.api;
 
 /*-

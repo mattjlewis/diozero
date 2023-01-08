@@ -37,6 +37,10 @@ import com.diozero.api.DeviceMode;
 import com.diozero.sbc.BoardInfo;
 import com.diozero.util.ServiceLoaderUtil;
 
+import aQute.bnd.annotation.Resolution;
+import aQute.bnd.annotation.spi.ServiceConsumer;
+
+@ServiceConsumer(value = NativeDeviceFactoryInterface.class,resolution = Resolution.OPTIONAL)
 public interface NativeDeviceFactoryInterface extends GpioDeviceFactoryInterface, SpiDeviceFactoryInterface,
 		I2CDeviceFactoryInterface, PwmOutputDeviceFactoryInterface, ServoDeviceFactoryInterface,
 		AnalogInputDeviceFactoryInterface, AnalogOutputDeviceFactoryInterface, SerialDeviceFactoryInterface {

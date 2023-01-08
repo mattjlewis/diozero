@@ -2,6 +2,7 @@
  * Classes representing actual devices such as LEDs, Buttons as well as GPIO,
  * devices that are connected via I2C, SPI and Serial interfaces.
  */
+@org.osgi.annotation.bundle.Export
 package com.diozero.devices;
 
 /*-

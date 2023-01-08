@@ -36,22 +36,63 @@
 				</configuration>
 			</plugin>
 			<plugin>
+				<groupId>biz.aQute.bnd</groupId>
+				<artifactId>bnd-maven-plugin</artifactId>
+				<version>5.3.0</version>
+				<configuration><bnd><![CDATA[
+            Bundle-SymbolicName: ${groupId}.${artifactId}
+            
+            # default ARM processor is armv7 but you could explicit specify your framework at start using
+            # -Dorg.osgi.framework.processor=armv6  or -Dorg.osgi.framework.processor=armv7
+            Bundle-NativeCode: lib/linux-aarch64/libdiozero-system-utils.so; osname=Linux; processor=aarch64,\
+                               lib/linux-armv7/libdiozero-system-utils.so; osname=Linux; processor=ARM,\
+                               lib/linux-armv6/libdiozero-system-utils.so; osname=Linux; processor=armv6,\
+                               lib/linux-armv7/libdiozero-system-utils.so; osname=Linux; processor=armv7,\
+                               lib/linux-x86_64/libdiozero-system-utils.so; osname=Linux; processor=x86_64,\
+                               lib/macosx-x86_64/libdiozero-system-utils.dylib; osname=MacOSX; processor=x86_64
+            -jpms-module-info:
+            
+        ]]></bnd></configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>bnd-process</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
 				<configuration>
 					<archive>
-						<addMavenDescriptor>true</addMavenDescriptor>
-						<manifestEntries>
-							<Automatic-Module-Name>diozero.core</Automatic-Module-Name>
-						</manifestEntries>
-						<manifest>
-							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-						</manifest>
+					    <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+<!-- 						<addMavenDescriptor>true</addMavenDescriptor> -->
+<!-- 						<manifestEntries> -->
+<!-- 							<Automatic-Module-Name>diozero.core</Automatic-Module-Name> -->
+<!-- 						</manifestEntries> -->
+<!-- 						<manifest> -->
+<!-- 							<addDefaultImplementationEntries>true</addDefaultImplementationEntries> -->
+<!-- 						</manifest> -->
 					</archive>
 				</configuration>
 			</plugin>
 		</plugins>
 	</build>
+	<dependencies>
+		<dependency>
+			<groupId>org.osgi</groupId>
+			<artifactId>osgi.annotation</artifactId>
+			<version>8.0.0</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>biz.aQute.bnd</groupId>
+			<artifactId>biz.aQute.bndlib</artifactId>
+			<version>5.3.0</version>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
 
 	<reporting>
 		<plugins>

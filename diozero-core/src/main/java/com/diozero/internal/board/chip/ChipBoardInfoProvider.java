@@ -46,6 +46,8 @@ import com.diozero.internal.spi.MmapGpioInterface;
 import com.diozero.sbc.BoardInfo;
 import com.diozero.sbc.LocalSystemInfo;
 
+import aQute.bnd.annotation.spi.ServiceProvider;
+@ServiceProvider(value = BoardInfoProvider.class)
 public class ChipBoardInfoProvider implements BoardInfoProvider {
 	public static final String MAKE = "Next Thing Company";
 	public static final String MODEL_CHIP = "CHIP";
