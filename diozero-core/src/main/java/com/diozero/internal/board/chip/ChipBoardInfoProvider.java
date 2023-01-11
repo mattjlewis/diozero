@@ -41,6 +41,7 @@ import org.tinylog.Logger;
 
 import com.diozero.api.PinInfo;
 import com.diozero.internal.board.GenericLinuxArmBoardInfo;
+import com.diozero.internal.board.soc.allwinner.AllwinnerR8MmapGpio;
 import com.diozero.internal.spi.BoardInfoProvider;
 import com.diozero.internal.spi.MmapGpioInterface;
 import com.diozero.sbc.BoardInfo;
@@ -221,7 +222,7 @@ public class ChipBoardInfoProvider implements BoardInfoProvider {
 
 		@Override
 		public MmapGpioInterface createMmapGpio() {
-			return new ChipMmapGpio();
+			return new AllwinnerR8MmapGpio();
 		}
 
 		private synchronized void loadXioGpioOffset() {

@@ -1,4 +1,5 @@
 # https://linux-sunxi.org/Xunlong_Orange_Pi_One_Plus
+# https://github.com/orangepi-xunlong/wiringOP#orange-pi-lite2oneplus
 
 General, DEFAULT, 1, 3v3
 General, DEFAULT, 2, 5v
@@ -10,7 +11,7 @@ General, DEFAULT, 17, 3v3
 General, DEFAULT, 20, GND
 General, DEFAULT, 25, GND
 
-# GPIO, Header, GPIO#, Name, Physical Pin, Modes, Chip, Line
+# GPIO, Header, GPIO#, Name, Physical Pin, Modes, Chip, Line Offset
 # GPIO = (position of letter in alphabet - 1) * 32 + pin number
 GPIO, DEFAULT, 230, SDA.1, 3, DIGITAL_INPUT | DIGITAL_OUTPUT, 1, 230    # TWI1_SDA / PH06 / GPIO230
 GPIO, DEFAULT, 229, SCL.1, 5, DIGITAL_INPUT | DIGITAL_OUTPUT, 1, 229    # TWI1_SCK / PH05 / GPIO229

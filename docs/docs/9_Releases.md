@@ -29,12 +29,22 @@ PrimitiveDevice (".api" package), i.e. LED, LDR, etc.
 class for info on provisioned state
 + Additional interfaces representing generic physical behaviour, e.g. movement, acceleration,
 similar to existing MotorInterface, BarometerInterface, etc.
-+ Revamp docker builds
++ MFRC522 cleanup and testing, in particular write operations
 
 ## 1.3.5 (in progress)
 
 + Tweaked cross compilation toolchain - switched to podman
-+ Orange Pi 3 LTS - preliminary
++ Orange Pi 3 LTS - untested
++ Support for Rock 4 (Rockchip RK3399 SoC)
++ Allow for mapping automatically detected GPIO chips via the GPIO Chip label (Pi 3B) - #121
++ Bug fix to HD44780 LCDs connected via GPIO expansion boards (e.g. PCF8574) - #116
++ Docs build fix (updated the JTD branch)
++ Don't initialise MCP23x17 pins to 0 - #88
++ Extracted common LcdInterface (thank you [EAGrahamJr](https://github.com/EAGrahamJr))
++ Improved accuracy of software PWM - required for servo control
++ Removed jitter in Software PWM output (thank you [EAGrahamJr](https://github.com/EAGrahamJr))
++ MPU-6050 support (thank you [EAGrahamJr](https://github.com/EAGrahamJr))
++ Internal - separated boards from SoC
 
 ## 1.3.4
 

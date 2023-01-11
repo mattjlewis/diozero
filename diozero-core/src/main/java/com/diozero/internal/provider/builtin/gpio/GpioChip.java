@@ -178,6 +178,13 @@ public class GpioChip extends GpioChipInfo implements AutoCloseable, GpioLineEve
 		return linesByName.get(name);
 	}
 
+	public GpioLine getLineByOffset(int offset) {
+		if (offset < 0 || offset >= lines.length) {
+			return null;
+		}
+		return lines[offset];
+	}
+
 	public GpioLine provisionGpioInputDevice(int offset, GpioPullUpDown pud, GpioEventTrigger trigger) {
 		if (offset < 0 || offset >= lines.length) {
 			throw new IllegalArgumentException("Invalid GPIO offset " + offset + " must 0.." + (lines.length - 1));

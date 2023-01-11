@@ -1,3 +1,8 @@
+# GPIO Chip Mapping - Chip, Id, Label
+Chip, 0, pinctrl-bcm2835
+#Chip, 1, brcmvirt-gpio
+Chip, 1, raspberrypi-exp-gpio
+
 # GPIO Header info - General, Header, Physical Pin, Name
 General, J8, 1, 3v3
 General, J8, 2, 5v
@@ -12,10 +17,10 @@ General, J8, 30, GND
 General, J8, 34, GND
 General, J8, 39, GND
 
-# TODO Try enabling sysfs PWM, see
+# For enabling sysfs PWM, see
 # https://jumpnowtek.com/rpi/Using-the-Raspberry-Pi-Hardware-PWM-timers.html
 
-# GPIO, Header, GPIO#, Name, Physical Pin, Modes, Chip, Line
+# GPIO, Header, GPIO#, Name, Physical Pin, Modes, Chip, Line Offset
 GPIO, J8, 0, ID_SDA, 27, DIGITAL_INPUT | DIGITAL_OUTPUT, 0, 0
 GPIO, J8, 1, ID_SCL, 28, DIGITAL_INPUT | DIGITAL_OUTPUT, 0, 1
 GPIO, J8, 2, SDA1, 3, DIGITAL_INPUT | DIGITAL_OUTPUT, 0, 2

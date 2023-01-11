@@ -141,7 +141,7 @@ Update the ZSH config `~/.zshrc`:
 
 ```
 export PATH=$PATH:/sbin:/usr/sbin:/usr/local/sbin
-export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-armhf
+export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-arm64
 export GRAALBM_HOME=/home/matt/graalvm-ce-java17-22.2.0
 
 ZSH_THEME="robbyrussell_tweak"

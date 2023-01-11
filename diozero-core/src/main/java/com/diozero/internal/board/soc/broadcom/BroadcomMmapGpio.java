@@ -1,4 +1,4 @@
-package com.diozero.internal.board.raspberrypi;
+package com.diozero.internal.board.soc.broadcom;
 
 /*
  * #%L
@@ -44,7 +44,7 @@ import com.diozero.util.SleepUtil;
 /**
  * https://datasheets.raspberrypi.org/bcm2835/bcm2835-peripherals.pdf
  */
-public class RaspberryPiMmapGpio implements MmapGpioInterface {
+public class BroadcomMmapGpio implements MmapGpioInterface {
 	/*-
 	 * The BCM2835 has 54 GPIO pins.
 	 * BCM2835 data sheet, Page 90 onwards.
@@ -118,11 +118,11 @@ public class RaspberryPiMmapGpio implements MmapGpioInterface {
 	private boolean piIs2711;
 	private MmapIntBuffer mmapIntBuffer;
 
-	public RaspberryPiMmapGpio(boolean piIs2711) {
+	public BroadcomMmapGpio(boolean piIs2711) {
 		this.piIs2711 = piIs2711;
 	}
 
-	public RaspberryPiMmapGpio(boolean piIs2711, MmapIntBuffer mmapIntBuffer) {
+	public BroadcomMmapGpio(boolean piIs2711, MmapIntBuffer mmapIntBuffer) {
 		this.piIs2711 = piIs2711;
 		this.mmapIntBuffer = mmapIntBuffer;
 	}
@@ -359,7 +359,7 @@ public class RaspberryPiMmapGpio implements MmapGpioInterface {
 		boolean PI_OFF = false;
 		boolean PI_ON = true;
 
-		try (RaspberryPiMmapGpio mmap = new RaspberryPiMmapGpio(false)) {
+		try (BroadcomMmapGpio mmap = new BroadcomMmapGpio(false)) {
 			mmap.initialise();
 
 			int gpio = 21;

@@ -130,7 +130,7 @@ Update the ZSH config `~/.zshrc`:
 
 ```
 export PATH=$PATH:/sbin:/usr/sbin:/usr/local/sbin
-export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-armhf
+export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-arm64
 
 ZSH_THEME="robbyrussell_tweak"
 ```

@@ -54,7 +54,7 @@ extern jmethodID mmapByteBufferConstructor;
 #endif
 
 jobject createMmapByteBuffer(JNIEnv* env, void* mapPtr, jlong length) {
-	return (*env)->NewObject(env, mmapByteBufferClassRef, mmapByteBufferConstructor, mapPtr, length,
+	return (*env)->NewObject(env, mmapByteBufferClassRef, mmapByteBufferConstructor, (uint64_t) (long_t) mapPtr, length,
 			(*env)->NewDirectByteBuffer(env, mapPtr, length));
 }
 
@@ -70,7 +70,7 @@ JNIEXPORT jobject JNICALL Java_com_diozero_util_MmapBufferNative_createMmapBuffe
 		return NULL;
 	}
 
-	void* map_ptr = mmap(0, (size_t) length, PROT_READ|PROT_WRITE, MAP_SHARED, fd, (off_t) offset);
+	void* map_ptr = mmap(0, (size_t) length, PROT_READ|PROT_WRITE, MAP_SHARED, fd, (off_t) (long_t) offset);
 	//void* map_ptr = mmap(0, length, PROT_READ|PROT_WRITE, MAP_SHARED|MAP_LOCKED, fd, offset);
 	/*
 	 * From: https://man7.org/linux/man-pages/man2/mmap.2.html

@@ -38,7 +38,10 @@ import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.tinylog.Logger;
@@ -49,6 +52,8 @@ import com.diozero.sbc.LocalSystemInfo;
 import com.diozero.util.StringUtil;
 
 public class GenericLinuxArmBoardInfo extends BoardInfo {
+	private Optional<Map<String, Integer>> chipMapping;
+
 	public GenericLinuxArmBoardInfo(LocalSystemInfo systemInfo) {
 		this(systemInfo, BoardInfo.UNKNOWN);
 	}
@@ -74,6 +79,8 @@ public class GenericLinuxArmBoardInfo extends BoardInfo {
 	public GenericLinuxArmBoardInfo(String make, String model, int memoryKb, float adcVRef, String libraryPath) {
 		super(make, model, memoryKb, adcVRef, libraryPath, LocalSystemInfo.getInstance().getOperatingSystemId(),
 				LocalSystemInfo.getInstance().getOperatingSystemVersion());
+
+		chipMapping = Optional.empty();
 	}
 
 	@Override
@@ -133,18 +140,23 @@ public class GenericLinuxArmBoardInfo extends BoardInfo {
 
 						line = line.trim();
 
-						if (line.startsWith("#") || line.isEmpty()) {
-							continue;
-						}
-
+						// Strip comments
 						int index = line.indexOf("#");
 						if (index != -1) {
 							line = line.substring(0, index);
 						}
 
+						// Ignore empty lines
+						if (line.isEmpty()) {
+							continue;
+						}
+
 						String[] parts = line.split(",");
 						try {
 							switch (parts[0].trim().toUpperCase()) {
+							case "CHIP":
+								loadChipMapping(parts);
+								break;
 							case "GENERAL":
 								loadGeneralPinInfo(parts);
 								break;
@@ -161,7 +173,7 @@ public class GenericLinuxArmBoardInfo extends BoardInfo {
 								loadDacPinInfo(parts);
 								break;
 							default:
-								// Ignore
+								Logger.warn("Unexpected entry '{}' in line '{}'", parts[0].trim(), line);
 							}
 						} catch (IllegalArgumentException e) {
 							Logger.warn("Illegal argument: {} - line: ", e.getMessage(), line);
@@ -178,6 +190,14 @@ public class GenericLinuxArmBoardInfo extends BoardInfo {
 		return loaded;
 	}
 
+	private void loadChipMapping(String[] parts) {
+		if (parts.length != 3) {
+			Logger.warn("Invalid Chip Mapping def line '{}'", String.join(",", parts));
+			return;
+		}
+		addChipMapping(Integer.parseInt(parts[1].trim()), parts[2].trim());
+	}
+
 	private void loadGeneralPinInfo(String[] parts) {
 		if (parts.length != 4) {
 			Logger.warn("Invalid General Pin def line '{}'", String.join(",", parts));
@@ -191,6 +211,7 @@ public class GenericLinuxArmBoardInfo extends BoardInfo {
 			Logger.warn("Invalid GPIO def line '{}'", String.join(",", parts));
 			return;
 		}
+
 		addGpioPinInfo(parts[1].trim(), Integer.parseInt(parts[2].trim()), parts[3].trim(),
 				Integer.parseInt(parts[4].trim()), parseModes(parts[5].trim()), Integer.parseInt(parts[6].trim()),
 				Integer.parseInt(parts[7].trim()));
@@ -230,5 +251,17 @@ public class GenericLinuxArmBoardInfo extends BoardInfo {
 		}
 		return Arrays.stream(modeValues.split("\\|")).map(mode -> DeviceMode.valueOf(mode.trim().toUpperCase()))
 				.collect(Collectors.toSet());
+	}
+
+	@Override
+	public Optional<Map<String, Integer>> getChipMapping() {
+		return chipMapping;
+	}
+
+	private void addChipMapping(int chipId, String label) {
+		if (chipMapping.isEmpty()) {
+			chipMapping = Optional.of(new HashMap<>());
+		}
+		chipMapping.get().put(label, Integer.valueOf(chipId));
 	}
 }

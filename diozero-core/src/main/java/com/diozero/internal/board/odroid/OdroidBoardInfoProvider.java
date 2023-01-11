@@ -32,6 +32,8 @@ package com.diozero.internal.board.odroid;
  */
 
 import com.diozero.internal.board.GenericLinuxArmBoardInfo;
+import com.diozero.internal.board.soc.amlogic.AmlogicS905MmapGpio;
+import com.diozero.internal.board.soc.amlogic.AmlogicS922XMmapGpio;
 import com.diozero.internal.spi.BoardInfoProvider;
 import com.diozero.internal.spi.MmapGpioInterface;
 import com.diozero.sbc.BoardInfo;
@@ -92,7 +94,7 @@ public class OdroidBoardInfoProvider implements BoardInfoProvider {
 
 		@Override
 		public MmapGpioInterface createMmapGpio() {
-			return new OdroidC2MmapGpio();
+			return new AmlogicS905MmapGpio();
 		}
 	}
 
@@ -107,7 +109,7 @@ public class OdroidBoardInfoProvider implements BoardInfoProvider {
 
 		@Override
 		public MmapGpioInterface createMmapGpio() {
-			return new OdroidN2PlusMmapGpio();
+			return new AmlogicS922XMmapGpio();
 		}
 	}
 }

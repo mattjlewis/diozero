@@ -35,12 +35,14 @@ import java.nio.ByteOrder;
 import java.nio.IntBuffer;
 
 public class MmapIntBuffer implements AutoCloseable {
+	private long offset;
 	private long address;
 	private long length;
 	private IntBuffer intBuffer;
 
 	public MmapIntBuffer(String file, long offset, long length, ByteOrder byteOrder) {
 		MmapByteBuffer mmap_bb = MmapBufferNative.createMmapBuffer(file, offset, length);
+		this.offset = offset;
 		this.address = mmap_bb.getAddress();
 		this.length = mmap_bb.getLength();
 		// Creates a view of the original direct byte buffer as an int buffer
@@ -75,5 +77,13 @@ public class MmapIntBuffer implements AutoCloseable {
 
 	public void put(int index, int i) {
 		intBuffer.put(index, i);
+	}
+
+	public long offset() {
+		return offset;
+	}
+
+	public long length() {
+		return length;
 	}
 }

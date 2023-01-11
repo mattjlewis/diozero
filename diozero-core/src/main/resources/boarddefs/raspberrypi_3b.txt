@@ -1,3 +1,8 @@
+# GPIO Chip Mapping - Chip, Id, Label
+Chip, 0, pinctrl-bcm2835
+#Chip, 1, brcmvirt-gpio
+Chip, 1, raspberrypi-exp-gpio
+
 # GPIO Header info - General, Header, Physical Pin, Name
 General, J8, 1, 3v3
 General, J8, 2, 5v
@@ -48,3 +53,13 @@ GPIO, J8, 24, GPIO24, 18, DIGITAL_INPUT | DIGITAL_OUTPUT, 0, 24
 GPIO, J8, 25, GPIO25, 22, DIGITAL_INPUT | DIGITAL_OUTPUT, 0, 25
 GPIO, J8, 26, GPIO26, 37, DIGITAL_INPUT | DIGITAL_OUTPUT, 0, 26
 GPIO, J8, 27, GPIO27, 13, DIGITAL_INPUT | DIGITAL_OUTPUT, 0, 27
+
+# P5 Header
+GPIO, P5, 54, BT_ON, 0, , 1, 0
+GPIO, P5, 55, WL_ON, 1, , 1, 1
+GPIO, P5, 56, STATUS_LED, 2, , 1, 2
+GPIO, P5, 57, LAN_RUN, 3, , 1, 3
+GPIO, P5, 58, HDMI_HPD_N, 4, , 1, 4
+GPIO, P5, 59, CAM_GPIO0, 5, , 1, 5
+GPIO, P5, 60, CAM_GPIO1, 6, , 1, 6
+GPIO, P5, 61, PWR_LOW_N, 7, , 1, 7

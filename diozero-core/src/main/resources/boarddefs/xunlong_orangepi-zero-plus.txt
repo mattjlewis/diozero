@@ -1,4 +1,5 @@
 # https://linux-sunxi.org/Xunlong_Orange_Pi_Zero_Plus
+# https://github.com/orangepi-xunlong/wiringOP#orange-pi-zero-plus
 
 General, DEFAULT, 1, 3v3
 General, DEFAULT, 2, 5v
@@ -10,7 +11,7 @@ General, DEFAULT, 17, 3v3
 General, DEFAULT, 20, GND
 General, DEFAULT, 25, GND
 
-# GPIO, Header, GPIO#, Name, Physical Pin, Modes, Chip, Line
+# GPIO, Header, GPIO#, Name, Physical Pin, Modes, Chip, Line Offset
 GPIO, DEFAULT, 12, SDA.0, 3, DIGITAL_INPUT | DIGITAL_OUTPUT, 1, 12     # TWI0_SDA / PA12 / GPIO12 **
 GPIO, DEFAULT, 11, SCL.0, 5, DIGITAL_INPUT | DIGITAL_OUTPUT, 1, 11     # TWI0_SCK / PA11 / GPIO11 **
 GPIO, DEFAULT, 6, PA06, 7, DIGITAL_INPUT | DIGITAL_OUTPUT, 1, 6        # PWM1 / PA06 / GPIO6

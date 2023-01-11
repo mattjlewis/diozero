@@ -305,4 +305,10 @@ public class PinInfo {
 				+ ", physicalPin=" + physicalPin + ", name=" + name + ", chip=" + chip + ", lineOffset=" + lineOffset
 				+ ", modes=" + modes + "]";
 	}
+
+	public void updateGpioChipId(int oldChipId, int newChipId) {
+		if (chip == oldChipId) {
+			chip = newChipId;
+		}
+	}
 }

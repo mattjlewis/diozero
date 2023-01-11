@@ -32,6 +32,7 @@ package com.diozero.internal.board.allwinner;
  */
 
 import com.diozero.internal.board.GenericLinuxArmBoardInfo;
+import com.diozero.internal.board.soc.allwinner.AllwinnerH5MmapGpio;
 import com.diozero.internal.spi.BoardInfoProvider;
 import com.diozero.internal.spi.MmapGpioInterface;
 import com.diozero.sbc.BoardInfo;

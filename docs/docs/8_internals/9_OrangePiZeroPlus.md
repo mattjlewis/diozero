@@ -17,8 +17,8 @@ Use `visudo` and add `NOPASSWD:` for group `sudo` so that the line looks like th
 Add gpio group:
 
 ```
-groupadd gpio
-usermod -aG gpio <<your-username>>
+sudo groupadd gpio
+sudo usermod -aG gpio <<your-username>>
 ```
 
 TBD udev rules for /dev/gpiochip* file permissions.

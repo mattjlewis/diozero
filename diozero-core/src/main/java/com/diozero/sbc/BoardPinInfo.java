@@ -38,6 +38,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
 
+import org.tinylog.Logger;
+
 import com.diozero.api.DeviceMode;
 import com.diozero.api.NoSuchDeviceException;
 import com.diozero.api.PinInfo;
@@ -340,6 +342,16 @@ public class BoardPinInfo {
 
 	public Collection<PinInfo> getDacPins() {
 		return dacs.values();
+	}
+
+	@SuppressWarnings("static-method")
+	public Optional<Map<String, Integer>> getChipMapping() {
+		return Optional.empty();
+	}
+
+	public void updateGpioChipId(int oldChipId, int newChipId) {
+		Logger.debug("Updating GPIO chip id from {} to {}", Integer.valueOf(oldChipId), Integer.valueOf(newChipId));
+		gpios.values().forEach(pin_info -> pin_info.updateGpioChipId(oldChipId, newChipId));
 	}
 
 	@SuppressWarnings("static-method")

@@ -1,4 +1,4 @@
-package com.diozero.internal.board.chip;
+package com.diozero.internal.board.soc.allwinner;
 
 /*-
  * #%L
@@ -47,7 +47,7 @@ import com.diozero.util.SleepUtil;
 // https://github.com/LuciferAndDiablo/NTC-C.H.I.P.-JavaGPIOLib
 // Refer to the Allwinner R8 User Manual V1.1 datasheet, section 32.2
 // Modes: 0 == INPUT, 1 == OUTPUT, 2-7 == alt functions
-public class ChipMmapGpio implements MmapGpioInterface {
+public class AllwinnerR8MmapGpio implements MmapGpioInterface {
 	private static final String MEM_DEVICE = "/dev/mem";
 	private static final int GPIO_BASE_OFFSET = 0x01c20000;
 	private static final int PAGE_SIZE = 0x1000;
@@ -250,7 +250,7 @@ public class ChipMmapGpio implements MmapGpioInterface {
 
 	public static void main(String[] args) {
 		LibraryLoader.loadSystemUtils();
-		try (ChipMmapGpio mmap_gpio = new ChipMmapGpio()) {
+		try (AllwinnerR8MmapGpio mmap_gpio = new AllwinnerR8MmapGpio()) {
 			mmap_gpio.initialise();
 			int gpio = 135; // PE7, CSID3
 			DeviceMode mode;

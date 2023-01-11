@@ -27,7 +27,7 @@ sudo apt -y install pigpio-tools libpigpiod-if-dev libpigpiod-if2-1
 ## Java
 
 ```shell
-sudo apt -y install openjdk-11-jdk-headless openjdk-17-jdk-headless
+sudo apt -y install openjdk-17-jdk-headless
 ```
 
 ## ZSH
@@ -46,11 +46,13 @@ cp robbyrussell.zsh-theme robbyrussell_tweak.zsh-theme
 
 Edit `robbyrussell_tweak.zsh-theme` and change the `PROMPT` value to include this prefix `%{$fg_bold[white]%}%M%{$reset_color%} `.
 The PROMPT line should look like this:
+
 ```
 PROMPT="%{$fg_bold[white]%}%M%{$reset_color%} %(?:%{$fg_bold[green]%}➜ :%{$fg_bold[red]%}➜ )"
 ```
 
 Update the ZSH config `~/.zshrc`:
+
 ```
 export PATH=$PATH:/sbin:/usr/sbin:/usr/local/sbin
 export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-armhf
@@ -59,6 +61,7 @@ ZSH_THEME="robbyrussell_tweak"
 ```
 
 My own preference is to add this to the end of the `.zshrc` file:
+
 ```
 # Allow multiple terminal sessions to all append to one zsh command history
 setopt APPEND_HISTORY

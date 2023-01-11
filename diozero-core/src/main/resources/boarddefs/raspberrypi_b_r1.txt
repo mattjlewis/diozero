@@ -8,10 +8,10 @@ General, J8, 17, 3v3
 General, J8, 20, GND
 General, J8, 25, GND
 
-# TODO Try enabling sysfs PWM, see
+# For enabling sysfs PWM, see
 # http://www.jumpnowtek.com/rpi/Using-the-Raspberry-Pi-Hardware-PWM-timers.html
 
-# GPIO, Header, GPIO#, Name, Physical Pin, Modes, Chip, Line
+# GPIO, Header, GPIO#, Name, Physical Pin, Modes, Chip, Line Offset
 GPIO, J8, 0, SDA1, 3, DIGITAL_INPUT | DIGITAL_OUTPUT, 0, 2
 GPIO, J8, 1, SCL1, 5, DIGITAL_INPUT | DIGITAL_OUTPUT, 0, 3
 GPIO, J8, 4, GPIO_GCLK, 7, DIGITAL_INPUT | DIGITAL_OUTPUT, 0, 4

@@ -1,0 +1,48 @@
+# https://github.com/eclipse/mraa/blob/master/src/arm/rockpi4.c#L128
+# https://wiki.radxa.com/Rockpi4/hardware/gpio
+
+# GPIO Header info - General, Header, Physical Pin, Name
+General, Default, 1, 3v3
+General, Default, 2, 5v
+General, Default, 4, 5v
+General, Default, 6, GND
+General, Default, 9, GND
+General, Default, 14, GND
+General, Default, 17, 3v3
+General, Default, 20, GND
+General, Default, 25, GND
+General, Default, 30, GND
+General, Default, 34, GND
+General, Default, 39, GND
+
+# GPIO, Header, GPIO#, Name, Physical Pin, Modes, Chip, Line
+GPIO, Default, 71, GPIO2_A7, 3, DIGITAL_INPUT | DIGITAL_OUTPUT, 2, 7                   # 1: I2C7_SDA, GPIO2_A7
+GPIO, Default, 72, GPIO2_B0, 5, DIGITAL_INPUT | DIGITAL_OUTPUT, 2, 8                   # 1: I2C7_SCL, GPIO2_B0
+GPIO, Default, 75, GPIO2_B3, 7, DIGITAL_INPUT | DIGITAL_OUTPUT, 2, 11                  # 1: SPI2_CLK, GPIO2_B3
+GPIO, Default, 148, TXD2, 8, DIGITAL_INPUT | DIGITAL_OUTPUT, 4, 20                     # 1: UART2_TXD, GPIO4_C4
+GPIO, Default, 147, RXD2, 10, DIGITAL_INPUT | DIGITAL_OUTPUT, 4, 19                    # 1: UART2_RXD, GPIO4_C3
+PWM, Default, 146, PWM0, 11, 0, 0, DIGITAL_INPUT | DIGITAL_OUTPUT | PWM_OUTPUT, 4, 18  # 1: PWM0, GPIO4_C2
+GPIO, Default, 131, GPIO4_A3, 12, DIGITAL_INPUT | DIGITAL_OUTPUT, 4, 3                 # 1: I2S1_SCLK, GPIO4_A3
+PWM, Default, 150, PWM1, 13, 1, 0, DIGITAL_INPUT | DIGITAL_OUTPUT | PWM_OUTPUT, 4, 22  # 1: PWM1, GPIO4_C6
+GPIO, Default, 149, GPIO4_C5, 15, DIGITAL_INPUT | DIGITAL_OUTPUT, 4, 21                # 1: SPDIF_TX, GPIO4_C5
+GPIO, Default, 154, GPIO4_D2, 16, DIGITAL_INPUT | DIGITAL_OUTPUT, 4, 26 
+GPIO, Default, 156, GPIO4_D4, 18, DIGITAL_INPUT | DIGITAL_OUTPUT, 4, 28
+GPIO, Default, 40, SPI1_TX, 19, DIGITAL_INPUT | DIGITAL_OUTPUT, 1, 8                   # 2: UART4_TXD, 1: SPI1_TXD, GPIO1_B0
+GPIO, Default, 39, SPI1_RX, 21, DIGITAL_INPUT | DIGITAL_OUTPUT, 1, 7                   # 2: UART4_RXD, 1: SPI1_RXD, GPIO1_A7
+GPIO, Default, 157, GPIO4_D5, 22, DIGITAL_INPUT | DIGITAL_OUTPUT, 4, 29
+GPIO, Default, 41, SPI1_CLK, 23, DIGITAL_INPUT | DIGITAL_OUTPUT, 1, 9                  # 1: SPI1_CLK, GPIO1_B1
+GPIO, Default, 42, SPI1_CS0, 24, DIGITAL_INPUT | DIGITAL_OUTPUT, 1, 10                 # 1: SPI1_CSn, GPIO1_B2
+GPIO, Default, 64, GPIO2_A0, 27, DIGITAL_INPUT | DIGITAL_OUTPUT, 2, 0                  # 1: I2C2_SDA, GPIO2_A0
+GPIO, Default, 65, GPIO2_A1, 28, DIGITAL_INPUT | DIGITAL_OUTPUT, 2, 1                  # 1: I2C2_CLK, GPIO2_A1
+GPIO, Default, 74, GPIO2_B2, 29, DIGITAL_INPUT | DIGITAL_OUTPUT, 2, 10                 # 2: I2C6_SCL, 1: SPI2_TXD, GPIO2_B2
+GPIO, Default, 73, GPIO2_B1, 31, DIGITAL_INPUT | DIGITAL_OUTPUT, 2, 9                  # 2: I2C6_SDA, 1: SPI2_RXD, GPIO2_B1
+GPIO, Default, 112, GPIO3_C0, 32, DIGITAL_INPUT | DIGITAL_OUTPUT, 3, 0                 # 2: UART3_CTSn, 1: SPDIF_TX, GPIO3_C0
+GPIO, Default, 76, GPIO2_B4, 33, DIGITAL_INPUT | DIGITAL_OUTPUT, 2, 12                 # 1: SPI2_CSn, GPIO2_B4
+GPIO, Default, 133, GPIO4_A5, 35, DIGITAL_INPUT | DIGITAL_OUTPUT, 4, 5                 # 1: I2S1_LRCK_TX, GPIO4_A5
+GPIO, Default, 132, GPIO4_A4, 36, DIGITAL_INPUT | DIGITAL_OUTPUT, 4, 4                 # 1: I2S1_LRCK_RX, GPIO4_A4
+GPIO, Default, 158, GPIO4_D6, 37, DIGITAL_INPUT | DIGITAL_OUTPUT, 4, 30
+GPIO, Default, 134, GPIO4_A6, 38, DIGITAL_INPUT | DIGITAL_OUTPUT, 4, 6                 # 1: I2S1_SDI, GPIO4_A6
+GPIO, Default, 135, GPIO4_A7, 40, DIGITAL_INPUT | DIGITAL_OUTPUT, 4, 7                 # 1: I2S1_SDO, GPIO4_A7
+
+# ADC, Header, ADC #, Name, Physical pin
+ADC, Default, 0, ADC_IN0, 26

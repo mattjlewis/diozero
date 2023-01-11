@@ -100,10 +100,10 @@ public class ConsoleUtil {
 		}
 
 		switch (deviceFactory.getGpioMode(gpio)) {
-		case DIGITAL_OUTPUT:
-			return "Out";
 		case DIGITAL_INPUT:
 			return "In";
+		case DIGITAL_OUTPUT:
+			return "Out";
 		case PWM_OUTPUT:
 			return "PWM";
 		case ANALOG_INPUT:
@@ -116,6 +116,10 @@ public class ConsoleUtil {
 			return "I2C";
 		case SPI:
 			return "SPI";
+		case SERIAL:
+			return "UART";
+		case I2S:
+			return "I2S";
 		default:
 			return "Unkn";
 		}

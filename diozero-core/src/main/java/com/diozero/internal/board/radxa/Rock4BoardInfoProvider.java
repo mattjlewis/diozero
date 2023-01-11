@@ -1,10 +1,10 @@
-package com.diozero.internal.board.allwinner;
+package com.diozero.internal.board.radxa;
 
 /*-
  * #%L
  * Organisation: diozero
  * Project:      diozero - Core
- * Filename:     AllwinnerSun8iBoardInfoProvider.java
+ * Filename:     TinkerBoardBoardInfoProvider.java
  * 
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
@@ -32,32 +32,34 @@ package com.diozero.internal.board.allwinner;
  */
 
 import com.diozero.internal.board.GenericLinuxArmBoardInfo;
-import com.diozero.internal.board.soc.allwinner.AllwinnerH3MmapGpio;
+import com.diozero.internal.board.soc.rockchip.Rockchip3399MmapGpio;
 import com.diozero.internal.spi.BoardInfoProvider;
 import com.diozero.internal.spi.MmapGpioInterface;
 import com.diozero.sbc.BoardInfo;
 import com.diozero.sbc.LocalSystemInfo;
 
-public class AllwinnerSun8iBoardInfoProvider implements BoardInfoProvider {
-	// E.g. CONFIG_ORANGEPI_H3, CONFIG_ORANGEPI_ZEROPLUS2_H3
-	public static final String MAKE = "Allwinner sun8i";
+public class Rock4BoardInfoProvider implements BoardInfoProvider {
+	public static final String MAKE = "Radxa";
+	private static final String ROCK4CPLUS_BOARD_HARDWARE_ID = "Radxa ROCK 4C+";
+	private static final String ROCKPI4CPLUS_BOARD_HARDWARE_ID = "Radxa ROCK Pi 4C+";
 
 	@Override
-	public BoardInfo lookup(LocalSystemInfo sysInfo) {
-		if (sysInfo.getHardware() != null && sysInfo.getHardware().startsWith(MAKE)) {
-			return new AllwinnerSun8iBoardInfo(sysInfo);
+	public BoardInfo lookup(LocalSystemInfo localSysInfo) {
+		if (localSysInfo.getHardware() != null && (localSysInfo.getHardware().equals(ROCK4CPLUS_BOARD_HARDWARE_ID)
+				|| localSysInfo.getHardware().equals(ROCKPI4CPLUS_BOARD_HARDWARE_ID))) {
+			return new Rock4BoardInfo(localSysInfo);
 		}
 		return null;
 	}
 
-	public static class AllwinnerSun8iBoardInfo extends GenericLinuxArmBoardInfo {
-		public AllwinnerSun8iBoardInfo(LocalSystemInfo localSysInfo) {
+	public static class Rock4BoardInfo extends GenericLinuxArmBoardInfo {
+		Rock4BoardInfo(LocalSystemInfo localSysInfo) {
 			super(localSysInfo, MAKE);
 		}
 
 		@Override
 		public MmapGpioInterface createMmapGpio() {
-			return new AllwinnerH3MmapGpio();
+			return new Rockchip3399MmapGpio();
 		}
 	}
 }

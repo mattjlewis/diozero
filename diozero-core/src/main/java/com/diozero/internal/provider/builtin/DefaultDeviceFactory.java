@@ -47,6 +47,7 @@ import com.diozero.api.RuntimeIOException;
 import com.diozero.api.SerialConstants;
 import com.diozero.api.SpiClockMode;
 import com.diozero.internal.SoftwarePwmOutputDevice;
+import com.diozero.internal.board.GenericLinuxArmBoardInfo;
 import com.diozero.internal.board.odroid.OdroidBoardInfoProvider;
 import com.diozero.internal.board.odroid.OdroidC2SysFsPwmOutputDevice;
 import com.diozero.internal.provider.builtin.gpio.GpioChip;
@@ -65,7 +66,7 @@ import com.diozero.internal.spi.InternalSerialDeviceInterface;
 import com.diozero.internal.spi.InternalServoDeviceInterface;
 import com.diozero.internal.spi.InternalSpiDeviceInterface;
 import com.diozero.internal.spi.MmapGpioInterface;
-import com.diozero.sbc.BoardPinInfo;
+import com.diozero.sbc.BoardInfo;
 import com.diozero.sbc.LocalSystemInfo;
 import com.diozero.util.Diozero;
 import com.diozero.util.EpollNative;
@@ -110,12 +111,34 @@ public class DefaultDeviceFactory extends BaseNativeDeviceFactory {
 				Logger.debug("Found {} GPIO chips", Integer.valueOf(chips.size()));
 
 				// Validate the data in BoardPinInfo
-				BoardPinInfo bpi = getBoardPinInfo();
+				final BoardInfo bpi = getBoardInfo();
+				if (bpi instanceof GenericLinuxArmBoardInfo) {
+					bpi.getChipMapping().ifPresent(chip_mapping -> updateChipIds(chips, chip_mapping, bpi));
+				}
 
+				// Validate the board pin info matches the GPIO chip and line offsets
+				Logger.debug("Validating BoardPinInfo against detected GPIO chip and line offsets...");
+				bpi.getGpioPins().forEach(pin_info -> {
+					GpioChip chip = chips.get(Integer.valueOf(pin_info.getChip()));
+					if (chip == null) {
+						if (pin_info.getChip() != -1) {
+							Logger.warn("No such chip for id {}", Integer.valueOf(pin_info.getChip()));
+						}
+					} else {
+						if (chip.getLineByOffset(pin_info.getLineOffset()) == null) {
+							Logger.warn("No such line offset {} for chip {}", Integer.valueOf(pin_info.getLineOffset()),
+									Integer.valueOf(pin_info.getChip()));
+						}
+					}
+				});
+
+				// Validate the GPIO chip and line offsets match those detected
+				Logger.debug("Validating detected GPIO chip and line offsets against BoardPinInfo...");
 				chips.values().forEach(chip -> {
 					for (GpioLine gpio_line : chip.getLines()) {
 						PinInfo pin_info = null;
-						String line_name = gpio_line.getName().trim();
+						final String line_name = gpio_line.getName().trim();
+
 						// Try to find this GPIO in the board pin info by the assumed system name
 						if (!line_name.isEmpty()) {
 							pin_info = bpi.getByName(line_name);
@@ -169,7 +192,7 @@ public class DefaultDeviceFactory extends BaseNativeDeviceFactory {
 							}
 
 							if (!line_name.isEmpty() && !pin_info.getName().equals(line_name)) {
-								Logger.warn("Configured pin name ({}) doesn't match that detected ({})",
+								Logger.info("Configured pin name ({}) doesn't match that detected ({})",
 										pin_info.getName(), line_name);
 								// XXX What to do about it - update the board pin info? Just ignore for now.
 							}
@@ -198,6 +221,26 @@ public class DefaultDeviceFactory extends BaseNativeDeviceFactory {
 			Logger.warn("GPIO pull-up / pull-down control is not available for this board");
 		} else {
 			Logger.debug("Memory mapped GPIO is available for this board");
+		}
+	}
+
+	private static void updateChipIds(Map<Integer, GpioChip> chips, Map<String, Integer> chipMapping, BoardInfo bpi) {
+		if (chips == null || chips.isEmpty()) {
+			return;
+		}
+
+		Logger.debug("Processing chipMapping {}", chipMapping);
+
+		for (final Map.Entry<String, Integer> mapping : chipMapping.entrySet()) {
+			final GpioChip chip = chips.get(mapping.getValue());
+			// If the labels don't match ...
+			if (!mapping.getKey().equals(chip.getLabel())) {
+				Logger.debug("Boarddef chip id {} ('{}') doesn't match actual id {} ('{}')", mapping.getValue(),
+						mapping.getKey(), Integer.valueOf(chip.getChipId()), chip.getLabel());
+				// Locate the actual GPIO chip with this label and update the chip id
+				chips.values().stream().filter(ch -> ch.getLabel().equals(mapping.getKey())).findFirst()
+						.ifPresent(ch -> bpi.updateGpioChipId(mapping.getValue().intValue(), ch.getChipId()));
+			}
 		}
 	}
 

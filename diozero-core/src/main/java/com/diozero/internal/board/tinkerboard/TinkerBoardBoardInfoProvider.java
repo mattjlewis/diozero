@@ -32,6 +32,7 @@ package com.diozero.internal.board.tinkerboard;
  */
 
 import com.diozero.internal.board.GenericLinuxArmBoardInfo;
+import com.diozero.internal.board.soc.rockchip.RockchipRK3288MmapGpio;
 import com.diozero.internal.spi.BoardInfoProvider;
 import com.diozero.internal.spi.MmapGpioInterface;
 import com.diozero.sbc.BoardInfo;
@@ -60,7 +61,7 @@ public class TinkerBoardBoardInfoProvider implements BoardInfoProvider {
 
 		@Override
 		public MmapGpioInterface createMmapGpio() {
-			return new TinkerBoardMmapGpio();
+			return new RockchipRK3288MmapGpio();
 		}
 	}
 }

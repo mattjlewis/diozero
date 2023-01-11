@@ -1,4 +1,4 @@
-package com.diozero.internal.board.odroid;
+package com.diozero.internal.board.soc.amlogic;
 
 /*-
  * #%L
@@ -46,7 +46,7 @@ import com.diozero.util.Hex;
 import com.diozero.util.MmapIntBuffer;
 import com.diozero.util.SleepUtil;
 
-public class OdroidN2PlusMmapGpio implements MmapGpioInterface {
+public class AmlogicS922XMmapGpio implements MmapGpioInterface {
 	private static final String MEM_DEVICE = "/dev/mem";
 
 	/*
@@ -317,7 +317,7 @@ public class OdroidN2PlusMmapGpio implements MmapGpioInterface {
 	public static void main(String[] args) {
 		System.out.println(ByteOrder.nativeOrder());
 		if (args.length != 2) {
-			System.out.println("Usage: " + OdroidN2PlusMmapGpio.class.getName() + " <gpio> <iterations>");
+			System.out.println("Usage: " + AmlogicS922XMmapGpio.class.getName() + " <gpio> <iterations>");
 			System.exit(1);
 		}
 		int gpio = Integer.parseInt(args[0]);
@@ -338,7 +338,7 @@ public class OdroidN2PlusMmapGpio implements MmapGpioInterface {
 		System.out.format("gpioToGPFSELReg(%d)=0x%04x%n", 214, gpioToOutputEnableRegOffset(214));
 		System.out.format("gpioToGPFSELReg(%d)=0x%04x%n", 219, gpioToOutputEnableRegOffset(219));
 
-		try (OdroidC2MmapGpio mmap_gpio = new OdroidC2MmapGpio()) {
+		try (AmlogicS905MmapGpio mmap_gpio = new AmlogicS905MmapGpio()) {
 			mmap_gpio.initialise();
 
 			System.out.println("getMode(" + gpio + ")=" + mmap_gpio.getMode(gpio));

@@ -73,6 +73,7 @@ Disable the graphical desktop since we are using the headless image:
 
 ```
 sudo systemctl disable graphical.target
+sudo systemctl set-default multi-user.target
 ```
 
 ## Disable and Remove Bonescript / Cloud9 / Nodered

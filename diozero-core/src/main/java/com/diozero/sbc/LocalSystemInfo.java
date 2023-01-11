@@ -122,6 +122,20 @@ import com.diozero.util.StringUtil;
  * os.name: Linux
  * os.arch: arm
  * sun.arch.data.model: 32
+ * 
+ * Board: Raspberry Pi Zero 2 W
+ * /etc/os-release PRETTY_NAME:     Raspbian GNU/Linux 11 (bullseye)
+ * /proc/device-tree/compatible:    raspberrypi,model-zero-2-w^@brcm,bcm2837^@%
+ * /proc/device-tree/model:         Raspberry Pi Zero 2 W Rev 1.0^@%
+ * /proc/device-tree/serial-number: 00000000b68a8100
+ * /proc/cpuinfo:
+ *   Hardware   : BCM2835
+ *   Revision   : 902120
+ *   Serial     : 00000000b68a8100
+ *   Model      : Raspberry Pi Zero 2 W Rev 1.0
+ * os.name: Linux
+ * os.arch: arm
+ * sun.arch.data.model: 32
  *
  * Board: Odroid C2
  * /etc/os-release PRETTY_NAME:     Armbian 20.08.17 Buster
@@ -201,6 +215,19 @@ import com.diozero.util.StringUtil;
  * os.name: Linux
  * os.arch: aarch64
  * sun.arch.data.model: 64
+ * 
+ * Board: OKdo ROCK 4 Model C+ (Rockchip RK3399-T)
+ * /etc/os-release PRETTY_NAME: 
+ * /proc/device-tree/compatible:    radxa,rock-4c-plus^@rockchip,rk3399^@%
+ * /proc/device-tree/model:         Radxa ROCK 4C+^@%
+ * /proc/device-tree/serial-number: 9b2bb1ea7d62e92f^@%
+ * /proc/cpuinfo:
+ *   Hardware   : <<Not present>>
+ *   Revision   : <<Not present>>
+ *   Serial     : 9b2bb1ea7d62e92f
+ * os.name: Linux
+ * os.arch: aarch64
+ * sun.arch.data.model: 64
  */
 /**
  * Utility class for accessing information about the local system. The majority
@@ -225,7 +252,6 @@ public class LocalSystemInfo {
 	private static final String LINUX_DEVICE_TREE_MODEL_FILE = "/proc/device-tree/model";
 	private static final String LINUX_DEVICE_TREE_SERIAL_NUMBER_FILE = "/proc/device-tree/serial-number";
 	private static final String TEMPERATURE_FILE = "/sys/class/thermal/thermal_zone0/temp";
-	private static final String UNKNOWN = "UNKNOWN";
 
 	private static LocalSystemInfo instance;
 
@@ -502,8 +528,8 @@ public class LocalSystemInfo {
 		if (isLinux()) {
 			try {
 				return Integer.parseInt(Files.lines(Paths.get(TEMPERATURE_FILE)).findFirst().orElse("0")) / 1000f;
-			} catch (IOException e) {
-				Logger.debug("Error reading {}: {}", TEMPERATURE_FILE, e);
+			} catch (Throwable t) {
+				Logger.debug("Error reading {}: {}", TEMPERATURE_FILE, t);
 				return -1;
 			}
 		} else if (isMacOS()) {

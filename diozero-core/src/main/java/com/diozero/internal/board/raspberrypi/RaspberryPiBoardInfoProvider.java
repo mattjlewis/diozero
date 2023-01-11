@@ -46,6 +46,7 @@ import org.tinylog.Logger;
 import com.diozero.api.DeviceMode;
 import com.diozero.api.PinInfo;
 import com.diozero.internal.board.GenericLinuxArmBoardInfo;
+import com.diozero.internal.board.soc.broadcom.BroadcomMmapGpio;
 import com.diozero.internal.spi.BoardInfoProvider;
 import com.diozero.internal.spi.MmapGpioInterface;
 import com.diozero.sbc.BoardInfo;
@@ -389,7 +390,7 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 
 		@Override
 		public MmapGpioInterface createMmapGpio() {
-			return new RaspberryPiMmapGpio(processor.equals(BCM2711));
+			return new BroadcomMmapGpio(processor.equals(BCM2711));
 		}
 
 		/**

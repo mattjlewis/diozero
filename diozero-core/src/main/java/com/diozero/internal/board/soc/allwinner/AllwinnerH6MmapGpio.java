@@ -1,4 +1,4 @@
-package com.diozero.internal.board.allwinner;
+package com.diozero.internal.board.soc.allwinner;
 
 /*-
  * #%L
@@ -54,26 +54,20 @@ public class AllwinnerH6MmapGpio implements MmapGpioInterface {
 	private static final int BLOCK_SIZE = 4 * MEM_INFO;
 
 	private static final int GPIOA_BASE = 0x0300B000;
-	private static final int GPIOA_OFFSET = 0x0;
-	private static final int GPIOA_INT_OFFSET = GPIOA_OFFSET / 4;
-	// private static final int GPIOA_BASE_MAP = GPIOA_BASE + GPIOA_OFFSET;
 	private static final int MAP_SIZE_A = BLOCK_SIZE;
 
-	/*-
 	private static final int GPIOL_BASE = 0x07022000;
-	private static final int GPIOL_OFFSET = 0x0;
-	private static final int GPIOL_INT_OFFSET = GPIOL_OFFSET / 4;
-	// private static final int GPIOL_BASE_MAP = GPIOL_BASE + GPIOL_OFFSET;
-	private static final int MAP_SIZE_L = BLOCK_SIZE * 2;
-	 */
+	private static final int MAP_SIZE_L = BLOCK_SIZE;
 
 	private boolean initialised;
 	private MmapIntBuffer gpioAMmapIntBuffer;
+	private MmapIntBuffer gpioLMmapIntBuffer;
 
 	@Override
 	public synchronized void initialise() {
 		if (!initialised) {
 			gpioAMmapIntBuffer = new MmapIntBuffer(GPIOMEM_DEVICE, GPIOA_BASE, MAP_SIZE_A, ByteOrder.LITTLE_ENDIAN);
+			gpioLMmapIntBuffer = new MmapIntBuffer(GPIOMEM_DEVICE, GPIOL_BASE, MAP_SIZE_L, ByteOrder.LITTLE_ENDIAN);
 
 			initialised = true;
 		}
@@ -95,10 +89,21 @@ public class AllwinnerH6MmapGpio implements MmapGpioInterface {
 		int int_offset = ((bank * 36) + ((index >> 3) << 2)) / 4;
 		int shift = ((index - ((index >> 3) << 3)) << 2);
 		 */
-		int int_offset = (gpio >> 3) + 5 * (gpio >> 5);
+		int bank = gpio >> 5;
 		int shift = (gpio % 8) << 2;
 
-		int mode_val = (gpioAMmapIntBuffer.get(GPIOA_INT_OFFSET + int_offset) >> shift) & 0b111;
+		int int_offset;
+		MmapIntBuffer int_buffer;
+		if (bank == 11) {
+			int_offset = ((gpio - (bank << 5) >> 3) << 2) / 4;
+			int_buffer = gpioLMmapIntBuffer;
+		} else {
+			// (bank * 36) + ((index >> 3) << 2)
+			int_offset = (gpio >> 3) + 5 * bank;
+			int_buffer = gpioAMmapIntBuffer;
+		}
+
+		int mode_val = (int_buffer.get(int_offset) >> shift) & 0b111;
 		DeviceMode mode;
 		switch (mode_val) {
 		case 0:
@@ -147,12 +152,12 @@ public class AllwinnerH6MmapGpio implements MmapGpioInterface {
 		int int_offset = (gpio >> 3) + 5 * (gpio >> 5);
 		int shift = (gpio % 8) << 2;
 
-		int addr = GPIOA_INT_OFFSET + int_offset;
+		int addr = int_offset;
 
 		int reg_val = gpioAMmapIntBuffer.get(addr);
 
 		reg_val &= ~(0b111 << shift);
-		reg_val |= (mode << shift);
+		reg_val |= ((mode & 0b111) << shift);
 
 		gpioAMmapIntBuffer.put(addr, reg_val);
 	}
@@ -190,7 +195,7 @@ public class AllwinnerH6MmapGpio implements MmapGpioInterface {
 		int shift = (gpio % 16) << 1; // Shift 0..30
 		int int_offset = (0x1c + bank * 0x24) / 4 + reg;
 
-		int phyaddr = GPIOA_INT_OFFSET + int_offset;
+		int phyaddr = int_offset;
 
 		int pud_val;
 		switch (pud) {
@@ -221,10 +226,20 @@ public class AllwinnerH6MmapGpio implements MmapGpioInterface {
 		int int_offset = ((bank * 36) + 0x10) / 4;
 		int shift = gpio - (bank << 5);
 		 */
-		int int_offset = (gpio >> 5) * 9 + 4;
+		int bank = gpio >> 5;
 		int shift = gpio % 32;
 
-		return ((gpioAMmapIntBuffer.get(GPIOA_INT_OFFSET + int_offset) >> shift) & 1) == 1;
+		int int_offset;
+		MmapIntBuffer int_buffer;
+		if (bank == 11) {
+			int_offset = 4;
+			int_buffer = gpioLMmapIntBuffer;
+		} else {
+			int_offset = bank * 9 + 4;
+			int_buffer = gpioAMmapIntBuffer;
+		}
+
+		return ((int_buffer.get(int_offset) >> shift) & 1) == 1;
 	}
 
 	@Override
@@ -234,20 +249,27 @@ public class AllwinnerH6MmapGpio implements MmapGpioInterface {
 		int int_offset = ((bank * 36) + 0x10) / 4;
 		int shift = gpio - (bank << 5);
 		 */
-		int int_offset = (gpio >> 5) * 9 + 4;
+		int bank = gpio >> 5;
 		int shift = gpio % 32;
 
-		int addr_int_offset = GPIOA_INT_OFFSET + int_offset;
+		int int_offset;
+		MmapIntBuffer int_buffer;
+		if (bank == 11) {
+			int_offset = 4; // 0x10 / 4
+			int_buffer = gpioLMmapIntBuffer;
+		} else {
+			int_offset = bank * 9 + 4; // ((bank * 36) + 0x10) / 4
+			int_buffer = gpioAMmapIntBuffer;
+		}
 
-		int reg_val = gpioAMmapIntBuffer.get(addr_int_offset);
-
+		int reg_val = int_buffer.get(int_offset);
 		if (value) {
 			reg_val |= (1 << shift);
 		} else {
 			reg_val &= ~(1 << shift);
 		}
 
-		gpioAMmapIntBuffer.put(addr_int_offset, reg_val);
+		int_buffer.put(int_offset, reg_val);
 	}
 
 	@SuppressWarnings("boxing")
@@ -257,10 +279,88 @@ public class AllwinnerH6MmapGpio implements MmapGpioInterface {
 		System.out.println((256 / 32) + ", " + (256 >> 5));
 		System.out.println((352 / 32) + ", " + (352 >> 5));
 
+		{
+			int pin = 0;
+			int bank = pin >> 5;
+			int index = pin - (bank << 5);
+			int phyaddr;
+			if (bank == 11) {
+				phyaddr = GPIOL_BASE + 0x10;
+			} else {
+				phyaddr = GPIOA_BASE + (bank * 36) + 0x10;
+			}
+			int int_offset = (pin >> 5) * 9 + 4;
+			int shift = pin % 32;
+			int my_phyaddr = GPIOA_BASE + int_offset * 4;
+			System.out.format(
+					"pin: %d, bank: %d, index: %d, phyaddr: 0x%x, int_offset: %d, shift: %d, my_phyaddr: 0x%x%n", pin,
+					bank, index, phyaddr, int_offset, shift, my_phyaddr);
+
+			pin = 228;
+			bank = pin >> 5;
+			index = pin - (bank << 5);
+			if (bank == 11) {
+				phyaddr = GPIOL_BASE + 0x10;
+			} else {
+				phyaddr = GPIOA_BASE + (bank * 36) + 0x10;
+			}
+			int_offset = (pin >> 5) * 9 + 4;
+			shift = pin % 32;
+			my_phyaddr = GPIOA_BASE + int_offset * 4;
+			System.out.format(
+					"pin: %d, bank: %d, index: %d, phyaddr: 0x%x, int_offset: %d, shift: %d, my_phyaddr: 0x%x%n", pin,
+					bank, index, phyaddr, int_offset, shift, my_phyaddr);
+
+			pin = 351;
+			bank = pin >> 5;
+			index = pin - (bank << 5);
+			if (bank == 11) {
+				phyaddr = GPIOL_BASE + 0x10;
+			} else {
+				phyaddr = GPIOA_BASE + (bank * 36) + 0x10;
+			}
+			int_offset = (pin >> 5) * 9 + 4;
+			shift = pin % 32;
+			my_phyaddr = bank == 11 ? (GPIOL_BASE + 0x10) : (GPIOA_BASE + int_offset * 4);
+			System.out.format(
+					"pin: %d, bank: %d, index: %d, phyaddr: 0x%x, int_offset: %d, shift: %d, my_phyaddr: 0x%x%n", pin,
+					bank, index, phyaddr, int_offset, shift, my_phyaddr);
+
+			pin = 352;
+			bank = pin >> 5;
+			index = pin - (bank << 5);
+			if (bank == 11) {
+				phyaddr = GPIOL_BASE + 0x10;
+			} else {
+				phyaddr = GPIOA_BASE + (bank * 36) + 0x10;
+			}
+			int_offset = (pin >> 5) * 9 + 4;
+			shift = pin % 32;
+			my_phyaddr = bank == 11 ? (GPIOL_BASE + 0x10) : (GPIOA_BASE + int_offset * 4);
+			System.out.format(
+					"pin: %d, bank: %d, index: %d, phyaddr: 0x%x, int_offset: %d, shift: %d, my_phyaddr: 0x%x%n", pin,
+					bank, index, phyaddr, int_offset, shift, my_phyaddr);
+
+			pin = 355;
+			bank = pin >> 5;
+			index = pin - (bank << 5);
+			if (bank == 11) {
+				phyaddr = GPIOL_BASE + 0x10;
+			} else {
+				phyaddr = GPIOA_BASE + (bank * 36) + 0x10;
+			}
+			int_offset = (pin >> 5) * 9 + 4;
+			shift = pin % 32;
+			my_phyaddr = bank == 11 ? (GPIOL_BASE + 0x10) : (GPIOA_BASE + int_offset * 4);
+			System.out.format(
+					"pin: %d, bank: %d, index: %d, phyaddr: 0x%x, int_offset: %d, shift: %d, my_phyaddr: 0x%x%n", pin,
+					bank, index, phyaddr, int_offset, shift, my_phyaddr);
+		}
+
 		// Test bank 11 (GPIO >= 352) - not sure how to handle this
 		int a_int_offset = 0x10 / 4 + 0xc00 / 4;
 		int b_int_offset = (352 >> 5) * 9 + 4 + 0x800 / 4;
-		System.out.println(a_int_offset + ", " + b_int_offset);
+		System.out.println("a_int_offset: " + a_int_offset + ", b_int_offset: " + b_int_offset);
 
 		// Test read / write offset and shift calculation
 		for (int gpio = 0; gpio < 352; gpio++) {

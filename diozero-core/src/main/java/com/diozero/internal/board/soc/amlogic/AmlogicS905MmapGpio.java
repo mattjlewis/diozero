@@ -1,4 +1,4 @@
-package com.diozero.internal.board.odroid;
+package com.diozero.internal.board.soc.amlogic;
 
 /*
  * #%L
@@ -52,7 +52,7 @@ import com.diozero.util.SleepUtil;
  * wiringPi</a> fork. Odroid C2 / S905 Datasheet:
  * https://dn.odroid.com/S905/DataSheet/S905_Public_Datasheet_V1.1.4.pdf
  */
-public class OdroidC2MmapGpio implements MmapGpioInterface {
+public class AmlogicS905MmapGpio implements MmapGpioInterface {
 	private static final String MEM_DEVICE = "/dev/mem";
 
 	private static final int J2_GPIO_BASE_ADDRESS = 0xC8834000;
@@ -454,7 +454,7 @@ public class OdroidC2MmapGpio implements MmapGpioInterface {
 	public static void main(String[] args) {
 		System.out.println(ByteOrder.nativeOrder());
 		if (args.length != 2) {
-			System.out.println("Usage: " + OdroidC2MmapGpio.class.getName() + " <gpio> <iterations>");
+			System.out.println("Usage: " + AmlogicS905MmapGpio.class.getName() + " <gpio> <iterations>");
 			System.exit(1);
 		}
 		int gpio = Integer.parseInt(args[0]);
@@ -482,7 +482,7 @@ public class OdroidC2MmapGpio implements MmapGpioInterface {
 		System.out.format("gpioToGPFSELReg(%d)=0x%04x%n", Integer.valueOf(219),
 				Integer.valueOf(gpioToOutputEnableRegOffset(219)));
 
-		try (OdroidC2MmapGpio mmap_gpio = new OdroidC2MmapGpio()) {
+		try (AmlogicS905MmapGpio mmap_gpio = new AmlogicS905MmapGpio()) {
 			mmap_gpio.initialise();
 
 			/*
