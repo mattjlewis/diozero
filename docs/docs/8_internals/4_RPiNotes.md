@@ -126,3 +126,22 @@ dtoverlay=pwm-2chan,pin=18,func=2,pin2=19,func2=2
 
 {: .danger }
 > Make sure you add only one of the above and verify that the settings are correct before rebooting.
+
+## ARMv6 - Original Pi Zero, Pi Models A/B
+
+diozero now requires JDK-11 as a minimum. The OpenJDK version in raspbian does not run on ARMv6. 
+Go to https://www.azul.com/downloads/?version=java-11-lts&os=linux&architecture=arm-32-bit-hf&package=jdk#download-openjdk
+
+Copy the download link.
+
+wget wget https://cdn.azul.com/zulu-embedded/bin/zulu11.60.19-ca-jdk11.0.17-linux_aarch32hf.tar.gz
+
+cd /usr/lib/jvm
+
+sudo tar xf zulu11.60.19-ca-jdk11.0.17-linux_aarch32hf.tar.gz
+sudo ln -s zulu11.60.19-ca-jdk11.0.17-linux_aarch32hf java-11-zulu-armhf
+
+sudo update-alternatives --install /usr/bin/javac javac /usr/lib/jvm/java-11-zulu-armhf/bin/javac 1
+
+sudo update-alternatives --config java
+

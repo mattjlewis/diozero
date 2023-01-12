@@ -32,7 +32,7 @@ package com.diozero.internal.board.radxa;
  */
 
 import com.diozero.internal.board.GenericLinuxArmBoardInfo;
-import com.diozero.internal.board.soc.rockchip.Rockchip3399MmapGpio;
+import com.diozero.internal.board.soc.rockchip.RockchipRK3399MmapGpio;
 import com.diozero.internal.spi.BoardInfoProvider;
 import com.diozero.internal.spi.MmapGpioInterface;
 import com.diozero.sbc.BoardInfo;
@@ -59,7 +59,7 @@ public class Rock4BoardInfoProvider implements BoardInfoProvider {
 
 		@Override
 		public MmapGpioInterface createMmapGpio() {
-			return new Rockchip3399MmapGpio();
+			return new RockchipRK3399MmapGpio();
 		}
 	}
 }
