@@ -34,6 +34,7 @@ package com.diozero.internal.board.soc.amlogic;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.IntBuffer;
+import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 
 import org.tinylog.Logger;
@@ -339,13 +340,13 @@ public class AmlogicS905MmapGpio implements MmapGpioInterface {
 		}
 	}
 
-	public int getPullUpDown(int gpio) {
+	@Override
+	public Optional<GpioPullUpDown> getPullUpDown(int gpio) {
 		int puen = gpioToPullUpDownEnableRegOffset(gpio);
 		int shift = gpioToRegShiftBit(gpio);
 
 		if (puen == -1 || shift == -1) {
-			Logger.error("Invalid GPIO {}", Integer.valueOf(gpio));
-			return -1;
+			throw new IllegalArgumentException("Invalid GPIO " + gpio);
 		}
 
 		MmapIntBuffer mmap_int_buffer = getMmapIntBuffer(gpio);
@@ -354,9 +355,10 @@ public class AmlogicS905MmapGpio implements MmapGpioInterface {
 			if (gpio >= J7_GPIOA_PIN_START) {
 				shift += 16;
 			}
-			return (mmap_int_buffer.get(pupd) & (1 << shift)) == 0 ? 2 : 1;
+			return Optional.of((mmap_int_buffer.get(pupd) & (1 << shift)) == 0 ? GpioPullUpDown.PULL_DOWN
+					: GpioPullUpDown.PULL_UP);
 		}
-		return 0;
+		return Optional.of(GpioPullUpDown.NONE);
 	}
 
 	@Override

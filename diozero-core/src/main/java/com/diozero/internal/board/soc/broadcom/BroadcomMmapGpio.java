@@ -32,6 +32,7 @@ package com.diozero.internal.board.soc.broadcom;
  */
 
 import java.nio.ByteOrder;
+import java.util.Optional;
 
 import org.tinylog.Logger;
 
@@ -268,9 +269,31 @@ public class BroadcomMmapGpio implements MmapGpioInterface {
 	}
 
 	@Override
+	public Optional<GpioPullUpDown> getPullUpDown(int gpio) {
+		if (!piIs2711) {
+			return Optional.empty();
+		}
+
+		int pud_int_offset = GPPUPPDN0 + (gpio >> 4);
+		int pud_shift = (gpio & 0xf) << 1;
+		GpioPullUpDown pud;
+		switch ((mmapIntBuffer.get(pud_int_offset) >> pud_shift) & 0b11) {
+		case PI_2711_PUD_UP:
+			pud = GpioPullUpDown.PULL_UP;
+			break;
+		case PI_2711_PUD_DOWN:
+			pud = GpioPullUpDown.PULL_DOWN;
+			break;
+		default:
+			pud = GpioPullUpDown.NONE;
+		}
+
+		return Optional.of(pud);
+	}
+
+	@Override
 	public void setPullUpDown(int gpio, GpioPullUpDown pud) {
 		// See pigpio: https://github.com/joan2937/pigpio/blob/master/pigpio.c#L8880
-		int shift = (gpio & 0xf) << 1;
 
 		if (piIs2711) {
 			int pull;
@@ -294,10 +317,12 @@ public class BroadcomMmapGpio implements MmapGpioInterface {
 			bits |= (pull << shift);
 			*(gpioReg + GPPUPPDN0 + (gpio>>4)) = bits;
 			*/
-			int bits = mmapIntBuffer.get(GPPUPPDN0 + (gpio >> 4));
-			bits &= ~(3 << shift);
-			bits |= (pull << shift);
-			mmapIntBuffer.put(GPPUPPDN0 + (gpio >> 4), bits);
+			int pud_int_offset = GPPUPPDN0 + (gpio >> 4);
+			int pud_shift = (gpio & 0xf) << 1;
+			int reg_val = mmapIntBuffer.get(pud_int_offset);
+			reg_val &= ~(0b11 << pud_shift);
+			reg_val |= (pull << pud_shift);
+			mmapIntBuffer.put(pud_int_offset, reg_val);
 		} else {
 			int pull;
 			switch (pud) {

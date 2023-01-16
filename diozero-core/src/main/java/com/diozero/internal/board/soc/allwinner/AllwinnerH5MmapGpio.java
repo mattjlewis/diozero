@@ -1,261 +1,136 @@
 package com.diozero.internal.board.soc.allwinner;
 
-/*-
- * #%L
- * Organisation: diozero
- * Project:      diozero - Core
- * Filename:     AllwinnerH5MmapGpio.java
- * 
- * This file is part of the diozero project. More information about this project
- * can be found at https://www.diozero.com/.
- * %%
- * Copyright (C) 2016 - 2022 diozero
- * %%
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- * 
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- * 
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- * #L%
- */
-
-import java.nio.ByteOrder;
-
-import org.tinylog.Logger;
-
 import com.diozero.api.DeviceMode;
-import com.diozero.api.GpioPullUpDown;
-import com.diozero.internal.spi.MmapGpioInterface;
-import com.diozero.util.MmapIntBuffer;
-import com.diozero.util.SleepUtil;
 
-/**
+/*-
  * https://github.com/friendlyarm/WiringNP/blob/master/wiringPi/wiringPi.c#L536
  * https://github.com/orangepi-xunlong/wiringOP/blob/master/wiringPi/OrangePi.c#L622
  * https://linux-sunxi.org/images/a/a3/Allwinner_H5_Manual_v1.0.pdf
  * https://linux-sunxi.org/images/d/de/Allwinner_H5_Datasheet_V1.0.pdf
+ * 
+ * Page 291 User Manual
+ * CPUX_PORT PIO base address 0x01C2_0800
+ * 7 ports (PA, PC, PD, PE, PF, PG, PL)
+ * 
+ * Port Name  Bank  Num Pins
+ * PA         0     22
+ * PC         2     17
+ * PD         3     18
+ * PE         4     16
+ * PF         5     7
+ * PG         6     14
+ * 
+ * Register  Offset       Description
+ * Pn_CFG0   n*0x24+0x00  Port n Configure Register 0 (n=0,2,3,4,5,6) Pn0..7_CFG (3+1 bits per GPIO)
+ * Pn_CFG1   n*0x24+0x04  Port n Configure Register 1 (n=0,2,3,4,5,6) Pn8..15_CFG (3+1 bits per GPIO)
+ * Pn_CFG2   n*0x24+0x08  Port n Configure Register 2 (n=0,2,3,4,5,6) Pn16..23_CFG (3+1 bits per GPIO)
+ * Pn_CFG3   n*0x24+0x0c  Port n Configure Register 3 (n=0,2,3,4,5,6) Pn24..31_CFG (3+1 bits per GPIO)
+ * Pn_DAT    n*0x24+0x10  Port n Data Register (n=0,2,3,4,5,6) Pn_DAT (1 bit per GPIO)
+ * Pn_DRV0   n*0x24+0x14  Port n Multi-Driving Register 0 (n=0,2,3,4,5,6) Pn0..15_DRV (2 bits per GPIO)
+ * Pn_DRV1   n*0x24+0x18  Port n Multi-Driving Register 1 (n=0,2,3,4,5,6) Pn16..31_DRV (2 bits per GPIO)
+ * Pn_PUL0   n*0x24+0x1c  Port n Pull Register 0 (n=0,2,3,4,5,6) Pn0..15_PULL (2 bits per GPIO)
+ * Pn_PUL1   n*0x24+0x20  Port n Pull Register 1 (n=0,2,3,4,5,6) Pn16..31_PULL
+ * 
+ * Page 433 User Manual
+ * CPUS_PORT PIO base address 0x01F0_2C00
+ * 2 ports (PL, PM)
+ * 
+ * Port Name  Bank  Num Pins
+ * PL         11    12
+ * 
+ * Register offsets as per CPUX_PORT
  */
-public class AllwinnerH5MmapGpio implements MmapGpioInterface {
-	private static final String GPIOMEM_DEVICE = "/dev/mem";
+public class AllwinnerH5MmapGpio extends AllwinnerHMmapGpio {
+	private static final long GPIOA_BASE = 0x01C2_0000L;
+	private static final int GPIOA_INT_OFFSET = 0x0800 / 4;
+	private static final long GPIOL_BASE = 0x01F0_2000L;
+	private static final int GPIOL_INT_OFFSET = 0x0C00 / 4;
+	private static final int[] NUM_GPIOS_BY_BANK = { 22, 0, 17, 18, 16, 7, 14, 0, 0, 0, 0, 12 };
 
-	private static final int MEM_INFO = 1024;
-	private static final int BLOCK_SIZE = 4 * MEM_INFO;
-
-	private static final int GPIOA_BASE = 0x01C20000;
-	private static final int GPIOA_OFFSET = 0x800;
-	private static final int GPIOA_INT_OFFSET = GPIOA_OFFSET / 4;
-	// private static final int GPIOA_BASE_MAP = GPIOA_BASE + GPIOA_OFFSET;
-	private static final int MAP_SIZE_A = BLOCK_SIZE * 10;
-
-	/*-
-	private static final int GPIOL_BASE = 0x01F02000;
-	private static final int GPIOL_OFFSET = 0xc00;
-	private static final int GPIOL_INT_OFFSET = GPIOL_OFFSET / 4;
-	// private static final int GPIOL_BASE_MAP = GPIOL_BASE + GPIOL_OFFSET;
-	private static final int MAP_SIZE_L = BLOCK_SIZE * 2;
-	 */
-
-	private boolean initialised;
-	private MmapIntBuffer gpioAMmapIntBuffer;
-	// private MmapIntBuffer gpioLMmapIntBuffer;
-
-	@Override
-	public synchronized void initialise() {
-		if (!initialised) {
-			gpioAMmapIntBuffer = new MmapIntBuffer(GPIOMEM_DEVICE, GPIOA_BASE, MAP_SIZE_A, ByteOrder.LITTLE_ENDIAN);
-			/*-
-			gpioLMmapIntBuffer = new MmapIntBuffer(GPIOMEM_DEVICE, GPIOL_BASE, MAP_SIZE_L, ByteOrder.LITTLE_ENDIAN);
-			 */
-
-			initialised = true;
-		}
+	public AllwinnerH5MmapGpio() {
+		super(GPIOA_BASE, GPIOA_INT_OFFSET, GPIOL_BASE, GPIOL_INT_OFFSET, NUM_GPIOS_BY_BANK);
 	}
 
 	@Override
-	public synchronized void close() {
-		if (initialised) {
-			gpioAMmapIntBuffer.close();
-			gpioAMmapIntBuffer = null;
-			/*-
-			gpioLMmapIntBuffer.close();
-			gpioLMmapIntBuffer = null;
-			 */
-		}
-	}
+	void initialiseGpioModes() {
+		// PA0 (0)
+		addGpioMode(0, 2, DeviceMode.SERIAL);
+		// PA1 (1)
+		addGpioMode(1, 2, DeviceMode.SERIAL);
+		// PA2 (2)
+		addGpioMode(2, 2, DeviceMode.SERIAL);
+		// PA3 (3)
+		addGpioMode(3, 2, DeviceMode.SERIAL);
+		// PA4 (4)
+		addGpioMode(4, 2, DeviceMode.SERIAL);
+		// PA5 (5)
+		addGpioMode(5, 2, DeviceMode.SERIAL);
+		addGpioMode(5, 3, DeviceMode.PWM_OUTPUT);
+		// PA11 (11)
+		addGpioMode(11, 2, DeviceMode.I2C);
+		// PA12 (12)
+		addGpioMode(12, 2, DeviceMode.I2C);
+		// PA13 (13)
+		addGpioMode(13, 2, DeviceMode.SPI);
+		addGpioMode(13, 3, DeviceMode.SERIAL);
+		// PA14 (14)
+		addGpioMode(14, 2, DeviceMode.SPI);
+		addGpioMode(14, 3, DeviceMode.SERIAL);
+		// PA15 (15)
+		addGpioMode(15, 2, DeviceMode.SPI);
+		addGpioMode(15, 3, DeviceMode.SERIAL);
+		// PA16 (16)
+		addGpioMode(16, 2, DeviceMode.SPI);
+		addGpioMode(16, 3, DeviceMode.SERIAL);
+		// PA18 (18)
+		addGpioMode(18, 3, DeviceMode.I2C);
+		// PA19 (19)
+		addGpioMode(19, 3, DeviceMode.I2C);
 
-	@Override
-	public DeviceMode getMode(int gpio) {
-		/*-
-		int bank = gpio >> 5;
-		int index = gpio - (bank << 5);
-		int int_offset = ((bank * 36) + ((index >> 3) << 2)) / 4;
-		int shift = ((index - ((index >> 3) << 3)) << 2);
-		 */
-		int int_offset = (gpio >> 3) + 5 * (gpio >> 5);
-		int shift = (gpio % 8) << 2;
+		// PC0 (64)
+		addGpioMode(64, 3, DeviceMode.SPI);
+		// PC1 (65)
+		addGpioMode(65, 3, DeviceMode.SPI);
+		// PC2 (66)
+		addGpioMode(66, 3, DeviceMode.SPI);
+		// PC3 (67)
+		addGpioMode(67, 3, DeviceMode.SPI);
+		// PC4 (68)
+		addGpioMode(68, 4, DeviceMode.SPI);
 
-		int mode_val = (gpioAMmapIntBuffer.get(GPIOA_INT_OFFSET + int_offset) >> shift) & 0b111;
-		DeviceMode mode;
-		switch (mode_val) {
-		case 0:
-			mode = DeviceMode.DIGITAL_INPUT;
-			break;
-		case 1:
-			mode = DeviceMode.DIGITAL_OUTPUT;
-			break;
-		default:
-			mode = DeviceMode.UNKNOWN;
-		}
+		// PE12 (140)
+		addGpioMode(140, 2, DeviceMode.I2C);
+		// XXX Clash
+		addGpioMode(140, 3, DeviceMode.I2C);
+		// PE13 (173)
+		addGpioMode(141, 2, DeviceMode.I2C);
+		// XXX Clash
+		addGpioMode(141, 3, DeviceMode.I2C);
 
-		return mode;
-	}
+		// PF2 (162)
+		addGpioMode(162, 3, DeviceMode.SERIAL);
+		// PF4 (164)
+		addGpioMode(164, 3, DeviceMode.SERIAL);
 
-	@Override
-	public void setMode(int gpio, DeviceMode mode) {
-		int mode_val;
+		// PG6 (198)
+		addGpioMode(198, 2, DeviceMode.SERIAL);
+		// PG7 (199)
+		addGpioMode(199, 2, DeviceMode.SERIAL);
+		// PG8 (200)
+		addGpioMode(200, 2, DeviceMode.SERIAL);
+		// PG9 (201)
+		addGpioMode(201, 2, DeviceMode.SERIAL);
 
-		switch (mode) {
-		case DIGITAL_INPUT:
-			mode_val = 0b000;
-			break;
-		case DIGITAL_OUTPUT:
-			mode_val = 0b001;
-			break;
-		case PWM_OUTPUT:
-			Logger.warn("Mode {} not yet implemented for GPIO #{}", mode, Integer.valueOf(gpio));
-			return;
-		default:
-			Logger.warn("Invalid mode ({}) for GPIO #{}", mode, Integer.valueOf(gpio));
-			return;
-		}
-
-		setModeUnchecked(gpio, mode_val);
-	}
-
-	@Override
-	public void setModeUnchecked(int gpio, int mode) {
-		/*-
-		int bank = gpio >> 5;
-		int index = gpio - (bank << 5);
-		int int_offset = ((bank * 36) + ((index >> 3) << 2)) / 4;
-		int shift = ((index - ((index >> 3) << 3)) << 2);
-		 */
-		int int_offset = (gpio >> 3) + 5 * (gpio >> 5);
-		int shift = (gpio % 8) << 2;
-
-		int addr = GPIOA_INT_OFFSET + int_offset;
-
-		int reg_val = gpioAMmapIntBuffer.get(addr);
-
-		reg_val &= ~(0b111 << shift);
-		reg_val |= (mode << shift);
-
-		gpioAMmapIntBuffer.put(addr, reg_val);
-	}
-
-	@Override
-	public void setPullUpDown(int gpio, GpioPullUpDown pud) {
-		/*-
-		 * int bank = gpio >> 5;
-		 * int index = gpio - (bank << 5);
-		 * int sub = index >> 4;
-		 * int sub_index = index - 16 * sub;
-		 * int int_offset = ((bank * 36) + 0x1c + sub * 4) / 4;
-		 */
-
-		/*-
-		 * Pull Registers
-		 * 00: Disable, 01: Pull-up, 10: Pull-down
-		 *
-		 * Bank   Offset R0    Offset R1    GPIOs
-		 * PA (0) 0x1c (0-15), 0x2d (16-31) 0..31
-		 * PB (1)                           32..63
-		 * PC (2) 0x64 (0-15), 0x68 (16-31) 64..95
-		 * PD (3) 0x88 (0-15), 0x8c (16-31) 96..127
-		 * PE (4) 0xac (0-15), 0xb0 (16-31) 128..159
-		 * PF (5) 0xd0 (0-15), 0xd4 (16-31) 160..191
-		 * PG (6) 0xf4 (0-15), 0xf8 (16-31) 192..223
-		 * PH (7)                           224..255
-		 * PI (8)                           256..287
-		 * PJ (9)                           288..319
-		 * PK (a)                           320..351
-		 * PL (b) 0x1c (0-15), 0x20 (16-31) 352..383
-		 */
-		int bank = gpio >> 5; // equivalent to / 32
-		int reg = (gpio >> 4) % 2; // Register 0 or 1
-		int shift = (gpio % 16) << 1; // Shift 0..30
-		int int_offset = (0x1c + bank * 0x24) / 4 + reg;
-
-		int phyaddr = GPIOA_INT_OFFSET + int_offset;
-
-		int pud_val;
-		switch (pud) {
-		case PULL_UP:
-			pud_val = 0b10;
-			break;
-		case PULL_DOWN:
-			pud_val = 0b01;
-			break;
-		case NONE:
-		default:
-			pud_val = 0b00;
-		}
-
-		int reg_val = gpioAMmapIntBuffer.get(phyaddr);
-		reg_val &= ~(0b11 << shift);
-		reg_val |= (pud_val << shift);
-
-		gpioAMmapIntBuffer.put(phyaddr, reg_val);
-
-		SleepUtil.sleepMillis(1);
-	}
-
-	@Override
-	public boolean gpioRead(int gpio) {
-		/*-
-		int bank = gpio >> 5;
-		int int_offset = ((bank * 36) + 0x10) / 4;
-		int shift = gpio - (bank << 5);
-		 */
-		int int_offset = (gpio >> 5) * 9 + 4;
-		int shift = gpio % 32;
-
-		return ((gpioAMmapIntBuffer.get(GPIOA_INT_OFFSET + int_offset) >> shift) & 1) == 1;
-	}
-
-	@Override
-	public void gpioWrite(int gpio, boolean value) {
-		/*-
-		int bank = gpio >> 5;
-		int int_offset = ((bank * 36) + 0x10) / 4;
-		int shift = gpio - (bank << 5);
-		 */
-		int int_offset = (gpio >> 5) * 9 + 4;
-		int shift = gpio % 32;
-
-		int addr_int_offset = GPIOA_INT_OFFSET + int_offset;
-
-		int reg_val = gpioAMmapIntBuffer.get(addr_int_offset);
-
-		if (value) {
-			reg_val |= (1 << shift);
-		} else {
-			reg_val &= ~(1 << shift);
-		}
-
-		gpioAMmapIntBuffer.put(addr_int_offset, reg_val);
+		// PL0 (352)
+		addGpioMode(352, 2, DeviceMode.I2C);
+		// PL1 (353)
+		addGpioMode(353, 2, DeviceMode.I2C);
+		// PL2 (354)
+		addGpioMode(354, 2, DeviceMode.SERIAL);
+		// PL3 (355)
+		addGpioMode(355, 2, DeviceMode.SERIAL);
+		// PL10 (362)
+		addGpioMode(362, 2, DeviceMode.PWM_OUTPUT);
 	}
 
 	@SuppressWarnings("boxing")

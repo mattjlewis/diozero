@@ -234,7 +234,7 @@ public class DefaultDeviceFactory extends BaseNativeDeviceFactory {
 		for (final Map.Entry<String, Integer> mapping : chipMapping.entrySet()) {
 			final GpioChip chip = chips.get(mapping.getValue());
 			// If the labels don't match ...
-			if (!mapping.getKey().equals(chip.getLabel())) {
+			if (chip != null && !mapping.getKey().equals(chip.getLabel())) {
 				Logger.debug("Boarddef chip id {} ('{}') doesn't match actual id {} ('{}')", mapping.getValue(),
 						mapping.getKey(), Integer.valueOf(chip.getChipId()), chip.getLabel());
 				// Locate the actual GPIO chip with this label and update the chip id

@@ -56,7 +56,8 @@ public class AllwinnerH5BoardInfoProvider implements BoardInfoProvider {
 	@Override
 	public BoardInfo lookup(LocalSystemInfo sysInfo) {
 		if ((sysInfo.getHardware() != null && sysInfo.getHardware().equals(ORANGEPI_H5_HARDWARE))
-				|| (sysInfo.getModel() != null && sysInfo.getModel().equals(ORANGEPI_ZEROPLUS_MODEL))) {
+				|| (sysInfo.getModel() != null && (sysInfo.getModel().contains(ORANGEPI_ZEROPLUS_MODEL)
+						|| sysInfo.getModel().contains("Orange Pi Zero Plus")))) {
 			return new AllwinnerH5BoardInfo(sysInfo);
 		}
 		return null;

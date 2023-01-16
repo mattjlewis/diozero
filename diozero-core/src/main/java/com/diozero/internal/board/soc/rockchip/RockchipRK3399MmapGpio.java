@@ -3,6 +3,7 @@ package com.diozero.internal.board.soc.rockchip;
 import java.nio.ByteOrder;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import org.tinylog.Logger;
 
@@ -260,8 +261,8 @@ public class RockchipRK3399MmapGpio implements MmapGpioInterface {
 		 * GRF_GPIO4D_IOMUX    0x0e02c     57388       152..159 0x0380b
 		 */
 		final int bank = gpio >> 5;
-		final int shift = (gpio % 8) << 1;
 		final int bank_offset = gpio % 32;
+		final int mode_shift = (gpio % 8) << 1;
 		int mode = 0;
 		// GPIOs 154 onwards are GPIO in/out only
 		if (gpio < 154) {
@@ -274,7 +275,7 @@ public class RockchipRK3399MmapGpio implements MmapGpioInterface {
 				mode_int_offset = IOMUX_INT_OFFSET + (bank - 2) * 4 + bank_offset / 8;
 				int_buffer = grfMmapIntBuffer;
 			}
-			mode = (int_buffer.get(mode_int_offset) >> shift) & 0b11;
+			mode = (int_buffer.get(mode_int_offset) >> mode_shift) & 0b11;
 		}
 
 		if (mode == 0) {
@@ -314,21 +315,21 @@ public class RockchipRK3399MmapGpio implements MmapGpioInterface {
 			 */
 			int int_offset;
 			MmapIntBuffer int_buffer;
-			int shift;
+			int gpio_dir_shift;
 			if (bank < 2) {
 				int_offset = PMUCRU_CLKGATE_CON1_INT_OFFSET;
 				int_buffer = pmuCruMmapIntBuffer;
-				shift = bank + 3;
+				gpio_dir_shift = bank + 3;
 			} else {
 				int_offset = CRU_CLKGATE_CON31_INT_OFFSET;
 				int_buffer = cruMmapIntBuffer;
-				shift = bank + 1;
+				gpio_dir_shift = bank + 1;
 			}
 			int cru_reg = int_buffer.get(int_offset);
 			// Set to low to enable the clock for GPIO bank - unclear why we need to do this
-			cru_reg &= ~(0b1 << shift);
+			cru_reg &= ~(0b1 << gpio_dir_shift);
 			// Set the write enable bit
-			cru_reg |= 0b1 << (shift + 16);
+			cru_reg |= 0b1 << (gpio_dir_shift + 16);
 			int_buffer.put(int_offset, cru_reg);
 
 			int reg_val = gpioBanks[bank].get(GPIO_SWPORTA_DDR);
@@ -344,8 +345,8 @@ public class RockchipRK3399MmapGpio implements MmapGpioInterface {
 	@Override
 	public void setModeUnchecked(int gpio, int mode) {
 		final int bank = gpio >> 5;
-		final int shift = (gpio % 8) << 1;
 		final int bank_offset = gpio % 32;
+		final int mode_shift = (gpio % 8) << 1;
 
 		int mode_int_offset;
 		MmapIntBuffer int_buffer;
@@ -358,20 +359,21 @@ public class RockchipRK3399MmapGpio implements MmapGpioInterface {
 		}
 
 		int reg_val = int_buffer.get(mode_int_offset);
-		reg_val &= ~(0b11 << shift);
+		reg_val &= ~(0b11 << mode_shift);
 		// Set the write enable bits
-		reg_val |= ((mode & 0b11) << shift) | (0b11 << (shift + 16));
+		reg_val |= ((mode & 0b11) << mode_shift) | (0b11 << (mode_shift + 16));
 		int_buffer.put(mode_int_offset, reg_val);
 	}
 
-	public GpioPullUpDown getPullUpDown(int gpio) {
+	@Override
+	public Optional<GpioPullUpDown> getPullUpDown(int gpio) {
 		final int bank = gpio >> 5;
 		final int shift = (gpio % 8) << 1;
 		final int bank_offset = gpio % 32;
 
 		if (bank <= 2) {
 			// PU/PD control only available for GPIO2A onwards
-			return GpioPullUpDown.NONE;
+			return Optional.of(GpioPullUpDown.NONE);
 		}
 
 		int pud_int_offset;
@@ -384,7 +386,7 @@ public class RockchipRK3399MmapGpio implements MmapGpioInterface {
 			int_buffer = grfMmapIntBuffer;
 		}
 
-		int pud_val = (int_buffer.get(pud_int_offset) >> shift) & 0b11;
+		final int pud_val = (int_buffer.get(pud_int_offset) >> shift) & 0b11;
 		GpioPullUpDown pud;
 		if (gpio < 32 || (gpio >= 80 && gpio < 96)) {
 			switch (pud_val) {
@@ -410,7 +412,7 @@ public class RockchipRK3399MmapGpio implements MmapGpioInterface {
 			}
 		}
 
-		return pud;
+		return Optional.of(pud);
 	}
 
 	@Override
@@ -441,9 +443,9 @@ public class RockchipRK3399MmapGpio implements MmapGpioInterface {
 		 */
 
 		final int bank = gpio >> 5;
-		final int shift = (gpio % 8) << 1;
 		final int bank_offset = gpio % 32;
 
+		final int pud_shift = (gpio % 8) << 1;
 		int pud_int_offset;
 		MmapIntBuffer int_buffer;
 		if (bank < 2) {
@@ -494,140 +496,71 @@ public class RockchipRK3399MmapGpio implements MmapGpioInterface {
 		}
 
 		int reg_val = int_buffer.get(pud_int_offset);
-		reg_val &= ~(0b11 << shift);
+		reg_val &= ~(0b11 << pud_shift);
 		// Set the write enable bits
-		reg_val |= (pud_val << shift) | (0b11 << (shift + 16));
+		reg_val |= (pud_val << pud_shift) | (0b11 << (pud_shift + 16));
 		int_buffer.put(pud_int_offset, reg_val);
 	}
 
 	@Override
 	public boolean gpioRead(int gpio) {
 		final int bank = gpio >> 5;
-		int shift = gpio % 32;
+		final int data_shift = gpio % 32;
 
-		return (gpioBanks[bank].get(GPIO_EXT_PORTA) & (1 << shift)) != 0;
+		return (gpioBanks[bank].get(GPIO_EXT_PORTA) & (1 << data_shift)) != 0;
 	}
 
 	@Override
 	public void gpioWrite(int gpio, boolean value) {
 		final int bank = gpio >> 5;
-		int shift = gpio % 32;
+		final int data_shift = gpio % 32;
 
 		int reg_val = gpioBanks[bank].get(GPIO_SWPORTA_DR);
 		if (value) {
-			reg_val |= (1 << shift);
+			reg_val |= (1 << data_shift);
 		} else {
-			reg_val &= ~(1 << shift);
+			reg_val &= ~(1 << data_shift);
 		}
 		gpioBanks[bank].put(GPIO_SWPORTA_DR, reg_val);
 	}
 
 	@SuppressWarnings("boxing")
 	public static void main(String[] args) {
-		int gpio = 0;
-		int bank = gpio >> 5;
-		int bank_index = gpio % 32;
-		int letter = bank_index >> 3;
-		int index = bank_index % 8;
-		int iomux_int_offset;
-		if (bank < 2) {
-			iomux_int_offset = IOMUX_INT_OFFSET + bank * 4 + (gpio % 32) / 8;
-		} else {
-			iomux_int_offset = GRF_GPIO2A_IOMUX + (bank - 2) * 4 + (gpio % 32) / 8;
-		}
-		System.out.format(
-				"GPIO: %d, bank: %d, bank_index: %d, letter: %d, index: %d - GPIO%d_%s%d, iomux int offset: 0x%05x%n",
-				gpio, bank, bank_index, letter, index, bank, Character.toString('A' + letter), index, iomux_int_offset);
+		int[] gpios = { 0, 39, 40, 47, 124, 157 };
 
-		gpio = 39;
-		bank = gpio >> 5;
-		bank_index = gpio % 32;
-		letter = bank_index >> 3;
-		index = bank_index % 8;
-		if (bank < 2) {
-			iomux_int_offset = IOMUX_INT_OFFSET + bank * 4 + (gpio % 32) / 8;
-		} else {
-			iomux_int_offset = GRF_GPIO2A_IOMUX + (bank - 2) * 4 + (gpio % 32) / 8;
+		for (int gpio : gpios) {
+			int bank = gpio >> 5;
+			int bank_index = gpio % 32;
+			int letter = bank_index >> 3;
+			int index = bank_index % 8;
+			int iomux_int_offset;
+			if (bank < 2) {
+				iomux_int_offset = IOMUX_INT_OFFSET + bank * 4 + (gpio % 32) / 8;
+			} else {
+				iomux_int_offset = GRF_GPIO2A_IOMUX + (bank - 2) * 4 + (gpio % 32) / 8;
+			}
+			System.out.format(
+					"GPIO: %d, bank: %d, bank_index: %d, letter: %d, index: %d - GPIO%d_%s%d, iomux int offset: 0x%05x%n",
+					gpio, bank, bank_index, letter, index, bank, Character.toString('A' + letter), index,
+					iomux_int_offset);
 		}
-		System.out.format(
-				"GPIO: %d, bank: %d, bank_index: %d, letter: %d, index: %d - GPIO%d_%s%d, iomux int offset: 0x%05x%n",
-				gpio, bank, bank_index, letter, index, bank, Character.toString('A' + letter), index, iomux_int_offset);
-
-		gpio = 40;
-		bank = gpio >> 5;
-		bank_index = gpio % 32;
-		letter = bank_index >> 3;
-		index = bank_index % 8;
-		if (bank < 2) {
-			iomux_int_offset = IOMUX_INT_OFFSET + bank * 4 + (gpio % 32) / 8;
-		} else {
-			iomux_int_offset = GRF_GPIO2A_IOMUX + (bank - 2) * 4 + (gpio % 32) / 8;
-		}
-		System.out.format(
-				"GPIO: %d, bank: %d, bank_index: %d, letter: %d, index: %d - GPIO%d_%s%d, iomux int offset: 0x%05x%n",
-				gpio, bank, bank_index, letter, index, bank, Character.toString('A' + letter), index, iomux_int_offset);
-
-		gpio = 47;
-		bank = gpio >> 5;
-		bank_index = gpio % 32;
-		letter = bank_index >> 3;
-		index = bank_index % 8;
-		if (bank < 2) {
-			iomux_int_offset = IOMUX_INT_OFFSET + bank * 4 + (gpio % 32) / 8;
-		} else {
-			iomux_int_offset = GRF_GPIO2A_IOMUX + (bank - 2) * 4 + (gpio % 32) / 8;
-		}
-		System.out.format(
-				"GPIO: %d, bank: %d, bank_index: %d, letter: %d, index: %d - GPIO%d_%s%d, iomux int offset: 0x%05x%n",
-				gpio, bank, bank_index, letter, index, bank, Character.toString('A' + letter), index, iomux_int_offset);
-
-		gpio = 124;
-		bank = gpio >> 5;
-		bank_index = gpio % 32;
-		letter = bank_index >> 3;
-		index = bank_index % 8;
-		if (bank < 2) {
-			iomux_int_offset = IOMUX_INT_OFFSET + bank * 4 + (gpio % 32) / 8;
-		} else {
-			iomux_int_offset = GRF_GPIO2A_IOMUX + (bank - 2) * 4 + (gpio % 32) / 8;
-		}
-		System.out.format(
-				"GPIO: %d, bank: %d, bank_index: %d, letter: %d, index: %d - GPIO%d_%s%d, iomux int offset: 0x%05x%n",
-				gpio, bank, bank_index, letter, index, bank, Character.toString('A' + letter), index, iomux_int_offset);
-
-		/*-
-		 * GPIO4_D5 = 4*32 + 3*8 + 5 = 157
-		 * (A=0, B=1, C=2, D=3)
-		 */
-		gpio = 157;
-		bank = gpio >> 5;
-		bank_index = gpio % 32;
-		letter = bank_index >> 3;
-		index = bank_index % 8;
-		if (bank < 2) {
-			iomux_int_offset = IOMUX_INT_OFFSET + bank * 4 + (gpio % 32) / 8;
-		} else {
-			iomux_int_offset = GRF_GPIO2A_IOMUX + (bank - 2) * 4 + (gpio % 32) / 8;
-		}
-		System.out.format(
-				"GPIO: %d, bank: %d, bank_index: %d, letter: %d, index: %d - GPIO%d_%s%d, iomux int offset: 0x%05x%n",
-				gpio, bank, bank_index, letter, index, bank, Character.toString('A' + letter), index, iomux_int_offset);
 
 		if (args.length == 0) {
 			return;
 		}
 
-		gpio = Integer.parseInt(args[0]);
-		bank = gpio >> 5;
-		bank_index = gpio % 32;
-		letter = bank_index >> 3;
-		index = bank_index % 8;
+		int gpio = Integer.parseInt(args[0]);
+		int bank = gpio >> 5;
+		int bank_index = gpio % 32;
+		int letter = bank_index >> 3;
+		int index = bank_index % 8;
 		System.out.println(
 				"Testing with GPIO: " + gpio + ", bank: " + bank + ", bank_index: " + bank_index + ", letter: " + letter
 						+ ", index: " + index + " - GPIO" + bank + "_" + Character.toString('A' + letter) + index);
 
 		try (RockchipRK3399MmapGpio mmap_gpio = new RockchipRK3399MmapGpio()) {
 			mmap_gpio.initialise();
+
 			boolean value = false;
 			for (int i = 0; i < 20; i++) {
 				DeviceMode mode = mmap_gpio.getMode(gpio);
@@ -638,19 +571,19 @@ public class RockchipRK3399MmapGpio implements MmapGpioInterface {
 					System.out.println(i + " post write: " + mmap_gpio.gpioRead(gpio));
 					value = !value;
 				} else if (mode == DeviceMode.DIGITAL_INPUT) {
-					GpioPullUpDown pud = mmap_gpio.getPullUpDown(gpio);
+					GpioPullUpDown pud = mmap_gpio.getPullUpDown(gpio).get();
 					System.out.println(i + " value pre PD change: " + mmap_gpio.gpioRead(gpio) + ", pud: " + pud);
 					mmap_gpio.setPullUpDown(gpio, GpioPullUpDown.PULL_DOWN);
-					pud = mmap_gpio.getPullUpDown(gpio);
+					pud = mmap_gpio.getPullUpDown(gpio).get();
 					System.out.println(i + " value post PD change: " + mmap_gpio.gpioRead(gpio) + ", pud: " + pud);
 					mmap_gpio.setPullUpDown(gpio, GpioPullUpDown.PULL_UP);
-					pud = mmap_gpio.getPullUpDown(gpio);
+					pud = mmap_gpio.getPullUpDown(gpio).get();
 					System.out.println(i + " value post PU change: " + mmap_gpio.gpioRead(gpio) + ", pud: " + pud);
 					mmap_gpio.setPullUpDown(gpio, GpioPullUpDown.NONE);
-					pud = mmap_gpio.getPullUpDown(gpio);
+					pud = mmap_gpio.getPullUpDown(gpio).get();
 					System.out.println(i + " value post NONE change: " + mmap_gpio.gpioRead(gpio) + ", pud: " + pud);
 					mmap_gpio.setPullUpDown(gpio, pud);
-					pud = mmap_gpio.getPullUpDown(gpio);
+					pud = mmap_gpio.getPullUpDown(gpio).get();
 					System.out.println(i + " value post restoring pud: " + mmap_gpio.gpioRead(gpio) + ", pud: " + pud);
 				}
 				SleepUtil.sleepSeconds(1);

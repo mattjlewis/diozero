@@ -31,6 +31,8 @@ package com.diozero.internal.spi;
  * #L%
  */
 
+import java.util.Optional;
+
 import com.diozero.api.DeviceMode;
 import com.diozero.api.GpioPullUpDown;
 
@@ -40,6 +42,14 @@ public interface MmapGpioInterface extends AutoCloseable {
 	@Override
 	void close();
 
+	/**
+	 * Get the currently configured {@link com.diozero.api.DeviceMode DeviceMode}
+	 * for the specified GPIO.
+	 * 
+	 * @param gpio The GPIO to query
+	 * @return The currently configured {@link com.diozero.api.DeviceMode
+	 *         DeviceMode}
+	 */
 	DeviceMode getMode(int gpio);
 
 	/**
@@ -55,17 +65,53 @@ public interface MmapGpioInterface extends AutoCloseable {
 
 	/**
 	 * Set the new mode for this GPIO without any checks on either the GPIO number
-	 * or new mode. <strong>Health warning</strong>: make sure you know what you are
-	 * doing when invoking this method.
+	 * or new mode value. <strong>Health warning</strong>: make sure you know what
+	 * you are doing when invoking this method.
 	 *
 	 * @param gpio The GPIO to configure
 	 * @param mode The new mode
 	 */
 	void setModeUnchecked(int gpio, int mode);
 
+	/**
+	 * Get the {@link com.diozero.api.GpioPullUpDown pull-up/down} configuration for
+	 * the specified GPIO. Some devices don't allow this to be queried and will
+	 * return Optional.empty().
+	 * 
+	 * @param gpio The GPIO to query
+	 * @return Current {@link com.diozero.api.GpioPullUpDown pull-up/down}
+	 *         configuration if known, otherwise Optional.empty()
+	 */
+	default Optional<GpioPullUpDown> getPullUpDown(int gpio) {
+		return Optional.empty();
+	}
+
+	/**
+	 * Set the new {@link com.diozero.api.GpioPullUpDown pull-up/down} configuration
+	 * for the specified GPIO.
+	 * 
+	 * @param gpio The GPIO to configure
+	 * @param pud  The new {@link com.diozero.api.GpioPullUpDown pull-up/down} value
+	 */
 	void setPullUpDown(int gpio, GpioPullUpDown pud);
 
+	/**
+	 * Read the current on/off value for the specified GPIO.
+	 * 
+	 * @param gpio The GPIO to query
+	 * @return True if on, false if off
+	 */
 	boolean gpioRead(int gpio);
 
+	/**
+	 * Set the current on/off value for the specified GPIO. Note assumes that the
+	 * GPIO is currently configured as
+	 * {@link com.diozero.api.DeviceMode#DIGITAL_INPUT DIGITAL_INPUT} or
+	 * {@link com.diozero.api.DeviceMode#DIGITAL_OUTPUT DIGITAL_OUTPUT} - the
+	 * current {@link com.diozero.api.DeviceMode DeviceMode} is not checked.
+	 * 
+	 * @param gpio  The GPIO to update
+	 * @param value New on-off value
+	 */
 	void gpioWrite(int gpio, boolean value);
 }

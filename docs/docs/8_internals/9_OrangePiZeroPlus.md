@@ -62,7 +62,7 @@ Select: `Europe / London`
 
 ## WiFi / I<sup>2</sup>C / SPI
 
-Use `raspbi-config`.
+Use `armbian-config`.
 
 ## DTB
 

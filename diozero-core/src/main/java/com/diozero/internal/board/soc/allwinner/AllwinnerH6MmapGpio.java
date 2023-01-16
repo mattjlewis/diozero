@@ -1,406 +1,179 @@
 package com.diozero.internal.board.soc.allwinner;
 
-/*-
- * #%L
- * Organisation: diozero
- * Project:      diozero - Core
- * Filename:     AllwinnerH6MmapGpio.java
- * 
- * This file is part of the diozero project. More information about this project
- * can be found at https://www.diozero.com/.
- * %%
- * Copyright (C) 2016 - 2022 diozero
- * %%
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- * 
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- * 
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- * #L%
- */
-
-import java.nio.ByteOrder;
-
-import org.tinylog.Logger;
-
 import com.diozero.api.DeviceMode;
-import com.diozero.api.GpioPullUpDown;
-import com.diozero.internal.spi.MmapGpioInterface;
-import com.diozero.util.MmapIntBuffer;
-import com.diozero.util.SleepUtil;
 
-/**
+/*-
  * https://github.com/friendlyarm/WiringNP/blob/master/wiringPi/wiringPi.c
  * https://github.com/orangepi-xunlong/wiringOP/blob/master/wiringPi/OrangePi.h#L70
  * https://linux-sunxi.org/images/4/46/Allwinner_H6_V200_User_Manual_V1.1.pdf
  * https://linux-sunxi.org/images/5/5c/Allwinner_H6_V200_Datasheet_V1.1.pdf
+ * 
+ * Page 379 User Manual
+ * CPUX_PORT PIO base address 0x0300_b000
+ * 5 ports (PC, PD, PF, PG, PH)
+ * 
+ * Port Name  Bank  Num Pins  Multiplex
+ * PC         2     17        NAND/SDC/SPI
+ * PD         3     27        LCD/TS/RGMII/CSI/DMIC/TWI/UART/JTAG/PWM
+ * PF         5     7         SDC/UART/JTAG
+ * PG         6     15        SDC/UART/PCM/SCR
+ * PH         7     11        UART/PCM/OWA/SCR/TWI/CIR/SPI
+ * 
+ * Register  Offset       Description
+ * Pn_CFG0   n*0x24+0x00  Port n Configure Register 0 (n=2,3,5,6,7) Pn0..7_CFG (3+1 bits per GPIO)
+ * Pn_CFG1   n*0x24+0x04  Port n Configure Register 1 (n=2,3,5,6,7) Pn8..15_CFG (3+1 bits per GPIO)
+ * Pn_CFG2   n*0x24+0x08  Port n Configure Register 2 (n=2,3,5,6,7) Pn16..23_CFG (3+1 bits per GPIO)
+ * Pn_CFG3   n*0x24+0x0c  Port n Configure Register 3 (n=2,3,5,6,7) Pn24..31_CFG (3+1 bits per GPIO)
+ * Pn_DAT    n*0x24+0x10  Port n Data Register (n=2,3,5,6,7) Pn_DAT (1 bit per GPIO)
+ * Pn_DRV0   n*0x24+0x14  Port n Multi-Driving Register 0 (n=2,3,5,6,7) Pn0..15_DRV (2 bits per GPIO)
+ * Pn_DRV1   n*0x24+0x18  Port n Multi-Driving Register 1 (n=2,3,5,6,7) Pn16..31_DRV (2 bits per GPIO)
+ * Pn_PUL0   n*0x24+0x1c  Port n Pull Register 0 (n=2,3,5,6,7) Pn0..15_PULL (2 bits per GPIO)
+ * Pn_PUL1   n*0x24+0x20  Port n Pull Register 1 (n=2,3,5,6,7) Pn16..31_PULL
+ * 
+ * Page 433 User Manual
+ * CPUS_PORT PIO base address 0x0702_2000
+ * 2 ports (PL, PM)
+ * 
+ * Port Name  Bank  Num Pins  Multiplex
+ * PL         11    11        Input/Output
+ * PM         12    5         Input/Output
+ * 
+ * Register offsets as per CPUX_PORT
  */
-public class AllwinnerH6MmapGpio implements MmapGpioInterface {
-	private static final String GPIOMEM_DEVICE = "/dev/mem";
+public class AllwinnerH6MmapGpio extends AllwinnerHMmapGpio {
+	private static final long GPIOA_BASE = 0x0300_B000L;
+	private static final int GPIOA_INT_OFFSET = 0;
+	private static final long GPIOL_BASE = 0x0702_2000L;
+	private static final int GPIOL_INT_OFFSET = 0;
 
-	private static final int MEM_INFO = 1024;
-	private static final int BLOCK_SIZE = 4 * MEM_INFO;
+	private static final int[] NUM_GPIOS_BY_BANK = { 0, 0, 17, 27, 0, 7, 15, 11, 0, 0, 0, 11, 5 };
 
-	private static final int GPIOA_BASE = 0x0300B000;
-	private static final int MAP_SIZE_A = BLOCK_SIZE;
-
-	private static final int GPIOL_BASE = 0x07022000;
-	private static final int MAP_SIZE_L = BLOCK_SIZE;
-
-	private boolean initialised;
-	private MmapIntBuffer gpioAMmapIntBuffer;
-	private MmapIntBuffer gpioLMmapIntBuffer;
-
-	@Override
-	public synchronized void initialise() {
-		if (!initialised) {
-			gpioAMmapIntBuffer = new MmapIntBuffer(GPIOMEM_DEVICE, GPIOA_BASE, MAP_SIZE_A, ByteOrder.LITTLE_ENDIAN);
-			gpioLMmapIntBuffer = new MmapIntBuffer(GPIOMEM_DEVICE, GPIOL_BASE, MAP_SIZE_L, ByteOrder.LITTLE_ENDIAN);
-
-			initialised = true;
-		}
+	public AllwinnerH6MmapGpio() {
+		super(GPIOA_BASE, GPIOA_INT_OFFSET, GPIOL_BASE, GPIOL_INT_OFFSET, NUM_GPIOS_BY_BANK);
 	}
 
 	@Override
-	public synchronized void close() {
-		if (initialised) {
-			gpioAMmapIntBuffer.close();
-			gpioAMmapIntBuffer = null;
-		}
-	}
+	void initialiseGpioModes() {
+		// PC0 (64)
+		addGpioMode(64, 4, DeviceMode.SPI);
+		// PC2 (66)
+		addGpioMode(66, 4, DeviceMode.SPI);
+		// PC3 (67)
+		addGpioMode(67, 4, DeviceMode.SPI);
+		// PC5 (69)
+		addGpioMode(69, 4, DeviceMode.SPI);
 
-	@Override
-	public DeviceMode getMode(int gpio) {
-		/*-
-		int bank = gpio >> 5;
-		int index = gpio - (bank << 5);
-		int int_offset = ((bank * 36) + ((index >> 3) << 2)) / 4;
-		int shift = ((index - ((index >> 3) << 3)) << 2);
-		 */
-		int bank = gpio >> 5;
-		int shift = (gpio % 8) << 2;
+		// PD19 (115)
+		addGpioMode(115, 4, DeviceMode.SERIAL);
+		// PD20 (116)
+		addGpioMode(116, 4, DeviceMode.SERIAL);
+		// PD21 (117)
+		addGpioMode(117, 4, DeviceMode.SERIAL);
+		// PD22 (118)
+		addGpioMode(118, 2, DeviceMode.PWM_OUTPUT);
+		addGpioMode(118, 4, DeviceMode.SERIAL);
+		// PD23 (119)
+		addGpioMode(119, 2, DeviceMode.I2C);
+		addGpioMode(119, 4, DeviceMode.SERIAL);
+		// PD24 (120)
+		addGpioMode(120, 2, DeviceMode.I2C);
+		addGpioMode(120, 4, DeviceMode.SERIAL);
+		// PD25 (121)
+		addGpioMode(121, 2, DeviceMode.I2C);
+		addGpioMode(121, 4, DeviceMode.SERIAL);
+		// PD26 (122)
+		addGpioMode(122, 2, DeviceMode.I2C);
+		addGpioMode(122, 4, DeviceMode.SERIAL);
 
-		int int_offset;
-		MmapIntBuffer int_buffer;
-		if (bank == 11) {
-			int_offset = ((gpio - (bank << 5) >> 3) << 2) / 4;
-			int_buffer = gpioLMmapIntBuffer;
-		} else {
-			// (bank * 36) + ((index >> 3) << 2)
-			int_offset = (gpio >> 3) + 5 * bank;
-			int_buffer = gpioAMmapIntBuffer;
-		}
+		// PF2 (162)
+		addGpioMode(162, 3, DeviceMode.SERIAL);
+		// PF4 (164)
+		addGpioMode(164, 3, DeviceMode.SERIAL);
 
-		int mode_val = (int_buffer.get(int_offset) >> shift) & 0b111;
-		DeviceMode mode;
-		switch (mode_val) {
-		case 0:
-			mode = DeviceMode.DIGITAL_INPUT;
-			break;
-		case 1:
-			mode = DeviceMode.DIGITAL_OUTPUT;
-			break;
-		default:
-			mode = DeviceMode.UNKNOWN;
-		}
+		// PG6 (198)
+		addGpioMode(198, 2, DeviceMode.SERIAL);
+		// PG7 (199)
+		addGpioMode(199, 2, DeviceMode.SERIAL);
+		// PG8 (200)
+		addGpioMode(200, 2, DeviceMode.SERIAL);
+		// PG9 (201)
+		addGpioMode(201, 2, DeviceMode.SERIAL);
 
-		return mode;
-	}
+		// PH0 (224)
+		addGpioMode(224, 2, DeviceMode.SERIAL);
+		// PH1 (225)
+		addGpioMode(225, 2, DeviceMode.SERIAL);
+		// PH3 (227)
+		addGpioMode(227, 2, DeviceMode.SPI);
+		// PH4 (228)
+		addGpioMode(228, 2, DeviceMode.SPI);
+		// PH5 (229)
+		addGpioMode(229, 2, DeviceMode.SPI);
+		addGpioMode(229, 4, DeviceMode.I2C);
+		// PH6 (230)
+		addGpioMode(230, 2, DeviceMode.SPI);
+		addGpioMode(230, 4, DeviceMode.I2C);
 
-	@Override
-	public void setMode(int gpio, DeviceMode mode) {
-		int mode_val;
-
-		switch (mode) {
-		case DIGITAL_INPUT:
-			mode_val = 0b000;
-			break;
-		case DIGITAL_OUTPUT:
-			mode_val = 0b001;
-			break;
-		case PWM_OUTPUT:
-			Logger.warn("Mode {} not yet implemented for GPIO #{}", mode, Integer.valueOf(gpio));
-			return;
-		default:
-			Logger.warn("Invalid mode ({}) for GPIO #{}", mode, Integer.valueOf(gpio));
-			return;
-		}
-
-		setModeUnchecked(gpio, mode_val);
-	}
-
-	@Override
-	public void setModeUnchecked(int gpio, int mode) {
-		/*-
-		int bank = gpio >> 5;
-		int index = gpio - (bank << 5);
-		int int_offset = ((bank * 36) + ((index >> 3) << 2)) / 4;
-		int shift = ((index - ((index >> 3) << 3)) << 2);
-		 */
-		int int_offset = (gpio >> 3) + 5 * (gpio >> 5);
-		int shift = (gpio % 8) << 2;
-
-		int addr = int_offset;
-
-		int reg_val = gpioAMmapIntBuffer.get(addr);
-
-		reg_val &= ~(0b111 << shift);
-		reg_val |= ((mode & 0b111) << shift);
-
-		gpioAMmapIntBuffer.put(addr, reg_val);
-	}
-
-	@Override
-	public void setPullUpDown(int gpio, GpioPullUpDown pud) {
-		/*-
-		 * int bank = gpio >> 5;
-		 * int index = gpio - (bank << 5);
-		 * int sub = index >> 4;
-		 * int sub_index = index - 16 * sub;
-		 * int int_offset = ((bank * 36) + 0x1c + sub * 4) / 4;
-		 */
-
-		/*-
-		 * Pull Registers
-		 * 00: Disable, 01: Pull-up, 10: Pull-down
-		 *
-		 * Bank   Offset R0    Offset R1    GPIOs
-		 * PA (0) 0x1c (0-15), 0x2d (16-31) 0..31
-		 * PB (1)                           32..63
-		 * PC (2) 0x64 (0-15), 0x68 (16-31) 64..95
-		 * PD (3) 0x88 (0-15), 0x8c (16-31) 96..127
-		 * PE (4) 0xac (0-15), 0xb0 (16-31) 128..159
-		 * PF (5) 0xd0 (0-15), 0xd4 (16-31) 160..191
-		 * PG (6) 0xf4 (0-15), 0xf8 (16-31) 192..223
-		 * PH (7)                           224..255
-		 * PI (8)                           256..287
-		 * PJ (9)                           288..319
-		 * PK (a)                           320..351
-		 * PL (b) 0x1c (0-15), 0x20 (16-31) 352..383
-		 */
-		int bank = gpio >> 5; // equivalent to / 32
-		int reg = (gpio >> 4) % 2; // Register 0 or 1
-		int shift = (gpio % 16) << 1; // Shift 0..30
-		int int_offset = (0x1c + bank * 0x24) / 4 + reg;
-
-		int phyaddr = int_offset;
-
-		int pud_val;
-		switch (pud) {
-		case PULL_UP:
-			pud_val = 0b10;
-			break;
-		case PULL_DOWN:
-			pud_val = 0b01;
-			break;
-		case NONE:
-		default:
-			pud_val = 0b00;
-		}
-
-		int reg_val = gpioAMmapIntBuffer.get(phyaddr);
-		reg_val &= ~(0b11 << shift);
-		reg_val |= (pud_val << shift);
-
-		gpioAMmapIntBuffer.put(phyaddr, reg_val);
-
-		SleepUtil.sleepMillis(1);
-	}
-
-	@Override
-	public boolean gpioRead(int gpio) {
-		/*-
-		int bank = gpio >> 5;
-		int int_offset = ((bank * 36) + 0x10) / 4;
-		int shift = gpio - (bank << 5);
-		 */
-		int bank = gpio >> 5;
-		int shift = gpio % 32;
-
-		int int_offset;
-		MmapIntBuffer int_buffer;
-		if (bank == 11) {
-			int_offset = 4;
-			int_buffer = gpioLMmapIntBuffer;
-		} else {
-			int_offset = bank * 9 + 4;
-			int_buffer = gpioAMmapIntBuffer;
-		}
-
-		return ((int_buffer.get(int_offset) >> shift) & 1) == 1;
-	}
-
-	@Override
-	public void gpioWrite(int gpio, boolean value) {
-		/*-
-		int bank = gpio >> 5;
-		int int_offset = ((bank * 36) + 0x10) / 4;
-		int shift = gpio - (bank << 5);
-		 */
-		int bank = gpio >> 5;
-		int shift = gpio % 32;
-
-		int int_offset;
-		MmapIntBuffer int_buffer;
-		if (bank == 11) {
-			int_offset = 4; // 0x10 / 4
-			int_buffer = gpioLMmapIntBuffer;
-		} else {
-			int_offset = bank * 9 + 4; // ((bank * 36) + 0x10) / 4
-			int_buffer = gpioAMmapIntBuffer;
-		}
-
-		int reg_val = int_buffer.get(int_offset);
-		if (value) {
-			reg_val |= (1 << shift);
-		} else {
-			reg_val &= ~(1 << shift);
-		}
-
-		int_buffer.put(int_offset, reg_val);
+		// PL0 (352)
+		addGpioMode(352, 3, DeviceMode.I2C);
+		// PL1 (353)
+		addGpioMode(353, 3, DeviceMode.I2C);
+		// PL2 (354)
+		addGpioMode(354, 2, DeviceMode.SERIAL);
+		// PL3 (355)
+		addGpioMode(355, 2, DeviceMode.SERIAL);
+		// PL8 (360)
+		addGpioMode(360, 2, DeviceMode.PWM_OUTPUT);
+		// PL10 (362)
+		addGpioMode(362, 3, DeviceMode.PWM_OUTPUT);
 	}
 
 	@SuppressWarnings("boxing")
 	public static void main(String[] args) {
-		System.out.println((256 / 8) + ", " + (256 >> 3));
-		System.out.println((256 / 16) + ", " + (256 >> 4));
-		System.out.println((256 / 32) + ", " + (256 >> 5));
-		System.out.println((352 / 32) + ", " + (352 >> 5));
+		int[] gpios = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 12, 16, 20, 24, 28, 31, 32, 63, 64, 80, 96, 112, 128, 144, 228, 351,
+				352, 355, 384, //
+				// Orange Pi 3 LTS
+				111, 112, 114, 117, 118, 119, 120, 121, 122, 227, 228, 229, 230, 354, 355, 360, 362, //
+				// Orange Pi One+
+				64, 66, 67, 69, 71, 72, 73, 117, 118, 119, 120, 121, 122, 227, 228, 229, 230 //
+		};
 
-		{
-			int pin = 0;
-			int bank = pin >> 5;
-			int index = pin - (bank << 5);
-			int phyaddr;
-			if (bank == 11) {
-				phyaddr = GPIOL_BASE + 0x10;
-			} else {
-				phyaddr = GPIOA_BASE + (bank * 36) + 0x10;
-			}
-			int int_offset = (pin >> 5) * 9 + 4;
-			int shift = pin % 32;
-			int my_phyaddr = GPIOA_BASE + int_offset * 4;
-			System.out.format(
-					"pin: %d, bank: %d, index: %d, phyaddr: 0x%x, int_offset: %d, shift: %d, my_phyaddr: 0x%x%n", pin,
-					bank, index, phyaddr, int_offset, shift, my_phyaddr);
-
-			pin = 228;
-			bank = pin >> 5;
-			index = pin - (bank << 5);
-			if (bank == 11) {
-				phyaddr = GPIOL_BASE + 0x10;
-			} else {
-				phyaddr = GPIOA_BASE + (bank * 36) + 0x10;
-			}
-			int_offset = (pin >> 5) * 9 + 4;
-			shift = pin % 32;
-			my_phyaddr = GPIOA_BASE + int_offset * 4;
-			System.out.format(
-					"pin: %d, bank: %d, index: %d, phyaddr: 0x%x, int_offset: %d, shift: %d, my_phyaddr: 0x%x%n", pin,
-					bank, index, phyaddr, int_offset, shift, my_phyaddr);
-
-			pin = 351;
-			bank = pin >> 5;
-			index = pin - (bank << 5);
-			if (bank == 11) {
-				phyaddr = GPIOL_BASE + 0x10;
-			} else {
-				phyaddr = GPIOA_BASE + (bank * 36) + 0x10;
-			}
-			int_offset = (pin >> 5) * 9 + 4;
-			shift = pin % 32;
-			my_phyaddr = bank == 11 ? (GPIOL_BASE + 0x10) : (GPIOA_BASE + int_offset * 4);
-			System.out.format(
-					"pin: %d, bank: %d, index: %d, phyaddr: 0x%x, int_offset: %d, shift: %d, my_phyaddr: 0x%x%n", pin,
-					bank, index, phyaddr, int_offset, shift, my_phyaddr);
-
-			pin = 352;
-			bank = pin >> 5;
-			index = pin - (bank << 5);
-			if (bank == 11) {
-				phyaddr = GPIOL_BASE + 0x10;
-			} else {
-				phyaddr = GPIOA_BASE + (bank * 36) + 0x10;
-			}
-			int_offset = (pin >> 5) * 9 + 4;
-			shift = pin % 32;
-			my_phyaddr = bank == 11 ? (GPIOL_BASE + 0x10) : (GPIOA_BASE + int_offset * 4);
-			System.out.format(
-					"pin: %d, bank: %d, index: %d, phyaddr: 0x%x, int_offset: %d, shift: %d, my_phyaddr: 0x%x%n", pin,
-					bank, index, phyaddr, int_offset, shift, my_phyaddr);
-
-			pin = 355;
-			bank = pin >> 5;
-			index = pin - (bank << 5);
-			if (bank == 11) {
-				phyaddr = GPIOL_BASE + 0x10;
-			} else {
-				phyaddr = GPIOA_BASE + (bank * 36) + 0x10;
-			}
-			int_offset = (pin >> 5) * 9 + 4;
-			shift = pin % 32;
-			my_phyaddr = bank == 11 ? (GPIOL_BASE + 0x10) : (GPIOA_BASE + int_offset * 4);
-			System.out.format(
-					"pin: %d, bank: %d, index: %d, phyaddr: 0x%x, int_offset: %d, shift: %d, my_phyaddr: 0x%x%n", pin,
-					bank, index, phyaddr, int_offset, shift, my_phyaddr);
-		}
-
-		// Test bank 11 (GPIO >= 352) - not sure how to handle this
-		int a_int_offset = 0x10 / 4 + 0xc00 / 4;
-		int b_int_offset = (352 >> 5) * 9 + 4 + 0x800 / 4;
-		System.out.println("a_int_offset: " + a_int_offset + ", b_int_offset: " + b_int_offset);
-
-		// Test read / write offset and shift calculation
-		for (int gpio = 0; gpio < 352; gpio++) {
-			a_int_offset = (gpio >> 5) * 9 + 4;
-			int a_shift = gpio % 32;
-
+		// Valid banks - 2, 3, 5, 6, 7, 11, 12
+		final String[] bank_letters = { "Z", "Z", "C", "D", "Z", "F", "G", "H", "Z", "Z", "Z", "L", "M" };
+		for (int gpio : gpios) {
 			int bank = gpio >> 5;
-			b_int_offset = ((bank * 36) + 0x10) / 4;
-			int b_shift = gpio % 32;
+			int bank_index = gpio % 32;
+			int mode_shift = (gpio % 8) << 2;
+			int data_shift = bank_index;
+			int pud_shift = (gpio % 16) << 1;
+			boolean valid_gpio = bank_index < NUM_GPIOS_BY_BANK[bank];
 
-			if (a_int_offset != b_int_offset) {
-				System.out.format("** Value Offset Difference - gpio: %d, a_int_offset: 0x%x, b_int_offset: 0x%x%n",
-						gpio, a_int_offset, b_int_offset);
+			int mode_int_offset;
+			int data_int_offset;
+			int pud_int_offset;
+			long phyaddr;
+			long my_phyaddr;
+			if (bank < 11) {
+				mode_int_offset = CONFIG_REG_INT_OFFSET + bank * BANK_INT_OFFSET + (bank_index >> 3);
+				data_int_offset = DATA_REG_INT_OFFSET + bank * BANK_INT_OFFSET;
+				pud_int_offset = PULL_REG_INT_OFFSET + bank * BANK_INT_OFFSET + (bank_index >> 4);
+
+				phyaddr = GPIOA_BASE + (bank * BANK_INT_OFFSET * 4) + DATA_REG_INT_OFFSET * 4;
+				my_phyaddr = GPIOA_BASE + data_int_offset * 4;
+			} else {
+				mode_int_offset = CONFIG_REG_INT_OFFSET + (bank - 11) * BANK_INT_OFFSET + (bank_index >> 3);
+				data_int_offset = DATA_REG_INT_OFFSET + (bank - 11) * BANK_INT_OFFSET;
+				pud_int_offset = PULL_REG_INT_OFFSET + (bank - 11) * BANK_INT_OFFSET + (bank_index >> 4);
+
+				phyaddr = GPIOL_BASE + ((bank - 11) * BANK_INT_OFFSET * 4) + DATA_REG_INT_OFFSET * 4;
+				my_phyaddr = GPIOL_BASE + data_int_offset * 4;
 			}
-
-			if (a_shift != b_shift) {
-				System.out.format("** Value Shift Difference - gpio: %d, a_shift: %d, b_shift: %d%n", gpio, a_shift,
-						b_shift);
-			}
-		}
-
-		// Test mode offset and shift calculation
-		for (int gpio = 0; gpio < 352; gpio++) {
-			a_int_offset = (gpio >> 3) + 5 * (gpio >> 5);
-			int a_shift = (gpio % 8) * 4;
-
-			int bank = gpio >> 5;
-			int index = gpio - (bank << 5);
-			b_int_offset = ((bank * 36) + ((index >> 3) << 2)) / 4;
-			int b_shift = ((index - ((index >> 3) << 3)) << 2);
-
-			if (a_int_offset != b_int_offset) {
-				System.out.format("** Mode Offset Difference - gpio: %d, a_int_offset: 0x%x, b_int_offset: 0x%x%n",
-						gpio, a_int_offset, b_int_offset);
-			}
-
-			if (a_shift != b_shift) {
-				System.out.format("** Mode Shift Difference - gpio: %d, a_shift: %d, b_shift: %d%n", gpio, a_shift,
-						b_shift);
-			}
+			System.out.format(
+					"gpio: %3d, name: %s, bank: %2d, bank_index: %2d, valid: %5b, phyaddr: 0x%08x, my_phyaddr: 0x%08x, mode_shift: %2d, mode_offset: 0x%03x, data_shift: %2d, data_offset: 0x%03x, pud_shift: %2d, pud_offset: 0x%03x%n",
+					gpio,
+					(bank_letters[bank] == "Z" ? "Z" : "P") + bank_letters[bank] + String.format("%02d", gpio % 32),
+					bank, bank_index, valid_gpio, phyaddr, my_phyaddr, mode_shift, mode_int_offset * 4, data_shift,
+					data_int_offset * 4, pud_shift, pud_int_offset * 4);
 		}
 
 		if (args.length < 1) {

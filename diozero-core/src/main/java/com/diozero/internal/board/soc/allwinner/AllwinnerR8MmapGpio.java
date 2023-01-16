@@ -32,6 +32,7 @@ package com.diozero.internal.board.soc.allwinner;
  */
 
 import java.nio.ByteOrder;
+import java.util.Optional;
 
 import com.diozero.api.DeviceMode;
 import com.diozero.api.GpioPullUpDown;
@@ -152,7 +153,8 @@ public class AllwinnerR8MmapGpio implements MmapGpioInterface {
 		mmapIntBuffer.put(config_reg, current_reg_val | (mode << shift));
 	}
 
-	public GpioPullUpDown getPullUpDown(int gpio) {
+	@Override
+	public Optional<GpioPullUpDown> getPullUpDown(int gpio) {
 		int port = getPort(gpio);
 		int pin = getPin(gpio);
 		int pull_reg = PORT_CONFIGS[port].pullRegisters[pin];
@@ -171,7 +173,7 @@ public class AllwinnerR8MmapGpio implements MmapGpioInterface {
 			break;
 		}
 
-		return pud;
+		return Optional.of(pud);
 	}
 
 	@Override
@@ -302,7 +304,7 @@ public class AllwinnerR8MmapGpio implements MmapGpioInterface {
 					on = mmap_gpio.gpioRead(gpio);
 					System.out.println("On: " + on);
 				} else if (mode == DeviceMode.DIGITAL_INPUT) {
-					GpioPullUpDown pud = mmap_gpio.getPullUpDown(gpio);
+					GpioPullUpDown pud = mmap_gpio.getPullUpDown(gpio).get();
 					System.out.println("PUD: " + pud);
 				}
 				SleepUtil.sleepSeconds(1);

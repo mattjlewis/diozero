@@ -34,6 +34,8 @@ package com.diozero.util;
 import java.nio.ByteOrder;
 import java.nio.IntBuffer;
 
+import org.tinylog.Logger;
+
 public class MmapIntBuffer implements AutoCloseable {
 	private long offset;
 	private long address;
@@ -41,6 +43,8 @@ public class MmapIntBuffer implements AutoCloseable {
 	private IntBuffer intBuffer;
 
 	public MmapIntBuffer(String file, long offset, long length, ByteOrder byteOrder) {
+		Logger.trace("Invoking MmapBufferNative.createMmapBuffer({}, 0x{}, {})", file, Long.toHexString(offset),
+				Long.valueOf(length));
 		MmapByteBuffer mmap_bb = MmapBufferNative.createMmapBuffer(file, offset, length);
 		this.offset = offset;
 		this.address = mmap_bb.getAddress();
