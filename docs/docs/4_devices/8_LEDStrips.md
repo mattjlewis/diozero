@@ -22,4 +22,5 @@ Also controls APA102 LED strips using SPI.
 >
 > All colours are represented as 24bit RGB values.
 
-TODO Insert wiring diagram.
+The [README](https://github.com/jgarff/rpi_ws281x#spi) on jgarff's GitHub project provides some
+good tips for if you are having issues controlling LED strips, in particular the [SPI section](https://github.com/jgarff/rpi_ws281x#spi).
