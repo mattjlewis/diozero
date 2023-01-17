@@ -58,7 +58,7 @@ public class AmlogicS922XMmapGpio implements MmapGpioInterface {
 	 * Therefore, none of these match the documented addresses or offsets, but they
 	 * all actually work.
 	 */
-	private static final int J2_GPIO_BASE_ADDRESS = 0xFF634000;
+	private static final long J2_GPIO_BASE_ADDRESS = 0xFF63_4000L;
 	private static final int BLOCK_SIZE = 4096;
 
 	private static final int J2_GPIO_START = 410;

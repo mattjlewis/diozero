@@ -41,7 +41,7 @@ import com.diozero.util.SleepUtil;
 
 /**
  * Stepper represents a stepper motor driven by a stepper motor controller.
- * Originally developed for a Wetterott SilentStepStick, it should be compatible
+ * Originally developed for a Watterott SilentStepStick, it should be compatible
  * with the Wetterott StepStick and the Pololu A4988 drivers. It might be
  * compatible with other drivers that use the following control signals: enable
  * (low), direction, and step.

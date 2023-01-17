@@ -56,8 +56,8 @@ import com.diozero.util.SleepUtil;
 public class AmlogicS905MmapGpio implements MmapGpioInterface {
 	private static final String MEM_DEVICE = "/dev/mem";
 
-	private static final int J2_GPIO_BASE_ADDRESS = 0xC8834000;
-	private static final int J7_GPIO_BASE_ADDRESS = 0xC8100000;
+	private static final long J2_GPIO_BASE_ADDRESS = 0xC883_4000L;
+	private static final long J7_GPIO_BASE_ADDRESS = 0xC810_0000L;
 	private static final int BLOCK_SIZE = 4 * 1024;
 
 	// XXX Armbian Kernel 5.x has the sysfs GPIO numbers starting at an offset of

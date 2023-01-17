@@ -50,7 +50,7 @@ import com.diozero.util.SleepUtil;
 // Modes: 0 == INPUT, 1 == OUTPUT, 2-7 == alt functions
 public class AllwinnerR8MmapGpio implements MmapGpioInterface {
 	private static final String MEM_DEVICE = "/dev/mem";
-	private static final int GPIO_BASE_OFFSET = 0x01c20000;
+	private static final long GPIO_BASE_OFFSET = 0x01c2_0000L;
 	private static final int PAGE_SIZE = 0x1000;
 	private static final int PIO_START_INT_OFFSET = 0x800 / 4;
 	private static final int PORT_INT_OFFSET = 0x24 / 4;

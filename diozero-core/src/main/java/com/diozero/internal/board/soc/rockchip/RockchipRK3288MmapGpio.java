@@ -51,9 +51,9 @@ import com.diozero.util.SleepUtil;
 @SuppressWarnings("resource")
 public class RockchipRK3288MmapGpio implements MmapGpioInterface {
 	private static final String MEM_DEVICE = "/dev/gpiomem";
-	private static final int PMU_BASE = 0xff730000;
-	private static final int GPIO_BASE = 0xff750000;
-	private static final int GRF_BASE = 0xff770000;
+	private static final long PMU_BASE = 0xff730000L;
+	private static final long GPIO_BASE = 0xff75_0000L;
+	private static final long GRF_BASE = 0xff77_0000L;
 	private static final int GPIO_LENGTH = 0x00010000;
 	private static final int GPIO_CHANNEL = 0x00020000;
 
