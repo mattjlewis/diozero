@@ -1,10 +1,9 @@
 ---
 parent: Internals
-nav_order: 2
+nav_order: 3
 permalink: /internals/gpio.html
 ---
-
-# GPIO
+# GPIO Implementation
 
 By default diozero uses the Linux GPIO Character Device implementation that was added in Linux kernel 4.8.
 This can be disabled by running with the property `diozero.gpio.chardev=false`, in which case diozero
@@ -32,12 +31,15 @@ it has been implemented and where the current user has access to the correspondi
 diozero has memory mapped GPIO support for following boards:
 
 * Raspberry Pi (all flavours)
-* FriendlyArm H3 / Allwinner H3 CPU (as used in the NanoPi Duo2 / NanoPi Neo amongst others)
-* OrangePi Zero+ (Allwinner H5) / One+ (Allwinner H6)
-* Odroid C2
-* ASUS Tinkerboard
-* Next Think Co CHIP (Allwinner sun4i/sun5i)
+* Allwinner R8: Next Think Co CHIP (Allwinner sun4i/sun5i)
+* Allwinner H3: NanoPi Duo2, NanoPi Neo, ...
+* Allwinner H5: OrangePi Zero Plus
+* Allwinner H6: OrangePi One Plus
+* Amlogic S905: Odroid C1/C2
+* Amlogic S922X: Odroid N2+
+* Rockchip RK3288: ASUS Tinkerboard
+* Rockchip RK3399: Radxa Rock 4C+
 
 Memory mapped support for the BeagleBone Green / Black will be added in the near future.
 
-Note that the pigpio provider does support configuring the pull-up / pull-down resistors on the Raspberry Pi.
+Note that the pigpio provider also supports configuring the pull-up / pull-down resistors on the Raspberry Pi.

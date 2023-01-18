@@ -24,6 +24,7 @@ group :jekyll_plugins do
   gem "jekyll-include-cache"
   gem "jekyll-seo-tag"
 #  gem "jekyll-sitemap"
+  gem "github-pages"
   gem "jekyll-github-metadata"
   gem "jekyll-readme-index"
   gem "jekyll-relative-links"
@@ -31,7 +32,6 @@ group :jekyll_plugins do
   gem "jekyll-titles-from-headings"
   gem "jekyll-redirect-from"
   gem "jemoji"
-  gem "github-pages"
   gem "webrick"
 end
 

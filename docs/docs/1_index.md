@@ -9,9 +9,9 @@ redirect_from:
 
 # diozero
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Maven CI Build](https://github.com/mattjlewis/diozero/actions/workflows/build.yml/badge.svg)](https://github.com/mattjlewis/diozero/actions/workflows/build.yml)
 [![Maven Central Status](https://img.shields.io/maven-central/v/com.diozero/diozero.svg)](https://search.maven.org/search?q=g:com.diozero)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Javadoc](https://www.javadoc.io/badge/com.diozero/diozero-core.svg)](https://www.javadoc.io/doc/com.diozero/diozero-core)
 
 A device I/O library implemented in Java that is portable across Single Board Computers and
@@ -65,12 +65,17 @@ adoption of common userspace APIs means that it _should_ work on all SBCs that c
 micro-controllers that can support the [Firmata protocol](https://github.com/firmata/protocol).
 
 * [Raspberry Pi](https://www.raspberrypi.org/) (_all_ versions + tested on Raspberry Pi OS 32-bit and 64-bit as well as Ubuntu Server 64-bit).
-* [Odroid C2](https://wiki.odroid.com/odroid-c2/odroid-c2) (Armbian 64-bit).
+* [Odroid C2](https://wiki.odroid.com/odroid-c2/odroid-c2) (Armbian 64-bit) - Amlogic S905 SoC.
+* [Odroid N2](https://wiki.odroid.com/odroid-n2/odroid-n2) (Armbian 64-bit) - Amlogic S922X SoC.
 * [BeagleBone Green / Black](https://beagleboard.org/black).
-* [ASUS TinkerBoard](https://www.asus.com/uk/Single-board-Computer/TINKER-BOARD/) (ASUS TinkerOS/Linaro as well as Armbian 64-bit).
-* [Allwinner H3](https://linux-sunxi.org/H3) boards, including [NanoPi Neo](https://www.friendlyarm.com/index.php?route=product/product&product_id=132) and [NanoPi Duo](https://www.friendlyarm.com/index.php?route=product/product&product_id=244) (Armbian 32-bit).
-* OrangePi [Zero+](http://www.orangepi.org/OrangePiZeroPlus/) ([Allwinner H5](https://linux-sunxi.org/H5)) / [One+](http://www.orangepi.org/OrangePiOneplus/) ([Allwinner H6](https://linux-sunxi.org/H6))
-* [The Next Thing Co CHIP](https://getchip.com/pages/chip).
+* [ASUS TinkerBoard](https://www.asus.com/uk/Single-board-Computer/TINKER-BOARD/) (ASUS TinkerOS/Linaro as well as Armbian 64-bit) - Rockchip RK3288 SoC.
+* [Radxa Rock 4C+](https://wiki.radxa.com/Rock4/4cplus) - Rockchip RK3299/RK3299T SoC.
+* [Allwinner H3](https://linux-sunxi.org/H3) boards, including [NanoPi Neo](https://www.friendlyarm.com/index.php?route=product/product&product_id=132)
+and [NanoPi Duo 2](https://www.friendlyelec.com/index.php?route=product/product&product_id=244) (Armbian 32-bit).
+* [Allwinner H5](https://linux-sunxi.org/H5) boards, e.g. [OrangePi Zero+](http://www.orangepi.org/OrangePiZeroPlus/).
+* [Allwinner H6](https://linux-sunxi.org/H6) boards, e.g. [OrangePi One+](http://www.orangepi.org/OrangePiOneplus/),
+[Orange Pi 3 LTS](http://www.orangepi.org/html/hardWare/computerAndMicrocontrollers/details/orange-pi-3-LTS.html)
+* [The Next Thing Co CHIP](https://getchip.com/pages/chip) - Allwinner R8 SoC.
 * [Arduino compatible](https://www.arduino.cc) (any device that can run [Firmata](http://firmatabuilder.com)).
 * [Raspberry Pi Pico](https://www.raspberrypi.com/products/raspberry-pi-pico/) (Firmata over serial).
 * [ESP8266](https://www.espressif.com/en/products/socs/esp8266) (via Firmata over Serial, Bluetooth or WiFi).

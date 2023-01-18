@@ -1,12 +1,12 @@
 ---
-parent: Internals
-nav_order: 5
-permalink: /internals/bbbsetup.html
+parent: Single Board Computers
+nav_order: 4
+permalink: /boards/bbbsetup.html
 redirect_from:
+  - /internal/bbbsetup.html
   - /en/latest/BeagleBoneBlackSetup/index.html
   - /en/stable/BeagleBoneBlackSetup/index.html
 ---
-
 # BeagleBone Green and Black Setup
 {: .no_toc }
 
@@ -103,24 +103,13 @@ sudo apt -y purge c9-core-installer bonescript nodejs bb-node-red-installer
 sudo apt autoremove && sudo apt autoclean
 ```
 
-## Create the System Update / Upgrade Script
-
-Create `/usr/local/bin/update`:
-
-```
-#!/bin/sh
-
-apt update && apt -y --auto-remove full-upgrade
-apt -y autoclean
-```
-
-Make it executable: `chmod +x /usr/local/bin/update`
-
-Run it (`sudo /usr/local/bin/update`) and reboot (`sudo reboot`).
-
 ## Install Essential Development Tools and Libraries
 
-Run: `sudo apt update && sudo apt -y install git gcc make build-essential i2c-tools libi2c-dev unzip zip vim gpiod libgpiod-dev libgpiod2`
+Run:
+
+```shell
+sudo apt update && sudo apt -y install git gcc make build-essential i2c-tools libi2c-dev unzip zip vim gpiod libgpiod-dev libgpiod2
+````
 
 ## Install Java
 
@@ -144,19 +133,11 @@ sudo apt-add-repository 'deb http://security.debian.org/debian-security stretch/
 sudo apt update && sudo apt -y install openjdk-8-jdk
 ```
 
-## Locale / Timezone
-
-Run: `sudo dpkg-reconfigure locales`
-
-Select `en_GB.UTF-8`
-
-Run: `sudo dpkg-reconfigure tzdata`
-
-Select: `Europe / London`
+## NTP
 
 Install and enable ntp:
 
-```
+```shell
 sudo apt update && sudo apt install ntp ntpdate
 sudo systemctl enable ntp
 ```
@@ -164,51 +145,6 @@ sudo systemctl enable ntp
 Check ntp: `ntpq -p`
 
 If need be, manually set the date / time: `sudo date -s "07:41 04/07/2017 BST" "+%H:%M %d/%m/%Y %Z"`
-
-## Install ZSH and Oh My Zsh
-
-Run:
-
-```
-sudo apt -y install zsh
-chsh -s /usr/bin/zsh
-sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-```
-
-Make a minor tweak to the robbyrussell theme to show the hostname in the command prompt:
-
-```
-cd ~/.oh-my-zsh/themes
-cp robbyrussell.zsh-theme robbyrussell_tweak.zsh-theme
-```
-
-Edit `robbyrussell_tweak.zsh-theme` and change the `PROMPT` value to include this prefix `%{$fg_bold[white]%}%M%{$reset_color%} `:
-
-```
-PROMPT="%{$fg_bold[white]%}%M%{$reset_color%} %(?:%{$fg_bold[green]%}➜ :%{$fg_bold[red]%}➜ )"
-```
-
-Update the ZSH config `~/.zshrc`:
-
-```
-export PATH=$PATH:/sbin:/usr/sbin:/usr/local/sbin
-export JAVA_HOME=/usr/lib/jvm/adoptopenjdk-8-hotspot-armhf
-
-ZSH_THEME="robbyrussell_tweak"
-```
-
-My own preference is to add this to the end of the `.zshrc` file:
-
-```
-# Allow multiple terminal sessions to all append to one zsh command history
-setopt APPEND_HISTORY
-# Do not enter command lines into the history list if they are duplicates of the previous event
-setopt HIST_IGNORE_DUPS
-# Remove command lines from the history list when the first character on the line is a space
-setopt HIST_IGNORE_SPACE
-# Remove the history (fc -l) command from the history list when invoked
-setopt HIST_NO_STORE
-```
 
 ## Disable Unused Capes (HDMI, Wireless)
 

@@ -1,5 +1,5 @@
 ---
-nav_order: 9
+nav_order: 10
 permalink: /releases.html
 redirect_from:
   - /en/latest/RELEASE/index.html
@@ -30,9 +30,11 @@ class for info on provisioned state
 + Additional interfaces representing generic physical behaviour, e.g. movement, acceleration,
 similar to existing MotorInterface, BarometerInterface, etc.
 + MFRC522 cleanup and testing, in particular write operations
-+ Remove the need to add board providers - have a generic one that works off the detected System on Chip (SoC)
++ Remove the need to add board providers - have a generic one that works off the detected System on a Chip (SoC)
++ Simplify MmapGpio implementation classes by extracting common behaviour into a base class.
++ Add GPIO iomux mode mapping information in the board def file (in the list of supported device modes, e.g. PWM_OUTPUT(2)?)
 
-## 1.3.5 (in progress)
+## 1.3.5
 
 + Tweaked cross compilation toolchain - switched to podman
 + Orange Pi 3 LTS - untested

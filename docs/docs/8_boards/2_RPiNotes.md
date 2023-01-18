@@ -1,76 +1,18 @@
 ---
-parent: Internals
-nav_order: 4
-permalink: /internals/rpinotes.html
+parent: Single Board Computers
+nav_order: 2
+permalink: /boards/rpinotes.html
+redirect_from:
+  - /internal/rpinotes.html
 ---
-
-# Raspberry Pi Setup Notes
+# Raspberry Pi
 
 These notes are based on an install of the 32-bit Raspberry Pi OS Lite.
-
-## User Permissions
-
-Note that this shouldn't be required - by default the pi user is in the dialout, gpio, i2c and spi groups.
-
-```shell
-sudo usermod -a -G dialout pi
-sudo usermod -a -G i2c pi
-```
 
 ## Development Libraries and Tools
 
 ```shell
-sudo apt -y install i2c-tools libi2c-dev gpiod libgpiod2 libgpiod-dev avahi-daemon gcc make unzip zip vim git
-sudo apt -y install pigpio-tools libpigpiod-if-dev libpigpiod-if2-1
-```
-
-## Java
-
-```shell
-sudo apt -y install openjdk-17-jdk-headless
-```
-
-## ZSH
-
-```shell
-sudo apt -y install zsh
-chsh -s /usr/bin/zsh
-sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-```
-
-Make a minor tweak to the robbyrussell theme to show the hostname in the command prompt:
-```
-cd ~/.oh-my-zsh/themes
-cp robbyrussell.zsh-theme robbyrussell_tweak.zsh-theme
-```
-
-Edit `robbyrussell_tweak.zsh-theme` and change the `PROMPT` value to include this prefix `%{$fg_bold[white]%}%M%{$reset_color%} `.
-The PROMPT line should look like this:
-
-```
-PROMPT="%{$fg_bold[white]%}%M%{$reset_color%} %(?:%{$fg_bold[green]%}➜ :%{$fg_bold[red]%}➜ )"
-```
-
-Update the ZSH config `~/.zshrc`:
-
-```
-export PATH=$PATH:/sbin:/usr/sbin:/usr/local/sbin
-export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-armhf
-
-ZSH_THEME="robbyrussell_tweak"
-```
-
-My own preference is to add this to the end of the `.zshrc` file:
-
-```
-# Allow multiple terminal sessions to all append to one zsh command history
-setopt APPEND_HISTORY
-# Do not enter command lines into the history list if they are duplicates of the previous event
-setopt HIST_IGNORE_DUPS
-# Remove command lines from the history list when the first character on the line is a space
-setopt HIST_IGNORE_SPACE
-# Remove the history (fc -l) command from the history list when invoked
-setopt HIST_NO_STORE
+sudo apt -y install pigpio-tools
 ```
 
 ## Check I<sup>2</sup>C Clock Speed
@@ -129,19 +71,22 @@ dtoverlay=pwm-2chan,pin=18,func=2,pin2=19,func2=2
 
 ## ARMv6 - Original Pi Zero, Pi Models A/B
 
-diozero now requires JDK-11 as a minimum. The OpenJDK version in raspbian does not run on ARMv6. 
-Go to https://www.azul.com/downloads/?version=java-11-lts&os=linux&architecture=arm-32-bit-hf&package=jdk#download-openjdk
+diozero now requires JDK-11 as a minimum, however, the OpenJDK 11 and later versions in raspbian do not run on ARMv6.
+Fortunately the Azul OpenJDK 11 version does support ARMv6.
 
-Copy the download link.
+Download the latest version of Azul OpenJDK 11 for ARMv6/7 from the
+[Azul downloads page](https://www.azul.com/downloads/?version=java-11-lts&os=linux&architecture=arm-32-bit-hf&package=jdk#download-openjdk).
 
-wget wget https://cdn.azul.com/zulu-embedded/bin/zulu11.60.19-ca-jdk11.0.17-linux_aarch32hf.tar.gz
+At the time of writing, this was build 11.60.19-ca:
 
+```
+cd
+wget https://cdn.azul.com/zulu-embedded/bin/zulu11.60.19-ca-jdk11.0.17-linux_aarch32hf.tar.gz
 cd /usr/lib/jvm
-
-sudo tar xf zulu11.60.19-ca-jdk11.0.17-linux_aarch32hf.tar.gz
+sudo tar xf ~/zulu11.60.19-ca-jdk11.0.17-linux_aarch32hf.tar.gz
 sudo ln -s zulu11.60.19-ca-jdk11.0.17-linux_aarch32hf java-11-zulu-armhf
-
+sudo update-alternatives --install /usr/bin/java java /usr/lib/jvm/java-11-zulu-armhf/bin/java 1
 sudo update-alternatives --install /usr/bin/javac javac /usr/lib/jvm/java-11-zulu-armhf/bin/javac 1
-
 sudo update-alternatives --config java
-
+sudo update-alternatives --config javac
+```

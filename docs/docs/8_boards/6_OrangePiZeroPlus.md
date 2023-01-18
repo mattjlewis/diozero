@@ -1,25 +1,14 @@
 ---
-parent: Internals
-nav_order: 9
-permalink: /internals/opisetup.html
+parent: Single Board Computers
+nav_order: 6
+permalink: /boards/opisetup.html
+redirect_from:
+  - /internal/opisetup.html
 ---
 
 # OrangePi Setup
 
 Armbian setup notes.
-
-Use `visudo` and add `NOPASSWD:` for group `sudo` so that the line looks like this:
-
-```
-%sudo	ALL=(ALL:ALL) NOPASSWD: ALL
-```
-
-Add gpio group:
-
-```
-sudo groupadd gpio
-sudo usermod -aG gpio <<your-username>>
-```
 
 TBD udev rules for /dev/gpiochip* file permissions.
 
@@ -37,28 +26,6 @@ SUBSYSTEM=="gpio*", PROGRAM="/bin/sh -c '\
   chown -R root:gpio /sys$devpath && chmod -R 770 /sys$devpath\
 '"
 ```
-
-## Development Libraries and Tools
-
-```
-sudo apt -y install i2c-tools libi2c-dev gpiod libgpiod2 libgpiod-dev avahi-daemon gcc make unzip zip vim git
-```
-
-## Java
-
-```shell
-sudo apt -y install openjdk-11-jdk-headless
-```
-
-## Locale / Timezone
-
-Run: `sudo dpkg-reconfigure locales`
-
-Select `en_GB.UTF-8`
-
-Run: `sudo dpkg-reconfigure tzdata`
-
-Select: `Europe / London`
 
 ## WiFi / I<sup>2</sup>C / SPI
 
