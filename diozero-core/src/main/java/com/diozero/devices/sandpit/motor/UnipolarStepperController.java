@@ -4,7 +4,7 @@ package com.diozero.devices.sandpit.motor;
  * #%L
  * Organisation: diozero
  * Project:      diozero - Core
- * Filename:     BasicStepperController.java
+ * Filename:     UnipolarStepperController.java
  *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
@@ -33,7 +33,6 @@ package com.diozero.devices.sandpit.motor;
 
 import java.util.Arrays;
 
-import com.diozero.api.DeviceInterface;
 import com.diozero.api.DigitalOutputDevice;
 import com.diozero.api.RuntimeIOException;
 import com.diozero.util.SleepUtil;
@@ -41,9 +40,11 @@ import com.diozero.util.SleepUtil;
 import static com.diozero.util.SleepUtil.NS_IN_MS;
 
 /**
- * The controller for a stepper motor.
+ * The controller for a unipolar stepper motor.
+ *
+ * @author E. A. Graham Jr.
  */
-public interface BasicStepperController extends DeviceInterface {
+public interface UnipolarStepperController extends StepperMotorInterface.StepperMotorController {
     /**
      * Execute a single "step" (the smallest movable increment) in a clockwise direction. For example, a 4-wire
      * half-stepper, this would be a half-step.
@@ -74,7 +75,7 @@ public interface BasicStepperController extends DeviceInterface {
     /**
      * Unipolar controller that uses discrete pins/wires on the motor for each phase.
      */
-    abstract class FiveWireUnipolarController implements BasicStepperController {
+    abstract class FiveWireUnipolarController implements UnipolarStepperController {
         // basically "fire these pins" in order to rotate
         private static final int[] FULL_STEPS = new int[] { 0b1000, 0b0100, 0b0010, 0b0001 };
         private static final int[] HALF_STEPS = new int[] {

@@ -46,6 +46,7 @@ import com.diozero.api.function.Action;
  * <b>IMPORTANT NOTE!</b> Implementation/usage should not exceed the maximum rotational speed of the device, otherwise
  * bad things can happen.
  *
+ * @author E. A. Graham Jr.
  * @see <a href="https://learn.adafruit.com/all-about-stepper-motors?view=all">What is a Stepper Motor?</a>
  */
 public interface StepperMotorInterface extends DeviceInterface {
@@ -71,6 +72,15 @@ public interface StepperMotorInterface extends DeviceInterface {
         }
     }
 
+    interface StepperMotorController extends DeviceInterface {
+        /**
+         * Stops the motor immediately.
+         */
+        void stop();
+    }
+
+    StepperMotorController getController();
+
     /**
      * Get the stride-angle (degrees per step) for this motor. This <b>MUST</b> take into account any gearboxes.
      *
@@ -91,14 +101,18 @@ public interface StepperMotorInterface extends DeviceInterface {
      *
      * @return the speed
      */
-    float getDefaultSpeed();
+    default float getSpeed() {
+        return frequencyToRpm(getDefaultFrequency());
+    }
 
     /**
      * Set the default speed of the motor in RPM.
      *
-     * @param speed the speed
+     * @param speedRPM the speed
      */
-    void setDefaultSpeed(float speed);
+    default void setSpeed(float speedRPM) {
+        setDefaultFrequency(rpmToFrequency(speedRPM));
+    }
 
     /**
      * Get the default frequency of the stepper: this is expressed in Hz (or pulse per second) and is used as the
@@ -117,17 +131,22 @@ public interface StepperMotorInterface extends DeviceInterface {
     void setDefaultFrequency(int frequencyInHz);
 
     /**
-     * Move a single step in the given direction at the default speed. No events are fired for this action.
+     * Move a single step in the given direction at the default speed. No events are fired for this action. Not all
+     * implementations support this.
      *
      * @param direction which way to rotate
      */
-    void step(Direction direction);
+    default void step(Direction direction) {
+        throw new UnsupportedOperationException("Single-stepping is not implemented.");
+    }
 
     /**
      * Causes the motor to stop <b>immediately</b>. Implementations <b>must</b> ensure that any actions are
      * interrupted when this method is called.
      */
-    void stop();
+    default void stop() {
+        getController().stop();
+    }
 
     /**
      * Rotate a relative angle, positive is clockwise. Uses the default (maximum) speed.
@@ -138,11 +157,11 @@ public interface StepperMotorInterface extends DeviceInterface {
      * @param angle the angle to rotate through - precision is determined by the device
      */
     default void rotate(float angle) {
-        rotate(angle, getDefaultSpeed());
+        rotate(angle, getSpeed());
     }
 
     /**
-     * Rotate a relative angle at a constant speed, positive is clockwise.
+     * Rotate a relative angle at a constant speed, positive is clockwise. Not all implementations support this.
      * <p>
      * <b>NOTE:</b>> this can be interrupted by calling {@link #stop()}, but should be implemented as a blocking
      * operation.
@@ -150,10 +169,13 @@ public interface StepperMotorInterface extends DeviceInterface {
      * @param angle the angle to rotate through - precision is determined by the device
      * @param speed axle speed in RPM
      */
-    void rotate(float angle, float speed);
+    default void rotate(float angle, float speed) {
+        throw new UnsupportedOperationException("Rotating to a specific angle is not implemented.");
+    }
 
     /**
-     * Rotate a relative angle with acceleration and deceleration, positive is clockwise. The graph is roughly:
+     * Rotate a relative angle at a constant speed, positive is clockwise. Not all implementations support this. The
+     * graph is roughly:
      * <pre>
      *       _______
      *      /       \
@@ -168,26 +190,28 @@ public interface StepperMotorInterface extends DeviceInterface {
      * @param maxSpeed         <b>maximum</b> axle speed in RPM
      * @param accelerationTime the time to accelerate/decelerate
      */
-    void rotate(float angle, float maxSpeed, Duration accelerationTime);
+    default void rotate(float angle, float maxSpeed, Duration accelerationTime) {
+        throw new UnsupportedOperationException("Accelerated rotation is not implemented.");
+    }
 
     /**
-     * Starts rotating in the direction noted, using the default speed.
+     * Starts rotating in the direction noted, using the default/current speed.
      * <p>
-     * <b>NOTE:</b>> this should be implemented on a background thread and can be interrupted by calling {@link #stop()}.
+     * This method <b>must</b> be implemented non-blocking. The motor can be stopped with the {@link #stop()} method.
      *
      * @param direction the direction
      */
     default void start(Direction direction) {
-        start(direction, getDefaultSpeed());
+        start(direction, getSpeed());
     }
 
     /**
      * Starts rotating in the direction noted.
      * <p>
-     * <b>NOTE:</b>> this should be implemented on a background thread and can be interrupted by calling {@link #stop()}.
+     * This method <b>must</b> be implemented non-blocking. The motor can be stopped with the {@link #stop()} method.
      *
      * @param direction the direction
-     * @param speed     axle speed in RPM
+     * @param speed     axle speed in RPM (this <b>may</b> change the default speed setting.\)
      */
     void start(Direction direction, float speed);
 
@@ -219,10 +243,6 @@ public interface StepperMotorInterface extends DeviceInterface {
      * @param action the action
      */
     void onStop(Action action);
-
-    static void TODO(String message) {
-        throw new UnsupportedOperationException(message);
-    }
 
     /**
      * Translates RPM  to frequency (in Hz) for this motor.

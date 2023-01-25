@@ -1,6 +1,6 @@
 package com.diozero.devices.sandpit.motor;
 
-/*
+/*-
  * #%L
  * Organisation: diozero
  * Project:      diozero - Core
@@ -31,59 +31,53 @@ package com.diozero.devices.sandpit.motor;
  * #L%
  */
 
-import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Consumer;
 
 import com.diozero.api.RuntimeIOException;
 import com.diozero.api.function.Action;
-import com.diozero.util.SleepUtil;
-
-import static com.diozero.util.SleepUtil.NS_IN_SEC;
 
 /**
- * Handles most of the math, execution, and timing, for sending steps to the motor.
+ * Abstractions of most of the generic functionality of a stepper. Note that the "steps per rotation" is treated as a
+ * <b>fixed</b> physical aspect of the motor.
+ *
+ * @author E. A. Graham Jr.
  */
 public abstract class AbstractStepperMotor implements StepperMotorInterface {
+    // attributes of the motor
+    protected int defaultFrequency;
+    protected final int stepsPerRotation;
+    protected final float strideAngle;
+
+    // can only execute one action at a time
+    protected final AtomicBoolean runFlag = new AtomicBoolean(false);
+
+    protected final StepperMotorController controller;
     private final List<StepperMotorEventListener> listeners = new CopyOnWriteArrayList<>();
+    // default actions that do nothing
     private Action stopAction = () -> {
     };
     private Action moveAction = () -> {
     };
 
-    // can only execute one action at a time
-    private final ExecutorService executor = Executors.newSingleThreadExecutor();
-    private Future<?> running;
-    private final AtomicBoolean runFlag = new AtomicBoolean(false);
-    private final int stepsPerRotation;
-    private final float strideAngle;
-    protected final BasicStepperController controller;
-    private int defaultFrequency;
-    private long pausePerStep;
-
-    /**
-     * Constructor.
-     *
-     * @param strideAngle the degrees a step will rotate - this is <b>REQUIRED</b>
-     * @param controller  the controller
-     */
-    protected AbstractStepperMotor(float strideAngle, BasicStepperController controller) {
-        this.strideAngle = strideAngle;
+    public AbstractStepperMotor(int stepsPerRotation, StepperMotorController controller) {
+        this.stepsPerRotation = stepsPerRotation;
+        strideAngle = 360f / stepsPerRotation;
         this.controller = controller;
-        stepsPerRotation = (int)Math.ceil(360.0 / strideAngle);
     }
 
-    protected AbstractStepperMotor(int stepsPerRotation, BasicStepperController controller) {
-        this.stepsPerRotation = stepsPerRotation;
+    public AbstractStepperMotor(float strideAngle, StepperMotorController controller) {
+        this.strideAngle = strideAngle;
+        stepsPerRotation = (int)Math.floor(360f / strideAngle);
         this.controller = controller;
-        strideAngle = stepsPerRotation / 360f;
+    }
+
+    @Override
+    public StepperMotorController getController() {
+        return controller;
     }
 
     @Override
@@ -97,42 +91,35 @@ public abstract class AbstractStepperMotor implements StepperMotorInterface {
     }
 
     @Override
-    public float getDefaultSpeed() {
-        return frequencyToRpm(defaultFrequency);
-    }
-
-    @Override
-    public void setDefaultSpeed(float speed) {
-        setDefaultFrequency(rpmToFrequency(speed));
-    }
-
-    @Override
     public int getDefaultFrequency() {
         return defaultFrequency;
     }
 
-    @Override
     public void setDefaultFrequency(int frequencyInHz) {
         defaultFrequency = frequencyInHz;
-        pausePerStep = Math.round((1.0 / defaultFrequency) * NS_IN_SEC);
-    }
-
-    @Override
-    public void step(Direction direction) {
-        getStepFunction(direction).accept(pausePerStep);
     }
 
     @Override
     public void stop() {
-        runFlag.set(false);
-        while (running != null && !running.isDone()) {
-            SleepUtil.busySleep(2 * pausePerStep);
-            running.cancel(true);
-        }
-
-        running = null;
         controller.stop();
+        runFlag.set(false);
+        fireEvent(false);
     }
+
+    @Override
+    public void start(Direction direction, float speed) {
+        if (!runFlag.compareAndSet(false, true)) return;
+        fireEvent(true);
+        run(direction, speed);
+    }
+
+    /**
+     * Allow implementations to do different things here.
+     *
+     * @param direction the direction to rotate
+     * @param speed     the speed to rotate (may change the "default" speed)
+     */
+    protected abstract void run(Direction direction, float speed);
 
     /**
      * Indicates that the code thinks the axle is rotating.
@@ -141,53 +128,6 @@ public abstract class AbstractStepperMotor implements StepperMotorInterface {
      */
     public boolean isRunning() {
         return runFlag.get();
-    }
-
-    @Override
-    public void rotate(float angle, float speed) {
-        if (!runFlag.compareAndSet(false, true)) return;
-
-        Consumer<Long> stepFunction = getStepFunction(angle);
-        int steps = Math.round((Math.abs(angle) * stepsPerRotation / 360f));
-        long pause = calculateStepPauseFromVelocity(speed);
-
-        // notify stuff
-        fireEvent(true);
-
-        while ((steps--) > 0) {
-            if (!runFlag.get()) break;
-            stepFunction.accept(pause);
-        }
-        runFlag.set(false);
-
-        // notify stuff
-        fireEvent(false);
-    }
-
-    @Override
-    public void rotate(float angle, float maxSpeed, Duration accelerationTime) {
-        throw new UnsupportedOperationException("Not yet");
-    }
-
-    @Override
-    public void start(Direction direction, float speed) {
-        if (!runFlag.compareAndSet(false, true)) return;
-
-        running = executor.submit(() -> {
-            Consumer<Long> stepFunction = getStepFunction(direction);
-            long pause = calculateStepPauseFromVelocity(speed);
-
-            // notify stuff
-            fireEvent(true);
-
-            while (runFlag.get()) {
-                stepFunction.accept(pause);
-            }
-            runFlag.set(false);
-
-            // notify stuff
-            fireEvent(false);
-        });
     }
 
     @Override
@@ -218,29 +158,6 @@ public abstract class AbstractStepperMotor implements StepperMotorInterface {
     public void close() throws RuntimeIOException {
         stop();
         controller.close();
-        executor.shutdownNow();
-    }
-
-    /**
-     * Get the consumer for this direction.
-     *
-     * @param direction ibid
-     * @return which step function to execute
-     */
-    protected Consumer<Long> getStepFunction(Direction direction) {
-        if (direction == Direction.COUNTERCLOCKWISE) return controller::stepBackward;
-        return controller::stepForward;
-    }
-
-    /**
-     * Get the consumer for this angle, negative being counter-clockwise.
-     *
-     * @param angle ibid
-     * @return which step function to execute
-     */
-    protected Consumer<Long> getStepFunction(float angle) {
-        if (angle < 0) return controller::stepBackward;
-        return controller::stepForward;
     }
 
     protected void fireEvent(boolean start) {
@@ -262,17 +179,5 @@ public abstract class AbstractStepperMotor implements StepperMotorInterface {
                 listener.stop(event);
             }
         }
-    }
-
-    /**
-     * Calculate how long a "pause" between steps is necessary for this velocity (degrees/second). This does
-     * <b>NOT</b> check to see if the maximum velocity of the motor is exceeded.
-     *
-     * @param velocity the desired velocity
-     * @return the pause in nanoseconds between steps for this velocity
-     */
-    protected long calculateStepPauseFromVelocity(float velocity) {
-        int hertz = rpmToFrequency(velocity);
-        return Math.round((1. / hertz) * NS_IN_SEC);
     }
 }

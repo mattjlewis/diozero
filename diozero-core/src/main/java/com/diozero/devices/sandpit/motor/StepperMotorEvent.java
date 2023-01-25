@@ -35,6 +35,8 @@ import java.time.Instant;
 
 /**
  * Events fired when stepper motors do things.
+ *
+ * @author E. A. Graham Jr.
  */
 public class StepperMotorEvent {
     private final StepperMotorInterface motor;

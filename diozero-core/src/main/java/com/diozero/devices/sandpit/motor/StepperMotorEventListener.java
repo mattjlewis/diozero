@@ -33,6 +33,8 @@ package com.diozero.devices.sandpit.motor;
 
 /**
  * Listeners when something changes on a stepper motor.
+ *
+ * @author E. A. Graham Jr.
  */
 public interface StepperMotorEventListener {
     void start(StepperMotorEvent event);

@@ -31,7 +31,7 @@ package com.diozero.devices.sandpit.motor;
  * #L%
  */
 
-import com.diozero.devices.sandpit.motor.BasicStepperController.FiveWireUnipolarController;
+import com.diozero.devices.sandpit.motor.UnipolarStepperController.FiveWireUnipolarController;
 
 /**
  * Commonly found 28BYJ-48 stepper motor. Typically driven by a ULN2003 driver chip. The default frequency is for a
@@ -44,8 +44,10 @@ import com.diozero.devices.sandpit.motor.BasicStepperController.FiveWireUnipolar
  *     <li>here are apparently two variations with different gear ratios - the default is for the 16:1</li>
  *     <li>motion is "smoother" when the controller is in "half-step" mode, but torque will be variable</li>
  * </ul>
+ *
+ * @author E. A. Graham Jr.
  */
-public class BYJ48Stepper extends AbstractStepperMotor {
+public class BYJ48Stepper extends AbstractUnipolarStepperMotor {
     public static final int MAX_STEPS_PER_ROTATION = 512;
 
     /**
