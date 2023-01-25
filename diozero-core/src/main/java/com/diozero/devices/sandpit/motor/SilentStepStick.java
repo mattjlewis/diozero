@@ -101,7 +101,6 @@ public class SilentStepStick extends AbstractStepperMotor {
         float frequencyFactor = stepsPerRotation / 60f;
         float multiplier = driver.getResolution().multiplier();
         int frequency = Math.round(speed * frequencyFactor * multiplier);
-        System.out.println("Frequency " + frequency);
 
         driver.setFrequency(frequency);
         driver.run();

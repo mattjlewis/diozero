@@ -98,11 +98,9 @@ public interface UnipolarStepperController extends StepperMotorInterface.Stepper
             this.pins = pins.clone();
             this.useHalfSteps = useHalfSteps;
             if (useHalfSteps) {
-                System.out.println("Doing half-steps");
                 pinMap = HALF_STEPS;
             }
             else {
-                System.out.println("Doing full-steps");
                 pinMap = FULL_STEPS;
             }
         }
