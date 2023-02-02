@@ -5,7 +5,7 @@ package com.diozero.internal.spi;
  * Organisation: diozero
  * Project:      diozero - Core
  * Filename:     DeviceFactoryInterface.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.internal.spi;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -31,6 +31,11 @@ package com.diozero.internal.spi;
  * #L%
  */
 
+import java.util.function.Function;
+import java.util.function.Supplier;
+
+import com.diozero.api.DeviceAlreadyOpenedException;
+import com.diozero.api.NoSuchDeviceException;
 import com.diozero.api.PinInfo;
 import com.diozero.api.RuntimeIOException;
 import com.diozero.sbc.BoardPinInfo;
@@ -166,4 +171,36 @@ public interface DeviceFactoryInterface extends AutoCloseable {
 	 * @return the device otherwise null if not found
 	 */
 	<T extends InternalDeviceInterface> T getDevice(String key);
+
+	/**
+	 * Check to see whether the requested device is already opened or not. If so, throws the appropriate exception.
+	 *
+	 * @param keySupplier creates the device key
+	 * @param creator     whatever actually makes the "device"
+	 * @param <T>         the type of internal device
+	 * @return the "device"
+	 */
+	default <T extends InternalDeviceInterface> T registerDevice(Supplier<String> keySupplier,
+																 Function<String, T> creator) {
+		String key = keySupplier.get();
+
+		if (isDeviceOpened(key)) throw new DeviceAlreadyOpenedException("Device '" + key + " is already opened");
+		T device = creator.apply(key);
+		deviceOpened(device);
+		return device;
+	}
+
+	/**
+	 * Convenience registration for pin-based devices.
+	 * @param pinInfo the info
+	 * @param creator     whatever actually makes the "device"
+	 * @param <T>         the type of internal device
+	 * @return the "device"
+	 */
+	default <T extends InternalDeviceInterface> T registerPinDevice(PinInfo pinInfo, Function<String, T> creator) {
+		if (pinInfo == null) {
+			throw new NoSuchDeviceException("No such device - pinInfo was null");
+		}
+		return registerDevice(() -> createPinKey(pinInfo), creator);
+	}
 }

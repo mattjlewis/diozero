@@ -5,7 +5,7 @@ package com.diozero.internal.spi;
  * Organisation: diozero
  * Project:      diozero - Core
  * Filename:     SerialDeviceFactoryInterface.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.internal.spi;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -31,7 +31,6 @@ package com.diozero.internal.spi;
  * #L%
  */
 
-import com.diozero.api.DeviceAlreadyOpenedException;
 import com.diozero.api.RuntimeIOException;
 import com.diozero.api.SerialDevice;
 
@@ -56,18 +55,10 @@ public interface SerialDeviceFactoryInterface extends DeviceFactoryInterface {
 	default InternalSerialDeviceInterface provisionSerialDevice(String deviceFilename, int baud,
 			SerialDevice.DataBits dataBits, SerialDevice.StopBits stopBits, SerialDevice.Parity parity,
 			boolean readBlocking, int minReadChars, int readTimeoutMillis) throws RuntimeIOException {
-		String key = createSerialKey(deviceFilename);
 
-		// Check if this pin is already provisioned
-		if (isDeviceOpened(key)) {
-			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
-		}
-
-		InternalSerialDeviceInterface device = createSerialDevice(key, deviceFilename, baud, dataBits, stopBits, parity,
-				readBlocking, minReadChars, readTimeoutMillis);
-		deviceOpened(device);
-
-		return device;
+		return registerDevice(()->createSerialKey(deviceFilename),
+							  (k)-> createSerialDevice(k, deviceFilename, baud, dataBits, stopBits, parity,
+													   readBlocking, minReadChars, readTimeoutMillis));
 	}
 
 	InternalSerialDeviceInterface createSerialDevice(String key, String deviceFilename, int baud,

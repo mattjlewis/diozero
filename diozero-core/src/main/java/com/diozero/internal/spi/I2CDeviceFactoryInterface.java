@@ -5,7 +5,7 @@ package com.diozero.internal.spi;
  * Organisation: diozero
  * Project:      diozero - Core
  * Filename:     I2CDeviceFactoryInterface.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.internal.spi;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -36,7 +36,6 @@ import java.util.List;
 
 import org.tinylog.Logger;
 
-import com.diozero.api.DeviceAlreadyOpenedException;
 import com.diozero.api.I2CConstants;
 import com.diozero.api.RuntimeIOException;
 
@@ -45,17 +44,9 @@ public interface I2CDeviceFactoryInterface extends DeviceFactoryInterface {
 
 	default InternalI2CDeviceInterface provisionI2CDevice(int controller, int address,
 			I2CConstants.AddressSize addressSize) throws RuntimeIOException {
-		String key = createI2CKey(controller, address);
 
-		// Check if this pin is already provisioned
-		if (isDeviceOpened(key)) {
-			throw new DeviceAlreadyOpenedException("Device " + key + " is already in use");
-		}
-
-		InternalI2CDeviceInterface device = createI2CDevice(key, controller, address, addressSize);
-		deviceOpened(device);
-
-		return device;
+		return registerDevice(() -> createI2CKey(controller, address),
+							  (k) -> createI2CDevice(k, controller, address, addressSize));
 	}
 
 	InternalI2CDeviceInterface createI2CDevice(String key, int controller, int address,
