@@ -1,4 +1,4 @@
-package com.diozero.internal.board.soc.amlogic;
+package com.diozero.internal.soc.amlogic;
 
 /*
  * #%L

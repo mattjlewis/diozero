@@ -59,7 +59,7 @@ public class Ads1115Test {
 				AnalogInputDevice ain2 = new AnalogInputDevice(adc, 2);
 				AnalogInputDevice ain3 = new AnalogInputDevice(adc, 3)) {
 			AnalogInputDevice[] ains = new AnalogInputDevice[] { ain0, ain1, ain2, ain3 };
-			System.out.println("Range: " + adc.getVRef());
+			System.out.println("Range: " + ain0.getRange());
 			for (int i = 0; i < 10; i++) {
 				for (int channel = 0; channel < adc.getModel().getNumChannels(); channel++) {
 					float unscaled = ains[channel].getUnscaledValue();

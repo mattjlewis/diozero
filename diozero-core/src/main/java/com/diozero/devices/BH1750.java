@@ -110,7 +110,7 @@ public class BH1750 implements LuminositySensorInterface {
 	}
 
 	public BH1750(int controller, int address) {
-		this(controller, DEFAULT_ADDRESS, DEFAULT_MODE);
+		this(controller, address, DEFAULT_MODE);
 	}
 
 	public BH1750(int controller, int address, Mode mode) {

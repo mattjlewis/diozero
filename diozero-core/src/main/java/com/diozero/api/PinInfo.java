@@ -123,21 +123,22 @@ public class PinInfo {
 	private Collection<DeviceMode> modes;
 	private int pwmChip;
 	private int pwmNum;
+	private float adcVRef;
 
 	public PinInfo(String keyPrefix, String header, int deviceNumber, int physicalPin, String name,
 			Collection<DeviceMode> modes) {
 		this(keyPrefix, header, deviceNumber, physicalPin, NOT_DEFINED, NOT_DEFINED, name, modes, deviceNumber,
-				NOT_DEFINED, NOT_DEFINED);
+				NOT_DEFINED, NOT_DEFINED, NOT_DEFINED);
 	}
 
 	public PinInfo(String keyPrefix, String header, int deviceNumber, int physicalPin, String name,
 			Collection<DeviceMode> modes, int sysFsNumber, int chip, int line) {
 		this(keyPrefix, header, deviceNumber, physicalPin, NOT_DEFINED, NOT_DEFINED, name, modes, sysFsNumber, chip,
-				line);
+				line, NOT_DEFINED);
 	}
 
 	public PinInfo(String keyPrefix, String header, int deviceNumber, int physicalPin, int pwmChip, int pwmNum,
-			String name, Collection<DeviceMode> modes, int sysFsNumber, int chip, int line) {
+			String name, Collection<DeviceMode> modes, int sysFsNumber, int chip, int line, float adcVRef) {
 		this.keyPrefix = keyPrefix;
 		this.header = header;
 		this.physicalPin = physicalPin;
@@ -149,6 +150,7 @@ public class PinInfo {
 		this.sysFsNumber = sysFsNumber;
 		this.chip = chip;
 		this.lineOffset = line;
+		this.adcVRef = adcVRef;
 	}
 
 	/**
@@ -297,6 +299,10 @@ public class PinInfo {
 
 	public int getPwmNum() {
 		return pwmNum;
+	}
+
+	public float getAdcVRef() {
+		return adcVRef;
 	}
 
 	@Override

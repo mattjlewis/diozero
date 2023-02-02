@@ -13,10 +13,10 @@ Setup notes for Armbian (32-bit).
 ## System Information
 
 ```
-$ sudo java -cp diozero-sampleapps-1.3.5.jar com.diozero.sampleapps.SystemInformation
+$ sudo java -cp diozero-sampleapps-{{site.version}}.jar com.diozero.sampleapps.SystemInformation
 
 Local System Info
-diozero version: 1.3.5
+diozero version: {{site.version}}
 Operating System: ubuntu 22.04.1 LTS (Jammy Jellyfish) - arm
 CPU Temperature: 37.73
 
@@ -55,7 +55,7 @@ Header: DEFAULT
 ## GPIO Read All
 
 ```
-$ sudo java -cp diozero-sampleapps-1.3.5.jar com.diozero.sampleapps.GpioReadAll
+$ sudo java -cp diozero-sampleapps-{{site.version}}.jar com.diozero.sampleapps.GpioReadAll
 
 Header: DEFAULT
 +-----+----------+------+---+--------+----------+--------+---+------+----------+-----+

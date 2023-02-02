@@ -99,7 +99,7 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 				throw new IllegalArgumentException("Invalid OperatingMode value " + value);
 			}
 
-			return OperatingMode.values()[value];
+			return values()[value];
 		}
 	}
 
@@ -152,7 +152,7 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 				throw new IllegalArgumentException("Invalid OversamplingMultiplier value " + value);
 			}
 
-			return OversamplingMultiplier.values()[value];
+			return values()[value];
 		}
 	}
 
@@ -191,7 +191,7 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 				throw new IllegalArgumentException("Invalid IirFilterCoefficient value " + value);
 			}
 
-			return IirFilterCoefficient.values()[value];
+			return values()[value];
 		}
 	}
 
@@ -199,8 +199,8 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 	 * Gas heater profile.
 	 */
 	public enum HeaterProfile {
-		PROFILE_0(0b0000), PROFILE_1(0b0001), PROFILE_2(0b0010), PROFILE_3(0b0011), PROFILE_4(0b0100),
-		PROFILE_5(0b0101), PROFILE_6(0b0110), PROFILE_7(0b0111), PROFILE_8(0b1000), PROFILE_9(0b1001);
+		_0(0b0000), _1(0b0001), _2(0b0010), _3(0b0011), _4(0b0100), _5(0b0101), _6(0b0110), _7(0b0111), _8(0b1000),
+		_9(0b1001);
 
 		private byte value;
 
@@ -213,11 +213,11 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 		}
 
 		static HeaterProfile valueOf(int value) {
-			if (value < 0 || value > PROFILE_9.getValue()) {
+			if (value < 0 || value > _9.getValue()) {
 				throw new IllegalArgumentException("Invalid HeaterProfile value " + value);
 			}
 
-			return HeaterProfile.values()[value];
+			return values()[value];
 		}
 	}
 
@@ -229,14 +229,14 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 	 * Not documented in the datasheet, ref:
 	 * https://github.com/BoschSensortec/BME68x-Sensor-API/blob/master/bme68x_defs.h#L265
 	 */
-	public enum ODR {
+	public enum StandbyDuration {
 		_0_59_MS(0b0000, 0.59f), _62_5_MS(0b0001, 62.5f), _125_MS(0b0010, 125f), _250_MS(0b0011, 250f),
 		_500_MS(0b0100, 500f), _1000_MS(0b0101, 1_000), _10_MS(0b0110, 10f), _20_MS(0b0111, 20), NONE(0b1000, 0f);
 
 		private byte value;
 		private float standbyTimeMs;
 
-		ODR(int value, float standbyTimeMs) {
+		StandbyDuration(int value, float standbyTimeMs) {
 			this.value = (byte) value;
 			this.standbyTimeMs = standbyTimeMs;
 		}
@@ -249,12 +249,12 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 			return standbyTimeMs;
 		}
 
-		static ODR valueOf(int value) {
+		static StandbyDuration valueOf(int value) {
 			if (value < 0 || value > NONE.getValue()) {
-				throw new IllegalArgumentException("Invalid ODR value " + value);
+				throw new IllegalArgumentException("Invalid StandbyDuration value " + value);
 			}
 
-			return ODR.values()[value];
+			return values()[value];
 		}
 	}
 
@@ -424,6 +424,68 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 	static final float[] GAS_RANGE_LOOKUP_TABLE_2_FPU = { 0.0f, 0.0f, 0.0f, 0.0f, 0.1f, 0.7f, 0.0f, -0.8f, -0.1f, 0.0f,
 			0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
 
+	public static class Builder {
+		public static Builder builder(final int controller) {
+			return new Builder(controller);
+		}
+
+		/*-
+		 * chipId: 0x61, variantId: 0x1, uniqueId: 0x2c
+		 * Defaults:
+		 * Humidity Oversampling: NONE
+		 * Temperature Oversampling: NONE
+		 * Pressure Oversampling: NONE
+		 * Filter: NONE
+		 * Standy Duration: _0_59_MS
+		 */
+		private int controller;
+		private int address = DEVICE_ADDRESS;
+		private OversamplingMultiplier humidityOversampling;
+		private OversamplingMultiplier temperatureOversampling;
+		private OversamplingMultiplier pressureOversampling;
+		private IirFilterCoefficient filter;
+		private StandbyDuration standbyDuration;
+
+		public Builder(int controller) {
+			this.controller = controller;
+		}
+
+		public Builder setAddress(int address) {
+			this.address = address;
+			return this;
+		}
+
+		public Builder setHumidityOversampling(OversamplingMultiplier humidityOversampling) {
+			this.humidityOversampling = humidityOversampling;
+			return this;
+		}
+
+		public Builder setTemperatureOversampling(OversamplingMultiplier temperatureOversampling) {
+			this.temperatureOversampling = temperatureOversampling;
+			return this;
+		}
+
+		public Builder setPressureOversampling(OversamplingMultiplier pressureOversampling) {
+			this.pressureOversampling = pressureOversampling;
+			return this;
+		}
+
+		public Builder setFilter(IirFilterCoefficient filter) {
+			this.filter = filter;
+			return this;
+		}
+
+		public Builder setDataRate(StandbyDuration standbyDuration) {
+			this.standbyDuration = standbyDuration;
+			return this;
+		}
+
+		public BME68x build() {
+			return new BME68x(controller, address, humidityOversampling, temperatureOversampling, pressureOversampling,
+					filter, standbyDuration);
+		}
+	}
+
 	private I2CDevice device;
 	private byte chipId;
 	private byte variantId;
@@ -455,9 +517,22 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 	 * @param address    I2C address of the sensor.
 	 */
 	public BME68x(final int controller, final int address) {
+		this(controller, address, OversamplingMultiplier.X1, OversamplingMultiplier.X1, OversamplingMultiplier.X1,
+				IirFilterCoefficient._7, StandbyDuration._10_MS);
+	}
+
+	/**
+	 * Create a new BME680 sensor driver connected on the given bus and address.
+	 *
+	 * @param controller I2C bus the sensor is connected to.
+	 * @param address    I2C address of the sensor.
+	 */
+	public BME68x(final int controller, final int address, OversamplingMultiplier humidityOversampling,
+			OversamplingMultiplier temperatureOversampling, OversamplingMultiplier pressureOversampling,
+			IirFilterCoefficient filter, StandbyDuration standbyDuration) {
 		this.device = I2CDevice.builder(address).setController(controller).build();
 
-		initialise();
+		initialise(humidityOversampling, temperatureOversampling, pressureOversampling, filter, standbyDuration);
 	}
 
 	/**
@@ -481,7 +556,8 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 	 *
 	 * bme68x_init
 	 */
-	public void initialise() {
+	public void initialise(OversamplingMultiplier humidityOversampling, OversamplingMultiplier temperatureOversampling,
+			OversamplingMultiplier pressureOversampling, IirFilterCoefficient filter, StandbyDuration standbyDuration) {
 		chipId = device.readByteData(REG_CHIP_ID);
 		if (chipId != CHIP_ID_BME680) {
 			throw new IllegalStateException(String.format("%s %s not found.", CHIP_VENDOR, CHIP_NAME));
@@ -493,6 +569,9 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 		softReset();
 
 		getCalibrationData();
+
+		// setConfiguration(humidityOversampling, temperatureOversampling,
+		// pressureOversampling, filter, standbyDuration);
 	}
 
 	/**
@@ -573,7 +652,7 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 	}
 
 	/**
-	 * Set the oversampling, filter and odr configuration.
+	 * Set the oversampling, filter and standby configuration.
 	 *
 	 * bme68x_set_conf
 	 *
@@ -581,12 +660,12 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 	 * @param temperatureOversampling Temperature oversampling mode
 	 * @param pressureOversampling    Pressure oversampling mode
 	 * @param filter                  IIR Filter coefficient
-	 * @param odr                     Standby time between sequential mode
+	 * @param standbyDuration         Standby time between sequential mode
 	 *                                measurement profiles (BME688 only).
 	 */
 	public void setConfiguration(OversamplingMultiplier humidityOversampling,
 			OversamplingMultiplier temperatureOversampling, OversamplingMultiplier pressureOversampling,
-			IirFilterCoefficient filter, ODR odr) {
+			IirFilterCoefficient filter, StandbyDuration standbyDuration) {
 		OperatingMode current_op_mode = getOperatingMode();
 
 		if (current_op_mode != OperatingMode.SLEEP) {
@@ -609,8 +688,8 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 
 		byte odr20 = 0;
 		byte odr3 = 1;
-		if (odr != ODR.NONE) {
-			odr20 = odr.getValue();
+		if (standbyDuration != StandbyDuration.NONE) {
+			odr20 = standbyDuration.getValue();
 			odr3 = 0;
 		}
 		data_array[4] = BitManipulation.updateWithMaskedData(data_array[4], (byte) ODR20_MASK, odr20, ODR20_POSITION);
@@ -663,11 +742,11 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 		return IirFilterCoefficient.valueOf((device.readByteData(REG_CONFIG) & FILTER_MASK) >> FILTER_POSITION);
 	}
 
-	public ODR getOdr() {
+	public StandbyDuration getStandbyDuration() {
 		byte odr20 = (byte) ((device.readByteData(REG_CONFIG) & ODR20_MASK) >> ODR20_POSITION);
 		byte odr3 = (byte) ((device.readByteData(REG_CTRL_GAS_1) & ODR3_MASK) >> ODR3_POSITION);
 
-		return ODR.valueOf(odr3 << 3 | odr20);
+		return StandbyDuration.valueOf(odr3 << 3 | odr20);
 	}
 
 	/**
@@ -890,7 +969,7 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 
 		HeaterConfig heatr_conf = new HeaterConfig(true, HEATR_DUR1, HIGH_TEMP);
 		setHeaterConfiguration(OperatingMode.FORCED, heatr_conf);
-		setConfiguration(os_hum, os_temp, os_press, IirFilterCoefficient.NONE, ODR._0_59_MS);
+		setConfiguration(os_hum, os_temp, os_press, IirFilterCoefficient.NONE, StandbyDuration._0_59_MS);
 		setOperatingMode(OperatingMode.FORCED);
 
 		Logger.info("Sleeping for {} ms", Integer.valueOf(HEATR_DUR1_DELAY_MS));
@@ -917,7 +996,7 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 			}
 
 			setHeaterConfiguration(OperatingMode.FORCED, heatr_conf);
-			setConfiguration(os_hum, os_temp, os_press, IirFilterCoefficient.NONE, ODR._0_59_MS);
+			setConfiguration(os_hum, os_temp, os_press, IirFilterCoefficient.NONE, StandbyDuration._0_59_MS);
 			setOperatingMode(OperatingMode.FORCED);
 
 			Logger.info("Sleeping for {} ms", Integer.valueOf(HEATR_DUR2_DELAY_MS));

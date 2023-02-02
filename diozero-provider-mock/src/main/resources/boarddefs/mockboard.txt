@@ -46,8 +46,8 @@ GPIO, Default, 25, GPIO25, 22, DIGITAL_INPUT | DIGITAL_OUTPUT, 0, 25
 GPIO, Default, 26, GPIO26, 37, DIGITAL_INPUT | DIGITAL_OUTPUT, 0, 26
 GPIO, Default, 27, GPIO27, 13, DIGITAL_INPUT | DIGITAL_OUTPUT, 0, 27
 # ADC, Header, ADC #, name, Physical pin
-ADC, Default, 0, AIN0, 41
-ADC, Default, 1, AIN1, 42
+ADC, Default, 0, AIN0, 41, 1.8
+ADC, Default, 1, AIN1, 42, 1.8
 # DAC, Header, DAC #, name, Physical pin
 DAC, Default, 0, AOUT0, 43
 DAC, Default, 1, AOUT1, 44

@@ -4,7 +4,7 @@ package com.diozero.devices;
  * #%L
  * Organisation: diozero
  * Project:      diozero - Core
- * Filename:     BME280.java
+ * Filename:     BMx280.java
  * 
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
@@ -36,7 +36,6 @@ import java.nio.ByteOrder;
 
 import org.tinylog.Logger;
 
-import com.diozero.api.I2CConstants;
 import com.diozero.api.I2CDevice;
 import com.diozero.api.RuntimeIOException;
 import com.diozero.api.SpiClockMode;
@@ -79,18 +78,40 @@ import com.diozero.util.SleepUtil;
  * @author gregflurry
  * @author mattjlewis
  */
-public class BME280 implements BarometerInterface, ThermometerInterface, HygrometerInterface {
+public class BMx280 implements BarometerInterface, ThermometerInterface, HygrometerInterface {
 	public enum Model {
-		BMP280(0x58), BME280(0x60);
+		BMP280(0x58, 24, 6), BME280(0x60, 26, 8);
 
 		private int deviceId;
+		private int calibrationSize;
+		private int dataSize;
 
-		Model(int deviceId) {
+		Model(int deviceId, int calibrationSize, int dataSize) {
 			this.deviceId = deviceId;
+			this.calibrationSize = calibrationSize;
+			this.dataSize = dataSize;
 		}
 
 		public int getDeviceId() {
 			return deviceId;
+		}
+
+		int getCalibrationSize() {
+			return calibrationSize;
+		}
+
+		int getDataSize() {
+			return dataSize;
+		}
+
+		static Model of(int deviceId) {
+			if (deviceId == BMP280.getDeviceId()) {
+				return Model.BMP280;
+			}
+			if (deviceId == BME280.getDeviceId()) {
+				return Model.BME280;
+			}
+			throw new RuntimeIOException("Unexpected device id: " + deviceId);
 		}
 	}
 
@@ -99,12 +120,14 @@ public class BME280 implements BarometerInterface, ThermometerInterface, Hygrome
 	private static final int CALIB_00_REG = 0x88;
 	private static final int ID_REG = 0xD0;
 	private static final int RESET_REG = 0xE0;
-	private static final int CALIB_26_REG = 0xe1;
+	private static final int CALIB_26_REG = 0xE1;
 	private static final int CTRL_HUM_REG = 0xF2;
 	private static final int STATUS_REG = 0xF3;
 	private static final int CTRL_MEAS_REG = 0xF4;
 	private static final int CONFIG_REG = 0xF5;
 	private static final int PRESS_MSB_REG = 0xF7;
+
+	private static final byte RESET_COMMAND = (byte) 0xB6;
 
 	// Flags for ctrl_hum and ctrl_meas registers
 	private static final byte OVERSAMPLING_1_MASK = 0b001;
@@ -114,31 +137,11 @@ public class BME280 implements BarometerInterface, ThermometerInterface, Hygrome
 	private static final byte OVERSAMPLING_16_MASK = 0b101;
 
 	/**
-	 * Humidity oversampling multiplier; value can be OVERSAMPLING_1, _2, _4, _8,
-	 * _16.
-	 */
-	public enum HumidityOversampling {
-		OVERSAMPLING_1(OVERSAMPLING_1_MASK), OVERSAMPLING_2(OVERSAMPLING_2_MASK), OVERSAMPLING_4(OVERSAMPLING_4_MASK),
-		OVERSAMPLING_8(OVERSAMPLING_8_MASK), OVERSAMPLING_16(OVERSAMPLING_16_MASK);
-
-		private byte mask;
-
-		HumidityOversampling(byte mask) {
-			this.mask = mask;
-		}
-
-		public byte getMask() {
-			return mask;
-		}
-	}
-
-	/**
-	 * Temperature oversampling multiplier; value can be OVERSAMPLING_1, _2, _4, _8,
-	 * _16.
+	 * Temperature oversampling multiplier; value can be 1, 2, 4, 8, 16.
 	 */
 	public enum TemperatureOversampling {
-		OVERSAMPLING_1(OVERSAMPLING_1_MASK), OVERSAMPLING_2(OVERSAMPLING_2_MASK), OVERSAMPLING_4(OVERSAMPLING_4_MASK),
-		OVERSAMPLING_8(OVERSAMPLING_8_MASK), OVERSAMPLING_16(OVERSAMPLING_16_MASK);
+		_1(OVERSAMPLING_1_MASK), _2(OVERSAMPLING_2_MASK), _4(OVERSAMPLING_4_MASK), _8(OVERSAMPLING_8_MASK),
+		_16(OVERSAMPLING_16_MASK);
 
 		private byte mask;
 
@@ -152,12 +155,11 @@ public class BME280 implements BarometerInterface, ThermometerInterface, Hygrome
 	}
 
 	/**
-	 * Pressure oversampling multiplier; value can be OVERSAMPLING_1, _2, _4, _8,
-	 * _16.
+	 * Pressure oversampling multiplier; value can be 1, 2, 4, 8, 16.
 	 */
 	public enum PressureOversampling {
-		OVERSAMPLING_1(OVERSAMPLING_1_MASK), OVERSAMPLING_2(OVERSAMPLING_2_MASK), OVERSAMPLING_4(OVERSAMPLING_4_MASK),
-		OVERSAMPLING_8(OVERSAMPLING_8_MASK), OVERSAMPLING_16(OVERSAMPLING_16_MASK);
+		_1(OVERSAMPLING_1_MASK), _2(OVERSAMPLING_2_MASK), _4(OVERSAMPLING_4_MASK), _8(OVERSAMPLING_8_MASK),
+		_16(OVERSAMPLING_16_MASK);
 
 		private byte mask;
 
@@ -165,16 +167,34 @@ public class BME280 implements BarometerInterface, ThermometerInterface, Hygrome
 			this.mask = (byte) (mask << 2);
 		}
 
+		byte getMask() {
+			return mask;
+		}
+	}
+
+	/**
+	 * Humidity oversampling multiplier; value can be 1, 2, 4, 8, 16.
+	 */
+	public enum HumidityOversampling {
+		_1(OVERSAMPLING_1_MASK), _2(OVERSAMPLING_2_MASK), _4(OVERSAMPLING_4_MASK), _8(OVERSAMPLING_8_MASK),
+		_16(OVERSAMPLING_16_MASK);
+
+		private byte mask;
+
+		HumidityOversampling(byte mask) {
+			this.mask = mask;
+		}
+
 		public byte getMask() {
 			return mask;
 		}
 	}
 
 	/**
-	 * Operating mode; value can be MODE_SLEEP, _FORCED, or _NORMAL.
+	 * Operating mode; value can be SLEEP, FORCED, or NORMAL.
 	 */
 	public enum OperatingMode {
-		MODE_SLEEP(0b00), MODE_FORCED(0b01), MODE_NORMAL(0b11);
+		SLEEP(0b00), FORCED(0b01), NORMAL(0b11);
 
 		private byte mask;
 
@@ -182,44 +202,50 @@ public class BME280 implements BarometerInterface, ThermometerInterface, Hygrome
 			this.mask = (byte) mask;
 		}
 
-		public byte getMask() {
+		byte getMask() {
 			return mask;
 		}
 	}
 
 	/**
-	 * Inactive duration in standby mode; can be STANDBY_
+	 * Inactive duration in standby mode; can be:
 	 * <ul>
-	 * <li>500_US (0.5 ms)</li>
-	 * <li>62_5_MS (62.5 ms)</li>
-	 * <li>125_MS (125 ms)</li>
-	 * <li>250_MS (250 ms)</li>
-	 * <li>500_MS (500 ms)</li>
-	 * <li>1_S (1 second)</li>
-	 * <li>10_MS (10 ms)</li>
-	 * <li>20_MS (20 ms)</li>
+	 * <li>_500_US (0.5 ms)</li>
+	 * <li>_62_5_MS (62.5 ms)</li>
+	 * <li>_125_MS (125 ms)</li>
+	 * <li>_250_MS (250 ms)</li>
+	 * <li>_500_MS (500 ms)</li>
+	 * <li>_1_S (1 second)</li>
+	 * <li>_10_MS (10 ms)</li>
+	 * <li>_20_MS (20 ms)</li>
 	 * </ul>
 	 */
 	public enum StandbyDuration {
-		STANDBY_500_US(0b000), STANDBY_62_5_MS(0b001), STANDBY_125_MS(0b010), STANDBY_250_MS(0b011),
-		STANDBY_500_MS(0b100), STANDBY_1_S(0b101), STANDBY_10_MS(0b110), STANDBY_20_MS(0b111);
+		_500_US(0b000, 500), _62_5_MS(0b001, 62_500), _125_MS(0b010, 125_000), _250_MS(0b011, 250_000),
+		_500_MS(0b100, 500_000), _1_S(0b101, 1_000_000), _10_MS(0b110, 10_000), _20_MS(0b111, 20_000);
 
 		private byte mask;
+		private int durationUs;
 
-		StandbyDuration(int mask) {
+		StandbyDuration(int mask, int durationUs) {
 			this.mask = (byte) (mask << 5);
+			this.durationUs = durationUs;
 		}
 
-		public byte getMask() {
+		byte getMask() {
 			return mask;
+		}
+
+		int getDurationUs() {
+			return durationUs;
 		}
 	}
 
 	/**
-	 * IIR Filter coefficient; can be FILTER_OFF, _2, _4, _8, _16.
+	 * IIR Filter coefficient; can be OFF, _2, _4, _8, _16.
 	 */
 	public enum FilterCoefficient {
-		FILTER_OFF(0b000), FILTER_2(0b001), FILTER_4(0b010), FILTER_8(0b011), FILTER_16(0b100);
+		OFF(0b000), _2(0b001), _4(0b010), _8(0b011), _16(0b100);
 
 		private byte mask;
 
@@ -232,10 +258,11 @@ public class BME280 implements BarometerInterface, ThermometerInterface, Hygrome
 		}
 	}
 
+	private boolean useI2C;
 	private I2CDevice deviceI;
 	private SpiDevice deviceS;
 	private Model model;
-	private boolean useI2C;
+	// Calibration data
 	private int digT1;
 	private short digT2;
 	private short digT3;
@@ -255,72 +282,203 @@ public class BME280 implements BarometerInterface, ThermometerInterface, Hygrome
 	private int digH5;
 	private byte digH6;
 
-	/**
-	 * Creates an instance that uses I2C. Assumes I2C bus 1 and the default I2C
-	 * address (0x76); all other I2C instantiation parameters are set to the
-	 * default.
-	 *
-	 * @throws RuntimeIOException if instance cannot be created
-	 */
-	public BME280() throws RuntimeIOException {
-		this(I2CConstants.CONTROLLER_1, DEFAULT_I2C_ADDRESS);
+	public static class I2CBuilder {
+		public static I2CBuilder builder(int bus) {
+			return new I2CBuilder(bus);
+		}
+
+		private int bus;
+		private int address = DEFAULT_I2C_ADDRESS;
+		private TemperatureOversampling temperatureOversampling = TemperatureOversampling._1;
+		private PressureOversampling pressureOversampling = PressureOversampling._1;
+		private HumidityOversampling humidityOversampling = HumidityOversampling._1;
+		private OperatingMode operatingMode = OperatingMode.NORMAL;
+		private StandbyDuration standbyDuration = StandbyDuration._1_S;
+		private FilterCoefficient filterCoefficient = FilterCoefficient.OFF;
+
+		public I2CBuilder(int bus) {
+			this.bus = bus;
+		}
+
+		public I2CBuilder setAddress(int address) {
+			this.address = address;
+			return this;
+		}
+
+		public I2CBuilder setTemperatureOversampling(TemperatureOversampling temperatureOversampling) {
+			this.temperatureOversampling = temperatureOversampling;
+			return this;
+		}
+
+		public I2CBuilder setPressureOversampling(PressureOversampling pressureOversampling) {
+			this.pressureOversampling = pressureOversampling;
+			return this;
+		}
+
+		public I2CBuilder setHumidityOversampling(HumidityOversampling humidityOversampling) {
+			this.humidityOversampling = humidityOversampling;
+			return this;
+		}
+
+		public I2CBuilder setOperatingMode(OperatingMode operatingMode) {
+			this.operatingMode = operatingMode;
+			return this;
+		}
+
+		public I2CBuilder setStandbyDuration(StandbyDuration standbyDuration) {
+			this.standbyDuration = standbyDuration;
+			return this;
+		}
+
+		public I2CBuilder setFilterCoefficient(FilterCoefficient filterCoefficient) {
+			this.filterCoefficient = filterCoefficient;
+			return this;
+		}
+
+		public BMx280 build() {
+			return new BMx280(bus, address, temperatureOversampling, pressureOversampling, humidityOversampling,
+					operatingMode, standbyDuration, filterCoefficient);
+		}
 	}
 
-	/**
-	 * Creates an instance that uses I2C. The caller must provide the I2C bus number
-	 * and the I2C address; all other I2C instantiation parameters are set to the
-	 * default.
-	 *
-	 * @param bus     I2C bus number
-	 * @param address device address
-	 * @throws RuntimeIOException if instance cannot be created
-	 */
-	public BME280(int bus, int address) throws RuntimeIOException {
+	public static class SpiBuilder {
+		public static SpiBuilder builder(int chipSelect) {
+			return new SpiBuilder(chipSelect);
+		}
+
+		private int chipSelect;
+		private int controller = SpiConstants.DEFAULT_SPI_CONTROLLER;
+		private int frequency = SpiConstants.DEFAULT_SPI_CLOCK_FREQUENCY;
+		private SpiClockMode mode = SpiConstants.DEFAULT_SPI_CLOCK_MODE;
+		private TemperatureOversampling temperatureOversampling = TemperatureOversampling._1;
+		private PressureOversampling pressureOversampling = PressureOversampling._1;
+		private HumidityOversampling humidityOversampling = HumidityOversampling._1;
+		private OperatingMode operatingMode = OperatingMode.NORMAL;
+		private StandbyDuration standbyDuration = StandbyDuration._1_S;
+		private FilterCoefficient filterCoefficient = FilterCoefficient.OFF;
+
+		public SpiBuilder(int chipSelect) {
+			this.chipSelect = chipSelect;
+		}
+
+		/**
+		 * Set the SPI controller
+		 * 
+		 * @param controller the SPI controller used
+		 * @return this builder instance
+		 */
+		public SpiBuilder setController(int controller) {
+			this.controller = controller;
+			return this;
+		}
+
+		/**
+		 * Set the SPI chip select.
+		 *
+		 * @param chipSelect the chip select line used
+		 * @return this builder instance
+		 */
+		public SpiBuilder setChipSelect(int chipSelect) {
+			this.chipSelect = chipSelect;
+			return this;
+		}
+
+		/**
+		 * Set the SPI clock frequency.
+		 *
+		 * @param frequency the frequency used
+		 * @return this builder instance
+		 */
+		public SpiBuilder setFrequency(int frequency) {
+			this.frequency = frequency;
+			return this;
+		}
+
+		/**
+		 * Set the SPI clock mode.
+		 *
+		 * @param mode the clock mode to be used
+		 * @return this builder instance
+		 */
+		public SpiBuilder setClockMode(SpiClockMode mode) {
+			this.mode = mode;
+			return this;
+		}
+
+		public SpiBuilder setTemperatureOversampling(TemperatureOversampling temperatureOversampling) {
+			this.temperatureOversampling = temperatureOversampling;
+			return this;
+		}
+
+		public SpiBuilder setPressureOversampling(PressureOversampling pressureOversampling) {
+			this.pressureOversampling = pressureOversampling;
+			return this;
+		}
+
+		public SpiBuilder setHumidityOversampling(HumidityOversampling humidityOversampling) {
+			this.humidityOversampling = humidityOversampling;
+			return this;
+		}
+
+		public SpiBuilder setOperatingMode(OperatingMode operatingMode) {
+			this.operatingMode = operatingMode;
+			return this;
+		}
+
+		public SpiBuilder setStandbyDuration(StandbyDuration standbyDuration) {
+			this.standbyDuration = standbyDuration;
+			return this;
+		}
+
+		public SpiBuilder setFilterCoefficient(FilterCoefficient filterCoefficient) {
+			this.filterCoefficient = filterCoefficient;
+			return this;
+		}
+
+		public BMx280 build() {
+			return new BMx280(controller, chipSelect, frequency, mode, temperatureOversampling, pressureOversampling,
+					humidityOversampling, operatingMode, standbyDuration, filterCoefficient);
+		}
+	}
+
+	private BMx280(int bus, int address, TemperatureOversampling temperatureOversampling,
+			PressureOversampling pressureOversampling, HumidityOversampling humidityOversampling,
+			OperatingMode operatingMode, StandbyDuration standbyDuration, FilterCoefficient filterCoefficient)
+			throws RuntimeIOException {
 		useI2C = true;
 
 		deviceI = I2CDevice.builder(address).setController(bus).setByteOrder(ByteOrder.LITTLE_ENDIAN).build();
 
-		setUp280();
+		initialise(temperatureOversampling, pressureOversampling, humidityOversampling, operatingMode, standbyDuration,
+				filterCoefficient);
 	}
 
-	/**
-	 * Creates an instance that uses SPI. The caller must provide the chip select
-	 * line; all other SPI instantiation parameters are set to the default.
-	 *
-	 * @param chipSelect the chip select line used
-	 * @throws RuntimeIOException if instance cannot be created
-	 */
-	public BME280(int chipSelect) throws RuntimeIOException {
-		this(SpiConstants.DEFAULT_SPI_CONTROLLER, chipSelect, SpiConstants.DEFAULT_SPI_CLOCK_FREQUENCY,
-				SpiConstants.DEFAULT_SPI_CLOCK_MODE);
-	}
-
-	/**
-	 * Creates an instance that uses SPI. The caller must provide all SPI
-	 * instantiation parameters.
-	 *
-	 * @param controller the SPI controller used
-	 * @param chipSelect the chip select line used
-	 * @param frequency  the frequency used
-	 * @param mode       the clock mode used
-	 * @throws RuntimeIOException if an error occurs
-	 */
-	public BME280(int controller, int chipSelect, int frequency, SpiClockMode mode) throws RuntimeIOException {
+	private BMx280(int controller, int chipSelect, int frequency, SpiClockMode mode,
+			TemperatureOversampling temperatureOversampling, PressureOversampling pressureOversampling,
+			HumidityOversampling humidityOversampling, OperatingMode operatingMode, StandbyDuration standbyDuration,
+			FilterCoefficient filterCoefficient) {
 		useI2C = false;
 
 		deviceS = SpiDevice.builder(chipSelect).setController(controller).setFrequency(frequency).setClockMode(mode)
 				.build();
 
-		setUp280();
+		initialise(temperatureOversampling, pressureOversampling, humidityOversampling, operatingMode, standbyDuration,
+				filterCoefficient);
 	}
 
-	private void setUp280() {
+	private void initialise(TemperatureOversampling temperatureOversampling, PressureOversampling pressureOversampling,
+			HumidityOversampling humidityOversampling, OperatingMode operatingMode, StandbyDuration standbyDuration,
+			FilterCoefficient filterCoefficient) {
 		readDeviceModel();
 		readCoefficients();
 
-		setOperatingModes(TemperatureOversampling.OVERSAMPLING_1, PressureOversampling.OVERSAMPLING_1,
-				HumidityOversampling.OVERSAMPLING_1, OperatingMode.MODE_NORMAL);
-		setStandbyAndFilterModes(StandbyDuration.STANDBY_1_S, FilterCoefficient.FILTER_OFF);
+		setOperatingModes(temperatureOversampling, pressureOversampling, humidityOversampling, operatingMode);
+		setStandbyAndFilterModes(standbyDuration, filterCoefficient);
+	}
+
+	private void readDeviceModel() throws RuntimeIOException {
+		// Detect the device model by reading the ID register
+		model = Model.of(readByte(ID_REG));
 	}
 
 	private void readCoefficients() {
@@ -329,44 +487,47 @@ public class BME280 implements BarometerInterface, ThermometerInterface, Hygrome
 			SleepUtil.sleepMillis(10);
 		}
 
-		// Read 26 bytes of data from address 0x88(136)
-		ByteBuffer buffer = readByteBlock(CALIB_00_REG, model == Model.BMP280 ? 24 : 26);
+		// Read the calibration data from address 0x88(136)
+		ByteBuffer buffer = readByteBlock(CALIB_00_REG, model.getCalibrationSize());
 
 		// Temperature coefficients
-		digT1 = buffer.getShort() & 0xffff;
-		digT2 = buffer.getShort();
-		digT3 = buffer.getShort();
+		digT1 = buffer.getShort() & 0xffff; // unsigned short
+		digT2 = buffer.getShort(); // signed short
+		digT3 = buffer.getShort(); // signed short
 
 		// Pressure coefficients
-		digP1 = buffer.getShort() & 0xffff;
-		digP2 = buffer.getShort();
-		digP3 = buffer.getShort();
-		digP4 = buffer.getShort();
-		digP5 = buffer.getShort();
-		digP6 = buffer.getShort();
-		digP7 = buffer.getShort();
-		digP8 = buffer.getShort();
-		digP9 = buffer.getShort();
+		digP1 = buffer.getShort() & 0xffff; // unsigned short
+		digP2 = buffer.getShort(); // signed short
+		digP3 = buffer.getShort(); // signed short
+		digP4 = buffer.getShort(); // signed short
+		digP5 = buffer.getShort(); // signed short
+		digP6 = buffer.getShort(); // signed short
+		digP7 = buffer.getShort(); // signed short
+		digP8 = buffer.getShort(); // signed short
+		digP9 = buffer.getShort(); // signed short
 
 		if (model == Model.BME280) {
-			// Skip 1 byte
+			// Skip 1 byte (0xA0)
 			buffer.get();
 			// Read 1 byte of data from address 0xA1(161)
-			digH1 = (short) (buffer.get() & 0xff);
+			digH1 = (short) (buffer.get() & 0xff); // unsigned char
 
 			// Read 7 bytes of data from address 0xE1(225)
-			// buffer = device.readI2CBlockDataByteBuffer(CALIB_26_REG, 7);
 			buffer = readByteBlock(CALIB_26_REG, 7);
 
 			// Humidity coefficients
-			digH2 = buffer.getShort();
-			digH3 = buffer.get() & 0xff;
-			byte b1_3 = buffer.get();
-			byte b1_4 = buffer.get();
-			digH4 = (b1_3 << 4) | (b1_4 & 0xF);
-			digH5 = ((b1_4 & 0xF0) >> 4) | (buffer.get() << 4);
-			digH6 = buffer.get();
+			digH2 = buffer.getShort(); // signed short
+			digH3 = buffer.get() & 0xff; // unsigned char
+			byte e4 = buffer.get();
+			byte e5 = buffer.get();
+			digH4 = (e4 << 4) | (e5 & 0x0F); // signed short (0xE4 / 0xE5[3:0])
+			digH5 = (buffer.get() << 4) | ((e5 & 0xF0) >> 4); // signed short (0xE5[7:4]/0xE6)
+			digH6 = buffer.get(); // signed char
 		}
+	}
+
+	public Model getModel() {
+		return model;
 	}
 
 	/**
@@ -437,7 +598,7 @@ public class BME280 implements BarometerInterface, ThermometerInterface, Hygrome
 	 */
 	public float[] getValues() {
 		// Read the pressure, temperature, and humidity registers
-		ByteBuffer buffer = readByteBlock(PRESS_MSB_REG, model == Model.BMP280 ? 6 : 8);
+		ByteBuffer buffer = readByteBlock(PRESS_MSB_REG, model.getDataSize());
 
 		// Unpack the raw 20-bit unsigned pressure value
 		int adc_p = ((buffer.get() & 0xff) << 12) | ((buffer.get() & 0xff) << 4) | ((buffer.get() & 0xf0) >> 4);
@@ -459,12 +620,12 @@ public class BME280 implements BarometerInterface, ThermometerInterface, Hygrome
 
 		int temp = (t_fine * 5 + 128) >> 8;
 
-		long pvar1 = ((long) t_fine) - 128000;
+		long pvar1 = t_fine - 128000;
 		long pvar2 = pvar1 * pvar1 * digP6;
 		pvar2 = pvar2 + ((pvar1 * digP5) << 17);
 		pvar2 = pvar2 + (((long) digP4) << 35);
 		pvar1 = ((pvar1 * pvar1 * digP3) >> 8) + ((pvar1 * digP2) << 12);
-		pvar1 = (((((long) 1) << 47) + pvar1)) * digP1 >> 33;
+		pvar1 = (((1L << 47) + pvar1)) * digP1 >> 33;
 		long pressure;
 		if (pvar1 == 0) {
 			pressure = 0; // Avoid exception caused by division by zero
@@ -542,7 +703,7 @@ public class BME280 implements BarometerInterface, ThermometerInterface, Hygrome
 	 * Resets the device.
 	 */
 	public void reset() {
-		writeByte(RESET_REG, (byte) 0xB6);
+		writeByte(RESET_REG, RESET_COMMAND);
 	}
 
 	private byte readByte(int register) {
@@ -589,17 +750,5 @@ public class BME280 implements BarometerInterface, ThermometerInterface, Hygrome
 		buffer.order(ByteOrder.LITTLE_ENDIAN);
 
 		return buffer;
-	}
-
-	private void readDeviceModel() throws RuntimeIOException {
-		// Detect the device model by reading the ID register
-		int id = readByte(ID_REG);
-		if (id == Model.BMP280.getDeviceId()) {
-			model = Model.BMP280;
-		} else if (id == Model.BME280.getDeviceId()) {
-			model = Model.BME280;
-		} else {
-			throw new RuntimeIOException("Unexpected device id: " + id);
-		}
 	}
 }

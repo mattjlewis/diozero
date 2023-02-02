@@ -69,7 +69,7 @@ To package your application so you can copy it to your device again there are a 
 1. Export your application as a JAR file and include all run-time dependencies via the classpath.
 Simply run `mvn package` to create the JAR file for your application.
 Note this will not generate a runnable JAR hence you will need to run your application as
-`java -cp tinylog-2.2.1.jar:diozero-core-{{ site.version }}.jar:yourapp.jar <<your-main-class>>`.
+`java -cp tinylog-api-2.5.0.jar:tinylog-impl-2.5.0.jar:diozero-core-{{ site.version }}.jar:yourapp.jar <<your-main-class>>`.
 1. You can use Eclipse to create an runnable JAR file that includes all dependencies and sets.
 Note a runnable JAR file is one that can be run from the command line using `java -jar yourapp.jar`.
 First make sure you have created a run configuration so Eclipse knows the main class for your application;

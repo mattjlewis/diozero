@@ -66,15 +66,14 @@ import com.diozero.util.DiozeroScheduler;
  * 
  * <pre>
  * {@code
- *try (McpAdc adc = new McpAdc(type, chipSelect);
- *	TMP36 tmp36 = new TMP36(adc, pin, vRef, tempOffset)) {
- *	for (int i=0; i<ITERATIONS; i++) {
- *		double tmp = tmp36.getTemperature();
- *		Logger.info("Temperature: {}", String.format("%.2f", Double.valueOf(tmp)));
- *		SleepUtil.sleepSeconds(.5);
- *	}
- *}
- *}
+ * try (McpAdc adc = new McpAdc(type, chipSelect); TMP36 tmp36 = new TMP36(adc, pin, vRef, tempOffset)) {
+ * 	for (int i = 0; i < ITERATIONS; i++) {
+ * 		double tmp = tmp36.getTemperature();
+ * 		Logger.info("Temperature: {}", String.format("%.2f", Double.valueOf(tmp)));
+ * 		SleepUtil.sleepSeconds(.5);
+ * 	}
+ * }
+ * }
  * </pre>
  */
 public class AnalogInputDevice extends GpioInputDevice<AnalogInputEvent> implements Runnable {
@@ -82,54 +81,44 @@ public class AnalogInputDevice extends GpioInputDevice<AnalogInputEvent> impleme
 		public static Builder builder(int adcNumber) {
 			return new Builder(adcNumber);
 		}
-	
+
 		public static Builder builder(PinInfo pinInfo) {
 			return new Builder(pinInfo);
 		}
-	
+
 		private Integer adcNumber;
 		private PinInfo pinInfo;
-		private Float range;
 		private AnalogInputDeviceFactoryInterface deviceFactory;
-	
+
 		public Builder(int adcNumber) {
 			this.adcNumber = Integer.valueOf(adcNumber);
 		}
-	
+
 		public Builder(PinInfo pinInfo) {
 			this.pinInfo = pinInfo;
 		}
-	
-		public Builder setRange(float range) {
-			this.range = Float.valueOf(range);
-			return this;
-		}
-	
+
 		public Builder setGpioDeviceFactoryInterface(AnalogInputDeviceFactoryInterface deviceFactory) {
 			this.deviceFactory = deviceFactory;
 			return this;
 		}
-	
+
 		public AnalogInputDevice build() {
 			// Default to the native device factory if not set
 			if (deviceFactory == null) {
 				deviceFactory = DeviceFactoryHelper.getNativeDeviceFactory();
 			}
-	
+
 			if (pinInfo == null) {
 				pinInfo = deviceFactory.getBoardPinInfo().getByGpioNumberOrThrow(adcNumber.intValue());
 			}
-	
-			if (range == null) {
-				range = Float.valueOf(deviceFactory.getVRef());
-			}
-	
-			return new AnalogInputDevice(deviceFactory, pinInfo, range.floatValue());
+
+			return new AnalogInputDevice(deviceFactory, pinInfo);
 		}
 	}
 
 	private static final int DEFAULT_POLL_INTERVAL = 50;
-	
+
 	private AnalogInputDeviceInterface device;
 	private Float lastValue;
 	private int pollInterval = DEFAULT_POLL_INTERVAL;
@@ -146,45 +135,24 @@ public class AnalogInputDevice extends GpioInputDevice<AnalogInputEvent> impleme
 	}
 
 	/**
-	 * @param adcNumber GPIO to which the device is connected.
-	 * @param range     To be used for taking scaled readings for this device.
-	 * @throws RuntimeIOException If an I/O error occurred.
-	 */
-	public AnalogInputDevice(int adcNumber, float range) throws RuntimeIOException {
-		this(DeviceFactoryHelper.getNativeDeviceFactory(), adcNumber, range);
-	}
-
-	/**
 	 * @param deviceFactory The device factory to use to provision this device.
 	 * @param adcNumber     GPIO to which the device is connected.
 	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
 	public AnalogInputDevice(AnalogInputDeviceFactoryInterface deviceFactory, int adcNumber) throws RuntimeIOException {
-		this(deviceFactory, adcNumber, deviceFactory.getVRef());
-	}
-
-	/**
-	 * @param deviceFactory The device factory to use to provision this device.
-	 * @param adcNumber     GPIO to which the device is connected.
-	 * @param range         To be used for taking scaled readings for this device.
-	 * @throws RuntimeIOException If an I/O error occurred.
-	 */
-	public AnalogInputDevice(AnalogInputDeviceFactoryInterface deviceFactory, int adcNumber, float range)
-			throws RuntimeIOException {
-		this(deviceFactory, deviceFactory.getBoardPinInfo().getByAdcNumberOrThrow(adcNumber), range);
+		this(deviceFactory, deviceFactory.getBoardPinInfo().getByAdcNumberOrThrow(adcNumber));
 	}
 
 	/**
 	 * @param deviceFactory The device factory to use to provision this device.
 	 * @param pinInfo       GPIO to which the device is connected.
-	 * @param range         To be used for taking scaled readings for this device.
 	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
-	public AnalogInputDevice(AnalogInputDeviceFactoryInterface deviceFactory, PinInfo pinInfo, float range)
+	public AnalogInputDevice(AnalogInputDeviceFactoryInterface deviceFactory, PinInfo pinInfo)
 			throws RuntimeIOException {
 		super(pinInfo);
 
-		this.range = range;
+		this.range = pinInfo.getAdcVRef();
 		device = deviceFactory.provisionAnalogInputDevice(pinInfo);
 		stopScheduler = new AtomicBoolean(true);
 	}

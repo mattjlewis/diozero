@@ -52,16 +52,13 @@ public abstract class BoardInfo extends BoardPinInfo {
 	private String model;
 	private int memoryKb;
 	private String libraryPath;
-	private float adcVRef;
 	private String osId;
 	private String osVersion;
 
-	public BoardInfo(String make, String model, int memoryKb, float adcVRef, String libraryPath, String osId,
-			String osVersion) {
+	public BoardInfo(String make, String model, int memoryKb, String libraryPath, String osId, String osVersion) {
 		this.make = make;
 		this.model = model;
 		this.memoryKb = memoryKb;
-		this.adcVRef = adcVRef;
 		this.libraryPath = libraryPath;
 		this.osId = osId;
 		this.osVersion = osVersion;
@@ -108,16 +105,6 @@ public abstract class BoardInfo extends BoardPinInfo {
 	 */
 	public String getLibraryPath() {
 		return libraryPath;
-	}
-
-	/**
-	 * Get the Analog to Digital converter reference voltage to be used when taking
-	 * ADC readings
-	 *
-	 * @return the reference voltage for this board
-	 */
-	public float getAdcVRef() {
-		return adcVRef;
 	}
 
 	public String getOperatingSystemId() {
@@ -167,6 +154,6 @@ public abstract class BoardInfo extends BoardPinInfo {
 	@Override
 	public String toString() {
 		return "BoardInfo [make=" + make + ", model=" + model + ", memory=" + memoryKb + ", libraryPath=" + libraryPath
-				+ ", adcVRef=" + adcVRef + "]";
+				+ "]";
 	}
 }

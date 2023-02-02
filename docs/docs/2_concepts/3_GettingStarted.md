@@ -52,7 +52,7 @@ To run the [LEDTest](https://github.com/mattjlewis/diozero/blob/master/diozero-s
 sample application using the pigpioj provider:
 
 ```shell
-sudo java -cp tinylog-api-2.2.1.jar:tinylog-impl-2.2.1.jar:diozero-core-{{ site.version }}.jar:diozero-sampleapps-{{ site.version }}.jar:diozero-provider-pigpio-{{ site.version }}.jar:pigpioj-java-2.5.5.jar com.diozero.sampleapps.LEDTest 12
+sudo java -cp tinylog-api-2.5.0.jar:tinylog-impl-2.5.0.jar:diozero-core-{{ site.version }}.jar:diozero-sampleapps-{{ site.version }}.jar:diozero-provider-pigpio-{{ site.version }}.jar:pigpioj-java-2.6.1.jar com.diozero.sampleapps.LEDTest 12
 ```
 
 For an experience similar to Python where source code is interpreted rather than compiled try 

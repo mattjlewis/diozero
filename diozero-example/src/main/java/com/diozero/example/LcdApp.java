@@ -5,8 +5,8 @@ import org.tinylog.Logger;
 import com.diozero.api.I2CConstants;
 import com.diozero.api.RuntimeIOException;
 import com.diozero.devices.HD44780Lcd;
-import com.diozero.devices.HD44780Lcd.LcdConnection;
-import com.diozero.devices.HD44780Lcd.PCF8574LcdConnection;
+import com.diozero.devices.LcdConnection;
+import com.diozero.devices.LcdConnection.PCF8574LcdConnection;
 import com.diozero.util.Diozero;
 import com.diozero.util.SleepUtil;
 
@@ -17,7 +17,7 @@ import com.diozero.util.SleepUtil;
 public class LcdApp {
 	// Main program block
 	public static void main(String[] args) {
-		int device_address = HD44780Lcd.PCF8574LcdConnection.DEFAULT_DEVICE_ADDRESS;
+		int device_address = LcdConnection.PCF8574LcdConnection.DEFAULT_DEVICE_ADDRESS;
 		if (args.length > 0) {
 			device_address = Integer.decode(args[0]).intValue();
 		}

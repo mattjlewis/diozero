@@ -4,7 +4,7 @@ package com.diozero.sampleapps;
  * #%L
  * Organisation: diozero
  * Project:      diozero - Sample applications
- * Filename:     BME280Test.java
+ * Filename:     BMx280TestI2C.java
  * 
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
@@ -31,28 +31,38 @@ package com.diozero.sampleapps;
  * #L%
  */
 
-import org.tinylog.Logger;
-
-import com.diozero.devices.BME280;
+import com.diozero.api.I2CConstants;
+import com.diozero.devices.BMx280;
+import com.diozero.devices.ThermometerInterface;
 import com.diozero.util.Diozero;
 import com.diozero.util.SleepUtil;
 
 /**
- * BME280 temperature / pressure / humidity sensor sample application. To run:
- * <ul>
- * <li>Built-in:<br>
- * {@code java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar com.diozero.sampleapps.BME280Test}</li>
- * <li>pigpgioj:<br>
- * {@code sudo java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar:diozero-provider-pigpio-$DIOZERO_VERSION.jar:pigpioj-java-2.4.jar com.diozero.sampleapps.BME280Test}</li>
- * </ul>
+ * Tests BMP280/BME280 using I2C
+ *
+ * @author gregflurry
  */
-public class BME280Test {
+public class BMx280TestI2C {
 	public static void main(String[] args) {
-		try (BME280 bme280 = new BME280()) {
-			for (int i = 0; i < 10; i++) {
-				float[] tph = bme280.getValues();
-				Logger.info("Temperature: {0.##} C. Pressure: {0.##} hPa. Relative Humidity: {0.##}% RH",
-						Double.valueOf(tph[0]), Double.valueOf(tph[1]), Double.valueOf(tph[2]));
+		int i2c_bus = I2CConstants.CONTROLLER_1;
+		if (args.length > 0) {
+			i2c_bus = Integer.parseInt(args[0]);
+		}
+		int iterations = 10;
+		if (args.length > 1) {
+			iterations = Integer.parseInt(args[1]);
+		}
+		System.out.println("--- USING I2C-" + i2c_bus + " ---");
+		try (BMx280 bmx280 = BMx280.I2CBuilder.builder(i2c_bus).build()) {
+			for (int i = 0; i < iterations; i++) {
+				bmx280.waitDataAvailable(10, 5);
+				float[] tph = bmx280.getValues();
+				System.out.format("Temperature: %.2f C (%.2f F), Pressure: %.2f hPa", Float.valueOf(tph[0]),
+						Float.valueOf(ThermometerInterface.celsiusToFahrenheit(tph[0])), Float.valueOf(tph[1]));
+				if (bmx280.getModel() == BMx280.Model.BME280) {
+					System.out.format(", Relaative Humidity: %.2f%% RH", Float.valueOf(tph[2]));
+				}
+				System.out.println();
 
 				SleepUtil.sleepSeconds(1);
 			}

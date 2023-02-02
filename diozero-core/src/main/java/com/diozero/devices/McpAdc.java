@@ -51,7 +51,6 @@ public class McpAdc extends AbstractDeviceFactory implements AnalogInputDeviceFa
 	private Type type;
 	private SpiDevice spiDevice;
 	private BoardPinInfo boardPinInfo;
-	private float vRef;
 
 	public McpAdc(Type type, int chipSelect, float vRef) throws RuntimeIOException {
 		this(type, SpiConstants.DEFAULT_SPI_CONTROLLER, chipSelect, vRef);
@@ -61,16 +60,10 @@ public class McpAdc extends AbstractDeviceFactory implements AnalogInputDeviceFa
 		super(type.name() + "-" + controller + "-" + chipSelect);
 
 		this.type = type;
-		this.vRef = vRef;
 
-		boardPinInfo = new McpAdcBoardPinInfo(type);
+		boardPinInfo = new McpAdcBoardPinInfo(type, vRef);
 
 		spiDevice = SpiDevice.builder(chipSelect).setController(controller).setFrequency(type.getMaxFreq2v7()).build();
-	}
-
-	@Override
-	public float getVRef() {
-		return vRef;
 	}
 
 	@Override
@@ -354,9 +347,9 @@ public class McpAdc extends AbstractDeviceFactory implements AnalogInputDeviceFa
 	}
 
 	public static class McpAdcBoardPinInfo extends BoardPinInfo {
-		public McpAdcBoardPinInfo(McpAdc.Type type) {
+		public McpAdcBoardPinInfo(McpAdc.Type type, float adcVRef) {
 			for (int i = 0; i < type.getNumPins(); i++) {
-				addAdcPinInfo(i, i);
+				addAdcPinInfo(i, i, adcVRef);
 			}
 		}
 	}

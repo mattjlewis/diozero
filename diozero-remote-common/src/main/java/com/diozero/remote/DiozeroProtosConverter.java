@@ -162,12 +162,13 @@ public class DiozeroProtosConverter {
 		gpio_info_builder.setSysFsNumber(pinInfo.getSysFsNumber());
 		gpio_info_builder.setChip(pinInfo.getChip());
 		gpio_info_builder.setLineOffset(pinInfo.getLineOffset());
-		gpio_info_builder.setPwmChip(pinInfo.getPwmChip());
-		gpio_info_builder.setPwmNum(pinInfo.getPwmNum());
 		gpio_info_builder.setName(pinInfo.getName());
 		for (DeviceMode mode : pinInfo.getModes()) {
 			gpio_info_builder.addMode(DiozeroProtosConverter.convert(mode));
 		}
+		gpio_info_builder.setPwmChip(pinInfo.getPwmChip());
+		gpio_info_builder.setPwmNum(pinInfo.getPwmNum());
+		gpio_info_builder.setAdcVRef(pinInfo.getAdcVRef());
 
 		return gpio_info_builder.build();
 	}

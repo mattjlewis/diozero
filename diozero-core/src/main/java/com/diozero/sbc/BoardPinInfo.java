@@ -173,22 +173,25 @@ public class BoardPinInfo {
 	public PinInfo addPwmPinInfo(String header, int gpioNumber, String name, int physicalPin, int pwmChip, int pwmNum,
 			Collection<DeviceMode> modes, int chip, int line) {
 		PinInfo pin_info = new PinInfo(GPIO_KEY_PREFIX, header, gpioNumber, physicalPin, pwmChip, pwmNum, name, modes,
-				mapToSysFsGpioNumber(gpioNumber), chip, line);
+				mapToSysFsGpioNumber(gpioNumber), chip, line, PinInfo.NOT_DEFINED);
 		addGpioPinInfo(pin_info);
 		pwmNumToGpioMapping.put(Integer.valueOf(pwmNum), Integer.valueOf(gpioNumber));
 		return pin_info;
 	}
 
-	public PinInfo addAdcPinInfo(int adcNumber, int physicalPin) {
-		return addAdcPinInfo(PinInfo.DEFAULT_HEADER, adcNumber, DEFAULT_ADC_NAME_PREFIX + adcNumber, physicalPin);
+	public PinInfo addAdcPinInfo(int adcNumber, int physicalPin, float adcVRef) {
+		return addAdcPinInfo(PinInfo.DEFAULT_HEADER, adcNumber, DEFAULT_ADC_NAME_PREFIX + adcNumber, physicalPin,
+				adcVRef);
 	}
 
-	public PinInfo addAdcPinInfo(int adcNumber, String name, int physicalPin) {
-		return addAdcPinInfo(PinInfo.DEFAULT_HEADER, adcNumber, name, physicalPin);
+	public PinInfo addAdcPinInfo(int adcNumber, String name, int physicalPin, float adcVRef) {
+		return addAdcPinInfo(PinInfo.DEFAULT_HEADER, adcNumber, name, physicalPin, adcVRef);
 	}
 
-	public PinInfo addAdcPinInfo(String header, int adcNumber, String name, int physicalPin) {
-		PinInfo pin_info = new PinInfo(ADC_KEY_PREFIX, header, adcNumber, physicalPin, name, PinInfo.ANALOG_INPUT);
+	public PinInfo addAdcPinInfo(String header, int adcNumber, String name, int physicalPin, float adcVRef) {
+		PinInfo pin_info = new PinInfo(ADC_KEY_PREFIX, header, adcNumber, physicalPin, PinInfo.NOT_DEFINED,
+				PinInfo.NOT_DEFINED, name, PinInfo.ANALOG_INPUT, adcNumber, PinInfo.NOT_DEFINED, PinInfo.NOT_DEFINED,
+				adcVRef);
 		addAdcPinInfo(pin_info);
 		return pin_info;
 	}

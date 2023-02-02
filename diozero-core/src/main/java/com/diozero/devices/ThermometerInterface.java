@@ -35,9 +35,53 @@ import com.diozero.api.RuntimeIOException;
 
 public interface ThermometerInterface extends SensorInterface {
 	/**
-	 * Get temperature in degrees celsius
+	 * Get temperature in degrees Celsius
+	 * 
 	 * @return Temperature (deg C)
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	float getTemperature() throws RuntimeIOException;
+
+	/**
+	 * Get temperature in degrees Celsius
+	 * 
+	 * @return Temperature (deg C)
+	 * @throws RuntimeIOException if an I/O error occurs
+	 */
+	default float getTemperatureCelsius() throws RuntimeIOException {
+		return getTemperature();
+	}
+
+	/**
+	 * Get temperature in degrees Fahrenheit
+	 * 
+	 * @return Temperature (deg F)
+	 * @throws RuntimeIOException if an I/O error occurs
+	 */
+	default float getTemperatureFahrenheit() throws RuntimeIOException {
+		return celsiusToFahrenheit(getTemperature());
+	}
+
+	static final float CONVERSION_OFFSET = 32;
+	static final float CONVERSION_RATIO = 9 / 5f;
+
+	/**
+	 * Convert from degrees Celsius to degrees Fahrenheit
+	 *
+	 * @param celsius temperature in degrees Celsius
+	 * @return the temperature in degrees Fahrenheit
+	 */
+	static float celsiusToFahrenheit(float celsius) {
+		return celsius * CONVERSION_RATIO + CONVERSION_OFFSET;
+	}
+
+	/**
+	 * Convert from degrees Fahrenheit to degrees Celsius
+	 *
+	 * @param fahrenheit temperature in degrees Fahrenheit
+	 * @return the temperature in degrees Celsius
+	 */
+	public static float fahrenheitToCelsius(float fahrenheit) {
+		return (fahrenheit - CONVERSION_OFFSET) / CONVERSION_RATIO;
+	}
 }

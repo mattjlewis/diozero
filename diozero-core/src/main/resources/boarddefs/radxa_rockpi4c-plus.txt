@@ -16,8 +16,8 @@ General, Default, 34, GND
 General, Default, 39, GND
 
 # GPIO, Header, GPIO#, Name, Physical Pin, Modes, Chip, Line
-GPIO, Default, 71, GPIO2_A7, 3, DIGITAL_INPUT | DIGITAL_OUTPUT, 2, 7                   # 1: I2C7_SDA, GPIO2_A7
-GPIO, Default, 72, GPIO2_B0, 5, DIGITAL_INPUT | DIGITAL_OUTPUT, 2, 8                   # 1: I2C7_SCL, GPIO2_B0
+GPIO, Default, 71, I2C7_SDA, 3, DIGITAL_INPUT | DIGITAL_OUTPUT, 2, 7                   # 1: I2C7_SDA, GPIO2_A7
+GPIO, Default, 72, I2C7_SCL, 5, DIGITAL_INPUT | DIGITAL_OUTPUT, 2, 8                   # 1: I2C7_SCL, GPIO2_B0
 GPIO, Default, 75, GPIO2_B3, 7, DIGITAL_INPUT | DIGITAL_OUTPUT, 2, 11                  # 1: SPI2_CLK, GPIO2_B3
 GPIO, Default, 148, TXD2, 8, DIGITAL_INPUT | DIGITAL_OUTPUT, 4, 20                     # 1: UART2_TXD, GPIO4_C4
 GPIO, Default, 147, RXD2, 10, DIGITAL_INPUT | DIGITAL_OUTPUT, 4, 19                    # 1: UART2_RXD, GPIO4_C3
@@ -45,4 +45,4 @@ GPIO, Default, 134, GPIO4_A6, 38, DIGITAL_INPUT | DIGITAL_OUTPUT, 4, 6          
 GPIO, Default, 135, GPIO4_A7, 40, DIGITAL_INPUT | DIGITAL_OUTPUT, 4, 7                 # 1: I2S1_SDO, GPIO4_A7
 
 # ADC, Header, ADC #, Name, Physical pin
-ADC, Default, 0, ADC_IN0, 26
+ADC, Default, 0, ADC_IN0, 26, 3.0

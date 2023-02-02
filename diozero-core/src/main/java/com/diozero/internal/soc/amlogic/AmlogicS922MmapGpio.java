@@ -1,4 +1,4 @@
-package com.diozero.internal.board.soc.amlogic;
+package com.diozero.internal.soc.amlogic;
 
 /*-
  * #%L
@@ -47,7 +47,7 @@ import com.diozero.util.Hex;
 import com.diozero.util.MmapIntBuffer;
 import com.diozero.util.SleepUtil;
 
-public class AmlogicS922XMmapGpio implements MmapGpioInterface {
+public class AmlogicS922MmapGpio implements MmapGpioInterface {
 	private static final String MEM_DEVICE = "/dev/mem";
 
 	/*
@@ -319,7 +319,7 @@ public class AmlogicS922XMmapGpio implements MmapGpioInterface {
 	public static void main(String[] args) {
 		System.out.println(ByteOrder.nativeOrder());
 		if (args.length != 2) {
-			System.out.println("Usage: " + AmlogicS922XMmapGpio.class.getName() + " <gpio> <iterations>");
+			System.out.println("Usage: " + AmlogicS922MmapGpio.class.getName() + " <gpio> <iterations>");
 			System.exit(1);
 		}
 		int gpio = Integer.parseInt(args[0]);

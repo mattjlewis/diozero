@@ -1,4 +1,4 @@
-package com.diozero.internal.board.soc.allwinner;
+package com.diozero.internal.soc.allwinner;
 
 /*-
  * #%L

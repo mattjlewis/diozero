@@ -1,4 +1,4 @@
-package com.diozero.internal.board.soc.rockchip;
+package com.diozero.internal.soc.rockchip;
 
 /*-
  * #%L
@@ -90,7 +90,7 @@ import com.diozero.util.SleepUtil;
  * Otherwise, the operation will have no effect and no error will be returned.
  * This workaround is required on vendor 4.4 kernel.
  */
-public class RockchipRK3399MmapGpio implements MmapGpioInterface {
+public class RK3399MmapGpio implements MmapGpioInterface {
 	private static final String GPIOMEM_DEVICE = "/dev/mem";
 	private static final int GRF_GPIO2A_IOMUX = 0x0e000;
 	// GRF - General Register Files (64K)
@@ -589,7 +589,7 @@ public class RockchipRK3399MmapGpio implements MmapGpioInterface {
 				"Testing with GPIO: " + gpio + ", bank: " + bank + ", bank_index: " + bank_index + ", letter: " + letter
 						+ ", index: " + index + " - GPIO" + bank + "_" + Character.toString('A' + letter) + index);
 
-		try (RockchipRK3399MmapGpio mmap_gpio = new RockchipRK3399MmapGpio()) {
+		try (RK3399MmapGpio mmap_gpio = new RK3399MmapGpio()) {
 			mmap_gpio.initialise();
 
 			boolean value = false;

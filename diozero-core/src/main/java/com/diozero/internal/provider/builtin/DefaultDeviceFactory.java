@@ -48,7 +48,6 @@ import com.diozero.api.SerialConstants;
 import com.diozero.api.SpiClockMode;
 import com.diozero.internal.SoftwarePwmOutputDevice;
 import com.diozero.internal.board.GenericLinuxArmBoardInfo;
-import com.diozero.internal.board.odroid.OdroidBoardInfoProvider;
 import com.diozero.internal.board.odroid.OdroidC2SysFsPwmOutputDevice;
 import com.diozero.internal.provider.builtin.gpio.GpioChip;
 import com.diozero.internal.provider.builtin.gpio.GpioLine;
@@ -376,9 +375,9 @@ public class DefaultDeviceFactory extends BaseNativeDeviceFactory {
 			float initialValue) throws RuntimeIOException {
 		try {
 			if (SysFsPwmOutputDevice.isSupported(this, pinInfo)) {
-				// Odroid C2 runs with an older 3.x kernel hence has a different sysfs interface
-				if (getBoardInfo().compareMakeAndModel(OdroidBoardInfoProvider.MAKE,
-						OdroidBoardInfoProvider.C2_HARDWARE_ID)) {
+				// XXX Hack Odroid C2 runs with an older 3.x kernel hence has a different sysfs
+				// interface
+				if (getBoardInfo().getModel().equals("Hardkernel ODROID-C2")) {
 					return new OdroidC2SysFsPwmOutputDevice(key, this, pinInfo, pwmFrequency, initialValue);
 				}
 
@@ -413,7 +412,7 @@ public class DefaultDeviceFactory extends BaseNativeDeviceFactory {
 	public AnalogInputDeviceInterface createAnalogInputDevice(String key, PinInfo pinInfo) throws RuntimeIOException {
 		// FIXME Work out the system device number! ("/sys/bus/iio/devices/iio:deviceN")
 		int device = 0;
-		return new SysFsAnalogInputDevice(this, key, device, pinInfo.getDeviceNumber());
+		return new SysFsAnalogInputDevice(this, key, device, pinInfo);
 	}
 
 	@Override

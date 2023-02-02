@@ -43,23 +43,27 @@ import com.diozero.internal.board.GenericLinuxArmBoardInfo;
  * diozero
  */
 public class UnknownBoardInfo extends BoardInfo {
-	public static BoardInfo get(LocalSystemInfo localSysInfo) {
-		String os_name = localSysInfo.getOsName();
-		String os_arch = localSysInfo.getOsArch();
-		Logger.warn("Failed to resolve board info for hardware '{}' and revision '{}'. Local O/S: {}-{}",
-				localSysInfo.getHardware(), localSysInfo.getRevision(), os_name, os_arch);
+	public static final float DEFAULT_ADC_VREF = 1.8f;
 
+	public static BoardInfo get(LocalSystemInfo localSysInfo) {
 		if (localSysInfo.isLinux() && localSysInfo.isArm()) {
+			Logger.debug("Using generic Linux board info, make '{}', model '{}', SoC '{}'", localSysInfo.getMake(),
+					localSysInfo.getModel(), localSysInfo.getSoc());
 			return new GenericLinuxArmBoardInfo(localSysInfo);
 		}
+
+		Logger.warn(
+				"Unable to resolve board provider for make '{}', model '{}', SoC '{}', on non-Linux local O/S: {}-{}",
+				localSysInfo.getMake(), localSysInfo.getModel(), localSysInfo.getSoc(), localSysInfo.getOsName(),
+				localSysInfo.getOsArch());
 
 		return new UnknownBoardInfo(localSysInfo);
 	}
 
 	private UnknownBoardInfo(LocalSystemInfo localSysInfo) {
-		super(UNKNOWN, localSysInfo.getModel(),
+		super(localSysInfo.getMake(), localSysInfo.getModel(),
 				localSysInfo.getMemoryKb() == null ? -1 : localSysInfo.getMemoryKb().intValue(),
-				BoardInfo.UNKNOWN_ADC_VREF, localSysInfo.getDefaultLibraryPath(), localSysInfo.getOperatingSystemId(),
+				localSysInfo.getDefaultLibraryPath(), localSysInfo.getOperatingSystemId(),
 				localSysInfo.getOperatingSystemVersion());
 	}
 
@@ -85,7 +89,8 @@ public class UnknownBoardInfo extends BoardInfo {
 	 */
 	@Override
 	public Optional<PinInfo> getByAdcNumber(int adcNumber) {
-		return Optional.of(super.getByAdcNumber(adcNumber).orElseGet(() -> addAdcPinInfo(adcNumber, adcNumber)));
+		return Optional.of(
+				super.getByAdcNumber(adcNumber).orElseGet(() -> addAdcPinInfo(adcNumber, adcNumber, DEFAULT_ADC_VREF)));
 	}
 
 	/**

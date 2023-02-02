@@ -1,4 +1,4 @@
-package com.diozero.internal.board.soc.rockchip;
+package com.diozero.internal.soc.rockchip;
 
 /*
  * #%L
@@ -49,7 +49,7 @@ import com.diozero.util.SleepUtil;
  * https://github.com/TinkerBoard/gpio_lib_c/blob/sbc/tinkerboard/c/wiringPi/wiringTB.c#L735
  */
 @SuppressWarnings("resource")
-public class RockchipRK3288MmapGpio implements MmapGpioInterface {
+public class RK3288MmapGpio implements MmapGpioInterface {
 	private static final String MEM_DEVICE = "/dev/gpiomem";
 	private static final long PMU_BASE = 0xff730000L;
 	private static final long GPIO_BASE = 0xff75_0000L;
@@ -489,7 +489,7 @@ public class RockchipRK3288MmapGpio implements MmapGpioInterface {
 			gpio = 171;
 		}
 
-		try (RockchipRK3288MmapGpio mmap_gpio = new RockchipRK3288MmapGpio()) {
+		try (RK3288MmapGpio mmap_gpio = new RK3288MmapGpio()) {
 			mmap_gpio.initialise();
 
 			DeviceMode mode = mmap_gpio.getMode(gpio);

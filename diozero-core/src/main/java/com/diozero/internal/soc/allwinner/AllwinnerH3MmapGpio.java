@@ -1,10 +1,10 @@
-package com.diozero.internal.board.soc.allwinner;
+package com.diozero.internal.soc.allwinner;
 
 /*-
  * #%L
  * Organisation: diozero
  * Project:      diozero - Core
- * Filename:     AllwinnerH5MmapGpio.java
+ * Filename:     AllwinnerH3MmapGpio.java
  * 
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
@@ -32,20 +32,20 @@ package com.diozero.internal.board.soc.allwinner;
  */
 
 import com.diozero.api.DeviceMode;
+import com.diozero.util.SleepUtil;
 
 /*-
- * https://github.com/friendlyarm/WiringNP/blob/master/wiringPi/wiringPi.c#L536
- * https://github.com/orangepi-xunlong/wiringOP/blob/master/wiringPi/OrangePi.c#L622
- * https://linux-sunxi.org/images/a/a3/Allwinner_H5_Manual_v1.0.pdf
- * https://linux-sunxi.org/images/d/de/Allwinner_H5_Datasheet_V1.0.pdf
- * 
- * Page 291 User Manual
- * CPUX_PORT PIO base address 0x01C2_0800
+ * https://wiki.friendlyarm.com/wiki/images/4/4b/Allwinner_H3_Datasheet_V1.2.pdf
+ * See https://github.com/friendlyarm/WiringNP/blob/master/wiringPi/wiringPi.c
+ *
+ *
+ * Page 316 User Manual
+ * CPU_PORT PIO base address 0x01C2_0800
  * 7 ports (PA, PC, PD, PE, PF, PG, PL)
  * 
  * Port Name  Bank  Num Pins
  * PA         0     22
- * PC         2     17
+ * PC         2     19
  * PD         3     18
  * PE         4     16
  * PF         5     7
@@ -64,21 +64,21 @@ import com.diozero.api.DeviceMode;
  * 
  * Page 433 User Manual
  * CPUS_PORT PIO base address 0x01F0_2C00
- * 2 ports (PL, PM)
+ * 1 port (PL)
  * 
  * Port Name  Bank  Num Pins
  * PL         11    12
  * 
- * Register offsets as per CPUX_PORT
+ * Register offsets as per CPU_PORT
  */
-public class AllwinnerH5MmapGpio extends AllwinnerHMmapGpio {
+public class AllwinnerH3MmapGpio extends AllwinnerHMmapGpio {
 	private static final long GPIOA_BASE = 0x01C2_0000L;
-	private static final int GPIOA_INT_OFFSET = 0x0800 / 4;
+	private static final int GPIOA_INT_OFFSET = 0x800 / 4;
 	private static final long GPIOL_BASE = 0x01F0_2000L;
-	private static final int GPIOL_INT_OFFSET = 0x0C00 / 4;
-	private static final int[] NUM_GPIOS_BY_BANK = { 22, 0, 17, 18, 16, 7, 14, 0, 0, 0, 0, 12 };
+	private static final int GPIOL_INT_OFFSET = 0xC00 / 4;
+	private static final int[] NUM_GPIOS_BY_BANK = { 22, 0, 19, 18, 16, 7, 14, 0, 0, 0, 0, 12 };
 
-	public AllwinnerH5MmapGpio() {
+	public AllwinnerH3MmapGpio() {
 		super(GPIOA_BASE, GPIOA_INT_OFFSET, GPIOL_BASE, GPIOL_INT_OFFSET, NUM_GPIOS_BY_BANK);
 	}
 
@@ -97,6 +97,8 @@ public class AllwinnerH5MmapGpio extends AllwinnerHMmapGpio {
 		// PA5 (5)
 		addGpioMode(5, 2, DeviceMode.SERIAL);
 		addGpioMode(5, 3, DeviceMode.PWM_OUTPUT);
+		// PA6 (6)
+		addGpioMode(6, 3, DeviceMode.PWM_OUTPUT);
 		// PA11 (11)
 		addGpioMode(11, 2, DeviceMode.I2C);
 		// PA12 (12)
@@ -118,28 +120,15 @@ public class AllwinnerH5MmapGpio extends AllwinnerHMmapGpio {
 		// PA19 (19)
 		addGpioMode(19, 3, DeviceMode.I2C);
 
-		// PC0 (64)
-		addGpioMode(64, 3, DeviceMode.SPI);
-		// PC1 (65)
-		addGpioMode(65, 3, DeviceMode.SPI);
-		// PC2 (66)
-		addGpioMode(66, 3, DeviceMode.SPI);
-		// PC3 (67)
-		addGpioMode(67, 3, DeviceMode.SPI);
-		// PC4 (68)
-		addGpioMode(68, 4, DeviceMode.SPI);
+		// PC0 (32)
+		addGpioMode(32, 3, DeviceMode.SPI);
+		// PC1 (33)
+		addGpioMode(33, 3, DeviceMode.SPI);
+		// PC2 (34)
+		addGpioMode(34, 3, DeviceMode.SPI);
+		// PC3 (35)
+		addGpioMode(35, 3, DeviceMode.SPI);
 
-		// PE12 (140)
-		addGpioMode(140, 2, DeviceMode.I2C);
-		// XXX Clash
-		addGpioMode(140, 3, DeviceMode.I2C);
-		// PE13 (173)
-		addGpioMode(141, 2, DeviceMode.I2C);
-		// XXX Clash
-		addGpioMode(141, 3, DeviceMode.I2C);
-
-		// PF2 (162)
-		addGpioMode(162, 3, DeviceMode.SERIAL);
 		// PF4 (164)
 		addGpioMode(164, 3, DeviceMode.SERIAL);
 
@@ -151,125 +140,130 @@ public class AllwinnerH5MmapGpio extends AllwinnerHMmapGpio {
 		addGpioMode(200, 2, DeviceMode.SERIAL);
 		// PG9 (201)
 		addGpioMode(201, 2, DeviceMode.SERIAL);
-
-		// PL0 (352)
-		addGpioMode(352, 2, DeviceMode.I2C);
-		// PL1 (353)
-		addGpioMode(353, 2, DeviceMode.I2C);
-		// PL2 (354)
-		addGpioMode(354, 2, DeviceMode.SERIAL);
-		// PL3 (355)
-		addGpioMode(355, 2, DeviceMode.SERIAL);
-		// PL10 (362)
-		addGpioMode(362, 2, DeviceMode.PWM_OUTPUT);
 	}
 
 	@SuppressWarnings("boxing")
 	public static void main(String[] args) {
-		System.out.println((256 / 8) + ", " + (256 >> 3));
-		System.out.println((256 / 16) + ", " + (256 >> 4));
-		System.out.println((256 / 32) + ", " + (256 >> 5));
-		System.out.println((352 / 32) + ", " + (352 >> 5));
-
-		// Test bank 11 (GPIO >= 352) - not sure how to handle this
-		int a_int_offset = 0x10 / 4 + 0xc00 / 4;
-		int b_int_offset = (352 >> 5) * 9 + 4 + 0x800 / 4;
-		System.out.println(a_int_offset + ", " + b_int_offset);
-
-		// Test read / write offset and shift calculation
-		for (int gpio = 0; gpio < 352; gpio++) {
-			a_int_offset = (gpio >> 5) * 9 + 4;
-			int a_shift = gpio % 32;
-
+		// Computed values for GPIO mode register
+		for (int gpio = 0; gpio < 224; gpio++) {
 			int bank = gpio >> 5;
-			b_int_offset = ((bank * 36) + 0x10) / 4;
-			int b_shift = gpio % 32;
+			int index = gpio - (bank << 5);
+			int offset = ((bank * 36) + ((index >> 3) << 2)) / 4;
+			int shift = ((index - ((index >> 3) << 3)) << 2);
 
-			if (a_int_offset != b_int_offset) {
-				System.out.format("** Value Offset Difference - gpio: %d, a_int_offset: 0x%x, b_int_offset: 0x%x%n",
-						gpio, a_int_offset, b_int_offset);
+			int my_bank = gpio >> 5;
+			int my_index = gpio % 32;
+			int my_offset = (gpio >> 3) + 5 * (gpio >> 5);
+			int my_shift = (gpio % 8) << 2;
+
+			if (bank != my_bank || index != my_index || offset != my_offset || shift != my_shift) {
+				System.out.format("Xx Mode for GPIO %d - bank: %d, index:%d, offset: 0x%02x, shift: %d%n", gpio, bank,
+						index, offset, shift);
+				System.out.format("My Mode for GPIO %d - bank: %d, index:%d, offset: 0x%02x, shift: %d%n", gpio,
+						my_bank, my_index, my_offset, my_shift);
 			}
+			System.out.format("My Mode for GPIO %d - bank: %d, index:%d, offset: 0x%02x, shift: %d%n", gpio, my_bank,
+					my_index, my_offset, my_shift);
+		}
 
-			if (a_shift != b_shift) {
-				System.out.format("** Value Shift Difference - gpio: %d, a_shift: %d, b_shift: %d%n", gpio, a_shift,
-						b_shift);
+		// Computed values for GPIO value register
+		for (int gpio = 0; gpio < 224; gpio++) {
+			int bank = gpio >> 5;
+			int gpio_int_offset = ((bank * 36) + 0x10) / 4;
+			int shift = gpio - (bank << 5);
+
+			int my_bank = gpio / 32;
+			int my_offset = (gpio / 32) * 9 + 4;
+			int my_shift = gpio % 32;
+
+			if (bank != my_bank || gpio_int_offset != my_offset || shift != my_shift) {
+				System.out.format("Xx Value for GPIO %d - bank: %d, offset: 0x%02x, shift: %d%n", gpio, bank,
+						gpio_int_offset, shift);
+				System.out.format("My Value for GPIO %d - bank: %d, offset: 0x%02x, shift: %d%n", gpio, my_bank,
+						my_offset, my_shift);
 			}
 		}
 
-		// Test mode offset and shift calculation
-		for (int gpio = 0; gpio < 352; gpio++) {
-			a_int_offset = (gpio >> 3) + 5 * (gpio >> 5);
-			int a_shift = (gpio % 8) * 4;
-
+		// Computed values for GPIO pull up/down control
+		for (int gpio = 0; gpio < 224; gpio++) {
 			int bank = gpio >> 5;
 			int index = gpio - (bank << 5);
-			b_int_offset = ((bank * 36) + ((index >> 3) << 2)) / 4;
-			int b_shift = ((index - ((index >> 3) << 3)) << 2);
+			int sub = index >> 4;
+			int sub_index = index - 16 * sub;
+			int int_offset = ((bank * 36) + 0x1c + sub * 4) / 4;
 
-			if (a_int_offset != b_int_offset) {
-				System.out.format("** Mode Offset Difference - gpio: %d, a_int_offset: 0x%x, b_int_offset: 0x%x%n",
-						gpio, a_int_offset, b_int_offset);
-			}
+			int my_bank = gpio >> 5;
+			int my_index = gpio % 32;
+			int my_sub = (gpio >> 4) % 2;
+			int my_sub_index = gpio % 16;
+			int my_int_offset = (0x1c + my_bank * 0x24 + my_sub * 4) / 4;
 
-			if (a_shift != b_shift) {
-				System.out.format("** Mode Shift Difference - gpio: %d, a_shift: %d, b_shift: %d%n", gpio, a_shift,
-						b_shift);
+			if (bank != my_bank || index != my_index || sub != my_sub || sub_index != my_sub_index
+					|| int_offset != my_int_offset) {
+				System.out.format(
+						"Xx PUD for GPIO %d - bank: %d, index: %d, sub: %d, sub_index: %d, int_offset=0x%02x%n", gpio,
+						bank, index, sub, sub_index, int_offset);
+				System.out.format(
+						"My PUD for GPIO %d - bank: %d, index: %d, sub: %d, sub_index: %d, int_offset=0x%02x%n", gpio,
+						my_bank, my_index, my_sub, my_sub_index, my_int_offset);
 			}
+		}
+
+		for (int gpio = 0; gpio < 224; gpio++) {
+			int bank = gpio >> 5; // equivalent to / 32
+			int reg = (gpio >> 4) % 2;
+			int shift = (gpio % 16) << 1;
+			int offset = 0x1c + bank * 0x24 + reg * 4;
+			int int_offset = offset / 4;
+			System.out.format("My PUD for GPIO %d - bank: %d, reg: %d, shift: %d, offset: 0x%02x, int_offset: 0x%02x%n",
+					gpio, bank, reg, shift, offset, int_offset);
 		}
 
 		if (args.length < 1) {
-			System.out.println("Usage: <gpio>");
-			System.exit(1);
+			System.out.println("Usage: " + AllwinnerH3MmapGpio.class.getName() + " <gpio>");
+			return;
 		}
 		int gpio = Integer.parseInt(args[0]);
 
-		try (AllwinnerH5MmapGpio mmap_gpio = new AllwinnerH5MmapGpio()) {
+		try (AllwinnerH3MmapGpio mmap_gpio = new AllwinnerH3MmapGpio()) {
 			mmap_gpio.initialise();
 
-			DeviceMode mode = mmap_gpio.getMode(gpio);
-			System.out.format("Mode for gpio %d: %s%n", Integer.valueOf(gpio), mode);
+			System.out.println("Mode: " + mmap_gpio.getMode(gpio));
 
-			DeviceMode new_mode = DeviceMode.DIGITAL_INPUT;
-			mmap_gpio.setMode(gpio, new_mode);
-			mode = mmap_gpio.getMode(gpio);
-			System.out.format("Mode for gpio %d: %s (%s)%n", gpio, mode, mode == new_mode ? "Correct" : "Incorrect!");
-			if (mode != new_mode) {
-				return;
-			}
-
-			new_mode = DeviceMode.DIGITAL_OUTPUT;
-			mmap_gpio.setMode(gpio, new_mode);
-			mode = mmap_gpio.getMode(gpio);
-			System.out.format("Mode for gpio %d: %s (%s)%n", gpio, mode, mode == new_mode ? "Correct" : "Incorrect!");
-			if (mode != new_mode) {
-				return;
-			}
-
-			/*-
-			for (int i = 0; i < 10; i++) {
-				System.out.println(mmap_gpio.gpioRead(gpio));
+			for (int i = 0; i < 20; i++) {
+				System.out.println("Mode for GPIO #" + gpio + ": " + mmap_gpio.getMode(gpio));
 				SleepUtil.sleepSeconds(1);
 			}
-			 */
+
+			if (true) {
+				return;
+			}
 
 			for (int i = 0; i < 5; i++) {
-				boolean new_value = false;
-				mmap_gpio.gpioWrite(gpio, new_value);
-				boolean value = mmap_gpio.gpioRead(gpio);
-				System.out.format("Value for gpio %d: %b (%s)%n", gpio, value,
-						value == new_value ? "Correct" : "Incorrect!");
-				if (value != new_value) {
-					return;
-				}
+				System.out.println("GPIO#" + gpio);
+				mmap_gpio.setMode(gpio, DeviceMode.DIGITAL_OUTPUT);
+				System.out.println("Mode: " + mmap_gpio.getMode(gpio));
+				SleepUtil.sleepSeconds(0.5);
+				mmap_gpio.setMode(gpio, DeviceMode.DIGITAL_INPUT);
+				System.out.println("Mode: " + mmap_gpio.getMode(gpio));
+				SleepUtil.sleepSeconds(0.5);
+			}
 
-				new_value = true;
-				mmap_gpio.gpioWrite(gpio, new_value);
-				value = mmap_gpio.gpioRead(gpio);
-				System.out.format("Value for gpio %d: %b (%s)%n", gpio, value,
-						value == new_value ? "Correct" : "Incorrect!");
-				if (value != new_value) {
-					return;
-				}
+			mmap_gpio.setMode(gpio, DeviceMode.DIGITAL_OUTPUT);
+			for (int i = 0; i < 5; i++) {
+				System.out.println("Value: " + mmap_gpio.gpioRead(gpio));
+
+				mmap_gpio.gpioWrite(gpio, true);
+				System.out.println("Value: " + mmap_gpio.gpioRead(gpio));
+
+				System.out.println("Sleeping");
+				SleepUtil.sleepSeconds(0.5);
+
+				mmap_gpio.gpioWrite(gpio, false);
+				System.out.println("Value: " + mmap_gpio.gpioRead(gpio));
+
+				System.out.println("Sleeping");
+				SleepUtil.sleepSeconds(0.5);
 			}
 
 			int iterations = 1_000_000;
@@ -279,6 +273,7 @@ public class AllwinnerH5MmapGpio extends AllwinnerHMmapGpio {
 
 			for (int i = 0; i < 3; i++) {
 				long start_ms = System.currentTimeMillis();
+
 				for (int j = 0; j < iterations; j++) {
 					mmap_gpio.gpioWrite(gpio, true);
 					mmap_gpio.gpioWrite(gpio, false);

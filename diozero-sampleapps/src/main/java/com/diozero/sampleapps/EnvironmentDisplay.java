@@ -55,13 +55,13 @@ import com.diozero.api.DigitalOutputDevice;
 import com.diozero.api.GpioEventTrigger;
 import com.diozero.api.GpioPullUpDown;
 import com.diozero.devices.Ads1x15;
-import com.diozero.devices.BME280;
+import com.diozero.devices.BMx280;
 import com.diozero.devices.PwmLed;
+import com.diozero.devices.ThermometerInterface;
 import com.diozero.devices.oled.ColourSsdOled;
 import com.diozero.devices.oled.SSD1351;
 import com.diozero.util.Diozero;
 import com.diozero.util.DiozeroScheduler;
-import com.diozero.util.TemperatureUtil;
 
 public class EnvironmentDisplay implements AutoCloseable {
 	private static final Character DEGREES_CHARACTER = Character.valueOf('\u00B0');
@@ -72,7 +72,7 @@ public class EnvironmentDisplay implements AutoCloseable {
 	private DigitalOutputDevice oledDcPin;
 	private DigitalOutputDevice oledResetPin;
 	private ColourSsdOled oled;
-	private BME280 bme280;
+	private BMx280 bmx280;
 	private Ads1x15 adc;
 	private AnalogInputDevice ain;
 	private DigitalInputDevice adcDataReadyPin;
@@ -111,15 +111,15 @@ public class EnvironmentDisplay implements AutoCloseable {
 		}
 	}
 
-	public EnvironmentDisplay(int spiController, int spiChipSelect, int dcGpio, int resetGpio, int i2cController,
+	public EnvironmentDisplay(int spiController, int spiChipSelect, int dcGpio, int resetGpio, int i2cBus,
 			int adcReadChannel, int adcReadyGpio) {
 		oledDcPin = new DigitalOutputDevice(dcGpio);
 		oledResetPin = new DigitalOutputDevice(resetGpio);
 		oled = new SSD1351(spiController, spiChipSelect, oledDcPin, oledResetPin);
 
-		bme280 = new BME280(i2cController, BME280.DEFAULT_I2C_ADDRESS);
+		bmx280 = BMx280.I2CBuilder.builder(i2cBus).build();
 
-		adc = new Ads1x15(i2cController, Ads1x15.Address.GND, Ads1x15.PgaConfig._4096MV, Ads1x15.Ads1115DataRate._8HZ);
+		adc = new Ads1x15(i2cBus, Ads1x15.Address.GND, Ads1x15.PgaConfig._4096MV, Ads1x15.Ads1115DataRate._8HZ);
 
 		ain = new AnalogInputDevice(adc, adcReadChannel);
 		adcDataReadyPin = new DigitalInputDevice(adcReadyGpio, GpioPullUpDown.PULL_UP, GpioEventTrigger.BOTH);
@@ -181,7 +181,7 @@ public class EnvironmentDisplay implements AutoCloseable {
 		stop();
 
 		// Close all device interfaces
-		for (DeviceInterface device : Arrays.asList(oled, oledDcPin, oledResetPin, bme280, ain, adcDataReadyPin, adc,
+		for (DeviceInterface device : Arrays.asList(oled, oledDcPin, oledResetPin, bmx280, ain, adcDataReadyPin, adc,
 				pwmLed)) {
 			if (device != null) {
 				try {
@@ -197,7 +197,7 @@ public class EnvironmentDisplay implements AutoCloseable {
 		oled = null;
 		oledDcPin = null;
 		oledResetPin = null;
-		bme280 = null;
+		bmx280 = null;
 		ain = null;
 		adcDataReadyPin = null;
 		adc = null;
@@ -225,11 +225,11 @@ public class EnvironmentDisplay implements AutoCloseable {
 
 		int index = 1;
 
-		bme280.waitDataAvailable(10, 5);
-		float[] tph = bme280.getValues();
+		bmx280.waitDataAvailable(10, 5);
+		float[] tph = bmx280.getValues();
 
 		String t_text = String.format("T: %.2f%cC (%.2f%cF)", Float.valueOf(tph[0]), DEGREES_CHARACTER,
-				Float.valueOf(TemperatureUtil.toFahrenheit(tph[0])), DEGREES_CHARACTER);
+				Float.valueOf(ThermometerInterface.celsiusToFahrenheit(tph[0])), DEGREES_CHARACTER);
 		g2d.setColor(Color.red);
 		g2d.drawString(t_text, 0, index++ * fontLineHeight);
 		String p_text = String.format("P: %.2f hPa", Float.valueOf(tph[1]));

@@ -692,8 +692,8 @@ public class GrpcClientDeviceFactory extends BaseNativeDeviceFactory {
 
 		public RemoteBoardInfo(Board.BoardInfoResponse boardInfoResponse) {
 			super(boardInfoResponse.getMake(), boardInfoResponse.getModel(), boardInfoResponse.getMemory(),
-					boardInfoResponse.getAdcVref(), LocalSystemInfo.getInstance().getDefaultLibraryPath(),
-					boardInfoResponse.getOsId(), boardInfoResponse.getOsVersion());
+					LocalSystemInfo.getInstance().getDefaultLibraryPath(), boardInfoResponse.getOsId(),
+					boardInfoResponse.getOsVersion());
 
 			this.boardInfoResponse = boardInfoResponse;
 
@@ -716,7 +716,7 @@ public class GrpcClientDeviceFactory extends BaseNativeDeviceFactory {
 								gpio_info.getChip(), gpio_info.getLineOffset());
 					} else if (gpio_info.getModeList().contains(Board.GpioMode.ANALOG_INPUT)) {
 						addAdcPinInfo(gpio_info.getHeader(), gpio_info.getGpioNumber(), gpio_info.getName(),
-								gpio_info.getPhysicalPin());
+								gpio_info.getPhysicalPin(), gpio_info.getAdcVRef());
 					} else if (gpio_info.getModeList().contains(Board.GpioMode.ANALOG_OUTPUT)) {
 						addDacPinInfo(gpio_info.getHeader(), gpio_info.getGpioNumber(), gpio_info.getName(),
 								gpio_info.getPhysicalPin());

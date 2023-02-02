@@ -346,13 +346,8 @@ public class MockDeviceFactory extends BaseNativeDeviceFactory {
 
 	private static class MockBoardInfo extends GenericLinuxArmBoardInfo {
 		public MockBoardInfo(Properties props, LocalSystemInfo localSysInfo) {
-			super(props.getProperty("Make"), props.getProperty("Model"), Integer.parseInt(props.getProperty("Memory")),
-					Float.parseFloat(props.getProperty("ADCvRef")), "lib-mock");
-		}
-
-		@Override
-		public List<String> getBoardCompatibility() {
-			return Arrays.asList("mockboard");
+			super(props.getProperty("Make"), props.getProperty("Model"), props.getProperty("SoC"),
+					Integer.parseInt(props.getProperty("Memory")), "lib-mock", Arrays.asList("mockboard"));
 		}
 	}
 

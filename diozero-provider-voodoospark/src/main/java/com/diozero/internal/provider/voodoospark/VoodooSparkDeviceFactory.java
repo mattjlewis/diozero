@@ -692,7 +692,7 @@ public class VoodooSparkDeviceFactory extends BaseNativeDeviceFactory {
 		public static final String MODEL = "Photon";
 
 		public ParticlePhotonBoardInfo() {
-			super(MAKE, MODEL, -1, BoardInfo.UNKNOWN_ADC_VREF, LocalSystemInfo.getInstance().getDefaultLibraryPath(),
+			super(MAKE, MODEL, -1, LocalSystemInfo.getInstance().getDefaultLibraryPath(),
 					LocalSystemInfo.getInstance().getOperatingSystemId(),
 					LocalSystemInfo.getInstance().getOperatingSystemVersion());
 		}

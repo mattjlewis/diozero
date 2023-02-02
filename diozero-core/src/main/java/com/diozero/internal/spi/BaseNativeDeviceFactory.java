@@ -88,11 +88,6 @@ public abstract class BaseNativeDeviceFactory extends AbstractDeviceFactory impl
 	}
 
 	@Override
-	public float getVRef() {
-		return getBoardInfo().getAdcVRef();
-	}
-
-	@Override
 	public float getCpuTemperature() {
 		return LocalSystemInfo.getInstance().getCpuTemperature();
 	}

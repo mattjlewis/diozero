@@ -1,4 +1,4 @@
-package com.diozero.internal.board.soc.broadcom;
+package com.diozero.internal.soc.broadcom;
 
 /*
  * #%L

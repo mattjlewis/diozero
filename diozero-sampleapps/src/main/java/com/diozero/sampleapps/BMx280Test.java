@@ -4,7 +4,7 @@ package com.diozero.sampleapps;
  * #%L
  * Organisation: diozero
  * Project:      diozero - Sample applications
- * Filename:     BME280TestSpi.java
+ * Filename:     BMx280Test.java
  * 
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
@@ -31,29 +31,35 @@ package com.diozero.sampleapps;
  * #L%
  */
 
-import com.diozero.api.SpiConstants;
-import com.diozero.devices.BME280;
+import com.diozero.api.I2CConstants;
+import com.diozero.devices.BMx280;
+import com.diozero.devices.ThermometerInterface;
 import com.diozero.util.Diozero;
 import com.diozero.util.SleepUtil;
 
 /**
- * Tests BME280 using SPI
- *
- * @author gregflurry
+ * BMP280/BME280 temperature / pressure (/ humidity) sensor sample application.
  */
-public class BME280TestSpi {
-	/**
-	 * @param args the command line arguments
-	 */
+public class BMx280Test {
 	public static void main(String[] args) {
-		System.out.println("--- USING SPI ----");
-		try (BME280 bme280 = new BME280(SpiConstants.CE0)) {
-			for (int i = 0; i < 3; i++) {
-				bme280.waitDataAvailable(10, 5);
-				float[] tph = bme280.getValues();
-				float tF = tph[0] * (9f / 5f) + 32f;
-				System.out.format("T=%.2f C (%.2f F) P=%.2f hPa H=%.2f%% RH%n", Float.valueOf(tph[0]),
-						Float.valueOf(tF), Float.valueOf(tph[1]), Float.valueOf(tph[2]));
+		int i2c_bus = I2CConstants.CONTROLLER_1;
+		if (args.length > 0) {
+			i2c_bus = Integer.parseInt(args[0]);
+		}
+		int iterations = 10;
+		if (args.length > 1) {
+			iterations = Integer.parseInt(args[1]);
+		}
+		System.out.println("--- USING I2C-" + i2c_bus + " ---");
+		try (BMx280 bmx280 = BMx280.I2CBuilder.builder(i2c_bus).build()) {
+			for (int i = 0; i < iterations; i++) {
+				float[] tph = bmx280.getValues();
+				System.out.format("Temperature: %.2f C (%.2f F), Pressure: %.2f hPa", Float.valueOf(tph[0]),
+						Float.valueOf(ThermometerInterface.celsiusToFahrenheit(tph[0])), Float.valueOf(tph[1]));
+				if (bmx280.getModel() == BMx280.Model.BME280) {
+					System.out.format(", Relaative Humidity: %.2f%% RH", Float.valueOf(tph[2]));
+				}
+				System.out.println();
 
 				SleepUtil.sleepSeconds(1);
 			}

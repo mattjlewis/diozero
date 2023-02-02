@@ -39,7 +39,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
@@ -52,194 +52,20 @@ import com.diozero.internal.provider.builtin.i2c.NativeI2C;
 import com.diozero.util.FileNative;
 import com.diozero.util.StringUtil;
 
-/*-
- * Notes...
- * Board: TinkerBoard
- * /etc/os-release PRETTY_NAME:     Armbian 20.08.17 Focal
- * /proc/device-tree/compatible:    asus,rk3288-tinker^@rockchip,rk3288^@
- * /proc/device-tree/model:         Rockchip RK3288 Asus Tinker Board^@
- * /proc/device-tree/serial-number: <No such file>
- * /proc/cpuinfo:
- *   Hardware : Rockchip (Device Tree)
- *   Revision : 0000
- *   Serial   : 0000000000000000
- * os.name: Linux
- * os.arch: arm
- * sun.arch.data.model: 32
- *
- * Board: Raspberry Pi Model B Rev 2
- * /proc/device-tree/compatible:    raspberrypi,model-b^@brcm,bcm2835^
- * /proc/device-tree/model:         ???
- * /proc/device-tree/serial-number: ???
- * /proc/cpuinfo:
- *   Hardware   : BCM2835
- *   Revision   : 000f
- *   Serial     : ???
- *   Model      : ???
- * os.name: Linux
- * os.arch: arm
- * sun.arch.data.model: 32
- *
- * Board: Raspberry Pi 4 Model B
- * /etc/os-release PRETTY_NAME:     Raspbian GNU/Linux 10 (buster)
- * /proc/device-tree/compatible:    raspberrypi,4-model-b^@brcm,bcm2711^@
- * /proc/device-tree/model:         Raspberry Pi 4 Model B Rev 1.1^@
- * /proc/device-tree/serial-number: 100000002914db7e^@
- * /proc/cpuinfo:
- *   model name : ARMv7 Processor rev 3 (v7l)
- *   Hardware   : BCM2711
- *   Revision   : b03111
- *   Serial     : 100000002914db7e
- *   Model      : Raspberry Pi 4 Model B Rev 1.1
- * os.name: Linux
- * os.arch: arm
- * sun.arch.data.model: 32
- *
- * Board: Raspberry Pi 3 Model B
- * /etc/os-release PRETTY_NAME:     Raspbian GNU/Linux 10 (buster)
- * /proc/device-tree/compatible:    raspberrypi,3-model-b^@brcm,bcm2837^@
- * /proc/device-tree/model:         Raspberry Pi 3 Model B Rev 1.2^@
- * /proc/device-tree/serial-number: 00000000c2b16ad3^@
- * /proc/cpuinfo:
- *   Hardware   : BCM2835
- *   Revision   : a02082
- *   Serial     : 00000000c2b16ad3
- *   Model      : Raspberry Pi 3 Model B Rev 1.2
- * os.name: Linux
- * os.arch: arm
- * sun.arch.data.model: 32
- *
- * Board: Raspberry Pi CM4
- * /etc/os-release PRETTY_NAME:     Raspbian GNU/Linux 10 (buster)
- * /proc/device-tree/compatible:    raspberrypi,4-compute-module^@brcm,bcm2711^@
- * /proc/device-tree/model:         Raspberry Pi Compute Module 4 Rev 1.0^@
- * /proc/device-tree/serial-number: 10000000b68ef68d^@
- * /proc/cpuinfo:
- *   Hardware   : BCM2835
- *   Revision   : a03140
- *   Serial     : 10000000b68ef68d
- *   Model      : Raspberry Pi Compute Module 4 Rev 1.0
- * os.name: Linux
- * os.arch: arm
- * sun.arch.data.model: 32
- * 
- * Board: Raspberry Pi Zero 2 W
- * /etc/os-release PRETTY_NAME:     Raspbian GNU/Linux 11 (bullseye)
- * /proc/device-tree/compatible:    raspberrypi,model-zero-2-w^@brcm,bcm2837^@%
- * /proc/device-tree/model:         Raspberry Pi Zero 2 W Rev 1.0^@%
- * /proc/device-tree/serial-number: 00000000b68a8100
- * /proc/cpuinfo:
- *   Hardware   : BCM2835
- *   Revision   : 902120
- *   Serial     : 00000000b68a8100
- *   Model      : Raspberry Pi Zero 2 W Rev 1.0
- * os.name: Linux
- * os.arch: arm
- * sun.arch.data.model: 32
- *
- * Board: Odroid C2
- * /etc/os-release PRETTY_NAME:     Armbian 20.08.17 Buster
- * /proc/device-tree/compatible:    hardkernel,odroid-c2^@amlogic,meson-gxbb^@
- * /proc/device-tree/model:         Hardkernel ODROID-C2^@
- * /proc/device-tree/serial-number: HKC213254DFD1F85M-^H^@
- * /proc/cpuinfo:
- *   Hardware : <<Not present>>
- *   Revision : <<Not present>>
- *   Serial   : <<Not present>>
- * os.name: Linux
- * os.arch: aarch64
- * sun.arch.data.model: 64
- *
- * Board: Odroid N2+
- * /etc/os-release PRETTY_NAME:     Ubuntu 20.04.4 LTS
- * /proc/device-tree/compatible:    amlogic, g12b^@
- * /proc/device-tree/model:         Hardkernel ODROID-N2Plus^@
- * /proc/device-tree/serial-number: ??
- * /proc/cpuinfo:
- *   Hardware : Hardkernel ODROID-N2Plus
- *   Revision : 0400
- *   Serial   : 3bfa5067-da47-40c8-a303-001e06430dc1
- * os.name: ??
- * os.arch: ??
- * sun.arch.data.model: ??
- *
- * Board: NanoPi Duo2
- * /etc/os-release PRETTY_NAME:     Armbian 20.08.17 Buster
- * /proc/device-tree/compatible:    friendlyarm,nanopi-duo2^@allwinner,sun8i-h3^@
- * /proc/device-tree/model:         FriendlyElec NanoPi-Duo2^@
- * /proc/device-tree/serial-number: 02c00081f71a3058^@
- * /proc/cpuinfo:
- *   Hardware   : Allwinner sun8i Family
- *   Revision   : 0000
- *   Serial     : 02c00081f71a3058
- * os.name: Linux
- * os.arch: arm
- * sun.arch.data.model: 32
- *
- * Board: BeagleBone Green / Black
- * /etc/os-release PRETTY_NAME: ???
- * /proc/device-tree/compatible:    ti,am335x-bone-green^@ti,am335x-bone-black^@ti,am335x-bone^@ti,am33xx^@
- * /proc/device-tree/model:         TI AM335x BeagleBone Green^@
- * /proc/device-tree/model:         TI AM335x BeagleBone Black^@
- * /proc/device-tree/serial-number: ??
- * /proc/cpuinfo:
- *   Hardware   : Generic AM33XX (Flattened Device Tree)
- *   Revision   : 0000
- *   Serial     : BBG217012434
- * os.name: Linux
- * os.arch: arm
- * sun.arch.data.model: 32
- *
- * Board: Orange Pi Zero Plus (Allwinner H5)
- * /etc/os-release PRETTY_NAME: Armbian 21.05.1 Buster
- * /proc/device-tree/compatible:    xunlong,orangepi-zero-plus^@allwinner,sun50i-h5^@
- * /proc/device-tree/model:         Xunlong Orange Pi Zero Plus^@
- * /proc/device-tree/serial-number: 82c000011f994b9b^@
- * /proc/cpuinfo:
- *   Hardware   : sun50iw1p1
- *   Revision   : <<Not present>>
- *   Serial     : <<Not present>>
- * os.name: Linux
- * os.arch: aarch64
- * sun.arch.data.model: 64
- *
- * Board: Orange Pi One Plus (Allwinner H6)
- * /etc/os-release PRETTY_NAME: Armbian 21.05.2 Buster
- * /proc/device-tree/compatible:    xunlong,orangepi-one-plus^@allwinner,sun50i-h6^@%
- * /proc/device-tree/model:         OrangePi One Plus^@%
- * /proc/device-tree/serial-number: 82c000072714fa87^@%
- * /proc/cpuinfo:
- *   Hardware   : sun50iw1p1
- *   Revision   : <<Not present>>
- *   Serial     : <<Not present>>
- * os.name: Linux
- * os.arch: aarch64
- * sun.arch.data.model: 64
- * 
- * Board: OKdo ROCK 4 Model C+ (Rockchip RK3399-T)
- * /etc/os-release PRETTY_NAME: 
- * /proc/device-tree/compatible:    radxa,rock-4c-plus^@rockchip,rk3399^@%
- * /proc/device-tree/model:         Radxa ROCK 4C+^@%
- * /proc/device-tree/serial-number: 9b2bb1ea7d62e92f^@%
- * /proc/cpuinfo:
- *   Hardware   : <<Not present>>
- *   Revision   : <<Not present>>
- *   Serial     : 9b2bb1ea7d62e92f
- * os.name: Linux
- * os.arch: aarch64
- * sun.arch.data.model: 64
- */
 /**
  * Utility class for accessing information about the local system. The majority
  * of information is specific to the Linux operating system.
  */
 public class LocalSystemInfo {
+	private static final String LSCPU_ARCHITECTURE = "Architecture";
+	private static final String LSCPU_MODEL_NAME = "Model name";
+
 	private static final String OS_NAME_SYSTEM_PROPERTY = "os.name";
 	private static final String OS_ARCH_SYSTEM_PROPERTY = "os.arch";
 	private static final String ARM_32_OS_ARCH = "arm";
 	private static final String ARM_64_OS_ARCH = "aarch64";
-	private static final String ARMV6_CPU_MODEL_NAME = "armv6";
-	private static final String ARMV7_CPU_MODEL_NAME = "armv7";
+	private static final String ARMV6_CPU_ARCHITECTURE = "armv6";
+	private static final String ARMV7_CPU_ARCHITECTURE = "armv7";
 	private static final String LINUX_OS_NAME = "Linux";
 	private static final String MAC_OS_NAME = "Mac OS X";
 	private static final String WINDOWS_OS_NAME_PREFIX = "Windows";
@@ -260,11 +86,15 @@ public class LocalSystemInfo {
 	private String libFileExtension;
 	private String osId;
 	private String osVersion;
-	private String hardware;
-	private String revision;
+	private String make;
 	private String model;
+	private String soc;
+	private String revision;
+	private String serial;
+	private String cpuArchitecture;
 	private String cpuModelName;
 	private Integer memoryKb;
+	private List<String> compatible;
 
 	public synchronized static LocalSystemInfo getInstance() {
 		if (instance == null) {
@@ -274,100 +104,34 @@ public class LocalSystemInfo {
 	}
 
 	// For unit testing purposes only
-	LocalSystemInfo(String hardware, String revision, String model) {
-		this();
-
-		this.hardware = hardware;
-		this.revision = revision;
+	LocalSystemInfo(String osName, String osArch, String make, String model, String soc, String revision, int memoryKb,
+			List<String> compatible) {
+		this.osName = osName;
+		this.osArch = osArch;
+		this.make = make;
 		this.model = model;
+		this.soc = soc;
+		this.revision = revision;
+		this.memoryKb = Integer.valueOf(memoryKb);
+		this.compatible = compatible;
 	}
 
 	private LocalSystemInfo() {
 		osName = System.getProperty(OS_NAME_SYSTEM_PROPERTY);
 		osArch = System.getProperty(OS_ARCH_SYSTEM_PROPERTY);
 		libFileExtension = isWindows() ? "dll" : isMacOS() ? "dylib" : "so";
+		compatible = Collections.emptyList();
 
 		if (isLinux()) {
-			try (Reader reader = new FileReader(LINUX_OS_RELEASE_FILE)) {
-				Properties props = new Properties();
-				props.load(reader);
-				osId = props.getProperty("ID");
-				osVersion = StringUtil.unquote(props.getProperty("VERSION"));
-				/*-
-				osVersion = props.getProperty("VERSION");
-				if (osVersion == null || osVersion.trim().isEmpty()) {
-					osVersion = props.getProperty("VERSION_ID");
-					if (osVersion == null || osVersion.trim().isEmpty()) {
-						osVersion = UNKNOWN;
-					}
-				} else {
-					osVersion = osVersion.replace("\"", "");
-				}
-				*/
-			} catch (IOException e) {
-				Logger.warn("Error loading properties file '{}': {}", LINUX_OS_RELEASE_FILE, e);
-			}
-
-			try {
-				Files.lines(Paths.get(LINUX_CPUINFO_FILE)).forEach(line -> {
-					if (line.startsWith("Hardware")) {
-						hardware = line.split(":")[1].trim();
-					} else if (line.startsWith("Revision")) {
-						revision = line.split(":")[1].trim();
-					} else if (line.startsWith("model name")) {
-						// FIXME Ugly and possibly unsafe code!
-						try {
-							// model name : ARMv7 Processor rev 3 (v7l)
-							// model name : ARMv6-compatible processor rev 7 (v6l)
-							cpuModelName = line.split(":")[1].trim().split("[- ]")[0].trim().toLowerCase();
-						} catch (Exception e) {
-							Logger.debug(e, "Error processing model name line '{}': {}", line, e);
-						}
-					} else if (line.startsWith("Model")) {
-						model = line.split(":")[1].trim();
-					}
-				});
-			} catch (IOException | NullPointerException | IndexOutOfBoundsException e) {
-				Logger.warn("Error reading '{}': {}", LINUX_CPUINFO_FILE, e.getMessage());
-			}
-
-			if (model == null) {
-				// aarch64 doesn't have Revision info in /proc/cpuinfo
-				// Load from /proc/device-tree/model instead
-				try {
-					model = Files.lines(Paths.get(LINUX_DEVICE_TREE_MODEL_FILE)).findFirst().map(s -> s.trim())
-							.orElse(null);
-				} catch (IOException e) {
-					// Ignore
-				}
-			}
-
-			if (hardware == null) {
-				// aarch64 doesn't have Hardware info in /proc/cpuinfo
-				// Load from /proc/device-tree/model instead
-				hardware = model;
-			}
-
-			if (revision == null) {
-				// aarch64 doesn't have Revision info in /proc/cpuinfo
-				// Load from /proc/device-tree/serial-number instead
-				try {
-					revision = new String(Files.readAllBytes(Paths.get(LINUX_DEVICE_TREE_SERIAL_NUMBER_FILE))).trim();
-				} catch (IOException e) {
-					// Ignore
-				}
-			}
-
-			memoryKb = null;
-			try {
-				Files.lines(Paths.get(LINUX_MEMINFO_FILE)).forEach(line -> {
-					if (line.startsWith("MemTotal:")) {
-						memoryKb = Integer.valueOf(line.split("\\s+")[1].trim());
-					}
-				});
-			} catch (IOException | NullPointerException | IndexOutOfBoundsException e) {
-				Logger.warn("Error reading '{}': {}", LINUX_MEMINFO_FILE, e.getMessage());
-			}
+			populateFromOsRelease();
+			populateFromLsCpu();
+			populateFromDeviceTreeModel();
+			populateFromDeviceTreeCompatible();
+			populateFromDeviceTreeSerialNumber();
+			populateFromMemInfo();
+			// Note aarch64 doesn't have Board Model / Hardware / Revision info in
+			// /proc/cpuinfo
+			populateFromCpuInfo();
 		} else if (isMacOS()) {
 			try (InputStream is = Runtime.getRuntime().exec("sw_vers").getInputStream()) {
 				Properties props = new Properties();
@@ -378,6 +142,115 @@ public class LocalSystemInfo {
 				// Ignore
 				Logger.warn(e, "Error getting versions: {}", e);
 			}
+		}
+	}
+
+	private void populateFromDeviceTreeSerialNumber() {
+		try {
+			serial = new String(Files.readAllBytes(Paths.get(LINUX_DEVICE_TREE_SERIAL_NUMBER_FILE))).trim();
+		} catch (IOException e) {
+			// Ignore
+		}
+	}
+
+	private void populateFromOsRelease() {
+		try (Reader reader = new FileReader(LINUX_OS_RELEASE_FILE)) {
+			Properties props = new Properties();
+			props.load(reader);
+			osId = props.getProperty("ID");
+			osVersion = StringUtil.unquote(props.getProperty("VERSION"));
+		} catch (IOException e) {
+			Logger.warn("Error loading properties file '{}': {}", LINUX_OS_RELEASE_FILE, e);
+		}
+	}
+
+	private void populateFromLsCpu() {
+		try {
+			final List<ProcessBuilder> pbs = Arrays.asList(new ProcessBuilder("lscpu"),
+					new ProcessBuilder("egrep", "-i", "(?:" + LSCPU_ARCHITECTURE + "|" + LSCPU_MODEL_NAME + "):"));
+			final List<Process> processes = ProcessBuilder.startPipeline(pbs);
+			final Process proc = processes.get(processes.size() - 1);
+			try (BufferedReader br = new BufferedReader(new InputStreamReader(proc.getInputStream()))) {
+				br.lines().map(line -> line.split(":")).forEach(this::processLsCpuEntry);
+			}
+		} catch (Exception e) {
+			Logger.warn("Error with lscpu command: {}", e.getMessage());
+		}
+	}
+
+	private void processLsCpuEntry(String[] parts) {
+		if (parts.length != 2) {
+			// XXX Assume CPU Architecture and Model name never contain the ':' character
+			Logger.warn("Invalid lscpu entry: '" + Arrays.toString(parts) + "'");
+			return;
+		}
+
+		if (parts[0].equalsIgnoreCase(LSCPU_ARCHITECTURE)) {
+			cpuArchitecture = parts[1].trim();
+		} else if (parts[0].equalsIgnoreCase(LSCPU_MODEL_NAME)) {
+			cpuModelName = parts[1].trim();
+		}
+	}
+
+	private void populateFromDeviceTreeModel() {
+		try {
+			model = Files.lines(Paths.get(LINUX_DEVICE_TREE_MODEL_FILE)).findFirst().map(s -> s.trim()).orElse(null);
+		} catch (Exception e) {
+			Logger.warn("Unable to process file '{}': {}", LINUX_DEVICE_TREE_MODEL_FILE, e);
+		}
+	}
+
+	private void populateFromDeviceTreeCompatible() {
+		try {
+			// This file has multiple strings separated by \0
+			compatible = Files.lines(Paths.get(LINUX_DEVICE_TREE_COMPATIBLE_FILE)).findFirst()
+					.map(line -> Arrays.asList(line.split("\0"))).orElse(Collections.emptyList());
+			// The first part is the make and model, e.g. "raspberrypi,model-b",
+			// "xunlong,orangepi-one-plus"
+			make = compatible.get(0).split(",")[0];
+			// The second part is the SoC, e.g. "allwinner,sun50i-h6", "rockchip,rk3399"
+			soc = compatible.get(compatible.size() - 1);
+		} catch (Exception e) {
+			Logger.warn(e, "Unable to process file '{}': {}", LINUX_DEVICE_TREE_COMPATIBLE_FILE, e.getMessage());
+		}
+	}
+
+	private void populateFromCpuInfo() {
+		try {
+			Files.lines(Paths.get(LINUX_CPUINFO_FILE)).forEach(line -> {
+				if (revision == null && line.startsWith("Revision")) {
+					revision = line.split(":")[1].trim();
+				} else if (serial == null && line.startsWith("Serial")) {
+					serial = line.split(":")[1].trim();
+				} else if (model == null && line.matches("Model\\w*:")) {
+					model = line.split(":")[1].trim();
+				} else if (cpuArchitecture == null && line.startsWith("model name")) {
+					// FIXME Ugly and possibly unsafe code!
+					// Only populated on certain O/S / SBC combinations
+					try {
+						// model name : ARMv7 Processor rev 3 (v7l)
+						// model name : ARMv6-compatible processor rev 7 (v6l)
+						cpuArchitecture = line.split(":")[1].trim().split("[- ]")[0].trim().toLowerCase();
+					} catch (Exception e) {
+						Logger.debug(e, "Error processing model name line '{}': {}", line, e);
+					}
+				}
+			});
+		} catch (Exception e) {
+			Logger.warn("Unable to process file '{}': {}", LINUX_CPUINFO_FILE, e.getMessage());
+		}
+	}
+
+	private void populateFromMemInfo() {
+		memoryKb = null;
+		try {
+			Files.lines(Paths.get(LINUX_MEMINFO_FILE)).forEach(line -> {
+				if (line.startsWith("MemTotal:")) {
+					memoryKb = Integer.valueOf(line.split("\\s+")[1].trim());
+				}
+			});
+		} catch (IOException | NullPointerException | IndexOutOfBoundsException e) {
+			Logger.warn("Unable to process file '{}': {}", LINUX_MEMINFO_FILE, e.getMessage());
 		}
 	}
 
@@ -409,32 +282,40 @@ public class LocalSystemInfo {
 		return osArch.equals(ARM_64_OS_ARCH);
 	}
 
+	public boolean isArm() {
+		return isArm32() || isArm64();
+	}
+
 	public boolean isArmv6() {
-		return cpuModelName != null && cpuModelName.equals(ARMV6_CPU_MODEL_NAME);
+		return cpuArchitecture != null && cpuArchitecture.startsWith(ARMV6_CPU_ARCHITECTURE);
 	}
 
 	public boolean isArmv7() {
-		return cpuModelName != null && cpuModelName.equals(ARMV7_CPU_MODEL_NAME);
-	}
-
-	public boolean isArm() {
-		return isArm32() || isArm64();
+		return cpuArchitecture != null && cpuArchitecture.startsWith(ARMV7_CPU_ARCHITECTURE);
 	}
 
 	public String getLibFileExtension() {
 		return libFileExtension;
 	}
 
-	public String getHardware() {
-		return hardware;
-	}
-
 	public String getRevision() {
 		return revision;
 	}
 
+	public String getMake() {
+		return make;
+	}
+
 	public String getModel() {
 		return model;
+	}
+
+	public String getSoc() {
+		return soc;
+	}
+
+	public String getCpuArchitecture() {
+		return cpuArchitecture;
 	}
 
 	public String getCpuModelName() {
@@ -447,32 +328,15 @@ public class LocalSystemInfo {
 
 	public String getDefaultLibraryPath() {
 		String lib_path;
-		if (isArm32() && !StringUtil.isNullOrBlank(cpuModelName)) {
-			lib_path = osName.toLowerCase().replace(" ", "") + "-" + cpuModelName.toLowerCase();
+		if (isArm32() && !StringUtil.isNullOrBlank(cpuArchitecture)) {
+			lib_path = osName.toLowerCase().replace(" ", "") + "-" + cpuArchitecture.toLowerCase();
 		} else {
 			lib_path = osName.toLowerCase().replace(" ", "") + "-" + osArch.toLowerCase();
 		}
 		return lib_path;
 	}
 
-	public List<String> loadLinuxBoardCompatibility() {
-		List<String> compatible = new ArrayList<>();
-		try {
-			// This file has multiple strings separated by \0
-			byte[] bytes = Files.readAllBytes(Paths.get(LINUX_DEVICE_TREE_COMPATIBLE_FILE));
-			int string_start = 0;
-			for (int i = 0; i < bytes.length; i++) {
-				if (bytes[i] == 0 || i == bytes.length - 1) {
-					compatible.add(new String(bytes, string_start, i - string_start));
-					string_start = i + 1;
-				}
-			}
-		} catch (IOException e) {
-			if (isLinux() && isArm()) {
-				// This file should exist on a Linux ARM system
-				Logger.warn(e, "Unable to read file {}: {}", LINUX_DEVICE_TREE_COMPATIBLE_FILE, e.getMessage());
-			}
-		}
+	public List<String> getLinuxBoardCompatibility() {
 		return compatible;
 	}
 
@@ -550,8 +414,9 @@ public class LocalSystemInfo {
 	@Override
 	public String toString() {
 		return "LocalSystemInfo [osName=" + osName + ", osArch=" + osArch + ", libFileExtension=" + libFileExtension
-				+ ", hardware=" + hardware + ", revision=" + revision + ", model=" + model + ", cpuModelName="
-				+ cpuModelName + ", memoryKb=" + memoryKb + "]";
+				+ ", make=" + make + ", model=" + model + ", soc=" + soc + ", revision=" + revision + ", serial="
+				+ serial + ", cpuArchitecture=" + cpuArchitecture + ", cpuModelName=" + cpuModelName + ", memoryKb="
+				+ memoryKb + "]";
 	}
 
 	public static void main(String[] args) {
@@ -562,5 +427,7 @@ public class LocalSystemInfo {
 		System.out.println("macOS? " + lsi.isMacOS() + ", Linux? " + lsi.isLinux() + ", Windows? " + lsi.isWindows());
 		System.out.println(lsi.getOperatingSystemId() + " version " + lsi.getOperatingSystemVersion());
 		System.out.println("CPU Temperature: " + lsi.getCpuTemperature());
+
+		System.out.println(lsi);
 	}
 }

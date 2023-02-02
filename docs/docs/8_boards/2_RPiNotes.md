@@ -77,14 +77,16 @@ Fortunately the Azul OpenJDK 11 version does support ARMv6.
 Download the latest version of Azul OpenJDK 11 for ARMv6/7 from the
 [Azul downloads page](https://www.azul.com/downloads/?version=java-11-lts&os=linux&architecture=arm-32-bit-hf&package=jdk#download-openjdk).
 
-At the time of writing, this was build 11.60.19-ca:
+At the time of writing, this was build 11.62.17-ca:
 
 ```
+JAVA_VERSION=11.0.18
+ZULU_JDK_VERSION=11.62.17-ca
 cd
-wget https://cdn.azul.com/zulu-embedded/bin/zulu11.60.19-ca-jdk11.0.17-linux_aarch32hf.tar.gz
+wget https://cdn.azul.com/zulu-embedded/bin/zulu${ZULU_JDK_VERSION}-jdk${JAVA_VERSION}-linux_aarch32hf.tar.gz
 cd /usr/lib/jvm
-sudo tar xf ~/zulu11.60.19-ca-jdk11.0.17-linux_aarch32hf.tar.gz
-sudo ln -s zulu11.60.19-ca-jdk11.0.17-linux_aarch32hf java-11-zulu-armhf
+sudo tar xf ~/zulu${ZULU_JDK_VERSION}-jdk${JAVA_VERSION}-linux_aarch32hf.tar.gz
+sudo ln -s zulu${ZULU_JDK_VERSION}-jdk${JAVA_VERSION}-linux_aarch32hf java-11-zulu-armhf
 sudo update-alternatives --install /usr/bin/java java /usr/lib/jvm/java-11-zulu-armhf/bin/java 1
 sudo update-alternatives --install /usr/bin/javac javac /usr/lib/jvm/java-11-zulu-armhf/bin/javac 1
 sudo update-alternatives --config java

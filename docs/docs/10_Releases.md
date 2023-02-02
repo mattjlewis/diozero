@@ -30,9 +30,16 @@ class for info on provisioned state
 + Additional interfaces representing generic physical behaviour, e.g. movement, acceleration,
 similar to existing MotorInterface, BarometerInterface, etc.
 + MFRC522 cleanup and testing, in particular write operations
-+ Remove the need to add board providers - have a generic one that works off the detected System on a Chip (SoC)
-+ Simplify MmapGpio implementation classes by extracting common behaviour into a base class.
-+ Add GPIO iomux mode mapping information in the board def file (in the list of supported device modes, e.g. PWM_OUTPUT(2)?)
++ MMAP GPIO
+    + Simplify MmapGpio implementation classes by extracting common behaviour into a base class
+    + Add GPIO iomux mode mapping information in the board def file (in the list of supported device modes, e.g. PWM_OUTPUT(2)?)
+    + Create common MmapGpioInterface sample app
+
+## 1.4.0 (In progress)
+
++ Boards
+    + Remove the need to add board provider classes - have a generic one that works off the detected System on a Chip (SoC)
+    + Use uname -m / lscpu for board detection (LocalSystemInfo)
 
 ## 1.3.5
 
