@@ -49,10 +49,6 @@ public interface GpioDeviceFactoryInterface extends DeviceFactoryInterface {
 
     default GpioDigitalOutputDeviceInterface provisionDigitalOutputDevice(PinInfo pinInfo, boolean initialValue)
             throws RuntimeIOException {
-        if (pinInfo == null) {
-            throw new NoSuchDeviceException("No such device - pinInfo was null");
-        }
-
         return registerPinDevice(pinInfo, (k) -> {
             if (!pinInfo.isSupported(DeviceMode.DIGITAL_OUTPUT)) {
                 throw new InvalidModeException("Invalid mode (digital output) for pin " + pinInfo);
@@ -63,10 +59,6 @@ public interface GpioDeviceFactoryInterface extends DeviceFactoryInterface {
 
     default GpioDigitalInputOutputDeviceInterface provisionDigitalInputOutputDevice(PinInfo pinInfo, DeviceMode mode)
             throws RuntimeIOException {
-        if (pinInfo == null) {
-            throw new NoSuchDeviceException("No such device - pinInfo was null");
-        }
-
         return registerPinDevice(pinInfo, (k) -> {
             if (!pinInfo.getModes().containsAll(PinInfo.DIGITAL_IN_OUT)) {
                 throw new InvalidModeException("Invalid mode (digital input/output) for pin " + pinInfo);
