@@ -132,6 +132,12 @@ public class PinInfo {
 	}
 
 	public PinInfo(String keyPrefix, String header, int deviceNumber, int physicalPin, String name,
+				   Collection<DeviceMode> modes, float adcVRef) {
+		this(keyPrefix, header, deviceNumber, physicalPin, NOT_DEFINED, NOT_DEFINED, name, modes, deviceNumber,
+			 NOT_DEFINED, NOT_DEFINED, adcVRef);
+	}
+
+	public PinInfo(String keyPrefix, String header, int deviceNumber, int physicalPin, String name,
 			Collection<DeviceMode> modes, int sysFsNumber, int chip, int line) {
 		this(keyPrefix, header, deviceNumber, physicalPin, NOT_DEFINED, NOT_DEFINED, name, modes, sysFsNumber, chip,
 				line, NOT_DEFINED);
