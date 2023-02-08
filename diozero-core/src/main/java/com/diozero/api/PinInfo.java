@@ -5,7 +5,7 @@ package com.diozero.api;
  * Organisation: diozero
  * Project:      diozero - Core
  * Filename:     PinInfo.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.api;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -129,6 +129,12 @@ public class PinInfo {
 			Collection<DeviceMode> modes) {
 		this(keyPrefix, header, deviceNumber, physicalPin, NOT_DEFINED, NOT_DEFINED, name, modes, deviceNumber,
 				NOT_DEFINED, NOT_DEFINED, NOT_DEFINED);
+	}
+
+	public PinInfo(String keyPrefix, String header, int deviceNumber, int physicalPin, String name,
+				   Collection<DeviceMode> modes, float adcVRef) {
+		this(keyPrefix, header, deviceNumber, physicalPin, NOT_DEFINED, NOT_DEFINED, name, modes, deviceNumber,
+			 NOT_DEFINED, NOT_DEFINED, adcVRef);
 	}
 
 	public PinInfo(String keyPrefix, String header, int deviceNumber, int physicalPin, String name,
