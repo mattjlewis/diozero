@@ -5,7 +5,7 @@ package com.diozero.api;
  * Organisation: diozero
  * Project:      diozero - Core
  * Filename:     ServoDeviceTest.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.api;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -97,7 +97,7 @@ public class ServoDeviceTest {
 		pulse_width_ms = trim.getMinPulseWidthMs();
 		servo_pulse = ServoUtil.calcServoPulseBits(pulse_width_ms, ms_per_bit);
 		System.out.println("TowerPro SG90 Min: On time=" + pulse_width_ms + ", servo_pulse=" + servo_pulse);
-		Assertions.assertEquals(122, servo_pulse);
+		Assertions.assertEquals(102, servo_pulse);
 
 		pulse_width_ms = trim.getMaxPulseWidthMs();
 		servo_pulse = ServoUtil.calcServoPulseBits(pulse_width_ms, ms_per_bit);
@@ -116,7 +116,7 @@ public class ServoDeviceTest {
 
 		float val = trim.getMinPulseWidthMs() * pwm_freq / 1000f;
 		System.out.println("Pulse width of " + trim.getMinPulseWidthMs() + "ms is " + (val * 100f) + "%");
-		Assertions.assertEquals(0.03f, val, FLOAT_COMPARISON_DELTA);
+		Assertions.assertEquals(0.025f, val, FLOAT_COMPARISON_DELTA);
 
 		pulse_width_ms = val * 1000f / pwm_freq;
 		System.out.println("Val of " + (val * 100f) + "% is " + trim.getMinPulseWidthMs() + "ms");
@@ -134,42 +134,34 @@ public class ServoDeviceTest {
 	@Test
 	public void mg996rServoTest() {
 		final ServoTrim trim = ServoTrim.MG996R;
-		Logger.debug("Min Pulse Width: {#,###} us, Min Angle: {} degrees", Integer.valueOf(trim.getMinPulseWidthUs()),
-				Integer.valueOf(trim.getMinAngle()));
-		Logger.debug("Mid Pulse Width: {#,###} us, Mid Angle: {} degrees", Integer.valueOf(trim.getMidPulseWidthUs()),
-				Integer.valueOf(trim.getMidAngle()));
-		Logger.debug("Max Pulse Width: {#,###} us, Max Angle: {} degrees", Integer.valueOf(trim.getMaxPulseWidthUs()),
-				Integer.valueOf(trim.getMaxAngle()));
+		Logger.debug("Min Pulse Width: {#,###} us, Min Angle: {} degrees", trim.getMinPulseWidthUs(), trim.getMinAngle());
+		Logger.debug("Mid Pulse Width: {#,###} us, Mid Angle: {} degrees", trim.getMidPulseWidthUs(), trim.getMidAngle());
+		Logger.debug("Max Pulse Width: {#,###} us, Max Angle: {} degrees", trim.getMaxPulseWidthUs(), trim.getMaxAngle());
 		try (final ServoDevice servo = ServoDevice.Builder.builder(SERVO_GPIO).setTrim(trim).build()) {
 			servo.setAngle(-90);
-			Logger.debug("Pulse Width: {#,###} us, Angle: {}", Integer.valueOf(servo.getPulseWidthUs()),
-					Float.valueOf(servo.getAngle()));
+			Logger.debug("Pulse Width: {#,###} us, Angle: {}", servo.getPulseWidthUs(), servo.getAngle());
 			Assertions.assertEquals(trim.getMinAngle(), servo.getAngle());
 			Assertions.assertEquals(trim.getMinPulseWidthUs(), servo.getPulseWidthUs());
 
 			servo.setAngle(0);
-			Logger.debug("Pulse Width: {#,###} us, Angle: {}", Integer.valueOf(servo.getPulseWidthUs()),
-					Float.valueOf(servo.getAngle()));
+			Logger.debug("Pulse Width: {#,###} us, Angle: {}", servo.getPulseWidthUs(), servo.getAngle());
 			Assertions.assertEquals(0, servo.getAngle());
 			Assertions.assertEquals(trim.getMidPulseWidthUs() - trim.getNinetyDegPulseWidthUs(),
 					servo.getPulseWidthUs());
 
 			servo.setAngle(90);
-			Logger.debug("Pulse Width: {#,###} us, Angle: {} degrees", Integer.valueOf(servo.getPulseWidthUs()),
-					Float.valueOf(servo.getAngle()));
+			Logger.debug("Pulse Width: {#,###} us, Angle: {} degrees", servo.getPulseWidthUs(), servo.getAngle());
 			Assertions.assertEquals(90, servo.getAngle());
 			Assertions.assertEquals(trim.getMidPulseWidthUs(), servo.getPulseWidthUs());
 
 			servo.setAngle(180);
-			Logger.debug("Pulse Width: {#,###} us, Angle: {} degrees", Integer.valueOf(servo.getPulseWidthUs()),
-					Float.valueOf(servo.getAngle()));
+			Logger.debug("Pulse Width: {#,###} us, Angle: {} degrees", servo.getPulseWidthUs(), servo.getAngle());
 			Assertions.assertEquals(180, servo.getAngle());
 			Assertions.assertEquals(trim.getMidPulseWidthUs() + trim.getNinetyDegPulseWidthUs(),
 					servo.getPulseWidthUs());
 
 			servo.setAngle(270);
-			Logger.debug("Pulse Width: {#,###} us, Angle: {} degrees", Integer.valueOf(servo.getPulseWidthUs()),
-					Float.valueOf(servo.getAngle()));
+			Logger.debug("Pulse Width: {#,###} us, Angle: {} degrees", servo.getPulseWidthUs(), servo.getAngle());
 			Assertions.assertEquals(190, servo.getAngle());
 			Assertions.assertEquals(trim.getMaxPulseWidthUs(), servo.getPulseWidthUs());
 
