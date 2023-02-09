@@ -166,6 +166,7 @@ public class GrpcClientDeviceFactory extends BaseNativeDeviceFactory {
 			}
 
 			boardPwmFrequency = response.getBoardPwmFrequency();
+			boardServoFrequency = response.getBoardServoFrequency();
 			spiBufferSize = response.getSpiBufferSize();
 
 			return new RemoteBoardInfo(response);
