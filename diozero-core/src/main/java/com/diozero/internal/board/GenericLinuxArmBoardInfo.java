@@ -68,12 +68,11 @@ public class GenericLinuxArmBoardInfo extends BoardInfo {
 	public GenericLinuxArmBoardInfo(LocalSystemInfo systemInfo, String make) {
 		this(make, systemInfo.getModel(), systemInfo.getSoc(),
 				systemInfo.getMemoryKb() == null ? -1 : systemInfo.getMemoryKb().intValue(),
-				systemInfo.getDefaultLibraryPath(), systemInfo.getLinuxBoardCompatibility());
+				systemInfo.getLinuxBoardCompatibility());
 	}
 
-	public GenericLinuxArmBoardInfo(String make, String model, String soc, int memoryKb, String libraryPath,
-			List<String> compatibility) {
-		super(make, model, memoryKb, libraryPath, LocalSystemInfo.getInstance().getOperatingSystemId(),
+	public GenericLinuxArmBoardInfo(String make, String model, String soc, int memoryKb, List<String> compatibility) {
+		super(make, model, memoryKb, LocalSystemInfo.getInstance().getOperatingSystemId(),
 				LocalSystemInfo.getInstance().getOperatingSystemVersion());
 
 		this.soc = soc;

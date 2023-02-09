@@ -40,7 +40,7 @@ public class MmapIntBuffer implements AutoCloseable {
 	private long offset;
 	private long address;
 	private long length;
-	private IntBuffer intBuffer;
+	private volatile IntBuffer intBuffer;
 
 	public MmapIntBuffer(String file, long offset, long length, ByteOrder byteOrder) {
 		Logger.trace("Invoking MmapBufferNative.createMmapBuffer({}, 0x{}, {})", file, Long.toHexString(offset),

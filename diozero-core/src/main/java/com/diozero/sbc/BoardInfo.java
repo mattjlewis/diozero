@@ -51,15 +51,13 @@ public abstract class BoardInfo extends BoardPinInfo {
 	private String make;
 	private String model;
 	private int memoryKb;
-	private String libraryPath;
 	private String osId;
 	private String osVersion;
 
-	public BoardInfo(String make, String model, int memoryKb, String libraryPath, String osId, String osVersion) {
+	public BoardInfo(String make, String model, int memoryKb, String osId, String osVersion) {
 		this.make = make;
 		this.model = model;
 		this.memoryKb = memoryKb;
-		this.libraryPath = libraryPath;
 		this.osId = osId;
 		this.osVersion = osVersion;
 	}
@@ -95,16 +93,6 @@ public abstract class BoardInfo extends BoardPinInfo {
 	 */
 	public int getMemoryKb() {
 		return memoryKb;
-	}
-
-	/**
-	 * Internal diozero method to get the library path prefix to be used when
-	 * loading native libraries for this device.
-	 *
-	 * @return the library path prefix
-	 */
-	public String getLibraryPath() {
-		return libraryPath;
 	}
 
 	public String getOperatingSystemId() {
@@ -153,7 +141,6 @@ public abstract class BoardInfo extends BoardPinInfo {
 
 	@Override
 	public String toString() {
-		return "BoardInfo [make=" + make + ", model=" + model + ", memory=" + memoryKb + ", libraryPath=" + libraryPath
-				+ "]";
+		return "BoardInfo [make=" + make + ", model=" + model + ", memory=" + memoryKb + "]";
 	}
 }

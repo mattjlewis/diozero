@@ -399,7 +399,6 @@ public class FirmataDeviceFactory extends BaseNativeDeviceFactory implements Fir
 
 		public FirmataAdapterBoardInfo(FirmataAdapter adapter) {
 			super(adapter.getFirmware().getName(), adapter.getFirmware().getVersionString(), -1,
-					LocalSystemInfo.getInstance().getDefaultLibraryPath(),
 					LocalSystemInfo.getInstance().getOperatingSystemId(),
 					LocalSystemInfo.getInstance().getOperatingSystemVersion());
 			this.adapter = adapter;

@@ -355,7 +355,6 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 		public PiBoardInfo(String revision, String model, String pcbRevision, int memory, String manufacturer,
 				String processor) {
 			super(MAKE, model, BROADCOM + "," + processor.toLowerCase(), memory,
-					LocalSystemInfo.getInstance().getDefaultLibraryPath(),
 					generateBoardCompatibility(model, pcbRevision, processor));
 
 			this.revision = revision;

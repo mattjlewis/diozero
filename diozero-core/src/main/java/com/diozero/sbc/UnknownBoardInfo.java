@@ -63,8 +63,7 @@ public class UnknownBoardInfo extends BoardInfo {
 	private UnknownBoardInfo(LocalSystemInfo localSysInfo) {
 		super(localSysInfo.getMake(), localSysInfo.getModel(),
 				localSysInfo.getMemoryKb() == null ? -1 : localSysInfo.getMemoryKb().intValue(),
-				localSysInfo.getDefaultLibraryPath(), localSysInfo.getOperatingSystemId(),
-				localSysInfo.getOperatingSystemVersion());
+				localSysInfo.getOperatingSystemId(), localSysInfo.getOperatingSystemVersion());
 	}
 
 	/**

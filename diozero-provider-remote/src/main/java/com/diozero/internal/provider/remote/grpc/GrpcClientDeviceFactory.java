@@ -82,7 +82,6 @@ import com.diozero.remote.message.protobuf.SerialServiceGrpc;
 import com.diozero.remote.message.protobuf.SerialServiceGrpc.SerialServiceBlockingStub;
 import com.diozero.remote.message.protobuf.Status;
 import com.diozero.sbc.BoardInfo;
-import com.diozero.sbc.LocalSystemInfo;
 import com.diozero.util.DiozeroScheduler;
 import com.diozero.util.PropertyUtil;
 import com.google.protobuf.Empty;
@@ -692,8 +691,7 @@ public class GrpcClientDeviceFactory extends BaseNativeDeviceFactory {
 
 		public RemoteBoardInfo(Board.BoardInfoResponse boardInfoResponse) {
 			super(boardInfoResponse.getMake(), boardInfoResponse.getModel(), boardInfoResponse.getMemory(),
-					LocalSystemInfo.getInstance().getDefaultLibraryPath(), boardInfoResponse.getOsId(),
-					boardInfoResponse.getOsVersion());
+					boardInfoResponse.getOsId(), boardInfoResponse.getOsVersion());
 
 			this.boardInfoResponse = boardInfoResponse;
 

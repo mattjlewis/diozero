@@ -40,7 +40,6 @@ import java.util.Map;
 
 import org.tinylog.Logger;
 
-import com.diozero.sbc.LocalBoardInfoUtil;
 import com.diozero.sbc.LocalSystemInfo;
 
 public class LibraryLoader {
@@ -63,8 +62,7 @@ public class LibraryLoader {
 		// Also look at this library: https://github.com/google/periph/tree/master/host
 		// XXX Note that SystemInto.lookupLocalBoardInfo also calls loadSystemUtils when
 		// intialising the pins...
-		loadLibrary(LibraryLoader.class, "diozero-system-utils",
-				LocalBoardInfoUtil.lookupLocalBoardInfo().getLibraryPath());
+		loadLibrary(LibraryLoader.class, "diozero-system-utils", LocalSystemInfo.getInstance().getDefaultLibraryPath());
 		// System.out.println("loadSystemUtils() - END - " + hash_code);
 	}
 
