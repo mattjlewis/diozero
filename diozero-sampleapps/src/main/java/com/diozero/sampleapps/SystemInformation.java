@@ -83,7 +83,7 @@ public class SystemInformation {
 			System.out.println(ansi().render("@|bold,underline Detected Board Info|@"));
 			System.out.format(ansi().render("@|bold Device Factory|@: %s%n").toString(), ndf.getName());
 			System.out.format(ansi().render("@|bold Board|@: %s (RAM: %,d bytes, O/S: %s %s)%n").toString(),
-					board_info.getName(), Integer.valueOf(board_info.getMemoryKb()), board_info.getOperatingSystemId(),
+					board_info.getModel(), Integer.valueOf(board_info.getMemoryKb()), board_info.getOperatingSystemId(),
 					board_info.getOperatingSystemVersion());
 			System.out.format(ansi().render("@|bold I2C Bus Numbers|@: %s%n").toString(),
 					ndf.getI2CBusNumbers().stream().map(Object::toString).collect(Collectors.joining(", ")));

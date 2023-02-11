@@ -41,14 +41,21 @@ import org.tinylog.Logger;
 
 import com.diozero.api.PinInfo;
 import com.diozero.internal.board.GenericLinuxArmBoardInfo;
-import com.diozero.internal.board.soc.allwinner.AllwinnerR8MmapGpio;
+import com.diozero.internal.soc.allwinner.AllwinnerR8MmapGpio;
 import com.diozero.internal.spi.BoardInfoProvider;
 import com.diozero.internal.spi.MmapGpioInterface;
 import com.diozero.sbc.BoardInfo;
 import com.diozero.sbc.LocalSystemInfo;
 
+/*-
+ * http://chip.jfpossibilities.com/docs/chip_pro.html#do-something-gr8
+ * 
+ * Feature  C.H.I.P                       C.H.I.P Pro
+ * RAM      512 MB                        256 MB
+ * Storage  4GB NAND SLC or 8GB NAND MLC  512 MB SLC NAND
+ */
 public class ChipBoardInfoProvider implements BoardInfoProvider {
-	public static final String MAKE = "Next Thing Company";
+	public static final String MAKE = "NextThing";
 	public static final String MODEL_CHIP = "CHIP";
 	public static final String MODEL_CHIP_PRO = "CHIP Pro";
 
@@ -56,11 +63,11 @@ public class ChipBoardInfoProvider implements BoardInfoProvider {
 
 	@Override
 	public BoardInfo lookup(LocalSystemInfo sysInfo) {
-		if (sysInfo.getHardware() != null && sysInfo.getHardware().startsWith("Allwinner sun4i/sun5i")) {
+		if (sysInfo.getModel() != null && sysInfo.getModel().equalsIgnoreCase("NextThing C.H.I.P.")) {
 			if (sysInfo.getMemoryKb() != null && sysInfo.getMemoryKb().intValue() < 500_000) {
-				return new CHIPProBoardInfo();
+				return new CHIPProBoardInfo(sysInfo);
 			}
-			return new CHIPBoardInfo();
+			return new CHIPBoardInfo(sysInfo);
 		}
 		return null;
 	}
@@ -69,13 +76,11 @@ public class ChipBoardInfoProvider implements BoardInfoProvider {
 		public static final String U13_HEADER = "U13";
 		public static final String U14_HEADER = "U14";
 
-		private static final int MEMORY = 512_000;
-
 		private int xioGpioOffset = 0;
 		private boolean xioGpioOffsetLoaded;
 
-		public CHIPBoardInfo() {
-			super(MAKE, MODEL_CHIP, MEMORY, ADC_VREF);
+		public CHIPBoardInfo(LocalSystemInfo sysInfo) {
+			super(sysInfo, MAKE);
 		}
 
 		@Override
@@ -172,7 +177,7 @@ public class ChipBoardInfoProvider implements BoardInfoProvider {
 			}
 
 			// LRADC
-			addAdcPinInfo(U14_HEADER, 0, "LRADC", 11);
+			addAdcPinInfo(U14_HEADER, 0, "LRADC", 11, ADC_VREF);
 
 			// Add other pins
 			pin = 1;
@@ -258,10 +263,8 @@ public class ChipBoardInfoProvider implements BoardInfoProvider {
 	}
 
 	public static final class CHIPProBoardInfo extends GenericLinuxArmBoardInfo {
-		private static final int MEMORY = 256;
-
-		public CHIPProBoardInfo() {
-			super(MAKE, MODEL_CHIP_PRO, MEMORY, ADC_VREF);
+		public CHIPProBoardInfo(LocalSystemInfo sysInfo) {
+			super(sysInfo, MAKE);
 		}
 
 		@Override
@@ -307,7 +310,7 @@ public class ChipBoardInfoProvider implements BoardInfoProvider {
 			addGpioPinInfo(gpio++, "UART1-RX", pin--, PinInfo.DIGITAL_IN_OUT); // PG4
 
 			// LRADC
-			addAdcPinInfo(0, "LRADC0", pin--);
+			addAdcPinInfo(0, "LRADC0", pin--, ADC_VREF);
 
 			// SPI2
 			gpio = 128;

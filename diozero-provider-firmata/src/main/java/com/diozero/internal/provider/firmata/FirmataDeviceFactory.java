@@ -398,8 +398,7 @@ public class FirmataDeviceFactory extends BaseNativeDeviceFactory implements Fir
 		private FirmataAdapter adapter;
 
 		public FirmataAdapterBoardInfo(FirmataAdapter adapter) {
-			super(adapter.getFirmware().getName(), adapter.getFirmware().getVersionString(), -1, ADC_VREF,
-					LocalSystemInfo.getInstance().getDefaultLibraryPath(),
+			super(adapter.getFirmware().getName(), adapter.getFirmware().getVersionString(), -1,
 					LocalSystemInfo.getInstance().getOperatingSystemId(),
 					LocalSystemInfo.getInstance().getOperatingSystemVersion());
 			this.adapter = adapter;
@@ -415,7 +414,7 @@ public class FirmataDeviceFactory extends BaseNativeDeviceFactory implements Fir
 			for (Set<PinCapability> pin_capabilities : board_capabilities) {
 				Set<DeviceMode> modes = convert(pin_capabilities);
 				if (modes.contains(DeviceMode.ANALOG_INPUT)) {
-					addAdcPinInfo(physical_pin, "A" + adc_num, physical_pin);
+					addAdcPinInfo(physical_pin, "A" + adc_num, physical_pin, ADC_VREF);
 
 					adc_num++;
 				} else if (modes.contains(DeviceMode.DIGITAL_INPUT) || modes.contains(DeviceMode.DIGITAL_OUTPUT)

@@ -38,13 +38,7 @@ import com.diozero.api.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 
 /**
- * Sample application to illustrate listening for changes to analog values. To run:
- * <ul>
- * <li>Built-in:<br>
- *  {@code java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar com.diozero.sampleapps.AdcListenerTest 0}</li>
- * <li>pigpgioj:<br>
- *  {@code sudo java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar:diozero-provider-pigpio-$DIOZERO_VERSION.jar:pigpioj-java-2.4.jar com.diozero.sampleapps.AdcListenerTest 0}</li>
- * </ul>
+ * Sample application to illustrate listening for changes to analog values.
  */
 public class AdcListenerTest {
 	public static void main(String[] args) {
@@ -54,13 +48,12 @@ public class AdcListenerTest {
 		}
 
 		int adc_number = Integer.parseInt(args[0]);
-		float vref = 1.8f;
-		test(adc_number, vref);
+		test(adc_number);
 	}
 
-	public static void test(int adcNumber, float vRef) {
-		try (AnalogInputDevice adc = new AnalogInputDevice(adcNumber, vRef)) {
-			//adc.addListener((event) -> Logger.info("Event: {}", event));
+	public static void test(int adcNumber) {
+		try (AnalogInputDevice adc = new AnalogInputDevice(adcNumber)) {
+			// adc.addListener((event) -> Logger.info("Event: {}", event));
 			for (int i = 0; i < 10; i++) {
 				Logger.info("Scaled: {}, Unscaled: {}", Float.valueOf(adc.getScaledValue()),
 						Float.valueOf(adc.getUnscaledValue()));

@@ -57,7 +57,7 @@ public class Ads1115AndEepromTest implements Runnable {
 		if (args.length > 1) {
 			ready_gpio = Integer.parseInt(args[1]);
 		}
-		
+
 		running = new AtomicBoolean(true);
 		Future<?> f = DiozeroScheduler.getNonDaemonInstance().submit(new Ads1115AndEepromTest());
 
@@ -70,7 +70,7 @@ public class Ads1115AndEepromTest implements Runnable {
 				AnalogInputDevice ain2 = new AnalogInputDevice(adc, 2);
 				AnalogInputDevice ain3 = new AnalogInputDevice(adc, 3)) {
 			AnalogInputDevice[] ains = new AnalogInputDevice[] { ain0, ain1, ain2, ain3 };
-			System.out.println("Range: " + adc.getVRef());
+			System.out.println("Range: " + ain0.getRange());
 			for (int i = 0; i < 10; i++) {
 				for (int channel = 0; channel < adc.getModel().getNumChannels(); channel++) {
 					float unscaled = ains[channel].getUnscaledValue();
@@ -81,9 +81,11 @@ public class Ads1115AndEepromTest implements Runnable {
 			}
 
 			AtomicInteger count = new AtomicInteger();
-			adc.setContinousMode(ready_pin, ain3.getGpio(),
-					(reading) -> { System.out.format("Callback - Channel #%d : %.2f%% (%.2fv)%n", 3, reading,
-							ain3.convertToScaledValue(reading)); count.getAndIncrement(); });
+			adc.setContinousMode(ready_pin, ain3.getGpio(), (reading) -> {
+				System.out.format("Callback - Channel #%d : %.2f%% (%.2fv)%n", 3, reading,
+						ain3.convertToScaledValue(reading));
+				count.getAndIncrement();
+			});
 			int wait_secs = 20;
 			System.err.println("Sleeping for " + wait_secs + " s");
 			SleepUtil.sleepSeconds(wait_secs);

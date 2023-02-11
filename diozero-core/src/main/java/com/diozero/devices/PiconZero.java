@@ -116,7 +116,6 @@ public class PiconZero extends AbstractDeviceFactory
 	private static final int RESET_REG = 0x14;
 
 	private static final String DEVICE_NAME = "PiconZero";
-	private static final float VREF = 5;
 
 	public static final int ALL_PIXELS = 100;
 	public static final int MAX_OUTPUT_VALUE = 100;
@@ -147,11 +146,6 @@ public class PiconZero extends AbstractDeviceFactory
 		device = I2CDevice.builder(address).setController(controller).setByteOrder(ByteOrder.LITTLE_ENDIAN).build();
 
 		reset();
-	}
-
-	@Override
-	public float getVRef() {
-		return VREF;
 	}
 
 	@Override

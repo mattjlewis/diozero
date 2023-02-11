@@ -350,7 +350,7 @@ public class Ads1x15 extends AbstractDeviceFactory implements AnalogInputDeviceF
 		latchingComparator = false;
 		comparatorQueue = ComparatorQueue.DISABLE;
 
-		boardPinInfo = new Ads1x15BoardPinInfo(model);
+		boardPinInfo = new Ads1x15BoardPinInfo(model, pgaConfig.getVoltage());
 		device = I2CDevice.builder(address.getValue()).setController(controller).setByteOrder(ByteOrder.BIG_ENDIAN)
 				.build();
 	}
@@ -368,11 +368,6 @@ public class Ads1x15 extends AbstractDeviceFactory implements AnalogInputDeviceF
 	@Override
 	public AnalogInputDeviceInterface createAnalogInputDevice(String key, PinInfo pinInfo) {
 		return new Ads1x15AnalogInputDevice(this, key, pinInfo.getDeviceNumber());
-	}
-
-	@Override
-	public float getVRef() {
-		return pgaConfig.getVoltage();
 	}
 
 	@Override
@@ -508,9 +503,9 @@ public class Ads1x15 extends AbstractDeviceFactory implements AnalogInputDeviceF
 	}
 
 	private static class Ads1x15BoardPinInfo extends BoardPinInfo {
-		public Ads1x15BoardPinInfo(Model model) {
+		public Ads1x15BoardPinInfo(Model model, float adcVRef) {
 			for (int i = 0; i < model.getNumChannels(); i++) {
-				addAdcPinInfo(i, i);
+				addAdcPinInfo(i, i, adcVRef);
 			}
 		}
 	}

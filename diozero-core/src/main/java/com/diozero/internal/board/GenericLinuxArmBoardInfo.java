@@ -42,43 +42,49 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Properties;
 import java.util.stream.Collectors;
 
 import org.tinylog.Logger;
 
 import com.diozero.api.DeviceMode;
+import com.diozero.internal.spi.MmapGpioInterface;
 import com.diozero.sbc.BoardInfo;
 import com.diozero.sbc.LocalSystemInfo;
 import com.diozero.util.StringUtil;
 
 public class GenericLinuxArmBoardInfo extends BoardInfo {
+	private static final String SOC_MAPPING_FILE = "/soc_mapping.properties";
+
+	private String soc;
+	private List<String> compatibility;
+	private Properties mmapGpioClasses;
 	private Optional<Map<String, Integer>> chipMapping;
 
 	public GenericLinuxArmBoardInfo(LocalSystemInfo systemInfo) {
-		this(systemInfo, BoardInfo.UNKNOWN);
+		this(systemInfo, systemInfo.getMake());
 	}
 
 	public GenericLinuxArmBoardInfo(LocalSystemInfo systemInfo, String make) {
-		this(make, systemInfo.getModel(), systemInfo.getMemoryKb() == null ? -1 : systemInfo.getMemoryKb().intValue(),
-				BoardInfo.UNKNOWN_ADC_VREF, systemInfo.getDefaultLibraryPath());
+		this(make, systemInfo.getModel(), systemInfo.getSoc(),
+				systemInfo.getMemoryKb() == null ? -1 : systemInfo.getMemoryKb().intValue(),
+				systemInfo.getLinuxBoardCompatibility());
 	}
 
-	public GenericLinuxArmBoardInfo(String make, String model, int memoryKb) {
-		this(make, model, memoryKb, BoardInfo.UNKNOWN_ADC_VREF, LocalSystemInfo.getInstance().getDefaultLibraryPath());
-	}
-
-	public GenericLinuxArmBoardInfo(String make, String model, int memoryKb, float adcVRef) {
-		this(make, model, memoryKb, adcVRef, LocalSystemInfo.getInstance().getDefaultLibraryPath());
-	}
-
-	public GenericLinuxArmBoardInfo(String make, String model, int memoryKb, String libraryPath) {
-		this(make, model, memoryKb, BoardInfo.UNKNOWN_ADC_VREF,
-				libraryPath + "-" + LocalSystemInfo.getInstance().getOsArch());
-	}
-
-	public GenericLinuxArmBoardInfo(String make, String model, int memoryKb, float adcVRef, String libraryPath) {
-		super(make, model, memoryKb, adcVRef, libraryPath, LocalSystemInfo.getInstance().getOperatingSystemId(),
+	public GenericLinuxArmBoardInfo(String make, String model, String soc, int memoryKb, List<String> compatibility) {
+		super(make, model, memoryKb, LocalSystemInfo.getInstance().getOperatingSystemId(),
 				LocalSystemInfo.getInstance().getOperatingSystemVersion());
+
+		this.soc = soc;
+		this.compatibility = compatibility;
+
+		mmapGpioClasses = new Properties();
+		try {
+			mmapGpioClasses.load(getClass().getResourceAsStream(SOC_MAPPING_FILE));
+		} catch (IOException e) {
+			Logger.error(e, "Error loading SoC to MMAP GPIO implementation class file '{}': {}", SOC_MAPPING_FILE,
+					e.getMessage());
+		}
 
 		chipMapping = Optional.empty();
 	}
@@ -94,8 +100,8 @@ public class GenericLinuxArmBoardInfo extends BoardInfo {
 		 * ["raspberrypi,model-zero", "brcm,bcm2835"]
 		 * ["hardkernel,odroid-c2", "amlogic,meson-gxbb"]
 		 */
-		for (String compatibility : getBoardCompatibility()) {
-			boolean loaded = loadBoardPinInfoDefinition(compatibility.split(","));
+		for (String compat : compatibility) {
+			boolean loaded = loadBoardPinInfoDefinition(compat.split(","));
 
 			if (loaded) {
 				break;
@@ -103,12 +109,7 @@ public class GenericLinuxArmBoardInfo extends BoardInfo {
 		}
 
 		// Note that if this fails the GPIO character implementation in the device
-		// factory will auto-populate (if enabled)
-	}
-
-	@SuppressWarnings("static-method")
-	protected List<String> getBoardCompatibility() {
-		return LocalSystemInfo.getInstance().loadLinuxBoardCompatibility();
+		// factory will attempt to auto-populate (if enabled)
 	}
 
 	protected boolean loadBoardPinInfoDefinition(String... compatibilityParts) {
@@ -228,12 +229,12 @@ public class GenericLinuxArmBoardInfo extends BoardInfo {
 	}
 
 	private void loadAdcPinInfo(String[] parts) {
-		if (parts.length != 5) {
+		if (parts.length != 6) {
 			Logger.warn("Invalid ADC def line '{}'", String.join(",", parts));
 			return;
 		}
 		addAdcPinInfo(parts[1].trim(), Integer.parseInt(parts[2].trim()), parts[3].trim(),
-				Integer.parseInt(parts[4].trim()));
+				Integer.parseInt(parts[4].trim()), Float.parseFloat(parts[5].trim()));
 	}
 
 	private void loadDacPinInfo(String[] parts) {
@@ -263,5 +264,19 @@ public class GenericLinuxArmBoardInfo extends BoardInfo {
 			chipMapping = Optional.of(new HashMap<>());
 		}
 		chipMapping.get().put(label, Integer.valueOf(chipId));
+	}
+
+	@Override
+	public MmapGpioInterface createMmapGpio() {
+		String clz_name = mmapGpioClasses.getProperty(soc);
+		if (clz_name == null) {
+			return null;
+		}
+		try {
+			return (MmapGpioInterface) Class.forName(clz_name).getDeclaredConstructor().newInstance();
+		} catch (Throwable t) {
+			Logger.error(t, "Error resolving MMAP GPIO instance '{}' for SoC '{}'", clz_name, soc);
+			return null;
+		}
 	}
 }

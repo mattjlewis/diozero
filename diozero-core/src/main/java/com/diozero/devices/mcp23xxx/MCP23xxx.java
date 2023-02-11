@@ -5,7 +5,7 @@ package com.diozero.devices.mcp23xxx;
  * Organisation: diozero
  * Project:      diozero - Core
  * Filename:     MCP23xxx.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.devices.mcp23xxx;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -191,8 +191,11 @@ public abstract class MCP23xxx extends AbstractDeviceFactory implements GpioDevi
 		}
 
 		for (int port = 0; port < numPorts; port++) {
-			// Default all GPIOs to output
-			writeByte(getIODirReg(port), directions[port].getValue());
+			// Read currently set GPIOs directions
+			directions[port] = new MutableByte(readByte(getIODirReg(port)));
+			// Read current state of pull-up resistors
+			pullUps[port] = new MutableByte(readByte(getGPPullUpReg(port)));
+
 			// Default to normal input polarity - IPOLA/IPOLB
 			writeByte(getIPolReg(port), (byte) 0);
 			// Disable interrupt-on-change for all GPIOs
@@ -201,8 +204,6 @@ public abstract class MCP23xxx extends AbstractDeviceFactory implements GpioDevi
 			writeByte(getDefValReg(port), defaultValues[port].getValue());
 			// Disable interrupt comparison control
 			writeByte(getIntConReg(port), interruptCompareFlags[port].getValue());
-			// Disable pull-up resistors
-			writeByte(getGPPullUpReg(port), pullUps[port].getValue());
 		}
 
 		// Finally enable interrupt listeners

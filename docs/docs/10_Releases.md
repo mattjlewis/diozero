@@ -11,28 +11,44 @@ redirect_from:
 
 ## Future
 
-+ Complete MAX30102
-+ Tidy up ADS112C04
-+ Tidy up IMU devices
-+ ST7735 / ST7789 displays
-+ Stepper motors
-+ Tidy up sampleapps with sub-packages as per diozero core (api, devices, motor, util, sbc, ...)
++ Devices
+    + Complete MAX30102
+    + Tidy up ADS112C04
+    + Tidy up IMU devices
+    + ST7735 / ST7789 displays
+    + Stepper motors
+    + MFRC522 cleanup and testing, in particular write operations
+    + [SHT40](https://sensirion.com/media/documents/33FD6951/63B52FAF/Datasheet_SHT4x.pdf) High-Accuracy, Ultra-Low-Power, 16-bit Relative Humidity and Temperature Sensor
+    + [TMP117](https://www.ti.com/lit/ds/symlink/tmp117.pdf?ts=1675326537553&ref_url=https%253A%252F%252Fwww.google.com%252F) High-Accuracy, Low-Power, Digital Temperature Sensor
+    + Waveshare 7.5" e-ink display
++ Refactor / cleanup
+    + Tidy up sampleapps with sub-packages as per diozero core (api, devices, motor, util, sbc, ...)
+    + Optimise GpioExpander when used for Software PWM output on multiple pins. Currently
+    `GpioExpander.setValues()` will be invoked multiple times, once per pin, whereas a single call for
+    multiple pins should be used instead. MultiplexedSoftwarePwmOutput?
+    + Refactor DeviceFactory interfaces to use a default registration method and Supplier #132
 + SPI support for Arduino devices over Firmata
-+ Waveshare 7.5" e-ink display
-+ Optimise GpioExpander when used for Software PWM output on multiple pins. Currently
-`GpioExpander.setValues()` will be invoked multiple times, once per pin, whereas a single call for
-multiple pins should be used instead. MultiplexedSoftwarePwmOutput?
 + Introduce PrimitiveDevice and Device interfaces / classes (".api" and ".device" packages respectively)
 + Ensure that all devices (".devices" package) use composition rather then inheritance of
-PrimitiveDevice (".api" package), i.e. LED, LDR, etc.
+  PrimitiveDevice (".api" package), i.e. LED, LDR, etc.
 + A device registry to provide info on all available PrimitiveDevices. Use the existing DeviceStates
-class for info on provisioned state
+  class for info on provisioned state
 + Additional interfaces representing generic physical behaviour, e.g. movement, acceleration,
-similar to existing MotorInterface, BarometerInterface, etc.
-+ MFRC522 cleanup and testing, in particular write operations
-+ Remove the need to add board providers - have a generic one that works off the detected System on a Chip (SoC)
-+ Simplify MmapGpio implementation classes by extracting common behaviour into a base class.
-+ Add GPIO iomux mode mapping information in the board def file (in the list of supported device modes, e.g. PWM_OUTPUT(2)?)
+  similar to existing MotorInterface, BarometerInterface, etc.
++ MMAP GPIO
+    + Simplify MmapGpio implementation classes by extracting common behaviour into a base class
+    + Add GPIO iomux mode mapping information in the board def file (in the list of supported device modes, e.g. PWM_OUTPUT(2)?)
+    + Create common MmapGpioInterface sample app
+
+## 1.4.0 (In progress)
+
++ Boards
+    + Remove the need to add board provider classes - have a generic one that works off the detected System on a Chip (SoC)
+    + Use uname -m / lscpu for board detection (LocalSystemInfo)
++ General
+    + Reduce duplication of code in device / pin factory (PR #133)
+    + #135 only call LocalSystemInfo when really necessary
+    + #136 corrected defaults for servo SG90
 
 ## 1.3.5
 

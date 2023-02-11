@@ -43,7 +43,7 @@ public class UsbInfo {
 	private static final String USB_ID_DATABASE_PROP = "diozero.usb.ids";
 	private static final String DEFAULT_USB_ID_DATABASE = "/var/lib/usbutils/usb.ids";
 	private static final String USB_ID_DATABASE;
-	
+
 	static {
 		USB_ID_DATABASE = PropertyUtil.getProperty(USB_ID_DATABASE_PROP, DEFAULT_USB_ID_DATABASE);
 	}
@@ -53,8 +53,8 @@ public class UsbInfo {
 		String product_name = null;
 
 		try {
-			Iterator<String> it = Files.lines(Paths.get(USB_ID_DATABASE))
-					.filter(line -> !line.startsWith("#")).filter(line -> !line.trim().isEmpty()).iterator();
+			Iterator<String> it = Files.lines(Paths.get(USB_ID_DATABASE)).filter(line -> !line.startsWith("#"))
+					.filter(line -> !line.isBlank()).iterator();
 			while (it.hasNext()) {
 				String line = it.next();
 				if (line.startsWith("C ")) {

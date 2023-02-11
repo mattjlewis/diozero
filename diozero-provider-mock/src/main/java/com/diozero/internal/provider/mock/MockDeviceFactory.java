@@ -67,7 +67,6 @@ import com.diozero.internal.spi.InternalSerialDeviceInterface;
 import com.diozero.internal.spi.InternalServoDeviceInterface;
 import com.diozero.internal.spi.InternalSpiDeviceInterface;
 import com.diozero.sbc.BoardInfo;
-import com.diozero.sbc.LocalSystemInfo;
 import com.diozero.util.PropertyUtil;
 
 public class MockDeviceFactory extends BaseNativeDeviceFactory {
@@ -106,7 +105,7 @@ public class MockDeviceFactory extends BaseNativeDeviceFactory {
 			throw new RuntimeIOException(e);
 		}
 
-		boardInfo = new MockBoardInfo(props, LocalSystemInfo.getInstance());
+		boardInfo = new MockBoardInfo(props);
 		boardPwmFrequency = Integer.parseInt(props.getProperty("PwmFrequency"));
 		boardServoFrequency = Integer.parseInt(props.getProperty("ServoFrequency"));
 		i2cBusNumbers = Arrays.stream(props.getProperty("I2CBusNumbers").split(",")).map(Integer::valueOf)
@@ -345,14 +344,9 @@ public class MockDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	private static class MockBoardInfo extends GenericLinuxArmBoardInfo {
-		public MockBoardInfo(Properties props, LocalSystemInfo localSysInfo) {
-			super(props.getProperty("Make"), props.getProperty("Model"), Integer.parseInt(props.getProperty("Memory")),
-					Float.parseFloat(props.getProperty("ADCvRef")), "lib-mock");
-		}
-
-		@Override
-		public List<String> getBoardCompatibility() {
-			return Arrays.asList("mockboard");
+		public MockBoardInfo(Properties props) {
+			super(props.getProperty("Make"), props.getProperty("Model"), props.getProperty("SoC"),
+					Integer.parseInt(props.getProperty("Memory")), Arrays.asList("mockboard"));
 		}
 	}
 

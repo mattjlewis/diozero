@@ -42,8 +42,70 @@ import com.diozero.util.SleepUtil;
 /**
  * Bosch BMP180 I2C temperature and pressure sensor
  */
-@SuppressWarnings("unused")
 public class BMP180 implements ThermometerInterface, BarometerInterface {
+	/**
+	 * Relationship between sampling mode and conversion delay (in ms) for each
+	 * sampling mode Ultra low power: 4.5 ms minimum conversion delay Standard: 7.5
+	 * ms High Resolution: 13.5 ms Ultra high Resolution: 25.5 ms
+	 */
+	public static enum Mode {
+		ULTRA_LOW_POWER(0, 5), STANDARD(1, 8), HIGH_RESOLUTION(2, 14), ULTRA_HIGH_RESOLUTION(3, 26);
+
+		/**
+		 * Sampling mode
+		 */
+		private final int samplingMode;
+
+		/**
+		 * Minimum delay required when reading pressure
+		 */
+		private final int delay;
+
+		/**
+		 * Command byte to read pressure based on sampling mode
+		 */
+		private final byte pressureCommand;
+
+		/**
+		 * Create a new instance of a BMPMode
+		 * 
+		 * @param samplingMode
+		 * @param delay
+		 */
+		Mode(int samplingMode, int delay) {
+			this.samplingMode = samplingMode;
+			this.delay = delay;
+			this.pressureCommand = (byte) (GET_PRESSURE_COMMAND + ((samplingMode << 6) & 0xC0));
+		}
+
+		/**
+		 * Return the conversion delay (in ms) associated with this sampling mode
+		 *
+		 * @return delay
+		 */
+		int getDelay() {
+			return delay;
+		}
+
+		/**
+		 * Return the pressure command to the control register for this sampling mode
+		 *
+		 * @return command
+		 */
+		byte getPressureCommand() {
+			return pressureCommand;
+		}
+
+		/**
+		 * Return this sampling mode
+		 *
+		 * @return Sampling mode
+		 */
+		int getSamplingMode() {
+			return samplingMode;
+		}
+	}
+
 	/**
 	 * Device address BMP180 address is 0x77
 	 */
@@ -55,23 +117,9 @@ public class BMP180 implements ThermometerInterface, BarometerInterface {
 	private static final int CALIBRATION_BYTES = 22;
 
 	// BMP085 EEPROM Registers
-	private static final int EEPROM_START = 0xAA;
-	private static final int BMP085_CAL_AC1 = 0xAA;
-	private static final int BMP085_CAL_AC2 = 0xAC;
-	private static final int BMP085_CAL_AC3 = 0xAE;
-	private static final int BMP085_CAL_AC4 = 0xB0;
-	private static final int BMP085_CAL_AC5 = 0xB2;
-	private static final int BMP085_CAL_AC6 = 0xB4;
-	private static final int BMP085_CAL_B1 = 0xB6;
-	private static final int BMP085_CAL_B2 = 0xB8;
-	private static final int BMP085_CAL_MB = 0xBA;
-	private static final int BMP085_CAL_MC = 0xBC;
-	private static final int BMP085_CAL_MD = 0xBE;
-	private static final int BMP085_CONTROL = 0xF4;
+	private static final int CALIBRATION_START = 0xAA;
 	private static final int CONTROL_REGISTER = 0xF4; // BMP180 control register
-	private static final int BMP085_TEMPDATA = 0xF6;
 	private static final int TEMP_ADDR = 0xF6; // Temperature read address
-	private static final int BMP085_PRESSUREDATA = 0xF6;
 	private static final int PRESS_ADDR = 0xF6; // Pressure read address
 
 	// Commands
@@ -94,7 +142,7 @@ public class BMP180 implements ThermometerInterface, BarometerInterface {
 	private short calMD;
 
 	// Barometer configuration
-	private BMPMode mode;
+	private Mode mode;
 	private I2CDevice i2cDevice;
 
 	/**
@@ -103,11 +151,11 @@ public class BMP180 implements ThermometerInterface, BarometerInterface {
 	 * @param mode BMP180 operating mode (low power .. ultra-high resolution)
 	 * @throws RuntimeIOException if an I/O error occurs
 	 **/
-	public BMP180(BMPMode mode) throws RuntimeIOException {
+	public BMP180(Mode mode) throws RuntimeIOException {
 		this(I2CConstants.CONTROLLER_1, mode);
 	}
 
-	public BMP180(int controller, BMPMode mode) throws RuntimeIOException {
+	public BMP180(int controller, Mode mode) throws RuntimeIOException {
 		i2cDevice = I2CDevice.builder(BMP180_ADDR).setController(controller).setByteOrder(ByteOrder.BIG_ENDIAN).build();
 
 		this.mode = mode;
@@ -121,7 +169,7 @@ public class BMP180 implements ThermometerInterface, BarometerInterface {
 	 **/
 	public void readCalibrationData() throws RuntimeIOException {
 		// Read all of the calibration data into a byte array
-		ByteBuffer calibData = i2cDevice.readI2CBlockDataByteBuffer(EEPROM_START, CALIBRATION_BYTES);
+		ByteBuffer calibData = i2cDevice.readI2CBlockDataByteBuffer(CALIBRATION_START, CALIBRATION_BYTES);
 		// Read each of the pairs of data as a signed short
 		calibData.rewind();
 		calAC1 = calibData.getShort();
@@ -232,70 +280,6 @@ public class BMP180 implements ThermometerInterface, BarometerInterface {
 		pa += ((X1 + X2 + 3791) >> 4);
 
 		return pa / 100f;
-	}
-
-	/**
-	 * Relationship between sampling mode and conversion delay (in ms) for each
-	 * sampling mode Ultra low power: 4.5 ms minimum conversion delay Standard: 7.5
-	 * ms High Resolution: 13.5 ms Ultra high Resolution: 25.5 ms
-	 */
-	public static enum BMPMode {
-
-		ULTRA_LOW_POWER(0, 5), STANDARD(1, 8), HIGH_RESOLUTION(2, 14), ULTRA_HIGH_RESOLUTION(3, 26);
-
-		/**
-		 * Sampling mode
-		 */
-		private final int samplingMode;
-
-		/**
-		 * Minimum delay required when reading pressure
-		 */
-		private final int delay;
-
-		/**
-		 * Command byte to read pressure based on sampling mode
-		 */
-		private final byte pressureCommand;
-
-		/**
-		 * Create a new instance of a BMPMode
-		 * 
-		 * @param samplingMode
-		 * @param delay
-		 */
-		BMPMode(int samplingMode, int delay) {
-			this.samplingMode = samplingMode;
-			this.delay = delay;
-			this.pressureCommand = (byte) (GET_PRESSURE_COMMAND + ((samplingMode << 6) & 0xC0));
-		}
-
-		/**
-		 * Return the conversion delay (in ms) associated with this sampling mode
-		 *
-		 * @return delay
-		 */
-		public int getDelay() {
-			return delay;
-		}
-
-		/**
-		 * Return the pressure command to the control register for this sampling mode
-		 *
-		 * @return command
-		 */
-		public byte getPressureCommand() {
-			return pressureCommand;
-		}
-
-		/**
-		 * Return this sampling mode
-		 *
-		 * @return Sampling mode
-		 */
-		public int getSamplingMode() {
-			return samplingMode;
-		}
 	}
 
 	@Override

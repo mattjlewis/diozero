@@ -35,17 +35,10 @@ import org.tinylog.Logger;
 
 import com.diozero.api.RuntimeIOException;
 import com.diozero.devices.BMP180;
-import com.diozero.devices.BMP180.BMPMode;
 import com.diozero.util.SleepUtil;
 
 /**
- * BMP180 temperature / pressure sensor sample application. To run:
- * <ul>
- * <li>Built-in:<br>
- * {@code java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar com.diozero.sampleapps.BMP180Test}</li>
- * <li>pigpgioj:<br>
- * {@code sudo java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar:diozero-provider-pigpio-$DIOZERO_VERSION.jar:pigpioj-java-2.4.jar com.diozero.sampleapps.BMP180Test}</li>
- * </ul>
+ * BMP180 temperature / pressure sensor sample application.
  */
 public class BMP180Test {
 	private static final int ITERATIONS = 20;
@@ -55,8 +48,8 @@ public class BMP180Test {
 		if (args.length > 0) {
 			controller = Integer.parseInt(args[0]);
 		}
-		
-		try (BMP180 bmp180 = new BMP180(controller, BMPMode.STANDARD)) {
+
+		try (BMP180 bmp180 = new BMP180(controller, BMP180.Mode.STANDARD)) {
 			bmp180.readCalibrationData();
 			Logger.debug("Opened device");
 

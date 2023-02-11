@@ -1314,12 +1314,6 @@ public class Ads112C04 extends AbstractDeviceFactory implements AnalogInputDevic
 	}
 
 	@Override
-	public float getVRef() {
-		// FIXME Can this actually be determined?
-		return 3.3f;
-	}
-
-	@Override
 	public void close() {
 		Logger.trace("close()");
 		// Close all open pins before closing the I2C device itself
@@ -1343,7 +1337,8 @@ public class Ads112C04 extends AbstractDeviceFactory implements AnalogInputDevic
 	private static class Ads112C04BoardPinInfo extends BoardPinInfo {
 		public Ads112C04BoardPinInfo() {
 			for (int i = 0; i < NUM_CHANNELS; i++) {
-				addAdcPinInfo(i, i);
+				// FIXME Check, define as a constant
+				addAdcPinInfo(i, i, 3.3f);
 			}
 		}
 	}

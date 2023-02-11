@@ -41,6 +41,7 @@ import java.nio.file.Paths;
 import org.tinylog.Logger;
 
 import com.diozero.api.AnalogInputEvent;
+import com.diozero.api.PinInfo;
 import com.diozero.api.RuntimeIOException;
 import com.diozero.internal.spi.AbstractInputDevice;
 import com.diozero.internal.spi.AnalogInputDeviceInterface;
@@ -54,11 +55,11 @@ public class SysFsAnalogInputDevice extends AbstractInputDevice<AnalogInputEvent
 	private RandomAccessFile voltageRaw;
 	private float vRef;
 
-	public SysFsAnalogInputDevice(DefaultDeviceFactory deviceFactory, String key, int device, int adcNumber) {
+	public SysFsAnalogInputDevice(DefaultDeviceFactory deviceFactory, String key, int device, PinInfo pinInfo) {
 		super(key, deviceFactory);
 
-		this.adcNumber = adcNumber;
-		vRef = deviceFactory.getVRef();
+		this.adcNumber = pinInfo.getDeviceNumber();
+		vRef = pinInfo.getAdcVRef();
 
 		Path device_path = Paths.get(DEVICE_PATH + device);
 		File voltage_scale_file = device_path.resolve("in_voltage_scale").toFile();

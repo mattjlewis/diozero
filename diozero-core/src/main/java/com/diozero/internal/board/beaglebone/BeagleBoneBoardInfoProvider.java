@@ -53,7 +53,7 @@ import com.diozero.sbc.LocalSystemInfo;
  * https://github.com/derekmolloy/boneDeviceTree/raw/master/docs/BeagleboneBlackP9HeaderTable.pdf
  */
 public class BeagleBoneBoardInfoProvider implements BoardInfoProvider {
-	public static final String MAKE = "BeagleBone";
+	public static final String MAKE = "TI";
 
 	static final class PwmModule {
 		final int subsystem;
@@ -121,8 +121,7 @@ public class BeagleBoneBoardInfoProvider implements BoardInfoProvider {
 	public BoardInfo lookup(LocalSystemInfo localSysInfo) {
 		String model = localSysInfo.getModel();
 		if (model != null && model.contains(MAKE)) {
-			model = model.substring(model.lastIndexOf(' ') + 1);
-			return new BeagleBoneBlackBoardInfo(localSysInfo, model);
+			return new BeagleBoneBlackBoardInfo(localSysInfo);
 		}
 		return null;
 	}
@@ -134,11 +133,11 @@ public class BeagleBoneBoardInfoProvider implements BoardInfoProvider {
 		public static final String P9_HEADER = "P9";
 		public static final String P8_HEADER = "P8";
 
-		private static final int MEMORY = 512_000;
+		// private static final int MEMORY = 512_000;
 		private static final float ADC_VREF = 1.8f;
 
-		public BeagleBoneBlackBoardInfo(LocalSystemInfo localSysInfo, String model) {
-			super(MAKE, model, MEMORY, ADC_VREF);
+		public BeagleBoneBlackBoardInfo(LocalSystemInfo localSysInfo) {
+			super(localSysInfo, MAKE);
 		}
 
 		public void oldPopulateBoardPinInfo() {
@@ -165,13 +164,13 @@ public class BeagleBoneBoardInfoProvider implements BoardInfoProvider {
 			addGpioPinInfo(P8_HEADER, 61, 26, PinInfo.DIGITAL_IN_OUT);
 
 			/*- To enable: sudo sh -c "echo 'BB-ADC' > /sys/devices/platform/bone_capemgr/slots" */
-			addAdcPinInfo(P9_HEADER, 0, "AIN0", 39);
-			addAdcPinInfo(P9_HEADER, 1, "AIN1", 40);
-			addAdcPinInfo(P9_HEADER, 2, "AIN2", 37);
-			addAdcPinInfo(P9_HEADER, 3, "AIN3", 38);
-			addAdcPinInfo(P9_HEADER, 4, "AIN4", 33);
-			addAdcPinInfo(P9_HEADER, 5, "AIN5", 36);
-			addAdcPinInfo(P9_HEADER, 6, "AIN6", 35);
+			addAdcPinInfo(P9_HEADER, 0, "AIN0", 39, ADC_VREF);
+			addAdcPinInfo(P9_HEADER, 1, "AIN1", 40, ADC_VREF);
+			addAdcPinInfo(P9_HEADER, 2, "AIN2", 37, ADC_VREF);
+			addAdcPinInfo(P9_HEADER, 3, "AIN3", 38, ADC_VREF);
+			addAdcPinInfo(P9_HEADER, 4, "AIN4", 33, ADC_VREF);
+			addAdcPinInfo(P9_HEADER, 5, "AIN5", 36, ADC_VREF);
+			addAdcPinInfo(P9_HEADER, 6, "AIN6", 35, ADC_VREF);
 
 			// BB-PWM0,BB-PWM1,BB-PWM2
 			addPwmPinInfo(P9_HEADER, PinInfo.NOT_DEFINED, "EHRPWM1A", 14, 0, 0, PinInfo.DIGITAL_IN_OUT_PWM);

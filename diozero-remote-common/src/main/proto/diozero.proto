@@ -167,6 +167,7 @@ message Board {
 		repeated GpioMode mode = 8;
 		optional int32 pwmChip = 9;
 		optional int32 pwmNum = 10;
+		optional float adcVRef = 11;
 	}
 
 	message HeaderInfo {
@@ -181,12 +182,11 @@ message Board {
 		string model = 4;
 		int32 memory = 5;
 		repeated HeaderInfo header = 6;
-		float adcVref = 7;
-		int32 boardPwmFrequency = 8;
-		int32 boardServoFrequency = 9;
-		int32 spiBufferSize = 10;
-		string osId = 11;
-		string osVersion = 12;
+		int32 boardPwmFrequency = 7;
+		int32 boardServoFrequency = 8;
+		int32 spiBufferSize = 9;
+		string osId = 10;
+		string osVersion = 11;
 	}
 
 	message GpioModeResponse {

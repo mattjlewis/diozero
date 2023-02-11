@@ -137,12 +137,7 @@ public class PCF8591 extends AbstractDeviceFactory
 
 		device = I2CDevice.builder(address).setController(controller).setByteOrder(ByteOrder.LITTLE_ENDIAN).build();
 
-		boardPinInfo = new PCF8591BoardPinInfo(inputMode);
-	}
-
-	@Override
-	public float getVRef() {
-		return vRef;
+		boardPinInfo = new PCF8591BoardPinInfo(inputMode, vRef);
 	}
 
 	@Override
@@ -335,30 +330,30 @@ public class PCF8591 extends AbstractDeviceFactory
 	public static class PCF8591BoardPinInfo extends BoardPinInfo {
 		private InputMode inputMode;
 
-		public PCF8591BoardPinInfo(InputMode inputMode) {
+		public PCF8591BoardPinInfo(InputMode inputMode, float adcVRef) {
 			this.inputMode = inputMode;
 
 			addDacPinInfo(0, "AOUT", 15);
 			switch (inputMode) {
 			case FOUR_SINGLE_ENDED_INPUTS:
-				addAdcPinInfo(0, 1);
-				addAdcPinInfo(1, 2);
-				addAdcPinInfo(2, 3);
-				addAdcPinInfo(3, 4);
+				addAdcPinInfo(0, 1, adcVRef);
+				addAdcPinInfo(1, 2, adcVRef);
+				addAdcPinInfo(2, 3, adcVRef);
+				addAdcPinInfo(3, 4, adcVRef);
 				break;
 			case THREE_DIFFERENTIAL_INPUTS:
-				addAdcPinInfo(0, "AIN0-AIN3", 1);
-				addAdcPinInfo(1, "AIN1-AIN3", 2);
-				addAdcPinInfo(2, "AIN2-AIN3", 3);
+				addAdcPinInfo(0, "AIN0-AIN3", 1, adcVRef);
+				addAdcPinInfo(1, "AIN1-AIN3", 2, adcVRef);
+				addAdcPinInfo(2, "AIN2-AIN3", 3, adcVRef);
 				break;
 			case SINGLE_ENDED_AND_DIFFERENTIAL_MIXED:
-				addAdcPinInfo(0, "AIN0", 1);
-				addAdcPinInfo(1, "AIN1", 2);
-				addAdcPinInfo(2, "AIN2-AIN3", 3);
+				addAdcPinInfo(0, "AIN0", 1, adcVRef);
+				addAdcPinInfo(1, "AIN1", 2, adcVRef);
+				addAdcPinInfo(2, "AIN2-AIN3", 3, adcVRef);
 				break;
 			case TWO_DIFFERENTIAL_INPUTS:
-				addAdcPinInfo(0, "AIN0-AIN1", 1);
-				addAdcPinInfo(1, "AIN2-AIN3", 3);
+				addAdcPinInfo(0, "AIN0-AIN1", 1, adcVRef);
+				addAdcPinInfo(1, "AIN2-AIN3", 3, adcVRef);
 				break;
 			}
 		}

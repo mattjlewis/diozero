@@ -31,7 +31,6 @@ package com.diozero.sampleapps;
  * #L%
  */
 
-
 import com.diozero.devices.LPS25H;
 import com.diozero.util.SleepUtil;
 
@@ -39,18 +38,19 @@ import com.diozero.util.SleepUtil;
  * LP25H sample application. To run:
  * <ul>
  * <li>Built-in:<br>
- *  {@code java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar com.diozero.sampleapps.LPS25HApp}</li>
+ * {@code java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar com.diozero.sampleapps.LPS25HApp}</li>
  * <li>pigpgioj:<br>
- *  {@code sudo java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar:diozero-provider-pigpio-$DIOZERO_VERSION.jar:pigpioj-java-2.4.jar com.diozero.sampleapps.LPS25HApp}</li>
+ * {@code sudo java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar:diozero-provider-pigpio-$DIOZERO_VERSION.jar:pigpioj-java-2.4.jar com.diozero.sampleapps.LPS25HApp}</li>
  * </ul>
  */
 public class LPS25HApp {
 	public static void main(String[] args) {
 		try (LPS25H device = new LPS25H()) {
-			for (int i=0; i<10; i++) {
+			for (int i = 0; i < 10; i++) {
 				float pressure = device.getPressure();
 				float temperature = device.getTemperature();
-				System.out.format("Pressure=%.2f, Temperature=%.2f%n", Double.valueOf(pressure), Double.valueOf(temperature));
+				System.out.format("Pressure=%.2f hPa, Temperature=%.2f Celsius%n", Double.valueOf(pressure),
+						Double.valueOf(temperature));
 				SleepUtil.sleepSeconds(1);
 			}
 		}

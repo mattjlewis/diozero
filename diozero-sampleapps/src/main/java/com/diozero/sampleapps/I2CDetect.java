@@ -173,8 +173,8 @@ public class I2CDetect implements Runnable {
 			System.out.print("Continue? [Y/n] ");
 			System.out.flush();
 			try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
-				String line = reader.readLine();
-				run = line.trim().toLowerCase().startsWith("y") || line.trim().isEmpty();
+				String line = reader.readLine().trim();
+				run = line.toLowerCase().startsWith("y") || line.isEmpty();
 			} catch (IOException e) {
 				// Ignore
 			}

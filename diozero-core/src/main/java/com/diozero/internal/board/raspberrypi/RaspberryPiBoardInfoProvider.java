@@ -46,7 +46,7 @@ import org.tinylog.Logger;
 import com.diozero.api.DeviceMode;
 import com.diozero.api.PinInfo;
 import com.diozero.internal.board.GenericLinuxArmBoardInfo;
-import com.diozero.internal.board.soc.broadcom.BroadcomMmapGpio;
+import com.diozero.internal.soc.broadcom.BroadcomMmapGpio;
 import com.diozero.internal.spi.BoardInfoProvider;
 import com.diozero.internal.spi.MmapGpioInterface;
 import com.diozero.sbc.BoardInfo;
@@ -59,7 +59,8 @@ import com.diozero.sbc.LocalSystemInfo;
  * table of revisions</a>.
  */
 public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
-	public static final String MAKE = "Raspberry Pi";
+	public static final String MAKE = "raspberrypi";
+	public static final String BROADCOM = "brcm";
 	private static final String BCM_HARDWARE_PREFIX = "BCM";
 
 	public static final String MODEL_A = "A";
@@ -122,13 +123,13 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 		MEMORY.put(Integer.valueOf(5), Integer.valueOf(8_192_000));
 	}
 
-	private static final String SONY = "Sony";
-	private static final String EGOMAN = "Egoman";
-	private static final String EMBEST = "Embest";
-	private static final String SONY_JAPAN = "Sony Japan";
-	private static final String EMBEST_2 = "Embest-2";
-	private static final String STADIUM = "Stadium";
-	private static final String QISDA = "Qisda";
+	public static final String SONY = "Sony";
+	public static final String EGOMAN = "Egoman";
+	public static final String EMBEST = "Embest";
+	public static final String SONY_JAPAN = "Sony Japan";
+	public static final String EMBEST_2 = "Embest-2";
+	public static final String STADIUM = "Stadium";
+	public static final String QISDA = "Qisda";
 	private static Map<Integer, String> MANUFACTURERS;
 	static {
 		MANUFACTURERS = new HashMap<>();
@@ -141,10 +142,10 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 		MANUFACTURERS.put(Integer.valueOf(99), QISDA);
 	}
 
-	public static final String BCM2835 = "BCM2835";
-	public static final String BCM2836 = "BCM2836";
-	public static final String BCM2837 = "BCM2837";
-	public static final String BCM2711 = "BCM2711";
+	public static final String BCM2835 = BCM_HARDWARE_PREFIX + "2835";
+	public static final String BCM2836 = BCM_HARDWARE_PREFIX + "2836";
+	public static final String BCM2837 = BCM_HARDWARE_PREFIX + "2837";
+	public static final String BCM2711 = BCM_HARDWARE_PREFIX + "2711";
 	private static Map<Integer, String> PROCESSORS;
 	static {
 		PROCESSORS = new HashMap<>();
@@ -156,12 +157,12 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 
 	@Override
 	public BoardInfo lookup(LocalSystemInfo systemInfo) {
-		String hardware = systemInfo.getHardware();
+		String make = systemInfo.getMake();
 		String revision = systemInfo.getRevision();
-		if (systemInfo.getHardware() == null || revision == null) {
+		if (make == null || revision == null) {
 			return null;
 		}
-		if (!hardware.startsWith(BCM_HARDWARE_PREFIX) || revision.length() < 4) {
+		if (!make.equals(MAKE) || revision.length() < 4) {
 			return null;
 		}
 
@@ -169,7 +170,7 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 	}
 
 	public static String modelWithRevision(String model, String pcbRevision) {
-		return model + "_r" + pcbRevision.replaceAll("\\.", "");
+		return model + "-r" + pcbRevision.replaceAll("\\.", "");
 	}
 
 	public static Map<Integer, Integer> extractPwmGpioNumbers(String line) {
@@ -353,7 +354,8 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 
 		public PiBoardInfo(String revision, String model, String pcbRevision, int memory, String manufacturer,
 				String processor) {
-			super(MAKE, model, memory);
+			super(MAKE, model, BROADCOM + "," + processor.toLowerCase(), memory,
+					generateBoardCompatibility(model, pcbRevision, processor));
 
 			this.revision = revision;
 			this.pcbRevision = pcbRevision;
@@ -397,17 +399,19 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 		 * Override for pigpio remote use cases as GenericLinuxArmBoardInfo works
 		 * exclusively off local system information.
 		 */
-		@Override
-		public List<String> getBoardCompatibility() {
+		private static List<String> generateBoardCompatibility(String model, String pcbRevision, String processor) {
 			String make = MAKE.replace(" ", "").toLowerCase();
-			String model = getModel().replace(" ", "").replace("+", "plus").toLowerCase();
+			String compatible_model = model.replace(" ", "").replace("+", "plus").toLowerCase();
 			// Note that the first two separate the make from the model with a "_" rather
 			// than a "," as GenericLinuxArmBoardInfo splits on "," - we want to prevent the
 			// first two falling back to just make, i.e. the catch all "raspberrypi"
+			// FIXME DT compatibility has e.g. "raspberrypi,3-model-b", this produces
+			// "raspberrypi_3b" - use a lookup table to map?
 			return Arrays.asList(//
-					make + "_" + modelWithRevision(model, pcbRevision), //
-					make + "_" + modelWithRevision(model, pcbRevision.substring(0, 1)), //
-					make + "," + model);
+					make + "_" + modelWithRevision(compatible_model, pcbRevision), //
+					make + "_" + modelWithRevision(compatible_model, pcbRevision.substring(0, 1)), //
+					make + "," + compatible_model, //
+					BROADCOM + "," + processor.toLowerCase());
 		}
 
 		@Override
@@ -434,12 +438,12 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 	/*-
 	public static class PiABPlusBoardInfo extends PiBoardInfo {
 		public static final String P5_HEADER = "P5";
-
+	
 		public PiABPlusBoardInfo(String code, String model, String pcbRevision, int memory, String manufacturer,
 				String processor) {
 			super(code, model, pcbRevision, memory, manufacturer, processor);
 		}
-
+	
 		public void initialisePinsOld() {
 			int chip = 0;
 			addGeneralPinInfo(1, PinInfo.VCC_3V3);

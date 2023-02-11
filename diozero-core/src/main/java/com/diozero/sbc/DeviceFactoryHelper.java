@@ -36,8 +36,8 @@ import org.tinylog.Logger;
 import com.diozero.internal.provider.builtin.DefaultDeviceFactory;
 import com.diozero.internal.spi.NativeDeviceFactoryInterface;
 import com.diozero.util.Diozero;
-import com.diozero.util.LibraryLoader;
 import com.diozero.util.PropertyUtil;
+import com.diozero.util.StringUtil;
 
 /**
  * Helper class for automatically detecting the
@@ -60,12 +60,10 @@ public class DeviceFactoryHelper {
 	private static NativeDeviceFactoryInterface nativeDeviceFactory;
 
 	private static synchronized void initialise() {
-		LibraryLoader.loadSystemUtils();
-
 		if (nativeDeviceFactory == null) {
 			// First try load one defined as a system property
 			String property = PropertyUtil.getProperty(DEVICE_FACTORY_PROP, null);
-			if (property != null && property.length() > 0) {
+			if (StringUtil.isNotBlank(property)) {
 				try {
 					nativeDeviceFactory = (NativeDeviceFactoryInterface) Class.forName(property)
 							.getDeclaredConstructor().newInstance();

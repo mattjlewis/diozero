@@ -4,15 +4,17 @@ nav_order: 3
 permalink: /boards/odroidc2.html
 ---
 
-# Odroid C2
+# HardKernel Odroid C2 / N2+
 
-## System Information
+## Odroid C2
+
+### System Information
 
 ```
-$ sudo java -cp diozero-sampleapps-1.3.5.jar com.diozero.sampleapps.SystemInformation
+$ sudo java -cp diozero-sampleapps-{{site.version}}.jar com.diozero.sampleapps.SystemInformation
 
 Local System Info
-diozero version: 1.3.5
+diozero version: {{site.version}}
 Operating System: debian 11 (bullseye) - aarch64
 CPU Temperature: -1.00
 
@@ -58,10 +60,10 @@ Header: J7
 +-----+----------------+--------+----------+--------+----------------+-----+
 ```
 
-## GPIO Read All
+### GPIO Read All
 
 ```
-$ sudo java -cp diozero-sampleapps-1.3.5.jar com.diozero.sampleapps.GpioReadAll
+$ sudo java -cp diozero-sampleapps-{{site.version}}.jar com.diozero.sampleapps.GpioReadAll
 
 Header: DEFAULT
 +-----+-----------------+------+---+--------+----------+--------+---+------+-----------------+-----+
@@ -98,3 +100,13 @@ Header: J7
 | 508 | J7 Header Pin7 |   In | 1 |  0:11  |  7 ||    |        |   |      |                |     |
 +-----+----------------+------+---+--------+----------+--------+---+------+----------------+-----+
 ```
+
+## Odroid N2+
+
+###  System Information
+
+![Odroid N2+ System Information](https://user-images.githubusercontent.com/7979275/170100603-9b54e67e-c7db-4c96-ab88-6b945a4f894a.png "Odroid N2+ System Information")
+
+### GPIO Read All
+
+![Odroid N2+ GPIO Read All](https://user-images.githubusercontent.com/7979275/170100605-50807f00-d5b7-4b7f-9a37-6f2876f1193d.png "Odroid N2+ GPIO Read All")

@@ -38,9 +38,9 @@ import com.diozero.devices.BME68x;
 import com.diozero.devices.BME68x.Data;
 import com.diozero.devices.BME68x.HeaterConfig;
 import com.diozero.devices.BME68x.IirFilterCoefficient;
-import com.diozero.devices.BME68x.ODR;
 import com.diozero.devices.BME68x.OperatingMode;
 import com.diozero.devices.BME68x.OversamplingMultiplier;
+import com.diozero.devices.BME68x.StandbyDuration;
 import com.diozero.util.Diozero;
 import com.diozero.util.SleepUtil;
 
@@ -62,6 +62,10 @@ public class BME68xTest {
 		try (BME68x bme68x = new BME68x(controller, address)) {
 			System.out.format("chipId: 0x%x, variantId: 0x%x, uniqueId: 0x%x%n", Integer.valueOf(bme68x.getChipId()),
 					Integer.valueOf(bme68x.getVariantId()), Integer.valueOf(bme68x.getUniqueId()));
+			System.out.format(
+					"Humidity Oversampling: %s, Temperature Oversampling: %s, Pressure Oversampling: %s, Filter: %s, Standy Duration: %s%n",
+					bme68x.getHumidityOversample(), bme68x.getTemperatureOversample(), bme68x.getPressureOversample(),
+					bme68x.getIirFilterConfig(), bme68x.getStandbyDuration());
 
 			if (bme68x.getVariantId() == BME68x.VARIANT_ID_BM688) {
 				bme68x.setOperatingMode(OperatingMode.PARALLEL);
@@ -97,12 +101,12 @@ public class BME68xTest {
 	private static void forcedModeTest(BME68x bme68x) {
 		System.out.format("hum os: %s, temp os: %s, press os: %s, IIR Filter: %s, ODR: %s%n",
 				bme68x.getHumidityOversample(), bme68x.getTemperatureOversample(), bme68x.getPressureOversample(),
-				bme68x.getIirFilterConfig(), bme68x.getOdr());
+				bme68x.getIirFilterConfig(), bme68x.getStandbyDuration());
 		bme68x.setConfiguration(OversamplingMultiplier.X2, OversamplingMultiplier.X2, OversamplingMultiplier.X2,
-				IirFilterCoefficient._3, ODR.NONE);
+				IirFilterCoefficient._3, StandbyDuration.NONE);
 		System.out.format("hum os: %s, temp os: %s, press os: %s, IIR Filter: %s, ODR: %s%n",
 				bme68x.getHumidityOversample(), bme68x.getTemperatureOversample(), bme68x.getPressureOversample(),
-				bme68x.getIirFilterConfig(), bme68x.getOdr());
+				bme68x.getIirFilterConfig(), bme68x.getStandbyDuration());
 
 		OperatingMode target_operating_mode = OperatingMode.FORCED;
 
@@ -135,12 +139,12 @@ public class BME68xTest {
 	private static void parallelModeTest(BME68x bme68x) {
 		System.out.format("hum os: %s, temp os: %s, press os: %s, IIR Filter: %s, ODR: %s%n",
 				bme68x.getHumidityOversample(), bme68x.getTemperatureOversample(), bme68x.getPressureOversample(),
-				bme68x.getIirFilterConfig(), bme68x.getOdr());
+				bme68x.getIirFilterConfig(), bme68x.getStandbyDuration());
 		bme68x.setConfiguration(OversamplingMultiplier.X2, OversamplingMultiplier.X2, OversamplingMultiplier.X2,
-				IirFilterCoefficient.NONE, ODR.NONE);
+				IirFilterCoefficient.NONE, StandbyDuration.NONE);
 		System.out.format("hum os: %s, temp os: %s, press os: %s, IIR Filter: %s, ODR: %s%n",
 				bme68x.getHumidityOversample(), bme68x.getTemperatureOversample(), bme68x.getPressureOversample(),
-				bme68x.getIirFilterConfig(), bme68x.getOdr());
+				bme68x.getIirFilterConfig(), bme68x.getStandbyDuration());
 
 		OperatingMode target_operating_mode = OperatingMode.PARALLEL;
 
@@ -209,12 +213,12 @@ public class BME68xTest {
 	private static void iaqTest(BME68x bme68x) {
 		System.out.format("hum os: %s, temp os: %s, press os: %s, IIR Filter: %s, ODR: %s%n",
 				bme68x.getHumidityOversample(), bme68x.getTemperatureOversample(), bme68x.getPressureOversample(),
-				bme68x.getIirFilterConfig(), bme68x.getOdr());
+				bme68x.getIirFilterConfig(), bme68x.getStandbyDuration());
 		bme68x.setConfiguration(OversamplingMultiplier.X1, OversamplingMultiplier.X2, OversamplingMultiplier.X16,
-				IirFilterCoefficient.NONE, ODR._0_59_MS);
+				IirFilterCoefficient.NONE, StandbyDuration._0_59_MS);
 		System.out.format("hum os: %s, temp os: %s, press os: %s, IIR Filter: %s, ODR: %s%n",
 				bme68x.getHumidityOversample(), bme68x.getTemperatureOversample(), bme68x.getPressureOversample(),
-				bme68x.getIirFilterConfig(), bme68x.getOdr());
+				bme68x.getIirFilterConfig(), bme68x.getStandbyDuration());
 
 		OperatingMode target_operating_mode = OperatingMode.FORCED;
 

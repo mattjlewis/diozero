@@ -50,7 +50,11 @@ public class StringUtil {
 	}
 
 	public static boolean isNullOrBlank(String s) {
-		return s == null || s.trim().isEmpty();
+		return s == null || s.isBlank();
+	}
+
+	public static boolean isNotBlank(String s) {
+		return s != null && !s.isBlank();
 	}
 
 	public static String pad(String str, int length) {

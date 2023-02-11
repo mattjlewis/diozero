@@ -33,11 +33,43 @@ package com.diozero.devices;
 
 import com.diozero.api.RuntimeIOException;
 
+/*-
+ * Useful environment calculations: https://github.com/finitespace/BME280/blob/master/src/EnvironmentCalculations.cpp
+ * - Altitude (Hypsometric equation https://en.wikipedia.org/wiki/Hypsometric_equation)
+ * - Equivalent sea level pressure (inverse of altitude calculation)
+ * - Absolute humidity (ref https://carnotcycle.wordpress.com/2012/08/04/how-to-convert-relative-humidity-to-absolute-humidity/, https://www.eas.ualberta.ca/jdwilson/EAS372_13/Vomel_CIRES_satvpformulae.html)
+ * - Heat index (https://ehp.niehs.nih.gov/1206273/, using both Rothfusz and Steadman's equations http://www.wpc.ncep.noaa.gov/html/heatindex_equation.shtml)
+ * - Dew point (Brian McNoldy from http://andrew.rsmas.miami.edu)
+ */
 public interface BarometerInterface extends SensorInterface {
+	static final float ABSOLUTE_ZERO = 273.15f;
+	static final double HYPSOMETRIC_POWER = 1 / 5.257;
+	static final double HYPSOMETRIC_DIVISOR = 0.0065;
+
 	/**
-	 * Get the pressure in kPa
-	 * @return pressure in kPa
+	 * Get the pressure in hPa (Hectopascal).
+	 * 
+	 * 1 Kilopascal (kPa) = 10 Hectopascals = 1,000 Pascals (hPa)
+	 * 
+	 * @return pressure in hPa
 	 * @throws RuntimeIOException if an IO error occurs
 	 */
 	float getPressure() throws RuntimeIOException;
+
+	/**
+	 * Calculate the altitude given the current reference sea level pressure,
+	 * current outdoor temperature (Celsius) and current pressure.
+	 * 
+	 * Uses the
+	 * <a href="https://en.wikipedia.org/wiki/Hypsometric_equation">Hypsometric
+	 * formula</a>
+	 * 
+	 * @param seaLevelPressure   Reference sea level pressure (kPA)
+	 * @param outdoorTempCelsius Current outdoor temperature (degrees Celsius)
+	 * @return Altitude in meters
+	 */
+	default float calculateAltitude(float seaLevelPressure, float outdoorTempCelsius) throws RuntimeIOException {
+		return (float) ((Math.pow(seaLevelPressure / getPressure(), HYPSOMETRIC_POWER) - 1)
+				* ((outdoorTempCelsius + ABSOLUTE_ZERO) / HYPSOMETRIC_DIVISOR));
+	}
 }
