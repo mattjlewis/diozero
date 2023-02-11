@@ -31,10 +31,10 @@ package com.diozero.devices.sandpit.motor;
  * #L%
  */
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.function.Consumer;
+
+import com.diozero.util.DiozeroScheduler;
 
 import static com.diozero.util.SleepUtil.NS_IN_SEC;
 
@@ -50,8 +50,6 @@ public abstract class AbstractUnipolarStepperMotor extends AbstractStepperMotor 
     private Consumer<Long> stepForward;
     private Consumer<Long> stepBackward;
     private Future<?> running;
-
-    private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     /**
      * Constructor.
@@ -82,7 +80,7 @@ public abstract class AbstractUnipolarStepperMotor extends AbstractStepperMotor 
 
     @Override
     public void rotate(float angle, float speed) {
-        if (!runFlag.compareAndSet(false, true)) return;
+        if (!runFlag.getAndSet(true)) return;
 
         Consumer<Long> stepFunction = (angle < 0) ? stepBackward : stepForward;
         int steps = Math.round((Math.abs(angle) * stepsPerRotation / 360f));
@@ -104,7 +102,12 @@ public abstract class AbstractUnipolarStepperMotor extends AbstractStepperMotor 
     @Override
     public void stop() {
         super.stop();
-        running.cancel(true);
+        // the boolean run-flag is intended to "protect" the state, so it doesn't matter if this is called multiple
+        // times - or even if never started
+        if (running != null) {
+            running.cancel(true);
+            running = null;
+        }
     }
 
     /**
@@ -116,7 +119,7 @@ public abstract class AbstractUnipolarStepperMotor extends AbstractStepperMotor 
         Consumer<Long> stepFunction = (direction.getDirection() < 0) ? stepBackward : stepForward;
         long pause = calculateStepPauseFromVelocity(speed);
 
-        running = executor.submit(() -> {
+        running = DiozeroScheduler.getNonDaemonInstance().submit(() -> {
             while (runFlag.get()) {
                 stepFunction.accept(pause);
             }

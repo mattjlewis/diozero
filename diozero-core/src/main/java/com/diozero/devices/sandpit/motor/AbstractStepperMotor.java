@@ -37,6 +37,8 @@ import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.tinylog.Logger;
+
 import com.diozero.api.RuntimeIOException;
 import com.diozero.api.function.Action;
 
@@ -102,8 +104,7 @@ public abstract class AbstractStepperMotor implements StepperMotorInterface {
     @Override
     public void stop() {
         controller.stop();
-        runFlag.set(false);
-        fireEvent(false);
+        if (runFlag.getAndSet(false)) fireEvent(false);
     }
 
     @Override
@@ -161,6 +162,7 @@ public abstract class AbstractStepperMotor implements StepperMotorInterface {
     }
 
     protected void fireEvent(boolean start) {
+        // TODO run this in another thread?
         if (start) {
             moveAction.action();
         }
@@ -172,11 +174,16 @@ public abstract class AbstractStepperMotor implements StepperMotorInterface {
 
         StepperMotorEvent event = new StepperMotorEvent(this, Instant.now(), start);
         for (StepperMotorEventListener listener : listeners) {
-            if (start) {
-                listener.start(event);
+            try {
+                if (start) {
+                    listener.start(event);
+                }
+                else {
+                    listener.stop(event);
+                }
             }
-            else {
-                listener.stop(event);
+            catch (Throwable t) {
+                Logger.error(t, "Error in listener loop: start = " + start);
             }
         }
     }
