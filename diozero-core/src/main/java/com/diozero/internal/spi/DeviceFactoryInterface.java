@@ -184,7 +184,7 @@ public interface DeviceFactoryInterface extends AutoCloseable {
 																 Function<String, T> creator) {
 		String key = keySupplier.get();
 
-		if (isDeviceOpened(key)) throw new DeviceAlreadyOpenedException("Device '" + key + " is already opened");
+		if (isDeviceOpened(key)) throw new DeviceAlreadyOpenedException("Device '" + key + "' is already opened");
 		T device = creator.apply(key);
 		deviceOpened(device);
 		return device;
