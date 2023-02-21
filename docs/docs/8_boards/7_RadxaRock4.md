@@ -1,4 +1,4 @@
----
+unam---
 parent: Single Board Computers
 nav_order: 7
 permalink: /boards/rock4cplus.html
@@ -81,8 +81,6 @@ Header: Default
 
 ## Setup
 
-sudo echo "%sudo ALL=(ALL:ALL) NOPASSWD: ALL" > /etc/sudoers.d/01_sudo-nopassword
-
 export DISTRO=bullseye-stable
 curl http://apt.radxa.com/$DISTRO/public.key | sudo apt-key add -
 
@@ -125,3 +123,19 @@ Install either via `armbian-config` (System / Hardware) or by directly adding `r
 
 
 https://github.com/TheRemote/PiBenchmarks
+
+## GPIO File Permissions
+
+File `/etc/udev/rules.d/70-gpio.rules`:
+
+```
+# Allow group gpio to access gpiochip files
+SUBSYSTEM=="gpio", GROUP="gpio", MODE="0660"
+
+# To allow additional features like edge detection
+SUBSYSTEM=="gpio*", PROGRAM="/bin/sh -c '\
+  chown -R root:gpio /sys/class/gpio && chmod -R 770 /sys/class/gpio;\
+  chown -R root:gpio /sys/devices/virtual/gpio && chmod -R 770 /sys/devices/virtual/gpio;\
+  chown -R root:gpio /sys$devpath && chmod -R 770 /sys$devpath\
+'"
+```

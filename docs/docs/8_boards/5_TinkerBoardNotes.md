@@ -84,7 +84,7 @@ Header: DEFAULT
 +-----+----------+------+---+--------+----------+--------+---+------+----------+-----+
 ```
 
-## I/O File Permissions
+## GPIO File Permissions
 
 File `/etc/udev/rules.d/70-gpio.rules`:
 

@@ -97,6 +97,8 @@ public class SleepUtil {
 	}
 
 	public static void parkNanos(final long nanos) {
+		// See:
+		// https://hazelcast.com/blog/locksupport-parknanos-under-the-hood-and-the-curious-case-of-parking/
 		LockSupport.parkNanos(nanos);
 	}
 

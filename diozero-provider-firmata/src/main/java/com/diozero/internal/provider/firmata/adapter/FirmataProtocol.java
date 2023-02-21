@@ -77,7 +77,7 @@ public interface FirmataProtocol {
 	byte SERVO_CONFIG = 0x70; // set max angle, minPulse, maxPulse, freq
 	byte STRING_DATA = 0x71; // a string message with 14-bits per char
 	byte STEPPER_DATA = 0x72; // ** control a stepper motor
-	byte ONEWIRE_DATA = 0x73; // ** send an OneWire read/write/reset/select/skip/search request
+	byte ONEWIRE_COMMAND = 0x73; // ** send an OneWire read/write/reset/select/skip/search request
 	byte DHTSENSOR_DATA = 0x74; // Used by DhtFirmata
 	byte SHIFT_DATA = 0x75; // ** a bitstream to/from a shift register
 	byte I2C_REQUEST = (byte) 0x76; // send an I2C read/write request
@@ -91,6 +91,16 @@ public interface FirmataProtocol {
 	byte FREQUENCY_COMMAND = 0x7D; // Command for the Frequency module
 	byte SYSEX_NON_REALTIME = 0x7E; // MIDI Reserved for non-realtime messages
 	byte SYSEX_REALTIME = 0X7F; // MIDI Reserved for realtime messages
+
+	// OneWire
+	byte ONEWIRE_NORMAL_SEARCH = 0x40;
+	byte ONEWIRE_NORMAL_SEARCH_REPLY = 0x42;
+	byte ONEWIRE_READ_REPLY = 0x43;
+	byte ONEWIRE_ALARMS_SEARCH = 0x44;
+	byte ONEWIRE_ALARMS_SEARCH_REPLY = 0x45;
+	byte ONEWIRE_CONFIG = 0x41;
+	byte ONEWIRE_PARASITIC_POWER_ON = 0x00;
+	byte ONEWIRE_PARASITIC_POWER_OFF = 0x01;
 
 	// Scheduler
 	byte MAX_TASK_ID = 0x7f;

@@ -33,12 +33,16 @@ package com.diozero.internal.provider.firmata.adapter;
 
 import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.OptionalInt;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
@@ -430,6 +434,123 @@ public class FirmataAdapter implements FirmataProtocol, Runnable, AutoCloseable 
 		sendMessage(buffer);
 	}
 
+	public OneWireSearchResponse oneWireSearch(int gpio, boolean alarms) throws RuntimeIOException {
+		byte[] buffer = new byte[5];
+		int index = 0;
+		buffer[index++] = START_SYSEX;
+		buffer[index++] = ONEWIRE_COMMAND;
+		if (alarms) {
+			buffer[index++] = ONEWIRE_ALARMS_SEARCH;
+		} else {
+			buffer[index++] = ONEWIRE_NORMAL_SEARCH;
+		}
+		buffer[index++] = (byte) gpio;
+		buffer[index++] = END_SYSEX;
+
+		return sendMessage(buffer, OneWireSearchResponse.class);
+	}
+
+	public void oneWireConfig(int gpio, boolean parasiticPower) throws RuntimeIOException {
+		byte[] buffer = new byte[5];
+		int index = 0;
+		buffer[index++] = START_SYSEX;
+		buffer[index++] = ONEWIRE_COMMAND;
+		buffer[index++] = ONEWIRE_CONFIG;
+		if (parasiticPower) {
+			buffer[index++] = ONEWIRE_PARASITIC_POWER_ON;
+		} else {
+			buffer[index++] = ONEWIRE_PARASITIC_POWER_OFF;
+		}
+		buffer[index++] = (byte) gpio;
+		buffer[index++] = END_SYSEX;
+
+		sendMessage(buffer);
+	}
+
+	public void oneWireReset(int gpio) throws RuntimeIOException {
+		oneWireCommands(gpio, EnumSet.of(OneWireCommand.RESET), Optional.empty(), OptionalInt.empty(),
+				OptionalInt.empty(), OptionalInt.empty(), OptionalInt.empty());
+	}
+
+	public void oneWireSkip(int gpio) throws RuntimeIOException {
+		oneWireCommands(gpio, EnumSet.of(OneWireCommand.SKIP), Optional.empty(), OptionalInt.empty(),
+				OptionalInt.empty(), OptionalInt.empty(), OptionalInt.empty());
+	}
+
+	public void oneWireSelect(int gpio, byte[] address) throws RuntimeIOException {
+		oneWireCommands(gpio, EnumSet.of(OneWireCommand.SELECT), Optional.of(address), OptionalInt.empty(),
+				OptionalInt.empty(), OptionalInt.empty(), OptionalInt.empty());
+	}
+
+	public OneWireReadResponse oneWireRead(int gpio, int length, int correlationId) throws RuntimeIOException {
+		return oneWireCommands(gpio, EnumSet.of(OneWireCommand.READ), Optional.empty(), OptionalInt.of(length),
+				OptionalInt.of(correlationId), OptionalInt.empty(), OptionalInt.empty()).get();
+	}
+
+	public void oneWireDelay(int gpio, int delay) throws RuntimeIOException {
+		oneWireCommands(gpio, EnumSet.of(OneWireCommand.DELAY), Optional.empty(), OptionalInt.empty(),
+				OptionalInt.empty(), OptionalInt.of(delay), OptionalInt.empty());
+	}
+
+	public void oneWireWrite(int gpio, int data) throws RuntimeIOException {
+		oneWireCommands(gpio, EnumSet.of(OneWireCommand.WRITE), Optional.empty(), OptionalInt.empty(),
+				OptionalInt.empty(), OptionalInt.empty(), OptionalInt.of(data));
+	}
+
+	public Optional<OneWireReadResponse> oneWireCommands(int gpio, EnumSet<OneWireCommand> commands,
+			Optional<byte[]> address, OptionalInt bytesToRead, OptionalInt correlationId, OptionalInt delay,
+			OptionalInt data) throws RuntimeIOException {
+		byte[] data_bytes = new byte[19];
+		ByteBuffer data_buffer = ByteBuffer.wrap(data_bytes);
+		data_buffer.order(ByteOrder.LITTLE_ENDIAN);
+		byte command_mask = 0;
+		for (OneWireCommand command : commands) {
+			command_mask |= command.mask();
+			switch (command) {
+			case SELECT:
+				data_buffer.position(0);
+				data_buffer.put(address.get());
+				break;
+			case READ:
+				data_buffer.position(8);
+				data_buffer.putShort((short) bytesToRead.getAsInt());
+				data_buffer.putShort((short) correlationId.getAsInt());
+				break;
+			case DELAY:
+				data_buffer.position(12);
+				data_buffer.putInt(delay.getAsInt());
+				break;
+			case WRITE:
+				data_buffer.position(16);
+				data_buffer.putShort((short) data.getAsInt());
+				data_buffer.put((byte) (data.getAsInt() >> 16));
+				break;
+			default:
+				// Ignore
+			}
+		}
+		data_buffer.flip();
+
+		byte[] data_bytes_encoded = FirmataProtocol.to7BitArray(data_bytes);
+
+		byte[] buffer = new byte[5 + data_bytes_encoded.length];
+		int index = 0;
+		buffer[index++] = START_SYSEX;
+		buffer[index++] = ONEWIRE_COMMAND;
+		buffer[index++] = (byte) gpio;
+		buffer[index++] = command_mask;
+		System.arraycopy(data_bytes_encoded, 0, buffer, index, data_bytes_encoded.length);
+		index += data_bytes_encoded.length;
+		buffer[index++] = END_SYSEX;
+
+		if (commands.contains(OneWireCommand.READ)) {
+			return Optional.of(sendMessage(buffer, OneWireReadResponse.class));
+		}
+
+		sendMessage(buffer);
+		return Optional.empty();
+	}
+
 	public void createTask(int taskId, int length) {
 		if (taskId < 0 || taskId > 0x7f) {
 			throw new IllegalArgumentException("Invalid taskId (" + taskId + ") must be 0.." + 0x7f);
@@ -698,6 +819,9 @@ public class FirmataAdapter implements FirmataProtocol, Runnable, AutoCloseable 
 			// TODO Implementation
 			response = new ReportFeaturesResponse();
 			break;
+		case ONEWIRE_COMMAND:
+			response = unpackOneWireResponse(buffer);
+			break;
 		case SCHEDULER_DATA:
 			byte scheduler_reply_type = buffer.get();
 			switch (scheduler_reply_type) {
@@ -779,6 +903,20 @@ public class FirmataAdapter implements FirmataProtocol, Runnable, AutoCloseable 
 		}
 
 		return response;
+	}
+
+	private static SysExResponse unpackOneWireResponse(ByteBuffer buffer) {
+		byte onewire_response = buffer.get();
+		switch (onewire_response) {
+		case ONEWIRE_NORMAL_SEARCH_REPLY:
+		case ONEWIRE_ALARMS_SEARCH_REPLY:
+			return new OneWireSearchResponse(buffer);
+		case ONEWIRE_READ_REPLY:
+			return new OneWireReadResponse(buffer);
+		default:
+			Logger.warn("Unhandled OneWire response {}", Integer.valueOf(onewire_response));
+		}
+		return null;
 	}
 
 	private ProtocolVersionResponse readVersionResponse() {
@@ -894,22 +1032,22 @@ public class FirmataAdapter implements FirmataProtocol, Runnable, AutoCloseable 
 	}
 
 	/*-
-	0  START_SYSEX                (0xF0)
-	1  REPORT_FEATURES            (0x65)
-	2  REPORT_FEATURES_RESPONSE   (0x01)
-	3  1st FEATURE_ID             (1-127, eg: Serial = 0x60, Stepper = 0x62)
-	4  1st FEATURE_MAJOR_VERSION  (0-127)
-	5  1st FEATURE_MINOR_VERSION  (0-127)
-	6  2nd FEATURE_ID             (1-127, eg: Serial = 0x60, Stepper = 0x62)
-	7  2nd FEATURE_MAJOR_VERSION  (0-127)
-	8  2nd FEATURE_MINOR_VERSION  (0-127)
-	9  3rd FEATURE_ID             (0x00, Extended ID)
-	10 3rd FEATURE_ID             (lsb)
-	11 3rd FEATURE_ID             (msb)
-	12 3rd FEATURE_MAJOR_VERSION  (0-127)
-	13 3rd FEATURE_MINOR_VERSION  (0-127)
-	...for all supported features
-	n  END_SYSEX                  (0xF7)
+	 * 0  START_SYSEX                (0xF0)
+	 * 1  REPORT_FEATURES            (0x65)
+	 * 2  REPORT_FEATURES_RESPONSE   (0x01)
+	 * 3  1st FEATURE_ID             (1-127, eg: Serial = 0x60, Stepper = 0x62)
+	 * 4  1st FEATURE_MAJOR_VERSION  (0-127)
+	 * 5  1st FEATURE_MINOR_VERSION  (0-127)
+	 * 6  2nd FEATURE_ID             (1-127, eg: Serial = 0x60, Stepper = 0x62)
+	 * 7  2nd FEATURE_MAJOR_VERSION  (0-127)
+	 * 8  2nd FEATURE_MINOR_VERSION  (0-127)
+	 * 9  3rd FEATURE_ID             (0x00, Extended ID)
+	 * 10 3rd FEATURE_ID             (lsb)
+	 * 11 3rd FEATURE_ID             (msb)
+	 * 12 3rd FEATURE_MAJOR_VERSION  (0-127)
+	 * 13 3rd FEATURE_MINOR_VERSION  (0-127)
+	 * ...for all supported features
+	 * n  END_SYSEX                  (0xF7)
 	 */
 	static class ReportFeaturesResponse extends SysExResponse {
 		ReportFeaturesResponse() {
@@ -1072,6 +1210,87 @@ public class FirmataAdapter implements FirmataProtocol, Runnable, AutoCloseable 
 		public String toString() {
 			return "I2CResponse[slaveAddress=" + slaveAddress + ", register=" + register + ", data.length="
 					+ data.length + "]";
+		}
+	}
+
+	public static class OneWireSearchResponse extends SysExResponse {
+		private int gpio;
+		private byte[][] addresses;
+
+		public OneWireSearchResponse(ByteBuffer buffer) {
+			/*-
+			 * 3  pin              (0-127)
+			 * 4  bit 0-6   [optional] address bytes encoded using 8 times 7 bit for 7 bytes of 8 bit
+			 * 5  bit 7-13  [optional] 1.address[0] = byte[0]    + byte[1]<<7 & 0x7F
+			 * 6  bit 14-20 [optional] 1.address[1] = byte[1]>>1 + byte[2]<<6 & 0x7F
+			 * 7  ....                 ...
+			 * 11 bit 49-55            1.address[6] = byte[6]>>6 + byte[7]<<1 & 0x7F
+			 * 12 bit 56-63            1.address[7] = byte[8]    + byte[9]<<7 & 0x7F
+			 * 13 bit 64-69            2.address[0] = byte[9]>>1 + byte[10]<<6 &0x7F
+			 * n  ... as many bytes as needed (don't exceed MAX_DATA_BYTES though)
+			 * n+1  END_SYSEX      (0xF7)
+			 */
+			gpio = buffer.get() & 0xff;
+			byte[] enc = new byte[buffer.remaining()];
+			buffer.get(enc);
+			byte[] data = FirmataProtocol.from7BitArray(enc);
+			/*
+			 * Each one-wire-device has a unique identifier which is 8 bytes long and comes
+			 * factory-programmed into the the device.
+			 */
+			if (data.length % 8 != 0) {
+				// Error !
+				Logger.error("Expected response with multiple of 8 bytes, got {} bytes", Integer.valueOf(data.length));
+			}
+			addresses = new byte[data.length % 8][8];
+			for (int device = 0; device < data.length % 8; device++) {
+				buffer.get(addresses[device]);
+			}
+		}
+
+		public int getGpio() {
+			return gpio;
+		}
+
+		public byte[][] getAddresses() {
+			return addresses;
+		}
+	}
+
+	public static class OneWireReadResponse extends SysExResponse {
+		private int gpio;
+		private int correlationId;
+		private int value;
+
+		public OneWireReadResponse(ByteBuffer buffer) {
+			/*-
+			 * 3  pin                  (0-127)
+			 * 4  bit 0-6   [optional] data bytes encoded using 8 times 7 bit for 7 bytes of 8 bit
+			 * 5  bit 7-13  [optional] correlationid[0] = byte[0]   + byte[1]<<7 & 0x7F
+			 * 6  bit 14-20 [optional] correlationid[1] = byte[1]>1 + byte[2]<<6 & 0x7F
+			 * 7  bit 21-27 [optional] data[0] = byte[2]>2 + byte[3]<<5 & 0x7F
+			 * 8  ....                 data[1] = byte[3]>3 + byte[4]<<4 & 0x7F
+			 * n  ... as many bytes as needed (don't exceed MAX_DATA_BYTES though)
+			 * n+1  END_SYSEX          (0xF7)
+			 */
+			gpio = buffer.get() & 0xff;
+			byte[] enc = new byte[buffer.remaining()];
+			buffer.get(enc);
+			ByteBuffer data = ByteBuffer.wrap(FirmataProtocol.from7BitArray(enc));
+			correlationId = data.getShort() & 0xffff;
+			value = data.getShort() & 0xffff;
+		}
+
+		public int getGpio() {
+			return gpio;
+		}
+
+		public int getCorrelationId() {
+			return correlationId;
+		}
+
+		public int getValue() {
+			return value;
 		}
 	}
 

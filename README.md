@@ -22,6 +22,6 @@ where they simplify development and improve code readability.
 Created by [Matt Lewis](https://github.com/mattjlewis) (email [deviceiozero@gmail.com](mailto:deviceiozero@gmail.com)) ([blog](https://diozero.blogspot.co.uk/)), 
 inspired by [GPIO Zero](https://gpiozero.readthedocs.org/) and [Johnny Five](http://johnny-five.io/). 
 If you have any issues please use the [GitHub issues page](https://github.com/mattjlewis/diozero/issues). 
-For any other comments or suggestions, please use the [diozero Google Group](https://groups.google.com/forum/#!forum/diozero).
+For any other comments or suggestions, please use the [GitHub discussions page](https://github.com/mattjlewis/diozero/discussions).
 
 Please refer to the [GitHub Pages site](https://www.diozero.com/) for further documentation.
