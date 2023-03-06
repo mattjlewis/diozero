@@ -49,7 +49,8 @@ public interface UnipolarStepperController extends StepperMotorInterface.Stepper
      * Execute a single "step" (the smallest movable increment) in a clockwise direction. For example, a 4-wire
      * half-stepper, this would be a half-step.
      *
-     * @param nanos interval in <b>nanoseconds</b> to wait between pin triggers
+     * @param nanos interval in <b>nanoseconds</b> to wait between pin triggers: this effectively controls the
+     *              "speed" of the rotation
      */
     void stepForward(long nanos);
 
@@ -57,7 +58,8 @@ public interface UnipolarStepperController extends StepperMotorInterface.Stepper
      * Execute a single "step" (the smallest movable increment) in a counter-clockwise direction. For example, a 4-wire
      * half-stepper, this would be a half-step.
      *
-     * @param nanos interval in <b>nanoseconds</b> to wait between pin triggers
+     * @param nanos interval in <b>nanoseconds</b> to wait between pin triggers: this effectively controls the
+     *              "speed" of the rotation
      */
     void stepBackward(long nanos);
 
@@ -75,7 +77,7 @@ public interface UnipolarStepperController extends StepperMotorInterface.Stepper
     /**
      * Unipolar controller that uses discrete pins/wires on the motor for each phase.
      */
-    abstract class FiveWireUnipolarController implements UnipolarStepperController {
+    abstract class AbstractUnipolarController implements UnipolarStepperController {
         // basically "fire these pins" in order to rotate
         private static final int[] FULL_STEPS = new int[] { 0b1000, 0b0100, 0b0010, 0b0001 };
         private static final int[] HALF_STEPS = new int[] {
@@ -90,19 +92,30 @@ public interface UnipolarStepperController extends StepperMotorInterface.Stepper
 
         protected final boolean useHalfSteps;
 
-        protected FiveWireUnipolarController(PinOut[] pins) {
+        protected AbstractUnipolarController(PinOut[] pins) {
             this(pins, false);
         }
 
-        protected FiveWireUnipolarController(PinOut[] pins, boolean useHalfSteps) {
+        /**
+         * Constructor.
+         *
+         * @param pins         the pins to "fire"
+         * @param useHalfSteps whether to use half-steps or not
+         */
+        protected AbstractUnipolarController(PinOut[] pins, boolean useHalfSteps) {
+            this(pins, useHalfSteps ? HALF_STEPS : FULL_STEPS);
+        }
+
+        /**
+         * Constructor.
+         *
+         * @param pins           the pins to "fire"
+         * @param pinFiringOrder determines which pin is fired in which order as a bit map
+         */
+        protected AbstractUnipolarController(PinOut[] pins, int[] pinFiringOrder) {
             this.pins = pins.clone();
-            this.useHalfSteps = useHalfSteps;
-            if (useHalfSteps) {
-                pinMap = HALF_STEPS;
-            }
-            else {
-                pinMap = FULL_STEPS;
-            }
+            useHalfSteps = pinFiringOrder.length > 4;
+            pinMap = pinFiringOrder.clone();
         }
 
         /**
@@ -188,7 +201,7 @@ public interface UnipolarStepperController extends StepperMotorInterface.Stepper
     /**
      * Set up a GPIO-based controller.
      */
-    class GpioFiveWireUnipolarController extends FiveWireUnipolarController {
+    class GpioFiveWireUnipolarController extends AbstractUnipolarController {
         public GpioFiveWireUnipolarController(DigitalOutputDevice pinA,
                                               DigitalOutputDevice pinB,
                                               DigitalOutputDevice pinC,
