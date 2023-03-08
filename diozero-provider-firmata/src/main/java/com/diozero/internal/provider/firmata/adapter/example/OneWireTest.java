@@ -65,7 +65,7 @@ public class OneWireTest implements FirmataTestConstants {
 			adapter.oneWireConfig(one_wire_pin, false);
 			adapter.setPinMode(one_wire_pin, PinMode.ONEWIRE);
 
-			// Search for one-wire devices attacked to this pin...
+			// Search for one-wire devices attached to this pin...
 			OneWireSearchResponse search = adapter.oneWireSearch(one_wire_pin, false);
 			System.out.println("Got " + search.getAddresses().length + " addresses on pin #" + search.getGpio());
 			for (byte[] address : search.getAddresses()) {
