@@ -37,7 +37,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class Hex {
 	private static final char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();
-	private static final char BUNDLE_SEP = ' ';
+	private static final char DEFAULT_BUNDLE_SEP = ' ';
 
 	public static String encodeHexString(byte[] bytes) {
 		return encodeHexString(bytes, 0);
@@ -56,6 +56,10 @@ public class Hex {
 	}
 
 	public static String encodeHexString(byte[] bytes, int bundleSize) {
+		return encodeHexString(bytes, bundleSize, DEFAULT_BUNDLE_SEP);
+	}
+
+	public static String encodeHexString(byte[] bytes, int bundleSize, char bundleSep) {
 		char[] hexChars = new char[(bytes.length * 2) + (bundleSize > 0 ? (bytes.length / bundleSize) : 0)];
 		for (int j = 0, k = 1; j < bytes.length; j++, k++) {
 			int v = bytes[j] & 0xFF;
@@ -64,8 +68,8 @@ public class Hex {
 			hexChars[start] = HEX_ARRAY[v >>> 4];
 			hexChars[start + 1] = HEX_ARRAY[v & 0x0F];
 
-			if (bundleSize > 0 && (k % bundleSize) == 0) {
-				hexChars[start + 2] = BUNDLE_SEP;
+			if (bundleSize > 0 && k < bytes.length && (k % bundleSize) == 0) {
+				hexChars[start + 2] = bundleSep;
 			}
 		}
 		return new String(hexChars).trim();
@@ -150,6 +154,7 @@ public class Hex {
 		String s = encodeHexString(bytes);
 		System.out.println(s);
 		System.out.println(encodeHexString(bytes, 2));
+		System.out.println(encodeHexString(bytes, 2, ':'));
 		System.out.println(encodeHexString(decodeHex(s)));
 
 		int num_ints = 35;
