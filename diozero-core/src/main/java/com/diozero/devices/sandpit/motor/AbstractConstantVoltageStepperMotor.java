@@ -4,7 +4,7 @@ package com.diozero.devices.sandpit.motor;
  * #%L
  * Organisation: diozero
  * Project:      diozero - Core
- * Filename:     AbstractUnipolarStepperMotor.java
+ * Filename:     AbstractConstantVoltageStepperMotor.java
  *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
@@ -34,21 +34,30 @@ package com.diozero.devices.sandpit.motor;
 import java.util.concurrent.Future;
 import java.util.function.Consumer;
 
+import com.diozero.api.function.VoidConsumer;
 import com.diozero.util.DiozeroScheduler;
 
 import static com.diozero.util.SleepUtil.NS_IN_SEC;
 
 /**
- * A unipolar driver is handled by sending timed on/off to the appropriate pins. This class handles most of the math,
- * execution, and timing, for sending steps to the motor.
+ * A stepper using a controller that moves the rotor by sending timed on/off to the appropriate pins. This class handles
+ * most of the math, execution, and timing, for sending steps and/or running the motor. The controller manages the
+ * actual outputs.
+ *
+ * <h4>About Frequency and Stepping</h4>
+ * Most manufacturers have a "default frequency" for the motors: this is the timing that produces the maximum torque
+ * for that motor. This class and the accompanying controller class(es) attempt to move that control into this class
+ * instead of relying on application code to manage the intervals to move the rotor.
  *
  * @author E. A. Graham Jr.
  */
-public abstract class AbstractUnipolarStepperMotor extends AbstractStepperMotor {
+public abstract class AbstractConstantVoltageStepperMotor extends AbstractStepperMotor {
 
     private long pausePerStep;
     private Consumer<Long> stepForward;
     private Consumer<Long> stepBackward;
+    private VoidConsumer microForward;
+    private VoidConsumer microBackward;
     private Future<?> running;
 
     /**
@@ -57,14 +66,21 @@ public abstract class AbstractUnipolarStepperMotor extends AbstractStepperMotor 
      * @param strideAngle the degrees a step will rotate - this is <b>REQUIRED</b>
      * @param controller  the controller
      */
-    protected AbstractUnipolarStepperMotor(float strideAngle, UnipolarStepperController controller) {
+    protected AbstractConstantVoltageStepperMotor(float strideAngle, ConstantVoltageStepperController controller) {
         super(strideAngle, controller);
+        setupController(controller);
     }
 
-    protected AbstractUnipolarStepperMotor(int stepsPerRotation, UnipolarStepperController controller) {
+    protected AbstractConstantVoltageStepperMotor(int stepsPerRotation, ConstantVoltageStepperController controller) {
         super(stepsPerRotation, controller);
+        setupController(controller);
+    }
+
+    private void setupController(ConstantVoltageStepperController controller) {
         stepForward = controller::stepForward;
         stepBackward = controller::stepBackward;
+        microForward = controller::microStepForward;
+        microBackward = controller::microStepBackward;
     }
 
     @Override
@@ -76,6 +92,18 @@ public abstract class AbstractUnipolarStepperMotor extends AbstractStepperMotor 
     @Override
     public void step(Direction direction) {
         ((direction.getDirection() < 0) ? stepBackward : stepForward).accept(pausePerStep);
+    }
+
+    /**
+     * Advances the rotor by the smallest increment (usually 1/4 step).
+     * <p>
+     * <b>NOTE!!!</b> Using this method can result in a loss of torque if micro-steps are not invoked at the
+     * manufacturer's recommended frequency.
+     *
+     * @param direction which way
+     */
+    public void microStep(Direction direction) {
+        ((direction.getDirection() < 0) ? microBackward : microForward).accept();
     }
 
     @Override

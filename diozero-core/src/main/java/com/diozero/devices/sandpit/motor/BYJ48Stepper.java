@@ -45,7 +45,7 @@ package com.diozero.devices.sandpit.motor;
  *
  * @author E. A. Graham Jr.
  */
-public class BYJ48Stepper extends AbstractUnipolarStepperMotor {
+public class BYJ48Stepper extends AbstractConstantVoltageStepperMotor {
     public static final int MAX_STEPS_PER_ROTATION = 512;
 
     /**
@@ -53,7 +53,7 @@ public class BYJ48Stepper extends AbstractUnipolarStepperMotor {
      *
      * @param controller the controller
      */
-    public BYJ48Stepper(UnipolarStepperController controller) {
+    public BYJ48Stepper(ConstantVoltageStepperController controller) {
         this(controller, false);
     }
 
@@ -65,7 +65,7 @@ public class BYJ48Stepper extends AbstractUnipolarStepperMotor {
      * @param controller the controller
      * @param largeRatio {@code true} if the motor is using the larger gear-box ratio
      */
-    public BYJ48Stepper(UnipolarStepperController controller, boolean largeRatio) {
+    public BYJ48Stepper(ConstantVoltageStepperController controller, boolean largeRatio) {
         super(largeRatio ? (MAX_STEPS_PER_ROTATION * 4) : MAX_STEPS_PER_ROTATION, controller);
 
         // spec sheet calls for 100Hz pulse

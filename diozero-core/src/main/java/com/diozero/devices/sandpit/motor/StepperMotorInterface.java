@@ -107,6 +107,9 @@ public interface StepperMotorInterface extends DeviceInterface {
 
     /**
      * Set the default speed of the motor in RPM.
+     * <p>
+     * <b>WARNING!!!!</b> Setting the speed (frequency) to other than the manufacturer default may result in loss of
+     * torque.
      *
      * @param speedRPM the speed
      */
@@ -125,6 +128,8 @@ public interface StepperMotorInterface extends DeviceInterface {
     /**
      * Set the default frequency of the stepper: this is expressed in Hz (or pulse per second) and is used as the
      * default speed of the motor.
+     * <p>
+     * <b>WARNING!!!!</b> Setting the frequency to other than the manufacturer default may result in loss of torque.
      *
      * @param frequencyInHz the frequency in Hz
      */

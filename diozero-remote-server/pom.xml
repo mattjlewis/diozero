@@ -88,6 +88,11 @@
 			<groupId>com.diozero</groupId>
 			<artifactId>diozero-remote-common</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>com.diozero</groupId>
+			<artifactId>diozero-provider-pigpio</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 
 		<dependency>
 			<groupId>io.grpc</groupId>
