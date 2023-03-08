@@ -42,16 +42,7 @@ import com.diozero.util.Hex;
 import com.diozero.util.PropertyUtil;
 import com.diozero.util.SleepUtil;
 
-public class SchedulerTest implements FirmataProtocol {
-	static final String SERIAL_PORT_PROP = "diozero.firmata.serialPort";
-	static final String SERIAL_BAUD_PROP = "diozero.firmata.serialBaud";
-	static final String SERIAL_DATA_BITS_PROP = "diozero.firmata.serialDataBits";
-	static final String SERIAL_STOP_BITS_PROP = "diozero.firmata.serialStopBits";
-	static final String SERIAL_PARITY_PROP = "diozero.firmata.serialParity";
-	static final String TCP_HOST_PROP = "diozero.firmata.tcpHostname";
-	static final String TCP_PORT_PROP = "diozero.firmata.tcpPort";
-	static final int DEFAULT_TCP_PORT = 3030;
-
+public class SchedulerTest implements FirmataProtocol, FirmataTestConstants {
 	private static int num7BitOutbytes(int a) {
 		// #define num7BitOutbytes(a)(((a)*7)>>3)
 		return (a * 7) >> 3;

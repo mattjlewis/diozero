@@ -57,15 +57,13 @@ public interface FirmataProtocol {
 	byte END_SYSEX = (byte) 0xF7; // end a MIDI Sysex message
 
 	// Extended command set using sysex (0-127/0x00-0x7F)
-	// ** means not yet supported
-	byte EXTENDED_ID = 0x00; // A value of 0x00 indicates the next 2 bytes define the extended ID
 	// IDs 0x00 - 0x0F are reserved for user defined commands
-	byte SERIAL_DATA = 0x60; // ** communicate with serial devices, including other boards
-	byte ENCODER_DATA = 0x61; // ** reply with encoder's current positions
-	byte ACCELSTEPPER_DATA = 0x62; // ** control a stepper motor
+	byte SERIAL_MESSAGE = 0x60; // communicate with serial devices, including other boards
+	byte ENCODER_DATA = 0x61; // reply with encoder's current positions
+	byte ACCELSTEPPER_DATA = 0x62; // control a stepper motor
 	byte REPORT_DIGITAL_PIN = 0x63; // (reserved)
 	byte EXTENDED_REPORT_ANALOG = 0x64; // (reserved)
-	byte REPORT_FEATURES = 0x65; // ** Report the features supported by the device (proposed API)
+	byte REPORT_FEATURES = 0x65; // Report the features supported by the device (proposed API)
 	byte SPI_DATA = 0x68; // SPI Commands start with this byte
 	byte ANALOG_MAPPING_QUERY = 0x69; // ask for mapping of analog to pin numbers
 	byte ANALOG_MAPPING_RESPONSE = 0x6A; // reply with mapping info
@@ -76,16 +74,16 @@ public interface FirmataProtocol {
 	byte EXTENDED_ANALOG = 0x6F; // analog write (PWM, Servo, etc) to any pin
 	byte SERVO_CONFIG = 0x70; // set max angle, minPulse, maxPulse, freq
 	byte STRING_DATA = 0x71; // a string message with 14-bits per char
-	byte STEPPER_DATA = 0x72; // ** control a stepper motor
-	byte ONEWIRE_COMMAND = 0x73; // ** send an OneWire read/write/reset/select/skip/search request
+	byte STEPPER_DATA = 0x72; // control a stepper motor
+	byte ONEWIRE_DATA = 0x73; // send an OneWire read/write/reset/select/skip/search request
 	byte DHTSENSOR_DATA = 0x74; // Used by DhtFirmata
-	byte SHIFT_DATA = 0x75; // ** a bitstream to/from a shift register
+	byte SHIFT_DATA = 0x75; // a bitstream to/from a shift register
 	byte I2C_REQUEST = (byte) 0x76; // send an I2C read/write request
 	byte I2C_REPLY = (byte) 0x77; // a reply to an I2C read request
 	byte I2C_CONFIG = (byte) 0x78; // config I2C settings such as delay times and power pins
 	byte REPORT_FIRMWARE = 0x79; // report name and version of the firmware
 	byte SAMPLING_INTERVAL = 0x7A; // the interval at which analog input is sampled (default = 19ms)
-	byte SCHEDULER_DATA = 0x7B; // ** send a createtask/deletetask/addtotask/schedule/querytasks/querytask
+	byte SCHEDULER_DATA = 0x7B; // send a createtask/deletetask/addtotask/schedule/querytasks/querytask
 								// request to the scheduler
 	byte ANALOG_CONFIG = 0x7C; // (reserved)
 	byte FREQUENCY_COMMAND = 0x7D; // Command for the Frequency module
@@ -93,12 +91,12 @@ public interface FirmataProtocol {
 	byte SYSEX_REALTIME = 0X7F; // MIDI Reserved for realtime messages
 
 	// OneWire
-	byte ONEWIRE_NORMAL_SEARCH = 0x40;
-	byte ONEWIRE_NORMAL_SEARCH_REPLY = 0x42;
+	byte ONEWIRE_SEARCH_REQUEST = 0x40;
+	byte ONEWIRE_CONFIG_REQUEST = 0x41;
+	byte ONEWIRE_SEARCH_REPLY = 0x42;
 	byte ONEWIRE_READ_REPLY = 0x43;
-	byte ONEWIRE_ALARMS_SEARCH = 0x44;
-	byte ONEWIRE_ALARMS_SEARCH_REPLY = 0x45;
-	byte ONEWIRE_CONFIG = 0x41;
+	byte ONEWIRE_SEARCH_ALARMS_REQUEST = 0x44;
+	byte ONEWIRE_SEARCH_ALARMS_REPLY = 0x45;
 	byte ONEWIRE_PARASITIC_POWER_ON = 0x00;
 	byte ONEWIRE_PARASITIC_POWER_OFF = 0x01;
 
