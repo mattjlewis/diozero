@@ -5,7 +5,7 @@ package com.diozero.internal;
  * Organisation: diozero
  * Project:      diozero - Core
  * Filename:     DeviceStates.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.internal;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -31,8 +31,10 @@ package com.diozero.internal;
  * #L%
  */
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import org.tinylog.Logger;
 
@@ -62,8 +64,12 @@ public class DeviceStates {
 
 	public void closeAll() {
 		Logger.trace("closeAll()");
-		// No need to remove from the Map as close() should always call closed()
-		devices.values().stream().filter(device -> !device.isChild()).forEach(InternalDeviceInterface::close);
+		// collect all the things
+		List<InternalDeviceInterface> closeThese = devices.values().stream()
+				.filter(device -> !device.isChild()).collect(Collectors.toList());
+
+		// calling "close" on each should end up calling closed (above), which should remove everything from the map
+		closeThese.forEach(InternalDeviceInterface::close);
 	}
 
 	public InternalDeviceInterface getDevice(String key) {
