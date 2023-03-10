@@ -7,6 +7,10 @@
  * The rotational direction is depenendent on the actual hardware hookup of the motor.
  * The direction can be changed either through application code (use it "backwards"
  * transparently) or by re-attaching the stepper in a different configuration.
+ * <p>
+ * <h4>Speed of Rotation</h4>
+ * This is highly variable and dependent on many factors: operating system(s), hardware, etc. Each implementation
+ * will need to determine how to best utilize the motor.
  */
 
 package com.diozero.devices.sandpit.motor;

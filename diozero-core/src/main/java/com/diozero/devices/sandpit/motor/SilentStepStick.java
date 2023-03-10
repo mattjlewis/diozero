@@ -48,7 +48,7 @@ import com.diozero.devices.sandpit.motor.ChopperStepperController.FrequencyMulti
  *
  * @author Greg Flurry, E. A. Graham Jr.
  */
-public class SilentStepStick extends AbstractStepperMotor {
+public class SilentStepStick extends AbstractChopperStepperMotor {
     public static final int DEFAULT_STEPS = 200;
 
     /**
@@ -98,9 +98,9 @@ public class SilentStepStick extends AbstractStepperMotor {
         if (!driver.isEnabled()) throw new RuntimeIOException("Driver is not enabled");
         driver.setDirection(direction);
 
-        float frequencyFactor = stepsPerRotation / 60f;
-        float multiplier = driver.getResolution().multiplier();
-        int frequency = Math.round(speed * frequencyFactor * multiplier);
+        var frequencyFactor = stepsPerRotation / 60f;
+        var multiplier = driver.getResolution().multiplier();
+        var frequency = Math.round(speed * frequencyFactor * multiplier);
 
         driver.setFrequency(frequency);
         driver.run();

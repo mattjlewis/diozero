@@ -98,6 +98,8 @@ public interface ChopperStepperController extends StepperMotorInterface.StepperM
      */
     void run();
 
+    void stop();
+
     class BasicChopperController implements ChopperStepperController {
         private final DigitalOutputDevice enableDevice;
         private final DigitalOutputDevice directionSet;
@@ -159,6 +161,12 @@ public interface ChopperStepperController extends StepperMotorInterface.StepperM
         @Override
         public void stop() {
             stepControl.setValue(0f);
+        }
+
+        @Override
+        public void release() {
+            stop();
+            setEnabled(false);
         }
 
         @Override
