@@ -80,7 +80,7 @@ public interface BasicStepperController extends StepperMotorInterface.StepperMot
         // basically "fire these pins" in order to rotate
         private static final int[] FULL_STEPS = new int[] { 0b1000, 0b0100, 0b0010, 0b0001 };
         // supposedly more torque
-        private static final int[] DOUBLE_STEPS = new int[] { 0b1001, 0b0110, 0b1010, 0b0101 };
+        private static final int[] DOUBLE_STEPS = new int[] { 0b1001, 0b1010, 0b0110, 0b0101 };
         // slow - kind of half-steps
         private static final int[] INTERLEAVE_STEPS = new int[] {
                 0b1000, 0b1100, 0b0100, 0b0110, 0b0010, 0b0011, 0b0001, 0b1001
@@ -243,7 +243,7 @@ public interface BasicStepperController extends StepperMotorInterface.StepperMot
             terminalA.validate();
             terminalB.validate();
 
-            return new StepperPin[] { terminalA.plus, terminalB.minus, terminalA.minus, terminalB.plus };
+            return new StepperPin[] { terminalA.plus, terminalB.plus, terminalA.minus, terminalB.minus };
         }
     }
 }

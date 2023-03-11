@@ -103,4 +103,10 @@ public interface StepperMotorInterface extends DeviceInterface {
         throw new UnsupportedOperationException("Single-stepping is not implemented.");
     }
 
+    /**
+     * Releases the rotor (should allow free rotation).
+     */
+    default void release() {
+        getController().release();
+    }
 }
