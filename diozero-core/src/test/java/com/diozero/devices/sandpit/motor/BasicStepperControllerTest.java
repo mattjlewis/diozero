@@ -142,10 +142,10 @@ public class BasicStepperControllerTest {
     public void bipolarStepForward() {
         biploarController.stepForward(StepStyle.SINGLE);
 
-        assertTrue(((TestStepperPin)terminalB.plus).requests.get(0));
-        assertFalse(((TestStepperPin)terminalA.minus).requests.get(0));
-        assertFalse(((TestStepperPin)terminalB.minus).requests.get(0));
         assertFalse(((TestStepperPin)terminalA.plus).requests.get(0));
+        assertFalse(((TestStepperPin)terminalA.minus).requests.get(0));
+        assertFalse(((TestStepperPin)terminalB.plus).requests.get(0));
+        assertTrue(((TestStepperPin)terminalB.minus).requests.get(0));
     }
 
     @Test
@@ -164,11 +164,11 @@ public class BasicStepperControllerTest {
 
         assertEquals(List.of(true, false, false, false, true, false, false, false),
                      ((TestStepperPin)terminalA.plus).requests);
-        assertEquals(List.of(false, true, false, false, false, true, false, false),
-                     ((TestStepperPin)terminalB.minus).requests);
         assertEquals(List.of(false, false, true, false, false, false, true, false),
                      ((TestStepperPin)terminalA.minus).requests);
-        assertEquals(List.of(false, false, false, true, false, false, false, true),
+        assertEquals(List.of(false, true, false, false, false, true, false, false),
                      ((TestStepperPin)terminalB.plus).requests);
+        assertEquals(List.of(false, false, false, true, false, false, false, true),
+                     ((TestStepperPin)terminalB.minus).requests);
     }
 }
