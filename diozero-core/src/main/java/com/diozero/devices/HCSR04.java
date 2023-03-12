@@ -5,7 +5,7 @@ package com.diozero.devices;
  * Organisation: diozero
  * Project:      diozero - Core
  * Filename:     HCSR04.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.devices;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -33,14 +33,9 @@ package com.diozero.devices;
 
 import org.tinylog.Logger;
 
-import com.diozero.api.DeviceMode;
-import com.diozero.api.DigitalInputDevice;
-import com.diozero.api.DigitalInputDeviceInterface;
-import com.diozero.api.DigitalInputOutputDevice;
-import com.diozero.api.DigitalOutputDevice;
-import com.diozero.api.GpioEventTrigger;
-import com.diozero.api.GpioPullUpDown;
-import com.diozero.api.RuntimeIOException;
+import com.diozero.api.*;
+import com.diozero.internal.spi.GpioDeviceFactoryInterface;
+import com.diozero.sbc.DeviceFactoryHelper;
 import com.diozero.util.SleepUtil;
 
 /**
@@ -48,7 +43,7 @@ import com.diozero.util.SleepUtil;
  * https://docs.google.com/document/d/1Y-yZnNhMYy7rwhAgyL_pfa39RsB-x2qR4vP8saG73rE/edit#
  * Product specification:
  * http://www.micropik.com/PDF/HCSR04.pdf
- * 
+ *
  * Provides 2cm - 400cm non-contact measurement function, the ranging accuracy
  * can reach to 3mm You only need to supply a short 10uS pulse to the trigger
  * input to start the ranging, and then the module will send out an 8 cycle
@@ -58,7 +53,7 @@ import com.diozero.util.SleepUtil;
  */
 public class HCSR04 implements DistanceSensorInterface {
 	// Spec says #10us pulse (min) = 10,000 ns
-	private static final int PULSE_NS = 10_000; 
+	private static final int PULSE_NS = 10_000;
 	private static final double MAX_DISTANCE_CM = 400; // Max distance measurement
 	private static final double SPEED_OF_SOUND_CM_PER_S = 34029; // Approx Speed of Sound at sea level and 15 degC
 	// Calculate the max time (in ns) that the echo pulse stays high
@@ -76,18 +71,31 @@ public class HCSR04 implements DistanceSensorInterface {
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	public HCSR04(int triggerGpioNum, int echoGpioNum) throws RuntimeIOException {
+		this(DeviceFactoryHelper.getNativeDeviceFactory(),triggerGpioNum, echoGpioNum);
+	}
+
+	/**
+	 * Initialise GPIO to echo and trigger pins
+	 *
+	 * @param deviceFactory the device factory to create the pins with
+	 * @param triggerGpioNum GPIO connected to the HC-SR04 trigger pin
+	 * @param echoGpioNum GPIO connected to the HC-SR04 echo pin
+	 * @throws RuntimeIOException if an I/O error occurs
+	 */
+	public HCSR04(GpioDeviceFactoryInterface deviceFactory, int triggerGpioNum, int echoGpioNum) {
 		if (triggerGpioNum != echoGpioNum) {
 			// Define device for trigger pin at HCSR04
-			trigger = new DigitalOutputDevice(triggerGpioNum, true, false);
+			trigger = new DigitalOutputDevice(deviceFactory, triggerGpioNum, true, false);
 			// Define device for echo pin at HCSR04
-			echo = new DigitalInputDevice(echoGpioNum, GpioPullUpDown.NONE, GpioEventTrigger.BOTH);
+			echo = new DigitalInputDevice(deviceFactory, echoGpioNum, GpioPullUpDown.NONE, GpioEventTrigger.BOTH);
 		} else {
-			triggerAndEcho = new DigitalInputOutputDevice(triggerGpioNum, DeviceMode.DIGITAL_OUTPUT);
+			triggerAndEcho = new DigitalInputOutputDevice(deviceFactory, triggerGpioNum, DeviceMode.DIGITAL_OUTPUT);
 			echo = triggerAndEcho;
 		}
 
 		// Sleep for 20 ms - let the device settle?
 		SleepUtil.sleepMillis(20);
+
 	}
 
 	/**
@@ -112,7 +120,7 @@ public class HCSR04 implements DistanceSensorInterface {
 			triggerAndEcho.setValue(false);
 			triggerAndEcho.setMode(DeviceMode.DIGITAL_INPUT);
 		}
-		
+
 		// Need to include as little code as possible here to avoid missing pin state changes
 		while (! echo.getValue()) {
 			if (System.nanoTime() - start > 500_000_000) {
@@ -121,7 +129,7 @@ public class HCSR04 implements DistanceSensorInterface {
 			}
 		}
 		long echo_on_time = System.nanoTime();
-		
+
 		while (echo.getValue()) {
 			if (System.nanoTime() - echo_on_time > 500_000_000) {
 				Logger.error("Timeout exceeded waiting for echo to go low");
@@ -129,7 +137,7 @@ public class HCSR04 implements DistanceSensorInterface {
 			}
 		}
 		long echo_off_time = System.nanoTime();
-		
+
 		Logger.info("Time from echo on to echo off = {}ns, max allowable time={}ns",
 				Long.valueOf(echo_off_time - echo_on_time), Long.valueOf(MAX_ECHO_TIME_NS));
 
