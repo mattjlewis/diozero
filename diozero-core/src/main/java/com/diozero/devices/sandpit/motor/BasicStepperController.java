@@ -137,7 +137,7 @@ public interface BasicStepperController extends StepperMotorInterface.StepperMot
         }
 
         /**
-         * Fire the pins according to the bitmap for a single cycle.
+         * Fire the pins according to the bitmap for a single step.
          * <p>
          * <b>WARNING!</b> This method is synchronized to prevent potential "over-writes" when running.
          *

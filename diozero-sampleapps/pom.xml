@@ -1,6 +1,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	
+
 	<parent>
 		<groupId>com.diozero</groupId>
 		<artifactId>diozero</artifactId>
@@ -10,13 +10,13 @@
 	<artifactId>diozero-sampleapps</artifactId>
 	<packaging>jar</packaging>
 	<name>diozero - Sample applications</name>
-	
+
 	<properties>
 		<imgscalr-lib.version>4.2</imgscalr-lib.version>
 		<jansi.version>2.4.0</jansi.version>
 		<picocli.version>4.7.1</picocli.version>
 	</properties>
-	
+
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
@@ -63,7 +63,7 @@
 			<groupId>com.diozero</groupId>
 			<artifactId>diozero-core</artifactId>
 		</dependency>
-		
+
 		<!-- Switch between providers that support remote communication -->
 		<!--
 		<dependency>
@@ -102,4 +102,31 @@
 		</dependency>
 	</dependencies>
 
+	<build>
+		<plugins>
+			<!-- build a "shaded/shadow jar" - makes it executable with all dependencies -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>3.4.1</version>
+				<configuration>
+					<createDependencyReducedPom>false</createDependencyReducedPom>
+					<!-- setting a main class makes the JAR "executable"
+<!-					<transformers>-->
+<!--						<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">-->
+<!--							<mainClass>com.diozero.sampleapps.AnimationTest</mainClass>-->
+<!--						</transformer>-->
+<!--					</transformers>-->
+				</configuration>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 </project>

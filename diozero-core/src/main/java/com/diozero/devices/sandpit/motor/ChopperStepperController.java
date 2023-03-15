@@ -37,7 +37,8 @@ import com.diozero.api.RuntimeIOException;
 import com.diozero.devices.sandpit.motor.StepperMotorInterface.Direction;
 
 /**
- * A basic device for a stepper driven by a "chopper" driver: uses 3 GPIO pins (2 on/off, 1 PWM) to control a motor.
+ * A basic device for a stepper driven by a "chopper" driver: uses 3 GPIO pins (enable, direction, frequency) to
+ * control a motor.
  * <p>
  * The direction pin starts "low" for <b>clockwise</b> operations.
  *
@@ -100,6 +101,9 @@ public interface ChopperStepperController extends StepperMotorInterface.StepperM
 
     void stop();
 
+    /**
+     * Base implementation.
+     */
     class BasicChopperController implements ChopperStepperController {
         private final DigitalOutputDevice enableDevice;
         private final DigitalOutputDevice directionSet;
