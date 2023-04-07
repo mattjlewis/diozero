@@ -35,6 +35,7 @@ import java.util.regex.Pattern;
 
 import com.diozero.devices.sandpit.motor.ChopperStepperController.FrequencyMultiplierChopperController;
 import com.diozero.devices.sandpit.motor.SilentStepStick;
+import com.diozero.devices.sandpit.motor.StepperMotorInterface;
 import com.diozero.util.SleepUtil;
 
 /**
@@ -48,9 +49,9 @@ import com.diozero.util.SleepUtil;
  */
 public class SilentStepStickTest {
     public static void main(String[] args) throws Exception {
-        int enablePin = 5;
-        int directionPin =  6;
-        int stepPin = 16;
+        int enablePin = 26;
+        int directionPin =  21;
+        int stepPin = 13;
 
         if (args.length == 1 && Pattern.matches("\\d+,\\d+,\\d+", args[0])) {
             String[] pins = args[0].split(",");
@@ -62,12 +63,14 @@ public class SilentStepStickTest {
         try (FrequencyMultiplierChopperController controller =
                      new FrequencyMultiplierChopperController(enablePin, directionPin, stepPin)){
             try (SilentStepStick stick = new SilentStepStick(controller)) {
-                System.out.println("Rotating forward/clockwise 45 degrees (or there about)");
-                stick.rotate(45f);
+                System.out.println("Rotating forward/clockwise ");
+                stick.start(StepperMotorInterface.Direction.FORWARD);
                 SleepUtil.sleepSeconds(1);
-                System.out.println("Rotating backward/counter-clockwise 45 degrees (approximately)");
-                stick.rotate(-45f);
+                stick.stop();
+                System.out.println("Rotating backward/counter-clockwise");
+                stick.start(StepperMotorInterface.Direction.BACKWARD);
                 SleepUtil.sleepSeconds(1);
+                stick.stop();
                 stick.release();
             }
         }

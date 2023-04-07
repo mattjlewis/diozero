@@ -117,7 +117,7 @@ public interface ChopperStepperController extends StepperMotorInterface.StepperM
          * @param stepPin      controls the <i>frequency</i> of the motor and whether stepping or not
          */
         public BasicChopperController(int enablePin, int directionPin, int stepPin) {
-            enableDevice = new DigitalOutputDevice(enablePin, false, false);
+            enableDevice = new DigitalOutputDevice(enablePin, true, false);
             directionSet = new DigitalOutputDevice(directionPin, true, false);
             stepControl = new PwmOutputDevice(stepPin);
         }
