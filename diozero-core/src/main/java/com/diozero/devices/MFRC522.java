@@ -1937,6 +1937,8 @@ public class MFRC522 implements DeviceInterface {
 			return false;
 		}
 
+		block0_buffer = Arrays.copyOf(block0_buffer, 16); //Remove the CRC_A which is also returned by mifareRead
+
 		// Write new UID to the data we just read, and calculate BCC byte
 		byte bcc = 0;
 		for (int i = 0; i < uid.getSize(); i++) {
