@@ -2034,6 +2034,33 @@ public class MFRC522 implements DeviceInterface {
 		return select();
 	}
 
+	/**
+	 * Waits for a card to be present and returns the UID
+	 *
+	 * @return The UID of the card
+	 */
+	public UID awaitCardPresent() {
+		return awaitCardPresent(1000);
+	}
+
+	/**
+	 * Waits for a card to be present and returns the UID
+	 *
+	 * @param wait The time to wait between checks
+	 * @return The UID of the card
+	 */
+	public UID awaitCardPresent(long wait) {
+		UID uid = null;
+		while (uid == null) {
+			SleepUtil.sleepMillis(wait);
+			if (isNewCardPresent()) {
+				uid = readCardSerial();
+			}
+		}
+
+		return uid;
+	}
+
 	// DEBUG METHODS
 
 	/**
