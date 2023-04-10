@@ -1976,10 +1976,21 @@ public class MFRC522 implements DeviceInterface {
 	 * @return Status
 	 */
 	public boolean mifareUnbrickUidSector() {
+		return mifareUnbrickUidSector((byte) 0x00);
+	}
+
+	/**
+	 * Resets entire sector 0 except sixth byte to zeroes, so the card can be read again by readers.
+	 * The sixth byte is used to identify the manufacturer.
+	 *
+	 * @param manufacturer Manufacturer byte (see {@link PiccType#forId(byte)})
+	 * @return Status
+	 */
+	public boolean mifareUnbrickUidSector(byte manufacturer) {
 		mifareOpenUidBackdoor();
 
-		byte[] block0_buffer = { 0x01, 0x02, 0x03, 0x04, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-				0x00, 0x00 };
+		byte[] block0_buffer = { 0x00, 0x00, 0x00, 0x00, 0x00, manufacturer, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+				0x00, 0x00, 0x00 };
 
 		// Write modified block 0 back to card
 		StatusCode status = mifareWrite((byte) 0, block0_buffer);
