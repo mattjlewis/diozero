@@ -32,7 +32,7 @@ package com.diozero.devices.sandpit.motor;
  */
 
 import com.diozero.api.RuntimeIOException;
-import com.diozero.devices.sandpit.motor.BipolarStepperDriver.FrequencyMultiplierBipolarDriver;
+import com.diozero.devices.sandpit.motor.ChopperStepperController.FrequencyMultiplierChopperController;
 
 /**
  * Represents a class of bipolar stepper motor drivers using 3 inputs: enable, direction, and "speed" (PWM frequency).
@@ -43,12 +43,12 @@ import com.diozero.devices.sandpit.motor.BipolarStepperDriver.FrequencyMultiplie
  * The micro-step capabilities of the driver chip are configured externally to this driver. This does <b>NOT</b> use
  * the UART interface.
  * <p>
- * The "enable" pin turns the motor driver on and off. When disabled, in nost cases the driver does not power the motor
- * and the shaft can be moved manually.
+ * The "enable" pin turns the motor driver on and off. In most cases, if the driver is <b>disabled</b>, power
+ * is not supplied to the motor and the shaft can be moved manually.
  *
  * @author Greg Flurry, E. A. Graham Jr.
  */
-public class SilentStepStick extends AbstractStepperMotor {
+public class SilentStepStick extends AbstractChopperStepperMotor {
     public static final int DEFAULT_STEPS = 200;
 
     /**
@@ -56,7 +56,7 @@ public class SilentStepStick extends AbstractStepperMotor {
      *
      * @param driver the driver
      */
-    public SilentStepStick(FrequencyMultiplierBipolarDriver driver) {
+    public SilentStepStick(ChopperStepperController.FrequencyMultiplierChopperController driver) {
         this(driver, DEFAULT_STEPS);
     }
 
@@ -66,7 +66,7 @@ public class SilentStepStick extends AbstractStepperMotor {
      * @param driver             the driver
      * @param stepsPerRevolution steps (not counting micro-stepping)
      */
-    public SilentStepStick(FrequencyMultiplierBipolarDriver driver, int stepsPerRevolution) {
+    public SilentStepStick(FrequencyMultiplierChopperController driver, int stepsPerRevolution) {
         super(stepsPerRevolution, driver);
     }
 
@@ -93,20 +93,20 @@ public class SilentStepStick extends AbstractStepperMotor {
 
     @Override
     protected void run(Direction direction, float speed) {
-        FrequencyMultiplierBipolarDriver driver = myDriver();
+        ChopperStepperController.FrequencyMultiplierChopperController driver = myDriver();
 
         if (!driver.isEnabled()) throw new RuntimeIOException("Driver is not enabled");
         driver.setDirection(direction);
 
-        float frequencyFactor = stepsPerRotation / 60f;
-        float multiplier = driver.getResolution().multiplier();
-        int frequency = Math.round(speed * frequencyFactor * multiplier);
+        var frequencyFactor = stepsPerRotation / 60f;
+        var multiplier = driver.getResolution().multiplier();
+        var frequency = Math.round(speed * frequencyFactor * multiplier);
 
         driver.setFrequency(frequency);
         driver.run();
     }
 
-    private FrequencyMultiplierBipolarDriver myDriver() {
-        return ((FrequencyMultiplierBipolarDriver)getController());
+    private FrequencyMultiplierChopperController myDriver() {
+        return ((ChopperStepperController.FrequencyMultiplierChopperController)getController());
     }
 }

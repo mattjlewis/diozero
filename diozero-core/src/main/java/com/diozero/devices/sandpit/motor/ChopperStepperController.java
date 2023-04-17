@@ -4,7 +4,7 @@ package com.diozero.devices.sandpit.motor;
  * #%L
  * Organisation: diozero
  * Project:      diozero - Core
- * Filename:     BipolarStepperDriver.java
+ * Filename:     ChopperStepperController.java
  *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
@@ -37,13 +37,14 @@ import com.diozero.api.RuntimeIOException;
 import com.diozero.devices.sandpit.motor.StepperMotorInterface.Direction;
 
 /**
- * A basic "device" for a bipolar motor: uses 3 GPIO pins (2 on/off, 1 PWM) to control a motor.
+ * A basic device for a stepper driven by a "chopper" driver: uses 3 GPIO pins (enable, direction, frequency) to
+ * control a motor.
  * <p>
  * The direction pin starts "low" for <b>clockwise</b> operations.
  *
  * @author E. A. Graham Jr.
  */
-public interface BipolarStepperDriver extends StepperMotorInterface.StepperMotorController {
+public interface ChopperStepperController extends StepperMotorInterface.StepperMotorController {
     /**
      * Status of the "enable" pin.
      *
@@ -98,7 +99,12 @@ public interface BipolarStepperDriver extends StepperMotorInterface.StepperMotor
      */
     void run();
 
-    class BasicBipolarDriver implements BipolarStepperDriver {
+    void stop();
+
+    /**
+     * Base implementation.
+     */
+    class BasicChopperController implements ChopperStepperController {
         private final DigitalOutputDevice enableDevice;
         private final DigitalOutputDevice directionSet;
         private final PwmOutputDevice stepControl;
@@ -110,8 +116,8 @@ public interface BipolarStepperDriver extends StepperMotorInterface.StepperMotor
          * @param directionPin set the direction (typically <i>low</i> is <b>clockwise</b>)
          * @param stepPin      controls the <i>frequency</i> of the motor and whether stepping or not
          */
-        public BasicBipolarDriver(int enablePin, int directionPin, int stepPin) {
-            enableDevice = new DigitalOutputDevice(enablePin, false, false);
+        public BasicChopperController(int enablePin, int directionPin, int stepPin) {
+            enableDevice = new DigitalOutputDevice(enablePin, true, false);
             directionSet = new DigitalOutputDevice(directionPin, true, false);
             stepControl = new PwmOutputDevice(stepPin);
         }
@@ -162,6 +168,12 @@ public interface BipolarStepperDriver extends StepperMotorInterface.StepperMotor
         }
 
         @Override
+        public void release() {
+            stop();
+            setEnabled(false);
+        }
+
+        @Override
         public void close() throws RuntimeIOException {
             enableDevice.close();
             directionSet.close();
@@ -175,7 +187,7 @@ public interface BipolarStepperDriver extends StepperMotorInterface.StepperMotor
      * <p>
      * This is typically used for {@link SilentStepStick} steppers.
      */
-    class FrequencyMultiplierBipolarDriver extends BasicBipolarDriver {
+    class FrequencyMultiplierChopperController extends BasicChopperController {
 
         /**
          * Human-readable multiplier values.
@@ -203,7 +215,7 @@ public interface BipolarStepperDriver extends StepperMotorInterface.StepperMotor
 
         private Resolution resolution = Resolution.FULL;
 
-        public FrequencyMultiplierBipolarDriver(int enablePin, int directionPin, int stepPin) {
+        public FrequencyMultiplierChopperController(int enablePin, int directionPin, int stepPin) {
             super(enablePin, directionPin, stepPin);
         }
 

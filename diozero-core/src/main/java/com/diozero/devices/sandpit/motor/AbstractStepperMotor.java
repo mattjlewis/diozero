@@ -31,46 +31,32 @@ package com.diozero.devices.sandpit.motor;
  * #L%
  */
 
-import java.time.Instant;
-import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import org.tinylog.Logger;
-
 import com.diozero.api.RuntimeIOException;
-import com.diozero.api.function.Action;
 
 /**
- * Abstractions of most of the generic functionality of a stepper. Note that the "steps per rotation" is treated as a
- * <b>fixed</b> physical aspect of the motor.
+ * Basic management and physical characteristics for a stepper.
  *
  * @author E. A. Graham Jr.
  */
 public abstract class AbstractStepperMotor implements StepperMotorInterface {
-    // attributes of the motor
-    protected int defaultFrequency;
     protected final int stepsPerRotation;
     protected final float strideAngle;
-
-    // can only execute one action at a time
-    protected final AtomicBoolean runFlag = new AtomicBoolean(false);
-
     protected final StepperMotorController controller;
-    private final List<StepperMotorEventListener> listeners = new CopyOnWriteArrayList<>();
-    // default actions that do nothing
-    private Action stopAction = () -> {
-    };
-    private Action moveAction = () -> {
-    };
 
+    /**
+     * @param stepsPerRotation how many steps required to complete a full rotation
+     * @param controller       the controller
+     */
     public AbstractStepperMotor(int stepsPerRotation, StepperMotorController controller) {
         this.stepsPerRotation = stepsPerRotation;
         strideAngle = 360f / stepsPerRotation;
         this.controller = controller;
     }
 
+    /**
+     * @param strideAngle how many degrees a "step" will rotate (angle = 360 / stepsPerRotation)
+     * @param controller  the controller
+     */
     public AbstractStepperMotor(float strideAngle, StepperMotorController controller) {
         this.strideAngle = strideAngle;
         stepsPerRotation = (int)Math.floor(360f / strideAngle);
@@ -93,98 +79,7 @@ public abstract class AbstractStepperMotor implements StepperMotorInterface {
     }
 
     @Override
-    public int getDefaultFrequency() {
-        return defaultFrequency;
-    }
-
-    public void setDefaultFrequency(int frequencyInHz) {
-        defaultFrequency = frequencyInHz;
-    }
-
-    @Override
-    public void stop() {
-        controller.stop();
-        if (runFlag.getAndSet(false)) fireEvent(false);
-    }
-
-    @Override
-    public void start(Direction direction, float speed) {
-        if (!runFlag.compareAndSet(false, true)) return;
-        fireEvent(true);
-        run(direction, speed);
-    }
-
-    /**
-     * Allow implementations to do different things here.
-     *
-     * @param direction the direction to rotate
-     * @param speed     the speed to rotate (may change the "default" speed)
-     */
-    protected abstract void run(Direction direction, float speed);
-
-    /**
-     * Indicates that the code thinks the axle is rotating.
-     *
-     * @return {@code true} if turning
-     */
-    public boolean isRunning() {
-        return runFlag.get();
-    }
-
-    @Override
-    public void addEventListener(StepperMotorEventListener listener) {
-        Objects.requireNonNull(listener);
-        listeners.add(listener);
-    }
-
-    @Override
-    public void removeEventListener(StepperMotorEventListener listener) {
-        Objects.requireNonNull(listener);
-        listeners.remove(listener);
-    }
-
-    @Override
-    public void onMove(Action action) {
-        Objects.requireNonNull(action);
-        moveAction = action;
-    }
-
-    @Override
-    public void onStop(Action action) {
-        Objects.requireNonNull(action);
-        stopAction = action;
-    }
-
-    @Override
     public void close() throws RuntimeIOException {
-        stop();
         controller.close();
-    }
-
-    protected void fireEvent(boolean start) {
-        // TODO run this in another thread?
-        if (start) {
-            moveAction.action();
-        }
-        else {
-            stopAction.action();
-        }
-
-        if (listeners.isEmpty()) return;
-
-        StepperMotorEvent event = new StepperMotorEvent(this, Instant.now(), start);
-        for (StepperMotorEventListener listener : listeners) {
-            try {
-                if (start) {
-                    listener.start(event);
-                }
-                else {
-                    listener.stop(event);
-                }
-            }
-            catch (Throwable t) {
-                Logger.error(t, "Error in listener loop: start = " + start);
-            }
-        }
     }
 }
