@@ -22,6 +22,8 @@ public class AHT21 implements ThermometerInterface, HygrometerInterface {
     public static final byte WRITE_COMMAND = 0x70;
     public static final byte[] MEASURE_COMMAND = new byte[]{(byte) 0xAC, 0x33, 0x00};
 
+    private static final float TWO_TO_THE_POWER_OF_20 = 1_048_576;
+
     private final I2CDeviceInterface i2c;
 
     public AHT21() {
@@ -92,61 +94,6 @@ public class AHT21 implements ThermometerInterface, HygrometerInterface {
         i2c.writeBytes(firstByte, resp[1], resp[2]);
     }
 
-    private byte[] readMeasurement(boolean withCrc) {
-        i2c.writeBytes(MEASURE_COMMAND);
-
-        /*
-        Wait 80ms for the measurement to be completed, if the read status word Bit[7] is 0, it means the measurement
-        is completed, and then six bytes can be read continuously; otherwise, continue to wait.
-         */
-        SleepUtil.sleepMillis(80);
-        while ((i2c.readByte() & 0x80) == 0x80) { //first bit of byte = 1 => device busy
-            Logger.debug("Device busy");
-            SleepUtil.sleepMillis(10);
-        }
-
-        /*
-        After receiving six bytes, the next byte is CRC check data, which the user can read as needed. If the receiver
-        needs CRC check, it will send an ACK reply after receiving the sixth byte, otherwise it will send a NACK reply.
-         */
-
-        i2c.writeByte(READ_COMMAND);
-        // 1st status byte,
-        // then 5 bytes with hum & temp,
-        // last byte crc (optional)
-        final byte[] resp = new byte[withCrc ? 7 : 6];
-        i2c.readBytes(resp);
-
-        return resp;
-    }
-
-    private float[] parseResponse(byte[] resp) {
-        if (resp.length > 6) { // check last byte CRC
-            final byte[] data = new byte[6];
-            System.arraycopy(resp, 0, data, 0, data.length);
-
-            final int computedCrc = computeCrc(data);
-            final int expectedCrc = toUnsignedInt(resp[6]);
-
-            if (computedCrc != expectedCrc) {
-                Logger.debug("CRC check failed");
-                return new float[]{-1F, -1F};
-            }
-        }
-
-        // skip status
-        // humidity is next with 20 bits
-        final int hum = (toUnsignedInt(resp[1]) << 16 | toUnsignedInt(resp[2]) << 8 | toUnsignedInt(resp[3])) >> 4;
-        // temperature is next with 20 bits
-        final int temp = (toUnsignedInt(resp[3]) & 0x0F) << 16 | toUnsignedInt(resp[4]) << 8 | toUnsignedInt(resp[5]);
-
-        // magic formula from datasheet
-        final float relativeHum = hum * 100F / 1024 / 1024;
-        final float temperature = temp * 200F / 1024 / 1024 - 50;
-
-        return new float[]{relativeHum, temperature};
-    }
-
     /**
      * Compute CRC for given data.
      * The initial value of CRC is 0xFF.
@@ -176,25 +123,73 @@ public class AHT21 implements ThermometerInterface, HygrometerInterface {
         return crc & 0xFF; // CRC is 1 byte
     }
 
+    private void checkCrc(byte[] resp) {
+        final byte[] data = new byte[6];
+        System.arraycopy(resp, 0, data, 0, data.length);
+
+        final int computedCrc = computeCrc(data);
+        final int expectedCrc = toUnsignedInt(resp[6]);
+
+        if (computedCrc != expectedCrc) {
+            Logger.debug("CRC check failed");
+            throw new RuntimeIOException("Sensor returned invalid data");
+        }
+    }
+
     /**
      * Read both humidity and temperature.
      *
-     * @param verifyCrc whether to check CRC byte. If CRC fails then returned value is [-1F, -1F], but if it passes
-     *                  it increases measurement confidence
-     * @return [relative humidity, temperature (Celsius)]
+     * @return [relative humidity[%], temperature (Celsius)]
      */
-    public float[] getValues(boolean verifyCrc) {
-        return parseResponse(readMeasurement(verifyCrc));
+    public float[] getValues() {
+        i2c.writeBytes(MEASURE_COMMAND);
+
+        /*
+        Wait 80ms for the measurement to be completed, if the read status word Bit[7] is 0, it means the measurement
+        is completed, and then six bytes can be read continuously; otherwise, continue to wait.
+         */
+        SleepUtil.sleepMillis(80);
+        while ((i2c.readByte() & 0x80) == 0x80) { //first bit of byte = 1 => device busy
+            Logger.debug("Device busy");
+            SleepUtil.sleepMillis(10);
+        }
+
+        /*
+        After receiving six bytes, the next byte is CRC check data, which the user can read as needed. If the receiver
+        needs CRC check, it will send an ACK reply after receiving the sixth byte, otherwise it will send a NACK reply.
+         */
+
+        i2c.writeByte(READ_COMMAND);
+        // 1st status byte,
+        // then 5 bytes with hum & temp,
+        // last byte crc
+        final byte[] resp = new byte[7];
+        i2c.readBytes(resp);
+
+        checkCrc(resp);
+        // CRC ok, time to parse
+
+        // skip status
+        // humidity is next with 20 bits
+        final int hum = (toUnsignedInt(resp[1]) << 16 | toUnsignedInt(resp[2]) << 8 | toUnsignedInt(resp[3])) >> 4;
+        // temperature is next with 20 bits
+        final int temp = (toUnsignedInt(resp[3]) & 0x0F) << 16 | toUnsignedInt(resp[4]) << 8 | toUnsignedInt(resp[5]);
+
+        // magic formula from datasheet
+        final float relativeHum = (hum / TWO_TO_THE_POWER_OF_20) * 100;         // RH[%] = (raw / 2^20) * 100
+        final float temperature = (temp / TWO_TO_THE_POWER_OF_20) * 200 - 50;   //  T[C] = (raw / 2^20) * 200 - 50
+
+        return new float[]{relativeHum, temperature};
     }
 
     @Override
     public float getRelativeHumidity() {
-        return getValues(true)[0];
+        return getValues()[0];
     }
 
     @Override
     public float getTemperature() throws RuntimeIOException {
-        return getValues(true)[1];
+        return getValues()[1];
     }
 
     @Override
