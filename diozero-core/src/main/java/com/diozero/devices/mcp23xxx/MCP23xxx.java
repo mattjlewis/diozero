@@ -191,11 +191,10 @@ public abstract class MCP23xxx extends AbstractDeviceFactory implements GpioDevi
 		}
 
 		for (int port = 0; port < numPorts; port++) {
-			// Read currently set GPIOs directions
-			directions[port] = new MutableByte(readByte(getIODirReg(port)));
-			// Read current state of pull-up resistors
-			pullUps[port] = new MutableByte(readByte(getGPPullUpReg(port)));
+			byte currentStates = readByte(getGPIOReg(port));
 
+			// Default all GPIOs to output
+			writeByte(getIODirReg(port), directions[port].getValue());
 			// Default to normal input polarity - IPOLA/IPOLB
 			writeByte(getIPolReg(port), (byte) 0);
 			// Disable interrupt-on-change for all GPIOs
@@ -204,6 +203,10 @@ public abstract class MCP23xxx extends AbstractDeviceFactory implements GpioDevi
 			writeByte(getDefValReg(port), defaultValues[port].getValue());
 			// Disable interrupt comparison control
 			writeByte(getIntConReg(port), interruptCompareFlags[port].getValue());
+			// Disable pull-up resistors
+			writeByte(getGPPullUpReg(port), pullUps[port].getValue());
+			// Set pin states to the values read earlier
+			writeByte(getGPIOReg(port), currentStates);
 		}
 
 		// Finally enable interrupt listeners
