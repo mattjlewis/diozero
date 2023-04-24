@@ -3,6 +3,7 @@ package com.diozero.devices;
 import com.diozero.api.I2CDevice;
 import com.diozero.api.I2CDeviceInterface;
 import com.diozero.api.RuntimeIOException;
+import com.diozero.util.Crc;
 import com.diozero.util.Hex;
 import com.diozero.util.SleepUtil;
 import org.tinylog.Logger;
@@ -23,6 +24,7 @@ public class AHT21 implements ThermometerInterface, HygrometerInterface {
     public static final byte[] MEASURE_COMMAND = new byte[]{(byte) 0xAC, 0x33, 0x00};
 
     private static final float TWO_TO_THE_POWER_OF_20 = 1_048_576;
+    private static final Crc.Params CRC8_PARAMS = new Crc.Params(0x31, 0xff, false, false, 0x00);
 
     private final I2CDeviceInterface i2c;
 
@@ -94,40 +96,11 @@ public class AHT21 implements ThermometerInterface, HygrometerInterface {
         i2c.writeBytes(firstByte, resp[1], resp[2]);
     }
 
-    /**
-     * Compute CRC for given data.
-     * The initial value of CRC is 0xFF.
-     * CRC check type: CRC8/MAXIM
-     * Polynomial: X8+X5+X4+1 Poly：0011 0001 0x31 When placed high, it becomes 1000 1100 0x8c
-     * Adapted from
-     * <a href="http://aosong.com/userfiles/files/software/AHT20-21%20DEMO%20V1_3(1).rar">datasheet reference</a>
-     *
-     * @param data the data
-     * @return the CRC
-     */
-    private int computeCrc(byte[] data) {
-        int crc = 0xFF;
-
-        for (byte current : data) {
-            int byteData = Byte.toUnsignedInt(current);
-            crc ^= byteData;
-            for (int index = 8; index > 0; --index) {
-                if ((crc & 0x80) == 0x80) {
-                    crc = crc << 1 ^ 0x31;
-                } else {
-                    crc = crc << 1;
-                }
-            }
-        }
-
-        return crc & 0xFF; // CRC is 1 byte
-    }
-
     private void checkCrc(byte[] resp) {
         final byte[] data = new byte[6];
         System.arraycopy(resp, 0, data, 0, data.length);
 
-        final int computedCrc = computeCrc(data);
+        final int computedCrc = Crc.crc8(CRC8_PARAMS, data);
         final int expectedCrc = toUnsignedInt(resp[6]);
 
         if (computedCrc != expectedCrc) {
