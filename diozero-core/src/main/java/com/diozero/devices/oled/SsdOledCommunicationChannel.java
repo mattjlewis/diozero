@@ -156,7 +156,6 @@ public interface SsdOledCommunicationChannel extends AutoCloseable {
         private final I2CDeviceInterface device;
         private final byte commandByte;
         private final byte dataByte;
-        private int chunkSize = 4096;
 
         public I2cCommunicationChannel(I2CDeviceInterface device) {
             this(device, DEFAULT_I2C_COMMAND, DEFAULT_I2C_DATA);
@@ -166,24 +165,6 @@ public interface SsdOledCommunicationChannel extends AutoCloseable {
             this.device = device;
             this.commandByte = commandByte;
             this.dataByte = dataByte;
-        }
-
-        /**
-         * @return current size of data chunks.
-         */
-        public int getChunkSize() {
-            return chunkSize;
-        }
-
-        /**
-         * Adjust the size of data-chunks sent.
-         *
-         * @param chunkSize new shunks
-         * @return this
-         */
-        public I2cCommunicationChannel setChunkSize(int chunkSize) {
-            this.chunkSize = chunkSize;
-            return this;
         }
 
         @Override
