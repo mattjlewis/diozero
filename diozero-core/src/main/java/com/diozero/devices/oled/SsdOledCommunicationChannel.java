@@ -31,8 +31,6 @@ package com.diozero.devices.oled;
  * #L%
  */
 
-import java.util.Arrays;
-
 import org.tinylog.Logger;
 
 import com.diozero.api.DigitalOutputDevice;
@@ -190,36 +188,14 @@ public interface SsdOledCommunicationChannel extends AutoCloseable {
 
         @Override
         public void write(byte... buffer) {
-            writeChunks(buffer);
+            device.writeBytes(buffer);
         }
 
         @Override
         public void write(byte[] buffer, int offset, int length) {
             byte[] data = new byte[length];
             System.arraycopy(buffer, offset, data, 0, length);
-            writeChunks(data);
-        }
-
-        /**
-         * Best guess at I2C throughput
-         *
-         * @param data the stuff to write
-         */
-        private void writeChunks(byte[] data) {
-            int num = data.length / chunkSize;
-            int rem = data.length % chunkSize;
-            int start = 0;
-            int end = 0;
-            for (int i = 0; i < num; i++) {
-                end += chunkSize;
-                byte[] output = Arrays.copyOfRange(data, start, end);
-                device.writeBytes(output);
-                start = end;
-            }
-            if (rem > 0) {
-                byte[] output = Arrays.copyOfRange(data, start, start + rem);
-                device.writeBytes(output);
-            }
+            device.writeBytes(data);
         }
 
         @Override
