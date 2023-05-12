@@ -5,7 +5,7 @@ package com.diozero.devices.oled;
  * Organisation: diozero
  * Project:      diozero - Core
  * Filename:     SsdOled.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.devices.oled;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -31,80 +31,80 @@ package com.diozero.devices.oled;
  * #L%
  */
 
+import java.awt.Font;
+import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.util.Arrays;
 
 import org.tinylog.Logger;
 
 import com.diozero.api.DeviceInterface;
-import com.diozero.api.DigitalOutputDevice;
-import com.diozero.util.SleepUtil;
 
 public abstract class SsdOled implements DeviceInterface {
-	private static final int SPI_FREQUENCY = 8_000_000;
+	public static final byte DISPLAY_OFF = (byte) 0xAE;
+	public static final byte DISPLAY_ON = (byte) 0xAF;
 
-	private static final byte DISPLAY_OFF = (byte) 0xAE;
-	private static final byte DISPLAY_ON = (byte) 0xAF;
+	protected final SsdOledCommunicationChannel device;
+	protected final int width;
+	protected final int height;
 
-	protected SsdOledCommunicationChannel device;
-	protected DigitalOutputDevice dcPin;
-	protected DigitalOutputDevice resetPin;
-	protected int width;
-	protected int height;
-	protected byte[] buffer;
 	protected int imageType;
 
-	public SsdOled(int controller, int chipSelect, DigitalOutputDevice dcPin, DigitalOutputDevice resetPin, int width,
-			int height, int imageType) {
-		device = new SsdOledCommunicationChannel.SpiCommunicationChannel(chipSelect, controller, SPI_FREQUENCY);
-
-		this.dcPin = dcPin;
-		this.resetPin = resetPin;
-
+	protected SsdOled(SsdOledCommunicationChannel device,  int width, int height, int imageType) {
+		this.device = device;
 		this.width = width;
 		this.height = height;
 		this.imageType = imageType;
 	}
 
+	/**
+	 * Each device must maintain a <b>static</b> byte buffer of the screen contents.
+	 * @return the screen contents to write out
+	 */
+	protected abstract byte[] getBuffer();
+
 	protected abstract void init();
 
 	protected void reset() {
-		resetPin.setOn(true);
-		SleepUtil.sleepMillis(1);
-		resetPin.setOn(false);
-		SleepUtil.sleepMillis(10);
-		resetPin.setOn(true);
+		device.reset();
 	}
 
 	protected void command(byte... commands) {
-		dcPin.setOn(false);
-		device.write(commands);
+		device.sendCommand(commands);
 	}
 
+
 	protected void data() {
-		dcPin.setOn(true);
-		device.write(buffer);
+		device.sendData(getBuffer());
 	}
 
 	protected void data(int offset, int length) {
-		dcPin.setOn(true);
-		device.write(buffer, offset, length);
+		device.sendData(getBuffer(), offset, length);
 	}
 
 	protected abstract void goTo(int x, int y);
 
-	protected abstract void home();
+	protected void home() {
+		goTo(0,0);
+	}
 
+	/**
+	 * Displays the current buffer contents.
+	 */
 	public void display() {
 		home();
-
 		data();
 	}
 
+	/**
+	 * Fills the buffer with the image and immediately displays it
+	 * @param image the image to display
+	 */
 	public abstract void display(BufferedImage image);
 
 	public void clear() {
-		Arrays.fill(buffer, (byte) 0);
+		Arrays.fill(getBuffer(), (byte) 0);
 		display();
 	}
 
@@ -133,4 +133,65 @@ public abstract class SsdOled implements DeviceInterface {
 	}
 
 	public abstract void invertDisplay(boolean invert);
+
+	/**
+	 * Scales the image to fit. This will scale up or down, depending on the relative sizes.
+	 * <p>
+	 * This <b>DOES NOT</b> display the image.
+	 * </p>
+	 *
+	 * @param image the image to scale
+	 * @return the scaled image
+	 */
+	public BufferedImage scaleImage(BufferedImage image) {
+		BufferedImage showThis = image;
+		if (image.getWidth() != width || image.getHeight() != height) {
+			float imageWd = image.getWidth();
+			float imageHt = image.getHeight();
+			float scale = Math.min(width / imageWd, height / imageHt);
+			int w = (int)Math.floor(imageWd * scale);
+			int y = (int)Math.floor(imageHt * scale);
+			Image scaledInstance = image.getScaledInstance(w, y, Image.SCALE_DEFAULT);
+			showThis = new BufferedImage(w, y, getNativeImageType());
+			showThis.getGraphics().drawImage(scaledInstance, 0, 0, null);
+		}
+		return showThis;
+	}
+
+	/**
+	 * Creates a default font (SERIF, PLAIN) that will fit in the specified number of "lines" with 0 spacing.
+	 *
+	 * @param numberOfLines number of lines
+	 * @return the font
+	 */
+	public Font defaultFont(int numberOfLines) {
+		return fitLines(Font.SANS_SERIF, Font.PLAIN, numberOfLines, 0);
+	}
+
+	/**
+	 * Creates a font of the specified type that will fit on the full display with the specified number of lines,
+	 * with the number of <b>pixels</b> between each line.
+	 *
+	 * @param fontName      name of the font
+	 * @param fontType      font type
+	 * @param numberOfLines number of lines
+	 * @param lineSpacing   number of pixels between lines
+	 * @return the font that can be used to match these parameters
+	 */
+	public Font fitLines(String fontName, int fontType, int numberOfLines, int lineSpacing) {
+		// how big is the font in pixels
+		int pixelsPerLine = height / numberOfLines - lineSpacing;
+		int size = pixelsPerLine + 1;
+		int fontSize = 48;    // TODO this is pretty big, but is it big enough?
+		Font f = null;
+		BufferedImage bufferedImage = new BufferedImage(width, height, getNativeImageType());
+		Graphics2D g = bufferedImage.createGraphics();
+		while (size > pixelsPerLine) {
+			fontSize--;
+			if (fontSize <= 0) throw new IllegalStateException("Font size is 0!");
+			f = new Font(fontName, fontType, fontSize);
+			size = g.getFontMetrics(f).getHeight();
+		}
+		return f;
+	}
 }
