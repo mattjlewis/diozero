@@ -5,7 +5,7 @@ package com.diozero.devices.oled;
  * Organisation: diozero
  * Project:      diozero - Core
  * Filename:     SSD1351.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.devices.oled;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -42,7 +42,7 @@ import com.diozero.api.DigitalOutputDevice;
  * initialisation sequence is pumped to the display to properly configure it.
  * Further control commands can then be called to affect the brightness and
  * other settings.</p>
- * 
+ *
  * <p>Wiring:</p>
  * <pre>
  * GND .... Ground
@@ -53,7 +53,7 @@ import com.diozero.api.DigitalOutputDevice;
  * DC  .... Data/Command Select (GPIO) [22]
  * CS  .... Chip Select (SPI)
  * </pre>
- * 
+ *
  * <p>Links:</p>
  * <ul>
  *  <li><a href="https://www.newhavendisplay.com/app_notes/SSD1351.pdf">Datasheet</a></li>
@@ -95,39 +95,35 @@ public class SSD1351 extends ColourSsdOled {
 	private static final byte HORIZONTAL_SCROLL = (byte) 0x96;
 	private static final byte STOP_SCROLL = (byte) 0x9E;
 	private static final byte START_SCROLL = (byte) 0x9F;
-	
+
 	public SSD1351(int controller, int chipSelect, DigitalOutputDevice dcPin, DigitalOutputDevice resetPin) {
 		// Limit to 5-6-5 image type for now (65k colours)
 		super(controller, chipSelect, dcPin, resetPin, WIDTH, HEIGHT, BufferedImage.TYPE_USHORT_565_RGB);
 	}
-	
+
 	private void commandAndData(byte command, byte... data) {
 		// Single byte command (D/C# = 0)
-		// Multiple byte command (D/C# = 0 for first byte, D/C# = 1 for other bytes) 
-		dcPin.setOn(false);
-		device.write(new byte[] { command });
-		dcPin.setOn(true);
+		// Multiple byte command (D/C# = 0 for first byte, D/C# = 1 for other bytes)
+		device.write(command);
 		device.write(data);
 	}
-	
+
 	@Override
 	protected void data() {
-		dcPin.setOn(true);
-		device.write(buffer);
+		super.data();
 		command(WRITE_RAM_COMMAND);
 	}
-	
+
 	@Override
 	protected void data(int offset, int length) {
-		dcPin.setOn(true);
-		device.write(buffer, offset, length);
+		super.data(offset, length);
 		command(WRITE_RAM_COMMAND);
 	}
-	
+
 	@Override
 	protected void init() {
 		reset();
-		
+
 		// A[7:0]: MCU protection status [reset = 12h]
 		// A[7:0] = 12b, Unlock OLED driver IC MCU interface from entering command [reset]
 		// A[7:0] = 16b, Lock OLED driver IC MCU interface from entering command
@@ -175,13 +171,13 @@ public class SSD1351 extends ColourSsdOled {
 		//  00 pin HiZ, Input disabled
 		//  01 pin HiZ, Input enabled
 		//  10 pin output LOW [reset]
-		//  11 pin output HIGH 
+		//  11 pin output HIGH
 		commandAndData(SET_GPIO, (byte) 0x00);
 		// A[0]=0b, Disable internal VDD regulator (for power save during sleep mode only)
 		// A[0]=1b, Enable internal VDD regulator [reset]
 		// A[7:6]=00b, Select 8-bit parallel interface [reset]
 		// A[7:6]=01b, Select 16-bit parallel interface
-		// A[7:6]=11b, Select 18-bit parallel interface 
+		// A[7:6]=11b, Select 18-bit parallel interface
 		commandAndData(FUNCTION_SELECTION, (byte) 0x01);
 		// A[3:0] Phase 1 period in N DCLK. 1~15 DCLK allowed.
 		// A[7:4] Phase 2 period in N DCLK. 1~15 DCLK allowed.
@@ -198,7 +194,7 @@ public class SSD1351 extends ColourSsdOled {
 		//  0000b reduce output currents for all colors to 1/16
 		//  0001b reduce output currents for all colors to 2/16
 		//  1110b reduce output currents for all colors to 15/16
-		//  1111b no change [reset] 
+		//  1111b no change [reset]
 		commandAndData(MASTER_CONTRAST_CURRENT_CONTROL, (byte) 0x0F);
 		// A[1:0]=00 External VSL [reset]
 		// A[1:0]=01,10,11 are invalid
@@ -208,7 +204,7 @@ public class SSD1351 extends ColourSsdOled {
 		//  0001b 1 DCLKS
 		//  0010b 2 DCLKS
 		//  1000b 8 DCLKS [reset]
-		//  1111b 15 DCLKS 
+		//  1111b 15 DCLKS
 		commandAndData(SET_SECOND_PRECHARGE_PERIOD, (byte) 0x01);
 
 		clear();
@@ -236,7 +232,7 @@ public class SSD1351 extends ColourSsdOled {
 	public void setContrast(byte level) {
 		commandAndData(CONTRAST_COLOUR, level, level, level);
 	}
-	
+
 	@Override
 	public void setContrast(byte red, byte green, byte blue) {
 		commandAndData(CONTRAST_COLOUR, red, green, blue);

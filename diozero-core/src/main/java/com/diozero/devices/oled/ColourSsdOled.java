@@ -5,7 +5,7 @@ package com.diozero.devices.oled;
  * Organisation: diozero
  * Project:      diozero - Core
  * Filename:     ColourSsdOled.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.devices.oled;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -38,7 +38,10 @@ import java.awt.image.DataBufferUShort;
 import org.tinylog.Logger;
 
 import com.diozero.api.DigitalOutputDevice;
+import com.diozero.devices.oled.SsdOledCommunicationChannel.SpiCommunicationChannel;
 import com.diozero.util.ColourUtil;
+
+import static com.diozero.devices.oled.SsdOledCommunicationChannel.SpiCommunicationChannel.SPI_FREQUENCY;
 
 public abstract class ColourSsdOled extends SsdOled {
 	private static final int RED_BITS = 5;
@@ -48,19 +51,23 @@ public abstract class ColourSsdOled extends SsdOled {
 	public static final byte MAX_GREEN = (byte) (Math.pow(2, GREEN_BITS) - 1);
 	public static final byte MAX_BLUE = (byte) (Math.pow(2, BLUE_BITS) - 1);
 
-	public ColourSsdOled(int controller, int chipSelect, DigitalOutputDevice dcPin, DigitalOutputDevice resetPin,
-			int width, int height, int imageType) {
-		super(controller, chipSelect, dcPin, resetPin, width, height, imageType);
+	private final byte[] buffer;
 
+	public ColourSsdOled(int controller, int chipSelect, DigitalOutputDevice dcPin, DigitalOutputDevice resetPin,
+						 int width, int height, int imageType) {
+		this(new SpiCommunicationChannel(controller, chipSelect, SPI_FREQUENCY, dcPin, resetPin), width, height, imageType);
+	}
+
+	public ColourSsdOled(SsdOledCommunicationChannel commChannel, int width, int height, int imageType) {
+		super(commChannel, width, height, imageType);
 		// 16 bit colour hence 2x
 		buffer = new byte[2 * width * height];
-
 		init();
 	}
 
 	@Override
-	protected void home() {
-		goTo(0, 0);
+	protected byte[] getBuffer() {
+		return buffer;
 	}
 
 	@Override
