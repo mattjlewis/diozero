@@ -559,7 +559,7 @@ public class I2CDevice implements I2CDeviceInterface {
 	 */
 	public void writeBytes(ByteBuffer buffer) throws RuntimeIOException {
 		byte[] tx_buf = new byte[buffer.remaining()];
-		buffer.put(tx_buf);
+		buffer.get(tx_buf);
 		writeBytes(tx_buf);
 	}
 
