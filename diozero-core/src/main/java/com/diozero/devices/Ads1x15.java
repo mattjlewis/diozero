@@ -464,8 +464,22 @@ public class Ads1x15 extends AbstractDeviceFactory implements AnalogInputDeviceF
 		this.dataRateMask = dataRateMask;
 	}
 
+	void waitUntilReady() {
+
+		Logger.trace("waitUntilReady hit");
+		byte[] data;
+		int i = 0;
+		while (true) {
+			data = device.readI2CBlockDataByteArray(ADDR_POINTER_CONFIG, 2);
+			if ((data[0] & 0x80) != 0) break;
+			SleepUtil.sleepMillis(10);
+			i++;
+		}
+		Logger.trace("waitUntilReady done {}", i);
+	}
+
 	public float getValue(int adcNumber) {
-		Logger.debug("Reading channel {}, mode={}", Integer.valueOf(adcNumber), mode);
+		Logger.debug("Reading channel {}, mode={}", adcNumber, mode);
 
 		// TODO Protect against concurrent reads
 
@@ -473,11 +487,16 @@ public class Ads1x15 extends AbstractDeviceFactory implements AnalogInputDeviceF
 			setConfig(adcNumber);
 
 			SleepUtil.sleepMillis(dataRateSleepMillis);
+
+			waitUntilReady();
 		} else if (readyPin != null) {
 			return lastResult;
 		}
 
-		return RangeUtil.map(readConversionData(adcNumber), 0, Short.MAX_VALUE, 0, 1f);
+		short conversionData = readConversionData(adcNumber);
+		float rv = RangeUtil.map(conversionData, 0, 0x8000, 0, 1f);
+		Logger.trace ("mapped {} to {}", conversionData, rv);
+		return rv;
 	}
 
 	protected void setConfig(int adcNumber) {
@@ -495,8 +514,11 @@ public class Ads1x15 extends AbstractDeviceFactory implements AnalogInputDeviceF
 		// short value = (short) ((data[0] & 0xff) << 8 | (data[1] & 0xff));
 		short value = device.readShort(ADDR_POINTER_CONV);
 
+		Logger.trace("readConversionData: 0x{}, {}", Integer.toHexString(value), value);
+
 		if (model == Model.ADS1015) {
-			value >>= 4;
+			value &= 0xfff0;  // make sure the last bits are zeroed
+			Logger.trace("readConversionData masked: 0x{}, {}", Integer.toHexString(value), value);
 		}
 
 		return value;
