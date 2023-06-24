@@ -314,6 +314,9 @@ public class Ads1x15 extends AbstractDeviceFactory implements AnalogInputDeviceF
 	private DigitalInputDevice readyPin;
 	private float lastResult;
 
+	// for tracing
+	private boolean amTracing = false;
+
 	/**
 	 * 
 	 * @param pgaConfig Programmable Gain Amplifier configuration - make sure this
@@ -353,6 +356,12 @@ public class Ads1x15 extends AbstractDeviceFactory implements AnalogInputDeviceF
 		boardPinInfo = new Ads1x15BoardPinInfo(model, pgaConfig.getVoltage());
 		device = I2CDevice.builder(address.getValue()).setController(controller).setByteOrder(ByteOrder.BIG_ENDIAN)
 				.build();
+
+		Logger.trace("{}", () -> {
+			// if this actually gets invoked, then we are tracing. remember that.
+			amTracing = true;
+			return getClass().getName() + " is tracing";
+		});
 	}
 
 	@Override
@@ -464,18 +473,29 @@ public class Ads1x15 extends AbstractDeviceFactory implements AnalogInputDeviceF
 		this.dataRateMask = dataRateMask;
 	}
 
-	void waitUntilReady() {
+	public void waitUntilReady() {
+		long t0 = 0;
 
-		Logger.trace("waitUntilReady hit");
-		byte[] data;
+		if (amTracing) { // only want to hit currentTimeMillis() if necessary
+			Logger.trace("waitUntilReady hit");
+			t0 = System.currentTimeMillis();
+		}
+
+		SleepUtil.sleepMillis(dataRateSleepMillis);
+		int incrementalSleepMillis = Math.max(dataRateSleepMillis / 20, 1);
+
 		int i = 0;
 		while (true) {
-			data = device.readI2CBlockDataByteArray(ADDR_POINTER_CONFIG, 2);
-			if ((data[0] & 0x80) != 0) break;
-			SleepUtil.sleepMillis(10);
+			short data = device.readShort(ADDR_POINTER_CONFIG);
+			if ((data & 0x8000) != 0) break;
+			SleepUtil.sleepMillis(incrementalSleepMillis);
 			i++;
 		}
-		Logger.trace("waitUntilReady done {}", i);
+
+		if (amTracing) {
+			long t1 = System.currentTimeMillis();
+			Logger.trace("waitUntilReady done, took {} ms, {} iterations", t1 - t0, i);
+		}
 	}
 
 	public float getValue(int adcNumber) {
@@ -485,16 +505,14 @@ public class Ads1x15 extends AbstractDeviceFactory implements AnalogInputDeviceF
 
 		if (mode == Mode.SINGLE) {
 			setConfig(adcNumber);
-
-			SleepUtil.sleepMillis(dataRateSleepMillis);
-
 			waitUntilReady();
 		} else if (readyPin != null) {
 			return lastResult;
 		}
 
 		short conversionData = readConversionData(adcNumber);
-		float rv = RangeUtil.map(conversionData, 0, 0x8000, 0, 1f);
+		// need to set constrain to false: we *could* get a negative if doing differential
+		float rv = RangeUtil.map(conversionData, 0, 0x8000, 0, 1f, false);
 		Logger.trace ("mapped {} to {}", conversionData, rv);
 		return rv;
 	}
@@ -505,8 +523,8 @@ public class Ads1x15 extends AbstractDeviceFactory implements AnalogInputDeviceF
 		byte config_lsb = (byte) (dataRateMask | comparatorMode.getMask() | comparatorPolarity.getMask()
 				| (latchingComparator ? CONFIG_LSB_COMP_LATCHING : 0) | comparatorQueue.getMask());
 		device.writeI2CBlockData(ADDR_POINTER_CONFIG, config_msb, config_lsb);
-		Logger.trace("msb: 0x{}, lsb: 0x{}", Integer.toHexString(config_msb & 0xff),
-				Integer.toHexString(config_lsb & 0xff));
+		Logger.trace("setConfig: 0x{} 0x{}", () -> Integer.toHexString(config_msb & 0xff),
+			() -> Integer.toHexString(config_lsb & 0xff));
 	}
 
 	private short readConversionData(int adcNumber) {
@@ -514,12 +532,7 @@ public class Ads1x15 extends AbstractDeviceFactory implements AnalogInputDeviceF
 		// short value = (short) ((data[0] & 0xff) << 8 | (data[1] & 0xff));
 		short value = device.readShort(ADDR_POINTER_CONV);
 
-		Logger.trace("readConversionData: 0x{}, {}", Integer.toHexString(value), value);
-
-		if (model == Model.ADS1015) {
-			value &= 0xfff0;  // make sure the last bits are zeroed
-			Logger.trace("readConversionData masked: 0x{}, {}", Integer.toHexString(value), value);
-		}
+		Logger.trace("readConversionData: 0x{}, {} dec", () -> Integer.toHexString(value), () -> value);
 
 		return value;
 	}
@@ -546,7 +559,7 @@ public class Ads1x15 extends AbstractDeviceFactory implements AnalogInputDeviceF
 
 		@Override
 		protected void closeDevice() {
-			Logger.trace("closeDevice() {}", getKey());
+			Logger.trace("closeDevice() {}", () -> getKey());
 			ads1x15.setConfig(adcNumber);
 		}
 
