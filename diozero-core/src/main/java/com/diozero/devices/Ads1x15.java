@@ -357,11 +357,9 @@ public class Ads1x15 extends AbstractDeviceFactory implements AnalogInputDeviceF
 		device = I2CDevice.builder(address.getValue()).setController(controller).setByteOrder(ByteOrder.BIG_ENDIAN)
 				.build();
 
-		Logger.trace("{}", () -> {
-			// if this actually gets invoked, then we are tracing. remember that.
-			amTracing = true;
-			return getClass().getName() + " is tracing";
-		});
+		amTracing = Logger.isTraceEnabled();
+
+		Logger.trace("{} is tracing", getClass().getName());
 	}
 
 	@Override
