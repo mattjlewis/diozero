@@ -358,8 +358,6 @@ public class Ads1x15 extends AbstractDeviceFactory implements AnalogInputDeviceF
 				.build();
 
 		amTracing = Logger.isTraceEnabled();
-
-		Logger.trace("{} is tracing", getClass().getName());
 	}
 
 	@Override
@@ -521,8 +519,8 @@ public class Ads1x15 extends AbstractDeviceFactory implements AnalogInputDeviceF
 		byte config_lsb = (byte) (dataRateMask | comparatorMode.getMask() | comparatorPolarity.getMask()
 				| (latchingComparator ? CONFIG_LSB_COMP_LATCHING : 0) | comparatorQueue.getMask());
 		device.writeI2CBlockData(ADDR_POINTER_CONFIG, config_msb, config_lsb);
-		Logger.trace("setConfig: 0x{} 0x{}", () -> Integer.toHexString(config_msb & 0xff),
-			() -> Integer.toHexString(config_lsb & 0xff));
+		Logger.trace("setConfig: 0x{} 0x{}", Integer.toHexString(config_msb & 0xff),
+			Integer.toHexString(config_lsb & 0xff));
 	}
 
 	private short readConversionData(int adcNumber) {
@@ -530,7 +528,7 @@ public class Ads1x15 extends AbstractDeviceFactory implements AnalogInputDeviceF
 		// short value = (short) ((data[0] & 0xff) << 8 | (data[1] & 0xff));
 		short value = device.readShort(ADDR_POINTER_CONV);
 
-		Logger.trace("readConversionData: 0x{}, {} dec", () -> Integer.toHexString(value), () -> value);
+		Logger.trace("readConversionData: 0x{}, {} dec", Integer.toHexString(value), value);
 
 		return value;
 	}
@@ -557,7 +555,7 @@ public class Ads1x15 extends AbstractDeviceFactory implements AnalogInputDeviceF
 
 		@Override
 		protected void closeDevice() {
-			Logger.trace("closeDevice() {}", () -> getKey());
+			Logger.trace("closeDevice() {}", getKey());
 			ads1x15.setConfig(adcNumber);
 		}
 
