@@ -1,4 +1,4 @@
-package com.diozero.internal.provider.firmata.adapter.example;
+package com.diozero.internal.provider.firmata.example;
 
 /*-
  * #%L

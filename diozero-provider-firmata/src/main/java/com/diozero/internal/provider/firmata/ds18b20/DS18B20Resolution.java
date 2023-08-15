@@ -1,4 +1,4 @@
-package com.diozero.internal.provider.firmata.adapter.example;
+package com.diozero.internal.provider.firmata.ds18b20;
 
 public enum DS18B20Resolution {
 	// Actually 93.75ms, 187.5ms, 375ms, 750ms

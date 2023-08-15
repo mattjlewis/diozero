@@ -4,7 +4,7 @@ package com.diozero.devices;
  * #%L
  * Organisation: diozero
  * Project:      diozero - Core
- * Filename:     W1ThermSensorTest.java
+ * Filename:     OneWireThermometerTest.java
  * 
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
@@ -31,7 +31,6 @@ package com.diozero.devices;
  * #L%
  */
 
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,36 +41,36 @@ import org.junit.jupiter.api.Test;
 import org.tinylog.Logger;
 
 @SuppressWarnings("static-method")
-public class W1ThermSensorTest {
-	private static Map<String, W1ThermSensor.Type> expectedTypes;
+public class OneWireThermometerTest {
+	private static Map<String, OneWireDeviceType> expectedTypes;
 	private static Map<String, Double> expectedTemperatures;
-	
+
 	@BeforeAll
 	public static void beforeAll() {
 		expectedTypes = new HashMap<>();
 		expectedTemperatures = new HashMap<>();
-		
-		expectedTypes.put("7894732432", W1ThermSensor.Type.DS18S20);
+
+		expectedTypes.put("7894732432", OneWireDeviceType.DS18S20);
 		expectedTemperatures.put("7894732432", Double.valueOf(21.187));
-		
-		expectedTypes.put("840932324", W1ThermSensor.Type.DS18S20);
-		
-		expectedTypes.put("4832984", W1ThermSensor.Type.DS1822);
-		
-		expectedTypes.put("02157190f0ff", W1ThermSensor.Type.DS18B20);
+
+		expectedTypes.put("840932324", OneWireDeviceType.DS18S20);
+
+		expectedTypes.put("4832984", OneWireDeviceType.DS1822);
+
+		expectedTypes.put("02157190f0ff", OneWireDeviceType.DS18B20);
 		expectedTemperatures.put("02157190f0ff", Double.valueOf(32.75));
-		
-		expectedTypes.put("5252532", W1ThermSensor.Type.MAX31850K);
+
+		expectedTypes.put("5252532", OneWireDeviceType.MAX31850K);
 	}
-	
+
 	@Test
 	public void test() {
-		System.out.println(W1ThermSensor.Type.valueOf(W1ThermSensor.Type.DS1822.getId()));
-		System.out.println(W1ThermSensor.Type.valueOf(W1ThermSensor.Type.DS1822.name()));
-		
-		List<W1ThermSensor> sensors = W1ThermSensor.getAvailableSensors("src/test/resources/devices");
+		System.out.println(OneWireDeviceType.valueOf(OneWireDeviceType.DS1822.getId()));
+		System.out.println(OneWireDeviceType.valueOf(OneWireDeviceType.DS1822.name()));
+
+		List<OneWireThermometer> sensors = OneWireThermometer.getAvailableSensors("src/test/resources/devices");
 		Assertions.assertEquals(5, sensors.size());
-		for (W1ThermSensor sensor : sensors) {
+		for (OneWireThermometer sensor : sensors) {
 			Logger.debug("Serial number=" + sensor.getSerialNumber());
 			Logger.debug("Type=" + sensor.getType());
 			Assertions.assertEquals(expectedTypes.get(sensor.getSerialNumber()), sensor.getType());

@@ -1,4 +1,4 @@
-package com.diozero.internal.provider.firmata.adapter.example;
+package com.diozero.internal.provider.firmata.example;
 
 public interface FirmataTestConstants {
 	String SERIAL_PORT_PROP = "diozero.firmata.serialPort";

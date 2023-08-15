@@ -105,8 +105,7 @@ public class RK3399MmapGpio implements MmapGpioInterface {
 	private static final long[] GPIOMEM_OFFSETS = { 0xff72_0000L, 0xff73_0000L, 0xff78_0000L, 0xff78_8000L,
 			0xff79_0000L };
 
-	private static final int MEM_INFO = 1024;
-	private static final int BLOCK_SIZE = 4 * MEM_INFO;
+	private static final int BLOCK_SIZE = 4 * 1024;
 
 	// Data register
 	private static final int GPIO_SWPORTA_DR = 0x0000 / 4;

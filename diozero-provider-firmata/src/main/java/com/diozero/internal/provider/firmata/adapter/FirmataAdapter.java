@@ -55,6 +55,7 @@ import org.tinylog.Logger;
 import com.diozero.api.RuntimeIOException;
 import com.diozero.util.Crc;
 import com.diozero.util.DiozeroScheduler;
+import com.diozero.util.Hex;
 
 public class FirmataAdapter implements FirmataProtocol, Runnable, AutoCloseable {
 	private static final int I2C_NO_REGISTER = 0;
@@ -434,6 +435,39 @@ public class FirmataAdapter implements FirmataProtocol, Runnable, AutoCloseable 
 		sendMessage(buffer);
 	}
 
+	public List<byte[]> detectOneWireDevices(int oneWirePin) {
+		// For some reason this doesn't set the pin mode to one-wire
+		oneWireConfig(oneWirePin, false);
+		setPinMode(oneWirePin, PinMode.ONEWIRE);
+
+		List<byte[]> devices = new ArrayList<>();
+
+		// Search for one-wire devices attached to this pin...
+		OneWireSearchResponse search = oneWireSearch(oneWirePin, false);
+		Logger.debug("Got {} addresses on pin #{}", Integer.valueOf(search.getAddresses().length),
+				Integer.valueOf(oneWirePin));
+		for (byte[] address : search.getAddresses()) {
+			byte[] data = new byte[7];
+			System.arraycopy(address, 0, data, 0, data.length);
+
+			// Each device has a unique 64-bit serial code, first byte is the family, next
+			// 48 bits are the serial number, final byte is the CRC
+			long serial_number = 0;
+			for (int i = 6; i > 0; i--) {
+				serial_number <<= 8;
+				serial_number += address[i] & 0xff;
+			}
+			int crc = Crc.crc8(Crc.CRC8_MAXIM, data);
+			Logger.debug("Detected device with address: {}, serial_number: {}, CRC: {} ({})",
+					Hex.encodeHexString(data, 1, ':'), Long.valueOf(serial_number), Integer.valueOf(crc),
+					crc == (address[7] & 0xff) ? "Correct" : "Incorrect");
+
+			devices.add(address);
+		}
+
+		return devices;
+	}
+
 	public OneWireSearchResponse oneWireSearch(int gpio, boolean alarms) throws RuntimeIOException {
 		byte[] buffer = new byte[5];
 		int index = 0;
@@ -465,6 +499,28 @@ public class FirmataAdapter implements FirmataProtocol, Runnable, AutoCloseable 
 		buffer[index++] = END_SYSEX;
 
 		sendMessage(buffer);
+	}
+
+	public void oneWireDeviceWrite(int gpio, boolean reset, byte[] address, byte[] data) throws RuntimeIOException {
+		oneWireCommands(gpio, reset, false, Optional.of(address), OptionalInt.empty(), OptionalInt.empty(),
+				OptionalInt.empty(), Optional.of(data));
+	}
+
+	public OneWireReadResponse oneWireDeviceReadRegister(int gpio, boolean reset, byte[] address,
+			OptionalInt delayBefore, byte register, int numBytes, int correlationId) throws RuntimeIOException {
+		return oneWireCommands(gpio, reset, false, Optional.of(address), OptionalInt.of(numBytes),
+				OptionalInt.of(correlationId), delayBefore, Optional.of(new byte[] { register })).get();
+	}
+
+	public void oneWireDeviceWriteRegister(int gpio, boolean reset, byte[] address, byte register, byte... data)
+			throws RuntimeIOException {
+		byte[] bytes = new byte[1 + (data == null ? 0 : data.length)];
+		bytes[0] = register;
+		if (data != null && data.length > 0) {
+			System.arraycopy(data, 0, bytes, 1, data.length);
+		}
+		oneWireCommands(gpio, reset, false, Optional.of(address), OptionalInt.empty(), OptionalInt.empty(),
+				OptionalInt.empty(), Optional.of(bytes));
 	}
 
 	public void oneWireReset(int gpio) throws RuntimeIOException {

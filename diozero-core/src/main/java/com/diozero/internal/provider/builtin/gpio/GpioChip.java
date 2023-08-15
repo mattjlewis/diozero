@@ -46,6 +46,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.tinylog.Logger;
@@ -64,7 +65,7 @@ public class GpioChip extends GpioChipInfo implements AutoCloseable, GpioLineEve
 				.filter(p -> p.getFileName().toString().startsWith("gpiochip"))
 				.map(p -> NativeGpioDevice.openChip(p.toString())) //
 				.filter(p -> p != null) // openChip will return null if it is unable to open the chip
-				.collect(Collectors.toMap(GpioChip::getChipId, chip -> chip));
+				.collect(Collectors.toMap(GpioChip::getChipId, Function.identity()));
 
 		if (chips.isEmpty()) {
 			Logger.error("Unable to open any gpiochip files in /dev");

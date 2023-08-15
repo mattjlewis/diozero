@@ -35,14 +35,14 @@ import java.util.List;
 
 import org.tinylog.Logger;
 
-import com.diozero.devices.W1ThermSensor;
+import com.diozero.devices.OneWireThermometer;
 
 /**
- * To run: 
+ * To run:
  */
-public class W1ThermSensorApp {
+public class OneWireThermometerApp {
 	public static void main(String[] args) {
-		List<W1ThermSensor> sensors = W1ThermSensor.getAvailableSensors();
+		List<OneWireThermometer> sensors = OneWireThermometer.getAvailableSensors();
 		if (sensors.isEmpty()) {
 			Logger.warn("No W1-therm sensors detected");
 			return;
@@ -50,9 +50,9 @@ public class W1ThermSensorApp {
 		Logger.info("Detected " + sensors.size() + " sensors");
 		test(sensors.get(0));
 	}
-	
-	private static void test(W1ThermSensor sensor) {
-		for (int i=0; i<10; i++) {
+
+	private static void test(OneWireThermometer sensor) {
+		for (int i = 0; i < 10; i++) {
 			Logger.info("Serial num=" + sensor.getSerialNumber() + ", temp=" + sensor.getTemperature());
 		}
 	}

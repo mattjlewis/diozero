@@ -213,9 +213,10 @@ public class GenericLinuxArmBoardInfo extends BoardInfo {
 			return;
 		}
 
+		// CSV: Header, GPIO#, Name, Physical Pin, Chip, Line, Modes
 		addGpioPinInfo(parts[1].trim(), Integer.parseInt(parts[2].trim()), parts[3].trim(),
-				Integer.parseInt(parts[4].trim()), parseModes(parts[5].trim()), Integer.parseInt(parts[6].trim()),
-				Integer.parseInt(parts[7].trim()));
+				Integer.parseInt(parts[4].trim()), parseModes(parts[7].trim()), Integer.parseInt(parts[5].trim()),
+				Integer.parseInt(parts[6].trim()));
 	}
 
 	private void loadPwmPinInfo(String[] parts) {
@@ -223,9 +224,11 @@ public class GenericLinuxArmBoardInfo extends BoardInfo {
 			Logger.warn("Invalid PWM def line '{}'", String.join(",", parts));
 			return;
 		}
+
+		// CSV: Header, GPIO#, Name, Physical Pin, Chip, Line, PWM Chip, PWM Num, Modes
 		addPwmPinInfo(parts[1].trim(), Integer.parseInt(parts[2].trim()), parts[3].trim(),
-				Integer.parseInt(parts[4].trim()), Integer.parseInt(parts[5].trim()), Integer.parseInt(parts[6].trim()),
-				parseModes(parts[7].trim()), Integer.parseInt(parts[8].trim()), Integer.parseInt(parts[9].trim()));
+				Integer.parseInt(parts[4].trim()), Integer.parseInt(parts[7].trim()), Integer.parseInt(parts[8].trim()),
+				parseModes(parts[9].trim()), Integer.parseInt(parts[5].trim()), Integer.parseInt(parts[6].trim()));
 	}
 
 	private void loadAdcPinInfo(String[] parts) {
