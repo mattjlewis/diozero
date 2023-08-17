@@ -44,7 +44,7 @@ import com.diozero.api.ServoTrim;
  * is <i>intended</i> to prevent the servo from "jumping" to the default position when the servo is first powered on.
  * </p>
  */
-public class ServoController {
+public class ServoController implements AutoCloseable {
     private final PCA9685 pwmController;
     private final ServoDevice[] servos = new ServoDevice[16];
 
@@ -77,6 +77,11 @@ public class ServoController {
             instance = new ServoController();
         }
         return instance;
+    }
+
+    @Override
+    public void close() throws Exception {
+        pwmController.close();
     }
 
     /**
