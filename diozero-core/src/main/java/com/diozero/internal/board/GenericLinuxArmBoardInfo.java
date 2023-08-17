@@ -139,8 +139,6 @@ public class GenericLinuxArmBoardInfo extends BoardInfo {
 							break;
 						}
 
-						line = line.trim();
-
 						// Strip comments
 						int index = line.indexOf("#");
 						if (index != -1) {
@@ -177,7 +175,7 @@ public class GenericLinuxArmBoardInfo extends BoardInfo {
 								Logger.warn("Unexpected entry '{}' in line '{}'", parts[0].trim(), line);
 							}
 						} catch (IllegalArgumentException e) {
-							Logger.warn("Illegal argument: {} - line: ", e.getMessage(), line);
+							Logger.warn("Illegal argument: {} - line: '{}'", e.getMessage(), line);
 						}
 					}
 
@@ -213,7 +211,6 @@ public class GenericLinuxArmBoardInfo extends BoardInfo {
 			return;
 		}
 
-		// CSV: Header, GPIO#, Name, Physical Pin, Chip, Line, Modes
 		addGpioPinInfo(parts[1].trim(), Integer.parseInt(parts[2].trim()), parts[3].trim(),
 				Integer.parseInt(parts[4].trim()), parseModes(parts[7].trim()), Integer.parseInt(parts[5].trim()),
 				Integer.parseInt(parts[6].trim()));
