@@ -54,8 +54,8 @@ import com.diozero.util.SleepUtil;
 
 /**
  * PCA9685 I2C-bus controlled 16-channel 12-bit PWM controller as used in the
- * popular Adafruit PWM add-on board Datasheet:
- * http://www.nxp.com/documents/data_sheet/PCA9685.pdf
+ * popular Adafruit PWM add-on board:
+ * <a href="http://www.nxp.com/documents/data_sheet/PCA9685.pdf">Datasheet</a>
  */
 @SuppressWarnings("unused")
 public class PCA9685 extends AbstractDeviceFactory
@@ -113,11 +113,11 @@ public class PCA9685 extends AbstractDeviceFactory
 	private static final int MAX_PWM_FREQUENCY = 1000;
 	public static final int DEFAULT_PWM_FREQUENCY = 50;
 
-	private I2CDevice i2cDevice;
+	private final I2CDevice i2cDevice;
 	private String keyPrefix;
 	private int boardPwmFrequency = DEFAULT_PWM_FREQUENCY;
-	private int periodUs = 1_000_000 / DEFAULT_PWM_FREQUENCY;
-	private BoardPinInfo boardPinInfo;
+	private double periodUs = 1_000_000.0 / DEFAULT_PWM_FREQUENCY;
+	private final BoardPinInfo boardPinInfo;
 
 	public PCA9685() throws RuntimeIOException {
 		this(I2CConstants.CONTROLLER_1, DEFAULT_ADDRESS, DEFAULT_PWM_FREQUENCY);
@@ -165,15 +165,15 @@ public class PCA9685 extends AbstractDeviceFactory
 		float prescale_flt = (((float) CLOCK_FREQ) / RANGE / pwmFrequency) - 1;
 		int prescale_int = Math.round(prescale_flt);
 		Logger.debug("Setting PWM frequency to {} Hz, float pre-scale: {}, int prescale {}",
-				Integer.valueOf(pwmFrequency), String.format("%.2f", Float.valueOf(prescale_flt)),
-				Integer.valueOf(prescale_int));
+					 pwmFrequency, String.format("%.2f", prescale_flt),
+					 prescale_int);
 
 		byte oldmode = i2cDevice.readByteData(MODE1);
 		i2cDevice.writeByteData(MODE1, (byte) ((oldmode & 0x7F) | SLEEP_MASK)); // Enter low power mode (set the sleep
 																				// bit)
 		i2cDevice.writeByteData(PRESCALE, (byte) (prescale_int));
 		boardPwmFrequency = pwmFrequency;
-		periodUs = 1_000_000 / pwmFrequency;
+		periodUs = 1_000_000.0 / pwmFrequency;
 		i2cDevice.writeByteData(MODE1, oldmode); // Restore the previous mode1 value
 		SleepUtil.sleepMillis(1); // Wait min 500us for the oscillator to stabilise
 		i2cDevice.writeByteData(MODE1, (byte) (oldmode | RESTART_MASK)); // Set restart enabled
@@ -190,7 +190,7 @@ public class PCA9685 extends AbstractDeviceFactory
 		short off_h = i2cDevice.readUByte(LED0_OFF_H + 4 * channel);
 		int off = (off_h << 8) | off_l;
 
-		Logger.debug("channel={}, on={}, off={}", Integer.valueOf(channel), Integer.valueOf(on), Integer.valueOf(off));
+		Logger.debug("channel={}, on={}, off={}", channel, on, off);
 
 		return new int[] { on, off };
 	}
@@ -253,7 +253,7 @@ public class PCA9685 extends AbstractDeviceFactory
 		// Total must be < 4096
 		if (on + off >= RANGE) {
 			throw new IllegalArgumentException(String.format("Error: on (%d) + off (%d) must be < %d",
-					Integer.valueOf(on), Integer.valueOf(off), Integer.valueOf(RANGE)));
+															 on, off, RANGE));
 		}
 	}
 
@@ -300,7 +300,7 @@ public class PCA9685 extends AbstractDeviceFactory
 	}
 
 	public void closeChannel(int channel) throws RuntimeIOException {
-		Logger.trace("closeChannel({})", Integer.valueOf(channel));
+		Logger.trace("closeChannel({})", channel);
 		setPwm(channel, 0, 0);
 	}
 
@@ -314,7 +314,7 @@ public class PCA9685 extends AbstractDeviceFactory
 					"Specified PWM frequency ({}) is different to that configured for the board ({})"
 							+ "; this device has a common PWM frequency that is used for all outputs"
 							+ " - the requested frequency will be ignored",
-					Integer.valueOf(pwmFrequency), Integer.valueOf(boardPwmFrequency));
+					pwmFrequency, boardPwmFrequency);
 		}
 		return new PCA9685ServoOrPwmOutputDevice(this, key, DeviceMode.PWM_OUTPUT, pinInfo.getDeviceNumber(),
 				initialValue);
@@ -330,10 +330,10 @@ public class PCA9685 extends AbstractDeviceFactory
 					"Specified Servo frequency ({}) is different to that configured for the board ({})"
 							+ "; this device has a common PWM frequency that is used for all outputs"
 							+ " - the requested frequency will be ignored",
-					Integer.valueOf(frequency), Integer.valueOf(boardPwmFrequency));
+					frequency, boardPwmFrequency);
 		}
 		return new PCA9685ServoOrPwmOutputDevice(this, key, DeviceMode.SERVO, pinInfo.getDeviceNumber(),
-				initialPulseWidthUs / (float) periodUs);
+												 (float)(initialPulseWidthUs /  periodUs));
 	}
 
 	/**
@@ -359,12 +359,12 @@ public class PCA9685 extends AbstractDeviceFactory
 		if (value < 0 || value > 1) {
 			throw new IllegalArgumentException("PWM value must 0..1, you requested " + value);
 		}
-		int off = (int) Math.floor(value * RANGE);
+		int off = Math.round(value * RANGE);
 		setPwm(channel, 0, off);
 	}
 
 	public int getDutyUs(int channel) {
-		return Math.round(getValue(channel) * periodUs);
+		return (int)Math.round(getValue(channel) * periodUs);
 	}
 
 	/**
@@ -380,10 +380,12 @@ public class PCA9685 extends AbstractDeviceFactory
 	public void setDutyUs(int channel, int dutyUs) throws RuntimeIOException {
 		// TODO Bounds checking
 
-		int off = (int) Math.floor(((double) dutyUs / (double) periodUs) * RANGE);
-		Logger.debug("Requested duty value: {}, Scale: {} microseconds per bit, Off: {}",
-				String.format("%.2f", Double.valueOf(dutyUs)),
-				String.format("%.4f", Double.valueOf(periodUs / (double) RANGE)), Integer.valueOf(off));
+		int off = (int)Math.round((dutyUs / periodUs) * RANGE);
+		if (Logger.isDebugEnabled()) {
+			Logger.debug("Requested duty value: {}, Scale: {} microseconds per bit, Off: {}",
+						 String.format("%.2f", (double)dutyUs),
+						 String.format("%.4f", periodUs / RANGE), off);
+		}
 
 		setPwm(channel, 0, off);
 	}
@@ -426,9 +428,9 @@ public class PCA9685 extends AbstractDeviceFactory
 
 	private static class PCA9685ServoOrPwmOutputDevice extends AbstractDevice
 			implements InternalPwmOutputDeviceInterface, InternalServoDeviceInterface {
-		private PCA9685 pca9685;
-		private DeviceMode mode;
-		private int channel;
+		private final PCA9685 pca9685;
+		private final DeviceMode mode;
+		private final int channel;
 
 		public PCA9685ServoOrPwmOutputDevice(PCA9685 pca9685, String key, DeviceMode mode, int channel,
 				float initialValue) {
