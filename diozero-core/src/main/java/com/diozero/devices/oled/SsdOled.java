@@ -92,7 +92,15 @@ public abstract class SsdOled implements DeviceInterface {
 	/**
 	 * Displays the current buffer contents.
 	 */
+	@Deprecated
 	public void display() {
+		show();
+	}
+
+	/**
+	 * Displays the current buffer contents.
+	 */
+	public void show() {
 		home();
 		data();
 	}
