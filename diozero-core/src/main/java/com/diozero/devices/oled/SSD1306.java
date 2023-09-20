@@ -297,7 +297,7 @@ public class SSD1306 extends SsdOled {
 			}
 		}
 
-		display();
+		show();
 	}
 
 	public void setPixel(int x, int y, boolean on) {

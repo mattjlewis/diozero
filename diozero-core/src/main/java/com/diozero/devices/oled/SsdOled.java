@@ -113,7 +113,7 @@ public abstract class SsdOled implements DeviceInterface {
 
 	public void clear() {
 		Arrays.fill(getBuffer(), (byte) 0);
-		display();
+		show();
 	}
 
 	public int getWidth() {

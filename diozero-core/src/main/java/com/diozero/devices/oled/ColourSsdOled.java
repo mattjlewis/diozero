@@ -95,7 +95,7 @@ public abstract class ColourSsdOled extends SsdOled {
 			buffer[2 * i + 1] = (byte) (image_data[i] & 0xff);
 		}
 
-		display();
+		show();
 	}
 
 	public void setPixel(int x, int y, byte red, byte green, byte blue, boolean display) {
