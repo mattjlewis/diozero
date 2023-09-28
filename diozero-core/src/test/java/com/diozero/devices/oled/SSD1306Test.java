@@ -137,7 +137,7 @@ class SSD1306Test {
         display.setPixel(0,0,true);
         display.setPixel(64,16,true);
         display.setPixel(127, 31, true);
-        display.display();
+        display.show();
 
         assertArrayEquals(dataExpected, fromBuffer());
     }
