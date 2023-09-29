@@ -57,6 +57,9 @@ import com.diozero.sbc.LocalSystemInfo;
  * <a href="https://github.com/AndrewFromMelbourne/raspberry_pi_revision">this c
  * library</a>. See also <a href="http://elinux.org/RPi_HardwareHistory">this
  * table of revisions</a>.
+ * 
+ * https://www.raspberrypi.com/documentation/computers/raspberry-pi.html#raspberry-pi-revision-codes
+ * https://github.com/gpiozero/gpiozero/blob/master/gpiozero/pins/pi.py
  */
 public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 	public static final String MAKE = "raspberrypi";
@@ -69,7 +72,7 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 	public static final String MODEL_B_PLUS = "B+";
 	public static final String MODEL_2B = "2B";
 	public static final String MODEL_ALPHA = "Alpha";
-	public static final String COMPUTE_MODULE = "CM";
+	public static final String COMPUTE_MODULE_1 = "CM";
 	public static final String MODEL_3B = "3B";
 	public static final String MODEL_ZERO = "Zero";
 	public static final String COMPUTE_MODULE_3 = "CM3";
@@ -81,6 +84,8 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 	public static final String MODEL_4B = "4B";
 	public static final String MODEL_400 = "400";
 	public static final String COMPUTE_MODULE_4 = "CM4";
+	public static final String COMPUTE_MODULE_4S = "CM4S";
+	public static final String MODEL_5B = "5B";
 
 	public static final String DEFAULT_HEADER = "J8";
 
@@ -93,7 +98,7 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 		MODELS.put(Integer.valueOf(0x3), MODEL_B_PLUS);
 		MODELS.put(Integer.valueOf(0x4), MODEL_2B);
 		MODELS.put(Integer.valueOf(0x5), MODEL_ALPHA);
-		MODELS.put(Integer.valueOf(0x6), COMPUTE_MODULE);
+		MODELS.put(Integer.valueOf(0x6), COMPUTE_MODULE_1);
 		MODELS.put(Integer.valueOf(0x8), MODEL_3B);
 		MODELS.put(Integer.valueOf(0x9), MODEL_ZERO);
 		MODELS.put(Integer.valueOf(0xa), COMPUTE_MODULE_3);
@@ -105,6 +110,8 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 		MODELS.put(Integer.valueOf(0x12), MODEL_ZERO_2_W);
 		MODELS.put(Integer.valueOf(0x13), MODEL_400);
 		MODELS.put(Integer.valueOf(0x14), COMPUTE_MODULE_4);
+		MODELS.put(Integer.valueOf(0x15), COMPUTE_MODULE_4S);
+		MODELS.put(Integer.valueOf(0x17), MODEL_5B);
 	}
 
 	public static final String PCB_REV_1_0 = "1.0";
@@ -121,6 +128,7 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 		MEMORY.put(Integer.valueOf(3), Integer.valueOf(2_048_000));
 		MEMORY.put(Integer.valueOf(4), Integer.valueOf(4_096_000));
 		MEMORY.put(Integer.valueOf(5), Integer.valueOf(8_192_000));
+		MEMORY.put(Integer.valueOf(6), Integer.valueOf(16_384_000));
 	}
 
 	public static final String SONY = "Sony";
@@ -146,13 +154,15 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 	public static final String BCM2836 = BCM_HARDWARE_PREFIX + "2836";
 	public static final String BCM2837 = BCM_HARDWARE_PREFIX + "2837";
 	public static final String BCM2711 = BCM_HARDWARE_PREFIX + "2711";
-	private static Map<Integer, String> PROCESSORS;
+	public static final String BCM2712 = BCM_HARDWARE_PREFIX + "2712";
+	private static Map<Integer, String> SOC;
 	static {
-		PROCESSORS = new HashMap<>();
-		PROCESSORS.put(Integer.valueOf(0), BCM2835);
-		PROCESSORS.put(Integer.valueOf(1), BCM2836);
-		PROCESSORS.put(Integer.valueOf(2), BCM2837);
-		PROCESSORS.put(Integer.valueOf(3), BCM2711);
+		SOC = new HashMap<>();
+		SOC.put(Integer.valueOf(0), BCM2835);
+		SOC.put(Integer.valueOf(1), BCM2836);
+		SOC.put(Integer.valueOf(2), BCM2837);
+		SOC.put(Integer.valueOf(3), BCM2711);
+		SOC.put(Integer.valueOf(4), BCM2712);
 	}
 
 	@Override
@@ -231,7 +241,10 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 				int proc = (rev_int & (0x0F << 12)) >> 12;
 				int mfr = (rev_int & (0x0F << 16)) >> 16;
 				int mem = (rev_int & (0x07 << 20)) >> 20;
-				// boolean warranty_void = (revision & (0x03 << 24)) != 0;
+				// boolean warranty_void = (rev_int & (1 << 25)) != 0;
+				// boolean otp_read_allowed = (rev_int & (1 << 29)) != 0;
+				// boolean otp_program_allowed = (rev_int & (1 << 30)) != 0;
+				// boolean overvoltage_allowed = (rev_int & (1 << 31)) != 0;
 
 				String model_val = MODELS.get(Integer.valueOf(model));
 				if (model_val == null) {
@@ -239,7 +252,7 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 					model_val = "UNKNOWN-" + model;
 				}
 
-				String proc_val = PROCESSORS.get(Integer.valueOf(proc));
+				String proc_val = SOC.get(Integer.valueOf(proc));
 				if (proc_val == null) {
 					Logger.warn("Unknown Pi processor: " + proc);
 					proc_val = "UNKNOWN-" + proc;
@@ -553,7 +566,7 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 
 	public static class PiComputeModuleBoardInfo extends PiBoardInfo {
 		public PiComputeModuleBoardInfo(String revision, int memory, String manufacturer, String processor) {
-			super(revision, COMPUTE_MODULE, PCB_REV_1_2, memory, manufacturer, processor);
+			super(revision, COMPUTE_MODULE_1, PCB_REV_1_2, memory, manufacturer, processor);
 		}
 
 		@Override

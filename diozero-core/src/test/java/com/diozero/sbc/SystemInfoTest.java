@@ -177,8 +177,8 @@ public class SystemInfoTest {
 						new PinInfo("GPIO", "J8", 2, 3, "SDA1", PinInfo.DIGITAL_IN_OUT, 2, 0, 2),
 						new PinInfo("GPIO", "J8", 3, 5, "SCL1", PinInfo.DIGITAL_IN_OUT, 3, 0, 3)),
 				RaspberryPiBoardInfoProvider.SONY, "1.2");
-		validatePiBoard(RaspberryPiBoardInfoProvider.BCM2835, "0011", RaspberryPiBoardInfoProvider.COMPUTE_MODULE, 512,
-				Collections.emptyList(), RaspberryPiBoardInfoProvider.SONY, "1.2");
+		validatePiBoard(RaspberryPiBoardInfoProvider.BCM2835, "0011", RaspberryPiBoardInfoProvider.COMPUTE_MODULE_1,
+				512, Collections.emptyList(), RaspberryPiBoardInfoProvider.SONY, "1.2");
 		validatePiBoard(RaspberryPiBoardInfoProvider.BCM2835, "0012", RaspberryPiBoardInfoProvider.MODEL_A_PLUS, 256,
 				List.of(new PinInfo("GPIO", "J8", 27, 13, "GPIO27", PinInfo.DIGITAL_IN_OUT, 27, 0, 27),
 						new PinInfo("GPIO", "J8", 2, 3, "SDA1", PinInfo.DIGITAL_IN_OUT, 2, 0, 2),
@@ -189,8 +189,8 @@ public class SystemInfoTest {
 						new PinInfo("GPIO", "J8", 2, 3, "SDA1", PinInfo.DIGITAL_IN_OUT, 2, 0, 2),
 						new PinInfo("GPIO", "J8", 3, 5, "SCL1", PinInfo.DIGITAL_IN_OUT, 3, 0, 3)),
 				RaspberryPiBoardInfoProvider.EGOMAN, "1.2");
-		validatePiBoard(RaspberryPiBoardInfoProvider.BCM2835, "0014", RaspberryPiBoardInfoProvider.COMPUTE_MODULE, 512,
-				Collections.emptyList(), RaspberryPiBoardInfoProvider.EMBEST, "1.2");
+		validatePiBoard(RaspberryPiBoardInfoProvider.BCM2835, "0014", RaspberryPiBoardInfoProvider.COMPUTE_MODULE_1,
+				512, Collections.emptyList(), RaspberryPiBoardInfoProvider.EMBEST, "1.2");
 		validatePiBoard(RaspberryPiBoardInfoProvider.BCM2835, "0015", RaspberryPiBoardInfoProvider.MODEL_A_PLUS, 256,
 				List.of(new PinInfo("GPIO", "J8", 27, 13, "GPIO27", PinInfo.DIGITAL_IN_OUT, 27, 0, 27),
 						new PinInfo("GPIO", "J8", 2, 3, "SDA1", PinInfo.DIGITAL_IN_OUT, 2, 0, 2),
@@ -247,7 +247,7 @@ public class SystemInfoTest {
 		// PiCM3, BCM2837, Sony, 1024MB
 		validatePiBoard(RaspberryPiBoardInfoProvider.BCM2837, "a020a2", RaspberryPiBoardInfoProvider.COMPUTE_MODULE_3,
 				_1GB, Collections.emptyList(), RaspberryPiBoardInfoProvider.SONY, "1.2");
-		validatePiBoard(RaspberryPiBoardInfoProvider.BCM2835, "900061", RaspberryPiBoardInfoProvider.COMPUTE_MODULE,
+		validatePiBoard(RaspberryPiBoardInfoProvider.BCM2835, "900061", RaspberryPiBoardInfoProvider.COMPUTE_MODULE_1,
 				_1GB / 2, Collections.emptyList(), RaspberryPiBoardInfoProvider.SONY, "1.1");
 		validatePiBoard(RaspberryPiBoardInfoProvider.BCM2837, "a020a0", RaspberryPiBoardInfoProvider.COMPUTE_MODULE_3,
 				_1GB, Collections.emptyList(), RaspberryPiBoardInfoProvider.SONY, "1.0");
@@ -266,6 +266,16 @@ public class SystemInfoTest {
 		validatePiBoard(RaspberryPiBoardInfoProvider.BCM2711, "c03111", RaspberryPiBoardInfoProvider.MODEL_4B, 4 * _1GB,
 				Collections.emptyList(), RaspberryPiBoardInfoProvider.SONY, "1.1");
 		validatePiBoard(RaspberryPiBoardInfoProvider.BCM2711, "b03115", RaspberryPiBoardInfoProvider.MODEL_4B, 2 * _1GB,
+				Collections.emptyList(), RaspberryPiBoardInfoProvider.SONY, "1.5");
+
+		// Pi5B
+		validatePiBoard(RaspberryPiBoardInfoProvider.BCM2711, "a03171", RaspberryPiBoardInfoProvider.MODEL_5B, _1GB,
+				Collections.emptyList(), RaspberryPiBoardInfoProvider.SONY, "1.1");
+		validatePiBoard(RaspberryPiBoardInfoProvider.BCM2711, "b03171", RaspberryPiBoardInfoProvider.MODEL_5B, 2 * _1GB,
+				Collections.emptyList(), RaspberryPiBoardInfoProvider.SONY, "1.1");
+		validatePiBoard(RaspberryPiBoardInfoProvider.BCM2711, "c03171", RaspberryPiBoardInfoProvider.MODEL_5B, 4 * _1GB,
+				Collections.emptyList(), RaspberryPiBoardInfoProvider.SONY, "1.1");
+		validatePiBoard(RaspberryPiBoardInfoProvider.BCM2711, "b03175", RaspberryPiBoardInfoProvider.MODEL_5B, 2 * _1GB,
 				Collections.emptyList(), RaspberryPiBoardInfoProvider.SONY, "1.5");
 
 		// Zero
@@ -292,7 +302,9 @@ public class SystemInfoTest {
 		validatePiBoard(RaspberryPiBoardInfoProvider.BCM2837, "902120", RaspberryPiBoardInfoProvider.MODEL_ZERO_2_W,
 				_1GB / 2, Collections.emptyList(), RaspberryPiBoardInfoProvider.SONY, "1.0");
 
-		// 400
+		// Pi 400
+		validatePiBoard(RaspberryPiBoardInfoProvider.BCM2711, "c03130", RaspberryPiBoardInfoProvider.MODEL_400,
+				4 * _1GB, Collections.emptyList(), RaspberryPiBoardInfoProvider.SONY, "1.0");
 		validatePiBoard(RaspberryPiBoardInfoProvider.BCM2711, "c03131", RaspberryPiBoardInfoProvider.MODEL_400,
 				4 * _1GB, Collections.emptyList(), RaspberryPiBoardInfoProvider.SONY, "1.1");
 

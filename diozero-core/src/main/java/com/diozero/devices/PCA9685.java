@@ -164,9 +164,8 @@ public class PCA9685 extends AbstractDeviceFactory
 
 		float prescale_flt = (((float) CLOCK_FREQ) / RANGE / pwmFrequency) - 1;
 		int prescale_int = Math.round(prescale_flt);
-		Logger.debug("Setting PWM frequency to {} Hz, float pre-scale: {}, int prescale {}",
-					 pwmFrequency, String.format("%.2f", prescale_flt),
-					 prescale_int);
+		Logger.debug("Setting PWM frequency to {} Hz, float pre-scale: {}, int prescale {}", pwmFrequency,
+				String.format("%.2f", prescale_flt), prescale_int);
 
 		byte oldmode = i2cDevice.readByteData(MODE1);
 		i2cDevice.writeByteData(MODE1, (byte) ((oldmode & 0x7F) | SLEEP_MASK)); // Enter low power mode (set the sleep
@@ -252,8 +251,7 @@ public class PCA9685 extends AbstractDeviceFactory
 		}
 		// Total must be < 4096
 		if (on + off >= RANGE) {
-			throw new IllegalArgumentException(String.format("Error: on (%d) + off (%d) must be < %d",
-															 on, off, RANGE));
+			throw new IllegalArgumentException(String.format("Error: on (%d) + off (%d) must be < %d", on, off, RANGE));
 		}
 	}
 
@@ -310,11 +308,9 @@ public class PCA9685 extends AbstractDeviceFactory
 		// Note pwmFrequency is ignored; make sure you setup the board's PWM frequency
 		// first
 		if (pwmFrequency != boardPwmFrequency) {
-			Logger.warn(
-					"Specified PWM frequency ({}) is different to that configured for the board ({})"
-							+ "; this device has a common PWM frequency that is used for all outputs"
-							+ " - the requested frequency will be ignored",
-					pwmFrequency, boardPwmFrequency);
+			Logger.warn("Specified PWM frequency ({}) is different to that configured for the board ({})"
+					+ "; this device has a common PWM frequency that is used for all outputs"
+					+ " - the requested frequency will be ignored", pwmFrequency, boardPwmFrequency);
 		}
 		return new PCA9685ServoOrPwmOutputDevice(this, key, DeviceMode.PWM_OUTPUT, pinInfo.getDeviceNumber(),
 				initialValue);
@@ -326,14 +322,12 @@ public class PCA9685 extends AbstractDeviceFactory
 		// Note frequency is ignored; make sure you setup the board's PWM frequency
 		// first
 		if (frequency != boardPwmFrequency) {
-			Logger.warn(
-					"Specified Servo frequency ({}) is different to that configured for the board ({})"
-							+ "; this device has a common PWM frequency that is used for all outputs"
-							+ " - the requested frequency will be ignored",
-					frequency, boardPwmFrequency);
+			Logger.warn("Specified Servo frequency ({}) is different to that configured for the board ({})"
+					+ "; this device has a common PWM frequency that is used for all outputs"
+					+ " - the requested frequency will be ignored", frequency, boardPwmFrequency);
 		}
 		return new PCA9685ServoOrPwmOutputDevice(this, key, DeviceMode.SERVO, pinInfo.getDeviceNumber(),
-												 (float)(initialPulseWidthUs /  periodUs));
+				(float) (initialPulseWidthUs / periodUs));
 	}
 
 	/**
@@ -364,7 +358,7 @@ public class PCA9685 extends AbstractDeviceFactory
 	}
 
 	public int getDutyUs(int channel) {
-		return (int)Math.round(getValue(channel) * periodUs);
+		return (int) Math.round(getValue(channel) * periodUs);
 	}
 
 	/**
@@ -380,11 +374,10 @@ public class PCA9685 extends AbstractDeviceFactory
 	public void setDutyUs(int channel, int dutyUs) throws RuntimeIOException {
 		// TODO Bounds checking
 
-		int off = (int)Math.round((dutyUs / periodUs) * RANGE);
+		int off = (int) Math.round((dutyUs / periodUs) * RANGE);
 		if (Logger.isDebugEnabled()) {
 			Logger.debug("Requested duty value: {}, Scale: {} microseconds per bit, Off: {}",
-						 String.format("%.2f", (double)dutyUs),
-						 String.format("%.4f", periodUs / RANGE), off);
+					String.format("%.2f", (double) dutyUs), String.format("%.4f", periodUs / RANGE), off);
 		}
 
 		setPwm(channel, 0, off);

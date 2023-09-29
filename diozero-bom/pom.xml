@@ -82,15 +82,15 @@
 		<eclipse.m2e.lifecycle-mapping.version>1.0.0</eclipse.m2e.lifecycle-mapping.version>
 
 		<!-- Libraries -->
-		<tinylog.version>2.6.0</tinylog.version>
+		<tinylog.version>2.6.2</tinylog.version>
 		<hipparchus.version>2.3</hipparchus.version>
 		<eclipse-paho-client-mqttv3.version>1.2.5</eclipse-paho-client-mqttv3.version>
 		<google-gson.version>2.10.1</google-gson.version>
-		<google-protobuf-java.version>3.21.12</google-protobuf-java.version>
-		<netty.version>4.1.87.Final</netty.version>
-		<grpc.version>1.52.1</grpc.version>
-		<junit.version>5.9.2</junit.version>
-		<mockito.version>5.1.1</mockito.version>
+		<google-protobuf-java.version>3.24.3</google-protobuf-java.version>
+		<netty.version>4.1.97.Final</netty.version>
+		<grpc.version>1.58.0</grpc.version>
+		<junit.version>5.10.0</junit.version>
+		<mockito.version>5.5.0</mockito.version>
 	</properties>
 
 	<!-- Prepare common library versions -->
