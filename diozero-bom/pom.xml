@@ -86,11 +86,11 @@
 		<hipparchus.version>2.3</hipparchus.version>
 		<eclipse-paho-client-mqttv3.version>1.2.5</eclipse-paho-client-mqttv3.version>
 		<google-gson.version>2.10.1</google-gson.version>
-		<google-protobuf-java.version>3.24.3</google-protobuf-java.version>
+		<google-protobuf-java.version>3.24.4</google-protobuf-java.version>
 		<netty.version>4.1.99.Final</netty.version>
 		<grpc.version>1.58.0</grpc.version>
 		<junit.version>5.10.0</junit.version>
-		<mockito.version>5.5.0</mockito.version>
+		<mockito.version>5.6.0</mockito.version>
 	</properties>
 
 	<!-- Prepare common library versions -->
