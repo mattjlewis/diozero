@@ -13,7 +13,7 @@
 
 	<properties>
 		<imgscalr-lib.version>4.2</imgscalr-lib.version>
-		<jansi.version>2.4.0</jansi.version>
+		<jansi.version>2.4.1</jansi.version>
 		<picocli.version>4.7.5</picocli.version>
 	</properties>
 

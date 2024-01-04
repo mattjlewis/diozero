@@ -51,6 +51,7 @@ import org.tinylog.Logger;
 import com.diozero.internal.provider.builtin.i2c.NativeI2C;
 import com.diozero.util.FileNative;
 import com.diozero.util.StringUtil;
+import com.diozero.util.Version;
 
 /**
  * Utility class for accessing information about the local system. The majority
@@ -74,6 +75,7 @@ public class LocalSystemInfo {
 	private static final String LINUX_OS_RELEASE_FILE = "/etc/os-release";
 	private static final String LINUX_CPUINFO_FILE = "/proc/cpuinfo";
 	private static final String LINUX_MEMINFO_FILE = "/proc/meminfo";
+	private static final String LINUX_VERSION_FILE = "/proc/version";
 	private static final String LINUX_DEVICE_TREE_COMPATIBLE_FILE = "/proc/device-tree/compatible";
 	private static final String LINUX_DEVICE_TREE_MODEL_FILE = "/proc/device-tree/model";
 	private static final String LINUX_DEVICE_TREE_SERIAL_NUMBER_FILE = "/proc/device-tree/serial-number";
@@ -94,6 +96,7 @@ public class LocalSystemInfo {
 	private String cpuArchitecture;
 	private String cpuModelName;
 	private Integer memoryKb;
+	private Version kernelVersion;
 	private List<String> compatible;
 
 	public synchronized static LocalSystemInfo getInstance() {
@@ -129,6 +132,7 @@ public class LocalSystemInfo {
 			populateFromDeviceTreeCompatible();
 			populateFromDeviceTreeSerialNumber();
 			populateFromMemInfo();
+			populateFromVersion();
 			// Note aarch64 doesn't have Board Model / Hardware / Revision info in
 			// /proc/cpuinfo
 			populateFromCpuInfo();
@@ -244,13 +248,20 @@ public class LocalSystemInfo {
 	private void populateFromMemInfo() {
 		memoryKb = null;
 		try {
-			Files.lines(Paths.get(LINUX_MEMINFO_FILE)).forEach(line -> {
-				if (line.startsWith("MemTotal:")) {
-					memoryKb = Integer.valueOf(line.split("\\s+")[1].trim());
-				}
-			});
+			memoryKb = Files.lines(Paths.get(LINUX_MEMINFO_FILE)).filter(line -> line.startsWith("MemTotal:"))
+					.findFirst().map(line -> Integer.valueOf(line.split("\\s+")[1].trim())).orElse(null);
 		} catch (IOException | NullPointerException | IndexOutOfBoundsException e) {
 			Logger.warn("Unable to process file '{}': {}", LINUX_MEMINFO_FILE, e.getMessage());
+		}
+	}
+
+	private void populateFromVersion() {
+		try {
+			kernelVersion = Files.lines(Paths.get(LINUX_VERSION_FILE)).findFirst()
+					.map(line -> line.replaceAll("^Linux version (\\d+\\.\\d+\\.\\d+).*$", "$1")).map(Version::new)
+					.orElse(null);
+		} catch (IOException | NullPointerException | IndexOutOfBoundsException e) {
+			Logger.warn("Unable to process file '{}': {}", LINUX_VERSION_FILE, e.getMessage());
 		}
 	}
 
@@ -324,6 +335,10 @@ public class LocalSystemInfo {
 
 	public Integer getMemoryKb() {
 		return memoryKb;
+	}
+
+	public Version getKernelVersion() {
+		return kernelVersion;
 	}
 
 	public String getDefaultLibraryPath() {

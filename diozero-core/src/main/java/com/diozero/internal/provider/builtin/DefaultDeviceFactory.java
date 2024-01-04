@@ -78,6 +78,7 @@ public class DefaultDeviceFactory extends BaseNativeDeviceFactory {
 	private static final String GPIO_USE_CHARDEV_PROP = "diozero.gpio.chardev";
 	private static final String I2C_USE_JAVA_RAF_PROP = "diozero.i2c.javaraf";
 	private static final String I2C_SLAVE_FORCE_PROP = "diozero.i2c.slaveforce";
+	private static final String GPIO_ADD_UNCONFIGURED_GPIOS_PROP = "diozero.gpio.autoconfig";
 
 	private static final boolean GPIO_USE_CHARDEV_DEFAULT = true;
 
@@ -88,12 +89,14 @@ public class DefaultDeviceFactory extends BaseNativeDeviceFactory {
 	private boolean gpioUseCharDev;
 	private boolean i2cUseJavaRaf;
 	private boolean i2cSlaveForce;
+	private boolean addUnconfiguredGpios;
 	private MmapGpioInterface mmapGpio;
 
 	public DefaultDeviceFactory() {
 		gpioUseCharDev = PropertyUtil.getBooleanProperty(GPIO_USE_CHARDEV_PROP, GPIO_USE_CHARDEV_DEFAULT);
 		i2cUseJavaRaf = PropertyUtil.isPropertySet(I2C_USE_JAVA_RAF_PROP);
 		i2cSlaveForce = PropertyUtil.isPropertySet(I2C_SLAVE_FORCE_PROP);
+		addUnconfiguredGpios = PropertyUtil.isPropertySet(GPIO_ADD_UNCONFIGURED_GPIOS_PROP);
 	}
 
 	@Override
@@ -101,6 +104,8 @@ public class DefaultDeviceFactory extends BaseNativeDeviceFactory {
 		Logger.debug("Using {} GPIO implementation", gpioUseCharDev ? "chardev" : "sysfs");
 
 		LibraryLoader.loadSystemUtils();
+
+		final BoardInfo board_info = getBoardInfo();
 
 		if (gpioUseCharDev) {
 			try {
@@ -110,14 +115,14 @@ public class DefaultDeviceFactory extends BaseNativeDeviceFactory {
 				Logger.debug("Found {} GPIO chips", Integer.valueOf(chips.size()));
 
 				// Validate the data in BoardPinInfo
-				final BoardInfo bpi = getBoardInfo();
-				if (bpi instanceof GenericLinuxArmBoardInfo) {
-					bpi.getChipMapping().ifPresent(chip_mapping -> updateChipIds(chips, chip_mapping, bpi));
+				if (board_info instanceof GenericLinuxArmBoardInfo) {
+					board_info.getChipMapping()
+							.ifPresent(chip_mapping -> updateChipIds(chips, chip_mapping, board_info));
 				}
 
 				// Validate the board pin info matches the GPIO chip and line offsets
 				Logger.debug("Validating BoardPinInfo against detected GPIO chip and line offsets...");
-				bpi.getGpioPins().forEach(pin_info -> {
+				board_info.getGpioPins().forEach(pin_info -> {
 					GpioChip chip = chips.get(Integer.valueOf(pin_info.getChip()));
 					if (chip == null) {
 						if (pin_info.getChip() != -1) {
@@ -140,14 +145,15 @@ public class DefaultDeviceFactory extends BaseNativeDeviceFactory {
 
 						// Try to find this GPIO in the board pin info by the assumed system name
 						if (!line_name.isEmpty()) {
-							pin_info = bpi.getByName(line_name);
+							pin_info = board_info.getByName(line_name);
 						}
 
 						// If the pin couldn't be found for the assigned name try to find the pin info
 						// by chip and line offset number
 						if (pin_info == null) {
 							// Note that getByChipAndLineOffset doesn't create missing entries
-							pin_info = bpi.getByChipAndLineOffset(chip.getChipId(), gpio_line.getOffset()).orElse(null);
+							pin_info = board_info.getByChipAndLineOffset(chip.getChipId(), gpio_line.getOffset())
+									.orElse(null);
 						}
 
 						// Finally, if still not found see if the name is in the format GPIOnn and
@@ -157,27 +163,30 @@ public class DefaultDeviceFactory extends BaseNativeDeviceFactory {
 							// format
 							// Note that the unknown / generic board info classes will create missing pin
 							// info objects if you call getByGpioNumber - we don't want that to happen here
-							pin_info = bpi.getGpios()
+							pin_info = board_info.getGpios()
 									.get(Integer.valueOf(line_name.replaceAll(GPIO_LINE_NUMBER_PATTERN, "$1")));
 						}
 
 						// XXX This includes a bit of a hack to ignore pins with the name "NC" - the BBB
 						// does this for quite a few pins which triggers the warning message
-						if (pin_info == null && !line_name.isEmpty() && !line_name.equals("NC")) {
+						if (pin_info == null && !line_name.isEmpty() && !line_name.equals("NC")
+								&& !line_name.equals("-")) {
 							Logger.debug("Detected GPIO line ({} {}-{}) that isn't configured in BoardPinInfo",
 									line_name, Integer.valueOf(chip.getChipId()),
 									Integer.valueOf(gpio_line.getOffset()));
-							// Add a new pin info to the board pin info
-							int gpio_num;
-							if (line_name.matches(GPIO_LINE_NUMBER_PATTERN)) {
-								gpio_num = Integer.parseInt(line_name.replaceAll(GPIO_LINE_NUMBER_PATTERN, "$1"));
-							} else {
-								// Calculate the GPIO number
-								gpio_num = chip.getLineOffset() + gpio_line.getOffset();
+							if (addUnconfiguredGpios) {
+								// Add a new pin info to the board pin info
+								int gpio_num;
+								if (line_name.matches(GPIO_LINE_NUMBER_PATTERN)) {
+									gpio_num = Integer.parseInt(line_name.replaceAll(GPIO_LINE_NUMBER_PATTERN, "$1"));
+								} else {
+									// Calculate the GPIO number
+									gpio_num = chip.getLineOffset() + gpio_line.getOffset();
+								}
+								pin_info = board_info.addGpioPinInfo(gpio_num, line_name, PinInfo.NOT_DEFINED,
+										PinInfo.DIGITAL_IN_OUT, chip.getChipId(), gpio_line.getOffset());
+								Logger.debug("Added pin info {}", pin_info);
 							}
-							pin_info = bpi.addGpioPinInfo(gpio_num, line_name, PinInfo.NOT_DEFINED,
-									PinInfo.DIGITAL_IN_OUT, chip.getChipId(), gpio_line.getOffset());
-							Logger.debug("Added pin info {}", pin_info);
 						} else if (pin_info != null) {
 							if (pin_info.getChip() != chip.getChipId()
 									|| pin_info.getLineOffset() != gpio_line.getOffset()) {
@@ -207,7 +216,7 @@ public class DefaultDeviceFactory extends BaseNativeDeviceFactory {
 		// accessible for this user
 		if (new File("/dev/gpiomem").canWrite() || new File("/dev/mem").canWrite()) {
 			try {
-				mmapGpio = getBoardInfo().createMmapGpio();
+				mmapGpio = board_info.createMmapGpio();
 				mmapGpio.initialise();
 			} catch (Throwable t) {
 				// Ignore
@@ -216,14 +225,15 @@ public class DefaultDeviceFactory extends BaseNativeDeviceFactory {
 			}
 		}
 
-		if (mmapGpio == null) {
+		if (mmapGpio == null && !board_info.isBiasControlSupported()) {
 			Logger.warn("GPIO pull-up / pull-down control is not available for this board");
 		} else {
 			Logger.debug("Memory mapped GPIO is available for this board");
 		}
 	}
 
-	private static void updateChipIds(Map<Integer, GpioChip> chips, Map<String, Integer> chipMapping, BoardInfo bpi) {
+	private static void updateChipIds(Map<Integer, GpioChip> chips, Map<String, Integer> chipMapping,
+			BoardInfo boardInfo) {
 		if (chips == null || chips.isEmpty()) {
 			return;
 		}
@@ -238,7 +248,7 @@ public class DefaultDeviceFactory extends BaseNativeDeviceFactory {
 						mapping.getKey(), Integer.valueOf(chip.getChipId()), chip.getLabel());
 				// Locate the actual GPIO chip with this label and update the chip id
 				chips.values().stream().filter(ch -> ch.getLabel().equals(mapping.getKey())).findFirst()
-						.ifPresent(ch -> bpi.updateGpioChipId(mapping.getValue().intValue(), ch.getChipId()));
+						.ifPresent(ch -> boardInfo.updateGpioChipId(mapping.getValue().intValue(), ch.getChipId()));
 			}
 		}
 	}

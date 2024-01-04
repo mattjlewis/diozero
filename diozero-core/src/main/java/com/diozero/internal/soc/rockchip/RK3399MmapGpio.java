@@ -91,7 +91,7 @@ import com.diozero.util.SleepUtil;
  * This workaround is required on vendor 4.4 kernel.
  */
 public class RK3399MmapGpio implements MmapGpioInterface {
-	private static final String GPIOMEM_DEVICE = "/dev/mem";
+	private static final String MEM_DEVICE = "/dev/mem";
 	private static final int GRF_GPIO2A_IOMUX = 0x0e000;
 	// GRF - General Register Files (64K)
 	private static final long GRF_MEM_OFFSET = 0xff77_0000L + GRF_GPIO2A_IOMUX;
@@ -135,16 +135,16 @@ public class RK3399MmapGpio implements MmapGpioInterface {
 	@Override
 	public synchronized void initialise() {
 		if (!initialised) {
-			grfMmapIntBuffer = new MmapIntBuffer(GPIOMEM_DEVICE, GRF_MEM_OFFSET, BLOCK_SIZE, ByteOrder.LITTLE_ENDIAN);
-			pmuGrfMmapIntBuffer = new MmapIntBuffer(GPIOMEM_DEVICE, PMUGRF_MEM_OFFSET, BLOCK_SIZE,
+			grfMmapIntBuffer = new MmapIntBuffer(MEM_DEVICE, GRF_MEM_OFFSET, BLOCK_SIZE, ByteOrder.LITTLE_ENDIAN);
+			pmuGrfMmapIntBuffer = new MmapIntBuffer(MEM_DEVICE, PMUGRF_MEM_OFFSET, BLOCK_SIZE,
 					ByteOrder.LITTLE_ENDIAN);
-			pmuCruMmapIntBuffer = new MmapIntBuffer(GPIOMEM_DEVICE, PMUCRU_MEM_OFFSET, BLOCK_SIZE,
+			pmuCruMmapIntBuffer = new MmapIntBuffer(MEM_DEVICE, PMUCRU_MEM_OFFSET, BLOCK_SIZE,
 					ByteOrder.LITTLE_ENDIAN);
-			cruMmapIntBuffer = new MmapIntBuffer(GPIOMEM_DEVICE, CRU_MEM_OFFSET, BLOCK_SIZE, ByteOrder.LITTLE_ENDIAN);
+			cruMmapIntBuffer = new MmapIntBuffer(MEM_DEVICE, CRU_MEM_OFFSET, BLOCK_SIZE, ByteOrder.LITTLE_ENDIAN);
 
 			gpioBanks = new MmapIntBuffer[GPIOMEM_OFFSETS.length];
 			for (int i = 0; i < GPIOMEM_OFFSETS.length; i++) {
-				gpioBanks[i] = new MmapIntBuffer(GPIOMEM_DEVICE, GPIOMEM_OFFSETS[i], BLOCK_SIZE,
+				gpioBanks[i] = new MmapIntBuffer(MEM_DEVICE, GPIOMEM_OFFSETS[i], BLOCK_SIZE,
 						ByteOrder.LITTLE_ENDIAN);
 			}
 

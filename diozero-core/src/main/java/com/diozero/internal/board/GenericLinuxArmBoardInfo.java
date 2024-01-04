@@ -52,6 +52,7 @@ import com.diozero.internal.spi.MmapGpioInterface;
 import com.diozero.sbc.BoardInfo;
 import com.diozero.sbc.LocalSystemInfo;
 import com.diozero.util.StringUtil;
+import com.diozero.util.Version;
 
 public class GenericLinuxArmBoardInfo extends BoardInfo {
 	private static final String SOC_MAPPING_FILE = "/soc_mapping.properties";
@@ -278,5 +279,12 @@ public class GenericLinuxArmBoardInfo extends BoardInfo {
 			Logger.error(t, "Error resolving MMAP GPIO instance '{}' for SoC '{}'", clz_name, soc);
 			return null;
 		}
+	}
+
+	@Override
+	public boolean isBiasControlSupported() {
+		Version kernel_version = LocalSystemInfo.getInstance().getKernelVersion();
+		return kernel_version != null && (kernel_version.getMajor() >= 6
+				|| (kernel_version.getMajor() == 5 && kernel_version.getMinor() >= 5));
 	}
 }

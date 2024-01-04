@@ -38,6 +38,7 @@ import org.tinylog.Logger;
 
 import com.diozero.api.DeviceMode;
 import com.diozero.api.GpioPullUpDown;
+import com.diozero.internal.board.raspberrypi.RaspberryPiBoardInfoProvider;
 import com.diozero.internal.spi.MmapGpioInterface;
 import com.diozero.util.MmapIntBuffer;
 import com.diozero.util.SleepUtil;
@@ -119,13 +120,8 @@ public class BroadcomMmapGpio implements MmapGpioInterface {
 	private boolean piIs2711;
 	private MmapIntBuffer mmapIntBuffer;
 
-	public BroadcomMmapGpio(boolean piIs2711) {
-		this.piIs2711 = piIs2711;
-	}
-
-	public BroadcomMmapGpio(boolean piIs2711, MmapIntBuffer mmapIntBuffer) {
-		this.piIs2711 = piIs2711;
-		this.mmapIntBuffer = mmapIntBuffer;
+	public BroadcomMmapGpio(String soc) {
+		this.piIs2711 = soc.equals(RaspberryPiBoardInfoProvider.BCM2711);
 	}
 
 	@Override
@@ -381,10 +377,14 @@ public class BroadcomMmapGpio implements MmapGpioInterface {
 
 	@SuppressWarnings("boxing")
 	public static void main(String[] args) {
+		String soc = RaspberryPiBoardInfoProvider.BCM2711;
+		if (args.length > 0) {
+			soc = args[0];
+		}
 		boolean PI_OFF = false;
 		boolean PI_ON = true;
 
-		try (BroadcomMmapGpio mmap = new BroadcomMmapGpio(false)) {
+		try (BroadcomMmapGpio mmap = new BroadcomMmapGpio(soc)) {
 			mmap.initialise();
 
 			int gpio = 21;

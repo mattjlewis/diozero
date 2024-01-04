@@ -405,7 +405,7 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 
 		@Override
 		public MmapGpioInterface createMmapGpio() {
-			return new BroadcomMmapGpio(processor.equals(BCM2711));
+			return new BroadcomMmapGpio(processor);
 		}
 
 		/**

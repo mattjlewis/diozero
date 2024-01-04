@@ -50,7 +50,7 @@ import com.diozero.util.SleepUtil;
  */
 @SuppressWarnings("resource")
 public class RK3288MmapGpio implements MmapGpioInterface {
-	private static final String MEM_DEVICE = "/dev/gpiomem";
+	private static final String GPIOMEM_DEVICE = "/dev/gpiomem";
 	private static final long PMU_BASE = 0xff730000L;
 	private static final long GPIO_BASE = 0xff75_0000L;
 	private static final long GRF_BASE = 0xff77_0000L;
@@ -128,11 +128,11 @@ public class RK3288MmapGpio implements MmapGpioInterface {
 		if (gpioBanks == null) {
 			gpioBanks = new MmapIntBuffer[9];
 			for (int i = 0; i < gpioBanks.length; i++) {
-				gpioBanks[i] = new MmapIntBuffer(MEM_DEVICE, GPIO_BASE + i * GPIO_LENGTH + (i > 0 ? GPIO_CHANNEL : 0),
+				gpioBanks[i] = new MmapIntBuffer(GPIOMEM_DEVICE, GPIO_BASE + i * GPIO_LENGTH + (i > 0 ? GPIO_CHANNEL : 0),
 						PAGE_SIZE, ByteOrder.LITTLE_ENDIAN);
 			}
-			pmuMmapIntBuffer = new MmapIntBuffer(MEM_DEVICE, PMU_BASE, PAGE_SIZE, ByteOrder.LITTLE_ENDIAN);
-			grfMmapIntBuffer = new MmapIntBuffer(MEM_DEVICE, GRF_BASE, PAGE_SIZE, ByteOrder.LITTLE_ENDIAN);
+			pmuMmapIntBuffer = new MmapIntBuffer(GPIOMEM_DEVICE, PMU_BASE, PAGE_SIZE, ByteOrder.LITTLE_ENDIAN);
+			grfMmapIntBuffer = new MmapIntBuffer(GPIOMEM_DEVICE, GRF_BASE, PAGE_SIZE, ByteOrder.LITTLE_ENDIAN);
 		}
 	}
 

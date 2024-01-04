@@ -61,7 +61,7 @@ import com.diozero.util.MmapIntBuffer;
  * 
  */
 public class RK3588MmapGpio implements MmapGpioInterface {
-	private static final String GPIOMEM_DEVICE = "/dev/mem";
+	private static final String MEM_DEVICE = "/dev/mem";
 
 	private static final int BLOCK_SIZE = 4 * 1024;
 
@@ -109,21 +109,21 @@ public class RK3588MmapGpio implements MmapGpioInterface {
 		if (!initialised) {
 			gpioBanks = new MmapIntBuffer[GPIO_BASE.length];
 			for (int i = 0; i < GPIO_BASE.length; i++) {
-				gpioBanks[i] = new MmapIntBuffer(GPIOMEM_DEVICE, GPIO_BASE[i], BLOCK_SIZE, ByteOrder.LITTLE_ENDIAN);
+				gpioBanks[i] = new MmapIntBuffer(MEM_DEVICE, GPIO_BASE[i], BLOCK_SIZE, ByteOrder.LITTLE_ENDIAN);
 			}
 
-			pmu1IocMmapIntBuffer = new MmapIntBuffer(GPIOMEM_DEVICE, PMU1_IOC_BASE, BLOCK_SIZE,
+			pmu1IocMmapIntBuffer = new MmapIntBuffer(MEM_DEVICE, PMU1_IOC_BASE, BLOCK_SIZE,
 					ByteOrder.LITTLE_ENDIAN);
-			pmu2IocMmapIntBuffer = new MmapIntBuffer(GPIOMEM_DEVICE, PMU2_IOC_BASE, BLOCK_SIZE,
+			pmu2IocMmapIntBuffer = new MmapIntBuffer(MEM_DEVICE, PMU2_IOC_BASE, BLOCK_SIZE,
 					ByteOrder.LITTLE_ENDIAN);
-			busIocMmapIntBuffer = new MmapIntBuffer(GPIOMEM_DEVICE, BUS_IOC_BASE, BLOCK_SIZE, ByteOrder.LITTLE_ENDIAN);
-			cruMmapIntBuffer = new MmapIntBuffer(GPIOMEM_DEVICE, CRU_BASE, BLOCK_SIZE, ByteOrder.LITTLE_ENDIAN);
-			pmu1CruMmapIntBuffer = new MmapIntBuffer(GPIOMEM_DEVICE, PMU1CRU_BASE, BLOCK_SIZE, ByteOrder.LITTLE_ENDIAN);
-			vccIo14IocMmapIntBuffer = new MmapIntBuffer(GPIOMEM_DEVICE, VCCIO1_4_IOC_BASE, BLOCK_SIZE,
+			busIocMmapIntBuffer = new MmapIntBuffer(MEM_DEVICE, BUS_IOC_BASE, BLOCK_SIZE, ByteOrder.LITTLE_ENDIAN);
+			cruMmapIntBuffer = new MmapIntBuffer(MEM_DEVICE, CRU_BASE, BLOCK_SIZE, ByteOrder.LITTLE_ENDIAN);
+			pmu1CruMmapIntBuffer = new MmapIntBuffer(MEM_DEVICE, PMU1CRU_BASE, BLOCK_SIZE, ByteOrder.LITTLE_ENDIAN);
+			vccIo14IocMmapIntBuffer = new MmapIntBuffer(MEM_DEVICE, VCCIO1_4_IOC_BASE, BLOCK_SIZE,
 					ByteOrder.LITTLE_ENDIAN);
-			vccIo35IocMmapIntBuffer = new MmapIntBuffer(GPIOMEM_DEVICE, RK3588_VCCIO3_5_IOC_BASE, BLOCK_SIZE,
+			vccIo35IocMmapIntBuffer = new MmapIntBuffer(MEM_DEVICE, RK3588_VCCIO3_5_IOC_BASE, BLOCK_SIZE,
 					ByteOrder.LITTLE_ENDIAN);
-			vccIo6IocMmapIntBuffer = new MmapIntBuffer(GPIOMEM_DEVICE, RK3588_VCCIO6_IOC_BASE, BLOCK_SIZE,
+			vccIo6IocMmapIntBuffer = new MmapIntBuffer(MEM_DEVICE, RK3588_VCCIO6_IOC_BASE, BLOCK_SIZE,
 					ByteOrder.LITTLE_ENDIAN);
 
 			gpioModes = new HashMap<>();

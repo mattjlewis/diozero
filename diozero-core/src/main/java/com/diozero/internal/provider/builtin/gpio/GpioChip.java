@@ -103,6 +103,16 @@ public class GpioChip extends GpioChipInfo implements AutoCloseable, GpioLineEve
 	private static final int EPOLL_FD_NOT_CREATED = -1;
 	private static final String GPIO_CHIP_FILENAME_PREFIX = "gpiochip";
 
+	// Informational flags
+	private static final int GPIOLINE_FLAG_KERNEL = 1 << 0; // Line used by the kernel
+	private static final int GPIOLINE_FLAG_IS_OUT = 1 << 1;
+	private static final int GPIOLINE_FLAG_ACTIVE_LOW = 1 << 2;
+	private static final int GPIOLINE_FLAG_OPEN_DRAIN = 1 << 3;
+	private static final int GPIOLINE_FLAG_OPEN_SOURCE = 1 << 4;
+	private static final int GPIOLINE_FLAG_BIAS_PULL_UP = 1 << 5;
+	private static final int GPIOLINE_FLAG_BIAS_PULL_DOWN = 1 << 6;
+	private static final int GPIOLINE_FLAG_BIAS_DISABLE = 1 << 7;
+
 	// Linerequest flags
 	// https://elixir.bootlin.com/linux/v4.9.127/source/include/uapi/linux/gpio.h#L58
 	private static final int GPIOHANDLE_REQUEST_INPUT = 1 << 0;
@@ -110,6 +120,10 @@ public class GpioChip extends GpioChipInfo implements AutoCloseable, GpioLineEve
 	private static final int GPIOHANDLE_REQUEST_ACTIVE_LOW = 1 << 2;
 	private static final int GPIOHANDLE_REQUEST_OPEN_DRAIN = 1 << 3;
 	private static final int GPIOHANDLE_REQUEST_OPEN_SOURCE = 1 << 4;
+	// Following available in kernel 5.5 onwards
+	private static final int GPIOHANDLE_REQUEST_BIAS_PULL_UP = 1 << 5;
+	private static final int GPIOHANDLE_REQUEST_BIAS_PULL_DOWN = 1 << 6;
+	private static final int GPIOHANDLE_REQUEST_BIAS_DISABLE = 1 << 7;
 
 	// Eventrequest flags
 	// https://elixir.bootlin.com/linux/v4.9.127/source/include/uapi/linux/gpio.h#L109
@@ -195,6 +209,18 @@ public class GpioChip extends GpioChipInfo implements AutoCloseable, GpioLineEve
 		// https://microhobby.com.br/blog/2020/02/02/new-linux-kernel-5-5-new-interfaces-in-gpiolib/
 		// As on 19/10/2020 Raspberry is on Kernel 5.4.51
 		int handle_flags = GPIOHANDLE_REQUEST_INPUT;
+		switch (pud) {
+		case PULL_UP:
+			handle_flags |= GPIOHANDLE_REQUEST_BIAS_PULL_UP;
+			break;
+		case PULL_DOWN:
+			handle_flags |= GPIOHANDLE_REQUEST_BIAS_PULL_DOWN;
+			break;
+		case NONE:
+		default:
+			handle_flags |= GPIOHANDLE_REQUEST_BIAS_DISABLE;
+		}
+
 		int event_flags;
 		switch (trigger) {
 		case RISING:
@@ -209,6 +235,7 @@ public class GpioChip extends GpioChipInfo implements AutoCloseable, GpioLineEve
 		default:
 			event_flags = 0;
 		}
+
 		int line_fd = NativeGpioDevice.provisionGpioInputDevice(chipFd, offset, handle_flags, event_flags);
 		if (line_fd < 0) {
 			throw new RuntimeIOException("Error in provisionGpioInputDevice: " + line_fd);

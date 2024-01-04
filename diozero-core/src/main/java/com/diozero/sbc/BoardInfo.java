@@ -143,4 +143,8 @@ public abstract class BoardInfo extends BoardPinInfo {
 	public String toString() {
 		return "BoardInfo [make=" + make + ", model=" + model + ", memory=" + memoryKb + "]";
 	}
+
+	public boolean isBiasControlSupported() {
+		return false;
+	}
 }

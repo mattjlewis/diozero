@@ -269,14 +269,8 @@ public class SystemInfoTest {
 				Collections.emptyList(), RaspberryPiBoardInfoProvider.SONY, "1.5");
 
 		// Pi5B
-		validatePiBoard(RaspberryPiBoardInfoProvider.BCM2711, "a03171", RaspberryPiBoardInfoProvider.MODEL_5B, _1GB,
-				Collections.emptyList(), RaspberryPiBoardInfoProvider.SONY, "1.1");
-		validatePiBoard(RaspberryPiBoardInfoProvider.BCM2711, "b03171", RaspberryPiBoardInfoProvider.MODEL_5B, 2 * _1GB,
-				Collections.emptyList(), RaspberryPiBoardInfoProvider.SONY, "1.1");
-		validatePiBoard(RaspberryPiBoardInfoProvider.BCM2711, "c03171", RaspberryPiBoardInfoProvider.MODEL_5B, 4 * _1GB,
-				Collections.emptyList(), RaspberryPiBoardInfoProvider.SONY, "1.1");
-		validatePiBoard(RaspberryPiBoardInfoProvider.BCM2711, "b03175", RaspberryPiBoardInfoProvider.MODEL_5B, 2 * _1GB,
-				Collections.emptyList(), RaspberryPiBoardInfoProvider.SONY, "1.5");
+		validatePiBoard(RaspberryPiBoardInfoProvider.BCM2712, "d04170", RaspberryPiBoardInfoProvider.MODEL_5B, 8 * _1GB,
+				Collections.emptyList(), RaspberryPiBoardInfoProvider.SONY, "1.0");
 
 		// Zero
 		validatePiBoard(RaspberryPiBoardInfoProvider.BCM2835, "920092", RaspberryPiBoardInfoProvider.MODEL_ZERO,
