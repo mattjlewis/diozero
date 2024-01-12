@@ -5,7 +5,7 @@ package com.diozero.devices;
  * Organisation: diozero
  * Project:      diozero - Core
  * Filename:     MFRC522.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.devices;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -308,8 +308,8 @@ public class MFRC522 implements DeviceInterface {
 
 	private static final int SPI_CLOCK_FREQUENCY = 1_000_000;
 
-	private SpiDevice device;
-	private DigitalOutputDevice resetPin;
+	private final SpiDevice device;
+	private final DigitalOutputDevice resetPin;
 
 	private boolean logReadsAndWrites = false;
 
@@ -340,6 +340,9 @@ public class MFRC522 implements DeviceInterface {
 	public void close() {
 		if (device != null) {
 			device.close();
+		}
+		if (resetPin != null) {
+			resetPin.close();
 		}
 	}
 
@@ -559,11 +562,11 @@ public class MFRC522 implements DeviceInterface {
 		/*-
 		writeRegister(T_MODE_REG, (byte) 0x8D); // Tauto=1; f(Timer) = 6.78MHz/TPreScaler
 		writeRegister(T_PRESCALER_REG, (byte) 0x3E); // TModeReg[3..0] + TPrescalerReg
-		
+
 		// 30
 		writeRegister(T_RELOAD_REG_MSB, (byte) 0);
 		writeRegister(T_RELOAD_REG_LSB, (byte) 0x1E);
-		
+
 		writeRegister(TX_ASK_REG, (byte) 0x40); // 100%ASK
 		writeRegister(MODE_REG, (byte) 0x3D); // CRC Initial value 0x6363 ???
 		*/
@@ -1683,35 +1686,35 @@ public class MFRC522 implements DeviceInterface {
 	{
 		// TODO: Fix cmdBuffer length and rxlength. They really should match.
 		//       (Better still, rxlength should not even be necessary.)
-	
+
 		StatusCode result;
 		byte				cmdBuffer[18]; // We need room for 16 bytes data and 2 bytes CRC_A.
-	
+
 		cmdBuffer[0] = 0x1B; //Comando de autentificacion
-	
+
 		for (byte i = 0; i<4; i++)
 			cmdBuffer[i+1] = passWord[i];
-	
+
 		result = PCD_CalculateCRC(cmdBuffer, 5, &cmdBuffer[5]);
-	
+
 		if (result!=STATUS_OK) {
 			return result;
 		}
-	
+
 		// Transceive the data, store the reply in cmdBuffer[]
 		byte waitIRq		= 0x30;	// RxIRq and IdleIRq
 		//byte cmdBufferSize	= sizeof(cmdBuffer);
 		byte validBits		= 0;
 		byte rxlength		= 5;
 		result = PCD_CommunicateWithPICC(PCD_Transceive, waitIRq, cmdBuffer, 7, cmdBuffer, &rxlength, &validBits);
-	
+
 		pACK[0] = cmdBuffer[0];
 		pACK[1] = cmdBuffer[1];
-	
+
 		if (result!=STATUS_OK) {
 			return result;
 		}
-	
+
 		return STATUS_OK;
 	} // End PCD_NTAG216_AUTH()
 	 */
