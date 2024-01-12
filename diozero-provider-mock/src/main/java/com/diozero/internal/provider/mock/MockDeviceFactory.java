@@ -5,7 +5,7 @@ package com.diozero.internal.provider.mock;
  * Organisation: diozero
  * Project:      diozero - Mock provider
  * Filename:     MockDeviceFactory.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.internal.provider.mock;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -33,39 +33,17 @@ package com.diozero.internal.provider.mock;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Properties;
+import java.util.*;
 import java.util.stream.Collectors;
 
-import com.diozero.api.DeviceMode;
-import com.diozero.api.GpioEventTrigger;
-import com.diozero.api.GpioPullUpDown;
+import com.diozero.api.*;
 import com.diozero.api.I2CConstants.AddressSize;
-import com.diozero.api.I2CDeviceInterface;
-import com.diozero.api.PinInfo;
-import com.diozero.api.RuntimeIOException;
 import com.diozero.api.SerialConstants.DataBits;
 import com.diozero.api.SerialConstants.Parity;
 import com.diozero.api.SerialConstants.StopBits;
-import com.diozero.api.SpiClockMode;
 import com.diozero.devices.PCA9685;
-import com.diozero.internal.board.GenericLinuxArmBoardInfo;
 import com.diozero.internal.provider.mock.devices.MockPca9685;
-import com.diozero.internal.spi.AnalogInputDeviceInterface;
-import com.diozero.internal.spi.AnalogOutputDeviceInterface;
-import com.diozero.internal.spi.BaseNativeDeviceFactory;
-import com.diozero.internal.spi.GpioDigitalInputDeviceInterface;
-import com.diozero.internal.spi.GpioDigitalInputOutputDeviceInterface;
-import com.diozero.internal.spi.GpioDigitalOutputDeviceInterface;
-import com.diozero.internal.spi.InternalI2CDeviceInterface;
-import com.diozero.internal.spi.InternalPwmOutputDeviceInterface;
-import com.diozero.internal.spi.InternalSerialDeviceInterface;
-import com.diozero.internal.spi.InternalServoDeviceInterface;
-import com.diozero.internal.spi.InternalSpiDeviceInterface;
+import com.diozero.internal.spi.*;
 import com.diozero.sbc.BoardInfo;
 import com.diozero.util.PropertyUtil;
 
@@ -343,10 +321,15 @@ public class MockDeviceFactory extends BaseNativeDeviceFactory {
 		throw new UnsupportedOperationException("Not yet implemented");
 	}
 
-	private static class MockBoardInfo extends GenericLinuxArmBoardInfo {
+	private static class MockBoardInfo extends BoardInfo {
 		public MockBoardInfo(Properties props) {
-			super(props.getProperty("Make"), props.getProperty("Model"), props.getProperty("SoC"),
-					Integer.parseInt(props.getProperty("Memory")), Arrays.asList("mockboard"));
+			super(props.getProperty("Make"), props.getProperty("Model"),Integer.parseInt(props.getProperty("Memory")),
+				  "mock","1.0");
+		}
+
+		@Override
+		public void populateBoardPinInfo() {
+
 		}
 	}
 
