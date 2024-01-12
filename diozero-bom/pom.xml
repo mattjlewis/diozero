@@ -62,9 +62,9 @@
 		<maven.compiler.release>11</maven.compiler.release>
 
 		<!-- Maven plugins -->
-		<maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
+		<maven-compiler-plugin.version>3.12.1</maven-compiler-plugin.version>
 		<maven-assembly-plugin.version>3.6.0</maven-assembly-plugin.version>
-		<maven-javadoc-plugin.version>3.6.0</maven-javadoc-plugin.version>
+		<maven-javadoc-plugin.version>3.6.3</maven-javadoc-plugin.version>
 		<maven-jar-plugin.version>3.3.0</maven-jar-plugin.version>
 		<maven-shade-plugin.version>3.5.1</maven-shade-plugin.version>
 		<maven-source-plugin.version>3.3.0</maven-source-plugin.version>
@@ -72,13 +72,13 @@
 		<maven-deploy-plugin.version>3.1.1</maven-deploy-plugin.version>
 		<maven-gpg-plugin.version>3.1.0</maven-gpg-plugin.version>
 		<maven-release-plugin.version>3.0.1</maven-release-plugin.version>
-		<maven-surefire-plugin.version>3.1.2</maven-surefire-plugin.version>
+		<maven-surefire-plugin.version>3.2.3</maven-surefire-plugin.version>
 
 		<!-- Other plugins -->
 		<nexus-staging-maven-plugin.version>1.6.13</nexus-staging-maven-plugin.version>
-		<license-maven-plugin.version>2.2.0</license-maven-plugin.version>
-		<versions-maven-plugin.version>2.16.1</versions-maven-plugin.version>
-		<exec-maven-plugin.version>3.1.0</exec-maven-plugin.version>
+		<license-maven-plugin.version>2.3.0</license-maven-plugin.version>
+		<versions-maven-plugin.version>2.16.2</versions-maven-plugin.version>
+		<exec-maven-plugin.version>3.1.1</exec-maven-plugin.version>
 		<eclipse.m2e.lifecycle-mapping.version>1.0.0</eclipse.m2e.lifecycle-mapping.version>
 
 		<!-- Libraries -->
@@ -86,11 +86,11 @@
 		<hipparchus.version>3.0</hipparchus.version>
 		<eclipse-paho-client-mqttv3.version>1.2.5</eclipse-paho-client-mqttv3.version>
 		<google-gson.version>2.10.1</google-gson.version>
-		<google-protobuf-java.version>3.25.0</google-protobuf-java.version>
-		<netty.version>4.1.100.Final</netty.version>
-		<grpc.version>1.59.0</grpc.version>
-		<junit.version>5.10.0</junit.version>
-		<mockito.version>5.6.0</mockito.version>
+		<google-protobuf-java.version>3.25.1</google-protobuf-java.version>
+		<netty.version>4.1.104.Final</netty.version>
+		<grpc.version>1.60.1</grpc.version>
+		<junit.version>5.10.1</junit.version>
+		<mockito.version>5.8.0</mockito.version>
 	</properties>
 
 	<!-- Prepare common library versions -->

@@ -12,8 +12,7 @@ public class Version {
 	}
 
 	public Version(String s) {
-		System.out.println(s);
-		String[] parts = s.split("\\.");
+		final String[] parts = s.split("\\.");
 		major = Integer.parseInt(parts[0]);
 		minor = Integer.parseInt(parts[1]);
 		point = Integer.parseInt(parts[2].split("-")[0]);

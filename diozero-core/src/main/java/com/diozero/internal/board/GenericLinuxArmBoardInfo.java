@@ -269,7 +269,7 @@ public class GenericLinuxArmBoardInfo extends BoardInfo {
 
 	@Override
 	public MmapGpioInterface createMmapGpio() {
-		String clz_name = mmapGpioClasses.getProperty(soc);
+		final String clz_name = mmapGpioClasses.getProperty(soc);
 		if (clz_name == null) {
 			return null;
 		}
@@ -283,7 +283,7 @@ public class GenericLinuxArmBoardInfo extends BoardInfo {
 
 	@Override
 	public boolean isBiasControlSupported() {
-		Version kernel_version = LocalSystemInfo.getInstance().getKernelVersion();
+		final Version kernel_version = LocalSystemInfo.getInstance().getKernelVersion();
 		return kernel_version != null && (kernel_version.getMajor() >= 6
 				|| (kernel_version.getMajor() == 5 && kernel_version.getMinor() >= 5));
 	}
