@@ -4,12 +4,12 @@ package com.diozero.internal.soc.rockchip;
  * #%L
  * Organisation: diozero
  * Project:      diozero - Core
- * Filename:     RockchipRK3288MmapGpio.java
+ * Filename:     RK3288MmapGpio.java
  * 
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
- * Copyright (C) 2016 - 2023 diozero
+ * Copyright (C) 2016 - 2024 diozero
  * %%
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal

@@ -1,16 +1,14 @@
 /**
- * Currently, these classes comprise the objects for
+ * <p>Currently, these classes comprise the objects for
  * <a href="https://learn.adafruit.com/all-about-stepper-motors">stepper motors</a>.
- * Additional support for the "chopper" style is also included.
- * <p>
+ * Additional support for the "chopper" style is also included.</p>
  * <h4>Direction of Rotation></h4>
- * The rotational direction is depenendent on the actual hardware hookup of the motor.
+ * <p>The rotational direction is depenendent on the actual hardware hookup of the motor.
  * The direction can be changed either through application code (use it "backwards"
- * transparently) or by re-attaching the stepper in a different configuration.
- * <p>
+ * transparently) or by re-attaching the stepper in a different configuration.</p>
  * <h4>Speed of Rotation</h4>
- * This is highly variable and dependent on many factors: operating system(s), hardware, etc. Each implementation
- * will need to determine how to best utilize the motor.
+ * <p>This is highly variable and dependent on many factors: operating system(s), hardware, etc. Each implementation
+ * will need to determine how to best utilize the motor.</p>
  */
 
 package com.diozero.devices.sandpit.motor;
@@ -20,11 +18,11 @@ package com.diozero.devices.sandpit.motor;
  * Organisation: diozero
  * Project:      diozero - Core
  * Filename:     package-info.java
- *
+ * 
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
- * Copyright (C) 2016 - 2023 diozero
+ * Copyright (C) 2016 - 2024 diozero
  * %%
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -32,10 +30,10 @@ package com.diozero.devices.sandpit.motor;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- *
+ * 
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- *
+ * 
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
