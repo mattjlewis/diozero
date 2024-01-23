@@ -2,11 +2,11 @@
  * <p>Currently, these classes comprise the objects for
  * <a href="https://learn.adafruit.com/all-about-stepper-motors">stepper motors</a>.
  * Additional support for the "chopper" style is also included.</p>
- * <h4>Direction of Rotation></h4>
+ * <p><strong>Direction of Rotation</strong></p>
  * <p>The rotational direction is depenendent on the actual hardware hookup of the motor.
  * The direction can be changed either through application code (use it "backwards"
  * transparently) or by re-attaching the stepper in a different configuration.</p>
- * <h4>Speed of Rotation</h4>
+ * <p><strong>Speed of Rotation</strong></p>
  * <p>This is highly variable and dependent on many factors: operating system(s), hardware, etc. Each implementation
  * will need to determine how to best utilize the motor.</p>
  */
