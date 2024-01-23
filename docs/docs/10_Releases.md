@@ -40,7 +40,11 @@ redirect_from:
     + Add GPIO iomux mode mapping information in the board def file (in the list of supported device modes, e.g. PWM_OUTPUT(2)?)
     + Create common MmapGpioInterface sample app
 
-## 1.4.0 (In progress)
+## 1.4.1 (In progress)
+
++ TBD
+
+## 1.4.0
 
 + Boards
     + Remove the need to add board provider classes - have a generic one that works off the detected System on a Chip (SoC)
@@ -49,6 +53,7 @@ redirect_from:
     + Reduce duplication of code in device / pin factory (PR #133)
     + #135 only call LocalSystemInfo when really necessary
     + #136 corrected defaults for servo SG90
++ Raspberry Pi 5 support
 
 ## 1.3.5
 
