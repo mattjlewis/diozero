@@ -68,15 +68,17 @@ public interface SsdOledCommunicationChannel extends AutoCloseable {
 
     /**
      * Sends a "command".
+     *
      * @param commands the set of commands to send
      */
-    void sendCommand(byte[] commands);
+    void sendCommand(byte... commands);
 
     /**
      * Sends a "data buffer".
+     *
      * @param buffer the buffer
      */
-    void sendData(byte[] buffer);
+    void sendData(byte... buffer);
 
     /**
      * Send part of a "data buffer"
@@ -128,13 +130,13 @@ public interface SsdOledCommunicationChannel extends AutoCloseable {
         }
 
         @Override
-        public void sendCommand(byte[] commands) {
+        public void sendCommand(byte... commands) {
             dcPin.setOn(false);
             device.write(commands);
         }
 
         @Override
-        public void sendData(byte[] buffer) {
+        public void sendData(byte... buffer) {
             dcPin.setOn(true);
             device.write(buffer);
         }
@@ -186,7 +188,7 @@ public interface SsdOledCommunicationChannel extends AutoCloseable {
         }
 
         @Override
-        public void sendCommand(byte[] commands) {
+        public void sendCommand(byte... commands) {
             byte[] output = new byte[2];
             output[0] = commandByte;
             for (byte command : commands) {
@@ -196,7 +198,7 @@ public interface SsdOledCommunicationChannel extends AutoCloseable {
         }
 
         @Override
-        public void sendData(byte[] buffer) {
+        public void sendData(byte... buffer) {
             sendData(buffer, 0, buffer.length);
         }
 

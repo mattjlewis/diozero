@@ -145,7 +145,7 @@ public abstract class SsdOled implements DeviceInterface {
 	/**
 	 * Scales the image to fit. This will scale up or down, depending on the relative sizes.
 	 * <p>
-	 * This <b>DOES NOT</b> display the image.
+	 * This <b>DOES NOT</b> display the image. It will render the image in the "native type" supplied by the display.
 	 * </p>
 	 *
 	 * @param image the image to scale
