@@ -7,7 +7,7 @@
 	<groupId>com.diozero</groupId>
 	<artifactId>diozero-bom</artifactId>
 	<packaging>pom</packaging>
-	<version>1.4.0</version>
+	<version>1.4.1</version>
 	<name>diozero - Bill of Materials</name>
 	<description>Java Device I/O library that is portable across Single Board Computers (including Raspberry Pi, BeagleBone Black, Odroid C2, CHIP, ASUS TinkerBoard, Allwinner H3 / H5 / H6)</description>
 	<url>https://www.diozero.com/</url>
@@ -55,7 +55,7 @@
 
 		<maven.min-version>3.3.0</maven.min-version>
 
-		<diozero.version>1.4.0</diozero.version>
+		<diozero.version>1.4.1</diozero.version>
 
 		<!-- Java version -->
 		<maven.compiler.source>11</maven.compiler.source>

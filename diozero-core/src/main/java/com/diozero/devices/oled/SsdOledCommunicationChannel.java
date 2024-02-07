@@ -36,176 +36,195 @@ import org.tinylog.Logger;
 import com.diozero.api.DigitalOutputDevice;
 import com.diozero.api.I2CDeviceInterface;
 import com.diozero.api.SpiDevice;
+import com.diozero.api.SpiDeviceInterface;
 import com.diozero.util.SleepUtil;
 
 /**
  * Comms for OLED devices.
  */
 public interface SsdOledCommunicationChannel extends AutoCloseable {
-    /**
-     * Send to the device.
-     * @param buffer data to send
-     */
-    void write(byte... buffer);
+	/**
+	 * Send to the device.
+	 * 
+	 * @param buffer data to send
+	 */
+	void write(byte... buffer);
 
-    /**
-     * Send parts to the device.
-     * @param buffer data to send
-     * @param offset offset
-     * @param length length
-     */
-    void write(byte[] buffer, int offset, int length);
+	/**
+	 * Send parts to the device.
+	 * 
+	 * @param buffer data to send
+	 * @param offset offset
+	 * @param length length
+	 */
+	void write(byte[] buffer, int offset, int length);
 
-    @Override
-    void close();
+	@Override
+	void close();
 
-    /**
-     * Optionally, reset the device.
-     */
-    default void reset() {
+	/**
+	 * Optionally, reset the device.
+	 */
+	default void reset() {
 
-    }
+	}
 
-    /**
-     * Sends a "command".
-     * @param commands the set of commands to send
-     */
-    void sendCommand(byte[] commands);
+	/**
+	 * Sends a "command".
+	 * 
+	 * @param commands the set of commands to send
+	 */
+	void sendCommand(byte[] commands);
 
-    /**
-     * Sends a "data buffer".
-     * @param buffer the buffer
-     */
-    void sendData(byte[] buffer);
+	/**
+	 * Sends a "data buffer".
+	 * 
+	 * @param buffer the buffer
+	 */
+	void sendData(byte[] buffer);
 
-    /**
-     * Send part of a "data buffer"
-     * @param buffer the buffer
-     * @param offset offset
-     * @param length size
-     */
-    void sendData(byte[] buffer, int offset, int length);
+	/**
+	 * Send part of a "data buffer"
+	 * 
+	 * @param buffer the buffer
+	 * @param offset offset
+	 * @param length size
+	 */
+	void sendData(byte[] buffer, int offset, int length);
 
-    /**
-     * SPI channel, with a data pin and a reset pin.
-     */
-    class SpiCommunicationChannel implements SsdOledCommunicationChannel {
-        public static final int SPI_FREQUENCY = 8_000_000;
-        private final SpiDevice device;
-        private final DigitalOutputDevice dcPin;
-        private final DigitalOutputDevice resetPin;
+	/**
+	 * SPI channel, with a data pin and a reset pin.
+	 */
+	class SpiCommunicationChannel implements SsdOledCommunicationChannel {
+		public static final int SPI_FREQUENCY = 8_000_000;
+		private final SpiDeviceInterface device;
+		private final DigitalOutputDevice dcPin;
+		private final DigitalOutputDevice resetPin;
 
-        public SpiCommunicationChannel(int chipSelect, int controller, int spiFrequency, DigitalOutputDevice dcPin,
-                                       DigitalOutputDevice resetPin) {
-            this.dcPin = dcPin;
-            this.resetPin = resetPin;
-            device = SpiDevice.builder(chipSelect).setController(controller).setFrequency(spiFrequency).build();
-        }
+		public SpiCommunicationChannel(int chipSelect, int controller, DigitalOutputDevice dcPin,
+				DigitalOutputDevice resetPin) {
+			this(SpiDevice.builder(chipSelect).setController(controller).setFrequency(SPI_FREQUENCY).build(), dcPin,
+					resetPin);
+		}
 
-        @Override
-        public void write(byte... buffer) {
-            device.write(buffer);
-        }
+		public SpiCommunicationChannel(int chipSelect, int controller, int spiFrequency, DigitalOutputDevice dcPin,
+				DigitalOutputDevice resetPin) {
+			this(SpiDevice.builder(chipSelect).setController(controller).setFrequency(spiFrequency).build(), dcPin,
+					resetPin);
+		}
 
-        @Override
-        public void write(byte[] txBuffer, int txOffset, int length) {
-            device.write(txBuffer, txOffset, length);
-        }
+		public SpiCommunicationChannel(SpiDeviceInterface device, DigitalOutputDevice dcPin,
+				DigitalOutputDevice resetPin) {
+			this.device = device;
+			this.dcPin = dcPin;
+			this.resetPin = resetPin;
+		}
 
-        @Override
-        public void close() {
-            Logger.trace("close()");
-            device.close();
-        }
+		@Override
+		public void write(byte... buffer) {
+			device.write(buffer);
+		}
 
-        @Override
-        public void reset() {
-            resetPin.setOn(true);
-            SleepUtil.sleepMillis(1);
-            resetPin.setOn(false);
-            SleepUtil.sleepMillis(10);
-            resetPin.setOn(true);
-        }
+		@Override
+		public void write(byte[] txBuffer, int txOffset, int length) {
+			device.write(txBuffer, txOffset, length);
+		}
 
-        @Override
-        public void sendCommand(byte[] commands) {
-            dcPin.setOn(false);
-            device.write(commands);
-        }
+		@Override
+		public void close() {
+			Logger.trace("close()");
+			device.close();
+		}
 
-        @Override
-        public void sendData(byte[] buffer) {
-            dcPin.setOn(true);
-            device.write(buffer);
-        }
+		@Override
+		public void reset() {
+			resetPin.setOn(true);
+			SleepUtil.sleepMillis(1);
+			resetPin.setOn(false);
+			SleepUtil.sleepMillis(10);
+			resetPin.setOn(true);
+		}
 
-        @Override
-        public void sendData(byte[] buffer, int offset, int length) {
-            dcPin.setOn(true);
-            device.write(buffer, offset, length);
-        }
-    }
+		@Override
+		public void sendCommand(byte[] commands) {
+			dcPin.setOn(false);
+			device.write(commands);
+		}
 
-    /**
-     * I2C channel. Sends the buffer data to the device in configurable chunks to adjust for the I2C speed.
-     */
-    class I2cCommunicationChannel implements SsdOledCommunicationChannel {
-        public static final byte DEFAULT_I2C_COMMAND = (byte)0x80;
-        public static final byte DEFAULT_I2C_DATA = (byte)0x40;
+		@Override
+		public void sendData(byte[] buffer) {
+			dcPin.setOn(true);
+			device.write(buffer);
+		}
 
-        private final I2CDeviceInterface device;
-        private final byte commandByte;
-        private final byte dataByte;
+		@Override
+		public void sendData(byte[] buffer, int offset, int length) {
+			dcPin.setOn(true);
+			device.write(buffer, offset, length);
+		}
+	}
 
-        public I2cCommunicationChannel(I2CDeviceInterface device) {
-            this(device, DEFAULT_I2C_COMMAND, DEFAULT_I2C_DATA);
-        }
+	/**
+	 * I2C channel. Sends the buffer data to the device in configurable chunks to
+	 * adjust for the I2C speed.
+	 */
+	class I2cCommunicationChannel implements SsdOledCommunicationChannel {
+		public static final byte DEFAULT_I2C_COMMAND = (byte) 0x80;
+		public static final byte DEFAULT_I2C_DATA = (byte) 0x40;
 
-        public I2cCommunicationChannel(I2CDeviceInterface device, byte commandByte, byte dataByte) {
-            this.device = device;
-            this.commandByte = commandByte;
-            this.dataByte = dataByte;
-        }
+		private final I2CDeviceInterface device;
+		private final byte commandByte;
+		private final byte dataByte;
 
-        @Override
-        public void write(byte... buffer) {
-            device.writeBytes(buffer);
-        }
+		public I2cCommunicationChannel(I2CDeviceInterface device) {
+			this(device, DEFAULT_I2C_COMMAND, DEFAULT_I2C_DATA);
+		}
 
-        @Override
-        public void write(byte[] buffer, int offset, int length) {
-            byte[] data = new byte[length];
-            System.arraycopy(buffer, offset, data, 0, length);
-            device.writeBytes(data);
-        }
+		public I2cCommunicationChannel(I2CDeviceInterface device, byte commandByte, byte dataByte) {
+			this.device = device;
+			this.commandByte = commandByte;
+			this.dataByte = dataByte;
+		}
 
-        @Override
-        public void close() {
-            Logger.trace("close()");
-            device.close();
-        }
+		@Override
+		public void write(byte... buffer) {
+			device.writeBytes(buffer);
+		}
 
-        @Override
-        public void sendCommand(byte[] commands) {
-            byte[] output = new byte[2];
-            output[0] = commandByte;
-            for (byte command : commands) {
-                output[1] = command;
-                write(output);
-            }
-        }
+		@Override
+		public void write(byte[] buffer, int offset, int length) {
+			byte[] data = new byte[length];
+			System.arraycopy(buffer, offset, data, 0, length);
+			device.writeBytes(data);
+		}
 
-        @Override
-        public void sendData(byte[] buffer) {
-            sendData(buffer, 0, buffer.length);
-        }
+		@Override
+		public void close() {
+			Logger.trace("close()");
+			device.close();
+		}
 
-        @Override
-        public void sendData(byte[] buffer, int offset, int length) {
-            byte[] output = new byte[length + 1];
-            output[0] = dataByte;
-            System.arraycopy(buffer, offset, output, 1, length);
-            write(output);
-        }
-    }
+		@Override
+		public void sendCommand(byte[] commands) {
+			byte[] output = new byte[2];
+			output[0] = commandByte;
+			for (byte command : commands) {
+				output[1] = command;
+				write(output);
+			}
+		}
+
+		@Override
+		public void sendData(byte[] buffer) {
+			sendData(buffer, 0, buffer.length);
+		}
+
+		@Override
+		public void sendData(byte[] buffer, int offset, int length) {
+			byte[] output = new byte[length + 1];
+			output[0] = dataByte;
+			System.arraycopy(buffer, offset, output, 1, length);
+			write(output);
+		}
+	}
 }

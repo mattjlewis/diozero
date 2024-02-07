@@ -38,10 +38,17 @@ import com.diozero.api.DigitalOutputDevice;
 import com.diozero.devices.oled.SsdOledCommunicationChannel.SpiCommunicationChannel;
 
 /**
- * <p>128x64 Dot Matrix OLED/PLED Segment/Common Driver (128 segments and 64 commons).<br>
- * Segment = column (x), Common = row (y)</p>
- * <p>The size of the RAM is 128 x 64 bits (1024 bytes) and the RAM is divided into eight pages, from
- * PAGE0 to PAGE7, which are used for monochrome 128x64 dot matrix display. Each page is 128 bytes.</p>
+ * <p>
+ * 128x64 Dot Matrix OLED/PLED Segment/Common Driver (128 segments and 64
+ * commons).<br>
+ * Segment = column (x), Common = row (y)
+ * </p>
+ * <p>
+ * The size of the RAM is 128 x 64 bits (1024 bytes) and the RAM is divided into
+ * eight pages, from PAGE0 to PAGE7, which are used for monochrome 128x64 dot
+ * matrix display. Each page is 128 bytes.
+ * </p>
+ * 
  * <pre>
  *        COM   Page   COM (Row re-mapping)
  *        0-7    0    63-56
@@ -55,9 +62,15 @@ import com.diozero.devices.oled.SsdOledCommunicationChannel.SpiCommunicationChan
  * Segment   0 ..... 127
  * Segment 127 ..... 0   (Column re-mapping)
  * </pre>
- * <p>A byte of data in GDDRAM represents values for all rows of the current column and page.</p>
- * <p>Enlargement of GDDRAM for Page 2 (No row re-mapping and column-remapping):
- * Each + represents one bit of image data.</p>
+ * <p>
+ * A byte of data in GDDRAM represents values for all rows of the current column
+ * and page.
+ * </p>
+ * <p>
+ * Enlargement of GDDRAM for Page 2 (No row re-mapping and column-remapping):
+ * Each + represents one bit of image data.
+ * </p>
+ * 
  * <pre>
  *                       1 1 1 1 1
  *        &lt;- Segment -&gt;  2 2 2 2 2
@@ -71,7 +84,10 @@ import com.diozero.devices.oled.SsdOledCommunicationChannel.SpiCommunicationChan
  *     6 + + + + + + + + + + + + + 22
  * MSB 7 + + + + + + + + + + + + + 23
  * </pre>
- * <p>Wiring</p>
+ * <p>
+ * Wiring
+ * </p>
+ * 
  * <pre>
  * GND .... Ground
  * Vcc .... 3v3
@@ -82,12 +98,20 @@ import com.diozero.devices.oled.SsdOledCommunicationChannel.SpiCommunicationChan
  * CS  .... Chip Select (SPI)
  * </pre>
  *
- * <p>Links</p>
+ * <p>
+ * Links
+ * </p>
  * <ul>
- * <li><a href="https://cdn-shop.adafruit.com/datasheets/SSD1306.pdf">SSD1306 Datasheet</a></li>
- * <li><a href="https://github.com/ondryaso/pi-ssd1306-java/blob/master/src/eu/ondryaso/ssd1306/Display.java">Example Pi4j Java implementation</a></li>
- * <li><a href="https://github.com/LuciferAndDiablo/NTC-C.H.I.P.-JavaGPIOLib/blob/master/GPIOChipLib/src/main/java/free/lucifer/chiplib/modules/SSD1306.java">Example Java implementation on the CHIP</a></li>
- * <li><a href="https://community.oracle.com/docs/DOC-982272">Java ME / JDK Device IO implementation</a></li>
+ * <li><a href="https://cdn-shop.adafruit.com/datasheets/SSD1306.pdf">SSD1306
+ * Datasheet</a></li>
+ * <li><a href=
+ * "https://github.com/ondryaso/pi-ssd1306-java/blob/master/src/eu/ondryaso/ssd1306/Display.java">Example
+ * Pi4j Java implementation</a></li>
+ * <li><a href=
+ * "https://github.com/LuciferAndDiablo/NTC-C.H.I.P.-JavaGPIOLib/blob/master/GPIOChipLib/src/main/java/free/lucifer/chiplib/modules/SSD1306.java">Example
+ * Java implementation on the CHIP</a></li>
+ * <li><a href="https://community.oracle.com/docs/DOC-982272">Java ME / JDK
+ * Device IO implementation</a></li>
  * </ul>
  */
 @SuppressWarnings("unused")
@@ -109,8 +133,10 @@ public class SSD1306 extends SsdOled {
 	private static final byte LEFT_HORIZONTAL_SCROLL = (byte) 0x27;
 	private static final byte VERTICAL_AND_RIGHT_HORIZONTAL_SCROLL = (byte) 0x29;
 	private static final byte VERTICAL_AND_LEFT_HORIZONTAL_SCROLL = (byte) 0x2A;
-	/** After sending 2Eh command to deactivate the scrolling
-	 * action, the ram data needs to be rewritten. */
+	/**
+	 * After sending 2Eh command to deactivate the scrolling action, the ram data
+	 * needs to be rewritten.
+	 */
 	private static final byte DEACTIVATE_SCROLL = (byte) 0x2E;
 	private static final byte ACTIVATE_SCROLL = (byte) 0x2F;
 	private static final byte SET_VERTICAL_SCROLL_AREA = (byte) 0xA3;
@@ -129,10 +155,11 @@ public class SSD1306 extends SsdOled {
 	private static final byte SET_SEGMENT_REMAP_OFF = (byte) 0xA0;
 	// Column address 127 is mapped to SEG0
 	private static final byte SET_SEGMENT_REMAP_ON = (byte) 0xA1;
-	// Set MUX ratio to N+1 MUX. From 16MUX to 64MUX, RESET=111111b (i.e. 63d, 64MUX)
+	// Set MUX ratio to N+1 MUX. From 16MUX to 64MUX, RESET=111111b (i.e. 63d,
+	// 64MUX)
 	private static final byte SET_MULTIPLEX_RATIO = (byte) 0xA8;
 	// enable internal IREF during display on
-	private static final byte SET_IREF_INTERNAL = (byte)0xAD;
+	private static final byte SET_IREF_INTERNAL = (byte) 0xAD;
 	// Normal mode. Scan from COM0 to COM[N ?1] (Default)
 	private static final byte COM_OUTPUT_SCAN_DIR_NORMAL = (byte) 0xC0;
 	// Remapped mode. Scan from COM[N-1] to COM0 (vertically flipped)
@@ -161,43 +188,55 @@ public class SSD1306 extends SsdOled {
 
 	// Memory addressing modes (SET_MEMORY_ADDR_MODE)
 	private static final byte ADDR_MODE_HORIZ = 0b00; // Horizontal Addressing Mode
-	private static final byte ADDR_MODE_VERT = 0b01;  // Vertical Addressing Mode
-	private static final byte ADDR_MODE_PAGE = 0b10;  // Page Addressing Mode (RESET)
+	private static final byte ADDR_MODE_VERT = 0b01; // Vertical Addressing Mode
+	private static final byte ADDR_MODE_PAGE = 0b10; // Page Addressing Mode (RESET)
 
 	// COM pins hardware config (SET_COM_PINS_HW_CONFIG)
 	private static final byte COM_PINS_SEQUENTIAL_NO_REMAP = 0b0000_0010;
-	private static final byte COM_PINS_ALT_NO_REMAP        = 0b0001_0010;
-	private static final byte COM_PINS_SEQUENTIAL_REMAP    = 0b0010_0010;
-	private static final byte COM_PINS_ALT_REMAP           = 0b0011_0010;
+	private static final byte COM_PINS_ALT_NO_REMAP = 0b0001_0010;
+	private static final byte COM_PINS_SEQUENTIAL_REMAP = 0b0010_0010;
+	private static final byte COM_PINS_ALT_REMAP = 0b0011_0010;
 
 	// Vcomh Deselect Levels (SET_VCOMH_DESELECT_LEVEL)
 	private static final byte VCOMH_DESELECT_LEVEL_065 = 0b0000_0000; // 0.65 x VCC
 	private static final byte VCOMH_DESELECT_LEVEL_077 = 0b0010_0000; // 0.77 x VCC (RESET)
 	private static final byte VCOMH_DESELECT_LEVEL_083 = 0b0011_0000; // 0.83 x VCC
 
-	public static final int WIDTH = 128;
+	private static final int WIDTH = 128;
 	private static final int BPP = 8;
+
 	private final int pages;
 	private final byte[] buffer;
-
 	private final boolean externalVcc;
+
+	public enum Height {
+		SHORT(32), TALL(64);
+
+		private int lines;
+
+		private Height(int lines) {
+			this.lines = lines;
+		}
+
+		public int lines() {
+			return lines;
+		}
+	}
 
 	@Deprecated
 	public SSD1306(int controller, int chipSelect, DigitalOutputDevice dcPin, DigitalOutputDevice resetPin) {
-		this(new SpiCommunicationChannel(controller, chipSelect, SpiCommunicationChannel.SPI_FREQUENCY, dcPin, resetPin),
-			 Height.TALL);
+		this(new SpiCommunicationChannel(controller, chipSelect, SpiCommunicationChannel.SPI_FREQUENCY, dcPin,
+				resetPin), Height.TALL);
 	}
 
-	public enum Height {
-		SHORT, TALL
-	}
 	/**
 	 * Only known to come in two variations, based on height
+	 * 
 	 * @param commChannel the comms
-	 * @param height how tall
+	 * @param height      how tall
 	 */
-	public SSD1306(SsdOledCommunicationChannel commChannel, Height height) {
-		super(commChannel, WIDTH, height == Height.SHORT ? 32 : 64, BufferedImage.TYPE_BYTE_BINARY);
+	public SSD1306(SsdOledCommunicationChannel commChannel, Height heightType) {
+		super(commChannel, WIDTH, heightType.lines(), BufferedImage.TYPE_BYTE_BINARY);
 		externalVcc = false;
 		buffer = new byte[this.width * this.height / BPP];
 		pages = this.height / 8;
@@ -213,7 +252,7 @@ public class SSD1306 extends SsdOled {
 	protected void init() {
 		reset();
 
-		/*
+		/*-
 		// From the docs (doesn't work):
 		// Set MUX Ratio
 		command(SET_MULTIPLEX_RATIO, (byte) 0x3F);
@@ -239,7 +278,7 @@ public class SSD1306 extends SsdOled {
 		command(SET_CHARGE_PUMP, externalVcc ? CHARGE_PUMP_DISABLED : CHARGE_PUMP_ENABLED);
 		// Display on
 		command(DISPLAY_ON);
-		*/
+		 */
 
 		int commPinsConfig = this.width > this.height * 2 ? COM_PINS_SEQUENTIAL_NO_REMAP : COM_PINS_ALT_NO_REMAP;
 
@@ -255,7 +294,7 @@ public class SSD1306 extends SsdOled {
 //		command(SET_COM_PINS_HW_CONFIG, COM_PINS_ALT_NO_REMAP);
 		command(SET_COM_PINS_HW_CONFIG, (byte) commPinsConfig);
 //		setContrast(externalVcc ? CONTRAST_EXTERNALVCC : CONTRAST_SWITCHCAPVCC);
-		setContrast((byte)0xFF);
+		setContrast((byte) 0xFF);
 		command(SET_PRECHARGE_PERIOD, externalVcc ? PRECHARGE_PERIOD_EXTERNALVCC : PRECHARGE_PERIOD_SWITCHCAPVCC);
 		// adafruit indicates this should be 0.83*Vcc (0x30)
 		// specs for ssd1306 64x32 oled screens imply this should be 0x40
@@ -263,8 +302,8 @@ public class SSD1306 extends SsdOled {
 //		command(SET_VCOMH_DESELECT_LEVEL, VCOMH_DESELECT_LEVEL_077);
 		command(RESUME_TO_RAM_CONTENT_DISPLAY);
 		command(NORMAL_DISPLAY);
-		//command(DEACTIVATE_SCROLL);
-		command(SET_IREF_INTERNAL, (byte)0x30);
+		// command(DEACTIVATE_SCROLL);
+		command(SET_IREF_INTERNAL, (byte) 0x30);
 		setDisplayOn(true);
 	}
 
@@ -285,14 +324,16 @@ public class SSD1306 extends SsdOled {
 			throw new IllegalArgumentException("Invalid input image dimensions, must be " + width + "x" + height);
 		}
 		/*
-		 * Unfortunately it isn't possible to render from a byte array even if the image is already in binary format
+		 * Unfortunately it isn't possible to render from a byte array even if the image
+		 * is already in binary format
 		 */
-		//byte[] image_data = ((DataBufferByte) image.getRaster().getDataBuffer()).getData();
-		//System.arraycopy(image_data, 0, buffer, 0, image_data.length);
+		// byte[] image_data = ((DataBufferByte)
+		// image.getRaster().getDataBuffer()).getData();
+		// System.arraycopy(image_data, 0, buffer, 0, image_data.length);
 		Raster r = image.getRaster();
-		for (int y=0; y<height; y++) {
-			for (int x=0; x<width; x++) {
-				//int[] pixel = r.getPixel(x, y, new int[] {});
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++) {
+				// int[] pixel = r.getPixel(x, y, new int[] {});
 				setPixel(x, y, r.getSample(x, y, 0) >= threshold);
 			}
 		}
@@ -311,6 +352,7 @@ public class SSD1306 extends SsdOled {
 
 	/**
 	 * Sets the display contract. Apparently not really working.
+	 * 
 	 * @param contrast Contrast
 	 */
 	public void setContrast(byte contrast) {
@@ -320,8 +362,7 @@ public class SSD1306 extends SsdOled {
 	/**
 	 * Sets if the display should be inverted
 	 *
-	 * @param invert
-	 *            Invert state
+	 * @param invert Invert state
 	 */
 	@Override
 	public void invertDisplay(boolean invert) {

@@ -9,7 +9,7 @@ java -cp diozero-sampleapps-<version>.jar <full reference to main class>
 `
 Example:
 ```shell
-`java -cp diozero-sampleapps-1.4.0.jar com.diozero.sampleapps.AnimationTest
+`java -cp diozero-sampleapps-1.4.1.jar com.diozero.sampleapps.AnimationTest
 ```
 
 If you wish to use one of the other providers, un-comment that dependency and re-build. Note that you **cannot** use multiple providers at the same time in this JAR due to the SPI limitations.

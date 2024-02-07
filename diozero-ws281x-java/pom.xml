@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>com.diozero</groupId>
 		<artifactId>diozero</artifactId>
-		<version>1.4.0</version>
+		<version>1.4.1</version>
 	</parent>
 	
 	<artifactId>diozero-ws281x-java</artifactId>

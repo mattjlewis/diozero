@@ -41,6 +41,7 @@ import org.tinylog.Logger;
 
 import com.diozero.api.DigitalOutputDevice;
 import com.diozero.devices.oled.SSD1306;
+import com.diozero.devices.oled.SsdOledCommunicationChannel.SpiCommunicationChannel;
 import com.diozero.util.SleepUtil;
 
 /**
@@ -54,19 +55,20 @@ import com.diozero.util.SleepUtil;
 public class SSD1306Test {
 	public static void main(String[] args) {
 		Graphics2D g2d = null;
-		ThreadLocalRandom random = ThreadLocalRandom.current();
-		try (DigitalOutputDevice dc_pin = new DigitalOutputDevice(22);
-				DigitalOutputDevice reset_pin = new DigitalOutputDevice(27);
-				SSD1306 oled = new SSD1306(0, 0, dc_pin, reset_pin)) {
-			int width = oled.getWidth();
-			int height = oled.getHeight();
+		final ThreadLocalRandom random = ThreadLocalRandom.current();
+		try (final DigitalOutputDevice dc_pin = new DigitalOutputDevice(22);
+				final DigitalOutputDevice reset_pin = new DigitalOutputDevice(27);
+				final SpiCommunicationChannel ssd_comm = new SpiCommunicationChannel(0, 0, dc_pin, reset_pin);
+				final SSD1306 oled = new SSD1306(ssd_comm, SSD1306.Height.TALL)) {
+			final int width = oled.getWidth();
+			final int height = oled.getHeight();
 			Logger.info("Sierpinski triangle");
-			int[][] corners = { { width / 2, 0 }, { 0, height - 1 }, { width - 1, height - 1 } };
-			int[] start_corner = corners[random.nextInt(3)];
+			final int[][] corners = { { width / 2, 0 }, { 0, height - 1 }, { width - 1, height - 1 } };
+			final int[] start_corner = corners[random.nextInt(3)];
 			int x = start_corner[0];
 			int y = start_corner[1];
 			for (int i = 0; i < 1_000; i++) {
-				int[] target_corner = corners[random.nextInt(3)];
+				final int[] target_corner = corners[random.nextInt(3)];
 				x += (target_corner[0] - x) / 2;
 				y += (target_corner[1] - y) / 2;
 				oled.setPixel(x, y, true);
@@ -75,7 +77,7 @@ public class SSD1306Test {
 			}
 
 			Logger.info("Displaying custom image");
-			BufferedImage image = new BufferedImage(width, height, oled.getNativeImageType());
+			final BufferedImage image = new BufferedImage(width, height, oled.getNativeImageType());
 			g2d = image.createGraphics();
 			g2d.setColor(Color.white);
 			g2d.setBackground(Color.black);
@@ -114,25 +116,26 @@ public class SSD1306Test {
 		}
 	}
 
-	private static void animateText(SSD1306 oled, String text) {
-		int width = oled.getWidth();
-		int height = oled.getHeight();
-		BufferedImage image = new BufferedImage(width, height, oled.getNativeImageType());
-		Graphics2D g2d = image.createGraphics();
+	private static void animateText(final SSD1306 oled, final String text) {
+		final int width = oled.getWidth();
+		final int height = oled.getHeight();
+		final BufferedImage image = new BufferedImage(width, height, oled.getNativeImageType());
+		final Graphics2D g2d = image.createGraphics();
 
 		g2d.setColor(Color.white);
 		g2d.setBackground(Color.black);
 
 		Font f = g2d.getFont();
-		Logger.info("Font name={}, family={}, size={}, style={}", f.getFontName(), f.getFamily(),
-                    f.getSize(), f.getStyle());
-		FontMetrics fm = g2d.getFontMetrics();
-		int maxwidth = fm.stringWidth(text);
+		Logger.info("Font name={}, family={}, size={}, style={}", f.getFontName(), f.getFamily(), f.getSize(),
+				f.getStyle());
+		final FontMetrics fm = g2d.getFontMetrics();
+		final int maxwidth = fm.stringWidth(text);
 
-		int amplitude = height / 4;
-		int offset = height / 2 - 4;
-		int velocity = -2;
-		int startpos = width;
+		final int amplitude = height / 4;
+		final int offset = height / 2 - 4;
+		final int velocity = -2;
+		final int startpos = width;
+
 		int pos = startpos;
 		int x;
 		for (int i = 0; i < 500; i++) {
@@ -152,7 +155,7 @@ public class SSD1306Test {
 				int y = (int) (offset + Math.floor(amplitude * Math.sin(x / ((float) width) * 2.0 * Math.PI)));
 				// Draw text.
 				g2d.drawString(String.valueOf(c), x, y);
-				// Increment x position based on chacacter width.
+				// Increment x position based on character width.
 				x += fm.charWidth(c);
 			}
 			// Draw the image buffer.
