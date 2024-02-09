@@ -1,10 +1,10 @@
-package com.diozero.devices.oled;
+package com.diozero.sampleapps.oled;
 
-/*-
+/*
  * #%L
  * Organisation: diozero
- * Project:      diozero - Core
- * Filename:     DisplayType.java
+ * Project:      diozero - Sample applications
+ * Filename:     SH1106Test.java
  *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
@@ -31,6 +31,20 @@ package com.diozero.devices.oled;
  * #L%
  */
 
-public enum DisplayType {
-	MONOCHROME, GRAYSCALE, COLOR;
+import com.diozero.devices.oled.SH1106;
+import com.diozero.devices.oled.SsdOledCommunicationChannel;
+
+/**
+ * {@code java -cp diozero-sampleapps-$DIOZERO_VERSION.jar com.diozero.sampleapps.oled.SH1106Test}
+ */
+public class SH1106Test extends MonochromeSsdOledBase {
+    public static void main(String[] args) {
+        SsdOledCommunicationChannel channel = getChannel(args);
+        try (SH1106 display = new SH1106(channel)) {
+            sierpinski(display);
+            customImage(display);
+            animateText(display, "SH1106");
+            display.clear();
+        }
+    }
 }
