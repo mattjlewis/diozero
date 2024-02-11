@@ -35,7 +35,12 @@ import com.diozero.devices.oled.SH1106;
 import com.diozero.devices.oled.SsdOledCommunicationChannel;
 
 /**
- * {@code java -cp diozero-sampleapps-$DIOZERO_VERSION.jar com.diozero.sampleapps.oled.SH1106Test}
+ * <ul>
+ *     <li>SPI (default)<br>
+ *     {@code java -cp diozero-sampleapps-$DIOZERO_VERSION.jar com.diozero.sampleapps.oled.SH1106Test}</li>
+ *     <li>I2C<br>
+ *     {@code java -cp diozero-sampleapps-$DIOZERO_VERSION.jar com.diozero.sampleapps.oled.SH1106Test i2c}</li>
+ * </ul>
  */
 public class SH1106Test extends MonochromeSsdOledBase {
     public static void main(String[] args) {

@@ -36,10 +36,10 @@ import com.diozero.devices.oled.SSD1306;
 
 /**
  * <ul>
- * <li>Built-in:<br>
- * {@code java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar com.diozero.sampleapps.oled.SSD1306Test}</li>
- * <li>pigpioj:<br>
- * {@code sudo java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-provider-pigpio-$DIOZERO_VERSION.jar:pigpioj-java-2.4.jar com.diozero.sampleapps.oled.SSD1306Test}</li>
+ * <li>SPI (default):<br>
+ * {@code java -cp diozero-sampleapps-$DIOZERO_VERSION.jar com.diozero.sampleapps.oled.SSD1306Test}</li>
+ * <li>I2C<br>
+ * {@code java -cp diozero-sampleapps-$DIOZERO_VERSION.jar com.diozero.sampleapps.oled.SSD1306Test i2c}</li>
  * </ul>
  */
 public class SSD1306Test extends MonochromeSsdOledBase {
