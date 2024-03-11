@@ -143,12 +143,23 @@ public abstract class MonochromeSsdOled extends SsdOled {
     }
 
     /**
-     * Sets the display contract. Apparently not really working.
+     * Sets the display contract. The effectiveness and/or granularity of this will vary from screen type to type
+     * (and other factors).
      *
      * @param contrast Contrast
      */
     public void setContrast(byte contrast) {
         command(SET_CONTRAST, contrast);
+    }
+
+    /**
+     * Sets the display "contrast" (basically the brightness). Small changes are not likely to have much
+     * effect.
+     * @param percentage the contrast {@code 0-> 1.0}
+     */
+    public void setContrast(float percentage) {
+        byte byteVal = (byte)(Math.round(0xFF * percentage) & 0xFF);
+        setContrast(byteVal);
     }
 
     /**
