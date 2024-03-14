@@ -5,7 +5,7 @@ package com.diozero.devices.oled;
  * Organisation: diozero
  * Project:      diozero - Core
  * Filename:     SsdOledCommunicationChannel.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.devices.oled;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -45,14 +45,14 @@ import com.diozero.util.SleepUtil;
 public interface SsdOledCommunicationChannel extends AutoCloseable {
 	/**
 	 * Send to the device.
-	 * 
+	 *
 	 * @param buffer data to send
 	 */
 	void write(byte... buffer);
 
 	/**
 	 * Send parts to the device.
-	 * 
+	 *
 	 * @param buffer data to send
 	 * @param offset offset
 	 * @param length length
@@ -71,21 +71,21 @@ public interface SsdOledCommunicationChannel extends AutoCloseable {
 
 	/**
 	 * Sends a "command".
-	 * 
+	 *
 	 * @param commands the set of commands to send
 	 */
-	void sendCommand(byte[] commands);
+    void sendCommand(byte... commands);
 
 	/**
 	 * Sends a "data buffer".
-	 * 
+	 *
 	 * @param buffer the buffer
 	 */
-	void sendData(byte[] buffer);
+    void sendData(byte... buffer);
 
 	/**
 	 * Send part of a "data buffer"
-	 * 
+	 *
 	 * @param buffer the buffer
 	 * @param offset offset
 	 * @param length size
@@ -146,13 +146,13 @@ public interface SsdOledCommunicationChannel extends AutoCloseable {
 		}
 
 		@Override
-		public void sendCommand(byte[] commands) {
+        public void sendCommand(byte... commands) {
 			dcPin.setOn(false);
 			device.write(commands);
 		}
 
 		@Override
-		public void sendData(byte[] buffer) {
+        public void sendData(byte... buffer) {
 			dcPin.setOn(true);
 			device.write(buffer);
 		}
@@ -205,7 +205,7 @@ public interface SsdOledCommunicationChannel extends AutoCloseable {
 		}
 
 		@Override
-		public void sendCommand(byte[] commands) {
+        public void sendCommand(byte... commands) {
 			byte[] output = new byte[2];
 			output[0] = commandByte;
 			for (byte command : commands) {
@@ -215,7 +215,7 @@ public interface SsdOledCommunicationChannel extends AutoCloseable {
 		}
 
 		@Override
-		public void sendData(byte[] buffer) {
+        public void sendData(byte... buffer) {
 			sendData(buffer, 0, buffer.length);
 		}
 

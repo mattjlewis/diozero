@@ -1,10 +1,10 @@
-package com.diozero.devices.oled;
+package com.diozero.sampleapps.oled;
 
-/*-
+/*
  * #%L
  * Organisation: diozero
- * Project:      diozero - Core
- * Filename:     DisplayType.java
+ * Project:      diozero - Sample applications
+ * Filename:     SSD1306Test.java
  *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
@@ -31,6 +31,24 @@ package com.diozero.devices.oled;
  * #L%
  */
 
-public enum DisplayType {
-	MONOCHROME, GRAYSCALE, COLOR;
+import com.diozero.devices.oled.MonochromeSsdOled;
+import com.diozero.devices.oled.SSD1306;
+
+/**
+ * <ul>
+ * <li>SPI (default):<br>
+ * {@code java -cp diozero-sampleapps-$DIOZERO_VERSION.jar com.diozero.sampleapps.oled.SSD1306Test}</li>
+ * <li>I2C<br>
+ * {@code java -cp diozero-sampleapps-$DIOZERO_VERSION.jar com.diozero.sampleapps.oled.SSD1306Test i2c}</li>
+ * </ul>
+ */
+public class SSD1306Test extends MonochromeSsdOledBase {
+	public static void main(String[] args) {
+        try (SSD1306 oled = new SSD1306(getChannel(args), MonochromeSsdOled.Height.SHORT)) {
+            sierpinski(oled);
+            customImage(oled);
+            animateText(oled, "SSD1306");
+            oled.clear();
+		}
+	}
 }
