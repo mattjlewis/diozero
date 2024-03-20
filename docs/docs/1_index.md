@@ -3,7 +3,7 @@ title: diozero
 nav_order: 1
 permalink: /
 author: "Matthew Lewis"
-published-on: 20 March 2024
+date: 2024-03-20
 redirect_from:
   - /en/latest/index.html
   - /en/stable/index.html
