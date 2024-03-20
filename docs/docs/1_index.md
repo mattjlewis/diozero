@@ -2,11 +2,12 @@
 title: diozero
 nav_order: 1
 permalink: /
+author: "Matthew Lewis"
+published-on: 20 March 2024
 redirect_from:
   - /en/latest/index.html
   - /en/stable/index.html
 ---
-
 # diozero
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
