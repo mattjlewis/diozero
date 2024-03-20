@@ -20,7 +20,7 @@
 
 title: "diozero"
 email: deviceiozero@gmail.com
-version: 1.3.5
+version: 1.4.0
 tagline: "A platform independent device I/O library written in Java"
 description: >- # this means to ignore newlines until the next YAML element
   Java Device I/O library that is portable across Single Board Computers.
@@ -33,6 +33,7 @@ url: "https://www.diozero.com" # the base hostname & protocol for your site, e.g
 #twitter_username: jekyllrb
 github_username:  mattjlewis
 search: true
+author: "Matthew Lewis"
 
 # Build settings
 markdown: kramdown
