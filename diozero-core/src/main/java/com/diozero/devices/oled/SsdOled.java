@@ -45,14 +45,14 @@ public abstract class SsdOled implements DeviceInterface {
 	public static final byte DISPLAY_OFF = (byte) 0xAE;
 	public static final byte DISPLAY_ON = (byte) 0xAF;
 
-	protected final SsdOledCommunicationChannel device;
+	protected final SsdOledCommunicationChannel channel;
 	protected final int width;
 	protected final int height;
 
 	protected int imageType;
 
-	protected SsdOled(SsdOledCommunicationChannel device,  int width, int height, int imageType) {
-		this.device = device;
+	protected SsdOled(SsdOledCommunicationChannel channel, int width, int height, int imageType) {
+		this.channel = channel;
 		this.width = width;
 		this.height = height;
 		this.imageType = imageType;
@@ -60,6 +60,7 @@ public abstract class SsdOled implements DeviceInterface {
 
 	/**
 	 * Each device must maintain a <b>static</b> byte buffer of the screen contents.
+	 * 
 	 * @return the screen contents to write out
 	 */
 	protected abstract byte[] getBuffer();
@@ -67,34 +68,25 @@ public abstract class SsdOled implements DeviceInterface {
 	protected abstract void init();
 
 	protected void reset() {
-		device.reset();
+		channel.reset();
 	}
 
 	protected void command(byte... commands) {
-		device.sendCommand(commands);
+		channel.sendCommand(commands);
 	}
 
-
 	protected void data() {
-		device.sendData(getBuffer());
+		channel.sendData(getBuffer());
 	}
 
 	protected void data(int offset, int length) {
-		device.sendData(getBuffer(), offset, length);
+		channel.sendData(getBuffer(), offset, length);
 	}
 
 	protected abstract void goTo(int x, int y);
 
 	protected void home() {
-		goTo(0,0);
-	}
-
-	/**
-	 * Displays the current buffer contents.
-	 */
-	@Deprecated
-	public void display() {
-		show();
+		goTo(0, 0);
 	}
 
 	/**
@@ -107,6 +99,7 @@ public abstract class SsdOled implements DeviceInterface {
 
 	/**
 	 * Fills the buffer with the image and immediately displays it
+	 * 
 	 * @param image the image to display
 	 */
 	public abstract void display(BufferedImage image);
@@ -133,7 +126,7 @@ public abstract class SsdOled implements DeviceInterface {
 		Logger.trace("close()");
 		clear();
 		setDisplayOn(false);
-		device.close();
+		channel.close();
 	}
 
 	public int getNativeImageType() {
@@ -157,8 +150,8 @@ public abstract class SsdOled implements DeviceInterface {
 			float imageWd = image.getWidth();
 			float imageHt = image.getHeight();
 			float scale = Math.min(width / imageWd, height / imageHt);
-			int w = (int)Math.floor(imageWd * scale);
-			int y = (int)Math.floor(imageHt * scale);
+			int w = (int) Math.floor(imageWd * scale);
+			int y = (int) Math.floor(imageHt * scale);
 			Image scaledInstance = image.getScaledInstance(w, y, Image.SCALE_DEFAULT);
 			showThis = new BufferedImage(w, y, getNativeImageType());
 			showThis.getGraphics().drawImage(scaledInstance, 0, 0, null);
@@ -177,8 +170,8 @@ public abstract class SsdOled implements DeviceInterface {
 	}
 
 	/**
-	 * Creates a font of the specified type that will fit on the full display with the specified number of lines,
-	 * with the number of <b>pixels</b> between each line.
+	 * Creates a font of the specified type that will fit on the full display with the specified number of lines, with
+	 * the number of <b>pixels</b> between each line.
 	 *
 	 * @param fontName      name of the font
 	 * @param fontType      font type
@@ -190,13 +183,15 @@ public abstract class SsdOled implements DeviceInterface {
 		// how big is the font in pixels
 		int pixelsPerLine = height / numberOfLines - lineSpacing;
 		int size = pixelsPerLine + 1;
-		int fontSize = 48;    // TODO this is pretty big, but is it big enough?
+		int fontSize = 48; // TODO this is pretty big, but is it big enough?
 		Font f = null;
 		BufferedImage bufferedImage = new BufferedImage(width, height, getNativeImageType());
 		Graphics2D g = bufferedImage.createGraphics();
 		while (size > pixelsPerLine) {
 			fontSize--;
-			if (fontSize <= 0) throw new IllegalStateException("Font size is 0!");
+			if (fontSize <= 0) {
+				throw new IllegalStateException("Font size is 0!");
+			}
 			f = new Font(fontName, fontType, fontSize);
 			size = g.getFontMetrics(f).getHeight();
 		}

@@ -54,8 +54,9 @@ public abstract class ColourSsdOled extends SsdOled {
 	private final byte[] buffer;
 
 	public ColourSsdOled(int controller, int chipSelect, DigitalOutputDevice dcPin, DigitalOutputDevice resetPin,
-						 int width, int height, int imageType) {
-		this(new SpiCommunicationChannel(controller, chipSelect, SPI_FREQUENCY, dcPin, resetPin), width, height, imageType);
+			int width, int height, int imageType) {
+		this(new SpiCommunicationChannel(controller, chipSelect, SPI_FREQUENCY, dcPin, resetPin), width, height,
+				imageType);
 	}
 
 	public ColourSsdOled(SsdOledCommunicationChannel commChannel, int width, int height, int imageType) {
@@ -83,7 +84,7 @@ public abstract class ColourSsdOled extends SsdOled {
 			Logger.warn("Source image type ({}) doesn't match native image type ({}); converting",
 					Integer.valueOf(image.getType()), Integer.valueOf(imageType));
 			image_to_display = new BufferedImage(width, height, imageType);
-			Graphics2D g2d = image_to_display.createGraphics();
+			final Graphics2D g2d = image_to_display.createGraphics();
 
 			g2d.drawImage(image, 0, 0, null);
 			g2d.dispose();

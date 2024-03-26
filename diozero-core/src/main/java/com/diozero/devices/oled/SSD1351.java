@@ -33,17 +33,19 @@ package com.diozero.devices.oled;
 
 import java.awt.image.BufferedImage;
 
-
 import com.diozero.api.DigitalOutputDevice;
 
 /**
- * <p>Encapsulates the serial interface to the 16-bit (5-6-5 RGB) and 18-bit
- * (6-6-6 RGB) colour SSD1351 128x128 OLED display hardware. On creation, an
- * initialisation sequence is pumped to the display to properly configure it.
- * Further control commands can then be called to affect the brightness and
- * other settings.</p>
+ * <p>
+ * Encapsulates the serial interface to the 16-bit (5-6-5 RGB) and 18-bit (6-6-6 RGB) colour SSD1351 128x128 OLED
+ * display hardware. On creation, an initialisation sequence is pumped to the display to properly configure it. Further
+ * control commands can then be called to affect the brightness and other settings.
+ * </p>
  *
- * <p>Wiring:</p>
+ * <p>
+ * Wiring:
+ * </p>
+ * 
  * <pre>
  * GND .... Ground
  * Vcc .... 3v3
@@ -54,12 +56,14 @@ import com.diozero.api.DigitalOutputDevice;
  * CS  .... Chip Select (SPI)
  * </pre>
  *
- * <p>Links:</p>
+ * <p>
+ * Links:
+ * </p>
  * <ul>
- *  <li><a href="https://www.newhavendisplay.com/app_notes/SSD1351.pdf">Datasheet</a></li>
- *  <li><a href="https://github.com/freetronics/FTOLED/">FTOLED</a></li>
- *  <li><a href="https://github.com/kirberich/teensy_ssd1351">Teensy</a></li>
- *  <li><a href="https://github.com/adafruit/Adafruit-SSD1351-library">Adafruit</a></li>
+ * <li><a href= "https://www.newhavendisplay.com/app_notes/SSD1351.pdf">Datasheet</a></li>
+ * <li><a href="https://github.com/freetronics/FTOLED/">FTOLED</a></li>
+ * <li><a href="https://github.com/kirberich/teensy_ssd1351">Teensy</a></li>
+ * <li><a href= "https://github.com/adafruit/Adafruit-SSD1351-library">Adafruit</a></li>
  * </ul>
  */
 public class SSD1351 extends ColourSsdOled {
@@ -104,20 +108,20 @@ public class SSD1351 extends ColourSsdOled {
 	private void commandAndData(byte command, byte... data) {
 		// Single byte command (D/C# = 0)
 		// Multiple byte command (D/C# = 0 for first byte, D/C# = 1 for other bytes)
-		device.write(command);
-		device.write(data);
+		channel.sendCommand(command);
+		channel.sendData(data);
 	}
 
 	@Override
 	protected void data() {
-		super.data();
-		command(WRITE_RAM_COMMAND);
+		channel.sendData(getBuffer());
+		channel.sendCommand(WRITE_RAM_COMMAND);
 	}
 
 	@Override
 	protected void data(int offset, int length) {
-		super.data(offset, length);
-		command(WRITE_RAM_COMMAND);
+		channel.sendData(getBuffer(), offset, length);
+		channel.sendCommand(WRITE_RAM_COMMAND);
 	}
 
 	@Override
@@ -151,27 +155,27 @@ public class SSD1351 extends ColourSsdOled {
 		// A[7:6]=00/01, 65k Colour depth
 		// A[7:6]=10, 262k Colour depth
 		// A[7:6]=11, 262k Colour depth (16-bit format 2)
-		commandAndData(REMAP_AND_COLOUR_DEPTH, (byte) 0b00110100);   // 0b00110000
-		//commandAndData(REMAP_AND_COLOUR_DEPTH, (byte) 0x74); // 0b01110100
+		commandAndData(REMAP_AND_COLOUR_DEPTH, (byte) 0b00110100); // 0b00110000
+		// commandAndData(REMAP_AND_COLOUR_DEPTH, (byte) 0x74); // 0b01110100
 		// A[6:0]: Start Address. [reset=0]
 		// B[6:0]: End Address. [reset=127]
-		commandAndData(SET_COLUMN_ADDRESS, (byte) 0x00, (byte) (width-1));
+		commandAndData(SET_COLUMN_ADDRESS, (byte) 0x00, (byte) (width - 1));
 		// A[6:0]: Start Address. [reset=0]
 		// B[6:0]: End Address. [reset=127]
-		commandAndData(SET_ROW_ADDRESS, (byte) 0x00, (byte) (height-1));
+		commandAndData(SET_ROW_ADDRESS, (byte) 0x00, (byte) (height - 1));
 		// Set start line - this needs to be 0 for a 128x128 display and 96 for a 128x96 display
 		commandAndData(DISPLAY_START_LINE, (byte) 0x00);
 		commandAndData(DISPLAY_OFFSET, (byte) 0x00);
 		// A[1:0] GPIO0:
-		//  00 pin HiZ, Input disabled
-		//  01 pin HiZ, Input enabled
-		//  10 pin output LOW [reset]
-		//  11 pin output HIGH
+		// 00 pin HiZ, Input disabled
+		// 01 pin HiZ, Input enabled
+		// 10 pin output LOW [reset]
+		// 11 pin output HIGH
 		// A[3:2] GPIO1:
-		//  00 pin HiZ, Input disabled
-		//  01 pin HiZ, Input enabled
-		//  10 pin output LOW [reset]
-		//  11 pin output HIGH
+		// 00 pin HiZ, Input disabled
+		// 01 pin HiZ, Input enabled
+		// 10 pin output LOW [reset]
+		// 11 pin output HIGH
 		commandAndData(SET_GPIO, (byte) 0x00);
 		// A[0]=0b, Disable internal VDD regulator (for power save during sleep mode only)
 		// A[0]=1b, Enable internal VDD regulator [reset]
@@ -191,20 +195,20 @@ public class SSD1351 extends ColourSsdOled {
 		// C[7:0] Contrast Value Color C [reset=10001010b = 0x8A]
 		setContrast((byte) 0xC8, (byte) 0x80, (byte) 0xC8);
 		// A[3:0] :
-		//  0000b reduce output currents for all colors to 1/16
-		//  0001b reduce output currents for all colors to 2/16
-		//  1110b reduce output currents for all colors to 15/16
-		//  1111b no change [reset]
+		// 0000b reduce output currents for all colors to 1/16
+		// 0001b reduce output currents for all colors to 2/16
+		// 1110b reduce output currents for all colors to 15/16
+		// 1111b no change [reset]
 		commandAndData(MASTER_CONTRAST_CURRENT_CONTROL, (byte) 0x0F);
 		// A[1:0]=00 External VSL [reset]
 		// A[1:0]=01,10,11 are invalid
 		commandAndData(SET_VSL, (byte) 0b10100000, (byte) 0b10110101, (byte) 0b01010101); // 0xA0, 0xB5, 0x55
 		// A[3:0] Set Second Pre-charge Period
-		//  0000b invalid
-		//  0001b 1 DCLKS
-		//  0010b 2 DCLKS
-		//  1000b 8 DCLKS [reset]
-		//  1111b 15 DCLKS
+		// 0000b invalid
+		// 0001b 1 DCLKS
+		// 0010b 2 DCLKS
+		// 1000b 8 DCLKS [reset]
+		// 1111b 15 DCLKS
 		commandAndData(SET_SECOND_PRECHARGE_PERIOD, (byte) 0x01);
 
 		clear();
@@ -224,9 +228,8 @@ public class SSD1351 extends ColourSsdOled {
 	}
 
 	/**
-	 * This command is used to set Contrast Setting of the display. The chip has 256
-	 * contrast steps from 00h to FFh. The segment output current ISEG increases
-	 * linearly with the contrast step, which results in brighter display.
+	 * This command is used to set Contrast Setting of the display. The chip has 256 contrast steps from 00h to FFh. The
+	 * segment output current ISEG increases linearly with the contrast step, which results in brighter display.
 	 */
 	@Override
 	public void setContrast(byte level) {
