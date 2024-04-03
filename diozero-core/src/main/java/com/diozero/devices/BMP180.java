@@ -36,6 +36,7 @@ import java.nio.ByteOrder;
 
 import com.diozero.api.I2CConstants;
 import com.diozero.api.I2CDevice;
+import com.diozero.api.I2CDeviceInterface;
 import com.diozero.api.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 
@@ -44,9 +45,9 @@ import com.diozero.util.SleepUtil;
  */
 public class BMP180 implements ThermometerInterface, BarometerInterface {
 	/**
-	 * Relationship between sampling mode and conversion delay (in ms) for each
-	 * sampling mode Ultra low power: 4.5 ms minimum conversion delay Standard: 7.5
-	 * ms High Resolution: 13.5 ms Ultra high Resolution: 25.5 ms
+	 * Relationship between sampling mode and conversion delay (in ms) for each sampling mode
+	 * Ultra low power: 4.5 ms minimum conversion delay Standard: 7.5 ms High Resolution: 13.5
+	 * ms Ultra high Resolution: 25.5 ms
 	 */
 	public static enum Mode {
 		ULTRA_LOW_POWER(0, 5), STANDARD(1, 8), HIGH_RESOLUTION(2, 14), ULTRA_HIGH_RESOLUTION(3, 26);
@@ -143,7 +144,7 @@ public class BMP180 implements ThermometerInterface, BarometerInterface {
 
 	// Barometer configuration
 	private Mode mode;
-	private I2CDevice i2cDevice;
+	private I2CDeviceInterface i2cDevice;
 
 	/**
 	 * Constructor
@@ -162,8 +163,8 @@ public class BMP180 implements ThermometerInterface, BarometerInterface {
 	}
 
 	/**
-	 * This method reads the calibration data common for the Temperature sensor and
-	 * Barometer sensor included in the BMP180
+	 * This method reads the calibration data common for the Temperature sensor and Barometer
+	 * sensor included in the BMP180
 	 * 
 	 * @throws RuntimeIOException if an I/O error occurs
 	 **/
@@ -201,10 +202,10 @@ public class BMP180 implements ThermometerInterface, BarometerInterface {
 	}
 
 	/**
-	 * Method for reading the temperature. Remember the sensor will provide us with
-	 * raw data, and we need to transform in some analysed value to make sense. All
-	 * the calculations are normally provided by the manufacturer. In our case we
-	 * use the calibration data collected at construction time.
+	 * Method for reading the temperature. Remember the sensor will provide us with raw data,
+	 * and we need to transform in some analysed value to make sense. All the calculations are
+	 * normally provided by the manufacturer. In our case we use the calibration data
+	 * collected at construction time.
 	 *
 	 * @return Temperature in Celsius as a double
 	 * @throws RuntimeIOException If there is an IO error reading the sensor

@@ -36,6 +36,7 @@ import java.util.Arrays;
 import org.tinylog.Logger;
 
 import com.diozero.api.SpiDevice;
+import com.diozero.api.SpiDeviceInterface;
 import com.diozero.util.SleepUtil;
 import com.diozero.ws281xj.LedDriverInterface;
 import com.diozero.ws281xj.StripType;
@@ -59,11 +60,10 @@ public class WS281xSpi implements LedDriverInterface {
 	private static final byte SYMBOL_LOW_INV = 0b011;
 
 	/*
-	 * 4 colours (R, G, B + W), 8 bits per byte, 3 symbols per bit + 55uS low for
-	 * reset signal
+	 * 4 colours (R, G, B + W), 8 bits per byte, 3 symbols per bit + 55uS low for reset signal
 	 */
 
-	private SpiDevice device;
+	private SpiDeviceInterface device;
 	private Protocol protocol;
 	private StripType stripType;
 	private int numLeds;
@@ -126,13 +126,13 @@ public class WS281xSpi implements LedDriverInterface {
 	}
 
 	/**
-	 * Pixels are sent as follows: - The first transmitted pixel is the pixel
-	 * closest to the transmitter. - The most significant bit is always sent first.
+	 * Pixels are sent as follows: - The first transmitted pixel is the pixel closest to the
+	 * transmitter. - The most significant bit is always sent first.
 	 *
 	 * g7,g6,g5,g4,g3,g2,g1,g0,r7,r6,r5,r4,r3,r2,r1,r0,b7,b6,b5,b4,b3,b2,b1,b0
 	 * \_____________________________________________________________________/ |
-	 * _________________... | / __________________... | / / ___________________... |
-	 * / / / GRB,GRB,GRB,GRB,...
+	 * _________________... | / __________________... | / / ___________________... | / / /
+	 * GRB,GRB,GRB,GRB,...
 	 *
 	 * For BYTE_ORDER_RGB, the order of the first two bytes are reversed.
 	 */
@@ -160,8 +160,8 @@ public class WS281xSpi implements LedDriverInterface {
 					// Symbol
 					for (int l = 2; l >= 0; l--) {
 						/*
-						 * volatile byte *byteptr = &pxl_raw[bytepos]; byteptr &= ~(1 << bitpos); if
-						 * (symbol & (1 << l)) { byteptr |= (1 << bitpos); }
+						 * volatile byte *byteptr = &pxl_raw[bytepos]; byteptr &= ~(1 << bitpos); if (symbol & (1
+						 * << l)) { byteptr |= (1 << bitpos); }
 						 */
 						pixelRaw[bytepos] &= ~(1 << bitpos);
 						if ((symbol & (1 << l)) != 0) {
@@ -206,22 +206,21 @@ public class WS281xSpi implements LedDriverInterface {
 	public enum Protocol {
 		/**
 		 *
-		 * 800kHz bit encodings: '0': ----________ '1': --------____ The period is
-		 * 1.25us, giving a basic frequency of 800kHz. Getting the mark-space ratio
-		 * right is trickier, though. There are a number of different timings, and the
-		 * correct (documented) values depend on the controller chip.
+		 * 800kHz bit encodings: '0': ----________ '1': --------____ The period is 1.25us, giving
+		 * a basic frequency of 800kHz. Getting the mark-space ratio right is trickier, though.
+		 * There are a number of different timings, and the correct (documented) values depend on
+		 * the controller chip.
 		 *
-		 * The _real_ timing restrictions are much simpler though, and someone has
-		 * published a lovely analysis here:
+		 * The _real_ timing restrictions are much simpler though, and someone has published a
+		 * lovely analysis here:
 		 * http://cpldcpu.wordpress.com/2014/01/14/light_ws2812-library-v2-0-part-i-understanding-the-ws2812/
 		 *
-		 * In summary: - The period should be at least 1.25us. - The '0' high time can
-		 * be anywhere from 0.0625us to 0.5us. - The '1' high time should be longer than
-		 * 0.625us.
+		 * In summary: - The period should be at least 1.25us. - The '0' high time can be anywhere
+		 * from 0.0625us to 0.5us. - The '1' high time should be longer than 0.625us.
 		 *
-		 * These constraints are easy to meet by splitting each bit into three and
-		 * packing them into SPI packets. '0': 100 mark: 0.42us, space: 0.83us '1': 110
-		 * mark: 0.83us, space: 0.42us
+		 * These constraints are easy to meet by splitting each bit into three and packing them
+		 * into SPI packets. '0': 100 mark: 0.42us, space: 0.83us '1': 110 mark: 0.83us, space:
+		 * 0.42us
 		 */
 		PROTOCOL_800KHZ(800_000),
 		/**
@@ -230,9 +229,8 @@ public class WS281xSpi implements LedDriverInterface {
 		 * Timing requirements are derived from this document:
 		 * http://www.adafruit.com/datasheets/WS2811.pdf
 		 *
-		 * The period is 2.5us, and we use a 10-bit packet for this encoding: '0':
-		 * 1100000000 mark: 0.5us, space: 2us '1': 1111100000 mark: 1.25us, space:
-		 * 1.25us
+		 * The period is 2.5us, and we use a 10-bit packet for this encoding: '0': 1100000000
+		 * mark: 0.5us, space: 2us '1': 1111100000 mark: 1.25us, space: 1.25us
 		 */
 		PROTOCOL_400KHZ(400_000);
 

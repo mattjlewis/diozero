@@ -85,7 +85,7 @@ and [NanoPi Duo 2](https://www.friendlyelec.com/index.php?route=product/product&
 
 ## Usage
 
-diozero requires Java 8 or later - it has been tested on all JDKs from Java 8 through to 17. Most
+diozero requires Java 11 or later - it has been tested on all JDK versions from Java 11 through to 17. Most
 use cases will only require the diozero-core JAR file which has just one other dependency -
 [tinylog](https://tinylog.org/v2/).
 

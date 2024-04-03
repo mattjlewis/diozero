@@ -50,8 +50,7 @@ import com.diozero.util.SleepUtil;
 
 /**
  * maxim integrated High-sensitivity Pulse Oximeter and Heart-rate Sensor.
- * <a href=
- * "https://datasheets.maximintegrated.com/en/ds/MAX30102.pdf">Datasheet</a>
+ * <a href= "https://datasheets.maximintegrated.com/en/ds/MAX30102.pdf">Datasheet</a>
  *
  * <pre>
  * INT  IRD  RD   GND
@@ -69,8 +68,8 @@ import com.diozero.util.SleepUtil;
  * select 1.8v or 3_3v (this terminal contains 3.3V and above)
  * </pre>
  *
- * The active-low interrupt pin pulls low when an interrupt is triggered. The
- * pin is open-drain, meaning it requires a pull-up resistor (min 4.7kOhm).
+ * The active-low interrupt pin pulls low when an interrupt is triggered. The pin is
+ * open-drain, meaning it requires a pull-up resistor (min 4.7kOhm).
  *
  * Credit to:
  * https://makersportal.com/blog/2019/6/24/arduino-heart-rate-monitor-using-max30102-and-pulse-oximetry
@@ -115,10 +114,9 @@ public class Max30102 implements DeviceInterface {
 	/**
 	 * FIFO Almost Full Flag bit mask.
 	 *
-	 * In SpO2 and HR modes, this interrupt triggers when the FIFO write pointer has
-	 * a certain number of free spaces remaining. The trigger can be set by the
-	 * FIFO_A_FULL[3:0] register. The interrupt is cleared by reading the Interrupt
-	 * Status 1 register (0x00).
+	 * In SpO2 and HR modes, this interrupt triggers when the FIFO write pointer has a certain
+	 * number of free spaces remaining. The trigger can be set by the FIFO_A_FULL[3:0]
+	 * register. The interrupt is cleared by reading the Interrupt Status 1 register (0x00).
 	 */
 	private static final int INT1_FIFO_ALMOST_FULL_MASK = 1 << INT1_FIFO_ALMOST_FULL_BIT;
 
@@ -126,9 +124,9 @@ public class Max30102 implements DeviceInterface {
 	/**
 	 * New FIFO Data Ready bit mask.
 	 *
-	 * In SpO2 and HR modes, this interrupt triggers when there is a new sample in
-	 * the data FIFO. The interrupt is cleared by reading the Interrupt Status 1
-	 * register (0x00), or by reading the FIFO_DATA register.
+	 * In SpO2 and HR modes, this interrupt triggers when there is a new sample in the data
+	 * FIFO. The interrupt is cleared by reading the Interrupt Status 1 register (0x00), or by
+	 * reading the FIFO_DATA register.
 	 */
 	private static final byte INT1_PPG_RDY_DATA_MASK = 1 << INT1_PPG_RDY_BIT;
 
@@ -136,10 +134,10 @@ public class Max30102 implements DeviceInterface {
 	/**
 	 * Ambient Light Cancellation Overflow bit mask.
 	 *
-	 * Ambient Light Cancellation Overflow This interrupt triggers when the ambient
-	 * light cancellation function of the SpO2/HR photodiode has reached its maximum
-	 * limit, and therefore, ambient light is affecting the output of the ADC. The
-	 * interrupt is cleared by reading the Interrupt Status 1 register (0x00).
+	 * Ambient Light Cancellation Overflow This interrupt triggers when the ambient light
+	 * cancellation function of the SpO2/HR photodiode has reached its maximum limit, and
+	 * therefore, ambient light is affecting the output of the ADC. The interrupt is cleared
+	 * by reading the Interrupt Status 1 register (0x00).
 	 */
 	private static final byte INT1_ALC_OVF_MASK = 1 << INT1_ALC_OVF_BIT;
 
@@ -150,8 +148,8 @@ public class Max30102 implements DeviceInterface {
 	 * On power-up a power-ready interrupt is triggered to signal that the module is
 	 * powered-up and ready to collect data.
 	 *
-	 * Note can only be read from the Interrupt Status 1 register, cannot be written
-	 * to the Interrupt Enable 1 register.
+	 * Note can only be read from the Interrupt Status 1 register, cannot be written to the
+	 * Interrupt Enable 1 register.
 	 */
 	private static final byte INT1_PWR_RDY_MASK = 1 << INT1_PWR_RDY_BIT;
 
@@ -161,17 +159,16 @@ public class Max30102 implements DeviceInterface {
 	/**
 	 * Internal Temperature Ready Flag bit mask.
 	 *
-	 * When an internal die temperature conversion is finished, this interrupt is
-	 * triggered so the processor can read the temperature data registers. The
-	 * interrupt is cleared by reading either the Interrupt Status 2 register (0x01)
-	 * or the TFRAC register (0x20).
+	 * When an internal die temperature conversion is finished, this interrupt is triggered so
+	 * the processor can read the temperature data registers. The interrupt is cleared by
+	 * reading either the Interrupt Status 2 register (0x01) or the TFRAC register (0x20).
 	 */
 	private static final byte INT2_DIE_TEMP_RDY_MASK = 1 << INT2_DIE_TEMP_RDY_BIT;
 
 	// FIFO Config (0x08)
 
 	// Mode Configuration (0x09)
-	
+
 	private static final int MODE_CONFIG_SHUTDOWN_BIT = 7;
 	private static final int MODE_CONFIG_SHUTDOWN_MASK = 1 << MODE_CONFIG_SHUTDOWN_BIT;
 	private static final int MODE_CONFIG_RESET_BIT = 6;
@@ -197,18 +194,15 @@ public class Max30102 implements DeviceInterface {
 	}
 
 	/**
-	 * Controls the behaviour of the FIFO when it becomes completely filled with
-	 * data
+	 * Controls the behaviour of the FIFO when it becomes completely filled with data
 	 */
 	public enum FifoRolloverOnFull {
 		/**
-		 * The FIFO address rolls over to zero and the FIFO continues to fill with new
-		 * data
+		 * The FIFO address rolls over to zero and the FIFO continues to fill with new data
 		 */
 		ENABLED(1),
 		/**
-		 * The FIFO is not updated until FIFO_DATA is read or the WRITE/READ positions
-		 * are changed
+		 * The FIFO is not updated until FIFO_DATA is read or the WRITE/READ positions are changed
 		 */
 		DISABLED(0);
 
@@ -324,7 +318,7 @@ public class Max30102 implements DeviceInterface {
 		}
 	}
 
-	private I2CDevice device;
+	private I2CDeviceInterface device;
 	private int revisionId;
 	private Mode mode;
 	private SampleAveraging sampleAveraging;
@@ -417,14 +411,12 @@ public class Max30102 implements DeviceInterface {
 	 *
 	 * @param sampleAveraging     number of samples averaged per FIFO sample
 	 * @param fifoRolloverOnFull  whether or not the FIFO rolls over when full
-	 * @param fifoAlmostFullValue set the number of data samples remaining in the
-	 *                            FIFO when the interrupt is issued (range 0..15).
-	 *                            E.g. if set to 0, the interrupt is issued when
-	 *                            there are no data samples remaining in the FIFO
-	 *                            (all 32 FIFO words have unread data, i.e. the FIFO
-	 *                            is full), if set to 15, the interrupt is issued
-	 *                            when there are 15 data samples remaining in the
-	 *                            FIFO (17 unread)
+	 * @param fifoAlmostFullValue set the number of data samples remaining in the FIFO when
+	 *                            the interrupt is issued (range 0..15). E.g. if set to 0, the
+	 *                            interrupt is issued when there are no data samples remaining
+	 *                            in the FIFO (all 32 FIFO words have unread data, i.e. the
+	 *                            FIFO is full), if set to 15, the interrupt is issued when
+	 *                            there are 15 data samples remaining in the FIFO (17 unread)
 	 * @param mode                Operating mode
 	 * @param spo2AdcRange        SpO2 ADC range
 	 * @param spo2SampleRate      SpO2 sample rate
@@ -604,8 +596,8 @@ public class Max30102 implements DeviceInterface {
 	}
 
 	/**
-	 * Poll the sensor for new data - call regularly. If new data is available, it
-	 * adds data to the queues
+	 * Poll the sensor for new data - call regularly. If new data is available, it adds data
+	 * to the queues
 	 *
 	 * @return number of new samples obtained
 	 */
@@ -618,8 +610,8 @@ public class Max30102 implements DeviceInterface {
 			SleepUtil.sleepMillis(1);
 		}
 		/*
-		 * The write pointer increments every time a new sample is added to the FIFO.
-		 * The read pointer is incremented every time a sample is read from the FIFO.
+		 * The write pointer increments every time a new sample is added to the FIFO. The read
+		 * pointer is incremented every time a sample is read from the FIFO.
 		 */
 		int fifo_read_ptr = getFifoReadPointer();
 		int fifo_write_ptr = getFifoWritePointer();
@@ -638,10 +630,9 @@ public class Max30102 implements DeviceInterface {
 			}
 
 			/*
-			 * The data FIFO consists of a 32-sample memory bank that can store IR and Red
-			 * ADC data. Since each sample consists of two channels of data, there are 6
-			 * bytes of data for each sample, and therefore 192 total bytes of data can be
-			 * stored in the FIFO.
+			 * The data FIFO consists of a 32-sample memory bank that can store IR and Red ADC data.
+			 * Since each sample consists of two channels of data, there are 6 bytes of data for each
+			 * sample, and therefore 192 total bytes of data can be stored in the FIFO.
 			 */
 			// Heart rate mode activates the Red LED only, SpO2 and Multi-mode activate Red
 			// and IR

@@ -38,6 +38,7 @@ import org.hipparchus.geometry.euclidean.threed.Vector3D;
 
 import com.diozero.api.I2CConstants;
 import com.diozero.api.I2CDevice;
+import com.diozero.api.I2CDeviceInterface;
 import com.diozero.api.RuntimeIOException;
 import com.diozero.util.BitManipulation;
 
@@ -120,7 +121,7 @@ public class ADXL345 implements ImuInterface {
 	private static final float FREEFALL_TIME_RANGE = 1280;
 	private static final float FREEFALL_TIME_LSB = FREEFALL_TIME_RANGE / 0xff;
 
-	private I2CDevice device;
+	private I2CDeviceInterface device;
 
 	public ADXL345() {
 		device = I2CDevice.builder(ADXL345_ADDRESS).setController(I2CConstants.CONTROLLER_1).build();
@@ -222,8 +223,8 @@ public class ADXL345 implements ImuInterface {
 	/**
 	 * Set the tap duration in mS
 	 *
-	 * @param tapDuration The maximum time in ms that an event must be above to
-	 *                    qualify as a tap event
+	 * @param tapDuration The maximum time in ms that an event must be above to qualify as a
+	 *                    tap event
 	 */
 	public void setTapDuration(float tapDuration) {
 		if (tapDuration < 0 || tapDuration > TAP_DURATION_MS_RANGE) {
@@ -245,9 +246,9 @@ public class ADXL345 implements ImuInterface {
 	/**
 	 * Set the tap latency in mS
 	 *
-	 * @param tapLatency The wait time in mS from the detection of a tap event to
-	 *                   the start of the time window during which a possible second
-	 *                   tap event can be detected
+	 * @param tapLatency The wait time in mS from the detection of a tap event to the start of
+	 *                   the time window during which a possible second tap event can be
+	 *                   detected
 	 */
 	public void setTapLatency(float tapLatency) {
 		if (tapLatency < 0 || tapLatency > TAP_LATENCY_MS_RANGE) {
@@ -269,8 +270,8 @@ public class ADXL345 implements ImuInterface {
 	/**
 	 * Set the tap window in mS
 	 *
-	 * @param tapWindow The amount of time in milliseconds after the expiration of
-	 *                  the latency time during which a second valid tap can begin
+	 * @param tapWindow The amount of time in milliseconds after the expiration of the latency
+	 *                  time during which a second valid tap can begin
 	 */
 	public void setTapWindow(float tapWindow) {
 		if (tapWindow < 0 || tapWindow > TAP_WINDOW_MS_RANGE) {
@@ -321,9 +322,9 @@ public class ADXL345 implements ImuInterface {
 	/**
 	 * Set the inactivity time value in mS
 	 *
-	 * @param inactivityTime Value representing the amount of time that acceleration
-	 *                       must be less than the value in the THRESH_INACT
-	 *                       register for inactivity to be declared
+	 * @param inactivityTime Value representing the amount of time that acceleration must be
+	 *                       less than the value in the THRESH_INACT register for inactivity
+	 *                       to be declared
 	 */
 	public void setInactivityTime(float inactivityTime) {
 		if (inactivityTime < 0 || inactivityTime > INACTIVITY_TIME_RANGE) {
@@ -334,25 +335,22 @@ public class ADXL345 implements ImuInterface {
 	}
 
 	/**
-	 * D7 - Activity ac/dc D6 - ACT_X enable D5 - ACT_Y enable D4 - ACT_Z enable D3
-	 * - Inactivity ac/dc D2 - INACT_X enable D1 - INACT_Y enable D0 - INACT_Z
-	 * enable
+	 * D7 - Activity ac/dc D6 - ACT_X enable D5 - ACT_Y enable D4 - ACT_Z enable D3 -
+	 * Inactivity ac/dc D2 - INACT_X enable D1 - INACT_Y enable D0 - INACT_Z enable
 	 *
-	 * A setting of 0 selects dc-coupled operation, and a setting of 1 enables
-	 * ac-coupled operation. In dc-coupled operation, the current acceleration
-	 * magnitude is compared directly with THRESH_ACT and THRESH_INACT to determine
-	 * whether activity or inactivity is detected. In ac-coupled operation for
-	 * activity detection, the acceleration value at the start of activity detection
-	 * is taken as a reference value. New samples of acceleration are then compared
-	 * to this reference value, and if the magnitude of the difference exceeds the
-	 * THRESH_ACT value, the device triggers an activity interrupt. Similarly, in
-	 * ac-coupled operation for inactivity detection, a reference value is used for
-	 * comparison and is updated whenever the device exceeds the inactivity
-	 * threshold. After the reference value is selected, the device compares the
-	 * magnitude of the difference between the reference value and the current
-	 * acceleration with THRESH_INACT. If the difference is less than the value in
-	 * THRESH_INACT for the time in TIME_INACT, the device is considered inactive
-	 * and the inactivity interrupt is triggered.
+	 * A setting of 0 selects dc-coupled operation, and a setting of 1 enables ac-coupled
+	 * operation. In dc-coupled operation, the current acceleration magnitude is compared
+	 * directly with THRESH_ACT and THRESH_INACT to determine whether activity or inactivity
+	 * is detected. In ac-coupled operation for activity detection, the acceleration value at
+	 * the start of activity detection is taken as a reference value. New samples of
+	 * acceleration are then compared to this reference value, and if the magnitude of the
+	 * difference exceeds the THRESH_ACT value, the device triggers an activity interrupt.
+	 * Similarly, in ac-coupled operation for inactivity detection, a reference value is used
+	 * for comparison and is updated whenever the device exceeds the inactivity threshold.
+	 * After the reference value is selected, the device compares the magnitude of the
+	 * difference between the reference value and the current acceleration with THRESH_INACT.
+	 * If the difference is less than the value in THRESH_INACT for the time in TIME_INACT,
+	 * the device is considered inactive and the inactivity interrupt is triggered.
 	 *
 	 * @return Activity / inativity control flags
 	 */
@@ -388,9 +386,8 @@ public class ADXL345 implements ImuInterface {
 	/**
 	 * Set the freefall time value in mS
 	 *
-	 * @param freefallTime Value representing minimum time that the value of all
-	 *                     axes must be less than THRESH_FF to generate a freefall
-	 *                     interrupt
+	 * @param freefallTime Value representing minimum time that the value of all axes must be
+	 *                     less than THRESH_FF to generate a freefall interrupt
 	 */
 	public void setFreefallTime(float freefallTime) {
 		if (freefallTime < 0 || freefallTime > FREEFALL_TIME_RANGE) {
@@ -505,24 +502,22 @@ public class ADXL345 implements ImuInterface {
 	}
 
 	/**
-	 * D7 D6 | D5 | D4 D3 D2 D1 D0 FIFO_MODE | Trigger | Samples FIFO modes: 0
-	 * Bypass - FIFO is bypassed 1 FIFO - FIFO collects up to 32 values and then
-	 * stops collecting data, collecting new data only when FIFO is not full 2
-	 * Stream - FIFO holds the last 32 data values. When FIFO is full, the oldest
-	 * data is overwritten with newer data 3 Trigger - When triggered by the trigger
-	 * bit, FIFO holds the last data samples before the trigger event and then
-	 * continues to collect data until full. New data is collected only when FIFO is
-	 * not full Trigger bit: A value of 0 in the trigger bit links the trigger event
-	 * of trigger mode to INT1, and a value of 1 links the trigger event to INT2
-	 * Samples: The function of these bits depends on the FIFO mode selected (see
-	 * below). Entering a value of 0 in the samples bits immediately sets the
-	 * watermark status bit in the INT_SOURCE register, regardless of which FIFO
-	 * mode is selected. Undesirable operation may occur if a value of 0 is used for
-	 * the samples bits when trigger mode is used FIFO Mode | Samples Bits Function
-	 * Bypass | None. FIFO | Specifies how many FIFO entries are needed to trigger a
-	 * watermark interrupt. Stream | Specifies how many FIFO entries are needed to
-	 * trigger a watermark interrupt. Trigger | Specifies how many FIFO samples are
-	 * retained in the FIFO buffer before a trigger event.
+	 * D7 D6 | D5 | D4 D3 D2 D1 D0 FIFO_MODE | Trigger | Samples FIFO modes: 0 Bypass - FIFO
+	 * is bypassed 1 FIFO - FIFO collects up to 32 values and then stops collecting data,
+	 * collecting new data only when FIFO is not full 2 Stream - FIFO holds the last 32 data
+	 * values. When FIFO is full, the oldest data is overwritten with newer data 3 Trigger -
+	 * When triggered by the trigger bit, FIFO holds the last data samples before the trigger
+	 * event and then continues to collect data until full. New data is collected only when
+	 * FIFO is not full Trigger bit: A value of 0 in the trigger bit links the trigger event
+	 * of trigger mode to INT1, and a value of 1 links the trigger event to INT2 Samples: The
+	 * function of these bits depends on the FIFO mode selected (see below). Entering a value
+	 * of 0 in the samples bits immediately sets the watermark status bit in the INT_SOURCE
+	 * register, regardless of which FIFO mode is selected. Undesirable operation may occur if
+	 * a value of 0 is used for the samples bits when trigger mode is used FIFO Mode | Samples
+	 * Bits Function Bypass | None. FIFO | Specifies how many FIFO entries are needed to
+	 * trigger a watermark interrupt. Stream | Specifies how many FIFO entries are needed to
+	 * trigger a watermark interrupt. Trigger | Specifies how many FIFO samples are retained
+	 * in the FIFO buffer before a trigger event.
 	 *
 	 * @return FIFO Control flags
 	 */
@@ -535,15 +530,14 @@ public class ADXL345 implements ImuInterface {
 	}
 
 	/**
-	 * D7 | D6 | D5 D4 D3 D2 D1 D0 FIFO Trig | 0 | Entries FIFO Trig: A 1 in the
-	 * FIFO_TRIG bit corresponds to a trigger event occurring, and a 0 means that a
-	 * FIFO trigger event has not occurred Entries: These bits report how many data
-	 * values are stored in FIFO. Access to collect the data from FIFO is provided
-	 * through the DATAX, DATAY, and DATAZ registers. FIFO reads must be done in
-	 * burst or multiple-byte mode because each FIFO level is cleared after any read
-	 * (single-or multiple-byte) of FIFO. FIFO stores a maximum of 32 entries, which
-	 * equates to a maximum of 33 entries available at any given time because an
-	 * additional entry is available at the output filter of the device.
+	 * D7 | D6 | D5 D4 D3 D2 D1 D0 FIFO Trig | 0 | Entries FIFO Trig: A 1 in the FIFO_TRIG bit
+	 * corresponds to a trigger event occurring, and a 0 means that a FIFO trigger event has
+	 * not occurred Entries: These bits report how many data values are stored in FIFO. Access
+	 * to collect the data from FIFO is provided through the DATAX, DATAY, and DATAZ
+	 * registers. FIFO reads must be done in burst or multiple-byte mode because each FIFO
+	 * level is cleared after any read (single-or multiple-byte) of FIFO. FIFO stores a
+	 * maximum of 32 entries, which equates to a maximum of 33 entries available at any given
+	 * time because an additional entry is available at the output filter of the device.
 	 *
 	 * @return FIFO status
 	 */

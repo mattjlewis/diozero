@@ -38,12 +38,13 @@ import org.tinylog.Logger;
 
 import com.diozero.api.I2CConstants;
 import com.diozero.api.I2CDevice;
+import com.diozero.api.I2CDeviceInterface;
 import com.diozero.util.SleepUtil;
 
 /**
- * Indoor air quality (IAQ) output. In principle, this output is in an index
- * that can have values between 0 and 500 with a resolution of 1 to indicate or
- * quantify the quality of the air available in the surrounding.
+ * Indoor air quality (IAQ) output. In principle, this output is in an index that can have
+ * values between 0 and 500 with a resolution of 1 to indicate or quantify the quality of
+ * the air available in the surrounding.
  *
  * Operational Range: Temperature: -40C-85C Humidity: 10-95 %r.H. IAQ: 0-500
  *
@@ -304,19 +305,20 @@ public class BME680 implements BarometerInterface, ThermometerInterface, Hygrome
 	private static final int RESET_PERIOD_MILLISECONDS = 10;
 	private static final int POLL_PERIOD_MILLISECONDS = 10;
 
-	private I2CDevice device;
-	// Raw temperature data
-	private int temperatureFine;
-
 	// Look up tables for the possible gas range values
-	final long GAS_RANGE_LOOKUP_TABLE_1[] = { 2147483647L, 2147483647L, 2147483647L, 2147483647L, 2147483647L,
-			2126008810L, 2147483647L, 2130303777L, 2147483647L, 2147483647L, 2143188679L, 2136746228L, 2147483647L,
-			2126008810L, 2147483647L, 2147483647L };
+	private static final long GAS_RANGE_LOOKUP_TABLE_1[] = { 2147483647L, 2147483647L, 2147483647L, 2147483647L,
+			2147483647L, 2126008810L, 2147483647L, 2130303777L, 2147483647L, 2147483647L, 2143188679L, 2136746228L,
+			2147483647L, 2126008810L, 2147483647L, 2147483647L };
 
-	final long GAS_RANGE_LOOKUP_TABLE_2[] = { 4096000000L, 2048000000L, 1024000000L, 512000000L, 255744255L, 127110228L,
-			64000000L, 32258064L, 16016016L, 8000000L, 4000000L, 2000000L, 1000000L, 500000L, 250000L, 125000L };
+	private static final long GAS_RANGE_LOOKUP_TABLE_2[] = { 4096000000L, 2048000000L, 1024000000L, 512000000L,
+			255744255L, 127110228L, 64000000L, 32258064L, 16016016L, 8000000L, 4000000L, 2000000L, 1000000L, 500000L,
+			250000L, 125000L };
 
 	private static final int DATA_GAS_BURN_IN = 50;
+
+	private I2CDeviceInterface device;
+	// Raw temperature data
+	private int temperatureFine;
 
 	private int chipId;
 	/* ! Ambient temperature in Degree C */
@@ -623,8 +625,8 @@ public class BME680 implements BarometerInterface, ThermometerInterface, Hygrome
 	}
 
 	/**
-	 * Set temperature offset in celsius. If set, the temperature t_fine will be
-	 * increased by given value in celsius.
+	 * Set temperature offset in celsius. If set, the temperature t_fine will be increased by
+	 * given value in celsius.
 	 *
 	 * @param value temperature offset in Celsius, eg. 4, -8, 1.25
 	 */

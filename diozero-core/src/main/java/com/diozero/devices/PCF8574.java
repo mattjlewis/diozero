@@ -40,6 +40,7 @@ import com.diozero.api.DigitalInputEvent;
 import com.diozero.api.GpioEventTrigger;
 import com.diozero.api.GpioPullUpDown;
 import com.diozero.api.I2CDevice;
+import com.diozero.api.I2CDeviceInterface;
 import com.diozero.api.PinInfo;
 import com.diozero.api.RuntimeIOException;
 import com.diozero.internal.spi.AbstractDevice;
@@ -60,7 +61,7 @@ public class PCF8574 extends AbstractDeviceFactory implements GpioDeviceFactoryI
 
 	private static final int NUM_PINS = 8;
 
-	private I2CDevice device;
+	private I2CDeviceInterface device;
 	private MutableByte directions;
 	private BoardPinInfo boardPinInfo;
 

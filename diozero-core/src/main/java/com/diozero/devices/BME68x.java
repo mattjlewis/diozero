@@ -35,6 +35,7 @@ import org.tinylog.Logger;
 
 import com.diozero.api.I2CConstants;
 import com.diozero.api.I2CDevice;
+import com.diozero.api.I2CDeviceInterface;
 import com.diozero.util.BitManipulation;
 import com.diozero.util.SleepUtil;
 
@@ -429,6 +430,10 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 			return new Builder(controller);
 		}
 
+		public static Builder builder(final I2CDeviceInterface device) {
+			return new Builder(device);
+		}
+
 		/*-
 		 * chipId: 0x61, variantId: 0x1, uniqueId: 0x2c
 		 * Defaults:
@@ -440,17 +445,25 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 		 */
 		private int controller;
 		private int address = DEVICE_ADDRESS;
+		private I2CDeviceInterface device;
 		private OversamplingMultiplier humidityOversampling;
 		private OversamplingMultiplier temperatureOversampling;
 		private OversamplingMultiplier pressureOversampling;
 		private IirFilterCoefficient filter;
 		private StandbyDuration standbyDuration;
 
-		public Builder(int controller) {
+		public Builder(final int controller) {
 			this.controller = controller;
 		}
 
+		public Builder(final I2CDeviceInterface device) {
+			this.device = device;
+		}
+
 		public Builder setAddress(int address) {
+			if (device != null) {
+				throw new IllegalArgumentException("I2C device already assigned");
+			}
 			this.address = address;
 			return this;
 		}
@@ -481,12 +494,15 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 		}
 
 		public BME68x build() {
-			return new BME68x(controller, address, humidityOversampling, temperatureOversampling, pressureOversampling,
-					filter, standbyDuration);
+			if (device == null) {
+				device = I2CDevice.builder(address).setController(controller).build();
+			}
+			return new BME68x(device, humidityOversampling, temperatureOversampling, pressureOversampling, filter,
+					standbyDuration);
 		}
 	}
 
-	private I2CDevice device;
+	private I2CDeviceInterface device;
 	private byte chipId;
 	private byte variantId;
 	private byte uniqueId;
@@ -517,20 +533,53 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 	 * @param address    I2C address of the sensor.
 	 */
 	public BME68x(final int controller, final int address) {
-		this(controller, address, OversamplingMultiplier.X1, OversamplingMultiplier.X1, OversamplingMultiplier.X1,
+		this(I2CDevice.builder(address).setController(controller).build());
+	}
+
+	/**
+	 * Create a new BME680 sensor driver connected on the given bus and address.
+	 *
+	 * @param device I2C device.
+	 */
+	public BME68x(final I2CDeviceInterface device) {
+		this(device, OversamplingMultiplier.X1, OversamplingMultiplier.X1, OversamplingMultiplier.X1,
 				IirFilterCoefficient._7, StandbyDuration._10_MS);
 	}
 
 	/**
 	 * Create a new BME680 sensor driver connected on the given bus and address.
 	 *
-	 * @param controller I2C bus the sensor is connected to.
-	 * @param address    I2C address of the sensor.
+	 * @param controller               I2C bus the sensor is connected to.
+	 * @param address                  I2C address of the sensor.
+	 * @param humidityOversampling     Humidity oversampling.
+	 * @param termperatureOversampling Temperature oversampling.
+	 * @param pressureOversampling     Pressure oversampling.
+	 * @param filter                   Infinite Impulse Response (IIR) filter.
+	 * @param standbyDuration          Standby time between sequential mode
+	 *                                 measurement profiles.
 	 */
 	public BME68x(final int controller, final int address, OversamplingMultiplier humidityOversampling,
 			OversamplingMultiplier temperatureOversampling, OversamplingMultiplier pressureOversampling,
 			IirFilterCoefficient filter, StandbyDuration standbyDuration) {
-		this.device = I2CDevice.builder(address).setController(controller).build();
+		this(I2CDevice.builder(address).setController(controller).build(), humidityOversampling,
+				temperatureOversampling, pressureOversampling, filter, standbyDuration);
+	}
+
+	/**
+	 * Create a new BME680 sensor driver connected on the given bus and address.
+	 *
+	 * @param device                   I2C device.
+	 * @param humidityOversampling     Humidity oversampling.
+	 * @param termperatureOversampling Temperature oversampling.
+	 * @param pressureOversampling     Pressure oversampling.
+	 * @param filter                   Infinite Impulse Response (IIR) filter.
+	 * @param standbyDuration          Standby time between sequential mode
+	 *                                 measurement profiles.
+	 */
+	public BME68x(final I2CDeviceInterface device, OversamplingMultiplier humidityOversampling,
+			OversamplingMultiplier temperatureOversampling, OversamplingMultiplier pressureOversampling,
+			IirFilterCoefficient filter, StandbyDuration standbyDuration) {
+		this.device = device;
 
 		initialise(humidityOversampling, temperatureOversampling, pressureOversampling, filter, standbyDuration);
 	}

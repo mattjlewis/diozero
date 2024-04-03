@@ -40,6 +40,7 @@ import com.diozero.api.DeviceInterface;
 import com.diozero.api.DeviceMode;
 import com.diozero.api.I2CConstants;
 import com.diozero.api.I2CDevice;
+import com.diozero.api.I2CDeviceInterface;
 import com.diozero.api.PinInfo;
 import com.diozero.api.RuntimeIOException;
 import com.diozero.internal.spi.AbstractDevice;
@@ -53,8 +54,8 @@ import com.diozero.util.BitManipulation;
 import com.diozero.util.SleepUtil;
 
 /**
- * PCA9685 I2C-bus controlled 16-channel 12-bit PWM controller as used in the
- * popular Adafruit PWM add-on board:
+ * PCA9685 I2C-bus controlled 16-channel 12-bit PWM controller as used in the popular
+ * Adafruit PWM add-on board:
  * <a href="http://www.nxp.com/documents/data_sheet/PCA9685.pdf">Datasheet</a>
  */
 @SuppressWarnings("unused")
@@ -113,7 +114,7 @@ public class PCA9685 extends AbstractDeviceFactory
 	private static final int MAX_PWM_FREQUENCY = 1000;
 	public static final int DEFAULT_PWM_FREQUENCY = 50;
 
-	private final I2CDevice i2cDevice;
+	private final I2CDeviceInterface device;
 	private String keyPrefix;
 	private int boardPwmFrequency = DEFAULT_PWM_FREQUENCY;
 	private double periodUs = 1_000_000.0 / DEFAULT_PWM_FREQUENCY;
@@ -134,7 +135,7 @@ public class PCA9685 extends AbstractDeviceFactory
 	public PCA9685(int controller, int address, int pwmFrequency) throws RuntimeIOException {
 		super(DEVICE_NAME + "-" + controller + "-" + address);
 
-		i2cDevice = I2CDevice.builder(address).setController(controller).setByteOrder(ByteOrder.BIG_ENDIAN).build();
+		device = I2CDevice.builder(address).setController(controller).setByteOrder(ByteOrder.BIG_ENDIAN).build();
 		boardPinInfo = new PCA9685BoardPinInfo();
 
 		reset();
@@ -143,15 +144,14 @@ public class PCA9685 extends AbstractDeviceFactory
 	}
 
 	private void reset() throws RuntimeIOException {
-		i2cDevice.writeByteData(MODE1, 0); // Normal mode
-		i2cDevice.writeByteData(MODE2, OUTDRV_MASK); // Set output driver to totem pole mode (rather than open drain)
+		device.writeByteData(MODE1, 0); // Normal mode
+		device.writeByteData(MODE2, OUTDRV_MASK); // Set output driver to totem pole mode (rather than open drain)
 	}
 
 	/**
 	 * Sets the PWM frequency
 	 *
-	 * @param pwmFrequency desired frequency. 40Hz to 1000Hz using internal 25MHz
-	 *                     oscillator
+	 * @param pwmFrequency desired frequency. 40Hz to 1000Hz using internal 25MHz oscillator
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	private void setPwmFreq(int pwmFrequency) throws RuntimeIOException {
@@ -167,26 +167,26 @@ public class PCA9685 extends AbstractDeviceFactory
 		Logger.debug("Setting PWM frequency to {} Hz, float pre-scale: {}, int prescale {}", pwmFrequency,
 				String.format("%.2f", prescale_flt), prescale_int);
 
-		byte oldmode = i2cDevice.readByteData(MODE1);
-		i2cDevice.writeByteData(MODE1, (byte) ((oldmode & 0x7F) | SLEEP_MASK)); // Enter low power mode (set the sleep
+		byte oldmode = device.readByteData(MODE1);
+		device.writeByteData(MODE1, (byte) ((oldmode & 0x7F) | SLEEP_MASK)); // Enter low power mode (set the sleep
 																				// bit)
-		i2cDevice.writeByteData(PRESCALE, (byte) (prescale_int));
+		device.writeByteData(PRESCALE, (byte) (prescale_int));
 		boardPwmFrequency = pwmFrequency;
 		periodUs = 1_000_000.0 / pwmFrequency;
-		i2cDevice.writeByteData(MODE1, oldmode); // Restore the previous mode1 value
+		device.writeByteData(MODE1, oldmode); // Restore the previous mode1 value
 		SleepUtil.sleepMillis(1); // Wait min 500us for the oscillator to stabilise
-		i2cDevice.writeByteData(MODE1, (byte) (oldmode | RESTART_MASK)); // Set restart enabled
+		device.writeByteData(MODE1, (byte) (oldmode | RESTART_MASK)); // Set restart enabled
 	}
 
 	private int[] getPwm(int channel) throws RuntimeIOException {
 		validateChannel(channel);
 
-		short on_l = i2cDevice.readUByte(LED0_ON_L + 4 * channel);
-		short on_h = i2cDevice.readUByte(LED0_ON_H + 4 * channel);
+		short on_l = device.readUByte(LED0_ON_L + 4 * channel);
+		short on_h = device.readUByte(LED0_ON_H + 4 * channel);
 		int on = (on_h << 8) | on_l;
 
-		short off_l = i2cDevice.readUByte(LED0_OFF_L + 4 * channel);
-		short off_h = i2cDevice.readUByte(LED0_OFF_H + 4 * channel);
+		short off_l = device.readUByte(LED0_OFF_L + 4 * channel);
+		short off_h = device.readUByte(LED0_OFF_H + 4 * channel);
 		int off = (off_h << 8) | off_l;
 
 		Logger.debug("channel={}, on={}, off={}", channel, on, off);
@@ -197,8 +197,8 @@ public class PCA9685 extends AbstractDeviceFactory
 	/**
 	 * Sets a single PWM channel
 	 *
-	 * Example 1: (assumes that the LED0 output is used and (delay time) + (PWM duty
-	 * cycle) &lt;= 100 %)
+	 * Example 1: (assumes that the LED0 output is used and (delay time) + (PWM duty cycle)
+	 * &lt;= 100 %)
 	 *
 	 * <pre>
 	 * Delay time = 10 %;
@@ -229,12 +229,12 @@ public class PCA9685 extends AbstractDeviceFactory
 		// Integer.valueOf(off));
 
 		// TODO Replace with writeWordData()?
-		// i2cDevice.writeWordData(LED0_ON_L + 4 * channel, (short) on);
-		// i2cDevice.writeWordData(LED0_OFF_L + 4 * channel, (short) off);
-		i2cDevice.writeByteData(LED0_ON_L + 4 * channel, on & 0xFF);
-		i2cDevice.writeByteData(LED0_ON_H + 4 * channel, on >> 8);
-		i2cDevice.writeByteData(LED0_OFF_L + 4 * channel, off & 0xFF);
-		i2cDevice.writeByteData(LED0_OFF_H + 4 * channel, off >> 8);
+		// device.writeWordData(LED0_ON_L + 4 * channel, (short) on);
+		// device.writeWordData(LED0_OFF_L + 4 * channel, (short) off);
+		device.writeByteData(LED0_ON_L + 4 * channel, on & 0xFF);
+		device.writeByteData(LED0_ON_H + 4 * channel, on >> 8);
+		device.writeByteData(LED0_OFF_L + 4 * channel, off & 0xFF);
+		device.writeByteData(LED0_OFF_H + 4 * channel, off >> 8);
 		// SleepUtil.sleepMillis(50);
 	}
 
@@ -272,12 +272,12 @@ public class PCA9685 extends AbstractDeviceFactory
 	private void setAllPwm(int on, int off) throws RuntimeIOException {
 		validateOnOff(on, off);
 		// TODO Replace with writeShort()?
-		// i2cDevice.writeShort(ALL_LED_ON_L, (short)on);
-		// i2cDevice.writeShort(ALL_LED_OFF_L, (short)off);
-		i2cDevice.writeByteData(ALL_LED_ON_L, on & 0xFF);
-		i2cDevice.writeByteData(ALL_LED_ON_H, on >> 8);
-		i2cDevice.writeByteData(ALL_LED_OFF_L, off & 0xFF);
-		i2cDevice.writeByteData(ALL_LED_OFF_H, off >> 8);
+		// device.writeShort(ALL_LED_ON_L, (short)on);
+		// device.writeShort(ALL_LED_OFF_L, (short)off);
+		device.writeByteData(ALL_LED_ON_L, on & 0xFF);
+		device.writeByteData(ALL_LED_ON_H, on >> 8);
+		device.writeByteData(ALL_LED_OFF_L, off & 0xFF);
+		device.writeByteData(ALL_LED_OFF_H, off >> 8);
 	}
 
 	@Override
@@ -294,7 +294,7 @@ public class PCA9685 extends AbstractDeviceFactory
 
 		// Close all open pins before closing the I2C device itself
 		super.close();
-		i2cDevice.close();
+		device.close();
 	}
 
 	public void closeChannel(int channel) throws RuntimeIOException {
@@ -362,10 +362,9 @@ public class PCA9685 extends AbstractDeviceFactory
 	}
 
 	/**
-	 * Set PWM duty cycle output in microseconds for the specified channel. A
-	 * standard servo has a minimum range of 1-2 milliseconds. The actual range
-	 * varies between devices. E.g. My TowerPro SG90 has a pulse width range of
-	 * 500-2,400 us.
+	 * Set PWM duty cycle output in microseconds for the specified channel. A standard servo
+	 * has a minimum range of 1-2 milliseconds. The actual range varies between devices. E.g.
+	 * My TowerPro SG90 has a pulse width range of 500-2,400 us.
 	 *
 	 * @param channel PWM channel
 	 * @param dutyUs  New duty value in microseconds

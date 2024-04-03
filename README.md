@@ -1,3 +1,6 @@
+---
+author: "Matthew Lewis"
+---
 # diozero - a Java Device I/O wrapper for GPIO / I<sup>2</sup>C / SPI control
 
 [![Maven CI Build](https://github.com/mattjlewis/diozero/actions/workflows/build.yml/badge.svg)](https://github.com/mattjlewis/diozero/actions/workflows/build.yml)

@@ -85,10 +85,10 @@ public class Ads112C04 extends AbstractDeviceFactory implements AnalogInputDevic
 	private static final int NUM_CHANNELS = 4;
 
 	/**
-	 * The ADS112C04 has two address pins: A0 and A1. Each address pin can be tied
-	 * to either DGND, DVDD, SDA, or SCL, providing 16 possible unique addresses.
-	 * This configuration allows up to 16 different ADS112C04 devices to be present
-	 * on the same I2C bus. Name format is A1_A0
+	 * The ADS112C04 has two address pins: A0 and A1. Each address pin can be tied to either
+	 * DGND, DVDD, SDA, or SCL, providing 16 possible unique addresses. This configuration
+	 * allows up to 16 different ADS112C04 devices to be present on the same I2C bus. Name
+	 * format is A1_A0
 	 */
 	public enum Address {
 		GND_GND(0b01000000), GND_VDD(0b01000001), GND_SDA(0b01000010), GND_SCL(0b01000011), //
@@ -393,10 +393,10 @@ public class Ads112C04 extends AbstractDeviceFactory implements AnalogInputDevic
 	}
 
 	/*
-	 * The device has four 8-bit configuration registers that are accessible through
-	 * the I2C interface using the RREG and WREG commands. After power-up or reset,
-	 * all registers are set to the default values (which are all 0). All register
-	 * values are retained during power-down mode.
+	 * The device has four 8-bit configuration registers that are accessible through the I2C
+	 * interface using the RREG and WREG commands. After power-up or reset, all registers are
+	 * set to the default values (which are all 0). All register values are retained during
+	 * power-down mode.
 	 */
 	public enum ConfigRegister {
 		_0(0b00), _1(0b01), _2(0b10), _3(0b11);
@@ -583,7 +583,7 @@ public class Ads112C04 extends AbstractDeviceFactory implements AnalogInputDevic
 	}
 
 	private BoardPinInfo boardPinInfo;
-	private I2CDevice device;
+	private I2CDeviceInterface device;
 	private GainConfig gainConfig;
 	private Pga pga;
 	private DataRate dataRate;
@@ -924,8 +924,8 @@ public class Ads112C04 extends AbstractDeviceFactory implements AnalogInputDevic
 	}
 
 	/**
-	 * Disable continuous readings and take a single-shot reading on the specified
-	 * ADC number (non-differential reads).
+	 * Disable continuous readings and take a single-shot reading on the specified ADC number
+	 * (non-differential reads).
 	 *
 	 * @param adcNumber The ADC number to read from
 	 * @return The current raw Analog reading
@@ -935,11 +935,10 @@ public class Ads112C04 extends AbstractDeviceFactory implements AnalogInputDevic
 	}
 
 	/**
-	 * Disable continuous readings and take a single-shot reading on the specified
-	 * ADC number.
+	 * Disable continuous readings and take a single-shot reading on the specified ADC number.
 	 *
-	 * For settings where AINN = AVSS, the PGA must be disabled (PGA_BYPASS = 1) and
-	 * only gains 1, 2, and 4 can be used.
+	 * For settings where AINN = AVSS, the PGA must be disabled (PGA_BYPASS = 1) and only
+	 * gains 1, 2, and 4 can be used.
 	 *
 	 * @param inputMultiplexerConfig the input multiplexer configuration
 	 * @return The current raw Analog reading
@@ -962,9 +961,8 @@ public class Ads112C04 extends AbstractDeviceFactory implements AnalogInputDevic
 	}
 
 	/**
-	 * Enable continuous read mode for the specified ADC number (AINp =
-	 * AIN{adcNumber}, AINn = AVSS). Note the PGA must be disabled and only gains 1,
-	 * 2, and 4 can be used.
+	 * Enable continuous read mode for the specified ADC number (AINp = AIN{adcNumber}, AINn =
+	 * AVSS). Note the PGA must be disabled and only gains 1, 2, and 4 can be used.
 	 *
 	 * @param adcNumber The ADC to continuously read from (non-differential mode)
 	 */
@@ -973,9 +971,8 @@ public class Ads112C04 extends AbstractDeviceFactory implements AnalogInputDevic
 	}
 
 	/**
-	 * Enable continuous read mode for the specified input multiplexer value. For
-	 * settings where AINN = AVSS, the PGA must be disabled and only gains 1, 2, and
-	 * 4 can be used.
+	 * Enable continuous read mode for the specified input multiplexer value. For settings
+	 * where AINN = AVSS, the PGA must be disabled and only gains 1, 2, and 4 can be used.
 	 *
 	 * @param inputMultiplexerConfig The input multiplexer configuration
 	 */

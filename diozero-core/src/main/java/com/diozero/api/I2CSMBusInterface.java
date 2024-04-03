@@ -31,23 +31,24 @@ package com.diozero.api;
  * #L%
  */
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+
+import com.diozero.util.BitManipulation;
+
 /**
  * I2C device interface
- * <a href="https://www.kernel.org/doc/Documentation/i2c/smbus-protocol">Linux
- * SMBus interface</a>
+ * <a href="https://www.kernel.org/doc/Documentation/i2c/smbus-protocol">Linux SMBus
+ * interface</a>
  */
 public interface I2CSMBusInterface extends DeviceInterface {
 	int MAX_I2C_BLOCK_SIZE = 32;
 
-	/**
-	 * Probe this I2C device using {@link I2CDevice.ProbeMode#AUTO Auto} probe mode
-	 *
-	 * @return True if the probe is successful
-	 * @throws RuntimeIOException if an I/O error occurs
-	 */
-	default boolean probe() throws RuntimeIOException {
-		return probe(I2CDevice.ProbeMode.AUTO);
-	}
+	int getController();
+
+	int getAddress();
+
+	ByteOrder getByteOrder();
 
 	/**
 	 * Probe this I2C device to see if it is connected
@@ -80,18 +81,16 @@ public interface I2CSMBusInterface extends DeviceInterface {
 	 * SMBus Receive Byte: <code>i2c_smbus_read_byte()</code>
 	 * </p>
 	 * <p>
-	 * This reads a single byte from a device, without specifying a device register.
-	 * Some devices are so simple that this interface is enough; for others, it is a
-	 * shorthand if you want to read the same register as in the previous SMBus
-	 * command.
+	 * This reads a single byte from a device, without specifying a device register. Some
+	 * devices are so simple that this interface is enough; for others, it is a shorthand if
+	 * you want to read the same register as in the previous SMBus command.
 	 * </p>
 	 *
 	 * <pre>
 	 * S Addr Rd [A] [Data] NA P
 	 * </pre>
 	 *
-	 * @return The byte data read (note caller needs to handle conversion to
-	 *         unsigned)
+	 * @return The byte data read (note caller needs to handle conversion to unsigned)
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	byte readByte() throws RuntimeIOException;
@@ -101,8 +100,8 @@ public interface I2CSMBusInterface extends DeviceInterface {
 	 * SMBus Send Byte: <code>i2c_smbus_write_byte()</code>
 	 * </p>
 	 * <p>
-	 * This operation is the reverse of Receive Byte: it sends a single byte to a
-	 * device. See Receive Byte for more information.
+	 * This operation is the reverse of Receive Byte: it sends a single byte to a device. See
+	 * Receive Byte for more information.
 	 * </p>
 	 *
 	 * <pre>
@@ -119,8 +118,8 @@ public interface I2CSMBusInterface extends DeviceInterface {
 	 * SMBus Read Byte: <code>i2c_smbus_read_byte_data()</code>
 	 * </p>
 	 * <p>
-	 * This reads a single byte from a device, from a designated register. The
-	 * register is specified through the Comm byte.
+	 * This reads a single byte from a device, from a designated register. The register is
+	 * specified through the Comm byte.
 	 * </p>
 	 *
 	 * <pre>
@@ -128,8 +127,7 @@ public interface I2CSMBusInterface extends DeviceInterface {
 	 * </pre>
 	 *
 	 * @param register the register to read from
-	 * @return data read as byte (note caller needs to handle conversion to
-	 *         unsigned)
+	 * @return data read as byte (note caller needs to handle conversion to unsigned)
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	byte readByteData(int register) throws RuntimeIOException;
@@ -139,9 +137,8 @@ public interface I2CSMBusInterface extends DeviceInterface {
 	 * SMBus Write Byte: <code>i2c_smbus_write_byte_data()</code>
 	 * </p>
 	 * <p>
-	 * This writes a single byte to a device, to a designated register. The register
-	 * is specified through the Comm byte. This is the opposite of the Read Byte
-	 * operation.
+	 * This writes a single byte to a device, to a designated register. The register is
+	 * specified through the Comm byte. This is the opposite of the Read Byte operation.
 	 * </p>
 	 *
 	 * <pre>
@@ -159,11 +156,10 @@ public interface I2CSMBusInterface extends DeviceInterface {
 	 * SMBus Read Word: <code>i2c_smbus_read_word_data()</code>
 	 * </p>
 	 * <p>
-	 * This operation is very like Read Byte; again, data is read from a device,
-	 * from a designated register that is specified through the Comm byte. But this
-	 * time, the data is a complete word (16 bits) in
-	 * {@link java.nio.ByteOrder#LITTLE_ENDIAN Little Endian} order as per the SMBus
-	 * specification.
+	 * This operation is very like Read Byte; again, data is read from a device, from a
+	 * designated register that is specified through the Comm byte. But this time, the data is
+	 * a complete word (16 bits) in {@link java.nio.ByteOrder#LITTLE_ENDIAN Little Endian}
+	 * order as per the SMBus specification.
 	 * </p>
 	 *
 	 * <pre>
@@ -171,8 +167,8 @@ public interface I2CSMBusInterface extends DeviceInterface {
 	 * </pre>
 	 *
 	 * @param register the register to read from
-	 * @return data read as a signed short in
-	 *         {@link java.nio.ByteOrder#LITTLE_ENDIAN Little Endian} byte order
+	 * @return data read as a signed short in {@link java.nio.ByteOrder#LITTLE_ENDIAN Little
+	 *         Endian} byte order
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	short readWordData(int register) throws RuntimeIOException;
@@ -182,11 +178,10 @@ public interface I2CSMBusInterface extends DeviceInterface {
 	 * SMBus Write Word: <code>i2c_smbus_write_word_data()</code>
 	 * </p>
 	 * <p>
-	 * This is the opposite of the Read Word operation. 16 bits of data is written
-	 * to a device, to the designated register that is specified through the Comm
-	 * byte. Note that the data is written in
-	 * {@link java.nio.ByteOrder#LITTLE_ENDIAN Little Endian} byte order as per the
-	 * SMBus specification.
+	 * This is the opposite of the Read Word operation. 16 bits of data is written to a
+	 * device, to the designated register that is specified through the Comm byte. Note that
+	 * the data is written in {@link java.nio.ByteOrder#LITTLE_ENDIAN Little Endian} byte
+	 * order as per the SMBus specification.
 	 * </p>
 	 *
 	 * <pre>
@@ -194,70 +189,19 @@ public interface I2CSMBusInterface extends DeviceInterface {
 	 * </pre>
 	 *
 	 * @param register the register to write to
-	 * @param data     value to write in {@link java.nio.ByteOrder#LITTLE_ENDIAN
-	 *                 Little Endian} byte order
+	 * @param data     value to write in {@link java.nio.ByteOrder#LITTLE_ENDIAN Little
+	 *                 Endian} byte order
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	void writeWordData(int register, short data) throws RuntimeIOException;
 
 	/**
 	 * <p>
-	 * SMBus Read Word Swapped: <code>i2c_smbus_read_word_swapped()</code>
-	 * </p>
-	 * <p>
-	 * This operation is very like Read Byte; again, data is read from a device,
-	 * from a designated register that is specified through the Comm byte. But this
-	 * time, the data is a complete word (16 bits). Note this is the convenience
-	 * function for reads where the two data bytes are the other way around (not
-	 * SMBus compliant, but very popular.)
-	 * </p>
-	 *
-	 * <pre>
-	 * S Addr Wr [A] Comm [A] S Addr Rd [A] [DataHigh] A [DataLow] NA P
-	 * </pre>
-	 *
-	 * @param register the register to read from
-	 * @return data read as a signed short in {@link java.nio.ByteOrder#BIG_ENDIAN
-	 *         Big Endian} byte order
-	 * @throws RuntimeIOException if an I/O error occurs
-	 */
-	default short readWordSwapped(int register) throws RuntimeIOException {
-		short value = readWordData(register);
-		return (short) (((value & 0x00ff) << 8) | ((value & 0xff00) >> 8));
-	}
-
-	/**
-	 * <p>
-	 * SMBus Write Word Swapped: <code>i2c_smbus_write_word_swapped()</code>
-	 * </p>
-	 * <p>
-	 * This is the opposite of the Read Word operation. 16 bits of data is written
-	 * to a device, to the designated register that is specified through the Comm
-	 * byte. Note that this is the convenience function for writes where the two
-	 * data bytes are the other way around (not SMBus compliant, but very popular.)
-	 * </p>
-	 *
-	 * <pre>
-	 * S Addr Wr [A] Comm [A] DataHigh [A] DataLow [A] P
-	 * </pre>
-	 *
-	 * @param register the register to write to
-	 * @param data     value to write in {@link java.nio.ByteOrder#BIG_ENDIAN Big
-	 *                 Endian} byte order
-	 * @throws RuntimeIOException if an I/O error occurs
-	 */
-	default void writeWordSwapped(int register, short data) throws RuntimeIOException {
-		short swapped = (short) (((data & 0x00ff) << 8) | ((data & 0xff00) >> 8));
-		writeWordData(register, swapped);
-	}
-
-	/**
-	 * <p>
 	 * SMBus Process Call
 	 * </p>
 	 * <p>
-	 * This command selects a device register (through the Comm byte), sends 16 bits
-	 * of data to it, and reads 16 bits of data in return.
+	 * This command selects a device register (through the Comm byte), sends 16 bits of data
+	 * to it, and reads 16 bits of data in return.
 	 * </p>
 	 *
 	 * <pre>
@@ -277,9 +221,9 @@ public interface I2CSMBusInterface extends DeviceInterface {
 	 * SMBus Block Read: <code>i2c_smbus_read_block_data()</code>
 	 * </p>
 	 * <p>
-	 * This command reads a block of up to 32 bytes from a device, from a designated
-	 * register that is specified through the Comm byte. The amount of data is
-	 * specified by the device in the Count byte.
+	 * This command reads a block of up to 32 bytes from a device, from a designated register
+	 * that is specified through the Comm byte. The amount of data is specified by the device
+	 * in the Count byte.
 	 * </p>
 	 *
 	 * <pre>
@@ -298,9 +242,9 @@ public interface I2CSMBusInterface extends DeviceInterface {
 	 * SMBus Block Write: <code>i2c_smbus_write_block_data()</code>
 	 * </p>
 	 * <p>
-	 * The opposite of the Block Read command, this writes up to 32 bytes to a
-	 * device, to a designated register that is specified through the Comm byte. The
-	 * amount of data is specified in the Count byte.
+	 * The opposite of the Block Read command, this writes up to 32 bytes to a device, to a
+	 * designated register that is specified through the Comm byte. The amount of data is
+	 * specified in the Count byte.
 	 * </p>
 	 *
 	 * <pre>
@@ -318,10 +262,10 @@ public interface I2CSMBusInterface extends DeviceInterface {
 	 * SMBus Block Write - Block Read Process Call
 	 * </p>
 	 * <p>
-	 * SMBus Block Write - Block Read Process Call was introduced in Revision 2.0 of
-	 * the specification.<br>
-	 * This command selects a device register (through the Comm byte), sends 1 to 31
-	 * bytes of data to it, and reads 1 to 31 bytes of data in return.
+	 * SMBus Block Write - Block Read Process Call was introduced in Revision 2.0 of the
+	 * specification.<br>
+	 * This command selects a device register (through the Comm byte), sends 1 to 31 bytes of
+	 * data to it, and reads 1 to 31 bytes of data in return.
 	 * </p>
 	 *
 	 * <pre>
@@ -330,8 +274,7 @@ public interface I2CSMBusInterface extends DeviceInterface {
 	 * </pre>
 	 *
 	 * @param register the register to write to and read from
-	 * @param txData   the byte array from which the data is written (up to 32
-	 *                 bytes)
+	 * @param txData   the byte array from which the data is written (up to 32 bytes)
 	 * @return the data read (up to 32 bytes)
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
@@ -351,8 +294,8 @@ public interface I2CSMBusInterface extends DeviceInterface {
 	 * I2C Block Read: <code>i2c_smbus_read_i2c_block_data()</code>
 	 * </p>
 	 * <p>
-	 * This command reads a block of up to 32 bytes from a device, using the
-	 * specified register address.
+	 * This command reads a block of up to 32 bytes from a device, using the specified
+	 * register address.
 	 * </p>
 	 *
 	 * I2C commands:
@@ -363,8 +306,8 @@ public interface I2CSMBusInterface extends DeviceInterface {
 	 * </pre>
 	 *
 	 * @param register the register to read from
-	 * @param buffer   the buffer to read the data into, the buffer length specifies
-	 *                 the number of bytes to read up to a maximum of 32 bytes
+	 * @param buffer   the buffer to read the data into, the buffer length specifies the
+	 *                 number of bytes to read up to a maximum of 32 bytes
 	 * @return the number of bytes actually read
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
@@ -375,8 +318,8 @@ public interface I2CSMBusInterface extends DeviceInterface {
 	 * I2C Block Write: <code>i2c_smbus_write_i2c_block_data()</code>
 	 * </p>
 	 * <p>
-	 * The opposite of the Block Read command, this writes up to 32 bytes of data to
-	 * a device, to the specified register address.
+	 * The opposite of the Block Read command, this writes up to 32 bytes of data to a device,
+	 * to the specified register address.
 	 * </p>
 	 *
 	 *
@@ -394,4 +337,273 @@ public interface I2CSMBusInterface extends DeviceInterface {
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	void writeI2CBlockData(int register, byte... data) throws RuntimeIOException;
+
+	//
+	// Utility methods
+	//
+
+	/**
+	 * Probe this I2C device using {@link I2CDevice.ProbeMode#AUTO Auto} probe mode
+	 *
+	 * @return True if the probe is successful
+	 * @throws RuntimeIOException if an I/O error occurs
+	 */
+	default boolean probe() throws RuntimeIOException {
+		return probe(I2CDevice.ProbeMode.AUTO);
+	}
+
+	/**
+	 * <p>
+	 * SMBus Read Word Swapped: <code>i2c_smbus_read_word_swapped()</code>
+	 * </p>
+	 * <p>
+	 * This operation is very like Read Byte; again, data is read from a device, from a
+	 * designated register that is specified through the Comm byte. But this time, the data is
+	 * a complete word (16 bits). Note this is the convenience function for reads where the
+	 * two data bytes are the other way around (not SMBus compliant, but very popular.)
+	 * </p>
+	 *
+	 * <pre>
+	 * S Addr Wr [A] Comm [A] S Addr Rd [A] [DataHigh] A [DataLow] NA P
+	 * </pre>
+	 *
+	 * @param register the register to read from
+	 * @return data read as a signed short in {@link java.nio.ByteOrder#BIG_ENDIAN Big Endian}
+	 *         byte order
+	 * @throws RuntimeIOException if an I/O error occurs
+	 */
+	default short readWordSwapped(int register) throws RuntimeIOException {
+		short value = readWordData(register);
+		return (short) (((value & 0x00ff) << 8) | ((value & 0xff00) >> 8));
+	}
+
+	/**
+	 * <p>
+	 * SMBus Write Word Swapped: <code>i2c_smbus_write_word_swapped()</code>
+	 * </p>
+	 * <p>
+	 * This is the opposite of the Read Word operation. 16 bits of data is written to a
+	 * device, to the designated register that is specified through the Comm byte. Note that
+	 * this is the convenience function for writes where the two data bytes are the other way
+	 * around (not SMBus compliant, but very popular.)
+	 * </p>
+	 *
+	 * <pre>
+	 * S Addr Wr [A] Comm [A] DataHigh [A] DataLow [A] P
+	 * </pre>
+	 *
+	 * @param register the register to write to
+	 * @param data     value to write in {@link java.nio.ByteOrder#BIG_ENDIAN Big Endian} byte
+	 *                 order
+	 * @throws RuntimeIOException if an I/O error occurs
+	 */
+	default void writeWordSwapped(int register, short data) throws RuntimeIOException {
+		short swapped = (short) (((data & 0x00ff) << 8) | ((data & 0xff00) >> 8));
+		writeWordData(register, swapped);
+	}
+
+	/**
+	 * Utility method that simply casts the int data parameter to byte and calls
+	 * {@link I2CDevice#writeByteData(int, byte)}
+	 *
+	 * @see I2CDevice#writeByteData(int, byte)
+	 *
+	 * @param register the register to write to
+	 * @param data     value to write
+	 * @throws RuntimeIOException if an I/O error occurs
+	 */
+	default void writeByteData(int register, int data) throws RuntimeIOException {
+		writeByteData(register, (byte) data);
+	}
+
+	/**
+	 * Utility method that simply converts the response from
+	 * {@link I2CDevice#readByteData(int)} to an unsigned byte. A short is returned to ensure
+	 * that the returned value is unsigned
+	 *
+	 * @see I2CDevice#readByteData(int)
+	 *
+	 * @param register the register to read from
+	 * @return byte data returned converted to unsigned byte (represented as a short)
+	 * @throws RuntimeIOException if an I/O error occurs
+	 */
+	default short readUByte(int register) throws RuntimeIOException {
+		return (short) (readByteData(register) & 0xff);
+	}
+
+	/**
+	 * Utility method that wraps {@link I2CDevice#readI2CBlockData(int, byte[])} to read the
+	 * specified number of bytes and return as a new byte array.
+	 *
+	 * @see I2CDevice#readI2CBlockData(int, byte[])
+	 *
+	 * @param register the register to read from
+	 * @param length   the number of bytes to read
+	 * @return the data read
+	 * @throws RuntimeIOException if an I/O error occurs
+	 */
+	default byte[] readI2CBlockDataByteArray(int register, int length) throws RuntimeIOException {
+		byte[] data = new byte[length];
+		int read = readI2CBlockData(register, data);
+		if (read == length) {
+			return data;
+		}
+
+		// Shrink the byte array to the size of data actually read
+		byte[] rx_data = new byte[read];
+		System.arraycopy(data, 0, rx_data, 0, read);
+		return rx_data;
+	}
+
+	/**
+	 * Utility method that wraps {@link I2CDevice#readI2CBlockData(int, byte[])} to read the
+	 * specified number of bytes and return as a {@link ByteBuffer} using the {@link ByteOrder
+	 * byte order} specified in the device constructor.
+	 *
+	 * @see I2CDevice#readI2CBlockData(int, byte[])
+	 * @see ByteBuffer#wrap(byte[])
+	 *
+	 * @param register the register to read from
+	 * @param length   the number of bytes to read
+	 * @return the data read
+	 * @throws RuntimeIOException if an I/O error occurs
+	 */
+	default ByteBuffer readI2CBlockDataByteBuffer(int register, int length) throws RuntimeIOException {
+		byte[] data = new byte[length];
+
+		readI2CBlockData(register, data);
+		ByteBuffer buffer = ByteBuffer.wrap(data);
+		buffer.order(getByteOrder());
+
+		return buffer;
+	}
+
+	/**
+	 * Utility method that invokes either {@link I2CDevice#readWordData(int)} or
+	 * {@link I2CDevice#readWordSwapped(int)} to read a signed short value from the requested
+	 * register in the {@link ByteOrder byte order} specified in the constructor.
+	 *
+	 * @see I2CDevice#readWordData(int)
+	 * @see I2CDevice#readWordSwapped(int)
+	 *
+	 * @param register register to read from
+	 * @return the signed short value read
+	 * @throws RuntimeIOException if an I/O error occurs
+	 */
+	default short readShort(int register) throws RuntimeIOException {
+		if (getByteOrder().equals(ByteOrder.LITTLE_ENDIAN)) {
+			return readWordData(register);
+		}
+		return readWordSwapped(register);
+	}
+
+	/**
+	 * Utility method that wraps {@link I2CDevice#readShort(int)} to read an unsigned short
+	 * value from the requested register using the {@link ByteOrder byte order} specified in
+	 * the constructor.
+	 *
+	 * @see I2CDevice#readShort(int)
+	 *
+	 * @param register register to read from
+	 * @return the unsigned short value read
+	 * @throws RuntimeIOException if an I/O error occurs
+	 */
+	default int readUShort(int register) throws RuntimeIOException {
+		return readShort(register) & 0xffff;
+	}
+
+	/**
+	 * Utility method that wraps {@link I2CDevice#readI2CBlockDataByteBuffer(int, int)} to
+	 * read a signed int value from the requested register using the {@link ByteOrder byte
+	 * order} specified in the constructor.
+	 *
+	 * @see I2CDevice#readI2CBlockDataByteBuffer(int, int)
+	 *
+	 * @param register register to read from
+	 * @return the signed int value read
+	 * @throws RuntimeIOException if an I/O error occurs
+	 */
+	default int readInt(int register) throws RuntimeIOException {
+		return readI2CBlockDataByteBuffer(register, 4).getInt();
+	}
+
+	/**
+	 * Utility method that wraps {@link I2CDevice#readInt(int)} to read an unsigned int value
+	 * from the requested register using the {@link ByteOrder byte order} specified in the
+	 * constructor.
+	 *
+	 * @see I2CDevice#readInt(int)
+	 *
+	 * @param register register to read from
+	 * @return the unsigned int value read
+	 * @throws RuntimeIOException if an I/O error occurs
+	 */
+	default long readUInt(int register) throws RuntimeIOException {
+		return readInt(register) & 0xffffffffL;
+	}
+
+	/**
+	 * Utility method that wraps {@link I2CDevice#readI2CBlockDataByteArray(int, int)} to read
+	 * an unsigned int value on the specified length from the requested register using the
+	 * {@link ByteOrder byte order} specified in the constructor.
+	 *
+	 * @see I2CDevice#readI2CBlockDataByteArray(int, int)
+	 *
+	 * @param register register to read from
+	 * @param numBytes number of bytes to read (1..4)
+	 * @return the unsigned int value read
+	 * @throws RuntimeIOException if an I/O error occurs
+	 */
+	default long readUInt(int register, int numBytes) throws RuntimeIOException {
+		if (numBytes < 1 || numBytes > 4) {
+			throw new IllegalArgumentException("Maximum int length is 4 bytes - you requested " + numBytes);
+		}
+
+		if (numBytes == 4) {
+			return readUInt(getAddress());
+		}
+
+		byte[] data = readI2CBlockDataByteArray(register, numBytes);
+
+		long val = 0;
+		for (int i = 0; i < numBytes; i++) {
+			val |= (data[getByteOrder().equals(ByteOrder.LITTLE_ENDIAN) ? numBytes - i - 1 : i] & 0xff) << (8
+					* (numBytes - i - 1));
+		}
+
+		return val;
+	}
+
+	/**
+	 * Utility method that wraps {@link I2CDevice#readByteData(int)} to check if the specified
+	 * bit number is set.
+	 *
+	 * @see BitManipulation#isBitSet(byte, int)
+	 * @see I2CDevice#readByteData(int)
+	 *
+	 * @param register the register to read
+	 * @param bit      the bit number to check
+	 * @return true if the specified bit number is set
+	 * @throws RuntimeIOException if an I/O error occurs
+	 */
+	default boolean readBit(int register, int bit) throws RuntimeIOException {
+		return BitManipulation.isBitSet(readByteData(register), bit);
+	}
+
+	/**
+	 * Utility method that wraps {@link I2CDevice#readByteData(int)} and
+	 * {@link I2CDevice#writeByteData(int, byte)} to update the specified bit number
+	 *
+	 * @see I2CDevice#readByteData(int)
+	 * @see BitManipulation#setBitValue(byte, int, boolean)
+	 *
+	 * @param register the register to update
+	 * @param bit      the bit number to set
+	 * @param value    the value to set the bit to
+	 * @throws RuntimeIOException if an I/O error occurs
+	 */
+	default void writeBit(int register, int bit, boolean value) throws RuntimeIOException {
+		byte cur_val = readByteData(register);
+		writeByteData(register, BitManipulation.setBitValue(cur_val, bit, value));
+	}
 }

@@ -31,18 +31,21 @@ package com.diozero.devices;
  * #L%
  */
 
-
 import org.tinylog.Logger;
 
 import com.diozero.api.DeviceInterface;
 import com.diozero.api.I2CDevice;
+import com.diozero.api.I2CDeviceInterface;
 import com.diozero.api.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 
 /**
- * See the <a href="http://www.microchip.com/ParamChartSearch/chart.aspx?branchID=1100111">Microchip website</a>.
+ * See the <a href=
+ * "http://www.microchip.com/ParamChartSearch/chart.aspx?branchID=1100111">Microchip
+ * website</a>.
  * <a href="http://ww1.microchip.com/downloads/en/DeviceDoc/21754M.pdf">Datasheet</a>.
  * Connections:
+ * 
  * <pre>
  *         Notch
  * GND  A0 1  8 Vcc 3v3
@@ -54,13 +57,13 @@ import com.diozero.util.SleepUtil;
 public class McpEeprom implements DeviceInterface {
 	public static enum Type {
 		MCP_24xx256(2, 64, 5, 256), MCP_24xx512(2, 128, 5, 512);
-		
+
 		private int addressSizeBytes;
 		private int pageSizeBytes;
 		private int writeCycleTimeMillis;
 		private int memorySizeBits;
 		private int memorySizeBytes;
-		
+
 		private Type(int addressSizeBytes, int pageSizeBytes, int writeCycleTimeMillis, int memorySizeKibibits) {
 			this.addressSizeBytes = addressSizeBytes;
 			this.pageSizeBytes = pageSizeBytes;
@@ -89,91 +92,91 @@ public class McpEeprom implements DeviceInterface {
 			return memorySizeBytes;
 		}
 	}
-	
+
 	public static final int DEFAULT_ADDRESS = 0x50;
-	
-	private I2CDevice device;
+
+	private I2CDeviceInterface device;
 	private Type type;
-	
+
 	public McpEeprom(int controller, Type type) {
 		this(controller, DEFAULT_ADDRESS, type);
 	}
-	
+
 	public McpEeprom(int controller, int address, Type type) {
 		this.type = type;
 		device = I2CDevice.builder(address).setController(controller).build();
-		if (! device.probe()) {
+		if (!device.probe()) {
 			throw new RuntimeIOException("No such device " + controller + "-0x" + Integer.toHexString(address));
 		}
 	}
-	
+
 	public Type getType() {
 		return type;
 	}
-	
+
 	public int getMemorySizeByte() {
 		return type.getMemorySizeBytes();
 	}
-	
+
 	private byte[] getAddressByteArray(int address) {
 		byte[] address_bytes = new byte[type.getAddressSizeBytes()];
-		
-		for (int i=0; i<type.getAddressSizeBytes(); i++) {
-			address_bytes[i] = (byte) ((address >> 8 * (type.getAddressSizeBytes() - (i+1))) & 0xff);
+
+		for (int i = 0; i < type.getAddressSizeBytes(); i++) {
+			address_bytes[i] = (byte) ((address >> 8 * (type.getAddressSizeBytes() - (i + 1))) & 0xff);
 		}
-		
+
 		return address_bytes;
 	}
-	
+
 	public byte readCurrentAddress() {
 		return device.readByte();
 	}
-	
+
 	public byte readByte(int address) {
 		device.writeBytes(getAddressByteArray(address));
 		return device.readByte();
 	}
-	
+
 	public byte[] readBytes(int address, int length) {
 		device.writeBytes(getAddressByteArray(address));
 		return device.readBytes(length);
 	}
-	
+
 	public void writeByte(int address, int data) {
 		writeByte(address, (byte) data);
 	}
-	
+
 	public void writeByte(int address, byte data) {
 		byte[] addr_bytes = getAddressByteArray(address);
-		byte[] buffer = new byte[addr_bytes.length+1];
+		byte[] buffer = new byte[addr_bytes.length + 1];
 		System.arraycopy(addr_bytes, 0, buffer, 0, addr_bytes.length);
 		buffer[addr_bytes.length] = data;
 		device.writeBytes(buffer);
 		SleepUtil.sleepMillis(type.getWriteCycleTimeMillis());
 	}
-	
+
 	public void writeBytes(int address, byte[] data) {
 		if ((address + data.length) > type.getMemorySizeBytes()) {
 			Logger.error("Attempt to write beyond memory size - no data written");
 			return;
 		}
-		
+
 		int page = address / type.getPageSizeBytes();
 		int bytes_remaining = data.length;
 		do {
 			int remaining_page_size = type.getPageSizeBytes() - (address % type.getPageSizeBytes());
 			int bytes_to_write = remaining_page_size < bytes_remaining ? remaining_page_size : bytes_remaining;
-			
+
 			byte[] addr_bytes = getAddressByteArray(address);
-			byte[] buffer = new byte[addr_bytes.length+bytes_to_write];
+			byte[] buffer = new byte[addr_bytes.length + bytes_to_write];
 			System.arraycopy(addr_bytes, 0, buffer, 0, addr_bytes.length);
 			System.arraycopy(data, data.length - bytes_remaining, buffer, addr_bytes.length, bytes_to_write);
 			device.writeBytes(buffer);
-			
+
 			bytes_remaining -= bytes_to_write;
 			page++;
 			address = page * type.getPageSizeBytes();
-			
+
 			SleepUtil.sleepMillis(type.getWriteCycleTimeMillis());
 		} while (bytes_remaining > 0);
 	}

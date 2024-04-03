@@ -38,6 +38,7 @@ import org.tinylog.Logger;
 
 import com.diozero.api.DeviceInterface;
 import com.diozero.api.I2CDevice;
+import com.diozero.api.I2CDeviceInterface;
 import com.diozero.api.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 
@@ -73,8 +74,8 @@ public class MPU9150Driver implements DeviceInterface, MPU9150Constants, AK8975C
 	/* true if devices on auxiliary I2C bus appear on the primary. */
 	private Boolean bypass_mode;
 	/*
-	 * true if half-sensitivity. NOTE: This doesn't belong here, but everything else
-	 * in hw_s is const, and this allows us to save some precious RAM.
+	 * true if half-sensitivity. NOTE: This doesn't belong here, but everything else in hw_s
+	 * is const, and this allows us to save some precious RAM.
 	 */
 	private boolean accel_half;
 	/* true if device in low-power accel-only mode. */
@@ -96,7 +97,7 @@ public class MPU9150Driver implements DeviceInterface, MPU9150Constants, AK8975C
 	private int compass_sample_rate;
 	private byte compass_addr;
 	private AK8975Driver magSensor;
-	private I2CDevice i2cDevice;
+	private I2CDeviceInterface i2cDevice;
 
 	/**
 	 * Default constructor, uses default I2C address.
@@ -129,8 +130,8 @@ public class MPU9150Driver implements DeviceInterface, MPU9150Constants, AK8975C
 	}
 
 	/**
-	 * Enable/disable data ready interrupt. If the DMP is on, the DMP interrupt is
-	 * enabled. Otherwise, the data ready interrupt is used.
+	 * Enable/disable data ready interrupt. If the DMP is on, the DMP interrupt is enabled.
+	 * Otherwise, the data ready interrupt is used.
 	 *
 	 * @param enable 1 to enable interrupt.
 	 * @return success status
@@ -168,9 +169,9 @@ public class MPU9150Driver implements DeviceInterface, MPU9150Constants, AK8975C
 	}
 
 	/**
-	 * Initialize hardware. Initial configuration: Gyro FSR: +/- 2000DPS Accel FSR
-	 * +/- 2G DLPF: 42Hz FIFO rate: 50Hz Clock source: Gyro PLL FIFO: Disabled. Data
-	 * ready interrupt: Disabled, active low, unlatched.
+	 * Initialize hardware. Initial configuration: Gyro FSR: +/- 2000DPS Accel FSR +/- 2G
+	 * DLPF: 42Hz FIFO rate: 50Hz Clock source: Gyro PLL FIFO: Disabled. Data ready interrupt:
+	 * Disabled, active low, unlatched.
 	 *
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
@@ -222,13 +223,13 @@ public class MPU9150Driver implements DeviceInterface, MPU9150Constants, AK8975C
 	}
 
 	/**
-	 * Enter low-power accel-only mode. In low-power accel mode, the chip goes to
-	 * sleep and only wakes up to sample the accelerometer at one of the following
-	 * frequencies: MPU6050: 1.25Hz, 5Hz, 20Hz, 40Hz MPU6500: 1.25Hz, 2.5Hz, 5Hz,
-	 * 10Hz, 20Hz, 40Hz, 80Hz, 160Hz, 320Hz, 640Hz If the requested rate is not one
-	 * listed above, the device will be set to the next highest rate. Requesting a
-	 * rate above the maximum supported frequency will result in an error. To select
-	 * a fractional wake-up frequency, round down the value passed to rate.
+	 * Enter low-power accel-only mode. In low-power accel mode, the chip goes to sleep and
+	 * only wakes up to sample the accelerometer at one of the following frequencies: MPU6050:
+	 * 1.25Hz, 5Hz, 20Hz, 40Hz MPU6500: 1.25Hz, 2.5Hz, 5Hz, 10Hz, 20Hz, 40Hz, 80Hz, 160Hz,
+	 * 320Hz, 640Hz If the requested rate is not one listed above, the device will be set to
+	 * the next highest rate. Requesting a rate above the maximum supported frequency will
+	 * result in an error. To select a fractional wake-up frequency, round down the value
+	 * passed to rate.
 	 *
 	 * @param rate Minimum sampling rate, or zero to disable LP accel mode.
 	 * @return true if successful.
@@ -249,10 +250,9 @@ public class MPU9150Driver implements DeviceInterface, MPU9150Constants, AK8975C
 			return true;
 		}
 		/*
-		 * For LP accel, we automatically configure the hardware to produce latched
-		 * interrupts. In LP accel mode, the hardware cycles into sleep mode before it
-		 * gets a chance to deassert the interrupt pin; therefore, we shift this
-		 * responsibility over to the MCU.
+		 * For LP accel, we automatically configure the hardware to produce latched interrupts. In
+		 * LP accel mode, the hardware cycles into sleep mode before it gets a chance to deassert
+		 * the interrupt pin; therefore, we shift this responsibility over to the MCU.
 		 *
 		 * Any register read will clear the interrupt.
 		 */
@@ -301,20 +301,19 @@ public class MPU9150Driver implements DeviceInterface, MPU9150Constants, AK8975C
 		short z = buffer.getShort();
 		System.out.format("gyro reg values = (%d, %d, %d)%n", Short.valueOf(x), Short.valueOf(y), Short.valueOf(z));
 		/*
-		 * byte[] data = readBytes(MPU9150_RA_GYRO_XOUT_H, 6) short x = (short)((data[0]
-		 * << 8) | (data[1] & 0xff)); short y = (short)((data[2] << 8) | (data[3] &
-		 * 0xff)); short z = (short)((data[4] << 8) | (data[5] & 0xff));
+		 * byte[] data = readBytes(MPU9150_RA_GYRO_XOUT_H, 6) short x = (short)((data[0] << 8) |
+		 * (data[1] & 0xff)); short y = (short)((data[2] << 8) | (data[3] & 0xff)); short z =
+		 * (short)((data[4] << 8) | (data[5] & 0xff));
 		 */
 
 		return new short[] { x, y, z };
 	}
 
 	/**
-	 * Each 16-bit accelerometer measurement has a full scale defined in ACCEL_FS
-	 * (Register 28). For each full scale setting, the accelerometers' sensitivity
-	 * per LSB in ACCEL_xOUT is shown in the table below. AFS_SEL Full Scale Range
-	 * LSB Sensitivity 0 +/-2g 16384 LSB/mg 1 +/-4g 8192 LSB/mg 2 +/-8g 4096 LSB/mg
-	 * 3 +/-16g 2048 LSB/mg
+	 * Each 16-bit accelerometer measurement has a full scale defined in ACCEL_FS (Register
+	 * 28). For each full scale setting, the accelerometers' sensitivity per LSB in ACCEL_xOUT
+	 * is shown in the table below. AFS_SEL Full Scale Range LSB Sensitivity 0 +/-2g 16384
+	 * LSB/mg 1 +/-4g 8192 LSB/mg 2 +/-8g 4096 LSB/mg 3 +/-16g 2048 LSB/mg
 	 *
 	 * @return Raw data in hardware units.
 	 * @throws RuntimeIOException if an I/O error occurs
@@ -340,12 +339,11 @@ public class MPU9150Driver implements DeviceInterface, MPU9150Constants, AK8975C
 	}
 
 	/**
-	 * Read temperature data directly from the registers. The scale factor and
-	 * offset for the temperature sensor are found in the Electrical Specifications
-	 * table in the MPU-9150 Product Specification document. The temperature in
-	 * degrees C for a given register value may be computed as: Temperature in
-	 * degrees C = (TEMP_OUT Register Value as a signed quantity)/340 + 35 Please
-	 * note that the math in the above equation is in decimal.
+	 * Read temperature data directly from the registers. The scale factor and offset for the
+	 * temperature sensor are found in the Electrical Specifications table in the MPU-9150
+	 * Product Specification document. The temperature in degrees C for a given register value
+	 * may be computed as: Temperature in degrees C = (TEMP_OUT Register Value as a signed
+	 * quantity)/340 + 35 Please note that the math in the above equation is in decimal.
 	 *
 	 * @return Temperature
 	 * @throws RuntimeIOException if an I/O error occurs
@@ -364,9 +362,9 @@ public class MPU9150Driver implements DeviceInterface, MPU9150Constants, AK8975C
 	}
 
 	/**
-	 * Read biases to the accel bias 6050 registers. This function reads from the
-	 * MPU6050 accel offset cancellations registers. The format are G in +-8G
-	 * format. The register is initialised with OTP factory trim values.
+	 * Read biases to the accel bias 6050 registers. This function reads from the MPU6050
+	 * accel offset cancellations registers. The format are G in +-8G format. The register is
+	 * initialised with OTP factory trim values.
 	 *
 	 * @return accel_bias returned structure with the accel bias
 	 * @throws RuntimeIOException if an I/O error occurs
@@ -375,12 +373,11 @@ public class MPU9150Driver implements DeviceInterface, MPU9150Constants, AK8975C
 		short[] accel_bias = new short[3];
 
 		/*
-		 * byte[] bias_x_bytes = readBytes(MPU9150_RA_XA_OFFS_H, 2); byte[] bias_y_bytes
-		 * = readBytes(MPU9150_RA_YA_OFFS_H, 2); byte[] bias_z_bytes =
+		 * byte[] bias_x_bytes = readBytes(MPU9150_RA_XA_OFFS_H, 2); byte[] bias_y_bytes =
+		 * readBytes(MPU9150_RA_YA_OFFS_H, 2); byte[] bias_z_bytes =
 		 * readBytes(MPU9150_RA_ZA_OFFS_H, 2); accel_bias[0] = (bias_x_bytes[0] << 8) |
-		 * (bias_x_bytes[1] & 0xff); accel_bias[1] = (bias_y_bytes[2] << 8) |
-		 * (bias_y_bytes[3] & 0xff); accel_bias[2] = (bias_z_bytes[4] << 8) |
-		 * (bias_z_bytes[5] & 0xff);
+		 * (bias_x_bytes[1] & 0xff); accel_bias[1] = (bias_y_bytes[2] << 8) | (bias_y_bytes[3] &
+		 * 0xff); accel_bias[2] = (bias_z_bytes[4] << 8) | (bias_z_bytes[5] & 0xff);
 		 */
 		ByteBuffer buffer = i2cDevice.readI2CBlockDataByteBuffer(MPU9150_RA_XA_OFFS_H, 6);
 		accel_bias[0] = buffer.getShort();
@@ -391,9 +388,9 @@ public class MPU9150Driver implements DeviceInterface, MPU9150Constants, AK8975C
 	}
 
 	/**
-	 * Push biases to the gyro bias 6500/6050 registers. This function expects
-	 * biases relative to the current sensor output, and these biases will be added
-	 * to the factory-supplied values. Bias inputs are LSB in +-1000dps format.
+	 * Push biases to the gyro bias 6500/6050 registers. This function expects biases relative
+	 * to the current sensor output, and these biases will be added to the factory-supplied
+	 * values. Bias inputs are LSB in +-1000dps format.
 	 *
 	 * @param gyro_bias New biases.
 	 * @throws RuntimeIOException if an I/O error occurs
@@ -403,11 +400,10 @@ public class MPU9150Driver implements DeviceInterface, MPU9150Constants, AK8975C
 			gyro_bias[i] = (short) -gyro_bias[i];
 		}
 		/*
-		 * byte data[] = {0, 0, 0, 0, 0, 0}; data[0] = (byte)((gyro_bias[0] >> 8) &
-		 * 0xff); data[1] = (byte)((gyro_bias[0]) & 0xff); data[2] =
-		 * (byte)((gyro_bias[1] >> 8) & 0xff); data[3] = (byte)((gyro_bias[1]) & 0xff);
-		 * data[4] = (byte)((gyro_bias[2] >> 8) & 0xff); data[5] = (byte)((gyro_bias[2])
-		 * & 0xff);
+		 * byte data[] = {0, 0, 0, 0, 0, 0}; data[0] = (byte)((gyro_bias[0] >> 8) & 0xff); data[1]
+		 * = (byte)((gyro_bias[0]) & 0xff); data[2] = (byte)((gyro_bias[1] >> 8) & 0xff); data[3]
+		 * = (byte)((gyro_bias[1]) & 0xff); data[4] = (byte)((gyro_bias[2] >> 8) & 0xff); data[5]
+		 * = (byte)((gyro_bias[2]) & 0xff);
 		 */
 		i2cDevice.writeWordData(MPU9150_RA_XG_OFFS_USRH, gyro_bias[0]);
 		i2cDevice.writeWordData(MPU9150_RA_YG_OFFS_USRH, gyro_bias[1]);
@@ -415,9 +411,9 @@ public class MPU9150Driver implements DeviceInterface, MPU9150Constants, AK8975C
 	}
 
 	/**
-	 * Push biases to the accel bias 6050 registers. This function expects biases
-	 * relative to the current sensor output, and these biases will be added to the
-	 * factory-supplied values. Bias inputs are LSB in +-16G format.
+	 * Push biases to the accel bias 6050 registers. This function expects biases relative to
+	 * the current sensor output, and these biases will be added to the factory-supplied
+	 * values. Bias inputs are LSB in +-16G format.
 	 *
 	 * @param accel_bias New biases.
 	 * @throws RuntimeIOException if an I/O error occurs
@@ -430,11 +426,10 @@ public class MPU9150Driver implements DeviceInterface, MPU9150Constants, AK8975C
 		accel_reg_bias[2] -= (accel_bias[2] & ~1);
 
 		/*
-		 * byte data[] = {0, 0, 0, 0, 0, 0}; data[0] = (byte)((accel_reg_bias[0] >> 8) &
-		 * 0xff); data[1] = (byte)((accel_reg_bias[0]) & 0xff); data[2] =
-		 * (byte)((accel_reg_bias[1] >> 8) & 0xff); data[3] = (byte)((accel_reg_bias[1])
-		 * & 0xff); data[4] = (byte)((accel_reg_bias[2] >> 8) & 0xff); data[5] =
-		 * (byte)((accel_reg_bias[2]) & 0xff);
+		 * byte data[] = {0, 0, 0, 0, 0, 0}; data[0] = (byte)((accel_reg_bias[0] >> 8) & 0xff);
+		 * data[1] = (byte)((accel_reg_bias[0]) & 0xff); data[2] = (byte)((accel_reg_bias[1] >> 8)
+		 * & 0xff); data[3] = (byte)((accel_reg_bias[1]) & 0xff); data[4] =
+		 * (byte)((accel_reg_bias[2] >> 8) & 0xff); data[5] = (byte)((accel_reg_bias[2]) & 0xff);
 		 */
 
 		i2cDevice.writeWordData(MPU9150_RA_XA_OFFS_H, accel_reg_bias[0]);
@@ -580,8 +575,8 @@ public class MPU9150Driver implements DeviceInterface, MPU9150Constants, AK8975C
 	}
 
 	/**
-	 * Set digital low pass filter. The following LPF settings are supported: 188,
-	 * 98, 42, 20, 10, 5.
+	 * Set digital low pass filter. The following LPF settings are supported: 188, 98, 42, 20,
+	 * 10, 5.
 	 *
 	 * @param frequency Desired LPF setting.
 	 * @throws RuntimeIOException if an I/O error occurs
@@ -592,8 +587,8 @@ public class MPU9150Driver implements DeviceInterface, MPU9150Constants, AK8975C
 	}
 
 	/**
-	 * Set digital low pass filter. The following LPF settings are supported: 188,
-	 * 98, 42, 20, 10, 5.
+	 * Set digital low pass filter. The following LPF settings are supported: 188, 98, 42, 20,
+	 * 10, 5.
 	 *
 	 * @param lpf Desired LPF setting.
 	 * @throws RuntimeIOException if an I/O error occurs
@@ -649,8 +644,8 @@ public class MPU9150Driver implements DeviceInterface, MPU9150Constants, AK8975C
 			}
 
 			/*
-			 * Requested rate exceeds the allowed frequencies in LP accel mode, switch back
-			 * to full-power mode.
+			 * Requested rate exceeds the allowed frequencies in LP accel mode, switch back to
+			 * full-power mode.
 			 */
 			Logger.debug("Setting lp_accel_mode to 0");
 			mpu_lp_accel_mode(0);
@@ -683,9 +678,9 @@ public class MPU9150Driver implements DeviceInterface, MPU9150Constants, AK8975C
 	}
 
 	/**
-	 * Set compass sampling rate. The compass on the auxiliary I2C bus is read by
-	 * the MPU hardware at a maximum of 100Hz. The actual rate can be set to a
-	 * fraction of the gyro sampling rate.
+	 * Set compass sampling rate. The compass on the auxiliary I2C bus is read by the MPU
+	 * hardware at a maximum of 100Hz. The actual rate can be set to a fraction of the gyro
+	 * sampling rate.
 	 *
 	 * WARNING: The new rate may be different than what was requested. Call
 	 * mpu_get_compass_sample_rate to check the actual setting.
@@ -715,9 +710,9 @@ public class MPU9150Driver implements DeviceInterface, MPU9150Constants, AK8975C
 	 */
 	public double mpu_get_gyro_sens() {
 		/*
-		 * float sens; switch (gyro_fsr) { case INV_FSR_250DPS: sens = 131.0f; break;
-		 * case INV_FSR_500DPS: sens = 65.5f; break; case INV_FSR_1000DPS: sens = 32.8f;
-		 * break; case INV_FSR_2000DPS: sens = 16.4f; break; default: sens = -1f; }
+		 * float sens; switch (gyro_fsr) { case INV_FSR_250DPS: sens = 131.0f; break; case
+		 * INV_FSR_500DPS: sens = 65.5f; break; case INV_FSR_1000DPS: sens = 32.8f; break; case
+		 * INV_FSR_2000DPS: sens = 16.4f; break; default: sens = -1f; }
 		 *
 		 * return sens;
 		 */
@@ -732,9 +727,9 @@ public class MPU9150Driver implements DeviceInterface, MPU9150Constants, AK8975C
 	 */
 	public int mpu_get_accel_sens() {
 		/*
-		 * int sens; switch (accel_fsr) { case INV_FSR_2G: sens = 16384; break; case
-		 * INV_FSR_4G: sens = 8192; break; case INV_FSR_8G: sens = 4096; break; case
-		 * INV_FSR_16G: sens = 2048; break; default: return -1; }
+		 * int sens; switch (accel_fsr) { case INV_FSR_2G: sens = 16384; break; case INV_FSR_4G:
+		 * sens = 8192; break; case INV_FSR_8G: sens = 4096; break; case INV_FSR_16G: sens = 2048;
+		 * break; default: return -1; }
 		 */
 
 		int sens = accel_fsr.getSensitivityScaleFactor();
@@ -746,9 +741,8 @@ public class MPU9150Driver implements DeviceInterface, MPU9150Constants, AK8975C
 	}
 
 	/**
-	 * Get current FIFO configuration. sensors can contain a combination of the
-	 * following flags: INV_X_GYRO, INV_Y_GYRO, INV_Z_GYRO INV_XYZ_GYRO
-	 * INV_XYZ_ACCEL
+	 * Get current FIFO configuration. sensors can contain a combination of the following
+	 * flags: INV_X_GYRO, INV_Y_GYRO, INV_Z_GYRO INV_XYZ_GYRO INV_XYZ_ACCEL
 	 *
 	 * @return sensors Mask of sensors in FIFO.
 	 */
@@ -757,9 +751,8 @@ public class MPU9150Driver implements DeviceInterface, MPU9150Constants, AK8975C
 	}
 
 	/**
-	 * Select which sensors are pushed to FIFO. sensors can contain a combination of
-	 * the following flags: INV_X_GYRO, INV_Y_GYRO, INV_Z_GYRO INV_XYZ_GYRO
-	 * INV_XYZ_ACCEL
+	 * Select which sensors are pushed to FIFO. sensors can contain a combination of the
+	 * following flags: INV_X_GYRO, INV_Y_GYRO, INV_Z_GYRO INV_XYZ_GYRO INV_XYZ_ACCEL
 	 *
 	 * @param newSensors Mask of sensors to push to FIFO.
 	 * @throws RuntimeIOException if an I/O error occurs
@@ -818,9 +811,8 @@ public class MPU9150Driver implements DeviceInterface, MPU9150Constants, AK8975C
 	}
 
 	/**
-	 * Turn specific sensors on/off. sensors can contain a combination of the
-	 * following flags: INV_X_GYRO, INV_Y_GYRO, INV_Z_GYRO INV_XYZ_GYRO
-	 * INV_XYZ_ACCEL INV_XYZ_COMPASS
+	 * Turn specific sensors on/off. sensors can contain a combination of the following flags:
+	 * INV_X_GYRO, INV_Y_GYRO, INV_Z_GYRO INV_XYZ_GYRO INV_XYZ_ACCEL INV_XYZ_COMPASS
 	 *
 	 * @param newSensors Mask of sensors to wake.
 	 * @return true if successful.
@@ -921,16 +913,15 @@ public class MPU9150Driver implements DeviceInterface, MPU9150Constants, AK8975C
 	}
 
 	/**
-	 * Get one packet from the FIFO. If sensors does not contain a particular
-	 * sensor, disregard the data returned to that pointer. sensors can contain a
-	 * combination of the following flags: INV_X_GYRO, INV_Y_GYRO, INV_Z_GYRO
-	 * INV_XYZ_GYRO INV_XYZ_ACCEL If the FIFO has no new data, sensors will be zero.
-	 * If the FIFO is disabled, sensors will be zero and this function will return a
-	 * non-zero error code.
+	 * Get one packet from the FIFO. If sensors does not contain a particular sensor,
+	 * disregard the data returned to that pointer. sensors can contain a combination of the
+	 * following flags: INV_X_GYRO, INV_Y_GYRO, INV_Z_GYRO INV_XYZ_GYRO INV_XYZ_ACCEL If the
+	 * FIFO has no new data, sensors will be zero. If the FIFO is disabled, sensors will be
+	 * zero and this function will return a non-zero error code.
 	 *
-	 * @return FIFOData: gyro Gyro data in hardware units. accel Accel data in
-	 *         hardware units. timestamp Timestamp in milliseconds. sensors Mask of
-	 *         sensors read from FIFO. more Number of remaining packets.
+	 * @return FIFOData: gyro Gyro data in hardware units. accel Accel data in hardware units.
+	 *         timestamp Timestamp in milliseconds. sensors Mask of sensors read from FIFO.
+	 *         more Number of remaining packets.
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	public MPU9150FIFOData mpu_read_fifo() throws RuntimeIOException {
@@ -1024,8 +1015,8 @@ public class MPU9150Driver implements DeviceInterface, MPU9150Constants, AK8975C
 	}
 
 	/**
-	 * Get one unparsed packet from the FIFO. This function should be used if the
-	 * packet is to be parsed elsewhere.
+	 * Get one unparsed packet from the FIFO. This function should be used if the packet is to
+	 * be parsed elsewhere.
 	 *
 	 * @param length Length of one FIFO packet.
 	 * @return more Number of remaining packets.
@@ -1192,8 +1183,7 @@ public class MPU9150Driver implements DeviceInterface, MPU9150Constants, AK8975C
 				continue;
 			}
 			/*
-			 * Equivalent to.. st_shift[ii] = 0.34f * powf(0.92f/0.34f, (shift_code[ii]-1) /
-			 * 30.f)
+			 * Equivalent to.. st_shift[ii] = 0.34f * powf(0.92f/0.34f, (shift_code[ii]-1) / 30.f)
 			 */
 			st_shift[ii] = 0.34f;
 			while (--shift_code[ii] != 0) {
@@ -1209,8 +1199,8 @@ public class MPU9150Driver implements DeviceInterface, MPU9150Constants, AK8975C
 	}
 
 	/**
-	 * Write to the DMP memory. This function prevents I2C writes past the bank
-	 * boundaries. The DMP memory is only accessible when the chip is awake.
+	 * Write to the DMP memory. This function prevents I2C writes past the bank boundaries.
+	 * The DMP memory is only accessible when the chip is awake.
 	 *
 	 * @param mem_addr Memory location (bank &lt;&lt; 8 | start address)
 	 * @param data     Bytes to write to memory.
@@ -1244,8 +1234,8 @@ public class MPU9150Driver implements DeviceInterface, MPU9150Constants, AK8975C
 	}
 
 	/**
-	 * Read from the DMP memory. This function prevents I2C reads past the bank
-	 * boundaries. The DMP memory is only accessible when the chip is awake.
+	 * Read from the DMP memory. This function prevents I2C reads past the bank boundaries.
+	 * The DMP memory is only accessible when the chip is awake.
 	 *
 	 * @param mem_addr Memory location (bank &lt;&lt; 8 | start address)
 	 * @param length   Number of bytes to read.
@@ -1387,9 +1377,9 @@ public class MPU9150Driver implements DeviceInterface, MPU9150Constants, AK8975C
 		/* Find compass. Possible addresses range from 0x0C to 0x0F. */
 		byte akm_addr = AK8975Driver.AK8975_MAG_ADDRESS;
 		/*
-		 * Assume it's on 0x0C... for (akm_addr = 0x0C; akm_addr <= 0x0F; akm_addr++) {
-		 * int result; result = read(akm_addr, AKM_REG_WHOAMI, 1, data); if (data[0] ==
-		 * AKM_WHOAMI) { break; } }
+		 * Assume it's on 0x0C... for (akm_addr = 0x0C; akm_addr <= 0x0F; akm_addr++) { int
+		 * result; result = read(akm_addr, AKM_REG_WHOAMI, 1, data); if (data[0] == AKM_WHOAMI) {
+		 * break; } }
 		 */
 
 		if (akm_addr > 0x0F) {
@@ -1529,36 +1519,32 @@ public class MPU9150Driver implements DeviceInterface, MPU9150Constants, AK8975C
 	}
 
 	/**
-	 * Enters LP accel motion interrupt mode. The behaviour of this feature is very
-	 * different between the MPU6050 and the MPU6500. Each chip's version of this
-	 * feature is explained below.
+	 * Enters LP accel motion interrupt mode. The behaviour of this feature is very different
+	 * between the MPU6050 and the MPU6500. Each chip's version of this feature is explained
+	 * below.
 	 *
-	 * The hardware motion threshold can be between 32mg and 8160mg in 32mg
-	 * increments.
+	 * The hardware motion threshold can be between 32mg and 8160mg in 32mg increments.
 	 *
-	 * Low-power accel mode supports the following frequencies: 1.25Hz, 5Hz, 20Hz,
-	 * 40Hz
+	 * Low-power accel mode supports the following frequencies: 1.25Hz, 5Hz, 20Hz, 40Hz
 	 *
-	 * MPU6500: Unlike the MPU6050 version, the hardware does not "lock in" a
-	 * reference sample. The hardware monitors the accel data and detects any large
-	 * change over a short period of time.
+	 * MPU6500: Unlike the MPU6050 version, the hardware does not "lock in" a reference
+	 * sample. The hardware monitors the accel data and detects any large change over a short
+	 * period of time.
 	 *
-	 * The hardware motion threshold can be between 4mg and 1020mg in 4mg
-	 * increments.
+	 * The hardware motion threshold can be between 4mg and 1020mg in 4mg increments.
 	 *
-	 * MPU6500 Low-power accel mode supports the following frequencies: 1.25Hz,
-	 * 2.5Hz, 5Hz, 10Hz, 20Hz, 40Hz, 80Hz, 160Hz, 320Hz, 640Hz
+	 * MPU6500 Low-power accel mode supports the following frequencies: 1.25Hz, 2.5Hz, 5Hz,
+	 * 10Hz, 20Hz, 40Hz, 80Hz, 160Hz, 320Hz, 640Hz
 	 *
 	 * NOTES: The driver will round down thresh to the nearest supported value if an
-	 * unsupported threshold is selected. To select a fractional wake-up frequency,
-	 * round down the value passed to lpa_freq. The MPU6500 does not support a delay
-	 * parameter. If this function is used for the MPU6500, the value passed to time
-	 * will be ignored. To disable this mode, set lpa_freq to zero. The driver will
-	 * restore the previous configuration.
+	 * unsupported threshold is selected. To select a fractional wake-up frequency, round down
+	 * the value passed to lpa_freq. The MPU6500 does not support a delay parameter. If this
+	 * function is used for the MPU6500, the value passed to time will be ignored. To disable
+	 * this mode, set lpa_freq to zero. The driver will restore the previous configuration.
 	 *
 	 * @param thresh   Motion threshold in mg.
-	 * @param time     Duration in milliseconds that the accel data must exceed
-	 *                 thresh before motion is reported.
+	 * @param time     Duration in milliseconds that the accel data must exceed thresh before
+	 *                 motion is reported.
 	 * @param lpa_freq Minimum sampling rate, or zero to disable.
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */

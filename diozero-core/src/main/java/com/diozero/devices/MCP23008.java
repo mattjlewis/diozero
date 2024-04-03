@@ -33,6 +33,7 @@ package com.diozero.devices;
 
 import com.diozero.api.I2CConstants;
 import com.diozero.api.I2CDevice;
+import com.diozero.api.I2CDeviceInterface;
 import com.diozero.api.RuntimeIOException;
 import com.diozero.devices.mcp23xxx.MCP23x08;
 
@@ -41,7 +42,7 @@ public class MCP23008 extends MCP23x08 {
 	public static final int DEVICE_ADDRESS = 0x20;
 	private static final String DEVICE_NAME = "MCP23008";
 
-	private I2CDevice device;
+	private I2CDeviceInterface device;
 
 	public MCP23008() throws RuntimeIOException {
 		this(I2CConstants.CONTROLLER_1, DEVICE_ADDRESS, INTERRUPT_GPIO_NOT_SET, INTERRUPT_GPIO_NOT_SET);
@@ -61,12 +62,12 @@ public class MCP23008 extends MCP23x08 {
 
 	public MCP23008(int controller, int address, int interruptGpioA, int interruptGpioB) throws RuntimeIOException {
 		super(DEVICE_NAME + "-" + controller + "-" + address, interruptGpioA, interruptGpioB);
-		
+
 		device = I2CDevice.builder(address).setController(controller).build();
-		
+
 		initialise();
 	}
-	
+
 	@Override
 	public void close() throws RuntimeIOException {
 		super.close();

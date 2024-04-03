@@ -36,19 +36,19 @@ import com.diozero.api.DigitalInputDevice;
 import com.diozero.api.DigitalOutputDevice;
 import com.diozero.api.RuntimeIOException;
 import com.diozero.api.SpiDevice;
+import com.diozero.api.SpiDeviceInterface;
 import com.diozero.util.SleepUtil;
 
 /**
- * 7.5" Datasheet:
- * https://www.waveshare.com/wiki/File:7.5inch-e-paper-specification.pdf 7.5" V2
- * Datasheet:
+ * 7.5" Datasheet: https://www.waveshare.com/wiki/File:7.5inch-e-paper-specification.pdf
+ * 7.5" V2 Datasheet:
  * https://www.waveshare.com/w/upload/6/60/7.5inch_e-Paper_V2_Specification.pdf
  * https://www.waveshare.com/wiki/7.5inch_e-Paper_HAT
  *
  * Code: https://github.com/waveshare/e-Paper
  *
- * OTP: One Time Programmable memory, not programmed into registers by the
- * driver SW for this controller. LUT: Waveform Look Up Table
+ * OTP: One Time Programmable memory, not programmed into registers by the driver SW for
+ * this controller. LUT: Waveform Look Up Table
  */
 public abstract class WaveshareEink implements DeviceInterface {
 	public enum Model {
@@ -73,7 +73,7 @@ public abstract class WaveshareEink implements DeviceInterface {
 	}
 
 	protected Model model;
-	protected SpiDevice device;
+	protected SpiDeviceInterface device;
 	protected DigitalOutputDevice reset;
 	protected DigitalOutputDevice dataOrCommand;
 	protected DigitalInputDevice busy;

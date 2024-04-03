@@ -15,6 +15,7 @@
 		<imgscalr-lib.version>4.2</imgscalr-lib.version>
 		<jansi.version>2.4.1</jansi.version>
 		<picocli.version>4.7.5</picocli.version>
+		<snakeyaml.version>2.2</snakeyaml.version>
 	</properties>
 
 	<dependencyManagement>
@@ -54,6 +55,11 @@
 				<groupId>info.picocli</groupId>
 				<artifactId>picocli</artifactId>
 				<version>${picocli.version}</version>
+			</dependency>
+			<dependency>
+			    <groupId>org.yaml</groupId>
+			    <artifactId>snakeyaml</artifactId>
+			    <version>${snakeyaml.version}</version>            
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -100,6 +106,10 @@
 			<groupId>info.picocli</groupId>
 			<artifactId>picocli</artifactId>
 		</dependency>
+		<dependency>
+		    <groupId>org.yaml</groupId>
+		    <artifactId>snakeyaml</artifactId>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -108,7 +118,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-shade-plugin</artifactId>
-				<version>3.4.1</version>
 				<configuration>
 					<createDependencyReducedPom>false</createDependencyReducedPom>
 					<!-- setting a main class makes the JAR "executable"

@@ -41,15 +41,14 @@ import com.diozero.api.DeviceInterface;
 import com.diozero.api.DigitalOutputDevice;
 import com.diozero.api.SpiConstants;
 import com.diozero.api.SpiDevice;
+import com.diozero.api.SpiDeviceInterface;
 import com.diozero.util.Hex;
 import com.diozero.util.SleepUtil;
 
 /**
  * <p>
- * <a href=
- * "http://www.nxp.com/documents/data_sheet/MFRC522.pdf">Datasheet</a><br>
- * <a href=
- * "https://github.com/mxgxw/MFRC522-python/blob/master/MFRC522.py">Example
+ * <a href= "http://www.nxp.com/documents/data_sheet/MFRC522.pdf">Datasheet</a><br>
+ * <a href= "https://github.com/mxgxw/MFRC522-python/blob/master/MFRC522.py">Example
  * Python code</a><br>
  * <a href="https://github.com/nfc-tools/mfcuk">MiFare Classic Universal toolKit
  * (MFCUK)</a><br>
@@ -70,10 +69,10 @@ import com.diozero.util.SleepUtil;
  * </ul>
  *
  * <p>
- * Java port from <a href=
- * "https://github.com/miguelbalboa/rfid/blob/master/src/MFRC522.cpp">MFRC522
- * Library to use ARDUINO RFID MODULE KIT 13.56 MHZ WITH TAGS SPI W AND R BY
- * COOQROBOT</a> that was created by Miguel Balboa (circuitito.com).
+ * Java port from
+ * <a href= "https://github.com/miguelbalboa/rfid/blob/master/src/MFRC522.cpp">MFRC522
+ * Library to use ARDUINO RFID MODULE KIT 13.56 MHZ WITH TAGS SPI W AND R BY COOQROBOT</a>
+ * that was created by Miguel Balboa (circuitito.com).
  * </p>
  *
  * <p>
@@ -81,22 +80,20 @@ import com.diozero.util.SleepUtil;
  * </p>
  * <ol>
  * <li>The controller, e.g. Arduino, Raspberry Pi</li>
- * <li>The PCD (Proximity C oupling Device), e.g. NXP MFRC522 Contactless
- * Reader</li>
- * <li>The PICC (Proximity Integrated Circuit Card): A card or tag using the ISO
- * 14443A interface, e.g. Mifare or NTAG203.</li>
+ * <li>The PCD (Proximity C oupling Device), e.g. NXP MFRC522 Contactless Reader</li>
+ * <li>The PICC (Proximity Integrated Circuit Card): A card or tag using the ISO 14443A
+ * interface, e.g. Mifare or NTAG203.</li>
  * </ol>
  *
  * <p>
- * The microcontroller and card reader uses SPI for communication. The protocol
- * is described in the
- * <a href="http://www.nxp.com/documents/data_sheet/MFRC522.pdf">MFRC522
+ * The microcontroller and card reader uses SPI for communication. The protocol is
+ * described in the <a href="http://www.nxp.com/documents/data_sheet/MFRC522.pdf">MFRC522
  * datasheet</a>.
  * </p>
  *
  * <p>
- * The card reader and the tags communicate using a 13.56MHz electromagnetic
- * field. The protocol is defined in <a href=
+ * The card reader and the tags communicate using a 13.56MHz electromagnetic field. The
+ * protocol is defined in <a href=
  * "http://wg8.de/wg8n1496_17n3613_Ballot_FCD14443-3.pdf">http://wg8.de/wg8n1496_17n3613_Ballot_FCD14443-3.pdf</a>:
  * </p>
  * <ul>
@@ -110,10 +107,9 @@ import com.diozero.util.SleepUtil;
  * <p>
  * If only the PICC UID is wanted, the above documents have all the information
  * needed.<br>
- * To read and write from MIFARE PICCs, the MIFARE protocol is used after the
- * PICC has been selected.<br>
- * The MIFARE Classic and Ultralight chips and protocols are described in the
- * datasheets:
+ * To read and write from MIFARE PICCs, the MIFARE protocol is used after the PICC has
+ * been selected.<br>
+ * The MIFARE Classic and Ultralight chips and protocols are described in the datasheets:
  * </p>
  * <ul>
  * <li><a href="http://www.mouser.com/ds/2/302/MF1S503x-89574.pdf">1K</a></li>
@@ -121,10 +117,8 @@ import com.diozero.util.SleepUtil;
  * "http://datasheet.octopart.com/MF1S7035DA4,118-NXP-Semiconductors-datasheet-11046188.pdf">4K</a></li>
  * <li><a href=
  * "http://www.idcardmarket.com/download/mifare_S20_datasheet.pdf">Mini</a></li>
- * <li><a href=
- * "http://www.nxp.com/documents/data_sheet/MF0ICU1.pdf">Ultralight</a></li>
- * <li><a href=
- * "http://www.nxp.com/documents/short_data_sheet/MF0ICU2_SDS.pdf">Ultralight
+ * <li><a href= "http://www.nxp.com/documents/data_sheet/MF0ICU1.pdf">Ultralight</a></li>
+ * <li><a href= "http://www.nxp.com/documents/short_data_sheet/MF0ICU2_SDS.pdf">Ultralight
  * C</a></li>
  * </ul>
  *
@@ -133,8 +127,7 @@ import com.diozero.util.SleepUtil;
  * Has 16 sectors * 4 blocks/sector * 16 bytes/block = 1024 bytes.<br>
  * The blocks are numbered 0-63.<br>
  * Block 3 in each sector is the Sector Trailer. See
- * <a href="http://www.mouser.com/ds/2/302/MF1S503x-89574.pdf">sections 8.6 and
- * 8.7</a>:
+ * <a href="http://www.mouser.com/ds/2/302/MF1S503x-89574.pdf">sections 8.6 and 8.7</a>:
  * </p>
  *
  * <pre>
@@ -152,23 +145,21 @@ import com.diozero.util.SleepUtil;
  * UID     |BCC|SAK|ATAQ|Manufacturer data
  * </pre>
  * <p>
- * To access a block, an authentication using a key from the block's sector must
- * be performed first.<br>
- * Example: To read from block 10, first authenticate using a key from sector 3
- * (blocks 8-11).<br>
+ * To access a block, an authentication using a key from the block's sector must be
+ * performed first.<br>
+ * Example: To read from block 10, first authenticate using a key from sector 3 (blocks
+ * 8-11).<br>
  * All keys are set to FFFFFFFFFFFFh at chip delivery.<br>
- * <em>Warning</em>: Please read section 8.7 "Memory Access". It includes this
- * text: if the PICC detects a format violation the whole sector is irreversibly
- * blocked.<br>
- * To use a block in "value block" mode (for Increment/Decrement operations) you
- * need to change the sector trailer. Use setAccessBits() to calculate the bit
- * patterns.
+ * <em>Warning</em>: Please read section 8.7 "Memory Access". It includes this text: if
+ * the PICC detects a format violation the whole sector is irreversibly blocked.<br>
+ * To use a block in "value block" mode (for Increment/Decrement operations) you need to
+ * change the sector trailer. Use setAccessBits() to calculate the bit patterns.
  * </p>
  *
  * <h2>MIFARE Classic 4K (MF1S703x)</h2>
  * <p>
- * Has (32 sectors * 4 blocks/sector + 8 sectors * 16 blocks/sector) * 16
- * bytes/block = 4096 bytes.<br>
+ * Has (32 sectors * 4 blocks/sector + 8 sectors * 16 blocks/sector) * 16 bytes/block =
+ * 4096 bytes.<br>
  * The blocks are numbered 0-255.<br>
  * The last block in each sector is the Sector Trailer like above.
  * </p>
@@ -184,11 +175,10 @@ import com.diozero.util.SleepUtil;
  * <p>
  * Has 16 pages of 4 bytes = 64 bytes.<br>
  * Pages 0 + 1 is used for the 7-byte UID.<br>
- * Page 2 contains the last check digit for the UID, one byte manufacturer
- * internal data, and the lock bytes (see
- * http://www.nxp.com/documents/data_sheet/MF0ICU1.pdf section 8.5.2).<br>
- * Page 3 is OTP, One Time Programmable bits. Once set to 1 they cannot revert
- * to 0.<br>
+ * Page 2 contains the last check digit for the UID, one byte manufacturer internal data,
+ * and the lock bytes (see http://www.nxp.com/documents/data_sheet/MF0ICU1.pdf section
+ * 8.5.2).<br>
+ * Page 3 is OTP, One Time Programmable bits. Once set to 1 they cannot revert to 0.<br>
  * Pages 4-15 are read/write unless blocked by the lock bytes in page 2.
  * </p>
  *
@@ -196,11 +186,10 @@ import com.diozero.util.SleepUtil;
  * <p>
  * Has 48 pages of 4 bytes = 192 bytes.<br>
  * Pages 0 + 1 is used for the 7-byte UID.<br>
- * Page 2 contains the last check digit for the UID, one byte manufacturer
- * internal data, and the lock bytes (see
- * http://www.nxp.com/documents/data_sheet/MF0ICU1.pdf section 8.5.2).<br>
- * Page 3 is OTP, One Time Programmable bits. Once set to 1 they cannot revert
- * to 0.<br>
+ * Page 2 contains the last check digit for the UID, one byte manufacturer internal data,
+ * and the lock bytes (see http://www.nxp.com/documents/data_sheet/MF0ICU1.pdf section
+ * 8.5.2).<br>
+ * Page 3 is OTP, One Time Programmable bits. Once set to 1 they cannot revert to 0.<br>
  * Pages 4-39 are read/write unless blocked by the lock bytes in page 2.<br>
  * Page 40 Lock bytes<br>
  * Page 41 16 bit one way counter<br>
@@ -241,14 +230,14 @@ import com.diozero.util.SleepUtil;
  * <ol>
  * <li>Call ISO_Request() to check to see if a tag is in range and if so get its
  * ATQA.</li>
- * <li>Upon success call ISO_Anticollision() which returns the UID of the active
- * tag in range.</li>
- * <li>Upon success call ISO_Select(UID) which selects the active tag in range
- * by its UID and returns its SAK.</li>
- * <li>If the card needs authentication call ISO_Authenticate(blockAddr, keyId,
- * key, UID) to authenticate access to a block.</li>
- * <li>Call ISO_StopCrypto() when you have finished talking to a card which
- * requires authentication.</li>
+ * <li>Upon success call ISO_Anticollision() which returns the UID of the active tag in
+ * range.</li>
+ * <li>Upon success call ISO_Select(UID) which selects the active tag in range by its UID
+ * and returns its SAK.</li>
+ * <li>If the card needs authentication call ISO_Authenticate(blockAddr, keyId, key, UID)
+ * to authenticate access to a block.</li>
+ * <li>Call ISO_StopCrypto() when you have finished talking to a card which requires
+ * authentication.</li>
  * </ol>
  */
 public class MFRC522 implements DeviceInterface {
@@ -308,7 +297,7 @@ public class MFRC522 implements DeviceInterface {
 
 	private static final int SPI_CLOCK_FREQUENCY = 1_000_000;
 
-	private final SpiDevice device;
+	private final SpiDeviceInterface device;
 	private final DigitalOutputDevice resetPin;
 
 	private boolean logReadsAndWrites = false;
@@ -562,11 +551,11 @@ public class MFRC522 implements DeviceInterface {
 		/*-
 		writeRegister(T_MODE_REG, (byte) 0x8D); // Tauto=1; f(Timer) = 6.78MHz/TPreScaler
 		writeRegister(T_PRESCALER_REG, (byte) 0x3E); // TModeReg[3..0] + TPrescalerReg
-
+		
 		// 30
 		writeRegister(T_RELOAD_REG_MSB, (byte) 0);
 		writeRegister(T_RELOAD_REG_LSB, (byte) 0x1E);
-
+		
 		writeRegister(TX_ASK_REG, (byte) 0x40); // 100%ASK
 		writeRegister(MODE_REG, (byte) 0x3D); // CRC Initial value 0x6363 ???
 		*/
@@ -627,8 +616,8 @@ public class MFRC522 implements DeviceInterface {
 	}
 
 	/**
-	 * Open antennas, each time you start or shut down the natural barrier between
-	 * the transmitter should be at least 1ms interval
+	 * Open antennas, each time you start or shut down the natural barrier between the
+	 * transmitter should be at least 1ms interval
 	 *
 	 * @param on on/off value
 	 */
@@ -644,10 +633,9 @@ public class MFRC522 implements DeviceInterface {
 	}
 
 	/**
-	 * Get the current MFRC522 Receiver Gain (RxGain[2:0]) value. See 9.3.3.6 /
-	 * table 98 in http://www.nxp.com/documents/data_sheet/MFRC522.pdf NOTE: Return
-	 * value scrubbed with (0x07&lt;&lt;4)=01110000b as RCFfgReg may use reserved
-	 * bits.
+	 * Get the current MFRC522 Receiver Gain (RxGain[2:0]) value. See 9.3.3.6 / table 98 in
+	 * http://www.nxp.com/documents/data_sheet/MFRC522.pdf NOTE: Return value scrubbed with
+	 * (0x07&lt;&lt;4)=01110000b as RCFfgReg may use reserved bits.
 	 *
 	 * @return Value of the RxGain, scrubbed to the 3 bits used.
 	 */
@@ -656,10 +644,9 @@ public class MFRC522 implements DeviceInterface {
 	}
 
 	/**
-	 * Set the MFRC522 Receiver Gain (RxGain) to value specified by given mask. See
-	 * 9.3.3.6 / table 98 in https://www.nxp.com/docs/en/data-sheet/MFRC522.pdf
-	 * NOTE: Given mask is scrubbed with (0x07&lt;&lt;4)=01110000b as RCFfgReg may
-	 * use reserved bits.
+	 * Set the MFRC522 Receiver Gain (RxGain) to value specified by given mask. See 9.3.3.6 /
+	 * table 98 in https://www.nxp.com/docs/en/data-sheet/MFRC522.pdf NOTE: Given mask is
+	 * scrubbed with (0x07&lt;&lt;4)=01110000b as RCFfgReg may use reserved bits.
 	 *
 	 * @param gain New antenna gain value
 	 */
@@ -681,8 +668,7 @@ public class MFRC522 implements DeviceInterface {
 	 * Performs a self-test of the MFRC522 See 16.1.1 in
 	 * http://www.nxp.com/documents/data_sheet/MFRC522.pdf
 	 *
-	 * @return Whether or not the test passed. Or false if no firmware reference is
-	 *         available.
+	 * @return Whether or not the test passed. Or false if no firmware reference is available.
 	 */
 	public boolean performSelfTest() {
 		Logger.debug("Self test - START");
@@ -779,8 +765,8 @@ public class MFRC522 implements DeviceInterface {
 	/////////////////////////////////////////////////////////////////////////////////////
 
 	/**
-	 * Executes the Transceive command. CRC validation can only be done if backData
-	 * and backLen are specified.
+	 * Executes the Transceive command. CRC validation can only be done if backData and
+	 * backLen are specified.
 	 *
 	 * @param sendData Pointer to the data to transfer to the FIFO.
 	 * @return STATUS_OK on success, STATUS_??? otherwise.
@@ -790,12 +776,12 @@ public class MFRC522 implements DeviceInterface {
 	}
 
 	/**
-	 * Executes the Transceive command. CRC validation can only be done if backData
-	 * and backLen are specified.
+	 * Executes the Transceive command. CRC validation can only be done if backData and
+	 * backLen are specified.
 	 *
 	 * @param sendData Pointer to the data to transfer to the FIFO.
-	 * @param rxAlign  Defines the bit position in backData[0] for the first bit
-	 *                 received. Default 0.
+	 * @param rxAlign  Defines the bit position in backData[0] for the first bit received.
+	 *                 Default 0.
 	 * @return STATUS_OK on success, STATUS_??? otherwise.
 	 */
 	private Response transceiveData(byte[] sendData, byte rxAlign) {
@@ -803,14 +789,13 @@ public class MFRC522 implements DeviceInterface {
 	}
 
 	/**
-	 * Executes the Transceive command. CRC validation can only be done if backData
-	 * and backLen are specified.
+	 * Executes the Transceive command. CRC validation can only be done if backData and
+	 * backLen are specified.
 	 *
 	 * @param sendData  Pointer to the data to transfer to the FIFO.
-	 * @param validBits The number of valid bits in the last byte. 0 for 8 valid
-	 *                  bits
-	 * @param rxAlign   Defines the bit position in backData[0] for the first bit
-	 *                  received. Default 0.
+	 * @param validBits The number of valid bits in the last byte. 0 for 8 valid bits
+	 * @param rxAlign   Defines the bit position in backData[0] for the first bit received.
+	 *                  Default 0.
 	 * @return STATUS_OK on success, STATUS_??? otherwise.
 	 */
 	private Response transceiveData(byte[] sendData, byte validBits, byte rxAlign) {
@@ -818,16 +803,15 @@ public class MFRC522 implements DeviceInterface {
 	}
 
 	/**
-	 * Executes the Transceive command. CRC validation can only be done if backData
-	 * and backLen are specified.
+	 * Executes the Transceive command. CRC validation can only be done if backData and
+	 * backLen are specified.
 	 *
 	 * @param sendData  Pointer to the data to transfer to the FIFO.
-	 * @param validBits The number of valid bits in the last byte. 0 for 8 valid
-	 *                  bits
-	 * @param rxAlign   Defines the bit position in backData[0] for the first bit
-	 *                  received. Default 0.
-	 * @param checkCRC  True => The last two bytes of the response is assumed to be
-	 *                  a CRC_A that must be validated.
+	 * @param validBits The number of valid bits in the last byte. 0 for 8 valid bits
+	 * @param rxAlign   Defines the bit position in backData[0] for the first bit received.
+	 *                  Default 0.
+	 * @param checkCRC  True => The last two bytes of the response is assumed to be a CRC_A
+	 *                  that must be validated.
 	 * @return STATUS_OK on success, STATUS_??? otherwise.
 	 */
 	private Response transceiveData(byte[] sendData, byte validBits, byte rxAlign, boolean checkCRC) {
@@ -844,20 +828,19 @@ public class MFRC522 implements DeviceInterface {
 	}
 
 	/**
-	 * Transfers data to the MFRC522 FIFO, executes a command, waits for completion
-	 * and transfers data back from the FIFO. CRC validation can only be done if
-	 * backData and backLen are specified.
+	 * Transfers data to the MFRC522 FIFO, executes a command, waits for completion and
+	 * transfers data back from the FIFO. CRC validation can only be done if backData and
+	 * backLen are specified.
 	 *
 	 * @param command   The command to execute. One of the PCD_Command enums.
-	 * @param waitIRq   The bits in the ComIrqReg register that signals successful
-	 *                  completion of the command.
+	 * @param waitIRq   The bits in the ComIrqReg register that signals successful completion
+	 *                  of the command.
 	 * @param sendData  Data to transfer to the FIFO.
-	 * @param validBits The number of valid bits in the last byte. 0 for 8 valid
-	 *                  bits.
-	 * @param rxAlign   Defines the bit position in backData[0] for the first bit
-	 *                  received. Default 0.
-	 * @param checkCRC  True => The last two bytes of the response is assumed to be
-	 *                  a CRC_A that must be validated.
+	 * @param validBits The number of valid bits in the last byte. 0 for 8 valid bits.
+	 * @param rxAlign   Defines the bit position in backData[0] for the first bit received.
+	 *                  Default 0.
+	 * @param checkCRC  True => The last two bytes of the response is assumed to be a CRC_A
+	 *                  that must be validated.
 	 * @return response
 	 */
 	private Response communicateWithPICC(PcdCommand command, byte waitIRq, byte[] sendData, byte validBits,
@@ -979,10 +962,9 @@ public class MFRC522 implements DeviceInterface {
 	}
 
 	/**
-	 * Transmits a REQuest command, Type A. Invites PICCs in state IDLE to go to
-	 * READY and prepare for anticollision or selection. 7 bit frame. Beware: When
-	 * two PICCs are in the field at the same time I often get STATUS_TIMEOUT -
-	 * probably due do bad antenna design.
+	 * Transmits a REQuest command, Type A. Invites PICCs in state IDLE to go to READY and
+	 * prepare for anticollision or selection. 7 bit frame. Beware: When two PICCs are in the
+	 * field at the same time I often get STATUS_TIMEOUT - probably due do bad antenna design.
 	 *
 	 * @param bufferATQA The buffer to store the ATQA (Answer to request) in
 	 * @return STATUS_OK on success, STATUS_??? otherwise.
@@ -992,10 +974,10 @@ public class MFRC522 implements DeviceInterface {
 	}
 
 	/**
-	 * Transmits a Wake-UP command, Type A. Invites PICCs in state IDLE and HALT to
-	 * go to READY(*) and prepare for anticollision or selection. 7 bit frame.
-	 * Beware: When two PICCs are in the field at the same time I often get
-	 * STATUS_TIMEOUT - probably due do bad antenna design.
+	 * Transmits a Wake-UP command, Type A. Invites PICCs in state IDLE and HALT to go to
+	 * READY(*) and prepare for anticollision or selection. 7 bit frame. Beware: When two
+	 * PICCs are in the field at the same time I often get STATUS_TIMEOUT - probably due do
+	 * bad antenna design.
 	 *
 	 * @param bufferATQA The buffer to store the ATQA (Answer to request) in
 	 * @return STATUS_OK on success, STATUS_??? otherwise.
@@ -1005,9 +987,8 @@ public class MFRC522 implements DeviceInterface {
 	}
 
 	/**
-	 * Transmits REQA or WUPA commands. Beware: When two PICCs are in the field at
-	 * the same time I often get STATUS_TIMEOUT - probably due do bad antenna
-	 * design.
+	 * Transmits REQA or WUPA commands. Beware: When two PICCs are in the field at the same
+	 * time I often get STATUS_TIMEOUT - probably due do bad antenna design.
 	 *
 	 * @param command    The command to send - PICC_CMD_REQA or PICC_CMD_WUPA
 	 * @param bufferATQA The buffer to store the ATQA (Answer to request) in
@@ -1046,21 +1027,20 @@ public class MFRC522 implements DeviceInterface {
 	}
 
 	/**
-	 * Transmits SELECT/ANTICOLLISION commands to select a single PICC. Before
-	 * calling this function the PICCs must be placed in the READY(*) state by
-	 * calling PICC_RequestA() or PICC_WakeupA(). On success: - The chosen PICC is
-	 * in state ACTIVE(*) and all other PICCs have returned to state IDLE/HALT.
-	 * (Figure 7 of the ISO/IEC 14443-3 draft.) - The UID size and value of the
-	 * chosen PICC is returned in *uid along with the SAK.
+	 * Transmits SELECT/ANTICOLLISION commands to select a single PICC. Before calling this
+	 * function the PICCs must be placed in the READY(*) state by calling PICC_RequestA() or
+	 * PICC_WakeupA(). On success: - The chosen PICC is in state ACTIVE(*) and all other PICCs
+	 * have returned to state IDLE/HALT. (Figure 7 of the ISO/IEC 14443-3 draft.) - The UID
+	 * size and value of the chosen PICC is returned in *uid along with the SAK.
 	 *
-	 * A PICC UID consists of 4, 7 or 10 bytes. Only 4 bytes can be specified in a
-	 * SELECT command, so for the longer UIDs two or three iterations are used: UID
-	 * size Number of UID bytes Cascade levels Example of PICC ========
-	 * =================== ============== =============== single 4 1 MIFARE Classic
-	 * double 7 2 MIFARE Ultralight triple 10 3 Not currently in use?
+	 * A PICC UID consists of 4, 7 or 10 bytes. Only 4 bytes can be specified in a SELECT
+	 * command, so for the longer UIDs two or three iterations are used: UID size Number of
+	 * UID bytes Cascade levels Example of PICC ======== =================== ==============
+	 * =============== single 4 1 MIFARE Classic double 7 2 MIFARE Ultralight triple 10 3 Not
+	 * currently in use?
 	 *
-	 * @param validBits The number of known UID bits supplied in *uid. Normally 0.
-	 *                  If set you must also supply uid-&gt;size.
+	 * @param validBits The number of known UID bits supplied in *uid. Normally 0. If set you
+	 *                  must also supply uid-&gt;size.
 	 * @return UID object or null if there was an error.
 	 */
 	public UID select(byte validBits) {
@@ -1363,24 +1343,22 @@ public class MFRC522 implements DeviceInterface {
 	}
 
 	/**
-	 * Executes the MFRC522 MFAuthent command. This command manages MIFARE
-	 * authentication to enable a secure communication to any MIFARE Mini, MIFARE 1K
-	 * and MIFARE 4K card. The authentication is described in the MFRC522 datasheet
-	 * section 10.3.1.9 and http://www.nxp.com/documents/data_sheet/MF1S503x.pdf
-	 * section 10.1. For use with MIFARE Classic PICCs. The PICC must be selected -
-	 * ie in state ACTIVE(*) - before calling this function. Remember to call
-	 * PCD_StopCrypto1() after communicating with the authenticated PICC - otherwise
-	 * no new communications can start.
+	 * Executes the MFRC522 MFAuthent command. This command manages MIFARE authentication to
+	 * enable a secure communication to any MIFARE Mini, MIFARE 1K and MIFARE 4K card. The
+	 * authentication is described in the MFRC522 datasheet section 10.3.1.9 and
+	 * http://www.nxp.com/documents/data_sheet/MF1S503x.pdf section 10.1. For use with MIFARE
+	 * Classic PICCs. The PICC must be selected - ie in state ACTIVE(*) - before calling this
+	 * function. Remember to call PCD_StopCrypto1() after communicating with the authenticated
+	 * PICC - otherwise no new communications can start.
 	 *
 	 * All keys are set to FFFFFFFFFFFFh at chip delivery.
 	 *
 	 * @param authKeyA  PICC_CMD_MF_AUTH_KEY_A or PICC_CMD_MF_AUTH_KEY_B
-	 * @param blockAddr The block number. See numbering in the comments in the .h
-	 *                  file.
+	 * @param blockAddr The block number. See numbering in the comments in the .h file.
 	 * @param key       Crypto1 key to use (6 bytes)
 	 * @param uid       Pointer to Uid struct. The first 4 bytes of the UID is used.
-	 * @return STATUS_OK on success, STATUS_??? otherwise. Probably STATUS_TIMEOUT
-	 *         if you supply the wrong key.
+	 * @return STATUS_OK on success, STATUS_??? otherwise. Probably STATUS_TIMEOUT if you
+	 *         supply the wrong key.
 	 */
 	public StatusCode authenticate(boolean authKeyA, byte blockAddr, byte[] key, UID uid) {
 		Logger.debug("blockAddr: " + blockAddr);
@@ -1412,9 +1390,8 @@ public class MFRC522 implements DeviceInterface {
 	} // End PCD_Authenticate()
 
 	/**
-	 * Used to exit the PCD from its authenticated state. Remember to call this
-	 * function after communicating with an authenticated PICC - otherwise no new
-	 * communications can start.
+	 * Used to exit the PCD from its authenticated state. Remember to call this function after
+	 * communicating with an authenticated PICC - otherwise no new communications can start.
 	 */
 	public void stopCrypto1() {
 		// Clear MFCrypto1On bit
@@ -1425,21 +1402,21 @@ public class MFRC522 implements DeviceInterface {
 	/**
 	 * Reads 16 bytes (+ 2 bytes CRC_A) from the active PICC.
 	 *
-	 * For MIFARE Classic the sector containing the block must be authenticated
-	 * before calling this function.
+	 * For MIFARE Classic the sector containing the block must be authenticated before calling
+	 * this function.
 	 *
-	 * For MIFARE Ultralight only addresses 00h to 0Fh are decoded. The MF0ICU1
-	 * returns a NAK for higher addresses. The MF0ICU1 responds to the READ command
-	 * by sending 16 bytes starting from the page address defined by the command
-	 * argument. For example; if blockAddr is 03h then pages 03h, 04h, 05h, 06h are
-	 * returned. A roll-back is implemented: If blockAddr is 0Eh, then the contents
-	 * of pages 0Eh, 0Fh, 00h and 01h are returned.
+	 * For MIFARE Ultralight only addresses 00h to 0Fh are decoded. The MF0ICU1 returns a NAK
+	 * for higher addresses. The MF0ICU1 responds to the READ command by sending 16 bytes
+	 * starting from the page address defined by the command argument. For example; if
+	 * blockAddr is 03h then pages 03h, 04h, 05h, 06h are returned. A roll-back is
+	 * implemented: If blockAddr is 0Eh, then the contents of pages 0Eh, 0Fh, 00h and 01h are
+	 * returned.
 	 *
-	 * The buffer must be at least 18 bytes because a CRC_A is also returned. Checks
-	 * the CRC_A before returning STATUS_OK.
+	 * The buffer must be at least 18 bytes because a CRC_A is also returned. Checks the CRC_A
+	 * before returning STATUS_OK.
 	 *
-	 * @param blockAddr MIFARE Classic: The block (0-0xff) number. MIFARE
-	 *                  Ultralight: The first page to return data from.
+	 * @param blockAddr MIFARE Classic: The block (0-0xff) number. MIFARE Ultralight: The
+	 *                  first page to return data from.
 	 * @return STATUS_OK on success, STATUS_??? otherwise.
 	 */
 	public byte[] mifareRead(byte blockAddr) {
@@ -1469,16 +1446,16 @@ public class MFRC522 implements DeviceInterface {
 	/**
 	 * Writes 16 bytes to the active PICC.
 	 *
-	 * For MIFARE Classic the sector containing the block must be authenticated
-	 * before calling this function.
+	 * For MIFARE Classic the sector containing the block must be authenticated before calling
+	 * this function.
 	 *
-	 * For MIFARE Ultralight the operation is called "COMPATIBILITY WRITE". Even
-	 * though 16 bytes are transferred to the Ultralight PICC, only the least
-	 * significant 4 bytes (bytes 0 to 3) are written to the specified address. It
-	 * is recommended to set the remaining bytes 04h to 0Fh to all logic 0.
+	 * For MIFARE Ultralight the operation is called "COMPATIBILITY WRITE". Even though 16
+	 * bytes are transferred to the Ultralight PICC, only the least significant 4 bytes (bytes
+	 * 0 to 3) are written to the specified address. It is recommended to set the remaining
+	 * bytes 04h to 0Fh to all logic 0.
 	 *
-	 * @param blockAddr MIFARE Classic: The block (0-0xff) number. MIFARE
-	 *                  Ultralight: The page (2-15) to write to.
+	 * @param blockAddr MIFARE Classic: The block (0-0xff) number. MIFARE Ultralight: The page
+	 *                  (2-15) to write to.
 	 * @param buffer    The 16 bytes to write to the PICC
 	 * @return STATUS_OK on success, STATUS_??? otherwise.
 	 */
@@ -1509,9 +1486,9 @@ public class MFRC522 implements DeviceInterface {
 	 */
 	public StatusCode mifareUltralightWrite(byte page, byte[] buffer) {
 		// Sanity check
-		//if (buffer == null || buffer.length != 4) {
-		//	return StatusCode.INVALID;
-		//}
+		// if (buffer == null || buffer.length != 4) {
+		// return StatusCode.INVALID;
+		// }
 
 		// Build commmand buffer
 		byte[] cmdBuffer = new byte[6];
@@ -1525,11 +1502,11 @@ public class MFRC522 implements DeviceInterface {
 	} // End MIFARE_Ultralight_Write()
 
 	/**
-	 * MIFARE Decrement subtracts the delta from the value of the addressed block,
-	 * and stores the result in a volatile memory. For MIFARE Classic only. The
-	 * sector containing the block must be authenticated before calling this
-	 * function. Only for blocks in "value block" mode, ie with access bits [C1 C2
-	 * C3] = [110] or [001]. Use MIFARE_Transfer() to store the result in a block.
+	 * MIFARE Decrement subtracts the delta from the value of the addressed block, and stores
+	 * the result in a volatile memory. For MIFARE Classic only. The sector containing the
+	 * block must be authenticated before calling this function. Only for blocks in "value
+	 * block" mode, ie with access bits [C1 C2 C3] = [110] or [001]. Use MIFARE_Transfer() to
+	 * store the result in a block.
 	 *
 	 * @param blockAddr The block (0-0xff) number.
 	 * @param delta     This number is subtracted from the value of block blockAddr.
@@ -1540,11 +1517,11 @@ public class MFRC522 implements DeviceInterface {
 	} // End MIFARE_Decrement()
 
 	/**
-	 * MIFARE Increment adds the delta to the value of the addressed block, and
-	 * stores the result in a volatile memory. For MIFARE Classic only. The sector
-	 * containing the block must be authenticated before calling this function. Only
-	 * for blocks in "value block" mode, ie with access bits [C1 C2 C3] = [110] or
-	 * [001]. Use MIFARE_Transfer() to store the result in a block.
+	 * MIFARE Increment adds the delta to the value of the addressed block, and stores the
+	 * result in a volatile memory. For MIFARE Classic only. The sector containing the block
+	 * must be authenticated before calling this function. Only for blocks in "value block"
+	 * mode, ie with access bits [C1 C2 C3] = [110] or [001]. Use MIFARE_Transfer() to store
+	 * the result in a block.
 	 *
 	 * @param blockAddr The block (0-0xff) number.
 	 * @param delta     This number is added to the value of block blockAddr.
@@ -1555,11 +1532,10 @@ public class MFRC522 implements DeviceInterface {
 	} // End MIFARE_Increment()
 
 	/**
-	 * MIFARE Restore copies the value of the addressed block into a volatile
-	 * memory. For MIFARE Classic only. The sector containing the block must be
-	 * authenticated before calling this function. Only for blocks in "value block"
-	 * mode, ie with access bits [C1 C2 C3] = [110] or [001]. Use MIFARE_Transfer()
-	 * to store the result in a block.
+	 * MIFARE Restore copies the value of the addressed block into a volatile memory. For
+	 * MIFARE Classic only. The sector containing the block must be authenticated before
+	 * calling this function. Only for blocks in "value block" mode, ie with access bits [C1
+	 * C2 C3] = [110] or [001]. Use MIFARE_Transfer() to store the result in a block.
 	 *
 	 * @param blockAddr The block (0-0xff) number.
 	 * @return STATUS_OK on success, STATUS_??? otherwise.
@@ -1573,8 +1549,8 @@ public class MFRC522 implements DeviceInterface {
 	} // End MIFARE_Restore()
 
 	/**
-	 * Helper function for the two-step MIFARE Classic protocol operations
-	 * Decrement, Increment and Restore.
+	 * Helper function for the two-step MIFARE Classic protocol operations Decrement,
+	 * Increment and Restore.
 	 *
 	 * @param command   The command to use
 	 * @param blockAddr The block (0-0xff) number.
@@ -1602,10 +1578,10 @@ public class MFRC522 implements DeviceInterface {
 	} // End MIFARE_TwoStepHelper()
 
 	/**
-	 * MIFARE Transfer writes the value stored in the volatile memory into one
-	 * MIFARE Classic block. For MIFARE Classic only. The sector containing the
-	 * block must be authenticated before calling this function. Only for blocks in
-	 * "value block" mode, ie with access bits [C1 C2 C3] = [110] or [001].
+	 * MIFARE Transfer writes the value stored in the volatile memory into one MIFARE Classic
+	 * block. For MIFARE Classic only. The sector containing the block must be authenticated
+	 * before calling this function. Only for blocks in "value block" mode, ie with access
+	 * bits [C1 C2 C3] = [110] or [001].
 	 *
 	 * @param blockAddr The block (0-0xff) number.
 	 * @return STATUS_OK on success, STATUS_??? otherwise.
@@ -1619,9 +1595,9 @@ public class MFRC522 implements DeviceInterface {
 	/**
 	 * Helper routine to read the current value from a Value Block.
 	 *
-	 * Only for MIFARE Classic and only for blocks in "value block" mode, that is:
-	 * with access bits [C1 C2 C3] = [110] or [001]. The sector containing the block
-	 * must be authenticated before calling this function.
+	 * Only for MIFARE Classic and only for blocks in "value block" mode, that is: with access
+	 * bits [C1 C2 C3] = [110] or [001]. The sector containing the block must be authenticated
+	 * before calling this function.
 	 *
 	 * @param blockAddr The block (0x00-0xff) number.
 	 * @return Integer value or null if error.
@@ -1641,9 +1617,9 @@ public class MFRC522 implements DeviceInterface {
 	/**
 	 * Helper routine to write a specific value into a Value Block.
 	 *
-	 * Only for MIFARE Classic and only for blocks in "value block" mode, that is:
-	 * with access bits [C1 C2 C3] = [110] or [001]. The sector containing the block
-	 * must be authenticated before calling this function.
+	 * Only for MIFARE Classic and only for blocks in "value block" mode, that is: with access
+	 * bits [C1 C2 C3] = [110] or [001]. The sector containing the block must be authenticated
+	 * before calling this function.
 	 *
 	 * @param blockAddr The block (0x00-0xff) number.
 	 * @param value     New value of the Value Block.
@@ -1686,35 +1662,35 @@ public class MFRC522 implements DeviceInterface {
 	{
 		// TODO: Fix cmdBuffer length and rxlength. They really should match.
 		//       (Better still, rxlength should not even be necessary.)
-
+	
 		StatusCode result;
 		byte				cmdBuffer[18]; // We need room for 16 bytes data and 2 bytes CRC_A.
-
+	
 		cmdBuffer[0] = 0x1B; //Comando de autentificacion
-
+	
 		for (byte i = 0; i<4; i++)
 			cmdBuffer[i+1] = passWord[i];
-
+	
 		result = PCD_CalculateCRC(cmdBuffer, 5, &cmdBuffer[5]);
-
+	
 		if (result!=STATUS_OK) {
 			return result;
 		}
-
+	
 		// Transceive the data, store the reply in cmdBuffer[]
 		byte waitIRq		= 0x30;	// RxIRq and IdleIRq
 		//byte cmdBufferSize	= sizeof(cmdBuffer);
 		byte validBits		= 0;
 		byte rxlength		= 5;
 		result = PCD_CommunicateWithPICC(PCD_Transceive, waitIRq, cmdBuffer, 7, cmdBuffer, &rxlength, &validBits);
-
+	
 		pACK[0] = cmdBuffer[0];
 		pACK[1] = cmdBuffer[1];
-
+	
 		if (result!=STATUS_OK) {
 			return result;
 		}
-
+	
 		return STATUS_OK;
 	} // End PCD_NTAG216_AUTH()
 	 */
@@ -1728,8 +1704,8 @@ public class MFRC522 implements DeviceInterface {
 	}
 
 	/**
-	 * Wrapper for MIFARE protocol communication. Adds CRC_A, executes the
-	 * Transceive command and checks that the response is MF_ACK or a timeout.
+	 * Wrapper for MIFARE protocol communication. Adds CRC_A, executes the Transceive command
+	 * and checks that the response is MF_ACK or a timeout.
 	 *
 	 * @param sendData      Data to transfer to the FIFO. Do NOT include the CRC_A.
 	 * @param acceptTimeout A timeout is also success
@@ -1737,9 +1713,9 @@ public class MFRC522 implements DeviceInterface {
 	 */
 	public StatusCode mifareTransceive(byte[] sendData, boolean acceptTimeout) {
 		// Sanity check
-		//if (sendData == null || sendData.length != 16) {
-		//	return StatusCode.INVALID;
-		//}
+		// if (sendData == null || sendData.length != 16) {
+		// return StatusCode.INVALID;
+		// }
 
 		/*- C++ Code:
 		byte cmdBuffer[18]; // We need room for 16 bytes data and 2 bytes CRC_A.
@@ -1798,8 +1774,8 @@ public class MFRC522 implements DeviceInterface {
 	} // End PICC_GetType()
 
 	/**
-	 * Calculates the bit pattern needed for the specified access bits. In the [C1
-	 * C2 C3] tuples C1 is MSB (=4) and C3 is LSB (=1).
+	 * Calculates the bit pattern needed for the specified access bits. In the [C1 C2 C3]
+	 * tuples C1 is MSB (=4) and C3 is LSB (=1).
 	 */
 	/*-
 	public void mifareSetAccessBits(	byte *accessBitBuffer,	///< Pointer to byte 6, 7 and 8 in the sector trailer. Bytes [0..2] will be set.
@@ -1811,7 +1787,7 @@ public class MFRC522 implements DeviceInterface {
 		byte c1 = ((g3 & 4) << 1) | ((g2 & 4) << 0) | ((g1 & 4) >> 1) | ((g0 & 4) >> 2);
 		byte c2 = ((g3 & 2) << 2) | ((g2 & 2) << 1) | ((g1 & 2) << 0) | ((g0 & 2) >> 1);
 		byte c3 = ((g3 & 1) << 3) | ((g2 & 1) << 2) | ((g1 & 1) << 1) | ((g0 & 1) << 0);
-
+	
 		accessBitBuffer[0] = (~c2 & 0xF) << 4 | (~c1 & 0xF);
 		accessBitBuffer[1] =          c1 << 4 | (~c3 & 0xF);
 		accessBitBuffer[2] =          c3 << 4 | c2;
@@ -1819,16 +1795,16 @@ public class MFRC522 implements DeviceInterface {
 	*/
 
 	/**
-	 * Performs the "magic sequence" needed to get Chinese UID changeable Mifare
-	 * cards to allow writing to sector 0, where the card UID is stored.
+	 * Performs the "magic sequence" needed to get Chinese UID changeable Mifare cards to
+	 * allow writing to sector 0, where the card UID is stored.
 	 *
-	 * Note that you do not need to have selected the card through REQA or WUPA,
-	 * this sequence works immediately when the card is in the reader vicinity. This
-	 * means you can use this method even on "bricked" cards that your reader does
-	 * not recognise anymore (see MFRC522::MIFARE_UnbrickUidSector).
+	 * Note that you do not need to have selected the card through REQA or WUPA, this sequence
+	 * works immediately when the card is in the reader vicinity. This means you can use this
+	 * method even on "bricked" cards that your reader does not recognise anymore (see
+	 * MFRC522::MIFARE_UnbrickUidSector).
 	 *
-	 * Of course with non-bricked devices, you're free to select them before calling
-	 * this function.
+	 * Of course with non-bricked devices, you're free to select them before calling this
+	 * function.
 	 *
 	 * @return Status
 	 */
@@ -1845,8 +1821,8 @@ public class MFRC522 implements DeviceInterface {
 
 		byte[] cmd = { 0x40 };
 		byte validBits = 7; /*
-							 * Our command is only 7 bits. After receiving card response, this will contain
-							 * amount of valid response bits.
+							 * Our command is only 7 bits. After receiving card response, this will contain amount of
+							 * valid response bits.
 							 */
 		Response resp = transceiveData(cmd, validBits, (byte) 0, false); // 40
 		byte[] response = resp.getBackData();
@@ -1886,9 +1862,8 @@ public class MFRC522 implements DeviceInterface {
 	} // End MIFARE_OpenUidBackdoor()
 
 	/**
-	 * Reads entire block 0, including all manufacturer data, and overwrites that
-	 * block with the new UID, a freshly calculated BCC, and the original
-	 * manufacturer data.
+	 * Reads entire block 0, including all manufacturer data, and overwrites that block with
+	 * the new UID, a freshly calculated BCC, and the original manufacturer data.
 	 *
 	 * Make sure to have selected the card before this function is called.
 	 *
@@ -1940,7 +1915,7 @@ public class MFRC522 implements DeviceInterface {
 			return false;
 		}
 
-		block0_buffer = Arrays.copyOf(block0_buffer, 16); //Remove the CRC_A which is also returned by mifareRead
+		block0_buffer = Arrays.copyOf(block0_buffer, 16); // Remove the CRC_A which is also returned by mifareRead
 
 		// Write new UID to the data we just read, and calculate BCC byte
 		byte bcc = 0;
@@ -2000,8 +1975,8 @@ public class MFRC522 implements DeviceInterface {
 	/////////////////////////////////////////////////////////////////////////////////////
 
 	/**
-	 * Returns true if a PICC responds to PICC_CMD_REQA. Only "new" cards in state
-	 * IDLE are invited. Sleeping cards in state HALT are ignored.
+	 * Returns true if a PICC responds to PICC_CMD_REQA. Only "new" cards in state IDLE are
+	 * invited. Sleeping cards in state HALT are ignored.
 	 *
 	 * @return bool
 	 */
@@ -2018,9 +1993,9 @@ public class MFRC522 implements DeviceInterface {
 	} // End PICC_IsNewCardPresent()
 
 	/**
-	 * Simple wrapper around PICC_Select. Returns the UID of the card if present,
-	 * otherwise null. Remember to call PICC_IsNewCardPresent(), PICC_RequestA() or
-	 * PICC_WakeupA() first.
+	 * Simple wrapper around PICC_Select. Returns the UID of the card if present, otherwise
+	 * null. Remember to call PICC_IsNewCardPresent(), PICC_RequestA() or PICC_WakeupA()
+	 * first.
 	 *
 	 * @return The UID is a card could be read, otherwise null
 	 */
@@ -2031,8 +2006,7 @@ public class MFRC522 implements DeviceInterface {
 	// DEBUG METHODS
 
 	/**
-	 * Dumps debug info about the connected PCD to Serial. Shows all known firmware
-	 * versions
+	 * Dumps debug info about the connected PCD to Serial. Shows all known firmware versions
 	 */
 	public void dumpVersionToConsole() {
 		// Get the MFRC522 firmware version
@@ -2063,9 +2037,9 @@ public class MFRC522 implements DeviceInterface {
 	} // End PCD_DumpVersionToSerial()
 
 	/**
-	 * Dumps debug info about the selected PICC to Serial. On success the PICC is
-	 * halted after dumping the data. For MIFARE Classic the factory default key of
-	 * 0xFFFFFFFFFFFF is tried.
+	 * Dumps debug info about the selected PICC to Serial. On success the PICC is halted after
+	 * dumping the data. For MIFARE Classic the factory default key of 0xFFFFFFFFFFFF is
+	 * tried.
 	 *
 	 * @param uid UID returned from a successful PICC_Select().
 	 * @deprecated Kept for backward compatibility
@@ -2130,8 +2104,8 @@ public class MFRC522 implements DeviceInterface {
 	} // End PICC_DumpDetailsToSerial()
 
 	/**
-	 * Dumps memory contents of a MIFARE Classic PICC. On success the PICC is halted
-	 * after dumping the data.
+	 * Dumps memory contents of a MIFARE Classic PICC. On success the PICC is halted after
+	 * dumping the data.
 	 *
 	 * @param uid UID returned from a successful PICC_Select().
 	 * @param key Key A used for all sectors.
@@ -2171,10 +2145,9 @@ public class MFRC522 implements DeviceInterface {
 	} // End PICC_DumpMifareClassicToSerial()
 
 	/**
-	 * Dumps memory contents of a sector of a MIFARE Classic PICC. Uses
-	 * PCD_Authenticate(), MIFARE_Read() and PCD_StopCrypto1. Always uses
-	 * PICC_CMD_MF_AUTH_KEY_A because only Key A can always read the sector trailer
-	 * access bits.
+	 * Dumps memory contents of a sector of a MIFARE Classic PICC. Uses PCD_Authenticate(),
+	 * MIFARE_Read() and PCD_StopCrypto1. Always uses PICC_CMD_MF_AUTH_KEY_A because only Key
+	 * A can always read the sector trailer access bits.
 	 *
 	 * @param uid    UID returned from a successful select().
 	 * @param key    Key A for the sector.
@@ -2590,8 +2563,7 @@ public class MFRC522 implements DeviceInterface {
 		/** Number of bytes in the UID. 4, 7 or 10. */
 		private byte[] uidBytes;
 		/**
-		 * The SAK (Select acknowledge) byte returned from the PICC after successful
-		 * selection.
+		 * The SAK (Select acknowledge) byte returned from the PICC after successful selection.
 		 */
 		private byte sak;
 
@@ -2634,15 +2606,19 @@ public class MFRC522 implements DeviceInterface {
 
 		@Override
 		public boolean equals(Object obj) {
-			if (this == obj)
+			if (this == obj) {
 				return true;
-			if (obj == null)
+			}
+			if (obj == null) {
 				return false;
-			if (getClass() != obj.getClass())
+			}
+			if (getClass() != obj.getClass()) {
 				return false;
+			}
 			UID other = (UID) obj;
-			if (!Arrays.equals(uidBytes, other.uidBytes))
+			if (!Arrays.equals(uidBytes, other.uidBytes)) {
 				return false;
+			}
 			return true;
 		}
 

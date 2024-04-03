@@ -45,8 +45,8 @@ import com.diozero.util.PropertyUtil;
 
 /**
  * <p>
- * Work In Progress. I am unclear as to how the this Java Firmata I2C
- * implementation is supposed to work.
+ * Work In Progress. I am unclear as to how the this Java Firmata I2C implementation is
+ * supposed to work.
  * </p>
  * <p>
  * Wiring:
@@ -63,6 +63,7 @@ public class FirmataI2CDevice extends AbstractDevice implements InternalI2CDevic
 	private static final String I2C_DELAY_PROP = "diozero.firmata.i2cDelay";
 
 	private FirmataAdapter adapter;
+	private int controller;
 	private int address;
 	private boolean autoRestart = false;
 	private boolean addressSize10Bit;
@@ -77,8 +78,20 @@ public class FirmataI2CDevice extends AbstractDevice implements InternalI2CDevic
 				adapter.i2cConfig(PropertyUtil.getIntProperty(I2C_DELAY_PROP, DEFAULT_I2C_DELAY));
 			}
 		}
+		// XXX Note multiple controllers supported in Firmata
+		this.controller = controller;
 		this.address = address;
 		addressSize10Bit = addressSize == I2CConstants.AddressSize.SIZE_10;
+	}
+
+	@Override
+	public int getController() {
+		return controller;
+	}
+
+	@Override
+	public int getAddress() {
+		return address;
 	}
 
 	@Override

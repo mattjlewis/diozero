@@ -237,7 +237,7 @@ public class I2CDetect implements Runnable {
 			if (device_address < first || device_address > last) {
 				System.out.print("   ");
 			} else {
-				try (I2CDevice device = I2CDevice.builder(device_address).setController(controller).build()) {
+				try (I2CDeviceInterface device = I2CDevice.builder(device_address).setController(controller).build()) {
 					if (device.probe(mode)) {
 						System.out.print(String.format("%02x ", Integer.valueOf(device_address)));
 					} else {

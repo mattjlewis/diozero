@@ -1,5 +1,7 @@
 package com.diozero.internal.spi;
 
+import java.nio.ByteOrder;
+
 /*-
  * #%L
  * Organisation: diozero
@@ -34,5 +36,8 @@ package com.diozero.internal.spi;
 import com.diozero.api.I2CDeviceInterface;
 
 public interface InternalI2CDeviceInterface extends InternalDeviceInterface, I2CDeviceInterface {
-
+	@Override
+	default ByteOrder getByteOrder() {
+		throw new UnsupportedOperationException("Only implemented in com.diozero.api");
+	}
 }

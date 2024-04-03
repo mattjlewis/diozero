@@ -48,15 +48,14 @@ import com.diozero.util.PropertyUtil;
  * JNI wrapper of SMBus interface.
  * </p>
  * <p>
- * Reference
- * <a href="https://www.kernel.org/doc/Documentation/i2c/dev-interface">Kernel
+ * Reference <a href="https://www.kernel.org/doc/Documentation/i2c/dev-interface">Kernel
  * I2C dev interface</a> and
  * <a href="https://www.kernel.org/doc/Documentation/i2c/smbus-protocol">SMBus
  * Protocol</a>.
  * </p>
  * <p>
- * See <a href=
- * "https://github.com/torvalds/linux/blob/v5.4/include/linux/i2c.h">i2c-dev</a>
+ * See
+ * <a href= "https://github.com/torvalds/linux/blob/v5.4/include/linux/i2c.h">i2c-dev</a>
  * for a definition of the in-line functions.
  * </p>
  */
@@ -105,11 +104,13 @@ public class NativeI2CDeviceSMBus extends AbstractDevice implements InternalI2CD
 		Logger.debug("I2C_FUNCS for controller {}: 0x{}", Integer.toString(controller), Integer.toHexString(funcs));
 	}
 
+	@Override
 	public int getController() {
 		return controller;
 	}
 
-	public int getDeviceAddress() {
+	@Override
+	public int getAddress() {
 		return deviceAddress;
 	}
 
@@ -313,7 +314,7 @@ public class NativeI2CDeviceSMBus extends AbstractDevice implements InternalI2CD
 			throw new UnsupportedOperationException(
 				"Function I2C_FUNC_SMBUS_WRITE_WORD_DATA isn't supported for device " + getKey());
 		}
-
+	
 		int rc = EAGAIN;
 		for (int i = 0; i < numRetries && (rc == EAGAIN || rc == ETIMEDOUT); i++) {
 			rc = NativeI2C.writeWordSwapped(fd, registerAddress, data);

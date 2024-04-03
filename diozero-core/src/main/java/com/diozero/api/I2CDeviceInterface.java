@@ -33,6 +33,8 @@ package com.diozero.api;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -63,6 +65,41 @@ public interface I2CDeviceInterface extends I2CSMBusInterface {
 	int readBytes(byte[] buffer) throws RuntimeIOException;
 
 	/**
+	 * Utility method that wraps the response from {@link I2CDevice#readBytes(int)}
+	 * in a {@link ByteBuffer} that is configured to use the {@link ByteOrder byte
+	 * order} specified in the constructor.
+	 *
+	 * @see I2CDevice#readBytes(int)
+	 * @see ByteBuffer#wrap(byte[])
+	 *
+	 * @param length number of bytes to read
+	 * @return A {@link ByteBuffer} containing the bytes read using the byte order
+	 *         specified in the constructor
+	 * @throws RuntimeIOException if an I/O error occurs
+	 */
+	default ByteBuffer readBytesAsByteBuffer(int length) throws RuntimeIOException {
+		ByteBuffer buffer = ByteBuffer.wrap(readBytes(length));
+		buffer.order(getByteOrder());
+		return buffer;
+	}
+
+	/**
+	 * Utility method that wraps {@link I2CDeviceInterface#readBytes(byte[])} to
+	 * read the specified number of bytes.
+	 *
+	 * @see I2CDevice#readBytes(byte[])
+	 *
+	 * @param length the number of bytes to read
+	 * @return the bytes read from the device
+	 * @throws RuntimeIOException if an I/O error occurs
+	 */
+	default byte[] readBytes(int length) throws RuntimeIOException {
+		byte[] buffer = new byte[length];
+		readBytes(buffer);
+		return buffer;
+	}
+
+	/**
 	 * Write the specified byte array to the device without the 32 byte limit
 	 * imposed by SMBus.
 	 *
@@ -76,6 +113,23 @@ public interface I2CDeviceInterface extends I2CSMBusInterface {
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	void writeBytes(byte... data) throws RuntimeIOException;
+
+	/**
+	 * Utility method that wraps {@link I2CDevice#writeBytes(byte[])} to write the
+	 * available bytes in the specified {@link ByteBuffer ByteBuffer}. The byte
+	 * order of data in the ByteBuffer is unchanged.
+	 *
+	 * @see I2CDevice#writeBytes(byte[])
+	 * @see ByteBuffer#put(byte[])
+	 *
+	 * @param buffer the {@link ByteBuffer} containing the data to write
+	 * @throws RuntimeIOException if an I/O error occurs
+	 */
+	default void writeBytes(ByteBuffer buffer) throws RuntimeIOException {
+		byte[] tx_buf = new byte[buffer.remaining()];
+		buffer.get(tx_buf);
+		writeBytes(tx_buf);
+	}
 
 	/**
 	 * Utility method to simplify the {@link #readWrite(I2CMessage[], byte[])}

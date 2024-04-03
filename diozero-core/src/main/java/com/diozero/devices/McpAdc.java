@@ -41,6 +41,7 @@ import com.diozero.api.PinInfo;
 import com.diozero.api.RuntimeIOException;
 import com.diozero.api.SpiConstants;
 import com.diozero.api.SpiDevice;
+import com.diozero.api.SpiDeviceInterface;
 import com.diozero.internal.spi.AbstractDeviceFactory;
 import com.diozero.internal.spi.AbstractInputDevice;
 import com.diozero.internal.spi.AnalogInputDeviceFactoryInterface;
@@ -49,7 +50,7 @@ import com.diozero.sbc.BoardPinInfo;
 
 public class McpAdc extends AbstractDeviceFactory implements AnalogInputDeviceFactoryInterface, DeviceInterface {
 	private Type type;
-	private SpiDevice spiDevice;
+	private SpiDeviceInterface device;
 	private BoardPinInfo boardPinInfo;
 
 	public McpAdc(Type type, int chipSelect, float vRef) throws RuntimeIOException {
@@ -63,7 +64,7 @@ public class McpAdc extends AbstractDeviceFactory implements AnalogInputDeviceFa
 
 		boardPinInfo = new McpAdcBoardPinInfo(type, vRef);
 
-		spiDevice = SpiDevice.builder(chipSelect).setController(controller).setFrequency(type.getMaxFreq2v7()).build();
+		device = SpiDevice.builder(chipSelect).setController(controller).setFrequency(type.getMaxFreq2v7()).build();
 	}
 
 	@Override
@@ -71,7 +72,7 @@ public class McpAdc extends AbstractDeviceFactory implements AnalogInputDeviceFa
 		Logger.trace("close()");
 		// Close all open pins before closing the SPI device itself
 		super.close();
-		spiDevice.close();
+		device.close();
 	}
 
 	/**
@@ -151,7 +152,7 @@ public class McpAdc extends AbstractDeviceFactory implements AnalogInputDeviceFa
 		tx[index++] = (byte) 0;
 		tx[index++] = (byte) 0;
 
-		byte[] in = spiDevice.writeAndRead(tx);
+		byte[] in = device.writeAndRead(tx);
 		// Logger.debug(String.format("0x%x, 0x%x, 0x%x",
 		// Byte.valueOf(in.get(0)), Byte.valueOf(in.get(1)), Byte.valueOf(in.get(2))));
 
@@ -201,7 +202,7 @@ public class McpAdc extends AbstractDeviceFactory implements AnalogInputDeviceFa
 
 	@Override
 	public String getName() {
-		return type.name() + "-" + spiDevice.getController() + "-" + spiDevice.getChipSelect();
+		return type.name() + "-" + device.getController() + "-" + device.getChipSelect();
 	}
 
 	@Override
@@ -210,21 +211,19 @@ public class McpAdc extends AbstractDeviceFactory implements AnalogInputDeviceFa
 	}
 
 	/**
-	 * The MCP3204/3208 devices offer the choice of using the analog input channels
-	 * configured as single-ended inputs or pseudo-differential pairs. When used in
-	 * the pseudo-differential mode, each channel pair (i.e., CH0 and CH1, CH2 and
-	 * CH3 etc.) is programmed to be the IN+ and IN- inputs as part of the command
-	 * string transmitted to the device. The IN+ input can range from IN- to (VREF +
-	 * IN-). The IN- input is limited to ?100 mV from the VSS rail. The IN- input
-	 * can be used to cancel small signal common-mode noise which is present on both
-	 * the IN+ and IN- inputs. When operating in the pseudo-differential mode, if
-	 * the voltage level of IN+ is equal to or less than IN-, the resultant code
-	 * will be 000h. If the voltage at IN+ is equal to or greater than {[VREF +
-	 * (IN-)] - 1 LSB}, then the output code will be FFFh. If the voltage level at
-	 * IN- is more than 1 LSB below VSS, the voltage level at the IN+ input will
-	 * have to go below VSS to see the 000h output code. Conversely, if IN- is more
-	 * than 1 LSB above VSS, then the FFFh code will not be seen unless the IN+
-	 * input level goes above VREF level.
+	 * The MCP3204/3208 devices offer the choice of using the analog input channels configured
+	 * as single-ended inputs or pseudo-differential pairs. When used in the
+	 * pseudo-differential mode, each channel pair (i.e., CH0 and CH1, CH2 and CH3 etc.) is
+	 * programmed to be the IN+ and IN- inputs as part of the command string transmitted to
+	 * the device. The IN+ input can range from IN- to (VREF + IN-). The IN- input is limited
+	 * to ?100 mV from the VSS rail. The IN- input can be used to cancel small signal
+	 * common-mode noise which is present on both the IN+ and IN- inputs. When operating in
+	 * the pseudo-differential mode, if the voltage level of IN+ is equal to or less than IN-,
+	 * the resultant code will be 000h. If the voltage at IN+ is equal to or greater than
+	 * {[VREF + (IN-)] - 1 LSB}, then the output code will be FFFh. If the voltage level at
+	 * IN- is more than 1 LSB below VSS, the voltage level at the IN+ input will have to go
+	 * below VSS to see the 000h output code. Conversely, if IN- is more than 1 LSB above VSS,
+	 * then the FFFh code will not be seen unless the IN+ input level goes above VREF level.
 	 */
 	public static enum Type {
 		/*-

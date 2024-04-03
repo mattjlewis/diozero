@@ -33,16 +33,17 @@ package com.diozero.devices.imu.invensense;
 
 import com.diozero.api.DeviceInterface;
 import com.diozero.api.I2CDevice;
+import com.diozero.api.I2CDeviceInterface;
 import com.diozero.api.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 
 /**
- * Output data resolution is 13 bit (0.3 uT per LSB), Full scale measurement
- * range is +/-1200 uT
+ * Output data resolution is 13 bit (0.3 uT per LSB), Full scale measurement range is
+ * +/-1200 uT
  */
 public class AK8975Driver implements DeviceInterface, AK8975Constants {
 	private short[] mag_sens_adj = new short[3];
-	private I2CDevice i2cDevice;
+	private I2CDeviceInterface i2cDevice;
 
 	public AK8975Driver(int controller) throws RuntimeIOException {
 		this(controller, AK8975_MAG_ADDRESS);

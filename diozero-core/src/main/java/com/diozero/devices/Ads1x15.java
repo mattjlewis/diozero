@@ -41,6 +41,7 @@ import com.diozero.api.DeviceInterface;
 import com.diozero.api.DigitalInputDevice;
 import com.diozero.api.I2CConstants;
 import com.diozero.api.I2CDevice;
+import com.diozero.api.I2CDeviceInterface;
 import com.diozero.api.PinInfo;
 import com.diozero.api.RuntimeIOException;
 import com.diozero.api.function.FloatConsumer;
@@ -53,8 +54,8 @@ import com.diozero.util.RangeUtil;
 import com.diozero.util.SleepUtil;
 
 /**
- * ADS1115 Datasheet: https://www.ti.com/lit/ds/symlink/ads1115.pdf ADS1015
- * Datasheet: https://www.ti.com/lit/ds/symlink/ads1015.pdf
+ * ADS1115 Datasheet: https://www.ti.com/lit/ds/symlink/ads1115.pdf ADS1015 Datasheet:
+ * https://www.ti.com/lit/ds/symlink/ads1015.pdf
  * 
  * <pre>
  * Device  | Resolution | Max Sample Rate | # Channels | Interface | Features
@@ -72,11 +73,11 @@ import com.diozero.util.SleepUtil;
  * A3 | A2 | A1 | A0 | ALERT | ADDR | SDA | SCL | G | V
  * </pre>
  * 
- * ADDR (In) - I2C slave address select ALERT (Out) - Comparator output or
- * conversion ready (ADS1114 and ADS1115 only)
+ * ADDR (In) - I2C slave address select ALERT (Out) - Comparator output or conversion
+ * ready (ADS1114 and ADS1115 only)
  *
- * ADDR - can be connected to GND, VDD, SDA, or SCL, allowing for four different
- * addresses to be selected
+ * ADDR - can be connected to GND, VDD, SDA, or SCL, allowing for four different addresses
+ * to be selected
  * 
  * <pre>
  * GND | 0b01001000 (0x48)
@@ -166,8 +167,8 @@ public class Ads1x15 extends AbstractDeviceFactory implements AnalogInputDeviceF
 	}
 
 	/**
-	 * Programmable Gain Amplifier configuration. Ensure that ADC input voltage does
-	 * not exceed this value
+	 * Programmable Gain Amplifier configuration. Ensure that ADC input voltage does not
+	 * exceed this value
 	 */
 	public static enum PgaConfig {
 		_6144MV(6.144f, 0b000), _4096MV(4.096f, 0b001), _2048MV(2.048f, 0b010), _1024MV(1.024f, 0b011),
@@ -295,7 +296,7 @@ public class Ads1x15 extends AbstractDeviceFactory implements AnalogInputDeviceF
 	// lowest address currently asserting the ALERT/RDY bus line.
 	private static final int CONFIG_LSB_COMP_LATCHING = 1 << 2;
 
-	private I2CDevice device;
+	private I2CDeviceInterface device;
 	private Model model;
 	private BoardPinInfo boardPinInfo;
 	private PgaConfig pgaConfig;
@@ -316,9 +317,8 @@ public class Ads1x15 extends AbstractDeviceFactory implements AnalogInputDeviceF
 
 	/**
 	 * 
-	 * @param pgaConfig Programmable Gain Amplifier configuration - make sure this
-	 *                  is set correctly and that the ADC input voltage does not
-	 *                  exceed this value
+	 * @param pgaConfig Programmable Gain Amplifier configuration - make sure this is set
+	 *                  correctly and that the ADC input voltage does not exceed this value
 	 * @param dataRate  Data read frequency (Hz)
 	 */
 	public Ads1x15(PgaConfig pgaConfig, Ads1115DataRate dataRate) {

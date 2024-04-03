@@ -42,9 +42,15 @@ import com.diozero.internal.spi.InternalI2CDeviceInterface;
 import com.diozero.util.Hex;
 
 public class TestI2CDevice extends AbstractDevice implements InternalI2CDeviceInterface {
+	private int controller;
+	private int address;
+
 	public TestI2CDevice(String key, DeviceFactoryInterface deviceFactory, int controller, int address,
 			I2CConstants.AddressSize addressSize) {
 		super(key, deviceFactory);
+
+		this.controller = controller;
+		this.address = address;
 	}
 
 	@Override
@@ -55,6 +61,16 @@ public class TestI2CDevice extends AbstractDevice implements InternalI2CDeviceIn
 	@Override
 	public boolean probe(I2CDevice.ProbeMode mode) {
 		return true;
+	}
+
+	@Override
+	public int getController() {
+		return controller;
+	}
+
+	@Override
+	public int getAddress() {
+		return address;
 	}
 
 	@Override

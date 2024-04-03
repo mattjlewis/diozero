@@ -42,6 +42,7 @@ import org.tinylog.Logger;
 
 import com.diozero.api.DeviceInterface;
 import com.diozero.api.I2CDevice;
+import com.diozero.api.I2CDeviceInterface;
 import com.diozero.api.I2CDeviceInterface.I2CMessage;
 import com.diozero.util.Crc;
 import com.diozero.util.DiozeroScheduler;
@@ -116,7 +117,7 @@ public class SGP30 implements DeviceInterface, Runnable {
 	private static final short CMD_SET_TVOC_BASELINE = 0x2077;
 	private static final int CMD_SET_TVOC_BASELINE_DELAY_MS = 10;
 
-	private I2CDevice device;
+	private I2CDeviceInterface device;
 	private long startTimeMs;
 	private ScheduledFuture<?> future;
 	private Consumer<SGP30Measurement> measurementListener;
@@ -127,7 +128,11 @@ public class SGP30 implements DeviceInterface, Runnable {
 	}
 
 	public SGP30(int controller, int address) {
-		device = I2CDevice.builder(address).setController(controller).setByteOrder(ByteOrder.BIG_ENDIAN).build();
+		this(I2CDevice.builder(address).setController(controller).setByteOrder(ByteOrder.BIG_ENDIAN).build());
+	}
+
+	public SGP30(I2CDeviceInterface device) {
+		this.device = device;
 	}
 
 	public void start(Consumer<SGP30Measurement> consumer) {

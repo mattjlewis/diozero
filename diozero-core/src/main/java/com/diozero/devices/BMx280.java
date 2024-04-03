@@ -37,10 +37,12 @@ import java.nio.ByteOrder;
 import org.tinylog.Logger;
 
 import com.diozero.api.I2CDevice;
+import com.diozero.api.I2CDeviceInterface;
 import com.diozero.api.RuntimeIOException;
 import com.diozero.api.SpiClockMode;
 import com.diozero.api.SpiConstants;
 import com.diozero.api.SpiDevice;
+import com.diozero.api.SpiDeviceInterface;
 import com.diozero.util.SleepUtil;
 
 /*-
@@ -61,9 +63,9 @@ import com.diozero.util.SleepUtil;
  */
 
 /**
- * Provides access to the Bosch BMx280 pressure and temperature sensor. The
- * BME280 includes an additional humidity sensor. Different constructors support
- * access via I2C or SPI.
+ * Provides access to the Bosch BMx280 pressure and temperature sensor. The BME280
+ * includes an additional humidity sensor. Different constructors support access via I2C
+ * or SPI.
  *
  * All constructors configure the device as follows:
  * <ul>
@@ -259,8 +261,8 @@ public class BMx280 implements BarometerInterface, ThermometerInterface, Hygrome
 	}
 
 	private boolean useI2C;
-	private I2CDevice deviceI;
-	private SpiDevice deviceS;
+	private I2CDeviceInterface deviceI;
+	private SpiDeviceInterface deviceS;
 	private Model model;
 	// Calibration data
 	private int digT1;
@@ -283,12 +285,17 @@ public class BMx280 implements BarometerInterface, ThermometerInterface, Hygrome
 	private byte digH6;
 
 	public static class I2CBuilder {
-		public static I2CBuilder builder(int bus) {
-			return new I2CBuilder(bus);
+		public static I2CBuilder builder(int controller) {
+			return new I2CBuilder(controller);
 		}
 
-		private int bus;
+		public static I2CBuilder builder(I2CDeviceInterface device) {
+			return new I2CBuilder(device);
+		}
+
+		private int controller;
 		private int address = DEFAULT_I2C_ADDRESS;
+		private I2CDeviceInterface device;
 		private TemperatureOversampling temperatureOversampling = TemperatureOversampling._1;
 		private PressureOversampling pressureOversampling = PressureOversampling._1;
 		private HumidityOversampling humidityOversampling = HumidityOversampling._1;
@@ -296,11 +303,18 @@ public class BMx280 implements BarometerInterface, ThermometerInterface, Hygrome
 		private StandbyDuration standbyDuration = StandbyDuration._1_S;
 		private FilterCoefficient filterCoefficient = FilterCoefficient.OFF;
 
-		public I2CBuilder(int bus) {
-			this.bus = bus;
+		public I2CBuilder(int controller) {
+			this.controller = controller;
+		}
+
+		public I2CBuilder(I2CDeviceInterface device) {
+			this.device = device;
 		}
 
 		public I2CBuilder setAddress(int address) {
+			if (device != null) {
+				throw new IllegalArgumentException("I2C device already assigned");
+			}
 			this.address = address;
 			return this;
 		}
@@ -336,7 +350,10 @@ public class BMx280 implements BarometerInterface, ThermometerInterface, Hygrome
 		}
 
 		public BMx280 build() {
-			return new BMx280(bus, address, temperatureOversampling, pressureOversampling, humidityOversampling,
+			if (device == null) {
+				device = I2CDevice.builder(address).setController(controller).build();
+			}
+			return new BMx280(device, temperatureOversampling, pressureOversampling, humidityOversampling,
 					operatingMode, standbyDuration, filterCoefficient);
 		}
 	}
@@ -346,10 +363,15 @@ public class BMx280 implements BarometerInterface, ThermometerInterface, Hygrome
 			return new SpiBuilder(chipSelect);
 		}
 
+		public static SpiBuilder builder(SpiDeviceInterface device) {
+			return new SpiBuilder(device);
+		}
+
 		private int chipSelect;
 		private int controller = SpiConstants.DEFAULT_SPI_CONTROLLER;
 		private int frequency = SpiConstants.DEFAULT_SPI_CLOCK_FREQUENCY;
 		private SpiClockMode mode = SpiConstants.DEFAULT_SPI_CLOCK_MODE;
+		private SpiDeviceInterface device;
 		private TemperatureOversampling temperatureOversampling = TemperatureOversampling._1;
 		private PressureOversampling pressureOversampling = PressureOversampling._1;
 		private HumidityOversampling humidityOversampling = HumidityOversampling._1;
@@ -361,6 +383,10 @@ public class BMx280 implements BarometerInterface, ThermometerInterface, Hygrome
 			this.chipSelect = chipSelect;
 		}
 
+		public SpiBuilder(SpiDeviceInterface device) {
+			this.device = device;
+		}
+
 		/**
 		 * Set the SPI controller
 		 * 
@@ -368,6 +394,9 @@ public class BMx280 implements BarometerInterface, ThermometerInterface, Hygrome
 		 * @return this builder instance
 		 */
 		public SpiBuilder setController(int controller) {
+			if (device != null) {
+				throw new IllegalStateException("SPI device already assigned");
+			}
 			this.controller = controller;
 			return this;
 		}
@@ -379,6 +408,9 @@ public class BMx280 implements BarometerInterface, ThermometerInterface, Hygrome
 		 * @return this builder instance
 		 */
 		public SpiBuilder setChipSelect(int chipSelect) {
+			if (device != null) {
+				throw new IllegalStateException("SPI device already assigned");
+			}
 			this.chipSelect = chipSelect;
 			return this;
 		}
@@ -390,6 +422,9 @@ public class BMx280 implements BarometerInterface, ThermometerInterface, Hygrome
 		 * @return this builder instance
 		 */
 		public SpiBuilder setFrequency(int frequency) {
+			if (device != null) {
+				throw new IllegalStateException("SPI device already assigned");
+			}
 			this.frequency = frequency;
 			return this;
 		}
@@ -401,6 +436,9 @@ public class BMx280 implements BarometerInterface, ThermometerInterface, Hygrome
 		 * @return this builder instance
 		 */
 		public SpiBuilder setClockMode(SpiClockMode mode) {
+			if (device != null) {
+				throw new IllegalStateException("SPI device already assigned");
+			}
 			this.mode = mode;
 			return this;
 		}
@@ -436,31 +474,33 @@ public class BMx280 implements BarometerInterface, ThermometerInterface, Hygrome
 		}
 
 		public BMx280 build() {
-			return new BMx280(controller, chipSelect, frequency, mode, temperatureOversampling, pressureOversampling,
-					humidityOversampling, operatingMode, standbyDuration, filterCoefficient);
+			if (device == null) {
+				device = SpiDevice.builder(chipSelect).setController(controller).setFrequency(frequency)
+						.setClockMode(mode).build();
+			}
+			return new BMx280(device, temperatureOversampling, pressureOversampling, humidityOversampling,
+					operatingMode, standbyDuration, filterCoefficient);
 		}
 	}
 
-	private BMx280(int bus, int address, TemperatureOversampling temperatureOversampling,
+	private BMx280(I2CDeviceInterface device, TemperatureOversampling temperatureOversampling,
 			PressureOversampling pressureOversampling, HumidityOversampling humidityOversampling,
 			OperatingMode operatingMode, StandbyDuration standbyDuration, FilterCoefficient filterCoefficient)
 			throws RuntimeIOException {
 		useI2C = true;
 
-		deviceI = I2CDevice.builder(address).setController(bus).setByteOrder(ByteOrder.LITTLE_ENDIAN).build();
+		deviceI = device;
 
 		initialise(temperatureOversampling, pressureOversampling, humidityOversampling, operatingMode, standbyDuration,
 				filterCoefficient);
 	}
 
-	private BMx280(int controller, int chipSelect, int frequency, SpiClockMode mode,
-			TemperatureOversampling temperatureOversampling, PressureOversampling pressureOversampling,
-			HumidityOversampling humidityOversampling, OperatingMode operatingMode, StandbyDuration standbyDuration,
-			FilterCoefficient filterCoefficient) {
+	private BMx280(SpiDeviceInterface device, TemperatureOversampling temperatureOversampling,
+			PressureOversampling pressureOversampling, HumidityOversampling humidityOversampling,
+			OperatingMode operatingMode, StandbyDuration standbyDuration, FilterCoefficient filterCoefficient) {
 		useI2C = false;
 
-		deviceS = SpiDevice.builder(chipSelect).setController(controller).setFrequency(frequency).setClockMode(mode)
-				.build();
+		deviceS = device;
 
 		initialise(temperatureOversampling, pressureOversampling, humidityOversampling, operatingMode, standbyDuration,
 				filterCoefficient);
@@ -591,8 +631,8 @@ public class BMx280 implements BarometerInterface, ThermometerInterface, Hygrome
 	}
 
 	/**
-	 * Reads the temperature, pressure, and humidity registers; compensates the raw
-	 * values to provide meaningful results.
+	 * Reads the temperature, pressure, and humidity registers; compensates the raw values to
+	 * provide meaningful results.
 	 *
 	 * @return array in order of: temperature, pressure, humidity
 	 */
@@ -653,8 +693,8 @@ public class BMx280 implements BarometerInterface, ThermometerInterface, Hygrome
 	}
 
 	/**
-	 * Reads the temperature, pressure, and humidity registers; compensates the raw
-	 * values to provide meaningful results.
+	 * Reads the temperature, pressure, and humidity registers; compensates the raw values to
+	 * provide meaningful results.
 	 *
 	 * @return temperature
 	 */
@@ -664,8 +704,8 @@ public class BMx280 implements BarometerInterface, ThermometerInterface, Hygrome
 	}
 
 	/**
-	 * Reads the temperature, pressure, and humidity registers; compensates the raw
-	 * values to provide meaningful results.
+	 * Reads the temperature, pressure, and humidity registers; compensates the raw values to
+	 * provide meaningful results.
 	 *
 	 * @return pressure in hectoPascals (hPa)
 	 */
@@ -675,8 +715,8 @@ public class BMx280 implements BarometerInterface, ThermometerInterface, Hygrome
 	}
 
 	/**
-	 * Reads the temperature, pressure, and humidity registers; compensates the raw
-	 * values to provide meaningful results.
+	 * Reads the temperature, pressure, and humidity registers; compensates the raw values to
+	 * provide meaningful results.
 	 *
 	 * @return humidity
 	 */

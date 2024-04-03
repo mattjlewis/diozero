@@ -46,6 +46,7 @@ import com.diozero.api.GpioEventTrigger;
 import com.diozero.api.GpioPullUpDown;
 import com.diozero.api.I2CConstants;
 import com.diozero.api.I2CDevice;
+import com.diozero.api.I2CDeviceInterface;
 import com.diozero.api.PinInfo;
 import com.diozero.api.RuntimeIOException;
 import com.diozero.api.function.DeviceEventConsumer;
@@ -127,7 +128,7 @@ public class PiconZero extends AbstractDeviceFactory
 	public static final int MIN_MOTOR_VALUE = -128;
 	public static final int SERVO_CENTRE = 90;
 
-	private I2CDevice device;
+	private I2CDeviceInterface device;
 	private BoardPinInfo boardPinInfo;
 	private OutputConfig[] outputConfigs = new OutputConfig[NUM_OUTPUT_CHANNELS];
 	private InputConfig[] inputConfigs = new InputConfig[NUM_INPUT_CHANNELS];
@@ -197,8 +198,7 @@ public class PiconZero extends AbstractDeviceFactory
 	/**
 	 * Get the board revision details
 	 *
-	 * @return revision[0]: Board type (2 == PiconZero); revision[1]: Firmware
-	 *         version
+	 * @return revision[0]: Board type (2 == PiconZero); revision[1]: Firmware version
 	 */
 	public byte[] getRevision() {
 		ByteBuffer buffer = device.readI2CBlockDataByteBuffer(REVISION_REG, 2);
@@ -224,8 +224,7 @@ public class PiconZero extends AbstractDeviceFactory
 	 * Set configuration of selected output
 	 *
 	 * @param channel Output channel (0..5)
-	 * @param config  Output configuration (0: Digital, 1: PWM, 2: Servo, 3:
-	 *                Neopixel WS2812B)
+	 * @param config  Output configuration (0: Digital, 1: PWM, 2: Servo, 3: Neopixel WS2812B)
 	 */
 	public void setOutputConfig(int channel, OutputConfig config) {
 		Logger.debug("setOutputConfig({}, {})", Integer.valueOf(channel), config);
@@ -337,8 +336,8 @@ public class PiconZero extends AbstractDeviceFactory
 	}
 
 	/**
-	 * Sets all pixels with the selected red, green and blue values (0 to 255)
-	 * [Available from firmware revision 07]
+	 * Sets all pixels with the selected red, green and blue values (0 to 255) [Available from
+	 * firmware revision 07]
 	 *
 	 * @param red    0..255
 	 * @param green  0..255

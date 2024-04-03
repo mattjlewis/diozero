@@ -37,11 +37,12 @@ import org.tinylog.Logger;
 
 import com.diozero.api.I2CConstants;
 import com.diozero.api.I2CDevice;
+import com.diozero.api.I2CDeviceInterface;
 import com.diozero.api.RuntimeIOException;
 
 /**
- * STMicroelectronics HTS221 "ultra compact sensor for relative humidity and
- * temperature". Datasheet: <a href=
+ * STMicroelectronics HTS221 "ultra compact sensor for relative humidity and temperature".
+ * Datasheet: <a href=
  * "http://www2.st.com/content/ccc/resource/technical/document/datasheet/4d/9a/9c/ad/25/07/42/34/DM00116291.pdf/files/DM00116291.pdf/jcr:content/translations/en.DM00116291.pdf">http://www2.st.com/content/ccc/resource/technical/document/datasheet/4d/9a/9c/ad/25/07/42/34/DM00116291.pdf/files/DM00116291.pdf/jcr:content/translations/en.DM00116291.pdf</a>
  */
 @SuppressWarnings("unused")
@@ -62,9 +63,8 @@ public class HTS221 implements ThermometerInterface, HygrometerInterface {
 	/** Control Register 3 (data ready output signal). */
 	private static final int CTRL_REG3 = 0x22;
 	/**
-	 * Status register; the content of this register is updated every one-shot
-	 * reading, and after completion of every ODR cycle, regardless of BDU value in
-	 * CTRL_REG1.
+	 * Status register; the content of this register is updated every one-shot reading, and
+	 * after completion of every ODR cycle, regardless of BDU value in CTRL_REG1.
 	 */
 	private static final int STATUS_REG = 0x27;
 	/** Humidity output registers (2s complement, signed short). */
@@ -94,15 +94,13 @@ public class HTS221 implements ThermometerInterface, HygrometerInterface {
 	// Flags for Control Register 1
 	private static final byte CR1_PD_CONTROL_BIT = 7;
 	/**
-	 * The PD bit is used to turn on the device. The device is in power-down mode
-	 * when PD = ?0? (default value after boot). The device is active when PD is set
-	 * to ?1?.
+	 * The PD bit is used to turn on the device. The device is in power-down mode when PD =
+	 * ?0? (default value after boot). The device is active when PD is set to ?1?.
 	 */
 	private static final byte CR1_PD_CONTROL = (byte) (1 << CR1_PD_CONTROL_BIT);
 	private static final byte CR1_BDU_BIT = 2;
 	/**
-	 * (0: continuous update; 1: output registers not updated until MSB and LSB
-	 * reading)
+	 * (0: continuous update; 1: output registers not updated until MSB and LSB reading)
 	 */
 	private static final byte CR1_BDU = 1 << CR1_BDU_BIT;
 	private static final byte CR1_ODR_ONE_SHOT = 0b00;
@@ -111,18 +109,17 @@ public class HTS221 implements ThermometerInterface, HygrometerInterface {
 	private static final byte CR1_ODR_12_5HZ = 0b11;
 
 	/*
-	 * Flags for Status Register [7:2] Reserved [1] H_DA: Humidity data available.
-	 * Default value: 0 (0: new data for humidity is not yet available; 1: new data
-	 * for humidity is available) [0] T_DA: Temperature data available. Default
-	 * value: 0 (0: new data for temperature is not yet available; 1: new data for
-	 * temperature is available)
+	 * Flags for Status Register [7:2] Reserved [1] H_DA: Humidity data available. Default
+	 * value: 0 (0: new data for humidity is not yet available; 1: new data for humidity is
+	 * available) [0] T_DA: Temperature data available. Default value: 0 (0: new data for
+	 * temperature is not yet available; 1: new data for temperature is available)
 	 */
 	private static final byte SR_H_DA_BIT = 1;
 	private static final byte SR_H_DA = 1 << SR_H_DA_BIT;
 	private static final byte SR_T_DA_BIT = 0;
 	private static final byte SR_T_DA = 1 << SR_T_DA_BIT;
 
-	private I2CDevice device;
+	private I2CDeviceInterface device;
 	private float h0Rh;
 	private float h1Rh;
 	private short h0T0Out;

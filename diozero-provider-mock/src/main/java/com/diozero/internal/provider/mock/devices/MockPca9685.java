@@ -77,6 +77,16 @@ public class MockPca9685 implements InternalI2CDeviceInterface {
 	}
 
 	@Override
+	public int getController() {
+		return 0;
+	}
+
+	@Override
+	public int getAddress() {
+		return 0;
+	}
+
+	@Override
 	public String getKey() {
 		return key;
 	}

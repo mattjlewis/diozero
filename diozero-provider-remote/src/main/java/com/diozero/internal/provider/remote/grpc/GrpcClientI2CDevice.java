@@ -81,6 +81,16 @@ public class GrpcClientI2CDevice extends AbstractDevice implements InternalI2CDe
 	}
 
 	@Override
+	public int getController() {
+		return controller;
+	}
+
+	@Override
+	public int getAddress() {
+		return address;
+	}
+
+	@Override
 	public boolean probe(ProbeMode mode) throws RuntimeIOException {
 		try {
 			BooleanResponse response = i2cBlockingStub.probe(I2C.Probe.newBuilder().setController(controller)

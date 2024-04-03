@@ -35,12 +35,12 @@ import java.nio.ByteOrder;
 
 import com.diozero.api.I2CConstants;
 import com.diozero.api.I2CDevice;
+import com.diozero.api.I2CDeviceInterface;
 import com.diozero.api.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 
 /**
- * <a href="https://cdn-shop.adafruit.com/datasheets/TSL2561.pdf">Datasheet</a>
- * Pins:
+ * <a href="https://cdn-shop.adafruit.com/datasheets/TSL2561.pdf">Datasheet</a> Pins:
  * 
  * <pre>
  * +-----------------------------+
@@ -170,14 +170,14 @@ public class TSL2561 implements LuminositySensorInterface {
 	private int broadband;
 	private int ir;
 	private TSL2561Package tsl2561Package;
-	private I2CDevice i2cDevice;
+	private I2CDeviceInterface device;
 
 	public TSL2561(TSL2561Package tsl2561Package) throws RuntimeIOException {
 		this(I2CConstants.CONTROLLER_1, tsl2561Package);
 	}
 
 	public TSL2561(int controller, TSL2561Package tsl2561Package) throws RuntimeIOException {
-		i2cDevice = I2CDevice.builder(DEVICE_ADDRESS).setController(controller).setByteOrder(ByteOrder.LITTLE_ENDIAN)
+		device = I2CDevice.builder(DEVICE_ADDRESS).setController(controller).setByteOrder(ByteOrder.LITTLE_ENDIAN)
 				.build();
 
 		this.tsl2561Package = tsl2561Package;
@@ -199,7 +199,7 @@ public class TSL2561 implements LuminositySensorInterface {
 	}
 
 	private boolean begin() throws RuntimeIOException {
-		int x = i2cDevice.readByteData(TSL2561_REGISTER_ID);
+		int x = device.readByteData(TSL2561_REGISTER_ID);
 		// if not(x & 0x0A):
 		if ((x & 0x0A) == 0) {
 			return false;
@@ -221,14 +221,14 @@ public class TSL2561 implements LuminositySensorInterface {
 	 * Enables the device
 	 */
 	private void enable() throws RuntimeIOException {
-		i2cDevice.writeByteData(TSL2561_COMMAND_BIT | TSL2561_REGISTER_CONTROL, TSL2561_CONTROL_POWERON);
+		device.writeByteData(TSL2561_COMMAND_BIT | TSL2561_REGISTER_CONTROL, TSL2561_CONTROL_POWERON);
 	}
 
 	/**
 	 * Disables the device (putting it in lower power sleep mode)
 	 */
 	private void disable() throws RuntimeIOException {
-		i2cDevice.writeByteData(TSL2561_COMMAND_BIT | TSL2561_REGISTER_CONTROL, TSL2561_CONTROL_POWEROFF);
+		device.writeByteData(TSL2561_COMMAND_BIT | TSL2561_REGISTER_CONTROL, TSL2561_CONTROL_POWEROFF);
 	}
 
 	/**
@@ -247,10 +247,10 @@ public class TSL2561 implements LuminositySensorInterface {
 		}
 
 		// Reads a two byte value from channel 0 (visible + infrared)
-		broadband = i2cDevice.readUShort(TSL2561_COMMAND_BIT | TSL2561_WORD_BIT | TSL2561_REGISTER_CHAN0_LOW);
+		broadband = device.readUShort(TSL2561_COMMAND_BIT | TSL2561_WORD_BIT | TSL2561_REGISTER_CHAN0_LOW);
 
 		// Reads a two byte value from channel 1 (infrared)
-		ir = i2cDevice.readUShort(TSL2561_COMMAND_BIT | TSL2561_WORD_BIT | TSL2561_REGISTER_CHAN1_LOW);
+		ir = device.readUShort(TSL2561_COMMAND_BIT | TSL2561_WORD_BIT | TSL2561_REGISTER_CHAN1_LOW);
 
 		// Turn the device off to save power
 		disable();
@@ -261,7 +261,7 @@ public class TSL2561 implements LuminositySensorInterface {
 		enable();
 
 		// Update the timing register
-		i2cDevice.writeByteData(TSL2561_COMMAND_BIT | TSL2561_REGISTER_TIMING, (byte) (time | gain));
+		device.writeByteData(TSL2561_COMMAND_BIT | TSL2561_REGISTER_TIMING, (byte) (time | gain));
 
 		integrationTime = time;
 
@@ -280,7 +280,7 @@ public class TSL2561 implements LuminositySensorInterface {
 		enable();
 
 		// Update the timing register
-		i2cDevice.writeByteData(TSL2561_COMMAND_BIT | TSL2561_REGISTER_TIMING, (byte) (integrationTime | gain));
+		device.writeByteData(TSL2561_COMMAND_BIT | TSL2561_REGISTER_TIMING, (byte) (integrationTime | gain));
 
 		this.gain = gain;
 
@@ -352,8 +352,8 @@ public class TSL2561 implements LuminositySensorInterface {
 	}
 
 	/**
-	 * Converts the raw sensor values to the standard SI lux equivalent. Returns 0
-	 * if the sensor is saturated and the values are unreliable.
+	 * Converts the raw sensor values to the standard SI lux equivalent. Returns 0 if the
+	 * sensor is saturated and the values are unreliable.
 	 */
 	@Override
 	public float getLuminosity() throws RuntimeIOException {
@@ -483,6 +483,6 @@ public class TSL2561 implements LuminositySensorInterface {
 
 	@Override
 	public void close() {
-		i2cDevice.close();
+		device.close();
 	}
 }

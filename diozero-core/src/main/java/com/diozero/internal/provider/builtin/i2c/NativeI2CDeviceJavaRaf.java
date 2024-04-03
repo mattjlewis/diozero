@@ -48,13 +48,12 @@ import com.diozero.util.FileDescriptorUtil;
 /**
  * <p>
  * Native Java implementation of the I2C SMBus commands using a Java
- * {@link RandomAccessFile} to read to and write from the device. Makes use of a
- * single native method to select the slave address.
+ * {@link RandomAccessFile} to read to and write from the device. Makes use of a single
+ * native method to select the slave address.
  * </p>
  *
  * <p>
- * Reference
- * <a href="https://www.kernel.org/doc/Documentation/i2c/dev-interface">Kernel
+ * Reference <a href="https://www.kernel.org/doc/Documentation/i2c/dev-interface">Kernel
  * I2C dev interface</a> and
  * <a href="https://www.kernel.org/doc/Documentation/i2c/smbus-protocol">SMBus
  * Protocol</a>.
@@ -118,6 +117,16 @@ public class NativeI2CDeviceJavaRaf extends AbstractDevice implements InternalI2
 		} catch (IOException e) {
 			return false;
 		}
+	}
+
+	@Override
+	public int getController() {
+		return controller;
+	}
+
+	@Override
+	public int getAddress() {
+		return deviceAddress;
 	}
 
 	@Override

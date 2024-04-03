@@ -32,14 +32,14 @@ package com.diozero.devices;
  */
 
 import com.diozero.api.I2CDevice;
+import com.diozero.api.I2CDeviceInterface;
 import com.diozero.api.RuntimeIOException;
 import com.diozero.util.SleepUtil;
 
 /**
  * BH1750 Luminosity sensor
  * <a href="http://www.mouser.com/ds/2/348/bh1750fvi-e-186247.pdf">Datasheet</a>
- * <a href="https://gist.github.com/oskar456/95c66d564c58361ecf9f">Python
- * code</a>
+ * <a href="https://gist.github.com/oskar456/95c66d564c58361ecf9f">Python code</a>
  * 
  * Pins:
  * 
@@ -102,7 +102,7 @@ public class BH1750 implements LuminositySensorInterface {
 
 	private static final Mode DEFAULT_MODE = Mode.CONTINUOUS_HIGH_RES_MODE;
 
-	private I2CDevice device;
+	private I2CDeviceInterface device;
 	private Mode mode;
 
 	public BH1750(int controller) {

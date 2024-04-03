@@ -34,11 +34,11 @@ package com.diozero.ws281xj.apa102;
 import java.util.Arrays;
 
 import com.diozero.api.SpiDevice;
+import com.diozero.api.SpiDeviceInterface;
 import com.diozero.ws281xj.LedDriverInterface;
 
 /**
- * Reference: https://cpldcpu.com/2014/11/30/understanding-the-apa102-superled/
- * Also:
+ * Reference: https://cpldcpu.com/2014/11/30/understanding-the-apa102-superled/ Also:
  * https://github.com/androidthings/contrib-drivers/blob/master/apa102/src/main/java/com/google/android/things/contrib/driver/apa102/Apa102.java
  */
 public class Apa102LedDriver implements LedDriverInterface {
@@ -46,7 +46,7 @@ public class Apa102LedDriver implements LedDriverInterface {
 	private static final byte APA_RESET_DATA_BYTE = 0x00;
 	private static final byte APA_END_DATA_BYTE = 0x00;
 
-	private SpiDevice device;
+	private SpiDeviceInterface device;
 	private int brightness;
 	private int[] leds;
 	private byte[] spiBuffer;

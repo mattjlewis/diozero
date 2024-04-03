@@ -121,14 +121,13 @@ public class SpiDevice implements SpiDeviceInterface {
 		 *
 		 * @return a new SPI device instance
 		 */
-		public SpiDevice build() {
+		public SpiDeviceInterface build() {
 			return new SpiDevice(controller, chipSelect, frequency, clockMode, lsbFirst);
 		}
 	}
 
 	/**
-	 * Construct a new SPI device builder instance using the specified chip select
-	 * value
+	 * Construct a new SPI device builder instance using the specified chip select value
 	 *
 	 * @param chipSelect SPI chip select
 	 * @return SPI device builder

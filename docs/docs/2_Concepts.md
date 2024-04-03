@@ -19,7 +19,7 @@ displays, etc) as classes with meaningful operation names, for example, LED (on 
 
 This library is known to work on the following boards: all models of the Raspberry Pi, Odroid C2,
 BeagleBone (Green and Black), AllWinner H3 / H5 and H6 CPUs, Next Thing C.H.I.P and ASUS Tinker Board.
-It is portable to any Single Board Computer that can run Linux and Java 8 as well as any
+It is portable to any Single Board Computer that can run Linux and Java 11 as well as any
 micro-controller with Firmata protocol support.
 
 {: .note-title }

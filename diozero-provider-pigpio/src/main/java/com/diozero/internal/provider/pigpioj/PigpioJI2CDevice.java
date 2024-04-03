@@ -72,6 +72,16 @@ public class PigpioJI2CDevice extends AbstractDevice implements InternalI2CDevic
 	}
 
 	@Override
+	public int getController() {
+		return controller;
+	}
+
+	@Override
+	public int getAddress() {
+		return address;
+	}
+
+	@Override
 	public boolean isOpen() {
 		return handle >= 0;
 	}

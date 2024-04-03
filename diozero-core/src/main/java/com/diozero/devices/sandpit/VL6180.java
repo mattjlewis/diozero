@@ -38,6 +38,7 @@ import java.util.GregorianCalendar;
 import org.tinylog.Logger;
 
 import com.diozero.api.I2CDevice;
+import com.diozero.api.I2CDeviceInterface;
 import com.diozero.api.I2CDeviceInterface.I2CMessage;
 import com.diozero.api.RuntimeIOException;
 import com.diozero.devices.DistanceSensorInterface;
@@ -46,20 +47,17 @@ import com.diozero.util.SleepUtil;
 /**
  * References:
  * <ul>
- * <li><a href=
- * "https://www.st.com/resource/en/datasheet/vl6180.pdf">Datasheet</a></li>
+ * <li><a href= "https://www.st.com/resource/en/datasheet/vl6180.pdf">Datasheet</a></li>
  * <li><a href=
  * "https://www.st.com/resource/en/application_note/dm00122600-vl6180x-basic-ranging-application-note-stmicroelectronics.pdf">Application
  * notes</a></li>
  * <li><a href=
  * "https://github.com/sparkfun/SparkFun_ToF_Range_Finder-VL6180_Arduino_Library/blob/master/src/SparkFun_VL6180X.cpp">SparkFun
  * C++ implementation</a></li>
- * <li><a href=
- * "https://github.com/pololu/vl6180x-arduino/blob/master/VL6180X.cpp">Pololu
+ * <li><a href= "https://github.com/pololu/vl6180x-arduino/blob/master/VL6180X.cpp">Pololu
  * C++ implementation</a></li>
- * <li><a href=
- * "https://github.com/adafruit/Adafruit_CircuitPython_VL6180X">Adafruit Python
- * implementation</a></li>
+ * <li><a href= "https://github.com/adafruit/Adafruit_CircuitPython_VL6180X">Adafruit
+ * Python implementation</a></li>
  * </ul>
  */
 public class VL6180 implements DistanceSensorInterface {
@@ -129,7 +127,7 @@ public class VL6180 implements DistanceSensorInterface {
 	private static final int DEFAULT_ADDRESS = 0x29;
 	public static final byte VL6180_MODEL_ID = (byte) 0xb4;
 
-	private I2CDevice device;
+	private I2CDeviceInterface device;
 	private short modelId;
 	private short modelMajor;
 	private short modelMinor;

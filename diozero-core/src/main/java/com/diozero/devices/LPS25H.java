@@ -31,34 +31,36 @@ package com.diozero.devices;
  * #L%
  */
 
-
 import java.nio.ByteOrder;
 
 import org.tinylog.Logger;
 
 import com.diozero.api.I2CConstants;
 import com.diozero.api.I2CDevice;
+import com.diozero.api.I2CDeviceInterface;
 
 /**
- * STMicroelectronics LPS25H "ultra compact absolute piezoresistive pressure sensor". Datasheet:
+ * STMicroelectronics LPS25H "ultra compact absolute piezoresistive pressure sensor".
+ * Datasheet:
  * http://www2.st.com/content/ccc/resource/technical/document/datasheet/58/d2/33/a4/42/89/42/0b/DM00066332.pdf/files/DM00066332.pdf/jcr:content/translations/en.DM00066332.pdf
  * Example implementation:
  * https://github.com/richards-tech/RTIMULib/blob/master/RTIMULib/IMUDrivers/RTPressureLPS25H.cpp
- * Eclipse Kura implementation: https://github.com/eclipse/kura/tree/develop/kura/examples/org.eclipse.kura.raspberrypi.sensehat/src/main/java/org/eclipse/kura
+ * Eclipse Kura implementation:
+ * https://github.com/eclipse/kura/tree/develop/kura/examples/org.eclipse.kura.raspberrypi.sensehat/src/main/java/org/eclipse/kura
  */
 @SuppressWarnings("unused")
 public class LPS25H implements ThermometerInterface, BarometerInterface {
 	private static final double PRESSURE_SCALE = 4096;
-	
-	//  LPS25H I2C Slave Addresses
+
+	// LPS25H I2C Slave Addresses
 	private static final int DEFAULT_DEVICE_ADDRESS0 = 0x5c;
 	private static final int DEFAULT_DEVICE_ADDRESS1 = 0x5d;
 	private static final int REG_ID = 0x0f;
 	private static final int ID = 0xbd;
 	/** Set to 1 to read, 0 to write. */
 	private static final int READ = 0x80;
-	
-	//	Register map
+
+	// Register map
 	/** Reference pressure, 2s complement, 3-byte signed integer. */
 	private static final int REF_P_XL = 0x08;
 	private static final int REF_P_L = 0x09;
@@ -77,7 +79,10 @@ public class LPS25H implements ThermometerInterface, BarometerInterface {
 	private static final int INTERRUPT_CFG = 0x24;
 	/** Interrupt Source. */
 	private static final int INT_SOURCE = 0x25;
-	/** Status register. This register is updated every ODR cycle, regardless of BDU value in CTRL_REG1. */
+	/**
+	 * Status register. This register is updated every ODR cycle, regardless of BDU value in
+	 * CTRL_REG1.
+	 */
 	private static final int STATUS_REG = 0x27;
 	/** Pressure value, 2s complement, 3-byte signed integer. */
 	private static final int PRESS_OUT_XL = 0x28;
@@ -96,8 +101,8 @@ public class LPS25H implements ThermometerInterface, BarometerInterface {
 	/** Pressure offset, 2s-complement signed 2-byte integer. */
 	private static final int RPDS_L = 0x39;
 	private static final int RPDS_H = 0x3a;
-	
-	/*
+
+	/*-
 	 * Flags for pressure and temperature resolution configuration.
 	 * Bit:   3     2     1     0
 	 * Use: AVGP1 AVGP0 AVGT1 AVGT0
@@ -120,8 +125,8 @@ public class LPS25H implements ThermometerInterface, BarometerInterface {
 	private static final byte RC_TEMP_16_SAMPLES = 0b01;
 	private static final byte RC_TEMP_32_SAMPLES = 0b10;
 	private static final byte RC_TEMP_64_SAMPLES = 0b11;
-	
-	/*
+
+	/*-
 	 * Flags for Control Register 1
 	 *   [7] PD: Power down control (0: power down mode, 1: active mode)
 	 * [6:4] ODR2, ODR1, ODR0: output data rate selection
@@ -132,33 +137,41 @@ public class LPS25H implements ThermometerInterface, BarometerInterface {
 	 *   [0] SIM: SPI Serial Interface Mode selection. (0: 4-wire interface; 1: 3-wire interface)
 	 */
 	private static final byte CR1_PD_CONTROL_BIT = 7;
-	/** The PD bit is used to turn on the device. The device is in power-down mode when
-	 * PD = ?0? (default value after boot). The device is active when PD is set to ?1?. */
+	/**
+	 * The PD bit is used to turn on the device. The device is in power-down mode when PD =
+	 * ?0? (default value after boot). The device is active when PD is set to ?1?.
+	 */
 	private static final byte CR1_PD_CONTROL = (byte) (1 << CR1_PD_CONTROL_BIT);
 	private static final byte CR1_ODR_ONE_SHOT = 0b000 << 4;
-	private static final byte CR1_ODR_1HZ      = 0b001 << 4;
-	private static final byte CR1_ODR_7HZ      = 0b010 << 4;
-	private static final byte CR1_ODR_12_5HZ   = 0b011 << 4;
-	private static final byte CR1_ODR_25HZ     = 0b100 << 4;
+	private static final byte CR1_ODR_1HZ = 0b001 << 4;
+	private static final byte CR1_ODR_7HZ = 0b010 << 4;
+	private static final byte CR1_ODR_12_5HZ = 0b011 << 4;
+	private static final byte CR1_ODR_25HZ = 0b100 << 4;
 	private static final byte CR1_DIFF_EN_BIT = 3;
-	/** Used to enable the circuitry for the computing of differential pressure output.
-	 * In default mode (DIFF_EN=?0?) the circuitry is turned off. It is suggested to turn
-	 * on the circuitry only after the configuration of REF_P_x and THS_P_x. */
+	/**
+	 * Used to enable the circuitry for the computing of differential pressure output. In
+	 * default mode (DIFF_EN=?0?) the circuitry is turned off. It is suggested to turn on the
+	 * circuitry only after the configuration of REF_P_x and THS_P_x.
+	 */
 	private static final byte CR1_DIFF_EN = 1 << CR1_DIFF_EN_BIT;
 	private static final byte CR1_BDU_BIT = 2;
 	/** (0: continuous update; 1: output registers not updated until MSB and LSB reading) */
 	private static final byte CR1_BDU = 1 << CR1_BDU_BIT;
 	private static final byte CR1_RESET_AZ_BIT = 1;
-	/** Used to Reset AutoZero function. Reset REF_P reg (@0x08..0A) set pressure
-	 * reference to default value RPDS reg(0x39/3A). RESET_AZ is self cleared. */
+	/**
+	 * Used to Reset AutoZero function. Reset REF_P reg (@0x08..0A) set pressure reference to
+	 * default value RPDS reg(0x39/3A). RESET_AZ is self cleared.
+	 */
 	private static final byte CR1_RESET_AZ = 1 << CR1_RESET_AZ_BIT;
 	private static final byte CR1_SIM_BIT = 1;
-	/** Selects the SPI serial interface mode.
+	/*-
+	 * Selects the SPI serial interface mode.
 	 * 0: (default value) 4-wire SPI interface mode selected.
-	 * 1: 3-wire SPI interface mode selected. */
+	 * 1: 3-wire SPI interface mode selected.
+	 */
 	private static final byte CR1_SIM = 1 << CR1_SIM_BIT;
-	
-	/*
+
+	/*-
 	 * Flags for Control Register 2
 	 * [7] BOOT: Reboot memory content. Default value: 0
 	 *      (0: normal mode; 1: reboot memory content) Self-clearing upon completion)
@@ -193,8 +206,8 @@ public class LPS25H implements ThermometerInterface, BarometerInterface {
 	private static final byte CR2_AUTOZERO_EN = (byte) (1 << CR2_AUTOZERO_EN_BIT);
 	private static final byte CR2_ONESHOT_EN_BIT = 0;
 	private static final byte CR2_ONESHOT_EN = (byte) (1 << CR2_ONESHOT_EN_BIT);
-	
-	/*
+
+	/*-
 	 * Flags for Control Register 3
 	 *   [7]  INT_H_L: Interrupt active high, low. Default value: 0
 	 *        (0: active high; 1: active low)
@@ -208,8 +221,8 @@ public class LPS25H implements ThermometerInterface, BarometerInterface {
 	 *   1      0    Pressure low (P_low)
 	 *   1      1    Pressure low OR high 
 	 */
-	
-	/*
+
+	/*-
 	 * Flags for Control Register 4
 	 * [7:4]  Reserved: keep these bits at 0
 	 *   [3]  P1_EMPTY: Empty signal on INT1 pin
@@ -217,8 +230,8 @@ public class LPS25H implements ThermometerInterface, BarometerInterface {
 	 *   [1]  P1_OVERRUN: Overrun signal on INT1 pin
 	 *   [0]  P1_DRDY: Data ready signal on INT1 pin
 	 */
-	
-	/*
+
+	/*-
 	 * Flags for Interrupt Configuration
 	 * [7:3]  RESERVED
 	 *   [2]  LIR: Latch Interrupt request into INT_SOURCE register. Default value: 0.
@@ -230,8 +243,8 @@ public class LPS25H implements ThermometerInterface, BarometerInterface {
 	 *        (0: disable interrupt request;
 	 *         1:enable interrupt request on measured differential pressure value higher than preset threshold)
 	 */
-	
-	/*
+
+	/*-
 	 * Flags for Interrupt Source
 	 * [7:3]  Reserved: keep these bits at 0 
 	 *   [2]  IA: Interrupt Active.
@@ -241,8 +254,8 @@ public class LPS25H implements ThermometerInterface, BarometerInterface {
 	 *   [0]  PH: Differential pressure High.
 	 *        (0: no interrupt has been generated; 1: High differential pressure event has occurred)
 	 */
-	
-	/*
+
+	/*-
 	 * Flags for Status Register
 	 *   [5]  P_OR: Pressure data overrun. Default value: 0
 	 *        (0: no overrun has occurred;
@@ -262,8 +275,8 @@ public class LPS25H implements ThermometerInterface, BarometerInterface {
 	private static final byte SR_P_DA = 1 << SR_P_DA_BIT;
 	private static final byte SR_T_DA_BIT = 0;
 	private static final byte SR_T_DA = 1 << SR_T_DA_BIT;
-	
-	/*
+
+	/*-
 	 * Flags for FIFO Control
 	 * [7:5]  F_MODE2-0: FIFO mode selection.
 	 * [4:0]  WTM_POINT4-0 : FIFO threshold watermark level setting.
@@ -272,28 +285,28 @@ public class LPS25H implements ThermometerInterface, BarometerInterface {
 	private static final byte FC_BYPASS_MODE = 0b000 << 5;
 	/** FIFO MODE. Stops collecting data when full. */
 	private static final byte FC_FIFO_MODE = 0b001 << 5;
-	/**  STREAM MODE: Keep the newest measurements in the FIFO. */
+	/** STREAM MODE: Keep the newest measurements in the FIFO. */
 	private static final byte FC_STREAM_MODE = 0b010 << 5;
 	/** STREAM MODE until trigger deasserted, then change to FIFO MODE. */
 	private static final byte FC_STREAM_THEN_FIFO_MODE = 0b011 << 5;
 	/** BYPASS MODE until trigger deasserted, then change to STREAM MODE. */
 	private static final byte FC_BYPASS_THEN_STREAM_MODE = (byte) (0b100 << 5);
-	/**  FIFO_MEAN MODE: FIFO is used to generate a running average filtered pressure. */
+	/** FIFO_MEAN MODE: FIFO is used to generate a running average filtered pressure. */
 	private static final byte FC_FIFO_MEAN_MODE = (byte) (0b110 << 5);
 	/** BYPASS mode until trigger deasserted, then change to FIFO MODE. */
 	private static final byte FC_BYPASS_THEN_FIFO_MODE = (byte) (0b111 << 5);
 	/** 2 samples moving average. */
-	private static final byte FC_WTM_2_SAMPLES  = 0b00001;
+	private static final byte FC_WTM_2_SAMPLES = 0b00001;
 	/** 4 samples moving average. */
-	private static final byte FC_WTM_4_SAMPLES  = 0b00011;
+	private static final byte FC_WTM_4_SAMPLES = 0b00011;
 	/** 8 samples moving average. */
-	private static final byte FC_WTM_8_SAMPLES  = 0b00111;
+	private static final byte FC_WTM_8_SAMPLES = 0b00111;
 	/** 16 samples moving average. */
 	private static final byte FC_WTM_16_SAMPLES = 0b01111;
 	/** 32 samples moving average. */
 	private static final byte FC_WTM_32_SAMPLES = 0b11111;
-	
-	private I2CDevice device;
+
+	private I2CDeviceInterface device;
 
 	public LPS25H() {
 		this(I2CConstants.CONTROLLER_1, DEFAULT_DEVICE_ADDRESS0);
@@ -312,7 +325,7 @@ public class LPS25H implements ThermometerInterface, BarometerInterface {
 		// Enable the FIFO
 		device.writeByteData(CTRL_REG2, CR2_FIFO_EN);
 	}
-	
+
 	@Override
 	public float getPressure() {
 		byte status = device.readByteData(STATUS_REG);
@@ -320,15 +333,15 @@ public class LPS25H implements ThermometerInterface, BarometerInterface {
 			Logger.warn("Pressure data not available");
 			return -1;
 		}
-		
+
 		byte[] raw_data = new byte[3];
 		device.readI2CBlockData(PRESS_OUT_XL | READ, raw_data);
-		
+
 		int raw_pressure = raw_data[2] << 16 | (raw_data[1] & 0xff) << 8 | (raw_data[0] & 0xff);
-		
+
 		return (float) (raw_pressure / PRESSURE_SCALE);
 	}
-	
+
 	@Override
 	public float getTemperature() {
 		byte status = device.readByteData(STATUS_REG);
@@ -336,9 +349,9 @@ public class LPS25H implements ThermometerInterface, BarometerInterface {
 			Logger.warn("Temperature data not available");
 			return -1;
 		}
-		
+
 		short raw_temp = device.readShort(TEMP_OUT_L | READ);
-		
+
 		return (float) (raw_temp / 480.0 + 42.5);
 	}
 

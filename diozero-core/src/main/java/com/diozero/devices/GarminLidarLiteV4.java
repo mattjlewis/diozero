@@ -36,6 +36,7 @@ import java.nio.ByteOrder;
 import org.tinylog.Logger;
 
 import com.diozero.api.I2CDevice;
+import com.diozero.api.I2CDeviceInterface;
 import com.diozero.api.RuntimeIOException;
 import com.diozero.api.RuntimeInterruptedException;
 import com.diozero.util.BitManipulation;
@@ -84,18 +85,17 @@ public class GarminLidarLiteV4 implements DistanceSensorInterface {
 
 	public enum PowerMode {
 		/**
-		 * The coprocessor is always OFF unless a distance measurement is requested or a
-		 * register access is required.
+		 * The coprocessor is always OFF unless a distance measurement is requested or a register
+		 * access is required.
 		 */
 		ASYNCHRONOUS(ASYNC_POWER_MODE),
 		/**
-		 * Distance measurement is tied to the ANT channel period. The coprocessor is
-		 * turned on and off as required.
+		 * Distance measurement is tied to the ANT channel period. The coprocessor is turned on
+		 * and off as required.
 		 */
 		SYNCHRONOUS(SYNC_POWER_MODE),
 		/**
-		 * The coprocessor is not turned off, allowing for the fastest measurements
-		 * possible.
+		 * The coprocessor is not turned off, allowing for the fastest measurements possible.
 		 */
 		ALWAYS_ON(ALWAYS_ON_POWER_MODE);
 
@@ -226,13 +226,11 @@ public class GarminLidarLiteV4 implements DistanceSensorInterface {
 		/** 1: Device is busy taking a measurement or powering on */
 		public static final byte BUSY_BIT = 0;
 		/**
-		 * 1: Signal data in correlation record has reached the maximum value before
-		 * overflow
+		 * 1: Signal data in correlation record has reached the maximum value before overflow
 		 */
 		public static final byte SIGNAL_OVERFLOW_BIT = 1;
 		/**
-		 * 1: Reference data in correlation record has reached the maximum value before
-		 * overflow
+		 * 1: Reference data in correlation record has reached the maximum value before overflow
 		 */
 		public static final byte REFDATA_OVERFLOW_BIT = 2;
 		/** 1: device is in low power mode */
@@ -264,9 +262,8 @@ public class GarminLidarLiteV4 implements DistanceSensorInterface {
 		/**
 		 * Signal overflow flag.
 		 *
-		 * @return true if the signal data in correlation record has reached the maximum
-		 *         value before overflow (this occurs with a strong received signal
-		 *         strength)
+		 * @return true if the signal data in correlation record has reached the maximum value
+		 *         before overflow (this occurs with a strong received signal strength)
 		 */
 		public boolean isSignalOverflow() {
 			return BitManipulation.isBitSet(value, SIGNAL_OVERFLOW_BIT);
@@ -275,9 +272,8 @@ public class GarminLidarLiteV4 implements DistanceSensorInterface {
 		/**
 		 * Reference overflow flag.
 		 *
-		 * @return reue if reference data in correlation record has reached the maximum
-		 *         value before overflow (this occurs when taking measurements with
-		 *         biasing enabled)
+		 * @return reue if reference data in correlation record has reached the maximum value
+		 *         before overflow (this occurs when taking measurements with biasing enabled)
 		 */
 		public boolean isReferenceDataOverflow() {
 			return BitManipulation.isBitSet(value, REFDATA_OVERFLOW_BIT);
@@ -289,8 +285,8 @@ public class GarminLidarLiteV4 implements DistanceSensorInterface {
 		 * <dt>0</dt>
 		 * <dd>Device is powered on. I2C commands can be issued at a normal rate.</dd>
 		 * <dt>1</dt>
-		 * <dd>The device is in low power mode. To allow the device to power on and
-		 * perform the I2C command, a 10ms delay after each command is recommended.</dd>
+		 * <dd>The device is in low power mode. To allow the device to power on and perform the
+		 * I2C command, a 10ms delay after each command is recommended.</dd>
 		 * </dl>
 		 *
 		 * @return true if the device is in low power mode
@@ -305,8 +301,8 @@ public class GarminLidarLiteV4 implements DistanceSensorInterface {
 		 * <dt>false</dt>
 		 * <dd>The device is performing automatic DC noise bias corrections.</dd>
 		 * <dt>true</dt>
-		 * <dd>DC noise is within tolerance, and the automatic DC noise bias corrections
-		 * are currently idle.</dd>
+		 * <dd>DC noise is within tolerance, and the automatic DC noise bias corrections are
+		 * currently idle.</dd>
 		 * </dl>
 		 *
 		 * @return the data correlation noise bias status
@@ -318,8 +314,8 @@ public class GarminLidarLiteV4 implements DistanceSensorInterface {
 		/**
 		 * Data correlation noise bias error flag.
 		 *
-		 * @return true if an error was detected in correcting DC noise bias, and
-		 *         distance measurements are expected to be inaccurate
+		 * @return true if an error was detected in correcting DC noise bias, and distance
+		 *         measurements are expected to be inaccurate
 		 */
 		public boolean isDataCorrelationNoiseBiasError() {
 			return BitManipulation.isBitSet(value, DC_ERROR_BIT);
@@ -333,7 +329,7 @@ public class GarminLidarLiteV4 implements DistanceSensorInterface {
 	private static final byte FLASH_STORAGE = 0x11;
 	private static final byte HIGH_ACCURACY_MODE_DISABLED = 0x00;
 
-	private I2CDevice device;
+	private I2CDeviceInterface device;
 
 	public GarminLidarLiteV4() {
 		device = I2CDevice.builder(DEFAULT_ADDRESS).setByteOrder(ByteOrder.LITTLE_ENDIAN).build();
@@ -386,8 +382,8 @@ public class GarminLidarLiteV4 implements DistanceSensorInterface {
 	}
 
 	/**
-	 * Resets the NVM/Flash storage information back to default settings and
-	 * executes a SoftDevice reset.
+	 * Resets the NVM/Flash storage information back to default settings and executes a
+	 * SoftDevice reset.
 	 */
 	public void factoryReset() {
 		device.writeByteData(FACTORY_RESET, 0x01);
@@ -473,19 +469,17 @@ public class GarminLidarLiteV4 implements DistanceSensorInterface {
 	 * Storage for register settings.
 	 * </p>
 	 * <p>
-	 * <strong>NOTE</strong>: Use caution when enabling flash storage. The total
-	 * number of writes and erases is limited to 10,000.
+	 * <strong>NOTE</strong>: Use caution when enabling flash storage. The total number of
+	 * writes and erases is limited to 10,000.
 	 * </p>
 	 *
 	 * <dl>
 	 * <dt>Enabled</dt>
-	 * <dd>Use RAM storage only. When the device is reset, default values are
-	 * loaded.</dd>
+	 * <dd>Use RAM storage only. When the device is reset, default values are loaded.</dd>
 	 * <dt>Disabled</dt>
-	 * <dd>Use FLASH/NVM storage. Any register that supports both read and write
-	 * operations is stored in NVM and persists over power cycles. When the device
-	 * is reset, the values stored in NVM are loaded instead of the default
-	 * values.</dd>
+	 * <dd>Use FLASH/NVM storage. Any register that supports both read and write operations is
+	 * stored in NVM and persists over power cycles. When the device is reset, the values
+	 * stored in NVM are loaded instead of the default values.</dd>
 	 * </dl>
 	 *
 	 * @param enabled whether or not to use Flash/NVM storage for register settings
@@ -495,21 +489,20 @@ public class GarminLidarLiteV4 implements DistanceSensorInterface {
 	}
 
 	/**
-	 * Get the high accuracy mode. While high accuracy mode is disabled, you can
-	 * adjust the {@link PowerMode} to {@link PowerMode#ASYNCHRONOUS Asynchronous}
-	 * or {@link PowerMode#SYNCHRONOUS Synchronous} if required.
+	 * Get the high accuracy mode. While high accuracy mode is disabled, you can adjust the
+	 * {@link PowerMode} to {@link PowerMode#ASYNCHRONOUS Asynchronous} or
+	 * {@link PowerMode#SYNCHRONOUS Synchronous} if required.
 	 *
 	 * <dl>
 	 * <dt>0x00</dt>
 	 * <dd>High accuracy mode is disabled</dd>
 	 * <dt>0x01 to 0xFF</dt>
-	 * <dd>High accuracy mode is enabled. The value is used as the number of
-	 * distance measurements to accumulate and average before returning them to the
-	 * user.</dd>
+	 * <dd>High accuracy mode is enabled. The value is used as the number of distance
+	 * measurements to accumulate and average before returning them to the user.</dd>
 	 * </dl>
 	 *
-	 * @return the number of distance measurements to accumulate and average before
-	 *         returning them to the user (0 == disabled)
+	 * @return the number of distance measurements to accumulate and average before returning
+	 *         them to the user (0 == disabled)
 	 */
 	public int getHighAccuracyMode() {
 		return device.readByteData(HIGH_ACCURACY_MODE) & 0xff;
@@ -525,24 +518,23 @@ public class GarminLidarLiteV4 implements DistanceSensorInterface {
 	}
 
 	/**
-	 * Set the high accuracy mode. While high accuracy mode is disabled, you can
-	 * adjust the {@link PowerMode} to {@link PowerMode#ASYNCHRONOUS Asynchronous}
-	 * or {@link PowerMode#SYNCHRONOUS Synchronous} if required.
+	 * Set the high accuracy mode. While high accuracy mode is disabled, you can adjust the
+	 * {@link PowerMode} to {@link PowerMode#ASYNCHRONOUS Asynchronous} or
+	 * {@link PowerMode#SYNCHRONOUS Synchronous} if required.
 	 *
 	 * <dl>
 	 * <dt>0x00</dt>
 	 * <dd>High accuracy mode is disabled</dd>
 	 * <dt>0x01 to 0xFF</dt>
-	 * <dd>Enable high accuracy mode. The value is used as the number of distance
-	 * measurements to accumulate and average before returning them to the
-	 * user.</dd>
+	 * <dd>Enable high accuracy mode. The value is used as the number of distance measurements
+	 * to accumulate and average before returning them to the user.</dd>
 	 * </dl>
 	 *
-	 * Note you must set the {@link PowerMode} to {@link PowerMode#ALWAYS_ON Always
-	 * On} before you adjust to a non-zero value.
+	 * Note you must set the {@link PowerMode} to {@link PowerMode#ALWAYS_ON Always On} before
+	 * you adjust to a non-zero value.
 	 *
-	 * @param accuracyMode the number of distance measurements to accumulate and
-	 *                     average before returning them to the user (0 == disabled)
+	 * @param accuracyMode the number of distance measurements to accumulate and average
+	 *                     before returning them to the user (0 == disabled)
 	 */
 	public void setHighAccuracyMode(int accuracyMode) {
 		if (accuracyMode < 0 || accuracyMode > 255) {
@@ -598,8 +590,8 @@ public class GarminLidarLiteV4 implements DistanceSensorInterface {
 	 *
 	 * <dl>
 	 * <dt>0x00</dt>
-	 * <dd>Use default valid measurement detection algorithm based on the peak
-	 * value, signal strength, and noise in the correlation record.</dd>
+	 * <dd>Use default valid measurement detection algorithm based on the peak value, signal
+	 * strength, and noise in the correlation record.</dd>
 	 * <dt>0x01 to 0xFF</dt>
 	 * <dd>Set simple threshold for valid measurement detection.</dd>
 	 * </dl>
@@ -620,8 +612,8 @@ public class GarminLidarLiteV4 implements DistanceSensorInterface {
 	 *
 	 * <dl>
 	 * <dt>0x00</dt>
-	 * <dd>Use default valid measurement detection algorithm based on the peak
-	 * value, signal strength, and noise in the correlation record.</dd>
+	 * <dd>Use default valid measurement detection algorithm based on the peak value, signal
+	 * strength, and noise in the correlation record.</dd>
 	 * <dt>0x01 to 0xFF</dt>
 	 * <dd>Set simple threshold for valid measurement detection.</dd>
 	 * </dl>
@@ -640,9 +632,9 @@ public class GarminLidarLiteV4 implements DistanceSensorInterface {
 	}
 
 	/**
-	 * Get the status of the quick acquisition termination flag. If enabled the
-	 * device terminates the distance measurement early if it anticipates the signal
-	 * peak in the correlation record will reach the maximum value.
+	 * Get the status of the quick acquisition termination flag. If enabled the device
+	 * terminates the distance measurement early if it anticipates the signal peak in the
+	 * correlation record will reach the maximum value.
 	 *
 	 * @return acquisition quick termination status
 	 */
@@ -655,9 +647,9 @@ public class GarminLidarLiteV4 implements DistanceSensorInterface {
 	}
 
 	/**
-	 * Set the quick acquisition termination flag. If enabled the device terminates
-	 * the distance measurement early if it anticipates the signal peak in the
-	 * correlation record will reach the maximum value.
+	 * Set the quick acquisition termination flag. If enabled the device terminates the
+	 * distance measurement early if it anticipates the signal peak in the correlation record
+	 * will reach the maximum value.
 	 *
 	 * @param enabled quick acquisition termination value
 	 */
@@ -667,20 +659,19 @@ public class GarminLidarLiteV4 implements DistanceSensorInterface {
 
 	/**
 	 * <p>
-	 * The correlation record used to calculate distance can be read from the
-	 * device. It has a bipolar wave shape, transitioning from a positive going
-	 * portion to a roughly symmetrical negative going pulse. The point where the
-	 * signal crosses zero represents the effective delay for the reference and
-	 * return signals.
+	 * The correlation record used to calculate distance can be read from the device. It has a
+	 * bipolar wave shape, transitioning from a positive going portion to a roughly
+	 * symmetrical negative going pulse. The point where the signal crosses zero represents
+	 * the effective delay for the reference and return signals.
 	 * </p>
 	 * <p>
 	 * Process:
 	 * </p>
 	 * <ol>
-	 * <li>Take a distance reading (there is no correlation record without at least
-	 * one distance reading being taken)</li>
-	 * <li>For as many points as you want to read from the record (max is 192) read
-	 * the two byte signed correlation data point.</li>
+	 * <li>Take a distance reading (there is no correlation record without at least one
+	 * distance reading being taken)</li>
+	 * <li>For as many points as you want to read from the record (max is 192) read the two
+	 * byte signed correlation data point.</li>
 	 * </ol>
 	 *
 	 * @param numberOfReadings The number of readings to take up to a maximum of 192
@@ -709,8 +700,7 @@ public class GarminLidarLiteV4 implements DistanceSensorInterface {
 	}
 
 	/**
-	 * Selects one of several preset configurations as per the Garmin Arduino
-	 * library <a href=
+	 * Selects one of several preset configurations as per the Garmin Arduino library <a href=
 	 * "https://github.com/garmin/LIDARLite_Arduino_Library/blob/master/src/LIDARLite_v4LED.cpp#L55">configure</a>
 	 * function.
 	 *
