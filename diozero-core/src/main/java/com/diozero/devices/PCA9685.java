@@ -51,6 +51,7 @@ import com.diozero.internal.spi.PwmOutputDeviceFactoryInterface;
 import com.diozero.internal.spi.ServoDeviceFactoryInterface;
 import com.diozero.sbc.BoardPinInfo;
 import com.diozero.util.BitManipulation;
+import com.diozero.util.RangeUtil;
 import com.diozero.util.SleepUtil;
 
 /**
@@ -64,7 +65,9 @@ public class PCA9685 extends AbstractDeviceFactory
 	public static final int DEFAULT_ADDRESS = 0x40;
 	private static final String DEVICE_NAME = "PCA9685";
 	private static final int NUM_CHANNELS = 16;
-	private static final int RANGE = (int) Math.pow(2, 12);
+	// 4095
+	private static final int RANGE = RangeUtil.resolutionEndInclusive(12);
+	private static final int MAX_VALUE = RangeUtil.resolutionEndExclusive(12);
 
 	private static final int CLOCK_FREQ = 25_000_000; // 25MHz default osc clock
 
@@ -151,7 +154,8 @@ public class PCA9685 extends AbstractDeviceFactory
 	/**
 	 * Sets the PWM frequency
 	 *
-	 * @param pwmFrequency desired frequency. 40Hz to 1000Hz using internal 25MHz oscillator
+	 * @param pwmFrequency desired frequency. Valid range is 40Hz to 1,000Hz using internal
+	 *                     25MHz oscillator
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
 	private void setPwmFreq(int pwmFrequency) throws RuntimeIOException {
@@ -162,20 +166,23 @@ public class PCA9685 extends AbstractDeviceFactory
 
 		// TODO Check if there are any devices currently provisioned
 
-		float prescale_flt = (((float) CLOCK_FREQ) / RANGE / pwmFrequency) - 1;
-		int prescale_int = Math.round(prescale_flt);
-		Logger.debug("Setting PWM frequency to {} Hz, float pre-scale: {}, int prescale {}", pwmFrequency,
-				String.format("%.2f", prescale_flt), prescale_int);
+		final float prescale_flt = (((float) CLOCK_FREQ) / RANGE / pwmFrequency) - 1;
+		final int prescale_int = Math.round(prescale_flt);
+		Logger.debug("Setting PWM frequency to {} Hz, float pre-scale: {0.##}, int prescale {}",
+				Integer.valueOf(pwmFrequency), Float.valueOf(prescale_flt), Integer.valueOf(prescale_int));
 
-		byte oldmode = device.readByteData(MODE1);
-		device.writeByteData(MODE1, (byte) ((oldmode & 0x7F) | SLEEP_MASK)); // Enter low power mode (set the sleep
-																				// bit)
+		final byte oldmode = device.readByteData(MODE1);
+		// Enter low power mode (set the sleep bit)
+		device.writeByteData(MODE1, (byte) ((oldmode & 0x7F) | SLEEP_MASK));
 		device.writeByteData(PRESCALE, (byte) (prescale_int));
 		boardPwmFrequency = pwmFrequency;
 		periodUs = 1_000_000.0 / pwmFrequency;
-		device.writeByteData(MODE1, oldmode); // Restore the previous mode1 value
-		SleepUtil.sleepMillis(1); // Wait min 500us for the oscillator to stabilise
-		device.writeByteData(MODE1, (byte) (oldmode | RESTART_MASK)); // Set restart enabled
+		// Restore the previous mode1 value
+		device.writeByteData(MODE1, oldmode);
+		// Wait min 500us for the oscillator to stabilise
+		SleepUtil.sleepMillis(1);
+		// Set restart enabled
+		device.writeByteData(MODE1, (byte) (oldmode | RESTART_MASK));
 	}
 
 	private int[] getPwm(int channel) throws RuntimeIOException {
@@ -189,7 +196,7 @@ public class PCA9685 extends AbstractDeviceFactory
 		short off_h = device.readUByte(LED0_OFF_H + 4 * channel);
 		int off = (off_h << 8) | off_l;
 
-		Logger.debug("channel={}, on={}, off={}", channel, on, off);
+		Logger.debug("channel={}, on={}, off={}", Integer.valueOf(channel), Integer.valueOf(on), Integer.valueOf(off));
 
 		return new int[] { on, off };
 	}
@@ -239,19 +246,20 @@ public class PCA9685 extends AbstractDeviceFactory
 	}
 
 	private static void validateOnOff(int on, int off) {
-		if (on < 0 || on >= RANGE) {
-			throw new IllegalArgumentException(String.format("Error: on (" + on + ") must be 0.." + (RANGE - 1)));
+		if (on < 0 || on > MAX_VALUE) {
+			throw new IllegalArgumentException(String.format("Error: on (" + on + ") must be 0.." + MAX_VALUE));
 		}
-		if (off < 0 || off >= RANGE) {
-			throw new IllegalArgumentException(String.format("Error: off (" + off + ") must be 0.." + (RANGE - 1)));
+		if (off < 0 || off > MAX_VALUE) {
+			throw new IllegalArgumentException(String.format("Error: off (" + off + ") must be 0.." + MAX_VALUE));
 		}
 		// Off must be after on
 		if (off < on) {
 			throw new IllegalArgumentException("Off value (" + off + ") must be > on value (" + on + ")");
 		}
 		// Total must be < 4096
-		if (on + off >= RANGE) {
-			throw new IllegalArgumentException(String.format("Error: on (%d) + off (%d) must be < %d", on, off, RANGE));
+		if (on + off > MAX_VALUE) {
+			throw new IllegalArgumentException(String.format("Error: on (%d) + off (%d) must be < %d",
+					Integer.valueOf(on), Integer.valueOf(off), Integer.valueOf(MAX_VALUE)));
 		}
 	}
 
@@ -298,7 +306,7 @@ public class PCA9685 extends AbstractDeviceFactory
 	}
 
 	public void closeChannel(int channel) throws RuntimeIOException {
-		Logger.trace("closeChannel({})", channel);
+		Logger.trace("closeChannel({})", Integer.valueOf(channel));
 		setPwm(channel, 0, 0);
 	}
 
@@ -308,9 +316,11 @@ public class PCA9685 extends AbstractDeviceFactory
 		// Note pwmFrequency is ignored; make sure you setup the board's PWM frequency
 		// first
 		if (pwmFrequency != boardPwmFrequency) {
-			Logger.warn("Specified PWM frequency ({}) is different to that configured for the board ({})"
-					+ "; this device has a common PWM frequency that is used for all outputs"
-					+ " - the requested frequency will be ignored", pwmFrequency, boardPwmFrequency);
+			Logger.warn(
+					"Specified PWM frequency ({}) is different to that configured for the board ({})"
+							+ "; this device has a common PWM frequency that is used for all outputs"
+							+ " - the requested frequency will be ignored",
+					Integer.valueOf(pwmFrequency), Integer.valueOf(boardPwmFrequency));
 		}
 		return new PCA9685ServoOrPwmOutputDevice(this, key, DeviceMode.PWM_OUTPUT, pinInfo.getDeviceNumber(),
 				initialValue);
@@ -322,9 +332,11 @@ public class PCA9685 extends AbstractDeviceFactory
 		// Note frequency is ignored; make sure you setup the board's PWM frequency
 		// first
 		if (frequency != boardPwmFrequency) {
-			Logger.warn("Specified Servo frequency ({}) is different to that configured for the board ({})"
-					+ "; this device has a common PWM frequency that is used for all outputs"
-					+ " - the requested frequency will be ignored", frequency, boardPwmFrequency);
+			Logger.warn(
+					"Specified Servo frequency ({}) is different to that configured for the board ({})"
+							+ "; this device has a common PWM frequency that is used for all outputs"
+							+ " - the requested frequency will be ignored",
+					Integer.valueOf(frequency), Integer.valueOf(boardPwmFrequency));
 		}
 		return new PCA9685ServoOrPwmOutputDevice(this, key, DeviceMode.SERVO, pinInfo.getDeviceNumber(),
 				(float) (initialPulseWidthUs / periodUs));
@@ -339,7 +351,8 @@ public class PCA9685 extends AbstractDeviceFactory
 	 */
 	public float getValue(int channel) throws RuntimeIOException {
 		int[] on_off = getPwm(channel);
-		return (on_off[1] - on_off[0]) / (float) RANGE;
+		// return (on_off[1] - on_off[0]) / (float) MAX_VALUE;
+		return RangeUtil.map(on_off[1] - on_off[0], MAX_VALUE, 1f);
 	}
 
 	/**
@@ -353,8 +366,8 @@ public class PCA9685 extends AbstractDeviceFactory
 		if (value < 0 || value > 1) {
 			throw new IllegalArgumentException("PWM value must 0..1, you requested " + value);
 		}
-		int off = Math.round(value * RANGE);
-		setPwm(channel, 0, off);
+		// int off = Math.round(value * MAX_VALUE);
+		setPwm(channel, 0, RangeUtil.map(value, 1, MAX_VALUE));
 	}
 
 	public int getDutyUs(int channel) {
@@ -373,10 +386,11 @@ public class PCA9685 extends AbstractDeviceFactory
 	public void setDutyUs(int channel, int dutyUs) throws RuntimeIOException {
 		// TODO Bounds checking
 
-		int off = (int) Math.round((dutyUs / periodUs) * RANGE);
+		// int off = (int) Math.round((dutyUs / periodUs) * MAX_VALUE);
+		int off = (int) Math.round(RangeUtil.map(dutyUs, periodUs, MAX_VALUE));
 		if (Logger.isDebugEnabled()) {
-			Logger.debug("Requested duty value: {}, Scale: {} microseconds per bit, Off: {}",
-					String.format("%.2f", (double) dutyUs), String.format("%.4f", periodUs / RANGE), off);
+			Logger.debug("Requested duty value: {}, Scale: {0.####} microseconds per bit, Off: {}",
+					Integer.valueOf(dutyUs), Double.valueOf(periodUs / MAX_VALUE), Integer.valueOf(off));
 		}
 
 		setPwm(channel, 0, off);
