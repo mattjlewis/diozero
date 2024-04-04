@@ -32,8 +32,6 @@ package com.diozero.util;
  */
 
 public class RangeUtil {
-	private static final boolean DEFAULT_MAP_CONSTRAIN = true;
-
 	public static int constrain(int value, int min, int max) {
 		return Math.min(max, Math.max(value, min));
 	}
@@ -47,8 +45,68 @@ public class RangeUtil {
 	}
 
 	/**
-	 * Map a number from one range to another. Based on Arduino's map(). Example:
-	 * <code>RangeUtil.map(500, 0, 1000, 0, 255);</code>
+	 * Map a number from one range to another and constrain the resulting value to be within
+	 * the target range. Assumes both ranges start at 0. Based on Arduino's map(). Example:
+	 * <code>RangeUtil.map(500, 1000, 256);</code> returns 128.
+	 *
+	 * @param value    value to map
+	 * @param fromHigh high end of originating range
+	 * @param toHigh   high end of target range
+	 * @return mapped value
+	 */
+	public static int map(int value, int fromHigh, int toHigh) {
+		return map(value, 0, fromHigh, 0, toHigh, true);
+	}
+
+	/**
+	 * Map a number from one range to another. Assumes both ranges start at 0. Based on
+	 * Arduino's map(). Example: <code>RangeUtil.map(1500, 1000, 256, false);</code> returns
+	 * 384 (128+256).
+	 *
+	 * @param value     value to map
+	 * @param fromHigh  high end of originating range
+	 * @param toHigh    high end of target range
+	 * @param constrain whether to constrain the returned value to the specified range
+	 * @return mapped value
+	 */
+	public static int map(int value, int fromHigh, int toHigh, boolean constrain) {
+		return map(value, 0, fromHigh, 0, toHigh, constrain);
+	}
+
+	/**
+	 * Map a number from one range to another and constrain the resulting value to be within
+	 * the target range. Based on Arduino's map(). Example:
+	 * <code>RangeUtil.map(0, -1000, 1000, 0, 256);</code> returns 128.
+	 *
+	 * @param value    value to map
+	 * @param fromLow  low end of originating range
+	 * @param fromHigh high end of originating range
+	 * @param toLow    low end of target range
+	 * @param toHigh   high end of target range
+	 * @return mapped value
+	 */
+	public static int map(int value, int fromLow, int fromHigh, int toLow, int toHigh) {
+		return map(value, fromLow, fromHigh, toLow, toHigh, true);
+	}
+
+	/**
+	 * Map a number from one range to another and constrain the resulting value to be within
+	 * the target range. Assumes both ranges start at 0. Based on Arduino's map(). Example:
+	 * <code>RangeUtil.map(0.5f, 1f, 256);</code> returns 128.
+	 *
+	 * @param value    value to map
+	 * @param fromHigh high end of originating range
+	 * @param toHigh   high end of target range
+	 * @return mapped value
+	 */
+	public static int map(float value, float fromHigh, int toHigh) {
+		return map(value, 0, fromHigh, 0, toHigh, true);
+	}
+
+	/**
+	 * Map a number from one range to another and constrain the resulting value to be within
+	 * the target range. Based on Arduino's map(). Example:
+	 * <code>RangeUtil.map(1.5f, 1f, 2f, 0, 256);</code> returns 128.
 	 *
 	 * @param value    value to map
 	 * @param fromLow  low end of originating range
@@ -58,20 +116,19 @@ public class RangeUtil {
 	 * @return mapped value
 	 */
 	public static int map(float value, float fromLow, float fromHigh, int toLow, int toHigh) {
-		return map(value, fromLow, fromHigh, toLow, toHigh, DEFAULT_MAP_CONSTRAIN);
+		return map(value, fromLow, fromHigh, toLow, toHigh, true);
 	}
 
 	/**
 	 * Map a number from one range to another. Based on Arduino's map(). Example:
-	 * <code>RangeUtil.map(500, 0, 1000, 0, 255, true);</code>
+	 * <code>RangeUtil.map(0.5f, 1f, 2f, 0, 256, false);</code> returns -128.
 	 *
 	 * @param value     value to map
 	 * @param fromLow   low end of originating range
 	 * @param fromHigh  high end of originating range
 	 * @param toLow     low end of target range
 	 * @param toHigh    high end of target range
-	 * @param constrain whether to constrain the returned value to the speceified
-	 *                  range
+	 * @param constrain whether to constrain the returned value to the specified range
 	 * @return mapped value
 	 */
 	public static int map(float value, float fromLow, float fromHigh, int toLow, int toHigh, boolean constrain) {
@@ -83,8 +140,23 @@ public class RangeUtil {
 	}
 
 	/**
-	 * Map a number from one range to another. Based on Arduino's map(). Example:
-	 * <code>RangeUtil.map(500, 0, 1000, 0, 255);</code>
+	 * Map a number from one range to another and constrain the resulting value to be within
+	 * the target range. Assumes both ranges start at zero. Based on Arduino's map(). Example:
+	 * <code>RangeUtil.map(0.5f, 1f, 256f);</code> returns 128f.
+	 *
+	 * @param value    value to map
+	 * @param fromHigh high end of originating range
+	 * @param toHigh   high end of target range
+	 * @return mapped value
+	 */
+	public static float map(float value, float fromHigh, float toHigh) {
+		return map(value, 0, fromHigh, 0, toHigh, true);
+	}
+
+	/**
+	 * Map a number from one range to another and constrain the resulting value to be within
+	 * the target range. Based on Arduino's map(). Example:
+	 * <code>RangeUtil.map(1.5f, 1f, 2f, 0f, 256f);</code> returns 128f.
 	 *
 	 * @param value    value to map
 	 * @param fromLow  low end of originating range
@@ -94,20 +166,19 @@ public class RangeUtil {
 	 * @return mapped value
 	 */
 	public static float map(float value, float fromLow, float fromHigh, float toLow, float toHigh) {
-		return map(value, fromLow, fromHigh, toLow, toHigh, DEFAULT_MAP_CONSTRAIN);
+		return map(value, fromLow, fromHigh, toLow, toHigh, true);
 	}
 
 	/**
 	 * Map a number from one range to another. Based on Arduino's map(). Example:
-	 * <code>RangeUtil.map(500, 0, 1000, 0, 255);</code>
+	 * <code>RangeUtil.map(500, 0, 1000, 0, 256);</code> returns 128.
 	 *
 	 * @param value     value to map
 	 * @param fromLow   low end of originating range
 	 * @param fromHigh  high end of originating range
 	 * @param toLow     low end of target range
 	 * @param toHigh    high end of target range
-	 * @param constrain whether to constrain the returned value to the speceified
-	 *                  range
+	 * @param constrain whether to constrain the returned value to the specified range
 	 * @return mapped value
 	 */
 	public static float map(float value, float fromLow, float fromHigh, float toLow, float toHigh, boolean constrain) {
@@ -119,8 +190,23 @@ public class RangeUtil {
 	}
 
 	/**
-	 * Map a number from one range to another. Based on Arduino's map(). Example:
-	 * <code>RangeUtil.map(500, 0, 1000, 0, 255);</code>
+	 * Map a number from one range to another and constrain the resulting value to be within
+	 * the target range. Assumes both ranges start at zero. Based on Arduino's map(). Example:
+	 * <code>RangeUtil.map(500, 1000, 256);</code> returns 128
+	 *
+	 * @param value    value to map
+	 * @param fromHigh high end of originating range
+	 * @param toHigh   high end of target range
+	 * @return mapped value
+	 */
+	public static double map(double value, double fromHigh, double toHigh) {
+		return map(value, 0, fromHigh, 0, toHigh, true);
+	}
+
+	/**
+	 * Map a number from one range to another and constrain the resulting value to be within
+	 * the target range. Based on Arduino's map(). Example:
+	 * <code>RangeUtil.map(500, 0, 1000, 0, 256);</code> returns 128.
 	 *
 	 * @param value    value to map
 	 * @param fromLow  low end of originating range
@@ -130,9 +216,21 @@ public class RangeUtil {
 	 * @return mapped value
 	 */
 	public static double map(double value, double fromLow, double fromHigh, double toLow, double toHigh) {
-		return map(value, fromLow, fromHigh, toLow, toHigh, DEFAULT_MAP_CONSTRAIN);
+		return map(value, fromLow, fromHigh, toLow, toHigh, true);
 	}
 
+	/**
+	 * Map a number from one range to another. Based on Arduino's map(). Example:
+	 * <code>RangeUtil.map(500, 0, 1000, 0, 256);</code> returns 128.
+	 *
+	 * @param value     value to map
+	 * @param fromLow   low end of originating range
+	 * @param fromHigh  high end of originating range
+	 * @param toLow     low end of target range
+	 * @param toHigh    high end of target range
+	 * @param constrain whether to constrain the returned value to the specified range
+	 * @return mapped value
+	 */
 	public static double map(double value, double fromLow, double fromHigh, double toLow, double toHigh,
 			boolean constrain) {
 		double result = (value - fromLow) * (toHigh - toLow) / (fromHigh - fromLow) + toLow;
@@ -140,5 +238,13 @@ public class RangeUtil {
 			result = constrain(result, toLow, toHigh);
 		}
 		return result;
+	}
+
+	public static int resolutionEndInclusive(int numBits) {
+		return 1 << numBits;
+	}
+
+	public static int resolutionEndExclusive(int numBits) {
+		return resolutionEndInclusive(numBits) - 1;
 	}
 }

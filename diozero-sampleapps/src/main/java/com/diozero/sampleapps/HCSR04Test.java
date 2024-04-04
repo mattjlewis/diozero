@@ -65,7 +65,7 @@ public class HCSR04Test {
 		try (HCSR04 device = new HCSR04(triggerPin, echoPin)) {
 			for (int i = 0; i < ITERATIONS; i++) {
 				double distance_cm = device.getDistanceCm();
-				Logger.info("Distance = {} cm", String.format("%.3f", Double.valueOf(distance_cm)));
+				Logger.info("Distance = {0.###} cm", Double.valueOf(distance_cm));
 				SleepUtil.sleepSeconds(0.5);
 			}
 		} catch (RuntimeIOException ex) {

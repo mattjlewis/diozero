@@ -77,7 +77,7 @@ public class TMP36Test {
 		try (McpAdc adc = new McpAdc(type, chipSelect, vRef); TMP36 tmp36 = new TMP36(adc, pin, tempOffset)) {
 			for (int i = 0; i < ITERATIONS; i++) {
 				double tmp = tmp36.getTemperature();
-				Logger.info("Temperature: {}", String.format("%.2f", Double.valueOf(tmp)));
+				Logger.info("Temperature: {0.##}", Double.valueOf(tmp));
 				SleepUtil.sleepSeconds(.5);
 			}
 		} catch (RuntimeIOException ioe) {

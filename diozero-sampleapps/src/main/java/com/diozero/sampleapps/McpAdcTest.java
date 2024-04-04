@@ -75,7 +75,7 @@ public class McpAdcTest {
 		try (McpAdc adc = new McpAdc(type, controller, chipSelect)) {
 			for (int i = 0; i < ITERATIONS; i++) {
 				float v = adc.getValue(pin);
-				Logger.info("Value: {}", String.format("%.2f", Float.valueOf(v)));
+				Logger.info("Value: {0.##}", Float.valueOf(v));
 				SleepUtil.sleepSeconds(0.5);
 			}
 		} catch (RuntimeIOException ioe) {

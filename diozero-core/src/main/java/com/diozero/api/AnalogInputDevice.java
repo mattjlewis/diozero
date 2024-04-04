@@ -44,11 +44,10 @@ import com.diozero.util.DiozeroScheduler;
 
 /**
  * <p>
- * The AnalogInputDevice base class encapsulates logic for interfacing with
- * analog devices. This class provides access to unscaled (-1..1) and scaled
- * (e.g. voltage, temperature, distance) readings. For scaled readings is
- * important that the device factory is configured correctly - all raw analog
- * readings are normalised (i.e. -1..1).
+ * The AnalogInputDevice base class encapsulates logic for interfacing with analog
+ * devices. This class provides access to unscaled (-1..1) and scaled (e.g. voltage,
+ * temperature, distance) readings. For scaled readings is important that the device
+ * factory is configured correctly - all raw analog readings are normalised (i.e. -1..1).
  * </p>
  * <p>
  * Note: The Raspberry Pi does not natively support analog input devices, see
@@ -69,7 +68,7 @@ import com.diozero.util.DiozeroScheduler;
  * try (McpAdc adc = new McpAdc(type, chipSelect); TMP36 tmp36 = new TMP36(adc, pin, vRef, tempOffset)) {
  * 	for (int i = 0; i < ITERATIONS; i++) {
  * 		double tmp = tmp36.getTemperature();
- * 		Logger.info("Temperature: {}", String.format("%.2f", Double.valueOf(tmp)));
+ * 		Logger.info("Temperature: {0.##}", Double.valueOf(tmp));
  * 		SleepUtil.sleepSeconds(.5);
  * 	}
  * }
@@ -225,8 +224,7 @@ public class AnalogInputDevice extends GpioInputDevice<AnalogInputEvent> impleme
 	}
 
 	/**
-	 * Get the unscaled normalised value in the range 0..1 (if unsigned) or -1..1
-	 * (if signed)
+	 * Get the unscaled normalised value in the range 0..1 (if unsigned) or -1..1 (if signed)
 	 * 
 	 * @return the unscaled value
 	 * @throws RuntimeIOException if there was an I/O error
@@ -236,8 +234,7 @@ public class AnalogInputDevice extends GpioInputDevice<AnalogInputEvent> impleme
 	}
 
 	/**
-	 * Get the scaled value in the range 0..range (if unsigned) or -range..range (if
-	 * signed)
+	 * Get the scaled value in the range 0..range (if unsigned) or -range..range (if signed)
 	 * 
 	 * @return the scaled value (-range..range)
 	 * @throws RuntimeIOException if there was an I/O error

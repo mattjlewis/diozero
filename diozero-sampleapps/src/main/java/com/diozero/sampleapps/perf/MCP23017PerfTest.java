@@ -38,8 +38,8 @@ import com.diozero.devices.MCP23017;
 import com.diozero.devices.mcp23xxx.MCP23x17;
 
 /**
- * MCP23017 performance test application. To run (note this hangs the Pi when
- * using wiringPi provider):
+ * MCP23017 performance test application. To run (note this hangs the Pi when using
+ * wiringPi provider):
  * <ul>
  * <li>built-in:<br>
  * {@code java -cp tinylog-api-$TINYLOG_VERSION.jar:tinylog-impl-$TINYLOG_VERSION.jar:diozero-core-$DIOZERO_VERSION.jar:diozero-sampleapps-$DIOZERO_VERSION.jar com.diozero.sampleapps.MCP23017PerfTest 1}</li>
@@ -76,8 +76,8 @@ public class MCP23017PerfTest {
 				}
 				long duration_ns = System.nanoTime() - start_nano;
 
-				Logger.info("Duration for {} iterations: {}s", Integer.valueOf(iterations),
-						String.format("%.4f", Float.valueOf(((float) duration_ns) / 1000 / 1000 / 1000)));
+				Logger.info("Duration for {} iterations: {0.####}s", Integer.valueOf(iterations),
+						Float.valueOf(((float) duration_ns) / 1000 / 1000 / 1000));
 			}
 
 			Logger.info("Going direct to the MCP23x17");
@@ -89,8 +89,8 @@ public class MCP23017PerfTest {
 				}
 				long duration_ns = System.nanoTime() - start_nano;
 
-				Logger.info("Duration for {} iterations: {}s", Integer.valueOf(iterations),
-						String.format("%.4f", Float.valueOf(((float) duration_ns) / 1000 / 1000 / 1000)));
+				Logger.info("Duration for {} iterations: {0.####}s", Integer.valueOf(iterations),
+						Float.valueOf(((float) duration_ns) / 1000 / 1000 / 1000));
 			}
 		}
 	}

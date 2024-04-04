@@ -65,7 +65,7 @@ public class TSL2561Test {
 
 			for (int i = 0; i < ITERATIONS; i++) {
 				double lux = tsl2561.getLuminosity();
-				Logger.info("Luminosity={} Lux", String.format("%.2f", Double.valueOf(lux)));
+				Logger.info("Luminosity={0.##} Lux", Double.valueOf(lux));
 
 				SleepUtil.sleepSeconds(0.5);
 			}

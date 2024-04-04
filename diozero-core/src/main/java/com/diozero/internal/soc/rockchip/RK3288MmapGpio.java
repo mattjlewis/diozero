@@ -128,8 +128,8 @@ public class RK3288MmapGpio implements MmapGpioInterface {
 		if (gpioBanks == null) {
 			gpioBanks = new MmapIntBuffer[9];
 			for (int i = 0; i < gpioBanks.length; i++) {
-				gpioBanks[i] = new MmapIntBuffer(GPIOMEM_DEVICE, GPIO_BASE + i * GPIO_LENGTH + (i > 0 ? GPIO_CHANNEL : 0),
-						PAGE_SIZE, ByteOrder.LITTLE_ENDIAN);
+				gpioBanks[i] = new MmapIntBuffer(GPIOMEM_DEVICE,
+						GPIO_BASE + i * GPIO_LENGTH + (i > 0 ? GPIO_CHANNEL : 0), PAGE_SIZE, ByteOrder.LITTLE_ENDIAN);
 			}
 			pmuMmapIntBuffer = new MmapIntBuffer(GPIOMEM_DEVICE, PMU_BASE, PAGE_SIZE, ByteOrder.LITTLE_ENDIAN);
 			grfMmapIntBuffer = new MmapIntBuffer(GPIOMEM_DEVICE, GRF_BASE, PAGE_SIZE, ByteOrder.LITTLE_ENDIAN);
@@ -545,8 +545,8 @@ public class RK3288MmapGpio implements MmapGpioInterface {
 				}
 				long duration_ns = System.nanoTime() - start_nano;
 
-				Logger.info("Duration for {} iterations: {}s", Integer.valueOf(iterations),
-						String.format("%.4f", Float.valueOf(((float) duration_ns) / 1000 / 1000 / 1000)));
+				Logger.info("Duration for {} iterations: {0.####}s", Integer.valueOf(iterations),
+						Float.valueOf(((float) duration_ns) / 1000 / 1000 / 1000));
 			}
 		}
 	}

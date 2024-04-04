@@ -46,13 +46,12 @@ import com.diozero.util.SleepUtil;
  * https://docs.google.com/document/d/1Y-yZnNhMYy7rwhAgyL_pfa39RsB-x2qR4vP8saG73rE/edit#
  * Product specification: http://www.micropik.com/PDF/HCSR04.pdf
  *
- * Provides 2cm - 400cm non-contact measurement function, the ranging accuracy
- * can reach to 3mm You only need to supply a short 10uS pulse to the trigger
- * input to start the ranging, and then the module will send out an 8 cycle
- * burst of ultrasound at 40 kHz and raise its echo. The Echo is a distance
- * object that is pulse width and the range in proportion. We suggest to use
- * over 60ms measurement cycle, in order to prevent trigger signal to the echo
- * signal
+ * Provides 2cm - 400cm non-contact measurement function, the ranging accuracy can reach
+ * to 3mm You only need to supply a short 10uS pulse to the trigger input to start the
+ * ranging, and then the module will send out an 8 cycle burst of ultrasound at 40 kHz and
+ * raise its echo. The Echo is a distance object that is pulse width and the range in
+ * proportion. We suggest to use over 60ms measurement cycle, in order to prevent trigger
+ * signal to the echo signal
  */
 public class HCSR04UsingWait implements DistanceSensorInterface {
 	public static void main(String[] args) {
@@ -65,7 +64,7 @@ public class HCSR04UsingWait implements DistanceSensorInterface {
 
 		try (HCSR04UsingWait device = new HCSR04UsingWait(trigger_pin, echo_pin)) {
 			while (true) {
-				Logger.info("Distance = {} cm", String.format("%.3f", Double.valueOf(device.getDistanceCm())));
+				Logger.info("Distance = {0.###} cm", Double.valueOf(device.getDistanceCm()));
 				SleepUtil.sleepMillis(1000);
 			}
 		} catch (RuntimeIOException ex) {

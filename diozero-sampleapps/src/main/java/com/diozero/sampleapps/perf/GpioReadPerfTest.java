@@ -75,8 +75,8 @@ public class GpioReadPerfTest {
 				}
 				long duration_ns = System.nanoTime() - start_nano;
 
-				Logger.info("Duration for {} iterations: {}s", Integer.valueOf(iterations),
-						String.format("%.4f", Float.valueOf(((float) duration_ns) / 1000 / 1000 / 1000)));
+				Logger.info("Duration for {} iterations: {0.###}s", Integer.valueOf(iterations),
+						Float.valueOf(((float) duration_ns) / 1000 / 1000 / 1000));
 			}
 		} catch (RuntimeIOException e) {
 			Logger.error(e, "Error: {}", e);

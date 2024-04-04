@@ -52,7 +52,7 @@ public abstract class McpAdcTest {
 	public static void beforeAll() {
 		TestDeviceFactory.setSpiDeviceClass(TestMcpAdcSpiDevice.class);
 	}
-	
+
 	public McpAdcTest(McpAdc.Type type) {
 		this.type = type;
 	}
@@ -62,7 +62,7 @@ public abstract class McpAdcTest {
 		Logger.info("setup(), type=" + type);
 		TestMcpAdcSpiDevice.setType(type);
 	}
-	
+
 	@Test
 	public void test() {
 		int spi_chip_select = 0;
@@ -72,31 +72,31 @@ public abstract class McpAdcTest {
 
 		try (McpAdc adc = new McpAdc(type, spi_chip_select, voltage);
 				AnalogInputDevice device = new AnalogInputDevice(adc, pin_number)) {
-			for (int i=0; i<iterations; i++) {
+			for (int i = 0; i < iterations; i++) {
 				float unscaled_val = adc.getValue(pin_number);
-				Logger.info("Value: {}", String.format("%.2f", Float.valueOf(unscaled_val)));
+				Logger.info("Value: {0.##}", Float.valueOf(unscaled_val));
 				if (type.isSigned()) {
 					Assertions.assertTrue(unscaled_val >= -1 && unscaled_val < 1, "Unscaled range");
 				} else {
 					Assertions.assertTrue(unscaled_val >= 0 && unscaled_val < 1, "Unscaled range");
 				}
-				
+
 				unscaled_val = device.getUnscaledValue();
-				Logger.info("Unscaled value: {}", String.format("%.2f", Float.valueOf(unscaled_val)));
+				Logger.info("Unscaled value: {0.##}", Float.valueOf(unscaled_val));
 				if (type.isSigned()) {
 					Assertions.assertTrue(unscaled_val >= -1 && unscaled_val < 1, "Unscaled range");
 				} else {
 					Assertions.assertTrue(unscaled_val >= 0 && unscaled_val < 1, "Unscaled range");
 				}
-				
+
 				float scaled_val = device.getScaledValue();
-				Logger.info("Scaled value: {}", String.format("%.2f", Float.valueOf(scaled_val)));
+				Logger.info("Scaled value: {0.##}", Float.valueOf(scaled_val));
 				if (type.isSigned()) {
 					Assertions.assertTrue(scaled_val >= -voltage && scaled_val < voltage, "Scaled range");
 				} else {
 					Assertions.assertTrue(scaled_val >= 0 && scaled_val < voltage, "Scaled range");
 				}
-				
+
 				SleepUtil.sleepMillis(100);
 			}
 		}
