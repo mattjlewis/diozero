@@ -5,7 +5,7 @@ package com.diozero.api;
  * Organisation: diozero
  * Project:      diozero - Core
  * Filename:     ServoTrim.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.api;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -62,6 +62,9 @@ public class ServoTrim {
 	private static final int MG996R_RANGE_US = 2_000;
 	public static final ServoTrim MG996R = new ServoTrim(DEFAULT_MID_US, DEFAULT_90_DELTA_US, MG996R_RANGE_US);
 
+	// Metal-gear micro servo ("size-compatible" with an SG90) but with an extended range
+	public static final ServoTrim MG90S = new ServoTrim(400,2600,200L);
+
 	private final int midPulseWidthUs;
 	private final int ninetyDegPulseWidthUs;
 	private final int minPulseWidthUs;
@@ -81,11 +84,40 @@ public class ServoTrim {
 		this(midPulseWidthUs, ninetyDegPulseWidthUs, 2 * ninetyDegPulseWidthUs);
 	}
 
+	/**
+	 * Assumes 180 degree range of movement
+	 *
+	 * @param midPulseWidthUs       Pulse width in microseconds corresponding to the
+	 *                              centre position (90 degrees)
+	 * @param ninetyDegPulseWidthUs Pulse width in microseconds corresponding to a
+	 *                              90 degree movement in either direction
+	 * @param rangePulseWidthUs     Pulse width in microseconds corresponding to the range
+	 *                              of motion in either direction (this is subtracted from
+	 *                              the 90 degree value
+	 */
 	public ServoTrim(int midPulseWidthUs, int ninetyDegPulseWidthUs, int rangePulseWidthUs) {
 		this(midPulseWidthUs, ninetyDegPulseWidthUs, midPulseWidthUs - rangePulseWidthUs / 2,
 				midPulseWidthUs + rangePulseWidthUs / 2);
 	}
 
+    /**
+     * Assumes 180 degree range of movement.
+     * <p>
+     * Note: if the min/max pulse widths exceed the
+     * mid-point +/- the 90 degree mark, value for min/max angles <b>may</b> be out of the
+     * 0-180 range.
+     * </p>
+     *
+     * @param midPulseWidthUs       Pulse width in microseconds corresponding to the
+     *                              centre position (90 degrees)
+     * @param ninetyDegPulseWidthUs Pulse width in microseconds corresponding to a
+     *                              90 degree movement in either direction
+     * @param minPulseWidthUs       Pulse width in microseconds corresponding to the minimum
+     *                              rotation location (see description)
+     * @param maxPulseWidthUs       Pulse width in microseconds corresponding to the maximum
+     *                              rotation location (see description)
+	 * @see ServoTrim#MG996R
+     */
 	public ServoTrim(int midPulseWidthUs, int ninetyDegPulseWidthUs, int minPulseWidthUs, int maxPulseWidthUs) {
 		this.midPulseWidthUs = midPulseWidthUs;
 		this.ninetyDegPulseWidthUs = ninetyDegPulseWidthUs;
@@ -95,6 +127,32 @@ public class ServoTrim {
 				midPulseWidthUs + ninetyDegPulseWidthUs, 0, 180, false);
 		maxAngle = RangeUtil.map(maxPulseWidthUs, midPulseWidthUs - ninetyDegPulseWidthUs,
 				midPulseWidthUs + ninetyDegPulseWidthUs, 0, 180, false);
+	}
+
+	/**
+	 * Assumes minimum value is assigned to 0 degrees and the maximum value is associated with the full arc.
+	 * <p>
+	 * Note: the arc parameter is defined as a <b>long</b> to avoid conflicts with the other constructor(s).
+	 * </p>
+	 *
+	 * @param minPulseWidthUs Pulse width in microseconds corresponding to the minimum
+	 *                        rotation location, or 0 degrees
+	 * @param maxPulseWidthUs Pulse width in microseconds corresponding to the maximum
+	 *                        rotation location, aka {@code arcDegrees}
+	 * @param arcDegrees      How far the servo rotates when {@code maxPulseWidthUs} is applied.
+	 */
+	public ServoTrim(int minPulseWidthUs, int maxPulseWidthUs, long arcDegrees) {
+		minAngle = 0;
+		maxAngle = (int)arcDegrees;
+		this.minPulseWidthUs = minPulseWidthUs;
+		this.maxPulseWidthUs = maxPulseWidthUs;
+
+		// calculate everything else
+		int pulseRange = maxPulseWidthUs - minPulseWidthUs;
+		this.midPulseWidthUs = Math.round(pulseRange / 2f) + minPulseWidthUs;
+
+		float ninetyLocation = 90f / arcDegrees;
+		this.ninetyDegPulseWidthUs = Math.round(ninetyLocation * pulseRange) + minPulseWidthUs;
 	}
 
 	public int getMidPulseWidthUs() {
