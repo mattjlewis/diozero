@@ -5,7 +5,7 @@ package com.diozero.devices;
  * Organisation: diozero
  * Project:      diozero - Core
  * Filename:     PCA9685.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.devices;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -123,22 +123,67 @@ public class PCA9685 extends AbstractDeviceFactory
 	private double periodUs = 1_000_000.0 / DEFAULT_PWM_FREQUENCY;
 	private final BoardPinInfo boardPinInfo;
 
+	/**
+	 * Default I2C bus, address, and PWM frequency.
+	 *
+	 * @throws RuntimeIOException on error
+	 */
 	public PCA9685() throws RuntimeIOException {
 		this(I2CConstants.CONTROLLER_1, DEFAULT_ADDRESS, DEFAULT_PWM_FREQUENCY);
 	}
 
+	/**
+	 * Default I2C bus, address.
+	 *
+	 * @param pwmFrequency the board frequency in Hz
+	 * @throws RuntimeIOException on error
+	 */
 	public PCA9685(int pwmFrequency) throws RuntimeIOException {
 		this(I2CConstants.CONTROLLER_1, DEFAULT_ADDRESS, pwmFrequency);
 	}
 
+	/**
+	 * Default address.
+	 *
+	 * @param controller   I2C bus/controller
+	 * @param pwmFrequency the board frequency in Hz
+	 * @throws RuntimeIOException
+	 */
 	public PCA9685(int controller, int pwmFrequency) throws RuntimeIOException {
 		this(controller, DEFAULT_ADDRESS, pwmFrequency);
 	}
 
+	/**
+	 * @param controller   I2C bus/controller
+	 * @param address      the device address
+	 * @param pwmFrequency the board frequency in Hz
+	 * @throws RuntimeIOException on error
+	 */
 	public PCA9685(int controller, int address, int pwmFrequency) throws RuntimeIOException {
-		super(DEVICE_NAME + "-" + controller + "-" + address);
+		this(I2CDevice.builder(address)
+					 .setController(controller)
+					 .setByteOrder(ByteOrder.BIG_ENDIAN)
+					 .build(),
+			 pwmFrequency);
+	}
 
-		device = I2CDevice.builder(address).setController(controller).setByteOrder(ByteOrder.BIG_ENDIAN).build();
+	/**
+	 * Default PWM frequency.
+	 *
+	 * @param device I2C device to use
+	 */
+	public PCA9685(I2CDeviceInterface device) {
+		this(device, DEFAULT_PWM_FREQUENCY);
+	}
+
+	/**
+	 * @param device       I2C device to use
+	 * @param pwmFrequency the board frequency in Hz
+	 * @throws RuntimeIOException on error
+	 */
+	public PCA9685(I2CDeviceInterface device, int pwmFrequency) throws RuntimeIOException {
+		super(DEVICE_NAME + "-" + device.getController() + "-" + device.getAddress());
+		this.device = device;
 		boardPinInfo = new PCA9685BoardPinInfo();
 
 		reset();
