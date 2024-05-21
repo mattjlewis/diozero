@@ -42,7 +42,9 @@ redirect_from:
 
 ## 1.4.1 (In progress)
 
-+ TBD
++ MICS6814 CO/NH3/NO2 gas sensor
++ ServoTrim constructors
++ Bug fix to SSD1351
 
 ## 1.4.0
 

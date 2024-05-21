@@ -38,17 +38,17 @@ diozero implements a layered architecture to provide maximum portability:
 ![diozero layers](/assets/images/Layers.png "diozero layers")
 
 [Device API](4_Devices.md)
-: Refers to classes in the [com.diozero.devices](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/com/diozero/devices/package-summary.html)
+: Refers to classes in the [com.diozero.devices](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/diozero.core/com/diozero/devices/package-summary.html)
 package that are designed to represent physical devices, such as an LED, and are to be used by
 diozero applications.
-All of the classes in [com.diozero.devices](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/com/diozero/devices/package-summary.html)
-rely exclusively on the [com.diozero.api](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/com/diozero/api/package-summary.html)
+All of the classes in [com.diozero.devices](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/diozero.core/com/diozero/devices/package-summary.html)
+rely exclusively on the [com.diozero.api](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/diozero.core/com/diozero/api/package-summary.html)
 package for GPIO, I<sup>2</sup>C, SPI, and Serial communication.
 
 [Base I/O API](3_API.md)
-: Classes and interfaces in the [com.diozero.api](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/com/diozero/api/package-summary.html)
+: Classes and interfaces in the [com.diozero.api](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/diozero.core/com/diozero/api/package-summary.html)
 package for doing GPIO, I<sup>2</sup>C, SPI, and Serial communication. These classes make use of the 
-Service Provider Interface layer in the [com.diozero.internal.spi](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/com/diozero/internal/spi/package-summary.html)
+Service Provider Interface layer in the [com.diozero.internal.spi](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/diozero.core/com/diozero/internal/spi/package-summary.html)
 package for actual device communication.
 
 [Provider](2_concepts/1_Providers.md)
@@ -56,8 +56,8 @@ package for actual device communication.
 for maximum compatibility across different boards.
 The Provider layer is split into two separate aspects (see the
 [Providers](2_concepts/1_Providers.md#providers) section for further details):
-1. The Service Provider Interface ([com.diozero.internal.spi](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/com/diozero/internal/spi/package-summary.html)), and
-1. Service provider implementations, e.g. the default built-in provider ([com.diozero.internal.provider.builtin](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/com/diozero/internal/provider/builtin/package-summary.html)). 
+1. The Service Provider Interface ([com.diozero.internal.spi](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/diozero.core/com/diozero/internal/spi/package-summary.html)), and
+1. Service provider implementations, e.g. the default built-in provider ([com.diozero.internal.provider.builtin](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/diozero.core/com/diozero/internal/provider/builtin/package-summary.html)). 
 
 ## Package Heirarchy
 
@@ -106,5 +106,5 @@ try (PwmLed led = new PwmLed(18)) {
 
 To protect against unexpected shutdown scenarios, diozero implements a [Shutdown Hook](https://docs.oracle.com/javase/7/docs/api/java/lang/Runtime.html#addShutdownHook(java.lang.Thread))
 which will [close all device factories and internal devices](https://github.com/mattjlewis/diozero/blob/master/diozero-core/src/main/java/com/diozero/sbc/Diozero.java#L78).
-Custom classes that implement AutoCloseable can also be registered by calling [Diozero.registerForShutown()](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/com/diozero/util/Diozero.html#registerForShutdown(java.lang.AutoCloseable...))
+Custom classes that implement AutoCloseable can also be registered by calling [Diozero.registerForShutown()](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/diozero.core/com/diozero/util/Diozero.html#registerForShutdown(java.lang.AutoCloseable...))
 and will be called for shutdown prior to closing the device factories and internal devices.

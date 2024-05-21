@@ -7,4 +7,4 @@ permalink: /api/serial.html
 
 # Serial Devices
 
-[Javadoc](https://www.javadoc.io/doc/com.diozero/diozero-core).
+Serial Device API [Javadoc](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/diozero.core/com/diozero/api/SerialDeviceInterface.html).

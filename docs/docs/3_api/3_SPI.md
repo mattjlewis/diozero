@@ -7,4 +7,4 @@ permalink: /api/spi.html
 
 # Serial Peripheral Interface (SPI) Devices
 
-[Javadoc](https://www.javadoc.io/doc/com.diozero/diozero-core).
+SPI API [Javadoc](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/diozero.core/com/diozero/api/SpiDeviceInterface.html).

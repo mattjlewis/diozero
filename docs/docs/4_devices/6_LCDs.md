@@ -13,9 +13,9 @@ redirect_from:
 
 Support for Hitachi HD44780 controlled LCDs.
 
-HD44780Lcd [Javadoc](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/com/diozero/devices/HD44780Lcd.html).
+HD44780Lcd [Javadoc](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/diozero.core/com/diozero/devices/HD44780Lcd.html).
 
-Connectivity is abstracted to the [HD44780.LcdConnection](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/com/diozero/devices/HD44780Lcd.LcdConnection.html)
+Connectivity is abstracted to the [HD44780.LcdConnection](https://www.javadoc.io/doc/com.diozero/diozero-core/latest/diozero.core/com/diozero/devices/LcdConnection.html)
 interface; diozero provides support for connectivity via the following GPIO expansion boards:
 
 + [PCF8574](3_ExpansionBoards.md#pcf8574) (a very common configuration)
