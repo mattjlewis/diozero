@@ -1,0 +1,45 @@
+# https://wiki.radxa.com/RockpiS/hardware/gpio
+
+# GPIO Header info
+# General, Header, Physical Pin, Name
+General, Header_1, 1, 3v3
+General, Header_1, 2, 5v
+General, Header_1, 4, 5v
+General, Header_1, 6, GND
+General, Header_1, 9, GND
+General, Header_1, 14, GND
+General, Header_1, 17, 3v3
+General, Header_1, 20, GND
+General, Header_1, 25, GND
+General, Header_1, 34, GND
+General, Header_1, 39, GND
+
+# GPIO, Header,   GPIO#, Name,      Physical, Chip, Line, Modes
+GPIO,   Header_1, 11,    I2C1_SDA,  3,        0,    11,   DIGITAL_INPUT | DIGITAL_OUTPUT  # I2C1_SDA, GPIO0_B3
+GPIO,   Header_1, 12,    I2C1_SCL,  5,        0,    12,   DIGITAL_INPUT | DIGITAL_OUTPUT  # I2C1_SCL, GPIO0_B4
+GPIO,   Header_1, 77,    GPIO2_B5,  7,        2,    13,   DIGITAL_INPUT | DIGITAL_OUTPUT  # GPIO2_B5
+GPIO,   Header_1, 65,    UART0_TX,  8,        2,    1,    DIGITAL_INPUT | DIGITAL_OUTPUT  # GPIO2_A1, UART0_TX, SPI0_MOSI
+GPIO,   Header_1, 64,    UART0_RX,  10,       2,    0,    DIGITAL_INPUT | DIGITAL_OUTPUT  # GPIO2_A0, I2C3_SDA_M2, UART0_RX, SPI0_MISO
+GPIO,   Header_1, 78,    GPIO2_B6,  11,       2,    14,   DIGITAL_INPUT | DIGITAL_OUTPUT  # GPIO0_B6
+GPIO,   Header_1, 73,    GPIO2_B1,  12,       2,    9,    DIGITAL_INPUT | DIGITAL_OUTPUT  # GPIO2_B1
+GPIO,   Header_1, 67,    GPIO2_A3,  13,       2,    3,    DIGITAL_INPUT | DIGITAL_OUTPUT  # GPIO2_A3, I2C2_SCL, SPI0_CSN0
+GPIO,   Header_1, 17,    GPIO0_C1,  15,       0,    17,   DIGITAL_INPUT | DIGITAL_OUTPUT  # GPIO0_C1, SPDIF_TX, PWM5
+GPIO,   Header_1,  1,    GPIO0_A1,  16,       0,    1,    DIGITAL_INPUT | DIGITAL_OUTPUT  # GPIO0_A1, PWM4
+GPIO,   Header_1, 79,    GPIO2_B7,  18,       2,    15,   DIGITAL_INPUT | DIGITAL_OUTPUT  # GPIO2_B1
+GPIO,   Header_1, 55,    GPIO1_C7,  19,       1,    23,   DIGITAL_INPUT | DIGITAL_OUTPUT  # GPIO1_C7, UART1_RTSN, UART2_TX, SPI2_MOSI
+GPIO,   Header_1, 54,    GPIO1_C6,  21,       1,    22,   DIGITAL_INPUT | DIGITAL_OUTPUT  # GPIO1_C6, UART1_CTSN, UART2_RX, SPI2_MISO
+GPIO,   Header_1, 75,    GPIO2_B3,  22,       2,    11,   DIGITAL_INPUT | DIGITAL_OUTPUT  # GPIO2_A7, PWM89
+GPIO,   Header_1, 56,    GPIO1_D0,  23,       1,    24,   DIGITAL_INPUT | DIGITAL_OUTPUT  # GPIO1_D0, UART1_RX, I2C0_SDA, SPI2_CLK
+GPIO,   Header_1, 57,    GPIO1_D1,  24,       1,    25,   DIGITAL_INPUT | DIGITAL_OUTPUT  # GPIO1_D1, UART1_TX, I2C0_SCL, SPI2_CS0
+GPIO,   Header_1, 72,    GPIO2_B0,  26,       2,     8,   DIGITAL_INPUT | DIGITAL_OUTPUT  # GPIO2_B0, PWM7
+GPIO,   Header_1, 15,    GPIO0_B7,  27,       0,    15,   DIGITAL_INPUT | DIGITAL_OUTPUT  # GPIO0_B7, PWM2
+GPIO,   Header_1, 16,    GPIO0_C0,  28,       0,    16,   DIGITAL_INPUT | DIGITAL_OUTPUT  # GPIO0_C0, PWM3
+GPIO,   Header_1, 80,    GPIO2_C0,  29,       2,    16,   DIGITAL_INPUT | DIGITAL_OUTPUT  # GPIO2_C0, PWM11
+GPIO,   Header_1, 74,    GPIO2_B2,  31,       2,    10,   DIGITAL_INPUT | DIGITAL_OUTPUT  # GPIO2_B2, PWM8
+GPIO,   Header_1, 76,    GPIO2_B4,  32,       2,    12,   DIGITAL_INPUT | DIGITAL_OUTPUT  # GPIO2_B4, PWM10
+GPIO,   Header_1, 18,    GPIO0_C2,  33,       0,    18,   DIGITAL_INPUT | DIGITAL_OUTPUT  # GPIO0_C2, PWM6, UART3_TX_M1
+GPIO,   Header_1, 68,    GPIO2_A4,  35,       2,     4,   DIGITAL_INPUT | DIGITAL_OUTPUT  # GPIO2_A4, SPI1_MISO1_M1
+GPIO,   Header_1, 70,    GPIO2_A6,  36,       2,     6,   DIGITAL_INPUT | DIGITAL_OUTPUT  # GPIO2_A6
+GPIO,   Header_1, 66,    GPIO2_A2,  37,       2,     2,   DIGITAL_INPUT | DIGITAL_OUTPUT  # GPIO2_A2, I2C2_SDA, SPI0_CLK
+GPIO,   Header_1, 69,    GPIO2_A5,  38,       2,     5,   DIGITAL_INPUT | DIGITAL_OUTPUT  # GPIO2_A5, SPI1_MISO_M1
+GPIO,   Header_1, 71,    GPIO2_A7,  40,       2,     7,   DIGITAL_INPUT | DIGITAL_OUTPUT  # GPIO2_A7, SPI1_CLK_M1
