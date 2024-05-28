@@ -203,10 +203,10 @@ public class FirmataDeviceFactory extends BaseNativeDeviceFactory implements Fir
 	@Override
 	public int getBoardPwmFrequency() {
 		/*
-		 * https://www.arduino.cc/en/Tutorial/SecretsOfArduinoPWM // Note that the base
-		 * frequency for pins 3, 9, 10, and 11 is 31250 Hz and for pins 5 and 6 is 62500
-		 * Hz switch (gpio) { case 3: case 9: case 10: case 11: return 31250; case 5:
-		 * case 6: return 62500; } return -1;
+		 * https://www.arduino.cc/en/Tutorial/SecretsOfArduinoPWM // Note that the base frequency
+		 * for pins 3, 9, 10, and 11 is 31250 Hz and for pins 5 and 6 is 62500 Hz switch (gpio) {
+		 * case 3: case 9: case 10: case 11: return 31250; case 5: case 6: return 62500; } return
+		 * -1;
 		 */
 		//
 		return 62500;
@@ -463,6 +463,11 @@ public class FirmataDeviceFactory extends BaseNativeDeviceFactory implements Fir
 			}
 
 			return modes;
+		}
+
+		@Override
+		public boolean isRecognised() {
+			return true;
 		}
 	}
 }

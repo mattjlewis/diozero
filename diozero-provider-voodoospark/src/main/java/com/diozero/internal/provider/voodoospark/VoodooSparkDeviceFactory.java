@@ -758,6 +758,11 @@ public class VoodooSparkDeviceFactory extends BaseNativeDeviceFactory {
 			addGeneralPinInfo(pin++, "RST");
 			addGeneralPinInfo(pin++, PinInfo.VCC_3V3);
 		}
+
+		@Override
+		public boolean isRecognised() {
+			return true;
+		}
 	}
 
 	public static void main(String[] args) throws InterruptedException {
@@ -788,14 +793,14 @@ public class VoodooSparkDeviceFactory extends BaseNativeDeviceFactory {
 			}
 
 			/*
-			 * for (int red=0; red<255; red++) { df.setInternalRgb((byte) red, (byte) 0,
+			 * for (int red=0; red<255; red++) { df.setInternalRgb((byte) red, (byte) 0, (byte) 0);
+			 * Thread.sleep(50); }
+			 *
+			 * for (int green=0; green<255; green++) { df.setInternalRgb((byte) 0, (byte) green,
 			 * (byte) 0); Thread.sleep(50); }
 			 *
-			 * for (int green=0; green<255; green++) { df.setInternalRgb((byte) 0, (byte)
-			 * green, (byte) 0); Thread.sleep(50); }
-			 *
-			 * for (int blue=0; blue<255; blue++) { df.setInternalRgb((byte) 0, (byte) 0,
-			 * (byte) blue); Thread.sleep(50); }
+			 * for (int blue=0; blue<255; blue++) { df.setInternalRgb((byte) 0, (byte) 0, (byte)
+			 * blue); Thread.sleep(50); }
 			 */
 
 			analogTest(df, gpio);

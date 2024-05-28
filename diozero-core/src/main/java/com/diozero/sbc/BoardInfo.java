@@ -34,12 +34,11 @@ package com.diozero.sbc;
 import com.diozero.internal.spi.MmapGpioInterface;
 
 /**
- * Information about the connected SBC. Note that the connected board instance
- * might be a remote device, e.g. connected via serial, Bluetooth or TCP/IP. The
- * BoardInfo instance for the connected device must be obtained by calling
+ * Information about the connected SBC. Note that the connected board instance might be a
+ * remote device, e.g. connected via serial, Bluetooth or TCP/IP. The BoardInfo instance
+ * for the connected device must be obtained by calling
  * {@link com.diozero.internal.spi.NativeDeviceFactoryInterface#getBoardInfo()
- * getBoardInfo()} the on the
- * {@link com.diozero.internal.spi.NativeDeviceFactoryInterface
+ * getBoardInfo()} the on the {@link com.diozero.internal.spi.NativeDeviceFactoryInterface
  * NativeDeviceFactoryInterface} instance returned from
  * {@link DeviceFactoryHelper#getNativeDeviceFactory()}.
  */
@@ -63,10 +62,16 @@ public abstract class BoardInfo extends BoardPinInfo {
 	}
 
 	/**
-	 * Pin initialisation is done separately to the constructor since all known
-	 * BoardInfo instances get instantiated on startup by the Java ServiceLoader.
+	 * Pin initialisation is done separately to the constructor since all known BoardInfo
+	 * instances get instantiated on startup by the Java ServiceLoader.
 	 */
 	public abstract void populateBoardPinInfo();
+
+	public boolean isBiasControlSupported() {
+		return false;
+	}
+
+	public abstract boolean isRecognised();
 
 	/**
 	 * The make of the connected board, e.g. "Raspberry Pi"
@@ -128,12 +133,10 @@ public abstract class BoardInfo extends BoardPinInfo {
 	}
 
 	/**
-	 * Instantiate the memory mapped GPIO interface for this board. Not that the
-	 * caller needs to call {@link MmapGpioInterface#initialise initialise} prior to
-	 * use.
+	 * Instantiate the memory mapped GPIO interface for this board. Not that the caller needs
+	 * to call {@link MmapGpioInterface#initialise initialise} prior to use.
 	 *
-	 * @return the MMAP GPIO interface implementation for this board, null if there
-	 *         isn't one
+	 * @return the MMAP GPIO interface implementation for this board, null if there isn't one
 	 */
 	public MmapGpioInterface createMmapGpio() {
 		return null;
@@ -142,9 +145,5 @@ public abstract class BoardInfo extends BoardPinInfo {
 	@Override
 	public String toString() {
 		return "BoardInfo [make=" + make + ", model=" + model + ", memory=" + memoryKb + "]";
-	}
-
-	public boolean isBiasControlSupported() {
-		return false;
 	}
 }

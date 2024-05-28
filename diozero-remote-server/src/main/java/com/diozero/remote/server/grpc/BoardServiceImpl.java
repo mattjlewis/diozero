@@ -85,9 +85,12 @@ public class BoardServiceImpl extends BoardServiceGrpc.BoardServiceImplBase {
 		}
 
 		response_builder.setBoardPwmFrequency(deviceFactory.getBoardPwmFrequency());
+		response_builder.setBoardServoFrequency(deviceFactory.getBoardServoFrequency());
 		response_builder.setSpiBufferSize(deviceFactory.getSpiBufferSize());
 		response_builder.setOsId(board_info.getOperatingSystemId());
 		response_builder.setOsVersion(board_info.getOperatingSystemVersion());
+		response_builder.setBiasControlSupported(board_info.isBiasControlSupported());
+		response_builder.setRecognised(board_info.isRecognised());
 
 		responseObserver.onNext(response_builder.build());
 		responseObserver.onCompleted();

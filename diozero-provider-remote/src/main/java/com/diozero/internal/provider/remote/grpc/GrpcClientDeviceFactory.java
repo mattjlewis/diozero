@@ -688,20 +688,24 @@ public class GrpcClientDeviceFactory extends BaseNativeDeviceFactory {
 	}
 
 	static class RemoteBoardInfo extends BoardInfo {
-		private Board.BoardInfoResponse boardInfoResponse;
+		private final List<Board.HeaderInfo> gpioHeaders;
+		private final boolean biasControlSupported;
+		private final boolean recognised;
 
 		public RemoteBoardInfo(Board.BoardInfoResponse boardInfoResponse) {
 			super(boardInfoResponse.getMake(), boardInfoResponse.getModel(), boardInfoResponse.getMemory(),
 					boardInfoResponse.getOsId(), boardInfoResponse.getOsVersion());
 
-			this.boardInfoResponse = boardInfoResponse;
+			gpioHeaders = boardInfoResponse.getHeaderList();
+			biasControlSupported = boardInfoResponse.getBiasControlSupported();
+			recognised = boardInfoResponse.getRecognised();
 
 			populateBoardPinInfo();
 		}
 
 		@Override
 		public void populateBoardPinInfo() {
-			for (Board.HeaderInfo header : boardInfoResponse.getHeaderList()) {
+			for (Board.HeaderInfo header : gpioHeaders) {
 				for (Board.GpioInfo gpio_info : header.getGpioList()) {
 					if (gpio_info.getModeList().contains(Board.GpioMode.PWM_OUTPUT)) {
 						addPwmPinInfo(gpio_info.getHeader(), gpio_info.getGpioNumber(), gpio_info.getName(),
@@ -725,6 +729,16 @@ public class GrpcClientDeviceFactory extends BaseNativeDeviceFactory {
 					}
 				}
 			}
+		}
+
+		@Override
+		public boolean isBiasControlSupported() {
+			return biasControlSupported;
+		}
+
+		@Override
+		public boolean isRecognised() {
+			return recognised;
 		}
 	}
 }

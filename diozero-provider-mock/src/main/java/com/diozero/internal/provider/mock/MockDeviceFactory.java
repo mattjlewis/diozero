@@ -33,17 +33,38 @@ package com.diozero.internal.provider.mock;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Properties;
 import java.util.stream.Collectors;
 
-import com.diozero.api.*;
+import com.diozero.api.DeviceMode;
+import com.diozero.api.GpioEventTrigger;
+import com.diozero.api.GpioPullUpDown;
 import com.diozero.api.I2CConstants.AddressSize;
+import com.diozero.api.I2CDeviceInterface;
+import com.diozero.api.PinInfo;
+import com.diozero.api.RuntimeIOException;
 import com.diozero.api.SerialConstants.DataBits;
 import com.diozero.api.SerialConstants.Parity;
 import com.diozero.api.SerialConstants.StopBits;
+import com.diozero.api.SpiClockMode;
 import com.diozero.devices.PCA9685;
 import com.diozero.internal.provider.mock.devices.MockPca9685;
-import com.diozero.internal.spi.*;
+import com.diozero.internal.spi.AnalogInputDeviceInterface;
+import com.diozero.internal.spi.AnalogOutputDeviceInterface;
+import com.diozero.internal.spi.BaseNativeDeviceFactory;
+import com.diozero.internal.spi.GpioDigitalInputDeviceInterface;
+import com.diozero.internal.spi.GpioDigitalInputOutputDeviceInterface;
+import com.diozero.internal.spi.GpioDigitalOutputDeviceInterface;
+import com.diozero.internal.spi.InternalI2CDeviceInterface;
+import com.diozero.internal.spi.InternalPwmOutputDeviceInterface;
+import com.diozero.internal.spi.InternalSerialDeviceInterface;
+import com.diozero.internal.spi.InternalServoDeviceInterface;
+import com.diozero.internal.spi.InternalSpiDeviceInterface;
 import com.diozero.sbc.BoardInfo;
 import com.diozero.util.PropertyUtil;
 
@@ -323,13 +344,18 @@ public class MockDeviceFactory extends BaseNativeDeviceFactory {
 
 	private static class MockBoardInfo extends BoardInfo {
 		public MockBoardInfo(Properties props) {
-			super(props.getProperty("Make"), props.getProperty("Model"),Integer.parseInt(props.getProperty("Memory")),
-				  "mock","1.0");
+			super(props.getProperty("Make"), props.getProperty("Model"), Integer.parseInt(props.getProperty("Memory")),
+					"mock", "1.0");
 		}
 
 		@Override
 		public void populateBoardPinInfo() {
+			//
+		}
 
+		@Override
+		public boolean isRecognised() {
+			return true;
 		}
 	}
 

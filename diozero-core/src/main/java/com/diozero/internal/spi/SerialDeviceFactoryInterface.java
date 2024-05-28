@@ -47,8 +47,8 @@ public interface SerialDeviceFactoryInterface extends DeviceFactoryInterface {
 	 * @param parity            Parity option
 	 * @param readBlocking      Do read operations block?
 	 * @param minReadChars      The minimum number of characters to read
-	 * @param readTimeoutMillis How long a read operation waits for data before
-	 *                          timing out. 0 == no timeout
+	 * @param readTimeoutMillis How long a read operation waits for data before timing out. 0
+	 *                          == no timeout
 	 * @return Serial device instance
 	 * @throws RuntimeIOException if an error occurs
 	 */
@@ -56,9 +56,8 @@ public interface SerialDeviceFactoryInterface extends DeviceFactoryInterface {
 			SerialDevice.DataBits dataBits, SerialDevice.StopBits stopBits, SerialDevice.Parity parity,
 			boolean readBlocking, int minReadChars, int readTimeoutMillis) throws RuntimeIOException {
 
-		return registerDevice(()->createSerialKey(deviceFilename),
-							  (k)-> createSerialDevice(k, deviceFilename, baud, dataBits, stopBits, parity,
-													   readBlocking, minReadChars, readTimeoutMillis));
+		return registerDevice(() -> createSerialKey(deviceFilename), key -> createSerialDevice(key, deviceFilename,
+				baud, dataBits, stopBits, parity, readBlocking, minReadChars, readTimeoutMillis));
 	}
 
 	InternalSerialDeviceInterface createSerialDevice(String key, String deviceFilename, int baud,

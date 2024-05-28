@@ -31,7 +31,7 @@ package com.diozero.sampleapps.util;
  * #L%
  */
 
-import java.util.Optional;
+import java.util.OptionalInt;
 
 import org.fusesource.jansi.Ansi.Color;
 
@@ -63,27 +63,35 @@ public class ConsoleUtil {
 		return colour;
 	}
 
-	public static Optional<Boolean> gpioRead(NativeDeviceFactoryInterface deviceFactory, PinInfo pinInfo) {
+	public static OptionalInt gpioRead(NativeDeviceFactoryInterface deviceFactory, PinInfo pinInfo) {
 		int gpio = pinInfo.getDeviceNumber();
 		if (gpio == PinInfo.NOT_DEFINED) {
-			return Optional.empty();
+			return OptionalInt.empty();
 		}
 
 		if (pinInfo.getModes().contains(DeviceMode.DIGITAL_INPUT)
 				|| pinInfo.getModes().contains(DeviceMode.DIGITAL_OUTPUT)) {
-			return Optional.of(Boolean.valueOf(deviceFactory.getGpioValue(gpio) == 1));
+			return OptionalInt.of(deviceFactory.getGpioValue(gpio));
 		}
 
-		return Optional.empty();
+		return OptionalInt.empty();
 	}
 
-	public static String getValueString(Optional<Boolean> value) {
-		return value.map(v -> v.booleanValue() ? "1" : "0").orElse(" ");
+	public static String getValueString(OptionalInt value) {
+		final int i = value.orElse(-1);
+		return i < 0 ? "?" : Integer.toString(i);
 	}
 
-	public static Color getValueColour(Optional<Boolean> value) {
+	public static Color getValueColour(OptionalInt value) {
 		// FIXME Switch back to Color.DEFAULT when AnsiRenderer supports FG_DEFAULT
-		return value.map(v -> v.booleanValue() ? Color.MAGENTA : Color.BLUE).orElse(Color.WHITE);
+		switch (value.orElse(-1)) {
+		case 0:
+			return Color.BLUE;
+		case 1:
+			return Color.MAGENTA;
+		default:
+			return Color.WHITE;
+		}
 	}
 
 	public static String getGpiodName(int chip, int lineOffset) {

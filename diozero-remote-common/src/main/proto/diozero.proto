@@ -187,6 +187,8 @@ message Board {
 		int32 spiBufferSize = 9;
 		string osId = 10;
 		string osVersion = 11;
+		bool biasControlSupported = 12;
+		bool recognised = 13;
 	}
 
 	message GpioModeResponse {

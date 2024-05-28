@@ -80,6 +80,7 @@ public class SystemInformation {
 
 		try (NativeDeviceFactoryInterface ndf = DeviceFactoryHelper.getNativeDeviceFactory()) {
 			BoardInfo board_info = ndf.getBoardInfo();
+
 			System.out.println(ansi().render("@|bold,underline Detected Board Info|@"));
 			System.out.format(ansi().render("@|bold Device Factory|@: %s%n").toString(), ndf.getName());
 			System.out.format(ansi().render("@|bold Board|@: %s (RAM: %,d bytes, O/S: %s %s)%n").toString(),
@@ -87,6 +88,12 @@ public class SystemInformation {
 					board_info.getOperatingSystemVersion());
 			System.out.format(ansi().render("@|bold I2C Bus Numbers|@: %s%n").toString(),
 					ndf.getI2CBusNumbers().stream().map(Object::toString).collect(Collectors.joining(", ")));
+			System.out.format(ansi().render("GPIO bias control @|bold is%s|@ supported%n").toString(),
+					board_info.isBiasControlSupported() ? "" : " not");
+
+			if (!board_info.isRecognised()) {
+				System.out.println(ansi().render("Board is @|bold not|@ recognised"));
+			}
 
 			System.out.println();
 			for (Map.Entry<String, Map<Integer, PinInfo>> header_pins_entry : board_info.getHeaders().entrySet()) {

@@ -61,7 +61,7 @@ public class GpioChip extends GpioChipInfo implements AutoCloseable, GpioLineEve
 	public static Map<Integer, GpioChip> openAllChips() throws IOException {
 		LibraryLoader.loadSystemUtils();
 
-		Map<Integer, GpioChip> chips = Files.list(Paths.get("/dev"))
+		final Map<Integer, GpioChip> chips = Files.list(Paths.get("/dev"))
 				.filter(p -> p.getFileName().toString().startsWith("gpiochip"))
 				.map(p -> NativeGpioDevice.openChip(p.toString())) //
 				.filter(p -> p != null) // openChip will return null if it is unable to open the chip
@@ -74,10 +74,9 @@ public class GpioChip extends GpioChipInfo implements AutoCloseable, GpioLineEve
 		// Calculate the line offset for the chips
 		// This allows GPIOs to be auto-detected as the GPIO number is chip offset +
 		// line offset
-		AtomicInteger offset = new AtomicInteger(0);
-		chips.entrySet().stream().sorted(Map.Entry.comparingByKey()).forEach(entry -> {
-			entry.getValue().setLineOffset(offset.getAndAdd(entry.getValue().getNumLines()));
-		});
+		final AtomicInteger offset = new AtomicInteger(0);
+		chips.entrySet().stream().sorted(Map.Entry.comparingByKey()).map(Map.Entry::getValue)
+				.forEach(chip -> chip.setLineOffset(offset.getAndAdd(chip.getNumLines())));
 
 		return chips;
 	}
@@ -91,7 +90,7 @@ public class GpioChip extends GpioChipInfo implements AutoCloseable, GpioLineEve
 	public static GpioChip openChip(int chipNum) {
 		LibraryLoader.loadSystemUtils();
 
-		return openChip("/dev/" + GPIO_CHIP_FILENAME_PREFIX + "/" + chipNum);
+		return openChip("/dev/" + GPIO_CHIP_FILENAME_PREFIX + chipNum);
 	}
 
 	public static GpioChip openChip(String chipDeviceFile) {

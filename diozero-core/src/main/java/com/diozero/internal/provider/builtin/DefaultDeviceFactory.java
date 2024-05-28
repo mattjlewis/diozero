@@ -114,6 +114,8 @@ public class DefaultDeviceFactory extends BaseNativeDeviceFactory {
 
 				Logger.debug("Found {} GPIO chips", Integer.valueOf(chips.size()));
 
+				final boolean unknown_board = !board_info.isRecognised();
+
 				// Validate the data in BoardPinInfo
 				if (board_info instanceof GenericLinuxArmBoardInfo) {
 					board_info.getChipMapping()
@@ -123,7 +125,7 @@ public class DefaultDeviceFactory extends BaseNativeDeviceFactory {
 				// Validate the board pin info matches the GPIO chip and line offsets
 				Logger.debug("Validating BoardPinInfo against detected GPIO chip and line offsets...");
 				board_info.getGpioPins().forEach(pin_info -> {
-					GpioChip chip = chips.get(Integer.valueOf(pin_info.getChip()));
+					final GpioChip chip = chips.get(Integer.valueOf(pin_info.getChip()));
 					if (chip == null) {
 						if (pin_info.getChip() != -1) {
 							Logger.warn("No such chip for id {}", Integer.valueOf(pin_info.getChip()));
@@ -138,75 +140,7 @@ public class DefaultDeviceFactory extends BaseNativeDeviceFactory {
 
 				// Validate the GPIO chip and line offsets match those detected
 				Logger.debug("Validating detected GPIO chip and line offsets against BoardPinInfo...");
-				chips.values().forEach(chip -> {
-					for (GpioLine gpio_line : chip.getLines()) {
-						PinInfo pin_info = null;
-						final String line_name = gpio_line.getName().trim();
-
-						// Try to find this GPIO in the board pin info by the assumed system name
-						if (!line_name.isEmpty()) {
-							pin_info = board_info.getByName(line_name);
-						}
-
-						// If the pin couldn't be found for the assigned name try to find the pin info
-						// by chip and line offset number
-						if (pin_info == null) {
-							// Note that getByChipAndLineOffset doesn't create missing entries
-							pin_info = board_info.getByChipAndLineOffset(chip.getChipId(), gpio_line.getOffset())
-									.orElse(null);
-						}
-
-						// Finally, if still not found see if the name is in the format GPIOnn and
-						// lookup by GPIO number
-						if (pin_info == null && line_name.matches(GPIO_LINE_NUMBER_PATTERN)) {
-							// Note that this isn't reliable - GPIO names are often missing or not in this
-							// format
-							// Note that the unknown / generic board info classes will create missing pin
-							// info objects if you call getByGpioNumber - we don't want that to happen here
-							pin_info = board_info.getGpios()
-									.get(Integer.valueOf(line_name.replaceAll(GPIO_LINE_NUMBER_PATTERN, "$1")));
-						}
-
-						// XXX This includes a bit of a hack to ignore pins with the name "NC" - the BBB
-						// does this for quite a few pins which triggers the warning message
-						if (pin_info == null && !line_name.isEmpty() && !line_name.equals("NC")
-								&& !line_name.equals("-")) {
-							Logger.debug("Detected GPIO line ({} {}-{}) that isn't configured in BoardPinInfo",
-									line_name, Integer.valueOf(chip.getChipId()),
-									Integer.valueOf(gpio_line.getOffset()));
-							if (addUnconfiguredGpios) {
-								// Add a new pin info to the board pin info
-								int gpio_num;
-								if (line_name.matches(GPIO_LINE_NUMBER_PATTERN)) {
-									gpio_num = Integer.parseInt(line_name.replaceAll(GPIO_LINE_NUMBER_PATTERN, "$1"));
-								} else {
-									// Calculate the GPIO number
-									gpio_num = chip.getLineOffset() + gpio_line.getOffset();
-								}
-								pin_info = board_info.addGpioPinInfo(gpio_num, line_name, PinInfo.NOT_DEFINED,
-										PinInfo.DIGITAL_IN_OUT, chip.getChipId(), gpio_line.getOffset());
-								Logger.debug("Added pin info {}", pin_info);
-							}
-						} else if (pin_info != null) {
-							if (pin_info.getChip() != chip.getChipId()
-									|| pin_info.getLineOffset() != gpio_line.getOffset()) {
-								Logger.warn(
-										"Configured pin chip and line offset ({}-{}) doesn't match that detected ({}-{}), line name '{}' - updating",
-										Integer.valueOf(pin_info.getChip()), Integer.valueOf(pin_info.getLineOffset()),
-										Integer.valueOf(chip.getChipId()), Integer.valueOf(gpio_line.getOffset()),
-										gpio_line.getName());
-								pin_info.setChip(chip.getChipId());
-								pin_info.setLineOffset(gpio_line.getOffset());
-							}
-
-							if (!line_name.isEmpty() && !pin_info.getName().equals(line_name)) {
-								Logger.info("Configured pin name ({}) doesn't match that detected ({})",
-										pin_info.getName(), line_name);
-								// XXX What to do about it - update the board pin info? Just ignore for now.
-							}
-						}
-					}
-				});
+				chips.values().forEach(chip -> loadChip(board_info, unknown_board, chip));
 			} catch (IOException e) {
 				throw new RuntimeIOException("Error initialising GPIO chips: " + e.getMessage(), e);
 			}
@@ -232,6 +166,76 @@ public class DefaultDeviceFactory extends BaseNativeDeviceFactory {
 			Logger.warn("GPIO pull-up / pull-down control is not available for this board");
 		} else {
 			Logger.debug("Memory mapped GPIO is available for this board");
+		}
+	}
+
+	private void loadChip(BoardInfo boardInfo, boolean unknownBoard, GpioChip chip) {
+		for (GpioLine gpio_line : chip.getLines()) {
+			PinInfo pin_info = null;
+			final String line_name = gpio_line.getName().trim();
+
+			// Try to find this GPIO in the board pin info by the assumed system name
+			if (!line_name.isEmpty()) {
+				pin_info = boardInfo.getByName(line_name);
+			}
+
+			// If the pin couldn't be found for the assigned name try to find the pin info
+			// by chip and line offset number
+			if (pin_info == null) {
+				// Note that getByChipAndLineOffset doesn't create missing entries
+				pin_info = boardInfo.getByChipAndLineOffset(chip.getChipId(), gpio_line.getOffset()).orElse(null);
+			}
+
+			// Finally, if still not found see if the name is in the format GPIOnn and
+			// lookup by GPIO number
+			if (pin_info == null && line_name.matches(GPIO_LINE_NUMBER_PATTERN)) {
+				// Note that this isn't reliable - GPIO names are often missing or not in this
+				// format
+				// Note that the unknown / generic board info classes will create missing pin
+				// info objects if you call getByGpioNumber - we don't want that to happen here
+				pin_info = boardInfo.getGpios()
+						.get(Integer.valueOf(line_name.replaceAll(GPIO_LINE_NUMBER_PATTERN, "$1")));
+			}
+
+			// XXX This includes a bit of a hack to ignore pins with the name "NC" - the BBB
+			// does this for quite a few pins which triggers the warning message
+			if (pin_info == null && !line_name.isEmpty() && !line_name.equals("NC") && !line_name.equals("-")) {
+				Logger.debug("Detected GPIO line ({} {}-{}) that isn't configured in BoardPinInfo", line_name,
+						Integer.valueOf(chip.getChipId()), Integer.valueOf(gpio_line.getOffset()));
+				if (addUnconfiguredGpios || unknownBoard) {
+					// Add a new pin info to the board pin info
+					int gpio_num;
+					if (line_name.matches(GPIO_LINE_NUMBER_PATTERN)) {
+						gpio_num = Integer.parseInt(line_name.replaceAll(GPIO_LINE_NUMBER_PATTERN, "$1"));
+					} else {
+						// Calculate the GPIO number
+						gpio_num = chip.getLineOffset() + gpio_line.getOffset();
+					}
+					int physical_pin = PinInfo.NOT_DEFINED;
+					if (line_name.startsWith("PIN_")) {
+						physical_pin = Integer.parseInt(line_name.substring("PIN_".length()));
+					}
+					pin_info = boardInfo.addGpioPinInfo(gpio_num, line_name, physical_pin, PinInfo.DIGITAL_IN_OUT,
+							chip.getChipId(), gpio_line.getOffset());
+					Logger.debug("Added {}", pin_info);
+				}
+			} else if (pin_info != null) {
+				if (pin_info.getChip() != chip.getChipId() || pin_info.getLineOffset() != gpio_line.getOffset()) {
+					Logger.warn(
+							"Configured pin chip and line offset ({}-{}) doesn't match that detected ({}-{}), line name '{}' - updating",
+							Integer.valueOf(pin_info.getChip()), Integer.valueOf(pin_info.getLineOffset()),
+							Integer.valueOf(chip.getChipId()), Integer.valueOf(gpio_line.getOffset()),
+							gpio_line.getName());
+					pin_info.setChip(chip.getChipId());
+					pin_info.setLineOffset(gpio_line.getOffset());
+				}
+
+				if (!line_name.isEmpty() && !pin_info.getName().equals(line_name)) {
+					Logger.info("Configured pin name ({}) doesn't match that detected ({})", pin_info.getName(),
+							line_name);
+					// XXX What to do about it - update the board pin info? Just ignore for now.
+				}
+			}
 		}
 	}
 
@@ -261,7 +265,7 @@ public class DefaultDeviceFactory extends BaseNativeDeviceFactory {
 		Logger.trace("shutdown()");
 
 		if (chips != null) {
-			chips.values().forEach(chip -> chip.close());
+			chips.values().forEach(GpioChip::close);
 			chips.clear();
 		}
 
@@ -312,6 +316,9 @@ public class DefaultDeviceFactory extends BaseNativeDeviceFactory {
 		if (mmapGpio != null) {
 			return mmapGpio.gpioRead(gpio) ? 1 : 0;
 		}
+		// TODO Use GpioChip to read the device and clean up afterwards - check how gpioget works
+		// (sets top input)
+		// https://github.com/brgl/libgpiod/blob/master/tools/gpioget.c
 		return Diozero.UNKNOWN_VALUE;
 	}
 

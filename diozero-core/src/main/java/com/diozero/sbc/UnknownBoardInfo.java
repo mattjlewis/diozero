@@ -39,8 +39,7 @@ import com.diozero.api.PinInfo;
 import com.diozero.internal.board.GenericLinuxArmBoardInfo;
 
 /**
- * Attempt to handle generic boards that don't have explicit support within
- * diozero
+ * Attempt to handle generic boards that don't have explicit support within diozero
  */
 public class UnknownBoardInfo extends BoardInfo {
 	public static final float DEFAULT_ADC_VREF = 1.8f;
@@ -64,6 +63,11 @@ public class UnknownBoardInfo extends BoardInfo {
 		super(localSysInfo.getMake(), localSysInfo.getModel(),
 				localSysInfo.getMemoryKb() == null ? -1 : localSysInfo.getMemoryKb().intValue(),
 				localSysInfo.getOperatingSystemId(), localSysInfo.getOperatingSystemVersion());
+	}
+
+	@Override
+	public boolean isRecognised() {
+		return false;
 	}
 
 	/**

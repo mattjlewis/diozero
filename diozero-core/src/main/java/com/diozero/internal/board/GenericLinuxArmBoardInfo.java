@@ -61,6 +61,7 @@ public class GenericLinuxArmBoardInfo extends BoardInfo {
 	private List<String> compatibility;
 	private Properties mmapGpioClasses;
 	private Optional<Map<String, Integer>> chipMapping;
+	private boolean boardDefLoaded = false;
 
 	public GenericLinuxArmBoardInfo(LocalSystemInfo systemInfo) {
 		this(systemInfo, systemInfo.getMake());
@@ -102,15 +103,19 @@ public class GenericLinuxArmBoardInfo extends BoardInfo {
 		 * ["hardkernel,odroid-c2", "amlogic,meson-gxbb"]
 		 */
 		for (String compat : compatibility) {
-			boolean loaded = loadBoardPinInfoDefinition(compat.split(","));
-
-			if (loaded) {
+			boardDefLoaded = loadBoardPinInfoDefinition(compat.split(","));
+			if (boardDefLoaded) {
 				break;
 			}
 		}
 
-		// Note that if this fails the GPIO character implementation in the device
+		// Note that if this fails the GPIO chardev implementation in the device
 		// factory will attempt to auto-populate (if enabled)
+	}
+
+	@Override
+	public boolean isRecognised() {
+		return boardDefLoaded;
 	}
 
 	protected boolean loadBoardPinInfoDefinition(String... compatibilityParts) {

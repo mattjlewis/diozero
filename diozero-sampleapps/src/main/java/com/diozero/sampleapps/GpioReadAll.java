@@ -42,7 +42,7 @@ import static com.diozero.sampleapps.util.ConsoleUtil.gpioRead;
 import static org.fusesource.jansi.Ansi.ansi;
 
 import java.util.Map;
-import java.util.Optional;
+import java.util.OptionalInt;
 
 import org.fusesource.jansi.AnsiConsole;
 import org.tinylog.Logger;
@@ -94,7 +94,7 @@ public class GpioReadAll {
 		int index = 0;
 		for (PinInfo pin_info : pins.values()) {
 			int gpio = pin_info.getDeviceNumber();
-			Optional<Boolean> value = gpioRead(deviceFactory, pin_info);
+			OptionalInt value = gpioRead(deviceFactory, pin_info);
 			if (index++ % 2 == 0) {
 				System.out.format(
 						ansi().render("| @|bold," + getPinColour(pin_info) + " %3s|@ | @|bold," + getPinColour(pin_info)
