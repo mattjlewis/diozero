@@ -5,7 +5,7 @@ package com.diozero.sampleapps;
  * Organisation: diozero
  * Project:      diozero - Sample applications
  * Filename:     BME68xTest.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.sampleapps;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -88,9 +88,13 @@ public class BME68xTest {
 
 			if (bme68x.getVariantId() == BME68x.VARIANT_ID_BM688) {
 				parallelModeTest(bme68x);
+				bme68x.softReset();
+
+				// should be identical to above
+				defaultConfigTest(bme68x);
+				bme68x.softReset();
 			}
 
-			bme68x.softReset();
 
 			iaqTest(bme68x);
 		} finally {
@@ -169,6 +173,15 @@ public class BME68xTest {
 
 		System.out.println("heater_duration_ms: " + heater_duration_ms);
 
+		runParallelModeTest(bme68x, heater_duration_ms, target_operating_mode);
+	}
+
+	private static void defaultConfigTest(BME68x bme68x) {
+		OperatingMode mode = bme68x.calculateDefaultConfiguration();
+		runParallelModeTest(bme68x, 150, mode);
+	}
+
+	private static void runParallelModeTest(BME68x bme68x, int heater_duration_ms, OperatingMode target_operating_mode) {
 		int last_gas_meas_idx = -1;
 		long last_gas_meas_ms = System.currentTimeMillis();
 		for (int i = 0; i < 100; i++) {

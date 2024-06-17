@@ -5,7 +5,7 @@ package com.diozero.devices;
  * Organisation: diozero
  * Project:      diozero - Core
  * Filename:     BME68x.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.devices;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -39,13 +39,20 @@ import com.diozero.api.I2CDeviceInterface;
 import com.diozero.util.BitManipulation;
 import com.diozero.util.SleepUtil;
 
-/*-
- *
- * https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bme680-ds001.pdf
- * https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bme688-ds000.pdf
- * https://github.com/BoschSensortec/BME68x-Sensor-API
- * https://github.com/pimoroni/bme680-python
- * https://github.com/knobtviker/bme680
+/**
+ * An environmental sensor: measures temperature, pressure, humity, and a "gas" sensor for general air quality. The
+ * actual values <i>may not</i> be entirely accurate for your environment, so may need minor adjustments: the typcal
+ * offset that needs to be applied witll be to the temperature (about 5 degrees high).
+ * <p>
+ * <b>NOTEL</b> once activated, it will take about 30 seconds for readings to become more precise.
+ * </p>
+ * <ul>
+ * <li>https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bme680-ds001.pdf</li>
+ * <li>https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bme688-ds000.pdf</li>
+ * <li>https://github.com/BoschSensortec/BME68x-Sensor-API</li>
+ * <li>https://github.com/pimoroni/bme680-python</li>
+ * <li>https://github.com/knobtviker/bme680</li>
+ * </ul>
  */
 public class BME68x implements BarometerInterface, ThermometerInterface, HygrometerInterface {
 	// Chip vendor for the BME680
@@ -552,7 +559,7 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 	 * @param controller               I2C bus the sensor is connected to.
 	 * @param address                  I2C address of the sensor.
 	 * @param humidityOversampling     Humidity oversampling.
-	 * @param termperatureOversampling Temperature oversampling.
+	 * @param temperatureOversampling Temperature oversampling.
 	 * @param pressureOversampling     Pressure oversampling.
 	 * @param filter                   Infinite Impulse Response (IIR) filter.
 	 * @param standbyDuration          Standby time between sequential mode
@@ -570,7 +577,7 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 	 *
 	 * @param device                   I2C device.
 	 * @param humidityOversampling     Humidity oversampling.
-	 * @param termperatureOversampling Temperature oversampling.
+	 * @param temperatureOversampling Temperature oversampling.
 	 * @param pressureOversampling     Pressure oversampling.
 	 * @param filter                   Infinite Impulse Response (IIR) filter.
 	 * @param standbyDuration          Standby time between sequential mode
@@ -2011,5 +2018,54 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 					+ humidity + ", gasResistance=" + gasResistance + ", idacHeatRegVal=" + idacHeatRegVal
 					+ ", heaterResistance=" + heaterResistance + ", gasWaitMs=" + gasWaitMs + "]";
 		}
+	}
+
+	/**
+	 * Attempts to set reasonable defaults for the device since it's not that easy to configure.
+	 *
+	 * @return the determined operating mode for use with {@link #getSensorData(OperatingMode)}
+	 */
+	public OperatingMode calculateDefaultConfiguration() {
+		// if it's the 688, use parallel mode
+		if (getVariantId() == BME68x.VARIANT_ID_BM688) {
+			Logger.debug("Using PARALLEL mode");
+			setConfiguration(OversamplingMultiplier.X2, OversamplingMultiplier.X2, OversamplingMultiplier.X2,
+							 IirFilterCoefficient.NONE, StandbyDuration.NONE);
+			OperatingMode targetOperatingMode = OperatingMode.PARALLEL;
+
+			// Calculate TPHG measure duration and convert to milliseconds
+			int measureDurationMs = calculateMeasureDuration(targetOperatingMode) / 1000;
+			Logger.debug("measureDurationMs: {}", measureDurationMs);
+
+			// Assume that 150ms is the required heater duration.
+			// https://github.com/BoschSensortec/BME68x-Sensor-API/blob/master/examples/parallel_mode/parallel_mode.c#L78
+			// p39: Measurement duration = gas_wait_X * (gas_wait_shared + TTPHG_duration)
+			int heaterDurationMs = 150;
+			int gasWaitSharedMs = heaterDurationMs - measureDurationMs;
+			Logger.debug("gasWaitSharedMs: {}", gasWaitSharedMs);
+
+			HeaterConfig heaterConfig = new HeaterConfig(true, //
+														 // Heater temperature in degree Celsius
+														 new int[] { 320, 100, 100, 100, 200, 200, 200, 320, 320, 320 },
+														 // Multiplier to the shared heater duration
+														 new int[] { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
+														 gasWaitSharedMs);
+			setHeaterConfiguration(targetOperatingMode, heaterConfig);
+			return targetOperatingMode;
+		}
+		// otherwise force mode
+		setDefaultConfiguration();
+		return OperatingMode.FORCED;
+	}
+
+	/**
+	 * Sets a reasonable default for FORCED mode operation.
+	 */
+	public void setDefaultConfiguration() {
+		Logger.debug("Using FORCED mode");
+		setConfiguration(OversamplingMultiplier.X2, OversamplingMultiplier.X2, OversamplingMultiplier.X2,
+						 IirFilterCoefficient._3, StandbyDuration.NONE);
+
+		setHeaterConfiguration(OperatingMode.FORCED, new HeaterConfig(true, 320, 150));
 	}
 }
