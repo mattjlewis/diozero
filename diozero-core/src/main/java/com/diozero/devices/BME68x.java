@@ -5,7 +5,7 @@ package com.diozero.devices;
  * Organisation: diozero
  * Project:      diozero - Core
  * Filename:     BME68x.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.devices;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -2011,5 +2011,45 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 					+ humidity + ", gasResistance=" + gasResistance + ", idacHeatRegVal=" + idacHeatRegVal
 					+ ", heaterResistance=" + heaterResistance + ", gasWaitMs=" + gasWaitMs + "]";
 		}
+	}
+
+	/**
+	 * Calculates the indoor air quality as a percentage based on a baseline reading. Based off of Pimoroni's
+	 * <a href="https://github.com/pimoroni/bme680-python/blob/main/examples/indoor-air-quality.py">indoor-air-quality.py</a>
+	 * <p>
+	 * Under non-calibrated, general usage, it is recommended that the sensor "warm up" in the current mode for at least
+	 * 30 minutes before taking readings. After that time, any kind of statistical baseline (e.g. average) for the gas
+	 * and humidity readings can be used to get an indication of general air-quality.
+	 * </p>
+	 *
+	 * @param gasReading        current reading
+	 * @param gasBaseline       the "baseline" to score off of
+	 * @param humidityReading   current reading
+	 * @param humidityBaseline  the "baseline" to score off of
+	 * @param humidityWeighting weighting applied to scoring (a good default is 0.25f)
+	 */
+	public static float airQuality(float gasReading, float gasBaseline, float humidityReading, float humidityBaseline,
+								   float humidityWeighting) {
+		float gasOffset = gasBaseline - gasReading;
+		float humidityOffset = humidityReading - humidityBaseline;
+
+		float humidityScore;
+		if (humidityOffset > 0) {
+			humidityScore = (100 - humidityBaseline - humidityOffset) / (100 - humidityBaseline) * (humidityWeighting * 100);
+		}
+		else {
+			humidityScore = (humidityBaseline + humidityOffset) / humidityBaseline * (humidityWeighting * 100);
+		}
+
+		float gasScore;
+		if (gasOffset > 0) {
+			gasScore = (gasReading / gasBaseline) * (100 - (humidityWeighting * 100));
+		}
+		else {
+			gasScore = 100 - (humidityWeighting * 100);
+		}
+
+		// Calculate air_quality_score.
+		return humidityScore + gasScore;
 	}
 }
