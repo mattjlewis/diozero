@@ -5,7 +5,7 @@ package com.diozero.devices.oled;
  * Organisation: diozero
  * Project:      diozero - Core
  * Filename:     SsdOled.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.devices.oled;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -50,6 +50,7 @@ public abstract class SsdOled implements DeviceInterface {
 	protected final int height;
 
 	protected int imageType;
+	protected boolean screenOn;
 
 	protected SsdOled(SsdOledCommunicationChannel channel, int width, int height, int imageType) {
 		this.channel = channel;
@@ -60,7 +61,7 @@ public abstract class SsdOled implements DeviceInterface {
 
 	/**
 	 * Each device must maintain a <b>static</b> byte buffer of the screen contents.
-	 * 
+	 *
 	 * @return the screen contents to write out
 	 */
 	protected abstract byte[] getBuffer();
@@ -99,7 +100,7 @@ public abstract class SsdOled implements DeviceInterface {
 
 	/**
 	 * Fills the buffer with the image and immediately displays it
-	 * 
+	 *
 	 * @param image the image to display
 	 */
 	public abstract void display(BufferedImage image);
@@ -117,8 +118,30 @@ public abstract class SsdOled implements DeviceInterface {
 		return height;
 	}
 
+	/**
+	 * Set the display on or off.
+	 * @param on if {@code true}, turn on the display, otherwise off
+	 * @deprecated since 1.4.1: did not (formerly) store state
+	 */
+	@Deprecated(since = "1.4.1", forRemoval = true)
 	public void setDisplayOn(boolean on) {
+		setDisplay(on);
+	}
+
+	/**
+	 * Set the display on or off.
+	 * @param on if {@code true}, turn on the display, otherwise off
+	 */
+	public void setDisplay(boolean on) {
 		command(on ? DISPLAY_ON : DISPLAY_OFF);
+		screenOn = true;
+	}
+
+	/**
+	 * Get the display state: on {@code true} or off {@code false}
+	 */
+	public boolean getDisplay() {
+		return screenOn;
 	}
 
 	@Override
