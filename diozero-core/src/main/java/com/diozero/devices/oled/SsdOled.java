@@ -134,7 +134,7 @@ public abstract class SsdOled implements DeviceInterface {
 	 */
 	public void setDisplay(boolean on) {
 		command(on ? DISPLAY_ON : DISPLAY_OFF);
-		screenOn = true;
+		screenOn = on;
 	}
 
 	/**
