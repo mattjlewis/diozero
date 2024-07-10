@@ -34,6 +34,7 @@ package com.diozero.sampleapps;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.diozero.devices.AirQualitySensorInterface;
 import com.diozero.devices.BME68x;
 import com.diozero.devices.BME68x.Data;
 import com.diozero.devices.BME68x.HeaterConfig;
@@ -277,7 +278,7 @@ public class BME68xTest {
 				float hum = data[0].getHumidity();
 
 				// Calculate air_quality_score.
-				float air_quality_score = BME68x.airQuality(gas, gas_baseline, hum, hum_baseline, hum_weighting);
+				float air_quality_score = AirQualitySensorInterface.airQuality(gas, gas_baseline, hum, hum_baseline, hum_weighting);
 				System.out.format("Gas: %,.2f Ohms, humidity: %,.2f %%RH, air quality: %,.2f%n", gas, hum, air_quality_score);
 
 				SleepUtil.sleepSeconds(1);

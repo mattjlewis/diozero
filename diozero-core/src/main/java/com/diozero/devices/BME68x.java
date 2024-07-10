@@ -47,7 +47,7 @@ import com.diozero.util.SleepUtil;
  * https://github.com/pimoroni/bme680-python
  * https://github.com/knobtviker/bme680
  */
-public class BME68x implements BarometerInterface, ThermometerInterface, HygrometerInterface {
+public class BME68x implements BarometerInterface, ThermometerInterface, AirQualitySensorInterface {
 	// Chip vendor for the BME680
 	private static final String CHIP_VENDOR = "Bosch";
 	// Chip name for the BME680
@@ -552,7 +552,7 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 	 * @param controller               I2C bus the sensor is connected to.
 	 * @param address                  I2C address of the sensor.
 	 * @param humidityOversampling     Humidity oversampling.
-	 * @param termperatureOversampling Temperature oversampling.
+	 * @param temperatureOversampling Temperature oversampling.
 	 * @param pressureOversampling     Pressure oversampling.
 	 * @param filter                   Infinite Impulse Response (IIR) filter.
 	 * @param standbyDuration          Standby time between sequential mode
@@ -570,7 +570,7 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 	 *
 	 * @param device                   I2C device.
 	 * @param humidityOversampling     Humidity oversampling.
-	 * @param termperatureOversampling Temperature oversampling.
+	 * @param temperatureOversampling Temperature oversampling.
 	 * @param pressureOversampling     Pressure oversampling.
 	 * @param filter                   Infinite Impulse Response (IIR) filter.
 	 * @param standbyDuration          Standby time between sequential mode
@@ -910,6 +910,7 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 		return getSensorData()[0].getHumidity();
 	}
 
+	@Override
 	public float getGasResistance() {
 		return getSensorData()[0].getGasResistance();
 	}
@@ -2013,43 +2014,4 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 		}
 	}
 
-	/**
-	 * Calculates the indoor air quality as a percentage based on a baseline reading. Based off of Pimoroni's
-	 * <a href="https://github.com/pimoroni/bme680-python/blob/main/examples/indoor-air-quality.py">indoor-air-quality.py</a>
-	 * <p>
-	 * Under non-calibrated, general usage, it is recommended that the sensor "warm up" in the current mode for at least
-	 * 30 minutes before taking readings. After that time, any kind of statistical baseline (e.g. average) for the gas
-	 * and humidity readings can be used to get an indication of general air-quality.
-	 * </p>
-	 *
-	 * @param gasReading        current reading
-	 * @param gasBaseline       the "baseline" to score off of
-	 * @param humidityReading   current reading
-	 * @param humidityBaseline  the "baseline" to score off of
-	 * @param humidityWeighting weighting applied to scoring (a good default is 0.25f)
-	 */
-	public static float airQuality(float gasReading, float gasBaseline, float humidityReading, float humidityBaseline,
-								   float humidityWeighting) {
-		float gasOffset = gasBaseline - gasReading;
-		float humidityOffset = humidityReading - humidityBaseline;
-
-		float humidityScore;
-		if (humidityOffset > 0) {
-			humidityScore = (100 - humidityBaseline - humidityOffset) / (100 - humidityBaseline) * (humidityWeighting * 100);
-		}
-		else {
-			humidityScore = (humidityBaseline + humidityOffset) / humidityBaseline * (humidityWeighting * 100);
-		}
-
-		float gasScore;
-		if (gasOffset > 0) {
-			gasScore = (gasReading / gasBaseline) * (100 - (humidityWeighting * 100));
-		}
-		else {
-			gasScore = 100 - (humidityWeighting * 100);
-		}
-
-		// Calculate air_quality_score.
-		return humidityScore + gasScore;
-	}
 }
