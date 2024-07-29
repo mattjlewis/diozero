@@ -5,7 +5,7 @@ package com.diozero.sampleapps;
  * Organisation: diozero
  * Project:      diozero - Sample applications
  * Filename:     BME68xTest.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.sampleapps;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -34,6 +34,7 @@ package com.diozero.sampleapps;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.diozero.devices.AirQualitySensorInterface;
 import com.diozero.devices.BME68x;
 import com.diozero.devices.BME68x.Data;
 import com.diozero.devices.BME68x.HeaterConfig;
@@ -60,10 +61,10 @@ public class BME68xTest {
 		}
 
 		try (BME68x bme68x = new BME68x(controller, address)) {
-			System.out.format("chipId: 0x%x, variantId: 0x%x, uniqueId: 0x%x%n", Integer.valueOf(bme68x.getChipId()),
-					Integer.valueOf(bme68x.getVariantId()), Integer.valueOf(bme68x.getUniqueId()));
+			System.out.format("chipId: 0x%x, variantId: 0x%x, uniqueId: 0x%x%n", (int)bme68x.getChipId(),
+                              (int)bme68x.getVariantId(), (int)bme68x.getUniqueId());
 			System.out.format(
-					"Humidity Oversampling: %s, Temperature Oversampling: %s, Pressure Oversampling: %s, Filter: %s, Standy Duration: %s%n",
+					"Humidity Oversampling: %s, Temperature Oversampling: %s, Pressure Oversampling: %s, Filter: %s, Stand Duration: %s%n",
 					bme68x.getHumidityOversample(), bme68x.getTemperatureOversample(), bme68x.getPressureOversample(),
 					bme68x.getIirFilterConfig(), bme68x.getStandbyDuration());
 
@@ -122,13 +123,13 @@ public class BME68xTest {
 			int reading = 0;
 			for (Data data : bme68x.getSensorData(target_operating_mode)) {
 				System.out.format(
-						"Reading [%d]: Idx: %,d. Temperature: %,.2f C. Pressure: %,.2f hPa. Relative Humidity: %,.2f %%rH. Gas Idx: %,d. Gas Resistance: %,.2f Ohms. IDAC: %,.2f mA. Gas Wait: %,d (ms or multiplier). (heater stable: %b, gas valid: %b).%n",
-						Integer.valueOf(reading), Integer.valueOf(data.getMeasureIndex()),
-						Float.valueOf(data.getTemperature()), Float.valueOf(data.getPressure()),
-						Float.valueOf(data.getHumidity()), Integer.valueOf(data.getGasMeasurementIndex()),
-						Float.valueOf(data.getGasResistance()), Float.valueOf(data.getIdacHeatMA()),
-						Short.valueOf(data.getGasWait()), Boolean.valueOf(data.isHeaterTempStable()),
-						Boolean.valueOf(data.isGasMeasurementValid()));
+                        "Reading [%d]: Idx: %,d. Temperature: %,.2f C. Pressure: %,.2f hPa. Relative Humidity: %,.2f %%rH. Gas Idx: %,d. Gas Resistance: %,.2f Ohms. IDAC: %,.2f mA. Gas Wait: %,d (ms or multiplier). (heater stable: %b, gas valid: %b).%n",
+                        reading, data.getMeasureIndex(),
+                        data.getTemperature(), data.getPressure(),
+                        data.getHumidity(), data.getGasMeasurementIndex(),
+                        data.getGasResistance(), data.getIdacHeatMA(),
+                        data.getGasWait(), data.isHeaterTempStable(),
+                        data.isGasMeasurementValid());
 				reading++;
 			}
 
@@ -180,13 +181,13 @@ public class BME68xTest {
 				if (data.isNewData()) {
 					if (data.isGasMeasurementValid()) {
 						System.out.format(
-								"Reading [%d]: Idx: %,d. Temperature: %,.2f C. Pressure: %,.2f hPa. Relative Humidity: %,.2f %%rH. Gas Idx: %,d. Gas Resistance: %,.2f Ohms. IDAC: %,.2f mA. Gas Wait: %,d (ms or multiplier). (heater stable: %b, gas valid: %b).%n",
-								Integer.valueOf(reading), Integer.valueOf(data.getMeasureIndex() & 0xff),
-								Float.valueOf(data.getTemperature()), Float.valueOf(data.getPressure()),
-								Float.valueOf(data.getHumidity()), Integer.valueOf(data.getGasMeasurementIndex()),
-								Float.valueOf(data.getGasResistance()), Float.valueOf(data.getIdacHeatMA()),
-								Short.valueOf(data.getGasWait()), Boolean.valueOf(data.isHeaterTempStable()),
-								Boolean.valueOf(data.isGasMeasurementValid()));
+                                "Reading [%d]: Idx: %,d. Temperature: %,.2f C. Pressure: %,.2f hPa. Relative Humidity: %,.2f %%rH. Gas Idx: %,d. Gas Resistance: %,.2f Ohms. IDAC: %,.2f mA. Gas Wait: %,d (ms or multiplier). (heater stable: %b, gas valid: %b).%n",
+                                reading, data.getMeasureIndex() & 0xff,
+                                data.getTemperature(), data.getPressure(),
+                                data.getHumidity(), data.getGasMeasurementIndex(),
+                                data.getGasResistance(), data.getIdacHeatMA(),
+                                data.getGasWait(), data.isHeaterTempStable(),
+                                data.isGasMeasurementValid());
 						if (data.getGasMeasurementIndex() != last_gas_meas_idx) {
 							System.out.println("delta: " + (System.currentTimeMillis() - last_gas_meas_ms));
 							last_gas_meas_ms = System.currentTimeMillis();
@@ -194,10 +195,10 @@ public class BME68xTest {
 						}
 					} else {
 						System.out.format(
-								"Reading [%d]: Idx: %,d. Temperature: %,.2f C. Pressure: %,.2f hPa. Relative Humidity: %,.2f %%rH.%n",
-								Integer.valueOf(reading), Integer.valueOf(data.getMeasureIndex() & 0xff),
-								Float.valueOf(data.getTemperature()), Float.valueOf(data.getPressure()),
-								Float.valueOf(data.getHumidity()));
+                                "Reading [%d]: Idx: %,d. Temperature: %,.2f C. Pressure: %,.2f hPa. Relative Humidity: %,.2f %%rH.%n",
+                                reading, data.getMeasureIndex() & 0xff,
+                                data.getTemperature(), data.getPressure(),
+                                data.getHumidity());
 					}
 				}
 				reading++;
@@ -238,74 +239,47 @@ public class BME68xTest {
 		// Collect gas resistance burn-in values, then use the average of the last 50
 		// values to set the upper limit for calculating gas_baseline
 		System.out.format("Collecting gas resistance burn-in data for %,d seconds...%n",
-				Integer.valueOf(burn_in_time_sec));
+                          burn_in_time_sec);
 		List<Float> gas_res_burn_in_data = new ArrayList<>();
 		List<Float> hum_burn_in_data = new ArrayList<>();
 		while ((System.currentTimeMillis() - start_time_ms) / 1000 < burn_in_time_sec) {
 			Data[] data = bme68x.getSensorData(target_operating_mode);
 			if (data != null && data.length > 0 && data[0].isHeaterTempStable()) {
-				gas_res_burn_in_data.add(Float.valueOf(data[0].getGasMeasurementIndex()));
-				hum_burn_in_data.add(Float.valueOf(data[0].getHumidity()));
+				gas_res_burn_in_data.add((float)data[0].getGasMeasurementIndex());
+				hum_burn_in_data.add(data[0].getHumidity());
 			}
 			SleepUtil.sleepSeconds(1);
 			System.out.format("Gas: %,.2f Ohms. Remaining burn-in time: %,d secs%n",
-					Float.valueOf(data[0].getGasResistance()),
-					Long.valueOf(burn_in_time_sec - (System.currentTimeMillis() - start_time_ms) / 1000));
+                              data[0].getGasResistance(),
+                              burn_in_time_sec - (System.currentTimeMillis() - start_time_ms) / 1000);
 		}
 
 		// Get the average of the last 50% of values
 		int num_gas_samples = gas_res_burn_in_data.size();
 		float gas_baseline = gas_res_burn_in_data.subList(num_gas_samples / 2, num_gas_samples).stream()
-				.reduce(Float.valueOf(0f), Float::sum).floatValue() / num_gas_samples / 2;
+                                     .reduce(0f, Float::sum) / num_gas_samples / 2;
 
 		// Set the humidity baseline to 40%, an optimal indoor humidity.
 		// float hum_baseline = 40f;
 		int num_hum_samples = hum_burn_in_data.size();
 		float hum_baseline = hum_burn_in_data.subList(num_hum_samples / 2, num_hum_samples).stream()
-				.reduce(Float.valueOf(0f), Float::sum).floatValue() / num_hum_samples / 2;
+                                     .reduce(0f, Float::sum) / num_hum_samples / 2;
 
 		// This sets the balance between humidity and gas reading in the calculation of
 		// air_quality_score (20:80, humidity:gas)
 		float hum_weighting = 0.2f;
 
-		System.out.format("Gas baseline: %,.2f Ohms, humidity baseline: %,.2f %%RH%n", Float.valueOf(gas_baseline),
-				Float.valueOf(hum_baseline));
+		System.out.format("Gas baseline: %,.2f Ohms, humidity baseline: %,.2f %%RH%n", gas_baseline, hum_baseline);
 
 		while (true) {
 			Data[] data = bme68x.getSensorData(target_operating_mode);
 			if (data != null && data.length > 0 && data[0].isHeaterTempStable()) {
 				float gas = data[0].getGasResistance();
-				float gas_offset = gas_baseline - gas;
-
 				float hum = data[0].getHumidity();
-				float hum_offset = hum - hum_baseline;
-
-				// Calculate hum_score as the distance from the hum_baseline.
-				float hum_score;
-				if (hum_offset > 0) {
-					hum_score = (100 - hum_baseline - hum_offset);
-					hum_score /= (100 - hum_baseline);
-					hum_score *= (hum_weighting * 100);
-				} else {
-					hum_score = (hum_baseline + hum_offset);
-					hum_score /= hum_baseline;
-					hum_score *= (hum_weighting * 100);
-				}
-
-				// Calculate gas_score as the distance from the gas_baseline.
-				float gas_score;
-				if (gas_offset > 0) {
-					gas_score = (gas / gas_baseline);
-					gas_score *= (100 - (hum_weighting * 100));
-				} else {
-					gas_score = 100 - (hum_weighting * 100);
-				}
 
 				// Calculate air_quality_score.
-				float air_quality_score = hum_score + gas_score;
-
-				System.out.format("Gas: %,.2f Ohms, humidity: %,.2f %%RH, air quality: %,.2f%n", Float.valueOf(gas),
-						Float.valueOf(hum), Float.valueOf(air_quality_score));
+				float air_quality_score = AirQualitySensorInterface.airQuality(gas, gas_baseline, hum, hum_baseline, hum_weighting);
+				System.out.format("Gas: %,.2f Ohms, humidity: %,.2f %%RH, air quality: %,.2f%n", gas, hum, air_quality_score);
 
 				SleepUtil.sleepSeconds(1);
 			}

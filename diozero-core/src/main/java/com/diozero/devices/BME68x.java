@@ -5,7 +5,7 @@ package com.diozero.devices;
  * Organisation: diozero
  * Project:      diozero - Core
  * Filename:     BME68x.java
- * 
+ *
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
  * %%
@@ -17,10 +17,10 @@ package com.diozero.devices;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -47,7 +47,7 @@ import com.diozero.util.SleepUtil;
  * https://github.com/pimoroni/bme680-python
  * https://github.com/knobtviker/bme680
  */
-public class BME68x implements BarometerInterface, ThermometerInterface, HygrometerInterface {
+public class BME68x implements BarometerInterface, ThermometerInterface, AirQualitySensorInterface {
 	// Chip vendor for the BME680
 	private static final String CHIP_VENDOR = "Bosch";
 	// Chip name for the BME680
@@ -552,7 +552,7 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 	 * @param controller               I2C bus the sensor is connected to.
 	 * @param address                  I2C address of the sensor.
 	 * @param humidityOversampling     Humidity oversampling.
-	 * @param termperatureOversampling Temperature oversampling.
+	 * @param temperatureOversampling Temperature oversampling.
 	 * @param pressureOversampling     Pressure oversampling.
 	 * @param filter                   Infinite Impulse Response (IIR) filter.
 	 * @param standbyDuration          Standby time between sequential mode
@@ -570,7 +570,7 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 	 *
 	 * @param device                   I2C device.
 	 * @param humidityOversampling     Humidity oversampling.
-	 * @param termperatureOversampling Temperature oversampling.
+	 * @param temperatureOversampling Temperature oversampling.
 	 * @param pressureOversampling     Pressure oversampling.
 	 * @param filter                   Infinite Impulse Response (IIR) filter.
 	 * @param standbyDuration          Standby time between sequential mode
@@ -910,6 +910,7 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 		return getSensorData()[0].getHumidity();
 	}
 
+	@Override
 	public float getGasResistance() {
 		return getSensorData()[0].getGasResistance();
 	}
@@ -2012,4 +2013,5 @@ public class BME68x implements BarometerInterface, ThermometerInterface, Hygrome
 					+ ", heaterResistance=" + heaterResistance + ", gasWaitMs=" + gasWaitMs + "]";
 		}
 	}
+
 }
