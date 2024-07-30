@@ -245,6 +245,7 @@ public class I2CDevice implements I2CDeviceInterface {
 		this.byteOrder = byteOrder;
 	}
 
+	@Override
 	public int getController() {
 		return controller;
 	}

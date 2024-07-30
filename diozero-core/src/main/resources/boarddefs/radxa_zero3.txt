@@ -1,0 +1,45 @@
+# https://docs.radxa.com/en/zero/zero3/hardware-design/hardware-interface
+
+# GPIO Header info
+# General, Header, Physical Pin, Name
+General, Default, 1, 3v3
+General, Default, 2, 5v
+General, Default, 4, 5v
+General, Default, 6, GND
+General, Default, 9, GND
+General, Default, 14, GND
+General, Default, 17, 3v3
+General, Default, 20, GND
+General, Default, 25, GND
+General, Default, 26, NC
+General, Default, 34, GND
+General, Default, 39, GND
+
+# GPIO, Header,  GPIO#, Name,      Physical, Chip, Line, Modes
+GPIO,   Default, 32,    I2C3_SDA,  3,        1,    0,    DIGITAL_INPUT | DIGITAL_OUTPUT  # GPIO1_A0, 2:UART3_RX, 3:I2C3_SDA
+GPIO,   Default, 33,    I2C3_SCL,  5,        1,    1,    DIGITAL_INPUT | DIGITAL_OUTPUT  # GPIO1_A1, 2:UART3_TX, 3:I2C3_SCL
+GPIO,   Default, 116,   GPIO3_C4,  7,        3,    20,   DIGITAL_INPUT | DIGITAL_OUTPUT | PWM_OUTPUT  # GPIO3_C4, 4:PWM14_M0
+GPIO,   Default, 25,    UART2_TX,  8,        0,    25,   DIGITAL_INPUT | DIGITAL_OUTPUT  # GPIO0_D1, 2:UART2_TX
+GPIO,   Default, 24,    UART2_RX,  10,       0,    24,   DIGITAL_INPUT | DIGITAL_OUTPUT  # GPIO0_D0, 2:UART2_RX
+GPIO,   Default, 97,    GPIO3_A1,  11,       3,    1,    DIGITAL_INPUT | DIGITAL_OUTPUT  # GPIO3_A1
+GPIO,   Default, 99,    GPIO3_A3,  12,       3,    3,    DIGITAL_INPUT | DIGITAL_OUTPUT  # GPIO3_A3, 5:I2S_SCLK
+GPIO,   Default, 98,    GPIO3_A2,  13,       3,    2,    DIGITAL_INPUT | DIGITAL_OUTPUT  # GPIO3_A2, 5:I2S_MSCL
+GPIO,   Default, 104,   GPIO3_B0,  15,       3,    8,    DIGITAL_INPUT | DIGITAL_OUTPUT  # GPIO3_B0
+GPIO,   Default, 105,   GPIO3_B1,  16,       3,    9,    DIGITAL_INPUT | DIGITAL_OUTPUT | PWM_OUTPUT  # GPIO3_B1, 2:UART4_RX, 3: PWM8_M0
+GPIO,   Default, 106,   GPIO3_B2,  18,       3,    10,   DIGITAL_INPUT | DIGITAL_OUTPUT | PWM_OUTPUT  # GPIO3_B2, 2:UART4_TX, 3: PWM9_M0
+GPIO,   Default, 147,   SPI3_MOSI, 19,       4,    19,   DIGITAL_INPUT | DIGITAL_OUTPUT  # GPIO4_C3, 2:SPI3_MOSI, 3:I2S3_SCLK, 4:PWM15_IR
+GPIO,   Default, 149,   SPI3_MISO, 21,       4,    21,   DIGITAL_INPUT | DIGITAL_OUTPUT | PWM_OUTPUT  # GPIO4_C5, 2:SPI3_MISO, 3:I2S3_SDO, 4:PWM12:_M1, 5:UART9_TX
+GPIO,   Default, 113,   GPIO3_C1,  22,       3,    17,   DIGITAL_INPUT | DIGITAL_OUTPUT  # GPIO3_C1, 5:I2S3_SDO
+GPIO,   Default, 146,   SPI3_CLK,  23,       4,    18,   DIGITAL_INPUT | DIGITAL_OUTPUT  # GPIO4_C2, 2:SPI3_CLK, 3:I2S3_MCLK, 4:PWM14_M1
+GPIO,   Default, 150,   SPI3_CS0,  24,       4,    22,   DIGITAL_INPUT | DIGITAL_OUTPUT  # GPIO4_C6, 2:SPI3_CS0, 3:PWM13_M1, 4:UART9_RX, 5:I2D3_SDI
+GPIO,   Default, 138,   I2C4_SDA,  27,       4,    10,   DIGITAL_INPUT | DIGITAL_OUTPUT  # GPIO4_B2, 3:I2S2_SDI, 4:I2C4_SDA
+GPIO,   Default, 139,   I2C4_SCL,  28,       4,    11,   DIGITAL_INPUT | DIGITAL_OUTPUT  # GPIO4_B3, 4:I2C4_SCL, 5:I2S2_SDO
+GPIO,   Default, 107,   GPIO3_B3,  29,       3,    11,   DIGITAL_INPUT | DIGITAL_OUTPUT  # GPIO3_B3
+GPIO,   Default, 108,   GPIO3_B4,  31,       3,    12,   DIGITAL_INPUT | DIGITAL_OUTPUT  # GPIO3_B4
+GPIO,   Default, 114,   GPIO3_C2,  32,       3,    18,   DIGITAL_INPUT | DIGITAL_OUTPUT  # GPIO3_C2, 2:UART5_TX, 5:I2S1_SDO3
+GPIO,   Default, 115,   GPIO3_C3,  33,       3,    19,   DIGITAL_INPUT | DIGITAL_OUTPUT  # GPIO3_C3, 3:I2S1_SCLK_RX, 5:UART5_RX
+GPIO,   Default, 100,   GPIO3_A4,  35,       3,     4,   DIGITAL_INPUT | DIGITAL_OUTPUT  # GPIO3_A4, 3:I2S3_LRCK
+GPIO,   Default, 103,   GPIO3_A7,  36,       3,     7,   DIGITAL_INPUT | DIGITAL_OUTPUT  # GPIO3_A7
+GPIO,   Default, 36,    GPIO1_A4,  37,       1,     4,   DIGITAL_INPUT | DIGITAL_OUTPUT  # GPIO1_A4, 3:I2S1_SCLK_RX
+GPIO,   Default, 102,   GPIO3_A6,  38,       3,     6,   DIGITAL_INPUT | DIGITAL_OUTPUT  # GPIO3_A6, 5:I2S3_SDI
+GPIO,   Default, 101,   GPIO3_A5,  40,       3,     5,   DIGITAL_INPUT | DIGITAL_OUTPUT  # GPIO3_A5, 5:I2S3_SDO
