@@ -86,7 +86,7 @@
 		<hipparchus.version>3.1</hipparchus.version>
 		<eclipse-paho-client-mqttv3.version>1.2.5</eclipse-paho-client-mqttv3.version>
 		<google-gson.version>2.11.0</google-gson.version>
-		<google-protobuf-java.version>4.27.2</google-protobuf-java.version>
+		<google-protobuf-java.version>4.27.5</google-protobuf-java.version>
 		<netty.version>4.1.112.Final</netty.version>
 		<grpc.version>1.65.1</grpc.version>
 		<junit.version>5.10.3</junit.version>
