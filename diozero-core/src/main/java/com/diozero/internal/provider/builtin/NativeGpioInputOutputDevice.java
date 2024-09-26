@@ -117,9 +117,9 @@ public class NativeGpioInputOutputDevice extends AbstractInputDevice<DigitalInpu
 	public boolean getValue() throws RuntimeIOException {
 		if (mmapGpio == null) {
 			return line.getValue() == 0 ? false : true;
-		} else {
-			return mmapGpio.gpioRead(gpio);
 		}
+
+		return mmapGpio.gpioRead(gpio);
 	}
 
 	@Override
