@@ -37,6 +37,7 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
@@ -62,9 +63,10 @@ public class GpioChip extends GpioChipInfo implements AutoCloseable, GpioLineEve
 		LibraryLoader.loadSystemUtils();
 
 		final Map<Integer, GpioChip> chips = Files.list(Paths.get("/dev"))
-				.filter(p -> p.getFileName().toString().startsWith("gpiochip"))
+				.filter(p -> p.getFileName().toString().startsWith("gpiochip")) //
+				.filter(p -> !Files.isSymbolicLink(p)) //
 				.map(p -> NativeGpioDevice.openChip(p.toString())) //
-				.filter(p -> p != null) // openChip will return null if it is unable to open the chip
+				.filter(Objects::nonNull) // openChip will return null if it is unable to open the chip
 				.collect(Collectors.toMap(GpioChip::getChipId, Function.identity()));
 
 		if (chips.isEmpty()) {
