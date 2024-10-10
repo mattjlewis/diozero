@@ -4,7 +4,7 @@ package com.diozero.internal.provider.builtin.gpio;
  * #%L
  * Organisation: diozero
  * Project:      diozero - Core
- * Filename:     GpioChipOpenTest.java
+ * Filename:     ListGpioChips.java
  * 
  * This file is part of the diozero project. More information about this project
  * can be found at https://www.diozero.com/.
@@ -33,45 +33,38 @@ package com.diozero.internal.provider.builtin.gpio;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
+import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Map;
-import java.util.Objects;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+import java.nio.file.attribute.PosixFileAttributes;
+import java.util.Comparator;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-
-@SuppressWarnings("static-method")
-public class GpioChipOpenTest {
-	private static final String GPIO_CHIP_FILENAME_PREFIX = "gpiochip";
-
-	@Test
-	public void test() throws IOException {
-		Map<Integer, GpioChipTest> chips = Files.list(Paths.get("src/test/resources/dev"))
-				.filter(p -> p.getFileName().toString().startsWith("gpiochip")) //
-				.filter(p -> !Files.isSymbolicLink(p)) //
-				.map(p -> GpioChipOpenTest.openChip(p.getFileName().toString())) //
-				.filter(Objects::nonNull) // openChip will return null if it is unable to open the chip
-				.collect(Collectors.toMap(GpioChipTest::getChipId, Function.identity()));
-		Assertions.assertNotNull(chips);
-		Assertions.assertEquals(4, chips.size());
-	}
-
-	private static GpioChipTest openChip(String deviceFilename) {
-		int chip_id = Integer.parseInt(deviceFilename.substring(GPIO_CHIP_FILENAME_PREFIX.length()));
-		return new GpioChipTest(chip_id);
-	}
-
-	public static class GpioChipTest {
-		private int chipId;
-
-		public GpioChipTest(int chipId) {
-			this.chipId = chipId;
+public class ListGpioChips {
+	public static void main(String[] args) {
+		try {
+			Files.list(Paths.get("src/test/resources/dev"))
+					.filter(p -> p.getFileName().toString().startsWith("gpiochip")) //
+					.sorted(Comparator.comparing(p -> p.getFileName().toString())) //
+					.distinct() //
+					.forEach(ListGpioChips::printInfo);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+	}
 
-		public int getChipId() {
-			return chipId;
+	private static void printInfo(Path p) {
+		System.out.format("%s symbolic link: %b, regular file (nofollow_links): %b, regular file: %b, directory: %b\n",
+				p, Boolean.valueOf(Files.isSymbolicLink(p)),
+				Boolean.valueOf(Files.isRegularFile(p, LinkOption.NOFOLLOW_LINKS)),
+				Boolean.valueOf(Files.isRegularFile(p)), Boolean.valueOf(Files.isDirectory(p)));
+		try {
+			var attrs = Files.readAttributes(p, PosixFileAttributes.class, LinkOption.NOFOLLOW_LINKS);
+			System.out.format("directory: %b, other: %b, regular: %b, symbolic link: %b\n", attrs.isDirectory(),
+					attrs.isOther(), attrs.isRegularFile(), attrs.isSymbolicLink());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 }

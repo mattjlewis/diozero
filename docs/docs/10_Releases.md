@@ -40,11 +40,14 @@ redirect_from:
     + Add GPIO iomux mode mapping information in the board def file (in the list of supported device modes, e.g. PWM_OUTPUT(2)?)
     + Create common MmapGpioInterface sample app
 
-## 1.4.1 (In progress)
+## 1.4.1
 
 + MICS6814 CO/NH3/NO2 gas sensor
 + ServoTrim constructors
-+ Bug fix to SSD1351
++ Bug fix for SSD1351
++ Jetson Nano & Libretech AML s905x
++ Fix for PCA9685 rounding errors
++ Fixes for Raspberry PI with kernel 6.6.x
 
 ## 1.4.0
 
