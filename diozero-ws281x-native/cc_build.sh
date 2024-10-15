@@ -15,8 +15,8 @@ rebuild_rpi_ws281x () {
   
   echo "ARMv6"
   old_path=${PATH}
-  PATH=${PI_GCC_TARGET_DIR}/bin:${PATH} && scons V=yes TOOLCHAIN=arm-linux-gnueabihf CFLAGS="-march=armv6 -mfloat-abi=hard"
-  sudo mv libws2811.a ${PI_GCC_TARGET_DIR}/arm-linux-gnueabihf/lib/.
+  PATH=${PI_CC_TARGET_DIR}/bin:${PATH} && scons V=yes TOOLCHAIN=arm-linux-gnueabihf CFLAGS="-march=armv6 -mfloat-abi=hard"
+  sudo mv libws2811.a ${PI_CC_TARGET_DIR}/arm-linux-gnueabihf/lib/.
   PATH=${old_path}
 }
 
@@ -56,7 +56,7 @@ echo
 # Finally build ARMv6 to be extra sure that PATH has no reference to the Pi ARMv6 cross compiler
 echo "Compiling for ARMv6"
 OLD_PATH=${PATH}
-PATH=${PI_GCC_TARGET_DIR}/bin:${PATH} && make clean && make CROSS_PREFIX=arm-linux-gnueabihf- CFLAGS="-mfpu=vfp -mfloat-abi=hard -march=armv6" RPI_WS281X_DIR=/home/develop/rpi_ws281x
+PATH=${PI_CC_TARGET_DIR}/bin:${PATH} && make clean && make CROSS_PREFIX=arm-linux-gnueabihf- CFLAGS="-mfpu=vfp -mfloat-abi=hard -march=armv6" RPI_WS281X_DIR=/home/develop/rpi_ws281x
 if [ $? -eq 0 ]; then
   TARGET=${LIB_DIR}/linux-armv6 && mkdir -p ${TARGET} && mv ${LIB_NAME} ${TARGET}/.
   make clean
