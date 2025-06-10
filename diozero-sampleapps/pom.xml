@@ -13,9 +13,9 @@
 
 	<properties>
 		<imgscalr-lib.version>4.2</imgscalr-lib.version>
-		<jansi.version>2.4.1</jansi.version>
-		<picocli.version>4.7.6</picocli.version>
-		<snakeyaml.version>2.3</snakeyaml.version>
+		<jansi.version>2.4.2</jansi.version>
+		<picocli.version>4.7.7</picocli.version>
+		<snakeyaml.version>2.4</snakeyaml.version>
 	</properties>
 
 	<dependencyManagement>
