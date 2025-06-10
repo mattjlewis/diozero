@@ -160,11 +160,8 @@ public class PCA9685 extends AbstractDeviceFactory
 	 * @throws RuntimeIOException on error
 	 */
 	public PCA9685(int controller, int address, int pwmFrequency) throws RuntimeIOException {
-		this(I2CDevice.builder(address)
-					 .setController(controller)
-					 .setByteOrder(ByteOrder.BIG_ENDIAN)
-					 .build(),
-			 pwmFrequency);
+		this(I2CDevice.builder(address).setController(controller).setByteOrder(ByteOrder.BIG_ENDIAN).build(),
+				pwmFrequency);
 	}
 
 	/**
@@ -272,7 +269,7 @@ public class PCA9685 extends AbstractDeviceFactory
 	 * @param off     off time
 	 * @throws RuntimeIOException if an I/O error occurs
 	 */
-	private void setPwm(int channel, int on, int off) throws RuntimeIOException {
+	public void setPwm(int channel, int on, int off) throws RuntimeIOException {
 		validateChannel(channel);
 		validateOnOff(on, off);
 
@@ -296,10 +293,6 @@ public class PCA9685 extends AbstractDeviceFactory
 		}
 		if (off < 0 || off > MAX_VALUE) {
 			throw new IllegalArgumentException(String.format("Error: off (" + off + ") must be 0.." + MAX_VALUE));
-		}
-		// Off must be after on
-		if (off < on) {
-			throw new IllegalArgumentException("Off value (" + off + ") must be > on value (" + on + ")");
 		}
 		// Total must be < 4096
 		if (on + off > MAX_VALUE) {
