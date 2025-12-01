@@ -191,74 +191,84 @@ public class PwmOutputDevice extends GpioDevice {
 	}
 
 	protected void onOffLoop(float onTime, float offTime, int n, boolean background) throws RuntimeIOException {
+		onOffLoop(onTime, offTime, 1, n, background);
+	}
+
+	protected void onOffLoop(float onTime, float offTime, float onValue, int n, boolean background)
+			throws RuntimeIOException {
 		stopLoops();
 		if (background) {
 			DiozeroScheduler.getNonDaemonInstance().execute(() -> {
 				backgroundThread = Thread.currentThread();
-				onOffLoop(onTime, offTime, n);
+				onOffLoop(onTime, offTime, onValue, n);
 				Logger.debug("Background on-off loop finished");
 			});
 		} else {
-			onOffLoop(onTime, offTime, n);
+			onOffLoop(onTime, offTime, onValue, n);
 		}
 	}
 
-	private void onOffLoop(float onTime, float offTime, int n) throws RuntimeIOException {
+	private void onOffLoop(float onTime, float offTime, float onValue, int n) throws RuntimeIOException {
 		if (n > 0) {
 			running.getAndSet(true);
 			for (int i = 0; i < n && running.get(); i++) {
-				onOff(onTime, offTime);
+				onOff(onTime, offTime, onValue);
 			}
 			running.getAndSet(false);
 		} else if (n == INFINITE_ITERATIONS) {
 			running.getAndSet(true);
 			while (running.get()) {
-				onOff(onTime, offTime);
+				onOff(onTime, offTime, onValue);
 			}
 		}
 	}
 
 	protected void fadeInOutLoop(float fadeTime, int steps, int iterations, boolean background)
 			throws RuntimeIOException {
+		fadeInOutLoop(fadeTime, steps, 1, iterations, background);
+	}
+
+	protected void fadeInOutLoop(float fadeTime, int steps, float maxValue, int iterations, boolean background)
+			throws RuntimeIOException {
 		stopLoops();
 		if (background) {
 			DiozeroScheduler.getNonDaemonInstance().execute(() -> {
 				backgroundThread = Thread.currentThread();
-				fadeInOutLoop(fadeTime, steps, iterations);
+				fadeInOutLoop(fadeTime, steps, iterations, maxValue);
 				Logger.debug("Background fade in-out loop finished");
 			});
 		} else {
-			fadeInOutLoop(fadeTime, steps, iterations);
+			fadeInOutLoop(fadeTime, steps, iterations, maxValue);
 		}
 	}
 
-	private void fadeInOutLoop(float fadeTime, int steps, int iterations) throws RuntimeIOException {
+	private void fadeInOutLoop(float fadeTime, int steps, int iterations, float maxValue) throws RuntimeIOException {
 		float sleep_time = fadeTime / steps;
-		float delta = 1f / steps;
+		float delta = maxValue / steps;
 		Logger.debug("fadeTime={}, steps={}, sleep_time={}s, delta={}", Float.valueOf(fadeTime), Integer.valueOf(steps),
 				Float.valueOf(sleep_time), Float.valueOf(delta));
 		running.getAndSet(true);
 		if (iterations > 0) {
 			for (int i = 0; i < iterations && running.get(); i++) {
-				fadeInOut(sleep_time, delta);
+				fadeInOut(sleep_time, delta, maxValue);
 			}
 			running.getAndSet(false);
 		} else if (iterations == INFINITE_ITERATIONS) {
 			while (running.get()) {
-				fadeInOut(sleep_time, delta);
+				fadeInOut(sleep_time, delta, maxValue);
 			}
 		}
 	}
 
-	private void fadeInOut(float sleepTime, float delta) throws RuntimeIOException {
+	private void fadeInOut(float sleepTime, float delta, float maxValue) throws RuntimeIOException {
 		try {
 			float value = 0;
-			while (value <= 1 && running.get()) {
+			while (value <= maxValue && running.get()) {
 				setValueInternal(value);
 				SleepUtil.sleepSeconds(sleepTime);
 				value += delta;
 			}
-			value = 1;
+			value = maxValue;
 			while (value >= 0 && running.get()) {
 				setValueInternal(value);
 				SleepUtil.sleepSeconds(sleepTime);
@@ -273,9 +283,9 @@ public class PwmOutputDevice extends GpioDevice {
 		running.getAndSet(false);
 	}
 
-	private void onOff(float onTime, float offTime) throws RuntimeIOException {
+	private void onOff(float onTime, float offTime, float onValue) throws RuntimeIOException {
 		try {
-			setValueInternal(1);
+			setValueInternal(onValue);
 			SleepUtil.sleepSeconds(onTime);
 			setValueInternal(0);
 			SleepUtil.sleepSeconds(offTime);
@@ -343,7 +353,7 @@ public class PwmOutputDevice extends GpioDevice {
 	}
 
 	/**
-	 * Toggle the state of the device (same as {@code setValue(1 - getvalue())} ).
+	 * Toggle the state of the device (same as {@code setValue(1 - getValue())} ).
 	 *
 	 * @throws RuntimeIOException If an I/O error occurred.
 	 */

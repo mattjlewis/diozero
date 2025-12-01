@@ -99,7 +99,7 @@ public class PwmLed extends PwmOutputDevice {
 	}
 
 	/**
-	 * Blink the LED on and off repeatedly.
+	 * Blink the LED on and off repeatedly at full brightness.
 	 * 
 	 * @param onTime
 	 *            On time in seconds.
@@ -119,6 +119,28 @@ public class PwmLed extends PwmOutputDevice {
 	}
 
 	/**
+	 * Blink the LED on and off repeatedly.
+	 * 
+	 * @param onTime
+	 *                   On time in seconds.
+	 * @param offTime
+	 *                   Off time in seconds.
+	 * @param brightness
+	 * 									 Brightness of the LED while on.
+	 * @param iterations
+	 *                   Number of iterations. Set to &lt;0 to blink indefinitely.
+	 * @param background
+	 *                   If true start a background thread to control the blink and
+	 *                   return immediately. If false, only return once the blink
+	 *                   iterations have finished.
+	 * @throws RuntimeIOException
+	 *                            If an I/O error occurred.
+	 */
+	public void blink(float onTime, float offTime, float brightness, int iterations, boolean background) throws RuntimeIOException {
+		onOffLoop(onTime, offTime, brightness, iterations, background);
+	}
+
+	/**
 	 * Pulse the LED on and off indefinitely in a background thread with a fade time of 1 second.
 	 * 
 	 * @throws RuntimeIOException
@@ -129,7 +151,7 @@ public class PwmLed extends PwmOutputDevice {
 	}
 
 	/**
-	 * Pulse the LED on and off repeatedly.
+	 * Pulse the LED on and off repeatedly at max brightness.
 	 * 
 	 * @param fadeTime
 	 *            Time in seconds from fully on to fully off.
@@ -146,6 +168,28 @@ public class PwmLed extends PwmOutputDevice {
 	 */
 	public void pulse(float fadeTime, int steps, int iterations, boolean background) throws RuntimeIOException {
 		fadeInOutLoop(fadeTime, steps, iterations, background);
+	}
+
+	/**
+	 * Pulse the LED on and off repeatedly.
+	 * 
+	 * @param fadeTime
+	 *                   Time in seconds from fully on to fully off.
+	 * @param steps
+	 *                   Number of steps between fully on to fully off.
+	 * @param brightness
+	 * 									 Brightness of the LED when fully on.
+	 * @param iterations
+	 *                   Number of times to fade in and out.
+	 * @param background
+	 *                   If true start a background thread to control the blink and
+	 *                   return immediately. If false, only return once the blink
+	 *                   iterations have finished.
+	 * @throws RuntimeIOException
+	 *                            If an I/O error occurred.
+	 */
+	public void pulse(float fadeTime, int steps, float brightness, int iterations, boolean background) throws RuntimeIOException {
+		fadeInOutLoop(fadeTime, steps, brightness, iterations, background);
 	}
 
 	/**
