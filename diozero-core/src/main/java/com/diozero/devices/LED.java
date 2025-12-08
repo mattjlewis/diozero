@@ -64,6 +64,58 @@ import com.diozero.sbc.DeviceFactoryHelper;
  * </pre>
  */
 public class LED extends DigitalOutputDevice {
+	public static final class Builder {
+		public static Builder builder(int gpio) {
+			return new Builder(gpio);
+		}
+
+		public static Builder builder(PinInfo pinInfo) {
+			return new Builder(pinInfo);
+		}
+
+		private Integer gpio;
+		private PinInfo pinInfo;
+		private boolean activeHigh = true;
+		private boolean initialValue = false;
+		private GpioDeviceFactoryInterface deviceFactory;
+
+		public Builder(int gpio) {
+			this.gpio = Integer.valueOf(gpio);
+		}
+
+		public Builder(PinInfo pinInfo) {
+			this.pinInfo = pinInfo;
+		}
+
+		public Builder setActiveHigh(boolean activeHigh) {
+			this.activeHigh = activeHigh;
+			return this;
+		}
+
+		public Builder setInitialValue(boolean initialValue) {
+			this.initialValue = initialValue;
+			return this;
+		}
+
+		public Builder setDeviceFactory(GpioDeviceFactoryInterface deviceFactory) {
+			this.deviceFactory = deviceFactory;
+			return this;
+		}
+
+		public DigitalOutputDevice build() {
+			// Default to the native device factory if not set
+			if (deviceFactory == null) {
+				deviceFactory = DeviceFactoryHelper.getNativeDeviceFactory();
+			}
+
+			if (pinInfo == null) {
+				pinInfo = deviceFactory.getBoardPinInfo().getByGpioNumberOrThrow(gpio.intValue());
+			}
+
+			return new LED(deviceFactory, pinInfo, activeHigh, initialValue);
+		}
+	}
+
 	/**
 	 * @param pinInfo      GPIO to which the LED is connected.
 	 * @param activeHigh   Set to true if a high output value represents on.
@@ -109,6 +161,18 @@ public class LED extends DigitalOutputDevice {
 	 */
 	public LED(GpioDeviceFactoryInterface deviceFactory, int gpio, boolean activeHigh, boolean initialValue) {
 		super(deviceFactory, gpio, activeHigh, initialValue);
+	}
+
+	/**
+	 * @param deviceFactory Device factory to use to construct the device.
+	 * @param pinInfo       Information about the GPIO pin to which the LED is
+	 *                      connected.
+	 * @param activeHigh    Set to true if a high output value represents on.
+	 * @param initialValue  Initial value.
+	 * @throws RuntimeIOException If an I/O error occurred.
+	 */
+	public LED(GpioDeviceFactoryInterface deviceFactory, PinInfo pinInfo, boolean activeHigh, boolean initialValue) {
+		super(deviceFactory, pinInfo, activeHigh, initialValue);
 	}
 
 	/**
