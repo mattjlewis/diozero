@@ -1,5 +1,9 @@
 package com.diozero.devices;
 
+import static com.diozero.api.PwmOutputDevice.DEFAULT_PWM_FREQUENCY;
+
+import com.diozero.api.PinInfo;
+
 /*
  * #%L
  * Organisation: diozero
@@ -34,11 +38,64 @@ package com.diozero.devices;
 import com.diozero.api.PwmOutputDevice;
 import com.diozero.api.RuntimeIOException;
 import com.diozero.internal.spi.PwmOutputDeviceFactoryInterface;
+import com.diozero.sbc.DeviceFactoryHelper;
 
 /**
  * PWM controlled LED. @see com.diozero.sampleapps.PwmLedTest PwmLedTest
  */
 public class PwmLed extends PwmOutputDevice {
+	public static final class Builder {
+		public static Builder builder(int gpio) {
+			return new Builder(gpio);
+		}
+
+		public static Builder builder(PinInfo pinInfo) {
+			return new Builder(pinInfo);
+		}
+
+		private Integer gpio;
+		private PinInfo pinInfo;
+		private int pwmFrequency = DEFAULT_PWM_FREQUENCY;
+		private float initialValue = 0;
+		private PwmOutputDeviceFactoryInterface deviceFactory;
+
+		public Builder(int gpio) {
+			this.gpio = Integer.valueOf(gpio);
+		}
+
+		public Builder(PinInfo pinInfo) {
+			this.pinInfo = pinInfo;
+		}
+
+		public Builder setPwmFrequency(int pwmFrequency) {
+			this.pwmFrequency = pwmFrequency;
+			return this;
+		}
+
+		public Builder setInitialValue(float initialValue) {
+			this.initialValue = initialValue;
+			return this;
+		}
+
+		public Builder setDeviceFactory(PwmOutputDeviceFactoryInterface deviceFactory) {
+			this.deviceFactory = deviceFactory;
+			return this;
+		}
+
+		public PwmOutputDevice build() {
+			// Default to the native device factory if not set
+			if (deviceFactory == null) {
+				deviceFactory = DeviceFactoryHelper.getNativeDeviceFactory();
+			}
+
+			if (pinInfo == null) {
+				pinInfo = deviceFactory.getBoardPinInfo().getByGpioNumberOrThrow(gpio.intValue());
+			}
+
+			return new PwmLed(deviceFactory, pinInfo, pwmFrequency, initialValue);
+		}
+	}
+
 	/**
 	 * @param gpio
 	 *            The GPIO to which the LED is attached to.
@@ -86,6 +143,23 @@ public class PwmLed extends PwmOutputDevice {
 	public PwmLed(PwmOutputDeviceFactoryInterface deviceFactory, int gpio, float initialValue)
 			throws RuntimeIOException {
 		super(deviceFactory, gpio, initialValue);
+	}
+
+	/**
+	 * @param deviceFactory
+	 * 						Device factory to use to provision this device.
+	 * @param pinInfo
+	 * 						GPIO to which the LED is attached to.
+	 * @param pwmFrequency
+	 * 						PWM frequency (Hz).
+	 * @param initialValue 
+	 *            Initial PWM output value (range 0..1).
+	 * @throws RuntimeIOException
+	 * 						If an I/O error occurred.
+	 */
+	public PwmLed(PwmOutputDeviceFactoryInterface deviceFactory, PinInfo pinInfo, int pwmFrequency,
+			float initialValue) throws RuntimeIOException {
+		super(deviceFactory, pinInfo, pwmFrequency, initialValue);
 	}
 
 	/**

@@ -99,7 +99,7 @@ public class PwmOutputDevice extends GpioDevice {
 		}
 	}
 
-	private static final int DEFAULT_PWM_FREQUENCY = 50;
+	protected static final int DEFAULT_PWM_FREQUENCY = 50;
 	public static final int INFINITE_ITERATIONS = -1;
 
 	private InternalPwmOutputDeviceInterface delegate;
