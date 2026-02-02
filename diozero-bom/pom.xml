@@ -7,7 +7,7 @@
 	<groupId>com.diozero</groupId>
 	<artifactId>diozero-bom</artifactId>
 	<packaging>pom</packaging>
-	<version>1.4.1</version>
+	<version>1.4.2</version>
 	<name>diozero - Bill of Materials</name>
 	<description>Java Device I/O library that is portable across Single Board Computers (including Raspberry Pi, BeagleBone Black, Odroid C2, CHIP, ASUS TinkerBoard, Allwinner H3 / H5 / H6)</description>
 	<url>https://www.diozero.com/</url>
@@ -55,42 +55,43 @@
 
 		<maven.min-version>3.3.0</maven.min-version>
 
-		<diozero.version>1.4.1</diozero.version>
+		<diozero.version>1.4.2</diozero.version>
 
 		<!-- Java version -->
 		<maven.compiler.source>11</maven.compiler.source>
 		<maven.compiler.release>11</maven.compiler.release>
 
 		<!-- Maven plugins -->
-		<maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
-		<maven-assembly-plugin.version>3.7.1</maven-assembly-plugin.version>
-		<maven-javadoc-plugin.version>3.11.2</maven-javadoc-plugin.version>
-		<maven-jar-plugin.version>3.4.2</maven-jar-plugin.version>
-		<maven-shade-plugin.version>3.6.0</maven-shade-plugin.version>
-		<maven-source-plugin.version>3.3.1</maven-source-plugin.version>
-		<maven-install-plugin.version>3.1.2</maven-install-plugin.version>
-		<maven-deploy-plugin.version>3.1.2</maven-deploy-plugin.version>
-		<maven-gpg-plugin.version>3.2.7</maven-gpg-plugin.version>
-		<maven-release-plugin.version>3.1.1</maven-release-plugin.version>
-		<maven-surefire-plugin.version>3.5.3</maven-surefire-plugin.version>
+		<maven-compiler-plugin.version>3.15.0</maven-compiler-plugin.version>
+		<maven-resources-plugin.version>3.4.0</maven-resources-plugin.version>
+		<maven-assembly-plugin.version>3.8.0</maven-assembly-plugin.version>
+		<maven-javadoc-plugin.version>3.12.0</maven-javadoc-plugin.version>
+		<maven-jar-plugin.version>3.5.0</maven-jar-plugin.version>
+		<maven-shade-plugin.version>3.6.1</maven-shade-plugin.version>
+		<maven-source-plugin.version>3.4.0</maven-source-plugin.version>
+		<maven-install-plugin.version>3.1.4</maven-install-plugin.version>
+		<maven-deploy-plugin.version>3.1.4</maven-deploy-plugin.version>
+		<maven-gpg-plugin.version>3.2.8</maven-gpg-plugin.version>
+		<maven-release-plugin.version>3.3.1</maven-release-plugin.version>
+		<maven-surefire-plugin.version>3.5.4</maven-surefire-plugin.version>
 
 		<!-- Other plugins -->
 		<nexus-staging-maven-plugin.version>1.7.0</nexus-staging-maven-plugin.version>
-		<license-maven-plugin.version>2.5.0</license-maven-plugin.version>
-		<versions-maven-plugin.version>2.18.0</versions-maven-plugin.version>
-		<exec-maven-plugin.version>3.5.1</exec-maven-plugin.version>
+		<license-maven-plugin.version>2.7.1</license-maven-plugin.version>
+		<versions-maven-plugin.version>2.21.0</versions-maven-plugin.version>
+		<exec-maven-plugin.version>3.6.3</exec-maven-plugin.version>
 		<eclipse.m2e.lifecycle-mapping.version>1.0.0</eclipse.m2e.lifecycle-mapping.version>
 
 		<!-- Libraries -->
 		<tinylog.version>2.7.0</tinylog.version>
-		<hipparchus.version>4.0.1</hipparchus.version>
+		<hipparchus.version>4.0.2</hipparchus.version>
 		<eclipse-paho-client-mqttv3.version>1.2.5</eclipse-paho-client-mqttv3.version>
-		<google-gson.version>2.13.1</google-gson.version>
-		<google-protobuf-java.version>4.31.1</google-protobuf-java.version>
-		<netty.version>4.2.2.Final</netty.version>
-		<grpc.version>1.73.0</grpc.version>
-		<junit.version>5.13.1</junit.version>
-		<mockito.version>5.18.0</mockito.version>
+		<google-gson.version>2.13.2</google-gson.version>
+		<google-protobuf-java.version>4.33.5</google-protobuf-java.version>
+		<netty.version>4.2.9.Final</netty.version>
+		<grpc.version>1.78.0</grpc.version>
+		<junit.version>6.0.2</junit.version>
+		<mockito.version>5.21.0</mockito.version>
 	</properties>
 
 	<!-- Prepare common library versions -->
@@ -211,6 +212,11 @@
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
 					<version>${maven-compiler-plugin.version}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-resources-plugin</artifactId>
+					<version>${maven-resources-plugin.version}</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>

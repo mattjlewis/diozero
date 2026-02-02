@@ -33,6 +33,7 @@ package com.diozero.internal.board.raspberrypi;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collection;
@@ -53,10 +54,9 @@ import com.diozero.sbc.BoardInfo;
 import com.diozero.sbc.LocalSystemInfo;
 
 /**
- * See
- * <a href="https://github.com/AndrewFromMelbourne/raspberry_pi_revision">this c
- * library</a>. See also <a href="http://elinux.org/RPi_HardwareHistory">this
- * table of revisions</a>.
+ * See <a href="https://github.com/AndrewFromMelbourne/raspberry_pi_revision">this c
+ * library</a>. See also <a href="http://elinux.org/RPi_HardwareHistory">this table of
+ * revisions</a>.
  * 
  * https://www.raspberrypi.com/documentation/computers/raspberry-pi.html#raspberry-pi-revision-codes
  * https://github.com/gpiozero/gpiozero/blob/master/gpiozero/pins/pi.py
@@ -375,24 +375,26 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 			this.manufacturer = manufacturer;
 			this.processor = processor;
 
-			// Read /boot/firmware/config.txt or /boot/config.txt to see if the PWM device
-			// tree overlay is loaded
-			// Can be max one of "dtoverlay=pwm," or "dtoverlay=pwm-2chan,"
 			try {
-				// /boot/firmware is used on Raspberry Pi OS Bookworm and later
-				gpioToPwmNumberMapping = Files.lines(Paths.get("/boot/firmware/config.txt"))
-						.filter(line -> line.startsWith("dtoverlay=pwm")).findFirst()
-						.map(RaspberryPiBoardInfoProvider::extractPwmGpioNumbers).orElse(Collections.emptyMap());
-			} catch (IOException e) {
-				try {
+				// Read /boot/firmware/config.txt or /boot/config.txt to see if the PWM device
+				// tree overlay is loaded
+				// Can be max one of "dtoverlay=pwm," or "dtoverlay=pwm-2chan,"
+				Path path = Paths.get("/boot/firmware/config.txt");
+				if (path.toFile().exists()) {
+					// /boot/firmware is used on Raspberry Pi OS Bookworm and later
+					gpioToPwmNumberMapping = Files.lines(path).filter(line -> line.startsWith("dtoverlay=pwm"))
+							.findFirst().map(RaspberryPiBoardInfoProvider::extractPwmGpioNumbers)
+							.orElse(Collections.emptyMap());
+				} else {
+					path = Paths.get("/boot/config.txt");
 					// /boot was used before Raspberry Pi OS Bookworm
-					gpioToPwmNumberMapping = Files.lines(Paths.get("/boot/config.txt"))
-							.filter(line -> line.startsWith("dtoverlay=pwm")).findFirst()
-							.map(RaspberryPiBoardInfoProvider::extractPwmGpioNumbers).orElse(Collections.emptyMap());
-				} catch (IOException e2) {
-					gpioToPwmNumberMapping = new HashMap<>();
-					// Ignore
+					gpioToPwmNumberMapping = Files.lines(path).filter(line -> line.startsWith("dtoverlay=pwm"))
+							.findFirst().map(RaspberryPiBoardInfoProvider::extractPwmGpioNumbers)
+							.orElse(Collections.emptyMap());
 				}
+			} catch (IOException e) {
+				gpioToPwmNumberMapping = new HashMap<>();
+				// Ignore
 			}
 		}
 
@@ -418,8 +420,8 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 		}
 
 		/**
-		 * Override for pigpio remote use cases as GenericLinuxArmBoardInfo works
-		 * exclusively off local system information.
+		 * Override for pigpio remote use cases as GenericLinuxArmBoardInfo works exclusively off
+		 * local system information.
 		 */
 		private static List<String> generateBoardCompatibility(String model, String pcbRevision, String processor) {
 			String make = MAKE.replace(" ", "").toLowerCase();

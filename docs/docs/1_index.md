@@ -118,6 +118,23 @@ A full distribution ZIP file containing all JARs and associated dependencies is 
 select a version and click the "[bin.zip](https://search.maven.org/remotecontent?filepath=com/diozero/diozero-distribution/{{ site.version }}/diozero-distribution-{{ site.version }}-bin.zip)" option in the Downloads link top right.
 It is also available in [mvnrepository](https://mvnrepository.com/) by locating [diozero-distribution](https://mvnrepository.com/artifact/com.diozero/diozero-distribution), selecting a version and clicking the Files [View All](https://repo1.maven.org/maven2/com/diozero/diozero-distribution/{{ site.version }}) link.
 
+### Java 24 or later
+
+Due to the low-level system access that is current implemented using JNI, the following error will be reported on start-up:
+
+```
+WARNING: A restricted method in java.lang.Runtime has been called
+WARNING: java.lang.Runtime::load has been called by com.diozero.util.LibraryLoader in an unnamed module (file:diozero-core-{{ site.version }}.jar)
+WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+```
+
+To remove this warning, add `--enable-native-access=ALL-UNNAMED` to your application start-up script, e.g.
+
+```shell
+java --enable-native-access=ALL-UNNAMED -jar /home/blah/blah.jar
+```
+
 ## Articles
 
 * [Building Portable Binaries for Single Board Computers with diozero and GraalVM](https://deviceiozero.medium.com/building-portable-binaries-for-single-board-computers-with-diozero-and-graalvm-b659f79d5c71)

@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>com.diozero</groupId>
 		<artifactId>diozero</artifactId>
-		<version>1.4.1</version>
+		<version>1.4.2</version>
 	</parent>
 	
 	<artifactId>diozero-provider-remote</artifactId>
@@ -13,9 +13,9 @@
 	<name>diozero - Remote Provider</name>
 
 	<properties>
-		<apache-httpcomponents-httpcore.version>4.4.14</apache-httpcomponents-httpcore.version>
-		<apache-httpcomponents-httpclient.version>4.5.13</apache-httpcomponents-httpclient.version>
-		<jetty-websocket-client.version>9.4.41.v20210516</jetty-websocket-client.version>
+		<apache-httpcomponents-httpcore.version>4.4.16</apache-httpcomponents-httpcore.version>
+		<apache-httpcomponents-httpclient.version>4.5.14</apache-httpcomponents-httpclient.version>
+		<jetty-websocket-client.version>9.4.58.v20250814</jetty-websocket-client.version>
 	</properties>
 	
 	<dependencyManagement>

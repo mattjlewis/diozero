@@ -54,8 +54,8 @@ import com.diozero.util.StringUtil;
 import com.diozero.util.Version;
 
 /**
- * Utility class for accessing information about the local system. The majority
- * of information is specific to the Linux operating system.
+ * Utility class for accessing information about the local system. The majority of
+ * information is specific to the Linux operating system.
  */
 public class LocalSystemInfo {
 	private static final String LSCPU_ARCHITECTURE = "Architecture";
@@ -179,6 +179,7 @@ public class LocalSystemInfo {
 			}
 		} catch (Exception e) {
 			Logger.warn("Error with lscpu command: {}", e.getMessage());
+			populateCpuArchitectureFromUname();
 		}
 	}
 
@@ -193,6 +194,17 @@ public class LocalSystemInfo {
 			cpuArchitecture = parts[1].trim();
 		} else if (parts[0].equalsIgnoreCase(LSCPU_MODEL_NAME)) {
 			cpuModelName = parts[1].trim();
+		}
+	}
+
+	private void populateCpuArchitectureFromUname() {
+		try {
+			final Process proc = new ProcessBuilder("uname", "-m").start();
+			try (BufferedReader br = new BufferedReader(new InputStreamReader(proc.getInputStream()))) {
+				cpuArchitecture = br.readLine();
+			}
+		} catch (Exception e) {
+			Logger.warn("Error with 'uname -m' command: {}", e.getMessage());
 		}
 	}
 
@@ -356,9 +368,8 @@ public class LocalSystemInfo {
 	}
 
 	/**
-	 * Get the local operating system id. For Linux this is as defined by the ID
-	 * property in <code>/etc/os-release</code>. For macOS it is the "ProductName"
-	 * as returned by sw_vers.
+	 * Get the local operating system id. For Linux this is as defined by the ID property in
+	 * <code>/etc/os-release</code>. For macOS it is the "ProductName" as returned by sw_vers.
 	 *
 	 * @return value of the ID property
 	 */
