@@ -375,15 +375,24 @@ public class RaspberryPiBoardInfoProvider implements BoardInfoProvider {
 			this.manufacturer = manufacturer;
 			this.processor = processor;
 
-			// Read /boot/config.txt to see if the PWM device tree overlay is loaded
+			// Read /boot/firmware/config.txt or /boot/config.txt to see if the PWM device
+			// tree overlay is loaded
 			// Can be max one of "dtoverlay=pwm," or "dtoverlay=pwm-2chan,"
 			try {
-				gpioToPwmNumberMapping = Files.lines(Paths.get("/boot/config.txt"))
+				// /boot/firmware is used on Raspberry Pi OS Bookworm and later
+				gpioToPwmNumberMapping = Files.lines(Paths.get("/boot/firmware/config.txt"))
 						.filter(line -> line.startsWith("dtoverlay=pwm")).findFirst()
 						.map(RaspberryPiBoardInfoProvider::extractPwmGpioNumbers).orElse(Collections.emptyMap());
 			} catch (IOException e) {
-				gpioToPwmNumberMapping = new HashMap<>();
-				// Ignore
+				try {
+					// /boot was used before Raspberry Pi OS Bookworm
+					gpioToPwmNumberMapping = Files.lines(Paths.get("/boot/config.txt"))
+							.filter(line -> line.startsWith("dtoverlay=pwm")).findFirst()
+							.map(RaspberryPiBoardInfoProvider::extractPwmGpioNumbers).orElse(Collections.emptyMap());
+				} catch (IOException e2) {
+					gpioToPwmNumberMapping = new HashMap<>();
+					// Ignore
+				}
 			}
 		}
 
