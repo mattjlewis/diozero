@@ -1,9 +1,5 @@
 package com.diozero.devices;
 
-import static com.diozero.api.PwmOutputDevice.DEFAULT_PWM_FREQUENCY;
-
-import com.diozero.api.PinInfo;
-
 /*
  * #%L
  * Organisation: diozero
@@ -35,6 +31,7 @@ import com.diozero.api.PinInfo;
  * #L%
  */
 
+import com.diozero.api.PinInfo;
 import com.diozero.api.PwmOutputDevice;
 import com.diozero.api.RuntimeIOException;
 import com.diozero.internal.spi.PwmOutputDeviceFactoryInterface;
@@ -97,48 +94,36 @@ public class PwmLed extends PwmOutputDevice {
 	}
 
 	/**
-	 * @param gpio
-	 *            The GPIO to which the LED is attached to.
-	 * @throws RuntimeIOException
-	 *             If an I/O error occurred.
+	 * @param gpio The GPIO to which the LED is attached to.
+	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
 	public PwmLed(int gpio) throws RuntimeIOException {
 		this(gpio, 0);
 	}
 
 	/**
-	 * @param gpio
-	 *            The GPIO to which the LED is attached to.
-	 * @param initialValue
-	 *            Initial PWM output value (range 0..1).
-	 * @throws RuntimeIOException
-	 *             If an I/O error occurred.
+	 * @param gpio         The GPIO to which the LED is attached to.
+	 * @param initialValue Initial PWM output value (range 0..1).
+	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
 	public PwmLed(int gpio, float initialValue) throws RuntimeIOException {
 		super(gpio, initialValue);
 	}
 
 	/**
-	 * @param deviceFactory
-	 *            Device factory to use to provision this device.
-	 * @param gpio
-	 *            The GPIO to which the LED is attached to.
-	 * @throws RuntimeIOException
-	 *             If an I/O error occurred.
+	 * @param deviceFactory Device factory to use to provision this device.
+	 * @param gpio          The GPIO to which the LED is attached to.
+	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
 	public PwmLed(PwmOutputDeviceFactoryInterface deviceFactory, int gpio) throws RuntimeIOException {
 		this(deviceFactory, gpio, 0);
 	}
 
 	/**
-	 * @param deviceFactory
-	 *            Device factory to use to provision this device.
-	 * @param gpio
-	 *            The GPIO to which the LED is attached to.
-	 * @param initialValue
-	 *            Initial PWM output value (range 0..1).
-	 * @throws RuntimeIOException
-	 *             If an I/O error occurred.
+	 * @param deviceFactory Device factory to use to provision this device.
+	 * @param gpio          The GPIO to which the LED is attached to.
+	 * @param initialValue  Initial PWM output value (range 0..1).
+	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
 	public PwmLed(PwmOutputDeviceFactoryInterface deviceFactory, int gpio, float initialValue)
 			throws RuntimeIOException {
@@ -146,27 +131,21 @@ public class PwmLed extends PwmOutputDevice {
 	}
 
 	/**
-	 * @param deviceFactory
-	 * 						Device factory to use to provision this device.
-	 * @param pinInfo
-	 * 						GPIO to which the LED is attached to.
-	 * @param pwmFrequency
-	 * 						PWM frequency (Hz).
-	 * @param initialValue 
-	 *            Initial PWM output value (range 0..1).
-	 * @throws RuntimeIOException
-	 * 						If an I/O error occurred.
+	 * @param deviceFactory Device factory to use to provision this device.
+	 * @param pinInfo       GPIO to which the LED is attached to.
+	 * @param pwmFrequency  PWM frequency (Hz).
+	 * @param initialValue  Initial PWM output value (range 0..1).
+	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
-	public PwmLed(PwmOutputDeviceFactoryInterface deviceFactory, PinInfo pinInfo, int pwmFrequency,
-			float initialValue) throws RuntimeIOException {
+	public PwmLed(PwmOutputDeviceFactoryInterface deviceFactory, PinInfo pinInfo, int pwmFrequency, float initialValue)
+			throws RuntimeIOException {
 		super(deviceFactory, pinInfo, pwmFrequency, initialValue);
 	}
 
 	/**
 	 * Blink the LED on and off indefinitely.
 	 * 
-	 * @throws RuntimeIOException
-	 *             If an I/O error occurred.
+	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
 	public void blink() throws RuntimeIOException {
 		blink(1, 1, INFINITE_ITERATIONS, true);
@@ -175,18 +154,13 @@ public class PwmLed extends PwmOutputDevice {
 	/**
 	 * Blink the LED on and off repeatedly at full brightness.
 	 * 
-	 * @param onTime
-	 *            On time in seconds.
-	 * @param offTime
-	 *            Off time in seconds.
-	 * @param iterations
-	 *            Number of iterations. Set to &lt;0 to blink indefinitely.
-	 * @param background
-	 *            If true start a background thread to control the blink and
-	 *            return immediately. If false, only return once the blink
-	 *            iterations have finished.
-	 * @throws RuntimeIOException
-	 *             If an I/O error occurred.
+	 * @param onTime     On time in seconds.
+	 * @param offTime    Off time in seconds.
+	 * @param iterations Number of iterations. Set to &lt;0 to blink indefinitely.
+	 * @param background If true start a background thread to control the blink and return
+	 *                   immediately. If false, only return once the blink iterations have
+	 *                   finished.
+	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
 	public void blink(float onTime, float offTime, int iterations, boolean background) throws RuntimeIOException {
 		onOffLoop(onTime, offTime, iterations, background);
@@ -195,30 +169,25 @@ public class PwmLed extends PwmOutputDevice {
 	/**
 	 * Blink the LED on and off repeatedly.
 	 * 
-	 * @param onTime
-	 *                   On time in seconds.
-	 * @param offTime
-	 *                   Off time in seconds.
-	 * @param brightness
-	 * 									 Brightness of the LED while on.
-	 * @param iterations
-	 *                   Number of iterations. Set to &lt;0 to blink indefinitely.
-	 * @param background
-	 *                   If true start a background thread to control the blink and
-	 *                   return immediately. If false, only return once the blink
-	 *                   iterations have finished.
-	 * @throws RuntimeIOException
-	 *                            If an I/O error occurred.
+	 * @param onTime     On time in seconds.
+	 * @param offTime    Off time in seconds.
+	 * @param brightness Brightness of the LED while on.
+	 * @param iterations Number of iterations. Set to &lt;0 to blink indefinitely.
+	 * @param background If true start a background thread to control the blink and return
+	 *                   immediately. If false, only return once the blink iterations have
+	 *                   finished.
+	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
-	public void blink(float onTime, float offTime, float brightness, int iterations, boolean background) throws RuntimeIOException {
+	public void blink(float onTime, float offTime, float brightness, int iterations, boolean background)
+			throws RuntimeIOException {
 		onOffLoop(onTime, offTime, brightness, iterations, background);
 	}
 
 	/**
-	 * Pulse the LED on and off indefinitely in a background thread with a fade time of 1 second.
+	 * Pulse the LED on and off indefinitely in a background thread with a fade time of 1
+	 * second.
 	 * 
-	 * @throws RuntimeIOException
-	 *             If an I/O error occurred.
+	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
 	public void pulse() throws RuntimeIOException {
 		pulse(1, 50, INFINITE_ITERATIONS, true);
@@ -227,18 +196,13 @@ public class PwmLed extends PwmOutputDevice {
 	/**
 	 * Pulse the LED on and off repeatedly at max brightness.
 	 * 
-	 * @param fadeTime
-	 *            Time in seconds from fully on to fully off.
-	 * @param steps
-	 *            Number of steps between fully on to fully off.
-	 * @param iterations
-	 *            Number of times to fade in and out.
-	 * @param background
-	 *            If true start a background thread to control the blink and
-	 *            return immediately. If false, only return once the blink
-	 *            iterations have finished.
-	 * @throws RuntimeIOException
-	 *             If an I/O error occurred.
+	 * @param fadeTime   Time in seconds from fully on to fully off.
+	 * @param steps      Number of steps between fully on to fully off.
+	 * @param iterations Number of times to fade in and out.
+	 * @param background If true start a background thread to control the blink and return
+	 *                   immediately. If false, only return once the blink iterations have
+	 *                   finished.
+	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
 	public void pulse(float fadeTime, int steps, int iterations, boolean background) throws RuntimeIOException {
 		fadeInOutLoop(fadeTime, steps, iterations, background);
@@ -247,22 +211,17 @@ public class PwmLed extends PwmOutputDevice {
 	/**
 	 * Pulse the LED on and off repeatedly.
 	 * 
-	 * @param fadeTime
-	 *                   Time in seconds from fully on to fully off.
-	 * @param steps
-	 *                   Number of steps between fully on to fully off.
-	 * @param brightness
-	 * 									 Brightness of the LED when fully on.
-	 * @param iterations
-	 *                   Number of times to fade in and out.
-	 * @param background
-	 *                   If true start a background thread to control the blink and
-	 *                   return immediately. If false, only return once the blink
-	 *                   iterations have finished.
-	 * @throws RuntimeIOException
-	 *                            If an I/O error occurred.
+	 * @param fadeTime   Time in seconds from fully on to fully off.
+	 * @param steps      Number of steps between fully on to fully off.
+	 * @param brightness Brightness of the LED when fully on.
+	 * @param iterations Number of times to fade in and out.
+	 * @param background If true start a background thread to control the blink and return
+	 *                   immediately. If false, only return once the blink iterations have
+	 *                   finished.
+	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
-	public void pulse(float fadeTime, int steps, float brightness, int iterations, boolean background) throws RuntimeIOException {
+	public void pulse(float fadeTime, int steps, float brightness, int iterations, boolean background)
+			throws RuntimeIOException {
 		fadeInOutLoop(fadeTime, steps, brightness, iterations, background);
 	}
 
@@ -270,8 +229,7 @@ public class PwmLed extends PwmOutputDevice {
 	 * Return true if the PWM value is &gt;0.
 	 * 
 	 * @return True if &gt;0, false if 0.
-	 * @throws RuntimeIOException
-	 *             If an I/O error occurred.
+	 * @throws RuntimeIOException If an I/O error occurred.
 	 */
 	public boolean isLit() throws RuntimeIOException {
 		return isOn();

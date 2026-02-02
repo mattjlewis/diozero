@@ -42,9 +42,8 @@ import com.diozero.util.DiozeroScheduler;
 import com.diozero.util.SleepUtil;
 
 /**
- * Provide generic
- * <a href="https://en.wikipedia.org/wiki/Pulse-width_modulation">Pulse Width
- * Modulation (PWM)</a> output control.
+ * Provide generic <a href="https://en.wikipedia.org/wiki/Pulse-width_modulation">Pulse
+ * Width Modulation (PWM)</a> output control.
  */
 public class PwmOutputDevice extends GpioDevice {
 	public static final class Builder {
@@ -99,7 +98,7 @@ public class PwmOutputDevice extends GpioDevice {
 		}
 	}
 
-	protected static final int DEFAULT_PWM_FREQUENCY = 50;
+	public static final int DEFAULT_PWM_FREQUENCY = 50;
 	public static final int INFINITE_ITERATIONS = -1;
 
 	private InternalPwmOutputDeviceInterface delegate;
