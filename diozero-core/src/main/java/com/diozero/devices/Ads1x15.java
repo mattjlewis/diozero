@@ -315,6 +315,9 @@ public class Ads1x15 extends AbstractDeviceFactory implements AnalogInputDeviceF
 	private DigitalInputDevice readyPin;
 	private float lastResult;
 
+	// for tracing
+	private boolean amTracing = false;
+
 	/**
 	 * 
 	 * @param pgaConfig Programmable Gain Amplifier configuration - make sure this is set
@@ -353,6 +356,8 @@ public class Ads1x15 extends AbstractDeviceFactory implements AnalogInputDeviceF
 		boardPinInfo = new Ads1x15BoardPinInfo(model, pgaConfig.getVoltage());
 		device = I2CDevice.builder(address.getValue()).setController(controller).setByteOrder(ByteOrder.BIG_ENDIAN)
 				.build();
+
+		amTracing = Logger.isTraceEnabled();
 	}
 
 	@Override
@@ -464,20 +469,48 @@ public class Ads1x15 extends AbstractDeviceFactory implements AnalogInputDeviceF
 		this.dataRateMask = dataRateMask;
 	}
 
+	public void waitUntilReady() {
+		long t0 = 0;
+
+		if (amTracing) { // only want to hit currentTimeMillis() if necessary
+			Logger.trace("waitUntilReady hit");
+			t0 = System.currentTimeMillis();
+		}
+
+		SleepUtil.sleepMillis(dataRateSleepMillis);
+		int incrementalSleepMillis = Math.max(dataRateSleepMillis / 20, 1);
+
+		int i = 0;
+		while (true) {
+			short data = device.readShort(ADDR_POINTER_CONFIG);
+			if ((data & 0x8000) != 0) break;
+			SleepUtil.sleepMillis(incrementalSleepMillis);
+			i++;
+		}
+
+		if (amTracing) {
+			long t1 = System.currentTimeMillis();
+			Logger.trace("waitUntilReady done, took {} ms, {} iterations", t1 - t0, i);
+		}
+	}
+
 	public float getValue(int adcNumber) {
-		Logger.debug("Reading channel {}, mode={}", Integer.valueOf(adcNumber), mode);
+		Logger.debug("Reading channel {}, mode={}", adcNumber, mode);
 
 		// TODO Protect against concurrent reads
 
 		if (mode == Mode.SINGLE) {
 			setConfig(adcNumber);
-
-			SleepUtil.sleepMillis(dataRateSleepMillis);
+			waitUntilReady();
 		} else if (readyPin != null) {
 			return lastResult;
 		}
 
-		return RangeUtil.map(readConversionData(adcNumber), 0, Short.MAX_VALUE, 0, 1f);
+		short conversionData = readConversionData(adcNumber);
+		// need to set constrain to false: we *could* get a negative if doing differential
+		float rv = RangeUtil.map(conversionData, 0, 0x8000, 0, 1f, false);
+		Logger.trace ("mapped {} to {}", conversionData, rv);
+		return rv;
 	}
 
 	protected void setConfig(int adcNumber) {
@@ -486,8 +519,8 @@ public class Ads1x15 extends AbstractDeviceFactory implements AnalogInputDeviceF
 		byte config_lsb = (byte) (dataRateMask | comparatorMode.getMask() | comparatorPolarity.getMask()
 				| (latchingComparator ? CONFIG_LSB_COMP_LATCHING : 0) | comparatorQueue.getMask());
 		device.writeI2CBlockData(ADDR_POINTER_CONFIG, config_msb, config_lsb);
-		Logger.trace("msb: 0x{}, lsb: 0x{}", Integer.toHexString(config_msb & 0xff),
-				Integer.toHexString(config_lsb & 0xff));
+		Logger.trace("setConfig: 0x{} 0x{}", Integer.toHexString(config_msb & 0xff),
+			Integer.toHexString(config_lsb & 0xff));
 	}
 
 	private short readConversionData(int adcNumber) {
@@ -495,9 +528,7 @@ public class Ads1x15 extends AbstractDeviceFactory implements AnalogInputDeviceF
 		// short value = (short) ((data[0] & 0xff) << 8 | (data[1] & 0xff));
 		short value = device.readShort(ADDR_POINTER_CONV);
 
-		if (model == Model.ADS1015) {
-			value >>= 4;
-		}
+		Logger.trace("readConversionData: 0x{}, {} dec", Integer.toHexString(value), value);
 
 		return value;
 	}
