@@ -36,6 +36,8 @@ import com.diozero.api.PwmOutputDevice;
 import com.diozero.api.RuntimeIOException;
 import com.diozero.devices.sandpit.motor.StepperMotorInterface.Direction;
 
+import java.util.Objects;
+
 /**
  * A basic device for a stepper driven by a "chopper" driver: uses 3 GPIO pins (enable, direction, frequency) to
  * control a motor.
@@ -110,6 +112,21 @@ public interface ChopperStepperController extends StepperMotorInterface.StepperM
         private final PwmOutputDevice stepControl;
 
         /**
+         * Constructor that allows injecting the devices directly.
+         *
+         * @param enableDevice the device responsible to enable/disable the driver
+         * @param directionSet the device responsible to set the direction of rotation
+         * @param stepControl  the device responsible to control the stepping frequency and whether stepping or not
+         * @implNote The provided devices will be closed when this controller is closed.
+         */
+        public BasicChopperController(DigitalOutputDevice enableDevice, DigitalOutputDevice directionSet,
+                                      PwmOutputDevice stepControl) {
+            this.enableDevice = Objects.requireNonNull(enableDevice, "enableDevice must not be null");
+            this.directionSet = Objects.requireNonNull(directionSet, "directionSet must not be null");
+            this.stepControl = Objects.requireNonNull(stepControl, "stepControl must not be null");
+        }
+
+        /**
          * Basic constructor for this type of driver.
          *
          * @param enablePin    enable the driver on/off
@@ -117,9 +134,9 @@ public interface ChopperStepperController extends StepperMotorInterface.StepperM
          * @param stepPin      controls the <i>frequency</i> of the motor and whether stepping or not
          */
         public BasicChopperController(int enablePin, int directionPin, int stepPin) {
-            enableDevice = new DigitalOutputDevice(enablePin, true, false);
-            directionSet = new DigitalOutputDevice(directionPin, true, false);
-            stepControl = new PwmOutputDevice(stepPin);
+            this(new DigitalOutputDevice(enablePin, true, false),
+                 new DigitalOutputDevice(directionPin, true, false),
+                 new PwmOutputDevice(stepPin));
         }
 
         @Override
@@ -214,6 +231,11 @@ public interface ChopperStepperController extends StepperMotorInterface.StepperM
         }
 
         private Resolution resolution = Resolution.FULL;
+
+        public FrequencyMultiplierChopperController(DigitalOutputDevice enableDevice, DigitalOutputDevice directionSet,
+                                            PwmOutputDevice stepControl) {
+            super(enableDevice, directionSet, stepControl);
+        }
 
         public FrequencyMultiplierChopperController(int enablePin, int directionPin, int stepPin) {
             super(enablePin, directionPin, stepPin);
