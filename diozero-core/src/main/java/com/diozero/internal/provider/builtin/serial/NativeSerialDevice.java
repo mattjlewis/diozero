@@ -64,6 +64,7 @@ public class NativeSerialDevice implements AutoCloseable {
 	private FileInputStream inputStream;
 	private FileOutputStream outputStream;
 	private String deviceFile;
+	private volatile boolean closed = false;
 
 	/**
 	 * Open a new serial device
@@ -101,6 +102,9 @@ public class NativeSerialDevice implements AutoCloseable {
 	}
 
 	public int read() {
+		if (closed) {
+			throw new RuntimeIOException("Serial device '" + deviceFile + "' is closed");
+		}
 		try {
 			return inputStream.read();
 		} catch (IOException e) {
@@ -109,6 +113,9 @@ public class NativeSerialDevice implements AutoCloseable {
 	}
 
 	public byte readByte() {
+		if (closed) {
+			throw new RuntimeIOException("Serial device '" + deviceFile + "' is closed");
+		}
 		try {
 			int read = inputStream.read();
 			if (read == -1) {
@@ -133,6 +140,9 @@ public class NativeSerialDevice implements AutoCloseable {
 	}
 
 	public void writeByte(byte value) {
+		if (closed) {
+			throw new RuntimeIOException("Serial device '" + deviceFile + "' is closed");
+		}
 		try {
 			outputStream.write(value & 0xff);
 			outputStream.flush();
@@ -151,6 +161,9 @@ public class NativeSerialDevice implements AutoCloseable {
 	}
 
 	public int read(byte[] buffer) {
+		if (closed) {
+			throw new RuntimeIOException("Serial device '" + deviceFile + "' is closed");
+		}
 		try {
 			return IOUtil.read(inputStream, buffer);
 		} catch (IOException e) {
@@ -167,6 +180,9 @@ public class NativeSerialDevice implements AutoCloseable {
 	}
 
 	public void write(byte[] data) {
+		if (closed) {
+			throw new RuntimeIOException("Serial device '" + deviceFile + "' is closed");
+		}
 		try {
 			outputStream.write(data);
 		} catch (IOException e) {
@@ -203,10 +219,18 @@ public class NativeSerialDevice implements AutoCloseable {
 	public void close() {
 		Logger.trace("closing...");
 
-		if (fileDescriptor == null) {
+		if (closed || fileDescriptor == null) {
 			Logger.trace("Already closed...");
 			return;
 		}
+		closed = true;
+
+		// Close the native fd first — this causes any blocking read() on FileInputStream
+		// to return -1 (EOF) or throw IOException, cleanly unblocking the thread.
+		// Previously: streams were closed first, then serialClose was called on an
+		// already-closed fd. Also used raise(SIGINT) which killed GPIO epoll.
+		serialClose(fileDescriptor);
+		fileDescriptor = null;
 
 		if (inputStream != null) {
 			try {
@@ -225,9 +249,6 @@ public class NativeSerialDevice implements AutoCloseable {
 			}
 			outputStream = null;
 		}
-
-		serialClose(fileDescriptor);
-		fileDescriptor = null;
 
 		Logger.trace("closed");
 	}
