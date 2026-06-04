@@ -215,6 +215,13 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_builtin_serial_NativeS
 	// [VTIME]: Time to wait for data (tenths of seconds) - unsigned char
 	options.c_cc[VMIN] = (unsigned char) (minReadChars & 0xff);
 	options.c_cc[VTIME] = (unsigned char) ((readTimeoutMillis / 100) & 0xff);
+
+	// In non-blocking mode with VMIN=0, read() returns EAGAIN immediately causing 100% CPU.
+	// Set a minimum timeout to prevent tight-loop spinning.
+	if (!blockingRead && minReadChars == 0 && readTimeoutMillis == 0) {
+		options.c_cc[VMIN] = 1;
+		options.c_cc[VTIME] = 1; // 100ms timeout
+	}
 	/*
 	if (blockingRead) {
 		// Read Semi-blocking with timeout
@@ -377,8 +384,12 @@ JNIEXPORT jint JNICALL Java_com_diozero_internal_provider_builtin_serial_NativeS
 	// Get the private fd attribute
 	int fd = (*env)->GetIntField(env, fileDesc, fileDescFdField);
 
-	// A hack? Interrupt anything doing a blocking read using this fd
-	raise(SIGINT);
+	// Close the fd — this causes any blocking read() on the fd to return -1 with errno=EBADF,
+	// unblocking the Java FileInputStream thread without sending a process-wide signal.
+	int rc = close(fd);
 
-	return close(fd);
+	// Mark fd as closed so subsequent close() calls are no-ops
+	(*env)->SetIntField(env, fileDesc, fileDescFdField, -1);
+
+	return rc;
 }
