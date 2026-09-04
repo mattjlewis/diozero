@@ -48,9 +48,11 @@ public class SpiDevice implements SpiDeviceInterface {
 	 * <li>frequency: 2MHz</li>
 	 * <li>clockMode: Mode 0</li>
 	 * <li>lsbFirst: false</li>
+	 * <li>deviceFatory: {@link DeviceFactoryHelper#getNativeDeviceFactory}</li>
 	 * </ul>
 	 */
 	public static class Builder {
+		private SpiDeviceFactoryInterface deviceFactory;
 		private int controller = SpiConstants.DEFAULT_SPI_CONTROLLER;
 		private int chipSelect;
 		private int frequency = SpiConstants.DEFAULT_SPI_CLOCK_FREQUENCY;
@@ -116,13 +118,23 @@ public class SpiDevice implements SpiDeviceInterface {
 			return this;
 		}
 
+		public Builder setDeviceFactory(SpiDeviceFactoryInterface deviceFactory) {
+			this.deviceFactory = deviceFactory;
+			return this;
+		}
+
 		/**
 		 * Provision a new SPI device
 		 *
 		 * @return a new SPI device instance
 		 */
 		public SpiDeviceInterface build() {
-			return new SpiDevice(controller, chipSelect, frequency, clockMode, lsbFirst);
+			// Default to the native device factory if not set
+			if (deviceFactory == null) {
+				deviceFactory = DeviceFactoryHelper.getNativeDeviceFactory();
+			}
+
+			return new SpiDevice(deviceFactory, controller, chipSelect, frequency, clockMode, lsbFirst);
 		}
 	}
 

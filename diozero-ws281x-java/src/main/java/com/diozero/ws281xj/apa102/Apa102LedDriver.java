@@ -35,6 +35,8 @@ import java.util.Arrays;
 
 import com.diozero.api.SpiDevice;
 import com.diozero.api.SpiDeviceInterface;
+import com.diozero.internal.spi.SpiDeviceFactoryInterface;
+import com.diozero.sbc.DeviceFactoryHelper;
 import com.diozero.ws281xj.LedDriverInterface;
 
 /**
@@ -52,7 +54,13 @@ public class Apa102LedDriver implements LedDriverInterface {
 	private byte[] spiBuffer;
 
 	public Apa102LedDriver(int controller, int chipSelect, int frequency, int numLeds, int brightness) {
-		device = SpiDevice.builder(chipSelect).setController(controller).setFrequency(frequency).build();
+		this(DeviceFactoryHelper.getNativeDeviceFactory(), controller, chipSelect, frequency, numLeds, brightness);
+	}
+
+	public Apa102LedDriver(SpiDeviceFactoryInterface deviceFactory, int controller, int chipSelect, int frequency,
+			int numLeds, int brightness) {
+		device = SpiDevice.builder(chipSelect).setController(controller).setFrequency(frequency)
+			.setDeviceFactory(deviceFactory).build();
 
 		this.brightness = brightness & 0x1F;
 
