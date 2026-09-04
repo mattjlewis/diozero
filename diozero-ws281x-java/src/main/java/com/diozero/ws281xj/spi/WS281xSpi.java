@@ -37,6 +37,8 @@ import org.tinylog.Logger;
 
 import com.diozero.api.SpiDevice;
 import com.diozero.api.SpiDeviceInterface;
+import com.diozero.internal.spi.SpiDeviceFactoryInterface;
+import com.diozero.sbc.DeviceFactoryHelper;
 import com.diozero.util.SleepUtil;
 import com.diozero.ws281xj.LedDriverInterface;
 import com.diozero.ws281xj.StripType;
@@ -81,8 +83,13 @@ public class WS281xSpi implements LedDriverInterface {
 
 	public WS281xSpi(int controller, int chipSelect, Protocol protocol, StripType stripType, int numLeds,
 			int brightness) {
+		this(DeviceFactoryHelper.getNativeDeviceFactory(), controller, chipSelect, protocol, stripType, numLeds, brightness);
+	}
+
+	public WS281xSpi(SpiDeviceFactoryInterface deviceFactory, int controller, int chipSelect, Protocol protocol,
+			StripType stripType, int numLeds, int brightness) {
 		device = SpiDevice.builder(chipSelect).setController(controller).setFrequency(protocol.getFrequency() * 3)
-				.build();
+				.setDeviceFactory(deviceFactory).build();
 
 		this.protocol = protocol;
 		this.stripType = stripType;
